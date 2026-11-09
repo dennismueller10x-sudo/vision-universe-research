@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "security-master-canonical-change-evidence-1.0.0",
+  "consumer": "scripts/market/build-security-master-approval-list.mjs --canonical-evidence (indexCanonicalEvidence, applyCanonicalEvidence)",
+  "doc": "docs/data/security-master/V130_G7_CANONICAL_EVIDENCE.md",
+  "effect": "Macht einen sonst nicht freigabefähigen canonical_id-Wechsel nur bei vollständigem Treffer freigabefähig (gleiche securityId, Ticker, canonical_ids, Builder-Klasse; Zielzeile im Freiverkehr; CIK wie im committeten Namensstand und in der SEC-Liste; Ereignis nicht in der Zukunft; verlangte SEC-Meldungen mit Zitat). Ändert weder Erzeuger noch Gate noch Grenzen.",
+  "scope": "Nur Börsenrückzüge in den Freiverkehr derselben Aktie unter demselben Ticker. Ausgeschlossen: Tickerwechsel, Ticker-Wiederverwendung, neue Listings, Zusammenschlüsse, Emittentenwechsel.",
+  "sources": [
+    { "id": "sec-edgar-submissions", "url": "https://data.sec.gov/submissions/", "fetchedAt": "2026-10-30", "userAgent": "VisionUniverseResearch info@visionuniverse.de" },
+    { "id": "sec-edgar-archives", "url": "https://www.sec.gov/Archives/edgar/data/", "fetchedAt": "2026-10-30" }
+  ],
+  "records": [
+    {
+      "securityId": "ref_GCTK",
+      "ticker": "GCTK",
+      "cik": "0001506983",
+      "builderClass": "MOVED_TO_OTC",
+      "fromCanonicalId": "tiingo:NASDAQ:GCTK:2013-04-25",
+      "toCanonicalId": "tiingo:OTCMKTS:GCTK:2013-04-25",
+      "event": { "kind": "NASDAQ_DELISTING_SUSPENSION_TO_OTC", "effectiveDate": "2026-10-30", "note": "Nasdaq Hearings Panel entscheidet am 28.10.2026 die Streichung (Bid Price Rule); Handelsaussetzung an der Nasdaq zur Eröffnung am 30.10.2026, Notiz im Freiverkehr (OTC Markets). Form 25 der Nasdaq ist angekündigt, noch nicht eingereicht." },
+      "filings": [
+        {
+          "form": "8-K", "items": ["3.01"], "accession": "0001493152-26-049299", "filingDate": "2026-10-29", "cik": "0001506983",
+          "url": "https://www.sec.gov/Archives/edgar/data/1506983/000149315226049299/form8-k.htm",
+          "quote": "On October 28, 2026, the Company received written notice from the Panel that it had determined to delist the Company’s securities from Nasdaq because the Company’s closing bid price was $0.87 on October 14, 2026, and the Company therefore did not satisfy the terms of the exception. Trading in the Company’s common stock on Nasdaq will be suspended at the open of trading on October 30, 2026. [...] The Company expects and plans for its shares of common stock to be quoted by the OTC Markets Group, Inc. (“OTC”) upon being suspended from trading on Nasdaq"
+        },
+        {
+          "form": "8-K", "items": ["5.03", "8.01", "9.01"], "accession": "0001493152-26-048981", "filingDate": "2026-10-28", "cik": "0001506983",
+          "url": "https://www.sec.gov/Archives/edgar/data/1506983/000149315226048981/form8-k.htm",
+          "quote": "to effect a one-for-two (1-for-2) reverse stock split (the “Reverse Stock Split”) of the shares of the Company’s common stock, par value $0.001 per share [...] which became effective at 4:30 p.m., Eastern Time, on October 23, 2026",
+          "role": "Kontext: Reverse Split 1:2 vom 23.10.; kein Emittenten- oder Gattungswechsel"
+        }
+      ],
+      "reviewedAt": "2026-10-30"
+    },
+    {
+      "securityId": "ref_LNAI",
+      "ticker": "LNAI",
+      "cik": "0001527728",
+      "builderClass": "MOVED_TO_OTC",
+      "fromCanonicalId": "tiingo:NASDAQ:LNAI:2015-02-02",
+      "toCanonicalId": "tiingo:OTCMKTS:LNAI:2015-02-02",
+      "event": { "kind": "NASDAQ_DELISTING_SUSPENSION_TO_OTC", "effectiveDate": "2026-10-30", "note": "Streichungsbeschluss der Nasdaq (Listing Rule 5550(b)(1)) vom 21.10.2026, keine Anhörung beantragt, freiwilliger Rückzug nach Rule 12d2-2(c) beschlossen; Handelsaussetzung zur Eröffnung am 30.10.2026." },
+      "filings": [
+        {
+          "form": "8-K", "items": ["3.01", "5.02", "7.01", "8.01", "9.01"], "accession": "0001731122-26-001362", "filingDate": "2026-10-23", "cik": "0001527728",
+          "url": "https://www.sec.gov/Archives/edgar/data/1527728/000173112226001362/e8019_8-k.htm",
+          "quote": "Unless the Company requests a hearing before a Nasdaq Hearings Panel by October 28, 2026, trading in the Common Stock on Nasdaq will be suspended at the opening of business on October 30, 2026. The Company does not intend to request a hearing. On October 22, 2026, the Company’s Board of Directors (the “Board”) approved the voluntary withdrawal of the Common Stock from listing on Nasdaq and from registration under Section 12(b) of the Securities Exchange Act of 1934"
+        }
+      ],
+      "reviewedAt": "2026-10-30"
+    },
+    {
+      "securityId": "ref_SBXD",
+      "ticker": "SBXD",
+      "cik": "0002015947",
+      "builderClass": "PROVIDER_HISTORY_RESTARTED",
+      "fromCanonicalId": "tiingo:NYSE:SBXD:2024-10-07",
+      "toCanonicalId": "tiingo:PINK:SBXD:2026-09-28",
+      "event": { "kind": "NYSE_DELISTING_TO_OTC", "effectiveDate": "2026-09-28", "note": "NYSE-Streichung der Class-A-Aktien, Units und Warrants (Section 802.01B); ab 28.09.2026 Notiz auf OTCID. Die Anbieterzeile im Freiverkehr beginnt am Wirksamkeitstag; danach neue OTC-Symbole (SBXDF), die securityId ref_SBXD endet damit." },
+      "filings": [
+        {
+          "form": "8-K", "items": ["3.01"], "accession": "0001104659-26-111044", "filingDate": "2026-09-25", "cik": "0002015947",
+          "url": "https://www.sec.gov/Archives/edgar/data/2015947/000110465926111044/tm2626181d1_8k.htm",
+          "quote": "On September 25, 2026, SilverBox Corp IV (the “Company”) received a written notice (the “Notice”) from the staff of NYSE Regulation (the “Staff”) of the New York Stock Exchange (“NYSE”) indicating that the Staff has determined to commence proceedings to delist the Company’s units (the “Units”), Class A ordinary shares and warrants from the NYSE."
+        },
+        {
+          "form": "8-K", "items": ["8.01"], "accession": "0001104659-26-111396", "filingDate": "2026-09-28", "cik": "0002015947",
+          "url": "https://www.sec.gov/Archives/edgar/data/2015947/000110465926111396/tm2626499d1_8k.htm",
+          "quote": "Effective as of September 28, 2026, the units, Class A ordinary shares and warrants are being quoted and traded on the OTCID, which is operated by the OTC Markets, under the ticker symbols “SBXUF,” “SBXDF” and “SBXWF,” respectively"
+        },
+        {
+          "form": "25-NSE", "items": [], "accession": "0000876661-26-000824", "filingDate": "2026-10-13", "cik": "0002015947",
+          "url": "https://www.sec.gov/Archives/edgar/data/2015947/000087666126000824/primary_doc.xml",
+          "role": "Form 25 der NYSE (17 CFR 240.12d2-2(b)) für Class A Ordinary Shares, Units und Warrants"
+        }
+      ],
+      "reviewedAt": "2026-10-30"
+    }
+  ]
+}

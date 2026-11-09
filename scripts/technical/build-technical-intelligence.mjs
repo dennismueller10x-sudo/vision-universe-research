@@ -42,6 +42,7 @@ import { projectFor, motiveCandidateFor, candidatePool, exploreCandidatesFor, ex
 import { pruneStaleShards } from "./lib/ti-shards.mjs";
 import { Freshness, loadMaster, freshnessOf, withholdPayload, shardBlock, withheldIndexRow, newStats, addStats, systemicCheck, validReference } from "./lib/ti-freshness.mjs";
 import { cpus } from "node:os";
+import { loadIdentityQuarantine } from "./lib/identity-quarantine.mjs";
 import { createHash } from "node:crypto";
 
 const require = createRequire(import.meta.url);
@@ -320,6 +321,12 @@ async function main() {
   /* --only A,B,C: nur diese Titel bauen (Entwicklung und QA; nie fuer die Veroeffentlichung) */
   const only = arg("only", null) ? new Set(arg("only").split(",").map((x) => x.trim().toUpperCase()).filter(Boolean)) : null;
   if (only) { wfiles = wfiles.filter((f) => only.has(f.replace(/^ref_|\.json$/g, "").toUpperCase())); dailyFiles = dailyFiles.filter((f) => only.has(f.replace(/^ref_|\.json$/g, "").toUpperCase())); }
+  /* Ticker-Wiederverwendung (quant/config/ticker-reuse-quarantine.json, IDENTITY_QUARANTINED): Name und Stamm beschreiben
+     das alte Unternehmen, die Reihe einen ETF. Keine Analyse unter falscher Identitaet; gezaehlt in meta.counts.identityQuarantined. */
+  const quarantine = loadIdentityQuarantine(ROOT);
+  const quarantined = (f) => quarantine.has(Identity.securityIdForTicker(f.replace(/^ref_|\.json$/g, "")));
+  const identityQuarantined = new Set([...wfiles, ...dailyFiles].filter(quarantined).map((f) => f.replace(/^ref_|\.json$/g, ""))).size;
+  wfiles = wfiles.filter((f) => !quarantined(f)); dailyFiles = dailyFiles.filter((f) => !quarantined(f));
   /* Tagesanalyse zuerst (bestimmt, welche Titel keine Wochenanalyse brauchen) */
   const dailyTickers = new Set(dailyFiles.map((f) => { try { return readJson(join(C.dailyDir, f)).ticker; } catch (e) { return null; } }).filter(Boolean));
   const units = dailyFiles.map((f) => ({ kind: "daily", f })).concat(wfiles.filter((f) => !dailyTickers.has(f.replace(/^ref_|\.json$/g, ""))).map((f) => ({ kind: "weekly", f })));
@@ -369,7 +376,7 @@ async function main() {
   const meta = {
     schemaVersion: API_VERSION, resultSchema: TI.SCHEMA_VERSION, bundle: TI.BUNDLE_VERSION, generatedAt: new Date().toISOString(),
     methodology: "quant/methodology/technical-intelligence-v2.json", elliott: { engine: PRODUCT_METHODOLOGY.elliottEngine, status: "EXPERIMENTAL_STRUCTURE_MODEL", confluenceWeight: 0, report: "docs/technical-intelligence/ELLIOTT_ENGINE32_REPORT.md" },
-    counts: { daily: dailyDone.size, weekly, skipped, shards: Object.keys(shards).length },
+    counts: { daily: dailyDone.size, weekly, skipped, shards: Object.keys(shards).length, identityQuarantined },
     sources: { daily: workDir ? "kanonische Tageshistorie (work-dir)" : "golden-preview (5 Titel)", weekly: "discover-series-long (Wochenschluss, ohne Volumen)" },
     evidence: { weekly: ev1W ? { file: ev1W.source, generatedAt: ev1W.generatedAt, calibrationPassed: ev1W.calibration.passed } : null, daily: ev1D ? { file: ev1D.source, generatedAt: ev1D.generatedAt, calibrationPassed: ev1D.calibration.passed } : null },
     paths: Object.fromEntries(Object.entries({ evidenceSummary: "evidence-summary.json", rulesCatalog: "rules-catalog.json", index: "index.json.gz", shard: "shards/<XX>.json.gz", discoverRows: "discover-rows.json", alerts: "alerts.json", methodEvidence: "method-evidence.json" }).map(([k, v]) => [k, "/quant/data/technical-intelligence/v3/" + v])),

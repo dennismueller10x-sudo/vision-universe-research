@@ -33,6 +33,7 @@
     RATE_LIMITED: 'Zu viele Versuche. Bitte warte einige Minuten.',
     ALREADY_SUBSCRIBED: 'Du hast bereits ein aktives Abonnement. Tarifwechsel und Laufzeit änderst du in der Abo-Verwaltung.',
     PRICE_NOT_AVAILABLE: 'Dieser Tarif ist gerade nicht buchbar.',
+    TAX_CONFIG_INVALID: 'Pro ist gerade nicht buchbar (Steuereinstellung wird geprüft). Es wurde nichts berechnet.',
     CHECKOUT_NOT_OPEN: 'Pro ist noch nicht buchbar. Bis dahin nutzt du alle Funktionen kostenlos mit Free.',
     CHECKOUT_CONFIRMATION_REQUIRED: 'Bitte bestätige Preis, Laufzeit und Kündigungsbedingungen.',
     NO_BILLING_ACCOUNT: 'Für dein Konto gibt es noch keine Zahlungsdaten.',
@@ -47,6 +48,10 @@
     UPSTREAM_UNAVAILABLE: 'Der Dienst ist gerade nicht erreichbar. Bitte versuche es gleich noch einmal.',
     NETWORK: 'Keine Verbindung. Bitte prüfe deine Internetverbindung.',
     TIMEOUT: 'Die Antwort dauert zu lange. Bitte versuche es noch einmal.',
+    SAVED_SEARCHES_LIMIT_REACHED: 'Im Konto ist Platz für 50 Suchen. Lösche eine, um eine neue zu speichern.',
+    SAVED_SEARCH_NOT_FOUND: 'Diese Suche liegt nicht mehr im Konto.',
+    QUERY_TOO_LARGE: 'Diese Suche ist zu groß für das Konto. Sie bleibt auf diesem Gerät.',
+    QUERY_INVALID: 'Diese Suche kann nicht im Konto gespeichert werden.',
     WATCHLIST_ITEMS_LIMIT_REACHED: 'Deine Watchlist ist voll. Entferne einen Titel, um einen neuen aufzunehmen.',
     WATCHLIST_LIMIT_REACHED: 'Du hast die Zahl der Watchlists deines Tarifs erreicht.',
     FEATURE_NOT_IN_PLAN: 'Diese Funktion ist in deinem Tarif nicht enthalten.',
@@ -54,7 +59,23 @@
     WATCHLIST_ITEM_NOT_FOUND: 'Dieser Eintrag ist nicht mehr auf deiner Watchlist.',
     ALERTS_INVALID: 'Diese Benachrichtigung gibt es nicht.',
     TEXT_TOO_LONG: 'Die Notiz darf höchstens 500 Zeichen lang sein.',
-    IMPORT_INVALID: 'Die Übernahme ist nicht möglich.'
+    IMPORT_INVALID: 'Die Übernahme ist nicht möglich.',
+    NEWSLETTER_NOT_AVAILABLE: 'Der Newsletter ist im Konto noch nicht verfügbar.',
+    SUBSCRIBE_INVALID: 'Das hat nicht geklappt. Bitte versuche es noch einmal.',
+    NOT_PRICING_ADMIN: 'Für die Tarifverwaltung hat dein Konto keine Berechtigung.',
+    BILLING_UNAVAILABLE: 'Die Abrechnung ist gerade nicht eingerichtet. Es wurde nichts geändert.',
+    AMOUNT_INVALID: 'Bitte gib einen Endpreis zwischen 0,50 € und 999,99 € ein (z. B. 9,90).',
+    PRICE_UNCHANGED: 'Das ist bereits der aktuelle Preis.',
+    PRICE_CHANGED: 'Der Preis wurde inzwischen geändert. Bitte lade die Seite neu und prüfe ihn.',
+    PRICE_NOT_ACTIVE: 'Dieser Preis ist nicht mehr aktiv. Bitte lade die Seite neu.',
+    PRICE_NOT_INCLUSIVE: 'Der bisherige Stripe-Preis ist nicht als Endpreis inkl. USt angelegt. Es wurde nichts geändert.',
+    CHANGE_IN_PROGRESS: 'Für diesen Tarif läuft gerade eine andere Änderung. Bitte warte 15 Minuten oder prüfe die letzten Änderungen.',
+    CHANGE_ID_REUSED: 'Diese Vorschau gehört zu einer anderen Änderung. Bitte erstelle eine neue Vorschau.',
+    CHANGE_ID_INVALID: 'Bitte erstelle zuerst eine Vorschau.',
+    CHANGE_NOT_READY: 'Die Änderung ist noch nicht vollständig. Bitte bestätige sie noch einmal.',
+    PRICE_CHANGE_RETRY: 'Der neue Stripe-Preis ist angelegt, aber noch nicht aktiv. Bitte bestätige noch einmal – nichts wird doppelt angelegt.',
+    STRIPE_UNAVAILABLE: 'Stripe ist gerade nicht erreichbar. Es wurde nichts geändert; du kannst es gleich noch einmal versuchen.',
+    STRIPE_PRICE_MISMATCH: 'Stripe hat einen abweichenden Preis gemeldet. Es wurde nichts aktiviert; bitte prüfe Stripe.'
   };
 
   var STATUS = {

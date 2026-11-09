@@ -1,0 +1,85 @@
+{
+ "schemaVersion": "v10-tr-dividend-protocol-1.0.4",
+ "status": "REGISTERED_BEFORE_OUTCOMES",
+ "registration": "The git commit that adds this file is the registration; it precedes every SEC fetch of this strand for dividend evidence. sha256 in tr-protocol-1.0.4.sha256. Changes need a new version.",
+ "priorKnowledge": "Written after reading docs/quant-recovery/v9/portfolio/dividend-evidence.json (completeness counts per title and gap quarters: MSFT/WMT 47/47, NVDA 46/47, IBM 43/47, A 28/47, JPM 15/47, XOM 14/47, META 1/11) and the V9 harvester code. V9 events are a candidate list only; every event admitted here is re-extracted from a body fetched by this strand.",
+ "purpose": "Research total-return register (dividends) for the titles of the V9/V10 ledger and study populations with the largest study effect. Strictly separates PRICE_RETURN, TOTAL_RETURN, unresolved corporate actions and unknown terminal proceeds.",
+ "titles": {
+  "A": 1090872,
+  "IBM": 51143,
+  "JPM": 19617,
+  "META": 1326801,
+  "MSFT": 789019,
+  "NVDA": 1045810,
+  "WMT": 104169,
+  "XOM": 34088
+ },
+ "period": {
+  "recordDateFrom": "2015-01-01",
+  "recordDateTo": "2026-10-23",
+  "expectedQuarters": "one regular cash dividend per record-date calendar quarter 2015Q1..2026Q3; META from 2024Q1 (first declared dividend 2024-02-01)"
+ },
+ "sources": {
+  "allowed": [
+   "8-K and 8-K exhibits (Item 8.01/7.01/2.02, EX-99 dividend declarations and earnings releases)",
+   "10-Q/10-K primary documents (dividend sentences and tables with record and payment dates)",
+   "inline XBRL dei/us-gaap dividend date facts in those documents"
+  ],
+  "access": "scripts/quant/sec/http_client.py, User-Agent 'VisionUniverseResearch info@visionuniverse.de', <= 1 request/second for this harvester (strand total <= 2/s), private cache scratchpad/v10-private/corporate-actions/div-cache. Availability time from the filing's SGML index-headers ACCEPTANCE-DATETIME (US/Eastern -> UTC), never from submissions.zip.",
+  "discovery": "(a) every document listed as attestation in the V9 dividend-evidence (candidate list only, re-fetched); (b) every 10-Q/10-K primary document of the title filed 2014-10-01..2026-10-27; (c) for each quarter without an admitted event after (a)+(b): EDGAR full-text search with the CIK, forms 8-K,10-Q,10-K and dateRange [quarterStart-100d, quarterEnd+45d] for each query in GAP_QUERIES (all pages, at most 300 hits per query), and all exhibits of 8-Ks of the title in that range with items 2.02, 7.01, 8.01 or empty items.",
+  "GAP_QUERIES": [
+   "\"of record\" dividend",
+   "\"record date\" dividend",
+   "\"holders of record\"",
+   "\"payable\" \"per share\" dividend"
+  ]
+ },
+ "extraction": "The V9 extractors (scripts/quant/v9/portfolio/harvest_dividends.py: sentence_events, table_events, installment_events, partial_events) are reused unchanged as parsing functions; a field not stated in the document stays null. 1.0.1: the extractors run on the V9 html_text output AND on the same text with every whitespace run (including line breaks) collapsed to one space; 1.0.2: statements from the collapsed-text run are used only for record dates for which the same document's original-text run yields no statement (fallback, not union); every statement carries its run ('ORIGINAL' or 'COLLAPSED_WHITESPACE'). Admission, conflict and completeness rules are unchanged.",
+ "eventAdmission": {
+  "rule": "A regular cash dividend event (title, recordDate) is admitted iff at least one extraction from a body fetched by this strand states recordDate, payDate and a contemporaneous per-share amount in the same sentence/table row, intentOnly is false, kind is REGULAR, and no other admitted extraction for the same recordDate states a different payDate or contemporaneous amount (conflict -> EVENT_CONFLICT, not admitted).",
+  "payDate": "the stated payment date; an ex-dividend date is never used as payment date.",
+  "exDate": "never sourced; recorded only as exDateDerived from the record date by the settlement-cycle rule (T+3 until 2017-09-06: record - 2 business days; T+2 from 2017-09-07: record - 1 business day; T+1 from 2024-05-28: record date), flagged DERIVED_SETTLEMENT_RULE_NOT_SOURCED.",
+  "declarationDate": "stated date if present, else null.",
+  "availability": "SEC acceptance (index-headers) of the earliest admitted source; issuer declaration date is reported separately and never replaces the SEC time.",
+  "sourcesPerEvent": "every admitted attestation: accession, url, sha256 of the full body, form, quote <= 300 characters, acceptanceUtc and header sha256.",
+  "ambiguousAmount": "1.0.3 (tightening): a SENTENCE-pattern statement whose recorded sentence (first 300 characters) states two or more distinct dollar amounts matching \\$\\s?\\d*\\.\\d+ followed within 30 characters by 'per' + optional 'common' + 'share' is AMBIGUOUS_AMOUNT and is not used for admission (e.g. 'increasing its quarterly cash dividend from $0.01 per share to $0.25 per share')."
+ },
+ "splitConsistency": {
+  "rule": "amount is kept in contemporaneous per-share units. seriesUnitFactor = product of the provider splitFactors of quant/data/market/discover-series-long/ref_<T>.json with date > exDateDerived; amountSeriesUnits = amount / seriesUnitFactor. Each provider split factor inside the period must be confirmed by a fetched SEC document stating the ratio (8-K/EX-99); a provider factor that is not a stock split (e.g. a spin-off price factor) is labelled PROVIDER_NON_SPLIT_FACTOR with its SEC source and the title's TOTAL_RETURN window is cut at that date unless the distribution is separately modelled.",
+  "check": "companyfacts us-gaap:CommonStockDividendsPerShareDeclared quarterly facts are compared (MATCH/MISMATCH/UNMATCHABLE) as a cross-check only."
+ },
+ "completeness": {
+  "quarterStatus": "COVERED (exactly one admitted regular event with record date in the quarter) | GAP_NO_SEC_ATTESTATION | GAP_RECORD_DATE_NOT_STATED | GAP_CONFLICT | GAP_MULTIPLE_RECORD_DATES",
+  "totalReturnWindows": "maximal runs of consecutive COVERED expected quarters; returnBasis TOTAL_RETURN is permitted only for holding periods whose every week lies inside one window (window start = first day of its first quarter, end = last day of its last quarter, additionally cut at PROVIDER_NON_SPLIT_FACTOR dates). Outside: PRICE_RETURN only. No dividend is inferred from neighbouring quarters.",
+  "separation": "PRICE_RETURN | TOTAL_RETURN | CA_UNRESOLVED (series not qualified by createResearchLoader {identityEvidence, corporateActionEvidence}) | TERMINAL_UNKNOWN (terminal proceeds without sourced pay date) are reported as separate labels; none is merged into another.",
+  "cadenceCut": "1.0.4 (tightening): inside a run of COVERED quarters, two consecutive admitted record dates more than 120 days apart mean a dividend may be missing although every calendar quarter shows one record date (record dates drifting across quarter ends). The window is then split: the left part ends at the earlier record date, the right part starts at the later record date."
+ },
+ "registerFile": "quant/engines/research-tr-evidence.cjs is NOT created (no loader change by this strand); the register is docs/quant-recovery/v10/corporate-actions/tr-register-1.0.0.json, shaped for direct use as research-portfolio.cjs CASH_DIVIDEND events (effectiveDate = first weekly session on/after exDateDerived, payDate, amount in series units, informationAvailableAt = SEC acceptance, sourceHash).",
+ "parity": "One TR ledger per title over its longest TOTAL_RETURN window: research-portfolio.cjs runPortfolio (buy at the first execution session, hold, dividend cash credited at the first weekly session on/after payDate, not reinvested, no costs) vs an independent Python stdlib re-computation from the series file and the register (not a port of the JS code). Tolerance 1e-9 relative on end value.",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "amends": {
+  "file": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.3.json",
+  "sha256": "9283cabf110b6b3891acf77ac8bfcfc6ceeef1ef0f9449a41911ce55737dac38",
+  "previous": {
+   "file": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.2.json",
+   "sha256": "7968e26ddc6b5ea7c31296b1ceeecd4ed033a5be02817ebd1dd2fe6f73e4ac47",
+   "previous": {
+    "file": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.1.json",
+    "sha256": "d932f0ea0676adfa914db8aaf7914442ae3e064f692df1ea4b306c39efc329be",
+    "previous": {
+     "file": "docs/quant-recovery/v10/corporate-actions/tr-protocol-1.0.0.json",
+     "sha256": "4cef8ff4a42fc2da50ec7215128bba438400076a212ceb94555fa9318cf48980",
+     "change": "extraction also on whitespace-collapsed text (see extraction).",
+     "why": "After the 1.0.0 build (no title improved over V9) a check of the gap-search documents found JPM EX-99 of accession 0001193125-17-304675 (warrant notice) stating record date 2017-10-06, pay date 2017-10-31 and $0.56, missed because the source HTML carries a raw line break inside the sentence ('of record at the' + line break + 'close of business') and the V9 sentence splitter treats every line break as a sentence end. This is a parse defect, fixed without any new pattern or threshold; it was found after seeing the 1.0.0 results and is disclosed as such. It can add admissions; every admitted event still needs record date, pay date and amount stated in one sentence/row of a fetched SEC body."
+    },
+    "change": "collapsed-text statements only as per-document fallback for record dates the original run did not find.",
+    "why": "The 1.0.1 union recovered IBM 2015Q2-2016Q2 and JPM 2017Q4 but the collapsed run also paired dates and amounts across table rows (e.g. A record 2023-01-03 with pay 2022-11-16 and $0.72; JPM 2015-07-06 with $0.40), so the conflict rule rejected four previously admitted events (A 2023Q1, A 2026Q1, JPM 2015Q3, JPM 2016Q3). No false admission occurred (the conflict rule held). Fallback instead of union restores precision; decided after seeing the 1.0.1 results and disclosed as such."
+   },
+   "change": "eventAdmission.ambiguousAmount (statements with two distinct per-share amounts are not used).",
+   "why": "The companyfacts cross-check of the 1.0.2 build showed NVDA quarter 2026-04-27..2026-07-26 XBRL $0.25 vs admitted $0.01 for record date 2026-06-04: the V9 amount pattern takes the first '$0.01 per share' of the sentence 'increasing its quarterly cash dividend from $0.01 per share to $0.25 per share ... paid on June 26, 2026, to all shareholders of record on June 4, 2026'. The same defect is in the V9 dividend table. Pure tightening; found after seeing results; disclosed."
+  },
+  "change": "completeness.cadenceCut",
+  "why": "Review of the 1.0.3 A window 2024: record dates 2024-07-02 and 2024-12-31 (182 days apart) each 'cover' a quarter, so the October 2024 payment (record date not found) was masked and the 2024 window was declared complete. Pure tightening; found after seeing results; disclosed."
+ }
+}

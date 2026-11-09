@@ -1,0 +1,41 @@
+{
+ "schemaVersion": "backtest-runner-spec-1.0.0",
+ "version": "1.0.0",
+ "registeredAt": "2026-10-29T00:00:00Z",
+ "asOf": "2025-12-31",
+ "costs": {
+  "feeBps": 0,
+  "slippageBps": 0
+ },
+ "benchmark": "SPY",
+ "id": "strategy-dividends-tr",
+ "description": "Equal-weight buy-and-hold MSFT/WMT/IBM with register dividends (total return), 2016-2020",
+ "kind": "STRATEGY_BACKTEST",
+ "window": {
+  "from": "2016-01-01",
+  "to": "2020-12-31"
+ },
+ "population": {
+  "profile": "V10_PRIMARY",
+  "tickers": [
+   "MSFT",
+   "WMT",
+   "IBM"
+  ]
+ },
+ "engine": {
+  "variant": "FIXED_WEIGHTS",
+  "weights": "EQUAL",
+  "rebalance": {
+   "frequency": "sessions",
+   "everySessions": 10000
+  },
+  "initialCapital": 100000,
+  "dividends": "TR_REGISTER"
+ },
+ "methods": {
+  "EVENT_DRIVEN": {
+   "horizonBars": 4
+  }
+ }
+}

@@ -8,27 +8,30 @@
 <meta name="theme-color" content="#ffffff">
 <title>Konto erstellen · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 </head>
-<body class="ka-body" data-view="register"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
-<main class="ka ka--narrow" id="main">
-<p class="ka-eyebrow">Konto</p>
+<body class="ka-body vu-ui" data-view="register"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka ka--narrow ka-auth" id="main">
+<!-- Registrieren (Mockup E04): Schrittanzeige, sichtbare Pro-Wahl mit Preis, Passwortregeln als Haken, klarer nächster Schritt. -->
+<ol class="ka-steps" id="ka-steps" aria-label="Schritte"><li class="is-now">Konto</li><li>E-Mail</li><li data-pro hidden>Pro bestätigen</li></ol>
 <h1 class="ka-title">Konto erstellen</h1>
 <p class="ka-lead">Ein Konto für alle Vision-Universe-Welten. Wir speichern nur, was dein Konto braucht.</p>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
-<p class="ka-notice" id="ka-plan-hint" data-kind="info" hidden>Du hast Pro gewählt. Nach der Bestätigung deiner E-Mail-Adresse meldest du dich an und schließt Pro ab. Bis dahin entsteht kein Vertrag und es wird nichts berechnet.</p>
-<form class="ka-card ka-form" id="ka-register" novalidate>
-<div class="ka-field"><label for="email">E-Mail-Adresse</label><input class="ka-input" id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required maxlength="254"></div>
+<div class="vu-box vu-box--ink ka-pro-card" id="ka-plan-hint" hidden><p class="ka-pro-top"><b>Du hast Pro gewählt <span class="vu-pro">PRO</span></b><span id="ka-plan-price"></span></p><p class="ka-pro-text">Nach der Bestätigung deiner E-Mail-Adresse schließt du Pro ab. Bis dahin entsteht kein Vertrag und es wird nichts berechnet.</p><button class="ka-textbtn" id="ka-plan-free" type="button">Lieber mit Free starten</button></div>
+<form class="ka-form" id="ka-register" novalidate>
+<div class="ka-field"><label for="email">E-Mail-Adresse</label><input class="ka-input" id="email" name="email" type="email" autocomplete="username" inputmode="email" autocapitalize="none" spellcheck="false" required maxlength="254" placeholder="name@beispiel.de"></div>
 <div class="ka-field"><label for="display-name">Anzeigename <span class="ka-muted">(optional)</span></label><input class="ka-input" id="display-name" name="display-name" type="text" autocomplete="nickname" maxlength="80"></div>
-<div class="ka-field"><label for="password">Passwort</label><div class="ka-pw"><input class="ka-input" id="password" name="password" type="password" autocomplete="new-password" required maxlength="200"><button type="button" data-toggle-password="password" aria-controls="password" aria-pressed="false">Anzeigen</button></div><ul class="ka-hint" id="pw-rules" aria-live="polite"></ul></div>
-<label class="ka-check"><input id="terms" name="terms" type="checkbox" required><span>Ich habe die <a class="ka-link" href="/landing/datenschutz/">Datenschutzhinweise</a> gelesen und akzeptiere die Nutzungsbedingungen.</span></label>
+<div class="ka-field"><label for="password">Passwort</label><div class="ka-pw"><input class="ka-input" id="password" name="password" type="password" autocomplete="new-password" required maxlength="200"><button type="button" data-toggle-password="password" aria-controls="password" aria-pressed="false">Anzeigen</button></div><ul class="ka-hint ka-rules" id="pw-rules" aria-live="polite"></ul></div>
+<label class="ka-check ka-check--card"><input id="terms" name="terms" type="checkbox" required><span>Ich akzeptiere die <a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb" target="_blank" rel="noopener">Nutzungsbedingungen</a> und habe die <a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz" target="_blank" rel="noopener">Datenschutzerklärung</a> gelesen.</span></label>
+<label class="ka-check" id="newsletter-field" hidden><input id="newsletter" name="newsletter" type="checkbox"><span><strong>Freiwillig:</strong> Ich möchte den Vision-Universe-Newsletter per E-Mail erhalten: Neuigkeiten zu Vision Universe, neue Research-Inhalte und Informationen zu seinen Produkten einschließlich des App-Starts. Ich kann mich jederzeit über den Abmeldelink abmelden. Du bekommst dazu eine E-Mail zur Bestätigung. <a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/newsletter" target="_blank" rel="noopener">Datenschutzhinweise</a></span></label>
 <button class="ka-btn ka-btn--block" type="submit">Konto erstellen</button>
 <p class="ka-hint">Nach dem Absenden bekommst du eine E-Mail mit einem Bestätigungslink.</p>
 </form>
-<section class="ka-card" id="ka-register-done" hidden><h2>Fast geschafft</h2><p>Wir haben einen Bestätigungslink an <strong data-email></strong> geschickt. Öffne ihn, um dein Konto zu aktivieren. Keine E-Mail? Sieh im Spam-Ordner nach.</p></section>
+<section class="ka-done" id="ka-register-done" hidden><span class="ka-done-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="M4 7l8 6 8-6"/></svg></span><h2>Schau in dein Postfach</h2><p>Wir haben einen Bestätigungslink an <strong data-email></strong> geschickt. Öffne ihn, um dein Konto zu aktivieren. Keine E-Mail? Sieh im Spam-Ordner nach.</p><button class="ka-btn ka-btn--secondary ka-btn--block" id="ka-register-change" type="button">Adresse ändern</button></section>
 <nav class="ka-links" aria-label="Weitere Möglichkeiten"><a class="ka-link" href="/konto/anmelden/">Ich habe schon ein Konto</a></nav>
-<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

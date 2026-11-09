@@ -1,0 +1,77 @@
+{
+  "schema": "vu-edge2-protocol-1.0.0",
+  "id": "EDGE2-QT-OVERLAY-2016-2026",
+  "registeredOn": "2026-11-06",
+  "registeredBy": "Strang Edge 2 (Claude) nach Owner-Auftrag vom 06.11.2026; Lesarten nach der dokumentierten Empfehlung (CLAUDE.md, Freigaben)",
+  "label": "Forschung, nicht zertifiziert",
+  "status": "Vor dem ersten Lauf festgeschrieben. Der SHA-256 dieser Datei ist in scripts/research/edge2/protocol-pin.cjs gepinnt; der Runner verweigert bei jeder Abweichung.",
+  "questions": {
+    "teil1": "Schlägt eine Kombination aus Quant-Auswahl (Merkliste) und technischem Einstieg an einer Zone der Technical-Engine, lange gehalten mit 10 oder 20 Positionen, den S&P 500 (SPY-Gesamtrendite) nach Kosten?",
+    "teil2": "Erreicht Value Momentum N20 mit einem Risiko-Overlay eine ähnliche Rendite wie SPY bei besserem Verhältnis von Rendite zu Risiko (Sharpe, maximaler Verlust)?"
+  },
+  "honesty": {
+    "notOutOfSample": "DEV 2016–2026 ist kein unberührter Zeitraum: E3 hat 2020–2026 als Prüfteil geöffnet, S2 hat 2016–2026 gerechnet, der Holdout 2008–2015 ist verbraucht. Die Varianten unten sind vor diesem Lauf festgelegt, aber in Kenntnis der E3-Ergebnisse (Value Momentum N20 roh über SPY im E3-Prüfteil, Defensive Quality bester DEV-Sharpe). Ein positives Ergebnis ist deshalb höchstens eine Hypothese.",
+    "confirmation": "Als Bestätigung zählt nur der Vorwärtslauf: Die nach der Auswahlregel beste Teil-1-Variante läuft ab der ersten Woche nach dem Lauf unverändert als Papierdepot EDGE2-PAPER (siehe paper)."
+  },
+  "window": { "from": "2016-01-01", "to": "2026-10-02", "anchor": "erster Wochenstichtag des Panels >= 2016-01-01", "start": "Cash-Start im Fenster wie E3 (quant-e3.cjs#runVariant)" },
+  "data": {
+    "panel": "scripts/quant/portfolio/model-portfolios.cjs#buildPanel mit R2-Tagesbalken (Gesamtrendite), delisteten V13-Ketten (Register 1.0.0, v13-derived + v13-raw) und SEC-Fundamentaldaten wie erstmals eingereicht (build_pit_fundamentals.py --bulk); identisch zu E3 und Holdout H",
+    "dailyBarsForZones": "Tagesbalken OHLC derselben Quellen: R2 tiingo/daily/<securityId>.json, delistete Titel aus v13-raw im Kettenzeitraum (wie scripts/research/signals/s2.mjs#r2Payload/#delistedPayload)",
+    "benchmark": "SPY-Gesamtrendite vorsorge/data/series/SPY.json, Wochenraster ohne Auffüllen (run-e3.cjs#evaluate); RSP und IWM nur beschreibend",
+    "marketFilter": "SPY-Tagesschluss quant/data/market/multi-asset/series/SPY.json (quant-e3.cjs#marketFilter, SMA200 inkl. Tag, Gleichstand = aus)"
+  },
+  "costs": "Exakt wie E3/H: Ledger quant/engines/research-portfolio.cjs#runPortfolio über quant-e3.cjs#ledgerFromTargets, 1 bp Gebühr + 5 bp Slippage je Seite, halber Spread je Titel aus portfolio-construction.cjs#halfSpreadBps als Abschlag am Handelstag, delistete Titel mit TERMINAL_CASH (MERGER 1, UNKNOWN 0,7, DISTRESS 0, SERIES_END 1). Cash verzinst sich nicht.",
+  "dq": "Primär ohne Quarantäne wie H; DQ-K5-BOOK (model-portfolios.cjs#applyDq) als Sensitivität, beide berichtet. Zonen werden in der Sensitivität auf den Tagesbalken des Grundtitels erkannt.",
+  "teil1": {
+    "watchlist": "Alle 13 Wochen ab Anker (Neubewertung): Profil-Score wie E3 (quant-e3.cjs#createSelector, Liquiditätspool bis 90 Titel mit 104 Wochen Historie). Merkliste = die besten 2N des Pools. Halteliste = die besten 4N des Pools.",
+    "entryZONE": "Jede Woche t (Entscheidung am letzten Tagesschluss der Woche): freie Plätze werden in Rangfolge der Merkliste mit Titeln besetzt, die nicht gehalten werden, die Branchengrenze 25 % einhalten und an t eine Zone laut Technical-Engine zeigen. Zone = dieselbe Erkennung wie S2 (study.mjs#detect auf allen Tagesbalken bis einschließlich t, mindestens 300 Balken, alle Balken gültig, letzter Balken höchstens 7 Tage vor t): ein Szenario BULLISH der Vorlagen PULLBACK_TO_SUPPORT, BREAKOUT_RETEST oder DEEPER_CORRECTION mit status ACTIVE und entryStatus ACTIVE und trade-setup.js#buildTradeSetup im Status COMPLETE oder COMPLETE_LOW_RR.",
+    "entryNOW": "Kontrolle: freie Plätze werden ohne Zonenprüfung in Rangfolge der Merkliste besetzt (gleiche Halte- und Verkaufsregel).",
+    "sizing": "Ein Platz = 1/N des Depotwerts zur Ausführung, höchstens die Liquiditätsgrenze des Titels (portfolio-construction.cjs#liquidity), höchstens das freie Cash. Gehaltene Titel werden nicht umgeschichtet (Gewichte laufen mit dem Kurs).",
+    "exit": "Verkauf nur an einer Neubewertung, wenn der Titel nicht mehr in der Halteliste (beste 4N) steht, oder durch Delisting (TERMINAL_CASH). Kein Stopp, kein Kursziel.",
+    "execution": "Entscheidung an t, Ausführung zum Schluss der Folgewoche t+1 (wie E3). Ist ein Kandidat an t+1 nicht handelbar, wird der nächste Titel der Merkliste geprüft. Fehlt einem gehaltenen Titel an t+1 der Kurs (Datenlücke), wird die ganze Aktion der Woche um eine Woche verschoben. Das Schatten-Depot zur Gewichtsbemessung rechnet ohne Kosten; gehandelt und bewertet wird nur im Ledger."
+  },
+  "teil2": {
+    "base": "Q-value-momentum-N20-W13-F0 aus E3, unverändert (quant-e3.cjs#runVariant-Logik): Auswahl alle 13 Wochen, gleichgewichtet, Umschichtung an der Auswahl.",
+    "overlay": "Das Overlay skaliert die Zielgewichte der Basis mit einer Investitionsquote e in [0,1]; der Rest ist Cash. Eine neue Quote wird als Ziel ausgegeben, wenn sie sich um mindestens 0,10 ändert oder eine Auswahl fällig ist (Ausführung t+1, Kosten wie oben).",
+    "TREND50": "e = 1, wenn der SPY-Marktfilter an t an ist, sonst 0,5; ohne 200-Tage-Mittel e = 0,5.",
+    "VOL15": "e = min(1; 0,15 / σ), σ = annualisierte Standardabweichung (×√52) der letzten 26 Wochenrenditen der unskalierten Basis bis einschließlich t (Basis-Ledger, kein Vorgriff); weniger als 26 Wochen: e = 1.",
+    "TREND50_VOL15": "e = Produkt aus TREND50 und VOL15.",
+    "ABSMOM12": "Monatlich (erste Entscheidungswoche jedes Kalendermonats): e = 1, wenn die SPY-Gesamtrendite der letzten 52 Wochen bis t > 0, sonst 0; zwischen den Monatsterminen bleibt e."
+  },
+  "variants": [
+    { "id": "E2-T1-VM-N20-ZONE", "part": "teil1", "profileId": "value-momentum", "n": 20, "entry": "ZONE" },
+    { "id": "E2-T1-VM-N10-ZONE", "part": "teil1", "profileId": "value-momentum", "n": 10, "entry": "ZONE" },
+    { "id": "E2-T1-ML-N20-ZONE", "part": "teil1", "profileId": "momentum-leader", "n": 20, "entry": "ZONE" },
+    { "id": "E2-T1-ML-N10-ZONE", "part": "teil1", "profileId": "momentum-leader", "n": 10, "entry": "ZONE" },
+    { "id": "E2-T1-DQ-N20-ZONE", "part": "teil1", "profileId": "defensive-quality", "n": 20, "entry": "ZONE" },
+    { "id": "E2-T1-VM-N20-NOW", "part": "teil1", "profileId": "value-momentum", "n": 20, "entry": "NOW" },
+    { "id": "E2-T1-ML-N20-NOW", "part": "teil1", "profileId": "momentum-leader", "n": 20, "entry": "NOW" },
+    { "id": "E2-T1-DQ-N20-NOW", "part": "teil1", "profileId": "defensive-quality", "n": 20, "entry": "NOW" },
+    { "id": "E2-T2-VM-N20-TREND50", "part": "teil2", "overlay": "TREND50" },
+    { "id": "E2-T2-VM-N20-VOL15", "part": "teil2", "overlay": "VOL15" },
+    { "id": "E2-T2-VM-N20-TREND50-VOL15", "part": "teil2", "overlay": "TREND50_VOL15" },
+    { "id": "E2-T2-VM-N20-ABSMOM12", "part": "teil2", "overlay": "ABSMOM12" }
+  ],
+  "variantRationale": "Höchstens 12 Varianten (Owner-Vorgabe). Teil 1: zwei Profile mit Vorbefund (Value Momentum, Momentum Leader) mit 10 und 20 Titeln, Defensive Quality nur mit 20; je Profil eine Kontrolle NOW, damit der Beitrag der Zone getrennt sichtbar ist. Teil 2: drei übliche Overlay-Arten (Cash-Quote im Abwärtstrend, Volatilitätsziel, absolutes Momentum) und eine Kombination; keine Schwellen-Suche.",
+  "statistics": {
+    "test": "scripts/research/edge/study.cjs#pairedTest gegen SPY-Gesamtrendite auf gemeinsamen Wochen (Block-Bootstrap 13 Wochen, 9.999 Ziehungen, Seed 20261105), einseitig für log-Mehrrendite (pLog) und Sharpe-Differenz (pSharpe)",
+    "multipleTesting": "Holm über alle 12 Varianten, getrennt für pLog und pSharpe (wie H). Fehlende oder blockierte Tests zählen mit p = 1; die Familie wird nie verkleinert.",
+    "verdictTeil1": "study.cjs#verdict mit Holm-p: 'schlägt' (Gesamtrendite > SPY und pLog_Holm <= 0,05), 'nur risikobereinigt', sonst 'schlägt nicht'.",
+    "verdictTeil2": "'besseres Rendite-Risiko' nur, wenn Sharpe > SPY-Sharpe mit pSharpe_Holm <= 0,05 UND maximaler Verlust kleiner als bei SPY UND CAGR >= SPY-CAGR − 2 Prozentpunkte; sonst 'nicht bestätigt'. Zusätzlich wird das study.cjs#verdict berichtet.",
+    "descriptive": "CAGR, Sharpe (rf = 0), Volatilität, maximaler Verlust, Kosten, Turnover, Cash-Anteil, Zonen-Treffer je Woche, je Variante gegen SPY, RSP, IWM; alle Varianten werden berichtet, auch die schlechten."
+  },
+  "selection": {
+    "paperRule": "Beste Teil-1-Variante = höchster Netto-Sharpe (primär, ohne DQ) im Fenster, dann Netto-CAGR, dann Varianten-ID. Sie geht unabhängig vom Urteil als Papierdepot vorwärts. Die Auswahl steht im öffentlichen Teil (nur die ID).",
+    "noPostHoc": "Nach dem Lauf keine weitere Variante, Schwelle oder Auswahl auf diesem Fenster."
+  },
+  "paper": {
+    "id": "EDGE2-PAPER",
+    "start": "erste vollständige Handelswoche nach dem Lauf",
+    "rules": "die ausgewählte Teil-1-Variante unverändert (Code-Version und Protokoll-SHA gepinnt), wöchentlich vorwärts, nur angehängt und hash-verkettet",
+    "evaluation": "nach 3, 6 und 12 Monaten gegen SPY-Gesamtrendite, Ergebnis versiegelt an den Owner"
+  },
+  "outputs": {
+    "public": "docs/research/edge2/results/edge2.public.json: Zählungen, Hashes, Zahl der Urteile je Klasse, ID der Papiervariante; keine Rendite- oder Risikokennzahl",
+    "sealed": "docs/research/edge2/results/edge2.sealed.owner.json (scripts/supertrader/validation/results-public-key.pem) und edge2.sealed.reviewer.json (docs/research/edge2/reviewer-public.pem, Strang Edge 2, intern)"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "testedAt": "2026-11-03T05:47:51.259670+00:00",
+  "baseMain": "f29b140bc918fe9435986ea29d0d1bc60b3ec04d",
+  "mode": "local integrated rollout; production verification follows authorized merge",
+  "technicalAndAcademy": {
+    "passed": 103,
+    "failed": 0
+  },
+  "core": {
+    "passed": 308,
+    "failed": 0
+  },
+  "contentAuditAndVisualRegressions": {
+    "passed": 26,
+    "failed": 0
+  },
+  "academyBrowser": {
+    "passed": 84,
+    "failed": 0,
+    "lessons": 32,
+    "scenes": 96,
+    "viewportThemeLessonCombinations": 192,
+    "sceneChecks": 576,
+    "axeSceneRuns": 576,
+    "quizAndProgressCases": 192,
+    "completeJourneys": 18,
+    "viewports": [
+      360,
+      390,
+      1280
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ]
+  },
+  "existingTechnicalBrowser": {
+    "passed": 66,
+    "failed": 0
+  },
+  "productionIsolation": "no production file changed",
+  "protectedEngines": "unchanged",
+  "heroFidelity": "8 product styles verified",
+  "physicalIphoneSafariTested": false,
+  "performanceChecks": [
+    {
+      "route": "/academy/",
+      "ms": 1971,
+      "contentRequests": 0,
+      "profile": "390px, CPU x4, 150ms latency, 1.6Mbit/s, empty cache",
+      "ceilingMs": 15000
+    },
+    {
+      "route": "/technical/#/akademie",
+      "ms": 5765,
+      "contentRequests": 1,
+      "profile": "390px, CPU x4, 150ms latency, 1.6Mbit/s, empty cache",
+      "ceilingMs": 15000
+    },
+    {
+      "route": "/technical/#/akademie/trend-1",
+      "ms": 5752,
+      "contentRequests": 1,
+      "profile": "390px, CPU x4, 150ms latency, 1.6Mbit/s, empty cache",
+      "ceilingMs": 15000
+    }
+  ],
+  "contentSha256": "475a1ad928f5c55037272747f088295872144c24620eb0546199cc6ebb08e220"
+}

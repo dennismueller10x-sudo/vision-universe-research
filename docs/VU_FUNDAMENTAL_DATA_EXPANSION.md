@@ -1,7 +1,7 @@
 # VU FUNDAMENTAL DATA EXPANSION — Company Master 7.803 / 7.004 und die Fundamentalschicht
 
 Fortsetzung von `docs/VU_UNIVERSE_EXPANSION.md` und
-`docs/VU_SEC_UNIVERSE_SCALE.md`. Dort wurde das Universum erweitert; hier
+`docs/archiv/VU_SEC_UNIVERSE_SCALE.md`. Dort wurde das Universum erweitert; hier
 bekommt es eine Emittentenebene und eine gemessene Fundamentalschicht.
 
 ---
@@ -272,7 +272,7 @@ Marktdatendeckung. Der Overlap wird erst berechnet, wenn die kanonische
 Quelle eingebunden ist.
 
 Die vollständigen Zahlen stehen in
-`docs/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md` und maschinenlesbar unter
+`docs/archiv/2026/VU_FUNDAMENTAL_ACCEPTANCE_REPORT.md` und maschinenlesbar unter
 `quant/data/fundamentals/`.
 
 ---

@@ -5,6 +5,8 @@
 // akzeptiert, wenn STRIPE_LIVE_MODE_APPROVED="true" gesetzt ist. Das ist die
 // ausdrueckliche Produktionsfreigabe (docs/accounts/LIVE_RELEASE.md).
 
+import {LEGAL_VERSION, LEGAL_STATUS} from './legal/texts.mjs';
+
 const list = value => String(value || '').split(',').map(s => s.trim()).filter(Boolean);
 const flag = value => String(value || '').trim().toLowerCase() === 'true';
 const origin = value => {
@@ -50,11 +52,24 @@ export function loadConfig(env = {}) {
       checkoutHosts: new Set(['checkout.stripe.com', ...list(env.STRIPE_CHECKOUT_HOSTS)]),
       // Wer den Checkout starten darf: public | testers (Rolle billing_tester) | off.
       // Ohne Angabe im Live-Modus nur Tester (kein versehentlich oeffentlicher Live-Checkout).
-      checkoutAccess: checkoutAccess(env.VU_CHECKOUT_ACCESS, stripeMode),
+      // "public" wirkt im Live-Modus nur zusammen mit freigegebenen Rechtstexten (legalApproved), sonst "testers".
+      checkoutAccess: effectiveCheckoutAccess(checkoutAccess(env.VU_CHECKOUT_ACCESS, stripeMode), legalApproved(env), stripeMode),
+      requestedCheckoutAccess: checkoutAccess(env.VU_CHECKOUT_ACCESS, stripeMode),
+      // Umsatzsteuer: "none" (Bruttopreis ohne Steuerausweis) oder "automatic" (Stripe Tax: Steuer aus dem
+      // Bruttopreis herausgerechnet, je nach Kundenland und Registrierung). docs/accounts/STEUER.md.
+      tax: taxMode(env.STRIPE_TAX_MODE),
     },
     registration: {
       enabled: flag(env.VU_REGISTRATION_ENABLED),
       allowlist: new Set(list(env.VU_REGISTRATION_ALLOWLIST).map(e => e.toLowerCase())),
+    },
+    legal: {version: LEGAL_VERSION, status: LEGAL_STATUS, approved: legalApproved(env)},
+    brevo: {
+      // A Kontaktverwaltung und B Newsletter getrennt schaltbar; beide Vorgabe "aus".
+      sync: flag(env.VU_BREVO_SYNC),
+      newsletter: flag(env.VU_NEWSLETTER),
+      lists: {users: listId(env.VU_BREVO_LIST_USERS), free: listId(env.VU_BREVO_LIST_FREE), pro: listId(env.VU_BREVO_LIST_PRO),
+        newsletter: listId(env.VU_BREVO_LIST_NEWSLETTER)},
     },
     mail: {
       apiKey: String(env.BREVO_API_KEY || ''),
@@ -72,6 +87,9 @@ export function loadConfig(env = {}) {
       // Empfaenger von Betriebsalarmen (Kuendigung ueberfaellig, Bestaetigung nicht zustellbar).
       opsAlertEmail: String(env.VU_OPS_ALERT_EMAIL || ''),
     },
+    // Interne Backtest-Vorschau (/v1/admin/backtests*): standardmaessig AUS. Einschalten nur per eigenem PR mit
+    // Owner-Freigabe (docs/accounts/FREIGABEN.md); zusaetzlich braucht jedes Konto die Rolle backtest_reviewer.
+    backtestReview: {enabled: flag(env.VU_BACKTEST_REVIEW_ENABLED)},
     cookies: {
       secure: cookieSecure,
       prefix: cookieSecure ? '__Host-' : '',
@@ -82,6 +100,23 @@ export function loadConfig(env = {}) {
 
 export function supabaseReady(cfg) {
   return Boolean(cfg.supabase.url && cfg.supabase.publishableKey && cfg.supabase.secretKey && cfg.apiOrigin);
+}
+
+const listId = value => (/^[1-9][0-9]{0,8}$/.test(String(value || '')) ? Number(value) : null);
+
+// Rechtstexte gelten nur als freigegeben, wenn der Code sie als freigegeben fuehrt UND die
+// Konfiguration genau diese Fassung bestaetigt (zwei unabhaengige Schritte).
+export function legalApproved(env) {
+  return LEGAL_STATUS === 'freigegeben' && String(env.VU_LEGAL_APPROVED || '') === LEGAL_VERSION;
+}
+// Nur im Live-Modus (echte Zahlungen); Testmodus und Simulation bleiben unveraendert.
+export function effectiveCheckoutAccess(access, approved, mode = 'live') {
+  return mode === 'live' && access === 'public' && !approved ? 'testers' : access;
+}
+// Umsatzsteuer: "none" (kein Steuerausweis) oder "automatic" (Stripe Tax). Ein fester Steuersatz (txr_) wird nicht
+// mehr unterstuetzt: Nie zwei Steuerberechnungen auf derselben Buchung (docs/accounts/STEUER.md).
+export function taxMode(value) {
+  return String(value || '').trim() === 'automatic' ? {mode: 'automatic'} : {mode: 'none'};
 }
 
 // Warum Abrechnung gerade nicht moeglich ist - oder null.

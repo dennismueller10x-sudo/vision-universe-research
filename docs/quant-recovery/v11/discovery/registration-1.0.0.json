@@ -1,0 +1,75 @@
+{
+ "schemaVersion": "v11-discovery-registration-1.0.0",
+ "studyId": "V11-DISCOVERY",
+ "strand": "discovery",
+ "registeredBeforeAnyDiscoveryOutcome": true,
+ "protocol": { "file": "docs/quant-recovery/v11/protocol/time-split-1.0.0.json", "sha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69", "rulesBinding": ["R1", "R2", "R3", "R4", "R5", "R6"] },
+ "baseCommit": "fa8c460c4e",
+ "firewall": {
+  "notRead": ["docs/quant-recovery/v11/winners/", "docs/quant-recovery/v11/decomposition/", "any output of other V11 strands"],
+  "enforcement": "instruction (R4), documented here; this strand's scripts read only the protocol, V10 code/engines, product series via the research loader, SPY, and the private V10 PIT factor panel"
+ },
+ "priorExposure": {
+  "statement": "The V10 findings over the FULL period are known to this strand and are prior knowledge, not TRAIN evidence.",
+  "knownFindings": [
+   "V10 signal backtest 2000-2025: no SPY excess Holm-significant for the five rules; NEW_52W_HIGH 13w SPY excess declines over subperiods (+5.1% 2000-07 ... -0.7% 2020-25)",
+   "V10 pattern evidence: strong-12m-momentum 13w and three-month-thrust 52w beat the contemporaneous base rate",
+   "V10 factor reconstruction 2010-2025: small positive rank ICs for momentum (all horizons), profitability and quality (1M/3M); top-quintile spreads not positive; Top-50 composite strategy 13.0% vs SPY 12.3% CAGR, below the equal-weighted survivor population 14.0%",
+   "V10 funded NEW_52W_HIGH strategy 2000-2026 CAGR 16.4% vs SPY 5.9% on a survivor cohort, not cost robust"
+  ],
+  "literatureKnown": "Momentum (Jegadeesh-Titman 1993), 52-week-high proximity (George-Hwang 2004), low volatility (Ang et al. 2006), gross profitability (Novy-Marx 2013), quality (Asness et al. 2013), smooth/continuous momentum (Grinblatt-Moskowitz 2004; Da-Gurun-Warachka 2014), trend filters (Faber 2007).",
+  "possiblyInfluencedDesignChoices": [
+   "Choice of the rule families momentum / trend stability / 52-week high / profitability / quality is informed by V10 full-period ICs (which include VALIDATION and TEST years) and by literature.",
+   "The expectation that concentrated or composite price strategies do not beat SPY after costs is known; the exploration nevertheless reports every variant.",
+   "Use of the equal-weighted own universe as the selection-skill benchmark is motivated by the V10 finding that the survivor population itself beats the Top-50 strategy."
+  ]
+ },
+ "population": {
+  "loaderOptions": { "identityEvidence": true, "corporateActionEvidence": true, "listingLifecycleEvidence": true },
+  "frameRule": "scripts/quant/v10/studies/common.cjs buildFrame (modal ISO-week labels, XNAS/XNYS/XASE)",
+  "eligibilityAtDecision": "close observed at week j and j+1, listingStart <= date(j), at least 57 weekly closes up to j; no price-level or liquidity filter on split-adjusted closes (an adjusted-price filter would select on future splits)",
+  "survivorship": "All frame series end in 2023 or later: the TRAIN and VALIDATION populations contain no delisted firm at all (conditional on survival to >= 2023). Coverage of SEC 10-K filers 14% (2000), 22% (2010), 48% (2020). Every result states this; SPY comparisons are biased in favour of any rule on this cohort."
+ },
+ "families": {
+  "PRICE": { "decisionPeriods": "protocol priceRules", "inputs": "weekly split-adjusted closes up to the decision week; SPY for relative strength / beta / market filter", "maxCandidates": 12 },
+  "FUND": { "decisionPeriods": "protocol fundamentalRules", "inputs": "V10 PIT factor panel (filed < rank date; month-end rank dates 2010-2025) cut to the lifecycle frame + price features", "maxCandidates": 12 }
+ },
+ "explorationPlan": {
+  "TRAINonly": "Rules are designed, tuned and selected on TRAIN decisions only (price 2001-2012, fundamental 2011-2016). Every evaluated variant is appended to the exploration log with its exact parameters; the count of variants is reported (garden of forking paths).",
+  "stages": [
+   "S1 single signals and simple rank sums x concentration (10/20/50) at 4-week full rebalancing, equal weight",
+   "S2 holding rules on the better S1 signals: rebalance interval, buffer (keep while rank in top x%), let-winners-run with rank/trend exits, market filter, weighting variants",
+   "S3 robustness of S2 picks: cost stress, TRAIN sub-halves, walk-forward within TRAIN"
+  ],
+  "walkForwardWithinTrain": "research-validation buildWalkForward/runWalkForward over the TRAIN decision calendar (expanding windows); fit = rank variants on train fold, select = best on validation fold, evaluate = test fold: measures the out-of-sample value of 'pick the best explored variant'",
+  "variantBudget": "at most 200 price and 150 fundamental variants"
+ },
+ "evaluation": {
+  "execution": "decision at week close j, execution at close j+1; the last portfolio of a period is held to the next scheduled rebalance and liquidated there",
+  "ledger": "fast simulator mirroring research-portfolio arithmetic for exploration; research-portfolio.cjs (HISTORICAL_PRICE_SIMULATION, numeraire 1) as official ledger for frozen candidates and final hypotheses with parity check",
+  "costs": { "base": { "feeBps": 10, "slippageBps": 5 }, "stress": { "feeBps": 20, "slippageBps": 30 }, "basis": "per side on traded notional" },
+  "returnBasis": "PRICE_RETURN for strategy and every benchmark (total return only exists for 8 titles; not mixed in)",
+  "investment": "fully invested at target weights except where a market filter or exit rule holds cash; cash earns nothing",
+  "benchmarks": ["SPY PRICE_RETURN buy-and-hold on the same sessions, no costs", "equal-weighted own eligible universe of the rule (same decisions, same costs)", "equal-weighted frame population (same decisions, same costs)", "PIT cap-weighted frame population from panel market cap (2010+, same decisions, same costs)"],
+  "metrics": ["CAGR", "total return", "volatility", "Sharpe and Sortino (rf = 0)", "max drawdown", "turnover per year", "costs paid", "average positions and invested share", "excess vs each benchmark (weekly mean and CAGR difference)"],
+  "inference": { "method": "research-validation.inferTemporalBlockMean on the weekly return difference (circular calendar blocks)", "blockLengthWeeks": 26, "robustnessBlockLengthWeeks": 52, "replicates": 1999, "seed": 1729, "alpha": 0.05, "neweyWestLag": 8 },
+  "primaryEndpoint": "VALIDATION/TEST: mean weekly return difference strategy (base costs) minus SPY (price), two-sided block-bootstrap p, Holm within the frozen family (<= 12)",
+  "secondaryEndpoints": ["difference vs equal-weighted own universe (selection skill; separate Holm family)", "difference vs frame EW and cap-weighted population (descriptive)", "stress-cost difference vs SPY"],
+  "firstYearReportedSeparately": true
+ },
+ "finalSelectionRule": {
+  "statedBefore": "VALIDATION outcomes (repeated verbatim in the candidates file)",
+  "eligible": "VALIDATION point estimates: weekly excess vs SPY > 0 AND vs own-universe EW > 0 AND stress-cost excess vs SPY > 0",
+  "ranking": "Holm-adjusted p vs SPY within family ascending, then raw p vs own-universe EW ascending",
+  "limits": "max 3 overall, max 2 per family",
+  "ifFewerThanTwoEligible": "add the best-ranked remaining candidate of each family not yet represented (labelled DIAGNOSTIC_NOT_VALIDATED) up to 3 in total, so that TEST measures persistence; such entries are not hypotheses expected to work"
+ },
+ "oracle": {
+  "label": "ORACLE_LOOKAHEAD",
+  "definition": "Top-N by realised forward price return over the holding window, equal weight, same costs, same rebalance interval as the compared rule; horizons 4, 13, 52 weeks; N 10/20/50",
+  "use": "upper bound and attribution only; computed for TRAIN before candidates are frozen, for VALIDATION/TEST only after the respective freeze; never a candidate source"
+ },
+ "attribution": "Weekly regression on SPY (alpha/beta); population (EW own universe) vs SPY = size/equal-weight effect; per-decision cross-sectional regression of forward returns on standardised characteristics (momentum, volatility, size where PIT market cap exists, quality, value, growth, profitability) -> characteristic contributions and specific selection; concentration (share of P&L from the top-5 positions); costs; cash/timing.",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

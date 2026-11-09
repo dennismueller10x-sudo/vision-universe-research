@@ -55,15 +55,19 @@
     hero.parentNode.insertBefore(host, hero);
     var head = N.head(host, {
       ctx: ctx, current: "discover", name: detail.companyName || detail.symbol,
-      exchange: [detail.exchange, detail.sector].filter(Boolean).join(" · "),
+      /* Redesign 2027 (C04): Kürzel · was die Firma macht; ohne Beschreibung Börse und Sektor. */
+      exchange: detail.was && global.VUDiscover && global.VUDiscover.Overview ? detail.was : [detail.exchange, detail.sector].filter(Boolean).join(" · "),
       logo: img && img.getAttribute("src") ? img.getAttribute("src") : false,
       back: back ? { href: back.getAttribute("href"), label: "Aktien entdecken" } : null,
       actions: node("div", "dv2-head-actions")
     });
     if (!head.el) { host.remove(); return null; }
     if (back) back.remove();
-    var badges = hero.querySelector(".dx-index-badges"), names = head.el.querySelector(".vu-shead-names");
-    if (badges && names) names.appendChild(badges);
+    /* Redesign 2027 (D09): Index-Etiketten unter dem Namen entfallen; die Indizes stehen mit Gewicht im
+       Abschnitt „In welchen Indizes?“ (discover/ui/overview.js). Ohne Überblick bleiben sie als Zeile. */
+    var badges = hero.querySelector(".dx-index-badges"), idRow = head.el.querySelector(".vu-shead-id");
+    if (badges && global.VUDiscover && global.VUDiscover.Overview && global.VUUI) badges.remove();
+    else if (badges && idRow) idRow.insertAdjacentElement("afterend", badges);
     [title, hero.querySelector(".dx-dhero-meta")].forEach(function (n) { if (n) n.remove(); });
     var nav = head.el.querySelector(".vu-shead-nav"), observer = null;
     if (nav && chart) {
@@ -81,6 +85,42 @@
       place();
     }
     return { dispose: head.dispose, observer: observer };
+  }
+  /* "Dieselbe Aktie in ...": Quant, Technical, Fundamental, Supertrader - nur Welten, die den Titel belegt fuehren
+     (StockContext.moduleState "available" aus dem Verfuegbarkeits-Ausschnitt des Navigators, derselbe Abruf, kein zweiter).
+     Ohne Beleg ("unknown") kein Link. Europa: diese Welten adressieren keine europaeischen Listings, also kein Block. */
+  var WORLDS = ["quant", "technical", "fundamental", "supertrader"];
+  function worldLinks(SC, ctx, manifest) {
+    if (!SC || !ctx || !manifest) return [];
+    return WORLDS.map(function (p) { return SC.moduleState(ctx, p, manifest); })
+      .filter(function (st) { return st.state === "available" && st.href; })
+      .map(function (st) { return { product: st.product, href: st.href }; });
+  }
+  function worlds(page, detail, opts) {
+    var N = global.VUStockNavigator, SC = global.VUCore && global.VUCore.StockContext;
+    var ctx = N && SC && stockContext(SC, detail);
+    if (!ctx || !WORLDS.some(function (p) { return SC.href(ctx, p); })) return Promise.resolve(null);
+    return N.loadShard(ctx, opts && opts.fetch).then(function (manifest) {
+      var links = worldLinks(SC, ctx, manifest), next = page.querySelector(".dv2-stock-next");
+      if (!links.length || !page.isConnected || page.querySelector(".dv2-worlds")) return null;
+      var box = node("nav", "dv2-worlds"), list = node("ul");
+      box.setAttribute("aria-label", "Dieselbe Aktie in anderen Welten");
+      box.appendChild(node("p", "dv2-detail-eyebrow", "Dieselbe Aktie in …"));
+      links.forEach(function (l) {
+        var m = N.MODULES[l.product], a = node("a"), li = node("li");
+        a.href = l.href;
+        a.setAttribute("data-world", l.product);
+        a.appendChild(node("b", "", m.plain || m.label));
+        a.appendChild(node("span", "", m.why));
+        li.appendChild(a);
+        list.appendChild(li);
+      });
+      box.appendChild(list);
+      /* Vor den Knoepfen "Weiter ..." (.dx-cta bzw. der einzelne Knopf aus discover/detail.js). */
+      var onward = next && (next.querySelector(":scope > .dx-cta") || next.querySelector(":scope > .dx-btn"));
+      if (next) next.insertBefore(box, onward || null); else page.appendChild(box);
+      return box;
+    });
   }
   function text(n) { return (n && n.textContent || "").replace(/\s+/g, " ").trim(); }
   /**
@@ -179,5 +219,5 @@
       foot.classList.add("dv2-foot");
     } else page.appendChild(dm);
   }
-  (global.VUDiscover = global.VUDiscover || {}).StockHead = { head: stockHead, calm: calm, more: more, context: stockContext };
+  (global.VUDiscover = global.VUDiscover || {}).StockHead = { head: stockHead, calm: calm, more: more, context: stockContext, worlds: worlds, worldLinks: worldLinks };
 })(window);

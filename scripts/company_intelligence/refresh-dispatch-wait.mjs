@@ -112,7 +112,11 @@ export function preDeployFailure(run,jobs){
  *       jobs?(id):Promise<Array<{name,status,conclusion}>>}  (fehlt jobs oder wirft es: jeder Fehlschlag bleibt ein echter Fehler)
  *  generation(): Promise<string|null>  ausgelieferte Generation (null = unbekannt)
  */
-export async function waitForDelivery({expected,gh,generation,now=()=>Date.now(),sleep=async()=>{},limits=LIMITS,deadlines}){
+/* requireOwnSuccess (Universe-Release, --expected): sichtbare Generation allein genuegt NICHT. Erfolg erst, wenn ein eigener
+   Pages-Lauf abgeschlossen ist (conclusion success, also samt Live-Pruefung company-intelligence-live) UND die erwartete
+   Generation ausgeliefert wird. Sonst koennte der Handler eines noch laufenden Pages-Laufs das Gate danach noch schliessen
+   (Pruefung Steuerung 09.11.2026 zu #1744, MAJOR 2). Der Refresh (--health) behaelt sein bisheriges Verhalten. */
+export async function waitForDelivery({expected,gh,generation,now=()=>Date.now(),sleep=async()=>{},limits=LIMITS,deadlines,requireOwnSuccess=false}){
  const log=[],note=(event,extra={})=>log.push({at:now(),event,...extra});
  const served=async()=>{try{return (await generation())===expected;}catch{return false;}};
  const list=async()=>{try{return await gh.listRuns();}catch{return null;}};
@@ -131,7 +135,7 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
  const finish=(res)=>({...res,dispatches:redispatches+1,log});
  const own=runs=>ownRuns(runs,{known,sinceMs:firstAt,skewMs:limits.skewMs}).filter(r=>!handled.has(String(r.databaseId)));
  const supersede=async(reason,ownNow)=>{ // Re-Dispatch nur mit Rest-Budget und nur wenn die Generation noch nicht ausgeliefert ist
-  if(await served())return 'SERVED';
+  if(!requireOwnSuccess&&await served())return 'SERVED';
   if(redispatches>=limits.maxRedispatch)return 'LIMIT';
   redispatches++;note('redispatch',{reason,n:redispatches});
   for(const r of ownNow)if(r.status==='completed')handled.add(String(r.databaseId));
@@ -146,11 +150,12 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
 
  await dispatch();
  for(;;){
-  if(await served())return finish(result(true,'DELIVERED'));
+  if(!requireOwnSuccess&&await served())return finish(result(true,'DELIVERED'));
   const t=now();
   const runs=await list();
   const ownNow=runs?own(runs):[];
   const j=runs?judge(ownNow):{verdict:'UNKNOWN'};
+  if(requireOwnSuccess&&j.verdict==='SUCCESS'&&await served())return finish(result(true,'DELIVERED'));
   if(j.verdict==='SUCCESS')successSeenAt??=t;
   if(t>=deadlines.waitDeadlineMs){
    /* Frist abgelaufen. Rollback erst, wenn kein eigener Lauf mehr laeuft (und ein gerade erfolgreicher seine Auslieferung zeigen konnte). */
@@ -204,19 +209,32 @@ export const realGeneration=async(fetcher=fetch)=>{
  return (await r.json()).generation??null;
 };
 
+/* Feste Wartezeit ab jetzt (Universe-Release, --wait-minutes): Wartefrist nach `minutes`, harte Frist reserveMinutes spaeter
+   (ein noch laufender eigener Lauf darf bis dahin fertig ausliefern). Rein. */
+export function fixedDeadlines({nowMs=Date.now(),minutes,reserveMinutes=10}){
+ return {waitDeadlineMs:nowMs+minutes*60000,hardDeadlineMs:nowMs+(minutes+reserveMinutes)*60000,verifyDeadlineMs:nowMs+(minutes+reserveMinutes)*60000};
+}
+
+/* Aufruf:
+ *   --health <health.json>                Refresh: erwartete Generation = consumerGeneration, Fristen aus JOB_STARTED_AT
+ *   --expected <24 hex> --wait-minutes N  Universe-Release (company-intelligence-universe-release.yml): feste Wartezeit ab jetzt.
+ *     Anlass: activate 42633299211 (09.11.2026) dispatchte einmal; der Lauf 42638619534 wurde um 15:02 verdraengt, nach
+ *     20 min EXACT_PRODUCTION_GENERATION_NOT_SERVED und Rueckfall auf 46. Jetzt dieselbe Neu-Dispatch-Logik wie der Refresh. */
 export async function main(argv=process.argv.slice(2),env=process.env,io={}){
  const arg=n=>{const i=argv.indexOf(n);return i>=0?argv[i+1]:null;};
- const health=arg('--health'),out=arg('--out');
- if(!health){console.error('USAGE: refresh-dispatch-wait.mjs --health <health.json> [--out <file>]');return result(false,'HEALTH_MISSING');}
+ const health=arg('--health'),out=arg('--out'),given=arg('--expected'),waitMinutes=Number(arg('--wait-minutes'));
+ if(!health&&!given){console.error('USAGE: refresh-dispatch-wait.mjs (--health <health.json> | --expected <generation> --wait-minutes <n>) [--out <file>]');return result(false,'HEALTH_MISSING');}
  let expected;
- try{expected=JSON.parse(readFileSync(health,'utf8')).consumerGeneration;}catch{expected=null;}
+ if(given)expected=/^[a-f0-9]{24}$/.test(given)?given:null;
+ else{try{expected=JSON.parse(readFileSync(health,'utf8')).consumerGeneration;}catch{expected=null;}}
  if(typeof expected!=='string'||!expected)return result(false,'EXPECTED_GENERATION_UNKNOWN'); // fail-closed
+ if(given&&!(Number.isFinite(waitMinutes)&&waitMinutes>=5&&waitMinutes<=90))return result(false,'WAIT_MINUTES_INVALID'); // fail-closed
  const started=Number(env.JOB_STARTED_AT),jobStartMs=Number.isFinite(started)&&started>0&&started*1000<=Date.now()?started*1000:null;
- const deadlines=planDeadlines({jobStartMs});
+ const deadlines=given?fixedDeadlines({nowMs:(io.now||Date.now)(),minutes:waitMinutes}):planDeadlines({jobStartMs});
  const res=await waitForDelivery({expected,gh:io.gh||realGh(env),generation:io.generation||(()=>realGeneration()),
-  sleep:io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),deadlines});
+  sleep:io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),deadlines,requireOwnSuccess:!!given,...(io.now?{now:io.now}:{})});
  const safe=v=>String(v??'').replace(/[^A-Za-z0-9_,.:()<>=\- ]/g,'?').slice(0,200);
- const line=`Refresh-Auslieferung: ${res.served?'OK':'FEHLER'} (${safe(res.reason)}), Dispatches: ${res.dispatches}`;
+ const line=`${given?'Universe-Auslieferung':'Refresh-Auslieferung'}: ${res.served?'OK':'FEHLER'} (${safe(res.reason)}), Dispatches: ${res.dispatches}`;
  console.log(line);
  if(!res.served)console.error(safe(res.reason));
  if(env.GITHUB_STEP_SUMMARY){try{appendFileSync(env.GITHUB_STEP_SUMMARY,line+'\n');}catch{/* optional */}}

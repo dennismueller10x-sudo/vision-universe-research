@@ -11,12 +11,13 @@
 <script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#0b0d10":"#ffffff");})();</script>
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/assets/stock-navigator.css">
+<link rel="stylesheet" href="/assets/vu-ui.css">
 <link rel="stylesheet" href="/hedgefonds/app.css">
 </head>
 <body class="hf"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="hf-skip" href="#hf-root">Zum Inhalt</a>
 <!-- VISION UNIVERSE® Hedgefonds: 13F-Daten werden serverseitig von data.sec.gov
-     geladen (scripts/hedgefonds/fetch_edgar_data.py) und hier nur gelesen. -->
+     geladen (products/hedgefonds/producer/fetch_edgar_data.py) und hier nur gelesen. -->
 <script>var DATA_URL = "/hedgefonds/data/hedgefonds.json"; window.HF_DATA_URL = DATA_URL;</script>
 <!-- Beträge formatiert der zentrale Currency Core (nur Formatierung, keine
      Umrechnung: 13F-Werte sind immer USD, §49). -->
@@ -29,13 +30,14 @@
   return a >= 1e3 ? F.formatCompact(n, "USD", { numberLocale: "de-DE", decimals: a >= 1e9 ? 1 : 0 })
     : F.formatPrice(n, "USD", { numberLocale: "de-DE", decimals: 0 });
 };</script>
-<main class="hf-main hf-wrap" id="hf-root" tabindex="-1"></main>
+<main class="hf-main hf-wrap vu-ui" id="hf-root" tabindex="-1"></main>
 <!-- Identität (Ticker -> Scherbe) für die Eigentümer-Signale, ADR-001 -->
 <script src="/core/identity.js"></script>
 <!-- Aktienkopf und Aktien-Navigator (VU3): dieselbe Aktie in den anderen Analysewelten -->
 <script src="/core/stock-context.js"></script>
 <script src="/assets/stock-navigator.js"></script>
 <script src="/assets/watchlist-button.js" defer></script>
+<script src="/assets/vu-ui.js"></script>
 <script src="/hedgefonds/app.js"></script>
 </body>
 </html>

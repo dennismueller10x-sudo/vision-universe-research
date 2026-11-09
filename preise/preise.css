@@ -1,44 +1,62 @@
-/* VISION UNIVERSE — oeffentliche Tarifuebersicht /preise/. Baut auf /konto/konto.css und den
-   gemeinsamen --vu-* Tokens auf (Hell/Dunkel). Ruhig: Typografie, Linien, ein Akzent. */
-.pr{--ka-max:960px}
-.pr-head{max-width:640px;margin:var(--vu-space-3) 0 var(--vu-space-5)}
-.pr-title{margin:0 0 14px;font-size:clamp(34px,8vw,56px);line-height:1.02;letter-spacing:-.04em;font-weight:700}
-.pr-lead{margin:0;color:var(--vu-text-secondary);font-size:17px;line-height:1.6;max-width:56ch}
-.pr-signed-in{margin:0 0 var(--vu-space-3);font-size:15px;color:var(--vu-text-secondary)}
-
-.pr-plans{display:grid;gap:var(--vu-space-3);margin-top:var(--vu-space-3)}
-@media(min-width:761px){.pr-plans{grid-template-columns:1fr 1fr}}
-.pr-plan{display:flex;flex-direction:column;gap:14px;padding:var(--vu-space-4) var(--vu-space-3);border:1px solid var(--vu-line);
-  border-radius:var(--vu-radius);background:var(--vu-surface)}
-@media(min-width:761px){.pr-plan{padding:var(--vu-space-4)}}
-.pr-plan[data-current=true]{border-color:var(--vu-accent-text)}
-.pr-plan-top{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.pr-plan h2{margin:0 auto 0 0;font-size:20px;letter-spacing:-.015em}
-.pr-tag{display:inline-flex;align-items:center;min-height:26px;padding:2px 10px;border-radius:999px;font-size:12px;font-weight:700;
-  background:var(--vu-accent-soft);color:var(--vu-accent-text)}
-.pr-tag--test{background:transparent;border:1px solid var(--vu-line-strong);color:var(--vu-text-secondary)}
-.pr-price{margin:4px 0 0;font-size:44px;font-weight:700;letter-spacing:-.04em;line-height:1}
-.pr-price small{font-size:15px;font-weight:500;letter-spacing:0;color:var(--vu-muted)}
-.pr-price [aria-busy=true]{color:var(--vu-muted)}
-.pr-terms{margin:0;font-size:14px;line-height:1.5;color:var(--vu-muted);min-height:3em}
-.pr-plan .ka-btn{margin-top:auto}
-.pr-note{margin:0;font-size:13px;line-height:1.5;color:var(--vu-muted)}
-
-.pr-compare,.pr-faq{margin-top:var(--vu-space-5)}
-.pr-compare h2,.pr-faq h2{margin:0 0 6px;font-size:22px;letter-spacing:-.02em}
-.pr-table{width:100%;border-collapse:collapse;margin:var(--vu-space-2) 0;font-size:15px}
-.pr-table th,.pr-table td{padding:14px 8px;border-bottom:1px solid var(--vu-line);text-align:right;font-variant-numeric:tabular-nums}
-.pr-table th[scope=row],.pr-table thead th:first-child{text-align:left;font-weight:500}
-.pr-table thead th{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--vu-muted)}
-.pr-table td{font-weight:600;width:22%}
-.pr-always{list-style:none;margin:var(--vu-space-2) 0;padding:0;display:grid;gap:10px;font-size:15px}
-.pr-always li{display:flex;gap:10px;line-height:1.45}
-.pr-always li::before{content:"";flex:none;width:6px;height:6px;margin-top:.55em;border-radius:50%;background:var(--vu-accent-text)}
-
-.pr-faq details{border-bottom:1px solid var(--vu-line)}
-.pr-faq summary{display:flex;align-items:center;min-height:52px;padding:10px 0;cursor:pointer;font-weight:600;list-style:none}
+/* VISION UNIVERSE — Preise (Mockup E03). Bausteine aus /assets/vu-ui.css; nur Weiß, Schwarz, Neongrün, drei Graustufen. */
+@font-face{font-family:Inter;src:url(/assets/fonts/inter-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}
+body.pr-body{padding-top:0!important;background:var(--vu-white)}
+:root[data-theme=dark] body.pr-body{background:var(--vu-black)}
+.pr-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Kopfzeile wie die Startseite */
+.pr-hd{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;height:56px;padding:0 16px;background:rgb(255 255 255/.94);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-bottom:1px solid var(--vu-hair)}
+:root[data-theme=dark] .pr-hd{background:rgb(0 0 0/.94)}
+.pr-hd-logo{margin-right:auto;display:flex;align-items:center;min-height:44px}.pr-hd-logo img{width:132px;height:auto}
+:root[data-theme=dark] .pr-hd-logo img{filter:invert(1)}
+.pr-hd-btn{width:44px;height:44px}
+.pr-hd-login{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;background:var(--vu-ink);color:var(--vu-inv);font-weight:800;font-size:14px;text-decoration:none}
+.pr{--ka-max:640px;padding-top:18px}
+.pr-head{margin-bottom:16px}
+.pr-plans{display:flex;flex-direction:column;gap:12px}
+.pr-plans.is-pro-off .pr-plan--pro{order:-1}
+.pr-plan{padding:18px;border-radius:24px}
+.pr-plan-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pr-plan h2{margin:0;font-size:18px;font-weight:800;display:flex;align-items:center;gap:8px}
+.pr-plan--pro .vu-pro{background:var(--vu-lime);color:#000}
+.pr-tag{display:inline-block;padding:3px 8px;border-radius:999px;font-size:10.5px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+.pr-tag--line{border:1.5px dashed var(--vu-mute);color:var(--vu-mute)}
+.pr-tag--lime{background:var(--vu-lime);color:#000}
+.pr-price{margin:10px 0 0;display:flex;align-items:baseline;gap:6px;flex-wrap:wrap}
+.pr-price>span{font-size:44px;font-weight:900;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.pr-plan--pro .pr-price>span{color:var(--vu-lime)}
+:root[data-theme=dark] .pr-plan--pro .pr-price>span{color:#000}
+.pr-price.is-off>span{font-size:28px;color:inherit!important;letter-spacing:-.03em}
+.pr-price small{font-size:13px;font-weight:700;opacity:.75}
+.pr-terms{margin:6px 0 0;font-size:13px;font-weight:700;color:var(--vu-mute)}
+.pr-plan--pro .pr-terms,.pr-plan--pro .pr-off,.pr-plan--pro .pr-note{color:inherit;opacity:.75}
+.pr-off{margin:6px 0 0;font-size:13.5px}
+.pr-ticks{list-style:none;margin:12px 0 16px;padding:0;display:grid;gap:8px}
+.pr-ticks li{display:flex;gap:10px;align-items:center;font-size:14.5px}
+.pr-ticks li:before,.pr-yes{content:"";flex:none;width:20px;height:20px;border-radius:50%;background:var(--vu-lime) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/13px no-repeat}
+.pr-yes{display:inline-block;vertical-align:middle}
+.pr-choose svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.pr-choose.is-disabled{background:rgb(255 255 255/.16);color:rgb(255 255 255/.5);pointer-events:none}
+:root[data-theme=dark] .pr-choose.is-disabled{background:rgb(0 0 0/.12);color:rgb(0 0 0/.45)}
+.pr-note{margin:10px 0 0;font-size:12px;line-height:1.45}
+.pr-compare{margin-top:8px}
+.pr-table-box{padding:4px 14px}
+.pr-table{width:100%;border-collapse:collapse;font-size:13.5px}
+.pr-table th,.pr-table td{padding:11px 0;border-top:1px solid var(--vu-hair);text-align:left;font-weight:700}
+.pr-table thead th{border-top:0;font-size:11.5px;color:var(--vu-mute);padding:10px 0 8px}
+.pr-table thead th:not(:first-child),.pr-table td{width:56px;text-align:center}
+.pr-no{color:var(--vu-mute)}
+.pr-never{margin-top:12px;padding:14px 16px;font-size:14px}
+.pr-never ul{list-style:none;margin:8px 0 10px;padding:0;display:grid;gap:6px;color:var(--vu-mute)}
+.pr-never li:before{content:"×";display:inline-grid;place-items:center;width:18px;height:18px;margin-right:8px;border:1.5px solid var(--vu-mute);border-radius:50%;font-size:12px;line-height:1}
+.pr-faq details{border-top:1px solid var(--vu-hair)}
+.pr-faq details:last-child{border-bottom:1px solid var(--vu-hair)}
+.pr-faq summary{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;font-weight:800;font-size:15.5px;cursor:pointer;list-style:none}
 .pr-faq summary::-webkit-details-marker{display:none}
-.pr-faq summary::after{content:"+";margin-left:auto;padding-left:16px;font-weight:400;font-size:20px;color:var(--vu-muted)}
-.pr-faq details[open] summary::after{content:"–"}
-.pr-faq summary:focus-visible{outline:2px solid var(--vu-focus);outline-offset:2px}
-.pr-faq details p{margin:0 0 16px;color:var(--vu-text-secondary);line-height:1.6;max-width:62ch}
+.pr-faq summary:after{content:"+";font-size:22px;font-weight:400}
+.pr-faq details[open] summary:after{content:"×"}
+.pr-faq p{margin:0 0 14px;color:var(--vu-mute);font-size:14.5px;line-height:1.5}
+.pr-have{margin-top:22px}
+.pr-legal{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:18px}
+.pr-legal a{display:inline-flex;align-items:center;min-height:44px;font-size:12.5px;color:var(--vu-mute)}
+.pr-hd-login:focus-visible,.pr-hd-logo:focus-visible,.pr-faq summary:focus-visible,.pr-legal a:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+.pr-same{margin:8px 0 0}

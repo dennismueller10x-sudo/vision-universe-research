@@ -87,9 +87,19 @@ test("DEBT6 · Ausgeliefert: keine DEBT-Zeile im Produkt, PRHIZ als Instrument a
   assert.ok(debt.every((d) => d.product_eligibility === "EXCLUDED"));
   const prhiz = elig.decisions.find((d) => d.ticker === "PRHIZ");
   assert.equal(prhiz.instrument_type, "DEBT", "PRHIZ darf nicht wieder Stammaktie werden");
+  /* Der Namensbeleg der Umstufung: Der Abgleich fuehrt eine Aenderungszeile nur im Lauf, der umstuft (er vergleicht
+     gegen den vorigen Eignungslauf). Danach steht der Beleg dauerhaft an der Entscheidung (Herkunft NAME_LAYER,
+     Merkmal NAME_LAYER_RECLASSIFIED) und in der Namensschicht (Anbietername mit Quelle und Stand). */
   const recon = json("quant/data/market/security-master/eligibility-reconciliation.json");
   const beleg = recon.changes.find((c) => c.ticker === "PRHIZ" && c.to && c.to.instrumentType === "DEBT");
-  assert.ok(beleg && beleg.nameSource && /Sr Nt/.test(beleg.name), "Umstufung ohne Namensbeleg");
+  if (beleg) assert.ok(beleg.nameSource && /Sr Nt/.test(beleg.name), "Umstufung ohne Namensbeleg");
+  else {
+    assert.match(prhiz.evidence_source || "", /NAME_LAYER/, "Umstufung ohne Herkunft an der Entscheidung");
+    assert.ok((prhiz.review_flags || []).some((f) => /^NAME_LAYER_RECLASSIFIED:/.test(f)), "Umstufung ohne Merkmal an der Entscheidung");
+    const name = json("quant/data/market/security-master/company-names.json").rows.find((r) => r.securityId === prhiz.securityId);
+    const anbieter = name && name.candidates && name.candidates.TIINGO_METADATA;
+    assert.ok(anbieter && /Sr Nt/.test(anbieter.name) && /^\d{4}-\d{2}-\d{2}$/.test(anbieter.asOf), "Umstufung ohne Namensbeleg");
+  }
   const ids = new Set(debt.map((d) => d.securityId));
   const product = json("quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json");
   assert.equal(product.securities.some((s) => ids.has(s.securityId)), false, "DEBT im Produktuniversum");
@@ -125,5 +135,15 @@ test("DEBT7 · Faktorevidenz: Grundgesamtheit ist das Produktuniversum, Anleihen
   if (tmus && tmus.fundamentalsAsOf) assert.ok(Number.isFinite(tmus.marketCap), "TMUS ohne Boersenwert");
   const summary = json("quant/data/product/factor-evidence-v1/summary.json");
   const cov = summary.coverage || summary.counts || {};
-  assert.equal(cov.productUniverse, json("quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json").actualSize);
+  /* Seit dem 31.10.2026 (b0efb459e5) zaehlt der Erzeuger wiederverwendete
+     Kuerzel (quant/config/ticker-reuse-quarantine.json) nicht mehr zur
+     Faktor-Grundgesamtheit: sie bleiben Mitglied des Universums, bekommen aber
+     keine Faktorzeile und stehen getrennt unter identityQuarantined. Die
+     Grundgesamtheit ist also das Universum ohne genau diese Titel - nicht
+     mehr und nicht weniger. */
+  const universum = json("quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json");
+  const register = new Set(json("quant/config/ticker-reuse-quarantine.json").records.map((r) => r.securityId));
+  const imRegister = (universum.securities || []).filter((s) => register.has(s.securityId || s.m)).length;
+  assert.equal(cov.identityQuarantined ?? 0, imRegister, "markierte Titel: Erzeuger und Register uneins");
+  assert.equal(cov.productUniverse + (cov.identityQuarantined ?? 0), universum.actualSize);
 });

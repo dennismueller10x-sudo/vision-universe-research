@@ -1,0 +1,80 @@
+{
+ "schemaVersion": "v11-alpha-discovery-protocol-1.0.0",
+ "registeredAt": "2026-10-28T17:10:00Z",
+ "registeredBeforeAnyV11OutcomeComputation": true,
+ "baseCommit": "472134a6be",
+ "purpose": "Reverse Strategy Discovery & Alpha Attribution: explain why the five existing signal rules show no secured excess over SPY, describe what was publicly knowable before exceptional winners, and test new transparent rules on time-separated data. Not a search for a winner; negative results are valid results.",
+ "population": {
+  "loaderOptions": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true
+  },
+  "frameRule": "V10 study frame rule (scripts/quant/v10/studies/common.cjs buildFrame): modal ISO-week labels, primary exchanges XNAS/XNYS/XASE",
+  "excluded": "identityEvidenceProtocolV10 (owner release pending) is not used in primary results; may only appear as a labelled sensitivity",
+  "survivorship": "Provider universe of today plus 150 ended series (28 sourced delistings, 122 censored frozen tails). Coverage vs SEC 10-K filers 2000 14 %, 2010 22 %, 2020 48 %. Every result reports this gap."
+ },
+ "periods": {
+  "priceRules": {
+   "TRAIN": [
+    "2001-01-01",
+    "2012-12-31"
+   ],
+   "VALIDATION": [
+    "2013-01-01",
+    "2018-12-31"
+   ],
+   "TEST": [
+    "2019-01-01",
+    "2025-12-31"
+   ]
+  },
+  "fundamentalRules": {
+   "TRAIN": [
+    "2011-01-01",
+    "2016-12-31"
+   ],
+   "VALIDATION": [
+    "2017-01-01",
+    "2020-12-31"
+   ],
+   "TEST": [
+    "2021-01-01",
+    "2025-12-31"
+   ]
+  },
+  "dateMeaning": "Periods refer to decision/signal dates; outcomes may mature after the period end. TRAIN decisions whose holding window reaches into VALIDATION are allowed and disclosed (overlap); VALIDATION and TEST results additionally report their first year separately.",
+  "pitFundamentals": "PIT SEC panel of the V10 factor strand (filed < decision date), available from 2010; anything fundamental before 2011 is excluded"
+ },
+ "rules": [
+  "R1 Candidate rules are designed, tuned and selected using TRAIN decisions only.",
+  "R2 The candidate set (max 12 per family) is frozen in a committed file BEFORE any VALIDATION outcome of it is computed; VALIDATION is evaluated once per frozen set, Holm within the set.",
+  "R3 At most 3 final hypotheses are frozen in a committed file BEFORE the TEST period is computed; TEST is computed once and reported unconditionally.",
+  "R4 The descriptive WINNERS and DECOMPOSITION strands may use the full period; their outputs are firewalled: the DISCOVERY strand must not read them (enforced by instruction, documented).",
+  "R5 ORACLE (future knowledge) results are labelled ORACLE_LOOKAHEAD, serve only as an upper bound and for attribution, and never as a strategy or candidate source beyond TRAIN.",
+  "R6 Every return comparison states for strategy and benchmark: dates, return definition (price / total), costs, weighting, investment assumption (fully invested, cash), and whether the excess is observed or statistically secured (block bootstrap / Newey-West, multiple testing)."
+ ],
+ "priorExposure": "All periods 2000-2025 were explored by V7-V10 for the five signal rules, 15 price patterns, the reconstructed factor rank IC (2010-2025) and setups. VALIDATION and TEST are therefore time-separated, not untouched; a TEST success is not confirmatory forward evidence. The only untouched evidence remains future data (e.g. the prospective 8-K cohort from 2027-04-29).",
+ "benchmarks": [
+  "SPY price return (quant/data/market/multi-asset/series/SPY.json, weekly-benchmark)",
+  "SPY total return where a sourced dividend path exists (else stated as unavailable)",
+  "equal-weight frame population (same dates, same costs basis)",
+  "cap-weighted frame population from PIT market cap (2010+)"
+ ],
+ "costs": {
+  "base": {
+   "feeBps": 10,
+   "slippageBps": 5
+  },
+  "stress": [
+   {
+    "feeBps": 20,
+    "slippageBps": 30
+   }
+  ]
+ },
+ "returnBasis": "PRICE_RETURN for stocks (total return only for the 8 titles of the V10 TR register); every comparison with SPY uses the same basis on both sides",
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "activeGatesChanged": false
+}

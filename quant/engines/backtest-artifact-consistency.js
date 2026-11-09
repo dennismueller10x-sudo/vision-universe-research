@@ -73,7 +73,28 @@
     return !!signal && !!status && status.state === "AVAILABLE" && signal.returnType === "TOTAL_RETURN";
   }
 
-  const api = { signalSourceStatus, assertSignalSourceStatus, readinessMatches, hasConfirmedTotalReturn };
+  /* Musterstudie (PATTERN_EVIDENCE): Gesamtrendite gilt nur, wenn die Studie
+     sie selbst traegt - Ausgaenge in Gesamtrendite (returnType), nie gemischt
+     (returnBasis.mixed === false) und mit derselben Mindestabdeckung wie die
+     Signal-Studie (population.totalReturnCoverage.state === "PASS", 95 %).
+     Fehlt eine Bedingung, bleibt es beim bisherigen Grund
+     STUDY_RETURN_BASIS_NOT_TOTAL_RETURN (Entscheidung FV-5, P4.2). */
+  function patternTotalReturnStatus(study) {
+    const basis = study && study.returnBasis;
+    const coverage = study && study.population && study.population.totalReturnCoverage;
+    const confirmed = !!study && study.returnType === "TOTAL_RETURN" && !!basis && basis.mixed === false &&
+      !!coverage && coverage.state === "PASS";
+    return {
+      confirmed,
+      reason: confirmed ? null : "STUDY_RETURN_BASIS_NOT_TOTAL_RETURN",
+      returnType: study && study.returnType || "PRICE_RETURN",
+      contract: confirmed ? basis.contract || null : null,
+      weeklyContract: confirmed ? basis.weeklyContract || null : null,
+      coverageState: coverage ? coverage.state : null
+    };
+  }
+
+  const api = { signalSourceStatus, assertSignalSourceStatus, readinessMatches, hasConfirmedTotalReturn, patternTotalReturnStatus };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   global.BacktestArtifactConsistency = api;
 })(typeof globalThis !== "undefined" ? globalThis : this);

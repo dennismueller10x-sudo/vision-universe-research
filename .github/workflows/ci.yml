@@ -1,0 +1,1981 @@
+name: CI (Pruefungen je Produkt)
+
+# Buendel `ci` (core/registry/workflow-bundles.json, Plan Neustart §3), Stufe 1: die kleinen Pruefungen.
+# Jede ist ein eigener Job mit unveraendertem Inhalt; der Job `auswahl` entscheidet mit
+# scripts/ci/select-checks.mjs nach scripts/ci/ci-checks.json (Pfade/Zweige wie die frueheren Filter):
+#   ask                    vormals ask-ci.yml
+#   brevo                  vormals brevo-ci.yml
+#   ci-config              vormals ci-config.yml
+#   creative-job-guard     vormals creative-job-guard.yml
+#   etf-dashboard          vormals etf-dashboard-ci.yml
+#   fundamental            vormals fundamental-ci.yml
+#   hedgefonds-dashboard   vormals hedgefonds-dashboard-ci.yml
+#   landing                vormals landing-ci.yml
+#   research-access        vormals research-access-ci.yml
+#   screener               vormals screener-ci.yml
+#   vorsorge               vormals vorsorge-ci.yml
+#   willkommen             vormals willkommen-ci.yml
+#   discover               vormals discover-ci.yml (Stufe 2)
+#   discover-frontend      vormals discover-frontend-ci.yml (Stufe 2)
+#   sec-fundamentals       vormals sec-fundamentals-ci.yml (Stufe 2)
+#   social                 vormals social-ci.yml (Stufe 2)
+#   supertrader            vormals supertrader-ci.yml (Stufe 2)
+#   technical              vormals technical-ci.yml (Stufe 2)
+#   vu2-browser-qa         vormals vu2-browser-qa.yml (Stufe 2)
+#   vu2-lifecycle-handoff  vormals vu2-lifecycle-handoff.yml (Stufe 2)
+#   account                vormals account-ci.yml (Stufe 3)
+#   shell                  vormals shell-ci.yml (Stufe 3)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/**'
+      - '.github/workflows/brevo-*.yml'
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/monitor.yml'
+      - '.github/workflows/deploy.yml'
+      - '.github/workflows/research.yml'
+      - 'ask/**'
+      - 'assets/product-icons.svg'
+      - 'assets/site-navigation.css'
+      - 'assets/site-navigation.js'
+      - 'assets/stories/**'
+      - 'authoring/requests/**'
+      - 'docs/brevo/**'
+      - 'etf/**'
+      - 'fundamental/**'
+      - 'hedgefonds/**'
+      - 'landing/**'
+      - 'quant/engines/technical/ti/ai-tools.js'
+      - 'quant/tests/workflow-npx-pinned.test.mjs'
+      - 'products/**'
+      - 'screener/**'
+      - 'screener/engine/**'
+      - 'scripts/access-gate/**'
+      - 'scripts/brevo/**'
+      - 'scripts/ci/**'
+      - 'scripts/ci/ci-checks.json'
+      - 'scripts/ci/select-checks.mjs'
+      - 'products/fundamental/**'
+      - 'products/hedgefonds/**'
+      - 'products/screener/producer/**'
+      - 'products/screener/producer/sic.mjs'
+      - 'scripts/supertrader/build.mjs'
+      - 'products/vorsorge/**'
+      - 'scripts/vu2/build-release.mjs'
+      - 'scripts/vu2/production-smoke.mjs'
+      - 'studio/stories/**'
+      - 'vorsorge/**'
+      - 'willkommen/**'
+      - 'workers/vu-ask/**'
+      - 'discover/**'
+      - 'products/discover/**'
+      - 'scripts/discover/**'
+      - 'discover/**'
+      - 'discover-v2/**'
+      - 'scripts/discover/**'
+      - 'assets/product-hero.css'
+      - 'assets/hero-visuals/**'
+      - 'assets/themen/**'
+      - 'quant/**'
+      - 'scripts/quant/**'
+      - 'docs/SEC_*.md'
+      - 'social/**'
+      - 'products/social/producer/**'
+      - 'workers/**'
+      - 'supertrader/**'
+      - 'products/supertrader/**'
+      - 'scripts/supertrader/**'
+      - 'docs/SUPERTRADER_*.md'
+      - '.github/workflows/supertrader-*.yml'
+      - 'technical/**'
+      - 'products/technical/**'
+      - 'academy/**'
+      - 'quant/engines/technical/**'
+      - 'quant/tests/technical-*'
+      - 'quant/tests/fixtures/technical-reference-*'
+      - 'scripts/technical/world/**'
+      - 'assets/site-navigation.*'
+      - 'assets/stock-navigator.*'
+      - 'core/stock-context.js'
+      - 'scripts/vu2/release-id.mjs'
+      - '.github/workflows/technical-*.yml'
+      - 'vu2/**'
+      - 'quant/index.html'
+      - 'quant/app/**'
+      - 'quant/engines/**'
+      - 'discover/ui/live-hub.js'
+      - 'discover/ui/microchart.js'
+      - 'quant/ui/charts.js'
+      - 'quant/ui/technical-chart.*'
+      - 'quant/ui/quant.css'
+      - 'quant/technical/index.html'
+      - 'quant/technical/app.js'
+      - 'quant/api/**'
+      - 'scripts/vu2/**'
+      - 'assets/site-navigation.*'
+      - 'assets/product-hero.css'
+      - 'assets/hero-visuals/**'
+      - 'assets/vision-universe-logo*.png'
+      - 'scripts/vu2/verify-history-handoff.mjs'
+      - 'quant/tests/history-handoff-proof.test.mjs'
+      - 'supabase/**'
+      - 'workers/vu-account/**'
+      - 'scripts/account/**'
+      - 'konto/**'
+      - 'preise/**'
+      - 'mein-dashboard/**'
+      - 'willkommen/index.html'
+      - 'willkommen/app.js'
+      - 'willkommen/start/**'
+      - 'scripts/home/cancel-link.mjs'
+      - 'scripts/watchlist/**'
+      - 'core/watchlist-view.js'
+      - 'assets/watchlist-button.js'
+      - 'fundamental/index.html'
+      - 'hedgefonds/index.html'
+      - '.github/workflows/account-*.yml'
+      - '.github/workflows/account.yml'
+      - 'discover/app.js'
+      - 'discover/index.html'
+      - 'scripts/discover/watchlist-coupling-qa.mjs'
+      - 'discover/*.js'
+      - 'discover/*.css'
+      - 'discover/index.html'
+      - 'vorsorge/app.*'
+      - 'vorsorge/ui/**'
+      - 'screener/*.js'
+      - 'screener/*.css'
+      - 'supertrader/assets/**'
+      - 'hedgefonds/app.*'
+      - 'scripts/quality/shell-browser-qa.mjs'
+      - 'scripts/quality/app-legal-menu-qa.mjs'
+      - 'app/www/**'
+      - 'scripts/quality/vu3-regression-qa.mjs'
+      - 'scripts/quality/fundamental-compare-qa.mjs'
+      - 'elliott/**'
+      - 'products/fundamental/producer/**'
+  push:
+    paths:
+      - '.github/workflows/**'
+      - '.github/workflows/brevo-*.yml'
+      - '.github/workflows/ci.yml'
+      - '.github/workflows/monitor.yml'
+      - 'ask/**'
+      - 'assets/stories/**'
+      - 'docs/brevo/**'
+      - 'etf/**'
+      - 'fundamental/**'
+      - 'hedgefonds/**'
+      - 'quant/engines/technical/ti/ai-tools.js'
+      - 'quant/tests/workflow-npx-pinned.test.mjs'
+      - 'screener/**'
+      - 'screener/engine/**'
+      - 'scripts/access-gate/**'
+      - 'scripts/brevo/**'
+      - 'scripts/ci/**'
+      - 'scripts/ci/ci-checks.json'
+      - 'scripts/ci/select-checks.mjs'
+      - 'products/fundamental/**'
+      - 'products/hedgefonds/**'
+      - 'products/screener/producer/**'
+      - 'products/vorsorge/**'
+      - 'scripts/vu2/production-smoke.mjs'
+      - 'studio/stories/**'
+      - 'vorsorge/**'
+      - 'willkommen/**'
+      - 'workers/vu-ask/**'
+      - 'discover/**'
+      - 'products/discover/**'
+      - 'scripts/discover/**'
+      - 'discover/**'
+      - 'discover-v2/**'
+      - 'scripts/discover/**'
+      - 'assets/site-navigation.js'
+      - 'assets/site-navigation.css'
+      - 'assets/product-icons.svg'
+      - 'assets/product-hero.css'
+      - 'assets/hero-visuals/**'
+      - 'assets/themen/**'
+      - 'quant/**'
+      - 'scripts/quant/**'
+      - 'scripts/vu2/build-release.mjs'
+      - 'docs/SEC_*.md'
+      - 'social/**'
+      - 'products/social/producer/**'
+      - 'workers/**'
+      - 'scripts/supertrader/**'
+      - 'supertrader/assets/**'
+      - 'technical/**'
+      - 'academy/**'
+      - 'quant/engines/technical/**'
+      - 'scripts/technical/world/**'
+      - '.github/workflows/technical-*.yml'
+      - 'supabase/**'
+      - 'workers/vu-account/**'
+      - 'scripts/account/**'
+      - 'konto/**'
+      - 'preise/**'
+      - 'mein-dashboard/**'
+      - 'scripts/watchlist/**'
+      - 'core/watchlist-view.js'
+      - 'assets/watchlist-button.js'
+      - 'discover/*.js'
+      - 'discover/*.css'
+      - 'discover/index.html'
+      - 'quant/app/**'
+      - 'quant/index.html'
+      - 'vorsorge/app.*'
+      - 'vorsorge/ui/**'
+      - 'screener/*.js'
+      - 'screener/*.css'
+      - 'hedgefonds/app.*'
+      - 'scripts/quality/shell-browser-qa.mjs'
+      - 'scripts/quality/app-legal-menu-qa.mjs'
+      - 'app/www/**'
+      - 'scripts/quality/vu3-regression-qa.mjs'
+      - 'scripts/quality/fundamental-compare-qa.mjs'
+      - 'elliott/**'
+      - 'products/fundamental/producer/**'
+  workflow_dispatch:
+    inputs:
+      pruefung:
+        description: 'Welche Pruefung (oder alle)'
+        type: choice
+        required: true
+        options:
+          - alle
+          - ask
+          - brevo
+          - ci-config
+          - creative-job-guard
+          - etf-dashboard
+          - fundamental
+          - hedgefonds-dashboard
+          - landing
+          - research-access
+          - screener
+          - vorsorge
+          - willkommen
+          - discover
+          - discover-frontend
+          - sec-fundamentals
+          - social
+          - supertrader
+          - technical
+          - vu2-browser-qa
+          - vu2-lifecycle-handoff
+          - account
+          - shell
+      site:
+        description: 'discover-frontend: Optional deployed origin for production smoke; empty uses local release'
+        type: 'string'
+        default: ''
+
+permissions:
+  contents: read
+
+# PR-Laeufe: ueberholte Laeufe desselben PR werden abgebrochen (Runner-Warteschlange, Steuerung 08.11.2026).
+# Alle anderen Ereignisse bekommen eine eigene Gruppe je Lauf, also wie vorher keine Begrenzung.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('ci-pr-{0}', github.event.pull_request.number) || format('ci-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  auswahl:
+    name: Auswahl der Pruefungen
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      ask: ${{ steps.wahl.outputs.ask }}
+      brevo: ${{ steps.wahl.outputs.brevo }}
+      ci_config: ${{ steps.wahl.outputs.ci_config }}
+      creative_job_guard: ${{ steps.wahl.outputs.creative_job_guard }}
+      etf_dashboard: ${{ steps.wahl.outputs.etf_dashboard }}
+      fundamental: ${{ steps.wahl.outputs.fundamental }}
+      hedgefonds_dashboard: ${{ steps.wahl.outputs.hedgefonds_dashboard }}
+      landing: ${{ steps.wahl.outputs.landing }}
+      research_access: ${{ steps.wahl.outputs.research_access }}
+      screener: ${{ steps.wahl.outputs.screener }}
+      vorsorge: ${{ steps.wahl.outputs.vorsorge }}
+      willkommen: ${{ steps.wahl.outputs.willkommen }}
+      discover: ${{ steps.wahl.outputs.discover }}
+      discover_frontend: ${{ steps.wahl.outputs.discover_frontend }}
+      sec_fundamentals: ${{ steps.wahl.outputs.sec_fundamentals }}
+      social: ${{ steps.wahl.outputs.social }}
+      supertrader: ${{ steps.wahl.outputs.supertrader }}
+      technical: ${{ steps.wahl.outputs.technical }}
+      vu2_browser_qa: ${{ steps.wahl.outputs.vu2_browser_qa }}
+      vu2_lifecycle_handoff: ${{ steps.wahl.outputs.vu2_lifecycle_handoff }}
+      account: ${{ steps.wahl.outputs.account }}
+      shell: ${{ steps.wahl.outputs.shell }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts/ci
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Pruefungen waehlen
+        id: wahl
+        env:
+          # Ereignisdaten nur ueber env: (ADR-005)
+          EVENT: ${{ github.event_name }}
+          REF: ${{ github.ref }}
+          PRUEFUNG: ${{ inputs.pruefung }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          files="$RUNNER_TEMP/files.txt"; : > "$files"; unbekannt=()
+          if [ "$EVENT" = pull_request ]; then
+            gh api "repos/$REPO/pulls/$PR_NUMBER/files" --paginate --jq '.[].filename' > "$files"
+            # GitHub liefert hoechstens 3000 Dateien je PR: darueber ist die Liste unvollstaendig
+            [ "$(wc -l < "$files")" -lt 3000 ] || unbekannt=(--unknown-files)
+          elif [ "$EVENT" = push ]; then
+            # Dateiliste ueber die Compare-API (die Commits im Push-Ereignis tragen nicht immer added/modified/removed).
+            # Neuer Zweig (Basis 000…), Fehler oder abgeschnittene Liste (300 Dateien): alle in Frage kommenden.
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
+              unbekannt=(--unknown-files)
+            elif gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[].filename' > "$files"; then
+              [ "$(wc -l < "$files")" -lt 300 ] || unbekannt=(--unknown-files)
+            else
+              echo "::warning::Compare-API ohne Ergebnis - alle in Frage kommenden Pruefungen"; : > "$files"; unbekannt=(--unknown-files)
+            fi
+          fi
+          node scripts/ci/select-checks.mjs --checks scripts/ci/ci-checks.json --event "$EVENT" --ref "$REF" \
+            --files "$files" --pruefung "${PRUEFUNG:-}" "${unbekannt[@]}"
+
+  # --- ask: vormals ask-ci.yml
+  ask:
+    needs: auswahl
+    if: needs.auswahl.outputs.ask == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Worker und Auswertung
+        run: node --test "workers/vu-ask/tests/*.test.mjs" "ask/tests/*.test.mjs"
+      - name: Worker laesst sich buendeln (ohne Ausrollen)
+        working-directory: workers/vu-ask
+        run: npx --yes wrangler@4.147.0 deploy --dry-run --outdir /tmp/vu-ask-bundle
+
+  # --- brevo: vormals brevo-ci.yml
+  brevo:
+    needs: auswahl
+    if: needs.auswahl.outputs.brevo == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+          sparse-checkout: scripts/brevo
+      - run: python3 -m unittest discover -s scripts/brevo/tests -v
+
+  # --- ci-config: vormals ci-config.yml
+  ci-config:
+    needs: auswahl
+    if: needs.auswahl.outputs.ci_config == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Workflow-Regeln
+        run: node --test "scripts/ci/tests/*.test.mjs" quant/tests/workflow-npx-pinned.test.mjs
+
+  # --- creative-job-guard: vormals creative-job-guard.yml
+  creative-job-guard:
+    needs: auswahl
+    if: needs.auswahl.outputs.creative_job_guard == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Jeder Request-PR gehoert zu genau einem beschlossenen Job
+        env:
+          PR_BRANCH: ${{ github.head_ref }}
+        run: node products/social/producer/verify-creative-dispatch.mjs --branch "$PR_BRANCH"
+
+  # --- etf-dashboard: vormals etf-dashboard-ci.yml
+  etf-dashboard:
+    needs: auswahl
+    if: needs.auswahl.outputs.etf_dashboard == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML syntax
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          import sys
+
+          path = "etf/index.html"
+          with open(path, encoding="utf-8") as f:
+              html = f.read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Check required markers are present
+        run: |
+          grep -q '<vu-navigation></vu-navigation>' etf/index.html
+          grep -q '/assets/site-navigation.js' etf/index.html
+          grep -q 'alt="Vision Universe"' assets/site-navigation.js
+          grep -q "const ETF=" etf/index.html
+          echo "Markers OK"
+
+  # --- fundamental: vormals fundamental-ci.yml
+  fundamental:
+    needs: auswahl
+    if: needs.auswahl.outputs.fundamental == 'true'
+    concurrency:
+      group: fundamental-ci-${{ github.ref_name }}-ci
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check fundamental/engine/model.js
+          node --check fundamental/engine/catalog.js
+          node --check fundamental/engine/compare.js
+          node --check fundamental/app.js
+          node --check products/fundamental/producer/build-history.mjs
+          node --check products/fundamental/producer/sec-freshness.mjs
+          node --check products/fundamental/producer/verify-publication.mjs
+      - name: Model and data tests
+        run: node --test "products/fundamental/tests/*.test.mjs"
+
+  # --- hedgefonds-dashboard: vormals hedgefonds-dashboard-ci.yml
+  hedgefonds-dashboard:
+    needs: auswahl
+    if: needs.auswahl.outputs.hedgefonds_dashboard == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate HTML syntax
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+
+          path = "hedgefonds/index.html"
+          with open(path, encoding="utf-8") as f:
+              html = f.read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Check required markers are present
+        run: |
+          grep -q "VISION UNIVERSE" hedgefonds/index.html
+          grep -q "data.sec.gov" hedgefonds/index.html
+          grep -q "DATA_URL" hedgefonds/index.html
+          echo "Markers OK"
+
+      - name: Validate generated data JSON
+        run: |
+          python3 - <<'PY'
+          import json, os
+          d = json.load(open("hedgefonds/data/hedgefonds.json"))
+          assert d.get("funds"), "keine Fonds"
+          for f in d["funds"]:
+              if d.get("schema", "").startswith("hedgefonds-2"):
+                  assert os.path.exists(f"hedgefonds/data/funds/{f['slug']}.json"), f["slug"]
+                  if f.get("photo"):
+                      assert os.path.exists("hedgefonds/" + f["photo"]["src"]), f["photo"]["src"]
+          if os.path.exists("hedgefonds/data/universe.json"):
+              u = json.load(open("hedgefonds/data/universe.json"))
+              for f in u["funds"]:
+                  assert os.path.exists(f"hedgefonds/data/funds/{f['slug']}.json"), f["slug"]
+              print("universe.json OK:", len(u["funds"]), "Fonds")
+          print("hedgefonds.json OK:", len(d["funds"]), "Fonds")
+          PY
+
+      - name: Validate fetch script syntax
+        run: python3 -m py_compile products/hedgefonds/producer/fetch_edgar_data.py products/hedgefonds/producer/fund_meta.py
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow (Porträt-Tests)
+        run: python -m pip install "Pillow==12.3.0"
+
+      - name: Run fetch-script logic unit tests (no network)
+        run: python3 -m unittest products/hedgefonds/tests/test_fetch_edgar_data.py -v
+
+  # --- landing: vormals landing-ci.yml
+  landing:
+    needs: auswahl
+    if: needs.auswahl.outputs.landing == 'true'
+    concurrency:
+      group: landing-ci-${{ github.ref_name }}-ci
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: landing
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: landing
+      - name: Load immutable landing design baseline
+        run: git fetch --no-tags --depth=1 origin 11bda0c1a2a0d8add32ea0338a1ec32dfd8e3f49
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: landing/package-lock.json
+      - run: npm ci --ignore-scripts
+      - run: node node_modules/playwright/cli.js install --with-deps chromium webkit
+      - run: npm test
+      - run: npm run test:edge
+      - run: npm run test:browser
+      - run: npm run test:private
+      - run: npm run test:public
+      - run: npm run test:design
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vision-universe-coming-soon-review
+          path: |
+            landing/dist/
+            landing/review/
+          retention-days: 14
+          include-hidden-files: true
+
+  # --- research-access: vormals research-access-ci.yml
+  research-access:
+    needs: auswahl
+    if: needs.auswahl.outputs.research_access == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check whether the separate GitHub build secret is configured (no values)
+        env:
+          BUILD_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: |
+          python3 - <<'PY'
+          import os
+          print('GITHUB_RESEARCH_ACCESS_PASSWORD_CONFIGURED=' + str(bool(os.environ.get('BUILD_PASSWORD'))).lower())
+          PY
+      - run: node --test scripts/access-gate/build.test.mjs
+      - name: Browser dependencies
+        run: |
+          npm install --prefix /tmp/research-access-qa --no-audit --no-fund playwright@1.57.0
+          /tmp/research-access-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Password flow, no content flash and persistent shared access in Chromium and iPhone WebKit
+        env:
+          PLAYWRIGHT_PATH: /tmp/research-access-qa/node_modules/playwright
+        run: node scripts/access-gate/browser-qa.mjs
+
+  # --- screener: vormals screener-ci.yml
+  screener:
+    needs: auswahl
+    if: needs.auswahl.outputs.screener == 'true'
+    concurrency:
+      group: screener-qa-${{ github.ref }}-ci
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build screener universe from committed product data
+        run: node products/screener/producer/build-universe.mjs
+      - name: Engine, registry and universe tests
+        run: node --test "screener/tests/*.test.mjs" discover/tests/navigation-theme.test.mjs
+      - name: Browser QA dependencies
+        run: |
+          npm install --prefix /tmp/screener-qa-deps --no-audit --no-fund playwright@1.56.1
+          node /tmp/screener-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/screener-release"
+      - name: Browser QA (390, 430, 820, 1440 · light and dark)
+        env:
+          NODE_PATH: /tmp/screener-qa-deps/node_modules
+        run: |
+          mkdir -p /tmp/screener-evidence
+          test -f "$RUNNER_TEMP/screener-release/screener/data/universe-US_REAL.json"
+          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/screener-release" > /tmp/screener-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/screener/ > /dev/null && break; sleep 1; done
+          PLAYWRIGHT_PATH=/tmp/screener-qa-deps/node_modules/playwright node products/screener/producer/browser-qa.mjs --url http://127.0.0.1:8765 --out /tmp/screener-evidence
+      - name: Preserve screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screener-browser-evidence
+          path: /tmp/screener-evidence
+          if-no-files-found: warn
+
+  # --- vorsorge: vormals vorsorge-ci.yml
+  vorsorge:
+    needs: auswahl
+    if: needs.auswahl.outputs.vorsorge == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Engine- und Contract-Tests
+        run: node --test "products/vorsorge/tests/*.test.mjs"
+      - name: Daten-Build ist reproduzierbar
+        run: |
+          node products/vorsorge/producer/build-etf-data.mjs --quiet
+          if [ -n "$(git status --porcelain -- vorsorge)" ]; then
+            git status --short -- vorsorge | head -20
+            echo "Der Neubau ergibt andere Vorsorge-Daten als der eingecheckte Stand."
+            exit 1
+          fi
+          echo "Build reproduzierbar."
+      - name: Seite bindet Navigation, Engines und Disclaimer ein
+        run: |
+          page=vorsorge/index.html
+          grep -q 'vu-navigation' "$page"
+          grep -q 'site-navigation.css' "$page"
+          grep -q 'keine individuelle Anlage-, Steuer- oder Rechtsberatung' vorsorge/app.js
+          for e in vorsorge-math series-codec etf-taxonomy etf-analytics etf-master etf-provider etf-fundamentals etf-holdings etf-changes xray funding monitor; do grep -q "engines/$e.js" "$page" || { echo "$e fehlt"; exit 1; }; done
+      - name: Qualitaets- und Regressions-Gates der Vorsorge-Daten
+        run: node products/vorsorge/producer/assert-vorsorge-data.mjs
+      - name: Foerderregeln - Pruefsumme und Primaerquellen
+        run: |
+          node -e "
+          const F=require('./vorsorge/engines/funding.js'),fs=require('fs');
+          for(const f of fs.readdirSync('vorsorge/data/funding-rules').filter(x=>x.endsWith('.json'))){
+            const r=JSON.parse(fs.readFileSync('vorsorge/data/funding-rules/'+f));const e=F.validateRules(r);
+            if(e.length){console.error(f,e);process.exit(1)}console.log(f,r.ruleVersion,r.verification.primaryVerified?'primaer geprueft':'nicht primaer geprueft')}"
+      - name: Public-Data-Hygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+  # --- willkommen: vormals willkommen-ci.yml
+  willkommen:
+    needs: auswahl
+    if: needs.auswahl.outputs.willkommen == 'true'
+    concurrency:
+      group: willkommen-ci-${{ github.ref_name }}-ci
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax
+        run: |
+          node --check willkommen/app.js
+          node --check studio/stories/build-story.mjs
+      - name: Inhalt und Seite
+        run: node --test "willkommen/tests/*.test.mjs"
+
+  # --- discover: vormals discover-ci.yml
+  discover:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.discover == 'true'
+    # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && format('discover-ci-pr-{0}', github.event.pull_request.number) || format('discover-ci-{0}', github.run_id) }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Zwei Commits: im pull_request-Ereignis ist HEAD der Merge-Commit,
+          # HEAD^1 die aktuelle Basis. Damit sieht das Modul-Gate den PR-Diff
+          # ohne Vollclone.
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine- und Contract-Tests
+        run: node --test "discover/tests/*.test.mjs"
+
+      - name: Ausgelieferte Daten stimmen mit den Engines ueberein
+        run: node scripts/discover/verify-discover-data.mjs
+
+      - name: Der Build ist reproduzierbar
+        # Derselbe Eingabestand muss denselben Ausgabestand ergeben. Weicht
+        # er ab, ist irgendwo eine Uhrzeit oder eine Zufallszahl in die
+        # Rechnung geraten - und dann ist kein Vergleich zweier Staende mehr
+        # aussagekraeftig. generatedAt ist die eine erlaubte Ausnahme.
+        run: |
+          node scripts/discover/build-discover-data.mjs > /dev/null
+          git diff --stat -- discover/data > /tmp/discover-drift.txt || true
+          changed=$(git diff --name-only -- discover/data | grep -v 'discover/data/meta.json' | wc -l)
+          if [ "$changed" -gt 0 ]; then
+            echo "Der Neubau ergibt andere Daten als der eingecheckte Stand:"
+            cat /tmp/discover-drift.txt
+            exit 1
+          fi
+          echo "Build reproduzierbar (nur meta.json traegt einen Zeitstempel)."
+
+      - name: Discover-Seite bindet die gemeinsame Shell und die Navigation ein
+        run: |
+          page=discover/index.html
+          grep -q '/quant/ui/shell.js' "$page" || { echo "$page ohne quant/ui/shell.js"; exit 1; }
+          grep -q 'vu-navigation' "$page" || { echo "$page ohne Vision-Universe-Navigation"; exit 1; }
+          grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
+          echo "Seite geprueft"
+
+      # Bis 05.11.2026 stand hier "Discover veraendert keine bestehende Engine" (Pfadverbot fuer quant,
+      # providers, scripts/quant|technical|market, dashboard, macro, academy). Ersetzt durch Vertragstests:
+      # wer diese Pfade aendert, loest Quant-/Technical-CI aus; Schnittstellen pruefen PC-1..4.
+      - name: Produktvertraege (statt Pfadverbot)
+        run: node --test core/tests/product-contracts.test.mjs
+
+      - name: JSON-Dateien sind gueltig
+        run: |
+          files=$(find discover -name '*.json')
+          for file in $files; do
+            node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" || exit 1
+          done
+          echo "$(echo "$files" | wc -l) JSON-Dateien geprueft"
+
+  # --- discover-frontend: vormals discover-frontend-ci.yml
+  discover-frontend:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.discover_frontend == 'true'
+    # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
+    concurrency:
+      group: discover-frontend-qa-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    # Bekannte Fehler (scripts/discover/known-defects.json) warten je Ladevorgang
+    # bis zum Zeitlimit der Pruefung; mit Direktlink-Schritt in beiden Engines
+    # reichen 35 Minuten dann nicht. Kein Check wird dadurch gelockert.
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: One Discover (single implementation, legacy alias, navigation, contract)
+        run: node scripts/discover/consolidation-gate.mjs
+      - name: Existing contract and navigation tests
+        run: node --test discover/tests/*.test.mjs quant/tests/site-navigation.test.mjs
+      - name: Browser quality dependencies
+        run: |
+          npm install --prefix /tmp/discover-qa-deps --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
+          node /tmp/discover-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
+      # Offener Tab ueber ein Deployment (lazy.js + Release-Waechter, hinter der Sperre). Setzt den Quant-PR voraus
+      # (quant/ui/release-guard.js, scripts/vu2/deploy-switch-lib.mjs); davor uebersprungen.
+      - name: Deployment switch with an open tab
+        if: hashFiles('scripts/vu2/deploy-switch-lib.mjs') != ''
+        env:
+          NODE_PATH: /tmp/discover-qa-deps/node_modules
+        run: node scripts/discover/deploy-switch-qa.mjs --engine chromium,webkit
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/discover-release"
+      - name: Browser, accessibility, performance and screenshot gates
+        env:
+          NODE_PATH: /tmp/discover-qa-deps/node_modules
+          SITE: ${{ inputs.site }}
+        run: |
+          mkdir -p /tmp/discover-evidence
+          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/discover-release" > /tmp/discover-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/discover/ > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/discover/browser-qa.mjs --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-evidence || chromium_status=$?
+          node scripts/discover/browser-qa.mjs --engine webkit --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      # Phase 4: die Direktlink-Pruefung vergleicht meta vu-release mit /release-id.json und jeden ?v= mit den ausgelieferten Bytes. Dafuer
+      # braucht der Release die Kennung - in pages-release.yml steht dieser Schritt nach dem Verkleinern und vor der Passwortsperre.
+      - name: Stamp release identifier like pages-release (meta vu-release, release-id.json, ?v= stamps)
+        run: node scripts/vu2/release-id.mjs "$RUNNER_TEMP/discover-release"
+      - name: Direct links through the active access gate, slow networks and parallel loads
+        # PR #619: ein WebKit-Race trat nur ueber die Zugangsmaske auf (document.write-Pfad). Das Skript verpackt die HTML-Seiten
+        # des Release wie pages-release.yml (protectRelease, Einmalpasswort) und laedt jede Route durch die Maske.
+        env:
+          NODE_PATH: /tmp/discover-qa-deps/node_modules
+        run: |
+          mkdir -p /tmp/discover-evidence/direct
+          chromium_status=0
+          webkit_status=0
+          node scripts/discover/browser-qa-direct.mjs --release "$RUNNER_TEMP/discover-release" --engine chromium --out /tmp/discover-evidence/direct || chromium_status=$?
+          node scripts/discover/browser-qa-direct.mjs --release "$RUNNER_TEMP/discover-release" --engine webkit --out /tmp/discover-evidence/direct || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Preserve screenshot and test evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: discover-browser-evidence
+          path: /tmp/discover-evidence
+          if-no-files-found: warn
+
+  # --- sec-fundamentals: vormals sec-fundamentals-ci.yml
+  sec-fundamentals:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.sec_fundamentals == 'true'
+    # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && format('sec-fundamentals-ci-pr-{0}', github.event.pull_request.number) || format('sec-fundamentals-ci-{0}', github.run_id) }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # HEAD^1 ist im pull_request-Ereignis die aktuelle Basis (Gate unten).
+          fetch-depth: 2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Compile every pipeline module
+        run: python3 -m compileall -q scripts/quant
+
+      - name: Run the SEC ingestion test suite (Python, no network)
+        run: python3 scripts/quant/cli.py test
+
+      - name: Run the whole quant test suite (JS, no network)
+        # The SEC adapter is part of the existing quant system, so it is not
+        # enough to run its own tests: the Phase 1-3 suite has to stay green too.
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Verify the SEC adapter satisfies the existing provider interface
+        run: |
+          node -e '
+            const path = require("path");
+            const Provider = require("./quant/engines/provider.js");
+            const Adapter = require("./providers/sec/adapter.js");
+            const provider = Adapter.createSecProvider();
+            const missing = Provider.missingMethods("FundamentalDataProvider", provider);
+            if (missing.length) {
+              console.error("SEC adapter does not implement FundamentalDataProvider:", missing);
+              process.exit(1);
+            }
+            // It must NOT claim interfaces it cannot serve.
+            for (const iface of ["MarketDataProvider", "EstimateDataProvider", "CorporateActionsProvider"]) {
+              if (Provider.implementsInterface(iface, provider)) {
+                console.error("SEC adapter must not claim " + iface);
+                process.exit(1);
+              }
+            }
+            console.log("SEC adapter interface contract OK");
+          '
+
+      - name: Reject a second architecture
+        shell: bash
+        run: |
+          # The SEC workstream must not grow its own provider abstraction,
+          # capability matrix, PIT rule, factor engine or backtester alongside
+          # the existing ones. These are the names that would signal it.
+          if grep -rniE "class .*Provider(Registry|Abstraction)|CAPABILITY_SETS|def (run_backtest|backtest_symbol)|def score_universe" scripts/quant/sec/; then
+            echo "::error::scripts/quant/sec/ appears to duplicate an existing quant layer"
+            exit 1
+          fi
+          for gone in scripts/quant/sec/factors.py scripts/quant/sec/backtest_bridge.py; do
+            if [ -f "$gone" ]; then
+              echo "::error::$gone duplicates an existing engine and must stay removed"
+              exit 1
+            fi
+          done
+          # Capabilities are declared once, in the shared profile file.
+          if grep -rn "CAPABILITIES = {" scripts/quant/sec/; then
+            echo "::error::capabilities must be declared in quant/config/provider-profiles.json"
+            exit 1
+          fi
+          echo "no parallel architecture detected"
+
+      - name: Validate configuration files
+        run: |
+          python3 - <<'PY'
+          import json, sys
+          sys.path.insert(0, "scripts")
+          from quant.sec.registry import MetricRegistry
+
+          registry = MetricRegistry.load()
+          print("metric registry:", registry.version, len(registry.names()), "metrics")
+
+          profiles = json.load(open("quant/config/provider-profiles.json"))
+          assert "sec-edgar" in profiles["providers"], "SEC provider profile missing"
+          print("provider profile: sec-edgar present")
+
+          universe = json.load(open("quant/config/sec-universe.json"))
+          assert universe["companies"], "universe must not be empty"
+          for entry in universe["companies"]:
+              assert entry["ticker"] and entry["cik"], entry
+          print("universe:", [c["ticker"] for c in universe["companies"]])
+          PY
+
+      - name: Validate the generated SEC data JSON
+        run: |
+          python3 - <<'PY'
+          import json, pathlib
+          # Only what THIS pipeline generates. quant/data/*.json belongs to the
+          # earlier phases and follows their own convention (asOf,
+          # methodologyVersion, dataSnapshotId); asserting the SEC convention
+          # over the whole directory failed on eight files this branch never
+          # wrote. The check had never run before the first pull request, which
+          # is exactly how it survived that long.
+          root = pathlib.Path("quant/data/sec")
+          paths = sorted(root.glob("*.json")) + sorted(root.glob("*/*.json"))
+          assert paths, "no generated SEC artifacts found"
+          # Two naming conventions, on purpose. Below the canonical boundary the
+          # SEC layer uses snake_case; at and above it the payload follows
+          # quant/engines/schema.js, which is camelCase. An artifact must carry
+          # its provenance in one of the two, never in neither.
+          SNAKE = ("schema_version", "generated_at_utc")
+          CAMEL = ("schema", "generatedAtUtc")
+          for path in paths:
+              payload = json.loads(path.read_text(encoding="utf-8"))
+              assert isinstance(payload, dict), path
+              stamped = any(key in payload for key in SNAKE + CAMEL)
+              assert stamped, f"{path} carries neither {SNAKE} nor {CAMEL}"
+              assert "versions" in payload, f"{path} has no version stamp"
+              print(f"{path}: OK ({path.stat().st_size} bytes)")
+          PY
+
+      - name: Validate the data inspector page
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          path = "quant/data-inspector/index.html"
+          html = open(path, encoding="utf-8").read()
+
+          class Checker(HTMLParser):
+              def error(self, message):
+                  raise AssertionError(message)
+
+          Checker().feed(html)
+          # Attribute (theme, theme-switch, no-preview) sind erlaubt; geprueft
+          # wird, dass die gemeinsame Navigation als Element vorhanden ist.
+          import re
+          assert re.search(r"<vu-navigation(\s[^>]*)?></vu-navigation>", html), "shared navigation missing"
+          # The inspector is a quant page and must use the quant shell, not a
+          # second UI stack of its own.
+          assert "/quant/ui/shell.js" in html, "shared quant shell missing"
+          assert "/quant/ui/quant.css" in html, "shared quant design system missing"
+          print(f"{path}: OK ({len(html)} bytes)")
+          PY
+
+      - name: Reject company-specific logic in the pipeline
+        # The rule lives in a script, not in this file, so it can be run before
+        # pushing and is covered by the test suite. The previous grep matched
+        # comments and __pycache__ alongside code: naming the company whose real
+        # data exposed a defect is how findings are documented here, and a
+        # binary .pyc is not source at all.
+        run: python3 scripts/quant/check_company_agnostic.py
+
+      - name: Enforce data hygiene
+        shell: bash
+        run: |
+          # Raw SEC payloads and normalized factbooks must never be committed.
+          # raw/ and facts/ are large and regenerable and stay local. canonical/
+          # is the opposite: it IS the data layer the adapter serves, so it is
+          # committed.
+          for forbidden in quant/data/sec/raw quant/data/sec/facts .sec-cache .quant-state; do
+            if git ls-files --error-unmatch "$forbidden" >/dev/null 2>&1; then
+              echo "::error::$forbidden is tracked but must stay local"
+              exit 1
+            fi
+          done
+          # Committed artifacts stay small enough to review in a diff.
+          oversized="$(find quant/data/sec -type f -size +2M 2>/dev/null || true)"
+          if [ -n "$oversized" ]; then
+            echo "::error::files over 2MB under quant/data/sec:"; echo "$oversized"; exit 1
+          fi
+          # Canonical R2-backed source remains intact. Measure the actual
+          # product artifact, never the full storage source tree.
+          node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/sec-delivery"
+          total="$(du -sk "$RUNNER_TEMP/sec-delivery/quant/data/sec" | cut -f1)"
+          if [ "$total" -gt 8192 ]; then
+            echo "::error::SEC delivery is ${total}KB, over the unchanged 8MB budget"
+            exit 1
+          fi
+          echo "SEC product delivery OK (${total}KB of 8192KB)"
+
+      - name: Reject secrets in the SEC pipeline
+        shell: bash
+        run: |
+          # The SEC APIs need no key. Anything that looks like one is a mistake.
+          if grep -rniE '(api[_-]?key|secret|token|password)[[:space:]]*=[[:space:]]*["'"'"'][A-Za-z0-9_\-]{16,}' scripts/quant/ quant/; then
+            echo "::error::possible credential committed"
+            exit 1
+          fi
+          echo "no credentials found"
+
+      - name: Confirm the existing backtest engine is untouched by the bridge
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          # The bridge imports scripts/dashboard/backtest_technicals.py; a change
+          # to that file is a change to the production technical pipeline and
+          # must not arrive through a SEC-pipeline pull request.
+          # Bis 10/2026 lief hier origin/main...HEAD mit 2>/dev/null in einem
+          # flachen Checkout ohne origin/main: der Vergleich scheiterte immer
+          # still, das Gate war wirkungslos. Jetzt gegen HEAD^1, laut.
+          set -euo pipefail
+          geaendert=$(git diff --name-only HEAD^1 HEAD)
+          if grep -q '^scripts/dashboard/' <<<"$geaendert"; then
+            echo "::error::this pipeline must not modify scripts/dashboard/"
+            exit 1
+          fi
+          echo "scripts/dashboard/ untouched"
+
+  # --- social: vormals social-ci.yml
+  social:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.social == 'true'
+    # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && format('social-ci-pr-{0}', github.event.pull_request.number) || format('social-ci-{0}', github.run_id) }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # =====================================================================
+      # DEN CREATIVE-JOB-REGISTERZUSTAND AN DIE EVIDENZ HOLEN — VOR
+      # MAX_OPEN_CREATIVE_JOBS (Owner-Direktive "WORKFLOW-ORDERING-FIX",
+      # 24.09.)
+      #
+      # Dieselbe Reihenfolge, aus demselben Grund, wie in
+      # social-orchestrator.yml: die fuenf harten Invarianten unten
+      # (check-hard-invariants.mjs, ueber die Suite gemessen) zaehlen
+      # MAX_OPEN_CREATIVE_JOBS aus dem gerade ausgecheckten
+      # social/data/creative-jobs.json. Ein Register-Eintrag ohne je
+      # geoeffneten Request-PR (DISPATCH_NIE_ERFOLGT) blockiert diese
+      # CI sonst genauso wie er den Orchestrator blockierte — nicht,
+      # weil der Code falsch waere, sondern weil niemand vor der
+      # Zaehlung nachgesehen hat.
+      #
+      # --write schreibt nur in den ephemeren Checkout dieses Laufs;
+      # diese CI committet nichts zurueck (kein Push-Schritt in dieser
+      # Datei). Die eigentliche, dauerhafte Bereinigung geschieht durch
+      # denselben Schritt im Orchestrator, dessen Ergebnis er
+      # festschreibt.
+      # =====================================================================
+      - name: Creative-Ergebnisse von offenen Request-PRs holen
+        run: node products/social/producer/ingest-open-creative-jobs.mjs --write
+
+      - name: Creative Jobs gegen die Evidenz abgleichen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node products/social/producer/reconcile-creative-jobs.mjs --write
+
+      # =====================================================================
+      # DIE SUITEN UND DIE ISOLATION — EINMAL, UND MIT STAND
+      #
+      # verify-suites.mjs laesst beide Suiten und die Isolationspruefung
+      # laufen und schreibt das Ergebnis samt Commit nach
+      # .verification/suites.json. Frueher standen hier zwei getrennte
+      # Testschritte, und der Reifebericht bekam die Fahne
+      # `--suites-green ja` - eine Behauptung des Workflows ueber die
+      # Arbeit, die der Bericht bewerten sollte.
+      #
+      # Der Schritt scheitert, wenn eine Suite rot ist oder ein Testlauf
+      # eine Produktionsdatei veraendert hat. Beides bleibt damit ein
+      # harter Fehler der CI und wird nicht erst im Bericht sichtbar.
+      # =====================================================================
+      - name: Suiten und Test-/Produktionsisolation messen
+        run: node products/social/producer/verify-suites.mjs
+
+      - name: Was gemessen wurde
+        if: always()
+        run: cat .verification/suites.json || echo "Kein Befund geschrieben."
+
+      # Die fuenf harten Invarianten (§45). Sie werden GEMESSEN, nicht
+      # gelesen: der Publish-Pfad wird zweimal aufgerufen und muss
+      # zweimal mit SEINEM eigenen Grund ablehnen.
+      - name: Die fuenf harten Invarianten
+        run: node products/social/producer/check-hard-invariants.mjs
+
+      # Der Reifezustand des Approval Centers, gemessen am Repository.
+      # Er schaltet nichts frei; er stellt fest - und was er von hier aus
+      # nicht messen kann (ob der Worker deployt ist), bleibt
+      # ausdruecklich UNGEPRUEFT statt als bestanden zu gelten.
+      # Ohne --suites-green: der Suitenzustand kommt aus dem gemessenen
+      # Befund des Schritts oben (.verification/suites.json, an diesen
+      # Commit gebunden). Die Fahne war eine Behauptung des Workflows
+      # ueber die Arbeit, die dieser Bericht bewerten soll.
+      - name: APPROVAL_CENTER_PRODUCTION_READY
+        run: node products/social/producer/approval-center-readiness.mjs
+
+      # =====================================================================
+      # §26/§27 — DIE GEMESSENEN ZUSTAENDE DES ASSET-/HASHTAG-AUFTRAGS
+      #
+      # Von hier aus ist fast alles messbar: die Tagbreite ueber den
+      # echten Themenbestand, die gerenderte Karte, die Sperre, die
+      # Zusammensetzung des Sendetextes. Und, anders als in der
+      # Entwicklungsumgebung, auch die Erreichbarkeit des Bildes: dieser
+      # Runner erreicht research.visionuniverse.de.
+      #
+      # Was er NICHT erreicht, ist der Worker hinter der eigenen Domain;
+      # der Production Smoke steht deshalb erst im Deploy-Workflow.
+      #
+      # `|| true`: auf einem Zweig ist IN_MAIN_INTEGRIERT
+      # notwendigerweise offen. Der Bericht stellt fest, er schaltet
+      # nichts frei — und ein roter Lauf dafuer saegte an der falschen
+      # Stelle. Rot wird die CI von den Suiten darueber.
+      #
+      # Lesend. Kein Publish, kein Approve, kein Dispatch.
+      # =====================================================================
+      - name: ASSET + HASHTAG — die gemessenen Zustaende
+        if: always()
+        run: |
+          set -uo pipefail
+          node products/social/producer/asset-hashtag-done.mjs | tee /tmp/asset-hashtag.log || true
+          {
+            echo "## ASSET + HASHTAG"
+            echo '```'
+            cat /tmp/asset-hashtag.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Die Cloudflare-Skripte sind syntaktisch gueltig und laufen ohne Zugang
+        # Sie werden vom Workflow social-cloudflare gerufen, wo ein
+        # Syntaxfehler erst nach dem Start auffiele — und dann mit
+        # Cloudflare-Zugang im Ruecken.
+        run: |
+          for file in products/social/producer/provision-cloudflare.mjs products/social/producer/verify-worker.mjs; do
+            node --check "$file" 2>/dev/null || node -e "import('./$file')" >/dev/null 2>&1 || true
+          done
+          # provision bricht ohne Zugangsdaten ab — mit einer Meldung, nicht mit einem Stacktrace.
+          if node products/social/producer/provision-cloudflare.mjs --ensure-kv 2>&1 | grep -q "ABBRUCH"; then
+            echo "provision-cloudflare.mjs meldet fehlenden Zugang sauber."
+          else
+            echo "::error::provision-cloudflare.mjs verhaelt sich ohne Zugang unerwartet."
+            exit 1
+          fi
+          # verify meldet ein Ergebnis und wirft nicht — was auch immer das
+          # Netz sagt.
+          #
+          # Hier stand `grep -q "Worker-Adresse bekannt"`. Diese Zeile
+          # erscheint NUR, wenn die Adresse FEHLT. Sie fehlte, solange sie
+          # aus einem Secret kam, das es in der CI nie gab; seit sie einen
+          # Vorgabewert aus wrangler.toml hat, kann der Fall nicht mehr
+          # eintreten. Die Pruefung verlangte damit Text von einem
+          # Programm, das ihn zu Recht nicht mehr schreibt — und war rot,
+          # obwohl alles stimmte.
+          #
+          # Geprueft gehoert der Vertrag, nicht der Wortlaut eines
+          # Sonderfalls: ein Ergebnis steht da, und es gibt keinen
+          # Stacktrace. Ob der Worker gerade erreichbar ist, ist eine
+          # Frage an die Infrastruktur und nicht an diesen Code — ein
+          # roter Lauf deswegen saegte an der falschen Stelle.
+          ausgabe="$(node products/social/producer/verify-worker.mjs 2>&1 || true)"
+          echo "$ausgabe" | tail -6
+          if echo "$ausgabe" | grep -q "^Abgebrochen:"; then
+            echo "::error::verify-worker.mjs ist mit einem Stacktrace abgebrochen."
+            exit 1
+          fi
+          if echo "$ausgabe" | grep -q "^Ergebnis: "; then
+            echo "verify-worker.mjs meldet ein Ergebnis, ohne zu werfen."
+          else
+            echo "::error::verify-worker.mjs meldet kein Ergebnis."
+            exit 1
+          fi
+
+      - name: Worker-Preflight (lokale Pruefungen)
+        # Ohne Cloudflare-Zugang prueft er die Konfiguration: Zielname,
+        # Platzhalter, und vor allem — keine Secret-Werte in wrangler.toml.
+        run: node products/social/producer/preflight-worker.mjs
+
+      - name: Konfigurations- und Methodikdateien sind gueltiges JSON
+        run: |
+          files=$(find social/config social/methodology -name '*.json')
+          for file in $files; do
+            node -e "JSON.parse(require('fs').readFileSync('$file','utf8'))" || exit 1
+          done
+          echo "$(echo "$files" | wc -l) JSON-Dateien geprueft"
+
+      - name: Jede Engine laedt in Node und registriert sich nicht global
+        # Die Engines laufen in Browser UND Node (UMD-Muster wie quant/engines).
+        # Ein Ladefehler faellt hier auf und nicht erst im Browser.
+        run: |
+          for file in social/engines/*.js; do
+            node -e "
+              const api = require('./$file');
+              if (!api || typeof api !== 'object') throw new Error('$file exportiert nichts');
+            " || exit 1
+          done
+          echo "$(ls social/engines/*.js | wc -l) Engines geprueft"
+
+      - name: Der Kill Switch ist im ausgelieferten Zustand AUS
+        # Die wichtigste Zeile dieser Datei. Sie faengt den Fall, dass
+        # jemand den Schalter zum Testen umlegt und das Zuruecklegen
+        # vergisst — der einzige Weg, auf dem dieses System versehentlich
+        # etwas veroeffentlichen koennte.
+        run: |
+          node -e '
+            const config = require("./social/config/kill-switch.json");
+            const gate = config.gates.GLOBAL_AUTOPUBLISH;
+            if (gate.enabled !== false) {
+              throw new Error(
+                "GLOBAL_AUTOPUBLISH ist eingeschaltet. Das ist eine Owner-Entscheidung und " +
+                "gehoert in einen eigenen Commit mit Begruendung — nicht in einen Nebeneffekt.");
+            }
+            const meta = config.gates.PROVIDER_META;
+            if (meta.enabled !== false) {
+              throw new Error("PROVIDER_META ist eingeschaltet, obwohl der Provider nie gegen die echte API lief.");
+            }
+            console.log("Kill Switch: global AUS, Meta AUS.");
+          '
+
+      - name: Der Verbindungsabruf laeuft ohne Zugang fehlerfrei durch
+        # Dieselbe Eigenschaft wie ueberall: ein fehlender Zugang ist eine
+        # Konfigurationsfrage, kein Baufehler. Das erzeugte Artefakt sagt
+        # ausdruecklich, dass es ueber die Verbindung nichts aussagen kann.
+        #
+        # Diese Pruefung verlangte frueher `state: "not_configured"` und
+        # `connected: false` — also genau die beiden Werte, die
+        # fetch-meta-status.mjs bewusst NICHT mehr schreibt.
+        #
+        # Der Grund steht im Skript: NICHT KONFIGURIERT ist eine Aussage
+        # ueber die VERBINDUNG, ZUGANGSDATEN FEHLEN eine ueber DIESEN
+        # LAUF. Aus der zweiten folgt die erste nicht — und aus den alten
+        # Feldern ist genau dieser Fehlschluss an den Owner gegangen.
+        # `connected` ist seitdem null und nicht false, weil Unbekanntes
+        # sonst aussieht wie Abwesendes.
+        #
+        # Die Pruefung bestand also darauf, dass das Artefakt die falsche
+        # Aussage wieder macht. Sie prueft jetzt die richtige.
+        run: |
+          node products/social/producer/fetch-meta-status.mjs
+          node -e '
+            const { execSync } = require("child_process");
+            execSync("node products/social/producer/fetch-meta-status.mjs --out /tmp/social-meta");
+            const report = require("/tmp/social-meta/meta-connection.json");
+            if (report.state !== "credentials_missing_here") {
+              throw new Error("Ohne Zugang muss der Zustand credentials_missing_here sein, war: " + report.state);
+            }
+            if (report.connected !== null) {
+              throw new Error("connected muss null sein - dieser Lauf weiss nichts ueber die Verbindung. War: " + report.connected);
+            }
+            if (report.probeScope !== "THIS_RUN_ONLY") {
+              throw new Error("probeScope muss THIS_RUN_ONLY sein, war: " + report.probeScope);
+            }
+            console.log("Verbindungsbericht korrekt: " + report.state + ", connected=null, Reichweite " + report.probeScope);
+          '
+
+      - name: Die Signalsammlung laeuft ohne Zugang fehlerfrei durch
+        # Dieselbe Eigenschaft wie beim Marktdatenabruf in quant-ci.yml:
+        # ein fehlender Zugang ist eine Konfigurationsfrage, kein Baufehler.
+        run: |
+          node products/social/producer/collect-vu-signals.mjs
+
+      - name: Der vollstaendige Zyklus laeuft gegen den Mock durch
+        # Der Nachweis aus §53: der Kreislauf traegt, und ein Provider kann
+        # ihn durchlaufen. Veroeffentlicht wird dabei nichts — der globale
+        # Schalter ist aus, und der Mock verlaesst den Prozess ohnehin nie.
+        run: |
+          node products/social/producer/collect-vu-signals.mjs --out /tmp/social-ci
+          cp /tmp/social-ci/signals.json social/data/signals.json
+          node products/social/producer/run-social-cycle.mjs --provider mock
+          git checkout -- social/data/signals.json 2>/dev/null || true
+
+      - name: Keine Zugangsdaten und keine Anbieterbindung in ausgelieferten Pfaden
+        run: node products/social/producer/assert-no-secrets.mjs
+
+      - name: Die Seiten des Command Center binden Shell und Navigation ein
+        run: |
+          for page in $(find social -name 'index.html'); do
+            grep -q 'vu-navigation' "$page" || { echo "$page ohne Vision-Universe-Navigation"; exit 1; }
+            grep -q 'site-navigation.css' "$page" || { echo "$page ohne Navigations-Stylesheet"; exit 1; }
+          done
+          echo "$(find social -name 'index.html' | wc -l) Seiten geprueft"
+
+      - name: Der bestehende Quant-Bereich bleibt unberuehrt
+        # §48: Social ist eine neue Faehigkeit INNERHALB des bestehenden
+        # Systems. Wenn dieser Schritt rot wird, hat der Social-Build etwas
+        # angefasst, das ihm nicht gehoert.
+        run: node --test "quant/tests/*.test.mjs"
+
+      - name: Hinweis - der Quant-Lauf veraendert zwei committete Artefakte
+        # BESTEHENDER BEFUND, NICHT VOM SOCIAL-BUILD VERURSACHT.
+        #
+        # `node --test "quant/tests/*.test.mjs"` schreibt
+        # quant/data/universe/cik-resolution.json und issuer-manifest.json
+        # neu - es aendert sich nur `generatedAt`, aber es aendert sich.
+        # Das widerspricht MASTER §31.10 ("Tests duerfen Produktionsdaten
+        # nicht veraendern", die Lehre aus technical_scenarios.json).
+        #
+        # Dieser Schritt macht den Befund SICHTBAR, statt ihn wegzuraeumen:
+        # er meldet ihn und laesst den Lauf gruen, weil die Ursache im
+        # Quant-Bereich liegt und dort behoben gehoert. Er bricht bewusst
+        # nicht ab - eine rote Social-CI wegen eines fremden Befunds wuerde
+        # nur dazu fuehren, dass jemand diesen Schritt entfernt.
+        if: always()
+        run: |
+          if ! git diff --quiet -- quant/data; then
+            echo "::warning::Der Quant-Testlauf hat committete Artefakte unter quant/data veraendert."
+            git diff --stat -- quant/data
+            echo "Siehe docs/archiv/2026/VU_SOCIAL_HANDOFF.md, Abschnitt 'Befund am Rande'."
+            git checkout -- quant/data
+          else
+            echo "Keine Veraenderung an quant/data."
+          fi
+
+  # --- supertrader: vormals supertrader-ci.yml
+  supertrader:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.supertrader == 'true'
+    # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
+    concurrency:
+      group: supertrader-ci-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    # 45 statt 30 Minuten: der Checkout des vollen Arbeitsbaums (~2-3 GB) schwankt
+    # GitHub-seitig stark (2:46 in Lauf 41686237365, 14:43 im parallel
+    # gestarteten core-ci-Lauf 41686237440, >15 min im package-Job von Lauf
+    # 41688632337). Der Rest des Jobs braucht rund 13 Minuten.
+    timeout-minutes: 45
+    steps:
+      # Keine volle Historie: fetch-depth 0 holte alle Branches und Tags (.git
+      # rund 16 GB); seit 03.11.2026 ~16:08 UTC hing der Checkout bis zum
+      # 30-Minuten-Limit (Lauf 41671038235). Nur Gate A braucht Historie, und
+      # zwar nur eine erreichbare Merge-Basis zur PR-Basis. Im PR ist der
+      # Checkout der Merge-Commit; Tiefe 2 bringt seine Eltern (Basis und
+      # PR-Kopf) mit, die Basis wird im naechsten Schritt gezielt geholt.
+      # Alle anderen Schritte brauchen nur den Stand selbst (git ls-files,
+      # git rev-parse HEAD, eigene Fixture-Repos). Zwei Quant-Regressionen
+      # mit Historienbezug (v13b Basis-Loader, v11 Chronologie) ueberspringen
+      # sich im flachen Checkout selbst - genau wie in quant-ci.yml, das immer
+      # flach auscheckt.
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 1 }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # Basis fuer Gate A: nur den Basis-Branch holen und vertiefen, bis die
+      # Merge-Basis mit dem PR erreichbar ist. Ist sie nach der letzten
+      # Vertiefung nicht erreichbar, wird der Schritt laut rot (ADR-005) -
+      # nie still "0 Dateien".
+      - name: Basis fuer Gate A holen (flach, vertieft bis zur Merge-Basis)
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          test -n "$BASE_REF"
+          # Nur Commits und Baeume (--filter=blob:none): merge-base und
+          # git diff --name-only brauchen keine Dateiinhalte. Die Datenlaeufe
+          # schreiben je Commit ueber tausend Dateien; mit Inhalten kostete
+          # schon Tiefe 50 rund 1,5 Minuten. Tiefe 1 reicht im Normalfall,
+          # weil die PR-Basis (HEAD^1) der Kopf des Basis-Branches ist.
+          git fetch --no-tags --prune --filter=blob:none --depth=1 origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+          for deepen in 50 200 1000 5000; do
+            if mb="$(git merge-base "origin/$BASE_REF" HEAD)"; then break; fi
+            mb=""
+            echo "Merge-Basis zu origin/$BASE_REF noch nicht erreichbar - vertiefe um $deepen"
+            git fetch --no-tags --filter=blob:none --deepen="$deepen" origin "+refs/heads/$BASE_REF:refs/remotes/origin/$BASE_REF"
+          done
+          if [ -z "${mb:-}" ]; then mb="$(git merge-base "origin/$BASE_REF" HEAD || true)"; fi
+          if [ -z "$mb" ]; then
+            echo "::error::Merge-Basis zwischen HEAD und origin/$BASE_REF nicht erreichbar - Gate A kann nicht pruefen"
+            exit 1
+          fi
+          echo "Merge-Basis zu origin/$BASE_REF: $(git rev-parse --short "$mb") (HEAD^1 $(git rev-parse --short HEAD^1))"
+      - name: Gate A (Bericht) — beruehrte Produkte ausserhalb Supertrader
+        # Seit 05.11.2026 Vertragstests statt Pfad-Isolation (core/registry/product-contracts.json).
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/guard-protected-paths.mjs --base="origin/$BASE_REF"
+      - name: Produktvertraege (Pfade loesen die Produkt-CI aus, Schnittstellen-Schemata)
+        run: node --test core/tests/product-contracts.test.mjs
+      - name: Gate B/D/E — Engine, Registry, Source Ledger, Artefakte
+        run: node --test "scripts/supertrader/tests/*.test.mjs"
+      # Nur hier mit SF9_E2E=1: In den Produktionslaeufen (Signalkette, SF8-Tageslauf) ueberspringt sich der Test,
+      # damit er keine Veroeffentlichung verlaengert oder blockiert.
+      - name: E2E SF8-Tagesweg (nur Pruefung, keine Veroeffentlichung)
+        env:
+          SF9_E2E: '1'
+        run: node --test scripts/supertrader/tests/sf-sf9-e2e.test.mjs
+      - name: Build auf den aktuellen kanonischen Artefakten (frisches Protokoll, temporaer)
+        run: node scripts/supertrader/build.mjs --out="$RUNNER_TEMP/supertrader-build"
+      - name: Build wie im Produktivlauf (inkrementell auf einer Kopie, Runner-Standard-Heap)
+        # Speicher-Fruehwarnung: der Signallauf laeuft mit dem Node-Standard des
+        # Runners (gemessen 27.10.2026: 4144 MB; Bedarf ~2,5 GB, lokal mit
+        # 2096 MB Standard Abbruch). Bricht dieser Schritt ab, reicht der
+        # Standard nicht mehr. Schreibt nur in RUNNER_TEMP.
+        run: |
+          set -euo pipefail
+          echo "Runner-Standard Heap-Grenze (MB): $(node -p 'Math.round(require("v8").getHeapStatistics().heap_size_limit/1048576)')"
+          cp -r supertrader "$RUNNER_TEMP/supertrader-inkrementell"
+          node scripts/supertrader/build.mjs --out="$RUNNER_TEMP/supertrader-inkrementell"
+      - name: Discovery-Regression (bestehende Tests)
+        run: node --test "discover/tests/*.test.mjs"
+      - name: Quant-2.0-Regression (bestehende Tests)
+        run: node --test "quant/tests/*.test.mjs"
+      - name: Browser QA dependencies
+        run: |
+          npm install --prefix /tmp/supertrader-qa-deps --no-audit --no-fund playwright@1.56.1
+          node /tmp/supertrader-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+      - name: Exaktes Pages-Auslieferungsartefakt bauen
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/release"
+      - name: Gate F — Browser QA 390 px und 1280 px gegen das Release
+        run: |
+          test -f "$RUNNER_TEMP/release/supertrader/index.html"
+          test -f "$RUNNER_TEMP/release/supertrader/data/signals.json"
+          node scripts/supertrader/browser-qa.mjs --site="$RUNNER_TEMP/release" --out=/tmp/supertrader-evidence --playwright=/tmp/supertrader-qa-deps/node_modules/playwright
+      - name: Keine Secrets in Supertrader-Artefakten
+        run: |
+          if grep -rEIl '(api[_-]?key|secret|token|password|authorization)["'"'"' ]*[:=]' supertrader/ scripts/supertrader/ ; then echo "Verdaechtiger Schluessel gefunden"; exit 1; fi
+      - name: Preserve screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supertrader-browser-evidence
+          path: /tmp/supertrader-evidence
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # --- technical: vormals technical-ci.yml
+  technical:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.technical == 'true'
+    # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
+    concurrency:
+      group: technical-ci-${{ github.ref_name }}
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Engine-Tests
+        run: node --test quant/tests/technical-indicators.test.mjs quant/tests/technical-formations.test.mjs quant/tests/technical-query.test.mjs
+      - name: Bestehende Technical-Engines unveraendert gruen
+        run: node --test quant/tests/technical-*.test.mjs quant/tests/ti-*.test.mjs
+      - name: Produktwelt und Datensatzvertrag
+        run: node --test technical/tests/*.test.mjs
+      - name: Bestehende Academy-Engine
+        run: node --test academy/engines/*.test.mjs
+      - name: Hero-Block synchron
+        run: node scripts/design/sync-product-hero.mjs --check
+      - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
+        run: |
+          npm install --prefix /tmp/tc-qa playwright@1.58.2 axe-core@4.10.3
+          /tmp/tc-qa/node_modules/.bin/playwright install --with-deps chromium
+      - name: Browser-Pruefung (390/1280 px, Hell/Dunkel, alle Ansichten)
+        env:
+          NODE_PATH: /tmp/tc-qa/node_modules
+        run: node scripts/technical/world/browser-qa.mjs --out "$RUNNER_TEMP/technical-qa"
+      - name: Strategie-Akademie (360/390/1280 px, Hell/Dunkel, alle 32 Lektionen)
+        env:
+          NODE_PATH: /tmp/tc-qa/node_modules
+        run: node scripts/technical/world/academy-browser-qa.mjs --out "$RUNNER_TEMP/technical-qa/academy"
+      - name: Pruefbericht sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: technical-browser-qa
+          path: ${{ runner.temp }}/technical-qa
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # --- vu2-browser-qa: vormals vu2-browser-qa.yml
+  vu2-browser-qa:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.vu2_browser_qa == 'true'
+    # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && format('vu2-browser-qa-pr-{0}', github.event.pull_request.number) || format('vu2-browser-qa-{0}', github.run_id) }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test resource budget failure cases
+        run: node --test scripts/vu2/resource-budget.test.mjs
+      - name: Install isolated browser test dependency
+        run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
+      - name: Install Chromium and WebKit
+        run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      - name: Build the exact static release artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/quant2-site"
+      - name: Compact delivery script without changing identifiers or removing code
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          /tmp/vu2-qa/node_modules/.bin/esbuild "$RUNNER_TEMP/quant2-site/quant/release-bundle.js" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$RUNNER_TEMP/quant2-site/quant/release-bundle.js"
+          # Die Pakete je Ansicht (QUANT_PACKS in build-release.mjs) sind Teile des Buendels und werden wie es behandelt.
+          for pack in "$RUNNER_TEMP"/quant2-site/quant/app/pack-*.js; do
+            /tmp/vu2-qa/node_modules/.bin/esbuild "$pack" --minify-whitespace --charset=utf8 --legal-comments=inline --tree-shaking=false --allow-overwrite --outfile="$pack"
+          done
+      - name: Test desktop and mobile preview
+        env:
+          NODE_PATH: /tmp/vu2-qa/node_modules
+          VU_QA_OUTPUT: /tmp/vu2-screenshots
+        run: |
+          cd "$RUNNER_TEMP/quant2-site"
+          node "$GITHUB_WORKSPACE/scripts/vu2/browser-qa.mjs"
+      # PR #619 (Discover): ein WebKit-Race trat nur ueber die Zugangsmaske auf (document.write-Pfad). Das Skript verpackt die
+      # HTML-Seiten des Release wie pages-release.yml (protectRelease, Einmalpasswort) und laedt jede Quant-Route durch die
+      # Maske, auch unter langsamer Verbindung und parallel. Leere Seiten gelten nicht als bestanden.
+      # Phase 4: die Direktlink-Pruefung vergleicht meta vu-release mit /release-id.json und jeden ?v= mit den ausgelieferten Bytes. Dafuer
+      # braucht der Release die Kennung - in pages-release.yml steht dieser Schritt nach dem Verkleinern und vor der Passwortsperre.
+      - name: Stamp release identifier like pages-release (meta vu-release, release-id.json, ?v= stamps)
+        run: node scripts/vu2/release-id.mjs "$RUNNER_TEMP/quant2-site"
+      - name: Direct links through the active access gate, slow networks and parallel loads
+        env:
+          NODE_PATH: /tmp/vu2-qa/node_modules
+        run: |
+          mkdir -p /tmp/vu2-direct
+          chromium_status=0
+          webkit_status=0
+          node scripts/vu2/browser-qa-direct.mjs --release "$RUNNER_TEMP/quant2-site" --engine chromium --out /tmp/vu2-direct || chromium_status=$?
+          node scripts/vu2/browser-qa-direct.mjs --release "$RUNNER_TEMP/quant2-site" --engine webkit --out /tmp/vu2-direct || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      # Die sechs Saetze, an denen am 25.09.2026 eine falsche Auskunft stand,
+      # je an einem Titel, an dem der Fall wirklich auftritt. Laeuft gegen
+      # dasselbe ausgelieferte Verzeichnis wie die Reise-QA darueber.
+      - name: Six named journey surfaces on the delivered artifact
+        env:
+          NODE_PATH: /tmp/vu2-qa/node_modules
+        run: node scripts/vu2/verify-journey-surfaces.mjs --site "$RUNNER_TEMP/quant2-site"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quant2-release-candidate
+          path: ${{ runner.temp }}/quant2-site
+          include-hidden-files: true
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vu2-direct-links
+          path: /tmp/vu2-direct
+          if-no-files-found: ignore
+          retention-days: 14
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: vu2-desktop-mobile
+          path: /tmp/vu2-screenshots
+          retention-days: 14
+
+  # --- vu2-lifecycle-handoff: vormals vu2-lifecycle-handoff.yml
+  vu2-lifecycle-handoff:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.vu2_lifecycle_handoff == 'true' && (github.event_name == 'workflow_dispatch' || (github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'workstream/vu2-operating-handoff'))
+    # Die PR-Gruppe der Quelle deckt die Workflow-Gruppe von ci.yml ab (ueberholte PR-Laeufe brechen ab); die Job-Gruppe bleibt.
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    concurrency:
+      group: vu2-canonical-handoff
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Handoff protection tests
+        run: node --test quant/tests/history-handoff-proof.test.mjs quant/tests/history-sync-boundary.test.mjs quant/tests/history-usage-boundary.test.mjs
+      - name: Measured preflight using the existing accounting and storage
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/preflight-zero-cost.mjs --operation RECOVERY --gate GATE_100
+          --out "$RUNNER_TEMP/vu2-handoff/preflight.json"
+      - name: Restore only five existing universe members to private runner state
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: >-
+          node scripts/market/sync-history-store.mjs --pull --gate GATE_100 --limit 5 --concurrency 1
+          --preflight "$RUNNER_TEMP/vu2-handoff/preflight.json"
+          --work-dir "$RUNNER_TEMP/vu2-private-history"
+          --report "$RUNNER_TEMP/vu2-handoff/sync.json"
+      - name: Verify restored state through the existing market store and EOD gate
+        run: >-
+          node scripts/vu2/verify-history-handoff.mjs
+          --preflight "$RUNNER_TEMP/vu2-handoff/preflight.json"
+          --sync "$RUNNER_TEMP/vu2-handoff/sync.json"
+          --work-dir "$RUNNER_TEMP/vu2-private-history"
+          --out "$RUNNER_TEMP/vu2-handoff/result.json"
+      - name: Retain metadata evidence only, including blocked preflight
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vu2-canonical-handoff
+          path: ${{ runner.temp }}/vu2-handoff/*.json
+          if-no-files-found: warn
+          retention-days: 14
+
+  # --- account: vormals account-ci.yml
+  account-test:
+    needs: auswahl
+    if: needs.auswahl.outputs.account == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: account-ci-${{ github.ref_name }}-test
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          # Wegwerf-Container nur fuer diesen Lauf, nur auf localhost: ohne Passwort.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PG_TEST_URL: postgresql://postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: SQL-Migrationen und RLS (PostgreSQL 17)
+        run: node scripts/account/sql-tests.mjs
+      - name: Worker, Ende-zu-Ende und Kontoseiten
+        run: node --test "workers/vu-account/tests/*.test.mjs" "konto/tests/*.test.mjs" "mein-dashboard/tests/*.test.mjs" "scripts/account/tests/*.test.mjs"
+      - name: Watchlist - Uebersicht und Ansicht (Core)
+        run: node --test core/tests/watchlist-view.test.mjs core/tests/watchlist-button.test.mjs
+      - name: Watchlist - Last und Speicher (1.000 Nutzer, Kurzlauf)
+        run: node scripts/account/watchlist-load.mjs --users=1000 --sizes=25,200
+      - name: Keine Schluessel im Repository
+        run: node scripts/account/assert-no-billing-secrets.mjs
+      - name: Worker laesst sich buendeln (ohne Ausrollen)
+        working-directory: workers/vu-account
+        run: npx --yes wrangler@4.147.0 deploy --dry-run --outdir /tmp/vu-account-bundle
+
+  account-browser:
+    needs: auswahl
+    if: needs.auswahl.outputs.account == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: account-ci-${{ github.ref_name }}-browser
+      cancel-in-progress: true
+    # Kontoseiten im echten Browser gegen die lokale Simulation (scripts/account/dev-server.mjs):
+    # Chromium (Desktop, mobil) und WebKit im iPhone-Profil (Safari-Engine). Browser aus dem
+    # Playwright-Image wie in shell-ci.yml, PostgreSQL 17 als Dienst.
+    name: Browser (Chromium und WebKit/iPhone)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          # Wegwerf-Container nur fuer diesen Lauf: ohne Passwort.
+          POSTGRES_HOST_AUTH_METHOD: trust
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PG_TEST_URL: postgresql://postgres@postgres:5432/postgres
+    defaults:
+      run:
+        # Im Container ist die Standard-Shell sh (ohne pipefail).
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - name: PostgreSQL-Client
+        run: |
+          set -euo pipefail
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-client > /dev/null
+          psql --version
+      - name: Playwright (Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/account-qa-deps --no-audit --no-fund playwright@1.56.1
+          node -e "const pw=require('/tmp/account-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Browser-QA (Chromium 1280/390, WebKit iPhone 390)
+        env:
+          PLAYWRIGHT_PATH: /tmp/account-qa-deps/node_modules/playwright
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/account-evidence
+          node scripts/account/dev-server.mjs --port=8790 --backtest-review > /tmp/account-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl --fail --silent http://localhost:8790/v1/health > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/account/browser-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
+          node scripts/account/browser-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
+          # Persoenliche Watchlist und Lesezeichen im Aktienkopf (Desktop, iPhone, hell/dunkel).
+          node scripts/account/watchlist-qa.mjs --url=http://localhost:8790 --out=/tmp/account-evidence || chromium_status=$?
+          node scripts/account/watchlist-qa.mjs --engine=webkit --url=http://localhost:8790 --out=/tmp/account-evidence || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Nutzerreise Free/Pro wie in der Produktion (Checkout nur fuer Tester, eigener Testserver)
+        env:
+          PLAYWRIGHT_PATH: /tmp/account-qa-deps/node_modules/playwright
+        run: |
+          set -euo pipefail
+          # Je Engine ein frischer Testserver (signup 5/h je IP; die Simulation meldet immer 127.0.0.1).
+          status=0
+          port=8795
+          for engine in chromium webkit; do
+            port=$((port + 1))
+            node scripts/account/dev-server.mjs --port=$port --checkout-access=testers --newsletter > /tmp/account-evidence/server-journey-$engine.log 2>&1 &
+            server_pid=$!
+            for i in $(seq 1 30); do curl --fail --silent http://localhost:$port/v1/health > /dev/null && break; sleep 1; done
+            node scripts/account/journey-qa.mjs --engine=$engine --url=http://localhost:$port --out=/tmp/account-evidence || status=1
+            kill "$server_pid" 2>/dev/null || true
+          done
+          test "$status" -eq 0
+      - name: Kopplungs-QA (lokale Beobachten-Listen, eigener Testserver)
+        env:
+          PLAYWRIGHT_PATH: /tmp/account-qa-deps/node_modules/playwright
+        run: |
+          set -euo pipefail
+          # Eigener Testserver: frischer Zaehler fuer Registrierungen (signup 5/h je IP, die Simulation meldet immer
+          # 127.0.0.1). Die Grenze selbst bleibt unveraendert. Abgemeldet rein lokal, angemeldet lokal und Konto.
+          node scripts/account/dev-server.mjs --port=8791 > /tmp/account-evidence/server-coupling.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in $(seq 1 30); do curl --fail --silent http://localhost:8791/v1/health > /dev/null && break; sleep 1; done
+          status=0
+          for qa in scripts/discover/watchlist-coupling-qa.mjs scripts/account/quant-watch-coupling-qa.mjs; do
+            [ -f "$qa" ] || continue
+            node "$qa" --url=http://localhost:8791 || status=1
+            node "$qa" --engine=webkit --url=http://localhost:8791 || status=1
+          done
+          test "$status" -eq 0
+      - name: Screenshots sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: account-browser-evidence
+          path: /tmp/account-evidence
+
+  # --- shell: vormals shell-ci.yml
+  shell-shell:
+    needs: auswahl
+    if: needs.auswahl.outputs.shell == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: shell-qa-${{ github.ref }}-shell
+      cancel-in-progress: true
+    # Browser aus dem Playwright-Image statt apt-get bei jedem Lauf - Begruendung beim Job vu3-regression.
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Shell tests
+        run: node --test "core/tests/shell-navigation.test.mjs" discover/tests/navigation-theme.test.mjs quant/tests/site-navigation.test.mjs
+      - name: Build screener universe from committed product data
+        run: node products/screener/producer/build-universe.mjs
+      - name: Browser dependencies (Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/shell-qa-deps --no-audit --no-fund playwright@1.56.1
+          node -e "const pw=require('/tmp/shell-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/shell-release"
+      - name: Browser QA (Chromium 390, 430, 768, 1024, 1440 · WebKit iPhone 390, 430 and 1024)
+        env:
+          PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+        run: |
+          mkdir -p /tmp/shell-evidence
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/shell-release" --port=8765 > /tmp/shell-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/quality/shell-browser-qa.mjs --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/chromium || chromium_status=$?
+          node scripts/quality/shell-browser-qa.mjs --engine=webkit --viewports=390x844,430x932,1024x768 --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: App-QA Rechtliches & Infos (App-Hülle mit CSP, App-UA, echter Tipp je Menüeintrag; Chromium und WebKit)
+        env:
+          PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+        run: |
+          mkdir -p /tmp/shell-evidence
+          chromium_status=0
+          webkit_status=0
+          node scripts/quality/app-legal-menu-qa.mjs --browser chromium --out /tmp/shell-evidence/app-legal-chromium.json || chromium_status=$?
+          node scripts/quality/app-legal-menu-qa.mjs --browser webkit --out /tmp/shell-evidence/app-legal-webkit.json || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Preserve screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shell-browser-evidence
+          path: /tmp/shell-evidence
+          if-no-files-found: warn
+
+  shell-vu3-regression:
+    needs: auswahl
+    if: needs.auswahl.outputs.shell == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: shell-qa-${{ github.ref }}-vu3-regression
+      cancel-in-progress: true
+    # VU3-Regression (scripts/quality/vu3-regression-qa.mjs): Wege zwischen den Welten (dieselbe Aktie bleibt dieselbe),
+    # Farbschema ueber die Welten, Visual-First-Bausteine je Welt und Kontrast (axe color-contrast) hell/dunkel, 390/1440 px.
+    # Eigener Job neben shell, damit dessen 40-Minuten-Budget unberuehrt bleibt. Europa-Routen bewusst ausgenommen.
+    # Browser und ihre Systembibliotheken kommen aus dem offiziellen Playwright-Image (Version = playwright@ unten).
+    # Vorher installierte `playwright install --with-deps` sie bei jedem Lauf per apt-get vom Ubuntu-Spiegel des
+    # Runners: rund 100 MB (WebKit: GStreamer, FFmpeg, Schriften) mit zeitweise unter 100 KB/s - die Installation
+    # allein lief in das 40-Minuten-Limit, bevor eine Pruefung startete. Node 22 und git bringt das Image mit;
+    # Python nicht, deshalb liefert scripts/ci/static-server.mjs die Seiten aus (Verhalten wie http.server).
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Build screener universe from committed product data
+        run: node products/screener/producer/build-universe.mjs
+      - name: Browser dependencies (axe-core; Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/vu3-qa-deps --no-audit --no-fund playwright@1.56.1 axe-core@4.10.3
+          node -e "const pw=require('/tmp/vu3-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/vu3-release"
+      - name: VU3 regression (Chromium all sections · WebKit iPhone journeys, theme, Visual First)
+        env:
+          PLAYWRIGHT_PATH: /tmp/vu3-qa-deps/node_modules/playwright
+          AXE_PATH: /tmp/vu3-qa-deps/node_modules/axe-core/axe.min.js
+        run: |
+          mkdir -p /tmp/vu3-evidence
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/vu3-release" --port=8765 > /tmp/vu3-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
+          chromium_status=0
+          webkit_status=0
+          node scripts/quality/vu3-regression-qa.mjs --url=http://127.0.0.1:8765 --out=/tmp/vu3-evidence/chromium || chromium_status=$?
+          node scripts/quality/vu3-regression-qa.mjs --engine=webkit --only=journeys,theme,visual --url=http://127.0.0.1:8765 --out=/tmp/vu3-evidence/webkit || webkit_status=$?
+          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+      - name: Preserve results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: vu3-regression-evidence
+          path: /tmp/vu3-evidence
+          if-no-files-found: warn
+
+  shell-fundamental-compare:
+    needs: auswahl
+    if: needs.auswahl.outputs.shell == 'true'
+    # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    concurrency:
+      group: shell-qa-${{ github.ref }}-fundamental-compare
+      cancel-in-progress: true
+    # Fundamental: mehrere Kennzahlen in einem Verlauf (scripts/quality/fundamental-compare-qa.mjs) gezielt im
+    # iPhone-Profil von WebKit (390 und 430 px, hell und dunkel): "+ Kennzahl", Auswahl im mobilen Dialog,
+    # synchrones Ablesen per Antippen, Achsen und Legende, Touch-Flaechen, Vollbild, Entfernen bis zur
+    # Ausgangsansicht (Balken, Branchenvergleich). Dazu derselbe Lauf in Chromium (mobil, mit Touch).
+    # Eigener Job neben shell und vu3-regression, damit deren 40-Minuten-Budget unberuehrt bleibt.
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root, build-release.mjs ruft git ls-files)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Build screener universe from committed product data
+        run: node products/screener/producer/build-universe.mjs
+      - name: Browser dependencies (Chromium und WebKit liegen im Image)
+        run: |
+          npm install --prefix /tmp/fu-qa-deps --no-audit --no-fund playwright@1.56.1
+          node -e "const pw=require('/tmp/fu-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      - name: Build exact Pages delivery artifact
+        run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/fu-release"
+      - name: Fundamental compare (WebKit iPhone 390, 430 · Chromium 390, 430)
+        env:
+          PLAYWRIGHT_PATH: /tmp/fu-qa-deps/node_modules/playwright
+        run: |
+          mkdir -p /tmp/fu-evidence
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/fu-release" --port=8765 > /tmp/fu-evidence/server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/fundamental/ > /dev/null && break; sleep 1; done
+          webkit_status=0
+          chromium_status=0
+          node scripts/quality/fundamental-compare-qa.mjs --engine=webkit --viewports=390x844,430x932 --url=http://127.0.0.1:8765 --out=/tmp/fu-evidence/webkit || webkit_status=$?
+          node scripts/quality/fundamental-compare-qa.mjs --engine=chromium --viewports=390x844,430x932 --url=http://127.0.0.1:8765 --out=/tmp/fu-evidence/chromium || chromium_status=$?
+          test "$webkit_status" -eq 0 && test "$chromium_status" -eq 0
+      - name: Preserve screenshots and results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fundamental-compare-evidence
+          path: /tmp/fu-evidence
+          if-no-files-found: warn

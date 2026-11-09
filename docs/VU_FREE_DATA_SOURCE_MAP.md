@@ -229,7 +229,7 @@ Ausgeschlossen: Nachbau proprietärer Indizes (keine S&P-, Nasdaq- oder DAX-Repl
 | **Nasdaq 100** | **NASDAQ100_SOURCE = NO_FREE_COMMERCIAL_SOURCE_FOUND** | Cboe `NDX_History.csv` 403; Nasdaq Data Link 403 (Incapsula); Nasdaq Global Index Watch nur HTML; FRED Pre-Approval; FMP 402; Twelve Data „ab Grow“ |
 | DAX | keine freie Quelle | STOXX-API 401, FMP 402, Twelve Data Basic 404, EZB FM ohne DAX-Reihe |
 | Euro Stoxx 50, FTSE 100 | nur FMP (LICENSE_PENDING) | EZB FM führt Euro Stoxx 50 nur monatlich |
-| CAC 40, SMI, Hang Seng, Shanghai Composite, MSCI World | unverändert | wie in `docs/VU_INDEX_COVERAGE_P0.md` |
+| CAC 40, SMI, Hang Seng, Shanghai Composite, MSCI World | unverändert | wie in `docs/archiv/VU_INDEX_COVERAGE_P0.md` |
 
 Die Indexmitglieder sind getrennt davon vorhanden (siehe §16). Ihre Lizenz ist eine eigene Frage und nicht mit der des Indexstands gleichzusetzen.
 

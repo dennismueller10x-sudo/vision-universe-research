@@ -1,0 +1,4257 @@
+{
+ "schemaVersion": "v12-mcap-impact-1.0.0",
+ "evidenceKind": "RECONSTRUCTION",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "correction": {
+  "module": "quant/engines/research-pit-market-cap.cjs",
+  "register": "quant/engines/research-pit-market-cap-register.cjs",
+  "ruleVersion": "1.0.8"
+ },
+ "reproducibility": {
+  "v10StudyBeforeVsPublished": {
+   "publishedReproHash": "39abef97e85ad05e3d19ef06765890fd56edf0e08456250b9057b3deb8d14aac",
+   "beforeReproHash": "0c582b1f5d3b2111d49434958b54a91b458a18245eddc51722be5d1e3e4cbf46",
+   "note": "before = V10 code on the current frame; differs from the published V10 run only by the CA register 1.1.2 frame (VSTS, 23 panel rows) if hashes differ"
+  },
+  "v11WinnersBeforeVsPublished": {
+   "publishedReproHash": "d3b6f3819494559fe2e3b9aba0709b7bc5a498bfdaf1dbd6568bb2a09c267a35",
+   "beforeReproHash": "d3b6f3819494559fe2e3b9aba0709b7bc5a498bfdaf1dbd6568bb2a09c267a35",
+   "identical": true
+  },
+  "inputs": {
+   "panelBefore": "92449f2a0774dff483fadb856d690415bd58937318238143e4ba2a1faf2093ae",
+   "panelAfter": "baab52596bdc09f6e8f25a91c1b10d7fb5d6381d684cb49f14ae25a86ce77594"
+  }
+ },
+ "panel": {
+  "rows": 528969,
+  "rowsMarketCapChanged": 4809,
+  "rowsValueScoreChanged": 222316,
+  "rowsCompositeChanged": 101925,
+  "availability": {
+   "value": {
+    "before": 222316,
+    "after": 221561
+   },
+   "quality": {
+    "before": 256701,
+    "after": 256701
+   },
+   "growth": {
+    "before": 297645,
+    "after": 297645
+   },
+   "profitability": {
+    "before": 128338,
+    "after": 128338
+   },
+   "composite": {
+    "before": 101925,
+    "after": 101685
+   }
+  },
+  "top50CompositeJaccardMean": 0.981461,
+  "datesCompared": 175
+ },
+ "factorStudy": {
+  "rejections05": {
+   "before": {
+    "E1_IC": 9,
+    "E2_SPREAD": 0,
+    "E3_EXCESS_SPY": 0,
+    "E4_EXCESS_EW": 0
+   },
+   "after": {
+    "E1_IC": 9,
+    "E2_SPREAD": 0,
+    "E3_EXCESS_SPY": 0,
+    "E4_EXCESS_EW": 0
+   }
+  },
+  "changes": [],
+  "cells": {
+   "quality:4": {
+    "before": {
+     "datesUsed": 172,
+     "observed": 256701,
+     "E1_IC": {
+      "mean": 0.0197602,
+      "pBlock": 0.0015,
+      "ci": [
+       0.00813624,
+       0.0322351
+      ],
+      "holm": 0.0345,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.0018752,
+      "pBlock": 0.42,
+      "ci": [
+       -0.00599361,
+       0.00244628
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00103651,
+      "pBlock": 0.485,
+      "ci": [
+       -0.00225633,
+       0.00388546
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.000466301,
+      "pBlock": 0.619,
+      "ci": [
+       -0.00216395,
+       0.00130749
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.000291432,
+       "p": 0.980853
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0161668,
+       "p": 0.00739986
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0338945,
+       "p": 0.0000460831
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 172,
+     "observed": 256701,
+     "E1_IC": {
+      "mean": 0.0197602,
+      "pBlock": 0.0015,
+      "ci": [
+       0.00813624,
+       0.0322351
+      ],
+      "holm": 0.0345,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.0018752,
+      "pBlock": 0.42,
+      "ci": [
+       -0.00599361,
+       0.00244628
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00103651,
+      "pBlock": 0.485,
+      "ci": [
+       -0.00225633,
+       0.00388546
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.000466301,
+      "pBlock": 0.619,
+      "ci": [
+       -0.00216395,
+       0.00130749
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.000291432,
+       "p": 0.980853
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0161668,
+       "p": 0.00739986
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0338945,
+       "p": 0.0000460831
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "quality:13": {
+    "before": {
+     "datesUsed": 172,
+     "observed": 256701,
+     "E1_IC": {
+      "mean": 0.0283408,
+      "pBlock": 0.0015,
+      "ci": [
+       0.0103626,
+       0.0474593
+      ],
+      "holm": 0.0345,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.00658693,
+      "pBlock": 0.3325,
+      "ci": [
+       -0.0191571,
+       0.00686011
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00192486,
+      "pBlock": 0.7095,
+      "ci": [
+       -0.00910678,
+       0.0113966
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00230353,
+      "pBlock": 0.4195,
+      "ci": [
+       -0.00733507,
+       0.00317271
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00486525,
+       "p": 0.834859
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.022499,
+       "p": 0.032224
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0462509,
+       "p": 0.000180593
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 172,
+     "observed": 256701,
+     "E1_IC": {
+      "mean": 0.0283408,
+      "pBlock": 0.0015,
+      "ci": [
+       0.0103626,
+       0.0474593
+      ],
+      "holm": 0.0345,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.00658693,
+      "pBlock": 0.3325,
+      "ci": [
+       -0.0191571,
+       0.00686011
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00192486,
+      "pBlock": 0.7095,
+      "ci": [
+       -0.00910678,
+       0.0113966
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00230353,
+      "pBlock": 0.4195,
+      "ci": [
+       -0.00733507,
+       0.00317271
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00486525,
+       "p": 0.834859
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.022499,
+       "p": 0.032224
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0462509,
+       "p": 0.000180593
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "quality:26": {
+    "before": {
+     "datesUsed": 172,
+     "observed": 256701,
+     "E1_IC": {
+      "mean": 0.0348063,
+      "pBlock": 0.003,
+      "ci": [
+       0.0117245,
+       0.0585748
+      ],
+      "holm": 0.057,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0118725,
+      "pBlock": 0.3595,
+      "ci": [
+       -0.0363446,
+       0.0145005
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00367155,
+      "pBlock": 0.7515,
+      "ci": [
+       -0.0192233,
+       0.0229566
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00332418,
+      "pBlock": 0.5325,
+      "ci": [
+       -0.0132287,
+       0.00687956
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.0000751173,
+       "p": 0.997432
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0331076,
+       "p": 0.0411979
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0556004,
+       "p": 0.00104439
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 172,
+     "observed": 256701,
+     "E1_IC": {
+      "mean": 0.0348063,
+      "pBlock": 0.003,
+      "ci": [
+       0.0117245,
+       0.0585748
+      ],
+      "holm": 0.057,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0118725,
+      "pBlock": 0.3595,
+      "ci": [
+       -0.0363446,
+       0.0145005
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00367155,
+      "pBlock": 0.7515,
+      "ci": [
+       -0.0192233,
+       0.0229566
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00332418,
+      "pBlock": 0.5325,
+      "ci": [
+       -0.0132287,
+       0.00687956
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.0000751173,
+       "p": 0.997432
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0331076,
+       "p": 0.0411979
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0556004,
+       "p": 0.00104439
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "quality:52": {
+    "before": {
+     "datesUsed": 169,
+     "observed": 249781,
+     "E1_IC": {
+      "mean": 0.0394608,
+      "pBlock": 0.0235,
+      "ci": [
+       0.00524465,
+       0.0734201
+      ],
+      "holm": 0.2405,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0346444,
+      "pBlock": 0.1745,
+      "ci": [
+       -0.0822388,
+       0.0146497
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.011689,
+      "pBlock": 0.6175,
+      "ci": [
+       -0.03624,
+       0.0550232
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00774185,
+      "pBlock": 0.403,
+      "ci": [
+       -0.0248455,
+       0.0100082
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.00670807,
+       "p": 0.792021
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.040871,
+       "p": 0.0743543
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0649991,
+       "p": 0.00380359
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 169,
+     "observed": 249781,
+     "E1_IC": {
+      "mean": 0.0394608,
+      "pBlock": 0.0235,
+      "ci": [
+       0.00524465,
+       0.0734201
+      ],
+      "holm": 0.2405,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0346444,
+      "pBlock": 0.1745,
+      "ci": [
+       -0.0822388,
+       0.0146497
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.011689,
+      "pBlock": 0.6175,
+      "ci": [
+       -0.03624,
+       0.0550232
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00774185,
+      "pBlock": 0.403,
+      "ci": [
+       -0.0248455,
+       0.0100082
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.00670807,
+       "p": 0.792021
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.040871,
+       "p": 0.0743543
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0649991,
+       "p": 0.00380359
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "growth:4": {
+    "before": {
+     "datesUsed": 174,
+     "observed": 297645,
+     "E1_IC": {
+      "mean": 0.013339,
+      "pBlock": 0.0435,
+      "ci": [
+       0.000201953,
+       0.0260319
+      ],
+      "holm": 0.3045,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": 0.000722426,
+      "pBlock": 0.7495,
+      "ci": [
+       -0.0037888,
+       0.0048562
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00159143,
+      "pBlock": 0.504,
+      "ci": [
+       -0.00321063,
+       0.00613578
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.000770115,
+      "pBlock": 0.6065,
+      "ci": [
+       -0.00223001,
+       0.00358868
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00110675,
+       "p": 0.892711
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0253118,
+       "p": 0.0334373
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0104971,
+       "p": 0.333418
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 174,
+     "observed": 297645,
+     "E1_IC": {
+      "mean": 0.013339,
+      "pBlock": 0.0435,
+      "ci": [
+       0.000201953,
+       0.0260319
+      ],
+      "holm": 0.306,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": 0.000722426,
+      "pBlock": 0.7495,
+      "ci": [
+       -0.0037888,
+       0.0048562
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00159143,
+      "pBlock": 0.504,
+      "ci": [
+       -0.00321063,
+       0.00613578
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.000770115,
+      "pBlock": 0.6065,
+      "ci": [
+       -0.00223001,
+       0.00358868
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00110675,
+       "p": 0.892711
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0253118,
+       "p": 0.0334373
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0104971,
+       "p": 0.333418
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "growth:13": {
+    "before": {
+     "datesUsed": 174,
+     "observed": 297645,
+     "E1_IC": {
+      "mean": 0.0118455,
+      "pBlock": 0.2915,
+      "ci": [
+       -0.0112915,
+       0.034964
+      ],
+      "holm": 0.8745,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": 0.000905977,
+      "pBlock": 0.8955,
+      "ci": [
+       -0.0125872,
+       0.0139475
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.0048707,
+      "pBlock": 0.5285,
+      "ci": [
+       -0.0107477,
+       0.0195359
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.00255519,
+      "pBlock": 0.5925,
+      "ci": [
+       -0.00647728,
+       0.0117923
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.001447,
+       "p": 0.923276
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0383881,
+       "p": 0.0405774
+      },
+      {
+       "from": "2020-01-01",
+       "mean": -0.00251939,
+       "p": 0.884654
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 174,
+     "observed": 297645,
+     "E1_IC": {
+      "mean": 0.0118455,
+      "pBlock": 0.2915,
+      "ci": [
+       -0.0112915,
+       0.034964
+      ],
+      "holm": 0.8745,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": 0.000905977,
+      "pBlock": 0.8955,
+      "ci": [
+       -0.0125872,
+       0.0139475
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.0048707,
+      "pBlock": 0.5285,
+      "ci": [
+       -0.0107477,
+       0.0195359
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.00255519,
+      "pBlock": 0.5925,
+      "ci": [
+       -0.00647728,
+       0.0117923
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.001447,
+       "p": 0.923276
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0383881,
+       "p": 0.0405774
+      },
+      {
+       "from": "2020-01-01",
+       "mean": -0.00251939,
+       "p": 0.884654
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "growth:26": {
+    "before": {
+     "datesUsed": 174,
+     "observed": 297645,
+     "E1_IC": {
+      "mean": 0.0142068,
+      "pBlock": 0.3325,
+      "ci": [
+       -0.0150882,
+       0.0431031
+      ],
+      "holm": 0.8745,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.00063215,
+      "pBlock": 0.958,
+      "ci": [
+       -0.0261849,
+       0.0255212
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00742493,
+      "pBlock": 0.618,
+      "ci": [
+       -0.0231715,
+       0.0350809
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.00419414,
+      "pBlock": 0.6245,
+      "ci": [
+       -0.0135682,
+       0.0210641
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00469799,
+       "p": 0.792292
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0485598,
+       "p": 0.0584932
+      },
+      {
+       "from": "2020-01-01",
+       "mean": -0.00887382,
+       "p": 0.643675
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 174,
+     "observed": 297645,
+     "E1_IC": {
+      "mean": 0.0142068,
+      "pBlock": 0.3325,
+      "ci": [
+       -0.0150882,
+       0.0431031
+      ],
+      "holm": 0.8745,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.00063215,
+      "pBlock": 0.958,
+      "ci": [
+       -0.0261849,
+       0.0255212
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00742493,
+      "pBlock": 0.618,
+      "ci": [
+       -0.0231715,
+       0.0350809
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.00419414,
+      "pBlock": 0.6245,
+      "ci": [
+       -0.0135682,
+       0.0210641
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00469799,
+       "p": 0.792292
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0485598,
+       "p": 0.0584932
+      },
+      {
+       "from": "2020-01-01",
+       "mean": -0.00887382,
+       "p": 0.643675
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "growth:52": {
+    "before": {
+     "datesUsed": 171,
+     "observed": 289571,
+     "E1_IC": {
+      "mean": 0.0200038,
+      "pBlock": 0.3345,
+      "ci": [
+       -0.0209788,
+       0.0585283
+      ],
+      "holm": 0.8745,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": 0.00114268,
+      "pBlock": 0.9745,
+      "ci": [
+       -0.0508839,
+       0.0612471
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.0225722,
+      "pBlock": 0.4485,
+      "ci": [
+       -0.0317612,
+       0.0789043
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.0117671,
+      "pBlock": 0.5035,
+      "ci": [
+       -0.0195554,
+       0.0482897
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0120875,
+       "p": 0.391485
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0721689,
+       "p": 0.0446004
+      },
+      {
+       "from": "2020-01-01",
+       "mean": -0.0205385,
+       "p": 0.296164
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 171,
+     "observed": 289571,
+     "E1_IC": {
+      "mean": 0.0200038,
+      "pBlock": 0.3345,
+      "ci": [
+       -0.0209788,
+       0.0585283
+      ],
+      "holm": 0.8745,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": 0.00114268,
+      "pBlock": 0.9745,
+      "ci": [
+       -0.0508839,
+       0.0612471
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.0225722,
+      "pBlock": 0.4485,
+      "ci": [
+       -0.0317612,
+       0.0789043
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.0117671,
+      "pBlock": 0.5035,
+      "ci": [
+       -0.0195554,
+       0.0482897
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0120875,
+       "p": 0.391485
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0721689,
+       "p": 0.0446004
+      },
+      {
+       "from": "2020-01-01",
+       "mean": -0.0205385,
+       "p": 0.296164
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "value:4": {
+    "before": {
+     "datesUsed": 177,
+     "observed": 222316,
+     "E1_IC": {
+      "mean": 0.0230232,
+      "pBlock": 0.029,
+      "ci": [
+       0.00111809,
+       0.0424746
+      ],
+      "holm": 0.261,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.00602723,
+      "pBlock": 0.1955,
+      "ci": [
+       -0.0148882,
+       0.00275921
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.000121432,
+      "pBlock": 0.956,
+      "ci": [
+       -0.00433804,
+       0.00375595
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00207387,
+      "pBlock": 0.1125,
+      "ci": [
+       -0.00458256,
+       0.000574306
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0106062,
+       "p": 0.322208
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.00473587,
+       "p": 0.702841
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0460233,
+       "p": 0.0094842
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 177,
+     "observed": 221561,
+     "E1_IC": {
+      "mean": 0.0221196,
+      "pBlock": 0.0355,
+      "ci": [
+       0.000602392,
+       0.0417321
+      ],
+      "holm": 0.306,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.00659615,
+      "pBlock": 0.162,
+      "ci": [
+       -0.015763,
+       0.00235033
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.0000934337,
+      "pBlock": 0.967,
+      "ci": [
+       -0.00428614,
+       0.00380659
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00215858,
+      "pBlock": 0.1015,
+      "ci": [
+       -0.00467299,
+       0.000502939
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0108505,
+       "p": 0.308553
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.00414112,
+       "p": 0.740029
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.044145,
+       "p": 0.0131642
+      }
+     ]
+    },
+    "deltaIC": -0.0009036,
+    "deltaSpread": -0.00056892,
+    "deltaObserved": -755
+   },
+   "value:13": {
+    "before": {
+     "datesUsed": 177,
+     "observed": 222316,
+     "E1_IC": {
+      "mean": 0.0343748,
+      "pBlock": 0.0325,
+      "ci": [
+       0.00127855,
+       0.0643033
+      ],
+      "holm": 0.261,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0193096,
+      "pBlock": 0.1915,
+      "ci": [
+       -0.0470732,
+       0.00950158
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.000882235,
+      "pBlock": 0.905,
+      "ci": [
+       -0.0138518,
+       0.0108479
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00668694,
+      "pBlock": 0.1125,
+      "ci": [
+       -0.0151307,
+       0.0018827
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0174756,
+       "p": 0.308681
+      },
+      {
+       "from": "2015-01-01",
+       "mean": -0.00299153,
+       "p": 0.872384
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0760754,
+       "p": 0.003051
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 177,
+     "observed": 221561,
+     "E1_IC": {
+      "mean": 0.0338915,
+      "pBlock": 0.034,
+      "ci": [
+       0.000999319,
+       0.0637645
+      ],
+      "holm": 0.306,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0202089,
+      "pBlock": 0.1745,
+      "ci": [
+       -0.0481196,
+       0.00868445
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.000713656,
+      "pBlock": 0.921,
+      "ci": [
+       -0.0137173,
+       0.0110123
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00678546,
+      "pBlock": 0.1065,
+      "ci": [
+       -0.0152414,
+       0.00179762
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0195591,
+       "p": 0.251649
+      },
+      {
+       "from": "2015-01-01",
+       "mean": -0.00324791,
+       "p": 0.860988
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0737986,
+       "p": 0.00436187
+      }
+     ]
+    },
+    "deltaIC": -0.0004833,
+    "deltaSpread": -0.0008993,
+    "deltaObserved": -755
+   },
+   "value:26": {
+    "before": {
+     "datesUsed": 177,
+     "observed": 222316,
+     "E1_IC": {
+      "mean": 0.0394798,
+      "pBlock": 0.0625,
+      "ci": [
+       -0.00361374,
+       0.0795387
+      ],
+      "holm": 0.375,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0394485,
+      "pBlock": 0.15,
+      "ci": [
+       -0.0883603,
+       0.0145846
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.00456413,
+      "pBlock": 0.737,
+      "ci": [
+       -0.0328878,
+       0.0194163
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0153337,
+      "pBlock": 0.0295,
+      "ci": [
+       -0.029054,
+       -0.00112782
+      ],
+      "holm": 0.708,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0105932,
+       "p": 0.502808
+      },
+      {
+       "from": "2015-01-01",
+       "mean": -0.0100038,
+       "p": 0.714685
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0987702,
+       "p": 0.00109808
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 177,
+     "observed": 221561,
+     "E1_IC": {
+      "mean": 0.0383619,
+      "pBlock": 0.0715,
+      "ci": [
+       -0.00449884,
+       0.0781587
+      ],
+      "holm": 0.378,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0413825,
+      "pBlock": 0.134,
+      "ci": [
+       -0.0910145,
+       0.0138624
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.00420247,
+      "pBlock": 0.7535,
+      "ci": [
+       -0.0326594,
+       0.0196835
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0154999,
+      "pBlock": 0.029,
+      "ci": [
+       -0.0294464,
+       -0.00131454
+      ],
+      "holm": 0.696,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0124543,
+       "p": 0.411174
+      },
+      {
+       "from": "2015-01-01",
+       "mean": -0.0109354,
+       "p": 0.687589
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0956352,
+       "p": 0.00192145
+      }
+     ]
+    },
+    "deltaIC": -0.0011179,
+    "deltaSpread": -0.001934,
+    "deltaObserved": -755
+   },
+   "value:52": {
+    "before": {
+     "datesUsed": 174,
+     "observed": 217100,
+     "E1_IC": {
+      "mean": 0.0453051,
+      "pBlock": 0.1575,
+      "ci": [
+       -0.0204778,
+       0.103595
+      ],
+      "holm": 0.63,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.102469,
+      "pBlock": 0.093,
+      "ci": [
+       -0.214264,
+       0.0278935
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.00831319,
+      "pBlock": 0.7455,
+      "ci": [
+       -0.0618316,
+       0.041119
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.036989,
+      "pBlock": 0.024,
+      "ci": [
+       -0.0679351,
+       -0.0041726
+      ],
+      "holm": 0.6,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00998295,
+       "p": 0.365441
+      },
+      {
+       "from": "2015-01-01",
+       "mean": -0.0263868,
+       "p": 0.523738
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.130682,
+       "p": 0.000102664
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 174,
+     "observed": 216379,
+     "E1_IC": {
+      "mean": 0.0442553,
+      "pBlock": 0.166,
+      "ci": [
+       -0.0213475,
+       0.102654
+      ],
+      "holm": 0.664,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.105435,
+      "pBlock": 0.0895,
+      "ci": [
+       -0.219292,
+       0.0263928
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.00770407,
+      "pBlock": 0.763,
+      "ci": [
+       -0.0614785,
+       0.041818
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0370961,
+      "pBlock": 0.0245,
+      "ci": [
+       -0.0679885,
+       -0.00415812
+      ],
+      "holm": 0.6125,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0112585,
+       "p": 0.269219
+      },
+      {
+       "from": "2015-01-01",
+       "mean": -0.0270799,
+       "p": 0.515081
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.127805,
+       "p": 0.000213019
+      }
+     ]
+    },
+    "deltaIC": -0.0010498,
+    "deltaSpread": -0.002966,
+    "deltaObserved": -721
+   },
+   "profitability:4": {
+    "before": {
+     "datesUsed": 173,
+     "observed": 128338,
+     "E1_IC": {
+      "mean": 0.0400652,
+      "pBlock": 0.001,
+      "ci": [
+       0.0224221,
+       0.0593006
+      ],
+      "holm": 0.026,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.000883015,
+      "pBlock": 0.841,
+      "ci": [
+       -0.00827868,
+       0.00781489
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00215691,
+      "pBlock": 0.1425,
+      "ci": [
+       -0.000675138,
+       0.00501255
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.000227855,
+      "pBlock": 0.854,
+      "ci": [
+       -0.00276284,
+       0.00278138
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0160412,
+       "p": 0.347444
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0426008,
+       "p": 0.000443909
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0516325,
+       "p": 0.000453357
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 173,
+     "observed": 128338,
+     "E1_IC": {
+      "mean": 0.0400652,
+      "pBlock": 0.001,
+      "ci": [
+       0.0224221,
+       0.0593006
+      ],
+      "holm": 0.026,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.000883015,
+      "pBlock": 0.841,
+      "ci": [
+       -0.00827868,
+       0.00781489
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00215691,
+      "pBlock": 0.1425,
+      "ci": [
+       -0.000675138,
+       0.00501255
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.000227855,
+      "pBlock": 0.854,
+      "ci": [
+       -0.00276284,
+       0.00278138
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0160412,
+       "p": 0.347444
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0426008,
+       "p": 0.000443909
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0516325,
+       "p": 0.000453357
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "profitability:13": {
+    "before": {
+     "datesUsed": 173,
+     "observed": 128338,
+     "E1_IC": {
+      "mean": 0.0443118,
+      "pBlock": 0.0025,
+      "ci": [
+       0.017317,
+       0.0741858
+      ],
+      "holm": 0.05,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.00871158,
+      "pBlock": 0.527,
+      "ci": [
+       -0.0317721,
+       0.019212
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00273735,
+      "pBlock": 0.557,
+      "ci": [
+       -0.00636961,
+       0.011663
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00448082,
+      "pBlock": 0.3185,
+      "ci": [
+       -0.0122277,
+       0.00512417
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00442724,
+       "p": 0.862913
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0567663,
+       "p": 0.00584485
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.056645,
+       "p": 0.0177631
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 173,
+     "observed": 128338,
+     "E1_IC": {
+      "mean": 0.0443118,
+      "pBlock": 0.0025,
+      "ci": [
+       0.017317,
+       0.0741858
+      ],
+      "holm": 0.05,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.00871158,
+      "pBlock": 0.527,
+      "ci": [
+       -0.0317721,
+       0.019212
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00273735,
+      "pBlock": 0.557,
+      "ci": [
+       -0.00636961,
+       0.011663
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00448082,
+      "pBlock": 0.3185,
+      "ci": [
+       -0.0122277,
+       0.00512417
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00442724,
+       "p": 0.862913
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0567663,
+       "p": 0.00584485
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.056645,
+       "p": 0.0177631
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "profitability:26": {
+    "before": {
+     "datesUsed": 173,
+     "observed": 128338,
+     "E1_IC": {
+      "mean": 0.0508175,
+      "pBlock": 0.0115,
+      "ci": [
+       0.0147506,
+       0.0912583
+      ],
+      "holm": 0.161,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.018412,
+      "pBlock": 0.504,
+      "ci": [
+       -0.0649629,
+       0.0368022
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00316212,
+      "pBlock": 0.7375,
+      "ci": [
+       -0.0145101,
+       0.0207774
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0107267,
+      "pBlock": 0.258,
+      "ci": [
+       -0.0266362,
+       0.00954434
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.000635194,
+       "p": 0.984576
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0779524,
+       "p": 0.0113207
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0575045,
+       "p": 0.0701209
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 173,
+     "observed": 128338,
+     "E1_IC": {
+      "mean": 0.0508175,
+      "pBlock": 0.0115,
+      "ci": [
+       0.0147506,
+       0.0912583
+      ],
+      "holm": 0.161,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.018412,
+      "pBlock": 0.504,
+      "ci": [
+       -0.0649629,
+       0.0368022
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00316212,
+      "pBlock": 0.7375,
+      "ci": [
+       -0.0145101,
+       0.0207774
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0107267,
+      "pBlock": 0.258,
+      "ci": [
+       -0.0266362,
+       0.00954434
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.000635194,
+       "p": 0.984576
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0779524,
+       "p": 0.0113207
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0575045,
+       "p": 0.0701209
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "profitability:52": {
+    "before": {
+     "datesUsed": 170,
+     "observed": 125306,
+     "E1_IC": {
+      "mean": 0.0500132,
+      "pBlock": 0.063,
+      "ci": [
+       -0.000140528,
+       0.103561
+      ],
+      "holm": 0.375,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0831713,
+      "pBlock": 0.1585,
+      "ci": [
+       -0.189857,
+       0.0335025
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00560143,
+      "pBlock": 0.794,
+      "ci": [
+       -0.0306819,
+       0.0439942
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0346152,
+      "pBlock": 0.09,
+      "ci": [
+       -0.0712074,
+       0.00633509
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.0204587,
+       "p": 0.708965
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0923096,
+       "p": 0.00614412
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0551084,
+       "p": 0.122301
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 170,
+     "observed": 125306,
+     "E1_IC": {
+      "mean": 0.0500132,
+      "pBlock": 0.063,
+      "ci": [
+       -0.000140528,
+       0.103561
+      ],
+      "holm": 0.378,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0831713,
+      "pBlock": 0.1585,
+      "ci": [
+       -0.189857,
+       0.0335025
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00560143,
+      "pBlock": 0.794,
+      "ci": [
+       -0.0306819,
+       0.0439942
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0346152,
+      "pBlock": 0.09,
+      "ci": [
+       -0.0712074,
+       0.00633509
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.0204587,
+       "p": 0.708965
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0923096,
+       "p": 0.00614412
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0551084,
+       "p": 0.122301
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "momentum:4": {
+    "before": {
+     "datesUsed": 192,
+     "observed": 499903,
+     "E1_IC": {
+      "mean": 0.0405609,
+      "pBlock": 0.0005,
+      "ci": [
+       0.0243885,
+       0.0565902
+      ],
+      "holm": 0.014,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": 0.00331209,
+      "pBlock": 0.237,
+      "ci": [
+       -0.00219472,
+       0.00865863
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00353845,
+      "pBlock": 0.0705,
+      "ci": [
+       -0.000539932,
+       0.00714805
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.00276304,
+      "pBlock": 0.0035,
+      "ci": [
+       0.000801119,
+       0.00458282
+      ],
+      "holm": 0.098,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0353064,
+       "p": 0.00486534
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0263429,
+       "p": 0.0837423
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.056788,
+       "p": 0.000198607
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 192,
+     "observed": 499903,
+     "E1_IC": {
+      "mean": 0.0405609,
+      "pBlock": 0.0005,
+      "ci": [
+       0.0243885,
+       0.0565902
+      ],
+      "holm": 0.014,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": 0.00331209,
+      "pBlock": 0.237,
+      "ci": [
+       -0.00219472,
+       0.00865863
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00353845,
+      "pBlock": 0.0705,
+      "ci": [
+       -0.000539932,
+       0.00714805
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.00276304,
+      "pBlock": 0.0035,
+      "ci": [
+       0.000801119,
+       0.00458282
+      ],
+      "holm": 0.098,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0353064,
+       "p": 0.00486534
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0263429,
+       "p": 0.0837423
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.056788,
+       "p": 0.000198607
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "momentum:13": {
+    "before": {
+     "datesUsed": 192,
+     "observed": 499903,
+     "E1_IC": {
+      "mean": 0.0450577,
+      "pBlock": 0.001,
+      "ci": [
+       0.0206952,
+       0.0693203
+      ],
+      "holm": 0.026,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": 0.007284,
+      "pBlock": 0.33,
+      "ci": [
+       -0.00836109,
+       0.0224666
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00729938,
+      "pBlock": 0.206,
+      "ci": [
+       -0.00537896,
+       0.0179669
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.00637472,
+      "pBlock": 0.0105,
+      "ci": [
+       0.00160766,
+       0.0110014
+      ],
+      "holm": 0.273,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0280943,
+       "p": 0.0579357
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0404369,
+       "p": 0.0553397
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0630446,
+       "p": 0.00791966
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 192,
+     "observed": 499903,
+     "E1_IC": {
+      "mean": 0.0450577,
+      "pBlock": 0.001,
+      "ci": [
+       0.0206952,
+       0.0693203
+      ],
+      "holm": 0.026,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": 0.007284,
+      "pBlock": 0.33,
+      "ci": [
+       -0.00836109,
+       0.0224666
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00729938,
+      "pBlock": 0.206,
+      "ci": [
+       -0.00537896,
+       0.0179669
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.00637472,
+      "pBlock": 0.0105,
+      "ci": [
+       0.00160766,
+       0.0110014
+      ],
+      "holm": 0.273,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0280943,
+       "p": 0.0579357
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0404369,
+       "p": 0.0553397
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0630446,
+       "p": 0.00791966
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "momentum:26": {
+    "before": {
+     "datesUsed": 192,
+     "observed": 499903,
+     "E1_IC": {
+      "mean": 0.062872,
+      "pBlock": 0.001,
+      "ci": [
+       0.030989,
+       0.0987383
+      ],
+      "holm": 0.026,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": 0.0176312,
+      "pBlock": 0.2555,
+      "ci": [
+       -0.0106805,
+       0.0505038
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.014694,
+      "pBlock": 0.151,
+      "ci": [
+       -0.00679868,
+       0.0333352
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.0144855,
+      "pBlock": 0.007,
+      "ci": [
+       0.00456473,
+       0.0255401
+      ],
+      "holm": 0.189,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0455004,
+       "p": 0.00000315081
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0644668,
+       "p": 0.039853
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0760194,
+       "p": 0.0360484
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 192,
+     "observed": 499903,
+     "E1_IC": {
+      "mean": 0.062872,
+      "pBlock": 0.001,
+      "ci": [
+       0.030989,
+       0.0987383
+      ],
+      "holm": 0.026,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": 0.0176312,
+      "pBlock": 0.2555,
+      "ci": [
+       -0.0106805,
+       0.0505038
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.014694,
+      "pBlock": 0.151,
+      "ci": [
+       -0.00679868,
+       0.0333352
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.0144855,
+      "pBlock": 0.007,
+      "ci": [
+       0.00456473,
+       0.0255401
+      ],
+      "holm": 0.189,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0455004,
+       "p": 0.00000315081
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0644668,
+       "p": 0.039853
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0760194,
+       "p": 0.0360484
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "momentum:52": {
+    "before": {
+     "datesUsed": 189,
+     "observed": 488226,
+     "E1_IC": {
+      "mean": 0.0646917,
+      "pBlock": 0.0005,
+      "ci": [
+       0.027494,
+       0.104367
+      ],
+      "holm": 0.014,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.00708822,
+      "pBlock": 0.8385,
+      "ci": [
+       -0.0642301,
+       0.0785643
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.0170099,
+      "pBlock": 0.2615,
+      "ci": [
+       -0.0109916,
+       0.047533
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.0137252,
+      "pBlock": 0.244,
+      "ci": [
+       -0.00684441,
+       0.03866
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0757211,
+       "p": 1.78189e-8
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0661196,
+       "p": 0.0193293
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0538594,
+       "p": 0.332781
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 189,
+     "observed": 488226,
+     "E1_IC": {
+      "mean": 0.0646917,
+      "pBlock": 0.0005,
+      "ci": [
+       0.027494,
+       0.104367
+      ],
+      "holm": 0.014,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.00708822,
+      "pBlock": 0.8385,
+      "ci": [
+       -0.0642301,
+       0.0785643
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.0170099,
+      "pBlock": 0.2615,
+      "ci": [
+       -0.0109916,
+       0.047533
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": 0.0137252,
+      "pBlock": 0.244,
+      "ci": [
+       -0.00684441,
+       0.03866
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0757211,
+       "p": 1.78189e-8
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0661196,
+       "p": 0.0193293
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0538594,
+       "p": 0.332781
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "risk:4": {
+    "before": {
+     "datesUsed": 192,
+     "observed": 501381,
+     "E1_IC": {
+      "mean": 0.0466971,
+      "pBlock": 0.003,
+      "ci": [
+       0.0189119,
+       0.0748138
+      ],
+      "holm": 0.057,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0054321,
+      "pBlock": 0.285,
+      "ci": [
+       -0.0157205,
+       0.00494088
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.0023001,
+      "pBlock": 0.093,
+      "ci": [
+       -0.00497909,
+       0.000507484
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00303629,
+      "pBlock": 0.1525,
+      "ci": [
+       -0.00712694,
+       0.00141899
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0182308,
+       "p": 0.364088
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0479441,
+       "p": 0.0104858
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0693797,
+       "p": 0.00396867
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 192,
+     "observed": 501381,
+     "E1_IC": {
+      "mean": 0.0466971,
+      "pBlock": 0.003,
+      "ci": [
+       0.0189119,
+       0.0748138
+      ],
+      "holm": 0.057,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0054321,
+      "pBlock": 0.285,
+      "ci": [
+       -0.0157205,
+       0.00494088
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.0023001,
+      "pBlock": 0.093,
+      "ci": [
+       -0.00497909,
+       0.000507484
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00303629,
+      "pBlock": 0.1525,
+      "ci": [
+       -0.00712694,
+       0.00141899
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0182308,
+       "p": 0.364088
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0479441,
+       "p": 0.0104858
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0693797,
+       "p": 0.00396867
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "risk:13": {
+    "before": {
+     "datesUsed": 192,
+     "observed": 501381,
+     "E1_IC": {
+      "mean": 0.0592062,
+      "pBlock": 0.019,
+      "ci": [
+       0.0158787,
+       0.107403
+      ],
+      "holm": 0.2405,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0199446,
+      "pBlock": 0.2195,
+      "ci": [
+       -0.0500295,
+       0.0142709
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.00932873,
+      "pBlock": 0.032,
+      "ci": [
+       -0.0178674,
+       -0.000507139
+      ],
+      "holm": 0.832,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0102095,
+      "pBlock": 0.1285,
+      "ci": [
+       -0.0222979,
+       0.00495001
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0295373,
+       "p": 0.365001
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0678188,
+       "p": 0.0149415
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0767531,
+       "p": 0.0974297
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 192,
+     "observed": 501381,
+     "E1_IC": {
+      "mean": 0.0592062,
+      "pBlock": 0.019,
+      "ci": [
+       0.0158787,
+       0.107403
+      ],
+      "holm": 0.2405,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0199446,
+      "pBlock": 0.2195,
+      "ci": [
+       -0.0500295,
+       0.0142709
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.00932873,
+      "pBlock": 0.032,
+      "ci": [
+       -0.0178674,
+       -0.000507139
+      ],
+      "holm": 0.832,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0102095,
+      "pBlock": 0.1285,
+      "ci": [
+       -0.0222979,
+       0.00495001
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0295373,
+       "p": 0.365001
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0678188,
+       "p": 0.0149415
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0767531,
+       "p": 0.0974297
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "risk:26": {
+    "before": {
+     "datesUsed": 192,
+     "observed": 501381,
+     "E1_IC": {
+      "mean": 0.0741453,
+      "pBlock": 0.019,
+      "ci": [
+       0.0174431,
+       0.138014
+      ],
+      "holm": 0.2405,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0416096,
+      "pBlock": 0.183,
+      "ci": [
+       -0.0974441,
+       0.0299919
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.0221087,
+      "pBlock": 0.009,
+      "ci": [
+       -0.0384567,
+       -0.00513307
+      ],
+      "holm": 0.252,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.022165,
+      "pBlock": 0.092,
+      "ci": [
+       -0.045243,
+       0.00855553
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0399613,
+       "p": 0.333469
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0937569,
+       "p": 0.0150108
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0862889,
+       "p": 0.165315
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 192,
+     "observed": 501381,
+     "E1_IC": {
+      "mean": 0.0741453,
+      "pBlock": 0.019,
+      "ci": [
+       0.0174431,
+       0.138014
+      ],
+      "holm": 0.2405,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0416096,
+      "pBlock": 0.183,
+      "ci": [
+       -0.0974441,
+       0.0299919
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.0221087,
+      "pBlock": 0.009,
+      "ci": [
+       -0.0384567,
+       -0.00513307
+      ],
+      "holm": 0.252,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.022165,
+      "pBlock": 0.092,
+      "ci": [
+       -0.045243,
+       0.00855553
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0399613,
+       "p": 0.333469
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0937569,
+       "p": 0.0150108
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0862889,
+       "p": 0.165315
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "risk:52": {
+    "before": {
+     "datesUsed": 189,
+     "observed": 489657,
+     "E1_IC": {
+      "mean": 0.0792836,
+      "pBlock": 0.0185,
+      "ci": [
+       0.0216748,
+       0.152018
+      ],
+      "holm": 0.2405,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.114068,
+      "pBlock": 0.0715,
+      "ci": [
+       -0.221769,
+       0.0327188
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.0497015,
+      "pBlock": 0.009,
+      "ci": [
+       -0.0865577,
+       -0.00931669
+      ],
+      "holm": 0.252,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0529018,
+      "pBlock": 0.044,
+      "ci": [
+       -0.0958591,
+       0.00580731
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0686791,
+       "p": 0.128109
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0823026,
+       "p": 0.0143712
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0858798,
+       "p": 0.168449
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 189,
+     "observed": 489657,
+     "E1_IC": {
+      "mean": 0.0792836,
+      "pBlock": 0.0185,
+      "ci": [
+       0.0216748,
+       0.152018
+      ],
+      "holm": 0.2405,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.114068,
+      "pBlock": 0.0715,
+      "ci": [
+       -0.221769,
+       0.0327188
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": -0.0497015,
+      "pBlock": 0.009,
+      "ci": [
+       -0.0865577,
+       -0.00931669
+      ],
+      "holm": 0.252,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0529018,
+      "pBlock": 0.044,
+      "ci": [
+       -0.0958591,
+       0.00580731
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0686791,
+       "p": 0.128109
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0823026,
+       "p": 0.0143712
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0858798,
+       "p": 0.168449
+      }
+     ]
+    },
+    "deltaIC": 0,
+    "deltaSpread": 0,
+    "deltaObserved": 0
+   },
+   "composite:4": {
+    "before": {
+     "datesUsed": 160,
+     "observed": 101925,
+     "E1_IC": {
+      "mean": 0.0396715,
+      "pBlock": 0.0015,
+      "ci": [
+       0.0169518,
+       0.0636444
+      ],
+      "holm": 0.0345,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.00204689,
+      "pBlock": 0.677,
+      "ci": [
+       -0.0110452,
+       0.00815166
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00259972,
+      "pBlock": 0.1315,
+      "ci": [
+       -0.000773238,
+       0.00609531
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.000334631,
+      "pBlock": 0.863,
+      "ci": [
+       -0.00389924,
+       0.00358712
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.00649235,
+       "p": 0.747269
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0402219,
+       "p": 0.00196489
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0571654,
+       "p": 0.00123382
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 160,
+     "observed": 101685,
+     "E1_IC": {
+      "mean": 0.0390743,
+      "pBlock": 0.0015,
+      "ci": [
+       0.0165923,
+       0.0630323
+      ],
+      "holm": 0.0345,
+      "holmReject05": true
+     },
+     "E2_SPREAD": {
+      "mean": -0.00244933,
+      "pBlock": 0.6165,
+      "ci": [
+       -0.0115151,
+       0.00768062
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00252718,
+      "pBlock": 0.143,
+      "ci": [
+       -0.000848762,
+       0.00599096
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.000501136,
+      "pBlock": 0.7945,
+      "ci": [
+       -0.00402155,
+       0.00335016
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.00601737,
+       "p": 0.765093
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0399505,
+       "p": 0.00201549
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0558798,
+       "p": 0.00152595
+      }
+     ]
+    },
+    "deltaIC": -0.0005972,
+    "deltaSpread": -0.00040244,
+    "deltaObserved": -240
+   },
+   "composite:13": {
+    "before": {
+     "datesUsed": 160,
+     "observed": 101925,
+     "E1_IC": {
+      "mean": 0.048406,
+      "pBlock": 0.006,
+      "ci": [
+       0.0159987,
+       0.0833867
+      ],
+      "holm": 0.096,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.00939459,
+      "pBlock": 0.546,
+      "ci": [
+       -0.0362208,
+       0.0219134
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00673073,
+      "pBlock": 0.103,
+      "ci": [
+       -0.00163212,
+       0.0146376
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00233004,
+      "pBlock": 0.6755,
+      "ci": [
+       -0.0120653,
+       0.00900464
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.0064626,
+       "p": 0.841659
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0550311,
+       "p": 0.0041876
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0642228,
+       "p": 0.0292717
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 160,
+     "observed": 101685,
+     "E1_IC": {
+      "mean": 0.0475038,
+      "pBlock": 0.007,
+      "ci": [
+       0.0153743,
+       0.082316
+      ],
+      "holm": 0.112,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0100524,
+      "pBlock": 0.5155,
+      "ci": [
+       -0.0369363,
+       0.0214999
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.00666389,
+      "pBlock": 0.107,
+      "ci": [
+       -0.00168926,
+       0.0145781
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00252513,
+      "pBlock": 0.647,
+      "ci": [
+       -0.0121475,
+       0.00865376
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": -0.00653417,
+       "p": 0.840657
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0550082,
+       "p": 0.00416681
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.062265,
+       "p": 0.033164
+      }
+     ]
+    },
+    "deltaIC": -0.0009022,
+    "deltaSpread": -0.00065781,
+    "deltaObserved": -240
+   },
+   "composite:26": {
+    "before": {
+     "datesUsed": 160,
+     "observed": 101925,
+     "E1_IC": {
+      "mean": 0.0656938,
+      "pBlock": 0.003,
+      "ci": [
+       0.0251609,
+       0.112054
+      ],
+      "holm": 0.057,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0206938,
+      "pBlock": 0.5555,
+      "ci": [
+       -0.0749471,
+       0.0516617
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.0131003,
+      "pBlock": 0.0845,
+      "ci": [
+       -0.00180004,
+       0.0273071
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00372717,
+      "pBlock": 0.7725,
+      "ci": [
+       -0.0233528,
+       0.0209439
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0060913,
+       "p": 0.80184
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0805506,
+       "p": 0.00801878
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.076492,
+       "p": 0.0699966
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 160,
+     "observed": 101685,
+     "E1_IC": {
+      "mean": 0.0646614,
+      "pBlock": 0.004,
+      "ci": [
+       0.0240266,
+       0.110751
+      ],
+      "holm": 0.068,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.0218975,
+      "pBlock": 0.5235,
+      "ci": [
+       -0.0762964,
+       0.0497019
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.0131342,
+      "pBlock": 0.0825,
+      "ci": [
+       -0.00184093,
+       0.0273704
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.00399706,
+      "pBlock": 0.75,
+      "ci": [
+       -0.0234224,
+       0.0206103
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.00480077,
+       "p": 0.846629
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.080624,
+       "p": 0.00800633
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0746385,
+       "p": 0.0754394
+      }
+     ]
+    },
+    "deltaIC": -0.0010324,
+    "deltaSpread": -0.0012037,
+    "deltaObserved": -240
+   },
+   "composite:52": {
+    "before": {
+     "datesUsed": 157,
+     "observed": 99454,
+     "E1_IC": {
+      "mean": 0.0643128,
+      "pBlock": 0.006,
+      "ci": [
+       0.0138185,
+       0.114024
+      ],
+      "holm": 0.096,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.111726,
+      "pBlock": 0.166,
+      "ci": [
+       -0.246511,
+       0.071832
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.015742,
+      "pBlock": 0.153,
+      "ci": [
+       -0.00721711,
+       0.0351911
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0264598,
+      "pBlock": 0.285,
+      "ci": [
+       -0.0742498,
+       0.0251561
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0214149,
+       "p": 0.504916
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0788082,
+       "p": 0.0463142
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.0691159,
+       "p": 0.159982
+      }
+     ]
+    },
+    "after": {
+     "datesUsed": 157,
+     "observed": 99225,
+     "E1_IC": {
+      "mean": 0.0635447,
+      "pBlock": 0.008,
+      "ci": [
+       0.0137554,
+       0.112988
+      ],
+      "holm": 0.12,
+      "holmReject05": false
+     },
+     "E2_SPREAD": {
+      "mean": -0.113166,
+      "pBlock": 0.1635,
+      "ci": [
+       -0.248097,
+       0.0704068
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E3_EXCESS_SPY": {
+      "mean": 0.0161929,
+      "pBlock": 0.1425,
+      "ci": [
+       -0.00691765,
+       0.0358218
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "E4_EXCESS_EW": {
+      "mean": -0.0264115,
+      "pBlock": 0.2835,
+      "ci": [
+       -0.0742754,
+       0.0250624
+      ],
+      "holm": 1,
+      "holmReject05": false
+     },
+     "icSubperiods": [
+      {
+       "from": "2010-01-01",
+       "mean": 0.0199685,
+       "p": 0.538063
+      },
+      {
+       "from": "2015-01-01",
+       "mean": 0.0792753,
+       "p": 0.0444194
+      },
+      {
+       "from": "2020-01-01",
+       "mean": 0.067549,
+       "p": 0.168221
+      }
+     ]
+    },
+    "deltaIC": -0.0007681,
+    "deltaSpread": -0.00144,
+    "deltaObserved": -229
+   }
+  }
+ },
+ "strategyTop50": {
+  "runs": {
+   "BASE": {
+    "before": {
+     "cagr": 0.130339,
+     "sharpe": 0.705615,
+     "maxDrawdown": -0.353518,
+     "excessCagr": 0.00712625,
+     "turnoverPerYear": 3.05971,
+     "monthlyExcessMean": 0.00141686,
+     "monthlyExcessPBlock": 0.373
+    },
+    "after": {
+     "cagr": 0.129817,
+     "sharpe": 0.70259,
+     "maxDrawdown": -0.356027,
+     "excessCagr": 0.00660401,
+     "turnoverPerYear": 3.05023,
+     "monthlyExcessMean": 0.00139217,
+     "monthlyExcessPBlock": 0.378
+    }
+   },
+   "LOW": {
+    "before": {
+     "cagr": 0.137281,
+     "sharpe": 0.735917,
+     "maxDrawdown": -0.352989,
+     "excessCagr": 0.0140677,
+     "turnoverPerYear": 3.06025,
+     "monthlyExcessMean": 0.00192796,
+     "monthlyExcessPBlock": 0.22
+    },
+    "after": {
+     "cagr": 0.136734,
+     "sharpe": 0.732765,
+     "maxDrawdown": -0.355475,
+     "excessCagr": 0.0135207,
+     "turnoverPerYear": 3.05077,
+     "monthlyExcessMean": 0.00190164,
+     "monthlyExcessPBlock": 0.228
+    }
+   },
+   "HIGH": {
+    "before": {
+     "cagr": 0.120004,
+     "sharpe": 0.660122,
+     "maxDrawdown": -0.35431,
+     "excessCagr": -0.00320933,
+     "turnoverPerYear": 3.05891,
+     "monthlyExcessMean": 0.000650511,
+     "monthlyExcessPBlock": 0.69
+    },
+    "after": {
+     "cagr": 0.119518,
+     "sharpe": 0.657292,
+     "maxDrawdown": -0.356855,
+     "excessCagr": -0.00369503,
+     "turnoverPerYear": 3.04946,
+     "monthlyExcessMean": 0.000628263,
+     "monthlyExcessPBlock": 0.6975
+    }
+   }
+  },
+  "selection": {
+   "before": {
+    "rankDates": 175,
+    "firstDecision": "2011-06-24",
+    "lastDecision": "2025-12-26",
+    "scoredPerDate": {
+     "min": 55,
+     "median": 622,
+     "max": 828
+    },
+    "datesWithFewerThanTopN": 0,
+    "distinctListingsSelected": 590
+   },
+   "after": {
+    "rankDates": 175,
+    "firstDecision": "2011-06-24",
+    "lastDecision": "2025-12-26",
+    "scoredPerDate": {
+     "min": 55,
+     "median": 621,
+     "max": 824
+    },
+    "datesWithFewerThanTopN": 0,
+    "distinctListingsSelected": 589
+   }
+  }
+ },
+ "winners": {
+  "features": {
+   "1Y|logMarketCap": {
+    "before": {
+     "members": 107652,
+     "top1Auc": 0.21926,
+     "top5Auc": 0.325938,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.31973,
+     "top5Lift": 0.365513
+    },
+    "after": {
+     "members": 106906,
+     "top1Auc": 0.217383,
+     "top5Auc": 0.32484,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.31963,
+     "top5Lift": 0.362443
+    },
+    "deltaTop5Auc": -0.001098,
+    "control": false
+   },
+   "1Y|salesToMarketCap": {
+    "before": {
+     "members": 69948,
+     "top1Auc": 0.531167,
+     "top5Auc": 0.534203,
+     "top5AucP": 0.0925,
+     "top5Holm": 1,
+     "loserAuc": 0.463661,
+     "top5Lift": 1.57615
+    },
+    "after": {
+     "members": 69692,
+     "top1Auc": 0.529391,
+     "top5Auc": 0.534009,
+     "top5AucP": 0.098,
+     "top5Holm": 1,
+     "loserAuc": 0.460548,
+     "top5Lift": 1.57963
+    },
+    "deltaTop5Auc": -0.000194,
+    "control": false
+   },
+   "1Y|earningsYield": {
+    "before": {
+     "members": 76022,
+     "top1Auc": 0.211529,
+     "top5Auc": 0.32513,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.333157,
+     "top5Lift": 0.642895
+    },
+    "after": {
+     "members": 75681,
+     "top1Auc": 0.21124,
+     "top5Auc": 0.324449,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.333389,
+     "top5Lift": 0.641318
+    },
+    "deltaTop5Auc": -0.000681,
+    "control": false
+   },
+   "1Y|salesYield": {
+    "before": {
+     "members": 4633,
+     "top1Auc": 0.810785,
+     "top5Auc": 0.664419,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.494715,
+     "top5Lift": 2.02007
+    },
+    "after": {
+     "members": 4594,
+     "top1Auc": 0.811687,
+     "top5Auc": 0.663787,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.494514,
+     "top5Lift": 2.0449
+    },
+    "deltaTop5Auc": -0.000632,
+    "control": false
+   },
+   "1Y|bookToMarket": {
+    "before": {
+     "members": 84568,
+     "top1Auc": 0.530715,
+     "top5Auc": 0.526496,
+     "top5AucP": 0.179,
+     "top5Holm": 1,
+     "loserAuc": 0.526094,
+     "top5Lift": 1.53166
+    },
+    "after": {
+     "members": 83967,
+     "top1Auc": 0.529541,
+     "top5Auc": 0.526533,
+     "top5AucP": 0.18,
+     "top5Holm": 1,
+     "loserAuc": 0.526049,
+     "top5Lift": 1.54051
+    },
+    "deltaTop5Auc": 0.000037,
+    "control": false
+   },
+   "1Y|mom12_1m": {
+    "before": {
+     "members": 210471,
+     "top1Auc": 0.401255,
+     "top5Auc": 0.453925,
+     "top5AucP": 0.012,
+     "top5Holm": 0.744,
+     "loserAuc": 0.439625,
+     "top5Lift": 1.26038
+    },
+    "after": {
+     "members": 210471,
+     "top1Auc": 0.401255,
+     "top5Auc": 0.453925,
+     "top5AucP": 0.012,
+     "top5Holm": 0.744,
+     "loserAuc": 0.439625,
+     "top5Lift": 1.26038
+    },
+    "deltaTop5Auc": 0,
+    "control": true
+   },
+   "1Y|vol52w": {
+    "before": {
+     "members": 210471,
+     "top1Auc": 0.159383,
+     "top5Auc": 0.24324,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.270456,
+     "top5Lift": 0.133369
+    },
+    "after": {
+     "members": 210471,
+     "top1Auc": 0.159383,
+     "top5Auc": 0.24324,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.270456,
+     "top5Lift": 0.133369
+    },
+    "deltaTop5Auc": 0,
+    "control": true
+   },
+   "1Y|revenueGrowthTtmYoy": {
+    "before": {
+     "members": 92655,
+     "top1Auc": 0.456486,
+     "top5Auc": 0.513651,
+     "top5AucP": 0.4125,
+     "top5Holm": 1,
+     "loserAuc": 0.531292,
+     "top5Lift": 1.50019
+    },
+    "after": {
+     "members": 92655,
+     "top1Auc": 0.456486,
+     "top5Auc": 0.513651,
+     "top5AucP": 0.4125,
+     "top5Holm": 1,
+     "loserAuc": 0.531292,
+     "top5Lift": 1.50019
+    },
+    "deltaTop5Auc": 0,
+    "control": true
+   },
+   "3Y|logMarketCap": {
+    "before": {
+     "members": 93998,
+     "top1Auc": 0.267978,
+     "top5Auc": 0.363348,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.318531,
+     "top5Lift": 0.443982
+    },
+    "after": {
+     "members": 93401,
+     "top1Auc": 0.267005,
+     "top5Auc": 0.360473,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.318804,
+     "top5Lift": 0.439205
+    },
+    "deltaTop5Auc": -0.002875,
+    "control": false
+   },
+   "3Y|salesToMarketCap": {
+    "before": {
+     "members": 61077,
+     "top1Auc": 0.532005,
+     "top5Auc": 0.512838,
+     "top5AucP": 0.758,
+     "top5Holm": 1,
+     "loserAuc": 0.425155,
+     "top5Lift": 1.53637
+    },
+    "after": {
+     "members": 60864,
+     "top1Auc": 0.53113,
+     "top5Auc": 0.512506,
+     "top5AucP": 0.762,
+     "top5Holm": 1,
+     "loserAuc": 0.423218,
+     "top5Lift": 1.53387
+    },
+    "deltaTop5Auc": -0.000332,
+    "control": false
+   },
+   "3Y|earningsYield": {
+    "before": {
+     "members": 66068,
+     "top1Auc": 0.266698,
+     "top5Auc": 0.3709,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.313496,
+     "top5Lift": 0.747632
+    },
+    "after": {
+     "members": 65802,
+     "top1Auc": 0.265114,
+     "top5Auc": 0.371296,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.313787,
+     "top5Lift": 0.745493
+    },
+    "deltaTop5Auc": 0.000396,
+    "control": false
+   },
+   "3Y|salesYield": {
+    "before": {
+     "members": 3940,
+     "top1Auc": 0.691263,
+     "top5Auc": 0.564194,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.441147,
+     "top5Lift": 1.68326
+    },
+    "after": {
+     "members": 3901,
+     "top1Auc": 0.689447,
+     "top5Auc": 0.563269,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.438201,
+     "top5Lift": 1.70736
+    },
+    "deltaTop5Auc": -0.000925,
+    "control": false
+   },
+   "3Y|bookToMarket": {
+    "before": {
+     "members": 73522,
+     "top1Auc": 0.522537,
+     "top5Auc": 0.508491,
+     "top5AucP": 0.82,
+     "top5Holm": 1,
+     "loserAuc": 0.506992,
+     "top5Lift": 1.36514
+    },
+    "after": {
+     "members": 73053,
+     "top1Auc": 0.522062,
+     "top5Auc": 0.510023,
+     "top5AucP": 0.7885,
+     "top5Holm": 1,
+     "loserAuc": 0.505831,
+     "top5Lift": 1.37022
+    },
+    "deltaTop5Auc": 0.001532,
+    "control": false
+   },
+   "3Y|mom12_1m": {
+    "before": {
+     "members": 191908,
+     "top1Auc": 0.397126,
+     "top5Auc": 0.458607,
+     "top5AucP": 0.012,
+     "top5Holm": 0.744,
+     "loserAuc": 0.436,
+     "top5Lift": 1.18073
+    },
+    "after": {
+     "members": 191908,
+     "top1Auc": 0.397126,
+     "top5Auc": 0.458607,
+     "top5AucP": 0.012,
+     "top5Holm": 0.744,
+     "loserAuc": 0.436,
+     "top5Lift": 1.18073
+    },
+    "deltaTop5Auc": 0,
+    "control": true
+   },
+   "3Y|vol52w": {
+    "before": {
+     "members": 191908,
+     "top1Auc": 0.187613,
+     "top5Auc": 0.276462,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.286164,
+     "top5Lift": 0.171639
+    },
+    "after": {
+     "members": 191908,
+     "top1Auc": 0.187613,
+     "top5Auc": 0.276462,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.286164,
+     "top5Lift": 0.171639
+    },
+    "deltaTop5Auc": 0,
+    "control": true
+   },
+   "3Y|revenueGrowthTtmYoy": {
+    "before": {
+     "members": 80567,
+     "top1Auc": 0.496366,
+     "top5Auc": 0.53088,
+     "top5AucP": 0.294,
+     "top5Holm": 1,
+     "loserAuc": 0.52213,
+     "top5Lift": 1.44708
+    },
+    "after": {
+     "members": 80567,
+     "top1Auc": 0.496366,
+     "top5Auc": 0.53088,
+     "top5AucP": 0.294,
+     "top5Holm": 1,
+     "loserAuc": 0.52213,
+     "top5Lift": 1.44708
+    },
+    "deltaTop5Auc": 0,
+    "control": true
+   },
+   "5Y|logMarketCap": {
+    "before": {
+     "members": 73851,
+     "top1Auc": 0.314377,
+     "top5Auc": 0.407996,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.324851,
+     "top5Lift": 0.577619
+    },
+    "after": {
+     "members": 73394,
+     "top1Auc": 0.311742,
+     "top5Auc": 0.405978,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.323934,
+     "top5Lift": 0.574666
+    },
+    "deltaTop5Auc": -0.002018,
+    "control": false
+   },
+   "5Y|salesToMarketCap": {
+    "before": {
+     "members": 47836,
+     "top1Auc": 0.539348,
+     "top5Auc": 0.50179,
+     "top5AucP": 0.9605,
+     "top5Holm": 1,
+     "loserAuc": 0.420495,
+     "top5Lift": 1.42905
+    },
+    "after": {
+     "members": 47667,
+     "top1Auc": 0.538282,
+     "top5Auc": 0.50111,
+     "top5AucP": 0.976,
+     "top5Holm": 1,
+     "loserAuc": 0.420159,
+     "top5Lift": 1.42766
+    },
+    "deltaTop5Auc": -0.00068,
+    "control": false
+   },
+   "5Y|earningsYield": {
+    "before": {
+     "members": 51569,
+     "top1Auc": 0.340166,
+     "top5Auc": 0.410687,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.321322,
+     "top5Lift": 0.853071
+    },
+    "after": {
+     "members": 51366,
+     "top1Auc": 0.338158,
+     "top5Auc": 0.409961,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.3217,
+     "top5Lift": 0.853444
+    },
+    "deltaTop5Auc": -0.000726,
+    "control": false
+   },
+   "5Y|salesYield": {
+    "before": {
+     "members": 2926,
+     "top1Auc": 0.655644,
+     "top5Auc": 0.480032,
+     "top5AucP": 0.673,
+     "top5Holm": 1,
+     "loserAuc": 0.408471,
+     "top5Lift": 1.72899
+    },
+    "after": {
+     "members": 2887,
+     "top1Auc": 0.653018,
+     "top5Auc": 0.476161,
+     "top5AucP": 0.624,
+     "top5Holm": 1,
+     "loserAuc": 0.40392,
+     "top5Lift": 1.72362
+    },
+    "deltaTop5Auc": -0.003871,
+    "control": false
+   },
+   "5Y|bookToMarket": {
+    "before": {
+     "members": 57351,
+     "top1Auc": 0.523361,
+     "top5Auc": 0.48149,
+     "top5AucP": 0.541,
+     "top5Holm": 1,
+     "loserAuc": 0.494238,
+     "top5Lift": 1.16327
+    },
+    "after": {
+     "members": 57010,
+     "top1Auc": 0.524316,
+     "top5Auc": 0.48179,
+     "top5AucP": 0.547,
+     "top5Holm": 1,
+     "loserAuc": 0.493567,
+     "top5Lift": 1.16619
+    },
+    "deltaTop5Auc": 0.0003,
+    "control": false
+   },
+   "5Y|mom12_1m": {
+    "before": {
+     "members": 164462,
+     "top1Auc": 0.404414,
+     "top5Auc": 0.463345,
+     "top5AucP": 0.0025,
+     "top5Holm": 0.175,
+     "loserAuc": 0.451509,
+     "top5Lift": 1.18246
+    },
+    "after": {
+     "members": 164462,
+     "top1Auc": 0.404414,
+     "top5Auc": 0.463345,
+     "top5AucP": 0.0025,
+     "top5Holm": 0.175,
+     "loserAuc": 0.451509,
+     "top5Lift": 1.18246
+    },
+    "deltaTop5Auc": 0,
+    "control": true
+   },
+   "5Y|vol52w": {
+    "before": {
+     "members": 164462,
+     "top1Auc": 0.218804,
+     "top5Auc": 0.302076,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.306384,
+     "top5Lift": 0.223186
+    },
+    "after": {
+     "members": 164462,
+     "top1Auc": 0.218804,
+     "top5Auc": 0.302076,
+     "top5AucP": 0.0005,
+     "top5Holm": 0.078,
+     "loserAuc": 0.306384,
+     "top5Lift": 0.223186
+    },
+    "deltaTop5Auc": 0,
+    "control": true
+   },
+   "5Y|revenueGrowthTtmYoy": {
+    "before": {
+     "members": 62655,
+     "top1Auc": 0.544375,
+     "top5Auc": 0.534547,
+     "top5AucP": 0.3295,
+     "top5Holm": 1,
+     "loserAuc": 0.514703,
+     "top5Lift": 1.30204
+    },
+    "after": {
+     "members": 62655,
+     "top1Auc": 0.544375,
+     "top5Auc": 0.534547,
+     "top5AucP": 0.3295,
+     "top5Holm": 1,
+     "loserAuc": 0.514703,
+     "top5Lift": 1.30204
+    },
+    "deltaTop5Auc": 0,
+    "control": true
+   }
+  },
+  "changes": [],
+  "reproHashBefore": "d3b6f3819494559fe2e3b9aba0709b7bc5a498bfdaf1dbd6568bb2a09c267a35",
+  "reproHashAfter": "47a90eeef8270fab2b13dc598aab1ff83223348d2d5938c6a87f1e95bd44e22f"
+ }
+}

@@ -1,0 +1,3180 @@
+{
+ "schemaVersion": "v12-listref-verification-sample-1.0.2",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "selection": "deterministic: per claimed reason the first N LINKED_ITEMS_QUERIED events ordered by sha256(cik|eventDate); quotas [('MERGER_ACQUISITION_COMPLETED', 22), ('LISTING_RULE_OR_TRANSFER_NOTICE', 14), ('BANKRUPTCY', 8), ('MERGER_PROCESS_INDICATED', 4), ('VOLUNTARY_ISSUER_FILING', 3), ('UNKNOWN', 9)]",
+ "quoteRule": "quote = 300 characters from the last occurrence of the item heading with its title (else the last bare item number) in the 8-K text (HTML stripped); verdict = keyword check on the quote (merger/acquisition/consummation; delisting/listing rule/transfer/notice; bankruptcy/chapter 11/7/receiver)",
+ "summary": {
+  "cases": 60,
+  "documentsFetched": 162,
+  "reasonVerdict": {
+   "CONFIRMED": 44,
+   "NO_ITEM_TEXT_CLAIM": 16
+  },
+  "ruleConsistency": {
+   "CONSISTENT": 32,
+   "None": 1,
+   "OTHER": 27
+  },
+  "tickerInDocuments": {
+   "True": 31,
+   "False": 29
+  },
+  "commonStock": {
+   "True": 50,
+   "None": 7,
+   "False": 3
+  },
+  "ruleMeaningByReason": {
+   "MERGER_ACQUISITION_COMPLETED": {
+    "CONVERTED_OR_EXCHANGED_SUBSTITUTED": 21,
+    "None": 1
+   },
+   "LISTING_RULE_OR_TRANSFER_NOTICE": {
+    "CALLED_FOR_REDEMPTION": 7,
+    "EXCHANGE_REMOVAL_RULES": 3,
+    "CONVERTED_OR_EXCHANGED_SUBSTITUTED": 4
+   },
+   "BANKRUPTCY": {
+    "EXCHANGE_REMOVAL_RULES": 8
+   },
+   "MERGER_PROCESS_INDICATED": {
+    "CONVERTED_OR_EXCHANGED_SUBSTITUTED": 4
+   },
+   "VOLUNTARY_ISSUER_FILING": {
+    "CALLED_FOR_REDEMPTION": 3
+   },
+   "UNKNOWN": {
+    "CALLED_FOR_REDEMPTION": 6,
+    "RIGHTS_EXTINGUISHED": 1,
+    "EXCHANGE_REMOVAL_RULES": 1,
+    "CONVERTED_OR_EXCHANGED_SUBSTITUTED": 1
+   }
+  }
+ },
+ "sec": {
+  "network": 0,
+  "ownCache": 162,
+  "v10Cache": 0
+ },
+ "cases": [
+  {
+   "cik": "1785345",
+   "eventDate": "2024-05-23",
+   "issuer": "Landos Biopharma, Inc.",
+   "linkedTickers": [
+    "LABP"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1785345/000135445724000356/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1785345/000119312524146014/d815685d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-24-000356",
+    "filingDate": "2024-05-23",
+    "files": [
+     "0001354457-24-000356-index-headers.html",
+     "0001354457-24-000356-index.html",
+     "0001354457-24-000356.txt",
+     "labp-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1785345/000135445724000356/primary_doc.xml",
+    "sha256": "4e1adcc416dfe12f4b1d781df5d782f03ae9cd30fc6c78b0c675674ccbf6e52e",
+    "classOfSecurity": "common stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1785345/000119312524146014/d815685d8k.htm",
+    "sha256": "f366da6d4fd75242475e19302936d4f7843d068a44444e69b12b6a54bd754f6a",
+    "filingDate": "2024-05-23",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. As described in the Introductory Note, on May 23, 2024, the Merger was completed. Upon the consummation of the Merger, the Company became a wholly owned subsidiary of Parent. The aggregate closing amount is approximately $137.5 million. T"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1042783",
+   "eventDate": "2015-10-06",
+   "issuer": "DOT HILL SYSTEMS CORP",
+   "linkedTickers": [
+    "HILL"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1042783/000135445715000183/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1042783/000119312515337973/d14786d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-15-000183",
+    "filingDate": "2015-10-06",
+    "files": [
+     "0001354457-15-000183-index-headers.html",
+     "0001354457-15-000183-index.html",
+     "0001354457-15-000183.txt",
+     "hill-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1042783/000135445715000183/primary_doc.xml",
+    "sha256": "3383d84b3b3e1b9395e0819c783819a308d876fe7c8950d00f695a3c983f6f6f",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1042783/000119312515337973/d14786d8k.htm",
+    "sha256": "c5b12b17e0c3702af23d2c5b33244f7156b169b7f1804bbf75a70f198c4e12cb",
+    "filingDate": "2015-10-06",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. In accordance with the terms of the Acquisition Agreement, on September 1, 2015, Merger Sub commenced a tender offer to acquire all of the outstanding shares of common stock of the Company, $0.001 par value per share (the “ Shares ”), at "
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "803352",
+   "eventDate": "2011-10-05",
+   "issuer": "CONTINUCARE CORP",
+   "linkedTickers": [
+    "CNU"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "2.01",
+    "2.02",
+    "2.03",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/803352/000087666111000451/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/803352/000119312511268474/d242362d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-11-000451",
+    "filingDate": "2011-10-05",
+    "files": [
+     "0000876661-11-000451-index-headers.html",
+     "0000876661-11-000451-index.html",
+     "0000876661-11-000451.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/803352/000087666111000451/primary_doc.xml",
+    "sha256": "a7ade4be28f59f37f54667ffdf1ebdb6fabb7289f8f352bf68844b2bfd7ad31a",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/803352/000119312511268474/d242362d8k.htm",
+    "sha256": "a697300ed69f8bca46db378888978be26df6753eeaba67a4ccbd5a791eb0fb50",
+    "filingDate": "2011-10-11",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. On October 4, 2011, Continucare Corporation, a Florida corporation (“ Continucare ”), merged with and into CAB Merger Sub, Inc. (“ Merger Sub ”), a Florida corporation and a wholly-owned subsidiary of Metropolitan Health Networks, Inc., a"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1093649",
+   "eventDate": "2014-08-05",
+   "issuer": "IDENIX PHARMACEUTICALS INC",
+   "linkedTickers": [
+    "IDIX"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1093649/000135445714000119/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1093649/000119312514295760/d768638d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-14-000119",
+    "filingDate": "2014-08-05",
+    "files": [
+     "0001354457-14-000119-index-headers.html",
+     "0001354457-14-000119-index.html",
+     "0001354457-14-000119.txt",
+     "idix-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1093649/000135445714000119/primary_doc.xml",
+    "sha256": "96d11c7785bafba9d2ebd08a5f77f6a2e6916052e5495586dabfaa62aea8ccbd",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1093649/000119312514295760/d768638d8k.htm",
+    "sha256": "530eabe4ea50905d847b44316d076a584b0adb15e429feb1959d76a0af5f8a14",
+    "filingDate": "2014-08-05",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. As described in the Introductory Note above, on August 4, 2014, Merger Sub accepted for payment all Shares validly tendered and not properly withdrawn pursuant to the Offer on or prior to the Expiration Date and on August 5, 2014, paid fo"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1366649",
+   "eventDate": "2014-11-24",
+   "issuer": "Dialogic Inc.",
+   "linkedTickers": [
+    "DLGC"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "2.02",
+    "2.03",
+    "3.02",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1366649/000119312514422679/d825507d8k.htm"
+   ],
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1366649/000119312514422679/d825507d8k.htm",
+    "sha256": "8f54449f187419f64012aed6142b8da681a371ee40a68298931d50c3408c68f0",
+    "filingDate": "2014-11-24",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets As previously disclosed, on October 10, 2014, Dialogic entered into an Agreement and Plan of Merger (the “ Merger Agreement ”) with Dialogic Group Inc., a Canadian corporation (“ Parent ”), and Dialogic Merger Inc., a Delaware corporation "
+   },
+   "tickerInDocuments": false,
+   "commonStock": null,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": null
+  },
+  {
+   "cik": "1854275",
+   "eventDate": "2023-12-29",
+   "issuer": "Innovative International Acquisition Corp.",
+   "linkedTickers": [
+    "IOAC"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "2.01",
+    "2.03",
+    "3.01",
+    "3.02",
+    "3.03",
+    "4.01",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.06",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1854275/000135445723001014/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1854275/000121390024001242/ea191008-8k_zoomcar.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-001014",
+    "filingDate": "2023-12-29",
+    "files": [
+     "0001354457-23-001014-index-headers.html",
+     "0001354457-23-001014-index.html",
+     "0001354457-23-001014.txt",
+     "ioacu-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1854275/000135445723001014/primary_doc.xml",
+    "sha256": "0490766425ccb841040aedcc8b747a0081d8d61b541085c24c9d0186f84c0601",
+    "classOfSecurity": "Unit",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1854275/000121390024001242/ea191008-8k_zoomcar.htm",
+    "sha256": "24b3d66ac903df31699625b3eb4f64878c0da9e041083def4e0678eaa72b132a",
+    "filingDate": "2024-01-04",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. The disclosure set forth in the “Introductory Note” above is incorporated into this Item 2.01 by reference. On December 19, 2023, the Business Combination was approved by IOAC’s shareholders at an extraordinary general meeting thereof (th"
+   },
+   "tickerInDocuments": true,
+   "commonStock": false,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1170534",
+   "eventDate": "2018-11-30",
+   "issuer": "MITEL NETWORKS CORP",
+   "linkedTickers": [
+    "MITL"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "2.02",
+    "2.03",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "7.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1170534/000135445718000497/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1170534/000119312518339023/d667526d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-18-000497",
+    "filingDate": "2018-11-30",
+    "files": [
+     "0001354457-18-000497-index-headers.html",
+     "0001354457-18-000497-index.html",
+     "0001354457-18-000497.txt",
+     "mitl-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1170534/000135445718000497/primary_doc.xml",
+    "sha256": "3cf547a84f2d5fabf5b6171caf106f5617ce5cadab36edf6f4a3c30ce4267a17",
+    "classOfSecurity": "Common Shares",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1170534/000119312518339023/d667526d8k.htm",
+    "sha256": "eed317521b35cac31c918c826321e631f7814e3142d3de5bcfc37f69f4a2af46",
+    "filingDate": "2018-11-30",
+    "item": "2.01",
+    "quote": "Item 2.01. Completion of Acquisition or Disposition of Assets. On November 30, 2018 (the “Closing Date”), pursuant to the terms of the Arrangement Agreement, dated as of April 23, 2018 (the “Arrangement Agreement”), by and among Mitel Networks Corporation, a Canadian corporation (“Mitel” or the “Com"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "33619",
+   "eventDate": "2019-03-14",
+   "issuer": "ESTERLINE TECHNOLOGIES CORP",
+   "linkedTickers": [
+    "ESL"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.02",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/33619/000087666119000241/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/33619/000003361919000003/eslform8-kxmergerclosing.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-19-000241",
+    "filingDate": "2019-03-14",
+    "files": [
+     "0000876661-19-000241-index-headers.html",
+     "0000876661-19-000241-index.html",
+     "0000876661-19-000241.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/33619/000087666119000241/primary_doc.xml",
+    "sha256": "7f2e7a3cc9811416875c600e0f36337bb9cc791923972de4cfc71ed4559d3cab",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/33619/000003361919000003/eslform8-kxmergerclosing.htm",
+    "sha256": "fff15d72138e1dbed0b95ee1c3294f97adc7febf7029f593dfecc7e6cae6b17f",
+    "filingDate": "2019-03-14",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets As described in the Introductory Note above, at the Effective Time on the Closing Date, Parent completed its previously announced acquisition of the Company. As a result of the Merger, the Company survived as a wholly owned subsidiary of P"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1437352",
+   "eventDate": "2024-07-02",
+   "issuer": "EVERBRIDGE, INC.",
+   "linkedTickers": [
+    "EVBG"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1437352/000135445724000467/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1437352/000119312524173902/d804733d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-24-000467",
+    "filingDate": "2024-07-02",
+    "files": [
+     "0001354457-24-000467-index-headers.html",
+     "0001354457-24-000467-index.html",
+     "0001354457-24-000467.txt",
+     "evbg-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1437352/000135445724000467/primary_doc.xml",
+    "sha256": "22fb0fa8950fb47c5b3a4f57c0a0c4792a8622b883fe3a33c48cb7a7dd55345f",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1437352/000119312524173902/d804733d8k.htm",
+    "sha256": "511887284d62866a3fb158644847c936b91ffc59f7b0ceb39bd90ca4ed443e2b",
+    "filingDate": "2024-07-02",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. The information set forth in the Introductory Note and under Items 3.01, 5.01, 5.02, 5.03 and 8.01 of this Current Report on Form 8-K is incorporated by reference into this Item 2.01. Pursuant to the Merger Agreement, at the Effective Tim"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1157377",
+   "eventDate": "2017-11-17",
+   "issuer": "ADVISORY BOARD CO",
+   "linkedTickers": [
+    "ABCO"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1157377/000135445717000234/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1157377/000119312517346675/d485120d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-17-000234",
+    "filingDate": "2017-11-17",
+    "files": [
+     "0001354457-17-000234-index-headers.html",
+     "0001354457-17-000234-index.html",
+     "0001354457-17-000234.txt",
+     "abco-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1157377/000135445717000234/primary_doc.xml",
+    "sha256": "d68fe35250342684b343b6279a9c752524b25e160304bac9a3d9e3d806d8ffbb",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1157377/000119312517346675/d485120d8k.htm",
+    "sha256": "76a46bdc3ab7731376b4ce16d0ba9a86053c2bd371b85c105cbd683d509073a2",
+    "filingDate": "2017-11-17",
+    "item": "2.01",
+    "quote": "Item 2.01. Completion of Acquisition or Disposition of Assets. Merger Agreement Closing On November 17, 2017 (the “Closing Date”), Optum completed the previously announced acquisition of the Company pursuant to the Agreement and Plan of Merger, dated as of August 28, 2017, by and among the Company, "
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1543916",
+   "eventDate": "2023-08-23",
+   "issuer": "ForgeRock, Inc.",
+   "linkedTickers": [
+    "FORG"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.02",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1543916/000087666123000678/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1543916/000114036123040969/brhc20057813_8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-23-000678",
+    "filingDate": "2023-08-23",
+    "files": [
+     "0000876661-23-000678-index-headers.html",
+     "0000876661-23-000678-index.html",
+     "0000876661-23-000678.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1543916/000087666123000678/primary_doc.xml",
+    "sha256": "101a21b62ea9851a3adf31607d39fd809f600d37d6b0d3ae0415b47852de5ceb",
+    "classOfSecurity": "Class A Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1543916/000114036123040969/brhc20057813_8k.htm",
+    "sha256": "1433091f325314f2226dc7d1538591241149e994ec54df9ce968615e0e4b2f95",
+    "filingDate": "2023-08-23",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. The information set forth in the Introductory Note of this Current Report on Form 8-K is incorporated by reference into this Item 2.01. Pursuant to the Merger Agreement, at the effective time of the Merger (the “ Effective Time ”): (i) ea"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1293593",
+   "eventDate": "2017-05-15",
+   "issuer": "Synutra International, Inc.",
+   "linkedTickers": [
+    "SYUT"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1293593/000135445717000101/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1293593/000157104917005051/t1701578_8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-17-000101",
+    "filingDate": "2017-05-15",
+    "files": [
+     "0001354457-17-000101-index-headers.html",
+     "0001354457-17-000101-index.html",
+     "0001354457-17-000101.txt",
+     "primary_doc.xml",
+     "syut-form25.txt"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1293593/000135445717000101/primary_doc.xml",
+    "sha256": "2e5400259bcf325bdac30070571f0e95f88c520bc9ac9742407f725db781386d",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1293593/000157104917005051/t1701578_8k.htm",
+    "sha256": "17443210061be43db6834f8c3c6595980ea08e4914eb5bfaada44f81188d9eef",
+    "filingDate": "2017-05-16",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets The Information in Item 5.01 below is incorporated herein by reference. Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. On May 15, 2017, in connection with the completion of th"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1286225",
+   "eventDate": "2021-04-22",
+   "issuer": "RealPage, Inc.",
+   "linkedTickers": [
+    "RP"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1286225/000135445721000496/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1286225/000119312521125818/d177605d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-21-000496",
+    "filingDate": "2021-04-22",
+    "files": [
+     "0001354457-21-000496-index-headers.html",
+     "0001354457-21-000496-index.html",
+     "0001354457-21-000496.txt",
+     "form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1286225/000135445721000496/primary_doc.xml",
+    "sha256": "ab047e50dcc4480c063a57d475624f525c7f800dc97b3c199e389eeed58d1a9f",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1286225/000119312521125818/d177605d8k.htm",
+    "sha256": "44f9bd0dafd56cc88648ac4ea2e7623991cfc77ecb24a4c6bbc9a7afa8b29823",
+    "filingDate": "2021-04-22",
+    "item": "2.01",
+    "quote": "Item 2.01. Completion of Acquisition or Disposition of Assets. Completion of the Merger The information set forth in the Introductory Note and in Items 3.03, 5.01, 5.02, 5.03 and 8.01 of this Current Report is incorporated herein by reference. On April 22, 2021, Parent completed the acquisition of t"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1688476",
+   "eventDate": "2023-09-01",
+   "issuer": "NEXTIER OILFIELD SOLUTIONS INC.",
+   "linkedTickers": [
+    "NEX"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "2.02",
+    "2.03",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1688476/000087666123000694/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1688476/000168847623000147/frac-20230901.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-23-000694",
+    "filingDate": "2023-09-01",
+    "files": [
+     "0000876661-23-000694-index-headers.html",
+     "0000876661-23-000694-index.html",
+     "0000876661-23-000694.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1688476/000087666123000694/primary_doc.xml",
+    "sha256": "e8bf778d16f45d2d75a044347990fc6b52342947c2c53a056d7cbb11648e1464",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1688476/000168847623000147/frac-20230901.htm",
+    "sha256": "fd7e55a474bdc6d6c8cdf04f50a3a0a1b100450e25a88abb65bc9fed61264a01",
+    "filingDate": "2023-09-01",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. On September 1, 2023, the Company completed its previously announced merger with Patterson-UTI Energy, Inc. (“Patterson-UTI”) in accordance with the terms of the Agreement and Plan of Merger, dated as of June 14, 2023 and amended as of Ju"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "701869",
+   "eventDate": "2022-02-16",
+   "issuer": "INDEPENDENCE HOLDING CO",
+   "linkedTickers": [
+    "IHC"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.02",
+    "5.03",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/701869/000087666122000180/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/701869/000070186922000009/ihc-20220215.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-22-000180",
+    "filingDate": "2022-02-16",
+    "files": [
+     "0000876661-22-000180-index-headers.html",
+     "0000876661-22-000180-index.html",
+     "0000876661-22-000180.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/701869/000087666122000180/primary_doc.xml",
+    "sha256": "6e508d4cb3485f58ecb9d273ac20b673b2d42e5832eeb4bfc5534cc94ce8db53",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/701869/000070186922000009/ihc-20220215.htm",
+    "sha256": "19dc2dc482c79d67141d2959d8ec97074cd3c8a6965489ecc3cc1306f9eb89f4",
+    "filingDate": "2022-02-15",
+    "item": "2.01",
+    "quote": "Item 2.01. Completion of Acquisition or Disposition of Assets. On February 15, 2022, Independence Holding Company, a Delaware corporation (the “Company”), completed the merger contemplated by the Agreement and Plan of Merger (the “Merger Agreement”), dated November 9, 2021, by and among the Company,"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1092662",
+   "eventDate": "2023-04-27",
+   "issuer": "CHEMBIO DIAGNOSTICS, INC.",
+   "linkedTickers": [
+    "CEMI"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1092662/000135445723000304/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1092662/000114036123021050/brhc20052113_8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000304",
+    "filingDate": "2023-04-27",
+    "files": [
+     "0001354457-23-000304-index-headers.html",
+     "0001354457-23-000304-index.html",
+     "0001354457-23-000304.txt",
+     "cemi-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1092662/000135445723000304/primary_doc.xml",
+    "sha256": "3cf9ff8209c845a7edcfb3571d663395a5beb342e99079bed67c9014bcc5d4b6",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1092662/000114036123021050/brhc20052113_8k.htm",
+    "sha256": "f934cb8d2944615ff33e96df932bb4b9815b627172440a020c34dac92f3d785f",
+    "filingDate": "2023-04-27",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets The disclosure set forth in the “Explanatory Note” above is incorporated into this Item 2.01 by reference. The Merger was effected pursuant to NRS 92A.133, which permits completion of a merger without a stockholder vote as soon as practica"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "896429",
+   "eventDate": "2026-05-08",
+   "issuer": "CANTALOUPE, INC.",
+   "linkedTickers": [
+    "CTLP"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.02",
+    "2.01",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/896429/000135445726000420/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/896429/000114036126020064/ef20072798_8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-26-000420",
+    "filingDate": "2026-05-08",
+    "files": [
+     "0001354457-26-000420-index-headers.html",
+     "0001354457-26-000420-index.html",
+     "0001354457-26-000420.txt",
+     "ctlp-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/896429/000135445726000420/primary_doc.xml",
+    "sha256": "ddbe9d3b911b1c0bbd10c99211329271336fe0a097cc58fc16435f8f39d27e40",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/896429/000114036126020064/ef20072798_8k.htm",
+    "sha256": "4d9fa25c534f95ec84cf488780f972f14f1ac2bcc43cbc3163d82876fde88bcf",
+    "filingDate": "2026-05-08",
+    "item": "2.01",
+    "quote": "Item 2.01. Completion of Acquisition or Disposition of Assets. As described in the Introductory Note of this Current Report on Form 8-K, which is incorporated herein by reference, pursuant to the terms of the Merger Agreement, the Merger was completed on the Closing Date. At the effective time of th"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "888228",
+   "eventDate": "2014-11-28",
+   "issuer": "KINDER MORGAN ENERGY PARTNERS L P",
+   "linkedTickers": [
+    "KMP"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.02",
+    "5.03",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/888228/000087666114000616/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/888228/000110465914084674/a14-25532_18k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-14-000616",
+    "filingDate": "2014-11-28",
+    "files": [
+     "0000876661-14-000616-index-headers.html",
+     "0000876661-14-000616-index.html",
+     "0000876661-14-000616.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/888228/000087666114000616/primary_doc.xml",
+    "sha256": "dd5e9de5b34a678cab39e15bebde62340c32b880f3f5bc8e0079590847e024a2",
+    "classOfSecurity": "Common Units Representing Limited Partner Interests",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/888228/000110465914084674/a14-25532_18k.htm",
+    "sha256": "28017790b34e7404ba225feec5168075205a6326c26183cffb05161488d3ba87",
+    "filingDate": "2014-12-03",
+    "item": "2.01",
+    "quote": "Item 2.01. Completion of Acquisition or Disposition of Assets. On November 26, 2014, Kinder Morgan, Inc. (“KMI”) completed its previously announced acquisition of KMP, pursuant to the terms of the Agreement and Plan of Merger (the “KMP Merger Agreement”), dated as of August 9, 2014, among KMI, KMP, "
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1433714",
+   "eventDate": "2022-02-17",
+   "issuer": "CASTLIGHT HEALTH, INC.",
+   "linkedTickers": [
+    "CSLT"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1433714/000087666122000184/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1433714/000143371422000012/cslt-20220216.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-22-000184",
+    "filingDate": "2022-02-17",
+    "files": [
+     "0000876661-22-000184-index-headers.html",
+     "0000876661-22-000184-index.html",
+     "0000876661-22-000184.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1433714/000087666122000184/primary_doc.xml",
+    "sha256": "aa751894119d5d34e286787d1bee0103caec3e7337fd25bfcc7c016fd4d251f7",
+    "classOfSecurity": "Class B Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1433714/000143371422000012/cslt-20220216.htm",
+    "sha256": "86bb29d1cc81337d536981e6502aa3379af8deaff81e5e0ee31475c3ec1322fa",
+    "filingDate": "2022-02-17",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. The disclosure under the Introductory Note and Item 3.01 is incorporated herein by reference. Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. On February 17, 2022, Castlight ("
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "861878",
+   "eventDate": "2024-11-04",
+   "issuer": "STERICYCLE INC",
+   "linkedTickers": [
+    "SRCL"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/861878/000135445724000847/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/861878/000119312524250292/d847372d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-24-000847",
+    "filingDate": "2024-11-04",
+    "files": [
+     "0001354457-24-000847-index-headers.html",
+     "0001354457-24-000847-index.html",
+     "0001354457-24-000847.txt",
+     "form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/861878/000135445724000847/primary_doc.xml",
+    "sha256": "d47c6cb4b64f7219da88932f1eb99c4204940eb40befdb9c070bfa6b9541eaeb",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/861878/000119312524250292/d847372d8k.htm",
+    "sha256": "475a8e880e22ede8368322cb46ed10b19a7503f0693085f31f19dcbee61c786c",
+    "filingDate": "2024-11-04",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. The information set forth in the Introductory Note, Item 3.01, Item 5.01, Item 5.02 and Item 5.03 of this Current Report on Form 8-K is incorporated by reference into this Item 2.01. At the Effective Time, as a result of the Merger: • Eac"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1664998",
+   "eventDate": "2023-02-01",
+   "issuer": "KnowBe4, Inc.",
+   "linkedTickers": [
+    "KNBE"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.01",
+    "2.02",
+    "2.03",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1664998/000135445723000059/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1664998/000119312523025770/d354819d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000059",
+    "filingDate": "2023-02-01",
+    "files": [
+     "0001354457-23-000059-index-headers.html",
+     "0001354457-23-000059-index.html",
+     "0001354457-23-000059.txt",
+     "form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1664998/000135445723000059/primary_doc.xml",
+    "sha256": "72690e059b2eb759292a191818f3037ea52a70fab2851e0b445f8f14d7f7ca3d",
+    "classOfSecurity": "Class A Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1664998/000119312523025770/d354819d8k.htm",
+    "sha256": "6053ce906017fd0cc405273dbd30266168de44e8b690067bc694955ca63d50d6",
+    "filingDate": "2023-02-06",
+    "item": "2.01",
+    "quote": "Item 2.01 Completion of Acquisition or Disposition of Assets. The information set forth in the Introductory Note of this Current Report on Form 8-K is incorporated by reference into this Item 2.01. Pursuant to the Merger Agreement, at the effective time of the Merger (the “ Effective Time ”): (i) ea"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "740694",
+   "eventDate": "2013-10-16",
+   "issuer": "KAYDON CORP",
+   "linkedTickers": [
+    "KDN"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "MERGER_ACQUISITION_COMPLETED",
+   "items": [
+    "1.01",
+    "2.01",
+    "2.02",
+    "3.01",
+    "3.02",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/740694/000087666113000774/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/740694/000119312513405343/d612276d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-13-000774",
+    "filingDate": "2013-10-16",
+    "files": [
+     "0000876661-13-000774-index-headers.html",
+     "0000876661-13-000774-index.html",
+     "0000876661-13-000774.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/740694/000087666113000774/primary_doc.xml",
+    "sha256": "b4e1593461ecd963aacad1225922367a746894973d44abd9fbd6f1c058726997",
+    "classOfSecurity": "Common Shares",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/740694/000119312513405343/d612276d8k.htm",
+    "sha256": "6a6cd6762b64a64b5695cf48a79d035d171698f1ebc032c9688b478f228fcd44",
+    "filingDate": "2013-10-21",
+    "item": "2.01",
+    "quote": "Item 2.01. Completion of Acquisition or Disposal of Assets. The Offer and withdrawal rights expired as scheduled at 11:59 p.m., New York City time, on October 15, 2013. Computershare Trust Company, N.A., the depositary, has advised that, as of that time, 25,463,526 shares of Company Common Stock had"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1832696",
+   "eventDate": "2023-02-23",
+   "issuer": "FTAC Athena Acquisition Corp.",
+   "linkedTickers": [
+    "FTAA"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "3.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1832696/000135445723000109/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1832696/000121390023002834/ea171674-8k_ftacathena.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000109",
+    "filingDate": "2023-02-23",
+    "files": [
+     "0001354457-23-000109-index-headers.html",
+     "0001354457-23-000109-index.html",
+     "0001354457-23-000109.txt",
+     "ftaa-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1832696/000135445723000109/primary_doc.xml",
+    "sha256": "28300f23192be1e2c2b973cddae7d236d19f33c9bfcb3fc2aced3f04a7e0965f",
+    "classOfSecurity": "Class A Ordinary Share, Warrant, Unit",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1832696/000121390023002834/ea171674-8k_ftacathena.htm",
+    "sha256": "acf807d238cb71f6ae6f8fc868a98108e38aaf9b94740335f8b6c24626622f60",
+    "filingDate": "2023-01-13",
+    "item": "3.01",
+    "quote": "Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. On January 11, 2023, FTAC Athena Acquisition Corp. (the “Company”) received written notice (the “Notice”) from the Listing Qualifications Department of The Nasdaq Stock Market LLC (“Nasdaq”"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1823776",
+   "eventDate": "2022-10-17",
+   "issuer": "H.I.G. Acquisition Corp.",
+   "linkedTickers": [
+    "HIGA"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "3.01",
+    "7.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1823776/000087666122000843/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1823776/000119312522257583/d239790d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-22-000843",
+    "filingDate": "2022-10-17",
+    "files": [
+     "0000876661-22-000843-index-headers.html",
+     "0000876661-22-000843-index.html",
+     "0000876661-22-000843.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1823776/000087666122000843/primary_doc.xml",
+    "sha256": "878c4710b4cb95d630b9d0904e61ba3b913b1fdc9d59a6a6ea5b809bf71ca468",
+    "classOfSecurity": "Warrants, each whole warrant exercisable for one Class A ordinary share at an exercise price of $11.50",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1823776/000119312522257583/d239790d8k.htm",
+    "sha256": "061e3bd01b42960ec21c1b90337c46169e6bb47724f2ec2d2651081ed6b80da0",
+    "filingDate": "2022-10-04",
+    "item": "3.01",
+    "quote": "Item 3.01 Notice of Delisting or Failure to Satisfy a Continue Listing Rule or Standard; Transfer of Listing. On September 30, 2022, the New York Stock Exchange (the “NYSE”) notified H.I.G. Acquisition Corp. (the “Company”), and publicly announced, that the NYSE determined to commence proceedings to"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1839569",
+   "eventDate": "2023-01-11",
+   "issuer": "FinTech Evolution Acquisition Group",
+   "linkedTickers": [
+    "FTEV"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "3.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1839569/000087666123000034/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1839569/000121390023006965/ea172582-8k_fintechevo.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-23-000034",
+    "filingDate": "2023-01-11",
+    "files": [
+     "0000876661-23-000034-index-headers.html",
+     "0000876661-23-000034-index.html",
+     "0000876661-23-000034.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1839569/000087666123000034/primary_doc.xml",
+    "sha256": "6ff149c44b6e95d4c1c14651b8a2175f49c848112d92fb1b2c205c0692fd4b8f",
+    "classOfSecurity": "Redeemable Warrants, each whole warrant exercisable for one Class A Ordinary Share for $11.50 per share",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1839569/000121390023006965/ea172582-8k_fintechevo.htm",
+    "sha256": "111171f81108a236d272caff0b7485a33d3c8dc4663b650caef05d0bba1bfd9a",
+    "filingDate": "2023-02-02",
+    "item": "3.01",
+    "quote": "Item 3.01. Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. On December 23, 2022, the New York Stock Exchange (the “NYSE”) notified FinTech Evolution Acquisition Group (the “Company”), and publicly announced, that the NYSE determined to commence pr"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1838219",
+   "eventDate": "2022-11-30",
+   "issuer": "TCW Special Purpose Acquisition Corp.",
+   "linkedTickers": [
+    "TSPQ"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "1.01",
+    "2.03",
+    "3.01",
+    "3.03",
+    "5.02",
+    "5.03",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1838219/000087666122001051/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1838219/000121390022072952/ea168775-8k_tcwspecial.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-22-001051",
+    "filingDate": "2022-11-30",
+    "files": [
+     "0000876661-22-001051-index-headers.html",
+     "0000876661-22-001051-index.html",
+     "0000876661-22-001051.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1838219/000087666122001051/primary_doc.xml",
+    "sha256": "31b5685e138bca1a92c0a4a41642e394718dd9e31853452ac3856ad98a852291",
+    "classOfSecurity": "Redeemable warrants, each whole warrant exercisable for one share of Class A common stock at an exercise price of $11.50",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1838219/000121390022072952/ea168775-8k_tcwspecial.htm",
+    "sha256": "220380aa7c7ce0239a00eca683cfc6eca748cc850229653b11c27ac048586662",
+    "filingDate": "2022-11-16",
+    "item": "3.01",
+    "quote": "Item 3.01. Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. As announced on November 14, 2022, TCW Special Purpose Acquisition Corp. (the “Company”) and its sponsor, TCW Special Purpose Sponsor LLC (the “Sponsor”), are seeking approval of the Compa"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1001606",
+   "eventDate": "2016-04-12",
+   "issuer": "BLOUNT INTERNATIONAL INC",
+   "linkedTickers": [
+    "BLT"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.01",
+    "5.02",
+    "5.03",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1001606/000087666116000926/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1001606/000119312516541716/d179834d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-16-000926",
+    "filingDate": "2016-04-12",
+    "files": [
+     "0000876661-16-000926-index-headers.html",
+     "0000876661-16-000926-index.html",
+     "0000876661-16-000926.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1001606/000087666116000926/primary_doc.xml",
+    "sha256": "7359149f61e2857d635c35db69240265b1d255eb16eea546c9cdff930929b81e",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1001606/000119312516541716/d179834d8k.htm",
+    "sha256": "f82de080796a7518070b3e783da5ed953a90609d5801c618796e0008c37b96dc",
+    "filingDate": "2016-04-15",
+    "item": "3.01",
+    "quote": "Item 3.01. Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing As a result of the Merger, each share of the Company’s common stock issued and outstanding immediately prior the effective time of the Merger was cancelled and, other than the Excluded Shar"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1474464",
+   "eventDate": "2018-10-23",
+   "issuer": "New York REIT, Inc.",
+   "linkedTickers": [
+    "NYRT"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "3.01",
+    "5.02",
+    "5.07"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1474464/000114420418054839/tv505262_25.htm",
+    "https://www.sec.gov/Archives/edgar/data/1474464/000114420418054840/tv505258_8k.htm"
+   ],
+   "form25": {
+    "form": "25",
+    "accession": "0001144204-18-054839",
+    "filingDate": "2018-10-23",
+    "files": [
+     "0001144204-18-054839-index-headers.html",
+     "0001144204-18-054839-index.html",
+     "0001144204-18-054839.txt",
+     "tv505262_25.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1474464/000114420418054839/tv505262_25.htm",
+    "sha256": "d2533031bdb62fab93ce4c56946cc833ef936547ca7172d4369903b6c9358436",
+    "classOfSecurity": null,
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1474464/000114420418054840/tv505258_8k.htm",
+    "sha256": "40ac0573dcec2df426c1726ce2e5b3663e885d21321a44ab2b2dedd3a54fa5af",
+    "filingDate": "2018-10-23",
+    "item": "3.01",
+    "quote": "Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. On October 4, 2018, the board of directors of New York REIT, Inc. (the “Company”) approved the withdrawal of the Company’s common stock from listing on the New York Stock Exchange (“NYSE”) "
+   },
+   "tickerInDocuments": false,
+   "commonStock": null,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1091748",
+   "eventDate": "2018-05-04",
+   "issuer": "Argo Group International Holdings, Ltd.",
+   "linkedTickers": [
+    "AGII"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "2.02",
+    "3.01",
+    "7.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1091748/000119312518152994/d583458d25.htm",
+    "https://www.sec.gov/Archives/edgar/data/1091748/000119312518126911/d574705d8k.htm"
+   ],
+   "form25": {
+    "form": "25",
+    "accession": "0001193125-18-152994",
+    "filingDate": "2018-05-04",
+    "files": [
+     "0001193125-18-152994-index-headers.html",
+     "0001193125-18-152994-index.html",
+     "0001193125-18-152994.txt",
+     "d583458d25.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1091748/000119312518152994/d583458d25.htm",
+    "sha256": "2e3454a3601d6100ddad1aa81cfc163dc0ac024de92bcf76f87f40df3937e724",
+    "classOfSecurity": null,
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1091748/000119312518126911/d574705d8k.htm",
+    "sha256": "72628593e255572bc6d958e7ca6c5206c0a4bc6dd53f49f2b93aae58141f477f",
+    "filingDate": "2018-04-23",
+    "item": "3.01",
+    "quote": "ITEM 3.01. NOTICE OF DELISTING OR FAILURE TO SATISFY A CONTINUED LISTING RULE OR STANDARD; TRANSFER OF LISTING On April 23, 2018, Argo Group International Holdings, Ltd. (the “ Company ”), acting pursuant to authorization from its Board of Directors, provided written notice to The Nasdaq Global Sele"
+   },
+   "tickerInDocuments": false,
+   "commonStock": null,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "61478",
+   "eventDate": "2010-12-09",
+   "issuer": "ADC TELECOMMUNICATIONS INC",
+   "linkedTickers": [
+    "ADCT"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.04",
+    "3.01",
+    "3.02",
+    "3.03",
+    "5.01",
+    "5.02",
+    "7.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/61478/000135445710000318/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/61478/000129993310004380/htm_40031.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-10-000318",
+    "filingDate": "2010-12-09",
+    "files": [
+     "0001354457-10-000318-index-headers.html",
+     "0001354457-10-000318-index.html",
+     "0001354457-10-000318.txt",
+     "adct-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/61478/000135445710000318/primary_doc.xml",
+    "sha256": "07990a7d544879d353e72cea584ce9d10006ebf5e41e34b9cf8e2edffba5076d",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/61478/000129993310004380/htm_40031.htm",
+    "sha256": "cc1f7d4cc171ce3253b1e762b770ce16539b5cd71a10dee12174633b5bdc3c29",
+    "filingDate": "2010-12-09",
+    "item": "3.01",
+    "quote": "Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. On July 12, 2010, ADC entered into an Agreement and Plan of Merger, as amended (the \"Merger Agreement\"), with Tyco Electronics Ltd., a Swiss company (\"Parent\"), and Parent’s indirect wholly"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1847351",
+   "eventDate": "2023-12-12",
+   "issuer": "Beard Energy Transition Acquisition Corp.",
+   "linkedTickers": [
+    "BRD"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "1.01",
+    "1.02",
+    "3.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1847351/000087666123000952/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1847351/000121390023068980/ea183853-8k_beardenergy.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-23-000952",
+    "filingDate": "2023-12-12",
+    "files": [
+     "0000876661-23-000952-index-headers.html",
+     "0000876661-23-000952-index.html",
+     "0000876661-23-000952.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1847351/000087666123000952/primary_doc.xml",
+    "sha256": "bc26e6c44a562ec9e3168e799dbbbe2b03cc182f383ad2ce090d2902b7ed21b6",
+    "classOfSecurity": "Class A Common Stock; Units, each consisting of one share of Class A Common Stock and one-half of one Warrant; Warrants,",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1847351/000121390023068980/ea183853-8k_beardenergy.htm",
+    "sha256": "d790d5b29afba85502156baeb14272468f3fed075484063dc6c08ad99da20aa5",
+    "filingDate": "2023-08-18",
+    "item": "3.01",
+    "quote": "Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing On August 16, 2023, Beard Energy Transition Acquisition Corp. (the “Company”) received a notice from the New York Stock Exchange (the “NYSE”) indicating that the Company was deficient in mee"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "97196",
+   "eventDate": "2016-08-31",
+   "issuer": "AMERICAN INDEPENDENCE CORP",
+   "linkedTickers": [
+    "AMIC"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "2.02",
+    "3.01",
+    "3.03",
+    "5.03",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/97196/000135445716000477/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/97196/000009719616000067/amic8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-16-000477",
+    "filingDate": "2016-08-31",
+    "files": [
+     "0001354457-16-000477-index-headers.html",
+     "0001354457-16-000477-index.html",
+     "0001354457-16-000477.txt",
+     "amic-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/97196/000135445716000477/primary_doc.xml",
+    "sha256": "235b042a04176db6fc2118da72d8fe3d32061788cf304d09f44a9f2820695d4b",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/97196/000009719616000067/amic8k.htm",
+    "sha256": "05e69d585d6553ec75dc9dea122f9918344e164884279ebbf816c1743122d014",
+    "filingDate": "2016-09-06",
+    "item": "3.01",
+    "quote": "Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing On August 31, 2016, the Surviving Corporation notified the NASDAQ Stock Market LLC (\"NASDAQ\") of the effectiveness of the Merger and requested that NASDAQ suspend trading of the Common Stock"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1009356",
+   "eventDate": "2015-04-01",
+   "issuer": "SALIX PHARMACEUTICALS LTD",
+   "linkedTickers": [
+    "SLXP"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.02",
+    "2.04",
+    "3.01",
+    "3.03",
+    "4.02",
+    "5.01",
+    "5.02",
+    "5.03",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1009356/000135445715000068/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1009356/000119312515116335/d902767d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-15-000068",
+    "filingDate": "2015-04-01",
+    "files": [
+     "0001354457-15-000068-index-headers.html",
+     "0001354457-15-000068-index.html",
+     "0001354457-15-000068.txt",
+     "primary_doc.xml",
+     "slxp-form25.txt"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1009356/000135445715000068/primary_doc.xml",
+    "sha256": "17fbcc1048e5a209c1e66d2b0b8953af49cb3a4b2381339ec0eb63f5ddedb136",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1009356/000119312515116335/d902767d8k.htm",
+    "sha256": "5b45039b46c789cce9011912ecea11b6e7f66f4ac76b70d8a5057a07f574c0ea",
+    "filingDate": "2015-04-01",
+    "item": "3.01",
+    "quote": "Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. In connection with the consummation of the Merger, Salix (i) notified NASDAQ of the consummation of the Merger and (ii) requested that NASDAQ file with the Securities and Exchange Commissio"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1807594",
+   "eventDate": "2023-06-16",
+   "issuer": "Malacca Straits Acquisition Co Ltd",
+   "linkedTickers": [
+    "MLAC"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "1.01",
+    "1.02",
+    "2.03",
+    "3.01",
+    "5.02",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1807594/000135445723000416/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1807594/000121390023032831/ea177496-8k_malacca.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000416",
+    "filingDate": "2023-06-16",
+    "files": [
+     "0001354457-23-000416-index-headers.html",
+     "0001354457-23-000416-index.html",
+     "0001354457-23-000416.txt",
+     "form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1807594/000135445723000416/primary_doc.xml",
+    "sha256": "70dd775c94b0071033d3980198f536ffa2ca758e221740534afeb9fa930d2f95",
+    "classOfSecurity": "Class A Ordinary Shares, Warrant, Unit",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1807594/000121390023032831/ea177496-8k_malacca.htm",
+    "sha256": "dc137dbd2c39c221e2220a78a550fdcc4e7221059a52a7ef053a69022b145d7d",
+    "filingDate": "2023-04-26",
+    "item": "3.01",
+    "quote": "Item 3.01. Notice of Delisting or Failure to Satisfy Continued Listing Rule or Standard; Transfer of Listing . On April 21, 2023, Malacca Straits Acquisition Company Limited, a Cayman Islands exempted company (the “Company”), received a letter (the “Public Float Notice”) from the listing qualificati"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1582086",
+   "eventDate": "2020-03-19",
+   "issuer": "Blue Capital Reinsurance Holdings Ltd.",
+   "linkedTickers": [
+    "BCRH"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "2.02",
+    "3.01",
+    "5.08",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1582086/000119312520079120/d891839d25.htm",
+    "https://www.sec.gov/Archives/edgar/data/1582086/000119312520090999/d885165d8k.htm"
+   ],
+   "form25": {
+    "form": "25",
+    "accession": "0001193125-20-079120",
+    "filingDate": "2020-03-19",
+    "files": [
+     "0001193125-20-079120-index-headers.html",
+     "0001193125-20-079120-index.html",
+     "0001193125-20-079120.txt",
+     "d891839d25.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1582086/000119312520079120/d891839d25.htm",
+    "sha256": "1cf84c71b09bdf49458621e49000a984ce9bac51a814d382e9f3bec897f8370e",
+    "classOfSecurity": null,
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1582086/000119312520090999/d885165d8k.htm",
+    "sha256": "24378c80ca0b54da3df3910b45b7996e5f8c774e3fa5a2f54936a80136ce3622",
+    "filingDate": "2020-03-30",
+    "item": "3.01",
+    "quote": "Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. On March 30, 2020, Blue Capital Reinsurance Holdings Ltd. (“Blue Capital” or the “Company”) announced that it had filed a Form 15 with the U.S. Securities and Exchange Commission (the “SEC”"
+   },
+   "tickerInDocuments": true,
+   "commonStock": null,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1812234",
+   "eventDate": "2023-10-17",
+   "issuer": "Churchill Capital Corp V",
+   "linkedTickers": [
+    "CCV"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "LISTING_RULE_OR_TRANSFER_NOTICE",
+   "items": [
+    "3.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1812234/000114331323000104/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1812234/000095014223002525/eh230397309_8k-ccv.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001143313-23-000104",
+    "filingDate": "2023-10-17",
+    "files": [
+     "0001143313-23-000104-index-headers.html",
+     "0001143313-23-000104-index.html",
+     "0001143313-23-000104.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1812234/000114331323000104/primary_doc.xml",
+    "sha256": "584b7c52d1500061544768d1490296e5ace031dbce4e7cd0bd3d806d60dc09cd",
+    "classOfSecurity": "Class A Common Stock; Units, each consisting of one share of Class A common stock, and one-fourth of one redeemable warr",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1812234/000095014223002525/eh230397309_8k-ccv.htm",
+    "sha256": "3c37c52e80ea5937e3288ad5da706eafe7a1f003d3f612777dbfaea1ec6f1038",
+    "filingDate": "2023-10-02",
+    "item": "3.01",
+    "quote": "Item 3.01 Notice of Delisting or Failure to Satisfy a Continued Listing Rule or Standard; Transfer of Listing. The information under Item 8.01 regarding the delisting by the New York Stock Exchange (the “NYSE”) is incorporated into this Item 3.01 by reference. Item 8.01 Other Events. On October 2, 2"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "925464",
+   "eventDate": "2009-08-20",
+   "issuer": "SECURITY BANK CORP",
+   "linkedTickers": [
+    "SBKC"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "BANKRUPTCY",
+   "items": [
+    "1.01",
+    "1.03",
+    "2.02",
+    "3.01",
+    "5.02",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/925464/000135445709000247/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/925464/000119312509155391/d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-09-000247",
+    "filingDate": "2009-08-20",
+    "files": [
+     "0001354457-09-000247-index-headers.html",
+     "0001354457-09-000247-index.html",
+     "0001354457-09-000247.txt",
+     "primary_doc.xml",
+     "sbkcdelistreason.txt"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/925464/000135445709000247/primary_doc.xml",
+    "sha256": "d49d001d5fb4b97075f077bcc855a62ceb91439e3c3c1332bca42786b5d893fa",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/925464/000119312509155391/d8k.htm",
+    "sha256": "194189c5545e783560fc481945a58d24fb94c55d654370470998c849338472b8",
+    "filingDate": "2009-07-27",
+    "item": "1.03",
+    "quote": "Item 1.03. Bankruptcy or Receivership. On July 24, 2009, the Georgia Department of Banking and Finance (the “Georgia Department”) closed Security Bank of Bibb County, Security Bank of Jones County, Security Bank of Gwinnett County, Security Bank of Houston County, Security Bank of North Metro and Se"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1093207",
+   "eventDate": "2017-08-31",
+   "issuer": "CROSSROADS SYSTEMS INC",
+   "linkedTickers": [
+    "CRDS"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "BANKRUPTCY",
+   "items": [
+    "1.01",
+    "1.02",
+    "1.03",
+    "3.01",
+    "5.02",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1093207/000135445717000170/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1093207/000114420417042653/v473162_8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-17-000170",
+    "filingDate": "2017-08-31",
+    "files": [
+     "0001354457-17-000170-index-headers.html",
+     "0001354457-17-000170-index.html",
+     "0001354457-17-000170.txt",
+     "crdsdelistreason.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1093207/000135445717000170/primary_doc.xml",
+    "sha256": "49cad1c42274cbdf4f713d008478159f6c193bc6c7a697ac30473a3470441309",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1093207/000114420417042653/v473162_8k.htm",
+    "sha256": "80338912a020c55646f82125dc82d858cc473b5ba873b092c3e2091ec3218971",
+    "filingDate": "2017-08-14",
+    "item": "1.03",
+    "quote": "Item 1.03 Bankruptcy or Receivership. The information set forth in Item 1.01 of this Current Report on Form 8-K is hereby incorporated by reference into this Item 1.03. Item 8.01 Other Events. On August 8, 2017, the United States Court of Appeals for the Federal Circuit (the “ Court ”) notified the "
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1722287",
+   "eventDate": "2020-07-21",
+   "issuer": "Covia Holdings Corp",
+   "linkedTickers": [
+    "CVIA"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "BANKRUPTCY",
+   "items": [
+    "1.01",
+    "1.02",
+    "1.03",
+    "2.03",
+    "2.04",
+    "3.01",
+    "5.02",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1722287/000087666120000571/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1722287/000156459020057036/cvia-8k_20201214.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-20-000571",
+    "filingDate": "2020-07-21",
+    "files": [
+     "0000876661-20-000571-index-headers.html",
+     "0000876661-20-000571-index.html",
+     "0000876661-20-000571.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1722287/000087666120000571/primary_doc.xml",
+    "sha256": "37ecec6dc2505e2b7e5b3114aeca427cbf5d0d0084059e170b624ac98c245c20",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1722287/000156459020057036/cvia-8k_20201214.htm",
+    "sha256": "3a2b2bd2423ea39b3b7f51df58cb9ee25cc69f03b82eaa9b9610cae1220fa5ec",
+    "filingDate": "2020-12-15",
+    "item": "1.03",
+    "quote": "Item 1.03. Bankruptcy or Receivership. As previously announced, on June 29, 2020, Covia Holdings Corporation (the “Company” and, as it may be reorganized pursuant to the Plan (as defined below), the “Reorganized Company”) and certain of its direct and indirect subsidiaries (together with the Company"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "38984",
+   "eventDate": "2017-12-07",
+   "issuer": "Real Industry, Inc.",
+   "linkedTickers": [
+    "RELY"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "BANKRUPTCY",
+   "items": [
+    "1.01",
+    "1.03",
+    "2.04",
+    "3.01",
+    "3.03",
+    "5.02",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/38984/000135445717000246/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/38984/000003898417000018/rely-20171221x8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-17-000246",
+    "filingDate": "2017-12-07",
+    "files": [
+     "0001354457-17-000246-index-headers.html",
+     "0001354457-17-000246-index.html",
+     "0001354457-17-000246.txt",
+     "primary_doc.xml",
+     "relydelistreason.txt"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/38984/000135445717000246/primary_doc.xml",
+    "sha256": "e5cd454abff4c88f0f2639125f073b4513c2711bb41e8bb49e900a64f5eb70dd",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/38984/000003898417000018/rely-20171221x8k.htm",
+    "sha256": "51d415d1f89f36056870f0a9780ae7cc45ed6e9dddcad191dab64f9e9e44ea71",
+    "filingDate": "2017-12-28",
+    "item": "1.03",
+    "quote": "Item 1.03 Bankruptcy or Receivership . As previously disclosed, on November 17, 2017, Real Industry, Inc. (the “Company”), Real Alloy Intermediate Holding, LLC (“RAIH”), Real Alloy Holding, Inc. (“Real Alloy”) and certain of Real Alloy’s wholly-owned U.S. subsidiaries (collectively with RAIH and the"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1365916",
+   "eventDate": "2023-09-08",
+   "issuer": "AMYRIS, INC.",
+   "linkedTickers": [
+    "AMRS"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "BANKRUPTCY",
+   "items": [
+    "1.01",
+    "1.03",
+    "2.03",
+    "2.04",
+    "2.05",
+    "3.01",
+    "5.02",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1365916/000135445723000646/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1365916/000136591623000094/amrs-20230804.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000646",
+    "filingDate": "2023-09-08",
+    "files": [
+     "0001354457-23-000646-index-headers.html",
+     "0001354457-23-000646-index.html",
+     "0001354457-23-000646.txt",
+     "amrsdelistreason.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1365916/000135445723000646/primary_doc.xml",
+    "sha256": "3544a2b822661545a96773b1506065e9b2e5eb161127fdf806e1d9e5c2f94fae",
+    "classOfSecurity": "Common stock",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1365916/000136591623000094/amrs-20230804.htm",
+    "sha256": "a8216c9fd0cdaabca5a339d3d5b36ef10854b79fd8d9e4147a6faa40ee77ddd5",
+    "filingDate": "2023-08-10",
+    "item": "1.03",
+    "quote": "Item 1.03 Bankruptcy or Receivership. Voluntary Petitions for Bankruptcy On August 9, 2023 (the “Petition Date”), Amyris, Inc. (the “Company” or the “Debtor”) and certain of its direct and indirect subsidiaries (collectively, the “Company Parties” or the “Debtors”) filed voluntary petitions for reli"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1661920",
+   "eventDate": "2020-10-27",
+   "issuer": "Lonestar Resources US Inc.",
+   "linkedTickers": [
+    "LONE"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "BANKRUPTCY",
+   "items": [
+    "1.01",
+    "1.03",
+    "2.02",
+    "2.04",
+    "3.01",
+    "7.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1661920/000135445720000637/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1661920/000119312520293233/d72913d8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-20-000637",
+    "filingDate": "2020-10-27",
+    "files": [
+     "0001354457-20-000637-index-headers.html",
+     "0001354457-20-000637-index.html",
+     "0001354457-20-000637.txt",
+     "lonedelistreason.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1661920/000135445720000637/primary_doc.xml",
+    "sha256": "86e5e92caa4bed93cfbf3fe5971da1a74dee00790aab52af76dbe3dbde811bd8",
+    "classOfSecurity": "Class A Common Stock",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1661920/000119312520293233/d72913d8k.htm",
+    "sha256": "c73034946cbef55e3365a882a4767d6a28200518f149212be0128a8255ebff1c",
+    "filingDate": "2020-11-13",
+    "item": "1.03",
+    "quote": "Item 1.03 Bankruptcy or Receivership. As previously disclosed, on September 30, 2020 (the “Petition Date”), Lonestar Resources US Inc., a Delaware corporation (the “Company” or “we”), and certain of its direct and indirect wholly-owned subsidiaries (collectively with the Company, the “Debtors”), fil"
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1171014",
+   "eventDate": "2016-11-10",
+   "issuer": "COSI INC",
+   "linkedTickers": [
+    "COSI"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "BANKRUPTCY",
+   "items": [
+    "1.01",
+    "1.03",
+    "2.02",
+    "2.03",
+    "2.04",
+    "3.01",
+    "5.02",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1171014/000135445716000549/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1171014/000114036116084933/form8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-16-000549",
+    "filingDate": "2016-11-10",
+    "files": [
+     "0001354457-16-000549-index-headers.html",
+     "0001354457-16-000549-index.html",
+     "0001354457-16-000549.txt",
+     "cosidelistreason.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1171014/000135445716000549/primary_doc.xml",
+    "sha256": "c919f8af633f676514e2e35180471b981dc316b92d382a7ad799e35e12826f5e",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1171014/000114036116084933/form8k.htm",
+    "sha256": "6ac287a9571568654cb60f5d15ce3b6d0a9de552ca9aaab818f8bb89ab4d47ed",
+    "filingDate": "2016-11-04",
+    "item": "1.03",
+    "quote": "ITEM 1.03 Bankruptcy or Receivership. On November 1, 2016, Cosi, Inc. (the “Company”), a Delaware corporation, issued a press release announcing that, as previously reported on the Company’s Current Report on Form 8-K filed on October 28, 2016 (Commission File No. 001-36196), the United States Bankr"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1870129",
+   "eventDate": "2024-02-15",
+   "issuer": "Rose Hill Acquisition Corp",
+   "linkedTickers": [
+    "ROSE"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "BANKRUPTCY",
+   "items": [
+    "1.01",
+    "1.02",
+    "1.03",
+    "3.01",
+    "5.02",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1870129/000135445724000081/primary_doc.xml",
+    "https://www.sec.gov/Archives/edgar/data/1870129/000114036124007454/ef20021578_8k.htm"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-24-000081",
+    "filingDate": "2024-02-15",
+    "files": [
+     "0001354457-24-000081-index-headers.html",
+     "0001354457-24-000081-index.html",
+     "0001354457-24-000081.txt",
+     "primary_doc.xml",
+     "rosewdelistreason.txt"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1870129/000135445724000081/primary_doc.xml",
+    "sha256": "783a557e900de90ea32fad692bfaad5cdb03fcb67867f8a26264018aa33862de",
+    "classOfSecurity": "Unit, ordinary shares, and warrants",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "eightK": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1870129/000114036124007454/ef20021578_8k.htm",
+    "sha256": "c13fa16530977c5fead70851cb925ca1931369c86362412c94007f380415b040",
+    "filingDate": "2024-02-13",
+    "item": "1.03",
+    "quote": "Item 1.03 Bankruptcy or Receivership. As previously disclosed, Rose Hill Acquisition Corporation (the “Company”) filed a winding up petition in the Grand Court of the Cayman Islands (the “Court”) on January 11, 2024 to effectuate the Company’s orderly liquidation (i.e. to gather and distribute the a"
+   },
+   "tickerInDocuments": true,
+   "commonStock": true,
+   "reasonVerdict": "CONFIRMED",
+   "ruleConsistency": "CONSISTENT"
+  },
+  {
+   "cik": "1729756",
+   "eventDate": "2020-10-16",
+   "issuer": "Fintech Acquisition Corp. III",
+   "linkedTickers": [
+    "FTAC"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_PROCESS_INDICATED",
+   "items": [
+    "1.01",
+    "3.02",
+    "5.07",
+    "7.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1729756/000135445720000600/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-20-000600",
+    "filingDate": "2020-10-16",
+    "files": [
+     "0001354457-20-000600-index-headers.html",
+     "0001354457-20-000600-index.html",
+     "0001354457-20-000600.txt",
+     "ftac-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1729756/000135445720000600/primary_doc.xml",
+    "sha256": "315df7b8a3a74bf5c8b3a42434c5123eb0766f978904e4946e29f285bf7414af",
+    "classOfSecurity": "Class A Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1780262",
+   "eventDate": "2021-03-22",
+   "issuer": "Newborn Acquisition Corp",
+   "linkedTickers": [
+    "NBAC"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_PROCESS_INDICATED",
+   "items": [
+    "1.01",
+    "2.03",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1780262/000135445721000387/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-21-000387",
+    "filingDate": "2021-03-22",
+    "files": [
+     "0001354457-21-000387-index-headers.html",
+     "0001354457-21-000387-index.html",
+     "0001354457-21-000387.txt",
+     "nbacr-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1780262/000135445721000387/primary_doc.xml",
+    "sha256": "3f5ce71792d71c424a02d04960e22e9d7699e05d67473bbdd8d9e3fc1d2eed34",
+    "classOfSecurity": "Rights, Units",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": false,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1094810",
+   "eventDate": "2020-04-24",
+   "issuer": "MUTUALFIRST FINANCIAL INC",
+   "linkedTickers": [
+    "MFSF"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_PROCESS_INDICATED",
+   "items": [
+    "2.02",
+    "5.07",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1094810/000135445720000160/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-20-000160",
+    "filingDate": "2020-04-24",
+    "files": [
+     "0001354457-20-000160-index-headers.html",
+     "0001354457-20-000160-index.html",
+     "0001354457-20-000160.txt",
+     "mfsf-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1094810/000135445720000160/primary_doc.xml",
+    "sha256": "8d74e31b5582c7b970471a54a42cc33982f2d06df4d5c87908528643c17d94e3",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": true
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1576914",
+   "eventDate": "2024-03-26",
+   "issuer": "MiX Telematics Ltd",
+   "linkedTickers": [
+    "MIXT"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "MERGER_PROCESS_INDICATED",
+   "items": [
+    "1.01",
+    "2.02",
+    "2.03",
+    "5.07",
+    "7.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1576914/000087666124000227/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-24-000227",
+    "filingDate": "2024-03-26",
+    "files": [
+     "0000876661-24-000227-index-headers.html",
+     "0000876661-24-000227-index.html",
+     "0000876661-24-000227.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1576914/000087666124000227/primary_doc.xml",
+    "sha256": "79dfee7b9ce88bf18aeaa8e1a02bcd6763a86b852115d25c02472107fdceed2b",
+    "classOfSecurity": "American Depositary Shares (each representing 25 Ordinary Shares)",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1624422",
+   "eventDate": "2024-03-01",
+   "issuer": "PHAXIAM Therapeutics S.A.",
+   "linkedTickers": [
+    "PHXM"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "VOLUNTARY_ISSUER_FILING",
+   "items": [],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1624422/000119312524055911/d768090d25.htm"
+   ],
+   "form25": {
+    "form": "25",
+    "accession": "0001193125-24-055911",
+    "filingDate": "2024-03-01",
+    "files": [
+     "0001193125-24-055911-index-headers.html",
+     "0001193125-24-055911-index.html",
+     "0001193125-24-055911.txt",
+     "d768090d25.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1624422/000119312524055911/d768090d25.htm",
+    "sha256": "f14067e31f14bf22d286baf055fe75579f5ef4c64278e3df200fe1c84489599d",
+    "classOfSecurity": null,
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": null,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1417754",
+   "eventDate": "2018-05-14",
+   "issuer": "LiNiu Technology Group",
+   "linkedTickers": [
+    "LINU"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "VOLUNTARY_ISSUER_FILING",
+   "items": [],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1417754/000114420418028193/tv494037_25.htm"
+   ],
+   "form25": {
+    "form": "25",
+    "accession": "0001144204-18-028193",
+    "filingDate": "2018-05-14",
+    "files": [
+     "0001144204-18-028193-index-headers.html",
+     "0001144204-18-028193-index.html",
+     "0001144204-18-028193.txt",
+     "tv494037_25.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1417754/000114420418028193/tv494037_25.htm",
+    "sha256": "919c26e2ce0ba13cb3faf67d21636c224670b20f133d44ac095732d7b3efdcee",
+    "classOfSecurity": null,
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": null,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1544856",
+   "eventDate": "2017-06-06",
+   "issuer": "Cencosud S.A.",
+   "linkedTickers": [
+    "CNCO"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "VOLUNTARY_ISSUER_FILING",
+   "items": [],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1544856/000165495417005374/cnco_25.htm"
+   ],
+   "form25": {
+    "form": "25",
+    "accession": "0001654954-17-005374",
+    "filingDate": "2017-06-06",
+    "files": [
+     "0001654954-17-005374-index-headers.html",
+     "0001654954-17-005374-index.html",
+     "0001654954-17-005374.txt",
+     "cnco_25.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1544856/000165495417005374/cnco_25.htm",
+    "sha256": "4744e3579be62c9f276a16641fb4e006b6bf159e320a6f8b7f172e9a0ff1b207",
+    "classOfSecurity": null,
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": true
+   },
+   "tickerInDocuments": false,
+   "commonStock": null,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1853594",
+   "eventDate": "2023-06-09",
+   "issuer": "Sculptor Acquisition Corp I",
+   "linkedTickers": [
+    "SCUA"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "UNKNOWN",
+   "items": [
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1853594/000087666123000472/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0000876661-23-000472",
+    "filingDate": "2023-06-09",
+    "files": [
+     "0000876661-23-000472-index-headers.html",
+     "0000876661-23-000472-index.html",
+     "0000876661-23-000472.txt",
+     "primary_doc.xml",
+     "ruleprovisionnotice.htm"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1853594/000087666123000472/primary_doc.xml",
+    "sha256": "647ec065e87d8a05d145e82e186594a5847c052d96728ce38bba51c5c1792502",
+    "classOfSecurity": "Class A Ordinary Shares, Units, Warrants",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1842498",
+   "eventDate": "2023-09-26",
+   "issuer": "Otonomo Technologies Ltd.",
+   "linkedTickers": [
+    "OTMO"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "UNKNOWN",
+   "items": [],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1842498/000135445723000702/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000702",
+    "filingDate": "2023-09-26",
+    "files": [
+     "0001354457-23-000702-index-headers.html",
+     "0001354457-23-000702-index.html",
+     "0001354457-23-000702.txt",
+     "form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1842498/000135445723000702/primary_doc.xml",
+    "sha256": "b765dffa73103fa67d0dbf08d8fd12ca25b705936ae8759c3faaf6751b8b1b9e",
+    "classOfSecurity": "Warrants expiring 2026",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": false,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1845580",
+   "eventDate": "2023-04-13",
+   "issuer": "TCV Acquisition Corp.",
+   "linkedTickers": [
+    "TCVA"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "UNKNOWN",
+   "items": [
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1845580/000135445723000277/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000277",
+    "filingDate": "2023-04-13",
+    "files": [
+     "0001354457-23-000277-index-headers.html",
+     "0001354457-23-000277-index.html",
+     "0001354457-23-000277.txt",
+     "primary_doc.xml",
+     "tcva-form25.txt"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1845580/000135445723000277/primary_doc.xml",
+    "sha256": "243c178e00e3e1f2498e87e29eb26c8923b134fa19da94bdb0d8747e9a29b9c4",
+    "classOfSecurity": "Class A Ordinary Shares",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": true
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1838433",
+   "eventDate": "2023-02-21",
+   "issuer": "New Vista Acquisition Corp",
+   "linkedTickers": [
+    "NVSA"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "UNKNOWN",
+   "items": [
+    "1.01",
+    "2.03",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1838433/000135445723000104/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000104",
+    "filingDate": "2023-02-21",
+    "files": [
+     "0001354457-23-000104-index-headers.html",
+     "0001354457-23-000104-index.html",
+     "0001354457-23-000104.txt",
+     "nvsa-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1838433/000135445723000104/primary_doc.xml",
+    "sha256": "28cd43d22888798b7dc4cc4edb92f7bfbf914fc26607c356355a1e8da5366aac",
+    "classOfSecurity": "Class A Ordinary Shares, Warrants, Units",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": true
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1863294",
+   "eventDate": "2023-07-28",
+   "issuer": "DA32 Life Science Tech Acquisition Corp.",
+   "linkedTickers": [
+    "DALS"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "UNKNOWN",
+   "items": [
+    "7.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1863294/000135445723000548/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000548",
+    "filingDate": "2023-07-28",
+    "files": [
+     "0001354457-23-000548-index-headers.html",
+     "0001354457-23-000548-index.html",
+     "0001354457-23-000548.txt",
+     "dals-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1863294/000135445723000548/primary_doc.xml",
+    "sha256": "06d69ef05cd63b4005ebd749b6f45910bb409164538f934af4943d607c35511d",
+    "classOfSecurity": "Class A Common Stock",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": true
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1822873",
+   "eventDate": "2022-10-24",
+   "issuer": "Lefteris Acquisition Corp.",
+   "linkedTickers": [
+    "LFTR"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "UNKNOWN",
+   "items": [
+    "5.02",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1822873/000135445722000588/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-22-000588",
+    "filingDate": "2022-10-24",
+    "files": [
+     "0001354457-22-000588-index-headers.html",
+     "0001354457-22-000588-index.html",
+     "0001354457-22-000588.txt",
+     "form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1822873/000135445722000588/primary_doc.xml",
+    "sha256": "e2b5d2823fa3cabb5930d0686d38a41e077f3dbf386d1e60bcf3db2d2dc3f554",
+    "classOfSecurity": "Class A Common Stock, Warrant, and Unit",
+    "ruleProvision": "(a)(4)",
+    "ruleMeaning": "RIGHTS_EXTINGUISHED",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1990145",
+   "eventDate": "2024-09-20",
+   "issuer": "Holdco Nuvo Group D.G Ltd.",
+   "linkedTickers": [
+    "NUVO"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "UNKNOWN",
+   "items": [],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1990145/000135445724000711/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-24-000711",
+    "filingDate": "2024-09-20",
+    "files": [
+     "0001354457-24-000711-index-headers.html",
+     "0001354457-24-000711-index.html",
+     "0001354457-24-000711.txt",
+     "nuvodelistreason.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1990145/000135445724000711/primary_doc.xml",
+    "sha256": "439f4f6b5b268211d55cecd9a07daa68149b2cc1c7d76b7192fe525e51873d0e",
+    "classOfSecurity": "Ordinary shares and warrants",
+    "ruleProvision": "(b)",
+    "ruleMeaning": "EXCHANGE_REMOVAL_RULES",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1462694",
+   "eventDate": "2014-06-30",
+   "issuer": "ConnectOne Bancorp, Inc.",
+   "linkedTickers": [
+    "CNBC"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_DISCOVERED"
+   ],
+   "claimedReason": "UNKNOWN",
+   "items": [
+    "2.02",
+    "5.07",
+    "5.08",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1462694/000135445714000093/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-14-000093",
+    "filingDate": "2014-06-30",
+    "files": [
+     "0001354457-14-000093-index-headers.html",
+     "0001354457-14-000093-index.html",
+     "0001354457-14-000093.txt",
+     "cnob-form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1462694/000135445714000093/primary_doc.xml",
+    "sha256": "1d574b541889312d7c5d043ec4d5749de6cff2167e9556d1da607a7507250193",
+    "classOfSecurity": "Common Stock",
+    "ruleProvision": "(a)(3)",
+    "ruleMeaning": "CONVERTED_OR_EXCHANGED_SUBSTITUTED",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  },
+  {
+   "cik": "1863428",
+   "eventDate": "2023-02-02",
+   "issuer": "Seaport Calibre Materials Acquisition Corp.",
+   "linkedTickers": [
+    "SCMA"
+   ],
+   "linkGrades": [
+    "MEDIUM_FTS_CONFIRMED"
+   ],
+   "claimedReason": "UNKNOWN",
+   "items": [
+    "1.01",
+    "2.03",
+    "3.02",
+    "5.07",
+    "7.01",
+    "8.01",
+    "9.01"
+   ],
+   "documents": [
+    "https://www.sec.gov/Archives/edgar/data/1863428/000135445723000066/primary_doc.xml"
+   ],
+   "form25": {
+    "form": "25-NSE",
+    "accession": "0001354457-23-000066",
+    "filingDate": "2023-02-02",
+    "files": [
+     "0001354457-23-000066-index-headers.html",
+     "0001354457-23-000066-index.html",
+     "0001354457-23-000066.txt",
+     "form25.txt",
+     "primary_doc.xml"
+    ],
+    "url": "https://www.sec.gov/Archives/edgar/data/1863428/000135445723000066/primary_doc.xml",
+    "sha256": "0d107961a92e157bb10d0f99805b458a44616a6f4be33586a21a229764ef8055",
+    "classOfSecurity": "Class A Common Stock, Warrant, Unit",
+    "ruleProvision": "(a)(1)",
+    "ruleMeaning": "CALLED_FOR_REDEMPTION",
+    "tickerInFileNames": false
+   },
+   "tickerInDocuments": false,
+   "commonStock": true,
+   "reasonVerdict": "NO_ITEM_TEXT_CLAIM",
+   "ruleConsistency": "OTHER"
+  }
+ ]
+}

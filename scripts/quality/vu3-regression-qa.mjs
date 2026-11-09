@@ -83,12 +83,16 @@ if (only.has('journeys')) await guard('journeys', async () => {
     if (errors.length) fail('quant<->elliott', 'Seitenfehler: ' + errors.slice(0, 2).join(' | '));
     await page.close();
   }
-  // Quant NVDA -> Supertrader / Discover; Discover -> Elliott
-  for (const [name, re, expectUrl, expectTitle] of [
-    ['quant->supertrader', /^\/supertrader\/stock\/NVDA\/$/, /\/supertrader\/stock\/NVDA\/$/, /NVDA/],
-    ['quant->discover', /^\/discover\/#\/s\/US_REAL\/NVDA$/, /\/discover\/#\/s\/US_REAL\/NVDA$/, /NVIDIA/i]
+  // Quant -> Supertrader (an einem Titel mit Supertrader-Seite) / Discover; Discover -> Elliott.
+  // Seit L3 (#1479) fuehrt Supertrader nur Titel mit Regel-Ergebnissen; NVDA hatte nur eine Modellposition.
+  // Der Titel kommt deshalb aus supertrader/data/build.json (slices.stock), bevorzugt AAPL.
+  const stSlices = await fetch(base + '/supertrader/data/build.json').then((r) => r.json()).then((j) => (j.slices && j.slices.stock) || []).catch(() => []);
+  const ST = ['AAPL', 'MSFT', 'NVDA'].find((t) => stSlices.includes(t)) || stSlices[0] || 'NVDA';
+  for (const [name, re, expectUrl, expectTitle, from] of [
+    ['quant->supertrader', new RegExp('^/supertrader/stock/' + ST + '/$'), new RegExp('/supertrader/stock/' + ST + '/$'), new RegExp(ST), ST],
+    ['quant->discover', /^\/discover\/#\/s\/US_REAL\/NVDA$/, /\/discover\/#\/s\/US_REAL\/NVDA$/, /NVIDIA/i, 'NVDA']
   ]) {
-    const { page, errors } = await open(ctx, '/quant/#/aktie/NVDA');
+    const { page, errors } = await open(ctx, '/quant/#/aktie/' + from);
     const href = await follow(page, re, name);
     if (!href) fail(name, 'Link fehlt');
     else if (!expectUrl.test(where(page)) || !expectTitle.test(await title(page))) fail(name, 'Ziel falsch: ' + where(page) + ' · ' + await title(page));
@@ -140,8 +144,10 @@ if (only.has('theme')) await guard('theme', async () => {
   await ctx.addInitScript((k) => { if (!sessionStorage.getItem('vu3-qa-init')) { try { localStorage.setItem(k, 'light'); } catch {} sessionStorage.setItem('vu3-qa-init', '1'); } }, THEME_KEY);
   const { page } = await open(ctx, '/quant/#/');
   const theme = () => page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-  const clicked = await page.evaluate(() => { const b = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('button.mode'); if (!b) return false; b.click(); return true; });
-  if (!clicked) { fail('theme', 'kein Farbschema-Schalter im Kopf von Quant'); await ctx.close(); return; }
+  // Das Farbschema wechselt im gemeinsamen Menue (Hell/Dunkel, Mockup N3).
+  const pick = (label) => page.evaluate((l) => { const b = [...(document.querySelector('vu-navigation')?.shadowRoot?.querySelectorAll('.appearance button') || [])].find(n => n.textContent === l); if (!b) return false; b.click(); return true; }, label);
+  const clicked = await pick('Dunkel');
+  if (!clicked) { fail('theme', 'kein Farbschema-Schalter im Menue von Quant'); await ctx.close(); return; }
   await page.waitForTimeout(400);
   const after = await theme();
   after === 'dark' ? pass('theme', 'Quant: Schalter -> dunkel') : fail('theme', 'Quant nach Klick: ' + after);
@@ -150,7 +156,7 @@ if (only.has('theme')) await guard('theme', async () => {
     const t = await theme();
     t === 'dark' ? pass('theme', path + ' dunkel') : fail('theme', path + ' zeigt ' + t + ' statt dunkel');
   }
-  await page.evaluate(() => document.querySelector('vu-navigation')?.shadowRoot?.querySelector('button.mode')?.click());
+  await pick('Hell');
   await page.waitForTimeout(400);
   await page.goto(base + '/hedgefonds/#/', { waitUntil: 'load' }); await page.waitForTimeout(1500);
   (await theme()) === 'light' ? pass('theme', 'zurueck auf hell, bleibt in Hedgefonds hell') : fail('theme', 'zurueck auf hell nicht uebernommen: ' + await theme());
@@ -160,23 +166,25 @@ if (only.has('theme')) await guard('theme', async () => {
 /* ---------------------------------------------------------------- 3 Visual-First-Bausteine */
 // [Welt, Route, Selektor, Beschreibung]; Inhalte stammen aus den Visual-First-PRs (#759-#783, #794).
 const VISUAL = [
-  ['Quant', '/quant/#/', '.q-rc-chip', 'Radar-Kompaktkarte mit Belegchips'],
+  ['Quant', '/quant/#/radar', '.q-rc-chip', 'Radar-Kompaktkarte mit Belegchips (Redesign Q01: Radar-Karten stehen im Radar, die Startseite zeigt „Heute bei Quant“)'],
   ['Quant', '/quant/#/radar', '.q-radar-stats', 'Radar mit Richtungszeichen und Zaehlungen'],
   ['Quant', '/quant/#/radar', '.q-chip-n', 'Filterzaehlungen'],
-  ['Quant', '/quant/#/aktie/NVDA', '.q-check-count', 'Setup-Regelcheckliste'],
+  ['Quant', '/quant/#/aktie/NVDA', '.q-check-count', 'Setup-Regelcheckliste', 'setupDirection'],
   ['Quant', '/quant/#/aktie/NVDA', '.q-evo', 'Evidenz-Ueberblick der drei Stufen'],
   ['Quant', '/quant/#/aktie/NVDA', '.qx-change-tally', 'Bilanz der Veraenderungen'],
   ['Quant', '/quant/#/strategien/quality-compounder', '.qx-cmeters', 'Bedingungs-Balken "Wer passt heute?"'],
-  ['Technik', '/quant/#/aktie/NVDA/technik', '.cb-checks', 'Zaehlung "Warum dieses Bild?"'],
-  ['Supertrader', '/supertrader/signals/', '.st-risk', 'Risiko der Modellposition als Zahl'],
-  ['Screener', '/screener/?f=roic:gt:0.1', '.sc-share', 'Anteil am Universum'],
+  ['Technik', '/quant/#/aktie/NVDA/technik', '.cb-ew-none, .cb-story-r', 'Elliott auf der Aktie: Absage mit Wegen oder Lesart in drei Sätzen (Konzept EHV, EX03)'],
+  ['Supertrader', '/supertrader/signals/', '.st-risk, .st-r-sfoot', 'Risiko der Modellposition als Zahl'],
+  ['Screener', '/screener/?f=roic:gt:0.1', '.sc-counter', 'Anteil am Universum'],
   ['Vorsorge', '/vorsorge/#/', '.vs-chg', 'Richtungszeichen 1J'],
   ['Vorsorge', '/vorsorge/#/etf/VT', '.vs-bilanz', 'Bilanz der Einordnung'],
   ['Hedgefonds', '/hedgefonds/#/', '.hf-card-val .hf-chg', 'Richtung der Fondsgroesse'],
   ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-balance', 'Kaeufer gegen Verkaeufer'],
-  ['Elliott', '/elliott/', '.el-splitrow', 'beschrifteter Richtungsbalken'],
-  ['Fundamental', '/fundamental/#/PLTR', '.fu-k .fu-chg', 'Kennzahl mit Richtung zum Vorjahr'],
-  ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahlen', '.fu-crow .fu-spark i', 'Kennzahlenkatalog mit Mini-Verlauf'],
+  ['Elliott', '/elliott/', '.el-ebar', 'Anteil zählbarer Aktien als Balken (Konzept EHV, EX02)'],
+  ['Fundamental', '/fundamental/#/PLTR', '.fu-kt .fu-k-v', 'Kennzahlen-Streifen (Konzept „Verstehen. Finden.“, FX02)'],
+  ['Fundamental', '/fundamental/#/PLTR', '.fu-fin-big .vu-chg', 'Finanz-Chart mit Richtung zum Vorjahr'],
+  ['Fundamental', '/fundamental/#/PLTR', '.fu-chap a', 'Kapitel der Aktie'],
+  ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahlen&t=profit', '.fu-crow .fu-spark i', 'Kennzahlenkatalog mit Mini-Verlauf'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-cagr', 'Wachstum pro Jahr ueber 3/5/10 Jahre'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-bc.is-last .fu-b', 'Verlauf je Geschaeftsjahr als Balken'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=finanzen', '.fu-stmt', 'Finanzen: GuV je Geschaeftsjahr'],
@@ -184,8 +192,9 @@ const VISUAL = [
   ['Fundamental', '/fundamental/#/JPM?ansicht=kennzahl&k=pe', '.fu-lines .fu-l-self', 'KGV nach jedem Jahresbericht als Linie'],
   ['Fundamental', '/fundamental/#/KO?ansicht=vergleich', '.fu-bc.is-self .fu-b', 'Branchenvergleich: eigener Balken neben Vergleichsunternehmen'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=pe&plus=free_cash_flow', '.fu-mc .fu-l-m.m1', 'Mehrere Kennzahlen in einem Verlauf (KGV + Free Cashflow)'],
-  ['Fundamental', '/fundamental/', '.fu-entry-list li', 'Start: Ranglisten-Einstiege mit Unternehmen'],
-  ['Fundamental', '/fundamental/#/entdecken', '.fu-tile .fu-meter-bar i', 'Entdecken: Discover-Kacheln mit Kennzahlbalken']
+  ['Fundamental', '/fundamental/', '.fu-rlc li', 'Start: Ranglisten als Schiene mit den ersten drei Plätzen (FX01)'],
+  ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-firms .fu-fchip-add', 'Kennzahl-Detail: „+ Firma“ (FX03)'],
+  ['Fundamental', '/fundamental/#/ranglisten/auswahlen', '.fu-firm .vu-meter i', 'Auswahlen: Firmenkarten mit drei Kennzahlbalken']
 ];
 if (only.has('visual')) await guard('visual', async () => {
   console.log('\n[3] Visual-First-Bausteine (' + engine + ')');
@@ -195,7 +204,27 @@ if (only.has('visual')) await guard('visual', async () => {
   for (const [route, items] of byRoute) {
     const { page, errors } = await open(ctx, route);
     await scrollThrough(page);
-    for (const [world, , sel, label] of items) {
+    for (const [world, , baseSel, baseLabel, variant] of items) {
+      let sel = baseSel, label = baseLabel;
+      if (variant === 'setupDirection') {
+        /* Die Setup-Karte hat zwei Formen: Aufwaertsszenario mit Regelcheckliste, Abwaertsszenario (bzw. ohne Richtung)
+           mit "Ungueltig ueber" und Zielzonen abwaerts, ohne Einstieg und ohne Checkliste (quant/app/page-stock.js
+           renderSetupCard). Welche gilt, entscheidet das veroeffentlichte Basisszenario - hier unabhaengig von der
+           Karte ueber die Produkt-API gelesen. Ohne Szenario bleibt die strenge Erwartung (Checkliste). */
+        const dir = await page.evaluate(async () => {
+          const g = globalThis, ticker = location.hash.split('/')[2];
+          const api = g.VUProductServices.create({ loadJSON: g.QuantShell.loadJSON, displayPolicy: g.VUDisplayPolicy, queryEngine: g.VUQuery });
+          const ws = await api.getTechnicalWorkspace(ticker).catch(() => null);
+          if (!ws || ws.state !== 'AVAILABLE' || !(ws.scenarios || []).length) return null;
+          const ts = ws.tradeSetup || null;
+          const sc = ws.scenarios.find((x) => ts && x.id === ts.scenarioId) || ws.scenarios.find((x) => x.kind === 'PRIMARY') || null;
+          return sc && sc.direction ? sc.direction : null;
+        });
+        if (dir && dir !== 'BULLISH') {
+          if (await page.evaluate(() => document.querySelectorAll('#setup .q-check-count').length)) fail('visual ' + world, 'Abwaertsszenario (' + dir + '), aber Setup-Regelcheckliste in #setup auf ' + route);
+          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Marke "Ungültig über" statt Regelcheckliste';
+        }
+      }
       const state = await page.evaluate((s) => { const n = document.querySelector(s); if (!n) return 'missing'; const r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0 ? 'visible' : 'hidden'; }, sel);
       state === 'visible' ? pass('visual ' + world, label + ' (' + sel + ')') : fail('visual ' + world, label + ' ' + state + ' (' + sel + ' auf ' + route + ')');
     }

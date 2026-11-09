@@ -1,6 +1,6 @@
 # Elliott Engine 3.2 — Mission III Report
 
-Stand: 03.10.2026. Vorgänger: [ELLIOTT_ENGINE3_REPORT.md](ELLIOTT_ENGINE3_REPORT.md) (3.0/3.1, HOLDOUT-1/2). Vorab-Registrierung: [ELLIOTT_HOLDOUT3_PREREG.md](ELLIOTT_HOLDOUT3_PREREG.md). Unabhängige Prüfungen: [reviews/ELLIOTT_32_REDTEAM.md](reviews/ELLIOTT_32_REDTEAM.md), [reviews/ELLIOTT_GENERATOR_AUDIT.md](reviews/ELLIOTT_GENERATOR_AUDIT.md). Alle Zahlen stammen aus Dateien unter `quant/data/technical-intelligence/elliott-validation/` (Unterordner `taxonomy/`, `frontier/`, `holdout3/`, `corpus/`, `stability/`, `multires/`).
+Stand: 03.10.2026. Vorgänger: ELLIOTT_ENGINE3_REPORT.md (`ELLIOTT_ENGINE3_REPORT.md`, historischer Beleg im Repository nicht vorhanden) (3.0/3.1, HOLDOUT-1/2). Vorab-Registrierung: ELLIOTT_HOLDOUT3_PREREG.md (`ELLIOTT_HOLDOUT3_PREREG.md`, historischer Beleg im Repository nicht vorhanden). Unabhängige Prüfungen: reviews/ELLIOTT_32_REDTEAM.md (`reviews/ELLIOTT_32_REDTEAM.md`, historischer Beleg im Repository nicht vorhanden), reviews/ELLIOTT_GENERATOR_AUDIT.md (`reviews/ELLIOTT_GENERATOR_AUDIT.md`, historischer Beleg im Repository nicht vorhanden). Alle Zahlen stammen aus Dateien unter `quant/data/technical-intelligence/elliott-validation/` (Unterordner `taxonomy/`, `frontier/`, `holdout3/`, `corpus/`, `stability/`, `multires/`).
 
 > **ENGINE QUALITY: FAIL.** Das Mission-III-Gate auf HOLDOUT-3 ist nicht bestanden: 9 von 16 Kriterien erfüllt, 7 verfehlt. Deshalb kein Prognose-Backtest. Elliott bleibt „Experimentelles Strukturmodell“ ohne Richtungsgewicht.
 
@@ -139,7 +139,7 @@ Engine 2.2 auf denselben C-Layouts (VALIDATION): G1 strikt 3,5 % / 4,9 % / 3,6 %
 
 ## 7. HOLDOUT-3 — Vorab-Registrierung
 
-Siehe [ELLIOTT_HOLDOUT3_PREREG.md](ELLIOTT_HOLDOUT3_PREREG.md):
+Siehe ELLIOTT_HOLDOUT3_PREREG.md (`ELLIOTT_HOLDOUT3_PREREG.md`, historischer Beleg im Repository nicht vorhanden):
 * committet vor dem Einfrieren (ae51cb54d), Freeze danach (2583e9fcf), dann genau ein Lauf;
 * C1/C2/C3, Seeds 60–79, fünf Stufen;
 * echte Charts: HOLDOUT-Emittenten, neues Fenster bis 30.12.2016, Zeitebenen-Titel Rang 121–240.

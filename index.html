@@ -5,729 +5,169 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <meta name="vu-navigation" content="none">
-<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
-<script>/* Intro-Animation im Hero nur, wenn Bewegung erlaubt ist (vor dem ersten Zeichnen gesetzt) */try{if(!matchMedia("(prefers-reduced-motion: reduce)").matches)document.documentElement.classList.add("intro");}catch(e){}</script>
-<title>Vision Universe® – Investieren mit Weitblick. Alles in einer App.</title>
-<meta name="description" content="Die Vision Universe App: Aktien entdecken und analysieren – Fundamentaldaten, Technik, Elliott Wave, Quant, Screener, Supertrader – und die Altersvorsorge planen. Alles in einer App.">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
+<title>Vision Universe® – Aktien verstehen. In klaren Worten.</title>
+<meta name="description" content="Vom ersten 10-€-Sparplan bis zur Profi-Analyse: Aktien, ETFs und Vorsorge mit echten Daten aus Pflichtberichten und einer Erklärung zu jeder Zahl.">
 <link rel="canonical" href="https://research.visionuniverse.de/">
-<!-- Link-Vorschau (WhatsApp, iMessage, LinkedIn, X): absolute URLs, Bild 1200 x 630 -->
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Vision Universe">
 <meta property="og:locale" content="de_DE">
 <meta property="og:url" content="https://research.visionuniverse.de/">
-<meta property="og:title" content="Vision Universe – Investieren mit Weitblick">
-<meta property="og:description" content="Aktien analysieren, Märkte verstehen, Vorsorge planen – Fundamentaldaten, Technik, Elliott Wave und Quant in einer App.">
+<meta property="og:title" content="Vision Universe – Aktien verstehen. In klaren Worten.">
+<meta property="og:description" content="Aktien, ETFs und Vorsorge mit echten Daten aus Pflichtberichten – jede Zahl erklärt.">
 <meta property="og:image" content="https://research.visionuniverse.de/assets/home/og-image.jpg">
 <meta property="og:image:secure_url" content="https://research.visionuniverse.de/assets/home/og-image.jpg">
 <meta property="og:image:type" content="image/jpeg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Vision Universe App: Aktienanalyse mit Chart, Elliott-Wave-Zählung und Fundamentaldaten">
+<meta property="og:image:alt" content="Vision Universe: Aktienkarte mit Chart und drei Urteilen">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Vision Universe – Investieren mit Weitblick">
-<meta name="twitter:description" content="Aktien analysieren, Märkte verstehen, Vorsorge planen – alles in einer App.">
+<meta name="twitter:title" content="Vision Universe – Aktien verstehen. In klaren Worten.">
+<meta name="twitter:description" content="Aktien, ETFs und Vorsorge mit echten Daten – jede Zahl erklärt.">
 <meta name="twitter:image" content="https://research.visionuniverse.de/assets/home/og-image.jpg">
 <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="stylesheet" href="/assets/vu-ui.css">
 <link rel="stylesheet" href="/assets/home/home.css">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <script src="/assets/pwa.js" defer></script>
-<script src="/assets/home/hero-intro.js" defer></script>
-<script src="/assets/home/home-motion.js" defer></script>
 </head>
-<body>
-<!-- Startseite als Landingpage: eigener, schlanker Kopf statt der Plattform-Navigation.
-     Transparent ueber dem Hero, beim Scrollen kompakte Glasleiste mit Logo und App-Button. -->
-<header class="lp-head" id="lp-head">
-  <div class="shell lp-row">
-    <a class="lp-logo" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" width="1086" height="362" alt="Vision Universe®"></a>
-    <nav class="lp-nav" aria-label="Startseite">
-      <a href="#app-module">Module</a><a href="#entwicklung">Discover</a><a href="#vorsorge">Vorsorge</a><a href="/ask/">AI Atlas</a>
-    </nav>
-    <a class="btn btn-app lp-cta" href="/discover/">App öffnen <svg><use href="#i-arrow"/></svg></a>
+<body class="vu-ui">
+<!-- Startseite (Mockup E01): eigener Kopf ohne Produkt-Leiste - Logo, Suche, Anmelden. -->
+<header class="hd">
+  <div class="shell hd-row">
+    <a class="hd-logo" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" width="150" height="50" alt="Vision Universe"></a>
+    <a class="hd-btn" href="/discover/#/suche" aria-label="Aktie suchen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></a>
+    <a class="hd-login" href="/konto/anmelden/">Anmelden</a>
   </div>
 </header>
 
-<!-- Icons. h-*: HUD-Icons (in .hud-Kacheln), i-*: kleine Bedien-Icons.
-     NICHT index.html bearbeiten, sondern dieses Template: scripts/home/build-home.mjs
-     setzt alle Werte der Produktabbildungen aus den Produktdaten ein und laeuft
-     nach jedem Datenlauf (Workflow "Startseite: Werte der Produktabbildungen"). -->
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor" opacity=".18"/><path d="m7.5 12.2 3 3 6-6.4" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
-  <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></symbol>
-  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></symbol>
-  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-5 5-5 13 0 18m0-18c5 5 5 13 0 18"/></symbol>
-  <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V5m0 14h16M7 15l4-5 3 2 5-7"/></symbol>
-  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 8.5c0 4-4.4 7.6-8.8 11-4.4-3.4-8.8-7-8.8-11a5 5 0 0 1 8.8-3.1 5 5 0 0 1 8.8 3.1z"/></symbol>
-  <symbol id="i-laptop" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="11" rx="2"/><path d="M2 19h20"/></symbol>
-  <symbol id="i-tablet" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 18h2"/></symbol>
-  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><path d="M11 18h2"/></symbol>
-  <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z" opacity=".7"/></symbol>
-  <symbol id="h-discover" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><circle class="dim" cx="12" cy="12" r="6"/><circle class="dim" cx="12" cy="12" r="2.5"/><path class="fill" d="M12 12 18.7 5.3A9.5 9.5 0 0 1 21.5 12z" opacity=".28"/><path d="M12 12 18.7 5.3"/><circle class="fill" cx="16.2" cy="9.6" r="1.3"/><circle class="fill" cx="7.6" cy="15.4" r="1"/><circle class="fill" cx="15.8" cy="16.2" r=".9"/></symbol>
-  <symbol id="h-quant" viewBox="0 0 24 24"><rect x="5.5" y="5.5" width="13" height="13" rx="2.2"/><path class="dim" d="M9 2v3.5M12 2v3.5M15 2v3.5M9 18.5V22M12 18.5V22M15 18.5V22M2 9h3.5M2 12h3.5M2 15h3.5M18.5 9H22M18.5 12H22M18.5 15H22"/><path d="M14.6 9H9.6l2.6 3-2.6 3h5"/></symbol>
-  <symbol id="h-screener" viewBox="0 0 24 24"><path d="M3 5h18M6 10.5h12M9 16h6M12 16v5"/><circle class="fill" cx="3" cy="5" r="1.4"/><circle class="fill" cx="21" cy="5" r="1.4"/><circle class="fill" cx="6" cy="10.5" r="1.3"/><circle class="fill" cx="18" cy="10.5" r="1.3"/><circle class="fill" cx="9" cy="16" r="1.2"/><circle class="fill" cx="15" cy="16" r="1.2"/><circle class="fill" cx="12" cy="21" r="1.5"/></symbol>
-  <symbol id="h-super" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path class="dim" d="M12 1.5v3.5M12 19v3.5M1.5 12H5M19 12h3.5"/><rect x="10.3" y="9" width="3.4" height="6" rx=".6"/><path d="M12 6.8V9M12 15v2.2"/></symbol>
-  <symbol id="h-elliott" viewBox="0 0 24 24"><path class="dim" d="M2 21h20" stroke-dasharray="1.5 2"/><path d="M2 19 6 12l2.5 3L14 5l2.5 4L21 3"/><circle class="fill" cx="6" cy="12" r="1.3"/><circle class="fill" cx="8.5" cy="15" r="1.3"/><circle class="fill" cx="14" cy="5" r="1.3"/><circle class="fill" cx="16.5" cy="9" r="1.3"/><circle class="fill" cx="21" cy="3" r="1.5"/></symbol>
-  <symbol id="h-technical" viewBox="0 0 24 24"><path d="M5.5 8v2M5.5 16v3M12 4v3M12 14v3M18.5 2.5v2M18.5 10v3"/><rect x="4" y="10" width="3" height="6" rx=".5"/><rect x="10.5" y="7" width="3" height="7" rx=".5"/><rect x="17" y="4.5" width="3" height="5.5" rx=".5"/><path class="dim" d="M2 20c5-1.5 9-5 20-11"/></symbol>
-  <symbol id="h-fundamental" viewBox="0 0 24 24"><path d="M2 21h20"/><path d="M4.5 21v-6M8.5 21V10M12.5 21v-5"/><circle cx="16" cy="9" r="4.5"/><path d="m19.3 12.3 2.7 2.7"/><path class="dim" d="M14.2 9.6 15.5 8l1.2 1.2 1.6-2"/></symbol>
-  <symbol id="h-atlas" viewBox="0 0 24 24"><path d="M12 2.5c.6 4.6 2.7 7.2 7.5 8-4.8.7-6.9 3.4-7.5 8-.6-4.6-2.7-7.3-7.5-8 4.8-.8 6.9-3.4 7.5-8z"/><circle class="fill" cx="20" cy="19" r="1.4"/><circle class="fill" cx="4" cy="4" r="1.1"/><path class="dim" d="M14.5 15.5 20 19M4 4l4.5 4"/></symbol>
-  <symbol id="h-shield" viewBox="0 0 24 24"><path d="M12 2.5 4 5.5v6c0 5 3.4 8.6 8 10 4.6-1.4 8-5 8-10v-6z"/><path d="m8.5 12 2.5 2.5 4.5-5"/><path class="dim" d="M12 2.5V6M4 8h3M20 8h-3"/></symbol>
-  <symbol id="h-data" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="8" ry="2.8"/><path d="M4 5v14c0 1.5 3.6 2.8 8 2.8s8-1.3 8-2.8V5"/><path class="dim" d="M4 12c0 1.5 3.6 2.8 8 2.8s8-1.3 8-2.8"/><path d="M7 18.5h2l1.2-2.5 1.6 4 1.2-2.5h4"/></symbol>
-  <symbol id="h-eye" viewBox="0 0 24 24"><path class="dim" d="M2 7V3h4M18 3h4v4M22 17v4h-4M6 21H2v-4"/><path d="M4.5 12s2.8-5 7.5-5 7.5 5 7.5 5-2.8 5-7.5 5-7.5-5-7.5-5z"/><circle cx="12" cy="12" r="2.3"/><circle class="fill" cx="12" cy="12" r=".9"/></symbol>
-  <symbol id="h-spark" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3" class="dim"/><path d="M12 6.5c.4 3 1.8 4.7 5 5.5-3.2.8-4.6 2.5-5 5.5-.4-3-1.8-4.7-5-5.5 3.2-.8 4.6-2.5 5-5.5z"/><path class="dim" d="M8 1.5V4M16 1.5V4M8 20v2.5M16 20v2.5"/></symbol>
-  <symbol id="h-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5"/><path class="dim" d="M2.5 12h19M12 2.5c-5 5-5 14 0 19m0-19c5 5 5 14 0 19"/><circle class="fill" cx="16.5" cy="7.5" r="1.3"/><circle class="fill" cx="7" cy="14.5" r="1.1"/><path d="M16.5 7.5 7 14.5"/></symbol>
-  <symbol id="h-swipe" viewBox="0 0 24 24"><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path class="dim" d="M3 8l-1.5 4L3 16M21 8l1.5 4L21 16"/><path d="M9.5 15l2-3 1.5 1.5 2-3.5"/></symbol>
-  <symbol id="h-heart" viewBox="0 0 24 24"><path d="M20.8 8.5c0 4-4.4 7.6-8.8 11-4.4-3.4-8.8-7-8.8-11a5 5 0 0 1 8.8-3.1 5 5 0 0 1 8.8 3.1z"/><path class="dim" d="M6 11h3l1.5-2.5 2 5 1.5-2.5H18"/></symbol>
-  <symbol id="h-sliders" viewBox="0 0 24 24"><path d="M3 6h10M17 6h4M3 12h4M11 12h10M3 18h12M19 18h2"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
-  <symbol id="h-rank" viewBox="0 0 24 24"><path d="M2 21h20"/><rect x="4" y="12" width="4" height="9" rx=".6"/><rect x="10" y="5" width="4" height="16" rx=".6"/><rect x="16" y="9" width="4" height="12" rx=".6"/><circle class="fill" cx="12" cy="2.5" r="1.2"/></symbol>
-  <symbol id="h-save" viewBox="0 0 24 24"><path d="M6 2.5h12v19l-6-4-6 4z"/><path class="dim" d="M9 7h6M9 10.5h6"/></symbol>
-  <symbol id="h-rules" viewBox="0 0 24 24"><rect x="4" y="2.5" width="16" height="19" rx="2"/><path d="m7.5 8 1.5 1.5 2.5-3M7.5 14l1.5 1.5 2.5-3"/><path class="dim" d="M14 8h3M14 14h3"/></symbol>
-  <symbol id="h-layers" viewBox="0 0 24 24"><path d="m12 2.5 9.5 5-9.5 5-9.5-5z"/><path class="dim" d="m2.5 12 9.5 5 9.5-5"/><path d="m2.5 16.5 9.5 5 9.5-5"/></symbol>
-  <symbol id="h-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l3.5 2"/><circle class="fill" cx="12" cy="12" r="1.1"/></symbol>
-  <symbol id="h-vorsorge" viewBox="0 0 24 24"><path d="M3 11.5a9 9 0 0 1 18 0z"/><path d="M12 11.5v7a2.2 2.2 0 0 0 4.4 0"/><path class="dim" d="M12 2.5V1M7.5 11.5c0-4 2-7 4.5-9M16.5 11.5c0-4-2-7-4.5-9"/><circle class="fill" cx="20" cy="20" r="1.3"/><path class="dim" d="M18.5 16l1.5 4"/></symbol>
-  <defs><linearGradient id="nvda-fill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".32"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient><radialGradient id="dot-glow"><stop offset="0" stop-color="#c8f531" stop-opacity=".95"/><stop offset=".35" stop-color="#c8f531" stop-opacity=".45"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></radialGradient></defs>
-  <!-- NVIDIA: Tageskurse der letzten 270 Handelstage, SMA 50/200, Elliott-Zählung, Setup-Zonen -->
-  <symbol id="chart-nvda" viewBox="0 -14 690 298">
-    <g stroke="rgba(255,255,255,.07)" stroke-width="1"><path d="M0 260.0H600M0 222.9H600M0 185.7H600M0 148.6H600M0 111.4H600M0 74.3H600M0 37.1H600M0 0.0H600"/></g>
-    <g fill="#8a9099" font-size="10" font-family="Inter,sans-serif" font-weight="600"><text x="608" y="264.0">160</text><text x="608" y="226.9">180</text><text x="608" y="189.7">200</text><text x="608" y="152.6">220</text><text x="608" y="115.4">240</text><text x="608" y="78.3">260</text><text x="608" y="41.1">280</text><text x="608" y="4.0">300</text></g>
-    <g class="c-zones"><rect x="0" y="33.4" width="600" height="16.7" fill="rgba(200,245,49,.14)" stroke="rgba(200,245,49,.55)" stroke-dasharray="4 4"/><text x="8" y="63.1" fill="#c8f531" font-size="10.5" font-weight="800" font-family="Inter,sans-serif">ZIELZONE 273–282</text><rect x="0" y="144.9" width="600" height="7.4" fill="rgba(255,255,255,.06)"/><path d="M0 174.6H600" stroke="#f0675c" stroke-width="1.4" stroke-dasharray="6 5"/><text x="8" y="188.6" fill="#f0675c" font-size="10.5" font-weight="800" font-family="Inter,sans-serif">INVALIDIERUNG 206</text></g>
-    <path class="c-area" d="M0.0 206.3 L2.2 208.7 L4.5 212.6 L6.7 213.5 L8.9 205.9 L11.2 199.5 L13.4 217.0 L15.6 207.4 L17.8 222.8 L20.1 223.2 L22.3 219.5 L24.5 216.9 L26.8 218.0 L29.0 220.7 L31.2 222.3 L33.5 218.8 L35.7 211.2 L37.9 201.5 L40.1 183.8 L42.4 172.6 L44.6 180.3 L46.8 181.1 L49.1 172.9 L51.3 188.1 L53.5 194.6 L55.8 207.9 L58.0 207.7 L60.2 187.5 L62.5 198.4 L64.7 197.2 L66.9 210.1 L69.1 204.0 L71.4 210.6 L73.6 220.3 L75.8 210.7 L78.1 221.7 L80.3 224.9 L82.5 218.1 L84.8 226.9 L87.0 222.4 L89.2 228.4 L91.4 223.0 L93.7 220.1 L95.9 223.6 L98.1 216.6 L100.4 218.4 L102.6 212.5 L104.8 213.6 L107.1 215.8 L109.3 221.1 L111.5 232.1 L113.8 229.7 L116.0 227.1 L118.2 239.7 L120.4 233.7 L122.7 221.0 L124.9 216.0 L127.1 205.8 L129.4 206.9 L131.6 203.3 L133.8 207.6 L136.1 208.9 L138.3 210.8 L140.5 206.4 L142.8 207.8 L145.0 209.4 L147.2 205.9 L149.4 213.5 L151.7 213.8 L153.9 213.7 L156.1 212.1 L158.4 217.0 L160.6 209.8 L162.8 211.3 L165.1 226.4 L167.3 216.7 L169.5 213.9 L171.7 208.6 L174.0 210.8 L176.2 207.0 L178.4 201.5 L180.7 199.6 L182.9 202.2 L185.1 212.4 L187.4 222.2 L189.6 233.6 L191.8 237.9 L194.1 212.8 L196.3 204.2 L198.5 207.0 L200.7 204.2 L203.0 210.0 L205.2 217.6 L207.4 213.6 L209.7 208.0 L211.9 208.2 L214.1 204.6 L216.4 201.4 L218.6 199.0 L220.8 194.0 L223.0 213.8 L225.3 228.1 L227.5 218.3 L229.7 222.8 L232.0 217.2 L234.2 216.7 L236.4 226.9 L238.7 217.9 L240.9 214.0 L243.1 211.7 L245.4 217.0 L247.6 222.4 L249.8 216.9 L252.0 219.3 L254.3 222.1 L256.5 225.5 L258.7 236.4 L261.0 231.0 L263.2 231.8 L265.4 225.3 L267.7 239.1 L269.9 246.0 L272.1 250.4 L274.3 233.3 L276.6 230.8 L278.8 227.7 L281.0 227.2 L283.3 226.4 L285.5 219.0 L287.7 215.6 L290.0 206.8 L292.2 205.6 L294.4 192.2 L296.7 187.8 L298.9 188.8 L301.1 182.6 L303.3 181.9 L305.6 185.9 L307.8 181.1 L310.0 186.4 L312.3 170.4 L314.5 154.9 L316.7 161.3 L319.0 168.5 L321.2 186.5 L323.4 188.6 L325.7 188.5 L327.9 192.2 L330.1 171.2 L332.3 164.4 L334.6 157.5 L336.8 149.6 L339.0 147.1 L341.3 137.7 L343.5 119.3 L345.7 138.7 L348.0 144.3 L350.2 147.4 L352.4 142.1 L354.6 149.5 L356.9 157.2 L359.1 158.1 L361.3 162.3 L363.6 159.3 L365.8 165.0 L368.0 140.5 L370.3 143.3 L372.5 158.3 L374.7 151.1 L377.0 176.2 L379.2 169.7 L381.4 170.5 L383.6 184.9 L385.9 176.7 L388.1 176.1 L390.3 162.6 L392.6 172.0 L394.8 177.1 L397.0 165.9 L399.3 169.7 L401.5 185.6 L403.7 187.6 L405.9 193.6 L408.2 199.6 L410.4 195.1 L412.6 185.5 L414.9 190.2 L417.1 195.3 L419.3 194.0 L421.6 191.4 L423.8 178.1 L426.0 180.6 L428.3 165.4 L430.5 179.2 L432.7 163.8 L434.9 162.5 L437.2 172.0 L439.4 180.5 L441.6 179.6 L443.9 172.2 L446.1 163.3 L448.3 169.4 L450.6 173.0 L452.8 192.2 L455.0 191.3 L457.2 204.3 L459.5 194.9 L461.7 184.3 L463.9 173.4 L466.2 163.5 L468.4 150.0 L470.6 150.4 L472.9 141.2 L475.1 153.1 L477.3 153.2 L479.6 141.0 L481.8 138.7 L484.0 139.0 L486.2 139.3 L488.5 149.1 L490.7 153.1 L492.9 154.4 L495.2 158.4 L497.4 170.0 L499.6 161.5 L501.9 167.8 L504.1 133.8 L506.3 153.1 L508.6 147.1 L510.8 153.3 L513.0 140.4 L515.2 132.9 L517.5 129.3 L519.7 137.9 L521.9 141.8 L524.2 151.6 L526.4 151.7 L528.6 165.4 L530.9 163.1 L533.1 159.9 L535.3 149.8 L537.5 144.4 L539.8 134.9 L542.0 132.1 L544.2 138.3 L546.5 140.1 L548.7 139.2 L550.9 132.1 L553.2 135.2 L555.4 133.0 L557.6 128.4 L559.9 122.7 L562.1 113.5 L564.3 112.8 L566.5 116.1 L568.8 129.1 L571.0 131.3 L573.2 136.8 L575.5 132.7 L577.7 146.2 L579.9 153.7 L582.2 159.5 L584.4 154.0 L586.6 155.1 L588.8 144.9 L591.1 163.0 L593.3 165.4 L595.5 156.0 L597.8 152.4 L600.0 157.2 L600 260 L0 260Z" fill="url(#nvda-fill)"/>
-    <path class="c-s200" d="M0.0 292.0 L2.2 291.5 L4.5 291.0 L6.7 290.5 L8.9 289.9 L11.2 289.3 L13.4 288.9 L15.6 288.4 L17.8 288.1 L20.1 287.7 L22.3 287.3 L24.5 286.8 L26.8 286.4 L29.0 286.0 L31.2 285.7 L33.5 285.4 L35.7 284.9 L37.9 284.5 L40.1 283.8 L42.4 283.2 L44.6 282.5 L46.8 281.9 L49.1 281.2 L51.3 280.6 L53.5 280.1 L55.8 279.8 L58.0 279.4 L60.2 278.9 L62.5 278.2 L64.7 277.6 L66.9 277.0 L69.1 276.4 L71.4 275.7 L73.6 275.1 L75.8 274.5 L78.1 274.0 L80.3 273.5 L82.5 273.0 L84.8 272.6 L87.0 272.2 L89.2 271.8 L91.4 271.3 L93.7 270.9 L95.9 270.6 L98.1 270.2 L100.4 269.8 L102.6 269.3 L104.8 268.8 L107.1 268.3 L109.3 267.8 L111.5 267.3 L113.8 266.8 L116.0 266.2 L118.2 265.7 L120.4 265.2 L122.7 264.5 L124.9 263.9 L127.1 263.1 L129.4 262.4 L131.6 261.7 L133.8 261.0 L136.1 260.4 L138.3 259.8 L140.5 259.1 L142.8 258.4 L145.0 257.8 L147.2 257.1 L149.4 256.5 L151.7 255.9 L153.9 255.3 L156.1 254.6 L158.4 253.9 L160.6 253.2 L162.8 252.5 L165.1 251.8 L167.3 251.1 L169.5 250.2 L171.7 249.4 L174.0 248.6 L176.2 247.9 L178.4 247.1 L180.7 246.3 L182.9 245.6 L185.1 244.9 L187.4 244.2 L189.6 243.5 L191.8 242.8 L194.1 242.0 L196.3 241.2 L198.5 240.5 L200.7 239.7 L203.0 239.0 L205.2 238.3 L207.4 237.6 L209.7 236.9 L211.9 236.2 L214.1 235.5 L216.4 234.8 L218.6 234.1 L220.8 233.4 L223.0 232.7 L225.3 232.2 L227.5 231.7 L229.7 231.3 L232.0 230.9 L234.2 230.4 L236.4 230.0 L238.7 229.6 L240.9 229.1 L243.1 228.6 L245.4 228.1 L247.6 227.7 L249.8 227.3 L252.0 226.9 L254.3 226.4 L256.5 226.1 L258.7 225.8 L261.0 225.4 L263.2 225.1 L265.4 224.8 L267.7 224.5 L269.9 224.3 L272.1 224.1 L274.3 223.8 L276.6 223.5 L278.8 223.2 L281.0 222.9 L283.3 222.6 L285.5 222.2 L287.7 221.9 L290.0 221.5 L292.2 221.2 L294.4 220.8 L296.7 220.4 L298.9 220.0 L301.1 219.6 L303.3 219.1 L305.6 218.8 L307.8 218.4 L310.0 218.0 L312.3 217.6 L314.5 217.1 L316.7 216.6 L319.0 216.2 L321.2 215.9 L323.4 215.7 L325.7 215.5 L327.9 215.2 L330.1 214.9 L332.3 214.5 L334.6 214.1 L336.8 213.6 L339.0 213.2 L341.3 212.8 L343.5 212.2 L345.7 211.8 L348.0 211.4 L350.2 210.9 L352.4 210.5 L354.6 210.1 L356.9 209.8 L359.1 209.5 L361.3 209.2 L363.6 208.9 L365.8 208.6 L368.0 208.2 L370.3 207.9 L372.5 207.5 L374.7 207.2 L377.0 206.9 L379.2 206.6 L381.4 206.3 L383.6 206.1 L385.9 205.9 L388.1 205.7 L390.3 205.4 L392.6 205.1 L394.8 204.8 L397.0 204.5 L399.3 204.1 L401.5 203.9 L403.7 203.6 L405.9 203.3 L408.2 203.1 L410.4 202.9 L412.6 202.7 L414.9 202.5 L417.1 202.4 L419.3 202.2 L421.6 201.9 L423.8 201.7 L426.0 201.4 L428.3 201.2 L430.5 201.0 L432.7 200.6 L434.9 200.3 L437.2 200.0 L439.4 199.8 L441.6 199.7 L443.9 199.5 L446.1 199.3 L448.3 199.1 L450.6 198.9 L452.8 198.8 L455.0 198.7 L457.2 198.7 L459.5 198.6 L461.7 198.5 L463.9 198.3 L466.2 198.0 L468.4 197.6 L470.6 197.3 L472.9 196.9 L475.1 196.6 L477.3 196.2 L479.6 195.8 L481.8 195.5 L484.0 195.1 L486.2 194.9 L488.5 194.8 L490.7 194.7 L492.9 194.5 L495.2 194.5 L497.4 194.4 L499.6 194.2 L501.9 194.0 L504.1 193.6 L506.3 193.5 L508.6 193.2 L510.8 193.0 L513.0 192.6 L515.2 192.3 L517.5 191.9 L519.7 191.5 L521.9 191.1 L524.2 190.8 L526.4 190.4 L528.6 190.1 L530.9 189.8 L533.1 189.5 L535.3 189.1 L537.5 188.7 L539.8 188.3 L542.0 187.8 L544.2 187.5 L546.5 187.1 L548.7 186.7 L550.9 186.3 L553.2 185.9 L555.4 185.4 L557.6 184.9 L559.9 184.4 L562.1 183.8 L564.3 183.2 L566.5 182.6 L568.8 182.1 L571.0 181.7 L573.2 181.4 L575.5 181.0 L577.7 180.7 L579.9 180.4 L582.2 180.2 L584.4 179.9 L586.6 179.7 L588.8 179.3 L591.1 179.1 L593.3 178.9 L595.5 178.6 L597.8 178.3 L600.0 178.0" fill="none" stroke="#6f7680" stroke-width="1.4" pathLength="1"/>
-    <path class="c-s50" d="M0.0 226.9 L2.2 226.4 L4.5 225.9 L6.7 225.6 L8.9 225.1 L11.2 224.6 L13.4 224.4 L15.6 223.9 L17.8 223.9 L20.1 223.8 L22.3 223.7 L24.5 223.7 L26.8 223.7 L29.0 223.7 L31.2 223.8 L33.5 223.8 L35.7 223.6 L37.9 223.2 L40.1 222.5 L42.4 221.3 L44.6 220.3 L46.8 219.3 L49.1 218.2 L51.3 217.5 L53.5 217.0 L55.8 216.8 L58.0 216.5 L60.2 215.6 L62.5 214.7 L64.7 213.9 L66.9 213.3 L69.1 212.4 L71.4 211.8 L73.6 211.4 L75.8 211.0 L78.1 210.9 L80.3 210.9 L82.5 210.7 L84.8 210.6 L87.0 210.2 L89.2 210.2 L91.4 210.1 L93.7 210.1 L95.9 210.1 L98.1 209.9 L100.4 209.7 L102.6 209.4 L104.8 209.3 L107.1 209.4 L109.3 209.6 L111.5 210.1 L113.8 210.6 L116.0 210.9 L118.2 211.4 L120.4 211.9 L122.7 212.4 L124.9 212.3 L127.1 212.3 L129.4 212.0 L131.6 211.6 L133.8 211.4 L136.1 211.2 L138.3 211.1 L140.5 210.8 L142.8 210.5 L145.0 210.3 L147.2 210.2 L149.4 210.4 L151.7 211.0 L153.9 211.8 L156.1 212.5 L158.4 213.2 L160.6 213.9 L162.8 214.4 L165.1 215.0 L167.3 215.2 L169.5 215.3 L171.7 215.8 L174.0 216.0 L176.2 216.2 L178.4 216.0 L180.7 215.9 L182.9 215.8 L185.1 215.6 L187.4 215.8 L189.6 216.1 L191.8 216.3 L194.1 216.2 L196.3 215.8 L198.5 215.5 L200.7 215.0 L203.0 214.7 L205.2 214.7 L207.4 214.5 L209.7 214.3 L211.9 214.1 L214.1 213.9 L216.4 213.7 L218.6 213.4 L220.8 212.8 L223.0 212.5 L225.3 212.4 L227.5 212.2 L229.7 211.9 L232.0 211.6 L234.2 211.5 L236.4 211.7 L238.7 211.9 L240.9 212.1 L243.1 212.3 L245.4 212.4 L247.6 212.7 L249.8 212.8 L252.0 213.1 L254.3 213.4 L256.5 213.7 L258.7 214.3 L261.0 214.7 L263.2 215.0 L265.4 215.3 L267.7 215.8 L269.9 216.4 L272.1 217.2 L274.3 217.6 L276.6 217.7 L278.8 217.9 L281.0 218.2 L283.3 218.6 L285.5 218.7 L287.7 218.9 L290.0 219.0 L292.2 219.1 L294.4 218.9 L296.7 218.4 L298.9 217.8 L301.1 216.7 L303.3 215.6 L305.6 215.1 L307.8 214.6 L310.0 214.2 L312.3 213.5 L314.5 212.4 L316.7 211.3 L319.0 210.4 L321.2 210.0 L323.4 209.6 L325.7 209.2 L327.9 209.1 L330.1 208.5 L332.3 207.9 L334.6 206.8 L336.8 205.2 L339.0 203.8 L341.3 202.1 L343.5 200.1 L345.7 198.6 L348.0 196.9 L350.2 195.5 L352.4 194.1 L354.6 192.8 L356.9 191.6 L359.1 190.4 L361.3 189.3 L363.6 188.1 L365.8 186.9 L368.0 185.2 L370.3 183.4 L372.5 181.9 L374.7 180.3 L377.0 179.3 L379.2 177.9 L381.4 176.4 L383.6 175.1 L385.9 174.0 L388.1 172.9 L390.3 171.6 L392.6 170.5 L394.8 169.5 L397.0 168.4 L399.3 167.5 L401.5 167.1 L403.7 166.7 L405.9 166.7 L408.2 167.0 L410.4 167.1 L412.6 167.2 L414.9 167.3 L417.1 167.5 L419.3 167.8 L421.6 167.9 L423.8 168.0 L426.0 168.5 L428.3 168.6 L430.5 168.8 L432.7 168.4 L434.9 167.9 L437.2 167.5 L439.4 167.3 L441.6 167.5 L443.9 167.6 L446.1 167.7 L448.3 168.1 L450.6 168.7 L452.8 169.7 L455.0 171.2 L457.2 172.5 L459.5 173.5 L461.7 174.2 L463.9 174.9 L466.2 175.2 L468.4 175.0 L470.6 174.9 L472.9 174.4 L475.1 174.3 L477.3 174.1 L479.6 174.1 L481.8 174.0 L484.0 173.6 L486.2 173.4 L488.5 172.8 L490.7 172.5 L492.9 172.2 L495.2 171.6 L497.4 171.5 L499.6 171.2 L501.9 171.3 L504.1 170.6 L506.3 170.1 L508.6 169.7 L510.8 169.4 L513.0 168.5 L515.2 167.4 L517.5 166.1 L519.7 164.9 L521.9 163.8 L524.2 163.1 L526.4 162.3 L528.6 161.7 L530.9 161.1 L533.1 160.5 L535.3 159.9 L537.5 159.2 L539.8 158.6 L542.0 157.7 L544.2 157.1 L546.5 156.7 L548.7 156.0 L550.9 155.1 L553.2 154.2 L555.4 153.4 L557.6 152.7 L559.9 151.8 L562.1 150.6 L564.3 149.0 L566.5 147.5 L568.8 146.0 L571.0 144.7 L573.2 143.8 L575.5 143.0 L577.7 142.6 L579.9 142.7 L582.2 142.9 L584.4 143.1 L586.6 143.2 L588.8 143.0 L591.1 143.4 L593.3 144.0 L595.5 144.3 L597.8 144.6 L600.0 144.7" fill="none" stroke="#e9e3c9" stroke-width="1.3" stroke-opacity=".7" pathLength="1"/>
-    <path class="c-close" d="M0.0 206.3 L2.2 208.7 L4.5 212.6 L6.7 213.5 L8.9 205.9 L11.2 199.5 L13.4 217.0 L15.6 207.4 L17.8 222.8 L20.1 223.2 L22.3 219.5 L24.5 216.9 L26.8 218.0 L29.0 220.7 L31.2 222.3 L33.5 218.8 L35.7 211.2 L37.9 201.5 L40.1 183.8 L42.4 172.6 L44.6 180.3 L46.8 181.1 L49.1 172.9 L51.3 188.1 L53.5 194.6 L55.8 207.9 L58.0 207.7 L60.2 187.5 L62.5 198.4 L64.7 197.2 L66.9 210.1 L69.1 204.0 L71.4 210.6 L73.6 220.3 L75.8 210.7 L78.1 221.7 L80.3 224.9 L82.5 218.1 L84.8 226.9 L87.0 222.4 L89.2 228.4 L91.4 223.0 L93.7 220.1 L95.9 223.6 L98.1 216.6 L100.4 218.4 L102.6 212.5 L104.8 213.6 L107.1 215.8 L109.3 221.1 L111.5 232.1 L113.8 229.7 L116.0 227.1 L118.2 239.7 L120.4 233.7 L122.7 221.0 L124.9 216.0 L127.1 205.8 L129.4 206.9 L131.6 203.3 L133.8 207.6 L136.1 208.9 L138.3 210.8 L140.5 206.4 L142.8 207.8 L145.0 209.4 L147.2 205.9 L149.4 213.5 L151.7 213.8 L153.9 213.7 L156.1 212.1 L158.4 217.0 L160.6 209.8 L162.8 211.3 L165.1 226.4 L167.3 216.7 L169.5 213.9 L171.7 208.6 L174.0 210.8 L176.2 207.0 L178.4 201.5 L180.7 199.6 L182.9 202.2 L185.1 212.4 L187.4 222.2 L189.6 233.6 L191.8 237.9 L194.1 212.8 L196.3 204.2 L198.5 207.0 L200.7 204.2 L203.0 210.0 L205.2 217.6 L207.4 213.6 L209.7 208.0 L211.9 208.2 L214.1 204.6 L216.4 201.4 L218.6 199.0 L220.8 194.0 L223.0 213.8 L225.3 228.1 L227.5 218.3 L229.7 222.8 L232.0 217.2 L234.2 216.7 L236.4 226.9 L238.7 217.9 L240.9 214.0 L243.1 211.7 L245.4 217.0 L247.6 222.4 L249.8 216.9 L252.0 219.3 L254.3 222.1 L256.5 225.5 L258.7 236.4 L261.0 231.0 L263.2 231.8 L265.4 225.3 L267.7 239.1 L269.9 246.0 L272.1 250.4 L274.3 233.3 L276.6 230.8 L278.8 227.7 L281.0 227.2 L283.3 226.4 L285.5 219.0 L287.7 215.6 L290.0 206.8 L292.2 205.6 L294.4 192.2 L296.7 187.8 L298.9 188.8 L301.1 182.6 L303.3 181.9 L305.6 185.9 L307.8 181.1 L310.0 186.4 L312.3 170.4 L314.5 154.9 L316.7 161.3 L319.0 168.5 L321.2 186.5 L323.4 188.6 L325.7 188.5 L327.9 192.2 L330.1 171.2 L332.3 164.4 L334.6 157.5 L336.8 149.6 L339.0 147.1 L341.3 137.7 L343.5 119.3 L345.7 138.7 L348.0 144.3 L350.2 147.4 L352.4 142.1 L354.6 149.5 L356.9 157.2 L359.1 158.1 L361.3 162.3 L363.6 159.3 L365.8 165.0 L368.0 140.5 L370.3 143.3 L372.5 158.3 L374.7 151.1 L377.0 176.2 L379.2 169.7 L381.4 170.5 L383.6 184.9 L385.9 176.7 L388.1 176.1 L390.3 162.6 L392.6 172.0 L394.8 177.1 L397.0 165.9 L399.3 169.7 L401.5 185.6 L403.7 187.6 L405.9 193.6 L408.2 199.6 L410.4 195.1 L412.6 185.5 L414.9 190.2 L417.1 195.3 L419.3 194.0 L421.6 191.4 L423.8 178.1 L426.0 180.6 L428.3 165.4 L430.5 179.2 L432.7 163.8 L434.9 162.5 L437.2 172.0 L439.4 180.5 L441.6 179.6 L443.9 172.2 L446.1 163.3 L448.3 169.4 L450.6 173.0 L452.8 192.2 L455.0 191.3 L457.2 204.3 L459.5 194.9 L461.7 184.3 L463.9 173.4 L466.2 163.5 L468.4 150.0 L470.6 150.4 L472.9 141.2 L475.1 153.1 L477.3 153.2 L479.6 141.0 L481.8 138.7 L484.0 139.0 L486.2 139.3 L488.5 149.1 L490.7 153.1 L492.9 154.4 L495.2 158.4 L497.4 170.0 L499.6 161.5 L501.9 167.8 L504.1 133.8 L506.3 153.1 L508.6 147.1 L510.8 153.3 L513.0 140.4 L515.2 132.9 L517.5 129.3 L519.7 137.9 L521.9 141.8 L524.2 151.6 L526.4 151.7 L528.6 165.4 L530.9 163.1 L533.1 159.9 L535.3 149.8 L537.5 144.4 L539.8 134.9 L542.0 132.1 L544.2 138.3 L546.5 140.1 L548.7 139.2 L550.9 132.1 L553.2 135.2 L555.4 133.0 L557.6 128.4 L559.9 122.7 L562.1 113.5 L564.3 112.8 L566.5 116.1 L568.8 129.1 L571.0 131.3 L573.2 136.8 L575.5 132.7 L577.7 146.2 L579.9 153.7 L582.2 159.5 L584.4 154.0 L586.6 155.1 L588.8 144.9 L591.1 163.0 L593.3 165.4 L595.5 156.0 L597.8 152.4 L600.0 157.2" fill="none" stroke="#c8f531" stroke-width="2.2" stroke-linejoin="round" pathLength="1"/>
-    <path class="c-wave" d="" fill="none" stroke="#f4f5f1" stroke-width="1.3" stroke-dasharray="3 4"/>
-    <g class="c-nodes"></g>
-  </symbol>
-</svg>
+<main id="main">
+<section class="shell hero" aria-labelledby="hero-title">
+  <p class="eyebrow">Aktien · ETFs · Vorsorge</p>
+  <h1 id="hero-title">Aktien verstehen. <mark>In klaren Worten.</mark></h1>
+  <p class="lead">Vom ersten 10-€-Sparplan bis zur Profi-Analyse. Echte Daten aus Pflichtberichten, für jede Zahl eine Erklärung.</p>
+  <div class="cta">
+    <a class="vu-btn" href="/konto/registrieren/?plan=free">Kostenlos starten <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+    <a class="vu-btn vu-btn--line" href="/discover/">Erst umsehen, ohne Konto</a>
+  </div>
+  <p class="note">Free kostet 0 €, ohne Zahlungsdaten.</p>
 
-<main>
-
-<!-- ============ HERO ============ -->
-<section class="hero" id="hero">
-  <div class="hero-fx" aria-hidden="true"><i class="hero-grid-fx"></i><i class="hero-scan"></i></div>
-  <div class="shell hero-grid">
-    <div class="hero-copy">
-      <span class="hero-badge"><b>App</b> Aktien · ETFs · Vorsorge · Elliott Wave · Quant</span>
-      <h1>Investieren mit <em>Weitblick.</em> Alles in einer&nbsp;App.</h1>
-      <p class="lead">Aktien entdecken und bis ins Detail verstehen – Fundamentaldaten, Technik, Elliott Wave und Quant mit klarer Einschätzung. Dazu Screener, Methoden und deine Altersvorsorge. Unabhängig, nachvollziehbar, auf echten Daten.</p>
-      <div class="hero-cta">
-        <a class="btn btn-app btn-xl" href="/discover/">App öffnen <svg><use href="#i-arrow"/></svg></a>
-        <a class="btn btn-ghost btn-xl" href="#app-module">Alle Module ansehen</a>
-      </div>
-      <ul class="hero-checks">
-        <li><svg><use href="#i-check"/></svg>Über 6.000 US-Aktien</li>
-        <li><svg><use href="#i-check"/></svg>9 Module in einer App</li>
-        <li><svg><use href="#i-check"/></svg>Desktop &amp; Smartphone</li>
-      </ul>
+  <article class="live" aria-label="Beispiel mit echten Daten: NVIDIA">
+    <div class="live-top"><span class="tag-lime">Echte Daten</span><span class="mute">Schluss 06.11.2026</span></div>
+    <div class="vu-stockhead__top">
+      <span class="vu-logo-tile" aria-hidden="true"><img src="/discover/logos/files/NVDA.png" alt="" width="42" height="42" loading="lazy" decoding="async"></span>
+      <div class="vu-stockhead__name"><b><a href="/discover/#/s/US_REAL/NVDA">NVIDIA</a></b><span>NVDA · Chips für KI und Grafik</span></div>
     </div>
+    <div class="vu-stockhead__price"><b>186,64 $</b><span role="img" aria-label="Plus 2,78 Prozent" class="vu-chg vu-chg--big"><span aria-hidden="true">▲</span> +2,78 %</span><span class="vu-stockhead__meta">Schluss<br>06.11.26</span></div>
+    <figure class="chart" aria-label="Kursverlauf ein Jahr"><svg class="vu-onechart" viewBox="0 0 354 150" aria-hidden="true"><defs><linearGradient id="g-live" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".55"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs><g class="grid"><line x1="0" x2="354" y1="40.5" y2="40.5"/><line x1="0" x2="354" y1="75.0" y2="75.0"/><line x1="0" x2="354" y1="109.5" y2="109.5"/></g><line class="base" x1="0" x2="354" y1="99.4" y2="99.4"/><path d="M0.0 99.4 L1.4 99.2 L2.8 80.4 L4.1 90.6 L5.5 89.5 L6.9 101.5 L8.3 95.8 L9.6 101.9 L11.0 111.0 L12.4 102.1 L13.8 112.2 L15.2 115.2 L16.5 108.9 L17.9 117.1 L19.3 112.9 L20.7 118.5 L22.1 113.4 L23.4 110.8 L24.8 114.0 L26.2 107.5 L27.6 109.1 L28.9 103.7 L30.3 104.7 L31.7 106.8 L33.1 111.7 L34.5 121.9 L35.8 119.7 L37.2 117.2 L38.6 128.9 L40.0 123.4 L41.4 111.6 L42.7 106.9 L44.1 97.4 L45.5 98.5 L46.9 95.1 L48.2 99.1 L49.6 100.3 L51.0 102.1 L52.4 98.0 L53.8 99.3 L55.1 100.8 L56.5 97.6 L57.9 104.6 L59.3 104.9 L60.7 104.8 L62.0 103.3 L63.4 107.9 L64.8 101.1 L66.2 102.6 L67.5 116.6 L68.9 107.6 L70.3 105.0 L71.7 100.1 L73.1 102.1 L74.4 98.6 L75.8 93.4 L77.2 91.7 L78.6 94.1 L80.0 103.6 L81.3 112.7 L82.7 123.3 L84.1 127.3 L85.5 104.0 L86.8 96.0 L88.2 98.6 L89.6 96.0 L91.0 101.3 L92.4 108.5 L93.7 104.7 L95.1 99.5 L96.5 99.7 L97.9 96.4 L99.3 93.4 L100.6 91.1 L102.0 86.5 L103.4 104.9 L104.8 118.2 L106.1 109.0 L107.5 113.2 L108.9 108.1 L110.3 107.5 L111.7 117.1 L113.0 108.7 L114.4 105.1 L115.8 102.9 L117.2 107.9 L118.5 112.9 L119.9 107.8 L121.3 110.0 L122.7 112.6 L124.1 115.8 L125.4 125.9 L126.8 120.8 L128.2 121.6 L129.6 115.6 L131.0 128.4 L132.3 134.8 L133.7 138.9 L135.1 123.0 L136.5 120.6 L137.8 117.8 L139.2 117.4 L140.6 116.6 L142.0 109.7 L143.4 106.6 L144.7 98.4 L146.1 97.2 L147.5 84.8 L148.9 80.8 L150.3 81.7 L151.6 75.9 L153.0 75.3 L154.4 79.0 L155.8 74.5 L157.1 79.4 L158.5 64.5 L159.9 50.2 L161.3 56.1 L162.7 62.8 L164.0 79.5 L165.4 81.5 L166.8 81.4 L168.2 84.8 L169.6 65.3 L170.9 59.0 L172.3 52.6 L173.7 45.3 L175.1 43.0 L176.4 34.2 L177.8 17.1 L179.2 35.1 L180.6 40.3 L182.0 43.2 L183.3 38.3 L184.7 45.1 L186.1 52.4 L187.5 53.2 L188.9 57.1 L190.2 54.2 L191.6 59.6 L193.0 36.8 L194.4 39.4 L195.7 53.4 L197.1 46.6 L198.5 70.0 L199.9 63.9 L201.3 64.7 L202.6 78.1 L204.0 70.4 L205.4 69.9 L206.8 57.3 L208.2 66.0 L209.5 70.8 L210.9 60.4 L212.3 63.9 L213.7 78.7 L215.0 80.5 L216.4 86.2 L217.8 91.7 L219.2 87.5 L220.6 78.6 L221.9 83.0 L223.3 87.7 L224.7 86.5 L226.1 84.1 L227.5 71.7 L228.8 74.0 L230.2 59.9 L231.6 72.7 L233.0 58.4 L234.3 57.2 L235.7 66.0 L237.1 74.0 L238.5 73.1 L239.9 66.2 L241.2 58.0 L242.6 63.7 L244.0 67.0 L245.4 84.8 L246.7 84.0 L248.1 96.0 L249.5 87.4 L250.9 77.5 L252.3 67.3 L253.6 58.2 L255.0 45.6 L256.4 46.0 L257.8 37.5 L259.2 48.5 L260.5 48.6 L261.9 37.2 L263.3 35.2 L264.7 35.4 L266.0 35.7 L267.4 44.8 L268.8 48.5 L270.2 49.7 L271.6 53.4 L272.9 64.2 L274.3 56.3 L275.7 62.1 L277.1 30.5 L278.5 48.5 L279.8 43.0 L281.2 48.7 L282.6 36.7 L284.0 29.7 L285.3 26.4 L286.7 34.4 L288.1 38.0 L289.5 47.1 L290.9 47.3 L292.2 59.9 L293.6 57.8 L295.0 54.8 L296.4 45.4 L297.8 40.4 L299.1 31.6 L300.5 29.0 L301.9 34.8 L303.3 36.4 L304.6 35.6 L306.0 29.0 L307.4 31.9 L308.8 29.8 L310.2 25.6 L311.5 20.2 L312.9 11.7 L314.3 11.1 L315.7 14.2 L317.1 26.2 L318.4 28.3 L319.8 33.4 L321.2 29.6 L322.6 42.1 L323.9 49.1 L325.3 54.4 L326.7 49.3 L328.1 50.4 L329.5 40.9 L330.8 57.7 L332.2 59.9 L333.6 51.2 L335.0 47.9 L336.4 52.3 L337.7 55.2 L339.1 70.8 L340.5 75.3 L341.9 67.3 L343.2 78.6 L344.6 110.5 L346.0 101.9 L346.0 150 L0 150Z" fill="url(#g-live)"/><path class="line" d="M0.0 99.4 L1.4 99.2 L2.8 80.4 L4.1 90.6 L5.5 89.5 L6.9 101.5 L8.3 95.8 L9.6 101.9 L11.0 111.0 L12.4 102.1 L13.8 112.2 L15.2 115.2 L16.5 108.9 L17.9 117.1 L19.3 112.9 L20.7 118.5 L22.1 113.4 L23.4 110.8 L24.8 114.0 L26.2 107.5 L27.6 109.1 L28.9 103.7 L30.3 104.7 L31.7 106.8 L33.1 111.7 L34.5 121.9 L35.8 119.7 L37.2 117.2 L38.6 128.9 L40.0 123.4 L41.4 111.6 L42.7 106.9 L44.1 97.4 L45.5 98.5 L46.9 95.1 L48.2 99.1 L49.6 100.3 L51.0 102.1 L52.4 98.0 L53.8 99.3 L55.1 100.8 L56.5 97.6 L57.9 104.6 L59.3 104.9 L60.7 104.8 L62.0 103.3 L63.4 107.9 L64.8 101.1 L66.2 102.6 L67.5 116.6 L68.9 107.6 L70.3 105.0 L71.7 100.1 L73.1 102.1 L74.4 98.6 L75.8 93.4 L77.2 91.7 L78.6 94.1 L80.0 103.6 L81.3 112.7 L82.7 123.3 L84.1 127.3 L85.5 104.0 L86.8 96.0 L88.2 98.6 L89.6 96.0 L91.0 101.3 L92.4 108.5 L93.7 104.7 L95.1 99.5 L96.5 99.7 L97.9 96.4 L99.3 93.4 L100.6 91.1 L102.0 86.5 L103.4 104.9 L104.8 118.2 L106.1 109.0 L107.5 113.2 L108.9 108.1 L110.3 107.5 L111.7 117.1 L113.0 108.7 L114.4 105.1 L115.8 102.9 L117.2 107.9 L118.5 112.9 L119.9 107.8 L121.3 110.0 L122.7 112.6 L124.1 115.8 L125.4 125.9 L126.8 120.8 L128.2 121.6 L129.6 115.6 L131.0 128.4 L132.3 134.8 L133.7 138.9 L135.1 123.0 L136.5 120.6 L137.8 117.8 L139.2 117.4 L140.6 116.6 L142.0 109.7 L143.4 106.6 L144.7 98.4 L146.1 97.2 L147.5 84.8 L148.9 80.8 L150.3 81.7 L151.6 75.9 L153.0 75.3 L154.4 79.0 L155.8 74.5 L157.1 79.4 L158.5 64.5 L159.9 50.2 L161.3 56.1 L162.7 62.8 L164.0 79.5 L165.4 81.5 L166.8 81.4 L168.2 84.8 L169.6 65.3 L170.9 59.0 L172.3 52.6 L173.7 45.3 L175.1 43.0 L176.4 34.2 L177.8 17.1 L179.2 35.1 L180.6 40.3 L182.0 43.2 L183.3 38.3 L184.7 45.1 L186.1 52.4 L187.5 53.2 L188.9 57.1 L190.2 54.2 L191.6 59.6 L193.0 36.8 L194.4 39.4 L195.7 53.4 L197.1 46.6 L198.5 70.0 L199.9 63.9 L201.3 64.7 L202.6 78.1 L204.0 70.4 L205.4 69.9 L206.8 57.3 L208.2 66.0 L209.5 70.8 L210.9 60.4 L212.3 63.9 L213.7 78.7 L215.0 80.5 L216.4 86.2 L217.8 91.7 L219.2 87.5 L220.6 78.6 L221.9 83.0 L223.3 87.7 L224.7 86.5 L226.1 84.1 L227.5 71.7 L228.8 74.0 L230.2 59.9 L231.6 72.7 L233.0 58.4 L234.3 57.2 L235.7 66.0 L237.1 74.0 L238.5 73.1 L239.9 66.2 L241.2 58.0 L242.6 63.7 L244.0 67.0 L245.4 84.8 L246.7 84.0 L248.1 96.0 L249.5 87.4 L250.9 77.5 L252.3 67.3 L253.6 58.2 L255.0 45.6 L256.4 46.0 L257.8 37.5 L259.2 48.5 L260.5 48.6 L261.9 37.2 L263.3 35.2 L264.7 35.4 L266.0 35.7 L267.4 44.8 L268.8 48.5 L270.2 49.7 L271.6 53.4 L272.9 64.2 L274.3 56.3 L275.7 62.1 L277.1 30.5 L278.5 48.5 L279.8 43.0 L281.2 48.7 L282.6 36.7 L284.0 29.7 L285.3 26.4 L286.7 34.4 L288.1 38.0 L289.5 47.1 L290.9 47.3 L292.2 59.9 L293.6 57.8 L295.0 54.8 L296.4 45.4 L297.8 40.4 L299.1 31.6 L300.5 29.0 L301.9 34.8 L303.3 36.4 L304.6 35.6 L306.0 29.0 L307.4 31.9 L308.8 29.8 L310.2 25.6 L311.5 20.2 L312.9 11.7 L314.3 11.1 L315.7 14.2 L317.1 26.2 L318.4 28.3 L319.8 33.4 L321.2 29.6 L322.6 42.1 L323.9 49.1 L325.3 54.4 L326.7 49.3 L328.1 50.4 L329.5 40.9 L330.8 57.7 L332.2 59.9 L333.6 51.2 L335.0 47.9 L336.4 52.3 L337.7 55.2 L339.1 70.8 L340.5 75.3 L341.9 67.3 L343.2 78.6 L344.6 110.5 L346.0 101.9"/><circle class="dot" cx="346.0" cy="101.9" r="5"/></svg><figcaption><span>06.11.25</span><span>06.11.26</span></figcaption></figure>
+    <ul class="verdicts"><li><span class="vu-hud" style="--vu-hud:34px;border-radius:10px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#fundamental"/></svg></span><span class="v-name"><b>Geschäft</b><small>+83 % in 12 Monaten</small></span><span class="vu-verdict vu-verdict--strong" data-verdict="strong"><span aria-hidden="true">▲</span> Sehr stark</span></li><li><span class="vu-hud" style="--vu-hud:34px;border-radius:10px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#quant"/></svg></span><span class="v-name"><b>Eigenschaften</b><small>3 von 6 stark</small></span><span class="vu-verdict vu-verdict--mid" data-verdict="mid"><span aria-hidden="true">◆</span> Gemischt</span></li><li><span class="vu-hud" style="--vu-hud:34px;border-radius:10px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#technical"/></svg></span><span class="v-name"><b>Chart</b><small>kein klarer Trend</small></span><span class="vu-verdict vu-verdict--mid" data-verdict="mid"><span aria-hidden="true">◆</span> Seitwärts</span></li></ul>
+  </article>
+</section>
 
-    <div class="stage" aria-hidden="true">
-      <!-- Desktop: Technik & Elliott -->
-      <div class="browser">
-        <div class="browser-bar"><i></i><i></i><i></i><span>research.visionuniverse.de/elliott/#/NVDA</span></div>
-        <div class="desk">
-          <div class="desk-side"><b>NVDA</b><span>Überblick</span><span>Zahlen</span><span class="on">Technik</span><span>Elliott</span><span>Faktoren</span><span>Setups</span></div>
-          <div class="desk-main">
-            <div class="desk-kpis">
-              <div class="desk-kpi"><b>offen</b><small>Elliott Wave</small></div>
-              <div class="desk-kpi"><b data-count>63,3</b><small>Trend-Score · neutral</small></div>
-              <div class="desk-kpi"><b data-count>43,9</b><small>RSI 14</small></div>
-            </div>
-            <div class="desk-chart">
-              <div class="lbl"><b>NVIDIA · Kursstruktur &amp; Elliott</b><span>1J</span></div>
-              <svg class="chart intro-chart" viewBox="0 -14 690 298">
-    <g stroke="rgba(255,255,255,.07)" stroke-width="1"><path d="M0 260.0H600M0 222.9H600M0 185.7H600M0 148.6H600M0 111.4H600M0 74.3H600M0 37.1H600M0 0.0H600"/></g>
-    <g fill="#8a9099" font-size="10" font-family="Inter,sans-serif" font-weight="600"><text x="608" y="264.0">160</text><text x="608" y="226.9">180</text><text x="608" y="189.7">200</text><text x="608" y="152.6">220</text><text x="608" y="115.4">240</text><text x="608" y="78.3">260</text><text x="608" y="41.1">280</text><text x="608" y="4.0">300</text></g>
-    <g class="c-zones"><rect x="0" y="33.4" width="600" height="16.7" fill="rgba(200,245,49,.14)" stroke="rgba(200,245,49,.55)" stroke-dasharray="4 4"/><text x="8" y="63.1" fill="#c8f531" font-size="10.5" font-weight="800" font-family="Inter,sans-serif">ZIELZONE 273–282</text><rect x="0" y="144.9" width="600" height="7.4" fill="rgba(255,255,255,.06)"/><path d="M0 174.6H600" stroke="#f0675c" stroke-width="1.4" stroke-dasharray="6 5"/><text x="8" y="188.6" fill="#f0675c" font-size="10.5" font-weight="800" font-family="Inter,sans-serif">INVALIDIERUNG 206</text></g>
-    <path class="c-area" d="M0.0 206.3 L2.2 208.7 L4.5 212.6 L6.7 213.5 L8.9 205.9 L11.2 199.5 L13.4 217.0 L15.6 207.4 L17.8 222.8 L20.1 223.2 L22.3 219.5 L24.5 216.9 L26.8 218.0 L29.0 220.7 L31.2 222.3 L33.5 218.8 L35.7 211.2 L37.9 201.5 L40.1 183.8 L42.4 172.6 L44.6 180.3 L46.8 181.1 L49.1 172.9 L51.3 188.1 L53.5 194.6 L55.8 207.9 L58.0 207.7 L60.2 187.5 L62.5 198.4 L64.7 197.2 L66.9 210.1 L69.1 204.0 L71.4 210.6 L73.6 220.3 L75.8 210.7 L78.1 221.7 L80.3 224.9 L82.5 218.1 L84.8 226.9 L87.0 222.4 L89.2 228.4 L91.4 223.0 L93.7 220.1 L95.9 223.6 L98.1 216.6 L100.4 218.4 L102.6 212.5 L104.8 213.6 L107.1 215.8 L109.3 221.1 L111.5 232.1 L113.8 229.7 L116.0 227.1 L118.2 239.7 L120.4 233.7 L122.7 221.0 L124.9 216.0 L127.1 205.8 L129.4 206.9 L131.6 203.3 L133.8 207.6 L136.1 208.9 L138.3 210.8 L140.5 206.4 L142.8 207.8 L145.0 209.4 L147.2 205.9 L149.4 213.5 L151.7 213.8 L153.9 213.7 L156.1 212.1 L158.4 217.0 L160.6 209.8 L162.8 211.3 L165.1 226.4 L167.3 216.7 L169.5 213.9 L171.7 208.6 L174.0 210.8 L176.2 207.0 L178.4 201.5 L180.7 199.6 L182.9 202.2 L185.1 212.4 L187.4 222.2 L189.6 233.6 L191.8 237.9 L194.1 212.8 L196.3 204.2 L198.5 207.0 L200.7 204.2 L203.0 210.0 L205.2 217.6 L207.4 213.6 L209.7 208.0 L211.9 208.2 L214.1 204.6 L216.4 201.4 L218.6 199.0 L220.8 194.0 L223.0 213.8 L225.3 228.1 L227.5 218.3 L229.7 222.8 L232.0 217.2 L234.2 216.7 L236.4 226.9 L238.7 217.9 L240.9 214.0 L243.1 211.7 L245.4 217.0 L247.6 222.4 L249.8 216.9 L252.0 219.3 L254.3 222.1 L256.5 225.5 L258.7 236.4 L261.0 231.0 L263.2 231.8 L265.4 225.3 L267.7 239.1 L269.9 246.0 L272.1 250.4 L274.3 233.3 L276.6 230.8 L278.8 227.7 L281.0 227.2 L283.3 226.4 L285.5 219.0 L287.7 215.6 L290.0 206.8 L292.2 205.6 L294.4 192.2 L296.7 187.8 L298.9 188.8 L301.1 182.6 L303.3 181.9 L305.6 185.9 L307.8 181.1 L310.0 186.4 L312.3 170.4 L314.5 154.9 L316.7 161.3 L319.0 168.5 L321.2 186.5 L323.4 188.6 L325.7 188.5 L327.9 192.2 L330.1 171.2 L332.3 164.4 L334.6 157.5 L336.8 149.6 L339.0 147.1 L341.3 137.7 L343.5 119.3 L345.7 138.7 L348.0 144.3 L350.2 147.4 L352.4 142.1 L354.6 149.5 L356.9 157.2 L359.1 158.1 L361.3 162.3 L363.6 159.3 L365.8 165.0 L368.0 140.5 L370.3 143.3 L372.5 158.3 L374.7 151.1 L377.0 176.2 L379.2 169.7 L381.4 170.5 L383.6 184.9 L385.9 176.7 L388.1 176.1 L390.3 162.6 L392.6 172.0 L394.8 177.1 L397.0 165.9 L399.3 169.7 L401.5 185.6 L403.7 187.6 L405.9 193.6 L408.2 199.6 L410.4 195.1 L412.6 185.5 L414.9 190.2 L417.1 195.3 L419.3 194.0 L421.6 191.4 L423.8 178.1 L426.0 180.6 L428.3 165.4 L430.5 179.2 L432.7 163.8 L434.9 162.5 L437.2 172.0 L439.4 180.5 L441.6 179.6 L443.9 172.2 L446.1 163.3 L448.3 169.4 L450.6 173.0 L452.8 192.2 L455.0 191.3 L457.2 204.3 L459.5 194.9 L461.7 184.3 L463.9 173.4 L466.2 163.5 L468.4 150.0 L470.6 150.4 L472.9 141.2 L475.1 153.1 L477.3 153.2 L479.6 141.0 L481.8 138.7 L484.0 139.0 L486.2 139.3 L488.5 149.1 L490.7 153.1 L492.9 154.4 L495.2 158.4 L497.4 170.0 L499.6 161.5 L501.9 167.8 L504.1 133.8 L506.3 153.1 L508.6 147.1 L510.8 153.3 L513.0 140.4 L515.2 132.9 L517.5 129.3 L519.7 137.9 L521.9 141.8 L524.2 151.6 L526.4 151.7 L528.6 165.4 L530.9 163.1 L533.1 159.9 L535.3 149.8 L537.5 144.4 L539.8 134.9 L542.0 132.1 L544.2 138.3 L546.5 140.1 L548.7 139.2 L550.9 132.1 L553.2 135.2 L555.4 133.0 L557.6 128.4 L559.9 122.7 L562.1 113.5 L564.3 112.8 L566.5 116.1 L568.8 129.1 L571.0 131.3 L573.2 136.8 L575.5 132.7 L577.7 146.2 L579.9 153.7 L582.2 159.5 L584.4 154.0 L586.6 155.1 L588.8 144.9 L591.1 163.0 L593.3 165.4 L595.5 156.0 L597.8 152.4 L600.0 157.2 L600 260 L0 260Z" fill="url(#nvda-fill)"/>
-    <path class="c-s200" d="M0.0 292.0 L2.2 291.5 L4.5 291.0 L6.7 290.5 L8.9 289.9 L11.2 289.3 L13.4 288.9 L15.6 288.4 L17.8 288.1 L20.1 287.7 L22.3 287.3 L24.5 286.8 L26.8 286.4 L29.0 286.0 L31.2 285.7 L33.5 285.4 L35.7 284.9 L37.9 284.5 L40.1 283.8 L42.4 283.2 L44.6 282.5 L46.8 281.9 L49.1 281.2 L51.3 280.6 L53.5 280.1 L55.8 279.8 L58.0 279.4 L60.2 278.9 L62.5 278.2 L64.7 277.6 L66.9 277.0 L69.1 276.4 L71.4 275.7 L73.6 275.1 L75.8 274.5 L78.1 274.0 L80.3 273.5 L82.5 273.0 L84.8 272.6 L87.0 272.2 L89.2 271.8 L91.4 271.3 L93.7 270.9 L95.9 270.6 L98.1 270.2 L100.4 269.8 L102.6 269.3 L104.8 268.8 L107.1 268.3 L109.3 267.8 L111.5 267.3 L113.8 266.8 L116.0 266.2 L118.2 265.7 L120.4 265.2 L122.7 264.5 L124.9 263.9 L127.1 263.1 L129.4 262.4 L131.6 261.7 L133.8 261.0 L136.1 260.4 L138.3 259.8 L140.5 259.1 L142.8 258.4 L145.0 257.8 L147.2 257.1 L149.4 256.5 L151.7 255.9 L153.9 255.3 L156.1 254.6 L158.4 253.9 L160.6 253.2 L162.8 252.5 L165.1 251.8 L167.3 251.1 L169.5 250.2 L171.7 249.4 L174.0 248.6 L176.2 247.9 L178.4 247.1 L180.7 246.3 L182.9 245.6 L185.1 244.9 L187.4 244.2 L189.6 243.5 L191.8 242.8 L194.1 242.0 L196.3 241.2 L198.5 240.5 L200.7 239.7 L203.0 239.0 L205.2 238.3 L207.4 237.6 L209.7 236.9 L211.9 236.2 L214.1 235.5 L216.4 234.8 L218.6 234.1 L220.8 233.4 L223.0 232.7 L225.3 232.2 L227.5 231.7 L229.7 231.3 L232.0 230.9 L234.2 230.4 L236.4 230.0 L238.7 229.6 L240.9 229.1 L243.1 228.6 L245.4 228.1 L247.6 227.7 L249.8 227.3 L252.0 226.9 L254.3 226.4 L256.5 226.1 L258.7 225.8 L261.0 225.4 L263.2 225.1 L265.4 224.8 L267.7 224.5 L269.9 224.3 L272.1 224.1 L274.3 223.8 L276.6 223.5 L278.8 223.2 L281.0 222.9 L283.3 222.6 L285.5 222.2 L287.7 221.9 L290.0 221.5 L292.2 221.2 L294.4 220.8 L296.7 220.4 L298.9 220.0 L301.1 219.6 L303.3 219.1 L305.6 218.8 L307.8 218.4 L310.0 218.0 L312.3 217.6 L314.5 217.1 L316.7 216.6 L319.0 216.2 L321.2 215.9 L323.4 215.7 L325.7 215.5 L327.9 215.2 L330.1 214.9 L332.3 214.5 L334.6 214.1 L336.8 213.6 L339.0 213.2 L341.3 212.8 L343.5 212.2 L345.7 211.8 L348.0 211.4 L350.2 210.9 L352.4 210.5 L354.6 210.1 L356.9 209.8 L359.1 209.5 L361.3 209.2 L363.6 208.9 L365.8 208.6 L368.0 208.2 L370.3 207.9 L372.5 207.5 L374.7 207.2 L377.0 206.9 L379.2 206.6 L381.4 206.3 L383.6 206.1 L385.9 205.9 L388.1 205.7 L390.3 205.4 L392.6 205.1 L394.8 204.8 L397.0 204.5 L399.3 204.1 L401.5 203.9 L403.7 203.6 L405.9 203.3 L408.2 203.1 L410.4 202.9 L412.6 202.7 L414.9 202.5 L417.1 202.4 L419.3 202.2 L421.6 201.9 L423.8 201.7 L426.0 201.4 L428.3 201.2 L430.5 201.0 L432.7 200.6 L434.9 200.3 L437.2 200.0 L439.4 199.8 L441.6 199.7 L443.9 199.5 L446.1 199.3 L448.3 199.1 L450.6 198.9 L452.8 198.8 L455.0 198.7 L457.2 198.7 L459.5 198.6 L461.7 198.5 L463.9 198.3 L466.2 198.0 L468.4 197.6 L470.6 197.3 L472.9 196.9 L475.1 196.6 L477.3 196.2 L479.6 195.8 L481.8 195.5 L484.0 195.1 L486.2 194.9 L488.5 194.8 L490.7 194.7 L492.9 194.5 L495.2 194.5 L497.4 194.4 L499.6 194.2 L501.9 194.0 L504.1 193.6 L506.3 193.5 L508.6 193.2 L510.8 193.0 L513.0 192.6 L515.2 192.3 L517.5 191.9 L519.7 191.5 L521.9 191.1 L524.2 190.8 L526.4 190.4 L528.6 190.1 L530.9 189.8 L533.1 189.5 L535.3 189.1 L537.5 188.7 L539.8 188.3 L542.0 187.8 L544.2 187.5 L546.5 187.1 L548.7 186.7 L550.9 186.3 L553.2 185.9 L555.4 185.4 L557.6 184.9 L559.9 184.4 L562.1 183.8 L564.3 183.2 L566.5 182.6 L568.8 182.1 L571.0 181.7 L573.2 181.4 L575.5 181.0 L577.7 180.7 L579.9 180.4 L582.2 180.2 L584.4 179.9 L586.6 179.7 L588.8 179.3 L591.1 179.1 L593.3 178.9 L595.5 178.6 L597.8 178.3 L600.0 178.0" fill="none" stroke="#6f7680" stroke-width="1.4" pathLength="1"/>
-    <path class="c-s50" d="M0.0 226.9 L2.2 226.4 L4.5 225.9 L6.7 225.6 L8.9 225.1 L11.2 224.6 L13.4 224.4 L15.6 223.9 L17.8 223.9 L20.1 223.8 L22.3 223.7 L24.5 223.7 L26.8 223.7 L29.0 223.7 L31.2 223.8 L33.5 223.8 L35.7 223.6 L37.9 223.2 L40.1 222.5 L42.4 221.3 L44.6 220.3 L46.8 219.3 L49.1 218.2 L51.3 217.5 L53.5 217.0 L55.8 216.8 L58.0 216.5 L60.2 215.6 L62.5 214.7 L64.7 213.9 L66.9 213.3 L69.1 212.4 L71.4 211.8 L73.6 211.4 L75.8 211.0 L78.1 210.9 L80.3 210.9 L82.5 210.7 L84.8 210.6 L87.0 210.2 L89.2 210.2 L91.4 210.1 L93.7 210.1 L95.9 210.1 L98.1 209.9 L100.4 209.7 L102.6 209.4 L104.8 209.3 L107.1 209.4 L109.3 209.6 L111.5 210.1 L113.8 210.6 L116.0 210.9 L118.2 211.4 L120.4 211.9 L122.7 212.4 L124.9 212.3 L127.1 212.3 L129.4 212.0 L131.6 211.6 L133.8 211.4 L136.1 211.2 L138.3 211.1 L140.5 210.8 L142.8 210.5 L145.0 210.3 L147.2 210.2 L149.4 210.4 L151.7 211.0 L153.9 211.8 L156.1 212.5 L158.4 213.2 L160.6 213.9 L162.8 214.4 L165.1 215.0 L167.3 215.2 L169.5 215.3 L171.7 215.8 L174.0 216.0 L176.2 216.2 L178.4 216.0 L180.7 215.9 L182.9 215.8 L185.1 215.6 L187.4 215.8 L189.6 216.1 L191.8 216.3 L194.1 216.2 L196.3 215.8 L198.5 215.5 L200.7 215.0 L203.0 214.7 L205.2 214.7 L207.4 214.5 L209.7 214.3 L211.9 214.1 L214.1 213.9 L216.4 213.7 L218.6 213.4 L220.8 212.8 L223.0 212.5 L225.3 212.4 L227.5 212.2 L229.7 211.9 L232.0 211.6 L234.2 211.5 L236.4 211.7 L238.7 211.9 L240.9 212.1 L243.1 212.3 L245.4 212.4 L247.6 212.7 L249.8 212.8 L252.0 213.1 L254.3 213.4 L256.5 213.7 L258.7 214.3 L261.0 214.7 L263.2 215.0 L265.4 215.3 L267.7 215.8 L269.9 216.4 L272.1 217.2 L274.3 217.6 L276.6 217.7 L278.8 217.9 L281.0 218.2 L283.3 218.6 L285.5 218.7 L287.7 218.9 L290.0 219.0 L292.2 219.1 L294.4 218.9 L296.7 218.4 L298.9 217.8 L301.1 216.7 L303.3 215.6 L305.6 215.1 L307.8 214.6 L310.0 214.2 L312.3 213.5 L314.5 212.4 L316.7 211.3 L319.0 210.4 L321.2 210.0 L323.4 209.6 L325.7 209.2 L327.9 209.1 L330.1 208.5 L332.3 207.9 L334.6 206.8 L336.8 205.2 L339.0 203.8 L341.3 202.1 L343.5 200.1 L345.7 198.6 L348.0 196.9 L350.2 195.5 L352.4 194.1 L354.6 192.8 L356.9 191.6 L359.1 190.4 L361.3 189.3 L363.6 188.1 L365.8 186.9 L368.0 185.2 L370.3 183.4 L372.5 181.9 L374.7 180.3 L377.0 179.3 L379.2 177.9 L381.4 176.4 L383.6 175.1 L385.9 174.0 L388.1 172.9 L390.3 171.6 L392.6 170.5 L394.8 169.5 L397.0 168.4 L399.3 167.5 L401.5 167.1 L403.7 166.7 L405.9 166.7 L408.2 167.0 L410.4 167.1 L412.6 167.2 L414.9 167.3 L417.1 167.5 L419.3 167.8 L421.6 167.9 L423.8 168.0 L426.0 168.5 L428.3 168.6 L430.5 168.8 L432.7 168.4 L434.9 167.9 L437.2 167.5 L439.4 167.3 L441.6 167.5 L443.9 167.6 L446.1 167.7 L448.3 168.1 L450.6 168.7 L452.8 169.7 L455.0 171.2 L457.2 172.5 L459.5 173.5 L461.7 174.2 L463.9 174.9 L466.2 175.2 L468.4 175.0 L470.6 174.9 L472.9 174.4 L475.1 174.3 L477.3 174.1 L479.6 174.1 L481.8 174.0 L484.0 173.6 L486.2 173.4 L488.5 172.8 L490.7 172.5 L492.9 172.2 L495.2 171.6 L497.4 171.5 L499.6 171.2 L501.9 171.3 L504.1 170.6 L506.3 170.1 L508.6 169.7 L510.8 169.4 L513.0 168.5 L515.2 167.4 L517.5 166.1 L519.7 164.9 L521.9 163.8 L524.2 163.1 L526.4 162.3 L528.6 161.7 L530.9 161.1 L533.1 160.5 L535.3 159.9 L537.5 159.2 L539.8 158.6 L542.0 157.7 L544.2 157.1 L546.5 156.7 L548.7 156.0 L550.9 155.1 L553.2 154.2 L555.4 153.4 L557.6 152.7 L559.9 151.8 L562.1 150.6 L564.3 149.0 L566.5 147.5 L568.8 146.0 L571.0 144.7 L573.2 143.8 L575.5 143.0 L577.7 142.6 L579.9 142.7 L582.2 142.9 L584.4 143.1 L586.6 143.2 L588.8 143.0 L591.1 143.4 L593.3 144.0 L595.5 144.3 L597.8 144.6 L600.0 144.7" fill="none" stroke="#e9e3c9" stroke-width="1.3" stroke-opacity=".7" pathLength="1"/>
-    <path class="c-close" d="M0.0 206.3 L2.2 208.7 L4.5 212.6 L6.7 213.5 L8.9 205.9 L11.2 199.5 L13.4 217.0 L15.6 207.4 L17.8 222.8 L20.1 223.2 L22.3 219.5 L24.5 216.9 L26.8 218.0 L29.0 220.7 L31.2 222.3 L33.5 218.8 L35.7 211.2 L37.9 201.5 L40.1 183.8 L42.4 172.6 L44.6 180.3 L46.8 181.1 L49.1 172.9 L51.3 188.1 L53.5 194.6 L55.8 207.9 L58.0 207.7 L60.2 187.5 L62.5 198.4 L64.7 197.2 L66.9 210.1 L69.1 204.0 L71.4 210.6 L73.6 220.3 L75.8 210.7 L78.1 221.7 L80.3 224.9 L82.5 218.1 L84.8 226.9 L87.0 222.4 L89.2 228.4 L91.4 223.0 L93.7 220.1 L95.9 223.6 L98.1 216.6 L100.4 218.4 L102.6 212.5 L104.8 213.6 L107.1 215.8 L109.3 221.1 L111.5 232.1 L113.8 229.7 L116.0 227.1 L118.2 239.7 L120.4 233.7 L122.7 221.0 L124.9 216.0 L127.1 205.8 L129.4 206.9 L131.6 203.3 L133.8 207.6 L136.1 208.9 L138.3 210.8 L140.5 206.4 L142.8 207.8 L145.0 209.4 L147.2 205.9 L149.4 213.5 L151.7 213.8 L153.9 213.7 L156.1 212.1 L158.4 217.0 L160.6 209.8 L162.8 211.3 L165.1 226.4 L167.3 216.7 L169.5 213.9 L171.7 208.6 L174.0 210.8 L176.2 207.0 L178.4 201.5 L180.7 199.6 L182.9 202.2 L185.1 212.4 L187.4 222.2 L189.6 233.6 L191.8 237.9 L194.1 212.8 L196.3 204.2 L198.5 207.0 L200.7 204.2 L203.0 210.0 L205.2 217.6 L207.4 213.6 L209.7 208.0 L211.9 208.2 L214.1 204.6 L216.4 201.4 L218.6 199.0 L220.8 194.0 L223.0 213.8 L225.3 228.1 L227.5 218.3 L229.7 222.8 L232.0 217.2 L234.2 216.7 L236.4 226.9 L238.7 217.9 L240.9 214.0 L243.1 211.7 L245.4 217.0 L247.6 222.4 L249.8 216.9 L252.0 219.3 L254.3 222.1 L256.5 225.5 L258.7 236.4 L261.0 231.0 L263.2 231.8 L265.4 225.3 L267.7 239.1 L269.9 246.0 L272.1 250.4 L274.3 233.3 L276.6 230.8 L278.8 227.7 L281.0 227.2 L283.3 226.4 L285.5 219.0 L287.7 215.6 L290.0 206.8 L292.2 205.6 L294.4 192.2 L296.7 187.8 L298.9 188.8 L301.1 182.6 L303.3 181.9 L305.6 185.9 L307.8 181.1 L310.0 186.4 L312.3 170.4 L314.5 154.9 L316.7 161.3 L319.0 168.5 L321.2 186.5 L323.4 188.6 L325.7 188.5 L327.9 192.2 L330.1 171.2 L332.3 164.4 L334.6 157.5 L336.8 149.6 L339.0 147.1 L341.3 137.7 L343.5 119.3 L345.7 138.7 L348.0 144.3 L350.2 147.4 L352.4 142.1 L354.6 149.5 L356.9 157.2 L359.1 158.1 L361.3 162.3 L363.6 159.3 L365.8 165.0 L368.0 140.5 L370.3 143.3 L372.5 158.3 L374.7 151.1 L377.0 176.2 L379.2 169.7 L381.4 170.5 L383.6 184.9 L385.9 176.7 L388.1 176.1 L390.3 162.6 L392.6 172.0 L394.8 177.1 L397.0 165.9 L399.3 169.7 L401.5 185.6 L403.7 187.6 L405.9 193.6 L408.2 199.6 L410.4 195.1 L412.6 185.5 L414.9 190.2 L417.1 195.3 L419.3 194.0 L421.6 191.4 L423.8 178.1 L426.0 180.6 L428.3 165.4 L430.5 179.2 L432.7 163.8 L434.9 162.5 L437.2 172.0 L439.4 180.5 L441.6 179.6 L443.9 172.2 L446.1 163.3 L448.3 169.4 L450.6 173.0 L452.8 192.2 L455.0 191.3 L457.2 204.3 L459.5 194.9 L461.7 184.3 L463.9 173.4 L466.2 163.5 L468.4 150.0 L470.6 150.4 L472.9 141.2 L475.1 153.1 L477.3 153.2 L479.6 141.0 L481.8 138.7 L484.0 139.0 L486.2 139.3 L488.5 149.1 L490.7 153.1 L492.9 154.4 L495.2 158.4 L497.4 170.0 L499.6 161.5 L501.9 167.8 L504.1 133.8 L506.3 153.1 L508.6 147.1 L510.8 153.3 L513.0 140.4 L515.2 132.9 L517.5 129.3 L519.7 137.9 L521.9 141.8 L524.2 151.6 L526.4 151.7 L528.6 165.4 L530.9 163.1 L533.1 159.9 L535.3 149.8 L537.5 144.4 L539.8 134.9 L542.0 132.1 L544.2 138.3 L546.5 140.1 L548.7 139.2 L550.9 132.1 L553.2 135.2 L555.4 133.0 L557.6 128.4 L559.9 122.7 L562.1 113.5 L564.3 112.8 L566.5 116.1 L568.8 129.1 L571.0 131.3 L573.2 136.8 L575.5 132.7 L577.7 146.2 L579.9 153.7 L582.2 159.5 L584.4 154.0 L586.6 155.1 L588.8 144.9 L591.1 163.0 L593.3 165.4 L595.5 156.0 L597.8 152.4 L600.0 157.2" fill="none" stroke="#c8f531" stroke-width="2.2" stroke-linejoin="round" pathLength="1"/>
-    <path class="c-wave" d="" fill="none" stroke="#f4f5f1" stroke-width="1.3" stroke-dasharray="3 4"/>
-    <g class="c-nodes"></g>
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
+<section class="shell band" aria-label="Vision Universe in Zahlen">
+  <div><b>6.000+</b><span>US-Aktien</span></div>
+  <div><b>9</b><span>Welten in einer App</span></div>
+  <div><b>12 J.</b><span>Zahlen je Aktie aus SEC-Berichten</span></div>
+  <div><b>7.000+</b><span>ETFs für deine Vorsorge</span></div>
+</section>
 
-      <!-- Smartphone: Aktienseite NVIDIA -->
-      <div class="phone">
-        <div class="screen">
-          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
-          <div class="app-top"><img src="/assets/vision-universe-logo-web.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
-          <div class="stock-head">
-            <span class="app-logo big">NVDA</span>
-            <div><b>NVIDIA</b><small>Chips für KI und Grafik</small></div>
-            <div class="px"><b data-count>215,38 $</b><small class="down">−1,17 %</small></div>
-          </div>
-          <div class="app-badges"></div>
-          <div class="app-tabs"><span class="on">Überblick</span><span>Zahlen</span><span>Technik</span><span>Elliott</span><span>Quant</span></div>
-          <div class="app-mini"><svg viewBox="0 0 690 298"><use href="#chart-nvda"/></svg></div>
-          <div class="app-grid">
-            <div><small>Umsatz TTM</small><b data-count>303,0 Mrd. $</b><em class="up">+83,4 %</em></div>
-            <div><small>Nettomarge</small><b data-count>55,6 %</b><em>KGV 27,2</em></div>
-            <div><small>Elliott Wave</small><b>offen</b><em>experimentell</em></div>
-            <div><small>Supertrader</small><b>Keine Setups</b><em class="up">beobachtet</em></div>
-          </div>
-          <div class="app-tabbar">
-            <span class="on"><svg><use href="#i-home"/></svg>Start</span>
-            <span><svg><use href="#i-globe"/></svg>Welten</span>
-            <span><svg><use href="#i-chart"/></svg>Analyse</span>
-            <span><svg><use href="#i-search"/></svg>Suchen</span>
-            <span><svg><use href="#i-heart"/></svg>Watchlist</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="orbit" aria-hidden="true"><span class="hud hud-sm orb" style="--k:0"><svg><use href="#h-discover"/></svg></span><span class="hud hud-sm orb" style="--k:1"><svg><use href="#h-quant"/></svg></span><span class="hud hud-sm orb" style="--k:2"><svg><use href="#h-screener"/></svg></span><span class="hud hud-sm orb" style="--k:3"><svg><use href="#h-super"/></svg></span><span class="hud hud-sm orb" style="--k:4"><svg><use href="#h-elliott"/></svg></span><span class="hud hud-sm orb" style="--k:5"><svg><use href="#h-technical"/></svg></span><span class="hud hud-sm orb" style="--k:6"><svg><use href="#h-fundamental"/></svg></span><span class="hud hud-sm orb" style="--k:7"><svg><use href="#h-vorsorge"/></svg></span><span class="hud hud-sm orb" style="--k:8"><svg><use href="#h-atlas"/></svg></span></div>
-      <div class="float-card fc-1"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><small>Struktur · experimentell</small></div></div>
-      <div class="float-card fc-2"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>12 Geschäftsjahre</b><small>Fundamentaldaten aus SEC-Berichten</small></div></div>
-    </div>
+<section class="shell sec" aria-labelledby="where-title">
+  <p class="vu-ltag">Für jeden ein Einstieg</p>
+  <h2 class="vu-mt" id="where-title">Wo stehst du gerade?</h2>
+  <div class="paths">
+    <a class="path path--lime" href="/vorsorge/#/" data-start-path="anfaenger"><span class="vu-hud"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#vorsorge"/></svg></span><span><b>Ich fange gerade an</b><small>Mit 10 € im Monat: Sparplan, ETF und Rente einfach erklärt.</small><em>→ Vorsorge</em></span></a>
+    <a class="path" href="/discover/" data-start-path="verstehen"><span class="vu-hud"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#discover"/></svg></span><span><b>Ich will Aktien verstehen</b><small>Eine Aktie, sieben Blickwinkel, ein klares Urteil.</small><em>→ Discover</em></span></a>
+    <a class="path" href="/supertrader/" data-start-path="profi"><span class="vu-hud"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#supertrader"/></svg></span><span><b>Ich analysiere wie ein Profi</b><small>Methoden, Signale, Backtests, 13F-Daten der Fonds.</small><em>→ Supertrader · Hedgefonds · Screener</em></span></a>
   </div>
 </section>
 
-<!-- ============ KENNZAHLEN ============ -->
-<section class="stats" aria-label="Vision Universe in Zahlen">
-  <div class="shell stats-grid">
-    <div class="stat"><b><span data-count-to="6000">6.000</span><i>+</i></b><span>US-Aktien im Universum</span></div>
-    <div class="stat"><b><span data-count-to="9">9</span></b><span>Module in einer App</span></div>
-    <div class="stat"><b><span data-count-to="12">12</span><i>&nbsp;J.</i></b><span>Fundamentaldaten je Aktie</span></div>
-    <div class="stat"><b><span data-count-to="7000">7.000</span><i>+</i></b><span>ETFs für deine Vorsorge</span></div>
+<section class="shell sec" aria-labelledby="persp-title">
+  <p class="vu-ltag">Eine Aktie, jede Perspektive</p>
+  <h2 class="vu-mt" id="persp-title">Sieben Blickwinkel. Eine Seite.</h2>
+  <p class="sub">Oben wählst du, wie du auf die Aktie schaust. Jede Welt liefert ihr Urteil in derselben Form.</p>
+  <nav class="vu-persp" aria-label="Perspektiven für NVDA"><a href="/discover/#/s/US_REAL/NVDA" data-world="discover" aria-current="page"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/product-icons.svg#discover"/></svg><span>Überblick</span></a><a href="/technical/#/chart/NVDA" data-world="technical"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/product-icons.svg#technical"/></svg><span>Chart</span></a><a href="/fundamental/#/NVDA" data-world="fundamental"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/product-icons.svg#fundamental"/></svg><span>Zahlen</span></a><a href="/quant/#/aktie/NVDA" data-world="quant"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/product-icons.svg#quant"/></svg><span>Faktoren</span></a><a href="/supertrader/stock/NVDA/" data-world="supertrader"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/product-icons.svg#supertrader"/></svg><span>Methoden</span></a><a href="/elliott/#/NVDA" data-world="elliott"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/product-icons.svg#elliott"/></svg><span>Wellen</span></a><a href="/hedgefonds/#/aktie/NVDA" data-world="hedgefonds"><svg width="15" height="15" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="/assets/product-icons.svg#hedgefonds"/></svg><span>Investoren</span></a></nav>
+  <ul class="persp-list"><li><a href="/discover/#/s/US_REAL/NVDA"><span class="vu-hud" style="--vu-hud:28px;border-radius:8px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#discover"/></svg></span><b>Überblick</b><span>Alles auf einen Blick</span></a></li><li><a href="/technical/#/chart/NVDA"><span class="vu-hud" style="--vu-hud:28px;border-radius:8px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#technical"/></svg></span><b>Chart</b><span>Trend, Unterstützung, Widerstand</span></a></li><li><a href="/fundamental/#/NVDA"><span class="vu-hud" style="--vu-hud:28px;border-radius:8px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#fundamental"/></svg></span><b>Zahlen</b><span>Umsatz, Gewinn, Cashflow seit 2015</span></a></li><li><a href="/quant/#/aktie/NVDA"><span class="vu-hud" style="--vu-hud:28px;border-radius:8px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#quant"/></svg></span><b>Faktoren</b><span>Wachstum, Qualität, Risiko …</span></a></li><li><a href="/supertrader/stock/NVDA/"><span class="vu-hud" style="--vu-hud:28px;border-radius:8px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#supertrader"/></svg></span><b>Methoden</b><span>Regeln berühmter Trader</span></a></li><li><a href="/elliott/#/NVDA"><span class="vu-hud" style="--vu-hud:28px;border-radius:8px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#elliott"/></svg></span><b>Wellen</b><span>Wellenstruktur im Kurs, experimentell</span></a></li><li><a href="/hedgefonds/#/aktien"><span class="vu-hud" style="--vu-hud:28px;border-radius:8px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#hedgefonds"/></svg></span><b>Investoren</b><span>Wer die Aktie hält</span></a></li></ul>
+</section>
+
+<section class="shell sec" aria-labelledby="fund-title">
+  <p class="vu-ltag">Fundamental</p>
+  <h2 class="vu-mt" id="fund-title">Wachstum, das man sieht.</h2>
+  <p class="sub">12 Geschäftsjahre aus den Pflichtberichten an die US-Börsenaufsicht.</p>
+  <div class="vu-box fund">
+    <div class="fund-top"><b>NVIDIA · Umsatz</b><span class="mute">GJ 2015–2026</span></div>
+    <div class="fund-kpis"><div><b>4,7 Mrd. $</b><span>GJ 2015</span></div><div><b>215,9 Mrd. $</b><span>GJ 2026</span></div></div>
+    <div class="fund-bars"><svg class="vu-bars" viewBox="0 0 354 168" role="img" aria-label="Umsatz je Geschäftsjahr, GJ 2015 bis GJ 2026"><rect x="3.0" y="146.7" width="23.5" height="3.3" rx="4"/><rect x="32.5" y="146.5" width="23.5" height="3.5" rx="4"/><text x="44.3" y="164" text-anchor="middle">16</text><rect x="62.0" y="145.2" width="23.5" height="4.8" rx="4"/><rect x="91.5" y="143.3" width="23.5" height="6.7" rx="4"/><text x="103.3" y="164" text-anchor="middle">18</text><rect x="121.0" y="141.9" width="23.5" height="8.1" rx="4"/><rect x="150.5" y="142.4" width="23.5" height="7.6" rx="4"/><text x="162.3" y="164" text-anchor="middle">20</text><rect x="180.0" y="138.4" width="23.5" height="11.6" rx="4"/><rect x="209.5" y="131.3" width="23.5" height="18.7" rx="4"/><text x="221.3" y="164" text-anchor="middle">22</text><rect x="239.0" y="131.3" width="23.5" height="18.7" rx="4"/><rect x="268.5" y="107.7" width="23.5" height="42.3" rx="4"/><text x="280.3" y="164" text-anchor="middle">24</text><rect x="298.0" y="59.4" width="23.5" height="90.6" rx="4"/><rect class="is-last" x="327.5" y="0.0" width="23.5" height="150.0" rx="4"/><text x="339.3" y="164" text-anchor="middle">26</text></svg></div>
+    <div class="vu-help"><i aria-hidden="true">?</i><span>Umsatz ist alles Geld, das die Firma mit ihren Produkten einnimmt, bevor Kosten abgezogen sind.</span></div>
   </div>
 </section>
 
-<!-- ============ APP-MODULE + SCHAUBILD ============ -->
-<section class="section" id="app-module" data-cv>
-  <div class="shell">
-    <div class="section-head">
-      <div>
-        <span class="kicker">Die Vision Universe App</span>
-        <h2 class="h2">Ein System. Neun Module.<br>Von der Aktie bis zur Vorsorge.</h2>
-      </div>
-      <p class="lead">Alle Analysen greifen auf dieselben Daten zu und sind miteinander verbunden: Von jeder Aktie kommst du mit einem Tipp zu Zahlen, Chartbild, Elliott-Struktur, Faktoren und Setups – und von dort direkt zu deinem Vorsorgeplan.</p>
-    </div>
-
-    <div class="eco">
-      <div class="hub" aria-hidden="true">
-        <div class="hub-ring">
-        <svg class="hub-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width=".25" stroke-dasharray=".8 1.2"/>
-          <circle cx="50" cy="50" r="27" fill="none" stroke="currentColor" stroke-width=".2" opacity=".6"/>
-          <g stroke="#c8f531" stroke-width=".35" opacity=".8">
-            <path d="M50 50 50.0 10.0M50 50 75.7 19.4M50 50 89.4 43.1M50 50 84.6 70.0M50 50 63.7 87.6M50 50 36.3 87.6M50 50 15.4 70.0M50 50 10.6 43.1M50 50 24.3 19.4"/>
-          </g>
-          <g fill="#c8f531"><circle cx="50.0" cy="23.0" r=".9"/><circle cx="67.4" cy="29.3" r=".9"/><circle cx="76.6" cy="45.3" r=".9"/><circle cx="73.4" cy="63.5" r=".9"/><circle cx="59.2" cy="75.4" r=".9"/><circle cx="40.8" cy="75.4" r=".9"/><circle cx="26.6" cy="63.5" r=".9"/><circle cx="23.4" cy="45.3" r=".9"/><circle cx="32.6" cy="29.3" r=".9"/></g>
-        </svg>
-        <span class="node" data-mod="discover" style="--x:50.0%;--y:10.0%"><span class="hud"><svg><use href="#h-discover"/></svg></span><em>Discover</em></span>
-        <span class="node" data-mod="quant" style="--x:75.7%;--y:19.4%"><span class="hud"><svg><use href="#h-quant"/></svg></span><em>Quant</em></span>
-        <span class="node" data-mod="screener" style="--x:89.4%;--y:43.1%"><span class="hud"><svg><use href="#h-screener"/></svg></span><em>Screener</em></span>
-        <span class="node" data-mod="super" style="--x:84.6%;--y:70.0%"><span class="hud"><svg><use href="#h-super"/></svg></span><em>Supertrader</em></span>
-        <span class="node" data-mod="elliott" style="--x:63.7%;--y:87.6%"><span class="hud"><svg><use href="#h-elliott"/></svg></span><em>Elliott Wave</em></span>
-        <span class="node" data-mod="technik" style="--x:36.3%;--y:87.6%"><span class="hud"><svg><use href="#h-technical"/></svg></span><em>Technik</em></span>
-        <span class="node" data-mod="fundamental" style="--x:15.4%;--y:70.0%"><span class="hud"><svg><use href="#h-fundamental"/></svg></span><em>Fundamental</em></span>
-        <span class="node" data-mod="vorsorge" style="--x:10.6%;--y:43.1%"><span class="hud"><svg><use href="#h-vorsorge"/></svg></span><em>Vorsorge</em></span>
-        <span class="node" data-mod="atlas" style="--x:24.3%;--y:19.4%"><span class="hud"><svg><use href="#h-atlas"/></svg></span><em>AI Atlas</em></span>
-        </div>
-        <div class="hub-core"><img src="/assets/vision-universe-logo-web.png" alt=""><b>APP</b><span class="hub-active">Discover</span></div>
-      </div>
-
-      <div class="modules">
-        <a class="module" data-mod="discover" href="/discover/"><span class="hud hud-sm"><svg><use href="#h-discover"/></svg></span><div><b>Discover</b><span>Aktien entdecken: Themenwelten, Rankings und Märkte zum Swipen.</span></div></a>
-        <a class="module" data-mod="quant" href="/quant/"><span class="hud hud-sm"><svg><use href="#h-quant"/></svg></span><div><b>Quant</b><span>Faktoren, Ereignisse und historische Vergleichsfälle je Aktie.</span></div></a>
-        <a class="module" data-mod="screener" href="/screener/"><span class="hud hud-sm"><svg><use href="#h-screener"/></svg></span><div><b>Screener</b><span>Eigene Kriterien filtern, gewichten und vergleichen.</span></div></a>
-        <a class="module" data-mod="super" href="/supertrader/"><span class="hud hud-sm"><svg><use href="#h-super"/></svg></span><div><b>Supertrader</b><span>11 Methoden mit festen Regeln, Setups und Backtests.</span></div></a>
-        <a class="module" data-mod="elliott" href="/elliott/"><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott Wave</b><span>Experimentelle Wellenstruktur im Chartbild – nur, wo sie sich belastbar lesen lässt.</span></div></a>
-        <a class="module" data-mod="technik" href="/elliott/#/NVDA"><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Analyse</b><span>Trend, Momentum, Unterstützungen, Fibonacci und Struktur.</span></div></a>
-        <a class="module" data-mod="fundamental" href="/quant/#/aktie/NVDA/zahlen"><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten</b><span>Umsatz, Gewinn, Margen, Bewertung – mit Einschätzung.</span></div></a>
-        <a class="module" data-mod="atlas" href="/ask/"><span class="hud hud-sm"><svg><use href="#h-atlas"/></svg></span><div><b>AI Atlas</b><span>Frag in eigenen Worten – Atlas rechnet auf den Daten.</span></div></a>
-        <a class="module module-wide" data-mod="vorsorge" href="/vorsorge/"><span class="hud hud-sm"><svg><use href="#h-vorsorge"/></svg></span><div><b>Altersvorsorge <span class="tag-new">Neu</span></b><span>Vorsorgelücke berechnen, ETFs vergleichen, Kosten prüfen und staatliche Förderung nutzen.</span></div></a>
-      </div>
-    </div>
-  </div>
+<section class="shell sec" aria-labelledby="swipe-title">
+  <p class="vu-ltag">Discover</p>
+  <h2 class="vu-mt" id="swipe-title">Swipen statt suchen.</h2>
+  <p class="sub">Nach rechts merken, nach links weiter. Dazu 54 Themenwelten, von KI bis Raumfahrt.</p>
+  <a class="vu-box vu-box--ink swipe" href="/discover/#/einzeln/US_REAL"><span class="swipe-top"><span class="vu-logo-tile swipe-logo">AAPL</span><span class="tag-lime">Fast am Jahreshoch</span></span><b class="swipe-name">Apple</b><small>iPhone, Mac und App Store</small><span class="swipe-px"><b>342,37 $</b><span role="img" aria-label="Minus 0,52 Prozent" class="vu-chg vu-chg--down"><span aria-hidden="true">▼</span> −0,52 %</span></span></a>
+  <div class="swipe-actions" aria-hidden="true"><span>✕</span><span class="lime">♡</span></div>
+  <div class="worlds"><a class="world" href="/discover/#/welten"><img src="/assets/home/worlds/01-kuenstliche-intelligenz.webp" alt="" loading="lazy" decoding="async" width="240" height="300"><span>AI-Modelle</span></a><a class="world" href="/discover/#/welten"><img src="/assets/home/worlds/02-halbleiter-chips.webp" alt="" loading="lazy" decoding="async" width="240" height="300"><span>GPUs</span></a><a class="world" href="/discover/#/welten"><img src="/assets/home/worlds/16-raumfahrt.webp" alt="" loading="lazy" decoding="async" width="240" height="300"><span>Raketen</span></a></div>
 </section>
 
-<!-- ============ EINE AKTIE, JEDE PERSPEKTIVE ============ -->
-<section class="section dark-band" id="analyse" data-cv>
-  <div class="shell">
-    <div class="feature">
-      <div class="feature-copy">
-        <span class="kicker">Aktienanalyse komplett</span>
-        <h2 class="h2">Eine Aktie. Jede Perspektive.</h2>
-        <p class="lead">Fundamental, technisch, Elliott Wave und Quant auf einer Seite – regelbasiert berechnet, reproduzierbar und ohne menschliches Einzeichnen.</p>
-        <ul class="points">
-          <li><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Fundamentaldaten &amp; Einschätzung</b><span>12 Geschäftsjahre aus SEC-Berichten: Umsatz, Gewinn, Margen, Verschuldung, Bewertung.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-technical"/></svg></span><div><b>Technische Details</b><span>Trend, Momentum, gleitende Durchschnitte, Unterstützungen, Widerstände und Fibonacci.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-elliott"/></svg></span><div><b>Elliott-Wave-Analysen</b><span>Experimentelle Wellenstruktur im Chartbild – nur, wo sie sich belastbar lesen lässt.</span></div></li>
-        </ul>
-        <a class="btn btn-app" href="/elliott/">Analyse öffnen <svg><use href="#i-arrow"/></svg></a>
-      </div>
-      <div class="visual visual-dark" aria-hidden="true">
-        <div class="panel panel-wide">
-          <div class="panel-head"><b>NVIDIA (NVDA) · Technik &amp; Elliott</b><span class="live"><i></i>Live-Daten</span></div>
-          <div class="chips"><span class="chip on">Elliott</span><span class="chip">SMA 50</span><span class="chip">SMA 200</span><span class="chip">Zonen</span></div>
-          <div style="padding:0 14px 6px"><svg class="chart" viewBox="0 0 690 298"><use href="#chart-nvda"/></svg></div>
-          <div class="kv">
-            <div><small>Elliott</small><b>keine belastbare Zählung</b><em>experimentell</em></div>
-            <div><small>Trend</small><b class="">Neutral · 63,3</b><em>Bezug SMA 50 &amp; 200</em></div>
-            <div><small>Umsatz TTM</small><b>303,0 Mrd. $</b><em class="up">+83,4 % ggü. Vorjahr</em></div>
-            <div><small>Nettomarge</small><b>55,6 %</b><em>KGV 27,2</em></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+<section class="shell sec" aria-labelledby="worlds-title">
+  <p class="vu-ltag">Alle Welten</p>
+  <h2 class="vu-mt" id="worlds-title">Neun Welten. Ein Konto.</h2>
+  <div class="nine"><a class="vu-box" href="/discover/"><span class="vu-hud" style="--vu-hud:38px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#discover"/></svg></span><b>Discover</b><small>Aktien entdecken</small></a><a class="vu-box" href="/quant/"><span class="vu-hud" style="--vu-hud:38px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#quant"/></svg></span><b>Quant</b><small>Faktoren je Aktie</small></a><a class="vu-box" href="/technical/"><span class="vu-hud" style="--vu-hud:38px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#technical"/></svg></span><b>Technical</b><small>Charts und Muster</small></a><a class="vu-box" href="/fundamental/"><span class="vu-hud" style="--vu-hud:38px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#fundamental"/></svg></span><b>Fundamental</b><small>Zahlen aus SEC-Berichten</small></a><a class="vu-box" href="/supertrader/"><span class="vu-hud" style="--vu-hud:38px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#supertrader"/></svg></span><b>Supertrader</b><small>Methoden der Profis</small></a><a class="vu-box" href="/hedgefonds/"><span class="vu-hud" style="--vu-hud:38px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#hedgefonds"/></svg></span><b>Hedgefonds</b><small>Was Investoren halten</small></a><a class="vu-box" href="/elliott/"><span class="vu-hud" style="--vu-hud:38px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#elliott"/></svg></span><b>Elliott</b><small>Wellenstruktur</small></a><a class="vu-box" href="/screener/"><span class="vu-hud" style="--vu-hud:38px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#screener"/></svg></span><b>Screener</b><small>Eigene Filter</small></a><a class="vu-box" href="/vorsorge/"><span class="vu-hud" style="--vu-hud:38px"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#vorsorge"/></svg></span><b>Vorsorge</b><small>Sparplan und Rente</small></a></div>
+  <a class="vu-box vu-box--ink atlas" href="/ask/"><span class="atlas-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/></svg><b>AI Atlas</b><span class="vu-pro">BETA</span></span><span class="atlas-q">„Wie stark ist der Free Cashflow bei Nvidia gewachsen?“</span><span class="atlas-sub">Frag in deinen Worten. Atlas rechnet nur mit den Daten von Vision Universe.</span></a>
 </section>
 
-<!-- ============ UNTERNEHMENSENTWICKLUNG (aus Discover) ============ -->
-<section class="section" id="entwicklung" data-cv>
-  <div class="shell">
-    <div class="feature flip">
-      <div class="feature-copy">
-        <span class="kicker">Discover · Unternehmensentwicklung</span>
-        <h2 class="h2">Wachstum, das man sieht.</h2>
-        <p class="lead">Zwölf Geschäftsjahre aus den SEC-Berichten auf einen Blick: Umsatz, Gewinn und Cashflow. Kennzahl wählen, Balken antippen, Jahre vergleichen.</p>
-        <ul class="points">
-          <li><span class="hud hud-sm"><svg><use href="#h-rank"/></svg></span><div><b>Zwölf Jahre Historie</b><span>Jede Zahl mit Geschäftsjahr und Quelle – direkt aus den Pflichtberichten.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-fundamental"/></svg></span><div><b>Klare Einordnung</b><span>Wachstum, Margen und Cashflow – verständlich statt Tabellenwüste.</span></div></li>
-        </ul>
-        <a class="btn btn-app" href="/discover/#/s/US_REAL/NVDA">NVIDIA in Discover ansehen <svg><use href="#i-arrow"/></svg></a>
-      </div>
-      <div class="visual visual-dark" aria-hidden="false">
-        <div class="journey" id="journey">
-          <div class="journey-head"><b>Wie sich NVIDIA entwickelt hat</b><span class="live"><i></i>Live-Daten</span></div>
-          <div class="journey-tabs" role="tablist" aria-label="Kennzahl wählen"><button type="button" role="tab" data-track="revenue" aria-selected="true">Umsatz</button><button type="button" role="tab" data-track="net_income" aria-selected="false">Gewinn</button><button type="button" role="tab" data-track="operating_cash_flow" aria-selected="false">Cashflow</button></div>
-          <div class="journey-kpis">
-            <div><b data-j="from">4,7 Mrd. $</b><small data-j="fromYear">GJ 2015</small></div>
-            <div><b data-j="to">215,9 Mrd. $</b><small data-j="toYear">GJ 2026</small></div>
-          </div>
-          <div class="journey-growth"><b data-j="growth">+4.512 %</b><small data-j="span">11 Jahre</small></div>
-          <div class="journey-bars" role="list"><button class="jbar" type="button" role="listitem" style="--h:2.2%;--i:0" data-i="0" aria-label="GJ 2015: 4,7 Mrd. $"><i></i><span>15</span></button><button class="jbar" type="button" role="listitem" style="--h:2.3%;--i:1" data-i="1" aria-label="GJ 2016: 5,0 Mrd. $"><i></i><span>16</span></button><button class="jbar" type="button" role="listitem" style="--h:3.2%;--i:2" data-i="2" aria-label="GJ 2017: 6,9 Mrd. $"><i></i><span>17</span></button><button class="jbar" type="button" role="listitem" style="--h:4.5%;--i:3" data-i="3" aria-label="GJ 2018: 9,7 Mrd. $"><i></i><span>18</span></button><button class="jbar" type="button" role="listitem" style="--h:5.4%;--i:4" data-i="4" aria-label="GJ 2019: 11,7 Mrd. $"><i></i><span>19</span></button><button class="jbar" type="button" role="listitem" style="--h:5.1%;--i:5" data-i="5" aria-label="GJ 2020: 10,9 Mrd. $"><i></i><span>20</span></button><button class="jbar" type="button" role="listitem" style="--h:7.7%;--i:6" data-i="6" aria-label="GJ 2021: 16,7 Mrd. $"><i></i><span>21</span></button><button class="jbar" type="button" role="listitem" style="--h:12.5%;--i:7" data-i="7" aria-label="GJ 2022: 26,9 Mrd. $"><i></i><span>22</span></button><button class="jbar" type="button" role="listitem" style="--h:12.5%;--i:8" data-i="8" aria-label="GJ 2023: 27,0 Mrd. $"><i></i><span>23</span></button><button class="jbar" type="button" role="listitem" style="--h:28.2%;--i:9" data-i="9" aria-label="GJ 2024: 60,9 Mrd. $"><i></i><span>24</span></button><button class="jbar" type="button" role="listitem" style="--h:60.4%;--i:10" data-i="10" aria-label="GJ 2025: 130,5 Mrd. $"><i></i><span>25</span></button><button class="jbar on" type="button" role="listitem" style="--h:100.0%;--i:11" data-i="11" aria-label="GJ 2026: 215,9 Mrd. $"><i></i><span>26</span></button></div>
-          <script type="application/json" id="journey-data">[{"id":"revenue","label":"Umsatz","rows":[{"fy":2015,"v":4682000000},{"fy":2016,"v":5010000000},{"fy":2017,"v":6910000000},{"fy":2018,"v":9714000000},{"fy":2019,"v":11716000000},{"fy":2020,"v":10918000000},{"fy":2021,"v":16675000000},{"fy":2022,"v":26914000000},{"fy":2023,"v":26974000000},{"fy":2024,"v":60922000000},{"fy":2025,"v":130497000000},{"fy":2026,"v":215938000000}]},{"id":"net_income","label":"Gewinn","rows":[{"fy":2015,"v":631000000},{"fy":2016,"v":614000000},{"fy":2017,"v":1666000000},{"fy":2018,"v":3047000000},{"fy":2019,"v":4141000000},{"fy":2020,"v":2796000000},{"fy":2021,"v":4332000000},{"fy":2022,"v":9752000000},{"fy":2023,"v":4368000000},{"fy":2024,"v":29760000000},{"fy":2025,"v":72880000000},{"fy":2026,"v":120067000000}]},{"id":"operating_cash_flow","label":"Cashflow","rows":[{"fy":2015,"v":906000000},{"fy":2016,"v":1175000000},{"fy":2017,"v":1672000000},{"fy":2018,"v":3502000000},{"fy":2019,"v":3743000000},{"fy":2020,"v":4761000000},{"fy":2021,"v":5822000000},{"fy":2022,"v":9108000000},{"fy":2023,"v":5641000000},{"fy":2024,"v":28090000000},{"fy":2025,"v":64089000000},{"fy":2026,"v":102718000000}]}]</script>
-        </div>
-      </div>
-    </div>
+<section class="shell sec" aria-labelledby="price-title">
+  <p class="vu-ltag">Preise</p>
+  <h2 class="vu-mt" id="price-title">Einfach. Ohne Haken.</h2>
+  <div class="vu-grid prices">
+    <div class="vu-box"><b>Free</b><strong>0 €</strong><span>ohne Zahlungsdaten</span></div>
+    <a class="vu-box vu-box--ink" href="/preise/"><b>Pro</b><strong>Preis ansehen</strong><span>monatlich kündbar</span></a>
   </div>
+  <p class="sub small">Beide Tarife schalten heute dieselben Funktionen frei. Mit Pro unterstützt du Vision Universe.</p>
 </section>
 
-<!-- ============ DISCOVER: SWIPE-FEED & THEMENWELTEN ============ -->
-<section class="section swipe-sec" id="swipe" data-cv>
-  <div class="shell">
-    <div class="section-head">
-      <div><span class="kicker">Discover · Swipe-Feed &amp; Themenwelten</span><h2 class="h2">Swipen statt suchen.</h2></div>
-      <p class="lead">Wische dich durch die stärksten Aktien – nach rechts merken, nach links weiter. Und tauche in 54 Themenwelten ein, von KI bis Raumfahrt. Probier es direkt aus.</p>
-    </div>
-    <div class="swipe-grid">
-      <div class="swipe-phone">
-        <div class="phone"><div class="screen">
-          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
-          <div class="app-top"><img src="/assets/vision-universe-logo-web.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
-          <div class="app-h"><b>Entdecken · Thema KI</b><span class="live"><i></i>Live</span></div>
-          <div class="deck" id="deck" aria-label="Aktien zum Swipen"><article class="card" style="--k:0" data-k="0"><div class="card-top"><span class="tk">AMD</span><span class="cbadge">Marktführer</span></div><b class="cname">Advanced Micro Devices</b><small class="cwhat">Prozessoren und Grafikchips</small><div class="card-px"><b>578,44 $</b><em class="up">+3,24 %</em></div><svg class="cspark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0.0 36.0L30.0 28.9L60.0 15.2L90.0 4.0L120.0 6.7"/></svg><div class="card-meta"><span>Rang #1 im Thema KI</span><b class="up">+122,8 % <small>12 M.</small></b></div><span class="stamp like">MERKEN</span><span class="stamp nope">WEITER</span></article><article class="card" style="--k:1" data-k="1"><div class="card-top"><span class="tk">ADI</span><span class="cbadge">Fast am Jahreshoch</span></div><b class="cname">Analog Devices</b><small class="cwhat">Analogchips</small><div class="card-px"><b>428,27 $</b><em class="up">+0,69 %</em></div><svg class="cspark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0.0 36.0L30.0 10.7L60.0 14.6L90.0 9.2L120.0 4.0"/></svg><div class="card-meta"><span>Rang #2 im Thema KI</span><b class="up">+76,2 % <small>12 M.</small></b></div><span class="stamp like">MERKEN</span><span class="stamp nope">WEITER</span></article><article class="card" style="--k:2" data-k="2"><div class="card-top"><span class="tk">TXN</span><span class="cbadge">Marktführer</span></div><b class="cname">Texas Instruments</b><small class="cwhat">Analog- und Embedded-Chips</small><div class="card-px"><b>309,83 $</b><em class="up">+0,30 %</em></div><svg class="cspark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0.0 36.0L30.0 13.3L60.0 11.1L90.0 10.4L120.0 4.0"/></svg><div class="card-meta"><span>Rang #3 im Thema KI</span><b class="up">+82,9 % <small>12 M.</small></b></div><span class="stamp like">MERKEN</span><span class="stamp nope">WEITER</span></article><article class="card" style="--k:3" data-k="3"><div class="card-top"><span class="tk">MRVL</span><span class="cbadge">Marktführer</span></div><b class="cname">Marvell Technology</b><small class="cwhat"></small><div class="card-px"><b>251,65 $</b><em class="up">+3,32 %</em></div><svg class="cspark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0.0 36.0L30.0 23.6L60.0 18.7L90.0 4.0L120.0 6.1"/></svg><div class="card-meta"><span>Rang #4 im Thema KI</span><b class="up">+183,7 % <small>12 M.</small></b></div><span class="stamp like">MERKEN</span><span class="stamp nope">WEITER</span></article><article class="card" style="--k:4" data-k="4"><div class="card-top"><span class="tk">MU</span><span class="cbadge">Marktführer</span></div><b class="cname">Micron Technology</b><small class="cwhat">Speicherchips</small><div class="card-px"><b>983,23 $</b><em class="up">+5,86 %</em></div><svg class="cspark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0.0 36.0L30.0 24.7L60.0 11.2L90.0 4.0L120.0 7.1"/></svg><div class="card-meta"><span>Rang #5 im Thema KI</span><b class="up">+346,7 % <small>12 M.</small></b></div><span class="stamp like">MERKEN</span><span class="stamp nope">WEITER</span></article><article class="card" style="--k:5" data-k="5"><div class="card-top"><span class="tk">SWKS</span><span class="cbadge">Marktführer</span></div><b class="cname">Skyworks Solutions</b><small class="cwhat">Funkchips für Smartphones</small><div class="card-px"><b>87,23 $</b><em class="up">+2,05 %</em></div><svg class="cspark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0.0 19.3L30.0 35.8L60.0 36.0L90.0 4.0L120.0 5.0"/></svg><div class="card-meta"><span>Rang #6 im Thema KI</span><b class="up">+15,0 % <small>12 M.</small></b></div><span class="stamp like">MERKEN</span><span class="stamp nope">WEITER</span></article><article class="card" style="--k:6" data-k="6"><div class="card-top"><span class="tk">AAPL</span><span class="cbadge">Fast am Jahreshoch</span></div><b class="cname">Apple</b><small class="cwhat">iPhone, Mac und App Store</small><div class="card-px"><b>343,83 $</b><em class="down">−0,94 %</em></div><svg class="cspark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0.0 36.0L30.0 35.4L60.0 8.4L90.0 10.2L120.0 4.0"/></svg><div class="card-meta"><span>Rang #7 im Thema KI</span><b class="up">+27,9 % <small>12 M.</small></b></div><span class="stamp like">MERKEN</span><span class="stamp nope">WEITER</span></article><article class="card" style="--k:7" data-k="7"><div class="card-top"><span class="tk">PLTR</span></div><b class="cname">Palantir Technologies</b><small class="cwhat"></small><div class="card-px"><b>196,81 $</b><em class="down">−0,97 %</em></div><svg class="cspark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0.0 7.3L30.0 29.3L60.0 36.0L90.0 8.2L120.0 4.0"/></svg><div class="card-meta"><span>Rang #8 im Thema KI</span><b class="up">+4,0 % <small>12 M.</small></b></div><span class="stamp like">MERKEN</span><span class="stamp nope">WEITER</span></article></div>
-          <div class="deck-actions"><button type="button" class="deck-btn no" data-swipe="left" aria-label="Weiter">✕</button><span class="deck-hint">Ziehen oder tippen</span><button type="button" class="deck-btn yes" data-swipe="right" aria-label="Merken"><svg><use href="#i-heart"/></svg></button></div>
-        </div></div>
-        <div class="deck-saved" aria-live="polite"><svg><use href="#i-heart"/></svg> <span id="deck-saved">0</span> gemerkt</div>
-      </div>
-      <div class="worlds" aria-label="Themenwelten">
-        <div class="world-row"><div class="world-track"><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/01-kuenstliche-intelligenz.webp" alt="" loading="lazy" decoding="async"><span><small>AI-Modelle · 30 Aktien</small>Künstliche Intelligenz</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/02-halbleiter-chips.webp" alt="" loading="lazy" decoding="async"><span><small>GPUs · 30 Aktien</small>Halbleiter &amp; Chips</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/03-rechenzentren-cloud.webp" alt="" loading="lazy" decoding="async"><span><small>Datacenter · 30 Aktien</small>Rechenzentren &amp; Cloud</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/04-cybersecurity.webp" alt="" loading="lazy" decoding="async"><span><small>Sicherheit · 24 Aktien</small>Cybersecurity</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/05-quantencomputing.webp" alt="" loading="lazy" decoding="async"><span><small>Quantensysteme · 10 Aktien</small>Quantencomputing</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/06-humanoide-robotik.webp" alt="" loading="lazy" decoding="async"><span><small>Roboter · 11 Aktien</small>Humanoide Robotik</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/07-robotik-automation.webp" alt="" loading="lazy" decoding="async"><span><small>Lagerrobotik · 20 Aktien</small>Robotik &amp; Automation</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/08-drohnen-autonome-systeme.webp" alt="" loading="lazy" decoding="async"><span><small>UAVs · 13 Aktien</small>Drohnen &amp; autonome Systeme</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/09-elektromobilitaet.webp" alt="" loading="lazy" decoding="async"><span><small>Elektroautos · 30 Aktien</small>Elektromobilität</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/10-autonomes-fahren.webp" alt="" loading="lazy" decoding="async"><span><small>Robotaxis · 10 Aktien</small>Autonomes Fahren</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/11-batterien-energiespeicher.webp" alt="" loading="lazy" decoding="async"><span><small>Zellhersteller · 14 Aktien</small>Batterien &amp; Energiespeicher</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/12-erneuerbare-energien.webp" alt="" loading="lazy" decoding="async"><span><small>Solar · 14 Aktien</small>Erneuerbare Energien</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/13-wasserstoff.webp" alt="" loading="lazy" decoding="async"><span><small>Elektrolyse · 6 Aktien</small>Wasserstoff</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/14-kernenergie-uran.webp" alt="" loading="lazy" decoding="async"><span><small>Reaktoren · 12 Aktien</small>Kernenergie &amp; Uran</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/15-stromnetze-elektrifizierung.webp" alt="" loading="lazy" decoding="async"><span><small>Stromnetze · 30 Aktien</small>Stromnetze &amp; Elektrifizierung</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/16-raumfahrt.webp" alt="" loading="lazy" decoding="async"><span><small>Raketen · 16 Aktien</small>Raumfahrt</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/17-satelliten-konnektivitaet.webp" alt="" loading="lazy" decoding="async"><span><small>Satelliten · 7 Aktien</small>Satelliten &amp; Konnektivität</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/18-defense-aerospace.webp" alt="" loading="lazy" decoding="async"><span><small>Luftfahrt · 30 Aktien</small>Defense &amp; Aerospace</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/01-kuenstliche-intelligenz.webp" alt="" loading="lazy" decoding="async"><span><small>AI-Modelle · 30 Aktien</small>Künstliche Intelligenz</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/02-halbleiter-chips.webp" alt="" loading="lazy" decoding="async"><span><small>GPUs · 30 Aktien</small>Halbleiter &amp; Chips</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/03-rechenzentren-cloud.webp" alt="" loading="lazy" decoding="async"><span><small>Datacenter · 30 Aktien</small>Rechenzentren &amp; Cloud</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/04-cybersecurity.webp" alt="" loading="lazy" decoding="async"><span><small>Sicherheit · 24 Aktien</small>Cybersecurity</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/05-quantencomputing.webp" alt="" loading="lazy" decoding="async"><span><small>Quantensysteme · 10 Aktien</small>Quantencomputing</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/06-humanoide-robotik.webp" alt="" loading="lazy" decoding="async"><span><small>Roboter · 11 Aktien</small>Humanoide Robotik</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/07-robotik-automation.webp" alt="" loading="lazy" decoding="async"><span><small>Lagerrobotik · 20 Aktien</small>Robotik &amp; Automation</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/08-drohnen-autonome-systeme.webp" alt="" loading="lazy" decoding="async"><span><small>UAVs · 13 Aktien</small>Drohnen &amp; autonome Systeme</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/09-elektromobilitaet.webp" alt="" loading="lazy" decoding="async"><span><small>Elektroautos · 30 Aktien</small>Elektromobilität</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/10-autonomes-fahren.webp" alt="" loading="lazy" decoding="async"><span><small>Robotaxis · 10 Aktien</small>Autonomes Fahren</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/11-batterien-energiespeicher.webp" alt="" loading="lazy" decoding="async"><span><small>Zellhersteller · 14 Aktien</small>Batterien &amp; Energiespeicher</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/12-erneuerbare-energien.webp" alt="" loading="lazy" decoding="async"><span><small>Solar · 14 Aktien</small>Erneuerbare Energien</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/13-wasserstoff.webp" alt="" loading="lazy" decoding="async"><span><small>Elektrolyse · 6 Aktien</small>Wasserstoff</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/14-kernenergie-uran.webp" alt="" loading="lazy" decoding="async"><span><small>Reaktoren · 12 Aktien</small>Kernenergie &amp; Uran</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/15-stromnetze-elektrifizierung.webp" alt="" loading="lazy" decoding="async"><span><small>Stromnetze · 30 Aktien</small>Stromnetze &amp; Elektrifizierung</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/16-raumfahrt.webp" alt="" loading="lazy" decoding="async"><span><small>Raketen · 16 Aktien</small>Raumfahrt</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/17-satelliten-konnektivitaet.webp" alt="" loading="lazy" decoding="async"><span><small>Satelliten · 7 Aktien</small>Satelliten &amp; Konnektivität</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/18-defense-aerospace.webp" alt="" loading="lazy" decoding="async"><span><small>Luftfahrt · 30 Aktien</small>Defense &amp; Aerospace</span></a></div></div>
-        <div class="world-row rev"><div class="world-track"><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/19-biotechnologie.webp" alt="" loading="lazy" decoding="async"><span><small>Wirkstoffe · 30 Aktien</small>Biotechnologie</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/20-genomik-gentherapie.webp" alt="" loading="lazy" decoding="async"><span><small>CRISPR · 10 Aktien</small>Genomik &amp; Gentherapie</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/21-medizintechnik.webp" alt="" loading="lazy" decoding="async"><span><small>Diagnostik · 30 Aktien</small>Medizintechnik</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/22-pharma-wirkstoffforschung.webp" alt="" loading="lazy" decoding="async"><span><small>Forschung · 14 Aktien</small>Pharma &amp; Wirkstoffforschung</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/23-longevity-praezisionsmedizin.webp" alt="" loading="lazy" decoding="async"><span><small>Medizin · 12 Aktien</small>Longevity &amp; Präzisionsmedizin</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/24-landwirtschaft-agtech.webp" alt="" loading="lazy" decoding="async"><span><small>AgTech · 13 Aktien</small>Landwirtschaft &amp; AgTech</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/25-rohstoffe-bergbau.webp" alt="" loading="lazy" decoding="async"><span><small>Kupfer · 30 Aktien</small>Rohstoffe &amp; Bergbau</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/26-industrie-maschinenbau.webp" alt="" loading="lazy" decoding="async"><span><small>Produktion · 30 Aktien</small>Industrie &amp; Maschinenbau</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/27-logistik-automation.webp" alt="" loading="lazy" decoding="async"><span><small>Lager · 13 Aktien</small>Logistik &amp; Automation</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/28-infrastruktur.webp" alt="" loading="lazy" decoding="async"><span><small>Straßen · 15 Aktien</small>Infrastruktur</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/29-banken-fintech.webp" alt="" loading="lazy" decoding="async"><span><small>Banken · 30 Aktien</small>Banken &amp; Fintech</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/30-versicherungen.webp" alt="" loading="lazy" decoding="async"><span><small>Assekuranz · 30 Aktien</small>Versicherungen</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/31-immobilien-reits.webp" alt="" loading="lazy" decoding="async"><span><small>REITs · 30 Aktien</small>Immobilien &amp; REITs</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/32-konsum-marken.webp" alt="" loading="lazy" decoding="async"><span><small>Marken · 30 Aktien</small>Konsum &amp; Marken</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/33-luxus-premium.webp" alt="" loading="lazy" decoding="async"><span><small>Mode · 9 Aktien</small>Luxus &amp; Premium</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/34-lebensmittel-getraenke.webp" alt="" loading="lazy" decoding="async"><span><small>Food · 30 Aktien</small>Lebensmittel &amp; Getränke</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/35-e-commerce.webp" alt="" loading="lazy" decoding="async"><span><small>Onlinehandel · 30 Aktien</small>E-Commerce</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/36-reisen-tourismus.webp" alt="" loading="lazy" decoding="async"><span><small>Airlines · 30 Aktien</small>Reisen &amp; Tourismus</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/19-biotechnologie.webp" alt="" loading="lazy" decoding="async"><span><small>Wirkstoffe · 30 Aktien</small>Biotechnologie</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/20-genomik-gentherapie.webp" alt="" loading="lazy" decoding="async"><span><small>CRISPR · 10 Aktien</small>Genomik &amp; Gentherapie</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/21-medizintechnik.webp" alt="" loading="lazy" decoding="async"><span><small>Diagnostik · 30 Aktien</small>Medizintechnik</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/22-pharma-wirkstoffforschung.webp" alt="" loading="lazy" decoding="async"><span><small>Forschung · 14 Aktien</small>Pharma &amp; Wirkstoffforschung</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/23-longevity-praezisionsmedizin.webp" alt="" loading="lazy" decoding="async"><span><small>Medizin · 12 Aktien</small>Longevity &amp; Präzisionsmedizin</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/24-landwirtschaft-agtech.webp" alt="" loading="lazy" decoding="async"><span><small>AgTech · 13 Aktien</small>Landwirtschaft &amp; AgTech</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/25-rohstoffe-bergbau.webp" alt="" loading="lazy" decoding="async"><span><small>Kupfer · 30 Aktien</small>Rohstoffe &amp; Bergbau</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/26-industrie-maschinenbau.webp" alt="" loading="lazy" decoding="async"><span><small>Produktion · 30 Aktien</small>Industrie &amp; Maschinenbau</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/27-logistik-automation.webp" alt="" loading="lazy" decoding="async"><span><small>Lager · 13 Aktien</small>Logistik &amp; Automation</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/28-infrastruktur.webp" alt="" loading="lazy" decoding="async"><span><small>Straßen · 15 Aktien</small>Infrastruktur</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/29-banken-fintech.webp" alt="" loading="lazy" decoding="async"><span><small>Banken · 30 Aktien</small>Banken &amp; Fintech</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/30-versicherungen.webp" alt="" loading="lazy" decoding="async"><span><small>Assekuranz · 30 Aktien</small>Versicherungen</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/31-immobilien-reits.webp" alt="" loading="lazy" decoding="async"><span><small>REITs · 30 Aktien</small>Immobilien &amp; REITs</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/32-konsum-marken.webp" alt="" loading="lazy" decoding="async"><span><small>Marken · 30 Aktien</small>Konsum &amp; Marken</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/33-luxus-premium.webp" alt="" loading="lazy" decoding="async"><span><small>Mode · 9 Aktien</small>Luxus &amp; Premium</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/34-lebensmittel-getraenke.webp" alt="" loading="lazy" decoding="async"><span><small>Food · 30 Aktien</small>Lebensmittel &amp; Getränke</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/35-e-commerce.webp" alt="" loading="lazy" decoding="async"><span><small>Onlinehandel · 30 Aktien</small>E-Commerce</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/36-reisen-tourismus.webp" alt="" loading="lazy" decoding="async"><span><small>Airlines · 30 Aktien</small>Reisen &amp; Tourismus</span></a></div></div>
-        <div class="world-row"><div class="world-track"><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/37-freizeit-entertainment.webp" alt="" loading="lazy" decoding="async"><span><small>Freizeitparks · 30 Aktien</small>Freizeit &amp; Entertainment</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/38-medien-werbung.webp" alt="" loading="lazy" decoding="async"><span><small>Content · 30 Aktien</small>Medien &amp; Werbung</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/39-streaming-gaming.webp" alt="" loading="lazy" decoding="async"><span><small>Video · 16 Aktien</small>Streaming &amp; Gaming</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/40-telekommunikation-netze.webp" alt="" loading="lazy" decoding="async"><span><small>Mobilfunk · 30 Aktien</small>Telekommunikation &amp; Netze</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/41-oel-gas.webp" alt="" loading="lazy" decoding="async"><span><small>Förderung · 30 Aktien</small>Öl, Gas &amp; Versorger</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/42-chemie.webp" alt="" loading="lazy" decoding="async"><span><small>Grundstoffe · 30 Aktien</small>Chemie &amp; Werkstoffe</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/43-fertigung.webp" alt="" loading="lazy" decoding="async"><span><small>Maschinen · 30 Aktien</small>Industrie &amp; Fertigung</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/44-einzelhandel.webp" alt="" loading="lazy" decoding="async"><span><small>Läden · 30 Aktien</small>Handel &amp; Einzelhandel</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/45-grosshandel.webp" alt="" loading="lazy" decoding="async"><span><small>Zwischenhandel · 30 Aktien</small>Großhandel</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/46-bau.webp" alt="" loading="lazy" decoding="async"><span><small>Bau · 30 Aktien</small>Bau &amp; Baustoffe</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/47-spedition.webp" alt="" loading="lazy" decoding="async"><span><small>Bahn · 30 Aktien</small>Transport &amp; Spedition</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/48-papier.webp" alt="" loading="lazy" decoding="async"><span><small>Holz · 28 Aktien</small>Papier &amp; Verpackung</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/49-textil.webp" alt="" loading="lazy" decoding="async"><span><small>Textil · 27 Aktien</small>Textil &amp; Bekleidung</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/50-stahl.webp" alt="" loading="lazy" decoding="async"><span><small>Stahl · 30 Aktien</small>Metallverarbeitung &amp; Stahl</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/51-finanzdienste.webp" alt="" loading="lazy" decoding="async"><span><small>Broker · 30 Aktien</small>Finanzdienstleistungen</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/52-software-it.webp" alt="" loading="lazy" decoding="async"><span><small>Software · 30 Aktien</small>Unternehmenssoftware &amp; IT</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/53-unternehmen.webp" alt="" loading="lazy" decoding="async"><span><small>Bildung · 30 Aktien</small>Dienstleistungen</span></a><a class="world" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/54-gesundheit.webp" alt="" loading="lazy" decoding="async"><span><small>Kliniken · 30 Aktien</small>Gesundheitsdienstleister</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/37-freizeit-entertainment.webp" alt="" loading="lazy" decoding="async"><span><small>Freizeitparks · 30 Aktien</small>Freizeit &amp; Entertainment</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/38-medien-werbung.webp" alt="" loading="lazy" decoding="async"><span><small>Content · 30 Aktien</small>Medien &amp; Werbung</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/39-streaming-gaming.webp" alt="" loading="lazy" decoding="async"><span><small>Video · 16 Aktien</small>Streaming &amp; Gaming</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/40-telekommunikation-netze.webp" alt="" loading="lazy" decoding="async"><span><small>Mobilfunk · 30 Aktien</small>Telekommunikation &amp; Netze</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/41-oel-gas.webp" alt="" loading="lazy" decoding="async"><span><small>Förderung · 30 Aktien</small>Öl, Gas &amp; Versorger</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/42-chemie.webp" alt="" loading="lazy" decoding="async"><span><small>Grundstoffe · 30 Aktien</small>Chemie &amp; Werkstoffe</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/43-fertigung.webp" alt="" loading="lazy" decoding="async"><span><small>Maschinen · 30 Aktien</small>Industrie &amp; Fertigung</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/44-einzelhandel.webp" alt="" loading="lazy" decoding="async"><span><small>Läden · 30 Aktien</small>Handel &amp; Einzelhandel</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/45-grosshandel.webp" alt="" loading="lazy" decoding="async"><span><small>Zwischenhandel · 30 Aktien</small>Großhandel</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/46-bau.webp" alt="" loading="lazy" decoding="async"><span><small>Bau · 30 Aktien</small>Bau &amp; Baustoffe</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/47-spedition.webp" alt="" loading="lazy" decoding="async"><span><small>Bahn · 30 Aktien</small>Transport &amp; Spedition</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/48-papier.webp" alt="" loading="lazy" decoding="async"><span><small>Holz · 28 Aktien</small>Papier &amp; Verpackung</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/49-textil.webp" alt="" loading="lazy" decoding="async"><span><small>Textil · 27 Aktien</small>Textil &amp; Bekleidung</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/50-stahl.webp" alt="" loading="lazy" decoding="async"><span><small>Stahl · 30 Aktien</small>Metallverarbeitung &amp; Stahl</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/51-finanzdienste.webp" alt="" loading="lazy" decoding="async"><span><small>Broker · 30 Aktien</small>Finanzdienstleistungen</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/52-software-it.webp" alt="" loading="lazy" decoding="async"><span><small>Software · 30 Aktien</small>Unternehmenssoftware &amp; IT</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/53-unternehmen.webp" alt="" loading="lazy" decoding="async"><span><small>Bildung · 30 Aktien</small>Dienstleistungen</span></a><a class="world" aria-hidden="true" href="/discover/#/welten" tabindex="-1"><img src="/assets/home/worlds/54-gesundheit.webp" alt="" loading="lazy" decoding="async"><span><small>Kliniken · 30 Aktien</small>Gesundheitsdienstleister</span></a></div></div>
-      </div>
-    </div>
-  </div>
+<section class="shell sec" aria-labelledby="trust-title">
+  <p class="vu-ltag" id="trust-title">Darauf kannst du dich verlassen</p>
+  <ul class="trust">
+    <li>Echte Daten aus SEC-Berichten und Börsenkursen, jede Zahl mit Datum.</li>
+    <li>Unabhängig: keine Kauf- oder Verkaufsempfehlung.</li>
+    <li>Fehlt etwas, sagt die App es ehrlich, statt zu raten.</li>
+    <li>Hell oder dunkel, Handy oder Desktop, ein Konto.</li>
+  </ul>
 </section>
 
-<!-- ============ MODULE IM DETAIL ============ -->
-<section class="section">
-  <div class="shell">
-
-    <!-- Discover -->
-    <div class="feature flip" id="discover" data-cv>
-      <div class="feature-copy">
-        <span class="kicker">Discover</span>
-        <h2 class="h2">Entdecke Aktien, wie du Musik entdeckst.</h2>
-        <p class="lead">Swipe durch Themenwelten, Rankings und Märkte. Discover zeigt dir, was sich bewegt – und von dort geht es direkt in die volle Analyse.</p>
-        <ul class="points">
-          <li><span class="hud hud-sm"><svg><use href="#h-globe"/></svg></span><div><b>54 Themenwelten</b><span>Künstliche Intelligenz, Halbleiter, Raumfahrt, Wasserstoff und viele mehr.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-rank"/></svg></span><div><b>Rankings &amp; Perspektiven</b><span>Die stärksten Aktien je Index, Branche und Thema.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-heart"/></svg></span><div><b>Deine Watchlist</b><span>Merke dir Ideen und verfolge sie über alle Module hinweg.</span></div></li>
-        </ul>
-        <a class="btn btn-app" href="/discover/">Discover öffnen <svg><use href="#i-arrow"/></svg></a>
-      </div>
-      <div class="visual" aria-hidden="true">
-        <div class="disc">
-          <div class="disc-hero"><img src="/assets/home/worlds/01-kuenstliche-intelligenz.webp" alt="" loading="lazy"><span><small>Themenwelt</small>Künstliche Intelligenz</span></div>
-          <div class="panel">
-            <div class="panel-head"><b>Stärkste Aktien · Thema KI</b><span class="live"><i></i>Live-Daten</span></div>
-            <table class="tbl">
-              <thead><tr><th>Rang</th><th>Unternehmen</th><th>3 Monate</th></tr></thead>
-              <tbody>
-                <tr><td>#1</td><td><span class="t"><i>AMD</i>Advanced Micro Devices</span></td><td><svg class="spk" viewBox="0 0 60 24"><path d="M0.0 19.7L0.9 22.0L1.8 16.9L2.8 17.8L3.7 17.0L4.6 13.9L5.5 17.2L6.5 16.6L7.4 17.1L8.3 18.4L9.2 17.9L10.2 17.1L11.1 17.1L12.0 14.3L12.9 15.0L13.8 17.0L14.8 18.6L15.7 18.4L16.6 18.0L17.5 19.5L18.5 17.5L19.4 17.3L20.3 17.7L21.2 18.7L22.2 18.3L23.1 19.3L24.0 19.5L24.9 19.6L25.8 17.6L26.8 15.1L27.7 13.7L28.6 15.3L29.5 14.1L30.5 16.2L31.4 15.2L32.3 14.5L33.2 11.5L34.2 10.2L35.1 5.1L36.0 4.3L36.9 5.2L37.8 3.8L38.8 3.7L39.7 5.8L40.6 5.8L41.5 5.4L42.5 5.1L43.4 3.4L44.3 3.6L45.2 2.0L46.2 2.3L47.1 4.6L48.0 5.8L48.9 7.0L49.8 6.0L50.8 9.2L51.7 9.9L52.6 13.0L53.5 12.1L54.5 12.4L55.4 10.8L56.3 14.9L57.2 14.1L58.2 12.7L59.1 10.1L60.0 8.5"/></svg> <span class="up">+27,2 %</span></td></tr>
-                <tr><td>#2</td><td><span class="t"><i>ADI</i>Analog Devices</span></td><td><svg class="spk" viewBox="0 0 60 24"><path d="M0.0 18.7L0.9 22.0L1.8 18.4L2.8 18.3L3.7 19.7L4.6 14.8L5.5 15.5L6.5 15.6L7.4 12.2L8.3 13.8L9.2 13.5L10.2 13.7L11.1 14.6L12.0 12.4L12.9 12.1L13.8 15.8L14.8 16.7L15.7 17.5L16.6 16.7L17.5 17.2L18.5 16.6L19.4 17.1L20.3 16.4L21.2 19.8L22.2 19.7L23.1 21.7L24.0 21.4L24.9 21.2L25.8 19.6L26.8 19.4L27.7 18.9L28.6 19.9L29.5 15.2L30.5 20.0L31.4 19.9L32.3 19.7L33.2 19.5L34.2 16.0L35.1 14.1L36.0 12.1L36.9 13.5L37.8 14.2L38.8 11.3L39.7 10.8L40.6 10.0L41.5 10.4L42.5 8.3L43.4 5.0L44.3 4.4L45.2 4.1L46.2 6.9L47.1 8.0L48.0 7.9L48.9 7.9L49.8 5.6L50.8 8.6L51.7 8.5L52.6 10.8L53.5 11.1L54.5 10.3L55.4 8.0L56.3 13.4L57.2 11.9L58.2 7.4L59.1 2.8L60.0 2.0"/></svg> <span class="up">+17,1 %</span></td></tr>
-                <tr><td>#3</td><td><span class="t"><i>TXN</i>Texas Instruments</span></td><td><svg class="spk" viewBox="0 0 60 24"><path d="M0.0 13.6L0.9 15.6L1.8 13.0L2.8 14.1L3.7 16.4L4.6 11.3L5.5 13.4L6.5 13.1L7.4 10.4L8.3 12.4L9.2 12.1L10.2 13.8L11.1 14.9L12.0 12.7L12.9 11.5L13.8 15.3L14.8 17.0L15.7 17.7L16.6 18.1L17.5 20.0L18.5 19.6L19.4 19.0L20.3 17.3L21.2 20.1L22.2 19.3L23.1 22.0L24.0 21.5L24.9 21.8L25.8 20.2L26.8 20.0L27.7 19.1L28.6 20.1L29.5 16.6L30.5 18.4L31.4 18.4L32.3 19.4L33.2 20.3L34.2 17.3L35.1 15.8L36.0 15.6L36.9 15.2L37.8 15.9L38.8 13.2L39.7 13.2L40.6 12.0L41.5 12.5L42.5 12.1L43.4 7.7L44.3 7.3L45.2 6.5L46.2 9.4L47.1 9.7L48.0 11.2L48.9 11.9L49.8 9.8L50.8 12.3L51.7 12.9L52.6 13.8L53.5 13.9L54.5 13.3L55.4 10.9L56.3 12.7L57.2 10.9L58.2 6.1L59.1 2.3L60.0 2.0"/></svg> <span class="up">+11,8 %</span></td></tr>
-                <tr><td>#4</td><td><span class="t"><i>MRVL</i>Marvell Technology</span></td><td><svg class="spk" viewBox="0 0 60 24"><path d="M0.0 20.2L0.9 22.0L1.8 18.8L2.8 18.1L3.7 17.1L4.6 13.1L5.5 14.3L6.5 14.4L7.4 13.0L8.3 14.7L9.2 14.1L10.2 13.3L11.1 12.5L12.0 12.5L12.9 10.5L13.8 13.5L14.8 10.0L15.7 7.8L16.6 10.1L17.5 11.3L18.5 9.5L19.4 8.8L20.3 9.4L21.2 13.4L22.2 14.2L23.1 14.4L24.0 15.0L24.9 14.6L25.8 12.3L26.8 12.0L27.7 10.4L28.6 11.7L29.5 10.2L30.5 13.0L31.4 12.6L32.3 11.3L33.2 9.5L34.2 8.9L35.1 6.8L36.0 6.0L36.9 6.2L37.8 6.5L38.8 6.1L39.7 7.7L40.6 5.8L41.5 5.7L42.5 5.1L43.4 4.4L44.3 4.5L45.2 2.0L46.2 2.4L47.1 4.0L48.0 3.9L48.9 5.4L49.8 5.0L50.8 8.8L51.7 9.4L52.6 11.6L53.5 10.1L54.5 9.5L55.4 8.8L56.3 12.3L57.2 11.5L58.2 10.6L59.1 9.0L60.0 7.7"/></svg> <span class="up">+44,2 %</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Screener -->
-    <div class="feature" id="screener" data-cv>
-      <div class="feature-copy">
-        <span class="kicker">Screener</span>
-        <h2 class="h2">Dein Universum. Deine Kriterien.</h2>
-        <p class="lead">Filtere über 6.000 US-Aktien Schritt für Schritt – einfach für den Einstieg, im Pro-Modus mit Gruppen, gewichtetem Ranking und allen Kriterien.</p>
-        <ul class="points">
-          <li><span class="hud hud-sm"><svg><use href="#h-sliders"/></svg></span><div><b>Einfach &amp; Pro</b><span>Starte mit wenigen Kriterien und vertiefe, wann du willst.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-rank"/></svg></span><div><b>Gewichtetes Ranking</b><span>Bestimme selbst, welche Faktoren dir wichtig sind.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-save"/></svg></span><div><b>Screens speichern</b><span>Gespeicherte und zuletzt genutzte Screens immer griffbereit.</span></div></li>
-        </ul>
-        <a class="btn btn-app" href="/screener/">Screener öffnen <svg><use href="#i-arrow"/></svg></a>
-      </div>
-      <div class="visual" aria-hidden="true">
-        <div class="panel">
-          <div class="panel-head"><b>Screen: Wachstum mit Marge</b><span class="live"><i></i>Live-Daten</span></div>
-          <div class="chips"><span class="chip on">Umsatzwachstum &gt; 10 %</span><span class="chip on">Nettomarge &gt; 10 %</span><span class="chip on">KGV &lt; 50</span><span class="chip">+ Kriterium</span></div>
-          <table class="tbl">
-            <thead><tr><th>Unternehmen</th><th>Umsatz&nbsp;+</th><th class="hide-s">Marge</th><th>KGV</th></tr></thead>
-            <tbody>
-              <tr><td><span class="t"><i>NVDA</i>NVIDIA</span></td><td><span class="bar"><i style="width:100%"></i></span> 83,4 %</td><td class="hide-s">55,6 %</td><td>27,2</td></tr>
-              <tr><td><span class="t"><i>AVGO</i>Broadcom</span></td><td><span class="bar"><i style="width:58%"></i></span> 48,7 %</td><td class="hide-s">36,2 %</td><td>44,9</td></tr>
-              <tr><td><span class="t"><i>META</i>Meta Platforms</span></td><td><span class="bar"><i style="width:33%"></i></span> 27,5 %</td><td class="hide-s">30,1 %</td><td>20,9</td></tr>
-              <tr><td><span class="t"><i>GOOGL</i>Alphabet</span></td><td><span class="bar"><i style="width:24%"></i></span> 20,1 %</td><td class="hide-s">32,8 %</td><td>16,3</td></tr>
-              <tr><td><span class="t"><i>MSFT</i>Microsoft</span></td><td><span class="bar"><i style="width:21%"></i></span> 17,8 %</td><td class="hide-s">40,3 %</td><td>29,6</td></tr>
-              <tr><td><span class="t"><i>AMZN</i>Amazon.com</span></td><td><span class="bar"><i style="width:19%"></i></span> 15,8 %</td><td class="hide-s">10,8 %</td><td>20,5</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- Supertrader -->
-    <div class="feature flip" id="supertrader" data-cv>
-      <div class="feature-copy">
-        <span class="kicker">Supertrader</span>
-        <h2 class="h2">Methoden. Setups. Klare Regeln.</h2>
-        <p class="lead">Bewährte Strategien, transparente Regeln, ehrliche Backtests und laufende Modell-Signale – von CAN SLIM über Darvas Boxes bis Weinstein Stages.</p>
-        <ul class="points">
-          <li><span class="hud hud-sm"><svg><use href="#h-rules"/></svg></span><div><b>11 Methoden, feste Regeln</b><span>Jede Regelversion ist dokumentiert und nachvollziehbar.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-eye"/></svg></span><div><b>Was die Modelle beobachten</b><span>Setups in Vorbereitung, bestätigte Einstiege und Modellpositionen.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-shield"/></svg></span><div><b>Ehrliche Evidenz</b><span>Wie belastbar jede Methode ist – als Forschung, nicht als Empfehlung.</span></div></li>
-        </ul>
-        <a class="btn btn-app" href="/supertrader/">Supertrader öffnen <svg><use href="#i-arrow"/></svg></a>
-      </div>
-      <div class="visual" aria-hidden="true">
-        <div class="panel">
-          <div class="panel-head"><b>Was die Modelle gerade beobachten</b><span class="live"><i></i>Live-Daten</span></div>
-          <div class="sig-list">
-            <div class="sig"><span class="t"><i>TSLA</i></span><div><b>Donchian / Turtle</b><small>Auslöser 388,84 $ · Invalidierung 349,33 $</small></div><span class="state on">Aktiv</span></div>
-            <div class="sig"><span class="t"><i>MSFT</i></span><div><b>Darvas Boxes</b><small>Box 515,70 – 551,15 $</small></div><span class="state ready">Setup</span></div>
-            <div class="sig"><span class="t"><i>AMZN</i></span><div><b>Weinstein Stages</b><small>Auslöser 280,14 $ · Invalidierung 244,68 $</small></div><span class="state ready">Setup</span></div>
-            <div class="sig"><span class="t"><i>AMZN</i></span><div><b>Donchian / Turtle</b><small>Beobachtung</small></div><span class="state ">Watch</span></div>
-          </div>
-        </div>
-        <div class="float-note" style="right:18px;bottom:18px"><i></i>Modellbeobachtung, keine Empfehlung</div>
-      </div>
-    </div>
-
-    <!-- Quant -->
-    <div class="feature" id="quant" data-cv>
-      <div class="feature-copy">
-        <span class="kicker">Quant</span>
-        <h2 class="h2">Von der Frage zur Entscheidung.</h2>
-        <p class="lead">Quant prüft über 6.000 US-Aktien nach festen Daten und Regeln – was dafür spricht, was dagegen, was sich verändert und was früher in ähnlichen Situationen geschah.</p>
-        <ul class="points">
-          <li><span class="hud hud-sm"><svg><use href="#h-layers"/></svg></span><div><b>Faktor-DNA</b><span>Qualität, Wachstum, Momentum, Bewertung, Profitabilität und Risiko.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-history"/></svg></span><div><b>Historische Vergleichsfälle</b><span>Was früher in ähnlichen Situationen geschah – mit Backtests.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-data"/></svg></span><div><b>Bis zu den Rohdaten</b><span>Offene Methodik und Datenherkunft statt Blackbox.</span></div></li>
-        </ul>
-        <a class="btn btn-app" href="/quant/#/aktie/NVDA">Quant öffnen <svg><use href="#i-arrow"/></svg></a>
-      </div>
-      <div class="visual" aria-hidden="true">
-        <div class="panel">
-          <div class="panel-head"><b>NVIDIA · Faktor-DNA</b><span class="live"><i></i>Live-Daten</span></div>
-          <div class="factors">
-            <div class="fx"><span>Profitabilität</span><span class="fbar"><i style="width:98.7%"></i></span><b>99</b></div>
-            <div class="fx"><span>Wachstum</span><span class="fbar"><i style="width:86.3%"></i></span><b>86</b></div>
-            <div class="fx"><span>Risiko-Score</span><span class="fbar"><i style="width:84.3%"></i></span><b>84</b></div>
-            <div class="fx"><span>Momentum</span><span class="fbar"><i style="width:65.9%"></i></span><b>66</b></div>
-            <div class="fx"><span>Bewertung</span><span class="fbar"><i style="width:58.5%"></i></span><b>59</b></div>
-            <div class="fx"><span>Qualität</span><span class="fbar"><i style="width:43.4%"></i></span><b>43</b></div>
-          </div>
-          <div class="event"><span class="hud hud-sm"><svg><use href="#h-history"/></svg></span><div><b>Ereignis-Radar</b><small>Neue Hochs, bestätigte Setups und Faktorwechsel – jeden Handelstag, mit historischen Vergleichsfällen. Historisch, kein Versprechen.</small></div></div>
-        </div>
-      </div>
-    </div>
-
-
-    <!-- Vorsorge -->
-    <div class="feature flip" id="vorsorge" data-cv>
-      <div class="feature-copy">
-        <span class="kicker">Altersvorsorge</span>
-        <h2 class="h2">Deine Vorsorge. Klar geplant.</h2>
-        <p class="lead">Wie groß ist deine Vorsorgelücke, welcher ETF passt, was kosten Produkte wirklich – und welche Förderung steht dir zu? Analyse statt Produktverkauf.</p>
-        <ul class="points">
-          <li><span class="hud hud-sm"><svg><use href="#h-vorsorge"/></svg></span><div><b>Vorsorgeplaner</b><span>Vorsorgelücke berechnen und Sparplan durchspielen – mit eigenen Annahmen.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-layers"/></svg></span><div><b>ETF Intelligence &amp; X-Ray</b><span>Über 7.000 ETFs mit echter Kurshistorie, Kostenanalyse und Portfolio-Durchleuchtung.</span></div></li>
-          <li><span class="hud hud-sm"><svg><use href="#h-shield"/></svg></span><div><b>Förderrechner</b><span>Altersvorsorgedepot ab 2027, Riester und Frühstart-Rente – nach Gesetzestext geprüft.</span></div></li>
-        </ul>
-        <a class="btn btn-app" href="/vorsorge/">Vorsorge planen <svg><use href="#i-arrow"/></svg></a>
-      </div>
-      <div class="visual" aria-hidden="true">
-        <div class="panel">
-          <div class="panel-head"><b>Vorsorgeplaner · Sparplan</b><small>Beispielrechnung</small></div>
-          <div class="plan">
-            <div class="plan-kpis">
-              <div><small>Sparrate</small><b>200 € / Monat</b></div>
-              <div><small>Laufzeit</small><b>30 Jahre</b></div>
-              <div><small>Endwert</small><b class="lime">166.452 €</b></div>
-            </div>
-            <div class="plan-bars">
-              <div><i style="height:8.2%"></i><em style="height:7.2%"></em><span>5 J.</span></div>
-              <div><i style="height:18.7%"></i><em style="height:14.4%"></em><span>10 J.</span></div>
-              <div><i style="height:32.1%"></i><em style="height:21.6%"></em><span>15 J.</span></div>
-              <div><i style="height:49.4%"></i><em style="height:28.8%"></em><span>20 J.</span></div>
-              <div><i style="height:71.6%"></i><em style="height:36%"></em><span>25 J.</span></div>
-              <div><i style="height:100%"></i><em style="height:43.3%"></em><span>30 J.</span></div>
-            </div>
-            <div class="plan-legend"><span><i class="l1"></i>Depotwert</span><span><i class="l2"></i>Eingezahlt 72.000 €</span><span class="note">5 % p. a. angenommen, vor Kosten und Steuern</span></div>
-            <div class="chips" style="padding:12px 0 0"><span class="chip on">Altersvorsorgedepot 2027</span><span class="chip">Riester</span><span class="chip">Frühstart-Rente</span><span class="chip">Kostenanalyse</span></div>
-          </div>
-        </div>
-        <div class="float-note" style="right:18px;top:18px"><i></i>Analyse statt Produktverkauf</div>
-      </div>
-    </div>
-
+<section class="shell sec">
+  <div class="vu-box vu-box--lime final">
+    <b>Bereit für deinen Start?</b>
+    <span>In zwei Minuten eingerichtet.</span>
+    <a class="vu-btn vu-btn--ink" href="/konto/registrieren/?plan=free">Kostenlos starten</a>
   </div>
 </section>
-
-<!-- ============ ATLAS ============ -->
-<section class="section" style="padding-top:0" data-cv>
-  <div class="shell">
-    <div class="atlas-band">
-      <div>
-        <span class="hud hud-lg" style="margin-bottom:22px"><svg><use href="#h-atlas"/></svg></span>
-        <span class="kicker">AI Atlas</span>
-        <h2 class="h2">Frag einfach. Atlas rechnet auf echten Daten.</h2>
-        <p class="lead">Stelle eine Investmentfrage in eigenen Worten – Atlas übersetzt sie in Filter und rechnet sie auf den Daten aus Screener, Supertrader und Quant aus.</p>
-        <div class="hero-cta"><a class="btn btn-app" href="/ask/">AI Atlas fragen <svg><use href="#i-arrow"/></svg></a></div>
-      </div>
-      <div class="chat" aria-hidden="true">
-        <div class="bubble q">Zeig mir günstig bewertete Small Caps mit wenig Schulden.</div>
-        <div class="bubble a">Ich habe das in <b>drei Filter</b> übersetzt: Marktkapitalisierung unter 2 Mrd. USD, KGV unter Branchenschnitt und niedrige Nettoverschuldung.<div class="src"><span>Screener</span><span>Quant</span><span>Live-Daten</span></div></div>
-        <div class="chat-input"><span>Deine Frage an Atlas …</span><i>→</i></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ SO FUNKTIONIERT'S ============ -->
-<section class="section" style="background:var(--bg-soft);border-block:1px solid var(--line)" data-cv>
-  <div class="shell">
-    <div class="section-head">
-      <div><span class="kicker">So einfach geht's</span><h2 class="h2">In drei Schritten zur klaren Einordnung.</h2></div>
-    </div>
-    <div class="steps">
-      <div class="step"><span class="hud"><svg><use href="#h-discover"/></svg></span><h3>Entdecken</h3><p>Starte mit Themenwelten, Rankings und Perspektiven und finde Unternehmen, die dich interessieren.</p></div>
-      <div class="step"><span class="hud"><svg><use href="#h-screener"/></svg></span><h3>Eingrenzen</h3><p>Filtere nach deinen Kriterien und sieh, welche Methoden und Setups gerade anschlagen.</p></div>
-      <div class="step"><span class="hud"><svg><use href="#h-elliott"/></svg></span><h3>Verstehen</h3><p>Prüfe Fundamentaldaten, Chartbild, Elliott-Struktur und Faktoren – mit klarer Einschätzung.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ APP-EINSTIEG ============ -->
-<section class="section" id="app" data-cv>
-  <div class="shell">
-    <div class="appcta">
-      <div class="appcta-copy">
-        <span class="kicker">Die Vision Universe App</span>
-        <h2 class="h2">Dein Research. Auf jedem Gerät.</h2>
-        <p class="lead">Alle Module in einer App – am Desktop, auf dem Tablet und auf dem Smartphone. Auf dem Handy einfach zum Home-Bildschirm hinzufügen und wie eine native App nutzen.</p>
-        <div class="hero-cta">
-          <a class="btn btn-dark btn-xl" href="/discover/">Jetzt App öffnen <svg><use href="#i-arrow"/></svg></a>
-          <a class="btn btn-ghost btn-xl" href="/ask/">AI Atlas</a>
-        </div>
-        <div class="devices">
-          <span><svg><use href="#i-laptop"/></svg>Desktop</span>
-          <span><svg><use href="#i-tablet"/></svg>Tablet</span>
-          <span><svg><use href="#i-phone"/></svg>Smartphone</span>
-        </div>
-      </div>
-      <div class="appcta-phones" aria-hidden="true">
-        <div class="phone p1"><div class="screen">
-          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
-          <div class="app-top"><img src="/assets/vision-universe-logo-web.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
-          <div class="app-h"><b>Themenwelten</b><span>Alle 54</span></div>
-          <div class="app-tiles">
-            <div class="app-tile"><img src="/assets/home/worlds/01-kuenstliche-intelligenz.webp" alt="" loading="lazy"><span>Künstliche<br>Intelligenz</span></div>
-            <div class="app-tile"><img src="/assets/home/worlds/02-halbleiter-chips.webp" alt="" loading="lazy"><span>Halbleiter</span></div>
-            <div class="app-tile"><img src="/assets/home/worlds/16-raumfahrt.webp" alt="" loading="lazy"><span>Raumfahrt</span></div>
-            <div class="app-tile"><img src="/assets/home/worlds/05-quantencomputing.webp" alt="" loading="lazy"><span>Quanten&shy;computing</span></div>
-            <div class="app-tile"><img src="/assets/home/worlds/12-erneuerbare-energien.webp" alt="" loading="lazy"><span>Erneuerbare</span></div>
-            <div class="app-tile"><img src="/assets/home/worlds/04-cybersecurity.webp" alt="" loading="lazy"><span>Cyber&shy;security</span></div>
-          </div>
-        </div></div>
-        <div class="phone p2"><div class="screen">
-          <div class="app-status"><span>9:41</span><span>●●● ▮</span></div>
-          <div class="app-top"><img src="/assets/vision-universe-logo-web.png" alt=""><span class="app-avatar"><svg><use href="#i-spark"/></svg></span></div>
-          <div class="app-h"><b>Watchlist</b><span>Live</span></div>
-          <div class="app-list" style="margin-top:0">
-            <div class="app-row"><span class="app-logo">NVDA</span><div><b>NVIDIA</b><small>215,38 $ · Trend neutral</small></div><svg viewBox="0 0 60 24"><path d="M0.0 19.2L0.9 22.0L1.8 20.0L2.8 17.6L3.7 15.2L4.6 13.1L5.5 10.1L6.5 10.2L7.4 8.2L8.3 10.8L9.2 10.8L10.2 8.2L11.1 7.7L12.0 7.7L12.9 7.8L13.8 9.9L14.8 10.8L15.7 11.1L16.6 12.0L17.5 14.5L18.5 12.6L19.4 14.0L20.3 6.6L21.2 10.8L22.2 9.5L23.1 10.9L24.0 8.0L24.9 6.4L25.8 5.6L26.8 7.5L27.7 8.3L28.6 10.5L29.5 10.5L30.5 13.5L31.4 13.0L32.3 12.3L33.2 10.1L34.2 8.9L35.1 6.8L36.0 6.2L36.9 7.6L37.8 8.0L38.8 7.8L39.7 6.2L40.6 6.9L41.5 6.4L42.5 5.4L43.4 4.1L44.3 2.1L45.2 2.0L46.2 2.7L47.1 5.6L48.0 6.0L48.9 7.2L49.8 6.4L50.8 9.3L51.7 10.9L52.6 12.2L53.5 11.0L54.5 11.3L55.4 9.0L56.3 13.0L57.2 13.5L58.2 11.4L59.1 10.7L60.0 11.7" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
-            <div class="app-row"><span class="app-logo">MSFT</span><div><b>Microsoft</b><small>531,01 $ · Trend bullisch</small></div><svg viewBox="0 0 60 24"><path d="M0.0 21.6L0.9 22.0L1.8 14.1L2.8 12.3L3.7 9.3L4.6 8.6L5.5 9.3L6.5 7.7L7.4 7.7L8.3 6.9L9.2 7.2L10.2 8.7L11.1 8.1L12.0 8.3L12.9 10.3L13.8 10.1L14.8 9.7L15.7 10.1L16.6 9.9L17.5 9.3L18.5 8.8L19.4 8.2L20.3 7.0L21.2 5.9L22.2 6.7L23.1 7.5L24.0 8.1L24.9 6.4L25.8 7.7L26.8 8.5L27.7 8.8L28.6 8.7L29.5 8.3L30.5 7.0L31.4 8.1L32.3 9.0L33.2 8.0L34.2 8.5L35.1 7.5L36.0 7.9L36.9 7.6L37.8 8.0L38.8 5.6L39.7 6.5L40.6 6.5L41.5 6.0L42.5 6.0L43.4 5.4L44.3 4.4L45.2 3.9L46.2 3.8L47.1 4.7L48.0 3.1L48.9 2.3L49.8 2.0L50.8 3.3L51.7 2.5L52.6 3.9L53.5 3.3L54.5 3.5L55.4 3.4L56.3 4.9L57.2 4.5L58.2 3.4L59.1 3.6L60.0 3.6" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
-            <div class="app-row"><span class="app-logo">AAPL</span><div><b>Apple</b><small>343,83 $ · Trend bullisch</small></div><svg viewBox="0 0 60 24"><path d="M0.0 5.5L0.9 6.4L1.8 8.4L2.8 19.1L3.7 21.5L4.6 18.9L5.5 18.2L6.5 17.6L7.4 17.2L8.3 19.4L9.2 20.8L10.2 22.0L11.1 20.7L12.0 20.4L12.9 20.5L13.8 18.6L14.8 15.7L15.7 18.1L16.6 18.9L17.5 18.5L18.5 18.7L19.4 17.1L20.3 16.6L21.2 14.4L22.2 15.6L23.1 12.0L24.0 12.1L24.9 10.7L25.8 14.3L26.8 15.9L27.7 16.3L28.6 11.4L29.5 8.9L30.5 8.6L31.4 9.3L32.3 8.9L33.2 6.9L34.2 7.3L35.1 6.0L36.0 5.7L36.9 6.9L37.8 7.4L38.8 5.1L39.7 6.3L40.6 10.2L41.5 8.6L42.5 9.8L43.4 8.3L44.3 8.7L45.2 8.3L46.2 7.0L47.1 5.4L48.0 7.0L48.9 5.2L49.8 5.0L50.8 4.3L51.7 4.7L52.6 4.1L53.5 4.3L54.5 5.8L55.4 3.8L56.3 2.0L57.2 2.2L58.2 3.9L59.1 2.5L60.0 3.9" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
-            <div class="app-row"><span class="app-logo">AMZN</span><div><b>Amazon.com</b><small>254,60 $ · Trend neutral</small></div><svg viewBox="0 0 60 24"><path d="M0.0 20.5L0.9 22.0L1.8 18.9L2.8 6.3L3.7 2.0L4.6 4.3L5.5 6.0L6.5 6.1L7.4 5.3L8.3 4.1L9.2 6.1L10.2 7.8L11.1 8.6L12.0 9.4L12.9 9.9L13.8 10.6L14.8 8.3L15.7 10.3L16.6 10.9L17.5 9.7L18.5 10.0L19.4 10.3L20.3 11.7L21.2 8.1L22.2 10.5L23.1 12.1L24.0 12.1L24.9 10.8L25.8 10.9L26.8 11.4L27.7 13.0L28.6 13.2L29.5 11.5L30.5 12.6L31.4 14.4L32.3 15.3L33.2 13.4L34.2 12.6L35.1 10.9L36.0 12.1L36.9 14.1L37.8 14.1L38.8 14.0L39.7 15.2L40.6 15.0L41.5 14.2L42.5 14.5L43.4 13.3L44.3 13.4L45.2 11.7L46.2 10.4L47.1 12.4L48.0 9.5L48.9 10.5L49.8 10.9L50.8 12.4L51.7 12.2L52.6 13.9L53.5 9.5L54.5 9.5L55.4 9.5L56.3 13.7L57.2 14.6L58.2 14.2L59.1 12.8L60.0 12.3" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
-            <div class="app-row"><span class="app-logo">META</span><div><b>Meta Platforms</b><small>612,49 $ · Trend neutral</small></div><svg viewBox="0 0 60 24"><path d="M0.0 17.4L0.9 18.1L1.8 22.0L2.8 20.5L3.7 17.7L4.6 17.9L5.5 17.8L6.5 17.7L7.4 17.6L8.3 17.3L9.2 17.0L10.2 18.7L11.1 17.3L12.0 17.7L12.9 19.5L13.8 21.6L14.8 21.4L15.7 21.4L16.6 21.1L17.5 20.3L18.5 19.4L19.4 18.9L20.3 19.3L21.2 18.7L22.2 19.2L23.1 18.7L24.0 17.5L24.9 16.0L25.8 15.5L26.8 15.8L27.7 12.4L28.6 13.2L29.5 12.9L30.5 11.4L31.4 11.0L32.3 10.7L33.2 10.0L34.2 11.4L35.1 5.0L36.0 5.4L36.9 4.8L37.8 2.0L38.8 4.2L39.7 7.2L40.6 5.3L41.5 6.4L42.5 6.3L43.4 6.2L44.3 5.0L45.2 5.2L46.2 6.7L47.1 6.8L48.0 6.9L48.9 4.9L49.8 3.3L50.8 5.4L51.7 5.4L52.6 7.7L53.5 8.0L54.5 9.0L55.4 8.7L56.3 12.8L57.2 13.3L58.2 14.3L59.1 15.2L60.0 15.8" fill="none" stroke="#c8f531" stroke-width="2"/></svg></div>
-          </div>
-        </div></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ PRINZIPIEN ============ -->
-<section class="section" style="padding-top:20px" data-cv>
-  <div class="shell">
-    <div class="section-head">
-      <div><span class="kicker">Worauf du dich verlassen kannst</span><h2 class="h2">Research mit Haltung.</h2></div>
-      <p class="lead">Farbe ist Signal, nicht Schmuck. Und jede Zahl hat eine Quelle.</p>
-    </div>
-    <div class="principles">
-      <div class="principle"><span class="hud"><svg><use href="#h-shield"/></svg></span><h3>Unabhängig</h3><p>Keine Produktvermittlung, keine bezahlten Platzierungen – nur Daten und Methode.</p></div>
-      <div class="principle"><span class="hud"><svg><use href="#h-data"/></svg></span><h3>Transparent</h3><p>Datenstand, Regelversion und Methodik stehen offen – nachvollziehbar bis zu den Rohdaten.</p></div>
-      <div class="principle"><span class="hud"><svg><use href="#h-eye"/></svg></span><h3>Ehrlich</h3><p>Wo es keine belastbare Evidenz gibt, sagen wir es. Keine Stufe ist ein Versprechen.</p></div>
-      <div class="principle"><span class="hud"><svg><use href="#h-spark"/></svg></span><h3>Verständlich</h3><p>Klare Sprache statt Fachjargon – für Einsteiger und Profis gleichermaßen.</p></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ FAQ ============ -->
-<section class="section" style="padding-top:20px" id="faq" data-cv>
-  <div class="shell faq-grid">
-    <div><span class="kicker">FAQ</span><h2 class="h2">Häufige Fragen</h2><p class="lead">Noch etwas unklar? Frag einfach AI Atlas.</p></div>
-    <div class="faq">
-      <details open><summary>Was ist die Vision Universe App?</summary><p>Eine App für das komplette Aktien-Research: Discover, Quant, Screener, Supertrader, Elliott-Wave-Analysen, technische Analyse, Fundamentaldaten mit Einschätzungen, Altersvorsorge und AI Atlas – alles auf denselben Daten und miteinander verbunden.</p></details>
-      <details><summary>Was bietet der Vorsorge-Bereich?</summary><p>Einen Vorsorgeplaner für deine Vorsorgelücke, ETF Intelligence mit echter Kurshistorie, Kostenanalyse, Portfolio-X-Ray und einen Förderrechner für Altersvorsorgedepot, Riester und Frühstart-Rente – unabhängig, ohne Produktverkauf.</p></details>
-      <details><summary>Muss ich etwas installieren?</summary><p>Nein. Die App läuft im Browser auf Desktop, Tablet und Smartphone. Auf dem Handy kannst du sie zum Home-Bildschirm hinzufügen und wie eine native App starten.</p></details>
-      <details><summary>Welche Aktien sind abgedeckt?</summary><p>Aktuell über 6.000 US-Aktien mit Kursdaten, Fundamentaldaten aus bis zu 12 Geschäftsjahren, technischer Analyse samt experimenteller Elliott-Strukturdeutung (eine belastbare Zählung gibt es nur bei wenigen Titeln) – geordnet nach Branchen, Märkten und 54 Themenwelten.</p></details>
-      <details><summary>Wie entstehen die Elliott-Wave-Analysen?</summary><p>Regelbasiert und reproduzierbar aus bestätigten Wendepunkten, ohne menschliches Einzeichnen. Elliott ist im Chartbild ein experimentelles Strukturmodell: Bei den meisten Aktien gibt es bewusst keine belastbare Zählung, und Elliott fließt nicht in den Ausblick ein. Szenarien, Invalidierung und Zielzonen kommen aus der Kursstruktur – als Bedingungen, nicht als Prognose.</p></details>
-      <details><summary>Sind die Signale Kaufempfehlungen?</summary><p>Nein. Alle Inhalte dienen der Information und Forschung. Setups sind Modellbeobachtungen nach festen Regeln, keine Anlageberatung und keine Empfehlung.</p></details>
-      <details><summary>Woher kommen die Daten?</summary><p>Aus Markt- und Unternehmensdaten, unter anderem Tageskursen und SEC-Berichten. Datenstand und Methodik sind in jedem Modul ausgewiesen.</p></details>
-    </div>
-  </div>
-</section>
-
-<!-- ============ SCHLUSS ============ -->
-<section class="final" data-cv>
-  <div class="shell">
-    <span class="kicker">Entdecken. Verstehen. Investieren.</span>
-    <h2 class="h2">Sieh den Markt mit anderen Augen.</h2>
-    <p class="lead">Öffne die App und starte deine Recherche – in wenigen Sekunden.</p>
-    <div class="hero-cta"><a class="btn btn-app btn-xl" href="/discover/">App öffnen <svg><use href="#i-arrow"/></svg></a></div>
-  </div>
-</section>
-
 </main>
 
-<!-- Mitlaufender App-Einstieg: erscheint nach dem Hero, verschwindet am Seitenende -->
-<div class="sticky-cta" id="sticky-cta" aria-hidden="true">
-  <div class="sticky-inner">
-    <span class="hud hud-sm"><svg><use href="#h-spark"/></svg></span>
-    <div class="sticky-copy"><b>Vision Universe App</b><span>Aktien, Analysen &amp; Vorsorge</span></div>
-    <a class="btn btn-app" href="/discover/" tabindex="-1">App öffnen <svg><use href="#i-arrow"/></svg></a>
-  </div>
-</div>
-
-<!-- ============ IMAGEFILM ============ -->
-<section class="film" id="film" aria-label="Vision Universe Imagefilm" data-cv>
-  <div class="shell film-grid">
-    <div class="film-copy">
-      <span class="kicker">Der Film</span>
-      <h2 class="h2">Vision Universe in 22 Sekunden.</h2>
-      <p class="lead">Elliott Wave, Fundamentaldaten, Quant, Themenwelten und Vorsorge – einmal im Schnelldurchlauf. Zum Anschauen und Teilen.</p>
-      <div class="hero-cta"><button class="btn btn-app" type="button" data-film-play>Film ansehen <svg><use href="#i-arrow"/></svg></button><a class="btn btn-ghost" href="/discover/">App öffnen</a></div>
-    </div>
-    <div class="film-frame">
-      <button class="film-poster" type="button" data-film-play aria-label="Imagefilm abspielen">
-        <picture>
-          <source media="(max-width:760px)" srcset="/assets/home/clip/vu-imageclip-9x16.jpg">
-          <img src="/assets/home/clip/vu-imageclip-16x9.jpg" width="1280" height="720" alt="Vision Universe Imagefilm" loading="lazy" decoding="async">
-        </picture>
-        <span class="film-play"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
-        <span class="film-len">0:22</span>
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- ============ NEWSLETTER (Shopify-Kundenformular von visionuniverse.de) ============ -->
-<section class="newsletter" id="newsletter" aria-labelledby="nl-title" data-cv>
-  <div class="shell nl-box">
-    <div class="nl-copy">
-      <span class="hud"><svg><use href="#h-spark"/></svg></span>
-      <div><span class="kicker">Newsletter</span><h2 class="h2" id="nl-title">Analysen direkt ins Postfach.</h2><p class="lead">Neue Reports, Marktbriefings und Funktionen der App – kompakt und kostenlos.</p></div>
-    </div>
-    <form class="nl-form" method="post" action="https://www.visionuniverse.de/contact#contact_form" accept-charset="UTF-8" target="_blank" rel="noopener">
-      <input type="hidden" name="form_type" value="customer">
-      <input type="hidden" name="utf8" value="✓">
-      <input type="hidden" name="contact[tags]" value="newsletter">
-      <label class="nl-field"><span class="sr">E-Mail-Adresse</span><input type="email" name="contact[email]" placeholder="Deine E-Mail-Adresse" autocomplete="email" autocapitalize="off" autocorrect="off" required></label>
-      <button class="btn btn-app" type="submit">Abonnieren <svg><use href="#i-arrow"/></svg></button>
-      <p class="nl-note">Abmeldung jederzeit möglich. Hinweise zum Datenschutz in der <a href="https://www.visionuniverse.de/policies/privacy-policy" target="_blank" rel="noopener">Datenschutzerklärung</a>.</p>
-    </form>
-  </div>
-</section>
-
-<!-- ============ SOCIAL ============ -->
-<section class="social-bar" aria-label="Vision Universe in sozialen Netzwerken" data-cv>
-  <div class="shell social-row">
-    <div><span class="kicker">Folge Vision Universe</span><p>Analysen, Reports und Einblicke – jeden Tag auf deinen Kanälen.</p></div>
-    <div class="social-links">
-      <a href="https://www.instagram.com/app.visionuniverse/" aria-label="Instagram" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.5" cy="6.5" r="1.1" class="f"/></svg></a>
-      <a href="https://www.tiktok.com/@visionuniverse.reports" aria-label="TikTok" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.4 2.6 2.3 4.4 5 4.6"/></svg></a>
-      <a href="https://youtube.com/@visionuniverse.aktienreports" aria-label="YouTube" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="m10 9 5 3-5 3z" class="f"/></svg></a>
-      <a href="https://x.com/visionuniverse_" aria-label="X" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><path d="M4 4l16 16M20 4 4 20"/></svg></a>
-      <a href="https://www.facebook.com/share/18Tq5kPjQw/" aria-label="Facebook" rel="noopener" target="_blank"><svg viewBox="0 0 24 24"><path d="M15 3.5h-2.2A3.8 3.8 0 0 0 9 7.3V10H6.5v3.5H9V21h3.5v-7.5h2.7l.5-3.5h-3.2V7.6c0-.6.5-1 1-1H15z"/></svg></a>
-    </div>
-  </div>
-</section>
-
-<footer class="footer" data-cv>
-  <div class="shell">
-    <div class="footer-grid">
-      <div><img class="footer-logo" src="/assets/vision-universe-logo-web.png" width="1086" height="362" alt="Vision Universe®"><p>Unabhängiges Aktien-Research: entdecken, verstehen, investieren.</p></div>
-      <div><h4>App-Module</h4><ul><li><a href="/discover/">Discover</a></li><li><a href="/quant/">Quant</a></li><li><a href="/screener/">Screener</a></li><li><a href="/supertrader/">Supertrader</a></li><li><a href="/elliott/">Elliott Wave &amp; Technik</a></li><li><a href="/vorsorge/">Altersvorsorge</a></li><li><a href="/ask/">AI Atlas</a></li></ul></div>
-      <div><h4>Märkte &amp; Research</h4><ul><li><a href="/dashboard/">Dashboard</a></li><li><a href="/macro/">Macro</a></li><li><a href="/news/">News</a></li><li><a href="/morning/">Morning</a></li><li><a href="/magazin/">Magazin</a></li><li><a href="/academy/">Academy</a></li></ul></div>
-      <div><h4>Rechtliches</h4><ul>
-        <li><a href="https://www.visionuniverse.de/policies/legal-notice">Impressum</a></li>
-        <li><a href="https://www.visionuniverse.de/policies/privacy-policy">Datenschutz</a></li>
-        <li><a href="https://www.visionuniverse.de/policies/terms-of-service">AGB</a></li>
-        <li><a href="https://www.visionuniverse.de/pages/nutzungsbedingungen">Nutzungsbedingungen</a></li>
-        <li><a href="https://www.visionuniverse.de/pages/transparenz-und-rechtshinweise">Transparenz &amp; Rechtshinweise</a></li>
-        <li><a href="https://www.visionuniverse.de/policies/contact-information">Kontakt</a></li>
+<footer class="shell ft">
+  <h4 class="ft-h">Rechtliches</h4>
+  <ul class="ft-legal">
+    <li><a href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></li>
+    <li><a href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a></li>
+    <li><a href="https://konto.visionuniverse.de/rechtliches/agb">Nutzungs- und Vertragsbedingungen</a></li>
+    <li><a href="https://konto.visionuniverse.de/rechtliches/widerrufsbelehrung">Widerrufsbelehrung</a></li>
+    <li><a href="mailto:info@visionuniverse.de">Kontakt</a></li>
         <li><a href="/konto/kuendigen/">Verträge hier kündigen</a></li>
-      </ul></div>
-    </div>
-    <div class="disclaimer">
-      <p>Alle Inhalte dienen ausschließlich der Information und stellen keine Anlageberatung, Empfehlung oder Aufforderung zum Kauf oder Verkauf von Wertpapieren dar. Historische Entwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Die Werte in den Produktabbildungen stammen aus den Daten der App und werden nach jedem Datenlauf automatisch aktualisiert.</p>
-      <span>© <span data-year>2026</span> Vision Universe®</span>
-    </div>
-  </div>
+  </ul>
+  <ul class="ft-more">
+    <li><a href="/dashboard/">Dashboard</a></li><li><a href="/macro/">Macro</a></li><li><a href="/news/">News</a></li><li><a href="/morning/">Morning</a></li><li><a href="/magazin/">Magazin</a></li><li><a href="/academy/">Academy</a></li>
+  </ul>
+  <p class="disclaimer">Alle Inhalte dienen ausschließlich der Information und stellen keine Anlageberatung, Empfehlung oder Aufforderung zum Kauf oder Verkauf von Wertpapieren dar. Historische Entwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Die Werte auf dieser Seite stammen aus den veröffentlichten Produktdaten (Kurse Stand 06.11.2026).</p>
+  <p class="disclaimer">© <span data-year>2026</span> Vision Universe®</p>
 </footer>
 <script>
 document.querySelector("[data-year]").textContent=new Date().getFullYear();
-/* Mitlaufender App-Button: sichtbar, sobald der Hero-Button aus dem Bild ist,
-   ausgeblendet, solange der Schluss-Button oder die Fusszeile sichtbar sind. */
-(function(){
-  var bar=document.getElementById("sticky-cta");if(!bar||!("IntersectionObserver" in window))return;
-  var link=bar.querySelector("a"),heroGone=false,endIn=false;
-  function sync(){var on=heroGone&&!endIn;bar.classList.toggle("on",on);bar.setAttribute("aria-hidden",String(!on));link.tabIndex=on?0:-1;}
-  new IntersectionObserver(function(e){heroGone=!e[0].isIntersecting;sync();}).observe(document.querySelector(".hero-cta"));
-  var seen=new Set(),end=new IntersectionObserver(function(es){es.forEach(function(x){x.isIntersecting?seen.add(x.target):seen.delete(x.target);});endIn=seen.size>0;sync();});
-  [".final",".footer"].forEach(function(q){var n=document.querySelector(q);if(n)end.observe(n);});
-})();
+/* "Wo stehst du?": die Wahl merken, damit der erste Start (E11) sie vorschlägt. */
+document.querySelectorAll("[data-start-path]").forEach(function(a){a.addEventListener("click",function(){try{localStorage.setItem("vu-start-path",a.getAttribute("data-start-path"));}catch(e){}});});
 </script>
 </body>
 </html>

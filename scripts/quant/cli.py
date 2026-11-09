@@ -804,6 +804,21 @@ def _unterbefehl(*argv):
     return build_parser().parse_args(list(argv))
 
 
+def _canonical_nur_vorhandene(ciks):
+    """Kanonische Buendel der aktualisierten Emittenten in Teilen von hoechstens
+    MAX_DOCUMENTS_IN_MEMORY auffrischen.
+
+    Nach einem Ausfall oder einer Universumsbereinigung meldet ein Tageslauf
+    mehr als 250 aktualisierte Emittenten (Lauf 42231797884: 590). In einem
+    Aufruf bricht _documents dann zu Recht ab (Speicherschutz). Mit
+    --only-existing schreibt canonical nur Buendel je Emittent, ohne Index und
+    ohne Bereinigung; Teilaufrufe ergeben deshalb denselben Bestand.
+    """
+    schritt = MAX_DOCUMENTS_IN_MEMORY
+    for i in range(0, len(ciks), schritt):
+        cmd_canonical(_unterbefehl("canonical", "--ciks", ",".join(ciks[i:i + schritt]), "--only-existing"))
+
+
 def cmd_daily_downstream(args):
     """Nach Persistenz und Reload: abhaengige Artefakte nur fuer die aktualisierten Emittenten.
 
@@ -836,7 +851,7 @@ def cmd_daily_downstream(args):
         cmd_reconcile(_unterbefehl("reconcile"))
         # 3. Kanonische Buendel: nur Emittenten mit neuem Filing UND vorhandenem Buendel.
         if ciks:
-            cmd_canonical(_unterbefehl("canonical", "--ciks", ",".join(ciks), "--only-existing"))
+            _canonical_nur_vorhandene(ciks)
 
     # 4. Persistenz- und Reload-Zahlen dieses Laufs in den Bericht.
     persistence = {}
@@ -1503,6 +1518,20 @@ def cmd_concept_census(args):
     return 0
 
 
+def consumer_output_paths(args):
+    """(bundle dir, history dir, coverage file) of one `consumer` run.
+
+    History and coverage default to siblings of --out, as in the committed
+    layout quant/data/sec/{consumer, consumer-history, consumer_coverage.json}.
+    The producer passes no output flag and writes exactly there; a test or
+    diagnostic run with --out <dir>/consumer keeps all three under <dir>.
+    """
+    out_dir = Path(args.out)
+    history_dir = Path(args.history_out) if args.history_out else out_dir.parent / "consumer-history"
+    coverage_file = Path(args.coverage_out) if args.coverage_out else out_dir.parent / "consumer_coverage.json"
+    return out_dir, history_dir, coverage_file
+
+
 def cmd_consumer(args):
     """Consumer fundamentals for the product universe from the SEC bulk archive.
 
@@ -1542,10 +1571,9 @@ def cmd_consumer(args):
     issuer_facts = issuer_extensions.load_facts(args.issuer_facts) if args.issuer_facts else {}
     extended = {}
     to_read = wanted | {p for preds in successors.values() for p in preds}
-    out_dir = Path(args.out)
+    out_dir, history_dir, coverage_file = consumer_output_paths(args)
     out_dir.mkdir(parents=True, exist_ok=True)
     # Aeltere Geschaeftsjahre als das Fenster der Bundles, als gzip-Scherben (nur Fundamental liest sie).
-    history_dir = Path(args.history_out)
     history_dir.mkdir(parents=True, exist_ok=True)
     as_of = args.as_of or str(date.today())
     print(f"  Produktuniversum: {product_count} Titel, {len(by_cik)} CIKs, {len(without_cik)} ohne CIK; angefragt {len(wanted)}")
@@ -1634,11 +1662,12 @@ def cmd_consumer(args):
     coverage["asOf"] = as_of
     coverage["generated_at_utc"] = _utcnow()
     coverage["versions"] = version_stamp(registry.version)
-    coverage["namesLayer"] = str(names_file.relative_to(ROOT)) if names_file.is_absolute() else str(names_file)
+    coverage["namesLayer"] = (str(names_file.relative_to(ROOT)) if names_file.is_absolute() and names_file.is_relative_to(ROOT)
+                              else str(names_file))
     _write(out_dir / "index.json", {"schema": consumer_module.SCHEMA, "generated_at_utc": _utcnow(),
                                     "versions": version_stamp(registry.version),
                                     "asOf": as_of, "count": len(index_rows), "byTicker": by_ticker})
-    _write(DATA_DIR / "consumer_coverage.json", coverage)
+    _write(coverage_file, coverage)
     print(f"  fertig: {len(index_rows)} Bundles, {len(failures)} Fehler, {len(unmatched)} CIKs nicht im Archiv")
     return 0
 
@@ -1898,8 +1927,12 @@ def build_parser():
     consumer = subparsers.add_parser("consumer", help="compact consumer fundamentals for the product universe")
     consumer.add_argument("--names", default=str(ROOT / "quant" / "data" / "market" / "security-master" / "company-names.json"))
     consumer.add_argument("--out", default=str(DATA_DIR / "consumer"))
-    consumer.add_argument("--history-out", default=str(DATA_DIR / "consumer-history"),
-                          help="older fiscal years than the bundle window, one file per CIK (Fundamental)")
+    consumer.add_argument("--history-out", default=None,
+                          help="older fiscal years than the bundle window, gzip shards (Fundamental); "
+                               "default: consumer-history next to --out")
+    consumer.add_argument("--coverage-out", default=None,
+                          help="coverage report; default: consumer_coverage.json next to --out "
+                               "(producer default quant/data/sec/consumer_coverage.json)")
     consumer.add_argument("--as-of")
     consumer.add_argument("--bulk", action="store_true", help="read companyfacts.zip (one request) instead of per-company calls")
     consumer.add_argument("--archive", help="local companyfacts.zip instead of fetching; implies --bulk")

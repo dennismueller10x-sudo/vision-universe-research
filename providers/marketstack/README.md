@@ -11,6 +11,15 @@ ISIN adapter, product builders, cache wrappers and workflows are not imported.
 metadata reads. These are real documented v2 routes. Method presence does not
 certify that this account or a given listing supports the data.
 
+`endpoint-coverage.json` binds the provider's own coverage sentences (v2 OpenAPI,
+hashed). `/splits` and `/dividends` name only US and Shanghai venues, and `/intraday`
+names only IEX. An empty European action response is therefore classified
+`EMPTY_OUTSIDE_DOCUMENTED_COVERAGE`: it is uninformative, never absence proof.
+Where the documentation is silent, coverage stays UNDOCUMENTED.
+The live check on 03.11.2026 confirmed this: `/tickers/EUZ.DE/splits` returned 0 rows,
+single-date `/eod` routes recovered 0 gap sessions, and billing is per symbol. See
+[the diagnostics report](../../docs/archiv/reports/europe-marketstack-diagnostics-20261103/README.md).
+
 All price observations require `{providerTicker, mic}`. `mic` is the requested
 provider MIC, not an inferred mapping from a symbol suffix. `resolveTicker` tests
 explicit candidate strings, preserving attempts and returning
@@ -83,4 +92,4 @@ raw-response reviews now establish scoped account/website parity and freshness.
 Frozen one-shot Actions leases total 3,500 reserved credits; the final signed
 marker only authorizes a child of the exact reviewed source and cannot replay.
 No schedule or production registration is added. See
-[the audit report](../../docs/marketstack-audit/ROOT_CAUSE_REPORT.md).
+the audit report (`../../docs/marketstack-audit/ROOT_CAUSE_REPORT.md`, historischer Beleg im Repository nicht vorhanden).

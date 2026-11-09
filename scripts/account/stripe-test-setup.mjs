@@ -31,7 +31,8 @@ export const WEBHOOK_EVENTS = Object.freeze([
   'invoice.payment_action_required', 'invoice.voided', 'invoice.marked_uncollectible', 'invoice.updated',
   'charge.dispute.created', 'charge.refunded',
 ]);
-const LEGAL = {privacy: 'https://www.visionuniverse.de/policies/privacy-policy', terms: 'https://www.visionuniverse.de/policies/terms-of-service'};
+// Eigene Rechtstexte (oeffentlich, ohne Passwortmaske; workers/vu-account/src/legal/texts.mjs) statt der Shopify-Shop-Texte.
+const LEGAL = {privacy: 'https://konto.visionuniverse.de/rechtliches/datenschutz', terms: 'https://konto.visionuniverse.de/rechtliches/agb'};
 
 export function assertTestKey(key) {
   const k = String(key || '');

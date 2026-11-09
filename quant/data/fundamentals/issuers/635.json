@@ -265,7 +265,7 @@
       "sic": "4911",
       "rawFacts": 24908,
       "mappedFacts": 7280,
-      "unmappedFacts": 17842,
+      "unmappedFacts": 17844,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -383,39 +383,40 @@
         "resolvedValues": 765
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 18388,
+        "rules_version": "1.1.0",
+        "total": 18277,
         "by_severity": {
-          "INFO": 17842,
+          "INFO": 17844,
           "ERROR": 18,
-          "WARNING": 528
+          "WARNING": 415
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 442,
+          "CONCEPT_DISAGREEMENT": 336,
           "FUTURE_DATA_LEAK": 18,
           "NEGATIVE_WHERE_IMPOSSIBLE": 3,
-          "RESTATEMENT_CONFLICT": 83,
-          "UNKNOWN_CONCEPT": 17842
+          "RESTATEMENT_CONFLICT": 76,
+          "UNKNOWN_CONCEPT": 17844
         }
       },
       "latestFiling": {
-        "accession": "0001021635-26-000025",
-        "filing_date": "2026-07-29",
+        "accession": "0001021635-26-000036",
+        "filing_date": "2026-10-28",
         "form": "10-Q",
-        "periodic_filings": 119
+        "periodic_filings": 120,
+        "acceptance_datetime": "2026-10-27T21:39:17.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "f2a11dd065367eed1feb6eb5154b08a20f35d3e0ae92db6d40aaf234c67806cf",
+      "sourceDigest": "2464068f08530e26f19acecdff493c703ce1752da05cfda792f01f91f4a04144",
       "issuerId": "iss_cik_0001021635"
     },
     {

@@ -1,4 +1,5 @@
-scripts/hedgefonds/__pycache__/
+products/hedgefonds/producer/__pycache__/
+products/hedgefonds/tests/__pycache__/
 scripts/dashboard/__pycache__/
 
 # Phase 2 — Zugangsdaten fuer Marktdatenanbieter.
@@ -21,6 +22,7 @@ providers/**/credentials.json
 quant/data/sec/raw/
 quant/data/sec/facts/
 scripts/quant/**/__pycache__/
+scripts/ci/__pycache__/
 # Eigentuemer-Signale (scripts/market/build-ownership-signals.mjs): Auszuege der
 # SEC-Datensaetze und geholte Form-4-Einreichungen - Arbeitsstand, kein Bestand.
 .ownership-cache/
@@ -42,7 +44,7 @@ node_modules
 tmp/
 .vercel-public/
 
-# Gemessene Suiten-/Isolationsbefunde (scripts/social/verify-suites.mjs).
+# Gemessene Suiten-/Isolationsbefunde (products/social/producer/verify-suites.mjs).
 # Sie gehoeren zu einem Stand, nicht ins Repository: der Bericht misst
 # neu, statt einem eingecheckten "gruen" zu glauben.
 .verification/
@@ -56,9 +58,9 @@ server/__pycache__/
 .launch/
 
 # Screener-Universum: Release-Projektion aus den Discover-Daten
-# (scripts/screener/build-universe.mjs). Lokal mit demselben Skript erzeugen.
+# (products/screener/producer/build-universe.mjs). Lokal mit demselben Skript erzeugen.
 screener/data/
-# Fundamental: SEC-Historie je shardKey, nur im Release (scripts/fundamental/build-history.mjs --out=...).
+# Fundamental: SEC-Historie je shardKey, nur im Release (products/fundamental/producer/build-history.mjs --out=...).
 fundamental/data/
 
 # Der Frische-Bericht gilt fuer genau einen Lauf. Committet waere er eine

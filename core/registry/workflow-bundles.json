@@ -1,0 +1,379 @@
+{
+ "schema": "vu-workflow-bundles-1",
+ "purpose": "Zielbild Plan Neustart §3: ca. 12 Workflows. Jede Datei in .github/workflows hat hier ein Ziel-Buendel. Ein Buendel-Workflow ersetzt seine Quellen erst, wenn er sie in 'replaces' nennt und die Quellen geloescht sind (core/tests/workflow-bundles.test.mjs). DoD (Steuerung 08.11.2026): 11 Buendel plus begruendete Ausnahmen; jede eigenstaendige Datei traegt ausnahme (ein Satz) oder geplant (WB-5).",
+ "bundles": {
+  "ci": {
+   "purpose": "Pruef-Workflows (Tests, Gates) als eine Matrix je Produkt",
+   "workflow": "ci.yml",
+   "replaces": [
+    "account-ci.yml",
+    "ask-ci.yml",
+    "brevo-ci.yml",
+    "ci-config.yml",
+    "creative-job-guard.yml",
+    "discover-ci.yml",
+    "discover-frontend-ci.yml",
+    "etf-dashboard-ci.yml",
+    "fundamental-ci.yml",
+    "hedgefonds-dashboard-ci.yml",
+    "landing-ci.yml",
+    "research-access-ci.yml",
+    "screener-ci.yml",
+    "sec-fundamentals-ci.yml",
+    "shell-ci.yml",
+    "social-ci.yml",
+    "supertrader-ci.yml",
+    "technical-ci.yml",
+    "vorsorge-ci.yml",
+    "vu2-browser-qa.yml",
+    "vu2-lifecycle-handoff.yml",
+    "willkommen-ci.yml"
+   ]
+  },
+  "deploy": {
+   "purpose": "Auslieferung: Pages, Cloudflare-Worker",
+   "workflow": "deploy.yml",
+   "replaces": [
+    "cloudflare-ask-deploy.yml",
+    "cloudflare-deploy.yml",
+    "landing-pages-publish.yml",
+    "sync-navigation.yml"
+   ]
+  },
+  "pipeline-daily": {
+   "purpose": "Tageskette nach US-Schluss: Kurse, Faktoren, Discover, Technical, Supertrader, SEC-Tagesindex",
+   "workflow": "pipeline-daily.yml",
+   "replaces": [
+    "fx-ecb-daily.yml",
+    "ki-depots-daily.yml",
+    "market-validation-data.yml",
+    "supertrader-house-live.yml",
+    "technical-intelligence-build.yml",
+    "technical-world.yml",
+    "vorsorge-daily-rebuild.yml"
+   ]
+  },
+  "pipeline-intraday": {
+   "purpose": "Takt waehrend der Sitzung: Snapshots, Im Blick, Realtime",
+   "workflow": "pipeline-intraday.yml",
+   "replaces": [
+    "currency-realtime-proof.yml",
+    "intraday-delivery-watchdog.yml"
+   ]
+  },
+  "pipeline-weekly": {
+   "purpose": "Wochenlaeufe: Security Master, Universum, lange Reihen, Index, Eigentuemer-Signale",
+   "workflow": "pipeline-weekly.yml",
+   "replaces": [
+    "company-logos.yml",
+    "company-names.yml",
+    "coverage-metrics.yml",
+    "index-membership.yml",
+    "quant-model-depots.yml",
+    "sec-sic-history.yml",
+    "tiingo2-universe-refresh.yml",
+    "update-sec-fundamentals.yml"
+   ]
+  },
+  "content": {
+   "purpose": "Redaktionelle Daten: News, Ratings, Morning, Hedgefonds, Dashboard",
+   "workflow": "content.yml",
+   "replaces": [
+    "update-news.yml",
+    "update-analyst-ratings.yml",
+    "update-hedgefonds.yml",
+    "build-morning.yml"
+   ]
+  },
+  "monitor": {
+   "purpose": "Waechter und Alarme: Freshness, Live-Smoke, Health",
+   "workflow": "monitor.yml",
+   "replaces": [
+    "cloudflare-proof.yml",
+    "cloudflare-waker-proof.yml",
+    "currency-production-proof.yml",
+    "discover-live-smoke.yml",
+    "discover-realtime-qa.yml",
+    "europe-discover-release-qa.yml",
+    "fundamental-sec-freshness.yml",
+    "realtime-production-smoke.yml",
+    "supertrader-live-smoke.yml",
+    "technical-live-qa.yml",
+    "vorsorge-live-smoke.yml"
+   ]
+  },
+  "account": {
+   "purpose": "Konten, Abos, Brevo",
+   "workflow": "account.yml",
+   "replaces": [
+    "account-backup.yml",
+    "account-cancellations.yml",
+    "account-db-approved.yml",
+    "account-monitor.yml",
+    "account-production-auth.yml",
+    "account-production-checks.yml",
+    "account-production-deploy.yml",
+    "account-production-stripe.yml"
+   ]
+  },
+  "social": {
+   "purpose": "Social und Reels",
+   "workflow": "social.yml",
+   "replaces": [
+    "social-cloudflare.yml",
+    "social-external-intelligence.yml",
+    "social-external-observe.yml",
+    "social-hashtag-capability.yml",
+    "social-publish-candidate.yml",
+    "social-reel.yml",
+    "social-resume-verified-web.yml",
+    "social-smoke-publish.yml",
+    "social-work-delivery.yml"
+   ]
+  },
+  "app": {
+   "purpose": "native App",
+   "workflow": null,
+   "replaces": []
+  },
+  "research": {
+   "purpose": "manuelle Forschungslaeufe und Studien",
+   "workflow": "research.yml",
+   "replaces": [
+    "elliott-prospective-registry.yml",
+    "emerging-leaders-study.yml",
+    "pattern-research-volume.yml",
+    "quant-pattern-total-return-check.yml",
+    "quant-portfolio-research.yml",
+    "quant-v13-archive.yml",
+    "research-edge2-paper.yml",
+    "research-labor.yml",
+    "supertrader-delisting-probe.yml",
+    "supertrader-house.yml",
+    "vorsorge-etf-sources.yml",
+    "vorsorge-etf-universe.yml",
+    "vorsorge-legal-sources.yml"
+   ]
+  },
+  "maintenance": {
+   "purpose": "manuelle Betriebswerkzeuge, Diagnosen, Einmal-Laeufe",
+   "workflow": "maintenance.yml",
+   "replaces": [
+    "landing-cloudflare-audit.yml",
+    "r2-audit.yml",
+    "tiingo-scale.yml"
+   ]
+  }
+ },
+ "workflows": {
+  "account-production-auto.yml": {
+   "bundle": "account",
+   "ausnahme": "zahlungsfreigabe (Owner-Umgebung) und migrationen laufen parallel unter einer Workflow-Gruppe; als Job-Gruppe wuerden Migrationen auf die Freigabe warten."
+  },
+  "app-android-build.yml": {
+   "bundle": "app",
+   "ausnahme": "App: Owner-Umgebungen und Signaturschluessel je Plattform; der S5-Test liest die App-Workflows einzeln."
+  },
+  "app-android-release.yml": {
+   "bundle": "app",
+   "ausnahme": "App: Owner-Umgebung und Pflicht-Versionseingaben je Release."
+  },
+  "app-ios-testflight.yml": {
+   "bundle": "app",
+   "ausnahme": "App: Owner-Umgebung und Pflicht-Versionseingaben; der S5-Test liest diese Datei."
+  },
+  "brand-media-higgsfield-images.yml": {
+   "bundle": "maintenance",
+   "ausnahme": "Kostenpflichtige Erzeugung; bleibt einzeln startbar und sichtbar."
+  },
+  "brand-media-higgsfield.yml": {
+   "bundle": "maintenance",
+   "ausnahme": "Kostenpflichtige Erzeugung; bleibt einzeln startbar und sichtbar."
+  },
+  "brevo-admin.yml": {
+   "bundle": "account",
+   "ausnahme": "Die Brevo-Freigabe prueft den Workflow-Pfad (scripts/brevo/newsletter_approval.py)."
+  },
+  "brevo-internal-membership.yml": {
+   "bundle": "account",
+   "ausnahme": "Die Freigabe ist an den Workflow-Pfad gebunden (scripts/brevo/internal_membership.py)."
+  },
+  "brevo-newsletter.yml": {
+   "bundle": "account",
+   "ausnahme": "Der Newsletter-Versand mit Versionsfreigabe ist an den Workflow-Pfad gebunden (scripts/brevo/newsletter_approval.py)."
+  },
+  "cloudflare-waker-deploy.yml": {
+   "bundle": "deploy",
+   "ausnahme": "Rollt den Cloudflare-Wecker aus, der alle getakteten Buendel startet (Strang O); bewusst getrennt vom Takt selbst."
+  },
+  "company-intelligence-health.yml": {
+   "bundle": "monitor",
+   "ausnahme": "Company Intelligence: auf Anweisung der Steuerung unangetastet."
+  },
+  "company-intelligence-profile-source.yml": {
+   "bundle": "research",
+   "ausnahme": "Company Intelligence: auf Anweisung der Steuerung unangetastet."
+  },
+  "company-intelligence-refreeze-auto.yml": {
+   "bundle": "research",
+   "ausnahme": "Company Intelligence: auf Anweisung der Steuerung unangetastet (Auto-Re-Freeze der 46er-Projektion)."
+  },
+  "company-intelligence-refresh-watchdog.yml": {
+   "bundle": "monitor",
+   "ausnahme": "Company Intelligence: auf Anweisung der Steuerung unangetastet."
+  },
+  "company-intelligence-refresh.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "Company Intelligence: auf Anweisung der Steuerung unangetastet."
+  },
+  "company-intelligence-universe-release.yml": {
+   "bundle": "research",
+   "ausnahme": "Company Intelligence: auf Anweisung der Steuerung unangetastet."
+  },
+  "company-intelligence.yml": {
+   "bundle": "ci",
+   "ausnahme": "Company Intelligence: Workflows bleiben auf Anweisung der Steuerung unangetastet (eigene Regressionsklassifikation, Freeze und Rollback)."
+  },
+  "core-ci.yml": {
+   "bundle": "ci",
+   "ausnahme": "Heimat der Vertragstests (CLAUDE.md, Datenlauf-Warnung) mit eigenem taeglichen Live-Lauf auf dem Wecker-Takt; bleibt als eigener Pruef-Workflow sichtbar."
+  },
+  "currency-fx-verify.yml": {
+   "bundle": "ci",
+   "ausnahme": "Schreibt Messdaten (contents: write) unter einer globalen Serialisierungsgruppe und laeuft auf jedem PR; als Teil des Pruef-Buendels nicht gleichwertig."
+  },
+  "discover-im-blick-live.yml": {
+   "bundle": "pipeline-intraday",
+   "ausnahme": "Wecker-Ziel: der Cloudflare-Wecker startet ihn per Dateiname mit eigener Laufsperre."
+  },
+  "europe-discover-refresh.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "Zwei parallele Jobs unter einer Workflow-Gruppe; als Job-Gruppen nicht gleichwertig."
+  },
+  "freshness-monitor.yml": {
+   "bundle": "monitor",
+   "ausnahme": "Waechter mit eigenem Wecker-Takt und sechs Jobs, deren Ereignisweichen sechs Vertragstests woertlich pruefen."
+  },
+  "history-store-sync.yml": {
+   "bundle": "maintenance",
+   "ausnahme": "Stufe STORE in scripts/vu2/measure-launch-readiness.mjs prueft diese Datei."
+  },
+  "home-refresh.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "pages-release hoert auf seinen Namen und er selbst auf vier Erzeuger; als Teil wuerde jeder Buendellauf die Startseite neu setzen."
+  },
+  "intraday-pacemaker.yml": {
+   "bundle": "pipeline-intraday",
+   "ausnahme": "Wecker-Ziel: der Cloudflare-Wecker startet ihn per Dateiname und prueft je Datei, ob ein Lauf aktiv ist."
+  },
+  "intraday-snapshots.yml": {
+   "bundle": "pipeline-intraday",
+   "ausnahme": "Teilt die Concurrency-Gruppe mit dem Taktgeber und loest Releases aus; ein Buendel braeuchte einen Wecker-Umbau mit Deploy (Strang O)."
+  },
+  "landing-cloudflare-prepare.yml": {
+   "bundle": "maintenance",
+   "ausnahme": "Der Newsletter-Admin liest diese Datei; der Generator lehnt sie ab."
+  },
+  "long-series.yml": {
+   "bundle": "pipeline-weekly",
+   "ausnahme": "Kettenkopf: Chartbild, technical-world und pages-release hoeren per Namen auf diesen Lauf."
+  },
+  "market-data-refresh.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "Kettenkopf der Nacht: pipeline-daily, pipeline-weekly, home-refresh, pages-release und die Materialisierung hoeren per workflow_run auf seinen Namen."
+  },
+  "multi-asset-data.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "Market Pulse auf dem Datenzweig, pull_request-Pruefung und Wecker-Takt (Strang O)."
+  },
+  "ownership-signals.yml": {
+   "bundle": "pipeline-weekly",
+   "ausnahme": "Datenart auf dem Datenzweig (core/registry/data-branch.json), Strang O."
+  },
+  "pages-release.yml": {
+   "bundle": "deploy",
+   "ausnahme": "Auslieferungs-Hub: hoert per workflow_run auf alle Erzeuger und filtert Buendellaeufe nach Lauftitel; ein eigener Workflow haelt die Release-Gruppe pages-production frei."
+  },
+  "product-intelligence-materialization.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "Wird per workflow_call eingebunden und pipeline-daily selbst hoert auf seinen Namen; der Generator buendelt keinen workflow_call."
+  },
+  "quant-ci.yml": {
+   "bundle": "ci",
+   "ausnahme": "Die eingefrorene Quant-Evidenz (docs/quant-recovery/v8, v9) nennt die manuellen V8-Archiv-Jobs dieser Datei als Zugangsweg und fuehrt ihren Hash."
+  },
+  "research-signals-s2.yml": {
+   "bundle": "research",
+   "ausnahme": "Matrix unter einer Workflow-Concurrency-Gruppe; als Job-Gruppe nicht gleichwertig."
+  },
+  "sec-consumer-fundamentals.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "pages-release und monitor (Teil sec-veroeffentlichung) hoeren per workflow_run auf seinen Namen; Bulk-Abruf unter eigener Workflow-Gruppe."
+  },
+  "sec-fundamentals-daily.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "Zwei parallele Jobs unter der Workflow-Gruppe sec-backfill-<ref>, die auch der Universum-Backfill nutzt."
+  },
+  "sec-fundamentals-universe.yml": {
+   "bundle": "research",
+   "ausnahme": "pull_request mit Pfadfiltern; der Generator buendelt keine pull_request-Ausloeser."
+  },
+  "security-master-eligibility.yml": {
+   "bundle": "pipeline-weekly",
+   "ausnahme": "Einziger Workflow, der das Produktuniversum aendert (Vertragstest UF); stoesst die Folgelaeufe im selben Lauf an."
+  },
+  "security-master-weekly.yml": {
+   "bundle": "pipeline-weekly",
+   "ausnahme": "Namenskette: security-master-eligibility hoert per workflow_run auf diesen Lauf (Vertrag UF)."
+  },
+  "social-orchestrator.yml": {
+   "bundle": "social",
+   "ausnahme": "Der ausgerollte Social-Worker stoesst ihn per Dateiname an (workers/vision-universe-social/src/approval.js)."
+  },
+  "supertrader-paper-2027.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "registry-guard.mjs pinnt den SHA-256 des domains.json-Eintrags samt Workflow-Namen."
+  },
+  "supertrader-research-snapshot.yml": {
+   "bundle": "research",
+   "ausnahme": "Workflow-Concurrency mit parallelen Jobs; als Job-Gruppen nicht gleichwertig."
+  },
+  "supertrader-sf8-candidates.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "registry-guard.mjs pinnt den Workflow-Namen der SF8-Domaene (eingefrorener Supertrader-Vertrag)."
+  },
+  "supertrader-signals.yml": {
+   "bundle": "pipeline-daily",
+   "ausnahme": "scripts/ci/supertrader-chain.mjs stoesst ihn per Dateiname an und liest seine Laeufe je Datei, um keinen wartenden vollen Lauf zu verdraengen."
+  },
+  "supertrader-st-hist-top5.yml": {
+   "bundle": "research",
+   "ausnahme": "Supertrader-Vertragstests (sf-st-hist-top5 ST-HIST-4/10/16, ST-HOLDOUT-3) lesen diese Datei, und SF2-LEGACY-ISOLATION erlaubt die Forschungsmodule nur in ihr."
+  },
+  "supertrader-st9-v13-study.yml": {
+   "bundle": "research",
+   "ausnahme": "Das Supertrader-Belegmodell prueft das Vorhandensein genau dieser Datei (sf-mc3-evidence-matrix, v13Workflow); Loeschen aendert ein Fachmodell."
+  },
+  "supertrader-validation.yml": {
+   "bundle": "research",
+   "ausnahme": "Versiegelte Supertrader-Validierung; Vertragstests (sf-paper-2027-forward) pruefen den Text dieser Datei."
+  },
+  "universe-master.yml": {
+   "bundle": "pipeline-weekly",
+   "ausnahme": "pull_request mit Pfadfiltern; der Generator buendelt keine pull_request-Ausloeser."
+  }
+ },
+ "retired": {
+  "2026-11-05": [
+   "cloudflare-probe.yml",
+   "diagnose-adjustment-steps.yml",
+   "market-data.yml",
+   "marketstack-diagnostics-once.yml",
+   "social-ig-check.yml",
+   "social-manual-dispatch-proof.yml",
+   "tiingo-verify.yml",
+   "update-dashboard.yml",
+   "update-fundamentals.yml"
+  ]
+ }
+}

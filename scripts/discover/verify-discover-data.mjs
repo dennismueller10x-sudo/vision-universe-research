@@ -124,6 +124,15 @@ for (const universe of meta.universes) {
 
   const detailFiles = new Set(readdirSync(join(DATA, "stocks", id)));
   const rowConfigs = new Map(ROWS.map((r) => [r.id, r]));
+  /* Reihen mit config.memberOf (Fallen Angels) sortieren zuerst nach der Zahl der Quell-Reihen,
+     in denen die Aktie steht (Index Aktie -> Reihen, discover/data/membership). */
+  const memberFile = join(DATA, "membership", id + ".json");
+  const memberIdx = existsSync(memberFile) ? readJSON(memberFile) : null;
+  const memberCount = (config, sym) => {
+    if (!memberIdx || !config || !config.memberOf) return 0;
+    const ids = memberIdx.rows.map((r) => r.id);
+    return ((memberIdx.members || {})[sym] || []).filter((x) => config.memberOf.includes(ids[x[0]])).length;
+  };
 
   for (const file of rows) {
     const row = readJSON(join(DATA, "rows", id, file));
@@ -145,8 +154,14 @@ for (const universe of meta.universes) {
 
     /* V4 §17-22: Rangbegruendung, Index-Herkunft, Qualifikation, Margenband. */
     if (row.rowId !== "sector-leaders" && config) {
-      let letzter = null;
+      let letzter = null, letzteZahl = null;
       cards.forEach((c, i) => {
+        const zahl = memberCount(config, c.symbol);
+        if (config.memberOf && letzteZahl !== null && zahl !== letzteZahl) {
+          check(zahl < letzteZahl, `${file}: ${c.symbol} steht in mehr Quell-Reihen als sein Vorgaenger`);
+          letzter = null;
+        }
+        letzteZahl = zahl;
         const rr = c.rankingReason;
         check(rr && rr.rowId === row.rowId && rr.rank === i + 1, `${file}: ${c.symbol} ohne passende rankingReason (Rang ${i + 1})`);
         if (rr && rr.of !== undefined) check(rr.of >= cards.length, `${file}: rankingReason.of kleiner als die Reihe`);
@@ -291,6 +306,10 @@ for (const universe of meta.universes) {
     if (config && row.cards && row.cards.length > 1) {
       for (let i = 1; i < row.cards.length; i++) {
         const prev = row.cards[i - 1], cur = row.cards[i];
+        if (config.memberOf) {
+          const za = memberCount(config, prev.symbol), zb = memberCount(config, cur.symbol);
+          if (za !== zb) { check(za > zb, `${file}: Zahl der Quell-Reihen faellt nicht (${prev.symbol} vor ${cur.symbol})`); continue; }
+        }
         if (config.signalFirst) {
           const a = prev.signals[config.signalFirst] === true;
           const b = cur.signals[config.signalFirst] === true;

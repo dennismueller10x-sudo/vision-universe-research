@@ -1,0 +1,17 @@
+{
+ "schema": "vu-module-2",
+ "id": "ask",
+ "label": "AI Atlas",
+ "status": "BETA",
+ "route": "/ask/",
+ "access": "free",
+ "navigation": null,
+ "data": [],
+ "reads": [
+  "quant",
+  "supertrader"
+ ],
+ "tests": [
+  "ask/tests/*.test.mjs"
+ ]
+}

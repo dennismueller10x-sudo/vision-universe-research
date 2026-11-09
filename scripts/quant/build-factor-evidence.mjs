@@ -37,7 +37,7 @@ const Survivorship = require(join(ROOT, "quant/engines/survivorship-control.js")
 const MarketCap = require(join(ROOT, "quant/engines/market-cap.js"));
 /* Bewusst zurueckgehaltene Boersenwerte (market-cap-1.0.0): die Bewertung
    nennt den Grund, statt "Eingabe nicht materialisiert" zu sagen. */
-const MARKET_CAP_WITHHELD = ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING", "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"];
+const MARKET_CAP_WITHHELD = ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING", "REPORTING_CURRENCY_NOT_LISTING_CURRENCY", "SHARE_COUNT_SCALE_SUSPECT"];
 /* Wer zur Grundgesamtheit der Perzentile gehoert (seit 02.10.2026: das
    kanonische Produktuniversum, nicht die Faktordatei). Teil der Methodik
    jedes Stands - aendert sich die Regel, ist ein Rangwechsel keine
@@ -327,7 +327,12 @@ function main() {
    * Emittenten dessen Stammaktie den Boersenwert nehmen (PRHI neben dem
    * Senior Note PRHIZ). Gezaehlt wird deshalb nur, wer im kanonischen
    * Produktuniversum steht; die Zahl der verworfenen Zeilen steht im Bericht. */
-  const imProdukt = new Set(resolveProductUniverse(ROOT).securities.map((s) => s.securityId));
+  /* Wiederverwendete Kuerzel (quant/config/ticker-reuse-quarantine.json, #1206) stehen weiter im Universum,
+   * tragen aber eine ungesicherte Identitaet (heute ein ETF unter dem Kuerzel der alten Gesellschaft). Sie
+   * bekommen keine Faktorzeile und zaehlen in keinem Rang mit; die Zahl steht im Bericht. */
+  const universum = resolveProductUniverse(ROOT).securities;
+  const identityQuarantined = universum.filter((s) => s.identityStatus === "IDENTITY_QUARANTINED").map((s) => s.securityId).sort();
+  const imProdukt = new Set(universum.filter((s) => s.identityStatus !== "IDENTITY_QUARANTINED").map((s) => s.securityId));
   const vorFilter = priceFactors.securities.length;
   priceFactors.securities = priceFactors.securities.filter((s) => imProdukt.has(s.securityId));
   const outsideProductUniverse = vorFilter - priceFactors.securities.length;
@@ -579,7 +584,10 @@ function main() {
          * ADS-Quote. Also: Berichtswaehrung ungleich USD -> zurueckhalten. */
         const berichtswaehrung = MarketCap.reportingCurrency(doc.units);
         const gleicheWaehrung = MarketCap.sameCurrencyAsListing(doc.units);
-        const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung ? shares.value * quote.close : null;
+        /* SKALA (market-cap-1.2.0): Zehnerpotenz-Sprung gegen die vorherigen Quartalszahlen oder > 8e12 USD -> zurueckhalten. */
+        const rohwert = shares && quote ? shares.value * quote.close : null;
+        const skalaPlausibel = MarketCap.scalePlausible(shares, doc, cutoff, rohwert);
+        const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung && skalaPlausibel ? rohwert : null;
         fundamentals = FundamentalInputs.compute(doc, cutoff, marketCap);
         if (fundamentals) {
           fundamentals.marketCap = finite(marketCap) ? marketCap : null;
@@ -588,11 +596,13 @@ function main() {
             : (!zuordenbar ? "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING"
               : !shares ? "NO_PIT_SHARE_COUNT"
               : !ausstehend ? "SHARE_COUNT_NOT_OUTSTANDING"
-              : !gleicheWaehrung ? "REPORTING_CURRENCY_NOT_LISTING_CURRENCY" : "NO_PUBLISHED_CLOSE");
+              : !gleicheWaehrung ? "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"
+              : !skalaPlausibel ? "SHARE_COUNT_SCALE_SUSPECT" : "NO_PUBLISHED_CLOSE");
           fundamentals.sharesConcept = sharesConcept;
           fundamentals.reportingCurrency = berichtswaehrung;
           if (!ausstehend) countGap("SHARE_COUNT_NOT_OUTSTANDING");
           if (!gleicheWaehrung) countGap("REPORTING_CURRENCY_NOT_LISTING_CURRENCY");
+          if (!skalaPlausibel) countGap("SHARE_COUNT_SCALE_SUSPECT");
           if (!zuordenbar) {
             fundamentals.issuerListings = zeilen.slice().sort();
             countGap("SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING");
@@ -1153,6 +1163,7 @@ function main() {
       priceFactorSecurities: priceFactors.securities.length,
       priceFactorRowsOutsideProductUniverse: outsideProductUniverse,
       notAnEquityListing: uebersprungen.length,
+      identityQuarantined: identityQuarantined.length,
       published: written,
       withFundamentals: records.filter((record) => record.fundamentals).length,
       withMarketCap: records.filter((record) => finite(record.fundamentals?.marketCap)).length,

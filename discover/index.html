@@ -2,25 +2,27 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <!-- STARTREIHENFOLGE DER STARTSEITE
-     Der erste Bildschirm besteht aus Stilen, Kopfbild und dem vorgerenderten Kopf (unten in #v2-shell). Alles andere - die rund
-     50 Skripte aus dem Template dx-start (unten) und die Datenabrufe der Startseite - wartet, bis das Kopfbild da ist
-     (spaetestens STAGE_MS), damit es sich nicht mit Stilen und Kopfbild um dieselbe Leitung streitet. Nur meta.json und der
-     Marktkalender (zusammen 17 KB) laufen sofort mit: aus meta.json ergeben sich Adresse der ersten Auswahl und des
-     Intraday-Verzeichnisses. Auf jeder anderen Route (Aktie, Maerkte, ...) gibt es weder Kopfbild noch vorgeladene Daten;
-     dort starten die Skripte, sobald das Dokument gelesen ist.
+     Der erste Bildschirm besteht aus Stilen und dem vorgerenderten Kopf (unten in #v2-shell; Redesign D01 ohne Kopfbild).
+     Die rund 50 Skripte aus dem Template dx-start (unten) starten, sobald das Dokument gelesen ist. Auf der Startseite laufen
+     meta.json und der Marktkalender (zusammen 17 KB) sofort mit, die uebrigen Daten der Startseite mit den Skripten: aus
+     meta.json ergeben sich Adresse der ersten Auswahl und des Intraday-Verzeichnisses. Auf jeder anderen Route (Aktie,
+     Maerkte, ...) gibt es keine vorgeladenen Daten.
      Die Skripte laufen unveraendert in ihrer Reihenfolge (async=false), nur eben nachgeladen. Jede Antwort der Startseite
      bekommt dieselbe Adresse und denselben Cache-Modus wie der spaetere fetch() der Seite und wird genau diesem
      uebergeben (danach ist der Eintrag weg); schlaegt sie fehl, laeuft dessen eigene Wiederholung normal.
+     Billboard und Top 10 der Startseite lesen die Reihe „Heute im Blick“ (rows/US_REAL/im-blick.json); auch sie laeuft frueh mit.
      Ein Tipp auf die Suche vor dem Skriptstart wird gemerkt (__vuSearchTap) und oeffnet sie, sobald home.js laeuft. -->
-<script>(function(w,d){var home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)$/.test(location.hash.replace(/^#\/?/,"").split("/")[0]),STAGE_MS=2500,ready=!home,parsed=false,started=false,f=w.fetch,e={},N={cache:"no-cache"},meta;
+<script>(function(w,d){var home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)$/.test(location.hash.replace(/^#\/?/,"").split(/[/?]/)[0]),ready=true,parsed=false,started=false,f=w.fetch,e={},N={cache:"no-cache"},meta;
 function go(u,o){var r=e[u]=f.call(w,u,o);r.catch(function(){});return r}
 function json(r){return r.clone().json()}
 if(home&&f){w.fetch=function(u){var r=typeof u==="string"&&e[u];if(r){delete e[u];return r}return f.apply(this,arguments)};
 meta=go("/discover/data/meta.json",N).then(json);meta.catch(function(){});go("/quant/config/market-calendar.json",N)}
 function data(){
 meta.then(function(m){var h=(m.home||[]).filter(function(x){return x.universeId==="US_REAL"})[0],r=m.realtime;if(h&&h.chunks&&h.chunks[0])go(h.chunks[0],N);if(r&&r.available===true&&r.intraday&&r.intraday.index)go(r.intraday.index)}).catch(function(){});
+go("/discover/data/rows/US_REAL/im-blick.json",N);
 go("/discover/live/im-blick-US_REAL.json",N);
 go("/quant/data/market/multi-asset/snapshot.json",N);
 go("/quant/config/multi-asset.json",N);
@@ -34,8 +36,6 @@ w.__vuParsed=function(){parsed=true;start()};
 // Suche vor dem Skriptstart: Tipp auf das Suchfeld oder die Taste "/" werden gemerkt; home.js oeffnet die Suche, sobald sie laeuft.
 d.addEventListener("click",function(v){var b=v.target.closest&&v.target.closest("[data-static] .v2-search-prompt");if(b)w.__vuSearchTap=1},true);
 d.addEventListener("keydown",function(v){if(v.key==="/"&&!/^(INPUT|TEXTAREA|SELECT)$/.test(v.target&&v.target.tagName||"")&&d.querySelector("[data-static]")){v.preventDefault();w.__vuSearchTap=1}},true);
-if(home){var l=d.createElement("link");l.rel="preload";l.as="image";l.href="/assets/hero-visuals/discover.webp";l.setAttribute("fetchpriority","high");
-l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeout(function(){ready=true;start()},STAGE_MS)}
 })(window,document);</script>
 <meta name="theme-color" content="#ffffff">
 <link rel="icon" href="data:,">
@@ -54,18 +54,23 @@ l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeo
 <link rel="stylesheet" href="/discover/home.css">
 <link rel="stylesheet" href="/discover/ui/featured.css">
 <link rel="stylesheet" href="/discover/detail.css">
+<!-- Redesign 2027 (D01-D08): gemeinsame Bausteine und die Discover-Muster, ausserhalb der gezaehlten Budget-Dateien. -->
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<link rel="stylesheet" href="/discover/ui/v3.css">
+<link rel="stylesheet" href="/discover/ui/reihen.css">
 <!-- Maerkte-Stile: erst auf einer #/maerkte-Route geladen (discover/ui/markets.js#ensureStyles), an dieser Stelle der Kaskade. -->
 <template id="dx-markets-css"><link rel="stylesheet" href="/discover/markets.css"></template>
 <!-- Stil des Aktienkopfs und Navigators: erst auf einer Aktienroute (#/s/...) geladen (discover/app.js#ensureCss). -->
 <template id="dx-snav-css"><link rel="stylesheet" href="/assets/stock-navigator.css"></template>
+<template id="dx-overview-css"><link rel="stylesheet" href="/discover/ui/overview.css"></template>
 <link rel="stylesheet" href="/company-intelligence/ui/stock-section.css">
 </head>
 <body class="dx dv2"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script><script src="/assets/scroll-memory.js"></script>
 
 <a class="v2-skip" href="#v2-main">Zum Inhalt</a>
-<div id="v2-shell"><main id="v2-main" class="v2-main" tabindex="-1" aria-busy="true"><div class="v2-home"><!-- Kopf der Startseite, Markup wie in home.js#render; app.js uebergibt ihn an V.Home.render (data-static), das nur noch die Suche anbindet. -->
-<header class="v2-intro vu-product-hero vu-hero-fidelity" data-product="discover" data-static><div class="vu-hero-scene" aria-hidden="true"></div><div class="v2-intro-copy vu-product-hero__copy"><span class="vu-product-icon vu-product-icon--hero" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#discover"></use></svg></span><p class="vu-hero-name">Discover</p><h1 class="vu-product-title vu-hero-headline">Sieh den Markt mit anderen Augen.</h1><p class="v2-intro-lead vu-product-lead vu-hero-description">Entdecke Unternehmen, Trends und Themenwelten weltweit.</p><button class="v2-search-prompt" type="button" aria-label="Unternehmen oder Symbol suchen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14m9 16-4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Unternehmen oder Symbol suchen</span><span class="v2-search-arrow"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button><div class="v2-intro-actions"><a class="v2-pill v2-pill-dark v2-intro-cta" href="#/aktien">Jetzt entdecken →</a><a class="v2-pill v2-pill-ghost" href="#/welten">Themenwelten</a><a class="v2-pill v2-pill-ghost" href="#/maerkte">Märkte</a></div></div></header></div></main></div>
-<script>if(/^#\/?(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|maerkte|daten)(\/|$)/.test(location.hash)){var n=document.querySelector("#v2-shell .v2-intro[data-static]");if(n)n.closest("main").remove();}</script>
+<div id="v2-shell"><main id="v2-main" class="v2-main dv3-main" tabindex="-1" aria-busy="true"><div class="v2-home vu-ui"><!-- Kopf der Startseite (Konzept „Reihe für Reihe“: Datum, Frage, Suche, Genre-Chips), Markup wie in home.js#header; app.js uebergibt ihn an V.Home.render (data-static), das nur noch die Suche anbindet. -->
+<header class="dv3-intro" data-product="discover" data-static><p class="vu-ltag dv3-asof">Discover</p><h1 class="vu-lt"><span class="dr-l">Was bewegt </span><span class="dr-l">die Börse heute?</span></h1><p class="vu-lead dr-genre-lead" hidden></p><button class="v2-search-prompt" type="button" aria-label="Aktie, Thema oder Frage suchen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M11 4a7 7 0 1 0 0 14 7 7 0 0 0 0-14m9 16-4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Aktie, Thema oder Frage …</span><span class="v2-search-arrow"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" fill="currentColor" stroke="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg></span></button><nav class="dr-genres vu-chips" aria-label="Genres"><button type="button" class="vu-chip" data-genre="alle" aria-pressed="true">Alle</button><button type="button" class="vu-chip" data-genre="kursbewegung" aria-pressed="false">Kursbewegung</button><button type="button" class="vu-chip" data-genre="unternehmen" aria-pressed="false">Unternehmen</button><button type="button" class="vu-chip" data-genre="themen" aria-pressed="false">Themen</button><button type="button" class="vu-chip" data-genre="indizes" aria-pressed="false">Indizes</button><a class="vu-chip" href="#/c/EUROPE/de" data-europe-chip>Europa</a><a class="vu-chip dr-genres__all" href="#/reihen" aria-label="Alle Reihen"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="7" height="7" rx="1.8"></rect><rect x="13" y="4" width="7" height="7" rx="1.8"></rect><rect x="4" y="13" width="7" height="7" rx="1.8"></rect><rect x="13" y="13" width="7" height="7" rx="1.8"></rect></g></svg></a></nav></header></div></main></div>
+<script>if(/^#\/?(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)([/?]|$)/.test(location.hash)){var n=document.querySelector("#v2-shell .dv3-intro[data-static]");if(n)n.closest("main").remove();}</script>
 
 <template id="dx-start">
 <!-- Release-Waechter (quant/ui/release-guard.js): vergleicht die Code-Kennung dieses Tabs mit /release-id.json, bevor Skriptgruppen nachgeladen werden oder nach einem 404 "Gerade nicht erreichbar" erscheint (Deployment-Wechsel mit offenem Tab). Vor shell.js, das ihn bei 404 fragt. -->
@@ -123,6 +128,13 @@ l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeo
 <script src="/discover/ui/home-market.js"></script>
 <script src="/discover/home.js"></script>
 <script src="/discover/ui/featured.js"></script>
+<!-- Redesign 2027: Bausteine (VUUI), der eine Chart (VUChart) und die neuen Discover-Ansichten D01-D08. -->
+<script src="/assets/vu-chart.js"></script>
+<script src="/assets/vu-ui.js"></script>
+<script src="/discover/ui/v3.js"></script>
+<!-- Konzept „Reihe für Reihe“ (docs/design/discover-netflix-2026-11): Regeln der Reihen und die Startseite aus Schienen. -->
+<script src="/discover/engines/reihen.js"></script>
+<script src="/discover/ui/reihen.js"></script>
 <script src="/discover/ui/europe.js"></script>
 <script src="/discover/app.js"></script>
 <script src="/discover/engines/europe-bootstrap.js"></script>
@@ -160,6 +172,7 @@ l.onload=l.onerror=function(){ready=true;start()};d.head.appendChild(l);setTimeo
 <script src="/assets/stock-navigator.js"></script>
 <!-- Lesezeichen der persoenlichen Watchlist (docs/accounts/WATCHLIST.md): ohne freigeschaltete Konten unsichtbar, keine Konto-Anfrage. -->
 <script src="/assets/watchlist-button.js" defer></script>
+<script src="/discover/ui/overview.js"></script>
 <script src="/discover/ui/stock-head.js"></script>
 <script src="/discover/ui/detail.js"></script>
 <script src="/discover/detail.js"></script>

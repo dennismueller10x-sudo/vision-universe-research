@@ -1,0 +1,170 @@
+{
+ "schemaVersion": "survivorship-public-frame-1.0.0",
+ "evidenceKind": "RESEARCH_SURVIVORSHIP_PUBLIC_FRAME",
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "gateInput": false,
+ "claim": "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+ "template": "pattern-2015-sideways-p41-total-return",
+ "window": {
+  "from": "2015-01-01",
+  "to": "2025-06-30"
+ },
+ "asOf": "2025-12-31",
+ "pattern": {
+  "id": "DRAWDOWN_FROM_PEAK_20PCT",
+  "version": "1.0.0"
+ },
+ "horizonBars": 13,
+ "cooldownBars": 13,
+ "returnBasis": "PRICE_RETURN",
+ "contracts": {
+  "engine": "research-studies-1.1.0",
+  "runner": "backtest-runner-1.0.0",
+  "base": "pattern-total-return-1.0.0"
+ },
+ "frame": {
+  "profile": "V10_LIFECYCLE",
+  "listings": 4327,
+  "withLifecycleEvidence": 124,
+  "endedListings": 19,
+  "endedShare": 0.004391033048301364,
+  "endedInWindow": 3,
+  "endedByStatusAndCategory": {
+   "DELISTED_SOURCE_VERIFIED|DELISTED_FORM25": 2,
+   "DELISTED_SOURCE_VERIFIED|MERGER_TERMINAL_CONSIDERATION": 17
+  }
+ },
+ "publicInventory": {
+  "register": {
+   "file": "docs/quant-recovery/v13/delisted/register-1.0.0.json",
+   "schemaVersion": "v13-delisted-register-1.0.0",
+   "endedChains": 4322,
+   "byStatus": {
+    "CA_MISMATCH": 19,
+    "CA_UNRESOLVED": 209,
+    "EXCLUDED_GAPS": 31,
+    "EXCLUDED_IDENTITY": 30,
+    "EXCLUDED_NO_CIK_LINK": 1819,
+    "EXCLUDED_SHORT": 157,
+    "NEWER_LISTING_ONLY": 162,
+    "NOT_DELIVERED": 34,
+    "PRICE_ONLY_CENSORED_END": 151,
+    "PRICE_OUTLIER": 35,
+    "QUALIFIED": 1675
+   },
+   "qualifiedWithEndBucketOverlappingWindow": 1522,
+   "seriesPublic": false
+  },
+  "framesByReference": {
+   "V10_LIFECYCLE": {
+    "frame": 4329,
+    "source": "docs/quant-recovery/v10/studies/ca-id-lifecycle/run-meta.json"
+   },
+   "V13_DELISTED_F1": {
+    "frame": 4719,
+    "source": "docs/quant-recovery/v13/studies/s2-population-1.0.0.json"
+   },
+   "V13_DELISTED_F1C": {
+    "frame": 4758,
+    "source": "docs/quant-recovery/v13/studies/s2-population-1.0.0.json"
+   },
+   "V13B_DELISTED_F1W": {
+    "frame": 5905,
+    "source": "docs/quant-recovery/v13/studies/s2-population-1.0.0.json"
+   }
+  },
+  "privateFetchInventory": {
+   "file": "quant/data/product/survivorship-control-v1.json",
+   "asOf": "2026-10-01",
+   "delistedListings": 3728,
+   "usableForStudy": 3082,
+   "totalReturnConfirmed": 3058,
+   "window": "2015-01-01",
+   "seriesPublic": false
+  }
+ },
+ "gap": {
+  "publicFrameEndedVsQualifiedRegister": {
+   "publicEnded": 19,
+   "registerQualified": 1675,
+   "share": 0.011343283582089553
+  },
+  "publicFrameEndedVsPrivateUsable": {
+   "publicEnded": 19,
+   "privateUsable": 3082,
+   "share": 0.006164828033744322
+  },
+  "frameGrowthWithDelistedF1": {
+   "f0": 4329,
+   "f1": 4719,
+   "addedListings": 390,
+   "addedShareOfF1": 0.08264462809917356
+  },
+  "privateProfile": {
+   "profile": "V13_DELISTED_F1",
+   "status": "PRIVATE_DATA_UNAVAILABLE"
+  }
+ },
+ "events": {
+  "design": {
+   "strata": "beendete Listings des Rahmens (Vollerhebung) + Stichprobe der uebrigen",
+   "selection": "sha256(seed + ':' + securityId) aufsteigend",
+   "seed": "p31-public-frame-1",
+   "limit": 1000,
+   "chunk": 100,
+   "survivorWeight": 4.308
+  },
+  "ended": {
+   "titles": 19,
+   "titlesWithEvents": 17,
+   "events": 442,
+   "states": {
+    "OBSERVED": 438,
+    "CENSORED": 4
+   },
+   "censoredReasons": {
+    "OUTCOME_NOT_OBSERVED": 4
+   },
+   "censoringRate": 0.00904977375565611,
+   "eventsWithListingEndAfterSignal": 442,
+   "eventsWithListingEndWithinHorizon": 4,
+   "censoredAmongEndWithinHorizon": 4,
+   "titlesWithListingEndAfterASignal": 17,
+   "shareOfTitlesWithEvents": 1,
+   "observedMeanNetReturn": 0.001031659431255705,
+   "observedN": 438
+  },
+  "survivorSample": {
+   "titles": 1000,
+   "titlesWithEvents": 866,
+   "events": 20719,
+   "states": {
+    "OBSERVED": 20713,
+    "CENSORED": 6
+   },
+   "censoredReasons": {
+    "OUTCOME_NOT_OBSERVED": 5,
+    "ENTRY_NOT_OBSERVED": 1
+   },
+   "censoringRate": 0.00028958926589121094,
+   "eventsWithListingEndAfterSignal": 0,
+   "eventsWithListingEndWithinHorizon": 0,
+   "censoredAmongEndWithinHorizon": 0,
+   "titlesWithListingEndAfterASignal": 0,
+   "shareOfTitlesWithEvents": 0,
+   "observedMeanNetReturn": 0.03033377938513551,
+   "observedN": 20713
+  },
+  "frameEstimate": {
+   "events": 89699.45199999999,
+   "shareFromEndedListings": 0.0049275663356338015,
+   "shareWithListingEndAfterSignal": 0.0049275663356338015,
+   "shareWithListingEndWithinHorizon": 0.00004459336050347332,
+   "censoringRate": 0.00033275565607691784,
+   "rule": "beendete Listings voll, uebrige mit Gewicht Rahmen/Stichprobe"
+  }
+ },
+ "reading": "Der oeffentliche Rahmen ist fast ein reiner Ueberlebenden-Rahmen: Delistete Titel stehen nur als Zaehlung in Registern, ihre Reihen sind privat. Die Zensurquote misst nur, was im Rahmen endet, nicht den Ueberlebenden-Effekt. Der Effekt selbst braucht P3.1 mit den privaten Reihen (Ablauf R2, Freigabe FV-5).",
+ "reportHash": "a8132761776fca3ad00e98573cf3497b900cf0a7e9d88a1cb1f316ead15372fa"
+}

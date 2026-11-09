@@ -1,0 +1,1061 @@
+{
+ "stage": "S1-FUND PIT fundamental scores and rank sums with 12-1 momentum; monthly full rebalance; universe quoted price >= 5 USD and PIT market cap >= 300 Mio USD",
+ "specs": [
+  {
+   "id": "F1-PROF-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.p",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-PROF-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.p",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-PROF-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.p",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-QUAL-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-QUAL-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-QUAL-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GROWTH-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.g",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GROWTH-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.g",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GROWTH-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.g",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-VALUE-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-VALUE-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-VALUE-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-COMP-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.comp",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-COMP-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.comp",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-COMP-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.comp",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GPA-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.grossProfitabilityTtm",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GPA-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.grossProfitabilityTtm",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GPA-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.grossProfitabilityTtm",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-PROF_MOM-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-PROF_MOM-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-QUAL_MOM-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-QUAL_MOM-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-QUAL_MOM-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GROWTH_MOM-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.g",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GROWTH_MOM-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.g",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GROWTH_MOM-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.g",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-VALUE_MOM-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-VALUE_MOM-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-VALUE_MOM-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-QUAL_PROF_MOM-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ],
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-QUAL_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ],
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-QUAL_PROF_MOM-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ],
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-PROF_MOM6-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-PROF_MOM6-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-PROF_MOM6-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GPA_MOM-N10-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.grossProfitabilityTtm",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GPA_MOM-N20-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.grossProfitabilityTtm",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW"
+  },
+  {
+   "id": "F1-GPA_MOM-N50-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "ranks": [
+    [
+     "f.grossProfitabilityTtm",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 50,
+   "holding": "FULL",
+   "weighting": "EW"
+  }
+ ]
+}

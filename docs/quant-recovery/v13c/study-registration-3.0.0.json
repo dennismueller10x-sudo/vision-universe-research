@@ -1,0 +1,95 @@
+{
+ "schemaVersion": "v13c-study-registration-3.0.0",
+ "studyId": "V13C-EXTENDED-DELISTED-AND-SPX-TERMINAL",
+ "ownerDecision": "Owner approval of 2026-10-29 (verbatim): \"Ich genehmige eine neue, vor der Auswertung registrierte Forschungsstudie mit den 13 zusätzlich qualifizierten delisteten Reihen und den quellenbelegten S&P-Endwerten vor 2010. Die fehlerhafte First-Data-2006-Rekonstruktion und alle ungeklärten Endwerte bleiben ausgeschlossen. Bisherige Forschungsstände unverändert erhalten. Keine automatische Änderung von Zertifizierungsverträgen.\" Also: no new large strategy search.",
+ "registeredBefore": "Committed in its own commit (SHA-256 in study-registration-3.0.0.sha256) before any computation of this study: no frame of this study was built, no outcome, count or index level of F1', F1w', F1d' or S3' was computed, and the hash-bound loader for register 1.1.0 did not exist yet when this file was frozen.",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "confirmatory": false,
+ "evidenceLabel": "NON_CONFIRMATORY_EXTENSION_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "certificationContracts": "No certification contract, gate, product path, loader default or */data artefact is changed by this study or by its results.",
+ "knownPriorInformation": {
+  "statement": "This study is NOT confirmatory. All V13 S1/S2/S3 results, the V13b F1w/F1d comparison and the V13b HIST source work were seen before this registration. The five V10 rules were developed on the same 2000-2025 history (V7-V10). The 13 new chains and the SPX terminal values were selected by source rules (protocol amendment 1.1.0, spx-terminal-rules 1.0.0) that were frozen before their documents were read, not by any outcome of this study; but their character is known (see below).",
+  "seen": [
+   "docs/quant-recovery/v13/studies/s1-signal-1.0.0.json sha256 3f04bab7256092b10a2fbb5669d4acf067be9ee824a79da88c8d75afe4c7e430",
+   "docs/quant-recovery/v13/studies/s2-population-1.0.0.json sha256 38efcd1048e1826a6295021949e101212032b56a8a94e4dbdda778864855f10c",
+   "docs/quant-recovery/v13/studies/s3-spx-exits-1.0.0.json sha256 8bf9a85a4f14fd28679bb3979c7c33ed586f475e9244abaed8d17c11cc26d799 (38 replaced exits, none with t0 before 2010-03-31)",
+   "docs/quant-recovery/v13/studies/python-check-1.0.0.json sha256 f1fa8f32de79e48277dcff0c6db93db6f2335326cd08e3051c3bf44c3e55931f",
+   "docs/quant-recovery/v13b/f1w/results-2.0.0.json sha256 b6999a87cb7f5106cd6bd7107b2b8221fe7799f07ae61c742e4e1f33064fbbbc (F1d: 1,576 chains added, 1,186 truncated)",
+   "docs/quant-recovery/v13b/hist/register-1.1.0.json sha256 19e108e79c25d602ead7ec79583af50a8e0b620571667460ab04a017b936b270 (13 chains CA_UNRESOLVED -> QUALIFIED: 11 real price events incl. 5 bankruptcy filings, 2 special distributions; terminal classes DISTRESS 7, MERGER 5, UNKNOWN 1; all end 2010 or later; their crash jumps are known from crash-adjudication-1.1.0.json)",
+   "docs/quant-recovery/v13b/hist/spx-terminal-register-1.0.0.json sha256 0dba611a573cbc635b497691475bae79ff8e9778915e53fc3e2d34194f0b8727 (29 accepted values with their returns; per-period bounded-weight effect in spx-terminal-coverage-1.0.0.json)",
+   "docs/quant-recovery/v13b/hist/spx-terminal-review-1.0.0.json sha256 531c97c7f7fca2333c8072158139b54e6300b3ee522a7680bcb162083b556baa (First Data 2006 flagged DISTRIBUTION_IN_PERIOD; 28 confirmed)"
+  ],
+  "notSeen": "Which of the 13 new chains pass the registered frame rule (or the F1w/F1d variants); any S1 cell, S2 return or S3 aggregate that includes them or the SPX terminal values; any SPY period before 2009-09-30 computed with the P5a code."
+ },
+ "basedOn": {
+  "v13StudyRegistration": { "file": "docs/quant-recovery/v13/delisted/study-registration-1.0.0.json", "sha256": "d12c1ec0fa7f37628b067c0c06470b0bef3b1209013e207193fe3d0a3e68937f" },
+  "v13StudyAmendment": { "file": "docs/quant-recovery/v13/studies/study-amendment-1.0.1.json", "sha256": "446d4a06cf369791efb6695fdb4c7f5c2d69abca464d66d99dbcecbe1f303d6e" },
+  "v13bF1wRegistration": { "file": "docs/quant-recovery/v13b/f1w/study-registration-2.0.0.json", "sha256": "c1ba0ebb4de87746a43af3a5429bf76f69d0a62edf9a45639001913097bc7f1f", "use": "F1d definition only" },
+  "v10Registration": { "file": "docs/quant-recovery/v10/studies/registration-1.0.0.json", "sha256": "32cc1b3023853f9ff4055e56d2f2e9d72f9131a5627f866b8ca91f8ddf9b5420" },
+  "delistedRegister100": { "file": "docs/quant-recovery/v13/delisted/register-1.0.0.json", "sha256": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f" },
+  "delistedRegister110": { "file": "docs/quant-recovery/v13b/hist/register-1.1.0.json", "sha256": "19e108e79c25d602ead7ec79583af50a8e0b620571667460ab04a017b936b270" },
+  "crashAdjudication110": { "file": "docs/quant-recovery/v13b/hist/crash-adjudication-1.1.0.json", "sha256": "89275c2fb7b38cce0bd0ea350d0fb8c1a882b561da408bd0fac2af7c4591d1aa" },
+  "spxTerminalRegister": { "file": "docs/quant-recovery/v13b/hist/spx-terminal-register-1.0.0.json", "sha256": "0dba611a573cbc635b497691475bae79ff8e9778915e53fc3e2d34194f0b8727" },
+  "spxTerminalRules": { "file": "docs/quant-recovery/v13b/hist/spx-terminal-rules-1.0.0.json", "sha256": "56a8838a70fbc930129e0b124c1cb22daabea10b3279fd6c8df34a4e385b7786" },
+  "spxTerminalReview": { "file": "docs/quant-recovery/v13b/hist/spx-terminal-review-1.0.0.json", "sha256": "531c97c7f7fca2333c8072158139b54e6300b3ee522a7680bcb162083b556baa" },
+  "v12P5a": { "file": "docs/quant-recovery/v12/requal/p5a-population-1.1.0.json", "sha256": "ba0575017122bca99d97986bd248a3229868017d97040f6a1b8d2f58a6900d07", "code": "scripts/quant/v12/requal/p5a-population.cjs (unchanged)" },
+  "spxpopPopulation": { "file": "docs/quant-recovery/v12/spxpop/population-1.1.1.json.gz", "sha256": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac" }
+ },
+ "primacy": {
+  "unchanged": "All V10-V13 and V13b results stay as committed. V13 F1 remains the registered primary of V13; this study does not recompute, rewrite or replace any committed file. Its numbers are new, versioned (3.0.0) and labelled V13C_* next to the cited V13 values.",
+  "noDefault": "Register 1.1.0 does not become the default of the delisted loader; the default stays register 1.0.0 with byte-identical output. Nothing here changes a frame rule, a loader default or a product input.",
+  "spxExcluded": "The First Data 2006 value (spx-terminal-register-1.0.0 row keyHash16 747c456cff6e81ac, t0 2006-09-30, CIK 883980) and every row that is not TERMINAL_CASH/TERMINAL_STOCK/TERMINAL_MIXED in register 1.0.0 (i.e. all BOUNDED rows, the unresolved end values) are excluded. Register/rules 1.0.1 (post-hoc) are not used, not even as sensitivity."
+ },
+ "loader": {
+  "module": "quant/engines/research-delisted-series.cjs, compatible opt-in extension",
+  "defaultBehaviour": "loadDelisted(root, {dir, include}) without registerVersion (or registerVersion '1.0.0') must give byte-identical output to the pre-V13c module (pinned hashes over the full 1.0.0 load of QUALIFIED and ALL_LOADABLE, and over a synthetic fixture; tested). Passing extraDirs with register 1.0.0 is rejected.",
+  "register110": "registerVersion '1.1.0': reads docs/quant-recovery/v13b/hist/register-1.1.0.json, fails closed unless the file SHA-256 equals 19e108e79c25d602ead7ec79583af50a8e0b620571667460ab04a017b936b270, schemaVersion is v13-delisted-register-1.1.0, controls.pass is true, productionApproved false, NOT_CERTIFIED, and basedOn names register 1.0.0 with its SHA-256. Every series file is bound to its 1.1.0 row exactly as in 1.0.0 (chainId, status, CIK, weeks, points SHA-256). Files are searched in dir and extraDirs (the 13 new series live in v13b-private/series-1.1.0); a chain found in more than one directory fails closed.",
+  "lifecycleRecord": "The row format of register 1.1.0 equals 1.0.0 (plus the adjudication column), so the lifecycle record keeps schemaVersion 'v13-delisted-register-1.0.0' (record schema) and the unchanged V13 terminal logic (scripts/quant/v13/studies/lib.cjs#terminalClassOf, terminal scenarios) applies; 1.1.0 docs additionally carry registerVersion '1.1.0', registerSchemaVersion 'v13-delisted-register-1.1.0', registryHash = SHA-256 of register 1.1.0 and the warning V13B_REGISTER_1_1_0."
+ },
+ "populations": {
+  "F0": "Cited unchanged from V13 (V10 lifecycle frame, 4,329 listings; s1-signal-1.0.0.json / s2-population-1.0.0.json). Not recomputed.",
+  "F1prime": "Primary population of THIS study: F0 plus the QUALIFIED chains of register 1.1.0 (1,688 = the 1,675 of register 1.0.0 + the 13 new) that pass the unchanged registered V13 frame rule (lib.cjs#mergeFrame without relabel: every weekly label equals F0's modal label of its ISO week; MIC in XNAS/XNYS/XASE). Expected: the 390 V13 F1 chains plus those of the 13 that pass (0..13; not known at registration).",
+  "F1wPrime": "Sensitivity, rule exactly as V13 amendment 1.0.1 D1 (last-bar relabel), on the 1,688 chains.",
+  "F1dPrime": "Sensitivity, rule exactly as V13b registration 2.0.0 populations.F1d (drop the non-modal last bar, then the unchanged registered frame rule; chains with < 2 bars excluded and counted), on the 1,688 chains.",
+  "notRun": "F1c' (PRICE_ONLY sensitivity) is not run: the PRICE_ONLY set is unchanged in register 1.1.0 and the owner decision names F1w/F1d as the sensitivities. CA_UNRESOLVED (196), PRICE_ONLY and all other register statuses stay excluded.",
+  "zeroAdditionCase": "If a frame adds none of the 13 new chains, it is still run in full; its results must then equal the cited V13/V13b counterpart (reported as reproduction, delta 0)."
+ },
+ "studies": {
+  "S1_signal": "Unchanged V10 signal study (scripts/quant/v10/studies/signal-study.cjs: five rules, horizons 4/13/26/52, endpoints RAW_NET/SPY_EXCESS/BASE_RATE_EXCESS, V10 base cost 10 + 5 bp per side, SPY price-return benchmark same dates, circular block bootstrap b 52 / b 104 for h 52, 1,999 replicates, seed 1729, 100,000-row subsample rule, window 2000-01-01..2025-12-31, subperiods as V10) plus the unchanged V13 terminal-resolved variant (scripts/quant/v13/studies/run-frame.cjs#s1Terminal, amendment 1.0.1 O1-O4, scenarios MERGER 0/-10/+10 %, DISTRESS/UNKNOWN 0/-30/-100 %, scenario 0 = point estimate) on F1', F1w', F1d'. Funded long-only portfolio of signal-study.cjs reported descriptively.",
+  "S2_population": "Unchanged V13 O5 definitions (run-frame.cjs#s2Population: buy-and-hold V11 P_t for h 4/13/26/52 in V10_COMPLETED_ONLY and TERMINAL_S0..S2; weekly-rebalanced EW index CAGR per period vs SPY price CAGR; delisted-subset lifetime price vs total return) on F1', F1w', F1d'.",
+  "S3prime_P5A": "PRIMARY S3': V12 REQUAL P5a 1.1.0 (unchanged code: p5a-population.cjs frameContext/computePeriods/aggregate, lib.makePopulation, span 2009-09-30..2026-06-30, scenarios ZERO/LOWER/FATE/UPPER, takeover premium unchanged) with (step A) the unchanged V13 O6 replacement of BOUNDED_EXIT* members by QUALIFIED delisted chains, now from register 1.1.0 (same CIK, lastTradeDate in [t0, t1+120d], bar within 7 days at/before t0, chain with last trade closest to t1, V12 seriesReturn, terminal scenario S0/S1/S2 if the series ended before t1), then (step B) every member that is still BOUNDED_EXIT* and matches a usable SPX terminal value gets that documented return in all four P5a scenarios. Usable SPX terminal value = row of spx-terminal-register-1.0.0 with status TERMINAL_CASH, TERMINAL_STOCK or TERMINAL_MIXED, not keyHash16 747c456cff6e81ac (First Data 2006) and not flagged in spx-terminal-review-1.0.0 register_1.0.0 (28 values). Return = the register field 'return' ((cash + ratio x acquirer price at t1) / p0 - 1, rules 1.0.0). Matching: same t0, population chain keyHash (first 16 hex) = keyHash16, same CIK, |weight - register weight| <= 5e-9, member status BOUNDED_EXIT*; exactly one member or the run fails closed. Precedence: a member replaced in step A keeps the series return; a usable terminal value on such a member is counted as CONFLICT_SERIES_FIRST and not applied. Everything else stays bounded exactly as before (ZERO 0 %, LOWER -100 %, FATE/UPPER as V12). Expected in span: the 4 values with t0 2009-09-30 (Black & Decker, IMS Health, Sun Microsystems, Wyeth); the other 24 lie before the P5a span.",
+  "S3prime_EARLY": "SECONDARY, descriptive: the identical computation on the SPY periods before the P5a span, 1995-12-31..2009-09-30 (14 annual periods: population PIT_SP500 2004-09-30..2008-09-30 and PIT_SP500_EARLY 1995-12-31..2004-09-30 of SPXPOP 1.1.1). All 14 periods are NOT_QUALIFIED in SPXPOP (coverage/error), so their LEVELS are not interpreted; only the deltas caused by the documented values (and by delisted chains, step A) are read. Member scenario logic = lib.makePopulation#members verbatim, parametrised only by the population id (tested: identical output on PIT_SP500 periods); takeover premium for FATE/UPPER = the unchanged V12 premium (P5a span). The SPXPOP diagnostic error (errorPp, tolerancePp) of each period is reported beside. No inference (no NW p-values, no tests) for EARLY."
+ },
+ "outputs": {
+  "O1_S1_cells": "All 60 cells (5 rules x 4 horizons x 3 endpoints) for F1', F1w', F1d' in V10 semantics and terminal S0 (n, estimate, CI, p, Holm-adjusted p, decision), plus the terminal band (S1/S2 estimates). Side by side with the cited V13 F0, F1, F1w and V13b F1d values.",
+  "O2_S1_deltas": "Per cell and variant: F1' - F1(V13), F1w' - F1w(V13), F1d' - F1d(V13b) = effect of the 13 new chains under each end-of-series rule; and F1' - F0(V13). Plus per frame: number of the 13 new chains added (by terminal class) and the number of events of new chains per cell (V10 observed, terminal-resolved). Descriptive, no test.",
+  "O3_S2": "Buy-and-hold (all horizons, variants) and weekly-rebalanced EW CAGR per period for F1', F1w', F1d', with deltas against the cited V13/V13b values.",
+  "O4_funded": "Funded strategy per frame (universe, delisted in universe, CAGR, excess CAGR, Holm-adjusted p of the 3-strategy family), descriptive only.",
+  "O5_S3prime_P5A": "Aggregates (EW_ALL, CW_ALL, EW_WITH_H, EW_WITHOUT_H, SPY, SPY_TR, EW_FRAME; terms survivorshipInIndex, equalWeightInIndex, frameMinusSpy) for all four P5a scenarios x delisted terminal scenarios S0/S1/S2, full span and from 2013-03-31 (rule 1.0.1 span), in three stages: V13 (register 1.0.0, must reproduce the committed s3-spx-exits-1.0.0.json), +A (register 1.1.0 chains), +B (SPX terminal values). Replaced rows listed (t0, CIK, kind, prior status/fate, weight, before, after).",
+  "O6_S3prime_EARLY": "Per period and for the chain-linked 1995-12..2009-09 span: bounded weight before/after, EW_ALL and CW_ALL per scenario ZERO/LOWER/FATE/UPPER before (V12 bounds only), after A, after B; survivorship term EW_WITH_H - EW_ALL; SPXPOP errorPp/tolerancePp. Rows replaced listed."
+ },
+ "decomposition": {
+  "S1_S2": "Delta vs V13/V13b counterpart = effect of the new chains only (everything else identical by construction; verified by reproduction checks R2). Reported per frame variant, so the end-of-series rule effect stays visible.",
+  "S3": "Delta S3'(+A+B) - V13 S3 = [A: register 1.1.0 chains] + [B: SPX terminal values], computed in this fixed order; for EARLY: delta = [A] + [B] against the V12-bounds-only baseline of the same periods."
+ },
+ "multipleTesting": {
+  "families": "Six Holm families of 60, one per frame and variant: F1'-V10, F1'-S0, F1w'-V10, F1w'-S0, F1d'-V10, F1d'-S0 (same construction as V10/V13). Funded strategy: the V10 family of 3 per frame, descriptive. S3' P5A: V12 Newey-West p of the period terms reported descriptively without Holm (as V12/V13). S3' EARLY: no test.",
+  "noOtherTests": "No test on deltas between frames or stages, no pooling, no new statistic, no variant search, no new rule, parameter, horizon, cost level, benchmark or period beyond the pre-span EARLY periods named here.",
+  "holmChangeCount": "Per frame and variant, cells whose Holm decision differs from the cited V13/V13b counterpart are counted and listed (descriptive)."
+ },
+ "reproductionChecks": {
+  "R1_loader_default": "Default loader output byte-identical to the pre-V13c module (pinned hashes).",
+  "R2_frames": "Each frame of this study is also built with register 1.0.0 using the same code path; its manifest hash must equal the V13/V13b manifest (F1 f7d13db0900757050b8025a8c0e8e546dbe9d43618e6856a393c6144e9caa478, F1w 066505661d92b62c6e5a4d0fe788c9629d5abde051c54f5309365016d64335f3, F1d c0d86f8319b65d99572a3ddb8912d0ba71f1fb128aec68774b9e8c882af44bf0), and the 1.1.0 frame's added set minus the new chains must equal the 1.0.0 frame's added set.",
+  "R3_S3": "Stage V13 of S3' must reproduce the committed V13 s3-spx-exits-1.0.0.json replacedRows and aggregates exactly (runtime field excepted)."
+ },
+ "verification": "Independent stdlib Python check (python3 -I, scripts/quant/v13c/verify_v13c.py; reuses the V13 Python verifier and the V10 Python reference by path for rules, state rule, bootstrap and Holm): register-1.1.0 binding of all loaded series, frame rules and counts of F1'/F1w'/F1d', all S1 cells (both variants, all scenarios), p-values and Holm of all six families, S2, the S3' step-A replacements, the step-B matching and returns, and the per-period EW_ALL/CW_ALL deltas of step B recomputed from the SPXPOP population file.",
+ "deviationPolicy": "The study runs exactly as registered. Any deviation (code error, count mismatch, fail-closed stop, runtime failure) is written as a versioned amendment (study-amendment-3.0.x.json + .sha256, own commit) BEFORE the affected run is repeated, and reported next to the result. No rule is changed after seeing results.",
+ "publication": "Only aggregate statistics in docs/quant-recovery/v13c/ (cell means, counts, p-values, index aggregates, replaced-row returns rounded to 4 decimals as in V13 S3). Private series, events and runs stay in the scratchpad (v13c-private); no copies of the V13 private data.",
+ "files": {
+  "results": ["s1-signal-3.0.0.json", "s2-population-3.0.0.json", "s3-spx-3.0.0.json", "python-check-3.0.0.json", "README.md"],
+  "code": "scripts/quant/v13c/ (lib.cjs, run-frame.cjs, run-s3.cjs, assemble.cjs, verify_v13c.py)",
+  "tests": "quant/tests/v13c-study.test.mjs"
+ }
+}

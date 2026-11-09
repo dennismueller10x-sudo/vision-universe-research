@@ -346,6 +346,13 @@
     if (t === 'SUCHE') return { view: 'home', focus: 'suche' };
     // Fundamental 2.0: Ranglisten und Branchen der Startseite (zweiteilig, damit core/stock-context.js sie nicht als Aktie liest)
     var parts = h.split('?')[0].split('/').map(function (x) { try { return decodeURIComponent(x); } catch (e) { return ''; } });
+    // Redesign 2027: Leistenplaetze Ranglisten (Reiter Auswahlen: #/ranglisten/auswahlen/<auswahl>) und Branchen
+    if (t === 'RANGLISTEN') {
+      var rl = { view: 'home', focus: 'ranglisten' };
+      if (parts[1] === 'auswahlen') { rl.tab = 'auswahlen'; if (/^[a-z0-9-]{3,40}$/.test(parts[2] || '')) rl.row = parts[2]; }
+      return rl;
+    }
+    if (t === 'BRANCHEN') return { view: 'home', focus: 'branchen' };
     if (t === 'RANGLISTE') return /^[a-z]{3,20}$/.test(parts[1] || '') ? { view: 'ranking', id: parts[1] } : { view: 'home', focus: 'entdecken' };
     if (t === 'BRANCHE') return /^\d{2}$/.test(parts[1] || '') ? { view: 'industry', id: parts[1] } : { view: 'home', focus: 'entdecken' };
     if (!validTicker(t)) return { view: 'home', invalid: true };
@@ -360,6 +367,8 @@
       // Kennzahl-Detail: weitere Kennzahlen im selben Verlauf (&plus=a.b.c) und Darstellung (&d=achsen|index|getrennt)
       else if (k === 'plus' && /^[a-z0-9_]{2,40}(\.[a-z0-9_]{2,40}){0,5}$/.test(v)) out.plus = v.split('.');
       else if (k === 'd' && /^(achsen|index|getrennt)$/.test(v)) out.dmode = v;
+      // Kennzahl-Detail: weitere Firmen im selben Verlauf (&mit=AMD.AVGO, bis 3 neben der eigenen)
+      else if (k === 'mit' && /^[A-Za-z0-9.-]{1,12}(~[A-Za-z0-9.-]{1,12}){0,2}$/.test(v)) out.firms = v.split('~').map(normTicker).filter(validTicker);
     });
     return out;
   }

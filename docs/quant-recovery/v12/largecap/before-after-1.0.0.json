@@ -1,0 +1,687 @@
+{
+ "schemaVersion": "v12-largecap-before-after-1.0.0",
+ "protocol": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "loaderSha256": "54ee465fba418a3b9e4a5538cfb9b802d3652b02c87a89179d781e24cff7356d",
+ "identityRegistrySha256": "599c4df0552c1f19169ed6685f60543b800a14a461c8ccdb7a319398a5075fc3",
+ "optionSets": {
+  "base3": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true
+  },
+  "v10": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true,
+   "identityEvidenceProtocolV10": true
+  },
+  "v12": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true,
+   "identityEvidenceProtocolV10": true,
+   "identityEvidenceProtocolV12": true
+  }
+ },
+ "files": 6190,
+ "qualified": {
+  "base3": 4526,
+  "v10": 4583,
+  "v12": 4588
+ },
+ "reasons": {
+  "base3": {
+   "QUALIFIED": 4526,
+   "INSUFFICIENT_HISTORY": 473,
+   "CORPORATE_ACTION_UNRESOLVED": 582,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "MISSING_WEEKS": 129,
+   "AMBIGUOUS_LISTING_IDENTITY": 180,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+  },
+  "v10": {
+   "QUALIFIED": 4583,
+   "INSUFFICIENT_HISTORY": 475,
+   "CORPORATE_ACTION_UNRESOLVED": 585,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "MISSING_WEEKS": 129,
+   "AMBIGUOUS_LISTING_IDENTITY": 118,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+  },
+  "v12": {
+   "QUALIFIED": 4588,
+   "INSUFFICIENT_HISTORY": 475,
+   "CORPORATE_ACTION_UNRESOLVED": 581,
+   "INELIGIBLE_EQUITY_LISTING": 295,
+   "MISSING_WEEKS": 129,
+   "AMBIGUOUS_LISTING_IDENTITY": 117,
+   "LISTING_IDENTITY_MISMATCH": 2,
+   "ORIGINAL_SOURCE_CLASSIFICATION_CONFLICT": 2,
+   "INACTIVE_LISTING_TERMINAL_VALUE_UNVERIFIED": 1
+  }
+ },
+ "newlyQualified": {
+  "v10_vs_base3": [
+   {
+    "securityId": "ref_ACI",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2022-02-25",
+    "last": "2026-10-23",
+    "bars": 244,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_AERT",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2023-11-17",
+    "last": "2026-10-23",
+    "bars": 154,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_ALTI",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2023-01-06",
+    "last": "2026-10-23",
+    "bars": 199,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_ARRY",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2020-10-16",
+    "last": "2026-10-23",
+    "bars": 315,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_BBAI",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-12-17",
+    "last": "2026-10-23",
+    "bars": 254,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_BEAM",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2020-05-01",
+    "last": "2026-10-23",
+    "bars": 339,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_BHVN",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2022-11-11",
+    "last": "2026-10-23",
+    "bars": 207,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_BNL",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-03-26",
+    "last": "2026-10-23",
+    "bars": 292,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_BOLT",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2023-12-15",
+    "last": "2026-10-23",
+    "bars": 150,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_BTDR",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2023-11-17",
+    "last": "2026-10-23",
+    "bars": 154,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_BUR",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-01-05",
+    "last": "2026-10-23",
+    "bars": 147,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_CHRD",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2022-07-08",
+    "last": "2026-10-23",
+    "bars": 225,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_CNH",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-05-31",
+    "last": "2026-10-23",
+    "bars": 126,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_CNR",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2025-01-17",
+    "last": "2026-10-23",
+    "bars": 93,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_COCO",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-10-22",
+    "last": "2026-10-23",
+    "bars": 262,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_COGT",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-12-31",
+    "last": "2026-10-23",
+    "bars": 252,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_CRC",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2023-09-15",
+    "last": "2026-10-23",
+    "bars": 163,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_CSR",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-01-08",
+    "last": "2026-10-23",
+    "bars": 303,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_CWBC",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-04-05",
+    "last": "2026-10-23",
+    "bars": 134,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_CZR",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2020-07-24",
+    "last": "2026-10-23",
+    "bars": 327,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_DERM",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-11-12",
+    "last": "2026-10-23",
+    "bars": 259,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_DOW",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-07-12",
+    "last": "2026-10-23",
+    "bars": 120,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_EE",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2022-04-14",
+    "last": "2026-10-23",
+    "bars": 237,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_ESI",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2019-03-01",
+    "last": "2026-10-23",
+    "bars": 400,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_EVER",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2018-06-29",
+    "last": "2026-10-23",
+    "bars": 435,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_FBRT",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-10-22",
+    "last": "2026-10-23",
+    "bars": 262,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_FRSH",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-09-24",
+    "last": "2026-10-23",
+    "bars": 266,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_FSBC",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-05-07",
+    "last": "2026-10-23",
+    "bars": 286,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_HCC",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2017-07-07",
+    "last": "2026-10-23",
+    "bars": 486,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_HR",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2022-12-30",
+    "last": "2026-10-23",
+    "bars": 200,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_IMCC",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-01-05",
+    "last": "2026-10-23",
+    "bars": 147,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_INM",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-10-04",
+    "last": "2026-10-23",
+    "bars": 108,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_IOT",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-12-17",
+    "last": "2026-10-23",
+    "bars": 254,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_LAB",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2022-04-08",
+    "last": "2026-10-23",
+    "bars": 238,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_MIR",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-10-29",
+    "last": "2026-10-23",
+    "bars": 261,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_MOVE",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-05-03",
+    "last": "2026-10-23",
+    "bars": 130,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_MRNA",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2019-01-04",
+    "last": "2026-10-23",
+    "bars": 408,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_MXCT",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-01-05",
+    "last": "2026-10-23",
+    "bars": 147,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_NMIH",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2014-01-03",
+    "last": "2026-10-23",
+    "bars": 669,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_OPEN",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-03-05",
+    "last": "2026-10-23",
+    "bars": 295,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_PAY",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-01-05",
+    "last": "2026-10-23",
+    "bars": 147,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_PD",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2019-07-05",
+    "last": "2026-10-23",
+    "bars": 382,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_PPTA",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-02-19",
+    "last": "2026-10-23",
+    "bars": 297,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_RELY",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-09-24",
+    "last": "2026-10-23",
+    "bars": 266,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_RENT",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-05-24",
+    "last": "2026-10-23",
+    "bars": 127,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_RPRX",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2020-06-19",
+    "last": "2026-10-23",
+    "bars": 332,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_S",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-10-18",
+    "last": "2026-10-23",
+    "bars": 106,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_SAFE",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2023-04-06",
+    "last": "2026-10-23",
+    "bars": 186,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_SDRL",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-01-05",
+    "last": "2026-10-23",
+    "bars": 147,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_SEVN",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2023-11-03",
+    "last": "2026-10-23",
+    "bars": 156,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_SIRI",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2019-01-04",
+    "last": "2026-10-23",
+    "bars": 408,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_SNOW",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2023-02-03",
+    "last": "2026-10-23",
+    "bars": 195,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_TW",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2020-04-09",
+    "last": "2026-10-23",
+    "bars": 342,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_UK",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2024-01-05",
+    "last": "2026-10-23",
+    "bars": 147,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_UWMC",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2021-03-05",
+    "last": "2026-10-23",
+    "bars": 295,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_VS",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2022-07-01",
+    "last": "2026-10-23",
+    "bars": 226,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   },
+   {
+    "securityId": "ref_WEST",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2022-09-02",
+    "last": "2026-10-23",
+    "bars": 217,
+    "binding": "research-identity-evidence-1.1.0:SELECT_EXISTING_ROW"
+   }
+  ],
+  "v12_vs_v10": [
+   {
+    "securityId": "ref_GOOGL",
+    "before": "CORPORATE_ACTION_UNRESOLVED",
+    "first": "2016-02-12",
+    "last": "2026-10-23",
+    "bars": 559,
+    "binding": "research-identity-evidence-1.2.0:RESTRICT_SINGLE_ROW"
+   },
+   {
+    "securityId": "ref_IEX",
+    "before": "CORPORATE_ACTION_UNRESOLVED",
+    "first": "2019-03-01",
+    "last": "2026-10-23",
+    "bars": 400,
+    "binding": "research-identity-evidence-1.2.0:RESTRICT_SINGLE_ROW"
+   },
+   {
+    "securityId": "ref_JCI",
+    "before": "CORPORATE_ACTION_UNRESOLVED",
+    "first": "2016-12-30",
+    "last": "2026-10-23",
+    "bars": 513,
+    "binding": "research-identity-evidence-1.2.0:RESTRICT_SINGLE_ROW"
+   },
+   {
+    "securityId": "ref_KDP",
+    "before": "CORPORATE_ACTION_UNRESOLVED",
+    "first": "2022-10-28",
+    "last": "2026-10-23",
+    "bars": 209,
+    "binding": "research-identity-evidence-1.2.0:RESTRICT_SINGLE_ROW"
+   },
+   {
+    "securityId": "ref_TEL",
+    "before": "AMBIGUOUS_LISTING_IDENTITY",
+    "first": "2013-11-15",
+    "last": "2026-10-23",
+    "bars": 676,
+    "binding": "research-identity-evidence-1.2.0:SELECT_EXISTING_ROW_BY_KEY"
+   }
+  ]
+ },
+ "lostQualification": {
+  "v10_vs_base3": [],
+  "v12_vs_v10": []
+ },
+ "changedOutputAmongQualified": {
+  "v12_vs_v10": [
+   "ref_DOW"
+  ]
+ },
+ "scope": {
+  "ref_AAPL": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "CORPORATE_ACTION_UNRESOLVED"
+  },
+  "ref_GOOGL": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "QUALIFIED 2016-02-12..2026-10-23 (559 bars)"
+  },
+  "ref_ABT": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "CORPORATE_ACTION_UNRESOLVED"
+  },
+  "ref_MS": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "CORPORATE_ACTION_UNRESOLVED"
+  },
+  "ref_USB": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "CORPORATE_ACTION_UNRESOLVED"
+  },
+  "ref_JCI": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "QUALIFIED 2016-12-30..2026-10-23 (513 bars)"
+  },
+  "ref_WBD": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "CORPORATE_ACTION_UNRESOLVED"
+  },
+  "ref_IFF": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "CORPORATE_ACTION_UNRESOLVED"
+  },
+  "ref_KDP": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "QUALIFIED 2022-10-28..2026-10-23 (209 bars)"
+  },
+  "ref_IEX": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "QUALIFIED 2019-03-01..2026-10-23 (400 bars)"
+  },
+  "ref_PENN": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "CORPORATE_ACTION_UNRESOLVED"
+  },
+  "ref_CPRI": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "CORPORATE_ACTION_UNRESOLVED"
+  },
+  "ref_NKTR": {
+   "base3": "CORPORATE_ACTION_UNRESOLVED",
+   "v10": "CORPORATE_ACTION_UNRESOLVED",
+   "v12": "CORPORATE_ACTION_UNRESOLVED"
+  },
+  "ref_TEL": {
+   "base3": "AMBIGUOUS_LISTING_IDENTITY",
+   "v10": "AMBIGUOUS_LISTING_IDENTITY",
+   "v12": "QUALIFIED 2013-11-15..2026-10-23 (676 bars)"
+  },
+  "ref_DD": {
+   "base3": "AMBIGUOUS_LISTING_IDENTITY",
+   "v10": "AMBIGUOUS_LISTING_IDENTITY",
+   "v12": "AMBIGUOUS_LISTING_IDENTITY"
+  },
+  "ref_DOW": {
+   "base3": "AMBIGUOUS_LISTING_IDENTITY",
+   "v10": "QUALIFIED 2024-07-12..2026-10-23 (120 bars)",
+   "v12": "QUALIFIED 2024-07-12..2026-10-23 (120 bars)"
+  },
+  "ref_COR": {
+   "base3": "AMBIGUOUS_LISTING_IDENTITY",
+   "v10": "AMBIGUOUS_LISTING_IDENTITY",
+   "v12": "AMBIGUOUS_LISTING_IDENTITY"
+  },
+  "ref_MRNA": {
+   "base3": "AMBIGUOUS_LISTING_IDENTITY",
+   "v10": "QUALIFIED 2019-01-04..2026-10-23 (408 bars)",
+   "v12": "QUALIFIED 2019-01-04..2026-10-23 (408 bars)"
+  },
+  "ref_DOC": {
+   "base3": "AMBIGUOUS_LISTING_IDENTITY",
+   "v10": "AMBIGUOUS_LISTING_IDENTITY",
+   "v12": "AMBIGUOUS_LISTING_IDENTITY"
+  },
+  "ref_CZR": {
+   "base3": "AMBIGUOUS_LISTING_IDENTITY",
+   "v10": "QUALIFIED 2020-07-24..2026-10-23 (327 bars)",
+   "v12": "QUALIFIED 2020-07-24..2026-10-23 (327 bars)"
+  },
+  "ref_ECHO": {
+   "base3": "AMBIGUOUS_LISTING_IDENTITY",
+   "v10": "AMBIGUOUS_LISTING_IDENTITY",
+   "v12": "AMBIGUOUS_LISTING_IDENTITY"
+  }
+ }
+}

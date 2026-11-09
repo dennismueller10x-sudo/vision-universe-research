@@ -11,8 +11,9 @@ import {
   checkStageTransition, loadSf6Readiness, candidateContractSha256,
 } from '../source-faithful/product/candidate-contract.mjs';
 import { CONTRACTS } from '../source-faithful/registry.mjs';
+import { takteVon } from '../../core/schedule-registry.mjs';
 import { contractFingerprint } from '../source-faithful/contract.mjs';
-import { sf8RegistryViolations, SF8_DOMAIN_ID, SF8_DOMAIN_PINNED, SF8_ACTIVATION_STATE, SF8_ACTIVATION_STATES } from '../source-faithful/product/registry-guard.mjs';
+import { sf8RegistryViolations, SF8_DOMAIN_ID, SF8_DOMAIN_PINNED, SF8_ACTIVATION_STATE, SF8_ACTIVATION_STATES, SF8_PRODUCT_REF, PAPER2027_DOMAIN_ID, PAPER2027_DOMAIN_ENTRY, PAPER2027_DOMAIN_SHA256, PAPER2027_LOG_ARTIFACT, PAPER2027_PRODUCER, PAPER2027_WORKFLOW, paper2027EntrySha256 } from '../source-faithful/product/registry-guard.mjs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '..', '..', '..');
@@ -32,6 +33,11 @@ const has = (res, prefix) => res.errors.some((e) => e.startsWith(prefix));
 const PINNED_CONTRACT_SHA256 = 'ea3e59ae8919dcb75bfa28ce6f618b2d2273a53182d44ae82e7a172ba0f6a9b3';
 
 const SF8_DAILY_WORKFLOW = 'supertrader-sf8-candidates.yml';
+const ALARM_IF = "    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || (github.event_name == 'schedule' || inputs.zeitplan != '') || (inputs.mode == 'auto' && github.ref == 'refs/heads/main'))";
+// Ein Zeitgeber (RUNBOOK §10): der Takt kommt als workflow_dispatch mit Eingang zeitplan vom Cloudflare-Wecker.
+const JOB_IF = "    if: vars.SF8_CANDIDATES_ENABLED == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || vars.SF8_AUTO_PUBLISH == 'true')";
+const EVENT_ENV = "          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}";
+const RUN_NAME = "run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}";
 
 test('SF-PRODUCT-CONTRACT-PINNED: Vertragsdefinition 1.0.0 festgeschrieben, VALIDATED nicht ausgebbar', () => {
   assert.equal(CANDIDATE_CONTRACT_VERSION, '1.0.0');
@@ -257,8 +263,9 @@ test('SF-PRODUCT-NO-RUN-INTEGRATION: kein Workflow, kein Frontend, keine Domain-
   for (const f of fs.readdirSync(wf)) if (f !== SF8_DAILY_WORKFLOW) assert.doesNotMatch(fs.readFileSync(path.join(wf, f), 'utf8'), /candidate-contract|source-faithful\/product/, f);
   const walk = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? (e.name === 'data' ? [] : walk(path.join(d, e.name))) : /\.(m?js|html)$/.test(e.name) ? [path.join(d, e.name)] : []);
   for (const f of walk(path.join(ROOT, 'supertrader'))) assert.doesNotMatch(fs.readFileSync(f, 'utf8'), /candidate-contract|source-faithful\/product/, f);
-  // V2: die Registry darf den Produktpfad nur im einen, festgeschriebenen und abgeschalteten Eintrag nennen
-  // (registry-guard.mjs); Gegenproben in SF8-REGISTRY-GUARD
+  // V2: die Registry darf den Produktpfad nur im einen, festgeschriebenen und abgeschalteten Eintrag nennen, den
+  // Paper-Pfad nur im einen exakt gepinnten Paper-2027-Eintrag (registry-guard.mjs); Gegenproben in SF8-REGISTRY-GUARD
+  // und SF-PAPER2027-REGISTRY-ALLOWANCE
   assert.deepEqual(sf8RegistryViolations(fs.readFileSync(path.join(ROOT, 'core/registry/domains.json'), 'utf8')), []);
 });
 
@@ -277,7 +284,9 @@ test('SF8-REGISTRY-GUARD: genau ein Eintrag, Felder festgeschrieben, Aktivierung
   assert.deepEqual(SF8_ACTIVATION_STATES, ['PREPARED_DISABLED', 'ACTIVATING']);
   assert.deepEqual(sf8RegistryViolations(txt([other, { ...entry, activation: { state: 'ACTIVATING', decision: 'Owner-Freigabe' } }])), [], 'freigegeben für die erste Veröffentlichung');
   for (const state of ['ACTIVE', 'activating', 'ENABLED', '', null]) assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: { state } }])).includes('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED'), String(state));
-  assert.ok(sf8RegistryViolations(txt([{ ...entry, activation: undefined }])).includes('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED'), 'Dauerbetrieb ohne Feld braucht eine eigene Freigabe');
+  // Dauerbetrieb (V6 e): ohne Feld zulässig; ein vorhandenes, leeres oder unbekanntes Feld nicht
+  assert.deepEqual(sf8RegistryViolations(txt([other, { ...SF8_DOMAIN_PINNED, label: 'x' }])), [], 'Dauerbetrieb ohne activation');
+  for (const activation of [null, {}, { state: undefined }, 'ACTIVATING']) assert.ok(sf8RegistryViolations(txt([{ ...entry, activation }])).includes('SF8_DOMAIN_ACTIVATION_NOT_ALLOWED'), JSON.stringify(activation));
   assert.ok(sf8RegistryViolations(txt([{ ...other, consumers: ['scripts/supertrader/source-faithful/product/x.mjs'] }, entry])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
   assert.ok(sf8RegistryViolations(txt([{ ...other, artifact: '/supertrader/data/sf-candidates/index.json' }])).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'));
   assert.ok(sf8RegistryViolations(txt([entry], { note: 'candidate-contract' })).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), 'auch der Kopf');
@@ -293,36 +302,176 @@ test('SF8-REGISTRY-GUARD: genau ein Eintrag, Felder festgeschrieben, Aktivierung
 });
 
 
-test('SF8-DAILY-DISABLED: Tageslauf ohne Zeitplan, nur mit Repository-Variable, Eingangsprüfung und ADR-005', () => {
+test('SF-PAPER2027-REGISTRY-ALLOWANCE: genau ein exakt gepinnter Eintrag fuer das Paper-Test-Protokoll 2027 (Owner-Freigabe Option A, Gegenproben)', () => {
+  const E = () => JSON.parse(JSON.stringify(PAPER2027_DOMAIN_ENTRY));
+  const sf8 = { ...SF8_DOMAIN_PINNED, label: 'x', activation: { state: SF8_ACTIVATION_STATE } };
+  const other = { id: 'supertrader', artifact: '/supertrader/data/signals.json', producer: 'scripts/supertrader/build.mjs' };
+  const txt = (domains, extra = {}) => JSON.stringify({ ...extra, domains });
+  const bad = (domains, code, msg) => assert.ok(sf8RegistryViolations(txt(domains)).includes(code), `${msg}: ${code} erwartet, ${JSON.stringify(sf8RegistryViolations(txt(domains)))}`);
+  // der Pin: Schluessel, Pfade, Erzeuger, Workflow und der Hash des ganzen Eintrags, doppelt festgeschrieben
+  assert.equal(PAPER2027_DOMAIN_ID, 'supertrader-paper-2027-log');
+  assert.equal(PAPER2027_LOG_ARTIFACT, '/scripts/supertrader/source-faithful/paper/log/SF6-PAPER-2027.jsonl');
+  assert.equal(PAPER2027_PRODUCER, 'scripts/supertrader/source-faithful/paper/run-paper-2027.mjs record');
+  assert.equal(PAPER2027_WORKFLOW, 'supertrader-paper-2027.yml');
+  assert.equal(PAPER2027_DOMAIN_SHA256, '4039aa836a6de27e6589f8ed32db34f6845aaa8cef9ea207183918818dae753a');
+  assert.equal(paper2027EntrySha256(PAPER2027_DOMAIN_ENTRY), PAPER2027_DOMAIN_SHA256, 'Eintrag und Pin stimmen ueberein');
+  assert.ok(Object.isFrozen(PAPER2027_DOMAIN_ENTRY) && Object.isFrozen(PAPER2027_DOMAIN_ENTRY.activation) && Object.isFrozen(PAPER2027_DOMAIN_ENTRY.consumers));
+  assert.deepEqual([PAPER2027_DOMAIN_ENTRY.id, PAPER2027_DOMAIN_ENTRY.artifact, PAPER2027_DOMAIN_ENTRY.producer, PAPER2027_DOMAIN_ENTRY.workflow], [PAPER2027_DOMAIN_ID, PAPER2027_LOG_ARTIFACT, PAPER2027_PRODUCER, PAPER2027_WORKFLOW]);
+  assert.equal(PAPER2027_DOMAIN_ENTRY.activation.state, 'PREPARED_DISABLED');
+  assert.equal(PAPER2027_DOMAIN_ENTRY.critical, false);
+  // der gepinnte Inhalt nennt nur den Paper-Pfad: kein Produktpfad, kein Kandidatenvertrag, kein Completion- oder Signalmodul
+  for (const x of JSON.stringify(PAPER2027_DOMAIN_ENTRY).match(/source-faithful\/[\w./-]*/gi) ?? []) assert.match(x, /^source-faithful\/paper\//, x);
+  assert.doesNotMatch(JSON.stringify(PAPER2027_DOMAIN_ENTRY), /candidate-contract|supertraderCandidates|sf-candidates|research-signal\.mjs|completion\/|source-faithful\/product/i);
+  // zulaessig: der Eintrag allein, neben dem SF8-Eintrag, in beliebiger Reihenfolge und Schluesselreihenfolge
+  assert.deepEqual(sf8RegistryViolations(txt([other, E()])), [], 'der gepinnte Eintrag ist zulaessig');
+  assert.deepEqual(sf8RegistryViolations(txt([E(), sf8, other])), [], 'neben dem SF8-Eintrag zulaessig');
+  const reordered = Object.fromEntries(Object.entries(E()).reverse());
+  assert.deepEqual(sf8RegistryViolations(txt([other, sf8, reordered])), [], 'Schluesselreihenfolge ist kein Inhalt');
+  const real = JSON.parse(fs.readFileSync(path.join(ROOT, 'core/registry/domains.json'), 'utf8'));
+  if (!real.domains.some((d) => d.id === PAPER2027_DOMAIN_ID)) real.domains.push(E());
+  assert.deepEqual(sf8RegistryViolations(JSON.stringify(real, null, 2)), [], 'die echte Registry mit dem Eintrag');
+  // jede Aenderung eines Felds (Wert, Typ), jedes fehlende und jedes zusaetzliche Feld: nicht mehr gepinnt
+  for (const k of Object.keys(PAPER2027_DOMAIN_ENTRY).filter((k) => k !== 'id')) {
+    const v = PAPER2027_DOMAIN_ENTRY[k];
+    const changed = typeof v === 'string' ? v + ' ' : typeof v === 'boolean' ? !v : v === null ? 'counts' : Array.isArray(v) ? [...v, 'x'] : { ...v, extra: 1 };
+    bad([other, { ...E(), [k]: changed }], 'PAPER2027_DOMAIN_NOT_PINNED', `Feld ${k} geaendert`);
+    const { [k]: _drop, ...without } = E(); void _drop;
+    bad([other, without], 'PAPER2027_DOMAIN_NOT_PINNED', `Feld ${k} fehlt`);
+  }
+  bad([other, { ...E(), extra: 1 }], 'PAPER2027_DOMAIN_NOT_PINNED', 'zusaetzliches Feld');
+  bad([other, { ...E(), pendingWorkflow: 'PR #1268' }], 'PAPER2027_DOMAIN_NOT_PINNED', 'zusaetzliches Feld pendingWorkflow');
+  // gezielt: Pfad, Erzeuger, Workflow, Aktivierungszustand, Entscheidungstext, kritisch
+  for (const [k, v] of [['artifact', '/scripts/supertrader/source-faithful/paper/log/'], ['artifact', '/scripts/supertrader/source-faithful/product/x.jsonl'], ['producer', 'scripts/supertrader/source-faithful/paper/run-paper-2027.mjs'], ['producer', 'scripts/supertrader/source-faithful/paper/forward-log.mjs record'], ['workflow', 'supertrader-validation.yml']]) {
+    bad([other, { ...E(), [k]: v }], 'PAPER2027_DOMAIN_NOT_PINNED', `${k}=${v}`);
+    bad([other, { ...E(), [k]: v }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', `${k}=${v}`);
+  }
+  for (const activation of [{ ...E().activation, state: 'ACTIVATING' }, { state: 'PREPARED_DISABLED' }, { ...E().activation, decision: E().activation.decision + '.' }, undefined]) {
+    const d = E(); if (activation === undefined) delete d.activation; else d.activation = activation;
+    bad([other, d], 'PAPER2027_DOMAIN_NOT_PINNED', `activation ${JSON.stringify(activation)}`);
+  }
+  bad([other, { ...E(), critical: true }], 'PAPER2027_DOMAIN_NOT_PINNED', 'critical');
+  // ein zweites Exemplar, ein zweiter Eintrag mit Bezug zu source-faithful/ unter anderem Schluessel, ein Verweis woanders
+  bad([other, E(), E()], 'PAPER2027_DOMAIN_DUPLICATE', 'zweites Exemplar');
+  bad([other, E(), E()], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'zweites Exemplar bleibt ein Verweis');
+  bad([other, E(), { ...E(), id: 'supertrader-paper-2027-log-2' }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'gleicher Inhalt, anderer Schluessel');
+  bad([other, { ...E(), id: 'supertrader-paper-2028-log' }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'anderer Schluessel allein');
+  bad([E(), { ...other, consumers: [PAPER2027_LOG_ARTIFACT] }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'Paper-Pfad in einem anderen Eintrag');
+  bad([E(), { ...other, producer: 'scripts/supertrader/source-faithful/paper/run-paper-2027.mjs record' }], 'SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN', 'Paper-Erzeuger in einem anderen Eintrag');
+  assert.ok(sf8RegistryViolations(txt([E()], { note: 'source-faithful/paper/log' })).includes('SF8_PRODUCT_REF_OUTSIDE_OWN_DOMAIN'), 'auch der Kopf');
+  // die SF8-Ausnahme bleibt unveraendert streng, auch neben dem Paper-Eintrag
+  bad([E(), { ...sf8, producer: 'anders' }], 'SF8_DOMAIN_FIELD:producer', 'SF8 geaendert');
+  bad([E(), { ...sf8, extra: 1 }], 'SF8_DOMAIN_UNKNOWN_FIELD:extra', 'SF8 mit Zusatzfeld');
+  bad([E(), sf8, sf8], 'SF8_DOMAIN_DUPLICATE', 'SF8 doppelt');
+  bad([E(), { ...sf8, consumers: [PAPER2027_LOG_ARTIFACT] }], 'SF8_DOMAIN_REF_IN:consumers', 'Paper-Pfad im SF8-Eintrag');
+  // das SF8-Muster allein erkennt den Paper-Pfad weiterhin als Verweis (die Ausnahme steckt nur im exakten Pin)
+  assert.match(PAPER2027_LOG_ARTIFACT, SF8_PRODUCT_REF);
+  // Abgleich mit dem Erzeuger und dem Workflow, sobald sie im Stand liegen (PR #1268)
+  const wf = path.join(ROOT, '.github/workflows', PAPER2027_WORKFLOW);
+  if (fs.existsSync(wf)) {
+    const y = fs.readFileSync(wf, 'utf8');
+    assert.ok(y.includes(PAPER2027_LOG_ARTIFACT.slice(1)), 'Workflow schreibt genau das registrierte Protokoll');
+    const takte = takteVon(PAPER2027_WORKFLOW);
+    for (const cron of ['37 2 * * 2-6', '41 9 * * 2-6']) assert.ok(takte.includes(cron), cron);
+    assert.ok(fs.existsSync(path.join(ROOT, PAPER2027_PRODUCER.split(' ')[0])), 'Erzeuger existiert');
+  }
+});
+
+test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nach Vertrag, Eingangsprüfung und ADR-005', () => {
   const p = path.join(ROOT, '.github/workflows', SF8_DAILY_WORKFLOW);
   if (!fs.existsSync(p)) return;
   const y = fs.readFileSync(p, 'utf8');
   const code = y.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n');
-  assert.doesNotMatch(code, /^\s*(schedule|cron|push|pull_request|workflow_run)\s*:/m, 'kein automatischer Auslöser');
+  // Auslöser: workflow_dispatch, Takt Di–Sa aus dem Register (Wecker); nie push, pull_request oder workflow_run
+  assert.doesNotMatch(code, /^\s*(push|pull_request|pull_request_target|workflow_run|repository_dispatch)\s*:/m, 'kein weiterer automatischer Auslöser');
+  const takte = takteVon(SF8_DAILY_WORKFLOW);
+  assert.equal(takte.length, 1, 'genau ein Zeitplan');
+  assert.match(takte[0], /^\d+ \d+ \* \* 2-6$/, 'Di–Sa');
   assert.match(code, /^on:\n\s+workflow_dispatch:/m);
-  assert.match(code, /^\s+if: vars\.SF8_CANDIDATES_ENABLED == 'true'$/m, 'Job nur mit freigeschalteter Variable');
+  assert.equal((code.match(/cron:/g) || []).length, 0, 'kein GitHub-Cron neben dem Wecker');
+  // beide Schalter: ohne SF8_CANDIDATES_ENABLED nie; ohne SF8_AUTO_PUBLISH nur manuell (Zeitplan läuft leer)
+  assert.ok(code.split('\n').includes(JOB_IF), 'Job nur mit freigeschalteten Variablen; der Wecker-Takt zaehlt als Zeitplan');
+  assert.ok(code.split('\n').includes(EVENT_ENV), 'Wecker-Takt heisst im Wegschritt schedule');
+  assert.match(code, /if \[ "\$EVENT" = "schedule" \] \|\| \[ "\$IN_MODE" = "auto" \]; then\n\s+if \[ "\$GITHUB_REF" != "refs\/heads\/main" \]; then [^\n]*exit 1; fi\n\s+if \[ "\$AUTO_SWITCH" != "true" \]; then [^\n]*exit 1; fi/, 'automatisch nur auf main und nur mit SF8_AUTO_PUBLISH');
   assert.match(code, /--require-current "\$heute"/, 'Eingangsprüfung gegen veraltete Eingaben');
+  assert.equal((code.match(/--require-current "\$heute"/g) || []).length, 2, 'auch der zweite Lauf');
   assert.match(code, /ref: \$\{\{ github\.ref \}\}/);
   assert.match(code, /group: supertrader-sf8-candidates-\$\{\{ github\.ref_name \}\}/);
   assert.match(code, /scripts\/ci\/push-with-retry\.sh/);
-  assert.match(code, /if: inputs\.commit == true/, 'Commit nur auf ausdrücklichen Wunsch');
+  // manueller Weg unverändert: Commit nur auf ausdrücklichen Wunsch und nur für den freigegebenen Fingerabdruck
+  assert.match(code, /if: inputs\.commit == true && steps\.mode\.outputs\.auto != 'true'/, 'Commit nur auf ausdrücklichen Wunsch');
   assert.match(code, /domains\.json[^\n]*"supertrader-sf8-candidates"[^\n]*\(!d\.activation \|\| d\.activation\.state==="ACTIVATING"\)[^\n]*\n\s*echo "::error::[^\n]*\n\s*exit 1/, 'Commit nur mit registriertem UND freigegebenem Erzeuger (V2/V6)');
   assert.doesNotMatch(code, /PREPARED_DISABLED"\s*\)?\s*\?\s*0/, 'vorbereitet ist nie freigegeben');
-  // Erste Veröffentlichung (docs/SUPERTRADER_8_FIRST_RELEASE.md): Commit nur für den freigegebenen Stand, Eingabe über env
   assert.match(code, /expected_sha256:\n\s+description: [^\n]+\n\s+type: string\n\s+default: ''/);
   assert.match(code, /EXPECTED_SHA256: \$\{\{ inputs\.expected_sha256 \}\}/);
   assert.match(code, /if \[ -z "\$EXPECTED_SHA256" \] \|\| \[ "\$EXPECTED_SHA256" != "\$ACTUAL_SHA256" \]; then\n[^\n]*\n\s*exit 1/, 'ohne oder mit abweichendem Fingerabdruck kein Commit');
-  assert.deepEqual(code.split('\n').filter((l) => /inputs\./.test(l) && !/^\s+[A-Z_0-9]+: \$\{\{ inputs\.[a-z_0-9]+ \}\}$/.test(l) && !/^\s+if: inputs\.commit == true$/.test(l)), [], 'Eingaben nur über env (ADR-005)');
-  const fpAt = code.indexOf('id: fp');
-  assert.ok(fpAt > code.indexOf('--only=sf8 --sf8-dir="$PUB" --sf8-activated') && fpAt < code.indexOf('if: inputs.commit == true'), 'Fingerabdruck nach DQ, vor dem Commit');
+  assert.deepEqual(code.split('\n').filter((l) => /inputs\./.test(l) && !/^\s+[A-Z_0-9]+: \$\{\{ inputs\.[a-z_0-9]+ \}\}$/.test(l) && !/^\s+if: inputs\.commit == true && steps\.mode\.outputs\.auto != 'true'$/.test(l) && ![ALARM_IF, JOB_IF, EVENT_ENV, RUN_NAME].includes(l)), [], 'Eingaben nur über env (ADR-005)');
+  // automatischer Weg: zweiter Lauf, Vertrag, Commit nur bei PUBLISH; alles nach DQ und Fingerabdruck
+  const at = (s) => code.indexOf(s);
+  const dq = at('--only=sf8 --sf8-dir="$PUB" --sf8-activated'), fpAt = at('id: fp'), re = at('id: rebuild'), ct = at('id: contract');
+  const manual = at("if: inputs.commit == true && steps.mode.outputs.auto != 'true'"), auto = at("if: steps.mode.outputs.auto == 'true' && steps.contract.outputs.decision == 'PUBLISH'");
+  assert.ok(dq > 0 && fpAt > dq && re > fpAt && ct > re && auto > ct && manual > fpAt, 'Reihenfolge DQ → Fingerabdruck → zweiter Lauf → Vertrag → Commit');
+  assert.ok(dq < at('actions/upload-artifact'), 'DQ vor Upload');
+  assert.match(code, /registry=false\n\s+if node -e '[^\n]*"supertrader-sf8-candidates"[^\n]*d\.artifact==="\/supertrader\/data\/sf-candidates\/summary\.json" && !d\.activation \? 0 : 1\)'; then registry=true; fi/, 'automatisch nur im Dauerbetrieb (ohne activation), nie mit ACTIVATING');
+  assert.match(code, /publication-contract\.mjs --next "\$PUB" --prev supertrader\/data\/sf-candidates[^\n]*\\\n\s+--fingerprint "\$FP" --rebuild-fingerprint "\$FP2" --dq "\$REPORT" --registry-ok "\$registry"/, 'Vertrag mit beiden Fingerabdrücken, DQ und Registry');
+  assert.equal((code.match(/rm -rf "\$ziel"/g) || []).length, 2); assert.equal((code.match(/cp -r "\$PUB\/\." "\$ziel\/"/g) || []).length, 2, 'committet wird genau das geprüfte Ergebnis');
+  const autoBlock = code.slice(auto, code.indexOf('\n  alarm:'));
+  assert.match(autoBlock, /if \[ "\$GITHUB_REF" != "refs\/heads\/main" \]; then echo "::error::automatischer Commit nur auf main"; exit 1; fi/);
+  assert.match(autoBlock, /SF8-Contract: /, 'Nachweis als Trailer');
+  // SF8-Code-Commit nennt den ausgecheckten Stand (Code und Eingaben), nicht GITHUB_SHA des Ausloesers
+  assert.match(code, /code_commit="\$\(git rev-parse HEAD\)"\n[\s\S]*?--code-commit "\$code_commit"/, 'SF8-Code-Commit = ausgecheckter HEAD');
+  assert.doesNotMatch(code, /--code-commit "\$GITHUB_SHA"/, 'GITHUB_SHA kann aelter sein als der Checkout');
   // V3: das Laufergebnis besteht DQ-SF8-1..8 vor Upload und Commit; fehlende Regeln sind rot, nicht still grün
-  const dq = code.indexOf('--only=sf8 --sf8-dir="$PUB" --sf8-activated');
-  assert.ok(dq > 0, 'DQ-SF8 auf dem Laufergebnis');
-  assert.ok(dq < code.indexOf('actions/upload-artifact') && dq < code.indexOf('if: inputs.commit == true'), 'DQ vor Upload und Commit');
   assert.match(code, /sf8\.length !== 8\)[^\n]*process\.exit\(1\)/, 'fehlende Regeln sind rot');
   assert.match(code, /x\.status !== "PASS" \|\| x\.checked === 0/, 'jede Regel muss geprüft und bestanden sein');
-  assert.match(code, /cp -r "\$PUB\/\." "\$ziel\/"/, 'committet wird genau das geprüfte Ergebnis');
   for (const block of code.split(/\n\s+run: \|/).slice(1)) assert.doesNotMatch(block.split(/\n\s+- (name|uses):/)[0], /\$\{\{\s*(inputs|github\.event)\./, 'Eingaben nur über env:');
   assert.doesNotMatch(code, /secrets\./, 'keine Secrets, keine Anbieter');
   assert.doesNotMatch(code, /cp[^\n]*records/, 'Vertragsdatensätze nur als CI-Artefakt');
+  // Alarm für rote automatische Läufe
+  assert.ok(code.includes('\n  alarm:\n    needs: candidates\n' + ALARM_IF + '\n'), 'Alarm-Bedingung (Ausdruck, kein Shell-Text)');
+  assert.match(code, /ALARM_SOURCE: supertrader-sf8-candidates[\s\S]*node scripts\/ci\/pipeline-alarm\.mjs/);
+  // Anstoß nach der Nachtkette: nur aus supertrader-signals.yml, nur mit beiden Schaltern, nur main, eigener Job
+  const sig = fs.readFileSync(path.join(ROOT, '.github/workflows/supertrader-signals.yml'), 'utf8');
+  assert.match(sig, /\n  sf8:\n\s+needs: signals\n\s+if: >-\n\s+always\(\) && github\.ref == 'refs\/heads\/main' && \(inputs\.mode \|\| 'build'\) == 'build' &&\n\s+vars\.SF8_CANDIDATES_ENABLED == 'true' && vars\.SF8_AUTO_PUBLISH == 'true'\n/);
+  assert.match(sig, /gh workflow run supertrader-sf8-candidates\.yml --repo "\$GITHUB_REPOSITORY" --ref main -f mode=auto/);
+  for (const f of fs.readdirSync(path.join(ROOT, '.github/workflows'))) if (!['supertrader-signals.yml', SF8_DAILY_WORKFLOW].includes(f)) assert.doesNotMatch(fs.readFileSync(path.join(ROOT, '.github/workflows', f), 'utf8'), /supertrader-sf8-candidates\.yml/, `kein weiterer Anstoß: ${f}`);
+});
+
+// Betriebsaudit 01.11.2026: Scheitert der Job vor dem Schritt `mode` (Checkout, Node, Wegbestimmung, Abbruch), ist
+// outputs.auto leer. Der Anstoß aus supertrader-signals.yml ist ein workflow_dispatch mit mode=auto; ohne die
+// Eingabe in der Bedingung bliebe genau dieser rote Lauf ohne Alarm. Bewertet wird der echte Ausdruck der Datei.
+test('SF8-DAILY-ALARM: roter automatischer Lauf alarmiert auch vor dem Schritt mode, ein manueller nie', () => {
+  const p = path.join(ROOT, '.github/workflows', SF8_DAILY_WORKFLOW);
+  assert.ok(fs.existsSync(p), 'Tageslauf-Workflow vorhanden');
+  const y = fs.readFileSync(p, 'utf8');
+  const m = y.match(/\n  alarm:\n    needs: candidates\n    if: ([^\n]+)\n/);
+  assert.ok(m, 'Alarm-Job mit Bedingung');
+  const ausdruck = m[1];
+  const bekannt = /always\(\)|needs\.candidates\.result|needs\.candidates\.outputs\.auto|github\.event_name|github\.ref|inputs\.mode|inputs\.zeitplan|'[a-z_/]*'|==|!=|&&|\|\||[()\s]/g;
+  assert.equal(ausdruck.replace(bekannt, ''), '', 'nur bekannte Bausteine: ' + ausdruck);
+  const js = ausdruck.replace(/always\(\)/g, 'true').replace(/needs\.candidates\.result/g, 'c.result').replace(/needs\.candidates\.outputs\.auto/g, 'c.auto')
+    .replace(/github\.event_name/g, 'c.event').replace(/github\.ref/g, 'c.ref').replace(/inputs\.mode/g, 'c.mode').replace(/inputs\.zeitplan/g, 'c.zeitplan').replace(/!=/g, '!==').replace(/([^!=])==/g, '$1===');
+  const alarm = new Function('c', 'return (' + js + ');');
+  const MAIN = 'refs/heads/main', ZWEIG = 'refs/heads/claude/probe';
+  for (const [event, mode, result, auto, erwartet, fall, ref = MAIN, zeitplan = ''] of [
+    ['workflow_dispatch', 'auto', 'failure', '', true, 'Anstoß mode=auto scheitert vor dem Schritt mode'],
+    ['workflow_dispatch', 'auto', 'cancelled', '', true, 'Anstoß mode=auto abgebrochen vor dem Schritt mode'],
+    ['workflow_dispatch', 'auto', 'failure', 'true', true, 'Anstoß mode=auto scheitert nach dem Schritt mode'],
+    ['workflow_dispatch', 'auto', 'success', 'true', true, 'grüner automatischer Lauf schließt das Issue'],
+    ['schedule', '', 'failure', '', true, 'Zeitplan scheitert vor dem Schritt mode'],
+    ['schedule', '', 'success', 'true', true, 'grüner Zeitplanlauf'],
+    ['workflow_dispatch', 'manual', 'failure', '', false, 'manueller Lauf scheitert vor dem Schritt mode'],
+    ['workflow_dispatch', 'manual', 'failure', 'false', false, 'manueller Lauf scheitert'],
+    ['workflow_dispatch', 'manual', 'success', 'false', false, 'manueller Lauf grün'],
+    ['workflow_dispatch', 'auto', 'skipped', '', false, 'Job übersprungen (Schalter aus)'],
+    ['schedule', '', 'skipped', '', false, 'Zeitplan ohne SF8_AUTO_PUBLISH'],
+    ['workflow_dispatch', '', 'failure', '', true, 'Wecker-Takt scheitert vor dem Schritt mode', MAIN, '43 11 * * 2-6'],
+    ['workflow_dispatch', '', 'skipped', '', false, 'Wecker-Takt ohne SF8_AUTO_PUBLISH', MAIN, '43 11 * * 2-6'],
+    ['workflow_dispatch', 'auto', 'failure', '', false, 'Probelauf mode=auto auf einem anderen Zweig (scheitert in mode)', ZWEIG],
+    ['workflow_dispatch', 'manual', 'failure', '', false, 'manueller Lauf auf einem anderen Zweig', ZWEIG],
+  ]) assert.equal(alarm({ event, mode, result, auto, ref, zeitplan }), erwartet, fall);
+  // Eingaben bleiben außerhalb des Shell-Texts: der Alarm-Schritt reicht nur das Jobergebnis über env weiter
+  const job = y.slice(y.indexOf('\n  alarm:'));
+  const ausdruecke = job.split('\n').filter((l) => /\$\{\{/.test(l));
+  assert.deepEqual(ausdruecke.filter((l) => !/^\s+[A-Z_]+: \$\{\{ (github\.token|needs\.candidates\.result) \}\}$/.test(l) && !/^\s+ref: \$\{\{ github\.ref \}\}$/.test(l)), [], 'Ausdrücke im Alarm-Job nur in env: und ref:, nie im Shell-Text');
+  assert.match(job, /RESULT_CANDIDATES: \$\{\{ needs\.candidates\.result \}\}/);
 });

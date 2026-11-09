@@ -53,6 +53,22 @@ test('Gate B: Source Ledger ist dauerhaft (echte URL oder ausdruecklich keine) u
   }
 });
 
+// X-LEDGER / C12-LEDGER (CERT-PREP-TOP5-PLAN.json): Morales/Kacher, Raschke, B07 und W-MIN18 stehen im Ledger.
+// Den Abgleich jedes Felds mit dem #709-Extrakt fuehrt sf-x-ledger.test.mjs (Isolation SF2-LEGACY-ISOLATION).
+const X_LEDGER_IDS = ['W-MOKAPP', 'W-MOKA12', 'W-MOKASTOP', 'W-MOKAV24', 'W-RAS04', 'W-RAS97', 'B07', 'W-MIN18'];
+
+test('X-LEDGER: Morales/Kacher, Raschke, B07 und W-MIN18 stehen im Source Ledger, ohne behaupteten Abruf', () => {
+  const ids = new Set(ledger.map((s) => s.source_id));
+  for (const id of X_LEDGER_IDS) {
+    assert.ok(ids.has(id), id);
+    const e = ledger.find((s) => s.source_id === id);
+    // kein Inhaltsabruf ueber den Weg der Runde 8 behauptet; Abrufdatum nicht belegt und so gekennzeichnet
+    assert.equal(e.content_retrieved_by_vu, false, id);
+    assert.equal(e.retrieved_at, null, id);
+    assert.ok(e.provenance_evidence && e.provenance_evidence.not_evidenced.includes('retrieved_at'), id);
+  }
+});
+
 test('Schreibweise Kullamägi, keine falsche Variante', () => {
   const files = ['scripts/supertrader/registry.mjs', 'scripts/supertrader/source-ledger.json', 'supertrader/assets/supertrader.js'];
   for (const f of files) {

@@ -38,9 +38,9 @@ test("Methodik, Engine und Registry sagen dasselbe", () => {
 test("Der Faktorbau haelt einen Boersenwert aus ausgegebenen Aktien zurueck - mit Grund, ohne Ersatz", () => {
   const b = read("scripts/quant/build-factor-evidence.mjs");
   assert.match(b, /const ausstehend = !sharesConcept \|\| MarketCap\.OUTSTANDING_CONCEPTS\.includes\(sharesConcept\)/);
-  assert.match(b, /const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung \? shares\.value \* quote\.close : null;/);
+  assert.match(b, /const marketCap = shares && quote && zuordenbar && ausstehend && gleicheWaehrung && skalaPlausibel \? rohwert : null;/);
   assert.match(b, /!ausstehend \? "SHARE_COUNT_NOT_OUTSTANDING"/);
-  assert.match(b, /MARKET_CAP_WITHHELD = \["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING", "REPORTING_CURRENCY_NOT_LISTING_CURRENCY"\]/);
+  assert.match(b, /MARKET_CAP_WITHHELD = \["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING", "REPORTING_CURRENCY_NOT_LISTING_CURRENCY", "SHARE_COUNT_SCALE_SUSPECT"\]/);
   /* Die Bewertung nennt den Grund, statt "Eingabe nicht materialisiert". */
   assert.match(b, /MARKET_CAP_WITHHELD\.includes\(record\.fundamentals\?\.marketCapReason\)/);
 });
@@ -51,7 +51,7 @@ test("Jeder Grund hat einen Satz - in Engine, Ansicht und Dienst", () => {
   assert.match(fe, /SHARE_COUNT_NOT_OUTSTANDING: "Gemeldet ist nur die Zahl ausgegebener Aktien/);
   assert.match(fe, /SHARE_COUNT_NOT_OUTSTANDING: "Bewertung bewusst zurückgehalten"/);
   assert.match(vm, /SHARE_COUNT_NOT_OUTSTANDING: "Diese Kennzahl braucht den Börsenwert\./);
-  assert.match(svc, /VALUATION_WITHHELD_REASONS=\['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING','REPORTING_CURRENCY_NOT_LISTING_CURRENCY'\]/);
+  assert.match(svc, /VALUATION_WITHHELD_REASONS=\['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING','REPORTING_CURRENCY_NOT_LISTING_CURRENCY','SHARE_COUNT_SCALE_SUSPECT'\]/);
   for (const t of Object.values(MarketCap.REASONS)) assert.doesNotMatch(t, /\b(laesst|fuer|waere|ueber|gemaess)\b/, "Umschrift statt Umlaut im Nutzertext");
 });
 

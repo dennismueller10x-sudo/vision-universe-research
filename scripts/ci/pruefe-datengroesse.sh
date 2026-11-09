@@ -20,10 +20,25 @@ GRENZE_MB="${GRENZE_MB:-400}"
 for d in quant/data/fundamentals quant/data/universe quant/data/sec; do
   [ -d "$d" ] || continue
 
+  # `ls-files -c` nennt auch verfolgte Dateien, die der Erzeuger in
+  # diesem Lauf geloescht hat (z. B. eine verwaiste Namens-Scherbe
+  # quant/data/universe/search/name/WU.json, Laeufe 41474158720 und
+  # 41650347339). Die gibt es auf der Platte nicht mehr; `stat` brach
+  # daran ab, xargs meldete 123, und `2>/dev/null` verschluckte den
+  # Grund. Eine Loeschung bringt 0 Byte in den Commit: sie wird
+  # gezaehlt und gemeldet, aber nicht gemessen. Andere stat-Fehler
+  # bleiben laut.
+  geloescht=$(git ls-files -d -z -- "$d" | tr -cd '\0' | wc -c)
   bytes=$(git ls-files -c -o --exclude-standard -z -- "$d" \
-    | xargs -0 -r stat -c %s 2>/dev/null \
+    | while IFS= read -r -d '' f; do
+        if [ -e "$f" ] || [ -L "$f" ]; then printf '%s\0' "$f"; fi
+      done \
+    | xargs -0 -r stat -c %s \
     | awk '{summe += $1} END {print summe + 0}')
   mb=$(( bytes / 1024 / 1024 ))
+  if [ "$geloescht" -gt 0 ]; then
+    echo "$d: ${geloescht} verfolgte Datei(en) in diesem Lauf geloescht"
+  fi
 
   ignoriert=$(du -sm "$d" | cut -f1)
   echo "$d: ${mb} MB im Commit (${ignoriert} MB auf der Platte, Rest ignoriert)"

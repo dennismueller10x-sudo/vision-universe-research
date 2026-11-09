@@ -6,7 +6,7 @@
   var Core = globalThis.VUCore || {};
   var TS = globalThis.VURealtime && globalThis.VURealtime.TradingSession;
   var LABEL = { OK: "OK", DEGRADED: "EINGESCHRÄNKT", STALE: "VERALTET", FAILED: "AUSFALL", DISABLED: "AUS",
-    UNKNOWN: "UNBEKANNT", NOT_DELIVERED: "NICHT AUSGELIEFERT", WARN: "HINWEIS", SKIPPED: "–" };
+    UNKNOWN: "UNBEKANNT", NOT_DELIVERED: "NICHT AUSGELIEFERT", RELEASE_ONLY: "NUR IN DER AUSLIEFERUNG", WARN: "HINWEIS", SKIPPED: "–" };
 
   function el(tag, props, kids) {
     var n = document.createElement(tag);
@@ -65,11 +65,72 @@
           cell("Befund", befund || "–")
         ]));
       });
+      await products(report).catch(function (e) {
+        var b = document.querySelector("#products tbody");
+        if (b) b.textContent = "Produktliste nicht ladbar (" + e.message + ").";
+      });
     } catch (e) {
       overall.textContent = "Systemzustand derzeit nicht messbar (" + e.message + "). ";
       var retry = el("button", { type: "button", text: "Erneut prüfen" });
       retry.addEventListener("click", health);
       overall.appendChild(retry);
+    }
+  }
+
+  /* Produkte aus den Steckbriefen (products/<id>/module.json -> core/registry/modules.json, core/modules.js):
+     Zustand = schlechtester Zustand der erzeugten und gelesenen Datenarten. */
+  var ACCESS = { free: "Free", pro: "Pro", intern: "Intern" };
+  async function products(report) {
+    var body = document.querySelector("#products tbody");
+    if (!body || !Core.Modules) return;
+    body.textContent = "";
+    var idx = await load("/core/registry/modules.json");
+    Core.Modules.productHealth(idx.modules, report).forEach(function (p) {
+      var m = idx.modules.find(function (x) { return x.id === p.id; });
+      var link = p.access === "intern" ? el("strong", { text: p.label }) : el("a", { href: p.route }, [el("strong", { text: p.label })]);
+      body.appendChild(el("tr", {}, [
+        el("td", {}, [link, el("small", { text: p.route })]),
+        el("td", {}, [p.status === "NO_DATA" ? el("span", { class: "st-badge st-SKIPPED", text: "ohne Datenart" }) : badge(p.status)]),
+        el("td", { "data-label": "Zugang", text: ACCESS[p.access] || p.access }),
+        el("td", { "data-label": "Phase", text: p.lifecycle }),
+        el("td", { "data-label": "Datenarten", text: m.data.concat(m.reads).join(", ") || "–" }),
+        el("td", { "data-label": "Ursache", text: p.cause.join(", ") || "–" })
+      ]));
+    });
+  }
+
+  var qualityReport = null;
+  var qualityReady = null;
+  var qualityTitles = ["Kurssprung über 50 % ohne Split", "Logo fehlt bei Börsenwert über 10 Mrd.",
+    "Firmenname fehlt oder ist nur das Kürzel", "Analysten-Einstufung älter als 45 Tage",
+    "Musterdepot-Position ohne aktuellen Kurs", "Supertrader-Position ohne Stopp"];
+  async function quality() {
+    var grid = document.getElementById("dq-rules"), stand = document.getElementById("dq-stand");
+    try {
+      qualityReport = await load("/status/data-quality.json");
+      if (!Array.isArray(qualityReport.rules) || !Number.isFinite(Date.parse(qualityReport.checkedAt))) throw new Error("Bericht ungültig");
+      var current = qualityReport.checkedAt.slice(0, 10) === new Date().toISOString().slice(0, 10);
+      stand.textContent = (current ? "Stand: " : "Älterer Bericht – Stand: ") + qualityReport.checkedAt.slice(0, 16).replace("T", " ") +
+        " UTC · Nur Hinweise, keine Sperre." + (qualityReport.missingEquityArtifacts?.length ? " Einige Quelldaten fehlen; Prüfung unvollständig." : "");
+      qualityTitles.forEach(function (title, i) {
+        var r = qualityReport.rules.find(function (row) { return row.id === "DQ-E8-" + (i + 1); });
+        var checked = r && r.checked > 0;
+        var delta = checked && current && Number.isInteger(r.delta) ? r.delta : null;
+        var trend = delta === null ? "Kein Vergleich mit gestern" : delta === 0 ? "±0 gegenüber gestern" : (delta > 0 ? "+" : "") + delta + " gegenüber gestern";
+        var card = el("article", { class: "st-dq-card" }, [el("h3", { text: title }),
+          el("p", { class: "st-dq-count", text: checked ? String(r.failed) : "–" }),
+          el("p", { class: "st-dq-trend", text: trend }),
+          el("small", { text: checked ? "Befunde bei " + r.checked + " geprüften Einträgen" : "Keine prüfbaren Quelldaten" })]);
+        if (r?.note) card.appendChild(el("small", { text: r.note }));
+        var examples = el("ul", { class: "st-dq-examples" });
+        (r?.findings || []).slice(0, 3).forEach(function (f) {
+          examples.appendChild(el("li", {}, [el("a", { href: "/status/#/" + encodeURIComponent(f.ticker), text: f.ticker }), " · " + f.text]));
+        });
+        card.appendChild(examples); grid.appendChild(card);
+      });
+    } catch (e) {
+      qualityReport = null;
+      stand.textContent = "Datenqualitätsbericht nicht verfügbar. Anzahl und Vortagstrend können derzeit nicht angezeigt werden.";
     }
   }
 
@@ -87,6 +148,15 @@
       out.appendChild(el("ol", { class: "st-steps" }, d.steps.map(function (s) {
         return el("li", {}, [badge(s.status), " ", el("strong", { text: s.label }), s.detail ? el("small", { text: s.detail }) : null]);
       })));
+      await qualityReady;
+      out.appendChild(el("h3", { text: "Datenqualität · gespeicherter Bericht" }));
+      if (qualityReport) {
+        var findings = Core.EquityQuality.forTicker(qualityReport.rules, d.ticker);
+        out.appendChild(el("p", { text: "Stand: " + qualityReport.checkedAt.slice(0, 10) }));
+        out.appendChild(el("ul", {}, findings.map(function (f) { return el("li", { text: f.rule + ": " + f.text }); })));
+        if (!findings.length) out.appendChild(el("p", { text: "Keine Befunde in den prüfbaren Daten." }));
+        if (qualityReport.missingEquityArtifacts?.length) out.appendChild(el("p", { text: "Prüfung unvollständig: Quelldaten fehlen." }));
+      } else out.appendChild(el("p", { text: "Datenqualitätsbericht nicht verfügbar." }));
       if (d.likelyCause) out.appendChild(el("div", { class: "st-cause" }, [
         el("p", {}, [el("strong", { text: "Wahrscheinliche Ursache: " }), d.likelyCause]),
         d.suggestedRepair ? el("p", {}, [el("strong", { text: "Vorgeschlagene Reparatur: " }), d.suggestedRepair]) : null]));
@@ -110,6 +180,7 @@
     document.getElementById("overall").textContent = "Prüfmodule nicht geladen.";
     return;
   }
+  qualityReady = quality();
   health();
   fromHash();
 })();

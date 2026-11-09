@@ -62,7 +62,8 @@
     "PRICE_FACTORS_UNAVAILABLE",        /* no certified price factor row */
     "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", /* one issuer share count, several listed lines */
     "SHARE_COUNT_NOT_OUTSTANDING",      /* only issued shares (incl. treasury) reported - market-cap-1.0.0 */
-    "REPORTING_CURRENCY_NOT_LISTING_CURRENCY" /* fundamentals not in USD (ADR / foreign filer) - market-cap-1.1.0 */
+    "REPORTING_CURRENCY_NOT_LISTING_CURRENCY", /* fundamentals not in USD (ADR / foreign filer) - market-cap-1.1.0 */
+    "SHARE_COUNT_SCALE_SUSPECT"         /* share count off by a power of ten vs. its history, or cap > 8e12 - market-cap-1.2.0 */
   ];
 
   var COMPONENT_STATES = ["AVAILABLE", "UNAVAILABLE"];
@@ -189,7 +190,10 @@
     /* market-cap-1.1.0: Kurs in USD, Geschaeftszahlen in einer anderen Waehrung. */
     REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Das Unternehmen berichtet seine Geschäftszahlen nicht in US-Dollar, der Kurs steht in US-Dollar. " +
       "Bei Hinterlegungsscheinen (ADR) entspricht ein gehandelter Schein außerdem nicht einer gemeldeten Aktie. " +
-      "Ein Börsenwert und alle Bewertungskennzahlen daraus wären verfälscht; sie bleiben deshalb offen."
+      "Ein Börsenwert und alle Bewertungskennzahlen daraus wären verfälscht; sie bleiben deshalb offen.",
+    /* market-cap-1.2.0: XBRL-Skalenfehler der Aktienzahl. */
+    SHARE_COUNT_SCALE_SUSPECT: "Die gemeldete Aktienzahl weicht um eine Zehnerpotenz von den vorherigen Meldungen ab. " +
+      "Ein Börsenwert daraus wäre um das Tausend- oder Millionenfache falsch; die Bewertungskennzahlen bleiben deshalb offen."
   };
 
   /* ---------------------------------------------------------------------
@@ -221,6 +225,7 @@
     SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Bewertung bewusst zurückgehalten",
     SHARE_COUNT_NOT_OUTSTANDING: "Bewertung bewusst zurückgehalten",
     REPORTING_CURRENCY_NOT_LISTING_CURRENCY: "Bewertung bewusst zurückgehalten",
+    SHARE_COUNT_SCALE_SUSPECT: "Bewertung bewusst zurückgehalten",
     BLOCKED_EXTERNAL: "Bewusst offen gelassen",
     SECTOR_TEMPLATE_MISSING: "Für diese Branche nicht anwendbar",
     FUNDAMENTALS_UNAVAILABLE: "Noch keine Geschäftszahlen veröffentlicht"

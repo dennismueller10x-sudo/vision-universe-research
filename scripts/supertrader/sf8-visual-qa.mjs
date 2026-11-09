@@ -41,14 +41,14 @@ for (const f of fs.readdirSync(path.join(SF, 'ticker'))) for (const v of JSON.pa
 const multi = [...byTicker].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1))[0][0];
 const modeledCid = (summary.strategies.find((s) => s.counts.byStage.MODELED_TRADE_PLAN) || summary.strategies[0]).candidateId;
 const ROUTES = [
-  ['start', '/supertrader/', '#sf-home .sf-row'],
-  ['methoden', '/supertrader/strategies/', '#sf .sf-strat'],
+  ['start', '/supertrader/', '.st-r-hero .st-r-ladder'],
+  ['methoden', '/supertrader/strategies/', '[data-tab=methoden] .st-r-mcard'],
   [`strategie-${modeledCid}`, `/supertrader/strategies/?sf=${modeledCid}`, '#sf .sf-card'],
   ['strategie-C08-kk-breakout', '/supertrader/strategies/?sf=C08', '#sf .sf-card'],
   ['strategie-C06-minervini', '/supertrader/strategies/?sf=C06', '#sf .sf-card'],
   ['strategie-C10-chartmodell', '/supertrader/strategies/?sf=C10', '#sf .sf-card'],
-  [`aktie-${multi}`, `/supertrader/stock/?s=${encodeURIComponent(multi)}#sf`, '#sf-stock .sf-card'],
-  ['aktie-ohne-treffer', '/supertrader/stock/?s=ZZZZ', '#sf-stock .sf-empty'],
+  [`aktie-${multi}`, `/supertrader/stock/?s=${encodeURIComponent(multi)}`, '.st-r-answer'],
+  ['aktie-ohne-treffer', '/supertrader/stock/?s=ZZZZ', '.st-r-answer'],
   ['strategie-leere-suche', `/supertrader/strategies/?sf=${modeledCid}`, '#sf .sf-card'],
 ];
 

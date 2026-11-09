@@ -1,0 +1,84 @@
+{
+ "schemaVersion": "v13b-f1w-study-registration-2.0.0",
+ "studyId": "V13B-F1W-END-OF-SERIES-COMPARISON",
+ "ownerDecision": "Owner decision 3 of 2026-10-29: a new study registration, frozen before the next evaluation, is approved. F1w may be developed further as a standalone sensitivity / comparison study. The previous primary population and its results stay unchanged. No automatic adoption as default rule.",
+ "registeredBefore": "Committed (own commit, SHA-256 in study-registration-2.0.0.sha256) before any computation of this study: no F1d frame, no F1d outcome, no diagnostic DG1-DG3 and no re-run of F1w was computed when this file was frozen.",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "confirmatory": false,
+ "evidenceLabel": "NON_CONFIRMATORY_COMPARISON_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "knownPriorInformation": {
+  "statement": "This study is NOT confirmatory. All F1w results of V13 are already seen and committed; the five V10 rules were developed and examined on the same 2000-2025 history (V7-V10). F1d outcomes are not yet computed, but F1d is a variant of the same population on the same explored history and is therefore also not confirmatory.",
+  "seenF1w": [
+   "docs/quant-recovery/v13/studies/s1-signal-1.0.0.json sha256 3f04bab7256092b10a2fbb5669d4acf067be9ee824a79da88c8d75afe4c7e430 (all 60 S1 cells of F0, F1, F1c, F1w in V10 semantics, terminal S0 and band; Holm F1w 9 rejections of 60 in both variants, no SPY_EXCESS rejection; funded strategy F1w: 52 delisted chains in the funded universe, NEW_52W_HIGH CAGR 19.68 % vs F1 16.42 %, Holm-adjusted p 0.003 vs 0.027)",
+   "docs/quant-recovery/v13/studies/s2-population-1.0.0.json sha256 38efcd1048e1826a6295021949e101212032b56a8a94e4dbdda778864855f10c",
+   "docs/quant-recovery/v13/studies/python-check-1.0.0.json sha256 f1fa8f32de79e48277dcff0c6db93db6f2335326cd08e3051c3bf44c3e55931f"
+  ],
+  "seenFrameCounts": "Outcome-free frame counts from study-amendment-1.0.1 (sha256 446d4a06cf369791efb6695fdb4c7f5c2d69abca464d66d99dbcecbe1f303d6e): of 1,675 loadable QUALIFIED delisted chains 390 pass the registered frame rule; 1,186 fail only because their last bar lies earlier than the modal label of its ISO week (F1w adds 390 + 1,186 = 1,576); 2 fail only on a last bar later than the modal label; 65 fail on the last and earlier bars; 32 only on earlier bars."
+ },
+ "basedOn": {
+  "studyRegistration": { "file": "docs/quant-recovery/v13/delisted/study-registration-1.0.0.json", "sha256": "d12c1ec0fa7f37628b067c0c06470b0bef3b1209013e207193fe3d0a3e68937f" },
+  "studyAmendment": { "file": "docs/quant-recovery/v13/studies/study-amendment-1.0.1.json", "sha256": "446d4a06cf369791efb6695fdb4c7f5c2d69abca464d66d99dbcecbe1f303d6e" },
+  "v10Registration": { "file": "docs/quant-recovery/v10/studies/registration-1.0.0.json", "sha256": "32cc1b3023853f9ff4055e56d2f2e9d72f9131a5627f866b8ca91f8ddf9b5420" },
+  "delistedRegister": { "file": "docs/quant-recovery/v13/delisted/register-1.0.0.json", "sha256": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f" }
+ },
+ "primacy": {
+  "primaryUnchanged": "F1 (F0 + the 390 QUALIFIED delisted chains passing the registered frame rule) remains the registered primary comparison of V13. Its committed results (V13 files above) are cited unchanged and are not recomputed, rewritten or replaced by this study.",
+  "noDefault": "Neither F1w nor F1d becomes a default frame rule, a loader default or an input of any product path through this study. A later change of the registered rule would require a new registration and an explicit owner decision; the results of this study alone cannot trigger it.",
+  "role": "F1w and F1d are comparison / sensitivity frames reported next to F0 and F1. No conclusion rests on F1w or F1d alone."
+ },
+ "populations": {
+  "F0": "Cited unchanged from V13 (V10 lifecycle frame, 4,329 listings).",
+  "F1": "Cited unchanged from V13 (registered primary, 4,719 listings).",
+  "F1w": {
+   "definition": "Exactly as study amendment 1.0.1 D1: F1 frame rule except that the LAST bar of a QUALIFIED delisted chain may carry a date earlier than F0's modal label of its own ISO week, provided every earlier bar carries the modal label of its week; that last bar is relabelled to the modal date of its week. The price is unchanged (last traded close), no bar is added, nothing is carried forward. The total-return point of the same date is relabelled identically. The true last trade date stays in listingLifecycle.lastTradeDate. All other bars must carry the modal label; MIC rule (XNAS/XNYS/XASE) unchanged. Code: scripts/quant/v13/studies/lib.cjs#mergeFrame with relabelLastBar (unchanged).",
+   "expectedCounts": "1,576 delisted chains added, 1,186 of them relabelled (from the amendment counts).",
+   "source": "Re-used from the V13 private run (events, s1-terminal, s2) and checked by reproduction R1; not re-estimated with different code."
+  },
+  "F1d": {
+   "definition": "Calendar-consistent alternative (second sensitivity, new in this registration): exactly the same chains as F1w (last bar earlier than the modal label of its ISO week, all earlier bars modal). Instead of relabelling, the non-modal last bar (and its total-return point) is DROPPED, so the series ends at the previous complete week whose label is modal. Price of the dropped bar is not used anywhere; nothing is carried forward; listingLifecycle.lastTradeDate stays the true last trade date. The modified chain then has to pass the unchanged registered frame rule (lib.mergeFrame without relabel). Chains with fewer than 2 bars after the drop are excluded and counted.",
+   "expectedCounts": "1,576 delisted chains added (390 unchanged + 1,186 truncated), i.e. the same listing set as F1w. A different count is reported as a deviation; the rule is not changed.",
+   "purpose": "Every F1d label is a genuine modal-week close of F0's calendar, so no stock price is paired with a SPY price of a later day. The cost is that the return of the last, partial week before delisting is omitted."
+  }
+ },
+ "lastPartialWeekTreatment": {
+  "F1": "Chains with a non-modal last bar are excluded entirely (registered rule).",
+  "F1w": "The partial-week return (previous modal close -> last traded close) is kept in full as the last weekly return and dated to the modal day of that week. SPY legs that start or end on a relabelled bar use the modal date (up to 4 trading days after the true last trade): known bias, quantified by DG2.",
+  "F1d": "The partial-week return is omitted (treated as not observed, NOT as 0 % carried forward). Terminal scenarios are applied to the previous modal close. Its size is quantified by DG1.",
+  "terminalScenarios": "Unchanged (protocol R6 / V13 O1): applied in the last held week of the frame series; MERGER 0 / -10 % / +10 %, DISTRESS and UNKNOWN 0 / -30 % / -100 %; scenario 0 = last close of the frame series is the point estimate."
+ },
+ "unchangedFromV10V13": {
+  "rules": "five V10 rules (MOMENTUM_IMPROVED, MOMENTUM_DETERIORATED, TREND_UP, TREND_DOWN, NEW_52W_HIGH), engine definitions, cooldown 13, warm-up 53",
+  "horizonsWeeks": [4, 13, 26, 52],
+  "endpoints": ["RAW_NET", "SPY_EXCESS", "BASE_RATE_EXCESS"],
+  "costs": "V10 base 10 bp fee + 5 bp slippage per side (net formula of V10)",
+  "benchmark": "SPY price return over the same entry/exit dates (terminal outcomes: entry date to the expected exit calendar date, V13 O3)",
+  "window": "signal dates 2000-01-01..2025-12-31; subperiods 2000-2007, 2008-2012, 2013-2019, 2020-2025",
+  "inference": "V10 circular calendar-block bootstrap (b 52, b 104 for h 52; 1,999 replicates, seed 1729; deterministic 100,000-row subsample rule), two-sided",
+  "engine": "scripts/quant/v10/studies/signal-study.cjs unchanged (V10 semantics, CENSORED excluded) plus scripts/quant/v13/studies/run-frame.cjs#s1Terminal and #s2Population unchanged (terminal-resolved variants, S2)",
+  "S2": "V13 O5 definitions (buy-and-hold V11 P_t per horizon; weekly-rebalanced EW index CAGR), gross, price return",
+  "fundedStrategy": "signal-study.cjs funded long-only portfolio unchanged (descriptive only)"
+ },
+ "outScope": "S3 (PIT S&P 500 exits) is not re-run: it uses the delisted series directly (V12 seriesReturn, bars within 7 days of t0/t1) and does not depend on the weekly frame label rule. CA_UNRESOLVED chains, PRICE_ONLY chains and the 97 chains failing on earlier bars stay excluded; no further repair.",
+ "outcomes": {
+  "O1_S1_cells": "For F1d: all 60 cells (5 rules x 4 horizons x 3 endpoints) in V10 semantics and terminal-resolved scenario 0, plus the terminal band (scenarios 1/2, estimate only). Reported side by side with F0, F1, F1w (cited from V13).",
+  "O2_deltas": "Per cell (terminal S0 and V10 semantics): F1w - F1, F1d - F1, F1w - F1d. Pre-specified reading: F1d - F1 = adding the 1,186 chains without their last partial week (population composition); F1w - F1d = the last partial week plus its modal date label (end-of-series treatment); F1w - F1 = their sum. Descriptive, no test.",
+  "O3_S2": "For F1d: buy-and-hold (h 4/13/26/52, V10_COMPLETED_ONLY, TERMINAL_S0..S2) and weekly-rebalanced EW CAGR per period, side by side with F0/F1/F1w.",
+  "O4_funded": "Funded strategy per frame (universe, delisted chains in universe, episodes, CAGR, excess CAGR, Holm-adjusted p of the 3-strategy family) for F1d next to F0/F1/F1w; descriptive only (DG3)."
+ },
+ "multipleTesting": {
+  "families": "As V10/V13: per frame and per variant one Holm family of 60 (V10 semantics; terminal S0). New families in this study: F1d-V10 and F1d-terminalS0. F1w families are cited from V13 (already seen). Funded strategy: V10 family of 3 per frame, descriptive.",
+  "noOtherTests": "No test on deltas between frames, no pooling across frames, no new test statistic, no search over variants.",
+  "robustnessLabel": "A cell is labelled END_OF_SERIES_STABLE if, in terminal S0, the sign of the estimate and the Holm decision are identical in F1, F1w and F1d; otherwise END_OF_SERIES_SENSITIVE. Counted and listed; not a test."
+ },
+ "diagnostics": {
+  "R1_F1w_reproduction": "The F1w frame is rebuilt with the unchanged V13 code; its manifest hash must equal the V13 F1w run (066505661d92b62c6e5a4d0fe788c9629d5abde051c54f5309365016d64335f3). s1Terminal and s2Population are recomputed on the V13 F1w events and must equal the committed F1w entries of s1-signal-1.0.0.json / s2-population-1.0.0.json after the same rounding. A mismatch is reported; the committed V13 values stay authoritative.",
+  "DG1_partial_week": "For the 1,186 truncated/relabelled chains: partial-week price return = last traded close / previous bar close - 1 (previous bar = last modal bar; flagged if it is not in the immediately preceding calendar week). Reported per terminal class (MERGER/DISTRESS/UNKNOWN): n, mean, median, share below -50 %, share above +50 %, and the trading-day distance between true last trade and the modal label. Descriptive.",
+  "DG2_spy_leg_date": "F1w only: S1 SPY_EXCESS (V10 semantics and terminal S0) re-estimated with every SPY leg date that falls on a relabelled bar replaced by the true last trade date of that chain (entry or exit). Count of affected events, estimate per cell and difference to F1w; no test, no Holm. Shows the size of the known label bias of amendment 1.0.1.",
+  "DG3_funded_fragility": "Per frame and funded rule: delisted chains in the funded universe (with their last-trade year), episodes in delisted chains, mean gross episode return of those episodes vs all episodes, number of episodes not present in F1 (displaced by the hash tie-break). Explains why the funded strategy reacts to the frame: its universe admits only listings whose series reach the last strategy session in 2026, so delisted chains enter only if they traded until 2026. Descriptive, no optimisation, no new strategy parameter."
+ },
+ "verification": "Independent stdlib Python check (python3 -I, scripts/quant/v13b/f1w/verify_v13b_f1w.py; V10/V13 Python references imported by path for rules, state rule, bootstrap, Holm): F1d frame rule and counts, all F1d S1 cells (both variants, all scenarios), F1d p-values and Holm (both variants), F1d S2, DG1, DG2, DG3 counts and the funded universe membership.",
+ "deviationPolicy": "Any deviation from this registration (code error, count mismatch, runtime failure) is versioned, explained and reported next to the result; no rule is changed after seeing results.",
+ "publication": "Only aggregate statistics in docs/quant-recovery/v13b/f1w/ (cell means, counts, p-values); private provider-derived series and event files stay in the scratchpad (re-used V13 private runs, no duplicate copies)."
+}

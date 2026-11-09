@@ -9,7 +9,10 @@ const pages = readFileSync(join(root, ".github", "workflows", "pages-release.yml
 const producerFiles = [
   "intraday-snapshots.yml",
   "market-data-refresh.yml",
-  "sec-consumer-fundamentals.yml"
+  "sec-consumer-fundamentals.yml",
+  // Pusht mit dem GITHUB_TOKEN nach supertrader/data/sf-candidates und laeuft nach dem
+  // Signale-Lauf, dessen workflow_run-Auslieferung also VOR dem Kandidaten-Commit startet.
+  "supertrader-sf8-candidates.yml"
 ];
 
 test("every main data producer that pushes product artifacts triggers Pages delivery", () => {

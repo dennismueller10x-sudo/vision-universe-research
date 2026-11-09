@@ -14,16 +14,23 @@
      Supertrader  supertrader/data/signals-core.json + registry-core.json Zustaende je Strategie + Freigabestufe der Strategie
    Zugeordnet wird ein Kurs/Score nur dem Listing, dessen kanonische securityId (ref_<TICKER>, core/identity.js) die Quelle
    traegt, das aktiv ist und dessen Waehrung passt. Sonst bleibt der Abschnitt leer und traegt den Grund.
-   Fehlt eine Quelle, fehlt der Abschnitt (state SOURCE_MISSING) - nie ein Ersatzwert. */
-import {readFileSync,existsSync,writeFileSync,mkdirSync} from 'node:fs';
+   Fehlt eine Quelle, fehlt der Abschnitt (state SOURCE_MISSING) - nie ein Ersatzwert.
+   Belegte Ticker-Wiederverwendung (quant/config/ticker-reuse-quarantine.json, gelesen ueber
+   scripts/market/universe-source.mjs#loadTickerReuseQuarantine): unter dem Ticker handelt heute ein anderes Wertpapier
+   (z. B. ein ETF) als das Unternehmen, auf das Name, Stamm und securityId zeigen. Solche Zeilen behalten Kennung, Kuerzel,
+   Boerse und Status, tragen aber keinen Namen der alten Identitaet und keine Kurs-, Quant-, Technik- oder
+   Supertrader-Werte; jeder Abschnitt nennt den Grund IDENTITY_QUARANTINED (why), gezaehlt in withheld. */
+import {readFileSync,existsSync,writeFileSync,mkdirSync,readdirSync} from 'node:fs';
 import {join,dirname} from 'node:path';
 import {gunzipSync} from 'node:zlib';
 import {createRequire} from 'node:module';
+import {loadTickerReuseQuarantine} from '../market/universe-source.mjs';
 
 const require=createRequire(import.meta.url);
 const Identity=require('../../core/identity.js');
 const FE=require('../../quant/engines/factor-evidence.js');
 const TS=require('../../quant/engines/realtime/trading-session.js');
+const Close=require('../../quant/engines/published-close.js');
 export const SUMMARY_DIR='core/data/watchlist-summary-v1/';
 export const SHARD_BUDGET=48*1024; /* groesste Scherbe heute ~20 KB roh (AL), ~4,5 KB gzip */
 export const SCHEMA='vu-watchlist-summary-1.0.0';
@@ -33,6 +40,7 @@ const BAND_IDS=FE.BANDS.map(b=>b.id);
 
 function readJson(root,rel){const p=join(root,rel);if(!existsSync(p))return null;const b=readFileSync(p);return JSON.parse(rel.endsWith('.gz')?gunzipSync(b):b);}
 const round=(v,d)=>typeof v==='number'&&Number.isFinite(v)?Math.round(v*10**d)/10**d:null;
+const isDay=v=>typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v);
 const domainRule=(reg,id)=>{const d=(reg&&reg.domains||[]).find(x=>x.id===id);return d?{domain:id,artifact:d.artifact,freshness:d.freshness||null}:{domain:id,artifact:null,freshness:null};};
 
 /** Liefert {doc, report}. doc ist spaltenweise (cols[feld][zeile]), wie technical/data/screener-v1.json. */
@@ -45,28 +53,34 @@ export function buildSummary(root,{now=new Date()}={}){
  const manifest=readJson(root,'quant/data/universe/master-manifest.json');
  if(!manifest||!manifest.shards||!Array.isArray(manifest.shards.index))throw Error('COMPANY_MASTER_MISSING');
  const rows=[],bySymbol=new Map();
+ const quarantine=loadTickerReuseQuarantine(root);
+ const quarantined=quarantine?quarantine.records:new Map();
+ const withheld={};
  for(const {shard} of manifest.shards.index){
   const part=readJson(root,'quant/data/universe/instruments/'+shard+'.json');if(!part)throw Error('COMPANY_MASTER_SHARD_MISSING:'+shard);
   for(const m of part.instruments||[]){
    if(!Identity.isInstrumentId(m.instrumentId)||!Identity.normalizeTicker(m.symbol))continue;
-   const r={i:m.instrumentId,s:m.symbol,n:m.companyName||null,x:m.exchange||null,cu:m.currency||null,act:m.active?1:0,
-    del:m.delistedAt||null,el:m.productEligibility||null,sid:Identity.securityIdForTicker(m.symbol),legacy:m.masterMemberId||null};
+   const sid=Identity.securityIdForTicker(m.symbol),iq=quarantined.has(sid);
+   const r={i:m.instrumentId,s:m.symbol,n:iq?null:m.companyName||null,x:m.exchange||null,cu:m.currency||null,act:m.active?1:0,
+    del:m.delistedAt||null,el:m.productEligibility||null,sid,legacy:m.masterMemberId||null};
+   if(iq){r.iq=true;r.why={identity:'IDENTITY_QUARANTINED'};withheld['identity:IDENTITY_QUARANTINED']=(withheld['identity:IDENTITY_QUARANTINED']||0)+1;}
    rows.push(r);
    if(!bySymbol.has(r.s))bySymbol.set(r.s,[]);bySymbol.get(r.s).push(r);
   }
  }
  sources.master={...domainRule(registry,'companyMaster'),asOf:manifest.asOf||null,generatedAt:manifest.generatedAt||null};
+ if(quarantine)sources.master.identityQuarantine={artifact:'/'+quarantine.file,sha256:quarantine.sha256,securities:quarantined.size,reason:'IDENTITY_QUARANTINED'};
  /* Genau ein Listing traegt die Daten eines Tickers: aktiv, und seine kanonische securityId ist die der Quelle. */
  const listingFor=(ticker,sid,currency)=>{
   const cands=(bySymbol.get(ticker)||[]).filter(r=>r.sid===sid);
   const active=cands.filter(r=>r.act===1);
   if(!cands.length)return {reason:'NOT_IN_COMPANY_MASTER'};
+  if(cands.some(r=>r.iq))return {reason:'IDENTITY_QUARANTINED',rows:cands};
   if(active.length>1)return {reason:'LISTING_AMBIGUOUS',rows:active};
   if(!active.length)return {reason:'LISTING_INACTIVE',rows:cands};
   if(currency&&active[0].cu&&currency!==active[0].cu)return {reason:'CURRENCY_MISMATCH',rows:active};
   return {row:active[0]};
  };
- const withheld={};
  const note=(rowsOf,section,reason)=>{for(const r of rowsOf||[]){(r.why=r.why||{})[section]=reason;}withheld[section+':'+reason]=(withheld[section+':'+reason]||0)+1;};
 
  // ---- Kurs
@@ -80,6 +94,10 @@ export function buildSummary(root,{now=new Date()}={}){
    const hit=listingFor(e.s,sid,e.u);
    if(!hit.row){note(hit.rows,'price',hit.reason);continue;}
    Object.assign(hit.row,{c:e.c,cd:e.d,pu:e.u||null});
+   /* Tagesveraenderung (Watchlist-Ereignis PRICE_MOVE): Verhaeltnis der beiden letzten Punkte DERSELBEN splitbereinigten
+      Tagesreihe ueber published-close.js#dayChange (ADR-002), nur wenn ihr letzter Punkt der Schluss der Liste ist. */
+   const dc=Close.dayChange(readJson(root,'quant/data/market/discover-series/'+sid+'.json'),e.d);
+   if(dc&&dc.date===e.d)Object.assign(hit.row,{d1:dc.change,dp:dc.previousDate});
    if(!sources.price.asOf||e.d>sources.price.asOf)sources.price.asOf=e.d;
   }
  });
@@ -113,6 +131,69 @@ export function buildSummary(root,{now=new Date()}={}){
    factorOrder:FE.FACTOR_ORDER,bands:FE.BANDS.map(b=>({id:b.id,label:b.label})),
    publication:{compositeAllowed:false,rankingAllowed:false,reason:(screening.publication&&screening.publication.reason)||'QUANT_V2_NOT_ACTIVE',
     explanation:(screening.publication&&screening.publication.explanation)||null},universe:summary&&summary.count||null};
+ });
+
+ // ---- Berichte: letzter Quartals- oder Jahresbericht bei der SEC (Watchlist-Ereignis EARNINGS), aus der Consumer-Schicht
+ tryPart('filings',()=>{
+  const dir=join(root,'quant/data/sec/consumer');if(!existsSync(dir))throw Error('SEC_CONSUMER_MISSING');
+  const latest=new Map();let asOf=null,generatedAt=null;
+  for(const f of readdirSync(dir).filter(x=>/^CIK\d{10}\.json$/.test(x)).sort()){
+   const j=readJson(root,'quant/data/sec/consumer/'+f),c=j&&j.coverage||{};
+   const q=c.latestQuarter&&isDay(c.latestQuarter.filed)?{rf:c.latestQuarter.filed,rk:'Q',rp:c.latestQuarter.fy+'-'+(c.latestQuarter.fp||'Q'),re:c.latestQuarter.end||null}:null;
+   const a=c.latestAnnual&&isDay(c.latestAnnual.filed)?{rf:c.latestAnnual.filed,rk:'A',rp:c.latestAnnual.fy+'-FY',re:c.latestAnnual.end||null}:null;
+   const r=q&&a?(a.rf>q.rf?a:q):(q||a);if(!r)continue;
+   if(!asOf||r.rf>asOf)asOf=r.rf;if(j.generatedAtUtc&&(!generatedAt||j.generatedAtUtc>generatedAt))generatedAt=j.generatedAtUtc;
+   /* Identitaet nur ueber core/identity.js (ADR-001): Ticker der Datei -> securityId, und die Datei muss sie selbst nennen. */
+   for(const t of j.tickers||[]){let sid;try{sid=Identity.securityIdForTicker(t);}catch{continue;}if((j.securityIds||[]).includes(sid)&&!latest.has(sid))latest.set(sid,{t,r});}
+  }
+  for(const [sid,{t,r}] of latest){
+   const hit=listingFor(t,sid,null);
+   if(!hit.row){note(hit.rows,'filings',hit.reason);continue;}
+   Object.assign(hit.row,r);
+  }
+  sources.filings={...domainRule(registry,'fundamentalsConsumer'),artifact:'/quant/data/sec/consumer/',asOf,generatedAt};
+ });
+
+ // ---- 13F: neue Positionen grosser Fonds je Titel (Watchlist-Ereignis FUND_13F), aus den veroeffentlichten Hedgefonds-Daten
+ tryPart('funds13f',()=>{
+  const hf=readJson(root,'hedgefonds/data/hedgefonds.json');if(!hf||!hf.latestPeriod)throw Error('HEDGEFONDS_MISSING');
+  const dir=join(root,'hedgefonds/data/stocks');if(!existsSync(dir))throw Error('HEDGEFONDS_STOCKS_MISSING');
+  /* "Grosse Fonds" = die kuratierte Liste der Hedgefonds-Seite (hedgefonds.json#funds), nicht jeder 13F-Melder des Bulk-Satzes. */
+  const curated=new Map((hf.funds||[]).filter(f=>f&&typeof f.slug==='string').map(f=>[f.slug,f.name||f.slug]));
+  for(const f of readdirSync(dir).filter(x=>/^\d+\.json$/.test(x)).sort()){
+   const part=readJson(root,'hedgefonds/data/stocks/'+f)||{};
+   for(const x of Object.values(part)){
+    if(!x||typeof x!=='object'||!x.ticker)continue;
+    let sid;try{sid=Identity.securityIdForTicker(x.ticker);}catch{continue;}
+    const hit=listingFor(x.ticker,sid,null);
+    if(!hit.row){note(hit.rows,'funds13f',hit.reason);continue;}
+    /* Neue Positionen (Status 'new' im juengsten Quartal), sortiert; Zahl der meldenden Fonds */
+    const fresh=[...new Set((x.holders||[]).filter(h=>h&&h.st==='new'&&curated.has(h.s)).map(h=>h.s))].sort();
+    Object.assign(hit.row,{fp:hf.latestPeriod,fc:Number.isInteger(x.fundCount)?x.fundCount:null,fn:fresh});
+   }
+  }
+  sources.funds13f={domain:'hedgefonds13f',artifact:'/hedgefonds/data/stocks/',asOf:hf.latestPeriod,generatedAt:hf.generatedAt||null,freshness:null,
+   funds:Object.fromEntries([...curated].sort((a,b)=>a[0].localeCompare(b[0])))};
+ });
+
+ // ---- Elliott: Hauptlesart je Titel aus dem Chartbild-Produkt (Watchlist-Ereignis ELLIOTT_CHANGE); zurueckgehaltene Titel ohne Lesart
+ tryPart('elliott',()=>{
+  const meta=readJson(root,'quant/data/technical-intelligence/v3/meta.json');if(!meta)throw Error('CHART_PRODUCT_MISSING');
+  const dir=join(root,'quant/data/technical-intelligence/v3/shards');let asOf=null;
+  for(const f of readdirSync(dir).filter(x=>/\.json\.gz$/.test(x)).sort()){
+   const part=readJson(root,'quant/data/technical-intelligence/v3/shards/'+f)||{};
+   for(const [ticker,x] of Object.entries(part.instruments||{})){
+    if(!x||x.withheld)continue;
+    const e=x.pro&&x.pro.elliott,pr=e&&e.primary;if(!pr||!pr.pattern)continue;
+    let sid;try{sid=Identity.securityIdForTicker(ticker);}catch{continue;}
+    const hit=listingFor(ticker,sid,null);
+    if(!hit.row){note(hit.rows,'elliott',hit.reason);continue;}
+    const w=pr.currentWave||{};
+    Object.assign(hit.row,{ew:[e.status||null,pr.pattern,pr.direction||null,pr.complete?1:0,w.label||null,w.status||null],ewd:isDay(x.asOf)?x.asOf:null});
+    if(isDay(x.asOf)&&(!asOf||x.asOf>asOf))asOf=x.asOf;
+   }
+  }
+  sources.elliott={...domainRule(registry,'technicalIntelligenceV3'),artifact:'/quant/data/technical-intelligence/v3/shards/',asOf,generatedAt:meta.generatedAt||null,model:'EXPERIMENTAL'};
  });
 
  // ---- Technik: 52W-Hoch, Volumen, Trend (Plattformdefinition aus market-factors.js, siehe discover/engines/high52w.js)
@@ -183,11 +264,11 @@ export function buildSummary(root,{now=new Date()}={}){
  if(oldest&&calendar){let d=oldest;for(let k=0;k<40;k++){d=TS.nextTradingDay(d,{calendar});if(!d)break;sessions.push(d);}}
 
  // ---- spaltenweise ausgeben
- const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
+ const FIELDS=['i','s','n','x','cu','act','del','el','c','cd','pu','d1','dp','rf','rk','rp','re','fp','fc','fn','ew','ewd','q','qdq','qd','mc','td','tf','h52','h52w','h52m','dh','rv','vs','rsi','a200','st','sts','why'];
  rows.sort((a,b)=>a.s<b.s?-1:a.s>b.s?1:a.i<b.i?-1:1);
  const cols={};for(const f of FIELDS)cols[f]=rows.map(r=>r[f]===undefined?null:r[f]);
  const slices=sources.supertrader&&sources.supertrader.slices;
- if(slices){cols.stp=rows.map(r=>slices.has(r.s)&&r.act===1?1:0);delete sources.supertrader.slices;}
+ if(slices){cols.stp=rows.map(r=>slices.has(r.s)&&r.act===1&&!r.iq?1:0);delete sources.supertrader.slices;}
  const doc={schemaVersion:SCHEMA,generatedAt:now.toISOString(),count:rows.length,calendar:{exchange:'XNYS',after:oldest,sessions},
   sources,skipped,withheld,fields:Object.keys(cols),cols};
  const report={rows:rows.length,priced:rows.filter(r=>r.c).length,quant:rows.filter(r=>r.q).length,technical:rows.filter(r=>r.td).length,

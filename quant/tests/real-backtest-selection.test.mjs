@@ -5,7 +5,9 @@ import fs from 'node:fs';
 import {tmpdir} from 'node:os';
 import {resolve,join} from 'node:path';
 const require=createRequire(import.meta.url),Reader=require('../../server/quant-backtest-reader.cjs'),Selection=require('../api/real-backtest-selection.js'),{materialize}=require('../../scripts/quant/materialize-real-backtest-read.cjs');
-const root=resolve(import.meta.dirname,'../..'),output=fs.mkdtempSync(join(tmpdir(),'vu-selection-')),tickers=['NVDA','MSFT','XOM','ARM','AAPL','BGC','AAAC','AACT'];
+/* Junge Notierung der Klasse C: ANDG (Stammaktie seit 17.12.2025) statt AAAC. AAAC ist ein ETF (Columbia AAA CLO ETF),
+   seit der Eignung vom 05.11.2026 belegt aus dem Produktuniversum genommen; seine Reihe wird nicht mehr veroeffentlicht. */
+const root=resolve(import.meta.dirname,'../..'),output=fs.mkdtempSync(join(tmpdir(),'vu-selection-')),tickers=['NVDA','MSFT','XOM','ARM','AAPL','BGC','ANDG','AACT'];
 materialize({root,output,ids:tickers.map(t=>'ref_'+t)});
 const service=Reader.create({directory:output,root,enabled:true,audience:'INTERNAL_REVIEW',allowedTickers:tickers}),client=Selection.create({service});
 test.after(()=>fs.rmSync(output,{recursive:true,force:true}));
@@ -20,7 +22,7 @@ test('all five real periods return identical hashes across raw service and pinne
 });
 test('8 real identities retain quality and benchmark dimensions; blocked listings never expose performance',async()=>{
  for(const ticker of tickers){const s=await client.load(ticker);assert.equal(s.identity.ticker,ticker);assert.equal(s.certification,'NOT_CERTIFIED');assert.equal(s.returnBasis,'PRICE_RETURN');
- if(['AAPL','BGC','AAAC','AACT'].includes(ticker)){assert.equal(s.state,'BLOCKED');assert.equal(s.result,undefined);for(const section of Selection.sections){const d=await client.read(s.selection,section);assert.equal(d.state,'BLOCKED');assert.equal(d.result,undefined);}}
+ if(['AAPL','BGC','ANDG','AACT'].includes(ticker)){assert.equal(s.state,'BLOCKED');assert.equal(s.result,undefined);for(const section of Selection.sections){const d=await client.read(s.selection,section);assert.equal(d.state,'BLOCKED');assert.equal(d.result,undefined);}}
  else{assert.equal(s.state,'AVAILABLE_LIMITED');assert.ok(s.result.endCapital>0);}
  }
  const xom=await client.load('XOM');assert.equal(xom.benchmarkState,'BENCHMARK_UNAVAILABLE');assert.ok(xom.quality.limitations.includes('DIVIDENDS_EXCLUDED'));

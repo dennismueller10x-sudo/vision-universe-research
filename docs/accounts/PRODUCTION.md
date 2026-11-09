@@ -9,12 +9,13 @@ und D gelten weiter.
 
 | Teil | Produktion | Hinweis |
 |---|---|---|
-| Datenbank | Supabase `qiytbnpoqvldsatpfkeh` (Frankfurt, Free) | heißt historisch `vision-universe-dev`; 8 Migrationen, RLS, Tests 01–08 grün |
+| Datenbank | Supabase `qiytbnpoqvldsatpfkeh` (Frankfurt, Free) | heißt historisch `vision-universe-dev`; 10 Migrationen, RLS, Tests 01–10 grün |
 | API | Worker `vu-account` unter `https://konto.visionuniverse.de` | `wrangler.toml` `[env.production]`; **nicht** `account.visionuniverse.de` (Shopify-Kundenkonten) |
 | Seiten | `/konto/` auf research.visionuniverse.de, hinter der Research-Passwortmaske | `konto/config.js` bleibt leer bis zur Freischaltung |
-| Abrechnung | Stripe Live, Restricted Key `rk_live_` | Live angebunden; Checkout nur für Konten mit Rolle `billing_tester` (`VU_CHECKOUT_ACCESS = "testers"`), siehe [TARIFE.md](TARIFE.md) |
-| E-Mail | Brevo, Domain `visionuniverse.de` verifiziert und authentifiziert | Auth-Mails über Brevo-SMTP; Kündigungsbestätigungen über die Brevo-API |
-| Sicherung | `account-backup.yml`, täglich, age-verschlüsselt | Free-Plan hat keine herunterladbaren Backups |
+| Abrechnung | Stripe Live, Restricted Key `rk_live_` | Live angebunden; Checkout nur für Konten mit Rolle `billing_tester` (`VU_CHECKOUT_ACCESS = "testers"`), siehe [TARIFE.md](../archiv/accounts/TARIFE.md) |
+| E-Mail | Brevo, Domain `visionuniverse.de` verifiziert und authentifiziert | Auth-Mails über Brevo-SMTP; Vertrags-, Kündigungs- und Widerrufsbestätigungen über die Brevo-API; Kontaktabgleich und Newsletter aus ([BREVO.md](BREVO.md)) |
+| Rechtstexte, Kündigen, Widerrufen | `https://konto.visionuniverse.de/rechtliches/`, `/kuendigen`, `/widerrufen` (ohne Passwortmaske) | Entwürfe, [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md) |
+| Sicherung | `account.yml` (Teil `sicherung`), täglich, age-verschlüsselt | Free-Plan hat keine herunterladbaren Backups |
 
 ## Zugangsdaten (GitHub)
 
@@ -32,14 +33,17 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
 
 ## Abläufe
 
-1. **Ausrollen** – Actions → „Konten — vu-account ausrollen (Produktion)“ → Run workflow (zwei Freigaben). Danach meldet
+Ausrollen und nicht destruktive Migrationen laufen nach dem Merge automatisch; was eine Freigabe braucht, steht in
+[FREIGABEN.md](FREIGABEN.md). Die Workflows unten sind die freigabepflichtigen Wege.
+
+1. **Ausrollen** – Actions → „Konten (Buendel account)“, Teil `ausrollen` → Run workflow (zwei Freigaben). Danach meldet
    `https://konto.visionuniverse.de/v1/health` `accounts: true`, `autoProcess: false`.
-2. **Auth einstellen** – „Konten — Supabase Auth einstellen (Produktion)“ (erst Probelauf;
+2. **Auth einstellen** – „Konten (Buendel account)“, Teil `auth` (erst Probelauf;
    `supabase-auth-config.mjs --production`, nur die feste Ref, ohne Projektabfrage). Setzt Site-URL, Redirect
    `https://konto.visionuniverse.de/v1/auth/callback**`, E-Mail-Bestätigung, Passwort ≥ 10 mit Groß/Klein/Ziffer, Hook
    „Before User Created“, deutsche Vorlagen (Registrierung, Passwort, E-Mail-Änderung) und – mit
    `VU_ACCOUNT_BREVO_SMTP_LOGIN`/`…_SMTP_KEY` in `account-dev` – SMTP über Brevo.
-3. **Stripe** – „Konten — Stripe Live einrichten (Produktion)“ (erst Probelauf, dann zwei Freigaben): legt Produkt
+3. **Stripe** – „Konten (Buendel account)“, Teil `stripe` (erst Probelauf, dann zwei Freigaben): legt Produkt
    `vu_pro` „Vision Universe Pro“, den Monatspreis 1,00 EUR (Katalog im Code, `LIVE_CATALOG`), Kundenportal und Webhook an;
    Webhook-Geheimnis und Portal-ID gehen direkt in den Worker, `pro_month_live` in `plan_prices`.
 4. **Öffentliche Registrierung** (Owner-Entscheidung 27.10.2026: jede gültige Adresse, **keine Positivliste**):
@@ -55,7 +59,7 @@ für die Betriebsläufe). Jeder Job prüft die Freigabe zusätzlich selbst (fail
    `/v1/health`, Zählungen und RLS in der Datenbank, Zustellereignisse bei Brevo.
 6. **Abrechnung** (Owner-Entscheidung 28.10.2026): `STRIPE_LIVE_MODE_APPROVED = "true"`, `VU_CHECKOUT_ACCESS = "testers"`.
    Den Checkout nutzen nur Konten mit Rolle `billing_tester`; öffentlicher Pro-Checkout nur per eigenem Freigabe-PR
-   (`"public"`, der Deploy-Workflow lehnt ihn bis dahin ab). Ablauf und Tarife: [TARIFE.md](TARIFE.md).
+   (`"public"`, der Deploy-Workflow lehnt ihn bis dahin ab). Ablauf und Tarife: [TARIFE.md](../archiv/accounts/TARIFE.md).
 
 ## Schutz der Testpreise
 
@@ -66,7 +70,7 @@ nur Preise passend zum Schlüsselmodus, der Checkout gleicht den Preis vorher mi
 ## Sicherung und Wiederherstellung
 
 Einmalig: lokal `age-keygen -o vu-backup.key` (privater Schlüssel nur offline/Passwortmanager), den öffentlichen Teil `age1…` als
-Repository-Variable `VU_ACCOUNT_BACKUP_AGE_RECIPIENT`, die Session-Pooler-URI als Repository-Secret `VU_ACCOUNT_BACKUP_DB_URL`.
+Repository-Variable `VU_ACCOUNT_BACKUP_AGE_RECIPIENT`; die Datenbank-URL kommt aus der Umgebung `account-auto` ([FREIGABEN.md](FREIGABEN.md)).
 Ohne Empfängerschlüssel sichert der Workflow nichts (nie unverschlüsselt).
 
 Wiederherstellen: Artefakt laden, `age -d -i vu-backup.key vu-accounts-….dump.age > dump`, dann

@@ -11,6 +11,8 @@ import {pkcePair} from './crypto.mjs';
 import {SupabaseError} from './supabase.mjs';
 import {SITE_PATHS} from './config.mjs';
 import * as v from './validate.mjs';
+import {NEWSLETTER} from './brevo.mjs';
+import {LEGAL_VERSION} from './legal/texts.mjs';
 
 const AT = 'vu_at', RT = 'vu_rt', PKCE = 'vu_pkce';
 
@@ -113,9 +115,14 @@ export async function signup(ctx) {
     await ctx.sb.auth.signUp({email, password, ip: ctx.ip, codeChallenge: challenge,
       redirectTo: ctx.cfg.apiOrigin + '/v1/auth/callback?flow=signup' + plan,
       data: {display_name: v.displayName(body.displayName), terms_accepted_at: new Date(ctx.now()).toISOString(),
-        terms_version: String(body.termsVersion || '').slice(0, 20) || null,
+        // Fassung der Bedingungen, der zugestimmt wurde (vom Server, nicht aus der Anfrage).
+        terms_version: LEGAL_VERSION,
         // Dieselbe Wahl im Konto (user_metadata): ueberdauert Geraetewechsel und neue Anmeldungen.
-        ...(plan ? {plan_intent: 'pro', plan_intent_at: new Date(ctx.now()).toISOString()} : {})}});
+        ...(plan ? {plan_intent: 'pro', plan_intent_at: new Date(ctx.now()).toISOString()} : {}),
+        // Freiwillige Newsletter-Anforderung: wird erst nach bestaetigter Adresse zur Einwilligungsanfrage
+        // (Cron, billing_newsletter_due); erst der Klick in der DOI-Mail macht sie wirksam.
+        ...(body.newsletter === true && ctx.cfg.brevo.newsletter
+          ? {newsletter_requested_at: new Date(ctx.now()).toISOString(), newsletter_version: NEWSLETTER.version} : {})}});
   } catch (e) {
     if (e instanceof SupabaseError && e.status === 429) throw new HttpError(429, 'RATE_LIMITED');
     if (e instanceof SupabaseError && e.code === 'weak_password') throw new HttpError(400, 'PASSWORD_WEAK');
@@ -198,3 +205,42 @@ export async function reauthenticate(ctx, user, currentPassword) {
 }
 
 export {clearSession};
+
+// Native HTTP; kein zweiter Browser-Tokenweg.
+function assertNative(ctx) {
+  if (ctx.request.headers.has('Origin') || ctx.request.headers.has('Cookie')) throw new HttpError(403, 'NATIVE_ONLY');
+}
+const appTokens = d => ({accessToken:d.access_token,refreshToken:d.refresh_token,expiresIn:d.expires_in,
+  user:{id:d.user?.id,email:d.user?.email}});
+export async function appLogin(ctx) {
+  assertNative(ctx);
+  const b = await readJson(ctx.request), email = v.email(b.email);
+  await ctx.limit('login', ctx.ip || email); await ctx.limit('loginAccount',email);
+  if (typeof b.password !== 'string' || !b.password || b.password.length>200) throw new HttpError(400,'PASSWORD_REQUIRED');
+  try {
+    const d = await ctx.sb.auth.signInWithPassword({email,password:b.password,ip:ctx.ip});
+    return json(ctx.request,ctx.cfg,200,appTokens(d),{headers:{'Cache-Control':'no-store'}});
+  } catch(e) {
+    if (e instanceof SupabaseError && e.status<500) throw new HttpError(e.status===429?429:e.code==='email_not_confirmed'?403:401,
+      e.status===429?'RATE_LIMITED':e.code==='email_not_confirmed'?'EMAIL_NOT_CONFIRMED':'INVALID_CREDENTIALS');
+    throw e;
+  }
+}
+export async function appRefresh(ctx) {
+  assertNative(ctx); await ctx.limit('sensitive',ctx.ip || 'native');
+  const b = await readJson(ctx.request);
+  if (typeof b.refreshToken !== 'string' || !b.refreshToken || b.refreshToken.length>4096) throw new HttpError(401,'TOKEN_INVALID');
+  try {
+    const d = await ctx.sb.auth.refresh({refreshToken:b.refreshToken,ip:ctx.ip});
+    return json(ctx.request,ctx.cfg,200,appTokens(d),{headers:{'Cache-Control':'no-store'}});
+  } catch(e) {
+    if (e instanceof SupabaseError && e.status<500) throw new HttpError(e.status===429?429:401,e.status===429?'RATE_LIMITED':'TOKEN_INVALID');
+    throw e;
+  }
+}
+export async function appLogout(ctx) {
+  assertNative(ctx);
+  const user = await requireUser(ctx);
+  await ctx.sb.auth.logout({accessToken:user.accessToken,ip:ctx.ip}).catch(()=>{});
+  return json(ctx.request,ctx.cfg,200,{authenticated:false},{headers:{'Cache-Control':'no-store'}});
+}

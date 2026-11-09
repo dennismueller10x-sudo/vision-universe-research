@@ -13,6 +13,8 @@
 import { join } from "node:path";
 import { args, makeLoader, loadEngines, REPO_ROOT, require } from "./lib.mjs";
 
+import { equityRules } from "./equity-quality.mjs";
+
 const a = args();
 if (!a._.length) { console.error("Aufruf: node scripts/core/diagnose.mjs <TICKER> [...] [--site=URL] [--json]"); process.exit(1); }
 const E = loadEngines();
@@ -20,6 +22,7 @@ const Diagnose = require(join(REPO_ROOT, "core", "diagnose.js"));
 const Staleness = require(join(REPO_ROOT, "core", "listing-staleness.js"));
 const Client = require(join(REPO_ROOT, "core", "client.js"));
 const load = makeLoader({ site: a.site || null });
+const EquityQuality = require(join(REPO_ROOT, "core/equity-quality.js"));
 const now = a.now ? new Date(a.now) : new Date();
 const lage = E.TradingSession.resolve(now, { calendar: E.calendar });
 const expected = lage.lastCompletedSession ? lage.lastCompletedSession.sessionDate : null;
@@ -44,12 +47,18 @@ const alle = [];
 for (const t of a._) {
   const d = await Diagnose.diagnose(t, { load, expectedSession: expected, lagSessions, marketState: lage.marketState });
   d.kursende = (await kursende(t)).map((f) => ({ kind: f.kind, text: f.text }));
+  const equity = await equityRules({ load, now, expected, tickers: [d.ticker] });
+  d.dataQuality = EquityQuality.forTicker(equity.rules, d.ticker);
+  d.dataQualityMissingArtifacts = equity.missingArtifacts;
   alle.push(d);
   if (d.status === "FAILED" || d.status === "STALE") schlecht++;
   if (!a.json) {
     console.log(Diagnose.formatText(d));
     console.log("  Kursende/Stamm (nur Bericht): " + (d.kursende.length ? "" : "unauffaellig"));
     for (const f of d.kursende) console.log("    WARN " + f.kind + ": " + f.text);
+    console.log("  Datenqualität (nur Bericht): " + (d.dataQuality.length ? "" : "keine Befunde in prüfbaren Daten"));
+    for (const f of d.dataQuality) console.log("    WARN " + f.rule + ": " + f.text);
+    if (equity.missingArtifacts.length) console.log("    Quellen nicht ladbar: " + equity.missingArtifacts.join(", "));
     console.log("");
   }
 }

@@ -196,7 +196,7 @@
     var headNode = el("p", { class: "qc-head" }, [headDelta, headWord, headMeta]);
     var plot = el("div", { class: "qc-plot", "aria-live": "off" });
     var box = el("div", { class: "vu-chart vu-chart--bleed qc-box" }, [plot]);
-    var bar = el("div", { class: "vu-ranges qc-ranges", role: "group", "aria-label": "Zeitraum des Charts" });
+    var bar = el("div", { class: "vu-ranges qc-ranges", role: "group", "aria-label": "Zeitraum des Charts", tabindex: "0" }); /* scrollbar auf schmalen Schirmen */
     var note = el("p", { class: "qc-note" });
     /* Anzeigewaehrung waehlen: der vorhandene Umschalter der FX-Schicht (VUFx.Switch, wie in Discover). */
     var fxHost = el("p", { class: "qc-fx" });

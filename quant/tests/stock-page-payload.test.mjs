@@ -127,10 +127,17 @@ test("technicalTickerDocs: jeder Titel des Scherbens genau einmal, Objekte unver
 });
 
 test("technicalTickerDocs: der Scherben ist der Ausgangspunkt, kein Titel geht verloren", () => {
-  /* NV: 15 Titel, 4,3 MB; NVDA allein 319 KB. */
-  const docs = technicalTickerDocs(shardFile("NV"));
-  assert.equal(Object.keys(docs).length, Object.keys(shardFile("NV").instruments).length);
-  assert.ok(JSON.stringify(docs.NVDA).length < JSON.stringify(shardFile("NV")).length / 10);
+  /* NV: 15 Titel, 4,3 MB; NVDA allein 319 KB (Stand 10/2026). Seit 11/2026 16 Titel, 5,2 MB; NVDA 529 KB, also knapp
+     ueber einem Zehntel des Scherbens - die feste Quote 1/10 war eine Faustregel fuer "nur ein Titel". Geprueft wird das
+     jetzt genau: Die Einzelansicht ist das Objekt des Titels plus Kopf (gemessen 204 Byte), nichts von den anderen Titeln. */
+  const shard = shardFile("NV"), docs = technicalTickerDocs(shard);
+  assert.equal(Object.keys(docs).length, Object.keys(shard.instruments).length);
+  assert.ok(Object.keys(shard.instruments).length >= 10, "Scherben NV unplausibel klein");
+  for (const t of Object.keys(shard.instruments)) {
+    const own = JSON.stringify(shard.instruments[t]).length, doc = JSON.stringify(docs[t]).length;
+    assert.ok(doc - own < 2048, t + ": Einzelansicht traegt mehr als Objekt und Kopf (" + (doc - own) + " Byte)");
+  }
+  assert.ok(JSON.stringify(docs.NVDA).length < JSON.stringify(shard).length / 5);
   assert.throws(() => technicalTickerDocs({ shard: "NV" }), /INVALID_TECHNICAL_SHARD/);
   assert.ok(TECHNICAL_SHARD_PATH.test("quant/data/product/technical-signals-v1/NV.json.gz"));
   assert.ok(!TECHNICAL_SHARD_PATH.test("quant/data/product/technical-signals-v1/signals-5.json.gz"));

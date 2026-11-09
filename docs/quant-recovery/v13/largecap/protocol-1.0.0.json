@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "v13-largecap-protocol-1.0.0",
+  "methodId": "SOURCE_PRICE_BAND_IDENTITY_INTERVAL",
+  "status": "REGISTERED_BEFORE_OUTCOMES",
+  "registeredAt": "2026-10-29",
+  "base": "claude/vision-quant-v10-backtest-4ho3rd @ ac66b4e239",
+  "registration": "The git commit that adds this file is the registration. It precedes every SEC document fetch of this method and every evaluation of the seven listings. sha256 in protocol-1.0.0.sha256. Any later change is a new version (protocol-amendment-x.y.z.json with its own sha256 and reason); results under every version are kept side by side and each result names the version it was computed under. Results of an amendment written after sight of results are EXPLORATORY_POST_HOC and never replace the registered result.",
+  "ownerApproval": "V13 (2026-10-29): fuer grosse Aktien (AAPL, ABT, MS, USB, DD, COR, DOC) eine neue, versionierte quellenbasierte Identitaets- und Preismethode; Freischaltung nur mit zeitgleichen Kurs- und Identitaetsbelegen, unabhaengiger Pruefung und klaren Intervallgrenzen; nachtraegliche Aenderungen nur explorativ; keine Ergebnisoptimierung ueber nachtraeglich gewaehlte Filter.",
+  "certificationStatus": "NOT_CERTIFIED",
+  "productionApproved": false,
+  "evidenceKind": "SOURCE_EVIDENCE",
+  "scope": {
+    "listings": ["ref_AAPL", "ref_ABT", "ref_MS", "ref_USB", "ref_DD", "ref_COR", "ref_DOC"],
+    "rule": "Exactly the seven listings named by the owner. No other listing is evaluated under this version; extending the scope needs a new version.",
+    "blockingAtBase": {
+      "ref_AAPL": "CA 2000-09-29 SINGLE_DAY_DOMINATES_WEEK; V12 RESTRICT: NO_SAME_DAY_PRICE_EVIDENCE",
+      "ref_ABT": "CA 2013-01-04 SINGLE_DAY_SPLIT_SIZED_JUMP (AbbVie distribution); V12 RESTRICT: NO_SAME_DAY_PRICE_EVIDENCE",
+      "ref_MS": "CA 2008-10-17 SINGLE_DAY_DOMINATES_WEEK; V12 RESTRICT: NO_SAME_DAY_PRICE_EVIDENCE",
+      "ref_USB": "CA 1999-04-16 PROVIDER_SPLIT_IN_WEEK; V12 RESTRICT: NO_SAME_DAY_PRICE_EVIDENCE",
+      "ref_DD": "AMBIGUOUS_LISTING_IDENTITY (2 master rows); V12 identity: NO_SAME_DAY_PRICE_EVIDENCE",
+      "ref_COR": "AMBIGUOUS_LISTING_IDENTITY (2 master rows, CoreSite concatenation risk); V12 identity: NO_SAME_DAY_PRICE_EVIDENCE",
+      "ref_DOC": "AMBIGUOUS_LISTING_IDENTITY (2 master rows, Physicians Realty concatenation risk); V12 identity: NO_SAME_DAY_PRICE_EVIDENCE"
+    }
+  },
+  "priorKnowledge": [
+    "The V12 LARGECAP results for all seven listings are known (docs/quant-recovery/v12/largecap/README.md, restrict-cases-1.0.1.json, identity-cases-1.0.1.json): no dated closing price in the V10 rule format was found in the documents V12 read (mostly 2016+ 10-K/10-Q/DEF 14A).",
+    "The SEC submissions filing lists of the seven CIKs were read by V12 (cached privately). No document content was inspected for this version.",
+    "Public corporate history known in general terms and used only to pre-register the candidate symbols and the CIK of each listing: Apple (AAPL); Abbott (ABT; Hospira distribution 2004, AbbVie distribution 2013); Morgan Stanley (CIK of Dean Witter Discover & Co.; symbols DWD, MWD, MS); U.S. Bancorp (CIK of First Bank System; Firstar merger 2001); DuPont de Nemours (CIK of DowDuPont; symbols DWDP, DD; Dow and Corteva distributions 2019); Cencora (CIK of AmerisourceBergen; symbols ABC, COR; previous COR = CoreSite); Healthpeak (CIK of Health Care Property Investors/HCP; symbols HCP, PEAK, DOC; previous DOC = Physicians Realty). None of these facts is used as evidence; each must be found in the fetched sources.",
+    "General knowledge that 10-K Item 5 contained quarterly high/low price tables until the SEC disclosure simplification of 2018 and that issuer repurchase tables with average price paid per share exist since 2004. How many of these tables exist for the seven listings, and how they compare with the provider series, is unknown at registration."
+  ],
+  "principle": "A weekly provider close is only usable inside an interval in which (1) contemporaneous SEC documents of the registrant state price bands that the series, converted into the units of each document with documented factors, lies in, and (2) the same or bracketing documents name the trading symbol and the exchange. Everything outside the interval stays excluded. No provider value is changed, nothing is interpolated.",
+  "listingIdentity": {
+    "cik": { "ref_AAPL": "0000320193", "ref_ABT": "0000001800", "ref_MS": "0000895421", "ref_USB": "0000036104", "ref_DD": "0001666700", "ref_COR": "0001140859", "ref_DOC": "0000765880" },
+    "candidateSymbols": { "ref_AAPL": ["AAPL"], "ref_ABT": ["ABT"], "ref_MS": ["MS", "MWD", "DWD"], "ref_USB": ["USB"], "ref_DD": ["DD", "DWDP"], "ref_COR": ["COR", "ABC"], "ref_DOC": ["DOC", "PEAK", "HCP"] },
+    "singleCik": "Only documents filed under the listed CIK are used (1.0.0). History of a predecessor registrant (another CIK) stays excluded even if the provider series contains it.",
+    "masterRow": "One master row: action SINGLE_ROW_INTERVAL (the only row). Two rows: SELECT_EXISTING_ROW of the ACTIVE row whose ticker equals the listing ticker, the other row must be INACTIVE; the exact row set is recorded and checked at load time (fail closed if it changed)."
+  },
+  "documents": {
+    "window": "filingDate 1993-01-01 .. 2026-10-28",
+    "annual": "Every 10-K, 10-K405, 10-KT of the CIK (no amendments). filingDate < 2009-01-01: the complete submission text file (includes all exhibits, in particular EX-13 annual reports). filingDate >= 2009-01-01: the filing index (index.json) plus the primary document plus every document of type EX-13*.",
+    "quarterly": "Every 10-Q of the CIK with filingDate >= 2004-01-01 (repurchase tables exist from 2004): the primary document (complete submission text file if no primary document is listed).",
+    "symbolChange": "For each symbol transition without a change anchor in the documents above: the 8-K filings of the CIK filed between the last identity document with the old symbol and the first with the new symbol (at most 25, chronological).",
+    "fairAccess": "All network reads through scripts/quant/sec/http_client.py (User-Agent 'VisionUniverseResearch info@visionuniverse.de', <= 2 requests/second). Bodies stored only under the private scratchpad (v13-private/largecap/http-cache); bodies already cached by earlier strands are re-used read-only and re-hashed. Every network request is written to a ledger and counted.",
+    "repo": "Only derived facts: accession, URL, sha256 of the bytes read (and sha256 after removing the per-request bot-manager tag, V10 population amendment 1.0.2), quote <= 300 characters, extracted numbers."
+  },
+  "priceAnchors": {
+    "A_QUARTERLY_RANGE": {
+      "source": "A table in an annual document (main document or EX-13) whose rows are fiscal quarters and that reports a high and a low price per common share for each quarter (market price range / price range / sales prices).",
+      "parse": "Table rows (HTML <tr> or text lines). A quarter row is labelled First/Second/Third/Fourth (quarter), 1st..4th, Q1..Q4 or the fiscal quarter month range. Numbers: decimals, '$' ignored, fractions 'a b/c', 'a-b/c' and unicode vulgar fractions. Column meaning from the header tokens High/Low (other columns such as Close or Dividends are ignored). Year labels: four-digit years in the header (one high/low pair per year, in header order) or a year row preceding a block of quarter rows. Several high/low pairs without explicit years, a high < low, or a quarter appearing twice for the same year in one table: table not used (PARSE_REJECTED, counted).",
+      "fiscalCalendar": "Fiscal year Y ends in the month of the document's period of report (reportDate from the submissions list) of year Y (or Y+1 for a period of report in January..March of a fiscal year labelled by its start; not expected for these seven). Quarter q covers the three fiscal months ending (4-q)*3 months before fiscal year end. Month boundaries are approximations for 52/53-week calendars, hence the buffer.",
+      "boundaryBufferDays": 10,
+      "testedBars": "Weekly bars dated inside the quarter and more than 10 calendar days away from both quarter boundaries.",
+      "tolerance": 0.01,
+      "pass": "Every tested bar: converted close in [low * (1 - 0.01), high * (1 + 0.01)]. At least 3 tested bars, else UNTESTED.",
+      "deviation": "max over tested bars of the relative distance outside [low, high] (0 if inside)."
+    },
+    "B_REPURCHASE_AVERAGE_PRICE": {
+      "source": "Issuer purchases of equity securities table (10-K Item 5, 10-Q Part II Item 2) with a row period and an average price paid per share.",
+      "parse": "Rows whose first cell is a period: explicit dates ('June 30, 2019 to August 3, 2019', '10/1/2015 - 10/31/2015') or a month name with year, or a month name with the year taken from the table header/document period. Average price = the first number after the total shares purchased that carries a '$' or a decimal point and is not a share count; rows labelled total/quarter total, rows mentioning accelerated/ASR/forward/collared/structured, rows with zero or no shares, and periods longer than 100 days are not used.",
+      "testedCloses": "C = converted closes of the bars dated in [periodStart, periodEnd + 6 days] plus the last bar dated before periodStart.",
+      "tolerance": 0.10,
+      "pass": "average price in [min(C) * (1 - 0.10), max(C) * (1 + 0.10)] and |C| >= 2, else UNTESTED.",
+      "deviation": "relative distance of the average price outside [min(C), max(C)] (0 if inside)."
+    },
+    "thresholdJustification": [
+      "A tolerance 1 %: table prices are exact (fractions) or rounded to cents; restated tables and provider-adjusted closes add rounding below 0.2 % at the price levels of these issuers. Weekly closes are closes, so they lie in any daily high/low range (intraday or closing) of the same quarter. 1 % keeps a margin for rounding without hiding a split- or identity-sized error (>= 25 %).",
+      "Buffer 10 days: fiscal quarters of 52/53-week calendars end up to 7 days away from month ends; bars near a boundary are not tested instead of being assigned to a possibly wrong quarter.",
+      "B tolerance 10 %: an average purchase price lies inside the daily price range of its period; weekly closes miss intra-week extremes, which rarely exceed 10 % even in 2008/2020. The errors this method targets (missing or wrong split factor, spliced issuer histories) are >= 25 % level shifts. Level errors below 10 % are NOT detected by B anchors (limit, reported).",
+      "Gap 366 days: the identity cadence of the method is annual (10-K naming symbol and exchange); targeted errors are persistent level shifts that the next anchor detects. A transient error shorter than the gap is not detectable (limit, reported).",
+      "Event window 120 days: a split-sized move or a provider factor inside the interval must be bracketed by passing anchors close to it (normally the containing quarter and the adjacent quarter or month).",
+      "Failure allowance: isolated small deviations (<= 10 % beyond the band, neighbours passing, <= 5 % of tested periods) are tolerated and reported because tables contain typos and repurchase rows can include negotiated prices; any larger, repeated or frequent failure ends the run.",
+      "Minimum 104 weekly bars: shorter islands carry little information relative to their boundary risk."
+    ]
+  },
+  "unitConversion": {
+    "factors": "Provider factors of the series document (corporateActions.splits, date and factor; series = raw / product of factors dated after the bar).",
+    "classification": "A factor is SPLIT if it equals p/q with integers 1 <= p,q <= 10 within relative 1e-4 AND a fetched document of the CIK filed within [date - 400 days, date + 800 days] states a stock split (or stock dividend / reverse split) of that ratio ('two-for-one', '2-for-1', '3 for 2', '1-for-3', '100% stock dividend' for 2/1 ...). Every other factor is NON_SPLIT (spin-off value adjustment, merger exchange ratio, or undocumented).",
+    "rule": "SEC SAB Topic 4C: per-share prices in a document are restated for stock splits effective up to its filing date; distributions are never restated. Converted close of bar b for document d = series close(b) * product(SPLIT factors dated after filingDate(d)) * product(NON_SPLIT factors dated after date(b)).",
+    "note": "A wrong classification changes the conversion and therefore fails the bands; it cannot unlock anything by itself."
+  },
+  "identityAnchors": {
+    "symbolStatement": "Document text contains a trading statement naming a candidate symbol: 'symbol(s)' or 'ticker' followed within 60 characters by the symbol as a whole word, or a cover 'Trading Symbol' cell with the symbol, or '(NYSE: X)' / '(Nasdaq: X)'.",
+    "exchangeStatement": "The same document names the exchange: New York Stock Exchange / NYSE (ABT, MS, USB, DD, COR, DOC) or Nasdaq (AAPL).",
+    "identityDocument": "A document is an identity document with symbol S if it has exactly one candidate symbol in trading statements (S) and an exchange statement. A document with several candidate symbols in trading statements is a CHANGE document (no own symbol).",
+    "symbolChain": "The current master ticker is valid. An older candidate symbol S is valid only if every transition S -> ... -> ticker has a change anchor: a fetched document of the CIK naming both symbols within 400 characters together with a change word (change, changed, new, formerly, previously, will begin trading, began trading, under the symbol).",
+    "periodIdentity": "A price anchor period counts only if its document (a) is an identity document with a valid symbol, or (b) was filed between two identity documents with valid symbols whose filing dates are <= 400 days apart (same symbol, or different symbols linked by a change anchor).",
+    "intervalBound": "validFrom >= earliest valid identity document filingDate - 400 days; validTo <= latest valid identity document filingDate + 400 days.",
+    "notUsed": "Form 25/25-NSE (cannot distinguish common stock from debt delistings without reading each one; banks file many for notes) and CUSIP (not stated consistently) are not used as cuts. A common-stock delisting inside the interval would contradict the annual symbol-and-exchange statements and the bands; counts of Forms 25 in the window are reported."
+  },
+  "intervalRule": {
+    "periods": "All tested anchor periods (A quarters and B rows with identity) sorted by period end, then start.",
+    "breaks": [
+      "a failing period with deviation > 0.10",
+      "two consecutive failing periods",
+      "a gap > 366 days between the end of a passing period and the start of the next passing period",
+      "a split-sized weekly move (corporate-action-evidence splitSized) or a provider factor date inside the candidate run that is not bracketed: a passing period containing it or ending within 120 days before it, AND a passing period containing it or starting within 120 days after it"
+    ],
+    "runs": "Maximal sequences of periods between breaks; a breaking period is not part of either neighbouring run; for an unbracketed event the run is split at the event date.",
+    "runAcceptance": "share of failing periods <= 0.05 of tested periods in the run; interval [start of first passing period, end of last passing period] intersected with the identity bound; at least 104 weekly bars.",
+    "selection": "If several runs are accepted, the one with the latest end is unlocked (one interval per listing in 1.0.0); the others are reported, not unlocked.",
+    "validFrom": "first weekly bar dated >= interval start",
+    "validTo": "last weekly bar dated <= interval end (closed interval; the series ends there in the research loader although the listing continues: SERIES_TRUNCATED_AT_LAST_ANCHOR_NOT_A_DELISTING)",
+    "eventsInside": "Split-sized moves inside the interval that validate() leaves UNRESOLVED are resolved as BAND_CONFIRMED_LEVEL only if bracketed (break rule 4). The result's returnBasis becomes PRICE_RETURN_ONLY (a distribution cannot be excluded by price bands; warning BAND_CONFIRMED_MOVE_DISTRIBUTION_NOT_EXCLUDED).",
+    "everythingElse": "Bars before validFrom and after validTo stay excluded. A listing without an accepted run stays fully locked (unchanged)."
+  },
+  "loader": {
+    "option": "identityEvidenceProtocolV13Largecap (new separate list LOADER_OPTIONS_V13; requires identityEvidenceProtocolV12). LOADER_OPTIONS and LOADER_OPTIONS_V12 unchanged; without the option every output is byte-identical; the product adapter is untouched.",
+    "registry": "New module quant/engines/research-largecap-price-anchors.cjs (generated, schema research-largecap-price-anchors-1.0.0); research-identity-evidence.cjs is not changed.",
+    "failClosed": "registry schema, protocol sha256, master row set, history guard sha256 over [validFrom, validTo], series ticker, every resolved move matched by week/prevWeek/closes/ratio (1e-5); any mismatch throws. No cover-age expiry (closed historical interval)."
+  },
+  "independentCheck": "A separate stdlib Python implementation (python3 -I) re-reads the raw private bodies, re-hashes them, re-extracts every cited anchor number with its own parser (from the flattened document text around the quote, not the table parser), recomputes conversions, band tests, runs and intervals from the series files, and compares with cases-1.0.0.json; output independent-check-1.0.0.json.",
+  "outputs": ["docs/quant-recovery/v13/largecap/cases-1.0.0.json", "docs/quant-recovery/v13/largecap/independent-check-1.0.0.json", "docs/quant-recovery/v13/largecap/README.md", "quant/engines/research-largecap-price-anchors.cjs", "quant/tests/v13-largecap.test.mjs"],
+  "limits": [
+    "Price bands test levels, not single weeks: a transient bad bar inside a band or a gap is not detected.",
+    "B anchors cannot detect level errors below 10 %; A anchors below about 1-5 % depending on how close closes come to the quarter extremes.",
+    "Dividends are not tested (PRICE_RETURN series).",
+    "Predecessor registrants (other CIKs) are out of scope of 1.0.0."
+  ]
+}

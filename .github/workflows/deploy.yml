@@ -1,0 +1,691 @@
+name: Auslieferung (Buendel deploy)
+
+# Buendel `deploy` (core/registry/workflow-bundles.json, Plan Neustart §3, A-Doc): Auslieferung von Workern und Nebenseiten.
+# Nicht hier: pages-release.yml (Hub der Auslieferung, viele Namensbezuege), cloudflare-waker-deploy.yml (Zeitgeber, Strang O).
+# Teile (Schritte unveraendert; Job-Bedingungen der Quelle bleiben und werden mit der Auswahl verknuepft):
+#   frage-worker                 vormals cloudflare-ask-deploy.yml
+#   live-worker                  vormals cloudflare-deploy.yml
+#   landing                      vormals landing-pages-publish.yml
+#   navigation                   vormals sync-navigation.yml
+# Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
+# Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
+
+on:
+  workflow_dispatch:
+    inputs:
+      teil:
+        description: 'Welcher Teil'
+        type: choice
+        required: true
+        options:
+          - frage-worker
+          - live-worker
+          - landing
+          - navigation
+      liveTest:
+        description: 'frage-worker: Nach dem Ausrollen eine echte Testfrage stellen (kostet unter 1 Cent)'
+        type: boolean
+        default: false
+      nurBericht:
+        description: 'frage-worker: Nur den Zustandsbericht lesen (kein Ausrollen, keine Frage, nur Zaehler und Fehlercodes)'
+        type: boolean
+        default: false
+      attachDomain:
+        description: 'live-worker: live.visionuniverse.de anlegen (sonst nur workers.dev)'
+        type: boolean
+        default: true
+  push:
+    branches:
+      - 'claude/**'
+      - 'main'
+    paths:
+      - '**/*.html'
+      - '.github/workflows/deploy.yml'
+      - 'quant/engines/technical/ti/ai-tools.js'
+      - 'scripts/sync-navigation.mjs'
+      - 'worker/src/**'
+      - 'worker/wrangler.toml'
+      - 'workers/vu-ask/**'
+
+permissions:
+  contents: read
+
+jobs:
+  auswahl:
+    name: Auswahl des Teils
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      frage_worker: ${{ steps.wahl.outputs.frage_worker }}
+      live_worker: ${{ steps.wahl.outputs.live_worker }}
+      landing: ${{ steps.wahl.outputs.landing }}
+      navigation: ${{ steps.wahl.outputs.navigation }}
+    steps:
+      - name: Teil waehlen
+        id: wahl
+        env:
+          # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
+          EVENT: ${{ github.event_name }}
+          ACTION: ${{ github.event.action }}
+          REF: ${{ github.ref }}
+          TEIL: ${{ inputs.teil }}
+          SCHEDULE: ${{ github.event.schedule }}
+          WR_NAME: ${{ github.event.workflow_run.name }}
+          WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          # Dateiliste beim push: Compare-API zwischen before und sha (die Commit-Liste des push-Ereignisses traegt in Actions
+          # kein added/modified/removed; Lauf 42598972028 waehlte deshalb nichts). Vertragstest WB-7.
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          INPUTS: ${{ toJSON(inputs) }}
+        run: |
+          set -euo pipefail
+          # Geaenderte Dateien des Pushs. Neuer Zweig (Basis 000...), API-Fehler oder abgeschnittene Liste
+          # (300 Dateien): unbekannt - dann gilt jede Pfadbedingung als erfuellt (im Zweifel ausfuehren).
+          PUSH_FILES="$RUNNER_TEMP/push-files.txt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=0
+          if [ "${EVENT:-}" = push ]; then
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ]; then PUSH_FILES_UNKNOWN=1
+            elif gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[].filename' > "$PUSH_FILES"; then
+              [ "$(wc -l < "$PUSH_FILES")" -lt 300 ] || PUSH_FILES_UNKNOWN=1
+            else echo "::warning::Compare-API ohne Ergebnis - Pfadbedingungen gelten als erfuellt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=1; fi
+          fi
+          echo "Dateien im Push: $(wc -l < "$PUSH_FILES"), unbekannt=$PUSH_FILES_UNKNOWN"
+          export PUSH_FILES PUSH_FILES_UNKNOWN
+          python3 - <<'PY'
+          import fnmatch, json, os, re
+          SPEC = json.loads(r"""{"frage-worker": {"crons": [], "dispatch": true, "push": {"branches": ["main"], "paths": ["workers/vu-ask/**", "quant/engines/technical/ti/ai-tools.js", ".github/workflows/deploy.yml"]}, "required": []}, "landing": {"crons": [], "dispatch": true, "required": []}, "live-worker": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/deploy.yml", "worker/src/**", "worker/wrangler.toml"]}, "required": []}, "navigation": {"crons": [], "dispatch": true, "push": {"branches": ["main"], "paths": ["**/*.html", "scripts/sync-navigation.mjs"]}, "required": []}}""")
+          ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
+          def glob_re(p):
+              # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
+              out, i = "", 0
+              while i < len(p):
+                  c = p[i]
+                  if p.startswith("**/", i): out += "(?:.*/)?"; i += 3; continue
+                  if p.startswith("**", i): out += ".*"; i += 2; continue
+                  if c == "*": out += "[^/]*"
+                  elif c == "?": out += "[^/]"
+                  elif c == "[":
+                      j = p.index("]", i); out += p[i:j + 1]; i = j + 1; continue
+                  else: out += re.escape(c)
+                  i += 1
+              return re.compile("^" + out + "$")
+          def match_list(pats, value):
+              ok = False
+              for p in pats:
+                  neg = p.startswith("!")
+                  if glob_re(p[1:] if neg else p).match(value): ok = not neg
+              return ok
+          def files():
+              # None = Liste unbekannt (siehe Schritt oben); sonst die geaenderten Pfade des Pushs
+              if os.environ.get("PUSH_FILES_UNKNOWN") == "1": return None
+              with open(os.environ["PUSH_FILES"]) as fh: return {l.strip() for l in fh if l.strip()}
+          def push_ok(r):
+              if ref.startswith("refs/heads/"):
+                  name = ref[11:]
+                  if "branches" in r and not match_list(r["branches"], name): return False
+                  if "branches-ignore" in r and match_list(r["branches-ignore"], name): return False
+                  if ("tags" in r) and "branches" not in r and "branches-ignore" not in r: return False
+              elif ref.startswith("refs/tags/"):
+                  name = ref[10:]
+                  if "tags" in r and not match_list(r["tags"], name): return False
+                  if "tags-ignore" in r and match_list(r["tags-ignore"], name): return False
+                  if ("branches" in r or "branches-ignore" in r) and "tags" not in r and "tags-ignore" not in r: return False
+              else: return False
+              if "paths" in r or "paths-ignore" in r:
+                  fs = files()
+                  if fs is None: return True  # Dateiliste unbekannt: im Zweifel ausfuehren, nie still 'keine Datei'
+                  if "paths" in r and not any(match_list(r["paths"], f) for f in fs): return False
+                  if "paths-ignore" in r and all(match_list(r["paths-ignore"], f) for f in fs): return False
+              return True
+          out = {}
+          for teil, r in SPEC.items():
+              v = False
+              if ev == "workflow_dispatch":
+                  v = bool(r.get("dispatch")) and os.environ.get("TEIL") == teil
+                  if v:
+                      # Pflichteingaben der Quelle gelten nur fuer ihren Teil (im Buendel optional)
+                      vals = json.loads(os.environ.get("INPUTS") or "{}") or {}
+                      fehlt = [n for n in (r.get("required") or []) if str(vals.get(n) if vals.get(n) is not None else "").strip() == ""]
+                      if fehlt: raise SystemExit("Pflichteingabe fehlt fuer Teil " + teil + ": " + ", ".join(fehlt))
+              elif ev == "schedule": v = os.environ.get("SCHEDULE") in (r.get("crons") or [])
+              elif ev == "push": v = "push" in r and push_ok(r["push"])
+              elif ev == "workflow_run" and "workflow_run" in r:
+                  w = r["workflow_run"]; b = os.environ.get("WR_BRANCH", "")
+                  v = os.environ.get("WR_NAME") in w["workflows"] and os.environ.get("ACTION") in w["types"]
+                  if v and w.get("branches") is not None: v = match_list(w["branches"], b)
+                  if v and w.get("branches-ignore") is not None: v = not match_list(w["branches-ignore"], b)
+              elif ev == "repository_dispatch" and "repository_dispatch" in r:
+                  t = r["repository_dispatch"]; v = t is None or os.environ.get("ACTION") in t
+              out[teil.replace("-", "_")] = "true" if v else "false"
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              for k, v in out.items(): fh.write(k + "=" + v + "\n"); print(k + "=" + v)
+          PY
+
+  # --- frage-worker: vormals cloudflare-ask-deploy.yml
+  frage-worker:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.frage_worker == 'true'
+    permissions:
+      contents: read
+    concurrency:
+      group: vu-ask-deploy
+      cancel-in-progress: false
+    name: Tests, Ausrollen, Smoke-Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tests (Budget, Limits, Lernprotokoll)
+        run: node --test "workers/vu-ask/tests/*.test.mjs" "ask/tests/*.test.mjs"
+
+      - name: Liegt der Cloudflare-Zugang vor?
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || { echo "::error::CLOUDFLARE_API_TOKEN fehlt"; exit 1; }
+
+      - name: Ausrollen
+        id: deploy
+        if: ${{ !inputs.nurBericht }}
+        working-directory: workers/vu-ask
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          # Optional: GitHub -> Settings -> Secrets and variables -> Actions ->
+          # Variables. Hat Vorrang vor wrangler.toml - so laesst sich die
+          # Fragenzahl ohne Codeaenderung umstellen.
+          PER_USER_DAILY: ${{ vars.VU_ASK_PER_USER_DAILY }}
+        run: |
+          extra=()
+          if [ -n "$PER_USER_DAILY" ]; then
+            [[ "$PER_USER_DAILY" =~ ^[0-9]{1,4}$ ]] || { echo "::error::VU_ASK_PER_USER_DAILY muss eine Zahl sein"; exit 1; }
+            extra+=(--var "VU_ASK_PER_USER_DAILY:$PER_USER_DAILY")
+            echo "Fragen pro Nutzer und Tag aus GitHub-Variable: $PER_USER_DAILY"
+          fi
+          npx --yes wrangler@4.147.0 deploy "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.log
+          url=$(grep -oE 'https://vu-ask\.[a-z0-9-]+\.workers\.dev' /tmp/deploy.log | head -1)
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+
+      - name: Schluessel zu Cloudflare (nie ins Protokoll)
+        id: keys
+        if: ${{ !inputs.nurBericht }}
+        working-directory: workers/vu-ask
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+          TURNSTILE_SECRET: ${{ secrets.TURNSTILE_SECRET }}
+          VU_ASK_ACCESS_PASSWORD: ${{ secrets.VU_ASK_ACCESS_PASSWORD }}
+          ANTHROPIC_WORKSPACE_ID: ${{ secrets.ANTHROPIC_WORKSPACE_ID }}
+        run: |
+          if [ -z "$VU_ASK_ADMIN_KEY" ]; then
+            VU_ASK_ADMIN_KEY=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
+          fi
+          echo "::add-mask::$VU_ASK_ADMIN_KEY"
+          put() { printf '%s' "$2" | npx --yes wrangler@4.147.0 secret put "$1" > /dev/null 2>&1 && echo "$1 hinterlegt" || { echo "::error::$1 nicht hinterlegt"; exit 1; }; }
+          put VU_ASK_ADMIN_KEY "$VU_ASK_ADMIN_KEY"
+          if [ -n "$TURNSTILE_SECRET" ]; then put TURNSTILE_SECRET "$TURNSTILE_SECRET"; fi
+          if [ -n "$VU_ASK_ACCESS_PASSWORD" ]; then put VU_ASK_ACCESS_PASSWORD "$VU_ASK_ACCESS_PASSWORD"; fi
+          # Nur noetig, wenn der API-Schluessel keinem Workspace zugeordnet ist.
+          if [ -n "$ANTHROPIC_WORKSPACE_ID" ]; then
+            ws=$(printf '%s' "$ANTHROPIC_WORKSPACE_ID" | tr -d '[:space:]')
+            # Die Form wird geprueft, der Wert nie ausgegeben.
+            if [[ "$ws" =~ ^wrkspc_[A-Za-z0-9]+$ ]]; then
+              put ANTHROPIC_WORKSPACE_ID "$ws"
+            else
+              echo "::warning::ANTHROPIC_WORKSPACE_ID hat nicht die Form wrkspc_… (Laenge ${#ws}, beginnt mit '${ws:0:3}…') - wird nicht verwendet."
+              printf '%s' "" | npx --yes wrangler@4.147.0 secret delete ANTHROPIC_WORKSPACE_ID --force > /dev/null 2>&1 || true
+            fi
+          fi
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            put ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
+            echo "claude=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::warning::ANTHROPIC_API_KEY fehlt - die Fragefunktion bleibt aus, bis er als GitHub-Secret hinterlegt und dieser Workflow erneut gelaufen ist."
+            echo "claude=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Smoke-Test (ohne Frage, kostet nichts)
+        if: ${{ steps.deploy.outputs.url != '' }}
+        run: |
+          sleep 5
+          curl --fail --silent "${{ steps.deploy.outputs.url }}/v1/health" > /dev/null
+          code=$(curl --silent -o /dev/null -w '%{http_code}' "${{ steps.deploy.outputs.url }}/v1/quota?client=smoketest0001")
+          case "$code" in
+            200) echo "Worker antwortet (ohne Zugangsschranke).";;
+            401) echo "Worker antwortet, Zugangsschranke aktiv.";;
+            *) echo "::error::Unerwartete Antwort $code"; exit 1;;
+          esac
+
+      # Eine echte Frage durch die ganze Kette: Schranke, Budget, Anthropic,
+      # Uebersetzung. Ausgegeben werden nur Status und erkannte Felder - kein
+      # Schluessel, keine Kosten-Interna.
+      - name: Live-Test mit echter Frage
+        if: ${{ inputs.liveTest && steps.keys.outputs.claude == 'true' && steps.deploy.outputs.url != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          ADMIN="$VU_ASK_ADMIN_KEY"
+          [ -n "$ADMIN" ] || ADMIN=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
+          echo "::add-mask::$ADMIN"
+          sleep 5
+          # Zwei Herkuenfte: die Website und die Capacitor-App (iOS).
+          check() {
+            curl --silent -X POST "$URL/v1/ask" -H 'content-type: application/json' -H "origin: $1" \
+                 -H "x-vu-access: $ADMIN" --data "$2" -D /tmp/head.txt > /tmp/answer.json
+            grep -qi "^access-control-allow-origin: $1" /tmp/head.txt || { echo "::error::Kein CORS-Kopf fuer $1"; exit 1; }
+            ORIGIN="$1" node -e '
+              const a = JSON.parse(require("fs").readFileSync("/tmp/answer.json", "utf8"));
+              console.log("Herkunft:", process.env.ORIGIN);
+              if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.code || "", a.detail || "", a.message || ""); process.exit(1); }
+              const r = a.result;
+              console.log("Quelle:", a.source, "| Status:", a.status, "| Art:", r.kind);
+              console.log("Verstanden:", r.understood);
+              console.log("Filter:", JSON.stringify((r.query ? r.query.groups[0].filters : []).map((f) => [f.field, f.op, f.value, f.value2])));
+              console.log("Supertrader:", JSON.stringify(r.supertrader), "| Fehlend:", JSON.stringify(r.missing));
+              console.log("Kontingent heute noch:", a.quota && a.quota.remainingToday);
+            '
+          }
+          check https://research.visionuniverse.de '{"question":"äh zeig mir mal alle Aktien mit neuem Jahreshoch zwischen 300 Millionen und 2 Milliarden, die ins Minervini Raster passen, und den Quant Score","clientId":"livetest-deploy-01"}'
+          check capacitor://localhost '{"question":"Welche Aktien mit über 10 Milliarden Börsenwert stehen im Weinstein Stage 2?","clientId":"livetest-app-0001"}'
+
+      # Zustandsbericht aus /v1/admin/report. Ausgegeben werden nur Zaehler,
+      # Grenzen und Fehlercodes - nie Fragetexte, nie Schluessel.
+      - name: Zustandsbericht (ohne Fragetexte)
+        if: ${{ always() }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          ADMIN="$VU_ASK_ADMIN_KEY"
+          [ -n "$ADMIN" ] || ADMIN=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
+          echo "::add-mask::$ADMIN"
+          [ -n "$URL" ] || URL=$(grep -oE 'https://vu-ask\.[a-z0-9-]+\.workers\.dev' ask/index.html | head -1)
+          code=$(curl --silent -o /tmp/report.json -w '%{http_code}' -H "authorization: Bearer $ADMIN" "$URL/v1/admin/report?limit=50" || true)
+          echo "Bericht: HTTP $code"
+          [ "$code" = "200" ] || exit 0
+          node workers/vu-ask/scripts/report-summary.mjs /tmp/report.json
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Fragefunktion vu-ask'
+            echo ''
+            echo "Adresse: \`${{ steps.deploy.outputs.url }}\`"
+            if [ "${{ steps.keys.outputs.claude }}" = "true" ]; then
+              echo ''; echo 'Anthropic-Schluessel hinterlegt - /ask/ ist aktiv.'
+            else
+              echo ''; echo '**Anthropic-Schluessel fehlt** - /ask/ zeigt "noch nicht freigeschaltet".'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- live-worker: vormals cloudflare-deploy.yml
+  live-worker:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.live_worker == 'true' && (github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[cf-deploy]'))
+    permissions:
+      contents: write
+    name: Tor, Deployment, Smoke-Test
+    runs-on: ubuntu-latest
+    concurrency:
+      group: vu-live-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # ---- Das Tor -----------------------------------------------------
+      - name: Tests des Realtime-Pfads
+        run: node scripts/market/run-realtime-tests.mjs
+
+      - name: Kein Schluessel in der Auslieferung
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/assert-no-secrets.mjs --all --record
+
+      # ZERO_COST_MODE = HARD. Kein Skript und kein Workflow darf einen
+      # Tarif anfassen koennen - das wird durchsucht, nicht versprochen.
+      - name: Zero-Cost-Vertrag pruefen (PAID_SERVICES_ENABLED = 0)
+        run: node scripts/market/assert-zero-cost-mode.mjs
+
+      # Bricht ab, wenn eine der sechs Abnahmebedingungen nicht auf gruen
+      # steht. Das ist der Unterschied zwischen einer Freigabe und einer
+      # Absichtserklaerung.
+      - name: Abnahmebedingungen pruefen (bricht ab bei NO_GO)
+        run: node scripts/market/assert-deploy-preconditions.mjs --max-age-hours 24
+
+      # ---- Die Account-ID aus dem, was schon da ist ---------------------
+      - name: Account-ID aus dem R2-Endpunkt ableiten
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: |
+          set -e
+          # Kein neues Secret: der bestehende R2-Endpunkt traegt die ID
+          # (scripts/market/storage/s3-driver.mjs, Zeile 121). Sie wird als
+          # Maske angemeldet, bevor sie irgendwohin geht.
+          ACC=$(node -e '
+            const m = /^https:\/\/([0-9a-f]{32})\./i.exec(process.env.VU_HISTORY_S3_ENDPOINT || "");
+            if (!m) { console.error("Account-ID nicht aus dem R2-Endpunkt ableitbar."); process.exit(1); }
+            console.log("::add-mask::" + m[1]);
+            console.log(m[1]);
+          ' | tail -1)
+          echo "::add-mask::$ACC"
+          echo "CLOUDFLARE_ACCOUNT_ID=$ACC" >> "$GITHUB_ENV"
+          echo "Account-ID abgeleitet (maskiert)."
+
+      # ---- Deployment ---------------------------------------------------
+      # Zuerst der Worker, dann sein Secret: `wrangler secret put` fragt
+      # bei einem Skript, das es noch nicht gibt, interaktiv nach - und in
+      # einer CI antwortet niemand.
+      - name: vu-live ausrollen (Cloudflare Free)
+        id: deploy
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          set -e
+          npx --yes wrangler@4.147.0 deploy 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g' | tee /tmp/deploy.txt
+          # Die veroeffentlichte Adresse steht in der Ausgabe. Sie ist
+          # oeffentlich, sobald sie existiert - sie darf in den Bericht.
+          URL=$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' /tmp/deploy.txt | head -1)
+          if [ -z "$URL" ]; then
+            SUB=$(npx --yes wrangler@4.147.0 subdomain get 2>/dev/null | grep -oE '[a-z0-9-]+\.workers\.dev' | head -1)
+            [ -n "$SUB" ] && URL="https://vu-live.$SUB"
+          fi
+          echo "Endpunkt: ${URL:-unbekannt}"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      # ---- Das Secret bei Cloudflare -----------------------------------
+      - name: Tiingo-Schluessel als Cloudflare-Secret setzen
+        working-directory: worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          set -e
+          # Ueber stdin, nie als Argument: Argumente stehen in der
+          # Prozessliste, stdin nicht. Und der Schluessel wird hier weder
+          # ausgegeben noch in eine Datei geschrieben.
+          printf '%s' "$TIINGO_API_KEY" | npx --yes wrangler@4.147.0 secret put TIINGO_API_KEY 2>&1 \
+            | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
+          # Das Objekt liest das Secret beim naechsten Start. Ein Redeploy
+          # ist nicht noetig - aber ein bereits laufendes Objekt haelt
+          # seine alte Umgebung, deshalb wird es angestossen.
+          npx --yes wrangler@4.147.0 deploy 2>&1 | tail -5 | sed -E 's/[0-9a-f]{32}/<maskiert>/g'
+
+      # ---- Smoke-Test ---------------------------------------------------
+      - name: Realtime Runtime smoke-testen
+        env:
+          VU_LIVE_URL: ${{ steps.deploy.outputs.url }}
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$VU_LIVE_URL" ]; then
+            echo "Keine Adresse aus dem Deployment - Smoke-Test nicht moeglich."
+            exit 1
+          fi
+          # Das Protokoll des Workers mitschneiden, waehrend der Test
+          # laeuft. Eine Ausnahme im Durable Object ist von aussen nur
+          # als abgerissener Socket zu sehen; hier steht sie im Klartext.
+          ( cd worker && npx --yes wrangler@4.147.0 tail vu-live --format json > /tmp/tail.json 2>/tmp/tail.err & echo $! > /tmp/tail.pid )
+          sleep 8
+          set +e
+          node scripts/market/smoke-vu-live.mjs --url "$VU_LIVE_URL" --seconds 45
+          ERGEBNIS=$?
+          set -e
+          sleep 3
+          [ -f /tmp/tail.pid ] && kill "$(cat /tmp/tail.pid)" 2>/dev/null || true
+          echo ""
+          echo "--- Worker-Protokoll (Ausnahmen und Meldungen) ---"
+          if [ -s /tmp/tail.json ]; then
+            node -e '
+              const fs = require("fs");
+              const zeilen = fs.readFileSync("/tmp/tail.json", "utf8").split("\n").filter(Boolean);
+              let gezeigt = 0;
+              for (const z of zeilen) {
+                let e = null;
+                try { e = JSON.parse(z); } catch (err) { continue; }
+                const aus = (e.exceptions || []).map((x) => "AUSNAHME: " + x.name + ": " + x.message);
+                const log = (e.logs || []).map((l) => (l.level || "log") + ": " +
+                  (l.message || []).map((m) => typeof m === "string" ? m : JSON.stringify(m)).join(" "));
+                for (const t of aus.concat(log)) {
+                  if (gezeigt++ < 40) console.log("  " + t.replace(/[0-9a-f]{32}/g, "<maskiert>").slice(0, 300));
+                }
+              }
+              if (!gezeigt) console.log("  (keine Ausnahmen, keine Meldungen)");
+            '
+          else
+            echo "  (kein Mitschnitt: $(head -c 200 /tmp/tail.err 2>/dev/null))"
+          fi
+          exit $ERGEBNIS
+
+      # ---- Der bevorzugte Name -------------------------------------------
+      - name: live.visionuniverse.de anlegen
+        if: >-
+          github.event_name != 'workflow_dispatch' || inputs.attachDomain
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/attach-live-domain.mjs --apply
+
+      - name: Smoke-Test auf dem bevorzugten Namen
+        continue-on-error: true
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          RESULT=$(node -e 'try{console.log(require("./quant/data/market/commercial/vu-live-domain.json").result)}catch(e){console.log("NONE")}')
+          if [ "$RESULT" = "ATTACHED" ] || [ "$RESULT" = "ALREADY_ATTACHED" ]; then
+            # Cloudflare braucht einen Moment, bis der Name traegt.
+            sleep 30
+            node scripts/market/smoke-vu-live.mjs --url "https://live.visionuniverse.de" \
+              --seconds 30 --out /tmp/domain-smoke || echo "Der Name traegt noch nicht - das ist kein Fehler des Workers."
+          else
+            echo "Kein eigener Name ($RESULT) - der Worker laeuft unter workers.dev."
+          fi
+
+      # ---- Nachweise sichern ----------------------------------------------
+      - name: Kein Schluessel in den Berichten
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+        run: node scripts/market/assert-no-secrets.mjs --all --record
+
+      - name: Berichte committen
+        if: always()
+        run: |
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add quant/data/market/commercial
+          if git diff --cached --quiet; then
+            echo "Keine Aenderung."
+          else
+            git commit -m "vu-live: Deployment und Smoke-Test aus Lauf ${{ github.run_id }}"
+            # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+            scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Zero-Cost Realtime V1 — Deployment'
+            echo ''
+            if [ -f quant/data/market/commercial/deploy-preconditions.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/deploy-preconditions.json");
+                console.log("| Abnahmebedingung | Stand |");
+                console.log("|---|---|");
+                for (const c of r.conditions) console.log("| " + c.name + " | **" + c.status + "** |");
+                console.log("| Zugang | " + (r.access.ok ? "OK" : "FEHLT") + " |");
+                console.log("");
+                console.log("**" + r.verdict + "**");
+                console.log("");
+                for (const c of r.conditions) console.log("- **" + c.name + "**: " + c.reason);
+              '
+            fi
+            echo ''
+            echo '### Smoke-Test der Runtime'
+            echo ''
+            if [ -f quant/data/market/commercial/vu-live-smoke.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/vu-live-smoke.json");
+                console.log("Endpunkt: `" + (r.endpoint || "—") + "`  ·  Sitzung: **" +
+                            (r.session ? r.session.phase : "?") + "**");
+                console.log("");
+                console.log("| Prüfung | Ergebnis |");
+                console.log("|---|---|");
+                for (const c of r.checks) console.log("| " + c.question + " | " + (c.ok ? "ok" : "**FEHLT**") + " |");
+                if (r.latency) {
+                  console.log("");
+                  console.log("| Titel | erster Kurs (ms) |");
+                  console.log("|---|---|");
+                  for (const k of Object.keys(r.latency.firstTickMs)) {
+                    console.log("| " + k + " | " + (r.latency.firstTickMs[k] === null ? "keiner" : r.latency.firstTickMs[k]) + " |");
+                  }
+                  console.log("");
+                  console.log("_" + r.latency.note + "_");
+                }
+                console.log("");
+                console.log("**" + r.result + "**" + (r.reason ? " (" + r.reason + ")" : ""));
+              '
+            else
+              echo 'Kein Smoke-Test entstanden.'
+            fi
+            echo ''
+            echo '### Endpunkt'
+            echo ''
+            if [ -f quant/data/market/commercial/vu-live-domain.json ]; then
+              node -e '
+                const r = require("./quant/data/market/commercial/vu-live-domain.json");
+                console.log("**" + r.result + "**");
+                console.log("");
+                console.log(r.consequence || "");
+                console.log("");
+                console.log("_Dieses Skript schreibt ausschliesslich `" + r.guard.onlyWrites +
+                            "`. Unberührt bleiben: " + r.guard.neverTouches.join(", ") + "._");
+              '
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- landing: vormals landing-pages-publish.yml
+  landing:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.landing == 'true' && (github.ref == 'refs/heads/main')
+    permissions:
+      contents: read
+    concurrency:
+      group: landing-pages-publish-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check prepared hosting prerequisites
+        env:
+          USAGE_CONFIRMED: ${{ vars.LANDING_PAGES_USAGE_CONFIRMED }}
+          TARGET_READY: ${{ vars.LANDING_PAGES_TARGET_READY }}
+        run: |
+          set -euo pipefail
+          test "$USAGE_CONFIRMED" = true || { echo 'GitHub-Pages-Nutzung für diese geschäftliche Seite ist noch nicht geklärt.'; exit 1; }
+          test "$TARGET_READY" = true || { echo 'Separates Ziel-Repository und Deploy-Key fehlen noch.'; exit 1; }
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          path: source
+          persist-credentials: false
+          sparse-checkout: |
+            landing
+            scripts/ci/push-with-retry.sh
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build only the isolated landing page
+        working-directory: source/landing
+        env:
+          BREVO_FORM_ACTION: ${{ vars.BREVO_FORM_ACTION }}
+          BREVO_DOUBLE_OPT_IN_VERIFIED: ${{ vars.BREVO_DOUBLE_OPT_IN_VERIFIED }}
+          BREVO_SOURCE_ATTRIBUTE: ${{ vars.BREVO_SOURCE_ATTRIBUTE }}
+          LANDING_PRIVACY_REVIEWED: ${{ vars.LANDING_PRIVACY_REVIEWED }}
+          LANDING_PRIVACY_HTML_PATH: ${{ vars.LANDING_PRIVACY_HTML_PATH }}
+        run: |
+          set -euo pipefail
+          node --test 'tests/*.test.mjs'
+          node scripts/build.mjs --production
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coming-soon-pages-build
+          path: source/landing/dist/
+          include-hidden-files: true
+          retention-days: 14
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/vision-universe-landing-pages
+          ref: gh-pages
+          path: publish
+          ssh-key: ${{ secrets.LANDING_PAGES_DEPLOY_KEY }}
+      - name: Stage and push only the build into the separate repository
+        env:
+          LANDING_PAGES_OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          node source/landing/scripts/stage-pages.mjs --target=publish
+          cd publish
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add --all
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Publish reviewed Vision Universe coming-soon build'
+          bash ../source/scripts/ci/push-with-retry.sh gh-pages
+
+  # --- navigation: vormals sync-navigation.yml
+  navigation:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.navigation == 'true'
+    permissions:
+      contents: write
+      pages: write
+    concurrency:
+      group: sync-navigation
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/sync-navigation.mjs
+      - name: Save navigation integration
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git add '*.html'
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Integrate shared navigation on new pages'
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds"

@@ -1,0 +1,76 @@
+{
+ "schemaVersion": "v10-ca-independent-check-1.0.0",
+ "implementation": "python3 stdlib, no repository imports",
+ "evidenceKind": "TECHNICAL_PARITY",
+ "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+ "series": 600,
+ "events": 1087,
+ "frameParity": {
+  "series": 600,
+  "mismatches": []
+ },
+ "decisionParity": {
+  "events": 1087,
+  "identical": 1087,
+  "mismatches": [],
+  "verdicts": {
+   "GENUINE_MOVE": 37,
+   "IDENTITY_UNVERIFIED": 309,
+   "INSUFFICIENT_FILINGS": 285,
+   "NEGATIVE_EVIDENCE_ONLY": 24,
+   "OUT_OF_FRAME_PRE_2004": 250,
+   "PROVIDER_SPLIT_RECORDED": 42,
+   "SPIKE_REVERSAL": 1,
+   "SPLIT_OR_SHARE_CHANGE_EVIDENCE": 131,
+   "SPLIT_UNADJUSTED": 8
+  }
+ },
+ "registry": {
+  "records": 30,
+  "series": 28,
+  "expectedRecords": 30,
+  "sourceSha256": {
+   "ok": 272,
+   "mismatch": 0,
+   "notInCache": 0
+  },
+  "reparse": {
+   "identityText": 12,
+   "identityTextOk": 12,
+   "textCover": 8,
+   "textCoverOk": 8
+  }
+ },
+ "providerErrors": {
+  "proposals": 8
+ },
+ "beforeAfter": {
+  "consistent": true,
+  "qualified": {
+   "adapter": 4449,
+   "default": 4449,
+   "identity": 4453,
+   "identityCaBefore": 4476,
+   "caOnlyBefore": 4472,
+   "identityCaAfter": 4481,
+   "caOnlyAfter": 4477
+  },
+  "newlyQualified": [
+   "ref_ACAD",
+   "ref_ARLO",
+   "ref_MGNX",
+   "ref_MOH",
+   "ref_NSIT",
+   "ref_RDN"
+  ],
+  "lost": [
+   {
+    "securityId": "ref_VSTS",
+    "after": "CORPORATE_ACTION_UNRESOLVED",
+    "inBaselineRegistry": true
+   }
+  ]
+ },
+ "problems": [],
+ "pass": true
+}

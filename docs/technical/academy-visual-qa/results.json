@@ -1,0 +1,48 @@
+{
+  "testedAt": "2026-11-03T04:55:10.908116+00:00",
+  "baseMain": "ee0577859fc69ed9abb7b471cbe6cc517c5af2ab",
+  "mode": "local integrated branch, not production",
+  "technicalAndAcademy": {
+    "passed": 99,
+    "failed": 0
+  },
+  "core": {
+    "passed": 308,
+    "failed": 0
+  },
+  "academyContentAndVisualTests": {
+    "passed": 22,
+    "failed": 0
+  },
+  "academyBrowser": {
+    "passed": 83,
+    "failed": 0,
+    "viewports": [
+      360,
+      390,
+      1280
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "completeJourneys": 18,
+    "pilotScenes": 9,
+    "pilotSceneAxeRuns": 54,
+    "textReflow": "doubled HTML text, all 3 pilots × 6 viewport/theme combinations"
+  },
+  "existingTechnicalBrowser": {
+    "passed": 66,
+    "failed": 0
+  },
+  "productionDataIsolation": "no production file changed",
+  "heroFidelity": "8 product styles verified",
+  "protectedEngineAndProductionPaths": "unchanged",
+  "coreContentSemanticSha256": "543a2a4f9259cb11d6edfdb8535487f83deba469e77d2a43c706bf3739d32ff5",
+  "physicalIphoneSafariTested": false,
+  "notes": [
+    "Presentation only: quiz/lesson/content revisions preserved.",
+    "Earlier negative-test isolation issue corrected by using a fresh document per injected response.",
+    "No merge, deployment or protected-model change."
+  ]
+}

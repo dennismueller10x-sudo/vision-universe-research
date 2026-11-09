@@ -8,6 +8,8 @@ import {requireUser, reauthenticate, clearSession} from './auth.mjs';
 import {billingBlocker} from './config.mjs';
 import {checkoutAllowed} from './billing.mjs';
 import * as v from './validate.mjs';
+import {NEWSLETTER, sha256Hex, advanceConsent} from './brevo.mjs';
+import {LEGAL_VERSION, LEGAL_STATUS} from './legal/texts.mjs';
 
 const one = rows => (Array.isArray(rows) ? rows[0] || null : null);
 
@@ -27,23 +29,32 @@ export function planIntentOf(authUser, entitlements, now) {
 export async function me(ctx) {
   const user = await requireUser(ctx);
   const t = user.accessToken;
-  const [profile, settings, roles, entitlements, authUser] = await Promise.all([
+  const [profile, settings, roles, entitlements, authUser, devices] = await Promise.all([
     ctx.sb.user.select(t, 'profiles', {user_id: `eq.${user.id}`}).then(one),
     ctx.sb.user.select(t, 'user_settings', {user_id: `eq.${user.id}`}).then(one),
     ctx.sb.user.select(t, 'user_roles', {user_id: `eq.${user.id}`}),
     ctx.sb.user.rpc(t, 'my_entitlements'),
     // Fehlt die Auskunft, gibt es eben keinen Hinweis - die Kontoseite bleibt nutzbar.
     ctx.sb.auth.getUser({accessToken: t, ip: ctx.ip}).catch(() => null),
+    // Z4: Geraete mit der App (nur die Zahl; Tokens verlassen die Datenbank nicht).
+    ctx.sb.user.select(t, 'push_devices', {user_id: `eq.${user.id}`, select: 'platform'}).catch(() => null),
   ]);
+  const newsletter = await ctx.store.newsletterStatus(user.id).catch(() => null);
   return json(ctx.request, ctx.cfg, 200, {
     user: {id: user.id, email: user.email},
     profile: profile && {displayName: profile.display_name, locale: profile.locale, createdAt: profile.created_at},
     settings: settings && {displayCurrency: settings.display_currency, appearance: settings.appearance,
-      experienceLevel: settings.experience_level, notifications: settings.notification_settings,
-      marketingEmails: settings.marketing_emails},
+      experienceLevel: settings.experience_level, goal: settings.goal ?? null, onboardedAt: settings.onboarded_at ?? null,
+      notifications: settings.notification_settings, marketingEmails: settings.marketing_emails},
     roles: (roles || []).map(r => r.role),
     entitlements,
     planIntent: planIntentOf(authUser, entitlements, ctx.now()),
+    // Newsletter: Stand der eigenen Einwilligung (none | requested | pending | confirmed | withdrawn | expired | failed).
+    newsletter: {available: newsletterAvailable(ctx), status: newsletter?.status || 'none', since: newsletter?.confirmedAt || newsletter?.requestedAt || null},
+    legal: {version: LEGAL_VERSION, status: LEGAL_STATUS},
+    // Z4: App-Push. available = FCM-Zugang im Worker hinterlegt; devices = angemeldete Geraete mit der App.
+    // E-Mail-Benachrichtigungen gibt es nicht (eigene Owner-Freigabe).
+    push: {available: Boolean(ctx.fcm?.configured), devices: Array.isArray(devices) ? devices.length : 0, maxPerDay: 1, channel: 'app'},
     billingAvailable: !billingBlocker(ctx.cfg),
     checkoutAllowed: !billingBlocker(ctx.cfg) && await checkoutAllowed(ctx, user),
   }, {cookies: ctx.outCookies});
@@ -62,20 +73,54 @@ export async function setPlanIntent(ctx) {
     ? {plan: 'pro', at: data.plan_intent_at} : null}, {cookies: ctx.outCookies});
 }
 
+export const newsletterAvailable = ctx => Boolean(ctx.cfg.brevo.newsletter && ctx.cfg.brevo.lists.newsletter && ctx.brevo?.configured);
+
+// Newsletter an- oder abmelden ({subscribe: true|false}). Anmeldung: Einwilligung mit Textfassung speichern,
+// Brevo schickt die Bestaetigungs-E-Mail (Double-Opt-in); erst nach Klick gilt sie. Abmeldung wirkt sofort.
+export async function newsletter(ctx) {
+  const user = await requireUser(ctx);
+  await ctx.limit('planIntent', user.id);
+  const body = await readJson(ctx.request);
+  if (typeof body.subscribe !== 'boolean') throw new HttpError(400, 'SUBSCRIBE_INVALID');
+  if (body.subscribe) {
+    if (!newsletterAvailable(ctx)) throw new HttpError(503, 'NEWSLETTER_NOT_AVAILABLE');
+    const consent = await ctx.store.newsletterRequest(user.id, 'settings', NEWSLETTER.version, await sha256Hex(NEWSLETTER.text));
+    let status = consent.status;
+    if (status === 'requested') {
+      try { status = await advanceConsent(ctx, consent); }
+      catch (e) { ctx.log('error', 'NEWSLETTER_REQUEST_FAILED', {code: String(e.code || e.message).slice(0, 80)}); }
+    }
+    return json(ctx.request, ctx.cfg, 200, {state: 'NEWSLETTER_REQUESTED', newsletter: {available: true, status}}, {cookies: ctx.outCookies});
+  }
+  const current = await ctx.store.newsletterStatus(user.id);
+  if (['requested', 'pending', 'confirmed'].includes(current?.status)) {
+    if (ctx.brevo?.configured && ctx.cfg.brevo.lists.newsletter) {
+      const email = await ctx.store.accountEmail(user.id);
+      if (email) await ctx.brevo.unlink(email, [ctx.cfg.brevo.lists.newsletter]);
+    }
+    await ctx.store.newsletterUpdate(current.id, 'withdrawn', 'ABGEMELDET_IM_KONTO');
+  }
+  return json(ctx.request, ctx.cfg, 200, {state: 'NEWSLETTER_WITHDRAWN', newsletter: {available: newsletterAvailable(ctx), status: 'withdrawn'}},
+    {cookies: ctx.outCookies});
+}
+
+// marketingEmails ist nicht mehr direkt schreibbar (nur bestaetigter Double-Opt-in, siehe newsletter()).
+// onboardedAt: nur true ("erster Start erledigt/uebersprungen"); den Zeitpunkt setzt die Datenbank (Trigger).
 const SETTING_COLUMNS = {displayCurrency: 'display_currency', appearance: 'appearance', experienceLevel: 'experience_level',
-  notifications: 'notification_settings', marketingEmails: 'marketing_emails'};
+  goal: 'goal', onboardedAt: 'onboarded_at', notifications: 'notification_settings'};
 
 export async function updateMe(ctx) {
   const user = await requireUser(ctx);
   const body = await readJson(ctx.request);
   const profile = v.profilePatch(Object.fromEntries(Object.entries(body.profile || {})
     .map(([k, val]) => [k === 'displayName' ? 'display_name' : k, val])));
-  const settings = v.settingsPatch(Object.fromEntries(Object.entries(body.settings || {}).map(([k, val]) => {
+  const settings = v.settingsPatch(Object.fromEntries(Object.entries(body.settings || {}).filter(([k]) => k !== 'marketingEmails').map(([k, val]) => {
     if (!SETTING_COLUMNS[k]) throw new HttpError(400, 'SETTING_INVALID', k);
     return [SETTING_COLUMNS[k], val];
   })));
   const filter = {user_id: `eq.${user.id}`};
   if (Object.keys(profile).length) await ctx.sb.user.update(user.accessToken, 'profiles', filter, profile);
+  if (settings.onboarded_at === true) settings.onboarded_at = new Date(ctx.now()).toISOString();
   if (Object.keys(settings).length) await ctx.sb.user.update(user.accessToken, 'user_settings', filter, settings);
   return me(ctx);
 }
@@ -106,13 +151,13 @@ export async function exportData(ctx) {
   const user = await requireUser(ctx);
   const t = user.accessToken;
   const f = {user_id: `eq.${user.id}`};
-  const [profiles, settings, roles, watchlists, items, subscriptions, invoices, entitlements] = await Promise.all([
+  const [profiles, settings, roles, watchlists, items, savedSearches, subscriptions, invoices, entitlements] = await Promise.all([
     ctx.sb.user.select(t, 'profiles', f), ctx.sb.user.select(t, 'user_settings', f), ctx.sb.user.select(t, 'user_roles', f),
-    ctx.sb.user.select(t, 'watchlists', f), ctx.sb.user.select(t, 'watchlist_items', f),
+    ctx.sb.user.select(t, 'watchlists', f), ctx.sb.user.select(t, 'watchlist_items', f), ctx.sb.user.select(t, 'saved_searches', f),
     ctx.sb.user.select(t, 'subscriptions', f), ctx.sb.user.select(t, 'invoices', f), ctx.sb.user.rpc(t, 'my_entitlements')]);
   const body = {schemaVersion: 'vu-account-export-1', exportedAt: new Date(ctx.now()).toISOString(),
     account: {id: user.id, email: user.email}, profile: one(profiles), settings: one(settings), roles, watchlists,
-    watchlistItems: items, subscriptions, invoices, entitlements,
+    watchlistItems: items, savedSearches, subscriptions, invoices, entitlements,
     notice: 'Zahlungsdaten (Karte, Konto) speichert Vision Universe nicht; sie liegen beim Zahlungsanbieter.'};
   return json(ctx.request, ctx.cfg, 200, body, {cookies: ctx.outCookies,
     headers: {'Content-Disposition': 'attachment; filename="vision-universe-konto.json"'}});
@@ -121,7 +166,7 @@ export async function exportData(ctx) {
 // Kontoloeschung (Art. 17 DSGVO). Reihenfolge:
 //   1 Passwort bestaetigen  2 laufende Stripe-Abos sofort beenden
 //   3 Loeschnachweis (nur Hash)  4 Supabase-Nutzer loeschen -> Profil,
-//   Einstellungen, Rollen, Watchlists per Cascade; Abos/Rechnungen werden
+//   Einstellungen, Rollen, Watchlists, gespeicherte Suchen per Cascade; Abos/Rechnungen werden
 //   pseudonymisiert aufbewahrt (§ 147 AO, § 257 HGB).
 export async function deleteAccount(ctx) {
   const user = await requireUser(ctx);

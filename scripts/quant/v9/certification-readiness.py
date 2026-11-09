@@ -70,7 +70,7 @@ def main():
     dates = sorted({e[2] for e in outcomes['events']})
     setup = {'events': len(outcomes['events']), 'uniqueDates': len(dates), 'from': dates[0] if dates else None, 'to': dates[-1] if dates else None,
              'legacyMonthCount': len({d[:7] for d in dates}), 'isoWeekCount': len({iso_week(d) for d in dates}),
-             'activeRequirement': contract['kinds']['SETUP_BACKTEST']['requirements']['independentWeeks'],
+             'activeRequirement': (lambda r: r.get('eventCalendarMonths', r.get('independentWeeks')))(contract['kinds']['SETUP_BACKTEST']['requirements']),  # FV-1: neuer Name, alter als Alias
              'legacyEvaluator': 'scripts/quant/build-backtest-certification.mjs: new Set(outcomes.events.map(e => e[2].slice(0,7))).size'}
     doc = {'schemaVersion': 'quant-v9-certification-readiness-1.0.0', 'asOf': cert['asOf'],
            'sources': {cert_p: sha(cert_p), contract_p: sha(contract_p), outcomes_p: sha(outcomes_p), 'scripts/quant/build-backtest-certification.mjs': sha('scripts/quant/build-backtest-certification.mjs')},

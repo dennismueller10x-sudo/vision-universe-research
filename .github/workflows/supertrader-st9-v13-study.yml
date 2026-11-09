@@ -1,0 +1,191 @@
+name: Supertrader 9 V13-Studie (A vs. A+V13, intern, verschluesselt)
+
+# Isolierte Studie A vs. A + V13-Delisting-Ketten (eingefrorene Registrierung
+# scripts/supertrader/source-faithful/research/st9-v13-delisted-registration-1.0.0.json), nur vom Owner manuell
+# ausgeloest. Ein Job sieht Snapshot (Secrets VU_HISTORY_S3_*) und das entschluesselte V13-Archiv 1.2.0
+# (Teile v13-raw, v13-derived; Secret V13_ARCHIVE_PRIVATE_KEY) gleichzeitig.
+# Ergebnisse sind intern: der GANZE Ausgabeordner (sealed, public, Laufprotokoll) wird mit
+# docs/quant-recovery/v13/archive/archive-pub.pem hybrid verschluesselt (AES-256 + RSA-OAEP-SHA256), der Klartext
+# geloescht, erst dann hochgeladen. Kein Commit, kein Push. Im Log und im Summary nur Status, Zaehlungen und Hashes.
+on:
+  workflow_dispatch:
+    inputs:
+      snapshot_id:
+        description: 'Research-Snapshot (sts1-<32 hex>)'
+        required: true
+        default: 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d'
+        type: string
+      methods:
+        description: 'Optional: Methoden-Schluessel, kommagetrennt (leer = alle registrierten)'
+        required: false
+        default: ''
+        type: string
+      repeat_check:
+        description: 'Zweiter runStudy-Lauf im selben Prozess, gleicher Ergebnis-Hash verlangt'
+        required: false
+        default: true
+        type: boolean
+permissions:
+  contents: read
+concurrency:
+  group: supertrader-st9-v13-study-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  study:
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Eingaben pruefen
+        env:
+          SNAPSHOT_ID: ${{ inputs.snapshot_id }}
+          METHODS: ${{ inputs.methods }}
+          REPEAT_CHECK: ${{ inputs.repeat_check }}
+        run: |
+          set -euo pipefail
+          [[ "$SNAPSHOT_ID" =~ ^sts1-[0-9a-f]{32}$ ]] || { echo "SNAPSHOT_ID_INVALID"; exit 2; }
+          [[ -z "$METHODS" || "$METHODS" =~ ^[A-Z0-9_]+(,[A-Z0-9_]+)*$ ]] || { echo "METHODS_INVALID"; exit 2; }
+          [[ "$REPEAT_CHECK" == "true" || "$REPEAT_CHECK" == "false" ]] || { echo "REPEAT_CHECK_INVALID"; exit 2; }
+          echo "Eingaben gueltig"
+      - name: Secrets vorhanden (nur ja/nein, fail closed)
+        env:
+          HAS_VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT != '' }}
+          HAS_VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET != '' }}
+          HAS_VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID != '' }}
+          HAS_VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY != '' }}
+          HAS_V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY != '' }}
+        run: |
+          set -euo pipefail
+          missing=0
+          for n in VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY V13_ARCHIVE_PRIVATE_KEY; do
+            v="HAS_$n"
+            if [ "${!v}" != "true" ]; then echo "SECRET_MISSING: $n"; missing=1; fi
+          done
+          [ "$missing" = 0 ] || exit 3
+          mkdir -p "$RUNNER_TEMP/st9/enc" "$RUNNER_TEMP/st9/upload"
+      - name: Verschluesselte V13-Teile laden (v13-raw, v13-derived)
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/snapshot/fetch-v13-archive-parts.mjs --manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json --prefix research-snapshots/quant-v13/archive-1.2.0/ --out "$RUNNER_TEMP/st9/enc" --parts v13-raw,v13-derived
+      - name: V13-Archiv entschluesseln (privater Schluessel nur in diesem Schritt)
+        env:
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          umask 077
+          M=docs/quant-recovery/v13/archive/manifest-1.2.0.json
+          K="$RUNNER_TEMP/st9/k.pem"
+          trap 'shred -u "$K" 2>/dev/null || rm -f "$K"' EXIT
+          printf '%s\n' "$V13_ARCHIVE_PRIVATE_KEY" > "$K"
+          fp=$(openssl pkey -in "$K" -pubout -outform DER 2>/dev/null | sha256sum | cut -c1-64) || { echo "SECRET_NOT_A_PRIVATE_KEY"; exit 3; }
+          want=$(node -e 'process.stdout.write(JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")).archivePublicKeySha256Der)' "$M")
+          [ "$fp" = "$want" ] || { echo "KEY_MISMATCH"; exit 3; }
+          bash scripts/quant/v13/archive/restore-archive.sh "$M" "$RUNNER_TEMP/st9/enc" "$K" "$RUNNER_TEMP/st9/v13" v13-raw v13-derived
+          rm -rf "$RUNNER_TEMP/st9/enc"
+          test -d "$RUNNER_TEMP/st9/v13/v13-derived/series" || { echo "V13_SERIES_DIR_MISSING"; exit 3; }
+          test -d "$RUNNER_TEMP/st9/v13/v13-raw/raw" || { echo "V13_DAILY_DIR_MISSING"; exit 3; }
+      - name: Studie ausfuehren (Ausgabe und Protokoll nur in den Ausgabeordner)
+        id: run
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          SNAPSHOT_ID: ${{ inputs.snapshot_id }}
+          METHODS: ${{ inputs.methods }}
+          REPEAT_CHECK: ${{ inputs.repeat_check }}
+          NODE_OPTIONS: --max-old-space-size=12000
+          ST_WINDOW: DEV
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/st9/out"
+          mkdir -p "$OUT"
+          args=(--snapshot "$SNAPSHOT_ID" --accounting research-v1 --v13-series "$RUNNER_TEMP/st9/v13/v13-derived/series" --v13-raw "$RUNNER_TEMP/st9/v13/v13-raw/raw" --out "$OUT")
+          if [ -n "$METHODS" ]; then args+=(--methods "$METHODS"); fi
+          if [ "$REPEAT_CHECK" = "true" ]; then args+=(--repeat-check); fi
+          R=scripts/supertrader/source-faithful/research/run-st9-v13-delisted-study.mjs
+          set +e
+          node "$R" "${args[@]}" --preflight > "$OUT/preflight.json" 2> "$OUT/preflight.log"
+          pf=$?
+          set -e
+          node -e 'try { const p = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8")); console.log("preflight ready=" + p.ready + " missing=" + p.missing.map((m) => m.code).join(",")); } catch { console.log("preflight unreadable"); }' "$OUT/preflight.json"
+          if [ "$pf" != 0 ]; then echo "rc=3" >> "$GITHUB_OUTPUT"; echo "PREFLIGHT_NOT_READY"; exit 0; fi
+          set +e
+          node "$R" "${args[@]}" > "$OUT/run.log" 2>&1
+          rc=$?
+          set -e
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          echo "runner exit code: $rc"
+      - name: Summary vorbereiten (nur Status, Zaehlungen, Hashes)
+        if: always()
+        env:
+          RC: ${{ steps.run.outputs.rc }}
+        run: |
+          set -euo pipefail
+          node scripts/supertrader/snapshot/st9-study-summary.mjs "$RUNNER_TEMP/st9/out/st9-v13-delisted.public.json" "${RC:-}" > "$RUNNER_TEMP/st9/summary.md"
+      - name: Ausgabeordner verschluesseln (AES-256 + RSA-OAEP), Klartext loeschen
+        id: enc
+        if: always()
+        run: |
+          set -euo pipefail
+          umask 077
+          W="$RUNNER_TEMP/st9"
+          rm -rf "$W/v13" "$W/enc"
+          if [ -d "$W/out" ] && [ -n "$(ls -A "$W/out")" ]; then
+            mkdir -p "$W/upload"
+            tar --sort=name --owner=0 --group=0 --numeric-owner -cf "$W/st9-output.tar" -C "$W/out" .
+            # passphrase = 64 hex characters on one line: -pass file: reads only up to the first newline, a binary key
+            # (rand -out) could be cut at a 0x0a byte (empty or short passphrase)
+            openssl rand -hex 32 > "$W/k.bin"
+            openssl enc -aes-256-cbc -pbkdf2 -iter 100000 -salt -pass file:"$W/k.bin" -in "$W/st9-output.tar" -out "$W/upload/st9-output.tar.enc"
+            openssl pkeyutl -encrypt -pubin -inkey "$GITHUB_WORKSPACE/docs/quant-recovery/v13/archive/archive-pub.pem" -pkeyopt rsa_padding_mode:oaep -pkeyopt rsa_oaep_md:sha256 -in "$W/k.bin" -out "$W/upload/k.bin.enc"
+            shred -u "$W/k.bin" "$W/st9-output.tar"
+            find "$W/out" -type f -exec shred -u {} +
+            rm -rf "$W/out"
+            echo "encrypted=true" >> "$GITHUB_OUTPUT"
+            echo "artifactCipherSha256: \`$(sha256sum "$W/upload/st9-output.tar.enc" | cut -c1-64)\`" >> "$W/summary.md"
+          else
+            rm -rf "$W/out"
+            echo "encrypted=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Kein Klartext im Upload
+        id: noplain
+        if: always() && steps.enc.outputs.encrypted == 'true'
+        run: |
+          set -euo pipefail
+          W="$RUNNER_TEMP/st9"
+          test ! -e "$W/out" || { echo "PLAINTEXT_LEFT"; exit 1; }
+          test ! -e "$W/v13" || { echo "V13_PLAINTEXT_LEFT"; exit 1; }
+          test ! -e "$W/k.bin" || { echo "KEY_LEFT"; exit 1; }
+          [ "$(ls "$W/upload" | sort | tr '\n' ' ')" = "k.bin.enc st9-output.tar.enc " ] || { echo "UNEXPECTED_UPLOAD_CONTENT"; exit 1; }
+      - name: Summary schreiben
+        if: always()
+        run: |
+          set -euo pipefail
+          if [ -f "$RUNNER_TEMP/st9/summary.md" ]; then cat "$RUNNER_TEMP/st9/summary.md" >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.noplain.outcome == 'success'
+        with:
+          name: st9-v13-study-${{ github.run_id }}
+          path: ${{ runner.temp }}/st9/upload
+          retention-days: 7
+          if-no-files-found: error
+      - name: Ergebnis (Exit-Code des Runners)
+        env:
+          RC: ${{ steps.run.outputs.rc }}
+        run: |
+          set -euo pipefail
+          [ "${RC:-}" = "0" ] || { echo "STUDY_RUN_FAILED rc=${RC:-none}"; exit 1; }

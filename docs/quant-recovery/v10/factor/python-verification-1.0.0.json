@@ -1,0 +1,155 @@
+{
+ "schemaVersion": "v10-factor-python-verification-1.0.0",
+ "kind": "COMPUTATION_PARITY_NOT_HOLDOUT",
+ "checks": {
+  "B_priceComponents": {
+   "comparisons": 14400,
+   "mismatches": 0,
+   "examples": []
+  },
+  "C_scores": {
+   "comparisons": 182343,
+   "mismatches": 0,
+   "examples": [],
+   "dates": [
+    "2010-01-29",
+    "2010-02-26",
+    "2010-09-24",
+    "2010-10-29",
+    "2010-12-31",
+    "2013-01-25",
+    "2014-07-25",
+    "2014-08-29",
+    "2014-12-26",
+    "2015-08-28",
+    "2019-10-25",
+    "2020-08-28"
+   ]
+  },
+  "D_ic_quintiles": {
+   "comparisons": 496,
+   "mismatches": 0,
+   "examples": []
+  },
+  "A_secRaw": {
+   "cases": 360,
+   "equityToAssets": {
+    "comparable": 249,
+    "equal": 229,
+    "differences": [
+     [
+      "2010-10-29",
+      "ref_WMT",
+      0.41444940423886684,
+      0.41352761330227045
+     ],
+     [
+      "2010-12-31",
+      "ref_NKE",
+      0.6764336687633935,
+      0.6764685484430265
+     ],
+     [
+      "2010-12-31",
+      "ref_KR",
+      0.20924089550946173,
+      0.20980714347487675
+     ],
+     [
+      "2013-01-25",
+      "ref_PESI",
+      0.5659311529953749,
+      0.5642120738990176
+     ],
+     [
+      "2014-08-29",
+      "ref_MTZ",
+      0.3480188297316311,
+      0.34759465489508407
+     ],
+     [
+      "2014-08-29",
+      "ref_COCP",
+      -0.9333845910075927,
+      -5.317880794701987
+     ],
+     [
+      "2014-12-26",
+      "ref_MGM",
+      0.16205090082663146,
+      0.16162982693626626
+     ],
+     [
+      "2015-08-28",
+      "ref_FCX",
+      0.31102984947699636,
+      0.31167126836418174
+     ]
+    ]
+   },
+   "marketCap": {
+    "comparable": 302,
+    "equal": 291,
+    "differences": [
+     [
+      "2010-01-29",
+      "ref_IP",
+      9921649965.427198,
+      10004776320
+     ],
+     [
+      "2010-02-26",
+      "ref_ITT",
+      9345526141.631998,
+      9350649785.349998
+     ],
+     [
+      "2010-10-29",
+      "ref_GATX",
+      1465858000.0,
+      1465812061.34
+     ],
+     [
+      "2010-10-29",
+      "ref_ADP",
+      21890082137.25,
+      21889080000
+     ],
+     [
+      "2014-12-26",
+      "ref_BANC",
+      136193985.92,
+      315739179.52
+     ],
+     [
+      "2019-10-25",
+      "ref_ATYR",
+      14860506.7,
+      1061471.1330743001
+     ],
+     [
+      "2022-05-27",
+      "ref_ENOV",
+      3610343401.5999994,
+      2097609516.3295996
+     ],
+     [
+      "2022-06-24",
+      "ref_JBLU",
+      2765201421.3599997,
+      2767019999.9999995
+     ]
+    ]
+   },
+   "note": "Unabhaengige Auswahl: nur us-gaap Assets/StockholdersEquity aus 10-K(/A) FY und dei EntityCommonStockSharesOutstanding; die Pipeline nutzt weitere Konzepte, Quartalsbilanzen und Periodenregeln - Abweichungen sind erwartbar und werden gezaehlt, nicht angeglichen."
+  },
+  "E_ledger": {
+   "sessions": 763,
+   "maxRelativeDifference": 1.5908331519319834e-14,
+   "endEngine": 596824.2694667022,
+   "endPython": 596824.2694666932
+  }
+ },
+ "state": "PASS",
+ "inputSha256": "a0e5ee6e78b0690fad3066e92146612b44c451805b70379f868808563b8f0eb9"
+}

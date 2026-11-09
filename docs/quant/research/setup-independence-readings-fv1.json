@@ -1,0 +1,118 @@
+{
+ "schemaVersion": "setup-independence-readings-1.0.0",
+ "asOf": "2026-10-31",
+ "threshold": {
+  "name": "independentWeeks",
+  "value": 20,
+  "source": "quant/methodology/backtest-certification-v1.json"
+ },
+ "evaluator": {
+  "file": "scripts/quant/build-backtest-certification.mjs",
+  "code": "new Set(outcomes.events.map((e) => e[2].slice(0, 7))).size",
+  "label": "verschiedene Monate mit Ereignissen",
+  "unit": "CALENDAR_MONTH"
+ },
+ "origin": {
+  "commit": "7cd1c3656a85b1fe720bb3de4a0e3d93e8627b26",
+  "date": "2026-10-01",
+  "title": "Quant Backtest Certification",
+  "facts": [
+   "quant/methodology/backtest-certification-v1.json fuehrt seitdem SETUP_BACKTEST.requirements.independentWeeks: 20 (keine spaetere Aenderung).",
+   "scripts/quant/build-backtest-certification.mjs zaehlt im selben Commit `eventWeeks = new Set(outcomes.events.map((e) => e[2].slice(0, 7))).size`: Variablenname Wochen, Rechnung Monate, Gate-Label „verschiedene Monate mit Ereignissen“.",
+   "docs/VU_QUANT_BACKTEST_CERTIFICATION.md (selber Commit) nennt fuer Setup „Stichtage ca. 10.03.2027, erste 6-Monats-Ergebnisse ca. 26.03.2027“ und kein Datum 2028: Die Monatszaehlung war in der damaligen Prognose nicht bindend."
+  ]
+ },
+ "prior": [
+  {
+   "file": "docs/quant-recovery/v6/methodology-proposal.json",
+   "status": "PRESERVED_PROPOSAL_NOT_APPROVED",
+   "note": "Diskrepanz setupWeeksVsMonths festgestellt; Erzeuger bewusst unveraendert, um das strengere beobachtete Gate nicht abzuschwaechen"
+  },
+  {
+   "file": "docs/quant-recovery/v8/setup-decision-current.json",
+   "status": "PROPOSED_NOT_APPROVED",
+   "note": "Vorschlag mit beiden Zaehlungen"
+  },
+  {
+   "file": "docs/quant-recovery/v9/setup-decision-recommendation-1.0.0.json",
+   "status": "RECOMMENDATION_NOT_APPROVED_NOT_ACTIVATED",
+   "note": "Empfehlung B: ISO-Wochen nach Wortlaut, Monate als Auditfeld; zusaetzlich wochengeclusterte Unsicherheit"
+  },
+  {
+   "file": "docs/quant-recovery/v10/setup/setup-independence-decision-1.0.0.json",
+   "status": "DECISION_TEMPLATE_NOT_APPROVED_NOT_ACTIVATED",
+   "note": "Empfehlung B (V10): Feld ehrlich in eventCalendarMonths umbenennen (Zaehlung bleibt), neues Gate N_eff >= 50 und >= 4 disjunkte M6-Fenster; frueheste Erfuellung 2029"
+  }
+ ],
+ "events": {
+  "count": 4780,
+  "first": "2026-09-24",
+  "last": "2026-10-30",
+  "distinctDates": 23
+ },
+ "readingA": {
+  "id": "A",
+  "label": "Monate (aktiv)",
+  "unit": "CALENDAR_MONTH",
+  "have": 2,
+  "required": 20,
+  "earliest": "2028-04",
+  "setupTimeGatesEarliest": "2028-04-01",
+  "independenceBinds": true,
+  "notForecastable": [
+   "oos"
+  ]
+ },
+ "readingB": {
+  "id": "B",
+  "label": "ISO-Wochen (Wortlaut)",
+  "unit": "ISO_WEEK",
+  "have": 6,
+  "required": 20,
+  "earliest": "2027-02-01",
+  "setupTimeGatesEarliest": "2027-03-26",
+  "independenceBinds": false,
+  "notForecastable": [
+   "oos"
+  ]
+ },
+ "otherSetupTimeGates": [
+  {
+   "gate": "historyDates",
+   "earliest": "2027-03-22",
+   "lowerBound": false
+  },
+  {
+   "gate": "historySpan",
+   "earliest": "2027-03-09",
+   "lowerBound": false
+  },
+  {
+   "gate": "completedOutcomes",
+   "earliest": "2027-03-26",
+   "lowerBound": true
+  },
+  {
+   "gate": "titles",
+   "earliest": "2027-03-26",
+   "lowerBound": true
+  },
+  {
+   "gate": "entryVariant",
+   "earliest": "2027-03-26",
+   "lowerBound": true
+  },
+  {
+   "gate": "oos",
+   "earliest": null,
+   "lowerBound": false
+  }
+ ],
+ "v10Recommendation": {
+  "status": "DECISION_TEMPLATE_NOT_APPROVED_NOT_ACTIVATED",
+  "option": "B",
+  "summary": "Gate \"m6SpyExcessEffectiveSampleSize >= 50\" plus \"disjointM6Windows >= 4\" unter dem Modell setup-neff-overlap-1.0.0; independentWeeks ehrlich in eventCalendarMonths umbenennen (nur Audit). Fruehestes Erfuellungsdatum mit Originalbeobachtungen: SETUP_NEW 2029-01-18 bis 2029-01-30, SETUP_CONFIRMED 2029-01-29 bis 2029-04-20 (frueheres Datum: kuenftig nur neue Titel; spaeteres: Titel wiederholen sich wie beobachtet)."
+ },
+ "statistics": "Keine der beiden Zaehlungen misst Unabhaengigkeit: Alle M6-Fenster ueberlappen; V10 mass eine effektive Fallzahl je Ereignisdatum von etwa 12,6 (docs/quant-recovery/v10/setup/README.md).",
+ "note": "Nur gelesen. Fruehestes Datum bei Ereignissen in jeder Folgeeinheit; die Ergebnisgates sind Untergrenzen; oos ist ohne A1–A6 nicht prognostizierbar."
+}

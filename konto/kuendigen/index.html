@@ -8,10 +8,11 @@
 <meta name="theme-color" content="#ffffff">
 <title>Verträge hier kündigen · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 </head>
-<body class="ka-body" data-view="cancel"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<body class="ka-body vu-ui" data-view="cancel"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <main class="ka ka--narrow" id="main">
 <p class="ka-eyebrow">Konto</p>
 <h1 class="ka-title">Verträge hier kündigen</h1>
@@ -37,7 +38,7 @@
 <dl class="ka-kv"><dt>Eingang</dt><dd data-received></dd><dt>Bestätigungsnummer</dt><dd data-id></dd><dt>Bestätigung per E-Mail</dt><dd data-mail></dd></dl>
 <div class="ka-actions"><button class="ka-btn ka-btn--secondary" type="button" id="ka-cancel-print">Bestätigung speichern oder drucken</button></div>
 </section>
-<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

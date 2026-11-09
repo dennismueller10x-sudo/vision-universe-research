@@ -67,6 +67,8 @@
        Quant-SPA). chartbild bleibt als Name erhalten und zeigt auf dieselbe eine Adresse (alte Links: app.js, canonicalElliott). */
     elliott: function (t, q) { return "/elliott/#/" + encodeURIComponent(String(t || "").toUpperCase()) + (q ? "?" + q : ""); },
     chartbild: function (t) { return "/elliott/#/" + encodeURIComponent(String(t || "").toUpperCase()); },
+    /* Redesign 2027 (Q09): Perspektive „Chart“ in Quant. */
+    chart: function (t) { return "#/aktie/" + encodeURIComponent(String(t || "").toUpperCase()) + "/chart"; },
     chartlagen: function (q) { return "#/chartlagen" + (q ? "?" + q : ""); },
     fundamentals: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/zahlen"; },
     compare: function (list) { return "#/vergleich" + (list && list.length ? "/" + list.map(encodeURIComponent).join(",") : ""); }
@@ -114,7 +116,7 @@
     if (opts.open) { d.open = true; fill(); }
     return d;
   }
-  function loading(text) { return el("div", { class: "qx-loading", role: "status" }, [el("span", { text: text || "Wird geladen …" })]); }
+  function loading(text) { var n = el("div", { class: "qx-loading", role: "status" }, [el("span", { class: "qx-loading-label", text: text || "Wird geladen …" })]); if (global.VUUI && global.VUUI.skeleton) n.insertAdjacentHTML("beforeend", global.VUUI.skeleton("card")); return n; }
   function dateDe(iso) {
     if (!iso) return "–";
     var p = String(iso).slice(0, 10).split("-");
@@ -145,7 +147,8 @@
     /* In langen Listen (Screener, Mitglieder einer Strategie) steht die
        Buchstaben-Marke - vierzig Einzelbilder waeren vierzig Anfragen fuer
        ein Erkennungszeichen, das die Zeile ohnehin mit Namen traegt. */
-    if (!L || opts.initialOnly) return el("span", { class: "dx-logo dx-logo--" + (size || "md"), "aria-hidden": "true", text: L && L.initial ? L.initial(name, ticker) : String(name || ticker || "·").charAt(0).toUpperCase() });
+    /* Redesign 2027 (C10): ohne Bild eine schwarze Kachel mit dem Kürzel statt eines Buchstabens. */
+    if (!L || opts.initialOnly) return el("span", { class: "dx-logo dx-logo--" + (size || "md") + (global.VUUI ? " qv3-mono" : ""), "aria-hidden": "true", text: global.VUUI && ticker ? String(ticker).slice(0, 5) : L && L.initial ? L.initial(name, ticker) : String(name || ticker || "·").charAt(0).toUpperCase() });
     return L.mark(ticker, { name: name, size: size || "md", onlyLogo: !!opts.onlyLogo, wide: !!opts.wide });
   }
 

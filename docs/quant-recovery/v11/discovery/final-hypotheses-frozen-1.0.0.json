@@ -1,0 +1,423 @@
+{
+ "schemaVersion": "v11-discovery-final-hypotheses-frozen-1.0.0",
+ "studyId": "V11-DISCOVERY:FINAL",
+ "rule": "R3",
+ "frozenBeforeAnyTestOutcome": true,
+ "protocolSha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69",
+ "selectionCriteria": {
+  "statedBefore": "VALIDATION outcomes (repeated verbatim in the candidates file)",
+  "eligible": "VALIDATION point estimates: weekly excess vs SPY > 0 AND vs own-universe EW > 0 AND stress-cost excess vs SPY > 0",
+  "ranking": "Holm-adjusted p vs SPY within family ascending, then raw p vs own-universe EW ascending",
+  "limits": "max 3 overall, max 2 per family",
+  "ifFewerThanTwoEligible": "add the best-ranked remaining candidate of each family not yet represented (labelled DIAGNOSTIC_NOT_VALIDATED) up to 3 in total, so that TEST measures persistence; such entries are not hypotheses expected to work"
+ },
+ "criteriaStatedIn": [
+  "docs/quant-recovery/v11/discovery/registration-1.0.0.json (commit 7f0d20e9e1)",
+  "docs/quant-recovery/v11/discovery/candidates-frozen-1.0.0.json (commit 05ca5f85ed)"
+ ],
+ "evidenceUsed": "TRAIN (exploration log) + VALIDATION (validation-results-1.0.0.json, computed once)",
+ "validationSummary": {
+  "holmRejectionsPrimary": {
+   "PRICE": 0,
+   "FUND": 0
+  },
+  "holmRejectionsSecondary": {
+   "PRICE": 0,
+   "FUND": 0
+  },
+  "note": "No candidate has a statistically secured excess in VALIDATION. The hypotheses below carry an OBSERVED, not secured, VALIDATION excess."
+ },
+ "eligibility": [
+  {
+   "id": "CP01",
+   "family": "PRICE",
+   "variantId": "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+   "exSpy": 0.02474017603876367,
+   "exOwn": 0.02798965600571755,
+   "stressExSpy": -0.027699094839013165,
+   "holmP": 1,
+   "pSpy": 0.682,
+   "pOwn": 0.621,
+   "eligible": false
+  },
+  {
+   "id": "CP02",
+   "family": "PRICE",
+   "variantId": "P3-MOM6_REV1-N30-R4-FULL-EW-PX5",
+   "exSpy": 0.006516835866717297,
+   "exOwn": 0.009766315833671178,
+   "stressExSpy": -0.07319245491106985,
+   "holmP": 1,
+   "pSpy": 0.9025,
+   "pOwn": 0.8255,
+   "eligible": false
+  },
+  {
+   "id": "CP03",
+   "family": "PRICE",
+   "variantId": "P2-MOM_REV1-N20-R4-FULL-INVVOL-PX5",
+   "exSpy": 0.05342648403515265,
+   "exOwn": 0.05667596400210653,
+   "stressExSpy": -0.02966377921750305,
+   "holmP": 1,
+   "pSpy": 0.2975,
+   "pOwn": 0.235,
+   "eligible": false
+  },
+  {
+   "id": "CP04",
+   "family": "PRICE",
+   "variantId": "P2-MOM3-N20-R4-BUFFER90-EW-PX5",
+   "exSpy": 0.020088251230414467,
+   "exOwn": 0.023337731197368344,
+   "stressExSpy": -0.012418886795980067,
+   "holmP": 1,
+   "pSpy": 0.8135,
+   "pOwn": 0.751,
+   "eligible": false
+  },
+  {
+   "id": "CP05",
+   "family": "PRICE",
+   "variantId": "P2-MOM3-N20-R4-FULL-INVVOL-PX5",
+   "exSpy": 0.006365980085249545,
+   "exOwn": 0.009615460052203425,
+   "stressExSpy": -0.05234698151851959,
+   "holmP": 1,
+   "pSpy": 0.921,
+   "pOwn": 0.843,
+   "eligible": false
+  },
+  {
+   "id": "CP06",
+   "family": "PRICE",
+   "variantId": "P3-MOM3-N50-R4-BUFFER90-EW-PX5",
+   "exSpy": 0.01728628699041091,
+   "exOwn": 0.02053576695736479,
+   "stressExSpy": -0.01734061482731969,
+   "holmP": 1,
+   "pSpy": 0.7735,
+   "pOwn": 0.6815,
+   "eligible": false
+  },
+  {
+   "id": "CP07",
+   "family": "PRICE",
+   "variantId": "P2-MOM6-N20-R4-FULL-EW-PX5-VOL60",
+   "exSpy": 0.018318504475543684,
+   "exOwn": 0.02223153243206538,
+   "stressExSpy": -0.028500243505150916,
+   "holmP": 1,
+   "pSpy": 0.7735,
+   "pOwn": 0.6875,
+   "eligible": false
+  },
+  {
+   "id": "CP08",
+   "family": "PRICE",
+   "variantId": "P2-MOM6-N20-R13-FULL-EW-PX5",
+   "exSpy": -0.05547682612508337,
+   "exOwn": -0.05288140980705188,
+   "stressExSpy": -0.07784359134975868,
+   "holmP": 1,
+   "pSpy": 0.4335,
+   "pOwn": 0.4,
+   "eligible": false
+  },
+  {
+   "id": "CP09",
+   "family": "PRICE",
+   "variantId": "P3-MOM6-N50-R4-BUFFER90-EW-PX5-MF",
+   "exSpy": 0.0003443715497577507,
+   "exOwn": 0.003593851516711631,
+   "stressExSpy": -0.02215935026487805,
+   "holmP": 1,
+   "pSpy": 0.997,
+   "pOwn": 0.9495,
+   "eligible": false
+  },
+  {
+   "id": "CP10",
+   "family": "PRICE",
+   "variantId": "P2-SLOPER2-N50-R4-FULL-EW-PX5-MF",
+   "exSpy": 0.022307954494754614,
+   "exOwn": 0.025557434461708495,
+   "stressExSpy": -0.0018335748591140693,
+   "holmP": 1,
+   "pSpy": 0.6625,
+   "pOwn": 0.591,
+   "eligible": false
+  },
+  {
+   "id": "CP11",
+   "family": "PRICE",
+   "variantId": "P2-MOM6_REV1-N20-R4-FULL-EW-PX5-MF",
+   "exSpy": -0.0047154326431310895,
+   "exOwn": -0.0014659526761772092,
+   "stressExSpy": -0.07475579587049755,
+   "holmP": 1,
+   "pSpy": 0.934,
+   "pOwn": 0.983,
+   "eligible": false
+  },
+  {
+   "id": "CP12",
+   "family": "PRICE",
+   "variantId": "P2-MOM6-N20-R4-RUN-E95-X50-TX-PX5",
+   "exSpy": -0.008019460204326674,
+   "exOwn": -0.004769980237372793,
+   "stressExSpy": -0.018935210991191127,
+   "holmP": 1,
+   "pSpy": 0.9145,
+   "pOwn": 0.925,
+   "eligible": false
+  },
+  {
+   "id": "CF01",
+   "family": "FUND",
+   "variantId": "F3-VALUE_PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "exSpy": -0.034240182967455214,
+   "exOwn": -0.09050564161403933,
+   "stressExSpy": -0.049955481630357346,
+   "holmP": 1,
+   "pSpy": 0.5715,
+   "pOwn": 0.024,
+   "eligible": false
+  },
+  {
+   "id": "CF02",
+   "family": "FUND",
+   "variantId": "F2-VALUE_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+   "exSpy": 0.0017539585764662915,
+   "exOwn": -0.056664469687220255,
+   "stressExSpy": -0.0281931851398306,
+   "holmP": 1,
+   "pSpy": 0.969,
+   "pOwn": 0.1605,
+   "eligible": false
+  },
+  {
+   "id": "CF03",
+   "family": "FUND",
+   "variantId": "F3-VALUE_PROF_MOM-N20-M1-FULL-INVVOL-PX5-MC300",
+   "exSpy": -0.007424630751417779,
+   "exOwn": -0.06584305901510432,
+   "stressExSpy": -0.037340814515263575,
+   "holmP": 1,
+   "pSpy": 0.8695,
+   "pOwn": 0.097,
+   "eligible": false
+  },
+  {
+   "id": "CF04",
+   "family": "FUND",
+   "variantId": "F2-VALUE-N20-M1-BUFFER90-EW-PX5-MC300",
+   "exSpy": -0.09841797247823877,
+   "exOwn": -0.13434302183935135,
+   "stressExSpy": -0.10971355949364386,
+   "holmP": 1,
+   "pSpy": 0.3365,
+   "pOwn": 0.064,
+   "eligible": false
+  },
+  {
+   "id": "CF05",
+   "family": "FUND",
+   "variantId": "F2-VALUE-N20-M3-FULL-EW-PX5-MC300",
+   "exSpy": -0.09386208669170673,
+   "exOwn": -0.12499757674463352,
+   "stressExSpy": -0.10905700863988074,
+   "holmP": 1,
+   "pSpy": 0.3935,
+   "pOwn": 0.109,
+   "eligible": false
+  },
+  {
+   "id": "CF06",
+   "family": "FUND",
+   "variantId": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+   "exSpy": 0.15663907501014268,
+   "exOwn": 0.12951173188746132,
+   "stressExSpy": 0.1425238537007456,
+   "holmP": 0.156,
+   "pSpy": 0.013,
+   "pOwn": 0.035,
+   "eligible": true
+  },
+  {
+   "id": "CF07",
+   "family": "FUND",
+   "variantId": "F2-QUAL-N50-M1-FULL-INVVOL-PX5-MC300",
+   "exSpy": 0.04942365530619974,
+   "exOwn": 0.0182876546315108,
+   "stressExSpy": 0.03489296306491771,
+   "holmP": 1,
+   "pSpy": 0.2625,
+   "pOwn": 0.527,
+   "eligible": true,
+   "notChosenReason": "MAX_2_PER_FAMILY"
+  },
+  {
+   "id": "CF08",
+   "family": "FUND",
+   "variantId": "F3-QUAL_LOWVOL-N20-M3-FULL-EW-PX5-MC300",
+   "exSpy": 0.01990236453920047,
+   "exOwn": -0.0072249785834809024,
+   "stressExSpy": 0.0073556051609614806,
+   "holmP": 1,
+   "pSpy": 0.439,
+   "pOwn": 0.891,
+   "eligible": false
+  },
+  {
+   "id": "CF09",
+   "family": "FUND",
+   "variantId": "F2-QUAL_LOWVOL-N20-M1-FULL-EW-PX5-MC300",
+   "exSpy": 0.0191934092951244,
+   "exOwn": -0.011942591379564545,
+   "stressExSpy": 0.00039504104863359634,
+   "holmP": 1,
+   "pSpy": 0.312,
+   "pOwn": 0.82,
+   "eligible": false
+  },
+  {
+   "id": "CF10",
+   "family": "FUND",
+   "variantId": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "exSpy": 0.13538717475061496,
+   "exOwn": 0.0811745057490351,
+   "stressExSpy": 0.12221068248457954,
+   "holmP": 0.156,
+   "pSpy": 0.014,
+   "pOwn": 0.099,
+   "eligible": true
+  },
+  {
+   "id": "CF11",
+   "family": "FUND",
+   "variantId": "F1-VALUE_MOM-N50-M1-FULL-EW-PX5-MC300",
+   "exSpy": -0.05470534845114764,
+   "exOwn": -0.09063039781226022,
+   "stressExSpy": -0.08682238652569879,
+   "holmP": 1,
+   "pSpy": 0.3655,
+   "pOwn": 0.0165,
+   "eligible": false
+  },
+  {
+   "id": "CF12",
+   "family": "FUND",
+   "variantId": "F2-PROF_MOM-N20-M1-RUN-E95-X50-TX-PEXIT40-PX5-MC300",
+   "exSpy": 0.16659716592507,
+   "exOwn": 0.11013681343054872,
+   "stressExSpy": 0.1562057836626292,
+   "holmP": 0.45499999999999996,
+   "pSpy": 0.0455,
+   "pOwn": 0.049,
+   "eligible": true,
+   "notChosenReason": "MAX_2_PER_FAMILY"
+  }
+ ],
+ "hypotheses": [
+  {
+   "hypothesisId": "H1",
+   "family": "FUND",
+   "candidateId": "CF06",
+   "variantId": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+   "label": "VALIDATION_ELIGIBLE",
+   "spec": {
+    "id": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+    "family": "FUND",
+    "cadence": "MONTHLY",
+    "rebalanceMonths": 3,
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": 300000000,
+    "positions": 10,
+    "holding": "FULL",
+    "weighting": "EW",
+    "ranks": [
+     [
+      "f.q",
+      1,
+      1
+     ]
+    ]
+   },
+   "validation": {
+    "exSpyAnnualised": 0.15663907501014268,
+    "holmAdjustedP": 0.156,
+    "exOwnEwAnnualised": 0.12951173188746132,
+    "pOwn": 0.035,
+    "stressExSpyAnnualised": 0.1425238537007456
+   },
+   "testPeriod": [
+    "2021-01-01",
+    "2025-12-31"
+   ]
+  },
+  {
+   "hypothesisId": "H2",
+   "family": "FUND",
+   "candidateId": "CF10",
+   "variantId": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "label": "VALIDATION_ELIGIBLE",
+   "spec": {
+    "id": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+    "family": "FUND",
+    "cadence": "MONTHLY",
+    "rebalanceMonths": 3,
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": 300000000,
+    "positions": 20,
+    "holding": "FULL",
+    "weighting": "EW",
+    "ranks": [
+     [
+      "f.p",
+      1,
+      1
+     ],
+     [
+      "r12_1",
+      1,
+      1
+     ]
+    ]
+   },
+   "validation": {
+    "exSpyAnnualised": 0.13538717475061496,
+    "holmAdjustedP": 0.156,
+    "exOwnEwAnnualised": 0.0811745057490351,
+    "pOwn": 0.099,
+    "stressExSpyAnnualised": 0.12221068248457954
+   },
+   "testPeriod": [
+    "2021-01-01",
+    "2025-12-31"
+   ]
+  }
+ ],
+ "testPlan": {
+  "computedOnceAndReportedUnconditionally": true,
+  "primaryEndpoint": "weekly excess vs SPY (base costs), block bootstrap 26 w, Holm over the frozen hypotheses",
+  "secondary": "vs own-universe EW (Holm), stress costs, first year separately, delisting bounds (-100 %, sourced cash), research-portfolio ledger parity",
+  "capWeightedBenchmark": "plausibility filter 1.0.1 (fixed before TEST; see validation-capweight-correction-1.0.1.json)",
+  "attribution": "attribution.cjs on VALIDATION and TEST paths"
+ },
+ "priorExposureNote": "TEST years 2021-2025 were part of the V10 full-period factor reconstruction (positive ICs for quality/profitability known); a TEST success is time-separated, not confirmatory forward evidence.",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

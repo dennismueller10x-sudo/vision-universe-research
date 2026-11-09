@@ -2,12 +2,27 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
+<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#ffffff">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}document.documentElement.setAttribute("data-theme",w);document.documentElement.setAttribute("data-theme-mode",w);})();</script>
 <title>Analysten – Vision Universe</title>
 <meta name="description" content="Wie Wall-Street-Analysten die Aktien im Vision-Universe-Universum aktuell einstufen — Konsens-Rating, Kursziele und Trend, wöchentlich aktualisiert über Finnhub und FMP.">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+  /* Inter aus /assets/fonts statt von fonts.googleapis.com (keine Uebermittlung an Google, wie macro/ und quant/).
+     JetBrains Mono faellt auf die Systemschrift fuer Festbreite zurueck. */
+  @font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+  @font-face{font-family:Inter;font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+  @font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+  @font-face{font-family:Inter;font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+  @font-face{font-family:Inter;font-style:normal;font-weight:800;font-display:swap;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+  @font-face{font-family:Inter;font-style:normal;font-weight:900;font-display:swap;src:url(/assets/fonts/inter-latin-ext.woff2) format("woff2");unicode-range:U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF}
+  @font-face{font-family:Inter;font-style:normal;font-weight:400;font-display:swap;src:url(/assets/fonts/inter-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+  @font-face{font-family:Inter;font-style:normal;font-weight:500;font-display:swap;src:url(/assets/fonts/inter-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+  @font-face{font-family:Inter;font-style:normal;font-weight:600;font-display:swap;src:url(/assets/fonts/inter-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+  @font-face{font-family:Inter;font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/inter-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+  @font-face{font-family:Inter;font-style:normal;font-weight:800;font-display:swap;src:url(/assets/fonts/inter-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+  @font-face{font-family:Inter;font-style:normal;font-weight:900;font-display:swap;src:url(/assets/fonts/inter-latin.woff2) format("woff2");unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 
   :root {
     --bg: #ffffff;
@@ -15,13 +30,13 @@
     --surface2: #ebebeb;
     --border: #e0e0e0;
     --black: #111111;
-    --gray: #888888;
-    --gray-light: #bbbbbb;
+    --gray: #626262;
+    --gray-light: #626262;
     --green: #00b14f;
     --red: #e63946;
     --text: #111111;
-    --text-muted: #888888;
-    --mono: 'JetBrains Mono', monospace;
+    --text-muted: #626262;
+    --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     --sans: 'Inter', sans-serif;
     --radius: 12px;
   }
@@ -37,7 +52,7 @@
   .logo-ring { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--black); display: flex; align-items: center; justify-content: center; }
   .logo-ring::after { content: ''; width: 5px; height: 5px; border-radius: 50%; background: var(--black); }
   .topbar-right { display: flex; align-items: center; gap: 10px; }
-  .last-update-label { font-size: 11px; color: var(--gray); font-family: var(--mono); }
+  .last-update-label { min-width:22ch; font-size: 11px; color: var(--gray); font-family: var(--mono); }
   .btn-refresh { font-family: var(--sans); font-size: 12px; font-weight: 700; color: #fff; background: var(--black); border: none; border-radius: 20px; padding: 7px 16px; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: opacity 0.15s; }
   .btn-refresh:hover { opacity: 0.75; }
   .btn-refresh:disabled { opacity: 0.4; cursor: default; }
@@ -46,7 +61,7 @@
 
   .wrapper { max-width: 680px; margin: 0 auto; padding: 28px 20px 60px; }
 
-  .page-title { font-size: 34px; font-weight: 900; letter-spacing: -1px; line-height: 1.05; margin-bottom: 4px; }
+  .page-title { font-size: 34px; font-weight: 900; letter-spacing: -1px; line-height: 1.05; margin: 0 0 4px; }
   .page-sub { font-size: 14px; color: var(--gray); margin-bottom: 24px; }
 
   .section-label { display: flex; align-items: baseline; justify-content: space-between; font-size: 11px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--gray); margin-bottom: 12px; margin-top: 32px; }
@@ -138,9 +153,46 @@
   .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(120%); background: var(--black); color: #fff; font-size: 12px; font-weight: 600; padding: 10px 18px; border-radius: 20px; display: flex; align-items: center; gap: 8px; transition: transform 0.25s ease; z-index: 300; }
   .toast.show { transform: translateX(-50%) translateY(0); }
   .toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+  .universe-block { margin-top: 18px; }
+  .u-form { display: flex; gap: 8px; margin-bottom: 10px; }
+  .u-input { flex: 1; min-width: 0; font: inherit; font-size: 15px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--gray-light); background: var(--surface); color: inherit; }
+  .u-result { padding: 14px 16px; }
+  .u-result:empty { display: none; }
+  .u-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .u-name { font-weight: 700; font-size: 16px; }
+  .u-meta { font-size: 12px; opacity: .75; }
+  .u-row { display: grid; grid-template-columns: 7.5em 1fr 2.5em; align-items: center; gap: 8px; margin-top: 6px; font-size: 13px; }
+  .u-bar { height: 8px; border-radius: 4px; background: var(--gray-light); overflow: hidden; }
+  .u-bar > span { display: block; height: 100%; background: var(--black); opacity: .55; }
+  .u-num { text-align: right; font-variant-numeric: tabular-nums; }
+  .u-note { margin-top: 10px; font-size: 12px; opacity: .8; }
+  .u-hist { width: 100%; margin-top: 10px; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .u-hist th, .u-hist td { padding: 3px 4px; text-align: right; border-bottom: 1px solid var(--gray-light); }
+  .u-hist th:first-child, .u-hist td:first-child { text-align: left; }
+
+  /* E5: identical layout, contrast tokens and native-sized controls. */
+  :root[data-theme=dark]{--bg:#08080a;--surface:#151515;--surface2:#262626;--border:#333;--black:#fff;--text:#fff;--gray:#aaa;--gray-light:#aaa;--text-muted:#aaa}
+  .topbar,.detail,.dtop{background:var(--bg)}
+  .bar-value.pos,.sum-card-value.pos,.rank-right .pt.pos,.badge.buy{color:#006e31}
+  .bar-value.neg,.sum-card-value.neg,.rank-right .pt.neg,.badge.sell{color:#b52118}
+  :root[data-theme=dark] .pos,:root[data-theme=dark] .badge.buy{color:#c8f531}
+  :root[data-theme=dark] .neg,:root[data-theme=dark] .badge.sell{color:#ffaaa0}
+  :root[data-theme=dark] .btn-refresh,:root[data-theme=dark] .toast{color:#000}
+  :root[data-theme=dark] .badge.buy{background:#263013}
+  :root[data-theme=dark] .badge.sell{background:#3c1717}
+  .btn-refresh,.dback,.u-input,.bar-row[role=button],.rank-item[role=button]{min-width:44px;min-height:44px;touch-action:manipulation}
+  .bar-row:focus-visible,.rank-item:focus-visible,.dback:focus-visible{outline:2px solid var(--vu-focus);outline-offset:3px}
+  .detail{top:var(--vu-navigation-height);z-index:1000002}
+  html.an-detail-open{overflow:hidden}
+  .u-note{opacity:1}
+  .an-skeleton{min-height:102px;display:grid;gap:8px}
+  .an-skeleton i{height:12px;width:70%;background:var(--surface2);border-radius:6px}
+  .an-skeleton i:nth-child(2){height:24px;width:45%}
+  @media(max-width:430px){#uTitle{min-height:56px}.summary-grid{min-height:250px}.an-skeleton{min-height:120px}}
+  @media(prefers-reduced-motion:reduce){.detail,.toast{transition:none}.btn-refresh .spin{animation:none}}
 </style>
 <link rel="stylesheet" href="/assets/site-navigation.css"></head>
-<body><vu-navigation></vu-navigation><script src="/assets/site-navigation.js"></script>
+<body><vu-navigation theme-switch></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 
 <nav class="topbar vu-tools" aria-label="Daten aktualisieren">
 
@@ -153,14 +205,26 @@
   </div>
 </nav>
 
-<div class="wrapper">
+<div class="wrapper" role="main" id="analyst-main">
 
-  <div class="page-title">Analysten</div>
-  <div class="page-sub">Konsens-Rating &amp; Kursziele der Wall-Street-Analysten · wöchentlich aktualisiert über Finnhub &amp; FMP</div>
+  <h1 class="page-title">Analysten</h1>
+  <div class="page-sub">Einstufungen der Wall-Street-Analysten für alle Aktien (Angabe Dritter) · Kursziele, wo eine freie Quelle sie liefert · Finnhub &amp; FMP</div>
 
-  <div class="summary-grid" id="summaryGrid"></div>
+  <!-- Alle Aktien des Produktuniversums: Einstufungs-Konsens je Titel (Angabe Dritter), Kursziel nur aus freier Quelle.
+       Daten: dashboard/data/analysts (products/analysten/producer/fetch-consensus.mjs, rotierend). -->
+  <section class="universe-block" aria-labelledby="uTitle">
+    <div class="section-label" id="uTitle">Alle Aktien: Analysten-Einstufungen (Angabe Dritter)<span class="section-label-note" id="uCoverage"></span></div>
+    <form class="u-form" id="uForm" role="search" onsubmit="ANU.show(event)">
+      <input class="u-input" id="uInput" type="search" inputmode="search" autocomplete="off" spellcheck="false" placeholder="Ticker, z. B. NVDA" aria-label="Ticker eingeben">
+      <button class="btn-refresh" type="submit">Anzeigen</button>
+    </form>
+    <div class="rank-card u-result" id="uResult" aria-live="polite"></div>
+  </section>
 
-  <div class="section-label">Konsens-Ranking<span class="section-label-note">bullish ↔ bearish</span></div>
+  <div class="section-label">Ausgewählte Aktien<span class="section-label-note">Dashboard-Auswahl</span></div>
+  <div class="summary-grid" id="summaryGrid" aria-busy="true"><div class="sum-card an-skeleton" aria-hidden="true"><i></i><i></i><i></i></div><div class="sum-card an-skeleton" aria-hidden="true"><i></i><i></i><i></i></div><div class="sum-card an-skeleton" aria-hidden="true"><i></i><i></i><i></i></div><div class="sum-card an-skeleton" aria-hidden="true"><i></i><i></i><i></i></div></div>
+
+  <div class="section-label">Analystenkonsens (Angabe Dritter)<span class="section-label-note">positiv ↔ negativ</span></div>
   <div class="legend">
     <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Kaufen-Konsens</span>
     <span class="legend-item"><span class="legend-dot" style="background:var(--gray-light)"></span>Halten</span>
@@ -168,22 +232,22 @@
   </div>
   <div class="bar-list" id="consensusList"></div>
 
-  <div class="section-label">Kursziel-Potenzial<span class="section-label-note">Ø Kursziel vs. aktueller Kurs</span></div>
+  <div class="section-label">Abstand zum mittleren Analysten-Kursziel<span class="section-label-note">Angabe Dritter · Ø Kursziel vs. letzter Schluss</span></div>
   <div class="bar-list" id="upsideList"></div>
 
   <div class="section-label">Aktien im Überblick<span class="section-label-note">antippen für Details</span></div>
   <div class="rank-card" id="stockList"></div>
 
   <div class="info-note" id="infoNote">
-    Datenquelle: <a href="https://finnhub.io" target="_blank" rel="noopener">Finnhub</a> (Analyst Recommendation Trends) und <a href="https://financialmodelingprep.com" target="_blank" rel="noopener">FMP</a> (Kursziel-Konsens), aggregiert aus veröffentlichten Analystenmeinungen — ohne Zuordnung zu einzelnen Banken oder Analysten. Aktualisierung jeden Sonntag automatisch. Diese Übersicht ist keine Anlageberatung.
+    Datenquelle: <a href="https://finnhub.io" target="_blank" rel="noopener">Finnhub</a> (Analyst Recommendation Trends; für alle Aktien des Produktuniversums, rotierend täglich aktualisiert) und <a href="https://financialmodelingprep.com" target="_blank" rel="noopener">FMP</a> (Kursziel-Konsens), aggregiert aus veröffentlichten Analystenmeinungen — ohne Zuordnung zu einzelnen Banken oder Analysten. Aktualisierung jeden Sonntag automatisch. Diese Übersicht ist keine Anlageberatung.
   </div>
 
 </div>
 
-<div class="detail" id="stock-detail">
+<div class="detail" id="stock-detail" role="dialog" aria-modal="true" aria-labelledby="d-name" aria-hidden="true" inert>
   <div class="detail-inner">
     <div class="dtop">
-      <button class="dback" onclick="AN.closeStock()">←</button>
+      <button class="dback" type="button" aria-label="Zurück zur Analystenübersicht" onclick="AN.closeStock()">←</button>
       <div>
         <div class="dtitle-name" id="d-name">–</div>
         <div class="dtitle-sym" id="d-sym">–</div>
@@ -213,14 +277,14 @@
 
    Architektur: Finnhub wird NICHT bei jedem Seitenaufruf live im
    Browser abgerufen. Ein Python-Skript
-   (scripts/dashboard/fetch_analyst_ratings.py) holt die Daten
+   (products/analysten/producer/fetch_analyst_ratings.py) holt die Daten
    server-seitig über einen wöchentlichen GitHub-Actions-Workflow
    (.github/workflows/update-analyst-ratings.yml, sonntags) und
    schreibt sie als statisches JSON nach
    dashboard/data/analyst_ratings.json. Diese Seite lädt nur noch
    diese kleine, gleiche-Origin-JSON-Datei — plus universe.json für
    die Firmennamen und market_data.json für den aktuellen Kurs
-   (Kursziel-Potenzial = Kursziel vs. letzter Schlusskurs).
+   (Abstand zum mittleren Analysten-Kursziel = Kursziel vs. letzter Schlusskurs; Angabe Dritter).
    ========================================================= */
 
 var UNIVERSE_URL = "../dashboard/config/universe.json";
@@ -228,7 +292,7 @@ var RATINGS_URL = "../dashboard/data/analyst_ratings.json";
 var MARKET_URL = "../dashboard/data/market_data.json";
 
 var CONSENSUS_META = {
-  strong_buy:   { label: "Klarer Kauf", badge: "buy" },
+  strong_buy:   { label: "Analysten: starkes Kaufen", badge: "buy" },
   buy:          { label: "Kaufen", badge: "buy" },
   hold:         { label: "Halten", badge: "hold" },
   sell:         { label: "Verkaufen", badge: "sell" },
@@ -474,6 +538,7 @@ function renderStockList(){
 /* ---------- Detail overlay ---------- */
 
 function openStock(sym){
+  S.focusReturn = document.activeElement;
   S.openSymbol = sym;
   var r = S.ratings[sym];
   set("#d-name", esc(S.names[sym] || sym));
@@ -484,7 +549,7 @@ function openStock(sym){
     set("#d-pt-note", "");
     set("#d-trendhist", "");
     set("#d-note", "");
-    $("#stock-detail").classList.add("open");
+    revealDetail();
     return;
   }
   var rec = r.trend_history[0];
@@ -541,11 +606,21 @@ function openStock(sym){
   noteParts.push('Keine Einzelnennung, welche Bank oder welcher Analyst welches Kursziel gesetzt hat — diese Detailtiefe ist bei keinem der beiden Anbieter kostenlos verfügbar.');
   set("#d-note", noteParts.join(' '));
 
-  $("#stock-detail").classList.add("open");
+  revealDetail();
 }
 
+function revealDetail(){
+  var panel = $("#stock-detail"); panel.inert = false; panel.setAttribute("aria-hidden", "false"); panel.classList.add("open");
+  document.documentElement.classList.add("an-detail-open");
+  [$(".wrapper"), $("vu-navigation"), $(".topbar")].forEach(function(n){if(n)n.inert=true;});
+  panel.querySelector(".dback").focus({preventScroll:true});
+}
 function closeStock(){
   $("#stock-detail").classList.remove("open");
+  var panel = $("#stock-detail"); panel.inert = true; panel.setAttribute("aria-hidden", "true");
+  document.documentElement.classList.remove("an-detail-open");
+  [$(".wrapper"), $("vu-navigation"), $(".topbar")].forEach(function(n){if(n)n.inert=false;});
+  var target = S.focusReturn && S.focusReturn.isConnected ? S.focusReturn : $("#uInput"); if(target)target.focus({preventScroll:true});
   S.openSymbol = null;
 }
 
@@ -556,14 +631,84 @@ function renderAll(){
   renderConsensusList();
   renderUpsideList();
   renderStockList();
+  $("#summaryGrid").setAttribute("aria-busy", "false");
+  document.querySelectorAll('.bar-row[onclick],.rank-item[onclick]').forEach(function(row){row.tabIndex=0;row.setAttribute('role','button');row.setAttribute('aria-haspopup','dialog');});
 }
 
 /* ---------- Public API ---------- */
+
+document.addEventListener('keydown',function(e){
+  var panel = $("#stock-detail");
+  if(panel.classList.contains('open')){
+    if(e.key==='Escape'){e.preventDefault();closeStock();return;}
+    if(e.key==='Tab'){
+      var nodes=Array.from(panel.querySelectorAll('button,a[href],input,[tabindex]')).filter(function(n){return !n.disabled&&n.tabIndex>=0&&n.getBoundingClientRect().height;});
+      var first=nodes[0],last=nodes[nodes.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    }
+  }else if((e.key==='Enter'||e.key===' ')&&e.target.matches('.bar-row[role=button],.rank-item[role=button]')){e.preventDefault();e.target.click();}
+});
 
 window.AN = { reload: reload, openStock: openStock, closeStock: closeStock };
 
 loadData(false);
 
+})();
+</script>
+<script src="/core/identity.js"></script>
+<script>
+/* Alle Aktien: Einstufungs-Konsens je Titel aus dashboard/data/analysts (Angabe Dritter, unveraendert mit Quelle
+   und Stand). Kein eigenes Urteil: gezeigt wird die Zaehlung der Kategorien, kein zusammengefasstes Wort.
+   Kursziel nur, wo eine freie Quelle es liefert; sonst ausdruecklich "keine freie Quelle". */
+(function(){
+  var BASE = "../dashboard/data/analysts/";
+  var LABELS = [["strongBuy","Stark kaufen"],["buy","Kaufen"],["hold","Halten"],["sell","Verkaufen"],["strongSell","Stark verkaufen"]];
+  var cache = {};
+  function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+  function month(iso){ if(!iso) return "–"; var m=["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"]; var p=String(iso).split("-"); return m[parseInt(p[1],10)-1]+" "+p[0]; }
+  function day(iso){ if(!iso) return "–"; var p=String(iso).split("-"); return p[2]+"."+p[1]+"."+p[0]; }
+  function usd(n){ return n==null||isNaN(n) ? "–" : "$" + Number(n).toFixed(2); }
+  function el(id){ return document.getElementById(id); }
+  function json(url){ return fetch(url,{cache:"default"}).then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); }); }
+  function shard(t){ var I=(window.VUCore&&window.VUCore.Identity); return I ? I.shardKey(t) : (t.replace(/[^A-Z0-9]/g,"")+"_").slice(0,2); }
+  function idOf(t){ var I=(window.VUCore&&window.VUCore.Identity); return I ? I.securityIdForTicker(t) : "ref_"+t.replace(/[^A-Z0-9]/g,"_"); }
+  function coverage(){
+    json(BASE+"summary.json").then(function(s){
+      var c=s.counts||{};
+      el("uCoverage").textContent = c.universe ? (c.withRatings+" von "+c.universe+" Aktien mit Einstufungen · "+c.withTarget+" mit Kursziel · Stand "+day(s.newestFetch)) : "";
+    }).catch(function(){ el("uCoverage").textContent = "Daten werden aufgebaut"; });
+  }
+  function render(e, t){
+    if(!e){ return '<div class="u-note">Für '+esc(t)+' liegen noch keine Analystendaten vor (Titel nicht im Produktuniversum oder noch nicht abgerufen).</div>'; }
+    var head='<div class="u-head"><span class="u-name">'+esc(e.ticker)+'</span><span class="u-meta">Angabe Dritter · Quelle '+esc(e.source||"Finnhub")+' · Stand '+month(e.asOf)+' · abgerufen '+day(e.fetchedAt)+'</span></div>';
+    if(e.ratingsState!=="AVAILABLE") return head+'<div class="u-note">Keine Analysten-Einstufungen veröffentlicht.</div>';
+    var max=Math.max.apply(null,LABELS.map(function(l){return e.counts[l[0]]||0;}))||1;
+    var rows=LABELS.map(function(l){ var n=e.counts[l[0]]||0; return '<div class="u-row"><span>'+l[1]+'</span><span class="u-bar"><span style="width:'+Math.round(n/max*100)+'%"></span></span><span class="u-num">'+n+'</span></div>'; }).join("");
+    var tgt = e.targetState==="AVAILABLE" && e.target
+      ? '<div class="u-note">Kursziel (Angabe Dritter, Quelle '+esc(e.target.source)+', geprüft '+day(e.targetCheckedAt)+'): Mittel '+usd(e.target.consensus)+' · Spanne '+usd(e.target.low)+' – '+usd(e.target.high)+'</div>'
+      : '<div class="u-note">Kursziel: '+({NO_FREE_SOURCE:"keine freie Quelle für diesen Titel",NO_TARGET:"von der Quelle kein Kursziel veröffentlicht"}[e.targetState]||"noch nicht geprüft (rotierend)")+'.</div>';
+    var hist = (e.history||[]).length>1 ? '<table class="u-hist"><thead><tr><th>Monat</th>'+LABELS.map(function(l){return '<th>'+l[1]+'</th>';}).join("")+'</tr></thead><tbody>'+
+      e.history.map(function(h){ return '<tr><td>'+month(h.period)+'</td>'+LABELS.map(function(l){return '<td>'+(h[l[0]]||0)+'</td>';}).join("")+'</tr>'; }).join("")+'</tbody></table>' : "";
+    return head+'<div class="u-meta" style="margin-top:6px">'+e.analysts+' Analysten mit Einstufung</div>'+rows+tgt+hist+
+      '<div class="u-note">Zusammengefasste Einschätzungen externer Analysten, unverändert mit Quelle und Datum. Keine Einschätzung von Vision Universe, keine Anlageberatung.</div>';
+  }
+  function show(ev){
+    if(ev) ev.preventDefault();
+    var t=String(el("uInput").value||"").trim().toUpperCase();
+    if(!t){ el("uResult").innerHTML=""; return; }
+    var k=shard(t), id;
+    try { id=idOf(t); } catch(e){ el("uResult").innerHTML='<div class="u-note">Ungültiger Ticker.</div>'; return; }
+    el("uResult").innerHTML='<div class="u-note">Lädt …</div>';
+    (cache[k] || (cache[k]=json(BASE+"shards/"+k+".json").catch(function(){ return {entries:{}}; }))).then(function(d){
+      el("uResult").innerHTML=render((d.entries||{})[id], t);
+      try { history.replaceState(null,"","#"+encodeURIComponent(t)); } catch(e){}
+    });
+  }
+  window.ANU={ show: show };
+  coverage();
+  var h=decodeURIComponent((location.hash||"").slice(1));
+  if(/^[A-Za-z0-9.\-]{1,12}$/.test(h)){ el("uInput").value=h; show(); }
 })();
 </script>
 </body>

@@ -637,9 +637,9 @@
       "cik": "0001847064",
       "name": "PSQ Holdings, Inc.",
       "sic": "7310",
-      "rawFacts": 4767,
-      "mappedFacts": 1476,
-      "unmappedFacts": 3265,
+      "rawFacts": 5117,
+      "mappedFacts": 1575,
+      "unmappedFacts": 3514,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -650,9 +650,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 23,
+      "quarterlyPeriods": 24,
       "firstPeriodEnd": "2021-02-11",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
@@ -664,7 +664,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -691,21 +691,21 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "revenue": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -719,14 +719,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -749,46 +749,47 @@
         }
       },
       "quality": {
-        "HIGH": 138,
-        "MEDIUM": 12
+        "HIGH": 143,
+        "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 150,
-        "resolvedValues": 150
+        "datableValues": 156,
+        "resolvedValues": 156
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3537,
+        "rules_version": "1.1.0",
+        "total": 3796,
         "by_severity": {
-          "INFO": 3265,
-          "WARNING": 272
+          "INFO": 3514,
+          "WARNING": 282
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 87,
-          "RESTATEMENT_CONFLICT": 121,
+          "CONCEPT_DISAGREEMENT": 94,
+          "RESTATEMENT_CONFLICT": 124,
           "UNEXPECTED_DURATION": 64,
-          "UNKNOWN_CONCEPT": 3265
+          "UNKNOWN_CONCEPT": 3514
         }
       },
       "latestFiling": {
-        "accession": "0001847064-26-000014",
-        "filing_date": "2026-08-04",
+        "accession": "0001847064-26-000020",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 25
+        "periodic_filings": 26,
+        "acceptance_datetime": "2026-11-06T11:36:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "09c5ffcce88d34e2dae9a5275d7d4261b01c0f3f010f2af5a314b7749b3a5c3f",
+      "sourceDigest": "88c29e8837e2a0ae2e982d91d59f5d534d62b6eb8d415994321dbfbc5a22b028",
       "issuerId": "iss_cik_0001847064"
     }
   ]

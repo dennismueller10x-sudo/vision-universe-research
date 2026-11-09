@@ -1,0 +1,711 @@
+{
+ "schemaVersion": "v12-mcap-producer-effect-1.0.0",
+ "proposal": "docs/quant-recovery/v12/mcap/producer-patch-market-cap-1.2.0.diff",
+ "population": "V10 factor panel rows with a V10 market cap (research frame, 2010-01 to 2025-12, 370,389 rows)",
+ "rows": 370389,
+ "guardWithholds": 558,
+ "guardShare": 0.00151,
+ "rowsOver5e12": {
+  "rows": 149,
+  "guarded": 141
+ },
+ "crossTabGuardVsRegister": {
+  "GUARD_PASSES|CORRECTED:SCALE_ERROR": 79,
+  "GUARD_PASSES|CORRECTED:SPINOFF_AS_SPLIT": 20,
+  "GUARD_PASSES|CORRECTED:SPLIT_TIMING": 944,
+  "GUARD_PASSES|EXCLUDED:DECIMAL_SCALE_SUSPECTED": 46,
+  "GUARD_PASSES|EXCLUDED:SPLIT_BASIS_UNRESOLVED": 228,
+  "GUARD_PASSES|EXCLUDED:UNRESOLVED": 2691,
+  "GUARD_PASSES|OK": 365823,
+  "GUARD_WITHHOLDS|CORRECTED:SCALE_ERROR": 322,
+  "GUARD_WITHHOLDS|EXCLUDED:MCAP_ABSOLUTE_BOUND": 21,
+  "GUARD_WITHHOLDS|EXCLUDED:UNRESOLVED": 81,
+  "GUARD_WITHHOLDS|OK": 134
+ },
+ "lastRankDate": {
+  "date": "2025-12-26",
+  "cases": [
+   {
+    "securityId": "ref_AGPU",
+    "guard": false,
+    "register": "CORRECTED",
+    "classes": [
+     "SPLIT_TIMING"
+    ],
+    "before": 1629000,
+    "after": 24430000
+   },
+   {
+    "securityId": "ref_AKAN",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 295000,
+    "after": null
+   },
+   {
+    "securityId": "ref_ALAR",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 542800000,
+    "after": null
+   },
+   {
+    "securityId": "ref_AMZE",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 6675000,
+    "after": null
+   },
+   {
+    "securityId": "ref_APVO",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 10230000,
+    "after": null
+   },
+   {
+    "securityId": "ref_ATCH",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 38370000,
+    "after": null
+   },
+   {
+    "securityId": "ref_AVX",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 127600000,
+    "after": null
+   },
+   {
+    "securityId": "ref_BEEP",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 118900000,
+    "after": null
+   },
+   {
+    "securityId": "ref_BMNR",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 10870000000,
+    "after": null
+   },
+   {
+    "securityId": "ref_BTTC",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 13670000,
+    "after": null
+   },
+   {
+    "securityId": "ref_BYND",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 408200000,
+    "after": null
+   },
+   {
+    "securityId": "ref_CING",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 28240000,
+    "after": null
+   },
+   {
+    "securityId": "ref_CISS",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 9929,
+    "after": null
+   },
+   {
+    "securityId": "ref_CMMB",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 169700000,
+    "after": null
+   },
+   {
+    "securityId": "ref_CMRE",
+    "guard": false,
+    "register": "CORRECTED",
+    "classes": [
+     "SPINOFF_AS_SPLIT"
+    ],
+    "before": 2540000000,
+    "after": 1886000000
+   },
+   {
+    "securityId": "ref_CNEY",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 256500,
+    "after": null
+   },
+   {
+    "securityId": "ref_CNTN",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 90770000,
+    "after": null
+   },
+   {
+    "securityId": "ref_CPK",
+    "guard": false,
+    "register": "CORRECTED",
+    "classes": [
+     "SCALE_ERROR"
+    ],
+    "before": 2978000000000,
+    "after": 2978000000
+   },
+   {
+    "securityId": "ref_CYCU",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 257700,
+    "after": null
+   },
+   {
+    "securityId": "ref_DFDV",
+    "guard": false,
+    "register": "CORRECTED",
+    "classes": [
+     "SPLIT_TIMING"
+    ],
+    "before": 199000000,
+    "after": 180900000
+   },
+   {
+    "securityId": "ref_DOGZ",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 145200000,
+    "after": null
+   },
+   {
+    "securityId": "ref_EDBL",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 3691000,
+    "after": null
+   },
+   {
+    "securityId": "ref_ESEA",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "SPLIT_BASIS_UNRESOLVED"
+    ],
+    "before": 471300000,
+    "after": null
+   },
+   {
+    "securityId": "ref_GENI",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 201300000,
+    "after": null
+   },
+   {
+    "securityId": "ref_GFAI",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 11510000,
+    "after": null
+   },
+   {
+    "securityId": "ref_GLBS",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 35200000,
+    "after": null
+   },
+   {
+    "securityId": "ref_GNLN",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 3168000,
+    "after": null
+   },
+   {
+    "securityId": "ref_GNPX",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 81280,
+    "after": null
+   },
+   {
+    "securityId": "ref_GNS",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 41080000,
+    "after": null
+   },
+   {
+    "securityId": "ref_GURE",
+    "guard": false,
+    "register": "CORRECTED",
+    "classes": [
+     "SPLIT_TIMING"
+    ],
+    "before": 511400,
+    "after": 5114000
+   },
+   {
+    "securityId": "ref_HCTI",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 8351000,
+    "after": null
+   },
+   {
+    "securityId": "ref_HIND",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 21050000,
+    "after": null
+   },
+   {
+    "securityId": "ref_IPST",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 917400,
+    "after": null
+   },
+   {
+    "securityId": "ref_IPW",
+    "guard": false,
+    "register": "CORRECTED",
+    "classes": [
+     "SPLIT_TIMING"
+    ],
+    "before": 339400,
+    "after": 10180000
+   },
+   {
+    "securityId": "ref_KITT",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 12340000,
+    "after": null
+   },
+   {
+    "securityId": "ref_KPTI",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 126900000000,
+    "after": null
+   },
+   {
+    "securityId": "ref_LITS",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 49660000,
+    "after": null
+   },
+   {
+    "securityId": "ref_LNAI",
+    "guard": false,
+    "register": "CORRECTED",
+    "classes": [
+     "SPLIT_TIMING"
+    ],
+    "before": 2276000,
+    "after": 22760000
+   },
+   {
+    "securityId": "ref_LPSN",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 3249000,
+    "after": null
+   },
+   {
+    "securityId": "ref_LTM",
+    "guard": true,
+    "register": "EXCLUDED",
+    "classes": [
+     "MCAP_ABSOLUTE_BOUND"
+    ],
+    "before": 32640000000000,
+    "after": null
+   },
+   {
+    "securityId": "ref_MI",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 20240000,
+    "after": null
+   },
+   {
+    "securityId": "ref_MNTS",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "SPLIT_BASIS_UNRESOLVED"
+    ],
+    "before": 8411000,
+    "after": null
+   },
+   {
+    "securityId": "ref_NNDM",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 347400000,
+    "after": null
+   },
+   {
+    "securityId": "ref_NUWE",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 3384000,
+    "after": null
+   },
+   {
+    "securityId": "ref_NWTG",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 7509000,
+    "after": null
+   },
+   {
+    "securityId": "ref_OKYO",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 74850000,
+    "after": null
+   },
+   {
+    "securityId": "ref_OLOX",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 12800000,
+    "after": null
+   },
+   {
+    "securityId": "ref_ORBS",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 330400000,
+    "after": null
+   },
+   {
+    "securityId": "ref_PALI",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 320400000,
+    "after": null
+   },
+   {
+    "securityId": "ref_PAVS",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 1448000,
+    "after": null
+   },
+   {
+    "securityId": "ref_PPBT",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 365100000,
+    "after": null
+   },
+   {
+    "securityId": "ref_QCLS",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 19830000,
+    "after": null
+   },
+   {
+    "securityId": "ref_RDHL",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 14710000000,
+    "after": null
+   },
+   {
+    "securityId": "ref_REVB",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 5095000,
+    "after": null
+   },
+   {
+    "securityId": "ref_RVSN",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 17750000,
+    "after": null
+   },
+   {
+    "securityId": "ref_SAFX",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 53880000,
+    "after": null
+   },
+   {
+    "securityId": "ref_SENS",
+    "guard": false,
+    "register": "CORRECTED",
+    "classes": [
+     "SPLIT_TIMING"
+    ],
+    "before": 12300000,
+    "after": 246000000
+   },
+   {
+    "securityId": "ref_SOAR",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "SPLIT_BASIS_UNRESOLVED"
+    ],
+    "before": 7902000,
+    "after": null
+   },
+   {
+    "securityId": "ref_TRNR",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 3412000,
+    "after": null
+   },
+   {
+    "securityId": "ref_TRUG",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 492.6,
+    "after": null
+   },
+   {
+    "securityId": "ref_UNIT",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 1680000000,
+    "after": null
+   },
+   {
+    "securityId": "ref_UPC",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 221500,
+    "after": null
+   },
+   {
+    "securityId": "ref_UYSC",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 78420000,
+    "after": null
+   },
+   {
+    "securityId": "ref_VERU",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 38520000,
+    "after": null
+   },
+   {
+    "securityId": "ref_XFOR",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 393500000,
+    "after": null
+   },
+   {
+    "securityId": "ref_XTIA",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 44590000,
+    "after": null
+   },
+   {
+    "securityId": "ref_YHC",
+    "guard": false,
+    "register": "EXCLUDED",
+    "classes": [
+     "UNRESOLVED"
+    ],
+    "before": 12900000,
+    "after": null
+   },
+   {
+    "securityId": "ref_YHGJ",
+    "guard": false,
+    "register": "CORRECTED",
+    "classes": [
+     "SPLIT_TIMING"
+    ],
+    "before": 1049000,
+    "after": 10490000
+   }
+  ]
+ },
+ "note": "The product computes market cap from the latest share count and the latest close; the research panel uses the same fundamental-inputs selection at each rank date. The last rank date approximates the current product state."
+}

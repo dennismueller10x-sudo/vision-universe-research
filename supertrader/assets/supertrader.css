@@ -15,10 +15,10 @@
   --st-bg: #000000; --st-bg-2: #0d0d0f; --st-surface: #12141d; --st-surface-2: #181b27;
   --st-line: rgba(255,255,255,.08); --st-line-2: rgba(255,255,255,.14);
   --st-text: #f4f5f8; --st-text-2: #b9bdca; --st-muted: #8a8fa0;
-  --st-accent: #c8f531; --st-good: #34d399; --st-warn: #fbbf24; --st-bad: #f87171; --st-info: #60a5fa;
+  --st-accent: #c8f531; --st-good: #34d399; --st-warn: #fbbf24; --st-bad: #a1a1aa; --st-info: #60a5fa;
   --p-cand: #8a8fa0; --p-prep: #60a5fa; --p-conf: #fbbf24; --p-pos: #34d399; --p-warn: #fb923c; --p-exit: #f472b6; --p-closed: #c4b5fd; --p-inv: #6b7280; --p-partial: #f59e0b; --p-watch: #94a3b8; --p-obs: #a8a29e;
   --ma10: #3987e5; --ma20: #d95926; --ma50: #199e70; --ma150: #c98500; --ma200: #d55181; --ma30w: #9085e9;
-  --candle-up: #34d399; --candle-down: #f87171;
+  --candle-up: #34d399; --candle-down: #9ca3af;
   /* Abgeleitete Rollen (Text auf Akzent, Leisten, Hervorhebungen) */
   --st-accent-ink: #c8f531; --st-on-accent: #000; --st-on-text: #000; --st-on-text-2: #333;
   --st-bar-bg: rgba(7,8,12,.86); --st-bottom-bg: rgba(10,11,16,.95); --st-tip-bg: rgba(12,14,21,.96); --st-tip-shadow: none;
@@ -27,7 +27,7 @@
   /* Charts (st-chart.js liest diese Werte beim Zeichnen) */
   --chart-bg: #0d0f16; --chart-grid: rgba(255,255,255,.06); --chart-axis: #8a8fa0; --chart-vol: rgba(185,189,202,.28);
   --chart-price: #e5e7eb; --chart-cross: rgba(255,255,255,.35); --candle-hollow: #0d0f16;
-  --chart-trigger: #fde047; --chart-entry: #4ade80; --chart-stop: #f87171; --chart-exit: #f472b6;
+  --chart-trigger: #fde047; --chart-entry: #4ade80; --chart-stop: #a1a1aa; --chart-exit: #f472b6;
   --chart-box-darvas: #ff7a1a; --chart-box-base: #2f7bff; --chart-marker-ring: #07080c; --chart-marker-legend: #ffffff; --chart-tag-ink: #000;
   --lc-strategy: #14b8a6; --lc-ew: #94a3b8; --lc-spy: #fbbf24; --lc-grid: rgba(255,255,255,.07);
 }
@@ -36,17 +36,17 @@ html[data-theme=light] {
   --st-bg: #ffffff; --st-bg-2: #f2f2f2; --st-surface: #ffffff; --st-surface-2: #f0f2f5;
   --st-line: rgba(16,20,32,.10); --st-line-2: rgba(16,20,32,.18);
   --st-text: #0f1117; --st-text-2: #3b4050; --st-muted: #5b6070;
-  --st-accent: #c8f531; --st-good: #046c4e; --st-warn: #a3470a; --st-bad: #c81e1e; --st-info: #1d4ed8;
+  --st-accent: #c8f531; --st-good: #046c4e; --st-warn: #a3470a; --st-bad: #18181b; --st-info: #1d4ed8;
   --p-cand: #5b6070; --p-prep: #1d4ed8; --p-conf: #8f5a06; --p-pos: #046c4e; --p-warn: #b23c0a; --p-exit: #be185d; --p-closed: #6d28d9; --p-inv: #60666f; --p-partial: #a3470a; --p-watch: #52607a; --p-obs: #67615c;
   --ma10: #2563eb; --ma20: #c2410c; --ma50: #047857; --ma150: #a16207; --ma200: #be185d; --ma30w: #6d28d9;
-  --candle-up: #059669; --candle-down: #dc2626;
+  --candle-up: #059669; --candle-down: #111111;
   --st-accent-ink: #4a6a00; --st-on-accent: #0f1117; --st-on-text: #fff; --st-on-text-2: #d4d7df;
   --st-bar-bg: rgba(255,255,255,.88); --st-bottom-bg: rgba(255,255,255,.96); --st-tip-bg: rgba(255,255,255,.98); --st-tip-shadow: 0 8px 24px rgba(16,20,32,.14);
   --st-fill-soft: rgba(16,20,32,.07); --st-now: #0f1117; --st-now-ring: rgba(16,20,32,.18);
   --st-trigger: #7d6300; --st-teal: #0d6b64; --st-research-ink: #57534e; --st-demo: #64748b; --st-stone: #78716c;
   --chart-bg: #ffffff; --chart-grid: rgba(16,20,32,.08); --chart-axis: #5b6070; --chart-vol: rgba(59,64,80,.20);
   --chart-price: #1f2430; --chart-cross: rgba(16,20,32,.38); --candle-hollow: #ffffff;
-  --chart-trigger: #b58b00; --chart-entry: #16a34a; --chart-stop: #e5484d; --chart-exit: #db2777;
+  --chart-trigger: #b58b00; --chart-entry: #16a34a; --chart-stop: #3f3f46; --chart-exit: #db2777;
   --chart-box-darvas: #ea580c; --chart-box-base: #2563eb; --chart-marker-ring: #ffffff; --chart-marker-legend: #1f2430; --chart-tag-ink: #000;
   --lc-strategy: #0d9488; --lc-ew: #64748b; --lc-spy: #d97706; --lc-grid: rgba(16,20,32,.08);
 }
@@ -794,3 +794,34 @@ html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] { margin-b
 }
 /* Fingerspur ausserhalb des Plots (Ruhestellung x=-10) nicht zeigen: der Chart zeichnet mit overflow:visible. */
 .st-pchart .vu-chart-cross[x1="-10"] { visibility: hidden; }
+
+/* Technischer Zustand derselben Aktie (assets/st-technical.js): Technical-Stand, nur angezeigt. */
+.st-tech-slot:empty { display: none; }
+.st-tech .st-sec-h { flex-wrap: wrap; }
+.st-tech-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; min-width: 0; }
+.st-tech-meta .st-tag { white-space: normal; }
+.st-tech-note { font-size: 12.5px; color: var(--st-muted); }
+.st-tech-dq { margin: 10px 0 0; font-size: 13px; line-height: 1.45; padding: 8px 10px; border-radius: 10px; background: var(--st-bg-2); color: var(--st-text-2); border-left: 3px solid var(--st-warn); }
+.st-tech-dq[data-t="bad"] { border-left-color: var(--st-bad); }
+.st-tech-block { margin-top: 18px; min-width: 0; }
+.st-tech-block h3 { font-size: 14px; font-weight: 800; margin: 0 0 8px; }
+.st-tech-fits, .st-tech-trend, .st-tech-forms { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.st-tech-fits li > a, .st-tech-fits li > div { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 9px 12px; border-radius: 10px; background: var(--st-bg-2); color: inherit; text-decoration: none; min-width: 0; }
+.st-tech-fits li > a:hover, .st-tech-fits li > a:focus-visible { background: var(--st-surface-2); }
+.st-tech-fit-t { min-width: 0; display: flex; flex-direction: column; }
+.st-tech-fit-t strong { font-size: 13.5px; overflow-wrap: anywhere; }
+.st-tech-kind { font-size: 12px; color: var(--st-muted); }
+.st-tech-fit-r { flex: none; display: flex; align-items: center; gap: 8px; }
+.st-tech-n { font-size: 12.5px; color: var(--st-muted); font-variant-numeric: tabular-nums; }
+.st-tech-trend { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-top: 8px; }
+.st-tech-trend li { display: flex; align-items: center; gap: 8px; font-size: 13px; padding: 6px 10px; border-radius: 10px; background: var(--st-bg-2); min-width: 0; }
+.st-tech-trend .i { flex: none; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 11px; background: var(--st-surface-2); color: var(--st-muted); }
+.st-tech-trend li[data-s="ok"] .i { background: color-mix(in srgb, var(--st-good) 18%, transparent); color: var(--st-good); }
+.st-tech-trend li[data-s="no"] .i { background: color-mix(in srgb, var(--st-bad) 15%, transparent); color: var(--st-bad); }
+.st-tech-forms li { padding: 9px 12px; border-radius: 10px; background: var(--st-bg-2); min-width: 0; }
+.st-tech-forms .r1 { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.st-tech-forms strong { font-size: 13.5px; margin-right: 2px; }
+.st-tech-forms p { margin: 4px 0 0; font-size: 12.5px; color: var(--st-text-2); line-height: 1.45; }
+.st-tech-limits { margin: 14px 0 0; font-size: 12px; line-height: 1.5; color: var(--st-muted); }
+.st-tech-empty { margin-top: 0; }
+.st-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }

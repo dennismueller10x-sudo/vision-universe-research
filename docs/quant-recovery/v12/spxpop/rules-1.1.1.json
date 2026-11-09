@@ -1,0 +1,243 @@
+{
+  "schemaVersion": "v12-spxpop-rules-1.1.1",
+  "ruleVersion": "1.1.1",
+  "strand": "SPXPOP (Quant V12, P4 qualified sub-population)",
+  "frozenAt": "2026-10-29",
+  "frozenBefore": "1.1.1 amends 1.1.0 AFTER sight of the 1.1.0 results and after the independent V12 review (finding SPXPOP m4: Broadcom Corp. -> Broadcom Ltd. 2015-09 -> 2016-03 chained as one identity with +200 %). Correction after independent review; the 1.1.0 files are kept unchanged (population/periods/validation/summary/manifest-1.1.0) and stay loadable (ruleVersion option).",
+  "evidenceKind": "RECONSTRUCTION",
+  "certificationStatus": "NOT_CERTIFIED",
+  "productionApproved": false,
+  "inputs": {
+    "snapshots": "INDEXPOP private snapshots.json (335 validated fund-date holdings schedules; rules-1.0.0 of INDEXPOP)",
+    "mapping": "INDEXPOP private mapping-1.2.0.json (key -> securityId per date (T1/T2 only), CIK)",
+    "fates": "INDEXPOP private fates-1.2.0.json (= repo exits-1.2.0.json.gz with names)",
+    "lifecycle": "quant/engines/research-listing-lifecycle.cjs (terminal cash consideration per share, source-bound)",
+    "series": "quant/data/market/discover-series-long/ref_*.json (weekly split-adjusted closes, provider split factors), read-only",
+    "fundSeries": "quant/data/market/multi-asset/series/{SPY,QQQ,DIA,IWM}.json (daily split-adjusted closes = price return), read-only",
+    "fundTotalReturn": "N-PORT returnInfo/monthlyTotReturns of the same holdings documents (2019+), used only as secondary reference"
+  },
+  "price": "p = value / shares of the position in the holdings schedule (fund valuation at the holdings date). No external price is used for members present at both dates.",
+  "identityChain": {
+    "scope": "consecutive holdings dates t0 < t1 of the same fund",
+    "order": [
+      "C1_CUSIP: same valid CUSIP (N-PORT) or, when the CUSIP is missing/zero, same valid ISIN",
+      "C2_NAME: same normalized name key + share class (INDEXPOP lib.cjs normName), unique among the still unmatched positions on both sides; duplicate keys inside one schedule are paired by the smallest |log(p1/p0) - log(1+Ridx_prelim)|",
+      "C3_CIK: same CIK (INDEXPOP mapping) for the t0 key and the t1 key, unique among the still unmatched positions on both sides",
+      "C4_FUZZY: token-set Jaccard of normalized names >= 0.6, unique best candidate in both directions among the still unmatched, and price/share plausible: |log q| <= log(1.5) or q within the split tolerance of a split ratio, and |e_none| <= 0.7 or |e_split| <= 0.7"
+    ],
+    "breaks": "An exit at t0 and an entry at t1 of the same fund that share a CIK or have token-set Jaccard >= 0.5 but were not linked by C1-C4 are counted as possible identity breaks (not linked, reported).",
+    "identityBreak": "1.1.1: identity break at a merger. A link of tier C3_CIK or C4_FUZZY (no CUSIP/ISIN and no name-key identity) whose split class is SHARE_CHANGE or AMBIGUOUS_CA and for which, under every admissible return hypothesis R_h (the point return, or both bounds of AMBIGUOUS_CA), log(1 + R_h) - log(1 + Ridx_prelim) > log 2 holds, is NOT linked. Signature of a merger target chained to the acquirer's (new holding's) position via a shared CIK or a similar name. The t0 position is booked as BOUNDED_EXIT (point 0 %, lower bound -100 %, no upper bound) with fate IDENTITY_BREAK, without the exit cascade (no cross-fund, series or cash estimate); the t1 position becomes an entry. Downward discontinuities (spin-offs, special dividends, crashes) are not affected."
+  },
+  "splitDetection": {
+    "shareRatio": "r = shares1 / shares0 for every linked position",
+    "fundFlow": "F = median of r over C1/C2 links of the period",
+    "relative": "q = r / F",
+    "indexPrelim": "Ridx_prelim = value-weighted (w0) mean of p1/p0 - 1 over C1/C2 links with |log q| < log(1.10)",
+    "trigger": "|log q| >= log(1.15)",
+    "ratios": [
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "10",
+      "15",
+      "20",
+      "25",
+      "30",
+      "40",
+      "50",
+      "3/2",
+      "5/2",
+      "5/3",
+      "1/2",
+      "1/3",
+      "1/4",
+      "1/5",
+      "1/6",
+      "1/8",
+      "1/10",
+      "1/12",
+      "1/15",
+      "1/20",
+      "1/25",
+      "1/30",
+      "1/40",
+      "1/50",
+      "2/5"
+    ],
+    "ratioTolerance": "|log q - log s| <= 0.15 for the nearest ratio s",
+    "residuals": "e_split = log(s * p1/p0) - log(1 + Ridx_prelim); e_none = log(p1/p0) - log(1 + Ridx_prelim)",
+    "classes": {
+      "NONE": "no trigger: split factor 1",
+      "SPLIT": "trigger, nearest ratio within tolerance, |e_split| + 0.10 <= |e_none| and |e_split| <= 1.0: split factor s",
+      "SHARE_CHANGE": "trigger, (no ratio within tolerance, or |e_none| + 0.10 <= |e_split|) and |e_none| <= 1.0: split factor 1 (float/index-share change, issuance, merger)",
+      "AMBIGUOUS_CA": "otherwise: no point return, bounds = [min, max] of the return under s and under 1"
+    },
+    "validation": "against the provider split factors of our weekly series (return-series.js#splitFactors convention: splits with t0 < split date <= t1) for links whose t0 and t1 keys map to the same securityId, and against cross-fund links of the same security and period (independent share counts)"
+  },
+  "periodReturn": {
+    "definition": "price return R = s * p1/p0 - 1 of every t0 member, weight w0 = value0 / sum(value0) over all members of the t0 schedule",
+    "statuses": {
+      "OBS_CHAIN": "linked in the own fund (C1-C4), split class NONE/SPLIT/SHARE_CHANGE",
+      "OBS_CROSSFUND": "not linked in the own fund, but the same security (CUSIP/ISIN, name key or CIK at t0) is linked in another fund with exactly the same t0 and t1 (non-ambiguous there): that fund's return",
+      "OBS_SERIES": "exit; mapped (T1/T2) at t0 to one of our series with a bar within 7 days on/before t0 and a bar within 7 days on/before t1: adjusted close ratio (weekly; documented misalignment)",
+      "EST_SERIES_END": "exit; series ends between t0 and t1 and the INDEXPOP fate is ACQUIRED_OR_MERGED (or the lifecycle register has a terminal record): return to the last bar, cash at 0 % afterwards",
+      "EST_CASH": "exit; lifecycle register CASH_MERGER for the mapped securityId or CIK with lastTradeDate in (t0, t1]: cashPerShare / p0 - 1",
+      "BOUNDED_AMBIGUOUS_CA": "see splitDetection AMBIGUOUS_CA",
+      "BOUNDED_EXIT": "exit without any of the above: point value 0 % (last holdings price carried), lower bound -100 %, no upper bound; fate class from INDEXPOP (ACQUIRED_OR_MERGED, DELISTED_OTHER, DELISTED_BANKRUPTCY, STILL_REPORTING_INDEX_EXIT, NO_SEC_EVIDENCE, NO_CIK, TEMPORARY_ABSENCE, NOT_FATED; 1.1.1: IDENTITY_BREAK for unlinked identity breaks) is reported per case",
+      "BOUNDED_EXIT_SERIES_DELISTED": "exit; series ends between t0 and t1 without acquisition evidence: point = return to last bar, lower bound -100 %, upper bound = point"
+    },
+    "groups": {
+      "observed": [
+        "OBS_CHAIN",
+        "OBS_CROSSFUND",
+        "OBS_SERIES"
+      ],
+      "estimated": [
+        "EST_SERIES_END",
+        "EST_CASH"
+      ],
+      "bounded": [
+        "BOUNDED_AMBIGUOUS_CA",
+        "BOUNDED_EXIT",
+        "BOUNDED_EXIT_SERIES_DELISTED"
+      ]
+    },
+    "indexLevel": "Rpoint = sum w0 * point; Rlow = same with every bounded case at its lower bound; impliedBoundedMean = (Rfund - sum over observed/estimated w0*R) / bounded weight (diagnostic only)",
+    "statusOrder": "for t0 members without an own-fund link: OBS_CROSSFUND, OBS_SERIES (series continues to t1), EST_CASH, EST_SERIES_END, BOUNDED_EXIT_SERIES_DELISTED, BOUNDED_EXIT",
+    "crossFundPriceCheck": "OBS_CROSSFUND additionally requires |p0(own) / p0(other) - 1| <= 2 % at t0 (same security, same valuation date)",
+    "frozenTail": "a series whose last >= 4 bars carry the identical close ends at the first bar of that run (carried-forward tail); a lifecycle register lastTradeDate for the securityId takes precedence",
+    "fateJoin": "fate from INDEXPOP fates by fund + lastHoldingDate (= t0) + holdings name; a member absent at t1 but present at a later date of the same fund = TEMPORARY_ABSENCE; IWB/IWM exits have no SEC fate in INDEXPOP = NOT_FATED"
+  },
+  "consistency": {
+    "externalReference": "fund price return between the last trading day on/before t0 and t1 from the daily multi-asset series (SPY, QQQ, DIA, IWM); price return on both sides (dividends missing on both sides)",
+    "error": "Rpoint - Rfund (percentage points)",
+    "tolerance": "0.5 pp * sqrt(months / 3); months = calendar months between t0 and t1 (quarter 0.50, half year 0.71, 9 months 0.87, year 1.00)",
+    "approxReference_IWB_IWV": "no IWB/IWV price series in the repository. N-PORT era (both dates N-PORT): Rfund_approx = compounded N-PORT monthly total return of the fund over the months of the period minus the SPY dividend gap of the same months (compounded SPY N-PORT total return - SPY price return); tolerance + 0.25 pp. Report era: no external reference; internal checks only (member-level agreement with the IWV chain for the same securities and dates; IWV vs IWB/IWM mix).",
+    "secondary": "for every fund with N-PORT total returns at both dates: TR_nport - Rpoint (should be a small positive dividend yield); reported only",
+    "nportTotalReturn": "only for periods of exactly 3 months whose t1 holdings document is N-PORT (monthly total returns of the 3 months ending at t1)"
+  },
+  "qualification": {
+    "period": {
+      "QUALIFIED": "observed+estimated weight >= 97.0 %, bounded weight <= 3.0 %, and |error| <= tolerance (external or approximate reference)",
+      "QUALIFIED_INTERNAL": "coverage criteria met, no external/approximate reference available, internal cross-fund agreement >= 99 % of the common weight with |dR| <= 0.1 pp",
+      "NOT_QUALIFIED_COVERAGE": "coverage criteria not met",
+      "NOT_QUALIFIED_ERROR": "coverage met but |error| > tolerance",
+      "NOT_QUALIFIED_NO_REFERENCE": "coverage criteria met, but neither an external/approximate reference nor the internal cross-fund agreement is available or met",
+      "NOT_APPLICABLE_PRICE_WEIGHTED": "DIA (see populations.notApplicable)"
+    },
+    "population": "A population qualifies on a span of consecutive periods when >= 90 % of its periods are QUALIFIED (or QUALIFIED_INTERNAL where no reference exists) and no two consecutive periods fail; the longest such span ending at the last period is reported together with every failing period. The span must start with a qualified period."
+  },
+  "populations": {
+    "primary": [
+      {
+        "id": "PIT_SP500",
+        "fund": "SPY",
+        "index": "S&P 500",
+        "from": "2004-09-30",
+        "to": "2026-06-30",
+        "frequency": "annual (30.9.) 2004-2009, semiannual (31.3./30.9.) 2010 - 2019-03, one 6-month period 2019-03 -> 2019-09, quarterly from 2019-09"
+      },
+      {
+        "id": "PIT_R1000",
+        "fund": "IWB",
+        "index": "Russell 1000",
+        "from": "2005-12-31",
+        "to": "2026-06-30",
+        "frequency": "semiannual (30.6./31.12.) 2005-2018, one 9-month period 2018-12 -> 2019-09, quarterly from 2019-09"
+      }
+    ],
+    "secondary": [
+      {
+        "id": "PIT_SP500_EARLY",
+        "fund": "SPY",
+        "from": "1995-12-31",
+        "to": "2004-09-30"
+      },
+      {
+        "id": "PIT_R2000",
+        "fund": "IWM",
+        "from": "2005-12-31",
+        "to": "2026-06-30"
+      },
+      {
+        "id": "PIT_R3000",
+        "fund": "IWV",
+        "from": "2005-12-31",
+        "to": "2026-06-30"
+      },
+      {
+        "id": "PIT_NDX",
+        "fund": "QQQ",
+        "from": "2004-09-30",
+        "to": "2026-06-30"
+      }
+    ],
+    "notApplicable": [
+      {
+        "id": "PIT_DJIA",
+        "fund": "DIA",
+        "reason": "price-weighted index: DIA holds the same share count of every member, a split does not change the fund's share count, so share-ratio split detection cannot work; periods are reported with qualification NOT_APPLICABLE_PRICE_WEIGHTED and no member data are published"
+      }
+    ]
+  },
+  "limits": [
+    "Frequency is the holdings frequency (annual/semiannual/quarterly); no weekly or monthly study is possible with this population alone.",
+    "Price return only; dividends are missing on both sides (fund price series are price returns as well).",
+    "Spin-offs are not modelled: the parent's price drop is a loss, the spun-off company enters at t1; this shows up as consistency error.",
+    "No fundamentals except via the CIK of the INDEXPOP mapping to the corrected PIT panel (research-pit-market-cap.cjs), where mapped."
+  ],
+  "amendments": [
+    {
+      "version": "1.0.1",
+      "date": "2026-10-29",
+      "afterSightOfResults": false,
+      "changes": [
+        "status order for exits",
+        "cross-fund price check 2 %",
+        "frozen series tail",
+        "fate join rule",
+        "N-PORT total return only for 3-month periods",
+        "class NOT_QUALIFIED_NO_REFERENCE",
+        "span starts with a qualified period"
+      ],
+      "reason": "implementation clarifications; none was prompted by an outcome"
+    },
+    {
+      "version": "1.1.0",
+      "date": "2026-10-29",
+      "afterSightOfResults": true,
+      "changes": [
+        "split ratio tolerance 0.05 -> 0.15 (log)",
+        "ratios 5/4, 4/3, 3/4, 4/5, 2/3 removed (|log s| < log 1.5)",
+        "ratios 25, 30, 40, 50 added (the registered set had the reverse ratios 1/25 ... 1/50 but not the forward ones)",
+        "DIA declared not applicable (price-weighted)"
+      ],
+      "findings": [
+        "Real splits are linked with q off the ratio by more than 5 %: index share/float updates and the median fund-flow factor move q (Tesla 3:1 2022 q=3.18, Broadcom 10:1 2024 q=10.70, Nike/Omnicom/Yum 2:1 2006 q=1.81-1.90, BellSouth/Intel/Wal-Mart/IBM 2:1 1998-99 q=1.89-1.95). Under 1.0.1 these became SHARE_CHANGE (price halving booked as loss) or AMBIGUOUS_CA.",
+        "Ratios between 2/3 and 3/2 are produced by index reweighting, not splits: Nasdaq-100 capping (QQQ Tesla 0.8, Broadcom 2/3, Apple 3/4, Amazon 5/4), share issuance in 2008 (BB&T, Principal, Capital One 5/4). Under 1.0.1 the residual test accepted them as splits when the idiosyncratic return happened to match.",
+        "Booking Holdings 25:1 (2026, q = 24.47) fell outside the registered forward ratios and became AMBIGUOUS_CA (found in a first, unpublished 1.1.0 run with the other two changes).",
+        "DIA (price-weighted) cannot show a split in its share count (3M 2:1 2003, Visa 4:1 2015, Apple 4:1 2020 all q = 1)."
+      ],
+      "reason": "The tolerance and ratio set were chosen a priori without data; the 1.0.1 validation shows they mis-specify how index funds' share counts move. The change is limited to these two parameters and the DIA scope; margin, residual bound, statuses, references, tolerances and qualification criteria are unchanged. The provider-factor validation is therefore in-sample for 1.1.0; the cross-fund agreement and the fund consistency are the remaining checks, also seen."
+    },
+    {
+      "version": "1.1.1",
+      "date": "2026-10-29",
+      "afterSightOfResults": true,
+      "prompt": "independent V12 review, finding SPXPOP m4 (correction after independent review)",
+      "changes": [
+        "identity break at mergers (identityChain.identityBreak): C3_CIK/C4_FUZZY link + SHARE_CHANGE/AMBIGUOUS_CA + price more than doubled relative to the index under every hypothesis -> not linked, t0 position BOUNDED_EXIT with fate IDENTITY_BREAK",
+        "fate IDENTITY_BREAK appended to the fate list"
+      ],
+      "findings": [
+        "Broadcom Corp. (Class A) was linked by CIK (C3) to Broadcom Ltd. in SPY 2015-09 -> 2016-03 (AMBIGUOUS_CA, both bounds +200 %), QQQ 2015-09 -> 2016-09 (+235 %), IWB/IWV 2015-12 -> 2016-06 (SHARE_CHANGE, +169 % as an observed return); the acquirer Avago became a BOUNDED_EXIT. Broadcom Corp. holders received cash plus Broadcom Ltd. shares; the chained price ratio is the price of a different security.",
+        "A scan of all links for the same signature finds 13 cases in all funds (Broadcom x4, PXRE -> Argo 2007 x2, BPZ Energy -> BPZ Resources 2007 x2, Arsanis -> X4 2019, WMIH -> Mr Cooper 2018, Aerovate -> Jade 2025, Cano Health 2023 and System1 2025 (reverse splits outside the ratio set)); all are treated the same way."
+      ],
+      "reason": "A chained return of a different security is a false observation (the 1.1.0 identity chain had no plausibility bound for C3 links). The rule is limited to upward discontinuities on links without CUSIP/name identity; thresholds of the split rule, statuses, references and qualification criteria are unchanged."
+    }
+  ]
+}

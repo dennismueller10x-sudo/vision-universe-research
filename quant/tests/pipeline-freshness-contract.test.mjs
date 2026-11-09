@@ -21,6 +21,7 @@
    ========================================================================= */
 
 import { test } from "node:test";
+import { takteVon } from "../../scripts/core/schedule-registry.mjs";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -239,14 +240,14 @@ test("kein Waechter-Slot liegt im Laufzeitfenster der Kette", () => {
   /* Welcher Slot ist ausgenommen? Genau die, die die Bedingung
      ausdruecklich ausschliesst. */
   const ausgenommen = new Set(
-    [...bedingung.matchAll(/github\.event\.schedule\s*!=\s*'([^']+)'/g)].map((m) => m[1]));
+    [...bedingung.matchAll(/(?:github\.event\.schedule|\(github\.event\.schedule \|\| inputs\.zeitplan\))\s*!=\s*'([^']+)'/g)].map((m) => m[1]));
 
-  const angenommen = cronZeilen(monitor).filter((c) => !ausgenommen.has(c));
+  const angenommen = takteVon("freshness-monitor.yml", ROOT).filter((c) => !ausgenommen.has(c));
   assert.ok(angenommen.length > 0, "der Waechter nimmt keinen Slot mehr an - dann prueft er nie");
 
   /* Wann startet die Kette? Aus ihrem eigenen Cron, nicht aus einer
      Annahme. */
-  const kette = cronZeilen(readFileSync(REFRESH, "utf8"));
+  const kette = takteVon("market-data-refresh.yml", ROOT);
   assert.equal(kette.length, 1, "die Kette hat " + kette.length + " Zeitplaene - dieser Test erwartet einen");
   const kettenStart = cronTeile(kette[0]);
 
@@ -282,8 +283,8 @@ test("der Waechter prueft ueberhaupt noch, und zwar nach der Kette", () => {
   const monitor = readFileSync(MONITOR, "utf8");
   const bedingung = jobBedingung(monitor, "produktstand");
   const ausgenommen = new Set(
-    [...bedingung.matchAll(/github\.event\.schedule\s*!=\s*'([^']+)'/g)].map((m) => m[1]));
-  const angenommen = cronZeilen(monitor).filter((c) => !ausgenommen.has(c));
+    [...bedingung.matchAll(/(?:github\.event\.schedule|\(github\.event\.schedule \|\| inputs\.zeitplan\))\s*!=\s*'([^']+)'/g)].map((m) => m[1]));
+  const angenommen = takteVon("freshness-monitor.yml", ROOT).filter((c) => !ausgenommen.has(c));
 
   /* Und der Wochenrhythmus muss halten: jede Handelssitzung braucht
      danach mindestens eine Pruefung. Die Kette laeuft Mo-Fr; also muss

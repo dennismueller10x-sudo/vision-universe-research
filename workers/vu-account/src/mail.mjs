@@ -2,6 +2,8 @@
 // Ohne BREVO_API_KEY oder Absender wird nichts versendet: send() meldet dann
 // "not_configured", der Aufrufer haelt das fest, der Betrieb holt es nach.
 
+import {plainText, LEGAL_BASE, LEGAL_VERSION, COMPANY} from './legal/texts.mjs';
+
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 // Eingaben Dritter landen in einer E-Mail an eine Adresse, die jeder eintragen
 // kann. Links daraus werden entfernt, damit der Versand nicht fuer Phishing taugt.
@@ -11,12 +13,12 @@ export function createMailer({apiKey, apiBase = 'https://api.brevo.com', sender,
   const configured = Boolean(apiKey && sender);
   return {
     configured,
-    async send({to, subject, text, html}) {
+    async send({to, subject, text, html, replyTo}) {
       if (!configured) return 'not_configured';
       try {
         const res = await fetchImpl(`${apiBase}/v3/smtp/email`, {method: 'POST',
           headers: {'api-key': apiKey, Accept: 'application/json', 'Content-Type': 'application/json', 'User-Agent': 'VisionUniverse-Account/1.0'},
-          body: JSON.stringify({sender: {email: sender, name: senderName}, to: [{email: to}], subject, textContent: text, htmlContent: html,
+          body: JSON.stringify({sender: {email: sender, name: senderName}, to: [{email: to}], ...(replyTo ? {replyTo: {email: replyTo}} : {}), subject, textContent: text, htmlContent: html,
             tags: ['vu-account']})});
         return res.ok ? 'sent' : 'failed';
       } catch { return 'failed'; }
@@ -85,4 +87,68 @@ export function opsAlert(health) {
     'Bearbeiten: node scripts/account/cancellations.mjs list (bzw. Workflow „Konten — Kündigungen bearbeiten“).'].join('\n');
   return {subject: 'Alarm: Kündigungen brauchen Bearbeitung', text,
     html: `<pre style="font-family:system-ui,sans-serif">${esc(text)}</pre>`};
+}
+
+// Eingangsbestaetigung des Widerrufs (§ 356a Abs. 4 BGB): Inhalt der Erklaerung, Datum und Uhrzeit des Eingangs.
+export function withdrawalConfirmation({confirmationId, receivedAt, email, fullName, reference}) {
+  const statement = `Hiermit widerrufe ich den von mir abgeschlossenen Vertrag über die Erbringung der folgenden Dienstleistung: ${neutralize(reference || 'Vision Universe Pro')}.`;
+  const rows = [['Bestätigungsnummer', confirmationId], ['Eingang', berlin(receivedAt)], ['Name', fullName ? neutralize(fullName) : '–'], ['E-Mail', email]];
+  const next = 'Wir beenden Pro und erstatten erhaltene Zahlungen nach Maßgabe der Widerrufsbelehrung unverzüglich, spätestens binnen 14 Tagen. Dein Konto bleibt als Free bestehen. Wir melden uns, falls wir deinen Vertrag nicht eindeutig zuordnen können.';
+  const subject = `Eingangsbestätigung deines Widerrufs (${confirmationId.slice(0, 8)})`;
+  const text = ['Hallo,', '', 'wir haben deinen Widerruf erhalten. Deine Erklärung:', '', statement, '', ...rows.map(([k, v]) => `${k}: ${v}`), '', next, '',
+    'Du hast nicht widerrufen? Dann antworte bitte auf diese E-Mail.', '', 'Vision Universe', `${COMPANY.name}, ${COMPANY.street}, ${COMPANY.city}`].join('\n');
+  const html = `<!doctype html><html lang="de"><body style="font-family:system-ui,sans-serif;line-height:1.5;color:#111">
+<p>Hallo,</p><p>wir haben deinen Widerruf erhalten. Deine Erklärung:</p><blockquote>${esc(statement)}</blockquote>
+<table cellpadding="6" style="border-collapse:collapse">${rows.map(([k, v]) => `<tr><td style="color:#555">${esc(k)}</td><td><strong>${esc(v)}</strong></td></tr>`).join('')}</table>
+<p>${esc(next)}</p><p style="color:#555">Du hast nicht widerrufen? Dann antworte bitte auf diese E-Mail.</p><p>Vision Universe</p></body></html>`;
+  return {subject, text, html};
+}
+
+// Vertragsbestaetigung (§ 312f Abs. 2 BGB) mit dem Vertragsinhalt, den Bedingungen und der Widerrufsbelehrung
+// samt Muster-Formular als Text (dauerhafter Datentraeger).
+export function contractConfirmation({email, subscriptionRef, amount, currency, interval, confirmedAt, concludedAt, paymentPending}) {
+  const price = new Intl.NumberFormat('de-DE', {style: 'currency', currency: currency || 'EUR'}).format((amount ?? 100) / 100);
+  const rows = [
+    ['Vertragspartner', `${COMPANY.name}, ${COMPANY.street}, ${COMPANY.city}`],
+    ['Produkt', 'Vision Universe Pro (Abonnement)'],
+    ['Preis', `${price} pro ${interval === 'year' ? 'Jahr' : 'Monat'} inkl. gesetzlicher Umsatzsteuer`],
+    ['Laufzeit', '1 Monat, verlängert sich automatisch um jeweils 1 Monat; kündbar jederzeit zum Ende des bezahlten Monats'],
+    ['Vertragsschluss', berlin(concludedAt || new Date().toISOString())],
+    ...(confirmedAt ? [['Sofortiger Beginn verlangt', berlin(confirmedAt)]] : []),
+    ['Abo-Kennung', subscriptionRef],
+    ['Konto', email],
+    ['Fassung der Bedingungen', LEGAL_VERSION],
+  ];
+  const pending = paymentPending ? 'Deine Zahlung (z. B. SEPA-Lastschrift) wird noch bestätigt. Pro gilt, sobald sie bestätigt ist; bis dahin nutzt du Free.' : '';
+  const subject = 'Vertragsbestätigung: Vision Universe Pro';
+  const legal = ['NUTZUNGS- UND VERTRAGSBEDINGUNGEN', plainText('agb'), '', 'WIDERRUFSBELEHRUNG', plainText('widerrufsbelehrung'), '', 'MUSTER-WIDERRUFSFORMULAR', plainText('widerrufsformular')].join('\n');
+  const text = ['Hallo,', '', 'vielen Dank für deine Bestellung. Hiermit bestätigen wir deinen Vertrag:', '', ...rows.map(([k, v]) => `${k}: ${v}`), '',
+    ...(pending ? [pending, ''] : []),
+    `Kündigen: ${LEGAL_BASE}/kuendigen · Widerrufen: ${LEGAL_BASE}/widerrufen · Abonnement verwalten: https://research.visionuniverse.de/konto/abo/`, '',
+    'Bitte bewahre diese E-Mail auf. Sie enthält die Bedingungen und die Widerrufsbelehrung in der bei Vertragsschluss geltenden Fassung.', '',
+    legal, '', 'Vision Universe'].join('\n');
+  const html = `<!doctype html><html lang="de"><body style="font-family:system-ui,sans-serif;line-height:1.5;color:#111">
+<p>Hallo,</p><p>vielen Dank für deine Bestellung. Hiermit bestätigen wir deinen Vertrag:</p>
+<table cellpadding="6" style="border-collapse:collapse">${rows.map(([k, v]) => `<tr><td style="color:#555">${esc(k)}</td><td><strong>${esc(v)}</strong></td></tr>`).join('')}</table>
+${pending ? `<p><strong>${esc(pending)}</strong></p>` : ''}
+<p><a href="${LEGAL_BASE}/kuendigen">Verträge hier kündigen</a> · <a href="${LEGAL_BASE}/widerrufen">Vertrag widerrufen</a> · <a href="https://research.visionuniverse.de/konto/abo/">Abonnement verwalten</a></p>
+<p style="color:#555">Bitte bewahre diese E-Mail auf. Sie enthält die Bedingungen und die Widerrufsbelehrung in der bei Vertragsschluss geltenden Fassung.</p>
+<pre style="white-space:pre-wrap;font-family:system-ui,sans-serif;font-size:13px;color:#333">${esc(legal)}</pre><p>Vision Universe</p></body></html>`;
+  return {subject, text, html};
+}
+
+// Kontaktformular (/kontakt): Nachricht an die Impressumsadresse, Antwort ueber Reply-To an die angegebene Adresse.
+// Eingaben bleiben reiner Text (keine Links im HTML), damit die Mail nicht fuer Phishing taugt.
+export function contactMessage({name, email, message, receivedAt}) {
+  const clean = s => String(s ?? '').replace(/[\u0000-\u0008\u000b-\u001f\u007f]/g, ' ');
+  const rows = [['Eingang', berlin(receivedAt)], ['Name', clean(name)], ['E-Mail', email]];
+  const subject = `Kontaktformular: ${clean(name).slice(0, 60)}`;
+  const text = ['Neue Nachricht über konto.visionuniverse.de/kontakt', '', ...rows.map(([k, v]) => `${k}: ${v}`), '', clean(message), '',
+    'Antworten: einfach auf diese E-Mail antworten (Antwort geht an die angegebene Adresse). Zusage auf der Seite: in der Regel innerhalb von 1–2 Werktagen.'].join('\n');
+  const html = `<!doctype html><html lang="de"><body style="font-family:system-ui,sans-serif;line-height:1.5;color:#111">
+<p>Neue Nachricht über konto.visionuniverse.de/kontakt</p>
+<table cellpadding="6" style="border-collapse:collapse">${rows.map(([k, v]) => `<tr><td style="color:#555">${esc(k)}</td><td><strong>${esc(v)}</strong></td></tr>`).join('')}</table>
+<pre style="white-space:pre-wrap;font-family:system-ui,sans-serif">${esc(clean(message))}</pre>
+<p style="color:#555">Antworten: einfach auf diese E-Mail antworten. Zusage auf der Seite: in der Regel innerhalb von 1–2 Werktagen.</p></body></html>`;
+  return {subject, text, html};
 }

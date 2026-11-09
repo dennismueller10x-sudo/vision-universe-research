@@ -1,0 +1,2290 @@
+{
+ "schemaVersion": "v11-discovery-oracle-1.0.0",
+ "studyId": "V11-DISCOVERY:ORACLE",
+ "label": "ORACLE_LOOKAHEAD",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "period": "VALIDATION",
+ "protocolSha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69",
+ "gate": {
+  "file": "docs/quant-recovery/v11/discovery/candidates-frozen-1.0.0.json",
+  "commit": "05ca5f85ed34099542a44e36b9838bdd60e77e79",
+  "committedAt": "2026-10-28T17:47:36+00:00",
+  "sha256": "d1910386a2c442b21fa916ea5b8e0e6a4173b67704ad7a3284f680f959db7c70"
+ },
+ "use": "Upper bound and attribution only (R5); never a strategy or a candidate source beyond TRAIN.",
+ "returnBasis": "PRICE_RETURN",
+ "costs": {
+  "feeBps": 10,
+  "slippageBps": 5
+ },
+ "weighting": "EW",
+ "investment": "fully invested at each rebalance",
+ "population": "lifecycle frame; universe per cell (quoted price >= 5 USD where stated; FUND: PIT panel rows with market cap >= 300 Mio USD)",
+ "survivorship": "TRAIN/VALIDATION populations contain no delisting (all series end >= 2023); the oracle can only pick survivors.",
+ "cells": [
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    79
+   ],
+   "valuationTo": "2019-02-01",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_4",
+   "N": 10,
+   "oracleFundedCagrNet": 99.41011992631223,
+   "oracleTotalReturnNet": 1450041849338.1035,
+   "oracleMaxDrawdown": -0.04574924915566403,
+   "populationEwFundedCagrNet": 0.10140256494169919,
+   "spyCagr": 0.10607674080392693,
+   "perIntervalOracleGross": 0.4372327579809938,
+   "perIntervalPopulationGross": 0.008276135854878193,
+   "avgUniverse": 2000.987341772152,
+   "turnoverPerYear": 12.696010808150692
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    79
+   ],
+   "valuationTo": "2019-02-01",
+   "universe": {
+    "family": "PRICE",
+    "filters": [],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_4",
+   "N": 10,
+   "oracleFundedCagrNet": 950.9127069823651,
+   "oracleTotalReturnNet": 1246935511770676500,
+   "oracleMaxDrawdown": -0.20767087460408906,
+   "populationEwFundedCagrNet": 0.10662039525086175,
+   "spyCagr": 0.10607674080392693,
+   "perIntervalOracleGross": 0.7229999804364309,
+   "perIntervalPopulationGross": 0.00906978140368602,
+   "avgUniverse": 2246.1012658227846,
+   "turnoverPerYear": 12.414943185731898
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    79
+   ],
+   "valuationTo": "2019-02-01",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_4",
+   "N": 20,
+   "oracleFundedCagrNet": 48.692299143721954,
+   "oracleTotalReturnNet": 20204572809.13834,
+   "oracleMaxDrawdown": -0.2729638903353304,
+   "populationEwFundedCagrNet": 0.10140256494169919,
+   "spyCagr": 0.10607674080392693,
+   "perIntervalOracleGross": 0.35935777585466155,
+   "perIntervalPopulationGross": 0.008276135854878193,
+   "avgUniverse": 2000.987341772152,
+   "turnoverPerYear": 12.480809558880543
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    79
+   ],
+   "valuationTo": "2019-02-01",
+   "universe": {
+    "family": "PRICE",
+    "filters": [],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_4",
+   "N": 20,
+   "oracleFundedCagrNet": 258.7875283444754,
+   "oracleTotalReturnNet": 467206164863748.3,
+   "oracleMaxDrawdown": -0.1159631248427836,
+   "populationEwFundedCagrNet": 0.10662039525086175,
+   "spyCagr": 0.10607674080392693,
+   "perIntervalOracleGross": 0.5495481615917148,
+   "perIntervalPopulationGross": 0.00906978140368602,
+   "avgUniverse": 2246.1012658227846,
+   "turnoverPerYear": 12.262847348473686
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    79
+   ],
+   "valuationTo": "2019-02-01",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_4",
+   "N": 50,
+   "oracleFundedCagrNet": 19.996005865531362,
+   "oracleTotalReturnNet": 107737021.54374778,
+   "oracleMaxDrawdown": -0.11557499161432427,
+   "populationEwFundedCagrNet": 0.10140256494169919,
+   "spyCagr": 0.10607674080392693,
+   "perIntervalOracleGross": 0.2698778736474227,
+   "perIntervalPopulationGross": 0.008276135854878193,
+   "avgUniverse": 2000.987341772152,
+   "turnoverPerYear": 12.16340648112466
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    79
+   ],
+   "valuationTo": "2019-02-01",
+   "universe": {
+    "family": "PRICE",
+    "filters": [],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_4",
+   "N": 50,
+   "oracleFundedCagrNet": 59.97663605033059,
+   "oracleTotalReturnNet": 70046643129.90681,
+   "oracleMaxDrawdown": -0.10922122183768523,
+   "populationEwFundedCagrNet": 0.10662039525086175,
+   "spyCagr": 0.10607674080392693,
+   "perIntervalOracleGross": 0.38064866278471865,
+   "perIntervalPopulationGross": 0.00906978140368602,
+   "avgUniverse": 2246.1012658227846,
+   "turnoverPerYear": 11.924530104574272
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    25
+   ],
+   "valuationTo": "2019-04-05",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_13",
+   "N": 10,
+   "oracleFundedCagrNet": 10.595566179256775,
+   "oracleTotalReturnNet": 4461255.785863356,
+   "oracleMaxDrawdown": -0.10811396283704444,
+   "populationEwFundedCagrNet": 0.11075293823541532,
+   "spyCagr": 0.11476840422643875,
+   "perIntervalOracleGross": 0.8596087732471305,
+   "perIntervalPopulationGross": 0.028990315254796936,
+   "avgUniverse": 1999.2,
+   "turnoverPerYear": 3.878824939252634
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    25
+   ],
+   "valuationTo": "2019-04-05",
+   "universe": {
+    "family": "PRICE",
+    "filters": [],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_13",
+   "N": 10,
+   "oracleFundedCagrNet": 31.278707546876923,
+   "oracleTotalReturnNet": 2675280147.9345746,
+   "oracleMaxDrawdown": -0.20027007083113713,
+   "populationEwFundedCagrNet": 0.11714170917472888,
+   "spyCagr": 0.11476840422643875,
+   "perIntervalOracleGross": 1.4258254854688395,
+   "perIntervalPopulationGross": 0.030984999742319677,
+   "avgUniverse": 2246.32,
+   "turnoverPerYear": 3.9252255700078624
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    25
+   ],
+   "valuationTo": "2019-04-05",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_13",
+   "N": 20,
+   "oracleFundedCagrNet": 7.103652396335665,
+   "oracleTotalReturnNet": 475590.0356123178,
+   "oracleMaxDrawdown": -0.1416489304737394,
+   "populationEwFundedCagrNet": 0.11075293823541532,
+   "spyCagr": 0.11476840422643875,
+   "perIntervalOracleGross": 0.7018168119394406,
+   "perIntervalPopulationGross": 0.028990315254796936,
+   "avgUniverse": 1999.2,
+   "turnoverPerYear": 3.812623972513733
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    25
+   ],
+   "valuationTo": "2019-04-05",
+   "universe": {
+    "family": "PRICE",
+    "filters": [],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_13",
+   "N": 20,
+   "oracleFundedCagrNet": 17.221377080891177,
+   "oracleTotalReturnNet": 75132579.51661588,
+   "oracleMaxDrawdown": -0.12021959076188171,
+   "populationEwFundedCagrNet": 0.11714170917472888,
+   "spyCagr": 0.11476840422643875,
+   "perIntervalOracleGross": 1.0922583323481738,
+   "perIntervalPopulationGross": 0.030984999742319677,
+   "avgUniverse": 2246.32,
+   "turnoverPerYear": 3.798729014952414
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    25
+   ],
+   "valuationTo": "2019-04-05",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_13",
+   "N": 50,
+   "oracleFundedCagrNet": 4.321078757320591,
+   "oracleTotalReturnNet": 34345.54481219123,
+   "oracleMaxDrawdown": -0.09976218592877784,
+   "populationEwFundedCagrNet": 0.11075293823541532,
+   "spyCagr": 0.11476840422643875,
+   "perIntervalOracleGross": 0.5288696387986781,
+   "perIntervalPopulationGross": 0.028990315254796936,
+   "avgUniverse": 1999.2,
+   "turnoverPerYear": 3.667894960794251
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    25
+   ],
+   "valuationTo": "2019-04-05",
+   "universe": {
+    "family": "PRICE",
+    "filters": [],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_13",
+   "N": 50,
+   "oracleFundedCagrNet": 8.163079065754367,
+   "oracleTotalReturnNet": 1024751.2903687923,
+   "oracleMaxDrawdown": -0.0950277335386156,
+   "populationEwFundedCagrNet": 0.11714170917472888,
+   "spyCagr": 0.11476840422643875,
+   "perIntervalOracleGross": 0.7575404887566788,
+   "perIntervalPopulationGross": 0.030984999742319677,
+   "avgUniverse": 2246.32,
+   "turnoverPerYear": 3.6317226886183143
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    7
+   ],
+   "valuationTo": "2020-01-03",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_52",
+   "N": 10,
+   "oracleFundedCagrNet": 1.9509334800520226,
+   "oracleTotalReturnNet": 1937.4930592508217,
+   "oracleMaxDrawdown": -0.20829274031161693,
+   "populationEwFundedCagrNet": 0.10811728979275803,
+   "spyCagr": 0.11950833977838649,
+   "perIntervalOracleGross": 2.0192148422706513,
+   "perIntervalPopulationGross": 0.12031462915306736,
+   "avgUniverse": 1996.857142857143,
+   "turnoverPerYear": 0.9992932079376043
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    7
+   ],
+   "valuationTo": "2020-01-03",
+   "universe": {
+    "family": "PRICE",
+    "filters": [],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_52",
+   "N": 10,
+   "oracleFundedCagrNet": 3.4830145571599678,
+   "oracleTotalReturnNet": 36129.1043158062,
+   "oracleMaxDrawdown": -0.34545966149719376,
+   "populationEwFundedCagrNet": 0.11576021805866055,
+   "spyCagr": 0.11950833977838649,
+   "perIntervalOracleGross": 3.757401323423023,
+   "perIntervalPopulationGross": 0.13013575932091329,
+   "avgUniverse": 2254.4285714285716,
+   "turnoverPerYear": 0.9992932079376045
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    7
+   ],
+   "valuationTo": "2020-01-03",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_52",
+   "N": 20,
+   "oracleFundedCagrNet": 1.6454949813149584,
+   "oracleTotalReturnNet": 901.6601338563494,
+   "oracleMaxDrawdown": -0.21348333567758415,
+   "populationEwFundedCagrNet": 0.10811728979275803,
+   "spyCagr": 0.11950833977838649,
+   "perIntervalOracleGross": 1.7004245201483912,
+   "perIntervalPopulationGross": 0.12031462915306736,
+   "avgUniverse": 1996.857142857143,
+   "turnoverPerYear": 0.9785189587177396
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    7
+   ],
+   "valuationTo": "2020-01-03",
+   "universe": {
+    "family": "PRICE",
+    "filters": [],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_52",
+   "N": 20,
+   "oracleFundedCagrNet": 2.6875046385458066,
+   "oracleTotalReturnNet": 9212.246182451347,
+   "oracleMaxDrawdown": -0.20429344083874035,
+   "populationEwFundedCagrNet": 0.11576021805866055,
+   "spyCagr": 0.11950833977838649,
+   "perIntervalOracleGross": 2.858220549320372,
+   "perIntervalPopulationGross": 0.13013575932091329,
+   "avgUniverse": 2254.4285714285716,
+   "turnoverPerYear": 0.9934653102416406
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    7
+   ],
+   "valuationTo": "2020-01-03",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_52",
+   "N": 50,
+   "oracleFundedCagrNet": 1.2545722297340256,
+   "oracleTotalReturnNet": 293.9561519899435,
+   "oracleMaxDrawdown": -0.18318521785183772,
+   "populationEwFundedCagrNet": 0.10811728979275803,
+   "spyCagr": 0.11950833977838649,
+   "perIntervalOracleGross": 1.2943083208615351,
+   "perIntervalPopulationGross": 0.12031462915306736,
+   "avgUniverse": 1996.857142857143,
+   "turnoverPerYear": 0.9638297491809563
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    7
+   ],
+   "valuationTo": "2020-01-03",
+   "universe": {
+    "family": "PRICE",
+    "filters": [],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_52",
+   "N": 50,
+   "oracleFundedCagrNet": 1.8684157305662512,
+   "oracleTotalReturnNet": 1588.6517633602023,
+   "oracleMaxDrawdown": -0.187184323310865,
+   "populationEwFundedCagrNet": 0.11576021805866055,
+   "spyCagr": 0.11950833977838649,
+   "perIntervalOracleGross": 1.9729053282953202,
+   "perIntervalPopulationGross": 0.13013575932091329,
+   "avgUniverse": 2254.4285714285716,
+   "turnoverPerYear": 0.9646775143466095
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2017-01-27",
+    "2020-12-31",
+    48
+   ],
+   "valuationTo": "2021-02-05",
+   "universe": {
+    "family": "FUND",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": 300000000
+   },
+   "cadence": "MONTHLY_EVERY_1",
+   "N": 10,
+   "oracleFundedCagrNet": 95.99670682849242,
+   "oracleTotalReturnNet": 99079305.06062575,
+   "oracleMaxDrawdown": -0.299112420395215,
+   "populationEwFundedCagrNet": 0.13422845855385646,
+   "spyCagr": 0.1398088116933236,
+   "perIntervalOracleGross": 0.4894899795313901,
+   "perIntervalPopulationGross": 0.013445672233109343,
+   "avgUniverse": 1470.8125,
+   "turnoverPerYear": 11.552335693387533
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2017-01-27",
+    "2020-12-31",
+    48
+   ],
+   "valuationTo": "2021-02-05",
+   "universe": {
+    "family": "FUND",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": 300000000
+   },
+   "cadence": "MONTHLY_EVERY_1",
+   "N": 20,
+   "oracleFundedCagrNet": 47.930090776023086,
+   "oracleTotalReturnNet": 6308647.773487638,
+   "oracleMaxDrawdown": -0.14928465929687862,
+   "populationEwFundedCagrNet": 0.13422845855385646,
+   "spyCagr": 0.1398088116933236,
+   "perIntervalOracleGross": 0.402333346600851,
+   "perIntervalPopulationGross": 0.013445672233109343,
+   "avgUniverse": 1470.8125,
+   "turnoverPerYear": 11.36958436202022
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2017-01-27",
+    "2020-12-31",
+    48
+   ],
+   "valuationTo": "2021-02-05",
+   "universe": {
+    "family": "FUND",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": 300000000
+   },
+   "cadence": "MONTHLY_EVERY_1",
+   "N": 50,
+   "oracleFundedCagrNet": 19.435228259856668,
+   "oracleTotalReturnNet": 187847.00373926072,
+   "oracleMaxDrawdown": -0.04986513019938721,
+   "populationEwFundedCagrNet": 0.13422845855385646,
+   "spyCagr": 0.1398088116933236,
+   "perIntervalOracleGross": 0.2996531745024414,
+   "perIntervalPopulationGross": 0.013445672233109343,
+   "avgUniverse": 1470.8125,
+   "turnoverPerYear": 11.021653571334303
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    79
+   ],
+   "valuationTo": "2019-02-01",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_4",
+   "N": 30,
+   "oracleFundedCagrNet": 32.62606019668522,
+   "oracleTotalReturnNet": 1883652213.5478315,
+   "oracleMaxDrawdown": -0.19098798798771033,
+   "populationEwFundedCagrNet": 0.10140256494169919,
+   "spyCagr": 0.10607674080392693,
+   "perIntervalOracleGross": 0.31780749923255347,
+   "perIntervalPopulationGross": 0.008276135854878193,
+   "avgUniverse": 2000.987341772152,
+   "turnoverPerYear": 12.30700798980581
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2013-01-04",
+    "2018-12-28",
+    79
+   ],
+   "valuationTo": "2019-02-01",
+   "universe": {
+    "family": "PRICE",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ],
+     [
+      "vol",
+      "lte",
+      0.6
+     ]
+    ],
+    "minMarketCap": null
+   },
+   "cadence": "WEEKS_4",
+   "N": 20,
+   "oracleFundedCagrNet": 28.34873690471444,
+   "oracleTotalReturnNet": 824200004.8609993,
+   "oracleMaxDrawdown": -0.28362882338104767,
+   "populationEwFundedCagrNet": 0.10123029929969452,
+   "spyCagr": 0.10607674080392693,
+   "perIntervalOracleGross": 0.30305644229792095,
+   "perIntervalPopulationGross": 0.008105884595141442,
+   "avgUniverse": 1910.8987341772151,
+   "turnoverPerYear": 12.624350029835723
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2017-01-27",
+    "2020-10-30",
+    16
+   ],
+   "valuationTo": "2021-02-05",
+   "universe": {
+    "family": "FUND",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": 300000000
+   },
+   "cadence": "MONTHLY_EVERY_3",
+   "N": 20,
+   "oracleFundedCagrNet": 8.047964441909722,
+   "oracleTotalReturnNet": 7074.767969963703,
+   "oracleMaxDrawdown": -0.15433142768937014,
+   "populationEwFundedCagrNet": 0.13035229201973353,
+   "spyCagr": 0.1398088116933236,
+   "perIntervalOracleGross": 0.8024308815998011,
+   "perIntervalPopulationGross": 0.037563904591069466,
+   "avgUniverse": 1463.0625,
+   "turnoverPerYear": 3.6604968795615105
+  },
+  {
+   "label": "ORACLE_LOOKAHEAD",
+   "period": "VALIDATION",
+   "decisions": [
+    "2017-01-27",
+    "2020-10-30",
+    16
+   ],
+   "valuationTo": "2021-02-05",
+   "universe": {
+    "family": "FUND",
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": 300000000
+   },
+   "cadence": "MONTHLY_EVERY_3",
+   "N": 10,
+   "oracleFundedCagrNet": 12.230997341841533,
+   "oracleTotalReturnNet": 32658.317661880108,
+   "oracleMaxDrawdown": -0.2506448155469876,
+   "populationEwFundedCagrNet": 0.13035229201973353,
+   "spyCagr": 0.1398088116933236,
+   "perIntervalOracleGross": 1.0149913350743964,
+   "perIntervalPopulationGross": 0.037563904591069466,
+   "avgUniverse": 1463.0625,
+   "turnoverPerYear": 3.7595509569426433
+  }
+ ],
+ "gaps": [
+  {
+   "specId": "CP01:P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.10824770507447568,
+    "oracleCagr": 48.692299143721954,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": 0.00014087289214098945,
+    "strategyMaxDrawdown": -0.3464095410715008
+   },
+   "perInterval": {
+    "oracle": 0.35935777585466155,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.013422681356520569,
+    "picksActualWeight": 0.013422681356520574,
+    "realisedGross": 0.013422681356520574,
+    "attainablePremium": 0.35108163999978337,
+    "selection": 0.005146545501642376,
+    "weighting": 5.204170427930421e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.002479749970812963,
+    "captureOfPremium": 0.014659113195567723,
+    "hitRateTopN": 0.05443037974683541,
+    "hitRateTopDecile": 0.2322784810126582,
+    "randomHitRateTopN": 0.01005750109356492,
+    "meanForwardPercentileOfPicks": 0.49183413006810867,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 20,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP03:P2-MOM_REV1-N20-R4-FULL-INVVOL-PX5",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.14385690107145344,
+    "oracleCagr": 48.692299143721954,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": 0.0008737096682487259,
+    "strategyMaxDrawdown": -0.33730591023850165
+   },
+   "perInterval": {
+    "oracle": 0.35935777585466155,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.015295780768390261,
+    "picksActualWeight": 0.015071732935651942,
+    "realisedGross": 0.01507173293565195,
+    "attainablePremium": 0.35108163999978337,
+    "selection": 0.007019644913512068,
+    "weighting": -0.00022404783273831906,
+    "timingCash": 6.938893903907228e-18,
+    "approxCostPerRebalanceInEquityUnits": 0.004498269010041835,
+    "captureOfPremium": 0.019356173341271703,
+    "hitRateTopN": 0.04873417721518985,
+    "hitRateTopDecile": 0.22848101265822784,
+    "randomHitRateTopN": 0.01005750109356492,
+    "meanForwardPercentileOfPicks": 0.510715708569175,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 20,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP04:P2-MOM3-N20-R4-BUFFER90-EW-PX5",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.09940234478398913,
+    "oracleCagr": 48.692299143721954,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": -0.00004116450402324053,
+    "strategyMaxDrawdown": -0.4745782963213465
+   },
+   "perInterval": {
+    "oracle": 0.35935777585466155,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.011715157329221453,
+    "picksActualWeight": 0.011715157329221446,
+    "realisedGross": 0.011715157329221446,
+    "attainablePremium": 0.35108163999978337,
+    "selection": 0.0034390214743432596,
+    "weighting": -6.938893903907228e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0015824079976491463,
+    "captureOfPremium": 0.009795503616610014,
+    "hitRateTopN": 0.08101265822784803,
+    "hitRateTopDecile": 0.270253164556962,
+    "randomHitRateTopN": 0.01005750109356492,
+    "meanForwardPercentileOfPicks": 0.4818153428930915,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 20,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP05:P2-MOM3-N20-R4-FULL-INVVOL-PX5",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.08993723710275114,
+    "oracleCagr": 48.692299143721954,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": -0.00023595629317848355,
+    "strategyMaxDrawdown": -0.3825296001166152
+   },
+   "perInterval": {
+    "oracle": 0.35935777585466155,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.008356463483499544,
+    "picksActualWeight": 0.011947229732543441,
+    "realisedGross": 0.01194722973254344,
+    "attainablePremium": 0.35108163999978337,
+    "selection": 0.00008032762862135098,
+    "weighting": 0.003590766249043897,
+    "timingCash": -1.734723475976807e-18,
+    "approxCostPerRebalanceInEquityUnits": 0.0023892717110172044,
+    "captureOfPremium": 0.01045652480621747,
+    "hitRateTopN": 0.0683544303797468,
+    "hitRateTopDecile": 0.2556962025316456,
+    "randomHitRateTopN": 0.01005750109356492,
+    "meanForwardPercentileOfPicks": 0.4787445876574072,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 20,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP11:P2-MOM6_REV1-N20-R4-FULL-EW-PX5-MF",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.08570819345522263,
+    "oracleCagr": 48.692299143721954,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": -0.000322989954734244,
+    "strategyMaxDrawdown": -0.35413407366535676
+   },
+   "perInterval": {
+    "oracle": 0.35935777585466155,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.012449887515784384,
+    "picksActualWeight": 0.012449887515784384,
+    "realisedGross": 0.012449887515784384,
+    "attainablePremium": 0.35108163999978337,
+    "selection": 0.004173751660906191,
+    "weighting": 0,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.003488843182416896,
+    "captureOfPremium": 0.0118882652505234,
+    "hitRateTopN": 0.0514705882352941,
+    "hitRateTopDecile": 0.23308823529411768,
+    "randomHitRateTopN": 0.01005750109356492,
+    "meanForwardPercentileOfPicks": 0.5057269783016417,
+    "avgPicks": 17.21518987341772,
+    "avgInvested": 0.8607594936708861
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 20,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP12:P2-MOM6-N20-R4-RUN-E95-X50-TX-PX5",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.06737550477979593,
+    "oracleCagr": 48.692299143721954,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": -0.0007002764418379338,
+    "strategyMaxDrawdown": -0.49420996296665853
+   },
+   "perInterval": {
+    "oracle": 0.35935777585466155,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.010014911405888016,
+    "picksActualWeight": 0.007626063885701166,
+    "realisedGross": 0.007626063885701166,
+    "attainablePremium": 0.35108163999978337,
+    "selection": 0.0017387755510098225,
+    "weighting": -0.0023888475201868497,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0005406559342667162,
+    "captureOfPremium": -0.001851626217700898,
+    "hitRateTopN": 0.080379746835443,
+    "hitRateTopDecile": 0.2613924050632911,
+    "randomHitRateTopN": 0.01005750109356492,
+    "meanForwardPercentileOfPicks": 0.4840529842098994,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 20,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP06:P3-MOM3-N50-R4-BUFFER90-EW-PX5",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.10931134233448048,
+    "oracleCagr": 19.996005865531362,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": 0.0003975338071982001,
+    "strategyMaxDrawdown": -0.3866002119642282
+   },
+   "perInterval": {
+    "oracle": 0.2698778736474227,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.011542883231355982,
+    "picksActualWeight": 0.011542883231355975,
+    "realisedGross": 0.011542883231355975,
+    "attainablePremium": 0.26160173779254453,
+    "selection": 0.0032667473764777886,
+    "weighting": -6.938893903907228e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0015569417376882883,
+    "captureOfPremium": 0.012487483470267994,
+    "hitRateTopN": 0.11113924050632906,
+    "hitRateTopDecile": 0.23417721518987347,
+    "randomHitRateTopN": 0.025143752733912294,
+    "meanForwardPercentileOfPicks": 0.4880801642220399,
+    "avgPicks": 50,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 50,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP09:P3-MOM6-N50-R4-BUFFER90-EW-PX5-MF",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.09262707405311676,
+    "oracleCagr": 19.996005865531362,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": -0.00044109906370047233,
+    "strategyMaxDrawdown": -0.24070104797769942
+   },
+   "perInterval": {
+    "oracle": 0.2698778736474227,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.009362936479566349,
+    "picksActualWeight": 0.009362936479566344,
+    "realisedGross": 0.009362936479566344,
+    "attainablePremium": 0.26160173779254453,
+    "selection": 0.001086800624688156,
+    "weighting": -5.204170427930421e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0012199509896336342,
+    "captureOfPremium": 0.004154409041235061,
+    "hitRateTopN": 0.11235294117647057,
+    "hitRateTopDecile": 0.24647058823529414,
+    "randomHitRateTopN": 0.025143752733912294,
+    "meanForwardPercentileOfPicks": 0.49073223290761153,
+    "avgPicks": 43.037974683544306,
+    "avgInvested": 0.8607594936708861
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 50,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP10:P2-SLOPER2-N50-R4-FULL-EW-PX5-MF",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.11863139353619623,
+    "oracleCagr": 19.996005865531362,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": 0.0008660051338639352,
+    "strategyMaxDrawdown": -0.24324835584886995
+   },
+   "perInterval": {
+    "oracle": 0.2698778736474227,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.010785205970480063,
+    "picksActualWeight": 0.010785205970480062,
+    "realisedGross": 0.010785205970480062,
+    "attainablePremium": 0.26160173779254453,
+    "selection": 0.0025090701156018705,
+    "weighting": -1.734723475976807e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0013164413187665923,
+    "captureOfPremium": 0.009591182905641139,
+    "hitRateTopN": 0.09176470588235287,
+    "hitRateTopDecile": 0.24382352941176463,
+    "randomHitRateTopN": 0.025143752733912294,
+    "meanForwardPercentileOfPicks": 0.5079692438346992,
+    "avgPicks": 43.037974683544306,
+    "avgInvested": 0.8607594936708861
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 50,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-NEW_52W_HIGH-N10-H13-HASH",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": 0.08235068310536064,
+    "oracleCagr": 31.278707546876923,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": -0.0011164723316719463,
+    "strategyMaxDrawdown": -0.2993429958013377
+   },
+   "perInterval": {
+    "oracle": 1.4258254854688395,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.02481955167739712,
+    "picksActualWeight": 0.024819551677397123,
+    "realisedGross": 0.02481955167739712,
+    "attainablePremium": 1.3948404857265198,
+    "selection": -0.006165448064922557,
+    "weighting": 3.469446951953614e-18,
+    "timingCash": -3.469446951953614e-18,
+    "approxCostPerRebalanceInEquityUnits": 0.0035453379693238356,
+    "captureOfPremium": -0.004420181467353386,
+    "hitRateTopN": 0.004,
+    "hitRateTopDecile": 0.08800000000000002,
+    "randomHitRateTopN": 0.004486100395153137,
+    "meanForwardPercentileOfPicks": 0.48827116885054517,
+    "avgPicks": 10,
+    "avgInvested": 0.9999999999999999
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 10,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-MOMENTUM_IMPROVED-N10-H13-HASH",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": 0.05649447222904125,
+    "oracleCagr": 31.278707546876923,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": -0.0019462191746574846,
+    "strategyMaxDrawdown": -0.3209367894426075
+   },
+   "perInterval": {
+    "oracle": 1.4258254854688395,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.01967114508884738,
+    "picksActualWeight": 0.019671145088847385,
+    "realisedGross": 0.019671145088847385,
+    "attainablePremium": 1.3948404857265198,
+    "selection": -0.011313854653472299,
+    "weighting": 6.938893903907228e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0035863082230740534,
+    "captureOfPremium": -0.008111217568781231,
+    "hitRateTopN": 0,
+    "hitRateTopDecile": 0.068,
+    "randomHitRateTopN": 0.004486100395153137,
+    "meanForwardPercentileOfPicks": 0.49814554781271936,
+    "avgPicks": 10,
+    "avgInvested": 0.9999999999999999
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 10,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-MOMENTUM_DETERIORATED-N10-H13-HASH",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": -0.012774583548717966,
+    "oracleCagr": 31.278707546876923,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": -0.00416911953013163,
+    "strategyMaxDrawdown": -0.4272666593312532
+   },
+   "perInterval": {
+    "oracle": 1.4258254854688395,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.0020386115593444025,
+    "picksActualWeight": 0.002038611559344401,
+    "realisedGross": 0.0020386115593444025,
+    "attainablePremium": 1.3948404857265198,
+    "selection": -0.028946388182975274,
+    "weighting": -1.3010426069826053e-18,
+    "timingCash": 1.3010426069826053e-18,
+    "approxCostPerRebalanceInEquityUnits": 0.0026736814818853895,
+    "captureOfPremium": -0.02075247204191825,
+    "hitRateTopN": 0,
+    "hitRateTopDecile": 0.064,
+    "randomHitRateTopN": 0.004486100395153137,
+    "meanForwardPercentileOfPicks": 0.4631032563934682,
+    "avgPicks": 10,
+    "avgInvested": 0.9999999999999999
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 10,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-TREND_UP-N10-H13-HASH",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": 0.0019517086316083176,
+    "oracleCagr": 31.278707546876923,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": -0.003696540833123118,
+    "strategyMaxDrawdown": -0.3269410337048979
+   },
+   "perInterval": {
+    "oracle": 1.4258254854688395,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.006263812286656446,
+    "picksActualWeight": 0.006263812286656447,
+    "realisedGross": 0.006263812286656446,
+    "attainablePremium": 1.3948404857265198,
+    "selection": -0.02472118745566323,
+    "weighting": 1.734723475976807e-18,
+    "timingCash": -1.734723475976807e-18,
+    "approxCostPerRebalanceInEquityUnits": 0.0028378599549931578,
+    "captureOfPremium": -0.017723307939966265,
+    "hitRateTopN": 0,
+    "hitRateTopDecile": 0.084,
+    "randomHitRateTopN": 0.004486100395153137,
+    "meanForwardPercentileOfPicks": 0.471554008862809,
+    "avgPicks": 10,
+    "avgInvested": 0.9999999999999999
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 10,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-TREND_DOWN-N10-H13-HASH",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": -0.005498232296124894,
+    "oracleCagr": 31.278707546876923,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": -0.0039356154985791,
+    "strategyMaxDrawdown": -0.4627254293170422
+   },
+   "perInterval": {
+    "oracle": 1.4258254854688395,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.005764796887117036,
+    "picksActualWeight": 0.005764796887117036,
+    "realisedGross": 0.005764796887117034,
+    "attainablePremium": 1.3948404857265198,
+    "selection": -0.025220202855202642,
+    "weighting": 0,
+    "timingCash": -1.734723475976807e-18,
+    "approxCostPerRebalanceInEquityUnits": 0.0026137912657866343,
+    "captureOfPremium": -0.01808106598086475,
+    "hitRateTopN": 0,
+    "hitRateTopDecile": 0.07600000000000001,
+    "randomHitRateTopN": 0.004486100395153137,
+    "meanForwardPercentileOfPicks": 0.4626190820635656,
+    "avgPicks": 10,
+    "avgInvested": 0.9999999999999999
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 10,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP08:P2-MOM6-N20-R13-FULL-EW-PX5",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": 0.022247445004322852,
+    "oracleCagr": 7.103652396335665,
+    "populationEwCagr": 0.11075293823541532,
+    "captureOfOraclePremium": -0.012656480156964337,
+    "strategyMaxDrawdown": -0.4395452721228075
+   },
+   "perInterval": {
+    "oracle": 0.7018168119394406,
+    "population": 0.028990315254796936,
+    "picksEqualWeight": 0.01697412329023298,
+    "picksActualWeight": 0.016974123290232977,
+    "realisedGross": 0.016974123290232977,
+    "attainablePremium": 0.6728264966846437,
+    "selection": -0.012016191964563955,
+    "weighting": -3.469446951953614e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0026523566038487993,
+    "captureOfPremium": -0.01785927281962558,
+    "hitRateTopN": 0.06800000000000002,
+    "hitRateTopDecile": 0.212,
+    "randomHitRateTopN": 0.010069724191467995,
+    "meanForwardPercentileOfPicks": 0.42739667034697115,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 20,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-NEW_52W_HIGH-ALL-H13",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": 0.1237655411522165,
+    "oracleCagr": 8.163079065754367,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": 0.00082325174605926,
+    "strategyMaxDrawdown": -0.19394740697503554
+   },
+   "perInterval": {
+    "oracle": 0.7575404887566788,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.034529277519028116,
+    "picksActualWeight": 0.03452927751902823,
+    "realisedGross": 0.03452927751902809,
+    "attainablePremium": 0.7265554890143591,
+    "selection": 0.003544277776708439,
+    "weighting": 1.1102230246251565e-16,
+    "timingCash": -1.3877787807814457e-16,
+    "approxCostPerRebalanceInEquityUnits": 0.004177365628162458,
+    "captureOfPremium": 0.004878192829451413,
+    "hitRateTopN": 0.01978057019575869,
+    "hitRateTopDecile": 0.09117199242214752,
+    "randomHitRateTopN": 0.022430501975765686,
+    "meanForwardPercentileOfPicks": 0.5079040094513102,
+    "avgPicks": 443.92,
+    "avgInvested": 0.9999999999999971
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 50,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-MOMENTUM_IMPROVED-ALL-H13",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": 0.11266794345622011,
+    "oracleCagr": 8.163079065754367,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": -0.000556027908277251,
+    "strategyMaxDrawdown": -0.20792025608029574
+   },
+   "perInterval": {
+    "oracle": 0.7575404887566788,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.03218945506747809,
+    "picksActualWeight": 0.03218945506747825,
+    "realisedGross": 0.0321894550674781,
+    "attainablePremium": 0.7265554890143591,
+    "selection": 0.0012044553251584142,
+    "weighting": 1.5959455978986625e-16,
+    "timingCash": -1.5265566588595902e-16,
+    "approxCostPerRebalanceInEquityUnits": 0.0039266391217329145,
+    "captureOfPremium": 0.0016577609602707402,
+    "hitRateTopN": 0.022822562541174148,
+    "hitRateTopDecile": 0.10182269533708191,
+    "randomHitRateTopN": 0.022430501975765686,
+    "meanForwardPercentileOfPicks": 0.5006742114528523,
+    "avgPicks": 613.08,
+    "avgInvested": 0.9999999999999954
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 50,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-MOMENTUM_DETERIORATED-ALL-H13",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": 0.1092926385434363,
+    "oracleCagr": 8.163079065754367,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": -0.0009755321578378854,
+    "strategyMaxDrawdown": -0.21309349775294406
+   },
+   "perInterval": {
+    "oracle": 0.7575404887566788,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.0314304711903799,
+    "picksActualWeight": 0.031430471190380005,
+    "realisedGross": 0.03143047119037983,
+    "attainablePremium": 0.7265554890143591,
+    "selection": 0.0004454714480602237,
+    "weighting": 1.0408340855860843e-16,
+    "timingCash": -1.734723475976807e-16,
+    "approxCostPerRebalanceInEquityUnits": 0.0038259115311329263,
+    "captureOfPremium": 0.0006131279094243418,
+    "hitRateTopN": 0.02083054498242579,
+    "hitRateTopDecile": 0.09816604541935048,
+    "randomHitRateTopN": 0.022430501975765686,
+    "meanForwardPercentileOfPicks": 0.5022944969158669,
+    "avgPicks": 635.48,
+    "avgInvested": 0.9999999999999953
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 50,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-TREND_UP-ALL-H13",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": 0.10812985125353691,
+    "oracleCagr": 8.163079065754367,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": -0.0011200507189908007,
+    "strategyMaxDrawdown": -0.20851131302184167
+   },
+   "perInterval": {
+    "oracle": 0.7575404887566788,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.030985756770798664,
+    "picksActualWeight": 0.03098575677079861,
+    "realisedGross": 0.030985756770798508,
+    "attainablePremium": 0.7265554890143591,
+    "selection": 7.570284789870652e-7,
+    "weighting": -5.551115123125783e-17,
+    "timingCash": -1.0061396160665481e-16,
+    "approxCostPerRebalanceInEquityUnits": 0.0038200912658103987,
+    "captureOfPremium": 0.0000010419417240353114,
+    "hitRateTopN": 0.02115010555740253,
+    "hitRateTopDecile": 0.09660287029391787,
+    "randomHitRateTopN": 0.022430501975765686,
+    "meanForwardPercentileOfPicks": 0.5004583560309332,
+    "avgPicks": 599.44,
+    "avgInvested": 0.999999999999995
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 50,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "B-V10-TREND_DOWN-ALL-H13",
+   "intervals": 25,
+   "funded": {
+    "strategyCagr": 0.10200781815839499,
+    "oracleCagr": 8.163079065754367,
+    "populationEwCagr": 0.11714170917472888,
+    "captureOfOraclePremium": -0.001880935725153019,
+    "strategyMaxDrawdown": -0.20398342962316474
+   },
+   "perInterval": {
+    "oracle": 0.7575404887566788,
+    "population": 0.030984999742319677,
+    "picksEqualWeight": 0.029447954027467745,
+    "picksActualWeight": 0.029447954027467735,
+    "realisedGross": 0.029447954027467565,
+    "attainablePremium": 0.7265554890143591,
+    "selection": -0.001537045714851932,
+    "weighting": -1.0408340855860843e-17,
+    "timingCash": -1.700029006457271e-16,
+    "approxCostPerRebalanceInEquityUnits": 0.0036981570006496467,
+    "captureOfPremium": -0.002115524193392661,
+    "hitRateTopN": 0.018628304786265502,
+    "hitRateTopDecile": 0.09504944304133557,
+    "randomHitRateTopN": 0.022430501975765686,
+    "meanForwardPercentileOfPicks": 0.501752117436222,
+    "avgPicks": 619.64,
+    "avgInvested": 0.9999999999999959
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_13",
+    "N": 50,
+    "universe": {
+     "family": "PRICE",
+     "filters": [],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CF02:F2-VALUE_PROF_MOM-N20-M1-FULL-EW-PX5-MC300",
+   "intervals": 48,
+   "funded": {
+    "strategyCagr": 0.12174757339581443,
+    "oracleCagr": 47.930090776023086,
+    "populationEwCagr": 0.13422845855385646,
+    "captureOfOraclePremium": -0.00026112898801033453,
+    "strategyMaxDrawdown": -0.4417033214017151
+   },
+   "perInterval": {
+    "oracle": 0.402333346600851,
+    "population": 0.013445672233109343,
+    "picksEqualWeight": 0.013818631610977758,
+    "picksActualWeight": 0.01381863161097775,
+    "realisedGross": 0.01381863161097775,
+    "attainablePremium": 0.3888876743677417,
+    "selection": 0.0003729593778684145,
+    "weighting": -6.938893903907228e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0011877685376328702,
+    "captureOfPremium": 0.000959041395371477,
+    "hitRateTopN": 0.012500000000000002,
+    "hitRateTopDecile": 0.13125,
+    "randomHitRateTopN": 0.013632851758762369,
+    "meanForwardPercentileOfPicks": 0.5055139001621815,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_1",
+    "N": 20,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF03:F3-VALUE_PROF_MOM-N20-M1-FULL-INVVOL-PX5-MC300",
+   "intervals": 48,
+   "funded": {
+    "strategyCagr": 0.11627343015973168,
+    "oracleCagr": 47.930090776023086,
+    "populationEwCagr": 0.13422845855385646,
+    "captureOfOraclePremium": -0.00037566072717475107,
+    "strategyMaxDrawdown": -0.4098145556905626
+   },
+   "perInterval": {
+    "oracle": 0.402333346600851,
+    "population": 0.013445672233109343,
+    "picksEqualWeight": 0.013818631610977758,
+    "picksActualWeight": 0.012950041054503448,
+    "realisedGross": 0.012950041054503448,
+    "attainablePremium": 0.3888876743677417,
+    "selection": 0.0003729593778684145,
+    "weighting": -0.00086859055647431,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0012117522587069083,
+    "captureOfPremium": -0.0012744841538413342,
+    "hitRateTopN": 0.012500000000000002,
+    "hitRateTopDecile": 0.13125,
+    "randomHitRateTopN": 0.013632851758762369,
+    "meanForwardPercentileOfPicks": 0.5055139001621815,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_1",
+    "N": 20,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF04:F2-VALUE-N20-M1-BUFFER90-EW-PX5-MC300",
+   "intervals": 48,
+   "funded": {
+    "strategyCagr": -0.024471169355623656,
+    "oracleCagr": 47.930090776023086,
+    "populationEwCagr": 0.13422845855385646,
+    "captureOfOraclePremium": -0.0033203633162922543,
+    "strategyMaxDrawdown": -0.6741930809877621
+   },
+   "perInterval": {
+    "oracle": 0.402333346600851,
+    "population": 0.013445672233109343,
+    "picksEqualWeight": 0.005751056907574342,
+    "picksActualWeight": 0.005751056907574342,
+    "realisedGross": 0.005751056907574342,
+    "attainablePremium": 0.3888876743677417,
+    "selection": -0.007694615325535001,
+    "weighting": 0,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.00032253733312688916,
+    "captureOfPremium": -0.019786215487659773,
+    "hitRateTopN": 0.008333333333333333,
+    "hitRateTopDecile": 0.13333333333333328,
+    "randomHitRateTopN": 0.013632851758762369,
+    "meanForwardPercentileOfPicks": 0.4694241731400612,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_1",
+    "N": 20,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF09:F2-QUAL_LOWVOL-N20-M1-FULL-EW-PX5-MC300",
+   "intervals": 48,
+   "funded": {
+    "strategyCagr": 0.16808629683245857,
+    "oracleCagr": 47.930090776023086,
+    "populationEwCagr": 0.13422845855385646,
+    "captureOfOraclePremium": 0.0007083842959817714,
+    "strategyMaxDrawdown": -0.2608103446412483
+   },
+   "perInterval": {
+    "oracle": 0.402333346600851,
+    "population": 0.013445672233109343,
+    "picksEqualWeight": 0.014695263763766231,
+    "picksActualWeight": 0.01469526376376623,
+    "realisedGross": 0.01469526376376623,
+    "attainablePremium": 0.3888876743677417,
+    "selection": 0.0012495915306568878,
+    "weighting": -1.734723475976807e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.000886343161769805,
+    "captureOfPremium": 0.003213245399686393,
+    "hitRateTopN": 0.0031250000000000006,
+    "hitRateTopDecile": 0.05520833333333334,
+    "randomHitRateTopN": 0.013632851758762369,
+    "meanForwardPercentileOfPicks": 0.516320133189004,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_1",
+    "N": 20,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF12:F2-PROF_MOM-N20-M1-RUN-E95-X50-TX-PEXIT40-PX5-MC300",
+   "intervals": 48,
+   "funded": {
+    "strategyCagr": 0.31759675160230905,
+    "oracleCagr": 47.930090776023086,
+    "populationEwCagr": 0.13422845855385646,
+    "captureOfOraclePremium": 0.0038364888540034165,
+    "strategyMaxDrawdown": -0.37657500353239715
+   },
+   "perInterval": {
+    "oracle": 0.402333346600851,
+    "population": 0.013445672233109343,
+    "picksEqualWeight": 0.025910336355789265,
+    "picksActualWeight": 0.02635233373176345,
+    "realisedGross": 0.02635233373176345,
+    "attainablePremium": 0.3888876743677417,
+    "selection": 0.012464664122679922,
+    "weighting": 0.00044199737597418534,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.00059138244264592,
+    "captureOfPremium": 0.033188661789391796,
+    "hitRateTopN": 0.030208333333333347,
+    "hitRateTopDecile": 0.1791666666666667,
+    "randomHitRateTopN": 0.013632851758762369,
+    "meanForwardPercentileOfPicks": 0.5338075320144968,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_1",
+    "N": 20,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF07:F2-QUAL-N50-M1-FULL-INVVOL-PX5-MC300",
+   "intervals": 48,
+   "funded": {
+    "strategyCagr": 0.18971560629844975,
+    "oracleCagr": 19.435228259856668,
+    "populationEwCagr": 0.13422845855385646,
+    "captureOfOraclePremium": 0.0028748328229529292,
+    "strategyMaxDrawdown": -0.3474766682778505
+   },
+   "perInterval": {
+    "oracle": 0.2996531745024414,
+    "population": 0.013445672233109343,
+    "picksEqualWeight": 0.019275588001662004,
+    "picksActualWeight": 0.017273054204719834,
+    "realisedGross": 0.01727305420471983,
+    "attainablePremium": 0.28620750226933206,
+    "selection": 0.0058299157685526605,
+    "weighting": -0.0020025337969421693,
+    "timingCash": -3.469446951953614e-18,
+    "approxCostPerRebalanceInEquityUnits": 0.000683218794635069,
+    "captureOfPremium": 0.013372752081141383,
+    "hitRateTopN": 0.038750000000000014,
+    "hitRateTopDecile": 0.11458333333333333,
+    "randomHitRateTopN": 0.034082129396905934,
+    "meanForwardPercentileOfPicks": 0.5159590112145446,
+    "avgPicks": 50,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_1",
+    "N": 50,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF11:F1-VALUE_MOM-N50-M1-FULL-EW-PX5-MC300",
+   "intervals": 48,
+   "funded": {
+    "strategyCagr": 0.05525315169437395,
+    "oracleCagr": 19.435228259856668,
+    "populationEwCagr": 0.13422845855385646,
+    "captureOfOraclePremium": -0.004091772844542058,
+    "strategyMaxDrawdown": -0.5239470594261277
+   },
+   "perInterval": {
+    "oracle": 0.2996531745024414,
+    "population": 0.013445672233109343,
+    "picksEqualWeight": 0.009371546036245274,
+    "picksActualWeight": 0.009371546036245267,
+    "realisedGross": 0.009371546036245267,
+    "attainablePremium": 0.28620750226933206,
+    "selection": -0.004074126196864069,
+    "weighting": -6.938893903907228e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0011669535514492906,
+    "captureOfPremium": -0.014234868633982102,
+    "hitRateTopN": 0.040000000000000015,
+    "hitRateTopDecile": 0.11875000000000001,
+    "randomHitRateTopN": 0.034082129396905934,
+    "meanForwardPercentileOfPicks": 0.48615045577484844,
+    "avgPicks": 50,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_1",
+    "N": 50,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CP02:P3-MOM6_REV1-N30-R4-FULL-EW-PX5",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.09575336197528528,
+    "oracleCagr": 32.62606019668522,
+    "populationEwCagr": 0.10140256494169919,
+    "captureOfOraclePremium": -0.00017368985187719195,
+    "strategyMaxDrawdown": -0.33526879142969546
+   },
+   "perInterval": {
+    "oracle": 0.31780749923255347,
+    "population": 0.008276135854878193,
+    "picksEqualWeight": 0.012830794316589351,
+    "picksActualWeight": 0.012830794316589351,
+    "realisedGross": 0.012830794316589348,
+    "attainablePremium": 0.3095313633776753,
+    "selection": 0.0045546584617111585,
+    "weighting": 0,
+    "timingCash": -3.469446951953614e-18,
+    "approxCostPerRebalanceInEquityUnits": 0.0038352346451754507,
+    "captureOfPremium": 0.014714691306269278,
+    "hitRateTopN": 0.0561181434599156,
+    "hitRateTopDecile": 0.21940928270042184,
+    "randomHitRateTopN": 0.015086251640347373,
+    "meanForwardPercentileOfPicks": 0.49834500857540764,
+    "avgPicks": 30,
+    "avgInvested": 0.9999999999999998
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 30,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CP07:P2-MOM6-N20-R4-FULL-EW-PX5-VOL60",
+   "intervals": 79,
+   "funded": {
+    "strategyCagr": 0.10621516476721515,
+    "oracleCagr": 28.34873690471444,
+    "populationEwCagr": 0.10123029929969452,
+    "captureOfOraclePremium": 0.0001764709904188532,
+    "strategyMaxDrawdown": -0.34301091921005344
+   },
+   "perInterval": {
+    "oracle": 0.30305644229792095,
+    "population": 0.008105884595141442,
+    "picksEqualWeight": 0.011012141344925772,
+    "picksActualWeight": 0.01101214134492577,
+    "realisedGross": 0.01101214134492577,
+    "attainablePremium": 0.2949505577027795,
+    "selection": 0.0029062567497843295,
+    "weighting": -1.734723475976807e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0022937578143559807,
+    "captureOfPremium": 0.009853369230489644,
+    "hitRateTopN": 0.06139240506329111,
+    "hitRateTopDecile": 0.22784810126582278,
+    "randomHitRateTopN": 0.010519628725726392,
+    "meanForwardPercentileOfPicks": 0.49104102147751405,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "WEEKS_4",
+    "N": 20,
+    "universe": {
+     "family": "PRICE",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ],
+      [
+       "vol",
+       "lte",
+       0.6
+      ]
+     ],
+     "minMarketCap": null
+    }
+   }
+  },
+  {
+   "specId": "CF01:F3-VALUE_PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "intervals": 16,
+   "funded": {
+    "strategyCagr": 0.08239455517203642,
+    "oracleCagr": 8.047964441909722,
+    "populationEwCagr": 0.13035229201973353,
+    "captureOfOraclePremium": -0.006057095995585419,
+    "strategyMaxDrawdown": -0.4881242240004595
+   },
+   "perInterval": {
+    "oracle": 0.8024308815998011,
+    "population": 0.037563904591069466,
+    "picksEqualWeight": 0.02798873949657079,
+    "picksActualWeight": 0.027988739496570783,
+    "realisedGross": 0.027988739496570783,
+    "attainablePremium": 0.7648669770087316,
+    "selection": -0.009575165094498676,
+    "weighting": -6.938893903907228e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0017033087201324105,
+    "captureOfPremium": -0.012518732514698924,
+    "hitRateTopN": 0.009375000000000001,
+    "hitRateTopDecile": 0.12187500000000001,
+    "randomHitRateTopN": 0.013699611388706658,
+    "meanForwardPercentileOfPicks": 0.4800424659662915,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_3",
+    "N": 20,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF05:F2-VALUE-N20-M3-FULL-EW-PX5-MC300",
+   "intervals": 16,
+   "funded": {
+    "strategyCagr": -0.018006502467841856,
+    "oracleCagr": 8.047964441909722,
+    "populationEwCagr": 0.13035229201973353,
+    "captureOfOraclePremium": -0.018737820403293783,
+    "strategyMaxDrawdown": -0.6808403712378717
+   },
+   "perInterval": {
+    "oracle": 0.8024308815998011,
+    "population": 0.037563904591069466,
+    "picksEqualWeight": 0.011374586181444296,
+    "picksActualWeight": 0.01137458618144431,
+    "realisedGross": 0.01137458618144431,
+    "attainablePremium": 0.7648669770087316,
+    "selection": -0.02618931840962517,
+    "weighting": 1.3877787807814457e-17,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0014063215108249896,
+    "captureOfPremium": -0.0342403570775761,
+    "hitRateTopN": 0.009375000000000001,
+    "hitRateTopDecile": 0.10937500000000001,
+    "randomHitRateTopN": 0.013699611388706658,
+    "meanForwardPercentileOfPicks": 0.4593478839494324,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_3",
+    "N": 20,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF08:F3-QUAL_LOWVOL-N20-M3-FULL-EW-PX5-MC300",
+   "intervals": 16,
+   "funded": {
+    "strategyCagr": 0.16391991229371228,
+    "oracleCagr": 8.047964441909722,
+    "populationEwCagr": 0.13035229201973353,
+    "captureOfOraclePremium": 0.004239614120836312,
+    "strategyMaxDrawdown": -0.31489634740209704
+   },
+   "perInterval": {
+    "oracle": 0.8024308815998011,
+    "population": 0.037563904591069466,
+    "picksEqualWeight": 0.04223000937740008,
+    "picksActualWeight": 0.042230009377400075,
+    "realisedGross": 0.042230009377400075,
+    "attainablePremium": 0.7648669770087316,
+    "selection": 0.004666104786330616,
+    "weighting": -6.938893903907228e-18,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.0017574067326748604,
+    "captureOfPremium": 0.006100544181654925,
+    "hitRateTopN": 0.00625,
+    "hitRateTopDecile": 0.043750000000000004,
+    "randomHitRateTopN": 0.013699611388706658,
+    "meanForwardPercentileOfPicks": 0.5372212449502047,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_3",
+    "N": 20,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF10:F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "intervals": 16,
+   "funded": {
+    "strategyCagr": 0.28181143738085046,
+    "oracleCagr": 8.047964441909722,
+    "populationEwCagr": 0.13035229201973353,
+    "captureOfOraclePremium": 0.019129396905760456,
+    "strategyMaxDrawdown": -0.3540847159829488
+   },
+   "perInterval": {
+    "oracle": 0.8024308815998011,
+    "population": 0.037563904591069466,
+    "picksEqualWeight": 0.07038409073679214,
+    "picksActualWeight": 0.07038409073679214,
+    "realisedGross": 0.07038409073679214,
+    "attainablePremium": 0.7648669770087316,
+    "selection": 0.03282018614572267,
+    "weighting": 0,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.002226025446862337,
+    "captureOfPremium": 0.04290966551344261,
+    "hitRateTopN": 0.031249999999999997,
+    "hitRateTopDecile": 0.20625,
+    "randomHitRateTopN": 0.013699611388706658,
+    "meanForwardPercentileOfPicks": 0.5600375731489592,
+    "avgPicks": 20,
+    "avgInvested": 1
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_3",
+    "N": 20,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  },
+  {
+   "specId": "CF06:F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+   "intervals": 16,
+   "funded": {
+    "strategyCagr": 0.31415530994224405,
+    "oracleCagr": 12.230997341841533,
+    "populationEwCagr": 0.13035229201973353,
+    "captureOfOraclePremium": 0.01518952230775642,
+    "strategyMaxDrawdown": -0.3430013637334144
+   },
+   "perInterval": {
+    "oracle": 1.0149913350743964,
+    "population": 0.037563904591069466,
+    "picksEqualWeight": 0.07773722701841346,
+    "picksActualWeight": 0.07773722701841349,
+    "realisedGross": 0.07773722701841349,
+    "attainablePremium": 0.9774274304833269,
+    "selection": 0.04017332242734399,
+    "weighting": 2.7755575615628914e-17,
+    "timingCash": 0,
+    "approxCostPerRebalanceInEquityUnits": 0.002446527434379923,
+    "captureOfPremium": 0.0411010793992949,
+    "hitRateTopN": 0.00625,
+    "hitRateTopDecile": 0.15625000000000003,
+    "randomHitRateTopN": 0.006849805694353329,
+    "meanForwardPercentileOfPicks": 0.569585881645949,
+    "avgPicks": 10,
+    "avgInvested": 0.9999999999999999
+   },
+   "note": "Per-interval values are gross buy-and-hold returns over each decision interval (identical forward-return definition as the oracle). Selection = EW picks minus EW population; weighting = actual weights minus EW picks; timing/cash = effect of holding cash (market filter, exits, unfilled slots). Funded CAGRs are net of base costs.",
+   "oracleCell": {
+    "cadence": "MONTHLY_EVERY_3",
+    "N": 10,
+    "universe": {
+     "family": "FUND",
+     "filters": [
+      [
+       "rawPx",
+       "gte",
+       5
+      ]
+     ],
+     "minMarketCap": 300000000
+    }
+   }
+  }
+ ],
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

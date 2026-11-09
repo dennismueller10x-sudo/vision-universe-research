@@ -1,0 +1,533 @@
+{
+ "stage": "S3 neighbours/robustness of the stronger S2 variants (turnover reduction, N, rebalance, weighting)",
+ "specs": [
+  {
+   "id": "P3-MOM6_REV1-N20-R4-BUFFER90-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "P3-MOM6_REV1-N50-R4-FULL-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 50,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "P3-MOM6_REV1-N20-R4-FULL-EW-PX5-VOL60",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ],
+    [
+     "vol",
+     "lte",
+     0.6
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "P3-MOM6_REV1-N30-R4-FULL-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 30,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "P3-MOM3-N50-R4-BUFFER90-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 50,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r3",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "P3-MOM3-N20-R4-BUFFER80-EW-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r3",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.8
+  },
+  {
+   "id": "P3-MOM6-N20-R4-BUFFER90-INVVOL-PX5-VOL60",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ],
+    [
+     "vol",
+     "lte",
+     0.6
+    ]
+   ],
+   "positions": 20,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "INVVOL",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "P3-SLOPER2-N50-R4-BUFFER90-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 50,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "slope_r2",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9,
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P3-MOM6-N50-R4-BUFFER90-EW-PX5-MF",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 50,
+   "rebalanceWeeks": 4,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "r6",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9,
+   "marketFilter": "SPY_SMA40"
+  },
+  {
+   "id": "P3-MOM_REV1-N30-R4-FULL-INVVOL-PX5",
+   "family": "PRICE",
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "positions": 30,
+   "rebalanceWeeks": 4,
+   "holding": "FULL",
+   "weighting": "INVVOL",
+   "ranks": [
+    [
+     "r12_1",
+     1,
+     1
+    ],
+    [
+     "r1",
+     -1,
+     0.5
+    ]
+   ]
+  },
+  {
+   "id": "F3-VALUE_PROF_MOM-N30-M1-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 30,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ],
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "F3-VALUE_PROF_MOM-N20-M1-BUFFER90-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ],
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "F3-VALUE_PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 3,
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ],
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "F3-VALUE_PROF_MOM-N20-M1-FULL-INVVOL-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "INVVOL",
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ],
+    [
+     "f.p",
+     1,
+     1
+    ],
+    [
+     "r12_1",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "F3-QUAL-N20-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 3,
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ]
+   ]
+  },
+  {
+   "id": "F3-QUAL-N10-M1-BUFFER90-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 10,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "F3-VALUE-N30-M1-BUFFER90-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 30,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.9
+  },
+  {
+   "id": "F3-VALUE-N20-M1-BUFFER80-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 1,
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "BUFFER",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "f.v",
+     1,
+     1
+    ]
+   ],
+   "keepRankPct": 0.8
+  },
+  {
+   "id": "F3-QUAL_LOWVOL-N20-M3-FULL-EW-PX5-MC300",
+   "family": "FUND",
+   "cadence": "MONTHLY",
+   "rebalanceMonths": 3,
+   "filters": [
+    [
+     "rawPx",
+     "gte",
+     5
+    ]
+   ],
+   "minMarketCap": 300000000,
+   "positions": 20,
+   "holding": "FULL",
+   "weighting": "EW",
+   "ranks": [
+    [
+     "f.q",
+     1,
+     1
+    ],
+    [
+     "vol",
+     -1,
+     1
+    ]
+   ]
+  }
+ ]
+}

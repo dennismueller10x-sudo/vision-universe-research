@@ -21,11 +21,21 @@ name: Supertrader Signale
 # Werte und Stand bleiben byte-gleich. Fuer Naechte, in denen das Universum
 # committet ist, die Materialisierung aber scheiterte (27.10.2026, BZH).
 # Siehe scripts/supertrader/prune-dead-refs.mjs.
+#
+# TAGESLAUF DER RESEARCH-KANDIDATEN: Nach einem vollen Lauf (mode=build) stoesst der Job `sf8` den Tageslauf
+# supertrader-sf8-candidates.yml mit mode=auto an - nur auf main und nur mit SF8_CANDIDATES_ENABLED und
+# SF8_AUTO_PUBLISH. Beide lesen dieselbe technische Materialisierung der Nachtkette. Ein Fehler der Signale haelt den
+# Anstoss nicht auf (eigener Job), ein Fehler des Anstosses macht die Signale nicht rot; der Tageslauf hat einen
+# eigenen Rueckfall-Zeitplan und meldet sich selbst ueber den Pipeline-Alarm.
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '17 6 * * 2-6'
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       mode:
         description: 'build = voller Strategie-Lauf; prune-dead-refs = nur entfallene Titel ausweisen'
         type: choice
@@ -35,6 +45,10 @@ on:
         default: build
 permissions:
   contents: write
+# Concurrency: Gruppe noch ohne Zweig (ADR-005 (5) offen). Bis zur Umstellung keine Laeufe auf anderen Zweigen im
+# Fenster der Nachtkette: ein wartender Zweig-Lauf kann einen wartenden main-Lauf verdraengen. Die Umstellung braucht
+# zugleich core/tests/supertrader-chain.test.mjs (SC5) und die Laufliste in scripts/ci/supertrader-chain.mjs (wartende
+# Laeufe nur von main zaehlen) - eigener Core-PR, nicht in Gate A.
 concurrency:
   group: supertrader-signals
   cancel-in-progress: false
@@ -45,18 +59,35 @@ jobs:
     env:
       MODE: ${{ inputs.mode || 'build' }}
     steps:
+      # ADR-005 (1): Spitze des eigenen Zweigs. Der Commit-Schritt rebased auf origin/$GITHUB_REF_NAME und pusht
+      # dorthin; ein fest verdrahtetes `ref: main` haette bei einem Lauf auf einem anderen Zweig main-Code getestet
+      # und den main-Stand auf diesen Zweig geschoben. Auf main ist es dasselbe wie vorher.
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.ref }}
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): Daten, die nur noch dort wachsen, wie ausgeliefert lesen (commit-sicher).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Minutenquelle fuer Kauf-Stop-Tage (IEX, nur Zaehlwerte im Log, Datei ausserhalb des Repositorys)
         if: env.MODE == 'build'
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
           SUPERTRADER_INTRADAY_CACHE: ${{ runner.temp }}/supertrader-intraday.json
         run: node scripts/supertrader/intraday-prefetch.mjs
+      # Rueckbau L2/L3 (Owner-Entscheidung 06.11.2026, #1522): steht im Repository noch die oeffentliche Ledger-Sicht,
+      # kommt der volle Zustand einmalig aus der History-Ablage zurueck (fail closed, danach ohne Wirkung).
+      - name: Vollen Ledger-Zustand zurueckholen (einmalig nach dem Rueckbau)
+        if: env.MODE == 'build'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+        run: node scripts/supertrader/restore-full-ledgers.mjs
       - name: Strategie-Lauf (deterministisch, append-only Signalprotokoll)
         if: env.MODE == 'build'
         env:
@@ -76,3 +107,19 @@ jobs:
             nachricht="Supertrader: Signale aktualisiert (Stand ${stand})"
           fi
           bash scripts/ci/commit-and-push.sh "$nachricht" supertrader/
+  sf8:
+    needs: signals
+    if: >-
+      always() && github.ref == 'refs/heads/main' && (inputs.mode || 'build') == 'build' &&
+      vars.SF8_CANDIDATES_ENABLED == 'true' && vars.SF8_AUTO_PUBLISH == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Tageslauf der Research-Kandidaten anstossen (mode=auto)
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run supertrader-sf8-candidates.yml --repo "$GITHUB_REPOSITORY" --ref main -f mode=auto

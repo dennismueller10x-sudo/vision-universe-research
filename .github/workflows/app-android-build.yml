@@ -1,0 +1,78 @@
+# Android-App "Vision Universe": Bauprobe (A5). Baut das App-Bundle (AAB) OHNE Signierung und OHNE Upload.
+# Kein Schluessel, kein Geheimnis, keine Umgebung noetig; es entsteht nur eine ungesignierte Pruefdatei, die nirgends hochgeladen wird.
+# Signierter Build und Upload zur internen Google-Play-Testspur folgen in einem eigenen PR (Umgebung "app-android" mit Pflichtpruefer).
+# Plan: docs/mobile/ANDROID_PLAN.md. Regeln aus CLAUDE.md / ADR-005: kein Commit-Push, Eingaben nur ueber env:, permissions contents: read.
+name: App - Android Bauprobe (ungesignt, kein Upload)
+
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - ".github/workflows/app-android-build.yml"
+  workflow_dispatch:
+    inputs:
+      version_name:
+        description: "Versionsname, z. B. 0.1.0"
+        required: true
+        default: "0.1.0"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: app-android-build-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  bauprobe:
+    runs-on: ubuntu-latest   # Android-SDK vorinstalliert (ANDROID_HOME)
+    timeout-minutes: 30
+    env:
+      VERSION_NAME: ${{ inputs.version_name || '0.0.0' }}
+      RUN_NUMBER: ${{ github.run_number }}
+      VU_SUPABASE_URL: ${{ vars.VU_SUPABASE_URL }}                       # oeffentlich
+      VU_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VU_SUPABASE_PUBLISHABLE_KEY }} # oeffentlich
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          # Gradle-Wrapper samt Distribution aus dem Actions-Cache statt jedes Mal von GitHub Releases
+          # (services.gradle.org leitet dorthin um; 08.11.2026: 504/Zeitueberlauf). Schluessel: Gradle-Dateien.
+          cache: gradle
+          cache-dependency-path: |
+            app/android/**/*.gradle*
+            app/android/gradle/wrapper/gradle-wrapper.properties
+      - name: App-Tests und Web-Teil
+        working-directory: app
+        run: |
+          set -euo pipefail
+          # --ignore-scripts: einziges Install-Skript, das der Build sonst ausfuehrt, ist sharp (nur fuer @capacitor/assets, Icons);
+          # es laedt libvips von GitHub Releases und bricht bei dessen Ausfall den Build ab (08.11.2026: 504). esbuild braucht kein Skript.
+          npm ci --no-audit --no-fund --ignore-scripts
+          npm test
+          npm run build:www
+          ./node_modules/.bin/cap sync android
+      - name: Bundle bauen (ungesignt)
+        working-directory: app/android
+        run: |
+          set -euo pipefail
+          [[ "$VERSION_NAME" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Version ungueltig"; exit 1; }
+          chmod +x gradlew
+          # Wrapper vorab laden, bei einem Netzfehler bis zu dreimal (20 s, 40 s Pause); die Version bleibt die aus gradle-wrapper.properties.
+          for i in 1 2 3; do ./gradlew --no-daemon --version >/dev/null && break; [ "$i" = 3 ] && exit 1; sleep $((i * 20)); done
+          ./gradlew --no-daemon bundleRelease -PvuVersionCode="$RUN_NUMBER" -PvuVersionName="$VERSION_NAME"
+      - name: Ergebnis pruefen (keine Werte)
+        working-directory: app/android
+        run: |
+          set -euo pipefail
+          f=app/build/outputs/bundle/release/app-release.aab
+          test -s "$f" || { echo "::error::Kein Bundle erzeugt"; exit 1; }
+          ls -l "$f" | awk '{print "Groesse (Byte): " $5}'
+          unzip -l "$f" | grep -E "base/manifest/AndroidManifest.xml|base/assets/public/index.html" | awk '{print $4}'

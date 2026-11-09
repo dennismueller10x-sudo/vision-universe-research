@@ -1,0 +1,263 @@
+name: Content (News, Analystenbewertungen, Hedgefonds 13F, Morning)
+
+# Buendel "content" (Plan Neustart §3, core/registry/workflow-bundles.json). Ersetzt update-news.yml,
+# update-analyst-ratings.yml, update-hedgefonds.yml und build-morning.yml. Jeder Teil ist ein eigener Job
+# mit seinem bisherigen Zeitplan und seinen bisherigen Schritten (unveraendert uebernommen); ein Fehler in
+# einem Teil haelt die anderen nicht auf. Manuell: Eingabe "teil".
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
+on:
+  workflow_dispatch:
+    inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
+      teil:
+        description: 'Welcher Teil laufen soll'
+        type: choice
+        options: [alle, news, ratings, hedgefonds, morning, analysten, analysten-probe]
+        default: alle
+  push:
+    branches: [main]
+    paths:
+      - 'content/morning/**'
+      - 'products/morning/**'
+      - 'morning/assets/**'
+
+permissions:
+  contents: write
+
+jobs:
+  news:
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '17 5,11,17 * * *') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'news'))
+    runs-on: ubuntu-latest
+    concurrency:
+      group: content-news-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Fetch primary-source news
+        run: node products/news/producer/update_news.mjs
+      - name: Commit fresh news data
+        shell: bash
+        run: |
+          if git diff --quiet -- dashboard/data/news_feed.json; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dashboard/data/news_feed.json
+          git commit -m "chore: update dashboard news"
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+      # Datenzweig-Pilot (Plan Neustart §3, core/registry/data-branch.json, Phase DUAL_WRITE):
+      # derselbe Stand zusaetzlich in den Datenzweig; Pages liefert ihn aus und weist Gleichheit mit main nach.
+      - name: News in den Datenzweig
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live dashboard/data/news_feed.json
+
+  ratings:
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '0 8 * * 0') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'ratings'))
+    runs-on: ubuntu-latest
+    concurrency:
+      group: content-ratings-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Fetch analyst ratings
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: python products/analysten/producer/fetch_analyst_ratings.py
+
+      - name: Verify generated-file-only scope
+        shell: bash
+        run: |
+          unexpected="$(git diff --name-only | grep -vE '^dashboard/data/analyst_ratings\.json$' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected modified files:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+      # Datenzweig (Plan Neustart §3, core/registry/data-branch.json, Phase BRANCH_ONLY): nur noch data/live,
+      # nicht mehr main. Die Kopie in main ist eingefroren (Rueckfall); Pages liefert den Datenzweig aus.
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live dashboard/data/analyst_ratings.json
+
+  # Analysten-Konsens fuer das Produktuniversum: Finnhub-Einstufungen (frei, 55/min), Kursziele nur aus der freien
+  # FMP-Liste. Rotierend ~2200 Titel je Lauf, drei Laeufe am Tag (ganzes Universum taeglich). Finnhub Free erlaubt
+  # 60 Aufrufe/min: der Erzeuger drosselt auf 55/min, die Concurrency-Gruppe verhindert parallele Laeufe (Owner 06.11.2026).
+  # Schreibt nur dashboard/data/analysts, und zwar nur in den Datenzweig data/live.
+  analysten:
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '41 5,13,21 * * *') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'analysten'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    concurrency:
+      group: content-analysten-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      # Rotation baut auf dem bisherigen Stand auf: der liegt im Datenzweig (BRANCH_ONLY), nicht in main.
+      - name: Bisheriger Stand aus dem Datenzweig
+        run: scripts/ci/seed-data-branch.sh analystConsensus
+      - name: Konsens abrufen (rotierend)
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: |
+          set -euo pipefail
+          node products/analysten/producer/fetch-consensus.mjs --max-titles 2200 --per-minute 55 --fmp-max 200 --max-minutes 42 | tee "$RUNNER_TEMP/analysten.txt"
+          { echo '### Analysten-Konsens'; echo '```'; cat "$RUNNER_TEMP/analysten.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Nur eigene Pfade geaendert
+        run: |
+          set -euo pipefail
+          unexpected="$(git status --porcelain | awk '{print $2}' | grep -vE '^dashboard/data/analysts/' || true)"
+          if [ -n "$unexpected" ]; then echo "::error::unerwartete Aenderungen:"; echo "$unexpected"; exit 1; fi
+      # Datenzweig (core/registry/data-branch.json, BRANCH_ONLY): nur noch data/live; die Kopie in main ist eingefroren.
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live dashboard/data/analysts/summary.json dashboard/data/analysts/shards
+
+  # Analysten-Konsens: Abdeckungsmessung der kostenlosen Zugaenge (Finnhub, FMP) an einer festen Stichprobe des
+  # Produktuniversums. Nur Bericht (Artefakt + Zusammenfassung), kein Commit, nur manuell.
+  analysten-probe:
+    if: (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.teil == 'analysten-probe'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Abdeckung messen (Stichprobe 120 + NVDA/AAPL/MSFT)
+        env:
+          FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          FMP_API_KEY: ${{ secrets.FMP_API_KEY }}
+        run: |
+          set -euo pipefail
+          node products/analysten/producer/probe-consensus.mjs --size 120 --seed 20261106 --per-minute 50 --out "$RUNNER_TEMP/analyst-probe.json" | tee "$RUNNER_TEMP/probe.txt"
+          { echo '### Analysten-Abdeckung (Stichprobe)'; echo '```'; cat "$RUNNER_TEMP/probe.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: analyst-probe-${{ github.run_id }}
+          path: ${{ runner.temp }}/analyst-probe.json
+          retention-days: 14
+
+  hedgefonds:
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && ((github.event.schedule || inputs.zeitplan) == '17 6 * * 1' || (github.event.schedule || inputs.zeitplan) == '17 7 10-20 2,5,8,11 *')) || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'hedgefonds'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    concurrency:
+      group: content-hedgefonds-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # Porträts werden auf 360 px verkleinert und ohne Metadaten neu kodiert
+      - name: Install Pillow
+        run: python -m pip install "Pillow==12.3.0"
+
+      - name: Fetch SEC EDGAR 13F data
+        env:
+          OPENFIGI_API_KEY: ${{ secrets.OPENFIGI_API_KEY }}
+        run: python products/hedgefonds/producer/fetch_edgar_data.py
+
+      - name: Verify generated-file-only scope
+        shell: bash
+        run: |
+          unexpected="$(git status --porcelain -uall | awk '{print $2}' | grep -vE '^hedgefonds/(data|img/managers)/' || true)"
+          if [ -n "$unexpected" ]; then
+            echo "Unexpected modified files:"
+            echo "$unexpected"
+            exit 1
+          fi
+
+      - name: Validate generated data
+        run: |
+          python3 - <<'PY'
+          import json
+          d = json.load(open("hedgefonds/data/hedgefonds.json"))
+          inv = [f for f in d["funds"] if f["category"] == "Investoren"]
+          assert len(inv) >= 20, f"nur {len(inv)} Investoren"
+          for f in inv:
+              assert f["totalValueUSD"] > 0 and f["reportDate"], f["slug"]
+          u = json.load(open("hedgefonds/data/universe.json"))
+          print("OK:", len(inv), "Investoren,", len(u["funds"]), "weitere Hedgefonds,", d["latestPeriodLabel"],
+                "| Fehler:", len(d["errors"]))
+          PY
+
+      - name: Commit generated data
+        shell: bash
+        run: |
+          git add -A hedgefonds/data hedgefonds/img/managers
+          if git diff --cached --quiet; then
+            echo "Keine Änderungen an den 13F-Daten – nichts zu committen."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Hedgefonds: 13F-Daten aktualisiert ($(python3 -c "import json;print(json.load(open('hedgefonds/data/hedgefonds.json'))['latestPeriodLabel'])"))"
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  morning:
+    if: (github.event_name == 'push') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'morning'))
+    runs-on: ubuntu-latest
+    concurrency:
+      group: content-morning-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Generate Morning pages
+        run: node products/morning/producer/build-morning.mjs
+      - name: Commit generated pages
+        shell: bash
+        run: |
+          if git diff --quiet -- morning; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add morning
+          git commit -m "chore: build Morning Briefing"
+          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"

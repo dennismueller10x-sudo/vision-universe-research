@@ -1,0 +1,56 @@
+PROPOSAL ONLY - NOT APPLIED. Producer of quant/data/market/security-master/us-security-master.json
+(scripts/market/build-us-security-master.mjs -> quant/engines/us-security-master.js#classifySecurity).
+
+Defect (B2 finding, docs/quant-recovery/v10/population/lifecycle-cases.json, field masterConflict):
+  active_status is derived only from the provider endDate (instrument-classification.js: endDate <= staleDays(30) old -> ACTIVE).
+  The provider keeps writing the last close forward after a delisting, so endDate stays current and the row stays ACTIVE
+  although SEC shows Form 25 / 25-NSE / 15 and (for mergers) an 8-K Item 2.01 completion. Count: see README "Erzeuger-Befund".
+
+Proposed fix: an explicit, source-bound producer input (SEC delisting evidence, built from Form 25/25-NSE/15 + 8-K 2.01/3.01
+by the existing SEC fair-access client, never from repeated closes alone) that can only turn a derived ACTIVE into INACTIVE.
+It never turns INACTIVE into ACTIVE (same one-way rule as the existing callerSupplied branch). Owner release and a separate
+product PR with before/after counts are required (CLAUDE.md: generated artefacts only via their producer; Fachmodelle only in own PR).
+
+--- a/quant/engines/us-security-master.js
++++ b/quant/engines/us-security-master.js
+@@ -328,10 +328,23 @@
+     var active = base.active;
+     var activeBasis = base.activeBasis;
+     if (active === null && typeof row.active === "boolean") {
+       active = row.active;
+       activeBasis = "callerSupplied:active=" + row.active;
+     }
++    /* SEC-Delisting-Beleg (Form 25/25-NSE/15, 8-K 2.01/3.01) mit quellenbelegtem letzten Handelstag.
++       Der Anbieter schreibt nach einem Delisting den letzten Kurs fort; sein endDate bleibt dadurch aktuell.
++       Ein Beleg darf nur ACTIVE -> INACTIVE kippen, nie umgekehrt, und nur fuer denselben Ticker mit
++       lastTradeDate <= today. */
++    var delisting = opts.secDelistings && opts.secDelistings[upper(row.ticker)];
++    if (delisting && active !== false && delisting.lastTradeDate && delisting.lastTradeDate <= today
++        && (!row.startDate || row.startDate <= delisting.lastTradeDate)) {
++      active = false;
++      activeBasis = "secDelisting:" + delisting.form + ":" + delisting.accession + ":lastTrade=" + delisting.lastTradeDate;
++    }
+
+     var ticker = upper(row.ticker);
+     var exchange = upper(row.exchange);
+@@ -627,7 +640,8 @@
+        Derivat genauso. */
+     var listedRoots = input.listedRoots || collectListedRoots(providerRows, baseline);
+-    var classifyOpts = { today: today, staleDays: input.staleDays, listedRoots: listedRoots };
++    var classifyOpts = { today: today, staleDays: input.staleDays, listedRoots: listedRoots,
++                         secDelistings: input.secDelistings || null };
+
+     providerRows.forEach(function (r) {
+       var c = classifySecurity(r, classifyOpts);
+--- a/scripts/market/build-us-security-master.mjs
++++ b/scripts/market/build-us-security-master.mjs
+@@ (input assembly) @@
++  // Optional, committed producer input (proposal): quant/config/sec-delisting-evidence.json
++  //   { schemaVersion, generatedBy, records: { TICKER: { form, accession, url, sha256, lastTradeDate } } }
++  // Built offline from SEC filings (fair-access client); absent file = unchanged behaviour.
++  const secDelistings = readJsonIfExists("quant/config/sec-delisting-evidence.json")?.records || null;
++  // ... pass { ..., secDelistings } into the engine input next to staleDays.
+
+Required with the product PR: unit test (ACTIVE->INACTIVE only, INACTIVE never revived, ticker reuse guard via startDate),
+before/after counts of active_status and eligible_us_equity, DQ-ID-4 / DQ-PX-6/7 before/after, and the gate
+scripts/market/security-master-refresh-gate.mjs unchanged.

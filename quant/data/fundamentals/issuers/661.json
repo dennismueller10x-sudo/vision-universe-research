@@ -703,9 +703,9 @@
       "cik": "0001880661",
       "name": "TPG Inc.",
       "sic": "6282",
-      "rawFacts": 6166,
-      "mappedFacts": 1279,
-      "unmappedFacts": 4712,
+      "rawFacts": 6559,
+      "mappedFacts": 1372,
+      "unmappedFacts": 5005,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -716,9 +716,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 18,
+      "quarterlyPeriods": 19,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
@@ -730,7 +730,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -750,28 +750,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -785,14 +785,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -815,47 +815,49 @@
         }
       },
       "quality": {
-        "HIGH": 107,
-        "MEDIUM": 46
+        "HIGH": 112,
+        "MEDIUM": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 153,
-        "resolvedValues": 153
+        "datableValues": 160,
+        "resolvedValues": 160
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 5017,
+        "rules_version": "1.1.0",
+        "total": 5272,
         "by_severity": {
-          "INFO": 4712,
-          "WARNING": 305
+          "INFO": 5005,
+          "WARNING": 267
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 228,
-          "FISCAL_PERIOD_CONFLICT": 1,
-          "RESTATEMENT_CONFLICT": 70,
+          "CONCEPT_DISAGREEMENT": 172,
+          "FISCAL_PERIOD_CONFLICT": 2,
+          "RESTATEMENT_CONFLICT": 57,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 4712
+          "UNKNOWN_CONCEPT": 5005,
+          "UNPLACEABLE_PERIOD": 30
         }
       },
       "latestFiling": {
-        "accession": "0001880661-26-000049",
-        "filing_date": "2026-08-04",
+        "accession": "0001880661-26-000059",
+        "filing_date": "2026-11-03",
         "form": "10-Q",
-        "periodic_filings": 19
+        "periodic_filings": 20,
+        "acceptance_datetime": "2026-11-03T21:01:58.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3476272bdf668c82b5ff4fbbaac55e66f69a0ccd1355c1e649073025f9cb3b63",
+      "sourceDigest": "eafd8443462d902fa7ec33ceec83b6520cca06458bdee33da949bd67ba1543e4",
       "issuerId": "iss_cik_0001880661"
     },
     {

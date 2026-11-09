@@ -1,0 +1,443 @@
+{
+ "schemaVersion": "v10-factor-strategy-1.0.0",
+ "studyId": "V10-FACTOR-RECONSTRUCTION:V10-FACTOR-RECON-TOP50",
+ "evidenceKind": "RECONSTRUCTION",
+ "registrationHash": "12efafc4bcbdcbcc8847b24f532fb73526538420702b2d5d832dce89542ae1b3",
+ "rule": "An jedem Rangstichtag die 50 Listings mit dem hoechsten rekonstruierten Gesamtrang (Gleichstand: listingId aufsteigend), gleichgewichtet je 1/50; Ausfuehrung zum naechsten Wochenschluss; monatliches Rebalancing; Rest in unverzinstem Cash (weniger als 50 Kandidaten -> Restgewicht Cash).",
+ "engine": "quant/engines/research-portfolio.cjs research-portfolio-1.2.0 (HISTORICAL_PRICE_SIMULATION)",
+ "loaderOptions": {
+  "identityEvidence": true,
+  "corporateActionEvidence": true
+ },
+ "engineMembership": "Je Stichtag die 100 bestplatzierten Listings des rekonstruierten Gesamtrangs aus der vollen Rangpopulation (Engine-Budget: Listings x Sitzungen <= 2 Mio.); Ziele (Top 50) sind Teilmenge.",
+ "sparseBars": "Der Engine werden exakte Wochenschluesse nur an Sitzungen uebergeben, an denen der Titel gehalten oder gehandelt wird (Budget 250.000 Balken); fehlt ein solcher Kurs, bricht der Lauf ab.",
+ "selection": {
+  "rankDates": 175,
+  "firstDecision": "2011-06-24",
+  "lastDecision": "2025-12-26",
+  "scoredPerDate": {
+   "min": 55,
+   "median": 622,
+   "max": 828
+  },
+  "datesWithFewerThanTopN": 0,
+  "distinctListingsSelected": 589
+ },
+ "returnBasis": "PRICE_RETURN",
+ "benchmark": "SPY PRICE_RETURN (weekly-benchmark, ohne Kosten)",
+ "costs": {
+  "BASE": {
+   "feeBps": 2.5,
+   "slippageBps": 12.5
+  },
+  "LOW": {
+   "feeBps": 0,
+   "slippageBps": 5
+  },
+  "HIGH": {
+   "feeBps": 5,
+   "slippageBps": 25
+  }
+ },
+ "runs": {
+  "BASE": {
+   "inputHash": "14b6921d1d05a1c47571104a82e9d48625f7b5378affa4fd1fd64a5548825943",
+   "resultHash": "8f7b40894b6c9a77d601ed5d0ffe8484387f05c06e0ac3601383afb0e2b7346c",
+   "generation": "459d22ea2f4bf189b27429b2097a13578cf18f6d26f5e9ac8afadd0c7da9b96b",
+   "limitations": [
+    "CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP",
+    "SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES",
+    "MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES",
+    "FRACTIONAL_LONG_ONLY",
+    "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+    "NO_CASH_INTEREST_OR_TAX",
+    "NO_VOLUME_CAPACITY_MODEL",
+    "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+    "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT"
+   ],
+   "metrics": {
+    "from": "2011-06-24",
+    "to": "2026-01-30",
+    "years": 14.603696098562628,
+    "endCapital": 596824.2694667022,
+    "cagr": 0.13012561894421215,
+    "volatility": 0.20247506138793142,
+    "sharpe": 0.7045998921582248,
+    "maxDrawdown": -0.35351771085904804,
+    "peak": "2020-02-14",
+    "trough": "2020-03-20",
+    "turnoverPerYear": 3.0623850475099053,
+    "fees": 5991.880237502054,
+    "slippage": 29959.40118751028,
+    "rebalances": 175,
+    "avgPositions": 49.93446920052425,
+    "avgCashShare": 0.001310615989515072,
+    "spy": {
+     "cagr": 0.12321304950941192,
+     "volatility": 0.16329028438773419,
+     "sharpe": 0.7921312243324616,
+     "maxDrawdown": -0.3222748815165877,
+     "peak": "2020-02-14",
+     "trough": "2020-03-20",
+     "endCapital": 545674.6313382225
+    },
+    "excessCagr": 0.006912569434800231,
+    "monthlyExcess": {
+     "n": 175,
+     "mean": 0.0014015363303813144,
+     "pValueBlock": 0.378,
+     "ci95Block": [
+      -0.0019799144051509086,
+      0.004430976612771655
+     ],
+     "nw": {
+      "n": 175,
+      "mean": 0.0014015363303813144,
+      "se": 0.001708696334608936,
+      "t": 0.8202372194484046,
+      "p": 0.41208088053242614,
+      "bandwidth": 4
+     },
+     "hitRate": 0.5142857142857142
+    },
+    "calendarYears": {
+     "2011": {
+      "strategy": -0.08126674047994786,
+      "spy": -0.010330415582367247
+     },
+     "2012": {
+      "strategy": 0.10642249958511885,
+      "spy": 0.11577689243027889
+     },
+     "2013": {
+      "strategy": 0.4627223495178332,
+      "spy": 0.3129329429407983
+     },
+     "2014": {
+      "strategy": 0.06482286489456479,
+      "spy": 0.13375033995104713
+     },
+     "2015": {
+      "strategy": -0.04516628742715101,
+      "spy": -0.021924774515448164
+     },
+     "2016": {
+      "strategy": 0.13675613623872795,
+      "spy": 0.09643400206013641
+     },
+     "2017": {
+      "strategy": 0.22934709531880482,
+      "spy": 0.19384422672571922
+     },
+     "2018": {
+      "strategy": 0.04250855284952304,
+      "spy": -0.07161058232781237
+     },
+     "2019": {
+      "strategy": 0.19466494315553784,
+      "spy": 0.3031685166498488
+     },
+     "2020": {
+      "strategy": 0.23878141026532718,
+      "spy": 0.15802515021990948
+     },
+     "2021": {
+      "strategy": 0.28956822311096,
+      "spy": 0.270354124317963
+     },
+     "2022": {
+      "strategy": -0.20613561252374757,
+      "spy": -0.19481640559204982
+     },
+     "2023": {
+      "strategy": 0.3195306167426828,
+      "spy": 0.24286797583871556
+     },
+     "2024": {
+      "strategy": 0.25778058497146494,
+      "spy": 0.2518356441059517
+     },
+     "2025": {
+      "strategy": 0.0439556463675006,
+      "spy": 0.1601653753718426
+     },
+     "2026": {
+      "strategy": 0.03230903072355962,
+      "spy": 0.0024047167214729104,
+      "partial": true
+     }
+    }
+   }
+  },
+  "LOW": {
+   "inputHash": "5d97cb6ad9073b2ac54f0e5af8348b12c82880e40edd250da15f8d399c630401",
+   "resultHash": "190869f3f93362e69fa10b5293c9184e1b9fe97791b8cdd5aa98937ab1ba92b5",
+   "generation": "982ec6b6fbe12fd5919e88075507b9d6444512b3fd519d94668c0c2965eb3403",
+   "limitations": [
+    "CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP",
+    "SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES",
+    "MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES",
+    "FRACTIONAL_LONG_ONLY",
+    "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+    "NO_CASH_INTEREST_OR_TAX",
+    "NO_VOLUME_CAPACITY_MODEL",
+    "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+    "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT"
+   ],
+   "metrics": {
+    "from": "2011-06-24",
+    "to": "2026-01-30",
+    "years": 14.603696098562628,
+    "endCapital": 652694.2030749248,
+    "cagr": 0.1370718680653944,
+    "volatility": 0.2024356601603394,
+    "sharpe": 0.7349245759439057,
+    "maxDrawdown": -0.3529891135597366,
+    "peak": "2020-02-14",
+    "trough": "2020-03-20",
+    "turnoverPerYear": 3.062934829888237,
+    "fees": 0,
+    "slippage": 12694.25638154472,
+    "rebalances": 175,
+    "avgPositions": 49.93446920052425,
+    "avgCashShare": 0.001310615989515072,
+    "spy": {
+     "cagr": 0.12321304950941192,
+     "volatility": 0.16329028438773419,
+     "sharpe": 0.7921312243324616,
+     "maxDrawdown": -0.3222748815165877,
+     "peak": "2020-02-14",
+     "trough": "2020-03-20",
+     "endCapital": 545674.6313382225
+    },
+    "excessCagr": 0.013858818555982477,
+    "monthlyExcess": {
+     "n": 175,
+     "mean": 0.0019130559320914018,
+     "pValueBlock": 0.224,
+     "ci95Block": [
+      -0.0014483490367396788,
+      0.004946990274826001
+     ],
+     "nw": {
+      "n": 175,
+      "mean": 0.0019130559320914018,
+      "se": 0.0017073569970133598,
+      "t": 1.1204779875783837,
+      "p": 0.262510145401552,
+      "bandwidth": 4
+     },
+     "hitRate": 0.52
+    },
+    "calendarYears": {
+     "2011": {
+      "strategy": -0.07950016589470787,
+      "spy": -0.010330415582367247
+     },
+     "2012": {
+      "strategy": 0.1113695196145097,
+      "spy": 0.11577689243027889
+     },
+     "2013": {
+      "strategy": 0.4725929761007579,
+      "spy": 0.3129329429407983
+     },
+     "2014": {
+      "strategy": 0.07211260408152476,
+      "spy": 0.13375033995104713
+     },
+     "2015": {
+      "strategy": -0.039369370625250144,
+      "spy": -0.021924774515448164
+     },
+     "2016": {
+      "strategy": 0.14439575876028088,
+      "spy": 0.09643400206013641
+     },
+     "2017": {
+      "strategy": 0.23724912459641478,
+      "spy": 0.19384422672571922
+     },
+     "2018": {
+      "strategy": 0.04855286059213437,
+      "spy": -0.07161058232781237
+     },
+     "2019": {
+      "strategy": 0.2028703756898078,
+      "spy": 0.3031685166498488
+     },
+     "2020": {
+      "strategy": 0.24620280440473574,
+      "spy": 0.15802515021990948
+     },
+     "2021": {
+      "strategy": 0.298572537780442,
+      "spy": 0.270354124317963
+     },
+     "2022": {
+      "strategy": -0.2011788931322952,
+      "spy": -0.19481640559204982
+     },
+     "2023": {
+      "strategy": 0.32690256589166,
+      "spy": 0.24286797583871556
+     },
+     "2024": {
+      "strategy": 0.2654234461365388,
+      "spy": 0.2518356441059517
+     },
+     "2025": {
+      "strategy": 0.050735761916748334,
+      "spy": 0.1601653753718426
+     },
+     "2026": {
+      "strategy": 0.032838825328313614,
+      "spy": 0.0024047167214729104,
+      "partial": true
+     }
+    }
+   }
+  },
+  "HIGH": {
+   "inputHash": "e1df344434268ca6a9553c4e31afb6f9fc1b053696227efd047eadef3138a6a6",
+   "resultHash": "f27fc9dd14b29000634e8e5367e18e47e0f4da9c03c0ad6c6b8b9940c50c4170",
+   "generation": "10aacea49919ca0665178ca7c8d832bdb9f4d3c0b134c95e743d735792a2e6e7",
+   "limitations": [
+    "CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP",
+    "SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES",
+    "MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES",
+    "FRACTIONAL_LONG_ONLY",
+    "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+    "NO_CASH_INTEREST_OR_TAX",
+    "NO_VOLUME_CAPACITY_MODEL",
+    "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+    "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT"
+   ],
+   "metrics": {
+    "from": "2011-06-24",
+    "to": "2026-01-30",
+    "years": 14.603696098562628,
+    "endCapital": 521838.3372631023,
+    "cagr": 0.11978297822222328,
+    "volatility": 0.2025590161417329,
+    "sharpe": 0.6590735365666097,
+    "maxDrawdown": -0.3543101488684728,
+    "peak": "2020-02-14",
+    "trough": "2020-03-20",
+    "turnoverPerYear": 3.0615920370975283,
+    "fees": 11003.719792373478,
+    "slippage": 55018.59896186741,
+    "rebalances": 175,
+    "avgPositions": 49.93446920052425,
+    "avgCashShare": 0.001310615989515072,
+    "spy": {
+     "cagr": 0.12321304950941192,
+     "volatility": 0.16329028438773419,
+     "sharpe": 0.7921312243324616,
+     "maxDrawdown": -0.3222748815165877,
+     "peak": "2020-02-14",
+     "trough": "2020-03-20",
+     "endCapital": 545674.6313382225
+    },
+    "excessCagr": -0.0034300712871886407,
+    "monthlyExcess": {
+     "n": 175,
+     "mean": 0.0006345705331835808,
+     "pValueBlock": 0.695,
+     "ci95Block": [
+      -0.002776184756073815,
+      0.00365464810080741
+     ],
+     "nw": {
+      "n": 175,
+      "mean": 0.0006345705331835808,
+      "se": 0.0017109592013709637,
+      "t": 0.3708858356617211,
+      "p": 0.7107225617378337,
+      "bandwidth": 4
+     },
+     "hitRate": 0.5028571428571429
+    },
+    "calendarYears": {
+     "2011": {
+      "strategy": -0.08390871619014872,
+      "spy": -0.010330415582367247
+     },
+     "2012": {
+      "strategy": 0.09904082185027963,
+      "spy": 0.11577689243027889
+     },
+     "2013": {
+      "strategy": 0.44803608568708375,
+      "spy": 0.3129329429407983
+     },
+     "2014": {
+      "strategy": 0.05397775164405427,
+      "spy": 0.13375033995104713
+     },
+     "2015": {
+      "strategy": -0.053799419657622805,
+      "spy": -0.021924774515448164
+     },
+     "2016": {
+      "strategy": 0.12538963599548536,
+      "spy": 0.09643400206013641
+     },
+     "2017": {
+      "strategy": 0.2175838900257132,
+      "spy": 0.19384422672571922
+     },
+     "2018": {
+      "strategy": 0.03350572858153855,
+      "spy": -0.07161058232781237
+     },
+     "2019": {
+      "strategy": 0.18245771172197522,
+      "spy": 0.3031685166498488
+     },
+     "2020": {
+      "strategy": 0.22772955263614025,
+      "spy": 0.15802515021990948
+     },
+     "2021": {
+      "strategy": 0.27617502714802056,
+      "spy": 0.270354124317963
+     },
+     "2022": {
+      "strategy": -0.21351444787639973,
+      "spy": -0.19481640559204982
+     },
+     "2023": {
+      "strategy": 0.30854608626918356,
+      "spy": 0.24286797583871556
+     },
+     "2024": {
+      "strategy": 0.24639928379855336,
+      "spy": 0.2518356441059517
+     },
+     "2025": {
+      "strategy": 0.03386485845171827,
+      "spy": 0.1601653753718426
+     },
+     "2026": {
+      "strategy": 0.03151457713820527,
+      "spy": 0.0024047167214729104,
+      "partial": true
+     }
+    }
+   }
+  }
+ },
+ "equalWeightPopulation": {
+  "note": "gleichgewichtete Rangpopulation, deskriptiv, ohne Kosten",
+  "cagrApprox": 0.13979412457436902,
+  "endLevel": 6.744382394652829,
+  "missingOutcomes": 0
+ },
+ "survivorship": "Population = heutige Survivors (CONDITIONAL_FIXED_CURRENT_COHORT); kein Titel des Frames endet vor dem Bewertungsende, Delisting-Abgaenge kommen deshalb nicht vor. Das ist Selektion, kein Ergebnis.",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "activeContractsAffected": [],
+ "seconds": 48,
+ "reproHash": "0fa099187e6aa620af2f75ee4fdd09f11064d1fbf8c1d2e70c22101142fcdaf9"
+}

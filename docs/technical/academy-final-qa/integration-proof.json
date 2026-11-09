@@ -1,0 +1,99 @@
+{
+  "date": "2026-11-02",
+  "implementationCommit": "411ab29718ba991d165f221cae045f007af0ab29",
+  "testedMain": "f53e50451566f72002a5e47eb00721741dff0bf9",
+  "observedMainAfterTests": "7d940e4ad0f74f76ae59887c48f5d981c187f562",
+  "sourceDriftSinceTestedMain": [],
+  "assistantCommit": "97b15816089c91e28c577c5c24c5f3a2e4c6f66b",
+  "localIntegratedCommit": "20dc27e93e490dd5a0fd3e52737030a0ed6c771d",
+  "localIntegratedTree": "f65d77bd62460616a81c2746a085e75de28b672a",
+  "mergeConflicts": false,
+  "remoteMainMerged": false,
+  "technicalTests": {
+    "pass": 83,
+    "fail": 0
+  },
+  "academyEngineTests": {
+    "pass": 8,
+    "fail": 0
+  },
+  "combinedTechnicalAcademyRun": {
+    "pass": 91,
+    "fail": 0
+  },
+  "coreTests": {
+    "pass": 308,
+    "fail": 0
+  },
+  "technicalTiEngineTests": {
+    "pass": 574,
+    "fail": 0
+  },
+  "academyTestsWithinTechnical": 16,
+  "academyBrowser": {
+    "pass": 70,
+    "fail": 0,
+    "widths": [
+      360,
+      390,
+      1280
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "lessonViews": 192,
+    "practiceAndReturnFlows": 192,
+    "completeJourneys": 18,
+    "axeRuns": 48,
+    "axeViolations": 0
+  },
+  "existingTechnicalBrowser": {
+    "pass": 66,
+    "fail": 0
+  },
+  "isolation": "full Technical suite changed no production file",
+  "contentPreservedByteForByteFromAudit": true,
+  "contentSha256": "9943986cccc9cd8f74d9dc8ff91312678241bc33f71462205b643f058782852c",
+  "singleExperience": {
+    "id": "technical-strategies",
+    "world": "strategies-factors-evidence",
+    "runtime": "/technical/#/akademie",
+    "source": "/technical/academy/content.json"
+  },
+  "alternativePlan": {
+    "pr": 1252,
+    "state": "closed",
+    "merged": false,
+    "branchPreserved": true
+  },
+  "limitations": [
+    "Physical iPhone/Safari not tested",
+    "Production browser reached the access gate without authentication; authenticated product workflow not claimed",
+    "Performance measurements are local mobile simulation, not production RUM",
+    "Axe checks shared lesson templates and integrated entry areas, not full manual WCAG certification"
+  ],
+  "performance": [
+    {
+      "route": "/academy/",
+      "ms": 1987,
+      "contentRequests": 0,
+      "profile": "390px, CPU x4, 150ms latency, 1.6Mbit/s, empty cache",
+      "ceilingMs": 15000
+    },
+    {
+      "route": "/technical/#/akademie",
+      "ms": 4700,
+      "contentRequests": 1,
+      "profile": "390px, CPU x4, 150ms latency, 1.6Mbit/s, empty cache",
+      "ceilingMs": 15000
+    },
+    {
+      "route": "/technical/#/akademie/trend-1",
+      "ms": 4698,
+      "contentRequests": 1,
+      "profile": "390px, CPU x4, 150ms latency, 1.6Mbit/s, empty cache",
+      "ceilingMs": 15000
+    }
+  ]
+}

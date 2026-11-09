@@ -643,3 +643,8 @@ html:not([data-kbd]) body.qd h1[tabindex="-1"]:focus{outline:none}
 .qd .cb .cb-pro-sub{letter-spacing:0;text-transform:none;font-size:16px;color:var(--vu-text,var(--q-text))}
 /* Zonenbeschriftung: Freistellung in der Flaechenfarbe statt fester Dunkelkontur (hell und dunkel lesbar). */
 .qd .cb .ti-zone-label,.qd .cb .ti-invalid-label{stroke:var(--vu-bg,#0b0d10)}
+/* W05: Marktstruktur im Chart (Elliott ohne belastbare Lesart): Unterstützung neongrün, Widerstand grau */
+.qd .ti-zone-range.ti-zone-support rect{fill:rgba(200,245,49,.28);stroke:rgba(150,190,20,.7)}
+.qd .ti-zone-range.ti-zone-resistance rect{fill:rgba(110,110,110,.16);stroke:rgba(110,110,110,.45)}
+.qd .ti-zone-range.ti-zone-support .ti-zone-label,.qd .ti-zone-range.ti-zone-resistance .ti-zone-label{fill:var(--vu-ink,#000);font-weight:800}
+.qd .cb-key-support::before{background:rgba(200,245,49,.6)} .qd .cb-key-resistance::before{background:rgba(110,110,110,.35)}

@@ -39,8 +39,9 @@ test("Screener-Zustand: Adresse <-> Zustand <-> gueltige Abfrage", () => {
   /* Woche: Tagesfelder entfallen sichtbar statt still. */
   const w = M.queryFromState(M.stateFromParams({ tf: "1W", muster: "dreieck", trend: "sma200,rs", vol: "1" }));
   assert.ok(Q.validate(w.query).ok);
-  assert.deepEqual(w.query.groups.map((g) => g.filters[0].field), ["aboveSma200", "volAboveAvg"], "Wochenvolumen gibt es seit technical-query 1.5.0");
-  assert.equal(w.dropped.length, 2);
+  assert.deepEqual(w.query.groups.map((g) => g.filters[0].field), ["formationActive", "aboveSma200", "volAboveAvg"],
+    "Wochenvolumen gibt es seit technical-query 1.5.0, Wochenformationen seit 1.13.0");
+  assert.equal(w.dropped.length, 1, "nur die relative Staerke entfaellt in der Woche");
   assert.equal(M.stateFromParams({ rsi: "150" }).rsiMax, null, "RSI-Grenze ausserhalb 0..100 wird ignoriert");
 });
 
@@ -112,10 +113,10 @@ test("Seite: Skripte existieren, Engines in Abhaengigkeitsreihenfolge, keine eig
     assert.doesNotMatch(src, /"ref_"\s*\+/, file + ": securityId nur ueber core/identity.js (ADR-001)");
     assert.doesNotMatch(src, /Math\.random\(\)\s*\*|mock|demo/i, file + ": keine Zufalls- oder Demo-Werte");
   }
-  /* Kein Score-Feld; "Setup-Score" erscheint nur in der Methodik als ausdrueckliche Verneinung. */
+  /* Kein Score-Feld; die Methodik verneint ausdruecklich eine Gesamtnote (frueher "Setup-Score", Wortwahl "Befund" seit PR 1 des Konzepts). */
   assert.doesNotMatch(app, /setupScore|opportunityScore|\.score\b/, "kein undokumentierter Score");
-  assert.equal(app.split("Setup-Score").length - 1, 1);
-  assert.match(app, /Es gibt keinen Setup-Score/);
+  assert.equal(app.split("Setup-Score").length - 1, 0);
+  assert.match(app, /Es gibt keine Gesamtnote/);
 });
 
 test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar", () => {
@@ -136,7 +137,11 @@ test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar",
 test("Tests liegen nicht in ausgelieferten Pfaden; Daten nur unter technical/data", () => {
   const files = readdirSync(join(root, "technical"), { recursive: true }).map(String);
   assert.ok(files.every((f) => !/\.test\.m?js$/.test(f) || f.startsWith("tests")));
-  assert.deepEqual(readdirSync(join(root, "technical/data")).sort(), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json"]);
+  /* stock/ (Technical-Stand je Aktie, docs/technical/STOCK_SUMMARY.md) erscheint mit dem ersten vollen Erzeugerlauf
+     und enthaelt nur Scherben <shardKey>.json. */
+  const data = readdirSync(join(root, "technical/data")).sort();
+  assert.deepEqual(data.filter((f) => f !== "stock"), ["formation-evidence.json", "index-v1.json", "meta.json", "screener-v1.json", "signal-evidence.json", "spark-v1.json"]);
+  if (data.includes("stock")) for (const f of readdirSync(join(root, "technical/data/stock"))) assert.match(f, /^[A-Z0-9_]{1,2}\.json$/, "technical/data/stock/" + f);
 });
 
 test("Release-Stempel: jede verlinkte Datei der Technical-Seite traegt den Hash ihrer Bytes (offene Tabs holen neuen Code)", async () => {
@@ -186,8 +191,12 @@ test("Datenqualitaet: Kurssprung-Verdacht ist ein Datum oder null, Zaehler in me
   const col = art.cols.suspectJumpAt;
   assert.equal(col.length, art.count);
   col.forEach((v, i) => assert.ok(v === null || (/^\d{4}-\d{2}-\d{2}$/.test(v) && v <= art.cols.asOf[i]), art.cols.s[i]));
-  assert.equal(col.filter(Boolean).length, meta.counts.suspectJump60);
-  assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /Kurssprung prüfen/);
+  assert.equal(col.filter(Boolean).length, meta.counts.suspectJump);
+  // seit screen-row 1.13.0: Faktor und Stufe zu jedem Datum, sonst null
+  const f = art.cols.suspectJumpFactor, st = art.cols.suspectJumpStatus;
+  col.forEach((v, i) => assert.equal(v === null, f[i] === null && st[i] === null, art.cols.s[i]));
+  assert.equal(st.filter((x) => x === "CONFIRMED").length, meta.counts.suspectJumpConfirmed);
+  assert.match(readFileSync(join(root, "technical/app.js"), "utf8"), /jumpFlag\(row\)/);
 });
 
 test("Formations-Evidenz: Vertrag, keine Aussage ohne Stichprobe, Signifikanz nur mit Korrektur, Texte ehrlich", () => {
@@ -289,4 +298,28 @@ test("Relative Staerke: nur bei gleichem Datum in beiden Reihen, Rendite minus S
   const gap = M.relativeStrength(dates, close, { dates: ["d0", "d2", "d3"], close: [100, 105, 110] }, 2);
   assert.ok(gap.every((v) => Number.isNaN(v)));
   assert.ok(M.relativeStrength(dates, close, null, 2).every((v) => Number.isNaN(v)));
+});
+
+test("Signal-Evidenz: Vertrag, Einordnung nachrechenbar, keine Signal-Sprache, Texte ehrlich", async () => {
+  const e = JSON.parse(readFileSync(join(root, "technical/data/signal-evidence.json"), "utf8"));
+  const SE = await import(join(root, "scripts/technical/world/signal-evidence.mjs"));
+  assert.match(e.schemaVersion, /^vu-technical-signal-evidence-1\./);
+  assert.equal(e.horizonBars, 20);
+  assert.equal(e.claims.strategyEdge, "nicht nachgewiesen");
+  assert.ok(e.indicators.length >= 10 && e.candles.length >= 30);
+  for (const r of e.indicators.concat(e.candles)) {
+    assert.ok(SE.READINGS.includes(r.reading), r.id);
+    assert.equal(r.reading, SE.readingOf({ direction: r.direction, h20: { mean: r.mean, significant: r.significant }, stableSign: r.stableSign }), r.id);
+    assert.ok(r.n >= e.method.minN, r.id + ": nur ab Mindeststichprobe");
+    if (r.significant) assert.ok(Math.abs(r.mean) > r.ci95, r.id + ": belastbar nur ausserhalb des 95-%-Bands");
+    const text = M.signalEvidenceText(r);
+    assert.doesNotMatch(text, /Kaufsignal|Verkaufssignal|empfehl|Chance/i, r.id);
+  }
+  assert.match(M.signalEvidenceText({ reading: "AGAINST_DIRECTION", direction: "BULLISH", mean: -0.02, ci95: 0.01, n: 500 }), /schwächer/);
+  assert.match(M.signalEvidenceText({ reading: "NOT_SIGNIFICANT", direction: "BULLISH", mean: 0.001, ci95: 0.01, n: 500 }), /kein statistisch gesicherter Unterschied .*nachgewiesen/);
+  assert.match(M.READING_TEXT.WITH_DIRECTION, /kein nachgewiesener Handelsvorteil/);
+  /* Owner-Auflage #1109: "nicht signifikant" ist kein Gleichheitsnachweis */
+  assert.match(M.READING_SHORT.NOT_SIGNIFICANT, /gesichert/);
+  assert.match(M.READING_TEXT.NOT_SIGNIFICANT, /nicht, dass Gleichheit bewiesen ist/);
+  for (const k of SE.READINGS) assert.doesNotMatch(M.READING_SHORT[k] + " " + M.READING_TEXT[k], /^kein Unterschied|kein belastbarer Unterschied/, k);
 });

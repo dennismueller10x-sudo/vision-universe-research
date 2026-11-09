@@ -8,7 +8,7 @@ Updated: 2026-09-28 UTC
 die Datenarchitektur, die Methodik und die Materialisierungen bleiben unverändert; neu sind
 Informationsarchitektur, Navigation, Verständlichkeit, Hierarchie, Nutzerführung, Transparenz
 und die mobile Erfahrung. Vollständige Herleitung:
-**`docs/VU_QUANT_2_FRONTEND_TRANSFORMATION.md`**.
+**`docs/archiv/VU_QUANT_2_FRONTEND_TRANSFORMATION.md`**.
 
 ### Die Navigation
 
@@ -183,7 +183,7 @@ durchgelaufen (Lauf 36410445415, `package` und `deploy` beide erfolgreich,
 Barrierefreiheits-Verstöße · Reise-Flächen 12/12 · Abnahmestichprobe 22 Titel PASS · Suite
 1.968/1.968/0.
 
-Der vollständige Bericht: **`docs/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`**.
+Der vollständige Bericht: **`docs/archiv/2026/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`**.
 
 ### Der Merge, in beide Richtungen geprüft
 
@@ -242,7 +242,7 @@ Das Ziel ist erreicht. Ab hier nur noch: **P0 Production Bug** oder **POST_LAUNC
 `launch-readiness-1.0.0` · Commit `55e3217841` · 12 von 12 P0-Gates · 2 von 2 P1-Prüfungen ·
 0 offen · 0 rot
 
-Der vollständige Bericht: **`docs/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`** (zehn Punkte, wie
+Der vollständige Bericht: **`docs/archiv/2026/VU_QUANT_2_PUBLIC_BETA_LAUNCH_REPORT.md`** (zehn Punkte, wie
 beauftragt). Alle drei Belege stammen vom **gleichen** Commit: Browser-Smoke gegen das gebaute
 Release (34 Ansichten × 2 Breiten, 0 Fehlschläge), Suite (1.968 / 1.968 / 0), Abnahmestichprobe
 (22 Titel, PASS).
@@ -1545,7 +1545,7 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 - Row source follows the methodology, not the caller. Trading status comes from the Company
   Master in both cases; the evidence table never asserts it itself.
 
-Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
+Documented in `docs/archiv/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## M32_2026-09-26 — DIE ÜBRIGEN 17 PFADE GEMESSEN, UND DIE KLASSE GESCHLOSSEN
 

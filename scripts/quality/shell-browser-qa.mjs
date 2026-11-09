@@ -26,26 +26,26 @@ await mkdir(out, { recursive: true });
 // [Produkt, Deep Link, erwarteter aktiver Eintrag (null = nur Produktkontext)]
 const ROUTES = [
   ['Discover', '/discover/#/', 'Discover'], ['Discover', '/discover/#/welten', 'Welten'], ['Discover', '/discover/#/strategien', 'Strategien'],
-  ['Discover', '/discover/#/einzeln/US_REAL', 'Entdecken'], ['Discover', '/discover/#/maerkte', null], ['Discover', '/discover/#/watchlist', null],
+  ['Discover', '/discover/#/swipen', 'Swipen'], ['Discover', '/discover/#/einzeln/US_REAL', 'Swipen'], ['Discover', '/discover/#/maerkte', null], ['Discover', '/discover/#/watchlist', null],
   ['Quant', '/quant/#/', 'Quant'], ['Quant', '/quant/#/screener', 'Screener'], ['Quant', '/quant/#/strategien', 'Strategien'],
-  ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', null],
+  ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', 'Quant'],
   // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext)
-  ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?welle=3', 'Welle 3'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
+  ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?zaehlbar=1', 'Zählbar'], ['Elliott', '/elliott/#/?welle=3', 'Zählbar'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
   ['Elliott', '/elliott/#/?richtung=ab', null], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
   // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext
-  ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/entdecken', 'Entdecken'], ['Fundamental', '/fundamental/#/suche', 'Suche'],
+  ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/ranglisten', 'Ranglisten'], ['Fundamental', '/fundamental/#/branchen', 'Branchen'],
   ['Fundamental', '/fundamental/#/methodik', 'Methodik'], ['Fundamental', '/fundamental/#/NVDA', null],
-  ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Plan'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
-  ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', null], ['Vorsorge', '/vorsorge/#/monitor', null],
-  ['Screener', '/screener/', 'Screener'], ['Screener','/screener/?f=roic:gt:0.1','Screener'], ['Screener','/screener/?mode=pro','Screener'], ['Screener', '/screener/?view=saved', 'Gespeichert'], ['Screener', '/screener/?view=watchlist', 'Watchlist'],
+  ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
+  ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', [null, 'Planer']], ['Vorsorge', '/vorsorge/#/monitor', [null, 'Portfolio']], // V03/V05: Förderung gehört zum Planer, Veränderungen zum Portfolio
+  ['Screener', '/screener/', 'Screener'], ['Screener','/screener/?f=roic:gt:0.1','Filter'], ['Screener','/screener/?mode=pro','Filter'], ['Screener', '/screener/?view=build', 'Filter'], ['Screener', '/screener/?view=saved', 'Gespeichert'], ['Screener', '/screener/?view=watchlist', 'Gespeichert'],
   ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/signals/', 'Signale'],
   ['Supertrader', '/supertrader/backtests/', 'Backtests'], ['Supertrader', '/supertrader/sources/', null],
-  ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Datenbank'],
+  ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/smart-money', 'Smart Money'],
   ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'],
   // Alte Quant-Unterseiten: Weiterleitungen auf die App unter /quant/ (quant/ui/legacy-redirect.js). Erwartet ist die Leiste
   // am Ziel: Ranking -> #/screener (Screener), Watchlist -> #/aktien (Aktien).
   ['Quant', '/quant/screener/', 'Screener'], ['Quant', '/quant/strategies/', 'Strategien'], ['Quant', '/quant/ranking/', 'Screener'],
-  ['Quant', '/quant/technical/', 'Aktien'], ['Quant', '/quant/watchlist/', 'Aktien'], ['Quant', '/quant/methodology/', null]
+  ['Quant', '/quant/technical/', 'Aktien'], ['Quant', '/quant/watchlist/', 'Aktien'], ['Quant', '/quant/methodology/', 'Quant']
 ];
 const VIEWPORTS = (arg('viewports', '390x844,430x932,768x1024,1024x768,1440x900')).split(',').map((v) => { const [w, h] = v.split('x').map(Number); return [String(w), w, h]; });
 const findings = [], checks = [];
@@ -76,6 +76,26 @@ async function state(page) {
   });
 }
 async function settle(page) { await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(500); }
+/* Das Menue gilt erst als offen, wenn es sichtbar ist, seine Einfahrt (transform .2s) und alle Animationen im Menue beendet
+   sind und die Schriften stehen. Vorher gemessene Zielgroessen sind ein Zwischenbild, kein Befund. Oeffnet es nicht bis
+   dahin, ist das selbst ein Befund. Danach wird einmal gemessen; was dann kleiner als 44 px ist, bleibt ein Befund. */
+async function menuOpen(page, where) {
+  const ok = await page.waitForFunction(async () => {
+    const nav = document.querySelector('vu-navigation'), root = nav && nav.shadowRoot, panel = root && root.querySelector('.panel');
+    if (!panel || !nav.hasAttribute('open')) return false;
+    const cs = getComputedStyle(panel);
+    if (cs.visibility !== 'visible' || !(cs.transform === 'none' || cs.transform === 'matrix(1, 0, 0, 1, 0, 0)')) return false;
+    if ((root.getAnimations ? root.getAnimations() : []).some((a) => a.playState === 'running' || a.playState === 'pending')) return false;
+    await document.fonts.ready;
+    return true;
+  }, null, { timeout: 5000, polling: 'raf' }).then(() => true, () => false);
+  if (!ok) fail(where, 'Menü ist nach 5 s nicht vollständig geöffnet');
+}
+/* Zu kleine sichtbare Ziele im Menue, mit Benennung, damit ein Befund sagt, welches Ziel wie gross war. */
+const SMALL_TARGETS = (root) => [...root.querySelectorAll('a,button')].filter((n) => n.getClientRects().length).map((n) => { const r = n.getBoundingClientRect(); return { n, w: Math.round(r.width), h: Math.round(r.height) }; })
+  .filter((x) => x.w < 44 || x.h < 44).map((x) => (x.n.getAttribute('class') || x.n.tagName.toLowerCase()) + ' „' + (x.n.textContent || x.n.getAttribute('aria-label') || '').trim().slice(0, 24) + '“ ' + x.w + '×' + x.h);
+const smallTargets = (page) => page.evaluate(`(${SMALL_TARGETS.toString()})(document.querySelector('vu-navigation').shadowRoot.querySelector('.panel'))`);
+const smallText = (list) => list.length + (list.length ? ' (' + list.slice(0, 4).join('; ') + (list.length > 4 ? '; …' : '') + ')' : '');
 
 for (const [vpName, width, height] of VIEWPORTS) {
   const phone = engine === 'webkit' && width <= 430;
@@ -95,7 +115,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
         if (!s) { fail(where, 'keine Produkt-Leiste'); break; }
         if (s.labels[0] !== product) fail(where, 'erster Eintrag ist nicht der Produktname: ' + s.labels[0]);
         if (s.labels.length !== 4 || !s.menu) fail(where, 'Leiste ist nicht [Produkt] + 3 Funktionen + ☰: ' + s.labels.join('|'));
-        if ((s.current[0] || null) !== expected || s.current.length > 1) fail(where, `${pass}: aktiv ${s.current.join('|') || '-'} statt ${expected || '-'}`);
+        if (!(Array.isArray(expected) ? expected : [expected]).includes(s.current[0] || null) || s.current.length > 1) fail(where, `${pass}: aktiv ${s.current.join('|') || '-'} statt ${[].concat(expected).map((x) => x || '-').join(' oder ')}`);
         if(!s.menuIconsDeferred||!s.dockOriginalInline) fail(where,'Icon-Laden ist nicht menu-lazy bzw Dock inline');
         if(path==='/quant/#/screener'&&s.spriteRequested) fail(where,'Quant Screener lädt ungeöffneten Menü-Sprite');
         if (s.toggle !== 'none') fail(where, 'Menue-Knopf im Kopf doppelt');
@@ -106,20 +126,19 @@ for (const [vpName, width, height] of VIEWPORTS) {
       }
       // Direkt geladene Unterseiten öffnen genau ihren Produktbereich; Home bleibt kompakt.
       await page.locator('#vu-dock button.menu').click();
+      await menuOpen(page, where);
+      const routeSmall = await smallTargets(page);
       const routeMenu = await page.evaluate(() => {
         const root=document.querySelector('vu-navigation').shadowRoot;
-        const groups=[...root.querySelectorAll('.group')];
-        const expanded=groups.filter(g=>g.querySelector('.disclosure').getAttribute('aria-expanded')==='true');
-        const product=groups.find(g=>g.classList.contains('is-current'));
-        return {expanded:expanded.map(g=>g.dataset.group),current:product?.querySelector('.group-link')?.textContent.trim(),
-          marked:groups.flatMap(g=>[...g.querySelectorAll('.links a[aria-current=page]')]).map(a=>({href:a.getAttribute('href'),visible:!!a.getClientRects().length})),
-          small:[...root.querySelectorAll('.panel a,.panel button')].filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.width<44||r.height<44}).length};
+        const tile=root.querySelector('.tile.is-current');
+        return {current:tile?.querySelector('b')?.textContent.trim(),here:!root.querySelector('.here').hidden&&root.querySelector('.here-title').textContent,
+          marked:[...root.querySelectorAll('.links a[aria-current=page]')].map(a=>({href:a.getAttribute('href'),visible:!!a.getClientRects().length}))};
       });
       const home=['/discover/#/','/elliott/','/fundamental/#/','/quant/#/','/vorsorge/#/','/screener/','/supertrader/','/hedgefonds/#/'].includes(path);
-      if(routeMenu.current!==product) fail(where,'Menu-Produktkontext falsch: '+JSON.stringify(routeMenu));
-      if(home ? routeMenu.expanded.length!==0 : routeMenu.expanded.length!==1||routeMenu.expanded[0]!==product.toLowerCase()) fail(where,'Accordion-Direkteinstieg falsch: '+JSON.stringify(routeMenu));
+      // Das Menue markiert die aktuelle Welt im Raster und zeigt ihre Unterseiten (Mockup N3).
+      if(routeMenu.current!==product||routeMenu.here!=='In '+product) fail(where,'Menu-Produktkontext falsch: '+JSON.stringify(routeMenu));
       if(routeMenu.marked.length>1||(!home&&routeMenu.marked.some(a=>!a.visible))) fail(where,'aktive Unterroute nicht eindeutig sichtbar: '+JSON.stringify(routeMenu));
-      if(routeMenu.small) fail(where,routeMenu.small+' sichtbare Menüziele kleiner als 44 px');
+      if(routeSmall.length) fail(where,smallText(routeSmall)+' sichtbare Menüziele kleiner als 44 px');
       await page.keyboard.press('Escape');
       // Die Desktop-Filter haben einen eigenen Scrollbereich. Sein letztes
       // Bedienelement muss auch bei feststehender Leiste erreichbar bleiben.
@@ -163,6 +182,25 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, end, sidebarEnd, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
+  // Seiten ohne Produkt-Leiste: der Kopf traegt den Menue-Knopf selbst und passt in jede Breite.
+  for (const path of ['/news/', '/willkommen/', '/konto/']) {
+    const where = `kopf ohne Leiste ${path} @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const h = await page.evaluate(() => { const root = document.querySelector('vu-navigation').shadowRoot, t = root.querySelector('.toggle').getBoundingClientRect();
+        return { overflow: document.documentElement.scrollWidth - innerWidth, left: t.left, right: t.right, w: t.width, h: t.height, vw: innerWidth, dock: !!document.getElementById('vu-dock') }; });
+      // Redesign 2027 (E02): die Willkommensseite traegt die Leiste „Mein Bereich“; dann sitzt der Menue-Knopf in der Leiste.
+      if (h.dock && path === '/willkommen/') {
+        const m = await page.locator('#vu-dock button.menu').boundingBox();
+        if (h.overflow > 1 || !m || m.width < 44 || m.height < 44 || m.x < 0 || m.x + m.width > h.vw + 1) fail(where, 'Menü-Knopf in der Leiste abgeschnitten oder zu klein: ' + JSON.stringify({ overflow: h.overflow, m, vw: h.vw }));
+      } else {
+        if (h.dock) fail(where, 'unerwartete Produkt-Leiste');
+        if (h.overflow > 1 || h.right > h.vw + 1 || h.left < 0 || h.w < 44 || h.h < 44) fail(where, 'Menü-Knopf im Kopf abgeschnitten oder zu klein: ' + JSON.stringify(h));
+      }
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
   // Farbschema: der Schalter im gemeinsamen Kopf wechselt Hell/Dunkel auf jedem Produkt; Leiste und Menue bleiben lesbar.
   for (const path of ['/discover/#/', '/quant/#/', '/vorsorge/#/', '/screener/', '/supertrader/', '/hedgefonds/#/']) {
     const where = `theme ${path} @${vpName}`;
@@ -170,15 +208,15 @@ for (const [vpName, width, height] of VIEWPORTS) {
     try {
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       const before = await page.evaluate(() => document.documentElement.getAttribute('data-theme'));
-      await page.evaluate(() => document.querySelector('vu-navigation').shadowRoot.querySelector('.mode').click());
-      await page.waitForTimeout(300);
+      // Das Farbschema wechselt im Menue (Hell/Dunkel).
+      const pick = async (mode) => { await page.locator('#vu-dock button.menu').click(); await menuOpen(page, where); await page.evaluate((m) => [...document.querySelector('vu-navigation').shadowRoot.querySelectorAll('.appearance button')].find(b => b.textContent === m).click(), mode); await page.keyboard.press('Escape'); await page.waitForTimeout(300); };
+      await pick(before === 'dark' ? 'Hell' : 'Dunkel');
       const after = await page.evaluate(() => ({ t: document.documentElement.getAttribute('data-theme'), bar: document.querySelector('meta[name=theme-color]')?.content,
         dock: getComputedStyle(document.getElementById('vu-dock').shadowRoot.querySelector('nav')).backgroundColor, stored: localStorage.getItem('vu-discover-theme-v1'),
         head: document.querySelector('vu-navigation').getAttribute('theme') }));
       if (after.t === before || after.stored !== after.t || after.head !== after.t) fail(where, 'Theme-Wechsel greift nicht: ' + JSON.stringify({ before, after }));
-      if (after.dock !== 'rgb(13, 15, 18)') fail(where, 'Leiste verliert ihre Flaeche: ' + after.dock);
-      await page.evaluate(() => document.querySelector('vu-navigation').shadowRoot.querySelector('.mode').click());
-      await page.waitForTimeout(200);
+      if (after.dock !== 'rgb(0, 0, 0)') fail(where, 'Leiste verliert ihre Flaeche: ' + after.dock);
+      await pick(before === 'dark' ? 'Dunkel' : 'Hell');
       if (await page.evaluate(() => document.documentElement.getAttribute('data-theme')) !== before) fail(where, 'Theme springt nicht zurueck');
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
@@ -198,49 +236,43 @@ for (const [vpName, width, height] of VIEWPORTS) {
         const root = document.querySelector('vu-navigation').shadowRoot, panel = root.querySelector('.panel');
         const dock = document.getElementById('vu-dock'), d = dock.shadowRoot.querySelector('nav').getBoundingClientRect();
         const top = document.elementFromPoint(innerWidth - 20, d.top + d.height / 2);
-        return { groups: [...root.querySelectorAll('.group h2')].map((h) => h.textContent), links: root.querySelectorAll('.links a').length,
+        return { groups: [...root.querySelectorAll('.tile b')].map((h) => h.textContent), links: root.querySelectorAll('.more-links a').length + root.querySelectorAll('.mine a').length,
           locked: document.documentElement.classList.contains('vu-menu-open') && getComputedStyle(document.documentElement).overflow === 'hidden',
           dockInert: dock.inert, dockCovered: top !== dock, scrollable: panel.scrollHeight <= panel.clientHeight || getComputedStyle(panel).overflowY === 'auto',
-          panelBottom: panel.getBoundingClientRect().bottom, vh: innerHeight,
-          expanded: root.querySelectorAll('.disclosure[aria-expanded=true]').length,
+          panelBottom: panel.getBoundingClientRect().bottom, vh: innerHeight, panelBg: getComputedStyle(panel).backgroundColor,
+          moreOpen: root.querySelector('.more').open, hereLinks: root.querySelectorAll('.here-links a').length,
           icons: [...root.querySelectorAll('.menu-product-icon use')].map(n=>n.getAttribute('href')),
-          small: [...panel.querySelectorAll('a,button')].filter(n=>n.getClientRects().length).filter(n=>{const b=n.getBoundingClientRect();return b.width<44||b.height<44}).length,
-          hiddenVisible: [...root.querySelectorAll('.links[hidden] a')].some(n=>n.getClientRects().length) };
+          search: !!root.querySelector('.find input[type=search]') };
       });
       if (!firstMenu) firstMenu = m.groups.join('|') + '#' + m.links;
       else if (m.groups.join('|') + '#' + m.links !== firstMenu) fail(where, 'anderes Menue als auf Discover');
-      if(m.groups.join('|')!=='Discover|Quant|Elliott|Fundamental|Technical|Screener|Vorsorge|Supertrader|Hedgefonds|Weitere Produkte') fail(where,'Produktstruktur falsch: '+m.groups.join('|'));
-      if(m.expanded!==0||m.hiddenVisible) fail(where,'Home-Menü ist nicht eingeklappt');
-      if(m.icons.length!==10||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
-      if(m.small) fail(where,m.small+' Menüziele kleiner als 44 px');
+      if(m.groups.join('|')!=='Discover|Quant|Technical|Fundamental|Supertrader|Hedgefonds|Elliott|Screener|Vorsorge|Portfolios|Insights') fail(where,'Produktraster falsch: '+m.groups.join('|'));
+      if(m.moreOpen||!m.hereLinks||!m.search) fail(where,'Menüaufbau falsch: '+JSON.stringify({moreOpen:m.moreOpen,here:m.hereLinks,search:m.search}));
+      if(m.panelBg!=='rgb(0, 0, 0)') fail(where,'Menü ist nicht schwarz: '+m.panelBg);
+      if(m.icons.length!==11||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
+      await menuOpen(page, where);
+      const menuSmall = await smallTargets(page);
+      if(menuSmall.length) fail(where,smallText(menuSmall)+' Menüziele kleiner als 44 px');
       if (!m.locked) fail(where, 'keine Scroll-Sperre');
       if (!m.dockInert || !m.dockCovered) fail(where, 'Leiste liegt ueber dem Menue oder bleibt fokussierbar');
       if (!m.scrollable || m.panelBottom > m.vh + 1) fail(where, 'Menue nicht scrollbar oder abgeschnitten');
       if (path === '/quant/#/') await page.screenshot({ path: `${out}/menu-${vpName}.png` });
-      const quantToggle=page.locator('vu-navigation .group[data-group=quant] .disclosure');
-      await quantToggle.focus();await page.keyboard.press('Enter');
-      if(!await quantToggle.evaluate(n=>n.getAttribute('aria-expanded')==='true')) fail(where,'Enter öffnet Quant nicht');
-      const discoverToggle=page.locator('vu-navigation .group[data-group=discover] .disclosure');
-      await discoverToggle.focus();await page.keyboard.press('Space');
-      const accordion=await page.evaluate(()=>{
-        const root=document.querySelector('vu-navigation').shadowRoot;
-        return {expanded:[...root.querySelectorAll('.disclosure[aria-expanded=true]')].map(n=>n.closest('.group').dataset.group),
-          quantHidden:root.querySelector('.group[data-group=quant] .links').hidden,
-          discoverVisible:!!root.querySelector('.group[data-group=discover] .links a').getClientRects().length,
-          small:[...root.querySelectorAll('.panel a,.panel button')].filter(n=>n.getClientRects().length).filter(n=>{const r=n.getBoundingClientRect();return r.width<44||r.height<44}).length};
-      });
-      if(accordion.expanded.join('|')!=='discover'||!accordion.quantHidden||!accordion.discoverVisible) fail(where,'Accordion schließt vorherigen Bereich nicht: '+JSON.stringify(accordion));
-      if(accordion.small) fail(where,accordion.small+' aufgeklappte Menüziele kleiner als 44 px');
+      // Weitere Produkte klappt per Tastatur auf.
+      const moreToggle=page.locator('vu-navigation .more summary');
+      await moreToggle.focus();await page.keyboard.press('Enter');
+      if(!await page.evaluate(()=>document.querySelector('vu-navigation').shadowRoot.querySelector('.more').open)) fail(where,'Enter öffnet Weitere Produkte nicht');
+      const moreSmall = await smallTargets(page);
+      if(moreSmall.length) fail(where,smallText(moreSmall)+' aufgeklappte Menüziele kleiner als 44 px');
       // Fokusfalle darf eingeklappte Unterlinks nicht berücksichtigen.
       await page.evaluate(()=>{
         const root=document.querySelector('vu-navigation').shadowRoot;
-        const nodes=[...root.querySelectorAll('.panel a,.panel button:not(:disabled)')].filter(n=>n.getClientRects().length&&!n.closest('[hidden]'));
+        const nodes=[...root.querySelectorAll('.panel a,.panel button:not(:disabled),.panel input,.panel summary')].filter(n=>n.getClientRects().length&&!n.closest('[hidden]'));
         nodes[0].focus();
       });
       await page.keyboard.press('Shift+Tab');
       const trappedLast=await page.evaluate(()=>{
         const root=document.querySelector('vu-navigation').shadowRoot;
-        const nodes=[...root.querySelectorAll('.panel a,.panel button:not(:disabled)')].filter(n=>n.getClientRects().length&&!n.closest('[hidden]'));
+        const nodes=[...root.querySelectorAll('.panel a,.panel button:not(:disabled),.panel input,.panel summary')].filter(n=>n.getClientRects().length&&!n.closest('[hidden]'));
         return root.activeElement===nodes.at(-1);
       });
       if(!trappedLast) fail(where,'Shift+Tab verlässt die Fokusfalle');

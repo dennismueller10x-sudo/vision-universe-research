@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { gunzipSync } from 'node:zlib';
-import { indicators, COLUMNS, technicalIntelligenceColumns, TI_MAX_AGE_DAYS, technicalWorldColumns, TW_MAX_AGE_DAYS } from '../../scripts/screener/build-universe.mjs';
-import { sectorFromSic } from '../../scripts/screener/sic.mjs';
+import { indicators, COLUMNS, technicalIntelligenceColumns, TI_MAX_AGE_DAYS, technicalWorldColumns, TW_MAX_AGE_DAYS } from '../../products/screener/producer/build-universe.mjs';
+import { sectorFromSic } from '../../products/screener/producer/sic.mjs';
 const require = createRequire(import.meta.url);
 const Fields = require('../engine/fields.js');
 const Query = require('../engine/query.js');
@@ -87,7 +87,7 @@ test('Jede verfuegbare Registry-Spalte existiert im Artefakt', () => {
   for (const f of Fields.FIELDS) if (f.available && !f.derive) assert.ok(COLUMNS.includes(f.col), f.id + ' -> ' + f.col);
 });
 
-// Gegen das echte Artefakt, sofern lokal gebaut (node scripts/screener/build-universe.mjs).
+// Gegen das echte Artefakt, sofern lokal gebaut (node products/screener/producer/build-universe.mjs).
 const path = new URL('../data/universe-US_REAL.json', import.meta.url);
 test('Echtes Universum: Umfang, Trichter und Plausibilitaet', { skip: !existsSync(path) && 'Artefakt nicht gebaut' }, () => {
   const art = JSON.parse(readFileSync(path, 'utf8'));
@@ -124,4 +124,26 @@ test('Echtes Universum: Umfang, Trichter und Plausibilitaet', { skip: !existsSyn
   // Quant-Gesamtscore bleibt gesperrt, solange die Publikation es nicht erlaubt
   assert.equal(art.factorPublication.compositeAllowed, false);
   assert.equal(Fields.field('quantScore').available, false);
+});
+
+test("ST-1 · Supertrader-Methoden (Z5): Spalten aus dem veroeffentlichten Kandidatenstand, fail closed", async () => {
+  const { supertraderColumns } = await import('../../products/screener/producer/build-universe.mjs');
+  const { screenerColumns } = await import('../../scripts/supertrader/source-faithful/product/screener-export.mjs');
+  const { readFileSync, existsSync } = await import('node:fs');
+  const { join, dirname } = await import('node:path');
+  const { fileURLToPath } = await import('node:url');
+  const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+  for (const c of ['stMeth', 'stV1', 'stStage']) assert.ok(COLUMNS.includes(c), c);
+  const file = join(ROOT, 'supertrader/data/sf-candidates/index.json');
+  if (existsSync(file)) {
+    const st = supertraderColumns(JSON.parse(readFileSync(file, 'utf8')), screenerColumns);
+    assert.ok(st.byTicker.size > 0);
+    for (const x of st.byTicker.values()) {
+      assert.ok(Array.isArray(x.stMeth) && x.stMeth.length > 0);
+      assert.ok(x.stV1 === null || x.stV1.every((m) => x.stMeth.includes(m)));
+      assert.ok(['CHART_CANDIDATE', 'CONFIRMED_RESEARCH_SETUP', 'MODELED_TRADE_PLAN'].includes(x.stStage));
+    }
+    assert.equal(st.meta.label, 'Research, keine Empfehlung');
+  }
+  assert.throws(() => supertraderColumns({ schema: 'falsch' }, screenerColumns), /SF_SCREENER_EXPORT_SCHEMA/);
 });

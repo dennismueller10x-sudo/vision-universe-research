@@ -1,6 +1,6 @@
 # Studio: Highlights der Willkommensseite
 
-Rezepte und Bauskript für die Videos in den Highlights von `/willkommen/`. Konzept, Sprechertexte und Regeln: [docs/studio/ERKLAERSERIE.md](../../docs/studio/ERKLAERSERIE.md).
+Rezepte und Bauskript für die Videos in den Highlights von `/willkommen/`. Konzept, Sprechertexte und Regeln: [docs/archiv/studio/ERKLAERSERIE.md](../../docs/archiv/studio/ERKLAERSERIE.md).
 
 ## Aufbau
 

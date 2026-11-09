@@ -1,0 +1,1227 @@
+{
+  "reviewedAt": "2026-11-03T05:40:02.100878+00:00",
+  "method": "Redaktionelle Quellengegenprüfung und Sichtprüfung mit separaten numerischen und semantischen Regressionstests; keine externe Zertifizierung.",
+  "lessons": 32,
+  "scenes": 96,
+  "coreContentSemanticSha256": "543a2a4f9259cb11d6edfdb8535487f83deba469e77d2a43c706bf3739d32ff5",
+  "protectedEngines": "unchanged",
+  "historicalResultsInvented": false,
+  "rows": [
+    {
+      "id": "struktur-1",
+      "title": "Aufbau einer Kurskerze",
+      "path": "struktur",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "OHLC-Reihenfolge und Vorschlussvergleich getrennt; C103/O100/H106/L98 geprüft.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Vier Angaben in einer Kerze",
+          "observation": "Eröffnung 100, Hoch 106, Tief 98, Schluss 103. Der Körper reicht von 100 bis 103.",
+          "interpretation": "Die vier Angaben beschreiben einen Zeitraum. Sie verraten nicht die Reihenfolge aller Bewegungen.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "compare",
+          "title": "Gleiche Kerze, andere Reihenfolge",
+          "observation": "Beide Verläufe beginnen bei 100, erreichen 106 und 98 und enden bei 103. Hoch und Tief treten in anderer Reihenfolge auf.",
+          "interpretation": "Eine einzelne OHLC-Kerze kann diese beiden Wege nicht unterscheiden.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "limit",
+          "title": "Steigender Körper nach einer Kurslücke",
+          "observation": "Der vorherige Schluss liegt bei 110. Die neue Kerze steigt von Eröffnung 100 auf Schluss 103.",
+          "interpretation": "Der Schluss bleibt unter 110. Eine steigende Kerze ist deshalb nicht automatisch ein Tagesgewinn.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        }
+      ]
+    },
+    {
+      "id": "struktur-2",
+      "title": "Trends und Seitwärtsbewegungen",
+      "path": "struktur",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Hoch- und Tieffolgen gemeinsam; gemischte Struktur kein Wendebeweis.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Eine steigende Folge benennen",
+          "observation": "Die Hochs 100, 105 und 109 und die Tiefs 94, 98 und 102 bilden jeweils eine steigende Folge.",
+          "interpretation": "Die Punkte beschreiben den gewählten Ausschnitt. Sie beweisen keine Fortsetzung.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        },
+        {
+          "id": "compare",
+          "title": "Seitwärts ist ein eigener Befund",
+          "observation": "Die Skizze zeigt wiederholte Bewegungen innerhalb einer Spanne, ohne steigende Folge beider Punktarten.",
+          "interpretation": "Gemischte oder seitwärts gerichtete Struktur muss nicht in aufwärts oder abwärts gezwungen werden.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "limit",
+          "title": "Ein neues Tief passt nicht mehr",
+          "observation": "Nach den steigenden Tiefs 94 und 98 folgt im Gedankenbeispiel ein Tief bei 97.",
+          "interpretation": "Der neue Punkt ist ein Gegenbefund. Er ist kein Beweis für den weiteren Verlauf.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        }
+      ]
+    },
+    {
+      "id": "struktur-3",
+      "title": "Unterstützung und Widerstand",
+      "path": "struktur",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Bereich 99–101 als Zone, Lücke kann darunter eröffnen.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Mehrere Reaktionen bilden eine Zone",
+          "observation": "Drei Tiefs reagieren im konstruierten Bereich 99 bis 101. Sie treffen nicht exakt denselben Preis.",
+          "interpretation": "Beschreibe den Bereich als frühere Unterstützung, nicht als unüberwindbare Linie.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        },
+        {
+          "id": "compare",
+          "title": "Auch obere Bereiche gehören zum Bild",
+          "observation": "Die zweite Skizze markiert wiederholte Reaktionen an einem oberen und einem unteren Bereich.",
+          "interpretation": "Zeitraum und verwendete Regeln gehören zur Beschreibung beider Zonen.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "limit",
+          "title": "Eine Lücke überspringt den Bereich",
+          "observation": "Die Skizze zeigt eine neue Eröffnung unter der früheren Zone. Die Verbindung über Nacht fehlt bewusst.",
+          "interpretation": "Frühere Reaktionen verhindern weder Kurslücken noch weitere Rückgänge.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        }
+      ]
+    },
+    {
+      "id": "struktur-4",
+      "title": "Einen Chart systematisch lesen",
+      "path": "struktur",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Stand und Qualität vor Interpretation; alte Reihe nicht als neue Ruhe lesen.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Mit den Grundlagen beginnen",
+          "observation": "Der Leserahmen hält Titel, Zeitrahmen und Datenstand vor der Interpretation fest.",
+          "interpretation": "Indikatoren beantworten anschließend eine benannte Frage; sie ersetzen diese Vorprüfung nicht.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 13
+        },
+        {
+          "id": "compare",
+          "title": "Beobachtung von Deutung trennen",
+          "observation": "Ein Kurs liegt in der Skizze unter einer früheren oberen Zone und zeigt eine gemischte Struktur.",
+          "interpretation": "Erst danach wird etwa die Lage zur SMA 200 geprüft. Der Indikator ist ein weiterer Befund.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 4
+        },
+        {
+          "id": "limit",
+          "title": "Ein altes Bild kann ruhig wirken",
+          "observation": "Die Reihe endet links vom heutigen Prüfzeitpunkt. Die leere Strecke ist keine neue Kursbeobachtung.",
+          "interpretation": "Ein leerer oder eingefrorener Datensatz wird durch mehr Indikatoren nicht aussagekräftiger.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        }
+      ]
+    },
+    {
+      "id": "trend-1",
+      "title": "Aufwärtstrends erkennen",
+      "path": "trend",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Pilot erhalten: Struktur vs SMA-Lage und Sprung ohne Tiefsequenz.",
+      "scenes": [
+        {
+          "id": "structure",
+          "title": "Höhere Hochs, höhere Tiefs",
+          "observation": "Hoch 2 liegt über Hoch 1, Tief 2 über Tief 1. Die Verbindung markiert die beiden Tiefs.",
+          "interpretation": "Diese Folge beschreibt eine Aufwärtsstruktur im gezeigten Ausschnitt. Über den nächsten Kurs sagt sie nichts Sicheres aus.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": "approved pilot drawing"
+        },
+        {
+          "id": "filter",
+          "title": "Über der Linie, aber sinkende Hochs",
+          "observation": "Der letzte Kurs liegt über der skizzierten SMA-200-Linie. Gleichzeitig liegen die markierten Hochs jeweils tiefer.",
+          "interpretation": "Der einzelne Lagefilter ist erfüllt. Die Struktur liefert einen Vorbehalt. Die Trendfolge-Vorlage prüft mehrere definierte Kriterien.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": "approved pilot drawing"
+        },
+        {
+          "id": "gap",
+          "title": "Ein Sprung ist noch keine Trendfolge",
+          "observation": "Nach einer wechselhaften Phase springt der Kurs über die Linie. Eine Folge höherer Tiefs ist noch nicht erkennbar.",
+          "interpretation": "Ein neuer Lagebefund kann sofort entstehen; eine längere Struktur lässt sich daraus nicht ableiten.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": "approved pilot drawing"
+        }
+      ]
+    },
+    {
+      "id": "trend-2",
+      "title": "SMA 50/150/200",
+      "path": "trend",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "SMA-3-Lehrmittel 102, keine neue 50/150/200-Berechnung; getrennte Lagefilter.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Das Mittelwertprinzip verstehen",
+          "observation": "Drei fiktive Schlüsse 100, 102 und 104 ergeben SMA 3 gleich 102. Das kleine Fenster erklärt nur das Prinzip.",
+          "interpretation": "SMA 50, 150 und 200 verwenden entsprechend ihre eigenen Fenster; diese Skizze ersetzt keine Berechnung.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "compare",
+          "title": "Drei Linien, drei Lagefragen",
+          "observation": "Der letzte Kurs liegt über der skizzierten SMA 50, aber unter SMA 150 und SMA 200.",
+          "interpretation": "Der kurzfristige Lagefilter ist erfüllt, die beiden längeren sind es nicht.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 9
+        },
+        {
+          "id": "limit",
+          "title": "Viele Kreuzungen im Seitwärtsbild",
+          "observation": "Die Kurslinie kreuzt einen fast waagerechten Durchschnitt wiederholt in beide Richtungen.",
+          "interpretation": "Die Häufigkeit solcher Kreuzungen belegt keinen Vorteil und keinen fairen Wert.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 4
+        }
+      ]
+    },
+    {
+      "id": "trend-3",
+      "title": "Relative Stärke",
+      "path": "trend",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Titel −5 %, SPY −10 %, Differenz +5 pp; Rang keine Erfolgswahrscheinlichkeit.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Relativ besser, absolut gefallen",
+          "observation": "Im selben konstruierten Fenster verliert der Titel 5 %, SPY 10 %. Die Differenz beträgt +5 Prozentpunkte.",
+          "interpretation": "Relative Stärke kann positiv sein, obwohl der Titel absolut gefallen ist.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "compare",
+          "title": "Rang ist eine Position im Vergleich",
+          "observation": "Die Karte trennt die RS-Differenz, den Rang im gültigen Universum und den anders definierten RSI.",
+          "interpretation": "Fenster, Stichtag und Vergleichsuniversum müssen zur Kennzahl passen.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "limit",
+          "title": "Ein Datensprung verzerrt den Vergleich",
+          "observation": "Ein auffälliger Sprung dominiert in der Skizze den jüngeren Verlauf. Seine Ursache ist ungeprüft.",
+          "interpretation": "Ein hoher Rang ersetzt die Prüfung von Datenhinweisen nicht. Verdacht und bestätigter Fehler bleiben getrennt.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        }
+      ]
+    },
+    {
+      "id": "trend-4",
+      "title": "Acht-Kriterien-Trendvorlage anwenden",
+      "path": "trend",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Sieben von acht, bestehender 21-Tage-Vergleich; acht Kriterien kein Erfolgsbeweis.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Sieben von acht ist nicht acht von acht",
+          "observation": "In der Beispielcheckliste ist die Steigungsbedingung der SMA 200 nicht erfüllt. Die übrigen sieben sind erfüllt.",
+          "interpretation": "Die fehlende Bedingung bleibt sichtbar. Die Zustände stammen produktiv aus der vorhandenen Vorlage.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 17
+        },
+        {
+          "id": "compare",
+          "title": "Der festgelegte Steigungsvergleich",
+          "observation": "Ein zweites Beispiel zeigt SMA 200 von 100 auf 105 über 21 Handelstage, mit Rückgängen dazwischen.",
+          "interpretation": "Steigend im Vergleich heißt nicht, dass die Linie an jedem einzelnen Tag gestiegen ist.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        },
+        {
+          "id": "limit",
+          "title": "Vollständig erfüllt bleibt beschreibend",
+          "observation": "Die Skizze trennt eine vollständig erfüllte Checkliste von einem danach möglichen Rückgang.",
+          "interpretation": "Auch acht erfüllte Kriterien beweisen keinen zukünftigen Erfolg.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        }
+      ]
+    },
+    {
+      "id": "breakout-1",
+      "title": "Konsolidierung und Dreiecke",
+      "path": "breakout",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Dreieckstypen und Status getrennt; kein vorgegebener Ausbruchspfeil.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Eine Spanne verengt sich",
+          "observation": "Sinkende Hochs und steigende Tiefs begrenzen die konstruierten Schwankungen.",
+          "interpretation": "Die Form kann in Bildung sein. Eine Bestätigung muss gesondert nach der bestehenden Regel geprüft werden.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        },
+        {
+          "id": "compare",
+          "title": "Drei Formen unterscheiden",
+          "observation": "Die kleinen Skizzen zeigen beidseitig konvergierende, oben waagerechte und unten waagerechte Begrenzungen.",
+          "interpretation": "So lassen sich symmetrische, aufsteigende und absteigende Dreiecke beschreiben; die Regeln bleiben typabhängig.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 11
+        },
+        {
+          "id": "limit",
+          "title": "Auch ein Ausbruch nach unten ist möglich",
+          "observation": "Der schematische Kurs verlässt die verengte Spanne nach unten.",
+          "interpretation": "Die Form allein legt die Richtung nicht fest und kann später invalidiert werden.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        }
+      ]
+    },
+    {
+      "id": "breakout-2",
+      "title": "Breakout und Bestätigung",
+      "path": "breakout",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Pilot erhalten: Docht, typabhängige Schlussregel, spätere Rückkehr.",
+      "scenes": [
+        {
+          "id": "touch",
+          "title": "Das Hoch reicht über die Grenze",
+          "observation": "Der obere Kerzendocht liegt über der markierten Begrenzung, der Schlusskurs darunter.",
+          "interpretation": "Die Intraday-Bewegung ist sichtbar. Eine Schlusskursbestätigung ist damit nicht automatisch vorhanden.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": "approved pilot drawing"
+        },
+        {
+          "id": "close",
+          "title": "Den Schluss mit der Regel vergleichen",
+          "observation": "Die nächste Skizze zeigt einen Schluss oberhalb der Begrenzung.",
+          "interpretation": "Ob das als Bestätigung gilt, entscheidet die bestehende typabhängige Regel in der Methodik. Die Grafik legt keine neue Schwelle oder Wartezeit fest.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": "approved pilot drawing"
+        },
+        {
+          "id": "return",
+          "title": "Die spätere Entwicklung bleibt offen",
+          "observation": "Auf den Schluss oberhalb der Grenze folgt ein Schluss innerhalb der alten Spanne.",
+          "interpretation": "Auch nach gültiger Bestätigung kann ein Kurs zurückkehren. Bestätigung beschreibt einen Zustand; sie beweist keinen künftigen Erfolg.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": "approved pilot drawing"
+        }
+      ]
+    },
+    {
+      "id": "breakout-3",
+      "title": "Volumen",
+      "path": "breakout",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Median vorheriger 20 ohne aktuellen Tag; 150/100=1,5; keine Richtung aus Volumen.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Eineinhalbmal den Vergleichswert",
+          "observation": "Ein konstruiertes Beispiel setzt den Median der vorherigen 20 Sitzungen auf 100 und heute auf 150.",
+          "interpretation": "Das Verhältnis beträgt 1,5. Der aktuelle Tag gehört nicht zum Vergleichsmedian.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        },
+        {
+          "id": "compare",
+          "title": "Hohe Aktivität bei fallendem Kurs",
+          "observation": "Oben fällt der skizzierte Kurs mit einer Lücke; darunter ist die Tagesaktivität groß.",
+          "interpretation": "Zu jedem Handel gehören Käufer und Verkäufer. Viel Volumen nennt für sich keine positive Richtung.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "limit",
+          "title": "Fehlend ist nicht null",
+          "observation": "Eine Karte enthält einen echten Nullwert, die andere ein fehlendes Feld.",
+          "interpretation": "Ohne vorhandenen Wert lässt sich das Verhältnis nicht einfach als null oder als Bestätigung ausgeben.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        }
+      ]
+    },
+    {
+      "id": "breakout-4",
+      "title": "Gescheiterte Ausbrüche",
+      "path": "breakout",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Bestätigung zum Zeitpunkt bleibt dokumentiert; Rückkehr nicht pauschal invalidiert.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Bestätigung und Rücklauf festhalten",
+          "observation": "Die Skizze zeigt erst einen Schluss über der Grenze und später wieder einen Schluss darunter.",
+          "interpretation": "Beide Beobachtungen gehören in die Dokumentation. Die ursprüngliche Bestätigung wird nicht rückwirkend gelöscht.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "compare",
+          "title": "Status braucht seine Regel",
+          "observation": "Die drei Prüfpunkte trennen Bestätigungsdatum, spätere Kurse und Invalidierungsregel.",
+          "interpretation": "Ein Rücklauf allein setzt nicht bei jedem Typ automatisch den gleichen Status.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "limit",
+          "title": "Rückblick ist mehr Wissen als damals",
+          "observation": "Links vom Stichtag ist nur der bis dahin bekannte Verlauf sichtbar; rechts folgen neue Balken.",
+          "interpretation": "Eine spätere Enttäuschung beweist nicht, dass der ursprüngliche Befund damals ein offensichtlicher Fehler war.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        }
+      ]
+    },
+    {
+      "id": "momentum-1",
+      "title": "Trend versus Momentum",
+      "path": "momentum",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "100→110→112 bei gleichen Abschnitten, kein Momentum-Rechenmodell.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Aufwärts mit kleinerem Zuwachs",
+          "observation": "Die konstruierten Werte steigen über gleich lange Abschnitte von 100 auf 110 und dann auf 112.",
+          "interpretation": "Der zweite Zuwachs ist kleiner, obwohl der Verlauf weiter aufwärts zeigt.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 11
+        },
+        {
+          "id": "compare",
+          "title": "Unterschiedliche Fragen an denselben Kurs",
+          "observation": "Der Kurs steigt im oberen Bereich; die darunter skizzierte Schwunglinie sinkt.",
+          "interpretation": "Eine schwächere Momentumzahl allein beschreibt noch keinen eingetretenen Abwärtstrend.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        },
+        {
+          "id": "limit",
+          "title": "Mehrere Fortsetzungen bleiben möglich",
+          "observation": "Nach der Verlangsamung zeigen gestrichelte Wege nur mögliche spätere Richtungen.",
+          "interpretation": "Pause, Rückgang oder erneute Beschleunigung bleiben offen; die Skizze verteilt keine Wahrscheinlichkeiten.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        }
+      ]
+    },
+    {
+      "id": "momentum-2",
+      "title": "RSI",
+      "path": "momentum",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Pilot erhalten: RSI 75 auf Skala, 70/30 nur Konvention, keine Umkehrpflicht.",
+      "scenes": [
+        {
+          "id": "scale",
+          "title": "Eine Skala, keine Wahrscheinlichkeit",
+          "observation": "Oben siehst du den Kurs, unten eine separate RSI-Skizze. Der markierte Wert 75 liegt über 70.",
+          "interpretation": "Oberhalb 70 heißt üblicherweise „überkauft“, unterhalb 30 „überverkauft“. Das sind beschreibende Konventionen, keine Kauf- oder Verkaufsanweisungen.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": "approved pilot drawing"
+        },
+        {
+          "id": "high",
+          "title": "Hoher RSI kann einen Trend begleiten",
+          "observation": "Der Kurs steigt im Ausschnitt weiter. Die RSI-Linie bleibt über mehrere Punkte oberhalb 70.",
+          "interpretation": "Die hohe Zone erzwingt keinen fallenden nächsten Schluss. Lies RSI zusammen mit Kursverlauf und Zeitraum.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": "approved pilot drawing"
+        },
+        {
+          "id": "low",
+          "title": "Niedriger RSI stoppt einen Rückgang nicht",
+          "observation": "Der Kurs sinkt weiter, während die RSI-Skizze länger unter 30 liegt.",
+          "interpretation": "„Überverkauft“ ist kein Beweis für eine bevorstehende Erholung. RSI ist außerdem keine relative Stärke gegenüber SPY.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": "approved pilot drawing"
+        }
+      ]
+    },
+    {
+      "id": "momentum-3",
+      "title": "MACD",
+      "path": "momentum",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "EMA12−EMA26, Signal EMA9; MACD −2/Signal −3 ergibt Hist +1, Grafik unter/über null geprüft.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Zwei Differenzen auseinanderhalten",
+          "observation": "Die Skizze trennt die Differenz zweier exponentieller Durchschnitte von der Differenz zur Signallinie.",
+          "interpretation": "EMA gewichtet neuere Werte stärker. Die Linien haben keine feste Skala von 0 bis 100.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "compare",
+          "title": "Histogramm +1, MACD −2",
+          "observation": "MACD −2 minus Signallinie −3 ergibt Histogramm +1. Die Skizze zeigt dieselbe Nullgrenze für alle drei Größen.",
+          "interpretation": "Ein positives Histogramm verlangt keine positive MACD-Linie.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "limit",
+          "title": "Kreuzungen in einer Seitwärtsphase",
+          "observation": "MACD und Signal kreuzen sich in der Skizze mehrfach um die Nullgrenze.",
+          "interpretation": "Die Zahl der Kreuzungen belegt keine nutzbare Vorhersagequalität.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        }
+      ]
+    },
+    {
+      "id": "momentum-4",
+      "title": "Kombination von Momentum und Trend",
+      "path": "momentum",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Lagefilter und Histogramm getrennt; gemeinsam abgeleitete Daten nicht unabhängig.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Längere Lage und jüngerer Unterschied",
+          "observation": "Die obere Kursskizze liegt über einer Referenzlinie; das untere Histogramm ist positiv.",
+          "interpretation": "Kurs über SMA 200 und positives MACD-Histogramm beschreiben zwei unterschiedliche Eigenschaften.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "compare",
+          "title": "Eine UND-Kombination verlangt beides",
+          "observation": "Titel A erfüllt beide Beispielbedingungen. B erfüllt nur den Lagefilter, C nur den Momentumfilter.",
+          "interpretation": "Die Schnittmenge kann kleiner oder unverändert sein; sie sagt nichts über spätere Qualität.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 17
+        },
+        {
+          "id": "limit",
+          "title": "Zwei Ausgaben, eine Datenquelle",
+          "observation": "Die beiden Prüfkarten gehen aus derselben Kursreihe hervor.",
+          "interpretation": "Mehrere Kennzahlen sind keine unabhängigen Stimmen. Eine kleine Auswahl beweist keinen Handelsvorteil.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 9
+        }
+      ]
+    },
+    {
+      "id": "risiko-1",
+      "title": "Schwankungen verstehen",
+      "path": "risiko",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Gleicher Endpunkt, unterschiedliche Breite; Richtung und Gesamtrisiko getrennt.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Gleicher Endpunkt, andere Schwankung",
+          "observation": "Beide Skizzen enden bei 100. Eine bewegt sich eng, die andere weit um diesen Wert.",
+          "interpretation": "Endpunkt und Schwankungsbreite sind getrennte Eigenschaften.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        },
+        {
+          "id": "compare",
+          "title": "Ruhig kann auch fallend sein",
+          "observation": "Die Kurslinie fällt relativ gleichmäßig, ohne große tägliche Gegenbewegungen.",
+          "interpretation": "Geringe tägliche Schwankung bedeutet weder steigenden Kurs noch geringes Gesamtrisiko.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 3
+        },
+        {
+          "id": "limit",
+          "title": "Ruhe kann abrupt enden",
+          "observation": "Auf eine enge Phase folgt in der Skizze ein großer Sprung.",
+          "interpretation": "Neue Nachrichten können jüngere Ruhe beenden. Ein ruhiger Kurs kann zudem besondere Ursachen haben.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        }
+      ]
+    },
+    {
+      "id": "risiko-2",
+      "title": "ATR",
+      "path": "risiko",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "V100/H106/T104: TR=max(2,6,4)=6, keine Gleichsetzung mit ATR14.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Die Kurslücke gehört zur True Range",
+          "observation": "Vorschluss 100, Hoch 106 und Tief 104: Die Abstände sind 2, 6 und 4. Das Maximum ist 6.",
+          "interpretation": "Diese True Range ist noch keine ATR. Erst die Glättung vieler solcher Werte ergibt ATR.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 9
+        },
+        {
+          "id": "compare",
+          "title": "Einzelne Spannen und geglättete Linie",
+          "observation": "Die Balken stehen schematisch für einzelne True Ranges, die Linie für eine geglättete Darstellung.",
+          "interpretation": "Technical verwendet Wilder über 14 Balken. Die frei gezeichnete Linie berechnet keine ATR aus diesen Balken.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 9
+        },
+        {
+          "id": "limit",
+          "title": "Keine Obergrenze für den nächsten Tag",
+          "observation": "Nach mehreren kleineren Spannen erscheint in der Skizze eine deutlich größere.",
+          "interpretation": "ATR beschreibt jüngere Spannen in Kurseinheiten, weder eine garantierte Grenze noch eine Richtung.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        }
+      ]
+    },
+    {
+      "id": "risiko-3",
+      "title": "Bollinger-Bänder",
+      "path": "risiko",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Schematische Bänder um Mitte; Enge keine Richtung, keine 95-%-Garantie.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Mitte, Abstand und Kurs unterscheiden",
+          "observation": "Eine Mittellinie und zwei Bandlinien umgeben den frei gezeichneten Kurs.",
+          "interpretation": "Die Standarddarstellung nutzt Fenster 20 und Faktor zwei. Maßgeblich bleiben die vorhandenen Parameter.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "compare",
+          "title": "Enge gibt keine Ausbruchsrichtung vor",
+          "observation": "Links liegt eine enge Bandphase. Rechts sind zwei mögliche Ausweitungen als Alternativen skizziert.",
+          "interpretation": "Die Ausweitung kann nach oben oder unten erfolgen. Bollinger-Enge bleibt der bestehende Breitenvergleich.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        },
+        {
+          "id": "limit",
+          "title": "Nähe am oberen Band kann anhalten",
+          "observation": "Der Preis folgt in der Skizze mehrfach dem steigenden oberen Band, statt sofort zur Mitte zurückzukehren.",
+          "interpretation": "Bandberührung ist keine verlässliche Umkehranweisung und keine Wahrscheinlichkeit für den nächsten Kurs.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        }
+      ]
+    },
+    {
+      "id": "risiko-4",
+      "title": "Stopps, Risiko und Positionsgröße als Bildungsthema",
+      "path": "risiko",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "100/2=50 nur Bildung; Stop-Market/Limit-Grenzen, Slippage und Lücken bleiben sichtbar.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Eine Annahmenrechnung, kein Auftrag",
+          "observation": "100 Geldeinheiten geteilt durch zwei Einheiten Stoppabstand ergeben 50 Stück vor Kosten.",
+          "interpretation": "Das ist eine hypothetische Bildungsrechnung außerhalb der Technical-Funktionen, keine passende Risikohöhe oder Empfehlung.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "compare",
+          "title": "Eine Lücke kann den Stopp überspringen",
+          "observation": "Der Kurs eröffnet in der Skizze unter dem geplanten Stoppniveau. Dazwischen liegt keine gezeigte Ausführung.",
+          "interpretation": "Der tatsächliche Verlust kann den Plan überschreiten. Auch ATR liefert keine garantierte Verlustgrenze.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        },
+        {
+          "id": "limit",
+          "title": "Auftragstypen haben verschiedene Grenzen",
+          "observation": "Stop-Market löst nach dem Stopp einen Marktauftrag aus. Stop-Limit verlangt zusätzlich eine Preisgrenze.",
+          "interpretation": "Beim Marktauftrag ist der Ausführungspreis nicht garantiert. Ein Limitauftrag kann unausgeführt bleiben.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        }
+      ]
+    },
+    {
+      "id": "wechsel-1",
+      "title": "Korrektur versus Trendwechsel",
+      "path": "wechsel",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Tieferes Tief Gegenbefund, kein endgültiger Zukunftsbeweis.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Ein tieferes Tief ist ein Gegenbefund",
+          "observation": "Auf eine steigende Folge folgt in der Skizze ein Tief unter dem vorherigen Tief.",
+          "interpretation": "Der Befund passt nicht mehr vollständig zur alten Aufwärtsstruktur. Er ist noch keine vollständige Zukunftsbeschreibung.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "compare",
+          "title": "Ein Bruch kann zurückgenommen werden",
+          "observation": "Die Kurslinie unterschreitet eine markierte Linie und liegt später wieder darüber.",
+          "interpretation": "Ein Bruch und seine spätere Rücknahme werden beide dokumentiert; die Linie allein entscheidet keine Zukunft.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        },
+        {
+          "id": "limit",
+          "title": "Eine kleine Korrektur kann größer werden",
+          "observation": "Nach einer zunächst kleinen Gegenbewegung fällt der schematische Verlauf weiter.",
+          "interpretation": "Die Bezeichnung Korrektur schützt nicht vor einem langen Rückgang. Der Suchname Trendwende ist ebenfalls kein Beweis.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 4
+        }
+      ]
+    },
+    {
+      "id": "wechsel-2",
+      "title": "Divergenzen",
+      "path": "wechsel",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Kurs- und RSI-Punkte zeitlich verbunden; Divergenz kann ohne Wende fortbestehen.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Höheres Kurshoch, niedrigerer RSI",
+          "observation": "Die verbundenen Zeitpunkte zeigen oben ein höheres zweites Kurshoch und unten ein tieferes RSI-Hoch.",
+          "interpretation": "Das ist eine beschriebene Abweichung zweier Verläufe, keine neue automatische Erkennung.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 11
+        },
+        {
+          "id": "compare",
+          "title": "Die Abweichung erzwingt keine Wende",
+          "observation": "Trotz einer abweichenden Kennzahlskizze setzt der obere Kurs seinen Anstieg fort.",
+          "interpretation": "Divergenzen können mehrfach auftreten, während Kurse weiter steigen.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        },
+        {
+          "id": "limit",
+          "title": "Punktauswahl offenlegen",
+          "observation": "Die Prüfliste verlangt zwei konkrete Zeitpunkte, denselben Zeitrahmen und eine benannte Kennzahl.",
+          "interpretation": "Nachträglich nur günstige Punkte auszuwählen überschätzt die Eindeutigkeit. Die Prüfung bleibt manuell.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 13
+        }
+      ]
+    },
+    {
+      "id": "wechsel-3",
+      "title": "Kerzenmuster im Kontext",
+      "path": "wechsel",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Ähnliche Lunte bei anderem Kontext; keine neue Mustererkennung oder Schwelle.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Eine lange Lunte nach fallenden Kerzen",
+          "observation": "Die Skizze zeigt mehrere fallende Kerzen und anschließend einen kleinen Körper mit langer unterer Lunte.",
+          "interpretation": "Das Lernbild erklärt die Form und den Kontext. Ob ein benanntes Muster erkannt wird, entscheidet die bestehende Regel.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "compare",
+          "title": "Ähnliche Lunte in einer Seitwärtsphase",
+          "observation": "Eine ähnlich geformte Kerze erscheint jetzt innerhalb einer engen Seitwärtsumgebung.",
+          "interpretation": "Die Form kann ähnlich sein, während die Umgebung eine andere ist.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        },
+        {
+          "id": "limit",
+          "title": "Die nächste Bewegung kann weiter fallen",
+          "observation": "Auf eine Kerze mit langer unterer Lunte folgt in der Skizze ein deutlich tieferer Schluss.",
+          "interpretation": "Eine bullische Bezeichnung ist eine übliche Lesart, kein statistisch belegter Erfolg.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 5
+        }
+      ]
+    },
+    {
+      "id": "wechsel-4",
+      "title": "Widersprüchliche Indikatorsignale",
+      "path": "wechsel",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Erfüllt, nicht erfüllt, unbekannt getrennt; kein Abstimmungs-Score.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Lage erfüllt, Histogramm negativ",
+          "observation": "Die Kursskizze liegt oberhalb einer Referenzlinie, während die Histogrammbalken unter ihrer Nullgrenze liegen.",
+          "interpretation": "Längerer Kontext und jüngerer Schwung können unterschiedliche Befunde liefern, ohne Rechenwiderspruch.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "compare",
+          "title": "Unbekannt bleibt ein eigener Zustand",
+          "observation": "Die Checkliste trennt erfüllt, nicht erfüllt und unbekannt.",
+          "interpretation": "Fehlende Kennzahlen werden weder null noch zu einem positiven Befund umgedeutet.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "limit",
+          "title": "Auswählen nach dem Ergebnis ist ein Fehler",
+          "observation": "Eine vorherige Frage steht links; rechts stehen passende und unpassende Beobachtungen.",
+          "interpretation": "Beide gehören zur Notiz. Nachträgliches Aussortieren kann jede gewünschte Geschichte erzeugen.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        }
+      ]
+    },
+    {
+      "id": "zeitrahmen-1",
+      "title": "Tag/Woche/Monat",
+      "path": "zeitrahmen",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Bestehende SMA200 Tag/SMA40 Woche/SMA10 Monat korrekt; Fenster nicht identisch.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Ein Titel, drei Ausschnitte",
+          "observation": "Die Tagesbewegung sinkt in der Skizze, während Wochen- und Monatsansichten länger aufwärts zeigen.",
+          "interpretation": "Das sind unterschiedliche Zeitfenster desselben Untersuchungsgegenstands, kein logischer Widerspruch.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        },
+        {
+          "id": "compare",
+          "title": "Die vorhandene Zuordnung lesen",
+          "observation": "Der lange Trendfilter verwendet in Technical SMA 200 am Tag, SMA 40 in der Woche und SMA 10 im Monat.",
+          "interpretation": "Die Fenster sind nicht mathematisch identische Durchschnitte. Der Feldname wird nicht als 200 Wochen gelesen.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 10
+        },
+        {
+          "id": "limit",
+          "title": "Gleiche Zahl, andere Einheit",
+          "observation": "Zwei Zeilen zeigen jeweils 50 Balken, einmal Tage und einmal Wochen.",
+          "interpretation": "Die gleiche Periodenzahl bezeichnet unterschiedliche Fenster; dies ist keine zusätzliche Filterempfehlung.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        }
+      ]
+    },
+    {
+      "id": "zeitrahmen-2",
+      "title": "Abgeschlossene Kerzen",
+      "path": "zeitrahmen",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Laufende und abgeschlossene Periode getrennt; keine erfundene Kalenderregel.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Laufend ist nicht abgeschlossen",
+          "observation": "Drei abgeschlossene Beispielkerzen stehen links; rechts ist die laufende Kerze als eigener Bereich markiert.",
+          "interpretation": "Welche Perioden im Filter zählen, legt Technical nach seiner bestehenden Kalender- und Aggregationsregel fest.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        },
+        {
+          "id": "compare",
+          "title": "Tageskurs und letzte abgeschlossene Woche",
+          "observation": "Ein Tageszwischenstand kann über einer Linie liegen, obwohl der letzte abgeschlossene Wochenwert darunter lag.",
+          "interpretation": "Beide Angaben brauchen den jeweiligen Zeitraum und das zugehörige Datum.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        },
+        {
+          "id": "limit",
+          "title": "Eine Kreuzung kann verschwinden",
+          "observation": "Die Skizze derselben laufenden Periode hat zunächst einen Schluss über der Linie und später darunter.",
+          "interpretation": "Das Periodenende ist nicht aus einem Zwischenstand bewiesen. Feiertage und Kalender werden nicht geraten.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        }
+      ]
+    },
+    {
+      "id": "zeitrahmen-3",
+      "title": "Unterschiedliche Trends je Zeitrahmen",
+      "path": "zeitrahmen",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Unterschiedliche Lagezustände zulässig; kein Vorrangscore.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Tag darunter, Woche darüber",
+          "observation": "Oben liegt die Tageskursskizze unter ihrer Referenz, unten der Wochenverlauf über seiner Wochenlinie.",
+          "interpretation": "Die vorhandenen Filterzustände können auseinanderfallen. Beide werden mit Zeitraum und Datenstand festgehalten.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        },
+        {
+          "id": "compare",
+          "title": "Eine kurze Erholung im langen Rückgang",
+          "observation": "Die lange Linie fällt. Ein kurzer gegenläufiger Abschnitt ist eigens markiert.",
+          "interpretation": "Eine lokale Erholung kann Teil eines länger fallenden Verlaufs sein.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 4
+        },
+        {
+          "id": "limit",
+          "title": "Uneinigkeit bleibt in der Notiz",
+          "observation": "Der Vergleich enthält beide Zeiträume statt nur des passenden.",
+          "interpretation": "Technical gibt keinen neuen Vorrangscore vor. Nachträgliches Aussuchen erzeugt eine einseitige Analyse.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 13
+        }
+      ]
+    },
+    {
+      "id": "zeitrahmen-4",
+      "title": "Analyse über mehrere Zeitrahmen",
+      "path": "zeitrahmen",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "1J·W Kerzen versus lange Schlusslinie, keine erfundenen Wochenhochs/-tiefs.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Ein Rahmen für drei Zeiträume",
+          "observation": "Der Leserahmen fragt je Zeitraum nach Stand und verfügbarem Befund. Ein unbekannter Wert bleibt offen.",
+          "interpretation": "Tag, abgeschlossene Woche und abgeschlossener Monat werden getrennt dokumentiert.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 13
+        },
+        {
+          "id": "compare",
+          "title": "Kerze und Schlusslinie enthalten anderes",
+          "observation": "Links stehen Wochenkerzen, rechts nur eine längere Schlusslinie.",
+          "interpretation": "In Technical sind kurze Wochenkerzen bei 1J·W verfügbar. Eine Schlusslinie enthält keine Wochenhochs und -tiefs.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        },
+        {
+          "id": "limit",
+          "title": "Überlappende Daten sind nicht unabhängig",
+          "observation": "Tagesbalken liegen innerhalb von Wochen und diese innerhalb eines Monatsfensters.",
+          "interpretation": "Drei gleichgerichtete Zeitrahmen sind keine drei unabhängigen Stichproben und kein Vorteilsnachweis.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        }
+      ]
+    },
+    {
+      "id": "routine-1",
+      "title": "Analyseziel definieren",
+      "path": "routine",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Frage vor Trefferliste; null Treffer zulässiges Ergebnis.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Von der Frage zu den Kriterien",
+          "observation": "Der Ablauf beginnt bei längerem Trendkontext, führt zur Kriterienprüfung und erst dann zur Trefferliste.",
+          "interpretation": "Ein Ziel beschreibt eine Untersuchung, keine gewünschte künftige Kursrichtung.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        },
+        {
+          "id": "compare",
+          "title": "Kein Treffer ist ein mögliches Ergebnis",
+          "observation": "Ein klar definiertes Ziel kann zu einer leeren Auswahl führen.",
+          "interpretation": "Leere Treffer sind kein Anlass, die ursprüngliche Frage still zu wechseln.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 6
+        },
+        {
+          "id": "limit",
+          "title": "Der falsche Ablauf beginnt beim Ergebnis",
+          "observation": "Die durchgestrichene Abkürzung führt von einem gefälligen Treffer direkt zu einer nachträglich passenden Frage.",
+          "interpretation": "Notiere die Frage vorher. Eine nachträgliche Geschichte erklärt nicht die ursprüngliche Auswahl.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 9
+        }
+      ]
+    },
+    {
+      "id": "routine-2",
+      "title": "Filter kombinieren",
+      "path": "routine",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "A in beiden Mengen, B/C nur jeweils einer; UND vs ODER, kein Qualitätsversprechen.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "UND ist die Schnittmenge",
+          "observation": "Im fiktiven Vergleich erfüllt A beide Bedingungen, B nur eine und C die andere.",
+          "interpretation": "Nur A erfüllt UND. A, B und C erfüllen mindestens eine Bedingung und damit ODER.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 9
+        },
+        {
+          "id": "compare",
+          "title": "Die gleiche Auswahl anders verknüpft",
+          "observation": "Der Vergleich zeigt für die drei Beispielmitglieder eine Schnittmenge von einem und eine Vereinigungsmenge von drei.",
+          "interpretation": "Die Mengengröße beschreibt Logik, nicht die Qualität späterer Kursverläufe.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        },
+        {
+          "id": "limit",
+          "title": "Ein Trichter ist kein Qualitätsbeweis",
+          "observation": "Ein konstruierter Filtertrichter verkleinert die Menge von 8 über 3 auf 1.",
+          "interpretation": "Mehr Filter können passend wirken, ohne einen belegten Vorteil zu liefern.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        }
+      ]
+    },
+    {
+      "id": "routine-3",
+      "title": "Datenqualität und Grenzen prüfen",
+      "path": "routine",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Aufwärmphase, fehlender Wert und eingefrorene Reihe; keine Delisting-Klassifikation.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Fehlende Historie begrenzt die Aussage",
+          "observation": "Die skizzierte Reihe endet vor dem heutigen Prüfpunkt. Ein Indikatorfeld ist unbekannt.",
+          "interpretation": "Alter Stand und fehlender Wert bleiben in der Notiz. Die Akademie korrigiert weder Kurse noch Klassifikationen.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        },
+        {
+          "id": "compare",
+          "title": "Ein Indikator braucht Aufwärmphase",
+          "observation": "Links steht zunächst zu wenig Historie; rechts wird das Feld erst nach ausreichender Historie nutzbar.",
+          "interpretation": "Die notwendige Länge hängt vom Indikator ab. Die Skizze führt keine neue Mindestschwelle ein.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 11
+        },
+        {
+          "id": "limit",
+          "title": "Gleiche Ruhe, unterschiedliche Ursachen",
+          "observation": "Zwei flache Skizzen sehen ähnlich aus. Ein Übernahmeangebot oder ein Datenproblem können aber verschiedene Ursachen sein.",
+          "interpretation": "Ein eingefroren-Hinweis ist deshalb kein bestätigtes Delisting. Prüfe Herkunft und Unternehmenskontext.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 7
+        }
+      ]
+    },
+    {
+      "id": "routine-4",
+      "title": "Analyse dokumentieren",
+      "path": "routine",
+      "presentationVersion": 1,
+      "sourceReferences": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "review": "Notiz trennt Befund/Interpretation/Offenes; gleiche Adresse kann spätere andere Treffer liefern.",
+      "scenes": [
+        {
+          "id": "observe",
+          "title": "Eine kurze Notiz hält Unsicherheit fest",
+          "observation": "Das Lernblatt enthält Ziel, Zeitraum und Zustände; eine unbekannte Bedingung bleibt ausdrücklich offen.",
+          "interpretation": "Beobachtung und Interpretation werden getrennt. Akademiefortschritt ersetzt kein Analysejournal.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        },
+        {
+          "id": "compare",
+          "title": "Drei Ebenen der Dokumentation",
+          "observation": "Drei verbundene Felder trennen den beobachteten Zustand, seine Interpretation und die nächste offene Prüfung.",
+          "interpretation": "Ein unbekannter Wert darf auch im fertigen Text nicht unbemerkt zur Gewissheit werden.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 8
+        },
+        {
+          "id": "limit",
+          "title": "Gleiche Abfrage, neue Daten",
+          "observation": "Die Abfrage bleibt gleich, während zwei schematische Listen unterschiedliche Mitglieder zeigen.",
+          "interpretation": "Neue Kurse und ein verändertes Universum können spätere Treffer ändern, ohne die frühere Notiz falsch zu machen.",
+          "kind": "constructed teaching diagram",
+          "graphicPrimitives": 11
+        }
+      ]
+    }
+  ]
+}

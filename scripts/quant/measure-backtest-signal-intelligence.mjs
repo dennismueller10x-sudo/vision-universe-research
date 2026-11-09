@@ -83,7 +83,7 @@ for (const t of SAMPLE) {
 
 const measures = {
   SETUP_BACKTEST_READY: { ready: true, decision: kind("B").decision, trust: kind("B").trust, reasons: kind("B").reasons.concat(setup.certification !== "CERTIFIED" ? ["SETUP_OUTCOMES_NOT_CERTIFIED"] : []),
-    replayTitles: setup.source.titles.length, parity: setup.parity.checked + "/" + setup.parity.checked },
+    replayTitles: setup.source.titles.length, parity: (setup.parity.checked - setup.parity.mismatches) + "/" + setup.parity.checked },
   SIGNAL_BACKTEST_READY: { ready: kind("C").decision === "PUBLISHED", decision: kind("C").decision, trust: kind("C").trust, reasons: kind("C").reasons },
   SIGNAL_STUDY_SOURCE: readiness.signalStudy,
   STRATEGY_BACKTEST_READY: { ready: false, decision: kind("D").decision, reasons: kind("D").reasons },

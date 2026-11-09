@@ -27,9 +27,15 @@ const TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
 // --checkout-access=testers spielt die Produktion nach (VU_CHECKOUT_ACCESS = "testers"): Checkout nur mit Rolle
 // billing_tester, vergeben ueber /__dev/tester (nur hier, nur die lokale Wegwerf-Datenbank).
 const checkoutAccess = (process.argv.find(a => a.startsWith('--checkout-access=')) || '').slice(18);
+// --newsletter: Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich gegen das simulierte Brevo einschalten.
+const newsletter = process.argv.includes('--newsletter')
+  ? {VU_NEWSLETTER: 'true', VU_BREVO_SYNC: 'true', VU_BREVO_LIST_USERS: '11', VU_BREVO_LIST_FREE: '12', VU_BREVO_LIST_PRO: '13', VU_BREVO_LIST_NEWSLETTER: '4'} : {};
+// --backtest-review: interne Backtest-Vorschau NUR in dieser Simulation einschalten (VU_BACKTEST_REVIEW_ENABLED = "true").
+// In Produktion bleibt der Schalter in wrangler.toml "false"; Rolle backtest_reviewer nur ueber /__dev/backtest-reviewer.
+const backtestReview = process.argv.includes('--backtest-review') ? {VU_BACKTEST_REVIEW_ENABLED: 'true'} : {};
 const env = await createEnvironment({site: origin, api: origin, checkoutBase: `${origin}/__dev/checkout`, portalBase: `${origin}/__dev/portal`,
   envOverrides: {VU_COOKIE_SECURE: 'false', VU_ALLOWED_ORIGINS: origin, STRIPE_CHECKOUT_HOSTS: 'localhost',
-    ...(['public', 'testers', 'off'].includes(checkoutAccess) ? {VU_CHECKOUT_ACCESS: checkoutAccess} : {})}});
+    ...(['public', 'testers', 'off'].includes(checkoutAccess) ? {VU_CHECKOUT_ACCESS: checkoutAccess} : {}), ...newsletter, ...backtestReview}});
 const {sim} = env.stripe;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 
@@ -101,6 +107,22 @@ async function devRoute(req, res, url) {
     res.writeHead(200, {'Content-Type': 'application/json'});
     return res.end(JSON.stringify({granted: n}));
   }
+  if (parts[1] === 'backtest-reviewer' && req.method === 'POST') {
+    // Rolle backtest_reviewer (interne Backtest-Vorschau) wie der Betrieb: nur ueber den Service, nie aus dem Browser. Nur Simulation.
+    const email = String(url.searchParams.get('email') || '').toLowerCase();
+    const n = await env.pg.json(`with x as (insert into public.user_roles (user_id, role) select id, 'backtest_reviewer' from auth.users
+      where lower(email) = :'email' on conflict do nothing returning 1) select to_json(count(*)) from x`, {email});
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    return res.end(JSON.stringify({granted: n}));
+  }
+  if (parts[1] === 'pricing-admin' && req.method === 'POST') {
+    // Rolle pricing_admin (Tarifverwaltung) wie der Betrieb: nur ueber den Service, nie aus dem Browser. Nur Simulation.
+    const email = String(url.searchParams.get('email') || '').toLowerCase();
+    const n = await env.pg.json(`with x as (insert into public.user_roles (user_id, role) select id, 'pricing_admin' from auth.users
+      where lower(email) = :'email' on conflict do nothing returning 1) select to_json(count(*)) from x`, {email});
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    return res.end(JSON.stringify({granted: n}));
+  }
   if (parts[1] === 'checkout' && parts[2] && parts[3] === 'sepa' && req.method === 'POST') {
     const session = sim.sessions.get(parts[2]);
     if (!session || session.status !== 'open') return redirect(res, session ? session.cancel_url : '/__dev/');
@@ -116,6 +138,22 @@ async function devRoute(req, res, url) {
     await env.deliverWebhooks();
     res.writeHead(200, {'Content-Type': 'application/json'});
     return res.end('{"settled":true}');
+  }
+  if (parts[1] === 'cron' && req.method === 'POST') {
+    // Cron des Workers einmal ausfuehren (Postausgang, Brevo-Abgleich, Newsletter-Einwilligungen).
+    const r = await env.app.scheduled();
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    return res.end(JSON.stringify({brevo: r.brevo}));
+  }
+  if (parts[1] === 'brevo' && req.method === 'POST') {
+    // Simuliertes Brevo: Klick auf den DOI-Link bzw. Abmeldung ueber den Link im Newsletter.
+    const email = String(url.searchParams.get('email') || '').toLowerCase();
+    if (parts[2] === 'confirm') env.brevo.confirmDoi(email);
+    if (parts[2] === 'unsubscribe') env.brevo.unsubscribe(email);
+    // Naechste Pruefung sofort zulassen (sonst 5 Minuten Abstand).
+    await env.pg.json(`with x as (update billing.marketing_consents set checked_at = now() - interval '7 hours' where email = :'email' returning 1) select to_json(count(*)) from x`, {email});
+    res.writeHead(200, {'Content-Type': 'application/json'});
+    return res.end(JSON.stringify({ok: true, contact: env.brevo.contacts.get(email) || null}));
   }
   if (parts[1] === 'events') {
     const rows = [...sim.events].reverse().map(e => `<li><code>${esc(e.type)}</code> ${esc(e.id)} ${e.delivered ? '✓' : '…'}</li>`).join('');
@@ -168,7 +206,10 @@ async function devRoute(req, res, url) {
 const server = createServer(async (req, res) => {
   try {
     const url = new URL(req.url, origin);
-    if (url.pathname.startsWith('/v1/')) return await send(res, await toWorker(req, url));
+    // Oeffentliche Seiten des Workers (in der Produktion auf konto.visionuniverse.de).
+    if (url.pathname.startsWith('/v1/') || url.pathname.startsWith('/rechtliches') || url.pathname === '/kuendigen' || url.pathname === '/widerrufen' || url.pathname === '/kontakt') {
+      return await send(res, await toWorker(req, url));
+    }
     if (url.pathname === '/__dev' || url.pathname.startsWith('/__dev/')) return await devRoute(req, res, url);
     // Watchlist-Uebersicht: im Release gebaut (nie committet), hier einmal beim Start aus den Artefakten des Repositorys.
     if (url.pathname.startsWith('/' + SUMMARY_DIR)) {

@@ -52,7 +52,8 @@ test('jede Route hat einen Pfad unter /quant/ und mindestens ein positives Merkm
     assert(spec.h1, name + ' braucht h1');
     assert(spec.minText > 0, name + ' braucht Mindesttext');
   }
-  assert(SPECS.chartbild.chart && SPECS.chartbild.chart.scope === '.cb-chart-card', 'das Chartbild braucht einen gezeichneten Chart');
+  /* Konzept EHV (EX03): NVDA ist meist nicht zaehlbar, dann zeigt das Elliott-Bild keinen Chart, sondern die Absage mit Wegen. */
+  assert(SPECS.chartbild.includes && SPECS.chartbild.includes.includes('Elliott'), 'das Elliott-Bild nennt Elliott');
 });
 
 // ---------------------------------------------------------------- Phase 4: Technik gegen die Datenerwartung

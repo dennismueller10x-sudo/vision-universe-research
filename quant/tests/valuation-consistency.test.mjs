@@ -234,7 +234,7 @@ test("ein Kennzahlenkasten ohne eine einzige Zeile entsteht nicht", async () => 
      ohne einen dieser Gruende, dessen Bewertungsfamilie leer ist, ist ein
      Datenverlust und kein Marktereignis. */
   const ZURUECKHALTUNG = ["SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING", "SHARE_COUNT_NOT_OUTSTANDING",
-    "REPORTING_CURRENCY_NOT_LISTING_CURRENCY", "DISPLAY_NOT_PERMITTED"];
+    "REPORTING_CURRENCY_NOT_LISTING_CURRENCY", "SHARE_COUNT_SCALE_SUSPECT", "DISPLAY_NOT_PERMITTED"];
   let uebersprungen = null;
   const ausgeschlossenGrund = (ticker, metrics) => {
     if (metrics.some((m) => ZURUECKHALTUNG.includes(m.reason))) return "Zurueckhaltung";

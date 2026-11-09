@@ -9,7 +9,7 @@ Datenbank, keine neue Datenhaltung, Passwortmaske und Registrierung unverändert
 | Bereich | Adresse | Rolle | Inhalt |
 |---|---|---|---|
 | Willkommensseite | `/willkommen/` | Einstieg nach jeder Anmeldung, nach der E-Mail-Bestätigung und nach bestätigter Zahlung | unverändert: Video, Story-Videos, Produktwelten, Neuigkeiten. **Neu:** Zeile „Mein Dashboard“ (Watchlist und gespeicherte Aktien) direkt unter dem Video, daneben abgesetzt „Konto“; kurze Rückmeldung bei `?konto=verified` bzw. `?konto=pro` |
-| Mein Dashboard | `/mein-dashboard/` | persönlicher Investment-Bereich | Begrüßung, Watchlist (hinzufügen, entfernen, rückgängig, Link zur Aktie), „Auf diesem Gerät gemerkt“ (lokale Listen der Produktwelten, Übernahme auf Klick), Schnellzugriff auf Discover, Quant, Fundamental, Technical, Screener, Supertrader |
+| Mein Dashboard | `/mein-dashboard/` | persönlicher Investment-Bereich | Konzept [mein-bereich-2026-11](../design/mein-bereich-2026-11/HANDOVER.md), Screen `m-home`: Begrüßung mit Datum, „Heute bei deinen Aktien“ (auf der Watchlist, neue Ereignisse, Aktien betroffen), Tarif-Marke, Watchlist als Streifen (Link zur Aktie; „+ Aktie hinzufügen oder entfernen“ öffnet Suche und „×“ mit Rückgängig), „Was sich getan hat“ (Ereignisse der Welten je Aktie), „Weiter lernen“ (nächstes ungesehenes Video der Willkommensseite), „Deine Welten“; unter `#/gespeichert` „Auf diesem Gerät gemerkt“ (lokale Listen, Übernahme auf Klick) |
 | Mein Konto | `/konto/` | Einstellungen und Vertrag | persönliche Daten, E-Mail, Passwort und Sicherheit, Tarif, Abonnement, Rechnungen, Zahlungsmethoden (Kundenportal), Kündigung, Datenschutz und Datenexport |
 
 `/dashboard/` ist das bestehende Research-Dashboard (V6.3) und bleibt unverändert; deshalb liegt der persönliche Bereich unter
@@ -27,11 +27,13 @@ sondern abgesetzt „Mein Dashboard →“.
 | Watchlist | `GET /v1/watchlist`, `POST /v1/watchlist/items`, `…/items/remove`, `…/import` – dieselben Aufrufe wie Lesezeichen und Detailansicht (RLS, Tarifgrenze in der Datenbank) |
 | Kurse | gemeinsame Watchlist-Übersicht `/core/data/watchlist-summary-v1/` über `core/watchlist-view.js` (veröffentlichter Schluss, Datum, „veraltet“) |
 | Auf diesem Gerät gemerkt | `vu-discover-watchlist-v1`, `vu.quant.watchlist.v1`, `vu2.watchlist.selection.v1` (nur gelesen, `W.legacyTickers`/`planMerge`), Europa-Liste nur gezählt |
+| Was sich getan hat | `mein-dashboard/events.js`, nur gelesen: Technical-Tagesbefund vom Stichtag oder Vortag (`/technical/data/stock/<shard>.json`), Quant-Anlagestil neu/nicht mehr erfüllt (`strategy-index-v1`, `historicalEvidence.transitions`), Supertrader-Regel neu erfüllt laut Methode (`sf-candidates`, `changes.added`; Forschung, nicht zertifiziert; ohne Short-Methode); als Zusatz ohne Zählung: 13F-Neupositionen großer Fonds im jüngsten Quartal (Watchlist-Übersicht) und bester Platz in einer Discover-Reihe |
+| Weiter lernen | `/willkommen/config/stories.json`, Gesehen-Merker `vu-welcome-seen-v1` (nur gelesen) |
 
-Nicht gezeigt: Quant-Gesamtscore, Supertrader-Zustände oder -Signale (auch keine „Forschung“-Chips) – das Dashboard liest diese
-Abschnitte nicht (Test `mein-dashboard/tests`). Supertrader hat keine eigene Speicherfunktion; es wird nichts vorgetäuscht.
+Nicht gezeigt: Quant-Gesamtscore, Supertrader-Zustände oder -Signale außerhalb der Regelereignisse oben. Eine Aktie ohne Ereignis
+von heute bekommt keine Karte; hat keine eines, steht dort ein Satz. Supertrader hat keine eigene Speicherfunktion; es wird nichts vorgetäuscht.
 
-**Erweiterung:** `mein-dashboard/dashboard.js` besteht aus Modulen (`MODULES`: `greeting`, `watchlist`, `add`, `local`, `shortcuts`).
+**Erweiterung:** `mein-dashboard/dashboard.js` besteht aus Modulen (`MODULES`: `greeting`, `today`, `watchlist`, `events`, `learn`, `add`, `local`, `shortcuts`).
 Persönliche Marktveränderungen oder Watchlist-Benachrichtigungen kommen später als eigenes Modul, sobald es eine freigegebene Quelle
 gibt (Vorbereitung: `core/watchlist-view.js#events`, `watchlist_items.alerts`). Heute ist nichts davon aktiv oder simuliert.
 
@@ -44,6 +46,9 @@ gibt (Vorbereitung: `core/watchlist-view.js#events`, `watchlist_items.alerts`). 
                                                      ─▶ Stripe Checkout ─▶ /konto/abo/?checkout=success
                                                      ─▶ Webhook bestätigt Pro ─▶ /willkommen/?konto=pro
 ```
+
+Die Registrierung fragt Zustimmung zu AGB und Datenschutzhinweisen (Fassung `LEGAL_VERSION`) und – nur wenn Brevo-Newsletter
+eingeschaltet ist – eine freiwillige, nicht vorausgewählte Newsletter-Checkbox (Double-Opt-in, [BREVO.md](BREVO.md)).
 
 Eine Stelle entscheidet über das Ziel: `konto/account-api.js#nextAfterSignIn` (Tests in `konto/tests/konto.test.mjs`).
 
@@ -115,7 +120,7 @@ bestehende Abos (409) → Checkout. Antwortet der Worker trotz allem `CHECKOUT_N
   Seite erklärt das und bietet den Weg zur Willkommensseite, das Konto bleibt Free. **Neu im Worker:**
   `checkout.session.async_payment_failed` holt den Zustand frisch von Stripe (Abo endet, Konto bleibt Free); bisher wurde das
   Ereignis ignoriert und nur über `customer.subscription.*` nachgezogen. Das Ereignis steht in `WEBHOOK_EVENTS`; im Stripe-Webhook
-  wird es mit dem nächsten Lauf von „Konten — Stripe Live einrichten“ abonniert (bis dahin wirken weiter die Abo-Ereignisse).
+  wird es mit dem nächsten Lauf von „Konten (Buendel account)“, Teil `stripe` abonniert (bis dahin wirken weiter die Abo-Ereignisse).
 - Kündigung (Kundenportal, `/konto/kuendigen/`), Laufzeitende → automatisch Free: unverändert, in der Browser-QA geprüft.
 
 ## 5. Tests
@@ -131,4 +136,5 @@ bestehende Abos (409) → Checkout. Antwortet der Worker trotz allem `CHECKOUT_N
 
 ## 6. Vor der ersten echten Zahlung prüfen
 
-Siehe [RECHTLICHE_PRUEFUNG_CHECKOUT.md](RECHTLICHE_PRUEFUNG_CHECKOUT.md).
+Siehe [RECHTLICHE_ABNAHME.md](RECHTLICHE_ABNAHME.md) (Texte, öffentliche Kündigungs- und Widerrufsfunktion, Abnahmeliste,
+Umschalten) und [BREVO.md](BREVO.md) (Newsletter-Checkbox bei der Registrierung, Opt-in in den Einstellungen).

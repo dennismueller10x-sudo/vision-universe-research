@@ -90,7 +90,7 @@ unambiguously. An honest gap with a stated reason, not a guess.
 It was 30 before the release audit. Most of NVDA's were not calendar ambiguity at
 all but a consequence of its fiscal years 2011–2014 being labelled one year too
 low, because the annual filing's own `fy` field was taken at face value. Fixing
-the label recovered 25 cells; see `docs/SEC_RELEASE_AUDIT.md` §3.4.
+the label recovered 25 cells; see `docs/archiv/SEC_RELEASE_AUDIT.md` §3.4.
 
 ## 3. What the states mean
 

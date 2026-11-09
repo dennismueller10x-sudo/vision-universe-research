@@ -8,6 +8,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createEnvironment} from '../../../scripts/account/sim/environment.mjs';
+import {LEGAL_STATUS} from '../src/legal/texts.mjs';
 import {subscriptionGrantsAccess} from '../src/entitlements.mjs';
 import {LOCAL_KEYS} from '../../../scripts/account/sim/fake-supabase.mjs';
 
@@ -616,6 +617,83 @@ test('Konten und Abos Ende-zu-Ende', {skip}, async t => {
     assert.equal(await env.pg.json(`select to_json(count(*)) from public.watchlist_items where instrument_id = :'id'`, {id: nvda}), 0);
   });
 
+  await t.test('Erster Start (Z1): Erfahrung Profi, Ziel, onboardedAt setzt der Server', async () => {
+    const a = await signedIn(env, 'z1-anna@example.test');
+    const before = (await a.get('/v1/me')).data.settings;
+    assert.deepEqual([before.experienceLevel, before.goal, before.onboardedAt], ['beginner', null, null]);
+    const r = await a.patch('/v1/me', {settings: {experienceLevel: 'pro', goal: 'strategien', onboardedAt: true}});
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.deepEqual([r.data.settings.experienceLevel, r.data.settings.goal], ['pro', 'strategien']);
+    const first = r.data.settings.onboardedAt;
+    assert.ok(first && !Number.isNaN(Date.parse(first)), 'Zeitpunkt gesetzt');
+    const again = await a.patch('/v1/me', {settings: {onboardedAt: true, goal: null}});
+    assert.deepEqual([again.data.settings.onboardedAt, again.data.settings.goal], [first, null], 'erster Zeitpunkt bleibt, Ziel leerbar');
+    for (const settings of [{experienceLevel: 'expert'}, {goal: 'reich'}, {onboardedAt: '2000-01-01T00:00:00Z'}, {onboardedAt: null}]) {
+      const bad = await a.patch('/v1/me', {settings});
+      assert.deepEqual([bad.status, bad.data.state], [400, 'SETTING_INVALID'], JSON.stringify(settings));
+    }
+    assert.equal((await a.patch('/v1/me', {settings: {goal: 'aktie'}}, {headers: {'X-VU-Client': ''}})).status, 403, 'CSRF');
+    const exp = (await a.get('/v1/me/export')).data;
+    assert.deepEqual([exp.settings.experience_level, exp.settings.goal, exp.settings.onboarded_at], ['pro', null, first], 'Export enthaelt Z1');
+  });
+
+  await t.test('Gespeicherte Suchen (Z3): anlegen, filtern, aendern, entfernen, Isolation, Grenze 50, Export, Loeschung', async () => {
+    const anon = env.browser();
+    assert.equal((await anon.get('/v1/searches')).status, 401);
+    const a = await signedIn(env, 'z3-anna@example.test'), b = await signedIn(env, 'z3-ben@example.test');
+    assert.deepEqual((await a.get('/v1/searches')).data, {searches: [], limit: 50});
+
+    const c1 = await a.post('/v1/searches', {world: 'quant', name: ' Qualität über 80 ', query: {minScore: 80, sort: 'score'}});
+    assert.deepEqual([c1.status, c1.data.state, c1.data.search.world, c1.data.search.name], [201, 'CREATED', 'quant', 'Qualität über 80']);
+    assert.deepEqual(c1.data.search.query, {minScore: 80, sort: 'score'});
+    assert.ok(c1.data.search.id && c1.data.search.createdAt && c1.data.search.updatedAt);
+    const id = c1.data.search.id;
+    assert.equal((await a.post('/v1/searches', {world: 'screener', name: 'KGV < 15', query: {pe: {max: 15}}})).status, 201);
+    for (const [body, state] of [[{world: 'krypto', name: 'x', query: {}}, 'WORLD_INVALID'], [{world: 'quant', name: '', query: {}}, 'NAME_INVALID'],
+      [{world: 'quant', name: 'x', query: [1]}, 'QUERY_INVALID'], [{world: 'quant', name: 'x', query: {q: 'a'.repeat(4100)}}, 'QUERY_TOO_LARGE']]) {
+      const bad = await a.post('/v1/searches', body);
+      assert.deepEqual([bad.status, bad.data.state], [400, state]);
+    }
+    assert.equal((await a.post('/v1/searches', {world: 'quant', name: 'x', query: {}}, {headers: {'X-VU-Client': ''}})).status, 403, 'CSRF');
+
+    const all = (await a.get('/v1/searches')).data.searches;
+    assert.equal(all.length, 2);
+    const quant = await a.get('/v1/searches?world=quant');
+    assert.deepEqual(quant.data.searches.map(s => s.id), [id]);
+    assert.match(quant.headers.get('Cache-Control'), /private, no-store/);
+    assert.equal((await a.get('/v1/searches?world=krypto')).data.state, 'WORLD_INVALID');
+
+    const upd = await a.patch('/v1/searches', {id, name: 'Qualität über 85', query: {minScore: 85}});
+    assert.deepEqual([upd.status, upd.data.state, upd.data.search.name, upd.data.search.query], [200, 'UPDATED', 'Qualität über 85', {minScore: 85}]);
+    assert.equal((await a.patch('/v1/searches', {id})).data.state, 'NOTHING_TO_UPDATE');
+    assert.equal((await a.patch('/v1/searches', {id: 'nicht-uuid', name: 'x'})).data.state, 'SEARCH_ID_INVALID');
+
+    // Ben sieht und aendert nichts von Anna.
+    assert.deepEqual((await b.get('/v1/searches')).data.searches, []);
+    const foreign = await b.patch('/v1/searches', {id, name: 'fremd'});
+    assert.deepEqual([foreign.status, foreign.data.state], [404, 'SAVED_SEARCH_NOT_FOUND']);
+    assert.deepEqual((await b.post('/v1/searches/remove', {id})).data, {state: 'NOT_PRESENT', removed: 0});
+    assert.equal((await a.get('/v1/searches?world=quant')).data.searches[0].name, 'Qualität über 85', 'Annas Suche unberuehrt');
+
+    // Grenze 50 je Konto setzt die Datenbank durch (Anna hat 2; 48 direkt in der Datenbank, dann ueber die API).
+    await env.pg.json(`with x as (insert into public.saved_searches (user_id, world, name)
+      select u.id, 'technical', 'Suche ' || g from auth.users u, generate_series(1, 48) g where u.email = 'z3-anna@example.test' returning 1)
+      select to_json(count(*)) from x`);
+    const full = await a.post('/v1/searches', {world: 'quant', name: 'zu viel', query: {}});
+    assert.deepEqual([full.status, full.data.state], [409, 'SAVED_SEARCHES_LIMIT_REACHED']);
+    assert.equal((await a.get('/v1/searches')).data.searches.length, 50);
+    assert.deepEqual((await a.post('/v1/searches/remove', {id})).data, {state: 'REMOVED', removed: 1});
+    assert.equal((await a.post('/v1/searches', {world: 'quant', name: 'wieder Platz', query: {}})).status, 201);
+    assert.equal((await b.post('/v1/searches', {world: 'discover', name: 'Ben', query: {theme: 'ki'}})).status, 201, 'Grenze je Konto');
+
+    // Export enthaelt die Suchen, Loeschung entfernt sie.
+    const exp = await b.get('/v1/me/export');
+    assert.deepEqual(exp.data.savedSearches.map(s => [s.world, s.name, s.query]), [['discover', 'Ben', {theme: 'ki'}]]);
+    assert.equal((await b.post('/v1/me/delete', {confirm: 'LOESCHEN', currentPassword: PASSWORD})).status, 200);
+    assert.equal(await env.pg.json(`select to_json(count(*)) from public.saved_searches where name = 'Ben'`), 0, 'mit dem Konto geloescht');
+    assert.equal((await a.get('/v1/searches')).data.searches.length, 50, 'Annas Suchen bleiben');
+  });
+
   await t.test('Watchlist mit Pro-Tarif: 200 Titel laden, Antwortzeit', async () => {
     const c = await signedIn(env, 'wl-pro@example.test');
     await subscribe(env, c, 'pro_month');
@@ -852,4 +930,346 @@ test('SEPA: verzoegerte Erstzahlung bestaetigt bzw. gescheitert', {skip}, async 
     assert.ok(env.logs.some(l => l.message === 'ASYNC_PAYMENT_FAILED'));
     assert.equal((await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true})).status, 200, 'neuer Versuch');
   });
+});
+
+// ------------------------------------------------------------------------------------------------
+// Produktivstart: oeffentliche Rechtsseiten, Kuendigen/Widerrufen ohne Anmeldung, Vertragsbestaetigung,
+// Checkout-Hinweis, Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich.
+// ------------------------------------------------------------------------------------------------
+const page = (env, path, init = {}) => env.app.handle(new Request(env.api + path, init));
+const form = (env, path, fields, origin = env.api) => page(env, path, {method: 'POST',
+  headers: {'Content-Type': 'application/x-www-form-urlencoded', Origin: origin}, body: new URLSearchParams(fields).toString()});
+
+test('Oeffentliche Seiten: Rechtstexte, Kuendigen und Widerrufen ohne Anmeldung', {skip}, async t => {
+  const env = await createEnvironment();
+  t.after(() => env.close());
+
+  await t.test('Rechtstexte: oeffentlich, als Entwurf gekennzeichnet, ohne Skript, keine Shopify-Texte', async () => {
+    for (const p of ['/rechtliches/', '/rechtliches/impressum', '/rechtliches/datenschutz', '/rechtliches/agb', '/rechtliches/widerrufsbelehrung',
+      '/rechtliches/widerrufsformular', '/rechtliches/newsletter', '/rechtliches/risikohinweise', '/rechtliches/methodik', '/rechtliches/mar-hinweise', '/kontakt', '/kuendigen', '/widerrufen']) {
+      const res = await page(env, p);
+      const html = await res.text();
+      assert.equal(res.status, 200, p);
+      assert.match(res.headers.get('Content-Type'), /text\/html/);
+      assert.match(res.headers.get('Content-Security-Policy'), /default-src 'none'.*form-action 'self'/);
+      assert.ok(!/<script/i.test(html), `${p}: kein Skript`);
+      if (LEGAL_STATUS !== 'freigegeben') assert.match(html, /Entwurf<\/strong> – Fassung vu-recht-/, `${p}: Entwurf gekennzeichnet`);
+      assert.ok(!/policies\/(terms-of-service|refund-policy)/.test(html), `${p}: keine Shopify-Texte`);
+      assert.match(html, /href="\/kuendigen">Verträge hier kündigen<\/a>/);
+      assert.match(html, /href="\/widerrufen">Vertrag widerrufen<\/a>/);
+    }
+    const head = await page(env, '/rechtliches/agb', {method: 'HEAD'});
+    assert.equal(head.status, 200, 'HEAD wie GET');
+    assert.equal(await head.text(), '', 'HEAD ohne Inhalt');
+    const impressum = await (await page(env, '/rechtliches/impressum')).text();
+    assert.match(impressum, /HRB 803400/);
+    assert.match(impressum, /DE461100952/);
+    assert.ok(!/\[(OFFEN|PRÜFEN):/.test(impressum), 'keine offenen Stellen');
+  });
+
+  await t.test('Kuendigen ohne Anmeldung: Jetzt kuendigen -> gespeichert, Bestaetigung per E-Mail, fremde Herkunft abgewiesen', async () => {
+    assert.match(await (await page(env, '/kuendigen')).text(), /<button type="submit">Jetzt kündigen<\/button>/);
+    const evil = await form(env, '/kuendigen', {fullName: 'X', email: 'x@example.test'}, 'https://evil.example');
+    assert.equal(evil.status, 403);
+    const missing = await (await form(env, '/kuendigen', {fullName: '', email: 'kai@example.test'})).text();
+    assert.match(missing, /Bitte gib deinen Namen an/);
+    const ok = await form(env, '/kuendigen', {fullName: 'Kai Kunde', email: 'kai@example.test', kind: 'ordinary'});
+    const html = await ok.text();
+    assert.equal(ok.status, 200);
+    assert.match(html, /Deine Kündigung ist eingegangen/);
+    assert.match(html, /Bestätigungsnummer<\/dt><dd>[0-9a-f-]{36}/);
+    const row = await env.pg.json(`select to_json(r) from (select kind, source, confirmation_status from billing.cancellation_requests where email = 'kai@example.test') r`);
+    assert.deepEqual(row, {kind: 'ordinary', source: 'public', confirmation_status: 'sent'});
+    assert.match(env.lastMailTo('kai@example.test').subject, /Eingangsbestätigung deiner Kündigung/);
+  });
+
+  await t.test('Widerrufen (§ 356a BGB): Vertrag widerrufen -> Widerruf bestaetigen -> Eingangsbestaetigung mit Inhalt, Datum, Uhrzeit', async () => {
+    const start = await (await page(env, '/widerrufen')).text();
+    assert.match(start, /<h1>Vertrag widerrufen<\/h1>/);
+    assert.ok(!/name="reason"/.test(start), 'kein Grund abgefragt');
+    const review = await (await form(env, '/widerrufen', {step: 'review', fullName: 'Wilma Widerruf', email: 'wilma@example.test', reference: 'Vision Universe Pro'})).text();
+    assert.match(review, /<button type="submit">Widerruf bestätigen<\/button>/);
+    assert.match(review, /Hiermit widerrufe ich/);
+    assert.equal(await env.pg.json(`select to_json(count(*)) from billing.cancellation_requests where email = 'wilma@example.test'`), 0, 'erst nach Bestaetigung');
+    const edit = await (await form(env, '/widerrufen', {step: 'edit', fullName: 'Wilma Widerruf', email: 'wilma@example.test', reference: 'Pro'})).text();
+    assert.match(edit, /value="Wilma Widerruf"/, 'Angaben aendern behaelt die Werte');
+    const done = await (await form(env, '/widerrufen', {step: 'confirm', fullName: 'Wilma Widerruf', email: 'wilma@example.test', reference: 'Vision Universe Pro'})).text();
+    assert.match(done, /Dein Widerruf ist eingegangen/);
+    const row = await env.pg.json(`select to_json(r) from (select kind, status, confirmation_status from billing.cancellation_requests where email = 'wilma@example.test') r`);
+    assert.deepEqual(row, {kind: 'withdrawal', status: 'manual_review', confirmation_status: 'sent'}, 'immer in die Pruefung, Bestaetigung gesendet');
+    const mail = env.lastMailTo('wilma@example.test');
+    assert.match(mail.subject, /Eingangsbestätigung deines Widerrufs/);
+    assert.match(mail.text, /Hiermit widerrufe ich den von mir abgeschlossenen Vertrag/);
+    assert.match(mail.text, /Eingang: \d{1,2}\. \S+ 20\d\d um \d\d:\d\d Uhr/, 'Datum und Uhrzeit');
+    assert.equal((await form(env, '/widerrufen', {step: 'confirm', fullName: 'X', email: 'x@example.test'}, 'https://evil.example')).status, 403);
+  });
+});
+
+test('Pro: Vertragsbestaetigung, Hinweis an der Bestellschaltflaeche, Rechtsfassung', {skip}, async t => {
+  const env = await createEnvironment();
+  t.after(() => env.close());
+  const b = await signedIn(env, 'vera.vertrag@example.test');
+  const res = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.equal(res.status, 200);
+  const session = env.stripe.sim.sessions.get(res.data.url.split('/').pop());
+  assert.match(session.custom_text.submit.message, /zahlungspflichtig für 19,90\s€ pro Monat inkl\. USt/);
+  assert.match(session.custom_text.submit.message, /\/rechtliches\/agb/);
+  assert.match(session.metadata.vu_legal_version, /^vu-recht-/);
+  env.stripe.sim.completeCheckout(session.id);
+  await env.deliverWebhooks();
+  const mail = env.lastMailTo('vera.vertrag@example.test');
+  assert.equal(mail.subject, 'Vertragsbestätigung: Vision Universe Pro');
+  assert.match(mail.text, /Vertragspartner: RAM Consulting UG \(haftungsbeschränkt\)/);
+  assert.match(mail.text, /19,90\s€ pro Monat inkl\. gesetzlicher Umsatzsteuer/);
+  assert.match(mail.text, /WIDERRUFSBELEHRUNG/);
+  assert.match(mail.text, /MUSTER-WIDERRUFSFORMULAR/);
+  assert.match(mail.text, /Sofortiger Beginn verlangt/);
+  // Erneute Zustellung desselben Ereignisses: keine zweite Bestaetigung.
+  const before = env.mails.filter(m => m.subject.startsWith('Vertragsbestätigung')).length;
+  env.stripe.sim.events.forEach(e => { e.delivered = false; });
+  await env.deliverWebhooks();
+  assert.equal(env.mails.filter(m => m.subject.startsWith('Vertragsbestätigung')).length, before, 'nur einmal je Abo');
+});
+
+test('Umsatzsteuer: Stripe Tax automatisch, Bruttopreis bleibt, kein zweiter Steuermechanismus; ohne aktives Stripe Tax kein Checkout', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
+  t.after(() => env.close());
+  const b = await signedIn(env, 'tina.steuer@example.test');
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
+  const health = async () => (await env.app.handle(new Request(env.api + '/v1/health'))).json();
+  assert.deepEqual([(await health()).tax, (await health()).stripeTax], ['automatic', 'ok']);
+  const ok = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.equal(ok.status, 200);
+  const session = env.stripe.sim.sessions.get(ok.data.url.split('/').pop());
+  assert.deepEqual(session.automatic_tax, {enabled: 'true'}, 'Stripe Tax berechnet');
+  assert.equal(session.subscription_data.default_tax_rates, undefined, 'kein fester Steuersatz daneben');
+  assert.match(session.custom_text.submit.message, /19,90\s€ pro Monat inkl\. USt/, 'angezeigter Bruttopreis unveraendert');
+
+  // Stripe Tax im Dashboard pausiert: kein Checkout, nichts berechnet.
+  env.stripe.sim.setTaxSettings({status: 'pending'});
+  resetTaxCache();
+  const before = env.stripe.sim.sessions.size;
+  const refused = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.deepEqual([refused.status, refused.data.state], [503, 'TAX_CONFIG_INVALID']);
+  assert.equal(env.stripe.sim.sessions.size, before, 'keine neue Checkout-Sitzung');
+  resetTaxCache();
+  assert.equal((await health()).stripeTax, 'STRIPE_TAX_PENDING');
+});
+
+test('Umsatzsteuer: ein Preis ohne "inclusive" wird mit Stripe Tax nicht verkauft (kein Aufschlag)', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
+  t.after(() => env.close());
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
+  const b = await signedIn(env, 'tom.exklusiv@example.test');
+  const [row] = await env.pg.json(`select json_agg(provider_price_id) from public.plan_prices where id = 'pro_month'`);
+  env.stripe.sim.overridePrice(row, {tax_behavior: 'exclusive'});
+  const r = await b.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  assert.deepEqual([r.status, r.data.state], [503, 'TAX_CONFIG_INVALID']);
+});
+
+test('Tarifverwaltung: nur pricing_admin, Vorschau ohne Aenderung, Bestaetigung mit Passwort, neuer Preis nur fuer neue Abos', {skip}, async t => {
+  const env = await createEnvironment({envOverrides: {STRIPE_TAX_MODE: 'automatic'}});
+  t.after(() => env.close());
+  const {resetTaxCache} = await import('../src/billing.mjs');
+  resetTaxCache();
+  const kunde = await signedIn(env, 'kai.bestand@example.test');
+  const admin = await signedIn(env, 'petra.preise@example.test');
+  const grant = email => env.pg.json(`with x as (insert into public.user_roles (user_id, role)
+    select id, 'pricing_admin' from auth.users where email = '${email}' returning 1) select to_json(count(*)) from x`);
+
+  // Bestandsabo auf dem alten Preis (19,90 EUR).
+  const co = await kunde.post('/v1/billing/checkout', {price: 'pro_month', confirm: true});
+  env.stripe.sim.completeCheckout(co.data.url.split('/').pop());
+  await env.deliverWebhooks();
+
+  await t.test('ohne Rolle: kein Zugriff, auch nicht per Selbstvergabe; ohne Anmeldung 401', async () => {
+    assert.equal((await env.browser().get('/v1/admin/pricing')).status, 401);
+    assert.deepEqual([(await admin.get('/v1/admin/pricing')).status, (await admin.get('/v1/admin/pricing')).data.state], [403, 'NOT_PRICING_ADMIN']);
+    assert.equal((await admin.post('/v1/admin/pricing/preview', {price: 'pro_month', amount: 2490})).status, 403);
+    assert.equal((await admin.post('/v1/admin/pricing/apply', {price: 'pro_month', amount: 2490, confirm: true})).status, 403);
+    assert.equal(await grant('petra.preise@example.test'), 1);
+  });
+
+  let preview;
+  await t.test('Uebersicht und Vorschau aendern nichts', async () => {
+    const o = await admin.get('/v1/admin/pricing');
+    assert.equal(o.status, 200);
+    const pro = o.data.prices.find(p => p.id === 'pro_month');
+    assert.deepEqual([pro.unit_amount, pro.active, pro.subscribers], [1990, true, 1]);
+    assert.deepEqual([o.data.stripe.pro_month.taxBehavior, o.data.stripe.pro_month.matches, o.data.tax, o.data.stripeTax], ['inclusive', true, 'automatic', 'ok']);
+    assert.equal(JSON.stringify(o.data).includes('sk_'), false, 'kein Stripe-Schluessel in der Antwort');
+    preview = (await admin.post('/v1/admin/pricing/preview', {price: 'pro_month', amount: 2490})).data;
+    assert.match(preview.changeId, /^pc_[a-f0-9]{32}$/);
+    assert.ok(preview.summary.some(l => /24,90\s€ pro Monat inkl\. Umsatzsteuer \(bisher 19,90\s€\)/.test(l)));
+    assert.ok(preview.summary.some(l => /Bestehende Abos \(1\) behalten ihren bisherigen Preis/.test(l)));
+    assert.equal(env.stripe.sim.pricesCreated || 0, 0, 'Vorschau legt nichts an');
+    assert.equal((await admin.post('/v1/admin/pricing/preview', {price: 'pro_month', amount: 20})).data.state, 'AMOUNT_INVALID');
+    assert.equal((await admin.post('/v1/admin/pricing/preview', {price: 'pro_month', amount: 1990})).data.state, 'PRICE_UNCHANGED');
+  });
+
+  const body = () => ({price: 'pro_month', amount: 2490, changeId: preview.changeId, expectedProviderPriceId: preview.expectedProviderPriceId,
+    password: PASSWORD, confirm: true});
+  await t.test('ohne Bestaetigung oder mit falschem Passwort: nichts geaendert', async () => {
+    assert.equal((await admin.post('/v1/admin/pricing/apply', {...body(), confirm: false})).data.state, 'CONFIRMATION_REQUIRED');
+    assert.equal((await admin.post('/v1/admin/pricing/apply', {...body(), password: 'falsch-falsch-1A'})).data.state, 'CURRENT_PASSWORD_INVALID');
+    assert.equal(env.stripe.sim.pricesCreated || 0, 0);
+  });
+
+  await t.test('Ausfuehren: neuer Stripe-Preis brutto/inklusive, aktiv fuer neue Abschluesse; doppelt = einmal', async () => {
+    const r = await admin.post('/v1/admin/pricing/apply', body());
+    assert.equal(r.status, 200, JSON.stringify(r.data));
+    assert.deepEqual([r.data.change.from, r.data.change.to, r.data.change.status], [1990, 2490, 'applied']);
+    const again = await admin.post('/v1/admin/pricing/apply', body());
+    assert.equal(again.data.change.price, r.data.change.price, 'zweiter Klick: derselbe Vorgang');
+    assert.equal(env.stripe.sim.pricesCreated, 1, 'genau ein neuer Stripe-Preis');
+    const plans = await env.browser().get('/v1/plans');
+    const month = plans.data.plans.find(p => p.id === 'pro').prices.filter(p => p.interval === 'month');
+    assert.deepEqual(month.map(p => p.unitAmount), [2490], 'Preisseite/Registrierung: nur der neue Preis');
+    // Neuer Abschluss nutzt den neuen Preis, mit Stripe Tax und unveraendertem Endpreis-Hinweis.
+    const neu = await signedIn(env, 'nina.neu@example.test');
+    const c = await neu.post('/v1/billing/checkout', {price: month[0].key, confirm: true});
+    assert.equal(c.status, 200, JSON.stringify(c.data));
+    const session = env.stripe.sim.sessions.get(c.data.url.split('/').pop());
+    assert.match(session.custom_text.submit.message, /24,90\s€ pro Monat inkl\. USt/);
+    assert.deepEqual(session.automatic_tax, {enabled: 'true'});
+    // Bestandsabo unveraendert, weiterhin Pro.
+    const bestand = await env.pg.json(`select to_json(price_id) from public.subscriptions s join auth.users u on u.id = s.user_id where u.email = 'kai.bestand@example.test'`);
+    assert.equal(bestand, 'pro_month');
+    assert.equal((await kunde.get('/v1/me/billing')).data.entitlements.plan_id, 'pro');
+    // Audit-Log
+    const audit = await env.pg.json(`select to_json(x) from (select status, old_amount, new_amount, admin_user_id is not null as wer from billing.price_changes) x`);
+    assert.deepEqual(audit, {status: 'applied', old_amount: 1990, new_amount: 2490, wer: true});
+  });
+
+  await t.test('veraltete Vorschau (Preis inzwischen geaendert) wird abgelehnt', async () => {
+    const stale = await admin.post('/v1/admin/pricing/apply', {...body(), changeId: 'pc_' + 'f'.repeat(32), amount: 2990});
+    assert.deepEqual([stale.status, stale.data.state], [409, 'PRICE_NOT_ACTIVE'], 'alter Preisschluessel nicht mehr aktiv');
+    assert.equal(env.stripe.sim.pricesCreated, 1, 'kein weiterer Stripe-Preis');
+  });
+});
+
+test('Newsletter (Double-Opt-in) und Brevo-Kontaktabgleich', {skip}, async t => {
+  const lists = {VU_BREVO_LIST_USERS: '11', VU_BREVO_LIST_FREE: '12', VU_BREVO_LIST_PRO: '13', VU_BREVO_LIST_NEWSLETTER: '4'};
+  const env = await createEnvironment({envOverrides: {VU_NEWSLETTER: 'true', VU_BREVO_SYNC: 'true', ...lists}});
+  t.after(() => env.close());
+  const cron = () => env.app.scheduled();
+  const status = async email => env.pg.json(`select to_json(status) from billing.marketing_consents where email = '${email}' order by requested_at desc limit 1`);
+
+  await t.test('Status zeigt, ob die DOI-Vorlage nutzbar ist (Pruefung ohne eigenen Workflow)', async () => {
+    const h = await env.app.handle(new Request(env.api + '/v1/health'));
+    const data = await h.json();
+    assert.deepEqual([data.newsletter, data.newsletterTemplate, data.contactSync], [true, 'ok', true]);
+  });
+
+  await t.test('Registrierung ohne Haken: kein Newsletter, kein DOI', async () => {
+    const b = await signedIn(env, 'ohne.haken@example.test');
+    await cron();
+    assert.equal(await status('ohne.haken@example.test'), null);
+    assert.ok(!env.brevo.doi.some(d => d.email === 'ohne.haken@example.test'));
+    assert.equal((await b.get('/v1/me')).data.newsletter.status, 'none');
+    // Selbst setzen geht nicht mehr (nur ueber den Double-Opt-in).
+    await b.patch('/v1/me', {settings: {marketingEmails: true}});
+    assert.equal((await b.get('/v1/me')).data.settings.marketingEmails, false);
+  });
+
+  await t.test('Registrierung mit Haken: DOI erst nach bestaetigter Adresse, Werbung erst nach Klick', async () => {
+    const b = env.browser();
+    const {location} = await register(env, b, 'mit.haken@example.test', {newsletter: true});
+    assert.ok(!env.brevo.doi.some(d => d.email === 'mit.haken@example.test'), 'vor der Kontobestaetigung keine DOI-Mail');
+    await b.open(location);
+    await cron();
+    const doi = env.brevo.doi.find(d => d.email === 'mit.haken@example.test');
+    assert.ok(doi, 'DOI-Mail ueber die bestehende Vorlage');
+    assert.deepEqual([doi.includeListIds, doi.tracking, doi.redirectionUrl], [[4], false, 'https://www.visionuniverse.de/newsletter/bestaetigt/']);
+    assert.equal(await status('mit.haken@example.test'), 'pending');
+    assert.equal((await b.get('/v1/me')).data.settings.marketingEmails, false, 'ohne Klick keine Werbung');
+    env.brevo.confirmDoi('mit.haken@example.test');
+    await env.pg.json(`with x as (update billing.marketing_consents set checked_at = now() - interval '10 minutes' returning 1) select to_json(count(*)) from x`);
+    await cron();
+    assert.equal(await status('mit.haken@example.test'), 'confirmed');
+    const me = (await b.get('/v1/me')).data;
+    assert.deepEqual([me.newsletter.status, me.settings.marketingEmails], ['confirmed', true]);
+    const row = await env.pg.json(`select to_json(r) from (select text_version, source, confirmed_at is not null as c from billing.marketing_consents where email = 'mit.haken@example.test') r`);
+    assert.deepEqual(row, {text_version: 'vu-newsletter-v1', source: 'signup', c: true}, 'Nachweis: Fassung, Quelle, Zeitpunkt');
+    // Abmeldung ueber den Link in der Mail (Brevo) wird uebernommen.
+    env.brevo.unsubscribe('mit.haken@example.test');
+    await env.pg.json(`with x as (update billing.marketing_consents set checked_at = now() - interval '7 hours' returning 1) select to_json(count(*)) from x`);
+    await cron();
+    assert.equal(await status('mit.haken@example.test'), 'withdrawn');
+    assert.equal((await b.get('/v1/me')).data.settings.marketingEmails, false);
+  });
+
+  await t.test('Bestandskonto: Opt-in in den Einstellungen und Abmelden im Konto', async () => {
+    const b = await signedIn(env, 'bestand@example.test');
+    const on = await b.post('/v1/me/newsletter', {subscribe: true});
+    assert.deepEqual([on.status, on.data.newsletter.status], [200, 'pending']);
+    env.brevo.confirmDoi('bestand@example.test');
+    await env.pg.json(`with x as (update billing.marketing_consents set checked_at = now() - interval '10 minutes' returning 1) select to_json(count(*)) from x`);
+    await cron();
+    assert.equal(await status('bestand@example.test'), 'confirmed');
+    const off = await b.post('/v1/me/newsletter', {subscribe: false});
+    assert.equal(off.data.newsletter.status, 'withdrawn');
+    assert.ok(!env.brevo.contacts.get('bestand@example.test').listIds.includes(4), 'aus der Newsletter-Liste entfernt');
+    assert.equal((await b.post('/v1/me/newsletter', {subscribe: 'ja'})).data.state, 'SUBSCRIBE_INVALID');
+    assert.equal((await b.post('/v1/me/newsletter', {subscribe: true}, {origin: 'https://evil.example'})).status, 403);
+  });
+
+  await t.test('Kontaktabgleich: Liste Nutzer + Free/Pro, keine Newsletter-Liste, Loeschung entfernt den Kontakt', async () => {
+    const b = await signedIn(env, 'kontakt@example.test');
+    await cron(); await cron();
+    let c = env.brevo.contacts.get('kontakt@example.test');
+    assert.deepEqual([c.listIds.sort(), c.attributes.VU_TARIF], [[11, 12], 'FREE']);
+    assert.ok(!c.listIds.includes(4), 'Kontaktverwaltung erzeugt keine Newsletter-Anmeldung');
+    await subscribe(env, b, 'pro_month');
+    await cron();
+    c = env.brevo.contacts.get('kontakt@example.test');
+    assert.deepEqual([c.listIds.sort(), c.attributes.VU_TARIF], [[11, 13], 'PRO'], 'Wechsel nach Pro');
+    await b.post('/v1/me/delete', {confirm: 'LOESCHEN', currentPassword: PASSWORD});
+    await cron();
+    assert.equal(env.brevo.contacts.has('kontakt@example.test'), false, 'geloeschtes Konto: Kontakt entfernt');
+  });
+
+  await t.test('Newsletter aus: kein Haken wirksam, Anmeldung abgewiesen', async () => {
+    const off = await createEnvironment({envOverrides: {VU_NEWSLETTER: 'false'}});
+    try {
+      const b = off.browser();
+      const {location} = await register(off, b, 'aus@example.test', {newsletter: true});
+      await b.open(location);
+      await off.app.scheduled();
+      assert.equal(off.brevo.doi.length, 0);
+      assert.equal((await b.post('/v1/me/newsletter', {subscribe: true})).data.state, 'NEWSLETTER_NOT_AVAILABLE');
+      assert.equal((await b.get('/v1/me')).data.newsletter.available, false);
+    } finally { await off.close(); }
+  });
+});
+
+test('E4: native Anmeldung, Rotation und Push-RLS durch Worker und PostgreSQL', {skip}, async t => {
+  const env = await createEnvironment(); t.after(() => env.close());
+  await signedIn(env,'mobile-a@example.test'); await signedIn(env,'mobile-b@example.test');
+  const request = async(path,body,token) => {
+    const res = await env.app.handle(new Request(env.api+path,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)}));
+    return {res,data:await res.json()};
+  };
+  const login=await request('/v1/auth/app/login',{email:'mobile-a@example.test',password:PASSWORD});
+  assert.equal(login.res.status,200);assert.match(login.res.headers.get('Cache-Control'),/no-store/);
+  assert.equal(login.res.headers.get('Set-Cookie'),null);
+  const refreshed=await request('/v1/auth/app/refresh',{refreshToken:login.data.refreshToken});
+  assert.equal(refreshed.res.status,200);assert.notEqual(refreshed.data.refreshToken,login.data.refreshToken);
+  const token=refreshed.data.accessToken,device='test_token_aaaaaaaaaaaaaaaaaaaaaaaa';
+  assert.equal((await request('/v1/push/devices',{token:device,platform:'ios'},token)).res.status,200);
+  // Z4: /v1/me nennt den Push-Stand (ohne FCM-Zugang nicht verfuegbar, ein Geraet); Arten werden im Konto gespeichert.
+  const call=async(method,path,body)=>{const res=await env.app.handle(new Request(env.api+path,{method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+token},body:body===undefined?undefined:JSON.stringify(body)}));return {res,data:await res.json()};};
+  const meA=await call('GET','/v1/me');
+  assert.deepEqual(meA.data.push,{available:false,devices:1,maxPerDay:1,channel:'app'});
+  const patched=await call('PATCH','/v1/me',{settings:{notifications:{PRICE_EVENT:true,SUPERTRADER_SIGNAL:false}}});
+  assert.equal(patched.res.status,200);assert.deepEqual(patched.data.settings.notifications,{PRICE_EVENT:true,SUPERTRADER_SIGNAL:false});
+  assert.equal((await call('PATCH','/v1/me',{settings:{notifications:{EMAIL:true}}})).data.state,'SETTING_INVALID');
+  const other=await request('/v1/auth/app/login',{email:'mobile-b@example.test',password:PASSWORD});
+  assert.equal((await request('/v1/push/devices/remove',{token:device},other.data.accessToken)).res.status,200);
+  const count=await env.pg.json('select count(*)::int from public.push_devices');
+  assert.equal(count,1);
+  assert.equal((await request('/v1/push/devices/remove',{token:device},token)).res.status,200);
+  assert.equal((await request('/v1/auth/app/logout',{},token)).res.status,200);
 });

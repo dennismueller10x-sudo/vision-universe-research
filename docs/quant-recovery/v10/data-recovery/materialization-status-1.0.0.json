@@ -1,0 +1,4204 @@
+{
+ "schemaVersion": "v10-materialization-status-1.0.0",
+ "productionApproved": false,
+ "states": [
+  "CODE_PRESENT",
+  "PRODUCER_EFFECTIVE",
+  "MATERIALIZED_VERIFIED"
+ ],
+ "codeSha256": {
+  "materialization_status.py": "bba2ba60ac81e70eff95a083eefcdb02e74f1976307635ecc39414a0b9a13317"
+ },
+ "sec": {
+  "correction": "SEC P1-P4 (#1043): fiscal-year anchor, future-period quarantine, no bulk acceptance time, DQ-SEC-1/2/3",
+  "state": "PRODUCER_EFFECTIVE",
+  "code": {
+   "normalizationLogic": "1.14.0",
+   "qualityRules": "1.1.0",
+   "state": "CODE_PRESENT"
+  },
+  "producers": {
+   "secConsumerFundamentals": {
+    "artifact": "quant/data/sec/consumer/CIK*.json",
+    "versions": {
+     "1.13.0": 5063
+    },
+    "schedule": "sec-consumer-fundamentals.yml cron \"30 7 * * 1\" (next: Monday 2026-11-02 07:30 UTC)",
+    "state": "PENDING_PRODUCER_RUN"
+   },
+   "secFactbookDaily": {
+    "artifact": "quant/data/fundamentals/issuers/*.json",
+    "versions": {
+     "1.9.0": 5031,
+     "1.10.0": 344,
+     "1.14.0": 68,
+     "1.13.0": 36
+    },
+    "issuersAtNewVersion": 68,
+    "issuersWithNewQualityCodes": [
+     {
+      "cik": "0000931015",
+      "tickers": [
+       "PII"
+      ],
+      "newQualityCodes": {
+       "FUTURE_PERIOD_END": 2
+      }
+     },
+     {
+      "cik": "0001552033",
+      "tickers": [
+       "TRU"
+      ],
+      "newQualityCodes": {
+       "IMPLAUSIBLE_FILING_FY": 1
+      }
+     },
+     {
+      "cik": "0000034067",
+      "tickers": [
+       "BOOM"
+      ],
+      "newQualityCodes": {
+       "FUTURE_PERIOD_END": 1
+      }
+     },
+     {
+      "cik": "0000895126",
+      "tickers": [
+       "EXE"
+      ],
+      "newQualityCodes": {
+       "FUTURE_PERIOD_END": 1
+      }
+     },
+     {
+      "cik": "0000007431",
+      "tickers": [
+       "AWI"
+      ],
+      "newQualityCodes": {
+       "FUTURE_PERIOD_END": 1
+      }
+     },
+     {
+      "cik": "0000912593",
+      "tickers": [
+       "SUI"
+      ],
+      "newQualityCodes": {
+       "FUTURE_PERIOD_END": 1
+      }
+     },
+     {
+      "cik": "0000102729",
+      "tickers": [
+       "VMI"
+      ],
+      "newQualityCodes": {
+       "IMPLAUSIBLE_FILING_FY": 1
+      }
+     },
+     {
+      "cik": "0001009829",
+      "tickers": [
+       "JAKK"
+      ],
+      "newQualityCodes": {
+       "FUTURE_PERIOD_END": 1
+      }
+     },
+     {
+      "cik": "0000861884",
+      "tickers": [
+       "RS"
+      ],
+      "newQualityCodes": {
+       "FUTURE_PERIOD_END": 10
+      }
+     }
+    ],
+    "state": "PRODUCER_EFFECTIVE",
+    "note": "sec-fundamentals-daily re-normalizes only the issuers it touches; the run of 2026-10-28 13:02 UTC (commit 572a011689) wrote 68 issuers with the corrected code."
+   },
+   "downstream": {
+    "discoverStx": {
+     "artifact": "discover/data/stocks/US_REAL/STX.json",
+     "marketCap": {
+      "value": 137008764839.38,
+      "shares": 212677178,
+      "sharesFy": 2027,
+      "sharesEnd": "2025-06-27"
+     },
+     "state": "STILL_DEFECTIVE"
+    },
+    "factorEvidenceStx": {
+     "artifact": "quant/data/product/factor-evidence-v1/ST.json.gz",
+     "marketCap": 137008764839.38,
+     "asOf": "2026-10-26",
+     "fundamentalsAsOf": "2026-07-03",
+     "state": "STILL_DEFECTIVE"
+    },
+    "order": "sec-consumer-fundamentals (bundles, discover/data, capabilities) -> product-intelligence-materialization (factor-evidence-v1) ; update-sec-fundamentals / sec-fundamentals-daily (factbooks)"
+   }
+  },
+  "shadowRunOnCurrentSecData": {
+   "method": "scripts/quant/cli.py consumer --ciks <33> --as-of 2026-10-28, once from the parent of #1043 (1.13.0) and once from this commit (1.14.0), identical cached SEC companyfacts API responses (33 requests); output private",
+   "issuers": 33,
+   "changed": 13,
+   "fyLabelsRepaired": [
+    "PRTH",
+    "STX",
+    "WTBA"
+   ],
+   "futurePeriodRowsRemoved": {
+    "issuers": [
+     "AAL",
+     "ASLE",
+     "AXR",
+     "HVII",
+     "LEGH",
+     "PFIS",
+     "PMT"
+    ],
+    "rows": 12
+   },
+   "futurePeriodRowsLeftInNew": 0,
+   "agreesWithV9Shadow": {
+    "noImpossibleFyLabel": {
+     "True": 9,
+     "None": 20
+    },
+    "shares": {
+     "True": 9,
+     "None": 20
+    }
+   },
+   "rows": [
+    {
+     "cik": "0000006201",
+     "tickers": [
+      "AAL"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 1,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2027,
+       "fp": "Q2",
+       "end": "2027-07-17",
+       "filed": "2026-07-23"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-07-23"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 661969951.0,
+       "end": "2027-07-17",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 661936666.0,
+       "end": "2026-06-30",
+       "concept": "us-gaap:CommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "sharesAfter": {
+       "v": 661936666,
+       "end": "2026-06-30"
+      }
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": true,
+      "shares": true
+     }
+    },
+    {
+     "cik": "0000006207",
+     "tickers": [
+      "AXR"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "new": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 1,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2034,
+       "fp": "Q1",
+       "end": "2033-09-12",
+       "filed": "2023-09-13"
+      },
+      "new": {
+       "fy": 2027,
+       "fp": "Q1",
+       "end": "2026-07-31",
+       "filed": "2026-09-11"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 5271309.0,
+       "end": "2033-09-12",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 5324849.0,
+       "end": "2026-07-31",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026,
+       2027
+      ],
+      "sharesAfter": {
+       "v": 5324849,
+       "end": "2026-07-31"
+      }
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": true,
+      "shares": true
+     }
+    },
+    {
+     "cik": "0000091576",
+     "tickers": [
+      "KEY"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-04"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-04"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 1067128554.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 1067128554.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 2,
+       "byMetric": {
+        "dividends_declared_per_share": 1,
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0000095029",
+     "tickers": [
+      "RGR"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-27",
+       "filed": "2026-07-29"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-27",
+       "filed": "2026-07-29"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 15978256.0,
+       "end": "2026-06-27",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 15978256.0,
+       "end": "2026-06-27",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 2,
+       "byMetric": {
+        "shares_outstanding": 2
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0000102729",
+     "tickers": [
+      "VMI"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q3",
+       "end": "2026-09-26",
+       "filed": "2026-10-27"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q3",
+       "end": "2026-09-26",
+       "filed": "2026-10-27"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 19139921.0,
+       "end": "2026-09-26",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 19139921.0,
+       "end": "2026-09-26",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "implausibleFilingFy": [
+       {
+        "periodEnd": "2021-12-25",
+        "filingClaimedFy": 2019,
+        "usedFy": 2021
+       }
+      ]
+     },
+     "changed": false
+    },
+    {
+     "cik": "0000320193",
+     "tickers": [
+      "AAPL"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q3",
+       "end": "2026-06-27",
+       "filed": "2026-07-31"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q3",
+       "end": "2026-06-27",
+       "filed": "2026-07-31"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 14594180000.0,
+       "end": "2026-06-27",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 14594180000.0,
+       "end": "2026-06-27",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": null,
+     "changed": false
+    },
+    {
+     "cik": "0000706698",
+     "tickers": [
+      "UTMD"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-12"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-12"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 3183818.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 3183818.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 5,
+       "byMetric": {
+        "long_term_debt": 5
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0000785956",
+     "tickers": [
+      "JJSF"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q3",
+       "end": "2026-06-27",
+       "filed": "2026-08-06"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q3",
+       "end": "2026-06-27",
+       "filed": "2026-08-06"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 18681608.0,
+       "end": "2026-06-27",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 18681608.0,
+       "end": "2026-06-27",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0000789019",
+     "tickers": [
+      "MSFT"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q4",
+       "end": "2026-06-30",
+       "filed": "2026-07-29"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q4",
+       "end": "2026-06-30",
+       "filed": "2026-07-29"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 7425545491.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 7425545491.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": null,
+     "changed": false
+    },
+    {
+     "cik": "0000836157",
+     "tickers": [
+      "LNN"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q4",
+       "end": "2026-08-31",
+       "filed": "2026-10-22"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q4",
+       "end": "2026-08-31",
+       "filed": "2026-10-22"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 10169930.0,
+       "end": "2026-08-31",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 10169930.0,
+       "end": "2026-08-31",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001009829",
+     "tickers": [
+      "JAKK"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q3",
+       "end": "2026-09-30",
+       "filed": "2026-10-27"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q3",
+       "end": "2026-09-30",
+       "filed": "2026-10-27"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 11519192.0,
+       "end": "2026-09-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 11519192.0,
+       "end": "2026-09-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false
+    },
+    {
+     "cik": "0001041368",
+     "tickers": [
+      "RVSB"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "new": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2027,
+       "fp": "Q1",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      },
+      "new": {
+       "fy": 2027,
+       "fp": "Q1",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 19953186.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 19953186.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001056943",
+     "tickers": [
+      "PFIS"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 1,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2028,
+       "fp": "Q2",
+       "end": "2028-08-01",
+       "filed": "2026-08-07"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-07"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 10010367.0,
+       "end": "2028-08-01",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 10010367.0,
+       "end": "2026-06-30",
+       "concept": "us-gaap:CommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 3,
+       "byMetric": {
+        "goodwill": 1,
+        "shares_outstanding": 2
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "sharesAfter": {
+       "v": 10010367,
+       "end": "2026-06-30"
+      }
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": true,
+      "shares": true
+     }
+    },
+    {
+     "cik": "0001137789",
+     "tickers": [
+      "STX"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2026,
+       2027
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 2,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q4",
+       "end": "2026-07-03",
+       "filed": "2026-08-04"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q4",
+       "end": "2026-07-03",
+       "filed": "2026-08-04"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 212677178.0,
+       "end": "2025-06-27",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 226644518.0,
+       "end": "2026-07-03",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "implausibleFilingFy": [
+       {
+        "periodEnd": "2025-06-27",
+        "filingClaimedFy": 2027,
+        "usedFy": 2025
+       }
+      ]
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "sharesAfter": {
+       "v": 226644518,
+       "end": "2026-07-03"
+      }
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": true,
+      "shares": true
+     }
+    },
+    {
+     "cik": "0001162896",
+     "tickers": [
+      "PROP"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 112798010.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 112798010.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "long_term_debt": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001166928",
+     "tickers": [
+      "WTBA"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2107
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 90,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-07-23"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-07-23"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 16215672.0,
+       "end": "2017-12-31",
+       "concept": "us-gaap:CommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 17043743.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "implausibleFilingFy": [
+       {
+        "periodEnd": "2017-12-31",
+        "filingClaimedFy": 2107,
+        "usedFy": 2017
+       }
+      ]
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "sharesAfter": {
+       "v": 17043743,
+       "end": "2026-06-30"
+      }
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": true,
+      "shares": true
+     }
+    },
+    {
+     "cik": "0001356093",
+     "tickers": [
+      "CREX"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 13526506.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 13526506.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 3,
+       "byMetric": {
+        "capital_expenditures": 1,
+        "dividends_paid": 1,
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001356115",
+     "tickers": [
+      "NXDT"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 53106027.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 53106027.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001436208",
+     "tickers": [
+      "LEGH"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 1,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2033,
+       "fp": "Q1",
+       "end": "2033-03-31",
+       "filed": "2024-05-09"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-05"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 23781601.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 23781601.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "income_tax_expense": 1
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": [
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": true,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001464423",
+     "tickers": [
+      "PMT"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026,
+       2027,
+       2028,
+       2029
+      ],
+      "new": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 4,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": null,
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-04"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 87202362.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 87202362.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 90,
+       "byMetric": {
+        "long_term_debt": 90
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": [
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": true,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001540171",
+     "tickers": [
+      "AVLN"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2024,
+       2025
+      ],
+      "new": [
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-12"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-12"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 44333095.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 44333094.0,
+       "end": "2026-06-30",
+       "concept": "us-gaap:CommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": {
+       "v": 44333094,
+       "end": "2026-06-30"
+      }
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": true
+     }
+    },
+    {
+     "cik": "0001589061",
+     "tickers": [
+      "GYRO"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2013,
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2013,
+       2014,
+       2015,
+       2016,
+       2017,
+       2018,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 1,
+      "new": 1
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-13"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-13"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 2199308.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 2199308.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 5,
+       "byMetric": {
+        "shares_outstanding": 5
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001653558",
+     "tickers": [
+      "PRTH"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2015,
+       2016,
+       2017,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       43465,
+       43830
+      ],
+      "new": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 41811,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-06"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-06"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 67060943.0,
+       "end": "2019-12-31",
+       "concept": "us-gaap:CommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 82440372.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "implausibleFilingFy": [
+       {
+        "periodEnd": "2018-12-31",
+        "filingClaimedFy": 43465,
+        "usedFy": 2018
+       },
+       {
+        "periodEnd": "2019-12-31",
+        "filingClaimedFy": 43830,
+        "usedFy": 2019
+       }
+      ]
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "sharesAfter": {
+       "v": 82440372,
+       "end": "2026-06-30"
+      }
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": true,
+      "shares": true
+     }
+    },
+    {
+     "cik": "0001682745",
+     "tickers": [
+      "VRRM"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-05"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-05"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 151982804.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 153557000.0,
+       "end": "2025-12-31",
+       "concept": "us-gaap:CommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 5,
+       "byMetric": {
+        "shares_outstanding": 5
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": {
+       "v": 153557000,
+       "end": "2025-12-31"
+      }
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": true
+     }
+    },
+    {
+     "cik": "0001746129",
+     "tickers": [
+      "BSVN"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2015,
+       2016,
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-10"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-10"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 9525856.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 9525856.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001754170",
+     "tickers": [
+      "ASLE"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2033
+      ],
+      "new": [
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 2,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2033,
+       "fp": "Q4",
+       "end": "2034-03-05",
+       "filed": "2024-03-27"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-07"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 52990947.0,
+       "end": "2034-03-05",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 47726763.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": [
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "sharesAfter": {
+       "v": 47726763,
+       "end": "2026-06-30"
+      }
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": true,
+      "shares": true
+     }
+    },
+    {
+     "cik": "0001806524",
+     "tickers": [
+      "LGHL"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2017,
+       2018,
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2025,
+       "fp": "Q4",
+       "end": "2025-12-31",
+       "filed": "2026-04-30"
+      },
+      "new": {
+       "fy": 2025,
+       "fp": "Q4",
+       "end": "2025-12-31",
+       "filed": "2026-04-30"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 17399176.0,
+       "end": "2021-06-16",
+       "concept": "us-gaap:CommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 17399176.0,
+       "end": "2020-06-16",
+       "concept": "us-gaap:CommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001846416",
+     "tickers": [
+      "HVII"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2024,
+       2025,
+       2026
+      ],
+      "new": [
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 2,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-12"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-12"
+      }
+     },
+     "sharesTtm": {
+      "old": null,
+      "new": null
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 2,
+       "byMetric": {
+        "net_income": 1,
+        "stockholders_equity": 1
+       }
+      }
+     },
+     "changed": true,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001849296",
+     "tickers": [
+      "OKYO"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2019,
+       2020,
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2027,
+       "fp": "Q1",
+       "end": "2026-07-15",
+       "filed": "2026-08-07"
+      },
+      "new": {
+       "fy": 2027,
+       "fp": "Q1",
+       "end": "2026-07-15",
+       "filed": "2026-08-07"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 52479527.0,
+       "end": "2026-07-15",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 52479527.0,
+       "end": "2026-07-15",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "cash_and_equivalents": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001958777",
+     "tickers": [
+      "FBLG"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2021,
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-07-31"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-07-31"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 6658193.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 6658193.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0001979332",
+     "tickers": [
+      "CPBI"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ],
+      "new": [
+       2022,
+       2023,
+       2024,
+       2025,
+       2026
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2027,
+       "fp": "Q1",
+       "end": "2026-06-30",
+       "filed": "2026-08-12"
+      },
+      "new": {
+       "fy": 2027,
+       "fp": "Q1",
+       "end": "2026-06-30",
+       "filed": "2026-08-12"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 4172236.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 4172236.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 3,
+       "byMetric": {
+        "shares_outstanding": 3
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0002011208",
+     "tickers": [
+      "SPAI"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2022,
+       2023,
+       2024,
+       2025
+      ],
+      "new": [
+       2022,
+       2023,
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-14"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 20362862.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 20362862.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 1,
+       "byMetric": {
+        "shares_outstanding": 1
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    },
+    {
+     "cik": "0002028201",
+     "tickers": [
+      "COLA"
+     ],
+     "versions": [
+      "1.13.0",
+      "1.14.0"
+     ],
+     "annualYears": {
+      "old": [
+       2024,
+       2025
+      ],
+      "new": [
+       2024,
+       2025
+      ]
+     },
+     "maxFyMinusPeriodYear": {
+      "old": 0,
+      "new": 0
+     },
+     "rowsWithFuturePeriodEnd": {
+      "old": 0,
+      "new": 0
+     },
+     "latestQuarter": {
+      "old": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-04"
+      },
+      "new": {
+       "fy": 2026,
+       "fp": "Q2",
+       "end": "2026-06-30",
+       "filed": "2026-08-04"
+      }
+     },
+     "sharesTtm": {
+      "old": {
+       "v": 4494439.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      },
+      "new": {
+       "v": 4494439.0,
+       "end": "2026-06-30",
+       "concept": "dei:EntityCommonStockSharesOutstanding"
+      }
+     },
+     "quality": {
+      "futurePeriodEnd": {
+       "quarantined": 2,
+       "byMetric": {
+        "shares_outstanding": 2
+       }
+      }
+     },
+     "changed": false,
+     "v9Expectation": {
+      "annualYearsAfter": null,
+      "sharesAfter": null
+     },
+     "agreesWithV9": {
+      "noImpossibleFyLabel": null,
+      "shares": null
+     }
+    }
+   ]
+  },
+  "committedAffectedIssuers": {
+   "count": 29,
+   "byState": {
+    "PENDING_PRODUCER_RUN": 29
+   },
+   "stillShowingV9Defect": [
+    "STX"
+   ],
+   "rows": [
+    {
+     "cik": "0000006201",
+     "tickers": [
+      "AAL"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2027,
+      "fp": "Q2",
+      "end": "2027-07-17",
+      "filed": "2026-07-23"
+     }
+    },
+    {
+     "cik": "0000006207",
+     "tickers": [
+      "AXR"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2034,
+      "fp": "Q1",
+      "end": "2033-09-12",
+      "filed": "2023-09-13"
+     }
+    },
+    {
+     "cik": "0000091576",
+     "tickers": [
+      "KEY"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-04"
+     }
+    },
+    {
+     "cik": "0000095029",
+     "tickers": [
+      "RGR"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-27",
+      "filed": "2026-07-29"
+     }
+    },
+    {
+     "cik": "0000706698",
+     "tickers": [
+      "UTMD"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-12"
+     }
+    },
+    {
+     "cik": "0000785956",
+     "tickers": [
+      "JJSF"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q3",
+      "end": "2026-06-27",
+      "filed": "2026-08-06"
+     }
+    },
+    {
+     "cik": "0000836157",
+     "tickers": [
+      "LNN"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q4",
+      "end": "2026-08-31",
+      "filed": "2026-10-22"
+     }
+    },
+    {
+     "cik": "0001041368",
+     "tickers": [
+      "RVSB"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2027,
+      "fp": "Q1",
+      "end": "2026-06-30",
+      "filed": "2026-08-14"
+     }
+    },
+    {
+     "cik": "0001056943",
+     "tickers": [
+      "PFIS"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2028,
+      "fp": "Q2",
+      "end": "2028-08-01",
+      "filed": "2026-08-07"
+     }
+    },
+    {
+     "cik": "0001137789",
+     "tickers": [
+      "STX"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2026,
+      2027
+     ],
+     "stillShowsV9Defect": true,
+     "maxFyMinusPeriodYear": 2,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q4",
+      "end": "2026-07-03",
+      "filed": "2026-08-04"
+     }
+    },
+    {
+     "cik": "0001162896",
+     "tickers": [
+      "PROP"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-14"
+     }
+    },
+    {
+     "cik": "0001166928",
+     "tickers": [
+      "WTBA"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2014,
+      2015,
+      2016,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2107
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 90,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-07-23"
+     }
+    },
+    {
+     "cik": "0001356093",
+     "tickers": [
+      "CREX"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-14"
+     }
+    },
+    {
+     "cik": "0001356115",
+     "tickers": [
+      "NXDT"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-14"
+     }
+    },
+    {
+     "cik": "0001436208",
+     "tickers": [
+      "LEGH"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2033,
+      "fp": "Q1",
+      "end": "2033-03-31",
+      "filed": "2024-05-09"
+     }
+    },
+    {
+     "cik": "0001464423",
+     "tickers": [
+      "PMT"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2026,
+      2027,
+      2028,
+      2029
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": null
+    },
+    {
+     "cik": "0001540171",
+     "tickers": [
+      "AVLN"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-12"
+     }
+    },
+    {
+     "cik": "0001589061",
+     "tickers": [
+      "GYRO"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2013,
+      2014,
+      2015,
+      2016,
+      2017,
+      2018,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 1,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-13"
+     }
+    },
+    {
+     "cik": "0001653558",
+     "tickers": [
+      "PRTH"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2015,
+      2016,
+      2017,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      43465,
+      43830
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 41811,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-06"
+     }
+    },
+    {
+     "cik": "0001682745",
+     "tickers": [
+      "VRRM"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-05"
+     }
+    },
+    {
+     "cik": "0001746129",
+     "tickers": [
+      "BSVN"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2015,
+      2016,
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-10"
+     }
+    },
+    {
+     "cik": "0001754170",
+     "tickers": [
+      "ASLE"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025,
+      2033
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2033,
+      "fp": "Q4",
+      "end": "2034-03-05",
+      "filed": "2024-03-27"
+     }
+    },
+    {
+     "cik": "0001806524",
+     "tickers": [
+      "LGHL"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2017,
+      2018,
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2025,
+      "fp": "Q4",
+      "end": "2025-12-31",
+      "filed": "2026-04-30"
+     }
+    },
+    {
+     "cik": "0001846416",
+     "tickers": [
+      "HVII"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2024,
+      2025,
+      2026
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-12"
+     }
+    },
+    {
+     "cik": "0001849296",
+     "tickers": [
+      "OKYO"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2019,
+      2020,
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2027,
+      "fp": "Q1",
+      "end": "2026-07-15",
+      "filed": "2026-08-07"
+     }
+    },
+    {
+     "cik": "0001958777",
+     "tickers": [
+      "FBLG"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2021,
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-07-31"
+     }
+    },
+    {
+     "cik": "0001979332",
+     "tickers": [
+      "CPBI"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2022,
+      2023,
+      2024,
+      2025,
+      2026
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2027,
+      "fp": "Q1",
+      "end": "2026-06-30",
+      "filed": "2026-08-12"
+     }
+    },
+    {
+     "cik": "0002011208",
+     "tickers": [
+      "SPAI"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2022,
+      2023,
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-14"
+     }
+    },
+    {
+     "cik": "0002028201",
+     "tickers": [
+      "COLA"
+     ],
+     "committedVersion": "1.13.0",
+     "state": "PENDING_PRODUCER_RUN",
+     "committedAnnualYears": [
+      2024,
+      2025
+     ],
+     "stillShowsV9Defect": false,
+     "maxFyMinusPeriodYear": 0,
+     "latestQuarter": {
+      "fy": 2026,
+      "fp": "Q2",
+      "end": "2026-06-30",
+      "filed": "2026-08-04"
+     }
+    }
+   ]
+  },
+  "originalFilerFacts": [
+   {
+    "cik": "0000006201",
+    "tickers": [
+     "AAL"
+    ],
+    "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000006201.json",
+    "responseSha256": "e86aa2120584973c57138a4d9d645d5c9ab641783c1180ce3ce3f74d98288cde",
+    "filingsWithImpossibleFyLabel": 0,
+    "examples": [],
+    "factsWithPeriodEndAfterFiled": 3
+   },
+   {
+    "cik": "0000006207",
+    "tickers": [
+     "AXR"
+    ],
+    "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0000006207.json",
+    "responseSha256": "5ef6c09f2f17c0ab0236cb5e36e5b3a9ea2405753afb824aa5b95d4dc3ba42d4",
+    "filingsWithImpossibleFyLabel": 1,
+    "examples": [
+     {
+      "accession": "0001410578-23-002089",
+      "fyLabel": 2023,
+      "latestPeriodEnd": "2033-09-12",
+      "filed": "2023-09-13",
+      "form": "10-Q"
+     }
+    ],
+    "factsWithPeriodEndAfterFiled": 5
+   },
+   {
+    "cik": "0001056943",
+    "tickers": [
+     "PFIS"
+    ],
+    "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001056943.json",
+    "responseSha256": "32d46a19fd173169605a92d21f6b98903bd2de46b9a87aa9021bba58695d2d25",
+    "filingsWithImpossibleFyLabel": 1,
+    "examples": [
+     {
+      "accession": "0001104659-26-092684",
+      "fyLabel": 2026,
+      "latestPeriodEnd": "2028-08-01",
+      "filed": "2026-08-07",
+      "form": "10-Q"
+     }
+    ],
+    "factsWithPeriodEndAfterFiled": 7
+   },
+   {
+    "cik": "0001137789",
+    "tickers": [
+     "STX"
+    ],
+    "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001137789.json",
+    "responseSha256": "4af11baa8aecbd802dbbd5d47709d7e94d89ad47876ca5ac62c1729e21f08a9d",
+    "filingsWithImpossibleFyLabel": 1,
+    "examples": [
+     {
+      "accession": "0001137789-25-000157",
+      "fyLabel": 2027,
+      "latestPeriodEnd": "2025-07-29",
+      "filed": "2025-08-01",
+      "form": "10-K"
+     }
+    ],
+    "factsWithPeriodEndAfterFiled": 0
+   },
+   {
+    "cik": "0001166928",
+    "tickers": [
+     "WTBA"
+    ],
+    "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001166928.json",
+    "responseSha256": "2e97ab0a85215c5cc68956014707ddc6117afb56bc963370d83c37148e3caff2",
+    "filingsWithImpossibleFyLabel": 1,
+    "examples": [
+     {
+      "accession": "0001166928-18-000014",
+      "fyLabel": 2107,
+      "latestPeriodEnd": "2018-02-28",
+      "filed": "2018-03-01",
+      "form": "10-K"
+     }
+    ],
+    "factsWithPeriodEndAfterFiled": 0
+   },
+   {
+    "cik": "0001464423",
+    "tickers": [
+     "PMT"
+    ],
+    "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001464423.json",
+    "responseSha256": "f95c23e42501745f773b441b69769d76cbe2bf6475afa5955b44691cdde166f4",
+    "filingsWithImpossibleFyLabel": 22,
+    "examples": [
+     {
+      "accession": "0000950170-23-017766",
+      "fyLabel": 2023,
+      "latestPeriodEnd": "2029-03-31",
+      "filed": "2023-05-04",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000950170-23-037947",
+      "fyLabel": 2023,
+      "latestPeriodEnd": "2029-06-30",
+      "filed": "2023-08-03",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000950170-23-057449",
+      "fyLabel": 2023,
+      "latestPeriodEnd": "2029-09-30",
+      "filed": "2023-11-01",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0000950170-24-018760",
+      "fyLabel": 2023,
+      "latestPeriodEnd": "2029-12-31",
+      "filed": "2024-02-22",
+      "form": "10-K"
+     },
+     {
+      "accession": "0000950170-24-052125",
+      "fyLabel": 2024,
+      "latestPeriodEnd": "2030-03-31",
+      "filed": "2024-05-02",
+      "form": "10-Q"
+     }
+    ],
+    "factsWithPeriodEndAfterFiled": 282
+   },
+   {
+    "cik": "0001653558",
+    "tickers": [
+     "PRTH"
+    ],
+    "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001653558.json",
+    "responseSha256": "ee10483b480a5b2494f2a4a652dbfbdb485538bc797d61673b08fb7a06e9a0d1",
+    "filingsWithImpossibleFyLabel": 5,
+    "examples": [
+     {
+      "accession": "0001628280-18-014379",
+      "fyLabel": 43465,
+      "latestPeriodEnd": "2018-11-09",
+      "filed": "2018-11-14",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001628280-19-003666",
+      "fyLabel": 43465,
+      "latestPeriodEnd": "2019-03-22",
+      "filed": "2019-03-29",
+      "form": "10-K"
+     },
+     {
+      "accession": "0001628280-19-006766",
+      "fyLabel": 43555,
+      "latestPeriodEnd": "2019-05-10",
+      "filed": "2019-05-15",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001628280-19-010770",
+      "fyLabel": 43555,
+      "latestPeriodEnd": "2019-08-09",
+      "filed": "2019-08-14",
+      "form": "10-Q"
+     },
+     {
+      "accession": "0001653558-20-000015",
+      "fyLabel": 43830,
+      "latestPeriodEnd": "2020-03-26",
+      "filed": "2020-03-30",
+      "form": "10-K"
+     }
+    ],
+    "factsWithPeriodEndAfterFiled": 0
+   },
+   {
+    "cik": "0001754170",
+    "tickers": [
+     "ASLE"
+    ],
+    "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001754170.json",
+    "responseSha256": "aab4bf290a9a8c3f15beaf79588e69c3a26eb664ab6afa15d2cc03d68749f686",
+    "filingsWithImpossibleFyLabel": 1,
+    "examples": [
+     {
+      "accession": "0001558370-24-004010",
+      "fyLabel": 2023,
+      "latestPeriodEnd": "2034-03-05",
+      "filed": "2024-03-27",
+      "form": "10-K/A"
+     }
+    ],
+    "factsWithPeriodEndAfterFiled": 1
+   },
+   {
+    "cik": "0001846416",
+    "tickers": [
+     "HVII"
+    ],
+    "sourceUrl": "https://data.sec.gov/api/xbrl/companyfacts/CIK0001846416.json",
+    "responseSha256": "1ff635e210b5462b4ee2c756ae9a588e22841c00d5f383e8236e67d4eb4bbf2e",
+    "filingsWithImpossibleFyLabel": 0,
+    "examples": [],
+    "factsWithPeriodEndAfterFiled": 3
+   }
+  ]
+ },
+ "pzza": {
+  "correction": "PZZA 2:1 stock dividend 2013-12-30 (#1042, quant/config/split-evidence-supplements.json)",
+  "state": "PENDING_PRODUCER_RUN",
+  "code": "CODE_PRESENT",
+  "artifact": "quant/data/market/discover-series-long/ref_PZZA.json",
+  "sha256": {
+   "committed": "c25f802bf30372355cc4e86603fe23cc3bf0c7bbec1f786794fafc730b3c2252",
+   "v9Before": "c25f802bf30372355cc4e86603fe23cc3bf0c7bbec1f786794fafc730b3c2252",
+   "expectedAfter": "e15912c5d483dc0854d6f773826fd05a271f33a674a82f3319575b565abb2004"
+  },
+  "exWeekRatio": {
+   "committed": 0.512285,
+   "v9Before": 0.512285,
+   "expectedAfter": 1.024455,
+   "splitSizedNow": true
+  },
+  "around": {
+   "2013-12-13": {
+    "committed": 86.16,
+    "v9Before": 86.16,
+    "expectedAfter": 43.08
+   },
+   "2013-12-20": {
+    "committed": 88.46,
+    "v9Before": 88.46,
+    "expectedAfter": 44.23
+   },
+   "2013-12-27": {
+    "committed": 89.95,
+    "v9Before": 89.95,
+    "expectedAfter": 44.98
+   },
+   "2014-01-03": {
+    "committed": 46.08,
+    "v9Before": 46.08,
+    "expectedAfter": 46.08
+   },
+   "2014-01-10": {
+    "committed": 46.66,
+    "v9Before": 46.66,
+    "expectedAfter": 46.66
+   },
+   "2014-01-17": {
+    "committed": 47.48,
+    "v9Before": 47.48,
+    "expectedAfter": 47.48
+   }
+  },
+  "producer": "long-series.yml (cron \"40 7 1-7 * 6\" = every Saturday and days 1-7 of a month, next full run Saturday 2026-10-31 07:40 UTC; or workflow_dispatch only=PZZA). The daily repair run cannot see 2013.",
+  "researchEffect": "Until materialized, ref_PZZA stays CORPORATE_ACTION_UNRESOLVED in the adapter (week 2014-01-03 ratio 0.512 is split-sized)."
+ },
+ "rerun": "Re-run after the scheduled producer runs (long-series Sat 2026-10-31, sec-consumer Mon 2026-11-02, product-intelligence afterwards) to move states to MATERIALIZED_VERIFIED; no manual data edit."
+}

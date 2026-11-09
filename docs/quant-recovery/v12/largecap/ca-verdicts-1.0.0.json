@@ -1,0 +1,1303 @@
+{
+ "schemaVersion": "v12-largecap-ca-verdicts-1.0.0",
+ "protocol": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json",
+ "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+ "caProtocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+ "factsSha256": "86cbc55c00eeabd1b68402d2081cbce8f064f1fcdb1aba815c23a100d00d2a4e",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "series": 13,
+ "events": 14,
+ "byVerdict": {
+  "INSUFFICIENT_FILINGS|NO_AFTER_BRACKET": 1,
+  "INSUFFICIENT_FILINGS|NO_BEFORE_BRACKET": 4,
+  "IDENTITY_UNVERIFIED|IDENTITY_TICKER_NOT_NAMED": 3,
+  "SPLIT_OR_SHARE_CHANGE_EVIDENCE|SPLIT_EVIDENCE_8K": 3,
+  "PROVIDER_SPLIT_RECORDED": 1,
+  "NEGATIVE_EVIDENCE_ONLY": 1,
+  "SPLIT_OR_SHARE_CHANGE_EVIDENCE|SHARE_COUNT_DISCONTINUITY": 1
+ },
+ "admissibleSeries": [],
+ "registeredEvents": 0,
+ "note": "Part CA = V10 protocol 1.1.2 + L1-L3. Admissible series would be written to the CA v12 extension; with none admissible no CA register change and no CA loader option was made.",
+ "events_": [
+  {
+   "securityId": "ref_AAPL",
+   "ticker": "AAPL",
+   "candidateCiks": [
+    320193
+   ],
+   "week": "2000-09-29",
+   "prevWeek": "2000-09-22",
+   "prevClose": 0.932,
+   "close": 0.4598,
+   "weeklyRatio": 0.493348,
+   "jumpDay": "2000-09-29",
+   "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
+   "era": "TEXT",
+   "verdict": "INSUFFICIENT_FILINGS",
+   "detail": "NO_AFTER_BRACKET",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 320193,
+     "issuer": "Apple Inc.",
+     "result": "INSUFFICIENT_FILINGS",
+     "insufficientDetail": "NO_AFTER_BRACKET",
+     "shareIssues": [
+      "COVER_DATE_NOT_FOUND",
+      "NO_SHARE_COUNT"
+     ],
+     "before": {
+      "accession": "0000912057-00-033901",
+      "form": "10-Q",
+      "filingDate": "2000-07-31",
+      "coverDate": "2000-07-21",
+      "shares": 324969055.0,
+      "coverVia": "E2_TEXT_COVER",
+      "tradingSymbols": [],
+      "instanceUrl": null,
+      "instanceSha256": null,
+      "textUrl": "https://www.sec.gov/Archives/edgar/data/320193/000091205700033901/a10-q.txt",
+      "textSha256": "b58e4a677c42557fb950640a2200f146c5e9afd81acd9126c2ec225366e46723"
+     },
+     "after": null
+    }
+   ]
+  },
+  {
+   "securityId": "ref_GOOGL",
+   "ticker": "GOOGL",
+   "candidateCiks": [
+    1288776,
+    1652044
+   ],
+   "week": "2014-04-04",
+   "prevWeek": "2014-03-28",
+   "prevClose": 56.01,
+   "close": 27.26,
+   "weeklyRatio": 0.486699,
+   "jumpDay": "2014-04-03",
+   "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "era": "XBRL",
+   "verdict": "INSUFFICIENT_FILINGS",
+   "detail": "NO_BEFORE_BRACKET",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 1288776,
+     "issuer": "GOOGLE INC.",
+     "result": "INSUFFICIENT_FILINGS",
+     "insufficientDetail": "NO_BEFORE_BRACKET",
+     "shareIssues": [
+      "SHARE_COUNT_AMBIGUOUS"
+     ],
+     "before": null,
+     "after": null
+    },
+    {
+     "cik": 1652044,
+     "issuer": "Alphabet Inc.",
+     "result": "INSUFFICIENT_FILINGS",
+     "insufficientDetail": "NO_BEFORE_BRACKET",
+     "shareIssues": null,
+     "before": null,
+     "after": null
+    }
+   ]
+  },
+  {
+   "securityId": "ref_ABT",
+   "ticker": "ABT",
+   "candidateCiks": [
+    1800
+   ],
+   "week": "2013-01-04",
+   "prevWeek": "2012-12-28",
+   "prevClose": 64.42,
+   "close": 33.07,
+   "weeklyRatio": 0.51335,
+   "jumpDay": "2013-01-02",
+   "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "era": "XBRL",
+   "verdict": "IDENTITY_UNVERIFIED",
+   "detail": "IDENTITY_TICKER_NOT_NAMED",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 1800,
+     "issuer": "ABBOTT LABORATORIES",
+     "result": "IDENTITY_TICKER_NOT_NAMED",
+     "insufficientDetail": null,
+     "shareIssues": null,
+     "before": {
+      "accession": "0001104659-12-075249",
+      "form": "10-Q",
+      "filingDate": "2012-11-07",
+      "coverDate": "2012-09-30",
+      "shares": 1580667737.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000110465912075249/abt-20120930.xml",
+      "instanceSha256": "0569b49e1ce3d9019c836f6ebe2510f1fba0c352ed7d584fb850b481b5bd747b",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "after": {
+      "accession": "0001047469-13-001180",
+      "form": "10-K",
+      "filingDate": "2013-02-15",
+      "coverDate": "2013-01-31",
+      "shares": 1570677029.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1800/000104746913001180/abt-20121231.xml",
+      "instanceSha256": "b6ff1c9b29d4ef05b37f48055aceb2c7e0e851e9a3de6d50291589fb705b60b5",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "idBefore": {
+      "via": "E1_TEXT",
+      "ok": false,
+      "accession": "0001104659-12-075249",
+      "l2Tried": [
+       "0001104659-12-075249",
+       "0001047469-12-001216"
+      ]
+     },
+     "idAfter": {
+      "via": "E1_TEXT",
+      "ok": false,
+      "accession": "0001047469-13-001180",
+      "l2Tried": [
+       "0001047469-13-001180"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "securityId": "ref_MS",
+   "ticker": "MS",
+   "candidateCiks": [
+    895421
+   ],
+   "week": "2008-10-17",
+   "prevWeek": "2008-10-10",
+   "prevClose": 9.68,
+   "close": 19.24,
+   "weeklyRatio": 1.987603,
+   "jumpDay": "2008-10-13",
+   "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
+   "era": "TEXT",
+   "verdict": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "detail": "SPLIT_EVIDENCE_8K",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 895421,
+     "issuer": "MORGAN STANLEY",
+     "result": "PASS",
+     "insufficientDetail": null,
+     "shareIssues": null,
+     "before": {
+      "accession": "0001193125-08-208512",
+      "form": "10-Q",
+      "filingDate": "2008-10-09",
+      "coverDate": "2008-09-30",
+      "shares": 1061983111.0,
+      "coverVia": "E2_TEXT_COVER",
+      "tradingSymbols": [],
+      "instanceUrl": null,
+      "instanceSha256": null,
+      "textUrl": "https://www.sec.gov/Archives/edgar/data/895421/000119312508208512/d10q.htm",
+      "textSha256": "6efd858b19da94bf49c54bce579889d0cc6e6ccb467307ab24cd3f2c977c9424"
+     },
+     "after": {
+      "accession": "0001193125-09-013429",
+      "form": "10-K",
+      "filingDate": "2009-01-29",
+      "coverDate": "2008-12-31",
+      "shares": 1074497565.0,
+      "coverVia": "E2_TEXT_COVER",
+      "tradingSymbols": [],
+      "instanceUrl": null,
+      "instanceSha256": null,
+      "textUrl": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+      "textSha256": "1c78d35c2fed37d6738f0672b3ec45de65e44c00cf45f19bda6d43c05278ffcc"
+     },
+     "idBefore": {
+      "via": "E1_TEXT",
+      "ok": true,
+      "accession": "0001193125-08-013719",
+      "form": "10-K",
+      "filingDate": "2008-01-29",
+      "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312508013719/d10k.htm",
+      "sha256": "743b5be1bc9de69e9251a5d070d8f6333f0f3e38fbc595da311e53d9160e34f2",
+      "quote": "Matters and Issuer Purchases of Equity Securities. Morgan Stanley’s common stock trades on the NYSE under the symbol “MS.” At January 23, 2008, Morgan Stanley had approximately 94,469 holders of record; however, Morgan Stanley bel"
+     },
+     "idAfter": {
+      "via": "E1_TEXT",
+      "ok": true,
+      "accession": "0001193125-09-013429",
+      "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+      "sha256": "1c78d35c2fed37d6738f0672b3ec45de65e44c00cf45f19bda6d43c05278ffcc",
+      "quote": "Matters and Issuer Purchases of Equity Securities. Morgan Stanley’s common stock trades on the NYSE under the symbol “MS.” As of January 23, 2009, Morgan Stanley had approximately 94,565 holders of record; however, Morgan Stanley "
+     },
+     "exchangeEvidence": {
+      "via": "10-K cover text",
+      "result": true,
+      "accession": "0001193125-09-013429",
+      "filingDate": "2009-01-29",
+      "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+      "sha256": "1c78d35c2fed37d6738f0672b3ec45de65e44c00cf45f19bda6d43c05278ffcc"
+     }
+    }
+   ],
+   "shareRatio": 1.0117840423923654,
+   "periodicText": {
+    "url": "https://www.sec.gov/Archives/edgar/data/895421/000119312509013429/d10k.htm",
+    "sha256": "1c78d35c2fed37d6738f0672b3ec45de65e44c00cf45f19bda6d43c05278ffcc",
+    "match": null
+   },
+   "xbrlSplitFactsInWindow": 0,
+   "splitWindow8K": [
+    {
+     "accession": "0000950103-08-002077",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-08-12",
+     "reportDate": "2008-08-11",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010308002077/0000950103-08-002077.txt",
+     "sha256": "652e3add1982c093e07a5d2190697fac2458a6f98f5359a0cd74649841013735",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0000950103-08-002282",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-09-02",
+     "reportDate": "2008-08-29",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010308002282/0000950103-08-002282.txt",
+     "sha256": "1e14b1dc990fbf46bc93939a7ff9664fe7aee8f424515515d95a2e30d82396f9",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0000950103-08-002357",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-09-15",
+     "reportDate": "2008-09-14",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010308002357/0000950103-08-002357.txt",
+     "sha256": "1cb135425945afc89f25f747c0d40d8551401bc0ef43a4374790b089b68eb162",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0000898822-08-000899",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-09-22",
+     "reportDate": "2008-09-21",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000089882208000899/0000898822-08-000899.txt",
+     "sha256": "514b07b525ece90efb8d5d8b56cc4ceca5ec00b5ee313e160beab6c9f54c0840",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0000950103-08-002386",
+     "items": [
+      "5.03",
+      "9.01"
+     ],
+     "filingDate": "2008-09-22",
+     "reportDate": "2008-09-16",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010308002386/0000950103-08-002386.txt",
+     "sha256": "4a12e8e35c42842ac9337f967fd49a6c1053ebeddccc7c287521a19c0a71ed35",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0000898822-08-000916",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-09-29",
+     "reportDate": "2008-09-29",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000089882208000916/0000898822-08-000916.txt",
+     "sha256": "5938f542e8fb0d9a55f4c680f85a99f208dd2b42956e2b84fd462b00b1d1453e",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0000898822-08-000945",
+     "items": [
+      "1.01",
+      "3.02",
+      "3.03",
+      "5.03",
+      "9.01"
+     ],
+     "filingDate": "2008-10-03",
+     "reportDate": "2008-09-29",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000089882208000945/0000898822-08-000945.txt",
+     "sha256": "76a9e82d4974b1edbf7b19c7f57e85e8ee6fa93eca75e9c09ffa0810ecf02959",
+     "match": "hile any of the Series B is outstanding, issues shares of Common Stock as a dividend or distribution on shares of Common Stock, or if the Corporation effects a share split or share combination in -21- respect of the Common Stock, then the Conversion Rate shall be adjusted based on the following form",
+     "noItems": false
+    },
+    {
+     "accession": "0000898822-08-000971",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-10-07",
+     "reportDate": "2008-10-07",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000089882208000971/0000898822-08-000971.txt",
+     "sha256": "a81f6d3924303f36173f77c82bc1b834ac7e8dd7a2d9ab637b8ec0776794b941",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0000898822-08-001004",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-10-14",
+     "reportDate": "2008-10-13",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000089882208001004/0000898822-08-001004.txt",
+     "sha256": "971a9053b67852f7216fc068332a98fe04087574f1db79508de9af61c946b640",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0000898822-08-001017",
+     "items": [
+      "1.01",
+      "3.02",
+      "3.03",
+      "5.03",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-10-17",
+     "reportDate": "2008-10-13",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000089882208001017/0000898822-08-001017.txt",
+     "sha256": "5b7e7ff9c3fb0f7d6912d13cc7046a8291fcd7d6095dedbd39b054b0bb7b16f5",
+     "match": "hile any of the Series B is outstanding, issues shares of Common Stock as a dividend or distribution on shares of Common Stock, or if the Corporation effects a share split or share combination in -23- respect of the Common Stock, then the Conversion Rate shall be adjusted based on the following form",
+     "noItems": false
+    },
+    {
+     "accession": "0000950103-08-002687",
+     "items": [
+      "1.01",
+      "3.02",
+      "3.03",
+      "5.03",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-10-30",
+     "reportDate": "2008-10-26",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010308002687/0000950103-08-002687.txt",
+     "sha256": "a28a8fcb602415ec28ac725af0d7154543258fc416d7f4b7366cd74379547e8e",
+     "match": "ission prior to the Original Issue Date) resulting from the grant, vesting or exercise of equity-based compensation to employees and equitably adjusted for any stock split, stock dividend, reverse stock split, reclassification or similar transaction. When dividends are not paid (or declared and a su",
+     "noItems": false
+    },
+    {
+     "accession": "0000950103-08-002935",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2008-12-05",
+     "reportDate": "2008-12-01",
+     "url": "https://www.sec.gov/Archives/edgar/data/895421/000095010308002935/0000950103-08-002935.txt",
+     "sha256": "568cd17d18101f99127f5cf4fe1aefbb0ccf308e531add331a21d829cc527500",
+     "match": null,
+     "noItems": false
+    }
+   ]
+  },
+  {
+   "securityId": "ref_USB",
+   "ticker": "USB",
+   "candidateCiks": [
+    36104
+   ],
+   "week": "1999-04-16",
+   "prevWeek": "1999-04-09",
+   "prevClose": 9.52,
+   "close": 28.02,
+   "weeklyRatio": 2.943277,
+   "jumpDay": "1999-04-16",
+   "providerReason": "PROVIDER_SPLIT_IN_WEEK",
+   "era": "TEXT",
+   "verdict": "PROVIDER_SPLIT_RECORDED",
+   "detail": null,
+   "admissible": false,
+   "identity": []
+  },
+  {
+   "securityId": "ref_JCI",
+   "ticker": "JCI",
+   "candidateCiks": [
+    833444
+   ],
+   "week": "2012-10-05",
+   "prevWeek": "2012-09-28",
+   "prevClose": 58.91,
+   "close": 29.54,
+   "weeklyRatio": 0.501443,
+   "jumpDay": "2012-10-01",
+   "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "era": "XBRL",
+   "verdict": "IDENTITY_UNVERIFIED",
+   "detail": "IDENTITY_TICKER_NOT_NAMED",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 833444,
+     "issuer": "Johnson Controls International plc",
+     "result": "IDENTITY_TICKER_NOT_NAMED",
+     "insufficientDetail": null,
+     "shareIssues": null,
+     "before": {
+      "accession": "0001047469-12-007586",
+      "form": "10-Q",
+      "filingDate": "2012-07-31",
+      "coverDate": "2012-07-26",
+      "shares": 459875217.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/833444/000104746912007586/tyc-20120629.xml",
+      "instanceSha256": "e87dc0c91f2199c9b132e7edd91cb381a6f86c3af14cc52c7d7df306184ad807",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "after": {
+      "accession": "0001047469-12-010665",
+      "form": "10-K",
+      "filingDate": "2012-11-16",
+      "coverDate": "2012-11-13",
+      "shares": 465717368.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/833444/000104746912010665/tyc-20120928.xml",
+      "instanceSha256": "d219e2b09dc861caabd8c59a77c1795e47fa61680d2914077aec10c699267160",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "idBefore": {
+      "via": "E1_TEXT",
+      "ok": false,
+      "accession": "0001047469-12-007586",
+      "l2Tried": [
+       "0001047469-12-007586",
+       "0001047469-11-009619"
+      ]
+     },
+     "idAfter": {
+      "via": "E1_TEXT",
+      "ok": false,
+      "accession": "0001047469-12-010665",
+      "l2Tried": [
+       "0001047469-12-010665"
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "securityId": "ref_WBD",
+   "ticker": "WBD",
+   "candidateCiks": [
+    1437107
+   ],
+   "week": "2014-08-08",
+   "prevWeek": "2014-08-01",
+   "prevClose": 83.33,
+   "close": 42.28,
+   "weeklyRatio": 0.50738,
+   "jumpDay": "2014-08-07",
+   "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "era": "XBRL",
+   "verdict": "INSUFFICIENT_FILINGS",
+   "detail": "NO_BEFORE_BRACKET",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 1437107,
+     "issuer": "Warner Bros. Discovery, Inc.",
+     "result": "INSUFFICIENT_FILINGS",
+     "insufficientDetail": "NO_BEFORE_BRACKET",
+     "shareIssues": [
+      "SHARE_COUNT_AMBIGUOUS"
+     ],
+     "before": null,
+     "after": null
+    }
+   ]
+  },
+  {
+   "securityId": "ref_IFF",
+   "ticker": "IFF",
+   "candidateCiks": [
+    51253
+   ],
+   "week": "1994-01-21",
+   "prevWeek": "1994-01-14",
+   "prevClose": 115.5,
+   "close": 38.5,
+   "weeklyRatio": 0.333333,
+   "jumpDay": "1994-01-20",
+   "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "era": "TEXT",
+   "verdict": "INSUFFICIENT_FILINGS",
+   "detail": "NO_BEFORE_BRACKET",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 51253,
+     "issuer": "INTERNATIONAL FLAVORS & FRAGRANCES INC",
+     "result": "INSUFFICIENT_FILINGS",
+     "insufficientDetail": "NO_BEFORE_BRACKET",
+     "shareIssues": [
+      "NO_SHARE_COUNT"
+     ],
+     "before": null,
+     "after": null
+    }
+   ]
+  },
+  {
+   "securityId": "ref_KDP",
+   "ticker": "KDP",
+   "candidateCiks": [
+    1418135
+   ],
+   "week": "2018-07-13",
+   "prevWeek": "2018-07-06",
+   "prevClose": 122.92,
+   "close": 24.25,
+   "weeklyRatio": 0.197283,
+   "jumpDay": "2018-07-10",
+   "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
+   "era": "XBRL",
+   "verdict": "IDENTITY_UNVERIFIED",
+   "detail": "IDENTITY_TICKER_NOT_NAMED",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 1418135,
+     "issuer": "Keurig Dr Pepper Inc.",
+     "result": "IDENTITY_TICKER_NOT_NAMED",
+     "insufficientDetail": null,
+     "shareIssues": null,
+     "before": {
+      "accession": "0001418135-18-000009",
+      "form": "10-Q",
+      "filingDate": "2018-04-25",
+      "coverDate": "2018-04-23",
+      "shares": 180221324.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1418135/000141813518000009/dps-20180331.xml",
+      "instanceSha256": "c4ff288083522357205f32d8f325596b943d61e91d0ca7f916e7c77b38973ada",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "after": {
+      "accession": "0001418135-18-000025",
+      "form": "10-Q",
+      "filingDate": "2018-08-08",
+      "coverDate": "2018-08-07",
+      "shares": 1388733463.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1418135/000141813518000025/kdp-20180630.xml",
+      "instanceSha256": "9aaa9734334ee35996d19a5943e74d34956a51ecf7ff59f81770007aad65b8d4",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "idBefore": {
+      "via": "E1_TEXT",
+      "ok": false,
+      "accession": "0001418135-18-000009",
+      "l2Tried": [
+       "0001418135-18-000009",
+       "0001418135-18-000006"
+      ]
+     },
+     "idAfter": {
+      "via": "E1_TEXT",
+      "ok": true,
+      "accession": "0001418135-18-000025",
+      "url": "https://www.sec.gov/Archives/edgar/data/1418135/000141813518000025/dps-10qx063018.htm",
+      "sha256": "f0df2f983b58eb02babf03e5a0f05dbc462823ce65d57f137297a883889771e5",
+      "quote": "er Inc. (\"KDP\"). KDP continues to operate as a public company traded on the New York Stock Exchange under the ticker symbol \"KDP\". KDP now conducts the combined business operations of DPS and Maple, including Keurig Green Mountain, Inc. (\""
+     }
+    }
+   ]
+  },
+  {
+   "securityId": "ref_IEX",
+   "ticker": "IEX",
+   "candidateCiks": [
+    832101
+   ],
+   "week": "1994-12-09",
+   "prevWeek": "1994-12-02",
+   "prevClose": 2.39,
+   "close": 12.07,
+   "weeklyRatio": 5.050209,
+   "jumpDay": "1994-12-08",
+   "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "era": "TEXT",
+   "verdict": "INSUFFICIENT_FILINGS",
+   "detail": "NO_BEFORE_BRACKET",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 832101,
+     "issuer": "IDEX CORP /DE/",
+     "result": "INSUFFICIENT_FILINGS",
+     "insufficientDetail": "NO_BEFORE_BRACKET",
+     "shareIssues": [
+      "NO_SHARE_COUNT"
+     ],
+     "before": null,
+     "after": null
+    }
+   ]
+  },
+  {
+   "securityId": "ref_PENN",
+   "ticker": "PENN",
+   "candidateCiks": [
+    921738
+   ],
+   "week": "2020-03-20",
+   "prevWeek": "2020-03-13",
+   "prevClose": 15.47,
+   "close": 7.89,
+   "weeklyRatio": 0.510019,
+   "jumpDay": "2020-03-16",
+   "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
+   "era": "XBRL",
+   "verdict": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "detail": "SPLIT_EVIDENCE_8K",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 921738,
+     "issuer": "PENN Entertainment, Inc.",
+     "result": "PASS",
+     "insufficientDetail": null,
+     "shareIssues": null,
+     "before": {
+      "accession": "0000921738-20-000009",
+      "form": "10-K",
+      "filingDate": "2020-02-27",
+      "coverDate": "2020-02-21",
+      "shares": 116864066.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [
+       "PENN"
+      ],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/921738/000092173820000009/penn1231201910k_htm.xml",
+      "instanceSha256": "13387af5b4ee6ba4ea295568a9c549668ea25038441ce6de67263b06ae68d567",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "after": {
+      "accession": "0000921738-20-000018",
+      "form": "10-Q",
+      "filingDate": "2020-05-08",
+      "coverDate": "2020-04-30",
+      "shares": 116798121.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [
+       "PENN"
+      ],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/921738/000092173820000018/penn0331202010q_htm.xml",
+      "instanceSha256": "d06b7d0937b86c31171000584f46d7ae008b31a9695a9bed4cd7668f574a30f0",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "idBefore": {
+      "via": "dei:TradingSymbol",
+      "ok": true,
+      "accession": "0000921738-20-000009",
+      "url": "https://www.sec.gov/Archives/edgar/data/921738/000092173820000009/penn1231201910k_htm.xml",
+      "sha256": "13387af5b4ee6ba4ea295568a9c549668ea25038441ce6de67263b06ae68d567",
+      "quote": "dei:TradingSymbol [\"PENN\"]"
+     },
+     "idAfter": {
+      "via": "dei:TradingSymbol",
+      "ok": true,
+      "accession": "0000921738-20-000018",
+      "url": "https://www.sec.gov/Archives/edgar/data/921738/000092173820000018/penn0331202010q_htm.xml",
+      "sha256": "d06b7d0937b86c31171000584f46d7ae008b31a9695a9bed4cd7668f574a30f0",
+      "quote": "dei:TradingSymbol [\"PENN\"]"
+     },
+     "exchangeEvidence": {
+      "via": "dei:SecurityExchangeName",
+      "values": [
+       "NASDAQ"
+      ]
+     }
+    }
+   ],
+   "shareRatio": 0.9994357119150723,
+   "periodicText": {
+    "url": "https://www.sec.gov/Archives/edgar/data/921738/000092173820000018/penn0331202010q.htm",
+    "sha256": "c4eb3b81a4dd4abd040c360e2258d4bae27334c555fa4f4fa7f6359911c44351",
+    "match": null
+   },
+   "xbrlSplitFactsInWindow": 0,
+   "splitWindow8K": [
+    {
+     "accession": "0001104659-20-007843",
+     "items": [
+      "1.01",
+      "3.02",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2020-01-29",
+     "reportDate": "2020-01-28",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000110465920007843/0001104659-20-007843.txt",
+     "sha256": "63a2d131348d4da22f3454be73d417b0a1ecfb3000a6e962f707a182b712c27c",
+     "match": " price of one (1) share of common stock, par value $0.01 per share, of PNG as reported on Nasdaq on January 28, 2020 (as adjusted as appropriate to reflect any stock splits, stock dividends, combinations, reorganizations, reclassifications or similar events). (ll) “ Portnoy Transaction Expenses ” me",
+     "noItems": false
+    },
+    {
+     "accession": "0001104659-20-023447",
+     "items": [
+      "3.02",
+      "3.03",
+      "5.03",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2020-02-20",
+     "reportDate": "2020-02-19",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000110465920023447/0001104659-20-023447.txt",
+     "sha256": "247cac68903d76ba5f4a609526835a08ee65d1af9774f6991c8c3ada7f1bf632",
+     "match": "ions to holders of shares of Common Stock. In the event that any distribution of securities, recapitalization, reclassification, change to organizational form, stock split, reverse stock split, or other similar transaction or event affects the capital structure of the Company (other than a dividend ",
+     "noItems": false
+    },
+    {
+     "accession": "0001104659-20-033586",
+     "items": [
+      "2.03",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2020-03-16",
+     "reportDate": "2020-03-13",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000110465920033586/0001104659-20-033586.txt",
+     "sha256": "21781a5949add0b37014d17c6491df5135cd50aa2fe14f8cba2ba0a672e18092",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001104659-20-036934",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2020-03-20",
+     "reportDate": "2020-03-16",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000110465920036934/0001104659-20-036934.txt",
+     "sha256": "ed6276f7da9795831711bd00645d6ba4729b00a692fadfd4bfefefd3ae43c751",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001104659-20-039804",
+     "items": [
+      "1.01",
+      "5.02",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2020-03-30",
+     "reportDate": "2020-03-27",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000110465920039804/0001104659-20-039804.txt",
+     "sha256": "22cd59245084550cbf88a9b1c1d3e4f934db999f8f17f8786e2e38eae88d2f5c",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001104659-20-048389",
+     "items": [
+      "1.01",
+      "2.03",
+      "7.01",
+      "9.01"
+     ],
+     "filingDate": "2020-04-20",
+     "reportDate": "2020-04-14",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000110465920048389/0001104659-20-048389.txt",
+     "sha256": "3901064dd39992b8139230c29902702cbb6618a486a4ffe96b237b6aeec4d57f",
+     "match": null,
+     "noItems": false
+    }
+   ],
+   "spinoffCandidates": []
+  },
+  {
+   "securityId": "ref_CPRI",
+   "ticker": "CPRI",
+   "candidateCiks": [
+    1530721
+   ],
+   "week": "2024-10-25",
+   "prevWeek": "2024-10-18",
+   "prevClose": 41.98,
+   "close": 21.26,
+   "weeklyRatio": 0.506432,
+   "jumpDay": "2024-10-25",
+   "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "era": "XBRL",
+   "verdict": "NEGATIVE_EVIDENCE_ONLY",
+   "detail": null,
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 1530721,
+     "issuer": "Capri Holdings Ltd",
+     "result": "PASS",
+     "insufficientDetail": null,
+     "shareIssues": null,
+     "before": {
+      "accession": "0001530721-24-000096",
+      "form": "10-Q",
+      "filingDate": "2024-08-08",
+      "coverDate": "2024-07-31",
+      "shares": 117789174.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [
+       "CPRI"
+      ],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1530721/000153072124000096/cpri-20240629_htm.xml",
+      "instanceSha256": "6f5550c157436ebacdba0e6d50dec4c91ffc2d96eaaad38ea2a40e03faf1880a",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "after": {
+      "accession": "0001530721-24-000125",
+      "form": "10-Q",
+      "filingDate": "2024-11-07",
+      "coverDate": "2024-10-31",
+      "shares": 117894437.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [
+       "CPRI"
+      ],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/1530721/000153072124000125/cpri-20240928_htm.xml",
+      "instanceSha256": "7f730d7078b7d86811df36f2206edcffb36ee0c9e5c62ba3e6a88e8dc5fc7eda",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "idBefore": {
+      "via": "dei:TradingSymbol",
+      "ok": true,
+      "accession": "0001530721-24-000096",
+      "url": "https://www.sec.gov/Archives/edgar/data/1530721/000153072124000096/cpri-20240629_htm.xml",
+      "sha256": "6f5550c157436ebacdba0e6d50dec4c91ffc2d96eaaad38ea2a40e03faf1880a",
+      "quote": "dei:TradingSymbol [\"CPRI\"]"
+     },
+     "idAfter": {
+      "via": "dei:TradingSymbol",
+      "ok": true,
+      "accession": "0001530721-24-000125",
+      "url": "https://www.sec.gov/Archives/edgar/data/1530721/000153072124000125/cpri-20240928_htm.xml",
+      "sha256": "7f730d7078b7d86811df36f2206edcffb36ee0c9e5c62ba3e6a88e8dc5fc7eda",
+      "quote": "dei:TradingSymbol [\"CPRI\"]"
+     },
+     "exchangeEvidence": {
+      "via": "dei:SecurityExchangeName",
+      "values": [
+       "NYSE"
+      ]
+     }
+    }
+   ],
+   "shareRatio": 1.00089365598234,
+   "periodicText": {
+    "url": "https://www.sec.gov/Archives/edgar/data/1530721/000153072124000125/cpri-20240928.htm",
+    "sha256": "434d8cf574d96edb13f45c0695c744c590834882e265bad9f36255e137292cf5",
+    "match": null
+   },
+   "xbrlSplitFactsInWindow": 0,
+   "splitWindow8K": [
+    {
+     "accession": "0001193125-24-258691",
+     "items": [
+      "1.01",
+      "1.02",
+      "5.02",
+      "7.01",
+      "9.01"
+     ],
+     "filingDate": "2024-11-14",
+     "reportDate": "2024-11-13",
+     "url": "https://www.sec.gov/Archives/edgar/data/1530721/000119312524258691/0001193125-24-258691.txt",
+     "sha256": "796624114b6cff8f2a3a878257646ddb7d1a8539a8653645fdf96b0006a99e88",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001530721-24-000127",
+     "items": [
+      "5.02",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2024-12-02",
+     "reportDate": "2024-11-26",
+     "url": "https://www.sec.gov/Archives/edgar/data/1530721/000153072124000127/0001530721-24-000127.txt",
+     "sha256": "3a2b744e24d5acd127724cbcf0262b303c682665b75a73d499bd3666a578d2f8",
+     "match": null,
+     "noItems": false
+    }
+   ],
+   "spinoffCandidates": [],
+   "affirmativeCandidates": []
+  },
+  {
+   "securityId": "ref_NKTR",
+   "ticker": "NKTR",
+   "candidateCiks": [
+    906709
+   ],
+   "week": "2023-02-24",
+   "prevWeek": "2023-02-17",
+   "prevClose": 46.05,
+   "close": 22.35,
+   "weeklyRatio": 0.485342,
+   "jumpDay": "2023-02-24",
+   "providerReason": "SINGLE_DAY_SPLIT_SIZED_JUMP",
+   "era": "XBRL",
+   "verdict": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "detail": "SPLIT_EVIDENCE_8K",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 906709,
+     "issuer": "NEKTAR THERAPEUTICS",
+     "result": "PASS",
+     "insufficientDetail": null,
+     "shareIssues": null,
+     "before": {
+      "accession": "0000906709-22-000019",
+      "form": "10-Q",
+      "filingDate": "2022-11-04",
+      "coverDate": "2022-10-27",
+      "shares": 187954482.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [
+       "NKTR"
+      ],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/906709/000090670922000019/nktr-20220930_htm.xml",
+      "instanceSha256": "9ad38d20e67f6c8b18e53b5aa68faf0595f1fa636aa1b09b1e312ebebda8c90b",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "after": {
+      "accession": "0000906709-23-000008",
+      "form": "10-Q",
+      "filingDate": "2023-05-10",
+      "coverDate": "2023-05-02",
+      "shares": 189235157.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [
+       "NKTR"
+      ],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/906709/000090670923000008/nktr-20230331_htm.xml",
+      "instanceSha256": "882839766b9d032740a39269e9dc88a68bf499301d9c67b239e2a380da730041",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "idBefore": {
+      "via": "dei:TradingSymbol",
+      "ok": true,
+      "accession": "0000906709-22-000019",
+      "url": "https://www.sec.gov/Archives/edgar/data/906709/000090670922000019/nktr-20220930_htm.xml",
+      "sha256": "9ad38d20e67f6c8b18e53b5aa68faf0595f1fa636aa1b09b1e312ebebda8c90b",
+      "quote": "dei:TradingSymbol [\"NKTR\"]"
+     },
+     "idAfter": {
+      "via": "dei:TradingSymbol",
+      "ok": true,
+      "accession": "0000906709-23-000008",
+      "url": "https://www.sec.gov/Archives/edgar/data/906709/000090670923000008/nktr-20230331_htm.xml",
+      "sha256": "882839766b9d032740a39269e9dc88a68bf499301d9c67b239e2a380da730041",
+      "quote": "dei:TradingSymbol [\"NKTR\"]"
+     },
+     "exchangeEvidence": {
+      "via": "dei:SecurityExchangeName",
+      "values": [
+       "NASDAQ"
+      ]
+     }
+    }
+   ],
+   "shareRatio": 1.0068137507888746,
+   "periodicText": {
+    "url": "https://www.sec.gov/Archives/edgar/data/906709/000090670923000008/nktr-20230331.htm",
+    "sha256": "dcabd4c2ee4bb6771ba1d53db28dff965a5f6669bd7f64558c4e59dc1aefbc35",
+    "match": null
+   },
+   "xbrlSplitFactsInWindow": 0,
+   "splitWindow8K": [
+    {
+     "accession": "0001213900-22-080498",
+     "items": [
+      "5.03",
+      "9.01"
+     ],
+     "filingDate": "2022-12-16",
+     "reportDate": "2022-12-15",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390022080498/0001213900-22-080498.txt",
+     "sha256": "4cb91e367c3dab133f8122a282023086d5c7c3065847841da2a39c7f9c9a2ee7",
+     "match": "or Nominating Group (in the aggregate) has continuously Owned at least the Minimum Percentage of shares of common stock of the corporation (as adjusted for any stock splits, stock dividends, subdivisions, combinations, reclassifications, recapitalizations or similar events) throughout the three-year",
+     "noItems": false
+    },
+    {
+     "accession": "0001213900-22-081972",
+     "items": [
+      "8.01"
+     ],
+     "filingDate": "2022-12-22",
+     "reportDate": "2022-12-16",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390022081972/0001213900-22-081972.txt",
+     "sha256": "731e8544bed5a3f0e2e8655b6abd4e9870e83ee9485a878b5de323f78365be87",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001213900-23-001524",
+     "items": [
+      "2.02",
+      "7.01"
+     ],
+     "filingDate": "2023-01-09",
+     "reportDate": "2023-01-09",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390023001524/0001213900-23-001524.txt",
+     "sha256": "e3d3cb153666062c9ebf52b24c54ce92de990e3d729656c1283d8169d2ce2f75",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001213900-23-014008",
+     "items": [
+      "7.01",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2023-02-23",
+     "reportDate": "2023-02-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390023014008/0001213900-23-014008.txt",
+     "sha256": "f4044423d916e019bfc9bf7510be8ea2370467eab966cb5d22cbda5adb90dcd5",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001213900-23-019351",
+     "items": [
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2023-03-13",
+     "reportDate": "2023-03-11",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390023019351/0001213900-23-019351.txt",
+     "sha256": "e73a669a89a30b63f5961b93c220470fc2bf25e3944cad475a75d000c8aec90a",
+     "match": null,
+     "noItems": false
+    }
+   ],
+   "spinoffCandidates": []
+  },
+  {
+   "securityId": "ref_NKTR",
+   "ticker": "NKTR",
+   "candidateCiks": [
+    906709
+   ],
+   "week": "2025-06-27",
+   "prevWeek": "2025-06-20",
+   "prevClose": 8.51,
+   "close": 25.76,
+   "weeklyRatio": 3.027027,
+   "jumpDay": "2025-06-24",
+   "providerReason": "SINGLE_DAY_DOMINATES_WEEK",
+   "era": "XBRL",
+   "verdict": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+   "detail": "SHARE_COUNT_DISCONTINUITY",
+   "admissible": false,
+   "identity": [
+    {
+     "cik": 906709,
+     "issuer": "NEKTAR THERAPEUTICS",
+     "result": "PASS",
+     "insufficientDetail": null,
+     "shareIssues": null,
+     "before": {
+      "accession": "0000950170-25-067279",
+      "form": "10-Q",
+      "filingDate": "2025-05-09",
+      "coverDate": "2025-05-01",
+      "shares": 186103588.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [
+       "NKTR"
+      ],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/906709/000095017025067279/nktr-20250331_htm.xml",
+      "instanceSha256": "b187e014851c6fce89e1a01a2d26f567c2c3eeabd4c6d2afef06e47a4bfa1a05",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "after": {
+      "accession": "0000950170-25-105275",
+      "form": "10-Q",
+      "filingDate": "2025-08-08",
+      "coverDate": "2025-07-31",
+      "shares": 19018573.0,
+      "coverVia": "dei:EntityCommonStockSharesOutstanding",
+      "tradingSymbols": [
+       "NKTR"
+      ],
+      "instanceUrl": "https://www.sec.gov/Archives/edgar/data/906709/000095017025105275/nktr-20250630_htm.xml",
+      "instanceSha256": "59748623ccfca7ce6b9a877b94b70e16c56bb1ffac6754be7b2c6c56f0536a7e",
+      "textUrl": null,
+      "textSha256": null
+     },
+     "idBefore": {
+      "via": "dei:TradingSymbol",
+      "ok": true,
+      "accession": "0000950170-25-067279",
+      "url": "https://www.sec.gov/Archives/edgar/data/906709/000095017025067279/nktr-20250331_htm.xml",
+      "sha256": "b187e014851c6fce89e1a01a2d26f567c2c3eeabd4c6d2afef06e47a4bfa1a05",
+      "quote": "dei:TradingSymbol [\"NKTR\"]"
+     },
+     "idAfter": {
+      "via": "dei:TradingSymbol",
+      "ok": true,
+      "accession": "0000950170-25-105275",
+      "url": "https://www.sec.gov/Archives/edgar/data/906709/000095017025105275/nktr-20250630_htm.xml",
+      "sha256": "59748623ccfca7ce6b9a877b94b70e16c56bb1ffac6754be7b2c6c56f0536a7e",
+      "quote": "dei:TradingSymbol [\"NKTR\"]"
+     },
+     "exchangeEvidence": {
+      "via": "dei:SecurityExchangeName",
+      "values": [
+       "NASDAQ"
+      ]
+     }
+    }
+   ],
+   "shareRatio": 0.10219347839763304,
+   "periodicText": {
+    "url": "https://www.sec.gov/Archives/edgar/data/906709/000095017025105275/nktr-20250630.htm",
+    "sha256": "7e86924204d32dc11b195f92a837a3b99dac9f6f391e02ec10e3176f10054701",
+    "match": "37 Total liabilities and stockholders’ equity (deficit) $ 207,534 $ 303,850 (1) All share and per share amounts have been retrospectively adjusted to reflect a one-for-fifteen reverse stock split (see Note 6). The accompanying notes are an integral part of these unaudited condensed consolidated fina"
+   },
+   "xbrlSplitFactsInWindow": 9,
+   "splitWindow8K": [
+    {
+     "accession": "0001213900-25-029002",
+     "items": [
+      "3.01"
+     ],
+     "filingDate": "2025-04-04",
+     "reportDate": "2025-04-03",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390025029002/0001213900-25-029002.txt",
+     "sha256": "042ac6e6b29266a37eb5b9c6fcf9050e5d5629213b3b864017b61d0d2adefb9a",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001213900-25-051191",
+     "items": [
+      "8.01"
+     ],
+     "filingDate": "2025-06-04",
+     "reportDate": "2025-06-04",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390025051191/0001213900-25-051191.txt",
+     "sha256": "850490ce09e97ccf970b4e6584c47f53ebc72ab650dd577a0e955b94ac5911a9",
+     "match": "d the Company’s Certificate of Incorporation to effect, at the discretion of the Board of Directors of the Company (the “Board”) on or prior to May 23, 2026, a reverse stock split of the Company’s common stock, par value $0.0001 per share (the “Common Stock”), at a stock split ratio between 1-for-2 ",
+     "noItems": false
+    },
+    {
+     "accession": "0001213900-25-052141",
+     "items": [
+      "5.03",
+      "9.01"
+     ],
+     "filingDate": "2025-06-06",
+     "reportDate": "2025-06-06",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390025052141/0001213900-25-052141.txt",
+     "sha256": "07af7bde4df53ddf72faf969616a13543d93ed8fec0d4aa98ffbc67689751469",
+     "match": "s incorporated herein by reference. On June 6, 2025, the Company also filed a Certificate of Amendment to the Certificate of Incorporation of the Company (the “Reverse Stock Split Amendment”) with the Secretary of State of the State of Delaware to effect a reverse stock split of the Company’s Common",
+     "noItems": false
+    },
+    {
+     "accession": "0001213900-25-056909",
+     "items": [
+      "7.01",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2025-06-24",
+     "reportDate": "2025-06-24",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390025056909/0001213900-25-056909.txt",
+     "sha256": "add1900590af6ba789bc93a3e946f66785000885bc3057a8f5c61ed60f59447b",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001213900-25-059115",
+     "items": [
+      "8.01"
+     ],
+     "filingDate": "2025-06-27",
+     "reportDate": "2025-06-24",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000121390025059115/0001213900-25-059115.txt",
+     "sha256": "55a19e9807457288a8309888fcfdaddfc58b86ea92b287d546c5f5ab22c87e7e",
+     "match": null,
+     "noItems": false
+    },
+    {
+     "accession": "0001193125-25-154062",
+     "items": [
+      "1.01",
+      "8.01",
+      "9.01"
+     ],
+     "filingDate": "2025-07-01",
+     "reportDate": "2025-06-30",
+     "url": "https://www.sec.gov/Archives/edgar/data/906709/000119312525154062/0001193125-25-154062.txt",
+     "sha256": "59ecd2cebcca5daba300b72f9ab601957a944f280bf3041c217885d6b63c0842",
+     "match": "ities Act in respect of any Shares or Related Securities (other than as contemplated by this Agreement with respect to the Offered Securities); (viii) effect a reverse stock split, recapitalization, share consolidation, reclassification or similar transaction affecting the outstanding Shares; or (ix",
+     "noItems": false
+    }
+   ]
+  }
+ ]
+}

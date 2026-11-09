@@ -148,7 +148,7 @@
         "Kein Zyklusbericht",
         "Es liegt kein Lauf vor. Das Command Center zeigt ausschliesslich, was ein Lauf " +
         "hinterlassen hat — es erfindet keine Beispieldaten.",
-        "node scripts/social/run-social-cycle.mjs --provider mock --out social/data"));
+        "node products/social/producer/run-social-cycle.mjs --provider mock --out social/data"));
       return;
     }
 
@@ -195,7 +195,7 @@
       main.appendChild(emptyState(
         "Keine Warteschlange",
         "Es liegt keine Veroeffentlichungsliste vor.",
-        "node scripts/social/run-social-cycle.mjs --provider mock --out social/data"));
+        "node products/social/producer/run-social-cycle.mjs --provider mock --out social/data"));
       return;
     }
     if (!pending.length) {
@@ -261,7 +261,7 @@
     if (!cycle) {
       main.appendChild(emptyState("Keine Gelegenheiten",
         "Es liegt kein Lauf vor.",
-        "node scripts/social/run-social-cycle.mjs --provider mock --out social/data"));
+        "node products/social/producer/run-social-cycle.mjs --provider mock --out social/data"));
       return;
     }
     var opportunities = cycle.opportunities || [];
@@ -337,7 +337,7 @@
 
   /**
    * Der Zustand der Meta-Verbindung, gelesen aus dem Artefakt, das
-   * scripts/social/fetch-meta-status.mjs aus dem Worker geholt hat.
+   * products/social/producer/fetch-meta-status.mjs aus dem Worker geholt hat.
    *
    * Die Oberflaeche ruft den Worker NICHT selbst auf: sein Statusendpunkt
    * verlangt einen Admin-Schluessel, und ein Schluessel im Browser waere
@@ -349,7 +349,7 @@
       return emptyState(
         "Kein Verbindungsbericht",
         "Es liegt kein Bericht ueber die Meta-Verbindung vor.",
-        "node scripts/social/fetch-meta-status.mjs --out social/data");
+        "node products/social/producer/fetch-meta-status.mjs --out social/data");
     }
 
     var card = el("div", "s-card");
@@ -425,7 +425,7 @@
     if (!health) {
       main.appendChild(emptyState("Kein Zustandsbericht",
         "Es liegt kein Gesundheitsbericht vor.",
-        "node scripts/social/run-social-cycle.mjs --provider mock --out social/data"));
+        "node products/social/producer/run-social-cycle.mjs --provider mock --out social/data"));
       return;
     }
 

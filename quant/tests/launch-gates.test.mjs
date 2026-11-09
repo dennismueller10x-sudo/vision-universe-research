@@ -57,28 +57,60 @@ test("eine Faktorbewertung wird behauptet, wenn es eine Faktorzeile gibt - nicht
   assert.ok(behauptet.length > 6000, "die Liste behauptet fast nichts mehr - das waere der Gegenfehler");
 });
 
-test("ein belegtes Nicht-Aktien-Papier behaelt seinen Kurs und verliert die Aktienaussage", async () => {
+test("ein belegtes Nicht-Aktien-Papier verliert die Aktienaussage - ausgeschieden mit benannter Absage, sonst ohne Faktoren", async () => {
   /* Gemessen: 145 Fonds, Optionsscheine und Vorzugspapiere standen in der
      Uebersicht mit `factorState = AVAILABLE`, waehrend dieselbe Anwendung auf
-     der Aktienseite "keine Aktie" sagte. */
-  const marken = (index.entries || []).filter((e) => e.ne);
-  assert.ok(marken.length > 100, "das Verzeichnis kennt die belegte Gattung nicht mehr (" + marken.length + ")");
-  assert.equal(index.coverage.provenNonEquity, marken.length);
+     der Aktienseite "keine Aktie" sagte.
 
+     VARIANTE B (Steuerung 05.11.2026). Bis dahin blieben belegte Nicht-Aktien mit Kurs IM Produkt (Owner-Entscheid 1,
+     hier geprueft als "mehr als 100 tragen einen Kurs"). Mit der Eignung aus Security Master 1.3.0 verlassen sie das
+     Aktien-Produktuniversum (#1388, 131 ETFs), bleiben aber im Verzeichnis auffindbar. Geprueft wird deshalb ebenso
+     streng: (1) kein ausgeschiedenes Nicht-Aktien-Papier steht in der Produktliste; (2) das Verzeichnis kennt sie weiter,
+     mit Name und Papierart, und der Dienst antwortet fuer sie mit einer benannten Absage statt "unbekannt"; (3) wer
+     als belegte Nicht-Aktie noch im Produkt steht, traegt keine Faktoraussage. */
+  const marken = (index.entries || []).filter((e) => e.ne);
+  /* `ne` tragen zwei belegte Gruppen, und das Verzeichnis zaehlt beide
+     getrennt: die belegte Gattung (provenNonEquity) und - seit dem
+     31.10.2026 - die wiederverwendeten Kuerzel des Registers, unter denen
+     heute ein ETF handelt (tickerReuseQuarantined, ic = TICKER_REUSE). */
+  const register = new Set(JSON.parse(readFileSync(join(ROOT, "quant/config/ticker-reuse-quarantine.json"), "utf8"))
+    .records.map((r) => r.ticker));
+  const wiederverwendet = marken.filter((e) => e.ic === "TICKER_REUSE");
+  for (const e of wiederverwendet) assert.ok(register.has(e.s), e.s + " traegt TICKER_REUSE ohne Eintrag im Register");
+  assert.equal(wiederverwendet.length, index.coverage.tickerReuseQuarantined ?? 0);
+  assert.equal(index.coverage.provenNonEquity, marken.length - wiederverwendet.length);
+
+  /* (1) und (2): ausgeschieden heisst nicht verschwunden. */
+  const dir = join(ROOT, "quant/data/universe/instruments"), ausgeschieden = [];
+  for (const datei of readdirSync(dir).filter((f) => f.endsWith(".json")))
+    for (const i of JSON.parse(readFileSync(join(dir, datei), "utf8")).instruments || [])
+      if (i.productEligibility === "EXCLUDED" && /^CONFIRMED_NON_EQUITY:/.test(String(i.productEligibilityReason || ""))) ausgeschieden.push(i);
+  assert.ok(ausgeschieden.length > 100, "das Verzeichnis kennt nur " + ausgeschieden.length + " ausgeschiedene Nicht-Aktien - sie waeren verschwunden statt ausgeschieden");
+  const imProdukt = new Set((index.entries || []).map((e) => e.s));
+  const trotzdemDrin = ausgeschieden.filter((i) => imProdukt.has(i.symbol)).map((i) => i.symbol);
+  assert.deepEqual(trotzdemDrin.slice(0, 8), [], trotzdemDrin.length + " ausgeschiedene Nicht-Aktien stehen weiter in der Produktliste");
+  for (const i of ausgeschieden.filter((_, k) => k % 25 === 0)) {
+    /* Fonds und ETFs tragen im Verzeichnis ihren Namen (Optionsscheine teils nicht - dort nennt die Absage das Kuerzel). */
+    if (i.securityClass === "ETF") assert.ok(i.companyName, i.symbol + " (ETF) ohne Namen im Verzeichnis");
+    /* Die Papierart steht in securityClass (Eignungskette); securityType ist die Anbieterangabe und sagt bei
+       Optionsscheinen, Units oder Anleihen oft COMMON_STOCK - genau der Fehler, den die Eignung behebt. */
+    assert.ok(i.securityClass && !/^EQUITY_/.test(i.securityClass), i.symbol + " ist ausgeschieden, traegt aber die Klasse " + i.securityClass);
+    const s = await api.getStockIntelligence(i.symbol);
+    assert.equal(s.reason, "OUTSIDE_EQUITY_UNIVERSE", i.symbol + " antwortet " + s.reason + " statt einer benannten Absage");
+    assert.equal(s.instrument.name, i.companyName || null, i.symbol + ": Absage nennt einen anderen Namen");
+    assert.ok(s.instrument.securityClass, i.symbol + ": Absage ohne Papierart");
+  }
+
+  /* (3): wer noch drin steht, traegt keine Faktoraussage. */
   const universe = await api.getUniverse();
   const nachTicker = new Map(universe.stocks.map((s) => [s.ticker, s]));
-  let mitKurs = 0;
   for (const e of marken) {
     const zeile = nachTicker.get(e.s);
     if (!zeile) continue;
     assert.equal(zeile.factorState, "UNAVAILABLE", e.s + " gilt weiter als faktorbewertet");
     assert.equal(zeile.factorReason, "NOT_AN_EQUITY_LISTING", e.s + " nennt den falschen Grund");
     assert.equal(zeile.capabilities.factors, false, e.s + " behauptet Faktorfaehigkeit");
-    /* Kurs und Kursverlauf bleiben - das war die Owner-Entscheidung, nicht
-       ein Verschwinden aus dem Produkt. */
-    if (zeile.price && Number.isFinite(zeile.price.value)) mitKurs += 1;
   }
-  assert.ok(mitKurs > 100, "nur " + mitKurs + " der belegten Nicht-Aktien tragen noch einen Kurs");
 });
 
 test("die Gattungsregel steht in der Engine und nicht zweimal", () => {
@@ -122,7 +154,13 @@ test("ein Kuerzel ist kein Firmenname - auf keiner Flaeche", async () => {
   assert.equal(universe.stocks.filter((s) => s.name === s.ticker).length, 0,
     "eine Zeile traegt ihr Kuerzel als Firmennamen");
   const ohne = universe.stocks.filter((s) => !s.name);
+  /* Zweiter belegter Grund: der Name der alten Gesellschaft eines
+     wiederverwendeten Kuerzels ist zurueckgehalten - nur fuer Kuerzel des
+     Registers (quant/config/ticker-reuse-quarantine.json). */
+  const register = new Set(JSON.parse(readFileSync(join(ROOT, "quant/config/ticker-reuse-quarantine.json"), "utf8"))
+    .records.map((r) => r.ticker));
   for (const s of ohne) {
+    if (s.nameReason === "TICKER_REUSE_NAME_WITHHELD" && register.has(s.ticker)) continue;
     assert.equal(s.nameReason, "PROVIDER_HAS_NO_NAME", s.ticker + " hat keinen Namen und keinen Grund");
   }
   /* Und die Oberflaeche sagt es in Alltagssprache, statt das Feld leer zu

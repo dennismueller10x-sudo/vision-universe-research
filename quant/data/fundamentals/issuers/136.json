@@ -578,9 +578,9 @@
       "cik": "0001699136",
       "name": "Cactus, Inc.",
       "sic": "3533",
-      "rawFacts": 10091,
-      "mappedFacts": 2973,
-      "unmappedFacts": 7334,
+      "rawFacts": 10402,
+      "mappedFacts": 3063,
+      "unmappedFacts": 7553,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -590,9 +590,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 40,
+      "quarterlyPeriods": 41,
       "firstPeriodEnd": "2015-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
@@ -624,28 +624,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "net_income": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "operating_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -659,14 +659,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -689,45 +689,46 @@
         }
       },
       "quality": {
-        "HIGH": 248,
+        "HIGH": 254,
         "MEDIUM": 48
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 296,
-        "resolvedValues": 296
+        "datableValues": 302,
+        "resolvedValues": 302
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7597,
+        "rules_version": "1.1.0",
+        "total": 7827,
         "by_severity": {
-          "INFO": 7334,
-          "WARNING": 263
+          "INFO": 7553,
+          "WARNING": 274
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 221,
-          "RESTATEMENT_CONFLICT": 42,
-          "UNKNOWN_CONCEPT": 7334
+          "CONCEPT_DISAGREEMENT": 230,
+          "RESTATEMENT_CONFLICT": 44,
+          "UNKNOWN_CONCEPT": 7553
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-051177",
-        "filing_date": "2026-07-31",
+        "accession": "0001628280-26-068341",
+        "filing_date": "2026-10-30",
         "form": "10-Q",
-        "periodic_filings": 35
+        "periodic_filings": 36,
+        "acceptance_datetime": "2026-10-29T22:42:17.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ae22038919d98635a54cf75a26d4de92fe7974f600e0eac0d5a3012df4136148",
+      "sourceDigest": "35d977a68c4eef0a3f341f54b26cd43f637bf4e2c8d590d89bad1b48c3231305",
       "issuerId": "iss_cik_0001699136"
     },
     {

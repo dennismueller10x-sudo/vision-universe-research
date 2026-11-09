@@ -1,20 +1,68 @@
 // Central navigation for every page. Add new menu entries only here.
 (() => {
+  // No gesture payload in the normal browser (including Discover's budget).
+  if (typeof document !== 'undefined' && !document.querySelector('[data-vu-gestures-loader]') && (globalThis.Capacitor?.isNativePlatform?.() || /VUApp\/1/.test(navigator.userAgent) || new URLSearchParams(location.search).get('vuGestures') === '1')) {
+    const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/assets/vu-gestures.css'; document.head.append(css);
+    const js = document.createElement('script'); js.setAttribute('data-vu-gestures-loader', ''); js.src = '/assets/vu-gestures.js'; document.head.append(js);
+  }
+  // K2 (Owner 07.11.2026, App-Gefuehl): Seitenwechsel gleiten vor/zurueck (View Transitions zwischen Dokumenten,
+  // CSS in site-navigation.css), die Produkt-Leiste bleibt stehen, Produktziele sind beim Tippen schon geladen.
+  if (typeof document !== 'undefined' && !globalThis.__vuMotion) {
+    globalThis.__vuMotion = true;
+    // Entscheidung im alten Dokument (pageswap): dort ist dieses Skript sicher geladen; im neuen Dokument laeuft es oft
+    // erst nach pagereveal. Vorwaerts gleitet die neue Seite von rechts herein (CSS). Zurueck und Neuladen ohne zweite
+    // Animation: zurueck schiebt in der App schon die native Randgeste, im Browser die Geste des Browsers.
+    const wanted = activation => !!(activation && activation.navigationType !== 'traverse' && activation.navigationType !== 'reload');
+    const flag = value => { try { if (value) sessionStorage.setItem('vu-vt-skip', '1'); else { const v = sessionStorage.getItem('vu-vt-skip'); sessionStorage.removeItem('vu-vt-skip'); return v === '1'; } } catch (_) { /* ohne Speicher */ } return false; };
+    addEventListener('pageswap', e => { if (e.viewTransition && !wanted(e.activation)) { e.viewTransition.skipTransition(); flag(true); } });
+    // Ein aus dem bfcache wiederhergestelltes Dokument startet seinen Uebergang selbst; das Merkzeichen des alten haelt es an.
+    addEventListener('pagereveal', e => { if (flag(false) && e.viewTransition) e.viewTransition.skipTransition(); });
+    // Vorladen: Einstiege der Produkte und Leistenziele, einmal je Seite nach Ruhe, nie bei Datensparen/2G.
+    const warm = () => {
+      const c = navigator.connection;
+      if (c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || ''))) return;
+      const here = location.pathname, seen = new Set([here]);
+      const dock = document.getElementById('vu-dock');
+      const hrefs = ['/discover/', '/quant/', '/technical/', '/fundamental/', '/supertrader/']
+        .concat(Array.from((dock && dock.shadowRoot || document).querySelectorAll('a[href]')).map(a => a.getAttribute('href')));
+      const urls = [];
+      hrefs.forEach(h => { try { const u = new URL(h, location.href); if (u.origin === location.origin && !/^\/konto\//.test(u.pathname) && !seen.has(u.pathname)) { seen.add(u.pathname); urls.push(u.pathname); } } catch (_) { /* ungueltig */ } });
+      const list = urls.slice(0, 4);
+      if (!list.length) return;
+      if (globalThis.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules')) {
+        const rules = document.createElement('script'); rules.type = 'speculationrules';
+        rules.textContent = JSON.stringify({prefetch: [{urls: list, eagerness: 'immediate'}],
+          prerender: [{where: {and: [{href_matches: '/*'}, {not: {href_matches: '/konto/*'}}]}, eagerness: 'moderate'}]});
+        document.head.append(rules);
+      } else {
+        // WebKit ohne Speculation Rules: HTTP-Cache mit dem HTML der Ziele fuellen (nacheinander, niedrige Prioritaet).
+        list.reduce((p, u) => p.then(() => fetch(u, {credentials: 'same-origin', priority: 'low'}).then(r => r.ok && r.arrayBuffer()).catch(() => {})), Promise.resolve());
+      }
+    };
+    const idle = globalThis.requestIdleCallback || (fn => setTimeout(fn, 1));
+    const later = () => setTimeout(() => idle(warm, {timeout: 4000}), 3000);
+    if (document.readyState === 'complete') later(); else addEventListener('load', later, {once: true});
+  }
   // Idempotent: im Gastbetrieb (/elliott/#/<T>) laedt das Quant-Buendel des Release die Shell ein zweites Mal mit.
   if (customElements.get && customElements.get('vu-navigation')) return;
   // Product links navigate directly; their separate disclosure opens existing routes.
   const groups = [
-    {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
-    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
-    {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', entries:[['Übersicht','/elliott/','⌂'],['Welle 3','/elliott/#/?welle=3','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
-    {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', entries:[['Übersicht','/fundamental/#/','⌂'],['Entdecken','/fundamental/#/entdecken','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
-    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Methodik','/technical/#/methodik','▤']]},
-    {id:'screener', label:'Screener', href:'/screener/', icon:'screener', entries:[['Übersicht','/screener/','⌂'],['Filter hinzufügen','/screener/?view=build','⧩'],['Treffer','/screener/?view=results','⌕'],['Gespeichert','/screener/?view=saved','▤'],['Watchlist','/screener/?view=watchlist','♡']]},
-    {id:'vorsorge', label:'Vorsorge', href:'/vorsorge/#/', icon:'vorsorge', entries:[['Vorsorge Home','/vorsorge/#/','☂'],['Planer','/vorsorge/#/plan','◬'],['ETFs','/vorsorge/#/etfs','◫'],['Portfolio','/vorsorge/#/portfolio','◎'],['Vergleichen','/vorsorge/#/vergleichen','⧩'],['Förderung','/vorsorge/#/foerderung','✧'],['Veränderungen','/vorsorge/#/monitor','≋'],['Wissen','/vorsorge/#/wissen','▤']]},
-    {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
-    {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁']]},
-    {id:'more', label:'Weitere Produkte', href:null, icon:'layers', entries:[['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫'],['Analysten','/analysten/','◇'],['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥'],['Academy','/academy/','✧'],['Guide','/guide/','◈'],['Budget','/budget/','▦']]}
+    /* Portfolios (Owner 06.11.2026): alle Musterdepots gesammelt; breite Kachel unter dem 3 x 3-Raster. */
+    {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
+    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
+    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤']]},
+    {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus Geschäftsberichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
+    {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
+    {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Smart Money','/hedgefonds/#/smart-money','◬']]},
+    {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', claim:'Wellenstruktur', entries:[['Übersicht','/elliott/','⌂'],['Zählbar','/elliott/#/?zaehlbar=1','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
+    {id:'screener', label:'Screener', href:'/screener/', icon:'screener', claim:'Eigene Filter', entries:[['Übersicht','/screener/','⌂'],['Filter hinzufügen','/screener/?view=build','⧩'],['Treffer','/screener/?view=results','⌕'],['Gespeichert','/screener/?view=saved','▤'],['Watchlist','/screener/?view=watchlist','♡']]},
+    {id:'vorsorge', label:'Vorsorge', href:'/vorsorge/#/', icon:'vorsorge', claim:'Sparplan und Rente', entries:[['Vorsorge Home','/vorsorge/#/','☂'],['Planer','/vorsorge/#/plan','◬'],['ETFs','/vorsorge/#/etfs','◫'],['Portfolio','/vorsorge/#/portfolio','◎'],['Vergleichen','/vorsorge/#/vergleichen','⧩'],['Förderung','/vorsorge/#/foerderung','✧'],['Veränderungen','/vorsorge/#/monitor','≋'],['Wissen','/vorsorge/#/wissen','▤']]},
+    {id:'portfolios', label:'Portfolios', href:'/portfolios/', icon:'portfolios', claim:'Alle Musterdepots: Supertrader, Quant, KI', entries:[['Übersicht','/portfolios/','⌂'],['Supertrader','/portfolios/#/supertrader','⚑'],['Quant','/portfolios/#/quant','⧩'],['KI-Depots','/portfolios/#/ki','✧']]},
+    {id:'insights', label:'Insights', href:'/insights/', icon:'insights', claim:'Tagesthemen, Aktienmagazin und Reports', entries:[['Artikel','/insights/','▤'],['Aktienmagazin','/insights/magazin/','▣'],['Reports','/insights/reports/','▥']]},
+    {id:'more', label:'Weitere Produkte', href:null, icon:'layers', claim:'', entries:[['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫'],['Analysten','/analysten/','◇'],['News','/news/','▤'],['Morning','/morning/','☼'],['Academy','/academy/','✧'],['Guide','/guide/','◈'],['Budget','/budget/','▦']]}
   ];
+  /* Mein Bereich im Menue (Mockup N3). */
+  const MINE = [['Mein Dashboard','/mein-dashboard/','person'],['Watchlist','/konto/watchlist/','heart'],['Konto und Tarif','/konto/','gear']];
   /* Produkt-Dock: die schwebende Leiste am unteren Rand jedes Produkts.
      Regel fuer alle Produkte: [PRODUKT] [Funktion] [Funktion] [Funktion] [☰].
      Der erste Eintrag traegt immer den Produktnamen (nie "Home"/"Start"); die Spalten sind gleich breit, aber nie
@@ -30,54 +78,59 @@
   const isElliottDetail = (p, loc) => p === '/quant/' && !!loc && /^#\/elliott(\/|$|\?)/.test(loc.hash || '');
   const PRODUCTS = [
     {id: 'discover', label: 'Discover', match: p => p.startsWith('/discover/'),
-      items: [['discover','Discover','/discover/#/','discover'],['welten','Welten','/discover/#/welten','worlds'],['strategien','Strategien','/discover/#/strategien','strategies'],['entdecken','Entdecken','/discover/#/einzeln/US_REAL','explore']],
+      items: [['discover','Discover','/discover/#/','discover'],['welten','Welten','/discover/#/welten','worlds'],['strategien','Strategien','/discover/#/strategien','strategies'],['entdecken','Swipen','/discover/#/einzeln/US_REAL','explore']],
       active: loc => {
         const k = hashPart(loc, 0);
         if (!k) return 'discover';
+        if (k === 'c' && hashPart(loc, 1) === 'EUROPE') return 'discover';
         if (k === 'c') { const themes = globalThis.VUDiscover?.Views?.Themes; return themes && themes.byRow(hashPart(loc, 2)) ? 'welten' : 'strategien'; }
-        return {welten: 'welten', thema: 'welten', strategien: 'strategien', einzeln: 'entdecken'}[k] || null;
+        return {welten: 'welten', thema: 'welten', strategien: 'strategien', einzeln: 'entdecken', swipen: 'entdecken'}[k] || null;
       }},
     {id: 'elliott', label: 'Elliott', match: (p, loc) => p.startsWith('/elliott/') || isElliottDetail(p, loc),
-      items: [['elliott','Elliott','/elliott/','elliott'],['welle3','Welle 3','/elliott/#/?welle=3','wave'],['neu','Neu','/elliott/#/?neu=1','spark'],['suche','Suche','/elliott/#/?suche=1','search']],
+      items: [['elliott','Elliott','/elliott/','elliott'],['zaehlbar','Zählbar','/elliott/#/?zaehlbar=1','wave'],['neu','Neu','/elliott/#/?neu=1','spark'],['suche','Suche','/elliott/#/?suche=1','search']],
       active: loc => {
         if (loc.pathname !== '/elliott/') return null;
         if (hashPart(loc, 0)) return null;   // Aktienbild /elliott/#/<T>: nur Produktkontext
         const q = new URLSearchParams((loc.hash || '').split('?')[1] || '');
         if (q.get('suche') === '1') return 'suche';
         if (q.get('neu') === '1') return 'neu';
-        if (q.get('welle') === '3') return 'welle3';
+        if (q.get('zaehlbar') === '1' || q.get('welle') === '3' && !q.get('richtung') && !q.get('status') && !q.get('rolle')) return 'zaehlbar';
         return q.get('welle') || q.get('richtung') || q.get('status') || q.get('rolle') ? null : 'elliott';
       }},
     {id: 'quant', label: 'Quant', match: (p, loc) => p.startsWith('/quant/') && !isElliottDetail(p, loc),
       items: [['quant','Quant','/quant/#/','quant'],['screener','Screener','/quant/#/screener','screener','Quant Screener'],['strategien','Strategien','/quant/#/strategien','strategies'],['aktien','Aktien','/quant/#/aktien','stocks']],
       active: loc => {
-        const legacy = {'/quant/screener/': 'screener', '/quant/strategies/': 'strategien', '/quant/strategies/builder/': 'strategien', '/quant/stock/': 'aktien', '/quant/technical/': 'aktien', '/quant/ranking/': 'aktien'}[loc.pathname];
+        const legacy = {'/quant/screener/': 'screener', '/quant/strategies/': 'strategien', '/quant/strategies/builder/': 'strategien', '/quant/stock/': 'aktien', '/quant/technical/': 'aktien', '/quant/ranking/': 'aktien', '/quant/methodology/': 'quant'}[loc.pathname];
         if (legacy) return legacy;
         if (loc.pathname !== '/quant/') return null;
         const k = hashPart(loc, 0);
-        return {'': 'quant', radar: 'quant', screener: 'screener', strategien: 'strategien', aktien: 'aktien', aktie: 'aktien', vergleich: 'aktien'}[k] || null;
+        /* Q00: Methodik und Backtest gehören zum Start „Quant“, Technische Lagen zu „Aktien“. */
+        return {'': 'quant', radar: 'quant', methodik: 'quant', backtest: 'quant', screener: 'screener', strategien: 'strategien', aktien: 'aktien', aktie: 'aktien', vergleich: 'aktien', chartlagen: 'aktien'}[k] || null;
       }},
     /* Fundamental: eigenes Produkt. #/<TICKER> ist die Unternehmensseite (nur Produktkontext); Entdecken und Suche sind
        Ansichten der Startseite, die fundamental/app.js (VUFundamental.Model.parseRoute) liest. */
     {id: 'fundamental', label: 'Fundamental', match: p => p.startsWith('/fundamental/'),
-      items: [['fundamental','Fundamental','/fundamental/#/','fundamental'],['entdecken','Entdecken','/fundamental/#/entdecken','explore'],['suche','Suche','/fundamental/#/suche','search'],['methodik','Methodik','/fundamental/#/methodik','table']],
-      active: loc => loc.pathname === '/fundamental/' ? ({'': 'fundamental', entdecken: 'entdecken', suche: 'suche', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
+      /* Redesign 2027 (F01–F05): Ranglisten · Branchen · Methodik; die Suche steht im Kopf (#/suche bleibt erreichbar). */
+      items: [['fundamental','Fundamental','/fundamental/#/','fundamental'],['ranglisten','Ranglisten','/fundamental/#/ranglisten','explore'],['branchen','Branchen','/fundamental/#/branchen','worlds'],['methodik','Methodik','/fundamental/#/methodik','table']],
+      active: loc => loc.pathname === '/fundamental/' ? ({'': 'fundamental', ranglisten: 'ranglisten', entdecken: 'ranglisten', branchen: 'branchen', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
     /* Technical: eigenes Produkt. #/chart/<TICKER> ist das Chart Studio einer Aktie; ohne Kuerzel die Auswahl.
        Der Chart-Eintrag zeigt per dock({hrefs:{chart}}) auf die zuletzt geoeffnete Aktie (technical/app.js). */
     {id: 'technical', label: 'Technical', match: p => p.startsWith('/technical/'),
-      items: [['technical','Technical','/technical/#/','technical'],['screener','Screener','/technical/#/screener','screener'],['chart','Chart Studio','/technical/#/chart','signals'],['methodik','Methodik','/technical/#/methodik','table']],
-      active: loc => loc.pathname === '/technical/' ? ({'': 'technical', screener: 'screener', chart: 'chart', methodik: 'methodik'}[hashPart(loc, 0)] || null) : null},
+      items: [['technical','Technical','/technical/#/','technical'],['screener','Screener','/technical/#/screener','screener'],['chart','Chart','/technical/#/chart','signals','Chart Studio'],['muster','Muster','/technical/#/muster','table']],
+      /* Redesign 2027 (T05): „Muster“ ersetzt „Methodik“; #/methodik zeigt dieselbe Seite. */
+      active: loc => loc.pathname === '/technical/' ? ({'': 'technical', screener: 'screener', chart: 'chart', muster: 'muster', methodik: 'muster'}[hashPart(loc, 0)] || null) : null},
     {id: 'vorsorge', label: 'Vorsorge', match: p => p.startsWith('/vorsorge/'),
-      items: [['vorsorge','Vorsorge','/vorsorge/#/','vorsorge'],['plan','Plan','/vorsorge/#/plan','plan'],['etfs','ETFs','/vorsorge/#/etfs','etf'],['portfolio','Portfolio','/vorsorge/#/portfolio','portfolio']],
+      items: [['vorsorge','Vorsorge','/vorsorge/#/','vorsorge'],['plan','Planer','/vorsorge/#/plan','plan'],['etfs','ETFs','/vorsorge/#/etfs','etf'],['portfolio','Portfolio','/vorsorge/#/portfolio','portfolio']],
       active: loc => {
         if (loc.pathname.startsWith('/vorsorge/etf/')) return 'etfs';
         return {'': 'vorsorge', home: 'vorsorge', plan: 'plan', luecke: 'plan', etfs: 'etfs', etf: 'etfs', watchlist: 'etfs', europa: 'etfs', portfolio: 'portfolio', xray: 'portfolio', szenarien: 'portfolio'}[hashPart(loc, 0)] || null;
       }},
     {id: 'screener', label: 'Screener', match: p => p.startsWith('/screener/'),
-      items: [['screener','Screener','/screener/','screener'],['treffer','Treffer','/screener/?view=results','hits'],['gespeichert','Gespeichert','/screener/?view=saved','saved'],['watchlist','Watchlist','/screener/?view=watchlist','heart']],
+      items: [['screener','Screener','/screener/','screener'],['filter','Filter','/screener/?view=build','plus'],['treffer','Treffer','/screener/?view=results','hits'],['gespeichert','Gespeichert','/screener/?view=saved','saved']],
       active: loc => {
-        const view = new URLSearchParams(loc.search).get('view') || 'start';
-        return {start: 'screener', build: 'screener', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'watchlist'}[view] || null;
+        const q = new URLSearchParams(loc.search);
+        const view = q.get('view') || (q.getAll('f').some(f => f.trim()) || q.get('mode') === 'pro' ? 'build' : 'start');
+        return {start: 'screener', build: 'filter', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'gespeichert'}[view] || null;
       }},
     {id: 'supertrader', label: 'Supertrader', match: p => p.startsWith('/supertrader/'),
       items: [['supertrader','Supertrader','/supertrader/','supertrader'],['methoden','Methoden','/supertrader/strategies/','grid'],['signale','Signale','/supertrader/signals/','signals'],['backtests','Backtests','/supertrader/backtests/','backtests']],
@@ -86,8 +139,22 @@
         return {'': 'supertrader', strategies: 'methoden', signals: 'signale', stock: 'signale', backtests: 'backtests'}[k] || null;
       }},
     {id: 'hedgefonds', label: 'Hedgefonds', match: p => p.startsWith('/hedgefonds/'),
-      items: [['hedgefonds','Hedgefonds','/hedgefonds/#/','hedgefonds'],['investoren','Investoren','/hedgefonds/#/investoren','users'],['datenbank','Datenbank','/hedgefonds/#/datenbank','table'],['aktien','Aktien','/hedgefonds/#/aktien','stocks']],
-      active: loc => ({'': 'hedgefonds', investoren: 'investoren', datenbank: 'datenbank', aktien: 'aktien', aktie: 'aktien'}[hashPart(loc, 0)] || null)}
+      items: [['hedgefonds','Hedgefonds','/hedgefonds/#/','hedgefonds'],['investoren','Investoren','/hedgefonds/#/investoren','users'],['aktien','Aktien','/hedgefonds/#/aktien','stocks'],['smart','Smart Money','/hedgefonds/#/smart-money','signals']],
+      active: loc => ({'': 'hedgefonds', investoren: 'investoren', datenbank: 'investoren', aktien: 'aktien', aktie: 'aktien', 'smart-money': 'smart'}[hashPart(loc, 0)] || null)},
+    /* Portfolios: #/<gruppe> filtert die Uebersicht, #/<gruppe>/<id> ist ein Depot (gehoert zur Gruppe). */
+    {id: 'portfolios', label: 'Portfolios', match: p => p.startsWith('/portfolios/'),
+      items: [['portfolios','Portfolios','/portfolios/#/','portfolios'],['supertrader','Supertrader','/portfolios/#/supertrader','signals'],['quant','Quant','/portfolios/#/quant','grid'],['ki','KI','/portfolios/#/ki','spark']],
+      active: loc => loc.pathname === '/portfolios/' ? ({'': 'portfolios', supertrader: 'supertrader', quant: 'quant', ki: 'ki'}[hashPart(loc, 0)] || null) : null},
+    /* Mein Bereich (Mockups E02, E07, E08): Start /willkommen/, Watchlist /mein-dashboard/, lokal Gemerktes
+       /mein-dashboard/#/gespeichert, Konto /konto/. Bestellweg und Anmeldung tragen keine Leiste (sie fordern sie nicht an). */
+    {id: 'mein', label: 'Mein Bereich', icon: 'person', match: p => p.startsWith('/willkommen/') || p.startsWith('/mein-dashboard/') || p === '/konto/' || p.startsWith('/konto/watchlist/'),
+      items: [['mein','Mein Bereich','/willkommen/','person'],['watchlist','Watchlist','/mein-dashboard/','heart'],['gespeichert','Gespeichert','/mein-dashboard/#/gespeichert','saved'],['konto','Konto','/konto/','gear']],
+      active: loc => {
+        if (loc.pathname.startsWith('/willkommen/')) return 'mein';
+        if (loc.pathname.startsWith('/konto/watchlist/')) return 'watchlist';
+        if (loc.pathname === '/konto/') return 'konto';
+        return hashPart(loc, 0) === 'gespeichert' ? 'gespeichert' : 'watchlist';
+      }}
   ];
   // Original sprite geometry is inlined only for the always-visible dock: no extra request
   // on resource-budgeted workspaces. The provenance test keeps these six symbols exact.
@@ -100,9 +167,10 @@
   "elliott": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path class=\"dim\" opacity=\".45\" d=\"M2 21h20\" stroke-dasharray=\"1.5 2\"/><path d=\"M2 19 6 12l2.5 3L14 5l2.5 4L21 3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"6\" cy=\"12\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"8.5\" cy=\"15\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"14\" cy=\"5\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"16.5\" cy=\"9\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"21\" cy=\"3\" r=\"1.5\"/></g>",
   "fundamental": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 21h20\"/><path d=\"M4.5 21v-6M8.5 21V10M12.5 21v-5\"/><circle cx=\"16\" cy=\"9\" r=\"4.5\"/><path d=\"m19.3 12.3 2.7 2.7\"/><path class=\"dim\" opacity=\".45\" d=\"M14.2 9.6 15.5 8l1.2 1.2 1.6-2\"/></g>",
   "technical": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2.5 4.5 20.5 12.5M2.5 20.5l18-8\"/><path class=\"dim\" opacity=\".45\" d=\"M7 8v9M11.5 10v5.5M15.5 11.3v3\"/><rect x=\"6\" y=\"10\" width=\"2\" height=\"5\" rx=\".4\"/><rect x=\"10.5\" y=\"11\" width=\"2\" height=\"3.5\" rx=\".4\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"20.5\" cy=\"12.5\" r=\"1.7\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"2.5\" cy=\"4.5\" r=\"1.1\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"2.5\" cy=\"20.5\" r=\"1.1\"/></g>",
-  "hedgefonds": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"6\" r=\"2.4\"/><circle class=\"dim\" opacity=\".45\" cx=\"5\" cy=\"8\" r=\"1.8\"/><circle class=\"dim\" opacity=\".45\" cx=\"19\" cy=\"8\" r=\"1.8\"/><path d=\"M8 19v-5a4 4 0 0 1 8 0v5\"/><path class=\"dim\" opacity=\".45\" d=\"M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18\"/><path d=\"M12 13v6\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"12\" cy=\"22\" r=\"1\"/></g>"
+  "hedgefonds": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"6\" r=\"2.4\"/><circle class=\"dim\" opacity=\".45\" cx=\"5\" cy=\"8\" r=\"1.8\"/><circle class=\"dim\" opacity=\".45\" cx=\"19\" cy=\"8\" r=\"1.8\"/><path d=\"M8 19v-5a4 4 0 0 1 8 0v5\"/><path class=\"dim\" opacity=\".45\" d=\"M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18\"/><path d=\"M12 13v6\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"12\" cy=\"22\" r=\"1\"/></g>",
+  "portfolios": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M11 3.5a8.5 8.5 0 1 0 9.5 9.5H11z\"/><path class=\"fill\" fill=\"currentColor\" stroke=\"none\" opacity=\".28\" d=\"M14 2.5a8 8 0 0 1 7.5 7.5H14z\"/><path d=\"M14 2.5a8 8 0 0 1 7.5 7.5H14z\"/><path class=\"dim\" opacity=\".45\" d=\"M5.5 13h3M5.5 16h5\"/></g>"
 };
-  const dockProductIcon = id => `<svg viewBox="0 0 24 24" aria-hidden="true">${DOCK_PRODUCT_ICONS[id]}</svg>`;
+  const dockProductIcon = id => DOCK_PRODUCT_ICONS[id] ? `<svg viewBox="0 0 24 24" aria-hidden="true">${DOCK_PRODUCT_ICONS[id]}</svg>` : `<svg class="line" viewBox="0 0 24 24" aria-hidden="true">${dockIcons[id] || ''}</svg>`;
   // Hidden menu symbols acquire href only when the menu opens.
   const productIcon = id => `<svg viewBox="0 0 24 24" aria-hidden="true"><use data-href="/assets/product-icons.svg#${id}"/></svg>`;
   const segmentPrefix = (value, prefix) => value === prefix || value.startsWith(prefix.replace(/\/$/, '') + '/');
@@ -153,6 +221,11 @@
     plan: '<path d="M4 19V5m0 14h16"/><path d="M7 15c3 0 4-6 7-6s3 3 6 3"/>',
     etf: '<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M12 3.5v17M3.5 10.5h17"/>',
     portfolio: '<path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+    gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8"/>',
+    close: '<path d="M6 6l12 12M18 6 6 18"/>',
+    next: '<path d="M9 5l7 7-7 7"/>',
     hits: '<path d="M4 5h16l-6 8v5l-4 2v-7z"/>',
     saved: '<path d="M6 3.5h12v17l-6-4-6 4z"/>',
     heart: '<path d="M20.8 8.5c0 4-4.4 7.6-8.8 11-4.4-3.4-8.8-7-8.8-11a5 5 0 0 1 8.8-3.1 5 5 0 0 1 8.8 3.1z"/>',
@@ -173,27 +246,28 @@
      globalen Menue. Abstand fuer den Inhalt: --vu-dock-space
      (site-navigation.css), damit nichts Letztes dauerhaft verdeckt ist. */
   const dockStyles = `
-        :host{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none;font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;text-align:left}
+        :host{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 12px calc(12px + env(safe-area-inset-bottom));pointer-events:none;font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
         *{box-sizing:border-box}
-        nav{pointer-events:auto;display:grid;grid-template-columns:repeat(5,minmax(min-content,1fr));gap:2px;width:100%;max-width:520px;padding:6px;border-radius:26px;background:#0d0f12;color:#f4f5f1;box-shadow:0 0 0 1px rgba(255,255,255,.07),0 16px 36px -14px rgba(0,0,0,.55)}
-        a,button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:54px;padding:7px 2px 6px;border:0;border-radius:20px;background:transparent;color:rgba(244,245,241,.66);font-family:inherit;font-size:10.5px;font-weight:700;line-height:1.15;letter-spacing:.01em;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,transform .15s}
-        a:hover,button:hover{color:#fff;background:rgba(255,255,255,.07)}
+        nav{pointer-events:auto;display:grid;grid-template-columns:minmax(min-content,1.35fr) repeat(4,minmax(min-content,1fr));gap:2px;width:100%;max-width:520px;min-height:68px;align-items:center;padding:6px;border-radius:26px;background:#000;color:#fff;box-shadow:0 0 0 1px #222,0 10px 30px -10px rgba(0,0,0,.5)}
+        a,button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:56px;padding:6px 3px;border:0;border-radius:20px;background:transparent;color:#9a9a9a;font-family:inherit;font-size:10.5px;font-weight:700;line-height:1.1;letter-spacing:0;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,transform .1s}
+        a:hover,button:hover{color:#fff;background:rgba(255,255,255,.08)}
         a:active,button:active{transform:scale(.96)}
         a:focus-visible,button:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
-        .label{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-        .product{color:#f4f5f1}.product .label{font-weight:800}
+        .label{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
+        .product{color:#fff}.product .label{font-weight:800}
         .product.is-context{color:#c8f531}
-        a[aria-current=page],a[aria-current=page]:hover{background:#c8f531;color:#101318}
-        svg{width:22px;height:22px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-        .badge{position:absolute;top:4px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:#f4f5f1;color:#101318;font-size:10px;font-weight:800;line-height:17px;text-align:center}
-        a[aria-current=page] .badge{background:#101318;color:#c8f531}
+        a[aria-current=page],a[aria-current=page]:hover{background:#c8f531;color:#000}
+        svg{width:21px;height:21px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+        .product svg{width:20px;height:20px}
+        .badge{position:absolute;top:4px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:#fff;color:#000;font-size:10px;font-weight:800;line-height:17px;text-align:center}
+        a[aria-current=page] .badge{background:#000;color:#c8f531}
         button[aria-expanded=true]{color:#c8f531}
         @media(min-width:761px){
           :host{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
-          nav{display:flex;width:auto;max-width:100%;gap:2px;padding:5px;border-radius:999px}
+          nav{display:flex;width:auto;max-width:100%;min-height:0;gap:2px;padding:5px;border-radius:999px}
           a,button{flex-direction:row;gap:8px;min-height:46px;padding:0 16px;border-radius:999px;font-size:13px}
           .label{overflow:visible}
-          svg{width:19px;height:19px}
+          svg,.product svg{width:19px;height:19px}
           .badge{position:static;margin-left:-2px}
         }
         @media(max-width:350px){:host{padding-inline:6px}a,button{font-size:9.5px}}
@@ -207,9 +281,67 @@
      badges}). Klicks auf die Leiste melden sich vorher als abbrechbares
      Ereignis vu-dock-navigate {product,id,href}; wer preventDefault ruft,
      navigiert selbst. */
+  /* Einheitlicher Seitenfuß (Strang F, Hinweis „footer“ aus assets/legal-notices.json). Erscheint erst mit
+     legalApproved: true; eine Seite kann ihn mit <meta name="vu-legal-footer" content="none"> abwählen. */
+  /* VU-LEGAL:BEGIN – erzeugt aus assets/legal-notices.json (scripts/legal/sync-legal-notices.mjs), nicht von Hand ändern */
+  var LEGAL = {"approved":true,"version":"vu-hinweise-2026-11-07-1","notices":{"footer":{"text":"Vision Universe ist eine Software zur Analyse von Aktien. Die Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Keine Anlageberatung, keine Anlageempfehlung, keine Kauf- oder Verkaufsempfehlung. Aktien können bis zum Totalverlust fallen. Frühere und simulierte Ergebnisse sind kein verlässlicher Hinweis auf die Zukunft.","label":null,"required":null,"links":[["Impressum","https://konto.visionuniverse.de/rechtliches/impressum"],["Kontakt","https://konto.visionuniverse.de/kontakt"],["Datenschutz","https://konto.visionuniverse.de/rechtliches/datenschutz"],["Nutzungsbedingungen","https://konto.visionuniverse.de/rechtliches/agb"],["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"]]},"stock":{"text":"Einstufungen und Werte beschreiben, wie diese Aktie nach den Regeln der jeweiligen Methode im Vergleich zu anderen Aktien abschneidet – Datenstand siehe oben. Sie berücksichtigen deine persönliche Situation nicht und sind keine Empfehlung, diese Aktie zu kaufen, zu halten oder zu verkaufen.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"ranking":{"text":"Diese Liste zeigt Aktien, die die beschriebenen Bedingungen zum Datenstand rechnerisch erfüllen. Die Reihenfolge folgt der Regel, nicht einer Einschätzung, welche Aktie besser für dich ist.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"setup":{"text":"Regel-Ergebnis der Methode, für alle gleich: Die Aktie erfüllt zum Datenstand die beschriebenen Bedingungen. Zonen laut Methode sind Rechenpunkte, kein Kursziel und keine Prognose. Das ist keine Empfehlung, die Aktie zu kaufen oder zu verkaufen.","label":null,"required":["Methode und Regelversion","Datenstand","Link zur Methodik"],"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"],["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"backtest":{"text":"Forschung, nicht zertifiziert: Dieser Backtest rechnet eine Regel rückwirkend auf historische Kurse. Das Ergebnis hängt von Zeitraum, Kosten, Ausführung und Datenumfang ab (Angaben unten). Es ist keine Prognose und kein Renditeversprechen. Frühere und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse.","label":"Forschung, nicht zertifiziert","required":["Zeitraum","Kosten je Trade","Vergleichsmaßstab (z. B. S&P 500 Gesamtrendite)","Enthält delistete Titel: ja/nein","Anzahl getesteter Varianten","größter Verlust (max. Drawdown)"],"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"]]},"modelPortfolio":{"text":"Musterdepot: ein Rechenmodell ohne echtes Geld, das eine Methode nach Regel rechnet. Es zeigt, was die Methode tut, nicht, was du tun solltest, und ist keine Empfehlung. Reale Ergebnisse weichen durch Kosten, Steuern, Kurslücken und Ausführungszeitpunkt ab.","label":"Rechenmodell, kein echtes Geld","required":null,"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"],["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"thirdParty":{"text":"Angabe Dritter: zusammengefasste Einschätzungen externer Analysten bzw. Pflichtmeldungen an die SEC, unverändert mit Quelle und Datum. Nicht von Vision Universe erstellt und keine Einschätzung von Vision Universe.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"ai":{"text":"Die KI übersetzt deine Frage in Filter; die Zahlen rechnet Vision Universe aus seinen Daten. KI-Texte können Fehler enthalten. Der Atlas beantwortet keine Fragen zu deiner persönlichen Situation und sagt nicht, was du kaufen oder verkaufen sollst.","label":null,"required":null,"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"]]},"editorial":{"text":"Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Methodik und Interessen: siehe Seite „Methodik, Quellen und Interessen“.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]}},"appLinks":[["Impressum","https://konto.visionuniverse.de/rechtliches/impressum"],["Kontakt","https://konto.visionuniverse.de/kontakt"],["Datenschutz","https://konto.visionuniverse.de/rechtliches/datenschutz"],["Nutzungsbedingungen","https://konto.visionuniverse.de/rechtliches/agb"],["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"],["Datenquellen & Methodik","https://research.visionuniverse.de/infos/#quellen"]],"menuTitle":"Rechtliches & Infos","footerInApp":false};
+  /* VU-LEGAL:END */
+  /* App-Hülle (iOS/Android): Capacitor oder User-Agent VUApp/1 (app/capacitor.config.json appendUserAgent). */
+  function inApp() {
+    try { return !!(globalThis.Capacitor && globalThis.Capacitor.isNativePlatform && globalThis.Capacitor.isNativePlatform()) || /VUApp\/1/.test(navigator.userAgent); } catch (_) { return false; }
+  }
+  /* Pflicht-Links (assets/legal-notices.json appLinks.always): Menü → „Rechtliches & Infos“, aus jedem Bereich in zwei
+     Schritten (§ 5 DDG). Owner-Entscheidung 07.11.2026: dort auch der kurze Software-/Risikosatz (notices.footer) und
+     „Datenquellen & Methodik“; in der App ersetzt dieser Menüpunkt den Seitenfuß. */
+  function legalMenu() {
+    var l = (typeof LEGAL !== 'undefined' && LEGAL.appLinks) || [];
+    if (!l.length) return '';
+    var e = function (x) { return String(x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var foot = LEGAL.approved && LEGAL.notices && LEGAL.notices.footer;
+    return '<h2 id="vu-legal-menu">' + e(LEGAL.menuTitle || 'Rechtliches') + '</h2><div class="links legal-links">' + l.map(function (x) { return '<a href="' + e(x[1]) + '"><span>' + e(x[0]) + '</span></a>'; }).join('') + '</div>' +
+      (foot ? '<p class="legal-note">' + e(foot.text) + '</p>' : '');
+  }
+  function legalFooter() {
+    var n = LEGAL.approved && LEGAL.notices && LEGAL.notices.footer;
+    if (!n || typeof document === 'undefined' || !document.body || document.querySelector('.vu-legal-foot')) return;
+    if (LEGAL.footerInApp === false && inApp()) return;
+    var off = document.querySelector('meta[name="vu-legal-footer"]');
+    if (off && off.getAttribute('content') === 'none') return;
+    var foot = document.createElement('aside');
+    foot.className = 'vu-legal-foot';
+    foot.setAttribute('aria-label', 'Rechtliche Hinweise');
+    var p = document.createElement('p'); p.textContent = n.text; foot.appendChild(p);
+    var links = document.createElement('p'); links.className = 'vu-legal-foot-links';
+    n.links.forEach(function (l, i) { if (i) links.appendChild(document.createTextNode(' · ')); var a = document.createElement('a'); a.href = l[1]; a.textContent = l[0]; links.appendChild(a); });
+    foot.appendChild(links);
+    document.body.appendChild(foot);
+  }
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', legalFooter); else legalFooter();
+  }
+  /* App (Owner 08.11.2026: „Rechtliches & Infos“ ließ sich nicht antippen): Die App zeigt diese Seite in einem Rahmen,
+     und die App-Hülle lässt im Rahmen nur research.visionuniverse.de zu (CSP frame-src in app/www/index.html). Ein Link auf
+     eine andere Herkunft, z. B. die Rechtstexte auf konto.visionuniverse.de, wurde dort still verworfen. Solche Links
+     öffnen in der App deshalb als neues Fenster; Capacitor gibt das an den System-Browser (iOS decidePolicyFor mit
+     targetFrame == nil, Android launchIntent). Im Web bleibt alles wie bisher. */
+  function appExternalLink(a) {
+    if (!a || !a.href || a.hasAttribute('download') || (a.target && a.target !== '_self')) return false;
+    var u; try { u = new URL(a.href, location.href); } catch (_) { return false; }
+    if (!/^https?:$/.test(u.protocol) || u.origin === location.origin) return false;
+    a.target = '_blank'; a.rel = 'noopener';
+    return true;
+  }
+  if (typeof document !== 'undefined' && inApp()) {
+    document.addEventListener('click', function (ev) {
+      var path = ev.composedPath ? ev.composedPath() : [ev.target];
+      for (var i = 0; i < path.length; i++) if (path[i] && path[i].tagName === 'A') { appExternalLink(path[i]); return; }
+    }, true);
+  }
   const dockBus = {state: {}, listeners: []};
   if (typeof window !== 'undefined') {
     window.VUNavigation = {
+      /* Nur lesend: Plätze der Produkt-Leiste je Welt (Musterseite /status/bausteine/, Tests). */
+      products: () => PRODUCTS.map(p => ({id: p.id, label: p.label, items: p.items.map(([id, label, href, icon]) => ({id, label, href, icon}))})),
       dock: state => {
         state = state || {};
         Object.assign(dockBus.state, state);
@@ -226,18 +358,8 @@
   /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
      Discover synchronisiert ihr Farbschema mit seiner eigenen Theme-Wahl. */
   const THEMES = {
-    light: {
-      bg: 'rgba(255,255,255,.96)', border: 'rgba(0,0,0,.07)', ink: '#111',
-      divider: '#e5e5e2', burgerBg: '#050505', burgerInk: '#fff',
-      panelBg: '#101318', panelBorder: 'rgba(255,255,255,.15)', outline: '#c8f531',
-      atlasBg: '#101318', atlasInk: '#f5f6f2', atlasRing: 'rgba(200,245,49,.35)', atlasGlow: 'rgba(16,19,24,.18)'
-    },
-    dark: {
-      bg: 'rgba(8,8,10,.92)', border: 'rgba(255,255,255,.10)', ink: '#f4f4f1',
-      divider: 'rgba(255,255,255,.12)', burgerBg: '#f4f4f1', burgerInk: '#08080a',
-      panelBg: '#101318', panelBorder: 'rgba(255,255,255,.15)', outline: '#c8f531',
-      atlasBg: '#171b21', atlasInk: '#f5f6f2', atlasRing: 'rgba(200,245,49,.55)', atlasGlow: 'rgba(200,245,49,.16)'
-    }
+    light: {bg: 'rgba(255,255,255,.96)', border: '#e9e9e9', ink: '#000', card: '#f4f4f4', mute: '#6e6e6e', atlasBg: '#000', atlasInk: '#fff', atlasIcon: '#c8f531', outline: '#4f6b00'},
+    dark: {bg: 'rgba(0,0,0,.94)', border: '#262626', ink: '#fff', card: '#151515', mute: '#9b9b9b', atlasBg: '#c8f531', atlasInk: '#000', atlasIcon: '#000', outline: '#c8f531'}
   };
 
   /* Farbschema plattformweit: dieselbe Wahl (localStorage, Schluessel von
@@ -283,41 +405,82 @@
      der Kopf zieht mit, ohne neu aufgebaut zu werden. */
   const styles = (t) => `
         :host{display:block;position:fixed;inset:0 0 auto;z-index:1000000;color:${t.ink};font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;text-align:left}
-        *{box-sizing:border-box}header{background:${t.bg};-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 1px 0 ${t.border}}
-        .shell{width:min(1240px,calc(100% - 64px));margin:auto}.row{height:72px;display:flex;align-items:center;gap:20px}
-        .brand{flex-shrink:0;display:flex;align-items:center;text-decoration:none}img{display:block;width:clamp(150px,14vw,196px);max-width:30vw;height:auto}
-        .section{font-size:12px;color:${t.ink};opacity:.65;border-left:1px solid ${t.divider};padding-left:16px;white-space:nowrap}
+        *{box-sizing:border-box}
+        header{background:${t.bg};-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 1px 0 ${t.border}}
+        .shell{width:min(1240px,calc(100% - 48px));margin:auto}.row{height:64px;display:flex;align-items:center;gap:16px}
+        .brand,.world{flex-shrink:0;display:flex;align-items:center;min-width:0;color:${t.ink};text-decoration:none}
+        .brand img{display:block;width:clamp(150px,14vw,190px);max-width:40vw;height:auto}
+        .world{gap:9px;font-size:17px;font-weight:900;letter-spacing:-.02em;min-height:44px}
+        .world[hidden],.brand[hidden]{display:none}
+        .hud{width:30px;height:30px;border-radius:9px;background:#0e1013;color:#c8f531;display:grid;place-items:center;flex:none}
+        .hud svg{width:62%;height:62%}.hud svg.line{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+        :host([theme="dark"]) .hud{box-shadow:0 0 0 1px #262a2f inset}
+        .world-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
         .quick{display:flex;align-items:center;gap:22px;margin-left:auto}.quick a{color:${t.ink};font-size:13px;font-weight:700;text-decoration:none}
         .quick a[aria-current=page]{text-decoration:underline;text-underline-offset:8px}
-        a:hover{text-decoration:underline;text-underline-offset:5px}a:focus-visible,button:focus-visible{outline:2px solid ${t.outline};outline-offset:3px}
-        button{font:inherit;cursor:pointer}.toggle{flex-shrink:0;border:1px solid ${t.divider};background:transparent;color:${t.ink};padding:10px 16px;border-radius:24px;font-weight:700}
-        .atlas{flex-shrink:0;display:inline-flex;align-items:center;gap:9px;height:42px;padding:0 16px 0 5px;border-radius:24px;background:${t.atlasBg};color:${t.atlasInk};font-size:13px;font-weight:800;letter-spacing:.01em;text-decoration:none;white-space:nowrap;box-shadow:0 0 0 1px ${t.atlasRing};transition:transform .15s,box-shadow .15s}
-        .quick+.atlas{margin-left:4px}.atlas:hover{text-decoration:none;transform:translateY(-1px);box-shadow:0 0 0 1px ${t.atlasRing},0 8px 22px ${t.atlasGlow}}
-        .atlas-icon{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#c8f531}
-        .atlas-icon svg{width:19px;height:19px;fill:#101318}.atlas-small{opacity:.7}
-        .mode{flex-shrink:0;width:42px;height:42px;display:grid;place-items:center;border-radius:50%;border:1px solid ${t.divider};background:transparent;color:${t.ink};padding:0;transition:transform .15s,background-color .15s}
-        .mode:hover{transform:translateY(-1px);background:${t.border}}.mode svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-        .mode .sun{display:none}:host([theme="dark"]) .mode .sun{display:block}:host([theme="dark"]) .mode .moon{display:none}
-        .atlas[aria-current=page]{box-shadow:0 0 0 2px #c8f531,0 6px 22px ${t.atlasGlow}}
-        .backdrop{position:fixed;inset:72px 0 0;background:#0009;visibility:hidden;opacity:0;transition:opacity .2s}
-        .panel{position:fixed;right:0;top:72px;bottom:0;width:min(420px,100vw);padding:24px 28px calc(34px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;background:${t.panelBg};color:#f5f6f2;border-left:1px solid ${t.panelBorder};box-shadow:-20px 20px 70px #0004;visibility:hidden;transform:translateX(100%);transition:transform .2s,visibility .2s}
+        .quick a:hover{text-decoration:underline;text-underline-offset:5px}
+        .tools{display:flex;align-items:center;gap:7px;margin-left:auto;flex-shrink:0}
+        @media(min-width:1025px){:host(:not([dock])) .quick+.tools{margin-left:12px}}
+        a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid ${t.outline};outline-offset:3px}
+        button{font:inherit;cursor:pointer}
+        .hb{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:50%;border:0;padding:0;background:transparent;color:${t.ink};text-decoration:none}
+        .hb i{width:36px;height:36px;border-radius:50%;background:${t.card};display:grid;place-items:center}
+        .hb svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+        .profile i{background:${t.ink};color:#c8f531}
+        .hb:hover i{filter:brightness(.95)}
+        .atlas{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;height:44px;padding:0 4px;border-radius:999px;color:${t.atlasInk};font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap}
+        .atlas span.pill{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 12px;border-radius:999px;background:${t.atlasBg}}
+        .atlas svg{width:16px;height:16px;fill:${t.atlasIcon}}
+        .atlas:hover span.pill{filter:brightness(1.15)}
+        .atlas[aria-current=page] span.pill{box-shadow:0 0 0 2px #c8f531}
+        .toggle{flex-shrink:0;border:1px solid ${t.border};background:transparent;color:${t.ink};min-height:44px;padding:0 16px;border-radius:999px;font-weight:800}
+        .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);visibility:hidden;opacity:0;transition:opacity .2s}
+        .panel{position:fixed;right:0;top:0;bottom:0;width:min(440px,100vw);padding:calc(14px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;background:#000;color:#fff;box-shadow:-1px 0 0 #222;visibility:hidden;transform:translateX(24px);opacity:0;transition:transform .2s,opacity .2s,visibility .2s}
         :host([open]) .backdrop,:host([open]) .panel{visibility:visible;opacity:1;transform:none}
-        .panel-head{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding:4px 0 12px;background:#101318}.panel-head img{width:185px;max-width:none;filter:invert(1) brightness(1.08)}.close{border:0;background:transparent;color:#f5f6f2;font-size:30px;width:44px;height:44px}
-        .panel h2{font-size:11px;text-transform:uppercase;letter-spacing:.14em;margin:0 0 9px;padding-bottom:9px;border-bottom:1px solid #ffffff30;color:#e8ebe8}
-        .groups{display:grid;gap:6px}.group-head{display:flex;align-items:center;gap:4px;min-height:56px;border-radius:12px}.group-link,.group-title{flex:1;min-width:0;display:flex;align-items:center;gap:12px;padding:6px 8px;color:#f5f6f2;font-size:15px;font-weight:750;text-decoration:none;min-height:48px}.group-link:hover{text-decoration:none;background:#ffffff0a;border-radius:10px}.group.is-current .group-link,.group.is-current .group-title{color:#c8f531}.group-link[aria-current=page]{background:#c8f53112}.disclosure{display:grid;place-items:center;flex:none;width:44px;height:48px;border:0;border-radius:10px;background:transparent;color:#b8beb5}.disclosure:hover{background:#ffffff12;color:#c8f531}.disclosure svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;transition:transform .15s}.disclosure[aria-expanded=true] svg{transform:rotate(180deg)}.menu-product-icon{width:36px;height:36px;display:grid;place-items:center;flex:none;border:1px solid #c8f53155;border-radius:10px;background:radial-gradient(circle at 50% 15%,#c8f53118,transparent 75%),#080b0b;color:#c8f531;box-shadow:inset 0 0 12px #c8f53108}.menu-product-icon svg{width:25px;height:25px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}.links[hidden]{display:none}.group .links{padding:3px 0 8px 48px}.groups h2{margin:0;padding:0;border:0;text-transform:none;letter-spacing:0;font:inherit}.group.is-current h2{color:#c8f531;border-color:#c8f53170}.group.is-current .links a[aria-current=page]{background:#c8f531;color:#101318}
-        .links{display:grid;grid-template-columns:1fr;gap:2px}.links a{color:#f5f6f2;text-decoration:none;display:flex;align-items:center;gap:12px;padding:8px 10px;min-height:44px;font-size:13px;border-radius:9px}.links a:hover{background:#ffffff17}
-        .icon{width:34px;height:34px;flex:none;display:grid;place-items:center;color:#f5f6f2}.icon svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}.links a[aria-current=page] .icon{color:#101318}.settings{margin-top:24px;padding-top:20px;border-top:1px solid #ffffff30}.setting{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:14px 0;font-size:12px}
-        .choices{display:flex;border:1px solid #ffffff38;border-radius:10px;padding:3px;gap:2px}.choices button,.choices a{display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:#f5f6f2;padding:7px 9px;min-width:44px;min-height:44px;font-size:11px;text-align:center;text-decoration:none}.choices [aria-pressed=true]{background:#f5f6f2;color:#101318}
-        .panel a:focus-visible,.panel button:focus-visible{outline-color:#c8f531}
-        @media(max-width:1240px){.section{display:none}}@media(max-width:900px){.quick a.q-extra{display:none}}
-        @media(max-width:1024px){.quick{display:none}.quick+.atlas,.atlas{margin-left:auto}}
-        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:64px;gap:10px;min-width:0}.brand{min-width:0}.brand img{width:min(168px,46vw);max-width:100%}.section{display:none}.quick{display:none}.quick+.atlas,.atlas{margin-left:auto;height:44px}.mode{width:44px;height:44px}.toggle{margin-left:auto;white-space:nowrap;padding:10px 12px;min-height:44px}.backdrop{inset:64px 0 0}.panel{top:64px;width:min(400px,100vw);padding:22px 24px calc(36px + env(safe-area-inset-bottom))}.links{grid-template-columns:1fr}.links a{min-height:44px;font-size:14px}.groups{gap:6px}}
-        @media(max-width:480px){.row{gap:6px}.mode{width:44px;height:44px}.brand img{width:min(140px,32vw)}:host([theme-switch]) .menu-label{display:none}:host([theme-switch]) .toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.atlas{gap:7px;padding-right:12px;font-size:12px}}
-        @media(max-width:340px){.atlas-ask{display:none}.mode{width:44px;height:44px}.toggle{padding:10px 9px}}
-        @media(max-width:360px){.shell{width:calc(100% - 24px)}.brand img{width:min(120px,35vw)}.panel{padding-inline:20px}}
-        :host([theme="dark"]) header img{filter:invert(1) brightness(1.08)}
-        :host([dock]) .section,:host([dock]) .quick,:host([dock]) .toggle{display:none}:host([dock]) .atlas{margin-left:auto}
-        @media(max-width:480px){:host([dock]) .brand img{width:min(150px,40vw)}}
+        .panel-head{display:flex;align-items:center;justify-content:space-between;min-height:48px}
+        .panel-head a{display:flex;align-items:center;min-height:44px}.panel-head img{display:block;width:150px;height:auto;filter:invert(1)}
+        .close{width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:#fff;display:grid;place-items:center;padding:0}
+        .close i{width:36px;height:36px;border-radius:50%;background:#1a1a1a;display:grid;place-items:center}
+        .close svg,.find svg,.mine svg,.here svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+        .find{display:flex;align-items:center;gap:10px;height:52px;margin-top:12px;padding:0 4px 0 16px;border-radius:999px;background:#151515;color:#9b9b9b}
+        .find input{flex:1;min-width:0;height:44px;border:0;background:transparent;color:#fff;font:600 15px/1 inherit;font-family:inherit;outline-offset:0}
+        .find input::placeholder{color:#9b9b9b}
+        .find button{width:44px;height:44px;border:0;border-radius:50%;background:#c8f531;color:#000;display:grid;place-items:center;padding:0;flex:none}
+        .find button svg{fill:currentColor;stroke:none}
+        .panel h2{margin:22px 0 10px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#8a8a8a}
+        .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+        .tile{display:grid;gap:8px;align-content:start;min-height:96px;padding:12px 10px;border-radius:18px;background:#141414;color:#fff;text-decoration:none}
+        .tile:hover{background:#1d1d1d}
+        .tile .menu-product-icon{width:38px;height:38px;border-radius:11px;background:#0e1013;color:#c8f531;display:grid;place-items:center;box-shadow:0 0 0 1px #262a2f inset}
+        .tile .menu-product-icon svg{width:62%;height:62%}
+        .tile b{display:block;font-size:13.5px;font-weight:800;line-height:1.2}
+        .tile small{display:block;margin-top:2px;font-size:10.5px;line-height:1.3;opacity:.7}
+        .tile[data-group=portfolios]{grid-column:1/-1;grid-template-columns:38px minmax(0,1fr);align-items:center;min-height:64px}
+        .tile[data-group=insights]{grid-column:1/-1;grid-template-columns:38px minmax(0,1fr);align-items:center;min-height:64px}
+        .tile[aria-current=page],.tile.is-current{background:#c8f531;color:#000}
+        .links{display:grid;gap:2px}
+        .links a,.mine a,.more summary{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 4px;border-bottom:1px solid #222;color:#fff;font-size:15px;font-weight:700;text-decoration:none}
+        .links a[aria-current=page]{color:#c8f531}
+        .legal-note{margin:12px 4px 4px;color:#a3a3a3;font-size:12px;line-height:1.5}
+        .links a span,.mine a b{flex:1}
+        .mine a i,.links a i{color:#c8f531;display:grid;place-items:center;font-style:normal;width:20px}
+        .more{margin-top:8px}.more summary{list-style:none;cursor:pointer}.more summary::-webkit-details-marker{display:none}
+        .more summary:after{content:"";width:8px;height:8px;margin-right:6px;border-right:2px solid #9b9b9b;border-bottom:2px solid #9b9b9b;transform:rotate(45deg) translateY(-3px)}
+        .more[open] summary:after{transform:rotate(225deg)}
+        .more summary span{flex:1}
+        .settings{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+        .choices{display:flex;gap:6px}
+        .choices button,.choices a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:#151515;color:#fff;font:700 14px/1 inherit;font-family:inherit;text-decoration:none}
+        .choices [aria-pressed=true]{background:#c8f531;color:#000}
+        .panel a:focus-visible,.panel button:focus-visible,.panel input:focus-visible,.panel summary:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
+        @media(max-width:1024px){.quick{display:none}}
+        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:56px;gap:8px}.brand img{width:min(150px,40vw)}.tools{gap:2px}.hb{width:40px;position:relative}.hb::after{content:"";position:absolute;inset:0 -2px}.atlas{padding:0 2px}
+          .panel{width:100vw;box-shadow:none;transform:none}}
+        @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
+        @media(max-width:430px){:host(:not([dock])) .atlas .atlas-label{display:none}:host(:not([dock])) .atlas span.pill{width:36px;padding:0;justify-content:center}:host(:not([dock])) .brand img{width:min(132px,34vw)}}
+        @media(max-width:360px){.shell{width:calc(100% - 20px)}.world{font-size:15px}.atlas .atlas-label{display:none}.atlas span.pill{width:36px;padding:0;justify-content:center}.panel{padding-inline:14px}.tile{padding:10px 8px}}
+        :host([theme="dark"]) header .brand img{filter:invert(1) brightness(1.08)}
+        :host([dock]) .quick,:host([dock]) .toggle{display:none}
         @media(prefers-reduced-motion:reduce){.backdrop,.panel{transition:none}}
 `;
 
@@ -341,53 +504,59 @@
          QA-Metadaten (quant/config/development-preview.json) bleiben, wo
          sie sind - sie stehen in Daten, nicht auf dem Bildschirm. */
       const root = this.attachShadow({mode: 'open'});
-      const inDiscover = location.pathname.startsWith('/discover/');
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe"></a><span class="section">${inDiscover?'Discover':'Entdecken. Verstehen. Investieren.'}</span><nav class="quick" aria-label="Direktzugriff"><a href="/dashboard/">Dashboard</a><a href="/screener/">Screener</a><a href="/news/">News</a><a href="/quant/">Quant</a><a href="/elliott/">Elliott</a><a class="q-extra" href="/vorsorge/">Vorsorge</a></nav><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="atlas-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path class="atlas-small" d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg></span><span class="atlas-label"><span class="atlas-ask">AI </span>Atlas</span></a>${this.hasAttribute('theme-switch')?'<button class="mode" type="button" aria-label="Farbschema wechseln"><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M19.1 4.9l-1.8 1.8M6.7 17.3l-1.8 1.8"/></svg></button>':''}<button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe"></a><button class="close" type="button" aria-label="Menü schließen">×</button></div><div class="groups"></div><div class="settings"><h2>Einstellungen</h2><div class="setting"><span>Währung</span><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div><div class="setting"><span>Darstellung</span><div class="choices appearance" role="group" aria-label="Darstellung"></div></div></div></nav>`;
-      const host=root.querySelector('.groups');
-      const setGroup = id => {
-        host.querySelectorAll('.group').forEach(section => {
-          const open = section.dataset.group === id;
-          section.querySelector('.links').hidden = !open;
-          section.querySelector('.disclosure').setAttribute('aria-expanded', String(open));
-        });
-      };
-      groups.forEach(({id,label,href,icon,entries})=>{
-        const section=document.createElement('section');section.className='group';section.dataset.group=id;
-        const title=document.createElement('h2');title.className='group-head';
-        const product=document.createElement(href?'a':'span');product.className=href?'group-link':'group-title';if(href)product.href=href;
-        product.innerHTML=`<span class="menu-product-icon" aria-hidden="true">${productIcon(icon)}</span>`;product.append(document.createTextNode(label));
-        const disclosure=document.createElement('button');disclosure.type='button';disclosure.className='disclosure';
-        disclosure.setAttribute('aria-label',label+' Unterseiten');disclosure.setAttribute('aria-expanded','false');disclosure.setAttribute('aria-controls','menu-links-'+id);
-        disclosure.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
-        disclosure.onclick=()=>setGroup(disclosure.getAttribute('aria-expanded')==='true'?null:id);
-        title.append(product,disclosure);section.append(title);
-        const links=document.createElement('div');links.className='links';links.id='menu-links-'+id;links.hidden=true;
-        entries.forEach(([label,href])=>{
-          const a=document.createElement('a');a.href=href;a.textContent=label;links.append(a);
-        });
-        section.append(links);host.append(section);
+      const ico = d => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
+      const SPARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg>';
+      /* Kopfzeile (C01): links die Welt (HUD-Icon + Name) oder das Logo, rechts Suche, Atlas, Mein Bereich.
+         Das Farbschema wechselt im Menue (Hell/Dunkel), nicht mehr im Kopf. */
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="190" height="63"></a><a class="world" hidden><span class="hud"></span><span class="world-name"></span></a><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/quant/">Quant</a><a href="/technical/">Technical</a><a href="/elliott/">Elliott</a><a href="/screener/">Screener</a><a class="q-extra" href="/vorsorge/">Vorsorge</a><a class="q-extra" href="/portfolios/">Portfolios</a></nav><div class="tools"><a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen"><i>${ico(dockIcons.search)}</i></a><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="pill">${SPARK}<span class="atlas-label">Atlas</span></span></a><a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich"><i>${ico(dockIcons.person)}</i></a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="150" height="50"></a><button class="close" type="button" aria-label="Menü schließen"><i>${ico(dockIcons.close)}</i></button></div><form class="find" role="search">${ico(dockIcons.search)}<input type="search" name="q" placeholder="Aktie, Produkt oder Frage …" aria-label="Aktie, Produkt oder Frage" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Im AI Atlas fragen">${SPARK}</button></form><h2>Produkte</h2><div class="tiles"></div><section class="here" hidden><h2 class="here-title"></h2><div class="links here-links"></div></section><h2>Mein Bereich</h2><div class="mine">${MINE.map(([label,href,icon])=>`<a href="${href}"><i>${ico(dockIcons[icon])}</i><b>${label}</b>${ico(dockIcons.next)}</a>`).join('')}</div><details class="more"><summary><span>Weitere Produkte</span></summary><div class="links more-links"></div></details><div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>${legalMenu()}</nav>`;
+      /* Menue (C03): 3 x 3 Produkte, darunter die Unterseiten der aktuellen Welt, Mein Bereich, Weitere Produkte, Darstellung. */
+      const tiles=root.querySelector('.tiles'),here=root.querySelector('.here'),hereLinks=root.querySelector('.here-links');
+      groups.filter(g=>g.href).forEach(({id,label,href,icon,claim})=>{
+        const a=document.createElement('a');a.className='tile';a.href=href;a.dataset.group=id;
+        a.innerHTML=`<span class="menu-product-icon" aria-hidden="true">${productIcon(icon)}</span><span><b>${label}</b><small>${claim}</small></span>`;
+        tiles.append(a);
       });
+      const more=groups.find(g=>g.id==='more');
+      more.entries.forEach(([label,href])=>{const a=document.createElement('a');a.href=href;a.innerHTML=`<span></span>`;a.firstChild.textContent=label;root.querySelector('.more-links').append(a);});
+      root.querySelector('.find').addEventListener('submit',event=>{
+        event.preventDefault();
+        const q=root.querySelector('.find input').value.trim();
+        const product=q&&groups.find(g=>g.href&&g.label.toLowerCase()===q.toLowerCase());
+        location.assign(product?product.href:'/ask/'+(q?'?q='+encodeURIComponent(q):''));
+      });
+      const world=root.querySelector('.world'),brand=root.querySelector('.brand');
+      const syncWorld=()=>{
+        const product=PRODUCTS.find(p=>p.match(location.pathname,location)),group=product&&groups.find(g=>g.id===product.id);
+        world.hidden=!product;brand.hidden=!!product;
+        if(!product)return;
+        world.href=product.items[0][2];world.setAttribute('aria-label',product.label+' Startseite');
+        world.querySelector('.hud').innerHTML=dockProductIcon((group||{icon:product.icon||product.id}).icon);
+        world.querySelector('.world-name').textContent=product.label;
+      };
+      syncWorld();
       let menuLocation=null;
       const syncActive=()=>{
-        const state=menuState(location);
-        host.querySelectorAll('.group').forEach(section=>{
-          section.classList.toggle('is-current',section.dataset.group===state.group);
-          const product=section.querySelector('.group-link');if(product){if(section.dataset.group===state.group&&!state.expanded)product.setAttribute('aria-current','page');else product.removeAttribute('aria-current');}
+        const state=menuState(location),group=groups.find(g=>g.id===state.group&&g.href);
+        tiles.querySelectorAll('.tile').forEach(a=>{
+          const on=a.dataset.group===state.group;a.classList.toggle('is-current',on);
+          if(on&&!state.expanded)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
         });
-        host.querySelectorAll('.links a').forEach(a=>{
-          if(a.getAttribute('href')===state.href)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
-        });
-        if(menuLocation!==location.href){setGroup(state.expanded);menuLocation=location.href;}
+        if(menuLocation!==location.href){
+          menuLocation=location.href;hereLinks.replaceChildren();here.hidden=!group;
+          if(group){
+            root.querySelector('.here-title').textContent='In '+group.label;
+            group.entries.forEach(([label,href])=>{const a=document.createElement('a');a.href=href;a.innerHTML=`<span></span>${ico(dockIcons.next)}`;a.firstChild.textContent=label;hereLinks.append(a);});
+          }
+        }
+        root.querySelectorAll('.links a').forEach(a=>{if(a.getAttribute('href')===state.href)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+        root.querySelector('.more').open=state.group==='more';
       };
       syncActive();
       if(location.pathname.startsWith('/ask/'))root.querySelector('.atlas').setAttribute('aria-current','page');
+      if(location.pathname.startsWith('/mein-dashboard/')||location.pathname.startsWith('/konto/'))root.querySelector('.profile').setAttribute('aria-current','page');
       const syncQuick=()=>root.querySelectorAll('.quick a').forEach(a=>{const h=a.getAttribute('href'),detail=isElliottDetail(location.pathname,location),on=h==='/elliott/'?(detail||location.pathname.startsWith(h)):h==='/quant/'?(!detail&&location.pathname.startsWith(h)):location.pathname.startsWith(h);if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
       syncQuick();
-      const modeButton=root.querySelector('.mode');
-      const syncMode=()=>{if(!modeButton)return;const dark=currentTheme()==='dark';modeButton.setAttribute('aria-pressed',String(dark));modeButton.setAttribute('aria-label',dark?'Helles Farbschema':'Dunkles Farbschema');modeButton.title=dark?'Hell':'Dunkel';};
-      if(modeButton){modeButton.onclick=()=>{window.VUTheme.toggle();syncMode();};syncMode();
-        if(this.getAttribute('theme')!==currentTheme())this.setAttribute('theme',currentTheme());}
-      document.addEventListener('vu-theme-change',syncMode);
+      if(this.hasAttribute('theme-switch')&&this.getAttribute('theme')!==currentTheme())this.setAttribute('theme',currentTheme());
       const panel=root.querySelector('.panel'),button=root.querySelector('.toggle');panel.inert=true;
       /* Ein Menue fuer zwei Oeffner: den Knopf im Kopf (Seiten ohne Leiste)
          und ☰ in der Produkt-Leiste. Der Fokus kehrt zum Oeffner zurueck. */
@@ -403,14 +572,14 @@
         if(!this.hasAttribute('open'))return;
         if(event.key==='Escape'){close();restore();return;}
         if(event.key==='Tab'){
-          const nodes=[...panel.querySelectorAll('a,button:not(:disabled)')].filter(n=>n.getClientRects().length&&!n.closest('[hidden]')),first=nodes[0],last=nodes[nodes.length-1];
+          const nodes=[...panel.querySelectorAll('a,button:not(:disabled),input,summary')].filter(n=>n.getClientRects().length&&!n.closest('[hidden]')),first=nodes[0],last=nodes[nodes.length-1];
           if(event.shiftKey&&root.activeElement===first){event.preventDefault();last.focus();}
           else if(!event.shiftKey&&root.activeElement===last){event.preventDefault();first.focus();}
         }
       });
       // Escape auch dann, wenn der Fokus (noch) ausserhalb des Menues liegt
       document.addEventListener('keydown',event=>{if(event.key==='Escape'&&this.hasAttribute('open')){close();restore();}});
-      window.addEventListener('hashchange',()=>{close();syncActive();syncQuick();});window.addEventListener('popstate',()=>{close();syncActive();syncQuick();});
+      window.addEventListener('hashchange',()=>{close();syncWorld();syncActive();syncQuick();});window.addEventListener('popstate',()=>{close();syncWorld();syncActive();syncQuick();});
       if(dockBus.requested)this.mountDock();
       this.renderSettings();
       document.addEventListener('vu-currency-change',()=>this.renderSettings());
@@ -431,7 +600,7 @@
       const nav=root.querySelector('nav');
       const links=product.items.map(([id,label,href,icon,name],i)=>{
         const a=document.createElement('a');a.href=href;a.dataset.id=id;if(!i)a.className='product';if(name)a.setAttribute('aria-label',name);
-        a.innerHTML=`${i?'<svg viewBox="0 0 24 24" aria-hidden="true">'+(dockIcons[icon]||'')+'</svg>':dockProductIcon((groups.find(g=>g.id===product.id)||{icon:product.id}).icon)}<span class="label">${label}</span>`;
+        a.innerHTML=`${i?'<svg viewBox="0 0 24 24" aria-hidden="true">'+(dockIcons[icon]||'')+'</svg>':dockProductIcon((groups.find(g=>g.id===product.id)||{icon:product.icon||product.id}).icon)}<span class="label">${label}</span>`;
         a.addEventListener('click',event=>{
           if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
           const intent=new CustomEvent('vu-dock-navigate',{cancelable:true,detail:{product:product.id,id,href:a.getAttribute('href')}});

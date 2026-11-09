@@ -147,7 +147,72 @@
     return '/screener/?' + Query.toParams(result.query).toString();
   }
 
-  var API = { runScreen: runScreen, runStock: runStock, runChartbild: runChartbild, chartbildSentence: chartbildSentence, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
+  /**
+   * Klartext fuer eine Antwort ohne Auswertung. Jede Ablehnung des Workers
+   * bekommt einen Satz - nie ein stilles Haengenbleiben.
+   * @param {number} status HTTP-Status (0 = keine Verbindung, -1 = Zeitueberschreitung)
+   * @param {object|null} body JSON-Antwort des Workers, falls lesbar
+   * @returns {{title:string, text:string, code:string}}
+   */
+  var FAILURES = {
+    TIMEOUT: ['Keine Antwort', 'Die Fragefunktion hat nicht rechtzeitig geantwortet. Bitte gleich noch einmal versuchen.'],
+    NETWORK: ['Keine Verbindung', 'Die Fragefunktion ist gerade nicht erreichbar. Bitte die Internetverbindung prüfen und erneut versuchen.'],
+    ORIGIN_NOT_ALLOWED: ['Nicht freigegeben', 'Diese Seite darf die Fragefunktion nicht aufrufen. Bitte über research.visionuniverse.de fragen.'],
+    CREDIT_EXHAUSTED: ['Kontingent aufgebraucht', 'Das Kontingent der Fragefunktion ist aufgebraucht. Bereits gestellte Fragen werden weiter beantwortet.'],
+    DISABLED: ['Abgeschaltet', 'Die Fragefunktion ist gerade abgeschaltet.'],
+    UPSTREAM: ['Keine Auswertung', 'Die Frage konnte gerade nicht ausgewertet werden. Ihr Kontingent wurde nicht belastet. Bitte gleich noch einmal versuchen.'],
+    INVALID_QUESTION: ['Frage zu kurz oder zu lang', 'Bitte eine Frage mit 3 bis 400 Zeichen stellen.'],
+    TOO_LARGE: ['Frage zu lang', 'Bitte eine kürzere Frage stellen.'],
+    INTERNAL: ['Fehler im Dienst', 'Bei der Auswertung ist ein Fehler aufgetreten. Bitte später erneut versuchen.']
+  };
+  function failure(status, body) {
+    var code = body && typeof body.reason === 'string' ? body.reason : status === -1 ? 'TIMEOUT' : status === 0 ? 'NETWORK' : 'HTTP_' + status;
+    var known = FAILURES[code];
+    var text = body && typeof body.message === 'string' && body.message ? body.message : known ? known[1]
+      : 'Die Frage konnte nicht ausgewertet werden (Fehler ' + code + '). Bitte später erneut versuchen.';
+    return { title: known ? known[0] : 'Keine Auswertung', text: text, code: code };
+  }
+
+  /* ------------------------------------------------------------ Darstellung (Konzept mein-bereich-2026-11, Screens a-screen/a-answer)
+     Nur Aufbereitung dessen, was die Übersetzung und die Rechnung oben liefern; keine eigene Rechnung über die Daten. */
+
+  /** Regel-Chips „So hat Atlas übersetzt“: je Filter ein Chip (Text aus der Screener-Beschreibung), dazu Methode und Aktien. */
+  function rules(result, dict) {
+    var out = [];
+    if (result && result.query) Query.filters(result.query).forEach(function (f) {
+      var fld = Fields.field(f.field);
+      out.push({ kind: 'filter', id: f.id, field: f.field, text: Fields.describeFilter(f, dict), source: fld ? fld.source : null });
+    });
+    if (result && result.supertrader) out.push({ kind: 'strategy', text: (result.supertrader.mode === 'require' ? 'erfüllt: ' : 'Status: ') + (STRATEGY_LABELS[result.supertrader.strategy] || result.supertrader.strategy) });
+    (result && result.tickers || []).forEach(function (t) { out.push({ kind: 'ticker', text: 'Aktie: ' + t }); });
+    return out;
+  }
+  /** Zahl der Regeln in Worten für „erfüllen alle drei“. */
+  function allOf(n) { return n <= 1 ? 'die Regel' : n <= 12 ? 'alle ' + ['zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn', 'elf', 'zwölf'][n - 2] : 'alle ' + n; }
+
+  /* Kennzahl der Frage → Jahresreihe der SEC-Berichte in der Aktiendatei (/discover/data/stocks/US_REAL/<T>.json,
+     fundamentals.journey.tracks; dieselben Werte wie in Fundamental). */
+  var SEC_TRACK = { fcfGrowth: 'free_cash_flow', freeCashFlow: 'free_cash_flow', fcfMargin: 'free_cash_flow',
+    revenueGrowth: 'revenue', revenue: 'revenue', revenueCagr3y: 'revenue', netIncome: 'net_income', epsGrowth: 'eps_diluted', eps: 'eps_diluted' };
+  var SEC_LABEL = { free_cash_flow: ['Free Cashflow', 'Free Cashflow = operativer Cashflow − Investitionen'], revenue: ['Umsatz', 'Umsatz laut Jahresbericht (10-K)'],
+    net_income: ['Nettogewinn', 'Nettogewinn laut Jahresbericht (10-K)'], eps_diluted: ['Gewinn je Aktie', 'verwässerter Gewinn je Aktie laut 10-K'] };
+  function secTrack(columns) { for (var i = 0; i < (columns || []).length; i++) if (SEC_TRACK[columns[i]]) return SEC_TRACK[columns[i]]; return null; }
+  /**
+   * explain(stockFile, track, years) -> {label, formula, fromFy, toFy, first, last, lastChange, bars:[[fy, wert]], asOf} | null
+   * Die letzten `years` Geschäftsjahre aus der veröffentlichten Reihe; lastChange = letzter Wert zum Vorjahr (nur bei positivem Vorjahr).
+   */
+  function explain(stockFile, track, years) {
+    var f = stockFile && stockFile.fundamentals, t = f && f.journey && f.journey.tracks && f.journey.tracks[track];
+    if (!Array.isArray(t)) return null;
+    var pts = t.filter(function (x) { return x && typeof x.v === 'number' && isFinite(x.v) && x.fy; }).slice(-(years || 4));
+    if (pts.length < 2) return null;
+    var a = pts[pts.length - 2].v, b = pts[pts.length - 1].v;
+    return { track: track, label: SEC_LABEL[track] ? SEC_LABEL[track][0] : track, formula: SEC_LABEL[track] ? SEC_LABEL[track][1] : '',
+      fromFy: pts[0].fy, toFy: pts[pts.length - 1].fy, first: pts[0].v, last: b, lastChange: a > 0 ? b / a - 1 : null,
+      bars: pts.map(function (x) { return [String(x.fy), x.v]; }), asOf: f.asOf || null };
+  }
+
+  var API = { rules: rules, allOf: allOf, secTrack: secTrack, explain: explain, failure: failure, runScreen: runScreen, runStock: runStock, runChartbild: runChartbild, chartbildSentence: chartbildSentence, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
     columnsFor: columnsFor, STRATEGY_LABELS: STRATEGY_LABELS };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   global.VUAskEngine = API;

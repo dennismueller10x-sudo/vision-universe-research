@@ -116,8 +116,8 @@
     INSUFFICIENT_HISTORY: "Die Kurshistorie ist noch zu kurz für diese Messung.",
     INSUFFICIENT_PRICE_HISTORY: "Die Kurshistorie ist noch zu kurz für diese Messung.",
     INSUFFICIENT_SNAPSHOT_HISTORY: "Dafür werden mehrere gespeicherte Stände über Wochen benötigt; die Aufzeichnung läuft noch.",
-    NO_FUNDAMENTALS: "Für diesen Titel liegen keine Geschäftszahlen aus SEC-Meldungen vor.",
-    FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegen keine Geschäftszahlen aus SEC-Meldungen vor.",
+    NO_FUNDAMENTALS: "Für diesen Titel liegen keine Geschäftszahlen aus Pflichtmeldungen vor.",
+    FUNDAMENTALS_UNAVAILABLE: "Für diesen Titel liegen keine Geschäftszahlen aus Pflichtmeldungen vor.",
     MARKET_CAP_UNAVAILABLE: "Der Börsenwert ist nicht belegt; Bewertungskennzahlen lassen sich deshalb nicht bilden.",
     SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING: "Diese Kennzahl braucht den Börsenwert genau dieser Notierung. Das Unternehmen hat mehrere börsennotierte Wertpapiere, und die veröffentlichte Aktienzahl gilt für das Unternehmen als Ganzes – welcher Anteil auf dieses Papier entfällt, steht nicht in den Unterlagen. Die Kennzahl wird deshalb bewusst nicht genannt, statt sie zu schätzen.",
     SHARE_COUNT_NOT_OUTSTANDING: "Diese Kennzahl braucht den Börsenwert. Gemeldet ist nur die Zahl ausgegebener Aktien einschließlich der Aktien, die das Unternehmen selbst hält – ein Börsenwert daraus wäre zu hoch. Die Kennzahl wird deshalb bewusst nicht genannt.",
@@ -415,7 +415,9 @@
        als eigene Zeile darunter (unrated / unratedText) mit Grund im Faktor-Kapitel. Der Nenner im Satz bleibt die Zahl
        der gemessenen Eigenschaften. */
     var off = factors.filter(function (f) { return f.state !== "AVAILABLE"; });
-    return { id: id, text: OVERALL[id].text, tone: OVERALL[id].tone, sub: sub,
+    /* Owner-Linie L7 (Plan §11): kein Gesamturteil als Wort. Angezeigt wird die Zaehlung. */
+    var count = u.bewertet ? u.stark + " von " + u.bewertet + " Faktoren stark" : OVERALL.KEINE_DATEN.text;
+    return { id: id, text: OVERALL[id].text, tone: OVERALL[id].tone, sub: sub, count: count,
       unrated: off.map(function (f) { return { id: f.id, name: f.name || (FACTORS[f.id] && FACTORS[f.id].name) || f.id }; }),
       unratedText: unratedNote(factors, rated).trim(),
       rated: u.bewertet, strong: u.stark, weak: u.schwach, middle: u.mittel, total: factors.length,
@@ -788,12 +790,28 @@
     F: "Die beiden Quellen nennen Firmennamen ohne ein gemeinsames Wort, und die Verknüpfung stützt sich nur auf das Kürzel.",
     G: "Die beiden Quellen nennen verschiedene Firmennamen. Ob es eine Umbenennung ist oder ein wiederverwendetes Kürzel, lässt sich aus den vorliegenden Angaben nicht entscheiden."
   };
+  /* Ein wiederverwendetes Kuerzel (quant/config/ticker-reuse-quarantine.json)
+     ist kein Streit zweier Quellen: der alte Name gehoert einer frueheren
+     Gesellschaft, der Dienst haelt ihn fuer das heutige Papier zurueck
+     (TICKER_REUSE_NAME_WITHHELD). Die Notiz sagt genau das - ohne das
+     Kuerzel ein zweites Mal als "Namen" und ohne Aussage ueber
+     Geschaeftszahlen, die fuer diesen Titel nicht belegt ist. */
+  function tickerReuseNote(k) {
+    return {
+      title: "Dieses Kürzel wurde wiederverwendet.",
+      shown: (k.alternativeName ? "Früher war das Kürzel „" + k.alternativeName + "“ zugeordnet. " : "") +
+        "Heute handelt darunter ein anderes Wertpapier; den Namen der früheren Gesellschaft zeigen wir deshalb nicht als Namen dieses Titels.",
+      why: "Für das heute gehandelte Wertpapier liegt kein belegter Firmenname vor. Wir nennen deshalb keinen, statt einen zu raten.",
+      kind: k.kind, contract: k.contract || null
+    };
+  }
   function identityNote(stock) {
     var k = stock && stock.identityConflict;
     if (!k) return null;
+    if (k.kind === "TICKER_REUSE") return tickerReuseNote(k);
     return {
       title: "Zu diesem Kürzel liegen zwei verschiedene Firmennamen vor.",
-      shown: "Angezeigt wird „" + (stock.name || stock.ticker) + "“." + (k.alternativeName ? " Eine andere Quelle nennt „" + k.alternativeName + "“." : ""),
+      shown: (stock.name ? "Angezeigt wird „" + stock.name + "“." : "") + (k.alternativeName ? (stock.name ? " " : "") + "Eine andere Quelle nennt „" + k.alternativeName + "“." : ""),
       why: (IDENTITY_REASON[k.kind] || "Die Quellen sind über die Zuordnung uneins.") +
         " Die Geschäftszahlen stammen aus den Unterlagen der Gesellschaft, der dieses Kürzel im Wertpapierverzeichnis zugeordnet ist. Wir entscheiden diese Frage nicht, solange sie nicht belegt ist.",
       kind: k.kind || null, contract: k.contract || null

@@ -1,4 +1,4 @@
-name: Security Master + Firmennamen (wöchentlich vorbereitet, Zeitplan aus)
+name: Security Master + Firmennamen (wöchentlich)
 
 # Kontrollierte Aktualisierung von US-Wertpapierstamm und Firmennamen mit den BESTEHENDEN Erzeugern
 # (scripts/market/build-us-security-master.mjs, scripts/market/build-company-names.mjs) und kostenfreien Quellen:
@@ -6,10 +6,10 @@ name: Security Master + Firmennamen (wöchentlich vorbereitet, Zeitplan aus)
 #   * SEC company_tickers_exchange.json (ohne Schluessel, mit User-Agent)
 # Keine Tiingo-Metadatenabfragen, keine Secrets, keine neuen Anbieter. Docs: docs/data/SECURITY_MASTER_WEEKLY.md.
 #
-# ZEITPLAN AUS (Owner-Entscheidung 28.10.2026: wöchentlich vorbereitet, nicht aktiviert). Aktivierung nur per
-# eigenem, freigegebenem PR, der die folgende Zeile unter `on:` einsetzt (Mittwoch nach dem Dienstagslauf des
-# Universums und der Wochenreihen-Reparatur):
-#   schedule: - cron: '41 9 * * 3'
+# ZEITPLAN AN (Neustart 04.11.2026, Owner-Freigabe Plan §6 Nr. 2): Mittwoch 09:41 UTC, nach dem Dienstagslauf des
+# Universums und der Wochenreihen-Reparatur. Ein geplanter Lauf committet, wenn das Gate COMMIT entscheidet
+# (normale Grenzen, KEIN Versionswechsel, KEINE Sonderfreigabe); jeder andere Ausgang ist rot und oeffnet den Alarm.
+# Grund: Die SF8-Eingangspruefung sperrt einen Stamm aelter als 60 Tage (input-gate.mjs, master: 60).
 #
 # Nicht Teil dieses Laufs: die Produkteignung (eligibility.json, Universumsentscheidung), neue Listings (Tiingo-2.0-
 # Veroeffentlichungspfad) und ein Discover-Neubau (macht der Nachtlauf).
@@ -17,9 +17,15 @@ name: Security Master + Firmennamen (wöchentlich vorbereitet, Zeitplan aus)
 # Ablauf (fail closed): Engine-Tests → Stamm mit --require-provider (Exit 3 ohne Anbieterliste) → Namen (SEC) →
 # Uebernahme-Gate (Plausibilitaetsgrenzen, Identitaet, Versionssprung; Exit 4) → Artefakt-Tests → CI-Artefakt →
 # Commit NUR mit commit=true UND Gate-Entscheidung COMMIT. Commit-Protokoll ADR-005.
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       commit:
         description: 'Ergebnis committen (sonst nur CI-Artefakt zur Pruefung)'
         type: boolean
@@ -29,7 +35,7 @@ on:
         type: boolean
         default: false
       approved_changes:
-        description: 'Einmalige G7-Sonderfreigabe 1.1.0 → 1.3.0 anwenden (docs/data/security-master/v130-approved-changes.json; nur mit allow_version_change)'
+        description: 'Einmalige Sonderfreigabe 1.1.0 → 1.3.0 anwenden (docs/data/security-master/v130-approved-changes-1.1.0.json, enthaelt 1.0.0; nur mit allow_version_change)'
         type: boolean
         default: false
 
@@ -96,7 +102,7 @@ jobs:
           heute="$(date -u +%F)"
           extra=()
           if [ "$IN_ALLOW_VERSION" = "true" ]; then extra=(--allow-version-change); fi
-          if [ "$IN_APPROVED" = "true" ]; then extra+=(--approved-changes docs/data/security-master/v130-approved-changes.json); fi
+          if [ "$IN_APPROVED" = "true" ]; then extra+=(--approved-changes docs/data/security-master/v130-approved-changes-1.1.0.json); fi
           node scripts/market/security-master-refresh-gate.mjs --prev "$PREV" --next "$NEXT" \
             --prev-names "$PREV/company-names.json" --next-names quant/data/market/security-master/company-names.json \
             --today "$heute" --out "$REPORT" "${extra[@]}"
@@ -109,7 +115,20 @@ jobs:
           for f in us-security-master.json summary.json reconciliation.json backfill-estimate.json; do
             cp "$NEXT/$f" "quant/data/market/security-master/$f"
           done
-          node --test quant/tests/us-security-master-artefacts.test.mjs quant/tests/company-name-coverage.test.mjs quant/tests/universe-source.test.mjs discover/tests/names.test.mjs
+          node --test quant/tests/us-security-master-artefacts.test.mjs quant/tests/company-name-coverage.test.mjs quant/tests/universe-source.test.mjs
+          # Namensanzeige (NM1-NM3): Dieser Lauf baut Discover nicht neu (macht der Marktdaten-Refresh). Die ausgelieferten
+          # Discover-Seiten werden deshalb gegen den COMMITTETEN Namensstand geprueft, zu dem sie gebaut wurden; gegen den
+          # neuen Stand scheitert der Vergleich bei jeder Umfirmierung (Lauf 41177449137: ATTT). Die neuen Namen pruefen
+          # company-name-coverage oben und das Gate (G9); der naechste Discover-Neubau prueft sie gegen die Seiten.
+          N=quant/data/market/security-master
+          cp "$N/company-names.json" "$RUNNER_TEMP/names-next.json"
+          git show "HEAD:$N/company-names.json" > "$N/company-names.json"
+          node --test discover/tests/names.test.mjs
+          cp "$RUNNER_TEMP/names-next.json" "$N/company-names.json"
+          cmp -s "$RUNNER_TEMP/names-next.json" "$N/company-names.json"
+          # Nichts verdecken: jede Seite, die vom NEUEN Namensstand abweicht, steht in Log und Artefakt
+          # (alter/neuer Name, Quelle, CIK-Wechsel); Freigabe der Aenderungen selbst: Gate G9.
+          node scripts/market/report-name-display-drift.mjs --next "$N/company-names.json" --prev "$RUNNER_TEMP/sm-prev/company-names.json" --out "$RUNNER_TEMP/sm-next/name-display-drift.json"
           node scripts/market/assert-public-data-hygiene.mjs
 
       - name: Ergebnis als CI-Artefakt (Pruefung vor jeder Uebernahme)
@@ -125,7 +144,7 @@ jobs:
           retention-days: 30
 
       - name: Commit (nur mit commit=true und Gate-Entscheidung COMMIT)
-        if: inputs.commit == true && steps.gate.outputs.decision == 'COMMIT'
+        if: ((github.event_name == 'schedule' || inputs.zeitplan != '') || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
         env:
           PUSH_OWNED_PATHS: quant/data/market/security-master/us-security-master.json quant/data/market/security-master/summary.json quant/data/market/security-master/reconciliation.json quant/data/market/security-master/backfill-estimate.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json
         run: |
@@ -152,3 +171,30 @@ jobs:
               echo 'Kein Gate-Bericht (Abbruch vor dem Gate).'
             fi
           } >> "$GITHUB_STEP_SUMMARY"
+
+  # Ein blockierter oder roter Lauf bleibt nicht unbemerkt (V1-Befund 30.10.: Lauf 40942100928 rot ohne Alarm):
+  # Issue mit Label pipeline-alarm ueber den bestehenden Boten, ein gruener Lauf schliesst es. Keine Secrets.
+  alarm:
+    needs: refresh
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          ALARM_SOURCE: security-master-weekly
+          ALARM_TITLE: Security Master ohne neuen Stand
+          RESULT_REFRESH: ${{ needs.refresh.result }}
+        run: node scripts/ci/pipeline-alarm.mjs

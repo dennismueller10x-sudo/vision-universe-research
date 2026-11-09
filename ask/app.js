@@ -16,25 +16,14 @@
 (function () {
   'use strict';
   var Fields = window.VUScreenerFields, Query = window.VUScreenerQuery, Adapters = window.VUScreenerAdapters, Ask = window.VUAskEngine;
+  /* Redesign 2027 (Mockup E10): Bausteine aus assets/vu-ui.js (Aktienzeile, Urteil, Balken, Erklärung, Navigationskarte)
+     und der eine Chart in Kleinform (assets/vu-chart.js). VUUI maskiert jede Eingabe; markup() ist die einzige HTML-Stelle. */
+  var U = window.VUUI, Chart = window.VUChart, Today = window.VUToday, Id = window.VUCore && window.VUCore.Identity;
+  function markup(html) { var t = document.createElement('template'); t.innerHTML = html; return t.content; }
+  /* „?“ an Kennzahlen öffnet die Erklärung im Sheet (C09 + C16); gebunden nach dem Aufbau. */
 
   var ENDPOINT = (meta('vu-ask-endpoint') || '').replace(/\/+$/, '');
   var TURNSTILE_KEY = meta('vu-ask-turnstile');
-  /* Ideen fuer den Einstieg - echte Fragen, die heute vollstaendig
-     beantwortet werden koennen. */
-  var IDEAS = [
-    { icon: 'trend', text: 'Profitable Small Caps mit neuem 52-Wochen-Hoch im Minervini-Raster',
-      q: 'Gib mir alle Aktien mit neuem 52-Wochen-Hoch, Marktkapitalisierung über 300 Millionen, aber unter 2 Milliarden, die ins Minervini-Raster passen – mit Quant-Faktoren' },
-    { icon: 'doc', text: 'Wie stark ist der Free Cashflow bei Nvidia gewachsen?', q: 'Wie stark ist der Free Cashflow bei Nvidia gewachsen?' },
-    { icon: 'scale', text: 'Nvidia vs. AMD vs. Broadcom – Wachstum und Bewertung', q: 'Vergleiche Nvidia, AMD und Broadcom bei Umsatzwachstum, Marge und KGV' },
-    { icon: 'funnel', text: 'Günstig bewertete Small Caps mit wenig Schulden', q: 'Zeig mir günstig bewertete Small Caps mit wenig Schulden' }
-  ];
-  var MODULES = [
-    { icon: 'quant', name: 'Quant', text: 'Faktoren. Muster. Scores.', href: '/quant/' },
-    { icon: 'funnel', name: 'Screener', text: 'Chancen. Filter. Setups.', href: '/screener/' },
-    { icon: 'compass', name: 'Discover', text: 'Märkte. Themen. Ideen.', href: '/discover/' },
-    { icon: 'trend', name: 'SuperTrader', text: 'Strategien. Signale. Edge.', href: '/supertrader/' }
-  ];
-
   var main = document.getElementById('ak-main');
   var adapter = Adapters.StaticUniverseAdapter();
   var signalsPromise = null;
@@ -100,14 +89,14 @@
   /* ------------------------------------------------------------ Aufbau */
   var Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
   var canSpeak = 'speechSynthesis' in window && typeof window.SpeechSynthesisUtterance === 'function';
-  var PLACEHOLDER = 'Ihre Frage an Atlas …';
-  var input = h('textarea', { id: 'ak-q', rows: '2', 'aria-label': 'Ihre Frage an Vision Universe', maxlength: '400', placeholder: PLACEHOLDER });
+  var PLACEHOLDER = 'z. B. „Kleine Firmen, günstig, ohne Schulden“';
+  var input = h('textarea', { id: 'ak-q', rows: '2', 'aria-label': 'Deine Frage an Atlas', maxlength: '400', placeholder: PLACEHOLDER });
   var followText = h('span', { class: 'ak-follow-q' });
   var followBar = h('div', { class: 'ak-follow', hidden: true }, [
     h('span', { class: 'ak-follow-label', text: 'Nachfrage zu' }), followText,
     h('button', { class: 'ak-follow-x', type: 'button', 'aria-label': 'Neue Frage statt Nachfrage', onclick: function () { setContext(null); input.focus(); } }, 'Neue Frage')
   ]);
-  var sendBtn = h('button', { class: 'ak-send', type: 'submit', 'aria-label': 'Frage senden' }, [icon('send')]);
+  var sendBtn = h('button', { class: 'ak-send', type: 'submit', 'aria-label': 'Frage senden' }, [icon('arrow')]);
   var micBtn = Speech ? h('button', { class: 'ak-mic', type: 'button', 'aria-pressed': 'false', 'aria-label': 'Frage sprechen', onclick: dictate }, [icon('mic')]) : null;
   var readAloud = canSpeak && (function () { try { return localStorage.getItem('vu-ask-read') !== '0'; } catch (e) { return true; } })();
   var speakBtn = canSpeak ? h('button', { class: 'ak-toggle', type: 'button', 'aria-pressed': String(readAloud), onclick: toggleRead },
@@ -120,8 +109,8 @@
 
   var form = h('form', { class: 'ak-bar', onsubmit: function (e) { e.preventDefault(); submit(); } }, [
     followBar,
-    h('div', { class: 'ak-bar-row' }, [input, h('div', { class: 'ak-bar-buttons' }, [micBtn, sendBtn])]),
-    h('p', { class: 'ak-bar-hint', text: Speech ? 'Tippen oder aufs Mikrofon drücken und sprechen – Pausen sind erlaubt.' : 'Stellen Sie Ihre Frage in eigenen Worten.' }),
+    input,
+    h('div', { class: 'ak-bar-row' }, [h('span', { class: 'ak-bar-hint', text: Speech ? 'Tippen oder sprechen' : 'Tippen' }), h('div', { class: 'ak-bar-buttons' }, [micBtn, sendBtn])]),
     turnstileMount
   ]);
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); } });
@@ -138,7 +127,7 @@
     try { localStorage.setItem('vu-ask-access', v); } catch (err) {}
     access = v; accessInput.value = ''; refreshQuota();
   } }, [
-    h('p', { class: 'ak-access-title' }, [icon('lock'), 'Beta-Zugang – bitte Passwort eingeben']),
+    h('p', { class: 'ak-access-title' }, [icon('lock'), 'Beta-Zugang: bitte Passwort eingeben']),
     h('div', { class: 'ak-bar-row' }, [accessInput, h('button', { class: 'ak-send', type: 'submit', 'aria-label': 'Freischalten' }, [icon('send')])]),
     accessMsg
   ]);
@@ -146,69 +135,87 @@
   try { access = localStorage.getItem('vu-ask-access') || ''; } catch (e) {}
   function authHeaders(extra) { var hd = Object.assign({}, extra || {}); if (access) hd['x-vu-access'] = access; return hd; }
   function lock(wrong) {
-    accessForm.hidden = false; form.hidden = true; toolsRow.hidden = true; examplesEl.hidden = true;
+    accessForm.hidden = false; form.hidden = true; toolsRow.hidden = true; statusEl.textContent = 'Beta: Zugang mit Passwort · ' + ARCHIVE + ' nach dem Freischalten';
     accessMsg.textContent = wrong ? 'Das Passwort ist nicht korrekt.' : '';
     if (wrong) { try { localStorage.removeItem('vu-ask-access'); } catch (e) {} access = ''; }
     accessInput.focus();
   }
-  function unlock() { accessForm.hidden = true; form.hidden = false; toolsRow.hidden = false; examplesEl.hidden = false; }
+  function unlock() { accessForm.hidden = true; form.hidden = false; toolsRow.hidden = false; }
 
-  var toolsRow = h('div', { class: 'ak-status' }, [
-    h('span', { class: 'ak-live' }, [h('i', { 'aria-hidden': 'true' }), '3 Systeme verbunden']),
-    h('span', { class: 'ak-status-list', text: 'Screener · SuperTrader · Quant-Faktoren' }),
-    quotaEl, speakBtn
-  ]);
-  function ask(q) { input.value = q; input.dispatchEvent(new Event('input')); input.focus(); try { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} }
-  var examplesEl = h('section', { class: 'ak-section', 'aria-labelledby': 'ak-ideas-h' }, [
-    h('div', { class: 'ak-section-head' }, [h('h2', { id: 'ak-ideas-h', text: 'Ideen für Sie' })]),
-    h('div', { class: 'ak-ideas' }, IDEAS.map(function (x) {
-      return h('button', { class: 'ak-idea', type: 'button', onclick: function () { ask(x.q); } }, [
-        h('span', { class: 'ak-idea-icon' }, [icon(x.icon)]), h('span', { class: 'ak-idea-text', text: x.text }), h('span', { class: 'ak-idea-go' }, [icon('arrow')])
-      ]);
-    }))
-  ]);
-  var modulesEl = h('section', { class: 'ak-section', 'aria-labelledby': 'ak-mod-h' }, [
-    h('div', { class: 'ak-section-head' }, [h('h2', { id: 'ak-mod-h', text: 'Quick Access' }), h('a', { href: '/', class: 'ak-more' }, ['Alle Module', icon('arrow')])]),
-    h('div', { class: 'ak-modules' }, MODULES.map(function (m) {
-      return h('a', { class: 'ak-module', href: m.href }, [
-        h('span', { class: 'ak-module-icon' }, [icon(m.icon)]),
-        h('span', { class: 'ak-module-text' }, [h('b', { text: m.name }), h('small', { text: m.text })]),
-        icon('arrow')
-      ]);
-    }))
-  ]);
-
-  main.appendChild(h('header', { class: 'ak-top' }, [
-    h('div', {}, [
-      h('h1', { class: 'ak-title' }, [icon('spark'), 'AI Atlas']),
-      h('p', { class: 'ak-sub', text: 'Ihre intelligente Verbindung zum Vision-Universe-Ökosystem.' }),
-      h('ul', { class: 'ak-checks' }, ['Echte Daten', 'Verifizierte Quellen', 'Sprachsteuerung'].map(function (t) {
-        return h('li', {}, [h('span', { class: 'ak-check' }, [icon('check')]), t]);
+  /* Ein Status-Satz unter der Eingabe (Konzept mein-bereich-2026-11, Screen a-home): gesperrt, Kontingent oder keine Verbindung. */
+  var ARCHIVE = 'Antworten aus dem Archiv kostenlos';
+  var statusEl = h('p', { class: 'ak-statusline', 'aria-live': 'polite', text: ENDPOINT ? 'Atlas wird verbunden …' : 'Neue Fragen noch gesperrt · ' + ARCHIVE });
+  var toolsRow = h('div', { class: 'ak-status' }, [quotaEl]);
+  function ask(q, send) {
+    input.value = q; input.dispatchEvent(new Event('input'));
+    if (send && !sendBtn.disabled && ENDPOINT) { submit(); return; }
+    input.focus(); try { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+  }
+  /* Was Atlas kann: Finden, Vergleichen, Erklären – je eine Beispielfrage ohne Fachwort. */
+  var CAN = [
+    { icon: 'screener', title: 'Finden', q: 'Kleine Firmen, günstig, ohne Schulden', sub: 'öffnet den Screener' },
+    { icon: 'quant', title: 'Vergleichen', q: 'NVIDIA gegen AMD und Broadcom', sub: 'Profile und Zahlen' },
+    { icon: 'fundamental', title: 'Erklären', q: 'Wie stark ist der Free Cashflow bei NVIDIA gewachsen?', sub: 'mit Chart und Quelle' }
+  ];
+  /* Oft gefragt: feste Fragen, die heute vollständig beantwortet werden (Antwort kommt aus dem Archiv, sobald sie einmal gestellt wurde). */
+  var OFTEN = ['Welche Aktien stehen auf einem neuen Jahreshoch?', 'Welche Aktien stehen im Weinstein-Stage-2?', 'Wie hoch ist die Marge bei Apple?'];
+  var startEl = h('div', { class: 'ak-start' }, [
+    h('section', { class: 'ak-section', 'aria-labelledby': 'ak-can-h' }, [
+      h('h2', { class: 'vu-sect', id: 'ak-can-h', text: 'Was Atlas kann' }),
+      h('div', { class: 'ak-can' }, CAN.map(function (c) {
+        return h('button', { class: 'ak-can-card', type: 'button', onclick: function () { ask(c.q, true); } }, [
+          markup(U.hud(c.icon, 34, 10)), h('b', { text: c.title }), h('span', { class: 'ak-can-q', text: '„' + c.q + '“' }), h('span', { class: 'ak-can-sub', text: c.sub })
+        ]);
       }))
     ]),
-    h('div', { class: 'ak-orb', 'aria-hidden': 'true' }, [h('span'), h('span'), h('span')])
-  ]));
-  main.appendChild(h('section', { class: 'ak-stage' }, [
-    h('div', { class: 'ak-globe', 'aria-hidden': 'true' }),
-    h('div', { class: 'ak-stage-copy' }, [
-      h('p', { class: 'ak-kicker', text: 'Vision Universe Intelligence' }),
-      h('h2', { class: 'ak-h1', text: 'Was möchten Sie heute analysieren?' }),
-      h('p', { class: 'ak-lead', text: 'Stellen Sie Ihre Frage zu Aktien, Kennzahlen und Strategien – getippt oder gesprochen. Atlas übersetzt sie in Filter; jede Zahl stammt aus den Daten von Vision Universe.' })
+    h('section', { class: 'ak-section', 'aria-labelledby': 'ak-often-h' }, [
+      h('div', { class: 'vu-sect' }, [h('h2', { id: 'ak-often-h', text: 'Oft gefragt' }), h('span', { class: 'ak-sect-r', text: 'Archiv · kostenlos' })]),
+      h('div', { class: 'ak-often' }, OFTEN.map(function (q) {
+        return h('button', { class: 'ak-often-q', type: 'button', onclick: function () { ask(q, true); } }, [h('span', { text: q }), markup(U.glyph('next', 14))]);
+      }))
     ]),
-    h('p', { class: 'ak-stage-side', text: 'Mehr Perspektive. Bessere Entscheidungen.' })
-  ]));
-  main.appendChild(h('div', { class: 'ak-askwrap' }, [accessForm, form, voiceEl, toolsRow]));
-  main.appendChild(conversation);
-  main.appendChild(modulesEl);
-  main.appendChild(examplesEl);
-  main.appendChild(h('div', { class: 'ak-verified' }, [
-    h('span', { class: 'ak-verified-icon' }, [icon('shield')]),
-    h('div', {}, [h('b', { text: 'Verified by Vision Universe' }), h('span', { text: 'AI interpretiert. Vision Universe liefert die Daten.' })])
-  ]));
-  main.appendChild(h('p', { class: 'ak-fine ak-foot', text: 'Beta: Die Zahl neuer Fragen pro Tag ist begrenzt; bereits gestellte Fragen werden kostenlos aus dem Archiv beantwortet. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Die AI übersetzt nur; sie rechnet nicht und gibt keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung Ihres Browsers (in Chrome über Google-Server).' : '') }));
+    /* Die Grenzen in einem „?“ (L6, Datenschutz, Beta, Spracheingabe) */
+    h('div', { class: 'vu-help ak-limits' }, [h('i', { 'aria-hidden': 'true', text: '?' }), h('span', {}, ['Atlas rechnet nicht selbst und gibt keine Anlageberatung. Grenzen und Datenschutz: ',
+      markup(U.q('Atlas sagt nicht, ob du kaufen oder verkaufen sollst, und beantwortet keine Fragen zu deiner persönlichen Lage. Beta: Neue Fragen pro Tag sind begrenzt; bereits gestellte Fragen kommen kostenlos aus dem Archiv. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Die AI übersetzt nur; sie rechnet nicht und gibt keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung deines Browsers (in Chrome über Google-Server).' : ''), 'Grenzen und Datenschutz'))])])
+  ]);
+
+  /* Dunkler Kopf: AI ATLAS · BETA, Frage, ein Satz, große Eingabe, ein Status-Satz. */
+  var hero = h('header', { class: 'ak-hero' }, [
+    h('p', { class: 'ak-kicker' }, [h('span', { class: 'ak-kicker-ic' }, [markup(U.glyph('spark', 16))]), h('span', { class: 'vu-ltag', text: 'AI Atlas · Beta' })]),
+    h('h1', { class: 'ak-h1', text: 'Frag Vision Universe.' }),
+    h('p', { class: 'ak-lead', text: 'In deinen Worten. Atlas übersetzt in Regeln, Vision Universe rechnet. Jede Zahl mit Quelle.' }),
+    h('div', { class: 'ak-askwrap' }, [accessForm, form, voiceEl, statusEl, toolsRow])
+  ]);
+  /* Antwortansicht (Screens a-screen/a-answer): Zurück, AI ATLAS, Herkunft der Antwort. */
+  var answerTop = h('div', { class: 'ak-anstop', hidden: true }, [
+    h('button', { class: 'vu-round ak-anstop-back', type: 'button', 'aria-label': 'Zurück zum Start von Atlas', onclick: function () { home(); } }, [markup(U.glyph('back', 18))]),
+    h('span', { class: 'vu-ltag', text: 'AI Atlas' }), h('span', { class: 'ak-anstop-pill' })
+  ]);
+  function home() {
+    document.body.classList.remove('ak-answering'); answerTop.hidden = true;
+    conversation.textContent = ''; setContext(null);
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+  /* „Regel ändern“ und „weiter fragen“: zurück in die Eingabe, die Frage bleibt als Bezug. */
+  function followUp(c, placeholder) {
+    setContext(c); document.body.classList.add('ak-asking');
+    if (placeholder) input.placeholder = placeholder;
+    input.focus(); try { hero.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+  }
+
+  main.appendChild(hero);
+  main.appendChild(h('div', { class: 'ak-body' }, [answerTop, conversation, startEl]));
+  /* Strang F, Hinweis „ai“ (assets/legal-notices.json): erscheint erst nach der rechtlichen Freigabe (VUUI.legal). */
+  if (U.legal && U.legal('ai')) main.appendChild(markup(U.legal('ai')));
+  if (U.bindHelp) U.bindHelp(main);
+  /* Zurück und Schließen: zur Seite, von der Atlas geöffnet wurde (nur eigene Seiten), sonst zur Startseite. */
+  (function () {
+    var back = '/';
+    try { var r = new URL(document.referrer); if (r.origin === location.origin && r.pathname !== location.pathname) back = r.pathname + r.search + r.hash; } catch (e) {}
+    ['ak-back', 'ak-close'].forEach(function (id) { var a = document.getElementById(id); if (a) a.setAttribute('href', back); });
+  })();
 
   if (!ENDPOINT) {
-    quotaEl.textContent = 'Die Fragefunktion ist noch nicht freigeschaltet.';
     sendBtn.disabled = true;
   } else {
     refreshQuota();
@@ -220,11 +227,12 @@
   function setQuota(q) {
     quota = q || quota;
     if (!quota) return;
-    if (!quota.enabled) { quotaEl.textContent = 'Die Fragefunktion ist noch nicht freigeschaltet.'; sendBtn.disabled = true; return; }
+    if (!quota.enabled) { statusEl.textContent = 'Neue Fragen noch gesperrt · ' + ARCHIVE; quotaEl.textContent = ''; sendBtn.disabled = true; return; }
     sendBtn.disabled = false;
-    quotaEl.textContent = quota.remainingToday > 0
+    quotaEl.textContent = '';
+    statusEl.textContent = (quota.remainingToday > 0
       ? 'Heute noch ' + quota.remainingToday + (quota.remainingToday === 1 ? ' neue Frage' : ' neue Fragen')
-      : 'Ihre neue Frage für heute ist verbraucht – bekannte Fragen gehen weiterhin.';
+      : 'Neue Fragen für heute verbraucht') + ' · ' + ARCHIVE;
   }
   function refreshQuota() {
     fetch(ENDPOINT + '/v1/quota?client=' + encodeURIComponent(clientId()), { headers: authHeaders() })
@@ -233,7 +241,8 @@
         if (!r.ok) throw Error('HTTP ' + r.status);
         unlock(); return r.json();
       }).then(setQuota)
-      .catch(function (e) { if (e.message === 'LOCKED') return; quotaEl.textContent = 'Die Fragefunktion ist noch nicht freigeschaltet.'; sendBtn.disabled = true; });
+      /* Nicht erreichbar ist nicht „gesperrt“: Hinweis zeigen, Senden bleibt moeglich und liefert dann eine klare Meldung. */
+      .catch(function (e) { if (e.message === 'LOCKED') return; unlock(); statusEl.textContent = 'Atlas antwortet gerade nicht (' + e.message + ') · bitte später noch einmal'; });
   }
 
   function loadTurnstile() {
@@ -352,32 +361,43 @@
     var question = input.value.replace(/\s+/g, ' ').trim();
     if (busy || !ENDPOINT || question.length < 3) return;
     busy = true; sendBtn.disabled = true; document.body.classList.add('ak-busy');
+    document.body.classList.add('ak-answering'); document.body.classList.remove('ak-asking'); answerTop.hidden = false;
     var turn = h('section', { class: 'ak-turn', 'aria-live': 'polite' }, [
       context ? h('p', { class: 'ak-q-ref', text: 'Nachfrage zu ' + followText.textContent }) : null,
-      h('p', { class: 'ak-q', text: question }),
-      h('div', { class: 'ak-state' }, [h('span', { class: 'ak-spin', 'aria-hidden': 'true' }), 'Ihre Frage wird übersetzt …'])
+      h('p', { class: 'ak-bub', text: question }),
+      h('div', { class: 'ak-state' }, [h('span', { class: 'ak-spin', 'aria-hidden': 'true' }), 'Deine Frage wird übersetzt …'])
     ]);
     conversation.insertBefore(turn, conversation.firstChild);
-    try { turn.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+    try { window.scrollTo(0, 0); } catch (e) {}
+    /* Nie still haengen: nach 45 s wird abgebrochen (der Worker gibt Anthropic 25 s),
+       jede Ablehnung bekommt einen Satz (VUAskEngine.failure). */
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 45000);
     Promise.all([
-      fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }),
+      fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }), signal: ctrl ? ctrl.signal : undefined,
         body: JSON.stringify({ question: question, clientId: clientId(), turnstileToken: turnstileToken, previous: context }) })
-        .then(function (r) { return r.json(); }),
+        .then(function (r) { return r.json().catch(function () { return null; }).then(function (b) { return { status: r.status, body: b }; }); },
+          function (e) { return { status: e && e.name === 'AbortError' ? -1 : 0, body: null }; }),
       adapter.load().catch(function () { return null; })
     ]).then(function (res) {
-      var answer = res[0];
-      if (answer.reason === 'ACCESS_REQUIRED') { turn.remove(); lock(true); return; }
-      if (!answer.ok) speak(answer.message || '');
-      setQuota(answer.quota);
+      var answer = res[0].body;
+      if (answer && answer.reason === 'ACCESS_REQUIRED') { turn.remove(); lock(true); return; }
+      if (answer) setQuota(answer.quota);
       if (turnstileToken && window.turnstile) { window.turnstile.reset(turnstileMount); turnstileToken = null; }
-      turn.lastChild.remove();
-      if (!answer.ok) { turn.appendChild(card('Keine Auswertung', answer.message || 'Die Frage konnte nicht ausgewertet werden.', true)); return; }
+      if (turn.lastChild) turn.lastChild.remove();
+      if (!answer || !answer.ok || !answer.result) {
+        var f = Ask.failure(res[0].status, answer);
+        speak(f.text);
+        turn.appendChild(card(f.title, f.text, true));
+        return;
+      }
       input.value = '';
       return render(turn, answer, context ? context.question + ' → ' + question : question).then(function (summary) { speak(summary); });
     }).catch(function () {
-      turn.lastChild.remove();
-      turn.appendChild(card('Keine Verbindung', 'Die Fragefunktion ist gerade nicht erreichbar. Bitte später erneut versuchen.', true));
-    }).then(function () { busy = false; spokenQuestion = false; document.body.classList.remove('ak-busy'); sendBtn.disabled = !ENDPOINT || !!(quota && !quota.enabled); });
+      var f = Ask.failure(0, { reason: 'INTERNAL' });
+      if (turn.lastChild) turn.lastChild.remove();
+      turn.appendChild(card(f.title, 'Die Antwort ließ sich nicht anzeigen. Bitte die Seite neu laden.', true));
+    }).then(function () { clearTimeout(timer); }).then(function () { busy = false; spokenQuestion = false; document.body.classList.remove('ak-busy'); sendBtn.disabled = !ENDPOINT || !!(quota && !quota.enabled); });
   }
 
   function card(title, text, warn) {
@@ -403,86 +423,60 @@
     input.placeholder = c ? 'Nachfrage, z. B. „nur positives Wachstum“ …' : PLACEHOLDER;
   }
 
-  /** Rendert die Antwort; liefert eine kurze Zusammenfassung zum Vorlesen. */
+  /** Rendert die Antwort; liefert eine kurze Zusammenfassung zum Vorlesen.
+      Aufbau (Konzept mein-bereich-2026-11, Screens a-screen/a-answer): Frage als Blase (submit), „So hat Atlas übersetzt“
+      mit Regel-Chips, Ergebnis, Knöpfe (Alle N im Screener, Regel ändern, weiter fragen), Quellen-Chips, ein Satz „keine Empfehlung“. */
   function render(turn, answer, question) {
     var r = answer.result;
     var gaps = (r.missing || []).filter(function (m) { return m.type !== 'withheld'; }).map(function (m) { return m.wish; });
     var gapText = gaps.length ? ' Noch nicht verfügbar: ' + gaps.join(', ') + '.' : '';
-    function say(title, text, warn) { turn.appendChild(card(title, text, warn)); return Promise.resolve(title + '. ' + text); }
-
-    var understoodMount = h('div', {}), resultMount = h('div', {}), atlasMount = h('div', {});
-    turn.appendChild(understoodMount);
-    if (r.kind === 'forecast') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Prognosen', 'Vision Universe sagt keine Kurse voraus und gibt keine Kaufempfehlungen. Sie können aber nach Kennzahlen, Trends und Strategiesignalen suchen – zum Beispiel „Welche Aktien stehen im Weinstein-Stage-2?“'); }
-    if (r.kind === 'off_topic') { understoodMount.appendChild(understood(r, answer.source)); return say('Keine Investmentfrage', 'Hier lassen sich Fragen zu Aktien, Kennzahlen und den Vision-Universe-Strategien beantworten.'); }
-    if (r.kind === 'unclear') { understoodMount.appendChild(understood(r, answer.source)); return say('Nicht eindeutig', 'Die Frage ließ sich nicht sicher in Filter übersetzen. Versuchen Sie es mit einer konkreten Kennzahl, Größe oder Strategie.' + gapText); }
+    var pill = answerTop.querySelector('.ak-anstop-pill');
+    pill.textContent = ''; pill.appendChild(markup(U.verdict('none', answer.source === 'cache' ? 'aus dem Archiv' : 'neu übersetzt')));
+    function say(title, text, warn) { turn.appendChild(card(title, text, warn)); turn.appendChild(missingBlock(r)); return Promise.resolve(title + '. ' + text); }
+    if (r.kind === 'forecast') return say('Keine Prognosen, keine Beratung', 'Vision Universe sagt keine Kurse voraus, gibt keine Kauf- oder Verkaufsempfehlungen und beantwortet keine Fragen zu deiner persönlichen Lage. Du kannst aber nach Kennzahlen, Trends und Methoden suchen – zum Beispiel „Welche Aktien stehen im Weinstein-Stage-2?“');
+    if (r.kind === 'off_topic') return say('Keine Investmentfrage', 'Hier lassen sich Fragen zu Aktien, Kennzahlen und den Methoden von Vision Universe beantworten.');
+    if (r.kind === 'unclear') return say('Nicht eindeutig', 'Die Frage ließ sich nicht eindeutig in Regeln übersetzen. Versuch es mit einer konkreten Kennzahl, Größe oder Methode.' + gapText);
 
     var ds = adapter.dataset();
-    if (!ds) { understoodMount.appendChild(understood(r, answer.source)); return say('Daten nicht verfügbar', 'Das Aktienuniversum konnte nicht geladen werden. Bitte die Seite neu laden.', true); }
+    if (!ds) return say('Daten nicht verfügbar', 'Das Aktienuniversum konnte nicht geladen werden. Bitte die Seite neu laden.', true);
     if (Fields.setDictionary && ds.meta) Fields.setDictionary(ds.meta.dict || null);
-    turn.appendChild(atlasMount);
-    turn.appendChild(resultMount);
-    turn.appendChild(h('div', { class: 'ak-actions ak-turn-actions' }, [
-      h('button', { class: 'ak-btn ak-btn-sm', type: 'button', onclick: function () { setContext(compactOf(question, r)); input.focus(); try { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {} } }, 'Diese Frage verfeinern')
-    ]));
+    var info = adapter.info && adapter.info() || {};
+    var mount = h('div', { class: 'ak-answer' });
+    turn.appendChild(mount);
 
     var needSignals = !!r.supertrader;
     return Promise.all([needSignals ? signals() : null, r.kind === 'stock' && r.chartbild ? chartbildData() : null]).then(function (loaded) {
       var sig = loaded[0], ti = loaded[1];
-      if (needSignals && !sig) resultMount.appendChild(card('Supertrader-Signale nicht geladen', 'Der Strategiestatus kann gerade nicht angezeigt werden.', true));
-      if (r.kind === 'stock') {
-        understoodMount.appendChild(understood(r, answer.source));
-        var st = Ask.runStock(ds, r, sig);
-        var found = st.stocks.filter(function (x) { return x.found; });
-        var text;
-        if (r.chartbild) {
-          /* Chartbild-Werkzeug: strukturierte Werte aus dem Index statt Freitext */
-          if (!ti) { resultMount.appendChild(card('Chartbild nicht geladen', 'Die Chartlage kann gerade nicht angezeigt werden.', true)); text = 'Das Chartbild konnte nicht geladen werden.' + gapText; }
-          else {
-            var cb = Ask.runChartbild(ti.index, ti.meta, r);
-            resultMount.appendChild(chartbildBlock(cb));
-            text = cb.stocks.map(Ask.chartbildSentence).join(' ') + gapText;
-          }
-        } else {
-          resultMount.appendChild(stockBlock(st));
-          text = !found.length ? 'Ich habe keine passende Aktie im Universum gefunden.' + gapText
-            : found.map(function (x) {
-              return (x.name || x.symbol) + ': ' + st.columns.slice(0, 3).map(function (c) { return header(c) + ' ' + Fields.format(c, x.values[c]); }).join(', ');
-            }).join('. ') + '.' + gapText;
-        }
-        atlasMount.appendChild(atlasCard(text, [], r));
-        setContext(compactOf(question, r));
-        return text;
-      }
-      /* Die Abfrage wird hier noch einmal geprueft - der Browser rechnet
-         nur, was die Screener-Validierung durchlaesst. */
+      if (needSignals && !sig) mount.appendChild(card('Methoden-Stand nicht geladen', 'Der Stand der Supertrader-Methoden kann gerade nicht angezeigt werden.', true));
+      if (r.kind === 'stock') return stockAnswer(mount, r, ds, sig, ti, info, question, gapText);
+      /* Die Abfrage wird hier noch einmal geprueft - der Browser rechnet nur, was die Screener-Validierung durchlaesst. */
       var limit = r.query.limit;
       r.query = Query.validate(r.query); r.query.limit = limit;
-
-      /* Rechnen und zeichnen - auch nach jeder Aenderung an den Chips,
-         kostenlos im Browser, ohne neue Anfrage an die AI. */
       var spoken = '';
+      /* Rechnen und zeichnen - auch nach jeder Aenderung an den Chips, kostenlos im Browser, ohne neue Anfrage an die AI. */
       function refresh(first) {
         var res = Ask.runScreen(ds, r, sig);
-        understoodMount.textContent = ''; resultMount.textContent = ''; atlasMount.textContent = '';
-        understoodMount.appendChild(understood(r, answer.source, function (kind, id) {
+        mount.textContent = '';
+        var tips = res.matched <= 3 ? relaxations(ds, r, sig, res.matched) : [];
+        function drop(kind, id) {
           if (kind === 'filter') r.query.groups.forEach(function (g) { g.filters = g.filters.filter(function (f) { return f.id !== id; }); });
           else r.supertrader = null;
-          refresh(false);
-          setContext(compactOf(question, r));
-        }));
-        resultMount.appendChild(screenBlock(res, r));
-        var tips = res.matched <= 3 ? relaxations(ds, r, sig, res.matched) : [];
+          refresh(false); setContext(compactOf(question, r));
+        }
+        mount.appendChild(translated(r, res, drop, tips));
+        mount.appendChild(screenList(res, r));
+        mount.appendChild(h('div', { class: 'ak-btns' }, [
+          h('a', { class: 'vu-btn vu-btn--ink ak-btn2', href: Ask.screenerUrl(r), text: 'Alle ' + res.matched.toLocaleString('de-DE') + ' im Screener' }),
+          h('button', { class: 'vu-btn vu-btn--line ak-btn2', type: 'button', onclick: function () { followUp(compactOf(question, r), 'Regel ändern, z. B. „KGV bis 20“ …'); } }, 'Regel ändern')
+        ]));
+        mount.appendChild(h('button', { class: 'ak-more', type: 'button', onclick: function () { followUp(compactOf(question, r)); } }, ['Weiter fragen', markup(U.glyph('next', 14))]));
+        mount.appendChild(sources(r, info, res.strategy));
+        mount.appendChild(markup(U.help('Eine Liste nach Regeln, keine Empfehlung. Ein niedriges KGV kann auch einmalige Gewinne spiegeln.')));
+        mount.appendChild(missingBlock(r));
         var top = res.rows.slice(0, 3).map(function (x) { return x.name || x.symbol; });
         spoken = !res.matched ? 'Keine Aktie erfüllt alle Bedingungen gleichzeitig.' :
           (res.matched === 1 ? 'Eine Aktie erfüllt' : res.matched + ' Aktien erfüllen') + ' alle Bedingungen' + (top.length ? ', darunter ' + top.join(', ') : '') + '.';
-        var text = spoken + (tips.length ? ' Mit einer gelockerten Bedingung fände ich mehr – siehe Vorschläge.' : '') + gapText;
-        atlasMount.appendChild(atlasCard(text, tips, r, function (tip) {
-          if (tip.kind === 'filter') r.query.groups.forEach(function (g) { g.filters = g.filters.filter(function (f) { return f.id !== tip.id; }); });
-          else r.supertrader = null;
-          refresh(false);
-          setContext(compactOf(question, r));
-        }));
-        if (!first) try { atlasMount.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
+        if (!first) try { mount.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
       }
       refresh(true);
       setContext(compactOf(question, r));
@@ -490,8 +484,7 @@
     });
   }
 
-  /* Was brächte es, eine Bedingung wegzulassen? Rechnet jede Variante
-     durch - im Browser, ohne Kosten. */
+  /* Was brächte es, eine Bedingung wegzulassen? Rechnet jede Variante durch - im Browser, ohne Kosten. */
   function relaxations(ds, r, sig, current) {
     var out = [];
     Query.filters(r.query).forEach(function (f) {
@@ -508,44 +501,120 @@
     return out.sort(function (a, b) { return a.count - b.count; }).slice(0, 3);
   }
 
-  function atlasCard(text, tips, r, onTip) {
-    var notes = (r.notes || []).filter(function (n) { return !/^Nicht ausgewertet/.test(n); });
-    return h('div', { class: 'ak-atlas' }, [
-      h('span', { class: 'ak-atlas-icon', 'aria-hidden': 'true' }, [icon('spark')]),
-      h('div', { class: 'ak-atlas-body' }, [
-        h('b', { text: 'Atlas' }),
-        h('p', { text: text }),
-        notes.length ? h('p', { class: 'ak-atlas-hint', text: 'Annahme: ' + notes.join(' · ') + ' – mit einer Nachfrage wie „nur positives Wachstum“ passe ich das an.' }) : null,
-        tips.length ? h('div', { class: 'ak-tips' }, tips.map(function (t) {
-          return h('button', { class: 'ak-tip', type: 'button', onclick: function () { onTip(t); } }, [t.label + ': ', h('b', { text: t.count + ' Treffer' })]);
-        })) : null
-      ])
+  /* „So hat Atlas übersetzt“: Regel-Chips (× entfernt eine Regel, kostenlos neu gerechnet) und die große Zahl. */
+  function translated(r, res, onRemove, tips) {
+    var rules = Ask.rules(r);
+    var n = res.strategy && res.strategy.mode === 'require' ? rules.length : rules.filter(function (x) { return x.kind === 'filter'; }).length;
+    return h('div', { class: 'ak-ans' }, [
+      h('span', { class: 'vu-ltag', text: 'So hat Atlas übersetzt' }),
+      r.understood ? h('p', { class: 'ak-fine', text: r.understood }) : null,
+      h('div', { class: 'ak-rcs' }, rules.map(function (x) {
+        return h('span', { class: 'ak-rc' }, [x.text, x.kind !== 'ticker' ? h('button', { class: 'ak-rc-x', type: 'button', 'aria-label': 'Regel entfernen: ' + x.text, title: 'Entfernen (kostenlos neu rechnen)', onclick: function () { onRemove(x.kind, x.id); } }, '×') : null]);
+      })),
+      h('div', { class: 'ak-count' }, [h('b', { class: 'vu-num', text: res.matched.toLocaleString('de-DE') }),
+        h('span', { text: 'von ' + res.universe.toLocaleString('de-DE') + ' US-Aktien erfüllen ' + Ask.allOf(n) })]),
+      res.note ? h('p', { class: 'ak-fine', text: res.note }) : null,
+      tips.length ? h('div', { class: 'ak-tips' }, tips.map(function (t) {
+        return h('button', { class: 'ak-tip', type: 'button', onclick: function () { onRemove(t.kind, t.id); } }, [t.label + ': ', h('b', { text: t.count + ' Treffer' })]);
+      })) : null
     ]);
   }
-
-  function understood(r, source, onRemove) {
-    var rules = [];
-    if (r.query) Query.filters(r.query).forEach(function (f) { rules.push({ text: Fields.describeFilter(f), kind: 'filter', id: f.id }); });
-    if (r.supertrader) rules.push({ text: (r.supertrader.mode === 'require' ? 'Erfüllt: ' : 'Status: ') + Ask.STRATEGY_LABELS[r.supertrader.strategy], kind: 'strategy' });
-    if (r.tickers && r.tickers.length) rules.push({ text: 'Aktie: ' + r.tickers.join(', ') });
-    var box = h('div', { class: 'ak-card' }, [
-      h('h3', {}, ['So habe ich Ihre Frage verstanden', source === 'cache' ? h('span', { class: 'ak-badge', text: 'aus dem Archiv – kein Kontingent verbraucht' }) : null]),
-      r.understood ? h('p', { text: r.understood }) : null,
-      rules.length ? h('ul', { class: 'ak-rules' }, rules.map(function (x) {
-        return h('li', {}, [x.text, onRemove && x.kind ? h('button', { class: 'ak-rule-x', type: 'button', 'aria-label': 'Bedingung entfernen: ' + x.text, title: 'Entfernen (kostenlos neu rechnen)', onclick: function () { onRemove(x.kind, x.id); } }, '×') : null]);
-      })) : null,
-      onRemove && rules.length ? h('p', { class: 'ak-fine', text: 'Tippen Sie auf ×, um eine Bedingung zu entfernen – das rechnet sofort und kostenlos neu.' }) : null
-    ]);
-    if (!r.missing || !r.missing.length) return box;
-    var wrap = h('div', {}, [box]);
-    var withheld = r.missing.filter(function (m) { return m.type === 'withheld'; });
-    var gaps = r.missing.filter(function (m) { return m.type !== 'withheld'; });
-    if (withheld.length) wrap.appendChild(card('Noch nicht freigegeben',
-      withheld.map(function (m) { return m.wish; }).join(', ') + ': vorhanden, aber noch nicht freigegeben. ' +
+  /* Die ersten fünf Treffer: Logo, Name, zwei Werte der Frage, rechts die passende Kennzahl. */
+  function screenList(res, r) {
+    if (!res.rows.length) return h('div', { class: 'vu-blank ak-none', text: 'Kein Titel erfüllt alle Regeln gleichzeitig. Fehlende Daten erfüllen keine Regel.' });
+    /* Die passende Kennzahl rechts: die, nach der sortiert ist (z. B. KGV aufsteigend), sonst die erste Spalte. */
+    var sortField = r && r.query && r.query.sort && r.query.sort.field;
+    var cols = res.columns, key = cols.indexOf(sortField) >= 0 ? sortField : cols[0], rest = cols.filter(function (c) { return c !== key; }).slice(0, 2);
+    return markup('<div class="ak-list">' + res.rows.slice(0, 5).map(function (row) {
+      return '<a class="ak-pos" href="/discover/#/s/US_REAL/' + encodeURIComponent(row.symbol) + '">' + U.logo(row.symbol) +
+        '<span class="ak-pos-n"><b>' + U.esc(cleanName(row.name) || row.symbol) + '</b><span>' + U.esc(rest.map(function (c) { return Fields.format(c, row.values[c]) + ' ' + header(c); }).join(' · ')) + '</span></span>' +
+        (key ? '<span class="ak-pos-v"><small>' + U.esc(header(key)) + '</small><b class="vu-num">' + U.esc(Fields.format(key, row.values[key])) + '</b></span>' : '') + '</a>';
+    }).join('') + '</div>');
+  }
+  function cleanName(n) { return String(n || '').replace(/,? (Inc|Corp|Corporation|Ltd|Limited|plc|N\.V\.|S\.A\.|AG|SE|Holdings?|Co)\.?$/i, '').trim(); }
+  /* Quellen-Chips mit Stand. */
+  function sources(r, info, strategy) {
+    var rules = Ask.rules(r), chips = [];
+    chips.push([U.worldIcon('screener', 12), 'Screener-Daten' + (info.asOf ? ', Stand ' + dateDe(info.asOf) : '')]);
+    if (rules.some(function (x) { return x.source === 'fundamentals'; })) chips.push(['', 'Gewinne und Schulden: SEC']);
+    if (strategy) chips.push([U.worldIcon('supertrader', 12), 'Supertrader' + (strategy.asOf ? ', Stand ' + dateDe(strategy.asOf) : '')]);
+    return markup('<div class="ak-srcs">' + chips.map(function (c) { return '<span class="ak-src">' + c[0] + U.esc(c[1]) + '</span>'; }).join('') + '</div>');
+  }
+  function dateDe(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || '')); return m ? m[3] + '.' + m[2] + '.' + m[1] : String(iso || ''); }
+  /* Was fehlt oder zurückgehalten ist (unverändert aus der Übersetzung). */
+  function missingBlock(r) {
+    var wrap = h('div', {});
+    var withheld = (r.missing || []).filter(function (m) { return m.type === 'withheld'; });
+    var gaps = (r.missing || []).filter(function (m) { return m.type !== 'withheld'; });
+    if (withheld.length) wrap.appendChild(card('Noch nicht freigegeben', withheld.map(function (m) { return m.wish; }).join(', ') + ': vorhanden, aber noch nicht freigegeben. ' +
       (withheld.some(function (m) { return /quant/i.test(m.wish); }) ? 'Angezeigt werden stattdessen die einzelnen Quant-Faktoren (0–100).' : '')));
-    if (gaps.length) wrap.appendChild(card('Das kann Vision Universe noch nicht beantworten',
-      gaps.map(function (m) { return m.wish; }).join(', ') + '. Ihre Frage ist notiert – daraus entsteht unsere Liste der nächsten Datenerweiterungen.', true));
+    if (gaps.length) wrap.appendChild(card('Das kann Vision Universe noch nicht beantworten', gaps.map(function (m) { return m.wish; }).join(', ') + '. Deine Frage ist notiert – daraus entsteht unsere Liste der nächsten Datenerweiterungen.', true));
     return wrap;
+  }
+
+  /* Frage zu einer oder mehreren Aktien (Erklären, Vergleichen). */
+  function stockAnswer(mount, r, ds, sig, ti, info, question, gapText) {
+    var st = Ask.runStock(ds, r, sig), found = st.stocks.filter(function (x) { return x.found; });
+    var calc = h('div', { class: 'ak-ans ak-calc' }, [h('span', { class: 'vu-ltag', text: 'So hat Atlas gerechnet' }),
+      h('div', { class: 'ak-rcs' }, [].concat(found.map(function (x) { return h('span', { class: 'ak-rc', text: 'Firma: ' + (cleanName(x.name) || x.symbol) }); }),
+        st.columns.slice(0, 3).map(function (c) { return h('span', { class: 'ak-rc', text: 'Kennzahl: ' + header(c) }); })))]);
+    var nextQ = found.length ? [
+      { text: 'Wie hoch ist die Marge?', q: 'Wie hoch ist die Marge bei ' + (cleanName(found[0].name) || found[0].symbol) + '?' },
+      { text: 'Wie hat sich der Umsatz entwickelt?', q: 'Wie hat sich der Umsatz bei ' + (cleanName(found[0].name) || found[0].symbol) + ' entwickelt?' },
+      { text: 'Zahlen-Seite öffnen', href: '/fundamental/#/' + encodeURIComponent(found[0].symbol) }] : [];
+    function tail() {
+      mount.appendChild(calc);
+      if (nextQ.length) {
+        mount.appendChild(h('h2', { class: 'vu-sect', text: 'Weiter fragen' }));
+        mount.appendChild(h('div', { class: 'ak-nextq' }, nextQ.map(function (x) {
+          return x.href ? h('a', { class: 'vu-chip', href: x.href, text: x.text }) : h('button', { class: 'vu-chip', type: 'button', onclick: function () { setContext(compactOf(question, r)); ask(x.q, true); } }, x.text);
+        })));
+      }
+      mount.appendChild(markup(U.help('Antwort aus festen Daten. Keine Vorhersage, keine Anlageberatung.')));
+      mount.appendChild(missingBlock(r));
+      setContext(compactOf(question, r));
+    }
+    if (r.chartbild) {
+      var text;
+      if (!ti) { mount.appendChild(card('Chartbild nicht geladen', 'Die Chartlage kann gerade nicht angezeigt werden.', true)); text = 'Das Chartbild konnte nicht geladen werden.' + gapText; }
+      else { var cb = Ask.runChartbild(ti.index, ti.meta, r); mount.appendChild(chartbildBlock(cb)); text = cb.stocks.map(Ask.chartbildSentence).join(' ') + gapText; }
+      tail(); return Promise.resolve(text);
+    }
+    if (!found.length) {
+      mount.appendChild(stockBlock(st)); tail();
+      return Promise.resolve('Ich habe keine passende Aktie im Universum gefunden.' + gapText);
+    }
+    var spoken = found.map(function (x) { return (x.name || x.symbol) + ': ' + st.columns.slice(0, 3).map(function (c) { return header(c) + ' ' + Fields.format(c, x.values[c]); }).join(', '); }).join('. ') + '.' + gapText;
+    if (found.length > 1) { mount.appendChild(stockBlock(st)); tail(); return Promise.resolve(spoken); }
+    /* Eine Aktie: die Zahl, und wenn die Kennzahl eine Jahresreihe in den SEC-Berichten hat, Balken und Rechenweg. */
+    var x = found[0], c0 = st.columns[0], track = Ask.secTrack(st.columns);
+    var ans = h('div', { class: 'ak-ans' }, [h('span', { class: 'vu-ltag', text: 'Antwort' })]);
+    mount.appendChild(ans);
+    function plain() {
+      ans.appendChild(h('p', { class: 'ak-sent', text: header(c0) + ' von ' + (cleanName(x.name) || x.symbol) }));
+      ans.appendChild(h('div', { class: 'ak-big vu-num', text: Fields.format(c0, x.values[c0]) }));
+      ans.appendChild(markup('<div class="vu-grid ak-tiles">' + st.columns.slice(1).map(function (c) { return U.tile(header(c), Fields.format(c, x.values[c])); }).join('') + '</div>'));
+      ans.appendChild(sources(r, info, null));
+    }
+    if (!track) { plain(); tail(); return Promise.resolve(spoken); }
+    return fetch('/discover/data/stocks/US_REAL/' + encodeURIComponent(x.symbol) + '.json', { cache: 'default' })
+      .then(function (res) { if (!res.ok) throw Error('HTTP ' + res.status); return res.json(); })
+      .then(function (file) {
+        var e = Ask.explain(file, track, 4);
+        if (!e) throw Error('NO_SERIES');
+        var money = function (v) { return Fields.format('freeCashFlow', v); };
+        ans.appendChild(h('p', { class: 'ak-sent', text: 'Der ' + e.label + ' von ' + (cleanName(x.name) || x.symbol) + ' ' + (e.last >= e.first ? 'stieg' : 'fiel') + ' von' }));
+        var a1 = money(e.first), a2 = money(e.last), unit = /\s[^\d\s,.−-]+\.?\s?\$$/.exec(a2);
+        if (unit && a1.slice(-unit[0].length) === unit[0]) a1 = a1.slice(0, -unit[0].length);
+        ans.appendChild(h('div', { class: 'ak-big vu-num', text: a1 + ' → ' + a2 }));
+        ans.appendChild(h('p', { class: 'ak-sub', text: 'Geschäftsjahr ' + e.fromFy + ' bis ' + e.toFy + (e.lastChange !== null ? ' · zuletzt ' + U.pct(e.lastChange * 100, 1) + ' zum Vorjahr' : '') }));
+        ans.appendChild(markup(U.bars(e.bars, { width: 320, height: 100, label: e.label + ' je Geschäftsjahr' })));
+        ans.appendChild(markup('<div class="ak-srcs"><span class="ak-src">' + U.worldIcon('fundamental', 12) + 'SEC-Berichte' + (e.asOf ? ', Stand ' + U.esc(dateDe(e.asOf)) : '') + '</span><span class="ak-src">' + U.esc(e.formula) + '</span></div>'));
+        calc.querySelector('.ak-rcs').appendChild(h('span', { class: 'ak-rc', text: 'Zeitraum: GJ ' + e.fromFy + '–' + e.toFy }));
+        tail();
+        return e.label + ' von ' + (x.name || x.symbol) + ': ' + money(e.first) + ' im Geschäftsjahr ' + e.fromFy + ', ' + money(e.last) + ' im Geschäftsjahr ' + e.toFy + '.' + gapText;
+      })
+      .catch(function () { plain(); tail(); return spoken; });
   }
 
   function header(col) { var f = Fields.field(col); return f ? (f.short || f.label) : col; }
@@ -553,35 +622,6 @@
   function strategyCell(s) { return h('td', { class: s.pass === true ? 'ak-pass' : 'ak-fail', text: s.label }); }
   function stockLink(sym, name) {
     return h('a', { href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, [h('b', { text: sym }), h('span', { class: 'ak-name', text: name || '' })]);
-  }
-
-  function screenBlock(res, r) {
-    var box = h('div', { class: 'ak-card' });
-    var headline = res.strategy && res.strategy.mode === 'require'
-      ? res.total + ' Aktien erfüllen die Filter, davon ' + res.matched + ' auch „' + res.strategy.label + '“'
-      : 'von ' + res.universe.toLocaleString('de-DE') + ' Aktien im Universum';
-    box.appendChild(h('div', { class: 'ak-summary' }, [h('b', { text: String(res.matched) }), h('span', { text: res.strategy && res.strategy.mode === 'require' ? 'Treffer · ' + headline : 'Treffer ' + headline })]));
-    if (res.note) box.appendChild(h('p', { class: 'ak-fine', text: res.note }));
-    if (!res.rows.length) {
-      box.appendChild(h('div', { class: 'ak-state', text: 'Kein Titel erfüllt alle Bedingungen gleichzeitig. Fehlende Daten erfüllen keinen Filter.' }));
-    } else {
-      var cols = res.columns;
-      box.appendChild(h('div', { class: 'ak-table-wrap' }, [h('table', { class: 'ak-table' }, [
-        h('thead', {}, [h('tr', {}, [h('th', { scope: 'col', text: 'Aktie' })].concat(cols.map(function (c) { return h('th', { scope: 'col', text: header(c) }); }))
-          .concat(res.strategy ? [h('th', { scope: 'col', text: 'Supertrader' })] : []))]),
-        h('tbody', {}, res.rows.map(function (row) {
-          return h('tr', {}, [h('td', {}, [stockLink(row.symbol, row.name)])].concat(cols.map(function (c) { return cell(c, row.values[c]); }))
-            .concat(row.strategy ? [strategyCell(row.strategy)] : []));
-        }))
-      ])]));
-      if (res.matched > res.rows.length) box.appendChild(h('p', { class: 'ak-fine', text: 'Angezeigt: die ersten ' + res.rows.length + ' von ' + res.matched + '.' }));
-    }
-    if (res.strategy && res.strategy.asOf) box.appendChild(h('p', { class: 'ak-fine', text: 'Supertrader-Stand ' + res.strategy.asOf + ' (Tagesschluss). Keine Anlageberatung.' }));
-    box.appendChild(h('div', { class: 'ak-actions' }, [
-      h('a', { class: 'ak-btn ak-btn-sm', href: Ask.screenerUrl(r), text: 'Im Screener weiterbearbeiten' }),
-      res.strategy ? h('a', { class: 'ak-btn ak-btn-sm', href: '/supertrader/', text: 'Zum Supertrader' }) : null
-    ]));
-    return box;
   }
 
   /* Chartbild-Index (gz) ueber die Lese-API des Chartbilds; null bei Fehler. */
@@ -627,36 +667,72 @@
     return box;
   }
 
+  /* Weiter-Karten (C12). */
+  function weiter(list) {
+    return h('div', { class: 'ak-weiter' }, [h('h3', { class: 'vu-sect', text: 'Weiter' }), markup(list.map(function (l) { return U.navcard({ href: l.href, icon: l.icon, title: l.title, sub: l.sub }); }).join(''))]);
+  }
+  function isNum(v) { return typeof v === 'number' && isFinite(v); }
+  /* Aktienzeile mit Kurs, Bewegung und Mini-Chart aus der Tagesreihe (gleiche Reihe wie der veröffentlichte Schluss). */
+  function fillRow(host, sym, name, sub) {
+    host.appendChild(markup(U.stockRow({ ticker: sym, name: name || sym, sub: sub, href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym), noPrice: true })));
+    var path = Today && Id ? Today.seriesPath(Id, sym) : null;
+    if (!path) return;
+    fetch(path, { cache: 'default' }).then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); }).then(function (series) {
+      var pts = (series.points || []).filter(function (p) { return p && isNum(p[1]); });
+      if (pts.length < 2) return;
+      var last = pts[pts.length - 1], mv = Today.move(series, { date: last[0] });
+      host.textContent = '';
+      host.appendChild(markup(U.stockRow({ ticker: sym, name: name || sym, sub: sub + ' · Schluss ' + last[0].slice(8, 10) + '.' + last[0].slice(5, 7) + '.', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym),
+        chart: Chart ? Chart.sparkline(mv.values) : '', price: last[1], currency: series.currency || 'USD', changePct: mv.pct })));
+    }).catch(function () { /* ohne Reihe bleibt die Zeile ohne Kurs */ });
+  }
+
   function stockBlock(res) {
-    var box = h('div', { class: 'ak-card' });
+    var box = h('div', { class: 'ak-answer' });
     var found = res.stocks.filter(function (s) { return s.found; });
     res.stocks.filter(function (s) { return !s.found; }).forEach(function (s) {
-      box.appendChild(h('p', { text: s.symbol + ' gehört nicht zum Vision-Universe-Aktienuniversum (US-Börsen).' }));
+      box.appendChild(h('p', { class: 'ak-fine', text: s.symbol + ' gehört nicht zum Vision-Universe-Aktienuniversum (US-Börsen).' }));
     });
-    if (!res.stocks.length) box.appendChild(h('p', { text: 'Es wurde keine Aktie erkannt. Nennen Sie den Namen oder das Kürzel, z. B. „Nvidia“ oder „NVDA“.' }));
-    if (found.length) {
-      box.appendChild(h('div', { class: 'ak-table-wrap' }, [h('table', { class: 'ak-table' }, [
-        h('thead', {}, [h('tr', {}, [h('th', { scope: 'col', text: 'Kennzahl' })].concat(found.map(function (s) { return h('th', { scope: 'col', text: s.symbol }); })))]),
-        h('tbody', {}, res.columns.map(function (c) {
-          return h('tr', {}, [h('td', { text: header(c) })].concat(found.map(function (s) { return cell(c, s.values[c]); })));
-        }).concat(res.strategy ? [h('tr', {}, [h('td', { text: res.strategy.label })].concat(found.map(function (s) { return strategyCell(s.strategy); })))] : []))
-      ])]));
-      var desc = res.columns.map(function (c) { var f = Fields.field(c); return f && f.desc ? header(c) + ': ' + f.desc : null; }).filter(Boolean);
-      if (desc.length) box.appendChild(h('ul', { class: 'ak-notes' }, desc.map(function (t) { return h('li', { text: t }); })));
-      /* Jede Aktie fuehrt in beide Produkte: Quant (Faktoren, Analyse) und
-         Discover (Ueberblick, Kurs, Einordnung). Was zuerst steht und
-         hervorgehoben ist, folgt der Frage: ging es um Quant-Faktoren,
-         ist es Quant, sonst Discover. Supertrader nur, wenn gefragt. */
-      var quantFirst = res.columns.some(function (c) { var f = Fields.field(c); return f && f.source === 'factor'; });
-      box.appendChild(h('div', { class: 'ak-actions' }, [].concat.apply([], found.map(function (s) {
-        var sym = encodeURIComponent(s.symbol);
-        var quant = { href: '/quant/#/aktie/' + sym, text: s.symbol + ' in Quant analysieren' };
-        var disc = { href: '/discover/#/s/US_REAL/' + sym, text: s.symbol + ' in Discover öffnen' };
-        var links = quantFirst ? [quant, disc] : [disc, quant];
-        if (res.strategy) links.push({ href: '/supertrader/', text: 'Zum Supertrader' });
-        return links.map(function (l) { return h('a', { class: 'ak-btn ak-btn-sm', href: l.href, text: l.text }); });
-      }))));
+    if (!res.stocks.length) box.appendChild(h('p', { text: 'Es wurde keine Aktie erkannt. Nenne den Namen oder das Kürzel, z. B. „Nvidia“ oder „NVDA“.' }));
+    if (!found.length) return box;
+    var rows = h('div', { class: 'ak-rows' });
+    found.forEach(function (s) { var r = h('div', {}); rows.appendChild(r); fillRow(r, s.symbol, s.name, s.symbol); });
+    box.appendChild(rows);
+    /* Je Kennzahl ein Vergleich als Balken (C17) mit Erklärung (C09); bei einer Aktie Kacheln (C11). */
+    if (found.length === 1) {
+      box.appendChild(markup('<div class="vu-grid ak-tiles">' + res.columns.map(function (c) { return U.tile(header(c), Fields.format(c, found[0].values[c])); }).join('') + '</div>'));
+    } else {
+      res.columns.forEach(function (c) {
+        var vals = found.map(function (s) { return s.values[c]; }).filter(isNum);
+        if (!vals.length) return;
+        var max = Math.max.apply(null, vals.map(Math.abs)) || 1, f = Fields.field(c);
+        box.appendChild(markup('<div class="vu-box ak-compare"><p class="ak-compare-h">' + U.esc(header(c)) + (f && f.desc ? U.q(f.desc, header(c)) : '') + '</p>' + found.map(function (s) {
+          var v = s.values[c];
+          return '<div class="ak-compare-row"><b>' + U.esc(s.symbol) + '</b>' + U.meter(isNum(v) ? Math.abs(v) / max * 100 : 0, { lime: isNum(v) && Math.abs(v) === max, label: header(c) + ' ' + s.symbol }) + '<span>' + U.esc(Fields.format(c, v)) + '</span></div>';
+        }).join('') + '</div>'));
+      });
     }
+    var desc = res.columns.map(function (c) { var f = Fields.field(c); return f && f.desc ? header(c) + ': ' + f.desc : null; }).filter(Boolean);
+    if (desc.length) box.appendChild(markup(desc.slice(0, 2).map(function (t) { return U.help(t); }).join('')));
+    var details = h('details', { class: 'ak-more-table' }, [h('summary', { text: 'Alle Werte als Tabelle' })]);
+    details.appendChild(h('div', { class: 'ak-table-wrap' }, [h('table', { class: 'ak-table' }, [
+      h('thead', {}, [h('tr', {}, [h('th', { scope: 'col', text: 'Kennzahl' })].concat(found.map(function (s) { return h('th', { scope: 'col', text: s.symbol }); })))]),
+      h('tbody', {}, res.columns.map(function (c) {
+        return h('tr', {}, [h('td', { text: header(c) })].concat(found.map(function (s) { return cell(c, s.values[c]); })));
+      }).concat(res.strategy ? [h('tr', {}, [h('td', { text: res.strategy.label })].concat(found.map(function (s) { return strategyCell(s.strategy); })))] : []))
+    ])]));
+    box.appendChild(details);
+    /* Jede Aktie führt in beide Produkte: Quant (Faktoren) und Discover (Überblick). Was zuerst steht, folgt der Frage. */
+    var quantFirst = res.columns.some(function (c) { var f = Fields.field(c); return f && f.source === 'factor'; });
+    var links = [];
+    found.slice(0, 2).forEach(function (s) {
+      var sym = encodeURIComponent(s.symbol);
+      var quant = { href: '/quant/#/aktie/' + sym, icon: 'quant', title: s.symbol + ' in Quant öffnen', sub: 'Faktoren der Aktie' };
+      var disc = { href: '/discover/#/s/US_REAL/' + sym, icon: 'discover', title: s.symbol + ' im Überblick', sub: 'Aktienseite in Discover' };
+      links = links.concat(quantFirst ? [quant, disc] : [disc, quant]);
+    });
+    if (res.strategy) links.push({ href: '/supertrader/', icon: 'supertrader', title: 'Zum Supertrader', sub: res.strategy.label });
+    box.appendChild(weiter(links));
     return box;
   }
 })();

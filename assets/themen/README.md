@@ -6,6 +6,12 @@ Dateiname = `NN-slug` (PNG/JPG hochladen ist ok — wird zu `.webp` konvertiert)
 Aktiviert wird ein Foto in `discover/themes.js` (letzter Wert `true` in der Zeile der Themenwelt).
 Ohne Foto zeigt Discover 2.1 einen dunklen Farbverlauf im Ton der Themenwelt.
 
+**Kleinere Stufen (Tempo):** `480/`, `720/` und `1080/` enthalten dasselbe Foto in dieser Breite (WebP, Qualität 80).
+Discover (`discover/ui/v3.js#themeImg`) gibt sie per `srcset` an; der Browser lädt die kleinste Stufe, die die Kachel
+bei seiner Pixeldichte voll deckt, das Original bleibt die größte Stufe. Nach einem neuen oder geänderten Foto:
+`python3 scripts/discover/build-theme-variants.py` (braucht Pillow). `discover/tests/theme-variants.test.mjs` schlägt
+fehl, solange eine Stufe fehlt oder die falsche Breite hat.
+
 | Nr | Themenwelt | Datei | Status |
 |----|------------|-------|--------|
 | 01 | Künstliche Intelligenz | `01-kuenstliche-intelligenz` | ✅ |

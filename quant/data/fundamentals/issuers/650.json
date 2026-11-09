@@ -163,9 +163,9 @@
       "cik": "0001383650",
       "name": "Cheniere Energy Partners, L.P.",
       "sic": "4924",
-      "rawFacts": 14479,
-      "mappedFacts": 4388,
-      "unmappedFacts": 10137,
+      "rawFacts": 14748,
+      "mappedFacts": 4456,
+      "unmappedFacts": 10331,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -175,14 +175,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 65,
+      "quarterlyPeriods": 66,
       "firstPeriodEnd": "2009-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -196,7 +196,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -209,35 +209,35 @@
         },
         "long_term_debt": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "short_term_debt": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 43,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -251,14 +251,14 @@
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 43,
+          "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0,
@@ -274,46 +274,47 @@
         }
       },
       "quality": {
-        "HIGH": 573,
+        "HIGH": 580,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 578,
-        "resolvedValues": 578
+        "datableValues": 585,
+        "resolvedValues": 585
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10585,
+        "rules_version": "1.1.0",
+        "total": 10780,
         "by_severity": {
-          "INFO": 10137,
-          "WARNING": 448
+          "INFO": 10331,
+          "WARNING": 449
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 322,
           "NEGATIVE_WHERE_IMPOSSIBLE": 5,
-          "RESTATEMENT_CONFLICT": 121,
-          "UNKNOWN_CONCEPT": 10137
+          "RESTATEMENT_CONFLICT": 122,
+          "UNKNOWN_CONCEPT": 10331
         }
       },
       "latestFiling": {
-        "accession": "0001383650-26-000028",
-        "filing_date": "2026-08-06",
+        "accession": "0001383650-26-000038",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 90
+        "periodic_filings": 91,
+        "acceptance_datetime": "2026-10-28T21:36:21.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3b5b8eb93a97746be9b8e763008839721ba7168040708302fa05e9e32c6f01cb",
+      "sourceDigest": "8fb4dde784894ea0c600dc17372e0608e36698b6db73ddd5bf393e4a44c0347e",
       "issuerId": "iss_cik_0001383650"
     },
     {

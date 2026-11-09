@@ -1,0 +1,39 @@
+{
+ "schemaVersion": "v12-listref-protocol-amendment-1.0.1",
+ "amends": "protocol-1.0.0.json",
+ "seenBeforeAmendment": [
+  "Erster Lauf der Referenz (Regeln 1.0.0) mit Jahreszählungen, Verknüpfungsquoten und EDGAR-Vollständigkeit (linkedShare 2015-2026 ≈ 0,22-0,37).",
+  "Tiingo führt delistete Titel mit eingefrorenem Enddatum = Dateidatum weiter (Beispiele mit SEC-belegtem letztem Handelstag aus V10: ALE 2025-12-12, ALOT 2026-08-26, AVNS 2026-07-24, BAYA 2026-07-06, BGFV 2025-10-01 – alle mit endDate 2026-10-28). 330 'aktive' Zeilen fehlen in der aktuellen SEC-Tickerliste.",
+  "233 beendete Zeilen werden binnen 5 Tagen unter demselben Ticker fortgesetzt (Anbieter-Neustart, kein Delisting).",
+  "Stichprobenhafte Sichtung der MEDIUM_EDGAR_END-Treffer: einzelne Fehlzuordnungen (z. B. AHP -> Alliance Holdings GP statt Ashford Hospitality Prime; AIHS -> AdvisorShares Trust)."
+ ],
+ "changes": [
+  {
+   "id": "A1-restart-chain",
+   "rule": "Zeilen desselben Tickers mit Lücke <= 5 Tagen bilden eine Listingkette (Start der ersten, Ende der letzten Zeile). Jahresaktivität und Delisting werden je Kette gezählt; das Ende einer Zeile mit Folgezeile ist kein Delisting.",
+   "why": "Doppelzählung und Schein-Delistings durch Anbieter-Neustarts"
+  },
+  {
+   "id": "A2-effective-end",
+   "rule": "Effektives Ende = min(Tiingo endDate, belegter letzter Handelstag aus dem V10-Lifecycle (DELISTED_SOURCE_VERIFIED), abgeleitetes Ende aus A4). Eine Kette gilt als beendet, wenn das effektive Ende < 2026-09-28 liegt.",
+   "why": "eingefrorene Anbieter-Enden"
+  },
+  {
+   "id": "A3-fts-confirmation",
+   "rule": "Index-basierte Verknüpfungen (MEDIUM_EDGAR_END, MEDIUM_EDGAR_START_END) gelten nur, wenn die EDGAR-Volltextsuche (efts.sec.gov, ab 2001) den Ticker in Formularen 8-K/10-K/10-Q/DEF 14A/S-1/424B4/20-F/6-K/F-1 dieser CIK im Fenster [max(Start, Ende-3J), Ende+30T] mindestens einmal findet -> MEDIUM_FTS_CONFIRMED. Unbestätigte bleiben unverknüpft (INDEX_MATCH_UNCONFIRMED, gezählt).",
+   "why": "Präzision; unsichere Verknüpfungen werden nicht gemacht"
+  },
+  {
+   "id": "A4-fts-discovery",
+   "rule": "Unverknüpfte beendete Ketten (Ende >= 2002) und 'aktive' Ketten ohne Eintrag in der aktuellen SEC-Tickerliste oder mit SEC-Börse OTC: Volltextsuche nach dem Ticker ohne CIK-Filter (gleiche Formulare; beendet: [Ende-2J, Ende+30T]; eingefroren: [max(Start, Ende-3J), Ende]). Kandidat = CIK mit den meisten Treffern auf der ersten Ergebnisseite unter den CIKs, die (beendet) im Fenster [Ende-15T, Ende+120T] bzw. (eingefroren) nach dem Start ein 25/25-NSE/15-12B/15-12G/15-15D eingereicht haben, mit Affinität >= A1; eindeutiges Maximum und >= 2 Treffer -> MEDIUM_FTS_DISCOVERED. Bei eingefrorenen Ketten wird das Datum des ersten 25/25-NSE (sonst 15-12B/15-12G/15-15D) nach dem Start zum abgeleiteten Ende (A2).",
+   "why": "Rückgewinnung delisteter Listings, deren Name nicht über die Indexzeile eindeutig ist"
+  },
+  {
+   "id": "A5-completeness-bounds",
+   "rule": "Referenz-Vollständigkeit wird als Intervall berichtet: untere Schranke = Anteil der EDGAR-Ereignisse mit verknüpfter beendeter Kette; obere Schranke = zusätzlich Ereignisse, für die eine beendete Common-Kette mit Affinität >= A2 im Fenster [Ereignis-120T, Ereignis+15T] endet. Zusätzlich das Zählverhältnis beendete Ketten / EDGAR-Ereignisse. Die P4-Bereitschaft nutzt die obere Schranke (konservativ gegenüber der Referenz, nicht gegenüber unserem Bestand) und weist die untere aus.",
+   "why": "Vollständigkeitsmaß darf nicht allein von unserer Verknüpfungsquote abhängen"
+  }
+ ],
+ "unchanged": "Symbolregel, Jahresdefinition, Segmente, Schwellen der P4-Bereitschaft, Gegenprüfung.",
+ "smokeTestEdit": "Nach einem Rauchtest mit 20 Volltextabfragen (vor jeder Nutzung von Ergebnissen) um die Formulare 20-F, 6-K und F-1 ergänzt, weil ausländische Emittenten (z. B. AAAP) sonst nie bestätigt werden können. Gilt für A3 und A4."
+}

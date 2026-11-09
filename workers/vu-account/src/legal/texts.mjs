@@ -1,0 +1,277 @@
+// Rechtstexte fuer Vision Universe (Konto, Free, Pro). Eine Quelle fuer:
+//   * die oeffentlichen Seiten https://konto.visionuniverse.de/rechtliches/... (ohne Research-Passwortmaske)
+//   * die Vertragsbestaetigung per E-Mail (dauerhafter Datenträger, § 312f BGB)
+//   * die Links in Bestellbestaetigung, Registrierung und Stripe-Kundenportal
+//
+// STATUS: FREIGESCHALTET am 06.11.2026 durch den Owner (Fassung 4, Inhalt aus #1449). Die Anwaltspruefung ist offen;
+// die Fragen dazu stehen in docs/legal/ANWALTSMAPPE.md („Offen nach Freischaltung 06.11.“), nicht mehr im Text.
+// Unternehmensangaben aus dem bestaetigten Impressum (landing/impressum/, Stand 16.10.2026) und den Angaben des
+// Owners vom 06.11.2026 (USt-IdNr., kein Telefon, Kontaktformular, kein Datenschutzbeauftragter).
+// Fassung 2 (02.11.2026): Preis ohne festen Betrag (Tarifverwaltung), Umsatzsteuer ueber Stripe Tax.
+// Fassung 3 (05.11.2026): Leistung als Analyse-Software, keine Anlageberatung/-vermittlung/Vermoegensverwaltung,
+// Backtests als Forschung, neue Texte „Risikohinweise und Haftungsausschluss“ und „Hinweise nach MAR und WpHG“.
+// Fassung 4 (05.11.2026, Owner-Linie Plan §11): keine Anlageempfehlungen, keine Signale, keine BaFin-Anzeige;
+// „Hinweise nach MAR und WpHG“ ersetzt durch „Methodik, Quellen und Interessen“ (mit Vorsorgeklausel).
+// Grundlage: docs/legal/EINORDNUNG.md (keine Rechtsberatung; Pruefung durch Fachanwalt offen, docs/legal/ANWALTSMAPPE.md).
+//
+// Fassung vu-recht-2026-11-06-1: Fassung 4 freigeschaltet, offene Angaben ergaenzt, Pruefmarken entfernt.
+//
+// Aenderungen an den Texten: LEGAL_VERSION hochzaehlen (eigener PR mit Owner-Freigabe, Kategorie Recht). Der oeffentliche Checkout setzt zusaetzlich VU_LEGAL_APPROVED =
+// LEGAL_VERSION voraus (config.mjs) – ohne freigegebene Texte bleibt er geschlossen.
+//
+// Mini-Auszeichnung: Bloecke {h}, {p}, {ul}, {note}; im Text **fett** und [Text](/pfad|https://…).
+
+export const LEGAL_VERSION = 'vu-recht-2026-11-06-1';
+export const LEGAL_STATUS = 'freigegeben'; // 'entwurf' | 'freigegeben'
+export const LEGAL_BASE = 'https://konto.visionuniverse.de';
+
+export const COMPANY = Object.freeze({
+  name: 'RAM Consulting UG (haftungsbeschränkt)',
+  brand: 'Vision Universe',
+  street: 'Bahnhofplatz 15',
+  city: '74189 Weinsberg',
+  country: 'Deutschland',
+  representative: 'Ralf Andreas Müller (Geschäftsführer)',
+  email: 'info@visionuniverse.de',
+  register: 'Amtsgericht Stuttgart, HRB 803400',
+  taxNumber: '65204/71409',
+  vatId: 'DE461100952', // Owner 06.11.2026
+  // Keine geschaeftliche Telefonnummer (Owner 06.11.2026). Zweiter schneller Kontaktweg neben der E-Mail ist das
+  // Kontaktformular (§ 5 Abs. 1 Nr. 2 DDG, EuGH C-298/07). Gibt es eine Nummer, hier eintragen (RECHTLICHE_ABNAHME A1).
+  phone: null,
+  contactForm: 'konto.visionuniverse.de/kontakt',
+});
+
+const C = COMPANY;
+const ADDRESS = `${C.name}, ${C.street}, ${C.city}, ${C.country}`;
+
+export const LINKS = Object.freeze({
+  index: '/rechtliches/', impressum: '/rechtliches/impressum', datenschutz: '/rechtliches/datenschutz',
+  agb: '/rechtliches/agb', widerrufsbelehrung: '/rechtliches/widerrufsbelehrung', widerrufsformular: '/rechtliches/widerrufsformular',
+  newsletter: '/rechtliches/newsletter', risikohinweise: '/rechtliches/risikohinweise', methodik: '/rechtliches/methodik',
+  kuendigen: '/kuendigen', widerrufen: '/widerrufen', kontakt: '/kontakt',
+});
+
+// Pro: Der Preis steht bewusst nicht in den Bedingungen. Er kommt zur Laufzeit aus plan_prices (Preisseite, Bestelluebersicht,
+// Stripe-Bestelltext billing.mjs#checkoutSubmitText, Vertragsbestaetigung mail.mjs#contractConfirmation) und kann in der
+// Tarifverwaltung geaendert werden (docs/accounts/TARIFVERWALTUNG.md); ein fester Betrag hier wuerde dann widersprechen.
+
+export const DOCS = {
+  impressum: {
+    title: 'Impressum',
+    blocks: [
+      {p: 'Angaben gemäß § 5 Digitale-Dienste-Gesetz (DDG) und § 18 Abs. 2 Medienstaatsvertrag (MStV)'},
+      {p: `**${C.name}**\n${C.street}\n${C.city}\n${C.country}`},
+      {p: `Vertreten durch: ${C.representative}`},
+      {p: `E-Mail: ${C.email}\n${C.phone ? `Telefon: ${C.phone}\n` : ''}Kontaktformular: [${C.contactForm}](/kontakt) – Antwort in der Regel innerhalb von 1–2 Werktagen`},
+      {p: `Handelsregister: ${C.register}\nSteuernummer: ${C.taxNumber}\nUmsatzsteuer-Identifikationsnummer gemäß § 27a UStG: ${C.vatId}`},
+      {p: `Verantwortlich für journalistisch-redaktionelle Inhalte gemäß § 18 Abs. 2 MStV: Ralf Andreas Müller, ${C.street}, ${C.city}`},
+      {h: 'Angebot'},
+      {p: 'Vision Universe ist eine Software zur Analyse von Aktien (Web-App unter research.visionuniverse.de). Konten, Abonnements und Zahlungen werden über konto.visionuniverse.de abgewickelt. Vertragspartner und Zahlungsempfänger ist die oben genannte RAM Consulting UG (haftungsbeschränkt).'},
+      {h: 'Hinweis zu Finanzinformationen'},
+      {p: 'Vision Universe ist eine Software zur Analyse von Aktien. Die Inhalte dienen der allgemeinen Information. Sie sind keine Anlage-, Steuer- oder Rechtsberatung, keine persönliche Empfehlung und keine Aufforderung zum Kauf oder Verkauf von Wertpapieren. Kapitalanlagen können bis zum Totalverlust führen; vergangene und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Einzelheiten: [Risikohinweise und Haftungsausschluss](/rechtliches/risikohinweise) und [Methodik, Quellen und Interessen](/rechtliches/methodik).'},
+      {h: 'Verbraucherstreitbeilegung'},
+      {p: `Wir sind nicht bereit und nicht verpflichtet, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen.`},
+    ],
+  },
+
+  agb: {
+    title: 'Nutzungs- und Vertragsbedingungen (Free und Pro)',
+    blocks: [
+      {h: '1. Anbieter, Geltungsbereich'},
+      {p: `Anbieter und dein Vertragspartner ist die ${ADDRESS}, vertreten durch ${C.representative}, ${C.register}, E-Mail ${C.email}. Sie handelt unter der Marke Vision Universe.`},
+      {p: 'Diese Bedingungen gelten für die Nutzung von Vision Universe mit einem Konto (Tarif „Free“) und für das kostenpflichtige Abonnement „Vision Universe Pro“. Abweichende Bedingungen von Kundinnen und Kunden gelten nicht.'},
+      {p: `Das Angebot richtet sich an Verbraucherinnen und Verbraucher sowie an Unternehmer. Ein Konto darf nur anlegen, wer mindestens 18 Jahre alt ist.`},
+      {h: '2. Leistung: Software zur Analyse von Aktien'},
+      {p: 'Vision Universe ist eine Software zur Analyse von Aktien, Fonds und Märkten. Über die Web-App research.visionuniverse.de stellen wir Werkzeuge bereit (u. a. die Produktwelten Discover, Quant, Fundamental, Technical, Screener, Supertrader), die öffentlich verfügbare und lizenzierte Daten nach festen, in der App beschriebenen Regeln aufbereiten, berechnen, filtern, vergleichen und darstellen, dazu ein persönliches Dashboard mit Watchlist. Welche Funktionen ein Tarif umfasst, zeigt die Tarifübersicht vor Vertragsschluss.'},
+      {p: '**Free und Pro haben derzeit denselben Funktionsumfang.** Pro ist ein freiwilliges, kostenpflichtiges Abonnement, mit dem du Vision Universe unterstützt. Funktionen, die noch nicht freigegeben sind (z. B. ein Quant-Gesamtscore oder unveröffentlichte Supertrader-Signale), sind in keinem Tarif enthalten.'},
+      {p: 'Die Ergebnisse der Software – etwa Kennzahlen, Faktorwerte, Einstufungen wie „Stark“, „Mittel“ oder „Schwach“, Ranglisten, Filtertreffer, Zonen laut Methode (z. B. Unterstützung, Widerstand) und Musterdepots – entstehen automatisch nach den beschriebenen Regeln. Sie sind für alle Nutzerinnen und Nutzer gleich und berücksichtigen weder deine finanziellen Verhältnisse noch deine Anlageziele, Kenntnisse, Erfahrungen oder Risikobereitschaft. Wir fragen diese Umstände nicht ab.'},
+      {p: 'Wir bemühen uns um eine hohe Verfügbarkeit; eine bestimmte Verfügbarkeit ist nicht vereinbart. Daten aus öffentlichen und lizenzierten Quellen können verzögert, unvollständig, fehlerhaft oder vorübergehend nicht verfügbar sein; die Seiten weisen den jeweiligen Datenstand aus.'},
+      {h: '3. Keine Anlageberatung, keine Vermittlung, keine Vermögensverwaltung'},
+      {p: 'Vision Universe erbringt keine Wertpapierdienstleistungen und veröffentlicht keine Anlageempfehlungen, keine Kauf- oder Verkaufsempfehlungen und keine Handelssignale. Insbesondere gilt:'},
+      {ul: [
+        '**Keine Anlageberatung und keine persönliche Empfehlung:** Wir prüfen deine persönlichen Umstände nicht und stellen kein Ergebnis als für dich geeignet dar.',
+        '**Keine Anlage- oder Abschlussvermittlung:** Wir nehmen keine Aufträge entgegen, leiten keine Orders weiter und vermitteln keine Geschäfte über Finanzinstrumente.',
+        '**Keine Finanzportfolioverwaltung oder Vermögensverwaltung:** Wir verwalten kein Geld und keine Depots. Musterdepots sind Rechenmodelle ohne echtes Geld.',
+        '**Keine Steuer- oder Rechtsberatung.**',
+      ]},
+      {p: 'Erfüllt eine Aktie die Regel einer Methode oder steht sie in einer Rangliste, heißt das nur: Die beschriebenen Bedingungen sind zum angegebenen Datenstand rechnerisch erfüllt. Das ist keine Aufforderung, ein Wertpapier zu kaufen, zu halten oder zu verkaufen, und keine Aussage darüber, ob es zu dir passt.'},
+      {p: 'Du entscheidest selbst, ob, wann und in welchem Umfang du Geschäfte tätigst, und trägst die Folgen dieser Entscheidungen. Wenn du eine Beratung zu deiner persönlichen Situation möchtest, wende dich an eine dafür zugelassene Stelle (z. B. Bank, Wertpapierinstitut oder Honorar-Anlageberatung).'},
+      {p: `Durch die Nutzung kommt kein Beratungs- oder Auskunftsvertrag zustande; Gegenstand des Vertrags ist allein die Bereitstellung der Software.`},
+      {h: '4. Backtests, Musterdepots und frühere Wertentwicklung'},
+      {p: 'Backtests sind Forschung. Sie wenden eine Regel rückwirkend auf historische Kurse an und sind als **„Forschung, nicht zertifiziert“** gekennzeichnet. Sie zeigen, wie die Regel unter den angegebenen Annahmen (u. a. Zeitraum, Kosten, Ausführung, Umfang der Daten) abgeschnitten hätte – nicht, wie sie künftig abschneiden wird. Sie sind keine Prognose und kein Versprechen einer Rendite.'},
+      {p: 'Musterdepots rechnen eine Methode ohne echtes Geld nach festen Regeln vorwärts. Frühere und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Reale Ergebnisse können durch Kosten, Steuern, Kurslücken, Ausführungszeitpunkt und Positionsgröße erheblich abweichen.'},
+      {p: 'Mehr dazu in den [Risikohinweisen und dem Haftungsausschluss](/rechtliches/risikohinweise) und unter [Methodik, Quellen und Interessen](/rechtliches/methodik) (Ersteller, Methodik, Quellen, Interessenkonflikte).'},
+      {h: '5. Konto und Vertragsschluss Free'},
+      {p: 'Mit dem Absenden der Registrierung gibst du ein Angebot auf Abschluss eines unentgeltlichen Nutzungsvertrags ab. Der Vertrag kommt zustande, wenn du deine E-Mail-Adresse über den zugesandten Link bestätigst. Halte deine Zugangsdaten geheim; ein Konto ist persönlich und nicht übertragbar.'},
+      {p: 'Free ist kostenlos und ohne Zahlungsdaten nutzbar. Ein Free-Konto wird nie ohne deine ausdrückliche Bestellung kostenpflichtig.'},
+      {h: '6. Bestellung und Vertragsschluss Pro'},
+      {p: 'Pro kann nur mit einem bestätigten, angemeldeten Konto bestellt werden. Der Ablauf: (1) „Pro auswählen“, (2) Prüfung der Bestellübersicht mit Preis, Laufzeit, Kündigung und Widerrufsfolgen und Bestätigung per Haken, (3) „Weiter zur Zahlung bei Stripe“, (4) auf der Zahlungsseite von Stripe Auswahl der Zahlungsart und Klick auf die Bestellschaltfläche. Bis dahin kannst du Eingaben jederzeit über „Zurück“ oder den Abbruch korrigieren.'},
+      {p: `Mit dem Klick auf die zahlungspflichtige Bestellschaltfläche auf der Stripe-Zahlungsseite gibst du ein verbindliches Angebot ab. Der Vertrag kommt zustande, wenn die Zahlungsseite den Abschluss bestätigt. Wir senden dir danach eine Vertragsbestätigung mit diesen Bedingungen und der Widerrufsbelehrung per E-Mail.`},
+      {p: 'Vertragssprache ist Deutsch. Den Vertragstext speichern wir nicht gesondert für dich abrufbar; du erhältst ihn mit der Vertragsbestätigung per E-Mail. Die jeweils aktuelle Fassung findest du unter [konto.visionuniverse.de/rechtliches/agb](/rechtliches/agb).'},
+      {h: '7. Preis, Zahlung, Rechnung'},
+      {p: `Der Preis für Pro ist der Preis, der dir vor der Bestellung auf der Preisseite, in der Bestellübersicht und auf der Zahlungsseite angezeigt wird. Er wird in der Vertragsbestätigung genannt und gilt für die gesamte Laufzeit deines Abonnements. Es ist ein Bruttopreis: Er enthält die gesetzliche Umsatzsteuer und wird nicht zusätzlich erhöht. Weitere Kosten fallen nicht an.`},
+      {p: 'Der Betrag ist jeweils zu Beginn eines Abrechnungsmonats im Voraus fällig. Die Zahlung wickelt die Stripe Payments Europe, Ltd. (Irland) ab. Welche Zahlungsarten angeboten werden (z. B. Karte, Apple Pay, Google Pay, PayPal, SEPA-Lastschrift, Klarna, Link), richtet sich nach deinem Gerät, deinem Land und der Eignung der Zahlungsart für wiederkehrende Zahlungen; angezeigt werden nur die jeweils zugelassenen.'},
+      {p: 'Bei SEPA-Lastschrift wird die erste Zahlung erst nach einigen Bankarbeitstagen bestätigt; bis dahin gilt Free. Schlägt eine Zahlung fehl, versucht Stripe den Einzug erneut; du erhältst einen Hinweis und kannst die Zahlungsart im Kundenportal ändern. Bleibt die Zahlung aus, endet der Pro-Zugang; dein Konto gilt dann als Free.'},
+      {p: `Rechnungen stellt die ${C.name} elektronisch aus; sie stehen im Konto unter „Abonnement“ und im Kundenportal bereit. Die Rechnung weist die im Preis enthaltene Umsatzsteuer aus; berechnet wird sie mit Stripe Tax anhand deiner Rechnungsadresse.`},
+      {h: '8. Laufzeit, Verlängerung, Kündigung'},
+      {p: 'Das Pro-Abonnement beginnt mit dem Vertragsschluss und läuft jeweils einen Monat. Es verlängert sich automatisch um einen weiteren Monat, wenn es nicht bis zum Ende des laufenden Monats gekündigt wird. Du kannst jederzeit zum Ende des bezahlten Monats kündigen; bis dahin bleibt Pro erhalten, danach gilt automatisch Free. Bereits bezahlte Monate werden bei einer ordentlichen Kündigung nicht anteilig erstattet.'},
+      {p: 'Kündigen kannst du ohne Anmeldung über [Verträge hier kündigen](/kuendigen), angemeldet im Konto unter „Abonnement“ (Kundenportal) oder per E-Mail. Du erhältst eine Eingangsbestätigung mit Inhalt, Datum und Uhrzeit und den Zeitpunkt der Beendigung. Das Recht zur außerordentlichen Kündigung aus wichtigem Grund bleibt unberührt.'},
+      {p: 'Kündigung, Widerruf, Löschung des Kontos und Abmeldung vom Newsletter sind getrennte Vorgänge. Mit der Kündigung von Pro bleibt dein Konto als Free bestehen; dein Konto kannst du jederzeit in den Einstellungen löschen.'},
+      {h: '9. Widerrufsrecht'},
+      {p: 'Verbraucherinnen und Verbrauchern steht ein Widerrufsrecht nach Maßgabe der [Widerrufsbelehrung](/rechtliches/widerrufsbelehrung) zu. Für den Widerruf gibt es die Funktion [Vertrag widerrufen](/widerrufen).'},
+      {h: '10. Nutzungsrechte, Pflichten'},
+      {p: 'Während der Vertragslaufzeit darfst du die Inhalte für eigene, nicht gewerbliche Zwecke nutzen. Rechte an Software, Texten, Daten, Grafiken und Marken bleiben bei uns bzw. den jeweiligen Rechteinhabern. Nicht erlaubt sind insbesondere das automatisierte Auslesen, die Weitergabe von Zugangsdaten und die Umgehung technischer Schutzmaßnahmen.'},
+      {p: `Bei schwerwiegenden Verstößen können wir das Konto nach vorheriger Abmahnung sperren oder außerordentlich kündigen, soweit gesetzlich zulässig.`},
+      {h: '11. Änderungen der Leistung und dieser Bedingungen'},
+      {p: `Wir halten die Leistungen vertragsgemäß und stellen Aktualisierungen bereit, soweit gesetzlich vorgeschrieben. Änderungen über das zur Erhaltung der Vertragsmäßigkeit Erforderliche hinaus nehmen wir nur unter den Voraussetzungen des § 327r BGB vor und teilen sie rechtzeitig auf einem dauerhaften Datenträger mit; dir steht dann gegebenenfalls ein Kündigungsrecht zu. Preisänderungen für laufende Abonnements erfolgen nur mit deiner Zustimmung.`},
+      {h: '12. Haftung'},
+      {p: 'Wir haften unbeschränkt bei Vorsatz und grober Fahrlässigkeit, bei Verletzung von Leben, Körper oder Gesundheit, nach dem Produkthaftungsgesetz und im Umfang einer übernommenen Garantie. Bei leicht fahrlässiger Verletzung einer wesentlichen Vertragspflicht (einer Pflicht, deren Erfüllung die ordnungsgemäße Durchführung des Vertrags erst ermöglicht und auf deren Einhaltung du regelmäßig vertrauen darfst) ist die Haftung auf den vertragstypischen, vorhersehbaren Schaden begrenzt. Im Übrigen ist die Haftung für leichte Fahrlässigkeit ausgeschlossen. Gesetzliche Rechte bei digitalen Produkten (§§ 327 ff. BGB) bleiben unberührt.'},
+      {p: `Soweit wir nicht nach dem vorstehenden Absatz haften, übernehmen wir keine Gewähr dafür, dass Daten Dritter und die daraus berechneten Ergebnisse richtig, vollständig und aktuell sind, und haften nicht für Verluste aus Anlageentscheidungen, die du auf Grundlage der Inhalte triffst.`},
+      {h: '13. Datenschutz, Newsletter'},
+      {p: 'Wie wir personenbezogene Daten verarbeiten, steht in der [Datenschutzerklärung](/rechtliches/datenschutz). Der Newsletter ist freiwillig, setzt eine eigene, per E-Mail bestätigte Einwilligung voraus und ist keine Voraussetzung für Free oder Pro.'},
+      {h: '14. Schlussbestimmungen'},
+      {p: 'Es gilt deutsches Recht unter Ausschluss des UN-Kaufrechts. Bei Verbraucherinnen und Verbrauchern gilt diese Rechtswahl nur, soweit dadurch der Schutz zwingender Bestimmungen des Staates ihres gewöhnlichen Aufenthalts nicht entzogen wird. Ist die Kundin oder der Kunde Kaufmann, juristische Person des öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen, ist Gerichtsstand Heilbronn.'},
+    ],
+  },
+
+  widerrufsbelehrung: {
+    title: 'Widerrufsbelehrung für Vision Universe Pro',
+    blocks: [
+      {note: `Einordnung: Vision Universe Pro wird als Vertrag über eine fortlaufend erbrachte digitale Dienstleistung behandelt (Zugang zu einer laufend aktualisierten Research-Plattform).`},
+      {h: 'Widerrufsrecht'},
+      {p: 'Du hast das Recht, binnen vierzehn Tagen ohne Angabe von Gründen diesen Vertrag zu widerrufen. Die Widerrufsfrist beträgt vierzehn Tage ab dem Tag des Vertragsabschlusses.'},
+      // Telefon nur, sofern vorhanden (Art. 246a § 1 EGBGB); derzeit keine geschaeftliche Nummer.
+      {p: `Um dein Widerrufsrecht auszuüben, musst du uns (${ADDRESS}, E-Mail: ${C.email}${C.phone ? ', Telefon: ' + C.phone : ''}) mittels einer eindeutigen Erklärung (z. B. ein mit der Post versandter Brief oder eine E-Mail) über deinen Entschluss, diesen Vertrag zu widerrufen, informieren. Du kannst dafür das [Muster-Widerrufsformular](/rechtliches/widerrufsformular) verwenden, das jedoch nicht vorgeschrieben ist.`},
+      {p: 'Du kannst den Widerruf auch online über unsere Widerrufsfunktion **[Vertrag widerrufen](/widerrufen)** erklären. Nutzt du diese Möglichkeit, übermitteln wir dir unverzüglich eine Bestätigung über den Eingang des Widerrufs mit seinem Inhalt sowie Datum und Uhrzeit des Eingangs per E-Mail.'},
+      {p: 'Zur Wahrung der Widerrufsfrist reicht es aus, dass du die Mitteilung über die Ausübung des Widerrufsrechts vor Ablauf der Widerrufsfrist absendest.'},
+      {h: 'Folgen des Widerrufs'},
+      {p: 'Wenn du diesen Vertrag widerrufst, haben wir dir alle Zahlungen, die wir von dir erhalten haben, unverzüglich und spätestens binnen vierzehn Tagen ab dem Tag zurückzuzahlen, an dem die Mitteilung über deinen Widerruf dieses Vertrags bei uns eingegangen ist. Für diese Rückzahlung verwenden wir dasselbe Zahlungsmittel, das du bei der ursprünglichen Transaktion eingesetzt hast, es sei denn, mit dir wurde ausdrücklich etwas anderes vereinbart; in keinem Fall werden dir wegen dieser Rückzahlung Entgelte berechnet.'},
+      {p: 'Hast du verlangt, dass die Dienstleistung während der Widerrufsfrist beginnen soll, so hast du uns einen angemessenen Betrag zu zahlen, der dem Anteil der bis zu dem Zeitpunkt, zu dem du uns von der Ausübung des Widerrufsrechts hinsichtlich dieses Vertrags unterrichtest, bereits erbrachten Dienstleistungen im Vergleich zum Gesamtumfang der im Vertrag vorgesehenen Dienstleistungen entspricht.'},
+      {h: 'Hinweis'},
+      {p: 'Den sofortigen Beginn verlangst du in der Bestellübersicht ausdrücklich (Haken vor „Weiter zur Zahlung bei Stripe“). Nach einem Widerruf endet Pro sofort; dein Konto bleibt als Free bestehen. Der Widerruf ist von der Kündigung zum Monatsende zu unterscheiden.'},
+      {p: 'Ende der Widerrufsbelehrung'},
+    ],
+  },
+
+  widerrufsformular: {
+    title: 'Muster-Widerrufsformular',
+    blocks: [
+      {p: '(Wenn du den Vertrag widerrufen willst, dann fülle bitte dieses Formular aus und sende es zurück. Schneller geht es online über [Vertrag widerrufen](/widerrufen).)'},
+      {p: `– An ${ADDRESS}, E-Mail: ${C.email}:`},
+      {p: '– Hiermit widerrufe(n) ich/wir (*) den von mir/uns (*) abgeschlossenen Vertrag über den Kauf der folgenden Waren (*)/die Erbringung der folgenden Dienstleistung (*)'},
+      {p: '– Bestellt am (*)/erhalten am (*)'},
+      {p: '– Name des/der Verbraucher(s)'},
+      {p: '– Anschrift des/der Verbraucher(s)'},
+      {p: '– Unterschrift des/der Verbraucher(s) (nur bei Mitteilung auf Papier)'},
+      {p: '– Datum'},
+      {p: '(*) Unzutreffendes streichen.'},
+    ],
+  },
+
+  datenschutz: {
+    title: 'Datenschutzerklärung',
+    blocks: [
+      {h: '1. Verantwortlicher'},
+      {p: `${ADDRESS}, vertreten durch ${C.representative}, E-Mail ${C.email}. Ein Datenschutzbeauftragter ist nicht benannt, weil weniger als 20 Personen ständig mit der automatisierten Verarbeitung personenbezogener Daten beschäftigt sind (§ 38 Abs. 1 BDSG).`},
+      {h: '2. Überblick'},
+      {p: 'Vision Universe besteht aus der Web-App research.visionuniverse.de (statische Seiten) und dem Konto-Dienst konto.visionuniverse.de (Anmeldung, Konto, Abonnement). Wir verarbeiten nur, was Konto, Vertrag und Sicherheit erfordern, und – mit Einwilligung – den Newsletter. Wir setzen keine Werbe- oder Analyse-Tracker ein.'},
+      {h: '3. Aufruf der Website'},
+      {p: `Beim Aufruf verarbeiten die Hosting-Dienstleister technisch notwendige Verbindungsdaten (IP-Adresse, Zeitpunkt, angefragte Adresse, Browserkennung) zur Auslieferung und Absicherung (Art. 6 Abs. 1 lit. f DSGVO; berechtigtes Interesse am sicheren Betrieb). Hosting: GitHub Pages (GitHub, Inc., USA) für research.visionuniverse.de, Cloudflare, Inc. (USA) für DNS, Schutz und den Konto-Dienst.`},
+      {p: `Im Browser speichern wir Einstellungen (z. B. Hell/Dunkel, Ansichten, lokal gemerkte Aktien) im lokalen Speicher deines Geräts; sie werden nicht an uns übertragen. Das ist für die von dir gewünschte Funktion erforderlich (§ 25 Abs. 2 Nr. 2 TDDDG). Schriften liefern wir selbst aus; es werden keine Inhalte von Drittanbietern (z. B. Google Fonts) nachgeladen.`},
+      {h: '4. Konto'},
+      {p: 'Für ein Konto verarbeiten wir E-Mail-Adresse, Passwort (nur als Hash), optional einen Anzeigenamen, Einstellungen, Zeitpunkt der Zustimmung zu den Bedingungen, deine Watchlist und deine Tarifwahl. Rechtsgrundlage ist die Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO). Anmeldung und Datenbank betreibt Supabase, Inc. als Auftragsverarbeiter mit Datenspeicherung in Frankfurt am Main (EU). Die Anmeldung hält eine Sitzung in technisch notwendigen Cookies auf konto.visionuniverse.de (§ 25 Abs. 2 Nr. 2 TDDDG). Zum Schutz vor Missbrauch verarbeiten wir die IP-Adresse kurzzeitig für Ratenbegrenzungen (Art. 6 Abs. 1 lit. f DSGVO).'},
+      {h: '5. Abonnement und Zahlung'},
+      {p: 'Für Pro verarbeiten wir Abonnementstatus, Laufzeit, Rechnungen und die Kundennummer beim Zahlungsdienstleister. Zahlungsdaten (Karte, Konto, PayPal) erhalten wir nicht; sie verarbeitet die Stripe Payments Europe, Ltd. (Irland), bei PayPal zusätzlich die PayPal (Europe) S.à r.l. et Cie, S.C.A. (Luxemburg), bei Klarna die Klarna Bank AB (Schweden), jeweils auch in eigener Verantwortung. Rechtsgrundlagen: Vertragserfüllung (Art. 6 Abs. 1 lit. b DSGVO) und gesetzliche Aufbewahrungspflichten (Art. 6 Abs. 1 lit. c DSGVO, § 147 AO, § 257 HGB).'},
+      {p: 'Zur Berechnung und zum Ausweis der Umsatzsteuer verwendet Stripe den Dienst Stripe Tax. Dafür verarbeitet Stripe deine Rechnungsadresse (mindestens Land und Postleitzahl) und, wenn du sie angibst, deine Umsatzsteuer-Identifikationsnummer. Rechtsgrundlage ist die Erfüllung gesetzlicher Pflichten (Art. 6 Abs. 1 lit. c DSGVO, Umsatzsteuergesetz).'},
+      {h: '6. E-Mails zum Vertrag'},
+      {p: `Bestätigungen (Registrierung, Passwort, Vertrag, Kündigung, Widerruf) versenden wir über Brevo (Sendinblue SAS, Frankreich) als Auftragsverarbeiter (Art. 6 Abs. 1 lit. b, c DSGVO). Zur Kommunikation über dein Konto und deinen Vertrag (z. B. Hinweise zu Änderungen der Bedingungen, Sicherheit, Störungen) führen wir bei Brevo eine Kontaktliste „Vision Universe App – Nutzer“ mit E-Mail-Adresse und Tarif (Free/Pro). Diese Liste dient nicht der Werbung.`},
+      {p: 'Nachrichten über das [Kontaktformular](/kontakt) (Name, E-Mail-Adresse, Nachricht) leiten wir über Brevo als E-Mail an uns weiter, um deine Anfrage zu beantworten (Art. 6 Abs. 1 lit. b DSGVO, sonst lit. f; berechtigtes Interesse an der Beantwortung). Der Konto-Dienst speichert sie nicht; die E-Mail bewahren wir auf, solange es für die Bearbeitung und etwaige Ansprüche nötig ist. Zum Schutz vor Missbrauch verarbeiten wir die IP-Adresse kurzzeitig für Ratenbegrenzungen (Art. 6 Abs. 1 lit. f DSGVO).'},
+      {h: '7. Newsletter (nur mit Einwilligung)'},
+      {p: 'Den Newsletter erhältst du nur, wenn du ihn freiwillig bestellst (Haken bei der Registrierung oder in den Einstellungen) und die Anmeldung über den Link in unserer E-Mail bestätigst (Double-Opt-in). Wir speichern Zeitpunkt der Anforderung und Bestätigung sowie die Fassung des Einwilligungstexts; Brevo protokolliert die Bestätigung. Rechtsgrundlage ist deine Einwilligung (Art. 6 Abs. 1 lit. a DSGVO), die du jederzeit über den Abmeldelink oder in den Einstellungen widerrufen kannst. Einzelheiten: [Datenschutzhinweise zum Newsletter](/rechtliches/newsletter).'},
+      {h: '8. Kündigung und Widerruf'},
+      {p: 'Erklärungen über die Kündigungs- und die Widerrufsfunktion speichern wir mit Inhalt, Zeitpunkt und Bearbeitungsstand als Nachweis (Art. 6 Abs. 1 lit. c, f DSGVO).'},
+      {h: '9. Speicherdauer'},
+      {p: `Kontodaten speichern wir bis zur Löschung des Kontos. Rechnungs- und Buchungsdaten bewahren wir pseudonymisiert für die gesetzlichen Fristen auf (bis zu zehn Jahre, für Buchungsbelege acht Jahre). Nachweise über Kündigungen und Widerrufe bewahren wir bis zum Ablauf der Verjährung auf. Newsletter-Einwilligungen speichern wir bis zum Widerruf und danach als Nachweis, solange Ansprüche geltend gemacht werden können.`},
+      {h: '10. Empfänger in Drittländern'},
+      {p: `Einige Dienstleister (GitHub, Cloudflare, Supabase, Stripe) haben ihren Sitz in den USA oder gehören zu US-Konzernen. Übermittlungen erfolgen auf Grundlage des EU-US Data Privacy Framework bzw. von Standardvertragsklauseln.`},
+      {h: '11. Deine Rechte'},
+      {p: 'Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie das Recht, eine erteilte Einwilligung jederzeit zu widerrufen. Datenexport und Kontolöschung findest du im Konto unter „Einstellungen“. Du kannst dich bei einer Datenschutzaufsichtsbehörde beschweren, z. B. beim Landesbeauftragten für den Datenschutz und die Informationsfreiheit Baden-Württemberg.'},
+      {h: '12. Pflicht zur Bereitstellung'},
+      {p: 'Ohne E-Mail-Adresse und Passwort kann kein Konto geführt werden. Der Newsletter ist freiwillig.'},
+    ],
+  },
+
+  newsletter: {
+    title: 'Datenschutzhinweise und Einwilligung: Newsletter',
+    blocks: [
+      {p: '**Einwilligungstext (Fassung vu-newsletter-v1):** „Ich möchte den Vision-Universe-Newsletter per E-Mail erhalten: Neuigkeiten zu Vision Universe, neue Research-Inhalte und Informationen zu seinen Produkten einschließlich des App-Starts. Ich kann mich jederzeit über den Abmeldelink abmelden.“'},
+      {p: 'Die Bestellung ist freiwillig und keine Voraussetzung für Free oder Pro. Erst nach Klick auf den Bestätigungslink in unserer E-Mail (Double-Opt-in) erhältst du den Newsletter. Ohne Bestätigung senden wir keine Werbung; die Anforderung verfällt.'},
+      {p: 'Versanddienstleister ist Brevo (Sendinblue SAS, Frankreich). Wir speichern E-Mail-Adresse, Zeitpunkt der Anforderung und Bestätigung und die Fassung des Einwilligungstexts; Brevo protokolliert die Bestätigung des Links. Öffnungs- und Klickmessung ist ohne gesonderte Einwilligung ausgeschaltet.'},
+      {p: 'Abmelden kannst du dich jederzeit über den Link in jeder Newsletter-E-Mail oder im Konto unter „Einstellungen“. Die Abmeldung wird automatisch übernommen; dein Konto und dein Tarif bleiben davon unberührt.'},
+    ],
+  },
+  risikohinweise: {
+    title: 'Risikohinweise und Haftungsausschluss',
+    blocks: [
+      {note: '**Kurz:** Vision Universe ist eine Software zur Analyse von Aktien. Sie gibt keine Anlageberatung und keine persönlichen Empfehlungen. Alle Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Aktien können stark schwanken; ein Totalverlust ist möglich. Frühere und simulierte Ergebnisse sagen nichts Verlässliches über die Zukunft. Du entscheidest selbst.'},
+      {h: '1. Was die Software ist – und was nicht'},
+      {p: 'Die Software bereitet Daten auf, berechnet Kennzahlen und prüft, ob Aktien die Bedingungen bestimmter, offen beschriebener Methoden erfüllen. Sie kennt weder dein Vermögen noch deine Ziele, Erfahrungen oder Risikobereitschaft und prüft nicht, ob eine Aktie zu dir passt. Die Software gibt keine Kauf- oder Verkaufsempfehlungen und keine Handelssignale; kein Ergebnis ist eine Aufforderung, ein Wertpapier zu kaufen, zu halten oder zu verkaufen. Wir erbringen keine Anlageberatung, keine Anlage- oder Abschlussvermittlung und keine Finanzportfolioverwaltung und haben dafür keine Erlaubnis der Bundesanstalt für Finanzdienstleistungsaufsicht (BaFin).'},
+      {h: '2. Risiken von Aktien und Fonds'},
+      {ul: [
+        '**Kursrisiko:** Kurse können stark und schnell fallen. Ein Verlust des eingesetzten Kapitals bis zum Totalverlust ist möglich.',
+        '**Emittentenrisiko:** Ein Unternehmen kann in Schwierigkeiten geraten oder insolvent werden.',
+        '**Liquiditätsrisiko:** Kleine und wenig gehandelte Werte lassen sich nicht immer zum gewünschten Kurs handeln.',
+        '**Währungsrisiko:** Viele Werte notieren in US-Dollar; Wechselkursänderungen wirken zusätzlich auf das Ergebnis in Euro.',
+        '**Klumpenrisiko:** Wenige Werte, eine Branche oder ein Land erhöhen das Risiko.',
+        '**Kosten und Steuern** mindern jedes Ergebnis. Geschäfte mit Hebel, Leerverkäufe und Derivate haben zusätzliche, deutlich höhere Risiken; die Software ist dafür nicht gemacht.',
+      ]},
+      {h: '3. Grenzen der Methoden'},
+      {ul: [
+        'Alle Methoden beruhen auf Daten der Vergangenheit. Märkte ändern sich; eine Regel, die früher funktioniert hat, kann künftig versagen.',
+        'Einstufungen wie „Stark“, „Mittel“ oder „Schwach“ und Ranglisten beschreiben die rechnerische Lage einer Aktie im Vergleich zu anderen nach einer bestimmten Regel. Sie sind keine Prognose.',
+        'Zonen laut Methode (z. B. Unterstützung, Widerstand, Ungültig-Marke) sind Rechenpunkte einer Methode, keine Kursprognose und kein Kursziel. Eine Marke, unter der eine Methode ungültig wird, begrenzt Verluste nicht: Bei Kurslücken kann der Kurs weit darunter liegen.',
+        'Texte, die mit künstlicher Intelligenz erzeugt, übersetzt oder zusammengefasst werden (z. B. im AI Atlas), können Fehler enthalten. Prüfe wichtige Angaben an der Quelle.',
+      ]},
+      {h: '4. Backtests und Musterdepots'},
+      {p: 'Backtests sind als **„Forschung, nicht zertifiziert“** gekennzeichnet. Sie rechnen eine Regel rückwirkend und hängen von Annahmen ab: Zeitraum, Kosten, Ausführungskurse und welche Aktien in den Daten enthalten sind. Fehlen Unternehmen, die inzwischen nicht mehr gehandelt werden, können Ergebnisse zu gut aussehen; die Angaben dazu stehen beim jeweiligen Backtest. Musterdepots laufen ohne echtes Geld. Frühere und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse.'},
+      {h: '5. Daten ohne Gewähr'},
+      {p: 'Die Software verwendet öffentlich verfügbare und lizenzierte Daten, u. a. Unternehmensmeldungen der US-Börsenaufsicht SEC (EDGAR) und Kursdaten von Marktdatenanbietern. Daten können verzögert, unvollständig oder fehlerhaft sein. Jede Seite nennt ihren Datenstand. Für die Richtigkeit, Vollständigkeit und Aktualität der Daten übernehmen wir keine Gewähr, soweit die Haftungsregeln der [Nutzungsbedingungen](/rechtliches/agb) nichts anderes bestimmen.'},
+      {h: '6. Angaben Dritter'},
+      {p: 'Einige Seiten zeigen zusammengefasste Einstufungen und Kursziele von Analysten Dritter oder Meldungen von Fonds und Insidern an die SEC. Diese Angaben stammen nicht von uns. Wir geben sie mit Quelle und Datum wieder und machen sie uns nicht zu eigen.'},
+      {h: '7. Haftungsausschluss'},
+      {p: 'Wir haften nicht für Verluste aus Anlageentscheidungen, die du auf Grundlage der Inhalte triffst. Unberührt bleibt die Haftung bei Vorsatz und grober Fahrlässigkeit, bei Verletzung von Leben, Körper oder Gesundheit, nach dem Produkthaftungsgesetz, im Umfang einer Garantie und bei der Verletzung wesentlicher Vertragspflichten nach Maßgabe der [Nutzungsbedingungen](/rechtliches/agb) (Abschnitt Haftung).'},
+      {p: `Ersteller, Methodik, Quellen und Interessenkonflikte beschreiben die [Methodik, Quellen und Interessen](/rechtliches/methodik).`},
+    ],
+  },
+
+  methodik: {
+    title: 'Methodik, Quellen und Interessen',
+    blocks: [
+      {note: 'Vision Universe ist eine Software zur Analyse von Aktien. Sie veröffentlicht keine Anlageempfehlungen, keine Kauf- oder Verkaufsempfehlungen und keine Handelssignale. Diese Seite beschreibt, wer die Software betreibt, wie ihre Ergebnisse entstehen, woher die Daten kommen und welche Interessen bestehen.'},
+      {h: '1. Betreiber'},
+      {p: `Betreiber und verantwortlich ist die ${ADDRESS}, vertreten durch ${C.representative}, E-Mail ${C.email}. Die Gesellschaft ist kein Kredit- oder Wertpapierinstitut und erbringt keine Wertpapierdienstleistungen.`},
+      {h: '2. Wie Ergebnisse entstehen'},
+      {p: 'Kennzahlen, Faktorwerte, Einstufungen, Filtertreffer, Regel-Ergebnisse von Methoden, Zonen laut Methode und Backtests berechnet die Software automatisch nach festen, in der App beschriebenen Regeln. Einzelne Aktien werden dafür nicht von Hand ausgewählt, bewertet oder bevorzugt. Für alle Aktien gelten dieselben Regeln; jede Änderung einer Regel wird als neue Regelversion dokumentiert.'},
+      {p: 'Jede Funktion nennt in der App ihre Methode, die geprüften Bedingungen, die Regelversion und den Datenstand. Tatsachen (z. B. Kurse, berichtete Kennzahlen) und Rechenergebnisse werden getrennt dargestellt. Einstufungen sind relativ: Sie vergleichen eine Aktie mit anderen Aktien desselben Universums. „Erfüllt die Regel“ heißt nur, dass die beschriebenen Bedingungen zum Datenstand rechnerisch erfüllt sind. Kursprognosen und Kursziele erstellt die Software nicht.'},
+      {h: '3. Quellen und Aktualität'},
+      {p: 'Quellen sind u. a. Unternehmensmeldungen der US-Börsenaufsicht SEC (EDGAR, z. B. Formulare 10-K, 10-Q, 13F und Form 4) sowie Kurs- und Stammdaten von Marktdatenanbietern. Auf jeder Seite stehen Quelle und Datenstand. Die Daten prüfen wir mit automatischen Datenqualitätsregeln; Lücken und veraltete Daten werden angezeigt. Ergebnisse werden in der Regel an jedem Handelstag neu berechnet und gelten nur zum angegebenen Datenstand.'},
+      {h: '4. Interessen'},
+      {p: 'Vision Universe finanziert sich über das freiwillige Pro-Abonnement. Wir erhalten keine Provisionen von Banken, Brokern oder Fondsgesellschaften, haben keine Partner- oder Werbeverträge mit Unternehmen, deren Wertpapiere die Software anzeigt, und erbringen keine Leistungen für Emittenten. Die Gesellschaft selbst hält keine Beteiligungen an diesen Unternehmen.'},
+      {p: 'Gesellschafter und Mitarbeiter können privat in Wertpapieren investiert sein, die die Software anzeigt. Die Ergebnisse entstehen regelbasiert und unabhängig davon; einzelne Ergebnisse lassen sich nicht gezielt verändern, ohne dass dies als neue Regelversion dokumentiert wird.'},
+      {h: '5. Angaben Dritter'},
+      {p: `Angaben Dritter (z. B. Pflichtmeldungen von Fonds und Insidern an die SEC) geben wir unverändert mit Quelle und Datum wieder. Sie sind keine Ergebnisse von Vision Universe.`},
+      {h: '6. Vorsorglicher Hinweis'},
+      {p: `Sollte ein Inhalt dennoch als Information mit einer Empfehlung zu einem Finanzinstrument verstanden werden (Art. 3 Abs. 1 Nr. 34, 35 der Verordnung (EU) Nr. 596/2014), gelten die Angaben dieser Seite zu Betreiber, Methodik, Quellen, Datenstand und Interessen als Angaben nach Art. 20 dieser Verordnung.`},
+    ],
+  },
+};
+
+// Kurzfassung der Vertragsbestaetigung (E-Mail): Bedingungen und Belehrung vollstaendig als Text.
+export function plainText(doc) {
+  return DOCS[doc].blocks.map(b => {
+    const t = (b.h || b.p || b.note || (b.ul || []).map(x => '• ' + x).join('\n'))
+      .replace(/\*\*(.+?)\*\*/g, '$1').replace(/\[([^\]]+)\]\((\/[^)]*)\)/g, `$1 (${LEGAL_BASE}$2)`).replace(/\[([^\]]+)\]\((https:[^)]*)\)/g, '$1 ($2)');
+    return b.h ? `\n${t.toUpperCase()}` : t;
+  }).join('\n\n');
+}

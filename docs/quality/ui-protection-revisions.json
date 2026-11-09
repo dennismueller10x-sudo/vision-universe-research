@@ -1,0 +1,1430 @@
+{
+  "schemaVersion": "ui-protection-revisions-1.0.0",
+  "purpose": "Versionierte, einzeln freigegebene Fortschreibung der UI-Byte-Sperre. Die Basis bleibt unveraendert eingefroren (V5.1-Nachweis, Freeze-Manifest docs/data/security-master/v130-quant-freeze.json, Test SMF-1). Wirksame Sperre = Basis mit allen Revisionen in Reihenfolge. Keine pauschale Ausnahme: jede Revision nennt genau eine Datei, ihren alten und neuen Hash, den PR und die Owner-Freigabe.",
+  "base": {
+    "file": "docs/quant-recovery/v51/ui-protection.json",
+    "sha256": "019d0608e6c7e3c697160aaa84319321245d88c44a67f8dcaf7df7721b4b9c5c"
+  },
+  "revisions": [
+    {
+      "id": "UIP-R1",
+      "date": "2026-11-02",
+      "pr": 1236,
+      "ownerApproval": "Owner 01.11.2026 und 02.11.2026: richtungsabhaengige NVDA-Pruefung in scripts/vu2/browser-qa.mjs fachlich freigegeben; Freeze-Provenienz nicht beschaedigen",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "2655c462c8d6e52ba989f24e57232c86ec267937a0d1604f8ace7c418b0bfef2",
+      "to": "362a13b29c91b50a8148805109e9a73479baf0635c030469bee4bbd69a33132a",
+      "scope": "nur die Setup-Karten-Pruefung (Richtung des veroeffentlichten Basisszenarios, gleiche Regel wie scripts/quality/vu3-regression-qa.mjs); 44 px, Barrierefreiheit, Budgets und alle anderen Pruefungen unveraendert"
+    },
+    {
+      "id": "UIP-R2",
+      "date": "2026-11-03",
+      "pr": 1279,
+      "ownerApproval": "Owner 03.11.2026: eng begrenzte UI-Schutzrevision fuer quant/app/view-model.js#identityNote freigegeben (wiederverwendetes Kuerzel: kein Kuerzel doppelt, keine unbelegte Aussage zur Herkunft der Geschaeftszahlen)",
+      "file": "quant/app/view-model.js",
+      "from": "fd393a5b8219856fca0f6cd488e071e8b6a0367dd7f55fab5d920b6b752d6987",
+      "to": "d9d0e7fdde1e40df3c4d7941faa372bf1ea9abb9f6291148aca414e118333636",
+      "scope": "nur identityNote: eigene Notiz fuer identityConflict.kind TICKER_REUSE (ACTS, ENTL, FTPA, GNMX, NMBL, PCLN, TRIL, USX, WX; Name nach quant/config/ticker-reuse-quarantine.json zurueckgehalten) ohne zweites Kuerzel und ohne Aussage zur Herkunft der Geschaeftszahlen; bei den Arten D/F/G ersetzt kein Kuerzel mehr einen fehlenden Namen. Scores, Modelle, Kursdaten und Identitaetsregeln unveraendert"
+    },
+    {
+      "id": "UIP-R3",
+      "date": "2026-11-03",
+      "pr": 1291,
+      "ownerApproval": "Owner 03.11.2026 (ausdruecklich, eng begrenzt, Issue #1289): Pruefung des Blocks 'Was ist jetzt wichtig?' in scripts/vu2/browser-qa.mjs auf den gerenderten, fachlich gueltigen Zustand umstellen statt auf Wortlaut; keine Pruefung deaktivieren, keine pauschale Timeout-Erhoehung, keine Abschwaechung der fachlichen Anforderungen",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "362a13b29c91b50a8148805109e9a73479baf0635c030469bee4bbd69a33132a",
+      "to": "b4efd15d03d4c7c84a9500c500ccb5461a5e1c40280fe2bfb42d8c0e42ebfb2c",
+      "scope": "nur die eine Zeile 'await ...q-now.filter({hasText:/Setup|Veränderung|Stand/}).waitFor' wird durch das Urteil judgeNowBlock (scripts/vu2/qa-now-block.mjs) gegen den Zustand der Produkt-API (getRadarCard) ersetzt, plus dessen Import; Warte-Grenze unveraendert 30 s; 44 px, Barrierefreiheit, Budgets, die Setup-Karten-Pruefung (UIP-R1) und alle anderen Pruefungen unveraendert; Gegenproben in quant/tests/browser-qa-now-block.test.mjs"
+    },
+    {
+      "id": "UIP-R4",
+      "date": "2026-11-04",
+      "pr": 1331,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.js",
+      "from": "f181dc78a4573c9b374d5e21607eac20fd5a1e92785e9aefedf1d6f273c34591",
+      "to": "72f96f95f00c6150292aebab92acbfdcb74ca9895850a2e2044172c83e933903",
+      "scope": "Shell-Redesign (Strang D): Kopfzeile C01 (Welt links; Suche, Atlas, Mein Bereich rechts), Produkt-Leiste C02 (schwarz, Beschriftungen nach Mockup), Vollbild-Menü C03 (3×3 Produkte, Unterseiten der aktuellen Welt, Mein Bereich, Weitere Produkte, Hell/Dunkel, Währung). Alle Ziele bleiben erreichbar; Opt-in der Leiste, Safe Areas, 44 px, Fokusfalle und Lazy-Sprite unverändert geprüft"
+    },
+    {
+      "id": "UIP-R5",
+      "date": "2026-11-04",
+      "pr": 1331,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.css",
+      "from": "59631d91b7fa4dc0b110e42e097e2088bc5da153933d4757069096b89ae2c074",
+      "to": "dff70747dd30e2621e5575fc3248a02da8a25c061384f56927ab72c9f9bda62e",
+      "scope": "Shell-Redesign (Strang D): Inter selbst gehostet, Kopfhöhe 56/64 px, Leistenhöhe 68 px, Bausteine C04–C20 als Opt-in-Klassen; bestehende Tokens und Klassen unverändert"
+    },
+    {
+      "id": "UIP-R6",
+      "date": "2026-11-04",
+      "pr": 1331,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.css",
+      "from": "dff70747dd30e2621e5575fc3248a02da8a25c061384f56927ab72c9f9bda62e",
+      "to": "cf10f954abfb090a4d6ebccc79ded73fd8a42f522fc923016258cc4a2304b12e",
+      "scope": "C06 Der eine Chart: schwarze Linie, neongrüne Fläche, Endpunkt neongrün mit Rand; Richtung nicht über Linienfarbe"
+    },
+    {
+      "id": "UIP-R7",
+      "date": "2026-11-04",
+      "pr": 1331,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/stock-navigator.css",
+      "from": "cfff53cd14feeeb999bb0d272ad4f115a0320f1776cbec45994cbab62b211ba7",
+      "to": "ce6f6b0ca0944cc9653b98838c514a736321f8c36863ed1e619d1ee876a91e15",
+      "scope": "C06 Der eine Chart: schwarze Linie, neongrüne Fläche, Endpunkt neongrün mit Rand; Richtung nicht über Linienfarbe"
+    },
+    {
+      "id": "UIP-R8",
+      "date": "2026-11-04",
+      "pr": 1331,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/vu-chart.js",
+      "from": "ce4445046deef8d4639e114f44e313f8e68957e5bf8c7a0d5786e66a5383d974",
+      "to": "304cd3c693cb32befe0456ce5201e25b8ddf98d3bc1df60a99c23bc700bd9b55",
+      "scope": "C06 Der eine Chart: schwarze Linie, neongrüne Fläche, Endpunkt neongrün mit Rand; Richtung nicht über Linienfarbe"
+    },
+    {
+      "id": "UIP-R9",
+      "date": "2026-11-04",
+      "pr": 1345,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.css",
+      "from": "cf10f954abfb090a4d6ebccc79ded73fd8a42f522fc923016258cc4a2304b12e",
+      "to": "65742ef0c37e70946d5a3481e99e265aab608854e1bca8fd397a07611860c1c0",
+      "scope": "Redesign Schritt 1/2: Bausteine C04–C20 aus der Navigationsdatei nach assets/vu-ui.css/.js verschoben; Regel 1 (Kurs-Tokens ohne Rot/Grün); C06 Zeitleiste als Segment und Kleinformat; VUNavigation.products() nur lesend"
+    },
+    {
+      "id": "UIP-R10",
+      "date": "2026-11-04",
+      "pr": 1345,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.js",
+      "from": "72f96f95f00c6150292aebab92acbfdcb74ca9895850a2e2044172c83e933903",
+      "to": "f8b40a7522c46b49eebb575afb8ff73b86812a5b91f8413393e708ee23ce78d2",
+      "scope": "Redesign Schritt 1/2: Bausteine C04–C20 aus der Navigationsdatei nach assets/vu-ui.css/.js verschoben; Regel 1 (Kurs-Tokens ohne Rot/Grün); C06 Zeitleiste als Segment und Kleinformat; VUNavigation.products() nur lesend"
+    },
+    {
+      "id": "UIP-R11",
+      "date": "2026-11-04",
+      "pr": 1345,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/vu-chart.js",
+      "from": "304cd3c693cb32befe0456ce5201e25b8ddf98d3bc1df60a99c23bc700bd9b55",
+      "to": "1ffee060601eba4f25ce3feb7562946e490c5cd39735a8fbe73a84685cb68cf1",
+      "scope": "Redesign Schritt 1/2: Bausteine C04–C20 aus der Navigationsdatei nach assets/vu-ui.css/.js verschoben; Regel 1 (Kurs-Tokens ohne Rot/Grün); C06 Zeitleiste als Segment und Kleinformat; VUNavigation.products() nur lesend"
+    },
+    {
+      "id": "UIP-R12",
+      "date": "2026-11-04",
+      "pr": 1346,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/stock-navigator.css",
+      "from": "ce6f6b0ca0944cc9653b98838c514a736321f8c36863ed1e619d1ee876a91e15",
+      "to": "54a8419054fdd3e274ba75c5c4272c8fbd7a2a9955bb9a737ff568ae098ce12f",
+      "scope": "Redesign Schritt 3: Aktienkopf C04 und Perspektiven-Leiste C05 für alle Welten (sieben Perspektiven nach N5, Wellen = /elliott/#/<T>)"
+    },
+    {
+      "id": "UIP-R13",
+      "date": "2026-11-04",
+      "pr": 1346,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/stock-navigator.js",
+      "from": "acb599758585610738000a83009d67c865016c3f2827fc491c241de143dc0773",
+      "to": "f8e3db794f3653a5c217eff0b524aa660bb1bc099d5f8d7813c340687451c473",
+      "scope": "Redesign Schritt 3: Aktienkopf C04 und Perspektiven-Leiste C05 für alle Welten (sieben Perspektiven nach N5, Wellen = /elliott/#/<T>)"
+    },
+    {
+      "id": "UIP-R14",
+      "date": "2026-11-04",
+      "pr": 1346,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "core/chart-standard.js",
+      "from": "39270e094032082981383e6e8ef12f6c152fa9f68f37d89116566083d003359d",
+      "to": "e5a298ba774efb21f23fc38d4ab75ba5ca72dae591af310bc928226f6eea3793",
+      "scope": "C06 Standard-Zeitraum 1J statt 1T (Folie D09 „Standard 1J“); gemerkte Wahl gilt weiter, 1T bleibt in der Leiste"
+    },
+    {
+      "id": "UIP-R15",
+      "date": "2026-11-04",
+      "pr": 1350,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/stock-navigator.css",
+      "from": "54a8419054fdd3e274ba75c5c4272c8fbd7a2a9955bb9a737ff568ae098ce12f",
+      "to": "dd6669c8286c6ae194f1e8022dd9fe08e1b799c98107a6d54e68993662d8eef0",
+      "scope": "Aktienkopf: Beschriftung der Kurspille in Pillenfarbe (Kontrast)"
+    },
+    {
+      "id": "UIP-R16",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.css",
+      "from": "65742ef0c37e70946d5a3481e99e265aab608854e1bca8fd397a07611860c1c0",
+      "to": "d7e4d8e8f4705beb84c903c04617bd641502388a08cf7ca50240822c3c57b7e5",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R17",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "e173b23ba17538f1a59cbbeb90ff0cefb3b93baecce81601931f98760e66dcef",
+      "to": "0e79a645344ed5831873b1398f461a225e16d03d8db4b06ad089f2b05cfb1207",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R18",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-method.js",
+      "from": "74b22c3253bbbd802c890e2fb822b4c000ff10085a123c5d43ea1afef0094f64",
+      "to": "191e836d1575c493797b14caca44ee22d1977f798cc0348eb06d3e7e56047b31",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R19",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-stock.js",
+      "from": "b01cee82b69a9e3a206b149b1644c7002c33ab5f2973c8081e88b459bbc9b74c",
+      "to": "4557939d7d22665d484abd10f2147ed8bffc8175471e6ea48ff9802f4d36bb15",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R20",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-tools.js",
+      "from": "14f90fd8a568c93fd5b79172741d5a6cf446af4cc8d02d2356e51013f4766c64",
+      "to": "1b9f3c7538fd633bbf8364d0d6b5b2d188b30a4331fdf1802c74256b8034070d",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R21",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/pages.js",
+      "from": "5cb9ddad5603940c67163a25e336968d3640dfb4787d6d77c27c02070e86670e",
+      "to": "a427d6acb38fb0da8cac8d40e8ecaae62ebddc5c35f4af2058d0c9ae40d71370",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R22",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/stock.css",
+      "from": "51a9eabf5e8bc07f01ddc3caa6da3480431420751c60a8e9995f10b1011409b9",
+      "to": "f4f4bd506d80d842884297c0fd06f9de13acaf9992379972b4b0b3f18bac6baf",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R23",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/ui.js",
+      "from": "bbbe45bf23f720677f0e18a9e4838b60123ec96a590cb26079ba1a6f5857416e",
+      "to": "14f3c4a6232d725042d40c3346ca604139eec0d030c8025eae951542367b3c85",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R24",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/index.html",
+      "from": "d642c6aaefb0136fc5de5372be67918aad01b606173a07c83178ee9fd3363c4b",
+      "to": "88ef3d17e82c2b4b24014c05e5e0f4c522cb8c687df819724da6a5a6dbfd6a5e",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R25",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/tests/product-language.test.mjs",
+      "from": "519f0df438c85fd20a6d70e21d54c6a5e2c1a74178b81cf40709d545d09efe98",
+      "to": "639acfa5c58a27b4183a75a7118dab13ad76e5f50d9d7555ba443ce414759998",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R26",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/tests/product-positioning.test.mjs",
+      "from": "e9b3fc71a65842a4cb7156483445279c69e4edcbee2f8174290ed05e8f24dfdf",
+      "to": "82545772b9b44a2eda5e26b677ae11436d81e1256d99e9f9f639ee67b9dd60d2",
+      "scope": "Redesign Quant (Q01–Q05, Q07, Q08), Bausteine-Korrekturen; nach Einbau von #1350 neu nummeriert"
+    },
+    {
+      "id": "UIP-R27",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "0e79a645344ed5831873b1398f461a225e16d03d8db4b06ad089f2b05cfb1207",
+      "to": "11118c91f159759f5784bb035cd6156400c68f7d1bbd19db71d3db373cc69f3e",
+      "scope": "Quant: Kontrast im Dunkelmodus (Setup-/Stil-Karten, Neongrün auf umgekehrter Karte), Q08 eine Überschrift h1"
+    },
+    {
+      "id": "UIP-R28",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-tools.js",
+      "from": "1b9f3c7538fd633bbf8364d0d6b5b2d188b30a4331fdf1802c74256b8034070d",
+      "to": "818d9b23114971f6df5f05a6f280626540acb8ccdc69ee56755b52244b771847",
+      "scope": "Quant: Kontrast im Dunkelmodus (Setup-/Stil-Karten, Neongrün auf umgekehrter Karte), Q08 eine Überschrift h1"
+    },
+    {
+      "id": "UIP-R29",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/stock.css",
+      "from": "f4f4bd506d80d842884297c0fd06f9de13acaf9992379972b4b0b3f18bac6baf",
+      "to": "bf52ca33c4fc053c1c383624b38bfbf84018370afdda0f69f9504b9f59f03b8d",
+      "scope": "Quant: Kontrast im Dunkelmodus (Setup-/Stil-Karten, Neongrün auf umgekehrter Karte), Q08 eine Überschrift h1"
+    },
+    {
+      "id": "UIP-R30",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/pages.js",
+      "from": "a427d6acb38fb0da8cac8d40e8ecaae62ebddc5c35f4af2058d0c9ae40d71370",
+      "to": "e672e07f220083497fdb202e9e6be0d19f2568333f34b60f17570c87f013a088",
+      "scope": "Q01: ehrlicher Satz unter „Heute bei Quant“ ohne Radar-Lauf"
+    },
+    {
+      "id": "UIP-R31",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "b4efd15d03d4c7c84a9500c500ccb5461a5e1c40280fe2bfb42d8c0e42ebfb2c",
+      "to": "dc3d11ec5b237dfee71859d4c0bc2a1fc90841e09ebcc6e580930cc32c3ae16a",
+      "scope": "Q01: ehrlicher Satz unter „Heute bei Quant“ ohne Radar-Lauf"
+    },
+    {
+      "id": "UIP-R32",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-stock.js",
+      "from": "4557939d7d22665d484abd10f2147ed8bffc8175471e6ea48ff9802f4d36bb15",
+      "to": "104479dac9403d8e325eb0adbf9cd25cf3b1db69a209fb3c6e42401f3b65f2d2",
+      "scope": "Q07: Sprung-Pillen folgen dem Scrollen (tiefster Abschnitt im Band, Seitenende, später entstandene Abschnitte)"
+    },
+    {
+      "id": "UIP-R33",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "dc3d11ec5b237dfee71859d4c0bc2a1fc90841e09ebcc6e580930cc32c3ae16a",
+      "to": "dc27a2d890d7f79d1199e3233375cb5d0c5bfd0b7fd749ff41518b3bc4f8a1a2",
+      "scope": "Q07: Sprung-Pillen folgen dem Scrollen (tiefster Abschnitt im Band, Seitenende, später entstandene Abschnitte)"
+    },
+    {
+      "id": "UIP-R34",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "dc27a2d890d7f79d1199e3233375cb5d0c5bfd0b7fd749ff41518b3bc4f8a1a2",
+      "to": "fa3cd169cee585fffd47f730e23106eed4c020e3dd86f1123d9befaf5b0bccc4",
+      "scope": "browser-qa: Bausteine-Ansicht über VUUI erkennen"
+    },
+    {
+      "id": "UIP-R35",
+      "date": "2026-11-04",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "fa3cd169cee585fffd47f730e23106eed4c020e3dd86f1123d9befaf5b0bccc4",
+      "to": "7fc02cf3b90d7b25a09af01c18fd1cdd1b12505c3cfd69cdc2131f673508aef8",
+      "scope": "browser-qa: Trefferzahl auf eigener Zeile, Desktop-Raster wie bisher"
+    },
+    {
+      "id": "UIP-R36",
+      "date": "2026-11-05",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "11118c91f159759f5784bb035cd6156400c68f7d1bbd19db71d3db373cc69f3e",
+      "to": "c25a970ebdea29506614685b4c381618c6e7434d0e9b33c4f4d7a2646997bd40",
+      "scope": "Quant Kontrast: Warn-Pille dunkler, Ausklapper auf schwarzer Risiko-Karte"
+    },
+    {
+      "id": "UIP-R37",
+      "date": "2026-11-05",
+      "pr": 1351,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/stock.css",
+      "from": "bf52ca33c4fc053c1c383624b38bfbf84018370afdda0f69f9504b9f59f03b8d",
+      "to": "a9c6063bdbcbe20c6097e28d98170d4b3e4f86f99bca34e4f4fd252212e3e699",
+      "scope": "Quant Kontrast: Warn-Pille dunkler, Ausklapper auf schwarzer Risiko-Karte"
+    },
+    {
+      "id": "UIP-R38",
+      "date": "2026-11-05",
+      "pr": 1356,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-chartbild.js",
+      "from": "53426a04d45cfcfa41350af62360b7692c6f5646b5bbe5b248ce376101c3ca97",
+      "to": "e3a0b93b0c8f372bcc86db7e78bda2c6cdcefadf6ba012116097750f3b1bb6a4",
+      "scope": "Redesign elliott (#1356), nach Einbau von #1351 neu nummeriert"
+    },
+    {
+      "id": "UIP-R39",
+      "date": "2026-11-05",
+      "pr": 1364,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.js",
+      "from": "f8b40a7522c46b49eebb575afb8ff73b86812a5b91f8413393e708ee23ce78d2",
+      "to": "3f90bf43b6f083849fc56f2cc6e114175da2c250a3bf0541fa3b461e3735a684",
+      "scope": "Redesign gemeinsam (#1364), auf main neu nummeriert"
+    },
+    {
+      "id": "UIP-R40",
+      "date": "2026-11-05",
+      "pr": 1364,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.js",
+      "from": "3f90bf43b6f083849fc56f2cc6e114175da2c250a3bf0541fa3b461e3735a684",
+      "to": "a45ddc178f7a4d0b2b3653696bf6f278c87da47fcff0ee2df5037f8c4c06e33e",
+      "scope": "Redesign gemeinsam (#1364): Swipen-Eintrag auf die weitergeleitete Adresse"
+    },
+    {
+      "id": "UIP-R41",
+      "date": "2026-11-05",
+      "pr": 1366,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/home/home.css",
+      "from": "391e16668d26ab64161cc7284ce9adcfc0d24a6f1ff7635007a082b803b0afb8",
+      "to": "96d7b5daf6691bd35f309a800335137c79b78116d8f62ea29eed5b9c3a567bdc",
+      "scope": "Redesign einstieg (#1366), nach Einbau von #1351 neu nummeriert"
+    },
+    {
+      "id": "UIP-R42",
+      "date": "2026-11-05",
+      "pr": 1366,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.js",
+      "from": "a45ddc178f7a4d0b2b3653696bf6f278c87da47fcff0ee2df5037f8c4c06e33e",
+      "to": "8187bbff51ed1f0cac0e37990c86c441c57ecbc73fa2f6b9636d5e76d2d1f8bd",
+      "scope": "Redesign einstieg (#1366), nach Einbau von #1351 neu nummeriert"
+    },
+    {
+      "id": "UIP-R43",
+      "date": "2026-11-05",
+      "pr": 1410,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "c25a970ebdea29506614685b4c381618c6e7434d0e9b33c4f4d7a2646997bd40",
+      "to": "382b8609edb0b31df09c2b2ae594594f2b24a8b5ec5c4aebcf5f8a9387fa8568",
+      "scope": "Redesign Quant Q02 Profi, Q03 Detail, Q05 (#1410)"
+    },
+    {
+      "id": "UIP-R44",
+      "date": "2026-11-05",
+      "pr": 1410,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-method.js",
+      "from": "191e836d1575c493797b14caca44ee22d1977f798cc0348eb06d3e7e56047b31",
+      "to": "d8bc62832084d02419bec699f4d039f4cf7575d2c29e2a43afd6d339953f8b74",
+      "scope": "Redesign Quant Q02 Profi, Q03 Detail, Q05 (#1410)"
+    },
+    {
+      "id": "UIP-R45",
+      "date": "2026-11-05",
+      "pr": 1410,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/pages.js",
+      "from": "e672e07f220083497fdb202e9e6be0d19f2568333f34b60f17570c87f013a088",
+      "to": "c8d51f60da3c6b6012d8fbb2a9210744c61362d31c10781a43669df4418843d2",
+      "scope": "Redesign Quant Q02 Profi, Q03 Detail, Q05 (#1410)"
+    },
+    {
+      "id": "UIP-R46",
+      "date": "2026-11-05",
+      "pr": 1410,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "7fc02cf3b90d7b25a09af01c18fd1cdd1b12505c3cfd69cdc2131f673508aef8",
+      "to": "163fc0e0cb919ab4db80fadbd487fe3cc5ba8145f9fb01f798742bf7566541ee",
+      "scope": "Redesign Quant Q02 Profi, Q03 Detail, Q05 (#1410)"
+    },
+    {
+      "id": "UIP-R47",
+      "date": "2026-11-05",
+      "pr": 1410,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/vu-chart.js",
+      "from": "1ffee060601eba4f25ce3feb7562946e490c5cd39735a8fbe73a84685cb68cf1",
+      "to": "0c3d776d413556d9a34573b67027660b3480c81f02de046a570379d7c716589b",
+      "scope": "Redesign q03-detail (#1410), nach Einbau von #1351 neu nummeriert"
+    },
+    {
+      "id": "UIP-R48",
+      "date": "2026-11-05",
+      "pr": 1410,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "382b8609edb0b31df09c2b2ae594594f2b24a8b5ec5c4aebcf5f8a9387fa8568",
+      "to": "dd0ff837ef83a0d781d0702a39ab8c14f41323759ebb06ae656bcb788c75cd33",
+      "scope": "Redesign q03-detail (#1410), nach Einbau von #1351 neu nummeriert"
+    },
+    {
+      "id": "UIP-R49",
+      "date": "2026-11-05",
+      "pr": 1410,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/chart.js",
+      "from": "5cef7993f13a66b59204f31335e6f1653a198b8b89f5dd185e08328239904b34",
+      "to": "adea950ffa540b6e2f6e0099016476bec46b8c41f03795814486de7b9450444a",
+      "scope": "Redesign q03-detail (#1410), nach Einbau von #1351 neu nummeriert"
+    },
+    {
+      "id": "UIP-R50",
+      "date": "2026-11-05",
+      "pr": 1412,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.js",
+      "from": "8187bbff51ed1f0cac0e37990c86c441c57ecbc73fa2f6b9636d5e76d2d1f8bd",
+      "to": "3f3fb7cc02aecf8a311b26f4e572853238c03ac132a46f5c47463b1d919dcd9b",
+      "scope": "Redesign q00 (#1412), nach Einbau von #1351 neu nummeriert"
+    },
+    {
+      "id": "UIP-R51",
+      "date": "2026-11-05",
+      "pr": 1412,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.js",
+      "from": "9a84c60399416c8d23d0c85cc3126c6fbb4ffb5d153dc0dfbb02d75300728d7d",
+      "to": "62d71b11964eea045817490d477bf05f3f7ee66767fa4bcfb69216a038caccbc",
+      "scope": "Redesign Q00 (#1412)"
+    },
+    {
+      "id": "UIP-R52",
+      "date": "2026-11-05",
+      "pr": 1443,
+      "ownerApproval": "Owner 05.11.2026 im Chat der Strang-A-Sitzung („Weitermachen“ auf den Plan Variante B inkl. kleinster Seitenänderung); Entscheidung der Steuerung Variante B; CLAUDE.md „Freigaben und Merge“",
+      "file": "quant/app/page-stock.js",
+      "from": "104479dac9403d8e325eb0adbf9cd25cf3b1db69a209fb3c6e42401f3b65f2d2",
+      "to": "e297b1b5f552baca3584d41a40db686a83fd1571256f0718ab64021dcc6b155a",
+      "scope": "Variante B: ausgeschiedene Nicht-Aktie (OUTSIDE_EQUITY_UNIVERSE) zeigt Absage mit Name, Kuerzel, Papierart und Grund statt 'Aktie nicht gefunden'"
+    },
+    {
+      "id": "UIP-R53",
+      "date": "2026-11-05",
+      "pr": 1450,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "dd0ff837ef83a0d781d0702a39ab8c14f41323759ebb06ae656bcb788c75cd33",
+      "to": "ff9e6a203f80236dd739386e25fc7209ecd269b5414062906443873b0d710ca3",
+      "scope": "Q06/Q09 Technische Lagen und Perspektive Chart in Quant"
+    },
+    {
+      "id": "UIP-R54",
+      "date": "2026-11-05",
+      "pr": 1450,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.js",
+      "from": "62d71b11964eea045817490d477bf05f3f7ee66767fa4bcfb69216a038caccbc",
+      "to": "b2da22eb9137f91622102a2077a79af941edde6a1cd0a4870b5e545c1ba7b491",
+      "scope": "Q06/Q09 Technische Lagen und Perspektive Chart in Quant"
+    },
+    {
+      "id": "UIP-R55",
+      "date": "2026-11-05",
+      "pr": 1450,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-chartbild.js",
+      "from": "e3a0b93b0c8f372bcc86db7e78bda2c6cdcefadf6ba012116097750f3b1bb6a4",
+      "to": "f682e507d38bcca7f0abacdff9de6356d5c0dfb123e0c9d7026e5880be8e5b91",
+      "scope": "Q06/Q09 Technische Lagen und Perspektive Chart in Quant"
+    },
+    {
+      "id": "UIP-R56",
+      "date": "2026-11-05",
+      "pr": 1450,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-stock.js",
+      "from": "e297b1b5f552baca3584d41a40db686a83fd1571256f0718ab64021dcc6b155a",
+      "to": "79803dcc80d833778405b9a55a005fbf89164158d6263fee99c5d30228730c4a",
+      "scope": "Q06/Q09 Technische Lagen und Perspektive Chart in Quant"
+    },
+    {
+      "id": "UIP-R57",
+      "date": "2026-11-05",
+      "pr": 1450,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/pages.js",
+      "from": "c8d51f60da3c6b6012d8fbb2a9210744c61362d31c10781a43669df4418843d2",
+      "to": "f108b9fff9990f4c4b5bac01d13aa354a4d3f23c221297c72de725fabb20b417",
+      "scope": "Q06/Q09 Technische Lagen und Perspektive Chart in Quant"
+    },
+    {
+      "id": "UIP-R58",
+      "date": "2026-11-05",
+      "pr": 1450,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/ui.js",
+      "from": "14f3c4a6232d725042d40c3346ca604139eec0d030c8025eae951542367b3c85",
+      "to": "025dc5ab7461714e9bf7c0019c7d36d8e06f82ec9bb6706fd2d7f76ffbe1c53c",
+      "scope": "Q06/Q09 Technische Lagen und Perspektive Chart in Quant"
+    },
+    {
+      "id": "UIP-R59",
+      "date": "2026-11-05",
+      "pr": 1450,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "163fc0e0cb919ab4db80fadbd487fe3cc5ba8145f9fb01f798742bf7566541ee",
+      "to": "20592d244db7381293fc9d871e9142468ddf432e36cc80208ac2bcafaadb504a",
+      "scope": "Q06/Q09 Technische Lagen und Perspektive Chart in Quant"
+    },
+    {
+      "id": "UIP-R60",
+      "date": "2026-11-05",
+      "pr": 1450,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "ff9e6a203f80236dd739386e25fc7209ecd269b5414062906443873b0d710ca3",
+      "to": "f455920e0be783c97c9649eb2f5fd8a811f59d51daa3a90b7dfe1216d47b1ee8",
+      "scope": "Q06: Reiter ohne aria-pressed (axe)"
+    },
+    {
+      "id": "UIP-R61",
+      "date": "2026-11-05",
+      "pr": 1450,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-chartbild.js",
+      "from": "f682e507d38bcca7f0abacdff9de6356d5c0dfb123e0c9d7026e5880be8e5b91",
+      "to": "c24905dfe23bdbe95e0b3f3c7ac8c4cb9057979204e105ece45997a6cdb3e368",
+      "scope": "Q06: Reiter ohne aria-pressed (axe)"
+    },
+    {
+      "id": "UIP-R62",
+      "date": "2026-11-05",
+      "pr": 1456,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.css",
+      "from": "d7e4d8e8f4705beb84c903c04617bd641502388a08cf7ca50240822c3c57b7e5",
+      "to": "79f0b40da7e032cd86e5096f2dcabc387c81925b28ae96975c4c76fe77b74fef",
+      "scope": "Redesign 2027: Pflicht-Hinweise (legal-notices.json) in der gemeinsamen Leiste, bis zur Freigabe unsichtbar"
+    },
+    {
+      "id": "UIP-R63",
+      "date": "2026-11-05",
+      "pr": 1456,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.js",
+      "from": "3f3fb7cc02aecf8a311b26f4e572853238c03ac132a46f5c47463b1d919dcd9b",
+      "to": "7355cbd407b9e994999c069562af043ad465cbf7d62559f49b85c38817cba872",
+      "scope": "Redesign 2027: Pflicht-Hinweise (legal-notices.json) in der gemeinsamen Leiste, bis zur Freigabe unsichtbar"
+    },
+    {
+      "id": "UIP-R64",
+      "date": "2026-11-05",
+      "pr": 1444,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-stock.js",
+      "from": "79803dcc80d833778405b9a55a005fbf89164158d6263fee99c5d30228730c4a",
+      "to": "8877de54db93d69834a03c416c14ebd26b467690dcde8aba8cf4628fcb34cd70",
+      "scope": "Redesign 2027: Wortwahl nach Strang F (Quant, Screener, Fundamental, Analysten, Hedgefonds)"
+    },
+    {
+      "id": "UIP-R65",
+      "date": "2026-11-05",
+      "pr": 1444,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/pages.js",
+      "from": "f108b9fff9990f4c4b5bac01d13aa354a4d3f23c221297c72de725fabb20b417",
+      "to": "b335bffd778092e9ac4e679d854a6b5c7ea252ebaf9f88fcbbcec28ced2db79b",
+      "scope": "Redesign 2027: Wortwahl nach Strang F (Quant, Screener, Fundamental, Analysten, Hedgefonds)"
+    },
+    {
+      "id": "UIP-R66",
+      "date": "2026-11-05",
+      "pr": 1444,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "20592d244db7381293fc9d871e9142468ddf432e36cc80208ac2bcafaadb504a",
+      "to": "d1d4e375abfbcaf3a98d7479257e9ebfdb3617a8efb0322b5e32a9c56cf6caca",
+      "scope": "Redesign 2027: Wortwahl nach Strang F (Quant, Screener, Fundamental, Analysten, Hedgefonds)"
+    },
+    {
+      "id": "UIP-R67",
+      "date": "2026-11-05",
+      "pr": 1470,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/chartbild.css",
+      "from": "55765831557dc500603a6f590be0cf33b9133185d95d1ed404edc4fb76f4d6aa",
+      "to": "c74dd1b96239ad5f25f085c4503b3b5722c48ef9080290094371bf8ad9d122c8",
+      "scope": "Redesign 2027 W05: Elliott zeigt ohne belastbare Lesart die Marktstruktur"
+    },
+    {
+      "id": "UIP-R68",
+      "date": "2026-11-05",
+      "pr": 1470,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-chartbild.js",
+      "from": "c24905dfe23bdbe95e0b3f3c7ac8c4cb9057979204e105ece45997a6cdb3e368",
+      "to": "5656d3553fa7ba7f10d1f3e4d5ea19d01a4821ea9e4e89855016b40481fd9388",
+      "scope": "Redesign 2027 W05: Elliott zeigt ohne belastbare Lesart die Marktstruktur"
+    },
+    {
+      "id": "UIP-R69",
+      "date": "2026-11-05",
+      "pr": 1470,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/ui/ti-chart.js",
+      "from": "e5a350fc14636ca6595d927cc9462d91fde55a5ee358d1531590be49cb0a306b",
+      "to": "65474abd8e49cc9a8cb99b8d39833957aff898789893697f283b7e8969236b96",
+      "scope": "Redesign 2027 W05: Elliott zeigt ohne belastbare Lesart die Marktstruktur"
+    },
+    {
+      "id": "UIP-R70",
+      "date": "2026-11-05",
+      "pr": 1477,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "f455920e0be783c97c9649eb2f5fd8a811f59d51daa3a90b7dfe1216d47b1ee8",
+      "to": "70efb6492e4e7c466c6cbf3c22a877a113f9d6b267d7a90fcf81c7884b0d4d92",
+      "scope": "Recht L1/L7 (Plan §11): Zone und Ungültig-Marke laut Methode, keine Ziele, Faktoren gezählt statt Gesamturteil"
+    },
+    {
+      "id": "UIP-R71",
+      "date": "2026-11-05",
+      "pr": 1477,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.js",
+      "from": "b2da22eb9137f91622102a2077a79af941edde6a1cd0a4870b5e545c1ba7b491",
+      "to": "51d84be70779ae8572f286e6beac792539dc7d510d177467c67e0e7107afa511",
+      "scope": "Recht L1/L7 (Plan §11): Zone und Ungültig-Marke laut Methode, keine Ziele, Faktoren gezählt statt Gesamturteil"
+    },
+    {
+      "id": "UIP-R72",
+      "date": "2026-11-05",
+      "pr": 1477,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-chartbild.js",
+      "from": "5656d3553fa7ba7f10d1f3e4d5ea19d01a4821ea9e4e89855016b40481fd9388",
+      "to": "00c6be39116096753a73bf27c5fd20624c9e7cb030134de23df20be136759d69",
+      "scope": "Recht L1/L7 (Plan §11): Zone und Ungültig-Marke laut Methode, keine Ziele, Faktoren gezählt statt Gesamturteil"
+    },
+    {
+      "id": "UIP-R73",
+      "date": "2026-11-05",
+      "pr": 1477,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-stock.js",
+      "from": "8877de54db93d69834a03c416c14ebd26b467690dcde8aba8cf4628fcb34cd70",
+      "to": "66c2d93045da21929e729625dfd844b11d10a1e6dc28281ab1c76ee09b4d8406",
+      "scope": "Recht L1/L7 (Plan §11): Zone und Ungültig-Marke laut Methode, keine Ziele, Faktoren gezählt statt Gesamturteil"
+    },
+    {
+      "id": "UIP-R74",
+      "date": "2026-11-05",
+      "pr": 1477,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-tools.js",
+      "from": "818d9b23114971f6df5f05a6f280626540acb8ccdc69ee56755b52244b771847",
+      "to": "1e053993182f5a276b6476782dc4f07f7914847c783d419495840da49a5373e5",
+      "scope": "Recht L1/L7 (Plan §11): Zone und Ungültig-Marke laut Methode, keine Ziele, Faktoren gezählt statt Gesamturteil"
+    },
+    {
+      "id": "UIP-R75",
+      "date": "2026-11-05",
+      "pr": 1477,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/pages.js",
+      "from": "b335bffd778092e9ac4e679d854a6b5c7ea252ebaf9f88fcbbcec28ced2db79b",
+      "to": "da50fe2f0f4f0f5f6ac88371f8521412962d4d8526a8e0d42a4475e006462bfa",
+      "scope": "Recht L1/L7 (Plan §11): Zone und Ungültig-Marke laut Methode, keine Ziele, Faktoren gezählt statt Gesamturteil"
+    },
+    {
+      "id": "UIP-R76",
+      "date": "2026-11-05",
+      "pr": 1477,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/view-model.js",
+      "from": "d9d0e7fdde1e40df3c4d7941faa372bf1ea9abb9f6291148aca414e118333636",
+      "to": "65fa7c4b5b35334987217af0b6cf597ff9fa6025396b2f537899209ae25afd97",
+      "scope": "Recht L1/L7 (Plan §11): Zone und Ungültig-Marke laut Methode, keine Ziele, Faktoren gezählt statt Gesamturteil"
+    },
+    {
+      "id": "UIP-R77",
+      "date": "2026-11-05",
+      "pr": 1477,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "d1d4e375abfbcaf3a98d7479257e9ebfdb3617a8efb0322b5e32a9c56cf6caca",
+      "to": "9b9a27ec4d3eabdccd851dfb19503ef39f7f38e16614858dd5af33a1e0a92935",
+      "scope": "Recht L1/L7 (Plan §11): Zone und Ungültig-Marke laut Methode, keine Ziele, Faktoren gezählt statt Gesamturteil"
+    },
+    {
+      "id": "UIP-R78",
+      "date": "2026-11-05",
+      "pr": 1477,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "9b9a27ec4d3eabdccd851dfb19503ef39f7f38e16614858dd5af33a1e0a92935",
+      "to": "dd4bbab9178eb04bdbce46f5d83e2ca749479dab9497b287321e5dd671e9cfea",
+      "scope": "Recht L1: QA-Erwartung der Setup-Karte auf Zone/Ungültig-Marke laut Methode"
+    },
+    {
+      "id": "UIP-R79",
+      "date": "2026-11-06",
+      "pr": 1491,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/stock-navigator.css",
+      "from": "dd6669c8286c6ae194f1e8022dd9fe08e1b799c98107a6d54e68993662d8eef0",
+      "to": "afd6bc62cf2ebeada14538725ad9d415e0cf4b8bc4717c06c8fd581ce5828da0",
+      "scope": "Pilot NVDA (06.11.2026): Firmenlogo statt Kürzel, Tagesveränderung Minus rot; Kontrast Waage-Summary dunkel"
+    },
+    {
+      "id": "UIP-R80",
+      "date": "2026-11-06",
+      "pr": 1491,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/stock-navigator.js",
+      "from": "f8e3db794f3653a5c217eff0b524aa660bb1bc099d5f8d7813c340687451c473",
+      "to": "55311a7f94d77e64ba7b1f04788b82e9fdfb7429f46548b399594b68dfa301db",
+      "scope": "Pilot NVDA (06.11.2026): Firmenlogo statt Kürzel, Tagesveränderung Minus rot; Kontrast Waage-Summary dunkel"
+    },
+    {
+      "id": "UIP-R81",
+      "date": "2026-11-06",
+      "pr": 1491,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/stock.css",
+      "from": "a9c6063bdbcbe20c6097e28d98170d4b3e4f86f99bca34e4f4fd252212e3e699",
+      "to": "a03898cfeb28b3db30fab541a7c42b6a8560cf0bb72bd5f0d524b4ece272b9c8",
+      "scope": "Pilot NVDA (06.11.2026): Firmenlogo statt Kürzel, Tagesveränderung Minus rot; Kontrast Waage-Summary dunkel"
+    },
+    {
+      "id": "UIP-R82",
+      "date": "2026-11-06",
+      "pr": 1449,
+      "ownerApproval": "Owner 06.11.2026: Freigabe der Rechtstexte Fassung 4 (#1449) direkt im Chat von Strang F und im Steuerungschat („Die Rechtstexte gebe ich trotzdem frei“)",
+      "file": "assets/site-navigation.js",
+      "from": "7355cbd407b9e994999c069562af043ad465cbf7d62559f49b85c38817cba872",
+      "to": "0b4883b3429313226d66e9e807d4c05c6afe1033a58e3ad508838458d8183535",
+      "scope": "Erzeugter Block VU-LEGAL (sync-legal-notices) auf Fassung 4 der Pflicht-Hinweise; keine weitere Änderung"
+    },
+    {
+      "id": "UIP-R83",
+      "date": "2026-11-06",
+      "pr": 1510,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "dd4bbab9178eb04bdbce46f5d83e2ca749479dab9497b287321e5dd671e9cfea",
+      "to": "a9f3339eb2e2789c1194104b1a986e7ab3e3d59e20c170366b9212bb659061e9",
+      "scope": "QA „Was ist jetzt wichtig?“: Radar verfügbar = Titel im Radar-Scherben ausgewertet (getRadarCard state), nicht „Karte vorhanden“; ohne Ereignis gilt der Leerhinweis"
+    },
+    {
+      "id": "UIP-E3-1502-navigation",
+      "date": "2026-11-06",
+      "pr": 1502,
+      "ownerApproval": "Owner-Auftrag 06.11.2026, Strang E3: gemeinsames app-aktives Gestenmodul in assets/ und Integration in Capacitor; keine Inhalte oder Fachmodelle ändern.",
+      "file": "assets/site-navigation.js",
+      "from": "0b4883b3429313226d66e9e807d4c05c6afe1033a58e3ad508838458d8183535",
+      "to": "f82c9dd8c82d555c40b233dfd53b75224b83ebce45092562cf7829a4abdea484",
+      "scope": "Nur app-aktiven Gesten-Loader ergänzen; Browser ohne Flag lädt keine zusätzlichen Assets."
+    },
+    {
+      "id": "UIP-R84",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.css",
+      "from": "70efb6492e4e7c466c6cbf3c22a877a113f9d6b267d7a90fcf81c7884b0d4d92",
+      "to": "f455920e0be783c97c9649eb2f5fd8a811f59d51daa3a90b7dfe1216d47b1ee8",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R85",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/app.js",
+      "from": "51d84be70779ae8572f286e6beac792539dc7d510d177467c67e0e7107afa511",
+      "to": "b2da22eb9137f91622102a2077a79af941edde6a1cd0a4870b5e545c1ba7b491",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R86",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-chartbild.js",
+      "from": "00c6be39116096753a73bf27c5fd20624c9e7cb030134de23df20be136759d69",
+      "to": "5656d3553fa7ba7f10d1f3e4d5ea19d01a4821ea9e4e89855016b40481fd9388",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R87",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-stock.js",
+      "from": "66c2d93045da21929e729625dfd844b11d10a1e6dc28281ab1c76ee09b4d8406",
+      "to": "954222dd0965fd62642f7690fdf44afaf05e38a32a6f725ed345ba5806b72251",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R88",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/page-tools.js",
+      "from": "1e053993182f5a276b6476782dc4f07f7914847c783d419495840da49a5373e5",
+      "to": "818d9b23114971f6df5f05a6f280626540acb8ccdc69ee56755b52244b771847",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R89",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/pages.js",
+      "from": "da50fe2f0f4f0f5f6ac88371f8521412962d4d8526a8e0d42a4475e006462bfa",
+      "to": "de6c95fbd9f1e41dc0edd1cf67d02994de03b726a1acf0cb6943640ecd6e686c",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R90",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/view-model.js",
+      "from": "65fa7c4b5b35334987217af0b6cf597ff9fa6025396b2f537899209ae25afd97",
+      "to": "3989cc957a0c83941c79b065617590bacf52d85ec4224b4d3449f4107aab8504",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R91",
+      "date": "2026-11-06",
+      "pr": 1522,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "a9f3339eb2e2789c1194104b1a986e7ab3e3d59e20c170366b9212bb659061e9",
+      "to": "67978cf8185aa21393acab0afb5b424eb90a4367ef13759a05e793fb62b1c10b",
+      "scope": "Owner-Entscheidung 06.11.2026: Kursmarken, Ziele und heutige Bestände wieder sichtbar"
+    },
+    {
+      "id": "UIP-R92",
+      "date": "2026-11-06",
+      "pr": 1520,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/stock-navigator.css",
+      "from": "afd6bc62cf2ebeada14538725ad9d415e0cf4b8bc4717c06c8fd581ce5828da0",
+      "to": "546b6ec42b39f44fb9f085c8dacbcf4fadc352176e0b3178e9c7b1239cbc8c82",
+      "scope": "Owner 06.11.2026: Firmenlogos für alle Aktien, Minus im Aktienkopf rot"
+    },
+    {
+      "id": "UIP-R93",
+      "date": "2026-11-06",
+      "pr": 1520,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/stock-navigator.js",
+      "from": "55311a7f94d77e64ba7b1f04788b82e9fdfb7429f46548b399594b68dfa301db",
+      "to": "f8e3db794f3653a5c217eff0b524aa660bb1bc099d5f8d7813c340687451c473",
+      "scope": "Owner 06.11.2026: Firmenlogos für alle Aktien, Minus im Aktienkopf rot"
+    },
+    {
+      "id": "UIP-R94",
+      "date": "2026-11-06",
+      "pr": 1499,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "quant/app/pages.js",
+      "from": "de6c95fbd9f1e41dc0edd1cf67d02994de03b726a1acf0cb6943640ecd6e686c",
+      "to": "98cb695a0302e918a35081d7c7360cc9325d422822f0adecb57dd4af9a79d916",
+      "scope": "Quant: Einstieg Musterdepots unter Selbst suchen"
+    },
+    {
+      "id": "UIP-R95",
+      "date": "2026-11-06",
+      "pr": 1499,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "67978cf8185aa21393acab0afb5b424eb90a4367ef13759a05e793fb62b1c10b",
+      "to": "f0c82a227475a4f3122f4c16bfbb0f021e8944526fad0a4a4ba0aba3d0959e0d",
+      "scope": "Quant: Einstieg Musterdepots unter Selbst suchen"
+    },
+    {
+      "id": "UIP-R96",
+      "date": "2026-11-06",
+      "pr": 1501,
+      "ownerApproval": "Owner 04.11.2026 (docs/PLAN_NEUSTART_2026-11.md, Abschnitt 6; CLAUDE.md „Freigaben und Merge“): Design und Umbauten des Frontends nach der Präsentation „Vision Universe Redesign“ (docs/design/redesign-2027) werden bei grüner CI ohne Einzelfreigabe gemergt",
+      "file": "assets/site-navigation.js",
+      "from": "f82c9dd8c82d555c40b233dfd53b75224b83ebce45092562cf7829a4abdea484",
+      "to": "b3a72246ef1750edee9a9eba73b8a062b292e1316ddfdcf4d69997a6f91aa438",
+      "scope": "App-Pflichtlinks: Menü → Rechtliches"
+    },
+    {
+      "id": "UIP-R98",
+      "date": "2026-11-06",
+      "pr": 1548,
+      "ownerApproval": "Owner 06.11.2026 (über die Steuerung, Strang D3): „Mach einen gesammelten Unterpunkt Portfolios und integriere ihn in die Menüleiste.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "b3a72246ef1750edee9a9eba73b8a062b292e1316ddfdcf4d69997a6f91aa438",
+      "to": "67da489dda7088a4ad3fd967347e0dcf870fe1a54be39f7ef6da99d089b1efa4",
+      "scope": "Portfolios: Menükachel (breit unter dem 3 x 3-Raster), Direktzugriff im Kopf, Produkt-Leiste Portfolios · Supertrader · Quant · KI, Dock-Symbol"
+    },
+    {
+      "id": "UIP-R99",
+      "date": "2026-11-06",
+      "pr": 1548,
+      "ownerApproval": "Owner 06.11.2026 (über die Steuerung, Strang D3): „Mach einen gesammelten Unterpunkt Portfolios und integriere ihn in die Menüleiste.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/product-icons.svg",
+      "from": "c8f17e92bdeb922ca6d2e7810a3614160a7923eb971cd85e5aa42e70ab7818d3",
+      "to": "1676bd5c1ef857cb5b6856701dbe94f834c0f163288949a23e77c43bc4f9c887",
+      "scope": "Portfolios: neues Symbol „portfolios“ in der HUD-Familie; bestehende Symbole unverändert"
+    },
+    {
+      "id": "UIP-R100",
+      "date": "2026-11-06",
+      "pr": 1528,
+      "ownerApproval": "Owner 06.11.2026 im Steuerungschat: „Die Rechtstexte bitte online freischalten. Nicht nur archivieren und in den Hauptstand bringen, sondern online freischalten, damit ich mir das auch online anschauen kann.“ Ergänzung 06.11.: Kontaktformular zusätzlich im Seitenfuß der Research-Seite verlinken. Merge im Chat von F2 bestätigt („Ja, mergen und freischalten“).",
+      "file": "assets/site-navigation.js",
+      "from": "67da489dda7088a4ad3fd967347e0dcf870fe1a54be39f7ef6da99d089b1efa4",
+      "to": "8f2a112024e397d5a1c28214d35547663e4d895784e1e0c4c7b82055304004e0",
+      "scope": "Erzeugter Block VU-LEGAL (sync-legal-notices): legalApproved true, Version vu-hinweise-2026-11-06-1, Link „Kontakt“ (konto.visionuniverse.de/kontakt) im Seitenfuß; keine weitere Änderung"
+    },
+    {
+      "id": "UIP-R101",
+      "date": "2026-11-06",
+      "pr": 1564,
+      "ownerApproval": "Owner 04.11.2026: Mockups verbindlich, Z3 gespeicherte Suchen im Konto (PLAN_NEUSTART §7) ohne Einzelfreigabe bei grüner CI (CLAUDE.md „Freigaben und Merge“); Auftrag Strang D4 06.11.2026",
+      "file": "quant/index.html",
+      "from": "88ef3d17e82c2b4b24014c05e5e0f4c522cb8c687df819724da6a5a6dbfd6a5e",
+      "to": "bedf1c14f52684f88c938364c8928c94778d6f331a8e5dbc29b04d8878ee5605",
+      "scope": "Z3: ein Skript /konto/saved-searches.js vor pages.js; sonst unverändert"
+    },
+    {
+      "id": "UIP-R102",
+      "date": "2026-11-06",
+      "pr": 1564,
+      "ownerApproval": "Owner 04.11.2026: Mockups verbindlich, Z3 gespeicherte Suchen im Konto (PLAN_NEUSTART §7) ohne Einzelfreigabe bei grüner CI (CLAUDE.md „Freigaben und Merge“); Auftrag Strang D4 06.11.2026",
+      "file": "quant/app/pages.js",
+      "from": "98cb695a0302e918a35081d7c7360cc9325d422822f0adecb57dd4af9a79d916",
+      "to": "441db5ea1eb03ac85849631472c57fe112ca873f13806490bacf65c8e9d3c1e2",
+      "scope": "Z3 Q02 Profi: Knopf „Regeln speichern“ und Liste gespeicherter Regeln (Gerät vu.quant.searches.v1, angemeldet /v1/searches); Abfrage, Tabelle, Regler und alle anderen Ansichten unverändert"
+    },
+    {
+      "id": "UIP-R103",
+      "date": "2026-11-07",
+      "pr": 1559,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "assets/pwa.js",
+      "from": "c392a885f553a0a44473c202865bcf7740a6688897de40186922fd598158fa92",
+      "to": "70d3d8e17e5fad0759d945904a74219430fd4e43101ab4609558f6834db34991",
+      "scope": "E5 Paket 2: Ladezeit und Caching"
+    },
+    {
+      "id": "UIP-R104",
+      "date": "2026-11-07",
+      "pr": 1562,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "assets/site-navigation.css",
+      "from": "79f0b40da7e032cd86e5096f2dcabc387c81925b28ae96975c4c76fe77b74fef",
+      "to": "1c9c2b68e64e6d81f5a02192a8ffb28299d2971a99e18eaec9998d99487abaf1",
+      "scope": "E5 Paket 3: stabile Kopfzeile und flüssige Navigation"
+    },
+    {
+      "id": "UIP-R105",
+      "date": "2026-11-07",
+      "pr": 1562,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "assets/stock-navigator.css",
+      "from": "546b6ec42b39f44fb9f085c8dacbcf4fadc352176e0b3178e9c7b1239cbc8c82",
+      "to": "eee527229ecaa16c728969817b7e48a93100f7570fa4eecb34593c91768c57fb",
+      "scope": "E5 Paket 3: stabile Kopfzeile und flüssige Navigation"
+    },
+    {
+      "id": "UIP-R106",
+      "date": "2026-11-07",
+      "pr": 1562,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "assets/stock-navigator.js",
+      "from": "f8e3db794f3653a5c217eff0b524aa660bb1bc099d5f8d7813c340687451c473",
+      "to": "ead4a5f6883dd5d11357913300e76c323c3974817ec99edd3242c087ced414f1",
+      "scope": "E5 Paket 3: stabile Kopfzeile und flüssige Navigation"
+    },
+    {
+      "id": "UIP-R107",
+      "date": "2026-11-07",
+      "pr": 1562,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "quant/app/app.css",
+      "from": "f455920e0be783c97c9649eb2f5fd8a811f59d51daa3a90b7dfe1216d47b1ee8",
+      "to": "3b9a3891b881ad005c830c9265b932d0df25c9aea5650280a07040975786508b",
+      "scope": "E5 Paket 3: stabile Kopfzeile und flüssige Navigation"
+    },
+    {
+      "id": "UIP-R108",
+      "date": "2026-11-07",
+      "pr": 1562,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "quant/app/app.js",
+      "from": "b2da22eb9137f91622102a2077a79af941edde6a1cd0a4870b5e545c1ba7b491",
+      "to": "22ebd677b4c3414201a315a7607e9d1d7b3f12170475726a0743f2252d3fb0c2",
+      "scope": "E5 Paket 3: stabile Kopfzeile und flüssige Navigation"
+    },
+    {
+      "id": "UIP-R109",
+      "date": "2026-11-07",
+      "pr": 1562,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "quant/app/page-stock.js",
+      "from": "954222dd0965fd62642f7690fdf44afaf05e38a32a6f725ed345ba5806b72251",
+      "to": "6fcd22907fce95b080d9e437234ed31885c5b68e6cf52d2c783846cf4c838361",
+      "scope": "E5 Paket 3: stabile Kopfzeile und flüssige Navigation"
+    },
+    {
+      "id": "UIP-R110",
+      "date": "2026-11-07",
+      "pr": 1562,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "quant/app/pages.js",
+      "from": "441db5ea1eb03ac85849631472c57fe112ca873f13806490bacf65c8e9d3c1e2",
+      "to": "0de0cbe15ecc970a11dc36170a78ee5fcb8485be94ee7abcdb80693675e5b041",
+      "scope": "E5 Paket 3: stabile Kopfzeile und flüssige Navigation"
+    },
+    {
+      "id": "UIP-R111",
+      "date": "2026-11-07",
+      "pr": 1562,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "quant/app/ui.js",
+      "from": "025dc5ab7461714e9bf7c0019c7d36d8e06f82ec9bb6706fd2d7f76ffbe1c53c",
+      "to": "13c76e77185cbe60ed59c8e1087aeccd6509e43937944eae7725bd944695ebdb",
+      "scope": "E5 Paket 3: stabile Kopfzeile und flüssige Navigation"
+    },
+    {
+      "id": "UIP-R112",
+      "date": "2026-11-07",
+      "pr": 1562,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "quant/index.html",
+      "from": "bedf1c14f52684f88c938364c8928c94778d6f331a8e5dbc29b04d8878ee5605",
+      "to": "1f39696fefad728717195869106b9640a44604aa95674138af4a12a862635b75",
+      "scope": "E5 Paket 3: stabile Kopfzeile und flüssige Navigation"
+    },
+    {
+      "id": "UIP-R113",
+      "date": "2026-11-07",
+      "pr": 1565,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "assets/site-navigation.css",
+      "from": "1c9c2b68e64e6d81f5a02192a8ffb28299d2971a99e18eaec9998d99487abaf1",
+      "to": "fe6dd67f69d4e4b5f09d89c94e00c72aceabc06797260360290f6622bc3c8c24",
+      "scope": "E5 Paket 4: Kontrast, Fokus und Screenreader"
+    },
+    {
+      "id": "UIP-R114",
+      "date": "2026-11-07",
+      "pr": 1565,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "assets/stock-navigator.js",
+      "from": "ead4a5f6883dd5d11357913300e76c323c3974817ec99edd3242c087ced414f1",
+      "to": "76e0389d17cb0a2c19754dea03d0e8f43cdbc6a07c4c8fd7422d8e107908133c",
+      "scope": "E5 Paket 4: Kontrast, Fokus und Screenreader"
+    },
+    {
+      "id": "UIP-R115",
+      "date": "2026-11-07",
+      "pr": 1565,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "quant/app/pages.js",
+      "from": "0de0cbe15ecc970a11dc36170a78ee5fcb8485be94ee7abcdb80693675e5b041",
+      "to": "3fd3347de494bfa02d2457537860c6b05e98060e38dc759d19b56064a1ff9da2",
+      "scope": "E5 Paket 4: zugänglicher Name enthält die unveränderte sichtbare Beschriftung"
+    },
+    {
+      "id": "UIP-R116",
+      "date": "2026-11-07",
+      "pr": 1565,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "quant/app/page-stock.js",
+      "from": "6fcd22907fce95b080d9e437234ed31885c5b68e6cf52d2c783846cf4c838361",
+      "to": "ccfda213da39b4b03ac1e0033ef5a1fad56a76f025f5abd06136cd2066147aaa",
+      "scope": "E5 Paket 4: zugänglicher Name enthält die unveränderte sichtbare Beschriftung"
+    },
+    {
+      "id": "UIP-R117",
+      "date": "2026-11-07",
+      "pr": 1565,
+      "ownerApproval": "Owner 06.11.2026: Performance- und Qualitätsauftrag E5",
+      "file": "quant/app/page-chartbild.js",
+      "from": "5656d3553fa7ba7f10d1f3e4d5ea19d01a4821ea9e4e89855016b40481fd9388",
+      "to": "d7ad7992aceee3c9f3a16c82d280afe0108b05ac549c06f5bc65412a5f1b8f2c",
+      "scope": "E5 Paket 4: zugänglicher Name enthält die unveränderte sichtbare Beschriftung"
+    },
+    {
+      "id": "UIP-R118",
+      "date": "2026-11-07",
+      "pr": 1601,
+      "ownerApproval": "Owner 07.11.2026 nach erstem iPhone-Test: „App-Feeling wie Trade Republic … Hin- und herwischen, vor und zurück ist sehr schwerfällig“; Auftrag Strang K (K2)",
+      "file": "assets/site-navigation.js",
+      "from": "8f2a112024e397d5a1c28214d35547663e4d895784e1e0c4c7b82055304004e0",
+      "to": "cdbc436199df7e1a3b158fa6ebe9b5b0cefa2e45371427b369641bb7ff22cace",
+      "scope": "K2: Dokument-Übergänge nur vorwärts (pageswap überspringt Zurück/Neuladen, auch nach nativer App-Geste) und begrenztes Vorladen von höchstens 4 Produktzielen nach Ruhe (Speculation Rules bzw. HTTP-Cache); Menü, Leiste, Links und Texte unverändert"
+    },
+    {
+      "id": "UIP-R119",
+      "date": "2026-11-07",
+      "pr": 1601,
+      "ownerApproval": "Owner 07.11.2026 nach erstem iPhone-Test: „App-Feeling wie Trade Republic … Hin- und herwischen, vor und zurück ist sehr schwerfällig“; Auftrag Strang K (K2)",
+      "file": "assets/site-navigation.css",
+      "from": "fe6dd67f69d4e4b5f09d89c94e00c72aceabc06797260360290f6622bc3c8c24",
+      "to": "744db0487d1b57df489f23dcd5fc7efeaf7be084ac5d61f5f0e7c8bb4805e679",
+      "scope": "K2: View Transitions zwischen Dokumenten nur ohne reduzierte Bewegung, neue Seite gleitet in 240 ms von rechts herein, Leiste und Kopf stehen; alle bestehenden Regeln unverändert"
+    },
+    {
+      "id": "UIP-R120",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "assets/site-navigation.css",
+      "from": "744db0487d1b57df489f23dcd5fc7efeaf7be084ac5d61f5f0e7c8bb4805e679",
+      "to": "279ed5daee47405657a8e664336250f537ca4b3f5f44799265b90b29412fe4e5",
+      "scope": "L1: Rechts-Seitenfuß ohne zweiten Dock-Abstand (Body trägt ihn schon)"
+    },
+    {
+      "id": "UIP-R121",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "assets/site-navigation.js",
+      "from": "cdbc436199df7e1a3b158fa6ebe9b5b0cefa2e45371427b369641bb7ff22cace",
+      "to": "27b871e501434b297226f07e6fc814a6252e4e0c4102a98ed52b75c9f64e9fea",
+      "scope": "L1: Menü „Rechtliches & Infos“ (Pflicht-Links, Kontakt, Software-/Risikosatz, Datenquellen & Methodik); Rechts-Seitenfuß entfällt nur in der App (VUApp/1, Capacitor); erzeugter Block VU-LEGAL vu-hinweise-2026-11-07-1; Fundamental-Kachel „Zahlen aus Geschäftsberichten“"
+    },
+    {
+      "id": "UIP-R122",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/app.js",
+      "from": "22ebd677b4c3414201a315a7607e9d1d7b3f12170475726a0743f2252d3fb0c2",
+      "to": "b4c850b3a78ecec8ec504d9888fbe5cd9ae40bffd394637cef4ca0f3ab666a4b",
+      "scope": "L1: Anbieternamen aus dem Quant-Fuß entfernt („Daten: SEC EDGAR, Tiingo“, „SEC-Dateninspektor“ → „Dateninspektor“)"
+    },
+    {
+      "id": "UIP-R123",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-method.js",
+      "from": "d8bc62832084d02419bec699f4d039f4cf7575d2c29e2a43afd6d339953f8b74",
+      "to": "fa0d082af375ca5009e9ab8ee99597c30112d69a89d52dba0e8d9521fff18a4d",
+      "scope": "L1: Knopf „SEC-Dateninspektor“ → „Dateninspektor“"
+    },
+    {
+      "id": "UIP-R124",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-stock.js",
+      "from": "ccfda213da39b4b03ac1e0033ef5a1fad56a76f025f5abd06136cd2066147aaa",
+      "to": "7ee0453824e620022dc393a878df2618536173bf41ae875587752c22f64797ee",
+      "scope": "L1: „Daten & Methodik“ der Aktie ohne Anbieternamen (Tiingo, SEC EDGAR); Daten unverändert"
+    },
+    {
+      "id": "UIP-R125",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/pages.js",
+      "from": "3fd3347de494bfa02d2457537860c6b05e98060e38dc759d19b56064a1ff9da2",
+      "to": "36fe10b72251c1a17fac56116349820ce4425bc8cfc0e4d5ab852e80427dfea1",
+      "scope": "L1: Hinweisboxen ohne „Daten: SEC EDGAR, Tiingo.“"
+    },
+    {
+      "id": "UIP-R126",
+      "date": "2026-11-07",
+      "pr": 1605,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L): Rechtliches in der App im Menü statt auf jeder Seite, Quellangaben zentral (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "f0c82a227475a4f3122f4c16bfbb0f021e8944526fad0a4a4ba0aba3d0959e0d",
+      "to": "76f33785aae4f73834798a84f0ba9b8fdf1e0c6ee005e20dbb8c97ef15275ed4",
+      "scope": "L1: Quant-Browser-QA prüft Fuß und „Daten & Methodik“ ohne Anbieternamen (Tiingo, SEC EDGAR); „Keine Anlageempfehlung“ und Stand bleiben Pflicht"
+    },
+    {
+      "id": "UIP-R127",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-stock.js",
+      "from": "7ee0453824e620022dc393a878df2618536173bf41ae875587752c22f64797ee",
+      "to": "cb7f686ce448444c19e7dffbbff42dc30f9d97dca8ff7178458e9489db288ab7",
+      "scope": "L2: Hinweistexte ohne „SEC“ (Geschäftszahlen aus Pflichtmeldungen); Daten unverändert"
+    },
+    {
+      "id": "UIP-R128",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/page-tools.js",
+      "from": "818d9b23114971f6df5f05a6f280626540acb8ccdc69ee56755b52244b771847",
+      "to": "3297e3534433955be2b332ae2870a3bede82aa3dbaf44f7633d45a886268f97b",
+      "scope": "L2: Ansicht „Zahlen“ ohne „SEC EDGAR“ (Hinweis, Kachel, Fußzeile), Knopf „Daten im Dateninspektor“; Stand bleibt"
+    },
+    {
+      "id": "UIP-R129",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "quant/app/view-model.js",
+      "from": "3989cc957a0c83941c79b065617590bacf52d85ec4224b4d3449f4107aab8504",
+      "to": "4eeed3e98f1f0aab77ff119d3e6f8feae16cfd6f92e4f89cd12d60450fc6fbc0",
+      "scope": "L2: Lückentexte „Geschäftszahlen aus Pflichtmeldungen“ statt „SEC-Meldungen“"
+    },
+    {
+      "id": "UIP-R130",
+      "date": "2026-11-07",
+      "pr": 1612,
+      "ownerApproval": "Owner 07.11.2026 (über die Steuerung, Strang L, Folgeauftrag): Quellangaben zentral statt in den Seiten (docs/PLAN_NEUSTART_2026-11.md §11)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "76f33785aae4f73834798a84f0ba9b8fdf1e0c6ee005e20dbb8c97ef15275ed4",
+      "to": "011eccec37dde14a35afbd0d6e89b917cec5fdc86cbd1be9b4e8a1eb4c4f3cda",
+      "scope": "L2: QA der Ansicht „Zahlen“ prüft Stand/Herkunft ohne Anbieternamen"
+    },
+    {
+      "id": "UIP-R131",
+      "date": "2026-11-08",
+      "pr": 1629,
+      "ownerApproval": "Owner 08.11.2026 (App-Feedback über die Steuerung, Strang L): „Rechtliches & Infos“ in der App nicht antippbar",
+      "file": "assets/site-navigation.js",
+      "from": "27b871e501434b297226f07e6fc814a6252e4e0c4102a98ed52b75c9f64e9fea",
+      "to": "8092ee8b47b01ccd9e98a2fd95f8c4d0187d296c305408ec98d315e11b8de4c4",
+      "scope": "In der App öffnen Links auf eine andere Herkunft (Rechtstexte auf konto.visionuniverse.de) als neues Fenster, also im System-Browser; im Web unverändert"
+    },
+    {
+      "id": "UIP-R132",
+      "date": "2026-11-08",
+      "pr": 1628,
+      "ownerApproval": "Owner 08.11.2026 (über die Steuerung, Strang L): Themenbilder als kleinere Stufen, reines Tempo ohne Layout-Änderung",
+      "file": "assets/themen/README.md",
+      "from": "e50431d7c7e540997078093ba03831354bcd0bda1fa0106d705ca07a527798af",
+      "to": "f7e614687e02cb085f18b21a7036393253ee6cef2fab7ed5a5a6ab204d34ce43",
+      "scope": "Nachtrag zu #1628: Absatz zu den Stufen 480/720/1080 und ihrem Erzeuger (scripts/discover/build-theme-variants.py); die Revision fehlte, Quant CI lief auf #1628 nicht"
+    },
+    {
+      "id": "UIP-R133",
+      "date": "2026-11-09",
+      "pr": 1649,
+      "ownerApproval": "Owner 08.11.2026 (über die Steuerung, Strang M): europäische Aktien in Discover zeigen, trotz Lücken",
+      "file": "assets/site-navigation.js",
+      "from": "8092ee8b47b01ccd9e98a2fd95f8c4d0187d296c305408ec98d315e11b8de4c4",
+      "to": "c6c4b0ab57e5e1b433843efaa9fec2c0276e62c564540336b836f4f8808f8fe9",
+      "scope": "Nachtrag zu #1649: Die Europa-Liste #/c/EUROPE/… markiert in der unteren Navigation „Discover“ statt „Strategien“ (eine Zeile in active()); die Revision fehlte, Quant CI lief auf #1649 nicht"
+    },
+    {
+      "id": "UIP-R134",
+      "date": "2026-11-09",
+      "pr": 1732,
+      "ownerApproval": "Owner/Steuerung 09.11.2026 (Bedienprüfung #1719, Punkt b: Tippziele ohne sichtbare Änderung)",
+      "file": "assets/site-navigation.js",
+      "from": "c6c4b0ab57e5e1b433843efaa9fec2c0276e62c564540336b836f4f8808f8fe9",
+      "to": "9b000c630b5235863655be450744ce4ca500ab5fb0f6e5d77f3b33f678b47eba",
+      "scope": "Kopf mobil: Suche/Profil (.hb, 40 px breit) bekommen über ::after eine 44 px breite Trefferfläche; Aussehen unverändert"
+    },
+    {
+      "id": "UIP-R135",
+      "date": "2026-11-09",
+      "pr": 1653,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „bau daraus dann direkt eine eigene Seite, die dann auch in der App erscheint. Und hinterlege auch direkt noch einen Unterbereich … Reports.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "9b000c630b5235863655be450744ce4ca500ab5fb0f6e5d77f3b33f678b47eba",
+      "to": "24471fe704cd26b77a3bae45877ad1e940852c15e6a50e3e17cc089276b4e503",
+      "scope": "Insights: Menükachel (breit unter Portfolios) aus products/insights/module.json, Einträge Artikel und Reports"
+    },
+    {
+      "id": "UIP-R136",
+      "date": "2026-11-09",
+      "pr": 1653,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „bau daraus dann direkt eine eigene Seite, die dann auch in der App erscheint. Und hinterlege auch direkt noch einen Unterbereich … Reports.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/product-icons.svg",
+      "from": "1676bd5c1ef857cb5b6856701dbe94f834c0f163288949a23e77c43bc4f9c887",
+      "to": "54ef0dfbb654bb2b904964fae89e388b634e88d11751dbac2591ccca6909ec4e",
+      "scope": "Insights: neues Symbol „insights“ (Zeitung) in der HUD-Familie; bestehende Symbole unverändert"
+    },
+    {
+      "id": "UIP-R137",
+      "date": "2026-11-09",
+      "pr": 1737,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (docs/design/elliott-hedgefonds-vorsorge-2026-11/HANDOVER.md, Entscheidung 2)",
+      "file": "assets/site-navigation.js",
+      "from": "24471fe704cd26b77a3bae45877ad1e940852c15e6a50e3e17cc089276b4e503",
+      "to": "f84ff7ef1b8bba4d6727d0768aa34ed9a6f8304cbf2216f028315b2629369464",
+      "scope": "Elliott: Leistenplatz und Menüeintrag „Welle 3“ → „Zählbar“ (#/?zaehlbar=1, alte Adresse markiert Zählbar); Menüeinträge aus products/elliott/module.json neu erzeugt"
+    },
+    {
+      "id": "UIP-R138",
+      "date": "2026-11-09",
+      "pr": 1737,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidung 2)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "011eccec37dde14a35afbd0d6e89b917cec5fdc86cbd1be9b4e8a1eb4c4f3cda",
+      "to": "d8d436c8379d5027353fc3155c65972038efa1a9911860bf18032b44147478d7",
+      "scope": "Erwartete Elliott-Leiste im Aktienbild: „Welle 3“ → „Zählbar“; sonst unverändert"
+    },
+    {
+      "id": "UIP-R139",
+      "date": "2026-11-09",
+      "pr": 1750,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidungen 3 und 4)",
+      "file": "quant/app/page-chartbild.js",
+      "from": "d7ad7992aceee3c9f3a16c82d280afe0108b05ac549c06f5bc65412a5f1b8f2c",
+      "to": "e12c1662c33622edf5b721fdfb949c7778fa3f43881ae3d39f4df34b48cdb234",
+      "scope": "Elliott auf der Aktie (Konzept EHV, EX03): zählbar mit Lesart in drei Sätzen, Chart nur mit Ungültig-Marke und Kapiteln, nicht zählbar mit Karte „Keine Zählung“ und Wegen zu Technical und zur Zählbar-Liste; kein eigener „Technischer Ausblick“ im Elliott-Produkt; „Rücklauf abwarten“ und „Zielbereich erreicht“ umformuliert"
+    },
+    {
+      "id": "UIP-R140",
+      "date": "2026-11-09",
+      "pr": 1750,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidungen 3 und 4)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "d8d436c8379d5027353fc3155c65972038efa1a9911860bf18032b44147478d7",
+      "to": "0eb594cc2523e1893a63c9b5bff6be58e9b35dd5600c3175e73a8e88719e7b57",
+      "scope": "Prüfung des Elliott-Aktienbilds auf den neuen Aufbau (zählbar: drei Sätze, Kapitel, Ungültig-Marke; nicht zählbar: Wege); keine Ziele, kein zweiter Ausblick"
+    },
+    {
+      "id": "UIP-R141",
+      "date": "2026-11-09",
+      "pr": 1743,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „Der Aktienreport Xpeng, der muss da auf jeden Fall raus … Außerdem muss dann unser Magazin rein, also unser Aktienmagazin.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "f84ff7ef1b8bba4d6727d0768aa34ed9a6f8304cbf2216f028315b2629369464",
+      "to": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
+      "scope": "Insights: Einträge Artikel, Aktienmagazin, Reports; „Weitere Produkte“ ohne altes Magazin und XPeng-Muster (aus den Steckbriefen erzeugt)"
+    },
+    {
+      "id": "UIP-R142",
+      "date": "2026-11-09",
+      "pr": 1743,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „Der Aktienreport Xpeng, der muss da auf jeden Fall raus … Außerdem muss dann unser Magazin rein, also unser Aktienmagazin.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "0eb594cc2523e1893a63c9b5bff6be58e9b35dd5600c3175e73a8e88719e7b57",
+      "to": "4501267a27988548364c26cdf362af2c48da346a986ae0de7054730bebb6d5c0",
+      "scope": "Plattform-Kopf-Prüfung: Magazin und Reports liegen jetzt unter /insights/ (Kachel Insights statt /magazin/ und /reports/)"
+    }
+  ]
+}

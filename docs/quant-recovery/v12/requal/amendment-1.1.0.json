@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "v12-requal-amendment-1.1.0",
+  "amends": "registration-1.0.2.json (sha256 9b712050...), which stays the registration of every strategy, parameter, cost level and test family",
+  "kind": "CORRECTION_AFTER_INDEPENDENT_REVIEW",
+  "afterSightOfResults": true,
+  "date": "2026-10-29",
+  "resultVersion": "1.1.0 (p5a/p5b/p5c/p5d/p6/python-check-1.1.0.json); the 1.0.0 result files stay unchanged",
+  "noChange": [
+    "no new strategy, no parameter change of the six P6 strategies (S1-S6), cost levels BASE/STRESS, rebalancing dates, quintile rules, market filter, volatility target",
+    "registered span 2010-03-31 ... 2026-03-31 and the registered Holm family (SPY and S1 per strategy) stay primary"
+  ],
+  "changes": [
+    {
+      "finding": "SPXPOP m4",
+      "change": "population SPXPOP rules 1.1.1 (identity break at mergers: Broadcom Corp. -> Broadcom Ltd. 2015-09 -> 2016-03 and 12 further links unchained, booked as BOUNDED_EXIT with fate IDENTITY_BREAK); all studies P5a-P6 rerun on it"
+    },
+    {
+      "finding": "REQUAL MAJOR 2",
+      "change": "P5a: two further scenarios for the bounded cases - FATE (exits by documented fate: takeover -> typical premium of documented takeovers = median of SEC-sourced cash considerations of the V10 lifecycle register against the last quarter-end close plus observed takeover exits of PIT_SP500/PIT_NDX; delisting/bankruptcy -> -100 %; index change -> population period return; unknown fate -> 0 %) and UPPER (every bounded exit at max(premium p75, population period return), ambiguous CA at the upper bound). Labels corrected: ZERO is a point convention, not a bound; LOWER (exits -100 %) gives the UPPER bound of the survivorship term; p-values are reported per scenario only, never across scenarios."
+    },
+    {
+      "finding": "REQUAL MAJOR 3/4",
+      "change": "P6: CW_ALL (holdings-weighted total population from the same holdings source, per scenario, from P5a) as like-for-like benchmark of every strategy next to SPY (own Holm family of six tests, not mixed with the registered family); bounded weight held per strategy reported (LOWER is practically no bound for S2-S5, which hold almost no bounded member); dividends quantified (SEC XBRL dividends per share of the members, cross-checked against the SPY N-30D distributions); cash accrual at EFFR disclosed as a total-return component."
+    },
+    {
+      "finding": "REQUAL MAJOR 5",
+      "change": "P5a and P6 additionally on the span from 2013-03-31 (first qualified S&P 500 period under the pre-registered SPXPOP rule 1.0.1; P6 restarts the portfolios there)."
+    },
+    {
+      "finding": "REQUAL m6/m7/m8",
+      "change": "CAGR differences reported next to the arithmetic (annualised mean) terms; causal wording of the P5d population text corrected to an association; same-bar execution of the market filter and the volatility target disclosed (signal from the SPY close / weekly bars up to t0, trade at the t0 holdings price)."
+    }
+  ]
+}

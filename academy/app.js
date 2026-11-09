@@ -43,7 +43,7 @@
     ]));
   }
 
-  function renderWorlds(worlds, concepts) {
+  function renderWorlds(worlds, concepts, experiences) {
     var mount = Shell.$("#worlds-mount");
     mount.innerHTML = "";
     worlds.forEach(function (w) {
@@ -54,11 +54,16 @@
         });
       }
 
-      var card = Shell.el("div", {
+      // One available experience makes the world a direct, native link.
+      // Content and learning state stay in that experience's existing implementation.
+      var entries = experiences.filter(function(e){return e.world===w.id && e.status==="available" && e.path;});
+      var destination = entries.length === 1 ? entries[0].path : null;
+      var card = Shell.el(destination ? "a" : "div", {
         class: "vu-a-world-card",
         style: "--vu-world-accent: var(--vu-accent-" + w.accent + ")",
-        role: "button", tabindex: "0"
+        role: destination ? "link" : "button", tabindex: "0"
       });
+      if (destination) card.setAttribute("href", destination);
       var head = Shell.el("div", { class: "vu-a-world-card-head" }, [
         Shell.createIconBadge(w.icon, "var(--vu-accent-" + w.accent + ")"),
         Shell.el("h3", { class: "vu-a-world-title", text: w.title })
@@ -80,8 +85,8 @@
       card.appendChild(foot);
 
       function toggle() { card.classList.toggle("is-open"); }
-      card.addEventListener("click", toggle);
-      card.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+      if (!destination) card.addEventListener("click", toggle);
+      if (!destination) card.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
 
       mount.appendChild(card);
     });
@@ -95,7 +100,7 @@
 
     renderQuestions(questionsData.questions, experiencesData.experiences);
     renderFeaturedPilot(experiencesData.experiences);
-    renderWorlds(worldsData.worlds, conceptsData);
+    renderWorlds(worldsData.worlds, conceptsData, experiencesData.experiences);
   }
 
   /* Ohne Fehlerbehandlung blieb bei einem Ladefehler eine leere Seite

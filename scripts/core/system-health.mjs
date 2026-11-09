@@ -16,7 +16,11 @@
    der Step Summary.
    ========================================================================= */
 import { writeFileSync, appendFileSync } from "node:fs";
+import { createRequire } from "node:module";
 import { args, makeLoader, loadEngines, loadArtifacts } from "./lib.mjs";
+import { loadModules } from "./build-modules.mjs";
+
+const Modules = createRequire(import.meta.url)("../../core/modules.js");
 
 const a = args();
 const E = loadEngines();
@@ -25,15 +29,22 @@ const now = a.now ? new Date(a.now) : new Date();
 const artifacts = await loadArtifacts(E.registry, load);
 const report = E.Health.evaluate(E.registry, artifacts, { now, calendar: E.calendar, tradingSession: E.TradingSession, target: a.site ? "site" : "repository" });
 report.target = a.site || "repository";
+/* Produkte aus den Steckbriefen (products/<id>/module.json): schlechtester Zustand ihrer Datenarten. */
+report.products = Modules.productHealth(loadModules().map((x) => x.m), report);
 
 if (a.json) console.log(JSON.stringify(report, null, 2));
-else console.log(E.Health.formatText(report));
+else {
+  console.log(E.Health.formatText(report));
+  console.log("\nProdukte (module.json):");
+  for (const p of report.products) console.log(`  ${p.label.padEnd(22)} ${p.status.padEnd(9)} ${p.access.padEnd(6)} ${p.cause.join(", ")}`);
+}
 if (typeof a.out === "string") writeFileSync(a.out, JSON.stringify(report, null, 2) + "\n");
 if (process.env.GITHUB_STEP_SUMMARY) {
   const rows = report.domains.map((d) => `| ${d.label} | **${d.status}** | ${d.asOf || (d.lastUpdate || "-").slice(0, 16)} | ${d.expected || "-"} | ${d.records ?? "-"}${d.expectedRecords ? "/" + d.expectedRecords : ""} | ${[d.reason, ...d.warnings].filter(Boolean).join("; ") || ""} |`);
   appendFileSync(process.env.GITHUB_STEP_SUMMARY, [
     `### Vision Universe System Health · ${report.overall}`, "",
     `Ziel: ${report.target} · geprueft ${report.checkedAt}` + (report.market ? ` · Markt ${report.market.state}, letzte Sitzung ${report.market.lastCompletedSession}` : ""), "",
+    "| Produkt | Zustand | Zugang | Ursache |", "|---|---|---|---|", ...report.products.map((p) => `| ${p.label} | **${p.status}** | ${p.access} | ${p.cause.join(", ")} |`), "",
     "| System | Zustand | Stand | erwartet | Datensaetze | Befund |", "|---|---|---|---|---|---|", ...rows, ""
   ].join("\n"));
 }

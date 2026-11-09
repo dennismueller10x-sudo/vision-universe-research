@@ -1,0 +1,391 @@
+{
+ "schemaVersion": "v12-listref-reference-summary-1.0.2",
+ "ruleVersion": "1.0.2",
+ "protocolSha256": {
+  "protocol-amendment-1.0.2.json": "7fafcb521229f42fd3d104ea6cc8111b0a986bffea42b04449b9826ef3427623",
+  "protocol-1.0.0.json": "934a421eb291441d34c88b84bbc8939089c74796b8a5bec0bd9bc1324798862a",
+  "protocol-amendment-1.0.1.json": "95a66f749e6d6df8bd08a7ad8acd0f4f41f12a18403737502a828661d5868259"
+ },
+ "codeSha256": {
+  "scripts/quant/v12/listref/build_reference.cjs": "cb286a39d15a573b0f497fe201398df3fc487b7e01291f218e3a79de4d709662",
+  "scripts/quant/v12/listref/reflib.cjs": "204a4b8d2eafda527ad5165a53b081fed2a0c883582eef5fb852551bf8ec7beb"
+ },
+ "inputs": {
+  "tiingoZipSha256": "bb35794349ae86be32a419a697b0a915344c3569fd09f9731b2198510b938b53",
+  "tiingoCsvSha256": "213c52126b62c65717e5151d40a9dbad65fec2bc78bae2dffc06cac53ecd7b93",
+  "holdingsSha256": "2dfa1fcc7631ab0593f1aa8ac7e441e1dea6421a5ff48eaa1a6bff1ca128514a",
+  "publicFloatTsvSha256": "948dd910eb44444954cb7bb2263718af05691f2e1084d154f50e09c5227a7b9f",
+  "cikMapSha256": "09ed973d2ff2bee11a987bf7afa255f7a5d0a10e4bbd83bc8559e0070482cd2b",
+  "edgarIndexFilesSha256": "de4d73394bfd0245bd319f74c1378a2c88344f2fd3da02e36c82d6aba0cb8832",
+  "ftsResultsSha256": "8214bff5ce94b5ac26cd1b096c6aa924efb3a7c52d10762936e026ba4fc8fd17"
+ },
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "dataAsOf": {
+  "tiingoFile": "2026-10-28",
+  "edgarIndexLastDataReceived": "October 27, 2026",
+  "holdingsWeekly": "2026-10-26"
+ },
+ "counts": {
+  "tiingoRows": 109155,
+  "usExchangeStockUsdRows": 16261,
+  "referenceRows": 11065,
+  "referenceChains": 10745,
+  "endedChains": 4474,
+  "endSource": {
+   "PROVIDER": 4382,
+   "DERIVED_FROM_SEC_DELISTING_FORM": 65,
+   "V10_LIFECYCLE_LAST_TRADE": 27
+  },
+  "duplicateRowIds": 22,
+  "fiveLetterKept": 296,
+  "spacLikely": 1592,
+  "excludedRowsByReason": {
+   "ASSET_TYPE_ETF": 9878,
+   "ASSET_TYPE_MUTUAL_FUND": 49880,
+   "CURRENCY_NOT_USD": 3,
+   "EXCHANGE_BATS": 273,
+   "EXCHANGE_EMPTY": 54,
+   "EXCHANGE_EXPM": 898,
+   "EXCHANGE_LSE": 11,
+   "EXCHANGE_NYSE_ARCA": 53,
+   "EXCHANGE_NYSE_NAT": 3,
+   "EXCHANGE_OTCBB": 593,
+   "EXCHANGE_OTCCE": 388,
+   "EXCHANGE_OTCD": 49,
+   "EXCHANGE_OTCGREY": 1463,
+   "EXCHANGE_OTCMKTS": 2290,
+   "EXCHANGE_OTCQB": 458,
+   "EXCHANGE_OTCQX": 206,
+   "EXCHANGE_PINK": 19877,
+   "EXCHANGE_SHE": 3400,
+   "EXCHANGE_SHEB": 42,
+   "EXCHANGE_SHG": 3031,
+   "EXCHANGE_SHGB": 44,
+   "SYMBOL_DASH_OTHER_SUFFIX": 126,
+   "SYMBOL_DASH_PREFERRED": 954,
+   "SYMBOL_DASH_RIGHT": 92,
+   "SYMBOL_DASH_UNIT": 380,
+   "SYMBOL_DASH_WARRANT_OR_WHEN_ISSUED": 681,
+   "SYMBOL_FIVE_LETTER_NON_NASDAQ": 112,
+   "SYMBOL_NASDAQ_SUFFIX_ADR_SUFFIX": 8,
+   "SYMBOL_NASDAQ_SUFFIX_CONVERTIBLE": 35,
+   "SYMBOL_NASDAQ_SUFFIX_FOREIGN_SUFFIX": 25,
+   "SYMBOL_NASDAQ_SUFFIX_PREFERRED": 228,
+   "SYMBOL_NASDAQ_SUFFIX_RIGHT": 265,
+   "SYMBOL_NASDAQ_SUFFIX_UNIT": 1005,
+   "SYMBOL_NASDAQ_SUFFIX_WARRANT": 1122,
+   "SYMBOL_NASDAQ_SUFFIX_WHEN_ISSUED": 103,
+   "SYMBOL_NASDAQ_SUFFIX_WITH_WARRANTS_OR_RIGHTS": 11,
+   "SYMBOL_NON_ALPHA_OR_LONG_SYMBOL": 49
+  }
+ },
+ "tickerReuse": {
+  "tickersWithSeveralRows": 504,
+  "reuseGapPairs": 217,
+  "adjacentRestartPairs": 320,
+  "tickersWithReuseGap": 215,
+  "chains": 10745,
+  "chainsWithSeveralRows": 298
+ },
+ "cikLinks": {
+  "HIGH_CURRENT_MAP": 5826,
+  "HIGH_V10_REGISTER": 197,
+  "MEDIUM_FTS_CONFIRMED": 1740,
+  "MEDIUM_FTS_DISCOVERED": 760,
+  "MEDIUM_FTS_DISCOVERED:FROZEN_TAIL": 73,
+  "UNLINKED:ACTIVE_NOT_IN_SEC_MAP_NO_MATCH": 276,
+  "UNLINKED:AMBIGUOUS_A3_CANDIDATES": 102,
+  "UNLINKED:INDEX_MATCH_UNCONFIRMED": 186,
+  "UNLINKED:NO_UNIQUE_MATCH": 1585
+ },
+ "ftsQueries": {
+  "total": 5010,
+  "missingResults": 0
+ },
+ "holdingsMapping": {
+  "MAPPED:CANONICAL_ID": 1400,
+  "MAPPED:CANONICAL_ID:IN_FRAME": 4224,
+  "MAPPED:TICKER_OVERLAP": 4,
+  "MAPPED:TICKER_OVERLAP:IN_FRAME": 1,
+  "UNMAPPED:TICKER_NOT_IN_PROVIDER_FILE": 11,
+  "UNMAPPED:TICKER_NOT_IN_PROVIDER_FILE:IN_FRAME": 6,
+  "UNMAPPED:TICKER_ONLY_OUTSIDE_US_STOCK_SCOPE": 68,
+  "UNMAPPED:TICKER_ONLY_OUTSIDE_US_STOCK_SCOPE:IN_FRAME": 5,
+  "UNMAPPED:TICKER_ROW_EXCLUDED_BY_SYMBOL_RULE_OR_NO_UNIQUE_OVERLAP": 378,
+  "UNMAPPED:TICKER_ROW_EXCLUDED_BY_SYMBOL_RULE_OR_NO_UNIQUE_OVERLAP:IN_FRAME": 93
+ },
+ "publicFloatScaleSuspectChainYears": 102,
+ "privateReference": {
+  "file": "v12-private/listref/work/reference-listings.jsonl.gz",
+  "sha256": "61bbff95d85acba9c987214b29b366037671a035ae0f3c84ad126df89a41676b",
+  "chains": 10745
+ },
+ "endedChainsByYear": {
+  "1997": {
+   "endedChains": 1,
+   "byEndSource": {
+    "PROVIDER": 1
+   },
+   "linked": 0,
+   "linkedToSecDelistingForm": 0,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.011
+  },
+  "2003": {
+   "endedChains": 1,
+   "byEndSource": {
+    "DERIVED_FROM_SEC_DELISTING_FORM": 1
+   },
+   "linked": 1,
+   "linkedToSecDelistingForm": 1,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0037
+  },
+  "2006": {
+   "endedChains": 1,
+   "byEndSource": {
+    "PROVIDER": 1
+   },
+   "linked": 0,
+   "linkedToSecDelistingForm": 0,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0019
+  },
+  "2007": {
+   "endedChains": 2,
+   "byEndSource": {
+    "PROVIDER": 2
+   },
+   "linked": 1,
+   "linkedToSecDelistingForm": 1,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0024
+  },
+  "2008": {
+   "endedChains": 4,
+   "byEndSource": {
+    "PROVIDER": 4
+   },
+   "linked": 3,
+   "linkedToSecDelistingForm": 3,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0063
+  },
+  "2009": {
+   "endedChains": 37,
+   "byEndSource": {
+    "PROVIDER": 37
+   },
+   "linked": 15,
+   "linkedToSecDelistingForm": 15,
+   "withSeries": 0,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0597
+  },
+  "2010": {
+   "endedChains": 45,
+   "byEndSource": {
+    "PROVIDER": 45
+   },
+   "linked": 22,
+   "linkedToSecDelistingForm": 22,
+   "withSeries": 1,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.0879
+  },
+  "2011": {
+   "endedChains": 73,
+   "byEndSource": {
+    "PROVIDER": 73
+   },
+   "linked": 22,
+   "linkedToSecDelistingForm": 22,
+   "withSeries": 1,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.155
+  },
+  "2012": {
+   "endedChains": 51,
+   "byEndSource": {
+    "PROVIDER": 50,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 1
+   },
+   "linked": 30,
+   "linkedToSecDelistingForm": 30,
+   "withSeries": 1,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.1118
+  },
+  "2013": {
+   "endedChains": 131,
+   "byEndSource": {
+    "PROVIDER": 131
+   },
+   "linked": 61,
+   "linkedToSecDelistingForm": 61,
+   "withSeries": 2,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.2937
+  },
+  "2014": {
+   "endedChains": 142,
+   "byEndSource": {
+    "PROVIDER": 142
+   },
+   "linked": 85,
+   "linkedToSecDelistingForm": 84,
+   "withSeries": 7,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.3717
+  },
+  "2015": {
+   "endedChains": 268,
+   "byEndSource": {
+    "PROVIDER": 266,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 2
+   },
+   "linked": 175,
+   "linkedToSecDelistingForm": 175,
+   "withSeries": 6,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.6489
+  },
+  "2016": {
+   "endedChains": 312,
+   "byEndSource": {
+    "PROVIDER": 312
+   },
+   "linked": 200,
+   "linkedToSecDelistingForm": 200,
+   "withSeries": 3,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.646
+  },
+  "2017": {
+   "endedChains": 405,
+   "byEndSource": {
+    "PROVIDER": 405
+   },
+   "linked": 195,
+   "linkedToSecDelistingForm": 195,
+   "withSeries": 10,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.9184
+  },
+  "2018": {
+   "endedChains": 421,
+   "byEndSource": {
+    "PROVIDER": 421
+   },
+   "linked": 187,
+   "linkedToSecDelistingForm": 186,
+   "withSeries": 4,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 1.0851
+  },
+  "2019": {
+   "endedChains": 276,
+   "byEndSource": {
+    "PROVIDER": 276
+   },
+   "linked": 152,
+   "linkedToSecDelistingForm": 152,
+   "withSeries": 3,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.6798
+  },
+  "2020": {
+   "endedChains": 248,
+   "byEndSource": {
+    "PROVIDER": 245,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 3
+   },
+   "linked": 155,
+   "linkedToSecDelistingForm": 155,
+   "withSeries": 6,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.6492
+  },
+  "2021": {
+   "endedChains": 343,
+   "byEndSource": {
+    "PROVIDER": 341,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 2
+   },
+   "linked": 188,
+   "linkedToSecDelistingForm": 187,
+   "withSeries": 5,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.8186
+  },
+  "2022": {
+   "endedChains": 413,
+   "byEndSource": {
+    "PROVIDER": 411,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 2
+   },
+   "linked": 243,
+   "linkedToSecDelistingForm": 242,
+   "withSeries": 6,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.7415
+  },
+  "2023": {
+   "endedChains": 489,
+   "byEndSource": {
+    "PROVIDER": 482,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 7
+   },
+   "linked": 353,
+   "linkedToSecDelistingForm": 353,
+   "withSeries": 11,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.7202
+  },
+  "2024": {
+   "endedChains": 280,
+   "byEndSource": {
+    "PROVIDER": 256,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 24
+   },
+   "linked": 189,
+   "linkedToSecDelistingForm": 189,
+   "withSeries": 22,
+   "lifecycle": 0,
+   "countRatioEndedChainsToEdgarEvents": 0.5556
+  },
+  "2025": {
+   "endedChains": 264,
+   "byEndSource": {
+    "PROVIDER": 236,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 10,
+    "V10_LIFECYCLE_LAST_TRADE": 18
+   },
+   "linked": 182,
+   "linkedToSecDelistingForm": 164,
+   "withSeries": 19,
+   "lifecycle": 18,
+   "countRatioEndedChainsToEdgarEvents": 0.5421
+  },
+  "2026": {
+   "endedChains": 267,
+   "byEndSource": {
+    "PROVIDER": 245,
+    "V10_LIFECYCLE_LAST_TRADE": 9,
+    "DERIVED_FROM_SEC_DELISTING_FORM": 13
+   },
+   "linked": 142,
+   "linkedToSecDelistingForm": 128,
+   "withSeries": 45,
+   "lifecycle": 9,
+   "countRatioEndedChainsToEdgarEvents": 1
+  }
+ }
+}

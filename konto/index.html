@@ -8,36 +8,56 @@
 <meta name="theme-color" content="#ffffff">
 <title>Mein Konto · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<link rel="stylesheet" href="/assets/vu-ui.css">
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 </head>
-<body class="ka-body" data-view="account"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
-<main class="ka" id="main">
-<p class="ka-eyebrow">Mein Konto</p>
-<h1 class="ka-title" id="ka-hello">Mein Konto</h1>
-<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a><a class="ka-nav-out" href="/mein-dashboard/">Mein Dashboard</a></nav>
+<body class="ka-body vu-ui" data-view="account"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<main class="ka ka-me" id="main">
+<!-- Konto (Mockup E07): eine Seite statt Reiter – Profil, Tarif, offene Pro-Wahl, Deine App, Vertrag und Zahlung, Sicherheit und Daten. Platz 3 der Leiste „Mein Bereich“. -->
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
+<header class="ka-profile"><span class="ka-initials" id="ka-initials" aria-hidden="true">–</span><span><h1 class="ka-profile-name" id="ka-hello">Mein Konto</h1><span class="ka-profile-sub" id="ka-profile-sub"></span></span></header>
 <div class="ka-skeleton" id="ka-loading" aria-hidden="true"></div>
 <div id="ka-account" hidden>
-<section class="ka-card ka-pending" id="ka-pro-pending" hidden aria-labelledby="ka-pro-pending-title">
-<h2 id="ka-pro-pending-title">Deine Pro-Bestellung ist noch offen</h2>
-<p class="ka-muted">Du hast vor der Registrierung Pro gewählt. Bis du die Bestellung bestätigst und bei Stripe bezahlst, gilt Free – es wurde nichts berechnet.</p>
-<div class="ka-actions"><a class="ka-btn" href="/konto/tarife/?plan=pro">Pro fortsetzen</a><button class="ka-btn ka-btn--secondary" type="button" id="ka-pro-dismiss">Mit Free weiter</button></div>
+<dl class="ka-kv ka-hidden" id="ka-account-facts"></dl>
+<section class="vu-box ka-plan-card" aria-label="Dein Tarif"><span><small>Dein Tarif</small><b id="ka-plan-name">Free</b><span id="ka-plan-sub">kostenlos, ohne Laufzeit</span></span><a class="vu-btn vu-btn--ink vu-btn--sm" id="ka-plan-go" href="/konto/tarife/">Tarife ansehen</a></section>
+<section class="vu-box vu-box--lime ka-pending" id="ka-pro-pending" hidden aria-labelledby="ka-pro-pending-title">
+<small>Offene Pro-Wahl</small>
+<h2 id="ka-pro-pending-title">Du wolltest Pro abschließen.</h2>
+<p>Bis du die Bestellung bestätigst und bei Stripe bezahlst, gilt Free – es wurde nichts berechnet.</p>
+<div class="ka-actions"><a class="vu-btn vu-btn--ink vu-btn--sm" href="/konto/tarife/?plan=pro">Pro fortsetzen</a><button class="vu-btn vu-btn--sm ka-white" type="button" id="ka-pro-dismiss">Mit Free weiter</button></div>
 </section>
-<section class="ka-card"><h2>Persönliche Daten</h2><dl class="ka-kv" id="ka-account-facts"></dl></section>
-<div class="ka-grid ka-grid--2 ka-section">
-<a class="ka-card ka-link-card" href="/konto/abo/"><h2>Abonnement und Rechnungen</h2><p class="ka-muted">Aktueller Tarif, Zahlungsmethoden, Rechnungen, Kündigung</p></a>
-<a class="ka-card ka-link-card" href="/konto/tarife/"><h2>Tarife</h2><p class="ka-muted">Free und Pro im Vergleich</p></a>
-<a class="ka-card ka-link-card" href="/konto/einstellungen/#sicherheit"><h2>Profil und Sicherheit</h2><p class="ka-muted">Anzeigename, Darstellung, Passwort</p></a>
-<a class="ka-card ka-link-card" href="/konto/einstellungen/#datenschutz"><h2>Datenschutz</h2><p class="ka-muted">Benachrichtigungen, Datenexport, Konto löschen</p></a>
+<h2 class="vu-sect">Deine App</h2>
+<div class="ka-list">
+<div class="ka-row ka-row--seg"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></span><span class="ka-row-text"><b>Erfahrung</b><span>Ändert Tiefe und Erklärungen</span></span></div>
+<div class="vu-seg ka-seg-row" id="ka-mode" role="group" aria-label="Erfahrung"><button type="button" data-mode="beginner" aria-pressed="false">Einsteiger</button><button type="button" data-mode="advanced" aria-pressed="false">Fortgeschritten</button><button type="button" data-mode="pro" aria-pressed="false">Profi</button></div>
+<a class="ka-row" href="/willkommen/start/"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".8"/></svg></span><span class="ka-row-text"><b>Mein Ziel</b><span id="ka-goal">Noch kein Ziel gewählt</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+<div class="ka-row ka-row--seg"><span class="ka-row-text"><b>Darstellung</b></span></div>
+<div class="vu-seg ka-seg-row" id="ka-theme" role="group" aria-label="Darstellung"><button type="button" data-theme="light" aria-pressed="false">Hell</button><button type="button" data-theme="dark" aria-pressed="false">Dunkel</button><button type="button" data-theme="system" aria-pressed="false">Wie Gerät</button></div>
+<a class="ka-row" href="/konto/einstellungen/"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.5 2.6 3.5 5.4 3.5 8.5s-1 5.9-3.5 8.5c-2.5-2.6-3.5-5.4-3.5-8.5s1-5.9 3.5-8.5z"/></svg></span><span class="ka-row-text"><b>Währung</b><span>Kurse in der Währung des Listings</span></span><b class="ka-row-val" id="ka-currency">–</b></a>
 </div>
-<p class="ka-muted ka-section">Deine Watchlist und gespeicherten Aktien findest du in <a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a>.</p>
-<div class="ka-actions ka-section"><button class="ka-btn ka-btn--secondary" type="button" id="ka-logout">Abmelden</button></div>
+<h2 class="vu-sect">Vertrag und Zahlung</h2>
+<div class="ka-list">
+<a class="ka-row" href="/konto/abo/"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8-4.3-4.1 5.9-.8z"/></svg></span><span class="ka-row-text"><b>Abonnement</b><span id="ka-sub-line">Kein Abo · Free</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+<a class="ka-row" href="/konto/abo/"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg></span><span class="ka-row-text"><b>Rechnungen</b><span>Rechnungen und Zahlungsmethoden</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+<a class="ka-row" href="/konto/kuendigen/"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="ka-row-text"><b>Verträge hier kündigen</b><span>Kündigung ohne Anmeldung möglich</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
 </div>
-<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="/landing/datenschutz/">Datenschutz</a><a class="ka-link" href="/landing/impressum/">Impressum</a></nav>
+<h2 class="vu-sect">Sicherheit und Daten</h2>
+<div class="ka-list">
+<a class="ka-row" href="/konto/einstellungen/#sicherheit"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8"/></svg></span><span class="ka-row-text"><b>Passwort ändern</b><span>Und Anzeigename</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+<a class="ka-row" href="/konto/einstellungen/#datenschutz"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg></span><span class="ka-row-text"><b>Newsletter</b><span id="ka-news-line">Freiwillig, Double-Opt-in</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+<a class="ka-row" href="/konto/einstellungen/#datenschutz"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h9"/></svg></span><span class="ka-row-text"><b>Meine Daten herunterladen</b><span>Profil, Einstellungen, Watchlists als Datei</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+<a class="ka-row" href="https://konto.visionuniverse.de/rechtliches/agb"><span class="vu-hud ka-hud ka-hud--sm" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 20h16M6 20V9M18 20V9M3 9l9-5 9 5z"/></svg></span><span class="ka-row-text"><b>Rechtliches</b><span>Bedingungen, Datenschutz, Widerruf, Impressum</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+</div>
+<button class="ka-btn ka-btn--secondary ka-btn--block ka-logout" type="button" id="ka-logout">Abmelden</button>
+<p class="ka-center ka-delete"><a class="ka-link" href="/konto/einstellungen/#datenschutz">Konto endgültig löschen</a></p>
+<p class="ka-muted ka-hidden">Deine Watchlist und gespeicherten Aktien findest du in <a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a>.</p>
+</div>
+<nav class="ka-links" aria-label="Rechtliches"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>
+<script src="/willkommen/start/prefs.js"></script>
 <script src="/konto/konto.js"></script>
 </body>
 </html>

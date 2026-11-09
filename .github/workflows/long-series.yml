@@ -39,9 +39,15 @@ name: Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)
 # startet keinen Workflow - keine Schleife. Dieselbe Concurrency-Gruppe wie
 # der Volllauf: nie zwei Schreiber auf discover-series-long.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       only:
         description: 'Nur diese Kuerzel neu bauen (kommagetrennt, z. B. NXGL,ZBAO). Leer = alle im Umfang.'
         required: false
@@ -52,10 +58,6 @@ on:
         default: 'full'
         type: choice
         options: ['full', 'repair']
-  schedule:
-    - cron: '40 7 1-7 * 6'
-    # Reparaturlauf nach dem Nachtlauf (nur abweichende Titel, siehe oben)
-    - cron: '20 4 * * 2-6'
   push:
     branches:
       - 'claude/**'
@@ -75,8 +77,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) ||
+      (github.event_name == 'schedule' || inputs.zeitplan != '') ||
       contains(github.event.head_commit.message, '[long-series]')
     steps:
       - uses: actions/checkout@v4
@@ -90,10 +92,10 @@ jobs:
       - name: Art des Laufs und Reparaturplan
         id: plan
         env:
-          EVENT: ${{ github.event_name }}
-          SCHEDULE: ${{ github.event.schedule }}
-          INPUT_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || '' }}
-          INPUT_ONLY: ${{ github.event_name == 'workflow_dispatch' && inputs.only || '' }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
+          SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
+          INPUT_MODE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.mode || '' }}
+          INPUT_ONLY: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.only || '' }}
         run: |
           set -euo pipefail
           MODE=full

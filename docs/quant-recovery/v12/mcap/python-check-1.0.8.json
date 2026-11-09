@@ -1,0 +1,633 @@
+{
+ "schemaVersion": "v12-mcap-python-check-1.0.0",
+ "registerRuleVersion": "1.0.8",
+ "registerRuleSha256": "8e64d38f06e4f82361101d2b2adf1bbb9a79fe201cf8a74e33e41d6c3bd6f77d",
+ "implementation": "independent stdlib Python, own fact selection from companyfacts.zip, own rule (see module docstring)",
+ "facts": 117888,
+ "statusMatrix_js_vs_python": {
+  "CORRECTED|CORRECTED": 107,
+  "CORRECTED|EXCLUDED": 17,
+  "CORRECTED|OK": 5,
+  "EXCLUDED|CORRECTED": 49,
+  "EXCLUDED|EXCLUDED": 528,
+  "EXCLUDED|OK": 191,
+  "OK|CORRECTED": 5,
+  "OK|EXCLUDED": 207,
+  "OK|OK": 116779
+ },
+ "statusAgreement": 0.995979,
+ "correctedValueAgreement": {
+  "bothCorrected": 107,
+  "sameValue": 107
+ },
+ "rows": {
+  "BOTH_EXCLUDED": 2090,
+  "VALUE_EQUAL_1E-9": 366436,
+  "JS_EXCLUDED_PY_VALUE": 977,
+  "JS_VALUE_PY_EXCLUDED": 851,
+  "VALUE_DIFFERENT": 35
+ },
+ "disagreementSample": [
+  {
+   "cik": "0001158449",
+   "accession": "0001158449-10-000069",
+   "concept": "ECSO",
+   "value": 87418084,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_3"
+  },
+  {
+   "cik": "0001158449",
+   "accession": "0001158449-10-000091",
+   "concept": "ECSO",
+   "value": 84265967,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_3"
+  },
+  {
+   "cik": "0001158449",
+   "accession": "0001158449-10-000101",
+   "concept": "ECSO",
+   "value": 84052980,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_3"
+  },
+  {
+   "cik": "0001158449",
+   "accession": "0001158449-12-000029",
+   "concept": "ECSO",
+   "value": 72924659000,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_6"
+  },
+  {
+   "cik": "0000318306",
+   "accession": "0001144204-16-119452",
+   "concept": "ECSO",
+   "value": 33545703,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000318306",
+   "accession": "0001144204-16-134339",
+   "concept": "ECSO",
+   "value": 39959568,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DECIMAL_SCALE"
+  },
+  {
+   "cik": "0000318306",
+   "accession": "0001144204-17-017709",
+   "concept": "ECSO",
+   "value": 40255082,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DECIMAL_SCALE"
+  },
+  {
+   "cik": "0001520697",
+   "accession": "0001193125-11-311297",
+   "concept": "ECSO",
+   "value": 22524783,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001824502",
+   "accession": "0001628280-25-039622",
+   "concept": "ECSO",
+   "value": 645026291,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DECIMAL_SCALE"
+  },
+  {
+   "cik": "0001736243",
+   "accession": "0001558370-25-011045",
+   "concept": "ECSO",
+   "value": 1584775,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001446159",
+   "accession": "0001171843-25-007342",
+   "concept": "ECSO",
+   "value": 3393516,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000353184",
+   "accession": "0000353184-20-000015",
+   "concept": "ECSO",
+   "value": 2912599,
+   "js": "EXCLUDED",
+   "jsClass": "DECIMAL_SCALE_SUSPECTED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001267238",
+   "accession": "0001193125-09-223907",
+   "concept": "ECSO",
+   "value": 116799796000,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_3"
+  },
+  {
+   "cik": "0000766421",
+   "accession": "0000766421-11-000020",
+   "concept": "ECSO",
+   "value": 35831543000,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_3"
+  },
+  {
+   "cik": "0000766421",
+   "accession": "0000766421-11-000033",
+   "concept": "ECSO",
+   "value": 35828450000,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_3"
+  },
+  {
+   "cik": "0000766421",
+   "accession": "0000766421-11-000069",
+   "concept": "ECSO",
+   "value": 36006026000,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_3"
+  },
+  {
+   "cik": "0000778164",
+   "accession": "0001019687-12-001720",
+   "concept": "ECSO",
+   "value": 86801993,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_-3"
+  },
+  {
+   "cik": "0000778164",
+   "accession": "0001019687-12-002814",
+   "concept": "ECSO",
+   "value": 114801245,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000778164",
+   "accession": "0001019687-13-001143",
+   "concept": "ECSO",
+   "value": 153213493,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000778164",
+   "accession": "0001019687-13-001906",
+   "concept": "ECSO",
+   "value": 10861482,
+   "js": "OK",
+   "jsClass": "ALTERNATIVE_CONCEPT_DEVIATES",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000778164",
+   "accession": "0001019687-13-002893",
+   "concept": "ECSO",
+   "value": 14194925,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000778164",
+   "accession": "0001019687-13-004209",
+   "concept": "ECSO",
+   "value": 15540140,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000778164",
+   "accession": "0001019687-14-001140",
+   "concept": "ECSO",
+   "value": 18014034,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000778164",
+   "accession": "0001019687-14-001742",
+   "concept": "ECSO",
+   "value": 20145068,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000778164",
+   "accession": "0001019687-14-003187",
+   "concept": "ECSO",
+   "value": 23908095,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DECIMAL_SCALE"
+  },
+  {
+   "cik": "0001677077",
+   "accession": "0001214659-24-016346",
+   "concept": "ECSO",
+   "value": 3890064,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0001677077",
+   "accession": "0001214659-24-020264",
+   "concept": "ECSO",
+   "value": 5432797,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DECIMAL_SCALE"
+  },
+  {
+   "cik": "0001677077",
+   "accession": "0001214659-25-004123",
+   "concept": "ECSO",
+   "value": 6597507,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DECIMAL_SCALE"
+  },
+  {
+   "cik": "0001004434",
+   "accession": "0001047469-10-009488",
+   "concept": "ECSO",
+   "value": 51571828,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_-3"
+  },
+  {
+   "cik": "0001004434",
+   "accession": "0001047469-11-001624",
+   "concept": "ECSO",
+   "value": 51908911,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0001393584",
+   "accession": "0000950170-24-088613",
+   "concept": "CSSO",
+   "value": 14956053,
+   "js": "OK",
+   "jsClass": "GENUINE_CAPITAL_ACTION",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0001621832",
+   "accession": "0001437749-25-026499",
+   "concept": "ECSO",
+   "value": 1406005,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0000921114",
+   "accession": "0001144204-18-014652",
+   "concept": "ECSO",
+   "value": 13695824,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DECIMAL_SCALE"
+  },
+  {
+   "cik": "0001554818",
+   "accession": "0001683168-24-002035",
+   "concept": "ECSO",
+   "value": 2194196,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001826397",
+   "accession": "0001493152-23-039152",
+   "concept": "ECSO",
+   "value": 1413511,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0000006207",
+   "accession": "0001410578-22-001969",
+   "concept": "ECSO",
+   "value": 5254909,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0000006207",
+   "accession": "0001410578-22-002759",
+   "concept": "ECSO",
+   "value": 5254909,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0000006207",
+   "accession": "0001410578-22-003556",
+   "concept": "ECSO",
+   "value": 5254909,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001701478",
+   "accession": "0001701478-25-000012",
+   "concept": "ECSO",
+   "value": 14979354,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0001701478",
+   "accession": "0001701478-25-000018",
+   "concept": "ECSO",
+   "value": 16476354,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0001701478",
+   "accession": "0001701478-25-000040",
+   "concept": "ECSO",
+   "value": 23476354,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0001701478",
+   "accession": "0001701478-25-000050",
+   "concept": "ECSO",
+   "value": 10204938,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0000009389",
+   "accession": "0000009389-11-000014",
+   "concept": "ECSO",
+   "value": 169198602,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001169770",
+   "accession": "0001193125-13-327905",
+   "concept": "CSSO",
+   "value": 14976979,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001169770",
+   "accession": "0001193125-13-438460",
+   "concept": "CSSO",
+   "value": 17439562,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001169770",
+   "accession": "0001193125-14-102322",
+   "concept": "CSSO",
+   "value": 19561469,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001398805",
+   "accession": "0001683168-19-001580",
+   "concept": "ECSO",
+   "value": 4910380,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001398805",
+   "accession": "0001683168-22-003992",
+   "concept": "ECSO",
+   "value": 10075569000,
+   "js": "CORRECTED",
+   "jsClass": "SCALE_ERROR",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001398805",
+   "accession": "0001683168-22-005630",
+   "concept": "ECSO",
+   "value": 10084970000,
+   "js": "CORRECTED",
+   "jsClass": "SCALE_ERROR",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001398805",
+   "accession": "0001683168-22-007522",
+   "concept": "ECSO",
+   "value": 10095562000,
+   "js": "CORRECTED",
+   "jsClass": "SCALE_ERROR",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001398805",
+   "accession": "0001683168-23-002090",
+   "concept": "ECSO",
+   "value": 10229060000,
+   "js": "CORRECTED",
+   "jsClass": "SCALE_ERROR",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001398805",
+   "accession": "0001683168-23-003411",
+   "concept": "ECSO",
+   "value": 10760195,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "CORRECTED",
+   "pythonReason": "SCALE_-3"
+  },
+  {
+   "cik": "0001398805",
+   "accession": "0001683168-23-008029",
+   "concept": "ECSO",
+   "value": 14231041,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0001786352",
+   "accession": "0001564590-20-004233",
+   "concept": "ECSO",
+   "value": 72333573,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001786352",
+   "accession": "0001564590-20-023546",
+   "concept": "ECSO",
+   "value": 72578777,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001704287",
+   "accession": "0001213900-25-042633",
+   "concept": "ECSO",
+   "value": 1494182,
+   "js": "OK",
+   "jsClass": "OK",
+   "python": "EXCLUDED",
+   "pythonReason": "DEVIATES"
+  },
+  {
+   "cik": "0001130464",
+   "accession": "0001130464-12-000041",
+   "concept": "ECSO",
+   "value": 44089428000,
+   "js": "CORRECTED",
+   "jsClass": "SCALE_ERROR",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001378590",
+   "accession": "0001437749-19-010084",
+   "concept": "ECSO",
+   "value": 950642,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001411690",
+   "accession": "0001411690-25-000037",
+   "concept": "ECSO",
+   "value": 3007000,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  },
+  {
+   "cik": "0001808898",
+   "accession": "0001193125-23-239121",
+   "concept": "ECSO",
+   "value": 2547434,
+   "js": "EXCLUDED",
+   "jsClass": "UNRESOLVED",
+   "python": "OK",
+   "pythonReason": null
+  }
+ ],
+ "verdict": "SEE_MATRIX: agreement is reported, the Python rule is not tuned to the JS result"
+}

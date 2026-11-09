@@ -1,0 +1,5 @@
+{ "stage": "S0-SMOKE (engine parity smoke test; TRAIN outcomes were seen, therefore counted as trials)", "specs": [
+  { "id": "smoke-mom", "family": "PRICE", "ranks": [["r12_1", 1, 1]], "positions": 20, "rebalanceWeeks": 4, "holding": "FULL", "weighting": "EW" },
+  { "id": "smoke-run", "family": "PRICE", "ranks": [["r12_1", 1, 1]], "positions": 20, "rebalanceWeeks": 4, "holding": "RUN", "exitRankPct": 0.7, "entryRankPct": 0.9, "trendExit": true },
+  { "id": "smoke-fund", "family": "FUND", "cadence": "MONTHLY", "rebalanceMonths": 1, "ranks": [["f.p", 1, 1], ["r12_1", 1, 1]], "positions": 20, "holding": "FULL", "weighting": "EW" }
+] }

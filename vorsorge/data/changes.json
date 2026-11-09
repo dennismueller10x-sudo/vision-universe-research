@@ -1,6 +1,6 @@
 {
  "version": "vorsorge-monitor-1.0.0",
- "asOf": "2026-10-28",
+ "asOf": "2026-11-05",
  "events": [
   {
    "type": "COST_CHANGE",
@@ -74,21 +74,20 @@
    "category": "PRODUCT_CHANGE"
   },
   {
-   "type": "DATA_REVIEW",
+   "type": "NEW_LISTING",
    "symbol": null,
-   "count": 23,
-   "relevance": "LOW",
-   "asOf": "2026-10-02",
-   "text": "23 Listings haben die Datenprüfung bestanden und sind jetzt vollständig analysierbar (z. B. 158063, 159636, 512410, 515120, 515290).",
-   "category": "DATA_UPDATE"
+   "count": 250,
+   "text": "250 ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).",
+   "asOf": "2026-11-05",
+   "category": "PRODUCT_CHANGE"
   },
   {
    "type": "DATA_REVIEW",
    "symbol": null,
-   "count": 3,
+   "count": 2,
    "relevance": "LOW",
-   "asOf": "2026-10-02",
-   "text": "3 Listings wegen unvollständiger Daten zurück in Prüfung (z. B. BNKSF, CEE, TEUUF).",
+   "asOf": "2026-11-05",
+   "text": "2 Listings wegen unvollständiger Daten zurück in Prüfung (z. B. GLNK, ZCSH).",
    "category": "DATA_UPDATE"
   }
  ],
@@ -120,236 +119,28 @@
  "rawEvents": [
   {
    "type": "STATUS_CHANGE",
-   "symbol": "158063",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von 158063: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "159636",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von 159636: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "512410",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von 512410: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "515120",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von 515120: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "515290",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von 515290: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "515380",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von 515380: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "AAOX",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von AAOX: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "ADBU",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von ADBU: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "BNKSF",
+   "symbol": "GLNK",
    "from": "ACTIVE",
    "to": "REVIEW",
-   "text": "Status von BNKSF: ACTIVE → REVIEW.",
-   "asOf": "2026-10-02",
+   "text": "Status von GLNK: ACTIVE → REVIEW.",
+   "asOf": "2026-11-05",
    "category": "PRODUCT_CHANGE"
   },
   {
    "type": "STATUS_CHANGE",
-   "symbol": "BTCU",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von BTCU: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "CEE",
+   "symbol": "ZCSH",
    "from": "ACTIVE",
    "to": "REVIEW",
-   "text": "Status von CEE: ACTIVE → REVIEW.",
-   "asOf": "2026-10-02",
+   "text": "Status von ZCSH: ACTIVE → REVIEW.",
+   "asOf": "2026-11-05",
    "category": "PRODUCT_CHANGE"
   },
   {
-   "type": "STATUS_CHANGE",
-   "symbol": "COHX",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von COHX: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "LITX",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von LITX: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "MARS",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von MARS: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "MCHU",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von MCHU: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "NXPX",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von NXPX: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "PYPU",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von PYPU: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "QABA",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von QABA: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "SNDQ",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von SNDQ: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "SNDU",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von SNDU: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "SNXX",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von SNXX: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "TEUP",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von TEUP: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "TEUUF",
-   "from": "ACTIVE",
-   "to": "REVIEW",
-   "text": "Status von TEUUF: ACTIVE → REVIEW.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "TXNU",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von TXNU: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "UNHU",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von UNHU: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "WDCX",
-   "from": "REVIEW",
-   "to": "ACTIVE",
-   "text": "Status von WDCX: REVIEW → ACTIVE.",
-   "asOf": "2026-10-02",
+   "type": "NEW_LISTING",
+   "symbol": null,
+   "count": 250,
+   "text": "250 ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).",
+   "asOf": "2026-11-05",
    "category": "PRODUCT_CHANGE"
   }
  ],

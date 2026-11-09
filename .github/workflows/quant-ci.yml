@@ -4,21 +4,74 @@ name: Quant CI
 # Acceptance-Kriterien, die Gueltigkeit der praekomputierten Daten und die
 # Uebereinstimmung zwischen Datenstand und Engine.
 
+# Die Pfadlisten enthalten auch die Dateien, deren Hash ein Quant-Test pinnt (UI-Sperre
+# scripts/quality/ui-protection.mjs, Freeze docs/data/security-master/v130-quant-freeze.json): ihre Aenderung
+# muss Quant CI ausloesen (Vertragstest PC-5, Steuerung 09.11.2026).
 on:
   push:
     branches: [main]
-    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
+    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'products/quant/**', 'products/elliott/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
-            '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
+            'assets/atlas-web.webp',
+            'assets/atlas.png',
+            'assets/discover-perspektiven/**',
+            'assets/fonts/**',
+            'assets/hero-visuals/**',
+            'assets/home/**',
+            'assets/icons/**',
+            'assets/product-hero.css',
+            'assets/product-icons.svg',
+            'assets/pwa.js',
+            'assets/scroll-memory.js',
+            'assets/site-navigation.css',
+            'assets/site-navigation.js',
+            'assets/social/**',
+            'assets/stock-navigator.css',
+            'assets/stock-navigator.js',
+            'assets/themen/**',
+            'assets/vision-universe-logo-web.png',
+            'assets/vision-universe-logo.png',
+            'assets/vu-chart.js',
+            'core/chart-history.js',
+            'core/chart-standard.js',
+            'docs/quant-recovery/**',
+            'docs/quality/ui-protection-revisions.json',
+            'docs/data/security-master/v130-quant-freeze.json',
+            '.github/workflows/quant-ci.yml']
   pull_request:
     # Full-universe refresh PRs change well over GitHub's 300-file path-filter
     # window. Keep this workflow file in those PRs so Quant CI cannot be
     # silently omitted while Discover CI still runs.
-    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
+    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'products/quant/**', 'products/elliott/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
-            '.github/workflows/quant-ci.yml', '.github/workflows/market-data.yml']
+            'assets/atlas-web.webp',
+            'assets/atlas.png',
+            'assets/discover-perspektiven/**',
+            'assets/fonts/**',
+            'assets/hero-visuals/**',
+            'assets/home/**',
+            'assets/icons/**',
+            'assets/product-hero.css',
+            'assets/product-icons.svg',
+            'assets/pwa.js',
+            'assets/scroll-memory.js',
+            'assets/site-navigation.css',
+            'assets/site-navigation.js',
+            'assets/social/**',
+            'assets/stock-navigator.css',
+            'assets/stock-navigator.js',
+            'assets/themen/**',
+            'assets/vision-universe-logo-web.png',
+            'assets/vision-universe-logo.png',
+            'assets/vu-chart.js',
+            'core/chart-history.js',
+            'core/chart-standard.js',
+            'docs/quant-recovery/**',
+            'docs/quality/ui-protection-revisions.json',
+            'docs/data/security-master/v130-quant-freeze.json',
+            '.github/workflows/quant-ci.yml']
   workflow_dispatch:
     inputs:
       recover_v8_archives:
@@ -38,6 +91,12 @@ on:
 permissions:
   contents: read
 
+# PR-Laeufe: ueberholte Laeufe desselben PR werden abgebrochen (Runner-Warteschlange, Steuerung 08.11.2026).
+# Alle anderen Ereignisse bekommen eine eigene Gruppe je Lauf, also wie vorher keine Begrenzung.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('quant-ci-pr-{0}', github.event.pull_request.number) || format('quant-ci-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -52,6 +111,14 @@ jobs:
 
       - name: Engine- und Acceptance-Tests
         run: node --test "quant/tests/*.test.mjs"
+
+      - name: Backtest-Demos passen zum Code (nur Hash-Abgleich, keine private Validierung)
+        # Vergleicht die in docs/quant/backtest-demos/results aufgezeichneten Code-Hashes mit dem Checkout
+        # (scripts/quant/research/check-backtest-demo-freshness.cjs). Rot heisst: Runner- oder Engine-Code hat sich
+        # geaendert, die Demos dokumentieren ihn nicht mehr. Abhilfe: leerer Commit mit [v13-archive:demos] auf dem
+        # claude/**-Branch (Neubau mit den privaten Archivdaten ueber das Secret, Python-Gegenrechnung), Ergebnis
+        # committen. Dieser Schritt liest keine privaten Daten und bestaetigt keine private Nachrechnung.
+        run: node scripts/quant/research/check-backtest-demo-freshness.cjs --strict
 
       - name: Existing SEC exporter and internal PIT projection guards
         run: python3 -m unittest discover -s scripts/vu2 -p 'test*.py'

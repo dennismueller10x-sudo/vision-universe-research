@@ -74,8 +74,8 @@
       var problems = A.passwordProblems(input.value);
       list.textContent = '';
       [['PASSWORD_LENGTH', '10 bis 72 Zeichen'], ['PASSWORD_WEAK', 'drei von vier: klein, GROSS, Ziffer, Sonderzeichen']].forEach(function (r) {
-        list.appendChild(el('li', {'data-ok': problems.indexOf(r[0]) === -1 ? 'true' : 'false',
-          text: (problems.indexOf(r[0]) === -1 ? '✓ ' : '· ') + r[1]}));
+        // Haken-Liste (E04): der Kreis wird neongrün, sobald die Regel erfüllt ist (Stil in konto.css).
+        list.appendChild(el('li', {'data-ok': problems.indexOf(r[0]) === -1 ? 'true' : 'false', text: r[1]}));
       });
     }
     input.addEventListener('input', update);
@@ -114,11 +114,30 @@
   // ------------------------------------------------------------ Seiten
   var views = {};
 
+  // Ziele nach der Anmeldung in Worten (E05): Grund bei Deep Link und Karte „Danach geht es weiter zu …“.
+  var DESTINATIONS = {'/konto/watchlist/': ['deine Watchlist zu sehen', 'Deine Watchlist mit allen Kennzahlen'],
+    '/mein-dashboard/': ['deine Watchlist zu sehen', 'Deine Watchlist in Mein Bereich'], '/konto/tarife/': ['deinen Tarif zu sehen', 'Tarife in deinem Konto'],
+    '/konto/abo/': ['dein Abonnement zu sehen', 'Dein Abonnement'], '/konto/einstellungen/': ['deine Einstellungen zu sehen', 'Deine Einstellungen'],
+    '/konto/kuendigen/': ['einen Vertrag zu kündigen', 'Verträge kündigen']};
+  function loginTargets() {
+    var next = A.safePath(param('next')), known = next && DESTINATIONS[next];
+    if (next && next !== '/konto/' && next !== A.HOME) {
+      $('ka-reason').hidden = false;
+      $('ka-reason-title').textContent = 'Melde dich an, um ' + (known ? known[0] : 'diese Seite zu sehen') + '.';
+      $('ka-login-title').textContent = 'Anmelden';
+      $('ka-login-lead').hidden = true;
+      $('ka-after').hidden = true;
+      return;
+    }
+    if (pendingChoice() === 'pro') { $('ka-after').href = A.PRO_CONFIRM; $('ka-after-text').textContent = 'Pro bestätigen: Preis und Laufzeit prüfen, dann Zahlung bei Stripe'; }
+  }
+
   views.login = function () {
     showStatusParam();
     if (!A.available()) return unavailable();
     // Bestaetigungslink auf einem anderen Geraet: die Tarifwahl kommt ueber den Link mit.
     if (param('plan') === 'pro') rememberChoice('pro');
+    loginTargets();
     $('ka-login').addEventListener('submit', function (e) {
       e.preventDefault();
       var email = $('email').value.trim(), pw = $('password').value, btn = e.submitter || this.querySelector('button[type=submit]');
@@ -128,17 +147,50 @@
         if (r.ok) return continueSignedIn({next: param('next')});
         busy(btn, false);
         $('password').value = '';
+        // Fehler direkt am Formular: beide Felder markiert, „Passwort zurücksetzen“ als Knopf (E05-b).
+        if (r.state === 'INVALID_CREDENTIALS') {
+          $('email').setAttribute('aria-invalid', 'true'); $('password').setAttribute('aria-invalid', 'true');
+          $('ka-reset').hidden = false;
+          return notice('E-Mail oder Passwort stimmt nicht. Prüfe die Eingabe oder setze dein Passwort zurück.', 'error');
+        }
         fail(r);
       });
     });
   };
 
+  // Schrittanzeige (E04/E06): 1 Konto · 2 E-Mail · 3 Pro bestätigen (nur bei Pro-Wahl).
+  function steps(now, pro) {
+    var list = $('ka-steps');
+    if (!list) return;
+    Array.prototype.forEach.call(list.children, function (li, i) {
+      if (li.hasAttribute('data-pro')) li.hidden = !pro;
+      li.className = i < now ? 'is-done' : i === now ? 'is-now' : '';
+    });
+  }
+
   views.register = function () {
     if (!A.available()) return unavailable();
     if (param('plan') === 'pro') rememberChoice('pro');
     if (param('plan') === 'free') forgetChoice();
-    if (pendingChoice() === 'pro') $('ka-plan-hint').hidden = false;
+    var pro = pendingChoice() === 'pro';
+    $('ka-plan-hint').hidden = !pro;
+    steps(0, pro);
+    $('ka-plan-free').addEventListener('click', function () {
+      forgetChoice(); pro = false;
+      $('ka-plan-hint').hidden = true; steps(0, false);
+      notice('Du startest mit Free. Pro kannst du später jederzeit im Konto wählen.', 'ok');
+    });
     passwordHints($('password'), $('pw-rules'));
+    // Newsletter nur anbieten, wenn er eingerichtet ist (freiwillig, nicht vorausgewaehlt). Pro-Preis nur aus GET /v1/plans.
+    A.get('/v1/plans').then(function (r) {
+      if (r.ok && r.data && r.data.newsletter) $('newsletter-field').hidden = false;
+      var p = r.ok && r.data && (r.data.plans || []).filter(function (x) { return x.id === 'pro'; })[0];
+      var month = p && (p.prices || []).filter(function (x) { return x.interval === 'month'; })[0];
+      $('ka-plan-price').textContent = month ? A.money(month.unitAmount, month.currency) + ' / Monat' : '';
+    });
+    $('ka-register-change').addEventListener('click', function () {
+      $('ka-register-done').hidden = true; $('ka-register').hidden = false; steps(0, pro); $('email').focus();
+    });
     $('ka-register').addEventListener('submit', function (e) {
       e.preventDefault();
       var btn = this.querySelector('button[type=submit]');
@@ -149,12 +201,15 @@
       if (!$('terms').checked) return notice(A.message('TERMS_REQUIRED'), 'error');
       busy(btn, true);
       A.post('/v1/auth/signup', {email: email, password: pw, displayName: $('display-name').value.trim() || null,
-        acceptTerms: true, termsVersion: 'entwurf-2026-10', plan: pendingChoice() === 'pro' ? 'pro' : null}).then(function (r) {
+        acceptTerms: true, newsletter: !$('newsletter-field').hidden && $('newsletter').checked,
+        plan: pendingChoice() === 'pro' ? 'pro' : null}).then(function (r) {
         busy(btn, false);
         if (!r.ok) return fail(r);
         $('ka-register').hidden = true;
+        $('ka-plan-hint').hidden = true;
         $('ka-register-done').hidden = false;
         $('ka-register-done').querySelector('[data-email]').textContent = email;
+        steps(1, pro);
         notice('');
       });
     });
@@ -211,6 +266,37 @@
     });
   };
 
+  /* „Deine App“ (E07): Erfahrung und Ziel aus dem ersten Start (willkommen/start/prefs.js; Konto zuerst,
+     Gerätewahl einmal übernommen, Z1: settings.experienceLevel/goal), Darstellung wie im Menü (VUTheme)
+     und im Konto (PATCH /v1/me settings.appearance, bestehende Einstellung). */
+  function appSettings(me) {
+    var S = window.VUStart;
+    if (S) {
+      var eff = S.effective(me);
+      var paintMode = function (m) { Array.prototype.forEach.call($('ka-mode').children, function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-mode') === m)); }); };
+      paintMode(eff.mode);
+      $('ka-mode').addEventListener('click', function (e) {
+        var b = e.target.closest('[data-mode]'); if (!b) return;
+        var m = b.getAttribute('data-mode');
+        S.write({mode: m}); paintMode(m);
+        A.patch('/v1/me', {settings: {experienceLevel: m}}).then(function (r) { if (r.ok) notice('Erfahrung im Konto gespeichert.', 'ok'); else fail(r); });
+      });
+      if (eff.goal) $('ka-goal').textContent = S.GOALS[eff.goal].title;
+    } else $('ka-mode').hidden = true;
+    var theme = (me.settings && me.settings.appearance) || 'system';
+    var paintTheme = function (t) { Array.prototype.forEach.call($('ka-theme').children, function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-theme') === t)); }); };
+    paintTheme(theme);
+    $('ka-theme').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-theme]'); if (!b) return;
+      var t = b.getAttribute('data-theme');
+      paintTheme(t);
+      if (t === 'system') { try { localStorage.removeItem('vu-discover-theme-v1'); } catch (err) { /* leer */ } }
+      if (window.VUTheme && window.VUTheme.set) window.VUTheme.set(t === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t);
+      if (t === 'system') { try { localStorage.removeItem('vu-discover-theme-v1'); } catch (err) { /* leer */ } }
+      A.patch('/v1/me', {settings: {appearance: t}}).then(function (r) { if (!r.ok) fail(r); });
+    });
+  }
+
   views.account = function () {
     showStatusParam();
     if (!A.available()) return unavailable();
@@ -224,14 +310,29 @@
         // Direkt nach der E-Mail-Bestaetigung: Pro-Bestaetigung bzw. Willkommensseite statt Kontoverwaltung.
         if (param('status') === 'verified') return go(A.nextAfterSignIn({me: d, localChoice: pendingChoice(), verified: true}));
         var name = d.profile && d.profile.displayName;
-        $('ka-hello').textContent = name ? 'Hallo, ' + name : 'Mein Konto';
+        $('ka-hello').textContent = name || 'Mein Konto';
+        // Profil (E07): Initialen, Anzeigename, E-Mail, Mitglied seit.
+        var initials = String(name || d.user.email || '').split(/[\s@._-]+/).filter(Boolean).slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase(); }).join('');
+        $('ka-initials').textContent = initials || '–';
+        var since = d.profile && d.profile.createdAt ? new Date(d.profile.createdAt) : null;
+        $('ka-profile-sub').textContent = d.user.email + (since && !isNaN(since) ? ' · Mitglied seit ' + since.toLocaleDateString('de-DE', {month: 'short', year: 'numeric'}) : '');
         var dl = $('ka-account-facts');
         dl.textContent = '';
-        [['E-Mail', d.user.email], ['Tarif', null], ['Mitglied seit', A.date(d.profile && d.profile.createdAt)]].forEach(function (row) {
+        [['E-Mail', d.user.email], ['Mitglied seit', A.date(d.profile && d.profile.createdAt)]].forEach(function (row) {
           dl.appendChild(el('dt', {text: row[0]}));
-          dl.appendChild(el('dd', {}, row[1] === null ? [planBadge(d.entitlements), (d.entitlements || {}).plan_id === 'pro' ? null
-            : el('a', {className: 'ka-link', href: '/konto/tarife/', text: ' Tarife ansehen'})] : [row[1] || '–']));
+          dl.appendChild(el('dd', {text: row[1] || '–'}));
         });
+        // Tarif-Karte: bei Pro „Abonnement verwalten“.
+        var plan = (d.entitlements && d.entitlements.plan_id) || 'free', names = {free: 'Free', plus: 'Plus', pro: 'Pro'};
+        $('ka-plan-name').textContent = names[plan] || plan;
+        $('ka-plan-sub').textContent = plan === 'free' ? 'kostenlos, ohne Laufzeit' : 'monatlich, kündbar zum Ende des bezahlten Monats';
+        if (plan !== 'free') { $('ka-plan-go').href = '/konto/abo/'; $('ka-plan-go').textContent = 'Abonnement verwalten'; }
+        $('ka-sub-line').textContent = plan === 'free' ? 'Kein Abo · Free' : names[plan] + ' aktiv';
+        var st = d.settings || {};
+        $('ka-currency').textContent = st.displayCurrency === 'EUR' ? '$ / €' : st.displayCurrency || 'Listing';
+        var NEWS = {confirmed: 'Du erhältst den Newsletter', pending: 'Bitte Link in der E-Mail bestätigen', requested: 'Bestätigungs-E-Mail unterwegs'};
+        $('ka-news-line').textContent = d.newsletter && d.newsletter.available === false ? 'Noch nicht verfügbar' : NEWS[d.newsletter && d.newsletter.status] || 'Freiwillig, Double-Opt-in';
+        (window.VUStart ? window.VUStart.adopt(A, d) : Promise.resolve(d)).then(appSettings);
         // Offene Pro-Wahl: eindeutig fortsetzen oder verwerfen, keine automatische Umleitung bei jedem Besuch.
         var pending = A.proPending(d, pendingChoice());
         $('ka-pro-pending').hidden = !pending;
@@ -244,6 +345,7 @@
         }
         $('ka-account').hidden = false;
         $('ka-loading').hidden = true;
+        if (window.VUNavigation) window.VUNavigation.dock({});
       });
     });
     $('ka-logout').addEventListener('click', function () {
@@ -362,6 +464,10 @@
     }
     var proPrice = null, me = null, signedIn = false, loaded = false, open = false;
     var confirmBox = $('ka-confirm'), terms = $('ka-confirm-terms'), pay = $('ka-checkout');
+    // Bestellweg (E06): mit ?plan=pro nur die Bestellbestätigung, ohne Reiter und ohne zweite Tarifwahl.
+    var order = param('plan') === 'pro' && !canceled;
+    if (order) { document.documentElement.setAttribute('data-ka-order', ''); $('ka-confirm-title').textContent = 'Deine Bestellung'; }
+    $('ka-ready-free').addEventListener('click', function () { $('ka-continue-free').click(); });
 
     $('ka-choose-free').addEventListener('click', forgetChoice);
     $('ka-choose-pro').addEventListener('click', function () {
@@ -427,6 +533,7 @@
         proAction.appendChild(el('span', {className: 'ka-badge', text: 'Dein Tarif'}));
         proAction.appendChild(el('a', {className: 'ka-btn ka-btn--block', href: '/konto/abo/', text: 'Abonnement verwalten'}));
         confirmBox.hidden = true;
+        if (order) { $('ka-subscribed').hidden = false; document.documentElement.setAttribute('data-ka-subscribed', ''); }
         return;
       }
       // Pro vor der Registrierung gewaehlt (Adresse, dieses Geraet oder im Konto): direkt zur Bestaetigung,
@@ -450,7 +557,7 @@
           + ' Dein kostenloses Konto mit Free ist aktiv. Es wurde nichts berechnet.';
       }
       if (state === 'signed-out' && open) { rememberChoice('pro'); go('/konto/registrieren/?plan=pro'); }
-      if (state === 'subscribed') confirmBox.hidden = true;
+      if (state === 'subscribed') { confirmBox.hidden = true; if (order) { $('ka-subscribed').hidden = false; document.documentElement.setAttribute('data-ka-subscribed', ''); } }
       return state;
     }
     function openConfirm() {
@@ -459,7 +566,7 @@
       var state = renderConfirm();
       if (state === 'signed-out' || state === 'subscribed') return;
       var title = $('ka-confirm-title');
-      if (title.scrollIntoView) title.scrollIntoView({block: 'start'});
+      if (title.scrollIntoView && !order) title.scrollIntoView({block: 'start'});
       title.focus({preventScroll: true});
     }
   };
@@ -476,7 +583,7 @@
         $('appearance').value = s.appearance || 'system';
         $('currency').value = s.displayCurrency || 'EUR';
         $('experience').value = s.experienceLevel || 'beginner';
-        $('marketing').checked = Boolean(s.marketingEmails);
+        renderNewsletter(r.data.newsletter);
         Array.prototype.forEach.call(document.querySelectorAll('[data-notification]'), function (c) {
           c.checked = Boolean((s.notifications || {})[c.getAttribute('data-notification')]);
         });
@@ -493,13 +600,43 @@
       });
       busy(btn, true);
       A.patch('/v1/me', {profile: {displayName: $('display-name').value.trim() || null}, settings: {appearance: $('appearance').value,
-        displayCurrency: $('currency').value, experienceLevel: $('experience').value, notifications: notifications,
-        marketingEmails: $('marketing').checked}}).then(function (r) {
+        displayCurrency: $('currency').value, experienceLevel: $('experience').value, notifications: notifications}}).then(function (r) {
         busy(btn, false);
         if (!r.ok) return fail(r);
         var mode = $('appearance').value;
         if ((mode === 'dark' || mode === 'light') && window.VUTheme && window.VUTheme.set) window.VUTheme.set(mode);
         notice('Gespeichert.', 'ok');
+      });
+    });
+
+    // Newsletter: Stand der eigenen Einwilligung; Bestellung per Double-Opt-in, Abmeldung sofort.
+    var NEWSLETTER_TEXT = {
+      none: 'Du hast den Newsletter nicht bestellt.',
+      withdrawn: 'Du hast den Newsletter abbestellt.',
+      expired: 'Deine Bestellung wurde nicht bestätigt und ist verfallen.',
+      failed: 'Die Bestellung konnte nicht gesendet werden. Bitte versuche es später erneut.',
+      requested: 'Bestellt – die Bestätigungs-E-Mail ist unterwegs.',
+      pending: 'Bestellt – bitte bestätige den Link in der E-Mail, die wir dir geschickt haben. Erst dann erhältst du den Newsletter.',
+      confirmed: 'Du erhältst den Newsletter.'
+    };
+    var newsletterState = null;
+    function renderNewsletter(n) {
+      newsletterState = n || {available: false, status: 'none'};
+      var active = ['requested', 'pending', 'confirmed'].indexOf(newsletterState.status) !== -1;
+      $('ka-newsletter-status').textContent = NEWSLETTER_TEXT[newsletterState.status] || NEWSLETTER_TEXT.none;
+      var btn = $('ka-newsletter-toggle');
+      btn.hidden = !active && !newsletterState.available;
+      btn.textContent = active ? 'Newsletter abbestellen' : 'Newsletter bestellen';
+      if (!newsletterState.available && !active) $('ka-newsletter-status').textContent += ' Der Newsletter ist im Konto noch nicht verfügbar.';
+    }
+    $('ka-newsletter-toggle').addEventListener('click', function () {
+      var btn = this, subscribe = ['requested', 'pending', 'confirmed'].indexOf((newsletterState || {}).status) === -1;
+      busy(btn, true);
+      A.post('/v1/me/newsletter', {subscribe: subscribe}).then(function (r) {
+        busy(btn, false);
+        if (!r.ok) return fail(r);
+        renderNewsletter(r.data.newsletter);
+        notice(subscribe ? 'Fast geschafft: Bitte bestätige den Link in der E-Mail.' : 'Du hast den Newsletter abbestellt.', 'ok');
       });
     });
 
@@ -600,6 +737,120 @@
     }
     $('cancel-kind').addEventListener('change', function () { $('cancel-reason-field').hidden = this.value !== 'extraordinary'; });
     $('ka-cancel-print').addEventListener('click', function () { window.print(); });
+  };
+
+  // ------------------------------------------------------------ Tarifverwaltung (nur Rolle pricing_admin)
+  // Der Server entscheidet ueber die Berechtigung (403 NOT_PRICING_ADMIN); die Seite zeigt nur an, was er liefert.
+  // Ablauf: Vorschau (nichts geaendert) -> Zusammenfassung -> Passwort + Bestaetigung -> Aenderung.
+  views['pricing-admin'] = function () {
+    if (!A.available()) return unavailable();
+    var current = null, pending = null;
+    var STATUS_TEXT = {applied: 'angewendet', failed: 'fehlgeschlagen', started: 'begonnen', stripe_created: 'unvollständig (wird bei Wiederholung abgeschlossen)'};
+    function label(p) { return p.plan_id.charAt(0).toUpperCase() + p.plan_id.slice(1) + ', ' + (p.interval === 'year' ? 'jährlich' : 'monatlich'); }
+    function cents(text) {
+      var t = String(text || '').trim().replace(/\s|€/g, '');
+      if (!/^\d{1,3}([.,]\d{1,2})?$/.test(t)) return null;
+      var parts = t.replace(',', '.').split('.');
+      return Number(parts[0]) * 100 + (parts[1] ? Number((parts[1] + '0').slice(0, 2)) : 0);
+    }
+    function row(cells) {
+      return el('tr', {}, cells.map(function (c) { return el('td', {className: c.num ? 'num' : null, text: c.text}); }));
+    }
+    function render(d) {
+      current = d;
+      var byId = {};
+      $('ka-loading').hidden = true;
+      $('ka-pricing-wrap').hidden = false;
+      $('pa-state').textContent = 'Modus: ' + (d.mode === 'live' ? 'Live' : 'Test') + ' · Checkout: ' + d.checkout +
+        ' · Umsatzsteuer: ' + (d.tax === 'automatic' ? 'Stripe Tax (' + (d.stripeTax === 'ok' ? 'aktiv' : 'NICHT aktiv') + ')' : 'ohne Ausweis') +
+        ' · Erlaubte Preise: ' + A.money(d.limits.min, 'EUR') + ' bis ' + A.money(d.limits.max, 'EUR');
+      var body = $('pa-prices'), sel = $('pa-price');
+      body.textContent = '';
+      sel.textContent = '';
+      d.prices.forEach(function (p) {
+        byId[p.id] = p;
+        var s = d.stripe[p.id];
+        var stripe = !p.active ? '–' : !s ? 'nicht geprüft' : s.error ? 'nicht lesbar'
+          : (s.matches ? 'stimmt überein' : 'ABWEICHUNG (' + A.money(s.amount, 'EUR') + ')') + (s.taxBehavior === 'inclusive' ? ', inkl. USt' : ', NICHT inkl. USt');
+        body.appendChild(row([{text: label(p)}, {text: A.money(p.unit_amount, p.currency), num: true},
+          {text: p.active ? 'aktiv (neue Abschlüsse)' : 'früher'}, {text: String(p.subscribers), num: true}, {text: stripe}]));
+        if (p.active && p.provider === 'stripe') sel.appendChild(el('option', {value: p.id, text: label(p) + ' – ' + A.money(p.unit_amount, p.currency)}));
+      });
+      var log = $('pa-log');
+      log.textContent = '';
+      if (!d.changes.length) log.appendChild(row([{text: 'Noch keine Änderung.'}, {text: ''}, {text: ''}, {text: ''}, {text: ''}]));
+      d.changes.forEach(function (c) {
+        var p = byId[c.plan_price_id];
+        log.appendChild(row([{text: new Date(c.created_at).toLocaleString('de-DE')}, {text: p ? label(p) : c.plan_price_id},
+          {text: A.money(c.old_amount, 'EUR'), num: true}, {text: A.money(c.new_amount, 'EUR'), num: true},
+          {text: (STATUS_TEXT[c.status] || c.status) + (c.error ? ' (' + c.error + ')' : '')}]));
+      });
+    }
+    function load() {
+      return A.get('/v1/admin/pricing').then(function (r) {
+        $('ka-loading').hidden = true;
+        if (r.ok) return render(r.data);
+        disableForms();
+        fail(r);
+      });
+    }
+    function reset() {
+      pending = null;
+      $('pa-apply-form').hidden = true;
+      $('pa-apply-form').reset();
+    }
+    requireSession().then(function (user) { if (user) load(); });
+
+    $('pa-preview-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var btn = this.querySelector('button[type=submit]');
+      var amount = cents($('pa-amount').value);
+      if (amount === null || !current || amount < current.limits.min || amount > current.limits.max) return notice(A.message('AMOUNT_INVALID'), 'error');
+      reset();
+      busy(btn, true);
+      A.post('/v1/admin/pricing/preview', {price: $('pa-price').value, amount: amount}).then(function (r) {
+        busy(btn, false);
+        if (!r.ok) return fail(r);
+        pending = r.data;
+        var list = $('pa-summary');
+        list.textContent = '';
+        r.data.summary.forEach(function (line) { list.appendChild(el('li', {text: line})); });
+        $('pa-warnings').hidden = !r.data.warnings.length;
+        $('pa-warnings').textContent = r.data.warnings.join(' ');
+        $('pa-apply-form').hidden = false;
+        notice('Vorschau erstellt. Es wurde noch nichts geändert.', 'info');
+        $('pa-password').focus();
+      });
+    });
+    $('pa-cancel').addEventListener('click', function () { reset(); notice('Abgebrochen. Es wurde nichts geändert.', 'info'); });
+    $('pa-apply-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!pending) return;
+      if (!$('pa-confirm').checked) return notice('Bitte bestätige, dass du die Zusammenfassung geprüft hast.', 'error');
+      var btn = this.querySelector('button[type=submit]');
+      busy(btn, true);
+      // Wiederholen (z. B. nach Zeitueberschreitung) schickt dieselbe Vorgangs-ID: der Server fuehrt nichts doppelt aus.
+      A.post('/v1/admin/pricing/apply', {price: pending.price, amount: pending.amount, changeId: pending.changeId,
+        expectedProviderPriceId: pending.expectedProviderPriceId, password: $('pa-password').value, confirm: true}, {timeoutMs: 30000}).then(function (r) {
+        busy(btn, false);
+        $('pa-password').value = '';
+        if (!r.ok) return fail(r);
+        var c = r.data.change;
+        reset();
+        $('pa-amount').value = '';
+        notice('Preis geändert: ' + A.money(c.from, 'EUR') + ' → ' + A.money(c.to, 'EUR') + '. Neue Abschlüsse zahlen den neuen Preis (Preisseite spätestens nach 5 Minuten).', 'ok');
+        load();
+      });
+    });
+  };
+
+  // ------------------------------------------------------------ Interne Backtest-Vorschau (nur Rolle backtest_reviewer)
+  // Entwurf, nicht verlinkt. Der Server entscheidet ueber Aktivierung (404 PREVIEW_NOT_ACTIVATED) und Rolle
+  // (403 NOT_BACKTEST_REVIEWER); Anzeige und Auswahl in konto/admin/backtests/review.js. Ohne Sitzung keine Anfrage.
+  views['backtest-review'] = function () {
+    if (!A.available()) return unavailable();
+    if (!window.VUBacktestReview) return;
+    window.VUBacktestReview.start({api: A, doc: document, requireSession: requireSession, notice: notice, disableForms: disableForms});
   };
 
   // Navigation innerhalb des Kontos: aktuelle Seite markieren.

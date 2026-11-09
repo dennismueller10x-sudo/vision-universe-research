@@ -208,7 +208,7 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
     /* Backtest & Signal Intelligence (01.10.2026): Regel oder Setup waehlen. */
     backtest: ["backtest", "NEW_52W_HIGH"],
     /* Chartbild (02.10.2026): technische Lage einer Aktie und Uebersicht der Lagen. */
-    chartbild: ["elliott", "NVDA"], elliott: ["elliott", "NVDA"], chartlagen: ["chartlagen", "reihe=near-entry"]
+    chartbild: ["elliott", "NVDA"], elliott: ["elliott", "NVDA"], chart: ["chart", "NVDA"], chartlagen: ["chartlagen", "reihe=near-entry"]
   };
   assert.deepEqual(Object.keys(routes).sort(), Object.keys(erwartet).sort(),
     "X.routes hat sich geaendert - dieser Test muss die neue Route kennen");
@@ -218,7 +218,7 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
     if (NATIV.has(name)) { assert.equal(routes[name](arg), "/elliott/#/NVDA", "X.routes." + name); continue; }
     assert.equal(parse(routes[name](arg)).view, view, "X.routes." + name + " -> " + routes[name](arg));
     /* Ohne Wert muss nur eine Route ohne Pflichtwert funktionieren. */
-    if (!["stock", "technical", "fundamentals", "chartbild", "elliott"].includes(name)) {
+    if (!["stock", "technical", "fundamentals", "chartbild", "elliott", "chart"].includes(name)) {
       assert.notEqual(parse(routes[name]()).view, "notfound", "X.routes." + name + "() ohne Wert fuehrt ins Leere");
     }
   }

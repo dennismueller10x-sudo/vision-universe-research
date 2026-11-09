@@ -1,0 +1,28 @@
+{
+ "schemaVersion": "v11-winners-registration-amendment-1.0.1",
+ "registeredAt": "2026-10-28T17:13:26.439Z",
+ "amendmentHash": "796a658b751a4748ddbdd4b51b95802f9ec92a08de77266905001f8815b52220",
+ "amendment": {
+  "id": "V11-WINNERS",
+  "version": "1.0.1",
+  "amends": {
+   "version": "1.0.0",
+   "registrationHash": "4aa432a0b4105a2a97468036eb8bb0bbab3607a400abb97ad59d378dfd94d3d4"
+  },
+  "reason": "Outcome-free availability check of the built member set (feature counts per cohort; no forward return compared with any feature): salesYield (revenue/EV) and netDebtToAssets need a net-debt figure and are finite for only 2-9 % of fundamental members (e.g. 2016-03: 78 resp. 100 of 2,273 members). They stay in the tables (counted) but cannot carry the valuation/leverage questions.",
+  "added": [
+   [
+    "salesToMarketCap",
+    "revenue TTM (PIT document ttm.revenue, version filed < t) / PIT market cap = inverse price-to-sales; substitute for EV/Sales",
+    "valuation"
+   ],
+   [
+    "equityToAssets",
+    "fundamental-inputs raws.equityToAssets (balance-sheet leverage; higher = less leverage); substitute for netDebtToAssets",
+    "quality"
+   ]
+  ],
+  "unchanged": "All other definitions, classes, endpoints, inference and splits of 1.0.0.",
+  "disclosure": "Decided after seeing feature availability counts and the forward return of the pre-named case NVDA at 2016-03 (a known ex-post fact named by the owner), before any winner/feature comparison was computed."
+ }
+}

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "rejection-ledger-1.0.0",
   "auftrag": "Owner 18.09.2026 P0: Rejection-Checkpoint klassifizieren statt loeschen",
-  "checkedAt": "2026-10-29T01:55:07.637Z",
+  "checkedAt": "2026-11-07T02:09:57.455Z",
   "applied": true,
   "staleAfterDays": 7,
   "checkpointsFound": 1,
@@ -9,28 +9,28 @@
     {
       "file": ".market-cache/tiingo/checkpoints/incremental.json",
       "runId": "incremental",
-      "total": 4,
+      "total": 6,
       "byClass": {
         "PERMANENT_REJECT": 0,
-        "TEMPORARY_REJECT": 4,
+        "TEMPORARY_REJECT": 6,
         "STALE_REJECT": 0
       },
       "byCode": {
         "too_few_bars": 2,
-        "adjustment_status_contradicted": 2
+        "adjustment_status_contradicted": 4
       },
-      "retryDue": 4,
+      "retryDue": 6,
       "keptBlocked": 0,
-      "oldest": "2026-10-28T01:41:56.145Z",
-      "newest": "2026-10-28T02:35:57.614Z",
+      "oldest": "2026-11-06T02:52:11.110Z",
+      "newest": "2026-11-06T03:45:13.876Z",
       "keptExamples": [],
-      "removed": 4
+      "removed": 6
     }
   ],
   "totals": {
-    "before": 4,
-    "retryDue": 4,
+    "before": 6,
+    "retryDue": 6,
     "keptBlocked": 0,
-    "removed": 4
+    "removed": 6
   }
 }

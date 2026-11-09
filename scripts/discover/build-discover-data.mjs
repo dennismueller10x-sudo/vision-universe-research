@@ -469,7 +469,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
   };
 
   const stocks = [];
-  const consumerPolicy = { allowed: 0, excludedByType: {} };
+  const consumerPolicy = { allowed: 0, excludedByType: {}, excludedByIdentity: {} };
   for (const sec of factors.securities) {
     /* Nur Titel des Produktuniversums: was der Company Master ausschliesst
        (Warrants, Units, Rights, Testwerte), bekommt keine Karte - auch wenn
@@ -482,6 +482,15 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
     if (ref.consumer === false) {
       const typ = ref.instrumentType || "UNKNOWN";
       consumerPolicy.excludedByType[typ] = (consumerPolicy.excludedByType[typ] || 0) + 1;
+      continue;
+    }
+    /* Belegte Ticker-Wiederverwendung (quant/config/ticker-reuse-quarantine.json ueber universe-source.mjs):
+       unter dem Ticker handelt heute ein anderes Wertpapier (z. B. ein ETF) als das Unternehmen, dessen Name
+       und Stamm hier stehen. Keine Karte, keine Seite, kein Ranking, bis die Identitaet korrigiert ist -
+       gezaehlt nach Grund, nie still und nie als das alte Unternehmen. */
+    if (ref.identityStatus === "IDENTITY_QUARANTINED") {
+      const grund = ref.identityReason || "IDENTITY_QUARANTINED";
+      consumerPolicy.excludedByIdentity[grund] = (consumerPolicy.excludedByIdentity[grund] || 0) + 1;
       continue;
     }
     consumerPolicy.allowed++;
@@ -610,7 +619,7 @@ function buildRealUniverse(nameMap, goldenBars, compactSeries) {
                       counts: universeSource.counts, sha256: universeSource.sha256, handover: universeSource.handover },
     factorCoverage,
     fundamentalsCoverage,
-    consumerPolicy: Object.assign({}, consumerPolicy, { rule: "CONSUMER_INSTRUMENT_TYPES aus scripts/market/universe-source.mjs" }),
+    consumerPolicy: Object.assign({}, consumerPolicy, { rule: "CONSUMER_INSTRUMENT_TYPES aus scripts/market/universe-source.mjs; identityStatus IDENTITY_QUARANTINED (quant/config/ticker-reuse-quarantine.json) ausgeschlossen" }),
     label: METHODOLOGY.universes.US_REAL.label,
     kind: "real",
     provider: factors.provider,
@@ -1083,6 +1092,12 @@ function attachIndexMembership(universe) {
 }
 
 const ROW_FILTERS = {
+  /* Fallen Angels (Konzept „Reihe für Reihe“, PR 4, Entscheidung 1): Mitglied in mindestens einer
+     der Reihen config.memberOf (Qualität + Wachstum, Profitables Wachstum, Langfristige Compounder)
+     UND Schlusskurs mindestens 30 % unter dem 52-Wochen-Hoch. */
+  fundFallenAngels: (s, config, memberCount) => isNum(s.metrics.distanceTo52wHigh) &&
+    s.metrics.distanceTo52wHigh <= (isNum(config.maxDistanceToHigh) ? config.maxDistanceToHigh : -0.30) &&
+    memberCount(s.symbol) > 0,
   strongest: (s) => !!(s.qualification && s.qualification.strongest),
   indexMember: (s, config) => !!(s.qualification && s.qualification.strongest) &&
     Array.isArray(s.indexMemberships) && s.indexMemberships.indexOf(config.indexId) !== -1,
@@ -1165,14 +1180,28 @@ function rankingReason(s, config, rank, of, scoreKey) {
   };
 }
 
+/* Alle Treffer einer Reihe (Symbole), je Universum einmal gerechnet - fuer Reihen, deren Regel
+   die Mitgliedschaft in anderen Reihen liest (config.memberOf). */
+const MEMBER_CACHE = new Map();
+function rowMembers(universe, rowId) {
+  const key = universe.universeId + ":" + rowId;
+  if (!MEMBER_CACHE.has(key)) {
+    const cfg = ROWS.find((r) => r.id === rowId);
+    if (!cfg) throw new Error("memberOf: unbekannte Reihe " + rowId);
+    MEMBER_CACHE.set(key, new Set(buildRow(universe, Object.assign({}, cfg, { limit: 0 })).members));
+  }
+  return MEMBER_CACHE.get(key);
+}
 function buildRow(universe, config) {
+  const sets = (config.memberOf || []).map((id) => rowMembers(universe, id));
+  const memberCount = (sym) => sets.reduce((n, set) => n + (set.has(sym) ? 1 : 0), 0);
   const pool = universe.stocks.filter((s) => {
     if (s.discoveryEligible === false) return false;
     /* V4 §21: Qualifikation zuerst - Kurs-Reihen zeigen nur liquide,
        gehandelte Titel mit Historie; ein eingefrorener Kurs an einem
        "Jahreshoch" ist keine Entdeckung. */
     if (config.qualify === true && !(s.qualification && s.qualification.strongest)) return false;
-    if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s, config)) return false;
+    if (config.filter && ROW_FILTERS[config.filter] && !ROW_FILTERS[config.filter](s, config, memberCount)) return false;
     return (config.require || []).every((f) => isNum(s.metrics[f]));
   });
   /* Zweitschluessel, damit eine Zeile nicht an Gleichstaenden haengt: bei
@@ -1183,6 +1212,11 @@ function buildRow(universe, config) {
     /* Eine Zeile, die "NEW 52-WEEK HIGHS" heisst, beginnt mit den Titeln,
        die tatsaechlich eines gemacht haben - nicht mit denen, die dem Hoch
        rechnerisch am naechsten sind. */
+    /* Fallen Angels: erst die Zahl der Quell-Reihen (absteigend), dann die Sortierung der Reihe. */
+    if (sets.length) {
+      const d = memberCount(b.symbol) - memberCount(a.symbol);
+      if (d) return d;
+    }
     if (config.signalFirst) {
       const asig = a.signals[config.signalFirst] === true;
       const bsig = b.signals[config.signalFirst] === true;
@@ -1242,7 +1276,7 @@ function buildRow(universe, config) {
     (config.require || []).every((f) => isNum(s.metrics[f]))).length;
 
   const index = config.indexId ? (universe.indexes || []).find((x) => x.indexId === config.indexId) || null : null;
-  return {
+  const out = {
     rowId: config.id, title: config.title, subtitle: config.subtitle,
     world: config.world || "leadership",
     /* V4 §19: Herkunft der Index-Mitgliedschaft an der Reihe. */
@@ -1270,6 +1304,11 @@ function buildRow(universe, config) {
     filters: filterOptions(pool),
     cards
   };
+  /* Alle Treffer in Rangfolge (nicht nur die ausgelieferten Karten) fuer den
+     Index Aktie -> Reihen (membership/{U}.json). Nicht aufzaehlbar: steht nicht
+     in der Reihen-Datei. */
+  Object.defineProperty(out, "members", { value: bereinigt.map((s) => s.symbol), enumerable: false });
+  return out;
 }
 
 function filterOptions(stocks) {
@@ -1938,10 +1977,44 @@ function compactSeries(bars) {
 /* =================================================================== Lauf */
 console.log("Vision Universe DISCOVER — Präkomputation\n");
 const started = Date.now();
+/* NEU-Etikett (Konzept „Reihe für Reihe“, PR 3): die zuletzt eingecheckte Fassung jeder Reihe
+   und des Index Aktie -> Reihen VOR dem Leeren lesen. Daraus entsteht je Karte firstSeen:
+   stand die Aktie schon in der Karte der Reihe, gilt deren firstSeen weiter; stand sie schon in
+   der Reihe (Index), aber ohne Datum, bleibt es null (nicht neu); ist sie neu, gilt asOf der
+   Daten - nie die Uhrzeit. Derselbe Eingabestand ergibt so dieselben Dateien. */
+const PREVIOUS = readPrevious();
+function readPrevious() {
+  const out = new Map();
+  if (!existsSync(join(OUT, "membership"))) return out;
+  for (const file of readdirSync(join(OUT, "membership"))) {
+    if (!file.endsWith(".json")) continue;
+    const U = file.replace(/\.json$/, "");
+    let m = null;
+    try { m = readJSON(join(OUT, "membership", file)); } catch { continue; }
+    const rows = new Map();
+    (m.rows || []).forEach((r, i) => rows.set(r.id, { members: new Set(), first: new Map(), index: i }));
+    for (const [sym, xs] of Object.entries(m.members || {})) for (const [ri] of xs) { const r = m.rows[ri]; if (r) rows.get(r.id).members.add(sym); }
+    for (const [id, r] of rows) {
+      const f = join(OUT, "rows", U, id + ".json");
+      if (!existsSync(f)) continue;
+      try { for (const c of readJSON(f).cards || []) if (c && c.symbol && "firstSeen" in c) r.first.set(c.symbol, c.firstSeen); } catch { /* kaputte Datei: wie ohne Datum */ }
+    }
+    out.set(U, rows);
+  }
+  return out;
+}
+function firstSeen(universe, rowId, symbol) {
+  const prev = PREVIOUS.get(universe.universeId), row = prev && prev.get(rowId);
+  if (!row) return null;                                   // ohne fruehere Fassung: unbekannt, nicht neu
+  if (row.first.has(symbol)) return row.first.get(symbol);
+  return row.members.has(symbol) ? null : universe.asOf;
+}
+const FOREIGN_DIRS = new Set(["europe", "europe-esef"]);
 if (existsSync(OUT)) {
   for (const entry of readdirSync(OUT, { withFileTypes: true })) {
-    // The registered Marketstack publication producer owns this directory.
-    if (entry.name === "europe" && entry.isDirectory()) continue;
+    // Fremde Erzeuger (core/registry/domains.json): europe = Marketstack-Veroeffentlichung,
+    // europe-esef = scripts/official-filings/de-esef-facts.mjs. Ihre Bytes bleiben unberuehrt.
+    if (FOREIGN_DIRS.has(entry.name) && entry.isDirectory()) continue;
     rmSync(join(OUT, entry.name), { recursive: true, force: true });
   }
 }
@@ -1976,14 +2049,34 @@ console.log("3/5  Zeilen-Payloads …");
 for (const universe of universes) {
   const rows = [];
   const rowsById = new Map();
+  /* Index Aktie -> Reihen (Konzept „Reihe für Reihe“, Vorschau-Sheet und Aktienseite):
+     je Symbol die Reihen, in denen es heute steht, mit Platz. Ein Abruf statt einer
+     Anfrage je Reihe. Nur aus den gerechneten Reihen, ohne Uhrzeit: reproduzierbar. */
+  const memberRows = [], memberOf = new Map();
   for (const config of ROWS) {
     const row = buildRow(universe, config);
+    for (const c of row.cards) c.firstSeen = firstSeen(universe, config.id, c.symbol);
     write(`rows/${universe.universeId}/${config.id}.json`, row);
+    const ri = memberRows.length;
+    memberRows.push({ id: config.id, matched: row.coverage.matched });
+    row.members.forEach((sym, rank) => {
+      if (!memberOf.has(sym)) memberOf.set(sym, []);
+      memberOf.get(sym).push([ri, rank + 1]);
+    });
     rowsById.set(config.id, Object.assign({}, row, { config }));
     rows.push({ rowId: row.rowId, title: row.title, subtitle: row.subtitle,
                 returned: row.coverage.returned, matched: row.coverage.matched,
-                theme: config.theme || null });
+                theme: config.theme || null,
+                /* Karten, die mit dem letzten Handelstag neu in der Reihe stehen (Regel 3 der Startseite). */
+                neu: row.cards.filter((c) => c.firstSeen && c.firstSeen === universe.asOf).length });
   }
+  const members = {};
+  [...memberOf.keys()].sort().forEach((sym) => { members[sym] = memberOf.get(sym); });
+  write(`membership/${universe.universeId}.json`, {
+    schemaVersion: "discover-membership-1.0.0", universeId: universe.universeId, asOf: universe.asOf,
+    note: "Je Symbol [Reihe, Platz]: Index in rows, Platz 1 = Erster nach der Regel der Reihe. Alle Treffer, nicht nur die ausgelieferten Karten.",
+    rows: memberRows, members
+  });
 
   /* Sektorzeilen */
   const sectorPayload = [];
@@ -2355,7 +2448,8 @@ const meta = {
   })),
   rows: rowIndex,
   rowConfigs: ROWS.map((r) => ({ id: r.id, title: r.title, theme: r.theme || null,
-                                 microRange: r.microRange || "6M", rule: r.rule || null })),
+                                 microRange: r.microRange || "6M", rule: r.rule || null,
+                                 explain: r.explain || null })),
   sources: [
     real.sourceFile,
     real.universeSource.file,

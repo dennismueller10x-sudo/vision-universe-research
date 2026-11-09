@@ -18,11 +18,17 @@ import {createMailer} from './mail.mjs';
 import * as auth from './auth.mjs';
 import * as account from './account.mjs';
 import * as billing from './billing.mjs';
+import * as pricing from './pricing.mjs';
+import * as backtests from './backtests.mjs';
 import * as watchlist from './watchlist.mjs';
+import * as push from './push.mjs';
+import * as searches from './searches.mjs';
 import {runScheduled, needsAttention} from './cancellation.mjs';
+import {createBrevo, runBrevo} from './brevo.mjs';
+import * as pages from './public-pages.mjs';
 
 // Gesundheit, oeffentlich und ohne Zahlen: Kuendigungen "ok" | "attention" | "unknown"
-// (fuer die Ueberwachung ohne Schluessel, .github/workflows/account-monitor.yml). 60 s zwischengespeichert.
+// (fuer die Ueberwachung ohne Schluessel, account.yml (Teil ueberwachung)). 60 s zwischengespeichert.
 let cancellationState = {at: 0, value: 'unknown'};
 async function health(ctx) {
   let cancellations = 'unknown';
@@ -34,15 +40,34 @@ async function health(ctx) {
     }
     cancellations = cancellationState.value;
   }
+  // Newsletter-Liste konfiguriert: ist die DOI-Vorlage bei Brevo nutzbar (auch vor dem Einschalten)? Ersetzt einen
+  // eigenen Pruef-Workflow; hoechstens ein Brevo-Abruf je 10 Minuten.
+  let newsletterTemplate;
+  if (ctx.cfg.brevo.lists.newsletter && ctx.brevo?.configured) {
+    if (ctx.now() - templateState.at > 600_000) {
+      let value;
+      try { await ctx.brevo.doiTemplateId(); value = 'ok'; } catch (e) { value = String(e.code || 'unknown').slice(0, 40); }
+      templateState = {at: ctx.now(), value};
+    }
+    newsletterTemplate = templateState.value;
+  }
   return json(ctx.request, ctx.cfg, 200, {state: 'OK', service: 'vu-account', accounts: supabaseReady(ctx.cfg),
-    mail: ctx.mailer.configured, cancellations, autoProcess: ctx.cfg.cancellation.autoProcess});
+    mail: ctx.mailer.configured, cancellations, autoProcess: ctx.cfg.cancellation.autoProcess,
+    checkout: ctx.cfg.stripe.checkoutAccess, legal: ctx.cfg.legal.status, legalApproved: ctx.cfg.legal.approved,
+    liveApproved: ctx.cfg.stripe.liveApproved, tax: ctx.cfg.stripe.tax.mode,
+    // Stripe Tax im Konto aktiv? Auch vor dem Einschalten sichtbar (ersetzt einen Pruef-Workflow).
+    stripeTax: ctx.stripe && ctx.cfg.stripe.mode !== 'missing' ? await billing.stripeTaxState(ctx) : undefined, newsletter: ctx.cfg.brevo.newsletter, newsletterTemplate, contactSync: ctx.cfg.brevo.sync});
 }
-export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; };
+let templateState = {at: 0, value: 'unknown'};
+export const resetHealthCache = () => { cancellationState = {at: 0, value: 'unknown'}; templateState = {at: 0, value: 'unknown'}; billing.resetTaxCache(); };
 
 // [Methode, Pfad, Handler, {csrf: Cookie-Schutz pruefen, needsDb}]
 const ROUTES = [
   ['GET', '/v1/health', health, {db: false}],
   ['GET', '/v1/session', auth.session],
+  ['POST', '/v1/auth/app/login', auth.appLogin],
+  ['POST', '/v1/auth/app/refresh', auth.appRefresh],
+  ['POST', '/v1/auth/app/logout', auth.appLogout],
   ['POST', '/v1/auth/login', auth.login, {csrf: true}],
   ['POST', '/v1/auth/logout', auth.logout, {csrf: true}],
   ['POST', '/v1/auth/signup', auth.signup, {csrf: true}],
@@ -52,14 +77,21 @@ const ROUTES = [
   ['GET', '/v1/me', account.me],
   ['PATCH', '/v1/me', account.updateMe, {csrf: true}],
   ['POST', '/v1/me/plan-intent', account.setPlanIntent, {csrf: true}],
+  ['POST', '/v1/me/newsletter', account.newsletter, {csrf: true}],
   ['GET', '/v1/me/billing', account.billingOverview],
   ['GET', '/v1/me/export', account.exportData],
   ['POST', '/v1/me/delete', account.deleteAccount, {csrf: true}],
+  ['POST', '/v1/push/devices', push.register, {csrf: true}],
+  ['POST', '/v1/push/devices/remove', push.remove, {csrf: true}],
   ['GET', '/v1/watchlist', watchlist.list],
   ['POST', '/v1/watchlist/items', watchlist.add, {csrf: true}],
   ['PATCH', '/v1/watchlist/items', watchlist.update, {csrf: true}],
   ['POST', '/v1/watchlist/items/remove', watchlist.remove, {csrf: true}],
   ['POST', '/v1/watchlist/import', watchlist.importItems, {csrf: true}],
+  ['GET', '/v1/searches', searches.list],
+  ['POST', '/v1/searches', searches.create, {csrf: true}],
+  ['PATCH', '/v1/searches', searches.update, {csrf: true}],
+  ['POST', '/v1/searches/remove', searches.remove, {csrf: true}],
   ['GET', '/v1/plans', billing.plans],
   ['GET', '/v1/entitlements/check', billing.entitlementCheck],
   ['POST', '/v1/billing/checkout', billing.checkout, {csrf: true}],
@@ -67,37 +99,79 @@ const ROUTES = [
   ['POST', '/v1/billing/cancel', billing.cancel, {csrf: true}],
   ['POST', '/v1/billing/cancellation-request', billing.cancellationRequest, {csrf: true}],
   ['POST', '/v1/billing/webhook/stripe', billing.stripeWebhook, {webhook: true}],
+  ['GET', '/v1/admin/pricing', pricing.overview],
+  ['POST', '/v1/admin/pricing/preview', pricing.preview, {csrf: true}],
+  ['POST', '/v1/admin/pricing/apply', pricing.apply, {csrf: true}],
+  // Interne Backtest-Vorschau: standardmaessig aus (404 PREVIEW_NOT_ACTIVATED), nur Rolle backtest_reviewer.
+  ['GET', '/v1/admin/backtests', backtests.overview],
+  ['GET', '/v1/admin/backtests/lookup', backtests.lookupGet],
+  ['GET', '/v1/admin/backtests/portfolios', backtests.portfolios],
+  ['POST', '/v1/admin/backtests/lookup', backtests.lookupPost, {csrf: true}],
   ['POST', '/v1/billing/webhook/apple', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
   ['POST', '/v1/billing/webhook/google', billing.storeWebhookNotConfigured, {webhook: true, db: false}],
+];
+
+// Oeffentliche HTML-Seiten (ohne Anmeldung, ohne Passwortmaske): Rechtstexte, Kontakt, Kuendigen, Widerrufen.
+const PAGES = [
+  ['GET', '/rechtliches/', pages.legalIndex, {db: false}],
+  ['GET', '/rechtliches', pages.legalIndex, {db: false}],
+  ...['impressum', 'datenschutz', 'agb', 'widerrufsbelehrung', 'widerrufsformular', 'newsletter', 'risikohinweise', 'methodik']
+    .map(k => ['GET', `/rechtliches/${k}`, pages.legalPage(k), {db: false}]),
+  // Fassung 3 hiess die Seite „Hinweise nach MAR und WpHG“; alte Links fuehren auf die Nachfolgeseite.
+  ['GET', '/rechtliches/mar-hinweise', pages.legalPage('methodik'), {db: false}],
+  ['GET', '/kuendigen', pages.cancelGet, {db: false}],
+  ['POST', '/kuendigen', pages.cancelPost],
+  ['GET', '/kontakt', pages.contactGet, {db: false}],
+  ['POST', '/kontakt', pages.contactPost, {db: false}],
+  ['GET', '/widerrufen', pages.withdrawGet, {db: false}],
+  ['POST', '/widerrufen', pages.withdrawPost],
 ];
 
 function defaultLog(level, message, fields) {
   console[level === 'error' ? 'error' : 'log'](JSON.stringify({level, message, ...fields}));
 }
 
-export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), now = () => Date.now(), log = defaultLog}) {
+export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), now = () => Date.now(), log = defaultLog, backtestBundle = null}) {
   const cfg = loadConfig(env);
   const jwks = cfg.supabase.url
     ? createJwksCache({url: cfg.supabase.url + '/auth/v1/.well-known/jwks.json', fetchImpl, now}) : null;
   const sb = createSupabase({url: cfg.supabase.url, publishableKey: cfg.supabase.publishableKey,
     secretKey: cfg.supabase.secretKey, fetchImpl, forwardClientIp: cfg.supabase.forwardClientIp});
   const store = createBillingStore(sb.service);
+  const fcm = push.createFcm({secret: env.FCM_SERVICE_ACCOUNT, fetchImpl, now});
   const stripe = createStripeClient({secretKey: cfg.stripe.secretKey, apiBase: cfg.stripe.apiBase,
     apiVersion: cfg.stripe.apiVersion, fetchImpl});
   const limit = createLimiter({binding: env.VU_ACCOUNT_LIMITER, now});
   const mailer = createMailer({...cfg.mail, fetchImpl});
+  const brevo = createBrevo({apiKey: cfg.mail.apiKey, apiBase: cfg.mail.apiBase, fetchImpl});
 
   async function handle(request) {
     const url = new URL(request.url);
     if (request.method === 'OPTIONS') return preflight(request, cfg);
+    // HEAD wie GET (Link-Pruefer, Suchmaschinen), ohne Inhalt.
+    const head = request.method === 'HEAD';
+    const htmlRoute = PAGES.find(([m, p]) => p === url.pathname && m === (head ? 'GET' : request.method));
+    if (htmlRoute) {
+      const [, , handler, opts = {}] = htmlRoute;
+      const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, fcm, ip: clientIp(request),
+        cookies: parseCookies(request), outCookies: []};
+      try {
+        if (opts.db !== false && !supabaseReady(cfg)) throw new Error('ACCOUNTS_NOT_CONFIGURED');
+        const res = await handler(ctx);
+        return head ? new Response(null, {status: res.status, headers: res.headers}) : res;
+      } catch (e) {
+        if (!(e instanceof HttpError)) log('error', 'PAGE_FAILED', {route: url.pathname, code: String(e.code || e.message).slice(0, 120)});
+        return pages.htmlError(e);
+      }
+    }
     const route = ROUTES.find(([m, p]) => p === url.pathname && m === request.method);
     if (!route) {
       const known = ROUTES.some(([, p]) => p === url.pathname);
       return json(request, cfg, known ? 405 : 404, {state: known ? 'METHOD_NOT_ALLOWED' : 'NOT_FOUND'});
     }
     const [, , handler, opts = {}] = route;
-    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, ip: clientIp(request),
-      cookies: parseCookies(request), outCookies: []};
+    const ctx = {request, cfg, sb, store, stripe, jwks, now, log, limit, mailer, brevo, fcm, ip: clientIp(request),
+      cookies: parseCookies(request), outCookies: [], backtestBundle};
     try {
       if (opts.db !== false && !supabaseReady(cfg)) throw new HttpError(503, 'ACCOUNTS_NOT_CONFIGURED');
       if (opts.csrf) assertCsrf(request, cfg, {bearer: (request.headers.get('Authorization') || '').startsWith('Bearer ')});
@@ -115,9 +189,16 @@ export function createApp({env, fetchImpl = globalThis.fetch.bind(globalThis), n
   // Cron (wrangler.toml [triggers]): Postausgang wiederholen, Fristen ueberwachen.
   async function scheduled() {
     if (!supabaseReady(cfg)) return {skipped: 'ACCOUNTS_NOT_CONFIGURED'};
-    return runScheduled({store, stripe, mailer, cfg, log, now});
+    const result = await runScheduled({store, stripe, mailer, cfg, log, now});
+    let brevoResult = null;
+    try { brevoResult = await runBrevo({store, brevo, cfg, log, now}); }
+    catch (e) { log('error', 'BREVO_RUN_FAILED', {code: String(e.code || e.message).slice(0, 120)}); }
+    let pushResult;
+    try { pushResult = await push.runPush({fcm, service: sb.service, fetchImpl, now}); }
+    catch { pushResult = {failed: true}; log('error', 'PUSH_RUN_FAILED', {}); }
+    return {...result, brevo: brevoResult, push: pushResult};
   }
-  return {handle, scheduled, cfg, deps: {store, stripe, mailer, cfg, log, now}};
+  return {handle, scheduled, cfg, deps: {store, stripe, mailer, brevo, cfg, log, now}};
 }
 
 let cached = null;

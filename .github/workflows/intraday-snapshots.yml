@@ -32,24 +32,19 @@ name: Intraday-Snapshots (Discover-Umfang waehrend der Sitzung, Universum nach S
 # dient ein Push mit der Marke `[intraday-snapshot]` als Ausloeser (ohne
 # Pfadfilter: die Marke ist das Tor, nicht die Datei).
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       scope:
         description: 'discover (Flaechen), universe (alles) oder Tickerliste (AAPL,MSFT)'
         type: string
         default: 'discover'
-  schedule:
-    # Der Fuenf-Minuten-Takt WAEHREND der Sitzung ist am 21.09.2026 an
-    # intraday-pacemaker.yml uebergegangen. Grund: er verlangte 78
-    # Zeitplan-Ereignisse je Sitzung, und GitHub legte an diesem Tag ueber
-    # eine Stunde lang keines davon an. Zwei Workflows, die dieselben
-    # Dateien schreiben, waeren ausserdem ein Wettlauf um denselben Ref.
-    #
-    # Was hier bleibt: der Universumslauf nach Schluss, der Handbetrieb
-    # (workflow_dispatch) und die Marke auf Entwicklungsbranches. Derselbe
-    # Ingest, dieselben Vertraege - nur nicht mehr derselbe Takt.
-    - cron: '35 21 * * 1-5'
   push:
     branches:
       - 'claude/**'
@@ -77,13 +72,17 @@ concurrency:
   group: intraday-pacemaker-${{ github.ref_name }}
   cancel-in-progress: false
 
+env:
+  # Wie vor der Umstellung: ein Takt des Weckers heisst schedule und traegt seinen Cron (ADR-005: ueber env, nicht im Shell-Text).
+  VU_SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
+
 jobs:
   snapshots:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) ||
+      (github.event_name == 'schedule' || inputs.zeitplan != '') ||
       contains(github.event.head_commit.message, '[intraday-snapshot')
     steps:
       - uses: actions/checkout@v4
@@ -115,8 +114,8 @@ jobs:
         # ist Text von aussen; sie gehoert nie unquotiert in ein Skript.
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          EVENT_NAME: ${{ github.event_name }}
-          DISPATCH_SCOPE: ${{ github.event_name == 'workflow_dispatch' && inputs.scope || '' }}
+          EVENT_NAME: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
+          DISPATCH_SCOPE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.scope || '' }}
         run: |
           SCOPE="$DISPATCH_SCOPE"
           # Auf Entwicklungsbranches darf die Marke den Umfang nennen: [intraday-snapshot:universe]
@@ -129,7 +128,7 @@ jobs:
             # Discover-Flaechen; ausserhalb der Sitzung das Universum, wenn die letzte
             # abgeschlossene Sitzung noch nicht fuer das Universum vorliegt (Nachzug
             # nach einem ausgefallenen oder verpassten Lauf - Vorfall 15.09.2026).
-            if [ "${{ github.event.schedule }}" = "35 21 * * 1-5" ]; then SCOPE=universe; else SCOPE=auto; fi
+            if [ "${VU_SCHEDULE}" = "35 21 * * 1-5" ]; then SCOPE=universe; else SCOPE=auto; fi
           fi
           echo "scope=$SCOPE" >> "$GITHUB_OUTPUT"
           echo "Umfang: $SCOPE"

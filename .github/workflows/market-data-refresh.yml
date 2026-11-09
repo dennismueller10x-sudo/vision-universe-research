@@ -19,16 +19,19 @@ name: Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)
 # Ausloeser - ohne Pfadfilter: die Marke ist das Tor, nicht die Datei.
 # Ohne Marke laeuft nichts.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       initial:
         description: 'Erstimport (volle Historie ab initialFrom/historyFrom statt inkrementell)'
         type: boolean
         default: false
-  schedule:
-    # Taeglich nach dem US-Handelsschluss (16:00 New York = 20:00/21:00 UTC), um 22:30 UTC.
-    - cron: '30 22 * * 1-5'
   push:
     branches:
       - 'claude/**'
@@ -48,8 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 300
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) ||
+      (github.event_name == 'schedule' || inputs.zeitplan != '') ||
       contains(github.event.head_commit.message, '[market-data-refresh]')
     steps:
       - uses: actions/checkout@v4
@@ -113,8 +116,10 @@ jobs:
       - name: Tageskurse fuer das Produktuniversum (inkrementell) + kompakte Discover-Reihen
         env:
           TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+          # Eingaben nur ueber env: (ADR-005); --initial nur manuell, nie beim Takt.
+          INITIAL_ARG: ${{ ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.initial) && '--initial' || '' }}
         run: |
-          node scripts/market/ingest-tiingo.mjs ${{ (github.event_name == 'workflow_dispatch' && inputs.initial) && '--initial' || '' }} \
+          node scripts/market/ingest-tiingo.mjs $INITIAL_ARG \
             --scope-from-preview --publish-preview --commercial --request-budget=7500 --concurrency=4
 
       # SPY als BENCHMARK_REFERENCE (Owner-Entscheid 02.10.2026): die ganze
@@ -395,7 +400,7 @@ jobs:
         # Erzeuger und bleibt ausgenommen. quant/tests/push-with-retry.test.mjs
         # (PR11) prueft die Liste gegen das Register.
         env:
-          PUSH_OWNED_PATHS: "discover/data/ !discover/data/europe/ quant/data/technical/ quant/data/market/factors/ quant/data/market/discover-series/ quant/data/market/golden-preview/ quant/data/market/listing-continuity-v1.json"
+          PUSH_OWNED_PATHS: "discover/data/ !discover/data/europe/ !discover/data/europe-esef/ quant/data/technical/ quant/data/market/factors/ quant/data/market/discover-series/ quant/data/market/golden-preview/ quant/data/market/listing-continuity-v1.json"
         # Der Push laeuft ueber scripts/ci/push-with-retry.sh: Autostash
         # gegen die ungestagten Zeitstempel der Regressionssuite (Lauf
         # 34987245529) UND Wiederholung gegen den verlorenen Wettlauf um
@@ -641,6 +646,14 @@ jobs:
         with:
           node-version: '22'
 
+      # Datenzweig (discoverImBlickLive, BRANCH_ONLY): bisheriger Stand aus data/live, nicht aus main.
+      - name: Bisheriger Stand aus dem Datenzweig
+        id: seed
+        if: steps.checkout.outcome == 'success' && steps.node.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 5
+        run: scripts/ci/seed-data-branch.sh discoverImBlickLive
+
       - name: Im Blick auf der neuen Basis rechnen
         id: rechnen
         if: steps.checkout.outcome == 'success' && steps.node.outcome == 'success'
@@ -673,34 +686,12 @@ jobs:
       # die Frage noch einmal gestellt: war der Live-Lauf schneller, ist das ein
       # SKIP; sonst wird auf dem aktuellen Stand neu gerechnet. Nie zwei Staende
       # zusammenmischen.
-      - name: Commit und Push (nur bei Aenderung)
+      - name: In den Datenzweig (nur bei Aenderung)
         id: push
         if: always() && steps.checkout.outcome == 'success' && steps.node.outcome == 'success'
         continue-on-error: true
         timeout-minutes: 10
-        run: |
-          set -euo pipefail
-          git config user.name "vision-universe-bot"
-          git config user.email "actions@users.noreply.github.com"
-          for versuch in 1 2 3; do
-            git add -- discover/live/im-blick-US_REAL.json discover/live/monitor-US_REAL.json
-            if git diff --cached --quiet; then
-              echo "Keine Aenderung."
-              exit 0
-            fi
-            status=$(node -e 'try{const l=require("./discover/live/im-blick-US_REAL.json");console.log(l.status+" "+((l.slot&&l.slot.id)||"")+" "+(l.eodAsOf||"")+" "+l.stocks.map(s=>s.symbol).join(","))}catch(e){console.log("Fehlerstand (Monitor)")}')
-            git commit -m "Discover Im Blick live (nach Nachtlauf): ${status}"
-            if scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"; then
-              exit 0
-            fi
-            echo "::warning::Push abgewiesen (Versuch ${versuch}); setze auf main auf und stelle die Frage neu."
-            git rebase --abort 2>/dev/null || true
-            git fetch origin "${GITHUB_REF_NAME}"
-            git reset --hard "origin/${GITHUB_REF_NAME}"
-            node scripts/discover/build-im-blick-live.mjs --nachtlauf --source nachtlauf || true
-          done
-          echo "::error::Im Blick nach dem Nachtlauf konnte nicht veroeffentlicht werden."
-          exit 1
+        run: scripts/ci/push-data-branch.sh data/live discover/live/im-blick-US_REAL.json discover/live/monitor-US_REAL.json
 
   # ===================================================================
   # SUPERTRADER NACH DEM NACHTLAUF
@@ -763,6 +754,58 @@ jobs:
         run: |
           set -euo pipefail
           node scripts/ci/supertrader-chain.mjs dispatch
+
+  # ===================================================================
+  # TECHNICAL-SCREENER NACH DEM NACHTLAUF
+  #
+  # technical-world.yml baut technical/data aus der Materialisierung dieses
+  # Laufs. Sein `workflow_run` auf diesen Marktlauf hat auf main nie
+  # gefeuert (wie bei der Materialisierung, siehe oben); geblieben ist nur
+  # sein Zeitplan, der 5-6 h spaet startet und Sonntag/Montag nicht laeuft.
+  # 30.10.-01.11.2026: ein einziger Zeitplanlauf (31.10., am Datenvertrag
+  # gescheitert), sonst nur uebersprungene workflow_run-Laeufe -> Screener
+  # zwei Sitzungen alt, Quant-Tests L1-L3 und DQ-TW-3 rot.
+  #
+  # Gleiches Muster wie `supertrader`: erst wenn refresh, materialize und
+  # freshness-contract gruen sind, ein workflow_dispatch auf main (eigener
+  # Lauf in der Gruppe technical-world-main mit Zeitplan-Rueckfall und
+  # workflow_run, dort nur fuer main gefiltert; eigene Engine- und
+  # Vertragstests vor dem Commit, Erzeuger unveraendert). Kein Anbieterabruf,
+  # kein PAT. Ein Technical-Fehler kann den Nachtlauf nicht rot machen; der
+  # Lauf selbst meldet sich ueber seinen eigenen Pipeline-Alarm. Scheitert
+  # der Anstoss, meldet es der Alarm dieses Laufs. Der Zeitplan in
+  # technical-world.yml bleibt Rueckfall; ein zweiter Lauf auf demselben
+  # Stand committet nichts.
+  # ===================================================================
+  technical:
+    needs: [refresh, materialize, freshness-contract]
+    if: >-
+      always() && github.ref == 'refs/heads/main' && github.event_name != 'push' &&
+      needs.refresh.result == 'success' && needs.materialize.result == 'success' &&
+      needs.freshness-contract.result == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: write
+    outputs:
+      ergebnis: ${{ steps.anstossen.outcome == 'failure' && 'failure' || 'success' }}
+      detail: ${{ steps.anstossen.outputs.detail }}
+    steps:
+      - name: Technical-Screener anstossen (eigener Lauf auf main)
+        id: anstossen
+        continue-on-error: true
+        timeout-minutes: 5
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if gh workflow run pipeline-daily.yml --repo "$GITHUB_REPOSITORY" --ref main -f teil=technical-world; then
+            echo "detail=pipeline-daily.yml (Teil technical-world) auf main angestossen" >> "$GITHUB_OUTPUT"
+          else
+            echo "detail=Anstoss von pipeline-daily.yml (Teil technical-world) abgewiesen" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
 
   # ===================================================================
   # SUPERTRADER-BEREINIGUNG, WENN DIE MATERIALISIERUNG SCHEITERT
@@ -831,7 +874,7 @@ jobs:
   # selben Issue, ohne es zu oeffnen.
   # ===================================================================
   alarm:
-    needs: [refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune]
+    needs: [refresh, materialize, freshness-contract, imblick, supertrader, supertrader-prune, technical]
     if: always() && github.ref == 'refs/heads/main' && github.event_name != 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -874,6 +917,9 @@ jobs:
           # Bereinigung nach gescheiterter Materialisierung: ebenfalls nur der Anstoss.
           RESULT_SUPERTRADER_PRUNE: ${{ needs.supertrader-prune.result == 'failure' && 'failure' || needs.supertrader-prune.outputs.ergebnis == 'failure' && 'failure' || needs.supertrader-prune.result == 'success' && 'success' || 'skipped' }}
           SUPERTRADER_PRUNE_DETAIL: ${{ needs.supertrader-prune.outputs.detail }}
+          # Technical-Anstoss: wie Supertrader nur der ANSTOSS (der Lauf meldet sich selbst).
+          RESULT_TECHNICAL: ${{ needs.technical.result == 'failure' && 'failure' || needs.technical.outputs.ergebnis == 'failure' && 'failure' || needs.technical.result == 'success' && 'success' || 'skipped' }}
+          TECHNICAL_DETAIL: ${{ needs.technical.outputs.detail }}
           GATE_DIR: ${{ runner.temp }}/gates
         run: |
           : > "$RUNNER_TEMP/stufen-detail.txt"
@@ -885,6 +931,9 @@ jobs:
           fi
           if [ -n "${SUPERTRADER_PRUNE_DETAIL:-}" ]; then
             printf 'Supertrader-Bereinigung (entfallene Titel): %s\n' "$SUPERTRADER_PRUNE_DETAIL" >> "$RUNNER_TEMP/stufen-detail.txt"
+          fi
+          if [ "${RESULT_TECHNICAL:-}" = "failure" ] && [ -n "${TECHNICAL_DETAIL:-}" ]; then
+            printf 'Technical (Anstoss nach dem Nachtlauf): %s\n' "$TECHNICAL_DETAIL" >> "$RUNNER_TEMP/stufen-detail.txt"
           fi
           if [ -s "$RUNNER_TEMP/stufen-detail.txt" ]; then
             export ALARM_DETAIL_FILE="$RUNNER_TEMP/stufen-detail.txt"

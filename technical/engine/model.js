@@ -10,14 +10,20 @@
   "use strict";
   var isNode = (typeof module !== "undefined" && module.exports);
   var Q = isNode ? require("../../quant/engines/technical/technical-query.js") : global.VUTechnical.Query;
+  /* Strategie-Vorlagen (AP8): Kriterien-Checklisten ueber bestehende Filter, technical/engine/templates.js */
+  var TPL = isNode ? require("./templates.js") : global.VUTechnical.Templates;
 
   var SCREENER_PATH = "/technical/data/screener-v1.json";
   var META_PATH = "/technical/data/meta.json";
+  var SPARK_PATH = "/technical/data/spark-v1.json";
   /* Schlanker Index fuer Startseite und Chart Studio (Kuerzel, Namen, Trefferzahlen der Vorlagen) - spart den vollen Datensatz. */
   var INDEX_PATH = "/technical/data/index-v1.json";
-  var INDEX_SCHEMA = "vu-technical-index-1.0.0";
+  /* 1.1.0: zusaetzlich templates = {id: [erfuellt, fast erfuellt, unvollstaendig]} (Startseite, Vorlagen-Auswahl). */
+  var INDEX_SCHEMA = "vu-technical-index-1.1.0";
   /* Historische Evidenz der Formationen (scripts/technical/world/formation-evidence.mjs). */
   var EVIDENCE_PATH = "/technical/data/formation-evidence.json";
+  /* AP6 (H4): historische Beobachtung zu Indikator-Ereignissen und Kerzenmustern, docs/technical/SIGNAL_EVIDENCE.md */
+  var SIGNAL_EVIDENCE_PATH = "/technical/data/signal-evidence.json";
   /* Startseite: "Setups im Fokus" und Ranglisten (Vorlagen aus technical-query.js). */
   var FOCUS = ["breakout", "trend", "triangles"], RANKS = ["high52", "aboveSma200", "high200w", "contraction"];
   var TECH_DIR = "/quant/data/product/technical-signals-v1/";
@@ -35,15 +41,22 @@
     if (qi >= 0) h.slice(qi + 1).split("&").forEach(function (kv) { if (!kv) return; var p = kv.split("="); params[decodeURIComponent(p[0])] = decodeURIComponent(p.slice(1).join("=") || ""); });
     var head = path[0] || "";
     if (!head) return { view: "home", params: params };
-    if (head === "screener") return { view: "screener", tab: path[1] === "gespeichert" ? "saved" : "build", params: params };
-    if (head === "methodik") return { view: "method", params: params };
+    /* Redesign 2027 (T02-T04): Reiter Suchen · Vorlagen · Gespeichert im Screener (?reiter=); alte Adressen bleiben gueltig. */
+    if (head === "screener") return { view: "screener", tab: path[1] === "gespeichert" || params.reiter === "gespeichert" ? "saved" : params.reiter === "vorlagen" ? "templates" : "build", params: params };
+    /* T05: der Leistenplatz "Muster" (#/muster); #/methodik zeigt dieselbe Seite. Reiter ?reiter=indikatoren|regeln. */
+    if (head === "methodik" || head === "muster") return { view: "method", params: params };
+    /* Konzept „Der Chart in drei Sätzen“, Entscheidung 8: Akademie und Assistent sind ein Ort „Lernen“. */
+    if (head === "lernen") return { view: "learn", params: params };
+    if (head === "akademie") return { view: "academy", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
+    if (head === "assistent") return { view: "assistant", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
+    if (head === "vorlagen") return { view: "templates", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "chart") {
       var t = String(path[1] || "").toUpperCase();
-      return TICKER.test(t) ? { view: "chart", ticker: t, tab: path[2] === "signale" ? "signals" : "chart", params: params } : { view: "chart", ticker: null, params: params };
+      return TICKER.test(t) ? { view: "chart", ticker: t, tab: path[2] === "signale" ? "signals" : path[2] === "studio" ? "studio" : "chart", params: params } : { view: "chart", ticker: null, params: params };
     }
     return { view: "notfound", params: params };
   }
-  function chartHref(ticker, tab) { return "#/chart/" + encodeURIComponent(ticker) + (tab === "signals" ? "/signale" : ""); }
+  function chartHref(ticker, tab, query) { return "#/chart/" + encodeURIComponent(ticker) + (tab === "signals" ? "/signale" : tab === "studio" ? "/studio" : "") + (query ? "?" + query : ""); }
   /** Zweistelliger Schluessel der technical-signals-Scherben (wie quant/api/product-services.js#technicalShard). */
   function technicalShard(ticker) { return (String(ticker) + "_").slice(0, 2); }
   function technicalPaths(ticker) { return [TECH_DIR + "by-ticker/" + ticker + ".json.gz", TECH_DIR + technicalShard(ticker) + ".json.gz"]; }
@@ -183,6 +196,32 @@
       (e.significant ? "nach Mehrfachtest-Korrektur belastbar, aber nur ein Marktjahr." : "statistisch nicht belastbar.");
   }
 
+  /* Einordnung je Zeile (signal-evidence.mjs#readingOf). Ereignis = technisch definiert; Einordnung = historische
+     Beobachtung; ein handelbarer Vorteil ist fuer keine Zeile nachgewiesen. */
+  var READING_TEXT = {
+    NOT_SIGNIFICANT: "kein statistisch gesicherter Unterschied zum Querschnitt aller Titel nachgewiesen (das heißt nicht, dass Gleichheit bewiesen ist)",
+    MIXED: "im Gesamtmittel belastbar, aber je nach Marktphase oder Zeithälfte mit wechselndem Vorzeichen, also keine stabile Beobachtung",
+    WITH_DIRECTION: "phasenstabil wie die übliche Lesart; eine historische Beobachtung, kein nachgewiesener Handelsvorteil",
+    AGAINST_DIRECTION: "phasenstabil gegen die übliche Lesart; eine historische Beobachtung, kein nachgewiesener Handelsvorteil",
+    NEUTRAL_PATTERN: "Muster ohne Richtung, daher ohne Lesart"
+  };
+  var READING_SHORT = { NOT_SIGNIFICANT: "kein gesicherter Unterschied", MIXED: "uneinheitlich", WITH_DIRECTION: "wie übliche Lesart", AGAINST_DIRECTION: "gegen übliche Lesart", NEUTRAL_PATTERN: "ohne Richtung" };
+  /** Ein Satz je Zeile: Kursverlauf gegenueber dem Querschnitt (nicht richtungsbereinigt) und Einordnung. */
+  function signalEvidenceText(r) {
+    if (!r) return "Für dieses Ereignis liegt keine historische Auswertung vor.";
+    var excess = isNum(r.mean) ? (r.direction === "BEARISH" ? -r.mean : r.mean) : null;
+    var move = isNum(excess) ? "nach 20 Handelstagen im Mittel " + (excess >= 0 ? "stärker" : "schwächer") + " als der Querschnitt (" + signedPct(excess) + " ± " + pctDe(r.ci95, 1) + ")" : "ohne Messwert";
+    return "n = " + (isNum(r.n) ? r.n.toLocaleString("de-DE") : "–") + ": " + move + " – " + (READING_TEXT[r.reading] || "nicht eingeordnet") + ".";
+  }
+
+  /** Zaehlung je Einordnung als ein Satz (oberhalb der Tabelle; mobil oft das Einzige, was ohne Scrollen sichtbar ist). */
+  function signalEvidenceSummary(rows) {
+    var c = {}; (rows || []).forEach(function (r) { c[r.reading] = (c[r.reading] || 0) + 1; });
+    var parts = ["NOT_SIGNIFICANT", "MIXED", "WITH_DIRECTION", "AGAINST_DIRECTION", "NEUTRAL_PATTERN"].filter(function (k) { return c[k]; })
+      .map(function (k) { return c[k] + " " + READING_SHORT[k]; });
+    return (rows || []).length + " ausgewiesen: " + parts.join(", ") + ". Keine Zeile ist eine Handlungsempfehlung.";
+  }
+
   /** Umbenennen bzw. Filter einer gespeicherten Suchstrategie ersetzen (gleiche ID, Zeitstempel "updatedAt"). */
   function updateScreen(storage, id, patch, now) {
     var list = loadScreens(storage), hit = false;
@@ -258,6 +297,24 @@
     return { field: f.id, op: "gt", value: f.kind === "pct" ? 0 : 50 };
   }
 
+  /* Konto (Z3, konto/saved-searches.js): acct = ID der Suche im Konto; die Abfrage im Konto ist { params }. */
+  function linkScreen(storage, id, acct) {
+    var list = loadScreens(storage), hit = false;
+    list.forEach(function (x) { if (x.id === id) { hit = true; if (acct) x.acct = acct; else delete x.acct; } });
+    if (!hit) return false;
+    try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+  /** Suche aus dem Konto aufs Gerät; nur bekannte Adressparameter, gleiche Filteradresse nicht doppelt. */
+  function addRemoteScreen(storage, r, now) {
+    var params = r && r.query && typeof r.query.params === "string" ? r.query.params : null;
+    if (params === null || !params.split("&").every(function (kv) { return !kv || PARAM_KEYS.indexOf(kv.split("=")[0]) >= 0; })) return false;
+    params = migrateParams(params).params;
+    var list = loadScreens(storage), t = now || Date.now();
+    if (list.length >= 50 || list.some(function (x) { return x.params === params && !x.acct; })) return false;
+    list.push({ id: "s" + t.toString(36) + "k" + list.length, name: String(r.name || "Suche").slice(0, 60), params: params, acct: r.acct, createdAt: new Date(t).toISOString() });
+    try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
+  }
+
   function deleteScreen(storage, id) {
     var list = loadScreens(storage).filter(function (x) { return x.id !== id; });
     try { storage.setItem(STORE_KEY, JSON.stringify(list)); return true; } catch (e) { return false; }
@@ -311,15 +368,17 @@
    */
   var FIELD_CHART = {
     aboveSma200: ["layer", "sma"], aboveSma50: ["layer", "sma"], sma50AboveSma200: ["layer", "sma"], distSma200: ["layer", "sma"],
+    aboveSma150: ["layer", "sma"], sma150AboveSma200: ["layer", "sma"], sma50AboveSma150: ["layer", "sma"], distSma150: ["layer", "sma"],
+    sma200Rising: ["layer", "sma"], sma200Slope21: ["layer", "sma"],
     aboveEma20: ["layer", "ema"], aboveEma50: ["layer", "ema"], aboveEma200: ["layer", "ema"], distEma200: ["layer", "ema"],
     adx: ["pane", "adx"], supertrendUp: ["layer", "supertrend"], structure: ["signals"], psarUp: ["layer", "psar"], aboveCloud: ["layer", "ichimoku"],
-    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], newLow52w: ["price"], distHigh52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
+    aroonOsc: ["pane", "aroon"], newHigh52w: ["price"], newLow52w: ["price"], distHigh52w: ["price"], distLow52w: ["price"], newHigh200w: ["weekly"], distHigh200w: ["weekly"],
     rsi14: ["pane", "rsi"], macdPositive: ["pane", "macd"], stochK: ["pane", "stoch"], cci20: ["pane", "cci"],
     roc21: ["pane", "roc"], roc63: ["pane", "roc"], roc126: ["pane", "roc"], roc252: ["pane", "roc"], williamsR: ["pane", "williams"],
     connorsRsi: ["pane", "crsi"], zScore20: ["pane", "zscore"], elderImpulse: ["pane", "elder"], vortexBull: ["pane", "vortex"],
     hmaRising: ["layer", "hma"], distChandelierLong: ["layer", "chandelier"], newHigh20d: ["layer", "donchian"], newLow20d: ["layer", "donchian"],
     choppiness14: ["pane", "chop"], histVol20: ["pane", "hv"], ulcer14: ["pane", "ulcer"],
-    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"],
+    rs3m: ["pane", "rs"], rs6m: ["pane", "rs"], rsPositive: ["pane", "rs"], rsRank: ["pane", "rs"],
     relVol: ["layer", "volumen"], volAboveAvg: ["layer", "volumen"], volSpike: ["layer", "volumen"], mfi14: ["pane", "mfi"], obvRising: ["pane", "obv"],
     cmf20: ["pane", "cmf"], atrPct: ["pane", "atr"], bbPctB: ["layer", "bb"], bbSqueeze: ["layer", "bb"], insideBar: ["price"], nr7: ["price"]
   };
@@ -396,31 +455,79 @@
     return out;
   }
 
+  /** Schwung in Worten aus dem RSI 14 (Darstellung, keine Regel): ab 70 stark gestiegen, ab 55 eher gestiegen, bis 30 stark gefallen, bis 45 eher gefallen. */
+  function momentumWords(r) {
+    if (!isNum(r)) return "keine Aussage";
+    return r >= 70 ? "zuletzt stark gestiegen" : r >= 55 ? "zuletzt eher gestiegen" : r <= 30 ? "zuletzt stark gefallen" : r <= 45 ? "zuletzt eher gefallen" : "ausgeglichen";
+  }
+  /** Relatives Volumen in Worten: 1,95 → „fast doppelt so viel Handel wie üblich“. */
+  function volumeWords(v) {
+    if (!isNum(v)) return "keine Angabe";
+    if (v < 0.75) return "deutlich weniger Handel als üblich";
+    if (v < 0.95) return "etwas weniger Handel als üblich";
+    if (v < 1.15) return "Handel wie üblich";
+    if (v < 1.6) return "mehr Handel als üblich";
+    if (v < 1.85) return "deutlich mehr Handel als üblich";
+    if (v < 2) return "fast doppelt so viel Handel wie üblich";
+    if (v < 2.25) return "doppelt so viel Handel wie üblich";
+    if (v < 2.85) return "mehr als doppelt so viel Handel wie üblich";
+    return "etwa " + Math.round(v).toLocaleString("de-DE") + "-mal so viel Handel wie üblich";
+  }
+  /* Anzeige-Namen ohne „bullisch/bärisch“ (Entscheidung 2). Die Engine-Namen (technical-query.js, formations.js) bleiben
+     unverändert, weil /screener/, die Suche in Worten und die Abfrage-Gleichheit sie festhalten; übersetzt wird nur die Anzeige. */
+  var PLAIN_NAMES = [
+    [/Bullische Flaggen und Wimpel/g, "Steigende Flaggen und Wimpel"], [/Bullische Flagge/g, "Flagge steigend"], [/Bärische Flagge/g, "Flagge fallend"],
+    [/Bullischer Wimpel/g, "Wimpel steigend"], [/Bärischer Wimpel/g, "Wimpel fallend"],
+    [/Bullisches Kerzenmuster/g, "Kerzenmuster nach oben"], [/Bärisches Kerzenmuster/g, "Kerzenmuster nach unten"],
+    [/einem bullischen Kerzenmuster/g, "einem Kerzenmuster nach oben"], [/einem bärischen Kerzenmuster/g, "einem Kerzenmuster nach unten"],
+    [/(über|unter) SMA (50|200)\b/g, "$1 der $2-Tage-Linie"], [/\bSMA (50|200)\b/g, "$1-Tage-Linie"],
+    [/\bbullisch(e[nrsm]?)?\b/g, "nach oben deutend"], [/\bbärisch(e[nrsm]?)?\b/g, "nach unten deutend"]
+  ];
+  function plain(text) { var t = String(text == null ? "" : text); PLAIN_NAMES.forEach(function (r) { t = t.replace(r[0], r[1]); }); return t; }
+  /** Richtung in Worten (Entscheidung 2): +1 „deutet nach oben“, −1 „deutet nach unten“, sonst „Richtung offen“. */
+  function directionWords(d) { return d > 0 ? "deutet nach oben" : d < 0 ? "deutet nach unten" : "Richtung offen"; }
+  /* Konzept „Der Chart in drei Sätzen“, Entscheidung 10: Markt heute aus der gemeinsamen Quelle aller Welten
+     (quant/data/market/intelligence/market-pulse.json, Dimension BREADTH, Beleg above200). Liefert Anteil, Basis und Stand
+     oder null, wenn der Beleg fehlt oder nicht aktuell ist; dann zeigt Technical die eigene Zählung mit Stand und Basis. */
+  var MARKET_PULSE_PATH = "/quant/data/market/intelligence/market-pulse.json";
+  function marketBreadth(pulse) {
+    var b = pulse && /^vu-market-pulse-1\./.test(pulse.schemaVersion || "") && pulse.dimensions && pulse.dimensions.BREADTH;
+    var e = b && (b.evidence || []).filter(function (x) { return x.key === "above200"; })[0];
+    if (!e || e.current === false || !isNum(e.value) || !isNum(e.evaluated) || !e.evaluated) return null;
+    return { share: e.value, matched: e.matched, base: e.evaluated, asOf: e.asOf || null, source: "market-pulse" };
+  }
+  /** Ein Satz mit Stand und Basis: „37 % von 5.051 US-Aktien über der 200-Tage-Linie, Stand 06.11.“ */
+  function breadthSentence(b) {
+    if (!b || !isNum(b.share)) return "";
+    return Math.round(b.share).toLocaleString("de-DE") + " % von " + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien über der 200-Tage-Linie" + (b.asOf ? ", Stand " + b.asOf.slice(8, 10) + "." + b.asOf.slice(5, 7) + "." : "");
+  }
   function findings(analysis, features, close) {
     var out = [];
     (analysis && analysis.formations || []).forEach(function (f) {
-      out.push({ kind: "formation", id: f.id, title: f.name, text: formationText(f), badge: stateBadge(f), tone: STATE_TONE[f.state],
+      out.push({ kind: "formation", id: f.id, title: plain(f.name), text: formationText(f), badge: stateBadge(f), tone: STATE_TONE[f.state],
                  icon: FAMILY_ICON[f.family] || "trend", direction: f.direction, formation: f });
     });
     var F = features || {};
+    /* Alltagssprache (Konzept „Der Chart in drei Sätzen“, Entscheidung 3): 200-/50-Tage-Linie statt SMA, Schwung statt RSI-Text,
+       Handel in Worten statt „Volumen 1,95× des 20-Tage-Medians“. Fachwerte stehen in Klammern bzw. im Chart Studio. */
     if (isNum(F.sma200) && isNum(close)) {
       var above = close > F.sma200;
-      out.push({ kind: "indicator", id: "sma200", title: above ? "Kurs über SMA 200" : "Kurs unter SMA 200", icon: "bars",
-                 text: "Schluss " + price(close) + " · SMA 200 " + price(F.sma200) + " (" + pct(close / F.sma200 - 1, 1) + ").", badge: above ? "Bullisch" : "Bärisch", tone: above ? "positive" : "negative" });
+      out.push({ kind: "indicator", id: "sma200", title: above ? "Kurs über der 200-Tage-Linie" : "Kurs unter der 200-Tage-Linie", icon: "bars",
+                 text: price(close) + " zu " + price(F.sma200) + " (" + pct(close / F.sma200 - 1, 1) + ").", badge: above ? "deutet nach oben" : "deutet nach unten", tone: above ? "positive" : "negative" });
     }
     if (isNum(F.sma50) && isNum(F.sma200)) {
       var golden = F.sma50 > F.sma200;
-      out.push({ kind: "indicator", id: "cross", title: golden ? "SMA 50 über SMA 200" : "SMA 50 unter SMA 200", icon: "trend",
-                 text: "SMA 50 " + price(F.sma50) + " · SMA 200 " + price(F.sma200) + ".", badge: golden ? "Bullisch" : "Bärisch", tone: golden ? "positive" : "negative" });
+      out.push({ kind: "indicator", id: "cross", title: golden ? "50-Tage-Linie über der 200-Tage-Linie" : "50-Tage-Linie unter der 200-Tage-Linie", icon: "trend",
+                 text: price(F.sma50) + " zu " + price(F.sma200) + ".", badge: golden ? "deutet nach oben" : "deutet nach unten", tone: golden ? "positive" : "negative" });
     }
     if (isNum(F.rsi14)) {
-      var zone = F.rsi14 >= 70 ? ["Überkauft", "watch"] : F.rsi14 <= 30 ? ["Überverkauft", "watch"] : ["Neutral", "neutral"];
-      out.push({ kind: "indicator", id: "rsi", title: "RSI 14: " + num(F.rsi14, 1), icon: "pulse", text: "Zonen: über 70 überkauft, unter 30 überverkauft (Wilder).", badge: zone[0], tone: zone[1] });
+      var zone = F.rsi14 >= 70 ? ["Überkauft", "watch"] : F.rsi14 <= 30 ? ["Überverkauft", "watch"] : ["Ausgeglichen", "neutral"];
+      out.push({ kind: "indicator", id: "rsi", title: "Schwung: " + momentumWords(F.rsi14), icon: "pulse", text: "Wie stark der Kurs zuletzt gestiegen oder gefallen ist (RSI " + num(F.rsi14, 1) + "; über 70 gilt als „überkauft“, unter 30 als „überverkauft“).", badge: zone[0], tone: zone[1] });
     }
     if (isNum(F.relativeVolume)) {
       var hiVol = F.relativeVolume >= 2 ? ["Spitze", "positive"] : F.relativeVolume > 1 ? ["Erhöht", "neutral"] : ["Normal", "neutral"];
-      out.push({ kind: "indicator", id: "volume", title: "Volumen " + num(F.relativeVolume, 2) + "× des 20-Tage-Medians", icon: "bars",
-                 text: "Relatives Volumen des letzten Handelstags.", badge: hiVol[0], tone: hiVol[1] });
+      out.push({ kind: "indicator", id: "volume", title: (function (w) { return w.charAt(0).toUpperCase() + w.slice(1); })(volumeWords(F.relativeVolume)), icon: "bars",
+                 text: "Gehandelte Stückzahl am letzten Tag im Vergleich zu einem üblichen Tag der letzten 20 (" + num(F.relativeVolume, 2) + "-fach).", badge: hiVol[0], tone: hiVol[1] });
     }
     return out;
   }
@@ -431,7 +538,7 @@
     if (wanted && wanted.length) f = list.filter(function (x) { return wanted.indexOf(x[0]) >= 0; })[0] || null;
     f = f || list[0];
     if (f) {
-      var name = Q.FORMATION_TYPES[f[0]] || f[0], flags = f[5] || "", dir = BREAK_DIR[f[4]];
+      var name = plain(Q.FORMATION_TYPES[f[0]] || f[0]), flags = f[5] || "", dir = BREAK_DIR[f[4]];
       if (f[1] === "CONFIRMED" && flags.indexOf("B") >= 0) return name + ": bei Erkennung am " + dateDe(f[2]) + " bereits ausgebrochen" + (dir ? " (" + dir + ")" : "") + ".";
       if (f[1] === "CONFIRMED") return name + ": Ausbruch" + (dir ? " " + dir : "") + (f[3] ? " am " + dateDe(f[3]) : "") + ", erkannt am " + dateDe(f[2]) + ".";
       if (flags.indexOf("V") >= 0) return name + ": vorläufig (vier Swing-Punkte), erkannt am " + dateDe(f[2]) + ".";
@@ -442,7 +549,7 @@
   /** Formationstypen, nach denen eine Abfrage sucht. */
   function wantedFormations(query) {
     var out = [];
-    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
+    (query.groups || []).forEach(function (g) { g.filters.forEach(function (x) { if (x.field === "formationActive" || x.field === "formationConfirmed" || x.field === "formationOpen" || x.field === "formationConfirmedUp" || x.field === "formationConfirmedDown") x.value.forEach(function (t) { if (out.indexOf(t) < 0) out.push(t); }); }); });
     return out;
   }
 
@@ -485,17 +592,18 @@
       if (FOCUS.indexOf(p.id) >= 0) r.indices.forEach(function (i) { union[i] = 1; });
     });
     return { schemaVersion: INDEX_SCHEMA, asOf: artifact.asOf, count: artifact.count, s: artifact.cols.s.slice(), n: artifact.cols.n.slice(),
-      presets: presets, focusUnion: Object.keys(union).length };
+      presets: presets, focusUnion: Object.keys(union).length, templates: TPL ? TPL.counts(ds) : {} };
   }
 
   var api = {
-    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
+    SCREENER_PATH: SCREENER_PATH, META_PATH: META_PATH, SPARK_PATH: SPARK_PATH, EVIDENCE_PATH: EVIDENCE_PATH, evidenceText: evidenceText,
+    SIGNAL_EVIDENCE_PATH: SIGNAL_EVIDENCE_PATH, READING_TEXT: READING_TEXT, READING_SHORT: READING_SHORT, signalEvidenceText: signalEvidenceText, signalEvidenceSummary: signalEvidenceSummary, INDEX_PATH: INDEX_PATH, INDEX_SCHEMA: INDEX_SCHEMA, FOCUS: FOCUS, RANKS: RANKS, homeIndex: homeIndex, LONG_DIR: LONG_DIR, STORE_KEY: STORE_KEY, LAST_KEY: LAST_KEY,
     PATTERN_PILLS: PATTERN_PILLS, STATE_BADGE: STATE_BADGE, TREND_PILLS: TREND_PILLS, trendLabel: trendLabel,
     parseRoute: parseRoute, chartHref: chartHref, technicalShard: technicalShard, technicalPaths: technicalPaths,
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
-    loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, exportScreens: exportScreens, importScreens: importScreens,
+    loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, linkScreen: linkScreen, addRemoteScreen: addRemoteScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
-    findings: findings, seriesState: seriesState, relativeStrength: relativeStrength, BENCHMARK_PATH: BENCHMARK_PATH, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
+    findings: findings, plain: plain, MARKET_PULSE_PATH: MARKET_PULSE_PATH, marketBreadth: marketBreadth, breadthSentence: breadthSentence, momentumWords: momentumWords, volumeWords: volumeWords, directionWords: directionWords, seriesState: seriesState, relativeStrength: relativeStrength, BENCHMARK_PATH: BENCHMARK_PATH, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
   if (isNode) module.exports = api;

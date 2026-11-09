@@ -1,0 +1,53 @@
+{
+ "schemaVersion": "v13b-spx-terminal-review-1.0.0",
+ "scope": "Manual reading of every accepted row of spx-terminal-register-1.0.0.json (primary) and 1.0.1 (sensitivity) after the runs. The review does NOT change either register; it annotates rows a user should exclude. Review checks: the quote states the consideration for the common shares of the exiting member; it is the final consideration; completion lies in the period; no distribution between t0 and completion is visible in the documents read for this review.",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "register_1.0.0": {
+  "accepted": 29,
+  "confirmed": 28,
+  "flagged": [
+   {
+    "t0": "2006-09-30",
+    "name": "First Data Corp.",
+    "cik": 883980,
+    "flag": "DISTRIBUTION_IN_PERIOD",
+    "note": "Western Union was spun off on the SPY report day; p0 is the pre-spin price, the register return (-19.0 %) ignores the Western Union shares received. Exclude.",
+    "evidence": [
+     {
+      "accession": "0001193125-06-201190",
+      "url": "https://www.sec.gov/Archives/edgar/data/883980/000119312506201190/0001193125-06-201190.txt",
+      "docSha256": "232ba4383a238dacd68c6406da6b8fd284deb757537d7a149af7fa7d68765364",
+      "quote": "On September 29, 2006 (the “Distribution Date”), the distribution (the “Distribution”) by First Data Corporation (“FDC” or the “Company”) of all of the outstanding shares of common stock of The Western Union Company (“Western Union”) to the stockholders of the Company was completed",
+      "quoteSha256": "f77c39208e44164613c931fa38307f22a7abe8bf8096c29ad681d9d28d58ccae"
+     }
+    ]
+   }
+  ]
+ },
+ "register_1.0.1": {
+  "accepted": 26,
+  "flagged": [
+   {
+    "t0": "2006-09-30",
+    "name": "Biomet, Inc.",
+    "flag": "SUPERSEDED_OFFER",
+    "note": "1.0.1 chose a December 2006 proxy supplement at $44.00; the completion 8-K read under 1.0.0 states $46.00 (the raised price)."
+   },
+   {
+    "t0": "2000-09-30",
+    "name": "Columbia Energy Group",
+    "flag": "TENDER_NOT_COMPLETED_AT_THIS_PRICE",
+    "note": "1.0.1 chose an amended tender-offer price ($74, February 2000) of a hostile offer; the merger that was completed later was agreed on different terms; final consideration not verified in the read documents. Exclude."
+   },
+   {
+    "t0": "2008-09-30",
+    "name": "Rohm & Haas Co.",
+    "flag": "FINAL_AMOUNT_NOT_VERIFIED",
+    "note": "decision document is the September 2008 proxy ($78.00); completion was in April 2009 after litigation; a later change of the per-share amount was not checked."
+   }
+  ]
+ },
+ "conclusion": "1.0.0 is the primary register (pre-registered rules, corrected implementation); use it without the flagged row (28 usable terminal values). 1.0.1 (after-sight amendment) is a sensitivity only: 19 rows are accepted by both (same values except Biomet), 7 only by 1.0.1 (Columbia Energy, Springs, PeopleSoft, Univision, TXU, Tribune, Rohm & Haas; 2 of them flagged), 10 only by 1.0.0 (incl. the flagged First Data, which 1.0.1 rejects for another reason); 1.0.1 is not adopted."
+}

@@ -1,0 +1,5126 @@
+{
+ "schemaVersion": "v12-largecap-restrict-cases-1.0.0",
+ "protocol": "docs/quant-recovery/v12/largecap/protocol-1.0.0.json",
+ "protocolSha256": "f0dcbd3389ad05ba4a757ba8cd7dfb00b5486d22407c296a7134053dc23210da",
+ "amendment": "docs/quant-recovery/v12/largecap/protocol-amendment-1.0.1.json",
+ "amendmentSha256": "ba2c8a4664762568b8d142fd42fef94e2548db0bb30765a0e31fbeb0434dbc58",
+ "v10ProtocolSha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c",
+ "generatedAt": "2026-10-29T08:45:45Z",
+ "codeSha256": {
+  "b1run.py": "994f69a829388657f85cb05bc428fd989534ff239c0b92ce5a8781d2fcca641c",
+  "seclib.py": "49630599df9bb9a0cae5bb299c5e754af964b2da45dc56a4cf966dcc81b39b03",
+  "b1_identity.py": "bbe68824cc2a9abe559540cf1ddac1fd2ce15d066a33c51745d78f661c5747c8",
+  "v10lib.py": "291435f46d44e454baac1476ac2dde49ec7eb4e3d8d440fb4166fc94f6d5eee5"
+ },
+ "inputs": {
+  "masterSha256": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+  "caFactsSha256": "86cbc55c00eeabd1b68402d2081cbce8f064f1fcdb1aba815c23a100d00d2a4e"
+ },
+ "productionApproved": false,
+ "certificationStatus": "NOT_CERTIFIED",
+ "counts": {
+  "EXCLUDED": 9,
+  "QUALIFIED_SEC_SAME_DAY_PRICE_AND_COVER": 4
+ },
+ "cases": [
+  {
+   "securityId": "ref_AAPL",
+   "ticker": "AAPL",
+   "cik": "0000320193",
+   "issuer": "Apple Inc.",
+   "selectedCanonicalId": "tiingo:NASDAQ:AAPL:1980-12-12",
+   "v9": {
+    "validFrom": "2000-12-15",
+    "basis": "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1921,
+    "sourceSha256": "e85c98350a8c95c4d7fb7a0f3739285286c91e24c53e52189631c1e52e834eba"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NASDAQ:AAPL:1980-12-12"
+   ],
+   "selectedRow": {
+    "exchange": "NASDAQ",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1980-12-12",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000320193.json",
+     "sha256": "5891cf875f690e38f26ca628f7091184c9d73ca34ca7646b9cecd5013aeac4ab"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000320193-submissions-001.json",
+     "sha256": "018484e6f9d2b2cc0378d73a71b4c625ac9e4af4e6e61356761b7e461db1bfdf"
+    }
+   ],
+   "secName": "Apple Inc.",
+   "secTickers": [
+    "AAPL"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0000320193-26-000020",
+    "form": "10-Q",
+    "filingDate": "2026-07-31",
+    "url": "https://www.sec.gov/Archives/edgar/data/320193/000032019326000020/aapl-20260627.htm",
+    "sha256": "4432b7b9d4fa48f5cd57d4bf7713a8fec5c29ae5368f889e3a48ecb0282b4016",
+    "sha256Normalized": "4ad5bea67cedfa7542d623900355cc8d143ef95c1acc135a597f2eedabdb9177",
+    "bytesRead": 1018322,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "AAPL",
+     "Security12bTitle": "Common Stock, $0.00001 par value per share",
+     "SecurityExchangeName": "The Nasdaq Stock Market LLC"
+    },
+    "commonSymbols": [
+     "AAPL"
+    ],
+    "mic": "XNAS",
+    "ageDays": 84
+   },
+   "startDocument": {
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0000912057-00-053623",
+    "filingDate": "2000-12-14",
+    "url": "https://www.sec.gov/Archives/edgar/data/320193/000091205700053623/a2032880z10-k.txt",
+    "sha256": "ed4f884d4ca78c082309ed66a9c0489f0b3543b7e96f797b363c74956896c8a7",
+    "sha256Normalized": "ed4f884d4ca78c082309ed66a9c0489f0b3543b7e96f797b363c74956896c8a7",
+    "v9Sha256": "ed4f884d4ca78c082309ed66a9c0489f0b3543b7e96f797b363c74956896c8a7",
+    "bytesRead": 304578,
+    "complete": true,
+    "detail": "e Company's common stock is traded on the over-the-counter market and is quoted on the Nasdaq National Market under the symbol AAPL, on the Tokyo Stock Exchange under the symbol APPLE, and on the Frankfurt Stock Exchange under the symbol APCD. As of December 1, 2000, there were 2"
+   },
+   "priceSearch": {
+    "candidates": 79,
+    "documentsRead": 79
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [
+    "2019-03-14"
+   ],
+   "levelBreaks": [],
+   "intervalMoves": [
+    {
+     "rule": "VENUE_TRANSFER_UNANCHORED",
+     "transfer": "2019-03-14",
+     "to": "2019-03-15"
+    }
+   ],
+   "validFrom": "2019-03-15",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2019-03-15",
+    "checkedTo": "2026-10-23",
+    "bars": 398,
+    "pointsSha256": "5703618d980f98fbf3a58ee5aeab9ac3a5d412b7ed79a9c2e28b4a2310c7cb5d"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 39,
+    "allCandidatesInWindow": 172
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2000-09-29",
+     "prevWeek": "2000-09-22",
+     "verdict": "INSUFFICIENT_FILINGS",
+     "detail": "NO_AFTER_BRACKET"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2000-09-29",
+    "tried": []
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2000-10-06",
+    "firstBarOnOrAfterSymbolStart": "2000-12-15",
+    "S0": "2000-12-15"
+   },
+   "symbolStartDocument": {
+    "accession": "0000912057-00-053623",
+    "form": "10-K",
+    "filingDate": "2000-12-14",
+    "url": "https://www.sec.gov/Archives/edgar/data/320193/000091205700053623/a2032880z10-k.txt",
+    "sha256": "ed4f884d4ca78c082309ed66a9c0489f0b3543b7e96f797b363c74956896c8a7",
+    "sha256Normalized": "ed4f884d4ca78c082309ed66a9c0489f0b3543b7e96f797b363c74956896c8a7",
+    "bytesRead": 304578,
+    "complete": true,
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "quote": "e Company's common stock is traded on the over-the-counter market and is quoted on the Nasdaq National Market under the symbol AAPL, on the Tokyo Stock Exchange under the symbol APPLE, and on the Frankfurt Stock Exchange under the symbol APCD. As of December 1, 2000, there were 2"
+   }
+  },
+  {
+   "securityId": "ref_GOOGL",
+   "ticker": "GOOGL",
+   "cik": "0001652044",
+   "issuer": "Alphabet Inc.",
+   "selectedCanonicalId": "tiingo:NASDAQ:GOOGL:2004-08-19",
+   "v9": {
+    "validFrom": "2016-02-12",
+    "basis": "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "2004-08-20",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1158,
+    "sourceSha256": "74dec98311585ecaace62c53cbd15c93a96020d85f7c26f2a975fda2ff9330d6"
+   },
+   "reasons": [],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NASDAQ:GOOGL:2004-08-19"
+   ],
+   "selectedRow": {
+    "exchange": "NASDAQ",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "2004-08-19",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001652044.json",
+     "sha256": "1a7944c563543dec98c2181c3f7c49f45afe58704f6fd68441b8ad16e9d02386"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001652044-submissions-001.json",
+     "sha256": "59cdd327f52b6a8cf0f82b7b36587455eac1f86d54dcd9e4c684bd95e24a4ff8"
+    }
+   ],
+   "secName": "Alphabet Inc.",
+   "secTickers": [
+    "GOOGL",
+    "GOOG",
+    "GOOGM",
+    "GOOGN"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001652044-26-000071",
+    "form": "10-Q",
+    "filingDate": "2026-07-23",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000071/goog-20260630.htm",
+    "sha256": "018effb8564a3798040ab3cb954314b5ccee7180f280597d4e5a7cff7d99f717",
+    "sha256Normalized": "fecfbc2683f630380b17937278ce3745eca150eb90e21a945fd6b78fe19728c7",
+    "bytesRead": 2464245,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "GOOGL",
+     "Security12bTitle": "Class A Common Stock, $0.001 par value",
+     "SecurityExchangeName": "Nasdaq Stock Market LLC"
+    },
+    "commonSymbols": [
+     "GOOGL"
+    ],
+    "mic": "XNAS",
+    "ageDays": 92
+   },
+   "startDocument": {
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0001652044-16-000012",
+    "filingDate": "2016-02-11",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204416000012/goog10-k2015.htm",
+    "sha256": "bec9381e0476b81829ddd7c4ddf932e8d045b4cf7fd26ce670e72ab8f9a076d3",
+    "sha256Normalized": "bec9381e0476b81829ddd7c4ddf932e8d045b4cf7fd26ce670e72ab8f9a076d3",
+    "v9Sha256": "bec9381e0476b81829ddd7c4ddf932e8d045b4cf7fd26ce670e72ab8f9a076d3",
+    "bytesRead": 3145728,
+    "complete": false,
+    "detail": "on stock has been listed on the Nasdaq Global Select Market under the symbol “GOOG” since August 19, 2004 and under the symbol \"GOOGL\" since April 3, 2014. Prior to August 19, 2004, there was no public market for our stock. The following table sets forth for the indicated periods"
+   },
+   "priceSearch": {
+    "candidates": 60,
+    "documentsRead": 60
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2016-02-12",
+   "validTo": null,
+   "anchors": [
+    {
+     "date": "2016-12-31",
+     "sourceRawPrice": 792.45,
+     "laterSplitProduct": 20.0,
+     "sourceAdjustedPrice": 39.6225,
+     "bar": [
+      "2016-12-30",
+      39.62
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 0.999937,
+     "state": "MATCH",
+     "accession": "0001308179-17-000170",
+     "form": "DEF 14A",
+     "filingDate": "2017-04-28",
+     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817917000170/lgoog2017_def14a.htm",
+     "sha256": "7d01fbf5cfc3286617720dd8c6b8e5e102ab8ca27232319e0513104a544743f2",
+     "sha256Normalized": "7d01fbf5cfc3286617720dd8c6b8e5e102ab8ca27232319e0513104a544743f2",
+     "bytesRead": 955168,
+     "complete": true,
+     "quote": " unvested GSUs was calculated by multiplying the number of unvested GSUs by the closing price of our Class A common stock or Class C capital stock on December 31, 2016, which were $792.45 per share and $771.",
+     "attributed": true
+    },
+    {
+     "date": "2017-12-31",
+     "sourceRawPrice": 1053.4,
+     "laterSplitProduct": 20.0,
+     "sourceAdjustedPrice": 52.67,
+     "bar": [
+      "2017-12-29",
+      52.67
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001308179-18-000222",
+     "form": "DEF 14A",
+     "filingDate": "2018-04-27",
+     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817918000222/lgoog2018-def14a.htm",
+     "sha256": "4c76c042a8b0778f9a85e728abfd2be9d49244410d7f615dbd3ac808f82a86e5",
+     "sha256Normalized": "4c76c042a8b0778f9a85e728abfd2be9d49244410d7f615dbd3ac808f82a86e5",
+     "bytesRead": 1180231,
+     "complete": true,
+     "quote": " unvested GSUs was calculated by multiplying the number of unvested GSUs by the closing price of our Class A common stock or Class C capital stock on December 31, 2017, which were $1,053.40 per share and $1,04",
+     "attributed": true
+    },
+    {
+     "date": "2020-12-31",
+     "sourceRawPrice": 1751.88,
+     "laterSplitProduct": 20.0,
+     "sourceAdjustedPrice": 87.594,
+     "bar": [
+      "2020-12-31",
+      87.63
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.000411,
+     "state": "MATCH",
+     "accession": "0001308179-21-000256",
+     "form": "DEF 14A",
+     "filingDate": "2021-04-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817921000256/lgoog2021_def14a.htm",
+     "sha256": "42805ed0a2b3b6ae3a3f222ac86cbdff0ad4f80cbe03e014da206cc2e812cff8",
+     "sha256Normalized": "42805ed0a2b3b6ae3a3f222ac86cbdff0ad4f80cbe03e014da206cc2e812cff8",
+     "bytesRead": 1051568,
+     "complete": true,
+     "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of our Class C capital stock on December 31, 2020, which was $1,751.88 per share. (4) The ",
+     "attributed": true
+    },
+    {
+     "date": "2021-12-31",
+     "sourceRawPrice": 2893.59,
+     "laterSplitProduct": 20.0,
+     "sourceAdjustedPrice": 144.6795,
+     "bar": [
+      "2021-12-31",
+      144.85
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.001178,
+     "state": "MATCH",
+     "accession": "0001308179-22-000262",
+     "form": "DEF 14A",
+     "filingDate": "2022-04-22",
+     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817922000262/lgoog2022_def14a.htm",
+     "sha256": "be9e9e5d7b161c0e13c094266dda8eacd1f0c0d81b5d0a7efb0a75d55ed4ec29",
+     "sha256Normalized": "be9e9e5d7b161c0e13c094266dda8eacd1f0c0d81b5d0a7efb0a75d55ed4ec29",
+     "bytesRead": 1599307,
+     "complete": true,
+     "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of Alphabet’s Class C capital stock on December 31, 2021, which was $2,893.59 per share. (4) The ",
+     "attributed": true
+    },
+    {
+     "date": "2022-12-30",
+     "sourceRawPrice": 88.73,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 88.73,
+     "bar": [
+      "2022-12-30",
+      88.23
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 0.994365,
+     "state": "MATCH",
+     "accession": "0001308179-23-000736",
+     "form": "DEF 14A",
+     "filingDate": "2023-04-21",
+     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817923000736/lgoog2023_def14a.htm",
+     "sha256": "6ccaff4efb4a0c69cf1a993d41aedf5c296b39b9364b839e143ccec9aaa3c993",
+     "sha256Normalized": "7d2d492e6b8cf411209469e82399c59aef4ac0e25c8110db0d7a56bea9177ef1",
+     "bytesRead": 1574754,
+     "complete": true,
+     "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of Alphabet’s Class C capital stock on December 30, 2022, which was $88.73 per share. (2) The ",
+     "attributed": true
+    },
+    {
+     "date": "2023-12-29",
+     "sourceRawPrice": 140.93,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 140.93,
+     "bar": [
+      "2023-12-29",
+      139.69
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 0.991201,
+     "state": "MATCH",
+     "accession": "0001308179-24-000612",
+     "form": "DEF 14A",
+     "filingDate": "2024-04-26",
+     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817924000612/lgoog2024_def14a.htm",
+     "sha256": "c5444c5428a37ed38ab77af6a9ab3495759af9bfd3e9740cedf39eaf137ab685",
+     "sha256Normalized": "ac378061308e9ef3f0075620f9f379119e2e1011142df6139b518d86ac9032af",
+     "bytesRead": 1423665,
+     "complete": true,
+     "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of Class C capital stock on December 29, 2023, which was $140.93 per share. (2) The ",
+     "attributed": true
+    },
+    {
+     "date": "2025-12-31",
+     "sourceRawPrice": 313.8,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 313.8,
+     "bar": [
+      "2025-12-31",
+      313
+     ],
+     "basis": "DAILY_CROSSCHECKED",
+     "ratioSeriesToSource": 0.997451,
+     "state": "MATCH",
+     "accession": "0001308179-26-000342",
+     "form": "DEF 14A",
+     "filingDate": "2026-04-24",
+     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817926000342/goog-20260424.htm",
+     "sha256": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+     "sha256Normalized": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "the number of unvested GSUs and PSUs held by the named executive officer by the closing price of Alphabet’s Class C capital stock on December 31, 2025, which was $313.80 per share. (2) The ",
+     "attributed": true
+    },
+    {
+     "date": "2026-01-12",
+     "sourceRawPrice": 332.73,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 332.73,
+     "bar": [
+      "2026-01-12",
+      331.86
+     ],
+     "basis": "DAILY_CROSSCHECKED",
+     "ratioSeriesToSource": 0.997385,
+     "state": "MATCH",
+     "accession": "0001308179-26-000342",
+     "form": "DEF 14A",
+     "filingDate": "2026-04-24",
+     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817926000342/goog-20260424.htm",
+     "sha256": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+     "sha256Normalized": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "or 2023 PSUs was calculated by multiplying 200% of the target PSU awards by the closing price of Alphabet’s Class C capital stock on January 12, 2026 (the business day immediately prior to vesting), which was $332.73 per share. Addition",
+     "attributed": true
+    },
+    {
+     "date": "2026-02-04",
+     "sourceRawPrice": 333.34,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 333.34,
+     "bar": [
+      "2026-02-04",
+      333.04
+     ],
+     "basis": "DAILY_CROSSCHECKED",
+     "ratioSeriesToSource": 0.9991,
+     "state": "MATCH",
+     "accession": "0001308179-26-000342",
+     "form": "DEF 14A",
+     "filingDate": "2026-04-24",
+     "url": "https://www.sec.gov/Archives/edgar/data/1652044/000130817926000342/goog-20260424.htm",
+     "sha256": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+     "sha256Normalized": "882d96eb4abb45488fc1e57ed5cf0e21a6add91d87653d6896286b4dd0430318",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "ranche B PSU was calculated by multiplying 200% of the target PSU awards by the closing price of Alphabet's Class C capital stock on February 4, 2026 (the business day immediately prior to vesting), which was $333.34 per share. Upon ter",
+     "attributed": true
+    }
+   ],
+   "anchorsOutsideInterval": 1,
+   "anchorsBeforeInterval": [
+    {
+     "date": "2015-12-31",
+     "state": "MATCH",
+     "sourceRawPrice": 778.01,
+     "ratioSeriesToSource": 0.999987,
+     "accession": "0001308179-16-000384",
+     "form": "DEF 14A"
+    }
+   ],
+   "historyGuard": {
+    "checkedFrom": "2016-02-12",
+    "checkedTo": "2026-10-23",
+    "bars": 559,
+    "pointsSha256": "b0abd8873f5d3fce3736961f728fe5599dd650c0b493f2bbff57b0244201f908"
+   },
+   "anchorGaps": {
+    "matchDates": 9,
+    "firstMatch": "2016-12-31",
+    "lastMatch": "2026-02-04",
+    "maxGapDays": 1096
+   },
+   "decision": "QUALIFIED_SEC_SAME_DAY_PRICE_AND_COVER",
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 20,
+    "allCandidatesInWindow": 114
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2014-04-04",
+     "prevWeek": "2014-03-28",
+     "verdict": "INSUFFICIENT_FILINGS",
+     "detail": "NO_BEFORE_BRACKET"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2014-04-04",
+    "tried": [
+     {
+      "accession": "0001652044-15-000005",
+      "form": "10-Q",
+      "filingDate": "2015-10-29"
+     }
+    ]
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2014-04-11",
+    "firstBarOnOrAfterSymbolStart": "2016-02-12",
+    "S0": "2016-02-12"
+   },
+   "symbolStartDocument": {
+    "accession": "0001652044-16-000012",
+    "form": "10-K",
+    "filingDate": "2016-02-11",
+    "url": "https://www.sec.gov/Archives/edgar/data/1652044/000165204416000012/goog10-k2015.htm",
+    "sha256": "bec9381e0476b81829ddd7c4ddf932e8d045b4cf7fd26ce670e72ab8f9a076d3",
+    "sha256Normalized": "bec9381e0476b81829ddd7c4ddf932e8d045b4cf7fd26ce670e72ab8f9a076d3",
+    "bytesRead": 3145728,
+    "complete": false,
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "quote": "on stock has been listed on the Nasdaq Global Select Market under the symbol “GOOG” since August 19, 2004 and under the symbol \"GOOGL\" since April 3, 2014. Prior to August 19, 2004, there was no public market for our stock. The following table sets forth for the indicated periods"
+   }
+  },
+  {
+   "securityId": "ref_ABT",
+   "ticker": "ABT",
+   "cik": "0000001800",
+   "issuer": "ABBOTT LABORATORIES",
+   "selectedCanonicalId": "tiingo:NYSE:ABT:1983-04-06",
+   "v9": {
+    "validFrom": "2019-02-22",
+    "basis": "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1921,
+    "sourceSha256": "9e7387eff2c14ce8d7fe22f90584a84528e293363e467a707fa1f10f02bb5a0b"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:ABT:1983-04-06"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1983-04-06",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000001800.json",
+     "sha256": "b40ee9c4c3ec1ed84c74a1cc9b21154deefaf0ba8377f90d261e3bf1c2ca8aaf"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000001800-submissions-001.json",
+     "sha256": "e00f128324f4bc416ae87f0b935d42f701d7cc2cb2f8d587259ca70d1c9e464d"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000001800-submissions-002.json",
+     "sha256": "7c24b1814d83b6514d6c2df0b9eb559c7b7948c5afcde4aa35700c78c4c66625"
+    }
+   ],
+   "secName": "ABBOTT LABORATORIES",
+   "secTickers": [
+    "ABT"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001628280-26-050134",
+    "form": "10-Q",
+    "filingDate": "2026-07-28",
+    "url": "https://www.sec.gov/Archives/edgar/data/1800/000162828026050134/abt-20260630.htm",
+    "sha256": "bb63b203e53f4550dccafb01cdd5127a8680a2d76325c01831eb52ebfc147c87",
+    "sha256Normalized": "7915730ae792c9526b9f52800710807cabe8f8710aff2cabea815dd967f18317",
+    "bytesRead": 1580389,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "ABT",
+     "Security12bTitle": "Common Shares, Without Par Value",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "ABT"
+    ],
+    "mic": "XNYS",
+    "ageDays": 87
+   },
+   "startDocument": {
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0001047469-19-000624",
+    "filingDate": "2019-02-22",
+    "url": "https://www.sec.gov/Archives/edgar/data/1800/000104746919000624/a2237733z10-k.htm",
+    "sha256": "a42b9cdbda9157ad67a02ac0a4391b9628acba797dbecb8745c7aa39db069f81",
+    "sha256Normalized": "a42b9cdbda9157ad67a02ac0a4391b9628acba797dbecb8745c7aa39db069f81",
+    "v9Sha256": "a42b9cdbda9157ad67a02ac0a4391b9628acba797dbecb8745c7aa39db069f81",
+    "bytesRead": 2088168,
+    "complete": true,
+    "detail": "TY SECURITIES Principal Market The principal market for Abbott's common shares is the New York Stock Exchange under the symbol \"ABT.\" Shares are also listed on the Chicago Stock Exchange and traded on various regional and electronic exchanges. Outside the United States, Abbott's "
+   },
+   "priceSearch": {
+    "candidates": 34,
+    "documentsRead": 34
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2019-02-22",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2019-02-22",
+    "checkedTo": "2026-10-23",
+    "bars": 401,
+    "pointsSha256": "a34f08a8fb0d83dfc2c6cf8eceecaee9ec27e9dab93f6b3083e2d4d66a42002b"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 34,
+    "added": 0,
+    "allCandidatesInWindow": 34
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2013-01-04",
+     "prevWeek": "2012-12-28",
+     "verdict": "IDENTITY_UNVERIFIED",
+     "detail": "IDENTITY_TICKER_NOT_NAMED"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2013-01-04",
+    "tried": [
+     {
+      "accession": "0001047469-13-001180",
+      "form": "10-K",
+      "filingDate": "2013-02-15"
+     },
+     {
+      "accession": "0001104659-13-038811",
+      "form": "10-Q",
+      "filingDate": "2013-05-08"
+     },
+     {
+      "accession": "0001104659-13-060300",
+      "form": "10-Q",
+      "filingDate": "2013-08-06"
+     },
+     {
+      "accession": "0001104659-13-082270",
+      "form": "10-Q",
+      "filingDate": "2013-11-07"
+     },
+     {
+      "accession": "0001047469-14-001176",
+      "form": "10-K",
+      "filingDate": "2014-02-21"
+     },
+     {
+      "accession": "0001104659-14-035832",
+      "form": "10-Q",
+      "filingDate": "2014-05-07"
+     },
+     {
+      "accession": "0001104659-14-056950",
+      "form": "10-Q",
+      "filingDate": "2014-08-05"
+     },
+     {
+      "accession": "0001104659-14-077769",
+      "form": "10-Q",
+      "filingDate": "2014-11-06"
+     },
+     {
+      "accession": "0001047469-15-001377",
+      "form": "10-K",
+      "filingDate": "2015-02-27"
+     },
+     {
+      "accession": "0001104659-15-034919",
+      "form": "10-Q",
+      "filingDate": "2015-05-06"
+     },
+     {
+      "accession": "0001104659-15-055905",
+      "form": "10-Q",
+      "filingDate": "2015-08-04"
+     },
+     {
+      "accession": "0001104659-15-076189",
+      "form": "10-Q",
+      "filingDate": "2015-11-05"
+     },
+     {
+      "accession": "0001047469-16-010246",
+      "form": "10-K",
+      "filingDate": "2016-02-19"
+     },
+     {
+      "accession": "0001104659-16-117710",
+      "form": "10-Q",
+      "filingDate": "2016-05-04"
+     },
+     {
+      "accession": "0001104659-16-136572",
+      "form": "10-Q",
+      "filingDate": "2016-08-03"
+     },
+     {
+      "accession": "0001104659-16-154583",
+      "form": "10-Q",
+      "filingDate": "2016-11-03"
+     },
+     {
+      "accession": "0001047469-17-000744",
+      "form": "10-K",
+      "filingDate": "2017-02-17"
+     },
+     {
+      "accession": "0001104659-17-029430",
+      "form": "10-Q",
+      "filingDate": "2017-05-03"
+     },
+     {
+      "accession": "0001104659-17-048855",
+      "form": "10-Q",
+      "filingDate": "2017-08-02"
+     },
+     {
+      "accession": "0001104659-17-065654",
+      "form": "10-Q",
+      "filingDate": "2017-11-02"
+     },
+     {
+      "accession": "0001047469-18-000856",
+      "form": "10-K",
+      "filingDate": "2018-02-16"
+     },
+     {
+      "accession": "0001104659-18-029831",
+      "form": "10-Q",
+      "filingDate": "2018-05-02"
+     },
+     {
+      "accession": "0001104659-18-048736",
+      "form": "10-Q",
+      "filingDate": "2018-08-01"
+     },
+     {
+      "accession": "0001104659-18-065076",
+      "form": "10-Q",
+      "filingDate": "2018-10-31"
+     }
+    ]
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2013-01-11",
+    "firstBarOnOrAfterSymbolStart": "2019-02-22",
+    "S0": "2019-02-22"
+   },
+   "symbolStartDocument": {
+    "accession": "0001047469-19-000624",
+    "form": "10-K",
+    "filingDate": "2019-02-22",
+    "url": "https://www.sec.gov/Archives/edgar/data/1800/000104746919000624/a2237733z10-k.htm",
+    "sha256": "a42b9cdbda9157ad67a02ac0a4391b9628acba797dbecb8745c7aa39db069f81",
+    "sha256Normalized": "a42b9cdbda9157ad67a02ac0a4391b9628acba797dbecb8745c7aa39db069f81",
+    "bytesRead": 2088168,
+    "complete": true,
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "quote": "TY SECURITIES Principal Market The principal market for Abbott's common shares is the New York Stock Exchange under the symbol \"ABT.\" Shares are also listed on the Chicago Stock Exchange and traded on various regional and electronic exchanges. Outside the United States, Abbott's "
+   }
+  },
+  {
+   "securityId": "ref_MS",
+   "ticker": "MS",
+   "cik": "0000895421",
+   "issuer": "MORGAN STANLEY",
+   "selectedCanonicalId": "tiingo:NYSE:MS:1993-02-23",
+   "v9": {
+    "validFrom": "2019-08-09",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "1993-02-26",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1757,
+    "sourceSha256": "a636405dcec8ddb389cffa26aa51e7e65487c98eab9f0a69cfd75d331c53047e"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:MS:1993-02-23"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1993-02-23",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421.json",
+     "sha256": "d9c07532e9fc6d0508bebd06e90fa74c8579f43ddcb1134225161b5be4538ba3"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-001.json",
+     "sha256": "61ee5af46be9ef09419f574f6335a361c6350d1d4f3d14f275a97705fc87f8ef"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-002.json",
+     "sha256": "92c8d846b6e92270f53eb7fda2802741484477a6b2253ccc664700c92b643705"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-003.json",
+     "sha256": "6338b01e29b532f5039a5342c3c11d2dad21f7cd6b4ed4cc8d3668d1920c3bb8"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-004.json",
+     "sha256": "04facf593bd402796595331f4c8f2558ae45ac5e1cbb447463697ded3d0cb076"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-005.json",
+     "sha256": "98e16e5f81ae4f55b850c6a20efbab9b77ca89cd05423e6ad8f81ecc282ff30c"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-006.json",
+     "sha256": "63ed505da37a4df7d24ad072374c09ce7bd3fa5dd124def36040b0ac30e47d08"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-007.json",
+     "sha256": "5fcda6911ddac05e143caa7ee65fda61deca26554ce31ec8a759248964aaa03a"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-008.json",
+     "sha256": "e606605150aa1965f087833b5b4205e7e70b52fade1e7ede3c00d81cff4ed925"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-009.json",
+     "sha256": "adbfc6999025c309c3d905ae01571913ae4b6c141a666172f541cb6f7ae86451"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-010.json",
+     "sha256": "538f7121e55f4de19ee7e10b640ffb303e6a4ab87d35a29a1ffbb47380bd6419"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-011.json",
+     "sha256": "a4d397e1c7c3ea11a45f440342e6f741db6289a1ba3be88764f61b88b3ea3610"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-012.json",
+     "sha256": "8619cfaeb716cd4ef40fc718b9ad9f3b4c1738d3c1397fefa7eb19b79fa7d5bc"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-013.json",
+     "sha256": "e656a98d228cef016c9582a4179274924dee1d2bfe536a4dd034446071be3cf1"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-014.json",
+     "sha256": "5a11bb63f98cda87af751c0b72de7bf325b47fc9cf2bd605cdc2880194e1487b"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-015.json",
+     "sha256": "d2b4b278e41dff54b79c33afa548c5181835d9d02e1e4f9d3301b8bd8b5260c8"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-016.json",
+     "sha256": "182c40b078df0c9b79c83729cf21520626a967edf1b32f137c21d0c08adb764b"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-017.json",
+     "sha256": "a964e64f06fffa422517d9f74266b8b0f8388efbf8bb45e6d4ff32c5bb8bf344"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-018.json",
+     "sha256": "6a4ab7dc75a9b4131bc3a27f6eff8019f4d6527461c8eec2d8c7ad3a159ff880"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-019.json",
+     "sha256": "2a05b03a18e48d6f10fff9b199b961936bfcc472cc5d1689e0b8b0ec95960883"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-020.json",
+     "sha256": "d6877e0ddf97fdd8cc0c4d35a3d7b9ee2c9f4e92b92752ee956b87ec5c0b095d"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-021.json",
+     "sha256": "551b01361d44f94142d01c805555feae109f51517b86c407540e5321a28fdadf"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-022.json",
+     "sha256": "9d445e47b7f60092d58bb8a974f9376efaeb9f3bbaaf81f27bdfde20119f74ee"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-023.json",
+     "sha256": "b673a9d2e2baa07abea028048d30723d5e1fe391d7dd25f58e8ac165ac61d2f6"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-024.json",
+     "sha256": "e0860d10ccc43d863bad86a430ea4ef2440dee1abf3c84138cca6bb7c6ee4478"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-025.json",
+     "sha256": "00b1761428a8c1372f8806f162bbce28de71dbbabc110d94faa9554efa336ab6"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-026.json",
+     "sha256": "6610afc476ab7ad665b1c1b5d295d031f4872a445312532493b4ae615640cca3"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-027.json",
+     "sha256": "161a72a490ef1b8bc15ce87f946a3357a8eb67473c7d7eafa52f704e40704808"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-028.json",
+     "sha256": "47d32e6abff4bf6aacf87497411cee99693781fac36ddf79645ba6b514d88fc4"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-029.json",
+     "sha256": "45eece2f659d2d345167b06a97408b032ced27355554d93288dd8de0e0ea5e9d"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-030.json",
+     "sha256": "099288d9a4ac612dfd12b2c190363ac9937e84bae72926405a3b1741a7126f5b"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-031.json",
+     "sha256": "97fa6d54972c8a458da4513d5e9e7fedfb622487cade0cff2b3f41980880a95d"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-032.json",
+     "sha256": "020c5b5c97cc4c7ad761766ec8daaf90f74fdd946847f226cd1a0af774cba03b"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-033.json",
+     "sha256": "349672e1aeb319e2a994c726daa81b39eafc9d4dc1a1ff6fc71f1ef0d91ba12e"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-034.json",
+     "sha256": "278ea7ee8e9600c2742600bff5234d24c1ea7aeb13988b3d1fc703576d748caf"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-035.json",
+     "sha256": "d811813caca2514117951d006e2915a98d9ef609dd28d9b72d740d7b6e171fbb"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-036.json",
+     "sha256": "cb0ceae841cdb9a9a76e15edcdcae32c3e96ea24f5e0a2b141b5263573936320"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-037.json",
+     "sha256": "cf6b15c2aae785b3f865014490ff7a5239784ce8489f6117b5bf7f2017907e8b"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-038.json",
+     "sha256": "526e95bfebd06cda57417047a06f985e6f22569ff5af0df17f5a46c747f12d53"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-039.json",
+     "sha256": "9e853e12a36117418530a574624c645e38c1f4a22681108c46af48f26a438733"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-040.json",
+     "sha256": "5f39e530f2fc12058f6a7aa4acd392afe9f6a5d0fc3e9fa2c77f4fe38cb929e8"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-041.json",
+     "sha256": "5a8d2adba023f0f2159dc01ea8357c2ff1a0bb52bd51b3c2586c6b18fc2ae8fe"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-042.json",
+     "sha256": "668beff7f47b305f7f8d7148ee00dbe7d4a520fe398fd6710614b0a35a8c3f9d"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-043.json",
+     "sha256": "fa138e5577b50ceff88859a21a65c25abc159379edcf0d405ae1d7212328c03d"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-044.json",
+     "sha256": "c4e9574afbfcf58703bf8a77fdbedf14d754fb4d12365c24e2769224b7fcecbe"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-045.json",
+     "sha256": "3fb69041ed4653196b9f636bfa4dd95203558f5f5f2c385c65dfc15410d995c6"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000895421-submissions-046.json",
+     "sha256": "ac88e9cb992adc182761b3a9a3c5e2754cfd844e7a686137eed5a0f24fb14129"
+    }
+   ],
+   "secName": "MORGAN STANLEY",
+   "secTickers": [
+    "MS",
+    "MS-PK",
+    "MS-PE",
+    "MS-PA",
+    "MS-PF",
+    "MS-PI",
+    "MS-PL",
+    "MS-PO",
+    "MS-PP",
+    "MS-PQ"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0000895421-26-000212",
+    "form": "10-Q",
+    "filingDate": "2026-08-04",
+    "url": "https://www.sec.gov/Archives/edgar/data/895421/000089542126000212/ms-20260630.htm",
+    "sha256": "9e1fee53c0f164212b4ca3f5a76ae4c30252fca2850dff475ff8552bdacf65b6",
+    "sha256Normalized": "9e1fee53c0f164212b4ca3f5a76ae4c30252fca2850dff475ff8552bdacf65b6",
+    "bytesRead": 3145728,
+    "complete": false,
+    "row": {
+     "TradingSymbol": "MS",
+     "Security12bTitle": "Common Stock, $0.01 par value",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "MS"
+    ],
+    "mic": "XNYS",
+    "ageDays": 80
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0001628280-19-009973",
+    "filingDate": "2019-08-05",
+    "url": "https://www.sec.gov/Archives/edgar/data/895421/000162828019009973/msq20630201910-q.htm",
+    "sha256": "a366c60d23443245485dd0fb68b98b866b3c56a4ffdda516c06c84a3d12d6e27",
+    "sha256Normalized": "a366c60d23443245485dd0fb68b98b866b3c56a4ffdda516c06c84a3d12d6e27",
+    "v9Sha256": "a366c60d23443245485dd0fb68b98b866b3c56a4ffdda516c06c84a3d12d6e27",
+    "bytesRead": 3145728,
+    "complete": false,
+    "detail": {
+     "TradingSymbol": "MS",
+     "Security12bTitle": "Common Stock, $0.01 par value",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   },
+   "priceSearch": {
+    "candidates": 54,
+    "documentsRead": 54
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2019-08-09",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2019-08-09",
+    "checkedTo": "2026-10-23",
+    "bars": 377,
+    "pointsSha256": "4d9a8efd8a2ac2c52edcbc2592098db5286d624fa5f1305273404a8fd37afe44"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 14,
+    "allCandidatesInWindow": 55912
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2008-10-17",
+     "prevWeek": "2008-10-10",
+     "verdict": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+     "detail": "SPLIT_EVIDENCE_8K"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2008-10-17",
+    "tried": [
+     {
+      "accession": "0001193125-09-013429",
+      "form": "10-K",
+      "filingDate": "2009-01-29"
+     },
+     {
+      "accession": "0001193125-09-102880",
+      "form": "10-Q",
+      "filingDate": "2009-05-07"
+     },
+     {
+      "accession": "0001193125-09-169269",
+      "form": "10-Q",
+      "filingDate": "2009-08-07"
+     },
+     {
+      "accession": "0001193125-09-227984",
+      "form": "10-Q",
+      "filingDate": "2009-11-09"
+     },
+     {
+      "accession": "0001193125-10-042763",
+      "form": "10-K",
+      "filingDate": "2010-02-26"
+     },
+     {
+      "accession": "0001193125-10-112958",
+      "form": "10-Q",
+      "filingDate": "2010-05-07"
+     },
+     {
+      "accession": "0001193125-10-181853",
+      "form": "10-Q",
+      "filingDate": "2010-08-09"
+     },
+     {
+      "accession": "0001193125-10-252125",
+      "form": "10-Q",
+      "filingDate": "2010-11-08"
+     },
+     {
+      "accession": "0001193125-11-050049",
+      "form": "10-K",
+      "filingDate": "2011-02-28"
+     },
+     {
+      "accession": "0001193125-11-132343",
+      "form": "10-Q",
+      "filingDate": "2011-05-09"
+     },
+     {
+      "accession": "0001193125-11-213320",
+      "form": "10-Q",
+      "filingDate": "2011-08-08"
+     },
+     {
+      "accession": "0001193125-11-299890",
+      "form": "10-Q",
+      "filingDate": "2011-11-07"
+     },
+     {
+      "accession": "0001193125-12-081807",
+      "form": "10-K",
+      "filingDate": "2012-02-27"
+     },
+     {
+      "accession": "0001193125-12-215012",
+      "form": "10-Q",
+      "filingDate": "2012-05-07"
+     },
+     {
+      "accession": "0001193125-12-337734",
+      "form": "10-Q",
+      "filingDate": "2012-08-06"
+     },
+     {
+      "accession": "0001193125-12-454838",
+      "form": "10-Q",
+      "filingDate": "2012-11-06"
+     },
+     {
+      "accession": "0001193125-13-077191",
+      "form": "10-K",
+      "filingDate": "2013-02-26"
+     },
+     {
+      "accession": "0001193125-13-204446",
+      "form": "10-Q",
+      "filingDate": "2013-05-07"
+     },
+     {
+      "accession": "0001193125-13-317186",
+      "form": "10-Q",
+      "filingDate": "2013-08-02"
+     },
+     {
+      "accession": "0001193125-13-425422",
+      "form": "10-Q",
+      "filingDate": "2013-11-04"
+     },
+     {
+      "accession": "0001193125-14-067354",
+      "form": "10-K",
+      "filingDate": "2014-02-25"
+     },
+     {
+      "accession": "0001193125-14-184868",
+      "form": "10-Q",
+      "filingDate": "2014-05-06"
+     },
+     {
+      "accession": "0001193125-14-295874",
+      "form": "10-Q",
+      "filingDate": "2014-08-05"
+     },
+     {
+      "accession": "0001193125-14-396227",
+      "form": "10-Q",
+      "filingDate": "2014-11-04"
+     },
+     {
+      "accession": "0001193125-15-071980",
+      "form": "10-K",
+      "filingDate": "2015-03-02"
+     },
+     {
+      "accession": "0001193125-15-169056",
+      "form": "10-Q",
+      "filingDate": "2015-05-04"
+     },
+     {
+      "accession": "0001193125-15-276529",
+      "form": "10-Q",
+      "filingDate": "2015-08-04"
+     },
+     {
+      "accession": "0001193125-15-364313",
+      "form": "10-Q",
+      "filingDate": "2015-11-03"
+     },
+     {
+      "accession": "0001193125-16-473553",
+      "form": "10-K",
+      "filingDate": "2016-02-23"
+     },
+     {
+      "accession": "0001193125-16-577875",
+      "form": "10-Q",
+      "filingDate": "2016-05-04"
+     },
+     {
+      "accession": "0001193125-16-670066",
+      "form": "10-Q",
+      "filingDate": "2016-08-03"
+     },
+     {
+      "accession": "0001193125-16-757027",
+      "form": "10-Q",
+      "filingDate": "2016-11-02"
+     },
+     {
+      "accession": "0001193125-17-059212",
+      "form": "10-K",
+      "filingDate": "2017-02-27"
+     },
+     {
+      "accession": "0001193125-17-158668",
+      "form": "10-Q",
+      "filingDate": "2017-05-04"
+     },
+     {
+      "accession": "0001193125-17-247402",
+      "form": "10-Q",
+      "filingDate": "2017-08-03"
+     },
+     {
+      "accession": "0001193125-17-331902",
+      "form": "10-Q",
+      "filingDate": "2017-11-03"
+     },
+     {
+      "accession": "0001193125-18-060831",
+      "form": "10-K",
+      "filingDate": "2018-02-27"
+     },
+     {
+      "accession": "0001193125-18-152899",
+      "form": "10-Q",
+      "filingDate": "2018-05-04"
+     },
+     {
+      "accession": "0001193125-18-238269",
+      "form": "10-Q",
+      "filingDate": "2018-08-03"
+     },
+     {
+      "accession": "0001193125-18-318377",
+      "form": "10-Q",
+      "filingDate": "2018-11-05"
+     },
+     {
+      "accession": "0001193125-19-051943",
+      "form": "10-K",
+      "filingDate": "2019-02-26"
+     },
+     {
+      "accession": "0001193125-19-136929",
+      "form": "10-Q",
+      "filingDate": "2019-05-03"
+     }
+    ]
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2008-10-24",
+    "firstBarOnOrAfterSymbolStart": "2019-08-09",
+    "S0": "2019-08-09"
+   },
+   "symbolStartDocument": {
+    "accession": "0001628280-19-009973",
+    "form": "10-Q",
+    "filingDate": "2019-08-05",
+    "url": "https://www.sec.gov/Archives/edgar/data/895421/000162828019009973/msq20630201910-q.htm",
+    "sha256": "a366c60d23443245485dd0fb68b98b866b3c56a4ffdda516c06c84a3d12d6e27",
+    "sha256Normalized": "a366c60d23443245485dd0fb68b98b866b3c56a4ffdda516c06c84a3d12d6e27",
+    "bytesRead": 3145728,
+    "complete": false,
+    "kind": "IXBRL_COVER_FIRST",
+    "cls": {
+     "TradingSymbol": "MS",
+     "Security12bTitle": "Common Stock, $0.01 par value",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   }
+  },
+  {
+   "securityId": "ref_USB",
+   "ticker": "USB",
+   "cik": "0000036104",
+   "issuer": "US BANCORP \\DE\\",
+   "selectedCanonicalId": "tiingo:NYSE:USB:1987-11-05",
+   "v9": {
+    "validFrom": "2019-08-02",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1921,
+    "sourceSha256": "55bf4e8637af146d8d646b543e0419521ba366c7ef5b80b87b453c3b49a87516"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:USB:1987-11-05"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1987-11-05",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000036104.json",
+     "sha256": "b38f4d4f3744b6bea9fcd165f79a397584780f25e420b4e95e534de4b8b6985c"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000036104-submissions-001.json",
+     "sha256": "cf086a8256e511b325945dcd209607effcd38ffc5a0cd6dab1806704f0e9eafc"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000036104-submissions-002.json",
+     "sha256": "7f2b86861040c7f32aa5f5cf2a66738e94cb8fc6aef0bbd128d250536e822954"
+    }
+   ],
+   "secName": "US BANCORP \\DE\\",
+   "secTickers": [
+    "USB",
+    "USB-PA",
+    "USB-PH",
+    "USB-PP",
+    "USB-PQ",
+    "USB-PR",
+    "USB-PS"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0000036104-26-000044",
+    "form": "10-Q",
+    "filingDate": "2026-08-06",
+    "url": "https://www.sec.gov/Archives/edgar/data/36104/000003610426000044/usb-20260630.htm",
+    "sha256": "e782a9ac49171426d5ca166060e65aa6e7de0e51e15b2492b30986ce7af8993f",
+    "sha256Normalized": "e782a9ac49171426d5ca166060e65aa6e7de0e51e15b2492b30986ce7af8993f",
+    "bytesRead": 3145728,
+    "complete": false,
+    "row": {
+     "TradingSymbol": "USB",
+     "Security12bTitle": "Common Stock, $.01 par value per share",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "USB"
+    ],
+    "mic": "XNYS",
+    "ageDays": 78
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0001193125-19-210903",
+    "filingDate": "2019-08-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/36104/000119312519210903/d737804d10q.htm",
+    "sha256": "b454d1f3cf44e774e15238f8edf67ffedfc25b6830ac166492bfde4c13f53f64",
+    "sha256Normalized": "b454d1f3cf44e774e15238f8edf67ffedfc25b6830ac166492bfde4c13f53f64",
+    "v9Sha256": "b454d1f3cf44e774e15238f8edf67ffedfc25b6830ac166492bfde4c13f53f64",
+    "bytesRead": 3145728,
+    "complete": false,
+    "detail": {
+     "TradingSymbol": "USB",
+     "Security12bTitle": "Common Stock",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   },
+   "priceSearch": {
+    "candidates": 54,
+    "documentsRead": 54
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [
+    "2021-02-02",
+    "2022-02-09",
+    "2024-05-21"
+   ],
+   "levelBreaks": [],
+   "intervalMoves": [
+    {
+     "rule": "VENUE_TRANSFER_UNANCHORED",
+     "transfer": "2021-02-02",
+     "to": "2021-02-05"
+    },
+    {
+     "rule": "VENUE_TRANSFER_UNANCHORED",
+     "transfer": "2022-02-09",
+     "to": "2022-02-11"
+    },
+    {
+     "rule": "VENUE_TRANSFER_UNANCHORED",
+     "transfer": "2024-05-21",
+     "to": "2024-05-24"
+    }
+   ],
+   "validFrom": "2024-05-24",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 1,
+   "anchorsBeforeInterval": [
+    {
+     "date": "2020-12-31",
+     "state": "MATCH",
+     "sourceRawPrice": 46.59,
+     "ratioSeriesToSource": 1.0,
+     "accession": "0001047469-21-000551",
+     "form": "DEF 14A"
+    }
+   ],
+   "historyGuard": {
+    "checkedFrom": "2024-05-24",
+    "checkedTo": "2026-10-23",
+    "bars": 127,
+    "pointsSha256": "c0d9fe3b782fcf40d17da898a737b5e2074c3e500fbf55e90649294c200c01c6"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 14,
+    "allCandidatesInWindow": 574
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "1999-04-16",
+     "prevWeek": "1999-04-09",
+     "verdict": "PROVIDER_SPLIT_RECORDED",
+     "detail": null
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "1999-04-16",
+    "tried": [
+     {
+      "accession": "0000897101-99-000519",
+      "form": "10-Q",
+      "filingDate": "1999-05-13"
+     },
+     {
+      "accession": "0000897101-99-000803",
+      "form": "10-Q",
+      "filingDate": "1999-08-12"
+     },
+     {
+      "accession": "0000897101-99-001050",
+      "form": "10-Q",
+      "filingDate": "1999-11-12"
+     },
+     {
+      "accession": "0000950124-00-003102",
+      "form": "10-Q",
+      "filingDate": "2000-05-12"
+     },
+     {
+      "accession": "0000950124-00-004887",
+      "form": "10-Q",
+      "filingDate": "2000-08-11"
+     },
+     {
+      "accession": "0000950124-00-006736",
+      "form": "10-Q",
+      "filingDate": "2000-11-13"
+     },
+     {
+      "accession": "0000950124-01-501229",
+      "form": "10-Q",
+      "filingDate": "2001-05-15"
+     },
+     {
+      "accession": "0000950137-01-503118",
+      "form": "10-Q",
+      "filingDate": "2001-08-14"
+     },
+     {
+      "accession": "0000950137-01-504649",
+      "form": "10-Q",
+      "filingDate": "2001-11-14"
+     },
+     {
+      "accession": "0000950137-02-000971",
+      "form": "10-K",
+      "filingDate": "2002-02-28"
+     },
+     {
+      "accession": "0000950137-02-003123",
+      "form": "10-Q",
+      "filingDate": "2002-05-15"
+     },
+     {
+      "accession": "0000950134-02-009736",
+      "form": "10-Q",
+      "filingDate": "2002-08-13"
+     },
+     {
+      "accession": "0000950134-02-014532",
+      "form": "10-Q",
+      "filingDate": "2002-11-14"
+     },
+     {
+      "accession": "0000950134-03-003243",
+      "form": "10-K",
+      "filingDate": "2003-02-28"
+     },
+     {
+      "accession": "0000950134-03-007963",
+      "form": "10-Q",
+      "filingDate": "2003-05-14"
+     },
+     {
+      "accession": "0000950134-03-011890",
+      "form": "10-Q",
+      "filingDate": "2003-08-14"
+     },
+     {
+      "accession": "0000950134-03-015362",
+      "form": "10-Q",
+      "filingDate": "2003-11-14"
+     },
+     {
+      "accession": "0000950134-04-002667",
+      "form": "10-K",
+      "filingDate": "2004-02-27"
+     },
+     {
+      "accession": "0000950134-04-007110",
+      "form": "10-Q",
+      "filingDate": "2004-05-10"
+     },
+     {
+      "accession": "0000950134-04-011712",
+      "form": "10-Q",
+      "filingDate": "2004-08-09"
+     },
+     {
+      "accession": "0000950134-04-016891",
+      "form": "10-Q",
+      "filingDate": "2004-11-09"
+     },
+     {
+      "accession": "0000950134-05-003890",
+      "form": "10-K",
+      "filingDate": "2005-02-28"
+     },
+     {
+      "accession": "0000950134-05-009415",
+      "form": "10-Q",
+      "filingDate": "2005-05-09"
+     },
+     {
+      "accession": "0000950134-05-015300",
+      "form": "10-Q",
+      "filingDate": "2005-08-09"
+     },
+     {
+      "accession": "0000950134-05-020994",
+      "form": "10-Q",
+      "filingDate": "2005-11-09"
+     },
+     {
+      "accession": "0000950134-06-004429",
+      "form": "10-K",
+      "filingDate": "2006-03-07"
+     },
+     {
+      "accession": "0000950124-06-002629",
+      "form": "10-Q",
+      "filingDate": "2006-05-10"
+     },
+     {
+      "accession": "0000950124-06-004352",
+      "form": "10-Q",
+      "filingDate": "2006-08-09"
+     },
+     {
+      "accession": "0000950124-06-006645",
+      "form": "10-Q",
+      "filingDate": "2006-11-09"
+     },
+     {
+      "accession": "0000950124-07-001116",
+      "form": "10-K",
+      "filingDate": "2007-02-26"
+     },
+     {
+      "accession": "0000950124-07-002789",
+      "form": "10-Q",
+      "filingDate": "2007-05-10"
+     },
+     {
+      "accession": "0000950124-07-004098",
+      "form": "10-Q",
+      "filingDate": "2007-08-09"
+     },
+     {
+      "accession": "0000950124-07-005662",
+      "form": "10-Q",
+      "filingDate": "2007-11-08"
+     },
+     {
+      "accession": "0000950124-08-000806",
+      "form": "10-K",
+      "filingDate": "2008-02-25"
+     },
+     {
+      "accession": "0000950137-08-007222",
+      "form": "10-Q",
+      "filingDate": "2008-05-12"
+     },
+     {
+      "accession": "0000950137-08-010494",
+      "form": "10-Q",
+      "filingDate": "2008-08-11"
+     },
+     {
+      "accession": "0000950137-08-013575",
+      "form": "10-Q",
+      "filingDate": "2008-11-10"
+     },
+     {
+      "accession": "0000950152-09-002057",
+      "form": "10-K",
+      "filingDate": "2009-03-02"
+     },
+     {
+      "accession": "0000950137-09-003749",
+      "form": "10-Q",
+      "filingDate": "2009-05-08"
+     },
+     {
+      "accession": "0000950123-09-033037",
+      "form": "10-Q",
+      "filingDate": "2009-08-10"
+     },
+     {
+      "accession": "0000950123-09-059477",
+      "form": "10-Q",
+      "filingDate": "2009-11-06"
+     },
+     {
+      "accession": "0000950123-10-018123",
+      "form": "10-K",
+      "filingDate": "2010-02-26"
+     },
+     {
+      "accession": "0000950123-10-046495",
+      "form": "10-Q",
+      "filingDate": "2010-05-07"
+     },
+     {
+      "accession": "0000950123-10-074384",
+      "form": "10-Q",
+      "filingDate": "2010-08-06"
+     },
+     {
+      "accession": "0000950123-10-102514",
+      "form": "10-Q",
+      "filingDate": "2010-11-08"
+     },
+     {
+      "accession": "0000950123-11-019888",
+      "form": "10-K",
+      "filingDate": "2011-02-28"
+     },
+     {
+      "accession": "0000950123-11-046628",
+      "form": "10-Q",
+      "filingDate": "2011-05-06"
+     },
+     {
+      "accession": "0000950123-11-074425",
+      "form": "10-Q",
+      "filingDate": "2011-08-08"
+     },
+     {
+      "accession": "0000950123-11-095416",
+      "form": "10-Q",
+      "filingDate": "2011-11-04"
+     },
+     {
+      "accession": "0001193125-12-075125",
+      "form": "10-K",
+      "filingDate": "2012-02-23"
+     },
+     {
+      "accession": "0001193125-12-212780",
+      "form": "10-Q",
+      "filingDate": "2012-05-07"
+     },
+     {
+      "accession": "0001193125-12-334354",
+      "form": "10-Q",
+      "filingDate": "2012-08-03"
+     },
+     {
+      "accession": "0001193125-12-451606",
+      "form": "10-Q",
+      "filingDate": "2012-11-05"
+     },
+     {
+      "accession": "0001193125-13-071069",
+      "form": "10-K",
+      "filingDate": "2013-02-22"
+     },
+     {
+      "accession": "0001193125-13-199123",
+      "form": "10-Q",
+      "filingDate": "2013-05-03"
+     },
+     {
+      "accession": "0001193125-13-324389",
+      "form": "10-Q",
+      "filingDate": "2013-08-07"
+     },
+     {
+      "accession": "0001193125-13-422783",
+      "form": "10-Q",
+      "filingDate": "2013-11-01"
+     },
+     {
+      "accession": "0001193125-14-062530",
+      "form": "10-K",
+      "filingDate": "2014-02-21"
+     },
+     {
+      "accession": "0001193125-14-187251",
+      "form": "10-Q",
+      "filingDate": "2014-05-07"
+     },
+     {
+      "accession": "0001193125-14-297896",
+      "form": "10-Q",
+      "filingDate": "2014-08-06"
+     },
+     {
+      "accession": "0001193125-14-400765",
+      "form": "10-Q",
+      "filingDate": "2014-11-06"
+     },
+     {
+      "accession": "0001193125-15-068728",
+      "form": "10-K",
+      "filingDate": "2015-02-27"
+     },
+     {
+      "accession": "0001193125-15-174506",
+      "form": "10-Q",
+      "filingDate": "2015-05-06"
+     },
+     {
+      "accession": "0001193125-15-278501",
+      "form": "10-Q",
+      "filingDate": "2015-08-05"
+     },
+     {
+      "accession": "0001193125-15-366273",
+      "form": "10-Q",
+      "filingDate": "2015-11-04"
+     },
+     {
+      "accession": "0001193125-16-478568",
+      "form": "10-K",
+      "filingDate": "2016-02-25"
+     },
+     {
+      "accession": "0001193125-16-581459",
+      "form": "10-Q",
+      "filingDate": "2016-05-06"
+     },
+     {
+      "accession": "0001193125-16-673126",
+      "form": "10-Q",
+      "filingDate": "2016-08-05"
+     },
+     {
+      "accession": "0001193125-16-759887",
+      "form": "10-Q",
+      "filingDate": "2016-11-04"
+     },
+     {
+      "accession": "0001193125-17-053947",
+      "form": "10-K",
+      "filingDate": "2017-02-23"
+     },
+     {
+      "accession": "0001193125-17-160671",
+      "form": "10-Q",
+      "filingDate": "2017-05-05"
+     },
+     {
+      "accession": "0001193125-17-248499",
+      "form": "10-Q",
+      "filingDate": "2017-08-04"
+     },
+     {
+      "accession": "0001193125-17-332564",
+      "form": "10-Q",
+      "filingDate": "2017-11-03"
+     },
+     {
+      "accession": "0001193125-18-053893",
+      "form": "10-K",
+      "filingDate": "2018-02-22"
+     },
+     {
+      "accession": "0001193125-18-150855",
+      "form": "10-Q",
+      "filingDate": "2018-05-03"
+     },
+     {
+      "accession": "0001193125-18-236628",
+      "form": "10-Q",
+      "filingDate": "2018-08-02"
+     },
+     {
+      "accession": "0001193125-18-316582",
+      "form": "10-Q",
+      "filingDate": "2018-11-02"
+     },
+     {
+      "accession": "0001193125-19-047201",
+      "form": "10-K",
+      "filingDate": "2019-02-22"
+     },
+     {
+      "accession": "0001193125-19-142913",
+      "form": "10-Q",
+      "filingDate": "2019-05-09"
+     }
+    ]
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "1999-04-23",
+    "firstBarOnOrAfterSymbolStart": "2019-08-02",
+    "S0": "2019-08-02"
+   },
+   "symbolStartDocument": {
+    "accession": "0001193125-19-210903",
+    "form": "10-Q",
+    "filingDate": "2019-08-01",
+    "url": "https://www.sec.gov/Archives/edgar/data/36104/000119312519210903/d737804d10q.htm",
+    "sha256": "b454d1f3cf44e774e15238f8edf67ffedfc25b6830ac166492bfde4c13f53f64",
+    "sha256Normalized": "b454d1f3cf44e774e15238f8edf67ffedfc25b6830ac166492bfde4c13f53f64",
+    "bytesRead": 3145728,
+    "complete": false,
+    "kind": "IXBRL_COVER_FIRST",
+    "cls": {
+     "TradingSymbol": "USB",
+     "Security12bTitle": "Common Stock",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   }
+  },
+  {
+   "securityId": "ref_JCI",
+   "ticker": "JCI",
+   "cik": "0000833444",
+   "issuer": "Johnson Controls International plc",
+   "selectedCanonicalId": "tiingo:NYSE:JCI:1985-03-27",
+   "v9": {
+    "validFrom": "2016-11-25",
+    "basis": "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1921,
+    "sourceSha256": "a0bbd8a738961423d0f899eeed16282025684a9d780236b8d52202221822759b"
+   },
+   "reasons": [],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:JCI:1985-03-27"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1985-03-27",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000833444.json",
+     "sha256": "9164aa4fa12447511ff1c0e71ffc0d3fd8041189d5c7b3aeedb02b81f9c84616"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000833444-submissions-001.json",
+     "sha256": "65fa38944ebd5f5a13fc4db99d4cd0d07aa184289f2d3b48fe1d7833185fddda"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000833444-submissions-002.json",
+     "sha256": "75a24f49f6d981a8b7e8e32064d05b2636e59c5eb0954e14b95bb4b3ca7ed9b9"
+    }
+   ],
+   "secName": "Johnson Controls International plc",
+   "secTickers": [
+    "JCI"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0000833444-26-000087",
+    "form": "10-Q",
+    "filingDate": "2026-07-29",
+    "url": "https://www.sec.gov/Archives/edgar/data/833444/000083344426000087/jci-20260630.htm",
+    "sha256": "5d1ff3700ba1586427f3d74af7531be095f2c26b9cb94dc820c6ef5a85d29c30",
+    "sha256Normalized": "60306dc50dec390b044cbaeac65c895d8f5442c4acd04bf157381c5dc288b350",
+    "bytesRead": 1498878,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "JCI",
+     "Security12bTitle": "Ordinary Shares, Par Value $0.01",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "JCI"
+    ],
+    "mic": "XNYS",
+    "ageDays": 86
+   },
+   "startDocument": {
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0000833444-16-000216",
+    "filingDate": "2016-11-23",
+    "url": "https://www.sec.gov/Archives/edgar/data/833444/000083344416000216/jciplc201610-k.htm",
+    "sha256": "c5894fefb3218c5d682b085aaf52739da28ad19fcf3b17bd86385224c67786e1",
+    "sha256Normalized": "c5894fefb3218c5d682b085aaf52739da28ad19fcf3b17bd86385224c67786e1",
+    "v9Sha256": "c5894fefb3218c5d682b085aaf52739da28ad19fcf3b17bd86385224c67786e1",
+    "bytesRead": 3145728,
+    "complete": false,
+    "detail": "ES OF EQUITY SECURITIES The shares of the Company’s ordinary shares are traded on the New York Stock Exchange under the symbol \"JCI.\" Title of Class Number of Record Holders as of September 30, 2016 Ordinary Shares, $0.01 par value 41,299 Ordinary Shares Price Range Dividends 201"
+   },
+   "priceSearch": {
+    "candidates": 50,
+    "documentsRead": 50
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [
+    "2016-12-28",
+    "2017-03-15",
+    "2021-09-22"
+   ],
+   "levelBreaks": [],
+   "intervalMoves": [
+    {
+     "rule": "VENUE_TRANSFER_UNANCHORED",
+     "transfer": "2016-12-28",
+     "to": "2016-12-30"
+    }
+   ],
+   "validFrom": "2016-12-30",
+   "validTo": null,
+   "anchors": [
+    {
+     "date": "2016-12-30",
+     "sourceRawPrice": 41.19,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 41.19,
+     "bar": [
+      "2016-12-30",
+      41.19
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-17-009786",
+     "form": "DEF 14A",
+     "filingDate": "2017-01-13",
+     "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312517009786/d281956ddef14a.htm",
+     "sha256": "60aac04b10f62c0b8c966b743749c2a7ec84b001487b7fd579e3f0f03c672802",
+     "sha256Normalized": "60aac04b10f62c0b8c966b743749c2a7ec84b001487b7fd579e3f0f03c672802",
+     "bytesRead": 1484976,
+     "complete": true,
+     "quote": "nd the extent to which performance goals set by the Committee are achieved. The closing price of our ordinary shares on the NYSE was $41.19 per share on December 30, 2016. Equity Compensatio",
+     "attributed": true
+    },
+    {
+     "date": "2017-09-29",
+     "sourceRawPrice": 40.29,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 40.29,
+     "bar": [
+      "2017-09-29",
+      40.29
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-18-014557",
+     "form": "DEF 14A",
+     "filingDate": "2018-01-19",
+     "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312518014557/d497342ddef14a.htm",
+     "sha256": "ff95cc98c4f8cf853b8ac035b8db48690aaa870e1c6a27b1237ffff83e3498b8",
+     "sha256Normalized": "ff95cc98c4f8cf853b8ac035b8db48690aaa870e1c6a27b1237ffff83e3498b8",
+     "bytesRead": 1344325,
+     "complete": true,
+     "quote": "were outstanding as of September 30, 2017. Dollar amounts are based on the NYSE closing price of $40.29 for the Company’s common stock on September 29, 2017. Option Awards Stoc",
+     "attributed": true
+    },
+    {
+     "date": "2018-09-28",
+     "sourceRawPrice": 35.0,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 35.0,
+     "bar": [
+      "2018-09-28",
+      35
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-19-012893",
+     "form": "DEF 14A",
+     "filingDate": "2019-01-18",
+     "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312519012893/d644844ddef14a.htm",
+     "sha256": "5e53d11910f15bfd0d7b08b7ec67801e44be74a8c59d66775d92206bbbd7f8f8",
+     "sha256Normalized": "5e53d11910f15bfd0d7b08b7ec67801e44be74a8c59d66775d92206bbbd7f8f8",
+     "bytesRead": 1433781,
+     "complete": true,
+     "quote": "were outstanding as of September 30, 2018. Dollar amounts are based on the NYSE closing price of $35.00 per share for our ordinary shares on September 28, 2018. Option Awards Stoc",
+     "attributed": true
+    },
+    {
+     "date": "2022-09-30",
+     "sourceRawPrice": 49.22,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 49.22,
+     "bar": [
+      "2022-09-30",
+      49.22
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-23-011980",
+     "form": "DEF 14A",
+     "filingDate": "2023-01-20",
+     "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312523011980/d397457ddef14a.htm",
+     "sha256": "8d5af739a187c999cbf04ccf1f66d4093ca639be653945029696cbae0602adbd",
+     "sha256Normalized": "8d5af739a187c999cbf04ccf1f66d4093ca639be653945029696cbae0602adbd",
+     "bytesRead": 1775092,
+     "complete": true,
+     "quote": "were outstanding as of September 30, 2022. Dollar amounts are based on the NYSE closing price of $49.22 per share for our ordinary shares on September 30, 2022. Option Awards Stoc",
+     "attributed": true
+    },
+    {
+     "date": "2023-09-30",
+     "sourceRawPrice": 53.21,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 53.21,
+     "bar": [
+      "2023-09-29",
+      53.21
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-24-011239",
+     "form": "DEF 14A",
+     "filingDate": "2024-01-19",
+     "url": "https://www.sec.gov/Archives/edgar/data/833444/000119312524011239/d554585ddef14a.htm",
+     "sha256": "1e2a5e463891a5311de2f82ffa896b7d5fd05c7e3661e03cb9c695ed9e772a50",
+     "sha256Normalized": "61d790e6a61dc0fb6361e10ac3e78d03da636d0e93227c515c224d7e70ec22cf",
+     "bytesRead": 1991693,
+     "complete": true,
+     "quote": "were outstanding as of September 30, 2023. Dollar amounts are based on the NYSE closing price of $53.21 per share for our ordinary shares on September 30, 2023. Option Awards Stoc",
+     "attributed": true
+    }
+   ],
+   "anchorsOutsideInterval": 1,
+   "anchorsBeforeInterval": [
+    {
+     "date": "2016-09-30",
+     "state": "MATCH",
+     "sourceRawPrice": 46.53,
+     "ratioSeriesToSource": 1.0,
+     "accession": "0001193125-17-009786",
+     "form": "DEF 14A"
+    }
+   ],
+   "historyGuard": {
+    "checkedFrom": "2016-12-30",
+    "checkedTo": "2026-10-23",
+    "bars": 513,
+    "pointsSha256": "c45f16f547dbf1be9da8da19de5f051e31fcd9916ec34fc354b43a7ed841c6de"
+   },
+   "anchorGaps": {
+    "matchDates": 5,
+    "firstMatch": "2016-12-30",
+    "lastMatch": "2023-09-30",
+    "maxGapDays": 1463
+   },
+   "decision": "QUALIFIED_SEC_SAME_DAY_PRICE_AND_COVER",
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 10,
+    "allCandidatesInWindow": 88
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2012-10-05",
+     "prevWeek": "2012-09-28",
+     "verdict": "IDENTITY_UNVERIFIED",
+     "detail": "IDENTITY_TICKER_NOT_NAMED"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2012-10-05",
+    "tried": [
+     {
+      "accession": "0001047469-12-010665",
+      "form": "10-K",
+      "filingDate": "2012-11-16"
+     },
+     {
+      "accession": "0001047469-13-000517",
+      "form": "10-Q",
+      "filingDate": "2013-01-29"
+     },
+     {
+      "accession": "0001047469-13-004987",
+      "form": "10-Q",
+      "filingDate": "2013-04-26"
+     },
+     {
+      "accession": "0000833444-13-000035",
+      "form": "10-Q",
+      "filingDate": "2013-07-26"
+     },
+     {
+      "accession": "0000833444-13-000045",
+      "form": "10-K",
+      "filingDate": "2013-11-14"
+     },
+     {
+      "accession": "0000833444-14-000022",
+      "form": "10-Q",
+      "filingDate": "2014-01-31"
+     },
+     {
+      "accession": "0000833444-14-000046",
+      "form": "10-Q",
+      "filingDate": "2014-04-25"
+     },
+     {
+      "accession": "0000833444-14-000099",
+      "form": "10-Q",
+      "filingDate": "2014-07-25"
+     },
+     {
+      "accession": "0000833444-14-000124",
+      "form": "10-K",
+      "filingDate": "2014-11-14"
+     },
+     {
+      "accession": "0000833444-15-000013",
+      "form": "10-Q",
+      "filingDate": "2015-01-30"
+     },
+     {
+      "accession": "0000833444-15-000032",
+      "form": "10-Q",
+      "filingDate": "2015-04-24"
+     },
+     {
+      "accession": "0000833444-15-000062",
+      "form": "10-Q",
+      "filingDate": "2015-07-31"
+     },
+     {
+      "accession": "0000833444-15-000091",
+      "form": "10-K",
+      "filingDate": "2015-11-13"
+     },
+     {
+      "accession": "0000833444-16-000120",
+      "form": "10-Q",
+      "filingDate": "2016-01-29"
+     },
+     {
+      "accession": "0000833444-16-000172",
+      "form": "10-Q",
+      "filingDate": "2016-04-29"
+     },
+     {
+      "accession": "0000833444-16-000197",
+      "form": "10-Q",
+      "filingDate": "2016-07-29"
+     }
+    ]
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2012-10-12",
+    "firstBarOnOrAfterSymbolStart": "2016-11-25",
+    "S0": "2016-11-25"
+   },
+   "symbolStartDocument": {
+    "accession": "0000833444-16-000216",
+    "form": "10-K",
+    "filingDate": "2016-11-23",
+    "url": "https://www.sec.gov/Archives/edgar/data/833444/000083344416000216/jciplc201610-k.htm",
+    "sha256": "c5894fefb3218c5d682b085aaf52739da28ad19fcf3b17bd86385224c67786e1",
+    "sha256Normalized": "c5894fefb3218c5d682b085aaf52739da28ad19fcf3b17bd86385224c67786e1",
+    "bytesRead": 3145728,
+    "complete": false,
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "quote": "ES OF EQUITY SECURITIES The shares of the Company’s ordinary shares are traded on the New York Stock Exchange under the symbol \"JCI.\" Title of Class Number of Record Holders as of September 30, 2016 Ordinary Shares, $0.01 par value 41,299 Ordinary Shares Price Range Dividends 201"
+   }
+  },
+  {
+   "securityId": "ref_WBD",
+   "ticker": "WBD",
+   "cik": "0001437107",
+   "issuer": "Warner Bros. Discovery, Inc.",
+   "selectedCanonicalId": "tiingo:NASDAQ:WBD:2005-07-08",
+   "v9": {
+    "validFrom": "2022-04-29",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "2005-07-08",
+    "to": "2026-10-07",
+    "asOf": "2026-10-07",
+    "bars": 1110,
+    "sourceSha256": "7576be50897f89be242aef76fd47eefad05a9eb5f80deedfbcc2ba7bf0776a8c"
+   },
+   "reasons": [
+    "DELISTING_FORM_AFTER_LAST_COVER"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NASDAQ:WBD:2005-07-08"
+   ],
+   "selectedRow": {
+    "exchange": "NASDAQ",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "2005-07-08",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001437107.json",
+     "sha256": "f53359563ad7583d7e255a9c6fbc30e19592c87ab90967c7897b64f7620ea8db"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001437107-submissions-001.json",
+     "sha256": "0a97a9684e246fa08cab19d819f12cf2b553713a3929cc2f0c5968a669d9b771"
+    }
+   ],
+   "secName": "Warner Bros. Discovery, Inc.",
+   "secTickers": [],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001437107-26-000075",
+    "form": "10-Q",
+    "filingDate": "2026-08-06",
+    "url": "https://www.sec.gov/Archives/edgar/data/1437107/000143710726000075/wbd-20260630.htm",
+    "sha256": "a28e76505638b36c84094ce8db824a32142ce5a1a6746ae5233d545268a5b8c4",
+    "sha256Normalized": "25c31773ca4cad3247fe99e4d5e615cc31b7283cc99ce946bc83464405673b2d",
+    "bytesRead": 2402652,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "WBD",
+     "Security12bTitle": "Series A Common Stock",
+     "SecurityExchangeName": "The Nasdaq Global Select Market"
+    },
+    "commonSymbols": [
+     "WBD"
+    ],
+    "mic": "XNAS",
+    "ageDays": 62
+   },
+   "delistingFormsAfterCover": [
+    {
+     "form": "25",
+     "filingDate": "2026-10-06",
+     "accession": "0001193125-26-415091"
+    },
+    {
+     "form": "25-NSE",
+     "filingDate": "2026-10-06",
+     "accession": "0001354457-26-000951"
+    },
+    {
+     "form": "15-12G",
+     "filingDate": "2026-10-16",
+     "accession": "0001193125-26-423513"
+    },
+    {
+     "form": "15-15D",
+     "filingDate": "2026-10-16",
+     "accession": "0001193125-26-423519"
+    },
+    {
+     "form": "15-15D",
+     "filingDate": "2026-10-16",
+     "accession": "0001193125-26-423523"
+    },
+    {
+     "form": "15-15D",
+     "filingDate": "2026-10-16",
+     "accession": "0001193125-26-423529"
+    },
+    {
+     "form": "15-15D",
+     "filingDate": "2026-10-16",
+     "accession": "0001193125-26-423536"
+    },
+    {
+     "form": "15-15D",
+     "filingDate": "2026-10-16",
+     "accession": "0001193125-26-423540"
+    },
+    {
+     "form": "15-15D",
+     "filingDate": "2026-10-16",
+     "accession": "0001193125-26-423544"
+    },
+    {
+     "form": "15-15D",
+     "filingDate": "2026-10-16",
+     "accession": "0001193125-26-423548"
+    },
+    {
+     "form": "15-15D",
+     "filingDate": "2026-10-16",
+     "accession": "0001193125-26-423553"
+    }
+   ],
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0001437107-22-000138",
+    "filingDate": "2022-04-26",
+    "url": "https://www.sec.gov/Archives/edgar/data/1437107/000143710722000138/disca-20220331.htm",
+    "sha256": "26560b1f4795cd3cf58b79f1249e0cb1b4bc334d2c4a136efe88012336f688f7",
+    "sha256Normalized": "f2620d83d71902de68662267af726b14accd1867c5f43f4e964d6cdcd01b661c",
+    "v9Sha256": "26560b1f4795cd3cf58b79f1249e0cb1b4bc334d2c4a136efe88012336f688f7",
+    "bytesRead": 2331250,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "WBD",
+     "Security12bTitle": "Series A Common Stock",
+     "SecurityExchangeName": "The Nasdaq Global Select Market"
+    }
+   },
+   "priceSearch": {
+    "candidates": 41,
+    "documentsRead": 41
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [
+    {
+     "rule": "FIRST_ANCHOR_730D",
+     "to": "2024-01-05"
+    }
+   ],
+   "validFrom": "2024-01-05",
+   "validTo": null,
+   "anchors": [
+    {
+     "date": "2025-12-31",
+     "sourceRawPrice": 28.82,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 28.82,
+     "bar": [
+      "2025-12-31",
+      28.82
+     ],
+     "basis": "DAILY_CROSSCHECKED",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001437107-26-000046",
+     "form": "DEF 14A",
+     "filingDate": "2026-04-30",
+     "url": "https://www.sec.gov/Archives/edgar/data/1437107/000143710726000046/wbd-20260429.htm",
+     "sha256": "a55ad44af16d5269b6a8eac00c081d6b014050a684fdd3d6c22c9620a6ce3c79",
+     "sha256Normalized": "a55ad44af16d5269b6a8eac00c081d6b014050a684fdd3d6c22c9620a6ce3c79",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "ns granted by the difference between the exercise price for such option and the closing price of our common stock on December 31, 2025, $28.82; ■ for PRSU/RSU awa",
+     "attributed": true
+    }
+   ],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2024-01-05",
+    "checkedTo": "2026-10-07",
+    "bars": 145,
+    "pointsSha256": "4cd8b60b84635d7aa199ed19886a420dc04a3cfeec440df2cce1d94ba1838314"
+   },
+   "anchorGaps": {
+    "matchDates": 1,
+    "firstMatch": "2025-12-31",
+    "lastMatch": "2025-12-31",
+    "maxGapDays": 218
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "HOLD",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 1,
+    "allCandidatesInWindow": 54
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2014-08-08",
+     "prevWeek": "2014-08-01",
+     "verdict": "INSUFFICIENT_FILINGS",
+     "detail": "NO_BEFORE_BRACKET"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2014-08-08",
+    "tried": [
+     {
+      "accession": "0001437107-14-000072",
+      "form": "10-Q",
+      "filingDate": "2014-11-04"
+     },
+     {
+      "accession": "0001437107-15-000004",
+      "form": "10-K",
+      "filingDate": "2015-02-19"
+     },
+     {
+      "accession": "0001437107-15-000013",
+      "form": "10-Q",
+      "filingDate": "2015-05-05"
+     },
+     {
+      "accession": "0001437107-15-000034",
+      "form": "10-Q",
+      "filingDate": "2015-08-05"
+     },
+     {
+      "accession": "0001437107-15-000052",
+      "form": "10-Q",
+      "filingDate": "2015-11-03"
+     },
+     {
+      "accession": "0001437107-16-000059",
+      "form": "10-K",
+      "filingDate": "2016-02-18"
+     },
+     {
+      "accession": "0001437107-16-000072",
+      "form": "10-Q",
+      "filingDate": "2016-05-05"
+     },
+     {
+      "accession": "0001437107-16-000084",
+      "form": "10-Q",
+      "filingDate": "2016-08-02"
+     },
+     {
+      "accession": "0001437107-16-000106",
+      "form": "10-Q",
+      "filingDate": "2016-11-01"
+     },
+     {
+      "accession": "0001437107-17-000007",
+      "form": "10-K",
+      "filingDate": "2017-02-14"
+     },
+     {
+      "accession": "0001437107-17-000017",
+      "form": "10-Q",
+      "filingDate": "2017-05-09"
+     },
+     {
+      "accession": "0001437107-17-000030",
+      "form": "10-Q",
+      "filingDate": "2017-08-04"
+     },
+     {
+      "accession": "0001437107-17-000063",
+      "form": "10-Q",
+      "filingDate": "2017-11-02"
+     },
+     {
+      "accession": "0001437107-18-000028",
+      "form": "10-K",
+      "filingDate": "2018-02-28"
+     },
+     {
+      "accession": "0001437107-18-000059",
+      "form": "10-Q",
+      "filingDate": "2018-05-10"
+     },
+     {
+      "accession": "0001437107-18-000076",
+      "form": "10-Q",
+      "filingDate": "2018-08-08"
+     },
+     {
+      "accession": "0001437107-18-000091",
+      "form": "10-Q",
+      "filingDate": "2018-11-09"
+     },
+     {
+      "accession": "0001437107-19-000013",
+      "form": "10-K",
+      "filingDate": "2019-03-01"
+     },
+     {
+      "accession": "0001437107-19-000026",
+      "form": "10-Q",
+      "filingDate": "2019-05-02"
+     },
+     {
+      "accession": "0001437107-19-000039",
+      "form": "10-Q",
+      "filingDate": "2019-08-06"
+     },
+     {
+      "accession": "0001437107-19-000050",
+      "form": "10-Q",
+      "filingDate": "2019-11-07"
+     },
+     {
+      "accession": "0001437107-20-000006",
+      "form": "10-K",
+      "filingDate": "2020-02-27"
+     },
+     {
+      "accession": "0001437107-20-000026",
+      "form": "10-Q",
+      "filingDate": "2020-05-06"
+     },
+     {
+      "accession": "0001437107-20-000069",
+      "form": "10-Q",
+      "filingDate": "2020-08-05"
+     },
+     {
+      "accession": "0001437107-20-000089",
+      "form": "10-Q",
+      "filingDate": "2020-11-06"
+     },
+     {
+      "accession": "0001437107-21-000018",
+      "form": "10-K",
+      "filingDate": "2021-02-22"
+     },
+     {
+      "accession": "0001437107-21-000088",
+      "form": "10-Q",
+      "filingDate": "2021-04-29"
+     },
+     {
+      "accession": "0001437107-21-000166",
+      "form": "10-Q",
+      "filingDate": "2021-08-03"
+     },
+     {
+      "accession": "0001437107-21-000183",
+      "form": "10-Q",
+      "filingDate": "2021-11-03"
+     },
+     {
+      "accession": "0001437107-22-000031",
+      "form": "10-K",
+      "filingDate": "2022-02-24"
+     }
+    ]
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2014-08-15",
+    "firstBarOnOrAfterSymbolStart": "2022-04-29",
+    "S0": "2022-04-29"
+   },
+   "symbolStartDocument": {
+    "accession": "0001437107-22-000138",
+    "form": "10-Q",
+    "filingDate": "2022-04-26",
+    "url": "https://www.sec.gov/Archives/edgar/data/1437107/000143710722000138/disca-20220331.htm",
+    "sha256": "26560b1f4795cd3cf58b79f1249e0cb1b4bc334d2c4a136efe88012336f688f7",
+    "sha256Normalized": "f2620d83d71902de68662267af726b14accd1867c5f43f4e964d6cdcd01b661c",
+    "bytesRead": 2331250,
+    "complete": true,
+    "kind": "IXBRL_COVER_FIRST",
+    "cls": {
+     "TradingSymbol": "WBD",
+     "Security12bTitle": "Series A Common Stock",
+     "SecurityExchangeName": "The Nasdaq Global Select Market"
+    }
+   }
+  },
+  {
+   "securityId": "ref_IFF",
+   "ticker": "IFF",
+   "cik": "0000051253",
+   "issuer": "INTERNATIONAL FLAVORS & FRAGRANCES INC",
+   "selectedCanonicalId": "tiingo:NYSE:IFF:1981-12-31",
+   "v9": {
+    "validFrom": "2019-08-09",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1921,
+    "sourceSha256": "b4ce546983be012e3cfc8164094b411b4566d71be88648710d947381192cd28d"
+   },
+   "reasons": [
+    "DELISTING_FORM_AFTER_LAST_COVER"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:IFF:1981-12-31"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1981-12-31",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000051253.json",
+     "sha256": "07cda265eb53446a9204e5c2d74fb847ca7a891485cabc27d9d2a3b31270a998"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000051253-submissions-001.json",
+     "sha256": "6f8e223ce4ea7d9c6de4235b0fd6478ca3b85b01968e344968620ef7c3a90a1c"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000051253-submissions-002.json",
+     "sha256": "96afbca2c91a52fa5548b4ba9f71f53f6515c1f46b69829c49d9a591d4266a73"
+    }
+   ],
+   "secName": "INTERNATIONAL FLAVORS & FRAGRANCES INC",
+   "secTickers": [
+    "IFF"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0000051253-26-000030",
+    "form": "10-Q",
+    "filingDate": "2026-08-04",
+    "url": "https://www.sec.gov/Archives/edgar/data/51253/000005125326000030/iff-20260630.htm",
+    "sha256": "123632b8ae9fe2d6edd7c3a92d57ace42574ca8e6fbc9a7862e0c2dde82926f2",
+    "sha256Normalized": "863992f78e39ed98cad884c639651ca0e24a1446956286645e718206957068bf",
+    "bytesRead": 2553353,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "IFF",
+     "Security12bTitle": "Common Stock, par value 12 1/2¢ per share",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "IFF"
+    ],
+    "mic": "XNYS",
+    "ageDays": 80
+   },
+   "delistingFormsAfterCover": [
+    {
+     "form": "25-NSE",
+     "filingDate": "2026-09-25",
+     "accession": "0000876661-26-000788"
+    }
+   ],
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0000051253-19-000018",
+    "filingDate": "2019-08-05",
+    "url": "https://www.sec.gov/Archives/edgar/data/51253/000005125319000018/iff10-q219.htm",
+    "sha256": "4452557e2eb4e8e2c51d9493865856a01da6835886a2b17fbdab3ab0f536d564",
+    "sha256Normalized": "1faabd9cb1db8b441cd8bf0e00bfd02b40a9a05e84e17619f339063bb3b43e2a",
+    "v9Sha256": "4452557e2eb4e8e2c51d9493865856a01da6835886a2b17fbdab3ab0f536d564",
+    "bytesRead": 2596791,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "IFF",
+     "Security12bTitle": "Common Stock, par value 12 1/2¢ per share",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   },
+   "priceSearch": {
+    "candidates": 30,
+    "documentsRead": 30
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2019-08-09",
+   "validTo": null,
+   "anchors": [
+    {
+     "date": "2020-12-31",
+     "sourceRawPrice": 108.84,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 108.84,
+     "bar": [
+      "2020-12-31",
+      108.84
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-21-091238",
+     "form": "DEF 14A",
+     "filingDate": "2021-03-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000119312521091238/d87231ddef14a.htm",
+     "sha256": "847bce26725b90822bbe666136769b0a8dd6287b96951018ca49220ae678895f",
+     "sha256Normalized": "847bce26725b90822bbe666136769b0a8dd6287b96951018ca49220ae678895f",
+     "bytesRead": 1971984,
+     "complete": true,
+     "quote": "rs in January 2021. The value realized is based on the number of shares and the closing market price of a share of our common stock on December 31, 2020 ($108.84); however, the actu",
+     "attributed": true
+    },
+    {
+     "date": "2021-12-31",
+     "sourceRawPrice": 150.65,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 150.65,
+     "bar": [
+      "2021-12-31",
+      150.65
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-22-084681",
+     "form": "DEF 14A",
+     "filingDate": "2022-03-25",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000119312522084681/d247508ddef14a.htm",
+     "sha256": "8259cbccdef624cf1aad2d5be847e4f1c6c34cc2db386f34e83b35410f5880fa",
+     "sha256Normalized": "8259cbccdef624cf1aad2d5be847e4f1c6c34cc2db386f34e83b35410f5880fa",
+     "bytesRead": 1837282,
+     "complete": true,
+     "quote": "ted portion of such outstanding ECP awards at a value of $106,208 (based on the closing price of common stock on December 31, 2021 ($150.65)), payable on the v",
+     "attributed": true
+    },
+    {
+     "date": "2022-04-01",
+     "sourceRawPrice": 134.33,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 134.33,
+     "bar": [
+      "2022-04-01",
+      134.33
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-23-077257",
+     "form": "DEF 14A",
+     "filingDate": "2023-03-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000119312523077257/d444061ddef14a.htm",
+     "sha256": "82cb2a3df987ba3cae06d5f9e264ebdbca3847a2a32a8d972d156d0d5dd5d8d6",
+     "sha256Normalized": "82cb2a3df987ba3cae06d5f9e264ebdbca3847a2a32a8d972d156d0d5dd5d8d6",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "9 under the ECP and vested on April 1, 2022. The value realized is based on the closing market price of our common stock on April 1, 2022 ($134.33). (3) The amounts s",
+     "attributed": true
+    },
+    {
+     "date": "2022-12-16",
+     "sourceRawPrice": 103.11,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 103.11,
+     "bar": [
+      "2022-12-16",
+      103.11
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-23-077257",
+     "form": "DEF 14A",
+     "filingDate": "2023-03-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000119312523077257/d444061ddef14a.htm",
+     "sha256": "82cb2a3df987ba3cae06d5f9e264ebdbca3847a2a32a8d972d156d0d5dd5d8d6",
+     "sha256Normalized": "82cb2a3df987ba3cae06d5f9e264ebdbca3847a2a32a8d972d156d0d5dd5d8d6",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": " Net Debt Ratio and 2020-2022 Relative TSR). The value realized is based on the closing market price of our common stock on December 16, 2022, the first business day following Mr. Fortanet's departure ($103.11). 84 IFF | 2023 PRO",
+     "attributed": true
+    },
+    {
+     "date": "2022-12-31",
+     "sourceRawPrice": 104.84,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 104.84,
+     "bar": [
+      "2022-12-30",
+      104.84
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-23-077257",
+     "form": "DEF 14A",
+     "filingDate": "2023-03-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000119312523077257/d444061ddef14a.htm",
+     "sha256": "82cb2a3df987ba3cae06d5f9e264ebdbca3847a2a32a8d972d156d0d5dd5d8d6",
+     "sha256Normalized": "82cb2a3df987ba3cae06d5f9e264ebdbca3847a2a32a8d972d156d0d5dd5d8d6",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "ock Settled Appreciation Right (2) The market value was determined based on the closing price of our common stock on December 31, 2022 ($104.84). IFF | 2023 PROXY ",
+     "attributed": true
+    },
+    {
+     "date": "2024-03-01",
+     "sourceRawPrice": 75.88,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 75.88,
+     "bar": [
+      "2024-03-01",
+      75.88
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-25-009165",
+     "form": "DEF 14A",
+     "filingDate": "2025-03-18",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000114036125009165/ny20039195x1_def14a.htm",
+     "sha256": "70193aa3548c18910aa238f3f6bce4d4461d8596146fc2a418129a7fcc2d461b",
+     "sha256Normalized": "70193aa3548c18910aa238f3f6bce4d4461d8596146fc2a418129a7fcc2d461b",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "arch 1, 2027. The amount shown as the Value Realized on Vesting is based on the closing market price of our common stock on March 1, 2024 ($75.88) multiplied by the ",
+     "attributed": true
+    },
+    {
+     "date": "2024-04-05",
+     "sourceRawPrice": 83.34,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 83.34,
+     "bar": [
+      "2024-04-05",
+      83.34
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-25-009165",
+     "form": "DEF 14A",
+     "filingDate": "2025-03-18",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000114036125009165/ny20039195x1_def14a.htm",
+     "sha256": "70193aa3548c18910aa238f3f6bce4d4461d8596146fc2a418129a7fcc2d461b",
+     "sha256Normalized": "70193aa3548c18910aa238f3f6bce4d4461d8596146fc2a418129a7fcc2d461b",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "pril 5, 2024. The amount shown as the Value Realized on Vesting is based on the closing price of our common stock on April 5, 2024 ($83.34) multiplied by the ",
+     "attributed": true
+    },
+    {
+     "date": "2024-05-03",
+     "sourceRawPrice": 86.64,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 86.64,
+     "bar": [
+      "2024-05-03",
+      86.64
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-25-009165",
+     "form": "DEF 14A",
+     "filingDate": "2025-03-18",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000114036125009165/ny20039195x1_def14a.htm",
+     "sha256": "70193aa3548c18910aa238f3f6bce4d4461d8596146fc2a418129a7fcc2d461b",
+     "sha256Normalized": "70193aa3548c18910aa238f3f6bce4d4461d8596146fc2a418129a7fcc2d461b",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": " May 3, 2026. The amount shown as the Value Realized on Vesting is based on the closing market price of our common stock on May 3, 2024 ($86.64) multiplied by the ",
+     "attributed": true
+    },
+    {
+     "date": "2025-04-04",
+     "sourceRawPrice": 73.12,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 73.12,
+     "bar": [
+      "2025-04-04",
+      73.12
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-26-009960",
+     "form": "DEF 14A",
+     "filingDate": "2026-03-18",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000114036126009960/ny20055514x1_def14a.htm",
+     "sha256": "f161a6473aef005419db7ddc69c984b747c6ccb0d1353536f3f1dc0b5176cfb6",
+     "sha256Normalized": "f161a6473aef005419db7ddc69c984b747c6ccb0d1353536f3f1dc0b5176cfb6",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": " the former ECP and vested on April 4, 2025. The value realized is based on the closing market price of our common stock on April 4, 2025 ($73.12). (6) This award gr",
+     "attributed": true
+    },
+    {
+     "date": "2025-12-31",
+     "sourceRawPrice": 67.39,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 67.39,
+     "bar": [
+      "2025-12-31",
+      67.39
+     ],
+     "basis": "DAILY_CROSSCHECKED",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-26-009960",
+     "form": "DEF 14A",
+     "filingDate": "2026-03-18",
+     "url": "https://www.sec.gov/Archives/edgar/data/51253/000114036126009960/ny20055514x1_def14a.htm",
+     "sha256": "f161a6473aef005419db7ddc69c984b747c6ccb0d1353536f3f1dc0b5176cfb6",
+     "sha256Normalized": "f161a6473aef005419db7ddc69c984b747c6ccb0d1353536f3f1dc0b5176cfb6",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "r. Fyrwald in the form of PSUs (2) The market value was determined based on the closing price of our common stock on December 31, 2025 ($67.39). 56 IFF | 2026 PRO",
+     "attributed": true
+    }
+   ],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2019-08-09",
+    "checkedTo": "2026-10-23",
+    "bars": 377,
+    "pointsSha256": "6646f60c812f7f0e683517d2b4d88d9b92b9279c6ca8b6e9867af6f31fe358bd"
+   },
+   "anchorGaps": {
+    "matchDates": 10,
+    "firstMatch": "2020-12-31",
+    "lastMatch": "2025-12-31",
+    "maxGapDays": 426
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "HOLD",
+   "l4": {
+    "oneZeroZeroCandidates": 30,
+    "added": 0,
+    "allCandidatesInWindow": 30
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "1994-01-21",
+     "prevWeek": "1994-01-14",
+     "verdict": "INSUFFICIENT_FILINGS",
+     "detail": "NO_BEFORE_BRACKET"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "1994-01-21",
+    "tried": [
+     {
+      "accession": "0000950110-94-000196",
+      "form": "10-Q",
+      "filingDate": "1994-05-13"
+     },
+     {
+      "accession": "0000950110-94-000276",
+      "form": "10-Q",
+      "filingDate": "1994-08-12"
+     },
+     {
+      "accession": "0000950110-94-000325",
+      "form": "10-Q",
+      "filingDate": "1994-11-14"
+     },
+     {
+      "accession": "0000950110-95-000190",
+      "form": "10-K",
+      "filingDate": "1995-03-30"
+     },
+     {
+      "accession": "0000950110-95-000390",
+      "form": "10-Q",
+      "filingDate": "1995-05-12"
+     },
+     {
+      "accession": "0000950110-95-000588",
+      "form": "10-Q",
+      "filingDate": "1995-08-14"
+     },
+     {
+      "accession": "0000950110-95-000774",
+      "form": "10-Q",
+      "filingDate": "1995-11-14"
+     },
+     {
+      "accession": "0000950110-96-000305",
+      "form": "10-K",
+      "filingDate": "1996-03-28"
+     },
+     {
+      "accession": "0000950110-96-000587",
+      "form": "10-Q",
+      "filingDate": "1996-05-15"
+     },
+     {
+      "accession": "0000950110-96-000907",
+      "form": "10-Q",
+      "filingDate": "1996-08-14"
+     },
+     {
+      "accession": "0000950110-96-001393",
+      "form": "10-Q",
+      "filingDate": "1996-11-14"
+     },
+     {
+      "accession": "0000950110-97-000547",
+      "form": "10-K",
+      "filingDate": "1997-03-31"
+     },
+     {
+      "accession": "0000950110-97-000956",
+      "form": "10-Q",
+      "filingDate": "1997-05-15"
+     },
+     {
+      "accession": "0000950110-97-001254",
+      "form": "10-Q",
+      "filingDate": "1997-08-13"
+     },
+     {
+      "accession": "0000950110-97-001537",
+      "form": "10-Q",
+      "filingDate": "1997-11-14"
+     },
+     {
+      "accession": "0000950110-98-000370",
+      "form": "10-K",
+      "filingDate": "1998-03-31"
+     },
+     {
+      "accession": "0000950110-98-000638",
+      "form": "10-Q",
+      "filingDate": "1998-05-15"
+     },
+     {
+      "accession": "0000950110-98-000921",
+      "form": "10-Q",
+      "filingDate": "1998-08-14"
+     },
+     {
+      "accession": "0000950110-98-001295",
+      "form": "10-Q",
+      "filingDate": "1998-11-13"
+     },
+     {
+      "accession": "0000950110-99-000422",
+      "form": "10-K",
+      "filingDate": "1999-03-30"
+     },
+     {
+      "accession": "0000950110-99-000739",
+      "form": "10-Q",
+      "filingDate": "1999-05-14"
+     },
+     {
+      "accession": "0000950110-99-001055",
+      "form": "10-Q",
+      "filingDate": "1999-08-13"
+     },
+     {
+      "accession": "0000950110-99-001432",
+      "form": "10-Q",
+      "filingDate": "1999-11-12"
+     },
+     {
+      "accession": "0000950110-00-000264",
+      "form": "10-K",
+      "filingDate": "2000-03-30"
+     },
+     {
+      "accession": "0000950110-00-000517",
+      "form": "10-Q",
+      "filingDate": "2000-05-15"
+     },
+     {
+      "accession": "0000950110-00-000875",
+      "form": "10-Q",
+      "filingDate": "2000-08-14",
+      "fetchError": "https://www.sec.gov/Archives/edgar/data/51253/000095011000000875/0001.txt -> HTTP 404 after 5 attempt(s): Not Found"
+     },
+     {
+      "accession": "0000950110-00-001239",
+      "form": "10-Q",
+      "filingDate": "2000-11-14",
+      "fetchError": "https://www.sec.gov/Archives/edgar/data/51253/000095011000001239/0001.txt -> HTTP 404 after 5 attempt(s): Not Found"
+     },
+     {
+      "accession": "0000950109-01-000802",
+      "form": "10-K",
+      "filingDate": "2001-03-30",
+      "fetchError": "https://www.sec.gov/Archives/edgar/data/51253/000095010901000802/0001.txt -> HTTP 404 after 5 attempt(s): Not Found"
+     },
+     {
+      "accession": "0000950130-01-501679",
+      "form": "10-Q",
+      "filingDate": "2001-05-15"
+     },
+     {
+      "accession": "0000950130-01-503865",
+      "form": "10-Q",
+      "filingDate": "2001-08-14"
+     },
+     {
+      "accession": "0000950130-01-505372",
+      "form": "10-Q",
+      "filingDate": "2001-11-14"
+     },
+     {
+      "accession": "0000950130-02-002044",
+      "form": "10-K",
+      "filingDate": "2002-03-27"
+     },
+     {
+      "accession": "0000950130-02-003457",
+      "form": "10-Q",
+      "filingDate": "2002-05-10"
+     },
+     {
+      "accession": "0000950136-02-002297",
+      "form": "10-Q",
+      "filingDate": "2002-08-12"
+     },
+     {
+      "accession": "0000950136-02-003151",
+      "form": "10-Q",
+      "filingDate": "2002-11-12"
+     },
+     {
+      "accession": "0000950136-03-000643",
+      "form": "10-K",
+      "filingDate": "2003-03-25"
+     },
+     {
+      "accession": "0000950136-03-001204",
+      "form": "10-Q",
+      "filingDate": "2003-05-13"
+     },
+     {
+      "accession": "0000950136-03-001975",
+      "form": "10-Q",
+      "filingDate": "2003-08-12"
+     },
+     {
+      "accession": "0000950136-03-002763",
+      "form": "10-Q",
+      "filingDate": "2003-11-12"
+     },
+     {
+      "accession": "0000950136-04-000700",
+      "form": "10-K",
+      "filingDate": "2004-03-11"
+     },
+     {
+      "accession": "0000950136-04-001450",
+      "form": "10-Q",
+      "filingDate": "2004-05-07"
+     },
+     {
+      "accession": "0000950136-04-002479",
+      "form": "10-Q",
+      "filingDate": "2004-08-06"
+     },
+     {
+      "accession": "0000950136-04-003793",
+      "form": "10-Q",
+      "filingDate": "2004-11-09"
+     },
+     {
+      "accession": "0000950136-05-001337",
+      "form": "10-K",
+      "filingDate": "2005-03-14"
+     },
+     {
+      "accession": "0000051253-05-000006",
+      "form": "10-Q",
+      "filingDate": "2005-05-05"
+     },
+     {
+      "accession": "0000051253-05-000020",
+      "form": "10-Q",
+      "filingDate": "2005-08-05"
+     },
+     {
+      "accession": "0000051253-05-000024",
+      "form": "10-Q",
+      "filingDate": "2005-11-09"
+     },
+     {
+      "accession": "0000950136-06-001885",
+      "form": "10-K",
+      "filingDate": "2006-03-13"
+     },
+     {
+      "accession": "0000051253-06-000019",
+      "form": "10-Q",
+      "filingDate": "2006-05-08"
+     },
+     {
+      "accession": "0000051253-06-000028",
+      "form": "10-Q",
+      "filingDate": "2006-08-07"
+     },
+     {
+      "accession": "0000051253-06-000033",
+      "form": "10-Q",
+      "filingDate": "2006-11-02"
+     },
+     {
+      "accession": "0000950136-07-001053",
+      "form": "10-K",
+      "filingDate": "2007-02-23"
+     },
+     {
+      "accession": "0000051253-07-000010",
+      "form": "10-Q",
+      "filingDate": "2007-05-03"
+     },
+     {
+      "accession": "0000051253-07-000022",
+      "form": "10-Q",
+      "filingDate": "2007-08-07"
+     },
+     {
+      "accession": "0000950136-07-007320",
+      "form": "10-Q",
+      "filingDate": "2007-10-31"
+     },
+     {
+      "accession": "0000950136-08-000919",
+      "form": "10-K",
+      "filingDate": "2008-02-27"
+     },
+     {
+      "accession": "0001214659-08-000969",
+      "form": "10-Q",
+      "filingDate": "2008-05-01"
+     },
+     {
+      "accession": "0001169232-08-002800",
+      "form": "10-Q",
+      "filingDate": "2008-07-30"
+     },
+     {
+      "accession": "0000950123-08-013895",
+      "form": "10-Q",
+      "filingDate": "2008-10-30"
+     },
+     {
+      "accession": "0000950123-09-003569",
+      "form": "10-K",
+      "filingDate": "2009-02-26"
+     },
+     {
+      "accession": "0000950123-09-007525",
+      "form": "10-Q",
+      "filingDate": "2009-04-30"
+     },
+     {
+      "accession": "0000950123-09-029974",
+      "form": "10-Q",
+      "filingDate": "2009-08-05"
+     },
+     {
+      "accession": "0000950123-09-057240",
+      "form": "10-Q",
+      "filingDate": "2009-11-04"
+     },
+     {
+      "accession": "0001193125-10-040927",
+      "form": "10-K",
+      "filingDate": "2010-02-25"
+     },
+     {
+      "accession": "0000950123-10-045041",
+      "form": "10-Q",
+      "filingDate": "2010-05-06"
+     },
+     {
+      "accession": "0000950123-10-072927",
+      "form": "10-Q",
+      "filingDate": "2010-08-05"
+     },
+     {
+      "accession": "0000950123-10-100516",
+      "form": "10-Q",
+      "filingDate": "2010-11-04"
+     },
+     {
+      "accession": "0000950123-11-017927",
+      "form": "10-K",
+      "filingDate": "2011-02-24"
+     },
+     {
+      "accession": "0000950123-11-047825",
+      "form": "10-Q",
+      "filingDate": "2011-05-10"
+     },
+     {
+      "accession": "0001193125-11-215300",
+      "form": "10-Q",
+      "filingDate": "2011-08-09"
+     },
+     {
+      "accession": "0001193125-11-300995",
+      "form": "10-Q",
+      "filingDate": "2011-11-08"
+     },
+     {
+      "accession": "0001193125-12-084851",
+      "form": "10-K",
+      "filingDate": "2012-02-28"
+     },
+     {
+      "accession": "0001193125-12-216690",
+      "form": "10-Q",
+      "filingDate": "2012-05-08"
+     },
+     {
+      "accession": "0001193125-12-342596",
+      "form": "10-Q",
+      "filingDate": "2012-08-08"
+     },
+     {
+      "accession": "0001193125-12-453233",
+      "form": "10-Q",
+      "filingDate": "2012-11-06"
+     },
+     {
+      "accession": "0001193125-13-077028",
+      "form": "10-K",
+      "filingDate": "2013-02-26"
+     },
+     {
+      "accession": "0001193125-13-203099",
+      "form": "10-Q",
+      "filingDate": "2013-05-07"
+     },
+     {
+      "accession": "0001193125-13-320349",
+      "form": "10-Q",
+      "filingDate": "2013-08-06"
+     },
+     {
+      "accession": "0000051253-13-000003",
+      "form": "10-Q",
+      "filingDate": "2013-11-05"
+     },
+     {
+      "accession": "0000051253-14-000004",
+      "form": "10-K",
+      "filingDate": "2014-02-25"
+     },
+     {
+      "accession": "0000051253-14-000008",
+      "form": "10-Q",
+      "filingDate": "2014-05-06"
+     },
+     {
+      "accession": "0000051253-14-000012",
+      "form": "10-Q",
+      "filingDate": "2014-08-05"
+     },
+     {
+      "accession": "0000051253-14-000017",
+      "form": "10-Q",
+      "filingDate": "2014-11-04"
+     },
+     {
+      "accession": "0000051253-15-000004",
+      "form": "10-K",
+      "filingDate": "2015-03-02"
+     },
+     {
+      "accession": "0000051253-15-000008",
+      "form": "10-Q",
+      "filingDate": "2015-05-12"
+     },
+     {
+      "accession": "0000051253-15-000015",
+      "form": "10-Q",
+      "filingDate": "2015-08-10"
+     },
+     {
+      "accession": "0000051253-15-000022",
+      "form": "10-Q",
+      "filingDate": "2015-11-09"
+     },
+     {
+      "accession": "0000051253-16-000026",
+      "form": "10-K",
+      "filingDate": "2016-03-01"
+     },
+     {
+      "accession": "0000051253-16-000035",
+      "form": "10-Q",
+      "filingDate": "2016-05-09"
+     },
+     {
+      "accession": "0000051253-16-000042",
+      "form": "10-Q",
+      "filingDate": "2016-08-08"
+     },
+     {
+      "accession": "0000051253-16-000045",
+      "form": "10-Q",
+      "filingDate": "2016-11-07"
+     },
+     {
+      "accession": "0000051253-17-000004",
+      "form": "10-K",
+      "filingDate": "2017-02-28"
+     },
+     {
+      "accession": "0000051253-17-000007",
+      "form": "10-Q",
+      "filingDate": "2017-05-08"
+     },
+     {
+      "accession": "0000051253-17-000012",
+      "form": "10-Q",
+      "filingDate": "2017-08-08"
+     },
+     {
+      "accession": "0000051253-17-000015",
+      "form": "10-Q",
+      "filingDate": "2017-11-07"
+     },
+     {
+      "accession": "0000051253-18-000005",
+      "form": "10-K",
+      "filingDate": "2018-02-27"
+     },
+     {
+      "accession": "0000051253-18-000009",
+      "form": "10-Q",
+      "filingDate": "2018-05-07"
+     },
+     {
+      "accession": "0000051253-18-000017",
+      "form": "10-Q",
+      "filingDate": "2018-08-07"
+     },
+     {
+      "accession": "0000051253-18-000020",
+      "form": "10-Q",
+      "filingDate": "2018-11-05"
+     },
+     {
+      "accession": "0000051253-19-000004",
+      "form": "10-K",
+      "filingDate": "2019-02-26"
+     },
+     {
+      "accession": "0000051253-19-000008",
+      "form": "10-Q",
+      "filingDate": "2019-05-06"
+     }
+    ]
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "1994-01-28",
+    "firstBarOnOrAfterSymbolStart": "2019-08-09",
+    "S0": "2019-08-09"
+   },
+   "symbolStartDocument": {
+    "accession": "0000051253-19-000018",
+    "form": "10-Q",
+    "filingDate": "2019-08-05",
+    "url": "https://www.sec.gov/Archives/edgar/data/51253/000005125319000018/iff10-q219.htm",
+    "sha256": "4452557e2eb4e8e2c51d9493865856a01da6835886a2b17fbdab3ab0f536d564",
+    "sha256Normalized": "1faabd9cb1db8b441cd8bf0e00bfd02b40a9a05e84e17619f339063bb3b43e2a",
+    "bytesRead": 2596791,
+    "complete": true,
+    "kind": "IXBRL_COVER_FIRST",
+    "cls": {
+     "TradingSymbol": "IFF",
+     "Security12bTitle": "Common Stock, par value 12 1/2¢ per share",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   }
+  },
+  {
+   "securityId": "ref_KDP",
+   "ticker": "KDP",
+   "cik": "0001418135",
+   "issuer": "Keurig Dr Pepper Inc.",
+   "selectedCanonicalId": "tiingo:NASDAQ:KDP:2008-04-28",
+   "v9": {
+    "validFrom": "2019-03-01",
+    "basis": "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "2008-05-02",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 965,
+    "sourceSha256": "cada0e2d0b75109e29f6cf11778cd3783f55f546da1e67fbe000665acce6aef6"
+   },
+   "reasons": [],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NASDAQ:KDP:2008-04-28"
+   ],
+   "selectedRow": {
+    "exchange": "NASDAQ",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "2008-04-28",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001418135.json",
+     "sha256": "95c929fc4ecc0af9dcbcbfea65a57b1179fd1b56b4db9051d7f33b7f654dbb2e"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001418135-submissions-001.json",
+     "sha256": "9cc050eddc93dc125d3ee8d91223c419f7e7f775ee294866586f58f56ee44346"
+    }
+   ],
+   "secName": "Keurig Dr Pepper Inc.",
+   "secTickers": [
+    "KDP"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001418135-26-000051",
+    "form": "10-Q",
+    "filingDate": "2026-08-10",
+    "url": "https://www.sec.gov/Archives/edgar/data/1418135/000141813526000051/kdp-20260630.htm",
+    "sha256": "229973724389c3cf57d15091068abf80fe7959427bdaa634d80963da047dc50a",
+    "sha256Normalized": "69837cfe16ffcd79b3aa8a108b53c6003359a3bdbd16353b5e03331566998d0d",
+    "bytesRead": 2398614,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "KDP",
+     "Security12bTitle": "Common stock",
+     "SecurityExchangeName": "The Nasdaq Stock Market LLC"
+    },
+    "commonSymbols": [
+     "KDP"
+    ],
+    "mic": "XNAS",
+    "ageDays": 74
+   },
+   "startDocument": {
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0001418135-19-000007",
+    "filingDate": "2019-02-28",
+    "url": "https://www.sec.gov/Archives/edgar/data/1418135/000141813519000007/kdp-10kx12312018.htm",
+    "sha256": "aed1926b5be6098440f645a530d74e2ca687bc1b72f0cfc4857c50ac570333fd",
+    "sha256Normalized": "aed1926b5be6098440f645a530d74e2ca687bc1b72f0cfc4857c50ac570333fd",
+    "v9Sha256": "aed1926b5be6098440f645a530d74e2ca687bc1b72f0cfc4857c50ac570333fd",
+    "bytesRead": 3145728,
+    "complete": false,
+    "detail": "URITIES Since July 9, 2018, our common stock has been listed and traded on the New York Stock Exchange under the ticker symbol \"KDP\". Prior to July 9, 2018 and the closing of the DPS Merger, our common stock was listed and traded on the New York Stock Exchange under the ticker sy"
+   },
+   "priceSearch": {
+    "candidates": 52,
+    "documentsRead": 52
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [
+    {
+     "rule": "FIRST_ANCHOR_730D",
+     "to": "2022-10-28"
+    }
+   ],
+   "validFrom": "2022-10-28",
+   "validTo": null,
+   "anchors": [
+    {
+     "date": "2024-10-25",
+     "sourceRawPrice": 34.58,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 34.58,
+     "bar": [
+      "2024-10-25",
+      34.58
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-24-246976",
+     "form": "424B7",
+     "filingDate": "2024-10-30",
+     "url": "https://www.sec.gov/Archives/edgar/data/1418135/000119312524246976/d869791d424b7.htm",
+     "sha256": "7f7a29f9704b11e274a6f81635509349fcdc17d3a8c0b836ab216340efff3720",
+     "sha256Normalized": "7f7a29f9704b11e274a6f81635509349fcdc17d3a8c0b836ab216340efff3720",
+     "bytesRead": 516724,
+     "complete": true,
+     "quote": "is listed on the Nasdaq Stock Market LLC (“Nasdaq”) under the symbol “KDP.” The last reported sale price of our common stock on the Nasdaq on October 25, 2024 was $34.58 per share. Investin",
+     "attributed": true
+    },
+    {
+     "date": "2024-10-25",
+     "sourceRawPrice": 34.58,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 34.58,
+     "bar": [
+      "2024-10-25",
+      34.58
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-24-246002",
+     "form": "424B7",
+     "filingDate": "2024-10-29",
+     "url": "https://www.sec.gov/Archives/edgar/data/1418135/000119312524246002/d869791d424b7.htm",
+     "sha256": "ff4b521810cf4da2190369b110f6e61872ca15c7e9c96f3fe34d6cccfc14c71e",
+     "sha256Normalized": "ff4b521810cf4da2190369b110f6e61872ca15c7e9c96f3fe34d6cccfc14c71e",
+     "bytesRead": 517682,
+     "complete": true,
+     "quote": "is listed on the Nasdaq Stock Market LLC (“Nasdaq”) under the symbol “KDP.” The last reported sale price of our common stock on the Nasdaq on October 25, 2024 was $34.58 per share. Investin",
+     "attributed": true
+    }
+   ],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2022-10-28",
+    "checkedTo": "2026-10-23",
+    "bars": 209,
+    "pointsSha256": "2db39497c15ea3d918fb1b0fc0b7ca367d6b76554f72de772ee0e5ed06b792e0"
+   },
+   "anchorGaps": {
+    "matchDates": 1,
+    "firstMatch": "2024-10-25",
+    "lastMatch": "2024-10-25",
+    "maxGapDays": 654
+   },
+   "decision": "QUALIFIED_SEC_SAME_DAY_PRICE_AND_COVER",
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 12,
+    "allCandidatesInWindow": 121
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2018-07-13",
+     "prevWeek": "2018-07-06",
+     "verdict": "IDENTITY_UNVERIFIED",
+     "detail": "IDENTITY_TICKER_NOT_NAMED"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2018-07-13",
+    "tried": [
+     {
+      "accession": "0001418135-18-000025",
+      "form": "10-Q",
+      "filingDate": "2018-08-08"
+     },
+     {
+      "accession": "0001418135-18-000035",
+      "form": "10-Q",
+      "filingDate": "2018-11-08"
+     }
+    ]
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2018-07-20",
+    "firstBarOnOrAfterSymbolStart": "2019-03-01",
+    "S0": "2019-03-01"
+   },
+   "symbolStartDocument": {
+    "accession": "0001418135-19-000007",
+    "form": "10-K",
+    "filingDate": "2019-02-28",
+    "url": "https://www.sec.gov/Archives/edgar/data/1418135/000141813519000007/kdp-10kx12312018.htm",
+    "sha256": "aed1926b5be6098440f645a530d74e2ca687bc1b72f0cfc4857c50ac570333fd",
+    "sha256Normalized": "aed1926b5be6098440f645a530d74e2ca687bc1b72f0cfc4857c50ac570333fd",
+    "bytesRead": 3145728,
+    "complete": false,
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "quote": "URITIES Since July 9, 2018, our common stock has been listed and traded on the New York Stock Exchange under the ticker symbol \"KDP\". Prior to July 9, 2018 and the closing of the DPS Merger, our common stock was listed and traded on the New York Stock Exchange under the ticker sy"
+   }
+  },
+  {
+   "securityId": "ref_IEX",
+   "ticker": "IEX",
+   "cik": "0000832101",
+   "issuer": "IDEX CORP /DE/",
+   "selectedCanonicalId": "tiingo:NYSE:IEX:1989-06-30",
+   "v9": {
+    "validFrom": "2019-03-01",
+    "basis": "FULLTEXT_TICKER_CONFIRMATION_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "1990-01-05",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1921,
+    "sourceSha256": "1cd60b6dfbd43beec6f71df15baaeac3d6e0e07cd1334069d2d031d6b30bba0d"
+   },
+   "reasons": [],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:IEX:1989-06-30"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1989-06-30",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000832101.json",
+     "sha256": "958446f6bfe6783f79e2d58d3f2cc4d84d671d512716706cc1553472b6aec389"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000832101-submissions-001.json",
+     "sha256": "3df87f3c045cff972cfc498d00d04f502e783ecdaee46a03a3936c4aea6c2bcd"
+    }
+   ],
+   "secName": "IDEX CORP /DE/",
+   "secTickers": [
+    "IEX"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0000832101-26-000029",
+    "form": "10-Q",
+    "filingDate": "2026-10-28",
+    "url": "https://www.sec.gov/Archives/edgar/data/832101/000083210126000029/iex-20260930.htm",
+    "sha256": "d60d8b73c8c7d8a21fcd9559f0c27beadb43712284ec44a7f8d7f92ac0d6a1b4",
+    "sha256Normalized": "70892c48bd332e4ee55897843feb8bbc2a1ac62d399c26b844fe2f81262a1d20",
+    "bytesRead": 2042204,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "IEX",
+     "Security12bTitle": "Common Stock, par value $0.01 per share",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "IEX"
+    ],
+    "mic": "XNYS",
+    "ageDays": -5
+   },
+   "startDocument": {
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0000832101-19-000005",
+    "filingDate": "2019-02-28",
+    "url": "https://www.sec.gov/Archives/edgar/data/832101/000083210119000005/iex-20181231x10k.htm",
+    "sha256": "47c1cb1cf177011469b2a71c25efc37fcf9b55ee405c7dfdb75d54461bc2c292",
+    "sha256Normalized": "47c1cb1cf177011469b2a71c25efc37fcf9b55ee405c7dfdb75d54461bc2c292",
+    "v9Sha256": "47c1cb1cf177011469b2a71c25efc37fcf9b55ee405c7dfdb75d54461bc2c292",
+    "bytesRead": 3145728,
+    "complete": false,
+    "detail": "s and Issuer Purchases of Equity Securities. The Company’s common stock trades on the New York Stock Exchange under the symbol “IEX”. As of February 15, 2019 , there were approximately 5,151 stockholders of record of our common stock and there were 75,792,814 shares outstanding. "
+   },
+   "priceSearch": {
+    "candidates": 32,
+    "documentsRead": 32
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2019-03-01",
+   "validTo": null,
+   "anchors": [
+    {
+     "date": "2020-12-31",
+     "sourceRawPrice": 199.2,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 199.2,
+     "bar": [
+      "2020-12-31",
+      199.2
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-21-090424",
+     "form": "DEF 14A",
+     "filingDate": "2021-03-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/832101/000119312521090424/d104944ddef14a.htm",
+     "sha256": "f0a8228e1f086f7db4f319ff7ffeff2e3dd31de7a3ef4a3e98ee1853e784eaea",
+     "sha256Normalized": "f0a8228e1f086f7db4f319ff7ffeff2e3dd31de7a3ef4a3e98ee1853e784eaea",
+     "bytesRead": 1335906,
+     "complete": true,
+     "quote": "d restricted stock, and exercise of all accelerated vested options based on the closing market price of $199.20 per share of Common Stock on December 31, 2020; • accelerated vest",
+     "attributed": true
+    },
+    {
+     "date": "2021-12-31",
+     "sourceRawPrice": 236.32,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 236.32,
+     "bar": [
+      "2021-12-31",
+      236.32
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-22-082200",
+     "form": "DEF 14A",
+     "filingDate": "2022-03-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/832101/000119312522082200/d221968ddef14a.htm",
+     "sha256": "2dade33c7591d16854825db73b7bbb478da5a03c87a5302fda180171883d1624",
+     "sha256Normalized": "2dade33c7591d16854825db73b7bbb478da5a03c87a5302fda180171883d1624",
+     "bytesRead": 1289361,
+     "complete": true,
+     "quote": "3/1/2022 02/21/2020 310 173.35 310 73,259 2/21/2023 (3) Determined based on the closing price of the Company’s Common Stock on December 31, 2021 of $236.32. (4) Represents the",
+     "attributed": true
+    },
+    {
+     "date": "2022-12-30",
+     "sourceRawPrice": 228.33,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 228.33,
+     "bar": [
+      "2022-12-30",
+      228.33
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-23-090402",
+     "form": "DEF 14A",
+     "filingDate": "2023-04-04",
+     "url": "https://www.sec.gov/Archives/edgar/data/832101/000119312523090402/d389379ddef14a.htm",
+     "sha256": "d7288129b05ecf3520013f152759566816c0de9b2d6125e03729ab89735b2990",
+     "sha256Normalized": "d85f39c989b3ecbc644398606d99f9faed7dd5cdd368c610b6c3670022e9176f",
+     "bytesRead": 1602418,
+     "complete": true,
+     "quote": "Anderson 02/21/2020 305 173.35 305 69,641 2/21/2023 (3) Determined based on the closing price of the Company’s Common Stock on December 30, 2022, of $228.33. (4) Represents the",
+     "attributed": true
+    },
+    {
+     "date": "2023-12-29",
+     "sourceRawPrice": 217.11,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 217.11,
+     "bar": [
+      "2023-12-29",
+      217.11
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-24-077229",
+     "form": "DEF 14A",
+     "filingDate": "2024-03-26",
+     "url": "https://www.sec.gov/Archives/edgar/data/832101/000119312524077229/d784515ddef14a.htm",
+     "sha256": "245718149f908d1546f1238dbdeb9e97c20072cae308f5108d6db4a7736b76f8",
+     "sha256Normalized": "f1d4c20f5da71ae1b47b7aa8f118db6967926b236362e07ce647eed4e3a66d13",
+     "bytesRead": 1901740,
+     "complete": true,
+     "quote": "/25/2021 08/29/2023 995 2,200 08/25/2024 08/29/2026 (3) Determined based on the closing price of the Company’s Common Stock on December 29, 2023, of $217.11. (4) Represents the",
+     "attributed": true
+    }
+   ],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2019-03-01",
+    "checkedTo": "2026-10-23",
+    "bars": 400,
+    "pointsSha256": "8e8a3eb27a97ddd313f3fff5f8c4ffc339447f22b30c3fab87963c0e195c4114"
+   },
+   "anchorGaps": {
+    "matchDates": 4,
+    "firstMatch": "2020-12-31",
+    "lastMatch": "2023-12-29",
+    "maxGapDays": 1034
+   },
+   "decision": "QUALIFIED_SEC_SAME_DAY_PRICE_AND_COVER",
+   "evidenceLevel": "SEC_SAME_DAY_PRICE_AND_COVER",
+   "l4": {
+    "oneZeroZeroCandidates": 32,
+    "added": 0,
+    "allCandidatesInWindow": 32
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "1994-12-09",
+     "prevWeek": "1994-12-02",
+     "verdict": "INSUFFICIENT_FILINGS",
+     "detail": "NO_BEFORE_BRACKET"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "1994-12-09",
+    "tried": [
+     {
+      "accession": "0000950124-95-000765",
+      "form": "10-K",
+      "filingDate": "1995-03-20"
+     },
+     {
+      "accession": "0000950137-95-000089",
+      "form": "10-Q",
+      "filingDate": "1995-05-09"
+     },
+     {
+      "accession": "0000950124-95-002290",
+      "form": "10-Q",
+      "filingDate": "1995-08-01"
+     },
+     {
+      "accession": "0000950124-95-003605",
+      "form": "10-Q",
+      "filingDate": "1995-11-08"
+     },
+     {
+      "accession": "0000950124-96-001922",
+      "form": "10-Q",
+      "filingDate": "1996-05-03"
+     },
+     {
+      "accession": "0000950137-96-001413",
+      "form": "10-Q",
+      "filingDate": "1996-08-13"
+     },
+     {
+      "accession": "0000950137-96-002302",
+      "form": "10-Q",
+      "filingDate": "1996-11-14"
+     },
+     {
+      "accession": "0000950137-97-001809",
+      "form": "10-Q",
+      "filingDate": "1997-05-09"
+     },
+     {
+      "accession": "0000950137-97-002483",
+      "form": "10-Q",
+      "filingDate": "1997-07-29"
+     },
+     {
+      "accession": "0000950124-97-005606",
+      "form": "10-Q",
+      "filingDate": "1997-10-30"
+     },
+     {
+      "accession": "0000950137-98-002015",
+      "form": "10-Q",
+      "filingDate": "1998-05-12"
+     },
+     {
+      "accession": "0000950137-98-003047",
+      "form": "10-Q",
+      "filingDate": "1998-08-10"
+     },
+     {
+      "accession": "0000950124-98-005949",
+      "form": "10-Q",
+      "filingDate": "1998-10-30"
+     },
+     {
+      "accession": "0000950137-99-001440",
+      "form": "10-Q",
+      "filingDate": "1999-05-07"
+     },
+     {
+      "accession": "0000950137-99-002915",
+      "form": "10-Q",
+      "filingDate": "1999-08-11"
+     },
+     {
+      "accession": "0000950137-99-003900",
+      "form": "10-Q",
+      "filingDate": "1999-11-04"
+     },
+     {
+      "accession": "0000950124-00-002517",
+      "form": "10-Q",
+      "filingDate": "2000-04-27"
+     },
+     {
+      "accession": "0000950137-00-003567",
+      "form": "10-Q",
+      "filingDate": "2000-08-10"
+     },
+     {
+      "accession": "0000950137-00-004539",
+      "form": "10-Q",
+      "filingDate": "2000-10-27"
+     },
+     {
+      "accession": "0000950137-01-501409",
+      "form": "10-Q",
+      "filingDate": "2001-05-11"
+     },
+     {
+      "accession": "0000950137-01-502819",
+      "form": "10-Q",
+      "filingDate": "2001-08-09"
+     },
+     {
+      "accession": "0000950137-01-504443",
+      "form": "10-Q",
+      "filingDate": "2001-11-09"
+     },
+     {
+      "accession": "0000950137-02-002747",
+      "form": "10-Q",
+      "filingDate": "2002-05-07"
+     },
+     {
+      "accession": "0000950137-02-004406",
+      "form": "10-Q",
+      "filingDate": "2002-08-13"
+     },
+     {
+      "accession": "0000950137-02-006277",
+      "form": "10-Q",
+      "filingDate": "2002-11-14"
+     },
+     {
+      "accession": "0000950137-03-001231",
+      "form": "10-K",
+      "filingDate": "2003-02-28"
+     },
+     {
+      "accession": "0000950137-03-002868",
+      "form": "10-Q",
+      "filingDate": "2003-05-13"
+     },
+     {
+      "accession": "0000950137-03-004194",
+      "form": "10-Q",
+      "filingDate": "2003-08-11"
+     },
+     {
+      "accession": "0000950137-03-005789",
+      "form": "10-Q",
+      "filingDate": "2003-11-10"
+     },
+     {
+      "accession": "0000950137-04-001504",
+      "form": "10-K",
+      "filingDate": "2004-03-05"
+     },
+     {
+      "accession": "0000950137-04-003547",
+      "form": "10-Q",
+      "filingDate": "2004-05-04"
+     },
+     {
+      "accession": "0000950137-04-006194",
+      "form": "10-Q",
+      "filingDate": "2004-08-04"
+     },
+     {
+      "accession": "0000950137-04-009371",
+      "form": "10-Q",
+      "filingDate": "2004-11-03"
+     },
+     {
+      "accession": "0000950137-05-002422",
+      "form": "10-K",
+      "filingDate": "2005-02-28"
+     },
+     {
+      "accession": "0000950137-05-005525",
+      "form": "10-Q",
+      "filingDate": "2005-05-06"
+     },
+     {
+      "accession": "0000950137-05-009810",
+      "form": "10-Q",
+      "filingDate": "2005-08-08"
+     },
+     {
+      "accession": "0000950137-05-013577",
+      "form": "10-Q",
+      "filingDate": "2005-11-09"
+     },
+     {
+      "accession": "0000950137-06-002615",
+      "form": "10-K",
+      "filingDate": "2006-03-06"
+     },
+     {
+      "accession": "0000950137-06-005193",
+      "form": "10-Q",
+      "filingDate": "2006-05-01"
+     },
+     {
+      "accession": "0000950137-06-008859",
+      "form": "10-Q",
+      "filingDate": "2006-08-09"
+     },
+     {
+      "accession": "0000950137-06-012075",
+      "form": "10-Q",
+      "filingDate": "2006-11-08"
+     },
+     {
+      "accession": "0000950137-07-003137",
+      "form": "10-K",
+      "filingDate": "2007-03-01"
+     },
+     {
+      "accession": "0000950137-07-006915",
+      "form": "10-Q",
+      "filingDate": "2007-05-07"
+     },
+     {
+      "accession": "0000950137-07-011592",
+      "form": "10-Q",
+      "filingDate": "2007-08-07"
+     },
+     {
+      "accession": "0000950137-07-016840",
+      "form": "10-Q",
+      "filingDate": "2007-11-08"
+     },
+     {
+      "accession": "0000950137-08-003071",
+      "form": "10-K",
+      "filingDate": "2008-02-29"
+     },
+     {
+      "accession": "0000950137-08-007035",
+      "form": "10-Q",
+      "filingDate": "2008-05-08"
+     },
+     {
+      "accession": "0000950137-08-010399",
+      "form": "10-Q",
+      "filingDate": "2008-08-07"
+     },
+     {
+      "accession": "0000950137-08-013606",
+      "form": "10-Q",
+      "filingDate": "2008-11-10"
+     },
+     {
+      "accession": "0000950137-09-001391",
+      "form": "10-K",
+      "filingDate": "2009-03-02"
+     },
+     {
+      "accession": "0000950152-09-004927",
+      "form": "10-Q",
+      "filingDate": "2009-05-08"
+     },
+     {
+      "accession": "0000950123-09-031231",
+      "form": "10-Q",
+      "filingDate": "2009-08-06"
+     },
+     {
+      "accession": "0000950123-09-057549",
+      "form": "10-Q",
+      "filingDate": "2009-11-04"
+     },
+     {
+      "accession": "0000950123-10-019117",
+      "form": "10-K",
+      "filingDate": "2010-03-01"
+     },
+     {
+      "accession": "0000950123-10-044480",
+      "form": "10-Q",
+      "filingDate": "2010-05-05"
+     },
+     {
+      "accession": "0000950123-10-074296",
+      "form": "10-Q",
+      "filingDate": "2010-08-06"
+     },
+     {
+      "accession": "0000950123-10-100265",
+      "form": "10-Q",
+      "filingDate": "2010-11-04"
+     },
+     {
+      "accession": "0000950123-11-018609",
+      "form": "10-K",
+      "filingDate": "2011-02-25"
+     },
+     {
+      "accession": "0000950123-11-043713",
+      "form": "10-Q",
+      "filingDate": "2011-05-03"
+     },
+     {
+      "accession": "0000950123-11-074497",
+      "form": "10-Q",
+      "filingDate": "2011-08-08"
+     },
+     {
+      "accession": "0001193125-11-288786",
+      "form": "10-Q",
+      "filingDate": "2011-10-31"
+     },
+     {
+      "accession": "0001193125-12-078246",
+      "form": "10-K",
+      "filingDate": "2012-02-24"
+     },
+     {
+      "accession": "0001193125-12-218054",
+      "form": "10-Q",
+      "filingDate": "2012-05-08"
+     },
+     {
+      "accession": "0001193125-12-328998",
+      "form": "10-Q",
+      "filingDate": "2012-08-01"
+     },
+     {
+      "accession": "0001193125-12-449176",
+      "form": "10-Q",
+      "filingDate": "2012-11-02"
+     },
+     {
+      "accession": "0001193125-13-069436",
+      "form": "10-K",
+      "filingDate": "2013-02-21"
+     },
+     {
+      "accession": "0001193125-13-199528",
+      "form": "10-Q",
+      "filingDate": "2013-05-06"
+     },
+     {
+      "accession": "0001193125-13-318966",
+      "form": "10-Q",
+      "filingDate": "2013-08-05"
+     },
+     {
+      "accession": "0001445305-13-002609",
+      "form": "10-Q",
+      "filingDate": "2013-10-31"
+     },
+     {
+      "accession": "0001445305-14-000435",
+      "form": "10-K",
+      "filingDate": "2014-02-13"
+     },
+     {
+      "accession": "0001445305-14-001514",
+      "form": "10-Q",
+      "filingDate": "2014-04-29"
+     },
+     {
+      "accession": "0001445305-14-002979",
+      "form": "10-Q",
+      "filingDate": "2014-07-29"
+     },
+     {
+      "accession": "0000832101-14-000009",
+      "form": "10-Q",
+      "filingDate": "2014-10-27"
+     },
+     {
+      "accession": "0000832101-15-000009",
+      "form": "10-K",
+      "filingDate": "2015-02-23"
+     },
+     {
+      "accession": "0000832101-15-000021",
+      "form": "10-Q",
+      "filingDate": "2015-04-28"
+     },
+     {
+      "accession": "0000832101-15-000031",
+      "form": "10-Q",
+      "filingDate": "2015-07-27"
+     },
+     {
+      "accession": "0000832101-15-000039",
+      "form": "10-Q",
+      "filingDate": "2015-10-27"
+     },
+     {
+      "accession": "0000832101-16-000057",
+      "form": "10-K",
+      "filingDate": "2016-02-19"
+     },
+     {
+      "accession": "0000832101-16-000067",
+      "form": "10-Q",
+      "filingDate": "2016-04-25"
+     },
+     {
+      "accession": "0000832101-16-000085",
+      "form": "10-Q",
+      "filingDate": "2016-08-01"
+     },
+     {
+      "accession": "0000832101-16-000093",
+      "form": "10-Q",
+      "filingDate": "2016-10-25"
+     },
+     {
+      "accession": "0000832101-17-000016",
+      "form": "10-K",
+      "filingDate": "2017-02-23"
+     },
+     {
+      "accession": "0000832101-17-000027",
+      "form": "10-Q",
+      "filingDate": "2017-04-26"
+     },
+     {
+      "accession": "0000832101-17-000037",
+      "form": "10-Q",
+      "filingDate": "2017-07-26"
+     },
+     {
+      "accession": "0000832101-17-000051",
+      "form": "10-Q",
+      "filingDate": "2017-10-23"
+     },
+     {
+      "accession": "0000832101-18-000019",
+      "form": "10-K",
+      "filingDate": "2018-02-22"
+     },
+     {
+      "accession": "0000832101-18-000027",
+      "form": "10-Q",
+      "filingDate": "2018-04-30"
+     },
+     {
+      "accession": "0000832101-18-000037",
+      "form": "10-Q",
+      "filingDate": "2018-07-25"
+     },
+     {
+      "accession": "0000832101-18-000045",
+      "form": "10-Q",
+      "filingDate": "2018-10-24"
+     }
+    ]
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "1994-12-16",
+    "firstBarOnOrAfterSymbolStart": "2019-03-01",
+    "S0": "2019-03-01"
+   },
+   "symbolStartDocument": {
+    "accession": "0000832101-19-000005",
+    "form": "10-K",
+    "filingDate": "2019-02-28",
+    "url": "https://www.sec.gov/Archives/edgar/data/832101/000083210119000005/iex-20181231x10k.htm",
+    "sha256": "47c1cb1cf177011469b2a71c25efc37fcf9b55ee405c7dfdb75d54461bc2c292",
+    "sha256Normalized": "47c1cb1cf177011469b2a71c25efc37fcf9b55ee405c7dfdb75d54461bc2c292",
+    "bytesRead": 3145728,
+    "complete": false,
+    "kind": "FULLTEXT_TICKER_STATEMENT",
+    "quote": "s and Issuer Purchases of Equity Securities. The Company’s common stock trades on the New York Stock Exchange under the symbol “IEX”. As of February 15, 2019 , there were approximately 5,151 stockholders of record of our common stock and there were 75,792,814 shares outstanding. "
+   }
+  },
+  {
+   "securityId": "ref_PENN",
+   "ticker": "PENN",
+   "cik": "0000921738",
+   "issuer": "PENN Entertainment, Inc.",
+   "selectedCanonicalId": "tiingo:NASDAQ:PENN:1994-05-26",
+   "v9": {
+    "validFrom": "2020-05-08",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "1994-05-27",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1692,
+    "sourceSha256": "ef6c4bfd0c169d9bae2804cf91d795339a9ba5e372f9f8cdd3223172902ecde8"
+   },
+   "reasons": [
+    "SOURCE_PRICE_CONFLICT"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NASDAQ:PENN:1994-05-26"
+   ],
+   "selectedRow": {
+    "exchange": "NASDAQ",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1994-05-26",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000921738.json",
+     "sha256": "2fcf59e40a85c08aae5d97e6dea4e9cdcb261d11f3df301da15351ce27763290"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000921738-submissions-001.json",
+     "sha256": "c8308fd401b6369d5b6ccfcafb7ff38295ee4c3268a9a335e8f3fd38d455e9bb"
+    }
+   ],
+   "secName": "PENN Entertainment, Inc.",
+   "secTickers": [
+    "PENN"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0000921738-26-000022",
+    "form": "10-Q",
+    "filingDate": "2026-08-06",
+    "url": "https://www.sec.gov/Archives/edgar/data/921738/000092173826000022/penn-20260630.htm",
+    "sha256": "870b07f9fe440a617d48eb06189c7e8e5aef0b9b612f14950a33e4dcbea996fe",
+    "sha256Normalized": "5c1380da4d043ae9e7ccdbadb6b54f0abb0dad5289f7aeb19d7e7f7eb57408bb",
+    "bytesRead": 2423985,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "PENN",
+     "Security12bTitle": "Common Stock, $0.01 par value per share",
+     "SecurityExchangeName": "The Nasdaq Stock Market LLC"
+    },
+    "commonSymbols": [
+     "PENN"
+    ],
+    "mic": "XNAS",
+    "ageDays": 78
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0000921738-20-000018",
+    "filingDate": "2020-05-08",
+    "url": "https://www.sec.gov/Archives/edgar/data/921738/000092173820000018/penn0331202010q.htm",
+    "sha256": "c4eb3b81a4dd4abd040c360e2258d4bae27334c555fa4f4fa7f6359911c44351",
+    "sha256Normalized": "c98152bfe8a5b128e6a4652331e8d4b823d572b400f4e0ecf10d321c3b0c4203",
+    "v9Sha256": "c4eb3b81a4dd4abd040c360e2258d4bae27334c555fa4f4fa7f6359911c44351",
+    "bytesRead": 2618752,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "PENN",
+     "Security12bTitle": "Common Stock, $0.01 par value per share",
+     "SecurityExchangeName": "The Nasdaq Stock Market LLC"
+    }
+   },
+   "priceSearch": {
+    "candidates": 41,
+    "documentsRead": 41
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2020-05-08",
+   "validTo": null,
+   "anchors": [
+    {
+     "date": "2020-12-31",
+     "sourceRawPrice": 86.37,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 86.37,
+     "bar": [
+      "2020-12-31",
+      86.37
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001193125-21-129077",
+     "form": "DEF 14A",
+     "filingDate": "2021-04-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000119312521129077/d130463ddef14a.htm",
+     "sha256": "9b95cd5053e452dc782e3d939cf5a17d9a2e2b6de3c04d153699fb9a11196887",
+     "sha256Normalized": "9b95cd5053e452dc782e3d939cf5a17d9a2e2b6de3c04d153699fb9a11196887",
+     "bytesRead": 1643832,
+     "complete": true,
+     "quote": "Restricted stock and phantom stock unit award values were computed based on the closing price of the Company’s common stock on December 31, 2020 ($86.37 per share), which w",
+     "attributed": true
+    },
+    {
+     "date": "2021-12-31",
+     "sourceRawPrice": 29.7,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 29.7,
+     "bar": [
+      "2021-12-31",
+      51.85
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.745791,
+     "state": "MISMATCH_SAME_DAY",
+     "accession": "0001140361-23-020195",
+     "form": "DEF 14A",
+     "filingDate": "2023-04-25",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000114036123020195/ny20007164x1_def14a.htm",
+     "sha256": "653e5d8a5f18ee3e512f77882ae487ef2d0d64bf79d8235e2a9488e9c0a2d470",
+     "sha256Normalized": "653e5d8a5f18ee3e512f77882ae487ef2d0d64bf79d8235e2a9488e9c0a2d470",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "Committee or the Board of Directors, as applicable. (k) Calculated based on the closing price of $29.70 for the Company’s common stock on December 31, 2021, which was the last",
+     "attributed": true
+    },
+    {
+     "date": "2021-12-31",
+     "sourceRawPrice": 51.85,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 51.85,
+     "bar": [
+      "2021-12-31",
+      51.85
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-22-015927",
+     "form": "DEF 14A",
+     "filingDate": "2022-04-26",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000114036122015927/ny20002016x1_def14a.htm",
+     "sha256": "e6ef4bd601926bb361c8f8fd15dd1085bfe946f88280f032f558537f11f26a6b",
+     "sha256Normalized": "e6ef4bd601926bb361c8f8fd15dd1085bfe946f88280f032f558537f11f26a6b",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "tricted stock and restricted stock unit award values were computed based on the closing price of the Company’s common stock on December 31, 2021 ($51.85 per share), which w",
+     "attributed": true
+    },
+    {
+     "date": "2022-04-08",
+     "sourceRawPrice": 36.96,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 36.96,
+     "bar": [
+      "2022-04-08",
+      36.96
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-22-015927",
+     "form": "DEF 14A",
+     "filingDate": "2022-04-26",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000114036122015927/ny20002016x1_def14a.htm",
+     "sha256": "e6ef4bd601926bb361c8f8fd15dd1085bfe946f88280f032f558537f11f26a6b",
+     "sha256Normalized": "e6ef4bd601926bb361c8f8fd15dd1085bfe946f88280f032f558537f11f26a6b",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": " Total Stock Options and Non-Vested Full Value Awards ​ ​ 6,077,228 ​ ​ ​ ​ The closing price of a share of our common stock on April 8, 2022, was $36.96 per share. Principa",
+     "attributed": true
+    },
+    {
+     "date": "2022-12-30",
+     "sourceRawPrice": 29.7,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 29.7,
+     "bar": [
+      "2022-12-30",
+      29.7
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-23-020195",
+     "form": "DEF 14A",
+     "filingDate": "2023-04-25",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000114036123020195/ny20007164x1_def14a.htm",
+     "sha256": "653e5d8a5f18ee3e512f77882ae487ef2d0d64bf79d8235e2a9488e9c0a2d470",
+     "sha256Normalized": "653e5d8a5f18ee3e512f77882ae487ef2d0d64bf79d8235e2a9488e9c0a2d470",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "Restricted stock and phantom stock unit award values were computed based on the closing price of the Company’s common stock on December 30, 2022 ($29.70 per share), which w",
+     "attributed": true
+    },
+    {
+     "date": "2023-12-29",
+     "sourceRawPrice": 26.02,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 26.02,
+     "bar": [
+      "2023-12-29",
+      26.02
+     ],
+     "basis": "WEEKLY",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-24-021379",
+     "form": "DEF 14A",
+     "filingDate": "2024-04-23",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000114036124021379/ny20018854x1_def14a.htm",
+     "sha256": "5732ca7ca02630b856fac0fc18755e51ba9a762a9ee27559f1d633904e25916a",
+     "sha256Normalized": "49ac165a081d5a53f373054dd17a363e52c4696f21061ae20482ce5fac7da5d8",
+     "bytesRead": 2001579,
+     "complete": true,
+     "quote": "December 31, 2023. (c) Restricted stock award values were computed based on the closing price of the Company’s common stock on December 29, 2023 ($26.02 per share), which w",
+     "attributed": true
+    },
+    {
+     "date": "2025-12-31",
+     "sourceRawPrice": 14.75,
+     "laterSplitProduct": 1.0,
+     "sourceAdjustedPrice": 14.75,
+     "bar": [
+      "2025-12-31",
+      14.75
+     ],
+     "basis": "DAILY_CROSSCHECKED",
+     "ratioSeriesToSource": 1.0,
+     "state": "MATCH",
+     "accession": "0001140361-26-016846",
+     "form": "DEF 14A",
+     "filingDate": "2026-04-27",
+     "url": "https://www.sec.gov/Archives/edgar/data/921738/000114036126016846/ny20062568x1_def14a.htm",
+     "sha256": "ab90ed62dc16005cbbf7b05b2bcfa4cb8963f36b3b23a5f2add35d535c4f398c",
+     "sha256Normalized": "ab90ed62dc16005cbbf7b05b2bcfa4cb8963f36b3b23a5f2add35d535c4f398c",
+     "bytesRead": 2097152,
+     "complete": false,
+     "quote": "centive Compensation Plan with a market value calculated based on the Company’s closing stock price on December 31, 2025 of $14.75 (b) Vesting date: J",
+     "attributed": true
+    }
+   ],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2020-05-08",
+    "checkedTo": "2026-10-23",
+    "bars": 338,
+    "pointsSha256": "5b3857f1e705bc46f7d0eb806c559e7b6c7f7f338cc4377d8ef3de8fa8da9f60"
+   },
+   "anchorGaps": {
+    "matchDates": 6,
+    "firstMatch": "2020-12-31",
+    "lastMatch": "2025-12-31",
+    "maxGapDays": 733
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "HOLD",
+   "l4": {
+    "oneZeroZeroCandidates": 40,
+    "added": 1,
+    "allCandidatesInWindow": 43
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2020-03-20",
+     "prevWeek": "2020-03-13",
+     "verdict": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+     "detail": "SPLIT_EVIDENCE_8K"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2020-03-20",
+    "tried": []
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2020-03-27",
+    "firstBarOnOrAfterSymbolStart": "2020-05-08",
+    "S0": "2020-05-08"
+   },
+   "symbolStartDocument": {
+    "accession": "0000921738-20-000018",
+    "form": "10-Q",
+    "filingDate": "2020-05-08",
+    "url": "https://www.sec.gov/Archives/edgar/data/921738/000092173820000018/penn0331202010q.htm",
+    "sha256": "c4eb3b81a4dd4abd040c360e2258d4bae27334c555fa4f4fa7f6359911c44351",
+    "sha256Normalized": "c98152bfe8a5b128e6a4652331e8d4b823d572b400f4e0ecf10d321c3b0c4203",
+    "bytesRead": 2618752,
+    "complete": true,
+    "kind": "IXBRL_COVER_FIRST",
+    "cls": {
+     "TradingSymbol": "PENN",
+     "Security12bTitle": "Common Stock, $0.01 par value per share",
+     "SecurityExchangeName": "The Nasdaq Stock Market LLC"
+    }
+   }
+  },
+  {
+   "securityId": "ref_CPRI",
+   "ticker": "CPRI",
+   "cik": "0001530721",
+   "issuer": "Capri Holdings Ltd",
+   "selectedCanonicalId": "tiingo:NYSE:CPRI:2011-12-15",
+   "v9": {
+    "validFrom": "2024-11-08",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "2011-12-16",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 776,
+    "sourceSha256": "8f7e3e2fe9bfda18f18e1f57f4e073aa472f81535d9bcd200cd4bb26b3ae5bc2"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NYSE:CPRI:2011-12-15"
+   ],
+   "selectedRow": {
+    "exchange": "NYSE",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "2011-12-15",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0001530721.json",
+     "sha256": "93910c845b26bc6f9a64cba3a8028dcc826fec19bc94fa5aeed08393e1d650cb"
+    }
+   ],
+   "secName": "Capri Holdings Ltd",
+   "secTickers": [
+    "CPRI"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001530721-26-000081",
+    "form": "10-Q",
+    "filingDate": "2026-08-05",
+    "url": "https://www.sec.gov/Archives/edgar/data/1530721/000153072126000081/cpri-20260627.htm",
+    "sha256": "df2e9bb86874fd591c509e4b8f7ff17ae87519d14d937e7682cdb866ed9b291b",
+    "sha256Normalized": "f926b3cc3a344d7b64b9da131395ec871d99a8f8f0024880ff02cc6849fd6318",
+    "bytesRead": 1386612,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "CPRI",
+     "Security12bTitle": "Ordinary Shares, no par value",
+     "SecurityExchangeName": "New York Stock Exchange"
+    },
+    "commonSymbols": [
+     "CPRI"
+    ],
+    "mic": "XNYS",
+    "ageDays": 79
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0001530721-24-000125",
+    "filingDate": "2024-11-07",
+    "url": "https://www.sec.gov/Archives/edgar/data/1530721/000153072124000125/cpri-20240928.htm",
+    "sha256": "434d8cf574d96edb13f45c0695c744c590834882e265bad9f36255e137292cf5",
+    "sha256Normalized": "8b79ed36a25fbd4708947983800e118a461fa2b6b5d0a29fd764632b738003b7",
+    "v9Sha256": "434d8cf574d96edb13f45c0695c744c590834882e265bad9f36255e137292cf5",
+    "bytesRead": 1852599,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "CPRI",
+     "Security12bTitle": "Ordinary Shares, no par value",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   },
+   "priceSearch": {
+    "candidates": 11,
+    "documentsRead": 11
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2024-11-08",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2024-11-08",
+    "checkedTo": "2026-10-23",
+    "bars": 103,
+    "pointsSha256": "3030c1a38e637c5afb7f035a254c4340d52cf7d18e458a70c38eb21180786ce9"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 11,
+    "added": 0,
+    "allCandidatesInWindow": 11
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2024-10-25",
+     "prevWeek": "2024-10-18",
+     "verdict": "NEGATIVE_EVIDENCE_ONLY",
+     "detail": null
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2024-10-25",
+    "tried": []
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2024-11-01",
+    "firstBarOnOrAfterSymbolStart": "2024-11-08",
+    "S0": "2024-11-08"
+   },
+   "symbolStartDocument": {
+    "accession": "0001530721-24-000125",
+    "form": "10-Q",
+    "filingDate": "2024-11-07",
+    "url": "https://www.sec.gov/Archives/edgar/data/1530721/000153072124000125/cpri-20240928.htm",
+    "sha256": "434d8cf574d96edb13f45c0695c744c590834882e265bad9f36255e137292cf5",
+    "sha256Normalized": "8b79ed36a25fbd4708947983800e118a461fa2b6b5d0a29fd764632b738003b7",
+    "bytesRead": 1852599,
+    "complete": true,
+    "kind": "IXBRL_COVER_FIRST",
+    "cls": {
+     "TradingSymbol": "CPRI",
+     "Security12bTitle": "Ordinary Shares, no par value",
+     "SecurityExchangeName": "New York Stock Exchange"
+    }
+   }
+  },
+  {
+   "securityId": "ref_NKTR",
+   "ticker": "NKTR",
+   "cik": "0000906709",
+   "issuer": "NEKTAR THERAPEUTICS",
+   "selectedCanonicalId": "tiingo:NASDAQ:NKTR:1994-05-03",
+   "v9": {
+    "validFrom": "2025-08-08",
+    "basis": "FIRST_IXBRL_COVER_WITH_TICKER_AFTER_CA",
+    "subState": "RESTRICTED_AFTER_UNRESOLVED_CORPORATE_ACTION"
+   },
+   "series": {
+    "from": "1994-05-06",
+    "to": "2026-10-23",
+    "asOf": "2026-10-23",
+    "bars": 1695,
+    "sourceSha256": "c8fe4fda9b399cbfdeb1c1b527c3465333b0208bea21cf1964302d9c55a08aa6"
+   },
+   "reasons": [
+    "NO_SAME_DAY_PRICE_EVIDENCE"
+   ],
+   "notes": [],
+   "masterRowSet": [
+    "tiingo:NASDAQ:NKTR:1994-05-03"
+   ],
+   "selectedRow": {
+    "exchange": "NASDAQ",
+    "instrument_type": "EQUITY_COMMON",
+    "active_status": "ACTIVE",
+    "eligible_us_equity": true,
+    "start_date": "1994-05-03",
+    "end_date": "2026-09-10"
+   },
+   "submissions": [
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000906709.json",
+     "sha256": "5225034c71f2551c19968f17285434ac01ba5b66aeea5f47e5dc8481e525d913"
+    },
+    {
+     "url": "https://data.sec.gov/submissions/CIK0000906709-submissions-001.json",
+     "sha256": "254efa416c6d61e60ca4f80fa992890b6bf50656fd50c074336b935b7cf948b7"
+    }
+   ],
+   "secName": "NEKTAR THERAPEUTICS",
+   "secTickers": [
+    "NKTR"
+   ],
+   "filerType": "DOMESTIC",
+   "latestCover": {
+    "accession": "0001193125-26-349805",
+    "form": "10-Q",
+    "filingDate": "2026-08-14",
+    "url": "https://www.sec.gov/Archives/edgar/data/906709/000119312526349805/nktr-20260630.htm",
+    "sha256": "e51b723e60e161d7fded73fe89caac5559e4cca59aa3f6a01a412e5bd1e5027f",
+    "sha256Normalized": "0b9aaa854101f146b61d1246616239f7410d8f9291f62319a0afcbcd71346e42",
+    "bytesRead": 2555498,
+    "complete": true,
+    "row": {
+     "TradingSymbol": "NKTR",
+     "Security12bTitle": "Common Stock, $0.0001 par value",
+     "SecurityExchangeName": "NASDAQ"
+    },
+    "commonSymbols": [
+     "NKTR"
+    ],
+    "mic": "XNAS",
+    "ageDays": 70
+   },
+   "startDocument": {
+    "kind": "IXBRL_COVER_FIRST",
+    "state": "VERIFIED",
+    "v9Sha256Reproduced": true,
+    "accession": "0000950170-25-105275",
+    "filingDate": "2025-08-08",
+    "url": "https://www.sec.gov/Archives/edgar/data/906709/000095017025105275/nktr-20250630.htm",
+    "sha256": "7e86924204d32dc11b195f92a837a3b99dac9f6f391e02ec10e3176f10054701",
+    "sha256Normalized": "37531bdd6e1e73dc827faf14434c4d3bc3dc5d564cca3c3a1321dd7bcbddbfa5",
+    "v9Sha256": "7e86924204d32dc11b195f92a837a3b99dac9f6f391e02ec10e3176f10054701",
+    "bytesRead": 2675839,
+    "complete": true,
+    "detail": {
+     "TradingSymbol": "NKTR",
+     "Security12bTitle": "Common Stock, $0.0001 par value",
+     "SecurityExchangeName": "NASDAQ"
+    }
+   },
+   "priceSearch": {
+    "candidates": 20,
+    "documentsRead": 20
+   },
+   "unattributedMultiClass": 0,
+   "venueTransfers": [],
+   "levelBreaks": [],
+   "intervalMoves": [],
+   "validFrom": "2025-08-08",
+   "validTo": null,
+   "anchors": [],
+   "anchorsOutsideInterval": 0,
+   "anchorsBeforeInterval": [],
+   "historyGuard": {
+    "checkedFrom": "2025-08-08",
+    "checkedTo": "2026-10-23",
+    "bars": 64,
+    "pointsSha256": "c3b1083913f27fb55592fa48f1152d9f30dd630c79035eed86f28ec7694ca712"
+   },
+   "anchorGaps": {
+    "matchDates": 0,
+    "firstMatch": null,
+    "lastMatch": null,
+    "maxGapDays": null
+   },
+   "decision": "EXCLUDED",
+   "evidenceLevel": "COVER_PAGE_ONLY",
+   "l4": {
+    "oneZeroZeroCandidates": 20,
+    "added": 0,
+    "allCandidatesInWindow": 20
+   },
+   "part": "RESTRICT",
+   "caEvents": [
+    {
+     "week": "2023-02-24",
+     "prevWeek": "2023-02-17",
+     "verdict": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+     "detail": "SPLIT_EVIDENCE_8K"
+    },
+    {
+     "week": "2025-06-27",
+     "prevWeek": "2025-06-20",
+     "verdict": "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+     "detail": "SHARE_COUNT_DISCONTINUITY"
+    }
+   ],
+   "symbolStartSearch": {
+    "after": "2025-06-27",
+    "tried": []
+   },
+   "S0": {
+    "firstBarAfterLastNonAdmissibleEvent": "2025-07-03",
+    "firstBarOnOrAfterSymbolStart": "2025-08-08",
+    "S0": "2025-08-08"
+   },
+   "symbolStartDocument": {
+    "accession": "0000950170-25-105275",
+    "form": "10-Q",
+    "filingDate": "2025-08-08",
+    "url": "https://www.sec.gov/Archives/edgar/data/906709/000095017025105275/nktr-20250630.htm",
+    "sha256": "7e86924204d32dc11b195f92a837a3b99dac9f6f391e02ec10e3176f10054701",
+    "sha256Normalized": "37531bdd6e1e73dc827faf14434c4d3bc3dc5d564cca3c3a1321dd7bcbddbfa5",
+    "bytesRead": 2675839,
+    "complete": true,
+    "kind": "IXBRL_COVER_FIRST",
+    "cls": {
+     "TradingSymbol": "NKTR",
+     "Security12bTitle": "Common Stock, $0.0001 par value",
+     "SecurityExchangeName": "NASDAQ"
+    }
+   }
+  }
+ ]
+}

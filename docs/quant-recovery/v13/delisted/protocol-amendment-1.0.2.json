@@ -1,0 +1,6 @@
+{
+ "schemaVersion": "v13-delisted-qualification-protocol-amendment-1.0.2",
+ "type": "TECHNICAL (identifier only, no qualification rule changed)",
+ "reason": "The V12 keyed chain id (ticker|exchange|endYear) collides for 2 pairs of ended reference chains (provider restarts more than 5 days apart, same end year). Found by the register uniqueness check of quant/engines/research-delisted-series.cjs on the smoke run.",
+ "change": "For colliding ids only: chainId = V12 id + '-' + first 4 hex of HMAC-SHA256(key, chain startDate). All other ids equal V12 LISTREF 1.0.3."
+}

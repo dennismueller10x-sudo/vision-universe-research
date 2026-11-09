@@ -1,0 +1,27 @@
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:98mm;background-image:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,0) 55%),url(img/hf-cover-bulle-baer.jpg);background-position:50% 38%"></div>
+  <span class="ki" style="top:14mm;right:14mm">KI-Bild</span>
+  <div data-run="Titelthema"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:40mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Titelthema</span>
+    <div style="font-size:58pt;font-weight:900;letter-spacing:-.065em;line-height:.82;margin-top:2.5mm">DIE KI-<span style="color:var(--lime)">BREMSE</span></div>
+    <div style="display:flex;gap:3mm;margin-top:5mm" data-k="opener"></div>
+  </div>
+  <div class="pad" style="top:104mm">
+    <div class="sub"><b>„Nationaler Baustopp für Rechenzentren. Jetzt.“</b> So schrieb es Bernie Sanders am Tag nach der Wahl. Für die Börse war das der Satz der Woche, und er stand nicht allein.</div>
+    <div class="body cols2" style="margin-top:4mm;column-gap:7mm">
+      <p>Die Demokraten haben den Kongress gewonnen, und mit ihnen viele Kandidaten, die im Wahlkampf gegen neue Rechenzentren angetreten sind. Gina Hinojosa, neue Gouverneurin von Texas, hatte ein Moratorium für alle Genehmigungen versprochen. In 41 lokalen Abstimmungen in zehn Bundesstaaten ging es um Rechenzentren, in 40 stimmten die Menschen dagegen. Der neue Kongress tritt im Januar zusammen; was davon Gesetz wird, ist offen.</p>
+      <p>Für die Börse zählt die Richtung. Allein Alphabet, Microsoft und Meta haben im dritten Quartal mehr als 130&nbsp;Mrd.&nbsp;$ investiert, vor allem in Rechenzentren. Dieses Geld fließt zu Nvidia, AMD, Micron, Broadcom und den Lieferanten für Strom und Kühlung. Die UBS schätzt, dass rund 30&nbsp;% der für 2028 geplanten Rechenzentren gefährdet sein könnten.</p>
+      <p>Dazu kam ein Markt, der schon nervös war: Hedgefonds hatten laut Goldman Sachs bereits Mitte Oktober alle KI-Käufe seit Anfang 2025 wieder verkauft. Am Donnerstag enttäuschten zudem Qualcomm und Arm mit ihren Ausblicken. Nicht alle sehen das Ende des Booms: Jefferies nennt den Ausverkauf „eine Reaktion, keinen grundlegenden Neustart“.</p>
+    </div>
+    <div class="grid" style="grid-template-columns:1.15fr 1fr;gap:5mm;margin-top:5mm">
+      <div class="card ink"><div class="kick" style="color:var(--lime)">Investitionen im 3. Quartal, Mrd. $</div><div style="margin-top:2.5mm" data-k="capex"></div><div class="xs" style="color:#9a9a9a;margin-top:2mm">Laut Quartalsberichten Ende Oktober (24/7 Wall St., FourWeekMBA). Amazon nicht gezeigt, Wert ungeprüft.</div></div>
+      <div class="card lime"><div class="bigq" style="font-size:13pt">„Ich arbeite nicht für Rechenzentren.“</div><div class="xs" style="margin-top:2mm"><b>Sherrod Brown</b>, wiedergewählter Senator (Ohio), laut CNBC, übersetzt</div></div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('capex',()=>VUC.hbars([{l:'Alphabet',v:51.3},{l:'Microsoft',v:45.2},{l:'Meta',v:34.9}],{w:260,rh:22,lw:70,vw:34,dark:1,fmt:v=>VUM.de(v,1)}));
+VUM.k('opener',()=>['NVDA','MU','VRT','LITE','ORCL','CRWV','AMD'].map(t=>{const c=VUM.C(t);return `<div style="flex:1;border-top:2px solid var(--lime);padding-top:1.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.1em;color:#d6d6d6">${t}</div><div style="font-size:12pt;font-weight:900;letter-spacing:-.03em;white-space:nowrap">${VUM.sg(c.week,1)}&nbsp;%</div></div>`}).join('')+'<div style="flex:1.2;padding-top:3mm;font-size:7pt;color:#d6d6d6;font-weight:700">Woche 30.10.–06.11.,<br>Schlusskurse</div>');
+</script>

@@ -37,12 +37,18 @@ test("identity: a reused ticker's series belongs to the later listing, never to 
   assert.equal(SC.ownsSeries({ start: "2009-05-19", end: "2016-11-02" }, { from: "2003-12-19", to: "2016-11-01" }), false, "Reihe beginnt vor dem Listing");
 });
 
-test("published inventory: none of the 191 inactive security-master rows is counted with history by ticker alone", () => {
+test("published inventory: none of the inactive security-master rows is counted with history by ticker alone", () => {
   const s = read("quant/data/product/survivorship-control-v1.json");
   const sm = s.securityMaster;
-  assert.equal(sm.inactiveCommon, 191);
-  assert.equal(sm.rows.length, 191);
-  assert.equal(Object.values(sm.classes).reduce((a, b) => a + b, 0), 191);
+  /* Die Zahl kommt aus dem Security Master, gegen den das Inventar gebaut ist (inaktive EQUITY_COMMON-Zeilen):
+     191 bis zum Stand 2026-10, 282 seit dem Stand 2026-11-04 (SEC-Delistingbeleg setzt weitere Zeilen INACTIVE). */
+  const master = read(sm.source);
+  const expected = master.rows.filter((r) => r.active_status === "INACTIVE" && r.instrument_type === "EQUITY_COMMON").length;
+  assert.equal(sm.rowsTotal, master.rows.length, "Inventar und Security Master sind derselbe Stand");
+  assert.ok(expected >= 191, "der Security Master verliert keine inaktiven Zeilen (" + expected + ")");
+  assert.equal(sm.inactiveCommon, expected);
+  assert.equal(sm.rows.length, expected);
+  assert.equal(Object.values(sm.classes).reduce((a, b) => a + b, 0), expected);
   const reused = sm.rows.filter((r) => r[4] === "D");
   assert.ok(reused.length >= 180, "fast alle inaktiven Zeilen sind neu vergebene Kuerzel");
   assert.ok(reused.every((r) => r[6] === "LATER_LISTING_SAME_TICKER" || r[6] === null), "eine vorhandene Reihe gehoert dem spaeteren Listing");

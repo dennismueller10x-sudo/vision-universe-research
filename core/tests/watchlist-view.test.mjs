@@ -160,17 +160,147 @@ test("Fixture: Waehrung passt nicht zum Listing -> kein Kurs; ohne Technikquelle
   assert.equal(v.high52.reason, "SOURCE_MISSING");
 });
 
-test("Ereignisse: neues Hoch, neue gueltige Eignung - je Instrument einmal, idempotente eventId", t => {
+const Ident = require("../identity.js");
+const EVENT_SCHEMA = JSON.parse(readFileSync(join(ROOT, "core/contracts/events.schema.json"), "utf8"));
+const kinds = evs => evs.map(e => e.type + ":" + e.subtype).sort();
+const at = (doc, t) => doc.cols.s.indexOf(t);
+/* Quant-Abschnitt fuer die Fixtures: Kopf aus dem echten Bestand, Werte je Titel von Hand ([score, Stufenindex]). */
+function withQuant(doc, perTicker) {
+  doc.sources.quant = { ...real.sources.quant, generatedAt: doc.generatedAt, asOf: "2026-10-23" };
+  const band = id => doc.sources.quant.bands.findIndex(b => b.id === id);
+  doc.cols.i.forEach((id, k) => {
+    const p = perTicker[doc.cols.s[k]];
+    doc.cols.q[k] = p ? doc.sources.quant.factorOrder.map(f => p.bands[f] ? [50, band(p.bands[f])] : null) : null;
+    doc.cols.qdq[k] = p ? p.dq : null; doc.cols.qd[k] = p ? "2026-10-23" : null;
+  });
+  return doc;
+}
+
+test("Ereignisse: neues Hoch, Volumen, neue gueltige Eignung, Zustandswechsel - je Instrument einmal, idempotente eventId", t => {
   const before = buildSummary(fixtureRoot(t, { signals: { ACME: [{ strategyId: "S_RES", state: "SETUP" }] } }), { now: AFTER_RUN }).doc;
   const after = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc;
-  const k = before.cols.s.indexOf("ACME");
+  const k = at(before, "ACME");
   before.cols.h52[k] = false; before.cols.vs[k] = false; before.cols.dh[k] = -0.02;
   const evs = W.events(before, after, { now: AFTER_RUN });
-  const acme = evs.filter(e => e.ticker === "ACME").map(e => e.type + ":" + e.subtype).sort();
-  assert.deepEqual(acme, ["PRICE_EVENT:NEW_52W_HIGH", "PRICE_EVENT:VOLUME_SPIKE", "SUPERTRADER_SIGNAL:VALID_SIGNAL"]);
-  assert.ok(evs.every(e => e.schemaVersion === "vu-event-1.0.0" && /^ev_[0-9a-f]{16}$/.test(e.eventId) && e.asOf && e.source.ruleVersion));
-  assert.deepEqual(W.events(before, after, { now: AFTER_RUN }).map(e => e.eventId), evs.map(e => e.eventId), "deterministisch");
+  assert.deepEqual(kinds(evs.filter(e => e.ticker === "ACME")),
+    ["PRICE_EVENT:NEW_52W_HIGH", "PRICE_EVENT:VOLUME_SPIKE", "SUPERTRADER_SIGNAL:STATE_CHANGED", "SUPERTRADER_SIGNAL:STATE_CHANGED", "SUPERTRADER_SIGNAL:VALID_SIGNAL"]);
+  assert.ok(evs.every(e => e.schemaVersion === "vu-event-1.0.0" && /^ev_[0-9a-f]{16}$/.test(e.eventId) && e.asOf && e.source.ruleVersion === W.RULE_VERSION));
+  assert.ok(evs.every(e => e.securityId === Ident.securityIdForTicker(e.ticker)), "securityId nur ueber core/identity.js");
+  const st = evs.filter(e => e.subtype === "STATE_CHANGED").map(e => [e.evidence.strategyId, e.evidence.stateBefore, e.evidence.state, e.evidence.presentation]).sort();
+  assert.deepEqual(st, [["S_OK", null, "SETUP", "RELEASED"], ["S_RES", "SETUP", null, "RESEARCH"]], "Forschung gekennzeichnet, keine Eignung");
+  assert.equal(new Set(evs.map(e => e.eventId)).size, evs.length, "keine doppelte eventId");
+  assert.deepEqual(W.events(before, after, { now: AFTER_RUN }), evs, "deterministisch");
+  const later = W.events(before, after, { now: new Date(AFTER_RUN.getTime() + 3600e3), nowBefore: AFTER_RUN });
+  assert.deepEqual(later.map(e => e.eventId), evs.map(e => e.eventId), "eventId haengt nicht an der Laufzeit");
   assert.deepEqual(W.events(after, after, { now: AFTER_RUN }), [], "kein Ereignis ohne Aenderung");
+  assert.deepEqual(W.events(before, after).map(e => e.occurredAt), evs.map(() => AFTER_RUN.toISOString()), "ohne now: Zeitpunkt der neueren Uebersicht");
+});
+
+test("Ereignisse: alle Arten der Regel - Quant, Technik, Supertrader-Ende, Datenstand", t => {
+  const before = withQuant(buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc,
+    { ACME: { bands: { momentum: "WEAK", value: "STRONG", quality: "NEUTRAL" }, dq: "PASS" } });
+  const after = withQuant(buildSummary(fixtureRoot(t, { signals: { ACME: [{ strategyId: "S_OK", state: "CLOSED" }], ACX: [{ strategyId: "S_RES", state: "ACTIVE" }] } }), { now: AFTER_RUN }).doc,
+    { ACME: { bands: { momentum: "STRONG", value: "VERY_WEAK", quality: "STRONG" }, dq: "WARNING" } });
+  const a = at(before, "ACME"), x = at(before, "ACX");
+  before.cols.st[a] = "RANGE"; before.cols.a200[a] = false;               // -> BULLISH, ueber SMA200
+  after.cols.a200[x] = false;                                             // ACX faellt unter SMA200
+  after.cols.sts[x] = null;                                               // ACX: Supertrader-Abschnitt ohne Abdeckung
+  before.sources.price.asOf = "2026-10-14";                               // neuer Kursstand, vorher veraltet
+  before.calendar = { ...before.calendar, after: "2026-10-14",             // Kalender reicht vor den alten Stand zurueck
+    sessions: ["2026-10-15", "2026-10-16", "2026-10-19", "2026-10-20", "2026-10-21", "2026-10-22", "2026-10-23", ...before.calendar.sessions.filter(d => d > "2026-10-23")] };
+  const evs = W.events(before, after, { now: AFTER_RUN });
+  assert.deepEqual(kinds(evs.filter(e => e.ticker === "ACME")), ["QUANT_CHANGE:DATA_QUALITY_CHANGED", "QUANT_CHANGE:FACTOR_BAND_DOWN", "QUANT_CHANGE:FACTOR_BAND_UP",
+    "SUPERTRADER_SIGNAL:STATE_CHANGED", "SUPERTRADER_SIGNAL:VALID_SIGNAL_ENDED", "TECHNICAL_CHANGE:SMA200_CROSS_UP", "TECHNICAL_CHANGE:TREND_STRUCTURE_CHANGED"]);
+  assert.ok(!evs.some(e => e.ticker === "ACME" && e.evidence.factor === "quality"), "eine Stufe ist kein deutlicher Wechsel");
+  assert.deepEqual(kinds(evs.filter(e => e.ticker === "ACX")), ["DATA_STATE_CHANGE:SECTION_STATE_CHANGED", "TECHNICAL_CHANGE:SMA200_CROSS_DOWN"]);
+  const sec = evs.find(e => e.subtype === "SECTION_STATE_CHANGED");
+  assert.deepEqual([sec.evidence.section, sec.evidence.stateBefore, sec.evidence.state, sec.evidence.reason, sec.severity], ["supertrader", "AVAILABLE", "UNAVAILABLE", "NOT_COVERED", "NOTABLE"]);
+  const src = evs.filter(e => e.instrumentId === null);
+  assert.deepEqual(kinds(src), ["DATA_STATE_CHANGE:SOURCE_STATE_CHANGED", "DATA_STATE_CHANGE:SOURCE_UPDATED"]);
+  assert.ok(src.every(e => e.evidence.source === "price" && e.securityId === null && e.source.domain === "eodPrices"));
+  assert.ok(!evs.some(e => e.instrumentId && e.evidence.section === "price"), "Quellwechsel ersetzt tausend Abschnittsereignisse");
+
+  // Zusammen mit dem Test davor ist jede Unterart des Vertrags belegt.
+  const first = buildSummary(fixtureRoot(t, { signals: { ACME: [] } }), { now: AFTER_RUN }).doc;
+  const covered = new Set(kinds(evs.concat(W.events(first, buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc))));
+  const k0 = at(first, "ACME"); first.cols.h52[k0] = false; first.cols.vs[k0] = false;
+  for (const e of W.events(first, buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc)) covered.add(e.type + ":" + e.subtype);
+  // Kursbewegung ab 5 % (PRICE_MOVE, 1.2.0): ACME +6 %, ACX -7,5 % am neuen Schlusstag
+  const mvBefore = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc, mvAfter = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc;
+  const [ma, mx] = [at(mvAfter, "ACME"), at(mvAfter, "ACX")], day = mvAfter.cols.cd[ma];
+  mvBefore.cols.cd[at(mvBefore, "ACME")] = mvBefore.cols.cd[at(mvBefore, "ACX")] = "2026-10-01";
+  Object.assign(mvAfter.cols.d1, { [ma]: 0.06, [mx]: -0.075 }); Object.assign(mvAfter.cols.dp, { [ma]: "2026-10-01", [mx]: "2026-10-01" });
+  const moves = W.events(mvBefore, mvAfter, { now: AFTER_RUN }).filter(e => e.type === "PRICE_MOVE");
+  for (const e of moves) covered.add(e.type + ":" + e.subtype);
+  assert.deepEqual(moves.map(e => [e.ticker, e.subtype, e.evidence.change, e.evidence.previousDate, e.asOf]),
+    [["ACME", "DAILY_UP_5", 0.06, "2026-10-01", day], ["ACX", "DAILY_DOWN_5", -0.075, "2026-10-01", day]].sort((x, y) => moves.findIndex(m => m.ticker === x[0]) - moves.findIndex(m => m.ticker === y[0])));
+  assert.ok(moves.every(e => e.evidence.threshold === 0.05 && e.severity === "NOTABLE" && e.source.ruleVersion === W.RULE_VERSION));
+  // Gegenproben: 4,9 % bleibt still; derselbe Schlusstag ergibt kein zweites Ereignis
+  mvAfter.cols.d1[ma] = 0.049;
+  assert.ok(!W.events(mvBefore, mvAfter, { now: AFTER_RUN }).some(e => e.type === "PRICE_MOVE" && e.ticker === "ACME"), "unter 5 % kein Ereignis");
+  mvAfter.cols.d1[ma] = 0.06; mvBefore.cols.cd[at(mvBefore, "ACME")] = day;
+  assert.ok(!W.events(mvBefore, mvAfter, { now: AFTER_RUN }).some(e => e.type === "PRICE_MOVE" && e.ticker === "ACME"), "gleicher Schlusstag: kein neues Ereignis");
+
+  // Neuer SEC-Bericht (EARNINGS, 1.3.0): ACME neues Quartal, ACX neuer Jahresbericht; Einreichungsdatum entscheidet
+  const erBefore = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc, erAfter = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc;
+  for (const d of [erBefore, erAfter]) d.sources.filings = { domain: "fundamentalsConsumer", artifact: "/quant/data/sec/consumer/", asOf: "2026-10-20" };
+  const setF = (d, tk, rf, rk, rp, re) => { const k = at(d, tk); Object.assign(d.cols.rf, { [k]: rf }); Object.assign(d.cols.rk, { [k]: rk }); Object.assign(d.cols.rp, { [k]: rp }); Object.assign(d.cols.re, { [k]: re }); };
+  setF(erBefore, "ACME", "2026-07-30", "Q", "2026-Q2", "2026-06-30"); setF(erAfter, "ACME", "2026-10-20", "Q", "2026-Q3", "2026-09-30");
+  setF(erBefore, "ACX", "2026-08-01", "Q", "2026-Q3", "2026-06-30"); setF(erAfter, "ACX", "2026-10-15", "A", "2026-FY", "2026-08-31");
+  const reports = W.events(erBefore, erAfter, { now: AFTER_RUN }).filter(e => e.type === "EARNINGS");
+  for (const e of reports) covered.add(e.type + ":" + e.subtype);
+  const byT = Object.fromEntries(reports.map(e => [e.ticker, [e.subtype, e.asOf, e.evidence.period, e.evidence.periodEnd, e.evidence.filedBefore]]));
+  assert.deepEqual(byT, { ACME: ["QUARTERLY_REPORT", "2026-10-20", "2026-Q3", "2026-09-30", "2026-07-30"], ACX: ["ANNUAL_REPORT", "2026-10-15", "2026-FY", "2026-08-31", "2026-08-01"] });
+  assert.ok(reports.every(e => e.severity === "NOTABLE" && e.evidence.source === "SEC" && !("v" in e.evidence)), "keine Kennzahl in der Evidenz");
+  // Gegenproben: gleiches Einreichungsdatum und Erstbeobachtung (vorher ohne Bericht) bleiben still
+  setF(erBefore, "ACME", "2026-10-20", "Q", "2026-Q3", "2026-09-30"); setF(erBefore, "ACX", null, null, null, null);
+  assert.deepEqual(W.events(erBefore, erAfter, { now: AFTER_RUN }).filter(e => e.type === "EARNINGS"), []);
+
+  // Neue 13F-Position (FUND_13F, 1.4.0): ACME bekommt zwei neue Fondspositionen, ACX bleibt gleich
+  const fBefore = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc, fAfter = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc;
+  for (const d of [fBefore, fAfter]) d.sources.funds13f = { domain: "hedgefonds13f", artifact: "/hedgefonds/data/stocks/", asOf: "2026-06-30", funds: { scion: "Scion Asset Management" } };
+  const setH = (d, tk, fn, fc) => { const k = at(d, tk); d.cols.fp[k] = "2026-06-30"; d.cols.fc[k] = fc; d.cols.fn[k] = fn; };
+  setH(fBefore, "ACME", ["berkshire"], 3); setH(fAfter, "ACME", ["berkshire", "f-1582202", "scion"], 5);
+  setH(fBefore, "ACX", ["akre"], 2); setH(fAfter, "ACX", ["akre"], 2);
+  const funds = W.events(fBefore, fAfter, { now: AFTER_RUN }).filter(e => e.type === "FUND_13F");
+  for (const e of funds) covered.add(e.type + ":" + e.subtype);
+  assert.deepEqual(funds.map(e => [e.ticker, e.subtype, e.evidence.funds, e.evidence.fundsCount, e.evidence.holders, e.asOf]),
+    [["ACME", "NEW_POSITION", ["f-1582202", "scion"], 2, 5, "2026-06-30"]]);
+  assert.deepEqual(funds[0].evidence.fundNames, ["f-1582202", "Scion Asset Management"], "Name aus der kuratierten Liste, sonst das Kuerzel");
+  // Gegenprobe: Erstbeobachtung (vorher keine Daten) bleibt still
+  const fk = at(fBefore, "ACME"); fBefore.cols.fn[fk] = null; fBefore.cols.fp[fk] = null;
+  assert.deepEqual(W.events(fBefore, fAfter, { now: AFTER_RUN }).filter(e => e.type === "FUND_13F"), []);
+
+  // Elliott (ELLIOTT_CHANGE, 1.5.0): ACME neue Lesart, ACX bestaetigte Welle bei gleicher Lesart
+  const eBefore = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc, eAfter = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc;
+  for (const d of [eBefore, eAfter]) d.sources.elliott = { domain: "technicalIntelligenceV3", artifact: "/quant/data/technical-intelligence/v3/shards/", asOf: "2026-10-23", model: "EXPERIMENTAL" };
+  const setE = (d, tk, ew) => { const k = at(d, tk); d.cols.ew[k] = ew; d.cols.ewd[k] = "2026-10-23"; };
+  setE(eBefore, "ACME", ["OK", "ZIGZAG", "DOWN", 0, "C", "DEVELOPING"]); setE(eAfter, "ACME", ["AMBIGUOUS", "IMPULSE", "UP", 0, "3", "DEVELOPING"]);
+  setE(eBefore, "ACX", ["OK", "WXY", "DOWN", 0, "Y", "DEVELOPING"]); setE(eAfter, "ACX", ["OK", "WXY", "DOWN", 0, "Y", "CONFIRMED"]);
+  const ell = W.events(eBefore, eAfter, { now: AFTER_RUN }).filter(e => e.type === "ELLIOTT_CHANGE");
+  for (const e of ell) covered.add(e.type + ":" + e.subtype);
+  assert.deepEqual(Object.fromEntries(ell.map(e => [e.ticker, e.subtype])), { ACME: "READING_CHANGED", ACX: "WAVE_CONFIRMED" });
+  assert.ok(ell.every(e => e.evidence.model === "EXPERIMENTAL"), "Evidenz kennzeichnet das experimentelle Modell");
+  // Gegenproben: unveraenderte Lesart und Erstbeobachtung bleiben still
+  setE(eBefore, "ACX", ["OK", "WXY", "DOWN", 0, "Y", "CONFIRMED"]); const ek = at(eBefore, "ACME"); eBefore.cols.ew[ek] = null;
+  assert.deepEqual(W.events(eBefore, eAfter, { now: AFTER_RUN }).filter(e => e.type === "ELLIOTT_CHANGE"), []);
+
+  const contract = Object.entries(EVENT_SCHEMA.properties.subtype.enumByType).flatMap(([ty, subs]) => subs.map(s => ty + ":" + s));
+  assert.deepEqual(contract.filter(c => !covered.has(c)), [], "jede Unterart entsteht in einem Test");
+  for (const e of evs) assert.ok(EVENT_SCHEMA.properties.type.enum.includes(e.type) && EVENT_SCHEMA.properties.subtype.enumByType[e.type].includes(e.subtype));
+});
+
+test("Ereignisse: fehlende Welt -> ein Quellereignis, keine Inhalts- oder Abschnittsereignisse; Erstbeobachtung ohne Ereignis", t => {
+  const before = buildSummary(fixtureRoot(t), { now: AFTER_RUN }).doc;
+  const after = buildSummary(fixtureRoot(t, { withTechnical: false }), { now: AFTER_RUN }).doc;
+  const evs = W.events(before, after);
+  assert.deepEqual(kinds(evs), ["DATA_STATE_CHANGE:SOURCE_STATE_CHANGED"]);
+  assert.deepEqual([evs[0].evidence.source, evs[0].evidence.stateBefore, evs[0].evidence.state, evs[0].severity, evs[0].instrumentId], ["technical", "OK", "UNAVAILABLE", "NOTABLE", null]);
+  assert.deepEqual(kinds(W.events(after, before)), ["DATA_STATE_CHANGE:SOURCE_STATE_CHANGED"], "Rueckkehr der Welt ebenfalls nur als Quellereignis");
+  // Instrument neu im Bestand: kein Vergleich moeglich, also nichts
+  const onlyAcx = JSON.parse(JSON.stringify(before)), k = at(onlyAcx, "ACME");
+  onlyAcx.cols.i[k] = "vu_eeeeee000001";
+  assert.ok(!W.events(onlyAcx, after).some(e => e.ticker === "ACME"));
 });
 
 test("Auslieferung in Teilen: meta, Scherben je shardKey, Namen; Laden nur der benoetigten Teile", async t => {

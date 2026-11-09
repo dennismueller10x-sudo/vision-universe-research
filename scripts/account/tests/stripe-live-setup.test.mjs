@@ -71,6 +71,13 @@ function fakeStripe({pmcStatus = 200} = {}) {
       return json(200, h);
     }
     if (method === 'POST' && p.startsWith('/v1/webhook_endpoints/')) return json(200, state.hooks.find(h => h.id === p.split('/').pop()));
+    if (method === 'GET' && p === '/v1/tax_rates') return json(200, {data: state.taxRates || []});
+    if (method === 'POST' && p === '/v1/tax_rates') {
+      const r = {id: `txr_live${++n}`, percentage: Number(form.get('percentage')), inclusive: form.get('inclusive') === 'true', country: form.get('country'),
+        tax_type: form.get('tax_type'), metadata: {vu_managed: form.get('metadata[vu_managed]')}, active: true, livemode: true};
+      (state.taxRates ||= []).push(r);
+      return json(200, r);
+    }
     return json(400, {error: {type: 'invalid_request_error'}});
   };
   return {state, fetchImpl};
@@ -177,4 +184,16 @@ test('Zahlungsmethoden: Probelauf schaltet nichts ein', async () => {
   const r = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, dryRun: true, log: () => {}});
   assert.equal(r.paymentMethods.find(m => m.key === 'sepa_debit').state, 'wird eingeschaltet');
   assert.equal(s.state.pmc.sepa_debit.display_preference.value, 'off');
+});
+
+test('Preis aus der Tarifverwaltung: kein neuer Preis, keine Preiszeile', async () => {
+  const s = fakeStripe();
+  s.state.products.set('vu_pro', {id: 'vu_pro', name: 'Vision Universe Pro', description: LIVE_CATALOG[0].description, active: true, livemode: true});
+  s.state.prices.push({id: 'price_verwaltet', product: 'vu_pro', unit_amount: 490, currency: 'eur', tax_behavior: 'inclusive',
+    recurring: {interval: 'month', interval_count: 1}, lookup_key: 'vu_pro_month', active: true, livemode: true,
+    metadata: {vu_change_id: 'pc_' + 'a'.repeat(32)}});
+  const r = await setupStripeLive({key: LIVE_KEY, approved: 'true', apiOrigin: API, fetchImpl: s.fetchImpl, log: () => {}});
+  assert.equal(s.state.prices.length, 1, 'nichts angelegt');
+  assert.equal(s.state.prices[0].unit_amount, 490);
+  assert.deepEqual(r.prices, [], 'keine Preiszeile');
 });

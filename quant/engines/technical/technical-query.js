@@ -20,12 +20,17 @@
 
    Fehlende Werte erfuellen keine Bedingung; der Trichter zeigt, wie viele
    Titel ein Filter wegen fehlender Daten verliert.
+
+   Ausgewertet wird mit der gemeinsamen Abfrage-Engine von /technical/ und
+   /screener/ (core/query-engine.js). Hier bleiben Katalog, Zeitrahmen,
+   Validierung, Texte, KI-Schema und Vorlagen.
    ========================================================================= */
 (function (global) {
   "use strict";
 
   var isNode = (typeof module !== "undefined" && module.exports);
-  var QUERY_VERSION = "technical-query-1.11.0";
+  var QE = isNode ? require("../../../core/query-engine.js") : global.VUCore.QueryEngine;
+  var QUERY_VERSION = "technical-query-1.13.0";
   var TIMEFRAMES = { "1D": "Tag", "1W": "Woche", "1M": "Monat" };
   var MAX_GROUPS = 6, MAX_FILTERS = 30, MAX_LIMIT = 500;
 
@@ -59,11 +64,21 @@
   var STRUCTURES_LEGACY = { NEUTRAL: "Neutral (bis 1.9.0, nie belegt)" };
 
   var ALL = ["1D", "1W", "1M"], D = ["1D"];
+  /* Tag und Woche: Formationen im Wochenchart seit 1.13.0 (screen-row 1.14.0, abgeschlossene Wochen aus den Tagesbars). */
+  var DW = ["1D", "1W"];
   /* group, id, label, kind (num|pct|bool|enum), tfs, hint; Labels mit Zeitrahmenvarianten als Objekt. */
   var FIELDS = [
     { id: "aboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "Kurs über SMA 200", "1W": "Kurs über 40-Wochen-Linie", "1M": "Kurs über 10-Monats-Linie" } },
     { id: "aboveSma50", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "Kurs über SMA 50", "1W": "Kurs über 10-Wochen-Linie", "1M": "Kurs über 5-Monats-Linie" } },
     { id: "sma50AboveSma200", group: "Trend", kind: "bool", tfs: ALL, label: { "1D": "SMA 50 über SMA 200", "1W": "10- über 40-Wochen-Linie", "1M": "5- über 10-Monats-Linie" } },
+    /* AP8 L1 (seit 1.12.0): SMA 150 (Tagesbars), docs/technical/SCREENER_FIELDS_AP8_L1.md */
+    { id: "aboveSma150", group: "Trend", kind: "bool", tfs: D, label: "Kurs über SMA 150" },
+    { id: "sma150AboveSma200", group: "Trend", kind: "bool", tfs: D, label: "SMA 150 über SMA 200" },
+    { id: "sma50AboveSma150", group: "Trend", kind: "bool", tfs: D, label: "SMA 50 über SMA 150" },
+    { id: "distSma150", group: "Trend", kind: "pct", tfs: D, label: "Abstand zur SMA 150" },
+    /* AP8 L2 (seit 1.12.0): Richtung der SMA 200 ueber 21 Handelstage, docs/technical/SCREENER_FIELDS_AP8_L2.md */
+    { id: "sma200Rising", group: "Trend", kind: "bool", tfs: D, label: "SMA 200 steigt (gegenüber vor einem Monat)" },
+    { id: "sma200Slope21", group: "Trend", kind: "pct", tfs: D, label: "Veränderung der SMA 200 über einen Monat" },
     { id: "aboveEma20", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 20" },
     { id: "aboveEma50", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 50" },
     { id: "aboveEma200", group: "Trend", kind: "bool", tfs: D, label: "Kurs über EMA 200" },
@@ -78,6 +93,8 @@
     { id: "newHigh52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Hoch (Tageshoch)", "1W": "52-Wochen-Hoch (Wochenschluss)", "1M": "12-Monats-Hoch (Monatsschluss)" } },
     /* seit 1.11.0 (AP4): Gegenstueck zum Hoch. Tag aus Tagestiefs, Woche/Monat aus Schlusskursen. Beschreibend, kein Signal. */
     { id: "newLow52w", group: "Hochs", kind: "bool", tfs: ALL, label: { "1D": "Neues 52-Wochen-Tief: Tagestief auf dem tiefsten Tagestief der letzten 52 Wochen", "1W": "52-Wochen-Schlusstief: Wochenschluss auf dem tiefsten Wochenschluss der letzten 52 Wochen", "1M": "12-Monats-Schlusstief: Monatsschluss auf dem tiefsten Monatsschluss der letzten 12 Monate" } },
+    /* AP8 L3 (seit 1.12.0): Abstand zum 52-Wochen-Tief, nur Tag, docs/technical/SCREENER_FIELDS_AP8_L3.md */
+    { id: "distLow52w", group: "Hochs", kind: "pct", tfs: D, label: "Abstand über dem 52-Wochen-Tief (Tagestief)" },
     { id: "distHigh52w", group: "Hochs", kind: "pct", tfs: ALL, label: { "1D": "Abstand zum 52-Wochen-Hoch", "1W": "Abstand zum 52-Wochen-Schlusshoch", "1M": "Abstand zum 12-Monats-Schlusshoch" } },
     { id: "newHigh200w", group: "Hochs", kind: "bool", tfs: ALL, tfIndependent: true, label: "Neues 200-Wochen-Hoch (Wochenschluss)" },
     { id: "distHigh200w", group: "Hochs", kind: "pct", tfs: ALL, tfIndependent: true, label: "Abstand zum 200-Wochen-Schlusshoch" },
@@ -105,6 +122,8 @@
     { id: "ulcer14", group: "Volatilität", kind: "pct", tfs: D, label: "Ulcer Index 14 (Rückschlagsrisiko)" },
     { id: "rs3m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 3 Monate ggü. S&P 500 (SPY)" },
     { id: "rs6m", group: "Relative Stärke", kind: "pct", tfs: D, label: "Relative Stärke 6 Monate ggü. S&P 500 (SPY)" },
+    /* AP8 L4 (seit 1.12.0): Perzentilrang von rs6m, docs/technical/SCREENER_FIELDS_AP8_L4.md */
+    { id: "rsRank", group: "Relative Stärke", kind: "num", tfs: D, label: "RS-Rang 6 Monate (0 = schwächster, 100 = stärkster Titel)" },
     { id: "rsPositive", group: "Relative Stärke", kind: "bool", tfs: D, label: "Positive relative Stärke (6 Monate)" },
     { id: "relVol", group: "Volumen", kind: "num", tfs: ALL, label: { "1D": "Relatives Volumen (zum 20-Tage-Median)", "1W": "Relatives Wochenvolumen (zum 20-Wochen-Median)", "1M": "Relatives Monatsvolumen (zum 20-Monats-Median)" } },
     { id: "volAboveAvg", group: "Volumen", kind: "bool", tfs: ALL, label: { "1D": "Volumen über Durchschnitt", "1W": "Wochenvolumen über Durchschnitt", "1M": "Monatsvolumen über Durchschnitt" } },
@@ -122,8 +141,11 @@
     { id: "candleBullish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bullisches Kerzenmuster am Stichtag", "1W": "Bullisches Kerzenmuster (Wochenkerze)", "1M": "Bullisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "candleBearish", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Bärisches Kerzenmuster am Stichtag", "1W": "Bärisches Kerzenmuster (Wochenkerze)", "1M": "Bärisches Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
     { id: "candleNeutral", group: "Kerzenmuster", kind: "enum", multi: true, tfs: ALL, label: { "1D": "Neutrales Kerzenmuster am Stichtag (Unentschlossenheit)", "1W": "Neutrales Kerzenmuster (Wochenkerze)", "1M": "Neutrales Kerzenmuster (Monatskerze)" }, values: CANDLE_TYPES },
-    { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation erkannt oder bestätigt", values: FORMATION_TYPES },
-    { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt", values: FORMATION_TYPES },
+    { id: "formationActive", group: "Chartmuster", kind: "enum", multi: true, tfs: DW, label: { "1D": "Formation erkannt oder bestätigt", "1W": "Formation im Wochenchart erkannt oder bestätigt" }, values: FORMATION_TYPES },
+    { id: "formationConfirmed", group: "Chartmuster", kind: "enum", multi: true, tfs: DW, label: { "1D": "Formation bestätigt", "1W": "Formation im Wochenchart bestätigt" }, values: FORMATION_TYPES },
+    /* AP8 L5 (seit 1.12.0): bestaetigte Formationen nach Ausbruchsrichtung, docs/technical/SCREENER_FIELDS_AP8_L5.md */
+    { id: "formationConfirmedUp", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach oben", values: FORMATION_TYPES },
+    { id: "formationConfirmedDown", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation bestätigt, Ausbruch nach unten", values: FORMATION_TYPES },
     { id: "formationOpen", group: "Chartmuster", kind: "enum", multi: true, tfs: D, label: "Formation offen (noch ohne Ausbruch)", values: FORMATION_TYPES },
     /* Ereignisse (Audit B12): Handelstage seit dem juengsten Ereignis, 0 = am Stichtag. `window` nennt die Spalte
        mit der Laenge des Pruefraums: Feld leer + Fenster W = kein Ereignis in den letzten W Handelstagen;
@@ -154,7 +176,7 @@
   /* "nin" = keiner der Werte (z. B. "ohne Kurslücke"); fehlende Werte bleiben unbekannt, nicht "erfüllt". */
   function opsFor(kind) { return kind === "bool" ? ["is"] : kind === "enum" ? ["in", "nin"] : ["gt", "gte", "lt", "lte", "between"]; }
 
-  function isNum(v) { return typeof v === "number" && Number.isFinite(v); }
+  var isNum = QE.isNum;
 
   /**
    * Prueft und normalisiert eine Abfrage. Wirft nie; liefert { ok, query, errors[] }.
@@ -222,50 +244,16 @@
 
   /* ----------------------------------------------------------- Datensatz */
   /** Datensatz aus dem Artefakt technical/data/screener-v1.json (spaltenbasiert). */
-  function createDataset(artifact) {
-    if (!artifact || !artifact.cols || !Array.isArray(artifact.cols.s)) throw new Error("INVALID_DATASET");
-    var cols = artifact.cols, n = cols.s.length, index = {};
-    for (var i = 0; i < n; i++) index[cols.s[i]] = i;
-    return {
-      size: n, meta: artifact, cols: cols,
-      column: function (key) { return cols[key] || null; },
-      indexOf: function (sym) { return index[sym] === undefined ? -1 : index[sym]; },
-      row: function (i) { var o = {}; Object.keys(cols).forEach(function (k) { o[k] = cols[k][i]; }); return o; }
-    };
-  }
+  function createDataset(artifact) { return QE.createDataset(artifact); }
 
-  /** Praedikat: true | false | null (null = kein Wert). */
+  /** Praedikat: true | false | null (null = kein Wert). Exportiert als predicate (Vorlagen-Checklisten, technical/engine/templates.js). */
   function compile(ds, filter, tf) {
     var f = field(filter.field), c = ds.column(columnKey(filter.field, filter.tf || tf));
     if (!f || !c) return function () { return null; };
-    if (f.kind === "bool") return function (i) { var v = c[i]; return v === null || v === undefined ? null : !!v === filter.value; };
-    if (f.kind === "enum") {
-      var want = {}; filter.value.forEach(function (v) { want[v] = true; });
-      return function (i) {
-        var v = c[i]; if (v === null || v === undefined) return null;
-        var hit = false;
-        if (Array.isArray(v)) { for (var k = 0; k < v.length && !hit; k++) if (want[v[k]]) hit = true; }
-        else hit = !!want[v];
-        return filter.op === "nin" ? !hit : hit;
-      };
-    }
-    var a = filter.value, b = filter.value2;
-    var test = { gt: function (v) { return v > a; }, gte: function (v) { return v >= a; }, lt: function (v) { return v < a; }, lte: function (v) { return v <= a; },
-                 between: function (v) { return v >= a && v <= b; } }[filter.op];
+    if (f.kind === "bool" || f.kind === "enum") return QE.predicate(c, filter, { kind: f.kind });
     /* Pruefraum des Zeitrahmens (seit 1.11.0): "fenster@1W" bzw. "fenster@1M" */
     var wtf = filter.tf || tf, w = f.window ? ds.column(wtf === "1D" ? f.window : f.window + "@" + wtf) : null;
-    if (!w) return function (i) { var v = c[i]; return isNum(v) ? test(v) : null; };
-    /* Ereignisfeld: leerer Wert mit Pruefraum W heisst "mindestens W Tage her (oder nie)". Entschieden wird nur,
-       was daraus sicher folgt; sonst bleibt der Wert unbekannt (null), nie geraten. */
-    var whenAbsent = {
-      lte: function (W) { return a < W ? false : null; }, lt: function (W) { return a <= W ? false : null; },
-      gt: function (W) { return W > a ? true : null; }, gte: function (W) { return W >= a ? true : null; },
-      between: function (W) { return b < W ? false : null; }
-    }[filter.op];
-    return function (i) {
-      var v = c[i]; if (isNum(v)) return test(v);
-      var W = w[i]; return isNum(W) ? whenAbsent(W) : null;
-    };
+    return QE.predicate(c, filter, { kind: "number", strict: true, window: w });
   }
 
   /**
@@ -275,61 +263,19 @@
   function evaluate(ds, query) {
     var v = validate(query);
     if (!v.ok) return { error: "INVALID_QUERY", errors: v.errors };
-    var q = v.query, n = ds.size, tf = q.timeframe;
-    var groups = q.groups.filter(function (g) { return g.filters.length; });
-    var compiled = {};
-    groups.forEach(function (g) { g.filters.forEach(function (f) { compiled[f.id] = compile(ds, f, tf); }); });
-    var matched = new Array(n);
-    for (var z = 0; z < n; z++) matched[z] = 0;
-    function groupPass(g, i) {
-      var any = false, all = true;
-      g.filters.forEach(function (f) { var r = compiled[f.id](i); if (r === true) { any = true; matched[i]++; } else all = false; });
-      return g.op === "OR" ? any : all;
-    }
-    var funnel = [{ kind: "start", label: "Ausgangsuniversum", count: n, lost: 0, missing: 0 }];
-    var alive = [], i;
-    if (!groups.length) { for (i = 0; i < n; i++) alive.push(i); }
-    else if (q.logic === "AND") {
-      var cur = []; for (i = 0; i < n; i++) cur.push(i);
-      groups.forEach(function (g, gi) {
-        if (g.op === "AND") {
-          g.filters.forEach(function (f) {
-            var next = [], missing = 0;
-            cur.forEach(function (k) { var r = compiled[f.id](k); if (r === true) { next.push(k); matched[k]++; } else if (r === null) missing++; });
-            funnel.push({ kind: "filter", label: describeFilter(f, tf), count: next.length, lost: cur.length - next.length, missing: missing });
-            cur = next;
-          });
-        } else {
-          var keep = cur.filter(function (k) { return groupPass(g, k); });
-          funnel.push({ kind: "group", label: "Gruppe " + (gi + 1) + " (ODER)", count: keep.length, lost: cur.length - keep.length, missing: 0 });
-          cur = keep;
-        }
-      });
-      alive = cur;
-    } else {
-      var hit = new Array(n);
-      groups.forEach(function (g, gi) {
-        var c = 0;
-        for (var k = 0; k < n; k++) if (groupPass(g, k)) { hit[k] = true; c++; }
-        funnel.push({ kind: "group", label: "Gruppe " + (gi + 1) + " allein", count: c, lost: n - c, missing: 0, standalone: true });
-      });
-      for (i = 0; i < n; i++) if (hit[i]) alive.push(i);
-      funnel.push({ kind: "union", label: "Mindestens eine Gruppe erfüllt (ODER)", count: alive.length, lost: n - alive.length, missing: 0 });
-    }
-    /* Sortierung: gewaehltes Feld, sonst Zahl erfuellter Bedingungen, dann Kuerzel. Fehlende Werte ans Ende. */
-    var sym = ds.column("s");
-    var sc = q.sort ? ds.column(columnKey(q.sort.field, tf)) : null, dir = q.sort && q.sort.dir === "asc" ? 1 : -1;
-    alive.sort(function (x, y) {
-      if (sc) {
-        var a = sc[x], b = sc[y], an = typeof a === "boolean" ? +a : a, bn = typeof b === "boolean" ? +b : b;
-        var ax = isNum(an), bx = isNum(bn);
-        if (ax !== bx) return ax ? -1 : 1;
-        if (ax && an !== bn) return (an - bn) * dir;
-      }
-      if (matched[x] !== matched[y]) return matched[y] - matched[x];
-      return sym[x] < sym[y] ? -1 : sym[x] > sym[y] ? 1 : 0;
+    var q = v.query, n = ds.size, tf = q.timeframe, compiled = {};
+    q.groups.forEach(function (g) { g.filters.forEach(function (f) { compiled[f.id] = compile(ds, f, tf); }); });
+    var r = QE.run(n, q, compiled, {
+      countMatches: true,
+      filterStep: function (f) { return { kind: "filter", label: describeFilter(f, tf) }; },
+      groupStep: function (g, gi, standalone) { return { kind: "group", label: "Gruppe " + (gi + 1) + (standalone ? " allein" : " (ODER)") }; }
     });
-    return { query: q, count: alive.length, universe: n, indices: alive.slice(0, q.limit), funnel: funnel, matched: matched };
+    /* Sortierung: gewaehltes Feld, sonst Zahl erfuellter Bedingungen, dann Kuerzel. Fehlende Werte ans Ende. */
+    var sym = ds.column("s"), matched = r.matched, alive = r.indices;
+    var sc = q.sort ? ds.column(columnKey(q.sort.field, tf)) : null, dir = q.sort && q.sort.dir === "asc" ? 1 : -1;
+    alive.sort(QE.compareBy(sc ? function (i) { var a = sc[i]; return typeof a === "boolean" ? +a : a; } : null, dir, function (a) { return !isNum(a); },
+      function (x, y) { return matched[x] !== matched[y] ? matched[y] - matched[x] : sym[x] < sym[y] ? -1 : sym[x] > sym[y] ? 1 : 0; }, true));
+    return { query: q, count: alive.length, universe: n, indices: alive.slice(0, q.limit), funnel: r.funnel, matched: matched };
   }
 
   /* ------------------------------------------------------------ Sprache */
@@ -405,7 +351,7 @@
     QUERY_VERSION: QUERY_VERSION, TIMEFRAMES: TIMEFRAMES, FIELDS: FIELDS, FORMATION_TYPES: FORMATION_TYPES, CANDLE_TYPES: CANDLE_TYPES, STRUCTURES: STRUCTURES, STRUCTURES_LEGACY: STRUCTURES_LEGACY, PRESETS: PRESETS,
     MAX_GROUPS: MAX_GROUPS, MAX_FILTERS: MAX_FILTERS,
     field: field, labelOf: labelOf, columnKey: columnKey, opsFor: opsFor,
-    validate: validate, createDataset: createDataset, evaluate: evaluate, describe: describe, describeFilter: describeFilter, jsonSchema: jsonSchema
+    validate: validate, createDataset: createDataset, evaluate: evaluate, predicate: compile, describe: describe, describeFilter: describeFilter, jsonSchema: jsonSchema
   };
   if (isNode) module.exports = api;
   else { global.VUTechnical = global.VUTechnical || {}; global.VUTechnical.Query = api; }

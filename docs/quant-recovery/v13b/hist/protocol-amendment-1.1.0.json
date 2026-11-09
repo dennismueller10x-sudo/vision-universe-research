@@ -1,0 +1,40 @@
+{
+ "schemaVersion": "v13-delisted-qualification-protocol-amendment-1.1.0",
+ "type": "SUBSTANTIVE (new versioned register; register-1.0.0 and all V13 results stay unchanged)",
+ "amends": {
+  "protocol-1.0.0.json": "4efcba25f331c60a88f1acd0e995cbe4df334c2c4080af14b5c03cb398f728a7",
+  "protocol-amendment-1.0.1.json": "5b12e3a1b7cdacf4778425f8d59175a45009a5573b1ff06619021c0658966e1e",
+  "protocol-amendment-1.0.2.json": "e37d1f13219dd9deba3dbd624bd5ad96821242be6633ed372086f5e125e1c755",
+  "register-1.0.0.json": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+  "qualify.py": "6addb5ff4d0189ddd9a4c7cc2eafdddd42c82838988f47860427e7ccee87f2ee"
+ },
+ "owner": "Owner decision 4 of 29.10.2026 (V13b): continue research on the 28 crash cases with original sources; no invented terminal values, no blanket admission.",
+ "registeredBefore": "Committed before any SEC document of the 28 cases was retrieved or read for this amendment. Seen so far: the counts file ca-unresolved-counts-1.0.0.json and a private listing of the 28 chains (ticker, CIK, dates/sizes of their unresolved split-sized jumps, provider split factors, last trade date and last close). The adjudicator also has general background knowledge of some issuers; this is why every decision must rest on a quoted original filing, never on memory.",
+ "scope": {
+  "chains": "Exactly the chains counted as PRICE_FELL:lastTradeWithin365d by scripts/quant/v13/studies/ca_unresolved_count.py (28): register-1.0.0 status CA_UNRESOLVED, first unresolved split-sized daily jump is a fall (close(t)/close(t-1) ~ 1/k, k in {2,3,4,5,10}, tolerance 3 %), last traded bar <= 365 days after that jump.",
+  "jumps": "Every unresolved split-sized daily jump of such a chain (qualify.py R4 test, all of them, not only the first) must be adjudicated. One jump in class C leaves the whole chain CA_UNRESOLVED.",
+  "otherChains": "All other chains are qualified with the unchanged 1.0.0 logic; register-1.1.0 must reproduce register-1.0.0 row by row for them (checked)."
+ },
+ "evidence": {
+  "sources": "Only original SEC filings of the chain's linked CIK (V12 LISTREF link, as in R1) and exchange Form 25/25-NSE for that CIK, read through scripts/quant/sec/http_client.py (<= 2 requests/s, User-Agent VisionUniverseResearch info@visionuniverse.de, private cache). Filing list from the issuer's submissions JSON. No news sites, no provider corporate-action table beyond what qualify.py already uses, no memory.",
+  "window": "For a jump on trading day J: all filings of forms 8-K, 8-K/A, 6-K, 25, 25-NSE, 15-12B, 15-12G, 15-15D, DEF 14A, DEFA14A, DEFM14A, DEFR14A, PRE 14A, PREM14A, DEF 14C, PRE 14C, 10-Q, 10-K, 20-F, 40-F, SC TO-I, SC TO-T, SC 14D9, 425, 424B3 filed in [J-60d, J+30d] are retrieved (complete submission text, at most the first 2,000,000 bytes; truncation is recorded).",
+  "caScan": "Mechanical scan of every retrieved document (HTML tags removed, case-insensitive) for corporate-action terms: stock split, reverse split, reverse stock split, share consolidation, consolidation of shares, stock dividend, special dividend, special cash dividend, special distribution, liquidating distribution, return of capital, spin-off, spinoff, spin off, distribution of all, rights offering, subscription rights, ADS ratio, ratio change, redemption of all (public) shares, trust account distribution. Every hit is listed (accession, term, 200-character context) and must be dispositioned by the adjudicator in the public file.",
+  "quotes": "Each decisive statement is cited with accession, URL, SHA-256 of the retrieved bytes, and a verbatim quote <= 300 characters (whitespace-normalized) with its SHA-256; the independent check re-finds every quote in the cached bytes."
+ },
+ "classes": {
+  "A_REAL_PRICE_EVENT": "Accepted as a real price move. Requires (E1) a filing dated in [J-14d, J+7d] that reports an event of the matching direction. Fall: bankruptcy petition or plan without equity recovery, going-concern / liquidity / default / forbearance warning, delisting or suspension notice, failed/terminated financing, merger or key contract, negative trial/regulatory outcome, results or guidance far below expectations, bank receivership/regulatory action, take-under offer, announced sale of assets with little or no equity recovery. Rise: acquisition offer/agreement, financing secured, favourable outcome. AND (E2) no corporate action: no caScan hit whose stated effective/ex/record/distribution date lies within 5 trading days of J (every hit dispositioned with its own quoted date or context), and no provider splitFactor != 1 within 5 trading days of J.",
+  "B_CORPORATE_ACTION": "Accepted as a documented corporate action. Requires a filing stating type, ratio or per-share amount, and the effective / ex / redemption date, with that date within 1 trading day of J. Sub-classes: B1_SPLIT (forward split k-for-1 for a fall, reverse 1-for-k for a rise): the documented ratio must match the jump within the R4 tolerance (3 %); it is applied as a split factor on day J exactly like a provider splitFactor (R4 cross-check against adjClose is skipped for that day only, because the provider has no factor there). B2_DISTRIBUTION (special/liquidating cash dividend, spin-off with documented per-share cash or value): price series unchanged (price return keeps the drop, as for spin-offs under R4); requires |D/close(J-1) - (1 - close(J)/close(J-1))| <= 0.15; total-return variant on that day uses the documented D instead of provider adjClose. B3_TERMINAL_CASH (all remaining public shares redeemed or cancelled for a documented cash amount C per share, e.g. SPAC trust liquidation or cash merger, with redemption/effective date within 1 trading day of J, J being on or after the last tradeable day): the series ends at the last bar before J and the terminal value is C (terminal class DOCUMENTED_CASH, scenario band [0]); C is converted to split-adjusted units like any raw close.",
+  "C_UNRESOLVED": "Everything else: no filing in the window, no direction-matching event, CA evidence without ratio/date, documented ratio or amount not matching, conflicting statements, a needed document not retrievable. The chain stays CA_UNRESOLVED and is excluded."
+ },
+ "afterAdjudication": "A chain all of whose unresolved jumps are in A or B is run through the unchanged rules R1-R7 of protocol 1.0.0 (+1.0.1, 1.0.2) with the adjudicated jumps treated as resolved; it may still end up EXCLUDED_GAPS, EXCLUDED_SHORT, PRICE_OUTLIER, CA_MISMATCH, PRICE_ONLY_CENSORED_END or QUALIFIED. R6 terminal classes are unchanged except B3 (DOCUMENTED_CASH).",
+ "outputs": {
+  "adjudication": "docs/quant-recovery/v13b/hist/crash-adjudication-1.1.0.json (public: chainId, CIK, issuer name from SEC, year of each jump, direction, ratio class, class, evidence and caScan dispositions; no prices, no provider dates).",
+  "register": "docs/quant-recovery/v13b/hist/register-1.1.0.json (same columns as register-1.0.0 plus adjudication class); private series under scratchpad v13b-private, never overwriting v13-private/series.",
+  "effect": "Counts per status 1.0.0 -> 1.1.0, terminal classes and end-year buckets of the changed chains."
+ },
+ "independentCheck": "python3 -I stdlib re-implementation: re-parses cached SEC bytes, re-finds quotes and hashes, re-runs the caScan, re-checks windows (privately, provider dates), re-applies the class rules and recomputes the 28 register rows and all status counts.",
+ "secBudget": "<= 600 SEC requests for this part.",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false
+}

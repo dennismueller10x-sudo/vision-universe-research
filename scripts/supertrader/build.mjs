@@ -26,6 +26,9 @@ import { createRequire } from 'node:module';
 // Vorher bildete der Build `ref_${symbol}` roh - Wochencharts fuer BRK-A, MOG-A,
 // PBR-A und BF-B zeigten auf Dateien, die es nicht gibt (Plattform-Audit 03.10.2026).
 const CompanyMaster = createRequire(import.meta.url)('../../quant/engines/company-master.js');
+const Identity = createRequire(import.meta.url)('../../core/identity.js');
+/* Ein Name je Methode (Konzept „Das Rezept eines Profis“, Folie K3): dieselbe Zuordnung wie die Oberfläche. */
+const STNames = createRequire(import.meta.url)('../../supertrader/assets/st-names.js');
 export const weeklySeriesId = (symbol) => CompanyMaster.legacySecurityId(symbol);
 import { computeIndicators, percentileRanks, isoWeekKey, sma } from './engine/indicators.mjs';
 import { buildWeekly } from './engine/weekly.mjs';
@@ -757,6 +760,8 @@ function buildSources() {
     schema: 'supertrader-sources-1.0.0',
     policy: 'Dauerhafte Quellen mit echter URL, Titel, Autor und Abrufdatum. Temporäre Chat-Zitate werden nicht übernommen. Kein Buch wurde als vollständig gelesen behandelt; es werden keine geschützten Texte oder Grafiken übernommen.',
     retrievalNote: 'Die URLs wurden am 2026-09-29 über Suchergebnisse mit exakt diesem Titel bestätigt (SEARCH_RESULT_MATCH). Ein direkter Seitenabruf war aus der Build-Umgebung nicht möglich; die inhaltliche Prüfung der Aussagen stammt aus dem Deep-Research-Report und bleibt bis zum Source-Fidelity-Pass offen.',
+    // X-LEDGER (Supertrader 9): Einträge mit provenance_evidence stammen aus dem #709-Extrakt bzw. aus D-RAS97.
+    provenanceNote: 'Einträge mit provenance_evidence (Morales/Kacher, Raschke, B07, W-MIN18) sind ausschließlich aus dem hash-geprüften Extrakt von PSR #709 bzw. der Owner-Entscheidung D-RAS97 übernommen. Nicht belegte Felder sind null und in provenance_evidence.not_evidenced genannt; content_retrieved_by_vu bleibt false, weil der Abrufweg der Runde 8 für sie nicht belegt ist.',
     sources: [...ledger, ...INTERNAL_SOURCES],
   };
 }
@@ -934,19 +939,43 @@ function mapVariant(v) {
 // <head> uebernimmt vor dem ersten Zeichnen die gespeicherte Wahl des
 // plattformweiten Hell/Dunkel-Schalters (localStorage "vu-discover-theme-v1"),
 // damit nichts aufblitzt; die Navigation zeigt den Schalter (theme-switch).
-function pageShell({ title, description, page, depth, attrs = '' }) {
+/* Aktienseite: der Kurs im Kopf wartete auf eine Kette aus Nachlade-Skripten (st-redesign.js, dann identity.js ->
+   stock-context.js -> stock-navigator.js nacheinander) und erst danach auf die Kursreihe (Messung 07.11.2026: Kurs
+   nach 2,6 s, docs/mobile/PERFORMANCE.md). Die Seite kuendigt beides im <head> an: die Skripte (loadScript in
+   supertrader.js nimmt einen passenden Preload samt Release-Stempel ?v=) und die Kursreihe, deren Adresse die
+   Identitaet aus core/identity.js bildet (ADR-001) - dieselbe Adresse wie st-redesign.js#series(). */
+export const STOCK_PRELOAD_SCRIPTS = ['/supertrader/assets/st-redesign.js', '/core/identity.js', '/core/stock-context.js', '/assets/stock-navigator.js', '/quant/engines/published-close.js'];
+export function stockSeriesHref(sym) { return '/quant/data/market/discover-series/' + encodeURIComponent(Identity.securityIdForTicker(sym)) + '.json'; }
+/* Bewusst NICHT vorgeladen: registry-core.json und stock/<SYM>.json. Bei 1,6 Mbit/s teilen sie sich die Leitung mit den
+   Skripten; gemessen kam der Kurs damit spaeter (2,35 s statt 2,28 s, docs/mobile/PERFORMANCE.md). */
+/* stockKit() wartet auf das Stylesheet des Aktienkopfs; ein Preload reicht nicht (loadCss fande den Preload-Link und
+   wartete auf ihn, ohne dass er angewendet wird). Als echtes Stylesheet im <head> ist es beim Zeichnen schon da. */
+export const STOCK_STYLESHEETS = ['/assets/stock-navigator.css'];
+export function stockPreloads(sym) {
+  return STOCK_STYLESHEETS.map((href) => `<link rel="stylesheet" href="${href}">\n`).join('') + STOCK_PRELOAD_SCRIPTS.map((href) => `<link rel="preload" as="script" href="${href}">`).join('\n') +
+    `\n<link rel="preload" as="fetch" crossorigin="anonymous" href="${stockSeriesHref(sym)}">`;
+}
+
+/* Startseite: Schrift und die Bausteine der Oberfläche früh ankündigen (vorher von Hand in supertrader/index.html gepflegt;
+   jetzt im Erzeuger, damit ein Lauf sie nicht wieder entfernt). */
+export const HOME_FONT = '<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>';
+export const HOME_HEAD = ['<link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.3.0">', '<link rel="stylesheet" href="/supertrader/assets/st-redesign.css">',
+  '<link rel="preload" href="/assets/vu-ui.js?v=vu-ui-1.3.0" as="script">', '<link rel="preload" href="/assets/vu-chart.js" as="script">',
+  '<link rel="preload" href="/supertrader/assets/st-redesign.js" as="script">'].join('\n');
+
+function pageShell({ title, description, page, depth, attrs = '', head = '', font = false }) {
   const up = '../'.repeat(depth);
   return `<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8">${font ? '\n' + HOME_FONT : ''}
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
 <title>${title}</title>
 <meta name="description" content="${description}">
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<link rel="stylesheet" href="/supertrader/assets/supertrader.css">
+<link rel="stylesheet" href="/supertrader/assets/supertrader.css">${head ? '\n' + head : ''}
 </head>
 <body class="st" data-page="${page}"${attrs}>
 <vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script>
@@ -972,21 +1001,52 @@ function writeIfChanged(file, content) {
 
 function writeStaticPages() {
   const pages = [
-    ['index.html', 'home', 'Supertrader — Vision Universe®', 'Bewährte Strategien, transparente Regeln, ehrliche Backtests und laufende Modell-Signale.', 1],
-    ['signals/index.html', 'signals', 'Signale — Supertrader — Vision Universe®', 'Signalzentrum: Setup, Einstieg bereit, ausgelöst, aktiv, abgeschlossen — mit vollständiger Historie.', 2],
-    ['strategies/index.html', 'strategies', 'Strategien — Supertrader — Vision Universe®', 'Alle Strategy Worlds von Supertrader mit Research-, Daten- und Backteststatus.', 2],
-    ['backtests/index.html', 'backtests', 'Backtest Lab — Supertrader — Vision Universe®', 'Backtest Lab: Gates, Datenabdeckung, Ausführungsannahmen und Vergleich der Strategien.', 2],
-    ['stock/index.html', 'stock', 'Strategy Lens — Supertrader — Vision Universe®', 'Welche Supertrader-Modelle einen Titel erkennen.', 2],
-    ['beispiel/index.html', 'replay', 'Beispiel eines Modell-Zyklus — Supertrader — Vision Universe®', 'Historisches Beispiel an echten Kursen: wie Bestätigung, Einstieg, Stop und Ausstieg ablaufen. Kein aktuelles Signal.', 2],
-    ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Source Ledger und Methodik der Supertrader-Strategien.', 2],
+    ['index.html', 'home', 'Supertrader — Vision Universe®', '13 Methoden berühmter Trader als feste Regeln, jeden Tag auf alle US-Aktien angewendet. Musterdepots zeigen, was die Regel tun würde. Ohne echtes Geld.', 1],
+    ['treffer/index.html', 'signals', 'Treffer — Supertrader — Vision Universe®', 'Wo steht welche Aktie im Ablauf einer Methode? Wartet, Aufgenommen, Im Musterdepot, Abgegeben — mit vollständigem Protokoll.', 2],
+    ['strategies/index.html', 'strategies', 'Methoden — Supertrader — Vision Universe®', 'Was sucht welche Methode? Ein Name je Methode, fünf mit Musterdepot.', 2],
+    ['forschung/index.html', 'backtests', 'Forschung — Supertrader — Vision Universe®', 'Wie belastbar ist welche Methode? Prüfstand, Datenabdeckung und Stand je Methode. Forschung, nicht zertifiziert.', 2],
+    ['stock/index.html', 'stock', 'Methoden — Supertrader — Vision Universe®', 'Welche der 13 Methoden eine Aktie erkennen.', 2],
+    ['beispiel/index.html', 'replay', 'So läuft ein Durchgang — Supertrader — Vision Universe®', 'Historisches Beispiel an echten Kursen: wie Bestätigung, Aufnahme, Ungültig-Marke und Abgabe im Musterdepot ablaufen. Kein aktueller Treffer.', 2],
+    ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Woher die Regeln der Supertrader-Methoden stammen: Bücher, Interviews, eigene Websites der Trader.', 2],
     ['hausstrategie/index.html', 'house', 'VU Hausstrategie — Supertrader — Vision Universe®', 'Die eigene Vision-Universe-Strategie: eingefrorene Regeln, Beobachtungsdepot mit Zeitstempel und ehrliche Prüfgeschichte.', 2],
   ];
-  for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth }));
+  for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth, ...(page === 'home' ? { head: HOME_HEAD, font: true } : {}) }));
+  /* Bis die Produkt-Leiste umgestellt ist (Konzept PR 5), bleiben die alten Adressen vollwertige Seiten; danach leiten sie weiter. */
+  for (const [from, to] of Object.entries(REDIRECTS)) {
+    const same = pages.find(([file]) => '/supertrader/' + file.replace(/index\.html$/, '') === to);
+    writeIfChanged(path.join(OUT, from, 'index.html'), REDIRECTS_ACTIVE ? redirectShell(to) : pageShell({ title: same[2], description: same[3], page: same[1], depth: 2 }));
+  }
+}
+export const REDIRECTS_ACTIVE = false;
+
+/* Neue Namen (Konzept „Das Rezept eines Profis“, Entscheidung 3): „Signale“ → Treffer, „Backtests“ → Forschung. Die alten
+   Adressen bleiben als Weiterleitung, mit Parametern und Sprungmarke (z. B. ?method=DONCHIAN_TURTLE). */
+export const REDIRECTS = { signals: '/supertrader/treffer/', backtests: '/supertrader/forschung/' };
+export function redirectShell(to) {
+  return `<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Weiterleitung — Supertrader — Vision Universe®</title>
+<link rel="canonical" href="${to}">
+<link rel="stylesheet" href="/assets/site-navigation.css">
+<script>location.replace(${JSON.stringify(to)} + location.search + location.hash);</script>
+<noscript><meta http-equiv="refresh" content="0; url=${to}"></noscript>
+</head>
+<body>
+<vu-navigation no-preview></vu-navigation>
+<script src="/assets/site-navigation.js"></script>
+<p>Diese Seite heißt jetzt <a href="${to}">${to === REDIRECTS.signals ? 'Treffer' : 'Forschung'}</a>.</p>
+</body>
+</html>
+`;
 }
 
 function writeStrategyPages(registry) {
   for (const s of registry.strategies) {
-    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
+    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${STNames.name(s.strategy_id, LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name)} — Supertrader — Vision Universe®`, description: `${STNames.name(s.strategy_id, LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name)}: Regeln, Herkunft, Musterdepot und Stand der Forschung.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
   }
 }
 
@@ -1061,10 +1121,28 @@ export function signalsBySymbol(signals, extra = []) {
 function writeStockPages(signals, extra = []) {
   for (const sym of new Set([...Object.keys(signals.bySymbol), ...extra])) {
     if (!/^[A-Z0-9.\-]+$/.test(sym)) continue;
-    writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Strategy Lens — Supertrader — Vision Universe®`, description: `Welche Supertrader-Modelle ${sym} erkennen — Status, Trigger, Risiko und Historie.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"` }));
+    writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Methoden — Supertrader — Vision Universe®`, description: `Welche der 13 Supertrader-Methoden ${sym} erkennen — Ablauf, Musterdepot und Protokoll.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"`, head: stockPreloads(sym) }));
   }
 }
 
+/** Nur die Seitenhüllen neu schreiben (Titel, Beschreibung, Kopf), aus dem veröffentlichten Stand unter <out>/data.
+    Rechnet nichts und schreibt keine Datei unter data/. Gebraucht, wenn sich nur eine Vorlage ändert (z. B. die
+    Wortwahl), damit die erzeugten Seiten über den Erzeuger entstehen und nicht von Hand (CLAUDE.md). */
+export function writePagesOnly() {
+  const registry = readJson(path.join(DATA, 'registry.json'));
+  const signals = readJson(path.join(DATA, 'signals.json'));
+  const t52file = path.join(DATA, 'trend52.json');
+  const t52 = exists(t52file) ? readJson(t52file) : null;
+  /* Auch ältere Hüllen, die noch ausgeliefert werden (Titel ohne heutigen Eintrag), bekommen die aktuelle Vorlage. */
+  const stockDir = path.join(OUT, 'stock');
+  const present = exists(stockDir) ? fs.readdirSync(stockDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name) : [];
+  writeStockPages(signals, [...(t52 ? trend52Symbols(t52) : []), ...symbolsIn(signals.partialChecks), ...present]);
+  writeStrategyPages(registry);
+  writeStaticPages();
+  log('Seitenhüllen geschrieben (--pages-only), Daten unverändert');
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
-  build();
+  if (args['pages-only']) writePagesOnly();
+  else build();
 }

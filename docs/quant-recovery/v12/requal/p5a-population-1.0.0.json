@@ -1,0 +1,6254 @@
+{
+ "studyId": "V12-REQUAL-P5A",
+ "registrationSha256": "79fc09f529a6b456c06000a82cbb9adb1bd55d3f5fb71c50506d17c8240159a5",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "population": {
+  "id": "PIT_SP500",
+  "rules": "1.1.0",
+  "dataSha256": "f70b35b9ec70e8aa291a716b365b841537dac3026fca407ad7c4dee4c51736da",
+  "periods": 47,
+  "span": [
+   "2009-09-30",
+   "2026-06-30"
+  ],
+  "nonQualifiedInSpan": [
+   [
+    "2012-09-30",
+    "NOT_QUALIFIED_ERROR"
+   ],
+   [
+    "2014-03-31",
+    "NOT_QUALIFIED_ERROR"
+   ],
+   [
+    "2015-03-31",
+    "NOT_QUALIFIED_COVERAGE"
+   ]
+  ]
+ },
+ "frame": {
+  "loaderOptions": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true
+  },
+  "listings": 4329,
+  "sourceManifestHash": "37a1d45a0f2cf8f7f10d1f74787e85666f02aed30ec410340ba95f1766314aa3",
+  "v11ManifestHash": "2c27039fd782cccced62ac28cebfb808eea07670ba2c79e58e373824bcc0b679",
+  "note": "manifest differs from the V11 run (CA register 1.1.2); frame size identical"
+ },
+ "returnBasis": "PRICE_RETURN on both sides; SPY_TR = SPY price + N-30D distributions (reference only)",
+ "inputs": {
+  "spySha256": "00ca2b101dfecd4f88ae600fb468c01814f6bd23491f91a90a17279eb7a3ccac",
+  "spyDistributionsSha256": "2800bdfa2aca83f13562950a34cc15c042aa856490b06fc594e6b5e91a7582e9"
+ },
+ "seriesDefinitions": {
+  "SPY": "SPY price return, exact dates",
+  "SPY_TR": "SPY total-return reference",
+  "SPY_W": "SPY price return at the weekly bar dates",
+  "EW_ALL": "equal-weighted all PIT S&P 500 members (holdings returns, scenario)",
+  "CW_ALL": "holdings-weighted all members (consistency, ~ SPY)",
+  "EW_WITH_H": "equal-weighted members WITH our series, holdings return",
+  "EW_WITH_S": "same members, weekly-series return",
+  "EW_FRAME": "equal-weighted survivor frame (all frame listings with a bar at t0, V10/V11 population), weekly-series return, period buy-and-hold",
+  "EW_FRAME_WREB": "V11 definition: weekly rebalanced equal-weighted frame index between the same bar dates"
+ },
+ "termDefinitions": {
+  "universe": [
+   "EW_FRAME",
+   "EW_WITH_S"
+  ],
+  "measurement": [
+   "EW_WITH_S",
+   "EW_WITH_H"
+  ],
+  "survivorshipInIndex": [
+   "EW_WITH_H",
+   "EW_ALL"
+  ],
+  "equalWeightInIndex": [
+   "EW_ALL",
+   "SPY"
+  ],
+  "benchmarkTrMinusPrice": [
+   "SPY_TR",
+   "SPY"
+  ],
+  "rebalancingWeekly": [
+   "EW_FRAME_WREB",
+   "EW_FRAME"
+  ],
+  "dateAlignmentSpy": [
+   "SPY_W",
+   "SPY"
+  ],
+  "frameMinusSpy": [
+   "EW_FRAME",
+   "SPY"
+  ],
+  "frameWrebMinusSpyW": [
+   "EW_FRAME_WREB",
+   "SPY_W"
+  ]
+ },
+ "identity": "EW_FRAME - SPY = (EW_FRAME - EW_WITH_S) [universe: survivor titles outside the index] + (EW_WITH_S - EW_WITH_H) [measurement: weekly series vs holdings, dates] + (EW_WITH_H - EW_ALL) [survivorship INSIDE the index] + (EW_ALL - SPY) [equal weighting inside the index]; plus SPY_TR - SPY [benchmark definition] and EW_FRAME_WREB - EW_FRAME [rebalancing frequency]. Exact per period.",
+ "regimes": {
+  "R1": [
+   {
+    "t0": "2009-09-30",
+    "t1": "2010-03-31",
+    "R": 0.108059,
+    "DDin": -0.079698,
+    "DD52": -0.090212,
+    "label": "BULL"
+   },
+   {
+    "t0": "2010-03-31",
+    "t1": "2010-09-30",
+    "R": -0.02453,
+    "DDin": -0.160988,
+    "DD52": -0.003492,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2010-09-30",
+    "t1": "2011-03-31",
+    "R": 0.161745,
+    "DDin": -0.062068,
+    "DD52": -0.063049,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2011-03-31",
+    "t1": "2011-09-30",
+    "R": -0.146617,
+    "DDin": -0.17716,
+    "DD52": -0.014421,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2011-09-30",
+    "t1": "2012-03-31",
+    "R": 0.244454,
+    "DDin": -0.095545,
+    "DD52": -0.170637,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2012-03-31",
+    "t1": "2012-09-30",
+    "R": 0.022442,
+    "DDin": -0.09687,
+    "DD52": -0.005649,
+    "label": "SIDEWAYS"
+   },
+   {
+    "t0": "2012-09-30",
+    "t1": "2013-03-31",
+    "R": 0.088213,
+    "DDin": -0.071819,
+    "DD52": -0.022209,
+    "label": "BULL"
+   },
+   {
+    "t0": "2013-03-31",
+    "t1": "2013-09-30",
+    "R": 0.072381,
+    "DDin": -0.060477,
+    "DD52": -0.000383,
+    "label": "BULL"
+   },
+   {
+    "t0": "2013-09-30",
+    "t1": "2014-03-31",
+    "R": 0.113089,
+    "DDin": -0.05696,
+    "DD52": -0.029125,
+    "label": "BULL"
+   },
+   {
+    "t0": "2014-03-31",
+    "t1": "2014-09-30",
+    "R": 0.053527,
+    "DDin": -0.039019,
+    "DD52": -0.00664,
+    "label": "BULL"
+   },
+   {
+    "t0": "2014-09-30",
+    "t1": "2015-03-31",
+    "R": 0.047762,
+    "DDin": -0.054563,
+    "DD52": -0.023784,
+    "label": "BULL"
+   },
+   {
+    "t0": "2015-03-31",
+    "t1": "2015-09-30",
+    "R": -0.071889,
+    "DDin": -0.123044,
+    "DD52": -0.026228,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2015-09-30",
+    "t1": "2016-03-31",
+    "R": 0.072707,
+    "DDin": -0.133365,
+    "DD52": -0.102623,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2016-03-31",
+    "t1": "2016-09-30",
+    "R": 0.052452,
+    "DDin": -0.060131,
+    "DD52": -0.037377,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2016-09-30",
+    "t1": "2017-03-31",
+    "R": 0.089875,
+    "DDin": -0.03583,
+    "DD52": -0.012734,
+    "label": "BULL"
+   },
+   {
+    "t0": "2017-03-31",
+    "t1": "2017-09-30",
+    "R": 0.065708,
+    "DDin": -0.020817,
+    "DD52": -0.016849,
+    "label": "BULL"
+   },
+   {
+    "t0": "2017-09-30",
+    "t1": "2018-03-31",
+    "R": 0.047447,
+    "DDin": -0.101019,
+    "DD52": 0,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2018-03-31",
+    "t1": "2018-09-30",
+    "R": 0.104769,
+    "DDin": -0.034311,
+    "DD52": -0.081757,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2018-09-30",
+    "t1": "2019-03-31",
+    "R": -0.028343,
+    "DDin": -0.196723,
+    "DD52": -0.009742,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2019-03-31",
+    "t1": "2019-09-30",
+    "R": 0.050588,
+    "DDin": -0.066184,
+    "DD52": -0.037809,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2019-09-30",
+    "t1": "2019-12-31",
+    "R": 0.084544,
+    "DDin": -0.029349,
+    "DD52": -0.01735,
+    "label": "BULL"
+   },
+   {
+    "t0": "2019-12-31",
+    "t1": "2020-03-31",
+    "R": -0.199186,
+    "DDin": -0.341047,
+    "DD52": -0.003344,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "R": 0.196353,
+    "DDin": -0.071627,
+    "DD52": -0.238192,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2020-06-30",
+    "t1": "2020-09-30",
+    "R": 0.086036,
+    "DDin": -0.098015,
+    "DD52": -0.088609,
+    "label": "BULL"
+   },
+   {
+    "t0": "2020-09-30",
+    "t1": "2020-12-31",
+    "R": 0.116426,
+    "DDin": -0.073461,
+    "DD52": -0.063769,
+    "label": "BULL"
+   },
+   {
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "R": 0.060046,
+    "DDin": -0.040597,
+    "DD52": 0,
+    "label": "BULL"
+   },
+   {
+    "t0": "2021-03-31",
+    "t1": "2021-06-30",
+    "R": 0.08006,
+    "DDin": -0.039586,
+    "DD52": -0.002341,
+    "label": "BULL"
+   },
+   {
+    "t0": "2021-06-30",
+    "t1": "2021-09-30",
+    "R": 0.002523,
+    "DDin": -0.053068,
+    "DD52": 0,
+    "label": "SIDEWAYS"
+   },
+   {
+    "t0": "2021-09-30",
+    "t1": "2021-12-31",
+    "R": 0.106772,
+    "DDin": -0.040938,
+    "DD52": -0.053068,
+    "label": "BULL"
+   },
+   {
+    "t0": "2021-12-31",
+    "t1": "2022-03-31",
+    "R": -0.049099,
+    "DDin": -0.128655,
+    "DD52": -0.005278,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2022-03-31",
+    "t1": "2022-06-30",
+    "R": -0.164711,
+    "DDin": -0.199081,
+    "DD52": -0.054573,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2022-06-30",
+    "t1": "2022-09-30",
+    "R": -0.053201,
+    "DDin": -0.168769,
+    "DD52": -0.210295,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2022-09-30",
+    "t1": "2022-12-31",
+    "R": 0.070693,
+    "DDin": -0.076089,
+    "DD52": -0.252308,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2022-12-31",
+    "t1": "2023-03-31",
+    "R": 0.070497,
+    "DDin": -0.075387,
+    "DD52": -0.199452,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2023-03-31",
+    "t1": "2023-06-30",
+    "R": 0.082782,
+    "DDin": -0.025966,
+    "DD52": -0.103787,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2023-06-30",
+    "t1": "2023-09-30",
+    "R": -0.035643,
+    "DDin": -0.069704,
+    "DD52": 0,
+    "label": "BULL"
+   },
+   {
+    "t0": "2023-09-30",
+    "t1": "2023-12-31",
+    "R": 0.111888,
+    "DDin": -0.058764,
+    "DD52": -0.066209,
+    "label": "BULL"
+   },
+   {
+    "t0": "2023-12-31",
+    "t1": "2024-03-31",
+    "R": 0.100482,
+    "DDin": -0.017078,
+    "DD52": -0.002895,
+    "label": "BULL"
+   },
+   {
+    "t0": "2024-03-31",
+    "t1": "2024-06-30",
+    "R": 0.040434,
+    "DDin": -0.053358,
+    "DD52": -0.000191,
+    "label": "BULL"
+   },
+   {
+    "t0": "2024-06-30",
+    "t1": "2024-09-30",
+    "R": 0.05428,
+    "DDin": -0.084056,
+    "DD52": -0.007785,
+    "label": "BULL"
+   },
+   {
+    "t0": "2024-09-30",
+    "t1": "2024-12-31",
+    "R": 0.021472,
+    "DDin": -0.035751,
+    "DD52": 0,
+    "label": "SIDEWAYS"
+   },
+   {
+    "t0": "2024-12-31",
+    "t1": "2025-03-31",
+    "R": -0.04554,
+    "DDin": -0.100354,
+    "DD52": -0.035751,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "R": 0.104507,
+    "DDin": -0.120527,
+    "DD52": -0.087351,
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2025-06-30",
+    "t1": "2025-09-30",
+    "R": 0.078223,
+    "DDin": -0.024141,
+    "DD52": 0,
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2025-09-30",
+    "t1": "2025-12-31",
+    "R": 0.023627,
+    "DDin": -0.050714,
+    "DD52": -0.00099,
+    "label": "SIDEWAYS"
+   },
+   {
+    "t0": "2025-12-31",
+    "t1": "2026-03-31",
+    "R": -0.04631,
+    "DDin": -0.091331,
+    "DD52": -0.012254,
+    "label": "BULL"
+   },
+   {
+    "t0": "2026-03-31",
+    "t1": "2026-06-30",
+    "R": 0.148276,
+    "DDin": -0.044946,
+    "DD52": -0.064918,
+    "label": "BULL"
+   }
+  ],
+  "R2": [
+   {
+    "t0": "2009-09-30",
+    "t1": "2010-03-31",
+    "mid": "2009-12-30",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2010-03-31",
+    "t1": "2010-09-30",
+    "mid": "2010-06-30",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2010-09-30",
+    "t1": "2011-03-31",
+    "mid": "2010-12-30",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2011-03-31",
+    "t1": "2011-09-30",
+    "mid": "2011-06-30",
+    "label": "SIDEWAYS"
+   },
+   {
+    "t0": "2011-09-30",
+    "t1": "2012-03-31",
+    "mid": "2011-12-30",
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2012-03-31",
+    "t1": "2012-09-30",
+    "mid": "2012-06-30",
+    "label": "SIDEWAYS"
+   },
+   {
+    "t0": "2012-09-30",
+    "t1": "2013-03-31",
+    "mid": "2012-12-30",
+    "label": "SIDEWAYS"
+   },
+   {
+    "t0": "2013-03-31",
+    "t1": "2013-09-30",
+    "mid": "2013-06-30",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2013-09-30",
+    "t1": "2014-03-31",
+    "mid": "2013-12-30",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2014-03-31",
+    "t1": "2014-09-30",
+    "mid": "2014-06-30",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2014-09-30",
+    "t1": "2015-03-31",
+    "mid": "2014-12-30",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2015-03-31",
+    "t1": "2015-09-30",
+    "mid": "2015-06-30",
+    "label": "SIDEWAYS"
+   },
+   {
+    "t0": "2015-09-30",
+    "t1": "2016-03-31",
+    "mid": "2015-12-30",
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2016-03-31",
+    "t1": "2016-09-30",
+    "mid": "2016-06-30",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2016-09-30",
+    "t1": "2017-03-31",
+    "mid": "2016-12-30",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2017-03-31",
+    "t1": "2017-09-30",
+    "mid": "2017-06-30",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2017-09-30",
+    "t1": "2018-03-31",
+    "mid": "2017-12-30",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2018-03-31",
+    "t1": "2018-09-30",
+    "mid": "2018-06-30",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2018-09-30",
+    "t1": "2019-03-31",
+    "mid": "2018-12-30",
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2019-03-31",
+    "t1": "2019-09-30",
+    "mid": "2019-06-30",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2019-09-30",
+    "t1": "2019-12-31",
+    "mid": "2019-11-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2019-12-31",
+    "t1": "2020-03-31",
+    "mid": "2020-02-14",
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2020-03-31",
+    "t1": "2020-06-30",
+    "mid": "2020-05-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2020-06-30",
+    "t1": "2020-09-30",
+    "mid": "2020-08-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2020-09-30",
+    "t1": "2020-12-31",
+    "mid": "2020-11-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2020-12-31",
+    "t1": "2021-03-31",
+    "mid": "2021-02-14",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2021-03-31",
+    "t1": "2021-06-30",
+    "mid": "2021-05-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2021-06-30",
+    "t1": "2021-09-30",
+    "mid": "2021-08-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2021-09-30",
+    "t1": "2021-12-31",
+    "mid": "2021-11-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2021-12-31",
+    "t1": "2022-03-31",
+    "mid": "2022-02-14",
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2022-03-31",
+    "t1": "2022-06-30",
+    "mid": "2022-05-15",
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2022-06-30",
+    "t1": "2022-09-30",
+    "mid": "2022-08-15",
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2022-09-30",
+    "t1": "2022-12-31",
+    "mid": "2022-11-15",
+    "label": "CRASH_BEAR"
+   },
+   {
+    "t0": "2022-12-31",
+    "t1": "2023-03-31",
+    "mid": "2023-02-14",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2023-03-31",
+    "t1": "2023-06-30",
+    "mid": "2023-05-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2023-06-30",
+    "t1": "2023-09-30",
+    "mid": "2023-08-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2023-09-30",
+    "t1": "2023-12-31",
+    "mid": "2023-11-15",
+    "label": "RECOVERY"
+   },
+   {
+    "t0": "2023-12-31",
+    "t1": "2024-03-31",
+    "mid": "2024-02-14",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2024-03-31",
+    "t1": "2024-06-30",
+    "mid": "2024-05-15",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2024-06-30",
+    "t1": "2024-09-30",
+    "mid": "2024-08-15",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2024-09-30",
+    "t1": "2024-12-31",
+    "mid": "2024-11-15",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2024-12-31",
+    "t1": "2025-03-31",
+    "mid": "2025-02-14",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2025-03-31",
+    "t1": "2025-06-30",
+    "mid": "2025-05-15",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2025-06-30",
+    "t1": "2025-09-30",
+    "mid": "2025-08-15",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2025-09-30",
+    "t1": "2025-12-31",
+    "mid": "2025-11-15",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2025-12-31",
+    "t1": "2026-03-31",
+    "mid": "2026-02-14",
+    "label": "OTHER"
+   },
+   {
+    "t0": "2026-03-31",
+    "t1": "2026-06-30",
+    "mid": "2026-05-15",
+    "label": "OTHER"
+   }
+  ]
+ },
+ "aggregates": {
+  "ZERO": {
+   "full": {
+    "periods": 47,
+    "years": 16.747433,
+    "from": "2009-09-30",
+    "to": "2026-06-30",
+    "cagr": {
+     "SPY": 0.123901,
+     "SPY_TR": 0.144015,
+     "SPY_W": 0.123013,
+     "EW_ALL": 0.105976,
+     "CW_ALL": 0.119957,
+     "EW_WITH_H": 0.11314,
+     "EW_WITHOUT_H": 0.084988,
+     "EW_WITH_S": 0.114259,
+     "EW_FRAME": 0.112328,
+     "EW_FRAME_WREB": 0.126681
+    },
+    "total": {
+     "SPY": 6.072373,
+     "SPY_TR": 8.518714,
+     "SPY_W": 5.979338,
+     "EW_ALL": 4.402926,
+     "CW_ALL": 5.667965,
+     "EW_WITH_H": 5.019872,
+     "EW_WITHOUT_H": 2.919931,
+     "EW_WITH_S": 5.122045,
+     "EW_FRAME": 4.946805,
+     "EW_FRAME_WREB": 6.371106
+    },
+    "terms": {
+     "universe": {
+      "meanPeriodPp": 0.187802,
+      "annualizedArithmeticPp": 0.527048,
+      "cagrDiffPp": -0.1931,
+      "positivePeriods": 21,
+      "periods": 47,
+      "nwSePp": 0.690512,
+      "nwP": 0.785641
+     },
+     "measurement": {
+      "meanPeriodPp": 0.025685,
+      "annualizedArithmeticPp": 0.072083,
+      "cagrDiffPp": 0.1119,
+      "positivePeriods": 26,
+      "periods": 47,
+      "nwSePp": 0.123088,
+      "nwP": 0.834704
+     },
+     "survivorshipInIndex": {
+      "meanPeriodPp": 0.238126,
+      "annualizedArithmeticPp": 0.668276,
+      "cagrDiffPp": 0.7164,
+      "positivePeriods": 31,
+      "periods": 47,
+      "nwSePp": 0.084503,
+      "nwP": 0.004833
+     },
+     "equalWeightInIndex": {
+      "meanPeriodPp": -0.510091,
+      "annualizedArithmeticPp": -1.431521,
+      "cagrDiffPp": -1.7925,
+      "positivePeriods": 20,
+      "periods": 47,
+      "nwSePp": 0.444908,
+      "nwP": 0.251584
+     },
+     "benchmarkTrMinusPrice": {
+      "meanPeriodPp": 0.6656,
+      "annualizedArithmeticPp": 1.86794,
+      "cagrDiffPp": 2.0114,
+      "positivePeriods": 47,
+      "periods": 47,
+      "nwSePp": 0.086106,
+      "nwP": 0
+     },
+     "rebalancingWeekly": {
+      "meanPeriodPp": 0.505543,
+      "annualizedArithmeticPp": 1.418755,
+      "cagrDiffPp": 1.4353,
+      "positivePeriods": 39,
+      "periods": 47,
+      "nwSePp": 0.086529,
+      "nwP": 0
+     },
+     "dateAlignmentSpy": {
+      "meanPeriodPp": -0.026517,
+      "annualizedArithmeticPp": -0.074417,
+      "cagrDiffPp": -0.0888,
+      "positivePeriods": 17,
+      "periods": 47,
+      "nwSePp": 0.116098,
+      "nwP": 0.819334
+     },
+     "frameMinusSpy": {
+      "meanPeriodPp": -0.058479,
+      "annualizedArithmeticPp": -0.164115,
+      "cagrDiffPp": -1.1573,
+      "positivePeriods": 20,
+      "periods": 47,
+      "nwSePp": 0.949355,
+      "nwP": 0.950883
+     },
+     "frameWrebMinusSpyW": {
+      "meanPeriodPp": 0.473581,
+      "annualizedArithmeticPp": 1.329057,
+      "cagrDiffPp": 0.3668,
+      "positivePeriods": 20,
+      "periods": 47,
+      "nwSePp": 0.942372,
+      "nwP": 0.615287
+     }
+    },
+    "identityMaxAbsResidual": 6.938893903907228e-18
+   },
+   "qualifiedOnly": {
+    "periods": 44,
+    "years": 15.247091,
+    "from": "2009-09-30",
+    "to": "2026-06-30",
+    "cagr": {
+     "SPY": 0.132274,
+     "SPY_TR": 0.152202,
+     "SPY_W": 0.129614,
+     "EW_ALL": 0.112504,
+     "CW_ALL": 0.129908,
+     "EW_WITH_H": 0.119329,
+     "EW_WITHOUT_H": 0.091758,
+     "EW_WITH_S": 0.118355,
+     "EW_FRAME": 0.120561,
+     "EW_FRAME_WREB": 0.135497
+    },
+    "total": {
+     "SPY": 5.646693,
+     "SPY_TR": 7.672268,
+     "SPY_W": 5.412527,
+     "EW_ALL": 4.081212,
+     "CW_ALL": 5.438026,
+     "EW_WITH_H": 4.577806,
+     "EW_WITHOUT_H": 2.813452,
+     "EW_WITH_S": 4.504249,
+     "EW_FRAME": 4.672122,
+     "EW_FRAME_WREB": 5.941052
+    },
+    "terms": {
+     "universe": {
+      "meanPeriodPp": 0.335848,
+      "annualizedArithmeticPp": 0.969188,
+      "cagrDiffPp": 0.2206,
+      "positivePeriods": 21,
+      "periods": 44,
+      "nwSePp": 0.733877,
+      "nwP": 0.647215
+     },
+     "measurement": {
+      "meanPeriodPp": -0.040123,
+      "annualizedArithmeticPp": -0.115786,
+      "cagrDiffPp": -0.0974,
+      "positivePeriods": 23,
+      "periods": 44,
+      "nwSePp": 0.149224,
+      "nwP": 0.788025
+     },
+     "survivorshipInIndex": {
+      "meanPeriodPp": 0.218459,
+      "annualizedArithmeticPp": 0.630428,
+      "cagrDiffPp": 0.6825,
+      "positivePeriods": 29,
+      "periods": 44,
+      "nwSePp": 0.084727,
+      "nwP": 0.009926
+     },
+     "equalWeightInIndex": {
+      "meanPeriodPp": -0.558982,
+      "annualizedArithmeticPp": -1.613108,
+      "cagrDiffPp": -1.977,
+      "positivePeriods": 19,
+      "periods": 44,
+      "nwSePp": 0.454445,
+      "nwP": 0.218685
+     },
+     "benchmarkTrMinusPrice": {
+      "meanPeriodPp": 0.638316,
+      "annualizedArithmeticPp": 1.84205,
+      "cagrDiffPp": 1.9928,
+      "positivePeriods": 44,
+      "periods": 44,
+      "nwSePp": 0.087345,
+      "nwP": 0
+     },
+     "rebalancingWeekly": {
+      "meanPeriodPp": 0.51027,
+      "annualizedArithmeticPp": 1.472537,
+      "cagrDiffPp": 1.4936,
+      "positivePeriods": 36,
+      "periods": 44,
+      "nwSePp": 0.088468,
+      "nwP": 0
+     },
+     "dateAlignmentSpy": {
+      "meanPeriodPp": -0.079941,
+      "annualizedArithmeticPp": -0.230693,
+      "cagrDiffPp": -0.266,
+      "positivePeriods": 15,
+      "periods": 44,
+      "nwSePp": 0.133731,
+      "nwP": 0.54999
+     },
+     "frameMinusSpy": {
+      "meanPeriodPp": -0.044798,
+      "annualizedArithmeticPp": -0.129277,
+      "cagrDiffPp": -1.1713,
+      "positivePeriods": 19,
+      "periods": 44,
+      "nwSePp": 0.994914,
+      "nwP": 0.964086
+     },
+     "frameWrebMinusSpyW": {
+      "meanPeriodPp": 0.545414,
+      "annualizedArithmeticPp": 1.573953,
+      "cagrDiffPp": 0.5883,
+      "positivePeriods": 19,
+      "periods": 44,
+      "nwSePp": 0.988266,
+      "nwP": 0.581024
+     }
+    },
+    "identityMaxAbsResidual": 6.938893903907228e-18
+   },
+   "semiannual_2009_2019": {
+    "periods": 20,
+    "years": 9.998631,
+    "from": "2009-09-30",
+    "to": "2019-09-30",
+    "cagr": {
+     "SPY": 0.108883,
+     "SPY_TR": 0.131349,
+     "SPY_W": 0.109574,
+     "EW_ALL": 0.1072,
+     "CW_ALL": 0.103322,
+     "EW_WITH_H": 0.117935,
+     "EW_WITHOUT_H": 0.079257,
+     "EW_WITH_S": 0.118423,
+     "EW_FRAME": 0.118945,
+     "EW_FRAME_WREB": 0.131809
+    },
+    "total": {
+     "SPY": 1.81059,
+     "SPY_TR": 2.434728,
+     "SPY_W": 1.828152,
+     "EW_ALL": 1.768219,
+     "CW_ALL": 1.672775,
+     "EW_WITH_H": 2.048591,
+     "EW_WITHOUT_H": 1.143896,
+     "EW_WITH_S": 2.061917,
+     "EW_FRAME": 2.076236,
+     "EW_FRAME_WREB": 2.448713
+    },
+    "terms": {
+     "universe": {
+      "meanPeriodPp": 0.17441,
+      "annualizedArithmeticPp": 0.348868,
+      "cagrDiffPp": 0.0522,
+      "positivePeriods": 11,
+      "periods": 20,
+      "nwSePp": 0.635521,
+      "nwP": 0.783749
+     },
+     "measurement": {
+      "meanPeriodPp": -0.00483,
+      "annualizedArithmeticPp": -0.009661,
+      "cagrDiffPp": 0.0488,
+      "positivePeriods": 11,
+      "periods": 20,
+      "nwSePp": 0.140031,
+      "nwP": 0.972484
+     },
+     "survivorshipInIndex": {
+      "meanPeriodPp": 0.522115,
+      "annualizedArithmeticPp": 1.044373,
+      "cagrDiffPp": 1.0735,
+      "positivePeriods": 17,
+      "periods": 20,
+      "nwSePp": 0.10914,
+      "nwP": 0.000002
+     },
+     "equalWeightInIndex": {
+      "meanPeriodPp": 0.00209,
+      "annualizedArithmeticPp": 0.004181,
+      "cagrDiffPp": -0.1683,
+      "positivePeriods": 10,
+      "periods": 20,
+      "nwSePp": 0.51194,
+      "nwP": 0.996743
+     },
+     "benchmarkTrMinusPrice": {
+      "meanPeriodPp": 1.064295,
+      "annualizedArithmeticPp": 2.128881,
+      "cagrDiffPp": 2.2466,
+      "positivePeriods": 20,
+      "periods": 20,
+      "nwSePp": 0.022328,
+      "nwP": 0
+     },
+     "rebalancingWeekly": {
+      "meanPeriodPp": 0.617295,
+      "annualizedArithmeticPp": 1.234759,
+      "cagrDiffPp": 1.2864,
+      "positivePeriods": 17,
+      "periods": 20,
+      "nwSePp": 0.120936,
+      "nwP": 0
+     },
+     "dateAlignmentSpy": {
+      "meanPeriodPp": 0.00539,
+      "annualizedArithmeticPp": 0.010781,
+      "cagrDiffPp": 0.0691,
+      "positivePeriods": 7,
+      "periods": 20,
+      "nwSePp": 0.115485,
+      "nwP": 0.962774
+     },
+     "frameMinusSpy": {
+      "meanPeriodPp": 0.693785,
+      "annualizedArithmeticPp": 1.38776,
+      "cagrDiffPp": 1.0062,
+      "positivePeriods": 11,
+      "periods": 20,
+      "nwSePp": 0.972365,
+      "nwP": 0.475535
+     },
+     "frameWrebMinusSpyW": {
+      "meanPeriodPp": 1.30569,
+      "annualizedArithmeticPp": 2.611738,
+      "cagrDiffPp": 2.2235,
+      "positivePeriods": 11,
+      "periods": 20,
+      "nwSePp": 0.958007,
+      "nwP": 0.172907
+     }
+    },
+    "identityMaxAbsResidual": 6.938893903907228e-18
+   },
+   "quarterly_2019_2026": {
+    "periods": 27,
+    "years": 6.748802,
+    "from": "2019-09-30",
+    "to": "2026-06-30",
+    "cagr": {
+     "SPY": 0.146525,
+     "SPY_TR": 0.16304,
+     "SPY_W": 0.143222,
+     "EW_ALL": 0.104165,
+     "CW_ALL": 0.145064,
+     "EW_WITH_H": 0.106073,
+     "EW_WITHOUT_H": 0.093535,
+     "EW_WITH_S": 0.108118,
+     "EW_FRAME": 0.102598,
+     "EW_FRAME_WREB": 0.119126
+    },
+    "total": {
+     "SPY": 1.51633,
+     "SPY_TR": 1.771315,
+     "SPY_W": 1.467809,
+     "EW_ALL": 0.95177,
+     "CW_ALL": 1.494772,
+     "EW_WITH_H": 0.974641,
+     "EW_WITHOUT_H": 0.828415,
+     "EW_WITH_S": 0.999415,
+     "EW_FRAME": 0.933143,
+     "EW_FRAME_WREB": 1.13735
+    },
+    "terms": {
+     "universe": {
+      "meanPeriodPp": 0.197722,
+      "annualizedArithmeticPp": 0.791029,
+      "cagrDiffPp": -0.552,
+      "positivePeriods": 10,
+      "periods": 27,
+      "nwSePp": 1.098746,
+      "nwP": 0.85719
+     },
+     "measurement": {
+      "meanPeriodPp": 0.048289,
+      "annualizedArithmeticPp": 0.19319,
+      "cagrDiffPp": 0.2045,
+      "positivePeriods": 15,
+      "periods": 27,
+      "nwSePp": 0.18803,
+      "nwP": 0.797322
+     },
+     "survivorshipInIndex": {
+      "meanPeriodPp": 0.027763,
+      "annualizedArithmeticPp": 0.111072,
+      "cagrDiffPp": 0.1908,
+      "positivePeriods": 14,
+      "periods": 27,
+      "nwSePp": 0.067593,
+      "nwP": 0.681264
+     },
+     "equalWeightInIndex": {
+      "meanPeriodPp": -0.889485,
+      "annualizedArithmeticPp": -3.558572,
+      "cagrDiffPp": -4.236,
+      "positivePeriods": 10,
+      "periods": 27,
+      "nwSePp": 0.644329,
+      "nwP": 0.167438
+     },
+     "benchmarkTrMinusPrice": {
+      "meanPeriodPp": 0.37027,
+      "annualizedArithmeticPp": 1.481344,
+      "cagrDiffPp": 1.6515,
+      "positivePeriods": 27,
+      "periods": 27,
+      "nwSePp": 0.020258,
+      "nwP": 0
+     },
+     "rebalancingWeekly": {
+      "meanPeriodPp": 0.422763,
+      "annualizedArithmeticPp": 1.691352,
+      "cagrDiffPp": 1.6528,
+      "positivePeriods": 22,
+      "periods": 27,
+      "nwSePp": 0.112932,
+      "nwP": 0.000181
+     },
+     "dateAlignmentSpy": {
+      "meanPeriodPp": -0.050152,
+      "annualizedArithmeticPp": -0.200643,
+      "cagrDiffPp": -0.3303,
+      "positivePeriods": 10,
+      "periods": 27,
+      "nwSePp": 0.18311,
+      "nwP": 0.78417
+     },
+     "frameMinusSpy": {
+      "meanPeriodPp": -0.615711,
+      "annualizedArithmeticPp": -2.463282,
+      "cagrDiffPp": -4.3927,
+      "positivePeriods": 9,
+      "periods": 27,
+      "nwSePp": 1.437393,
+      "nwP": 0.668394
+     },
+     "frameWrebMinusSpyW": {
+      "meanPeriodPp": -0.142796,
+      "annualizedArithmeticPp": -0.571287,
+      "cagrDiffPp": -2.4096,
+      "positivePeriods": 9,
+      "periods": 27,
+      "nwSePp": 1.41942,
+      "nwP": 0.919866
+     }
+    },
+    "identityMaxAbsResidual": 6.938893903907228e-18
+   },
+   "regimeR1": {
+    "CRASH_BEAR": {
+     "periods": 12,
+     "years": 4.492813,
+     "from": "2010-03-31",
+     "to": "2025-06-30",
+     "cagr": {
+      "SPY": -0.129777,
+      "SPY_TR": -0.113242,
+      "SPY_W": -0.135363,
+      "EW_ALL": -0.150828,
+      "CW_ALL": -0.130954,
+      "EW_WITH_H": -0.142709,
+      "EW_WITHOUT_H": -0.181605,
+      "EW_WITH_S": -0.145983,
+      "EW_FRAME": -0.194989,
+      "EW_FRAME_WREB": -0.183495
+     },
+     "total": {
+      "SPY": -0.464485,
+      "SPY_TR": -0.417228,
+      "SPY_W": -0.479757,
+      "EW_ALL": -0.520276,
+      "CW_ALL": -0.467732,
+      "EW_WITH_H": -0.499323,
+      "EW_WITHOUT_H": -0.593596,
+      "EW_WITH_S": -0.507857,
+      "EW_FRAME": -0.622614,
+      "EW_FRAME_WREB": -0.597796
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": -1.957092,
+       "annualizedArithmeticPp": -5.227259,
+       "cagrDiffPp": -4.9006,
+       "positivePeriods": 2,
+       "periods": 12,
+       "nwSePp": 0.448191,
+       "nwP": 0.000013
+      },
+      "measurement": {
+       "meanPeriodPp": -0.175617,
+       "annualizedArithmeticPp": -0.46906,
+       "cagrDiffPp": -0.3274,
+       "positivePeriods": 6,
+       "periods": 12,
+       "nwSePp": 0.310795,
+       "nwP": 0.572036
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 0.325833,
+       "annualizedArithmeticPp": 0.870279,
+       "cagrDiffPp": 0.8119,
+       "positivePeriods": 11,
+       "periods": 12,
+       "nwSePp": 0.083349,
+       "nwP": 0.000093
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -0.754458,
+       "annualizedArithmeticPp": -2.015107,
+       "cagrDiffPp": -2.1051,
+       "positivePeriods": 6,
+       "periods": 12,
+       "nwSePp": 0.641456,
+       "nwP": 0.239529
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.678142,
+       "annualizedArithmeticPp": 1.811271,
+       "cagrDiffPp": 1.6535,
+       "positivePeriods": 12,
+       "periods": 12,
+       "nwSePp": 0.143827,
+       "nwP": 0.000002
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.526733,
+       "annualizedArithmeticPp": 1.406869,
+       "cagrDiffPp": 1.1494,
+       "positivePeriods": 10,
+       "periods": 12,
+       "nwSePp": 0.131437,
+       "nwP": 0.000061
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.244158,
+       "annualizedArithmeticPp": -0.65213,
+       "cagrDiffPp": -0.5586,
+       "positivePeriods": 6,
+       "periods": 12,
+       "nwSePp": 0.33643,
+       "nwP": 0.468002
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -2.561333,
+       "annualizedArithmeticPp": -6.841148,
+       "cagrDiffPp": -6.5212,
+       "positivePeriods": 3,
+       "periods": 12,
+       "nwSePp": 0.725016,
+       "nwP": 0.000411
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -1.790442,
+       "annualizedArithmeticPp": -4.782149,
+       "cagrDiffPp": -4.8132,
+       "positivePeriods": 2,
+       "periods": 12,
+       "nwSePp": 0.607199,
+       "nwP": 0.003191
+      }
+     },
+     "identityMaxAbsResidual": 6.938893903907228e-18
+    },
+    "RECOVERY": {
+     "periods": 10,
+     "years": 3.750856,
+     "from": "2010-09-30",
+     "to": "2025-09-30",
+     "cagr": {
+      "SPY": 0.319271,
+      "SPY_TR": 0.34339,
+      "SPY_W": 0.311955,
+      "EW_ALL": 0.28793,
+      "CW_ALL": 0.317032,
+      "EW_WITH_H": 0.297983,
+      "EW_WITHOUT_H": 0.251987,
+      "EW_WITH_S": 0.286524,
+      "EW_FRAME": 0.362194,
+      "EW_FRAME_WREB": 0.387431
+     },
+     "total": {
+      "SPY": 1.827192,
+      "SPY_TR": 2.02599,
+      "SPY_W": 1.768835,
+      "EW_ALL": 1.583387,
+      "CW_ALL": 1.80924,
+      "EW_WITH_H": 1.659838,
+      "EW_WITHOUT_H": 1.323181,
+      "EW_WITH_S": 1.572825,
+      "EW_FRAME": 2.187948,
+      "EW_FRAME_WREB": 2.415182
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": 2.55649,
+       "annualizedArithmeticPp": 6.815752,
+       "cagrDiffPp": 7.567,
+       "positivePeriods": 6,
+       "periods": 10,
+       "nwSePp": 0.996648,
+       "nwP": 0.010315
+      },
+      "measurement": {
+       "meanPeriodPp": -0.4058,
+       "annualizedArithmeticPp": -1.081886,
+       "cagrDiffPp": -1.1459,
+       "positivePeriods": 4,
+       "periods": 10,
+       "nwSePp": 0.376579,
+       "nwP": 0.281214
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 0.32779,
+       "annualizedArithmeticPp": 0.873907,
+       "cagrDiffPp": 1.0053,
+       "positivePeriods": 7,
+       "periods": 10,
+       "nwSePp": 0.179396,
+       "nwP": 0.067672
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -0.89412,
+       "annualizedArithmeticPp": -2.383776,
+       "cagrDiffPp": -3.1341,
+       "positivePeriods": 5,
+       "periods": 10,
+       "nwSePp": 0.97106,
+       "nwP": 0.357172
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.76367,
+       "annualizedArithmeticPp": 2.035989,
+       "cagrDiffPp": 2.4119,
+       "positivePeriods": 10,
+       "periods": 10,
+       "nwSePp": 0.169691,
+       "nwP": 0.000007
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.82814,
+       "annualizedArithmeticPp": 2.20787,
+       "cagrDiffPp": 2.5237,
+       "positivePeriods": 9,
+       "periods": 10,
+       "nwSePp": 0.152144,
+       "nwP": 0
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.24915,
+       "annualizedArithmeticPp": -0.664248,
+       "cagrDiffPp": -0.7316,
+       "positivePeriods": 1,
+       "periods": 10,
+       "nwSePp": 0.212727,
+       "nwP": 0.241511
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": 1.58436,
+       "annualizedArithmeticPp": 4.223996,
+       "cagrDiffPp": 4.2923,
+       "positivePeriods": 5,
+       "periods": 10,
+       "nwSePp": 1.331705,
+       "nwP": 0.234155
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": 2.66165,
+       "annualizedArithmeticPp": 7.096114,
+       "cagrDiffPp": 7.5476,
+       "positivePeriods": 5,
+       "periods": 10,
+       "nwSePp": 1.407391,
+       "nwP": 0.058598
+      }
+     },
+     "identityMaxAbsResidual": 6.938893903907228e-18
+    },
+    "SIDEWAYS": {
+     "periods": 4,
+     "years": 1.256674,
+     "from": "2012-03-31",
+     "to": "2025-12-31",
+     "cagr": {
+      "SPY": 0.056703,
+      "SPY_TR": 0.072966,
+      "SPY_W": 0.121821,
+      "EW_ALL": -0.018939,
+      "CW_ALL": 0.052214,
+      "EW_WITH_H": -0.020202,
+      "EW_WITHOUT_H": -0.000151,
+      "EW_WITH_S": 0.021854,
+      "EW_FRAME": 0.019311,
+      "EW_FRAME_WREB": 0.024801
+     },
+     "total": {
+      "SPY": 0.071769,
+      "SPY_TR": 0.092538,
+      "SPY_W": 0.155414,
+      "EW_ALL": -0.023741,
+      "CW_ALL": 0.066051,
+      "EW_WITH_H": -0.025321,
+      "EW_WITHOUT_H": -0.000189,
+      "EW_WITH_S": 0.02754,
+      "EW_FRAME": 0.024327,
+      "EW_FRAME_WREB": 0.031266
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": -0.010125,
+       "annualizedArithmeticPp": -0.032228,
+       "cagrDiffPp": -0.2543,
+       "positivePeriods": 2,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "measurement": {
+       "meanPeriodPp": 1.32305,
+       "annualizedArithmeticPp": 4.211277,
+       "cagrDiffPp": 4.2056,
+       "positivePeriods": 3,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": -0.040225,
+       "annualizedArithmeticPp": -0.128036,
+       "cagrDiffPp": -0.1263,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -2.34365,
+       "annualizedArithmeticPp": -7.459853,
+       "cagrDiffPp": -7.5642,
+       "positivePeriods": 0,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.490625,
+       "annualizedArithmeticPp": 1.561663,
+       "cagrDiffPp": 1.6263,
+       "positivePeriods": 4,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.166225,
+       "annualizedArithmeticPp": 0.529095,
+       "cagrDiffPp": 0.549,
+       "positivePeriods": 2,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": 1.92925,
+       "annualizedArithmeticPp": 6.140815,
+       "cagrDiffPp": 6.5118,
+       "positivePeriods": 3,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -1.07095,
+       "annualizedArithmeticPp": -3.408841,
+       "cagrDiffPp": -3.7392,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -2.833975,
+       "annualizedArithmeticPp": -9.020561,
+       "cagrDiffPp": -9.702,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      }
+     },
+     "identityMaxAbsResidual": 0
+    },
+    "BULL": {
+     "periods": 21,
+     "years": 7.247091,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "SPY": 0.225236,
+      "SPY_TR": 0.246613,
+      "SPY_W": 0.218728,
+      "EW_ALL": 0.229348,
+      "CW_ALL": 0.218311,
+      "EW_WITH_H": 0.235783,
+      "EW_WITHOUT_H": 0.217081,
+      "EW_WITH_S": 0.238252,
+      "EW_FRAME": 0.242568,
+      "EW_FRAME_WREB": 0.255567
+     },
+     "total": {
+      "SPY": 3.358499,
+      "SPY_TR": 3.940555,
+      "SPY_W": 3.19347,
+      "EW_ALL": 3.465631,
+      "CW_ALL": 3.183084,
+      "EW_WITH_H": 3.637807,
+      "EW_WITHOUT_H": 3.152592,
+      "EW_WITH_S": 3.705401,
+      "EW_FRAME": 3.825559,
+      "EW_FRAME_WREB": 4.203574
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": 0.32321,
+       "annualizedArithmeticPp": 0.936569,
+       "cagrDiffPp": 0.4316,
+       "positivePeriods": 11,
+       "periods": 21,
+       "nwSePp": 0.978222,
+       "nwP": 0.741094
+      },
+      "measurement": {
+       "meanPeriodPp": 0.099067,
+       "annualizedArithmeticPp": 0.287067,
+       "cagrDiffPp": 0.2469,
+       "positivePeriods": 13,
+       "periods": 21,
+       "nwSePp": 0.285885,
+       "nwP": 0.728947
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 0.198329,
+       "annualizedArithmeticPp": 0.5747,
+       "cagrDiffPp": 0.6435,
+       "positivePeriods": 12,
+       "periods": 21,
+       "nwSePp": 0.113867,
+       "nwP": 0.08155
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": 0.161667,
+       "annualizedArithmeticPp": 0.468464,
+       "cagrDiffPp": 0.4112,
+       "positivePeriods": 9,
+       "periods": 21,
+       "nwSePp": 0.719709,
+       "nwP": 0.822269
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.645062,
+       "annualizedArithmeticPp": 1.869205,
+       "cagrDiffPp": 2.1377,
+       "positivePeriods": 21,
+       "periods": 21,
+       "nwSePp": 0.125954,
+       "nwP": 0
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.404448,
+       "annualizedArithmeticPp": 1.171974,
+       "cagrDiffPp": 1.2999,
+       "positivePeriods": 18,
+       "periods": 21,
+       "nwSePp": 0.085637,
+       "nwP": 0.000002
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.168662,
+       "annualizedArithmeticPp": -0.488734,
+       "cagrDiffPp": -0.6508,
+       "positivePeriods": 7,
+       "periods": 21,
+       "nwSePp": 0.299314,
+       "nwP": 0.573098
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": 0.782271,
+       "annualizedArithmeticPp": 2.266799,
+       "cagrDiffPp": 1.7332,
+       "positivePeriods": 11,
+       "periods": 21,
+       "nwSePp": 1.734714,
+       "nwP": 0.652025
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": 1.355381,
+       "annualizedArithmeticPp": 3.927507,
+       "cagrDiffPp": 3.6839,
+       "positivePeriods": 12,
+       "periods": 21,
+       "nwSePp": 1.598946,
+       "nwP": 0.396621
+      }
+     },
+     "identityMaxAbsResidual": 0
+    }
+   },
+   "regimeR2": {
+    "CRASH_BEAR": {
+     "periods": 8,
+     "years": 2.748802,
+     "from": "2011-09-30",
+     "to": "2022-12-31",
+     "cagr": {
+      "SPY": -0.062936,
+      "SPY_TR": -0.044575,
+      "SPY_W": -0.075952,
+      "EW_ALL": -0.06989,
+      "CW_ALL": -0.063447,
+      "EW_WITH_H": -0.055075,
+      "EW_WITHOUT_H": -0.130325,
+      "EW_WITH_S": -0.065455,
+      "EW_FRAME": -0.142127,
+      "EW_FRAME_WREB": -0.12522
+     },
+     "total": {
+      "SPY": -0.163628,
+      "SPY_TR": -0.117805,
+      "SPY_W": -0.195175,
+      "EW_ALL": -0.18058,
+      "CW_ALL": -0.164882,
+      "EW_WITH_H": -0.1442,
+      "EW_WITHOUT_H": -0.318752,
+      "EW_WITH_S": -0.169795,
+      "EW_FRAME": -0.343866,
+      "EW_FRAME_WREB": -0.307705
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": -2.756087,
+       "annualizedArithmeticPp": -8.021203,
+       "cagrDiffPp": -7.6672,
+       "positivePeriods": 0,
+       "periods": 8,
+       "nwSePp": 0.411237,
+       "nwP": 0
+      },
+      "measurement": {
+       "meanPeriodPp": -0.402775,
+       "annualizedArithmeticPp": -1.17222,
+       "cagrDiffPp": -1.038,
+       "positivePeriods": 3,
+       "periods": 8,
+       "nwSePp": 0.392513,
+       "nwP": 0.304823
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 0.5685,
+       "annualizedArithmeticPp": 1.654539,
+       "cagrDiffPp": 1.4815,
+       "positivePeriods": 7,
+       "periods": 8,
+       "nwSePp": 0.238502,
+       "nwP": 0.017143
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": 0.030025,
+       "annualizedArithmeticPp": 0.087384,
+       "cagrDiffPp": -0.6954,
+       "positivePeriods": 6,
+       "periods": 8,
+       "nwSePp": 0.955669,
+       "nwP": 0.974936
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.685163,
+       "annualizedArithmeticPp": 1.994069,
+       "cagrDiffPp": 1.8361,
+       "positivePeriods": 8,
+       "periods": 8,
+       "nwSePp": 0.192069,
+       "nwP": 0.000361
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.695525,
+       "annualizedArithmeticPp": 2.024227,
+       "cagrDiffPp": 1.6907,
+       "positivePeriods": 7,
+       "periods": 8,
+       "nwSePp": 0.268936,
+       "nwP": 0.009704
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.47475,
+       "annualizedArithmeticPp": -1.381693,
+       "cagrDiffPp": -1.3016,
+       "positivePeriods": 2,
+       "periods": 8,
+       "nwSePp": 0.326621,
+       "nwP": 0.14608
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -2.560338,
+       "annualizedArithmeticPp": -7.4515,
+       "cagrDiffPp": -7.9191,
+       "positivePeriods": 3,
+       "periods": 8,
+       "nwSePp": 1.107659,
+       "nwP": 0.020806
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -1.390062,
+       "annualizedArithmeticPp": -4.04558,
+       "cagrDiffPp": -4.9268,
+       "positivePeriods": 2,
+       "periods": 8,
+       "nwSePp": 1.090964,
+       "nwP": 0.202607
+      }
+     },
+     "identityMaxAbsResidual": 6.938893903907228e-18
+    },
+    "RECOVERY": {
+     "periods": 18,
+     "years": 6.001369,
+     "from": "2009-09-30",
+     "to": "2023-12-31",
+     "cagr": {
+      "SPY": 0.246857,
+      "SPY_TR": 0.268817,
+      "SPY_W": 0.253704,
+      "EW_ALL": 0.239371,
+      "CW_ALL": 0.243952,
+      "EW_WITH_H": 0.244705,
+      "EW_WITHOUT_H": 0.214187,
+      "EW_WITH_S": 0.250127,
+      "EW_FRAME": 0.295447,
+      "EW_FRAME_WREB": 0.317502
+     },
+     "total": {
+      "SPY": 2.758635,
+      "SPY_TR": 3.173834,
+      "SPY_W": 2.884232,
+      "EW_ALL": 2.625234,
+      "CW_ALL": 2.7064,
+      "EW_WITH_H": 2.719884,
+      "EW_WITHOUT_H": 2.205014,
+      "EW_WITH_S": 2.818183,
+      "EW_FRAME": 3.72794,
+      "EW_FRAME_WREB": 4.232058
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": 1.612817,
+       "annualizedArithmeticPp": 4.837346,
+       "cagrDiffPp": 4.532,
+       "positivePeriods": 11,
+       "periods": 18,
+       "nwSePp": 1.425711,
+       "nwP": 0.257956
+      },
+      "measurement": {
+       "meanPeriodPp": 0.134017,
+       "annualizedArithmeticPp": 0.401958,
+       "cagrDiffPp": 0.5422,
+       "positivePeriods": 11,
+       "periods": 18,
+       "nwSePp": 0.26195,
+       "nwP": 0.608923
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 0.138628,
+       "annualizedArithmeticPp": 0.415788,
+       "cagrDiffPp": 0.5334,
+       "positivePeriods": 11,
+       "periods": 18,
+       "nwSePp": 0.12642,
+       "nwP": 0.27283
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -0.149339,
+       "annualizedArithmeticPp": -0.447914,
+       "cagrDiffPp": -0.7486,
+       "positivePeriods": 7,
+       "periods": 18,
+       "nwSePp": 0.83781,
+       "nwP": 0.858527
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.629078,
+       "annualizedArithmeticPp": 1.886803,
+       "cagrDiffPp": 2.196,
+       "positivePeriods": 18,
+       "periods": 18,
+       "nwSePp": 0.118431,
+       "nwP": 0
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.657083,
+       "annualizedArithmeticPp": 1.9708,
+       "cagrDiffPp": 2.2055,
+       "positivePeriods": 16,
+       "periods": 18,
+       "nwSePp": 0.141556,
+       "nwP": 0.000003
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": 0.172056,
+       "annualizedArithmeticPp": 0.516049,
+       "cagrDiffPp": 0.6847,
+       "positivePeriods": 7,
+       "periods": 18,
+       "nwSePp": 0.20914,
+       "nwP": 0.41069
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": 1.736122,
+       "annualizedArithmeticPp": 5.207179,
+       "cagrDiffPp": 4.859,
+       "positivePeriods": 9,
+       "periods": 18,
+       "nwSePp": 2.22425,
+       "nwP": 0.435071
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": 2.22115,
+       "annualizedArithmeticPp": 6.66193,
+       "cagrDiffPp": 6.3798,
+       "positivePeriods": 9,
+       "periods": 18,
+       "nwSePp": 2.180138,
+       "nwP": 0.308292
+      }
+     },
+     "identityMaxAbsResidual": 0
+    },
+    "SIDEWAYS": {
+     "periods": 4,
+     "years": 2.001369,
+     "from": "2011-03-31",
+     "to": "2015-09-30",
+     "cagr": {
+      "SPY": -0.061213,
+      "SPY_TR": -0.041336,
+      "SPY_W": -0.051887,
+      "EW_ALL": -0.072894,
+      "CW_ALL": -0.069224,
+      "EW_WITH_H": -0.063934,
+      "EW_WITHOUT_H": -0.092179,
+      "EW_WITH_S": -0.053484,
+      "EW_FRAME": -0.072619,
+      "EW_FRAME_WREB": -0.063703
+     },
+     "total": {
+      "SPY": -0.118755,
+      "SPY_TR": -0.081017,
+      "SPY_W": -0.101148,
+      "EW_ALL": -0.140563,
+      "CW_ALL": -0.133741,
+      "EW_WITH_H": -0.12386,
+      "EW_WITHOUT_H": -0.17597,
+      "EW_WITH_S": -0.104175,
+      "EW_FRAME": -0.140053,
+      "EW_FRAME_WREB": -0.123427
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": -0.874125,
+       "annualizedArithmeticPp": -1.747054,
+       "cagrDiffPp": -1.9135,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "measurement": {
+       "meanPeriodPp": 0.494875,
+       "annualizedArithmeticPp": 0.989073,
+       "cagrDiffPp": 1.045,
+       "positivePeriods": 3,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 0.491125,
+       "annualizedArithmeticPp": 0.981578,
+       "cagrDiffPp": 0.896,
+       "positivePeriods": 4,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -0.33475,
+       "annualizedArithmeticPp": -0.669042,
+       "cagrDiffPp": -1.1681,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 1.02885,
+       "annualizedArithmeticPp": 2.056293,
+       "cagrDiffPp": 1.9877,
+       "positivePeriods": 4,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.50165,
+       "annualizedArithmeticPp": 1.002614,
+       "cagrDiffPp": 0.8916,
+       "positivePeriods": 3,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": 0.44295,
+       "annualizedArithmeticPp": 0.885294,
+       "cagrDiffPp": 0.9326,
+       "positivePeriods": 2,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -0.222875,
+       "annualizedArithmeticPp": -0.445445,
+       "cagrDiffPp": -1.1406,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -0.164175,
+       "annualizedArithmeticPp": -0.328125,
+       "cagrDiffPp": -1.1816,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      }
+     },
+     "identityMaxAbsResidual": 0
+    },
+    "OTHER": {
+     "periods": 17,
+     "years": 5.995893,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "SPY": 0.169193,
+      "SPY_TR": 0.188264,
+      "SPY_W": 0.163854,
+      "EW_ALL": 0.133181,
+      "CW_ALL": 0.164089,
+      "EW_WITH_H": 0.136903,
+      "EW_WITHOUT_H": 0.13869,
+      "EW_WITH_S": 0.136693,
+      "EW_FRAME": 0.143048,
+      "EW_FRAME_WREB": 0.150814
+     },
+     "total": {
+      "SPY": 1.552931,
+      "SPY_TR": 1.813007,
+      "SPY_W": 1.483817,
+      "EW_ALL": 1.116275,
+      "CW_ALL": 1.486826,
+      "EW_WITH_H": 1.158302,
+      "EW_WITHOUT_H": 1.178717,
+      "EW_WITH_S": 1.155911,
+      "EW_FRAME": 1.229193,
+      "EW_FRAME_WREB": 1.321566
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": 0.314188,
+       "annualizedArithmeticPp": 0.89081,
+       "cagrDiffPp": 0.6355,
+       "positivePeriods": 9,
+       "periods": 17,
+       "nwSePp": 0.586392,
+       "nwP": 0.592098
+      },
+      "measurement": {
+       "meanPeriodPp": 0.002212,
+       "annualizedArithmeticPp": 0.006271,
+       "cagrDiffPp": -0.021,
+       "positivePeriods": 9,
+       "periods": 17,
+       "nwSePp": 0.146075,
+       "nwP": 0.987919
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 0.128476,
+       "annualizedArithmeticPp": 0.364266,
+       "cagrDiffPp": 0.3722,
+       "positivePeriods": 9,
+       "periods": 17,
+       "nwSePp": 0.118244,
+       "nwP": 0.277243
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -1.187494,
+       "annualizedArithmeticPp": -3.366871,
+       "cagrDiffPp": -3.6012,
+       "positivePeriods": 6,
+       "periods": 17,
+       "nwSePp": 0.628469,
+       "nwP": 0.058825
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.609594,
+       "annualizedArithmeticPp": 1.728366,
+       "cagrDiffPp": 1.9071,
+       "positivePeriods": 17,
+       "periods": 17,
+       "nwSePp": 0.139748,
+       "nwP": 0.000013
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.2566,
+       "annualizedArithmeticPp": 0.727531,
+       "cagrDiffPp": 0.7766,
+       "positivePeriods": 13,
+       "periods": 17,
+       "nwSePp": 0.080944,
+       "nwP": 0.001524
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.1363,
+       "annualizedArithmeticPp": -0.386448,
+       "cagrDiffPp": -0.5339,
+       "positivePeriods": 6,
+       "periods": 17,
+       "nwSePp": 0.181165,
+       "nwP": 0.45184
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -0.742618,
+       "annualizedArithmeticPp": -2.105524,
+       "cagrDiffPp": -2.6145,
+       "positivePeriods": 7,
+       "periods": 17,
+       "nwSePp": 0.776267,
+       "nwP": 0.338743
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -0.349718,
+       "annualizedArithmeticPp": -0.991545,
+       "cagrDiffPp": -1.304,
+       "positivePeriods": 8,
+       "periods": 17,
+       "nwSePp": 0.775415,
+       "nwP": 0.651984
+      }
+     },
+     "identityMaxAbsResidual": 6.938893903907228e-18
+    }
+   }
+  },
+  "LOWER": {
+   "full": {
+    "periods": 47,
+    "years": 16.747433,
+    "from": "2009-09-30",
+    "to": "2026-06-30",
+    "cagr": {
+     "SPY": 0.123901,
+     "SPY_TR": 0.144015,
+     "SPY_W": 0.123013,
+     "EW_ALL": 0.072986,
+     "CW_ALL": 0.104647,
+     "EW_WITH_H": 0.112781,
+     "EW_WITHOUT_H": -0.061269,
+     "EW_WITH_S": 0.114259,
+     "EW_FRAME": 0.111051,
+     "EW_FRAME_WREB": 0.126681
+    },
+    "total": {
+     "SPY": 6.072373,
+     "SPY_TR": 8.518714,
+     "SPY_W": 5.979338,
+     "EW_ALL": 2.253683,
+     "CW_ALL": 4.295223,
+     "EW_WITH_H": 4.987468,
+     "EW_WITHOUT_H": -0.653158,
+     "EW_WITH_S": 5.122045,
+     "EW_FRAME": 4.833455,
+     "EW_FRAME_WREB": 6.371106
+    },
+    "terms": {
+     "universe": {
+      "meanPeriodPp": 0.145462,
+      "annualizedArithmeticPp": 0.408224,
+      "cagrDiffPp": -0.3208,
+      "positivePeriods": 21,
+      "periods": 47,
+      "nwSePp": 0.689325,
+      "nwP": 0.832871
+     },
+     "measurement": {
+      "meanPeriodPp": 0.037802,
+      "annualizedArithmeticPp": 0.106088,
+      "cagrDiffPp": 0.1478,
+      "positivePeriods": 26,
+      "periods": 47,
+      "nwSePp": 0.123355,
+      "nwP": 0.759262
+     },
+     "survivorshipInIndex": {
+      "meanPeriodPp": 1.340702,
+      "annualizedArithmeticPp": 3.762547,
+      "cagrDiffPp": 3.9795,
+      "positivePeriods": 44,
+      "periods": 47,
+      "nwSePp": 0.296459,
+      "nwP": 0.000006
+     },
+     "equalWeightInIndex": {
+      "meanPeriodPp": -1.624785,
+      "annualizedArithmeticPp": -4.559797,
+      "cagrDiffPp": -5.0915,
+      "positivePeriods": 15,
+      "periods": 47,
+      "nwSePp": 0.478361,
+      "nwP": 0.000682
+     },
+     "benchmarkTrMinusPrice": {
+      "meanPeriodPp": 0.6656,
+      "annualizedArithmeticPp": 1.86794,
+      "cagrDiffPp": 2.0114,
+      "positivePeriods": 47,
+      "periods": 47,
+      "nwSePp": 0.086106,
+      "nwP": 0
+     },
+     "rebalancingWeekly": {
+      "meanPeriodPp": 0.547883,
+      "annualizedArithmeticPp": 1.537579,
+      "cagrDiffPp": 1.563,
+      "positivePeriods": 41,
+      "periods": 47,
+      "nwSePp": 0.081543,
+      "nwP": 0
+     },
+     "dateAlignmentSpy": {
+      "meanPeriodPp": -0.026517,
+      "annualizedArithmeticPp": -0.074417,
+      "cagrDiffPp": -0.0888,
+      "positivePeriods": 17,
+      "periods": 47,
+      "nwSePp": 0.116098,
+      "nwP": 0.819334
+     },
+     "frameMinusSpy": {
+      "meanPeriodPp": -0.100819,
+      "annualizedArithmeticPp": -0.282939,
+      "cagrDiffPp": -1.285,
+      "positivePeriods": 20,
+      "periods": 47,
+      "nwSePp": 0.951597,
+      "nwP": 0.915624
+     },
+     "frameWrebMinusSpyW": {
+      "meanPeriodPp": 0.473581,
+      "annualizedArithmeticPp": 1.329057,
+      "cagrDiffPp": 0.3668,
+      "positivePeriods": 20,
+      "periods": 47,
+      "nwSePp": 0.942372,
+      "nwP": 0.615287
+     }
+    },
+    "identityMaxAbsResidual": 1.3877787807814457e-17
+   },
+   "qualifiedOnly": {
+    "periods": 44,
+    "years": 15.247091,
+    "from": "2009-09-30",
+    "to": "2026-06-30",
+    "cagr": {
+     "SPY": 0.132274,
+     "SPY_TR": 0.152202,
+     "SPY_W": 0.129614,
+     "EW_ALL": 0.080236,
+     "CW_ALL": 0.116173,
+     "EW_WITH_H": 0.119002,
+     "EW_WITHOUT_H": -0.056217,
+     "EW_WITH_S": 0.118355,
+     "EW_FRAME": 0.119147,
+     "EW_FRAME_WREB": 0.135497
+    },
+    "total": {
+     "SPY": 5.646693,
+     "SPY_TR": 7.672268,
+     "SPY_W": 5.412527,
+     "EW_ALL": 2.243873,
+     "CW_ALL": 4.342798,
+     "EW_WITH_H": 4.553036,
+     "EW_WITHOUT_H": -0.586122,
+     "EW_WITH_S": 4.504249,
+     "EW_FRAME": 4.564007,
+     "EW_FRAME_WREB": 5.941052
+    },
+    "terms": {
+     "universe": {
+      "meanPeriodPp": 0.29062,
+      "annualizedArithmeticPp": 0.838671,
+      "cagrDiffPp": 0.0792,
+      "positivePeriods": 21,
+      "periods": 44,
+      "nwSePp": 0.733183,
+      "nwP": 0.691823
+     },
+     "measurement": {
+      "meanPeriodPp": -0.029659,
+      "annualizedArithmeticPp": -0.08559,
+      "cagrDiffPp": -0.0647,
+      "positivePeriods": 23,
+      "periods": 44,
+      "nwSePp": 0.149816,
+      "nwP": 0.843068
+     },
+     "survivorshipInIndex": {
+      "meanPeriodPp": 1.269948,
+      "annualizedArithmeticPp": 3.664811,
+      "cagrDiffPp": 3.8766,
+      "positivePeriods": 41,
+      "periods": 44,
+      "nwSePp": 0.302966,
+      "nwP": 0.000028
+     },
+     "equalWeightInIndex": {
+      "meanPeriodPp": -1.620934,
+      "annualizedArithmeticPp": -4.677686,
+      "cagrDiffPp": -5.2038,
+      "positivePeriods": 14,
+      "periods": 44,
+      "nwSePp": 0.481209,
+      "nwP": 0.000756
+     },
+     "benchmarkTrMinusPrice": {
+      "meanPeriodPp": 0.638316,
+      "annualizedArithmeticPp": 1.84205,
+      "cagrDiffPp": 1.9928,
+      "positivePeriods": 44,
+      "periods": 44,
+      "nwSePp": 0.087345,
+      "nwP": 0
+     },
+     "rebalancingWeekly": {
+      "meanPeriodPp": 0.555498,
+      "annualizedArithmeticPp": 1.603053,
+      "cagrDiffPp": 1.635,
+      "positivePeriods": 38,
+      "periods": 44,
+      "nwSePp": 0.08269,
+      "nwP": 0
+     },
+     "dateAlignmentSpy": {
+      "meanPeriodPp": -0.079941,
+      "annualizedArithmeticPp": -0.230693,
+      "cagrDiffPp": -0.266,
+      "positivePeriods": 15,
+      "periods": 44,
+      "nwSePp": 0.133731,
+      "nwP": 0.54999
+     },
+     "frameMinusSpy": {
+      "meanPeriodPp": -0.090025,
+      "annualizedArithmeticPp": -0.259794,
+      "cagrDiffPp": -1.3127,
+      "positivePeriods": 19,
+      "periods": 44,
+      "nwSePp": 0.997384,
+      "nwP": 0.92808
+     },
+     "frameWrebMinusSpyW": {
+      "meanPeriodPp": 0.545414,
+      "annualizedArithmeticPp": 1.573953,
+      "cagrDiffPp": 0.5883,
+      "positivePeriods": 19,
+      "periods": 44,
+      "nwSePp": 0.988266,
+      "nwP": 0.581024
+     }
+    },
+    "identityMaxAbsResidual": 1.3877787807814457e-17
+   },
+   "semiannual_2009_2019": {
+    "periods": 20,
+    "years": 9.998631,
+    "from": "2009-09-30",
+    "to": "2019-09-30",
+    "cagr": {
+     "SPY": 0.108883,
+     "SPY_TR": 0.131349,
+     "SPY_W": 0.109574,
+     "EW_ALL": 0.061817,
+     "CW_ALL": 0.081394,
+     "EW_WITH_H": 0.1177,
+     "EW_WITHOUT_H": -0.078777,
+     "EW_WITH_S": 0.118423,
+     "EW_FRAME": 0.118945,
+     "EW_FRAME_WREB": 0.131809
+    },
+    "total": {
+     "SPY": 1.81059,
+     "SPY_TR": 2.434728,
+     "SPY_W": 1.828152,
+     "EW_ALL": 0.821641,
+     "CW_ALL": 1.186713,
+     "EW_WITH_H": 2.042183,
+     "EW_WITHOUT_H": -0.559754,
+     "EW_WITH_S": 2.061917,
+     "EW_FRAME": 2.076236,
+     "EW_FRAME_WREB": 2.448713
+    },
+    "terms": {
+     "universe": {
+      "meanPeriodPp": 0.17441,
+      "annualizedArithmeticPp": 0.348868,
+      "cagrDiffPp": 0.0522,
+      "positivePeriods": 11,
+      "periods": 20,
+      "nwSePp": 0.635521,
+      "nwP": 0.783749
+     },
+     "measurement": {
+      "meanPeriodPp": 0.00695,
+      "annualizedArithmeticPp": 0.013902,
+      "cagrDiffPp": 0.0723,
+      "positivePeriods": 11,
+      "periods": 20,
+      "nwSePp": 0.139467,
+      "nwP": 0.960256
+     },
+     "survivorshipInIndex": {
+      "meanPeriodPp": 2.66893,
+      "annualizedArithmeticPp": 5.338591,
+      "cagrDiffPp": 5.5883,
+      "positivePeriods": 20,
+      "periods": 20,
+      "nwSePp": 0.27122,
+      "nwP": 0
+     },
+     "equalWeightInIndex": {
+      "meanPeriodPp": -2.156505,
+      "annualizedArithmeticPp": -4.3136,
+      "cagrDiffPp": -4.7066,
+      "positivePeriods": 5,
+      "periods": 20,
+      "nwSePp": 0.633239,
+      "nwP": 0.00066
+     },
+     "benchmarkTrMinusPrice": {
+      "meanPeriodPp": 1.064295,
+      "annualizedArithmeticPp": 2.128881,
+      "cagrDiffPp": 2.2466,
+      "positivePeriods": 20,
+      "periods": 20,
+      "nwSePp": 0.022328,
+      "nwP": 0
+     },
+     "rebalancingWeekly": {
+      "meanPeriodPp": 0.617295,
+      "annualizedArithmeticPp": 1.234759,
+      "cagrDiffPp": 1.2864,
+      "positivePeriods": 17,
+      "periods": 20,
+      "nwSePp": 0.120936,
+      "nwP": 0
+     },
+     "dateAlignmentSpy": {
+      "meanPeriodPp": 0.00539,
+      "annualizedArithmeticPp": 0.010781,
+      "cagrDiffPp": 0.0691,
+      "positivePeriods": 7,
+      "periods": 20,
+      "nwSePp": 0.115485,
+      "nwP": 0.962774
+     },
+     "frameMinusSpy": {
+      "meanPeriodPp": 0.693785,
+      "annualizedArithmeticPp": 1.38776,
+      "cagrDiffPp": 1.0062,
+      "positivePeriods": 11,
+      "periods": 20,
+      "nwSePp": 0.972365,
+      "nwP": 0.475535
+     },
+     "frameWrebMinusSpyW": {
+      "meanPeriodPp": 1.30569,
+      "annualizedArithmeticPp": 2.611738,
+      "cagrDiffPp": 2.2235,
+      "positivePeriods": 11,
+      "periods": 20,
+      "nwSePp": 0.958007,
+      "nwP": 0.172907
+     }
+    },
+    "identityMaxAbsResidual": 0
+   },
+   "quarterly_2019_2026": {
+    "periods": 27,
+    "years": 6.748802,
+    "from": "2019-09-30",
+    "to": "2026-06-30",
+    "cagr": {
+     "SPY": 0.146525,
+     "SPY_TR": 0.16304,
+     "SPY_W": 0.143222,
+     "EW_ALL": 0.08975,
+     "CW_ALL": 0.140021,
+     "EW_WITH_H": 0.105533,
+     "EW_WITHOUT_H": -0.034718,
+     "EW_WITH_S": 0.108118,
+     "EW_FRAME": 0.099458,
+     "EW_FRAME_WREB": 0.119126
+    },
+    "total": {
+     "SPY": 1.51633,
+     "SPY_TR": 1.771315,
+     "SPY_W": 1.467809,
+     "EW_ALL": 0.786127,
+     "CW_ALL": 1.421544,
+     "EW_WITH_H": 0.968148,
+     "EW_WITHOUT_H": -0.212164,
+     "EW_WITH_S": 0.999415,
+     "EW_FRAME": 0.896296,
+     "EW_FRAME_WREB": 1.13735
+    },
+    "terms": {
+     "universe": {
+      "meanPeriodPp": 0.124019,
+      "annualizedArithmeticPp": 0.496162,
+      "cagrDiffPp": -0.866,
+      "positivePeriods": 10,
+      "periods": 27,
+      "nwSePp": 1.096643,
+      "nwP": 0.90996
+     },
+     "measurement": {
+      "meanPeriodPp": 0.060656,
+      "annualizedArithmeticPp": 0.242665,
+      "cagrDiffPp": 0.2585,
+      "positivePeriods": 15,
+      "periods": 27,
+      "nwSePp": 0.18873,
+      "nwP": 0.747917
+     },
+     "survivorshipInIndex": {
+      "meanPeriodPp": 0.35683,
+      "annualizedArithmeticPp": 1.427572,
+      "cagrDiffPp": 1.5783,
+      "positivePeriods": 24,
+      "periods": 27,
+      "nwSePp": 0.074774,
+      "nwP": 0.000002
+     },
+     "equalWeightInIndex": {
+      "meanPeriodPp": -1.230919,
+      "annualizedArithmeticPp": -4.924548,
+      "cagrDiffPp": -5.6775,
+      "positivePeriods": 10,
+      "periods": 27,
+      "nwSePp": 0.632502,
+      "nwP": 0.051642
+     },
+     "benchmarkTrMinusPrice": {
+      "meanPeriodPp": 0.37027,
+      "annualizedArithmeticPp": 1.481344,
+      "cagrDiffPp": 1.6515,
+      "positivePeriods": 27,
+      "periods": 27,
+      "nwSePp": 0.020258,
+      "nwP": 0
+     },
+     "rebalancingWeekly": {
+      "meanPeriodPp": 0.496467,
+      "annualizedArithmeticPp": 1.986219,
+      "cagrDiffPp": 1.9668,
+      "positivePeriods": 24,
+      "periods": 27,
+      "nwSePp": 0.105273,
+      "nwP": 0.000002
+     },
+     "dateAlignmentSpy": {
+      "meanPeriodPp": -0.050152,
+      "annualizedArithmeticPp": -0.200643,
+      "cagrDiffPp": -0.3303,
+      "positivePeriods": 10,
+      "periods": 27,
+      "nwSePp": 0.18311,
+      "nwP": 0.78417
+     },
+     "frameMinusSpy": {
+      "meanPeriodPp": -0.689415,
+      "annualizedArithmeticPp": -2.758149,
+      "cagrDiffPp": -4.7067,
+      "positivePeriods": 9,
+      "periods": 27,
+      "nwSePp": 1.439371,
+      "nwP": 0.63196
+     },
+     "frameWrebMinusSpyW": {
+      "meanPeriodPp": -0.142796,
+      "annualizedArithmeticPp": -0.571287,
+      "cagrDiffPp": -2.4096,
+      "positivePeriods": 9,
+      "periods": 27,
+      "nwSePp": 1.41942,
+      "nwP": 0.919866
+     }
+    },
+    "identityMaxAbsResidual": 1.3877787807814457e-17
+   },
+   "regimeR1": {
+    "CRASH_BEAR": {
+     "periods": 12,
+     "years": 4.492813,
+     "from": "2010-03-31",
+     "to": "2025-06-30",
+     "cagr": {
+      "SPY": -0.129777,
+      "SPY_TR": -0.113242,
+      "SPY_W": -0.135363,
+      "EW_ALL": -0.178249,
+      "CW_ALL": -0.147093,
+      "EW_WITH_H": -0.143102,
+      "EW_WITHOUT_H": -0.285166,
+      "EW_WITH_S": -0.145983,
+      "EW_FRAME": -0.195708,
+      "EW_FRAME_WREB": -0.183495
+     },
+     "total": {
+      "SPY": -0.464485,
+      "SPY_TR": -0.417228,
+      "SPY_W": -0.479757,
+      "EW_ALL": -0.586054,
+      "CW_ALL": -0.510724,
+      "EW_WITH_H": -0.500354,
+      "EW_WITHOUT_H": -0.778705,
+      "EW_WITH_S": -0.507857,
+      "EW_FRAME": -0.624126,
+      "EW_FRAME_WREB": -0.597796
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": -1.991075,
+       "annualizedArithmeticPp": -5.318027,
+       "cagrDiffPp": -4.9725,
+       "positivePeriods": 2,
+       "periods": 12,
+       "nwSePp": 0.438788,
+       "nwP": 0.000006
+      },
+      "measurement": {
+       "meanPeriodPp": -0.1589,
+       "annualizedArithmeticPp": -0.424411,
+       "cagrDiffPp": -0.2881,
+       "positivePeriods": 6,
+       "periods": 12,
+       "nwSePp": 0.311854,
+       "nwP": 0.610378
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 1.469942,
+       "annualizedArithmeticPp": 3.926115,
+       "cagrDiffPp": 3.5147,
+       "positivePeriods": 12,
+       "periods": 12,
+       "nwSePp": 0.523738,
+       "nwP": 0.005006
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -1.915283,
+       "annualizedArithmeticPp": -5.115592,
+       "cagrDiffPp": -4.8472,
+       "positivePeriods": 5,
+       "periods": 12,
+       "nwSePp": 0.918074,
+       "nwP": 0.036961
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.678142,
+       "annualizedArithmeticPp": 1.811271,
+       "cagrDiffPp": 1.6535,
+       "positivePeriods": 12,
+       "periods": 12,
+       "nwSePp": 0.143827,
+       "nwP": 0.000002
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.560717,
+       "annualizedArithmeticPp": 1.497636,
+       "cagrDiffPp": 1.2213,
+       "positivePeriods": 10,
+       "periods": 12,
+       "nwSePp": 0.137688,
+       "nwP": 0.000047
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.244158,
+       "annualizedArithmeticPp": -0.65213,
+       "cagrDiffPp": -0.5586,
+       "positivePeriods": 6,
+       "periods": 12,
+       "nwSePp": 0.33643,
+       "nwP": 0.468002
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -2.595317,
+       "annualizedArithmeticPp": -6.931915,
+       "cagrDiffPp": -6.5931,
+       "positivePeriods": 3,
+       "periods": 12,
+       "nwSePp": 0.72765,
+       "nwP": 0.000361
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -1.790442,
+       "annualizedArithmeticPp": -4.782149,
+       "cagrDiffPp": -4.8132,
+       "positivePeriods": 2,
+       "periods": 12,
+       "nwSePp": 0.607199,
+       "nwP": 0.003191
+      }
+     },
+     "identityMaxAbsResidual": 0
+    },
+    "RECOVERY": {
+     "periods": 10,
+     "years": 3.750856,
+     "from": "2010-09-30",
+     "to": "2025-09-30",
+     "cagr": {
+      "SPY": 0.319271,
+      "SPY_TR": 0.34339,
+      "SPY_W": 0.311955,
+      "EW_ALL": 0.239874,
+      "CW_ALL": 0.297643,
+      "EW_WITH_H": 0.297761,
+      "EW_WITHOUT_H": 0.011011,
+      "EW_WITH_S": 0.286524,
+      "EW_FRAME": 0.361726,
+      "EW_FRAME_WREB": 0.387431
+     },
+     "total": {
+      "SPY": 1.827192,
+      "SPY_TR": 2.02599,
+      "SPY_W": 1.768835,
+      "EW_ALL": 1.239986,
+      "CW_ALL": 1.657225,
+      "EW_WITH_H": 1.658132,
+      "EW_WITHOUT_H": 0.041929,
+      "EW_WITH_S": 1.572825,
+      "EW_FRAME": 2.183842,
+      "EW_FRAME_WREB": 2.415182
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": 2.54193,
+       "annualizedArithmeticPp": 6.776934,
+       "cagrDiffPp": 7.5202,
+       "positivePeriods": 6,
+       "periods": 10,
+       "nwSePp": 0.989629,
+       "nwP": 0.010212
+      },
+      "measurement": {
+       "meanPeriodPp": -0.39819,
+       "annualizedArithmeticPp": -1.061598,
+       "cagrDiffPp": -1.1237,
+       "positivePeriods": 4,
+       "periods": 10,
+       "nwSePp": 0.375886,
+       "nwP": 0.289446
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 1.85295,
+       "annualizedArithmeticPp": 4.940073,
+       "cagrDiffPp": 5.7887,
+       "positivePeriods": 9,
+       "periods": 10,
+       "nwSePp": 0.558393,
+       "nwP": 0.000905
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -2.42689,
+       "annualizedArithmeticPp": -6.47023,
+       "cagrDiffPp": -7.9397,
+       "positivePeriods": 3,
+       "periods": 10,
+       "nwSePp": 0.863689,
+       "nwP": 0.004956
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.76367,
+       "annualizedArithmeticPp": 2.035989,
+       "cagrDiffPp": 2.4119,
+       "positivePeriods": 10,
+       "periods": 10,
+       "nwSePp": 0.169691,
+       "nwP": 0.000007
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.8427,
+       "annualizedArithmeticPp": 2.246687,
+       "cagrDiffPp": 2.5705,
+       "positivePeriods": 9,
+       "periods": 10,
+       "nwSePp": 0.151428,
+       "nwP": 0
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.24915,
+       "annualizedArithmeticPp": -0.664248,
+       "cagrDiffPp": -0.7316,
+       "positivePeriods": 1,
+       "periods": 10,
+       "nwSePp": 0.212727,
+       "nwP": 0.241511
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": 1.5698,
+       "annualizedArithmeticPp": 4.185178,
+       "cagrDiffPp": 4.2455,
+       "positivePeriods": 5,
+       "periods": 10,
+       "nwSePp": 1.333134,
+       "nwP": 0.238985
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": 2.66165,
+       "annualizedArithmeticPp": 7.096114,
+       "cagrDiffPp": 7.5476,
+       "positivePeriods": 5,
+       "periods": 10,
+       "nwSePp": 1.407391,
+       "nwP": 0.058598
+      }
+     },
+     "identityMaxAbsResidual": 1.3877787807814457e-17
+    },
+    "SIDEWAYS": {
+     "periods": 4,
+     "years": 1.256674,
+     "from": "2012-03-31",
+     "to": "2025-12-31",
+     "cagr": {
+      "SPY": 0.056703,
+      "SPY_TR": 0.072966,
+      "SPY_W": 0.121821,
+      "EW_ALL": -0.045284,
+      "CW_ALL": 0.042111,
+      "EW_WITH_H": -0.020202,
+      "EW_WITHOUT_H": -0.154327,
+      "EW_WITH_S": 0.021854,
+      "EW_FRAME": 0.014805,
+      "EW_FRAME_WREB": 0.024801
+     },
+     "total": {
+      "SPY": 0.071769,
+      "SPY_TR": 0.092538,
+      "SPY_W": 0.155414,
+      "EW_ALL": -0.056573,
+      "CW_ALL": 0.053203,
+      "EW_WITH_H": -0.025321,
+      "EW_WITHOUT_H": -0.18994,
+      "EW_WITH_S": 0.02754,
+      "EW_FRAME": 0.01864,
+      "EW_FRAME_WREB": 0.031266
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": -0.150525,
+       "annualizedArithmeticPp": -0.479122,
+       "cagrDiffPp": -0.7049,
+       "positivePeriods": 2,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "measurement": {
+       "meanPeriodPp": 1.32305,
+       "annualizedArithmeticPp": 4.211277,
+       "cagrDiffPp": 4.2056,
+       "positivePeriods": 3,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 0.8072,
+       "annualizedArithmeticPp": 2.569323,
+       "cagrDiffPp": 2.5082,
+       "positivePeriods": 4,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -3.191075,
+       "annualizedArithmeticPp": -10.157213,
+       "cagrDiffPp": -10.1987,
+       "positivePeriods": 0,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.490625,
+       "annualizedArithmeticPp": 1.561663,
+       "cagrDiffPp": 1.6263,
+       "positivePeriods": 4,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.306625,
+       "annualizedArithmeticPp": 0.975989,
+       "cagrDiffPp": 0.9996,
+       "positivePeriods": 3,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": 1.92925,
+       "annualizedArithmeticPp": 6.140815,
+       "cagrDiffPp": 6.5118,
+       "positivePeriods": 3,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -1.21135,
+       "annualizedArithmeticPp": -3.855735,
+       "cagrDiffPp": -4.1898,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -2.833975,
+       "annualizedArithmeticPp": -9.020561,
+       "cagrDiffPp": -9.702,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      }
+     },
+     "identityMaxAbsResidual": 0
+    },
+    "BULL": {
+     "periods": 21,
+     "years": 7.247091,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "SPY": 0.225236,
+      "SPY_TR": 0.246613,
+      "SPY_W": 0.218728,
+      "EW_ALL": 0.198721,
+      "CW_ALL": 0.20518,
+      "EW_WITH_H": 0.235323,
+      "EW_WITHOUT_H": 0.089159,
+      "EW_WITH_S": 0.238252,
+      "EW_FRAME": 0.241133,
+      "EW_FRAME_WREB": 0.255567
+     },
+     "total": {
+      "SPY": 3.358499,
+      "SPY_TR": 3.940555,
+      "SPY_W": 3.19347,
+      "EW_ALL": 2.719442,
+      "CW_ALL": 2.867139,
+      "EW_WITH_H": 3.625328,
+      "EW_WITHOUT_H": 0.85697,
+      "EW_WITH_S": 3.705401,
+      "EW_FRAME": 3.785316,
+      "EW_FRAME_WREB": 4.203574
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": 0.281543,
+       "annualizedArithmeticPp": 0.815831,
+       "cagrDiffPp": 0.2881,
+       "positivePeriods": 11,
+       "periods": 21,
+       "nwSePp": 0.986432,
+       "nwP": 0.775326
+      },
+      "measurement": {
+       "meanPeriodPp": 0.11301,
+       "annualizedArithmeticPp": 0.327469,
+       "cagrDiffPp": 0.2929,
+       "positivePeriods": 13,
+       "periods": 21,
+       "nwSePp": 0.285189,
+       "nwP": 0.691912
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 1.124543,
+       "annualizedArithmeticPp": 3.258604,
+       "cagrDiffPp": 3.6602,
+       "positivePeriods": 19,
+       "periods": 21,
+       "nwSePp": 0.379136,
+       "nwP": 0.003016
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -0.77849,
+       "annualizedArithmeticPp": -2.255843,
+       "cagrDiffPp": -2.6515,
+       "positivePeriods": 7,
+       "periods": 21,
+       "nwSePp": 0.696749,
+       "nwP": 0.263858
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.645062,
+       "annualizedArithmeticPp": 1.869205,
+       "cagrDiffPp": 2.1377,
+       "positivePeriods": 21,
+       "periods": 21,
+       "nwSePp": 0.125954,
+       "nwP": 0
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.446114,
+       "annualizedArithmeticPp": 1.292712,
+       "cagrDiffPp": 1.4434,
+       "positivePeriods": 19,
+       "periods": 21,
+       "nwSePp": 0.083769,
+       "nwP": 0
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.168662,
+       "annualizedArithmeticPp": -0.488734,
+       "cagrDiffPp": -0.6508,
+       "positivePeriods": 7,
+       "periods": 21,
+       "nwSePp": 0.299314,
+       "nwP": 0.573098
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": 0.740605,
+       "annualizedArithmeticPp": 2.146061,
+       "cagrDiffPp": 1.5897,
+       "positivePeriods": 11,
+       "periods": 21,
+       "nwSePp": 1.742309,
+       "nwP": 0.670785
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": 1.355381,
+       "annualizedArithmeticPp": 3.927507,
+       "cagrDiffPp": 3.6839,
+       "positivePeriods": 12,
+       "periods": 21,
+       "nwSePp": 1.598946,
+       "nwP": 0.396621
+      }
+     },
+     "identityMaxAbsResidual": 0
+    }
+   },
+   "regimeR2": {
+    "CRASH_BEAR": {
+     "periods": 8,
+     "years": 2.748802,
+     "from": "2011-09-30",
+     "to": "2022-12-31",
+     "cagr": {
+      "SPY": -0.062936,
+      "SPY_TR": -0.044575,
+      "SPY_W": -0.075952,
+      "EW_ALL": -0.100793,
+      "CW_ALL": -0.075534,
+      "EW_WITH_H": -0.055617,
+      "EW_WITHOUT_H": -0.262845,
+      "EW_WITH_S": -0.065455,
+      "EW_FRAME": -0.142127,
+      "EW_FRAME_WREB": -0.12522
+     },
+     "total": {
+      "SPY": -0.163628,
+      "SPY_TR": -0.117805,
+      "SPY_W": -0.195175,
+      "EW_ALL": -0.25326,
+      "CW_ALL": -0.194175,
+      "EW_WITH_H": -0.145548,
+      "EW_WITHOUT_H": -0.567541,
+      "EW_WITH_S": -0.169795,
+      "EW_FRAME": -0.343866,
+      "EW_FRAME_WREB": -0.307705
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": -2.756087,
+       "annualizedArithmeticPp": -8.021203,
+       "cagrDiffPp": -7.6672,
+       "positivePeriods": 0,
+       "periods": 8,
+       "nwSePp": 0.411237,
+       "nwP": 0
+      },
+      "measurement": {
+       "meanPeriodPp": -0.384087,
+       "annualizedArithmeticPp": -1.117832,
+       "cagrDiffPp": -0.9838,
+       "positivePeriods": 3,
+       "periods": 8,
+       "nwSePp": 0.397791,
+       "nwP": 0.334269
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 1.755187,
+       "annualizedArithmeticPp": 5.108225,
+       "cagrDiffPp": 4.5176,
+       "positivePeriods": 8,
+       "periods": 8,
+       "nwSePp": 0.712038,
+       "nwP": 0.013701
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -1.17535,
+       "annualizedArithmeticPp": -3.42069,
+       "cagrDiffPp": -3.7857,
+       "positivePeriods": 4,
+       "periods": 8,
+       "nwSePp": 1.227906,
+       "nwP": 0.338467
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.685163,
+       "annualizedArithmeticPp": 1.994069,
+       "cagrDiffPp": 1.8361,
+       "positivePeriods": 8,
+       "periods": 8,
+       "nwSePp": 0.192069,
+       "nwP": 0.000361
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.695525,
+       "annualizedArithmeticPp": 2.024227,
+       "cagrDiffPp": 1.6907,
+       "positivePeriods": 7,
+       "periods": 8,
+       "nwSePp": 0.268936,
+       "nwP": 0.009704
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.47475,
+       "annualizedArithmeticPp": -1.381693,
+       "cagrDiffPp": -1.3016,
+       "positivePeriods": 2,
+       "periods": 8,
+       "nwSePp": 0.326621,
+       "nwP": 0.14608
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -2.560338,
+       "annualizedArithmeticPp": -7.4515,
+       "cagrDiffPp": -7.9191,
+       "positivePeriods": 3,
+       "periods": 8,
+       "nwSePp": 1.107659,
+       "nwP": 0.020806
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -1.390062,
+       "annualizedArithmeticPp": -4.04558,
+       "cagrDiffPp": -4.9268,
+       "positivePeriods": 2,
+       "periods": 8,
+       "nwSePp": 1.090964,
+       "nwP": 0.202607
+      }
+     },
+     "identityMaxAbsResidual": 0
+    },
+    "RECOVERY": {
+     "periods": 18,
+     "years": 6.001369,
+     "from": "2009-09-30",
+     "to": "2023-12-31",
+     "cagr": {
+      "SPY": 0.246857,
+      "SPY_TR": 0.268817,
+      "SPY_W": 0.253704,
+      "EW_ALL": 0.199646,
+      "CW_ALL": 0.226048,
+      "EW_WITH_H": 0.244374,
+      "EW_WITHOUT_H": 0.033763,
+      "EW_WITH_S": 0.250127,
+      "EW_FRAME": 0.295283,
+      "EW_FRAME_WREB": 0.317502
+     },
+     "total": {
+      "SPY": 2.758635,
+      "SPY_TR": 3.173834,
+      "SPY_W": 2.884232,
+      "EW_ALL": 1.981445,
+      "CW_ALL": 2.397556,
+      "EW_WITH_H": 2.713942,
+      "EW_WITHOUT_H": 0.22052,
+      "EW_WITH_S": 2.818183,
+      "EW_FRAME": 3.724345,
+      "EW_FRAME_WREB": 4.232058
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": 1.608367,
+       "annualizedArithmeticPp": 4.823999,
+       "cagrDiffPp": 4.5156,
+       "positivePeriods": 11,
+       "periods": 18,
+       "nwSePp": 1.426321,
+       "nwP": 0.259475
+      },
+      "measurement": {
+       "meanPeriodPp": 0.143594,
+       "annualizedArithmeticPp": 0.430685,
+       "cagrDiffPp": 0.5753,
+       "positivePeriods": 11,
+       "periods": 18,
+       "nwSePp": 0.262536,
+       "nwP": 0.584412
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 1.283317,
+       "annualizedArithmeticPp": 3.849072,
+       "cagrDiffPp": 4.4728,
+       "positivePeriods": 16,
+       "periods": 18,
+       "nwSePp": 0.50005,
+       "nwP": 0.010277
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -1.303606,
+       "annualizedArithmeticPp": -3.909925,
+       "cagrDiffPp": -4.7211,
+       "positivePeriods": 5,
+       "periods": 18,
+       "nwSePp": 0.861476,
+       "nwP": 0.130223
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.629078,
+       "annualizedArithmeticPp": 1.886803,
+       "cagrDiffPp": 2.196,
+       "positivePeriods": 18,
+       "periods": 18,
+       "nwSePp": 0.118431,
+       "nwP": 0
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.661533,
+       "annualizedArithmeticPp": 1.984147,
+       "cagrDiffPp": 2.2219,
+       "positivePeriods": 16,
+       "periods": 18,
+       "nwSePp": 0.140436,
+       "nwP": 0.000002
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": 0.172056,
+       "annualizedArithmeticPp": 0.516049,
+       "cagrDiffPp": 0.6847,
+       "positivePeriods": 7,
+       "periods": 18,
+       "nwSePp": 0.20914,
+       "nwP": 0.41069
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": 1.731672,
+       "annualizedArithmeticPp": 5.193832,
+       "cagrDiffPp": 4.8426,
+       "positivePeriods": 9,
+       "periods": 18,
+       "nwSePp": 2.225028,
+       "nwP": 0.43641
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": 2.22115,
+       "annualizedArithmeticPp": 6.66193,
+       "cagrDiffPp": 6.3798,
+       "positivePeriods": 9,
+       "periods": 18,
+       "nwSePp": 2.180138,
+       "nwP": 0.308292
+      }
+     },
+     "identityMaxAbsResidual": 0
+    },
+    "SIDEWAYS": {
+     "periods": 4,
+     "years": 2.001369,
+     "from": "2011-03-31",
+     "to": "2015-09-30",
+     "cagr": {
+      "SPY": -0.061213,
+      "SPY_TR": -0.041336,
+      "SPY_W": -0.051887,
+      "EW_ALL": -0.1132,
+      "CW_ALL": -0.094773,
+      "EW_WITH_H": -0.064377,
+      "EW_WITHOUT_H": -0.214502,
+      "EW_WITH_S": -0.053484,
+      "EW_FRAME": -0.072619,
+      "EW_FRAME_WREB": -0.063703
+     },
+     "total": {
+      "SPY": -0.118755,
+      "SPY_TR": -0.081017,
+      "SPY_W": -0.101148,
+      "EW_ALL": -0.213715,
+      "CW_ALL": -0.180675,
+      "EW_WITH_H": -0.124689,
+      "EW_WITHOUT_H": -0.383196,
+      "EW_WITH_S": -0.104175,
+      "EW_FRAME": -0.140053,
+      "EW_FRAME_WREB": -0.123427
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": -0.874125,
+       "annualizedArithmeticPp": -1.747054,
+       "cagrDiffPp": -1.9135,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "measurement": {
+       "meanPeriodPp": 0.52215,
+       "annualizedArithmeticPp": 1.043586,
+       "cagrDiffPp": 1.0893,
+       "positivePeriods": 3,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 2.543775,
+       "annualizedArithmeticPp": 5.08407,
+       "cagrDiffPp": 4.8823,
+       "positivePeriods": 4,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -2.414675,
+       "annualizedArithmeticPp": -4.826047,
+       "cagrDiffPp": -5.1987,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 1.02885,
+       "annualizedArithmeticPp": 2.056293,
+       "cagrDiffPp": 1.9877,
+       "positivePeriods": 4,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.50165,
+       "annualizedArithmeticPp": 1.002614,
+       "cagrDiffPp": 0.8916,
+       "positivePeriods": 3,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": 0.44295,
+       "annualizedArithmeticPp": 0.885294,
+       "cagrDiffPp": 0.9326,
+       "positivePeriods": 2,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -0.222875,
+       "annualizedArithmeticPp": -0.445445,
+       "cagrDiffPp": -1.1406,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -0.164175,
+       "annualizedArithmeticPp": -0.328125,
+       "cagrDiffPp": -1.1816,
+       "positivePeriods": 1,
+       "periods": 4,
+       "nwSePp": null,
+       "nwP": null
+      }
+     },
+     "identityMaxAbsResidual": 0
+    },
+    "OTHER": {
+     "periods": 17,
+     "years": 5.995893,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "SPY": 0.169193,
+      "SPY_TR": 0.188264,
+      "SPY_W": 0.163854,
+      "EW_ALL": 0.108912,
+      "CW_ALL": 0.154018,
+      "EW_WITH_H": 0.136661,
+      "EW_WITHOUT_H": 0.010615,
+      "EW_WITH_S": 0.136693,
+      "EW_FRAME": 0.139529,
+      "EW_FRAME_WREB": 0.150814
+     },
+     "total": {
+      "SPY": 1.552931,
+      "SPY_TR": 1.813007,
+      "SPY_W": 1.483817,
+      "EW_ALL": 0.858654,
+      "CW_ALL": 1.36059,
+      "EW_WITH_H": 1.155549,
+      "EW_WITHOUT_H": 0.065355,
+      "EW_WITH_S": 1.155911,
+      "EW_FRAME": 1.188367,
+      "EW_FRAME_WREB": 1.321566
+     },
+     "terms": {
+      "universe": {
+       "meanPeriodPp": 0.201841,
+       "annualizedArithmeticPp": 0.572275,
+       "cagrDiffPp": 0.2836,
+       "positivePeriods": 9,
+       "periods": 17,
+       "nwSePp": 0.575209,
+       "nwP": 0.725663
+      },
+      "measurement": {
+       "meanPeriodPp": 0.010359,
+       "annualizedArithmeticPp": 0.02937,
+       "cagrDiffPp": 0.0032,
+       "positivePeriods": 9,
+       "periods": 17,
+       "nwSePp": 0.147717,
+       "nwP": 0.944093
+      },
+      "survivorshipInIndex": {
+       "meanPeriodPp": 0.923335,
+       "annualizedArithmeticPp": 2.617909,
+       "cagrDiffPp": 2.7749,
+       "positivePeriods": 16,
+       "periods": 17,
+       "nwSePp": 0.375809,
+       "nwP": 0.014013
+      },
+      "equalWeightInIndex": {
+       "meanPeriodPp": -1.9905,
+       "annualizedArithmeticPp": -5.643613,
+       "cagrDiffPp": -6.0281,
+       "positivePeriods": 5,
+       "periods": 17,
+       "nwSePp": 0.577279,
+       "nwP": 0.000565
+      },
+      "benchmarkTrMinusPrice": {
+       "meanPeriodPp": 0.609594,
+       "annualizedArithmeticPp": 1.728366,
+       "cagrDiffPp": 1.9071,
+       "positivePeriods": 17,
+       "periods": 17,
+       "nwSePp": 0.139748,
+       "nwP": 0.000013
+      },
+      "rebalancingWeekly": {
+       "meanPeriodPp": 0.368947,
+       "annualizedArithmeticPp": 1.046066,
+       "cagrDiffPp": 1.1285,
+       "positivePeriods": 15,
+       "periods": 17,
+       "nwSePp": 0.086483,
+       "nwP": 0.00002
+      },
+      "dateAlignmentSpy": {
+       "meanPeriodPp": -0.1363,
+       "annualizedArithmeticPp": -0.386448,
+       "cagrDiffPp": -0.5339,
+       "positivePeriods": 6,
+       "periods": 17,
+       "nwSePp": 0.181165,
+       "nwP": 0.45184
+      },
+      "frameMinusSpy": {
+       "meanPeriodPp": -0.854965,
+       "annualizedArithmeticPp": -2.424059,
+       "cagrDiffPp": -2.9664,
+       "positivePeriods": 7,
+       "periods": 17,
+       "nwSePp": 0.775218,
+       "nwP": 0.270084
+      },
+      "frameWrebMinusSpyW": {
+       "meanPeriodPp": -0.349718,
+       "annualizedArithmeticPp": -0.991545,
+       "cagrDiffPp": -1.304,
+       "positivePeriods": 8,
+       "periods": 17,
+       "nwSePp": 0.775415,
+       "nwP": 0.651984
+      }
+     },
+     "identityMaxAbsResidual": 1.3877787807814457e-17
+    }
+   }
+  }
+ },
+ "periods": [
+  {
+   "t0": "2009-09-30",
+   "t1": "2010-03-31",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.108059,
+     "SPY_TR": 0.118763,
+     "SPY_W": 0.116132,
+     "EW_ALL": 0.133935,
+     "CW_ALL": 0.104626,
+     "EW_WITH_H": 0.129137,
+     "EW_WITHOUT_H": 0.141376,
+     "EW_WITH_S": 0.14196,
+     "EW_FRAME": 0.159128,
+     "EW_FRAME_WREB": 0.174637
+    },
+    "LOWER": {
+     "SPY": 0.108059,
+     "SPY_TR": 0.118763,
+     "SPY_W": 0.116132,
+     "EW_ALL": 0.101935,
+     "CW_ALL": 0.082945,
+     "EW_WITH_H": 0.129137,
+     "EW_WITHOUT_H": 0.059743,
+     "EW_WITH_S": 0.14196,
+     "EW_FRAME": 0.159128,
+     "EW_FRAME_WREB": 0.174637
+    }
+   },
+   "counts": {
+    "members": 500,
+    "withSeries": 304,
+    "withoutSeries": 196,
+    "withSeriesWeight": 0.764847,
+    "boundedMembers": 16,
+    "boundedWeight": 0.021681,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 304
+    },
+    "frameListings": 1833,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 1833
+    },
+    "weeklyDates": [
+     "2009-09-25",
+     "2010-03-26"
+    ],
+    "spyTrDividendYield": 0.010144,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2010-03-31",
+   "t1": "2010-09-30",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.02453,
+     "SPY_TR": -0.014606,
+     "SPY_W": -0.015097,
+     "EW_ALL": -0.004576,
+     "CW_ALL": -0.024493,
+     "EW_WITH_H": 0.001629,
+     "EW_WITHOUT_H": -0.015231,
+     "EW_WITH_S": 0.006269,
+     "EW_FRAME": 0.012482,
+     "EW_FRAME_WREB": 0.020244
+    },
+    "LOWER": {
+     "SPY": -0.02453,
+     "SPY_TR": -0.014606,
+     "SPY_W": -0.015097,
+     "EW_ALL": -0.016576,
+     "CW_ALL": -0.030589,
+     "EW_WITH_H": 0.001629,
+     "EW_WITHOUT_H": -0.047839,
+     "EW_WITH_S": 0.006269,
+     "EW_FRAME": 0.012482,
+     "EW_FRAME_WREB": 0.020244
+    }
+   },
+   "counts": {
+    "members": 500,
+    "withSeries": 316,
+    "withoutSeries": 184,
+    "withSeriesWeight": 0.780073,
+    "boundedMembers": 6,
+    "boundedWeight": 0.006096,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 316
+    },
+    "frameListings": 1858,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 1858
+    },
+    "weeklyDates": [
+     "2010-03-26",
+     "2010-09-24"
+    ],
+    "spyTrDividendYield": 0.010029,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2010-09-30",
+   "t1": "2011-03-31",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.161745,
+     "SPY_TR": 0.172842,
+     "SPY_W": 0.143529,
+     "EW_ALL": 0.186071,
+     "CW_ALL": 0.160419,
+     "EW_WITH_H": 0.186626,
+     "EW_WITHOUT_H": 0.185117,
+     "EW_WITH_S": 0.170855,
+     "EW_FRAME": 0.211727,
+     "EW_FRAME_WREB": 0.213672
+    },
+    "LOWER": {
+     "SPY": 0.161745,
+     "SPY_TR": 0.172842,
+     "SPY_W": 0.143529,
+     "EW_ALL": 0.16959,
+     "CW_ALL": 0.157825,
+     "EW_WITH_H": 0.185865,
+     "EW_WITHOUT_H": 0.141639,
+     "EW_WITH_S": 0.170855,
+     "EW_FRAME": 0.211727,
+     "EW_FRAME_WREB": 0.213672
+    }
+   },
+   "counts": {
+    "members": 500,
+    "withSeries": 316,
+    "withoutSeries": 184,
+    "withSeriesWeight": 0.777333,
+    "boundedMembers": 9,
+    "boundedWeight": 0.003457,
+    "boundedWithSeries": 1,
+    "withSeriesKinds": {
+     "SERIES": 316
+    },
+    "frameListings": 1888,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 1888
+    },
+    "weeklyDates": [
+     "2010-09-24",
+     "2011-03-25"
+    ],
+    "spyTrDividendYield": 0.010279,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2011-03-31",
+   "t1": "2011-09-30",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.146617,
+     "SPY_TR": -0.137981,
+     "SPY_W": -0.138233,
+     "EW_ALL": -0.168644,
+     "CW_ALL": -0.145685,
+     "EW_WITH_H": -0.165961,
+     "EW_WITHOUT_H": -0.173443,
+     "EW_WITH_S": -0.158551,
+     "EW_FRAME": -0.18396,
+     "EW_FRAME_WREB": -0.186176
+    },
+    "LOWER": {
+     "SPY": -0.146617,
+     "SPY_TR": -0.137981,
+     "SPY_W": -0.138233,
+     "EW_ALL": -0.185194,
+     "CW_ALL": -0.150489,
+     "EW_WITH_H": -0.165961,
+     "EW_WITHOUT_H": -0.219599,
+     "EW_WITH_S": -0.158551,
+     "EW_FRAME": -0.18396,
+     "EW_FRAME_WREB": -0.186176
+    }
+   },
+   "counts": {
+    "members": 502,
+    "withSeries": 322,
+    "withoutSeries": 180,
+    "withSeriesWeight": 0.770473,
+    "boundedMembers": 9,
+    "boundedWeight": 0.005261,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 322
+    },
+    "frameListings": 1924,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 1924
+    },
+    "weeklyDates": [
+     "2011-03-25",
+     "2011-09-30"
+    ],
+    "spyTrDividendYield": 0.009299,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "SIDEWAYS"
+  },
+  {
+   "t0": "2011-09-30",
+   "t1": "2012-03-31",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.244454,
+     "SPY_TR": 0.257852,
+     "SPY_W": 0.244454,
+     "EW_ALL": 0.252478,
+     "CW_ALL": 0.245403,
+     "EW_WITH_H": 0.273634,
+     "EW_WITHOUT_H": 0.21284,
+     "EW_WITH_S": 0.272626,
+     "EW_FRAME": 0.271377,
+     "EW_FRAME_WREB": 0.288318
+    },
+    "LOWER": {
+     "SPY": 0.244454,
+     "SPY_TR": 0.257852,
+     "SPY_W": 0.244454,
+     "EW_ALL": 0.232478,
+     "CW_ALL": 0.242316,
+     "EW_WITH_H": 0.273634,
+     "EW_WITHOUT_H": 0.155369,
+     "EW_WITH_S": 0.272626,
+     "EW_FRAME": 0.271377,
+     "EW_FRAME_WREB": 0.288318
+    }
+   },
+   "counts": {
+    "members": 500,
+    "withSeries": 326,
+    "withoutSeries": 174,
+    "withSeriesWeight": 0.777129,
+    "boundedMembers": 10,
+    "boundedWeight": 0.003087,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 326
+    },
+    "frameListings": 1948,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 1948
+    },
+    "weeklyDates": [
+     "2011-09-30",
+     "2012-03-30"
+    ],
+    "spyTrDividendYield": 0.011974,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "CRASH_BEAR"
+  },
+  {
+   "t0": "2012-03-31",
+   "t1": "2012-09-30",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.022442,
+     "SPY_TR": 0.032881,
+     "SPY_W": 0.022442,
+     "EW_ALL": 0.002984,
+     "CW_ALL": 0.019223,
+     "EW_WITH_H": 0.003613,
+     "EW_WITHOUT_H": 0.001752,
+     "EW_WITH_S": 0.00237,
+     "EW_FRAME": 0.002725,
+     "EW_FRAME_WREB": 0.017885
+    },
+    "LOWER": {
+     "SPY": 0.022442,
+     "SPY_TR": 0.032881,
+     "SPY_W": 0.022442,
+     "EW_ALL": -0.019016,
+     "CW_ALL": 0.009931,
+     "EW_WITH_H": 0.003613,
+     "EW_WITHOUT_H": -0.063337,
+     "EW_WITH_S": 0.00237,
+     "EW_FRAME": 0.002725,
+     "EW_FRAME_WREB": 0.017885
+    }
+   },
+   "counts": {
+    "members": 500,
+    "withSeries": 331,
+    "withoutSeries": 169,
+    "withSeriesWeight": 0.76965,
+    "boundedMembers": 11,
+    "boundedWeight": 0.009292,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 331
+    },
+    "frameListings": 1980,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 1980
+    },
+    "weeklyDates": [
+     "2012-03-30",
+     "2012-09-28"
+    ],
+    "spyTrDividendYield": 0.010295,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "SIDEWAYS",
+   "regimeR2": "SIDEWAYS"
+  },
+  {
+   "t0": "2012-09-30",
+   "t1": "2013-03-31",
+   "months": 6,
+   "qualification": "NOT_QUALIFIED_ERROR",
+   "series": {
+    "ZERO": {
+     "SPY": 0.088213,
+     "SPY_TR": 0.100611,
+     "SPY_W": 0.088213,
+     "EW_ALL": 0.141416,
+     "CW_ALL": 0.078527,
+     "EW_WITH_H": 0.152759,
+     "EW_WITHOUT_H": 0.117602,
+     "EW_WITH_S": 0.154057,
+     "EW_FRAME": 0.15293,
+     "EW_FRAME_WREB": 0.157015
+    },
+    "LOWER": {
+     "SPY": 0.088213,
+     "SPY_TR": 0.100611,
+     "SPY_W": 0.088213,
+     "EW_ALL": 0.126649,
+     "CW_ALL": 0.074445,
+     "EW_WITH_H": 0.151668,
+     "EW_WITHOUT_H": 0.074124,
+     "EW_WITH_S": 0.154057,
+     "EW_FRAME": 0.15293,
+     "EW_FRAME_WREB": 0.157015
+    }
+   },
+   "counts": {
+    "members": 499,
+    "withSeries": 338,
+    "withoutSeries": 161,
+    "withSeriesWeight": 0.770657,
+    "boundedMembers": 8,
+    "boundedWeight": 0.006541,
+    "boundedWithSeries": 1,
+    "withSeriesKinds": {
+     "SERIES": 338
+    },
+    "frameListings": 2007,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2007
+    },
+    "weeklyDates": [
+     "2012-09-28",
+     "2013-03-28"
+    ],
+    "spyTrDividendYield": 0.011838,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "SIDEWAYS"
+  },
+  {
+   "t0": "2013-03-31",
+   "t1": "2013-09-30",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.072381,
+     "SPY_TR": 0.083485,
+     "SPY_W": 0.078126,
+     "EW_ALL": 0.092812,
+     "CW_ALL": 0.067605,
+     "EW_WITH_H": 0.094912,
+     "EW_WITHOUT_H": 0.088309,
+     "EW_WITH_S": 0.101128,
+     "EW_FRAME": 0.138395,
+     "EW_FRAME_WREB": 0.131404
+    },
+    "LOWER": {
+     "SPY": 0.072381,
+     "SPY_TR": 0.083485,
+     "SPY_W": 0.078126,
+     "EW_ALL": 0.078812,
+     "CW_ALL": 0.063045,
+     "EW_WITH_H": 0.094912,
+     "EW_WITHOUT_H": 0.044284,
+     "EW_WITH_S": 0.101128,
+     "EW_FRAME": 0.138395,
+     "EW_FRAME_WREB": 0.131404
+    }
+   },
+   "counts": {
+    "members": 500,
+    "withSeries": 341,
+    "withoutSeries": 159,
+    "withSeriesWeight": 0.780808,
+    "boundedMembers": 7,
+    "boundedWeight": 0.00456,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 341
+    },
+    "frameListings": 2045,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2045
+    },
+    "weeklyDates": [
+     "2013-03-28",
+     "2013-09-27"
+    ],
+    "spyTrDividendYield": 0.010692,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2013-09-30",
+   "t1": "2014-03-31",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.113089,
+     "SPY_TR": 0.124136,
+     "SPY_W": 0.098159,
+     "EW_ALL": 0.118203,
+     "CW_ALL": 0.112582,
+     "EW_WITH_H": 0.124761,
+     "EW_WITHOUT_H": 0.103604,
+     "EW_WITH_S": 0.10917,
+     "EW_FRAME": 0.115076,
+     "EW_FRAME_WREB": 0.120543
+    },
+    "LOWER": {
+     "SPY": 0.113089,
+     "SPY_TR": 0.124136,
+     "SPY_W": 0.098159,
+     "EW_ALL": 0.102203,
+     "CW_ALL": 0.107796,
+     "EW_WITH_H": 0.124761,
+     "EW_WITHOUT_H": 0.051991,
+     "EW_WITH_S": 0.10917,
+     "EW_FRAME": 0.115076,
+     "EW_FRAME_WREB": 0.120543
+    }
+   },
+   "counts": {
+    "members": 500,
+    "withSeries": 345,
+    "withoutSeries": 155,
+    "withSeriesWeight": 0.78646,
+    "boundedMembers": 8,
+    "boundedWeight": 0.004786,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 345
+    },
+    "frameListings": 2086,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2086
+    },
+    "weeklyDates": [
+     "2013-09-27",
+     "2014-03-28"
+    ],
+    "spyTrDividendYield": 0.010457,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2014-03-31",
+   "t1": "2014-09-30",
+   "months": 6,
+   "qualification": "NOT_QUALIFIED_ERROR",
+   "series": {
+    "ZERO": {
+     "SPY": 0.053527,
+     "SPY_TR": 0.063421,
+     "SPY_W": 0.066904,
+     "EW_ALL": 0.031641,
+     "CW_ALL": 0.04107,
+     "EW_WITH_H": 0.031105,
+     "EW_WITHOUT_H": 0.032881,
+     "EW_WITH_S": 0.047203,
+     "EW_FRAME": -0.002392,
+     "EW_FRAME_WREB": 0.003572
+    },
+    "LOWER": {
+     "SPY": 0.053527,
+     "SPY_TR": 0.063421,
+     "SPY_W": 0.066904,
+     "EW_ALL": 0.019641,
+     "CW_ALL": 0.037815,
+     "EW_WITH_H": 0.031105,
+     "EW_WITHOUT_H": -0.006854,
+     "EW_WITH_S": 0.047203,
+     "EW_FRAME": -0.002392,
+     "EW_FRAME_WREB": 0.003572
+    }
+   },
+   "counts": {
+    "members": 500,
+    "withSeries": 349,
+    "withoutSeries": 151,
+    "withSeriesWeight": 0.78885,
+    "boundedMembers": 6,
+    "boundedWeight": 0.003256,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 349
+    },
+    "frameListings": 2153,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2153
+    },
+    "weeklyDates": [
+     "2014-03-28",
+     "2014-09-26"
+    ],
+    "spyTrDividendYield": 0.00962,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2014-09-30",
+   "t1": "2015-03-31",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.047762,
+     "SPY_TR": 0.058292,
+     "SPY_W": 0.039616,
+     "EW_ALL": 0.068683,
+     "CW_ALL": 0.04452,
+     "EW_WITH_H": 0.072957,
+     "EW_WITHOUT_H": 0.05872,
+     "EW_WITH_S": 0.059891,
+     "EW_FRAME": 0.067855,
+     "EW_FRAME_WREB": 0.068294
+    },
+    "LOWER": {
+     "SPY": 0.047762,
+     "SPY_TR": 0.058292,
+     "SPY_W": 0.039616,
+     "EW_ALL": 0.048803,
+     "CW_ALL": 0.034057,
+     "EW_WITH_H": 0.072957,
+     "EW_WITHOUT_H": -0.007505,
+     "EW_WITH_S": 0.059891,
+     "EW_FRAME": 0.067855,
+     "EW_FRAME_WREB": 0.068294
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 352,
+    "withoutSeries": 151,
+    "withSeriesWeight": 0.784297,
+    "boundedMembers": 10,
+    "boundedWeight": 0.010462,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 352
+    },
+    "frameListings": 2227,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2227
+    },
+    "weeklyDates": [
+     "2014-09-26",
+     "2015-03-27"
+    ],
+    "spyTrDividendYield": 0.010264,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2015-03-31",
+   "t1": "2015-09-30",
+   "months": 6,
+   "qualification": "NOT_QUALIFIED_COVERAGE",
+   "series": {
+    "ZERO": {
+     "SPY": -0.071889,
+     "SPY_TR": -0.062208,
+     "SPY_W": -0.062555,
+     "EW_ALL": -0.096997,
+     "CW_ALL": -0.077578,
+     "EW_WITH_H": -0.092007,
+     "EW_WITHOUT_H": -0.109523,
+     "EW_WITH_S": -0.079677,
+     "EW_FRAME": -0.088461,
+     "EW_FRAME_WREB": -0.085424
+    },
+    "LOWER": {
+     "SPY": -0.071889,
+     "SPY_TR": -0.062208,
+     "SPY_W": -0.062555,
+     "EW_ALL": -0.126877,
+     "CW_ALL": -0.111185,
+     "EW_WITH_H": -0.092007,
+     "EW_WITHOUT_H": -0.214418,
+     "EW_WITH_S": -0.079677,
+     "EW_FRAME": -0.088461,
+     "EW_FRAME_WREB": -0.085424
+    }
+   },
+   "counts": {
+    "members": 502,
+    "withSeries": 359,
+    "withoutSeries": 143,
+    "withSeriesWeight": 0.784436,
+    "boundedMembers": 15,
+    "boundedWeight": 0.033608,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 359
+    },
+    "frameListings": 2273,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2273
+    },
+    "weeklyDates": [
+     "2015-03-27",
+     "2015-09-25"
+    ],
+    "spyTrDividendYield": 0.010017,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "SIDEWAYS"
+  },
+  {
+   "t0": "2015-09-30",
+   "t1": "2016-03-31",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.072707,
+     "SPY_TR": 0.08432,
+     "SPY_W": 0.053145,
+     "EW_ALL": 0.063674,
+     "CW_ALL": 0.071534,
+     "EW_WITH_H": 0.070425,
+     "EW_WITHOUT_H": 0.045539,
+     "EW_WITH_S": 0.043445,
+     "EW_FRAME": 0.009744,
+     "EW_FRAME_WREB": 0.019066
+    },
+    "LOWER": {
+     "SPY": 0.072707,
+     "SPY_TR": 0.08432,
+     "SPY_W": 0.053145,
+     "EW_ALL": 0.033971,
+     "CW_ALL": 0.059924,
+     "EW_WITH_H": 0.070425,
+     "EW_WITHOUT_H": -0.06395,
+     "EW_WITH_S": 0.043445,
+     "EW_FRAME": 0.009744,
+     "EW_FRAME_WREB": 0.019066
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 368,
+    "withoutSeries": 137,
+    "withSeriesWeight": 0.808225,
+    "boundedMembers": 16,
+    "boundedWeight": 0.013311,
+    "boundedWithSeries": 1,
+    "withSeriesKinds": {
+     "SERIES": 368
+    },
+    "frameListings": 2337,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2337
+    },
+    "weeklyDates": [
+     "2015-09-25",
+     "2016-03-24"
+    ],
+    "spyTrDividendYield": 0.011188,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "CRASH_BEAR"
+  },
+  {
+   "t0": "2016-03-31",
+   "t1": "2016-09-30",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.052452,
+     "SPY_TR": 0.063409,
+     "SPY_W": 0.064888,
+     "EW_ALL": 0.057063,
+     "CW_ALL": 0.049835,
+     "EW_WITH_H": 0.05851,
+     "EW_WITHOUT_H": 0.053628,
+     "EW_WITH_S": 0.073934,
+     "EW_FRAME": 0.15571,
+     "EW_FRAME_WREB": 0.161674
+    },
+    "LOWER": {
+     "SPY": 0.052452,
+     "SPY_TR": 0.063409,
+     "SPY_W": 0.064888,
+     "EW_ALL": 0.025442,
+     "CW_ALL": 0.035138,
+     "EW_WITH_H": 0.05851,
+     "EW_WITHOUT_H": -0.053039,
+     "EW_WITH_S": 0.073934,
+     "EW_FRAME": 0.15571,
+     "EW_FRAME_WREB": 0.161674
+    }
+   },
+   "counts": {
+    "members": 506,
+    "withSeries": 356,
+    "withoutSeries": 150,
+    "withSeriesWeight": 0.798301,
+    "boundedMembers": 16,
+    "boundedWeight": 0.014697,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 356
+    },
+    "frameListings": 2388,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2388
+    },
+    "weeklyDates": [
+     "2016-03-24",
+     "2016-09-30"
+    ],
+    "spyTrDividendYield": 0.010652,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2016-09-30",
+   "t1": "2017-03-31",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.089875,
+     "SPY_TR": 0.101256,
+     "SPY_W": 0.089875,
+     "EW_ALL": 0.075262,
+     "CW_ALL": 0.087475,
+     "EW_WITH_H": 0.08616,
+     "EW_WITHOUT_H": 0.046487,
+     "EW_WITH_S": 0.086164,
+     "EW_FRAME": 0.102694,
+     "EW_FRAME_WREB": 0.113463
+    },
+    "LOWER": {
+     "SPY": 0.089875,
+     "SPY_TR": 0.101256,
+     "SPY_W": 0.089875,
+     "EW_ALL": 0.051547,
+     "CW_ALL": 0.080719,
+     "EW_WITH_H": 0.08616,
+     "EW_WITHOUT_H": -0.039844,
+     "EW_WITH_S": 0.086164,
+     "EW_FRAME": 0.102694,
+     "EW_FRAME_WREB": 0.113463
+    }
+   },
+   "counts": {
+    "members": 506,
+    "withSeries": 367,
+    "withoutSeries": 139,
+    "withSeriesWeight": 0.810061,
+    "boundedMembers": 12,
+    "boundedWeight": 0.006757,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 367
+    },
+    "frameListings": 2442,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2442
+    },
+    "weeklyDates": [
+     "2016-09-30",
+     "2017-03-31"
+    ],
+    "spyTrDividendYield": 0.010871,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2017-03-31",
+   "t1": "2017-09-30",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.065708,
+     "SPY_TR": 0.076069,
+     "SPY_W": 0.065708,
+     "EW_ALL": 0.048014,
+     "CW_ALL": 0.063642,
+     "EW_WITH_H": 0.059673,
+     "EW_WITHOUT_H": 0.015734,
+     "EW_WITH_S": 0.06,
+     "EW_FRAME": 0.077237,
+     "EW_FRAME_WREB": 0.080504
+    },
+    "LOWER": {
+     "SPY": 0.065708,
+     "SPY_TR": 0.076069,
+     "SPY_W": 0.065708,
+     "EW_ALL": 0.022272,
+     "CW_ALL": 0.048151,
+     "EW_WITH_H": 0.059673,
+     "EW_WITHOUT_H": -0.081281,
+     "EW_WITH_S": 0.06,
+     "EW_FRAME": 0.077237,
+     "EW_FRAME_WREB": 0.080504
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 371,
+    "withoutSeries": 134,
+    "withSeriesWeight": 0.811183,
+    "boundedMembers": 13,
+    "boundedWeight": 0.01549,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 371
+    },
+    "frameListings": 2502,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2502
+    },
+    "weeklyDates": [
+     "2017-03-31",
+     "2017-09-29"
+    ],
+    "spyTrDividendYield": 0.010011,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2017-09-30",
+   "t1": "2018-03-31",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.047447,
+     "SPY_TR": 0.057391,
+     "SPY_W": 0.047447,
+     "EW_ALL": 0.043272,
+     "CW_ALL": 0.048161,
+     "EW_WITH_H": 0.048738,
+     "EW_WITHOUT_H": 0.027342,
+     "EW_WITH_S": 0.048488,
+     "EW_FRAME": 0.038026,
+     "EW_FRAME_WREB": 0.044671
+    },
+    "LOWER": {
+     "SPY": 0.047447,
+     "SPY_TR": 0.057391,
+     "SPY_W": 0.047447,
+     "EW_ALL": 0.031391,
+     "CW_ALL": 0.044367,
+     "EW_WITH_H": 0.048738,
+     "EW_WITHOUT_H": -0.019169,
+     "EW_WITH_S": 0.048488,
+     "EW_FRAME": 0.038026,
+     "EW_FRAME_WREB": 0.044671
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 376,
+    "withoutSeries": 129,
+    "withSeriesWeight": 0.816456,
+    "boundedMembers": 6,
+    "boundedWeight": 0.003794,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 376
+    },
+    "frameListings": 2566,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2566
+    },
+    "weeklyDates": [
+     "2017-09-29",
+     "2018-03-29"
+    ],
+    "spyTrDividendYield": 0.009698,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2018-03-31",
+   "t1": "2018-09-30",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.104769,
+     "SPY_TR": 0.114671,
+     "SPY_W": 0.104769,
+     "EW_ALL": 0.072424,
+     "CW_ALL": 0.101541,
+     "EW_WITH_H": 0.071157,
+     "EW_WITHOUT_H": 0.076275,
+     "EW_WITH_S": 0.072537,
+     "EW_FRAME": 0.090912,
+     "EW_FRAME_WREB": 0.095981
+    },
+    "LOWER": {
+     "SPY": 0.104769,
+     "SPY_TR": 0.114671,
+     "SPY_W": 0.104769,
+     "EW_ALL": 0.062523,
+     "CW_ALL": 0.09447,
+     "EW_WITH_H": 0.071157,
+     "EW_WITHOUT_H": 0.036275,
+     "EW_WITH_S": 0.072537,
+     "EW_FRAME": 0.090912,
+     "EW_FRAME_WREB": 0.095981
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 380,
+    "withoutSeries": 125,
+    "withSeriesWeight": 0.823531,
+    "boundedMembers": 5,
+    "boundedWeight": 0.007072,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 380
+    },
+    "frameListings": 2646,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2646
+    },
+    "weeklyDates": [
+     "2018-03-29",
+     "2018-09-28"
+    ],
+    "spyTrDividendYield": 0.009395,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2018-09-30",
+   "t1": "2019-03-31",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.028343,
+     "SPY_TR": -0.018279,
+     "SPY_W": -0.028343,
+     "EW_ALL": -0.024201,
+     "CW_ALL": -0.026812,
+     "EW_WITH_H": -0.022351,
+     "EW_WITHOUT_H": -0.029963,
+     "EW_WITH_S": -0.02286,
+     "EW_FRAME": -0.056237,
+     "EW_FRAME_WREB": -0.038398
+    },
+    "LOWER": {
+     "SPY": -0.028343,
+     "SPY_TR": -0.018279,
+     "SPY_W": -0.028343,
+     "EW_ALL": -0.050274,
+     "CW_ALL": -0.040487,
+     "EW_WITH_H": -0.022855,
+     "EW_WITHOUT_H": -0.135654,
+     "EW_WITH_S": -0.02286,
+     "EW_FRAME": -0.056237,
+     "EW_FRAME_WREB": -0.038398
+    }
+   },
+   "counts": {
+    "members": 506,
+    "withSeries": 383,
+    "withoutSeries": 123,
+    "withSeriesWeight": 0.825743,
+    "boundedMembers": 14,
+    "boundedWeight": 0.015341,
+    "boundedWithSeries": 1,
+    "withSeriesKinds": {
+     "SERIES": 383
+    },
+    "frameListings": 2723,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2723
+    },
+    "weeklyDates": [
+     "2018-09-28",
+     "2019-03-29"
+    ],
+    "spyTrDividendYield": 0.010194,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "CRASH_BEAR"
+  },
+  {
+   "t0": "2019-03-31",
+   "t1": "2019-09-30",
+   "months": 6,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.050588,
+     "SPY_TR": 0.060373,
+     "SPY_W": 0.045738,
+     "EW_ALL": 0.030743,
+     "CW_ALL": 0.04915,
+     "EW_WITH_H": 0.043203,
+     "EW_WITHOUT_H": -0.023734,
+     "EW_WITH_S": 0.038705,
+     "EW_FRAME": -0.012372,
+     "EW_FRAME_WREB": -0.01489
+    },
+    "LOWER": {
+     "SPY": 0.050588,
+     "SPY_TR": 0.060373,
+     "SPY_W": 0.045738,
+     "EW_ALL": -0.016782,
+     "CW_ALL": 0.026013,
+     "EW_WITH_H": 0.043203,
+     "EW_WITHOUT_H": -0.279053,
+     "EW_WITH_S": 0.038705,
+     "EW_FRAME": -0.012372,
+     "EW_FRAME_WREB": -0.01489
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 411,
+    "withoutSeries": 94,
+    "withSeriesWeight": 0.861066,
+    "boundedMembers": 24,
+    "boundedWeight": 0.023138,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 411
+    },
+    "frameListings": 2777,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2777
+    },
+    "weeklyDates": [
+     "2019-03-29",
+     "2019-09-27"
+    ],
+    "spyTrDividendYield": 0.009526,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": null
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2019-09-30",
+   "t1": "2019-12-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.084544,
+     "SPY_TR": 0.089328,
+     "SPY_W": 0.092959,
+     "EW_ALL": 0.071434,
+     "CW_ALL": 0.084674,
+     "EW_WITH_H": 0.068159,
+     "EW_WITHOUT_H": 0.089641,
+     "EW_WITH_S": 0.074044,
+     "EW_FRAME": 0.075184,
+     "EW_FRAME_WREB": 0.079812
+    },
+    "LOWER": {
+     "SPY": 0.084544,
+     "SPY_TR": 0.089328,
+     "SPY_W": 0.092959,
+     "EW_ALL": 0.063514,
+     "CW_ALL": 0.07972,
+     "EW_WITH_H": 0.068159,
+     "EW_WITHOUT_H": 0.037693,
+     "EW_WITH_S": 0.074044,
+     "EW_FRAME": 0.075184,
+     "EW_FRAME_WREB": 0.079812
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 428,
+    "withoutSeries": 77,
+    "withSeriesWeight": 0.88136,
+    "boundedMembers": 4,
+    "boundedWeight": 0.004954,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 428
+    },
+    "frameListings": 2857,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2857
+    },
+    "weeklyDates": [
+     "2019-09-27",
+     "2019-12-27"
+    ],
+    "spyTrDividendYield": 0.004785,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.090233
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2019-12-31",
+   "t1": "2020-03-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.199186,
+     "SPY_TR": -0.194774,
+     "SPY_W": -0.215078,
+     "EW_ALL": -0.273501,
+     "CW_ALL": -0.201021,
+     "EW_WITH_H": -0.266375,
+     "EW_WITHOUT_H": -0.31567,
+     "EW_WITH_S": -0.270429,
+     "EW_FRAME": -0.299773,
+     "EW_FRAME_WREB": -0.300353
+    },
+    "LOWER": {
+     "SPY": -0.199186,
+     "SPY_TR": -0.194774,
+     "SPY_W": -0.215078,
+     "EW_ALL": -0.275574,
+     "CW_ALL": -0.201696,
+     "EW_WITH_H": -0.266483,
+     "EW_WITHOUT_H": -0.329369,
+     "EW_WITH_S": -0.270429,
+     "EW_FRAME": -0.299773,
+     "EW_FRAME_WREB": -0.300353
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 432,
+    "withoutSeries": 73,
+    "withSeriesWeight": 0.878912,
+    "boundedMembers": 2,
+    "boundedWeight": 0.001814,
+    "boundedWithSeries": 1,
+    "withSeriesKinds": {
+     "SERIES": 432
+    },
+    "frameListings": 2893,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2893
+    },
+    "weeklyDates": [
+     "2019-12-27",
+     "2020-03-27"
+    ],
+    "spyTrDividendYield": 0.004412,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": -0.195037
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "CRASH_BEAR"
+  },
+  {
+   "t0": "2020-03-31",
+   "t1": "2020-06-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.196353,
+     "SPY_TR": 0.201862,
+     "SPY_W": 0.184003,
+     "EW_ALL": 0.21083,
+     "CW_ALL": 0.198588,
+     "EW_WITH_H": 0.199321,
+     "EW_WITHOUT_H": 0.281186,
+     "EW_WITH_S": 0.16256,
+     "EW_FRAME": 0.287601,
+     "EW_FRAME_WREB": 0.317322
+    },
+    "LOWER": {
+     "SPY": 0.196353,
+     "SPY_TR": 0.201862,
+     "SPY_W": 0.184003,
+     "EW_ALL": 0.20687,
+     "CW_ALL": 0.194179,
+     "EW_WITH_H": 0.199321,
+     "EW_WITHOUT_H": 0.253017,
+     "EW_WITH_S": 0.16256,
+     "EW_FRAME": 0.287601,
+     "EW_FRAME_WREB": 0.317322
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 434,
+    "withoutSeries": 71,
+    "withSeriesWeight": 0.8809,
+    "boundedMembers": 2,
+    "boundedWeight": 0.004409,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 434
+    },
+    "frameListings": 2928,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2928
+    },
+    "weeklyDates": [
+     "2020-03-27",
+     "2020-06-26"
+    ],
+    "spyTrDividendYield": 0.005509,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.204742
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2020-06-30",
+   "t1": "2020-09-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.086036,
+     "SPY_TR": 0.090641,
+     "SPY_W": 0.095584,
+     "EW_ALL": 0.062437,
+     "CW_ALL": 0.084721,
+     "EW_WITH_H": 0.067634,
+     "EW_WITHOUT_H": 0.028466,
+     "EW_WITH_S": 0.08644,
+     "EW_FRAME": 0.066688,
+     "EW_FRAME_WREB": 0.072734
+    },
+    "LOWER": {
+     "SPY": 0.086036,
+     "SPY_TR": 0.090641,
+     "SPY_W": 0.095584,
+     "EW_ALL": 0.062437,
+     "CW_ALL": 0.084721,
+     "EW_WITH_H": 0.067634,
+     "EW_WITHOUT_H": 0.028466,
+     "EW_WITH_S": 0.08644,
+     "EW_FRAME": 0.066688,
+     "EW_FRAME_WREB": 0.072734
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 438,
+    "withoutSeries": 67,
+    "withSeriesWeight": 0.875446,
+    "boundedMembers": 0,
+    "boundedWeight": 0,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 438
+    },
+    "frameListings": 2957,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 2957
+    },
+    "weeklyDates": [
+     "2020-06-26",
+     "2020-09-25"
+    ],
+    "spyTrDividendYield": 0.004605,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.089133
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2020-09-30",
+   "t1": "2020-12-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.116426,
+     "SPY_TR": 0.120652,
+     "SPY_W": 0.137347,
+     "EW_ALL": 0.178307,
+     "CW_ALL": 0.115486,
+     "EW_WITH_H": 0.175025,
+     "EW_WITHOUT_H": 0.199396,
+     "EW_WITH_S": 0.197602,
+     "EW_FRAME": 0.334565,
+     "EW_FRAME_WREB": 0.338977
+    },
+    "LOWER": {
+     "SPY": 0.116426,
+     "SPY_TR": 0.120652,
+     "SPY_W": 0.137347,
+     "EW_ALL": 0.172366,
+     "CW_ALL": 0.114659,
+     "EW_WITH_H": 0.175025,
+     "EW_WITHOUT_H": 0.155278,
+     "EW_WITH_S": 0.197602,
+     "EW_FRAME": 0.334565,
+     "EW_FRAME_WREB": 0.338977
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 437,
+    "withoutSeries": 68,
+    "withSeriesWeight": 0.868063,
+    "boundedMembers": 3,
+    "boundedWeight": 0.000827,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 437
+    },
+    "frameListings": 3028,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3028
+    },
+    "weeklyDates": [
+     "2020-09-25",
+     "2020-12-31"
+    ],
+    "spyTrDividendYield": 0.004225,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.121149
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2020-12-31",
+   "t1": "2021-03-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.060046,
+     "SPY_TR": 0.063831,
+     "SPY_W": 0.05911,
+     "EW_ALL": 0.108326,
+     "CW_ALL": 0.05782,
+     "EW_WITH_H": 0.104853,
+     "EW_WITHOUT_H": 0.131431,
+     "EW_WITH_S": 0.111159,
+     "EW_FRAME": 0.178339,
+     "EW_FRAME_WREB": 0.189145
+    },
+    "LOWER": {
+     "SPY": 0.060046,
+     "SPY_TR": 0.063831,
+     "SPY_W": 0.05911,
+     "EW_ALL": 0.102386,
+     "CW_ALL": 0.05684,
+     "EW_WITH_H": 0.104853,
+     "EW_WITHOUT_H": 0.085977,
+     "EW_WITH_S": 0.111159,
+     "EW_FRAME": 0.178339,
+     "EW_FRAME_WREB": 0.189145
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 439,
+    "withoutSeries": 66,
+    "withSeriesWeight": 0.866313,
+    "boundedMembers": 3,
+    "boundedWeight": 0.000981,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 439
+    },
+    "frameListings": 3125,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3125
+    },
+    "weeklyDates": [
+     "2020-12-31",
+     "2021-03-26"
+    ],
+    "spyTrDividendYield": 0.003785,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.061463
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2021-03-31",
+   "t1": "2021-06-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.08006,
+     "SPY_TR": 0.08363,
+     "SPY_W": 0.077352,
+     "EW_ALL": 0.063522,
+     "CW_ALL": 0.081504,
+     "EW_WITH_H": 0.064013,
+     "EW_WITHOUT_H": 0.060193,
+     "EW_WITH_S": 0.062807,
+     "EW_FRAME": 0.062061,
+     "EW_FRAME_WREB": 0.064688
+    },
+    "LOWER": {
+     "SPY": 0.08006,
+     "SPY_TR": 0.08363,
+     "SPY_W": 0.077352,
+     "EW_ALL": 0.059121,
+     "CW_ALL": 0.080691,
+     "EW_WITH_H": 0.063499,
+     "EW_WITHOUT_H": 0.029424,
+     "EW_WITH_S": 0.062807,
+     "EW_FRAME": 0.062061,
+     "EW_FRAME_WREB": 0.064688
+    }
+   },
+   "counts": {
+    "members": 506,
+    "withSeries": 441,
+    "withoutSeries": 65,
+    "withSeriesWeight": 0.871692,
+    "boundedMembers": 3,
+    "boundedWeight": 0.001181,
+    "boundedWithSeries": 1,
+    "withSeriesKinds": {
+     "SERIES": 441
+    },
+    "frameListings": 3212,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3212
+    },
+    "weeklyDates": [
+     "2021-03-26",
+     "2021-06-25"
+    ],
+    "spyTrDividendYield": 0.00357,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.085279
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2021-06-30",
+   "t1": "2021-09-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.002523,
+     "SPY_TR": 0.005829,
+     "SPY_W": 0.040552,
+     "EW_ALL": -0.010749,
+     "CW_ALL": 0.001364,
+     "EW_WITH_H": -0.011555,
+     "EW_WITHOUT_H": -0.005079,
+     "EW_WITH_S": 0.013222,
+     "EW_FRAME": -0.038924,
+     "EW_FRAME_WREB": -0.038847
+    },
+    "LOWER": {
+     "SPY": 0.002523,
+     "SPY_TR": 0.005829,
+     "SPY_W": 0.040552,
+     "EW_ALL": -0.014702,
+     "CW_ALL": -0.000523,
+     "EW_WITH_H": -0.011555,
+     "EW_WITHOUT_H": -0.036825,
+     "EW_WITH_S": 0.013222,
+     "EW_FRAME": -0.038924,
+     "EW_FRAME_WREB": -0.038847
+    }
+   },
+   "counts": {
+    "members": 506,
+    "withSeries": 443,
+    "withoutSeries": 63,
+    "withSeriesWeight": 0.869427,
+    "boundedMembers": 2,
+    "boundedWeight": 0.001888,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 443
+    },
+    "frameListings": 3322,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3322
+    },
+    "weeklyDates": [
+     "2021-06-25",
+     "2021-09-24"
+    ],
+    "spyTrDividendYield": 0.003306,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.005674
+   },
+   "regimeR1": "SIDEWAYS",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2021-09-30",
+   "t1": "2021-12-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.106772,
+     "SPY_TR": 0.110372,
+     "SPY_W": 0.069947,
+     "EW_ALL": 0.085565,
+     "CW_ALL": 0.106294,
+     "EW_WITH_H": 0.09207,
+     "EW_WITHOUT_H": 0.039824,
+     "EW_WITH_S": 0.062378,
+     "EW_FRAME": -0.027799,
+     "EW_FRAME_WREB": -0.026548
+    },
+    "LOWER": {
+     "SPY": 0.106772,
+     "SPY_TR": 0.110372,
+     "SPY_W": 0.069947,
+     "EW_ALL": 0.083588,
+     "CW_ALL": 0.105616,
+     "EW_WITH_H": 0.09207,
+     "EW_WITHOUT_H": 0.023951,
+     "EW_WITH_S": 0.062378,
+     "EW_FRAME": -0.027799,
+     "EW_FRAME_WREB": -0.026548
+    }
+   },
+   "counts": {
+    "members": 506,
+    "withSeries": 443,
+    "withoutSeries": 63,
+    "withSeriesWeight": 0.864247,
+    "boundedMembers": 1,
+    "boundedWeight": 0.000678,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 443
+    },
+    "frameListings": 3429,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3429
+    },
+    "weeklyDates": [
+     "2021-09-24",
+     "2021-12-31"
+    ],
+    "spyTrDividendYield": 0.0036,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.1099
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2021-12-31",
+   "t1": "2022-03-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.049099,
+     "SPY_TR": -0.045846,
+     "SPY_W": -0.046888,
+     "EW_ALL": -0.029983,
+     "CW_ALL": -0.049047,
+     "EW_WITH_H": -0.032094,
+     "EW_WITHOUT_H": -0.014866,
+     "EW_WITH_S": -0.027063,
+     "EW_FRAME": -0.048818,
+     "EW_FRAME_WREB": -0.04878
+    },
+    "LOWER": {
+     "SPY": -0.049099,
+     "SPY_TR": -0.045846,
+     "SPY_W": -0.046888,
+     "EW_ALL": -0.03471,
+     "CW_ALL": -0.052534,
+     "EW_WITH_H": -0.032977,
+     "EW_WITHOUT_H": -0.047124,
+     "EW_WITH_S": -0.027063,
+     "EW_FRAME": -0.048818,
+     "EW_FRAME_WREB": -0.04878
+    }
+   },
+   "counts": {
+    "members": 506,
+    "withSeries": 444,
+    "withoutSeries": 62,
+    "withSeriesWeight": 0.860513,
+    "boundedMembers": 4,
+    "boundedWeight": 0.007208,
+    "boundedWithSeries": 2,
+    "withSeriesKinds": {
+     "SERIES": 444
+    },
+    "frameListings": 3534,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3534
+    },
+    "weeklyDates": [
+     "2021-12-31",
+     "2022-03-25"
+    ],
+    "spyTrDividendYield": 0.003253,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": -0.046215
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "CRASH_BEAR"
+  },
+  {
+   "t0": "2022-03-31",
+   "t1": "2022-06-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.164711,
+     "SPY_TR": -0.16129,
+     "SPY_W": -0.138307,
+     "EW_ALL": -0.147539,
+     "CW_ALL": -0.16509,
+     "EW_WITH_H": -0.144857,
+     "EW_WITHOUT_H": -0.167478,
+     "EW_WITH_S": -0.123319,
+     "EW_FRAME": -0.158943,
+     "EW_FRAME_WREB": -0.154936
+    },
+    "LOWER": {
+     "SPY": -0.164711,
+     "SPY_TR": -0.16129,
+     "SPY_W": -0.138307,
+     "EW_ALL": -0.151492,
+     "CW_ALL": -0.166032,
+     "EW_WITH_H": -0.144857,
+     "EW_WITHOUT_H": -0.200811,
+     "EW_WITH_S": -0.123319,
+     "EW_FRAME": -0.158943,
+     "EW_FRAME_WREB": -0.154936
+    }
+   },
+   "counts": {
+    "members": 506,
+    "withSeries": 446,
+    "withoutSeries": 60,
+    "withSeriesWeight": 0.860429,
+    "boundedMembers": 2,
+    "boundedWeight": 0.000943,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 446
+    },
+    "frameListings": 3571,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3571
+    },
+    "weeklyDates": [
+     "2022-03-25",
+     "2022-06-24"
+    ],
+    "spyTrDividendYield": 0.003421,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": -0.160808
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "CRASH_BEAR"
+  },
+  {
+   "t0": "2022-06-30",
+   "t1": "2022-09-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.053201,
+     "SPY_TR": -0.049105,
+     "SPY_W": -0.084342,
+     "EW_ALL": -0.051909,
+     "CW_ALL": -0.052816,
+     "EW_WITH_H": -0.048552,
+     "EW_WITHOUT_H": -0.07778,
+     "EW_WITH_S": -0.075197,
+     "EW_FRAME": -0.082188,
+     "EW_FRAME_WREB": -0.075844
+    },
+    "LOWER": {
+     "SPY": -0.053201,
+     "SPY_TR": -0.049105,
+     "SPY_W": -0.084342,
+     "EW_ALL": -0.051909,
+     "CW_ALL": -0.052816,
+     "EW_WITH_H": -0.048552,
+     "EW_WITHOUT_H": -0.07778,
+     "EW_WITH_S": -0.075197,
+     "EW_FRAME": -0.082188,
+     "EW_FRAME_WREB": -0.075844
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 447,
+    "withoutSeries": 58,
+    "withSeriesWeight": 0.865242,
+    "boundedMembers": 0,
+    "boundedWeight": 0,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 447
+    },
+    "frameListings": 3602,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3602
+    },
+    "weeklyDates": [
+     "2022-06-24",
+     "2022-09-30"
+    ],
+    "spyTrDividendYield": 0.004095,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": -0.048837
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "CRASH_BEAR"
+  },
+  {
+   "t0": "2022-09-30",
+   "t1": "2022-12-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.070693,
+     "SPY_TR": 0.075249,
+     "SPY_W": 0.070693,
+     "EW_ALL": 0.106697,
+     "CW_ALL": 0.070204,
+     "EW_WITH_H": 0.111366,
+     "EW_WITHOUT_H": 0.069995,
+     "EW_WITH_S": 0.111771,
+     "EW_FRAME": 0.053325,
+     "EW_FRAME_WREB": 0.055056
+    },
+    "LOWER": {
+     "SPY": 0.070693,
+     "SPY_TR": 0.075249,
+     "SPY_W": 0.070693,
+     "EW_ALL": 0.096796,
+     "CW_ALL": 0.067499,
+     "EW_WITH_H": 0.111366,
+     "EW_WITHOUT_H": -0.017724,
+     "EW_WITH_S": 0.111771,
+     "EW_FRAME": 0.053325,
+     "EW_FRAME_WREB": 0.055056
+    }
+   },
+   "counts": {
+    "members": 505,
+    "withSeries": 448,
+    "withoutSeries": 57,
+    "withSeriesWeight": 0.86504,
+    "boundedMembers": 5,
+    "boundedWeight": 0.002704,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 448
+    },
+    "frameListings": 3637,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3637
+    },
+    "weeklyDates": [
+     "2022-09-30",
+     "2022-12-30"
+    ],
+    "spyTrDividendYield": 0.004557,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.075405
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "CRASH_BEAR"
+  },
+  {
+   "t0": "2022-12-31",
+   "t1": "2023-03-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.070497,
+     "SPY_TR": 0.074752,
+     "SPY_W": 0.070497,
+     "EW_ALL": 0.02982,
+     "CW_ALL": 0.070032,
+     "EW_WITH_H": 0.031105,
+     "EW_WITHOUT_H": 0.018658,
+     "EW_WITH_S": 0.031816,
+     "EW_FRAME": 0.043756,
+     "EW_FRAME_WREB": 0.052838
+    },
+    "LOWER": {
+     "SPY": 0.070497,
+     "SPY_TR": 0.074752,
+     "SPY_W": 0.070497,
+     "EW_ALL": 0.025852,
+     "CW_ALL": 0.069394,
+     "EW_WITH_H": 0.031105,
+     "EW_WITHOUT_H": -0.019803,
+     "EW_WITH_S": 0.031816,
+     "EW_FRAME": 0.043756,
+     "EW_FRAME_WREB": 0.052838
+    }
+   },
+   "counts": {
+    "members": 504,
+    "withSeries": 452,
+    "withoutSeries": 52,
+    "withSeriesWeight": 0.878266,
+    "boundedMembers": 2,
+    "boundedWeight": 0.000637,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 452
+    },
+    "frameListings": 3658,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3658
+    },
+    "weeklyDates": [
+     "2022-12-30",
+     "2023-03-31"
+    ],
+    "spyTrDividendYield": 0.004256,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.07482
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2023-03-31",
+   "t1": "2023-06-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.082782,
+     "SPY_TR": 0.086757,
+     "SPY_W": 0.082782,
+     "EW_ALL": 0.035851,
+     "CW_ALL": 0.08314,
+     "EW_WITH_H": 0.041352,
+     "EW_WITHOUT_H": -0.013012,
+     "EW_WITH_S": 0.041352,
+     "EW_FRAME": 0.03842,
+     "EW_FRAME_WREB": 0.045333
+    },
+    "LOWER": {
+     "SPY": 0.082782,
+     "SPY_TR": 0.086757,
+     "SPY_W": 0.082782,
+     "EW_ALL": 0.033867,
+     "CW_ALL": 0.083066,
+     "EW_WITH_H": 0.041352,
+     "EW_WITHOUT_H": -0.03262,
+     "EW_WITH_S": 0.041352,
+     "EW_FRAME": 0.03842,
+     "EW_FRAME_WREB": 0.045333
+    }
+   },
+   "counts": {
+    "members": 504,
+    "withSeries": 453,
+    "withoutSeries": 51,
+    "withSeriesWeight": 0.8695,
+    "boundedMembers": 1,
+    "boundedWeight": 0.000074,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 453
+    },
+    "frameListings": 3685,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3685
+    },
+    "weeklyDates": [
+     "2023-03-31",
+     "2023-06-30"
+    ],
+    "spyTrDividendYield": 0.003975,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.086974
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2023-06-30",
+   "t1": "2023-09-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.035643,
+     "SPY_TR": -0.031972,
+     "SPY_W": -0.035643,
+     "EW_ALL": -0.051964,
+     "CW_ALL": -0.03618,
+     "EW_WITH_H": -0.052191,
+     "EW_WITHOUT_H": -0.049815,
+     "EW_WITH_S": -0.052093,
+     "EW_FRAME": -0.052827,
+     "EW_FRAME_WREB": -0.057584
+    },
+    "LOWER": {
+     "SPY": -0.035643,
+     "SPY_TR": -0.031972,
+     "SPY_W": -0.035643,
+     "EW_ALL": -0.05237,
+     "CW_ALL": -0.03629,
+     "EW_WITH_H": -0.05264,
+     "EW_WITHOUT_H": -0.049815,
+     "EW_WITH_S": -0.052093,
+     "EW_FRAME": -0.053096,
+     "EW_FRAME_WREB": -0.057584
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 455,
+    "withoutSeries": 48,
+    "withSeriesWeight": 0.865544,
+    "boundedMembers": 1,
+    "boundedWeight": 0.000536,
+    "boundedWithSeries": 1,
+    "withSeriesKinds": {
+     "SERIES": 455
+    },
+    "frameListings": 3717,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3716,
+     "LAST_CLOSE": 1
+    },
+    "weeklyDates": [
+     "2023-06-30",
+     "2023-09-29"
+    ],
+    "spyTrDividendYield": 0.003671,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": -0.032951
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2023-09-30",
+   "t1": "2023-12-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.111888,
+     "SPY_TR": 0.115988,
+     "SPY_W": 0.111888,
+     "EW_ALL": 0.111715,
+     "CW_ALL": 0.111176,
+     "EW_WITH_H": 0.113494,
+     "EW_WITHOUT_H": 0.094859,
+     "EW_WITH_S": 0.113494,
+     "EW_FRAME": 0.116542,
+     "EW_FRAME_WREB": 0.12458
+    },
+    "LOWER": {
+     "SPY": 0.111888,
+     "SPY_TR": 0.115988,
+     "SPY_W": 0.111888,
+     "EW_ALL": 0.107739,
+     "CW_ALL": 0.108863,
+     "EW_WITH_H": 0.113494,
+     "EW_WITHOUT_H": 0.053192,
+     "EW_WITH_S": 0.113494,
+     "EW_FRAME": 0.11601,
+     "EW_FRAME_WREB": 0.12458
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 455,
+    "withoutSeries": 48,
+    "withSeriesWeight": 0.870991,
+    "boundedMembers": 2,
+    "boundedWeight": 0.002313,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 455
+    },
+    "frameListings": 3757,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3755,
+     "LAST_CLOSE": 2
+    },
+    "weeklyDates": [
+     "2023-09-29",
+     "2023-12-29"
+    ],
+    "spyTrDividendYield": 0.0041,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.116462
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "RECOVERY"
+  },
+  {
+   "t0": "2023-12-31",
+   "t1": "2024-03-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.100482,
+     "SPY_TR": 0.104169,
+     "SPY_W": 0.100482,
+     "EW_ALL": 0.07461,
+     "CW_ALL": 0.101737,
+     "EW_WITH_H": 0.078103,
+     "EW_WITHOUT_H": 0.039056,
+     "EW_WITH_S": 0.078102,
+     "EW_FRAME": 0.045472,
+     "EW_FRAME_WREB": 0.046171
+    },
+    "LOWER": {
+     "SPY": 0.100482,
+     "SPY_TR": 0.104169,
+     "SPY_W": 0.100482,
+     "EW_ALL": 0.07461,
+     "CW_ALL": 0.101737,
+     "EW_WITH_H": 0.078103,
+     "EW_WITHOUT_H": 0.039056,
+     "EW_WITH_S": 0.078102,
+     "EW_FRAME": 0.045118,
+     "EW_FRAME_WREB": 0.046171
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 458,
+    "withoutSeries": 45,
+    "withSeriesWeight": 0.873864,
+    "boundedMembers": 0,
+    "boundedWeight": 0,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 458
+    },
+    "frameListings": 3787,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3785,
+     "LAST_CLOSE": 2
+    },
+    "weeklyDates": [
+     "2023-12-29",
+     "2024-03-28"
+    ],
+    "spyTrDividendYield": 0.003687,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.105266
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2024-03-31",
+   "t1": "2024-06-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.040434,
+     "SPY_TR": 0.043785,
+     "SPY_W": 0.040434,
+     "EW_ALL": -0.032097,
+     "CW_ALL": 0.037957,
+     "EW_WITH_H": -0.033581,
+     "EW_WITHOUT_H": -0.016999,
+     "EW_WITH_S": -0.033034,
+     "EW_FRAME": -0.046158,
+     "EW_FRAME_WREB": -0.042691
+    },
+    "LOWER": {
+     "SPY": 0.040434,
+     "SPY_TR": 0.043785,
+     "SPY_W": 0.040434,
+     "EW_ALL": -0.034085,
+     "CW_ALL": 0.036567,
+     "EW_WITH_H": -0.033581,
+     "EW_WITHOUT_H": -0.039221,
+     "EW_WITH_S": -0.033034,
+     "EW_FRAME": -0.046682,
+     "EW_FRAME_WREB": -0.042691
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 458,
+    "withoutSeries": 45,
+    "withSeriesWeight": 0.890274,
+    "boundedMembers": 1,
+    "boundedWeight": 0.00139,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 458
+    },
+    "frameListings": 3835,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3833,
+     "LAST_CLOSE": 2
+    },
+    "weeklyDates": [
+     "2024-03-28",
+     "2024-06-28"
+    ],
+    "spyTrDividendYield": 0.00335,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.042411
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2024-06-30",
+   "t1": "2024-09-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.05428,
+     "SPY_TR": 0.0575,
+     "SPY_W": 0.050072,
+     "EW_ALL": 0.089686,
+     "CW_ALL": 0.055214,
+     "EW_WITH_H": 0.091034,
+     "EW_WITHOUT_H": 0.075274,
+     "EW_WITH_S": 0.089692,
+     "EW_FRAME": 0.068287,
+     "EW_FRAME_WREB": 0.073856
+    },
+    "LOWER": {
+     "SPY": 0.05428,
+     "SPY_TR": 0.0575,
+     "SPY_W": 0.050072,
+     "EW_ALL": 0.087698,
+     "CW_ALL": 0.054936,
+     "EW_WITH_H": 0.091034,
+     "EW_WITHOUT_H": 0.052018,
+     "EW_WITH_S": 0.089692,
+     "EW_FRAME": 0.067422,
+     "EW_FRAME_WREB": 0.073856
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 460,
+    "withoutSeries": 43,
+    "withSeriesWeight": 0.880064,
+    "boundedMembers": 1,
+    "boundedWeight": 0.000279,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 460
+    },
+    "frameListings": 3875,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3871,
+     "LAST_CLOSE": 4
+    },
+    "weeklyDates": [
+     "2024-06-28",
+     "2024-09-27"
+    ],
+    "spyTrDividendYield": 0.00322,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.058465
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2024-09-30",
+   "t1": "2024-12-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.021472,
+     "SPY_TR": 0.024631,
+     "SPY_W": 0.041192,
+     "EW_ALL": -0.022654,
+     "CW_ALL": 0.020921,
+     "EW_WITH_H": -0.022921,
+     "EW_WITHOUT_H": -0.019716,
+     "EW_WITH_S": -0.01247,
+     "EW_FRAME": 0.07063,
+     "EW_FRAME_WREB": 0.066083
+    },
+    "LOWER": {
+     "SPY": 0.021472,
+     "SPY_TR": 0.024631,
+     "SPY_W": 0.041192,
+     "EW_ALL": -0.026622,
+     "CW_ALL": 0.02039,
+     "EW_WITH_H": -0.022921,
+     "EW_WITHOUT_H": -0.067335,
+     "EW_WITH_S": -0.01247,
+     "EW_FRAME": 0.06927,
+     "EW_FRAME_WREB": 0.066083
+    }
+   },
+   "counts": {
+    "members": 504,
+    "withSeries": 462,
+    "withoutSeries": 42,
+    "withSeriesWeight": 0.87637,
+    "boundedMembers": 2,
+    "boundedWeight": 0.000531,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 462
+    },
+    "frameListings": 3920,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3913,
+     "LAST_CLOSE": 7
+    },
+    "weeklyDates": [
+     "2024-09-27",
+     "2024-12-27"
+    ],
+    "spyTrDividendYield": 0.003159,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.0238
+   },
+   "regimeR1": "SIDEWAYS",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2024-12-31",
+   "t1": "2025-03-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.04554,
+     "SPY_TR": -0.042447,
+     "SPY_W": -0.066133,
+     "EW_ALL": -0.010267,
+     "CW_ALL": -0.045998,
+     "EW_WITH_H": -0.010229,
+     "EW_WITHOUT_H": -0.010724,
+     "EW_WITH_S": -0.02585,
+     "EW_FRAME": -0.08795,
+     "EW_FRAME_WREB": -0.087076
+    },
+    "LOWER": {
+     "SPY": -0.04554,
+     "SPY_TR": -0.042447,
+     "SPY_W": -0.066133,
+     "EW_ALL": -0.010267,
+     "CW_ALL": -0.045998,
+     "EW_WITH_H": -0.010229,
+     "EW_WITHOUT_H": -0.010724,
+     "EW_WITH_S": -0.02585,
+     "EW_FRAME": -0.089327,
+     "EW_FRAME_WREB": -0.087076
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 464,
+    "withoutSeries": 39,
+    "withSeriesWeight": 0.87229,
+    "boundedMembers": 0,
+    "boundedWeight": 0,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 464
+    },
+    "frameListings": 3987,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 3981,
+     "LAST_CLOSE": 6
+    },
+    "weeklyDates": [
+     "2024-12-27",
+     "2025-03-28"
+    ],
+    "spyTrDividendYield": 0.003093,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": -0.042771
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2025-03-31",
+   "t1": "2025-06-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.104507,
+     "SPY_TR": 0.107747,
+     "SPY_W": 0.10663,
+     "EW_ALL": 0.051681,
+     "CW_ALL": 0.105105,
+     "EW_WITH_H": 0.051744,
+     "EW_WITHOUT_H": 0.050936,
+     "EW_WITH_S": 0.05378,
+     "EW_FRAME": 0.080263,
+     "EW_FRAME_WREB": 0.090399
+    },
+    "LOWER": {
+     "SPY": 0.104507,
+     "SPY_TR": 0.107747,
+     "SPY_W": 0.10663,
+     "EW_ALL": 0.049222,
+     "CW_ALL": 0.104134,
+     "EW_WITH_H": 0.051233,
+     "EW_WITHOUT_H": 0.025295,
+     "EW_WITH_S": 0.05378,
+     "EW_FRAME": 0.077562,
+     "EW_FRAME_WREB": 0.090399
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 464,
+    "withoutSeries": 39,
+    "withSeriesWeight": 0.879204,
+    "boundedMembers": 2,
+    "boundedWeight": 0.001197,
+    "boundedWithSeries": 1,
+    "withSeriesKinds": {
+     "SERIES": 464
+    },
+    "frameListings": 4062,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 4051,
+     "LAST_CLOSE": 11
+    },
+    "weeklyDates": [
+     "2025-03-28",
+     "2025-06-27"
+    ],
+    "spyTrDividendYield": 0.00324,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.109084
+   },
+   "regimeR1": "CRASH_BEAR",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2025-06-30",
+   "t1": "2025-09-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.078223,
+     "SPY_TR": 0.081156,
+     "SPY_W": 0.076288,
+     "EW_ALL": 0.041167,
+     "CW_ALL": 0.077673,
+     "EW_WITH_H": 0.039649,
+     "EW_WITHOUT_H": 0.059267,
+     "EW_WITH_S": 0.039187,
+     "EW_FRAME": 0.130536,
+     "EW_FRAME_WREB": 0.138502
+    },
+    "LOWER": {
+     "SPY": 0.078223,
+     "SPY_TR": 0.081156,
+     "SPY_W": 0.076288,
+     "EW_ALL": 0.033231,
+     "CW_ALL": 0.076388,
+     "EW_WITH_H": 0.039649,
+     "EW_WITHOUT_H": -0.043297,
+     "EW_WITH_S": 0.039187,
+     "EW_FRAME": 0.12908,
+     "EW_FRAME_WREB": 0.138502
+    }
+   },
+   "counts": {
+    "members": 504,
+    "withSeries": 465,
+    "withoutSeries": 39,
+    "withSeriesWeight": 0.892031,
+    "boundedMembers": 4,
+    "boundedWeight": 0.001286,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 465
+    },
+    "frameListings": 4141,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 4135,
+     "LAST_CLOSE": 6
+    },
+    "weeklyDates": [
+     "2025-06-27",
+     "2025-09-26"
+    ],
+    "spyTrDividendYield": 0.002934,
+    "spyTrCarriedForward": false,
+    "nportTotalReturn": 0.080915
+   },
+   "regimeR1": "RECOVERY",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2025-09-30",
+   "t1": "2025-12-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.023627,
+     "SPY_TR": 0.026348,
+     "SPY_W": 0.043048,
+     "EW_ALL": 0.006737,
+     "CW_ALL": 0.023115,
+     "EW_WITH_H": 0.005572,
+     "EW_WITHOUT_H": 0.023333,
+     "EW_WITH_S": 0.024509,
+     "EW_FRAME": -0.007205,
+     "EW_FRAME_WREB": -0.011246
+    },
+    "LOWER": {
+     "SPY": 0.023627,
+     "SPY_TR": 0.026348,
+     "SPY_W": 0.043048,
+     "EW_ALL": 0.002761,
+     "CW_ALL": 0.022543,
+     "EW_WITH_H": 0.005572,
+     "EW_WITHOUT_H": -0.037273,
+     "EW_WITH_S": 0.024509,
+     "EW_FRAME": -0.011461,
+     "EW_FRAME_WREB": -0.011246
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 470,
+    "withoutSeries": 33,
+    "withSeriesWeight": 0.881583,
+    "boundedMembers": 2,
+    "boundedWeight": 0.000573,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 470
+    },
+    "frameListings": 4269,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 4249,
+     "TERMINAL_CASH": 2,
+     "LAST_CLOSE": 18
+    },
+    "weeklyDates": [
+     "2025-09-26",
+     "2025-12-26"
+    ],
+    "spyTrDividendYield": 0.002721,
+    "spyTrCarriedForward": true,
+    "nportTotalReturn": 0.026166
+   },
+   "regimeR1": "SIDEWAYS",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2025-12-31",
+   "t1": "2026-03-31",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": -0.04631,
+     "SPY_TR": -0.043652,
+     "SPY_W": -0.081442,
+     "EW_ALL": 0.001199,
+     "CW_ALL": -0.046797,
+     "EW_WITH_H": -0.004743,
+     "EW_WITHOUT_H": 0.08583,
+     "EW_WITH_S": -0.031784,
+     "EW_FRAME": -0.055625,
+     "EW_FRAME_WREB": -0.056878
+    },
+    "LOWER": {
+     "SPY": -0.04631,
+     "SPY_TR": -0.043652,
+     "SPY_W": -0.081442,
+     "EW_ALL": -0.000789,
+     "CW_ALL": -0.046985,
+     "EW_WITH_H": -0.004743,
+     "EW_WITHOUT_H": 0.055527,
+     "EW_WITH_S": -0.031784,
+     "EW_FRAME": -0.058085,
+     "EW_FRAME_WREB": -0.056878
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 470,
+    "withoutSeries": 33,
+    "withSeriesWeight": 0.872306,
+    "boundedMembers": 1,
+    "boundedWeight": 0.000189,
+    "boundedWithSeries": 0,
+    "withSeriesKinds": {
+     "SERIES": 470
+    },
+    "frameListings": 4268,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 4254,
+     "LAST_CLOSE": 13,
+     "TERMINAL_CASH": 1
+    },
+    "weeklyDates": [
+     "2025-12-26",
+     "2026-03-27"
+    ],
+    "spyTrDividendYield": 0.002658,
+    "spyTrCarriedForward": true,
+    "nportTotalReturn": -0.043438
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  },
+  {
+   "t0": "2026-03-31",
+   "t1": "2026-06-30",
+   "months": 3,
+   "qualification": "QUALIFIED",
+   "series": {
+    "ZERO": {
+     "SPY": 0.148276,
+     "SPY_TR": 0.151063,
+     "SPY_W": 0.149663,
+     "EW_ALL": 0.107149,
+     "CW_ALL": 0.14853,
+     "EW_WITH_H": 0.10617,
+     "EW_WITHOUT_H": 0.121098,
+     "EW_WITH_S": 0.123928,
+     "EW_FRAME": 0.13453,
+     "EW_FRAME_WREB": 0.139422
+    },
+    "LOWER": {
+     "SPY": 0.148276,
+     "SPY_TR": 0.151063,
+     "SPY_W": 0.149663,
+     "EW_ALL": 0.104345,
+     "CW_ALL": 0.147823,
+     "EW_WITH_H": 0.105296,
+     "EW_WITHOUT_H": 0.090795,
+     "EW_WITH_S": 0.123928,
+     "EW_FRAME": 0.130784,
+     "EW_FRAME_WREB": 0.139422
+    }
+   },
+   "counts": {
+    "members": 503,
+    "withSeries": 470,
+    "withoutSeries": 33,
+    "withSeriesWeight": 0.874208,
+    "boundedMembers": 2,
+    "boundedWeight": 0.001035,
+    "boundedWithSeries": 1,
+    "withSeriesKinds": {
+     "SERIES": 470
+    },
+    "frameListings": 4254,
+    "frameSeriesGapExcluded": 0,
+    "frameKinds": {
+     "SERIES": 4238,
+     "LAST_CLOSE": 16
+    },
+    "weeklyDates": [
+     "2026-03-27",
+     "2026-06-26"
+    ],
+    "spyTrDividendYield": 0.002787,
+    "spyTrCarriedForward": true,
+    "nportTotalReturn": 0.151639
+   },
+   "regimeR1": "BULL",
+   "regimeR2": "OTHER"
+  }
+ ],
+ "runtimeSeconds": 43
+}

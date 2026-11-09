@@ -31,6 +31,7 @@ Jede Regel ist deterministisch. Gleiche Artefakte ergeben dasselbe Ergebnis. Es 
 | DQ-TW-5 | WARN | jede Wochen-/Monatsspalte (`feld@1W`, `feld@1M`) ist belegt, sobald ein Bündel der Materialisierung die nötige `technical-mtf`-Version trägt; Felder, die noch kein Bündel liefern kann, stehen als „wartet“ in der Notiz (L7: 18 Spalten bis `technical-mtf-1.1.0`) | Absicherung für L7 (#1017): ohne die Regel blieben die neuen Spalten nach der Materialisierung unbemerkt leer |
 | DQ-TW-6 | WARN | Titel mit veraltetem Kurs (`fresh = false`) haben in allen Ereignisspalten (`…Days`, Prüfräume) und Stichtagsspalten (`chg1d`, `newHigh52w`, `newHigh20d`/`newLow20d`, Volumen, Inside Bar, NR7, Kerzenmuster; je Tag/Woche/Monat) `null` | AP1, SCREENER_FRESHNESS.md: sonst meldet ein Ereignisfilter einen alten Kurs als aktuellen Treffer (Befund 28.10.2026: 82 Titel) |
 | DQ-TW-7 | WARN | `technical/data` (Screener, Meta, Index) erfüllt den Datenvertrag `technical-screener-contract-1.*`: jede Spalte beschrieben, Typen, Wertebereiche, Enum-Werte aus dem Abfragekatalog, Prüfräume, Aktualität, Formationstupel, Zähler | AP2, docs/technical/DATA_CONTRACT.md; der Erzeuger schreibt bei einem Verstoß nicht |
+| DQ-TW-8 | WARN | kein vollständiger Treffer einer Strategie-Vorlage, die den Abstand zum 52-Wochen-Tief prüft (`distLow52w`), beruht auf einem Lunten-Tief: tiefstes Tagestief der letzten 252 Bars unter der Hälfte von min(Eröffnung, Schluss) dieses Tages. Die Notiz zählt alle aktuellen Titel mit Lunten-Tief. Die Regel kennzeichnet nur, sie ändert keine Kurse und keine Vorlage | Owner-Auflage zu AP8 L3 (30.10.2026): unplausible Tagestiefs (MYND, AREB, DRCT, JL, MBRX, STFS) dürfen nicht ungekennzeichnet zu einem vollständigen Trend-Template führen. Befund 29.10.: 6 aktuelle Titel mit Lunten-Tief, keiner erfüllt mehr als 3 der 8 Kriterien von „Etablierter Aufwärtstrend“ |
 | DQ-SF8-1 | ERROR | Supertrader-8-Research-Kandidaten (`supertrader/data/sf-candidates`): Stand höchstens zwei Sitzungen hinter der letzten abgeschlossenen, nicht danach | Vorbereitung V3; Daten gibt es erst nach Freigabe |
 | DQ-SF8-2 | ERROR | jede Ansicht: `securityId` = `core/identity.js`, Scherbe = `shardKey`, je Methode kein Titel doppelt | ADR-001 |
 | DQ-SF8-3 | ERROR | Stufe 4 gesperrt, keine Ansicht und keine Kurzzeile (`index.json`, `summary.top`) über der Obergrenze ihrer Methode (`SF8_CEILING`), Status in `summary` und `index` `LIVE_NOT_APPROVED` / `LOCKED_FOR_ALL_13` / Orders `NONE` | Vertrag 1.0.0 |
@@ -74,3 +75,57 @@ Von Hand: `long-series.yml` → *Run workflow* mit `mode = repair` (findet die T
 2. Laden der Eingaben in `scripts/core/data-quality.mjs`.
 3. Test in `core/tests/data-quality.test.mjs`: der Fehler, für den die Regel geschrieben ist, und eine Gegenprobe.
 4. Zeile in dieser Tabelle.
+
+## E8 – Datenqualität je Aktie
+
+`scripts/core/data-quality.mjs` ergänzt sechs ausschließlich meldende WARN-Regeln
+(DQ-E8-1 bis DQ-E8-6): Tagesbewegung strikt über ±50 % ohne Splitbeleg,
+Logo fehlt bei Marktkapitalisierung strikt über 10 Mrd. USD, fehlender oder
+Ticker-identischer Firmenname, Analysten-Einstufung älter als 45 Kalendertage,
+Musterdepot-Position ohne veröffentlichten Schluss zur letzten abgeschlossenen
+Sitzung und offene Supertrader-Position ohne positiven endlichen Stopp.
+Die Regeln ändern keine Scores, Modelle, Positionen oder PR-Sperren.
+
+Quellen: Discover-US-Index und Aktienpayloads (`marketCap.value` in USD),
+`discover/logos/index.json`; bei fehlender Marktkapitalisierung im Payload
+der bereits berechnete USD-Wert aus `factor-evidence-v1/*.json.gz#securities`
+(nur mit passender securityId, ohne neue Berechnung). Tagesreihen und Splitbelege aus
+`discover-series-long/*.json#corporateActions.splits` (Anbieter-splitFactor,
+inklusive im Publisher angewandter Ergänzungen). Die Split-Erkennung nutzt
+`return-series.js#splitFactors`; es entsteht keine neue Preisbereinigung.
+Die Regel prüft benachbarte veröffentlichte Tagesschlüsse im vorhandenen
+Einjahresfenster. Splitbelege am Sprungtag unterdrücken die Verdachtsmeldung.
+Analysten: neue Scherben `dashboard/data/analysts/shards` haben Vorrang,
+sonst `analyst_ratings.json#symbols`; maßgeblich ist `asOf` bzw. neueste
+`trend_history.period`, nie das Abrufdatum. Keine Analystenabdeckung wird
+nicht als veraltete Einstufung gezählt; vorhandene Einstufung ohne Datum
+wird als Hinweis gemeldet. Depotquellen sind `model-depots-v1.json#depots`
+und `supertrader/data/portfolio.json#strategies` (nur `positions`). Kurse werden
+über `published-close.js#lastPoint` gelesen, alte Fallback-Kurse gelten nicht
+als aktuell. Null geprüfte Datensätze und fehlende Quellen bedeuten keine
+Entwarnung; `missingEquityArtifacts` nennt nicht ladbare Quellen.
+
+### Veröffentlichung durch Strang A
+
+Seit dem E8-Nachlauf (08.11.2026) erzeugt `pipeline-daily.yml`, Teil `datenqualitaet`, den Bericht täglich (Di–Sa 07:13 UTC, nach dem nächtlichen Kurslauf; auch per Dispatch `teil=datenqualitaet`). Er geht nur in den Datenzweig `data/live` (`core/registry/data-branch.json`, `BRANCH_ONLY`); Pages legt ihn beim Bau unter `/status/data-quality.json` ab. Nach `main` wird nichts committet (rund 560 KB je Bericht). Der Takt kommt vom Cloudflare-Wecker (`core/registry/schedule.json`, Eintrag `pipeline-daily-datenqualitaet`); der erste Lauf war am 09.11.2026 (Run 42585534846, 562 KB), seitdem ist die Datenart `releaseOnly` (`domains.json`) und ohne `pendingFirstRun` (`data-branch.json`). Der vorige Bericht im Datenzweig ist der Vortag:
+
+```bash
+node scripts/core/data-quality.mjs --out=status/data-quality.json --previous=VORTAG.json
+```
+
+Läuft der Bericht am selben UTC-Tag erneut, ist der vorige Bericht von heute. Dann gilt dessen `trendBasis`, die schlanke Vortagsbasis aus `id`, `checked` und `failed` der E8-Regeln. Jeder Bericht trägt sie weiter (`core/equity-quality.js#withTrend`). ERROR-Regeln blockieren die Veröffentlichung nicht.
+
+`--previous` ist optional. `delta` ist nur bei einem Bericht vom unmittelbar
+vorherigen UTC-Kalendertag und positiver Prüfmenge beider Tage eine Zahl;
+sonst `null`. Gezählt werden Befunde (eine Aktie kann mehrere haben).
+Jede E8-Regel enthält vollständige strukturierte `findings` und maximal
+25 Textbeispiele in `samples`, damit Einzeldiagnosen nie durch Sampling fehlen.
+
+`/status/` liest ausschließlich den fertig erzeugten Bericht unter
+`/status/data-quality.json`; sie führt die neuen Regeln nicht im Browser aus.
+Dieser Pfad ist der Übergabevertrag für A, kein von Hand angelegtes Artefakt.
+Fehlt der Bericht, steht dort „nicht verfügbar“. Ältere Berichte tragen ihr
+Datum; ihr Trend wird nicht als heutiger Vergleich ausgegeben. Die Links
+führen nach `/status/#/TICKER` und zeigen die gespeicherten Befunde.
+`node scripts/core/diagnose.mjs TICKER` prüft dieselben Regeln direkt auf den
+vorhandenen Artefakten (auch mit `--site`), unabhängig von der Veröffentlichung.

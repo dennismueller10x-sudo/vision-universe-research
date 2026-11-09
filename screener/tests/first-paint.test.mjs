@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import vm from 'node:vm';
-import { universeMeta, SCHEMA } from '../../scripts/screener/build-universe.mjs';
+import { universeMeta, SCHEMA } from '../../products/screener/producer/build-universe.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..');
 const FULL_URL = '/screener/data/universe-US_REAL.json';
@@ -125,12 +125,17 @@ function startApp({ search = '', respond }) {
   };
   win.window = win; win.globalThis = win;
   vm.createContext(win);
-  for (const p of ['screener/engine/fields.js', 'screener/engine/query.js', 'screener/engine/engine.js', 'core/identity.js', 'screener/engine/adapters.js', 'screener/engine/store.js', 'screener/app.js']) {
+  for (const p of ['core/query-engine.js', 'screener/engine/fields.js', 'screener/engine/query.js', 'screener/engine/engine.js', 'core/identity.js', 'screener/engine/adapters.js', 'screener/engine/store.js', 'screener/engine/checklists.js', 'screener/engine/vocab.js', 'screener/app.js']) {
     vm.runInContext(readFileSync(join(ROOT, p), 'utf8'), win, { filename: p });
   }
   return { win, document, root, body, requests };
 }
-const text = (root) => root.textContent;
+/* Live-Trefferzahlen (.sc-n) stehen erst mit dem vollen Universum fest: in der Vorschau „…“,
+   danach die Zahl aus der Engine. Der Textvergleich setzt sie gleich; alle anderen Werte muessen identisch sein. */
+const text = (n) => n.nodeType === 3 ? n.data
+  : String(n.className || '').split(/\s+/).includes('sc-n') ? '#'
+  : n._html !== null ? n._html.replace(/<[^>]*>/g, '') : n.children.map(text).join('');
+const liveCounts = (root) => root.querySelectorAll('.sc-n').map((n) => n.textContent);
 const skeleton = (root) => root.querySelectorAll('.sc-skel').length > 0;
 function findButton(root, label) { let hit = null; (function w(n) { for (const c of n.children) { if (!hit && c.tagName === 'BUTTON' && c.textContent.includes(label)) hit = c; if (c.children) w(c); } })(root); return hit; }
 
@@ -140,7 +145,7 @@ test('Startansicht: sofort aus der Kopfdatei, volles Universum laedt parallel, T
   await tick();
   assert.equal(skeleton(ref.root), false);
   const expected = text(ref.root);
-  assert.match(expected, /Aktien im Universum/);
+  assert.match(expected, /Screener · 3 US-Aktien · Stand Fr\. 09\.10\./, 'Universum und Stand im Kopf (Konzept „Verstehen. Finden.“, FX04)');
   assert.match(expected, /Universum: 3 US-Aktien · Kurse Stand 09\.10\.2026 · Fundamentaldaten SEC EDGAR bis 30\.09\.2026/);
 
   const full = deferred();
@@ -150,15 +155,17 @@ test('Startansicht: sofort aus der Kopfdatei, volles Universum laedt parallel, T
   await tick();
   assert.equal(skeleton(app.root), false, 'Startansicht steht ohne Spalten');
   assert.equal(text(app.root), expected, 'Vorschau = spaetere Startansicht');
+  assert.ok(liveCounts(app.root).length > 0 && liveCounts(app.root).every((t) => t === '…'), 'Vorschau: Trefferzahlen offen, nicht erfunden');
   assert.equal(app.requests.length, 2, "keine weiteren Abrufe fuer die Startansicht");
 
   // Eine Aktion, die Spalten braucht, wartet auf das Universum (und laeuft dann).
-  findButton(app.root, 'Filter hinzufügen').dispatch('click');
+  findButton(app.root, 'Zahlen').dispatch('click');
   await tick();
   assert.equal(app.body.querySelectorAll('.sc-sheet').length, 0, 'kein Sheet ohne Daten');
   full.resolve({ status: 200, body: artifact });
   await tick();
   assert.equal(text(app.root), expected, 'nach dem Laden unveraendert');
+  assert.ok(liveCounts(app.root).every((t) => /^\d/.test(t)), 'nach dem Laden: echte Trefferzahlen ' + liveCounts(app.root).join(','));
   assert.equal(app.body.querySelectorAll('.sc-sheet').length, 1, 'wartende Aktion laeuft nach dem Laden genau einmal');
 });
 
@@ -191,7 +198,7 @@ test('Universum scheitert nach der Vorschau: Fehleransicht wie bisher, wartende 
   const app = startApp({ respond: (u) => (u === META_URL ? Promise.resolve({ status: 200, body: universeMeta(artifact) }) : full.promise) });
   await tick();
   assert.equal(skeleton(app.root), false);
-  findButton(app.root, 'Filter hinzufügen').dispatch('click');
+  findButton(app.root, 'Zahlen').dispatch('click');
   full.resolve({ status: 404 });
   await tick();
   assert.match(text(app.root), /Screener-Daten nicht verfügbar/);

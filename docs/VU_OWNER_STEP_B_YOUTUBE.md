@@ -22,10 +22,10 @@ Alles andere ist vorbereitet:
 | Kontingentmodell (zwei Toepfe, siehe unten) | `social/engines/youtube-source.js` |
 | Query-Portfolio: Kern + Rotation + Ereignis | `social/engines/youtube-query-portfolio.js` |
 | Suchphrasen aus dem Content Universe | 50 abgeleitet, 0 kuratiert |
-| Entdeckungs- und Ernteschritt | `scripts/social/discover-creators.mjs` |
-| Anreicherung ohne Suchaufruf | `scripts/social/enrich-youtube-metrics.mjs` |
+| Entdeckungs- und Ernteschritt | `products/social/producer/discover-creators.mjs` |
+| Anreicherung ohne Suchaufruf | `products/social/producer/enrich-youtube-metrics.mjs` |
 | Watch Universe, versioniert und lernend | `social/engines/creator-universe.js` |
-| Taeglicher Lauf der ganzen Kette | `.github/workflows/social-external-intelligence.yml` |
+| Taeglicher Lauf der ganzen Kette | `social.yml, Teil extern-recherche (vormals social-external-intelligence.yml)` |
 
 Der Workflow laeuft schon jetzt gruen — ohne Schluessel plant er und
 sucht nicht. Was fehlt, ist der Schluessel.
@@ -154,7 +154,7 @@ Projekts aufrufen. Beschraenkt kann er genau eine.
 
 Nichts weiter — und vor allem: **kein taeglicher Start**.
 
-`social-external-intelligence.yml` faehrt die ganze Kette:
+`social.yml, Teil extern-recherche (vormals social-external-intelligence.yml)` faehrt die ganze Kette:
 
 ```
 SCHEDULER (05:20 UTC)

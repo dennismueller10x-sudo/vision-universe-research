@@ -1,0 +1,15 @@
+{
+ "schemaVersion": "v13-delisted-qualification-protocol-amendment-1.0.1",
+ "amends": {
+  "file": "protocol-1.0.0.json",
+  "sha256": "4efcba25f331c60a88f1acd0e995cbe4df334c2c4080af14b5c03cb398f728a7"
+ },
+ "registeredBefore": "Committed before qualify.py ran on any fetched series. Seen so far: only the run summary of smoke batch 5 (counts: 288 requested, 287 with prices, 576 requests, all HTTP 200) and the provider meta header of one control ticker.",
+ "clarifications": {
+  "C1_last_traded_bar": "Trailing daily bars with volume 0 or null are dropped before R1-R7 (the provider keeps some delisted listings with frozen bars; V10 lifecycle convention). 'Last bar' in R1/R3/R6 means the last traded bar.",
+  "C2_weeks": "ISO week = Monday-based calendar week; weekly close = split-adjusted close of the last traded bar in that week; total-return variant from provider adjClose (dividends included) of the same bar.",
+  "C3_split_adjustment": "split-adjusted close(t) = close(t) / product of splitFactor over all later bars.",
+  "C4_reason_mapping": "V12 delisting-reasons labels are mapped as: MERGER_ACQUISITION_COMPLETED -> MERGER; BANKRUPTCY -> DISTRESS; any other label (incl. MERGER_PROCESS_INDICATED) -> DISTRESS if last raw close < 1 USD else UNKNOWN. This equals R6 (2.01 / 1.03) on the label set V12 actually produced.",
+  "C5_public_redaction": "Public register rows use the V12 LISTREF keyed chain id (scripts/quant/v12/listref/redact.cjs#chainId), CIK and 5-year buckets only."
+ }
+}

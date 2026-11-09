@@ -226,9 +226,9 @@
       "cik": "0001058090",
       "name": "CHIPOTLE MEXICAN GRILL INC",
       "sic": "5812",
-      "rawFacts": 20154,
-      "mappedFacts": 6369,
-      "unmappedFacts": 14578,
+      "rawFacts": 20456,
+      "mappedFacts": 6335,
+      "unmappedFacts": 14919,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -238,28 +238,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -279,21 +279,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -307,14 +307,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -337,44 +337,45 @@
         }
       },
       "quality": {
-        "HIGH": 578
+        "HIGH": 585
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 578,
-        "resolvedValues": 578
+        "datableValues": 585,
+        "resolvedValues": 585
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 14853,
+        "rules_version": "1.1.0",
+        "total": 15103,
         "by_severity": {
-          "INFO": 14578,
-          "WARNING": 275
+          "INFO": 14919,
+          "WARNING": 184
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 209,
-          "RESTATEMENT_CONFLICT": 66,
-          "UNKNOWN_CONCEPT": 14578
+          "CONCEPT_DISAGREEMENT": 142,
+          "RESTATEMENT_CONFLICT": 42,
+          "UNKNOWN_CONCEPT": 14919
         }
       },
       "latestFiling": {
-        "accession": "0001058090-26-000066",
-        "filing_date": "2026-07-31",
+        "accession": "0001058090-26-000104",
+        "filing_date": "2026-10-29",
         "form": "10-Q",
-        "periodic_filings": 83
+        "periodic_filings": 84,
+        "acceptance_datetime": "2026-10-28T22:23:01.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3224c2ce592687e3fd9c5a922e4cbdf12508f53e2bc971b67626d1d542b5c5f6",
+      "sourceDigest": "a0baa771ff8632bd98b8afbe27f87e92fda345cab627784c008a44abe170a2f4",
       "issuerId": "iss_cik_0001058090"
     },
     {

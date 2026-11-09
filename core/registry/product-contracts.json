@@ -1,0 +1,57 @@
+{
+  "schema": "vu-product-contracts-1",
+  "purpose": "Vertragstests statt Pfad-Gates (Plan Neustart §3, Owner-Entscheidung 04.11.2026). Jedes Produkt nennt seine Pfade, die CI, die bei jeder Aenderung daran laeuft, und die Tests, die seinen Vertrag pruefen. Wer ein Produkt aendert - aus welchem PR auch immer -, loest dessen CI und Vertragstests aus. Verbraucher nennen die Schnittstellen (Artefakt + Schema), die sie lesen. Gepruefte Regeln: core/tests/product-contracts.test.mjs.",
+  "products": {
+    "supertrader": {
+      "paths": ["supertrader/**", "products/supertrader/**", "scripts/supertrader/**"],
+      "ci": "ci.yml",
+      "contractTests": ["scripts/supertrader/tests/*.test.mjs"],
+      "consumes": ["technicalSignals", "securityMasterEligibility"],
+      "replacesGate": "Supertrader Gate A (scripts/supertrader/guard-protected-paths.mjs, jetzt nur Bericht)"
+    },
+    "discover": {
+      "paths": ["discover/**", "products/discover/**", "scripts/discover/**"],
+      "ci": "ci.yml",
+      "contractTests": ["discover/tests/*.test.mjs"],
+      "consumes": ["discoverSeries", "marketCapability"],
+      "replacesGate": "Discover 'veraendert keine bestehende Engine' (discover-ci.yml)"
+    },
+    "companyIntelligence": {
+      "paths": ["company-intelligence/**", "scripts/company_intelligence/**"],
+      "ci": "company-intelligence.yml",
+      "contractTests": ["scripts/company_intelligence/tests/*.test.mjs"],
+      "consumes": ["marketCapability"],
+      "replacesGate": "Company Intelligence 'Reject changes to protected production paths' (company-intelligence.yml, validate)"
+    },
+    "quant": {
+      "paths": ["quant/**", "products/quant/**", "scripts/quant/**", "scripts/market/**", "scripts/technical/**"],
+      "ci": "quant-ci.yml",
+      "contractTests": ["quant/tests/*.test.mjs"],
+      "pinnedFiles": [
+        {"source": "scripts/quality/ui-protection.mjs#effectiveLock", "test": "quant/tests/backtest-consolidation-boundary.test.mjs"},
+        {"source": "docs/data/security-master/v130-quant-freeze.json#frozen.files", "test": "quant/tests/security-master-v130-freeze.test.mjs"}
+      ],
+      "consumes": []
+    },
+    "technical": {
+      "paths": ["technical/**", "products/technical/**", "academy/**", "quant/engines/technical/**"],
+      "ci": "ci.yml",
+      "contractTests": ["technical/tests/*.test.mjs"],
+      "consumes": ["technicalSignals", "marketPulse"]
+    },
+    "screener": {
+      "paths": ["screener/**", "products/screener/**", "products/screener/producer/**"],
+      "ci": "ci.yml",
+      "contractTests": ["screener/tests/*.test.mjs"],
+      "consumes": ["technicalScreener"]
+    }
+  },
+  "interfaces": {
+    "technicalSignals": { "artifact": "quant/data/product/technical-signals-v1/summary.json", "schemaField": "schemaVersion", "schema": "technical-signals-product-summary-1.0.0", "provider": "quant" },
+    "securityMasterEligibility": { "artifact": "quant/data/market/security-master/eligibility.json", "schemaField": "version", "schema": "us-security-master-1.3.0", "provider": "quant" },
+    "discoverSeries": { "artifact": "quant/data/market/discover-series/index.json", "schemaField": "schemaVersion", "schema": "discover-series-1.1.0", "provider": "quant" },
+    "marketCapability": { "artifact": "quant/data/universe/market-capability.json", "schemaField": "version", "schema": "company-master-1.0.0", "provider": "quant" },
+    "technicalScreener": { "artifact": "technical/data/screener-v1.json", "schemaField": "schemaVersion", "schema": "vu-technical-screener-1.0.0", "provider": "technical" },
+    "marketPulse": { "artifact": "quant/data/market/intelligence/market-pulse.json", "schemaField": "schemaVersion", "schema": "vu-market-pulse-1.1.0", "provider": "quant" }
+  }
+}

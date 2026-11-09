@@ -9,6 +9,29 @@
 (function (root) {
   'use strict';
   var W = root.VUCore && root.VUCore.WatchlistView;
+  var T = root.VUToday, Chart = root.VUChart;
+  var ASK = { momentum: 'Läuft der Kurs gut?', growth: 'Wächst die Firma?', profitability: 'Verdient sie gut?', value: 'Ist sie günstig?',
+    quality: 'Sind die Zahlen solide?', risk: 'Wie ruhig ist der Kurs?', revisions: 'Heben Analysten Schätzungen an?' };
+  /* VUUI-Bausteine als DOM-Knoten (keine HTML-Strings: Serverdaten nur per textContent). Gleiches Markup wie assets/vu-ui.js. */
+  var VMARK = { strong: '▲', mid: '◆', weak: '▼', none: '○' };
+  function verdictEl(kind, text) {
+    var k = VMARK[kind] ? kind : 'none';
+    return el('span', {className: 'vu-verdict vu-verdict--' + k, 'data-verdict': k}, [el('span', {'aria-hidden': 'true', text: VMARK[k]}), ' ' + text]);
+  }
+  function chgEl(v) {
+    if (typeof v !== 'number' || !isFinite(v)) return el('span', {className: 'vu-chg vu-chg--flat', text: '–'});
+    return el('span', {className: 'vu-chg' + (v > 0 ? '' : v < 0 ? ' vu-chg--down' : ' vu-chg--flat')}, [el('span', {'aria-hidden': 'true', text: v > 0 ? '▲' : v < 0 ? '▼' : '◆'}),
+      ' ' + (v > 0 ? '+' : v < 0 ? '−' : '') + fmtNum(Math.abs(v), 2) + ' %']);
+  }
+  function logoEl(t) { return el('span', {className: 'vu-logo-tile', 'aria-hidden': 'true', text: String(t || '?').slice(0, 5)}); }
+  function svgEl(markup) {
+    /* Nur Zahlenwerte aus der Tagesreihe (VUChart.sparkline); als SVG-Dokument geparst. */
+    try { if (!/xmlns=/.test(markup)) markup = markup.replace('<svg', '<svg xmlns="http://www.w3.org/2000/svg"'); var d = new DOMParser().parseFromString(markup, 'image/svg+xml').documentElement; return d && d.nodeName.toLowerCase() === 'svg' ? document.importNode(d, true) : null; } catch (e) { return null; }
+  }
+  function verdictKind(f) {
+    if (f.state !== 'AVAILABLE' || !f.band) return 'none';
+    return /WEAK/.test(f.band) ? 'weak' : /STRONG/.test(f.band) ? 'strong' : 'mid';
+  }
   var Id = root.VUCore && root.VUCore.Identity;
   var UI_KEY = 'vu-watchlist-ui-v1';
   var FACTORS = ['quality', 'growth', 'momentum', 'value', 'profitability', 'revisions', 'risk'];
@@ -194,36 +217,51 @@
     }
     var remove = el('button', {type: 'button', className: 'wl-remove', 'aria-label': (v.ticker || 'Titel') + ' aus der Watchlist entfernen', 'aria-pressed': 'true', title: 'Aus der Watchlist entfernen'}, [icon('bookmark')]);
     remove.addEventListener('click', function () { removeItem(v, remove); });
-    var head = el('div', {className: 'wl-row-main'}, [name, price, chips, factorBars(v.quant), remove]);
+    /* Redesign 2027 (E09): Kopf wie die Aktienzeile (C10) – Logo, Name, Kurs mit Tagesbewegung; darunter Signale und Faktorbalken. */
+    var logo = el('span', {className: 'wl-logo', 'aria-hidden': 'true'});
+    logo.appendChild(logoEl(v.ticker));
+    price.appendChild(el('span', {className: 'wl-chg', 'data-chg': v.instrumentId}));
+    var head = el('div', {className: 'wl-row-main'}, [logo, name, price, remove]);
     li.appendChild(head);
+    li.appendChild(el('div', {className: 'wl-row-sub'}, [chips, factorBars(v.quant)]));
     li.appendChild(details(v));
     return li;
   }
 
   function details(v) {
     var d = el('details', {className: 'wl-details'}), body = el('div', {className: 'wl-details-body'});
-    d.appendChild(el('summary', {text: 'Details, Notiz und Benachrichtigung'}));
-    // Quant
-    var q = v.quant, qs = el('section', {}, [el('h3', {text: 'Quant-Faktoren'})]);
+    d.appendChild(el('summary', {text: 'Alle Kennzahlen'}));
+    /* Redesign 2027 (E09): Chart (Tagesreihe), Quant-Faktoren als Fragen mit Balken, Zahl und Urteil (C08). */
+    body.appendChild(el('div', {className: 'wl-chart', 'data-chart': v.instrumentId}));
+    var q = v.quant, qs = el('section', {className: 'wl-q'}, [el('div', {className: 'wl-q-head'}, [el('h3', {text: 'Quant-Faktoren'}), el('span', {className: 'wl-fine', text: 'Gesamtscore: nicht freigegeben'})])]);
     if (q.state === 'AVAILABLE' || q.state === 'STALE') {
       var t = el('table', {className: 'wl-table'}), tb = el('tbody');
-      q.factors.forEach(function (f) { tb.appendChild(el('tr', {}, [el('th', {text: f.label}), el('td', {className: 'num', text: f.state === 'AVAILABLE' ? fmtNum(f.score, 0) : '–'}),
-        el('td', {text: f.state === 'AVAILABLE' ? f.bandLabel : 'Nicht verfügbar'})])); });
+      q.factors.forEach(function (f) {
+        var ok = f.state === 'AVAILABLE', bar = el('span', {className: 'wl-bar', 'aria-hidden': 'true'}, [el('i', {'data-band': f.band || 'NONE'})]);
+        if (ok) bar.firstChild.style.width = Math.max(2, Math.min(100, f.score)) + '%';
+        var vd = el('td', {className: 'wl-vd'});
+        vd.appendChild(verdictEl(verdictKind(f), ok ? f.bandLabel || '–' : 'Keine Daten'));
+        tb.appendChild(el('tr', {}, [el('th', {}, [el('span', {text: ASK[f.id] || f.label}), bar]), el('td', {className: 'num', text: ok ? fmtNum(f.score, 0) : '–'}), vd]));
+      });
       t.appendChild(tb); qs.appendChild(t);
-      qs.appendChild(el('p', {className: 'wl-fine', text: 'Gesamtscore: nicht freigegeben · Datenqualität ' + (q.dataQuality || '–') + ' · Stand ' + fmtDate(q.asOf) +
+      qs.appendChild(el('p', {className: 'wl-fine', text: 'Jede Zahl von 0 bis 100: 86 heißt besser als 86 von 100 US-Aktien. Datenqualität ' + (q.dataQuality || '–') + ' · Stand ' + fmtDate(q.asOf) +
         (q.state === 'STALE' ? ' · veraltet' : '')}));
     } else qs.appendChild(el('p', {className: 'ka-muted', text: q.reasonText || 'Nicht verfügbar'}));
     body.appendChild(qs);
+    var pair = el('div', {className: 'wl-pair'});
+    body.appendChild(pair);
     // Supertrader
-    var s = v.supertrader, ss = el('section', {}, [el('h3', {text: 'Supertrader'})]);
+    var s = v.supertrader, ss = el('section', {className: 'wl-mini'}, [el('h3', {text: 'Supertrader'})]);
+    ss.appendChild(el('div', {}, [verdictEl(s.status === 'VALID_SIGNAL' ? 'strong' : 'none', s.status === 'VALID_SIGNAL' ? 'Gültiges Signal' : s.state === 'AVAILABLE' && s.entries && s.entries.length ? 'Forschung' : 'Kein Setup')]));
     if (s.state === 'AVAILABLE' && s.entries.length) {
       var ul = el('ul', {className: 'wl-list'});
       s.entries.forEach(function (e) { ul.appendChild(el('li', {}, [el('b', {text: e.name}), ' · ' + e.stateLabel + ' · ', el('span', {className: e.released ? null : 'ka-muted', text: e.released ? 'freigegeben' : (e.levelLabel || 'nicht freigegeben')})])); });
       ss.appendChild(ul);
     } else ss.appendChild(el('p', {className: 'ka-muted', text: s.label || s.reasonText || 'Nicht verfügbar'}));
-    body.appendChild(ss);
+    pair.appendChild(ss);
     // Technik
-    var tr = v.trend, ts = el('section', {}, [el('h3', {text: 'Technik'})]);
+    var tr = v.trend, ts = el('section', {className: 'wl-mini'}, [el('h3', {text: 'Technik'})]);
+    ts.appendChild(el('div', {}, [verdictEl(tr.structure === 'BULLISH' ? 'strong' : tr.structure === 'BEARISH' ? 'weak' : tr.state === 'AVAILABLE' ? 'mid' : 'none', TREND[tr.structure] || 'Keine Aussage')]));
     if (tr.state === 'AVAILABLE' || tr.state === 'STALE') {
       var kv = el('dl', {className: 'ka-kv'});
       [['Abstand zum 52W-Hoch', pct(v.high52.distance)], ['RSI 14', fmtNum(tr.rsi14, 0)], ['Über 200-Tage-Linie', tr.aboveSma200 === true ? 'ja' : tr.aboveSma200 === false ? 'nein' : '–'],
@@ -232,7 +270,7 @@
       });
       ts.appendChild(kv);
     } else ts.appendChild(el('p', {className: 'ka-muted', text: tr.reasonText || 'Nicht verfügbar'}));
-    body.appendChild(ts);
+    pair.appendChild(ts);
     // Notiz und Benachrichtigung
     var ns = el('section', {className: 'wl-own'}, [el('h3', {text: 'Deine Notiz'})]);
     var ta = el('textarea', {className: 'ka-input ka-textarea', maxlength: '500', 'aria-label': 'Notiz zu ' + (v.ticker || 'diesem Titel')});
@@ -240,16 +278,23 @@
     var save = el('button', {type: 'button', className: 'ka-btn ka-btn--secondary', text: 'Notiz speichern'});
     save.addEventListener('click', function () { patchItem(v, {note: ta.value}, save, 'Notiz gespeichert.'); });
     ns.appendChild(ta); ns.appendChild(el('div', {className: 'ka-actions'}, [save]));
-    var fs = el('fieldset', {className: 'ka-fieldset wl-alerts'}, [el('legend', {className: 'ka-legend', text: 'Benachrichtigen bei'})]);
+    var fs = el('fieldset', {className: 'ka-fieldset wl-alerts'}, [el('legend', {className: 'ka-legend'}, ['Benachrichtigen bei ', el('span', {className: 'wl-soon', text: 'bald'})])]);
     ALERTS.forEach(function (a) {
-      var id = 'wl-' + v.instrumentId + '-' + a[0], cb = el('input', {type: 'checkbox', id: id});
+      var id = 'wl-' + v.instrumentId + '-' + a[0], cb = el('input', {type: 'checkbox', id: id, role: 'switch', className: 'vu-switch'});
       cb.checked = v.alerts && v.alerts[a[0]] === true;
       cb.addEventListener('change', function () { var next = Object.assign({}, v.alerts || {}); next[a[0]] = cb.checked; patchItem(v, {alerts: next}, cb, 'Benachrichtigung gespeichert. Versendet wird erst nach der Freigabe.'); });
       fs.appendChild(el('label', {className: 'ka-check', for: id}, [cb, a[1]]));
     });
+    var picked = ALERTS.filter(function (a) { return v.alerts && v.alerts[a[0]] === true; }).length;
+    fs.querySelector('legend').appendChild(el('span', {className: 'wl-picked', text: picked + ' gewählt'}));
     fs.appendChild(el('p', {className: 'wl-fine', text: 'Gespeichert, aber noch nicht aktiv: Benachrichtigungen werden erst mit der Freigabe versendet.'}));
     ns.appendChild(fs);
     body.appendChild(ns);
+    var go = el('div', {className: 'wl-go'}, [el('a', {className: 'vu-chip vu-chip--on', href: '/aktie/' + encodeURIComponent(v.ticker || ''), text: 'Zur Aktie'})]);
+    var drop = el('button', {type: 'button', className: 'vu-chip', text: 'Entfernen'});
+    drop.addEventListener('click', function () { removeItem(v, drop); });
+    go.appendChild(drop);
+    body.appendChild(go);
     // Links
     if (v.links.length) {
       var nav = el('nav', {className: 'wl-links', 'aria-label': 'In den Produktwelten öffnen'});
@@ -266,6 +311,7 @@
     renderKpis(all);
     renderSources();
     var list = W.sort(W.filter(all, {query: ui.query, filter: ui.filter}), ui.sort || 'relevance');
+    if (ui.withNote) list = list.filter(function (v) { return !!(v.note && String(v.note).trim()); });
     var box = $('wl-list');
     box.textContent = '';
     $('wl-empty').hidden = all.length > 0;
@@ -277,6 +323,23 @@
       var ul = el('ul', {className: 'wl-rows'});
       g.items.forEach(function (v) { ul.appendChild(row(v)); });
       box.appendChild(ul);
+    });
+    renderQuick(all);
+    paintMoves(list);
+  }
+
+  /* Tagesbewegung und Chart je Karte aus derselben Tagesreihe (mein-dashboard/today.js, ADR-002); ohne Reihe bleibt „–“. */
+  var movesFor = null;
+  function paintMoves(list) {
+    if (!T || !Id) return;
+    var key = list.map(function (v) { return v.instrumentId; }).join(',');
+    if (!movesFor || movesFor.key !== key) movesFor = { key: key, p: T.load(fetchJson, Id, list, 50) };
+    movesFor.p.then(function (moves) {
+      list.forEach(function (v, k) {
+        var m = moves[k] || {}, c = document.querySelector('[data-chg="' + v.instrumentId + '"]'), ch = document.querySelector('[data-chart="' + v.instrumentId + '"]');
+        if (c) { c.textContent = ''; c.appendChild(chgEl(m.pct)); }
+        if (ch && Chart && m.values && m.values.length > 1) { var sv2 = svgEl(Chart.sparkline(m.values.slice(-260), { width: 326, height: 90 })); ch.textContent = ''; if (sv2) ch.appendChild(sv2); }
+      });
     });
   }
 
@@ -311,6 +374,17 @@
     });
   }
 
+  /* E09: Schnellfilter als Chips – Alle, Filter (Ansicht), Neues 52W-Hoch, Mit Notiz. Gleiche Filter wie die Auswahl darunter. */
+  function renderQuick(all) {
+    var box = $('wl-quick'); if (!box) return;
+    var ui = state.ui, f = $('wl-filter');
+    box.textContent = '';
+    function chipBtn(text, on, fn) { var b = el('button', {type: 'button', className: 'vu-chip', 'aria-pressed': on ? 'true' : 'false', text: text}); b.addEventListener('click', fn); box.appendChild(b); }
+    chipBtn('Alle ' + all.length, (!ui.filter || ui.filter === 'all') && !ui.withNote, function () { ui.filter = 'all'; ui.withNote = false; f.value = 'all'; render(); });
+    chipBtn('Filter', false, function () { var tb = document.querySelector('.wl-toolbar'); if (tb) { tb.hidden = false; f.focus(); } });
+    chipBtn('Neues 52W-Hoch', ui.filter === 'newHigh', function () { ui.filter = ui.filter === 'newHigh' ? 'all' : 'newHigh'; f.value = ui.filter; render(); });
+    chipBtn('Mit Notiz', !!ui.withNote, function () { ui.withNote = !ui.withNote; render(); });
+  }
   function setupToolbar() {
     var ui = state.ui;
     var q = $('wl-query'), f = $('wl-filter'), s = $('wl-sort'), g = $('wl-group');

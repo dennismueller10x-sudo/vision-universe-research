@@ -1,0 +1,3819 @@
+{
+  "schema": "vu-supertrader-cert-prep-plan-1",
+  "id": "SF9-CERT-PREP-ALL13",
+  "version": "1.0.2",
+  "fixedOn": "2026-11-01",
+  "revision": "1.0.1 (02.11.2026, vor jedem Ergebnis einer Studie): Feld token in sourcePhrase umbenannt wie im TOP5-Plan 1.1.1 (#1196), weil die Schlüsselsuche der Supertrader Quality Gates den Feldnamen als möglichen Schlüssel meldet; Basis auf TOP5 1.1.1 mit deren neuem Inhalts-Pin. Werte, Regeln, Parameter, Blocker, Gegenproben und Abnahmekriterien unverändert. | 1.0.2 (02.11.2026, vor jedem Ergebnis einer Studie): Basis auf TOP5 1.1.2 (#1257, X-LEDGER und Vertragstexte der TOP5-Befunde) mit deren neuem Inhalts-Pin. Sonst unverändert: Werte, Regeln, Parameter, Blocker, Gegenproben und Abnahmekriterien.",
+  "status": "PREREGISTERED_NOT_ACTIVE",
+  "purpose": "Methodische Zertifizierungsvorbereitung aller 13 Methoden: der unveränderte TOP5-Plan plus die übrigen acht (C07, C06, C13, C11, C05, C04, C09, C10). Keine Zertifizierung, keine Regel- oder Parameteränderung, keine Aktivierung.",
+  "extends": {
+    "plan": "scripts/supertrader/source-faithful/certification/CERT-PREP-TOP5-PLAN.json",
+    "id": "SF9-CERT-PREP-TOP5",
+    "version": "1.1.2",
+    "contentSha256": "ed209fc36ec19151df94cbc793e0ebcfec358b923b22de90eee4067f4ab16b46",
+    "rule": "Basis unverändert; Erweiterung hängt Methoden, Querschnittsblocker, Befunde, Ausschlussgründe und Tests an (cert-prep-all13.mjs#mergePlans)"
+  },
+  "dependsOn": {
+    "pr": 1148,
+    "branch": "claude/supertrader-9-data-certification-jnejw3",
+    "commit": "afa923a6ce61262cfabd0177ba72f9f4a1ce2da4",
+    "file": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md",
+    "sha256": "89a6026937f1f903dab18487dcfc34603b387a12132efe81de8abf3c2398cfde",
+    "mergeOrder": "erst nach #1148 mergen: alle Fundstellen 'Matrix …' verweisen auf diese Datei, die heute nur auf dem Branch von #1148 liegt; die Matrix wird hier nicht kopiert"
+  },
+  "basis": {
+    "matrix": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md (PR #1148, Stand 30.10.2026; noch nicht auf main, siehe dependsOn)",
+    "criteria": "sf6-readiness-criteria-1.2.0 (scripts/supertrader/source-faithful/completion/sf6-readiness-criteria.mjs)",
+    "paperProtocol": "SF6-PAPER-2027 1.1.0 (scripts/supertrader/source-faithful/completion/sf6-paper-protocol-2027.mjs)",
+    "validationProtocol": "SF6-VALIDATION-PROTOCOL 1.1.0 (scripts/supertrader/source-faithful/research/run-sf6-validation.mjs)",
+    "sourceExtract": "scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json",
+    "top5Plan": "CERT-PREP-TOP5-PLAN.json 1.1.2 (PR #1196, Revision 1.1.2 in PR #1257)"
+  },
+  "guards": {
+    "validatedTradeSignal": "LOCKED_FOR_ALL_13",
+    "ruleChanges": "NONE",
+    "parameterChanges": "NONE",
+    "workflowsTriggered": "NONE",
+    "generatedDataChanged": "NONE",
+    "acceptanceMetricKinds": [
+      "INTEGRITY",
+      "COUNT",
+      "SOURCE",
+      "DATA_COVERAGE",
+      "DISTRIBUTION_REPORT_ONLY",
+      "DECISION_RECORD"
+    ],
+    "forbiddenMetricKinds": [
+      "PERFORMANCE"
+    ],
+    "noTuning": "kein Parameter, kein Universum, keine Kosten- oder Ausführungsannahme wird nach einem Ergebnis gewählt"
+  },
+  "outOfScopeReasons": {
+    "EVIDENCE_ONLY_CONVENTION": "Konvention eines reinen Belegwerts (kein Gate, keine Quellenzahl)"
+  },
+  "sharedExecutionTests": [],
+  "paramsOutOfScopeSuperseded": [
+    {
+      "module": "methods/kullamagi.mjs",
+      "export": "KK_PARAMS",
+      "path": "epMaxAdr"
+    },
+    {
+      "module": "methods/kullamagi.mjs",
+      "export": "KK_PARAMS",
+      "path": "epGapReference"
+    },
+    {
+      "module": "methods/morales-kacher.mjs",
+      "export": "MOKA_PARAMS",
+      "path": "ppWindow"
+    }
+  ],
+  "paramsOutOfScope": [
+    {
+      "module": "methods/weinstein.mjs",
+      "export": "WEIN_PARAMS",
+      "path": "rsNormWeeks",
+      "reason": "EVIDENCE_ONLY_CONVENTION"
+    }
+  ],
+  "crossCuttingBlockers": [
+    {
+      "id": "X-MANUAL",
+      "criterion": "CC-3",
+      "class": "d",
+      "secondary": [],
+      "text": "alle Methoden außer C01 und C02 ersetzen essenzielle Quellenentscheidungen durch Modellannahmen; für Darvas, SEPA und Weinstein verlangt die Quelle das Ermessen ausdrücklich (Grenze der Mechanisierbarkeit, kein Datenproblem)",
+      "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md Querschnittsblocker 7",
+      "closes": "Quellenbelege für eine mechanische Definition oder Owner-Entscheidung, die das Kriterium nicht aufweicht; eine Neudefinition wäre keine Quellentreue"
+    },
+    {
+      "id": "X-LICENSE-DATA",
+      "criterion": "DATA",
+      "class": "d",
+      "secondary": [],
+      "text": "IBD-RS (C06), NYSE-Breite (C04, C05), SIP-Minuten (C09, C10), Borrow (C10) und PIT-Marktkapitalisierung (C12, nur Beleg) sind nicht vorhanden",
+      "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md Querschnittsblocker 8",
+      "closes": "Lizenzentscheidung des Owners je Datensatz, danach eigener Daten-PR"
+    },
+    {
+      "id": "X-PIT-GROUPS",
+      "criterion": "CC-4",
+      "class": "d",
+      "secondary": [],
+      "text": "PIT-Branchengruppen: SIC-Historie und Adapter vorhanden, aber ohne Owner-Entscheidung MODEL_ASSUMPTION_REQUIRED; E4 schließt SIC-Proxys für CC-4 aus; für Weinstein fehlt ein Gruppenchart",
+      "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md Querschnittsblocker 5",
+      "closes": "Owner-Entscheidung E7-5 (A mit E4-Revision oder B GICS-Historie) und ein Gruppenchart"
+    },
+    {
+      "id": "X-PAPER-SCOPE",
+      "criterion": "CC-8",
+      "class": "d",
+      "secondary": [],
+      "text": "SF6-PAPER-2027 1.1.0 umfasst 11 Referenzen; C09 und C10 sind nicht enthalten (E5)",
+      "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.6",
+      "closes": "eigenes, vor Fensterbeginn festgelegtes Forward-Protokoll für C09/C10 (Owner-Entscheidung); SF6-PAPER-2027 bleibt unverändert"
+    }
+  ],
+  "methods": [
+    {
+      "candidateId": "C07",
+      "strategyId": "SF_MINERVINI_POWER_PLAY",
+      "priority": 6,
+      "contract": {
+        "module": "contracts/minervini.mjs",
+        "export": "MINERVINI_POWER_PLAY",
+        "sourceContractVersion": "1.4.0"
+      },
+      "engine": {
+        "module": "research/minervini-lifecycle.mjs",
+        "versionExport": "LIFECYCLE_VERSION",
+        "version": "sf4-minervini-lifecycle-1.0.0"
+      },
+      "sources": [
+        "B12",
+        "B07",
+        "B03",
+        "W-MIN18"
+      ],
+      "ccMet": [
+        "CC-2",
+        "CC-4",
+        "CC-6",
+        "CC-7"
+      ],
+      "ccOpen": [
+        "CC-1",
+        "CC-3",
+        "CC-5",
+        "CC-8"
+      ],
+      "rules": [
+        {
+          "id": "MIN-SF-PP-NOFUND",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-PP-DURATION",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-PP-RUNUP",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-PP-CORRECTION",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-PP-TIGHT",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-PP-ENTRY",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MIN-SF-PP-STOP",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MIN-SF-PP-SIZE",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MIN-SF-PP-EXIT",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        }
+      ],
+      "rulesOutOfScope": [
+        {
+          "id": "MIN-SF-STAGGER",
+          "reason": "COVERED_IN:C06"
+        }
+      ],
+      "wordingUncheckedBlocker": "C07-CC1",
+      "psr709WordingUnchecked": [
+        "MIN-MM-SELL-01",
+        "MIN-MM-SIZE-01",
+        "MIN-MM-STOP-01",
+        "MIN-MM-STOP-02",
+        "MIN-PP-01",
+        "MIN-PP-02",
+        "MIN-PP-03",
+        "MIN-PP-04",
+        "MIN-PP-05",
+        "MIN-RISK-01",
+        "MIN-TTC-SIZING",
+        "MIN-VCP-07"
+      ],
+      "params": [
+        {
+          "psr709": "MIN-PP-02",
+          "sourcePhrase": "100%",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "ppMultiple"
+          },
+          "value": 2,
+          "kind": "SOURCE_NUMBER_TRANSLATION_ONLY",
+          "note": "+100 % = Faktor 2,0; Wortlaut nur übersetzt (B12/B07/B03)"
+        },
+        {
+          "psr709": "MIN-PP-02",
+          "sourcePhrase": "acht Wochen",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "ppMaxSessions"
+          },
+          "value": 40,
+          "kind": "CONVENTION",
+          "note": "\"weniger als acht Wochen\" = weniger als 40 Sitzungen zwischen Tief und Hoch (Ableitung des Vertrags)"
+        },
+        {
+          "psr709": "MIN-PP-04",
+          "sourcePhrase": "20–25%",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "ppMaxCorrection"
+          },
+          "value": 0.25,
+          "kind": "SOURCE_NUMBER_TRANSLATION_ONLY",
+          "note": "äußere Grenze der gedruckten Spanne"
+        },
+        {
+          "psr709": "MIN-PP-04",
+          "sourcePhrase": "20–25%",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "ppReviewCorrection"
+          },
+          "value": 0.2,
+          "kind": "SOURCE_NUMBER_TRANSLATION_ONLY",
+          "note": "innere Grenze: (20 %, 25 %] geht in die Prüfung"
+        },
+        {
+          "psr709": "MIN-PP-05",
+          "sourcePhrase": "10%",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "ppTight"
+          },
+          "value": 0.1,
+          "kind": "SOURCE_NUMBER_TRANSLATION_ONLY",
+          "note": "\"höchstens 10 %\""
+        },
+        {
+          "psr709": "MIN-PP-03",
+          "sourcePhrase": "3–6 Wochen",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "ppTypicalMaxSessions"
+          },
+          "value": 30,
+          "kind": "CONVENTION",
+          "note": "6 Wochen = 30 Sitzungen; darüber nur eine Prüffrage, nie eine Ablehnung"
+        },
+        {
+          "psr709": "MIN-MM-STOP-02",
+          "sourcePhrase": "10%",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "maxStopPct"
+          },
+          "value": 0.1,
+          "kind": "SOURCE_NUMBER_TRANSLATION_ONLY",
+          "note": "englisch nur als \"generally 8-10 %\" (W-MIN18, Präferenz); die absolute Grenze bleibt Übersetzung"
+        },
+        {
+          "psr709": "MIN-MM-SIZE-03",
+          "sourcePhrase": "1,25–2,5%",
+          "code": {
+            "module": "research/minervini-lifecycle.mjs",
+            "export": "REFERENCE_CONFIG",
+            "path": "riskFraction"
+          },
+          "value": 0.0125,
+          "kind": "MODEL_BOUND_FROM_SOURCE_RANGE",
+          "note": "Grenzwert der gedruckten Spannen MIN-MM-SIZE-03/-04 (MA-MIN-RISK-FRACTION)"
+        }
+      ],
+      "blockers": [
+        {
+          "id": "C07-CC1",
+          "criterion": "CC-1",
+          "class": "d",
+          "secondary": [],
+          "text": "alle Schwellen nur übersetzt (B12 id, B07 id, B03 vi); im #709-Extrakt original_wording_checked = false für jeden MIN-PP-/MIN-MM-Beleg (Liste psr709WordingUnchecked); englisch belegt nur Stop und Größe (W-MIN18)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C07 Blocker; evidence/PSR709-EVIDENCE-EXTRACT.json",
+          "closes": "englische Buchausgabe im Projekt oder Owner-Entscheidung über Übersetzungsbelege (E7-2: Übersetzung ist nie SOURCE_EXACT)",
+          "status": "OPEN"
+        },
+        {
+          "id": "C07-CC3",
+          "criterion": "CC-3",
+          "class": "d",
+          "secondary": [],
+          "text": "6 essenzielle manuelle Entscheidungen (Startvolumen, Korrekturspanne 20–25 %, Pivot, Stop, Größe, Ausstieg)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C07 Blocker",
+          "closes": "X-MANUAL",
+          "status": "OPEN_STRUCTURAL"
+        },
+        {
+          "id": "C07-CC5",
+          "criterion": "CC-5",
+          "class": "d",
+          "secondary": [],
+          "text": "DQ-K5 12 / 12 ungeklärt, DQ-K3 39 / 39 ungeklärt; 10 von 1.007 Trades exponiert (0,99 %), Stabilität unter Quarantäne 11 %",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C07 Corporate Actions",
+          "closes": "X-CC5",
+          "status": "OPEN"
+        },
+        {
+          "id": "C07-CC8",
+          "criterion": "CC-8",
+          "class": "d",
+          "secondary": [],
+          "text": "SF6-PAPER-2027 nicht aktiv",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C07 OOS",
+          "closes": "X-CC8",
+          "status": "OPEN"
+        },
+        {
+          "id": "C07-CA-PROXIMITY",
+          "criterion": "DATA",
+          "class": "a",
+          "secondary": [],
+          "text": "+100-%-Bewegungen liegen methodisch nahe an nicht deklarierten Splits (eigene Einordnung der Matrix)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C07 Corporate Actions",
+          "closes": "Zählung der Run-up-Starts und Hochs auf DQ-K5/-K3-markierten Sitzungen vorregistriert (PS-C07-CA-PROXIMITY); Lauf braucht den Snapshot-Workflow",
+          "status": "PREPARED_COUNT_ONLY"
+        },
+        {
+          "id": "C07-STABILITY",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "Trade-Stabilität unter Quarantäne 11 %, Knock-on 889",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C07 Corporate Actions",
+          "closes": "nur als Verteilung berichtet (PS-C07-STABILITY, E6)",
+          "status": "PREPARED_REPORT_ONLY"
+        },
+        {
+          "id": "C07-STAGE2-EXIT",
+          "criterion": "CC-3",
+          "class": "d",
+          "secondary": [],
+          "text": "E7-7: die Stage-2-Ausstiegsregeln sind in rund 600 Trades nicht bewertbar; die Varianten sind vorregistriert, nicht Teil der Referenz",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C07 OOS",
+          "closes": "Owner-Entscheidung, ob eine E7-7-Variante Referenz wird (vor dem Öffnen der Kennzahlen)",
+          "status": "OPEN_DOCUMENTED"
+        },
+        {
+          "id": "C07-TAKEOVER",
+          "criterion": "PRODUCT",
+          "class": "d",
+          "secondary": [],
+          "text": "Übernahmekandidaten erscheinen als enge Basis (z. B. BMBL, SUPERTRADER_8_FIRST_RELEASE.md:87)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C07 Ausführung",
+          "closes": "Owner-Entscheidung über eine Datenquelle für Übernahmeankündigungen; keine Heuristik ohne Quelle",
+          "status": "OPEN"
+        },
+        {
+          "id": "C07-SURV",
+          "criterion": "DATA",
+          "class": "c",
+          "secondary": [],
+          "text": "Delistings vor 2009 fehlen, keine Delisting-Renditen; Holdout nach oben verzerrt",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.5",
+          "closes": "X-SURV",
+          "status": "OPEN"
+        },
+        {
+          "id": "C07-LEDGER",
+          "criterion": "CC-1",
+          "class": "a",
+          "secondary": [],
+          "text": "kein Eintrag in scripts/supertrader/source-ledger.json (B07, W-MIN18)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.8, Querschnittsblocker 6",
+          "closes": "X-LEDGER",
+          "status": "OPEN_SEPARATE_PR"
+        },
+        {
+          "id": "C07-RULE-CONFORMANCE",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "Run-up-Fenster (< 40 Sitzungen, Faktor 2,0), Korrekturgrenzen 25 %/20 %/10 %, 10-%-Verlustgrenze am Pivot und nur bestätigte Setups nicht an der Grenze getestet",
+          "evidence": "Abgleich sf-minervini*.test.mjs mit MIN-PP-02..05, MIN-MM-STOP-02",
+          "closes": "CP-MIN-*-Tests in sf-cert-prep-all13.test.mjs (mit Gegenproben)",
+          "status": "DONE"
+        }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-STOP-FLAG-10",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-ENTRY-PLANNED-LOSS-LIMIT",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-PP-RUNUP-40",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-PP-CORRECTION-BOUNDS",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-PP-CONFIRMED-ONLY",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CANDIDATE",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SLOW-RUN",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-DEEP-CORRECTION",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-CORRECTION-RANGE-FLAG",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-WIDE-REVIEW",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-SHORT-CONSOLIDATION",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-PP-MISSING-LOW",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: SF-MIN-PP-NEWER-PEAK",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG",
+        "scripts/supertrader/tests/sf-minervini-components.test.mjs: GC-MIN-PP-CLASSES",
+        "scripts/supertrader/tests/sf-pp-missing-low-fix.test.mjs: GC-MIN-PP-MISSING-LOW-CLASS",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: GC-MLC-PP-LIFECYCLE",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-PLANNED-LOSS",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-GAP-THROUGH-STOP",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: SF4-PP-SERIES-EQUIVALENCE",
+        "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER"
+      ],
+      "dataRequirements": [
+        {
+          "id": "D-PP-OHLCV",
+          "data": "Tages-OHLCV split-adjustiert, mindestens 41 Balken (dataReadiness READY)",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-PP-CA",
+          "data": "faktortragende Kapitalmaßnahmen (12 K5 / 39 K3); bei +100-%-Bewegungen zwingend",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C07-CC5"
+        },
+        {
+          "id": "D-PP-TAKEOVER",
+          "data": "PIT-Übernahmeankündigungen (Ausschluss von Übernahmekandidaten)",
+          "need": "OPTIONAL_PRODUCT_QUALITY",
+          "availability": "MISSING_OWNER_DECISION",
+          "class": "d",
+          "blocker": "C07-TAKEOVER"
+        },
+        {
+          "id": "D-PP-TERMINAL",
+          "data": "Listing-Enden und Delisting-Renditen",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT_PARTIAL",
+          "class": "c",
+          "blocker": "C07-SURV"
+        }
+      ],
+      "executionAssumptions": [
+        {
+          "id": "EX-MIN-BUY-STOP-LIMIT",
+          "text": "Buy-Stop am Pivot (Run-up-Hoch), Limit = Stop / 0,9, gültig für die nächste Sitzung; Gap über dem Limit ohne Rücklauf wird nicht ausgeführt",
+          "basis": "MA-MIN-ORDER-TYPE, MA-MIN-PP-PIVOT, MA-MIN-SETUP-VALIDITY",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-ENTRY-PLANNED-LOSS-LIMIT",
+            "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-GAP-OVER-ENTRY"
+          ]
+        },
+        {
+          "id": "EX-MIN-STOP-FILL",
+          "text": "Stop am tiefsten Tief der Konsolidierung; ein Gap durch den Stop füllt zur Eröffnung (min(Eröffnung, Stop))",
+          "basis": "MA-MIN-STOP-PLACEMENT, MA-MIN-STOP-FILL",
+          "tests": [
+            "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-GAP-THROUGH-STOP"
+          ]
+        },
+        {
+          "id": "EX-MIN-INTRABAR",
+          "text": "Pivot-Berührung mit Tief am Stop auf demselben Balken: pessimistisch (Referenz); SF7-ALT-INTRABAR-OPTIMISTIC-CLOSE-RULE als Variante",
+          "basis": "MA-MIN-INTRABAR-ORDER",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-ENTRY-PLANNED-LOSS-LIMIT",
+            "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-ENTRY-AND-STOP-SAME-BAR"
+          ]
+        },
+        {
+          "id": "EX-MIN-EXIT",
+          "text": "Initialstop, Break-even bei 3R auf Schlussbasis, danach Schluss unter MA50 -> nächste Eröffnung",
+          "basis": "MA-MIN-EXIT-POLICY",
+          "tests": [
+            "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-EXIT-PRECEDENCE"
+          ]
+        },
+        {
+          "id": "EX-MIN-SIZE-COSTS",
+          "text": "1,25 % Risiko zum Stop, höchstens 25 % Gewicht; 10 bps je Seite plus 1 bp",
+          "basis": "MA-MIN-RISK-FRACTION, MA-MIN-COSTS",
+          "tests": [
+            "scripts/supertrader/tests/sf-minervini-components.test.mjs: GC-MIN-SIZING",
+            "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-COSTS-AND-POLICY"
+          ]
+        }
+      ],
+      "studies": [
+        {
+          "id": "PS-C07-CONFORMANCE",
+          "class": "a",
+          "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?",
+          "procedure": "node --test über die Dateien aus conformanceTests; protokolliert mit scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --run-tests (NOT_MET macht das Protokoll ungültig, Exit 1); Gegenproben mit --mutation-probes",
+          "acceptance": [
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen"
+            },
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "jede Gegenprobe der CP-Tests dieser Methode ist ROT, danach ist der Code byte-gleich zurückgesetzt"
+            }
+          ],
+          "status": "READY",
+          "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN"
+        },
+        {
+          "id": "PS-C07-SOURCE",
+          "class": "d",
+          "question": "Liegt der englische Wortlaut der Power-Play-Schwellen vor?",
+          "procedure": "Owner beschafft die englische Ausgabe oder entscheidet über Übersetzungsbelege (E7-2), datiert vor jedem Öffnen der Kennzahlen",
+          "acceptance": [
+            {
+              "metricKind": "SOURCE",
+              "criterion": "Quellenstelle je Schwelle (MIN-PP-02..05, MIN-MM-STOP-02) im Original zitiert oder Entscheidung dokumentiert"
+            },
+            {
+              "metricKind": "DECISION_RECORD",
+              "criterion": "Datum der Entscheidung vor jedem Öffnen der Kennzahlen"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C07-CA-PROXIMITY",
+          "class": "a",
+          "question": "Wie viele Run-up-Starts und Hochs der Referenz liegen auf einer DQ-K5- oder DQ-K3-markierten Sitzung?",
+          "procedure": "Zählung mit dem bestehenden SF6-Detektor auf dem DEV-Snapshot; Lauf braucht den Snapshot-Workflow und wird hier nicht ausgelöst",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "Anzahl und Anteil markierter Setups berichtet; nichts wird entfernt"
+            }
+          ],
+          "status": "PLANNED_NEEDS_SNAPSHOT_RUN"
+        },
+        {
+          "id": "PS-C07-STABILITY",
+          "class": "a",
+          "question": "Wie stabil sind die Trades unter Quarantäne?",
+          "procedure": "bestehende SF7-VAL-STABILITY-Zählung",
+          "acceptance": [
+            {
+              "metricKind": "DISTRIBUTION_REPORT_ONLY",
+              "criterion": "Anteil unveränderter Trades berichtet; keine Schwelle"
+            }
+          ],
+          "status": "READY"
+        },
+        {
+          "id": "PS-C07-COSTS",
+          "class": "a",
+          "question": "Wie reagiert die Tradezahl auf die vier Kostenstufen?",
+          "procedure": "bestehende SF6-Läufe (versiegelt)",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "Trades je Kostenstufe berichtet; keine Stufe wird nachträglich gewählt"
+            }
+          ],
+          "status": "READY"
+        }
+      ],
+      "findings": [
+        "F-MIN-WORDING-UNCHECKED"
+      ]
+    },
+    {
+      "candidateId": "C06",
+      "strategyId": "SF_MINERVINI_SEPA_VCP",
+      "priority": 7,
+      "contract": {
+        "module": "contracts/minervini.mjs",
+        "export": "MINERVINI_SEPA",
+        "sourceContractVersion": "1.4.0"
+      },
+      "engine": {
+        "module": "research/minervini-lifecycle.mjs",
+        "versionExport": "LIFECYCLE_VERSION",
+        "version": "sf4-minervini-lifecycle-1.0.0"
+      },
+      "sources": [
+        "B12",
+        "B07",
+        "B03",
+        "W-MIN18"
+      ],
+      "ccMet": [
+        "CC-2",
+        "CC-6",
+        "CC-7"
+      ],
+      "ccOpen": [
+        "CC-1",
+        "CC-3",
+        "CC-4",
+        "CC-5",
+        "CC-8"
+      ],
+      "rules": [
+        {
+          "id": "MIN-SF-STAGGER",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-PRICE-CONFIRM",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-SIMPLE",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-PROCESS",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-TT-1",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-TT-2",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-TT-3",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-TT-4",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-TT-5",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-TT-6",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-TT-7",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MIN-SF-TT-8",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "MIN-SF-PRIORITY",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MIN-SF-FUNDAMENTALS",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MIN-SF-VCP",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MIN-SF-PIVOT",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MIN-SF-STOP",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MIN-SF-SIZE",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MIN-SF-SELL",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        }
+      ],
+      "rulesOutOfScope": [],
+      "wordingUncheckedBlocker": "C06-CC1",
+      "psr709WordingUnchecked": [
+        "MIN-BASE-01",
+        "MIN-EPS-01",
+        "MIN-EPS-02",
+        "MIN-MM-SELL-01",
+        "MIN-MM-SELL-02",
+        "MIN-MM-SELL-03",
+        "MIN-MM-SELL-04",
+        "MIN-MM-SIZE-01",
+        "MIN-MM-STOP-01",
+        "MIN-MM-STOP-02",
+        "MIN-PRICE-01",
+        "MIN-PROCESS-01",
+        "MIN-PROCESS-04",
+        "MIN-PROCESS-05",
+        "MIN-PROCESS-06",
+        "MIN-PROCESS-07",
+        "MIN-PROCESS-08",
+        "MIN-PROCESS-09",
+        "MIN-PROCESS-10",
+        "MIN-PROCESS-11",
+        "MIN-PROCESS-15",
+        "MIN-QUALITY-01",
+        "MIN-QUALITY-02",
+        "MIN-QUALITY-03",
+        "MIN-RISK-01",
+        "MIN-RISK-05",
+        "MIN-TT-01",
+        "MIN-TT-02",
+        "MIN-TT-03",
+        "MIN-TT-04",
+        "MIN-TT-05",
+        "MIN-TT-06",
+        "MIN-TT-07",
+        "MIN-TT-08",
+        "MIN-TTC-SIZING",
+        "MIN-VCP-01",
+        "MIN-VCP-02",
+        "MIN-VCP-03",
+        "MIN-VCP-04",
+        "MIN-VCP-05",
+        "MIN-VCP-07"
+      ],
+      "params": [
+        {
+          "psr709": "MIN-TT-04",
+          "sourcePhrase": "MA50",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "ma"
+          },
+          "value": [
+            50,
+            150,
+            200
+          ],
+          "kind": "SOURCE_NUMBER_TRANSLATION_ONLY",
+          "note": "MA50 / MA150 / MA200 (MIN-TT-01..05), Wortlaut nur übersetzt"
+        },
+        {
+          "psr709": "MIN-TT-03",
+          "sourcePhrase": "einen Monat",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "ma200RisingSessions"
+          },
+          "value": 21,
+          "kind": "CONVENTION",
+          "note": "ein Monat = 21 Sitzungen (Ableitung)"
+        },
+        {
+          "psr709": "MIN-TT-06",
+          "sourcePhrase": "52-Wochen",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "yearSessions"
+          },
+          "value": 252,
+          "kind": "CONVENTION",
+          "note": "52 Wochen = 252 Sitzungen (Ableitung)"
+        },
+        {
+          "psr709": "MIN-TT-06",
+          "sourcePhrase": "30%",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "aboveLow"
+          },
+          "value": 0.3,
+          "kind": "SOURCE_NUMBER_TRANSLATION_ONLY",
+          "note": "Wortlaut nur übersetzt; SF7-MIN-TT6-25 führt die 25-%-Lesart (B03) als Variante"
+        },
+        {
+          "psr709": "MIN-TT-07",
+          "sourcePhrase": "25%",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "belowHigh"
+          },
+          "value": 0.25,
+          "kind": "SOURCE_NUMBER_TRANSLATION_ONLY",
+          "note": "Wortlaut nur übersetzt"
+        },
+        {
+          "psr709": "MIN-MM-STOP-02",
+          "sourcePhrase": "10%",
+          "code": {
+            "module": "methods/minervini.mjs",
+            "export": "MIN_PARAMS",
+            "path": "maxStopPct"
+          },
+          "value": 0.1,
+          "kind": "SOURCE_NUMBER_TRANSLATION_ONLY",
+          "note": "wie C07"
+        },
+        {
+          "psr709": "MIN-MM-SIZE-03",
+          "sourcePhrase": "1,25–2,5%",
+          "code": {
+            "module": "research/minervini-lifecycle.mjs",
+            "export": "REFERENCE_CONFIG",
+            "path": "riskFraction"
+          },
+          "value": 0.0125,
+          "kind": "MODEL_BOUND_FROM_SOURCE_RANGE",
+          "note": "wie C07 (MA-MIN-RISK-FRACTION)"
+        }
+      ],
+      "blockers": [
+        {
+          "id": "C06-CC1",
+          "criterion": "CC-1",
+          "class": "d",
+          "secondary": [],
+          "text": "Vertrag 1.4.0 mit 0 exakten Regeln; Wortlaut nur über Übersetzungen (B12 id, B07 id, B03 vi; CROSS_TRANSLATION nach E7-2); jeder Trend-Template-Beleg im #709-Extrakt original_wording_checked = false (Liste psr709WordingUnchecked)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C06 Blocker; evidence/PSR709-EVIDENCE-EXTRACT.json",
+          "closes": "englische Buchausgabe im Projekt oder Owner-Entscheidung über Übersetzungsbelege (E7-2)",
+          "status": "OPEN"
+        },
+        {
+          "id": "C06-CC3",
+          "criterion": "CC-3",
+          "class": "d",
+          "secondary": [],
+          "text": "11 essenzielle manuelle Entscheidungen (Priorität, Earnings-Qualität, VCP, Pivot, Stop, Größe, Verkauf; SEPA ist laut Quelle manuell, MIN-PROCESS-04)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C06 Blocker",
+          "closes": "X-MANUAL",
+          "status": "OPEN_STRUCTURAL"
+        },
+        {
+          "id": "C06-CC4",
+          "criterion": "CC-4",
+          "class": "d",
+          "secondary": [],
+          "text": "MIN-SF-TT-8 (IBD-RS >= 70) DATA_BLOCKED; das IBD-Rating ist proprietär, ein VU-Perzentil ist kein Ersatz",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C06 Blocker",
+          "closes": "X-LICENSE-DATA (IBD-RS-Historie, Lizenz); kein Ersatz zulässig",
+          "status": "OPEN"
+        },
+        {
+          "id": "C06-CC5",
+          "criterion": "CC-5",
+          "class": "d",
+          "secondary": [],
+          "text": "DQ-K5 0 exponiert, DQ-K3 0 exponiert; CC5-a und CC5-b erfüllt, offen nur CC5-e und CC5-f",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C06 Corporate Actions",
+          "closes": "X-CC5",
+          "status": "OPEN"
+        },
+        {
+          "id": "C06-CC8",
+          "criterion": "CC-8",
+          "class": "d",
+          "secondary": [],
+          "text": "SF6-PAPER-2027 nicht aktiv",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C06 OOS",
+          "closes": "X-CC8",
+          "status": "OPEN"
+        },
+        {
+          "id": "C06-FUNDAMENTALS",
+          "criterion": "DATA",
+          "class": "d",
+          "secondary": [],
+          "text": "SEC-PIT-EPS nur als Beleg (fundamentals: MANUAL_ONLY): 762 von 954 DEV-Einstiegen mit PIT-Fundamentals, 405 mit ungeklärtem Quartal (überwiegend abgeleitetes Q4); Schätzungen, Überraschungen und Guidance fehlen",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C06 Daten",
+          "closes": "Owner-Entscheidung, ob Fundamentaldaten Teil der Referenz werden; die Q4-Ableitung gehört dem Quant-Erzeuger (eigener Quant-PR), Schätzungen brauchen eine Lizenz",
+          "status": "OPEN"
+        },
+        {
+          "id": "C06-SURV",
+          "criterion": "DATA",
+          "class": "c",
+          "secondary": [],
+          "text": "Delistings vor 2009 fehlen, keine Delisting-Renditen; Holdout nach oben verzerrt",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.5",
+          "closes": "X-SURV",
+          "status": "OPEN"
+        },
+        {
+          "id": "C06-LEDGER",
+          "criterion": "CC-1",
+          "class": "a",
+          "secondary": [],
+          "text": "kein Eintrag in scripts/supertrader/source-ledger.json (B07, W-MIN18)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.8, Querschnittsblocker 6",
+          "closes": "X-LEDGER",
+          "status": "OPEN_SEPARATE_PR"
+        },
+        {
+          "id": "C06-RULE-CONFORMANCE",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "Trend-Template-Grenzen (30 % über dem Tief, 25 % unter dem Hoch) und die 10-%-Verlustgrenze am Pivot nicht an der Grenze getestet",
+          "evidence": "Abgleich sf-minervini*.test.mjs mit MIN-TT-06/-07, MIN-MM-STOP-02",
+          "closes": "CP-MIN-TT-BOUNDS, CP-MIN-STOP-FLAG-10, CP-MIN-ENTRY-PLANNED-LOSS-LIMIT in sf-cert-prep-all13.test.mjs (mit Gegenproben)",
+          "status": "DONE"
+        }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-TT-BOUNDS",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-STOP-FLAG-10",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-ENTRY-PLANNED-LOSS-LIMIT",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-TT-1",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: SF-MIN-IPO-SCOPE",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-RS-PROXY-NOT-GATE",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-CANDIDATE",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-SEPA-NO-FUNDAMENTAL-GATE",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-VCP-EVIDENCE-NOT-GATE",
+        "scripts/supertrader/tests/sf-minervini.test.mjs: GC-MIN-STOP-10PCT-FLAG",
+        "scripts/supertrader/tests/sf-minervini-components.test.mjs: GC-MIN-VCP-CONTRACTIONS",
+        "scripts/supertrader/tests/sf-minervini-components.test.mjs: GC-MIN-FUNDAMENTALS-PIT",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: GC-MLC-SEPA-LIFECYCLE",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-PIVOT-BEFORE-CONTRACTIONS",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-PLANNED-LOSS",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-GAP-OVER-ENTRY",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: SF4-NO-LOOKAHEAD",
+        "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: SF4-SEPA-SERIES-EQUIVALENCE",
+        "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-STAGGER",
+        "scripts/supertrader/tests/sf-sf7-minervini.test.mjs: SF7-MIN-PRICE-CONFIRM"
+      ],
+      "dataRequirements": [
+        {
+          "id": "D-SEPA-OHLCV",
+          "data": "Tages-OHLCV split-adjustiert, mindestens 252 Balken (Trend Template)",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-SEPA-IBD-RS",
+          "data": "IBD-RS-Rating-Historie (MIN-TT-08)",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C06-CC4"
+        },
+        {
+          "id": "D-SEPA-EPS",
+          "data": "SEC-PIT-Quartalsergebnisse ohne abgeleitetes Q4; Schätzungen, Überraschungen, Guidance",
+          "need": "EVIDENCE_ONLY_MANUAL_RULE",
+          "availability": "SNAPSHOT_PARTIAL",
+          "class": "d",
+          "blocker": "C06-FUNDAMENTALS"
+        },
+        {
+          "id": "D-SEPA-CA",
+          "data": "faktortragende Kapitalmaßnahmen für CC5-e/-f (0 exponierte Sitzungen)",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C06-CC5"
+        },
+        {
+          "id": "D-SEPA-TERMINAL",
+          "data": "Listing-Enden und Delisting-Renditen",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT_PARTIAL",
+          "class": "c",
+          "blocker": "C06-SURV"
+        }
+      ],
+      "executionAssumptions": [
+        {
+          "id": "EX-MIN-SEPA-PIVOT",
+          "text": "Pivot = Hoch des letzten bestätigten Swinghochs der Basis (+-5 Sitzungen), Setup-Proxy VCP_FOOTPRINT_STRICT",
+          "basis": "MA-MIN-SEPA-PIVOT, MA-MIN-SEPA-SETUP-PROXY",
+          "tests": [
+            "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-PIVOT-BEFORE-CONTRACTIONS"
+          ]
+        },
+        {
+          "id": "EX-MIN-BUY-STOP-LIMIT",
+          "text": "wie C07",
+          "basis": "MA-MIN-ORDER-TYPE",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-MIN-ENTRY-PLANNED-LOSS-LIMIT"
+          ]
+        },
+        {
+          "id": "EX-MIN-STOP-FILL",
+          "text": "Stop am tiefsten Tief der letzten Kontraktion; Gap durch den Stop füllt zur Eröffnung",
+          "basis": "MA-MIN-STOP-PLACEMENT, MA-MIN-STOP-FILL",
+          "tests": [
+            "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-GAP-THROUGH-STOP"
+          ]
+        },
+        {
+          "id": "EX-MIN-EXIT",
+          "text": "wie C07",
+          "basis": "MA-MIN-EXIT-POLICY",
+          "tests": [
+            "scripts/supertrader/tests/sf-minervini-lifecycle.test.mjs: ADV-MLC-EXIT-PRECEDENCE"
+          ]
+        }
+      ],
+      "studies": [
+        {
+          "id": "PS-C06-CONFORMANCE",
+          "class": "a",
+          "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?",
+          "procedure": "node --test über die Dateien aus conformanceTests; protokolliert mit scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --run-tests (NOT_MET macht das Protokoll ungültig, Exit 1); Gegenproben mit --mutation-probes",
+          "acceptance": [
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen"
+            },
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "jede Gegenprobe der CP-Tests dieser Methode ist ROT, danach ist der Code byte-gleich zurückgesetzt"
+            }
+          ],
+          "status": "READY",
+          "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN"
+        },
+        {
+          "id": "PS-C06-SOURCE",
+          "class": "d",
+          "question": "Liegt der englische Wortlaut des Trend Templates vor?",
+          "procedure": "wie PS-C07-SOURCE",
+          "acceptance": [
+            {
+              "metricKind": "SOURCE",
+              "criterion": "Quellenstelle je Kriterium MIN-TT-01..07 im Original zitiert oder Entscheidung dokumentiert"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C06-FUNDAMENTALS-COVERAGE",
+          "class": "a",
+          "question": "Wie viele Einstiege tragen eindeutige PIT-Fundamentaldaten?",
+          "procedure": "bestehende SF6-Zählung (SUPERTRADER_6_VALIDATION_AND_HOLDOUT.md §4), nur Belegwert",
+          "acceptance": [
+            {
+              "metricKind": "DATA_COVERAGE",
+              "criterion": "Anteil mit PIT-Fundamentals und Anteil mit ungeklärtem Quartal berichtet"
+            }
+          ],
+          "status": "READY"
+        },
+        {
+          "id": "PS-C06-COSTS",
+          "class": "a",
+          "question": "Wie reagiert die Tradezahl auf die vier Kostenstufen?",
+          "procedure": "bestehende SF6-Läufe (versiegelt)",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "Trades je Kostenstufe berichtet"
+            }
+          ],
+          "status": "READY"
+        }
+      ],
+      "findings": [
+        "F-MIN-WORDING-UNCHECKED"
+      ]
+    },
+    {
+      "candidateId": "C13",
+      "strategyId": "SF_RASCHKE_HOLY_GRAIL",
+      "priority": 8,
+      "contract": {
+        "module": "contracts/holy-grail.mjs",
+        "export": "HOLY_GRAIL",
+        "sourceContractVersion": "1.2.1"
+      },
+      "engine": {
+        "module": "research/holy-grail-lifecycle.mjs",
+        "versionExport": "HG_LIFECYCLE_VERSION",
+        "version": "sf5-holy-grail-research-variant-1.0.0"
+      },
+      "sources": [
+        "W-RAS04",
+        "W-RAS97"
+      ],
+      "ccMet": [
+        "CC-4",
+        "CC-6",
+        "CC-7"
+      ],
+      "ccOpen": [
+        "CC-1",
+        "CC-2",
+        "CC-3",
+        "CC-5",
+        "CC-8"
+      ],
+      "rules": [
+        {
+          "id": "RAS-SF-ADX",
+          "status": "SOURCE_EXACT"
+        },
+        {
+          "id": "RAS-SF-PULLBACK",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "RAS-SF-OSC",
+          "status": "SOURCE_EXACT"
+        },
+        {
+          "id": "RAS-SF-OSC-HIGH",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "RAS-SF-TIMEFRAME",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "RAS-SF-ENTRY",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "RAS-SF-STOP",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "RAS-SF-EXIT",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "RAS-SF-SIZE",
+          "status": "SOURCE_AMBIGUOUS"
+        }
+      ],
+      "rulesOutOfScope": [],
+      "params": [
+        {
+          "psr709": "RAS04-002",
+          "sourcePhrase": "ADX14",
+          "code": {
+            "module": "methods/holy-grail.mjs",
+            "export": "HG_PARAMS",
+            "path": "adxPeriod"
+          },
+          "value": 14,
+          "kind": "SOURCE_NUMBER"
+        },
+        {
+          "psr709": "RAS04-002",
+          "sourcePhrase": ">30",
+          "code": {
+            "module": "methods/holy-grail.mjs",
+            "export": "HG_PARAMS",
+            "path": "adxThreshold"
+          },
+          "value": 30,
+          "kind": "SOURCE_NUMBER"
+        },
+        {
+          "psr709": "RAS04-001",
+          "sourcePhrase": "20EMA",
+          "code": {
+            "module": "methods/holy-grail.mjs",
+            "export": "HG_PARAMS",
+            "path": "ema"
+          },
+          "value": 20,
+          "kind": "SOURCE_NUMBER"
+        },
+        {
+          "psr709": "RAS04-004",
+          "sourcePhrase": "3/10SMA",
+          "code": {
+            "module": "methods/holy-grail.mjs",
+            "export": "HG_PARAMS",
+            "path": "osc"
+          },
+          "value": [
+            3,
+            10
+          ],
+          "kind": "SOURCE_NUMBER"
+        },
+        {
+          "psr709": "RAS04-004",
+          "sourcePhrase": "SMA16",
+          "code": {
+            "module": "methods/holy-grail.mjs",
+            "export": "HG_PARAMS",
+            "path": "signal"
+          },
+          "value": 16,
+          "kind": "SOURCE_NUMBER"
+        }
+      ],
+      "blockers": [
+        {
+          "id": "C13-CC1",
+          "criterion": "CC-1",
+          "class": "d",
+          "secondary": [],
+          "text": "Einstieg und Initialstop nur aus der Sekundärquelle W-RAS97 (D-RAS97, vermutlich redaktionelle Zusammenfassung); RAS-SF-SIZE SOURCE_AMBIGUOUS (nicht offengelegt); W-RAS04 und W-RAS97 ohne Ledger-Eintrag",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C13 Quellen / Blocker",
+          "closes": "Primärquelle der Autorin für Einstieg, Stop, Trailing und Größe oder Owner-Entscheidung, die das Kriterium nicht aufweicht",
+          "status": "OPEN"
+        },
+        {
+          "id": "C13-CC2",
+          "criterion": "CC-2",
+          "class": "d",
+          "secondary": [],
+          "text": "Trailing und Größe stehen in keiner Quelle; MA6-HG-TRAIL-SWING-LOWS ist keine Originalregel (E3); ohne sie ist keine historische Methodenrendite berechenbar (Registry)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C13 Regeln",
+          "closes": "wie C13-CC1",
+          "status": "OPEN"
+        },
+        {
+          "id": "C13-CC3",
+          "criterion": "CC-3",
+          "class": "d",
+          "secondary": [],
+          "text": "3 essenzielle manuelle Entscheidungen (starker Impuls, erster Rücklauf, Ausführung)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C13 Blocker",
+          "closes": "X-MANUAL",
+          "status": "OPEN_STRUCTURAL"
+        },
+        {
+          "id": "C13-CC5",
+          "criterion": "CC-5",
+          "class": "d",
+          "secondary": [],
+          "text": "DQ-K5 29 / 29 ungeklärt (höchste Zahl aller Referenzen), DQ-K3 99 / 99 ungeklärt; Stabilität unter Quarantäne 9 %",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C13 Corporate Actions",
+          "closes": "X-CC5",
+          "status": "OPEN"
+        },
+        {
+          "id": "C13-CC8",
+          "criterion": "CC-8",
+          "class": "d",
+          "secondary": [],
+          "text": "SF6-PAPER-2027 nicht aktiv",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C13 OOS",
+          "closes": "X-CC8",
+          "status": "OPEN"
+        },
+        {
+          "id": "C13-INTRADAY",
+          "criterion": "DATA",
+          "class": "d",
+          "secondary": [],
+          "text": "Intraday-Zeitebenen (5–120 Minuten, RAS04-006) DATA_BLOCKED; die Tagesebene ist eine erlaubte Zeitebene",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C13 Daten",
+          "closes": "lizenzierte Minutenhistorie; nicht essenziell für die Tageskomponente",
+          "status": "OPEN_NON_ESSENTIAL"
+        },
+        {
+          "id": "C13-STABILITY",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "Trade-Stabilität unter Quarantäne 9 % (niedrigster Wert)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C13 Corporate Actions",
+          "closes": "nur als Verteilung berichtet (PS-C13-STABILITY)",
+          "status": "PREPARED_REPORT_ONLY"
+        },
+        {
+          "id": "C13-SURV",
+          "criterion": "DATA",
+          "class": "c",
+          "secondary": [],
+          "text": "Delistings vor 2009 fehlen, keine Delisting-Renditen; Holdout nach oben verzerrt",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.5",
+          "closes": "X-SURV",
+          "status": "OPEN"
+        },
+        {
+          "id": "C13-LEDGER",
+          "criterion": "CC-1",
+          "class": "a",
+          "secondary": [],
+          "text": "kein Eintrag in scripts/supertrader/source-ledger.json (W-RAS04, W-RAS97)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.8, Querschnittsblocker 6",
+          "closes": "X-LEDGER",
+          "status": "OPEN_SEPARATE_PR"
+        },
+        {
+          "id": "C13-RULE-CONFORMANCE",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "strikte ADX-Grenze, Berührung genau an der EMA20, Buy-Stop über dem Berührungsbalken, Swing-Low-Stop und strikter Neues-Hoch-Ausstieg nicht an der Grenze getestet",
+          "evidence": "Abgleich sf-holy-grail / sf-sf5-kk-moka-lifecycle mit RAS04-001..003",
+          "closes": "CP-HG-*-Tests in sf-cert-prep-all13.test.mjs (mit Gegenproben)",
+          "status": "DONE"
+        }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-HG-ADX-STRICT-30",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-HG-TOUCH-ORDER-STOP",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-HG-EXIT-NEW-HIGH-STRICT",
+        "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-WILDER",
+        "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-ADX-BELOW-30",
+        "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-FIRST-PULLBACK",
+        "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-SECOND-PULLBACK-NOT-FIRST",
+        "scripts/supertrader/tests/sf-holy-grail.test.mjs: GC-RAS-OSC-310",
+        "scripts/supertrader/tests/sf-holy-grail.test.mjs: SF-RAS-TEMPORAL",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-HG-RESEARCH-VARIANT",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-HG-READINGS",
+        "scripts/supertrader/tests/sf-sf5-owner-decisions.test.mjs: SF5-OD-RAS97-SECONDARY-SOURCE",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-HOLY-GRAIL"
+      ],
+      "dataRequirements": [
+        {
+          "id": "D-HG-OHLC",
+          "data": "Tages-OHLC split-adjustiert, mindestens 60 Balken",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-HG-INTRADAY",
+          "data": "Minutenbalken für die Intraday-Zeitebenen",
+          "need": "OPTIONAL_NON_ESSENTIAL",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C13-INTRADAY"
+        },
+        {
+          "id": "D-HG-CA",
+          "data": "faktortragende Kapitalmaßnahmen (29 K5 / 99 K3)",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C13-CC5"
+        },
+        {
+          "id": "D-HG-TERMINAL",
+          "data": "Listing-Enden und Delisting-Renditen",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT_PARTIAL",
+          "class": "c",
+          "blocker": "C13-SURV"
+        }
+      ],
+      "executionAssumptions": [
+        {
+          "id": "EX-HG-BUY-STOP",
+          "text": "Buy-Stop ein Roh-Cent über dem Hoch des Berührungsbalkens, nur für die nächste Sitzung; Fill max(Eröffnung, Level)",
+          "basis": "W-RAS97 Regel 3 (Sekundärquelle), MA-RAS-PREVIOUS-BAR",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-HG-TOUCH-ORDER-STOP",
+            "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-BUY-STOP-FILL"
+          ]
+        },
+        {
+          "id": "EX-HG-STOP",
+          "text": "Stop am tiefsten Tief ab dem Impulshoch bis zum Berührungsbalken; Gap füllt zur Eröffnung",
+          "basis": "W-RAS97 Regel 4, MA-RAS-SWING-LOW",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-HG-TOUCH-ORDER-STOP",
+            "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-HOLY-GRAIL"
+          ]
+        },
+        {
+          "id": "EX-HG-INTRABAR",
+          "text": "Einstiegsbalken mit Tief am Stop: pessimistisch (Referenz), ALT-INTRABAR-OPTIMISTIC vorregistriert",
+          "basis": "MA-RAS-INTRABAR-ORDER",
+          "tests": [
+            "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-HG-READINGS"
+          ]
+        },
+        {
+          "id": "EX-HG-EXIT",
+          "text": "erster Schluss strikt über dem Impulshoch -> Ausstieg zur nächsten Eröffnung; kein Trailing",
+          "basis": "MA-RAS-EXIT (RAS04-003 Präferenz)",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-HG-EXIT-NEW-HIGH-STRICT"
+          ]
+        },
+        {
+          "id": "EX-HG-SIZE-COSTS",
+          "text": "1 % Risiko zum Stop (Plattformannahme, Größe nicht offengelegt); 10 bps je Seite plus 1 bp",
+          "basis": "MA-RAS-SIZING, MA-RAS-COSTS",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-COSTS-AND-POLICY"
+          ]
+        }
+      ],
+      "studies": [
+        {
+          "id": "PS-C13-CONFORMANCE",
+          "class": "a",
+          "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?",
+          "procedure": "node --test über die Dateien aus conformanceTests; protokolliert mit scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --run-tests (NOT_MET macht das Protokoll ungültig, Exit 1); Gegenproben mit --mutation-probes",
+          "acceptance": [
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen"
+            },
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "jede Gegenprobe der CP-Tests dieser Methode ist ROT, danach ist der Code byte-gleich zurückgesetzt"
+            }
+          ],
+          "status": "READY",
+          "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN"
+        },
+        {
+          "id": "PS-C13-SOURCE",
+          "class": "d",
+          "question": "Gibt es eine Primärquelle für Einstieg, Stop, Trailing und Größe?",
+          "procedure": "Owner-Quellensuche (Street Smarts ist kommerziell und nicht genutzt) oder Entscheidung, datiert vor jedem Öffnen der Kennzahlen",
+          "acceptance": [
+            {
+              "metricKind": "SOURCE",
+              "criterion": "Primärquellenstelle zitiert oder Entscheidung dokumentiert"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C13-READINGS",
+          "class": "d",
+          "question": "Welche Lesarten (Vorbalken, ADX-Fenster, Berührungen) sind die Referenz?",
+          "procedure": "Owner-Entscheidung; alle vorregistrierten Varianten bleiben gerechnet",
+          "acceptance": [
+            {
+              "metricKind": "DECISION_RECORD",
+              "criterion": "Entscheidung datiert vor jedem Öffnen der Kennzahlen"
+            },
+            {
+              "metricKind": "COUNT",
+              "criterion": "Trades je Variante berichtet"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C13-ENTRY-BAR",
+          "class": "a",
+          "question": "Wie groß ist die Spannweite pessimistische Referenz / sichere Einstiegsbalken-Lesart (SF7-D1)?",
+          "procedure": "bestehende SF7-Varianten, nur Zählungen",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "Ausstiege am Einstiegstag je Lesart berichtet (127 sichere)"
+            }
+          ],
+          "status": "READY"
+        },
+        {
+          "id": "PS-C13-STABILITY",
+          "class": "a",
+          "question": "Wie stabil sind die Trades unter Quarantäne?",
+          "procedure": "bestehende SF7-VAL-STABILITY-Zählung",
+          "acceptance": [
+            {
+              "metricKind": "DISTRIBUTION_REPORT_ONLY",
+              "criterion": "Anteil unveränderter Trades berichtet; keine Schwelle"
+            }
+          ],
+          "status": "READY"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "candidateId": "C11",
+      "strategyId": "SF_MOKA_POCKET_PIVOT",
+      "priority": 9,
+      "contract": {
+        "module": "contracts/morales-kacher.mjs",
+        "export": "POCKET_PIVOT",
+        "sourceContractVersion": "1.3.0"
+      },
+      "engine": {
+        "module": "research/moka-lifecycle.mjs",
+        "versionExport": "MOKA_LIFECYCLE_VERSION",
+        "version": "sf5-moka-lifecycle-1.0.0"
+      },
+      "sources": [
+        "W-MOKAPP",
+        "W-MOKA12",
+        "W-MOKASTOP",
+        "W-MOKAV24"
+      ],
+      "ccMet": [
+        "CC-4",
+        "CC-6",
+        "CC-7"
+      ],
+      "ccOpen": [
+        "CC-1",
+        "CC-2",
+        "CC-3",
+        "CC-5",
+        "CC-8"
+      ],
+      "rules": [
+        {
+          "id": "MOKA-SF-PP-VOLUME",
+          "status": "SOURCE_EXACT"
+        },
+        {
+          "id": "MOKA-SF-PP-DOWNDAY",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MOKA-SF-PP-UPDAY",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MOKA-SF-PP-CONTEXT",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MOKA-SF-PP-STOP",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MOKA-SF-PP-SIZE",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MOKA-SF-EXIT-MA",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "MOKA-SF-EXIT-VIOLATION",
+          "status": "SOURCE_AMBIGUOUS"
+        },
+        {
+          "id": "MOKA-SF-EXIT-GUIDE-EVIDENCE",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "MOKA-SF-EXIT-CONTEXT",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        }
+      ],
+      "rulesOutOfScope": [],
+      "params": [
+        {
+          "psr709": "MOKAPP-003",
+          "sourcePhrase": "10Tage",
+          "code": {
+            "module": "methods/morales-kacher.mjs",
+            "export": "MOKA_PARAMS",
+            "path": "ppWindow"
+          },
+          "value": 10,
+          "kind": "SOURCE_NUMBER"
+        },
+        {
+          "psr709": "MOKA12-008",
+          "sourcePhrase": "7Wochen",
+          "code": {
+            "module": "methods/morales-kacher.mjs",
+            "export": "MOKA_PARAMS",
+            "path": "respectWeeks"
+          },
+          "value": 7,
+          "kind": "SOURCE_NUMBER"
+        }
+      ],
+      "blockers": [
+        {
+          "id": "C11-STOP",
+          "criterion": "CC-2",
+          "class": "d",
+          "secondary": [],
+          "text": "die Quelle nennt keinen Initialstop: Lebenszyklus-Zeile PP-STOP SOURCE_BLOCKED (Vertragsregel MOKA-SF-PP-STOP MANUAL_REVIEW_REQUIRED), 8 von 9 Phasen; MA6-PP-STOP-SIGNAL-DAY-LOW ist ausdrücklich keine Originalregel (E3)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C11 Regeln / Blocker; research/sf6-model-variants.mjs",
+          "closes": "Primärquelle der Autoren mit Stopregel; mit der Modellvariante ist CC-2 nach E3 nicht erfüllbar",
+          "status": "OPEN"
+        },
+        {
+          "id": "C11-CC1",
+          "criterion": "CC-1",
+          "class": "d",
+          "secondary": [],
+          "text": "MOKA-SF-EXIT-VIOLATION SOURCE_AMBIGUOUS (MOKA-C2: nächster Tag laut 2012-Folie, spätere Tage laut FAQ); Referenz LATER_DAYS",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C11 Regeln",
+          "closes": "wie C12-CC1-VIOLATION",
+          "status": "OPEN"
+        },
+        {
+          "id": "C11-CC3",
+          "criterion": "CC-3",
+          "class": "d",
+          "secondary": [],
+          "text": "7 essenzielle manuelle Entscheidungen (Basis, Thema, Ausdehnung, Größe, Ausstieg)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C11 Blocker",
+          "closes": "X-MANUAL",
+          "status": "OPEN_STRUCTURAL"
+        },
+        {
+          "id": "C11-CC5",
+          "criterion": "CC-5",
+          "class": "d",
+          "secondary": [],
+          "text": "DQ-K5 9 / 9 ungeklärt, DQ-K3 25 / 25 ungeklärt; Stabilität unter Quarantäne 10 %",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C11 Corporate Actions",
+          "closes": "X-CC5",
+          "status": "OPEN"
+        },
+        {
+          "id": "C11-CC8",
+          "criterion": "CC-8",
+          "class": "d",
+          "secondary": [],
+          "text": "SF6-PAPER-2027 nicht aktiv",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C11 OOS",
+          "closes": "X-CC8",
+          "status": "OPEN"
+        },
+        {
+          "id": "C11-STOP-FILTER",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "die Stopvariante wirkt als Einstiegsfilter: 32.413 Einstiege abgelehnt, 4.534 statt 1.872 Trades",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C11 Ausführung",
+          "closes": "Abnahme berichtet Referenz und Variante getrennt (PS-C11-STOP-FILTER); die Variante wird nie Referenz ohne Quelle",
+          "status": "PREPARED_REPORT_ONLY"
+        },
+        {
+          "id": "C11-SURV",
+          "criterion": "DATA",
+          "class": "c",
+          "secondary": [],
+          "text": "Delistings vor 2009 fehlen, keine Delisting-Renditen; Holdout nach oben verzerrt",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.5",
+          "closes": "X-SURV",
+          "status": "OPEN"
+        },
+        {
+          "id": "C11-LEDGER",
+          "criterion": "CC-1",
+          "class": "a",
+          "secondary": [],
+          "text": "kein Eintrag in scripts/supertrader/source-ledger.json (W-MOKAPP, W-MOKA12, W-MOKASTOP, W-MOKAV24)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.8, Querschnittsblocker 6",
+          "closes": "X-LEDGER",
+          "status": "OPEN_SEPARATE_PR"
+        },
+        {
+          "id": "C11-RULE-CONFORMANCE",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "strikter Auf-/Abwärtstag, strikter MA50-Kontext, 35-Sitzungen-Grenze des Verkaufsleitfadens und strikter Verletzungsauslöser ohne Preisstop nicht an der Grenze getestet",
+          "evidence": "Abgleich sf-morales-kacher / sf-moka-completion / sf-sf5-kk-moka-lifecycle mit MOKAPP-003, MOKA12-008/-009",
+          "closes": "CP-PP-*-Tests in sf-cert-prep-all13.test.mjs (mit Gegenproben)",
+          "status": "DONE"
+        }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PP-UP-DAY-STRICT",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PP-CONTEXT-MA50-STRICT",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PP-SELL-GUIDE-35",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PP-VIOLATION-STRICT-NO-STOP",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-SIGNATURE",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EQUAL-NOT-GREATER",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-WINDOW-10",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-NO-DOWN-DAY",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-DOWN-DAY-REJECT",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-PP-EXTENSION-IS-EVIDENCE",
+        "scripts/supertrader/tests/sf-morales-kacher.test.mjs: GC-MOKA-MA-VIOLATION-BOTH-READINGS",
+        "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-RESPECTED",
+        "scripts/supertrader/tests/sf-moka-completion.test.mjs: GC-MOKA-SELL-GUIDE-READINGS-DIFFER",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-PP-LIFECYCLE",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-MOKA-GUIDE-EQUIV",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-MOKA-NO-SIGNAL-CLOSE-FILL",
+        "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-MOKA-USED-VIOLATION",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-POCKET-PIVOT"
+      ],
+      "dataRequirements": [
+        {
+          "id": "D-PPV-OHLCV",
+          "data": "Tages-OHLCV split-adjustiert, mindestens 51 Balken",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-PPV-CA",
+          "data": "faktortragende Kapitalmaßnahmen (9 K5 / 25 K3)",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C11-CC5"
+        },
+        {
+          "id": "D-PPV-INTRADAY-VOL",
+          "data": "hochgerechnetes Intraday-Volumen (Autoren kaufen intraday)",
+          "need": "OPTIONAL_NOT_MODELLED",
+          "availability": "MISSING_LICENSE",
+          "class": "d"
+        },
+        {
+          "id": "D-PPV-TERMINAL",
+          "data": "Listing-Enden und Delisting-Renditen",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT_PARTIAL",
+          "class": "c",
+          "blocker": "C11-SURV"
+        }
+      ],
+      "executionAssumptions": [
+        {
+          "id": "EX-PP-NEXT-OPEN",
+          "text": "Kauf zur nächsten Eröffnung nach dem Signalschluss (Tagesvolumen erst nach dem Schluss bekannt); kein Preisstop",
+          "basis": "MA-MOKA-ENTRY-TIMING; MOKA-SF-PP-STOP manuell",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PP-VIOLATION-STRICT-NO-STOP",
+            "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-MOKA-NO-SIGNAL-CLOSE-FILL"
+          ]
+        },
+        {
+          "id": "EX-PP-SELL-GUIDE",
+          "text": "10DMA ab 35 respektierten Sitzungen, sonst 50DMA, an jedem Schluss neu bewertet",
+          "basis": "MA-MOKA-SELL-GUIDE (MOKA12-008 Präferenz)",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PP-SELL-GUIDE-35",
+            "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-MOKA-GUIDE-EQUIV"
+          ]
+        },
+        {
+          "id": "EX-PP-VIOLATION",
+          "text": "Stop-Market strikt unter dem Tief des Verletzungstags (LATER_DAYS), ganze Position; Gap füllt zur Eröffnung",
+          "basis": "MA-MOKA-VIOLATION-READING",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PP-VIOLATION-STRICT-NO-STOP",
+            "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-POCKET-PIVOT"
+          ]
+        },
+        {
+          "id": "EX-PP-SIZE-COSTS",
+          "text": "feste Gewichtung 10 % (kein Preisstop zum Dimensionieren); 10 bps je Seite plus 1 bp",
+          "basis": "MA-MOKA-SIZING, MA-MOKA-COSTS",
+          "tests": [
+            "scripts/supertrader/tests/sf-sf5-kk-moka-lifecycle.test.mjs: GC-SF5-PP-LIFECYCLE",
+            "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-COSTS-AND-POLICY"
+          ]
+        }
+      ],
+      "studies": [
+        {
+          "id": "PS-C11-CONFORMANCE",
+          "class": "a",
+          "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?",
+          "procedure": "node --test über die Dateien aus conformanceTests; protokolliert mit scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --run-tests (NOT_MET macht das Protokoll ungültig, Exit 1); Gegenproben mit --mutation-probes",
+          "acceptance": [
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen"
+            },
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "jede Gegenprobe der CP-Tests dieser Methode ist ROT, danach ist der Code byte-gleich zurückgesetzt"
+            }
+          ],
+          "status": "READY",
+          "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN"
+        },
+        {
+          "id": "PS-C11-STOP-SOURCE",
+          "class": "d",
+          "question": "Nennen die Autoren eine Initialstopregel?",
+          "procedure": "Quellensuche in Autorenprimärquellen; keine Modellvariante ersetzt sie",
+          "acceptance": [
+            {
+              "metricKind": "SOURCE",
+              "criterion": "Quellenstelle zitiert oder \"keine Regel\" dokumentiert"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C11-READINGS",
+          "class": "d",
+          "question": "Welche Verletzungslesart ist die Referenz?",
+          "procedure": "wie PS-C12-READINGS (gleiche Regel MOKA-SF-EXIT-VIOLATION)",
+          "acceptance": [
+            {
+              "metricKind": "DECISION_RECORD",
+              "criterion": "Entscheidung datiert vor jedem Öffnen der Kennzahlen"
+            },
+            {
+              "metricKind": "COUNT",
+              "criterion": "Trades je Lesart (LATER_DAYS / NEXT_DAY) berichtet"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C11-STOP-FILTER",
+          "class": "a",
+          "question": "Wie viele Einstiege lehnt die Stopvariante ab?",
+          "procedure": "bestehende SF6-Läufe, nur Zählungen",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "abgelehnte Einstiege und Trades je Lauf berichtet"
+            }
+          ],
+          "status": "READY"
+        },
+        {
+          "id": "PS-C11-STABILITY",
+          "class": "a",
+          "question": "Wie stabil sind die Trades unter Quarantäne?",
+          "procedure": "bestehende SF7-VAL-STABILITY-Zählung",
+          "acceptance": [
+            {
+              "metricKind": "DISTRIBUTION_REPORT_ONLY",
+              "criterion": "Anteil unveränderter Trades berichtet; keine Schwelle"
+            }
+          ],
+          "status": "READY"
+        }
+      ],
+      "findings": [
+        "F-PP-STOP-STATUS-SPLIT"
+      ]
+    },
+    {
+      "candidateId": "C05",
+      "strategyId": "SF_WEINSTEIN_TRADER",
+      "priority": 10,
+      "contract": {
+        "module": "contracts/weinstein.mjs",
+        "export": "WEINSTEIN_TRADER",
+        "sourceContractVersion": "1.2.0"
+      },
+      "engine": {
+        "module": "research/weinstein-lifecycle.mjs",
+        "versionExport": "WEIN_LIFECYCLE_VERSION",
+        "version": "sf5-weinstein-lifecycle-1.0.0"
+      },
+      "sources": [
+        "B09"
+      ],
+      "ccMet": [
+        "CC-1",
+        "CC-2",
+        "CC-6",
+        "CC-7"
+      ],
+      "ccOpen": [
+        "CC-3",
+        "CC-4",
+        "CC-5",
+        "CC-8"
+      ],
+      "rules": [
+        {
+          "id": "WEIN-SF-MA-GATE",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "WEIN-SF-VOLUME",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-GROUP",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "WEIN-SF-MARKET",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "WEIN-SF-ORDER",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "WEIN-SF-STOP-PLAN",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "WEIN-SF-TR-CONT",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "WEIN-SF-TR-SIZE",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-TR-STOP",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-TR-TRAIL",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        }
+      ],
+      "rulesOutOfScope": [
+        {
+          "id": "WEIN-SF-WEEKLY",
+          "reason": "COVERED_IN:C04"
+        },
+        {
+          "id": "WEIN-SF-STAGE",
+          "reason": "COVERED_IN:C04"
+        },
+        {
+          "id": "WEIN-SF-RS",
+          "reason": "COVERED_IN:C04"
+        },
+        {
+          "id": "WEIN-SF-OVERHEAD",
+          "reason": "COVERED_IN:C04"
+        },
+        {
+          "id": "WEIN-SF-NO-AVG-DOWN",
+          "reason": "COVERED_IN:C04"
+        },
+        {
+          "id": "WEIN-SF-NONTECH",
+          "reason": "COVERED_IN:C04"
+        }
+      ],
+      "params": [
+        {
+          "psr709": "WEIN-TR-TRAIL",
+          "sourcePhrase": "7%",
+          "code": {
+            "module": "research/weinstein-lifecycle.mjs",
+            "export": "WEIN_TRADER_REFERENCE_CONFIG",
+            "path": "trailThreshold"
+          },
+          "value": 0.07,
+          "kind": "MODEL_BOUND_FROM_SOURCE_RANGE",
+          "note": "gedruckte Zahl (\"unter 7 % ignorieren\"); im Forschungsmodul als Modellgrenze geführt"
+        }
+      ],
+      "blockers": [
+        {
+          "id": "C05-CC3",
+          "criterion": "CC-3",
+          "class": "d",
+          "secondary": [],
+          "text": "12 essenzielle manuelle Entscheidungen (Stage, Volumen, RS, Overhead, Stops, Größe, Trailing; die Quelle verlangt das Stage-Urteil)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C05 Blocker",
+          "closes": "X-MANUAL",
+          "status": "OPEN_STRUCTURAL"
+        },
+        {
+          "id": "C05-CC4",
+          "criterion": "CC-4",
+          "class": "d",
+          "secondary": [],
+          "text": "WEIN-SF-GROUP (Branchen-Stage: PIT-Gruppenzugehörigkeit vorhanden, Gruppenchart fehlt) und WEIN-SF-MARKET (NYSE-Breite: nur Live-Log ab 18.09.2026) DATA_BLOCKED; der SIC3-Proxy entsperrt nichts (E4)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C05 Daten, Querschnittsblocker 5",
+          "closes": "X-PIT-GROUPS für die Gruppen-Stage, lizenzierte NYSE-A/D-Historie (X-LICENSE-DATA)",
+          "status": "OPEN"
+        },
+        {
+          "id": "C05-CC5",
+          "criterion": "CC-5",
+          "class": "d",
+          "secondary": [],
+          "text": "DQ-K5 4 / 4 ungeklärt, DQ-K3 9 / 9 ungeklärt; Stabilität unter Quarantäne 21 %",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C05 Corporate Actions",
+          "closes": "X-CC5",
+          "status": "OPEN"
+        },
+        {
+          "id": "C05-CC8",
+          "criterion": "CC-8",
+          "class": "d",
+          "secondary": [],
+          "text": "SF6-PAPER-2027 nicht aktiv",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C05 OOS",
+          "closes": "X-CC8",
+          "status": "OPEN"
+        },
+        {
+          "id": "C05-TRAIL-READING",
+          "criterion": "CC-7",
+          "class": "d",
+          "secondary": [],
+          "text": "SF7-V1: MA-WEIN-TRAIL deklariert \"at or above\", der Code endet die Korrektur erst bei einem höheren Wochenhoch (>); gemessen als EX7-WEIN-TRAIL-AT-OR-ABOVE, die Referenz ist unverändert",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C04 Ausführung; research/weinstein-lifecycle.mjs#makeAdapter",
+          "closes": "Owner-Entscheidung, welche Lesart die Referenz ist (vor dem Öffnen der Kennzahlen); keine Codeänderung hier",
+          "status": "OPEN_DOCUMENTED"
+        },
+        {
+          "id": "C05-SURV",
+          "criterion": "DATA",
+          "class": "c",
+          "secondary": [],
+          "text": "Delistings vor 2009 fehlen, keine Delisting-Renditen; Holdout nach oben verzerrt",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.5",
+          "closes": "X-SURV",
+          "status": "OPEN"
+        },
+        {
+          "id": "C05-RULE-CONFORMANCE",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "MA30w-Gleichheit, Volumenalternativen, Swinghoch-Definition, 7-%-Trailing und Stop unter dem Trigger nicht an der Grenze getestet",
+          "evidence": "Abgleich sf-weinstein / sf-sf5-weinstein-lifecycle mit WEIN-MA, WEIN-VOL1..3, WEIN-TR-CONT, WEIN-TR-TRAIL",
+          "closes": "CP-WEIN-*-Tests in sf-cert-prep-all13.test.mjs (mit Gegenproben)",
+          "status": "DONE"
+        }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-MA-GATE-EQUALITY",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-VOL-THRESHOLDS",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-TR-SWING-HIGH",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-TRAIL-THRESHOLDS",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-STOP-BELOW-TRIGGER",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-WEEKLY",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-C",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: SF-WEIN-TEMPORAL",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-CANDIDATE",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-TRADER-MA-FLAT",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-TRADER-LIFECYCLE",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-WEINSTEIN-TRADER",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-SCREEN-EQUIV",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-VOL5",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-PIT-PREFIX",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-DATA-EXCEPTION",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-WEIN-TRAIL-GOLDEN"
+      ],
+      "dataRequirements": [
+        {
+          "id": "D-WEIN-OHLCV",
+          "data": "Tages-OHLCV split-adjustiert, zu ISO-Wochen aggregiert, mindestens 160 Balken",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-WEIN-SPY",
+          "data": "SPY-Tagesbalken (RS- und Marktbeleg)",
+          "need": "EVIDENCE_ONLY",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-WEIN-GROUPS",
+          "data": "PIT-Branchengruppen mit Gruppenchart (Member-Index)",
+          "need": "REQUIRED",
+          "availability": "MISSING_OWNER_DECISION",
+          "class": "d",
+          "blocker": "C05-CC4"
+        },
+        {
+          "id": "D-WEIN-BREADTH",
+          "data": "NYSE-Advance/Decline- und Neue-Hochs/Tiefs-Historie",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C05-CC4"
+        },
+        {
+          "id": "D-WEIN-CA",
+          "data": "faktortragende Kapitalmaßnahmen (4 K5 / 9 K3)",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C05-CC5"
+        },
+        {
+          "id": "D-WEIN-TERMINAL",
+          "data": "Listing-Enden und Delisting-Renditen",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT_PARTIAL",
+          "class": "c",
+          "blocker": "C05-SURV"
+        }
+      ],
+      "executionAssumptions": [
+        {
+          "id": "EX-WEIN-ORDER-WEEK",
+          "text": "Buy-Stop aus der abgeschlossenen Woche ein Roh-Cent über dem Widerstand, für jede Sitzung der Folgewoche; Fill max(Eröffnung, Trigger)",
+          "basis": "WEIN-ORD (Quelle), MA-WEIN-ORDER-WEEK, MA-WEIN-WEEK-END",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-TR-SWING-HIGH",
+            "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-BUY-STOP-FILL",
+            "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-SCREEN-EQUIV"
+          ]
+        },
+        {
+          "id": "EX-WEIN-STOP",
+          "text": "Stop einen Roh-Cent unter dem Maschinenvorschlag, unter dem Trigger; Gap füllt zur Eröffnung",
+          "basis": "WEIN-STOP1 (Quelle), MA-WEIN-INITIAL-STOP",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-STOP-BELOW-TRIGGER",
+            "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-WEINSTEIN-TRADER"
+          ]
+        },
+        {
+          "id": "EX-WEIN-TRAIL",
+          "text": "Korrektur der Wochentiefs >= 7 % vom Hoch, dann ein höheres Wochenhoch: Stop einen Roh-Cent unter das Korrekturtief",
+          "basis": "MA-WEIN-TRAIL",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-TRAIL-THRESHOLDS",
+            "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-WEIN-TRAIL-GOLDEN"
+          ]
+        },
+        {
+          "id": "EX-WEIN-VOL5",
+          "text": "ohne Volumenbestätigung am Ende der Ausbruchswoche: Ausstieg zur Eröffnung nach dem ersten höheren Schluss",
+          "basis": "WEIN-VOL5 (Quelle), MA-WEIN-VOL5-STRENGTH",
+          "tests": [
+            "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-VOL5"
+          ]
+        },
+        {
+          "id": "EX-WEIN-SIZE-COSTS",
+          "text": "volle Position 10 % Gewicht; 10 bps je Seite plus 1 bp",
+          "basis": "MA-WEIN-SIZING, MA-WEIN-COSTS",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-COSTS-AND-POLICY"
+          ]
+        }
+      ],
+      "studies": [
+        {
+          "id": "PS-C05-CONFORMANCE",
+          "class": "a",
+          "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?",
+          "procedure": "node --test über die Dateien aus conformanceTests; protokolliert mit scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --run-tests (NOT_MET macht das Protokoll ungültig, Exit 1); Gegenproben mit --mutation-probes",
+          "acceptance": [
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen"
+            },
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "jede Gegenprobe der CP-Tests dieser Methode ist ROT, danach ist der Code byte-gleich zurückgesetzt"
+            }
+          ],
+          "status": "READY",
+          "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN"
+        },
+        {
+          "id": "PS-C05-TRAIL-READING",
+          "class": "d",
+          "question": "Ist \"at or above\" (Deklaration) oder \">\" (Code) die Referenzlesart des Trailings?",
+          "procedure": "Owner-Entscheidung; beide Lesarten bleiben gerechnet (EX7-WEIN-TRAIL-AT-OR-ABOVE)",
+          "acceptance": [
+            {
+              "metricKind": "DECISION_RECORD",
+              "criterion": "Entscheidung datiert vor jedem Öffnen der Kennzahlen"
+            },
+            {
+              "metricKind": "COUNT",
+              "criterion": "Stopanhebungen und geänderte Trades je Lesart berichtet"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C05-GROUP-PROXY",
+          "class": "a",
+          "question": "Wie viele Buy-Stops überspringt der SIC3-Gruppenproxy (Forschungsvariante)?",
+          "procedure": "bestehende Variante ALT-SIC3-GROUP-PROXY, nur Zählungen; der Proxy entsperrt WEIN-SF-GROUP nie (E4)",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "übersprungene Buy-Stops und Trades je Lauf berichtet"
+            }
+          ],
+          "status": "READY"
+        },
+        {
+          "id": "PS-C05-STABILITY",
+          "class": "a",
+          "question": "Wie stabil sind die Trades unter Quarantäne?",
+          "procedure": "bestehende SF7-VAL-STABILITY-Zählung",
+          "acceptance": [
+            {
+              "metricKind": "DISTRIBUTION_REPORT_ONLY",
+              "criterion": "Anteil unveränderter Trades berichtet; keine Schwelle"
+            }
+          ],
+          "status": "READY"
+        }
+      ],
+      "findings": [
+        "F-WEIN-TRAIL-AT-OR-ABOVE",
+        "F-WEIN-MA-GATE-EQUALITY"
+      ]
+    },
+    {
+      "candidateId": "C04",
+      "strategyId": "SF_WEINSTEIN_INVESTOR",
+      "priority": 11,
+      "contract": {
+        "module": "contracts/weinstein.mjs",
+        "export": "WEINSTEIN_INVESTOR",
+        "sourceContractVersion": "1.2.0"
+      },
+      "engine": {
+        "module": "research/weinstein-lifecycle.mjs",
+        "versionExport": "WEIN_LIFECYCLE_VERSION",
+        "version": "sf5-weinstein-lifecycle-1.0.0"
+      },
+      "sources": [
+        "B09"
+      ],
+      "ccMet": [
+        "CC-1",
+        "CC-2",
+        "CC-6",
+        "CC-7"
+      ],
+      "ccOpen": [
+        "CC-3",
+        "CC-4",
+        "CC-5",
+        "CC-8"
+      ],
+      "rules": [
+        {
+          "id": "WEIN-SF-WEEKLY",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "WEIN-SF-MA-GATE",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "WEIN-SF-STAGE",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-VOLUME",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-RS",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-GROUP",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "WEIN-SF-MARKET",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "WEIN-SF-OVERHEAD",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-ORDER",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "WEIN-SF-STOP-PLAN",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "WEIN-SF-NO-AVG-DOWN",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-NONTECH",
+          "status": "SOURCE_EXACT"
+        },
+        {
+          "id": "WEIN-SF-INV-BREAKOUT",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "WEIN-SF-INV-SIZE",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-INV-STOP",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-INV-TRAIL",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "WEIN-SF-VOL5",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        }
+      ],
+      "rulesOutOfScope": [],
+      "params": [
+        {
+          "psr709": "WEIN-MA",
+          "sourcePhrase": "MA30",
+          "code": {
+            "module": "methods/weinstein.mjs",
+            "export": "WEIN_PARAMS",
+            "path": "maWeeks"
+          },
+          "value": 30,
+          "kind": "SOURCE_NUMBER"
+        },
+        {
+          "psr709": "WEIN-VOL1",
+          "sourcePhrase": "doppeltes",
+          "code": {
+            "module": "methods/weinstein.mjs",
+            "export": "WEIN_PARAMS",
+            "path": "volumeMultiple"
+          },
+          "value": 2,
+          "kind": "SOURCE_NUMBER"
+        },
+        {
+          "psr709": "WEIN-VOL1",
+          "sourcePhrase": "vorherigen Monats",
+          "code": {
+            "module": "methods/weinstein.mjs",
+            "export": "WEIN_PARAMS",
+            "path": "volMonthWeeks"
+          },
+          "value": 4,
+          "kind": "CONVENTION",
+          "note": "Vormonat = 4 Wochen (Ableitung)"
+        },
+        {
+          "psr709": "WEIN-VOL2",
+          "sourcePhrase": "3–4 Wochen",
+          "code": {
+            "module": "methods/weinstein.mjs",
+            "export": "WEIN_PARAMS",
+            "path": "volBuildWeeks"
+          },
+          "value": [
+            3,
+            4
+          ],
+          "kind": "SOURCE_NUMBER"
+        },
+        {
+          "psr709": "WEIN-VOL3",
+          "sourcePhrase": "Vorwoche",
+          "code": {
+            "module": "methods/weinstein.mjs",
+            "export": "WEIN_PARAMS",
+            "path": "volDailyPriorSessions"
+          },
+          "value": 5,
+          "kind": "CONVENTION",
+          "note": "Vorwoche = 5 Sitzungen (Ableitung)"
+        },
+        {
+          "psr709": "WEIN-STOP4",
+          "sourcePhrase": "15%",
+          "code": {
+            "module": "methods/weinstein.mjs",
+            "export": "WEIN_PARAMS",
+            "path": "riskGuide"
+          },
+          "value": 0.15,
+          "kind": "SOURCE_NUMBER",
+          "note": "nur Beleg und Variante ALT-RISK-GUIDE-15, nie ein Gate"
+        },
+        {
+          "psr709": "WEIN-TRAIL1",
+          "sourcePhrase": "8–10%",
+          "code": {
+            "module": "research/weinstein-lifecycle.mjs",
+            "export": "WEIN_INVESTOR_REFERENCE_CONFIG",
+            "path": "trailThreshold"
+          },
+          "value": 0.08,
+          "kind": "MODEL_BOUND_FROM_SOURCE_RANGE",
+          "note": "untere Druckgrenze (MA-WEIN-TRAIL); 10 % als ALT-TRAIL-10PCT"
+        }
+      ],
+      "blockers": [
+        {
+          "id": "C04-CC3",
+          "criterion": "CC-3",
+          "class": "d",
+          "secondary": [],
+          "text": "14 essenzielle manuelle Entscheidungen (Stage, Volumen, RS, Overhead, Stops, Größe, Trailing; die Quelle verlangt das Stage-Urteil)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C04 Blocker",
+          "closes": "X-MANUAL",
+          "status": "OPEN_STRUCTURAL"
+        },
+        {
+          "id": "C04-CC4",
+          "criterion": "CC-4",
+          "class": "d",
+          "secondary": [],
+          "text": "WEIN-SF-GROUP (Branchen-Stage: PIT-Gruppenzugehörigkeit vorhanden, Gruppenchart fehlt) und WEIN-SF-MARKET (NYSE-Breite: nur Live-Log ab 18.09.2026) DATA_BLOCKED; der SIC3-Proxy entsperrt nichts (E4)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C04 Daten, Querschnittsblocker 5",
+          "closes": "X-PIT-GROUPS für die Gruppen-Stage, lizenzierte NYSE-A/D-Historie (X-LICENSE-DATA)",
+          "status": "OPEN"
+        },
+        {
+          "id": "C04-CC5",
+          "criterion": "CC-5",
+          "class": "d",
+          "secondary": [],
+          "text": "DQ-K5 0 exponiert (CC5-a erfüllt), DQ-K3 5 exponiert (1 echt, 4 ungeklärt); Stabilität unter Quarantäne 23 %; Owner-Frage, ob Exposition 0 bei K5 für CC5-a genügt",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C04 Corporate Actions",
+          "closes": "X-CC5",
+          "status": "OPEN"
+        },
+        {
+          "id": "C04-CC8",
+          "criterion": "CC-8",
+          "class": "d",
+          "secondary": [],
+          "text": "SF6-PAPER-2027 nicht aktiv",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C04 OOS",
+          "closes": "X-CC8",
+          "status": "OPEN"
+        },
+        {
+          "id": "C04-TRAIL-READING",
+          "criterion": "CC-7",
+          "class": "d",
+          "secondary": [],
+          "text": "SF7-V1: MA-WEIN-TRAIL deklariert \"at or above\", der Code endet die Korrektur erst bei einem höheren Wochenhoch (>); gemessen als EX7-WEIN-TRAIL-AT-OR-ABOVE, die Referenz ist unverändert",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C04 Ausführung; research/weinstein-lifecycle.mjs#makeAdapter",
+          "closes": "Owner-Entscheidung, welche Lesart die Referenz ist (vor dem Öffnen der Kennzahlen); keine Codeänderung hier",
+          "status": "OPEN_DOCUMENTED"
+        },
+        {
+          "id": "C04-SURV",
+          "criterion": "DATA",
+          "class": "c",
+          "secondary": [],
+          "text": "Delistings vor 2009 fehlen, keine Delisting-Renditen; Holdout nach oben verzerrt",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.5",
+          "closes": "X-SURV",
+          "status": "OPEN"
+        },
+        {
+          "id": "C04-RULE-CONFORMANCE",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "MA30w-Gleichheit, Volumenalternativen an der Doppel-Grenze, Basis-Widerstand ab Basisbeginn, 8-%-Trailing und Stop unter dem Trigger nicht an der Grenze getestet",
+          "evidence": "Abgleich sf-weinstein / sf-sf5-weinstein-lifecycle mit WEIN-MA, WEIN-VOL1..3, WEIN-BUY1, WEIN-TRAIL1",
+          "closes": "CP-WEIN-*-Tests in sf-cert-prep-all13.test.mjs (mit Gegenproben)",
+          "status": "DONE"
+        }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-MA-GATE-EQUALITY",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-VOL-THRESHOLDS",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-INV-BASE-RESISTANCE",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-TRAIL-THRESHOLDS",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-STOP-BELOW-TRIGGER",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-WEEKLY",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MA-BELOW",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-BREAKOUT-CROSSES-MA",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-A",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-C",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-VOL-NONE",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: SF-WEIN-TEMPORAL",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-CANDIDATE",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-INVESTOR-NO-BASE",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-RS-BELOW-ZERO-IMPROVING",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-MARKET-EVIDENCE",
+        "scripts/supertrader/tests/sf-weinstein.test.mjs: GC-WEIN-NO-NONTECH-EXIT",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-INVESTOR-LIFECYCLE",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-SCREEN-EQUIV",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-VOL5",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-PIT-PREFIX",
+        "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-DATA-EXCEPTION",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-WEIN-TRAIL-GOLDEN"
+      ],
+      "dataRequirements": [
+        {
+          "id": "D-WEIN-OHLCV",
+          "data": "Tages-OHLCV split-adjustiert, zu ISO-Wochen aggregiert, mindestens 160 Balken",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-WEIN-SPY",
+          "data": "SPY-Tagesbalken (RS- und Marktbeleg)",
+          "need": "EVIDENCE_ONLY",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-WEIN-GROUPS",
+          "data": "PIT-Branchengruppen mit Gruppenchart (Member-Index)",
+          "need": "REQUIRED",
+          "availability": "MISSING_OWNER_DECISION",
+          "class": "d",
+          "blocker": "C04-CC4"
+        },
+        {
+          "id": "D-WEIN-BREADTH",
+          "data": "NYSE-Advance/Decline- und Neue-Hochs/Tiefs-Historie",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C04-CC4"
+        },
+        {
+          "id": "D-WEIN-CA",
+          "data": "faktortragende Kapitalmaßnahmen (0 K5 / 4 K3 ungeklärt)",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C04-CC5"
+        },
+        {
+          "id": "D-WEIN-TERMINAL",
+          "data": "Listing-Enden und Delisting-Renditen",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT_PARTIAL",
+          "class": "c",
+          "blocker": "C04-SURV"
+        }
+      ],
+      "executionAssumptions": [
+        {
+          "id": "EX-WEIN-ORDER-WEEK",
+          "text": "Buy-Stop aus der abgeschlossenen Woche ein Roh-Cent über dem Widerstand, für jede Sitzung der Folgewoche; Fill max(Eröffnung, Trigger)",
+          "basis": "WEIN-ORD (Quelle), MA-WEIN-ORDER-WEEK, MA-WEIN-WEEK-END",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-INV-BASE-RESISTANCE",
+            "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-BUY-STOP-FILL",
+            "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-SCREEN-EQUIV"
+          ]
+        },
+        {
+          "id": "EX-WEIN-STOP",
+          "text": "Stop einen Roh-Cent unter dem Maschinenvorschlag, unter dem Trigger; Gap füllt zur Eröffnung",
+          "basis": "WEIN-STOP1 (Quelle), MA-WEIN-INITIAL-STOP",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-STOP-BELOW-TRIGGER"
+          ]
+        },
+        {
+          "id": "EX-WEIN-TRAIL",
+          "text": "Korrektur der Wochentiefs >= 8 % vom Hoch, dann ein höheres Wochenhoch: Stop einen Roh-Cent unter das Korrekturtief (Investor: unter min(Korrekturtief, MA30w))",
+          "basis": "MA-WEIN-TRAIL",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-WEIN-TRAIL-THRESHOLDS",
+            "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-WEIN-TRAIL-GOLDEN"
+          ]
+        },
+        {
+          "id": "EX-WEIN-VOL5",
+          "text": "ohne Volumenbestätigung am Ende der Ausbruchswoche: Ausstieg zur Eröffnung nach dem ersten höheren Schluss",
+          "basis": "WEIN-VOL5 (Quelle), MA-WEIN-VOL5-STRENGTH",
+          "tests": [
+            "scripts/supertrader/tests/sf-sf5-weinstein-lifecycle.test.mjs: GC-SF5-WEIN-VOL5"
+          ]
+        },
+        {
+          "id": "EX-WEIN-SIZE-COSTS",
+          "text": "halbe Position 5 % Gewicht; 10 bps je Seite plus 1 bp",
+          "basis": "MA-WEIN-SIZING, MA-WEIN-COSTS",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-top5.test.mjs: CP-EXEC-COSTS-AND-POLICY"
+          ]
+        }
+      ],
+      "studies": [
+        {
+          "id": "PS-C04-CONFORMANCE",
+          "class": "a",
+          "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?",
+          "procedure": "node --test über die Dateien aus conformanceTests; protokolliert mit scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --run-tests (NOT_MET macht das Protokoll ungültig, Exit 1); Gegenproben mit --mutation-probes",
+          "acceptance": [
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen"
+            },
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "jede Gegenprobe der CP-Tests dieser Methode ist ROT, danach ist der Code byte-gleich zurückgesetzt"
+            }
+          ],
+          "status": "READY",
+          "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN"
+        },
+        {
+          "id": "PS-C04-TRAIL-READING",
+          "class": "d",
+          "question": "Ist \"at or above\" (Deklaration) oder \">\" (Code) die Referenzlesart des Trailings?",
+          "procedure": "Owner-Entscheidung; beide Lesarten bleiben gerechnet (EX7-WEIN-TRAIL-AT-OR-ABOVE)",
+          "acceptance": [
+            {
+              "metricKind": "DECISION_RECORD",
+              "criterion": "Entscheidung datiert vor jedem Öffnen der Kennzahlen"
+            },
+            {
+              "metricKind": "COUNT",
+              "criterion": "Stopanhebungen und geänderte Trades je Lesart berichtet"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C04-GROUP-PROXY",
+          "class": "a",
+          "question": "Wie viele Buy-Stops überspringt der SIC3-Gruppenproxy (Forschungsvariante)?",
+          "procedure": "bestehende Variante ALT-SIC3-GROUP-PROXY, nur Zählungen; der Proxy entsperrt WEIN-SF-GROUP nie (E4)",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "übersprungene Buy-Stops und Trades je Lauf berichtet"
+            }
+          ],
+          "status": "READY"
+        },
+        {
+          "id": "PS-C04-STABILITY",
+          "class": "a",
+          "question": "Wie stabil sind die Trades unter Quarantäne?",
+          "procedure": "bestehende SF7-VAL-STABILITY-Zählung",
+          "acceptance": [
+            {
+              "metricKind": "DISTRIBUTION_REPORT_ONLY",
+              "criterion": "Anteil unveränderter Trades berichtet; keine Schwelle"
+            }
+          ],
+          "status": "READY"
+        }
+      ],
+      "findings": [
+        "F-WEIN-TRAIL-AT-OR-ABOVE",
+        "F-WEIN-MA-GATE-EQUALITY"
+      ]
+    },
+    {
+      "candidateId": "C09",
+      "strategyId": "SF_KK_EPISODIC_PIVOT",
+      "priority": 12,
+      "contract": {
+        "module": "contracts/kullamagi.mjs",
+        "export": "KK_EPISODIC_PIVOT",
+        "sourceContractVersion": "1.1.0"
+      },
+      "engine": {
+        "module": "research/kk-ep-lifecycle.mjs",
+        "versionExport": "KK_EP_LIFECYCLE_VERSION",
+        "version": "kk-ep-chart-lifecycle-1.2.0"
+      },
+      "sources": [
+        "W-KKEP",
+        "W-KK3",
+        "W-KKFAQ"
+      ],
+      "ccMet": [],
+      "ccOpen": [
+        "CC-1",
+        "CC-2",
+        "CC-3",
+        "CC-4",
+        "CC-5",
+        "CC-6",
+        "CC-7",
+        "CC-8"
+      ],
+      "rules": [
+        {
+          "id": "KK-SF-EP-GAP",
+          "status": "SOURCE_DERIVED"
+        },
+        {
+          "id": "KK-SF-EP-SIDEWAYS",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "KK-SF-EP-CATALYST",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "KK-SF-EP-VOLUME",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "KK-SF-EP-ENTRY",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "KK-SF-EP-STOP",
+          "status": "SOURCE_EXACT"
+        },
+        {
+          "id": "KK-SF-EP-EXIT",
+          "status": "SOURCE_AMBIGUOUS"
+        }
+      ],
+      "rulesOutOfScope": [
+        {
+          "id": "KK-SF-ADR",
+          "reason": "COVERED_IN:C08"
+        },
+        {
+          "id": "KK-SF-CAP",
+          "reason": "COVERED_IN:C08"
+        },
+        {
+          "id": "KK-SF-STOPMARKET",
+          "reason": "COVERED_IN:C08"
+        },
+        {
+          "id": "KK-SF-PRIORITY",
+          "reason": "MANUAL_REVIEW_LAYER"
+        },
+        {
+          "id": "KK-SF-SIZE",
+          "reason": "COVERED_IN:C08"
+        }
+      ],
+      "params": [
+        {
+          "psr709": "KK-034",
+          "sourcePhrase": "1,5ADR",
+          "code": {
+            "module": "methods/kullamagi.mjs",
+            "export": "KK_PARAMS",
+            "path": "epMaxAdr"
+          },
+          "value": 1.5,
+          "kind": "SOURCE_NUMBER"
+        },
+        {
+          "psr709": "KK-015",
+          "sourcePhrase": "10%",
+          "code": {
+            "module": "methods/kullamagi.mjs",
+            "export": "KK_PARAMS",
+            "path": "epGapReference"
+          },
+          "value": 0.1,
+          "kind": "SOURCE_NUMBER",
+          "note": "gedruckte Größe einer STRONG_PREFERENCE-Beschreibung; im Methodenmodul nur Belegwert"
+        },
+        {
+          "psr709": "KK-015",
+          "sourcePhrase": "10%",
+          "code": {
+            "module": "research/kk-ep-lifecycle.mjs",
+            "export": "EP_REFERENCE_CONFIG",
+            "path": "gapMin"
+          },
+          "value": 0.1,
+          "kind": "MODEL_BOUND_FROM_SOURCE_RANGE",
+          "note": "gedruckte Größe als deklarierte Screen-Konvention (MA-EP-GAP-SCREEN)"
+        },
+        {
+          "psr709": "KK-032",
+          "sourcePhrase": "1Min-ORH",
+          "code": {
+            "module": "research/kk-ep-lifecycle.mjs",
+            "export": "EP_REFERENCE_CONFIG",
+            "path": "orMinutes"
+          },
+          "value": 1,
+          "kind": "MODEL_BOUND_FROM_SOURCE_RANGE",
+          "note": "\"meist erstes 1-Minuten-ORH\" (MA-EP-ORH); ORH_5 als Variante"
+        },
+        {
+          "psr709": "KK-017",
+          "sourcePhrase": "20/50DMA",
+          "code": {
+            "module": "research/kk-ep-lifecycle.mjs",
+            "export": "EP_REFERENCE_CONFIG",
+            "path": "exitMa"
+          },
+          "value": 20,
+          "kind": "MODEL_BOUND_FROM_SOURCE_RANGE",
+          "note": "20 ist in beiden Lesarten genannt (MA-EP-EXIT); 10 und 50 als Varianten"
+        }
+      ],
+      "blockers": [
+        {
+          "id": "C09-CC1",
+          "criterion": "CC-1",
+          "class": "d",
+          "secondary": [],
+          "text": "KK-SF-EP-EXIT SOURCE_AMBIGUOUS (KK-017: 20/50DMA, später 10/20DMA; KK-C2)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C09 Regeln",
+          "closes": "Quellenstelle oder Owner-Entscheidung \"nicht essenziell\"; alle drei Ausstiegs-MAs bleiben gerechnet",
+          "status": "OPEN"
+        },
+        {
+          "id": "C09-CC2",
+          "criterion": "CC-2",
+          "class": "d",
+          "secondary": [],
+          "text": "VALIDATION_BLOCKED: Katalysator, Eröffnungsvolumen und Einstieg DATA_BLOCKED; der Lebenszyklus läuft nur als Chart-Modell auf einer IEX-Stichprobe",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C09 CC-Stand",
+          "closes": "wie C09-CC4",
+          "status": "OPEN"
+        },
+        {
+          "id": "C09-CC3",
+          "criterion": "CC-3",
+          "class": "d",
+          "secondary": [],
+          "text": "3 essenzielle manuelle Entscheidungen (Katalysatorbewertung \"unerwartet und signifikant\", Seitwärtsphase, Größe)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C09 Blocker",
+          "closes": "X-MANUAL",
+          "status": "OPEN_STRUCTURAL"
+        },
+        {
+          "id": "C09-CC4",
+          "criterion": "CC-4",
+          "class": "d",
+          "secondary": [],
+          "text": "KK-SF-EP-CATALYST, -VOLUME, -ENTRY DATA_BLOCKED; Owner-Entscheidung 23.10.2026: keine News-Datenbank",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C09 Blocker",
+          "closes": "X-LICENSE-DATA (konsolidierte SIP-Minuten) und ein PIT-Katalysatorkalender (z. B. SEC 8-K Item 2.02 acceptedAt <= Eröffnung) nach Owner-Entscheidung",
+          "status": "OPEN"
+        },
+        {
+          "id": "C09-CC5",
+          "criterion": "CC-5",
+          "class": "d",
+          "secondary": [],
+          "text": "Corporate Actions NOT_EVIDENCED: kein eigener Lebenszyklus auf dem Snapshot, Quarantäne nicht separat gerechnet",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C09 Corporate Actions",
+          "closes": "X-CC5; vorab Quarantänezählung auf der Stichprobe (PS-C09-CA)",
+          "status": "OPEN"
+        },
+        {
+          "id": "C09-CC6",
+          "criterion": "CC-6",
+          "class": "d",
+          "secondary": [],
+          "text": "IEX-Minuten liegen in einem privaten Cache und sind nicht im Snapshot eingefroren",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C09 Daten / Blocker",
+          "closes": "Owner- und Lizenzentscheidung, die Minuten in einer Snapshot-Generation einzufrieren",
+          "status": "OPEN"
+        },
+        {
+          "id": "C09-CC7",
+          "criterion": "CC-7",
+          "class": "d",
+          "secondary": [],
+          "text": "SF7-V2 (MEDIUM): bei 180 von 222 über Nacht gehaltenen Referenztrades liegt das konsolidierte Tagestief unter dem IEX-Stop; die Referenz ist dort möglicherweise optimistisch",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C09 Ausführung; docs/SUPERTRADER_7_EXECUTION_VALIDATION.md §4",
+          "closes": "X-LICENSE-DATA (konsolidierte Minuten, Lizenz)",
+          "status": "OPEN"
+        },
+        {
+          "id": "C09-CC8",
+          "criterion": "CC-8",
+          "class": "d",
+          "secondary": [],
+          "text": "nicht in SF6-PAPER-2027 (E5); kein Forward-Protokoll",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C09 OOS",
+          "closes": "X-PAPER-SCOPE",
+          "status": "OPEN"
+        },
+        {
+          "id": "C09-SAMPLE",
+          "criterion": "DATA",
+          "class": "d",
+          "secondary": [],
+          "text": "Stichprobe CLEAN (11,3 %) und CLEAN_EXT_E7_6 (etwa 15 % je Schicht, 481 Anfragen); vor 2017 keine Minuten, also kein zweites Fenster",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C09 Daten / Survivorship",
+          "closes": "Owner-Entscheidung über Abrufbudget und Lizenz; keine Erweiterung ohne Vorregistrierung",
+          "status": "OPEN"
+        },
+        {
+          "id": "C09-SURV",
+          "criterion": "DATA",
+          "class": "c",
+          "secondary": [],
+          "text": "Delistings vor 2009 fehlen, keine Delisting-Renditen; Holdout nach oben verzerrt",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.5",
+          "closes": "X-SURV",
+          "status": "OPEN"
+        },
+        {
+          "id": "C09-RULE-CONFORMANCE",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "KK-034 an der 1,5-ADR-Grenze, Gap-Screen an der Grenze, ORH-Fill und Tagestief vor der Kaufminute sowie der MA20-Ausstieg bei Gleichheit nicht an der Grenze getestet",
+          "evidence": "Abgleich sf-kullamagi / sf-kk-ep-ps-chart mit KK-015, KK-017, KK-032, KK-034",
+          "closes": "CP-EP-*-Tests in sf-cert-prep-all13.test.mjs (mit Gegenproben)",
+          "status": "DONE"
+        }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-EP-STOP-1-5-ADR",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-EP-GAP-SCREEN-10",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-EP-ORH-FILL-AND-LOD",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-EP-EXIT-MA20",
+        "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-STOP-ACCEPT",
+        "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-EP-GAP-EVIDENCE",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-EP-CHART-CANDIDATE",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-EP-INTRADAY-ENTRY",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-EP-VOLUME-PACE",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-EP-KK034-REJECT",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-EP-SAME-DAY-STOP",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-EP-NO-INVENTED-MINUTES",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: SF-KK-EP-PIT-INTRADAY",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: SF-KK-EP-CLASSES",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: SF-KK-EP-OR-OFFICIAL-OPEN",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: SF-KK-EP-VOLUME-BY-20",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: SF-KK-PIT-IDENTITY",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-EP",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-EP-PIT-CORRUPTION"
+      ],
+      "dataRequirements": [
+        {
+          "id": "D-EP-OHLC",
+          "data": "Tages-OHLC split-adjustiert, mindestens 64 Vorsitzungen",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-EP-IEX",
+          "data": "IEX-Minuten ab 2017 (1–5 % des konsolidierten Volumens), eingefroren",
+          "need": "REQUIRED",
+          "availability": "PRIVATE_CACHE_NOT_FROZEN",
+          "class": "d",
+          "blocker": "C09-CC6"
+        },
+        {
+          "id": "D-EP-SIP",
+          "data": "konsolidierte (SIP-)Minuten für Volumen-Tempo und Stop",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C09-CC7"
+        },
+        {
+          "id": "D-EP-CATALYST",
+          "data": "PIT-Katalysatorkalender (Ergebnisse, Nachrichten) mit Zeitstempel",
+          "need": "REQUIRED",
+          "availability": "MISSING_OWNER_DECISION",
+          "class": "d",
+          "blocker": "C09-CC4"
+        },
+        {
+          "id": "D-EP-CA",
+          "data": "faktortragende Kapitalmaßnahmen auf den Stichprobentagen",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C09-CC5"
+        }
+      ],
+      "executionAssumptions": [
+        {
+          "id": "EX-EP-ORH",
+          "text": "Buy-Stop ein Roh-Cent über dem 1-Minuten-ORH (IEX-Hoch und offizielle Eröffnung), ab Minute 1; Fill max(Level, Minuteneröffnung)",
+          "basis": "MA-EP-ORH, MA-EP-FILL",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-EP-ORH-FILL-AND-LOD",
+            "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: SF-KK-EP-OR-OFFICIAL-OPEN"
+          ]
+        },
+        {
+          "id": "EX-EP-VOLUME",
+          "text": "IEX-Volumen-Tempo PACE_20 nur gegen IEX-Volumen, nie gegen konsolidiertes",
+          "basis": "MA-EP-VOLUME-PACE",
+          "tests": [
+            "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-EP-VOLUME-PACE",
+            "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: SF-KK-EP-VOLUME-BY-20"
+          ]
+        },
+        {
+          "id": "EX-EP-STOP",
+          "text": "Stop = Tagestief vor der Kaufminute, Abstand <= 1,5 ADR20 (sonst keine Ausführung, nie enger); Kaufminute mit Tief am Stop: pessimistisch",
+          "basis": "KK-034 (Quelle), MA-EP-LOD-AT-ENTRY, MA-EP-FILL-MINUTE-STOP",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-EP-STOP-1-5-ADR",
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-EP-ORH-FILL-AND-LOD",
+            "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-EP-SAME-DAY-STOP"
+          ]
+        },
+        {
+          "id": "EX-EP-EXIT",
+          "text": "erster Schluss strikt unter MA20 -> Ausstieg zur nächsten Eröffnung, dazu der Stop-Market",
+          "basis": "MA-EP-EXIT",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-EP-EXIT-MA20"
+          ]
+        },
+        {
+          "id": "EX-EP-SIZE-COSTS",
+          "text": "0,5 % Risiko zum Stop, Deckel 30 % Quelle / 25 % Plattform; 10 bps je Seite plus 1 bp",
+          "basis": "MA-EP-SIZING, KK-001, MA-EP-COSTS",
+          "tests": [
+            "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-EP-INTRADAY-ENTRY"
+          ]
+        }
+      ],
+      "studies": [
+        {
+          "id": "PS-C09-CONFORMANCE",
+          "class": "a",
+          "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?",
+          "procedure": "node --test über die Dateien aus conformanceTests; protokolliert mit scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --run-tests (NOT_MET macht das Protokoll ungültig, Exit 1); Gegenproben mit --mutation-probes",
+          "acceptance": [
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen"
+            },
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "jede Gegenprobe der CP-Tests dieser Methode ist ROT, danach ist der Code byte-gleich zurückgesetzt"
+            }
+          ],
+          "status": "READY",
+          "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN"
+        },
+        {
+          "id": "PS-C09-SF7-V2",
+          "class": "d",
+          "question": "Wie viele über Nacht gehaltene Trades haben ein konsolidiertes Tagestief unter dem IEX-Stop?",
+          "procedure": "bestehende SF7-Zählung; eine Korrektur braucht lizenzierte konsolidierte Minuten",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "Anzahl und Anteil berichtet (180 von 222); keine Korrektur ohne Lizenzdaten"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C09-FORWARD",
+          "class": "d",
+          "question": "Gibt es ein eigenes Forward-Protokoll für C09?",
+          "procedure": "Owner-Entscheidung über ein Protokoll analog SF6-PAPER-2027, festgelegt vor Fensterbeginn",
+          "acceptance": [
+            {
+              "metricKind": "DECISION_RECORD",
+              "criterion": "Protokoll mit Fingerabdruck vor Fensterbeginn festgelegt"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C09-CA",
+          "class": "a",
+          "question": "Wie viele Stichprobentage liegen auf DQ-K5/-K3-markierten Sitzungen?",
+          "procedure": "Zählung mit dem bestehenden SF6-Detektor auf dem DEV-Snapshot; Lauf braucht den Snapshot-Workflow und wird hier nicht ausgelöst",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "Anzahl und Anteil markierter Tage berichtet; nichts wird entfernt"
+            }
+          ],
+          "status": "PLANNED_NEEDS_SNAPSHOT_RUN"
+        }
+      ],
+      "findings": []
+    },
+    {
+      "candidateId": "C10",
+      "strategyId": "SF_KK_PARABOLIC_SHORT",
+      "priority": 13,
+      "contract": {
+        "module": "contracts/kullamagi.mjs",
+        "export": "KK_PARABOLIC_SHORT",
+        "sourceContractVersion": "1.1.0"
+      },
+      "engine": {
+        "module": "research/kk-ps-study.mjs",
+        "versionExport": "KK_PS_STUDY_VERSION",
+        "version": "kk-ps-chart-short-study-1.2.0"
+      },
+      "sources": [
+        "W-KK3",
+        "W-KKFAQ",
+        "W-KKEP"
+      ],
+      "ccMet": [
+        "CC-1"
+      ],
+      "ccOpen": [
+        "CC-2",
+        "CC-3",
+        "CC-4",
+        "CC-5",
+        "CC-6",
+        "CC-7",
+        "CC-8"
+      ],
+      "rules": [
+        {
+          "id": "KK-SF-PS-ACCEL",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        },
+        {
+          "id": "KK-SF-PS-ENTRY",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "KK-SF-PS-STOP",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "KK-SF-PS-BORROW",
+          "status": "DATA_BLOCKED"
+        },
+        {
+          "id": "KK-SF-PS-TARGET",
+          "status": "MANUAL_REVIEW_REQUIRED"
+        }
+      ],
+      "rulesOutOfScope": [
+        {
+          "id": "KK-SF-ADR",
+          "reason": "COVERED_IN:C08"
+        },
+        {
+          "id": "KK-SF-CAP",
+          "reason": "COVERED_IN:C08"
+        },
+        {
+          "id": "KK-SF-STOPMARKET",
+          "reason": "COVERED_IN:C08"
+        },
+        {
+          "id": "KK-SF-PRIORITY",
+          "reason": "MANUAL_REVIEW_LAYER"
+        },
+        {
+          "id": "KK-SF-SIZE",
+          "reason": "COVERED_IN:C08"
+        }
+      ],
+      "params": [
+        {
+          "psr709": "KK-023",
+          "sourcePhrase": "10/20DMA",
+          "code": {
+            "module": "research/kk-ps-study.mjs",
+            "export": "PS_REFERENCE_CONFIG",
+            "path": "target"
+          },
+          "value": "MA10",
+          "kind": "MODEL_BOUND_FROM_SOURCE_RANGE",
+          "note": "Ziel 10/20DMA ohne Aufteilung (MA-PS-TARGET); MA20 und halbe/halbe als Varianten"
+        }
+      ],
+      "blockers": [
+        {
+          "id": "C10-BORROW",
+          "criterion": "CC-7",
+          "class": "d",
+          "secondary": [],
+          "text": "KK-SF-PS-BORROW DATA_BLOCKED: keine Borrow-, Locate- oder Gebührenhistorie; jeder Short ist hypothetisch (EXECUTION_REALISM BLOCKED)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C10 Daten / Ausführung",
+          "closes": "X-LICENSE-DATA (historische Borrow- und Gebührendaten, Lizenzentscheidung)",
+          "status": "OPEN"
+        },
+        {
+          "id": "C10-CC2",
+          "criterion": "CC-2",
+          "class": "d",
+          "secondary": [],
+          "text": "nur Studie auf Trade-Ebene (228 CLEAN / 262 E7-6 abgeschlossene Studientrades), kein Portfolio-Lebenszyklus",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C10 Ausführung",
+          "closes": "wie C10-BORROW",
+          "status": "OPEN"
+        },
+        {
+          "id": "C10-CC3",
+          "criterion": "CC-3",
+          "class": "d",
+          "secondary": [],
+          "text": "4 essenzielle manuelle Entscheidungen (Beschleunigung, Ziel, Größe, Priorität)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C10 Blocker",
+          "closes": "X-MANUAL",
+          "status": "OPEN_STRUCTURAL"
+        },
+        {
+          "id": "C10-CC4",
+          "criterion": "CC-4",
+          "class": "d",
+          "secondary": [],
+          "text": "KK-SF-PS-ENTRY und -STOP DATA_BLOCKED (ORL, VWAP auf konsolidierten Minuten)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C10 Regeln",
+          "closes": "X-LICENSE-DATA (konsolidierte Minuten)",
+          "status": "OPEN"
+        },
+        {
+          "id": "C10-CC5",
+          "criterion": "CC-5",
+          "class": "d",
+          "secondary": [],
+          "text": "Corporate Actions NOT_EVIDENCED",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C10 Corporate Actions",
+          "closes": "X-CC5",
+          "status": "OPEN"
+        },
+        {
+          "id": "C10-CC6",
+          "criterion": "CC-6",
+          "class": "d",
+          "secondary": [],
+          "text": "IEX-Minuten nicht im Snapshot eingefroren",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C10 / C09 Daten",
+          "closes": "wie C09-CC6",
+          "status": "OPEN"
+        },
+        {
+          "id": "C10-CC8",
+          "criterion": "CC-8",
+          "class": "d",
+          "secondary": [],
+          "text": "nicht in SF6-PAPER-2027 (E5); kein Forward-Protokoll",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C10 OOS",
+          "closes": "X-PAPER-SCOPE",
+          "status": "OPEN"
+        },
+        {
+          "id": "C10-UPTICK",
+          "criterion": "DATA",
+          "class": "d",
+          "secondary": [],
+          "text": "kein Modell der Uptick-Regel (SSR, Rule 201)",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md, C10 Daten",
+          "closes": "Owner-Entscheidung über eine SSR-Historie; ohne sie bleibt der Short hypothetisch",
+          "status": "OPEN"
+        },
+        {
+          "id": "C10-SURV",
+          "criterion": "DATA",
+          "class": "c",
+          "secondary": [],
+          "text": "Delistings vor 2009 fehlen, keine Delisting-Renditen; Holdout nach oben verzerrt",
+          "evidence": "docs/SUPERTRADER_9_CERTIFICATION_READINESS.md §0.5",
+          "closes": "X-SURV",
+          "status": "OPEN"
+        },
+        {
+          "id": "C10-RULE-CONFORMANCE",
+          "criterion": "CC-7",
+          "class": "a",
+          "secondary": [],
+          "text": "Beschleunigung an der Gleichheit, Streak-Länge, ORL-5-Fill und Tageshoch vor der Kaufminute sowie Kosten ohne Leihgebühr nicht an der Grenze getestet",
+          "evidence": "Abgleich sf-kullamagi / sf-kk-ep-ps-chart mit KK-018, KK-020, KK-022, KK-030",
+          "closes": "CP-PS-*-Tests in sf-cert-prep-all13.test.mjs (mit Gegenproben)",
+          "status": "DONE"
+        }
+      ],
+      "conformanceTests": [
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PS-STREAK-ACCEL",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PS-ORL5-FILL-HOD-STOP",
+        "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PS-COSTS-NO-BORROW",
+        "scripts/supertrader/tests/sf-kullamagi.test.mjs: GC-KK-PS-EVIDENCE",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-PS-CHART-CANDIDATE",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-PS-ORL5-SHORT",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-PS-STOP-FIRST",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-PS-ENTRY-READINGS",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-PS-NO-INVENTED-MINUTES",
+        "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: SF-KK-PIT-IDENTITY",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-GC-PS",
+        "scripts/supertrader/tests/sf-sf7-execution-validation.test.mjs: SF7-VAL-PS-PIT"
+      ],
+      "dataRequirements": [
+        {
+          "id": "D-PS-OHLC",
+          "data": "Tages-OHLC split-adjustiert, mindestens 31 Sitzungen bis zum Signalschluss",
+          "need": "REQUIRED",
+          "availability": "SNAPSHOT",
+          "class": null
+        },
+        {
+          "id": "D-PS-IEX",
+          "data": "IEX-Minuten ab 2017, eingefroren",
+          "need": "REQUIRED",
+          "availability": "PRIVATE_CACHE_NOT_FROZEN",
+          "class": "d",
+          "blocker": "C10-CC6"
+        },
+        {
+          "id": "D-PS-SIP",
+          "data": "konsolidierte Minuten für ORL, VWAP und Tageshoch",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C10-CC4"
+        },
+        {
+          "id": "D-PS-BORROW",
+          "data": "Borrow-Verfügbarkeit, Locates und Leihgebühren je Tag",
+          "need": "REQUIRED",
+          "availability": "MISSING_LICENSE",
+          "class": "d",
+          "blocker": "C10-BORROW"
+        },
+        {
+          "id": "D-PS-SSR",
+          "data": "SSR-Status (Rule 201) je Titel und Tag",
+          "need": "REQUIRED",
+          "availability": "MISSING",
+          "class": "d",
+          "blocker": "C10-UPTICK"
+        }
+      ],
+      "executionAssumptions": [
+        {
+          "id": "EX-PS-ENTRY",
+          "text": "Short ein Roh-Cent unter dem 5-Minuten-ORL (IEX-Tiefs und offizielle Eröffnung) ab Minute 5; Fill min(Level, Minuteneröffnung)",
+          "basis": "MA-PS-ENTRY, MA-PS-FILL",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PS-ORL5-FILL-HOD-STOP",
+            "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-PS-ORL5-SHORT"
+          ]
+        },
+        {
+          "id": "EX-PS-STOP",
+          "text": "Buy-Stop ein Roh-Cent über dem Tageshoch vor der Kaufminute; eine Minute, die Stop und Ziel erreicht, ist ein Stop",
+          "basis": "MA-PS-STOP, MA-PS-SAME-MINUTE",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PS-ORL5-FILL-HOD-STOP",
+            "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-PS-STOP-FIRST"
+          ]
+        },
+        {
+          "id": "EX-PS-TARGET",
+          "text": "Eindeckung an der MA10 des Vorschlusses (Limit; Eröffnung darunter deckt zur Eröffnung)",
+          "basis": "MA-PS-TARGET",
+          "tests": [
+            "scripts/supertrader/tests/sf-kk-ep-ps-chart.test.mjs: GC-KK-PS-ORL5-SHORT"
+          ]
+        },
+        {
+          "id": "EX-PS-COSTS",
+          "text": "10 bps je Seite plus 1 bp, keine Leihgebühr (unbekannt); jeder Kandidatentag ist ein eigener hypothetischer Short (INDEPENDENT)",
+          "basis": "MA-PS-COSTS, MA-PS-BORROW, MA-PS-OVERLAP",
+          "tests": [
+            "scripts/supertrader/tests/sf-cert-prep-all13.test.mjs: CP-PS-COSTS-NO-BORROW"
+          ]
+        }
+      ],
+      "studies": [
+        {
+          "id": "PS-C10-CONFORMANCE",
+          "class": "a",
+          "question": "Bestehen alle Regeltreue-Tests auf dem Commit, der die Referenz rechnet?",
+          "procedure": "node --test über die Dateien aus conformanceTests; protokolliert mit scripts/supertrader/source-faithful/certification/cert-prep-all13.mjs --run-tests (NOT_MET macht das Protokoll ungültig, Exit 1); Gegenproben mit --mutation-probes",
+          "acceptance": [
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "alle gelisteten Tests PASS, 0 FAIL, 0 übersprungen"
+            },
+            {
+              "metricKind": "INTEGRITY",
+              "criterion": "jede Gegenprobe der CP-Tests dieser Methode ist ROT, danach ist der Code byte-gleich zurückgesetzt"
+            }
+          ],
+          "status": "READY",
+          "evidenceState": "PR_HEAD_ONLY_REFERENCE_COMMIT_OPEN"
+        },
+        {
+          "id": "PS-C10-BORROW",
+          "class": "d",
+          "question": "Für welchen Anteil der Kandidatentage ist die Leihbarkeit belegt?",
+          "procedure": "nach Lizenzentscheidung: Abgleich je Kandidatentag mit der Borrow-Historie",
+          "acceptance": [
+            {
+              "metricKind": "DATA_COVERAGE",
+              "criterion": "Anteil der Kandidatentage mit belegter Leihbarkeit und Gebühr berichtet"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        },
+        {
+          "id": "PS-C10-OVERLAP",
+          "class": "a",
+          "question": "Wie viele Kandidaten überlappen mit einem offenen Short desselben Titels?",
+          "procedure": "bestehende Berichtsvariante ONE_POSITION_PER_TICKER, nur Zählungen",
+          "acceptance": [
+            {
+              "metricKind": "COUNT",
+              "criterion": "Trades je Überlappungsregel berichtet"
+            }
+          ],
+          "status": "READY"
+        },
+        {
+          "id": "PS-C10-FORWARD",
+          "class": "d",
+          "question": "Gibt es ein eigenes Forward-Protokoll für C10?",
+          "procedure": "wie PS-C09-FORWARD",
+          "acceptance": [
+            {
+              "metricKind": "DECISION_RECORD",
+              "criterion": "Protokoll mit Fingerabdruck vor Fensterbeginn festgelegt"
+            }
+          ],
+          "status": "BLOCKED_OWNER"
+        }
+      ],
+      "findings": []
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-MIN-WORDING-UNCHECKED",
+      "methods": [
+        "C06",
+        "C07"
+      ],
+      "kind": "SOURCE_STATUS",
+      "modelChange": false,
+      "text": "Jeder MIN-TT-, MIN-PP-, MIN-MM-, MIN-RISK-, MIN-VCP-, MIN-PROCESS- und MIN-EPS-Beleg, den die Minervini-Verträge zitieren, trägt im #709-Extrakt original_wording_checked = false; der TOP5-Prüfer hätte das als PSR709_WORDING_UNCHECKED abgewiesen. ALL13 führt die Belege je Methode als exakte Liste (psr709WordingUnchecked) und verlangt dafür einen CC-1-Blocker der Klasse d; jede übersetzte Zahl hat die Art SOURCE_NUMBER_TRANSLATION_ONLY.",
+      "code": "scripts/supertrader/source-faithful/evidence/PSR709-EVIDENCE-EXTRACT.json; contracts/minervini.mjs",
+      "proposal": "keine Änderung; schließt erst mit englischem Wortlaut oder Owner-Entscheidung (E7-2)"
+    },
+    {
+      "id": "F-WEIN-TRAIL-AT-OR-ABOVE",
+      "methods": [
+        "C04",
+        "C05"
+      ],
+      "kind": "DECLARATION_CODE_MISMATCH_KNOWN",
+      "modelChange": false,
+      "text": "SF7-V1, bereits in Supertrader 7.0 gemessen: MA-WEIN-TRAIL deklariert \"a weekly high at or above that high\", makeAdapter beendet die Korrektur ohne trailAtOrAbove erst bei wk.high > st.peak. CP-WEIN-TRAIL-THRESHOLDS hält die Schwelle (>= 8 % / >= 7 %, mit Toleranz 1e-12) fest, SF7-VAL-WEIN-TRAIL-GOLDEN die Gleichheit des Hochs.",
+      "code": "scripts/supertrader/source-faithful/research/weinstein-lifecycle.mjs#makeAdapter (onClose)",
+      "proposal": "Owner-Entscheidung über die Referenzlesart (PS-C04/C05-TRAIL-READING); danach entweder Deklaration oder Code in einem eigenen Fachmodell-PR mit Vorher/Nachher"
+    },
+    {
+      "id": "F-WEIN-MA-GATE-EQUALITY",
+      "methods": [
+        "C04",
+        "C05"
+      ],
+      "kind": "SOURCE_READING",
+      "modelChange": false,
+      "text": "maGate lehnt einen Kaufpreis genau gleich MA30w ab (BUY_PRICE_AT_OR_BELOW_MA30W), auch bei steigender MA; eine flache MA (gleich der Vorwoche) gilt nicht als fallend. #709 WEIN-MA lautet \"keine Longkäufe unter oder bei fallender MA30\": der Vertrag liest \"at\" als Gleichheit mit der MA (\"at or below MA30w\"), nicht als \"bei fallender MA\". Die Lesart ist in der derivation von WEIN-SF-MA-GATE genannt, ihre Mehrdeutigkeit nicht.",
+      "code": "scripts/supertrader/source-faithful/methods/weinstein.mjs#maGate",
+      "proposal": "Mehrdeutigkeit in der derivation von WEIN-SF-MA-GATE ausdrücklich nennen (eigener PR, Vertragsfingerabdruck); praktisch nur bei exakter Gleichheit wirksam"
+    },
+    {
+      "id": "F-PP-STOP-STATUS-SPLIT",
+      "methods": [
+        "C11"
+      ],
+      "kind": "DOCUMENTATION_GAP",
+      "modelChange": false,
+      "text": "Der Vertrag führt MOKA-SF-PP-STOP als MANUAL_REVIEW_REQUIRED, die Lebenszyklus-Zeile PP-STOP und die Matrix als SOURCE_BLOCKED. research/sf6-model-variants.mjs nennt beides; der Vertrag selbst nicht.",
+      "code": "scripts/supertrader/source-faithful/contracts/morales-kacher.mjs (MOKA-SF-PP-STOP); research/sf6-model-variants.mjs",
+      "proposal": "Hinweis auf SOURCE_BLOCKED in der Regel ergänzen (eigener PR, Vertragsfingerabdruck); keine Statusänderung ohne Owner"
+    }
+  ],
+  "mutationProbes": [
+    {
+      "id": "MP-WEIN-MA-FALLING",
+      "test": "CP-WEIN-MA-GATE-EQUALITY",
+      "file": "methods/weinstein.mjs",
+      "find": "if (ma[w] < ma[w - 1]) return { pass: false, reason: 'MA30W_FALLING' };",
+      "replace": "if (ma[w] <= ma[w - 1]) return { pass: false, reason: 'MA30W_FALLING' };",
+      "why": "eine flache MA würde als fallend gelten"
+    },
+    {
+      "id": "MP-WEIN-MA-AT",
+      "test": "CP-WEIN-MA-GATE-EQUALITY",
+      "file": "methods/weinstein.mjs",
+      "find": "if (!(buyPrice > ma[w]))",
+      "replace": "if (!(buyPrice >= ma[w]))",
+      "why": "ein Kaufpreis gleich der MA würde zugelassen"
+    },
+    {
+      "id": "MP-WEIN-VOL-C",
+      "test": "CP-WEIN-VOL-THRESHOLDS",
+      "file": "methods/weinstein.mjs",
+      "find": "C: C !== null && C > P.volumeMultiple",
+      "replace": "C: C !== null && C >= P.volumeMultiple",
+      "why": "\"mehr als das Doppelte\" würde zu \"mindestens\""
+    },
+    {
+      "id": "MP-WEIN-VOL-A",
+      "test": "CP-WEIN-VOL-THRESHOLDS",
+      "file": "methods/weinstein.mjs",
+      "find": "A: A !== null && A >= P.volumeMultiple",
+      "replace": "A: A !== null && A > P.volumeMultiple",
+      "why": "\"mindestens das Doppelte\" würde zu \"mehr als\""
+    },
+    {
+      "id": "MP-WEIN-BASE-START",
+      "test": "CP-WEIN-INV-BASE-RESISTANCE",
+      "file": "methods/weinstein.mjs",
+      "find": "for (let k = s; k <= w - 1; k++) { level = Math.max(level, weeks[k].high); low = Math.min(low, weeks[k].low); }\n  const trigger",
+      "replace": "for (let k = s + 1; k <= w - 1; k++) { level = Math.max(level, weeks[k].high); low = Math.min(low, weeks[k].low); }\n  const trigger",
+      "why": "die erste Basiswoche fiele aus dem Widerstand"
+    },
+    {
+      "id": "MP-WEIN-INV-TRIGGER",
+      "test": "CP-WEIN-INV-BASE-RESISTANCE",
+      "file": "methods/weinstein.mjs",
+      "find": "if (!(weeks[w].high >= trigger)) return [];\n  return [candidateRecord({ methodId: 'SF_WEINSTEIN_INVESTOR'",
+      "replace": "if (!(weeks[w].high > trigger)) return [];\n  return [candidateRecord({ methodId: 'SF_WEINSTEIN_INVESTOR'",
+      "why": "ein Wochenhoch genau am Trigger löste nicht aus"
+    },
+    {
+      "id": "MP-WEIN-SWING",
+      "test": "CP-WEIN-TR-SWING-HIGH",
+      "file": "methods/weinstein.mjs",
+      "find": "if (p <= w - 2 && weeks[p].high > maxAfter",
+      "replace": "if (p <= w - 1 && weeks[p].high > maxAfter",
+      "why": "die Vorwoche könnte selbst das Swinghoch sein"
+    },
+    {
+      "id": "MP-WEIN-TRAIL",
+      "test": "CP-WEIN-TRAIL-THRESHOLDS",
+      "file": "research/weinstein-lifecycle.mjs",
+      "find": ">= cfg.trailThreshold - 1e-12",
+      "replace": ">= cfg.trailThreshold + 1e-12",
+      "why": "eine Korrektur genau an der Schwelle höbe den Stop nicht"
+    },
+    {
+      "id": "MP-WEIN-STOP-TRIGGER",
+      "test": "CP-WEIN-STOP-BELOW-TRIGGER",
+      "file": "research/weinstein-lifecycle.mjs",
+      "find": "if (!(stop > 0 && stop < setup.trigger))",
+      "replace": "if (!(stop > 0 && stop <= setup.trigger))",
+      "why": "ein Stop gleich dem Trigger würde zugelassen"
+    },
+    {
+      "id": "MP-MIN-TT6",
+      "test": "CP-MIN-TT-BOUNDS",
+      "file": "methods/minervini.mjs",
+      "find": "'MIN-SF-TT-6': c >= lo * (1 + P.aboveLow)",
+      "replace": "'MIN-SF-TT-6': c > lo * (1 + P.aboveLow)",
+      "why": "genau +30 % genügte nicht"
+    },
+    {
+      "id": "MP-MIN-TT7",
+      "test": "CP-MIN-TT-BOUNDS",
+      "file": "methods/minervini.mjs",
+      "find": "'MIN-SF-TT-7': c >= hi * (1 - P.belowHigh)",
+      "replace": "'MIN-SF-TT-7': c > hi * (1 - P.belowHigh)",
+      "why": "genau -25 % genügte nicht"
+    },
+    {
+      "id": "MP-MIN-STOP-FLAG",
+      "test": "CP-MIN-STOP-FLAG-10",
+      "file": "methods/minervini.mjs",
+      "find": "exceedsMaxPlannedLoss: risk > P.maxStopPct",
+      "replace": "exceedsMaxPlannedLoss: risk >= P.maxStopPct",
+      "why": "genau 10 % würde als Überschreitung markiert"
+    },
+    {
+      "id": "MP-MIN-PLANNED-LOSS",
+      "test": "CP-MIN-ENTRY-PLANNED-LOSS-LIMIT",
+      "file": "research/minervini-lifecycle.mjs",
+      "find": "else if (plannedLossAtPivot > MAX_PLANNED_LOSS + 1e-12)",
+      "replace": "else if (plannedLossAtPivot > MAX_PLANNED_LOSS - 1e-12)",
+      "why": "genau 10 % geplanter Verlust würde gesperrt"
+    },
+    {
+      "id": "MP-MIN-LIMIT",
+      "test": "CP-MIN-ENTRY-PLANNED-LOSS-LIMIT",
+      "file": "research/minervini-lifecycle.mjs",
+      "find": "if (fin(order.limit) && fill > order.limit) {",
+      "replace": "if (false) {",
+      "why": "eine Eröffnung über dem Limit würde gefüllt"
+    },
+    {
+      "id": "MP-MIN-PP-WINDOW",
+      "test": "CP-MIN-PP-RUNUP-40",
+      "file": "methods/minervini.mjs",
+      "find": "p - (P.ppMaxSessions - 1)",
+      "replace": "p - P.ppMaxSessions",
+      "why": "ein Tief 40 Sitzungen vor dem Hoch würde zählen"
+    },
+    {
+      "id": "MP-MIN-PP-MULTIPLE",
+      "test": "CP-MIN-PP-RUNUP-40",
+      "file": "methods/minervini.mjs",
+      "find": "bars[k].low * P.ppMultiple <= bars[p].high",
+      "replace": "bars[k].low * P.ppMultiple < bars[p].high",
+      "why": "genau +100 % genügte nicht"
+    },
+    {
+      "id": "MP-MIN-PP-CORRECTION",
+      "test": "CP-MIN-PP-CORRECTION-BOUNDS",
+      "file": "methods/minervini.mjs",
+      "find": "if (correction > P.ppMaxCorrection) return [];",
+      "replace": "if (correction >= P.ppMaxCorrection) return [];",
+      "why": "genau 25 % Korrektur verlöre den Datensatz"
+    },
+    {
+      "id": "MP-MIN-PP-CLASSES",
+      "test": "CP-MIN-PP-CONFIRMED-ONLY",
+      "file": "research/minervini-lifecycle.mjs",
+      "find": "else if (!cfg.ppClasses.includes(setup.state)) add(",
+      "replace": "else if (false) add(",
+      "why": "Prüf-Setups würden simuliert"
+    },
+    {
+      "id": "MP-EP-ADR",
+      "test": "CP-EP-STOP-1-5-ADR",
+      "file": "methods/kullamagi.mjs",
+      "find": "stopCheck(entry, lowOfDay, adrPct, KK_PARAMS.epMaxAdr, 'KK-SF-EP-STOP')",
+      "replace": "stopCheck(entry, lowOfDay, adrPct, 1, 'KK-SF-EP-STOP')",
+      "why": "die EP-Grenze fiele auf 1 ADR"
+    },
+    {
+      "id": "MP-EP-GAP",
+      "test": "CP-EP-GAP-SCREEN-10",
+      "file": "research/kk-ep-lifecycle.mjs",
+      "find": "if (!(gap >= cfg.gapMin)) return null;",
+      "replace": "if (!(gap > cfg.gapMin)) return null;",
+      "why": "ein Gap genau an der Grenze würde abgelehnt"
+    },
+    {
+      "id": "MP-EP-FILL",
+      "test": "CP-EP-ORH-FILL-AND-LOD",
+      "file": "research/kk-ep-lifecycle.mjs",
+      "find": "const fill = Math.max(level, m.open), stop = low;",
+      "replace": "const fill = level, stop = low;",
+      "why": "ein Minuten-Gap würde am Level statt zur Eröffnung gefüllt"
+    },
+    {
+      "id": "MP-EP-LOD",
+      "test": "CP-EP-ORH-FILL-AND-LOD",
+      "file": "research/kk-ep-lifecycle.mjs",
+      "find": "const fill = Math.max(level, m.open), stop = low;",
+      "replace": "const fill = Math.max(level, m.open), stop = Math.min(low, m.low);",
+      "why": "das Tief der Kaufminute ginge in den Stop ein"
+    },
+    {
+      "id": "MP-EP-EXIT",
+      "test": "CP-EP-EXIT-MA20",
+      "file": "research/kk-ep-lifecycle.mjs",
+      "find": "if (fin(c) && fin(m) && c < m) api.scheduleExit",
+      "replace": "if (fin(c) && fin(m) && c <= m) api.scheduleExit",
+      "why": "ein Schluss gleich MA20 löste den Ausstieg aus"
+    },
+    {
+      "id": "MP-EP-EXIT-MA-PARAM",
+      "test": "CP-EP-EXIT-MA20",
+      "file": "research/kk-ep-lifecycle.mjs",
+      "find": "m = smaAt(ctx.bars, i, cfg.exitMa)",
+      "replace": "m = smaAt(ctx.bars, i, 10)",
+      "why": "der Ausstieg nutzte die MA10 statt der konfigurierten MA20"
+    },
+    {
+      "id": "MP-PS-ACCEL",
+      "test": "CP-PS-STREAK-ACCEL",
+      "file": "research/kk-ps-study.mjs",
+      "find": "const accel = rets.every((r, k) => k === 0 || r >= rets[k - 1]);",
+      "replace": "const accel = rets.every((r, k) => k === 0 || r > rets[k - 1]);",
+      "why": "gleiche Renditen gälten nicht als Beschleunigung"
+    },
+    {
+      "id": "MP-PS-STREAK",
+      "test": "CP-PS-STREAK-ACCEL",
+      "file": "research/kk-ps-study.mjs",
+      "find": "if (!(ev.upStreak >= cfg.streak) || !fin(adr)) return null;",
+      "replace": "if (!(ev.upStreak >= cfg.streak - 1) || !fin(adr)) return null;",
+      "why": "zwei höhere Schlüsse würden genügen"
+    },
+    {
+      "id": "MP-PS-FILL",
+      "test": "CP-PS-ORL5-FILL-HOD-STOP",
+      "file": "research/kk-ps-study.mjs",
+      "find": "return { status: 'FILLED', fill: Math.min(level, m.open), minuteIndex: j, hodBefore: high, fillAtClose: false };",
+      "replace": "return { status: 'FILLED', fill: level, minuteIndex: j, hodBefore: high, fillAtClose: false };",
+      "why": "ein Minuten-Gap würde am Level gefüllt"
+    },
+    {
+      "id": "MP-PS-HOD",
+      "test": "CP-PS-ORL5-FILL-HOD-STOP",
+      "file": "research/kk-ps-study.mjs",
+      "find": "return { status: 'FILLED', fill: Math.min(level, m.open), minuteIndex: j, hodBefore: high, fillAtClose: false };",
+      "replace": "return { status: 'FILLED', fill: Math.min(level, m.open), minuteIndex: j, hodBefore: Math.max(high, m.high), fillAtClose: false };",
+      "why": "das Hoch der Kaufminute ginge in den Stop ein"
+    },
+    {
+      "id": "MP-PS-BORROW",
+      "test": "CP-PS-COSTS-NO-BORROW",
+      "file": "research/kk-ps-study.mjs",
+      "find": "if (cfg.borrow !== 'NOT_MODELLED') e.push('BORROW_IS_DATA_BLOCKED');",
+      "replace": "if (false) e.push('BORROW_IS_DATA_BLOCKED');",
+      "why": "eine modellierte Leihe würde zugelassen"
+    },
+    {
+      "id": "MP-PP-DOWNDAY",
+      "test": "CP-PP-UP-DAY-STRICT",
+      "file": "methods/morales-kacher.mjs",
+      "find": "if (bars[k].close < bars[k - 1].close) { downDays++;",
+      "replace": "if (bars[k].close <= bars[k - 1].close) { downDays++;",
+      "why": "ein gleich schließender Tag zählte als Abwärtstag"
+    },
+    {
+      "id": "MP-PP-UPDAY",
+      "test": "CP-PP-UP-DAY-STRICT",
+      "file": "methods/morales-kacher.mjs",
+      "find": "if (!(b.close > bars[i - 1].close)) return { status: 'NOT_UP_DAY'",
+      "replace": "if (!(b.close >= bars[i - 1].close)) return { status: 'NOT_UP_DAY'",
+      "why": "ein gleich schließender Tag wäre ein Aufwärtstag"
+    },
+    {
+      "id": "MP-PP-VOLUME-STRICT",
+      "test": "CP-PP-UP-DAY-STRICT",
+      "file": "methods/morales-kacher.mjs",
+      "find": "status: b.volume > maxDown ?",
+      "replace": "status: b.volume >= maxDown ?",
+      "why": "ein Signalvolumen gleich dem höchsten Abwärtsvolumen wäre eine Volumensignatur"
+    },
+    {
+      "id": "MP-PP-MA50",
+      "test": "CP-PP-CONTEXT-MA50-STRICT",
+      "file": "research/moka-lifecycle.mjs",
+      "find": "aboveMa50 = fin(m50) ? bars[i].close > m50 : null;",
+      "replace": "aboveMa50 = fin(m50) ? bars[i].close >= m50 : null;",
+      "why": "ein Schluss gleich MA50 genügte"
+    },
+    {
+      "id": "MP-PP-GUIDE",
+      "test": "CP-PP-SELL-GUIDE-35",
+      "file": "research/moka-lifecycle.mjs",
+      "find": "guide[k] = since >= minSessions ? 10 : 50;",
+      "replace": "guide[k] = since > minSessions ? 10 : 50;",
+      "why": "der 10DMA-Leitfaden gälte erst ab 36 Sitzungen"
+    },
+    {
+      "id": "MP-PP-STRICT",
+      "test": "CP-PP-VIOLATION-STRICT-NO-STOP",
+      "file": "research/moka-lifecycle.mjs",
+      "find": "api.setTrigger({ level: lvl, strict: true,",
+      "replace": "api.setTrigger({ level: lvl, strict: false,",
+      "why": "ein Tief gleich dem Auslöser würde verkaufen"
+    },
+    {
+      "id": "MP-PP-NO-STOP",
+      "test": "CP-PP-VIOLATION-STRICT-NO-STOP",
+      "file": "research/moka-lifecycle.mjs",
+      "find": "order: { type: 'ON_OPEN', stop: null, rule: 'MA-MOKA-ENTRY-TIMING; no price stop",
+      "replace": "order: { type: 'ON_OPEN', stop: bars[i].low, rule: 'MA-MOKA-ENTRY-TIMING; no price stop",
+      "why": "ein erfundener Preisstop am Signaltief"
+    },
+    {
+      "id": "MP-HG-ADX",
+      "test": "CP-HG-ADX-STRICT-30",
+      "file": "research/holy-grail-lifecycle.mjs",
+      "find": "if (fin(ADX[j]) && ADX[j] > P.adxThreshold)",
+      "replace": "if (fin(ADX[j]) && ADX[j] >= P.adxThreshold)",
+      "why": "ein ADX genau an der Grenze genügte"
+    },
+    {
+      "id": "MP-HG-TOUCH",
+      "test": "CP-HG-TOUCH-ORDER-STOP",
+      "file": "research/holy-grail-lifecycle.mjs",
+      "find": "!(bars[i].low <= ema[i])) continue;",
+      "replace": "!(bars[i].low < ema[i])) continue;",
+      "why": "ein Tief genau an der EMA wäre keine Berührung"
+    },
+    {
+      "id": "MP-HG-LEVEL",
+      "test": "CP-HG-TOUCH-ORDER-STOP",
+      "file": "research/holy-grail-lifecycle.mjs",
+      "find": "const level = fin(ref) ? ref + rawTickAdjusted(bars[i]) : null;",
+      "replace": "const level = fin(ref) ? ref : null;",
+      "why": "der Buy-Stop läge am Hoch statt einen Roh-Cent darüber"
+    },
+    {
+      "id": "MP-HG-SWING-LOW",
+      "test": "CP-HG-TOUCH-ORDER-STOP",
+      "file": "research/holy-grail-lifecycle.mjs",
+      "find": "let lo = Infinity; for (let k = hiK; k <= i; k++)",
+      "replace": "let lo = Infinity; for (let k = hiK + 1; k <= i; k++)",
+      "why": "das Tief des Impulshoch-Balkens selbst gehörte nicht zum Stop"
+    },
+    {
+      "id": "MP-HG-EXIT",
+      "test": "CP-HG-EXIT-NEW-HIGH-STRICT",
+      "file": "research/holy-grail-lifecycle.mjs",
+      "find": "if (fin(imp) && ctx.bars[i].close > imp)",
+      "replace": "if (fin(imp) && ctx.bars[i].close >= imp)",
+      "why": "ein Schluss gleich dem Impulshoch löste den Ausstieg aus"
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "schema": "vu-data-branch-1",
+  "branch": "data/live",
+  "purpose": "Erzeugte Daten ausserhalb von main (Plan Neustart §3). Pages holt sie beim Bau (scripts/ci/overlay-data-branch.mjs).",
+  "phases": {
+    "DUAL_WRITE": "Erzeuger schreibt nach main UND in den Datenzweig; Pages liefert den Datenzweig aus und weist Gleichheit mit main nach.",
+    "BRANCH_ONLY": "Erzeuger schreibt nur in den Datenzweig; eine Kopie in main ist, wenn vorhanden, eingefroren und dient nur als Rueckfall. pendingFirstRun: bis zum ersten Lauf darf der Pfad fehlen."
+  },
+  "domains": [
+    {
+      "id": "news",
+      "phase": "DUAL_WRITE",
+      "workflow": "content.yml",
+      "paths": ["dashboard/data/news_feed.json"]
+    },
+    {
+      "id": "insiderPurchases",
+      "phase": "BRANCH_ONLY",
+      "workflow": "sec-fundamentals-daily.yml",
+      "paths": ["insider/data/purchases.json"]
+    },
+    {
+      "id": "dataQualityReport",
+      "phase": "BRANCH_ONLY",
+      "workflow": "pipeline-daily.yml",
+      "paths": ["status/data-quality.json"]
+    },
+    {
+      "id": "analystRatings",
+      "phase": "BRANCH_ONLY",
+      "workflow": "content.yml",
+      "paths": ["dashboard/data/analyst_ratings.json"]
+    },
+    {
+      "id": "analystConsensus",
+      "phase": "BRANCH_ONLY",
+      "workflow": "content.yml",
+      "paths": ["dashboard/data/analysts/summary.json"],
+      "prefixes": ["dashboard/data/analysts/shards/"]
+    },
+    {
+      "id": "marketPulse",
+      "phase": "BRANCH_ONLY",
+      "workflow": "multi-asset-data.yml",
+      "paths": [
+        "quant/data/market/multi-asset/snapshot.json",
+        "quant/data/market/intelligence/market-pulse.json",
+        "quant/data/market/intelligence/market-pulse-history.json"
+      ],
+      "prefixes": ["quant/data/market/multi-asset/"],
+      "note": "Vertrag: snapshot.json (domains.json marketPulse). Market Pulse ist ein Bericht desselben Laufs ohne eigenen Vertrag; das Verzeichnis folgt nur dem Snapshot. Verbraucher spielen den Zweig per seed-data-branch.sh alle ein (Pages vor dem Bau, Supertrader, Materialisierung, pipeline-daily, research)."
+    },
+    {
+      "id": "modelDepots",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "pipeline-weekly.yml",
+      "paths": ["quant/data/product/model-depots-v1.json"],
+      "note": "Der Erzeuger rechnet vom bisherigen Stand weiter (Bestand, Protokoll); pipeline-weekly spielt den Zweig vor dem Lauf ein (seed-data-branch.sh alle). Bis zum ersten Lauf (Sa 07:23 UTC) liefert Pages die eingefrorene Kopie aus main."
+    },
+    {
+      "id": "kiDepots",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "pipeline-daily.yml",
+      "paths": ["quant/data/product/ki-depots-v1.json"],
+      "note": "pipeline-daily Teil ki-depots (werktags 23:41 UTC) spielt den Zweig vor dem Export ein und schreibt nur dorthin. Bis zum ersten Lauf liefert Pages die eingefrorene Kopie aus main."
+    },
+    {
+      "id": "fxReference",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "pipeline-daily.yml",
+      "paths": ["quant/data/market/fx/ecb-coverage.json"],
+      "prefixes": ["quant/data/market/fx/ecb/"],
+      "note": "Vertrag: ecb-coverage.json; die Reihen unter ecb/ folgen ihm. Die uebrigen Dateien unter quant/data/market/fx/ (Waehrungsschulden-Register, Paarbedarf, Abdeckung) gehoeren currency-fx-verify.yml und bleiben in main. Verbraucher (Release-Bau, Multi-Asset, Watchlist) saeen den Zweig."
+    },
+    {
+      "id": "technicalWorld",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "pipeline-daily.yml",
+      "paths": ["technical/data/meta.json"],
+      "prefixes": ["technical/data/"],
+      "note": "Vertrag: meta.json; Screener, Spark, Index, Evidenz und die Kurzstaende je Aktie (stock/) folgen ihm. Der Erzeuger (pipeline-daily Teil technical-world) baut vollstaendig aus der Materialisierung neu und braucht keinen bisherigen Stand."
+    },
+    {
+      "id": "discoverImBlickLive",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "discover-im-blick-live.yml",
+      "paths": ["discover/live/im-blick-US_REAL.json", "discover/live/monitor-US_REAL.json"],
+      "note": "Zwei Erzeuger: discover-im-blick-live.yml (Wecker, Minute 5/35, 15-21 UTC) und market-data-refresh.yml (Job imblick, Nachtlauf). Beide saeen den Zweig vor dem Rechnen (der Baustein entscheidet am bisherigen Stand, ob der Slot offen ist) und schreiben nur nach data/live. Vertrag: im-blick-US_REAL.json; der Monitor ist Begleitdatei."
+    }
+  ],
+  "internal": [
+    {
+      "id": "insiderForm4Compact",
+      "workflow": "sec-fundamentals-daily.yml",
+      "pathPrefix": "insider/data/form4/",
+      "files": "<YYYY-MM>.json; geschrieben und gesaet werden die letzten 6 Monate",
+      "producer": "scripts/insider/form4-compact.mjs (aus derselben Abholung wie insider/data/purchases.json)",
+      "consumers": ["ownership-signals.yml (saet .ownership-cache/form4 vor dem Bau)"],
+      "note": "Nicht ausgeliefert (kein Pages-Overlay). Eine Form-4-Abholung fuer Insider-Kaeufe (E2) und Eigentuemer-Signale."
+    }
+  ],
+  "plan": {
+    "purpose": "Jede Datenart aus core/registry/domains.json steht entweder unter domains (im Datenzweig) oder hier mit Status und Grund (DB-14). NEXT = als Naechstes, LATER = nach dem Buendel/der Kette, LAST = Quant/Supertrader/Discover zuletzt (Plan §3), EXEMPT = begruendet ausgenommen.",
+    "entries": {
+      "news": {"status": "NEXT", "grund": "Pilot DUAL_WRITE; BRANCH_ONLY nach der Abnahme am 11.11.2026"},
+      "companyNames": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "europeDiscoverDisplay": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "europeEsefFacts": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "indexMembership": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "industryClassificationHistory": {"status": "EXEMPT", "grund": "liegt unter quant/data/sec (Sparse-Checkout von Company Intelligence) und hat keinen Zeitplan (manuell bis zur Owner-Entscheidung): kein Lauf, keine Commits auf main, ein Umzug braechte nichts"},
+      "companyMaster": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "corporateActions": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "discover": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "eodPrices": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "fundamentals": {"status": "EXEMPT", "grund": "Eingang von Company Intelligence: company-intelligence-refresh und -profile-source lesen quant/data/sec (canonical, inspector) aus main; derselbe Lauf (sec-fundamentals-daily) schreibt quant/data/fundamentals, quant/data/sec und quant/data/universe in einem Commit. Ohne Eingriff in die CI-Workflows kein Umzug (Strang O fasst CI nicht an, Steuerung 09.11.2026)"},
+      "fundamentalsConsumer": {"status": "EXEMPT", "grund": "Eingang von Company Intelligence: quant/data/sec/consumer wird von company-intelligence-refresh und -profile-source aus main gelesen (pipeline.py, top46_content.py); ohne Eingriff in die CI-Workflows kein Umzug"},
+      "intraday": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "longSeries": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "quant": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "securityMaster": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "supertrader": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "supertrader-sf8-candidates": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "technical": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "technicalIntelligenceV3": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "usSecurityMaster": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
+      "companyIntelligence": {"status": "EXEMPT", "grund": "Company Intelligence liegt in R2 und wird vom Release aus R2 projiziert; Strang O fasst CI nicht an (Auftrag 08.11.2026)"},
+      "globalDiscoverUniverse": {"status": "EXEMPT", "grund": "Nebenprodukt des Discover-Baus; folgt der Datenart discover"},
+      "supertrader-paper-2027-log": {"status": "EXEMPT", "grund": "Papier-Handelsprotokoll (append-only); die Git-Historie in main ist sein Pruefpfad"},
+      "watchlistEvents": {"status": "EXEMPT", "grund": "entsteht im Release-Bau aus der zuletzt ausgelieferten Seite, liegt nie in main"}
+    }
+  }
+}

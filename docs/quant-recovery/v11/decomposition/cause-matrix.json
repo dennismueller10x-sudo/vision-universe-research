@@ -1,0 +1,1156 @@
+{
+ "studyId": "V11-DECOMPOSITION",
+ "part": "cause-matrix",
+ "registrationHash": "f3354b1f87b369a189c683db77471b0df383a0ad3018f90b51c4ee3b499111fa",
+ "protocol": {
+  "file": "docs/quant-recovery/v11/protocol/time-split-1.0.0.json",
+  "sha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69"
+ },
+ "period": "FULL_DESCRIPTIVE",
+ "firewall": "R4: FULL_DESCRIPTIVE output of the DECOMPOSITION strand - must not be read by the DISCOVERY strand.",
+ "population": {
+  "frame": 4329,
+  "loaderOptions": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true
+  },
+  "sourceManifestHash": "2c27039fd782cccced62ac28cebfb808eea07670ba2c79e58e373824bcc0b679",
+  "survivorshipGap": "Provider universe of today plus ended series; coverage of SEC 10-K filers 2000 14 %, 2010 22 %, 2020 48 % (protocol). Survivorship of issuers that vanished before universe formation is NOT measurable here; only the in-sample ended listings (V10 bounds) and the cap-weighted vs equal-weighted comparison are quantified."
+ },
+ "returnBasis": {
+  "strategyOrEvents": "PRICE_RETURN (split-adjusted weekly closes, no dividends)",
+  "spy": "PRICE_RETURN (SPY split-adjusted close, same dates, no dividends)",
+  "population": "PRICE_RETURN equal-weighted, same dates",
+  "totalReturn": "only as labelled ESTIMATE in benchmark-reference-check.json"
+ },
+ "costs": {
+  "events": {
+   "feeBps": 10,
+   "slippageBps": 5
+  },
+  "stress": {
+   "feeBps": 20,
+   "slippageBps": 30
+  },
+  "benchmarks": "none (SPY passive, population benchmark gross)"
+ },
+ "weighting": "events: equal per event; funded: see A3",
+ "investmentAssumption": "events: fully invested per event; funded strategy: slots of 1/N, unfilled slots in cash at 0 %; SPY: fully invested buy-and-hold",
+ "observedVsSecured": "every cell reports the observed estimate and, separately, whether it is statistically secured (block bootstrap, Holm within the stated family)",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY (decomposition, FULL_DESCRIPTIVE)",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "shareDefinition": "share = |contribution| / sum of |additive contributions| (benchmark, selection, costs, dividend estimate); entry, exit/holding, weighting, data coverage and uncertainty are non-additive diagnostics in Pp",
+ "pythonCrossCheck": {
+  "pythonA1MaxAbsDiff": 5.578870698741412e-15,
+  "pass": true
+ },
+ "rows": [
+  {
+   "rule": "MOMENTUM_IMPROVED",
+   "horizonWeeks": 13,
+   "observedSpyExcessNetPriceReturn": 0.004803,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": -0.3,
+     "share": 0.165574,
+     "secured": false,
+     "holmP": 1,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 1.09,
+     "share": 0.60342,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 0.37,
+      "capWeightedMinusSpyPp": -0.11,
+      "coveragePp": -0.28,
+      "populationMinusSpy2010Pp": -0.02
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.31,
+     "share": 0.171358,
+     "breakEvenPerSideBps": 38.4
+    },
+    "dividends": {
+     "pp": -0.11,
+     "share": 0.059648,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": 0.15,
+     "reactionWeekMinusSpyPp": -0.06,
+     "reactionWeekMinusPopulationPp": -0.21,
+     "runUpBeforeSignal4wMinusSpyPp": 6.72,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 1.92,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 25.4,
+       "spyExcessNetPp": 1.4,
+       "perWeekAnnualisedSpyPp": 2.87,
+       "populationExcessPerWeekAnnualisedPp": -1.74,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 36.8,
+       "spyExcessNetPp": 2.5,
+       "perWeekAnnualisedSpyPp": 3.53,
+       "populationExcessPerWeekAnnualisedPp": -1.04,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 17,
+       "spyExcessNetPp": 2,
+       "perWeekAnnualisedSpyPp": 6.1,
+       "populationExcessPerWeekAnnualisedPp": 1.05,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": {
+     "EQUAL_N10": {
+      "hashExcessCagrPp": 1.8,
+      "randomExcessCagrP5P95Pp": [
+       -4.5,
+       4.03
+      ],
+      "shareRandomPathsPositive": 0.455,
+      "investedShare": 0.99635
+     },
+     "EQUAL_N5": {
+      "hashExcessCagrPp": 7.54,
+      "randomExcessCagrP5P95Pp": [
+       -5.64,
+       4.45
+      ],
+      "shareRandomPathsPositive": 0.42,
+      "investedShare": 0.99635
+     },
+     "EQUAL_N20": {
+      "hashExcessCagrPp": 5.87,
+      "randomExcessCagrP5P95Pp": [
+       -1.19,
+       4.36
+      ],
+      "shareRandomPathsPositive": 0.86,
+      "investedShare": 0.995411
+     },
+     "EQUAL_N50": {
+      "hashExcessCagrPp": 4.87,
+      "randomExcessCagrP5P95Pp": [
+       1.49,
+       5.08
+      ],
+      "shareRandomPathsPositive": 1,
+      "investedShare": 0.990253
+     },
+     "VOL_INVERSE_N10": {
+      "hashExcessCagrPp": -0.43,
+      "randomExcessCagrP5P95Pp": [
+       -2.96,
+       2.99
+      ],
+      "shareRandomPathsPositive": 0.46,
+      "investedShare": 0.965545
+     },
+     "FULLY_INVESTED_N10": {
+      "hashExcessCagrPp": 1.79,
+      "randomExcessCagrP5P95Pp": [
+       -3.72,
+       3.73
+      ],
+      "shareRandomPathsPositive": 0.52,
+      "investedShare": 0.99854
+     }
+    },
+    "dataCoverage": {
+     "censoredOrImmature": 20,
+     "minus100BoundShiftPp": -0.03,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 0.48,
+     "mde80Holm60WorstPp": 3.1,
+     "mde80AnnualisedWorstPp": 12.4,
+     "nEffectiveShare": 0.02377,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 0.48,
+    "observedPp": 0.48
+   },
+   "explanation": "MOMENTUM_IMPROVED 13 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 0.48 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 1.09 Pp, Auswahl (Signal minus Population) -0.3 Pp, Kosten -0.31 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 0.37 Pp, kapitalgewichtete Frame-Population minus SPY -0.11 Pp, Abdeckung -0.28 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.11 Pp; Reaktionswoche vor dem Einstieg vs. SPY -0.06 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 3.1 Pp."
+  },
+  {
+   "rule": "MOMENTUM_IMPROVED",
+   "horizonWeeks": 52,
+   "observedSpyExcessNetPriceReturn": 0.037898,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": -0.53,
+     "share": 0.088396,
+     "secured": false,
+     "holmP": 1,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 4.66,
+     "share": 0.781988,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 1.6,
+      "capWeightedMinusSpyPp": -0.57,
+      "coveragePp": -1.28,
+      "populationMinusSpy2010Pp": -0.26
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.34,
+     "share": 0.057436,
+     "breakEvenPerSideBps": 184.2
+    },
+    "dividends": {
+     "pp": -0.43,
+     "share": 0.07218,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": 0.15,
+     "reactionWeekMinusSpyPp": -0.06,
+     "reactionWeekMinusPopulationPp": -0.21,
+     "runUpBeforeSignal4wMinusSpyPp": 6.72,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 3.79,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 25.4,
+       "spyExcessNetPp": 1.4,
+       "perWeekAnnualisedSpyPp": 2.87,
+       "populationExcessPerWeekAnnualisedPp": -1.74,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 36.8,
+       "spyExcessNetPp": 2.5,
+       "perWeekAnnualisedSpyPp": 3.53,
+       "populationExcessPerWeekAnnualisedPp": -1.04,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 17,
+       "spyExcessNetPp": 2,
+       "perWeekAnnualisedSpyPp": 6.1,
+       "populationExcessPerWeekAnnualisedPp": 1.05,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": "not a funded rule/horizon",
+    "dataCoverage": {
+     "censoredOrImmature": 645,
+     "minus100BoundShiftPp": -0.15,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 3.79,
+     "mde80Holm60WorstPp": 13.06,
+     "mde80AnnualisedWorstPp": 13.06,
+     "nEffectiveShare": 0.010136,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 3.79,
+    "observedPp": 3.79
+   },
+   "explanation": "MOMENTUM_IMPROVED 52 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 3.79 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 4.66 Pp, Auswahl (Signal minus Population) -0.53 Pp, Kosten -0.34 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 1.6 Pp, kapitalgewichtete Frame-Population minus SPY -0.57 Pp, Abdeckung -1.28 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.43 Pp; Reaktionswoche vor dem Einstieg vs. SPY -0.06 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 13.06 Pp."
+  },
+  {
+   "rule": "MOMENTUM_DETERIORATED",
+   "horizonWeeks": 13,
+   "observedSpyExcessNetPriceReturn": 0.006353,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": -0.03,
+     "share": 0.017523,
+     "secured": false,
+     "holmP": 1,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 0.97,
+     "share": 0.675992,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 0.49,
+      "capWeightedMinusSpyPp": -0.08,
+      "coveragePp": -0.34,
+      "populationMinusSpy2010Pp": 0.07
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.31,
+     "share": 0.215936,
+     "breakEvenPerSideBps": 45.9
+    },
+    "dividends": {
+     "pp": -0.13,
+     "share": 0.090549,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": 0.14,
+     "reactionWeekMinusSpyPp": 0.02,
+     "reactionWeekMinusPopulationPp": 0.07,
+     "runUpBeforeSignal4wMinusSpyPp": -4.66,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 2.54,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 25.1,
+       "spyExcessNetPp": 1.26,
+       "perWeekAnnualisedSpyPp": 2.62,
+       "populationExcessPerWeekAnnualisedPp": -1.16,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 36.5,
+       "spyExcessNetPp": 1.96,
+       "perWeekAnnualisedSpyPp": 2.8,
+       "populationExcessPerWeekAnnualisedPp": -1.5,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 15.5,
+       "spyExcessNetPp": 0.48,
+       "perWeekAnnualisedSpyPp": 1.62,
+       "populationExcessPerWeekAnnualisedPp": -2.19,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": "not a funded rule/horizon",
+    "dataCoverage": {
+     "censoredOrImmature": 15,
+     "minus100BoundShiftPp": -0.02,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 0.64,
+     "mde80Holm60WorstPp": 2.71,
+     "mde80AnnualisedWorstPp": 10.85,
+     "nEffectiveShare": 0.027527,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 0.64,
+    "observedPp": 0.64
+   },
+   "explanation": "MOMENTUM_DETERIORATED 13 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 0.64 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 0.97 Pp, Auswahl (Signal minus Population) -0.03 Pp, Kosten -0.31 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 0.49 Pp, kapitalgewichtete Frame-Population minus SPY -0.08 Pp, Abdeckung -0.34 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.13 Pp; Reaktionswoche vor dem Einstieg vs. SPY 0.02 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 2.71 Pp."
+  },
+  {
+   "rule": "MOMENTUM_DETERIORATED",
+   "horizonWeeks": 52,
+   "observedSpyExcessNetPriceReturn": 0.033909,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": -1.11,
+     "share": 0.16279,
+     "secured": false,
+     "holmP": 1,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 4.84,
+     "share": 0.710779,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 2.27,
+      "capWeightedMinusSpyPp": -0.43,
+      "coveragePp": -1.27,
+      "populationMinusSpy2010Pp": 0.56
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.34,
+     "share": 0.050075,
+     "breakEvenPerSideBps": 166.6
+    },
+    "dividends": {
+     "pp": -0.52,
+     "share": 0.076356,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": 0.14,
+     "reactionWeekMinusSpyPp": 0.02,
+     "reactionWeekMinusPopulationPp": 0.07,
+     "runUpBeforeSignal4wMinusSpyPp": -4.66,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 3.39,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 25.1,
+       "spyExcessNetPp": 1.26,
+       "perWeekAnnualisedSpyPp": 2.62,
+       "populationExcessPerWeekAnnualisedPp": -1.16,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 36.5,
+       "spyExcessNetPp": 1.96,
+       "perWeekAnnualisedSpyPp": 2.8,
+       "populationExcessPerWeekAnnualisedPp": -1.5,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 15.5,
+       "spyExcessNetPp": 0.48,
+       "perWeekAnnualisedSpyPp": 1.62,
+       "populationExcessPerWeekAnnualisedPp": -2.19,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": "not a funded rule/horizon",
+    "dataCoverage": {
+     "censoredOrImmature": 1071,
+     "minus100BoundShiftPp": -0.14,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 3.39,
+     "mde80Holm60WorstPp": 11.71,
+     "mde80AnnualisedWorstPp": 11.71,
+     "nEffectiveShare": 0.01103,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 3.39,
+    "observedPp": 3.39
+   },
+   "explanation": "MOMENTUM_DETERIORATED 52 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 3.39 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 4.84 Pp, Auswahl (Signal minus Population) -1.11 Pp, Kosten -0.34 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 2.27 Pp, kapitalgewichtete Frame-Population minus SPY -0.43 Pp, Abdeckung -1.27 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.52 Pp; Reaktionswoche vor dem Einstieg vs. SPY 0.02 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 11.71 Pp."
+  },
+  {
+   "rule": "TREND_UP",
+   "horizonWeeks": 13,
+   "observedSpyExcessNetPriceReturn": 0.002026,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": -0.59,
+     "share": 0.280266,
+     "secured": true,
+     "holmP": 0.03,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 1.1,
+     "share": 0.523239,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 0.37,
+      "capWeightedMinusSpyPp": -0.13,
+      "coveragePp": -0.27,
+      "populationMinusSpy2010Pp": -0.02
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.31,
+     "share": 0.146497,
+     "breakEvenPerSideBps": 24.9
+    },
+    "dividends": {
+     "pp": -0.1,
+     "share": 0.049997,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": 0.25,
+     "reactionWeekMinusSpyPp": -0.18,
+     "reactionWeekMinusPopulationPp": -0.32,
+     "runUpBeforeSignal4wMinusSpyPp": 9.51,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 0.81,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 25.5,
+       "spyExcessNetPp": 1.18,
+       "perWeekAnnualisedSpyPp": 2.4,
+       "populationExcessPerWeekAnnualisedPp": -2.1,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 37.1,
+       "spyExcessNetPp": 2.33,
+       "perWeekAnnualisedSpyPp": 3.27,
+       "populationExcessPerWeekAnnualisedPp": -1.25,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 17.6,
+       "spyExcessNetPp": 2.28,
+       "perWeekAnnualisedSpyPp": 6.73,
+       "populationExcessPerWeekAnnualisedPp": 1.18,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": {
+     "EQUAL_N10": {
+      "hashExcessCagrPp": 5.18,
+      "randomExcessCagrP5P95Pp": [
+       -4.15,
+       4.55
+      ],
+      "shareRandomPathsPositive": 0.56,
+      "investedShare": 0.996347
+     },
+     "EQUAL_N5": {
+      "hashExcessCagrPp": 6.02,
+      "randomExcessCagrP5P95Pp": [
+       -6.06,
+       6.16
+      ],
+      "shareRandomPathsPositive": 0.4,
+      "investedShare": 0.99635
+     },
+     "EQUAL_N20": {
+      "hashExcessCagrPp": 7.8,
+      "randomExcessCagrP5P95Pp": [
+       -2.17,
+       4.84
+      ],
+      "shareRandomPathsPositive": 0.54,
+      "investedShare": 0.993048
+     },
+     "EQUAL_N50": {
+      "hashExcessCagrPp": 5.37,
+      "randomExcessCagrP5P95Pp": [
+       -0.03,
+       4.27
+      ],
+      "shareRandomPathsPositive": 0.94,
+      "investedShare": 0.989322
+     },
+     "VOL_INVERSE_N10": {
+      "hashExcessCagrPp": 4.03,
+      "randomExcessCagrP5P95Pp": [
+       -2.31,
+       3.48
+      ],
+      "shareRandomPathsPositive": 0.52,
+      "investedShare": 0.975685
+     },
+     "FULLY_INVESTED_N10": {
+      "hashExcessCagrPp": 4.38,
+      "randomExcessCagrP5P95Pp": [
+       -3.98,
+       3.95
+      ],
+      "shareRandomPathsPositive": 0.34,
+      "investedShare": 0.99854
+     }
+    },
+    "dataCoverage": {
+     "censoredOrImmature": 17,
+     "minus100BoundShiftPp": -0.02,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 0.2,
+     "mde80Holm60WorstPp": 3.03,
+     "mde80AnnualisedWorstPp": 12.1,
+     "nEffectiveShare": 0.023165,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 0.2,
+    "observedPp": 0.2
+   },
+   "explanation": "TREND_UP 13 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 0.20 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 1.1 Pp, Auswahl (Signal minus Population) -0.59 Pp, Kosten -0.31 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 0.37 Pp, kapitalgewichtete Frame-Population minus SPY -0.13 Pp, Abdeckung -0.27 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.1 Pp; Reaktionswoche vor dem Einstieg vs. SPY -0.18 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 3.03 Pp."
+  },
+  {
+   "rule": "TREND_UP",
+   "horizonWeeks": 52,
+   "observedSpyExcessNetPriceReturn": 0.035314,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": -0.72,
+     "share": 0.118145,
+     "secured": false,
+     "holmP": 1,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 4.59,
+     "share": 0.756356,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 1.69,
+      "capWeightedMinusSpyPp": -0.61,
+      "coveragePp": -1.28,
+      "populationMinusSpy2010Pp": -0.21
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.34,
+     "share": 0.05629,
+     "breakEvenPerSideBps": 172.7
+    },
+    "dividends": {
+     "pp": -0.42,
+     "share": 0.069209,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": 0.25,
+     "reactionWeekMinusSpyPp": -0.18,
+     "reactionWeekMinusPopulationPp": -0.32,
+     "runUpBeforeSignal4wMinusSpyPp": 9.51,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 3.53,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 25.5,
+       "spyExcessNetPp": 1.18,
+       "perWeekAnnualisedSpyPp": 2.4,
+       "populationExcessPerWeekAnnualisedPp": -2.1,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 37.1,
+       "spyExcessNetPp": 2.33,
+       "perWeekAnnualisedSpyPp": 3.27,
+       "populationExcessPerWeekAnnualisedPp": -1.25,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 17.6,
+       "spyExcessNetPp": 2.28,
+       "perWeekAnnualisedSpyPp": 6.73,
+       "populationExcessPerWeekAnnualisedPp": 1.18,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": "not a funded rule/horizon",
+    "dataCoverage": {
+     "censoredOrImmature": 869,
+     "minus100BoundShiftPp": -0.15,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 3.53,
+     "mde80Holm60WorstPp": 12.71,
+     "mde80AnnualisedWorstPp": 12.71,
+     "nEffectiveShare": 0.009802,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 3.53,
+    "observedPp": 3.53
+   },
+   "explanation": "TREND_UP 52 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 3.53 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 4.59 Pp, Auswahl (Signal minus Population) -0.72 Pp, Kosten -0.34 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 1.69 Pp, kapitalgewichtete Frame-Population minus SPY -0.61 Pp, Abdeckung -1.28 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.42 Pp; Reaktionswoche vor dem Einstieg vs. SPY -0.18 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 12.71 Pp."
+  },
+  {
+   "rule": "TREND_DOWN",
+   "horizonWeeks": 13,
+   "observedSpyExcessNetPriceReturn": 0.000242,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": -0.37,
+     "share": 0.242105,
+     "secured": false,
+     "holmP": 1,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 0.7,
+     "share": 0.461072,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 0.28,
+      "capWeightedMinusSpyPp": -0.1,
+      "coveragePp": -0.37,
+      "populationMinusSpy2010Pp": -0.19
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.31,
+     "share": 0.203001,
+     "breakEvenPerSideBps": 16.2
+    },
+    "dividends": {
+     "pp": -0.14,
+     "share": 0.093823,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": -0.02,
+     "reactionWeekMinusSpyPp": 0.15,
+     "reactionWeekMinusPopulationPp": 0.24,
+     "runUpBeforeSignal4wMinusSpyPp": -6.14,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 0.1,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 25.2,
+       "spyExcessNetPp": 0.63,
+       "perWeekAnnualisedSpyPp": 1.3,
+       "populationExcessPerWeekAnnualisedPp": -1.89,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 36.7,
+       "spyExcessNetPp": 1.35,
+       "perWeekAnnualisedSpyPp": 1.91,
+       "populationExcessPerWeekAnnualisedPp": -1.81,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 16.2,
+       "spyExcessNetPp": 0,
+       "perWeekAnnualisedSpyPp": -0.01,
+       "populationExcessPerWeekAnnualisedPp": -3.29,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": "not a funded rule/horizon",
+    "dataCoverage": {
+     "censoredOrImmature": 16,
+     "minus100BoundShiftPp": -0.02,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 0.02,
+     "mde80Holm60WorstPp": 2.37,
+     "mde80AnnualisedWorstPp": 9.48,
+     "nEffectiveShare": 0.030046,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 0.02,
+    "observedPp": 0.02
+   },
+   "explanation": "TREND_DOWN 13 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 0.02 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 0.7 Pp, Auswahl (Signal minus Population) -0.37 Pp, Kosten -0.31 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 0.28 Pp, kapitalgewichtete Frame-Population minus SPY -0.1 Pp, Abdeckung -0.37 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.14 Pp; Reaktionswoche vor dem Einstieg vs. SPY 0.15 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 2.37 Pp."
+  },
+  {
+   "rule": "TREND_DOWN",
+   "horizonWeeks": 52,
+   "observedSpyExcessNetPriceReturn": 0.022187,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": -1.8,
+     "share": 0.255016,
+     "secured": false,
+     "holmP": 0.406,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 4.36,
+     "share": 0.616616,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 2,
+      "capWeightedMinusSpyPp": -0.47,
+      "coveragePp": -1.3,
+      "populationMinusSpy2010Pp": 0.23
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.34,
+     "share": 0.047732,
+     "breakEvenPerSideBps": 114.8
+    },
+    "dividends": {
+     "pp": -0.57,
+     "share": 0.080636,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": -0.02,
+     "reactionWeekMinusSpyPp": 0.15,
+     "reactionWeekMinusPopulationPp": 0.24,
+     "runUpBeforeSignal4wMinusSpyPp": -6.14,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 2.22,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 25.2,
+       "spyExcessNetPp": 0.63,
+       "perWeekAnnualisedSpyPp": 1.3,
+       "populationExcessPerWeekAnnualisedPp": -1.89,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 36.7,
+       "spyExcessNetPp": 1.35,
+       "perWeekAnnualisedSpyPp": 1.91,
+       "populationExcessPerWeekAnnualisedPp": -1.81,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 16.2,
+       "spyExcessNetPp": 0,
+       "perWeekAnnualisedSpyPp": -0.01,
+       "populationExcessPerWeekAnnualisedPp": -3.29,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": "not a funded rule/horizon",
+    "dataCoverage": {
+     "censoredOrImmature": 819,
+     "minus100BoundShiftPp": -0.13,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 2.22,
+     "mde80Holm60WorstPp": 11.19,
+     "mde80AnnualisedWorstPp": 11.19,
+     "nEffectiveShare": 0.009964,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 2.22,
+    "observedPp": 2.22
+   },
+   "explanation": "TREND_DOWN 52 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 2.22 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 4.36 Pp, Auswahl (Signal minus Population) -1.8 Pp, Kosten -0.34 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 2 Pp, kapitalgewichtete Frame-Population minus SPY -0.47 Pp, Abdeckung -1.3 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.57 Pp; Reaktionswoche vor dem Einstieg vs. SPY 0.15 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 11.19 Pp."
+  },
+  {
+   "rule": "NEW_52W_HIGH",
+   "horizonWeeks": 13,
+   "observedSpyExcessNetPriceReturn": 0.010728,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": 0.51,
+     "share": 0.273655,
+     "secured": false,
+     "holmP": 1,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 0.87,
+     "share": 0.47076,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 0.13,
+      "capWeightedMinusSpyPp": -0.21,
+      "coveragePp": -0.25,
+      "populationMinusSpy2010Pp": -0.33
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.31,
+     "share": 0.16674,
+     "breakEvenPerSideBps": 67.3
+    },
+    "dividends": {
+     "pp": -0.16,
+     "share": 0.088844,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": -0.09,
+     "reactionWeekMinusSpyPp": 0.2,
+     "reactionWeekMinusPopulationPp": 0.03,
+     "runUpBeforeSignal4wMinusSpyPp": 14.64,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 4.29,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 27.4,
+       "spyExcessNetPp": 1.66,
+       "perWeekAnnualisedSpyPp": 3.15,
+       "populationExcessPerWeekAnnualisedPp": 0.36,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 38.9,
+       "spyExcessNetPp": 2.56,
+       "perWeekAnnualisedSpyPp": 3.43,
+       "populationExcessPerWeekAnnualisedPp": 0.71,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 25.9,
+       "spyExcessNetPp": 2.87,
+       "perWeekAnnualisedSpyPp": 5.77,
+       "populationExcessPerWeekAnnualisedPp": 2.65,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": {
+     "EQUAL_N10": {
+      "hashExcessCagrPp": 10.52,
+      "randomExcessCagrP5P95Pp": [
+       3.59,
+       16.62
+      ],
+      "shareRandomPathsPositive": 0.99,
+      "investedShare": 0.987841
+     },
+     "EQUAL_N5": {
+      "hashExcessCagrPp": 9.69,
+      "randomExcessCagrP5P95Pp": [
+       -0.87,
+       15.78
+      ],
+      "shareRandomPathsPositive": 0.9,
+      "investedShare": 0.988735
+     },
+     "EQUAL_N20": {
+      "hashExcessCagrPp": 7.7,
+      "randomExcessCagrP5P95Pp": [
+       4.68,
+       13.07
+      ],
+      "shareRandomPathsPositive": 1,
+      "investedShare": 0.984025
+     },
+     "EQUAL_N50": {
+      "hashExcessCagrPp": 7.69,
+      "randomExcessCagrP5P95Pp": [
+       5.55,
+       8.69
+      ],
+      "shareRandomPathsPositive": 1,
+      "investedShare": 0.977362
+     },
+     "VOL_INVERSE_N10": {
+      "hashExcessCagrPp": 7.83,
+      "randomExcessCagrP5P95Pp": [
+       2.68,
+       9.21
+      ],
+      "shareRandomPathsPositive": 1,
+      "investedShare": 0.956526
+     },
+     "FULLY_INVESTED_N10": {
+      "hashExcessCagrPp": 9.69,
+      "randomExcessCagrP5P95Pp": [
+       3.15,
+       15.46
+      ],
+      "shareRandomPathsPositive": 0.98,
+      "investedShare": 0.99708
+     }
+    },
+    "dataCoverage": {
+     "censoredOrImmature": 14,
+     "minus100BoundShiftPp": -0.03,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 1.07,
+     "mde80Holm60WorstPp": 2.88,
+     "mde80AnnualisedWorstPp": 11.51,
+     "nEffectiveShare": 0.040902,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 1.07,
+    "observedPp": 1.07
+   },
+   "explanation": "NEW_52W_HIGH 13 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 1.07 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 0.87 Pp, Auswahl (Signal minus Population) 0.51 Pp, Kosten -0.31 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 0.13 Pp, kapitalgewichtete Frame-Population minus SPY -0.21 Pp, Abdeckung -0.25 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.16 Pp; Reaktionswoche vor dem Einstieg vs. SPY 0.2 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 2.88 Pp."
+  },
+  {
+   "rule": "NEW_52W_HIGH",
+   "horizonWeeks": 52,
+   "observedSpyExcessNetPriceReturn": 0.033871,
+   "securedSpyExcess": false,
+   "spyExcessHolmP": 1,
+   "causes": {
+    "selection": {
+     "pp": 0.49,
+     "share": 0.103952,
+     "secured": false,
+     "holmP": 1,
+     "meaning": "signal minus equal-weighted population of the same week (Auswahlqualitaet)"
+    },
+    "benchmark": {
+     "pp": 3.23,
+     "share": 0.684752,
+     "secured": false,
+     "holmP": 1,
+     "split2010": {
+      "equalWeightSizePp": 0.9,
+      "capWeightedMinusSpyPp": -0.82,
+      "coveragePp": -1.24,
+      "populationMinusSpy2010Pp": -1.16
+     },
+     "meaning": "equal-weighted survivor population minus SPY (Gleichgewichtung, Groesse, Zusammensetzung/Survivor)"
+    },
+    "costs": {
+     "pp": -0.34,
+     "share": 0.071554,
+     "breakEvenPerSideBps": 167.9
+    },
+    "dividends": {
+     "pp": -0.66,
+     "share": 0.139742,
+     "state": "ESTIMATE 2010+ (signal titles vs SPY distributions), sign = correction of the SPY excess if both sides were total return"
+    },
+    "entry": {
+     "delay1MinusDelay0Pp": -0.09,
+     "reactionWeekMinusSpyPp": 0.2,
+     "reactionWeekMinusPopulationPp": 0.03,
+     "runUpBeforeSignal4wMinusSpyPp": 14.64,
+     "additive": false
+    },
+    "exitHolding": {
+     "fixedHorizonPerWeekAnnualisedSpyExcessPp": 3.39,
+     "variants": [
+      {
+       "variant": "TRAIL_15",
+       "meanHoldingWeeks": 27.4,
+       "spyExcessNetPp": 1.66,
+       "perWeekAnnualisedSpyPp": 3.15,
+       "populationExcessPerWeekAnnualisedPp": 0.36,
+       "secured": false
+      },
+      {
+       "variant": "TRAIL_25",
+       "meanHoldingWeeks": 38.9,
+       "spyExcessNetPp": 2.56,
+       "perWeekAnnualisedSpyPp": 3.43,
+       "populationExcessPerWeekAnnualisedPp": 0.71,
+       "secured": false
+      },
+      {
+       "variant": "OPPOSITE_SIGNAL_MAX52",
+       "meanHoldingWeeks": 25.9,
+       "spyExcessNetPp": 2.87,
+       "perWeekAnnualisedSpyPp": 5.77,
+       "populationExcessPerWeekAnnualisedPp": 2.65,
+       "secured": false
+      }
+     ],
+     "additive": false
+    },
+    "weighting": "not a funded rule/horizon",
+    "dataCoverage": {
+     "censoredOrImmature": 643,
+     "minus100BoundShiftPp": -0.17,
+     "survivorCoverage": "10-K filer coverage 2000 14 %, 2010 22 %, 2020 48 %: not quantifiable as Pp; acts through the population term"
+    },
+    "uncertainty": {
+     "observedPp": 3.39,
+     "mde80Holm60WorstPp": 10.75,
+     "mde80AnnualisedWorstPp": 10.75,
+     "nEffectiveShare": 0.013322,
+     "verdict": "OBSERVED_NOT_SECURED_BELOW_MDE"
+    }
+   },
+   "additiveCheck": {
+    "sumPp": 3.39,
+    "observedPp": 3.39
+   },
+   "explanation": "NEW_52W_HIGH 52 W: beobachteter SPY-Ueberschuss (Kursrendite, netto) 3.39 Pp, nicht abgesichert (Holm-p 1). Davon Benchmark/Population (gleichgewichtete Survivor-Population minus SPY) 3.23 Pp, Auswahl (Signal minus Population) 0.49 Pp, Kosten -0.34 Pp. Ab 2010: Gleichgewichtungs-/Groesseneffekt 0.9 Pp, kapitalgewichtete Frame-Population minus SPY -0.82 Pp, Abdeckung -1.24 Pp. Dividendenkorrektur (Schaetzung 2010+) -0.66 Pp; Reaktionswoche vor dem Einstieg vs. SPY 0.2 Pp; Mindesteffekt fuer 80 % Power (Holm 60, ungünstigster Schritt) 10.75 Pp."
+  }
+ ]
+}

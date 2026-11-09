@@ -1,0 +1,21 @@
+{
+ "schema": "vu-module-2",
+ "id": "morning",
+ "label": "Morning",
+ "status": "LIVE",
+ "route": "/morning/",
+ "access": "free",
+ "navigation": {
+  "group": "more",
+  "order": 6,
+  "label": "Morning",
+  "href": "/morning/",
+  "icon": "☼"
+ },
+ "data": [],
+ "reads": [],
+ "producers": [
+  "products/morning/producer/build-morning.mjs"
+ ],
+ "tests": []
+}

@@ -1,0 +1,59 @@
+{
+ "schemaVersion": "v11-winners-python-check-1.0.0",
+ "evidenceKind": "TECHNICAL_PARITY",
+ "implementation": "python3 -I, stdlib only, independent re-implementation",
+ "note": "A second language on the same loader output is technical parity, not a holdout.",
+ "membership": {
+  "cohorts": 96,
+  "memberCohortRows": 210472,
+  "cohortsWithDifferentMemberSet": 0
+ },
+ "priceFeatures": {
+  "checks": 2104720,
+  "failures": 0,
+  "tolerance": "relative 1e-9",
+  "examples": [],
+  "shareAbove40wExactTiesAccepted": 630,
+  "tieRule": "a weekly close equal to its 40-week SMA within 1e-12 is an exact tie; strict > then depends on floating-point summation order (Python sum() is compensated). Accepted when the JS value lies within [python, python + ties/52]."
+ },
+ "outcomesAndClasses": {
+  "checks": 566841,
+  "classFailures": 0,
+  "returnFailures": 0,
+  "examples": [],
+  "winnersTop1": {
+   "1Y": 2156,
+   "3Y": 1968,
+   "5Y": 1688
+  },
+  "winnersTop5": {
+   "1Y": 10572,
+   "3Y": 9642,
+   "5Y": 8266
+  }
+ },
+ "liftTables": {
+  "checks": 2184,
+  "failures": 0,
+  "examples": [],
+  "basis": "price features from this implementation; fundamental feature values taken from the JS export (their PIT derivation is checked on a sample below)"
+ },
+ "fundamentalSample": {
+  "sampleRows": 400,
+  "comparisons": 543,
+  "agree": 542,
+  "agreeShare": 0.998158379373849,
+  "definition": "Simple ratios from the PIT document TTM facts filed before t (gross profit/revenue, operating income/revenue, net income/latest quarterly equity) vs. fundamental-inputs.compute; disagreements come from that engine's period alignment and quarter summation, listed not resolved",
+  "disagreementExamples": [
+   [
+    "2012-09-28",
+    "ref_SNA",
+    "grossMarginTtm",
+    0.4666147143211363,
+    0.4736132711249352
+   ]
+  ]
+ },
+ "verdict": "PASS",
+ "verdictScope": "membership, forward returns, classes, price features and pooled lift tables; the fundamental sample is reported as an agreement share"
+}

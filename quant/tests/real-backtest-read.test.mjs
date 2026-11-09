@@ -9,7 +9,9 @@ import {execFileSync} from 'node:child_process';
 const require=createRequire(import.meta.url),Service=require('../api/product-services.js'),Policy=require('../engines/display-policy.js'),Query=require('../engines/query.js');
 const A=require('../engines/weekly-real-adapter.cjs'),B=require('../engines/weekly-benchmark.cjs'),C=require('../api/real-backtest-contract.js'),{run}=require('../../scripts/quant/run-real-weekly-backtest.cjs'),{materialize}=require('../../scripts/quant/materialize-real-backtest-read.cjs');
 const root=resolve(import.meta.dirname,'../..'),out=mkdtempSync(join(tmpdir(),'vu-backtest-read-'));
-const ids=['ref_NVDA','ref_AAPL','ref_XOM','ref_ARM','ref_BGC','ref_AAAC','ref_AACT','ref_MSFT'];
+/* Junge Notierung der Klasse C: ANDG (Stammaktie seit 17.12.2025) statt AAAC. AAAC ist ein ETF (Columbia AAA CLO ETF),
+   seit der Eignung vom 05.11.2026 belegt aus dem Produktuniversum genommen; seine Reihe wird nicht mehr veroeffentlicht. */
+const ids=['ref_NVDA','ref_AAPL','ref_XOM','ref_ARM','ref_BGC','ref_ANDG','ref_AACT','ref_MSFT'];
 const report=materialize({root,output:out,ids}),reads=[];
 const loadJSON=async p=>JSON.parse(readFileSync(join(root,p.replace(/^\//,'')),'utf8'));
 function create({enabled=true,mutate=x=>x,policy=Policy}={}){const store={loadJSON:async p=>{reads.push(p);return mutate(JSON.parse(readFileSync(join(out,p),'utf8')),p);},loadDetail:async p=>{reads.push(p);return mutate(JSON.parse(gunzipSync(readFileSync(join(out,p))).toString()),p);}};
@@ -28,15 +30,17 @@ test('default and explicitly disabled product services do not read private artif
 test('real NVDA API summary, detail and independent reference share identity and result hashes',async()=>{
  const api=create(),summary=await api.getRealBacktest('NVDA');assert.equal(summary.state,'AVAILABLE_LIMITED',JSON.stringify(summary));assert.equal(summary.identity.sourceSecurityId,'ref_NVDA');assert.equal(summary.identity.securityId,'vu_d57074b4128184');assert.equal(summary.identity.listingId,'tiingo:NASDAQ:NVDA:1999-01-22');
  assert.equal(summary.executionModel.state,'VALIDATED_EXECUTION_MODEL');assert.equal(summary.productionApproved,false);assert.equal(summary.certification,'NOT_CERTIFIED');
- const raw=run(A.load(root,'ref_NVDA'),{benchmark:B.load(root)});assert.equal(summary.result.resultHash,raw.resultHash);assert.equal(summary.result.metrics.completedTrades,21);assert.ok(Math.abs(summary.result.endCapital-raw.equity.at(-1).value)<1e-6);assert.equal(summary.benchmarkState,raw.marketBenchmark.state);
- const equity=await api.getRealBacktest('NVDA',{section:'equity'}),trades=await api.getRealBacktest('NVDA',{section:'trades'});assert.deepEqual(equity.result.equity,raw.equity);assert.deepEqual(trades.result.trades,raw.trades);assert.equal(trades.result.openPosition.completed,false);
+ // The committed series grows weekly: the completed-trade count follows the independent reference; the pinned 21 is
+ // anchored at a fixed As-of. NVDA has no open position from 2026-10-30 (the 2026-05-01 entry closed at entry + 26 weeks).
+ const raw=run(A.load(root,'ref_NVDA'),{benchmark:B.load(root)});assert.equal(summary.result.resultHash,raw.resultHash);assert.equal(summary.result.metrics.completedTrades,raw.trades.filter(t=>t.completed).length);assert.equal(run(A.load(root,'ref_NVDA'),{benchmark:B.load(root),asOf:'2026-10-16'}).trades.length,21);assert.ok(Math.abs(summary.result.endCapital-raw.equity.at(-1).value)<1e-6);assert.equal(summary.benchmarkState,raw.marketBenchmark.state);
+ const equity=await api.getRealBacktest('NVDA',{section:'equity'}),trades=await api.getRealBacktest('NVDA',{section:'trades'});assert.deepEqual(equity.result.equity,raw.equity);assert.deepEqual(trades.result.trades,raw.trades);assert.deepEqual(trades.result.openPosition??null,raw.openPosition??null);if(raw.openPosition)assert.equal(trades.result.openPosition.completed,false);assert.equal(run(A.load(root,'ref_NVDA'),{asOf:'2026-10-16'}).openPosition.completed,false);
  const file=join(out,'reference.json');writeFileSync(file,JSON.stringify(raw));assert.equal(JSON.parse(execFileSync('python3',['scripts/quant/verify-real-weekly-backtest.py',file],{cwd:root})).state,'PASS');
 });
 test('all five periods end on actual final mark and never use same-close signal execution',async()=>{
  const api=create(),data=A.load(root,'ref_NVDA');for(const period of C.periods){const r=run(data,{period});assert.equal(r.history.window.endDate,data.points.at(-1)[0]);const s=await api.getRealBacktest('NVDA',{period});assert.equal(s.result.to,data.points.at(-1)[0]);for(const t of r.trades)assert.ok(t.signalDate<t.entryDate);}
 });
 test('every required real edge case returns consistent execution, quality and benchmark dimensions',async()=>{
- const api=create();for(const ticker of ['AAPL','BGC','AAAC','AACT']){for(const section of C.sections){const r=await api.getRealBacktest(ticker,{section});assert.equal(r.state,'BLOCKED',ticker+':'+JSON.stringify(r));assert.equal(r.quality.class,'C');assert.equal(r.result,undefined);assert.equal(r.certification,'NOT_CERTIFIED');assert.equal(r.benchmarkState,'NOT_EVALUATED');}}
+ const api=create();for(const ticker of ['AAPL','BGC','ANDG','AACT']){for(const section of C.sections){const r=await api.getRealBacktest(ticker,{section});assert.equal(r.state,'BLOCKED',ticker+':'+JSON.stringify(r));assert.equal(r.quality.class,'C');assert.equal(r.result,undefined);assert.equal(r.certification,'NOT_CERTIFIED');assert.equal(r.benchmarkState,'NOT_EVALUATED');}}
  for(const ticker of ['XOM','ARM','MSFT']){const r=await api.getRealBacktest(ticker);assert.equal(r.state,'AVAILABLE_LIMITED',ticker+':'+JSON.stringify(r));assert.equal(r.returnBasis,'PRICE_RETURN');assert.ok(r.quality.limitations.includes('DIVIDENDS_EXCLUDED'));assert.equal(r.certification,'NOT_CERTIFIED');assert.ok(r.result.endCapital>0);}
  const xom=await api.getRealBacktest('XOM');assert.equal(xom.benchmarkState,'BENCHMARK_UNAVAILABLE');assert.equal(xom.state,'AVAILABLE_LIMITED');
 });

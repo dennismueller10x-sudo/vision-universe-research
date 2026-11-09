@@ -1,0 +1,737 @@
+{
+ "schemaVersion": "v11-discovery-test-results-1.0.0",
+ "studyId": "V11-DISCOVERY:TEST",
+ "period": "TEST",
+ "protocolSha256": "1ff32b61853a1c19ca96b36a9e045a55bbec5f1ae60d1b5a14e9f9a7bc200a69",
+ "computedOnce": true,
+ "gate": {
+  "file": "docs/quant-recovery/v11/discovery/final-hypotheses-frozen-1.0.0.json",
+  "commit": "7b10e91177dcd459db264b71552017706f8985af",
+  "committedAt": "2026-10-28T17:55:56+00:00",
+  "sha256": "ae050326e6e5f04029653e6e12946bbc9d63497521ed3643f2333ced40f81154"
+ },
+ "codeCommit": "7b10e91177dcd459db264b71552017706f8985af",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "population": {
+  "loaderOptions": {
+   "identityEvidence": true,
+   "corporateActionEvidence": true,
+   "listingLifecycleEvidence": true
+  },
+  "frame": 4329,
+  "survivorship": "Frame series all end 2023 or later except 121 ended listings (2023-2026): VALIDATION contains no delisting; TEST forced exits at the last observed close (primary), bounds -100% and sourced cash consideration reported per candidate. Coverage of SEC 10-K filers 22% (2010) / 48% (2020)."
+ },
+ "returnBasis": {
+  "strategy": "PRICE_RETURN",
+  "benchmarks": "PRICE_RETURN (SPY total return not used: no sourced dividend path in this strand; TR exists for 8 titles only)"
+ },
+ "costs": {
+  "base": {
+   "feeBps": 10,
+   "slippageBps": 5
+  },
+  "stress": {
+   "feeBps": 20,
+   "slippageBps": 30
+  }
+ },
+ "investment": "fully invested at target weights except market filter / exit rules; cash 0 %",
+ "inference": {
+  "replicates": 1999,
+  "seed": 1729,
+  "alpha": 0.05,
+  "blockLengthWeeks": 26,
+  "robustnessBlockLengthWeeks": 52,
+  "assumption": "CONDITIONAL_WEAK_STATIONARITY_AND_MIXING"
+ },
+ "multipleTesting": {
+  "FUND": {
+   "primary": {
+    "familySize": 2,
+    "testable": 2,
+    "rejections": 1,
+    "alpha": 0.05,
+    "method": "HOLM_STEP_DOWN (research-validation.holm)"
+   },
+   "secondary": {
+    "familySize": 2,
+    "testable": 2,
+    "rejections": 0,
+    "alpha": 0.05,
+    "method": "HOLM_STEP_DOWN (research-validation.holm)"
+   }
+  },
+  "note": "Primary: Holm within family over the weekly excess vs SPY (block bootstrap, 26 w). Secondary: Holm within family vs own-universe EW. Observed excess is not secured unless Holm-adjusted p <= 0.05."
+ },
+ "results": [
+  {
+   "family": "FUND",
+   "id": "H1",
+   "variantId": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+   "label": "VALIDATION_ELIGIBLE",
+   "spec": {
+    "id": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+    "family": "FUND",
+    "cadence": "MONTHLY",
+    "rebalanceMonths": 3,
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": 300000000,
+    "positions": 10,
+    "holding": "FULL",
+    "weighting": "EW",
+    "ranks": [
+     [
+      "f.q",
+      1,
+      1
+     ]
+    ]
+   },
+   "specId": "F2-QUAL-N10-M3-FULL-EW-PX5-MC300",
+   "period": {
+    "decisionsFrom": "2021-01-01",
+    "decisionsTo": "2025-12-31",
+    "firstDecision": "2021-01-29",
+    "lastDecision": "2025-10-31",
+    "decisions": 20,
+    "valuationTo": "2026-02-06",
+    "note": "Decisions inside the period; the last portfolio is held to the next scheduled rebalance after the period and liquidated there (overlap disclosed)."
+   },
+   "strategy": {
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": -0.12142357340693011,
+    "cagr": -0.025451575246181912,
+    "volatility": 0.24128702456318482,
+    "sharpe": 0.013187866442931838,
+    "sortino": 0.01918792042951851,
+    "maxDrawdown": -0.32951282361786516,
+    "maxDrawdownPeak": "2024-12-06",
+    "maxDrawdownTrough": "2025-04-17",
+    "weeks": 262,
+    "turnoverPerYear": 1.8716042956499566,
+    "costsPaid": 0.02885963205228654,
+    "avgPositions": 9.923954372623575,
+    "avgInvestedShare": 0.9923954372623575,
+    "rebalances": 21,
+    "distinctNames": 71,
+    "forcedExits": 0
+   },
+   "spy": {
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": 0.8661874780446943,
+    "cagr": 0.13230143343953538,
+    "volatility": 0.16100972534314453,
+    "sharpe": 0.8502386951619725,
+    "sortino": 1.2890345938622798,
+    "maxDrawdown": -0.2479787771601819,
+    "maxDrawdownPeak": "2021-12-31",
+    "maxDrawdownTrough": "2022-09-30",
+    "weeks": 262
+   },
+   "ownUniverseEw": {
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": 0.38136385584831745,
+    "cagr": 0.06645623252885757,
+    "volatility": 0.19265881822873498,
+    "sharpe": 0.4291673090866507,
+    "sortino": 0.6300250660816642,
+    "maxDrawdown": -0.2722797127854709,
+    "maxDrawdownPeak": "2021-11-05",
+    "maxDrawdownTrough": "2022-09-30",
+    "weeks": 262,
+    "avgNames": 1267.1216730038022
+   },
+   "frameEw": {
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": 0.24631392529288965,
+    "cagr": 0.044827681537770836,
+    "volatility": 0.1868873517761191,
+    "sharpe": 0.32742415984002865,
+    "sortino": 0.46523463181402586,
+    "maxDrawdown": -0.2994989740562175,
+    "maxDrawdownPeak": "2021-11-12",
+    "maxDrawdownTrough": "2022-09-30",
+    "weeks": 262,
+    "avgNames": 3442.661596958175
+   },
+   "capWeighted": {
+    "definition": "PIT panel market cap with plausibility filter 1.0.1 (cap <= 5e12 USD, implied share count change within 0.2..5x vs 12 rank dates earlier)",
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": 0.7389953092590602,
+    "cagr": 0.11649451685166934,
+    "volatility": 0.15792745899804922,
+    "sharpe": 0.7748156329343683,
+    "sortino": 1.1657209213399575,
+    "maxDrawdown": -0.24277873788891358,
+    "maxDrawdownPeak": "2021-11-05",
+    "maxDrawdownTrough": "2022-10-14",
+    "weeks": 262,
+    "avgNames": 2491
+   },
+   "capWeightedRawPanelInvalid": {
+    "note": "unfiltered V10 panel market cap; dominated by XBRL scale errors (e.g. ON 3.5e18 USD 2013) - not a valid benchmark",
+    "cagr": 0.04501008138469831
+   },
+   "excess": {
+    "vsSpy": {
+     "n": 262,
+     "estimate": -0.0025714353409575213,
+     "ci": [
+      -0.004724582437414139,
+      -0.0004209629813284165
+     ],
+     "pValue": 0.0185,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "6cb0e1613cccdfe8db260287d869a1a643683891e86eb7fbfc57dcde7d29ec1f",
+     "annualisedMean": -0.1337146377297911,
+     "nw": {
+      "mean": -0.0025714353409575213,
+      "se": 0.0012191299952683296,
+      "t": -2.1092380229653447,
+      "lag": 8
+     },
+     "holmAdjustedP": 0.037,
+     "holmReject": true
+    },
+    "vsSpyBlock52": {
+     "pValue": 0.018,
+     "ci": [
+      -0.004483183325023245,
+      -0.0003677569374928198
+     ]
+    },
+    "vsOwnUniverseEw": {
+     "n": 262,
+     "estimate": -0.0015288616449363208,
+     "ci": [
+      -0.003509301790318984,
+      0.0006831359836472466
+     ],
+     "pValue": 0.1605,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "7eed2510a5570d9d97c21a9b46199b524ecbacf4786e0703970ba1ec8c103b5c",
+     "annualisedMean": -0.07950080553668867,
+     "nw": {
+      "mean": -0.0015288616449363208,
+      "se": 0.0010929824051240213,
+      "t": -1.3987980389884136,
+      "lag": 8
+     },
+     "holmAdjustedP": 0.321,
+     "holmReject": false
+    },
+    "vsFrameEw": {
+     "n": 262,
+     "estimate": -0.0011155648670321536,
+     "ci": [
+      -0.0032192426174823706,
+      0.0012345987858281143
+     ],
+     "pValue": 0.329,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "c2b14c9c838840c66d9c2b789b7669f273f7c17fba2b7c88731f1ea1f131de14",
+     "annualisedMean": -0.058009373085671986,
+     "nw": {
+      "mean": -0.0011155648670321536,
+      "se": 0.0011188038037355998,
+      "t": -0.9971050002756233,
+      "lag": 8
+     }
+    },
+    "vsCapWeighted": {
+     "n": 262,
+     "estimate": -0.002291973135518045,
+     "ci": [
+      -0.004443061039170041,
+      -0.000041804285611800156
+     ],
+     "pValue": 0.043,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "16b349a138424f1362c3cc7cce5f546ec0d3f00cbd51247ae532241737557685",
+     "annualisedMean": -0.11918260304693833,
+     "nw": {
+      "mean": -0.002291973135518045,
+      "se": 0.0012488255919326822,
+      "t": -1.8353028239683875,
+      "lag": 8
+     }
+    }
+   },
+   "excessCagr": {
+    "vsSpy": -0.1577530086857173,
+    "vsOwnUniverseEw": -0.09190780777503949,
+    "vsFrameEw": -0.07027925678395275,
+    "vsCapWeighted": -0.14194609209785125
+   },
+   "stress": {
+    "costs": {
+     "feeBps": 20,
+     "slippageBps": 30
+    },
+    "cagr": -0.03815269639018859,
+    "sharpe": -0.041142302751479926,
+    "maxDrawdown": -0.33356142027082947,
+    "excessCagrVsSpy": -0.17045412982972397,
+    "excessVsSpyAnnualised": -0.14681638371415232,
+    "excessVsSpy": {
+     "n": 262,
+     "estimate": -0.002823391994502929,
+     "ci": [
+      -0.004988521516599599,
+      -0.0006623537225542838
+     ],
+     "pValue": 0.008,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "210b02dea553e67fb5f8bbe584e14ec730f462d593a6f66adeda402743a38037",
+     "annualisedMean": -0.14681638371415232,
+     "nw": {
+      "mean": -0.002823391994502929,
+      "se": 0.0012194383714099915,
+      "t": -2.3153215945126813,
+      "lag": 8
+     }
+    }
+   },
+   "firstYear": {
+    "to": "2022-01-07",
+    "strategyTotalReturn": 0.10341757223763626,
+    "spyTotalReturn": 0.25946442564920136,
+    "ownUniverseEwTotalReturn": 0.07912639767918495
+   },
+   "afterFirstYear": {
+    "from": "2022-01-07",
+    "strategyCagr": -0.054290610228007075,
+    "spyCagr": 0.10111667786012513
+   },
+   "delistingBounds": {
+    "primary": "LAST_CLOSE (sale at the last observed close of the series, base costs)",
+    "forcedExits": 0,
+    "MINUS_100": {
+     "cagr": -0.025451575246181912,
+     "totalReturn": -0.12142357340693011,
+     "forcedExits": 0
+    },
+    "CASH_OR_LAST": {
+     "cagr": -0.025451575246181912,
+     "totalReturn": -0.12142357340693011,
+     "forcedExits": 0
+    }
+   },
+   "engineLedger": {
+    "engine": "research-portfolio-1.2.0",
+    "inputHash": "679b77910351e571ca869835749d1d6cc0f847c1cf466884651a8542f130571d",
+    "resultHash": "74e69cf010a5b87ccbf8d9125af3f4c17d2bd0489a0a14abac1baeefd5f231e1",
+    "generation": "c99d454be0c3800301c8d6c707d9390ce2afbff0b1ec0284f00ed4e3ad1d1171",
+    "cumulativeReturn": -0.12142357340693088,
+    "cagr": -0.025451575246182023,
+    "maxDrawdown": -0.32951282361786527,
+    "oneWayTurnoverSum": 9.397733821278633,
+    "fees": 0.01923975470152435,
+    "slippage": 0.009619877350762175,
+    "limitations": [
+     "CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP",
+     "SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES",
+     "MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES",
+     "FRACTIONAL_LONG_ONLY",
+     "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+     "NO_CASH_INTEREST_OR_TAX",
+     "NO_VOLUME_CAPACITY_MODEL",
+     "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+     "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT"
+    ],
+    "parityWithSimulator": {
+     "sessions": 263,
+     "maxAbsEquityDiff": 1.3322676295501878e-15,
+     "identicalWithin1e9": true
+    }
+   },
+   "coverage": {
+    "first": {
+     "date": "2021-01-29",
+     "aliveFrame": 2895,
+     "panelRows": 3107,
+     "eligibleForRule": 1171
+    },
+    "last": {
+     "date": "2025-10-31",
+     "aliveFrame": 3894,
+     "panelRows": 4216,
+     "eligibleForRule": 1377
+    },
+    "minEligible": 1171,
+    "meanEligibleShareOfAlive": 0.3699126477274278
+   },
+   "seconds": 14.611
+  },
+  {
+   "family": "FUND",
+   "id": "H2",
+   "variantId": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "label": "VALIDATION_ELIGIBLE",
+   "spec": {
+    "id": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+    "family": "FUND",
+    "cadence": "MONTHLY",
+    "rebalanceMonths": 3,
+    "filters": [
+     [
+      "rawPx",
+      "gte",
+      5
+     ]
+    ],
+    "minMarketCap": 300000000,
+    "positions": 20,
+    "holding": "FULL",
+    "weighting": "EW",
+    "ranks": [
+     [
+      "f.p",
+      1,
+      1
+     ],
+     [
+      "r12_1",
+      1,
+      1
+     ]
+    ]
+   },
+   "specId": "F2-PROF_MOM-N20-M3-FULL-EW-PX5-MC300",
+   "period": {
+    "decisionsFrom": "2021-01-01",
+    "decisionsTo": "2025-12-31",
+    "firstDecision": "2021-01-29",
+    "lastDecision": "2025-10-31",
+    "decisions": 20,
+    "valuationTo": "2026-02-06",
+    "note": "Decisions inside the period; the last portfolio is held to the next scheduled rebalance after the period and liquidated there (overlap disclosed)."
+   },
+   "strategy": {
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": 0.24734323367056277,
+    "cagr": 0.04499947635155199,
+    "volatility": 0.2722917263484041,
+    "sharpe": 0.2968732143952785,
+    "sortino": 0.4336143511800945,
+    "maxDrawdown": -0.34238384319469706,
+    "maxDrawdownPeak": "2021-11-12",
+    "maxDrawdownTrough": "2022-06-17",
+    "weeks": 262,
+    "turnoverPerYear": 2.0479120176480694,
+    "costsPaid": 0.031235169746198048,
+    "avgPositions": 19.84790874524715,
+    "avgInvestedShare": 0.9923954372623575,
+    "rebalances": 21,
+    "distinctNames": 131,
+    "forcedExits": 0
+   },
+   "spy": {
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": 0.8661874780446943,
+    "cagr": 0.13230143343953538,
+    "volatility": 0.16100972534314453,
+    "sharpe": 0.8502386951619725,
+    "sortino": 1.2890345938622798,
+    "maxDrawdown": -0.2479787771601819,
+    "maxDrawdownPeak": "2021-12-31",
+    "maxDrawdownTrough": "2022-09-30",
+    "weeks": 262
+   },
+   "ownUniverseEw": {
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": 0.3464025273723952,
+    "cagr": 0.06102547614807974,
+    "volatility": 0.20949143121425387,
+    "sharpe": 0.3862886626830404,
+    "sortino": 0.5725385520354608,
+    "maxDrawdown": -0.3255323801690517,
+    "maxDrawdownPeak": "2021-11-12",
+    "maxDrawdownTrough": "2022-10-14",
+    "weeks": 262,
+    "avgNames": 599.93536121673
+   },
+   "frameEw": {
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": 0.24631392529288965,
+    "cagr": 0.044827681537770836,
+    "volatility": 0.1868873517761191,
+    "sharpe": 0.32742415984002865,
+    "sortino": 0.46523463181402586,
+    "maxDrawdown": -0.2994989740562175,
+    "maxDrawdownPeak": "2021-11-12",
+    "maxDrawdownTrough": "2022-09-30",
+    "weeks": 262,
+    "avgNames": 3442.661596958175
+   },
+   "capWeighted": {
+    "definition": "PIT panel market cap with plausibility filter 1.0.1 (cap <= 5e12 USD, implied share count change within 0.2..5x vs 12 rank dates earlier)",
+    "from": "2021-01-29",
+    "to": "2026-02-06",
+    "years": 5.021218343600274,
+    "totalReturn": 0.7389953092590602,
+    "cagr": 0.11649451685166934,
+    "volatility": 0.15792745899804922,
+    "sharpe": 0.7748156329343683,
+    "sortino": 1.1657209213399575,
+    "maxDrawdown": -0.24277873788891358,
+    "maxDrawdownPeak": "2021-11-05",
+    "maxDrawdownTrough": "2022-10-14",
+    "weeks": 262,
+    "avgNames": 2491
+   },
+   "capWeightedRawPanelInvalid": {
+    "note": "unfiltered V10 panel market cap; dominated by XBRL scale errors (e.g. ON 3.5e18 USD 2013) - not a valid benchmark",
+    "cagr": 0.04501008138469831
+   },
+   "excess": {
+    "vsSpy": {
+     "n": 262,
+     "estimate": -0.001078088052497164,
+     "ci": [
+      -0.003343004034500369,
+      0.0013570799529312692
+     ],
+     "pValue": 0.3755,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "04c5a34f182b835bc49277ad4f8fe13fe632c3300adf2596605f74e562dd8b75",
+     "annualisedMean": -0.056060578729852525,
+     "nw": {
+      "mean": -0.001078088052497164,
+      "se": 0.0012733861234401102,
+      "t": -0.8466309100217461,
+      "lag": 8
+     },
+     "holmAdjustedP": 0.3755,
+     "holmReject": false
+    },
+    "vsSpyBlock52": {
+     "pValue": 0.3525,
+     "ci": [
+      -0.0031969722136417364,
+      0.0013517438425997073
+     ]
+    },
+    "vsOwnUniverseEw": {
+     "n": 262,
+     "estimate": -0.0000016931683273077994,
+     "ci": [
+      -0.0021254392511533067,
+      0.002462945593620779
+     ],
+     "pValue": 0.9985,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "524b969e41603f1b583e40d7196f8aa857f52dd71d70dfcaa632c49ac9000099",
+     "annualisedMean": -0.00008804475302000558,
+     "nw": {
+      "mean": -0.0000016931683273077994,
+      "se": 0.0010881258520419575,
+      "t": -0.0015560408974112966,
+      "lag": 8
+     },
+     "holmAdjustedP": 0.9985,
+     "holmReject": false
+    },
+    "vsFrameEw": {
+     "n": 262,
+     "estimate": 0.0003777824214282036,
+     "ci": [
+      -0.0017792397193972273,
+      0.002698471806777974
+     ],
+     "pValue": 0.746,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "0d0bcc5ba600d99e00d49f170dc5982a69bb173d1dee0e7a998102b69d6bd9a5",
+     "annualisedMean": 0.019644685914266588,
+     "nw": {
+      "mean": 0.0003777824214282036,
+      "se": 0.0012482352912247389,
+      "t": 0.3026532129671902,
+      "lag": 8
+     }
+    },
+    "vsCapWeighted": {
+     "n": 262,
+     "estimate": -0.0007986258470576875,
+     "ci": [
+      -0.0029098682659474753,
+      0.0013872245194535221
+     ],
+     "pValue": 0.465,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "5b81471b3a251865d9fcaeb5f714de934bf2c24cfacd72a8353172d7ba17be0e",
+     "annualisedMean": -0.04152854404699975,
+     "nw": {
+      "mean": -0.0007986258470576875,
+      "se": 0.0012302475621087145,
+      "t": -0.6491586503848032,
+      "lag": 8
+     }
+    }
+   },
+   "excessCagr": {
+    "vsSpy": -0.08730195708798338,
+    "vsOwnUniverseEw": -0.016025999796527746,
+    "vsFrameEw": 0.00017179481378115646,
+    "vsCapWeighted": -0.07149504050011735
+   },
+   "stress": {
+    "costs": {
+     "feeBps": 20,
+     "slippageBps": 30
+    },
+    "cagr": 0.030107624327173177,
+    "sharpe": 0.24428933905109726,
+    "maxDrawdown": -0.35046502255261824,
+    "excessCagrVsSpy": -0.1021938091123622,
+    "excessVsSpyAnnualised": -0.07047736822604969,
+    "excessVsSpy": {
+     "n": 262,
+     "estimate": -0.0013553340043471094,
+     "ci": [
+      -0.0036395204223199223,
+      0.001091799853135823
+     ],
+     "pValue": 0.2735,
+     "blockLength": 26,
+     "blocks": 10,
+     "method": "CIRCULAR_CALENDAR_BLOCK_BASIC_CENTERED_TWO_SIDED",
+     "inputHash": "f6b64275ade187253340411d7b10bbc8ff1954e0d58c6dc84a1ada33c8db6859",
+     "annualisedMean": -0.07047736822604969,
+     "nw": {
+      "mean": -0.0013553340043471094,
+      "se": 0.001274007457427623,
+      "t": -1.0638352204654238,
+      "lag": 8
+     }
+    }
+   },
+   "firstYear": {
+    "to": "2022-01-07",
+    "strategyTotalReturn": -0.07173873357481375,
+    "spyTotalReturn": 0.25946442564920136,
+    "ownUniverseEwTotalReturn": 0.0669804361925983
+   },
+   "afterFirstYear": {
+    "from": "2022-01-07",
+    "strategyCagr": 0.07506193556934804,
+    "spyCagr": 0.10111667786012513
+   },
+   "delistingBounds": {
+    "primary": "LAST_CLOSE (sale at the last observed close of the series, base costs)",
+    "forcedExits": 0,
+    "MINUS_100": {
+     "cagr": 0.04499947635155199,
+     "totalReturn": 0.24734323367056277,
+     "forcedExits": 0
+    },
+    "CASH_OR_LAST": {
+     "cagr": 0.04499947635155199,
+     "totalReturn": 0.24734323367056277,
+     "forcedExits": 0
+    }
+   },
+   "engineLedger": {
+    "engine": "research-portfolio-1.2.0",
+    "inputHash": "ff275938cd4c316ff00c42fe26c0b7283b852a22b1a1f6e59ffd45acaaf212bc",
+    "resultHash": "c6868e1d6b1d054f6cff49f0609fd05587740ad4e6495803b5a3546f3ada24cb",
+    "generation": "0c853946498493460fb94318bdff0f6fa197635148fd34267c3e3f18286487c2",
+    "cumulativeReturn": 0.2473432336705652,
+    "cagr": 0.044999476351552437,
+    "maxDrawdown": -0.34238384319469695,
+    "oneWayTurnoverSum": 10.283013389093934,
+    "fees": 0.020823446497465387,
+    "slippage": 0.010411723248732694,
+    "limitations": [
+     "CONDITIONAL_CURRENT_SURVIVOR_COHORT_NOT_PIT_MEMBERSHIP",
+     "SPLIT_ADJUSTED_VIRTUAL_UNITS_NO_DIVIDENDS_OR_TERMINAL_VALUES",
+     "MODELED_CLOCK_NOT_HISTORICAL_PUBLICATION_TIMES",
+     "FRACTIONAL_LONG_ONLY",
+     "OBSERVED_NEXT_SESSION_CLOSE_MODEL_NOT_GUARANTEED_FILL",
+     "NO_CASH_INTEREST_OR_TAX",
+     "NO_VOLUME_CAPACITY_MODEL",
+     "CASH_PAYMENTS_CREDITED_AT_FIRST_VALUATION_SESSION_ON_OR_AFTER_PAY_DATE",
+     "SOURCE_REFERENCES_REQUIRE_INDEPENDENT_AUDIT"
+    ],
+    "parityWithSimulator": {
+     "sessions": 263,
+     "maxAbsEquityDiff": 2.6645352591003757e-15,
+     "identicalWithin1e9": true
+    }
+   },
+   "coverage": {
+    "first": {
+     "date": "2021-01-29",
+     "aliveFrame": 2895,
+     "panelRows": 3107,
+     "eligibleForRule": 576
+    },
+    "last": {
+     "date": "2025-10-31",
+     "aliveFrame": 3894,
+     "panelRows": 4216,
+     "eligibleForRule": 631
+    },
+    "minEligible": 576,
+    "meanEligibleShareOfAlive": 0.17551579722312696
+   },
+   "seconds": 1.153
+  }
+ ],
+ "manifestHash": "2c27039fd782cccced62ac28cebfb808eea07670ba2c79e58e373824bcc0b679",
+ "codeHashes": {
+  "scripts/quant/v11/discovery/lib.cjs": "744fdf451eea29d5bcac2bf2fa1cb039b52b06b88a31bbc5a6f05a22bdf95e14",
+  "scripts/quant/v11/discovery/rules.cjs": "b49f23385716f82855f6f043feee1578a2697edb0a050e94f352450cdc5a943c",
+  "scripts/quant/v11/discovery/evaluate.cjs": "64c7f5f85398de7100c685c198a42630ba52a357e2fd35c7c975e758f0078938",
+  "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+  "quant/engines/research-portfolio.cjs": "d7f401388b20f4e8a9b53a13cb1a3160079d48347b8673aa3bc4cf5797cce5bc",
+  "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+  "quant/engines/research-weekly-loader.cjs": "cc18551ffc8ecf1c6c3f3282c9475e0f3306d2aa53651369753d53883d179b44"
+ },
+ "seconds": 57.598,
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "reproHash": "9bc200cfda8e5394e107870d903414242b9456f567fbbc4135ff908d8e7897ff"
+}

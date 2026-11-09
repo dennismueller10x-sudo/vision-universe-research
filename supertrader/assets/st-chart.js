@@ -121,7 +121,7 @@
     (cfg.overlays || []).forEach(function (o) { addToggle(o.id, o.label, o.color); });
     (cfg.levels || []).forEach(function (o) { addToggle(o.id, o.label, o.color); });
     if (cfg.boxes && cfg.boxes.length) addToggle('__boxes', cfg.boxes[0].label || 'Box', cfg.boxes[0].color || 'var(--chart-box-darvas)');
-    if (cfg.markers && cfg.markers.length) addToggle('__markers', 'Bestätigung · Modell-Ein-/Ausstiege', 'var(--chart-marker-legend)');
+    if (cfg.markers && cfg.markers.length) addToggle('__markers', 'Bestätigung · Aufnahme und Abgabe im Musterdepot', 'var(--chart-marker-legend)');
     host.appendChild(tools);
 
     var wrap = document.createElement('div');

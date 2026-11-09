@@ -1,0 +1,53 @@
+{
+  "date": "2026-11-02",
+  "auditBaseline": "272b226018869a03459f64c9dc4d46e67a791ee7",
+  "assistantBase": "97b15816089c91e28c577c5c24c5f3a2e4c6f66b",
+  "technical": {
+    "pass": 80,
+    "fail": 0
+  },
+  "core": {
+    "pass": 308,
+    "fail": 0
+  },
+  "academyTests": {
+    "pass": 13,
+    "fail": 0,
+    "newAuditTestGroups": 7,
+    "wrongButSchemaValidQuizKeysRejected": 32
+  },
+  "academyBrowser": {
+    "pass": 44,
+    "fail": 0,
+    "lessonViews": 192,
+    "practiceAndReturnFlows": 192,
+    "widths": [
+      360,
+      390,
+      1280
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "axeRuns": 30,
+    "axeViolationCount": 0,
+    "axeTags": [
+      "wcag2a",
+      "wcag2aa",
+      "wcag21aa"
+    ]
+  },
+  "existingTechnicalBrowser": {
+    "pass": 66,
+    "fail": 0
+  },
+  "isolation": "full Technical suite: no production file changed",
+  "protectedPaths": "empty diff against auditBaseline for quant, supertrader, core, technical/data, assistant.js, templates.js",
+  "limitations": [
+    "Chromium mobile emulation, no physical iPhone/Safari",
+    "Critical second audit pass with independent test expectations and external definitions; no external human certification or recruited beginner study",
+    "Axe checks shared templates, not a complete manual WCAG certification"
+  ],
+  "contentSha256": "9943986cccc9cd8f74d9dc8ff91312678241bc33f71462205b643f058782852c"
+}

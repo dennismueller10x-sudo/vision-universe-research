@@ -1,6 +1,6 @@
 {
   "schema": "vu-currency-debt-register-1.0.0",
-  "generatedAtUtc": "2026-10-21T17:45:59.469Z",
+  "generatedAtUtc": "2026-11-04T20:50:14.485Z",
   "note": "Erst klassifizieren, dann migrieren (O-6). Klasse A ist die einzige, die den Currency Contract konsumieren MUSS. B darf ihn nie konsumieren. E ist kein Schaden, sondern eine Aussage.",
   "classes": {
     "A": {
@@ -54,7 +54,7 @@
   "entries": [
     {
       "file": "discover/detail.js",
-      "line": 269,
+      "line": 279,
       "rule": "trailingDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -65,7 +65,7 @@
     },
     {
       "file": "discover/detail.js",
-      "line": 270,
+      "line": 280,
       "rule": "germanScaleDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -76,7 +76,7 @@
     },
     {
       "file": "discover/detail.js",
-      "line": 271,
+      "line": 281,
       "rule": "germanScaleDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -87,7 +87,7 @@
     },
     {
       "file": "discover/detail.js",
-      "line": 272,
+      "line": 282,
       "rule": "germanScaleDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -197,7 +197,7 @@
     },
     {
       "file": "discover/ui/detail.js",
-      "line": 758,
+      "line": 773,
       "rule": "germanScaleDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",
@@ -208,7 +208,7 @@
     },
     {
       "file": "discover/ui/detail.js",
-      "line": 760,
+      "line": 775,
       "rule": "germanScaleDollar",
       "class": "F",
       "label": "MIGRATED_FALLBACK",

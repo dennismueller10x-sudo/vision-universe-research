@@ -1,0 +1,1790 @@
+{
+ "studyId": "V13-S3-SPX-BOUNDED-EXITS",
+ "registrationSha256": "d12c1ec0fa7f37628b067c0c06470b0bef3b1209013e207193fe3d0a3e68937f",
+ "amendmentSha256": "446d4a06cf369791efb6695fdb4c7f5c2d69abca464d66d99dbcecbe1f303d6e",
+ "basedOn": {
+  "study": "V12-REQUAL-P5A 1.1.0",
+  "registrationSha256": "9b712050ac833cab6632410ddcf711795c501225f13663d5f4cfc7ca2fa8e62c",
+  "committedResultReproduced": true
+ },
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "population": {
+  "id": "PIT_SP500 (SPY holdings, SPXPOP 1.1.1)",
+  "periods": 47,
+  "span": [
+   "2009-09-30",
+   "2026-06-30"
+  ],
+  "frameListingsF0": 4329,
+  "delistedQualifiedLoaded": 1675,
+  "delistedRegisterHash": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f"
+ },
+ "returnBasis": "PRICE_RETURN both sides (members: holdings-derived or series price return; replaced exits: split-adjusted delisted series price return, terminal scenario at the last traded close); SPY_TR reference as V12",
+ "costs": "none (index population returns, as V12 P5a)",
+ "weighting": {
+  "EW_ALL": "equal weight of all index members",
+  "CW_ALL": "holdings weight (SPY) of all index members"
+ },
+ "matching": {
+  "rule": "BOUNDED_EXIT* member, same CIK as a QUALIFIED delisted chain with lastTradeDate in [t0, t1+120d], bar within 7 days at/before t0 (amendment 1.0.1 O6)",
+  "boundedExitRowsWithCikInSpan": 165,
+  "states": {
+   "NO_QUALIFIED_CHAIN": 127,
+   "REPLACED": 38
+  },
+  "coverageReferenceAllSpyPeriods": 39,
+  "note": "coverage-1.0.0 counts all SPY periods 1995-2026; P5a uses the span 2009-09-30..2026-06-30"
+ },
+ "replacedRows": [
+  {
+   "t0": "2012-09-30",
+   "cik": 1011657,
+   "chainId": "dl_37f8e38831dcc726",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0001,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.286,
+   "afterS1": 0.1574,
+   "afterS2": 0.4147
+  },
+  {
+   "t0": "2013-03-31",
+   "cik": 46640,
+   "chainId": "dl_bc3ce363bac50294",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "UNKNOWN",
+   "weight": 0.0017,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "UNKNOWN",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0,
+   "afterS0": 0.003,
+   "afterS1": -0.2979,
+   "afterS2": -1
+  },
+  {
+   "t0": "2014-09-30",
+   "cik": 1457543,
+   "chainId": "dl_9b7bbe378f5135ac",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0005,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.3098,
+   "afterS1": 0.1788,
+   "afterS2": 0.4408
+  },
+  {
+   "t0": "2014-09-30",
+   "cik": 86144,
+   "chainId": "dl_8ac1e9a6ead8c92a",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0004,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0218,
+   "afterS1": -0.0803,
+   "afterS2": 0.124
+  },
+  {
+   "t0": "2015-03-31",
+   "cik": 34408,
+   "chainId": "dl_55e724605ad90d32",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0004,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": -0.0008,
+   "afterS1": -0.1007,
+   "afterS2": 0.0992
+  },
+  {
+   "t0": "2015-03-31",
+   "cik": 1274057,
+   "chainId": "dl_3c75693ef3cf58ff",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0008,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0236,
+   "afterS1": -0.0788,
+   "afterS2": 0.1259
+  },
+  {
+   "t0": "2015-03-31",
+   "cik": 916863,
+   "chainId": "dl_89618925b6463694",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0003,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "UNKNOWN",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": -0.0318,
+   "afterS1": -0.3223,
+   "afterS2": -1
+  },
+  {
+   "t0": "2015-03-31",
+   "cik": 1545158,
+   "chainId": "dl_05afceb8060d230f",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0028,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": -0.0102,
+   "afterS1": -0.1092,
+   "afterS2": 0.0888
+  },
+  {
+   "t0": "2015-03-31",
+   "cik": 1159297,
+   "chainId": "dl_49d9fa37f16ec972",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0005,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": -0.024,
+   "afterS1": -0.1216,
+   "afterS2": 0.0736
+  },
+  {
+   "t0": "2016-03-31",
+   "cik": 804212,
+   "chainId": "dl_df70e8cc76402c7a",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0005,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0077,
+   "afterS1": -0.0931,
+   "afterS2": 0.1085
+  },
+  {
+   "t0": "2016-09-30",
+   "cik": 203077,
+   "chainId": "dl_b6853e31f5f91f71",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0012,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0133,
+   "afterS1": -0.088,
+   "afterS2": 0.1146
+  },
+  {
+   "t0": "2017-03-31",
+   "cik": 1275283,
+   "chainId": "dl_444d52559c4db389",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0026,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0378,
+   "afterS1": -0.066,
+   "afterS2": 0.1415
+  },
+  {
+   "t0": "2017-03-31",
+   "cik": 7332,
+   "chainId": "dl_6caf5d58dc6d79d8",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "DELISTING",
+   "weight": 0.0002,
+   "kind": "SERIES",
+   "terminalClass": "UNKNOWN",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": -1,
+   "afterS0": -0.2791,
+   "afterS1": -0.2791,
+   "afterS2": -0.2791
+  },
+  {
+   "t0": "2017-03-31",
+   "cik": 791519,
+   "chainId": "dl_430ab7771ac96067",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0003,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.429,
+   "afterS1": 0.2861,
+   "afterS2": 0.5719
+  },
+  {
+   "t0": "2017-03-31",
+   "cik": 865436,
+   "chainId": "dl_932a84e47e44d8b6",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0005,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.4129,
+   "afterS1": 0.2716,
+   "afterS2": 0.5541
+  },
+  {
+   "t0": "2017-09-30",
+   "cik": 9892,
+   "chainId": "dl_3488cf91ebb2c8cc",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "UNKNOWN",
+   "weight": 0.0011,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "UNKNOWN",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0,
+   "afterS0": 0.0335,
+   "afterS1": -0.2765,
+   "afterS2": -1
+  },
+  {
+   "t0": "2017-09-30",
+   "cik": 1430602,
+   "chainId": "dl_efe8076c88a6dad3",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0004,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0483,
+   "afterS1": -0.0565,
+   "afterS2": 0.1531
+  },
+  {
+   "t0": "2018-09-30",
+   "cik": 884905,
+   "chainId": "dl_d1b80aef40ec3713",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0019,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0235,
+   "afterS1": -0.0789,
+   "afterS2": 0.1258
+  },
+  {
+   "t0": "2018-09-30",
+   "cik": 1308161,
+   "chainId": "dl_b126dd0869784e23",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "UNKNOWN",
+   "weight": 0.002,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0,
+   "afterS0": 0.0827,
+   "afterS1": -0.0256,
+   "afterS2": 0.191
+  },
+  {
+   "t0": "2018-09-30",
+   "cik": 1308161,
+   "chainId": "dl_b126dd0869784e23",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0009,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0827,
+   "afterS1": -0.0256,
+   "afterS2": 0.191
+  },
+  {
+   "t0": "2019-09-30",
+   "cik": 816284,
+   "chainId": "dl_ca2267a53aae92fe",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0028,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.095,
+   "afterS1": -0.0145,
+   "afterS2": 0.2045
+  },
+  {
+   "t0": "2020-09-30",
+   "cik": 1015780,
+   "chainId": "dl_b587abcce0520ef6",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0004,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.013,
+   "afterS1": -0.0883,
+   "afterS2": 0.1143
+  },
+  {
+   "t0": "2020-09-30",
+   "cik": 72207,
+   "chainId": "dl_e0342e19b8525195",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0001,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": -0.0035,
+   "afterS1": -0.1032,
+   "afterS2": 0.0961
+  },
+  {
+   "t0": "2020-12-31",
+   "cik": 98246,
+   "chainId": "dl_54288676622db487",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0004,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0001,
+   "afterS1": -0.0999,
+   "afterS2": 0.1001
+  },
+  {
+   "t0": "2021-03-31",
+   "cik": 354908,
+   "chainId": "dl_019c17aaf75f7e66",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0002,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0307,
+   "afterS1": -0.0723,
+   "afterS2": 0.1338
+  },
+  {
+   "t0": "2021-06-30",
+   "cik": 743316,
+   "chainId": "dl_01e1a4203f89b749",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0008,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0047,
+   "afterS1": -0.0958,
+   "afterS2": 0.1051
+  },
+  {
+   "t0": "2021-06-30",
+   "cik": 899866,
+   "chainId": "dl_a99297694b9c3870",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0011,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": -0.0013,
+   "afterS1": -0.1012,
+   "afterS2": 0.0986
+  },
+  {
+   "t0": "2021-12-31",
+   "cik": 743988,
+   "chainId": "dl_9b5ea8a6c60ccb19",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0013,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": -0.0807,
+   "afterS1": -0.1726,
+   "afterS2": 0.0112
+  },
+  {
+   "t0": "2022-09-30",
+   "cik": 1418091,
+   "chainId": "dl_4dec25696942033e",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.001,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.2249,
+   "afterS1": 0.1024,
+   "afterS2": 0.3474
+  },
+  {
+   "t0": "2023-09-30",
+   "cik": 718877,
+   "chainId": "dl_c87c50c220c2310b",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0019,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0084,
+   "afterS1": -0.0924,
+   "afterS2": 0.1093
+  },
+  {
+   "t0": "2024-09-30",
+   "cik": 1596783,
+   "chainId": "dl_f119ac4633e4515c",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0002,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0522,
+   "afterS1": -0.053,
+   "afterS2": 0.1574
+  },
+  {
+   "t0": "2025-03-31",
+   "cik": 1393612,
+   "chainId": "dl_9e3b7328c8370988",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0009,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.2603,
+   "afterS1": 0.1343,
+   "afterS2": 0.3863
+  },
+  {
+   "t0": "2025-06-30",
+   "cik": 4447,
+   "chainId": "dl_b04187cbbcc2d3bd",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0007,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.072,
+   "afterS1": -0.0352,
+   "afterS2": 0.1792
+  },
+  {
+   "t0": "2025-06-30",
+   "cik": 1618921,
+   "chainId": "dl_3a35010de16df79b",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0002,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.0463,
+   "afterS1": -0.0583,
+   "afterS2": 0.1509
+  },
+  {
+   "t0": "2025-06-30",
+   "cik": 813828,
+   "chainId": "dl_ee1da9f6b673605f",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0001,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": -0.2484,
+   "afterS1": -0.3236,
+   "afterS2": -0.1733
+  },
+  {
+   "t0": "2025-06-30",
+   "cik": 1043604,
+   "chainId": "dl_71695806680df07b",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0003,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": 0.085,
+   "afterS1": -0.0235,
+   "afterS2": 0.1935
+  },
+  {
+   "t0": "2025-09-30",
+   "cik": 51644,
+   "chainId": "dl_5fe759fed0397470",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "UNKNOWN",
+   "weight": 0.0002,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0,
+   "afterS0": -0.0676,
+   "afterS1": -0.1608,
+   "afterS2": 0.0257
+  },
+  {
+   "t0": "2026-03-31",
+   "cik": 858470,
+   "chainId": "dl_db51ecec508c1755",
+   "priorStatus": "BOUNDED_EXIT",
+   "fateClass": "TAKEOVER",
+   "weight": 0.0005,
+   "kind": "LAST_CLOSE",
+   "terminalClass": "MERGER",
+   "matchingChains": 1,
+   "beforeZero": 0,
+   "beforeLower": -1,
+   "beforeFate": 0.0148,
+   "afterS0": -0.1033,
+   "afterS1": -0.1929,
+   "afterS2": -0.0136
+  }
+ ],
+ "replacedSummary": {
+  "n": 38,
+  "weightSum": 0.0321,
+  "meanBeforeZero": 0,
+  "meanBeforeFate": -0.0134,
+  "meanBeforeLower": -1,
+  "meanAfterS0": 0.0489,
+  "byKind": {
+   "LAST_CLOSE": 37,
+   "SERIES": 1
+  },
+  "byTerminalClass": {
+   "MERGER": 34,
+   "UNKNOWN": 4
+  },
+  "byPriorFateClass": {
+   "TAKEOVER": 33,
+   "UNKNOWN": 4,
+   "DELISTING": 1
+  }
+ },
+ "aggregates": {
+  "before": {
+   "ZERO": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.105729,
+      "CW_ALL": 0.119743,
+      "EW_WITH_H": 0.112812,
+      "EW_WITHOUT_H": 0.084968,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.7083,
+       "meanPeriodPp": 0.23536,
+       "nwP": 0.005048
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.8172,
+       "meanPeriodPp": -0.518536,
+       "nwP": 0.244107
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.09611,
+      "CW_ALL": 0.121063,
+      "EW_WITH_H": 0.102249,
+      "EW_WITHOUT_H": 0.075445,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.6139,
+       "meanPeriodPp": 0.182115,
+       "nwP": 0.021309
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.899,
+       "meanPeriodPp": -0.834025,
+       "nwP": 0.065585
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   },
+   "LOWER": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.072617,
+      "CW_ALL": 0.104328,
+      "EW_WITH_H": 0.112453,
+      "EW_WITHOUT_H": -0.061677,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.111051
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.9836,
+       "meanPeriodPp": 1.342149,
+       "nwP": 0.000006
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -5.1284,
+       "meanPeriodPp": -1.637443,
+       "nwP": 0.000676
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.285,
+       "meanPeriodPp": -0.100819,
+       "nwP": 0.915624
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.064873,
+      "CW_ALL": 0.105705,
+      "EW_WITH_H": 0.101932,
+      "EW_WITHOUT_H": -0.080382,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.097259
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.7059,
+       "meanPeriodPp": 1.152728,
+       "nwP": 0.00034
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -6.0227,
+       "meanPeriodPp": -1.814245,
+       "nwP": 0.000641
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.7841,
+       "meanPeriodPp": -0.55007,
+       "nwP": 0.599836
+      }
+     }
+    }
+   },
+   "FATE": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.105229,
+      "CW_ALL": 0.119107,
+      "EW_WITH_H": 0.112812,
+      "EW_WITHOUT_H": 0.083924,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.7583,
+       "meanPeriodPp": 0.251126,
+       "nwP": 0.00313
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.8672,
+       "meanPeriodPp": -0.534302,
+       "nwP": 0.225049
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.095967,
+      "CW_ALL": 0.121045,
+      "EW_WITH_H": 0.102249,
+      "EW_WITHOUT_H": 0.075413,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.6282,
+       "meanPeriodPp": 0.18699,
+       "nwP": 0.021398
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.9133,
+       "meanPeriodPp": -0.8389,
+       "nwP": 0.063363
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   },
+   "UPPER": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.108992,
+      "CW_ALL": 0.121245,
+      "EW_WITH_H": 0.11317,
+      "EW_WITHOUT_H": 0.097879,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.4178,
+       "meanPeriodPp": 0.134972,
+       "nwP": 0.058497
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.4909,
+       "meanPeriodPp": -0.406032,
+       "nwP": 0.370267
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.098737,
+      "CW_ALL": 0.122348,
+      "EW_WITH_H": 0.102566,
+      "EW_WITHOUT_H": 0.087818,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.3829,
+       "meanPeriodPp": 0.10893,
+       "nwP": 0.112179
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.6363,
+       "meanPeriodPp": -0.751235,
+       "nwP": 0.098253
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   }
+  },
+  "afterTerminalS0": {
+   "ZERO": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.105957,
+      "CW_ALL": 0.119839,
+      "EW_WITH_H": 0.112812,
+      "EW_WITHOUT_H": 0.086008,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.6855,
+       "meanPeriodPp": 0.227511,
+       "nwP": 0.005653
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.7944,
+       "meanPeriodPp": -0.510687,
+       "nwP": 0.251074
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.096353,
+      "CW_ALL": 0.121182,
+      "EW_WITH_H": 0.102249,
+      "EW_WITHOUT_H": 0.07662,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.5896,
+       "meanPeriodPp": 0.174325,
+       "nwP": 0.023218
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.8747,
+       "meanPeriodPp": -0.826235,
+       "nwP": 0.067849
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   },
+   "LOWER": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.077606,
+      "CW_ALL": 0.106512,
+      "EW_WITH_H": 0.112453,
+      "EW_WITHOUT_H": -0.031022,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.111051
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.4847,
+       "meanPeriodPp": 1.173919,
+       "nwP": 0.000042
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -4.6295,
+       "meanPeriodPp": -1.469213,
+       "nwP": 0.001889
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.285,
+       "meanPeriodPp": -0.100819,
+       "nwP": 0.915624
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.070954,
+      "CW_ALL": 0.108461,
+      "EW_WITH_H": 0.101932,
+      "EW_WITHOUT_H": -0.042776,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.097259
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.0978,
+       "meanPeriodPp": 0.9615,
+       "nwP": 0.001427
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -5.4146,
+       "meanPeriodPp": -1.623017,
+       "nwP": 0.001905
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.7841,
+       "meanPeriodPp": -0.55007,
+       "nwP": 0.599836
+      }
+     }
+    }
+   },
+   "FATE": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.105519,
+      "CW_ALL": 0.119189,
+      "EW_WITH_H": 0.112812,
+      "EW_WITHOUT_H": 0.08502,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.7293,
+       "meanPeriodPp": 0.241126,
+       "nwP": 0.003153
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.8382,
+       "meanPeriodPp": -0.524302,
+       "nwP": 0.233145
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.096291,
+      "CW_ALL": 0.121147,
+      "EW_WITH_H": 0.102249,
+      "EW_WITHOUT_H": 0.076666,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.5958,
+       "meanPeriodPp": 0.1766,
+       "nwP": 0.020892
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.8809,
+       "meanPeriodPp": -0.82851,
+       "nwP": 0.066164
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   },
+   "UPPER": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.108837,
+      "CW_ALL": 0.121183,
+      "EW_WITH_H": 0.11317,
+      "EW_WITHOUT_H": 0.096337,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.4333,
+       "meanPeriodPp": 0.139985,
+       "nwP": 0.043871
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.5064,
+       "meanPeriodPp": -0.411045,
+       "nwP": 0.36379
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.098523,
+      "CW_ALL": 0.122269,
+      "EW_WITH_H": 0.102566,
+      "EW_WITHOUT_H": 0.085822,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.4043,
+       "meanPeriodPp": 0.115535,
+       "nwP": 0.081534
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.6577,
+       "meanPeriodPp": -0.75784,
+       "nwP": 0.094351
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   }
+  },
+  "afterTerminalS1": {
+   "ZERO": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.105381,
+      "CW_ALL": 0.119582,
+      "EW_WITH_H": 0.112812,
+      "EW_WITHOUT_H": 0.082447,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.7431,
+       "meanPeriodPp": 0.246572,
+       "nwP": 0.002965
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.852,
+       "meanPeriodPp": -0.529749,
+       "nwP": 0.234038
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.09565,
+      "CW_ALL": 0.120857,
+      "EW_WITH_H": 0.102249,
+      "EW_WITHOUT_H": 0.072216,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.6599,
+       "meanPeriodPp": 0.19608,
+       "nwP": 0.012555
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.945,
+       "meanPeriodPp": -0.84799,
+       "nwP": 0.060762
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   },
+   "LOWER": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.077039,
+      "CW_ALL": 0.106256,
+      "EW_WITH_H": 0.112453,
+      "EW_WITHOUT_H": -0.034303,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.111051
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.5414,
+       "meanPeriodPp": 1.192983,
+       "nwP": 0.000034
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -4.6862,
+       "meanPeriodPp": -1.488277,
+       "nwP": 0.001679
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.285,
+       "meanPeriodPp": -0.100819,
+       "nwP": 0.915624
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.070259,
+      "CW_ALL": 0.108137,
+      "EW_WITH_H": 0.101932,
+      "EW_WITHOUT_H": -0.046818,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.097259
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.1673,
+       "meanPeriodPp": 0.983255,
+       "nwP": 0.001216
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -5.4841,
+       "meanPeriodPp": -1.644773,
+       "nwP": 0.001685
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.7841,
+       "meanPeriodPp": -0.55007,
+       "nwP": 0.599836
+      }
+     }
+    }
+   },
+   "FATE": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.104943,
+      "CW_ALL": 0.118932,
+      "EW_WITH_H": 0.112812,
+      "EW_WITHOUT_H": 0.081462,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.7869,
+       "meanPeriodPp": 0.260196,
+       "nwP": 0.001572
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.8958,
+       "meanPeriodPp": -0.543372,
+       "nwP": 0.21678
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.095588,
+      "CW_ALL": 0.120823,
+      "EW_WITH_H": 0.102249,
+      "EW_WITHOUT_H": 0.072262,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.6661,
+       "meanPeriodPp": 0.198362,
+       "nwP": 0.011133
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.9512,
+       "meanPeriodPp": -0.850273,
+       "nwP": 0.059191
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   },
+   "UPPER": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.108261,
+      "CW_ALL": 0.120925,
+      "EW_WITH_H": 0.11317,
+      "EW_WITHOUT_H": 0.09275,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.4909,
+       "meanPeriodPp": 0.159047,
+       "nwP": 0.023766
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.564,
+       "meanPeriodPp": -0.430106,
+       "nwP": 0.34219
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.09782,
+      "CW_ALL": 0.121944,
+      "EW_WITH_H": 0.102566,
+      "EW_WITHOUT_H": 0.081391,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.4746,
+       "meanPeriodPp": 0.137288,
+       "nwP": 0.042829
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.728,
+       "meanPeriodPp": -0.779593,
+       "nwP": 0.085026
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   }
+  },
+  "afterTerminalS2": {
+   "ZERO": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.106023,
+      "CW_ALL": 0.119841,
+      "EW_WITH_H": 0.112812,
+      "EW_WITHOUT_H": 0.087775,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.6789,
+       "meanPeriodPp": 0.224987,
+       "nwP": 0.007791
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.7878,
+       "meanPeriodPp": -0.508164,
+       "nwP": 0.252478
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.096417,
+      "CW_ALL": 0.121184,
+      "EW_WITH_H": 0.102249,
+      "EW_WITHOUT_H": 0.078775,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.5832,
+       "meanPeriodPp": 0.172005,
+       "nwP": 0.030573
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.8683,
+       "meanPeriodPp": -0.823915,
+       "nwP": 0.068436
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   },
+   "LOWER": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.07767,
+      "CW_ALL": 0.106515,
+      "EW_WITH_H": 0.112453,
+      "EW_WITHOUT_H": -0.029426,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.111051
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.4783,
+       "meanPeriodPp": 1.171396,
+       "nwP": 0.00005
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -4.6231,
+       "meanPeriodPp": -1.466689,
+       "nwP": 0.001927
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.285,
+       "meanPeriodPp": -0.100819,
+       "nwP": 0.915624
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.071015,
+      "CW_ALL": 0.108464,
+      "EW_WITH_H": 0.101932,
+      "EW_WITHOUT_H": -0.040836,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.097259
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.0917,
+       "meanPeriodPp": 0.95918,
+       "nwP": 0.001596
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -5.4085,
+       "meanPeriodPp": -1.620698,
+       "nwP": 0.00196
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.7841,
+       "meanPeriodPp": -0.55007,
+       "nwP": 0.599836
+      }
+     }
+    }
+   },
+   "FATE": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.105585,
+      "CW_ALL": 0.119191,
+      "EW_WITH_H": 0.112812,
+      "EW_WITHOUT_H": 0.086783,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.7227,
+       "meanPeriodPp": 0.238613,
+       "nwP": 0.004671
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.8316,
+       "meanPeriodPp": -0.521789,
+       "nwP": 0.234502
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.096355,
+      "CW_ALL": 0.121149,
+      "EW_WITH_H": 0.102249,
+      "EW_WITHOUT_H": 0.07882,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.5894,
+       "meanPeriodPp": 0.17429,
+       "nwP": 0.028409
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.8745,
+       "meanPeriodPp": -0.8262,
+       "nwP": 0.066771
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   },
+   "UPPER": {
+    "full": {
+     "periods": 47,
+     "years": 16.747433,
+     "from": "2009-09-30",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.108903,
+      "CW_ALL": 0.121185,
+      "EW_WITH_H": 0.11317,
+      "EW_WITHOUT_H": 0.098118,
+      "SPY": 0.123901,
+      "SPY_TR": 0.144015,
+      "EW_FRAME": 0.112328
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.4267,
+       "meanPeriodPp": 0.137468,
+       "nwP": 0.055106
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -1.4998,
+       "meanPeriodPp": -0.408528,
+       "nwP": 0.365718
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -1.1573,
+       "meanPeriodPp": -0.058479,
+       "nwP": 0.950883
+      }
+     }
+    },
+    "from2013_03_rule101": {
+     "periods": 40,
+     "years": 13.24846,
+     "from": "2013-03-31",
+     "to": "2026-06-30",
+     "cagr": {
+      "EW_ALL": 0.098587,
+      "CW_ALL": 0.12227,
+      "EW_WITH_H": 0.102566,
+      "EW_WITHOUT_H": 0.087994,
+      "SPY": 0.1251,
+      "SPY_TR": 0.144419,
+      "EW_FRAME": 0.098854
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.3979,
+       "meanPeriodPp": 0.113222,
+       "nwP": 0.10008
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -2.6513,
+       "meanPeriodPp": -0.755527,
+       "nwP": 0.095075
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": -2.6246,
+       "meanPeriodPp": -0.50032,
+       "nwP": 0.632815
+      }
+     }
+    }
+   }
+  }
+ },
+ "scenarios": {
+  "P5a": {
+   "ZERO": "point convention: bounded exits at 0 % (last holdings price), ambiguous CA at the midpoint - NOT a bound",
+   "LOWER": "all bounded exits at -100 %, ambiguous CA at the lower bound - gives the UPPER bound of the survivorship term (EW_WITH_H - EW_ALL) and the lower bound of EW_ALL/CW_ALL",
+   "FATE": "exits by documented fate: takeover -> typical premium of documented takeovers (takeoverPremium.median), delisting/bankruptcy -> -100 %, index change -> population period return, unknown fate -> 0 %; ambiguous CA midpoint - evidence-based point estimate",
+   "UPPER": "every bounded exit at max(takeover premium p75, population period return), ambiguous CA at the upper bound - gives the lower end of the survivorship term"
+  },
+  "terminal": {
+   "S0_LAST_CLOSE": "replaced exit at the last traded close",
+   "S1_MERGER_M10_OTHER_M30": "MERGER -10 %, DISTRESS/UNKNOWN -30 % on the last traded close (only when the series ended before t1)",
+   "S2_MERGER_P10_OTHER_M100": "MERGER +10 %, DISTRESS/UNKNOWN -100 %"
+  }
+ },
+ "scope": "Index population (S&P 500 members by SPY holdings) 2009-09..2026-06; replaces only the bounded exits that a QUALIFIED delisted chain covers; tests only descriptive (V12 NW p-values of the period terms). Not a strategy, no alpha claim.",
+ "runtimeSeconds": 50
+}

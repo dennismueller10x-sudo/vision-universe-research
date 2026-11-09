@@ -1,0 +1,275 @@
+{
+ "id": "V12-REQUAL",
+ "version": "1.0.2",
+ "amends": [
+  {
+   "file": "docs/quant-recovery/v12/requal/registration-1.0.0.json",
+   "sha256": "57b965b1397792245a92f35fece28653ce9ed6cb66ae692cfbbd79cb9ccba4fd"
+  },
+  {
+   "file": "docs/quant-recovery/v12/requal/registration-1.0.1.json",
+   "sha256": "79fc09f529a6b456c06000a82cbb9adb1bd55d3f5fb71c50506d17c8240159a5"
+  }
+ ],
+ "amendments": [
+  "Implementation clarification BEFORE any outcome (first P5a run aborted on a null weekly date, no result written or seen): weekly bars are labelled with the last trading day of the ISO week, so the last bar <= t0 can lie 7 days before t0 (e.g. t0 = 2016-03-31, Good Friday week, bar 2016-03-24). The window [t0 - 6 days, t0] of 1.0.0 would empty whole periods. 1.0.1: [t0 - 7 days, t0] (and the same for t1) everywhere 1.0.0 says 6 days. Nothing else changed.",
+  "1.0.2 AFTER the P5a, P5b and P5c results and BEFORE any P6 outcome: inside the S&P subset the V10 scoring (factors.cjs scoreCrossSection, product minimum of 200 valid values per component) leaves profitability and composite unavailable in all 45 periods (P5c S3/S4 null; only about 130 S&P members carry profitability components). P6 S3 and S4 would therefore be empty. Change for P6: all P6 signal scores are the AFTER-panel scores as built by the V10 code (percentiles across the whole survivor frame at the rank date, PIT, no re-normalisation inside the S&P subset); selection still only among PIT S&P 500 members. Raw realizedVolatility252d (S5) is unaffected. Change for P5c: diagnostic D2 added = AFTER full-frame scores with the holdings outcome (ZERO/LOWER), labelled post hoc; the registered steps S3/S4 stay reported unchanged (with profitability/composite unavailable). No parameter of any strategy changed."
+ ],
+ "strand": "requal",
+ "baseCommit": "55422d6724",
+ "purpose": "P5: reproducible before/after of the V10/V11 studies on the qualified PIT S&P 500 population (fund holdings, incl. exits, bounded cases) with corrected PIT market cap; P6: at most six complete, pre-specified trading strategies (entry/exit, market filter, cash, risk management) on the same basis, evaluated by market phase. Data quality before strategy optimisation: no variant search, no parameter tuning, no alpha claim and no generalisation that strategies cannot add value.",
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "priorExposure": [
+  "All V10 and V11 results are known (docs/quant-recovery/BACKTEST_V10_*.md, ALPHA_DISCOVERY_V11.md, v11/decomposition): population effect of the equal-weighted survivor frame vs SPY, selection -0.6..+0.5 pp per 13 W, V10 factor ICs (quality/profitability/momentum/composite positive at 1M, value weak), V11 H1/H2 quality and profitability+momentum lost to SPY 2021-2025, low-volatility and momentum families known from V7-V11 on the same history.",
+  "V12 strand outputs known before this registration: SPXPOP periods-1.1.0 (cap-weighted member return rPoint vs SPY per period, bounded weights, the three failing periods 2012-09, 2014-03, 2015-03), INDEXPOP coverage-1.2.0 (share of members with a qualified series per year), MCAP impact-1.0.0 (V10 factor ICs before/after the market-cap correction on the survivor frame).",
+  "Computed by this strand before registration (outcome-free): lifecycle frame size (4,329 listings; source manifest hash 37a1d45a... differs from the V11 run 2c27039f... because the CA register moved to 1.1.2 - disclosed), member counts and securityId shares per period of PIT_SP500, panel rank-date range 2010-01-29..2025-12-26. No equal-weighted return, no strategy return, no factor IC on the index population and no regime label was computed.",
+  "The parameters below (quintiles, top 30, 10-month line, 15 % vol target, 10 % buffer, 45 % reduced equity, costs) are conventional choices fixed without looking at any outcome on this population; they were NOT optimised. Owner suggestions (2) to (6) were adopted as worded."
+ ],
+ "inputs": {
+  "indexPopulation": {
+   "module": "quant/engines/research-index-population.cjs",
+   "population": "PIT_SP500",
+   "rules": "1.1.0",
+   "manifest": "docs/quant-recovery/v12/spxpop/manifest-1.1.0.json",
+   "manifestSha256": "c054da5492fcf123e69df5b58e7a51a2f37d92389e3ec01dbcc4e363803175d8"
+  },
+  "marketCap": {
+   "module": "quant/engines/research-pit-market-cap.cjs",
+   "rule": "1.0.8",
+   "ruleSha256": "8e64d38f06e4f82361101d2b2adf1bbb9a79fe201cf8a74e33e41d6c3bd6f77d",
+   "registerSha256": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+   "panels": "private V12 MCAP panels <v12-private>/mcap/{before,after}/panel.jsonl.gz (V10 factor code, survivor frame, monthly rank dates 2010-01-29..2025-12-26); sha256 recorded in every output"
+  },
+  "frame": {
+   "loaderOptions": {
+    "identityEvidence": true,
+    "corporateActionEvidence": true,
+    "listingLifecycleEvidence": true
+   },
+   "rule": "scripts/quant/v10/studies/common.cjs buildFrame (V10/V11 survivor frame incl. 121 ended listings)",
+   "expectedListings": 4329
+  },
+  "spy": {
+   "file": "quant/data/market/multi-asset/series/SPY.json",
+   "sha256": "00ca2b101dfecd4f88ae600fb468c01814f6bd23491f91a90a17279eb7a3ccac",
+   "basis": "PRICE_RETURN, daily split-adjusted close"
+  },
+  "spyDistributions": {
+   "file": "docs/quant-recovery/v11/decomposition/benchmark-reference-check.json",
+   "field": "spyDividends.fiscalYears[*].distributionsPerUnit",
+   "sha256": "2800bdfa2aca83f13562950a34cc15c042aa856490b06fc594e6b5e91a7582e9",
+   "source": "SEC N-30D annual reports of the SPDR S&P 500 ETF Trust (CIK 884394), fiscal year Oct-Sep"
+  },
+  "cash": {
+   "file": "quant/data/market/multi-asset/series/US_EFFR.json",
+   "sha256": "e5abf44aabf6185f0cf961466719853c892b8f2f578a6f7fc1749784be026362",
+   "rule": "cash accrues the effective federal funds rate: prod over calendar days of (1 + EFFR_d/100/360), EFFR_d = last observation <= d"
+  }
+ },
+ "commonDefinitions": {
+  "periods": "PIT_SP500 periods of the qualified span 2009-09-30 -> 2026-06-30 (47 periods; semiannual 31.3./30.9. until 2019-03, one 6-month period 2019-03 -> 2019-09, quarterly from 2019-09). The three non-qualified periods inside the span (2012-09 -> 2013-03, 2014-03 -> 2014-09, 2015-03 -> 2015-09) are INCLUDED (allowUnqualified) and flagged; sensitivity: statistics over the 44 qualified periods only.",
+  "signalSpan": "Studies needing factor-panel signals (P5c, P6): periods whose t0 has a panel rank date r with t0 - 35 days <= r <= t0 -> t0 in 2010-03-31 .. 2025-12-31 (45 periods). S1 is additionally reported from 2009-09-30.",
+  "membership": "Member set at t0 = fund holdings of SPY at t0. Index membership was public at the time (S&P announcements); the SEC filing date of the holdings report is NOT used as availability (stated limitation).",
+  "memberReturn": "Holdings price return t0 -> t1 of the module (R = s * p1/p0 - 1, observed/estimated statuses), bounded cases by scenario.",
+  "scenarios": {
+   "ZERO": "bounded exits at 0 % (module boundedAs ZERO); BOUNDED_AMBIGUOUS_CA at the midpoint of its two hypotheses (lower+upper)/2",
+   "LOWER": "bounded exits at -100 % and BOUNDED_AMBIGUOUS_CA at its lower hypothesis (module boundedAs LOWER)",
+   "rule": "every P5a/P5c/P6 result is reported under both scenarios; ZERO is the point estimate, LOWER the survivorship lower bound"
+  },
+  "withSeries": "A member \"has our series\" at t0 if its securityId (INDEXPOP T1/T2) is a frame listing whose weekly series has a bar in [t0 - 7 days, t0] and listingStart <= t0.",
+  "seriesReturn": "Weekly series return from the last bar <= t0 (>= t0 - 7 days) to the last bar <= t1 (>= t1 - 7 days). If the series ends before t1 - 7 days: lifecycle terminal CASH_MERGER -> cashPerShare / close(t0) - 1, otherwise last close (V10 LAST_CLOSE); sensitivity -100 % for these cases (counted).",
+  "spyPrice": "SPY daily close at the last trading day <= t0 and <= t1 (exact dates). For weekly-series comparisons additionally SPY at the same weekly bar dates.",
+  "spyTotalReturnReference": "Per calendar quarter q: y_q = D_FY(q) / 4 / SPY_close(start of q), D_FY = N-30D distributions per unit of the fiscal year (Oct-Sep) containing q; TR_period = prod_q (1 + priceReturn_q + y_q) - 1 over the quarters of the period. FY2026 (Oct 2025 - Sep 2026) not yet reported -> FY2025 value carried forward and flagged. Diagnostic: comparison with the N-PORT fund total return 2019-09+. Approximation; used only as reference because no strategy side is total-return capable (member returns are holdings price returns).",
+  "returnBasis": "PRICE_RETURN on both sides for every comparison; SPY total return only as a separately labelled reference (benchmark-definition term).",
+  "aggregation": "Chain-linked period returns; CAGR over the exact calendar span (365.25-day years); per-period differences in percentage points; annualised differences = CAGR differences."
+ },
+ "regimes": {
+  "R1_SPY_RULE": {
+   "inputs": "SPY daily closes. R = period price return; DDin = min over trading days d in (t0, t1] of close_d / max(close over [t0, d]) - 1; DD52 = close(t0) / max(close over the 252 trading days ending t0) - 1.",
+   "rule": [
+    "CRASH_BEAR if DDin <= -10 % or R <= -5 %",
+    "RECOVERY if not CRASH_BEAR and (previous period CRASH_BEAR or DD52 <= -10 %) and R > 0",
+    "SIDEWAYS if none of the above and |R| <= 2.5 % * sqrt(months / 3)",
+    "BULL otherwise"
+   ]
+  },
+  "R2_OWNER_CALENDAR": {
+   "rule": "Label by the calendar midpoint of the period, priority CRASH_BEAR > RECOVERY > SIDEWAYS > OTHER.",
+   "CRASH_BEAR": [
+    [
+     "2011-07-01",
+     "2011-12-31"
+    ],
+    [
+     "2015-07-01",
+     "2016-03-31"
+    ],
+    [
+     "2018-10-01",
+     "2018-12-31"
+    ],
+    [
+     "2020-01-01",
+     "2020-03-31"
+    ],
+    [
+     "2022-01-01",
+     "2022-12-31"
+    ]
+   ],
+   "RECOVERY": [
+    [
+     "2009-07-01",
+     "2010-12-31"
+    ],
+    [
+     "2016-01-01",
+     "2016-12-31"
+    ],
+    [
+     "2019-01-01",
+     "2019-12-31"
+    ],
+    [
+     "2020-04-01",
+     "2021-12-31"
+    ],
+    [
+     "2023-01-01",
+     "2023-12-31"
+    ]
+   ],
+   "SIDEWAYS": [
+    [
+     "2011-01-01",
+     "2012-12-31"
+    ],
+    [
+     "2015-01-01",
+     "2015-12-31"
+    ]
+   ]
+  },
+  "note": "Regimes are ex-post descriptive labels, fixed before any strategy outcome; semiannual periods make the labels coarse (stated)."
+ },
+ "P5": {
+  "a_population": {
+   "series": {
+    "SPY": "SPY price return, exact dates",
+    "SPY_TR": "SPY total-return reference",
+    "SPY_W": "SPY price return at the weekly bar dates",
+    "EW_ALL": "equal-weighted all PIT S&P 500 members (holdings returns, scenario)",
+    "CW_ALL": "holdings-weighted all members (consistency, ~ SPY)",
+    "EW_WITH_H": "equal-weighted members WITH our series, holdings return",
+    "EW_WITH_S": "same members, weekly-series return",
+    "EW_FRAME": "equal-weighted survivor frame (all frame listings with a bar at t0, V10/V11 population), weekly-series return, period buy-and-hold",
+    "EW_FRAME_WREB": "V11 definition: weekly rebalanced equal-weighted frame index between the same bar dates"
+   },
+   "identity": "EW_FRAME - SPY = (EW_FRAME - EW_WITH_S) [universe: survivor titles outside the index] + (EW_WITH_S - EW_WITH_H) [measurement: weekly series vs holdings, dates] + (EW_WITH_H - EW_ALL) [survivorship INSIDE the index] + (EW_ALL - SPY) [equal weighting inside the index]; plus SPY_TR - SPY [benchmark definition] and EW_FRAME_WREB - EW_FRAME [rebalancing frequency]. Exact per period.",
+   "reports": "per period, chain-linked CAGR, mean per-period difference with Newey-West SE (bandwidth 2 periods), subspans 2009-09..2019-09 and 2019-09..2026-06, by regime R1 and R2; under ZERO and LOWER; qualified-only sensitivity. Counts of members with/without series, bounded weights."
+  },
+  "b_signalDecomposition": {
+   "rules": [
+    "MOMENTUM_IMPROVED",
+    "MOMENTUM_DETERIORATED",
+    "TREND_UP",
+    "TREND_DOWN",
+    "NEW_52W_HIGH"
+   ],
+   "horizonsWeeks": [
+    13,
+    52
+   ],
+   "signalTiming": "V10/V11 unchanged: detection at weekly close k (signal-backtest.js), eligibility eligibleAt(k, WARMUP+COOLDOWN), entry close k+1, exit after h weeks on a contiguous calendar path; costs 10 + 5 bps per side (netOf).",
+   "window": [
+    "2009-10-01",
+    "2025-12-31"
+   ],
+   "sp500Restriction": "event counted if the listing is a PIT S&P 500 member at the latest population date t0 <= signal date (member securityId = frame id); population term = mean forward return of all eligible S&P-member frame observations of the same week.",
+   "steps": [
+    "V11 published (frame, 2000-2025)",
+    "FRAME_2009: same code on the full frame, window 2009-10..2025 (window effect)",
+    "SP500_WITH_SERIES: events and population restricted to S&P members (population effect)",
+    "SP500_ALL_ESTIMATE: population term shifted by the within-index survivorship gap of P5a (EW_WITH_H - EW_ALL per period, scaled to h weeks by h / weeks of the period; estimate, ZERO and LOWER)"
+   ],
+   "terms": "rawNet = SPY + (Pop - SPY) + (Signal - Pop) - cost (exact identity)",
+   "inference": "research-validation.inferTemporalBlockMean on the study calendar (block 52 for 13 W, 104 for 52 W, 1,999 replicates, seed 1729), Holm over 5 rules x 2 horizons x 3 terms = 30 per step; observed vs secured."
+  },
+  "c_factor": {
+   "signals": [
+    "quality",
+    "growth",
+    "value",
+    "profitability",
+    "momentum",
+    "risk",
+    "composite"
+   ],
+   "periodGrid": "signalSpan periods (45), rank date = latest panel date in [t0 - 35 d, t0]",
+   "steps": [
+    "S0 V10_PUBLISHED: docs/quant-recovery/v10/factor/factor-study-1.0.0.json (monthly, survivor frame, old market cap) - reference only",
+    "S1 FRAME_BEFORE: survivor frame listings with a panel row and a bar at t0; scores of the BEFORE panel as built; outcome = weekly series return t0 -> t1",
+    "S2 FRAME_AFTER: as S1 with the AFTER panel (corrected PIT market cap) -> market-cap effect",
+    "S3 SP_SERIES: S&P members with series and a panel row; scores re-normalised inside this subset (factors.cjs scoreCrossSection on AFTER raws); outcome weekly series -> population effect",
+    "S4 SP_HOLDINGS: same members and scores; outcome = holdings return incl. exits (ZERO / LOWER) -> exit/survivorship effect",
+    "D1 diagnostic: S&P members with series, AFTER full-frame scores (normalisation effect S3 vs D1)"
+   ],
+   "endpoints": "per period Spearman rank IC (observed outcomes), quintile means Q1..Q5 (ties by securityId), Q5 - Q1, Q5 - EW(scored), Q5 - SPY; min 100 scored members with outcome per period",
+   "inference": "Newey-West (bandwidth 2 periods) on per-period IC and spread; Holm over 7 signals per endpoint for S4 ZERO; few periods -> stated as observed unless secured."
+  },
+  "d_attribution": "Synthesis per difference (population, selection, costs, benchmark price vs TR, total return, portfolio construction) with explanatory text in the README and attribution JSON; no new outcome definition."
+ },
+ "P6": {
+  "span": "2010-03-31 -> 2026-03-31 (signalSpan periods); S1 additionally 2009-09-30 -> 2026-06-30",
+  "rebalancing": "at each population date t0; targets fixed at t0, buy-and-hold to t1; exited members become cash at their scenario value at t1 (no cost); weights drift with returns",
+  "universe": "PIT S&P 500 members at t0; selectable = members with a panel row at the rank date (securityId = panel id); scores = AFTER-panel full-frame scores (1.0.2; 1.0.0/1.0.1 said re-normalised inside the subset); ties broken by securityId; templates (banks/insurers/REITs) have no quality/profitability score and are not selectable for S3/S4.",
+  "marketFilter": "SPY close on the last trading day <= t0 above the mean of the last 10 month-end closes (month ends <= t0, the t0 month included when t0 is a month end)",
+  "strategies": [
+   {
+    "id": "S1_EW_SP500",
+    "rule": "equal weight all members (incl. members without series)",
+    "exposure": "fully invested"
+   },
+   {
+    "id": "S2_MOM_Q5_FILTER",
+    "rule": "top quintile of the V10 momentum score, equal weight",
+    "exposure": "100 % if market filter on, else 100 % cash (EFFR)"
+   },
+   {
+    "id": "S3_QP_Q5",
+    "rule": "top quintile of mean(quality score, profitability score) (both required), equal weight",
+    "exposure": "fully invested"
+   },
+   {
+    "id": "S4_MOMQP_TOP30_VOLTGT",
+    "rule": "top 30 by mean(momentum score, mean(quality, profitability)) (all required), equal weight, max position e/30 <= 3.33 %",
+    "exposure": "e = min(1, 0.15 / sigma), sigma = annualised (sqrt 52) std of the 52 weekly returns to the last bar <= t0 of the equal-weighted basket of the 30 names (names with >= 26 weekly returns in the window; weekly EW over available names); rest cash (EFFR)"
+   },
+   {
+    "id": "S5_LOWVOL_Q1",
+    "rule": "lowest quintile of realizedVolatility252d (panel raw), equal weight",
+    "exposure": "fully invested"
+   },
+   {
+    "id": "S6_EW_BUFFER_FILTER",
+    "rule": "equal weight all members",
+    "exposure": "equity 90 % if market filter on, 45 % if off; rest cash (EFFR)"
+   }
+  ],
+  "costs": {
+   "base": "10 + 5 bps per side on traded notional",
+   "stress": "20 + 30 bps per side",
+   "traded": "sum_i |w_target,i - w_drifted,i| over equity positions (cash leg free); initial purchase counted",
+   "turnover": "traded / 2 per year (one-sided)"
+  },
+  "metrics": "CAGR, annualised volatility sqrt-time-scaled from period log returns, Sharpe = annualised mean excess log return over cash / its annualised SD, MaxDD on the population-date equity curve (period granularity; SPY daily MaxDD shown for scale), turnover, cost drag, average equity share, CAGR difference vs SPY price, vs SPY TR reference (mixed basis, labelled), vs S1 (EW S&P), vs EW_WITH_H (selectable universe) -> selection term.",
+  "regimes": "mean per-period excess vs SPY and vs S1 by R1 and R2 labels, with period counts",
+  "inference": "z_i = (ln(1+r_i) - ln(1+b_i)) * n / years; Newey-West (bandwidth 2) and circular block bootstrap (block 4 periods, 9,999 replicates, seed 20261029) on mean(z); Holm over 11 tests (6 strategies vs SPY, S2-S6 vs S1) per scenario and cost level; ~11 blocks -> bootstrap NOT robust, stated; secured only if Holm <= 0.05 in both procedures.",
+  "survivorship": "ZERO and LOWER for every result; bounded weight held per strategy counted."
+ },
+ "verification": "Independent Python (stdlib, python3 -I): all P5a series per period from the raw population file, an exported frame series file and the raw SPY/EFFR series; one P6 strategy (S5_LOWVOL_Q1, ZERO, base costs) with its own volatility computation from the weekly series. A second language is not a holdout.",
+ "files": "scripts/quant/v12/requal/*, docs/quant-recovery/v12/requal/*, quant/tests/v12-requal*.test.mjs",
+ "registeredAt": "2026-10-29T09:35:59.738Z"
+}

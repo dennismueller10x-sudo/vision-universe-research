@@ -1,5 +1,6 @@
 /* Real existing Discover pages. Candidate overlays are explicitly labelled;
    live acceptance has no interception. Bounded representative browser sample. */
+import {routeDeliveryBundles} from './bundle-routes.mjs';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFileSync,writeFileSync,mkdirSync} from 'node:fs';
@@ -33,17 +34,18 @@ const work=[...tickers.map(ticker=>({ticker,width:390,theme:'dark'})),...matrice
 let failure=null;
 async function routes(page){
  if(live)return;
+ await routeDeliveryBundles(page,{'company-intelligence/config/rollout.js':rollout,'company-intelligence/ui/stock-section.js':ui,'company-intelligence/api/contract.js':contract,'discover/ui/detail.js':detail},origin);
  await page.route('**/company-intelligence/data/**',route=>{const path=new URL(route.request().url()).pathname.split('/company-intelligence/data/')[1];return route.fulfill({status:payloads.has(path)?200:404,contentType:'application/json',body:payloads.get(path)||'{}'});});
  for(const [path,body] of [['config/rollout.js',rollout],['ui/stock-section.js',ui],['api/contract.js',contract]])await page.route('**/company-intelligence/'+path+'*',route=>route.fulfill({status:200,contentType:'application/javascript',body}));
  await page.route('**/discover/ui/detail.js*',route=>route.fulfill({status:200,contentType:'application/javascript',body:detail}));
 }
 try{
- const locked=await browser.newPage();let protectedRequests=0;locked.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))protectedRequests++;});
+ const locked=await browser.newPage({serviceWorkers:'block'});let protectedRequests=0;locked.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))protectedRequests++;});
  await locked.goto(origin+'/discover/#/s/US_REAL/AAPL');await locked.waitForSelector('#research-access-gate');assert.equal(protectedRequests,0);await locked.close();
  await objectPool(work,async ({ticker,width,theme})=>{
   const cid=Object.keys(m.eligibility).find(c=>m.eligibility[c].tickers.includes(ticker));assert(cid,ticker);
   const expected=JSON.parse(payloads.get(`snapshots/${m.generation}/${cid}.json`)),flags=m.eligibility[cid].modules;
-  const page=await browser.newPage({viewport:{width,height:860},colorScheme:theme}),errors=[],requests=[],scriptFailures=[],stockResponses=[];
+  const page=await browser.newPage({serviceWorkers:'block',viewport:{width,height:860},colorScheme:theme}),errors=[],requests=[],scriptFailures=[],stockResponses=[];
   try{
    await routes(page);await page.addInitScript(({key,state,theme})=>{localStorage.setItem(key,JSON.stringify(state));localStorage.setItem('vu-discover-theme-v1',theme);},{key:STORAGE_KEY,state,theme});
    page.on('pageerror',e=>errors.push(String(e.stack||e.message).slice(0,500)));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push({path:new URL(r.url()).pathname,status:r.status()});if(r.url().includes('/discover/data/stocks/'))stockResponses.push({path:new URL(r.url()).pathname,status:r.status()});if(r.request().resourceType()==='script'&&r.status()>=400)scriptFailures.push({path:new URL(r.url()).pathname,status:r.status()});});page.on('requestfailed',r=>{if(r.resourceType()==='script')scriptFailures.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText});if(r.url().includes('/discover/data/stocks/'))stockResponses.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText});});
@@ -93,7 +95,7 @@ try{
   }catch(e){failure={ticker,cid,width,theme,message:String(e.message).slice(0,600),errors,requests,scriptFailures,stockResponses,visibleText:(await page.locator('#v2-main').innerText().catch(()=>'' )).slice(0,500)};await page.screenshot({path:out+'-failure.png'});throw e;}finally{await page.close();await new Promise(r=>setTimeout(r,750));}
  },1);
  for(const ticker of sample.ineligible){
-  const page=await browser.newPage({viewport:{width:390,height:860}});await routes(page);await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});let requests=0;const errors=[];
+  const page=await browser.newPage({serviceWorkers:'block',viewport:{width:390,height:860}});await routes(page);await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});let requests=0;const errors=[];
   page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests++;});page.on('pageerror',e=>errors.push(e.message));
   await page.goto(origin+'/discover/#/s/US_REAL/'+ticker);await page.waitForFunction(()=>document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false',null,{timeout:30000});
   assert.equal(requests,0,ticker+':ineligible-request');assert.equal(await page.locator('.ci-company-intelligence').count(),0,ticker);assert.equal(await page.locator('vu-navigation').count(),1);assert.deepEqual(errors,[]);

@@ -6,9 +6,9 @@
       "cik": "0000746514",
       "name": "NEW ENGLAND REALTY ASSOCIATES LIMITED PARTNERSHIP",
       "sic": "6513",
-      "rawFacts": 13968,
-      "mappedFacts": 4171,
-      "unmappedFacts": 10056,
+      "rawFacts": 14185,
+      "mappedFacts": 4226,
+      "unmappedFacts": 10211,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 65,
+      "quarterlyPeriods": 66,
       "firstPeriodEnd": "2009-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 49,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -94,7 +94,7 @@
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -117,48 +117,49 @@
         }
       },
       "quality": {
-        "HIGH": 365,
-        "MEDIUM": 14
+        "HIGH": 368,
+        "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 379,
-        "resolvedValues": 379
+        "datableValues": 384,
+        "resolvedValues": 384
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10265,
+        "rules_version": "1.1.0",
+        "total": 10285,
         "by_severity": {
-          "INFO": 10056,
+          "INFO": 10211,
           "ERROR": 18,
-          "WARNING": 191
+          "WARNING": 56
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 110,
           "FUTURE_DATA_LEAK": 18,
+          "FUTURE_PERIOD_END": 6,
           "PERIOD_MISMATCH": 24,
-          "RESTATEMENT_CONFLICT": 57,
-          "UNKNOWN_CONCEPT": 10056
+          "RESTATEMENT_CONFLICT": 26,
+          "UNKNOWN_CONCEPT": 10211
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-092533",
-        "filing_date": "2026-08-07",
+        "accession": "0001104659-26-123743",
+        "filing_date": "2026-11-06",
         "form": "10-Q",
-        "periodic_filings": 127
+        "periodic_filings": 128,
+        "acceptance_datetime": "2026-11-06T17:42:39.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "19a97755e28371e11c5571998299c7c08b12b8e8cab8264b3e90046ab4d6aca3",
+      "sourceDigest": "800b79eb4f492a3a0e757622d730292e54cc51fabd0d7a45acf03836d7dfa49d",
       "issuerId": "iss_cik_0000746514"
     },
     {
@@ -167,7 +168,7 @@
       "sic": "1040",
       "rawFacts": 4290,
       "mappedFacts": 744,
-      "unmappedFacts": 3685,
+      "unmappedFacts": 3664,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -277,8 +278,8 @@
         }
       },
       "quality": {
-        "HIGH": 120,
-        "MEDIUM": 8
+        "HIGH": 112,
+        "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
@@ -286,33 +287,34 @@
         "resolvedValues": 128
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3756,
+        "rules_version": "1.1.0",
+        "total": 3753,
         "by_severity": {
-          "INFO": 3685,
-          "WARNING": 71
+          "INFO": 3664,
+          "WARNING": 89
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 17,
+          "CONCEPT_DISAGREEMENT": 35,
           "RESTATEMENT_CONFLICT": 54,
-          "UNKNOWN_CONCEPT": 3685
+          "UNKNOWN_CONCEPT": 3664
         }
       },
       "latestFiling": {
-        "accession": "0001628280-25-047726",
-        "filing_date": "2025-10-31",
+        "accession": "0001628280-26-068459",
+        "filing_date": "2026-10-30",
         "form": "20-F",
-        "periodic_filings": 32
+        "periodic_filings": 33,
+        "acceptance_datetime": "2026-10-30T12:54:12.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "f97226ef3f8153660eb26f21640a510561ea069bb814cda8737e43bc36b0245a",

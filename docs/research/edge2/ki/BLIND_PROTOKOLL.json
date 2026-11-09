@@ -1,0 +1,43 @@
+{
+  "schema": "vu-edge2-blind-protocol-1.0.0",
+  "id": "EDGE2-KI-BLIND-2016-2026",
+  "registeredOn": "2026-11-06",
+  "registeredBy": "Strang Edge 2 (Claude) nach Owner-Auftrag vom 06.11.2026",
+  "label": "Forschung, nicht zertifiziert",
+  "question": "Wählt ein Sprachmodell, das nur anonymisierte Daten sieht, monatlich 10 aus 50 zufälligen Kandidaten so aus, dass das Depot den S&P 500 (SPY-Gesamtrendite) nach Kosten schlägt?",
+  "execution": "Im Claude-Abo des Owners (Claude-Code-Sitzung und Subagenten), nicht über die API; workers/vu-ask bleibt den Nutzerfragen vorbehalten.",
+  "prompt": { "file": "docs/research/edge2/ki/PROMPT_v1.md", "version": "v1", "sha256": "4d273f7b84b4a8819c7e1964ce19ebbd8e9171703aff9b63457a04f7ebdd5b9e" },
+  "packets": {
+    "builder": "scripts/research/edge2/blind.cjs#buildPackets (edge2-blind-1.0.0)",
+    "panel": "dasselbe Gesamtrendite-Panel wie Edge 2 Teil 1/2 (R2-Tagesbalken, delistete V13-Ketten, SEC wie erstmals eingereicht)",
+    "decisions": "erste Panelwoche jedes Kalendermonats von 2016-01-01 bis 2026-09-30, Ausführung zum Schluss der Folgewoche, gehalten bis zur Ausführung der nächsten Entscheidung",
+    "universe": "Kurs an t und t+1, Branche, 104 Wochen Historie, Liquidität VU-Standard (Kurs >= 5 USD, Umsatz >= 2 Mio. USD/Tag bzw. Marktwert >= 300 Mio. USD)",
+    "draw": "50 Kandidaten gleichverteilt aus dem Universum, Ziehung mit geheimem Salz (im Runner erzeugt)",
+    "anonymization": "keine Ticker, Namen, Datumsangaben, Branchen im Klartext; Gruppenbuchstaben je Paket neu gewürfelt; Kurse als 52-Wochen-Pfad relativ zum gleichgewichteten Universum (Startwert 100, 4-Wochen-Schritte); Kennzahlen als Dezile im Universum; Paket-IDs aus dem Salz, Pakete nach ID sortiert (keine Chronologie)",
+    "omitted": "SEC-Text (ohne Firmen- und Produktnamen nicht verlässlich neutralisierbar, für 129 Monate x 50 Titel nicht prüfbar), News und Analysten-Konsens (historisch nicht zeitgenau vorhanden)",
+    "keys": "Zuordnung Paket -> Datum und Label -> Titel nur im privaten Eimer (edge2-blind/keys-<packetsSha256>.json) und versiegelt an Owner und Strang; nie im Repository"
+  },
+  "recognitionTest": {
+    "when": "vor den Entscheidungen, mit eigenen Subagenten, die keine Entscheidung treffen",
+    "sample": "20 Pakete (die ersten 20 nach Paket-ID)",
+    "task": "je Paket das Jahr schätzen (2016–2026) und für jeden Kandidaten optional eine Firma nennen",
+    "failIf": "Jahr exakt in mehr als 25 % der Pakete ODER mittlerer Jahresfehler unter 2,0 Jahren ODER mehr als 2 % aller Kandidaten korrekt als Firma benannt (Ticker oder Name, Prüfung durch Auflösung)",
+    "onFail": "Der Backtest gilt als wertlos und wird so berichtet; keine nachträgliche Änderung der Anonymisierung in diesem Protokoll."
+  },
+  "decisions": {
+    "agents": "je Subagent höchstens 13 Pakete in Paket-ID-Reihenfolge, jedes Paket unabhängig, Prompt v1 wörtlich, nur das Paket als Daten; keine Werkzeuge, kein Repository-Zugriff",
+    "invalid": "Antwort ohne genau 10 gültige verschiedene Labels oder mit mehr als 3 Titeln einer Gruppe: einmal mit demselben Prompt neu fragen; danach zählt das Paket als Cash (Depot hält Cash bis zur nächsten Entscheidung)",
+    "picksFile": "docs/research/edge2/ki/blind/picks.json, vor der Auflösung committet (Zeitstempel)"
+  },
+  "evaluation": {
+    "ledger": "quant-e3.cjs#ledgerFromTargets, gleichgewichtet 10 %, Kosten 1 + 5 bp je Seite und halber Spread, TERMINAL_CASH wie E3/H",
+    "primary": "KI-Depot gegen SPY-Gesamtrendite: study.cjs#pairedTest und study.cjs#verdict (einzelne Hypothese, keine Holm-Familie)",
+    "secondary": "KI-Depot gegen das gleichgewichtete Depot aller 50 Kandidaten desselben Pakets (Zufallsbasis): pairedTest, beschreibend",
+    "dq": "DQ-K5-BOOK als Sensitivität",
+    "sealed": "Ergebnis versiegelt an den Owner (results-public-key.pem) und den Strang (docs/research/edge2/reviewer-public.pem); öffentlich nur Zählungen und Hashes"
+  },
+  "forward": {
+    "rule": "Dieselbe Regel unverändert vorwärts im KI-Depot (a): Paket aus heutigen Daten mit demselben Bauplan, Prompt v1, 10 gleichgewichtete Titel, Entscheidung einmal je Monat in der ersten Handelswoche; Bewertung mit Schlusskursen des nächsten Handelstags über quant/engines/published-close.js nach 3, 6 und 12 Monaten gegen SPY-Gesamtrendite.",
+    "note": "Im Vorwärtslauf gibt es keinen Vorgriff; die Anonymisierung bleibt trotzdem, damit die Regel identisch ist."
+  }
+}

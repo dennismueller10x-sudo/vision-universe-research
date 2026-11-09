@@ -1,0 +1,596 @@
+{
+ "schema": "vu-ci-checks-1",
+ "purpose": "Regeln je Pruefung im Buendel ci.yml; gelesen von scripts/ci/select-checks.mjs (Pfade/Zweige wie die frueheren Workflow-Filter).",
+ "checks": {
+  "ask": {
+   "vormals": "ask-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "ask/**",
+     "workers/vu-ask/**",
+     "screener/engine/**",
+     "products/screener/producer/sic.mjs",
+     "scripts/supertrader/build.mjs",
+     "quant/engines/technical/ti/ai-tools.js",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "ask/**",
+     "workers/vu-ask/**",
+     "screener/engine/**",
+     "quant/engines/technical/ti/ai-tools.js",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "brevo": {
+   "vormals": "brevo-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "scripts/brevo/**",
+     "docs/brevo/**",
+     ".github/workflows/brevo-*.yml"
+    ]
+   },
+   "push": {
+    "branches": [
+     "feat/brevo-newsletter-isolated"
+    ],
+    "paths": [
+     "scripts/brevo/**",
+     "docs/brevo/**",
+     ".github/workflows/brevo-*.yml"
+    ]
+   },
+   "dispatch": false
+  },
+  "ci-config": {
+   "vormals": "ci-config.yml",
+   "pullRequest": {
+    "paths": [
+     ".github/workflows/**",
+     "scripts/ci/**",
+     "quant/tests/workflow-npx-pinned.test.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     ".github/workflows/**",
+     "scripts/ci/**",
+     "quant/tests/workflow-npx-pinned.test.mjs"
+    ]
+   }
+  },
+  "creative-job-guard": {
+   "vormals": "creative-job-guard.yml",
+   "pullRequest": {
+    "paths": [
+     "authoring/requests/**"
+    ]
+   },
+   "dispatch": false
+  },
+  "etf-dashboard": {
+   "vormals": "etf-dashboard-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "etf/**"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "etf/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "fundamental": {
+   "vormals": "fundamental-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "fundamental/**",
+     "products/fundamental/**",
+     ".github/workflows/ci.yml",
+     ".github/workflows/monitor.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "fundamental/**",
+     "products/fundamental/**",
+     ".github/workflows/ci.yml",
+     ".github/workflows/monitor.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "hedgefonds-dashboard": {
+   "vormals": "hedgefonds-dashboard-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "hedgefonds/**",
+     "products/hedgefonds/**"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "hedgefonds/**",
+     "products/hedgefonds/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "landing": {
+   "vormals": "landing-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "landing/**",
+     ".github/workflows/ci.yml",
+     ".github/workflows/deploy.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "research-access": {
+   "vormals": "research-access-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "scripts/access-gate/**",
+     "scripts/vu2/production-smoke.mjs",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "paths": [
+     "scripts/access-gate/**",
+     "scripts/vu2/production-smoke.mjs",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "dispatch": false
+  },
+  "screener": {
+   "vormals": "screener-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "screener/**",
+     "products/screener/producer/**",
+     "assets/site-navigation.js",
+     "scripts/vu2/build-release.mjs",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "screener/**",
+     "products/screener/producer/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "vorsorge": {
+   "vormals": "vorsorge-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "vorsorge/**",
+     "products/vorsorge/**",
+     ".github/workflows/ci.yml",
+     ".github/workflows/research.yml",
+     "assets/site-navigation.js",
+     "assets/site-navigation.css",
+     "assets/product-icons.svg",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "vorsorge/**",
+     "products/vorsorge/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "willkommen": {
+   "vormals": "willkommen-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "willkommen/**",
+     "assets/stories/**",
+     "studio/stories/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "willkommen/**",
+     "assets/stories/**",
+     "studio/stories/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "discover": {
+   "vormals": "discover-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "discover/**",
+     "products/discover/**",
+     "scripts/discover/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "discover/**",
+     "products/discover/**",
+     "scripts/discover/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "discover-frontend": {
+   "vormals": "discover-frontend-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "discover/**",
+     "discover-v2/**",
+     "scripts/discover/**",
+     "assets/site-navigation.js",
+     "assets/site-navigation.css",
+     "assets/product-icons.svg",
+     "assets/product-hero.css",
+     "assets/hero-visuals/**",
+     "assets/themen/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "discover/**",
+     "discover-v2/**",
+     "scripts/discover/**",
+     "assets/site-navigation.js",
+     "assets/site-navigation.css",
+     "assets/product-icons.svg",
+     "assets/product-hero.css",
+     "assets/hero-visuals/**",
+     "assets/themen/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "sec-fundamentals": {
+   "vormals": "sec-fundamentals-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "quant/**",
+     "scripts/quant/**",
+     "scripts/vu2/build-release.mjs",
+     "docs/SEC_*.md",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "quant/**",
+     "scripts/quant/**",
+     "scripts/vu2/build-release.mjs",
+     "docs/SEC_*.md",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "social": {
+   "vormals": "social-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "social/**",
+     "products/social/producer/**",
+     "workers/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "social/**",
+     "products/social/producer/**",
+     "workers/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "supertrader": {
+   "vormals": "supertrader-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "supertrader/**",
+     "products/supertrader/**",
+     "scripts/supertrader/**",
+     "docs/SUPERTRADER_*.md",
+     ".github/workflows/supertrader-*.yml"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "scripts/supertrader/**",
+     "supertrader/assets/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "technical": {
+   "vormals": "technical-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "technical/**",
+     "products/technical/**",
+     "academy/**",
+     "quant/engines/technical/**",
+     "quant/tests/technical-*",
+     "quant/tests/fixtures/technical-reference-*",
+     "scripts/technical/world/**",
+     "assets/site-navigation.*",
+     "assets/stock-navigator.*",
+     "core/stock-context.js",
+     "scripts/vu2/release-id.mjs",
+     ".github/workflows/technical-*.yml"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "technical/**",
+     "academy/**",
+     "quant/engines/technical/**",
+     "scripts/technical/world/**",
+     ".github/workflows/technical-*.yml"
+    ]
+   }
+  },
+  "vu2-browser-qa": {
+   "vormals": "vu2-browser-qa.yml",
+   "pullRequest": {
+    "paths": [
+     "vu2/**",
+     "quant/index.html",
+     "quant/app/**",
+     "quant/engines/**",
+     "discover/ui/live-hub.js",
+     "discover/ui/microchart.js",
+     "quant/ui/charts.js",
+     "quant/ui/technical-chart.*",
+     "quant/ui/quant.css",
+     "quant/technical/index.html",
+     "quant/technical/app.js",
+     "quant/api/**",
+     "scripts/vu2/**",
+     "assets/site-navigation.*",
+     "assets/product-icons.svg",
+     "assets/product-hero.css",
+     "assets/hero-visuals/**",
+     "assets/vision-universe-logo*.png",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "dispatch": false
+  },
+  "vu2-lifecycle-handoff": {
+   "vormals": "vu2-lifecycle-handoff.yml",
+   "pullRequest": {
+    "paths": [
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs",
+     "scripts/vu2/verify-history-handoff.mjs",
+     "quant/tests/history-handoff-proof.test.mjs"
+    ]
+   }
+  },
+  "account": {
+   "vormals": "account-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "supabase/**",
+     "workers/vu-account/**",
+     "scripts/account/**",
+     "konto/**",
+     "preise/**",
+     "mein-dashboard/**",
+     "willkommen/index.html",
+     "willkommen/app.js",
+     "willkommen/start/**",
+     "scripts/home/cancel-link.mjs",
+     "scripts/watchlist/**",
+     "core/watchlist-view.js",
+     "assets/watchlist-button.js",
+     "fundamental/index.html",
+     "hedgefonds/index.html",
+     ".github/workflows/account-*.yml",
+     ".github/workflows/account.yml",
+     "discover/app.js",
+     "discover/index.html",
+     "scripts/discover/watchlist-coupling-qa.mjs",
+     "quant/index.html"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "supabase/**",
+     "workers/vu-account/**",
+     "scripts/account/**",
+     "konto/**",
+     "preise/**",
+     "mein-dashboard/**",
+     "scripts/watchlist/**",
+     "core/watchlist-view.js",
+     "assets/watchlist-button.js",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  },
+  "shell": {
+   "vormals": "shell-ci.yml",
+   "pullRequest": {
+    "paths": [
+     "assets/site-navigation.js",
+     "assets/site-navigation.css",
+     "assets/product-icons.svg",
+     "assets/product-hero.css",
+     "assets/hero-visuals/**",
+     "discover/*.js",
+     "discover/*.css",
+     "discover/index.html",
+     "quant/app/**",
+     "quant/index.html",
+     "vorsorge/app.*",
+     "vorsorge/ui/**",
+     "screener/*.js",
+     "screener/*.css",
+     "supertrader/assets/**",
+     "hedgefonds/app.*",
+     "scripts/quality/shell-browser-qa.mjs",
+     "scripts/quality/app-legal-menu-qa.mjs",
+     "app/www/**",
+     "scripts/quality/vu3-regression-qa.mjs",
+     "scripts/quality/fundamental-compare-qa.mjs",
+     "elliott/**",
+     "fundamental/**",
+     "products/fundamental/producer/**",
+     "scripts/vu2/build-release.mjs",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   },
+   "push": {
+    "branches": [
+     "main"
+    ],
+    "paths": [
+     "assets/site-navigation.js",
+     "assets/site-navigation.css",
+     "assets/product-icons.svg",
+     "assets/product-hero.css",
+     "assets/hero-visuals/**",
+     "discover/*.js",
+     "discover/*.css",
+     "discover/index.html",
+     "quant/app/**",
+     "quant/index.html",
+     "vorsorge/app.*",
+     "vorsorge/ui/**",
+     "screener/*.js",
+     "screener/*.css",
+     "supertrader/assets/**",
+     "hedgefonds/app.*",
+     "scripts/quality/shell-browser-qa.mjs",
+     "scripts/quality/app-legal-menu-qa.mjs",
+     "app/www/**",
+     "scripts/quality/vu3-regression-qa.mjs",
+     "scripts/quality/fundamental-compare-qa.mjs",
+     "elliott/**",
+     "fundamental/**",
+     "products/fundamental/producer/**",
+     ".github/workflows/ci.yml",
+     "scripts/ci/ci-checks.json",
+     "scripts/ci/select-checks.mjs"
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,787 @@
+{
+  "auditBaseline": "272b226018869a03459f64c9dc4d46e67a791ee7",
+  "assistantDependency": "97b15816089c91e28c577c5c24c5f3a2e4c6f66b",
+  "method": "Critical second audit pass with externally checked definitions and independent semantic test expectations; not a separately commissioned human expert review or beginner user study.",
+  "lessons": [
+    {
+      "id": "struktur-1",
+      "title": "Aufbau einer Kurskerze",
+      "checks": {
+        "1_fachlichkeit": "OHLC/Körper/Dochte korrekt; fehlende Intrabar-Reihenfolge richtig.",
+        "2_einsteiger": "OHLC ausgeschrieben, Kurslücke erklärt; Kerzengrafik passend zu den Zahlen ausgerichtet.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Form, Beispiel, Gegenbeispiel und Quizkern erhalten.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Eine grüne Kerze kann nach einer Abwärtslücke unter dem Vortagesschluss bleiben. Grün bedeutet daher nicht automatisch einen Tagesgewinn gegenüber gestern.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Die Reihenfolge von Hoch und Tief",
+        "8_funktion": "Öffne Chart Studio, wähle einen Titel und lies die vier Werte einer abgeschlossenen Tageskerze ab. → #/chart"
+      },
+      "internalSources": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "struktur-2",
+      "title": "Trends und Seitwärtsbewegungen",
+      "checks": {
+        "1_fachlichkeit": "Höhere Hochs plus höhere Tiefs; gemischte Struktur richtig.",
+        "2_einsteiger": "Abfolgebeispiel und Gegenfall überzeugen.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Praxisziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Ein kurzer Anstieg innerhalb eines großen Abwärtstrends sieht im engen Ausschnitt aufwärts aus. Gemischte Struktur ist weder ein Datenfehler noch ein Wendebeweis.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Höhere Hochs und höhere Tiefs",
+        "8_funktion": "Vergleiche im Chart Studio mehrere Hochs und Tiefs; notiere auch widersprüchliche Abschnitte. → #/chart"
+      },
+      "internalSources": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "struktur-3",
+      "title": "Unterstützung und Widerstand",
+      "checks": {
+        "1_fachlichkeit": "Unterstützung als Zone früherer Reaktionen, keine Kursgarantie.",
+        "2_einsteiger": "Anschauliche 99–101-Zone; externer Definitionsabgleich ergänzt.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Erklärung, Quiz und Praxisziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Nach neuen Nachrichten kann der Kurs direkt unter dem Bereich eröffnen. Frühere Reaktionen verhindern weder Kurslücken noch einen weiteren Rückgang.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Eine Zone früherer Reaktionen",
+        "8_funktion": "Schalte im Chart Studio die Schicht Niveaus ein und vergleiche sie mit den sichtbaren Reaktionen. → #/chart"
+      },
+      "internalSources": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [
+        "fidelity-support"
+      ],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "struktur-4",
+      "title": "Einen Chart systematisch lesen",
+      "checks": {
+        "1_fachlichkeit": "Datenstand vor Struktur vor Indikatoren; UNKNOWN korrekt.",
+        "2_einsteiger": "SMA erschien vor seiner Einführung: passenden Vorabbegriff ergänzt.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Haupttext, Beispiel und Quiz unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Ein Kursbild ohne neue Balken kann ruhig wirken, obwohl die Reihe nicht mehr aktualisiert wird. Ruhe ist dann keine belastbare Marktbeobachtung.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Datenstand und Zeitrahmen prüfen",
+        "8_funktion": "Öffne im Chart Studio Datenqualität und Herkunft und schreibe eine vierteilige Chartbeschreibung. → #/chart"
+      },
+      "internalSources": [
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "technical/app.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "trend-1",
+      "title": "Aufwärtstrends erkennen",
+      "checks": {
+        "1_fachlichkeit": "Lagefilter ist kein Strukturbeweis.",
+        "2_einsteiger": "Gegenfall sinkender Hochs trotz Kurs über SMA 200 funktioniert.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Ziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Nach einem starken Ein-Tages-Sprung kann der Kurs oberhalb mehrerer Linien stehen, ohne dass bereits eine länger erkennbare Aufwärtsstruktur vorliegt.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Dieser einzelne Lagefilter ist erfüllt",
+        "8_funktion": "Öffne das Analyseziel Trendfolge und vergleiche Kriterienliste und Struktur eines Treffers. → #/assistent/trendfolge"
+      },
+      "internalSources": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "trend-2",
+      "title": "SMA 50/150/200",
+      "checks": {
+        "1_fachlichkeit": "Arithmetische Gleichgewichtung korrekt; Verzögerung ergänzungsbedürftig.",
+        "2_einsteiger": "Einfaches Dreier-Zahlenbeispiel und Anwendungsquiz statt offensichtlicher Garantie-Alternative.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Praxisziel von allgemeiner Trendfolge auf tatsächlich angekündigte establishedUptrend korrigiert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "In einer Seitwärtsphase kann der Kurs mehrfach um eine Durchschnittslinie pendeln. Häufige Kreuzungen beweisen keinen Vorteil.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: 102",
+        "8_funktion": "Öffne die etablierte Trendvorlage und prüfe die SMA-Kriterien im Chart ihrer Treffer. → #/vorlagen/establishedUptrend"
+      },
+      "internalSources": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [
+        "fidelity-sma"
+      ],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "trend-3",
+      "title": "Relative Stärke",
+      "checks": {
+        "1_fachlichkeit": "RS/RS-Rang/RSI richtig unterschieden; Einheit und Bezugsinstrument fehlten.",
+        "2_einsteiger": "SPY als ETF und RS-Differenz +5 Prozentpunkte bei absolut −5 % erklärt.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Quiz prüft jetzt absolutes vs. relatives Ergebnis; optionalen RS-Filter in der Praxis benannt.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Ein hoher RS-Rang kann in einem schwachen Gesamtmarkt auftreten. Auch ein ungewöhnlicher Kurssprung durch fehlerhafte Daten kann Rangwerte verzerren.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Relativ +5 Prozentpunkte, absolut −5 %",
+        "8_funktion": "Öffne Trendfolge und aktiviere bei Bedarf „RS-Rang mindestens 70“. Lies die Rangwerte der Treffer und prüfe im Chart die relative Stärke sowie Datenhinweise. → #/assistent/trendfolge"
+      },
+      "internalSources": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "trend-4",
+      "title": "Acht-Kriterien-Trendvorlage anwenden",
+      "checks": {
+        "1_fachlichkeit": "Alle acht Kriterien entsprechen templates.js.",
+        "2_einsteiger": "21-Handelstage-Vergleich erklärt: nicht jeden Tag steigend; Hoch/Tief-Basis präzisiert.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Acht-Kriterien-Beispiel, Quiz und Ziel erhalten.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Selbst acht erfüllte Bedingungen können vor einem Kursrückgang auftreten. Die Zusammenstellung beschreibt den Zustand; sie belegt keinen zukünftigen Erfolg.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Die definierten Bedingungen sind am Stichtag erfüllt",
+        "8_funktion": "Öffne die Vorlage Etablierter Aufwärtstrend, lies alle acht Kriterien und prüfe einen Treffer im Chart. → #/vorlagen/establishedUptrend"
+      },
+      "internalSources": [
+        "technical/engine/templates.js",
+        "docs/technical/STRATEGY_TEMPLATES_PLAN.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "breakout-1",
+      "title": "Konsolidierung und Dreiecke",
+      "checks": {
+        "1_fachlichkeit": "Erkannt/Bestätigt/Invalidiert richtig getrennt.",
+        "2_einsteiger": "Symmetrisch/aufsteigend/absteigend und invalidiert erklärt.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Richtung nicht vorweggenommen; Beispiel und Quiz erhalten.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Eine engere Spanne kann sich lange fortsetzen oder in beide Richtungen verlassen werden. Das Dreieck legt keine sichere Ausbruchsrichtung fest.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Die Erkennung liegt vor, die Bestätigung noch nicht",
+        "8_funktion": "Öffne die Dreiecksvorlagen und vergleiche in Bildung mit bestätigten Formationen. → #/vorlagen"
+      },
+      "internalSources": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "breakout-2",
+      "title": "Breakout und Bestätigung",
+      "checks": {
+        "1_fachlichkeit": "Typabhängige Schlusskursregel; Intraday-Hoch ist keine Bestätigung.",
+        "2_einsteiger": "Passender kurzer Gegenfall eines Rücklaufs.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Praxisziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Auch nach gültiger Bestätigung kann der nächste Schluss wieder innerhalb der alten Spanne liegen. Bestätigt bedeutet nicht dauerhaft erfolgreich.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Die vorhandene Bestätigungsregel der Formation",
+        "8_funktion": "Öffne Ausbruch im Assistenten und vergleiche den Status eines Treffers mit der Methodik. → #/assistent/ausbruch"
+      },
+      "internalSources": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "breakout-3",
+      "title": "Volumen",
+      "checks": {
+        "1_fachlichkeit": "Tagesvolumen / Median vorheriger 20 Sitzungen entspricht der Engine.",
+        "2_einsteiger": "Median und Ausschluss des aktuellen Tags ausdrücklich erklärt.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Keine Richtungsbehauptung; Beispiel und Quiz erhalten.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Hohe Aktivität kann bei einer Abwärtslücke oder einer Nachricht auftreten. Sie bestätigt für sich allein keine positive Kursrichtung.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Das Verhältnis zum definierten Vergleichsvolumen",
+        "8_funktion": "Öffne Ausbruch im Assistenten und lies die Volumenbedingung sowie die Angaben eines Treffers. → #/assistent/ausbruch"
+      },
+      "internalSources": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "breakout-4",
+      "title": "Gescheiterte Ausbrüche",
+      "checks": {
+        "1_fachlichkeit": "Bestätigung und spätere Entwicklung dürfen nicht rückwirkend vermischt werden.",
+        "2_einsteiger": "Rücklauf ist nicht automatisch typabhängige Invalidierung.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Praxis präzisiert: Historie unter Signale, Regeln unter Methodik.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Der Rücklauf allein bedeutet nicht bei jedem Formationstyp sofort den Status invalidiert. Dafür zählt weiterhin die jeweilige vorhandene Engine-Regel.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Bestätigung und spätere Entwicklung getrennt",
+        "8_funktion": "Öffne einen Titel im Chart Studio und wechsle zu Signale. Lies dort die Erkennungshistorie. Die Bestätigungs- und Invalidierungsregel des jeweiligen Typs findest du zusätzlich unter Methodik. → #/chart"
+      },
+      "internalSources": [
+        "docs/technical/FORMATION_VALIDATION.md",
+        "technical/engine/templates.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "momentum-1",
+      "title": "Trend versus Momentum",
+      "checks": {
+        "1_fachlichkeit": "Trend und nachlassender Schwung können zusammen auftreten.",
+        "2_einsteiger": "Zuwächse nur über gleich lange Abschnitte vergleichbar: Beispiel und Lernbild präzisiert.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Quizkern erhalten; keine neue Momentumregel.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Weniger Schwung kann eine Pause, einen Rückgang oder eine erneute Beschleunigung begleiten. Die spätere Richtung ist damit nicht festgelegt.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Aufwärtstrend und nachlassender Schwung",
+        "8_funktion": "Öffne Momentum im Assistenten und vergleiche Kursverlauf und ausgewählte Momentumkriterien. → #/assistent/momentum"
+      },
+      "internalSources": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "momentum-2",
+      "title": "RSI",
+      "checks": {
+        "1_fachlichkeit": "RSI 0–100, 30/70 als Konventionen, Verharren im Trend korrekt.",
+        "2_einsteiger": "Wilder-Glättung, 14 und Bedeutung der Skala ergänzt; keine Gewinnwahrscheinlichkeit.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Zonenquiz und Gegenfall bleiben erhalten; Glossar präzisiert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "In einem ausgeprägten Aufwärtstrend kann RSI länger hoch bleiben. Ein niedriger RSI kann einen weiter fallenden Kurs begleiten.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Die übliche beschreibende Zone ist erreicht",
+        "8_funktion": "Wähle im Chart Studio das RSI-Unterfenster und vergleiche seine Zonen mit dem Verlauf. → #/chart"
+      },
+      "internalSources": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [
+        "fidelity-rsi"
+      ],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "momentum-3",
+      "title": "MACD",
+      "checks": {
+        "1_fachlichkeit": "EMA12−EMA26; Signal EMA9; Histogramm MACD−Signal korrekt.",
+        "2_einsteiger": "EMA vorab erklärt; keine feste 0–100-Skala; +1 bei −2/−3 als Rechenquiz.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Vorzeichen-Gegenbeispiel und Praxis erhalten.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "In Seitwärtsphasen können sich Linie und Signallinie wiederholt kreuzen. Viele Kreuzungen belegen keine nutzbare Vorhersagequalität.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: +1, obwohl die MACD-Linie unter null liegt",
+        "8_funktion": "Schalte im Chart Studio MACD ein und vergleiche Linie, Signal und Histogramm. → #/chart"
+      },
+      "internalSources": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [
+        "fidelity-macd"
+      ],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "momentum-4",
+      "title": "Kombination von Momentum und Trend",
+      "checks": {
+        "1_fachlichkeit": "Überlappende Kursdaten sind keine unabhängigen Bestätigungen.",
+        "2_einsteiger": "Bisherige UND-Antwort zu pauschal: Trefferzahl kann auch gleich bleiben.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Quizantwort und Begründung korrigiert; Filterregeln unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Ein zusätzlicher Filter kann viele Titel ausschließen und dennoch keinen belegten Vorteil liefern. Eine kleine Trefferliste ist kein Qualitätsnachweis.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Sie kann die Auswahl verkleinern oder unverändert lassen",
+        "8_funktion": "Öffne Momentum, ergänze den vorhandenen Trendfilter und lies die übersetzte Abfrage. → #/assistent/momentum"
+      },
+      "internalSources": [
+        "quant/engines/technical/indicators.js",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "risiko-1",
+      "title": "Schwankungen verstehen",
+      "checks": {
+        "1_fachlichkeit": "Schwankungsbreite ist nicht Richtung oder vollständiges Risiko.",
+        "2_einsteiger": "Gleicher Endkurs bei verschiedenen Spannen und Übernahme-Gegenfall plausibel.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Ziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Ein Übernahmeangebot kann einen Kurs längere Zeit ruhig halten. Neue Nachrichten können diese Ruhe abrupt beenden. Geringe jüngere Schwankung garantiert keine Stabilität.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Die zukünftige Richtung",
+        "8_funktion": "Öffne Volatilität und Konsolidierung und vergleiche ruhige Treffer mit ihren Datenhinweisen. → #/assistent/ruhephase"
+      },
+      "internalSources": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "risiko-2",
+      "title": "ATR",
+      "checks": {
+        "1_fachlichkeit": "ATR war nicht falsch, aber True-Range-Auswahlregel blieb unklar.",
+        "2_einsteiger": "Maximum aus drei Spannen, Wilder14 und TR-vs.-ATR ergänzt; Lückenbeispiel 2/6/4→6.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Eigenständiges Zahlenquiz und passendes Lernbild; keine Engine verändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "ATR kann nach einem einzelnen großen Sprung steigen. Ein solcher Wert nennt weder eine maximale künftige Tagesbewegung noch die Richtung des nächsten Schlusses.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: 6, weil der größte Abstand zählt",
+        "8_funktion": "Öffne im Chart Studio ATR und lies Einheit, Zeitraum und Datenqualität zusammen. → #/chart"
+      },
+      "internalSources": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [
+        "fidelity-atr"
+      ],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "risiko-3",
+      "title": "Bollinger-Bänder",
+      "checks": {
+        "1_fachlichkeit": "20/2, Bandbreite vs. Richtung und Bandberührung ohne Umkehrzwang korrekt.",
+        "2_einsteiger": "Streuung erklärt; keine garantierte 95-%-Einschlusswahrscheinlichkeit.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Hauptaktion Chart statt Ruhephasen-Assistent; zweiter Weg explizit als Zusatz erklärt.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Nach einer engen Phase kann die Ausweitung aufwärts oder abwärts erfolgen. Bandberührung ist keine verlässliche Umkehranweisung.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Die Richtung der nächsten Ausweitung",
+        "8_funktion": "Öffne Chart Studio, wähle einen Titel und schalte Bollinger-Bänder ein. Vergleiche Bandbreite und Kurslage. Die Erklärung zur Bollinger-Enge findest du zusätzlich im Analyseziel Volatilität und Konsolidierung. → #/chart"
+      },
+      "internalSources": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [
+        "bollinger-rules"
+      ],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "risiko-4",
+      "title": "Stopps, Risiko und Positionsgröße als Bildungsthema",
+      "checks": {
+        "1_fachlichkeit": "Hypothetische Stückzahlrechnung korrekt; Ausführungsrisiko vorhanden.",
+        "2_einsteiger": "Stop-Market vs. Stop-Limit und Slippage erklärt, Ausführung kann fehlen.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Rechnung bleibt Textbeispiel ohne Funktion oder Empfehlung; Quiz erhalten.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Eröffnet der Markt hinter dem Stopp, kann der tatsächliche Verlust den geplanten Betrag überschreiten. ATR liefert ebenfalls keine garantierte Verlustgrenze.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Eine Annahme unter Ausführungsbedingungen",
+        "8_funktion": "Untersuche im Chart Studio eine Kurslücke und notiere, warum ein geplanter Preis nicht zwingend ausführbar war. → #/chart"
+      },
+      "internalSources": [
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_LIBRARY.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [
+        "sec-orders"
+      ],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "wechsel-1",
+      "title": "Korrektur versus Trendwechsel",
+      "checks": {
+        "1_fachlichkeit": "Korrektur und Strukturwechsel am aktuellen Rand unsicher.",
+        "2_einsteiger": "Tieferes Tief als Gegenbefund, nicht als Zukunftsbeweis.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Ziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Ein Bruch einer Linie kann bald zurückgenommen werden. Umgekehrt kann eine vermeintlich kleine Korrektur in einen langen Rückgang übergehen.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Unsicherheit und beobachtete Strukturbrüche benennen",
+        "8_funktion": "Öffne Trendwende und trenne in deiner Notiz erfüllte Suchkriterien von deiner Interpretation. → #/assistent/trendwende"
+      },
+      "internalSources": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "wechsel-2",
+      "title": "Divergenzen",
+      "checks": {
+        "1_fachlichkeit": "Preis höheres Hoch / RSI tieferes Hoch ist passende Divergenz.",
+        "2_einsteiger": "Auswahlpunkte und rückblickende Auswahlverzerrung richtig benannt.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Praxis unverändert; externer Abgleich hinzugefügt.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Eine solche Abweichung kann mehrfach auftreten, während der Kurs weiter steigt. Rückblickend passende Punkte auszuwählen überschätzt die Eindeutigkeit.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Benannte Vergleichspunkte, Kennzahl und Zeitraum",
+        "8_funktion": "Öffne RSI im Chart Studio, vergleiche zwei abgeschlossene Hochpunkte und dokumentiere die Auswahl manuell. → #/chart"
+      },
+      "internalSources": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [
+        "fidelity-rsi"
+      ],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "wechsel-3",
+      "title": "Kerzenmuster im Kontext",
+      "checks": {
+        "1_fachlichkeit": "Musterform vs. Kontext richtig; bisheriger Glossarlink verwies auf geometrische Formation.",
+        "2_einsteiger": "Eigenen passenden Begriff Kerzenmuster statt geometrischer Formation verknüpft.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Ziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Ein bullisch bezeichnetes Muster kann vor weiteren Verlusten auftreten. Die Bezeichnung ist eine übliche Lesart, kein statistisch belegter Erfolg.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Die vorhandene Musterregel ist an diesem Bar erfüllt",
+        "8_funktion": "Schalte Kerzenmuster im Chart Studio ein und lies zum Marker den vorherigen Verlauf. → #/chart"
+      },
+      "internalSources": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "wechsel-4",
+      "title": "Widersprüchliche Indikatorsignale",
+      "checks": {
+        "1_fachlichkeit": "Unterschiedliche Fenster erklären gegensätzliche Befunde; keine Abstimmung unabhängiger Stimmen.",
+        "2_einsteiger": "SMA200 mit negativem Histogramm als verständliches Gegenbeispiel.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Praxis unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Das Aussuchen nur passender Indikatoren nach Betrachtung des Ergebnisses kann jede gewünschte Geschichte erzeugen. Eine klare vorherige Frage begrenzt diese Willkür.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Beide samt Zeitraum und Bedeutung festhalten",
+        "8_funktion": "Öffne Trendwende oder Momentum und protokolliere ausdrücklich auch nicht erfüllte Kriterien. → #/assistent/trendwende"
+      },
+      "internalSources": [
+        "docs/technical/CANDLESTICK_EVIDENCE.md",
+        "quant/engines/technical/indicators.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "zeitrahmen-1",
+      "title": "Tag/Woche/Monat",
+      "checks": {
+        "1_fachlichkeit": "Balkenperioden zählen Zeitrahmen; reale Technical-Zuordnung musste ausdrücklich erklärt werden.",
+        "2_einsteiger": "SMA200 Tag / SMA40 Woche / SMA10 Monat ergänzt; keine mathematische Gleichsetzung.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Kein neuer Wochen- oder Monatsindikator; bestehendes Quiz erhalten.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Eine 50-Tage-Linie darf nicht mit 50 Wochen gleichgesetzt werden. Gleiche Zahlen bedeuten bei verschiedenen Zeitrahmen andere Fenster.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Balken des angegebenen Zeitrahmens",
+        "8_funktion": "Öffne Bestätigung über Zeitrahmen und lies die dort benannten Linien für Tag, Woche und Monat. → #/assistent/zeitrahmen"
+      },
+      "internalSources": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "zeitrahmen-2",
+      "title": "Abgeschlossene Kerzen",
+      "checks": {
+        "1_fachlichkeit": "Nur abgeschlossene Perioden gemäß bestehendem Kalender-/Aggregationsvertrag.",
+        "2_einsteiger": "Mittwoch ist kein finaler Wochenschluss; geeigneter Gegenfall.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Ziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Eine unter der Woche sichtbare Kreuzung kann bis zum Periodenende verschwinden. Rückblickend nur den Endwert zu sehen verdeckt diese Veränderlichkeit.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Die abgeschlossenen Wochen gemäß bestehender Regel",
+        "8_funktion": "Vergleiche im Chart Studio 1J·W den letzten dargestellten Wochenbalken mit dem genannten Datenstand. → #/chart"
+      },
+      "internalSources": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "zeitrahmen-3",
+      "title": "Unterschiedliche Trends je Zeitrahmen",
+      "checks": {
+        "1_fachlichkeit": "Verschachtelte Trends können verschieden gerichtet sein.",
+        "2_einsteiger": "Kein Zeitrahmen muss gewinnen; Auswahl vorab festlegen.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Ziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Zeitrahmen nachträglich so zu wählen, dass sie zur eigenen Erwartung passen, erzeugt eine einseitige Analyse. Ein vorheriger Plan hilft bei der Einordnung.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Unterschiedliche Beobachtungsfenster und Zustände",
+        "8_funktion": "Öffne Bestätigung über Zeitrahmen und protokolliere jeden Filter einzeln, auch bei Uneinigkeit. → #/assistent/zeitrahmen"
+      },
+      "internalSources": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "zeitrahmen-4",
+      "title": "Analyse über mehrere Zeitrahmen",
+      "checks": {
+        "1_fachlichkeit": "Lange Schlusslinie enthält keine Wochenhochs/-tiefs; überlappende Daten nicht unabhängig.",
+        "2_einsteiger": "Verfügbare Darstellung 1J·W und Datenstand korrekt benannt.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Ziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Drei gleichgerichtete Zeitrahmen liefern keine drei unabhängigen Stichproben: Sie entstehen aus überlappenden Daten. Ihre Übereinstimmung beweist keinen Handelsvorteil.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Nicht vorhandene Wochenhochs und Wochentiefs",
+        "8_funktion": "Nutze den Zeitrahmen-Assistenten und vergleiche einen Treffer im Chart mit der Darstellung 1J·W. → #/assistent/zeitrahmen"
+      },
+      "internalSources": [
+        "docs/technical/MULTI_TIMEFRAME.md",
+        "docs/technical/WEEKLY_FORMATIONS.md",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "routine-1",
+      "title": "Analyseziel definieren",
+      "checks": {
+        "1_fachlichkeit": "Konkrete Analysefrage vor Trefferwahl ist sinnvoll.",
+        "2_einsteiger": "Vorher direkter Sprung zu Kombination statt freier Zielwahl.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Praxisziel auf Assistenten-Katalog korrigiert; Fachtext und Quiz erhalten.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Wenn kein Titel alle Bedingungen erfüllt, ist das ein mögliches Ergebnis und kein Anlass, still die Frage zu wechseln.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Eine konkret beobachtbare Eigenschaft untersuchen",
+        "8_funktion": "Wähle im Assistenten ein Analyseziel und schreibe dessen Zweck in eigenen Worten auf. → #/assistent"
+      },
+      "internalSources": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "routine-2",
+      "title": "Filter kombinieren",
+      "checks": {
+        "1_fachlichkeit": "UND/ODER und Gruppen korrekt; Validierung bleibt in vorhandener Engine.",
+        "2_einsteiger": "Beispiel vergleicht Mengenlogik ohne Vorteilsaussage.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Ziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Immer mehr Filter können eine scheinbar besonders passende Restmenge erzeugen. Ohne unabhängige Prüfung ist das kein Beleg für bessere Ergebnisse.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Alle verbundenen Bedingungen",
+        "8_funktion": "Öffne Kriterien kombinieren, übernimm die Auswahl in den Screener und lies die sichtbare Abfrage. → #/assistent/kombination"
+      },
+      "internalSources": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    },
+    {
+      "id": "routine-3",
+      "title": "Datenqualität und Grenzen prüfen",
+      "checks": {
+        "1_fachlichkeit": "Fehlend/Null, Verdacht/bestätigt und eingefroren/Delisting korrekt getrennt.",
+        "2_einsteiger": "Aufwärmphase und SPAC erklärt; kein Fremdwort ohne rechtzeitige Hilfe.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Datenqualität-Aktion zum Chart statt Kombinations-Assistenten korrigiert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Unveränderte Kurse können auch durch ein Übernahmeangebot oder einen SPAC entstehen. Ein eingefroren-Hinweis ist deshalb kein bestätigtes Delisting.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Als unbekannt, mit Prüfung der Ursache",
+        "8_funktion": "Lies bei einem Titel Datenqualität und Herkunft und trenne Datenverdacht, bestätigten Fehler und fehlenden Wert. → #/chart"
+      },
+      "internalSources": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 2
+    },
+    {
+      "id": "routine-4",
+      "title": "Analyse dokumentieren",
+      "checks": {
+        "1_fachlichkeit": "Dokumentation von Stichtag und Unsicherheit sowie spätere Trefferänderung korrekt.",
+        "2_einsteiger": "Kurze wiederholbare Notiz und bestehender Screener-Speicher genügen.",
+        "3_reihenfolge": "Innerhalb des vierteiligen Pfads sinnvoll; Vorabbegriffe vor den Grundlagen sichtbar.",
+        "4_vollstaendigkeit": "Fachtext, Beispiel, Quiz und Ziel unverändert.",
+        "5_vereinfachungen": "Beschreibender Befund und Interpretation getrennt; keine neue Regel oder Erfolgsaussage.",
+        "6_grenzen": "Eine spätere Trefferliste kann durch neue Kurse und ein verändertes Universum abweichen. Das beweist nicht, dass die frühere Notiz falsch war.",
+        "7_quiz": "Richtige Antwort in separatem semantischem Vertrag fachlich geprüft: Beobachtung, Interpretation und offene Fragen",
+        "8_funktion": "Öffne den Screener, speichere bei Bedarf deine Abfrage und führe die Analysenotiz außerhalb der Akademie. → #/screener"
+      },
+      "internalSources": [
+        "docs/technical/DATA_CONTRACT.md",
+        "technical/engine/assistant.js",
+        "docs/technical/TECHNICAL_ASSISTANT.md"
+      ],
+      "externalReading": [],
+      "substantiveFoundationPreserved": true,
+      "lessonVersion": 1
+    }
+  ],
+  "externalSources": [
+    {
+      "id": "fidelity-rsi",
+      "title": "Fidelity: Relative Strength Index (RSI)",
+      "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/RSI",
+      "kind": "secondary",
+      "retrieved": "2026-11-02",
+      "responseSha256": "b5850302159fd317d8e54a51fc7870f2cfa0a3c195372feb26f75cc80697f4a5"
+    },
+    {
+      "id": "fidelity-macd",
+      "title": "Fidelity: MACD",
+      "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/macd",
+      "kind": "secondary",
+      "retrieved": "2026-11-02",
+      "responseSha256": "6a70172183b5fe6962b47aad962bdcded883e2643442509111e4814aa3b1588b"
+    },
+    {
+      "id": "fidelity-atr",
+      "title": "Fidelity: Average True Range (ATR)",
+      "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/atr",
+      "kind": "secondary",
+      "retrieved": "2026-11-02",
+      "responseSha256": "c34c145d5ac43d9fbf7fe95e8907019c3a8427564c9557f9a16e4b7d6496be7d"
+    },
+    {
+      "id": "fidelity-sma",
+      "title": "Fidelity: Simple Moving Average (SMA)",
+      "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/technical-indicator-guide/sma",
+      "kind": "secondary",
+      "retrieved": "2026-11-02",
+      "responseSha256": "34c2e92697a1c47c926cf9f8401c491525ba1f5af7f545ef9a489c9fe8d705a0"
+    },
+    {
+      "id": "bollinger-rules",
+      "title": "John Bollinger: Bollinger Band Rules (6, 7, 9, 14)",
+      "url": "https://www.bollingerbands.com/bollinger-band-rules",
+      "kind": "primary",
+      "retrieved": "2026-11-02",
+      "responseSha256": "fed2bd86b3c3175440f9fd3543baa6c35d36468edba6bd230d7e2da2b3045d93"
+    },
+    {
+      "id": "sec-orders",
+      "title": "SEC Investor.gov: Types of Orders",
+      "url": "https://www.investor.gov/introduction-investing/investing-basics/how-stock-markets-work/types-orders",
+      "kind": "primary",
+      "retrieved": "2026-11-02",
+      "responseSha256": "14e919e1f5202271afbcf1118eeaaefdfc412aa391b301daa61b74bc965361ba"
+    },
+    {
+      "id": "fidelity-support",
+      "title": "Fidelity: Support and Resistance",
+      "url": "https://www.fidelity.com/learning-center/trading-investing/technical-analysis/support-and-resistance",
+      "kind": "secondary",
+      "retrieved": "2026-11-02",
+      "responseSha256": "c0bf75d2987ecd5b24e0c5cb66cb9a9557fcfe9269e4b92aa2ca7f6331298e1c"
+    }
+  ],
+  "sharedChange": "Two duplicated foundation blocks removed from each lesson; path-specific exercise hint moved once to path card; short methodological caveat remains in each lesson view.",
+  "contentSha256": "9943986cccc9cd8f74d9dc8ff91312678241bc33f71462205b643f058782852c"
+}

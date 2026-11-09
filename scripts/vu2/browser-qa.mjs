@@ -13,6 +13,7 @@
 // 768 px: unter 1000 px traegt die untere Leiste die fuenf Bereiche, die
 // Kopfnavigation ist ausgeblendet.
 import {assessResourceBudget} from './resource-budget.mjs';
+import {judgeNowBlock} from './qa-now-block.mjs';
 import {createServer} from 'node:http';
 import {gunzipSync} from 'node:zlib';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
@@ -79,6 +80,7 @@ const ROUTES=[
  /* Native Elliott-Route: dieselbe Seite, ohne /quant/ in der Adresse. */
  ['elliott-nativ','/elliott/#/NVDA?ansicht=profi'],
  ['chartbild','#/aktie/NVDA/chartbild'],
+ ['chart','#/aktie/NVDA/chart'],
  ['chartlagen','#/chartlagen'],
  ['zahlen','#/aktie/NVDA/zahlen'],
  ['vergleich','#/vergleich/NVDA,MSFT'],
@@ -162,7 +164,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   {
    const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
    /* Elliott ist ein eigenes Produkt: die alten Technik-/Chartbild-Adressen enden auf #/elliott/<T> und tragen die Elliott-Leiste. */
-   const soll=['technik','elliott','elliott-nativ','chartbild'].includes(view)?['Elliott','Welle 3','Neu','Suche']:SOLL_BEREICHE;
+   const soll=['technik','elliott','elliott-nativ','chartbild'].includes(view)?['Elliott','Zählbar','Neu','Suche']:SOLL_BEREICHE;
    if(bereiche.join('|')!==soll.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+leiste+' '+bereiche.join('|'));
    for(const fremdes of ['Discover','Research','Markets','Portfolio','Screener'])
     if(await page.locator(leiste).getByRole('link',{name:fremdes,exact:true}).count())befund(view,width,fremdes+' steht in der Quant-Navigation');
@@ -176,7 +178,29 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(box&&box.y+box.height>page.viewportSize().height)befund(view,width,'die Leiste ragt aus dem Bild');
   }
 
-  if(view==='home'){
+  /* Redesign 2027: Seiten mit den Bausteinen (VUUI) tragen qv3-Klassen; die Release-Seite laedt VUUI immer mit. */
+  const v3=await page.evaluate(()=>!!globalThis.VUUI);
+  if(view==='home'&&v3){
+   /* Redesign 2027 (Q01): dieselben Zusagen in der neuen Gestalt - ein Satz, was Quant prueft, die Suche, die Wege
+      mit ihrem Ziel, "Heute bei Quant" mit Stichtag oder ehrlichem Rueckfall, Fusszeile mit Quellen. */
+   if(!(await page.locator('.qv3-intro .vu-lead').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
+   if(!/früher/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Home verliert den historischen Marktvergleich');
+   await page.locator('button.qv3-search').waitFor();
+   const wege=await page.locator('#qx-main a.vu-navcard').evaluateAll(ns=>ns.map(n=>n.getAttribute('href')||''));
+   for(const ziel of ['#/aktien','#/screener','#/strategien'])if(!wege.includes(ziel))befund(view,width,'Weg nach '+ziel+' fehlt auf Home');
+   await page.waitForFunction(()=>/Stand \d{2}\.\d{2}\.\d{4}|Gerade keine Veränderungen abrufbar/.test(document.querySelector('#qx-main').innerText),null,{timeout:30000}).catch(()=>befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall'));
+   const fuss=await page.locator('footer.qx-foot').innerText();
+   if(!fuss.includes('Keine Anlageempfehlung'))befund(view,width,'Fusszeile ohne Keine Anlageempfehlung');
+   /* Owner-Entscheidung 07.11.2026 (PLAN §11): Anbieter stehen zentral auf /infos/#quellen, nicht im Fuß. */
+   for(const name of ['SEC EDGAR','Tiingo'])if(fuss.includes(name))befund(view,width,'Fusszeile nennt Anbieter '+name);
+   await page.route('**/quant/config/market-calendar.json',route=>{absichtlich++;return route.abort();});
+   await page.reload();await bereit(page,'home');
+   /* Fünf Einstiege unter „Selbst suchen“: Aktie, Screener, Anlagestil, Technische Lagen, Musterdepots (#1497). */
+   if(await page.locator('#qx-main a.vu-navcard').count()!==5||!await page.locator('#qx-main a.vu-navcard[href="/quant/musterdepots/"]').count())befund(view,width,'Ohne Kalender verliert die Startseite ihre Einstiege');
+   await page.unroute('**/quant/config/market-calendar.json');
+   await frisch(page,hash,'home');
+  }
+  if(view==='home'&&!v3){
    /* HOME BEANTWORTET ZUERST DIE PRODUKTFRAGE: ein Satz, was Quant ist,
       eine Suche, und die Wege dorthin mit ihrem Ziel. */
    if(!(await page.locator('.qx-hero .q-intro-note').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
@@ -196,7 +220,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!mitStand&&!heute.includes('Gerade keine Veränderungen abrufbar'))befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall');
    /* Quellen und die Absage an Empfehlung, Prognose, Kursziel. */
    const fuss=await page.locator('footer.qx-foot').innerText();
-   for(const satz of ['Keine Anlageempfehlung','SEC EDGAR','Tiingo'])if(!fuss.includes(satz))befund(view,width,'Fusszeile ohne '+satz);
+   if(!fuss.includes('Keine Anlageempfehlung'))befund(view,width,'Fusszeile ohne Keine Anlageempfehlung');
+   /* Owner-Entscheidung 07.11.2026 (PLAN §11): Anbieter stehen zentral auf /infos/#quellen, nicht im Fuß. */
+   for(const name of ['SEC EDGAR','Tiingo'])if(fuss.includes(name))befund(view,width,'Fusszeile nennt Anbieter '+name);
    if(!await page.locator('footer.qx-foot a[href="/quant/methodology/"]').count())befund(view,width,'Fusszeile ohne Methodik im Detail');
    /* FAELLT DER KALENDER AUS, DARF DIE SEITE IHRE EINSTIEGE NICHT VERLIEREN. */
    await page.route('**/quant/config/market-calendar.json',route=>{absichtlich++;return route.abort();});
@@ -215,7 +241,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.locator('button.qx-question[data-question="momentum"]').click();
    await page.waitForFunction(()=>location.hash==='#/screener?frage=momentum'&&!document.querySelector('#qx-main .qx-loading'),null,{timeout:30000});
    if(await page.locator('button.qx-question[data-question="momentum"]').getAttribute('aria-pressed')!=='true')befund(view,width,'die gewaehlte Frage ist nicht markiert');
-   if(!/Kursentwicklung/.test(await page.locator('.qx-sentence').innerText()))befund(view,width,'der Satz liest die Frage nicht vor');
+   if(!/Kursentwicklung|Kurs besser läuft|Kurs läuft/.test(await page.locator('.qx-sentence').innerText()))befund(view,width,'der Satz liest die Frage nicht vor');
    const ohneWert=(await page.locator('#qx-main a.qx-row .qx-row-why').allInnerTexts()).filter(t=>!/\d/.test(t));
    if(!await page.locator('#qx-main a.qx-row').count())befund(view,width,'der einfache Einstieg zeigt keine Treffer');
    if(ohneWert.length)befund(view,width,'Trefferzeile ohne gemessenen Wert: '+ohneWert[0]);
@@ -223,9 +249,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
       Konzept-Design: es steht unter dem Namen (.qx-row-verdict), die rechte
       Spalte zeigt den Wert der gefilterten Eigenschaft - mit ihrem Namen.
       Die Marke stellt "Eigenschaften:" voran - geprueft wird das Urteil. */
-   const urteile=(await page.locator('#qx-main a.qx-row .qx-row-verdict .qx-pill').allTextContents()).map(t=>t.trim().replace(/^(Gesamt|Eigenschaften):\s*/,'').toLowerCase());
-   const erlaubt=['Überwiegend stark','Mehr Stärken als Schwächen','Gemischtes Bild','Mehr Schwächen als Stärken','Überwiegend schwach'].map(t=>t.toLowerCase());
-   const fremdesUrteil=urteile.filter(t=>!erlaubt.includes(t));
+   const urteile=(await page.locator('#qx-main a.qx-row .qx-row-verdict .qx-pill').allTextContents()).map(t=>t.trim().replace(/^[▲▼◆●○]\s*/,'').replace(/^(Gesamt|Eigenschaften):\s*/,'').toLowerCase());
+   /* Owner-Linie L7 (Plan §11): kein Gesamturteil als Wort, sondern die Zaehlung „k von n Faktoren stark“. */
+   const fremdesUrteil=urteile.filter(t=>!/^\d+ von \d+ faktoren stark$/.test(t));
    if(!urteile.length)befund(view,width,'keine einzige Trefferzeile traegt ein Urteil');
    if(fremdesUrteil.length)befund(view,width,'Trefferzeile traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
    /* Die Methodik der Frage steht dabei: die Schwelle ist ein WERT (70),
@@ -235,15 +261,34 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.getByRole('link',{name:'Im Profi-Modus verfeinern',exact:true}).click();
    await bereit(page,'screener');
    if(!/^#\/screener\/profi\?query=/.test(await page.evaluate(()=>location.hash)))befund(view,width,'der Profi-Modus bekommt die Regel nicht');
-   if(await page.locator('.qx-rules .qx-rule').count()<1)befund(view,width,'Profi-Modus ohne Regel');
+   if(await page.locator(v3?'.qv3-cond':'.qx-rules .qx-rule').count()<1)befund(view,width,'Profi-Modus ohne Regel');
   }
   if(view==='screener-hoch'){
+   /* Redesign 2027 (Q02): zuerst 10 Zeilen und „Alle N zeigen“ - gezaehlt wird die ganze Liste. */
+   const alle=page.locator('#qx-main button.qv3-all');if(await alle.count()){await alle.first().click();await page.waitForTimeout(300);}
    const zeilen=await page.locator('#qx-main a.qx-row').allInnerTexts();
    if(zeilen.length<20)befund(view,width,'nahe am Hoch: nur '+zeilen.length+' Zeilen');
    const mitKurs=zeilen.filter(t=>/\d+,\d+\s*\$/.test(t)&&/\d{2}\.\d{2}\.\d{4}/.test(t)).length;
    if(mitKurs<zeilen.length*0.8)befund(view,width,'nahe am Hoch: nur '+mitKurs+' von '+zeilen.length+' Zeilen mit Kurs und Datum');
   }
-  if(view==='screener-profi'){
+  if(view==='screener-profi'&&v3){
+   /* Redesign 2027 (Q02, q02-b): dunkle Profi-Fläche. Dieselben Zusagen: andere Datenbasis waehlbar, Regeln sichtbar und
+      teilbar, eine unerfuellbare Regel liefert keine Treffer statt Ersatz, ungueltige Regeln werden nicht still ersetzt. */
+   if(!await page.locator('#qx-main a[href*="daten=v1"]').count())befund(view,width,'screener methodologies missing');
+   if(await page.locator('.qv3-cond').count()<1)befund(view,width,'Profi-Modus ohne Regel');
+   await page.waitForFunction(()=>document.querySelectorAll('#qx-main a.qv3-prow').length>0,null,{timeout:15000}).catch(()=>{});
+   if(!await page.locator('#qx-main a.qv3-prow').count())befund(view,width,'Profi-Modus liefert nichts');
+   await page.evaluate(()=>document.querySelectorAll('.qv3-cond input[aria-label$=" ab"]').forEach(i=>{i.value='100';i.dispatchEvent(new Event('input',{bubbles:true}));}));
+   const leer=await page.waitForFunction(()=>/^0 Treffer$/.test((document.querySelector('.qv3-pro-n')||{}).textContent||''),null,{timeout:10000}).then(()=>true,()=>false);
+   if(!leer)befund(view,width,'unerfuellbare Regel (100–100 je Bedingung): keine Antwort oder Treffer');
+   else if(await page.locator('#qx-main a.qv3-prow').count())befund(view,width,'unerfuellbare Regel liefert Treffer');
+   if(!/query=/.test(await page.evaluate(()=>location.hash)))befund(view,width,'die Regeln stehen nicht in der Adresse (teilen)');
+   if(!await page.getByRole('button',{name:/Regeln teilen/}).count())befund(view,width,'kein Knopf „Regeln teilen“');
+   await frisch(page,'#/screener/profi?query=invalid','screener');
+   await page.getByText('Gespeicherte Regeln konnten nicht geöffnet werden',{exact:true}).waitFor();
+   if(await page.locator('#qx-main a.qx-row, #qx-main a.qv3-prow').count())befund(view,width,'invalid rules silently replaced');
+  }
+  if(view==='screener-profi'&&!v3){
    /* Die Datenbasis ist waehlbar, eine Regel ist sichtbar und teilbar, und
       eine unerfuellbare Regel liefert "Keine Treffer" statt Ersatz. */
    const basis=page.getByRole('combobox',{name:'Datenbasis',exact:true});
@@ -274,7 +319,15 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.getByText('Gespeicherte Regeln konnten nicht geöffnet werden',{exact:true}).waitFor();
    if(await page.locator('#qx-main a.qx-row').count())befund(view,width,'invalid rules silently replaced: die Seite sagt "keine Ersatzregeln" und zeigt '+await page.locator('#qx-main a.qx-row').count()+' Treffer der Standardregel');
   }
-  if(view==='strategien'){
+  if(view==='strategien'&&v3){
+   /* Redesign 2027 (Q03): Karten ohne Bild (Mockup), dieselben Zusagen: jeder Ansatz, seine heutigen Treffer, keine Trefferquote. */
+   const karten=await page.locator('#qx-main a.qv3-scard').count();
+   if(karten!==profiles.length)befund(view,width,'der Strategie-Katalog zeigt '+karten+' von '+profiles.length+' Ansaetzen');
+   const katalog=await page.locator('#qx-main').innerText();
+   if(!/Aktien erfüllen heute|erfüllen heute alle|\d[\d.]*\s+Aktien heute/.test(katalog))befund(view,width,'kein Ansatz nennt seine heutigen Treffer');
+   if(!/keine (Erfolgs- oder )?Trefferquote/i.test(katalog))befund(view,width,'die Absage an eine Trefferquote fehlt');
+  }
+  if(view==='strategien'&&!v3){
    const karten=await page.locator('#qx-main a.qx-strat').count();
    if(karten!==profiles.length)befund(view,width,'der Strategie-Katalog zeigt '+karten+' von '+profiles.length+' Ansaetzen');
    /* Bildwelt der Anlagestile: steht seit den Paketen je Ansicht (QUANT_PACKS) in pages.js, nicht mehr auf der Aktienseite. */
@@ -288,9 +341,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view.startsWith('strategie-')){
    const text=await page.locator('#qx-main').innerText();
    if(/Gerade nicht erreichbar/.test(text))befund(view,width,'Strategieseite faellt in die Wiederherstellung');
-   for(const satz of ['Welche Bedingungen gelten?','Wer passt heute?'])if(!text.includes(satz))befund(view,width,'fehlt: '+satz);
+   /* Redesign 2027 (Q03, q03-b): „Die Regeln“ und „Erfüllen heute“ oben; die bisherige Auswertung unter „Mehr zu dieser Strategie“. */
+   for(const satz of v3?['Die Regeln','Erfüllen heute','Mehr zu dieser Strategie']:['Welche Bedingungen gelten?','Wer passt heute?'])if(!text.includes(satz))befund(view,width,'fehlt: '+satz);
   }
   if(view==='aktie-nvda'){
+   /* Redesign 2027 (Q07): die bisherigen Inhalte stehen vollstaendig unter den Ausklappern von Schritt 5 und 6. */
+   await page.evaluate(()=>document.querySelectorAll('#qx-main details.qv3-more').forEach(d=>{d.open=true;}));
    /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES KANONS - gelesen aus
       der Engine. Eine Gesamtnote gibt es bewusst nicht. */
    const ids=await page.locator('details.qx-factor[data-factor]').evaluateAll(ns=>ns.map(n=>n.dataset.factor));
@@ -304,10 +360,46 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!await page.locator('.qx-verdict-card').count())befund(view,width,'Quant-Ergebnis fehlt neben dem Chart');
    const jetzt=await page.locator('#veraenderung').innerText();
    if(!/Was ist jetzt wichtig\?/.test(jetzt))befund(view,width,'"Was ist jetzt wichtig?" fehlt bei den Veraenderungen');
-   await page.locator('#veraenderung .q-now').filter({hasText:/Setup|Veränderung|Stand/}).waitFor({state:'attached'});
+   /* "Was ist jetzt wichtig?" (Revision UIP-R3, Issue #1289): geprueft wird der GERENDERTE, fachlich gueltige Zustand gegen das, was die
+      Produkt-API fuer diese Aktie veroeffentlicht (getRadarCard, wie bei setupDir unten), nicht ein bestimmter Wortlaut. Gewartet wird
+      mit der bisherigen Grenze von 30 s (Playwright-Standard) darauf, dass der Platzhalter "wird geladen" verschwindet. Das Urteil
+      steht in scripts/vu2/qa-now-block.mjs und hat Gegenproben in quant/tests/browser-qa-now-block.test.mjs. */
+   await page.waitForFunction(()=>{const n=document.querySelector('#veraenderung .q-now');return !!n&&!/wird geladen/.test(n.textContent||'');},null,{timeout:30000});
+   {
+    const nowExpected=await page.evaluate(async()=>{const g=globalThis,ticker=location.hash.split('/')[2];
+     const api=g.VUProductServices.create({loadJSON:g.QuantShell.loadJSON,displayPolicy:g.VUDisplayPolicy,queryEngine:g.VUQuery});
+     const r=await api.getRadarCard(ticker).catch(()=>null);
+     const card=r&&r.state==='AVAILABLE'?r.card:null;
+     /* Verfuegbar heisst: der Radar hat diesen Titel ausgewertet (Zeile im Scherben). Eine Karte entsteht im Erzeuger
+        (scripts/quant/build-quant-radar.mjs) nur fuer Titel mit Ereignissen; ohne Karte gilt "keine neue Veraenderung". */
+     return {available:Boolean(r&&r.state==='AVAILABLE'),events:card&&Array.isArray(card.events)?card.events.map(e=>({explanation:e.explanation})):[],
+      nextOpen:card&&card.next&&Array.isArray(card.next.open)?card.next.open.length:0};});
+    const nowDom=await page.evaluate(()=>{const n=document.querySelector('#veraenderung .q-now');if(!n)return null;
+     const t=e=>((e&&e.textContent)||'').trim();
+     return {loading:/wird geladen/.test(n.textContent||''),
+      eventItems:[...n.querySelectorAll('ul.q-events > li.q-ev')].map(li=>({label:t(li.querySelector('b')),explanation:t(li.querySelector('span')),date:t(li.querySelector('small'))})),
+      none:n.querySelectorAll('p.q-now-none').length,
+      nextLines:[...n.querySelectorAll('p.q-now-line')].map(t),
+      empty:[...n.querySelectorAll('p.qx-small')].map(t)};});
+    for(const m of judgeNowBlock(nowExpected,nowDom))befund(view,width,'"Was ist jetzt wichtig?": '+m);
+   }
    /* Setup & Trigger in Alltagssprache; Backtests mit gemessenem Grund. */
    const setupText=await page.locator('#setup').innerText();
-   for(const w of ['Interessant ab','Ungültig unter'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
+   /* Richtung des veroeffentlichten Basisszenarios (Owner-Freigabe 01.11.2026, nur diese Pruefung): unabhaengig von der
+      Karte ueber die Produkt-API gelesen, dieselbe Regel wie scripts/quality/vu3-regression-qa.mjs (setupDirection).
+      Aufwaerts: Einstieg und Abbruch nach unten ("Einstiegsmarke", "Stopp-Marke" der Methode, Wortwahl Strang F). Abwaerts: Abbruch nach oben
+      ("Ungültig über"), kein Einstieg, keine Regelcheckliste. Ohne Szenario bleibt die strenge Aufwaerts-Erwartung. */
+   const setupDir=await page.evaluate(async()=>{const g=globalThis,ticker=location.hash.split('/')[2];
+    const api=g.VUProductServices.create({loadJSON:g.QuantShell.loadJSON,displayPolicy:g.VUDisplayPolicy,queryEngine:g.VUQuery});
+    const ws=await api.getTechnicalWorkspace(ticker).catch(()=>null);
+    if(!ws||ws.state!=='AVAILABLE'||!(ws.scenarios||[]).length)return null;
+    const ts=ws.tradeSetup||null,sc=ws.scenarios.find(x=>ts&&x.id===ts.scenarioId)||ws.scenarios.find(x=>x.kind==='PRIMARY')||null;
+    return sc&&sc.direction?sc.direction:null;});
+   if(setupDir&&setupDir!=='BULLISH'){
+    if(!setupText.includes('Ungültig über'))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') ohne "Ungültig über"');
+    for(const w of ['Einstiegsmarke','Stopp-Marke'])if(setupText.includes(w))befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit "'+w+'"');
+    if(await page.locator('#setup .q-check-count').count())befund(view,width,'Setup-Karte im Abwaertsszenario ('+setupDir+') mit Regelcheckliste');
+   } else for(const w of ['Einstiegsmarke','Stopp-Marke'])if(!setupText.includes(w))befund(view,width,'Setup-Karte ohne "'+w+'"');
    /* Evidence Experience: Stufe C nennt den Zertifizierungsstand und je geschlossener Art den gemessenen Grund. */
    /* VU3-Finalisierung: Stufe C steht in "Einzelheiten und Methodik" - zuerst aufklappen, dann lesen (wie die Faktoren). */
    {await page.locator('#historie details').evaluateAll(ds=>ds.forEach(d=>{d.open=true;}));
@@ -337,7 +429,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const ist=abschnitte.filter(id=>soll.includes(id));
    if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
    const grenzen=await page.locator('#grenzen').innerText();
-   for(const q of ['Tiingo','SEC EDGAR'])if(!grenzen.includes(q))befund(view,width,'Daten und Grenzen ohne '+q);
+   /* Owner-Entscheidung 07.11.2026: Stand ja, Anbieternamen nein (zentral auf /infos/#quellen). */
+   if(!/Daten & Methodik/.test(grenzen))befund(view,width,'Daten und Grenzen ohne Daten & Methodik');
+   for(const q of ['Tiingo','SEC EDGAR'])if(grenzen.includes(q))befund(view,width,'Daten und Grenzen nennt Anbieter '+q);
    if(!/\d{2}\.\d{2}\.\d{4}/.test(await page.locator('.qx-quote').innerText()))befund(view,width,'Kurs ohne Datum');
    if(!/keine Prognose/i.test(await page.locator('#historie').innerText()))befund(view,width,'Historical Replay ohne Prognose-Absage');
    await page.locator('#technik').getByRole('link',{name:'Chartbild öffnen',exact:true}).waitFor();
@@ -356,7 +450,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
     for(const ziel of [...pillen.slice(1),...pillen.slice(0,-1).reverse()]){
      await page.locator(`.qv2-toc a[data-target="${ziel}"]`).click();await ruhig();await page.waitForTimeout(700);
      const ist=await aktiv();if(ist!==ziel)befund(view,width,`Pille "${ziel}" angeklickt, markiert ist "${ist}"`);}
-    if(width>=760){
+    if(v3&&width<760){
+     /* Redesign 2027 (Q07): eine lange Seite auch auf dem Handy - die Pille folgt dem senkrechten Scrollen. */
+     for(const ziel of ['setup','dafuer','historie','veraenderung']){
+      await page.evaluate(id=>{const n=document.getElementById(id);scrollTo({top:scrollY+n.getBoundingClientRect().top-innerHeight*0.32,behavior:'instant'});},ziel);
+      await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Scrollen zu "${ziel}" markiert ist "${ist}"`);}
+    }else if(width>=760){
      for(const ziel of ['einordnung','veraenderung'])/* links in ihrer Zeile, rechts daneben dafuer bzw. setup */{
       await page.evaluate(id=>{const n=document.getElementById(id);scrollTo({top:scrollY+n.getBoundingClientRect().top-innerHeight*0.32,behavior:'instant'});},ziel);
       await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Scrollen zu "${ziel}" markiert ist "${ist}"`);}
@@ -391,9 +490,14 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!/Branchenvorlage/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Branchenvorlage ungenannt');
   }
   if(view==='aktie-aaac'){
-   /* Ein belegter ETF behaelt Kurs und Verlauf und verliert die Aktienaussage. */
+   /* Variante B (Steuerung 05.11.2026): ein belegter ETF ist nicht im Aktien-Produktuniversum. Vorher: Kurs und
+      Verlauf ohne Aktienaussage; jetzt: benannte Absage mit Name und Papierart, ohne Chart und ohne Aktienaussage. */
    if(await page.locator('.qx-verdict-card').count()||await page.locator('details.qx-factor').count())befund(view,width,'ETF traegt eine Aktienaussage');
-   if(await page.locator('section.qc-chart').count()!==1)befund(view,width,'ETF ohne Kursverlauf');
+   if(await page.locator('section.qc-chart').count())befund(view,width,'ETF zeigt einen Kursverlauf als Aktie');
+   const kopf=(await page.locator('main h1').innerText()).trim(),text=await page.locator('#qx-main').innerText();
+   if(!kopf||kopf==='Aktie nicht gefunden'||kopf==='AAAC')befund(view,width,'ETF ohne Namen in der Absage');
+   if(!(await page.locator('#qx-main [class*=tag]').allTextContents()).some(t=>t.trim()==='ETF'))befund(view,width,'Papierart ETF ungenannt');
+   if(!/keine Aktie/.test(text))befund(view,width,'Absage ohne Grund');
   }
   if(view==='aktie-edva'){
    /* Datenarm heisst reduziert, nicht kaputt: kein Code, die Luecken benannt. */
@@ -407,26 +511,59 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    danach=async()=>{await page.locator('#qx-main').getByRole('link',{name:'Aktie suchen',exact:true}).click();await bereit(page,'aktien');};
   }
   if(view==='technik'||view==='elliott'||view==='elliott-nativ'||view==='chartbild'){
-   /* CHARTBILD (Technical Intelligence v3): Ausblick, Szenario-Wechsel, Chart mit Zonen. Die alten Routen
-      zeigen dieselbe Seite; ?elliott=1 oeffnet die Profi-Ansicht mit der Elliott-Strukturdeutung. */
-   await page.locator('#qx-main .cb-outlook').first().waitFor();
-   await page.locator('#qx-main .cb-chart svg').first().waitFor();
-   const knoepfe=page.locator('#qx-main .cb-switch-btn');
-   if(await knoepfe.count()<2)befund(view,width,'kein Szenario-Wechsel');
-   else{await knoepfe.nth(1).click();await page.locator('#qx-main .cb-chart svg').first().waitFor();await knoepfe.nth(0).click();}
+   /* Konzept EHV (EX03): Elliott auf der Aktie – zaehlbar (Muster, Chart mit Ungueltig-Marke, Lesart in drei Saetzen, Kapitel)
+      oder ehrliche Absage mit den Wegen zu Technical und zur Zaehlbar-Liste. Kein zweiter technischer Ausblick, keine Ziele.
+      ?elliott=1 bzw. ?ansicht=profi oeffnet die Profi-Ansicht mit der Elliott-Strukturdeutung. */
+   await page.locator('#qx-main .cb-ew-say, #qx-main .cb-ew-none').first().waitFor();
    const text=await page.locator('#qx-main').innerText();
-   if(!/Szenario/i.test(text))befund(view,width,'kein Szenario');
-   if(!/Ungültig|Invalid/i.test(text))befund(view,width,'keine Ungueltig-Linie');
+   if(/Technischer Ausblick|Zielbereich|Ziel 1|abwarten/.test(text))befund(view,width,'Ziel oder zweiter Ausblick im Elliott-Bild');
+   if(await page.locator('#qx-main .cb-ew-say').count()){
+    await page.locator('#qx-main .cb-chart svg').first().waitFor();
+    if(!/Ungültig/i.test(text))befund(view,width,'keine Ungueltig-Marke');
+    if(await page.locator('#qx-main .cb-story-r').count()!==3)befund(view,width,'nicht drei Saetze');
+    if(await page.locator('#qx-main details.cb-ep').count()<3)befund(view,width,'Kapitel fehlen');
+   }else if(!/Chart-Lage in Technical/.test(text)||!/Aktien mit sauberer Zählung/.test(text))befund(view,width,'Absage ohne Wege');
    if(/Validierte Zählung|Method Fit/.test(text))befund(view,width,'V1-Elliott-Wortlaut im Chartbild');
    if(view==='elliott'||view==='elliott-nativ'){
     await page.locator('#qx-main section.cb-pro').waitFor();
     if(!/Elliott/i.test(await page.locator('#qx-main section.cb-pro').innerText()))befund(view,width,'Profi-Ansicht ohne Elliott');
    }
   }
+  if(view==='chart'&&v3){
+   /* Redesign 2027 (Q09): Perspektive Chart bleibt in Quant - Urteil, Chart mit Zonen, Szenarien, Historie gegen Zufall, Zeitreise. */
+   await page.locator('#qx-main .qv3-ch-h').waitFor();
+   if(!await page.locator('#qx-main .qv3-ch-chart svg .qv3-ch-zone').count())befund(view,width,'Chart ohne Zonen');
+   if(!/Szenari/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Szenarien fehlen');
+   if(!/Zufall/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Historie ohne Zufallsvergleich');
+   if(!await page.locator('#qx-main input.qv3-ch-range').count())befund(view,width,'Zeitreise fehlt');
+   if(!/^#\/aktie\/NVDA\/chart/.test(await page.evaluate(()=>location.hash)))befund(view,width,'Chart verlaesst Quant');
+  }
   if(view==='chartlagen'){
    if(!/Chart|Lage/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Chartlagen leer');
+   /* Redesign 2027 (Q06): Lage als Urteil, Regel der Reihe, Eigene Auswahl als Sheet mit Ergebnis erst nach dem Filtern. */
+   if(v3){
+    await page.locator('#qx-main .qv3-lage').first().waitFor();
+    if(!await page.locator('#qx-main .qv3-lage .vu-verdict').count())befund(view,width,'Lage ohne Urteil');
+    if(!/Die Regel/.test(await page.locator('#qx-main .qv3-lrule').innerText()))befund(view,width,'Regel der Reihe fehlt');
+    await page.locator('#qx-main .qv3-lown').click();
+    await page.locator('#qv3-lagen-sheet [data-go]').click();
+    await page.locator('#qx-main .qv3-lownout .qv3-lage, #qx-main .qv3-lownout .vu-blank').first().waitFor({timeout:10000}).catch(()=>befund(view,width,'Eigene Auswahl ohne Ergebnis'));
+   }
   }
-  if(view==='zahlen'){
+  if(view==='zahlen'&&v3){
+   /* Redesign 2027 (Q08): Berichtsart als Segment, Kennzahl als Chips - dieselben Zusagen: 12 Monate gezeigt oder begruendet,
+      die Auswahl steht in der Adresse und kommt nach dem Neuladen wieder, die Quelle steht dabei. */
+   await page.locator('#qx-main .qv3-period').waitFor();
+   await page.locator('#qx-main .qv3-period button[data-id="ttm"]').click();
+   await page.waitForFunction(()=>/Zwölfmonats|Letzte 12 Monate/.test(document.querySelector('#qx-main').innerText),null,{timeout:15000}).catch(()=>befund(view,width,'TTM weder gezeigt noch begruendet'));
+   await page.locator('#qx-main .qv3-period button[data-id="annual"]').click();
+   const zweite=page.locator('#qx-main .qv3-mchips button').nth(1);const kennzahl=await zweite.getAttribute('data-id');await zweite.click();
+   await page.waitForFunction(k=>location.hash.includes('kennzahl='+k),kennzahl,{timeout:10000}).catch(()=>{});
+   await page.reload();await bereit(page,'zahlen');await page.locator('#qx-main .qv3-mchips').waitFor();
+   if(await page.locator('#qx-main .qv3-mchips button[aria-pressed="true"]').getAttribute('data-id')!==kennzahl)befund(view,width,'history link lost state');
+   {const z=await page.locator('#qx-main').innerText();/* Owner-Entscheidung 07.11.2026: Anbieter auf /infos/#quellen, hier Stand und Herkunft ohne Anbieternamen. */if(/SEC EDGAR/.test(z))befund(view,width,'Zahlen nennen Anbieter SEC EDGAR');if(!/Rückblickende Ansicht|Aufbereitung vom/.test(z))befund(view,width,'Zahlen ohne Stand/Herkunft');}
+  }
+  if(view==='zahlen'&&!v3){
    await page.locator('#qx-main svg').first().waitFor();
    await page.getByRole('combobox',{name:'Berichtsart',exact:true}).selectOption('ttm');
    await page.waitForFunction(()=>!document.querySelector('#qx-main .qx-loading'));
@@ -439,7 +576,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Die Auswahl steht in der Adresse und kommt nach einem Neuladen wieder. */
    await page.reload();await bereit(page,'zahlen');
    if(await page.getByRole('combobox',{name:'Kennzahl',exact:true}).inputValue()!==kennzahl)befund(view,width,'history link lost state');
-   if(!/SEC EDGAR/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Zahlen ohne Quelle');
+   {const z=await page.locator('#qx-main').innerText();/* Owner-Entscheidung 07.11.2026: Anbieter auf /infos/#quellen, hier Stand und Herkunft ohne Anbieternamen. */if(/SEC EDGAR/.test(z))befund(view,width,'Zahlen nennen Anbieter SEC EDGAR');if(!/Rückblickende Ansicht|Aufbereitung vom/.test(z))befund(view,width,'Zahlen ohne Stand/Herkunft');}
   }
   if(view==='vergleich'){
    if(await page.locator('#qx-main table thead th').count()!==3)befund(view,width,'Vergleich ohne zwei Spalten');
@@ -449,8 +586,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.getByText('Auswahl prüfen',{exact:true}).waitFor();
   }
   if(view==='methodik'){
-   if(await page.locator('#qx-main .qx-method-grid a').count()!==10)befund(view,width,'nicht zehn Methodik-Themen');
-   await page.getByRole('link',{name:/Methodik im Detail/}).first().waitFor();
+   const themen=v3?new Set(await page.locator('#qx-main a[href^="#/methodik/"]').evaluateAll(ns=>ns.map(n=>n.getAttribute('href').split('?')[0]))).size:await page.locator('#qx-main .qx-method-grid a').count();
+   if(themen!==10)befund(view,width,'nicht zehn Methodik-Themen ('+themen+')');
+   if(v3)await page.locator('#qx-main a[href="/quant/methodology/"]').first().waitFor();   /* Q05: „Technische Dokumentation PRO“ */
+   else await page.getByRole('link',{name:/Methodik im Detail/}).first().waitFor();
   }
   if(view==='nicht-gefunden'){
    await page.getByRole('heading',{name:'Diese Seite gibt es nicht',exact:true}).waitFor();
@@ -498,15 +637,21 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   errors.length=vorher;
   await page.getByText('Gerade nicht erreichbar',{exact:true}).waitFor();
   if(await page.locator('h1').count()!==1)befund('render-failure-recovery',width,'die Wiederherstellung traegt '+await page.locator('h1').count()+' Ueberschriften');
-  if(await page.locator('#qx-main a.qx-door').count())befund('render-failure-recovery',width,'failed render retained partial content');
+  if(await page.locator('#qx-main a.qx-door, #qx-main a.vu-navcard').count())befund('render-failure-recovery',width,'failed render retained partial content');
   await page.screenshot({path:out+'/render-recovery-'+width+'.png',fullPage:true});
   await page.unroute(serviceRoute);
   await page.getByRole('button',{name:'Erneut versuchen',exact:true}).click();
   await bereit(page,'home');
   /* Premium-Hero: kurze H1, vollständiger Nutzen und Methodik bleiben sichtbar. */
+  if(await page.locator('#qx-main .qv3').count()){
+   /* Redesign 2027 (Q01): kurze Frage als H1, Nutzen in einem Satz. */
+   await page.locator('#qx-main h1').filter({hasText:'Was hat sich heute verändert?'}).waitFor();
+   await page.locator('#qx-main .qv3-intro .vu-lead').filter({hasText:'über 6.000 US-Aktien nach festen Regeln'}).waitFor();
+  } else {
   await page.locator('#qx-main h1').filter({hasText:'Jeden Tag sehen, was sich verändert.'}).waitFor();
   await page.locator('#qx-main .q-hero-lead').filter({hasText:'wie oft das früher besser lief als der Markt'}).waitFor();
   await page.locator('#qx-main .q-intro-note').filter({hasText:'Quant beobachtet über 6.000 US-Aktien nach festen Regeln'}).waitFor();
+  }
   checks.push({view:'render-failure-recovery',width,pass:true});
  });
 
@@ -522,7 +667,7 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   /* Die Quant-Suche steht prominent im Hero der Startseite (die Kopfzeile ist
      seit 10/2026 die gemeinsame Shell); dazu / und Strg+K ueberall in Quant. */
   await frisch(page,'#/','home');
-  const searchButton=page.locator('button.qx-searchbox');await searchButton.focus();await page.keyboard.press('Enter');
+  const searchButton=page.locator('button.qx-searchbox, button.qv3-search').first();await searchButton.focus();await page.keyboard.press('Enter');
   const dialog=page.locator('dialog.qx-dialog');await dialog.waitFor();
   const searchInput=dialog.locator('input[type=search]');
   if(!await searchInput.evaluate(e=>e===document.activeElement))befund('keyboard-navigation',width,'search input not focused on open');
@@ -562,7 +707,7 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   if(quantLinks.length!==4)befund('platform-header',width,'die Quant-Leiste hat nicht vier Bereiche: '+quantLinks.length);
   if(quantLinks.some(h=>!h||!h.startsWith('/quant/#/')))befund('platform-header',width,'die Quant-Navigation fuehrt aus Quant heraus: '+quantLinks.join(', '));
   const kopf=await page.locator('vu-navigation a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
-  for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/magazin/','/reports/','/academy/','/screener/'])
+  for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/insights/','/academy/','/screener/'])
    if(!kopf.some(h=>h&&h.startsWith(path)))befund('platform-header',width,'der Plattform-Kopf fuehrt nicht mehr zu '+path);
   checks.push({view:'platform-header',width,pass:true});
  });

@@ -76,3 +76,17 @@
 @media(max-width:640px){
   .vu-a-pilot{padding:26px 22px;}
 }
+
+/* Available worlds open their single registered experience without nesting controls. */
+a.vu-a-world-card{color:inherit;text-decoration:none;display:block}
+a.vu-a-world-card:focus-visible{outline:2px solid var(--vu-focus);outline-offset:3px}
+
+/* Keep the integrated Academy entry consistent with the remembered product theme. */
+[data-theme=dark] .vu-academy[data-view=academy-home]{--vu-acad-bg:var(--vu-bg);--vu-acad-bg-elevated:var(--vu-surface);--vu-acad-bg-card:var(--vu-elevated);--vu-acad-line:var(--vu-line);--vu-acad-text:var(--vu-text);--vu-acad-text-muted:var(--vu-text-secondary);--vu-acad-text-faint:var(--vu-text-secondary)}
+[data-theme=dark] .vu-academy[data-view=academy-home] .vu-a-world-status.is-available{color:#8fd694}
+/* The newly available strategy entry must meet text contrast in both themes. */
+a.vu-a-world-card[href="/technical/#/akademie"] .vu-a-world-count{color:var(--vu-acad-text-muted)}
+
+[data-theme=dark] .vu-academy[data-view=academy-home] .vu-a-pilot{background:var(--vu-acad-bg-card);border-color:var(--vu-acad-line)}
+[data-theme=dark] .vu-academy[data-view=academy-home] .vu-a-pilot-cta{color:#12131a}
+[data-theme=dark] .vu-academy[data-view=academy-home] .vu-a-question-card.is-available .vu-a-question-badge{color:#8fd694}

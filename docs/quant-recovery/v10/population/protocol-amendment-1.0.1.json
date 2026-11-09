@@ -1,0 +1,11 @@
+{
+  "schemaVersion": "v10-population-protocol-amendment-1.0.1",
+  "amends": { "path": "docs/quant-recovery/v10/population/protocol-1.0.0.json", "sha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c" },
+  "registeredAt": "2026-10-28",
+  "timing": "registered before any B1/B2/B3 source evidence was evaluated (only a helper library existed)",
+  "reason": "Coordinator rule (CI guard scripts/quant/tests/test_secpit_v9_corrections.py): V10 code under scripts/quant must not read the SEC bulk submissions archive. The archive downloaded for B3 was deleted unread.",
+  "changes": [
+    { "rule": "sourcesAllowed", "before": "bulk submissions archive for CIK discovery and the B3 reference", "after": "removed. CIK discovery: quant/data/universe/cik-map.json, SEC company_tickers_exchange.json (current), per-CIK submissions API and EDGAR full-text search display names (ticker on cover), <= 2 req/s." },
+    { "rule": "B3_population.externalReference", "before": "bulk submissions archive", "after": "EDGAR full indices https://www.sec.gov/Archives/edgar/full-index/<YEAR>/QTR<n>/form.idx for 2000-2026: per calendar year the number of distinct CIKs filing 10-K or 10-K405 (all registrants incl. OTC; order of magnitude), plus distinct CIKs filing 8-A12B (new exchange registrations) and 25/25-NSE (exchange delistings) as flow indicators. SEC offers no exchange-listed stock count per year; coverage ratios are stated against the 10-K filer count and labelled order of magnitude." }
+  ]
+}

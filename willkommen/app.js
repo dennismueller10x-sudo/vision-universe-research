@@ -9,18 +9,37 @@
   var SEEN_KEY = 'vu-welcome-seen-v1', ICONS = '/assets/product-icons.svg#';
   var MIN_S = 15, MAX_S = 45;
 
-  // Produkte in der Reihenfolge des globalen Menues (assets/site-navigation.js).
-  // Produktwelten auf der Willkommensseite (4 x 2); Elliott, Hedgefonds und alle weiteren ueber "Alle Produkte" (globales Menue).
+  // Neun Welten in der Reihenfolge des Menue-Rasters (assets/site-navigation.js), danach AI Atlas als eigene Zeile (Mockup E02).
   var PRODUCTS = [
-    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Märkte' },
-    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren' },
-    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Kennzahlen' },
-    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Charts' },
-    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Methoden' },
-    { id: 'screener', name: 'Screener', href: '/screener/', text: 'Aktien finden' },
-    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'ETFs & Rente' },
-    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag frei' }
+    { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Aktien entdecken' },
+    { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren je Aktie' },
+    { id: 'technical', name: 'Technical', href: '/technical/#/', text: 'Charts und Muster' },
+    { id: 'fundamental', name: 'Fundamental', href: '/fundamental/#/', text: 'Zahlen aus SEC-Berichten' },
+    { id: 'supertrader', name: 'Supertrader', href: '/supertrader/', text: 'Methoden der Profis' },
+    { id: 'hedgefonds', name: 'Hedgefonds', href: '/hedgefonds/', text: 'Was Investoren halten' },
+    { id: 'elliott', name: 'Elliott', href: '/elliott/', text: 'Wellenstruktur' },
+    { id: 'screener', name: 'Screener', href: '/screener/', text: 'Eigene Filter' },
+    { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'Sparplan und Rente' },
+    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag in deinen Worten' }
   ];
+  // Ziel aus der Startseite („Wo stehst du?“, Schluessel vu-start-path) mit dem naechsten Schritt.
+  var GOALS = {
+    anfaenger: { label: 'Dein Ziel: Mit einem Sparplan anfangen', step: 'Starte mit dem Vorsorge-Planer', href: '/vorsorge/#/plan' },
+    verstehen: { label: 'Dein Ziel: Eine Aktie verstehen', step: 'Starte mit NVIDIA im Überblick', href: '/discover/#/s/US_REAL/NVDA' },
+    profi: { label: 'Dein Ziel: Wie ein Profi analysieren', step: 'Starte mit den Methoden', href: '/supertrader/strategies/' }
+  };
+  var NO_GOAL = { label: 'Noch kein Ziel gewählt', step: 'Wähle deinen Einstieg in drei Schritten', href: '/willkommen/start/' };
+  function goalFor(key) { return GOALS[key] || NO_GOAL; }
+  /* Ziel-Karte (E02): Wahl aus dem ersten Start (willkommen/start/prefs.js, Konto zuerst), sonst „Wo stehst du?“ der Startseite. */
+  function goalCard(me) {
+    var S = global.VUStart;
+    if (!S) { var g = null; try { g = global.localStorage.getItem('vu-start-path'); } catch (e) { g = null; } return goalFor(g); }
+    var eff = S.effective(me);
+    return eff.goal ? S.goalCard(eff.goal) : S.NO_GOAL;
+  }
+  var DAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
+  var MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+  function dayLine(d) { return DAYS[d.getDay()] + ', ' + d.getDate() + '. ' + MONTHS[d.getMonth()]; }
 
   function storyDuration(story) {
     return (story.slides || []).reduce(function (sum, slide) { return sum + (Number(slide.duration) || 0); }, 0);
@@ -76,7 +95,7 @@
     return Number(p[2]) + '. ' + ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'][Number(p[1]) - 1] + ' ' + p[0];
   }
 
-  var api = { PRODUCTS: PRODUCTS, validateStories: validateStories, validateNews: validateNews, sortNews: sortNews, storyDuration: storyDuration, greeting: greeting, formatDate: formatDate, MIN_S: MIN_S, MAX_S: MAX_S };
+  var api = { PRODUCTS: PRODUCTS, GOALS: GOALS, goalFor: goalFor, goalCard: goalCard, dayLine: dayLine, validateStories: validateStories, validateNews: validateNews, sortNews: sortNews, storyDuration: storyDuration, greeting: greeting, formatDate: formatDate, MIN_S: MIN_S, MAX_S: MAX_S };
   if (typeof module === 'object' && module.exports) module.exports = api;
   global.VUWelcome = api;
   if (typeof document === 'undefined') return;
@@ -133,8 +152,10 @@
       b.type = 'button'; b.dataset.story = story.id;
       if (story.thumb) th.style.backgroundImage = 'url("' + story.thumb + '")';
       play.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
-      th.append(play, h('span', 'wk-dur', mmss(storyVideo(story))), h('span', 'wk-vid-tag', story.product));
-      b.append(th, h('span', 'wk-vid-title', story.tagline || story.title));
+      var copy = h('span', 'wk-vid-copy');
+      copy.append(h('span', 'wk-vid-title', story.tagline || story.title), h('span', 'wk-vid-tag', story.product));
+      th.append(play, h('span', 'wk-dur', mmss(storyVideo(story))), copy);
+      b.append(th);
       b.addEventListener('click', function () { openStory(story.id, b); });
       li.appendChild(b); list.appendChild(li);
     });
@@ -154,7 +175,7 @@
   function renderProducts(host) {
     var list = h('ul', 'wk-products');
     PRODUCTS.forEach(function (p) {
-      var li = h('li'), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon'), go = h('span', 'wk-product-go');
+      var li = h('li', p.id === 'atlas' ? 'wk-product-row' : ''), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon'), go = h('span', 'wk-product-go');
       a.href = p.href; a.dataset.product = p.id;
       ic.appendChild(icon(p.id)); go.innerHTML = CHEVRON;
       a.append(ic, go, h('strong', 'wk-product-name', p.name), h('span', 'wk-product-text', p.text));
@@ -192,7 +213,8 @@
     if (!text) return;
     text.hidden = false; if (title) title.style.webkitLineClamp = '';
     var bottom = function () { var r = box.getBoundingClientRect(); return r.bottom - parseFloat(getComputedStyle(box).paddingBottom); };
-    for (var n = 6; n >= 1; n--) { text.style.webkitLineClamp = String(n); if (text.getBoundingClientRect().bottom <= bottom() + 1) return; }
+    // Seit dem Redesign hat die Karte ihre natuerliche Hoehe: hoechstens drei Zeilen Text.
+    for (var n = 3; n >= 1; n--) { text.style.webkitLineClamp = String(n); if (text.getBoundingClientRect().bottom <= bottom() + 1) return; }
     text.hidden = true;
     if (title && title.getBoundingClientRect().bottom > bottom() + 1) title.style.webkitLineClamp = '1';
   }
@@ -375,20 +397,86 @@
   }
   // Rueckmeldung nach Konto-Schritten (/konto/ leitet nach E-Mail-Bestaetigung bzw. bestaetigter Zahlung hierher).
   // Nur feste Texte; der Parameter wird danach aus der Adresse entfernt.
-  var FLASH = { verified: 'Deine E-Mail-Adresse ist bestätigt. Willkommen bei Vision Universe.', pro: 'Dein Pro-Abonnement ist aktiv. Danke für deine Unterstützung.' };
+  var FLASH = {
+    verified: { title: 'E-Mail bestätigt. Schön, dass du da bist.', sub: 'Dein Konto ist eingerichtet, Tarif Free.' },
+    pro: { title: 'Willkommen bei Pro. Dein Abo ist aktiv.', sub: 'Bestätigt von Stripe. Alles Weitere unter Konto.' }
+  };
   function flash() {
-    var box = doc.getElementById('wk-flash'), key = null;
+    var box = doc.getElementById('wk-flash'), key = null, timer = 0;
     try { key = new URLSearchParams(global.location.search).get('konto'); } catch (e) { key = null; }
     if (!box || !FLASH[key]) return;
-    box.textContent = FLASH[key]; box.hidden = false;
+    doc.getElementById('wk-flash-title').textContent = FLASH[key].title;
+    doc.getElementById('wk-flash-sub').textContent = FLASH[key].sub;
+    box.hidden = false;
+    function hide() { clearTimeout(timer); box.hidden = true; }
+    doc.getElementById('wk-flash-x').onclick = hide;
+    // Schließt sich selbst; bei reduzierter Bewegung etwas länger sichtbar.
+    timer = setTimeout(hide, reduced() ? 12000 : 8000);
     try { global.history.replaceState(null, '', global.location.pathname + global.location.hash); } catch (e) { /* nur Komfort */ }
-    requestAnimationFrame(fitNews);
+  }
+  /* „Deine Watchlist heute“ (E02): Zähler im Plus, größte Bewegung, die ersten drei Aktien (C10). Nur mit Konto und Einträgen. */
+  function fetchJson(path) { return fetch(path, { cache: 'default', credentials: 'omit' }).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status); return r.json(); }); }
+  function cleanName(n) { return String(n || '').replace(/,? (Inc|Corp|Corporation|Ltd|Limited|plc|N\.V\.|S\.A\.|AG|SE|Holdings?|Co)\.?$/i, '').replace(/ Class [A-Z]$/, '').trim(); }
+  function renderWatch(A) {
+    var C = global.VUCore || {}, W = C.WatchlistView, Id = C.Identity, U = global.VUUI, T = global.VUToday, box = doc.getElementById('wk-watch');
+    if (!box || !W || !Id || !U || !T) return;
+    A.get('/v1/watchlist').then(function (r) {
+      var items = r.ok && r.data && r.data.items ? r.data.items.slice().sort(function (a, b) { return String(b.addedAt || '').localeCompare(String(a.addedAt || '')); }) : [];
+      if (!items.length) return;
+      var keys = items.map(function (i) { return i.ticker && Id.normalizeTicker(i.ticker) ? Id.shardKey(i.ticker) : null; }).filter(Boolean);
+      return W.load(fetchJson, keys, null).then(function (res) {
+        var ix = W.index(res.doc), views = items.map(function (i) { return W.view(ix, i, new Date()); });
+        return T.load(fetchJson, Id, views, 12).then(function (moves) {
+          views.forEach(function (v, k) { var m = moves[k] || {}; v.pct = typeof m.pct === 'number' ? m.pct : null; v.spark = m.values || []; });
+          var sum = T.summary(views.slice(0, 12)), last = views.map(function (v) { return v.price && v.price.date; }).filter(Boolean).sort().pop();
+          doc.getElementById('wk-watch-all').textContent = 'Alle ' + items.length;
+          doc.getElementById('wk-watch-n').textContent = sum.measured ? sum.up + '/' + sum.measured : String(items.length);
+          doc.getElementById('wk-watch-up').textContent = sum.measured ? 'im Plus' + (last ? ' am ' + DAYS[new Date(last + 'T12:00:00Z').getUTCDay()] : '') : (items.length === 1 ? 'Aktie' : 'Aktien') + ' auf deiner Watchlist';
+          doc.getElementById('wk-watch-big').textContent = sum.biggest ? 'Größte Bewegung: ' + sum.biggest.ticker + ' ' + U.pct(sum.biggest.pct) : 'Die Tagesbewegung ist gerade nicht verfügbar.';
+          var rows = doc.getElementById('wk-watch-rows'), html = '';
+          views.slice(0, 3).forEach(function (v) {
+            var priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number';
+            var href = (v.links || []).filter(function (l) { return l.product === 'discover'; }).map(function (l) { return l.href; })[0] || null;
+            html += U.stockRow({ ticker: v.ticker || '–', name: cleanName(v.name) || v.ticker, sub: [v.ticker, v.exchange].filter(Boolean).join(' · '), href: href,
+              chart: global.VUChart && v.spark.length > 1 ? global.VUChart.sparkline(v.spark) : '', price: priced ? v.price.close : null,
+              currency: priced ? v.price.currency : null, changePct: v.pct, noPrice: !priced });
+          });
+          rows.innerHTML = html; /* nur VUUI-Markup: VUUI maskiert jede Eingabe */
+          box.hidden = false;
+        });
+      });
+    }).catch(function () { /* ohne Kurse bleibt der Abschnitt verborgen; die Watchlist steht unter Platz 1 */ });
   }
   function init() {
+    // Erster Start (E11) erscheint einmal nach der E-Mail-Bestätigung, vor Mein Bereich; nicht im Pro-Bestellweg (?konto=pro).
+    try {
+      if (new URLSearchParams(global.location.search).get('konto') === 'verified' && global.VUStart && !global.VUStart.read().done) {
+        global.location.replace('/willkommen/start/?konto=verified'); return;
+      }
+    } catch (e) { /* ohne Speicher: kein erster Start */ }
     measureTop(); global.addEventListener('resize', measureTop);
     if (global.customElements && customElements.whenDefined) customElements.whenDefined('vu-navigation').then(function () { requestAnimationFrame(measureTop); });
-    var hello = doc.getElementById('wk-hello');
-    if (hello) hello.textContent = greeting(new Date().getHours());
+    var now = new Date(), title = doc.getElementById('wk-title'), date = doc.getElementById('wk-date');
+    if (date) date.textContent = dayLine(now);
+    if (title) title.textContent = greeting(now.getHours());
+    var card = doc.getElementById('wk-goal');
+    function paintGoal(me) { var goal = goalCard(me); if (card) { card.href = goal.href; doc.getElementById('wk-goal-label').textContent = goal.label; doc.getElementById('wk-goal-step').textContent = goal.step; } }
+    paintGoal(null);
+    // Anzeigename aus dem Konto (GET /v1/me), nur wenn Konten verbunden sind und jemand angemeldet ist.
+    var A = global.VUAccount;
+    if (A && A.available && A.available() && title) A.get('/v1/session').then(function (r) {
+      if (!(r.ok && r.data && r.data.authenticated)) return null;
+      renderWatch(A);
+      return A.get('/v1/me').then(function (m) {
+        if (!m.ok) return null;
+        // Z1: Wahl aus dem ersten Start ohne Anmeldung einmal ins Konto übernehmen (willkommen/start/prefs.js#adopt).
+        return (global.VUStart ? global.VUStart.adopt(A, m.data) : Promise.resolve(m.data)).then(function (me) {
+          var n = me && me.profile && me.profile.displayName; if (n) title.textContent = greeting(now.getHours()) + ', ' + n; paintGoal(me);
+        });
+      });
+    }).catch(function () {});
+    // Produkt-Leiste „Mein Bereich“ (Platz 0).
+    if (global.VUNavigation) global.VUNavigation.dock({});
     renderProducts(doc.getElementById('wk-products'));
     flash();
     var hl = doc.getElementById('wk-highlights'), news = doc.getElementById('wk-news');

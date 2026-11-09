@@ -22,7 +22,8 @@ import {fileURLToPath} from 'node:url';
 import {formEncode} from '../../workers/vu-account/src/stripe.mjs';
 import {API_VERSION, WEBHOOK_EVENTS, lookupKey} from './stripe-test-setup.mjs';
 
-const LEGAL = {privacy: 'https://www.visionuniverse.de/policies/privacy-policy', terms: 'https://www.visionuniverse.de/policies/terms-of-service'};
+// Eigene Rechtstexte (oeffentlich, ohne Passwortmaske; workers/vu-account/src/legal/texts.mjs) statt der Shopify-Shop-Texte.
+const LEGAL = {privacy: 'https://konto.visionuniverse.de/rechtliches/datenschutz', terms: 'https://konto.visionuniverse.de/rechtliches/agb'};
 
 // Pro: Einfuehrungspreis 1,00 EUR im Monat (interner Testpreis). free hat keinen Preis.
 export const LIVE_CATALOG = Object.freeze([
@@ -95,6 +96,12 @@ export async function setupStripeLive({key, approved, apiOrigin, catalog = LIVE_
       if (!Number.isInteger(amount) || amount <= 0 || amount > 100000) throw new Error(`Preis ${item.plan}_${interval} ungueltig (Cent, 1-100000)`);
       const lk = lookupKey(item.product, interval);
       const found = (await stripe('GET', '/v1/prices', {lookup_keys: [lk], active: 'true', limit: 1}))?.data?.[0];
+      // Seit der Tarifverwaltung (docs/accounts/TARIFVERWALTUNG.md) gilt dort festgelegter Preis; die Einrichtung setzt ihn
+      // nicht auf den Katalogpreis zurueck und schreibt keine Preiszeile (die Verwaltung hat sie schon angelegt).
+      if (found?.metadata?.vu_change_id) {
+        log(`Preis ${lk} wird in der Tarifverwaltung gepflegt (${found.id}, ${(found.unit_amount / 100).toFixed(2)} EUR) – unveraendert.`);
+        continue;
+      }
       const fits = found && found.unit_amount === amount && found.currency === 'eur' && found.recurring?.interval === interval
         && found.recurring?.interval_count === 1 && found.tax_behavior === 'inclusive'
         && (found.product === item.product || found.product?.id === item.product);

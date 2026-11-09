@@ -5,7 +5,7 @@
 # 10 ms CPU je Anfrage; der Worker wartet fast nur auf Supabase/Stripe).
 # Kein KV, kein D1, kein Durable Object: Zustand liegt in Supabase.
 #
-# AUSGEROLLT WIRD NUR VON HAND (Workflow "Konten — vu-account ausrollen",
+# AUSGEROLLT WIRD NUR VON HAND (Workflow "Konten (Buendel account)", Teil ausrollen,
 # workflow_dispatch) in die GitHub-Umgebung "account-dev". Kein Ausrollen bei
 # Merge. Produktion braucht die Freigabe aus docs/accounts/LIVE_RELEASE.md.
 #
@@ -72,12 +72,29 @@ VU_CANCELLATION_AUTO_PROCESS = "false"
 VU_OPS_ALERT_EMAIL = ""
 # Produktionsfreigabe fuer Stripe-Live-Schluessel. Nur per Freigabe-PR auf "true".
 STRIPE_LIVE_MODE_APPROVED = "false"
+# Steuer im Checkout (docs/accounts/STEUER.md): none | automatic (Stripe Tax).
+# Der Preis ist inkl. USt (tax_behavior inclusive); "none" weist keine Steuer gesondert aus.
+STRIPE_TAX_MODE = "none"
+# Rechtstexte: Fassung, die der Owner freigegeben hat (src/legal/texts.mjs LEGAL_VERSION, Status
+# "freigegeben"). Ohne beides bleibt ein Live-Checkout "public" auf Tester beschraenkt.
+VU_LEGAL_APPROVED = ""
+# Brevo (docs/accounts/BREVO.md): A Kontaktabgleich (Servicekommunikation, keine Werbung),
+# B Newsletter mit Double-Opt-in. IDs liefert scripts/account/brevo-setup.mjs.
+VU_BREVO_SYNC = "false"
+VU_NEWSLETTER = "false"
+VU_BREVO_LIST_USERS = ""
+VU_BREVO_LIST_FREE = ""
+VU_BREVO_LIST_PRO = ""
+VU_BREVO_LIST_NEWSLETTER = ""
+# Interne Backtest-Vorschau (/v1/admin/backtests*, Rolle backtest_reviewer): AUS. Nur per eigenem PR mit
+# Owner-Freigabe auf "true" (docs/accounts/FREIGABEN.md, docs/quant/BACKTEST_PREVIEW.md Abschnitt 9).
+VU_BACKTEST_REVIEW_ENABLED = "false"
 
 # =============================================================================
 # PRODUKTION (eine einzige Infrastruktur, docs/accounts/PRODUCTION.md)
 #
 #   npx wrangler deploy --env production   (nur ueber den Workflow
-#   "Konten — vu-account ausrollen (Produktion)", mit Freigabe)
+#   "Konten (Buendel account)", Teil ausrollen, mit Freigabe)
 #
 # Worker "vu-account" unter https://konto.visionuniverse.de (Custom Domain;
 # Cloudflare legt DNS-Eintrag und Zertifikat an). NICHT account.visionuniverse.de:
@@ -134,3 +151,18 @@ VU_OPS_ALERT_EMAIL = ""
 # lehnt "public" ab. Oeffentlicher Pro-Checkout nur per eigenem Freigabe-PR.
 STRIPE_LIVE_MODE_APPROVED = "true"
 VU_CHECKOUT_ACCESS = "testers"
+# Siehe [vars]. Oeffentlicher Checkout zusaetzlich nur mit freigegebenen Rechtstexten (VU_LEGAL_APPROVED).
+# Stripe Tax aktiv seit 30.10.2026 (Registrierung DE; Probe: DE 1,00 EUR brutto = 0,16 EUR USt). docs/accounts/STEUER.md
+STRIPE_TAX_MODE = "automatic"
+VU_LEGAL_APPROVED = "vu-recht-2026-11-06-1"
+# Brevo aus bis zur Abnahme. Listen angelegt 29.10.2026 (Lauf "Produktivstart einspielen" #1): 11 Nutzer, 12 Free,
+# 13 Pro; 4 = bestehende Newsletter-Liste der Landingpage (DOI).
+VU_BREVO_SYNC = "false"
+VU_NEWSLETTER = "false"
+VU_BREVO_LIST_USERS = "11"
+VU_BREVO_LIST_FREE = "12"
+VU_BREVO_LIST_PRO = "13"
+VU_BREVO_LIST_NEWSLETTER = "4"
+# Interne Backtest-Vorschau: EIN nur in Produktion, nach Owner-Freigabe (docs/accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md).
+# Zugang bleibt an Sitzung und Rolle backtest_reviewer gebunden. Abschalten: diese Zeile auf "false" (PR) oder Rolle entziehen (sofort).
+VU_BACKTEST_REVIEW_ENABLED = "true"

@@ -35,6 +35,7 @@ import { fileURLToPath } from "node:url";
 import { createRequire } from "node:module";
 import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-scope.mjs";
 import { applySupplements } from "./lib/split-evidence-supplements.mjs";
+import { applyConfirmations } from "./lib/corporate-action-confirmations.mjs";
 
 const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -76,8 +77,11 @@ export function compactSeries(payload, security, permission, opts) {
   /* Nur positive Kurse: ein Schluss von 0 ist ein Datenloch, kein Kurs. */
   /* SEC-belegte Splits, die der Anbieter nicht fuehrt (quant/config/split-evidence-supplements.json), als
      korrigierte splitFactor-Spalte - dieselbe Eingabe wie in der Wochenreihe (publish-long-series.mjs). */
+  /* Danach belegte Kapitalmassnahmen mit Status PIPELINE (quant/config/corporate-action-confirmations.json), dieselbe
+     Eingabe wie Wochenreihe und Technical-Materialisierung; ohne Eintrag dasselbe Array. */
   const belegt = applySupplements(bars, security && security.securityId).bars;
-  const dated = splitAdjustedCloses(belegt).filter((b) => isNum(b.close) && b.close > 0);
+  const bestaetigt = applyConfirmations(belegt, security && security.securityId).bars;
+  const dated = splitAdjustedCloses(bestaetigt).filter((b) => isNum(b.close) && b.close > 0);
   if (dated.length < 30) return null;
   const fenster = dated.slice(-maxPoints);
   return {

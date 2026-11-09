@@ -1,0 +1,173 @@
+{
+ "schemaVersion": "survivorship-sensitivity-1.0.0",
+ "runner": "backtest-runner-1.0.0",
+ "certificationAsOf": "2026-10-31",
+ "evidenceKind": "RESEARCH_SENSITIVITY",
+ "certification": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "gateInput": false,
+ "claim": "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+ "design": {
+  "survivorProfile": "V10_LIFECYCLE",
+  "delistedProfile": "V13_DELISTED_F1",
+  "sample": 100,
+  "seed": "p3.1-survivorship-sensitivity",
+  "rule": "gleiche Spezifikation, gleiche Hash-Stichprobe aus dem jeweiligen Rahmen; benannte Titel, Methoden und die finanzierte Variante entfallen; Ereignisse nach dem letzten Handelstag zensiert"
+ },
+ "state": "PREPARED_PRIVATE_INPUT_MISSING",
+ "cases": [
+  {
+   "template": "pattern-2015-sideways",
+   "kind": "PATTERN_EVIDENCE",
+   "window": {
+    "from": "2015-01-01",
+    "to": "2015-12-31"
+   },
+   "asOf": "2025-12-31",
+   "costs": {
+    "feeBps": 5,
+    "slippageBps": 5
+   },
+   "benchmark": "SPY",
+   "state": "PREPARED_PRIVATE_INPUT_MISSING",
+   "survivors": {
+    "profile": "V10_LIFECYCLE",
+    "state": "RESEARCH_EXECUTED",
+    "contractViolations": [],
+    "specHash": "8ac55a2f10fb77a83c3906e48d0179469215da5b88ca4e807d2f8873fcd2dba3",
+    "inputHash": "21a1c8e6e941cfa945c9d8f9f36782a57cb9b8a391a27d2e9ee75d188e0d693e",
+    "resultHash": "d6e2c310079b52481b8291fb6cbdba65925b728f5f8762dbe55be9da2de4be41",
+    "envelopeHash": "53042ec205258c3c7ad00a4f612eebf234e992513804204d922cc1d652d2b966",
+    "metricsHash": "e8c3a720c8bd359b89b1694027c04e861c844c3dd3b7f496da4e0168ddd43a7e",
+    "population": {
+     "frameSize": 4327,
+     "listings": 100,
+     "delistedListings": 0,
+     "idsHash": "56d217e71d89d7ed881f6396868622c0bbab55174eaf4844f5d7a6db21569473",
+     "excluded": 62,
+     "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "terminal": "SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE"
+    },
+    "events": {
+     "occurrences": 267,
+     "completed": 267,
+     "immature": 0,
+     "censored": 0,
+     "ineligible": 0,
+     "titles": 82
+    },
+    "perEvent": {
+     "n": 267,
+     "mean": -0.026917536420474602,
+     "median": -0.04163539662308113,
+     "hitRate": 0.3970037453183521,
+     "meanExcessVsBenchmark": -0.014764445218399832,
+     "interval95": [
+      -0.06303849522953242,
+      0.00920342238858322
+     ]
+    },
+    "fromDelistedSeries": {
+     "occurrences": 0,
+     "completed": 0,
+     "censored": 0,
+     "meanNetReturn": null
+    }
+   },
+   "withDelisted": {
+    "profile": "V13_DELISTED_F1",
+    "state": "PREPARED_DATA_LIMITED",
+    "contractViolations": [],
+    "specHash": "ba9bde698c3808bf2495ff0f37c1dd10736502fbd32d3f6dae3a996f82029ca6",
+    "inputHash": "f70b9892ed674246ab81f1e417b799abbfef0ee14a28d1fd3d94d2c7c723d72f",
+    "resultHash": "3ca0766d99ca0c8f54f8019ad4de50c30d4c39dddb14f4722bc67946a90f1827",
+    "envelopeHash": "eb43b57139980f851edf43e4005fd32f1acd8ed408bf1d284d31329477f606a4",
+    "metricsHash": "7252b600d79894bdce11e7c9d5c5ff53a9500ec293b6743d1863010ab0ea3b00",
+    "missing": [
+     "PRIVATE_DATA_UNAVAILABLE:delistedSeries (docs/quant-recovery/v13/delisted/register-1.0.0.json, private hash-bound series)"
+    ]
+   },
+   "delta": null
+  },
+  {
+   "template": "signal-2020-covid",
+   "kind": "SIGNAL_BACKTEST",
+   "window": {
+    "from": "2020-01-01",
+    "to": "2020-12-31"
+   },
+   "asOf": "2025-12-31",
+   "costs": {
+    "feeBps": 5,
+    "slippageBps": 5
+   },
+   "benchmark": "SPY",
+   "state": "PREPARED_PRIVATE_INPUT_MISSING",
+   "survivors": {
+    "profile": "V10_LIFECYCLE",
+    "state": "RESEARCH_EXECUTED",
+    "contractViolations": [],
+    "specHash": "f703e58f4df02fe3e3d0cf68e0bf57104be0e8b93fd59dc8935aefa984c3c3cc",
+    "inputHash": "5b7f9d7dd821fe3c742e2258dfba398e4b29893b0bb797db04f75aca6c9d2880",
+    "resultHash": "d6abbc0ae7371e0b55a71ad2d4dd6bc3129bacf8c6d095db55494eefa8a72cf0",
+    "envelopeHash": "38109148d62afcd6b1282c110934e4b1e677afbb2895c5fb8d48d9ba945e5a85",
+    "metricsHash": "e67846ccbd067054b0192a424c19ad5ffe0782098e67b9bc894169cbfcbcd68b",
+    "population": {
+     "frameSize": 4327,
+     "listings": 100,
+     "delistedListings": 0,
+     "idsHash": "4eea2446b024e767376e47092bf84a946625706ecb978a353e9bceb299244739",
+     "excluded": 28,
+     "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+     "terminal": "SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE"
+    },
+    "events": {
+     "occurrences": 483,
+     "completed": 483,
+     "immature": 0,
+     "censored": 0,
+     "ineligible": 0,
+     "titles": 91
+    },
+    "perEvent": {
+     "n": 483,
+     "mean": 0.20376019834143147,
+     "median": 0.12636819702037116,
+     "hitRate": 0.7142857142857143,
+     "meanExcessVsBenchmark": 0.1219523877728533,
+     "interval95": [
+      0.09495495568974947,
+      0.31256544099311345
+     ]
+    },
+    "fromDelistedSeries": {
+     "occurrences": 0,
+     "completed": 0,
+     "censored": 0,
+     "meanNetReturn": null
+    }
+   },
+   "withDelisted": {
+    "profile": "V13_DELISTED_F1",
+    "state": "PREPARED_DATA_LIMITED",
+    "contractViolations": [],
+    "specHash": "2c46fe7b63cc88afe8208b708a77aa136e8904287fe8e8b42e79aa13a15a8421",
+    "inputHash": "f70b9892ed674246ab81f1e417b799abbfef0ee14a28d1fd3d94d2c7c723d72f",
+    "resultHash": "c4b30ef5cbdfbcdf1869e1596a42e28a71527f094e1cf5f974287b939c4d3449",
+    "envelopeHash": "340f10e76391f19d7c8ddd1f89a43eaa182fe1cc5ae4dcb2d2eb6364dd235d83",
+    "metricsHash": "dd53c91d27a3d9af79b611fe51b0c3e2c4e0bd8798a6c2fe523c1eda42524aa5",
+    "missing": [
+     "PRIVATE_DATA_UNAVAILABLE:delistedSeries (docs/quant-recovery/v13/delisted/register-1.0.0.json, private hash-bound series)"
+    ]
+   },
+   "delta": null
+  }
+ ],
+ "freigabe": {
+  "id": "FV-5/P3.1",
+  "privateInput": "v13-derived (R2-Archiv 1.2.0, Manifest docs/quant-recovery/v13/archive/manifest-1.2.0.json), Secret V13_ARCHIVE_PRIVATE_KEY",
+  "run": "Wiederherstellung wie [v13-archive:demos] (r2-restore.mjs --mode extract --parts v13-derived), dann dieses Skript mit --private-delisted <Verzeichnis der Reihen> --require-private; Bericht nur als Artefakt des Laufs, nie die Reihen",
+  "gate": "Das Gate survivorship liest den Bericht nicht. Erst P3.2 (Tiingo-Rechte) und P3.3 (Owner-Freigabe) duerften es umverdrahten."
+ },
+ "reportHash": "bbd8aea89ec957c929041116a321742dd9413f99e7f5828ebf9106b37307f984"
+}

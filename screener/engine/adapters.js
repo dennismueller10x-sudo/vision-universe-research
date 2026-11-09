@@ -46,7 +46,7 @@
   function StaticUniverseAdapter(opts) {
     opts = opts || {};
     var url = opts.url || '/screener/data/universe-US_REAL.json';
-    /* Kopfdatei = dasselbe Artefakt ohne `cols` (scripts/screener/build-universe.mjs). */
+    /* Kopfdatei = dasselbe Artefakt ohne `cols` (products/screener/producer/build-universe.mjs). */
     var metaUrl = opts.metaUrl || url.replace(/\.json$/, '.meta.json');
     var researchBase = opts.researchBase || '/discover/data/stocks/US_REAL/';
     var ds = null, loading = null;
@@ -60,6 +60,13 @@
         if (ds) return Promise.resolve();
         if (!loading) loading = (opts.fetchJson || fetchJson)(url).then(function (a) {
           if (!a || a.schema !== 'vu-screener-universe-1.0.0') throw Error('SCHEMA_MISMATCH');
+          // Z5: Namen der Supertrader-Methoden und -Stufen aus dem Kandidatenstand in das Woerterbuch der Oberflaeche.
+          var stc = a.supertrader && a.supertrader.criteria;
+          if (stc) {
+            a.dict = Object.assign({}, a.dict || {});
+            a.dict.stMethods = {}; (stc.methods || []).forEach(function (m) { a.dict.stMethods[m.id] = m.name + (m.v1 ? '' : ' (in Forschung)'); });
+            a.dict.stStages = {}; (stc.stages || []).forEach(function (x) { a.dict.stStages[x.id] = x.name; });
+          }
           ds = Engine.createDataset(a);
           if (Fields.setDictionary) Fields.setDictionary(a.dict || null);
         }).catch(function (e) { loading = null; throw e; });

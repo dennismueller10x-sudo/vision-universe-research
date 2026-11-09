@@ -14,7 +14,7 @@ const text = readFileSync(FILE, "utf8");
 
 /** Erzwingt der Verarbeitungsschritt bei einem push-Ereignis --dry-run? */
 export function pushForcesDryRun(src) {
-  return /\[\s*"\$GITHUB_EVENT_NAME"\s*=\s*"push"\s*\][^\n]*args\+=\(--dry-run\)/.test(src);
+  return /\[\s*"\$(GITHUB_EVENT_NAME|\{VU_EVENT\}|VU_EVENT)"\s*=\s*"push"\s*\][^\n]*args\+=\(--dry-run\)/.test(src);
 }
 
 test("Push-Laeufe der SEC-Daily-Pipeline sind Trockenlaeufe", () => {

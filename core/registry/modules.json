@@ -1,0 +1,1002 @@
+{
+ "schema": "vu-modules-index-1",
+ "generatedBy": "scripts/core/build-modules.mjs",
+ "note": "Erzeugt aus products/<id>/module.json; nicht von Hand aendern.",
+ "modules": [
+  {
+   "schema": "vu-module-2",
+   "id": "academy",
+   "label": "Academy",
+   "status": "LIVE",
+   "route": "/academy/",
+   "access": "free",
+   "navigation": {
+    "group": "more",
+    "order": 9,
+    "label": "Academy",
+    "href": "/academy/",
+    "icon": "✧"
+   },
+   "data": [],
+   "reads": [],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "analysten",
+   "label": "Analysten",
+   "status": "LIVE",
+   "route": "/analysten/",
+   "access": "free",
+   "navigation": {
+    "group": "more",
+    "order": 4,
+    "label": "Analysten",
+    "href": "/analysten/",
+    "icon": "◇"
+   },
+   "data": [
+    "analystConsensus",
+    "analystRatings"
+   ],
+   "reads": [],
+   "producers": [
+    "products/analysten/producer/fetch-consensus.mjs",
+    "products/analysten/producer/fetch_analyst_ratings.py",
+    "products/analysten/producer/probe-consensus.mjs"
+   ],
+   "tests": [
+    "products/analysten/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "ask",
+   "label": "AI Atlas",
+   "status": "BETA",
+   "route": "/ask/",
+   "access": "free",
+   "navigation": null,
+   "data": [],
+   "reads": [
+    "quant",
+    "supertrader"
+   ],
+   "tests": [
+    "ask/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "budget",
+   "label": "Budget",
+   "status": "LIVE",
+   "route": "/budget/",
+   "access": "free",
+   "navigation": {
+    "group": "more",
+    "order": 11,
+    "label": "Budget",
+    "href": "/budget/",
+    "icon": "▦"
+   },
+   "data": [],
+   "reads": [],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "company-intelligence",
+   "label": "Company Intelligence",
+   "status": "BETA",
+   "route": "/company-intelligence/",
+   "access": "intern",
+   "navigation": null,
+   "data": [
+    "companyIntelligence"
+   ],
+   "reads": [
+    "companyMaster"
+   ],
+   "producers": [
+    "scripts/company_intelligence/cli.py"
+   ],
+   "tests": [
+    "scripts/company_intelligence/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "dashboard",
+   "label": "Dashboard",
+   "status": "LIVE",
+   "route": "/dashboard/",
+   "access": "free",
+   "navigation": {
+    "group": "more",
+    "order": 1,
+    "label": "Dashboard",
+    "href": "/dashboard/",
+    "icon": "▧"
+   },
+   "data": [],
+   "reads": [],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "discover",
+   "label": "Discover",
+   "status": "LIVE",
+   "route": "/discover/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 1,
+    "label": "Discover",
+    "href": "/discover/#/",
+    "icon": "discover",
+    "claim": "Aktien entdecken",
+    "entries": [
+     [
+      "Übersicht",
+      "/discover/#/",
+      "⌂"
+     ],
+     [
+      "Welten",
+      "/discover/#/welten",
+      "◎"
+     ],
+     [
+      "Strategien",
+      "/discover/#/strategien",
+      "◬"
+     ],
+     [
+      "Entdecken",
+      "/discover/#/einzeln/US_REAL",
+      "◇"
+     ],
+     [
+      "Suchen",
+      "/discover/#/suche",
+      "⌕"
+     ],
+     [
+      "Märkte",
+      "/discover/#/maerkte",
+      "≋"
+     ],
+     [
+      "Watchlist",
+      "/discover/#/watchlist",
+      "♡"
+     ]
+    ]
+   },
+   "data": [
+    "discover",
+    "discoverImBlickLive",
+    "europeDiscoverDisplay",
+    "globalDiscoverUniverse"
+   ],
+   "reads": [
+    "eodPrices",
+    "longSeries",
+    "intraday",
+    "fxReference",
+    "indexMembership",
+    "companyNames",
+    "marketPulse",
+    "fundamentalsConsumer"
+   ],
+   "tests": [
+    "discover/tests/*.test.mjs",
+    "scripts/discover/tests/*.test.mjs",
+    "core/tests/discover-universe.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "elliott",
+   "label": "Elliott",
+   "status": "LIVE",
+   "route": "/elliott/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 7,
+    "label": "Elliott",
+    "href": "/elliott/",
+    "icon": "elliott",
+    "claim": "Wellenstruktur",
+    "entries": [
+     [
+      "Übersicht",
+      "/elliott/",
+      "⌂"
+     ],
+     [
+      "Zählbar",
+      "/elliott/#/?zaehlbar=1",
+      "◬"
+     ],
+     [
+      "Aufwärts",
+      "/elliott/#/?richtung=auf",
+      "↗"
+     ],
+     [
+      "Abwärts",
+      "/elliott/#/?richtung=ab",
+      "↘"
+     ],
+     [
+      "Neu und verändert",
+      "/elliott/#/?neu=1",
+      "✧"
+     ],
+     [
+      "Suchen",
+      "/elliott/#/?suche=1",
+      "⌕"
+     ]
+    ]
+   },
+   "data": [
+    "technicalIntelligenceV3"
+   ],
+   "reads": [],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "etf",
+   "label": "ETF",
+   "status": "LIVE",
+   "route": "/etf/",
+   "access": "free",
+   "navigation": {
+    "group": "more",
+    "order": 3,
+    "label": "ETF",
+    "href": "/etf/",
+    "icon": "◫"
+   },
+   "data": [],
+   "reads": [],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "fundamental",
+   "label": "Fundamental",
+   "status": "LIVE",
+   "route": "/fundamental/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 4,
+    "label": "Fundamental",
+    "href": "/fundamental/#/",
+    "icon": "fundamental",
+    "claim": "Zahlen aus Geschäftsberichten",
+    "entries": [
+     [
+      "Übersicht",
+      "/fundamental/#/",
+      "⌂"
+     ],
+     [
+      "Ranglisten",
+      "/fundamental/#/ranglisten",
+      "◇"
+     ],
+     [
+      "Branchen",
+      "/fundamental/#/branchen",
+      "◇"
+     ],
+     [
+      "Suchen",
+      "/fundamental/#/suche",
+      "⌕"
+     ],
+     [
+      "Methodik",
+      "/fundamental/#/methodik",
+      "▤"
+     ]
+    ]
+   },
+   "data": [],
+   "reads": [
+    "fundamentalsConsumer"
+   ],
+   "producers": [
+    "products/fundamental/producer/build-history.mjs",
+    "products/fundamental/producer/sec-freshness.mjs",
+    "products/fundamental/producer/verify-publication.mjs",
+    "products/fundamental/producer/coverage-report.mjs"
+   ],
+   "tests": [
+    "products/fundamental/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "guide",
+   "label": "Guide",
+   "status": "LIVE",
+   "route": "/guide/",
+   "access": "free",
+   "navigation": {
+    "group": "more",
+    "order": 10,
+    "label": "Guide",
+    "href": "/guide/",
+    "icon": "◈"
+   },
+   "data": [],
+   "reads": [],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "hedgefonds",
+   "label": "Hedgefonds",
+   "status": "LIVE",
+   "route": "/hedgefonds/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 6,
+    "label": "Hedgefonds",
+    "href": "/hedgefonds/",
+    "icon": "hedgefonds",
+    "claim": "Was Investoren halten",
+    "entries": [
+     [
+      "Übersicht",
+      "/hedgefonds/",
+      "⌂"
+     ],
+     [
+      "Investoren",
+      "/hedgefonds/#/investoren",
+      "♙"
+     ],
+     [
+      "Datenbank",
+      "/hedgefonds/#/datenbank",
+      "▧"
+     ],
+     [
+      "Aktien",
+      "/hedgefonds/#/aktien",
+      "⌁"
+     ],
+     [
+      "Smart Money",
+      "/hedgefonds/#/smart-money",
+      "◬"
+     ]
+    ]
+   },
+   "data": [],
+   "reads": [],
+   "producers": [
+    "products/hedgefonds/producer/fetch_edgar_data.py"
+   ],
+   "tests": [
+    "products/hedgefonds/tests/test_fetch_edgar_data.py"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "insights",
+   "label": "Insights",
+   "status": "BETA",
+   "route": "/insights/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 11,
+    "label": "Insights",
+    "href": "/insights/",
+    "icon": "insights",
+    "claim": "Tagesthemen, Aktienmagazin und Reports",
+    "entries": [
+     [
+      "Artikel",
+      "/insights/",
+      "▤"
+     ],
+     [
+      "Aktienmagazin",
+      "/insights/magazin/",
+      "▣"
+     ],
+     [
+      "Reports",
+      "/insights/reports/",
+      "▥"
+     ]
+    ]
+   },
+   "data": [],
+   "reads": [],
+   "producers": [
+    "products/insights/build.mjs",
+    "products/insights/snapshot.mjs",
+    "products/insights/screens.mjs",
+    "products/insights/heft_veroeffentlichen.py"
+   ],
+   "tests": [
+    "products/insights/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "macro",
+   "label": "Macro",
+   "status": "LIVE",
+   "route": "/macro/",
+   "access": "free",
+   "navigation": {
+    "group": "more",
+    "order": 2,
+    "label": "Macro",
+    "href": "/macro/",
+    "icon": "≋"
+   },
+   "data": [],
+   "reads": [],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "magazin",
+   "label": "Magazin",
+   "status": "LIVE",
+   "route": "/magazin/",
+   "access": "free",
+   "navigation": null,
+   "data": [],
+   "reads": [],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "morning",
+   "label": "Morning",
+   "status": "LIVE",
+   "route": "/morning/",
+   "access": "free",
+   "navigation": {
+    "group": "more",
+    "order": 6,
+    "label": "Morning",
+    "href": "/morning/",
+    "icon": "☼"
+   },
+   "data": [],
+   "reads": [],
+   "producers": [
+    "products/morning/producer/build-morning.mjs"
+   ],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "news",
+   "label": "News",
+   "status": "LIVE",
+   "route": "/news/",
+   "access": "free",
+   "navigation": {
+    "group": "more",
+    "order": 5,
+    "label": "News",
+    "href": "/news/",
+    "icon": "▤"
+   },
+   "data": [
+    "news"
+   ],
+   "reads": [],
+   "producers": [
+    "products/news/producer/update_news.mjs"
+   ],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "portfolios",
+   "label": "Portfolios",
+   "status": "LIVE",
+   "route": "/portfolios/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 10,
+    "label": "Portfolios",
+    "href": "/portfolios/",
+    "icon": "portfolios",
+    "claim": "Alle Musterdepots: Supertrader, Quant, KI",
+    "entries": [
+     [
+      "Übersicht",
+      "/portfolios/",
+      "⌂"
+     ],
+     [
+      "Supertrader",
+      "/portfolios/#/supertrader",
+      "⚑"
+     ],
+     [
+      "Quant",
+      "/portfolios/#/quant",
+      "⧩"
+     ],
+     [
+      "KI-Depots",
+      "/portfolios/#/ki",
+      "✧"
+     ]
+    ]
+   },
+   "data": [
+    "kiDepots"
+   ],
+   "reads": [
+    "modelDepots",
+    "supertrader"
+   ],
+   "tests": [
+    "core/tests/portfolios.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "quant",
+   "label": "Quant",
+   "status": "LIVE",
+   "route": "/quant/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 2,
+    "label": "Quant",
+    "href": "/quant/",
+    "icon": "quant",
+    "claim": "Faktoren je Aktie",
+    "entries": [
+     [
+      "Übersicht",
+      "/quant/",
+      "⌂"
+     ],
+     [
+      "Quant Screener",
+      "/quant/#/screener",
+      "⧩"
+     ],
+     [
+      "Strategien",
+      "/quant/#/strategien",
+      "◬"
+     ],
+     [
+      "Aktien",
+      "/quant/#/aktien",
+      "⌁"
+     ],
+     [
+      "Methodik",
+      "/quant/#/methodik",
+      "▤"
+     ],
+     [
+      "Technische Lagen",
+      "/quant/#/chartlagen",
+      "⌁"
+     ],
+     [
+      "Fundamentaldaten",
+      "/quant/#/aktie/NVDA/zahlen",
+      "▧"
+     ]
+    ]
+   },
+   "data": [
+    "quant",
+    "modelDepots",
+    "technical"
+   ],
+   "reads": [
+    "securityMaster",
+    "companyMaster",
+    "eodPrices",
+    "fundamentals",
+    "technicalIntelligenceV3"
+   ],
+   "tests": [
+    "quant/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "reports",
+   "label": "Reports",
+   "status": "LIVE",
+   "route": "/reports/xpeng/",
+   "access": "free",
+   "navigation": null,
+   "data": [],
+   "reads": [],
+   "tests": []
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "screener",
+   "label": "Screener",
+   "status": "LIVE",
+   "route": "/screener/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 8,
+    "label": "Screener",
+    "href": "/screener/",
+    "icon": "screener",
+    "claim": "Eigene Filter",
+    "entries": [
+     [
+      "Übersicht",
+      "/screener/",
+      "⌂"
+     ],
+     [
+      "Filter hinzufügen",
+      "/screener/?view=build",
+      "⧩"
+     ],
+     [
+      "Treffer",
+      "/screener/?view=results",
+      "⌕"
+     ],
+     [
+      "Gespeichert",
+      "/screener/?view=saved",
+      "▤"
+     ],
+     [
+      "Watchlist",
+      "/screener/?view=watchlist",
+      "♡"
+     ]
+    ]
+   },
+   "data": [],
+   "reads": [
+    "discover",
+    "eodPrices",
+    "fundamentalsConsumer",
+    "indexMembership",
+    "companyNames"
+   ],
+   "producers": [
+    "products/screener/producer/build-universe.mjs",
+    "products/screener/producer/build-europe.mjs"
+   ],
+   "tests": [
+    "screener/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "social",
+   "label": "Social",
+   "status": "LIVE",
+   "route": "/social/",
+   "access": "intern",
+   "navigation": null,
+   "data": [],
+   "reads": [],
+   "producers": [
+    "products/social/producer/approval-center-readiness.mjs",
+    "products/social/producer/assert-no-secrets.mjs",
+    "products/social/producer/asset-hashtag-done.mjs",
+    "products/social/producer/build-opportunity-slate.mjs",
+    "products/social/producer/check-hard-invariants.mjs",
+    "products/social/producer/collect-vu-signals.mjs",
+    "products/social/producer/decide-candidate.mjs",
+    "products/social/producer/discover-creators.mjs",
+    "products/social/producer/dispatch-creative-job.mjs",
+    "products/social/producer/enrich-youtube-metrics.mjs",
+    "products/social/producer/fetch-meta-status.mjs",
+    "products/social/producer/ig-reel.mjs",
+    "products/social/producer/ingest-external-observation.mjs",
+    "products/social/producer/ingest-open-creative-jobs.mjs",
+    "products/social/producer/ingest-owner-decisions.mjs",
+    "products/social/producer/ingest-performance.mjs",
+    "products/social/producer/make-carousel-candidates.mjs",
+    "products/social/producer/manual-now-web-candidate.mjs",
+    "products/social/producer/open-creative-request.mjs",
+    "products/social/producer/order-d-done.mjs",
+    "products/social/producer/plan-hashtag-observation.mjs",
+    "products/social/producer/preflight-worker.mjs",
+    "products/social/producer/production-readiness.mjs",
+    "products/social/producer/provision-cloudflare.mjs",
+    "products/social/producer/publish-approval-queue.mjs",
+    "products/social/producer/rank-social-opportunities.mjs",
+    "products/social/producer/reconcile-creative-jobs.mjs",
+    "products/social/producer/record-publication.mjs",
+    "products/social/producer/request-creative.mjs",
+    "products/social/producer/run-orchestrator.mjs",
+    "products/social/producer/run-post-job.mjs",
+    "products/social/producer/run-social-cycle.mjs",
+    "products/social/producer/verify-approval-center.mjs",
+    "products/social/producer/verify-creative-dispatch.mjs",
+    "products/social/producer/verify-hashtag-access.mjs",
+    "products/social/producer/verify-meta-capabilities.mjs",
+    "products/social/producer/verify-suites.mjs",
+    "products/social/producer/verify-worker.mjs"
+   ],
+   "tests": [
+    "products/social/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "status",
+   "label": "Systemzustand",
+   "status": "LIVE",
+   "route": "/status/",
+   "access": "intern",
+   "navigation": null,
+   "data": [
+    "dataQualityReport"
+   ],
+   "reads": [],
+   "tests": [
+    "core/tests/status-equity-quality.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "supertrader",
+   "label": "Supertrader",
+   "status": "LIVE",
+   "route": "/supertrader/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 5,
+    "label": "Supertrader",
+    "href": "/supertrader/",
+    "icon": "supertrader",
+    "claim": "Methoden der Profis",
+    "entries": [
+     [
+      "Übersicht",
+      "/supertrader/",
+      "⌂"
+     ],
+     [
+      "Methoden",
+      "/supertrader/strategies/",
+      "⚑"
+     ],
+     [
+      "Signale",
+      "/supertrader/signals/",
+      "◬"
+     ],
+     [
+      "Backtests",
+      "/supertrader/backtests/",
+      "▧"
+     ],
+     [
+      "Quellen",
+      "/supertrader/sources/",
+      "▤"
+     ]
+    ]
+   },
+   "data": [
+    "supertrader",
+    "supertrader-sf8-candidates",
+    "supertrader-paper-2027-log"
+   ],
+   "reads": [
+    "discover",
+    "longSeries",
+    "intraday",
+    "companyNames",
+    "fundamentals"
+   ],
+   "tests": [
+    "scripts/supertrader/tests/*.test.mjs",
+    "core/tests/supertrader-chain.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "technical",
+   "label": "Technical",
+   "status": "LIVE",
+   "route": "/technical/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 3,
+    "label": "Technical",
+    "href": "/technical/#/",
+    "icon": "technical",
+    "claim": "Charts und Muster",
+    "entries": [
+     [
+      "Übersicht",
+      "/technical/#/",
+      "⌂"
+     ],
+     [
+      "Screener",
+      "/technical/#/screener",
+      "⧩"
+     ],
+     [
+      "Chart Studio",
+      "/technical/#/chart",
+      "⌁"
+     ],
+     [
+      "Gespeichert",
+      "/technical/#/screener/gespeichert",
+      "▤"
+     ],
+     [
+      "Muster",
+      "/technical/#/muster",
+      "▤"
+     ]
+    ]
+   },
+   "data": [
+    "technicalWorld"
+   ],
+   "reads": [
+    "eodPrices",
+    "marketPulse"
+   ],
+   "tests": [
+    "technical/tests/*.test.mjs",
+    "core/tests/technical-chain.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "vorsorge",
+   "label": "Vorsorge",
+   "status": "LIVE",
+   "route": "/vorsorge/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 9,
+    "label": "Vorsorge",
+    "href": "/vorsorge/#/",
+    "icon": "vorsorge",
+    "claim": "Sparplan und Rente",
+    "entries": [
+     [
+      "Vorsorge Home",
+      "/vorsorge/#/",
+      "☂"
+     ],
+     [
+      "Planer",
+      "/vorsorge/#/plan",
+      "◬"
+     ],
+     [
+      "ETFs",
+      "/vorsorge/#/etfs",
+      "◫"
+     ],
+     [
+      "Portfolio",
+      "/vorsorge/#/portfolio",
+      "◎"
+     ],
+     [
+      "Vergleichen",
+      "/vorsorge/#/vergleichen",
+      "⧩"
+     ],
+     [
+      "Förderung",
+      "/vorsorge/#/foerderung",
+      "✧"
+     ],
+     [
+      "Veränderungen",
+      "/vorsorge/#/monitor",
+      "≋"
+     ],
+     [
+      "Wissen",
+      "/vorsorge/#/wissen",
+      "▤"
+     ]
+    ]
+   },
+   "data": [],
+   "reads": [
+    "fxReference"
+   ],
+   "producers": [
+    "products/vorsorge/producer/assert-vorsorge-data.mjs",
+    "products/vorsorge/producer/build-etf-data.mjs",
+    "products/vorsorge/producer/build-etf-intelligence.mjs",
+    "products/vorsorge/producer/fetch-legal-sources.sh",
+    "products/vorsorge/producer/fetch-sec-sic.mjs",
+    "products/vorsorge/producer/ingest-esma-firds.mjs",
+    "products/vorsorge/producer/ingest-esma-funds.mjs",
+    "products/vorsorge/producer/ingest-sec-nport.mjs",
+    "products/vorsorge/producer/ingest-sec-rr.mjs",
+    "products/vorsorge/producer/ingest-tiingo-etfs.mjs",
+    "products/vorsorge/producer/ingest-xetra-refdata.mjs",
+    "products/vorsorge/producer/slim-index.mjs",
+    "products/vorsorge/producer/tiingo-catalog.mjs"
+   ],
+   "tests": [
+    "products/vorsorge/tests/*.test.mjs"
+   ]
+  }
+ ],
+ "pages": [
+  {
+   "dir": "aktie",
+   "reason": "Weiterleitung auf die Aktienansicht (Discover/Quant), kein eigenes Produkt"
+  },
+  {
+   "dir": "discover-v2",
+   "reason": "Altadresse, leitet auf /discover/ um"
+  },
+  {
+   "dir": "vu2",
+   "reason": "Altadresse des Neubaus, leitet um"
+  },
+  {
+   "dir": "infos",
+   "reason": "Info- und Rechtsseiten"
+  },
+  {
+   "dir": "konto",
+   "reason": "Konto und Tarif (Mein Bereich im Menue, workers/vu-account)"
+  },
+  {
+   "dir": "mein-dashboard",
+   "reason": "Mein Bereich (persoenliche Startseite), kein Produkt"
+  },
+  {
+   "dir": "landing",
+   "reason": "Kampagnenseiten"
+  },
+  {
+   "dir": "preise",
+   "reason": "Preisseite des Kontos"
+  },
+  {
+   "dir": "willkommen",
+   "reason": "Willkommensseite der Nutzerfuehrung"
+  }
+ ]
+}

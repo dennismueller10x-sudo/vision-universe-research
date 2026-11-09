@@ -1,0 +1,649 @@
+{
+ "schemaVersion": "quant-v10-setup-original-inventory-1.0.0",
+ "evidenceKind": "SOURCE_EVIDENCE",
+ "status": "ANALYSIS_ONLY_NO_GATE_CHANGE",
+ "asOfPublished": "2026-10-26",
+ "sources": {
+  "quant/data/product/setup-outcomes-v1.json": "dfd8f98181aeaf69d6536e2a54581d547fa5de75625507fcd47fca18863ef546",
+  "quant/methodology/backtest-certification-v1.json": "392f5657702e23598c4ee5ebcf36e120687f3975d31d9deb57e2e661882ad6ce",
+  "quant/methodology/setup-backtest-contract-v1.json": "409f924c56cdf5944d3d123554a4b65421ade78762497d6220446b0b6d1d6e3a",
+  "scripts/quant/build-backtest-certification.mjs": "7af343630edc2440e063895695fc45a85964e0758a856f444aee4f449e0bdfcb",
+  "quant/data/market/discover-series/ref_SPY.json": "f04a3ea0bc79a51bd811073d8f25ab4642affffa18aa0ed40b5552efc6dc950e",
+  "quant/data/market/multi-asset/series/SPY.json": "050e049e33645fcf0cf26f0b185559b9601b2424381acb5ece43062565c71b36"
+ },
+ "snapshots": {
+  "count": 21,
+  "from": "2026-09-10",
+  "to": "2026-10-26",
+  "contentHashVerified": 21,
+  "gapsDays": [
+   14,
+   1,
+   3,
+   2,
+   1,
+   1,
+   3,
+   1,
+   3,
+   3,
+   1,
+   1,
+   1,
+   1,
+   3,
+   1,
+   1,
+   1,
+   1,
+   3
+  ],
+  "nyseSessionsInSpan": 33,
+  "missedSessionsInSpan": [
+   "2026-09-11",
+   "2026-09-14",
+   "2026-09-15",
+   "2026-09-16",
+   "2026-09-17",
+   "2026-09-18",
+   "2026-09-21",
+   "2026-09-22",
+   "2026-09-23",
+   "2026-09-29",
+   "2026-10-07",
+   "2026-10-08"
+  ],
+  "perDate": [
+   {
+    "date": "2026-09-10",
+    "titles": 5676,
+    "sha256": "2c8ee664d05ad5e4648955155d2c841c408eff0dae4e864341b97d9ff7dcdedf"
+   },
+   {
+    "date": "2026-09-24",
+    "titles": 5842,
+    "sha256": "6c6337cc85e23abecd08007719a84108bd6c978f8094beef7b190f28487d7f59"
+   },
+   {
+    "date": "2026-09-25",
+    "titles": 5842,
+    "sha256": "4a3679093c7bb293a72114c2489beba97935e3d0a894fa08b478bb979a069e0d"
+   },
+   {
+    "date": "2026-09-28",
+    "titles": 5872,
+    "sha256": "ed9bb0e5fac162c446e24cc572bbd61603c479b6b63e440f4d7d0934ee9da371"
+   },
+   {
+    "date": "2026-09-30",
+    "titles": 5878,
+    "sha256": "a4ad9601aa509a0835297deb55a70043c3b6f2448864d2cdb6783798c1d7237a"
+   },
+   {
+    "date": "2026-10-01",
+    "titles": 5882,
+    "sha256": "415dbe1adc54f95bf07760def2564d9dbf75583bf651eea26ed2f48801a04e48"
+   },
+   {
+    "date": "2026-10-02",
+    "titles": 5876,
+    "sha256": "ff3c363001b1f12f4e9db876a0392fe5ab95496b44bae362786fbff05ee080fb"
+   },
+   {
+    "date": "2026-10-05",
+    "titles": 5687,
+    "sha256": "7113e21db0a7e5df3f626b431bddba7dd21da355397735a1031cd492cc28926c"
+   },
+   {
+    "date": "2026-10-06",
+    "titles": 5686,
+    "sha256": "547f7667cb4fd7207f0c4ec38e68cc899483fb7baaa1ad47be73d5034859ced9"
+   },
+   {
+    "date": "2026-10-09",
+    "titles": 5705,
+    "sha256": "d5abaeff144b42c30da6ede712595cd8792fda802963240e80a2b588dc6ee7a4"
+   },
+   {
+    "date": "2026-10-12",
+    "titles": 5568,
+    "sha256": "be2f5f727684b88d4ac54e53f1e25aa2f73fcb35c92e8175a7b309359d342524"
+   },
+   {
+    "date": "2026-10-13",
+    "titles": 5567,
+    "sha256": "7ced64797aea075a543eaee6684a40236bd40dc230cd4da81fcdb256f0d7e2de"
+   },
+   {
+    "date": "2026-10-14",
+    "titles": 5560,
+    "sha256": "00f339582121bcf9cdf822a879cec620b45966af6942830ccc1caf8045c792b9"
+   },
+   {
+    "date": "2026-10-15",
+    "titles": 5553,
+    "sha256": "1251c3a6d74b7d0b5ccb9eef58ff97bce814acc7a4fa26ba7c4e7587dc801aef"
+   },
+   {
+    "date": "2026-10-16",
+    "titles": 5569,
+    "sha256": "8d80f882da4ec744785f6db675b9c9f32c7b871752077cac2ca04952cd3eeb48"
+   },
+   {
+    "date": "2026-10-19",
+    "titles": 5571,
+    "sha256": "c0e2159067c29a8e2a8962f1d0fb20c9fb44a630d3cac2b2cb699484c2a0c0f8"
+   },
+   {
+    "date": "2026-10-20",
+    "titles": 5568,
+    "sha256": "685c038999c46c3f169b79c9779682c1a8179d263e0762ae2308b0680175c3c3"
+   },
+   {
+    "date": "2026-10-21",
+    "titles": 5569,
+    "sha256": "ba8c523f47aefc2a20bacf5c417333cd4eaa8c0f05c3087cc4ad7ded0983f515"
+   },
+   {
+    "date": "2026-10-22",
+    "titles": 5571,
+    "sha256": "0beaee6c76805323768b22350f2166ce2c762b7b61fe8e707aa8d102b8d7b276"
+   },
+   {
+    "date": "2026-10-23",
+    "titles": 5574,
+    "sha256": "ca96c5d329b3bf4a1243c90b947d7f46caa75b240a09456806de2109edf91ac1"
+   },
+   {
+    "date": "2026-10-26",
+    "titles": 5575,
+    "sha256": "8ea5f75859d8b332fb1e41ce3e13c45fd7786ee1955ba0106aea959f04f8368e"
+   }
+  ]
+ },
+ "events": {
+  "total": 4137,
+  "byType": {
+   "SETUP_NEW": 1791,
+   "SETUP_CONFIRMED": 147,
+   "SETUP_WEAKENED": 2199
+  },
+  "titles": 1404,
+  "eventDates": 20,
+  "calendarMonths": [
+   "2026-09",
+   "2026-10"
+  ],
+  "isoWeeks": 6,
+  "recomputedEqualsPublished": true,
+  "recomputedHash": "8e6d6dd57b268f2315f606512c2d04d691c4ae75ff5224329ba3d39ca2c68331"
+ },
+ "maturedOutcomes": {
+  "M1": "siehe setup-outcomes-v1 (Pipeline)",
+  "M3": 0,
+  "M6": 0,
+  "publishedStatusM6": {
+   "SETUP_NEW": {
+    "COMPLETED": 0,
+    "PENDING": 1769,
+    "INCOMPLETE": 3,
+    "NO_PRICES": 19
+   },
+   "SETUP_CONFIRMED": {
+    "COMPLETED": 0,
+    "PENDING": 139,
+    "INCOMPLETE": 5,
+    "NO_PRICES": 3
+   }
+  },
+  "returnType": "SPLIT_ADJUSTED_PRICE",
+  "note": "Heute ist kein M3- und kein M6-Ergebnis reif; erste M3-Reife 2026-12-24, erste M6-Reife 2027-03-30."
+ },
+ "calendar": {
+  "rules": "NYSE: Neujahr (Sa: kein Ersatz, So: Mo), MLK, Presidents Day, Karfreitag, Memorial Day, Juneteenth ab 2022, 4. Juli, Labor Day, Thanksgiving, Weihnachten (Sa: Fr, So: Mo) + belegte Sonderschliessungen",
+  "specialClosures": [
+   "2001-09-11",
+   "2001-09-12",
+   "2001-09-13",
+   "2001-09-14",
+   "2004-06-11",
+   "2007-01-02",
+   "2012-10-29",
+   "2012-10-30",
+   "2018-12-05",
+   "2025-01-09"
+  ],
+  "check": {
+   "from": "1998-01-02",
+   "to": "2026-10-27",
+   "spySessions": 7249,
+   "ruleSessions": 7249,
+   "onlyInSpy": [],
+   "onlyInRules": [],
+   "state": "EXACT_MATCH"
+  },
+  "holidays": {
+   "2026": [
+    "2026-01-01",
+    "2026-01-19",
+    "2026-02-16",
+    "2026-04-03",
+    "2026-05-25",
+    "2026-06-19",
+    "2026-07-03",
+    "2026-09-07",
+    "2026-11-26",
+    "2026-12-25"
+   ],
+   "2027": [
+    "2027-01-01",
+    "2027-01-18",
+    "2027-02-15",
+    "2027-03-26",
+    "2027-05-31",
+    "2027-06-18",
+    "2027-07-05",
+    "2027-09-06",
+    "2027-11-25",
+    "2027-12-24"
+   ],
+   "2028": [
+    "2028-01-17",
+    "2028-02-21",
+    "2028-04-14",
+    "2028-05-29",
+    "2028-06-19",
+    "2028-07-04",
+    "2028-09-04",
+    "2028-11-23",
+    "2028-12-25"
+   ],
+   "2029": [
+    "2029-01-01",
+    "2029-01-15",
+    "2029-02-19",
+    "2029-03-30",
+    "2029-05-28",
+    "2029-06-19",
+    "2029-07-04",
+    "2029-09-03",
+    "2029-11-22",
+    "2029-12-25"
+   ]
+  }
+ },
+ "maturityByEventDate": [
+  {
+   "eventDate": "2026-09-24",
+   "entryNextClose": "2026-09-25",
+   "m1": "2026-10-26",
+   "m3": "2026-12-24",
+   "m6": "2027-03-30",
+   "m12": "2027-09-28",
+   "SETUP_NEW": 222,
+   "SETUP_CONFIRMED": 33,
+   "SETUP_WEAKENED": 395,
+   "titles": 650
+  },
+  {
+   "eventDate": "2026-09-25",
+   "entryNextClose": "2026-09-28",
+   "m1": "2026-10-27",
+   "m3": "2026-12-28",
+   "m6": "2027-03-31",
+   "m12": "2027-09-29",
+   "SETUP_NEW": 79,
+   "SETUP_CONFIRMED": 5,
+   "SETUP_WEAKENED": 107,
+   "titles": 191
+  },
+  {
+   "eventDate": "2026-09-28",
+   "entryNextClose": "2026-09-29",
+   "m1": "2026-10-28",
+   "m3": "2026-12-29",
+   "m6": "2027-04-01",
+   "m12": "2027-09-30",
+   "SETUP_NEW": 54,
+   "SETUP_CONFIRMED": 5,
+   "SETUP_WEAKENED": 109,
+   "titles": 168
+  },
+  {
+   "eventDate": "2026-09-30",
+   "entryNextClose": "2026-10-01",
+   "m1": "2026-10-30",
+   "m3": "2026-12-31",
+   "m6": "2027-04-05",
+   "m12": "2027-10-04",
+   "SETUP_NEW": 84,
+   "SETUP_CONFIRMED": 9,
+   "SETUP_WEAKENED": 167,
+   "titles": 260
+  },
+  {
+   "eventDate": "2026-10-01",
+   "entryNextClose": "2026-10-02",
+   "m1": "2026-11-02",
+   "m3": "2027-01-04",
+   "m6": "2027-04-06",
+   "m12": "2027-10-05",
+   "SETUP_NEW": 102,
+   "SETUP_CONFIRMED": 8,
+   "SETUP_WEAKENED": 81,
+   "titles": 191
+  },
+  {
+   "eventDate": "2026-10-02",
+   "entryNextClose": "2026-10-05",
+   "m1": "2026-11-03",
+   "m3": "2027-01-05",
+   "m6": "2027-04-07",
+   "m12": "2027-10-06",
+   "SETUP_NEW": 102,
+   "SETUP_CONFIRMED": 9,
+   "SETUP_WEAKENED": 70,
+   "titles": 181
+  },
+  {
+   "eventDate": "2026-10-05",
+   "entryNextClose": "2026-10-06",
+   "m1": "2026-11-04",
+   "m3": "2027-01-06",
+   "m6": "2027-04-08",
+   "m12": "2027-10-07",
+   "SETUP_NEW": 83,
+   "SETUP_CONFIRMED": 5,
+   "SETUP_WEAKENED": 87,
+   "titles": 175
+  },
+  {
+   "eventDate": "2026-10-06",
+   "entryNextClose": "2026-10-07",
+   "m1": "2026-11-05",
+   "m3": "2027-01-07",
+   "m6": "2027-04-09",
+   "m12": "2027-10-08",
+   "SETUP_NEW": 63,
+   "SETUP_CONFIRMED": 6,
+   "SETUP_WEAKENED": 100,
+   "titles": 169
+  },
+  {
+   "eventDate": "2026-10-09",
+   "entryNextClose": "2026-10-12",
+   "m1": "2026-11-10",
+   "m3": "2027-01-12",
+   "m6": "2027-04-14",
+   "m12": "2027-10-13",
+   "SETUP_NEW": 130,
+   "SETUP_CONFIRMED": 8,
+   "SETUP_WEAKENED": 159,
+   "titles": 297
+  },
+  {
+   "eventDate": "2026-10-12",
+   "entryNextClose": "2026-10-13",
+   "m1": "2026-11-11",
+   "m3": "2027-01-13",
+   "m6": "2027-04-15",
+   "m12": "2027-10-14",
+   "SETUP_NEW": 90,
+   "SETUP_CONFIRMED": 7,
+   "SETUP_WEAKENED": 65,
+   "titles": 162
+  },
+  {
+   "eventDate": "2026-10-13",
+   "entryNextClose": "2026-10-14",
+   "m1": "2026-11-12",
+   "m3": "2027-01-14",
+   "m6": "2027-04-16",
+   "m12": "2027-10-15",
+   "SETUP_NEW": 72,
+   "SETUP_CONFIRMED": 4,
+   "SETUP_WEAKENED": 80,
+   "titles": 156
+  },
+  {
+   "eventDate": "2026-10-14",
+   "entryNextClose": "2026-10-15",
+   "m1": "2026-11-13",
+   "m3": "2027-01-15",
+   "m6": "2027-04-19",
+   "m12": "2027-10-18",
+   "SETUP_NEW": 45,
+   "SETUP_CONFIRMED": 5,
+   "SETUP_WEAKENED": 164,
+   "titles": 214
+  },
+  {
+   "eventDate": "2026-10-15",
+   "entryNextClose": "2026-10-16",
+   "m1": "2026-11-16",
+   "m3": "2027-01-19",
+   "m6": "2027-04-20",
+   "m12": "2027-10-19",
+   "SETUP_NEW": 108,
+   "SETUP_CONFIRMED": 2,
+   "SETUP_WEAKENED": 72,
+   "titles": 182
+  },
+  {
+   "eventDate": "2026-10-16",
+   "entryNextClose": "2026-10-19",
+   "m1": "2026-11-17",
+   "m3": "2027-01-20",
+   "m6": "2027-04-21",
+   "m12": "2027-10-20",
+   "SETUP_NEW": 58,
+   "SETUP_CONFIRMED": 2,
+   "SETUP_WEAKENED": 116,
+   "titles": 176
+  },
+  {
+   "eventDate": "2026-10-19",
+   "entryNextClose": "2026-10-20",
+   "m1": "2026-11-18",
+   "m3": "2027-01-21",
+   "m6": "2027-04-22",
+   "m12": "2027-10-21",
+   "SETUP_NEW": 62,
+   "SETUP_CONFIRMED": 5,
+   "SETUP_WEAKENED": 61,
+   "titles": 128
+  },
+  {
+   "eventDate": "2026-10-20",
+   "entryNextClose": "2026-10-21",
+   "m1": "2026-11-19",
+   "m3": "2027-01-22",
+   "m6": "2027-04-23",
+   "m12": "2027-10-22",
+   "SETUP_NEW": 114,
+   "SETUP_CONFIRMED": 1,
+   "SETUP_WEAKENED": 34,
+   "titles": 149
+  },
+  {
+   "eventDate": "2026-10-21",
+   "entryNextClose": "2026-10-22",
+   "m1": "2026-11-20",
+   "m3": "2027-01-25",
+   "m6": "2027-04-26",
+   "m12": "2027-10-25",
+   "SETUP_NEW": 74,
+   "SETUP_CONFIRMED": 7,
+   "SETUP_WEAKENED": 66,
+   "titles": 147
+  },
+  {
+   "eventDate": "2026-10-22",
+   "entryNextClose": "2026-10-23",
+   "m1": "2026-11-23",
+   "m3": "2027-01-26",
+   "m6": "2027-04-27",
+   "m12": "2027-10-26",
+   "SETUP_NEW": 108,
+   "SETUP_CONFIRMED": 9,
+   "SETUP_WEAKENED": 109,
+   "titles": 226
+  },
+  {
+   "eventDate": "2026-10-23",
+   "entryNextClose": "2026-10-26",
+   "m1": "2026-11-24",
+   "m3": "2027-01-27",
+   "m6": "2027-04-28",
+   "m12": "2027-10-27",
+   "SETUP_NEW": 78,
+   "SETUP_CONFIRMED": 7,
+   "SETUP_WEAKENED": 88,
+   "titles": 173
+  },
+  {
+   "eventDate": "2026-10-26",
+   "entryNextClose": "2026-10-27",
+   "m1": "2026-11-25",
+   "m3": "2027-01-28",
+   "m6": "2027-04-29",
+   "m12": "2027-10-28",
+   "SETUP_NEW": 63,
+   "SETUP_CONFIRMED": 10,
+   "SETUP_WEAKENED": 69,
+   "titles": 142
+  }
+ ],
+ "overlap": {
+  "entryEvents": 1938,
+  "entryTitles": 1064,
+  "titlesWithRepeatedEntry": 545,
+  "repeatedEntryWithinOpenM6WindowOfSameTitle": 874,
+  "maxEntryEventsOnOneDate": 255,
+  "entrySpanSessions": 22,
+  "allPairsOfM6WindowsOverlap": true,
+  "nonOverlappingM6Blocks": 1,
+  "disjointM6Windows": 1
+ },
+ "independence": {
+  "model": "wie docs/quant-recovery/v9/setup-independence-1.0.0.json (rho_ij*overlap/H, H=126 Sitzungen), JS-Neuimplementierung",
+  "rho": {
+   "window": [
+    "2026-04-27",
+    "2026-10-26"
+   ],
+   "titles": 1333,
+   "rhoRaw": 0.0614957432220812,
+   "rhoSpyExcess": 0.07928103640104137
+  },
+  "byKind": {
+   "ALL": {
+    "n": 4137,
+    "nEffRaw": 17.131608625333232,
+    "nEffSpyExcess": 13.34037326474037
+   },
+   "ENTRY": {
+    "n": 1938,
+    "nEffRaw": 17.08185232992908,
+    "nEffSpyExcess": 13.30946816393867
+   },
+   "SETUP_NEW": {
+    "n": 1791,
+    "nEffRaw": 17.06218205541902,
+    "nEffSpyExcess": 13.295863196504833
+   },
+   "SETUP_CONFIRMED": {
+    "n": 147,
+    "nEffRaw": 14.938029203923122,
+    "nEffSpyExcess": 12.00662842592009
+   },
+   "SETUP_WEAKENED": {
+    "n": 2199,
+    "nEffRaw": 17.13572863857402,
+    "nEffSpyExcess": 13.34194710761762
+   }
+  }
+ },
+ "gateCalendar": {
+  "contract": "backtest-certification-1.0.0",
+  "unchangedContract": true,
+  "gates": [
+   {
+    "gate": "historyDates",
+    "required": 120,
+    "observed": 21,
+    "earliest": "2027-03-19",
+    "basis": "99 weitere Veroeffentlichungen an aufeinanderfolgenden NYSE-Sitzungen ab 2026-10-27"
+   },
+   {
+    "gate": "historySpanDays",
+    "required": 180,
+    "observed": 46,
+    "earliest": "2027-03-09",
+    "basis": "erster Stand 2026-09-10 + 180 Kalendertage, naechste Sitzung"
+   },
+   {
+    "gate": "completedOutcomesM6",
+    "required": 100,
+    "observed": 0,
+    "earliest": "2027-03-30",
+    "basis": "Reife M6 (126 Sitzungen nach NEXT_CLOSE-Einstieg) der Ereignisse vom 2026-09-24; SETUP_NEW hat dort 222 Ereignisse (>= 100), Annahme: alle bepreist, keines INCOMPLETE"
+   },
+   {
+    "gate": "titles",
+    "required": 20,
+    "observed": 0,
+    "earliest": "2027-03-30",
+    "basis": "Auswerter Z. 133 zaehlt ALLE Titel einer Ereignisart, sobald mindestens ein M6-Ergebnis abgeschlossen ist (heute 1024 Titel SETUP_NEW); damit faellt das Gate mit der ersten M6-Reife"
+   },
+   {
+    "gate": "independentWeeks",
+    "required": 20,
+    "observed": 2,
+    "earliest": "2028-04-03",
+    "basis": "Auswerter Z. 134 zaehlt verschiedene Kalendermonate (date.slice(0,7)) aller Ereignisse inkl. SETUP_WEAKENED; 18 weitere Monate, je mindestens ein Ereignis; frueheste Sitzung des 20. Monats"
+   },
+   {
+    "gate": "entryVariant",
+    "required": "Delta Median M6 <= 1 Pp (SETUP_CONFIRMED)",
+    "observed": "NOT_MEASURABLE_YET",
+    "earliest": "2027-03-30",
+    "basis": "erst messbar, sobald M6-Ergebnisse von SETUP_CONFIRMED vorliegen; Ergebnis offen (kann PASS oder OWNER_GATE_ENTRY_VARIANT sein)"
+   },
+   {
+    "gate": "oos",
+    "required": "oosMinPerSegment 30",
+    "observed": "konstant false",
+    "earliest": null,
+    "basis": "Auswerter Z. 149 setzt das Gate unbedingt auf false (keine Segmentdefinition implementiert); ohne Codeaenderung zu keinem Datum erfuellbar"
+   },
+   {
+    "gate": "returnBasis",
+    "required": "TOTAL_RETURN",
+    "observed": "SPLIT_ADJUSTED_PRICE",
+    "earliest": null,
+    "basis": "strukturell: haengt an der Preisquelle des Pipeline-Laufs, nicht an der Zeit"
+   },
+   {
+    "gate": "ownerApproval",
+    "required": "setup-state-v1.json requirements.backtestCertification = CERTIFIED",
+    "observed": "NOT_CERTIFIED",
+    "earliest": null,
+    "basis": "Owner-Entscheidung; keine Zeitbedingung"
+   }
+  ],
+  "bindingTimeGate": {
+   "gate": "independentWeeks",
+   "required": 20,
+   "observed": 2,
+   "earliest": "2028-04-03",
+   "basis": "Auswerter Z. 134 zaehlt verschiedene Kalendermonate (date.slice(0,7)) aller Ereignisse inkl. SETUP_WEAKENED; 18 weitere Monate, je mindestens ein Ereignis; frueheste Sitzung des 20. Monats"
+  },
+  "certifiableUnderUnchangedEvaluator": false,
+  "why": "oos ist im Auswerter konstant false; returnBasis und Owner-Freigabe haben keine Zeitbedingung. Das spaeteste Zeit-Gate ist der Monatszaehler."
+ },
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "activeGateChanged": false,
+ "reproHash": "11206c2908ccac8ac711c9537165c8f718eb1a49c009e21ee12a53b2cd285f31"
+}

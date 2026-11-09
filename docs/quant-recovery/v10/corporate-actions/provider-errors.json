@@ -1,0 +1,685 @@
+{
+ "schemaVersion": "v10-ca-provider-errors-1.0.0",
+ "protocol": "docs/quant-recovery/v10/corporate-actions/protocol-1.1.2.json",
+ "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+ "productionApproved": false,
+ "dataChange": "NONE",
+ "scope": "Producer repair proposals for split-sized weekly moves proven (protocol 1.1.1 E4) to be provider-unadjusted splits. No series, master, adapter or published value is changed here; a producer fix needs its own PR with before/after comparison.",
+ "knownSeparately": [
+  {
+   "securityId": "ref_PZZA",
+   "note": "2:1 split 2013 (handoff: weekly closes before 2013-12-30 halved by the next long-series run), already repaired by the series producer change of #1042 (workstream A). E4 rediscovered it independently (proposal list entry ref_PZZA 2014-01-03, CONFIRMED_BY_STATED_XBRL_RATIO); no second repair is needed - the entry is a positive control of E4."
+  }
+ ],
+ "proposals": [
+  {
+   "securityId": "ref_GCTK",
+   "ticker": "GCTK",
+   "cik": "0001506983",
+   "issuer": "Glucotrack, Inc.",
+   "canonicalId": "tiingo:NASDAQ:GCTK:2013-04-25",
+   "week": "2024-11-15",
+   "prevWeek": "2024-11-08",
+   "prevClose": 49680,
+   "close": 9763.2,
+   "weeklyRatio": 0.1965217391304348,
+   "jumpDay": "2024-11-13",
+   "confidence": "UNCONFIRMED_E4_ONLY_DO_NOT_APPLY_WITHOUT_MANUAL_RATIO_CHECK",
+   "proposal": {
+    "action": "ADD_PROVIDER_SPLIT_FACTOR",
+    "splitFactor": 5,
+    "effectiveDate": "2024-11-13",
+    "direction": "FORWARD_SPLIT",
+    "statedRatios": [],
+    "note": "factor = snapped split size of the weekly move (protocol E4); confirm the exact ratio from the statement before the producer change"
+   },
+   "shareContinuity": {
+    "before": {
+     "accession": "0001493152-24-045894",
+     "coverDate": "2024-11-03",
+     "shares": 5772026
+    },
+    "after": {
+     "accession": "0001641172-25-001861",
+     "coverDate": "2025-03-31",
+     "shares": 25585853
+    },
+    "ratio": 4.432733497735457
+   },
+   "sources": [
+    {
+     "role": "COVER_BEFORE",
+     "form": "10-Q",
+     "filingDate": "2024-11-14",
+     "accession": "0001493152-24-045894",
+     "url": "https://www.sec.gov/Archives/edgar/data/1506983/000149315224045894/form10-q_htm.xml",
+     "sha256": "750a331f3aa6a653d584b33529caf1f08bec93e4ec2b172e531bee84a94206df",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"GCTK\"]; dei:EntityCommonStockSharesOutstanding 5772026 as of 2024-11-03; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "COVER_AFTER",
+     "form": "10-K",
+     "filingDate": "2025-03-31",
+     "accession": "0001641172-25-001861",
+     "url": "https://www.sec.gov/Archives/edgar/data/1506983/000164117225001861/form10-k_htm.xml",
+     "sha256": "9c956100629b2c8b52103787556ed216e608eab0c62e6fc69bd2d36e70461ef2",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"GCTK\"]; dei:EntityCommonStockSharesOutstanding 25585853 as of 2025-03-31; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001493152-24-045979",
+     "url": "https://www.sec.gov/Archives/edgar/data/1506983/000149315224045979/0001493152-24-045979.txt",
+     "sha256": "affe3eb1d3df7c9ec468caca65defd6bd1002efa0b37d71cac453a3b43e968cc",
+     "quote": "qual to $0.70, and (B) effective beginning on the Shareholder Approval Date, a price equal to $0.28; which in each case shall be appropriately adjusted for any stock dividend, stock split, stock combination, reclassification or similar event or transaction. “ Fundamental Transaction ” shall have the"
+    },
+    {
+     "role": "SPLIT_STATEMENT_PERIODIC_TEXT",
+     "accession": "0001641172-25-001861",
+     "url": "https://www.sec.gov/Archives/edgar/data/1506983/000164117225001861/form10-k.htm",
+     "sha256": "3ab96e93763260c094c0d6216fe1f6220209a59c587ace4074e1695662d045bb",
+     "quote": "r share for a period of five (5) consecutive trading days, would automatically convert at a price equal to the five-day (5) VWAP (subject to adjustment for any stock split, stock dividend, reverse stock split, combination or similar transaction). “VWAP” means the daily volume weighted average price "
+    }
+   ],
+   "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+   "verifiedAt": "2026-10-28T14:08:41+00:00",
+   "dataChange": "NONE (proposal for the series producer; separate PR, owner approval)"
+  },
+  {
+   "securityId": "ref_GOVX",
+   "ticker": "GOVX",
+   "cik": "0000832489",
+   "issuer": "GeoVax Labs, Inc.",
+   "canonicalId": "tiingo:NASDAQ:GOVX:2012-07-23",
+   "week": "2025-07-03",
+   "prevWeek": "2025-06-27",
+   "prevClose": 24,
+   "close": 12,
+   "weeklyRatio": 0.5,
+   "jumpDay": "2025-07-01",
+   "confidence": "UNCONFIRMED_E4_ONLY_DO_NOT_APPLY_WITHOUT_MANUAL_RATIO_CHECK",
+   "proposal": {
+    "action": "ADD_PROVIDER_SPLIT_FACTOR",
+    "splitFactor": 2,
+    "effectiveDate": "2025-07-01",
+    "direction": "FORWARD_SPLIT",
+    "statedRatios": [],
+    "note": "factor = snapped split size of the weekly move (protocol E4); confirm the exact ratio from the statement before the producer change"
+   },
+   "shareContinuity": {
+    "before": {
+     "accession": "0001437749-25-014083",
+     "coverDate": "2025-04-30",
+     "shares": 15193593
+    },
+    "after": {
+     "accession": "0001437749-25-023651",
+     "coverDate": "2025-07-28",
+     "shares": 25359593
+    },
+    "ratio": 1.6690978230100018
+   },
+   "sources": [
+    {
+     "role": "COVER_BEFORE",
+     "form": "10-Q",
+     "filingDate": "2025-05-01",
+     "accession": "0001437749-25-014083",
+     "url": "https://www.sec.gov/Archives/edgar/data/832489/000143774925014083/govx20250331_10q_htm.xml",
+     "sha256": "c4d0c01dbd244fd28ceb041634ea22f3728a1b97112284eb805f8c6e9ea33523",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"GOVX\",\"GOVXW\"]; dei:EntityCommonStockSharesOutstanding 15193593 as of 2025-04-30; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "COVER_AFTER",
+     "form": "10-Q",
+     "filingDate": "2025-07-28",
+     "accession": "0001437749-25-023651",
+     "url": "https://www.sec.gov/Archives/edgar/data/832489/000143774925023651/govx20250630_10q_htm.xml",
+     "sha256": "ca966cd074fe9cd6d06895326ddf1a7861782283937a757dd0b671733a08deeb",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"GOVX\",\"GOVXW\"]; dei:EntityCommonStockSharesOutstanding 25359593 as of 2025-07-28; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001437749-25-021990",
+     "url": "https://www.sec.gov/Archives/edgar/data/832489/000143774925021990/0001437749-25-021990.txt",
+     "sha256": "36eb3ba42017a5260df7803e34f715960ff7aec2d7d5b99f04583a5b54f9e051",
+     "quote": " exercise of this Warrant.. The limitations contained in this paragraph shall apply to a successor holder of this Warrant. Section 3 . Certain Adjustments . a) Stock Dividends and Splits . If the Company, at any time while this Warrant is outstanding: (i) pays a stock dividend or otherwise makes a d"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001437749-25-024389",
+     "url": "https://www.sec.gov/Archives/edgar/data/832489/000143774925024389/0001437749-25-024389.txt",
+     "sha256": "50a9f4d66d5f33d50adf7b7d41a81fd48a6eab628872bc9ec18f677c386899a6",
+     "quote": "d. To qualify, the Company would need to provide written notice of its intention to cure the deficiency during the additional compliance period, by effecting a reverse stock split, if necessary, provided that it meets the continued listing requirement for the market value of publicly held shares and"
+    },
+    {
+     "role": "SPLIT_STATEMENT_PERIODIC_TEXT",
+     "accession": "0001437749-25-023651",
+     "url": "https://www.sec.gov/Archives/edgar/data/832489/000143774925023651/govx20250630_10q.htm",
+     "sha256": "770f8c11c05db838e0a718425ab335444dc9433a9196cbb658d78ca0aa06acbe",
+     "quote": "of common stock for services 6,703 7 37,493 - 37,500 Issuance of common stock upon warrant exercises 269,032 269 ( 269 ) - - Fractional share roundup following reverse split 55,422 55 ( 55 ) - - Stock option expense - - 103,569 - 103,569 Net loss for the three months ended March 31, 2024 - - - ( 5,8"
+    }
+   ],
+   "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+   "verifiedAt": "2026-10-28T14:09:47+00:00",
+   "dataChange": "NONE (proposal for the series producer; separate PR, owner approval)"
+  },
+  {
+   "securityId": "ref_INBS",
+   "ticker": "INBS",
+   "cik": "0001725430",
+   "issuer": "INTELLIGENT BIO SOLUTIONS INC.",
+   "canonicalId": "tiingo:NASDAQ:INBS:2020-12-23",
+   "week": "2023-03-10",
+   "prevWeek": "2023-03-03",
+   "prevClose": 734.4,
+   "close": 357.6,
+   "weeklyRatio": 0.48692810457516345,
+   "jumpDay": "2023-03-08",
+   "confidence": "UNCONFIRMED_E4_ONLY_DO_NOT_APPLY_WITHOUT_MANUAL_RATIO_CHECK",
+   "proposal": {
+    "action": "ADD_PROVIDER_SPLIT_FACTOR",
+    "splitFactor": 2,
+    "effectiveDate": "2023-03-08",
+    "direction": "FORWARD_SPLIT",
+    "statedRatios": [],
+    "note": "factor = snapped split size of the weekly move (protocol E4); confirm the exact ratio from the statement before the producer change"
+   },
+   "shareContinuity": {
+    "before": {
+     "accession": "0001493152-23-004603",
+     "coverDate": "2023-02-13",
+     "shares": 916265
+    },
+    "after": {
+     "accession": "0001493152-23-016436",
+     "coverDate": "2023-05-08",
+     "shares": 1732567
+    },
+    "ratio": 1.8909016496319295
+   },
+   "sources": [
+    {
+     "role": "COVER_BEFORE",
+     "form": "10-Q",
+     "filingDate": "2023-02-14",
+     "accession": "0001493152-23-004603",
+     "url": "https://www.sec.gov/Archives/edgar/data/1725430/000149315223004603/form10-q_htm.xml",
+     "sha256": "21be4b1ab381875f9346346c454876a5e81673dd8fc1497ee1fda802b2d9091c",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"INBS\"]; dei:EntityCommonStockSharesOutstanding 916265 as of 2023-02-13; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "COVER_AFTER",
+     "form": "10-Q",
+     "filingDate": "2023-05-11",
+     "accession": "0001493152-23-016436",
+     "url": "https://www.sec.gov/Archives/edgar/data/1725430/000149315223016436/form10-q_htm.xml",
+     "sha256": "432c40a2efd70ae6f378d782f09317de722fb44e0c4fdcd7e087e7eb2370cd79",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"INBS\"]; dei:EntityCommonStockSharesOutstanding 1732567 as of 2023-05-08; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001493152-22-036357",
+     "url": "https://www.sec.gov/Archives/edgar/data/1725430/000149315222036357/0001493152-22-036357.txt",
+     "sha256": "1dd513d0e1eb171eefdf5655f5e5c6115ea28dde77114479f0bf652e1933f6f0",
+     "quote": "n Stock of the Company into a smaller number of shares of Common Stock at a ratio specified in or determined in accordance with the terms of such amendment (a “Reverse Stock Split”). Each share of Preferred Stock will have the right to cast 20,000 votes per share of Preferred Stock on any proposal o"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001493152-23-004127",
+     "url": "https://www.sec.gov/Archives/edgar/data/1725430/000149315223004127/0001493152-23-004127.txt",
+     "sha256": "7422ca62a43a9e483ac6a174d3a3726135cf4601b0757130e867a7bc93b03926",
+     "quote": "l Meeting the stockholders of the Company approved an amendment to the Company’s Amended And Restated Articles Of Incorporation (the “Amendment”) to effect the reverse stock split at a ratio of not less than 1-for-2 and not more than 1-for-35 at any time within 12 months following the date of stockh"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001493152-23-007271",
+     "url": "https://www.sec.gov/Archives/edgar/data/1725430/000149315223007271/0001493152-23-007271.txt",
+     "sha256": "33c4357df7ba23239353bb84276b41ebfe6129bf11901265516cba73ef0d19b9",
+     "quote": "he exercise price and the number of shares of Common Stock issuable upon exercise of the Warrants is subject to appropriate adjustments in the event of certain stock dividends and distributions, stock splits, stock combinations, reclassifications or similar events affecting the Common Stock. The War"
+    },
+    {
+     "role": "SPLIT_STATEMENT_PERIODIC_TEXT",
+     "accession": "0001493152-23-016436",
+     "url": "https://www.sec.gov/Archives/edgar/data/1725430/000149315223016436/form10-q.htm",
+     "sha256": "f8583102073bcf45a67b0ee255390f3eaf7ad08a18e263b166da7c31b303fe61",
+     "quote": "27,071 ) Balance, December 31, 2022 2,539,465 $ 25,395 917,650 $ 9,177 ( 1,386 ) $ ( 14 ) $ 43,686,675 $ ( 32,804,746 ) $ ( 562,097 ) $ ( 91,407 ) $ 10,262,983 Reverse stock split rounding adjustment - - 11,250 112 - - ( 112 ) - - - - Issuance of common stock and warrants, net of issuance costs - - "
+    }
+   ],
+   "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+   "verifiedAt": "2026-10-28T14:13:20+00:00",
+   "dataChange": "NONE (proposal for the series producer; separate PR, owner approval)"
+  },
+  {
+   "securityId": "ref_INO",
+   "ticker": "INO",
+   "cik": "0001055726",
+   "issuer": "INOVIO PHARMACEUTICALS, INC.",
+   "canonicalId": "tiingo:NASDAQ:INO:1998-12-08",
+   "week": "2020-03-13",
+   "prevWeek": "2020-03-06",
+   "prevClose": 169.08,
+   "close": 86.4,
+   "weeklyRatio": 0.511000709723208,
+   "jumpDay": "2020-03-10",
+   "confidence": "UNCONFIRMED_E4_ONLY_DO_NOT_APPLY_WITHOUT_MANUAL_RATIO_CHECK",
+   "proposal": {
+    "action": "ADD_PROVIDER_SPLIT_FACTOR",
+    "splitFactor": 2,
+    "effectiveDate": "2020-03-10",
+    "direction": "FORWARD_SPLIT",
+    "statedRatios": [],
+    "note": "factor = snapped split size of the weekly move (protocol E4); confirm the exact ratio from the statement before the producer change"
+   },
+   "shareContinuity": {
+    "before": {
+     "accession": "0001055726-19-000058",
+     "coverDate": "2019-11-07",
+     "shares": 100010328
+    },
+    "after": {
+     "accession": "0001055726-20-000032",
+     "coverDate": "2020-05-08",
+     "shares": 158096451
+    },
+    "ratio": 1.5808012448474322
+   },
+   "sources": [
+    {
+     "role": "COVER_BEFORE",
+     "form": "10-Q",
+     "filingDate": "2019-11-12",
+     "accession": "0001055726-19-000058",
+     "url": "https://www.sec.gov/Archives/edgar/data/1055726/000105572619000058/ino-20190930.xml",
+     "sha256": "3c7c049b44109549fbe256ac8e3bd876d5fec329626590c025125780442db4d8",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol []; dei:EntityCommonStockSharesOutstanding 100010328 as of 2019-11-07"
+    },
+    {
+     "role": "COVER_AFTER",
+     "form": "10-Q",
+     "filingDate": "2020-05-11",
+     "accession": "0001055726-20-000032",
+     "url": "https://www.sec.gov/Archives/edgar/data/1055726/000105572620000032/ino-20200331.xml",
+     "sha256": "c65a82309ef85afe92e7d09db41806c359f6f1d81b6ef1674a72f738061acbc2",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol []; dei:EntityCommonStockSharesOutstanding 158096451 as of 2020-05-08"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001193125-20-000651",
+     "url": "https://www.sec.gov/Archives/edgar/data/1055726/000119312520000651/0001193125-20-000651.txt",
+     "sha256": "c0a87f07e8acaafce840d199b5f84383369eabfc469defa3cbd8878c2b575c36",
+     "quote": "or writing thereon or notice of any previous loss or theft thereof) for the purpose of receiving payment and for all other purposes. The Bonds may not split or reverse split except as otherwise provided in these Terms and Conditions. The entries in the Register of Bondholders shall be conclusive abs"
+    }
+   ],
+   "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+   "verifiedAt": "2026-10-28T14:13:50+00:00",
+   "dataChange": "NONE (proposal for the series producer; separate PR, owner approval)"
+  },
+  {
+   "securityId": "ref_MNPR",
+   "ticker": "MNPR",
+   "cik": "0001645469",
+   "issuer": "Monopar Therapeutics",
+   "canonicalId": "tiingo:NASDAQ:MNPR:2019-12-19",
+   "week": "2024-10-25",
+   "prevWeek": "2024-10-18",
+   "prevClose": 5.5,
+   "close": 16.93,
+   "weeklyRatio": 3.078181818181818,
+   "jumpDay": "2024-10-24",
+   "confidence": "UNCONFIRMED_E4_ONLY_DO_NOT_APPLY_WITHOUT_MANUAL_RATIO_CHECK",
+   "proposal": {
+    "action": "ADD_PROVIDER_SPLIT_FACTOR",
+    "splitFactor": 0.3333333333333333,
+    "effectiveDate": "2024-10-24",
+    "direction": "REVERSE_SPLIT",
+    "statedRatios": [],
+    "note": "factor = snapped split size of the weekly move (protocol E4); confirm the exact ratio from the statement before the producer change"
+   },
+   "shareContinuity": {
+    "before": {
+     "accession": "0001437749-24-025651",
+     "coverDate": "2024-07-31",
+     "shares": 17601827
+    },
+    "after": {
+     "accession": "0001437749-24-034048",
+     "coverDate": "2024-10-31",
+     "shares": 5277796
+    },
+    "ratio": 0.2998436469123347
+   },
+   "sources": [
+    {
+     "role": "COVER_BEFORE",
+     "form": "10-Q",
+     "filingDate": "2024-08-09",
+     "accession": "0001437749-24-025651",
+     "url": "https://www.sec.gov/Archives/edgar/data/1645469/000143774924025651/mnpr20240630_10q_htm.xml",
+     "sha256": "b0f526971bcd2dc635b7fcef07ff6dcbda3d1762a56b3e1144ffe2805c758133",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"MNPR\"]; dei:EntityCommonStockSharesOutstanding 17601827 as of 2024-07-31; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "COVER_AFTER",
+     "form": "10-Q",
+     "filingDate": "2024-11-08",
+     "accession": "0001437749-24-034048",
+     "url": "https://www.sec.gov/Archives/edgar/data/1645469/000143774924034048/mnpr20240930_10q_htm.xml",
+     "sha256": "49933c4dc16fdb11f973a53465b9b1e5d7bc05085347c36313db03581623c03e",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"MNPR\"]; dei:EntityCommonStockSharesOutstanding 5277796 as of 2024-10-31; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001437749-24-025650",
+     "url": "https://www.sec.gov/Archives/edgar/data/1645469/000143774924025650/0001437749-24-025650.txt",
+     "sha256": "cb6bbfd2615d2b4c2b02256a9725b6df79f1770b04da224c6639fdc1d85676e0",
+     "quote": "led with the Secretary of State of the State of Delaware a Certificate of Amendment to its Second Amended and Restated Certificate of Incorporation to effect a 1 for 5 reverse stock split of its outstanding shares of common stock (the “Reverse Stock Split”). The Certificate of Amendment provides tha"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001437749-24-032612",
+     "url": "https://www.sec.gov/Archives/edgar/data/1645469/000143774924032612/0001437749-24-032612.txt",
+     "sha256": "44d758682d40bb6ff0d403bdfb22a002dfa67aa00296b2266b5ed24528a6989f",
+     "quote": "AOB ” shall have the meaning ascribed to such term in Section 3.1(dd). “Per Share Purchase Price ” equals $16.25, subject to adjustment for reverse and forward stock splits, stock dividends, stock combinations and other similar transactions of the Common Stock that occur after the date of this Agree"
+    },
+    {
+     "role": "SPLIT_STATEMENT_PERIODIC_TEXT",
+     "accession": "0001437749-24-034048",
+     "url": "https://www.sec.gov/Archives/edgar/data/1645469/000143774924034048/mnpr20240930_10q.htm",
+     "sha256": "6b11728d6b7fd858197e51ef768c912d45c51d3e6a542c1748c9bfeb5f7d2ac5",
+     "quote": "* Derived from the Company’s audited consolidated financial statements. ** Information pertaining to number of shares outstanding gives retroactive effect to a 1 for 5 reverse stock split that became effective on August 12, 2024. The accompanying notes are an integral part of these condensed consoli"
+    }
+   ],
+   "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+   "verifiedAt": "2026-10-28T14:22:50+00:00",
+   "dataChange": "NONE (proposal for the series producer; separate PR, owner approval)"
+  },
+  {
+   "securityId": "ref_MTVA",
+   "ticker": "MTVA",
+   "cik": "0001638287",
+   "issuer": "MetaVia Inc.",
+   "canonicalId": "tiingo:NASDAQ:MTVA:2016-08-05",
+   "week": "2025-04-17",
+   "prevWeek": "2025-04-11",
+   "prevClose": 15.95,
+   "close": 8.13,
+   "weeklyRatio": 0.509717868338558,
+   "jumpDay": "2025-04-15",
+   "confidence": "UNCONFIRMED_E4_ONLY_DO_NOT_APPLY_WITHOUT_MANUAL_RATIO_CHECK",
+   "proposal": {
+    "action": "ADD_PROVIDER_SPLIT_FACTOR",
+    "splitFactor": 2,
+    "effectiveDate": "2025-04-15",
+    "direction": "FORWARD_SPLIT",
+    "statedRatios": [
+     0.091
+    ],
+    "note": "factor = snapped split size of the weekly move (protocol E4); confirm the exact ratio from the statement before the producer change"
+   },
+   "shareContinuity": {
+    "before": {
+     "accession": "0001558370-25-003386",
+     "coverDate": "2025-03-17",
+     "shares": 8654869
+    },
+    "after": {
+     "accession": "0001558370-25-007749",
+     "coverDate": "2025-05-14",
+     "shares": 19564214
+    },
+    "ratio": 2.2604864383273737
+   },
+   "sources": [
+    {
+     "role": "COVER_BEFORE",
+     "form": "10-K",
+     "filingDate": "2025-03-20",
+     "accession": "0001558370-25-003386",
+     "url": "https://www.sec.gov/Archives/edgar/data/1638287/000155837025003386/mtva-20241231x10k_htm.xml",
+     "sha256": "f6cb24cd324109c7382b09b2c2bbcae4e0d56f2ba33b1a3f30bee72e5ea6f011",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"MTVA\"]; dei:EntityCommonStockSharesOutstanding 8654869 as of 2025-03-17; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "COVER_AFTER",
+     "form": "10-Q",
+     "filingDate": "2025-05-14",
+     "accession": "0001558370-25-007749",
+     "url": "https://www.sec.gov/Archives/edgar/data/1638287/000155837025007749/mtva-20250331x10q_htm.xml",
+     "sha256": "5302128f6365bb250e221f9ab870428e32ff2b2781b2666448ba21f8f14403a1",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"MTVA\"]; dei:EntityCommonStockSharesOutstanding 19564214 as of 2025-05-14; dei:SecurityExchangeName [\"NASDAQ\"]"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001104659-25-048210",
+     "url": "https://www.sec.gov/Archives/edgar/data/1638287/000110465925048210/0001104659-25-048210.txt",
+     "sha256": "44b8ada7bc7176dbf47d000c8d06d813536b4ed34030b619f142d11267ddf40c",
+     "quote": "ffect to such limitation. The limitations contained in this paragraph shall apply to a successor holder of this Warrant. 8 Section 3 . Certain Adjustments . a) Stock Dividends and Splits . If the Company, at any time while this Warrant is outstanding: (i) pays a stock dividend or otherwise makes a d"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001104659-25-054976",
+     "url": "https://www.sec.gov/Archives/edgar/data/1638287/000110465925054976/0001104659-25-054976.txt",
+     "sha256": "aec6762f59119da2d398e2f835d427cfd9520b9ddc458c7589f22dcbd16fafb5",
+     "quote": "the bid price requirement, and would need to provide written notice of its intention to cure the deficiency during the second compliance period, by effecting a reverse stock split, if necessary. If the Company meets these requirements, Nasdaq will inform the Company that it has been granted an addit"
+    },
+    {
+     "role": "SPLIT_STATEMENT_XBRL",
+     "accession": "0001104659-26-034911",
+     "url": "https://data.sec.gov/api/xbrl/companyconcept/CIK0001638287/us-gaap/StockholdersEquityNoteStockSplitConversionRatio1.json",
+     "sha256": null,
+     "quote": "StockholdersEquityNoteStockSplitConversionRatio1 0.091 end 2025-12-31 form 10-K",
+     "statedRatio": 0.091
+    },
+    {
+     "role": "SPLIT_STATEMENT_PERIODIC_TEXT",
+     "accession": "0001558370-25-007749",
+     "url": "https://www.sec.gov/Archives/edgar/data/1638287/000155837025007749/mtva-20250331x10q.htm",
+     "sha256": "eed0a1070655c4a231e5f6766ab0f7c49bdd0734d5a9169cb37e1a8f2eea1aae",
+     "quote": "ncorporated by reference to Exhibit 3.1 to the Registrant's Current Report on Form 8-K, filed with the SEC on August 10, 2016). 3.2 ​ Certificate of Amendment (Reverse Stock Split) to the Third Amended and Restated Certificate of Incorporation of the Registrant (incorporated by reference to Exhibit "
+    }
+   ],
+   "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+   "verifiedAt": "2026-10-28T14:24:38+00:00",
+   "dataChange": "NONE (proposal for the series producer; separate PR, owner approval)"
+  },
+  {
+   "securityId": "ref_PZZA",
+   "ticker": "PZZA",
+   "cik": "0000901491",
+   "issuer": "PAPA JOHNS INTERNATIONAL INC",
+   "canonicalId": "tiingo:NASDAQ:PZZA:1993-06-08",
+   "week": "2014-01-03",
+   "prevWeek": "2013-12-27",
+   "prevClose": 89.95,
+   "close": 46.08,
+   "weeklyRatio": 0.512284602556976,
+   "jumpDay": "2013-12-30",
+   "confidence": "CONFIRMED_BY_STATED_XBRL_RATIO",
+   "proposal": {
+    "action": "ADD_PROVIDER_SPLIT_FACTOR",
+    "splitFactor": 2,
+    "effectiveDate": "2013-12-30",
+    "direction": "FORWARD_SPLIT",
+    "statedRatios": [
+     2,
+     2,
+     2,
+     2,
+     2
+    ],
+    "note": "factor = snapped split size of the weekly move (protocol E4); confirm the exact ratio from the statement before the producer change"
+   },
+   "shareContinuity": {
+    "before": {
+     "accession": "0001104659-13-081219",
+     "coverDate": "2013-10-28",
+     "shares": 21544498
+    },
+    "after": {
+     "accession": "0001104659-14-013226",
+     "coverDate": "2014-02-18",
+     "shares": 41888411
+    },
+    "ratio": 1.9442741715309404
+   },
+   "sources": [
+    {
+     "role": "COVER_BEFORE",
+     "form": "10-Q",
+     "filingDate": "2013-11-05",
+     "accession": "0001104659-13-081219",
+     "url": "https://www.sec.gov/Archives/edgar/data/901491/000110465913081219/pzza-20130929.xml",
+     "sha256": "1832bb81d1ba8d47ee4af01a05e1e7123e70af2703b804d5e64a9e57e6b171a9",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"PZZA\"]; dei:EntityCommonStockSharesOutstanding 21544498 as of 2013-10-28"
+    },
+    {
+     "role": "COVER_AFTER",
+     "form": "10-K",
+     "filingDate": "2014-02-25",
+     "accession": "0001104659-14-013226",
+     "url": "https://www.sec.gov/Archives/edgar/data/901491/000110465914013226/pzza-20131229.xml",
+     "sha256": "4df3ef23d0df79225ac0d237dd648475dbc3d7a97e0ea3440bceee5c6ff6bb6f",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"PZZA\"]; dei:EntityCommonStockSharesOutstanding 41888411 as of 2014-02-18"
+    },
+    {
+     "role": "SPLIT_STATEMENT_8K",
+     "accession": "0001157523-13-005314",
+     "url": "https://www.sec.gov/Archives/edgar/data/901491/000115752313005314/0001157523-13-005314.txt",
+     "sha256": "e3cdf4d429ee617d767fd594d00567bbdbe1d9eed6f91004aa663f1187982e3f",
+     "quote": "013, Papa John’s International, Inc. announced a two-for-one split of the company’s outstanding shares of common stock, which will be effected in the form of a stock dividend. The stock dividend entitles each shareholder of record at the close of business on December 12, 2013 to receive one addition"
+    },
+    {
+     "role": "SPLIT_STATEMENT_XBRL",
+     "accession": "0001104659-16-099249",
+     "url": "https://data.sec.gov/api/xbrl/companyconcept/CIK0000901491/us-gaap/StockholdersEquityNoteStockSplitConversionRatio1.json",
+     "sha256": null,
+     "quote": "StockholdersEquityNoteStockSplitConversionRatio1 2 end 2013-10-29 form 10-K",
+     "statedRatio": 2
+    },
+    {
+     "role": "SPLIT_STATEMENT_XBRL",
+     "accession": "0001104659-14-013226",
+     "url": "https://data.sec.gov/api/xbrl/companyconcept/CIK0000901491/us-gaap/StockholdersEquityNoteStockSplitConversionRatio1.json",
+     "sha256": null,
+     "quote": "StockholdersEquityNoteStockSplitConversionRatio1 2 end 2013-12-29 form 10-K",
+     "statedRatio": 2
+    },
+    {
+     "role": "SPLIT_STATEMENT_XBRL",
+     "accession": "0001104659-14-035286",
+     "url": "https://data.sec.gov/api/xbrl/companyconcept/CIK0000901491/us-gaap/StockholdersEquityNoteStockSplitConversionRatio1.json",
+     "sha256": null,
+     "quote": "StockholdersEquityNoteStockSplitConversionRatio1 2 end 2013-12-29 form 10-Q",
+     "statedRatio": 2
+    },
+    {
+     "role": "SPLIT_STATEMENT_XBRL",
+     "accession": "0001104659-14-056997",
+     "url": "https://data.sec.gov/api/xbrl/companyconcept/CIK0000901491/us-gaap/StockholdersEquityNoteStockSplitConversionRatio1.json",
+     "sha256": null,
+     "quote": "StockholdersEquityNoteStockSplitConversionRatio1 2 end 2013-12-29 form 10-Q",
+     "statedRatio": 2
+    },
+    {
+     "role": "SPLIT_STATEMENT_XBRL",
+     "accession": "0001104659-14-076574",
+     "url": "https://data.sec.gov/api/xbrl/companyconcept/CIK0000901491/us-gaap/StockholdersEquityNoteStockSplitConversionRatio1.json",
+     "sha256": null,
+     "quote": "StockholdersEquityNoteStockSplitConversionRatio1 2 end 2013-12-29 form 10-Q",
+     "statedRatio": 2
+    },
+    {
+     "role": "SPLIT_STATEMENT_PERIODIC_TEXT",
+     "accession": "0001104659-14-013226",
+     "url": "https://www.sec.gov/Archives/edgar/data/901491/000110465914013226/a14-3257_110k.htm",
+     "sha256": "8cef5918a4867e406936eaf47f3f4f14ec59b5fdf99d8dfad914f31904cd56ec",
+     "quote": ", and dividends declared per common share. All sales prices have been adjusted to reflect a two-for-one split of the Company’s outstanding shares of stock. The stock split was effected in the form of a stock dividend and entitled each shareholder of record at the close of business on December 12, 20"
+    }
+   ],
+   "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+   "verifiedAt": "2026-10-28T14:37:42+00:00",
+   "dataChange": "NONE (proposal for the series producer; separate PR, owner approval)"
+  },
+  {
+   "securityId": "ref_ZONE",
+   "ticker": "ZONE",
+   "cik": "0001956741",
+   "issuer": "Zone Frontier Inc.",
+   "canonicalId": "tiingo:NYSE MKT:ZONE:2024-04-26",
+   "week": "2026-07-31",
+   "prevWeek": "2026-07-24",
+   "prevClose": 0.7188,
+   "close": 0.36,
+   "weeklyRatio": 0.5008347245409015,
+   "jumpDay": "2026-07-29",
+   "confidence": "UNCONFIRMED_E4_ONLY_DO_NOT_APPLY_WITHOUT_MANUAL_RATIO_CHECK",
+   "proposal": {
+    "action": "ADD_PROVIDER_SPLIT_FACTOR",
+    "splitFactor": 2,
+    "effectiveDate": "2026-07-29",
+    "direction": "FORWARD_SPLIT",
+    "statedRatios": [],
+    "note": "factor = snapped split size of the weekly move (protocol E4); confirm the exact ratio from the statement before the producer change"
+   },
+   "shareContinuity": {
+    "before": {
+     "accession": "0001213900-26-054078",
+     "coverDate": "2026-05-08",
+     "shares": 221938856
+    },
+    "after": {
+     "accession": "0001213900-26-104157",
+     "coverDate": "2026-09-28",
+     "shares": 508830259
+    },
+    "ratio": 2.2926596458621016
+   },
+   "sources": [
+    {
+     "role": "COVER_BEFORE",
+     "form": "10-Q",
+     "filingDate": "2026-05-11",
+     "accession": "0001213900-26-054078",
+     "url": "https://www.sec.gov/Archives/edgar/data/1956741/000121390026054078/ea0289167-10q_cleancore_htm.xml",
+     "sha256": "3fd8aa4d74cdeb9bb9a376d9b2a9b334b681ef5cbb0b5af30142b4c6d32c66a7",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"ZONE\"]; dei:EntityCommonStockSharesOutstanding 221938856 as of 2026-05-08; dei:SecurityExchangeName [\"NYSEAMER\"]"
+    },
+    {
+     "role": "COVER_AFTER",
+     "form": "10-K",
+     "filingDate": "2026-09-28",
+     "accession": "0001213900-26-104157",
+     "url": "https://www.sec.gov/Archives/edgar/data/1956741/000121390026104157/ea0306318-10k_zone_htm.xml",
+     "sha256": "4db51a18cad0d2117ae96e29deedec3322bd11685b7209f6270c922c8add0f32",
+     "via": "dei:EntityCommonStockSharesOutstanding",
+     "quote": "dei:TradingSymbol [\"ZONE\"]; dei:EntityCommonStockSharesOutstanding 508830259 as of 2026-09-28; dei:SecurityExchangeName [\"NYSEAMER\"]"
+    },
+    {
+     "role": "SPLIT_STATEMENT_PERIODIC_TEXT",
+     "accession": "0001213900-26-104157",
+     "url": "https://www.sec.gov/Archives/edgar/data/1956741/000121390026104157/ea0306318-10k_zone.htm",
+     "sha256": "dacacb39727479be1ffea0c01eda01b9f2fe0b74f1722ad15d767a3307c77638",
+     "quote": " be converted at the holder’s option at any time into shares of the Company’s common stock at a conversion price of $ 1.12 (subject to standard adjustments for stock splits, stock dividends, reclassifications and similar transactions). On June 2, 2025, all principal and interest due under the amende"
+    }
+   ],
+   "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795",
+   "verifiedAt": "2026-10-28T14:55:45+00:00",
+   "dataChange": "NONE (proposal for the series producer; separate PR, owner approval)"
+  }
+ ]
+}

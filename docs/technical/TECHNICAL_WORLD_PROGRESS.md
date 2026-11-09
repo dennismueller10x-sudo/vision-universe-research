@@ -1,5 +1,8 @@
 # Vision Universe Technical – Fortschrittsbericht und Aufgabenliste
 
+> **Einstieg Technical.** Aktuelle Arbeitsregeln: [CLAUDE.md](../../CLAUDE.md); datierte Entscheidungen: [Neustart-Plan](../PLAN_NEUSTART_2026-11.md). Bei Widersprüchen zu historischen Abschnitten gelten diese Quellen. Weitere Seiten sind Fachbelege, keine parallelen Einstiege. [Landkarte](../README.md).
+
+
 **Stand:** 27.10.2026 · Bibliothek L1–L8 auf `main` (160 Funktionen: 78 Indikatoren, 58 Kerzenmuster, 24 Formationen; Stand je Funktion in [TECHNICAL_LIBRARY.md](TECHNICAL_LIBRARY.md)) · Versionen `indicators` 1.5.0, `candlesticks` 1.1.0, `formations` 1.2.3, `screen-row` 1.8.0, `technical-mtf` 1.1.0 · Auftrag seit 26.10.2026: Bibliothek mit mathematischer und historischer Validierung und Screener-Anbindung.
 Ältere Stände: V1 (PR #919), V2 (PR #923), Menügruppe (PR #925), V3 (PR #929).
 Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst Abschnitt 6 (offene Aufgaben) und Abschnitt 5 (Teststatus).
@@ -84,6 +87,11 @@ Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst A
   - Kanäle und Keile sind beim ersten Sichtbarwerden meist schon bestätigt (58 bis 93 %), die Erkennung kommt also spät.
   - Flaggen werden praktisch nie bestätigt.
   - Ursachen und Korrektur (`technical-formations-1.2.0`, Zweig `claude/technical-formations-lifecycle`, nicht gemergt): [FORMATIONS_LIFECYCLE.md](FORMATIONS_LIFECYCLE.md).
+- **Verbund je Aktie – „Diese Aktie in Quant und Supertrader“** (`technical/engine/world-context.js`, Chart Studio und Signale): Bisher führte der Aktien-Navigator nur in die anderen Welten, ohne zu sagen, was dort steht. Jetzt zeigt Chart Studio unter den Niveaus, was Quant und Supertrader zur selben Aktie veröffentlicht haben, jeweils mit eigenem Stand und Link. Keine eigene Rechnung:
+  - Quant: `factor-evidence-v1/<Scherbe>.json.gz` über die Quant-Engine `quant/engines/factor-evidence.js` (`validShard`, `publicationViolations`, `hydrate`, `ordered`, `summarySentence`), dieselbe Kette wie `product-services.js#getFactorEvidence`. Gezeigt werden Satz und Stufen (Stark, Durchschnittlich …), keine Zahl und keine Gesamtnote; dazu der Grund aus `publication.explanation` und ein Hinweis bei `dataQuality` ≠ PASS.
+  - Supertrader-Modellsignale: `supertrader/data/stock/<T>.json` (nur angefragt, wenn `build.json` die Seite führt), Zustands-, Strategie- und Evidenznamen aus `registry-core.json`. Wartende Setups einer Forschungsstrategie heißen wie in `supertrader.js#badgeFor` „Modellbeobachtung“, nie „Einstieg vorbereitet“. Abgeschlossene Signale werden nur gezählt.
+  - Quellentreue Methoden: `sf-candidates/summary.json` und `ticker/<Scherbe>.json` (Scherbe über `core/identity.js#shardKey`), Stufennamen aus `stageLabels`, Status (`DIAGNOSTIC_NOT_CERTIFIED`, `LIVE_NOT_APPROVED`, gesperrte höchste Stufe) ausgeschrieben, „nicht aktuell“ nach derselben Regel wie `sf-research.js#stale`.
+  - Fehlt ein Artefakt oder bricht es den Vertrag, steht „keine Angabe“, nie „nichts gefunden“. Tests: `technical/tests/technical-world-context.test.mjs` (alle 1.437 Supertrader-Aktienseiten), Browser-QA 66/66.
 - **Phase 6 – Integration:** Dock, Menüeintrag, Navigator-Kachel „Technical“ in allen Welten mit Aktienkopf (Quant, Fundamental, Discover, Supertrader, Hedgefonds) über eine Core-Änderung. Die bisherige Kachel „Technik“ (Elliott-Chartbild) heißt jetzt „Chartbild“ und behält das bisherige Symbol (`chartbild`). Verfügbarkeitsnachweis in `scripts/core/stock-availability.mjs`. Registry-Eintrag `technicalWorld`.
 
 ## 5. Teststatus (lokal, 25.10.2026)
@@ -106,10 +114,10 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 
 1. ~~PR-Freigabe der UI-Schutzliste~~ erledigt (Owner-Freigabe 25.10.2026, 4 Hashes verifiziert).
 2. ~~Eigene Menügruppe „Technical“~~ PR #925 (Owner-Freigabe 25.10.2026, Hash von `site-navigation.js` nachgezogen).
-3. ~~Supertrader-Angleichung~~ ATR-Teil erledigt: PR #928 (Wilder als Standard, veröffentlichte Werte bytegleich). Offen: Technical-Befunde auf den Supertrader-Aktienseiten verlinken (eigener PR unter Gate A).
+3. ~~Supertrader-Angleichung~~ ATR-Teil erledigt: PR #928 (Wilder als Standard, veröffentlichte Werte bytegleich). Offen: Technical-Befunde auf den Supertrader-Aktienseiten zeigen (eigener PR unter Gate A; braucht einen kleinen Technical-Ausschnitt je Aktie, der volle Datensatz ist 6 MB). Die Gegenrichtung (Supertrader- und Quant-Stand im Chart Studio) ist umgesetzt, siehe „Verbund je Aktie“.
 4. ~~EMA 200 exakt~~ PR #927 gemergt (`ema-settled-1.1.0`). Offen: Screener-Feld `aboveEma200`/`distEma200`, sobald der nächtliche Materialisierungslauf EMA-Werte geliefert hat; danach Wochen-EMA.
 5. **KI-Suche freischalten:** technisch vorbereitet (V3: Parser, Schema, Validierung, Oberfläche, `query-text.js#contract()`). Offen ist nur der Modellaufruf über `workers/vu-ask`; das ist ein Deploy mit Kosten und braucht eine eigene Freigabe.
-6. ~~Zusammenführung mit `/screener/`~~ erster Schritt PR #936: `/screener/` übernimmt 16 Technical-Spalten (Indikatoren und Formationen) aus `technical/data/screener-v1.json`; eine Quelle, keine zweite Rechnung. Offen: eine gemeinsame Abfrage-Engine für beide Oberflächen.
+6. ~~Zusammenführung mit `/screener/`~~ erster Schritt PR #936: `/screener/` übernimmt 16 Technical-Spalten (Indikatoren und Formationen) aus `technical/data/screener-v1.json`; eine Quelle, keine zweite Rechnung. Zweiter Schritt (03.11.2026): eine gemeinsame Abfrage-Engine `core/query-engine.js` (Datensatz, Prädikate, UND/ODER-Auswertung mit Trichter, Sortierung mit fehlenden Werten am Ende). `screener/engine/engine.js` und `technical-query.js` behalten Katalog, Validierung, URL-Form und Texte und werten nur noch damit aus. Universumstest `core/tests/query-engine-universe.test.mjs`: 2.455 Abfragen, Treffer alt = neu byte-genau (Momentaufnahme der alten Implementierung in `core/tests/fixtures/`, Erzeuger `scripts/core/query-universe-snapshot.mjs --out`).
 7. ~~Evidenz~~ PR #934: `technical/data/formation-evidence.json` (Definition, Stichprobe, Bonferroni). PR #938 (Fachmodell, `formations` 1.2.0, vollständiger Lebenszyklus, Owner-Freigabe 26.10.2026), siehe [FORMATIONS_LIFECYCLE.md](FORMATIONS_LIFECYCLE.md).
 8. ~~Release-Stempel~~ erledigt (V2): `technical` steht in `STAMP_ONLY`; jede in `technical/index.html` verlinkte Datei trägt `?v=<Hash>` (Test in `technical/tests`). Die bei Bedarf nachgeladenen Engines bleiben ungestempelt.
 9. ~~Browser-QA in CI~~ erledigt (V2): `scripts/technical/world/browser-qa.mjs` läuft in `technical-ci.yml` (Chromium, 390/1280 px, hell/dunkel, 20 Prüfungen: Inhalte, Interaktionen, Seitenfehler, horizontales Scrollen, Dock). Gegenprobe: Ein defekter Chart-Renderer lässt genau die vier Chart-Studio-Prüfungen scheitern.
@@ -125,6 +133,8 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 - Keine neuen Anbieter, Dienste oder Modellaufrufe. Die Passwortsperre ist unverändert.
 - Gates wurden nicht abgeschwächt. Die Isolationsgates von Discover, Supertrader und Company Intelligence werden von diesem PR nicht ausgelöst (keine Pfade unter `discover/**`, `supertrader/**`, `scripts/supertrader/**`).
 - Der Ausbruch über Widerstand verlangt eine Zone mit mindestens zwei Swing-Kontakten. Ohne diese Regel meldeten 18 % des Universums einen „Ausbruch“, mit ihr 9 % (Stichtag 23.10.2026).
+- Elliott-Registry-Produktsicht (M11, Entscheidung 06.11.2026): Liegt das Chartbild-Produkt genau einen Wochenpunkt hinter der Langreihe (Fenster zwischen „Lange Kursreihen“ und dem direkt angehängten Chartbild-Lauf, 60–100 min), gelten die Identitätstests als STALE (Alarm, übersprungen) statt rot; jeder andere Identitätsfehler und ein Abstand ab zwei Wochen bleiben hart.
+- MACD-Vorzeichen im Abgleich Screener = Chart Studio (Entscheidung 07.11.2026): Der Screener liest das Histogramm aus `featuresAtCutoff`, das auf 5 Nachkommastellen gerundet veröffentlicht wird (06.11.: 144 von 5.632 Titeln mit Histogramm 0). Liegt |Histogramm| unter 0,5·10⁻⁵, wird `macdPositive` nicht verglichen, weil das Vorzeichen aus dem gerundeten Wert nicht bestimmbar ist (Anlass MNDO, Chart 6,9·10⁻⁸). Jede Abweichung außerhalb dieses Bereichs bleibt ein Fehler; der Erzeuger und die Rundung bleiben unverändert.
 
 ## 10. Verlauf
 
@@ -176,6 +186,12 @@ Lokal erwartete 404: `technical-signals-v1/by-ticker/` und `/core/data/stock-ava
 | 28.10.2026 | Parallel zur Nachtlauf-Prüfung (Owner-Auftrag „Backend-Entwicklung parallel fortsetzen“), jeweils ohne Anbieterabruf und ohne Wochen-/Monatsänderung: #1066 (`a7a429a`): Indikatoren 1.6.0, 14 weitere Katalogindikatoren mit TA-Lib- bzw. pandas-ta-Referenz (L12), 92 Einträge. #1068 (`8aa8308`): Kerzen 1.2.0, 4 weitere Muster mit TA-Lib-Abgleich (L13), 62 Muster. #1071 (`db2bec0`): Tages-Evidenz nach Marktphasen (SPY über/unter SMA 50) und Zeithälften. Ergebnis: 10 von 18 Indikator-Ereignissen und 35 von 71 Kerzenmustern widersprechen sich zwischen den Phasen, nur stabile Vorzeichen gelten als Befund. #1073: Validator prüft jede Bestätigung gegen die gezeichnete Ausbruchslinie, im Bar-Raum wie Engine und Chart. 11.387/11.387 gültig, 1.856 bestätigte Linienformationen am frühesten möglichen Tag. #1074: Regeltext der Keile nennt den Ausbruchsabstand von 0,1 ATR. Nur Text, Daten unverändert. |
 | 28.10.2026 | AP1 abgeschlossen. #1077 gemergt (`9711d8c`, Owner-Freigabe mit 7 Bedingungen). Der Text sagt jetzt „Datenqualitätshinweis, kein bestätigtes Delisting“. `frozenSince` bedeutet den ersten Tag mit unverändertem Schlusskurs im Fenster; bei 42 Titeln, deren Kurs das ganze Fenster unverändert ist, „spätestens seit“. #1088 gemergt (`23c2b47`): Chart Studio nutzt dieselbe Regel (`model.js#seriesState`), zeigt einen Hinweis, keine Befunde und Niveaus bei eingefrorener Reihe, ± 0,00 % neutral. Neubau per `workflow_dispatch` ohne Anbieterabruf (Lauf 40728249574, `a433f3e`): byte-gleich zum PR-Nachweis. 5.347 aktuell, 77 hinter dem Stichtag, 233 eingefroren. DQ-TW-1..7 PASS (DQ-TW-6 0/310). Technical-Tests 32/32, E2E eingefroren 233/233. |
 | 29.10.2026 | Nachtlauf-Prüfung (Owner-Auftrag), ohne Anbieterabruf. Nachtlauf grün: market-data-refresh 40803128385 mit Discover-Prüfung, Materialisierung `94d7b46` mit allen 5.659 Bündeln auf `technical-mtf-1.1.0`. technical-world per `workflow_dispatch` (`92b010e`, Stichtag 28.10., 5.659 Titel), weil der Zeitplan Stunden verspätet startet; die Ausgabe ist byte-gleich zum lokalen Neubau. L7: alle 18 Spalten belegt (ROC 95,9 %, Inside Bar/NR7 94,5 %, Kerzen W 94,4 %, M 94,0 %), passend zur Näherung (SCREENER_FIELDS_L7.md §2d). DQ-TW-1..7 PASS (DQ-TW-5 0/46, DQ-TW-6 0/312). DQ-PX-4 meldet 4/6.188 (Vortag 14), Domäne long-series.yml. Formationen `technical-formations-1.4.0`. |
+| 30.10.2026 | E3 ✔ (06:47 UTC, Materialisierung `9685f63`, Erzeuger lokal mit `--out`, kein Commit): 21 AP4-Spalten belegt, DQ-TW-1..7 PASS. A1 ✔ (12:40 UTC): technical-world committet ohne Handstart, `workflow_run` `21ffbff` 11:08 UTC und Zeitplan-Lauf `b65def8` 11:23 UTC; auch am 29.10. hatte der Zeitplan-Lauf selbst committet (`26a0360`). AP8: DQ-TW-8 (#1155, Lunten-Tiefs), L1–L5 (#1144, #1145, #1147, #1149, #1150, Owner-Freigabe 30.10.) nacheinander gemergt, je mit Neubau durch den Erzeuger; die bisherigen 150 Spalten blieben byte-gleich. Danach S1 (#1139) und S3 (#1151). „Etablierter Aufwärtstrend“: 685 erfüllt, 440 fast erfüllt, 1 unvollständig; Nachrechnung 1.126/1.126; Browser-QA 60/60. |
+| 09.11.2026 | Konzept „Der Chart in drei Sätzen“ (Owner-Freigabe 09.11.): PR 1 Wörter. „Befund“ statt Signal/Setup/Erkennungen, Richtung in Worten, 200-Tage-Linie, Schwung und Handel in Worten, du. Wortwahl-Test `technical-wording.test.mjs`; Browser-QA 72/72. Stand je Schritt: TECHNICAL_COMPLETION_PLAN.md §1 M. |
+| 09.11.2026 | PR 2 Start und Chart: Start mit Markt als Zeile, „Heute neu im Chart“ als Karten mit Musterbild, fertige Suchen als Schiene, Muster-Raster; Chart-Seite mit Urteil, drei Sätzen, Zonen-Kacheln, Befunden heute, Befund-Sheet und Kapiteln; Studio mit Befunden und Zonen; Block „Diese Aktie in Quant und Supertrader“ entfernt (Entscheidung 6). Musterbilder `technical/ui/shapes.js`. Browser-QA 72/72, Chromium und WebKit 390 px ohne Überlauf. |
+| 09.11.2026 | PR 3 Muster und Lernen: Musterseite mit Bildern, Zahl und Richtung, „Hilft das Muster?“ als Liste mit Urteil (Forschung, nicht zertifiziert); `#/lernen` vereint Akademie und Assistent (Weiter mit, 8 Lernpfade mit Fortschritt, Fragen an den Chart → Screener); `#/akademie` und `#/assistent` leiten weiter. Akademie-Inhalte unverändert. |
+| 09.11.2026 | PR 4 Screener: Technical-Screener im Design „Was suchst du?“ mit Perspektiven-Chips (Basis, Zahlen, Faktoren → Hauptscreener), Suche in Worten als Satz-Karte, fertige Suchen als Schiene, Hauptknopf „N Treffer zeigen“. Keine Weiterleitung (Owner-Änderung 09.11.). |
+| 09.11.2026 | PR 5 Markt heute: Technical liest die Marktbreite aus `market-pulse.json` (wie Discover), mit Stand und Basis; Rückfall auf die eigene Zählung mit Basis. Damit ist das Konzept „Der Chart in drei Sätzen“ umgesetzt (M1–M5). |
 | 25.10.2026 | PR #927: Owner-Prüfung der EMA-Aufwärmregel; Korrektur auf eine kursbezogene Fehlerschranke (`ema-settled-1.1.0`), siehe EMA200_MATERIALIZATION.md. |
 | 25.10.2026 | Fachmodell-PRs ohne automatischen Merge: #927 (exakte EMA 20/50/200 in der Materialisierung), #928 (Supertrader-ATR auf Wilder, ohne Wirkung auf veröffentlichte Zahlen). Beide CI grün, Entscheidung beim Owner. |
 | 25.10.2026 | V3 auf `claude/technical-v3`: Indikatoren 1.1, Kurslücken, Suche in Worten, Chart-Studio-Schichten, Formationsfokus; Technical-Browser-QA 32 Prüfungen (dazu Menü, Suche, Fokus). |
@@ -235,3 +251,85 @@ Vor PR #918 (Quant-Code in Pakete je Ansicht) riss PR #919 die Grenze der Quant-
 Nach dem Merge von #918 misst die VU2-Browser-QA mit allen Technical-Änderungen **1.606.572 Bytes bei 23 Anfragen**
 (lokal, gebautes Release, 390 und 1440 px, 8/8 Budgets, 96 Prüfungen ohne Befund). Die Anhebung wurde deshalb
 **nicht** umgesetzt; die Grenze bleibt 1.820.000.
+
+## Fachbelege und weiterführende Dokumentation
+
+Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
+
+- [ELLIOTT_PRODUCT_ARCHITECTURE.md](../archiv/ELLIOTT_PRODUCT_ARCHITECTURE.md)
+- [VU_ELLIOTT_ENGINE.md](../archiv/VU_ELLIOTT_ENGINE.md)
+- [VU_ELLIOTT_RENDERING.md](../archiv/VU_ELLIOTT_RENDERING.md)
+- [VU_TECHNICAL_DATA_SEMANTICS.md](../archiv/VU_TECHNICAL_DATA_SEMANTICS.md)
+- [VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md](../archiv/VU_TECHNICAL_INTELLIGENCE_ARCHITECTURE.md)
+- [VU_TECHNICAL_OPPORTUNITY_SCORE.md](../archiv/VU_TECHNICAL_OPPORTUNITY_SCORE.md)
+- [VU_TECHNICAL_SNAPSHOT_SPEC.md](../archiv/VU_TECHNICAL_SNAPSHOT_SPEC.md)
+- [VU_TECHNICAL_VALIDATION.md](../archiv/VU_TECHNICAL_VALIDATION.md)
+- [technical-intelligence/API_V3_MIGRATION.md](../technical-intelligence/API_V3_MIGRATION.md)
+- [technical-intelligence/DATA_FRESHNESS_POLICY.md](../archiv/technical-intelligence/DATA_FRESHNESS_POLICY.md)
+- [technical-intelligence/ELLIOTT_ENGINE32_REPORT.md](../technical-intelligence/ELLIOTT_ENGINE32_REPORT.md)
+- [technical-intelligence/ELLIOTT_PROJECTION_ENGINE.md](../archiv/technical-intelligence/ELLIOTT_PROJECTION_ENGINE.md)
+- [technical-intelligence/ELLIOTT_PROSPECTIVE_REGISTRY.md](../archiv/technical-intelligence/ELLIOTT_PROSPECTIVE_REGISTRY.md)
+- [technical-intelligence/ELLIOTT_SETUP_LIBRARY_V1.md](../archiv/technical-intelligence/ELLIOTT_SETUP_LIBRARY_V1.md)
+- [technical-intelligence/ELLIOTT_VALIDATION_REPORT.md](../technical-intelligence/ELLIOTT_VALIDATION_REPORT.md)
+- [technical-intelligence/EXPLORE_HIGHLIGHT_CURATION.md](../archiv/technical-intelligence/EXPLORE_HIGHLIGHT_CURATION.md)
+- [technical-intelligence/METHOD_RESEARCH.md](../technical-intelligence/METHOD_RESEARCH.md)
+- [technical-intelligence/PREREGISTRATION.md](../technical-intelligence/PREREGISTRATION.md)
+- [technical-intelligence/PRODUCT_MIGRATION_MANIFEST.md](../archiv/technical-intelligence/PRODUCT_MIGRATION_MANIFEST.md)
+- [technical-intelligence/TECHNICAL_INTELLIGENCE_ARCHITECTURE.md](../archiv/technical-intelligence/TECHNICAL_INTELLIGENCE_ARCHITECTURE.md)
+- [technical/AI_SEARCH_EVAL.md](../archiv/technical/AI_SEARCH_EVAL.md)
+- [technical/BACKEND_AUDIT.md](BACKEND_AUDIT.md)
+- [technical/CANDLESTICKS.md](CANDLESTICKS.md)
+- [technical/CANDLESTICK_EVIDENCE.md](CANDLESTICK_EVIDENCE.md)
+- [technical/DATA_CONTRACT.md](DATA_CONTRACT.md)
+- [technical/DQ_TOP20_ESTABLISHED_UPTREND.md](../archiv/technical/DQ_TOP20_ESTABLISHED_UPTREND.md)
+- [technical/EMA200_MATERIALIZATION.md](EMA200_MATERIALIZATION.md)
+- [technical/EMA_SCREENER_RELEASE.md](../archiv/technical/EMA_SCREENER_RELEASE.md)
+- [technical/EVENT_FILTERS.md](../archiv/technical/EVENT_FILTERS.md)
+- [technical/FORMATIONS_LIFECYCLE.md](FORMATIONS_LIFECYCLE.md)
+- [technical/FORMATION_VALIDATION.md](FORMATION_VALIDATION.md)
+- [technical/INDICATORS_CATALOG.md](INDICATORS_CATALOG.md)
+- [technical/INDICATORS_EXTERNAL_REFERENCE.md](INDICATORS_EXTERNAL_REFERENCE.md)
+- [technical/INDICATOR_EVIDENCE.md](INDICATOR_EVIDENCE.md)
+- [technical/MULTI_TIMEFRAME.md](MULTI_TIMEFRAME.md)
+- [technical/S4_TEMPLATE_STUDY.md](S4_TEMPLATE_STUDY.md)
+- [technical/SCREENER_FIELDS_AP4.md](SCREENER_FIELDS_AP4.md)
+- [technical/SCREENER_FIELDS_AP8_L1.md](SCREENER_FIELDS_AP8_L1.md)
+- [technical/SCREENER_FIELDS_AP8_L2.md](SCREENER_FIELDS_AP8_L2.md)
+- [technical/SCREENER_FIELDS_AP8_L3.md](SCREENER_FIELDS_AP8_L3.md)
+- [technical/SCREENER_FIELDS_AP8_L4.md](SCREENER_FIELDS_AP8_L4.md)
+- [technical/SCREENER_FIELDS_AP8_L5.md](SCREENER_FIELDS_AP8_L5.md)
+- [technical/SCREENER_FIELDS_L6.md](SCREENER_FIELDS_L6.md)
+- [technical/SCREENER_FIELDS_L7.md](SCREENER_FIELDS_L7.md)
+- [technical/SCREENER_FIELDS_L9.md](SCREENER_FIELDS_L9.md)
+- [technical/SCREENER_FRESHNESS.md](SCREENER_FRESHNESS.md)
+- [technical/SIGNAL_EVIDENCE.md](SIGNAL_EVIDENCE.md)
+- [technical/STOCK_SUMMARY.md](STOCK_SUMMARY.md)
+- [technical/STRATEGY_ACADEMY.md](../archiv/technical/STRATEGY_ACADEMY.md)
+- [technical/STRATEGY_ACADEMY_ABNAHME.md](../archiv/technical/STRATEGY_ACADEMY_ABNAHME.md)
+- [technical/STRATEGY_ACADEMY_AUDIT_002.md](../archiv/technical/STRATEGY_ACADEMY_AUDIT_002.md)
+- [technical/STRATEGY_ACADEMY_FINAL.md](../archiv/technical/STRATEGY_ACADEMY_FINAL.md)
+- [technical/STRATEGY_ACADEMY_VISUAL_ABNAHME.md](../archiv/technical/STRATEGY_ACADEMY_VISUAL_ABNAHME.md)
+- [technical/STRATEGY_ACADEMY_VISUAL_PILOTS.md](../archiv/technical/STRATEGY_ACADEMY_VISUAL_PILOTS.md)
+- [technical/STRATEGY_ACADEMY_VISUAL_ROLLOUT.md](../archiv/technical/STRATEGY_ACADEMY_VISUAL_ROLLOUT.md)
+- [technical/STRATEGY_TEMPLATES_PLAN.md](STRATEGY_TEMPLATES_PLAN.md)
+- [technical/STRATEGY_TEMPLATE_S3.md](../archiv/technical/STRATEGY_TEMPLATE_S3.md)
+- [technical/TECHNICAL_ASSISTANT.md](TECHNICAL_ASSISTANT.md)
+- [technical/TECHNICAL_ASSISTANT_ABNAHME.md](../archiv/technical/TECHNICAL_ASSISTANT_ABNAHME.md)
+- [technical/TECHNICAL_COMPLETION_2_0.md](TECHNICAL_COMPLETION_2_0.md)
+- [technical/TECHNICAL_COMPLETION_PLAN.md](TECHNICAL_COMPLETION_PLAN.md)
+- [technical/TECHNICAL_LIBRARY.md](TECHNICAL_LIBRARY.md)
+- [technical/TECHNICAL_READINESS_REPORT.md](../archiv/technical/TECHNICAL_READINESS_REPORT.md)
+- [technical/TECHNICAL_SCHEDULE.md](TECHNICAL_SCHEDULE.md)
+- [technical/WEEKLY_EVIDENCE.md](WEEKLY_EVIDENCE.md)
+- [technical/WEEKLY_FORMATIONS.md](WEEKLY_FORMATIONS.md)
+- [technical/academy-rollout-qa/SCREENSHOTS.md](../archiv/technical/academy-rollout-qa/SCREENSHOTS.md)
+- [vu2/phases/05-technical-workspaces.md](../archiv/vu2/phases/05-technical-workspaces.md)
+- [vu2/phases/34-technical-elliott-rule-integration.md](../archiv/vu2/phases/34-technical-elliott-rule-integration.md)
+- [vu2/phases/35-technical-scanner-rule-parity.md](../archiv/vu2/phases/35-technical-scanner-rule-parity.md)
+
+### Historische Arbeitsstände
+
+Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maßgeblich sind der Einstieg und der aktuelle Plan.
+
+- [VU_TECHNICAL_PHASE1_REPORT.md](../archiv/2026/VU_TECHNICAL_PHASE1_REPORT.md)
+- [VU_TECHNICAL_RELEASE_AUDIT.md](../archiv/2026/VU_TECHNICAL_RELEASE_AUDIT.md)

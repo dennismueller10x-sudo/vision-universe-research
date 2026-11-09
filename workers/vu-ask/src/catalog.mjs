@@ -16,7 +16,7 @@
    Daten, die ohnehin ausgeliefert werden.
    ========================================================================= */
 import Fields from "../../../screener/engine/fields.js";
-import { SECTORS, MAJOR_GROUPS } from "../../../scripts/screener/sic.mjs";
+import { SECTORS, MAJOR_GROUPS } from "../../../products/screener/producer/sic.mjs";
 import TIAITools from "../../../quant/engines/technical/ti/ai-tools.js";
 
 export const STRATEGIES = ["MINERVINI_VCP", "MOMENTUM_BREAKOUT", "WEINSTEIN_STAGE", "DARVAS_BOX"];
@@ -74,6 +74,8 @@ export const SYSTEM_PROMPT = [
   "- screen: Suche nach Aktien, die Bedingungen erfuellen (\"zeig mir\", \"welche Aktien\", \"gibt es Titel mit ...\").",
   "- stock: Frage zu einer oder mehreren bestimmten Aktien (\"wie stark ist der Cashflow bei Nvidia gewachsen\"). Ticker in tickers (z. B. NVDA), gewuenschte Kennzahlen in show.",
   "- forecast: Kursprognosen, Kursziele, \"wird die Aktie steigen\", Kaufempfehlungen. Vision Universe macht keine Prognosen.",
+  "  Ebenfalls forecast: Fragen, die eine persoenliche Lage nennen oder eine Entscheidung fuer den Nutzer verlangen (Alter, Vermoegen,",
+  "  Sparbetrag, Ziele, \"ich habe 10.000 Euro\", \"soll ich verkaufen\", \"was passt zu mir\"). Vision Universe ist eine Analyse-Software ohne Anlageberatung.",
   "- off_topic: keine Investmentfrage.",
   "- unclear: Investmentfrage, aber zu unklar, um sie zu uebersetzen.",
   "",

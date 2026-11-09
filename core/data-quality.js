@@ -317,7 +317,7 @@
     if (!meta) fail.push("technical/data/meta.json fehlt");
     else {
       if (materializedAt && meta.generatedFrom && meta.generatedFrom < materializedAt)
-        fail.push("Datensatz aus der Materialisierung " + meta.generatedFrom + ", vorliegend ist " + materializedAt + " (Erzeuger technical-world.yml nicht gelaufen)");
+        fail.push("Datensatz aus der Materialisierung " + meta.generatedFrom + ", vorliegend ist " + materializedAt + " (Erzeuger pipeline-daily.yml, Teil technical-world, nicht gelaufen)");
       var lag = lagFn(meta.asOf, expectedSession);
       if (lag !== null && lag > maxLag) fail.push("Stichtag " + meta.asOf + " liegt " + lag + " Sitzungen hinter " + expectedSession);
     }
@@ -483,6 +483,22 @@
       (v.contract || "") + (Object.keys(v.counts || {}).length ? " Verstoesse: " + JSON.stringify(v.counts) : ""));
   }
 
+  /** DQ-TW-8: kein vollstaendiger Treffer einer Strategie-Vorlage, die den Abstand zum 52-Wochen-Tief prueft
+      (`distLow52w`, AP8 L3), beruht auf einem Lunten-Tief. Lunten-Tief: das tiefste Tagestief der letzten 252 Bars
+      liegt unter der Haelfte von min(Eroeffnung, Schluss) dieses Tages (SCREENER_FIELDS_AP8_L3.md §2, z. B. MYND
+      0,0001 bei Schluss 0,2199). Die Regel kennzeichnet nur; sie aendert weder Kurse noch Vorlagen.
+      `fullHits` = [{ template, ticker }], `wickByTicker` = Kuerzel -> { date, low, open, close } nur fuer Lunten-Tiefs. */
+  function technicalTemplateWickLows(fullHits, wickByTicker) {
+    var hits = fullHits || [], wick = wickByTicker || {}, fail = [];
+    hits.forEach(function (h) {
+      var w = wick[h.ticker];
+      if (w) fail.push(h.ticker + " (" + h.template + "): 52-Wochen-Tief " + w.low + " am " + w.date + " bei Eroeffnung " + w.open + " / Schluss " + w.close);
+    });
+    var names = Object.keys(wick).sort();
+    return result("DQ-TW-8", "Technical: kein vollstaendiger Vorlagen-Treffer beruht auf einem Lunten-Tief", "WARN", hits.length, fail,
+      names.length + " aktuelle Titel mit Lunten-Tief" + (names.length ? " (" + names.slice(0, 12).join(", ") + (names.length > 12 ? " …" : "") + ")" : "") + ".");
+  }
+
   /* -------------------------------------------- Supertrader 8.0 (Vorschau) */
 
   /* Research-Kandidaten der 13 quellentreuen Methoden
@@ -638,7 +654,7 @@
     if (x && typeof x === "object") return Object.keys(x).some(function (k) { return hasNumber(x[k]); });
     return false;
   }
-  var SF8_BUDGET = { totalBytes: 16 * 1024 * 1024, fileBytes: 2 * 1024 * 1024 };
+  var SF8_BUDGET = { totalBytes: 32 * 1024 * 1024, fileBytes: 4 * 1024 * 1024 };
 
   function sf8Present(b) { return !!(b && (b.summary || b.index || (b.files || []).length || b.recordsPresent || (b.unreadable || []).length)); }
   /* Ansichten der Strategiedateien (Bezug fuer Zaehlungen und Vertraege). */
@@ -862,12 +878,12 @@
     return result("DQ-SF8-6", "SF8-Ergebnisvertraege konsistent", "ERROR", checked, fail);
   }
 
-  /** DQ-SF8-7: oeffentliche Teile hoechstens 16 MB, jede Datei hoechstens 2 MB. */
+  /** DQ-SF8-7: oeffentliche Teile hoechstens 32 MB, jede Datei hoechstens 4 MB (seit Security Master 1.3.0 mit 5.098 Titeln; vorher 16/2 MB). */
   function sf8Budget(b) {
     var g = sf8Gate("DQ-SF8-7", "SF8-Datenbudget eingehalten", b); if (g) return g;
     var fail = [], total = 0;
-    (b.files || []).forEach(function (f) { total += f.bytes; if (f.bytes > SF8_BUDGET.fileBytes) fail.push(f.path + ": " + f.bytes + " Bytes ueber 2 MB"); });
-    if (total > SF8_BUDGET.totalBytes) fail.push("zusammen " + total + " Bytes ueber 16 MB");
+    (b.files || []).forEach(function (f) { total += f.bytes; if (f.bytes > SF8_BUDGET.fileBytes) fail.push(f.path + ": " + f.bytes + " Bytes ueber 4 MB"); });
+    if (total > SF8_BUDGET.totalBytes) fail.push("zusammen " + total + " Bytes ueber 32 MB");
     return result("DQ-SF8-7", "SF8-Datenbudget eingehalten", "ERROR", (b.files || []).length, fail, "Oeffentliche Teile " + total + " Bytes.");
   }
 
@@ -922,7 +938,7 @@
     staleTails: staleTails, masterSeriesConsistency: masterSeriesConsistency,
     payloadIndexParity: payloadIndexParity, referencedPathsExist: referencedPathsExist,
     indexMembersResolve: indexMembersResolve,
-    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents, technicalContract: technicalContract,
+    technicalFreshness: technicalFreshness, technicalEmptyFields: technicalEmptyFields, technicalCloseParity: technicalCloseParity, technicalCoverage: technicalCoverage, technicalTimeframeFields: technicalTimeframeFields, technicalStaleEvents: technicalStaleEvents, technicalContract: technicalContract, technicalTemplateWickLows: technicalTemplateWickLows,
     secFiscalYearLabels: secFiscalYearLabels, secFuturePeriods: secFuturePeriods, secRefusals: secRefusals,
     SF8_CEILING: SF8_CEILING, SF8_BUDGET: SF8_BUDGET, SF8_STRUCTURE_LEVELS: SF8_STRUCTURE_LEVELS, SF8_PIVOT_KINDS: SF8_PIVOT_KINDS, SF8_DESCRIPTIVE_FEATURES: SF8_DESCRIPTIVE_FEATURES, SF8_FEATURES_HIDDEN: SF8_FEATURES_HIDDEN, SF8_TREND_HIDDEN: SF8_TREND_HIDDEN, SF8_SUBFIELDS_HIDDEN: SF8_SUBFIELDS_HIDDEN, SF8_PIVOT_LEVEL: SF8_PIVOT_LEVEL, SF8_VIEW_KEYS: SF8_VIEW_KEYS, SF8_TREND_KEYS: SF8_TREND_KEYS, SF8_SORT_KEYS: SF8_SORT_KEYS,
     sf8Freshness: sf8Freshness, sf8Identity: sf8Identity, sf8StageLock: sf8StageLock, sf8NoOrderBelowModel: sf8NoOrderBelowModel,

@@ -1,0 +1,6250 @@
+{
+ "studyId": "V13C-S3PRIME-SPX",
+ "registrationSha256": "bbe15b1920bcee83222b72547b336b608e60f474a84d8ea2c178c6f08ad14c1b",
+ "amendmentSha256": "51698966d144d7bed805edda6c2fcaa492350577702642dace577bbc46ff10a1",
+ "amendments": {
+  "3.0.1": "51698966d144d7bed805edda6c2fcaa492350577702642dace577bbc46ff10a1",
+  "3.0.2": "528cf78059b93b0b68c44100248b38d9aca00a598562e2aff2666cd8e7d487b3"
+ },
+ "data": {
+  "snapshotCommit": "885f5574cc3249f806ea7982d6b27263d1c2b001",
+  "snapshotTree": "963779a13c247e658ac051fb90b3e4714f1d1663",
+  "quantDataTree": "963779a13c247e658ac051fb90b3e4714f1d1663",
+  "quantDataEqualsSnapshot": true
+ },
+ "evidenceKind": "HISTORICAL_DEVELOPMENT_STUDY",
+ "evidenceLabel": "NON_CONFIRMATORY_EXTENSION_STUDY",
+ "confirmatory": false,
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "basedOn": {
+  "v12": "V12-REQUAL-P5A 1.1.0 (p5a-population.cjs unchanged)",
+  "v12RegistrationSha256": "9b712050ac833cab6632410ddcf711795c501225f13663d5f4cfc7ca2fa8e62c",
+  "v13": "docs/quant-recovery/v13/studies/s3-spx-exits-1.0.0.json (cited, unchanged)",
+  "r3": {
+   "beforeAggregatesIdentical": true,
+   "afterAggregatesIdentical": [
+    true,
+    true,
+    true
+   ],
+   "replacedRowsIdentical": true,
+   "replacedV13": 38,
+   "pass": true
+  }
+ },
+ "inputs": {
+  "spxTerminalRegister": {
+   "file": "docs/quant-recovery/v13b/hist/spx-terminal-register-1.0.0.json",
+   "sha256": "0dba611a573cbc635b497691475bae79ff8e9778915e53fc3e2d34194f0b8727"
+  },
+  "spxTerminalReview": {
+   "file": "docs/quant-recovery/v13b/hist/spx-terminal-review-1.0.0.json",
+   "sha256": "531c97c7f7fca2333c8072158139b54e6300b3ee522a7680bcb162083b556baa"
+  },
+  "delistedRegister100": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+  "delistedRegister110": "19e108e79c25d602ead7ec79583af50a8e0b620571667460ab04a017b936b270",
+  "delistedLoaded": {
+   "register100": 1675,
+   "register110": 1688
+  },
+  "populationDataSha256": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+ },
+ "terminalValues": {
+  "acceptedInRegister100": 29,
+  "excluded": [
+   {
+    "t0": "2006-09-30",
+    "keyHash16": "747c456cff6e81ac",
+    "name": "First Data Corp.",
+    "cik": 883980
+   }
+  ],
+  "usable": 28,
+  "inP5ASpan": 4,
+  "inEarly": 24,
+  "states": {
+   "P5A": {
+    "REPLACED": 4
+   },
+   "EARLY": {
+    "REPLACED": 24
+   }
+  },
+  "matching": "same t0, population chain keyHash (16 hex) = keyHash16, same CIK, |weight - register weight| <= 5e-9, member BOUNDED_EXIT*; exactly one member (fail closed otherwise); series replacement (step A) first"
+ },
+ "returnBasis": "PRICE_RETURN both sides as V12/V13; documented terminal value = (cash + ratio x acquirer price at t1) / p0 - 1 (spx-terminal-rules 1.0.0), used in all four P5a scenarios; SPY_TR reference as V12",
+ "costs": "none (index population returns, as V12 P5a)",
+ "weighting": {
+  "EW_ALL": "equal weight of all index members",
+  "CW_ALL": "holdings weight (SPY) of all index members"
+ },
+ "P5A": {
+  "span": [
+   "2009-09-30",
+   "2026-06-30"
+  ],
+  "periods": 47,
+  "label": "PRIMARY (registered P5a span)",
+  "stepA": {
+   "states": {
+    "NO_QUALIFIED_CHAIN": 127,
+    "REPLACED": 38
+   },
+   "replaced": 38,
+   "replacedByNewChains": 0,
+   "replacedRows": [
+    {
+     "t0": "2012-09-30",
+     "cik": 1011657,
+     "chainId": "dl_37f8e38831dcc726",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0001,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.286,
+     "afterS1": 0.1574,
+     "afterS2": 0.4147
+    },
+    {
+     "t0": "2013-03-31",
+     "cik": 46640,
+     "chainId": "dl_bc3ce363bac50294",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "UNKNOWN",
+     "weight": 0.0017,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "UNKNOWN",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0,
+     "afterS0": 0.003,
+     "afterS1": -0.2979,
+     "afterS2": -1
+    },
+    {
+     "t0": "2014-09-30",
+     "cik": 1457543,
+     "chainId": "dl_9b7bbe378f5135ac",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0005,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.3098,
+     "afterS1": 0.1788,
+     "afterS2": 0.4408
+    },
+    {
+     "t0": "2014-09-30",
+     "cik": 86144,
+     "chainId": "dl_8ac1e9a6ead8c92a",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0004,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0218,
+     "afterS1": -0.0803,
+     "afterS2": 0.124
+    },
+    {
+     "t0": "2015-03-31",
+     "cik": 34408,
+     "chainId": "dl_55e724605ad90d32",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0004,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": -0.0008,
+     "afterS1": -0.1007,
+     "afterS2": 0.0992
+    },
+    {
+     "t0": "2015-03-31",
+     "cik": 1274057,
+     "chainId": "dl_3c75693ef3cf58ff",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0008,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0236,
+     "afterS1": -0.0788,
+     "afterS2": 0.1259
+    },
+    {
+     "t0": "2015-03-31",
+     "cik": 916863,
+     "chainId": "dl_89618925b6463694",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "UNKNOWN",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": -0.0318,
+     "afterS1": -0.3223,
+     "afterS2": -1
+    },
+    {
+     "t0": "2015-03-31",
+     "cik": 1545158,
+     "chainId": "dl_05afceb8060d230f",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0028,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": -0.0102,
+     "afterS1": -0.1092,
+     "afterS2": 0.0888
+    },
+    {
+     "t0": "2015-03-31",
+     "cik": 1159297,
+     "chainId": "dl_49d9fa37f16ec972",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0005,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": -0.024,
+     "afterS1": -0.1216,
+     "afterS2": 0.0736
+    },
+    {
+     "t0": "2016-03-31",
+     "cik": 804212,
+     "chainId": "dl_df70e8cc76402c7a",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0005,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0077,
+     "afterS1": -0.0931,
+     "afterS2": 0.1085
+    },
+    {
+     "t0": "2016-09-30",
+     "cik": 203077,
+     "chainId": "dl_b6853e31f5f91f71",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0012,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0133,
+     "afterS1": -0.088,
+     "afterS2": 0.1146
+    },
+    {
+     "t0": "2017-03-31",
+     "cik": 1275283,
+     "chainId": "dl_444d52559c4db389",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0026,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0378,
+     "afterS1": -0.066,
+     "afterS2": 0.1415
+    },
+    {
+     "t0": "2017-03-31",
+     "cik": 7332,
+     "chainId": "dl_6caf5d58dc6d79d8",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "DELISTING",
+     "weight": 0.0002,
+     "kind": "SERIES",
+     "terminalClass": "UNKNOWN",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "afterS0": -0.2791,
+     "afterS1": -0.2791,
+     "afterS2": -0.2791
+    },
+    {
+     "t0": "2017-03-31",
+     "cik": 791519,
+     "chainId": "dl_430ab7771ac96067",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.429,
+     "afterS1": 0.2861,
+     "afterS2": 0.5719
+    },
+    {
+     "t0": "2017-03-31",
+     "cik": 865436,
+     "chainId": "dl_932a84e47e44d8b6",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0005,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.4129,
+     "afterS1": 0.2716,
+     "afterS2": 0.5541
+    },
+    {
+     "t0": "2017-09-30",
+     "cik": 9892,
+     "chainId": "dl_3488cf91ebb2c8cc",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "UNKNOWN",
+     "weight": 0.0011,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "UNKNOWN",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0,
+     "afterS0": 0.0335,
+     "afterS1": -0.2765,
+     "afterS2": -1
+    },
+    {
+     "t0": "2017-09-30",
+     "cik": 1430602,
+     "chainId": "dl_efe8076c88a6dad3",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0004,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0483,
+     "afterS1": -0.0565,
+     "afterS2": 0.1531
+    },
+    {
+     "t0": "2018-09-30",
+     "cik": 884905,
+     "chainId": "dl_d1b80aef40ec3713",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0019,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0235,
+     "afterS1": -0.0789,
+     "afterS2": 0.1258
+    },
+    {
+     "t0": "2018-09-30",
+     "cik": 1308161,
+     "chainId": "dl_b126dd0869784e23",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "UNKNOWN",
+     "weight": 0.002,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0,
+     "afterS0": 0.0827,
+     "afterS1": -0.0256,
+     "afterS2": 0.191
+    },
+    {
+     "t0": "2018-09-30",
+     "cik": 1308161,
+     "chainId": "dl_b126dd0869784e23",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0009,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0827,
+     "afterS1": -0.0256,
+     "afterS2": 0.191
+    },
+    {
+     "t0": "2019-09-30",
+     "cik": 816284,
+     "chainId": "dl_ca2267a53aae92fe",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0028,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.095,
+     "afterS1": -0.0145,
+     "afterS2": 0.2045
+    },
+    {
+     "t0": "2020-09-30",
+     "cik": 1015780,
+     "chainId": "dl_b587abcce0520ef6",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0004,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.013,
+     "afterS1": -0.0883,
+     "afterS2": 0.1143
+    },
+    {
+     "t0": "2020-09-30",
+     "cik": 72207,
+     "chainId": "dl_e0342e19b8525195",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0001,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": -0.0035,
+     "afterS1": -0.1032,
+     "afterS2": 0.0961
+    },
+    {
+     "t0": "2020-12-31",
+     "cik": 98246,
+     "chainId": "dl_54288676622db487",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0004,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0001,
+     "afterS1": -0.0999,
+     "afterS2": 0.1001
+    },
+    {
+     "t0": "2021-03-31",
+     "cik": 354908,
+     "chainId": "dl_019c17aaf75f7e66",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0002,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0307,
+     "afterS1": -0.0723,
+     "afterS2": 0.1338
+    },
+    {
+     "t0": "2021-06-30",
+     "cik": 743316,
+     "chainId": "dl_01e1a4203f89b749",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0008,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0047,
+     "afterS1": -0.0958,
+     "afterS2": 0.1051
+    },
+    {
+     "t0": "2021-06-30",
+     "cik": 899866,
+     "chainId": "dl_a99297694b9c3870",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0011,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": -0.0013,
+     "afterS1": -0.1012,
+     "afterS2": 0.0986
+    },
+    {
+     "t0": "2021-12-31",
+     "cik": 743988,
+     "chainId": "dl_9b5ea8a6c60ccb19",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0013,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": -0.0807,
+     "afterS1": -0.1726,
+     "afterS2": 0.0112
+    },
+    {
+     "t0": "2022-09-30",
+     "cik": 1418091,
+     "chainId": "dl_4dec25696942033e",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.001,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.2249,
+     "afterS1": 0.1024,
+     "afterS2": 0.3474
+    },
+    {
+     "t0": "2023-09-30",
+     "cik": 718877,
+     "chainId": "dl_c87c50c220c2310b",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0019,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0084,
+     "afterS1": -0.0924,
+     "afterS2": 0.1093
+    },
+    {
+     "t0": "2024-09-30",
+     "cik": 1596783,
+     "chainId": "dl_f119ac4633e4515c",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0002,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0522,
+     "afterS1": -0.053,
+     "afterS2": 0.1574
+    },
+    {
+     "t0": "2025-03-31",
+     "cik": 1393612,
+     "chainId": "dl_9e3b7328c8370988",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0009,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.2603,
+     "afterS1": 0.1343,
+     "afterS2": 0.3863
+    },
+    {
+     "t0": "2025-06-30",
+     "cik": 4447,
+     "chainId": "dl_b04187cbbcc2d3bd",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0007,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.072,
+     "afterS1": -0.0352,
+     "afterS2": 0.1792
+    },
+    {
+     "t0": "2025-06-30",
+     "cik": 1618921,
+     "chainId": "dl_3a35010de16df79b",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0002,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.0463,
+     "afterS1": -0.0583,
+     "afterS2": 0.1509
+    },
+    {
+     "t0": "2025-06-30",
+     "cik": 813828,
+     "chainId": "dl_ee1da9f6b673605f",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0001,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": -0.2484,
+     "afterS1": -0.3236,
+     "afterS2": -0.1733
+    },
+    {
+     "t0": "2025-06-30",
+     "cik": 1043604,
+     "chainId": "dl_71695806680df07b",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": 0.085,
+     "afterS1": -0.0235,
+     "afterS2": 0.1935
+    },
+    {
+     "t0": "2025-09-30",
+     "cik": 51644,
+     "chainId": "dl_5fe759fed0397470",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "UNKNOWN",
+     "weight": 0.0002,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0,
+     "afterS0": -0.0676,
+     "afterS1": -0.1608,
+     "afterS2": 0.0257
+    },
+    {
+     "t0": "2026-03-31",
+     "cik": 858470,
+     "chainId": "dl_db51ecec508c1755",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0005,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "MERGER",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "afterS0": -0.1033,
+     "afterS1": -0.1929,
+     "afterS2": -0.0136
+    }
+   ]
+  },
+  "stepB": {
+   "replacedRows": [
+    {
+     "t0": "2009-09-30",
+     "name": "Black & Decker Corp.",
+     "cik": 12355,
+     "keyHash16": "b0899a63cbb88b2e",
+     "kind": "TERMINAL_STOCK",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.1384,
+     "documented": 0.5813
+    },
+    {
+     "t0": "2009-09-30",
+     "name": "IMS Health, Inc.",
+     "cik": 1058083,
+     "keyHash16": "5df7a9ed7c0ecc83",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.1384,
+     "documented": 0.4332
+    },
+    {
+     "t0": "2009-09-30",
+     "name": "Sun Microsystems, Inc.",
+     "cik": 709519,
+     "keyHash16": "11088eac3ab5afab",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0007,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.1384,
+     "documented": 0.0451
+    },
+    {
+     "t0": "2009-09-30",
+     "name": "Wyeth",
+     "cik": 5187,
+     "keyHash16": "e755746f46a539ed",
+     "kind": "TERMINAL_MIXED",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "DELISTED_OTHER",
+     "fateClass": "DELISTING",
+     "weight": 0.0069,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "beforeUpper": 0.1384,
+     "documented": 0.027
+    }
+   ]
+  },
+  "aggregates": {
+   "base": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105729,
+       "CW_ALL": 0.119743,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.084968,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7083,
+        "meanPeriodPp": 0.23536,
+        "nwP": 0.005048
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8172,
+        "meanPeriodPp": -0.518536,
+        "nwP": 0.244107
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.09611,
+       "CW_ALL": 0.121063,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.075445,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6139,
+        "meanPeriodPp": 0.182115,
+        "nwP": 0.021309
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.899,
+        "meanPeriodPp": -0.834025,
+        "nwP": 0.065585
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.072617,
+       "CW_ALL": 0.104328,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.061677,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.9836,
+        "meanPeriodPp": 1.342149,
+        "nwP": 0.000006
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.1284,
+        "meanPeriodPp": -1.637443,
+        "nwP": 0.000676
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.064873,
+       "CW_ALL": 0.105705,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.080382,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.7059,
+        "meanPeriodPp": 1.152728,
+        "nwP": 0.00034
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -6.0227,
+        "meanPeriodPp": -1.814245,
+        "nwP": 0.000641
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105229,
+       "CW_ALL": 0.119107,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.083924,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7583,
+        "meanPeriodPp": 0.251126,
+        "nwP": 0.00313
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8672,
+        "meanPeriodPp": -0.534302,
+        "nwP": 0.225049
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.095967,
+       "CW_ALL": 0.121045,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.075413,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6282,
+        "meanPeriodPp": 0.18699,
+        "nwP": 0.021398
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.9133,
+        "meanPeriodPp": -0.8389,
+        "nwP": 0.063363
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108992,
+       "CW_ALL": 0.121245,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.097879,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4178,
+        "meanPeriodPp": 0.134972,
+        "nwP": 0.058497
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.4909,
+        "meanPeriodPp": -0.406032,
+        "nwP": 0.370267
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.098737,
+       "CW_ALL": 0.122348,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.087818,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.3829,
+        "meanPeriodPp": 0.10893,
+        "nwP": 0.112179
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.6363,
+        "meanPeriodPp": -0.751235,
+        "nwP": 0.098253
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   },
+   "A_S0": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105957,
+       "CW_ALL": 0.119839,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.086008,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6855,
+        "meanPeriodPp": 0.227511,
+        "nwP": 0.005653
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.7944,
+        "meanPeriodPp": -0.510687,
+        "nwP": 0.251074
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096353,
+       "CW_ALL": 0.121182,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.07662,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5896,
+        "meanPeriodPp": 0.174325,
+        "nwP": 0.023218
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8747,
+        "meanPeriodPp": -0.826235,
+        "nwP": 0.067849
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.077606,
+       "CW_ALL": 0.106512,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.031022,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.4847,
+        "meanPeriodPp": 1.173919,
+        "nwP": 0.000042
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -4.6295,
+        "meanPeriodPp": -1.469213,
+        "nwP": 0.001889
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.070954,
+       "CW_ALL": 0.108461,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.042776,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.0978,
+        "meanPeriodPp": 0.9615,
+        "nwP": 0.001427
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.4146,
+        "meanPeriodPp": -1.623017,
+        "nwP": 0.001905
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105519,
+       "CW_ALL": 0.119189,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.08502,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7293,
+        "meanPeriodPp": 0.241126,
+        "nwP": 0.003153
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8382,
+        "meanPeriodPp": -0.524302,
+        "nwP": 0.233145
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096291,
+       "CW_ALL": 0.121147,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.076666,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5958,
+        "meanPeriodPp": 0.1766,
+        "nwP": 0.020892
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8809,
+        "meanPeriodPp": -0.82851,
+        "nwP": 0.066164
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108837,
+       "CW_ALL": 0.121183,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.096337,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4333,
+        "meanPeriodPp": 0.139985,
+        "nwP": 0.043871
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.5064,
+        "meanPeriodPp": -0.411045,
+        "nwP": 0.36379
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.098523,
+       "CW_ALL": 0.122269,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.085822,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4043,
+        "meanPeriodPp": 0.115535,
+        "nwP": 0.081534
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.6577,
+        "meanPeriodPp": -0.75784,
+        "nwP": 0.094351
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   },
+   "B_S0": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.106083,
+       "CW_ALL": 0.119871,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.086323,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6729,
+        "meanPeriodPp": 0.222887,
+        "nwP": 0.007223
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.7818,
+        "meanPeriodPp": -0.506064,
+        "nwP": 0.25678
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096353,
+       "CW_ALL": 0.121182,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.07662,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5896,
+        "meanPeriodPp": 0.174325,
+        "nwP": 0.023218
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8747,
+        "meanPeriodPp": -0.826235,
+        "nwP": 0.067849
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.078197,
+       "CW_ALL": 0.107047,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.029621,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.4256,
+        "meanPeriodPp": 1.152274,
+        "nwP": 0.00005
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -4.5704,
+        "meanPeriodPp": -1.447568,
+        "nwP": 0.002376
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.070954,
+       "CW_ALL": 0.108461,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.042776,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.0978,
+        "meanPeriodPp": 0.9615,
+        "nwP": 0.001427
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.4146,
+        "meanPeriodPp": -1.623017,
+        "nwP": 0.001905
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105757,
+       "CW_ALL": 0.119642,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.085612,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7055,
+        "meanPeriodPp": 0.232436,
+        "nwP": 0.004791
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8144,
+        "meanPeriodPp": -0.515613,
+        "nwP": 0.243486
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096291,
+       "CW_ALL": 0.121147,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.076666,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5958,
+        "meanPeriodPp": 0.1766,
+        "nwP": 0.020892
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8809,
+        "meanPeriodPp": -0.82851,
+        "nwP": 0.066164
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108899,
+       "CW_ALL": 0.121145,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.096492,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4271,
+        "meanPeriodPp": 0.137717,
+        "nwP": 0.049623
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.5002,
+        "meanPeriodPp": -0.408777,
+        "nwP": 0.367149
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.098523,
+       "CW_ALL": 0.122269,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.085822,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4043,
+        "meanPeriodPp": 0.115535,
+        "nwP": 0.081534
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.6577,
+        "meanPeriodPp": -0.75784,
+        "nwP": 0.094351
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   },
+   "A_S1": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105381,
+       "CW_ALL": 0.119582,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.082447,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7431,
+        "meanPeriodPp": 0.246572,
+        "nwP": 0.002965
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.852,
+        "meanPeriodPp": -0.529749,
+        "nwP": 0.234038
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.09565,
+       "CW_ALL": 0.120857,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.072216,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6599,
+        "meanPeriodPp": 0.19608,
+        "nwP": 0.012555
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.945,
+        "meanPeriodPp": -0.84799,
+        "nwP": 0.060762
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.077039,
+       "CW_ALL": 0.106256,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.034303,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.5414,
+        "meanPeriodPp": 1.192983,
+        "nwP": 0.000034
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -4.6862,
+        "meanPeriodPp": -1.488277,
+        "nwP": 0.001679
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.070259,
+       "CW_ALL": 0.108137,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.046818,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.1673,
+        "meanPeriodPp": 0.983255,
+        "nwP": 0.001216
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.4841,
+        "meanPeriodPp": -1.644773,
+        "nwP": 0.001685
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.104943,
+       "CW_ALL": 0.118932,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.081462,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7869,
+        "meanPeriodPp": 0.260196,
+        "nwP": 0.001572
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8958,
+        "meanPeriodPp": -0.543372,
+        "nwP": 0.21678
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.095588,
+       "CW_ALL": 0.120823,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.072262,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6661,
+        "meanPeriodPp": 0.198362,
+        "nwP": 0.011133
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.9512,
+        "meanPeriodPp": -0.850273,
+        "nwP": 0.059191
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108261,
+       "CW_ALL": 0.120925,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.09275,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4909,
+        "meanPeriodPp": 0.159047,
+        "nwP": 0.023766
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.564,
+        "meanPeriodPp": -0.430106,
+        "nwP": 0.34219
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.09782,
+       "CW_ALL": 0.121944,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.081391,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4746,
+        "meanPeriodPp": 0.137288,
+        "nwP": 0.042829
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.728,
+        "meanPeriodPp": -0.779593,
+        "nwP": 0.085026
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   },
+   "B_S1": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105507,
+       "CW_ALL": 0.119614,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.08276,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7305,
+        "meanPeriodPp": 0.241949,
+        "nwP": 0.003877
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8394,
+        "meanPeriodPp": -0.525126,
+        "nwP": 0.239526
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.09565,
+       "CW_ALL": 0.120857,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.072216,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6599,
+        "meanPeriodPp": 0.19608,
+        "nwP": 0.012555
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.945,
+        "meanPeriodPp": -0.84799,
+        "nwP": 0.060762
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.07763,
+       "CW_ALL": 0.106791,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.032907,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.4823,
+        "meanPeriodPp": 1.171338,
+        "nwP": 0.000041
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -4.6271,
+        "meanPeriodPp": -1.466632,
+        "nwP": 0.002118
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.070259,
+       "CW_ALL": 0.108137,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.046818,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.1673,
+        "meanPeriodPp": 0.983255,
+        "nwP": 0.001216
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.4841,
+        "meanPeriodPp": -1.644773,
+        "nwP": 0.001685
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105181,
+       "CW_ALL": 0.119385,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.082052,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7631,
+        "meanPeriodPp": 0.251506,
+        "nwP": 0.002481
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.872,
+        "meanPeriodPp": -0.534683,
+        "nwP": 0.226702
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.095588,
+       "CW_ALL": 0.120823,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.072262,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6661,
+        "meanPeriodPp": 0.198362,
+        "nwP": 0.011133
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.9512,
+        "meanPeriodPp": -0.850273,
+        "nwP": 0.059191
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108323,
+       "CW_ALL": 0.120888,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.092904,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4847,
+        "meanPeriodPp": 0.156779,
+        "nwP": 0.02735
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.5578,
+        "meanPeriodPp": -0.427838,
+        "nwP": 0.345457
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.09782,
+       "CW_ALL": 0.121944,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.081391,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4746,
+        "meanPeriodPp": 0.137288,
+        "nwP": 0.042829
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.728,
+        "meanPeriodPp": -0.779593,
+        "nwP": 0.085026
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   },
+   "A_S2": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.106023,
+       "CW_ALL": 0.119841,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.087775,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6789,
+        "meanPeriodPp": 0.224987,
+        "nwP": 0.007791
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.7878,
+        "meanPeriodPp": -0.508164,
+        "nwP": 0.252478
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096417,
+       "CW_ALL": 0.121184,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.078775,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5832,
+        "meanPeriodPp": 0.172005,
+        "nwP": 0.030573
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8683,
+        "meanPeriodPp": -0.823915,
+        "nwP": 0.068436
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.07767,
+       "CW_ALL": 0.106515,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.029426,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.4783,
+        "meanPeriodPp": 1.171396,
+        "nwP": 0.00005
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -4.6231,
+        "meanPeriodPp": -1.466689,
+        "nwP": 0.001927
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.071015,
+       "CW_ALL": 0.108464,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.040836,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.0917,
+        "meanPeriodPp": 0.95918,
+        "nwP": 0.001596
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.4085,
+        "meanPeriodPp": -1.620698,
+        "nwP": 0.00196
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105585,
+       "CW_ALL": 0.119191,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.086783,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7227,
+        "meanPeriodPp": 0.238613,
+        "nwP": 0.004671
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8316,
+        "meanPeriodPp": -0.521789,
+        "nwP": 0.234502
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096355,
+       "CW_ALL": 0.121149,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.07882,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5894,
+        "meanPeriodPp": 0.17429,
+        "nwP": 0.028409
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8745,
+        "meanPeriodPp": -0.8262,
+        "nwP": 0.066771
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108903,
+       "CW_ALL": 0.121185,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.098118,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4267,
+        "meanPeriodPp": 0.137468,
+        "nwP": 0.055106
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.4998,
+        "meanPeriodPp": -0.408528,
+        "nwP": 0.365718
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.098587,
+       "CW_ALL": 0.12227,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.087994,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.3979,
+        "meanPeriodPp": 0.113222,
+        "nwP": 0.10008
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.6513,
+        "meanPeriodPp": -0.755527,
+        "nwP": 0.095075
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   },
+   "B_S2": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.106149,
+       "CW_ALL": 0.119873,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.088089,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6663,
+        "meanPeriodPp": 0.220364,
+        "nwP": 0.009765
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.7752,
+        "meanPeriodPp": -0.50354,
+        "nwP": 0.258215
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096417,
+       "CW_ALL": 0.121184,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.078775,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5832,
+        "meanPeriodPp": 0.172005,
+        "nwP": 0.030573
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8683,
+        "meanPeriodPp": -0.823915,
+        "nwP": 0.068436
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.078261,
+       "CW_ALL": 0.10705,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.028023,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.4192,
+        "meanPeriodPp": 1.149751,
+        "nwP": 0.000059
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -4.564,
+        "meanPeriodPp": -1.445045,
+        "nwP": 0.002422
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.071015,
+       "CW_ALL": 0.108464,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.040836,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.0917,
+        "meanPeriodPp": 0.95918,
+        "nwP": 0.001596
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.4085,
+        "meanPeriodPp": -1.620698,
+        "nwP": 0.00196
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105823,
+       "CW_ALL": 0.119644,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.087377,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6989,
+        "meanPeriodPp": 0.229923,
+        "nwP": 0.006861
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8078,
+        "meanPeriodPp": -0.5131,
+        "nwP": 0.244901
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096355,
+       "CW_ALL": 0.121149,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.07882,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5894,
+        "meanPeriodPp": 0.17429,
+        "nwP": 0.028409
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8745,
+        "meanPeriodPp": -0.8262,
+        "nwP": 0.066771
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108965,
+       "CW_ALL": 0.121147,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.098273,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4205,
+        "meanPeriodPp": 0.1352,
+        "nwP": 0.061614
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.4936,
+        "meanPeriodPp": -0.40626,
+        "nwP": 0.369094
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.098587,
+       "CW_ALL": 0.12227,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.087994,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.3979,
+        "meanPeriodPp": 0.113222,
+        "nwP": 0.10008
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.6513,
+        "meanPeriodPp": -0.755527,
+        "nwP": 0.095075
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   }
+  },
+  "v13Aggregates": {
+   "afterTerminalS0": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105957,
+       "CW_ALL": 0.119839,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.086008,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6855,
+        "meanPeriodPp": 0.227511,
+        "nwP": 0.005653
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.7944,
+        "meanPeriodPp": -0.510687,
+        "nwP": 0.251074
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096353,
+       "CW_ALL": 0.121182,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.07662,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5896,
+        "meanPeriodPp": 0.174325,
+        "nwP": 0.023218
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8747,
+        "meanPeriodPp": -0.826235,
+        "nwP": 0.067849
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.077606,
+       "CW_ALL": 0.106512,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.031022,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.4847,
+        "meanPeriodPp": 1.173919,
+        "nwP": 0.000042
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -4.6295,
+        "meanPeriodPp": -1.469213,
+        "nwP": 0.001889
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.070954,
+       "CW_ALL": 0.108461,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.042776,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.0978,
+        "meanPeriodPp": 0.9615,
+        "nwP": 0.001427
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.4146,
+        "meanPeriodPp": -1.623017,
+        "nwP": 0.001905
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105519,
+       "CW_ALL": 0.119189,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.08502,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7293,
+        "meanPeriodPp": 0.241126,
+        "nwP": 0.003153
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8382,
+        "meanPeriodPp": -0.524302,
+        "nwP": 0.233145
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096291,
+       "CW_ALL": 0.121147,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.076666,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5958,
+        "meanPeriodPp": 0.1766,
+        "nwP": 0.020892
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8809,
+        "meanPeriodPp": -0.82851,
+        "nwP": 0.066164
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108837,
+       "CW_ALL": 0.121183,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.096337,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4333,
+        "meanPeriodPp": 0.139985,
+        "nwP": 0.043871
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.5064,
+        "meanPeriodPp": -0.411045,
+        "nwP": 0.36379
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.098523,
+       "CW_ALL": 0.122269,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.085822,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4043,
+        "meanPeriodPp": 0.115535,
+        "nwP": 0.081534
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.6577,
+        "meanPeriodPp": -0.75784,
+        "nwP": 0.094351
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   },
+   "afterTerminalS1": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105381,
+       "CW_ALL": 0.119582,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.082447,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7431,
+        "meanPeriodPp": 0.246572,
+        "nwP": 0.002965
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.852,
+        "meanPeriodPp": -0.529749,
+        "nwP": 0.234038
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.09565,
+       "CW_ALL": 0.120857,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.072216,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6599,
+        "meanPeriodPp": 0.19608,
+        "nwP": 0.012555
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.945,
+        "meanPeriodPp": -0.84799,
+        "nwP": 0.060762
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.077039,
+       "CW_ALL": 0.106256,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.034303,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.5414,
+        "meanPeriodPp": 1.192983,
+        "nwP": 0.000034
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -4.6862,
+        "meanPeriodPp": -1.488277,
+        "nwP": 0.001679
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.070259,
+       "CW_ALL": 0.108137,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.046818,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.1673,
+        "meanPeriodPp": 0.983255,
+        "nwP": 0.001216
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.4841,
+        "meanPeriodPp": -1.644773,
+        "nwP": 0.001685
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.104943,
+       "CW_ALL": 0.118932,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.081462,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7869,
+        "meanPeriodPp": 0.260196,
+        "nwP": 0.001572
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8958,
+        "meanPeriodPp": -0.543372,
+        "nwP": 0.21678
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.095588,
+       "CW_ALL": 0.120823,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.072262,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6661,
+        "meanPeriodPp": 0.198362,
+        "nwP": 0.011133
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.9512,
+        "meanPeriodPp": -0.850273,
+        "nwP": 0.059191
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108261,
+       "CW_ALL": 0.120925,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.09275,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4909,
+        "meanPeriodPp": 0.159047,
+        "nwP": 0.023766
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.564,
+        "meanPeriodPp": -0.430106,
+        "nwP": 0.34219
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.09782,
+       "CW_ALL": 0.121944,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.081391,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4746,
+        "meanPeriodPp": 0.137288,
+        "nwP": 0.042829
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.728,
+        "meanPeriodPp": -0.779593,
+        "nwP": 0.085026
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   },
+   "afterTerminalS2": {
+    "ZERO": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.106023,
+       "CW_ALL": 0.119841,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.087775,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.6789,
+        "meanPeriodPp": 0.224987,
+        "nwP": 0.007791
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.7878,
+        "meanPeriodPp": -0.508164,
+        "nwP": 0.252478
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096417,
+       "CW_ALL": 0.121184,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.078775,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5832,
+        "meanPeriodPp": 0.172005,
+        "nwP": 0.030573
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8683,
+        "meanPeriodPp": -0.823915,
+        "nwP": 0.068436
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "LOWER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.07767,
+       "CW_ALL": 0.106515,
+       "EW_WITH_H": 0.112453,
+       "EW_WITHOUT_H": -0.029426,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.111051
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.4783,
+        "meanPeriodPp": 1.171396,
+        "nwP": 0.00005
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -4.6231,
+        "meanPeriodPp": -1.466689,
+        "nwP": 0.001927
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.285,
+        "meanPeriodPp": -0.100819,
+        "nwP": 0.915624
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.071015,
+       "CW_ALL": 0.108464,
+       "EW_WITH_H": 0.101932,
+       "EW_WITHOUT_H": -0.040836,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.097259
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 3.0917,
+        "meanPeriodPp": 0.95918,
+        "nwP": 0.001596
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -5.4085,
+        "meanPeriodPp": -1.620698,
+        "nwP": 0.00196
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.7841,
+        "meanPeriodPp": -0.55007,
+        "nwP": 0.599836
+       }
+      }
+     }
+    },
+    "FATE": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.105585,
+       "CW_ALL": 0.119191,
+       "EW_WITH_H": 0.112812,
+       "EW_WITHOUT_H": 0.086783,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.7227,
+        "meanPeriodPp": 0.238613,
+        "nwP": 0.004671
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.8316,
+        "meanPeriodPp": -0.521789,
+        "nwP": 0.234502
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.096355,
+       "CW_ALL": 0.121149,
+       "EW_WITH_H": 0.102249,
+       "EW_WITHOUT_H": 0.07882,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.5894,
+        "meanPeriodPp": 0.17429,
+        "nwP": 0.028409
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.8745,
+        "meanPeriodPp": -0.8262,
+        "nwP": 0.066771
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    },
+    "UPPER": {
+     "full": {
+      "periods": 47,
+      "years": 16.747433,
+      "from": "2009-09-30",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.108903,
+       "CW_ALL": 0.121185,
+       "EW_WITH_H": 0.11317,
+       "EW_WITHOUT_H": 0.098118,
+       "SPY": 0.123901,
+       "SPY_TR": 0.144015,
+       "EW_FRAME": 0.112328
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.4267,
+        "meanPeriodPp": 0.137468,
+        "nwP": 0.055106
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -1.4998,
+        "meanPeriodPp": -0.408528,
+        "nwP": 0.365718
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -1.1573,
+        "meanPeriodPp": -0.058479,
+        "nwP": 0.950883
+       }
+      }
+     },
+     "from2013_03_rule101": {
+      "periods": 40,
+      "years": 13.24846,
+      "from": "2013-03-31",
+      "to": "2026-06-30",
+      "cagr": {
+       "EW_ALL": 0.098587,
+       "CW_ALL": 0.12227,
+       "EW_WITH_H": 0.102566,
+       "EW_WITHOUT_H": 0.087994,
+       "SPY": 0.1251,
+       "SPY_TR": 0.144419,
+       "EW_FRAME": 0.098854
+      },
+      "terms": {
+       "survivorshipInIndex": {
+        "cagrDiffPp": 0.3979,
+        "meanPeriodPp": 0.113222,
+        "nwP": 0.10008
+       },
+       "equalWeightInIndex": {
+        "cagrDiffPp": -2.6513,
+        "meanPeriodPp": -0.755527,
+        "nwP": 0.095075
+       },
+       "frameMinusSpy": {
+        "cagrDiffPp": -2.6246,
+        "meanPeriodPp": -0.50032,
+        "nwP": 0.632815
+       }
+      }
+     }
+    }
+   }
+  },
+  "decompositionVsV13_S0": {
+   "ZERO": {
+    "EW_ALL": {
+     "reference": 0.105957,
+     "afterA": 0.105957,
+     "afterB": 0.106083,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0.0126,
+     "deltaTotal_pp": 0.0126
+    },
+    "CW_ALL": {
+     "reference": 0.119839,
+     "afterA": 0.119839,
+     "afterB": 0.119871,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0.0032,
+     "deltaTotal_pp": 0.0032
+    },
+    "EW_WITH_H": {
+     "reference": 0.112812,
+     "afterA": 0.112812,
+     "afterB": 0.112812,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0,
+     "deltaTotal_pp": 0
+    },
+    "survivorshipTermCagrDiffPp": {
+     "reference": 0.6855,
+     "afterA": 0.6855,
+     "afterB": 0.6729,
+     "deltaTotal_pp": -0.0126
+    }
+   },
+   "LOWER": {
+    "EW_ALL": {
+     "reference": 0.077606,
+     "afterA": 0.077606,
+     "afterB": 0.078197,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0.0591,
+     "deltaTotal_pp": 0.0591
+    },
+    "CW_ALL": {
+     "reference": 0.106512,
+     "afterA": 0.106512,
+     "afterB": 0.107047,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0.0535,
+     "deltaTotal_pp": 0.0535
+    },
+    "EW_WITH_H": {
+     "reference": 0.112453,
+     "afterA": 0.112453,
+     "afterB": 0.112453,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0,
+     "deltaTotal_pp": 0
+    },
+    "survivorshipTermCagrDiffPp": {
+     "reference": 3.4847,
+     "afterA": 3.4847,
+     "afterB": 3.4256,
+     "deltaTotal_pp": -0.0591
+    }
+   },
+   "FATE": {
+    "EW_ALL": {
+     "reference": 0.105519,
+     "afterA": 0.105519,
+     "afterB": 0.105757,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0.0238,
+     "deltaTotal_pp": 0.0238
+    },
+    "CW_ALL": {
+     "reference": 0.119189,
+     "afterA": 0.119189,
+     "afterB": 0.119642,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0.0453,
+     "deltaTotal_pp": 0.0453
+    },
+    "EW_WITH_H": {
+     "reference": 0.112812,
+     "afterA": 0.112812,
+     "afterB": 0.112812,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0,
+     "deltaTotal_pp": 0
+    },
+    "survivorshipTermCagrDiffPp": {
+     "reference": 0.7293,
+     "afterA": 0.7293,
+     "afterB": 0.7055,
+     "deltaTotal_pp": -0.0238
+    }
+   },
+   "UPPER": {
+    "EW_ALL": {
+     "reference": 0.108837,
+     "afterA": 0.108837,
+     "afterB": 0.108899,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0.0062,
+     "deltaTotal_pp": 0.0062
+    },
+    "CW_ALL": {
+     "reference": 0.121183,
+     "afterA": 0.121183,
+     "afterB": 0.121145,
+     "deltaA_pp": 0,
+     "deltaB_pp": -0.0038,
+     "deltaTotal_pp": -0.0038
+    },
+    "EW_WITH_H": {
+     "reference": 0.11317,
+     "afterA": 0.11317,
+     "afterB": 0.11317,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0,
+     "deltaTotal_pp": 0
+    },
+    "survivorshipTermCagrDiffPp": {
+     "reference": 0.4333,
+     "afterA": 0.4333,
+     "afterB": 0.4271,
+     "deltaTotal_pp": -0.0062
+    }
+   }
+  },
+  "periodTableStepB": [
+   {
+    "t0": "2009-09-30",
+    "t1": "2010-03-31",
+    "qualification": "QUALIFIED",
+    "errorPp": null,
+    "tolerancePp": null,
+    "boundedWeight": {
+     "base": 0.021681,
+     "A": 0.021681,
+     "B": 0.013405
+    },
+    "boundedMembers": {
+     "base": 16,
+     "A": 16,
+     "B": 12
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.133935,
+      "A": 0.133935,
+      "B": 0.136108
+     },
+     "LOWER": {
+      "base": 0.101935,
+      "A": 0.101935,
+      "B": 0.112108
+     },
+     "FATE": {
+      "base": 0.131249,
+      "A": 0.131249,
+      "B": 0.135333
+     },
+     "UPPER": {
+      "base": 0.138362,
+      "A": 0.138362,
+      "B": 0.139428
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.104626,
+      "A": 0.104626,
+      "B": 0.105151
+     },
+     "LOWER": {
+      "base": 0.082945,
+      "A": 0.082945,
+      "B": 0.091746
+     },
+     "FATE": {
+      "base": 0.097356,
+      "A": 0.097356,
+      "B": 0.104808
+     },
+     "UPPER": {
+      "base": 0.107626,
+      "A": 0.107626,
+      "B": 0.107005
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": -0.4798,
+      "B": -0.6971
+     },
+     "LOWER": {
+      "base": 2.7202,
+      "B": 1.7029
+     },
+     "FATE": {
+      "base": -0.2112,
+      "B": -0.6196
+     },
+     "UPPER": {
+      "base": -0.9225,
+      "B": -1.0291
+     }
+    },
+    "SPY": 0.108059
+   }
+  ]
+ },
+ "EARLY": {
+  "span": [
+   "1995-12-31",
+   "2009-09-30"
+  ],
+  "periods": 14,
+  "label": "SECONDARY DESCRIPTIVE - all periods NOT_QUALIFIED in SPXPOP; levels not interpreted, only the deltas",
+  "memberLogicIdenticalOnP5A": true,
+  "qualification": {
+   "NOT_QUALIFIED_ERROR": 2,
+   "NOT_QUALIFIED_COVERAGE": 12
+  },
+  "takeoverPremium": {
+   "median": 0.014816,
+   "p75": 0.066285,
+   "source": "unchanged V12 premium (P5a span)"
+  },
+  "stepA": {
+   "states": {
+    "NO_QUALIFIED_CHAIN": 312,
+    "REPLACED": 1
+   },
+   "replaced": 1,
+   "replacedRows": [
+    {
+     "t0": "2008-09-30",
+     "cik": 84792,
+     "chainId": "dl_debff54b3005beed",
+     "priorStatus": "BOUNDED_EXIT",
+     "fateClass": "DELISTING",
+     "weight": 0.0009,
+     "kind": "LAST_CLOSE",
+     "terminalClass": "UNKNOWN",
+     "matchingChains": 1,
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "afterS0": 0.093,
+     "afterS1": -0.2349,
+     "afterS2": -1
+    }
+   ]
+  },
+  "stepB": {
+   "replacedRows": [
+    {
+     "t0": "1996-12-31",
+     "name": "Alexander & Alexander Services, Inc",
+     "cik": 3449,
+     "keyHash16": "342af084ae5d0747",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0001,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.2482,
+     "documented": 0.0072
+    },
+    {
+     "t0": "1996-12-31",
+     "name": "Amdahl Corp.",
+     "cik": 4427,
+     "keyHash16": "f7776417c5934361",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.2482,
+     "documented": 0.0227
+    },
+    {
+     "t0": "1996-12-31",
+     "name": "Conrail, Inc",
+     "cik": 897732,
+     "keyHash16": "722c5f54791c075d",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0014,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.2482,
+     "documented": 0.1543
+    },
+    {
+     "t0": "1997-09-30",
+     "name": "Mercantile Stores Co., Inc.",
+     "cik": 64923,
+     "keyHash16": "c371c8f9c7347a4d",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.0663,
+     "documented": 0.2711
+    },
+    {
+     "t0": "1999-09-30",
+     "name": "ASARCO, Inc.",
+     "cik": 7649,
+     "keyHash16": "5bf634c36790b35c",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0001,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.0663,
+     "documented": 0.1096
+    },
+    {
+     "t0": "1999-09-30",
+     "name": "Case Corp.",
+     "cik": 922321,
+     "keyHash16": "8d21ab2d25fd7a05",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "DELISTED_OTHER",
+     "fateClass": "DELISTING",
+     "weight": 0.0004,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "beforeUpper": 0.0663,
+     "documented": 0.1041
+    },
+    {
+     "t0": "1999-09-30",
+     "name": "Jostens, Inc.",
+     "cik": 54050,
+     "keyHash16": "90cca6d8c8a64e34",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "DELISTED_OTHER",
+     "fateClass": "DELISTING",
+     "weight": 0.0001,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "beforeUpper": 0.0663,
+     "documented": 0.3203
+    },
+    {
+     "t0": "1999-09-30",
+     "name": "Republic New York Corp.",
+     "cik": 83246,
+     "keyHash16": "b39c86d278d53fd9",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "DELISTED_OTHER",
+     "fateClass": "DELISTING",
+     "weight": 0.0006,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "beforeUpper": 0.0663,
+     "documented": 0.1719
+    },
+    {
+     "t0": "1999-09-30",
+     "name": "Shared Medical Systems",
+     "cik": 89415,
+     "keyHash16": "c7458fd115c92db7",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0001,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.0663,
+     "documented": 0.5615
+    },
+    {
+     "t0": "2000-09-30",
+     "name": "Bestfoods",
+     "cik": 25350,
+     "keyHash16": "e72e1510a8cc86df",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "DELISTED_OTHER",
+     "fateClass": "DELISTING",
+     "weight": 0.0016,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "beforeUpper": 0.0663,
+     "documented": 0.0034
+    },
+    {
+     "t0": "2000-09-30",
+     "name": "Harcourt General, Inc.",
+     "cik": 40493,
+     "keyHash16": "6d965e54ff6bca30",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.0663,
+     "documented": 0
+    },
+    {
+     "t0": "2003-09-30",
+     "name": "Charter One Financial, Inc.",
+     "cik": 819692,
+     "keyHash16": "b0456885ae76bca4",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0008,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.1693,
+     "documented": 0.4542
+    },
+    {
+     "t0": "2004-09-30",
+     "name": "SunGard Data Systems, Inc.",
+     "cik": 789388,
+     "keyHash16": "b28c8ec228a47ccf",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "DELISTED_OTHER",
+     "fateClass": "DELISTING",
+     "weight": 0.0007,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "beforeUpper": 0.1386,
+     "documented": 0.5145
+    },
+    {
+     "t0": "2005-09-30",
+     "name": "Engelhard Corp.",
+     "cik": 352947,
+     "keyHash16": "7b5f8276ee1144a6",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.0943,
+     "documented": 0.3973
+    },
+    {
+     "t0": "2005-09-30",
+     "name": "Reebok International Ltd.",
+     "cik": 770949,
+     "keyHash16": "fe7b8168d3267352",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.0943,
+     "documented": 0.043
+    },
+    {
+     "t0": "2005-09-30",
+     "name": "Scientific-Atlanta, Inc.",
+     "cik": 87777,
+     "keyHash16": "9d2de6811b008d18",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0005,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.0943,
+     "documented": 0.1464
+    },
+    {
+     "t0": "2006-09-30",
+     "name": "American Power Conversion Corp.",
+     "cik": 835910,
+     "keyHash16": "7b714fa965904104",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0003,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.1211,
+     "documented": 0.4117
+    },
+    {
+     "t0": "2006-09-30",
+     "name": "Biomet, Inc.",
+     "cik": 351346,
+     "keyHash16": "dc45c01620f9d905",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0007,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.1211,
+     "documented": 0.429
+    },
+    {
+     "t0": "2006-09-30",
+     "name": "Equity Office Properties Trust",
+     "cik": 1038339,
+     "keyHash16": "357e5969e07444ec",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0012,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.1211,
+     "documented": 0.3959
+    },
+    {
+     "t0": "2006-09-30",
+     "name": "KeySpan Corp.",
+     "cik": 1062379,
+     "keyHash16": "418539e0c9275324",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "DELISTED_OTHER",
+     "fateClass": "DELISTING",
+     "weight": 0.0006,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "beforeUpper": 0.1211,
+     "documented": 0.0209
+    },
+    {
+     "t0": "2006-09-30",
+     "name": "Realogy Corp.",
+     "cik": 1355001,
+     "keyHash16": "0b94183bbcfb70c7",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0004,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.1211,
+     "documented": 0.3228
+    },
+    {
+     "t0": "2007-09-30",
+     "name": "Archstone-Smith Trust",
+     "cik": 1156826,
+     "keyHash16": "bf64a45b722a31f2",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "DELISTED_OTHER",
+     "fateClass": "DELISTING",
+     "weight": 0.001,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": -1,
+     "beforeUpper": 0.0663,
+     "documented": 0.0101
+    },
+    {
+     "t0": "2007-09-30",
+     "name": "SAFECO Corp.",
+     "cik": 86104,
+     "keyHash16": "6c33a7f1e3800aa1",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0005,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.0663,
+     "documented": 0.1148
+    },
+    {
+     "t0": "2007-09-30",
+     "name": "Tektronix, Inc.",
+     "cik": 96879,
+     "keyHash16": "c59529ca6ee33122",
+     "kind": "TERMINAL_CASH",
+     "priorStatus": "BOUNDED_EXIT",
+     "fate": "ACQUIRED_OR_MERGED",
+     "fateClass": "TAKEOVER",
+     "weight": 0.0002,
+     "state": "REPLACED",
+     "beforeZero": 0,
+     "beforeLower": -1,
+     "beforeFate": 0.0148,
+     "beforeUpper": 0.0663,
+     "documented": 0.3699
+    }
+   ]
+  },
+  "aggregates": {
+   "base": {
+    "ZERO": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.054125,
+      "CW_ALL": 0.018403,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.043911,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 1.5502,
+       "meanPeriodPp": 1.560557
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 1.401,
+       "meanPeriodPp": 0.744107
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "LOWER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": -0.022666,
+      "CW_ALL": -0.029035,
+      "EW_WITH_H": 0.065692,
+      "EW_WITHOUT_H": -0.094234,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 8.8358,
+       "meanPeriodPp": 8.360679
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -6.2781,
+       "meanPeriodPp": -6.471693
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "FATE": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.039368,
+      "CW_ALL": 0.007953,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.017174,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.0259,
+       "meanPeriodPp": 2.898364
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -0.0747,
+       "meanPeriodPp": -0.5937
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "UPPER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.064563,
+      "CW_ALL": 0.027331,
+      "EW_WITH_H": 0.073551,
+      "EW_WITHOUT_H": 0.059683,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.8988,
+       "meanPeriodPp": 0.913507
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 2.4448,
+       "meanPeriodPp": 1.806836
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    }
+   },
+   "A_S0": {
+    "ZERO": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.05414,
+      "CW_ALL": 0.01841,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.043947,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 1.5487,
+       "meanPeriodPp": 1.559221
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 1.4025,
+       "meanPeriodPp": 0.745443
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "LOWER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": -0.022491,
+      "CW_ALL": -0.028961,
+      "EW_WITH_H": 0.065692,
+      "EW_WITHOUT_H": -0.093816,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 8.8183,
+       "meanPeriodPp": 8.345036
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -6.2606,
+       "meanPeriodPp": -6.45605
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "FATE": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.039544,
+      "CW_ALL": 0.008027,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.017585,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.0083,
+       "meanPeriodPp": 2.882721
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -0.0571,
+       "meanPeriodPp": -0.578057
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "UPPER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.064567,
+      "CW_ALL": 0.027333,
+      "EW_WITH_H": 0.073551,
+      "EW_WITHOUT_H": 0.059693,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.8984,
+       "meanPeriodPp": 0.913121
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 2.4452,
+       "meanPeriodPp": 1.807221
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    }
+   },
+   "B_S0": {
+    "ZERO": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.054922,
+      "CW_ALL": 0.018589,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.045488,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 1.4705,
+       "meanPeriodPp": 1.482714
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 1.4807,
+       "meanPeriodPp": 0.82195
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "LOWER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": -0.018104,
+      "CW_ALL": -0.027827,
+      "EW_WITH_H": 0.065692,
+      "EW_WITHOUT_H": -0.085279,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 8.3796,
+       "meanPeriodPp": 7.925871
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -5.8219,
+       "meanPeriodPp": -6.036886
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "FATE": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.041384,
+      "CW_ALL": 0.008619,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.021144,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 2.8243,
+       "meanPeriodPp": 2.709793
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 0.1269,
+       "meanPeriodPp": -0.405129
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "UPPER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.064973,
+      "CW_ALL": 0.027408,
+      "EW_WITH_H": 0.073551,
+      "EW_WITHOUT_H": 0.060526,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.8578,
+       "meanPeriodPp": 0.8747
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 2.4858,
+       "meanPeriodPp": 1.845643
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    }
+   },
+   "A_S1": {
+    "ZERO": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.054086,
+      "CW_ALL": 0.018387,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.043821,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 1.5541,
+       "meanPeriodPp": 1.563914
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 1.3971,
+       "meanPeriodPp": 0.74075
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "LOWER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": -0.022544,
+      "CW_ALL": -0.028983,
+      "EW_WITH_H": 0.065692,
+      "EW_WITHOUT_H": -0.093942,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 8.8236,
+       "meanPeriodPp": 8.349729
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -6.2659,
+       "meanPeriodPp": -6.460743
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "FATE": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.039491,
+      "CW_ALL": 0.008005,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.017462,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.0136,
+       "meanPeriodPp": 2.887414
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -0.0624,
+       "meanPeriodPp": -0.58275
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "UPPER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.064513,
+      "CW_ALL": 0.027311,
+      "EW_WITH_H": 0.073551,
+      "EW_WITHOUT_H": 0.059566,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.9038,
+       "meanPeriodPp": 0.917814
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 2.4398,
+       "meanPeriodPp": 1.802529
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    }
+   },
+   "B_S1": {
+    "ZERO": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.054869,
+      "CW_ALL": 0.018566,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.045362,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 1.4758,
+       "meanPeriodPp": 1.487407
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 1.4754,
+       "meanPeriodPp": 0.817257
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "LOWER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": -0.018157,
+      "CW_ALL": -0.027849,
+      "EW_WITH_H": 0.065692,
+      "EW_WITHOUT_H": -0.085405,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 8.3849,
+       "meanPeriodPp": 7.930564
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -5.8272,
+       "meanPeriodPp": -6.041579
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "FATE": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.041331,
+      "CW_ALL": 0.008597,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.021021,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 2.8296,
+       "meanPeriodPp": 2.714486
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 0.1216,
+       "meanPeriodPp": -0.409821
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "UPPER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.064919,
+      "CW_ALL": 0.027385,
+      "EW_WITH_H": 0.073551,
+      "EW_WITHOUT_H": 0.060399,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.8632,
+       "meanPeriodPp": 0.879393
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 2.4804,
+       "meanPeriodPp": 1.84095
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    }
+   },
+   "A_S2": {
+    "ZERO": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.053962,
+      "CW_ALL": 0.018335,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.043527,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 1.5665,
+       "meanPeriodPp": 1.574871
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 1.3847,
+       "meanPeriodPp": 0.729793
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "LOWER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": -0.022666,
+      "CW_ALL": -0.029035,
+      "EW_WITH_H": 0.065692,
+      "EW_WITHOUT_H": -0.094234,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 8.8358,
+       "meanPeriodPp": 8.360679
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -6.2781,
+       "meanPeriodPp": -6.471693
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "FATE": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.039368,
+      "CW_ALL": 0.007953,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.017174,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 3.0259,
+       "meanPeriodPp": 2.898364
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -0.0747,
+       "meanPeriodPp": -0.5937
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "UPPER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.064388,
+      "CW_ALL": 0.027258,
+      "EW_WITH_H": 0.073551,
+      "EW_WITHOUT_H": 0.05927,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.9163,
+       "meanPeriodPp": 0.928764
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 2.4273,
+       "meanPeriodPp": 1.791579
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    }
+   },
+   "B_S2": {
+    "ZERO": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.054744,
+      "CW_ALL": 0.018514,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.045067,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 1.4883,
+       "meanPeriodPp": 1.498364
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 1.4629,
+       "meanPeriodPp": 0.8063
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "LOWER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": -0.01828,
+      "CW_ALL": -0.027901,
+      "EW_WITH_H": 0.065692,
+      "EW_WITHOUT_H": -0.0857,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 8.3972,
+       "meanPeriodPp": 7.941514
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": -5.8395,
+       "meanPeriodPp": -6.052529
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "FATE": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.041208,
+      "CW_ALL": 0.008545,
+      "EW_WITH_H": 0.069627,
+      "EW_WITHOUT_H": 0.020732,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 2.8419,
+       "meanPeriodPp": 2.725436
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 0.1093,
+       "meanPeriodPp": -0.420771
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    },
+    "UPPER": {
+     "periods": 14,
+     "years": 13.749487,
+     "from": "1995-12-31",
+     "to": "2009-09-30",
+     "cagr": {
+      "EW_ALL": 0.064794,
+      "CW_ALL": 0.027333,
+      "EW_WITH_H": 0.073551,
+      "EW_WITHOUT_H": 0.060102,
+      "SPY": 0.040115,
+      "SPY_TR": null,
+      "EW_FRAME": 0.145078
+     },
+     "terms": {
+      "survivorshipInIndex": {
+       "cagrDiffPp": 0.8757,
+       "meanPeriodPp": 0.890343
+      },
+      "equalWeightInIndex": {
+       "cagrDiffPp": 2.4679,
+       "meanPeriodPp": 1.83
+      },
+      "frameMinusSpy": {
+       "cagrDiffPp": 10.4963,
+       "meanPeriodPp": 10.018314
+      }
+     }
+    }
+   }
+  },
+  "decompositionVsBase_S0": {
+   "ZERO": {
+    "EW_ALL": {
+     "reference": 0.054125,
+     "afterA": 0.05414,
+     "afterB": 0.054922,
+     "deltaA_pp": 0.0015,
+     "deltaB_pp": 0.0782,
+     "deltaTotal_pp": 0.0797
+    },
+    "CW_ALL": {
+     "reference": 0.018403,
+     "afterA": 0.01841,
+     "afterB": 0.018589,
+     "deltaA_pp": 0.0007,
+     "deltaB_pp": 0.0179,
+     "deltaTotal_pp": 0.0186
+    },
+    "EW_WITH_H": {
+     "reference": 0.069627,
+     "afterA": 0.069627,
+     "afterB": 0.069627,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0,
+     "deltaTotal_pp": 0
+    },
+    "survivorshipTermCagrDiffPp": {
+     "reference": 1.5502,
+     "afterA": 1.5487,
+     "afterB": 1.4705,
+     "deltaTotal_pp": -0.0797
+    }
+   },
+   "LOWER": {
+    "EW_ALL": {
+     "reference": -0.022666,
+     "afterA": -0.022491,
+     "afterB": -0.018104,
+     "deltaA_pp": 0.0175,
+     "deltaB_pp": 0.4387,
+     "deltaTotal_pp": 0.4562
+    },
+    "CW_ALL": {
+     "reference": -0.029035,
+     "afterA": -0.028961,
+     "afterB": -0.027827,
+     "deltaA_pp": 0.0074,
+     "deltaB_pp": 0.1134,
+     "deltaTotal_pp": 0.1208
+    },
+    "EW_WITH_H": {
+     "reference": 0.065692,
+     "afterA": 0.065692,
+     "afterB": 0.065692,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0,
+     "deltaTotal_pp": 0
+    },
+    "survivorshipTermCagrDiffPp": {
+     "reference": 8.8358,
+     "afterA": 8.8183,
+     "afterB": 8.3796,
+     "deltaTotal_pp": -0.4562
+    }
+   },
+   "FATE": {
+    "EW_ALL": {
+     "reference": 0.039368,
+     "afterA": 0.039544,
+     "afterB": 0.041384,
+     "deltaA_pp": 0.0176,
+     "deltaB_pp": 0.184,
+     "deltaTotal_pp": 0.2016
+    },
+    "CW_ALL": {
+     "reference": 0.007953,
+     "afterA": 0.008027,
+     "afterB": 0.008619,
+     "deltaA_pp": 0.0074,
+     "deltaB_pp": 0.0592,
+     "deltaTotal_pp": 0.0666
+    },
+    "EW_WITH_H": {
+     "reference": 0.069627,
+     "afterA": 0.069627,
+     "afterB": 0.069627,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0,
+     "deltaTotal_pp": 0
+    },
+    "survivorshipTermCagrDiffPp": {
+     "reference": 3.0259,
+     "afterA": 3.0083,
+     "afterB": 2.8243,
+     "deltaTotal_pp": -0.2016
+    }
+   },
+   "UPPER": {
+    "EW_ALL": {
+     "reference": 0.064563,
+     "afterA": 0.064567,
+     "afterB": 0.064973,
+     "deltaA_pp": 0.0004,
+     "deltaB_pp": 0.0406,
+     "deltaTotal_pp": 0.041
+    },
+    "CW_ALL": {
+     "reference": 0.027331,
+     "afterA": 0.027333,
+     "afterB": 0.027408,
+     "deltaA_pp": 0.0002,
+     "deltaB_pp": 0.0075,
+     "deltaTotal_pp": 0.0077
+    },
+    "EW_WITH_H": {
+     "reference": 0.073551,
+     "afterA": 0.073551,
+     "afterB": 0.073551,
+     "deltaA_pp": 0,
+     "deltaB_pp": 0,
+     "deltaTotal_pp": 0
+    },
+    "survivorshipTermCagrDiffPp": {
+     "reference": 0.8988,
+     "afterA": 0.8984,
+     "afterB": 0.8578,
+     "deltaTotal_pp": -0.041
+    }
+   }
+  },
+  "periodTable": [
+   {
+    "t0": "1995-12-31",
+    "t1": "1996-12-31",
+    "qualification": "NOT_QUALIFIED_ERROR",
+    "errorPp": -2.9873,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.029602,
+     "A": 0.029602,
+     "B": 0.029602
+    },
+    "boundedMembers": {
+     "base": 30,
+     "A": 30,
+     "B": 30
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.141936,
+      "A": 0.141936,
+      "B": 0.141936
+     },
+     "LOWER": {
+      "base": 0.090464,
+      "A": 0.090464,
+      "B": 0.090464
+     },
+     "FATE": {
+      "base": 0.140753,
+      "A": 0.140753,
+      "B": 0.140753
+     },
+     "UPPER": {
+      "base": 0.152524,
+      "A": 0.152524,
+      "B": 0.152524
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.171144,
+      "A": 0.171144,
+      "B": 0.171144
+     },
+     "LOWER": {
+      "base": 0.14865,
+      "A": 0.14865,
+      "B": 0.14865
+     },
+     "FATE": {
+      "base": 0.167124,
+      "A": 0.167124,
+      "B": 0.167124
+     },
+     "UPPER": {
+      "base": 0.176841,
+      "A": 0.176841,
+      "B": 0.176841
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 3.804,
+      "B": 3.804
+     },
+     "LOWER": {
+      "base": 8.4659,
+      "B": 8.4659
+     },
+     "FATE": {
+      "base": 3.9223,
+      "B": 3.9223
+     },
+     "UPPER": {
+      "base": 3.2305,
+      "B": 3.2305
+     }
+    },
+    "SPY": 0.201017
+   },
+   {
+    "t0": "1996-12-31",
+    "t1": "1997-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": -2.3473,
+    "tolerancePp": 0.866,
+    "boundedWeight": {
+     "base": 0.057619,
+     "A": 0.057619,
+     "B": 0.055831
+    },
+    "boundedMembers": {
+     "base": 39,
+     "A": 39,
+     "B": 36
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.233937,
+      "A": 0.233937,
+      "B": 0.234304
+     },
+     "LOWER": {
+      "base": 0.168327,
+      "A": 0.168327,
+      "B": 0.174658
+     },
+     "FATE": {
+      "base": 0.229674,
+      "A": 0.229674,
+      "B": 0.229952
+     },
+     "UPPER": {
+      "base": 0.254707,
+      "A": 0.254707,
+      "B": 0.253593
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.254565,
+      "A": 0.254565,
+      "B": 0.254786
+     },
+     "LOWER": {
+      "base": 0.208132,
+      "A": 0.208132,
+      "B": 0.210141
+     },
+     "FATE": {
+      "base": 0.252554,
+      "A": 0.252554,
+      "B": 0.252749
+     },
+     "UPPER": {
+      "base": 0.270453,
+      "A": 0.270453,
+      "B": 0.27023
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 7.1656,
+      "B": 7.1289
+     },
+     "LOWER": {
+      "base": 12.2963,
+      "B": 11.6632
+     },
+     "FATE": {
+      "base": 7.5919,
+      "B": 7.5641
+     },
+     "UPPER": {
+      "base": 6.519,
+      "B": 6.6304
+     }
+    },
+    "SPY": 0.278037
+   },
+   {
+    "t0": "1997-09-30",
+    "t1": "1998-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": -5.969,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.063318,
+     "A": 0.063318,
+     "B": 0.062999
+    },
+    "boundedMembers": {
+     "base": 47,
+     "A": 47,
+     "B": 46
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": -0.058851,
+      "A": -0.058851,
+      "B": -0.058309
+     },
+     "LOWER": {
+      "base": -0.139668,
+      "A": -0.139668,
+      "B": -0.137126
+     },
+     "FATE": {
+      "base": -0.084148,
+      "A": -0.084148,
+      "B": -0.083635
+     },
+     "UPPER": {
+      "base": -0.048996,
+      "A": -0.048996,
+      "B": -0.048586
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.018455,
+      "A": 0.018455,
+      "B": 0.018542
+     },
+     "LOWER": {
+      "base": -0.022901,
+      "A": -0.022901,
+      "B": -0.022496
+     },
+     "FATE": {
+      "base": 0.005649,
+      "A": 0.005649,
+      "B": 0.005731
+     },
+     "UPPER": {
+      "base": 0.03103,
+      "A": 0.03103,
+      "B": 0.031095
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 0.6014,
+      "B": 0.5472
+     },
+     "LOWER": {
+      "base": 7.8536,
+      "B": 7.5994
+     },
+     "FATE": {
+      "base": 3.1311,
+      "B": 3.0798
+     },
+     "UPPER": {
+      "base": 0.4454,
+      "B": 0.4044
+     }
+    },
+    "SPY": 0.078146
+   },
+   {
+    "t0": "1998-09-30",
+    "t1": "1999-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": -12.8329,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.092328,
+     "A": 0.092328,
+     "B": 0.092328
+    },
+    "boundedMembers": {
+     "base": 59,
+     "A": 59,
+     "B": 59
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.153774,
+      "A": 0.153774,
+      "B": 0.153774
+     },
+     "LOWER": {
+      "base": 0.048166,
+      "A": 0.048166,
+      "B": 0.048166
+     },
+     "FATE": {
+      "base": 0.13153,
+      "A": 0.13153,
+      "B": 0.13153
+     },
+     "UPPER": {
+      "base": 0.174176,
+      "A": 0.174176,
+      "B": 0.174176
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.137028,
+      "A": 0.137028,
+      "B": 0.137028
+     },
+     "LOWER": {
+      "base": 0.06929,
+      "A": 0.06929,
+      "B": 0.06929
+     },
+     "FATE": {
+      "base": 0.125842,
+      "A": 0.125842,
+      "B": 0.125842
+     },
+     "UPPER": {
+      "base": 0.161276,
+      "A": 0.161276,
+      "B": 0.161276
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 0.7408,
+      "B": 0.7408
+     },
+     "LOWER": {
+      "base": 10.8786,
+      "B": 10.8786
+     },
+     "FATE": {
+      "base": 2.9652,
+      "B": 2.9652
+     },
+     "UPPER": {
+      "base": -0.8764,
+      "B": -0.8764
+     }
+    },
+    "SPY": 0.265356
+   },
+   {
+    "t0": "1999-09-30",
+    "t1": "2000-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": -10.1924,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.125917,
+     "A": 0.125917,
+     "B": 0.124635
+    },
+    "boundedMembers": {
+     "base": 71,
+     "A": 71,
+     "B": 66
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.023212,
+      "A": 0.023212,
+      "B": 0.025747
+     },
+     "LOWER": {
+      "base": -0.108516,
+      "A": -0.108516,
+      "B": -0.095981
+     },
+     "FATE": {
+      "base": -0.00769,
+      "A": -0.00769,
+      "B": 0.000785
+     },
+     "UPPER": {
+      "base": 0.035424,
+      "A": 0.035424,
+      "B": 0.037296
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.01361,
+      "A": 0.01361,
+      "B": 0.013855
+     },
+     "LOWER": {
+      "base": -0.09362,
+      "A": -0.09362,
+      "B": -0.092094
+     },
+     "FATE": {
+      "base": -0.019318,
+      "A": -0.019318,
+      "B": -0.018023
+     },
+     "UPPER": {
+      "base": 0.02565,
+      "A": 0.02565,
+      "B": 0.02581
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 2.0204,
+      "B": 1.7669
+     },
+     "LOWER": {
+      "base": 14.8038,
+      "B": 13.5503
+     },
+     "FATE": {
+      "base": 5.1106,
+      "B": 4.2631
+     },
+     "UPPER": {
+      "base": 1.1886,
+      "B": 1.0014
+     }
+    },
+    "SPY": 0.115534
+   },
+   {
+    "t0": "2000-09-30",
+    "t1": "2001-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": -0.2333,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.089469,
+     "A": 0.089469,
+     "B": 0.087542
+    },
+    "boundedMembers": {
+     "base": 61,
+     "A": 61,
+     "B": 59
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": -0.089237,
+      "A": -0.089237,
+      "B": -0.08923
+     },
+     "LOWER": {
+      "base": -0.200776,
+      "A": -0.200776,
+      "B": -0.196761
+     },
+     "FATE": {
+      "base": -0.118474,
+      "A": -0.118474,
+      "B": -0.116493
+     },
+     "UPPER": {
+      "base": -0.080613,
+      "A": -0.080613,
+      "B": -0.080872
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": -0.275162,
+      "A": -0.275162,
+      "B": -0.275157
+     },
+     "LOWER": {
+      "base": -0.327064,
+      "A": -0.327064,
+      "B": -0.325131
+     },
+     "FATE": {
+      "base": -0.293963,
+      "A": -0.293963,
+      "B": -0.292372
+     },
+     "UPPER": {
+      "base": -0.26757,
+      "A": -0.26757,
+      "B": -0.267692
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 2.7974,
+      "B": 2.7967
+     },
+     "LOWER": {
+      "base": 13.8647,
+      "B": 13.4632
+     },
+     "FATE": {
+      "base": 5.7211,
+      "B": 5.523
+     },
+     "UPPER": {
+      "base": 2.0216,
+      "B": 2.0475
+     }
+    },
+    "SPY": -0.272829
+   },
+   {
+    "t0": "2001-09-30",
+    "t1": "2002-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": 2.6143,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.088223,
+     "A": 0.088223,
+     "B": 0.088223
+    },
+    "boundedMembers": {
+     "base": 61,
+     "A": 61,
+     "B": 61
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": -0.114694,
+      "A": -0.114694,
+      "B": -0.114694
+     },
+     "LOWER": {
+      "base": -0.229014,
+      "A": -0.229014,
+      "B": -0.229014
+     },
+     "FATE": {
+      "base": -0.13861,
+      "A": -0.13861,
+      "B": -0.13861
+     },
+     "UPPER": {
+      "base": -0.106817,
+      "A": -0.106817,
+      "B": -0.106817
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": -0.190728,
+      "A": -0.190728,
+      "B": -0.190728
+     },
+     "LOWER": {
+      "base": -0.276131,
+      "A": -0.276131,
+      "B": -0.276131
+     },
+     "FATE": {
+      "base": -0.206248,
+      "A": -0.206248,
+      "B": -0.206248
+     },
+     "UPPER": {
+      "base": -0.184975,
+      "A": -0.184975,
+      "B": -0.184975
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 2.4057,
+      "B": 2.4057
+     },
+     "LOWER": {
+      "base": 13.8377,
+      "B": 13.8377
+     },
+     "FATE": {
+      "base": 4.7973,
+      "B": 4.7973
+     },
+     "UPPER": {
+      "base": 1.618,
+      "B": 1.618
+     }
+    },
+    "SPY": -0.216871
+   },
+   {
+    "t0": "2002-09-30",
+    "t1": "2003-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": -0.3054,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.045021,
+     "A": 0.045021,
+     "B": 0.045021
+    },
+    "boundedMembers": {
+     "base": 22,
+     "A": 22,
+     "B": 22
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.364225,
+      "A": 0.364225,
+      "B": 0.364225
+     },
+     "LOWER": {
+      "base": 0.322782,
+      "A": 0.322782,
+      "B": 0.322782
+     },
+     "FATE": {
+      "base": 0.366524,
+      "A": 0.366524,
+      "B": 0.366524
+     },
+     "UPPER": {
+      "base": 0.381094,
+      "A": 0.381094,
+      "B": 0.381094
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.218978,
+      "A": 0.218978,
+      "B": 0.218978
+     },
+     "LOWER": {
+      "base": 0.174676,
+      "A": 0.174676,
+      "B": 0.174676
+     },
+     "FATE": {
+      "base": 0.220546,
+      "A": 0.220546,
+      "B": 0.220546
+     },
+     "UPPER": {
+      "base": 0.234984,
+      "A": 0.234984,
+      "B": 0.234984
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": -3.7614,
+      "B": -3.7614
+     },
+     "LOWER": {
+      "base": -0.3497,
+      "B": -0.3497
+     },
+     "FATE": {
+      "base": -3.9913,
+      "B": -3.9913
+     },
+     "UPPER": {
+      "base": -4.7157,
+      "B": -4.7157
+     }
+    },
+    "SPY": 0.222032
+   },
+   {
+    "t0": "2003-09-30",
+    "t1": "2004-09-30",
+    "qualification": "NOT_QUALIFIED_ERROR",
+    "errorPp": -1.4315,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.024484,
+     "A": 0.024484,
+     "B": 0.023703
+    },
+    "boundedMembers": {
+     "base": 16,
+     "A": 16,
+     "B": 15
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.165048,
+      "A": 0.165048,
+      "B": 0.165956
+     },
+     "LOWER": {
+      "base": 0.13849,
+      "A": 0.13849,
+      "B": 0.141399
+     },
+     "FATE": {
+      "base": 0.162123,
+      "A": 0.162123,
+      "B": 0.163002
+     },
+     "UPPER": {
+      "base": 0.171669,
+      "A": 0.171669,
+      "B": 0.172238
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.103844,
+      "A": 0.103844,
+      "B": 0.104198
+     },
+     "LOWER": {
+      "base": 0.08569,
+      "A": 0.08569,
+      "B": 0.086826
+     },
+     "FATE": {
+      "base": 0.099724,
+      "A": 0.099724,
+      "B": 0.100067
+     },
+     "UPPER": {
+      "base": 0.109876,
+      "A": 0.109876,
+      "B": 0.110099
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 2.6339,
+      "B": 2.5431
+     },
+     "LOWER": {
+      "base": 5.047,
+      "B": 4.7561
+     },
+     "FATE": {
+      "base": 2.9264,
+      "B": 2.8385
+     },
+     "UPPER": {
+      "base": 2.2145,
+      "B": 2.1576
+     }
+    },
+    "SPY": 0.118159
+   },
+   {
+    "t0": "2004-09-30",
+    "t1": "2005-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": -2.7904,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.030986,
+     "A": 0.030986,
+     "B": 0.03033
+    },
+    "boundedMembers": {
+     "base": 26,
+     "A": 26,
+     "B": 25
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.132855,
+      "A": 0.132855,
+      "B": 0.133884
+     },
+     "LOWER": {
+      "base": 0.088846,
+      "A": 0.088846,
+      "B": 0.091875
+     },
+     "FATE": {
+      "base": 0.124854,
+      "A": 0.124854,
+      "B": 0.127883
+     },
+     "UPPER": {
+      "base": 0.142406,
+      "A": 0.142406,
+      "B": 0.143158
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.073027,
+      "A": 0.073027,
+      "B": 0.073364
+     },
+     "LOWER": {
+      "base": 0.048347,
+      "A": 0.048347,
+      "B": 0.04934
+     },
+     "FATE": {
+      "base": 0.067087,
+      "A": 0.067087,
+      "B": 0.068081
+     },
+     "UPPER": {
+      "base": 0.079638,
+      "A": 0.079638,
+      "B": 0.079884
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 1.7441,
+      "B": 1.6412
+     },
+     "LOWER": {
+      "base": 5.441,
+      "B": 5.1381
+     },
+     "FATE": {
+      "base": 2.5442,
+      "B": 2.2413
+     },
+     "UPPER": {
+      "base": 1.4929,
+      "B": 1.4177
+     }
+    },
+    "SPY": 0.100931
+   },
+   {
+    "t0": "2005-09-30",
+    "t1": "2006-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": -0.3337,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.030001,
+     "A": 0.030001,
+     "B": 0.028918
+    },
+    "boundedMembers": {
+     "base": 32,
+     "A": 32,
+     "B": 29
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.089277,
+      "A": 0.089277,
+      "B": 0.09045
+     },
+     "LOWER": {
+      "base": 0.031893,
+      "A": 0.031893,
+      "B": 0.039066
+     },
+     "FATE": {
+      "base": 0.076616,
+      "A": 0.076616,
+      "B": 0.0777
+     },
+     "UPPER": {
+      "base": 0.097753,
+      "A": 0.097753,
+      "B": 0.098361
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.082326,
+      "A": 0.082326,
+      "B": 0.08253
+     },
+     "LOWER": {
+      "base": 0.057816,
+      "A": 0.057816,
+      "B": 0.059103
+     },
+     "FATE": {
+      "base": 0.072275,
+      "A": 0.072275,
+      "B": 0.072463
+     },
+     "UPPER": {
+      "base": 0.087311,
+      "A": 0.087311,
+      "B": 0.087413
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 1.3412,
+      "B": 1.2239
+     },
+     "LOWER": {
+      "base": 6.7152,
+      "B": 5.9979
+     },
+     "FATE": {
+      "base": 2.6073,
+      "B": 2.4989
+     },
+     "UPPER": {
+      "base": 0.8581,
+      "B": 0.7973
+     }
+    },
+    "SPY": 0.085663
+   },
+   {
+    "t0": "2006-09-30",
+    "t1": "2007-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": -1.2622,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.03423,
+     "A": 0.03423,
+     "B": 0.031017
+    },
+    "boundedMembers": {
+     "base": 33,
+     "A": 33,
+     "B": 28
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": 0.113438,
+      "A": 0.113438,
+      "B": 0.116598
+     },
+     "LOWER": {
+      "base": 0.048674,
+      "A": 0.048674,
+      "B": 0.061834
+     },
+     "FATE": {
+      "base": 0.102763,
+      "A": 0.102763,
+      "B": 0.107804
+     },
+     "UPPER": {
+      "base": 0.121955,
+      "A": 0.121955,
+      "B": 0.123904
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": 0.129615,
+      "A": 0.129615,
+      "B": 0.13066
+     },
+     "LOWER": {
+      "base": 0.095833,
+      "A": 0.095833,
+      "B": 0.100091
+     },
+     "FATE": {
+      "base": 0.124927,
+      "A": 0.124927,
+      "B": 0.126525
+     },
+     "UPPER": {
+      "base": 0.133951,
+      "A": 0.133951,
+      "B": 0.134606
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": 1.615,
+      "B": 1.299
+     },
+     "LOWER": {
+      "base": 8.0914,
+      "B": 6.7754
+     },
+     "FATE": {
+      "base": 2.6825,
+      "B": 2.1784
+     },
+     "UPPER": {
+      "base": 0.7633,
+      "B": 0.5684
+     }
+    },
+    "SPY": 0.142237
+   },
+   {
+    "t0": "2007-09-30",
+    "t1": "2008-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": 1.9327,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.040437,
+     "A": 0.040437,
+     "B": 0.03881
+    },
+    "boundedMembers": {
+     "base": 35,
+     "A": 35,
+     "B": 32
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": -0.206644,
+      "A": -0.206644,
+      "B": -0.205654
+     },
+     "LOWER": {
+      "base": -0.26873,
+      "A": -0.26873,
+      "B": -0.261741
+     },
+     "FATE": {
+      "base": -0.222185,
+      "A": -0.222185,
+      "B": -0.219255
+     },
+     "UPPER": {
+      "base": -0.202448,
+      "A": -0.202448,
+      "B": -0.201856
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": -0.220482,
+      "A": -0.220482,
+      "B": -0.220356
+     },
+     "LOWER": {
+      "base": -0.250593,
+      "A": -0.250593,
+      "B": -0.248841
+     },
+     "FATE": {
+      "base": -0.23041,
+      "A": -0.23041,
+      "B": -0.229307
+     },
+     "UPPER": {
+      "base": -0.218462,
+      "A": -0.218462,
+      "B": -0.218445
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": -0.3864,
+      "B": -0.4854
+     },
+     "LOWER": {
+      "base": 5.8222,
+      "B": 5.1233
+     },
+     "FATE": {
+      "base": 1.1677,
+      "B": 0.8747
+     },
+     "UPPER": {
+      "base": -0.806,
+      "B": -0.8652
+     }
+    },
+    "SPY": -0.239809
+   },
+   {
+    "t0": "2008-09-30",
+    "t1": "2009-09-30",
+    "qualification": "NOT_QUALIFIED_COVERAGE",
+    "errorPp": 1.2745,
+    "tolerancePp": 1,
+    "boundedWeight": {
+     "base": 0.036259,
+     "A": 0.035407,
+     "B": 0.035407
+    },
+    "boundedMembers": {
+     "base": 28,
+     "A": 27,
+     "B": 27
+    },
+    "EW_ALL": {
+     "ZERO": {
+      "base": -0.056161,
+      "A": -0.055974,
+      "B": -0.055974
+     },
+     "LOWER": {
+      "base": -0.109035,
+      "A": -0.106845,
+      "B": -0.106845
+     },
+     "FATE": {
+      "base": -0.058908,
+      "A": -0.056718,
+      "B": -0.056718
+     },
+     "UPPER": {
+      "base": -0.051937,
+      "A": -0.051883,
+      "B": -0.051883
+     }
+    },
+    "CW_ALL": {
+     "ZERO": {
+      "base": -0.076917,
+      "A": -0.076838,
+      "B": -0.076838
+     },
+     "LOWER": {
+      "base": -0.103033,
+      "A": -0.102102,
+      "B": -0.102102
+     },
+     "FATE": {
+      "base": -0.078075,
+      "A": -0.077145,
+      "B": -0.077145
+     },
+     "UPPER": {
+      "base": -0.072995,
+      "A": -0.072972,
+      "B": -0.072972
+     }
+    },
+    "survivorshipTermPp": {
+     "ZERO": {
+      "base": -0.8739,
+      "B": -0.8926
+     },
+     "LOWER": {
+      "base": 4.2818,
+      "B": 4.0628
+     },
+     "FATE": {
+      "base": -0.5992,
+      "B": -0.8182
+     },
+     "UPPER": {
+      "base": -1.1647,
+      "B": -1.1701
+     }
+    },
+    "SPY": -0.089663
+   }
+  ]
+ },
+ "scenarios": {
+  "P5a": {
+   "ZERO": "point convention: bounded exits at 0 % (last holdings price), ambiguous CA at the midpoint - NOT a bound",
+   "LOWER": "all bounded exits at -100 %, ambiguous CA at the lower bound - gives the UPPER bound of the survivorship term (EW_WITH_H - EW_ALL) and the lower bound of EW_ALL/CW_ALL",
+   "FATE": "exits by documented fate: takeover -> typical premium of documented takeovers (takeoverPremium.median), delisting/bankruptcy -> -100 %, index change -> population period return, unknown fate -> 0 %; ambiguous CA midpoint - evidence-based point estimate",
+   "UPPER": "every bounded exit at max(takeover premium p75, population period return), ambiguous CA at the upper bound - gives the lower end of the survivorship term"
+  },
+  "terminal": {
+   "S0": "delisted series replacement at the last traded close",
+   "S1": "MERGER -10 %, DISTRESS/UNKNOWN -30 % (series ended before t1)",
+   "S2": "MERGER +10 %, DISTRESS/UNKNOWN -100 %"
+  },
+  "stages": {
+   "base": "V12 bounds only",
+   "A": "+ register-1.1.0 delisted chains (V13 O6 rule)",
+   "B": "+ documented SPX terminal values"
+  }
+ },
+ "scope": "Index population (S&P 500 members by SPY holdings). P5A tests only descriptive (V12 NW p of the period terms, no Holm); EARLY no test. Not a strategy, no alpha claim, no certification.",
+ "runtimeSeconds": 62
+}

@@ -43,11 +43,61 @@
 # darf.
 #
 # Aufruf: scripts/ci/push-with-retry.sh <branch> [versuche]
+# Umgebung (optional): PUSH_OWNED_PATHS, PUSH_REGENERATE_PATHS + PUSH_REGENERATE
 set -euo pipefail
 
 BRANCH="${1:?Branch fehlt}"
 VERSUCHE="${2:-5}"
 WARTE=3
+
+# SIEBTENS (Lauf 41666053466, 03.11.2026): ZEITLIMITS FUER NETZWERKBEFEHLE.
+# Der Chartbild-Neubau (v3) lief 76 Minuten, der Push wurde abgewiesen, und der
+# anschliessende `git fetch` hing 61 Minuten bis "early EOF" (GitHub-Uebertragung
+# abgerissen). Ohne Zeitlimit blockiert ein einziger haengender Befehl den ganzen
+# Lauf, und der fertige Neubau ging verloren. Jetzt hat jeder fetch und push ein
+# Zeitlimit, und ein abgebrochener oder fehlgeschlagener fetch wird begrenzt und
+# mit Wartezeit wiederholt. Ein abgewiesener Push (Wettlauf) bleibt das, was er
+# war: Rebase und neuer Versuch (Schleife unten). Standardwerte lassen normale
+# Laeufe unberuehrt (ein fetch dauert Sekunden, ein Push mit tausenden Dateien
+# unter einer Minute); sie sind per Umgebung einstellbar.
+#   PUSH_FETCH_TIMEOUT   Sekunden je fetch-Versuch          (Standard 300)
+#   PUSH_PUSH_TIMEOUT    Sekunden je push-Versuch           (Standard 600)
+#   PUSH_FETCH_TRIES     Versuche je fetch                  (Standard 3)
+FETCH_TIMEOUT="${PUSH_FETCH_TIMEOUT:-300}"
+PUSH_TIMEOUT="${PUSH_PUSH_TIMEOUT:-600}"
+FETCH_TRIES="${PUSH_FETCH_TRIES:-3}"
+for wert in "$FETCH_TIMEOUT" "$PUSH_TIMEOUT" "$FETCH_TRIES"; do
+  [[ "$wert" =~ ^[1-9][0-9]*$ ]] || { echo "Ungueltiger Zeitlimit- oder Versuchswert: '$wert'" >&2; exit 2; }
+done
+
+# Fuehrt einen Befehl mit Zeitlimit aus (Exit 124 = Zeitlimit; danach hartes Ende nach 10 s).
+# Ohne `timeout` (z. B. macOS ohne coreutils) laeuft der Befehl wie bisher, mit Warnung.
+mit_zeitlimit() {
+  local sek="$1"; shift
+  if command -v timeout >/dev/null 2>&1; then
+    timeout --kill-after=10 "$sek" "$@"
+  else
+    echo "Hinweis: 'timeout' fehlt, kein Zeitlimit fuer: $*" >&2
+    "$@"
+  fi
+}
+
+# Holt den Branch begrenzt und mit Wiederholung (Zeitlimit oder Uebertragungsfehler).
+holen() {
+  local n rc
+  for ((n = 1; n <= FETCH_TRIES; n++)); do
+    rc=0
+    mit_zeitlimit "$FETCH_TIMEOUT" git fetch origin "$BRANCH" || rc=$?
+    if [ "$rc" -eq 0 ]; then return 0; fi
+    if [ "$rc" -eq 124 ] || [ "$rc" -eq 137 ]; then
+      echo "fetch nach ${FETCH_TIMEOUT}s abgebrochen (Zeitlimit, Versuch ${n}/${FETCH_TRIES})." >&2
+    else
+      echo "fetch fehlgeschlagen (Exit ${rc}, Versuch ${n}/${FETCH_TRIES})." >&2
+    fi
+    if [ "$n" -lt "$FETCH_TRIES" ]; then sleep $((5 * n)); fi
+  done
+  return 1
+}
 
 # Erzeugte Artefakte mit geteilter Schreibhoheit. Pfad-Praefixe.
 #
@@ -96,6 +146,81 @@ ERZEUGT=(
 # gegen das Erzeugerregister.
 read -r -a EIGENE <<< "${PUSH_OWNED_PATHS:-}"
 
+# SIEBTENS (Lauf 41490082062, 02.11.2026): der SEC-Consumer-Montagslauf
+# verwarf nach 43 Minuten seine Fundamentaldaten an einem Konflikt in
+# discover/data/meta.json. Die Datei schreibt build-discover-data.mjs, und
+# den rufen fuenf Workflows auf (Erzeugerregister: market-data-refresh,
+# index-membership, long-series, company-names, sec-consumer). Zwei davon
+# waren 13 Minuten auseinander gelaufen: "Lange Kursreihen" (17:32 UTC)
+# und der Consumer (Start 17:19 UTC statt 07:30 - GitHub verschiebt
+# Zeitplaene um Stunden).
+#
+# Hier ist "eigener Stand" FALSCH: jede Seite hat Eingaben, die die andere
+# nicht hat (der eine Lauf neue Wochenreihen, der andere neue
+# Fundamentaldaten). Weder der eine noch der andere Stand ist richtig, nur
+# ein Neubau aus den zusammengefuehrten Eingaben. Ein Aufrufer, der den
+# Erzeuger selbst ausfuehrt, nennt deshalb
+#
+#   PUSH_REGENERATE_PATHS="discover/data/ !discover/data/europe/"
+#   PUSH_REGENERATE="node scripts/discover/build-discover-data.mjs && node scripts/discover/verify-discover-data.mjs"
+#
+# Ein Konflikt in diesen Pfaden wird nur VORLAEUFIG mit dem Stand von
+# origin aufgeloest, damit der Rebase zu Ende kommt. Danach - nach JEDEM
+# Neuaufsetzen, auch ohne Konflikt, denn auch dann koennen sich die
+# Eingaben geaendert haben - laeuft der Erzeuger auf dem rebasten Baum, und
+# sein Ergebnis wird in den eigenen Commit genommen. Scheitert der Neubau
+# oder seine Pruefung, wird NICHTS geschoben. Ein vorlaeufiger Stand
+# verlaesst den Runner also nie. Welcher Workflow welche Pfade nennen darf,
+# prueft quant/tests/push-with-retry.test.mjs gegen das Erzeugerregister.
+read -r -a NEU_ERZEUGBAR <<< "${PUSH_REGENERATE_PATHS:-}"
+NEUBAU="${PUSH_REGENERATE:-}"
+if [ "${#NEU_ERZEUGBAR[@]}" -gt 0 ] && [ -z "$NEUBAU" ]; then
+  echo "PUSH_REGENERATE_PATHS ohne PUSH_REGENERATE: kein Erzeuger fuer den Neubau genannt. Abbruch." >&2
+  exit 1
+fi
+
+neu_erzeugbar() {
+  local datei="$1"
+  local p
+  for p in "${NEU_ERZEUGBAR[@]}"; do
+    case "$p" in "!"*) case "$datei" in "${p#!}"*) return 1 ;; esac ;; esac
+  done
+  for p in "${NEU_ERZEUGBAR[@]}"; do
+    case "$p" in "!"*) continue ;; esac
+    case "$datei" in "$p"*) return 0 ;; esac
+  done
+  return 1
+}
+
+# Pfadangabe fuer git add: die Praefixe, "!"-Ausnahmen als :(exclude).
+neubau_pfadangabe() {
+  local p
+  for p in "${NEU_ERZEUGBAR[@]}"; do
+    case "$p" in "!"*) printf '%s\0' ":(exclude)${p#!}" ;; *) printf '%s\0' "$p" ;; esac
+  done
+}
+
+# Erzeuger auf dem rebasten Baum ausfuehren und sein Ergebnis in den
+# obersten eigenen Commit nehmen. Rueckgabe 1: nichts schieben.
+neu_erzeugen() {
+  [ -n "$NEUBAU" ] || return 0
+  echo "Neubau der erzeugten Pfade (${NEU_ERZEUGBAR[*]}) auf dem neuen Stand: $NEUBAU"
+  if ! bash -c "$NEUBAU"; then
+    echo "Neubau gescheitert - die Daten dieses Laufs werden NICHT geschoben." >&2
+    return 1
+  fi
+  local pfade=()
+  while IFS= read -r -d '' p; do pfade+=("$p"); done < <(neubau_pfadangabe)
+  git add -A -- "${pfade[@]}"
+  if git diff --cached --quiet; then
+    echo "Neubau ergibt denselben Stand."
+  else
+    git commit -q --amend --no-edit
+    echo "Neubau in den eigenen Commit uebernommen."
+  fi
+  return 0
+}
+
 eigener_stand() {
   local datei="$1"
   local p
@@ -132,6 +257,18 @@ konflikte_aufloesen() {
         rm -f -- "$datei"
       fi
       echo "  Konflikt nach Erzeugerhoheit aufgeloest (eigener Stand): $datei"
+    elif neu_erzeugbar "$datei"; then
+      # Vorlaeufig: Stand von origin (im Rebase --ours, Stufe 2). Fehlt
+      # Stufe 2, hat origin die Datei geloescht. Der Neubau nach dem
+      # Rebase ueberschreibt beides; ohne erfolgreichen Neubau kein Push.
+      if git ls-files -u -- "$datei" | awk '{print $3}' | grep -qx 2; then
+        git checkout --ours -- "$datei"
+        git add -- "$datei"
+      else
+        git rm -q --cached -- "$datei" >/dev/null 2>&1 || true
+        rm -f -- "$datei"
+      fi
+      echo "  Konflikt in erzeugter Datei, wird nach dem Rebase neu gebaut: $datei"
     else
       echo "  Konflikt ausserhalb erzeugter Artefakte: $datei" >&2
       offen=1
@@ -154,7 +291,7 @@ rebase_laeuft() {
 # Jetzt wird JEDER Halt geprueft, bis kein Rebase mehr offen ist, und vor
 # dem Push steht fest: kein offener Rebase, keine ungeloesten Pfade.
 neu_aufsetzen() {
-  git fetch origin "$BRANCH" || return 1
+  holen || return 1
   # --autostash: die Regressionssuite laesst Dateien mit neuem
   # Zeitstempel ungestaged zurueck; ohne Autostash verweigert git den
   # Rebase und der Lauf verliert seinen Commit (Lauf 34987245529).
@@ -194,7 +331,7 @@ neu_aufsetzen() {
 }
 
 for ((i = 1; i <= VERSUCHE; i++)); do
-  if git push origin "HEAD:${BRANCH}"; then
+  if mit_zeitlimit "$PUSH_TIMEOUT" git push origin "HEAD:${BRANCH}"; then
     echo "Push erfolgreich (Versuch ${i})."
     exit 0
   fi
@@ -202,7 +339,11 @@ for ((i = 1; i <= VERSUCHE; i++)); do
   echo "Push abgewiesen (Versuch ${i}/${VERSUCHE}) - neu aufsetzen und in ${WARTE}s erneut versuchen."
   sleep "$WARTE"
   WARTE=$((WARTE * 2))
-  neu_aufsetzen || exit 1
+  neu_aufsetzen || {
+    echo "Neu aufsetzen nicht moeglich (fetch oder Rebase). Die Daten dieses Laufs sind NICHT veroeffentlicht." >&2
+    exit 1
+  }
+  neu_erzeugen || exit 1
 done
 
 echo "Push nach ${VERSUCHE} Versuchen nicht moeglich. Die Daten dieses Laufs sind NICHT veroeffentlicht." >&2

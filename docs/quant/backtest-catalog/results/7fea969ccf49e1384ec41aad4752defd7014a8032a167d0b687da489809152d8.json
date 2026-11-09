@@ -1,0 +1,565 @@
+{
+ "schemaVersion": "backtest-runner-result-1.0.0",
+ "runner": "backtest-runner-1.0.0",
+ "kind": "SIGNAL_BACKTEST",
+ "state": "RESEARCH_EXECUTED",
+ "specHash": "7fea969ccf49e1384ec41aad4752defd7014a8032a167d0b687da489809152d8",
+ "spec": {
+  "schemaVersion": "backtest-runner-spec-1.0.0",
+  "version": "1.0.0",
+  "registeredAt": "2026-10-29T00:00:00Z",
+  "asOf": "2025-12-31",
+  "costs": {
+   "feeBps": 5,
+   "slippageBps": 5
+  },
+  "benchmark": "SPY",
+  "id": "sel-6a82215b45e2276b",
+  "description": "Auswahl aus Vorlage acquisition-agn (SIGNAL_BACKTEST, 2015-01-01..2020-05-08)",
+  "kind": "SIGNAL_BACKTEST",
+  "window": {
+   "from": "2015-01-01",
+   "to": "2020-05-08"
+  },
+  "population": {
+   "profile": "V13_DELISTED_F1",
+   "securityIds": [
+    "dl_392eb87953a4f307"
+   ],
+   "privateInputs": [
+    "delistedSeries"
+   ]
+  },
+  "engine": {
+   "horizonBars": 26
+  },
+  "methods": {
+   "MARKET_REGIME": {}
+  }
+ },
+ "inputHashes": {
+  "code": {
+   "scripts/quant/research/backtest-runner.cjs": "cbcb6f85f3b29c0e22d7297336d4a39f07185cbde4767d99ca3771b55fe3e9ee",
+   "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+   "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+   "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+   "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+   "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+   "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+   "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+   "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+   "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+   "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+   "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+   "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+   "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+   "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+   "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+   "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
+   "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
+   "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+   "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+   "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+   "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+   "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+   "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+  },
+  "certification": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+  "benchmark": "375bb894afcc7799aae1fb17fe7fcbe30439b79fef61ff6d76baa94276c58d44",
+  "population": {
+   "profile": "V13_DELISTED_F1",
+   "profileSpecHash": "c3b88381a1a1633b6480f7fe8d7b04878404efee70e88775e8638f91d271714b",
+   "populationHash": "0eeccd32fdc09510769c631bb639bf1268e7efbad9935b237f9f13005730419e",
+   "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+   "calendarLength": 1922,
+   "sourceManifestHash": "c0356bdd7e18d862ce81541be4ef670d78a99cb3abb5d3f291964913db63de9d",
+   "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+   "registers": {
+    "identityEvidence": {
+     "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+     "v12RegistryHash": null,
+     "v13RegistryHash": null,
+     "v13StrictRegistryHash": null
+    },
+    "corporateActionEvidence": {
+     "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+     "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+    },
+    "listingLifecycleEvidence": {
+     "registryHash": "14ad8652202597319571f37557a8a88bfe7d713b47030df7e97eac95dfb2a1fb",
+     "protocolSha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c"
+    },
+    "delistedRegister": {
+     "registerHash": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+     "include": "QUALIFIED"
+    },
+    "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+    "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+   },
+   "pointsHashRoot": "73b7619a10f7c71cdbc11d1aa4d9b061954b4aced0453f0f6168f4788d9bdf1d"
+  },
+  "listings": {
+   "dl_392eb87953a4f307": {
+    "listingId": "v13delisted:NYSE:392eb87953a4f307",
+    "sourceBytesHash": null,
+    "registerPointsSha256": "6405a7d1a5612d109b6ce62b2b17beeb10da03fd7992ea967b740dbf4d0a8be2",
+    "first": "1990-01-05",
+    "last": "2020-05-08",
+    "bars": 1584
+   }
+  },
+  "private": {
+   "delisted": {
+    "register": {
+     "registerHash": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+     "include": "QUALIFIED"
+    },
+    "listings": [
+     [
+      "dl_392eb87953a4f307",
+      "6405a7d1a5612d109b6ce62b2b17beeb10da03fd7992ea967b740dbf4d0a8be2"
+     ]
+    ]
+   }
+  }
+ },
+ "inputHash": "2231e2772a6acfbed68cb28a3e3333d33461bb9d22f09ef399895e6e3fbb0737",
+ "kindPath": {
+  "kind": "SIGNAL_BACKTEST",
+  "engine": "research-studies.runSignalStudy",
+  "adapter": "fromResearchStudy",
+  "population": "V13_DELISTED_F1"
+ },
+ "envelope": {
+  "schemaVersion": "backtest-result-2.0.0",
+  "identity": {
+   "kind": "SIGNAL_BACKTEST",
+   "scope": "SINGLE_LISTING",
+   "listingId": "v13delisted:NYSE:392eb87953a4f307",
+   "listingHash": "72fd32715f085bbc136f10db57158372a88705c2f99fd8bb602646718430d786",
+   "populationId": null,
+   "populationHash": null,
+   "source": {
+    "adapter": "backtest-result-adapters-1.0.0#fromResearchStudy",
+    "schemaVersion": "research-studies-1.1.0",
+    "engineVersion": null,
+    "artifact": null,
+    "resultHash": "64aeeb4134f58c64a4a72c785a4a79e82be555e186a1c50c520b5e51cfb2c269"
+   }
+  },
+  "period": {
+   "from": "2015-07-31",
+   "to": "2020-05-08",
+   "asOf": "2025-12-31",
+   "grain": "WEEKLY"
+  },
+  "spec": {
+   "id": "sel-6a82215b45e2276b",
+   "version": "1.0.0",
+   "description": "Auswahl aus Vorlage acquisition-agn (SIGNAL_BACKTEST, 2015-01-01..2020-05-08)",
+   "parameters": {
+    "runner": "backtest-runner-1.0.0",
+    "runnerSpecSchema": "backtest-runner-spec-1.0.0",
+    "runnerSpec": {
+     "schemaVersion": "backtest-runner-spec-1.0.0",
+     "version": "1.0.0",
+     "registeredAt": "2026-10-29T00:00:00Z",
+     "asOf": "2025-12-31",
+     "costs": {
+      "feeBps": 5,
+      "slippageBps": 5
+     },
+     "benchmark": "SPY",
+     "id": "sel-6a82215b45e2276b",
+     "description": "Auswahl aus Vorlage acquisition-agn (SIGNAL_BACKTEST, 2015-01-01..2020-05-08)",
+     "kind": "SIGNAL_BACKTEST",
+     "window": {
+      "from": "2015-01-01",
+      "to": "2020-05-08"
+     },
+     "population": {
+      "profile": "V13_DELISTED_F1",
+      "securityIds": [
+       "dl_392eb87953a4f307"
+      ],
+      "privateInputs": [
+       "delistedSeries"
+      ]
+     },
+     "engine": {
+      "horizonBars": 26
+     },
+     "methods": {
+      "MARKET_REGIME": {}
+     }
+    },
+    "runnerSpecHash": "7fea969ccf49e1384ec41aad4752defd7014a8032a167d0b687da489809152d8",
+    "inputHashes": {
+     "code": {
+      "scripts/quant/research/backtest-runner.cjs": "cbcb6f85f3b29c0e22d7297336d4a39f07185cbde4767d99ca3771b55fe3e9ee",
+      "scripts/quant/research/research-population.cjs": "699173804bddf7e3aae88523cff22f471dbb0f96276ce62fe9e949879a109a82",
+      "quant/engines/research-studies.cjs": "474422373eeac509b043d2a5e95c17dcfecfcb8ff0f651020696bbaf027be418",
+      "quant/engines/research-portfolio.cjs": "0cc42852cefca4d484935feb430f6f1b8199a7263f07b87bb0a615c1fd3f4e5e",
+      "quant/engines/research-validation.cjs": "1152970a14fca40e246c6515de2a7ab468e2be80e4e2f3c19fb7fe072a9525f7",
+      "quant/engines/research-monte-carlo.cjs": "d68c62047da805bd5bbcd21a64f5334545b8150fce7ee0d35d6dc1c34798ecba",
+      "quant/engines/backtest-metrics.cjs": "fcc74d3a74d392430c45cf420794f3c3a698fffb31e1055b30c4530064e074f4",
+      "quant/engines/backtest-result-adapters.cjs": "043011853234dd0872d0f2c587b20a8842eecac01bdffdbc7639911bf695e9dd",
+      "quant/engines/backtest-result-contract.cjs": "aa755d981485b784552f3e722c25f679be8c2c9e9c235cce2fcfec5c078162c6",
+      "quant/engines/backtest-kinds.cjs": "40a2bad506225282b2da47bf9c1a03fe1f0fbe2612a85b6496a8cf819a1d1b72",
+      "quant/engines/research-weekly-loader.cjs": "bfe45091f632be5fd5fc47c9bba111bf72d39977682a9ad0e6e76fc881dc4d53",
+      "quant/engines/weekly-real-adapter.cjs": "15c468a5b403c7c0e9c57241d9464c9383dd11aa145f8a51d482f1b63f8e176a",
+      "quant/engines/weekly-benchmark.cjs": "d7476bd6cd4da7e681b589d58026df07a7c4a3ecb820d938f228e0ba590e558e",
+      "quant/engines/signal-backtest.js": "c85a1823f313cc7b51ef22bfc33da15694818a2b733a64fc37dad658947bfecb",
+      "quant/engines/pattern-research.js": "13a46ca22e78ac2ae60c916f3e1134ecc937afbe5f0934169aa5451853b0db9b",
+      "quant/engines/setup-engine.js": "1f2bd61b0001b2c3453d6f96ffcf1f97d2f4233f3204366c8a31f1b19e88e618",
+      "quant/engines/setup-oos.cjs": "44b03de27027c61f3eb97832697ffaa515ad295cc9b9c4c6621d94a04bcf27aa",
+      "quant/engines/research-delisted-series.cjs": "5e9cd3d07cef15c351cf162afa12eb5ef3a41f061e1cc1808e24213d95989765",
+      "scripts/quant/run-real-weekly-backtest.cjs": "835e7f42787106bb2f264cc19e5ac3c59165536636d656ce106c7e0350c7f959",
+      "scripts/quant/run-research.cjs": "bcaca620fdba56221d3219b8133425d722125b705e46d7bd40535fa16d75977e",
+      "scripts/quant/v10/studies/common.cjs": "d27aa6da4f04a9a0d1bc454939c70ef4ca082be9fba80a47e16f63031d7d92e1",
+      "scripts/quant/v10/studies/signal-study.cjs": "9bc600c4e80187c91232207a6ce7ae90ef42c0c15bcdbd596d4db0eea673f433",
+      "scripts/quant/v10/setup/run-setup-reconstruction.cjs": "df6ec66d87b97c2b8a18c6815a8b91f45e9d04b81d5f5f8f824723f1eb4ca30c",
+      "scripts/quant/v10/factor/panel.cjs": "10f82897a00a294f35ac12262d1aca76e39f718047f8f0514ee589a70398b1d7"
+     },
+     "certification": "b81bb9682efc6937f0ee9670eeb7ed0751c6afb35c4c02ff1f43bc26d0494a3c",
+     "benchmark": "375bb894afcc7799aae1fb17fe7fcbe30439b79fef61ff6d76baa94276c58d44",
+     "population": {
+      "profile": "V13_DELISTED_F1",
+      "profileSpecHash": "c3b88381a1a1633b6480f7fe8d7b04878404efee70e88775e8638f91d271714b",
+      "populationHash": "0eeccd32fdc09510769c631bb639bf1268e7efbad9935b237f9f13005730419e",
+      "calendarHash": "48605c9a1b079cd73464963084d17e4df04f0d29ca8afc2b859d845bfdd54b8e",
+      "calendarLength": 1922,
+      "sourceManifestHash": "c0356bdd7e18d862ce81541be4ef670d78a99cb3abb5d3f291964913db63de9d",
+      "masterHash": "26c82617913ab0dcbd08d24c80eb818134ccced74cc01e9eac819b4635498332",
+      "registers": {
+       "identityEvidence": {
+        "registryHash": "1aa23666114ccbc77b1cb36ed89c75ffb0597b5b5ea63e31a2dccf50f4b572c6",
+        "v12RegistryHash": null,
+        "v13RegistryHash": null,
+        "v13StrictRegistryHash": null
+       },
+       "corporateActionEvidence": {
+        "registryHash": "fa1475ba9f12de11eff6dbee48fe7022297a447004da928659655df7fb1baa58",
+        "protocolSha256": "c8cb9ec920d7daf4549d4eb33c28cf0fdfcac2fff88e77136604621c6f7ad795"
+       },
+       "listingLifecycleEvidence": {
+        "registryHash": "14ad8652202597319571f37557a8a88bfe7d713b47030df7e97eac95dfb2a1fb",
+        "protocolSha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c"
+       },
+       "delistedRegister": {
+        "registerHash": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+        "include": "QUALIFIED"
+       },
+       "pitMarketCap": "d45efd4d4f08aa63a776f87c790ce85492a5670232308bc7850b702680ea23a6",
+       "indexPopulation": "413663e6632617c5270f2c4257973b06d3cdd8e95f210fb46f846aa5b3b8c4ac"
+      },
+      "pointsHashRoot": "73b7619a10f7c71cdbc11d1aa4d9b061954b4aced0453f0f6168f4788d9bdf1d"
+     },
+     "listings": {
+      "dl_392eb87953a4f307": {
+       "listingId": "v13delisted:NYSE:392eb87953a4f307",
+       "sourceBytesHash": null,
+       "registerPointsSha256": "6405a7d1a5612d109b6ce62b2b17beeb10da03fd7992ea967b740dbf4d0a8be2",
+       "first": "1990-01-05",
+       "last": "2020-05-08",
+       "bars": 1584
+      }
+     },
+     "private": {
+      "delisted": {
+       "register": {
+        "registerHash": "ea986202ab4dee0b33ff12f31d005bc2435e11014e5c4925be2fcacf86657a6f",
+        "include": "QUALIFIED"
+       },
+       "listings": [
+        [
+         "dl_392eb87953a4f307",
+         "6405a7d1a5612d109b6ce62b2b17beeb10da03fd7992ea967b740dbf4d0a8be2"
+        ]
+       ]
+      }
+     }
+    },
+    "inputHash": "2231e2772a6acfbed68cb28a3e3333d33461bb9d22f09ef399895e6e3fbb0737",
+    "kindPath": {
+     "kind": "SIGNAL_BACKTEST",
+     "engine": "research-studies.runSignalStudy",
+     "adapter": "fromResearchStudy",
+     "population": "V13_DELISTED_F1"
+    },
+    "adapterSpec": {
+     "id": "registration:2c956354ca6c3583",
+     "version": null,
+     "description": "researchStudyKind:SIGNAL_BACKTEST",
+     "parameters": {
+      "registrationHash": "2c956354ca6c3583407384eedfc37082a12fe22daacfe9ff8f75a9263c6756c9",
+      "analysisMode": "EXPLORATORY",
+      "sourceMode": "HISTORICAL_SIMULATION",
+      "pattern": null,
+      "ruleHash": null,
+      "factorId": null,
+      "rules": [
+       "MOMENTUM_IMPROVED",
+       "MOMENTUM_DETERIORATED",
+       "TREND_UP",
+       "TREND_DOWN",
+       "NEW_52W_HIGH"
+      ],
+      "entryStates": null,
+      "costs": {
+       "basis": "PER_SIDE_NOTIONAL",
+       "feeBps": 5,
+       "slippageBps": 5
+      }
+     },
+     "specHash": "1f058955ea6e03607ea85018b60a8a4e64e726ea9c970861fab6fbb61c1af0dc"
+    }
+   },
+   "specHash": "17431e7d5db9caadcc776ddba952de6b048142a2085424a75a57a426ee63465f"
+  },
+  "events": {
+   "form": "EVENTS",
+   "occurrences": 30,
+   "completed": 28,
+   "immature": 0,
+   "censored": 2,
+   "ineligible": 0,
+   "titles": 1,
+   "entry": "NEXT_OBSERVED_CLOSE_AFTER_AVAILABILITY",
+   "exit": "FIXED_HORIZON"
+  },
+  "portfolio": null,
+  "metrics": {
+   "basis": "PER_EVENT",
+   "totalReturn": null,
+   "cagr": null,
+   "annualReturns": null,
+   "volatility": null,
+   "maxDrawdown": -0.23399673889673311,
+   "hitRate": 0.17857142857142858,
+   "trades": 28,
+   "turnover": null,
+   "costs": {
+    "model": "PER_SIDE_NOTIONAL",
+    "feeBpsPerSide": 5,
+    "slippageBpsPerSide": 5,
+    "paid": null
+   },
+   "cashShare": null,
+   "benchmark": {
+    "id": "SUPPLIED_RESEARCH_BENCHMARK",
+    "returnBasis": "PRICE_RETURN",
+    "costsBps": 0
+   },
+   "excess": {
+    "meanExcess": -0.16703586046581023,
+    "n": 28
+   },
+   "perEvent": {
+    "horizon": "REGISTERED_HORIZON",
+    "label": null,
+    "n": 28,
+    "median": -0.14732859560841094,
+    "mean": -0.1235737754685126,
+    "maxDrawdownStatistic": "MEDIAN_OF_EVENT_MAX_DRAWDOWNS"
+   }
+  },
+  "uncertainty": {
+   "method": "TWO_WAY_CLUSTER_MEAN_ASYMPTOTIC",
+   "interval": null,
+   "level": null,
+   "p": null,
+   "family": null
+  },
+  "dataQuality": {
+   "coverage": {
+    "numerator": 28,
+    "denominator": 30,
+    "share": 0.9333333333333333,
+    "contract": null
+   },
+   "censored": 2,
+   "terminal": {
+    "state": "SOURCED_TERMINAL_CLASS_CENSORS_EVENTS_AFTER_LAST_TRADE",
+    "listings": [
+     {
+      "securityId": "dl_392eb87953a4f307",
+      "lastTradeDate": "2020-05-08",
+      "terminalKind": "MERGER",
+      "terminalScenarios": [
+       0,
+       -0.1,
+       0.1
+      ]
+     }
+    ]
+   },
+   "corporateActions": {
+    "contract": "LOADER_CORPORATE_ACTION_EVIDENCE (ADR-002 split-adjusted weekly closes)",
+    "listings": [
+     {
+      "securityId": "dl_392eb87953a4f307",
+      "quality": null,
+      "splitsInWindow": []
+     }
+    ]
+   },
+   "totalReturnBasis": "PRICE_RETURN",
+   "survivorship": {
+    "state": "INCLUDES_PRIVATE_DELISTED_SERIES",
+    "control": "population profile V13_DELISTED_F1 (0eeccd32fdc09510)"
+   },
+   "warnings": [
+    "INSUFFICIENT_OR_NONPOSITIVE_CLUSTER_VARIANCE",
+    "TOTAL_RETURN_PARTIAL_390_OF_4715",
+    "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+    "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+    "DATA_DRIFT_SINCE_REFERENCE_RUN",
+    "V13_DELISTED_RESEARCH_SERIES",
+    "PRIVATE_PROVIDER_DATA_HASH_BOUND",
+    "TERMINAL_CONSIDERATION_NOT_VERIFIED_SCENARIOS_ONLY"
+   ]
+  },
+  "methods": [
+   {
+    "method": "MONTE_CARLO",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "WALK_FORWARD",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "OUT_OF_SAMPLE",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "MARKET_REGIME",
+    "state": "EXECUTED",
+    "result": {
+     "engine": "research-studies.classifyRegimes+analyzeRegimes",
+     "mode": "PIT_AVAILABLE",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "regimeResultHash": "ecfa8994a69dcbb83dca0b1af1236793f10398fbe4718a322b83d678e5a9f384",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 7,
+       "mean": -0.18407944990722536,
+       "median": -0.18024161856298415,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 21,
+       "mean": -0.103405217322275,
+       "median": -0.14577990435479748,
+       "interval95": null
+      }
+     ],
+     "unmatched": 0,
+     "resultHash": "25c2fcd6d00d454c52aa739726b8af3848122a5140f88c48d861e38263bf7583"
+    }
+   },
+   {
+    "method": "PARAMETER_SENSITIVITY",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "EVENT_DRIVEN",
+    "state": "NOT_RUN",
+    "result": null
+   },
+   {
+    "method": "PORTFOLIO_REBALANCING",
+    "state": "NOT_APPLICABLE",
+    "result": null
+   }
+  ],
+  "limitations": [
+   "CURRENT_CLASSIFICATION_CONDITIONING_NOT_HISTORICAL_UNIVERSE",
+   "SURVIVOR_SELECTION_NOT_MARKET_REPRESENTATIVE",
+   "EX_POST_PRICE_REVISIONS",
+   "NO_INDEPENDENT_CONFIRMATION",
+   "SUPPLIED_HISTORICAL_LISTING_COHORT_NOT_PROOF_OF_MARKET_COMPLETENESS",
+   "INDEPENDENT_EVIDENCE_NOT_ESTABLISHED_BY_CALCULATOR",
+   "PER_EVENT_STATISTICS_NOT_A_FUNDED_PORTFOLIO",
+   "CERTIFICATION_BLOCKER:survivorship:PARTIAL_SENSITIVITY_ONLY",
+   "CERTIFICATION_BLOCKER:ruleCertified:NO_RULE_CERTIFIED",
+   "CERTIFICATION_READINESS:NOT_READY",
+   "NO_ALPHA_OR_CERTIFICATION_CLAIM",
+   "RUNNER_COMPOSED_EXISTING_ENGINES",
+   "WINDOWED_VIEW_OF_ENGINE_RUN_SIGNAL_DATES_IN_SPEC_WINDOW"
+  ],
+  "status": {
+   "state": "RESEARCH_EXECUTED",
+   "certificationStatus": "LIMITED",
+   "certificationScope": "KIND",
+   "certificationRuleId": null,
+   "certificationSource": "quant/data/product/backtest-certification-v1.json#SIGNAL_BACKTEST@2026-10-31",
+   "productionApproved": false,
+   "evidenceKind": "TESTED"
+  },
+  "envelopeHash": "6deca3eadca7421ccbc60ea8c749b1b3ff1813bfcdc9de80b89af8fff3b0e82d"
+ },
+ "envelopeHash": "6deca3eadca7421ccbc60ea8c749b1b3ff1813bfcdc9de80b89af8fff3b0e82d",
+ "population": {
+  "profile": "V13_DELISTED_F1",
+  "populationHash": "0eeccd32fdc09510769c631bb639bf1268e7efbad9935b237f9f13005730419e",
+  "frameSize": 4715,
+  "calendar": {
+   "first": "1990-01-05",
+   "last": "2025-12-26",
+   "length": 1878
+  },
+  "listings": [
+   {
+    "securityId": "dl_392eb87953a4f307",
+    "ticker": "AGN",
+    "listingId": "v13delisted:NYSE:392eb87953a4f307",
+    "first": "1990-01-05",
+    "last": "2020-05-08",
+    "corporateActionQuality": null,
+    "splitsInWindow": [],
+    "lifecycle": {
+     "status": "DELISTED_SOURCED_END",
+     "lastTradeDate": "2020-05-08",
+     "terminalKind": "MERGER",
+     "terminalScenarios": [
+      0,
+      -0.1,
+      0.1
+     ]
+    }
+   }
+  ],
+  "excluded": [],
+  "warnings": [
+   "TOTAL_RETURN_PARTIAL_390_OF_4715",
+   "EX_POST_SPLIT_ADJUSTED_SERIES_NOT_AS_PUBLISHED_PIT",
+   "FRAME_RULE_USES_FULL_DATA_MODAL_WEEK_LABELS",
+   "DATA_DRIFT_SINCE_REFERENCE_RUN"
+  ]
+ },
+ "extras": {
+  "engineResultHash": "ddf1cd8c93a1ba78c8ff32fa2c4fa6636db43d593043f85130c0e19d65f50435",
+  "engineEvents": 32,
+  "windowEvents": 30
+ },
+ "pit": {
+  "asOf": "2025-12-31",
+  "latestInputBar": "2020-05-08",
+  "inputsAfterAsOf": 0,
+  "entryNotAfterSignal": 0,
+  "exitAfterAsOf": 0,
+  "signalsAfterWindow": 0
+ },
+ "qa": null,
+ "resultHash": "74df25e350e0be119278f15a7b9ccc7b163b93fbd4b6aa21d4388357738e4f02"
+}

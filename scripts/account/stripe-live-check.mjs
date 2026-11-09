@@ -16,6 +16,9 @@ import {WEBHOOK_EVENTS, lookupKey} from './stripe-test-setup.mjs';
 
 const CAPABILITIES = {card: 'card_payments', paypal: 'paypal_payments', sepa_debit: 'sepa_debit_payments', klarna: 'klarna_payments'};
 
+// Steuerproben: Inland, zwei EU-Staaten (Schwellen-/OSS-Frage), zwei Drittlaender. Je Land eine Postleitzahl.
+export const TAX_PROBES = Object.freeze([['DE', '74189'], ['AT', '1010'], ['FR', '75001'], ['CH', '8001'], ['US', '10001']]);
+
 async function attempt(fn) {
   try { return {ok: true, value: await fn()}; } catch (e) { return {ok: false, error: e.message}; }
 }
@@ -72,6 +75,9 @@ export async function checkStripeLive({key, approved, apiOrigin, fetchImpl = fet
     report.portal = {cancel: Boolean(f.subscription_cancel?.enabled), mode: f.subscription_cancel?.mode || null,
       paymentMethodUpdate: Boolean(f.payment_method_update?.enabled), invoices: Boolean(f.invoice_history?.enabled)};
     log(`Portal ${portal.id}: Kuendigung ${report.portal.cancel ? `an (${report.portal.mode})` : 'AUS'}, Zahlungsmethode aendern ${report.portal.paymentMethodUpdate ? 'an' : 'AUS'}, Rechnungen ${report.portal.invoices ? 'an' : 'AUS'}`);
+    report.portal.terms = portal.business_profile?.terms_of_service_url || null;
+    report.portal.privacy = portal.business_profile?.privacy_policy_url || null;
+    log(`Portal-Links: AGB ${report.portal.terms || '-'}, Datenschutz ${report.portal.privacy || '-'}`);
   } else log('Portal-Konfiguration (vu_managed): FEHLT');
 
   if (probeCheckout && price) {
@@ -89,6 +95,65 @@ export async function checkStripeLive({key, approved, apiOrigin, fetchImpl = fet
       report.checkout = {error: session.error};
       log(`Probe-Checkout nicht moeglich (${session.error}).`);
     }
+  }
+
+  // Steuer und oeffentliche Unternehmensangaben (nur lesen). Bruttopreis: tax_behavior "inclusive" -> die Steuer
+  // ist im Betrag enthalten und wird nicht aufgeschlagen. Ausweis auf der Rechnung nur mit Steuersatz oder Stripe Tax.
+  report.tax = {priceTaxBehavior: price?.tax_behavior || null, priceTaxCode: price?.tax_code || null};
+  log(`Preis Steuerverhalten: ${price?.tax_behavior || 'nicht gesetzt'}${price?.tax_behavior === 'inclusive' ? ' (Bruttopreis, Steuer enthalten)' : ' - PRUEFEN'}`);
+  const taxSettings = await attempt(() => stripe('GET', '/v1/tax/settings'));
+  report.tax.stripeTax = taxSettings.ok ? (taxSettings.value?.status || 'unbekannt') : `nicht lesbar (${taxSettings.error})`;
+  log(`Stripe Tax: ${report.tax.stripeTax}${taxSettings.ok && taxSettings.value?.defaults ? `, Standard-Steuerverhalten ${taxSettings.value.defaults.tax_behavior || '-'}` : ''}`);
+  const registrations = await attempt(() => stripe('GET', '/v1/tax/registrations', {limit: 100, status: 'active'}));
+  report.tax.registrations = registrations.ok ? (registrations.value?.data || []).map(r => `${r.country}:${r.country_options?.[String(r.country).toLowerCase()]?.type || r.type || '-'}`) : null;
+  log(`Steuerregistrierungen (Stripe Tax): ${registrations.ok ? (report.tax.registrations.join(', ') || 'keine') : `nicht lesbar (${registrations.error})`}`);
+  const ts = taxSettings.ok ? taxSettings.value || {} : {};
+  const product = await attempt(() => stripe('GET', '/v1/products/vu_pro'));
+  report.tax.defaultTaxCode = ts.defaults?.tax_code || null;
+  report.tax.productTaxCode = product.ok ? product.value?.tax_code?.id || product.value?.tax_code || null : null;
+  report.tax.headOffice = ts.head_office?.address?.country || null;
+  log(`Steuerkategorie: Produkt ${report.tax.productTaxCode || '- (Standard)'}, Standard ${report.tax.defaultTaxCode || '-'}; Sitz ${report.tax.headOffice || '-'}`);
+  // Probe-Berechnungen (nur mit --probe-checkout; Stripe Tax Calculations: nur Berechnung, keine Buchung, keine Zahlung): 1,00 EUR brutto
+  // je Kundenland. Erwartung DE-Privatkunde: Endpreis 1,00 EUR, darin 0,16 EUR USt (19 %). Andere Laender: was Stripe
+  // aus den Registrierungen ableitet - keine eigene Annahme.
+  report.tax.calculations = [];
+  if (probeCheckout && ts.status === 'active' && price) {
+    for (const [country, postal] of TAX_PROBES) {
+      const c = await attempt(() => stripe('POST', '/v1/tax/calculations', {currency: 'eur',
+        line_items: [{amount: price.unit_amount, reference: 'vu_pro_probe', tax_behavior: 'inclusive',
+          ...(report.tax.productTaxCode ? {tax_code: report.tax.productTaxCode} : {})}],
+        customer_details: {address: {country, postal_code: postal}, address_source: 'billing'}}));
+      const v = c.ok ? c.value : null;
+      const b = v?.tax_breakdown?.[0];
+      const row = {country, ok: c.ok, total: v?.amount_total ?? null, tax: v?.tax_amount_inclusive ?? null,
+        rate: b?.tax_rate_details?.percentage_decimal ?? null, reason: b?.taxability_reason ?? null, error: c.ok ? null : c.error};
+      report.tax.calculations.push(row);
+      log(`Steuerprobe ${country}: ${c.ok ? `Endpreis ${(row.total / 100).toFixed(2)} EUR, darin USt ${(row.tax / 100).toFixed(2)} EUR (${row.rate ?? '-'} %, ${row.reason || '-'})` : `nicht berechnet (${c.error})`}`);
+    }
+    const de = report.tax.calculations.find(r => r.country === 'DE');
+    report.tax.germanConsumerOk = Boolean(de?.ok && de.total === price.unit_amount && de.tax === Math.round(price.unit_amount - price.unit_amount / 1.19));
+    log(`Erwartung DE-Privatkunde (${(price.unit_amount / 100).toFixed(2)} EUR brutto, 19 % enthalten): ${report.tax.germanConsumerOk ? 'erfuellt' : 'NICHT erfuellt'}`);
+  } else log(`Steuerproben: uebersprungen (${probeCheckout ? 'Stripe Tax nicht aktiv' : 'nur mit --probe-checkout'})`);
+  const rates = await attempt(() => stripe('GET', '/v1/tax_rates', {active: 'true', limit: 100}));
+  report.tax.rates = rates.ok ? (rates.value?.data || []).map(r => ({id: r.id, percentage: r.percentage, inclusive: r.inclusive, country: r.country || null,
+    jurisdiction: r.jurisdiction || null, display: r.display_name})) : null;
+  log(`Steuersaetze (aktiv): ${rates.ok ? (report.tax.rates.map(r => `${r.id} ${r.percentage} % ${r.inclusive ? 'inklusive' : 'exklusive'} ${r.country || ''}`).join('; ') || 'keine') : `nicht lesbar (${rates.error})`}`);
+  const taxIds = await attempt(() => stripe('GET', '/v1/tax_ids', {limit: 10}));
+  log(`Eigene Steuernummern bei Stripe (Rechnungsausweis): ${taxIds.ok ? ((taxIds.value?.data || []).map(t => t.type).join(', ') || 'keine hinterlegt') : `nicht lesbar (${taxIds.error})`}`);
+  if (account.ok && account.value) {
+    const a = account.value, st = a.settings || {};
+    report.business = {displayName: st.dashboard?.display_name || null, descriptor: st.payments?.statement_descriptor || null,
+      descriptorPrefix: st.card_payments?.statement_descriptor_prefix || null, name: a.business_profile?.name || null,
+      url: a.business_profile?.url || null, supportEmail: a.business_profile?.support_email || null, supportUrl: a.business_profile?.support_url || null,
+      supportPhone: Boolean(a.business_profile?.support_phone), country: a.country || null, branding: {logo: Boolean(st.branding?.logo), icon: Boolean(st.branding?.icon),
+        color: st.branding?.primary_color || null, accent: st.branding?.secondary_color || null}};
+    const b = report.business;
+    log(`Unternehmensangaben: Anzeigename "${b.displayName || '-'}", Name "${b.name || '-'}", Land ${b.country || '-'}, Website ${b.url || '-'}`);
+    log(`Kontoauszug: "${b.descriptor || '-'}" (Karten-Praefix "${b.descriptorPrefix || '-'}")`);
+    const inv = st.invoices || {};
+    b.invoices = {taxIds: (inv.default_account_tax_ids || []).length, supportAddress: Boolean(a.business_profile?.support_address?.line1)};
+    log(`Rechnungen: Steuer-IDs als Standard ${b.invoices.taxIds}, Support-Anschrift ${b.invoices.supportAddress ? 'hinterlegt' : '-'}`);
+    log(`Support: E-Mail ${b.supportEmail || '-'}, URL ${b.supportUrl || '-'}, Telefon ${b.supportPhone ? 'hinterlegt' : '-'}; Branding: Logo ${b.branding.logo ? 'ja' : 'nein'}, Icon ${b.branding.icon ? 'ja' : 'nein'}, Farbe ${b.branding.color || '-'}, Akzent ${b.branding.accent || '-'}`);
   }
 
   const pp = report.methods.find(m => m.key === 'paypal');

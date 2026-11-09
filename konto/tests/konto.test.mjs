@@ -106,7 +106,7 @@ test('Formatierung deutsch', () => {
 
 test('jede Kontoseite: gemeinsame Shell, Theme, noindex, keine fremden Skripte, keine Inline-Handler', () => {
   const list = pages();
-  assert.equal(list.length, 10);
+  assert.equal(list.length, 12);
   for (const p of list) {
     const html = readFileSync(p, 'utf8');
     const name = p.slice(ROOT.length) || '/';
@@ -147,14 +147,25 @@ test('Watchlist-Seite: Kennzahlen nur aus der gemeinsamen Uebersicht, kein Gesam
   assert.match(js, /W\.PATHS\.names/, 'Namensverzeichnis nur bei Bedarf');
   assert.ok(!/compositeScore|quantScore|universeRank/.test(js), 'kein Gesamtscore oder Rang im Browser');
   assert.match(html, /Gesamtscore ist nicht freigegeben/);
+  // Gesperrte Identitaet (IDENTITY_QUARANTINED, Zustand WARN): Warnchip mit dem Text der Ansicht, Verweise nur aus view.links.
+  assert.match(js, /var inactive = v\.identity\.state !== 'AVAILABLE';/);
+  assert.match(js, /if \(inactive\) chips\.appendChild\(chip\(v\.identity\.reasonText \|\| 'Nicht verfügbar', 'warn', 'alert'\)\);/);
+  assert.match(js, /if \(v\.links\.length\) \{/);
+  assert.ok(!/StockContext/.test(js), 'kein eigener Produktverweis neben view.links');
   // Owner-Auftrag 29.10.2026: Die Watchlist ist Teil von "Mein Dashboard"; die Kontonavigation fuehrt dorthin,
   // die Detailseite /konto/watchlist/ bleibt unter ihrer Adresse erreichbar und fuehrt zurueck.
-  for (const p of ['index.html', 'abo/index.html', 'tarife/index.html', 'einstellungen/index.html']) {
+  // Redesign (E07): /konto/ ist eine Seite ohne Reiter (Platz 3 der Leiste „Mein Bereich“, die zur Watchlist fuehrt);
+  // die Unterseiten behalten die Kontonavigation mit dem Weg zu Mein Dashboard.
+  const overview = readFileSync(join(ROOT, 'index.html'), 'utf8');
+  assert.ok(!/class="ka-nav"/.test(overview), 'Konto-Startseite ohne Reiterleiste');
+  assert.match(overview, /href="\/mein-dashboard\/">Mein Dashboard<\/a>/, 'Weg zur Watchlist bleibt auf der Seite');
+  for (const p of ['abo/index.html', 'tarife/index.html', 'einstellungen/index.html']) {
     const html = readFileSync(join(ROOT, p), 'utf8');
     assert.match(html, /<a class="ka-nav-out" href="\/mein-dashboard\/">Mein Dashboard<\/a>/, p);
     assert.ok(!/class="ka-nav"[^]*?href="\/konto\/watchlist\/"[^]*?<\/nav>/.test(html), `${p}: Watchlist nicht mehr in der Kontonavigation`);
   }
-  assert.match(html, /href="\/mein-dashboard\/">Mein Dashboard<\/a><span aria-hidden="true">›<\/span><span aria-current="page">Watchlist/);
+  // Redesign (E09): Zurück zur Watchlist (Platz 1 der Leiste „Mein Bereich“) statt Brotkrumen.
+  assert.match(html, /<a class="ka-back-link" href="\/mein-dashboard\/">[^]*?<b>Watchlist<\/b><\/a>/);
 });
 
 test('Nutzerfuehrung: offene Pro-Bestellung vor der Willkommensseite, Deep Links bleiben, Pro nie aus dem Browser', () => {
@@ -200,4 +211,39 @@ test('Pro-Bestellbestaetigung: Checkbox nur im Zustand "ready", fehlende Freigab
   assert.match(html, /id="ka-confirm-blocked"[^]*Pro ist für dein Konto noch nicht buchbar[^]*id="ka-continue-free"/, 'eigener Hinweis bei fehlender Freigabe');
   assert.match(js, /pay\.disabled = !terms\.checked/);
   assert.match(js, /\{price: proPrice\.key, confirm: true\}/, 'Bestaetigung geht an den Server (confirm: true)');
+});
+
+test('Rechtstexte und Newsletter: eigene Texte statt Shopify, Newsletter freiwillig und nicht vorausgewaehlt', async () => {
+  const {NEWSLETTER} = await import('../../workers/vu-account/src/brevo.mjs');
+  const reg = readFileSync(join(ROOT, 'registrieren/index.html'), 'utf8');
+  const box = reg.match(/<label class="ka-check" id="newsletter-field" hidden><input id="newsletter" name="newsletter" type="checkbox">[^]*?<\/label>/);
+  assert.ok(box, 'eigene Checkbox, ohne checked/required, zunaechst verborgen');
+  assert.ok(!/checked|required/.test(box[0].match(/<input[^>]*>/)[0]));
+  assert.ok(box[0].replace(/<[^>]+>/g, '').includes(NEWSLETTER.text), 'Einwilligungstext wortgleich mit der gespeicherten Fassung');
+  for (const p of pages()) {
+    const html = readFileSync(p, 'utf8');
+    assert.ok(!/policies\/(terms-of-service|refund-policy|privacy-policy)/.test(html), `${p}: keine Shopify-Texte`);
+    assert.match(html, /href="https:\/\/konto\.visionuniverse\.de\/widerrufen">Vertrag widerrufen<\/a>/, `${p}: Widerrufsfunktion verlinkt`);
+  }
+  const tarife = readFileSync(join(ROOT, 'tarife/index.html'), 'utf8');
+  assert.match(tarife, /href="https:\/\/konto\.visionuniverse\.de\/rechtliches\/agb"/);
+  assert.match(tarife, /href="https:\/\/konto\.visionuniverse\.de\/rechtliches\/widerrufsbelehrung"/);
+  const settings = readFileSync(join(ROOT, 'einstellungen/index.html'), 'utf8');
+  assert.ok(!/id="marketing"/.test(settings), 'kein direkt setzbarer Werbe-Haken');
+  assert.match(settings, /id="ka-newsletter-toggle"/);
+});
+
+test('Tarifverwaltung: Seite ohne Schluessel, Vorschau vor Bestaetigung, Passwort und Haken', () => {
+  const html = readFileSync(join(ROOT, 'admin', 'tarife', 'index.html'), 'utf8');
+  const js = readFileSync(join(ROOT, 'konto.js'), 'utf8');
+  assert.ok(!/sk_(live|test)|rk_(live|test)|whsec_/.test(html + js), 'keine Stripe-Schluessel');
+  for (const id of ['pa-preview-form', 'pa-apply-form', 'pa-summary', 'pa-password', 'pa-confirm', 'pa-log']) assert.ok(html.includes(`id="${id}"`), id);
+  assert.match(html, /id="pa-apply-form" novalidate hidden/, 'Bestaetigung erst nach der Vorschau');
+  const view = js.slice(js.indexOf("views['pricing-admin']"));
+  assert.ok(view.indexOf('/v1/admin/pricing/preview') < view.indexOf('/v1/admin/pricing/apply'));
+  assert.match(view, /confirm: true/);
+  assert.match(view, /pa-confirm'\)\.checked/);
+  for (const code of ['NOT_PRICING_ADMIN', 'AMOUNT_INVALID', 'PRICE_CHANGED', 'CHANGE_IN_PROGRESS', 'PRICE_CHANGE_RETRY', 'STRIPE_UNAVAILABLE']) {
+    assert.notEqual(A.message(code), A.message('UNBEKANNT'), code);
+  }
 });

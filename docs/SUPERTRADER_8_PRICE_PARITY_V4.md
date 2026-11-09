@@ -1,6 +1,6 @@
 # Supertrader 8.0 – zentraler Preisabgleich der Research-Kurse (V4)
 
-Stand 27.10.2026, gemessen auf dem Repository-Stand vom 26.10.2026 (`main` 7b6dcfe, enthält 1527253). Aktivierungsvoraussetzung V4 aus `docs/SUPERTRADER_8_DAILY_RUN.md` (#973).
+Stand 27.10.2026, gemessen auf dem Repository-Stand vom 26.10.2026 (`main` 7b6dcfe, enthält 1527253). Aktivierungsvoraussetzung V4 aus `docs/archiv/SUPERTRADER_8_DAILY_RUN.md` (#973).
 
 Gilt weiter unverändert:
 - Alle 13 Strategien sind `LIVE_NOT_APPROVED`; `VALIDATED_TRADE_SIGNAL` bleibt gesperrt.

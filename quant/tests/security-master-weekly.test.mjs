@@ -1,6 +1,7 @@
 // Wöchentliche Aktualisierung von US-Wertpapierstamm und Firmennamen (vorbereitet, Zeitplan aus):
 // Workflow-Abschaltung und ADR-005, Übernahme-Gate (fail closed), Erzeuger fail closed und idempotent.
 import test from "node:test";
+import { takteVon } from "../../scripts/core/schedule-registry.mjs";
 import assert from "node:assert/strict";
 import { readFileSync, mkdtempSync, rmSync, writeFileSync, existsSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -15,14 +16,19 @@ const SM = "quant/data/market/security-master";
 const SIX = ["us-security-master.json", "summary.json", "reconciliation.json", "backfill-estimate.json", "company-names.json", "company-names-summary.json"].map((f) => `${SM}/${f}`);
 const code = () => readFileSync(WF, "utf8").split("\n").filter((l) => !/^\s*#/.test(l)).join("\n");
 
-test("SMW-1 · Workflow: nur workflow_dispatch, Zeitplan nur als Kommentar, Commit standardmaessig aus", () => {
+test("SMW-1 · Workflow: Zeitplan Mittwoch 09:41 UTC und workflow_dispatch, Commit manuell standardmaessig aus, geplant nur ohne Sonderrechte", () => {
   const c = code();
+  // Neustart 04.11.2026 (Plan §6 Nr. 2): Zeitplan wieder an, damit der Stamm die 60-Tage-Grenze der SF8-Eingangspruefung nie erreicht.
+  assert.deepEqual(takteVon("security-master-weekly.yml"), ["41 9 * * 3"], "Zeitplan im Register (Wecker)");
   assert.match(c, /^on:\n\s+workflow_dispatch:/m);
-  assert.doesNotMatch(c, /^\s*(schedule|cron|push|pull_request|workflow_run)\s*:/m, "kein automatischer Ausloeser");
+  assert.doesNotMatch(c, /^\s*(push|pull_request|workflow_run)\s*:/m, "kein weiterer automatischer Ausloeser");
+  assert.equal((c.match(/^\s*- cron:/gm) || []).length, 0, "kein GitHub-Cron neben dem Wecker");
   assert.match(c, /commit:\n\s+description:[^\n]*\n\s+type: boolean\n\s+default: false/);
   assert.match(c, /allow_version_change:\n\s+description:[^\n]*\n\s+type: boolean\n\s+default: false/);
-  assert.match(readFileSync(WF, "utf8"), /^#\s+schedule: - cron: '41 9 \* \* 3'$/m, "Zielrhythmus dokumentiert, aber auskommentiert");
-  assert.match(c, /if: inputs\.commit == true && steps\.gate\.outputs\.decision == 'COMMIT'/);
+  // Ein geplanter Lauf hat keine Eingaben: weder Versionswechsel noch Sonderfreigabe, Commit nur bei Gate COMMIT.
+  assert.match(c, /if: \(\(github\.event_name == 'schedule' \|\| inputs\.zeitplan != ''\) \|\| inputs\.commit == true\) && steps\.gate\.outputs\.decision == 'COMMIT'/);
+  assert.match(c, /IN_ALLOW_VERSION: \$\{\{ inputs\.allow_version_change \}\}/);
+  assert.match(c, /if \[ "\$IN_ALLOW_VERSION" = "true" \]/);
 });
 
 test("SMW-2 · Workflow: ADR-005, keine Secrets, keine Eingabe im Shell-Text, nur kostenfreie Quellen", () => {
@@ -51,7 +57,12 @@ test("SMW-3 · Workflow: committet genau die sechs Dateien der beiden registrier
   const sm = reg.find((d) => d.id === "usSecurityMaster"), cn = reg.find((d) => d.id === "companyNames");
   assert.ok(sm && /build-us-security-master\.mjs/.test(sm.producer) && /security-master-weekly\.yml/.test(sm.workflow));
   assert.ok(cn && /build-company-names\.mjs/.test(cn.producer) && /security-master-weekly\.yml/.test(cn.workflow));
-  assert.equal(reg.find((d) => d.id === "securityMaster").workflow, null, "Produkteignung bleibt ohne Workflow (nicht Teil des Laufs)");
+  /* Die Produkteignung ist nicht Teil dieses Laufs: sie hat ihren eigenen Workflow (security-master-eligibility.yml,
+     ausgeloest nach diesem Lauf, mit eigenem Gate), und dieser Lauf schreibt eligibility.json nie (siehe oben). */
+  const elig = reg.find((d) => d.id === "securityMaster");
+  assert.equal(elig.workflow, "security-master-eligibility.yml", "Produkteignung laeuft in ihrem eigenen Workflow");
+  assert.ok(existsSync(join(ROOT, ".github", "workflows", elig.workflow)), "Workflow der Produkteignung fehlt");
+  assert.doesNotMatch(c, /eligibility\.json/, "der Wochenlauf schreibt die Produkteignung nicht");
 });
 
 /* ------------------------------------------------------------------ Gate */
@@ -241,4 +252,22 @@ test("SMW-10 · Goldener Fall am committeten Stamm: 1.1.0 → 1.3.0 = 138 Typ- u
   assert.ok(ev.backtestableLost.every((x) => x.identityConsistent && !x.inDiscoverUniverse));
   const cmp = compareMasters(prev, next);
   assert.equal(cmp.instrumentTypeChanges.length, 138); assert.ok(cmp.eligibilityFlips.every((f) => f.from === true && f.to === false));
+});
+
+test("SMW-11 · Zählabgleich 138 / 127 / 133 aus den committeten Eingaben reproduzierbar (Erzeugerausgabe = committete Datei)", async (t) => {
+  const { reclassify, countReconciliation } = await import("../../scripts/market/security-master-v130-evidence.mjs");
+  const bytes = readFileSync(join(ROOT, SM, "us-security-master.json")), prev = JSON.parse(bytes.toString("utf8"));
+  const committed = JSON.parse(readFileSync(join(ROOT, "docs/data/security-master/v130-count-reconciliation.json"), "utf8"));
+  const { createHash } = await import("node:crypto");
+  if (committed.inputs.masterSha256 !== createHash("sha256").update(bytes).digest("hex")) return t.skip("Stamm seit dem Nachweis geändert (G8)");
+  const next = reclassify(prev, JSON.parse(readFileSync(join(ROOT, "quant/data/market/scale/universe-FULL_UNIVERSE.json"), "utf8")).securities);
+  const rec = countReconciliation({ prevBytes: bytes, prev, next });
+  assert.deepEqual(rec, committed, "Abgleich = Erzeugerausgabe");
+  // je securityId (Gate): 138 Typ, 138 Eignung, dieselben IDs; je Zeile: 149 Typzeilen (11 inaktive Zweitzeilen), 138 Eignungszeilen
+  assert.equal(rec.perSecurityId.instrumentTypeChanges, 138); assert.equal(rec.perSecurityId.eligibilityFlips, 138); assert.equal(rec.perSecurityId.sameIdsForTypeAndEligibility, true);
+  assert.equal(rec.perRow.instrumentTypeRowChanges, 149); assert.equal(rec.perRow.eligibilityRowsTrueToFalse, 138); assert.equal(rec.perRow.eligibilityRowsFalseToTrue, 0); assert.equal(rec.perRow.unpairedRows, 0);
+  // zwei verschiedene 127: → PREFERRED (116 + 11 Zwei-Zeilen-IDs) und entfallend backtestfähig (116 PREFERRED + 11 TEST_SECURITY)
+  assert.equal(rec.twoDifferent127.equityCommonToPreferredIds, 127); assert.equal(rec.twoDifferent127.backtestableLost, 127); assert.equal(rec.twoDifferent127.overlap, 116);
+  // die frühere Angabe 133 ist aus keiner dieser Zählungen reproduzierbar; ihre eigene Herleitung ergibt 137
+  assert.equal(rec.claim133.reproducibleFromCommittedInputs, false); assert.equal(rec.claim133.derivationArithmetic, 137);
 });

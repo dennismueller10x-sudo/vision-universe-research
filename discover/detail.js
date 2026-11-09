@@ -53,6 +53,7 @@
       var SH = global.VUDiscover.StockHead, head = SH && SH.head(page, detail);
       if (head) { unsubscribers.push(head.dispose); if (head.observer) observers.push(head.observer); }
       if (SH) SH.calm(page, detail);
+      if (SH && SH.worlds) SH.worlds(page, detail);
       /* app.js und ui/europe.js setzen den Watchlist-Knopf nach dem Zeichnen vor die Seite: in den Kopf holen. */
       Promise.resolve().then(function () {
         var watch = root.querySelector(":scope > .v2-watch-button"), slot = page.querySelector(".dv2-head-actions");
@@ -99,7 +100,15 @@
 
 
 
-    if (hero && chart) {
+    /* Redesign 2027 (D09): mit dem Überblick (discover/ui/overview.js) stehen Satz, Zeitachse, Jahresspanne und
+       Signale dort; im Kopf entfallen sie, ebenso Sprungleiste und „Weiter“-Knöpfe (die Produkt-Leiste führt weiter). */
+    var v3 = !!page.querySelector(".dv3-overview");
+    if (hero && chart && v3) {
+      [".dx-dhero-story", ".dx-dhero-hook", ".dx-dhero-sigs", ".dx-zeitachse", ".dx-spanne", ".dx-dhero-art"].forEach(function (selector) {
+        var item = hero.querySelector(selector);
+        if (item) item.remove();
+      });
+    } else if (hero && chart) {
       var context = node("section", "dv2-stock-context");
       context.setAttribute("aria-label", "Was bei dieser Aktie auffällt");
       [".dx-dhero-story", ".dx-dhero-hook", ".dx-dhero-sigs", ".dx-zeitachse", ".dx-spanne"].forEach(function (selector) {
@@ -143,7 +152,7 @@
       nav.appendChild(button);
     });
     research.appendChild(nav);
-    if (nav.children.length) {
+    if (nav.children.length && !v3) {
       var contextEnd = page.querySelector(".dv2-stock-context") || chart;
       if (contextEnd) contextEnd.insertAdjacentElement("afterend", research);
     }
@@ -180,14 +189,15 @@
       var nextKicker = next.querySelector(".dx-kicker");
       if (nextKicker) nextKicker.textContent = "Weiter im Vision Universe";
     }
-    if (!next) {
+    if (!next && v3) next = null;
+    else if (!next) {
       next = node("section", "dv2-stock-next dx-chapter");
       next.appendChild(node("p", "dv2-detail-eyebrow", "Die nächste Perspektive"));
       next.appendChild(node("h2", "", "Eine Aktie weiter."));
       var foot = page.querySelector(".dx-foot");
       page.insertBefore(next, foot || null);
     }
-    if (!next.querySelector('a[href^="#/einzeln/"]')) {
+    if (next && !v3 && !next.querySelector('a[href^="#/einzeln/"]')) {
       var onward = node("a", "dx-btn", detail.region === "EUROPE" ? "Weiter entdecken →" : "Weiter swipen →");
       onward.href = detail.region === "EUROPE" ? "#/c/EUROPE/all" : "#/einzeln/" + encodeURIComponent(detail.universeId || "US_REAL");
       next.appendChild(onward);

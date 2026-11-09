@@ -59,6 +59,18 @@ function create(options){
   if(result.status!=='OK'||!i||i.symbol!==ticker||!Master.inProductUniverse(i)||!/^vu_[a-f0-9]+$/.test(i.instrumentId)||!i.masterMemberId||!(i.legacyIds||[]).includes(i.masterMemberId))return null;
   return i;
  }
+ /* Variante B (Steuerung 05.11.2026, Eignung aus Security Master 1.3.0): belegte Nicht-Aktien (ETF, Fonds,
+    Anleihen) gehoeren nicht zum Aktien-Produktuniversum, bleiben aber im Verzeichnis auffindbar. Fuer sie gibt es
+    statt INVALID_IDENTITY eine benannte Absage mit Name und Papierart - keine Kurse, keine Aktienaussage. */
+ async function outsideEquityUniverse(ticker){
+  try{const result=await directory.getInstrument(ticker),i=result.instrument;
+   if(result.status!=='OK'||!i||i.symbol!==ticker||Master.inProductUniverse(i)||i.productEligibility!=='EXCLUDED')return null;
+   if(!/^CONFIRMED_NON_EQUITY:/.test(String(i.productEligibilityReason||'')))return null;
+   return {state:'UNAVAILABLE',reason:'OUTSIDE_EQUITY_UNIVERSE',identityState:'OUTSIDE_PRODUCT',stocks:[],
+    instrument:{ticker:i.symbol,name:i.companyName||null,securityClass:i.securityClass||i.securityType||null,
+     eligibilityReason:i.productEligibilityReason,exchange:i.exchange||null}};
+  }catch{return null;}
+ }
  function canonicalIdentity(i){return !!i&&Master.inProductUniverse(i)&&/^vu_[a-f0-9]+$/.test(i.instrumentId)&&!!i.masterMemberId&&(i.legacyIds||[]).includes(i.masterMemberId);}
  function identityModel(i){return {securityId:i.instrumentId,instrumentId:i.instrumentId,masterMemberId:i.masterMemberId,issuerId:i.issuerId||null,ticker:i.symbol,name:i.companyName||i.symbol,productEligibility:i.productEligibility};}
  async function searchInstruments(query,{limit=12}={}){
@@ -289,7 +301,7 @@ function create(options){
     if(versionState!=='CURRENT')return {state:'UNAVAILABLE',reason:'INVALID_SCREENING_ARTIFACT',rows:[]};
     const rows=Object.entries(payload.rows).map(([ticker,values])=>FactorEvidence.screeningRow(ticker,values,payload.fields)).filter(Boolean);
     return {state:'AVAILABLE',namespace:payload.namespace,methodologyVersion:payload.methodologyVersion,
-     asOf:payload.asOf,fields:payload.fields,publication:payload.publication,rows};
+     asOf:payload.asOf,fields:payload.fields,publication:payload.publication,factorWeights:payload.factorWeights||null,rows};
    }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING',rows:[]};}
   })();
   return screeningPromise;
@@ -902,6 +914,13 @@ function create(options){
     Flaeche muesste dieselbe Sonderregel kennen. Die Regel gehoert deshalb in
     den Dienst: kein Name, dafuer ein Grund. */
  const KEIN_NAME_GRUND='PROVIDER_HAS_NO_NAME';
+ /* EIN ZURUECKGEHALTENER NAME IST KEIN FEHLENDER.
+    Unter den Kuerzeln des Registers quant/config/ticker-reuse-quarantine.json handelt heute ein
+    anderes Wertpapier; das Verzeichnis haelt den Namen der alten Gesellschaft deshalb zurueck
+    (ic = TICKER_REUSE, kein n). Der Anbieter HAT einen Namen - nur nicht fuer dieses Papier.
+    Gemessen am 03.11.2026: 9 Titel trugen dafuer PROVIDER_HAS_NO_NAME, eine falsche Begruendung. */
+ const NAME_ZURUECKGEHALTEN='TICKER_REUSE_NAME_WITHHELD';
+ function nameZurueckgehalten(entry){return !!entry&&entry.ic==='TICKER_REUSE'&&!entry.n;}
  function ohneErfundenenNamen(row){
   if(row&&row.name&&row.ticker&&row.name===row.ticker){row.name=null;if(!row.nameReason)row.nameReason=KEIN_NAME_GRUND;}
   return row;
@@ -916,6 +935,7 @@ function create(options){
      Identitaetsquelle, und die Panelzeile traegt denselben Namen in Versalien
      ("JPMORGAN CHASE & CO"). Alles andere in dieser Funktion ergaenzt nur. */
   if(entry.n)row.name=entry.n;
+  else if(nameZurueckgehalten(entry)){row.name=null;row.nameReason=NAME_ZURUECKGEHALTEN;}
   /* EIN KURS OHNE STICHTAG IST EINE UNDATIERTE ZAHL.
      Gemessen am 28.09.2026: fuenf Titel - genau die mit einer Panelzeile,
      darunter AAPL, MSFT, NVDA und JPM - trugen `price` ohne `asOf`, waehrend
@@ -992,7 +1012,7 @@ function create(options){
   * Faktorschicht ein zeitpunktsicherer Anteilsbestand; das ist eine andere
   * Aussage als "die vorhandene Zahl gilt nicht fuer diese Zeile", und eine
   * Zahl auf anderer Grundlage ist keine Fehlzuordnung. */
- const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING','REPORTING_CURRENCY_NOT_LISTING_CURRENCY'];
+ const VALUATION_WITHHELD_REASONS=['SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING','SHARE_COUNT_NOT_OUTSTANDING','REPORTING_CURRENCY_NOT_LISTING_CURRENCY','SHARE_COUNT_SCALE_SUSPECT'];
  function withholdValuation(stock){
   if(!stock||VALUATION_WITHHELD_REASONS.indexOf(stock.marketCapReason)<0)return stock;
   const grund=stock.marketCapReason;
@@ -1091,7 +1111,7 @@ function create(options){
   /* Die Aktienseite laedt die Faktoren selbst. Vorher hatte sie sie nur, wenn
      vorher eine Liste geladen war: Direktaufruf ohne Volatilitaet und Drawdown,
      Stand der Marktkennzahlen veraltet (Audit 03.10.2026). */
-  try{const c=await factorsFor(await init(),ticker),canonical=await identity(ticker);if(!canonical)return unavailable('INVALID_IDENTITY');
+  try{const c=await factorsFor(await init(),ticker),canonical=await identity(ticker);if(!canonical)return (await outsideEquityUniverse(ticker))||unavailable('INVALID_IDENTITY');
    const member=await memberFor(c,ticker);if(!member)return identityOnlyStock(ticker);
    const panelCandidate=c.panel?.securities?.[ticker];if(panelCandidate&&panelCandidate.securityId!=='sec_'+ticker)return unavailable('INVALID_IDENTITY');
    let stock=await row(c,ticker)||broadRow(c,member);if(!stock)return identityOnlyStock(ticker);
@@ -1258,8 +1278,8 @@ function create(options){
   /* Der Bewertungsgrund gilt fuer BEIDE Wege dieser Funktion - den Panelweg
      und den breiten. Er wird deshalb einmal davor geholt und am Ende auf das
      Ergebnis angewandt, statt zweimal formuliert zu werden. */
-  let grund=null,verzeichnisName=null;
-  try{const eintrag=await universeEntry(ticker);grund=eintrag&&eintrag.v?eintrag.v:null;verzeichnisName=eintrag&&eintrag.n?eintrag.n:null;}catch{}
+  let grund=null,verzeichnisName=null,zurueckgehalten=false;
+  try{const eintrag=await universeEntry(ticker);grund=eintrag&&eintrag.v?eintrag.v:null;verzeichnisName=eintrag&&eintrag.n?eintrag.n:null;zurueckgehalten=nameZurueckgehalten(eintrag);}catch{}
   /* DER NAME GILT AUCH HIER.
      Gemessen am 28.09.2026 ueber eine Probe von 977 Titeln: 976 trugen auf
      dieser Flaeche das KUERZEL als Firmennamen ("A" statt "Agilent
@@ -1267,7 +1287,9 @@ function create(options){
      laeuft nicht durch mitVerzeichnis, und der Panelweg liest die Panelzeile
      - beide Namen sind nicht die Identitaetsquelle. */
   const mitGrund=(model)=>{if(model&&model.state==='AVAILABLE'&&grund)withholdValuation({marketCapReason:grund,quant:model});
-   if(model&&model.state==='AVAILABLE'&&verzeichnisName)model.name=verzeichnisName;return ohneErfundenenNamen(model);};
+   if(model&&model.state==='AVAILABLE'&&verzeichnisName)model.name=verzeichnisName;
+   else if(model&&model.state==='AVAILABLE'&&zurueckgehalten){model.name=null;model.nameReason=NAME_ZURUECKGEHALTEN;}
+   return ohneErfundenenNamen(model);};
   try{const c=await init();const stock=await row(c,ticker);if(stock)return mitGrund(QuantWorkspace.build(stock,{...c.panel.securities[ticker],securityId:stock.securityId},c.panel.versions));
    const member=await memberFor(c,ticker);if(!member)return unavailable('INVALID_IDENTITY');let broad=broadRow(c,member);if(!broad)return unavailable('SOURCE_MISSING');const consumer=await consumerFor(ticker);if(consumer)broad=applyConsumer(broad,consumer);broad._factorValues=(c.factorIndex&&c.factorIndex[member.m]||{}).values||{};const model=broadQuantWorkspace(broad);if(!permission(c,ticker).allowed)for(const family of model.families.filter(f=>['value','momentum','risk'].includes(f.id)))for(const item of family.metrics){item.value=null;item.state='UNAVAILABLE';item.reason='DISPLAY_NOT_PERMITTED';}return mitGrund(model);
   }catch{return unavailable('SOURCE_MISSING');}
@@ -1410,11 +1432,20 @@ function create(options){
   ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return null;
   try{return (await universeEntry(ticker))||null;}catch{return null;}
  }
+ /* Concurrent head/brief consumers share work only while it is pending.
+    No settled value or permission decision survives the request. */
+ const pendingStocks=new Map();
+ function sharedStockIntelligence(ticker){
+  const key=String(ticker||'').toUpperCase();
+  if(pendingStocks.has(key))return pendingStocks.get(key);
+  const pending=getStockIntelligence(key).finally(()=>{if(pendingStocks.get(key)===pending)pendingStocks.delete(key);});
+  pendingStocks.set(key,pending);return pending;
+ }
  async function getIntelligenceBrief(ticker){
   ticker=String(ticker||'').toUpperCase();
   if(!IntelligenceBrief||!/^[A-Z0-9.-]{1,12}$/.test(ticker))return {state:'UNAVAILABLE',reason:'INVALID_IDENTITY'};
   const [stock,factors,setup,patterns,match,technical]=await Promise.all([
-   getStockIntelligence(ticker).catch(()=>null),
+   sharedStockIntelligence(ticker).catch(()=>null),
    getFactorEvidence(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
    getSetupObservation(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
    getPatternMatch(ticker).catch(()=>({state:'UNAVAILABLE',reason:'SOURCE_MISSING'})),
@@ -1423,7 +1454,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
+ return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence:sharedStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

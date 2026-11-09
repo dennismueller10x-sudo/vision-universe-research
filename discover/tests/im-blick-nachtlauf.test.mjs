@@ -306,13 +306,16 @@ test("NL5 · Workflow: Stufe nach allen Pruefungen, kein roter Nachtlauf, gleich
   assert.match(job, /BEWUSST KEINE Job-Concurrency/);
   /* ADR-005 */
   assert.match(job, /ref: \$\{\{ github\.ref \}\}/);
-  assert.match(job, /scripts\/ci\/push-with-retry\.sh/);
+  /* Datenzweig (discoverImBlickLive, BRANCH_ONLY): bisheriger Stand aus data/live, Ergebnis nur dorthin */
+  assert.match(job, /scripts\/ci\/seed-data-branch\.sh discoverImBlickLive/);
+  assert.match(job, /scripts\/ci\/push-data-branch\.sh data\/live discover\/live\/im-blick-US_REAL\.json discover\/live\/monitor-US_REAL\.json/);
+  assert.doesNotMatch(job, /git commit|push-with-retry/, "kein Commit mehr nach main");
   assert.match(job, /set -euo pipefail/);
   assert.doesNotMatch(job, /\$\{\{\s*inputs\./);
   /* Jeder Schritt (auch Checkout und Node) darf den Nachtlauf nicht rot machen (pages-release verlangt success)
      und hat ein eigenes Zeitlimit, damit ein Zeitablauf ein Schrittfehler ist und kein roter Job */
   const schritte = job.split("\n      - ").slice(1);
-  assert.equal(schritte.length, 5);
+  assert.equal(schritte.length, 6);
   for (const sch of schritte) {
     assert.match(sch, /continue-on-error: true/, sch.split("\n")[0]);
     assert.match(sch, /timeout-minutes: \d+/, sch.split("\n")[0]);
@@ -324,11 +327,11 @@ test("NL5 · Workflow: Stufe nach allen Pruefungen, kein roter Nachtlauf, gleich
   const mitNeeds = andere.split("\n").filter((z) => /needs:/.test(z) && /imblick/.test(z));
   assert.equal(mitNeeds.length, 1, "nur der Alarm-Job wartet auf imblick");
   /* Alarm wartet auf die drei Vorstufen und auf imblick; danach nur die Supertrader-Stufen des Nachtlaufs, seit #993
-     auch supertrader-prune (deren Verdrahtung prueft core/tests/supertrader-chain.test.mjs). Exakt statt optionaler
-     Gruppen, damit kein Job still wegfaellt. */
+     auch supertrader-prune (deren Verdrahtung prueft core/tests/supertrader-chain.test.mjs), seit 3caa8ca150 (01.11.)
+     zusaetzlich die Technical-Stufe des Nachtlaufs. Exakt statt optionaler Gruppen, damit kein Job still wegfaellt. */
   const alarmNeeds = teil(wf, "\n  alarm:\n").match(/\n    needs: \[([^\]]+)\]/)[1].split(/,\s*/);
   assert.deepEqual(alarmNeeds.slice(0, 4), ["refresh", "materialize", "freshness-contract", "imblick"]);
-  assert.deepEqual(alarmNeeds.slice(4), ["supertrader", "supertrader-prune"]);
+  assert.deepEqual(alarmNeeds.slice(4), ["supertrader", "supertrader-prune", "technical"]);
   assert.match(wf, /RESULT_IMBLICK: \$\{\{ needs\.imblick\.result == 'failure' && 'failure' \|\| needs\.imblick\.outputs\.ergebnis == 'failure'/);
   assert.match(wf, /ALARM_DETAIL_FILE/);
   /* keine Anbieteranfrage in der Stufe und im Baustein */
@@ -394,8 +397,9 @@ test("NL8 · Isolation: kein Fachmodell, keine Produkte, keine geschuetzten Pfad
   const i = wf.indexOf("\n  imblick:\n");
   const job = wf.slice(i, wf.indexOf("\n  # ===", i + 10));
   assert.doesNotMatch(job, /quant\/data|supertrader|screener|emerging/i, "die Stufe schreibt nur discover/live");
-  assert.match(job, /git add -- discover\/live\/im-blick-US_REAL\.json discover\/live\/monitor-US_REAL\.json/);
-  assert.doesNotMatch(job, /git add discover\/live\s/, "keine Sammelaufnahme (verwaiste tmp-Dateien)");
+  /* nur die zwei eigenen Dateien, keine Sammelaufnahme (verwaiste tmp-Dateien) */
+  assert.match(job, /push-data-branch\.sh data\/live discover\/live\/im-blick-US_REAL\.json discover\/live\/monitor-US_REAL\.json\n/);
+  assert.doesNotMatch(job, /push-data-branch\.sh data\/live discover\/live\n/);
 });
 
 /* ----------------------------------------------------------------- NL9 */

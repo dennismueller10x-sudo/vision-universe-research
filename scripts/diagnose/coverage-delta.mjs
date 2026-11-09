@@ -58,6 +58,24 @@ export const TECH_MIN = 300, CHART_MIN = 2;
             listingStart:(t)=>string|null, seriesFirst:(t)=>string|null } */
 export const BACKFILL_WINDOW_DAYS = 30;
 const tageZwischen = (a, b) => (Date.parse(b) - Date.parse(a)) / 86400000;
+const nextDay = (d) => new Date(Date.parse(d) + 86400000).toISOString().slice(0, 10);
+export const LAST_DATA_DAY_WINDOW_DAYS = 7;
+/* Letzter Datentag der Technik-Messung, aus der Messung selbst abgeleitet: der spaeteste Tag, an dem jeder damals
+   als zu kurz gefuehrte Titel (mit lesbarer Reihe) noch unter der Schwelle lag. Hoechstens LAST_DATA_DAY_WINDOW_DAYS
+   vor dem Stichtag, sonst null (dann gilt der Stichtag wie bisher). seriesOf(t) -> sortierte Tage oder null. */
+export function lastDataDayOfMeasurement(shortBefore, seriesOf, baseDate, min) {
+  let last = null;
+  for (const t of shortBefore) {
+    const d = seriesOf(t);
+    if (!d || d.length < min) continue;
+    const reach = d[min - 1];                           // Tag, an dem der Titel die Schwelle erreicht
+    if (reach >= baseDate) continue;
+    const day = new Date(Date.parse(reach) - 86400000).toISOString().slice(0, 10);
+    if (last === null || day < last) last = day;
+  }
+  if (last === null) return null;
+  return tageZwischen(last, baseDate) <= LAST_DATA_DAY_WINDOW_DAYS ? last : null;
+}
 export function classify(input) {
   const out = { technical: [], chart: [] };
   const why = (t, kind, wasShort, nowShort, baseDate, min) => {
@@ -69,6 +87,12 @@ export function classify(input) {
       const b = input.barsBefore(t, baseDate);
       if (b === null || b === undefined) return "UNEXPLAINED";
       if (b < min) return kind === "technical" ? "AGED_PAST_THRESHOLD" : "NEW_BARS_SINCE_REFERENCE";
+      /* Entscheidung Steuerung 06.11.2026: Grenzfaelle zaehlen ueber den letzten Datentag der Messung, nicht ueber
+         den Stichtag. Lag der letzte Datentag vor dem Stichtag, hatte der Titel damals weniger Bars. */
+      if (kind === "technical" && input.techLastDataDay && input.techLastDataDay < baseDate) {
+        const bl = input.barsBefore(t, nextDay(input.techLastDataDay));
+        if (bl !== null && bl !== undefined && bl < min) return "AGED_PAST_THRESHOLD";
+      }
       const start = input.listingStart ? input.listingStart(t) : null;
       const first = input.seriesFirst ? input.seriesFirst(t) : null;
       if (kind === "chart" && start && first === start && tageZwischen(start, baseDate) >= 0 &&
@@ -82,12 +106,12 @@ export function classify(input) {
     const tw = why(t, "technical", input.techShortBefore.has(t), input.techShortNow.has(t), input.techBaseDate, TECH_MIN);
     const inBoth = input.productNow.has(t) && input.productBefore.has(t);
     const techChanged = !inBoth || input.techShortBefore.has(t) !== input.techShortNow.has(t);
-    if (techChanged && tw) out.technical.push({ ticker: t, cls: tw, before: input.techShortBefore.has(t) ? "SHORT" : "READY",
+    if (techChanged && tw) out.technical.push({ ticker: t, cls: tw, before: !input.productBefore.has(t) ? "OUT" : input.techShortBefore.has(t) ? "SHORT" : "READY",
       now: input.productNow.has(t) ? (input.techShortNow.has(t) ? "SHORT" : "READY") : "OUT" });
     const chartChanged = !inBoth || input.chartShortBefore.has(t) !== input.chartShortNow.has(t);
     if (chartChanged) {
       const cw = why(t, "chart", input.chartShortBefore.has(t), input.chartShortNow.has(t), input.chartBaseDate, CHART_MIN);
-      if (cw) out.chart.push({ ticker: t, cls: cw, before: input.chartShortBefore.has(t) ? "SHORT" : "OK",
+      if (cw) out.chart.push({ ticker: t, cls: cw, before: !input.productBefore.has(t) ? "OUT" : input.chartShortBefore.has(t) ? "SHORT" : "OK",
         now: input.productNow.has(t) ? (input.chartShortNow.has(t) ? "SHORT" : "OK") : "OUT" });
     }
   }
@@ -171,13 +195,20 @@ async function main() {
   let before;
   try { before = JSON.parse(execFileSync("git", ["show", "HEAD:quant/data/market/history/coverage-metrics.json"], { cwd: root, maxBuffer: 1 << 26 }).toString()); }
   catch { console.error("Bezugsstand (git HEAD) nicht lesbar."); process.exit(2); }
+  /* Eignung und Abgleich "desselben Commits" wie die Messung: der letzte Commit, der coverage-metrics.json
+     geschrieben hat - nicht HEAD. Seit der Messung kann die Eignung mehrfach neu beurteilt worden sein
+     (05./06.11.2026: 6.686 -> 6.577 -> 6.308), dann trifft HEAD den Nenner nicht mehr. In einem flachen Checkout
+     findet git log den Commit nicht und liefert HEAD (der Workflow holt die Historie vorher blob-frei nach). */
+  let ref = "HEAD";
+  try { ref = execFileSync("git", ["log", "-1", "--format=%H", "--", "quant/data/market/history/coverage-metrics.json"], { cwd: root }).toString().trim() || "HEAD"; }
+  catch { ref = "HEAD"; }
 
   const elig = read("quant/data/market/security-master/eligibility.json");
   let eligHead = null;
-  try { eligHead = JSON.parse(execFileSync("git", ["show", "HEAD:quant/data/market/security-master/eligibility.json"], { cwd: root, maxBuffer: 1 << 27 }).toString()); }
+  try { eligHead = JSON.parse(execFileSync("git", ["show", ref + ":quant/data/market/security-master/eligibility.json"], { cwd: root, maxBuffer: 1 << 27 }).toString()); }
   catch { eligHead = null; }
   let reconHead = null;
-  try { reconHead = JSON.parse(execFileSync("git", ["show", "HEAD:quant/data/market/security-master/eligibility-reconciliation.json"], { cwd: root, maxBuffer: 1 << 26 }).toString()); }
+  try { reconHead = JSON.parse(execFileSync("git", ["show", ref + ":quant/data/market/security-master/eligibility-reconciliation.json"], { cwd: root, maxBuffer: 1 << 26 }).toString()); }
   catch { reconHead = null; }
   const tech = read("quant/data/technical/scale/technical-coverage-ELIGIBLE_US_EQUITY.json");
   let b;
@@ -220,7 +251,9 @@ async function main() {
   const listingStart = (t) => startByTicker.get(t) || null;
   const seriesFirst = (t) => { const d = series.get(t); return d && d.length ? d[0] : null; };
 
-  const res = classify({ productNow, productBefore, debt, excludedReason, cut, techShortNow, techShortBefore, techBaseDate,
+  const techLastDataDay = lastDataDayOfMeasurement([...techShortBefore].filter((t) => series.has(t)), (t) => series.get(t), techBaseDate, TECH_MIN);
+  if (techLastDataDay) console.log(`  Letzter Datentag der Technik-Messung (aus der Messung abgeleitet): ${techLastDataDay}`);
+  const res = classify({ productNow, productBefore, debt, excludedReason, cut, techShortNow, techShortBefore, techBaseDate, techLastDataDay,
     chartShortNow, chartShortBefore, chartBaseDate, barsBefore, listingStart, seriesFirst });
 
   const count = (rows) => rows.reduce((a, r) => ((a[r.cls] = (a[r.cls] || 0) + 1), a), {});

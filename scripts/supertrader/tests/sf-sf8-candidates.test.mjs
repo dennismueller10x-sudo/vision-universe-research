@@ -713,7 +713,7 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   // eine Engine-Marke des modellierten Ablaufs (z. B. RUN_UP_HIGH = Einstieg) wird nie als Chartstruktur gezeigt
   assert.match(ui, /function structOf\(p\) \{ return p && fin\(p\.level\) && STRUCT_TXT\[p\.kind\] \? p : null; \}/);
   assert.doesNotMatch(pushes[0], /chart-trigger|chart-entry|chart-stop/);
-  assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
+  assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Ungültig-Marke', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
   // keine Orderbeschriftung irgendwo im Chart außer im Planzweig; Beschriftungen nur als Literal (keine Konstante von außen)
   const drawNoPlan = draw.split('\n').filter((l) => !/^\s*if \(v\.plan\) \{/.test(l)).join('\n');
   assert.deepEqual([...drawNoPlan.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]).filter((x) => !/^var\(--[a-z0-9-]+\)$/.test(x) && /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), []);
@@ -723,7 +723,7 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   // keine aus Kursbalken oder Kennzahlen errechnete Marke (Mutation M3b): Linien nur als gleitende Durchschnitte, Box nur aus levels.box
   assert.doesNotMatch(draw, /features|bars\.low\[|bars\.high\[|Math\.(min|max)\(/);
   // Kästen nur aus levels.box; die Karte außerhalb der Planansicht beschriftet nichts als Einstieg, Stop, Limit oder Order
-  for (const l of draw.split('\n').filter((x) => /boxes\.push\(/.test(x))) assert.match(l, /^\s*if \(lv\.box && fin\(lv\.box\.top\)\) boxes\.push\(\{ from: lv\.box\.from, to: null, top: lv\.box\.top, bottom: lv\.box\.bottom,[^}]*label: 'Darvas-Box' \}\);\s*$/, l);
+  for (const l of draw.split('\n').filter((x) => /boxes\.push\(/.test(x))) assert.match(l, /^\s*if \(lv\.box && fin\(lv\.box\.top\)\) boxes\.push\(\{ from: lv\.box\.from, to: null, top: lv\.box\.top, bottom: lv\.box\.bottom,[^}]*label: 'Box laut Methode' \}\);\s*$/, l);
   const card = ui.slice(ui.indexOf('function card('), ui.indexOf('function planBlock('));
   assert.ok(card.length > 500, 'card gefunden');
   const literals = [...card.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]);
@@ -891,5 +891,5 @@ test('SF8-REFERENCE-PROTECTION: die Pipeline verändert keine Research-Artefakte
   const dir = path.join(ROOT, 'scripts/supertrader/source-faithful/artifacts');
   const snap = () => Object.fromEntries(fs.readdirSync(dir).sort().map((f) => [f, crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, f))).digest('hex')]));
   const before = snap(); run(); assert.deepEqual(snap(), before);
-  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, 'STRATEGY-SF6-READINESS.json'))).digest('hex').slice(0, 8), '4f9808aa');
+  assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(dir, 'STRATEGY-SF6-READINESS.json'))).digest('hex').slice(0, 8), '9658445d'); // 4f9808aa… -> 9658445d… (2026-11-04): only paperProtocol 1.1.0 -> 1.2.0 (SF6-PAPER-2027 V5), no grade changed
 });

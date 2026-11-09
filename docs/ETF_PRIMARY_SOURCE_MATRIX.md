@@ -2,7 +2,7 @@
 
 Stand: 04.10.2026. Grundlage: Recherche (vier parallele Agenten, öffentliche Code-Repositories, die die
 Endpunkte zitieren, und Suchauszüge) und eine CI-Probe von GitHub Actions aus
-(`vorsorge/data/sources/etf-source-probe.json`, Workflow `vorsorge-etf-sources.yml`, Marker `[vorsorge-etf-probe]`).
+(`vorsorge/data/sources/etf-source-probe.json`, Workflow `research.yml`, Teil `vorsorge-etf` mit Eingabe `job=probe` (vormals `vorsorge-etf-sources.yml`), Marker `[vorsorge-etf-probe]`).
 Die Probe hat **nur** Nutzungsbedingungen, robots.txt und die Form offener Quellen gelesen. Datenendpunkte
 der Emittenten wurden **nicht** abgerufen.
 
@@ -59,7 +59,7 @@ Vanguard US monatlich, SEC N-PORT quartalsweise mit 60 Tagen Verzögerung.
 
 ## Was das für die Umsetzung bedeutet
 
-- **Emittenten-Adapter** (`scripts/vorsorge/adapters/issuers.mjs`) erfüllen den Vertrag `ETFPrimarySourceAdapter`
+- **Emittenten-Adapter** (`products/vorsorge/producer/adapters/issuers.mjs`) erfüllen den Vertrag `ETFPrimarySourceAdapter`
   (discoverProducts, fetchProductMetadata, fetchShareClasses, fetchListings, fetchHoldings, fetchHistoricalHoldings,
   fetchFundCharacteristics, healthCheck, normalise, validate). Alle `fetch*` liefern `NOT_PERMITTED`. Die Parser für
   die dokumentierten Formate (iShares-CSV US/DE, SSGA-XLSX, Xtrackers-XLSX, Amundi-JSON, Invesco-JSON, generische

@@ -1,0 +1,155 @@
+{
+ "schemaVersion": "v12-spxpop-summary-1.1.0",
+ "studyId": "v12-spxpop-index-population",
+ "ruleVersion": "1.1.0",
+ "evidenceKind": "RECONSTRUCTION",
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "dataSource": "SEC fund holdings (N-30D, N-30B-2, N-Q, NPORT-P) of SPY, QQQ, DIA, IWB, IWM, IWV as parsed and validated by V12 INDEXPOP; fund price series (multi-asset, Tiingo) only as consistency reference",
+ "listingIdentity": "identity chain C1 CUSIP/ISIN, C2 normalized name, C3 CIK, C4 fuzzy (rules-1.1.0 identityChain); securityId only from INDEXPOP T1/T2 via core/identity.js",
+ "returnBasis": "PRICE_RETURN",
+ "availability": "holdings as of the report date; SEC filing date is later (N-PORT ~60 days, reports ~60 days) - a study using these members must respect the filing date",
+ "populations": [
+  {
+   "id": "PIT_SP500",
+   "fund": "SPY",
+   "index": "S&P 500",
+   "from": "2004-09-30",
+   "to": "2026-06-30",
+   "frequency": "annual (30.9.) 2004-2009, semiannual (31.3./30.9.) 2010 - 2019-03, one 6-month period 2019-03 -> 2019-09, quarterly from 2019-09",
+   "role": "primary",
+   "periods": 52,
+   "qualificationCounts": {
+    "NOT_QUALIFIED_COVERAGE": 6,
+    "QUALIFIED": 44,
+    "NOT_QUALIFIED_ERROR": 2
+   },
+   "qualifiedSpanFrom": "2009-09-30",
+   "qualifiedSpanTo": "2026-06-30",
+   "qualifiedSpanPeriods": 47,
+   "failingPeriods": 8
+  },
+  {
+   "id": "PIT_R1000",
+   "fund": "IWB",
+   "index": "Russell 1000",
+   "from": "2005-12-31",
+   "to": "2026-06-30",
+   "frequency": "semiannual (30.6./31.12.) 2005-2018, one 9-month period 2018-12 -> 2019-09, quarterly from 2019-09",
+   "role": "primary",
+   "periods": 54,
+   "qualificationCounts": {
+    "QUALIFIED_INTERNAL": 27,
+    "QUALIFIED": 27
+   },
+   "qualifiedSpanFrom": "2005-12-31",
+   "qualifiedSpanTo": "2026-06-30",
+   "qualifiedSpanPeriods": 54,
+   "failingPeriods": 0
+  },
+  {
+   "id": "PIT_SP500_EARLY",
+   "fund": "SPY",
+   "from": "1995-12-31",
+   "to": "2004-09-30",
+   "role": "secondary",
+   "periods": 9,
+   "qualificationCounts": {
+    "NOT_QUALIFIED_ERROR": 2,
+    "NOT_QUALIFIED_COVERAGE": 7
+   },
+   "qualifiedSpanFrom": null,
+   "qualifiedSpanTo": null,
+   "qualifiedSpanPeriods": 0,
+   "failingPeriods": 9
+  },
+  {
+   "id": "PIT_R2000",
+   "fund": "IWM",
+   "from": "2005-12-31",
+   "to": "2026-06-30",
+   "role": "secondary",
+   "periods": 54,
+   "qualificationCounts": {
+    "NOT_QUALIFIED_COVERAGE": 22,
+    "NOT_QUALIFIED_ERROR": 6,
+    "QUALIFIED": 26
+   },
+   "qualifiedSpanFrom": null,
+   "qualifiedSpanTo": null,
+   "qualifiedSpanPeriods": 0,
+   "failingPeriods": 28
+  },
+  {
+   "id": "PIT_R3000",
+   "fund": "IWV",
+   "from": "2005-12-31",
+   "to": "2026-06-30",
+   "role": "secondary",
+   "periods": 54,
+   "qualificationCounts": {
+    "QUALIFIED_INTERNAL": 27,
+    "QUALIFIED": 27
+   },
+   "qualifiedSpanFrom": "2005-12-31",
+   "qualifiedSpanTo": "2026-06-30",
+   "qualifiedSpanPeriods": 54,
+   "failingPeriods": 0
+  },
+  {
+   "id": "PIT_NDX",
+   "fund": "QQQ",
+   "from": "2004-09-30",
+   "to": "2026-06-30",
+   "role": "secondary",
+   "periods": 42,
+   "qualificationCounts": {
+    "NOT_QUALIFIED_COVERAGE": 7,
+    "QUALIFIED": 30,
+    "NOT_QUALIFIED_ERROR": 5
+   },
+   "qualifiedSpanFrom": "2016-09-30",
+   "qualifiedSpanTo": "2026-06-30",
+   "qualifiedSpanPeriods": 30,
+   "failingPeriods": 12
+  },
+  {
+   "id": "PIT_DJIA",
+   "fund": "DIA",
+   "reason": "price-weighted index: DIA holds the same share count of every member, a split does not change the fund's share count, so share-ratio split detection cannot work; periods are reported with qualification NOT_APPLICABLE_PRICE_WEIGHTED and no member data are published",
+   "role": "notApplicable",
+   "from": "0000",
+   "to": "9999",
+   "periods": 64,
+   "qualificationCounts": {
+    "NOT_APPLICABLE_PRICE_WEIGHTED": 64
+   },
+   "qualifiedSpanFrom": null,
+   "qualifiedSpanTo": null,
+   "qualifiedSpanPeriods": 0,
+   "failingPeriods": 64
+  }
+ ],
+ "statusCounts": {
+  "OBS_CHAIN": 335162,
+  "OBS_SERIES": 2648,
+  "BOUNDED_EXIT": 11032,
+  "OBS_CROSSFUND": 2067,
+  "BOUNDED_AMBIGUOUS_CA": 1452,
+  "BOUNDED_EXIT_SERIES_DELISTED": 25,
+  "EST_SERIES_END": 30,
+  "EST_CASH": 4
+ },
+ "inputHashes": {
+  "snapshots": "97b0d2fce4746608d96c430a7bf9108196a967cd8cd6b3ae7cc3bf82b537171b",
+  "mapping": "d71c285307c55c666870e6efff21565285965dffb874f3dcc685704c79cd5c6c",
+  "fates": "35f9ab47bae7cffc1a4737709d4236c888ec2695e873aa3e2bf77eefd554020d",
+  "rules": "e4627c416484b34bc2b609840bd1fd56f963e34553bbae15038b0b51b613cc59",
+  "fundSeries_SPY": "0183a199ab4454a84b5432409379d108c3c6da06c74948e51f4b3700d6f0e6db",
+  "fundSeries_QQQ": "be79bf8a45dbd24b3ae03aeb7ed2220e0dd751f74c97d468deed60812007ceb5",
+  "fundSeries_DIA": "9493fb3f69b3b04e687e8a6012c6b8993e67c4e2c92eee2443b5be14c6e932de",
+  "fundSeries_IWM": "e8a0c25623367955fc25ede6427328b8076017ca6d22bbfe8efdd23063a1b87b"
+ },
+ "reproHash": "a68b8016f5577b8bf7e7117ee9d381e903b491f18540886a1c05623ad7d245db",
+ "scope": "Holdings-frequency (annual/semiannual/quarterly) PIT index membership and price returns; no weekly study, no total return, no fundamentals except via CIK; not a strategy or signal study."
+}

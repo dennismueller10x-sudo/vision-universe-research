@@ -14,6 +14,7 @@
         wird geschoben.
    Echt: ein lokales Remote, zwei Klone, derselbe Wettlauf.
    ========================================================================= */
+import { workflowPart, workflowHead } from "../../scripts/ci/lib/workflow-part.mjs";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync, existsSync } from "node:fs";
@@ -271,4 +272,269 @@ test("PR11 · Der Refresh nennt nur Pfade, die er committet und deren eingetrage
     const pfad = d.artifact.slice(1);
     assert.ok(ausgeschlossen.some((x) => pfad.startsWith(x)), "fremder Erzeuger nicht ausgeschlossen: " + d.artifact);
   }
+});
+
+/* PR12-PR16 · NEUBAU STATT EIGENEM STAND (Lauf 41490082062, 02.11.2026)
+   Der SEC-Consumer-Montagslauf verwarf seine Fundamentaldaten an einem
+   Konflikt in discover/data/meta.json: "Lange Kursreihen" hatte 13 Minuten
+   vorher dieselbe Datei aus SEINEN neuen Eingaben gebaut. Beide Seiten
+   haben Eingaben, die die andere nicht hat; richtig ist nur ein Neubau aus
+   dem zusammengefuehrten Baum. Simuliert mit einem kleinen Erzeuger, der
+   meta.json wie build-discover-data.mjs als eine Zeile mit Zeitstempel
+   schreibt. */
+const META = "discover/data/meta.json";
+const SERIE = "quant/data/market/discover-series-long/index.json";
+const FUND = "quant/data/sec/consumer_coverage.json";
+const ERZEUGER = [
+  'import { readFileSync, writeFileSync, mkdirSync } from "node:fs";',
+  'const lies = (f) => JSON.parse(readFileSync(f, "utf8"));',
+  'if (process.env.NEUBAU_SCHEITERT === "1") { console.error("verify: Abweichung"); process.exit(1); }',
+  'mkdirSync("discover/data", { recursive: true });',
+  `const m = { generatedAt: new Date().toISOString() + Math.random(), serien: lies(${JSON.stringify(SERIE)}).stand, fundamentals: lies(${JSON.stringify(FUND)}).stand };`,
+  `writeFileSync(${JSON.stringify(META)}, JSON.stringify(m));`,
+].join("\n");
+const NEUBAU = { PUSH_REGENERATE_PATHS: "discover/data/ !discover/data/europe/", PUSH_REGENERATE: "node gen.mjs" };
+const baue = (dir, extra = {}) => {
+  const r = spawnSync("node", ["gen.mjs"], { cwd: dir, env: Object.assign({}, ENV, extra), encoding: "utf8" });
+  if (r.status !== 0) throw new Error(r.stderr);
+};
+
+function montag({ env = NEUBAU, langeAendertMeta = true, extraKonflikt = null, neubauScheitert = false } = {}) {
+  const root = mkdtempSync(join(tmpdir(), "vu-push4-"));
+  const remote = join(root, "remote.git");
+  git(root, "init", "-q", "--bare", "-b", "main", remote);
+  const seed = join(root, "seed");
+  git(root, "clone", "-q", remote, seed);
+  writeFileSync(join(seed, "gen.mjs"), ERZEUGER + "\n");
+  schreibe(seed, SERIE, { stand: "serien-alt" });
+  schreibe(seed, FUND, { stand: "fund-alt" });
+  if (extraKonflikt) schreibe(seed, extraKonflikt, { stand: "basis" });
+  baue(seed);
+  git(seed, "add", "-A"); git(seed, "commit", "-q", "-m", "basis"); git(seed, "push", "-q", "origin", "HEAD:main");
+  const lange = join(root, "lange"), consumer = join(root, "consumer");
+  git(root, "clone", "-q", remote, lange); git(root, "clone", "-q", remote, consumer);
+  /* 17:32 UTC: Lange Kursreihen landet zuerst - neue Serien, Discover neu gebaut. */
+  schreibe(lange, SERIE, { stand: "serien-neu" });
+  if (langeAendertMeta) baue(lange);
+  if (extraKonflikt) schreibe(lange, extraKonflikt, { stand: "lange" });
+  git(lange, "add", "-A"); git(lange, "commit", "-q", "-m", "Lange Kursreihen"); git(lange, "push", "-q", "origin", "HEAD:main");
+  /* Der Consumer hat neue Fundamentaldaten und baut Discover auf dem alten Serienstand. */
+  schreibe(consumer, FUND, { stand: "fund-neu" });
+  baue(consumer);
+  if (extraKonflikt) schreibe(consumer, extraKonflikt, { stand: "consumer" });
+  git(consumer, "add", "-A"); git(consumer, "commit", "-q", "-m", "SEC Consumer-Fundamentals");
+  const r = spawnSync("bash", [SCRIPT, "main", "2"], { cwd: consumer,
+    env: Object.assign({}, ENV, env, neubauScheitert ? { NEUBAU_SCHEITERT: "1" } : {}), encoding: "utf8" });
+  const pruef = join(root, "pruef");
+  git(root, "clone", "-q", remote, pruef);
+  const lies = (f) => JSON.parse(readFileSync(join(pruef, f), "utf8"));
+  const rebaseOffen = existsSync(join(consumer, git(consumer, "rev-parse", "--git-path", "rebase-merge")));
+  return { root, r, lies, log: git(pruef, "log", "--format=%s"), rebaseOffen };
+}
+
+test("PR12 · meta.json im Konflikt (Lauf 41490082062): Neubau aus beiden Eingaben, beide Commits landen, nichts geht verloren", () => {
+  const w = montag();
+  try {
+    assert.equal(w.r.status, 0, w.r.stdout + w.r.stderr);
+    assert.match(w.r.stdout, /Konflikt in erzeugter Datei, wird nach dem Rebase neu gebaut: discover\/data\/meta\.json/);
+    assert.match(w.r.stdout, /Neubau in den eigenen Commit uebernommen/);
+    assert.deepEqual(w.log.split("\n"), ["SEC Consumer-Fundamentals", "Lange Kursreihen", "basis"]);
+    const m = w.lies(META);
+    assert.equal(m.serien, "serien-neu", "die Serien von Lange Kursreihen fehlen");
+    assert.equal(m.fundamentals, "fund-neu", "die Fundamentaldaten des Consumers fehlen");
+    assert.equal(w.lies(SERIE).stand, "serien-neu");
+    assert.equal(w.lies(FUND).stand, "fund-neu");
+    assert.equal(w.rebaseOffen, false);
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR13 · Gegenprobe: ohne Neubau-Angabe bricht derselbe Konflikt ab wie am 02.11.", () => {
+  const w = montag({ env: {} });
+  try {
+    assert.equal(w.r.status, 1);
+    assert.match(w.r.stderr, /Konflikt ausserhalb erzeugter Artefakte: discover\/data\/meta\.json/);
+    assert.equal(w.log.split("\n")[0], "Lange Kursreihen");
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR14 · Neubau scheitert: nichts wird geschoben, kein vorlaeufiger Stand verlaesst den Runner", () => {
+  const w = montag({ neubauScheitert: true });
+  try {
+    assert.equal(w.r.status, 1);
+    assert.match(w.r.stderr, /Neubau gescheitert/);
+    assert.equal(w.log.split("\n")[0], "Lange Kursreihen");
+    assert.equal(w.lies(META).serien, "serien-neu");
+    assert.equal(w.lies(META).fundamentals, "fund-alt");
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR15 · Ohne Textkonflikt, aber mit geaenderten Eingaben: der Neubau macht Discover reproduzierbar", () => {
+  /* Lange Kursreihen aendert nur die Serien, nicht meta.json; der Rebase
+     gelaenge still - und meta.json des Consumers waere aus alten Serien. */
+  const w = montag({ langeAendertMeta: false });
+  try {
+    assert.equal(w.r.status, 0, w.r.stdout + w.r.stderr);
+    assert.deepEqual([w.lies(META).serien, w.lies(META).fundamentals], ["serien-neu", "fund-neu"]);
+  } finally { aufraeumen(w.root); }
+});
+
+test("PR16 · Ausnahmen bleiben Ausnahmen: Europa-Konflikt und Konflikt in Eingabedaten brechen weiterhin ab", () => {
+  for (const datei of ["discover/data/europe/manifest.json", "quant/data/sec/consumer/CIK0000320193.json"]) {
+    const w = montag({ extraKonflikt: datei });
+    try {
+      assert.equal(w.r.status, 1, datei);
+      assert.match(w.r.stderr, new RegExp("Konflikt ausserhalb erzeugter Artefakte: " + datei.replace(/[./]/g, "\\$&")));
+      assert.equal(w.log.split("\n")[0], "Lange Kursreihen");
+      assert.equal(w.rebaseOffen, false);
+    } finally { aufraeumen(w.root); }
+  }
+});
+
+test("PR17 · Wer neu baut, ist eingetragener Schreiber und ruft den eingetragenen Erzeuger auf", () => {
+  const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
+  const reg = JSON.parse(readFileSync(join(ROOT, "core/registry/domains.json"), "utf8"));
+  const domains = (Array.isArray(reg.domains) ? reg.domains : Object.values(reg.domains || {})).filter(Boolean);
+  const skript = readFileSync(SCRIPT, "utf8");
+  const erzeugt = [...skript.match(/ERZEUGT=\(([\s\S]*?)\)/)[1].matchAll(/"([^"]+)"/g)].map((m) => m[1]);
+  const wf = readFileSync(join(ROOT, ".github/workflows/sec-consumer-fundamentals.yml"), "utf8");
+  const pfade = (wf.match(/PUSH_REGENERATE_PATHS:\s*"([^"]+)"/) || [])[1];
+  const befehl = (wf.match(/PUSH_REGENERATE:\s*"([^"]+)"/) || [])[1];
+  assert.ok(pfade && befehl, "Consumer nennt keinen Neubau");
+  assert.match(wf, /scripts\/ci\/push-with-retry\.sh/);
+  for (const p of pfade.split(/\s+/).filter((x) => !x.startsWith("!"))) {
+    const dom = domains.find((d) => d.artifact && d.artifact.startsWith("/" + p));
+    assert.ok(dom, "kein Registereintrag fuer " + p);
+    assert.match(String(dom.workflow), /sec-consumer/, "Consumer ist kein eingetragener Schreiber von " + p);
+    assert.ok(befehl.includes(String(dom.producer).split(/\s/)[0]), "Neubau ruft nicht den Erzeuger " + dom.producer);
+    assert.ok(!erzeugt.some((e) => e.startsWith(p) || p.startsWith(e)), "Pfad steht zugleich unter 'eigener Stand': " + p);
+  }
+  /* Fremde Erzeuger unter discover/data sind ausgeschlossen (wie PR11). */
+  const aus = pfade.split(/\s+/).filter((x) => x.startsWith("!")).map((x) => x.slice(1));
+  for (const d of domains) {
+    if (!d.artifact || !d.artifact.startsWith("/discover/data/")) continue;
+    if (/build-discover-data|global-search-index/.test(String(d.producer))) continue;
+    assert.ok(aus.some((x) => d.artifact.slice(1).startsWith(x)), "fremder Erzeuger nicht ausgeschlossen: " + d.artifact);
+  }
+  /* Die Pruefung gehoert zum Neubau, sonst ginge ein ungeprueftes Ergebnis hinaus. */
+  assert.match(befehl, /verify-discover-data\.mjs/);
+});
+
+/* =========================================================================
+   ZEITLIMITS FUER NETZWERKBEFEHLE (Lauf 41666053466, 03.11.2026)
+
+   Ein fetch hing 61 Minuten und verwarf einen fertigen 76-Minuten-Neubau.
+   PR12  haengender fetch: nach dem Zeitlimit neu versucht, Push gelingt
+   PR13  Gegenprobe: fetch haengt immer -> begrenzt abgebrochen, nichts geschoben, klare Meldung
+   PR14  fetch bricht ab ("early EOF") -> wiederholt, Push gelingt
+   PR15  haengender push -> nach dem Zeitlimit Rebase und neuer Versuch, kein Doppelcommit
+   PR16  Gegenprobe: ungueltige Werte verweigern den Start; Standardwerte und lueckenlose Absicherung
+   Echt: lokales Remote, zwei Klone; ein `git`-Vorsatz haengt oder bricht gezielt ab.
+   ========================================================================= */
+import { chmodSync, readdirSync } from "node:fs";
+
+function mitShim(ablauf) {
+  const root = mkdtempSync(join(tmpdir(), "vu-zl-"));
+  const remote = join(root, "remote.git"), bin = join(root, "bin"), zaehler = join(root, "zaehler");
+  mkdirSync(bin); mkdirSync(zaehler);
+  const echtes = spawnSync("bash", ["-c", "command -v git"], { encoding: "utf8" }).stdout.trim();
+  const shim = join(bin, "git");
+  writeFileSync(shim, [
+    "#!/usr/bin/env bash",
+    'cmd="${1:-}"',
+    'zaehle() { local f="$SHIM_DIR/$1"; local n=0; [ -f "$f" ] && n=$(cat "$f"); n=$((n + 1)); echo "$n" > "$f"; echo "$n"; }',
+    'if [ "$cmd" = fetch ]; then',
+    '  n=$(zaehle fetch)',
+    '  if [ "$n" -le "${SHIM_HANG_FETCH:-0}" ]; then exec sleep 60; fi',
+    '  if [ "$n" -le "$(( ${SHIM_HANG_FETCH:-0} + ${SHIM_FAIL_FETCH:-0} ))" ]; then echo "error: 1856 bytes of body are still expected" >&2; echo "fatal: early EOF" >&2; exit 128; fi',
+    "fi",
+    'if [ "$cmd" = push ]; then',
+    '  n=$(zaehle push)',
+    '  if [ "$n" -le "${SHIM_HANG_PUSH:-0}" ]; then exec sleep 60; fi',
+    "fi",
+    'exec "$SHIM_REAL_GIT" "$@"', ""].join("\n"));
+  chmodSync(shim, 0o755);
+  git(root, "init", "-q", "--bare", "-b", "main", remote);
+  const seed = join(root, "seed"); git(root, "clone", "-q", remote, seed);
+  schreibe(seed, "a.json", { n: 1 }); git(seed, "add", "-A"); git(seed, "commit", "-q", "-m", "basis"); git(seed, "push", "-q", "origin", "HEAD:main");
+  const lauf = join(root, "lauf"), andere = join(root, "andere");
+  git(root, "clone", "-q", remote, lauf); git(root, "clone", "-q", remote, andere);
+  if (ablauf.race) { schreibe(andere, "b.json", { n: 2 }); git(andere, "add", "-A"); git(andere, "commit", "-q", "-m", "anderer"); git(andere, "push", "-q", "origin", "HEAD:main"); }
+  schreibe(lauf, "c.json", { n: 3 }); git(lauf, "add", "-A"); git(lauf, "commit", "-q", "-m", "eigener Lauf");
+  const env = { ...ENV, PATH: bin + ":" + (ENV.PATH || process.env.PATH), SHIM_DIR: zaehler, SHIM_REAL_GIT: echtes, ...ablauf.env };
+  const t0 = Date.now();
+  const r = spawnSync("bash", [SCRIPT, "main", "3"], { cwd: lauf, env, encoding: "utf8", timeout: 120000 });
+  const dauer = (Date.now() - t0) / 1000;
+  const pruef = join(root, "pruef"); git(root, "clone", "-q", remote, pruef);
+  const dateien = readdirSync(pruef).filter((f) => f.endsWith(".json")).sort();
+  const commits = git(pruef, "log", "--format=%s");
+  const wie = (name) => Number(existsSync(join(zaehler, name)) ? readFileSync(join(zaehler, name), "utf8") : 0);
+  return { root, r, dauer, dateien, commits, fetches: wie("fetch"), pushes: wie("push") };
+}
+
+test("PR12 · haengender fetch: nach dem Zeitlimit neu versucht, Push gelingt, nichts geht verloren", () => {
+  const s = mitShim({ race: true, env: { SHIM_HANG_FETCH: "1", PUSH_FETCH_TIMEOUT: "2" } });
+  try {
+    assert.equal(s.r.status, 0, s.r.stderr + s.r.stdout);
+    assert.match(s.r.stderr, /fetch nach 2s abgebrochen \(Zeitlimit, Versuch 1\/3\)/);
+    assert.deepEqual(s.dateien, ["a.json", "b.json", "c.json"], "fremder und eigener Commit liegen vor");
+    assert.match(s.commits, /eigener Lauf/); assert.ok(s.fetches >= 2, "fetch wurde wiederholt");
+    assert.ok(s.dauer < 40, "begrenzt statt 61 Minuten: " + s.dauer + " s");
+  } finally { aufraeumen(s.root); }
+});
+
+test("PR13 · GEGENPROBE: fetch haengt immer -> nach begrenzten Versuchen Abbruch, nichts geschoben, klare Meldung", () => {
+  const s = mitShim({ race: true, env: { SHIM_HANG_FETCH: "99", PUSH_FETCH_TIMEOUT: "2", PUSH_FETCH_TRIES: "2" } });
+  try {
+    assert.notEqual(s.r.status, 0, "kein stilles Gelingen");
+    assert.match(s.r.stderr, /fetch nach 2s abgebrochen \(Zeitlimit, Versuch 2\/2\)/);
+    assert.match(s.r.stderr, /NICHT veroeffentlicht/);
+    assert.deepEqual(s.dateien, ["a.json", "b.json"], "eigener Commit wurde nicht geschoben");
+    assert.equal(s.fetches, 2, "genau die begrenzte Zahl von Versuchen");
+    assert.ok(s.dauer < 45, "Gesamtdauer begrenzt: " + s.dauer + " s");
+  } finally { aufraeumen(s.root); }
+});
+
+test("PR14 · fetch bricht mit 'early EOF' ab: wiederholt, Push gelingt", () => {
+  const s = mitShim({ race: true, env: { SHIM_FAIL_FETCH: "1", PUSH_FETCH_TIMEOUT: "20" } });
+  try {
+    assert.equal(s.r.status, 0, s.r.stderr + s.r.stdout);
+    assert.match(s.r.stderr, /fetch fehlgeschlagen \(Exit 128, Versuch 1\/3\)/);
+    assert.deepEqual(s.dateien, ["a.json", "b.json", "c.json"]);
+  } finally { aufraeumen(s.root); }
+});
+
+test("PR15 · haengender push: nach dem Zeitlimit Rebase und neuer Versuch, genau ein eigener Commit auf dem Remote", () => {
+  const s = mitShim({ race: false, env: { SHIM_HANG_PUSH: "1", PUSH_PUSH_TIMEOUT: "2" } });
+  try {
+    assert.equal(s.r.status, 0, s.r.stderr + s.r.stdout);
+    assert.deepEqual(s.dateien, ["a.json", "c.json"]);
+    assert.equal(s.commits.split("\n").filter((l) => l === "eigener Lauf").length, 1, "kein Doppelcommit");
+    assert.equal(s.pushes, 2, "ein Zeitlimit, ein erfolgreicher Push");
+  } finally { aufraeumen(s.root); }
+});
+
+test("PR16 · GEGENPROBE: ungueltige Werte verweigern den Start; Standardwerte stehen fest; kein roher fetch/push ausser mit Zeitlimit", () => {
+  const s = mitShim({ race: false, env: { PUSH_FETCH_TIMEOUT: "abc" } });
+  try {
+    assert.equal(s.r.status, 2); assert.match(s.r.stderr, /Ungueltiger Zeitlimit- oder Versuchswert/);
+    assert.deepEqual(s.dateien, ["a.json"], "nichts geschoben");
+  } finally { aufraeumen(s.root); }
+  const text = readFileSync(SCRIPT, "utf8");
+  assert.match(text, /FETCH_TIMEOUT="\$\{PUSH_FETCH_TIMEOUT:-300\}"/);
+  assert.match(text, /PUSH_TIMEOUT="\$\{PUSH_PUSH_TIMEOUT:-600\}"/);
+  assert.match(text, /FETCH_TRIES="\$\{PUSH_FETCH_TRIES:-3\}"/);
+  const roh = text.split("\n").filter((l) => /^\s*(?!#)(.*\s)?git (fetch|push)\b/.test(l) && !/mit_zeitlimit/.test(l) && !/^\s*#/.test(l) && !/echo|Hinweis|"[^"]*git (fetch|push)/.test(l));
+  assert.deepEqual(roh, [], "jeder fetch/push laeuft ueber mit_zeitlimit");
+});
+
+test("PR17 · technical-intelligence (pipeline-daily, vormals technical-intelligence-build): workflow_run nur auf main, Concurrency je Zweig, Nachlauf nur nach Erfolg", () => {
+  const root = join(dirname(SCRIPT), "..", "..");
+  const kopf = workflowHead(root, "pipeline-daily.yml");
+  const y = workflowPart(root, "pipeline-daily.yml", "technical-intelligence");
+  const wr = kopf.slice(kopf.indexOf("\n  workflow_run:"), kopf.indexOf("\n  push:"));
+  assert.match(wr, /Lange Kursreihen/);
+  assert.match(wr, /branches: \[main\]/, "ohne Filter verdraengt ein uebersprungener Zweiglauf einen wartenden Neubau");
+  assert.match(y, /group: technical-intelligence-build-\$\{\{ github\.ref_name \}\}/, "ADR-005");
+  assert.match(y, /conclusion == 'success'/, "kein Neubau nach gescheitertem long-series-Lauf");
+  assert.match(y, /push-with-retry\.sh/, "Push nur ueber das Skript");
 });

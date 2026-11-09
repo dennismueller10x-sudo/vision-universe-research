@@ -15,6 +15,8 @@
                oder freigegeben, erster Lauf ausstehend - ACTIVATING)
      NOT_DELIVERED  gegen die Seite gemessen, Artefakt wird bewusst nicht
                ausgeliefert (repositoryOnly)
+     RELEASE_ONLY  gegen das Repository gemessen, Artefakt entsteht erst im
+               Release-Bau und liegt nur in der Auslieferung (releaseOnly)
      UNKNOWN   kein Zeitstempel - Frische nicht messbar
 
    Jede Zeile traegt: letzter Lauf, erwarteter und tatsaechlicher Stand,
@@ -39,7 +41,7 @@
   "use strict";
 
   var VERSION = "core-health-1.0.0";
-  var RANK = { OK: 0, DISABLED: 0, NOT_DELIVERED: 0, UNKNOWN: 1, DEGRADED: 2, STALE: 3, FAILED: 4 };
+  var RANK = { OK: 0, DISABLED: 0, NOT_DELIVERED: 0, RELEASE_ONLY: 0, UNKNOWN: 1, DEGRADED: 2, STALE: 3, FAILED: 4 };
   var HOUR = 3600000;
 
   /** Wert unter einem Punktpfad ("a.b.0.c"); null, wenn nicht vorhanden. */
@@ -120,6 +122,11 @@
       out.warnings.push("Wird nicht ausgeliefert; nur gegen das Repository messbar.");
       return out;
     }
+    if (domain.releaseOnly && ctx.target !== "site") {
+      out.status = "RELEASE_ONLY"; out.reason = "RELEASE_ONLY";
+      out.warnings.push("Entsteht im Release-Bau und liegt nur in der Auslieferung; gegen die Seite messbar.");
+      return out;
+    }
     /* Vorbereitet, nicht freigegeben (domains.json, Kopf "activation"): das
        Artefakt darf NICHT existieren. Fehlt es, ist das der Sollzustand;
        liegt es vor, wurde ohne Freigabe veroeffentlicht. Ist es vorhanden,
@@ -158,6 +165,15 @@
     var data = loaded.data;
     var dis = domain.disabledWhen;
     if (dis && at(data, dis.path) === dis.equals) {
+      /* expectLive (domains.json): die Datenart soll auf der Seite AN sein. Steht sie dort trotzdem auf DISABLED, ist das ein
+         Ausfall, kein Sollzustand (Vorfall 08.11.2026: Company Intelligence nach einem Fail-closed-Rollback 18 h live aus,
+         ohne Alarm). Nur gegen die Seite: der Repository-Stand traegt bewusst den DISABLED-Platzhalter. Bewusst abschalten =
+         expectLive im selben PR auf false setzen. */
+      if (domain.expectLive === true && ctx.target === "site") {
+        out.status = "FAILED"; out.reason = "DISABLED_BUT_EXPECTED_LIVE";
+        out.warnings.push("Auf der Seite abgeschaltet (" + dis.path + " = " + dis.equals + "), erwartet ist AN (expectLive).");
+        return out;
+      }
       out.status = "DISABLED"; out.reason = "DISABLED_BY_ARTIFACT";
       return out;
     }
@@ -205,9 +221,37 @@
       else if (lag >= f.warnAfter) { out.status = worse(out.status, "DEGRADED"); out.reason = "BEHIND_" + lag + "_SESSIONS"; }
     } else if (f.kind === "intraday") {
       assessIntraday(out, data, f, ctx);
+    } else if (f.kind === "follows") {
+      assessFollows(out, tsMs, f, ctx);
     }
     if (out.status !== "OK" && !out.reason) out.reason = "SEE_WARNINGS";
     return out;
+  }
+
+
+  /* "follows": ein abgeleitetes Produkt muss nach seinem Vorgaenger-Artefakt neu gebaut werden (Betriebscheck 03.11.2026,
+     Issue #1292). Beispiel: Chartbild/Elliott (v3) wird aus den Langreihen gebaut. Nach jedem Reihenlauf liegt das Produkt
+     NORMAL 70 bis 100 Minuten hinter dem Vorgaenger (Neubau); das ist kein Befund. Gemessen wird das Alter des Vorgaengers
+     (Erzeugungszeit), solange das Produkt aelter ist als er:
+       Produkt gleich alt oder juenger gebaut  -> OK
+       Vorgaenger juenger, Abstand <= warnAfterHours  -> OK (normales Verarbeitungsfenster, nur Hinweis)
+       Abstand > warnAfterHours  -> DEGRADED     Abstand > staleAfterHours  -> STALE
+     Fehlt eine der beiden Zeiten, ist der Zustand UNKNOWN, nie stillschweigend OK. Die Domaene misst nur Aktualitaet; sie
+     aendert keine Daten, keine Sperre und keine Methodik. */
+  function assessFollows(out, tsMs, f, ctx) {
+    var ref = ctx.artifacts && ctx.artifacts[f.artifact];
+    var refMs = ref && ref.ok ? parseTime(first(ref.data, f.timestamp || ["generatedAt"])) : null;
+    out.expected = "nachgezogen innerhalb " + f.warnAfterHours + " h nach " + f.artifact;
+    out.followsArtifact = f.artifact;
+    if (refMs === null) { out.status = worse(out.status, "UNKNOWN"); out.reason = "NO_REFERENCE_TIMESTAMP"; return; }
+    if (tsMs === null) { out.status = worse(out.status, "UNKNOWN"); out.reason = "NO_TIMESTAMP"; return; }
+    if (tsMs >= refMs) { out.followLagHours = 0; return; }
+    var lagH = Math.round(((ctx.now.getTime() - refMs) / HOUR) * 10) / 10;
+    out.followLagHours = lagH;
+    if (lagH > f.staleAfterHours) { out.status = worse(out.status, "STALE"); out.reason = "BEHIND_PREDECESSOR_" + lagH + "H"; }
+    else if (lagH > f.warnAfterHours) { out.status = worse(out.status, "DEGRADED"); out.reason = "BEHIND_PREDECESSOR_" + lagH + "H"; }
+    out.warnings.push((lagH > f.warnAfterHours ? "Produkt ist " : "Produkt wird nachgezogen: ") + lagH + " h hinter dem Vorgaenger (" + f.artifact + ", Stand " +
+      new Date(refMs).toISOString() + ", Produkt " + out.lastUpdate + "). " + (lagH > f.warnAfterHours ? "Ueber dem normalen Verarbeitungsfenster." : "Normales Verarbeitungsfenster."));
   }
 
   /* Intraday: bei offener Boerse zaehlt das Alter des letzten Takts; nach
@@ -280,7 +324,7 @@
       try { resolution = opts.tradingSession.resolve(now, { calendar: opts.calendar }); } catch (e) { resolution = null; }
     }
     var ctx = { now: now, calendar: opts.calendar || null, tradingSession: opts.tradingSession || null, resolution: resolution,
-                target: opts.target === "site" ? "site" : "repository" };
+                target: opts.target === "site" ? "site" : "repository", artifacts: artifacts };
     var domains = (registry.domains || []).map(function (d) { return assessDomain(d, artifacts[d.artifact], ctx); });
     var overall = "OK";
     domains.forEach(function (d) {
@@ -317,7 +361,7 @@
       if (d.ageHours !== null && d.ageHours !== undefined) extra.push(d.ageHours + " h alt");
       if (d.records !== null && d.records !== undefined) extra.push(d.records + (d.expectedRecords ? "/" + d.expectedRecords : "") + " Datensaetze");
       lines.push(pad(d.label, 30) + pad(d.status, 10) + pad(stand, 18) + extra.join(" · "));
-      if (d.status !== "OK" && d.status !== "DISABLED" && d.status !== "NOT_DELIVERED") {
+      if (d.status !== "OK" && d.status !== "DISABLED" && d.status !== "NOT_DELIVERED" && d.status !== "RELEASE_ONLY") {
         if (d.reason) lines.push("    Grund: " + d.reason + (d.workflow ? " · Erzeuger: " + d.workflow : ""));
         d.warnings.forEach(function (w) { lines.push("    - " + w); });
       }

@@ -1,0 +1,73 @@
+{
+ "schemaVersion": "backtest-runner-spec-1.0.0",
+ "version": "1.0.0",
+ "registeredAt": "2026-10-29T00:00:00Z",
+ "asOf": "2025-12-31",
+ "costs": {
+  "feeBps": 5,
+  "slippageBps": 5
+ },
+ "benchmark": "SPY",
+ "id": "signal-2009-recovery",
+ "description": "Five weekly signal rules, 30 large caps, signals in the 2009-2010 recovery",
+ "kind": "SIGNAL_BACKTEST",
+ "window": {
+  "from": "2009-03-01",
+  "to": "2010-12-31"
+ },
+ "population": {
+  "profile": "V10_PRIMARY",
+  "tickers": [
+   "MSFT",
+   "JPM",
+   "KO",
+   "PG",
+   "XOM",
+   "NVDA",
+   "INTC",
+   "CSCO",
+   "ORCL",
+   "WMT",
+   "HD",
+   "MRK",
+   "PFE",
+   "JNJ",
+   "CVX",
+   "IBM",
+   "MCD",
+   "DIS",
+   "BA",
+   "CAT",
+   "AMZN",
+   "GE",
+   "T",
+   "VZ",
+   "BAC",
+   "C",
+   "WFC",
+   "MMM",
+   "HON",
+   "PEP"
+  ]
+ },
+ "engine": {
+  "horizonBars": 26
+ },
+ "methods": {
+  "MARKET_REGIME": {},
+  "PARAMETER_SENSITIVITY": {
+   "dimensions": {
+    "holdingPeriods": [
+     13,
+     26,
+     52
+    ],
+    "feeBps": [
+     5,
+     25
+    ]
+   },
+   "blockLength": 13
+  }
+ }
+}

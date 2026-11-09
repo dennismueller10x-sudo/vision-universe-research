@@ -1,0 +1,1656 @@
+{
+ "schemaVersion": "v10-ca-agreement-1.0.0",
+ "readAfterFreeze": true,
+ "v112VerdictsSha256": "ab5678dd08dee8107c8b081fa7b7477b922772edd488f41a1214427e2bf9fb06",
+ "events": 1087,
+ "transitions100to112": {
+  "OUT_OF_FRAME_PRE_XBRL -> OUT_OF_FRAME_PRE_2004": 250,
+  "IDENTITY_UNVERIFIED -> IDENTITY_UNVERIFIED": 211,
+  "INSUFFICIENT_FILINGS -> INSUFFICIENT_FILINGS": 210,
+  "SPLIT_OR_SHARE_CHANGE_EVIDENCE -> SPLIT_OR_SHARE_CHANGE_EVIDENCE": 104,
+  "OUT_OF_FRAME_PRE_XBRL -> IDENTITY_UNVERIFIED": 93,
+  "OUT_OF_FRAME_PRE_XBRL -> INSUFFICIENT_FILINGS": 75,
+  "PROVIDER_SPLIT_RECORDED -> PROVIDER_SPLIT_RECORDED": 37,
+  "GENUINE_MOVE -> GENUINE_MOVE": 28,
+  "IDENTITY_UNVERIFIED -> SPLIT_OR_SHARE_CHANGE_EVIDENCE": 20,
+  "NEGATIVE_EVIDENCE_ONLY -> NEGATIVE_EVIDENCE_ONLY": 14,
+  "OUT_OF_FRAME_PRE_XBRL -> SPLIT_OR_SHARE_CHANGE_EVIDENCE": 7,
+  "SPLIT_OR_SHARE_CHANGE_EVIDENCE -> SPLIT_UNADJUSTED": 7,
+  "OUT_OF_FRAME_PRE_XBRL -> GENUINE_MOVE": 6,
+  "INSUFFICIENT_FILINGS -> IDENTITY_UNVERIFIED": 5,
+  "OUT_OF_FRAME_PRE_XBRL -> PROVIDER_SPLIT_RECORDED": 5,
+  "IDENTITY_UNVERIFIED -> NEGATIVE_EVIDENCE_ONLY": 5,
+  "OUT_OF_FRAME_PRE_XBRL -> NEGATIVE_EVIDENCE_ONLY": 4,
+  "IDENTITY_UNVERIFIED -> GENUINE_MOVE": 3,
+  "SPIKE_REVERSAL -> SPIKE_REVERSAL": 1,
+  "IDENTITY_UNVERIFIED -> SPLIT_UNADJUSTED": 1,
+  "GENUINE_MOVE -> NEGATIVE_EVIDENCE_ONLY": 1
+ },
+ "admissibilityChanged": [
+  {
+   "securityId": "ref_ACAD",
+   "week": "2009-09-04",
+   "v100": "OUT_OF_FRAME_PRE_XBRL",
+   "v112": "GENUINE_MOVE",
+   "detail112": null
+  },
+  {
+   "securityId": "ref_ARLO",
+   "week": "2019-02-08",
+   "v100": "IDENTITY_UNVERIFIED",
+   "v112": "GENUINE_MOVE",
+   "detail112": null
+  },
+  {
+   "securityId": "ref_IGC",
+   "week": "2018-11-02",
+   "v100": "OUT_OF_FRAME_PRE_XBRL",
+   "v112": "GENUINE_MOVE",
+   "detail112": null
+  },
+  {
+   "securityId": "ref_IGC",
+   "week": "2019-02-22",
+   "v100": "OUT_OF_FRAME_PRE_XBRL",
+   "v112": "GENUINE_MOVE",
+   "detail112": null
+  },
+  {
+   "securityId": "ref_JOB",
+   "week": "2014-12-19",
+   "v100": "IDENTITY_UNVERIFIED",
+   "v112": "GENUINE_MOVE",
+   "detail112": null
+  },
+  {
+   "securityId": "ref_MGNX",
+   "week": "2019-02-08",
+   "v100": "IDENTITY_UNVERIFIED",
+   "v112": "GENUINE_MOVE",
+   "detail112": null
+  },
+  {
+   "securityId": "ref_MOH",
+   "week": "2005-07-22",
+   "v100": "OUT_OF_FRAME_PRE_XBRL",
+   "v112": "GENUINE_MOVE",
+   "detail112": null
+  },
+  {
+   "securityId": "ref_NSIT",
+   "week": "2009-02-13",
+   "v100": "OUT_OF_FRAME_PRE_XBRL",
+   "v112": "GENUINE_MOVE",
+   "detail112": null
+  },
+  {
+   "securityId": "ref_RDN",
+   "week": "2009-08-07",
+   "v100": "OUT_OF_FRAME_PRE_XBRL",
+   "v112": "GENUINE_MOVE",
+   "detail112": null
+  },
+  {
+   "securityId": "ref_VSTS",
+   "week": "2024-05-03",
+   "v100": "GENUINE_MOVE",
+   "v112": "NEGATIVE_EVIDENCE_ONLY",
+   "detail112": "AFFIRMATIVE_8K_MENTIONS_SPINOFF"
+  }
+ ],
+ "series": {
+  "admitted100": 23,
+  "admitted112": 28,
+  "both": [
+   "ref_ACRS",
+   "ref_ALEC",
+   "ref_ALNY",
+   "ref_BKSY",
+   "ref_BMEA",
+   "ref_CPIX",
+   "ref_ERII",
+   "ref_FMC",
+   "ref_GRAL",
+   "ref_GRCE",
+   "ref_HYFM",
+   "ref_MDRR",
+   "ref_MIRA",
+   "ref_MVST",
+   "ref_NTLA",
+   "ref_OM",
+   "ref_PACB",
+   "ref_PBYI",
+   "ref_REPL",
+   "ref_SRPT",
+   "ref_SSRM",
+   "ref_VRRM"
+  ],
+  "only100": [
+   "ref_VSTS"
+  ],
+  "only112": [
+   "ref_ACAD",
+   "ref_ARLO",
+   "ref_MGNX",
+   "ref_MOH",
+   "ref_NSIT",
+   "ref_RDN"
+  ]
+ },
+ "v9DryRun81": {
+  "cases": 81,
+  "admitted112": 20,
+  "heldByBlockingClasses": {
+   "SPLIT_OR_SHARE_CHANGE_EVIDENCE": 27,
+   "IDENTITY_UNVERIFIED": 22,
+   "NEGATIVE_EVIDENCE_ONLY": 10,
+   "OUT_OF_FRAME_PRE_2004": 1,
+   "INSUFFICIENT_FILINGS": 1
+  },
+  "perCase": [
+   {
+    "securityId": "ref_AAPL",
+    "v9DryRunEvents": [
+     {
+      "week": "2000-09-29",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2000-09-29",
+      "OUT_OF_FRAME_PRE_2004",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ABT",
+    "v9DryRunEvents": [
+     {
+      "week": "2013-01-04",
+      "resolution": "SPIN_OFF_DISTRIBUTION"
+     }
+    ],
+    "v9PriceReturnOnly": true,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2013-01-04",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ACET",
+    "v9DryRunEvents": [
+     {
+      "week": "2023-06-30",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2023-06-30",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ACRS",
+    "v9DryRunEvents": [
+     {
+      "week": "2023-11-17",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2023-11-17",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ALEC",
+    "v9DryRunEvents": [
+     {
+      "week": "2025-10-24",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2025-10-24",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ALNY",
+    "v9DryRunEvents": [
+     {
+      "week": "2016-10-07",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2016-10-07",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ANAB",
+    "v9DryRunEvents": [
+     {
+      "week": "2017-10-13",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2017-10-13",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_XBRL"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_APRE",
+    "v9DryRunEvents": [
+     {
+      "week": "2020-12-31",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2020-12-31",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ASMB",
+    "v9DryRunEvents": [
+     {
+      "week": "2020-11-06",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2020-11-06",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ATEC",
+    "v9DryRunEvents": [
+     {
+      "week": "2015-08-07",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2015-08-07",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_XBRL"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ATNM",
+    "v9DryRunEvents": [
+     {
+      "week": "2013-03-22",
+      "resolution": "GENUINE_MOVE"
+     },
+     {
+      "week": "2024-08-09",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2013-03-22",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ],
+     [
+      "2024-08-09",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_EXCHANGE_UNCONFIRMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ATRA",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-01-16",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2026-01-16",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_AVTX",
+    "v9DryRunEvents": [
+     {
+      "week": "2016-12-02",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2016-12-02",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_BKSY",
+    "v9DryRunEvents": [
+     {
+      "week": "2022-05-27",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2022-05-27",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_BMEA",
+    "v9DryRunEvents": [
+     {
+      "week": "2023-03-31",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2023-03-31",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_BRLS",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-05-24",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2024-05-24",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_8K"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_BYSI",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-03-08",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2024-03-08",
+      "INSUFFICIENT_FILINGS",
+      "NO_BEFORE_BRACKET"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_CELU",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-08-28",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2026-08-28",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_CLDX",
+    "v9DryRunEvents": [
+     {
+      "week": "2018-04-20",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2018-04-20",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_XBRL"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_CLSK",
+    "v9DryRunEvents": [
+     {
+      "week": "2017-11-03",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2017-11-03",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_EXCHANGE_UNCONFIRMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_CPIX",
+    "v9DryRunEvents": [
+     {
+      "week": "2021-12-03",
+      "resolution": "GENUINE_MOVE"
+     },
+     {
+      "week": "2025-02-07",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2021-12-03",
+      "GENUINE_MOVE",
+      null
+     ],
+     [
+      "2025-02-07",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_CPRI",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-10-25",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2024-10-25",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_CPS",
+    "v9DryRunEvents": [
+     {
+      "week": "2022-08-05",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2022-08-05",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_CRBP",
+    "v9DryRunEvents": [
+     {
+      "week": "2020-09-11",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2020-09-11",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_8K"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_DMRA",
+    "v9DryRunEvents": [
+     {
+      "week": "2023-08-18",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2023-08-18",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_DWTX",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-01-26",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2024-01-26",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_EDSA",
+    "v9DryRunEvents": [
+     {
+      "week": "2020-06-19",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2020-06-19",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ELTX",
+    "v9DryRunEvents": [
+     {
+      "week": "2021-10-29",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2021-10-29",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ERII",
+    "v9DryRunEvents": [
+     {
+      "week": "2015-10-23",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2015-10-23",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_EYPT",
+    "v9DryRunEvents": [
+     {
+      "week": "2011-11-11",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2011-11-11",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_FMC",
+    "v9DryRunEvents": [
+     {
+      "week": "2025-10-31",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2025-10-31",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_GALT",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-12-20",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2024-12-20",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_GLSI",
+    "v9DryRunEvents": [
+     {
+      "week": "2020-12-11",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2020-12-11",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_GOSS",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-02-27",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2026-02-27",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_8K"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_GRAL",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-02-20",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2026-02-20",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_GRCE",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-04-24",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2026-04-24",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_HOUR",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-12-27",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2024-12-27",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_IZEA",
+    "v9DryRunEvents": [
+     {
+      "week": "2012-05-11",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2012-05-11",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_EXCHANGE_UNCONFIRMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_JCI",
+    "v9DryRunEvents": [
+     {
+      "week": "2012-10-05",
+      "resolution": "SPIN_OFF_DISTRIBUTION"
+     }
+    ],
+    "v9PriceReturnOnly": true,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2012-10-05",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_KOSS",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-07-05",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2024-07-05",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_KYNB",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-02-02",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2024-02-02",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_LAW",
+    "v9DryRunEvents": [
+     {
+      "week": "2022-08-12",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2022-08-12",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_XBRL"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_LXRX",
+    "v9DryRunEvents": [
+     {
+      "week": "2020-12-11",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2020-12-11",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_MAMO",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-02-06",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2026-02-06",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_MDGL",
+    "v9DryRunEvents": [
+     {
+      "week": "2015-10-23",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2015-10-23",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_MGNX",
+    "v9DryRunEvents": [
+     {
+      "week": "2019-02-08",
+      "resolution": "GENUINE_MOVE"
+     },
+     {
+      "week": "2020-05-08",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2019-02-08",
+      "GENUINE_MOVE",
+      null
+     ],
+     [
+      "2020-05-08",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_MGRX",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-03-27",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2026-03-27",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_MIRA",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-07-26",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2024-07-26",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_MLSS",
+    "v9DryRunEvents": [
+     {
+      "week": "2011-11-25",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2011-11-25",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_EXCHANGE_UNCONFIRMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_MTNB",
+    "v9DryRunEvents": [
+     {
+      "week": "2023-08-11",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2023-08-11",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_MVST",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-11-15",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2024-11-15",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_NBIX",
+    "v9DryRunEvents": [
+     {
+      "week": "2014-01-10",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2014-01-10",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_NTLA",
+    "v9DryRunEvents": [
+     {
+      "week": "2025-10-31",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2025-10-31",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_NVNO",
+    "v9DryRunEvents": [
+     {
+      "week": "2025-08-22",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2025-08-22",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ODYS",
+    "v9DryRunEvents": [
+     {
+      "week": "2022-08-12",
+      "resolution": "GENUINE_MOVE"
+     },
+     {
+      "week": "2023-08-18",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2022-08-12",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ],
+     [
+      "2023-08-18",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_OLMA",
+    "v9DryRunEvents": [
+     {
+      "week": "2021-12-03",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2021-12-03",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_OM",
+    "v9DryRunEvents": [
+     {
+      "week": "2023-10-13",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2023-10-13",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_ORMP",
+    "v9DryRunEvents": [
+     {
+      "week": "2023-01-13",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2023-01-13",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_OTLK",
+    "v9DryRunEvents": [
+     {
+      "week": "2023-09-01",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2023-09-01",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_XBRL"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_PACB",
+    "v9DryRunEvents": [
+     {
+      "week": "2024-04-19",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2024-04-19",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_PASG",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-04-24",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2026-04-24",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_XBRL"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_PBYI",
+    "v9DryRunEvents": [
+     {
+      "week": "2018-11-02",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2018-11-02",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_PMTS",
+    "v9DryRunEvents": [
+     {
+      "week": "2016-05-13",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2016-05-13",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_PROP",
+    "v9DryRunEvents": [
+     {
+      "week": "2020-05-15",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2020-05-15",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_QURE",
+    "v9DryRunEvents": [
+     {
+      "week": "2025-09-26",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2025-09-26",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_8K"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_REPL",
+    "v9DryRunEvents": [
+     {
+      "week": "2025-10-24",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2025-10-24",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_RXT",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-02-20",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2026-02-20",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_SGLY",
+    "v9DryRunEvents": [
+     {
+      "week": "2022-04-14",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2022-04-14",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_PERIODIC_TEXT"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_SIEB",
+    "v9DryRunEvents": [
+     {
+      "week": "2017-12-15",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2017-12-15",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_SLNG",
+    "v9DryRunEvents": [
+     {
+      "week": "2018-06-08",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2018-06-08",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_SLSN",
+    "v9DryRunEvents": [
+     {
+      "week": "2020-05-01",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2020-05-01",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_SPXC",
+    "v9DryRunEvents": [
+     {
+      "week": "2015-10-02",
+      "resolution": "SPIN_OFF_DISTRIBUTION"
+     }
+    ],
+    "v9PriceReturnOnly": true,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2015-10-02",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_SRPT",
+    "v9DryRunEvents": [
+     {
+      "week": "2016-09-23",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2016-09-23",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_SVRA",
+    "v9DryRunEvents": [
+     {
+      "week": "2019-06-14",
+      "resolution": "GENUINE_MOVE"
+     },
+     {
+      "week": "2019-10-04",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2019-06-14",
+      "GENUINE_MOVE",
+      null
+     ],
+     [
+      "2019-10-04",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_8K"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_TNDM",
+    "v9DryRunEvents": [
+     {
+      "week": "2016-11-04",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2016-11-04",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_XBRL"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_TNXP",
+    "v9DryRunEvents": [
+     {
+      "week": "2018-07-27",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2018-07-27",
+      "SPLIT_OR_SHARE_CHANGE_EVIDENCE",
+      "SPLIT_EVIDENCE_XBRL"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_TVRD",
+    "v9DryRunEvents": [
+     {
+      "week": "2021-04-30",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2021-04-30",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_VAI",
+    "v9DryRunEvents": [
+     {
+      "week": "2025-06-13",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2025-06-13",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_VATE",
+    "v9DryRunEvents": [
+     {
+      "week": "2013-08-30",
+      "resolution": "SPIN_OFF_DISTRIBUTION"
+     }
+    ],
+    "v9PriceReturnOnly": true,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2013-08-30",
+      "IDENTITY_UNVERIFIED",
+      "IDENTITY_TICKER_NOT_NAMED"
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_VRRM",
+    "v9DryRunEvents": [
+     {
+      "week": "2026-05-29",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": true,
+    "v112Verdicts": [
+     [
+      "2026-05-29",
+      "GENUINE_MOVE",
+      null
+     ]
+    ]
+   },
+   {
+    "securityId": "ref_WKHS",
+    "v9DryRunEvents": [
+     {
+      "week": "2021-02-26",
+      "resolution": "GENUINE_MOVE"
+     }
+    ],
+    "v9PriceReturnOnly": false,
+    "v112Admitted": false,
+    "v112Verdicts": [
+     [
+      "2021-02-26",
+      "NEGATIVE_EVIDENCE_ONLY",
+      null
+     ]
+    ]
+   }
+  ]
+ }
+}

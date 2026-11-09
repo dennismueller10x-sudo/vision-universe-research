@@ -7,6 +7,8 @@
      node scripts/core/data-quality.mjs --json     Bericht als JSON
      node scripts/core/data-quality.mjs --strict   Exit 2, wenn eine ERROR-Regel faellt
      node scripts/core/data-quality.mjs --out=PFAD Bericht zusaetzlich als Datei
+     node scripts/core/data-quality.mjs --out=PFAD --previous=GESTERN.json
+                                                   E8-Trend zum UTC-Vortag
      node scripts/core/data-quality.mjs --only=sf8 --sf8-dir=PFAD --sf8-activated --strict
                                                    nur die Supertrader-8-Regeln, gegen ein
                                                    Laufergebnis ausserhalb des Repositorys
@@ -19,7 +21,9 @@
 import { readFileSync, readdirSync, existsSync, writeFileSync, appendFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import { gunzipSync } from "node:zlib";
-import { args, REPO_ROOT, require } from "./lib.mjs";
+import { args, makeLoader, REPO_ROOT, require } from "./lib.mjs";
+
+import { equityRules } from "./equity-quality.mjs";
 
 const a = args();
 const root = typeof a.root === "string" ? a.root : REPO_ROOT;
@@ -122,7 +126,7 @@ const ixIndex = maybe("quant/data/market/index-membership/index.json");
 const indexes = ixIndex ? ixIndex.indexes.map((i) => maybe("quant/data/market/index-membership/" + i.indexId + ".json")).filter(Boolean) : [];
 rules.push(DQ.indexMembersResolve(indexes, Object.fromEntries(decisions.map((d) => [d.securityId, d]))));
 
-/* Technical (technical/data, Erzeuger technical-world.yml) */
+/* Technical (technical/data, Erzeuger pipeline-daily.yml, Teil technical-world) */
 const twMeta = maybe("technical/data/meta.json");
 const twArt = maybe("technical/data/screener-v1.json");
 const twSummary = maybe("quant/data/product/technical-signals-v1/summary.json");
@@ -138,7 +142,7 @@ if (twArt && twArt.cols) {
   }
   rules.push(DQ.technicalCloseParity(twPairs));
   const SIG = "quant/data/product/technical-signals-v1";
-  const matTickers = [], mtfVersions = new Set(), frozenByTicker = {};
+  const matTickers = [], mtfVersions = new Set(), frozenByTicker = {}, wickByTicker = {}, fresh = new Map(c.s.map((t, i) => [t, c.fresh[i] === true]));
   for (const f of dir(SIG, /^[A-Z0-9_-]{2}\.json\.gz$/)) {
     try {
       const inst = JSON.parse(gunzipSync(readFileSync(p(SIG + "/" + f))).toString("utf8")).instruments || {};
@@ -147,6 +151,12 @@ if (twArt && twArt.cols) {
       for (const [tk, v] of Object.entries(inst)) {
         const b = v && v.bars, tail = b && b.timestamps ? Staleness.tailRun(b.timestamps.map((d, i) => [d, b.close[i]])) : null;
         frozenByTicker[tk] = tail && tail.run >= Staleness.DEFAULTS.dailyMinRun ? tail.since : null;
+        /* DQ-TW-8: tiefstes Tagestief der letzten 252 Bars unter der Haelfte von min(Eroeffnung, Schluss) */
+        if (b && b.low && fresh.get(tk)) {
+          let j = Math.max(0, b.low.length - 252);
+          for (let m = j; m < b.low.length; m++) if (b.low[m] < b.low[j]) j = m;
+          if (b.low[j] < 0.5 * Math.min(b.open[j], b.close[j])) wickByTicker[tk] = { date: String(b.timestamps[j]).slice(0, 10), low: b.low[j], open: b.open[j], close: b.close[j] };
+        }
       }
     } catch (e) { /* defekte Scherbe zeigt DQ-TW-4 */ }
   }
@@ -158,7 +168,16 @@ if (twArt && twArt.cols) {
   const analytic = TQ.FIELDS.filter((f) => f.group !== "Kurs" && f.group !== "Datenqualität").map((f) => f.id);
   rules.push(DQ.technicalStaleEvents(c, staleFields, [...analytic.flatMap((k) => [k, k + "@1W", k + "@1M"]), "formations"], frozenByTicker));
   const Contract = require(join(REPO_ROOT, "quant", "engines", "technical", "screener-contract.js"));
-  rules.push(DQ.technicalContract(Contract.check(twArt, twMeta, maybe("technical/data/index-v1.json"))));
+  rules.push(DQ.technicalContract(Contract.check(twArt, twMeta, maybe("technical/data/index-v1.json"), maybe("technical/data/spark-v1.json"))));
+  /* DQ-TW-8: vollstaendige Treffer der Vorlagen, die distLow52w pruefen (technical/engine/templates.js, AP8) */
+  const tplPath = join(REPO_ROOT, "technical", "engine", "templates.js"), fullHits = [];
+  if (existsSync(tplPath)) {
+    const TPL = require(tplPath), ds = TQ.createDataset(twArt);
+    for (const t of TPL.list().filter((x) => JSON.stringify(x.criteria).indexOf('"distLow52w"') >= 0)) {
+      for (const h of TPL.evaluate(ds, t).full) fullHits.push({ template: t.id, ticker: c.s[h.i] });
+    }
+  }
+  rules.push(DQ.technicalTemplateWickLows(fullHits, wickByTicker));
 }
 
 }
@@ -211,7 +230,17 @@ rules.push(DQ.secFuturePeriods(secBundles));
 rules.push(DQ.secRefusals(secBundles));
 }
 
+let equity = null;
+if (only !== "sf8") {
+  equity = await equityRules({ load: makeLoader({ root }), now, expected });
+  rules.push(...equity.rules);
+}
 const report = Object.assign(DQ.summarize(rules), { checkedAt: now.toISOString(), expectedSession: expected });
+
+if (equity) report.missingEquityArtifacts = equity.missingArtifacts;
+const EquityQuality = require(join(REPO_ROOT, "core/equity-quality.js"));
+const previous = typeof a.previous === "string" ? JSON.parse(readFileSync(a.previous, "utf8")) : null;
+EquityQuality.withTrend(report, previous);
 
 if (a.json) console.log(JSON.stringify(report, null, 2));
 else {

@@ -225,7 +225,26 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        das Unternehmen in Zahlen (Cluster), damals vs. heute, Bewertung,
        Chancen und Risiken, weiter entdecken - und erst dann die Analyse. */
     var DF = D.DetailFundamentals || {};
-    var kapitel = function (node) { if (node) root.appendChild(node); }; if (global.VUCompanyIntelligenceStock && detail.region !== "EUROPE") intelligenceDispose = global.VUCompanyIntelligenceStock.mount(root, detail.symbol);
+    var kapitel = function (node) { if (node) root.appendChild(node); };
+    var ciMount = function (host) { if (global.VUCompanyIntelligenceStock && detail.region !== "EUROPE") intelligenceDispose = global.VUCompanyIntelligenceStock.mount(host, detail.symbol); };
+    /* Redesign 2027 (Folie D09): unter Kopf und Chart der Überblick nach dem Mockup (discover/ui/overview.js).
+       Die bisherigen Kapitel (Belege, Fundamental Journey, Bewertung im Detail, Analyse, weitere Nachbarn) bleiben
+       vollständig erreichbar – gebündelt in der Profi-Ansicht „Alle Kennzahlen“ (PRO). Nichts fällt weg. */
+    var uebersicht = D.Overview ? D.Overview.render(detail, options) : null;
+    if (uebersicht) {
+      kapitel(uebersicht);
+      var profi = el("details", { class: "dx-analyse dv3-profi dx-fade" }, [
+        el("summary", {}, [el("span", { text: "Alle Kennzahlen" }), el("span", { class: "vu-pro", text: "PRO" })])
+      ]);
+      [why(detail), ueberblick(detail), unternehmen(detail), DF.journey && DF.journey(detail), DF.heute && DF.heute(detail), DF.damalsHeute && DF.damalsHeute(detail), DF.bewertung && DF.bewertung(detail)]
+        .concat(detail.region === "EUROPE" ? [] : [belege(detail), panels(detail), technicalIntelligence(detail)])
+        .concat([DF.nextDiscovery && DF.nextDiscovery(detail, options)])
+        .forEach(function (node) { if (node) profi.appendChild(node); });
+      /* Unternehmensmeldungen (Company Intelligence) ebenfalls in der Profi-Ansicht; ein leerer Block entfällt oben (D09). */
+      ciMount(profi);
+      kapitel(profi);
+    } else {
+    ciMount(root);
     kapitel(why(detail));
     kapitel(ueberblick(detail));
     kapitel(unternehmen(detail));
@@ -234,11 +253,6 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     if (DF.damalsHeute) kapitel(DF.damalsHeute(detail));
     if (DF.bewertung) kapitel(DF.bewertung(detail));
     kapitel(waage(detail));
-
-    /* Ab hier die Analyse. Der Anfaenger muss nicht hierher; der Profi
-       kommt mit einem Wisch. V4.1 §25: auf dem Telefon ist sie
-       zugeklappt (ein Tipp oeffnet sie), am Schreibtisch offen - nichts
-       davon ist geloescht, es steht nur nach dem Verstehen. */
     var analyse = el("details", { class: "dx-analyse dx-fade" }, [kapitelTrenner()]);
     var telefon = !!(global.matchMedia && global.matchMedia("(max-width: 860px)").matches);
     if (!telefon) analyse.open = true;
@@ -248,6 +262,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     kapitel(analyse);
     kapitel(continueDiscovery(detail, options));
     if (DF.nextDiscovery) kapitel(DF.nextDiscovery(detail, options));
+    }
     kapitel(provenance(detail));
 
     /* Der Tagesverlauf kommt aus demselben Hub wie die Karte: ein Strom je
@@ -654,8 +669,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       el("p", { class: "dx-kicker", text: "Chancen und Risiken" }),
       el("h2", { text: "Was dafür spricht — und was dagegen" }),
       el("div", { class: "dx-waage" }, [
-        spalte("Das spricht dafür", w.dafuer, "pro"),
-        spalte("Das sollte man beachten", w.beachten, "contra")
+        spalte("Stärken laut Kennzahlen", w.dafuer, "pro"),
+        spalte("Schwächen laut Kennzahlen", w.beachten, "contra")
       ]),
       el("p", { class: "dx-kapitel-fuss", text: w.hinweis })
     ]);
@@ -994,10 +1009,9 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     { id: "1M", label: "1M", quelle: "daily", wort: "in einem Monat", tage: 31 },
     { id: "1Y", label: "1J", quelle: "daily", wort: "in einem Jahr", tage: 366 },
     { id: "5Y", label: "5J", quelle: "weekly", wort: "in fünf Jahren", tage: 1827 },
-    { id: "MAX", label: "MAX", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null },
-    { id: "3M", label: "3M", quelle: "daily", wort: "in drei Monaten", tage: 92 },
-    { id: "6M", label: "6M", quelle: "daily", wort: "in sechs Monaten", tage: 183 },
-    { id: "3Y", label: "3J", quelle: "weekly", wort: "in drei Jahren", tage: 1096 }
+    { id: "MAX", label: "Max", quelle: "weekly", wort: "seit Beginn der Reihe", tage: null }
+    /* Redesign 2027 (C06): nur die eine Zeitleiste 1T · 1W · 1M · 1J · 5J · Max; 3M, 6M und 3J stehen als
+       Zahlen in der Zeitachse des Überblicks und im Chart Studio (Technical). */
   ];
   function CStd() { return global.VUCore && global.VUCore.ChartStandard || null; }
   /* Fenster: ChartHistory fuer die Zeitraeume, die es kennt; 1W schneidet der Chartstandard nach derselben Regel. */
@@ -1117,6 +1131,14 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        (§41). */
     var nativeCurrency = state.detail.region === "EUROPE" ? state.detail.currency : null;
     var anzeige = inAnzeigewaehrung(sel.points, nativeCurrency);
+    /* Konzept „Reihe für Reihe“, Entscheidung 7 (ADR-002, eine Preiswahrheit): US-Aktien im Überblick in Dollar wie
+       an der Börse, alle Prozentwerte in Dollar; die Euro-Umrechnung des letzten Kurses steht nur klein daneben. */
+    var dollarKopf = state.detail.region !== "EUROPE" && !!D.Overview && D.Reihen;
+    var euroDaneben = null;
+    if (dollarKopf && anzeige.punkte.length >= 2 && anzeige.waehrung && anzeige.waehrung !== "USD") {
+      euroDaneben = (function (letzterEuro, waehrung) { return alsAngezeigt(letzterEuro, waehrung); })(anzeige.punkte[anzeige.punkte.length - 1][1], anzeige.waehrung);
+      anzeige = { punkte: [], waehrung: "USD" };
+    }
     var waehrung = anzeige.punkte.length >= 2 ? anzeige.waehrung : (nativeCurrency || "USD");
     if (anzeige.punkte.length >= 2) sel = { points: anzeige.punkte, from: anzeige.punkte[0][0],
                                             to: anzeige.punkte[anzeige.punkte.length - 1][0],
@@ -1124,10 +1146,30 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     var erster = sel.points[0][1], letzter = sel.points[sel.points.length - 1][1];
     var vergleichbar = global.VUCore.ChartHistory.performanceComparable(state.europeSegments,sel.from,sel.to);
     var veraenderung = erster > 0 && vergleichbar ? (letzter / erster - 1) * 100 : null;
-    var mobil = global.innerWidth < 860;
+    var mobil = global.innerWidth < 860, kopf;
     /* Kopf: der Kurs, die Veraenderung im Zeitraum, das Datum - mit
        Frische-Zustand der Tagesreihe (Freshness-Vertrag, Tagesreihen). */
-    var kopf = el("div", { class: "dx-chart-hero" }, [
+    /* Konzept „Reihe für Reihe“ (Folie AX01, a-top; Baustein C04): im Überblick ist der Kopf eine Zeile wie im
+       Mockup - Kurs in Dollar, Tagesbewegung als Pille, rechts der Schluss und der Euro-Wert. Zeitraum, Kursart und
+       Bereinigung stehen für Bildschirmleser im Kopf und sichtbar an der Datumsachse des Charts. */
+    if (dollarKopf) {
+      var tage = (state.dailyPoints || []).filter(function (p) { return p && isNum(p[1]); });
+      var tag = tage.length >= 2 && tage[tage.length - 2][1] > 0 ? (tage[tage.length - 1][1] / tage[tage.length - 2][1] - 1) * 100 : null;
+      var spanText = C().dateShort(sel.from) + " – " + C().dateShort(sel.to) + (woechentlich ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · split-bereinigt";
+      kopf = el("div", { class: "dx-chart-hero dx-chart-hero--c04", "data-range": z.id }, [
+        el("div", { class: "dx-chart-hero-preis" }, [
+          el("b", { class: "num", text: alsAngezeigt(tage.length ? tage[tage.length - 1][1] : letzter, waehrung) }),
+          el("span", { class: "num " + C().toneClass(tag), title: "zum Vortagesschluss", text: isNum(tag) ? prozentGross(tag) : "" }),
+          el("span", { class: "dx-chart-hero-wort" })
+        ]),
+        el("div", { class: "dx-chart-hero-meta" }, [
+          frischeTages(state),
+          euroDaneben ? el("span", { class: "dx-chart-hero-eur", text: "≈ " + euroDaneben }) : null,
+          el("span", { class: "dx-chart-hero-span dv3-sr", text: "Kursverlauf " + z.wort + ": " + spanText })
+        ].filter(Boolean))
+      ]);
+    }
+    else kopf = el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
         el("b", { class: "num", text: alsAngezeigt(letzter, waehrung) }),
         el("span", { class: "num " + C().toneClass(veraenderung), text: isNum(veraenderung) ? prozentGross(veraenderung) : "" }),
@@ -1137,9 +1179,9 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
         el("span", { class: "dx-chart-hero-span", text: C().dateShort(sel.from) + " – " + C().dateShort(sel.to) +
           (woechentlich ? " · Wochenschlusskurse" : " · Tagesschlusskurse") + " · " +
           (state.detail.region === "EUROPE" ? state.detail.basisLabel : "split-bereinigt") +
-          (state.displayWindow&&state.displayWindow.truncated?' · Sicheres Kursfenster ab '+C().dateShort(state.displayWindow.safeHistoryStart)+'; ältere Datenlücken ausgeblendet':state.displayWindow&&['MAJOR_GAPS','BROKEN'].includes(state.displayWindow.visualQualityStatus)?' · Datenlücken im Kursverlauf':'') }),
+          (state.displayWindow&&state.displayWindow.truncated?' · Sicheres Kursfenster ab '+C().dateShort(state.displayWindow.safeHistoryStart)+'; ältere Datenlücken ausgeblendet':state.displayWindow&&['MAJOR_GAPS','BROKEN'].includes(state.displayWindow.visualQualityStatus)?' · Kursreihe mit Lücken':'') }),
         frischeTages(state)
-      ])
+      ].concat(euroDaneben ? [el("span", { class: "dx-chart-hero-eur", text: "≈ " + euroDaneben })] : []))
     ]);
     chartBox.appendChild(kopf);
     /* V4.1 §5: der Chart ist die Hauptflaeche. Die viewBox ist pixelgenau
@@ -1147,7 +1189,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        Schrift nicht mitskaliert und die Linie auf dem Telefon so hoch ist
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
-    var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol,
+    if (dollarKopf) mass.h = mobil ? 184 : 260;   /* Mockup ~170 px; die Browser-QA verlangt auf dem Telefon mindestens 180 px (Chart bleibt die Hauptfläche) */
+    var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol, compact: !!dollarKopf,
                                                  range: z.id, label: z.wort, grain: woechentlich ? "weekly" : "daily",
                                                  segments: state.detail.region === 'EUROPE' ? state.europeSegments || undefined : undefined });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {
