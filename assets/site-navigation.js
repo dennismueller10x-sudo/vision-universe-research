@@ -52,7 +52,7 @@
     {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
     {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤']]},
     {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus Geschäftsberichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
-    {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
+    {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Treffer','/supertrader/treffer/','◬'],['Forschung','/supertrader/forschung/','▧'],['Quellen','/supertrader/sources/','▤']]},
     {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Gruppen-Käufe','/hedgefonds/#/gruppen-kaeufe','◬']]},
     {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', claim:'Wellenstruktur', entries:[['Übersicht','/elliott/','⌂'],['Zählbar','/elliott/#/?zaehlbar=1','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
     {id:'screener', label:'Screener', href:'/screener/', icon:'screener', claim:'Eigene Filter', entries:[['Übersicht','/screener/','⌂'],['Filter hinzufügen','/screener/?view=build','⧩'],['Treffer','/screener/?view=results','⌕'],['Gespeichert','/screener/?view=saved','▤'],['Watchlist','/screener/?view=watchlist','♡']]},
@@ -133,10 +133,10 @@
         return {start: 'screener', build: 'filter', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'gespeichert'}[view] || null;
       }},
     {id: 'supertrader', label: 'Supertrader', match: p => p.startsWith('/supertrader/'),
-      items: [['supertrader','Supertrader','/supertrader/','supertrader'],['methoden','Methoden','/supertrader/strategies/','grid'],['signale','Signale','/supertrader/signals/','signals'],['backtests','Backtests','/supertrader/backtests/','backtests']],
+      items: [['supertrader','Supertrader','/supertrader/','supertrader'],['methoden','Methoden','/supertrader/strategies/','grid'],['treffer','Treffer','/supertrader/treffer/','signals'],['forschung','Forschung','/supertrader/forschung/','backtests']],
       active: loc => {
         const k = loc.pathname.split('/')[2] || '';
-        return {'': 'supertrader', strategies: 'methoden', signals: 'signale', stock: 'signale', backtests: 'backtests'}[k] || null;
+        return {'': 'supertrader', strategies: 'methoden', treffer: 'treffer', signals: 'treffer', stock: 'treffer', forschung: 'forschung', backtests: 'forschung'}[k] || null;
       }},
     {id: 'hedgefonds', label: 'Hedgefonds', match: p => p.startsWith('/hedgefonds/'),
       items: [['hedgefonds','Hedgefonds','/hedgefonds/#/','hedgefonds'],['investoren','Investoren','/hedgefonds/#/investoren','users'],['aktien','Aktien','/hedgefonds/#/aktien','stocks'],['gruppen','Gruppen-Käufe','/hedgefonds/#/gruppen-kaeufe','signals']],

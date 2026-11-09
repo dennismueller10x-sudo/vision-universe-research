@@ -1017,7 +1017,7 @@ function writeStaticPages() {
     writeIfChanged(path.join(OUT, from, 'index.html'), REDIRECTS_ACTIVE ? redirectShell(to) : pageShell({ title: same[2], description: same[3], page: same[1], depth: 2 }));
   }
 }
-export const REDIRECTS_ACTIVE = false;
+export const REDIRECTS_ACTIVE = true;
 
 /* Neue Namen (Konzept „Das Rezept eines Profis“, Entscheidung 3): „Signale“ → Treffer, „Backtests“ → Forschung. Die alten
    Adressen bleiben als Weiterleitung, mit Parametern und Sprungmarke (z. B. ?method=DONCHIAN_TURTLE). */
