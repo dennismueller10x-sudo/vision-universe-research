@@ -1,6 +1,6 @@
 # Mein Bereich, Portfolios, AI-Atlas · Konzept
 
-Konzept vom 09.11.2026 für die persönlichen Bereiche (Willkommensseite + Mein Dashboard), die Musterdepots unter /portfolios/ und den AI-Atlas (/ask/), im gleichen Muster wie die Produktwelten (Ordner nebenan). Version 2 nach Owner-Feedback (Dashboard unverändert; Willkommensseite, Musterdepot und Atlas neu gestaltet). Noch nicht freigegeben, noch nicht umgesetzt.
+Konzept vom 09.11.2026 für die persönlichen Bereiche (Willkommensseite + Mein Dashboard), die Musterdepots unter /portfolios/ und den AI-Atlas (/ask/), im gleichen Muster wie die Produktwelten (Ordner nebenan). Version 2 nach Owner-Feedback (Dashboard unverändert; Willkommensseite, Musterdepot und Atlas neu gestaltet). Freigegeben am 09.11.2026 für Mein Dashboard, Portfolios und Atlas; die Willkommensseite bleibt wie heute (Owner). Bauplan und Master-Prompt: `HANDOVER.md`.
 Präsentation online (privat): https://claude.ai/artifact/Tt79faCqfHwp9jP2oVKjc9
 
 | Datei | Zweck |
