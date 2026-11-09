@@ -157,13 +157,14 @@ test("LV4 · Client: ersetzt die EOD-Auswahl nur bei LIVE, gleicher Basis, >= 3 
 test("LV5 · Workflow nach ADR-005, Auslieferung ueber Pages, Eintrag im Register, Artefakt vorhanden", () => {
   const wf = readFileSync(join(ROOT, ".github", "workflows", "discover-im-blick-live.yml"), "utf8");
   assert.match(wf, /ref: \$\{\{ github\.ref \}\}/);
-  assert.match(wf, /scripts\/ci\/push-with-retry\.sh/);
+  assert.match(wf, /scripts\/ci\/seed-data-branch\.sh discoverImBlickLive/);
+  assert.match(wf, /scripts\/ci\/push-data-branch\.sh data\/live discover\/live\/im-blick-US_REAL\.json discover\/live\/monitor-US_REAL\.json/);
   assert.match(wf, /group: discover-im-blick-live-\$\{\{ github\.ref_name \}\}/);
   /* ADR-005: Workflow-Eingaben nur ueber env:, nie im Shell-Text. */
   for (const z of wf.split("\n").filter((l) => /\$\{\{[^}]*inputs\./.test(l) && !/^\s*#/.test(l))) {
     assert.match(z, /^\s+[A-Z_]+: \$\{\{/, "inputs ausserhalb einer env-Zeile: " + z.trim());
   }
-  assert.match(wf, /git add discover\/live\n/, "schreibt nur discover/live");
+  assert.doesNotMatch(wf, /git commit|push-with-retry/, "schreibt nur discover/live, und nur in den Datenzweig");
   assert.doesNotMatch(wf, /TIINGO|secrets\./, "keine Anbieteranfrage, kein Schluessel");
   const name = wf.match(/^name:\s*(.+)$/m)[1];
   assert.ok(readFileSync(join(ROOT, ".github", "workflows", "pages-release.yml"), "utf8").includes(`- "${name}"`));
