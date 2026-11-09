@@ -15,61 +15,69 @@
 <link rel="stylesheet" href="/mein-dashboard/dashboard.css">
 </head>
 <body class="ka-body md-body vu-ui"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
-<!-- Mein Bereich, Plätze 1 und 2 der Leiste (Mockups E08 a–c): Watchlist mit Tageskarte, Gespeichert unter #/gespeichert. -->
+<!-- Mein Dashboard (Konzept docs/design/mein-bereich-2026-11, Folie MX02, Screen m-home): Heute bei deinen Aktien,
+     Watchlist-Streifen, Was sich getan hat, Weiter lernen, Deine Welten. Platz 2 der Leiste: Gespeichert unter #/gespeichert. -->
 <main class="ka md" id="main">
 <header class="md-head">
 <p class="vu-ltag" id="md-eyebrow">Mein Dashboard</p>
-<div class="md-titlerow"><h1 class="vu-lt" id="md-hello">Watchlist</h1><span class="md-plan" id="md-plan" hidden></span></div>
+<h1 class="vu-lt" id="md-hello">Mein Dashboard</h1>
 <p class="vu-lead md-only-saved">Was du in den Welten gemerkt hast. Übernimm es in deine Watchlist, dann ist es auf jedem Gerät da.</p>
 </header>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="md-loading" aria-hidden="true"></div>
 <div class="md-grid" id="md-app" hidden>
 
-<section class="md-watch md-only-watch" id="md-watchlist" aria-labelledby="md-watch-title">
-<h2 id="md-watch-title" class="md-visually-hidden">Watchlist</h2>
-<div class="vu-box vu-box--ink md-day" id="md-day" hidden>
-<p class="md-day-date" id="md-day-date"></p>
-<p class="md-day-big"><b id="md-day-n"></b> <span id="md-day-unit"></span></p>
-<p class="md-day-sub" id="md-day-sub"></p>
-<ul class="md-day-chips" id="md-day-chips"></ul>
+<section class="md-only-watch" id="md-today-sec" aria-labelledby="md-today-title">
+<div class="md-today" id="md-today">
+<h2 class="vu-ltag" id="md-today-title">Heute bei deinen Aktien</h2>
+<ul class="md-today-n">
+<li><b id="md-n-watch">–</b><span>auf der Watchlist</span></li>
+<li><b id="md-n-events">–</b><span>neue Ereignisse</span></li>
+<li><b id="md-n-stocks">–</b><span>Aktien betroffen</span></li>
+</ul>
 </div>
-<div class="md-find" id="md-find">
+</section>
+
+<section class="md-only-watch" id="md-watchlist" aria-labelledby="md-watch-title">
+<div class="md-rh"><div class="md-rh-t"><h2 id="md-watch-title">Watchlist</h2><a id="md-watch-all" href="/konto/watchlist/">Alle</a></div></div>
+<ul class="md-strip" id="md-strip" aria-label="Aktien auf deiner Watchlist"></ul>
+<div class="md-find" id="md-find" hidden>
 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
 <label class="md-visually-hidden" for="md-add">Aktie hinzufügen</label>
 <input id="md-add" type="search" autocomplete="off" spellcheck="false" placeholder="Aktie hinzufügen, z. B. Apple" role="combobox" aria-expanded="false" aria-controls="md-results" aria-autocomplete="list">
 <a class="md-find-atlas" href="/ask/" aria-label="Im AI Atlas fragen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></a>
 <div class="wl-results md-results" id="md-results" role="listbox" aria-label="Treffer" hidden></div>
 </div>
-<div class="vu-chips md-sort" id="md-sort" role="group" aria-label="Sortierung" hidden>
-<button class="vu-chip" type="button" data-sort="own" aria-pressed="true">Meine Reihenfolge</button>
-<button class="vu-chip" type="button" data-sort="move" aria-pressed="false">Bewegung heute</button>
-<button class="vu-chip" type="button" data-sort="name" aria-pressed="false">Name</button>
-</div>
-<ul class="md-rows" id="md-rows"></ul>
 <div class="md-empty" id="md-watch-empty" hidden>
-<div class="vu-box md-empty-box"><span class="vu-verdict vu-verdict--none" data-verdict="none"><span aria-hidden="true">○</span> Noch leer</span><p class="md-empty-title">Noch keine Aktien gespeichert</p><p class="vu-mu vu-sm">Merke dir Aktien, die dich interessieren: Tippe auf das Herz bei einer Aktie oder such sie oben. Hier siehst du dann jeden Tag, wie sie sich bewegt.</p></div>
+<div class="vu-box md-empty-box"><span class="vu-verdict vu-verdict--none" data-verdict="none"><span aria-hidden="true">○</span> Noch leer</span><p class="md-empty-title">Noch keine Aktien gespeichert</p><p class="vu-mu vu-sm">Merke dir Aktien, die dich interessieren: Tippe auf das Herz bei einer Aktie oder such sie oben. Hier siehst du dann jeden Tag, was sich bei ihnen tut.</p></div>
 <h2 class="vu-sect">Beliebt zum Start</h2>
 <p class="vu-mu vu-xs md-popular-note">Häufig gesuchte Kürzel, keine Empfehlung.</p>
 <div class="md-popular" id="md-popular"></div>
 </div>
-<p class="md-fine vu-mu vu-xs" id="md-watch-fine">Schlusskurse aus den veröffentlichten Daten, in der Währung des Listings. Keine Anlageberatung.</p>
-<div class="vu-stack md-cards">
-<a class="vu-navcard" id="md-watch-all" href="/konto/watchlist/"><span class="vu-hud md-hud"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></svg></span><span class="vu-navcard__text"><b>Alle Kennzahlen</b><span>Faktoren, Signale, Notizen je Aktie</span></span><span class="vu-pro">PRO-ANSICHT</span></a>
-<a class="vu-navcard" id="md-local-card" href="#/gespeichert"><span class="vu-hud md-hud"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.5h12v17l-6-4-6 4z"/></svg></span><span class="vu-navcard__text"><b id="md-local-card-title">Auf diesem Gerät gemerkt</b><span>Listen aus Discover und Quant übernehmen</span></span><svg class="vu-navcard__go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
-</div>
-<div class="vu-help md-help" id="md-help"><i aria-hidden="true">?</i><span>Die Bewegung ist die Änderung zum Schluss des Vortags. Neongrün heißt im Plus, schwarz im Minus. Nach links wischen entfernt eine Aktie.</span></div>
+</section>
+
+<section class="md-only-watch" id="md-events" aria-labelledby="md-events-title">
+<div class="md-rh"><div class="md-rh-t"><h2 id="md-events-title">Was sich getan hat</h2><span class="vu-xs vu-mu" id="md-events-count"></span></div><p>Aus allen Welten, nur für deine Aktien.</p></div>
+<ul class="md-feed" id="md-feed"></ul>
+<p class="vu-blank md-feed-none" id="md-feed-none" hidden></p>
+<div class="vu-help md-feed-help" id="md-feed-help"><i aria-hidden="true">?</i><span>Ereignisse aus den veröffentlichten Daten der Welten, ohne neue Speicherung. Keine Empfehlung.</span></div>
+</section>
+
+<section class="md-only-watch" id="md-learn-sec" aria-labelledby="md-learn-title" hidden>
+<div class="md-rh"><div class="md-rh-t"><h2 id="md-learn-title">Weiter lernen</h2><a id="md-learn-all" href="/willkommen/">Alle</a></div><p id="md-learn-sub"></p></div>
+<a class="md-learn" id="md-learn" href="/willkommen/"></a>
+</section>
+
+<section class="md-only-watch" aria-labelledby="md-short-title">
+<div class="md-rh"><div class="md-rh-t"><h2 id="md-short-title">Deine Welten</h2><a href="#/gespeichert">Gemerkt</a></div></div>
+<ul class="md-tiles" id="md-tiles"></ul>
+<p class="md-fine vu-mu vu-xs" id="md-watch-fine">Keine Anlageberatung.</p>
 </section>
 
 <section class="md-local md-only-saved" id="md-local" aria-labelledby="md-local-title">
 <h2 class="vu-sect" id="md-local-title">Auf diesem Gerät gemerkt</h2>
 <p class="vu-mu vu-sm" id="md-local-text"></p>
 <ul class="md-sources" id="md-local-sources"></ul>
-</section>
-
-<section class="md-shortcuts md-only-saved" aria-labelledby="md-short-title">
-<h2 class="vu-sect" id="md-short-title">Schnellzugriff</h2>
-<ul class="md-tiles" id="md-tiles"></ul>
 </section>
 
 </div>
@@ -82,6 +90,8 @@
 <script src="/assets/vu-ui.js"></script>
 <script src="/assets/vu-chart.js"></script>
 <script src="/mein-dashboard/today.js"></script>
+<script src="/supertrader/assets/st-names.js"></script>
+<script src="/mein-dashboard/events.js"></script>
 <script src="/mein-dashboard/dashboard.js"></script>
 </body>
 </html>
