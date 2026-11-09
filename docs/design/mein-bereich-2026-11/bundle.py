@@ -5,7 +5,7 @@ D = os.path.dirname(os.path.abspath(__file__))
 html = open(os.path.join(D, 'index.html')).read()
 imgs = {}
 used = set()
-files = glob.glob(D + '/img/logos/*.png') + [D + '/img/themen/%s.webp' % k for k in used] + [D + '/img/vision-universe-logo-web.png', D + '/img/vu-logo.png'] + glob.glob(D + '/now/*.jpg')
+files = glob.glob(D + '/img/logos/*.png') + [D + '/img/themen/%s.webp' % k for k in used] + [D + '/img/vision-universe-logo-web.png', D + '/img/vu-logo.png'] + glob.glob(D + '/now/*.jpg') + glob.glob(D + '/img/stories/*.jpg')
 mime = {'.png': 'image/png', '.webp': 'image/webp', '.jpg': 'image/jpeg'}
 for f in files:
     rel = os.path.relpath(f, D)
