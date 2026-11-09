@@ -472,7 +472,7 @@
         .choices [aria-pressed=true]{background:#c8f531;color:#000}
         .panel a:focus-visible,.panel button:focus-visible,.panel input:focus-visible,.panel summary:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
         @media(max-width:1024px){.quick{display:none}}
-        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:56px;gap:8px}.brand img{width:min(150px,40vw)}.tools{gap:2px}.hb{width:40px}.atlas{padding:0 2px}
+        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:56px;gap:8px}.brand img{width:min(150px,40vw)}.tools{gap:2px}.hb{width:40px;position:relative}.hb::after{content:"";position:absolute;inset:0 -2px}.atlas{padding:0 2px}
           .panel{width:100vw;box-shadow:none;transform:none}}
         @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
         @media(max-width:430px){:host(:not([dock])) .atlas .atlas-label{display:none}:host(:not([dock])) .atlas span.pill{width:36px;padding:0;justify-content:center}:host(:not([dock])) .brand img{width:min(132px,34vw)}}
