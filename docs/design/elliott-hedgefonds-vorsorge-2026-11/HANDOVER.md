@@ -71,6 +71,9 @@ Entscheidungen 12, 15.
 - PR 2 · „Zählbar“ auf der Aktie ist dieselbe Einstufung wie auf dem Start (`applicability.level` HIGH/MODERATE ohne Enthaltung); der Chart zeigt im Elliott-Produkt nur die Ungültig-Marke der Hauptlesart (1 Jahr Wochenchart), Ziele und Schlüsselzone entfallen.
 - PR 2 · Kapitel klappen an Ort und Stelle auf (`<details>`): Wellen mit Datum und Kurs, andere Zählungen und Szenarien nur mit Ungültig-Marke, Forschung = bisheriger Block „Was die Historie nahelegt“ samt Zeitreise; „Elliott-Profi“ bleibt als Knopf darunter. Die Zeile „← Elliott · Frag VU“ über dem Aktienkopf bleibt (Rückweg).
 - PR 2 · Ohne geladene Startseite (Direktaufruf) holt die Aktie die kleine Lieferansicht nach, um „nur N von M Aktien“ zu nennen; fehlt sie, steht „nur wenige Aktien“.
+- PR 3 · „Gruppen-Käufe“ ist die bisherige Smart-Money-Seite mit den Reitern Fonds-Einstiege (Start, `#/gruppen-kaeufe`, „Viele Fonds, gleiche Aktie“) und Insider-Käufe (`#/gruppen-kaeufe/insider`); `#/smart-money` leitet auf Insider, `#/smart-money/einstiege` auf Fonds-Einstiege. Der Untertitel auf dem Start sagt „im Quartal neu gekauft … und Käufe mehrerer Insider“ statt „in 30 Tagen“, weil Fonds-Einstiege je Quartal gezählt werden.
+- PR 3 · Quartalsband: „Gemeldet bis“ ist die 45-Tage-Frist des gezeigten Quartals, „Nächste Meldungen“ die nächste Frist; Star-Karten mit anderem Meldequartal tragen „Stand Qx“. Start ohne Schnellwahl-Chips, Kacheln und „Entdecken“-Raster (Mockup); „Gekauft · Verkauft · Meistgehalten“ zeigt nur Star-Investoren (der Umschalter „Alle Hedgefonds“ bleibt unter Aktien).
+- PR 3 · Fondsnamen: Rechtsform und SEC-Kürzel („/adv“, „/de/“) weg, „Capital Management“ weg, wenn danach noch zwei Wörter bleiben; der SEC-Name bleibt in der Meldung sichtbar. Stil „Value“ ohne „zu billig“ (WORTWAHL).
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
