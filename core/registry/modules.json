@@ -395,6 +395,43 @@
   },
   {
    "schema": "vu-module-2",
+   "id": "insights",
+   "label": "Insights",
+   "status": "BETA",
+   "route": "/insights/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 11,
+    "label": "Insights",
+    "href": "/insights/",
+    "icon": "insights",
+    "claim": "Tagesthemen und Reports, eingeordnet mit unseren Daten",
+    "entries": [
+     [
+      "Artikel",
+      "/insights/",
+      "▤"
+     ],
+     [
+      "Reports",
+      "/insights/reports/",
+      "▥"
+     ]
+    ]
+   },
+   "data": [],
+   "reads": [],
+   "producers": [
+    "products/insights/build.mjs",
+    "products/insights/snapshot.mjs"
+   ],
+   "tests": [
+    "products/insights/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
    "id": "macro",
    "label": "Macro",
    "status": "LIVE",

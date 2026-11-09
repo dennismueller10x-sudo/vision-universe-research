@@ -1,6 +1,18 @@
-# Vision Universe Aktienmagazin – Produktionshandbuch
+# Publishing – Aktienmagazin, Insights und Reports
 
-Stand 08.11.2026, nach dem Umbau gemäß Codex-Prüfung ([Prüfbericht](ausgaben/2026-11-09-nr01/PRUEFBERICHT_CODEX.md)).
+Ein Handbuch für alles Redaktionelle: das Wochenheft (Abschnitte 1–7) und die Tagesartikel unter `/insights/` mit den
+Reports unter `/reports/` (Abschnitt 8).
+
+| Was | Wo |
+|---|---|
+| Heft-System (Build, Prüftor, Vorlagen, Design) | `docs/publishing/system/` |
+| Ausgabe Nr. 01 vom 09.11.2026 (30 Seiten), eingefroren | `docs/publishing/ausgaben/2026-11-09-nr01/` (PDF in `pdf/`, Vorschau `vorschau/index.html`, Prüfbericht Codex) |
+| Erstes Konzept (5 Seiten Magazin, 5 Seiten Aktienreport AMD), eingefroren | `docs/publishing/konzept-2026-11/` |
+| Insights: Artikel, Build, Tests | `products/insights/`, Seiten unter `insights/` und `reports/` |
+| Bildaufträge (Higgsfield) | `brand-media/publishing/` |
+
+
+Heft: Stand 09.11.2026, nach dem Umbau gemäß Codex-Prüfung ([Prüfbericht](ausgaben/2026-11-09-nr01/PRUEFBERICHT_CODEX.md)).
 Ziel: jede Woche eine neue Ausgabe, ohne Vorlagen, CSS oder Werkzeuge anzufassen. Je Ausgabe neu sind nur Daten,
 Texte, Quellen und Bilder.
 
@@ -127,3 +139,28 @@ Für 24 Seiten: Titelthema auf 4 Aktien kürzen, Szenarien-Seite und eine Einzel
 | P2 | Rechtstexte aus `assets/legal-notices.json` einbinden; Zitatrecht, KI-Kennzeichnung, Eigenwerbung anwaltlich bestätigen | offen, Owner-Freigabe |
 
 Bekannt: Der Kerntest `core/tests/stock-availability.test.mjs` scheitert derzeit auch auf `main` (datenabhängig, nicht Publishing).
+
+## 8. Insights und Reports (Tagesartikel)
+
+Owner-Entscheidung 09.11.2026: kein Newsticker, sondern **ein bis zwei Themenartikel am Tag** (ein großer Wert, ein
+Nebenwert oder ein Zukunftsthema), jeweils mit dem Teil, den nur Vision Universe hat: „Was unsere Daten zeigen“.
+Die Artikel sind frei lesbar, für Google und KI-Suchen gebaut (statisches HTML, `NewsArticle`-JSON-LD, Sitemap
+`/insights/sitemap.xml`, RSS `/insights/feed.xml`) und Rohstoff für Reels, X, TikTok und das Wochenheft.
+
+**Ablauf je Artikel**
+
+1. Thema wählen (Anlass aus dem Tag), recherchieren, jede Zahl mit Quelle. Quellen kommen mit Adresse in `quellen`.
+2. `products/insights/artikel/<datum>-<slug>.json` anlegen (Vorlage: ein bestehender Artikel). Abschnitte als HTML-Absätze;
+   der Abschnitt mit `"daten": "<TICKER>"` bekommt den Datenkasten (Chart, Kennzahlen, Gesundheitscheck, 13F, Links in die App).
+3. Daten einfrieren: `node products/insights/snapshot.mjs products/insights/artikel/<datei>.json`. Ein Artikel zeigt immer den Stand
+   seines Erscheinens.
+4. Bild nach `insights/img/` (16:9, hell, Stil-Satz aus Abschnitt 5; bis neue Higgsfield-Motive da sind, Vorrat mit Aufhellung).
+5. Bauen: `node products/insights/build.mjs`; Prüfung: `node --test "products/insights/tests/*.test.mjs"` (aktuell gebaut,
+   Pflichtfelder, Quellen, Wortwahl, JSON-LD, Übersicht/Feed/Sitemap).
+6. Owner liest gegen und gibt frei (redaktionelle Verantwortung; damit gilt die Ausnahme von der KI-Kennzeichnungspflicht
+   für Texte, Art. 50 Abs. 4 KI-Verordnung). Der Hinweis „Mit KI-Unterstützung recherchiert und geschrieben, von der Redaktion
+   geprüft“ steht trotzdem unter jedem Artikel. KI-Bilder tragen „KI-Bild“.
+7. Reports: Eintrag in `products/insights/reports.json`, der Report selbst liegt unter `reports/<id>/`.
+
+Regeln wie im Heft (Abschnitt 6). Zusätzlich: Privatpersonen, gegen die nur Vorwürfe bestehen, werden nicht namentlich
+genannt; Vorwürfe stehen im Konjunktiv mit Quelle, die Gegenseite kommt zu Wort.
