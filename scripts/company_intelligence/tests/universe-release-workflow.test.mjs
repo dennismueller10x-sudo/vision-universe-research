@@ -239,3 +239,11 @@ test('mutation: restore-legacy reaching the Pages wait or the guard being droppe
  const g=mutate("        if: inputs.mode == 'restore-legacy'\n        env:\n          EXPECT_GENERATION: ${{ inputs.expect_generation }}\n        run: |\n          if !","        if: inputs.mode == 'never'\n        env:\n          EXPECT_GENERATION: ${{ inputs.expect_generation }}\n        run: |\n          if !");
  assert.equal(condition(find(g,'Require expect_generation for restore-legacy').if,{mode:'restore-legacy'}),false);
 });
+
+test('UR-3 activate dispatcht Pages ueber refresh-dispatch-wait (Neu-Dispatch bei Verdraengung), nicht mehr einmal blind',()=>{
+ const text=readFileSync(new URL('../../../.github/workflows/company-intelligence-universe-release.yml',import.meta.url),'utf8');
+ const step=text.slice(text.indexOf('- name: Deploy existing Pages and wait for exact consumer generation'),text.indexOf('- name: Actual production broad sample'));
+ assert.match(step,/node scripts\/company_intelligence\/refresh-dispatch-wait\.mjs --expected "\$expected" --wait-minutes 40/);
+ assert.doesNotMatch(step,/gh workflow run pages-release/);
+ assert.match(step,/EXACT_PRODUCTION_GENERATION_NOT_SERVED/);
+});

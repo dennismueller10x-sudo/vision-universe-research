@@ -163,7 +163,12 @@ jobs:
         id: deployment
         if: inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy'
         run: |
-          gh workflow run pages-release.yml --ref main
+          # Eigenen Pages-Lauf verfolgen statt einmal blind zu dispatchen (refresh-dispatch-wait.mjs, wie der Refresh): bei Verdraengung
+          # in der Gruppe pages-production hoechstens 2 Mal neu dispatchen; ein noch nicht gestarteter eigener Lauf wird am Fristende
+          # abgebrochen. Anlass: activate 42633299211 (09.11.2026), Dispatch 42638619534 um 15:02 verdraengt, Rueckfall auf 46.
+          expected=$(node -e "console.log(JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).generation)" "$RUNNER_TEMP/universe-release/evidence/release.json")
+          node scripts/company_intelligence/refresh-dispatch-wait.mjs --expected "$expected" --wait-minutes 40 --out "$RUNNER_TEMP/universe-release/evidence/dispatch-wait.json"
+          # Danach unveraendert: PASS und (Modus health) abgeglichene Gesundheit muessen ausgeliefert sein.
           node --input-type=module <<'NODE'
           import {readFileSync} from 'node:fs';
           import {acceptedHealthServed} from './scripts/company_intelligence/release-health.mjs';
