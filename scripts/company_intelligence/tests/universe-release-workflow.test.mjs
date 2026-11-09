@@ -47,7 +47,7 @@ test('workflow YAML parses and keeps the main-only job, permissions and concurre
  assert.deepEqual(doc.permissions,['contents: read','actions: write']);
  assert.deepEqual(doc.concurrency,['group: company-intelligence-continuous-production','cancel-in-progress: false']);
  assert.equal(doc.jobIf,"github.ref == 'refs/heads/main'");
- assert.equal(doc.timeout,'120');
+ assert.equal(doc.timeout,'180'); // 09.11.2026: Pages-Warten mit Neu-Dispatch plus Rueckweg mit eigenem Warten (Pruefung zu #1744, MAJOR 3)
 });
 test('mode options add refreeze; scaling_run is optional in the form but mandatory for activate',()=>{
  assert.deepEqual(doc.mode.options,['activate','rollback','health','refreeze','restore-legacy']);
