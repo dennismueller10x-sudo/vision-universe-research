@@ -386,7 +386,7 @@
       h('p', { class: 'st-lead vu-product-lead vu-hero-description', text: 'Welche Aktien regelbasierte Methoden heute beobachten – und wie belastbar jede Methode ist.' }),
       h('div', { class: 'vu-product-hero__actions' }, [
         h('a', { class: 'vu-product-action', href: BASE + 'strategies/' }, ['Methoden entdecken', icon(IC.arrow)]),
-        h('a', { class: 'vu-product-action vu-product-action--secondary', href: BASE + 'signals/', text: 'Treffer ansehen' }),
+        h('a', { class: 'vu-product-action vu-product-action--secondary', href: BASE + 'treffer/', text: 'Treffer ansehen' }),
       ]),
     ]));
     main.appendChild(freshness(D));
@@ -402,7 +402,7 @@
       [String(closed), 'Geschlossene Trades', 'closed'],
     ];
     if (research.length) tiles.push([String(resOpen.filter(function (s) { return s.entry; }).length), 'Forschung · Modellpositionen', 'obs', research.map(function (s) { return stName(s); }).join(' · ') + ' – weiter protokolliert']);
-    main.appendChild(h('div', { class: 'st-kpis' }, tiles.map(function (t) { return h('a', { class: 'st-kpi', 'data-p': t[2], href: t[2] === 'obs' ? stratUrl(research[0]) : BASE + 'signals/?phase=' + t[2] }, [h('strong', { text: t[0] }), h('span', { text: t[1] }), t[3] ? h('em', { text: t[3] }) : null]); })));
+    main.appendChild(h('div', { class: 'st-kpis' }, tiles.map(function (t) { return h('a', { class: 'st-kpi', 'data-p': t[2], href: t[2] === 'obs' ? stratUrl(research[0]) : BASE + 'treffer/?phase=' + t[2] }, [h('strong', { text: t[0] }), h('span', { text: t[1] }), t[3] ? h('em', { text: t[3] }) : null]); })));
     if (D.replay) main.appendChild(replayTeaser(D.replay));
 
     // Methoden mit aktuellen Setups
@@ -418,7 +418,7 @@
     main.appendChild(sec('Am nächsten an der Zone', [
       stale ? emptyBox('Kurse noch nicht aktuell', 'Die Tageskurse sind älter als ein Handelstag. Supertrader hebt auf veralteten Kursen nichts hervor; die Setups bleiben unter Treffer einsehbar.')
         : pick.length ? h('div', { class: 'st-list' }, pick.slice(0, 8).map(function (s) { return stockCard(s, S[s.strategyId]); })) : emptyBox('Kein Setup nahe an der Zone', 'Keine Methode mit aktuellen Setups sieht heute ein Setup innerhalb von 3 % vor der Zone laut Methode.'),
-    ], { kicker: 'Wartet heißt: noch keine Aufnahme', more: more(BASE + 'signals/?phase=prep', 'Alle') }));
+    ], { kicker: 'Wartet heißt: noch keine Aufnahme', more: more(BASE + 'treffer/?phase=prep', 'Alle') }));
 
     // Laufende Modellpositionen (simuliert, keine Orders)
     if (positions.length) {
@@ -426,7 +426,7 @@
       main.appendChild(sec('Modellpositionen', [
         h('div', { class: 'st-list' }, posSorted.slice(0, 3).map(function (x) { return stockCard(x, S[x.strategyId]); })),
         moreBox('Wie das Musterdepot aufnimmt', [h('p', { text: 'Aufnahme nach der Regel der jeweiligen Version: Momentum, Weinstein, Darvas und Turtle, sobald der Kurs im Tagesverlauf die Zone laut Methode erreicht, Minervini nach einem Schlusskurs über dem Pivot zur nächsten Eröffnung. Das ist die Umsetzung von Vision Universe auf Tageskursen, nicht überall wörtlich die Regel des Traders. Simulation, keine Orders.' })]),
-      ], { kicker: 'Live seit ' + dateDe(firstLive(sig)), more: more(BASE + 'signals/?phase=pos', 'Alle ' + positions.length) }));
+      ], { kicker: 'Live seit ' + dateDe(firstLive(sig)), more: more(BASE + 'treffer/?phase=pos', 'Alle ' + positions.length) }));
     }
 
     // Forschung: auffindbar, nicht hervorgehoben
@@ -447,7 +447,7 @@
     ], { kicker: 'Teilprüfung', more: more(stratUrl(S.CANSLIM), 'Alle ' + cs.counts.partialMatch) }));
 
     // Evidenz je Methode
-    main.appendChild(sec('Wie belastbar ist welche Methode?', [evidenceList(reg.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; })), h('p', { class: 'st-hint', text: (reg.evidenceScale && reg.evidenceScale.noPromise) || '' })], { kicker: 'Evidenz je Regelversion', more: more(BASE + 'backtests/', 'Details') }));
+    main.appendChild(sec('Wie belastbar ist welche Methode?', [evidenceList(reg.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; })), h('p', { class: 'st-hint', text: (reg.evidenceScale && reg.evidenceScale.noPromise) || '' })], { kicker: 'Evidenz je Regelversion', more: more(BASE + 'forschung/', 'Details') }));
     main.appendChild(disclaimer(sig));
   }
   // Startseite, wenn keine Regelversion einen belegten Vorteil hat: alle laufenden
@@ -461,7 +461,7 @@
     var sum = function (k) { return per.reduce(function (a, x) { return a + x[k]; }, 0); };
     // VU3: Ergebnis zuerst - was die Modelle heute protokollieren, dann der Status der Evidenz in einer Zeile.
     main.appendChild(h('section', { class: 'st-sec vu-sec st-today' }, [
-      h('div', { class: 'st-sec-h vu-sec-head' }, [h('div', null, [h('div', { class: 'st-kick vu-eyebrow', text: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · ' + research.length + ' Methoden' }), h('h2', { class: 'vu-sec-title', text: 'Heute im Protokoll' })]), more(BASE + 'signals/', 'Alle Treffer')]),
+      h('div', { class: 'st-sec-h vu-sec-head' }, [h('div', null, [h('div', { class: 'st-kick vu-eyebrow', text: stale ? 'Kurse veraltet – Stand ' + dateDe(sig.asOf) : 'Modellbeobachtung · ' + research.length + ' Methoden' }), h('h2', { class: 'vu-sec-title', text: 'Heute im Protokoll' })]), more(BASE + 'treffer/', 'Alle Treffer')]),
       kpiList([[String(sum('prep')), 'In Vorbereitung'], [String(sum('conf')), 'Aufgenommen'], [String(sum('pos')), 'Modellpositionen'], [String(sum('done')), 'Geschlossen']]),
       h('div', { class: 'st-evline' }, [vstatus('Alle Methoden in Prüfung', 'warn'), h('span', { text: 'Kein belegter Vorteil – Beobachtung, keine Empfehlung.' })]),
       moreBox('Was heißt „in Prüfung“?', [
@@ -481,7 +481,7 @@
     if (partial.length) main.appendChild(sec('Teilprüfung', [h('div', { class: 'st-rail' }, partial.map(function (s) { return methodTile(s, D); })),
       pending.length ? h('p', { class: 'st-hint' }, ['In Vorbereitung: ' + pending.map(function (s) { return stName(s); }).join(' · ') + '. ', h('a', { href: BASE + 'strategies/#vorbereitung', text: 'Warum?' })]) : null], { kicker: 'Kandidaten ohne Musterdepot' }));
     if (D.replay) main.appendChild(sec('Beispiel', [replayTeaser(D.replay)], { kicker: 'Historisch · kein aktueller Treffer' }));
-    main.appendChild(sec('Wie belastbar ist welche Methode?', [evidenceList(reg.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; }))], { kicker: 'Evidenz je Regelversion', more: more(BASE + 'backtests/', 'Details') }));
+    main.appendChild(sec('Wie belastbar ist welche Methode?', [evidenceList(reg.strategies.filter(function (s) { return s.mode !== 'RESEARCH'; }))], { kicker: 'Evidenz je Regelversion', more: more(BASE + 'forschung/', 'Details') }));
     main.appendChild(disclaimer(sig));
   }
   function obsNum(n, label) { return h('span', null, [h('strong', { text: String(n) }), label]); }
@@ -828,12 +828,12 @@
       qTile(st.quality.B, 'B-Setups', (st.quality.bBreakdown ? st.quality.bBreakdown.blockedOnlyByRegime + ' nur wegen Regime-Sperre (VU)' : '')),
     ]));
     kids.push(main1.length ? h('div', { class: 'st-list' }, main1.slice(0, 12).map(function (x) { return stockCard(x, s); })) : emptyBox(hasQ ? 'Heute kein A-Setup' : 'Heute kein Setup', hasQ ? 'Alle ' + bList.length + ' gültigen Boxen verfehlen mindestens ein Qualitätskriterium.' : 'Die Regeln sind heute für keinen Titel erfüllt. Supertrader erfindet keinen Treffer.'));
-    if (main1.length > 12 || bList.length) kids.push(more(BASE + 'signals/?method=' + s.strategy_id, 'Alle ' + open.length + ' Setups' + (bList.length ? ' (inkl. ' + bList.length + ' B)' : '')));
+    if (main1.length > 12 || bList.length) kids.push(more(BASE + 'treffer/?method=' + s.strategy_id, 'Alle ' + open.length + ' Setups' + (bList.length ? ' (inkl. ' + bList.length + ' B)' : '')));
     if (WATCH[s.strategy_id] && !isResearchS(s)) kids.push(moreBox('Warum eine Beobachtungsliste?', [h('p', { text: 'Die Turtle-Regeln handeln jeden Ausbruch über das 20-Tage-Hoch. Das Modell nimmt Aktien erst auf, wenn sie höchstens 6 % darunter stehen (ab 3 % „vorbereitet“) – diese Abstände sind VU-Regeln, keine Turtle-Regeln, und Ausbrüche aus größerer Entfernung können dadurch verloren gehen. Die Liste ist eine Beobachtungsliste, keine vorbereitete Aufnahme. Steigt der Kurs im Tagesverlauf über den Ausbruchspunkt, nimmt das Musterdepot die Aktie auf; nach einem Gewinner-Ausbruch gilt das 55-Tage-Hoch.' })]));
     if (isResearchS(s)) {
       kids.push(moreBox('Warum Modellbeobachtung?', [h('p', { text: 'Die Regeln laufen unverändert weiter, damit die Beobachtung nicht rückwirkend geschönt wird. Die Liste ist keine Auswahl für ein echtes Depot.' })]));
       var pos = open.filter(function (x) { return x.entry; });
-      if (pos.length) main.appendChild(sec('Laufende Modellpositionen (' + pos.length + ')', [h('p', { class: 'st-hint', text: 'Abgabe und Ungültig-Marke gelten nach der Regelversion, unter der die Position eröffnet wurde.' }), h('div', { class: 'st-list' }, pos.slice(0, 12).map(function (x) { return stockCard(x, s); })), pos.length > 12 ? more(BASE + 'signals/?method=' + s.strategy_id + '&phase=pos', 'Alle ' + pos.length) : null], { kicker: 'Forschung · weiter geführt' }));
+      if (pos.length) main.appendChild(sec('Laufende Modellpositionen (' + pos.length + ')', [h('p', { class: 'st-hint', text: 'Abgabe und Ungültig-Marke gelten nach der Regelversion, unter der die Position eröffnet wurde.' }), h('div', { class: 'st-list' }, pos.slice(0, 12).map(function (x) { return stockCard(x, s); })), pos.length > 12 ? more(BASE + 'treffer/?method=' + s.strategy_id + '&phase=pos', 'Alle ' + pos.length) : null], { kicker: 'Forschung · weiter geführt' }));
     }
     main.appendChild(sec(isResearchS(s) ? 'Modellbeobachtung: aktuelle Setups' : WATCH[s.strategy_id] ? 'Beobachtungsliste: nahe dem 20-Tage-Hoch' : 'Aktien, die die Regeln heute erfüllen', kids, { kicker: 'Live seit ' + dateDe(st.liveSince) }));
     // Chart des besten Setups
@@ -1395,7 +1395,7 @@
   /* ======================================================== BACKTESTS */
   function pilotTeaser(pl) {
     var sm = pl.strategy.metrics.full, ew = pl.comparison.equalWeightUniverse.full, spy = pl.comparison.spy.full;
-    return h('a', { class: 'st-pilot-t', href: BASE + 'backtests/' }, [
+    return h('a', { class: 'st-pilot-t', href: BASE + 'forschung/' }, [
       h('div', { class: 'r1' }, [h('span', { class: 'st-tag', 'data-t': 'warn', text: 'Explorativ' }), h('span', { class: 'm', text: pl.method.label })]),
       h('div', { class: 'st-trio' }, [trio(pct(sm.cagr, 1, true), 'Regel p. a.'), trio(pct(ew.cagr, 1, true), 'Gleiche Aktien, gleich gewichtet'), trio(pct(spy.cagr, 1, true), 'SPY')]),
       h('p', { text: 'Explorativ, nicht validiert: nur heute gelistete Aktien (' + pl.period.from.slice(0, 4) + '–' + pl.period.to.slice(0, 4) + '). Die übrigen Methoden sind noch nicht historisch geprüft.' }),
