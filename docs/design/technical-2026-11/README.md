@@ -1,6 +1,6 @@
 # Technical · Konzept „Der Chart in drei Sätzen“
 
-Konzept vom 09.11.2026, damit Technical einfacher und verständlicher wird; gleicher Ansatz wie Discover, Quant, Fundamental + Screener und Supertrader (Ordner nebenan). Noch nicht freigegeben, noch nicht umgesetzt.
+Konzept vom 09.11.2026, damit Technical einfacher und verständlicher wird; gleicher Ansatz wie Discover, Quant, Fundamental + Screener und Supertrader (Ordner nebenan). **Vom Owner freigegeben am 09.11.2026.** Bauplan und Master-Prompt: [HANDOVER.md](HANDOVER.md).
 Präsentation online (privat): https://claude.ai/artifact/KNABRiU8SWHcMkLtB21BLV
 
 | Datei | Zweck |
