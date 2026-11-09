@@ -207,36 +207,38 @@
   function artKind(d) { return d.group === "quant" && QUANT_PROFILE[d.id] ? "quant" : ART_OF[d.key] || "plain"; }
   function methodArt(kind, o) {
     var x = o || {}, dark = !!x.dark, w = x.width || 330, ink = dark ? "#fff" : "#000", base = dark ? "#1a1a1a" : "#f0f0f0", mute = "#8c8c8c", lime = "#c8f531";
+    /* Hell (Übersicht): Farben über Klassen, damit das Bild dem Theme folgt (portfolios.css .pf-art-*); dunkel (Kopf der Depotseite) fest. */
+    var cls = function (c) { return dark ? "" : ' class="' + c + '"'; };
     var svg = function (h, body, label) { return '<svg class="pf-art" width="' + w + '" height="' + h + '" viewBox="0 0 330 ' + h + '" role="img" aria-label="' + esc(label) + '" style="display:block;max-width:100%;height:auto">' + body + "</svg>"; };
-    var line = function (pts) { return '<path d="' + pts.map(function (p, i) { return (i ? "L" : "M") + p[0] + " " + p[1]; }).join(" ") + '" fill="none" stroke="' + ink + '" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'; };
-    var text = function (xx, y, t, on) { return '<text x="' + xx + '" y="' + y + '" text-anchor="middle" font-size="11" font-weight="800" fill="' + (on ? (dark ? lime : ink) : mute) + '" font-family="Inter,sans-serif">' + esc(t) + "</text>"; };
+    var line = function (pts) { return '<path' + cls("pf-art-i") + ' d="' + pts.map(function (p, i) { return (i ? "L" : "M") + p[0] + " " + p[1]; }).join(" ") + '" fill="none" stroke="' + ink + '" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'; };
+    var text = function (xx, y, t, on) { return '<text' + (on && !dark ? cls("pf-art-it") : "") + ' x="' + xx + '" y="' + y + '" text-anchor="middle" font-size="11" font-weight="800" fill="' + (on ? (dark ? lime : ink) : mute) + '" font-family="Inter,sans-serif">' + esc(t) + "</text>"; };
     if (kind === "weinstein") {
       var zones = [[0, 110, "Basis", 1], [110, 205, "Aufwärts", 2], [205, 265, "Top", 3], [265, 330, "Abwärts", 4]];
       return svg(104, zones.map(function (z) {
         var on = z[3] === 2;
-        return '<rect x="' + z[0] + '" y="0" width="' + (z[1] - z[0]) + '" height="84" rx="8" fill="' + (on ? lime : base) + '" opacity="' + (on ? (dark ? 0.25 : 0.35) : 1) + '"/>' + text((z[0] + z[1]) / 2, 100, z[3] + " · " + z[2], on);
+        return '<rect' + (on ? "" : cls("pf-art-b")) + ' x="' + z[0] + '" y="0" width="' + (z[1] - z[0]) + '" height="84" rx="8" fill="' + (on ? lime : base) + '" opacity="' + (on ? (dark ? 0.25 : 0.35) : 1) + '"/>' + text((z[0] + z[1]) / 2, 100, z[3] + " · " + z[2], on);
       }).join("") + line([[0, 70], [40, 66], [70, 72], [100, 64], [120, 58], [160, 38], [190, 26], [215, 18], [240, 22], [260, 16], [285, 30], [310, 50], [330, 66]]), "Vier Phasen nach Weinstein, das Musterdepot hält Phase 2, den Aufwärtstrend");
     }
     if (kind === "darvas") {
       var boxes = [[20, 52, 70, 22], [100, 34, 70, 22], [180, 16, 70, 22]];
       return svg(104, boxes.map(function (b, i) {
         var on = i === boxes.length - 1;
-        return '<rect x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '" rx="4" fill="' + (on ? lime : base) + '" opacity="' + (on ? 0.3 : 1) + '" stroke="' + (on ? lime : mute) + '" stroke-dasharray="' + (on ? "0" : "3 3") + '"/>';
+        return '<rect' + (on ? "" : cls("pf-art-b")) + ' x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '" rx="4" fill="' + (on ? lime : base) + '" opacity="' + (on ? 0.3 : 1) + '" stroke="' + (on ? lime : mute) + '" stroke-dasharray="' + (on ? "0" : "3 3") + '"/>';
       }).join("") + line([[0, 80], [20, 70], [40, 58], [60, 70], [85, 56], [100, 46], [125, 54], [150, 40], [170, 50], [190, 28], [215, 36], [240, 22], [260, 8], [300, 4]]) +
-        '<circle cx="260" cy="8" r="4.5" fill="' + lime + '" stroke="' + ink + '" stroke-width="1.6"/>' + text(55, 100, "Kiste", false) + text(135, 100, "Kiste", false) + text(215, 100, "Ausbruch", true), "Darvas-Kisten: Aufnahme beim Ausbruch aus der Kiste");
+        '<circle' + cls("pf-art-s") + ' cx="260" cy="8" r="4.5" fill="' + lime + '" stroke="' + ink + '" stroke-width="1.6"/>' + text(55, 100, "Kiste", false) + text(135, 100, "Kiste", false) + text(215, 100, "Ausbruch", true), "Darvas-Kisten: Aufnahme beim Ausbruch aus der Kiste");
     }
     if (kind === "turtle") {
       return svg(104, '<path d="M0 30 L120 30 L120 22 L330 22" fill="none" stroke="' + mute + '" stroke-width="1.6" stroke-dasharray="4 4"/>' +
         '<path d="M0 76 L150 76 L150 62 L330 62" fill="none" stroke="' + mute + '" stroke-width="1.6" stroke-dasharray="4 4"/>' +
         '<rect x="230" y="0" width="100" height="84" rx="8" fill="' + lime + '" opacity="' + (dark ? 0.2 : 0.3) + '"/>' +
         line([[0, 60], [30, 48], [60, 66], [90, 40], [120, 56], [150, 44], [180, 52], [210, 36], [230, 20], [260, 12], [300, 16], [330, 8]]) +
-        '<circle cx="230" cy="20" r="4.5" fill="' + lime + '" stroke="' + ink + '" stroke-width="1.6"/>' + text(80, 100, "Kanal der letzten 20 Tage", false) + text(280, 100, "Ausbruch", true), "Turtle-Kanal: Aufnahme, wenn der Kurs über das Hoch der letzten 20 Tage steigt");
+        '<circle' + cls("pf-art-s") + ' cx="230" cy="20" r="4.5" fill="' + lime + '" stroke="' + ink + '" stroke-width="1.6"/>' + text(80, 100, "Kanal der letzten 20 Tage", false) + text(280, 100, "Ausbruch", true), "Turtle-Kanal: Aufnahme, wenn der Kurs über das Hoch der letzten 20 Tage steigt");
     }
     if (kind === "quant") {
       var on = QUANT_PROFILE[x.profile] || [];
       return svg(104, FACTORS.map(function (f, i) {
         var hit = on.indexOf(f[0]) >= 0, h = hit ? 64 : 26, bx = 8 + i * 54;
-        return '<rect x="' + bx + '" y="' + (84 - h) + '" width="42" height="' + h + '" rx="7" fill="' + (hit ? lime : base) + '"/>' + text(bx + 21, 100, f[1], hit);
+        return '<rect' + (hit ? "" : cls("pf-art-b")) + ' x="' + bx + '" y="' + (84 - h) + '" width="42" height="' + h + '" rx="7" fill="' + (hit ? lime : base) + '"/>' + text(bx + 21, 100, f[1], hit);
       }).join(""), "Profil: betont " + on.map(function (k) { return FACTORS.filter(function (f) { return f[0] === k; })[0][1]; }).join(", "));
     }
     return "";

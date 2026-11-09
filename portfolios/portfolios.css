@@ -138,3 +138,7 @@ button.pf-sect__r{min-height:44px;min-width:44px}
 .pf-dpc__perf{display:inline-flex;align-items:center;gap:6px}
 .pf-dpc__perf .vu-chg{font-size:12px;padding:2px 8px}
 .pf-new{margin-left:auto;display:inline-block;background:var(--vu-lime);color:#000;font-size:10px;font-weight:900;letter-spacing:.06em;border-radius:999px;padding:3px 8px;text-transform:uppercase;white-space:nowrap}
+/* Methodenbild auf den Karten folgt dem Theme (Klassen aus methodArt, hell) */
+.pf-art-b{fill:#f0f0f0}.pf-art-i{stroke:var(--vu-ink)}.pf-art-s{stroke:var(--vu-ink)}.pf-art-it{fill:var(--vu-ink)}
+:root[data-theme=dark] .pf-art-b{fill:#1a1a1a}
+:root[data-theme=dark] .pf-art-it{fill:#c8f531}
