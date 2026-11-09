@@ -92,5 +92,15 @@ test("Hedgefonds: Fondsnamen aufbereitet, Rohname bleibt in Quellen (Entscheidun
   assert.equal(fn("Fisher Asset Management"), "Fisher Asset Management");
   assert.equal(fn("Geode Capital Management, Llc"), "Geode Capital Management");
   assert.equal(fn("BlackRock, Inc."), "BlackRock");
+  assert.equal(fn("D. E. Shaw & Co."), "D. E. Shaw & Co");
   assert.match(hedgeSrc, /d\.secName/, "SEC-Name bleibt in der Meldung sichtbar");
+});
+test("Hedgefonds: Investor und Aktie mit Quartalsband, drei Sätzen und Kapiteln (Entscheidungen 6, 8, 9)", () => {
+  const fund = hedgeSrc.slice(hedgeSrc.indexOf("function renderFund(slug) {"), hedgeSrc.indexOf("/* ------------------------------------------------------------ Routing */"));
+  const stock = hedgeSrc.slice(hedgeSrc.indexOf("function renderStock(cusip, ticker) {"), hedgeSrc.indexOf("/* --------------------------------------------------------- H06"));
+  for (const [src, name] of [[fund, "Investor"], [stock, "Aktie"]]) assert.match(src, /qband\(/, name + ": Quartalsband");
+  for (const t of ['story("Das Quartal in drei Sätzen"', '"Größte Position"', '"Gekauft"', '"Verkauft"', '"Größte Positionen"', '/positionen", "Alle "', '"Depotwert im Verlauf"', '"Werte je Quartal"', "plain.slice(0, 6)"]) assert.ok(fund.includes(t), "Investor: " + t);
+  for (const t of ['story("Investoren in drei Sätzen · "', '"Fonds"', '"Bewegung"', '"Insider"', "starsByValue.slice(0, 4)", '"Insider-Käufe und -Verkäufe"', '"Alle 13F-Melder"', "inkl. Banken, Versicherer, ETF-Anbieter"]) assert.ok(stock.includes(t), "Aktie: " + t);
+  assert.match(stock, / Hedgefonds halten /, "Hedgefonds und alle 13F-Melder nie mit demselben Wort");
+  assert.doesNotMatch(stock, /"Fonds halten "/);
 });

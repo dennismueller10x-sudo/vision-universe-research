@@ -130,7 +130,7 @@
       .replace(/\bGrp\b/g, "Group").replace(/\bSvcs\b/g, "Services")
       .replace(/^Ss (?=Spdr)/i, "").replace(/-Us$/, "")
       // Rechtsform-Zusätze sind in Listen Rauschen („Amazon.Com Inc" → „Amazon")
-      .replace(/\.Com\b/, "").replace(/,?\s+(Inc|Corp|Corporation|Co|Ltd|plc|Holdings Inc)\.?$/i, "").trim();
+      .replace(/\.Com\b/, "").replace(/\s+Co\/The$/i, "").replace(/,?\s+(Inc|Corp|Corporation|Co|Ltd|plc|Holdings Inc)\.?$/i, "").trim();
   }
   // Von SEC/FIGI abgeschnittene Namen, die sich nicht regelbasiert reparieren lassen
   var NAME_FIX = { NVDA: "NVIDIA", TSM: "TSMC", SPCX: "SpaceX", GOOGL: "Alphabet (A)", GOOG: "Alphabet (C)", "BRK/B": "Berkshire Hathaway", META: "Meta Platforms" };
@@ -155,7 +155,9 @@
     x = x.replace(/^ARK Investment Management$/, "ARK Invest");
     if (/ Capital Management$/.test(x) && x.replace(/ Capital Management$/, "").split(" ").length > 1) x = x.replace(/ Capital Management$/, "");
     if (x === x.toUpperCase() || /\b(Llc|Inc|Corp)\b/.test(x)) x = prettyIssuer(x.toUpperCase());
-    return x.trim() || String(n || "");
+    x = x.trim();
+    if (/&$/.test(x)) x = String(n).replace(/[.,\s]+$/, "");
+    return x || String(n || "");
   }
   function fundLabel(f) { return f.manager ? f.manager + " · " + fundName(f.name) : fundName(f.name); }
   function regionLabel(f) { return f.region ? REGION[f.region] || f.region : ""; }
@@ -588,7 +590,7 @@
     return '<p class="hf-legal">' + (lead ? lead + " " : "") + 'Keine Anlageberatung.' + (stand ? " " + stand + "." : "") + '</p><details class="hf-acc hf-dm"><summary>Daten &amp; Methodik</summary><dl>' +
       rows.filter(Boolean).map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("") + "</dl></details>";
   }
-  function footer(extra) {
+  function footer(extra, lead) {
     var d = S.data, errs = (d.errors || []).length;
     return dmBlock("Stand " + dateDE(d.generatedAt), [
       ["Grundlage", "Quartalsmeldungen der Investoren (Form 13F-HR)."],
@@ -596,7 +598,7 @@
       ["Was 13F zeigt", "Nur US-Aktien, ETFs und börsennotierte Optionen zum Quartalsende, veröffentlicht bis zu 45 Tage später. Keine Short-Positionen, Anleihen oder ausländischen Aktien."],
       ["Käufe & Verkäufe", "Aus dem Vergleich zweier Quartale abgeleitet; Handelszeitpunkt und -preis sind nicht bekannt. Volumen = Stückzahländerung × Kurs zum Quartalsende, daher geschätzt. Put/Call-Positionen stehen mit dem Wert des Basiswerts."],
       ["Zuordnung", "Ticker: OpenFIGI. Porträts: Wikimedia Commons, Urheber und Lizenz in der Detailansicht des Fonds. Fondsnamen gekürzt (ohne Rechtsform); der Name laut SEC steht in der Meldung."]
-    ].concat(extra || []), "Was große Fonds gemeldet haben (13F, Angabe Dritter).");
+    ].concat(extra || []), lead || "Was große Fonds gemeldet haben (13F, Angabe Dritter).");
   }
   function backLink(href, label) {
     return '<a class="hf-back" href="' + href + '">' + U.glyph("back", 18) + label + "</a>";
@@ -911,6 +913,12 @@
     }).catch(function () {});
   }
   // C08 aus dem Verhältnis Käufer : Verkäufer (Fonds, die aufgestockt haben, gegen Fonds, die verkleinert oder verkauft haben)
+  /* Star-Investor auf der Aktie: Foto, Name, Firma · Anteil des Depots, Wert, Veränderung. */
+  function starHolderRow(h) {
+    var f = S.bySlug[h.s];
+    return '<a class="hf-mvr hf-mvr--inv" href="#/fonds/' + esc(f.slug) + '">' + avatar(f, "md") + '<span class="hf-mvr-b"><b>' + esc(f.manager || fundName(f.name)) + "</b><small>" + esc((f.manager ? fundName(f.name) + " · " : "") + pct(h.w) + " des Depots") +
+      '</small></span><span class="hf-inv-v"><b class="vu-num">' + usd(h.v) + "</b>" + move(h) + "</span></a>";
+  }
   function balanceVerdict(b, s) {
     var n = b + s;
     if (!n) return { kind: "none", text: "Keine Bewegung", help: "Kein erfasster Fonds hat die Position im Quartal verändert." };
@@ -941,49 +949,63 @@
         var f = S.bySlug[h.s];
         return invRow(f, { sub: (f.manager ? fundName(f.name) : (f.city || f.style || "")) + " · " + pct(h.w) + " Anteil", val: usd(h.v), chg: move(h) });
       };
-      root.innerHTML = '<div class="hf-detail"><div id="hf-shead">' + stockHeadFallback(a, name, "#/aktien", "Alle Aktien") + "</div>" +
-        '<section class="vu-box vu-box--ink hf-answer" aria-label="Antwort"><div class="hf-answer-top"><span class="vu-ltag">Hedgefonds · ' + esc(d.latestPeriodLabel || "") + "</span>" + U.verdict(vd.kind, vd.text) + "</div>" +
-          '<p class="hf-answer-big"><b class="vu-num">' + nf0.format(holders.length) + "</b><span>Fonds halten " + esc(name) + "</span></p>" +
-          "<p class=\"hf-answer-sub\">darunter " + stars.length + " Star-Investoren · zusammen " + usd(a.valueUSD) + "</p>" +
-          (buyers.length + nSell ? '<div class="hf-balance" role="img" aria-label="' + buyers.length + " Fonds kaufen mehr, " + nSell + ' Fonds verkaufen"><div class="hf-balance-l"><span>' + buyers.length + " kaufen mehr</span><span>" + nSell + " verkaufen</span></div>" +
-            '<div class="hf-balance-bar"><i class="b" style="flex-grow:' + buyers.length + '"></i><i class="s" style="flex-grow:' + nSell + '"></i></div></div>' : "") +
-          '<p class="hf-answer-foot">' + nNew + " neu eingestiegen · " + sellers.length + " komplett ausgestiegen</p></section>" +
+      var many = holders.length >= 100 ? ["mid", "Viele"] : holders.length >= 20 ? ["mid", "Einige"] : ["none", "Wenige"];
+      var instNote = "Angabe Dritter (13F, Form 4). Stand der Depots " + dateDE(d.latestPeriod) + '<span id="hf-insasof"></span>.';
+      root.innerHTML = '<div class="hf-detail"><div id="hf-shead">' + stockHeadFallback(a, name, "#/aktien", "Alle Aktien") + "</div>" + qband() +
+        story("Investoren in drei Sätzen · " + (d.latestPeriodLabel || ""), [
+          ["users", "Fonds", nf0.format(holders.length) + " Hedgefonds halten " + esc(name) + ", darunter " + stars.length + " Star-Investoren.", U.verdict(many[0], many[1])],
+          ["pulse", "Bewegung", buyers.length + " haben aufgestockt, " + nSell + " verkauft: " + vd.text.toLowerCase() + ".", U.verdict(vd.kind, vd.text)],
+          ["key", "Insider", a.ticker ? "Insider-Daten werden geladen …" : "Ohne Kürzel keine Insider-Daten.", U.verdict("none", "Offen"), "hf-insrow"]]) +
         '<div class="hf-gap">' + U.help(vd.help) + "</div>" +
-        (topW ? '<div class="vu-box vu-box--lime hf-lime">' + icon("star") + "<span><b>Größte Überzeugung:</b> " + esc(fundLabel(S.bySlug[topW.s])) + " hat " + pct(topW.w) + " des Depots in " + esc(name) + ".</span></div>" : "") +
         sectBtn("Star-Investoren mit " + esc(name), "hf-hall", "Alle " + stars.length) +
-        '<div id="hf-starrows">' + (starsByValue.slice(0, 6).map(holderRow).join("") || U.blank("Kein Star-Investor hält " + name + ".")) + "</div>" +
-        '<div class="hf-gap">' + U.help("Rechts die Veränderung der Stückzahl zum Vorquartal. Anteil: Gewicht von " + name + " im Depot des Fonds.") + "</div>" +
-        (sellers.length ? '<div class="vu-box vu-box--line hf-gap"><b class="vu-sm">Komplett ausgestiegen' + (starSellers.length ? " (Stars), u. a." : ", u. a.") + '</b><p class="vu-sm hf-gap-s">' +
-          (starSellers.length ? starSellers : sellers).slice(0, 3).map(function (h) { var f = S.bySlug[h.s]; return esc(f.manager || fundName(f.name)) + " (" + (f.manager ? esc(fundName(f.name)) + ", " : "") + "zuvor " + usd(h.v) + ")"; }).join(" · ") + "</p></div>" : "") +
-        '<details class="hf-acc" id="hf-allacc"><summary>Alle ' + holders.length + " Fonds mit " + esc(name) + "</summary>" +
-          seg([{ id: "all", label: "Alle " + holders.length }, { id: "star", label: "Stars " + stars.length }], "all", 'id="hf-hmode" role="group" aria-label="Fonds-Auswahl"') +
-          '<div id="hf-hlist"></div>' + moreBtn("hf-hmore") +
-          (sellers.length ? '<h3 class="hf-flowh">' + sellers.length + " komplett ausgestiegen</h3>" + sellers.map(function (h) { var f = S.bySlug[h.s]; return invRow(f, { sub: "zuvor " + usd(h.v), val: usd(f.totalValueUSD), chg: U.verdict("weak", "Verkauft") }); }).join("") : "") +
-        "</details>" +
-        (a.ticker ? '<div id="hf-sm"></div>' : "") +
+        '<div class="vu-box hf-mvl" id="hf-starrows">' + (starsByValue.slice(0, 4).map(starHolderRow).join("") || '<p class="hf-none">Kein Star-Investor hält ' + esc(name) + ".</p>") + "</div>" +
+        '<div class="hf-eps">' + chapter(1, "table", "Alle " + nf0.format(holders.length) + " Hedgefonds", "neu " + nNew + " · ganz raus " + sellers.length, "hf-allacc") +
+          (a.ticker ? chapter(2, "key", "Insider-Käufe und -Verkäufe", "Form 4, 90 Tage", "hf-ch-ins") + chapter(3, "layers", "Alle 13F-Melder", '<span id="hf-instsub">inkl. Banken, Versicherer, ETF-Anbieter</span>', "hf-ch-inst") : "") + "</div>" +
         footer([["Aktie", esc(name) + (a.ticker ? " · " + esc(a.ticker) : "") + " · CUSIP " + esc(a.cusip)],
           ["Abdeckung", "Berücksichtigt sind je Fonds die größten gemeldeten Positionen (Star-Investoren: 150, weitere Hedgefonds: 50). Kleinere Beteiligungen können fehlen. Anteil = Gewicht der Aktie im jeweiligen 13F-Portfolio."],
-          ["Urteil", "Mehr Käufer ab 60 % Käufen unter allen Bewegungen, Mehr Verkäufer ab 60 % Verkäufen, dazwischen ausgeglichen."]]) + "</div>";
+          ["Zwei Zahlen", "„Hedgefonds“ zählt die erfassten Hedgefonds und Star-Investoren; „Alle 13F-Melder“ zählt jeden Verwalter mit 13F-Pflicht, auch Banken, Versicherer und ETF-Anbieter."],
+          ["Urteil", "Mehr Käufer ab 60 % Käufen unter allen Bewegungen, Mehr Verkäufer ab 60 % Verkäufen, dazwischen ausgeglichen."]], instNote) + "</div>";
       mountStockHead(a.ticker || ticker, name, "#/aktien", "Alle Aktien");
       var hShown = 15, hMode = "all";
+      onChapter("hf-allacc", function (body) {
+        body.innerHTML = seg([{ id: "all", label: "Alle " + holders.length }, { id: "star", label: "Stars " + stars.length }], hMode, 'id="hf-hmode" role="group" aria-label="Fonds-Auswahl"') +
+          '<div id="hf-hlist"></div>' + moreBtn("hf-hmore") +
+          (sellers.length ? '<h3 class="hf-flowh">' + sellers.length + " komplett ausgestiegen</h3>" + sellers.map(function (h) { var f = S.bySlug[h.s]; return invRow(f, { sub: "zuvor " + usd(h.v), val: usd(f.totalValueUSD), chg: U.verdict("weak", "Verkauft") }); }).join("") : "") +
+          '<div class="hf-gap">' + U.help("Rechts die Veränderung der Stückzahl zum Vorquartal. Anteil: Gewicht von " + name + " im Depot des Fonds.") + "</div>";
+        draw();
+        bindSeg(document.getElementById("hf-hmode"), function (v) { hMode = v; hShown = 15; draw(); });
+        document.getElementById("hf-hmore").addEventListener("click", function () { hShown = 1e9; draw(); });
+      });
       function draw() {
         var list = hMode === "star" ? stars : holders, shown = list.slice(0, hShown), more = document.getElementById("hf-hmore");
+        if (!more) return;
         document.getElementById("hf-hlist").innerHTML = shown.map(holderRow).join("") || '<p class="hf-none">Keine Star-Investoren unter den Haltern.</p>';
         more.hidden = list.length <= shown.length;
         more.textContent = "Alle " + list.length + " Fonds zeigen";
       }
-      draw();
-      bindSeg(document.getElementById("hf-hmode"), function (v) { hMode = v; hShown = 15; draw(); });
-      document.getElementById("hf-hmore").addEventListener("click", function () { hShown = 1e9; draw(); });
       document.getElementById("hf-hall").addEventListener("click", function () {
         var acc = document.getElementById("hf-allacc");
-        acc.open = true;
         hMode = "star"; hShown = 1e9;
+        acc.open = true;
         [].forEach.call(acc.querySelectorAll("[data-v]"), function (x) { x.setAttribute("aria-pressed", x.getAttribute("data-v") === "star"); });
         draw();
         acc.scrollIntoView({ block: "start" });
       });
-      smartMoneyBlock(a.ticker || ticker, name);
+      if (a.ticker) loadOwnIssuer(a.ticker).then(function (r) {
+        var row = document.getElementById("hf-insrow");
+        if (!row) return;
+        var x = r && r.data, ins = x && x.insider, inst = x && x.institutions, p = row.querySelector("p"), v = row.lastElementChild;
+        if (!ins) { p.textContent = "Zu den Insidern von " + name + " liegen noch keine Daten vor."; }
+        else {
+          var b = ins.ib90 || 0, se = ins.is90 || 0, w = function (n) { return n === 0 ? "keiner" : n === 1 ? "1 Insider" : n + " Insider"; };
+          p.textContent = "In 90 Tagen haben " + (b && se ? w(se) + " verkauft und " + w(b) + " gekauft." : b ? w(b) + " gekauft, keiner verkauft." : se ? w(se) + " verkauft, keiner gekauft." : "keine Insider gekauft oder verkauft.");
+          v.outerHTML = ins.nbv90 > 0 ? U.verdict("strong", "Netto Kauf") : ins.nbv90 < 0 ? U.verdict("weak", "Netto Verkauf") : U.verdict("none", "Keine Bewegung");
+          var asof = document.getElementById("hf-insasof"); if (asof && r.asOf) asof.textContent = ", Insider bis " + dateDE(r.asOf);
+        }
+        if (inst) { var sub = document.getElementById("hf-instsub"); if (sub) sub.textContent = nf0.format(inst.fh) + " inkl. Banken, Versicherer, ETF-Anbieter"; }
+        onChapter("hf-ch-ins", function (body) { body.innerHTML = ins ? insiderHtml(ins, name) : U.blank("Zu " + a.ticker + " liegen noch keine Insider-Daten vor."); });
+        onChapter("hf-ch-inst", function (body) { body.innerHTML = inst || (x && x.schedules) ? '<p class="hf-note-s">Quartal ' + (inst ? quarter(inst.period) : "–") + ", Meldedaten Stand " + dateDE(r.asOf) + ".</p>" + instHtml(inst, x.schedules) : U.blank("Zu " + a.ticker + " liegen noch keine 13F-Melderdaten vor."); });
+      });
     }).catch(function (err) {
       root.innerHTML = backLink("#/aktien", "Alle Aktien") + U.blank("Aktie konnte nicht geladen werden (" + err.message + ").");
     });
@@ -1115,46 +1137,63 @@
     return '<span class="vu-chg' + (v < 0 ? " vu-chg--down" : v === 0 ? " vu-chg--flat" : "") + '">' + (v > 0 ? "+" : "") + usd(v) + "</span>";
   }
   // Block auf der Aktienseite: Insider und alle 13F-Melder für einen Ticker
+  function insiderHtml(ins, name) {
+    var buyers = ins.topBuyers || [];
+    return '<div class="vu-grid hf-tiles" style="--vu-cols:3">' + U.tile("Käufer", String(ins.ib90), "") + U.tile("Verkäufer", String(ins.is90), "") +
+      '<div class="vu-tile"><div class="vu-tile__label">Netto</div><div class="hf-gap-s">' + netPill(ins.nbv90) + "</div></div></div>" +
+      (ins.cb ? '<div class="vu-blank hf-gap">' + U.verdict("strong", "Mehrere Insider") + "<span>Mindestens drei Insider haben innerhalb von 30 Tagen gekauft.</span></div>" : "") +
+      (buyers.length ? '<div class="hf-gap">' + buyers.map(function (b) {
+        return '<div class="hf-row"><span class="hf-inv-n"><b>' + esc(personName(b.name)) + "</b><small>" + esc(roleLabel(b.relationship)) + (b.plan10b5One ? " · Plan 10b5-1" : "") + " · gemeldet " + dateDE(b.lastFiled) +
+          '</small></span><span class="hf-inv-v"><b class="vu-num">' + usd(b.valueUsd) + "</b><small>" + shares(b.shares) + " Aktien</small></span></div>";
+      }).join("") + "</div>" : '<div class="vu-blank hf-gap">' + U.verdict("none", "Keine Käufe") + "<span>Kein Insider hat in 90 Tagen gekauft.</span></div>") +
+      (ins.complete === false ? '<p class="hf-note-s">Die jüngsten Wochen sind noch nicht vollständig erfasst.</p>' : "") +
+      (ins.issuerLevel ? '<p class="hf-note-s">Insider-Werte gelten für das Unternehmen insgesamt (alle Aktiengattungen).</p>' : "") +
+      '<a class="hf-linkline" href="#/gruppen-kaeufe/insider">Alle Insider-Käufe ' + U.glyph("next", 15) + "</a>";
+  }
+  function instHtml(inst, sch) {
+    var html = "";
+    if (inst) html += kv([["Halter", nf0.format(inst.fh)], ["Halter im Vorquartal", nf0.format(inst.fhp)], ["Neu eingestiegen", "+" + nf0.format(inst.fnew)], ["Ausgestiegen", nf0.format(inst.fexit)], ["Aufgestockt / reduziert", nf0.format(inst.finc) + " / " + nf0.format(inst.fdec)]]) +
+      ((inst.topNew || []).length ? '<details class="hf-acc"><summary>Größte Neueinsteiger</summary>' + inst.topNew.map(function (n) {
+        return '<div class="hf-kvrow"><span>' + esc(fundName(prettyIssuer(n.manager))) + '</span><b class="vu-num">' + usd(n.valueUsd) + "</b></div>";
+      }).join("") + "</details>" : "") +
+      (inst.previousHoldersLow ? '<p class="hf-note-s">Im Vorquartal waren wenige Melder erfasst; Neueinstiege sind deshalb nur eingeschränkt vergleichbar.</p>' : "") +
+      '<div class="hf-gap">' + U.help("Alle 13F-Melder: auch Banken, Versicherer und ETF-Anbieter, nicht nur Hedgefonds.") + "</div>";
+    var rec = (sch && sch.recent) || [];
+    if (rec.length) html += sect("Beteiligungen über 5 %") + rec.slice(0, 6).map(function (m) {
+      var url = secFilingUrl(m.accession);
+      return '<div class="hf-row"><span class="hf-inv-n"><b>' + esc((m.filers || []).map(function (x) { return fundName(prettyIssuer(x)); }).join(", ") || "–") + "</b><small>" + esc(m.form) + (/13D/.test(m.form) ? " (aktiv)" : " (passiv)") +
+        '</small></span><span class="hf-inv-v"><b class="vu-num">' + (url ? '<a href="' + url + '" target="_blank" rel="noopener">' + dateDE(m.filed) + "</a>" : dateDE(m.filed)) + "</b></span></div>";
+    }).join("");
+    return html;
+  }
+  // Block für Aktien ohne Fondsdaten: Insider und alle 13F-Melder für einen Ticker
   function smartMoneyBlock(ticker, name) {
     var el = document.getElementById("hf-sm");
     if (!el || !ticker) return;
     loadOwnIssuer(ticker).then(function (r) {
       if (!document.getElementById("hf-sm")) return;
       if (!r) { el.innerHTML = sect("Insider bei " + esc(name) + " · 90 Tage") + U.blank("Zu " + ticker + " liegen noch keine Insider- oder Fondsdaten vor."); return; }
-      var x = r.data, ins = x.insider, inst = x.institutions, sch = x.schedules, html = "";
-      if (ins) {
-        var buyers = ins.topBuyers || [];
-        html += sect("Insider bei " + esc(name) + " · 90 Tage") +
-          '<div class="vu-grid hf-tiles" style="--vu-cols:3">' + U.tile("Käufer", String(ins.ib90), "") + U.tile("Verkäufer", String(ins.is90), "") +
-          '<div class="vu-tile"><div class="vu-tile__label">Netto</div><div class="hf-gap-s">' + netPill(ins.nbv90) + "</div></div></div>" +
-          (ins.cb ? '<div class="vu-blank hf-gap">' + U.verdict("strong", "Gruppen-Kauf") + "<span>Mindestens drei Insider haben innerhalb von 30 Tagen gekauft.</span></div>" : "") +
-          (buyers.length ? '<div class="hf-gap">' + buyers.map(function (b) {
-            return '<div class="hf-row"><span class="hf-inv-n"><b>' + esc(personName(b.name)) + "</b><small>" + esc(roleLabel(b.relationship)) + (b.plan10b5One ? " · Plan 10b5-1" : "") + " · gemeldet " + dateDE(b.lastFiled) +
-              '</small></span><span class="hf-inv-v"><b class="vu-num">' + usd(b.valueUsd) + "</b><small>" + shares(b.shares) + " Aktien</small></span></div>";
-          }).join("") + "</div>" : '<div class="vu-blank hf-gap">' + U.verdict("none", "Keine Käufe") + "<span>Kein Insider hat in 90 Tagen gekauft.</span></div>") +
-          (ins.complete === false ? '<p class="hf-note-s">Die jüngsten Wochen sind noch nicht vollständig erfasst.</p>' : "") +
-          (ins.issuerLevel ? '<p class="hf-note-s">Insider-Werte gelten für das Unternehmen insgesamt (alle Aktiengattungen).</p>' : "") +
-          '<a class="hf-linkline" href="#/gruppen-kaeufe/insider">Alle Insider-Käufe ' + U.glyph("next", 15) + "</a>";
-      }
-      if (inst) {
-        html += sect("Alle 13F-Melder · " + quarter(inst.period)) +
-          kv([["Halter", nf0.format(inst.fh)], ["Halter im Vorquartal", nf0.format(inst.fhp)], ["Neu eingestiegen", "+" + nf0.format(inst.fnew)], ["Ausgestiegen", nf0.format(inst.fexit)], ["Aufgestockt / reduziert", nf0.format(inst.finc) + " / " + nf0.format(inst.fdec)]]) +
-          ((inst.topNew || []).length ? '<details class="hf-acc"><summary>Größte Neueinsteiger</summary>' + inst.topNew.map(function (n) {
-            return '<div class="hf-kvrow"><span>' + esc(prettyIssuer(n.manager)) + '</span><b class="vu-num">' + usd(n.valueUsd) + "</b></div>";
-          }).join("") + "</details>" : "") +
-          (inst.previousHoldersLow ? '<p class="hf-note-s">Im Vorquartal waren wenige Melder erfasst; Neueinstiege sind deshalb nur eingeschränkt vergleichbar.</p>' : "") +
-          '<div class="hf-gap">' + U.help("Alle 13F-Melder: auch Banken, Versicherer und ETF-Anbieter, nicht nur Hedgefonds.") + "</div>";
-      }
-      var rec = (sch && sch.recent) || [];
-      if (rec.length) {
-        html += sect("Beteiligungen über 5 %") + rec.slice(0, 6).map(function (m) {
-          var url = secFilingUrl(m.accession);
-          return '<div class="hf-row"><span class="hf-inv-n"><b>' + esc((m.filers || []).map(prettyIssuer).join(", ") || "–") + "</b><small>" + esc(m.form) + (/13D/.test(m.form) ? " (aktiv)" : " (passiv)") +
-            '</small></span><span class="hf-inv-v"><b class="vu-num">' + (url ? '<a href="' + url + '" target="_blank" rel="noopener">' + dateDE(m.filed) + "</a>" : dateDE(m.filed)) + "</b></span></div>";
-        }).join("");
-      }
+      var x = r.data, html = "";
+      if (x.insider) html += sect("Insider bei " + esc(name) + " · 90 Tage") + insiderHtml(x.insider, name);
+      if (x.institutions) html += sect("Alle 13F-Melder · " + quarter(x.institutions.period));
+      html += instHtml(x.institutions, x.schedules);
       el.innerHTML = html + '<p class="hf-note-s">Insider- und Meldedaten Stand ' + dateDE(r.asOf) + ".</p>";
     });
+  }
+  /* Konzept EHV: drei Sätze (Story-Karte) und Kapitel (zugeklappt, Inhalt beim Öffnen). */
+  function story(title, rows) {
+    return '<section class="hf-story" aria-label="' + esc(title) + '"><div class="vu-ltag">' + esc(title) + "</div>" + rows.map(function (r) {
+      return '<div class="hf-story-r"' + (r[4] ? ' id="' + r[4] + '"' : "") + '><span class="vu-hud hf-hud">' + icon(r[0]) + '</span><div><span class="vu-ltag">' + esc(r[1]) + "</span><p>" + r[2] + "</p></div>" + r[3] + "</div>";
+    }).join("") + "</section>";
+  }
+  function chapter(n, ico, title, sub, id) {
+    return '<details class="hf-ep" id="' + id + '"><summary><b class="hf-ep-n vu-num">' + n + '</b><span class="vu-hud hf-hud">' + icon(ico) + '</span><span class="hf-ep-t"><b>' + title + "</b><span>" + sub +
+      '</span></span><span class="hf-ep-go" aria-hidden="true">' + U.glyph("next", 15) + '</span></summary><div class="hf-ep-body"></div></details>';
+  }
+  function onChapter(id, fill) {
+    var d = document.getElementById(id), done = false;
+    if (!d) return;
+    d.addEventListener("toggle", function () { if (d.open && !done) { done = true; fill(d.querySelector(".hf-ep-body")); } });
   }
   // Aktie ohne Fondsdaten (z. B. aus der Insider-Liste): nur Insider und 13F-Melder
   function renderTickerStock(ticker) {
@@ -1184,16 +1223,16 @@
   }
 
   /* --------------------------------------------------------------- H05 Fonds */
-  function historyBars(d) {
+  function historyBars(d, bare) {
     var h = (d.history || []).filter(function (x) { return x.valueUSD > 0; });
     if (h.length < 2) return U.blank("Noch kein Verlauf verfügbar.");
     var max = Math.max.apply(null, h.map(function (x) { return x.valueUSD; }));
     var growth = h[0].valueUSD ? (h[h.length - 1].valueUSD - h[0].valueUSD) / h[0].valueUSD * 100 : null;
     return '<div class="vu-box">' + U.bars(h.map(function (x) { return [qShort(x.period).replace(/\/\d+$/, ""), x.valueUSD]; }), { width: 330, height: 110, label: "Depotwert je Quartal" }) +
       '<p class="hf-bars-cap">' + h.length + " Quartale · " + pct(growth, true) + " seit " + quarter(h[0].period) + " · Hoch " + usd(max) + "</p>" +
-      '</div><details class="hf-acc"><summary>Werte je Quartal</summary>' + h.slice().reverse().map(function (x) {
+      (bare ? "</div>" : "") + (bare ? "" : '</div><details class="hf-acc"><summary>Werte je Quartal</summary>' + h.slice().reverse().map(function (x) {
         return '<div class="hf-kvrow"><span><b>' + quarter(x.period) + '</b></span><b class="vu-num">' + usd(x.valueUSD) + "</b></div>";
-      }).join("") + "</details>";
+      }).join("") + "</details>");
   }
   function fundTab(d, tab) {
     var tr = d.trades || {}, hs = d.holdings || [], max = hs.length ? hs[0].weightPct : 1, total = d.totalValueUSD || 0, tc = d.tradeCounts || {};
@@ -1228,33 +1267,61 @@
       var top5 = d.totalValueUSD ? hs.filter(function (h) { return !h.putCall; }).slice(0, 5).reduce(function (s, h) { return s + h.valueUSD; }, 0) / d.totalValueUSD * 100 : null;
       var late = f.reportDate < S.data.latestPeriod;
       var tag = [f.style, f.role, f.region ? regionLabel(f) : "", f.city && !f.role ? f.city : ""].filter(Boolean).join(" · ");
-      root.innerHTML = '<div class="hf-detail">' + back +
-        '<section class="hf-fhead">' + avatar(f, "xl") + '<div><div class="vu-ltag">' + esc(tag) + '</div><h1 class="vu-lt">' + esc(f.manager || fundName(f.name)) + "</h1>" +
-          '<p class="vu-mu">' + esc(f.manager ? fundName(f.name) : (String(d.secName).toLowerCase() === String(f.name).toLowerCase() ? "13F-Melder" : d.secName)) + "</p></div></section>" +
-        (f.bio ? '<p class="hf-bio">' + esc(f.bio) + "</p>" : "") +
+      var all = /\/positionen$/.test(location.hash.split("?")[0]);
+      var tr = d.trades || {}, plain = hs.filter(function (h) { return !h.putCall; });
+      var biggest = plain[0], q = otherQ(f);
+      var buyList = (tr["new"] || []).concat(tr.added || []).filter(function (t) { return !t.putCall; }).sort(function (x, y) { return y.estValueUSD - x.estValueUSD; });
+      var sellList = (tr.sold || []).concat(tr.reduced || []).filter(function (t) { return !t.putCall; }).sort(function (x, y) { return x.estValueUSD - y.estValueUSD; });
+      var mv = function (t) { return esc(stockName(t)) + " (" + (t.status === "new" ? "neu" : t.status === "sold" ? "ganz raus" : pct(t.deltaPct, true).replace("-", "−")) + ")"; };
+      var two = function (l) { return l.slice(0, 2).map(mv).join(" und "); };
+      var head = back + '<section class="hf-fhead">' + avatar(f, "xl") + '<div><div class="vu-ltag">' + esc([f.style, f.manager ? fundName(f.name) : ""].filter(Boolean).join(" · ")) + '</div><h1 class="vu-mt hf-fname">' + esc(f.manager || fundName(f.name)) + "</h1>" +
+          (f.role && /seit|CEO/.test(f.role) ? '<p class="vu-xs vu-mu hf-frole">' + esc(f.role.replace(/^[^(]*\(|\)$/g, "")) + "</p>" : "") + "</div></section>";
+      if (all) {
+        document.title = "Alle Positionen · " + document.title;
+        root.innerHTML = '<div class="hf-detail">' + backLink("#/fonds/" + esc(slug), esc(f.manager || fundName(f.name))) + '<h1 class="vu-mt">Alle ' + nf0.format(d.positionCount) + " Positionen</h1>" + qband(d.reportDate) +
+          '<div class="hf-gap">' + fundTab(d, "holdings") + "</div>" + footer() + "</div>";
+        return;
+      }
+      root.innerHTML = '<div class="hf-detail">' + head + qband(d.reportDate) +
         (late ? '<div class="vu-box vu-box--line hf-stale">' + U.verdict("none", "Stand " + quarter(f.reportDate)) + "<span>Für " + esc(S.data.latestPeriodLabel) +
           " liegt noch keine Meldung vor. Du siehst den letzten Stand vom " + dateDE(f.reportDate) + ".</span></div>" : "") +
         (f.note ? '<div class="vu-box vu-box--line hf-stale">' + U.verdict("none", "Hinweis") + "<span>" + esc(f.note) + "</span></div>" : "") +
         (d.jump ? '<div class="vu-box vu-box--line hf-stale">' + U.verdict("none", "Sprung") + "<span>Die gemeldete Fondsgröße hat sich extrem verändert (" + usd(d.prevTotalValueUSD) + " → " + usd(d.totalValueUSD) + "). Das kann eine Umstrukturierung oder ein Meldefehler sein.</span></div>" : "") +
-        '<div class="vu-grid hf-gap-l">' +
-          '<div class="vu-tile"><div class="vu-tile__label">Depotwert (13F)' + U.q("Summe der gemeldeten US-Positionen zum Stichtag " + dateDE(d.reportDate) + ". Rechts die Veränderung zum Vorquartal (" + (d.prevTotalValueUSD ? usd(d.prevTotalValueUSD) : "kein Vorquartal") + "); sie ist keine Rendite.", "Depotwert") +
-            '</div><div class="vu-tile__value">' + usd(d.totalValueUSD) + '</div><div class="hf-gap-s">' + (d.aumChangePct != null && !d.jump ? U.chg(d.aumChangePct, { digits: 1 }) : "") + "</div></div>" +
-          U.tile("Positionen", nf0.format(d.positionCount), (top5 != null ? "Top 5 = " + pct(top5) : "") + (d.optionCount ? " · " + nf0.format(d.optionCount) + " Optionen" : "")) + "</div>" +
-        sect("Depotwert im Verlauf") + historyBars(d) +
-        sect("Was im Depot steckt") +
-        seg([{ id: "holdings", label: "Positionen " + nf0.format(d.positionCount) }, { id: "buys", label: "Käufe " + nBuys }, { id: "sells", label: "Verkäufe " + nSells }], S.tab, 'id="hf-ftabs" role="group" aria-label="Depot"') +
-        '<div id="hf-tabbody"></div>' +
-        (d.optionCount ? '<p class="hf-note-s">Optionen (Calls/Puts) sind in Positionen, Käufen und Verkäufen nicht mitgezählt; sie stehen mit dem Wert des Basiswerts in der Liste.</p>' : "") +
+        '<div class="hf-kt2">' +
+          '<div class="hf-kt"><small>Depotwert ' + dateDE(d.reportDate).slice(0, 6) + U.q("Summe der gemeldeten US-Positionen zum Stichtag " + dateDE(d.reportDate) + ". Darunter die Veränderung zum Vorquartal (" + (d.prevTotalValueUSD ? usd(d.prevTotalValueUSD) : "kein Vorquartal") + "); sie ist keine Rendite.", "Depotwert") +
+            '</small><b class="vu-num">' + usd(d.totalValueUSD) + "</b>" + (d.aumChangePct != null && !d.jump ? U.chg(d.aumChangePct, { digits: 1 }) : "") + "</div>" +
+          '<div class="hf-kt"><small>Positionen</small><b class="vu-num">' + nf0.format(d.positionCount) + "</b><span>" + (top5 != null ? "Top 5 = " + pct(top5) : "") + "</span></div></div>" +
+        story("Das Quartal in drei Sätzen", [
+          ["pie", "Größte Position", biggest ? esc(stockName(biggest)) + " ist mit " + pct(biggest.weightPct) + " die größte Position." : "Keine Positionen gemeldet.", U.verdict("mid", "Größte")],
+          ["up", "Gekauft", buyList.length ? "Mehr " + two(buyList) + "." : "Keine Käufe in diesem Quartal.", buyList.length ? U.verdict("strong", buyList[0].status === "new" ? "Neu" : "Aufgestockt") : U.verdict("none", "Keine")],
+          ["down", "Verkauft", sellList.length ? "Weniger " + two(sellList) + "." : "Keine Verkäufe in diesem Quartal.", sellList.length ? U.verdict("weak", sellList[0].status === "sold" ? "Ganz raus" : "Reduziert") : U.verdict("none", "Keine")]]) +
+        sect("Größte Positionen", "#/fonds/" + esc(slug) + "/positionen", "Alle " + nf0.format(d.positionCount)) +
+        '<div class="vu-box hf-mvl">' + plain.slice(0, 6).map(function (h) {
+          var href = stockHref(h), tag = href ? "a" : "div";
+          return "<" + tag + ' class="hf-mvr hf-pp"' + (href ? ' href="' + href + '"' : "") + ">" + logo(h) + '<span class="hf-mvr-b"><b>' + stockName(h) + '</b><span class="hf-bar is-buy"><i style="width:' + Math.max(1.5, h.weightPct / (plain[0].weightPct || 1) * 100).toFixed(1) + '%"></i></span></span>' +
+            '<b class="vu-num">' + pct(h.weightPct) + "</b>" + (h.status === "unchanged" ? '<span class="hf-flat">gleich</span>' : move(h)) + "</" + tag + ">";
+        }).join("") + "</div>" +
+        '<div class="hf-eps">' + chapter(1, "chart", "Depotwert im Verlauf", ((d.history || []).length || 0) + " Quartale", "hf-ch-hist") +
+          chapter(2, "table", "Käufe (" + nBuys + ") und Verkäufe (" + nSells + ")", "mit Stückzahl und Wert", "hf-ch-trades") +
+          chapter(3, "calendar", "Werte je Quartal", "Tabelle", "hf-ch-q") + "</div>" +
+        (f.bio ? '<p class="hf-bio">' + esc(f.bio) + "</p>" : "") +
         '<details class="hf-acc"><summary>13F-Meldung bei der SEC</summary><div class="hf-kvrow"><span><b>Gemeldet am</b></span><b>' + dateDE(d.filedDate) + '</b></div><div class="hf-kvrow"><span><b>Stichtag</b></span><b>' + dateDE(d.reportDate) +
           '</b></div><div class="hf-kvrow"><span><b>Formular</b></span><b>' + esc(d.form || "13F-HR") + "</b></div>" + (d.secName ? '<div class="hf-kvrow"><span><b>SEC-Melder</b></span><b>' + esc(d.secName) + "</b></div>" : "") +
           '<p class="hf-gap"><a class="vu-btn vu-btn--ink vu-btn--sm" href="' + secLink(d) + '" target="_blank" rel="noopener">13F bei der SEC öffnen ' + icon("ext") + "</a></p></details>" +
         (photo ? '<details class="hf-acc"><summary>Foto und Lizenz</summary><p class="vu-sm hf-gap-s">Foto: ' + esc(photo.artist) + ", " + (photo.licenseUrl ? '<a href="' + esc(photo.licenseUrl) + '" target="_blank" rel="noopener">' + esc(photo.license) + "</a>" : esc(photo.license)) +
           (photo.sourceUrl ? ' · <a href="' + esc(photo.sourceUrl) + '" target="_blank" rel="noopener">Wikimedia Commons</a>' : "") + "</p></details>" : "") +
-        closeLine("Vergleich " + quarter(d.prevReportDate) + " → " + quarter(d.reportDate) + ".") +
+        closeLine("Vergleich " + quarter(d.prevReportDate) + " → " + quarter(d.reportDate) + (q ? " · " + q : "") + ".") +
         footer() + "</div>";
-      var draw = function () { document.getElementById("hf-tabbody").innerHTML = fundTab(d, S.tab); };
-      draw();
-      bindSeg(document.getElementById("hf-ftabs"), function (v) { S.tab = v; draw(); });
+      onChapter("hf-ch-hist", function (body) { body.innerHTML = historyBars(d, true); });
+      onChapter("hf-ch-trades", function (body) {
+        body.innerHTML = seg([{ id: "buys", label: "Käufe " + nBuys }, { id: "sells", label: "Verkäufe " + nSells }], "buys", 'id="hf-ftabs" role="group" aria-label="Käufe oder Verkäufe"') + '<div id="hf-tabbody">' + fundTab(d, "buys") + "</div>" +
+          (d.optionCount ? '<p class="hf-note-s">Optionen (Calls/Puts) sind nicht mitgezählt; sie stehen mit dem Wert des Basiswerts in der Liste.</p>' : "");
+        bindSeg(document.getElementById("hf-ftabs"), function (v) { document.getElementById("hf-tabbody").innerHTML = fundTab(d, v); });
+      });
+      onChapter("hf-ch-q", function (body) {
+        var h = (d.history || []).filter(function (x) { return x.valueUSD > 0; });
+        body.innerHTML = h.length ? h.slice().reverse().map(function (x) { return '<div class="hf-kvrow"><span><b>' + quarter(x.period) + '</b></span><b class="vu-num">' + usd(x.valueUSD) + "</b></div>"; }).join("") : U.blank("Noch kein Verlauf verfügbar.");
+      });
     }).catch(function (err) {
       root.innerHTML = back + U.blank("Details konnten nicht geladen werden (" + err.message + ").");
     });
@@ -1275,7 +1342,7 @@
     var changed = lastPath !== path;
     lastPath = path;
     [].forEach.call(document.querySelectorAll(".vu-sheet-backdrop"), function (el) { el.remove(); });
-    if (page === "fonds" && parts[1]) { setDock(null); if (changed) S.tab = "holdings"; renderFund(parts[1]); return; }
+    if (page === "fonds" && parts[1]) { setDock(null); if (changed) S.tab = "holdings"; renderFund(parts[1]); return; }   // #/fonds/<slug>/positionen = alle Positionen
     if (page === "aktie" && parts[1]) { setDock("aktien"); routeStockId(decodeURIComponent(parts[1])); return; }
     /* Alte Adresse „Smart Money“ (Konzept EHV, Entscheidung 7) leitet auf Gruppen-Käufe. */
     if (page === "smart-money") { location.replace(parts[1] === "einstiege" ? "#/gruppen-kaeufe" : "#/gruppen-kaeufe/insider"); return; }
