@@ -137,6 +137,15 @@ Entscheidung 11.
 - Die Tarif-Marke („Free · 5 von 500“) bleibt klein rechts neben dem Datum, weil Konto-Reise und Nutzer den Tarif dort erwarten.
 - „Weiter lernen“ öffnet `/willkommen/`, weil die Willkommensseite unverändert bleibt und kein Video direkt verlinkt.
 
+**PR 2 · Musterdepot-Seite**
+- Der Name im Kopf folgt der Regel „ein Name je Methode“ aus `supertrader/assets/st-names.js` („Weinstein · Investor“, „Darvas · Box“); der Registry-Name steht als Fachname in der Übersicht.
+- Einzeln stehen in der Verteilung die sechs größten Gewichte, der Rest als „+N“; beschriftet ist ein Feld ab 8 % Gewicht.
+- „Seit Aufnahme“ zeigt die sechs größten Positionen, „Alle N“ klappt den Rest auf; die Ungültig-Marke im Mini-Chart erscheint nur bei Methoden, die eine führen (Supertrader-Methoden mit Stopp-Regel).
+- Das Protokoll zeigt die letzten vier Einträge je Tag und Richtung („aufgenommen“ / „abgegeben“, bei Abgabe die Veränderung, wie bisher); „Alles“ klappt den Rest auf.
+- Depots ohne eigenes Bild (Minervini, Momentum, Trendfolge 52W, Hausstrategie, KI) zeigen im Kopf nur Name und Satz (die schlichte Variante); Texte der Erzeuger werden in der Wortwahl der Seite gezeigt („Aufnahme“ statt „Einstieg“).
+- Die Wertentwicklung seit Start steht nur, wo der Export sie heute schon führt (Quant, KI), als Zeile unter den drei Zahlen; keine neue Depot-Rendite.
+- Quant-Profil als Bild: betont sind die Eigenschaften, die der Regelsatz des Profils nennt (fest, kein Modell).
+
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
 ```
