@@ -1,3 +1,4 @@
+import {shellReady} from './shell-ready.mjs';
 // Browser-QA der gemeinsamen Vision-Universe-Shell (assets/site-navigation.js):
 // Kopf, Produkt-Leiste und globales Menue auf allen Produkten.
 //
@@ -75,7 +76,7 @@ async function state(page) {
     };
   });
 }
-async function settle(page) { await page.waitForLoadState('networkidle', { timeout: 15000 }).catch(() => {}); await page.waitForTimeout(500); }
+const settle = shellReady;
 /* Das Menue gilt erst als offen, wenn es sichtbar ist, seine Einfahrt (transform .2s) und alle Animationen im Menue beendet
    sind und die Schriften stehen. Vorher gemessene Zielgroessen sind ein Zwischenbild, kein Befund. Oeffnet es nicht bis
    dahin, ist das selbst ein Befund. Danach wird einmal gemessen; was dann kleiner als 44 px ist, bleibt ein Befund. */
