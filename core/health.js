@@ -165,6 +165,15 @@
     var data = loaded.data;
     var dis = domain.disabledWhen;
     if (dis && at(data, dis.path) === dis.equals) {
+      /* expectLive (domains.json): die Datenart soll auf der Seite AN sein. Steht sie dort trotzdem auf DISABLED, ist das ein
+         Ausfall, kein Sollzustand (Vorfall 08.11.2026: Company Intelligence nach einem Fail-closed-Rollback 18 h live aus,
+         ohne Alarm). Nur gegen die Seite: der Repository-Stand traegt bewusst den DISABLED-Platzhalter. Bewusst abschalten =
+         expectLive im selben PR auf false setzen. */
+      if (domain.expectLive === true && ctx.target === "site") {
+        out.status = "FAILED"; out.reason = "DISABLED_BUT_EXPECTED_LIVE";
+        out.warnings.push("Auf der Seite abgeschaltet (" + dis.path + " = " + dis.equals + "), erwartet ist AN (expectLive).");
+        return out;
+      }
       out.status = "DISABLED"; out.reason = "DISABLED_BY_ARTIFACT";
       return out;
     }

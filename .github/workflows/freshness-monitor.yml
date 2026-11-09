@@ -16,6 +16,9 @@ name: Freshness-Monitor (zeigt die Seite den letzten Handelstag?)
 #   15:15 Mo-Fr   45 Minuten nach 09:30 EST / 105 nach 09:30 EDT: laeuft der
 #                 Intraday-Takt der laufenden Sitzung?
 #   23:15 Mo-Fr   nach dem Abendlauf (22:30) plus Build und Auslieferung.
+#   */6 Sa+So     :41 - Wochenende: vor allem expectLive (eine Datenart, die AN
+#                 sein soll, ist live aus); die uebrigen Jobs erwarten die
+#                 Freitagssitzung bzw. schweigen am Wochenende.
 # Der Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches
 # dient ein Push mit der Marke `[freshness-check]` als Ausloeser.
 
@@ -71,6 +74,19 @@ jobs:
           SITE="$IN_SITE"
           node scripts/market/check-freshness.mjs --strict --site="$SITE" | tee freshness-live.txt
 
+      # Datenarten, die AN sein sollen (core/registry/domains.json, expectLive), sind es auch auf der Seite. Vorfall
+      # 08.11.2026: Company Intelligence nach einem Fail-closed-Rollback live aus (index.json state DISABLED), der eigene
+      # Health-Lauf wertete das als "bewusst aus". Der Befund landet in freshness-live.txt und damit im Alarm-Issue.
+      - name: Erwartet AN auf der Seite (expectLive)
+        id: expect_live
+        continue-on-error: true
+        env:
+          IN_SITE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.site || 'https://research.visionuniverse.de' }}
+        run: |
+          set -o pipefail
+          SITE="$IN_SITE"
+          node scripts/core/expect-live.mjs --site="$SITE" | tee -a freshness-live.txt
+
       - name: Freshness des Repository-Stands (zur Einordnung)
         run: node scripts/market/check-freshness.mjs | tee freshness-repo.txt
 
@@ -97,9 +113,13 @@ jobs:
           retention-days: 7
 
       - name: Ergebnis
-        if: steps.live.outcome == 'failure'
+        if: steps.live.outcome == 'failure' || steps.expect_live.outcome == 'failure'
+        env:
+          LIVE: ${{ steps.live.outcome }}
+          EXPECT_LIVE: ${{ steps.expect_live.outcome }}
         run: |
-          echo "::error::Die veroeffentlichte Seite zeigt nicht den letzten Handelstag (siehe Zusammenfassung)."
+          if [ "$LIVE" = failure ]; then echo "::error::Die veroeffentlichte Seite zeigt nicht den letzten Handelstag (siehe Zusammenfassung)."; fi
+          if [ "$EXPECT_LIVE" = failure ]; then echo "::error::Eine Datenart ist live aus, obwohl sie an sein soll (expectLive, siehe Zusammenfassung)."; fi
           exit 1
 
   # ===================================================================
@@ -238,7 +258,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ALARM_SOURCE: freshness-monitor
-          ALARM_TITLE: 'Veroeffentlichte Markt-/Discover-Daten veraltet'
+          ALARM_TITLE: 'Veroeffentlichte Seite: Daten veraltet oder Datenart aus'
           RESULT_MONITOR: ${{ needs.monitor.result }}
           RESULT_PRODUKTSTAND: ${{ needs.produktstand.result }}
           RESULT_SUPERTRADER: ${{ needs.supertrader.result }}

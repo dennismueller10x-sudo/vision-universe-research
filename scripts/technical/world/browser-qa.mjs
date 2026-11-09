@@ -100,15 +100,16 @@ async function main() {
     }
 
     await check(key + " Start", async () => {
+      /* Konzept „Der Chart in drei Sätzen“ TX01: Markt als Zeile, Heute neu als Karten, fertige Suchen als Schiene, Muster als Raster. */
       await navigate(page,base + "#/");
-      await page.waitForSelector(".tc-tcard", { timeout: 30000 });
-      assert(/Was zeigt der Chart/.test(await page.locator("h1").innerText()), "Titel als Frage fehlt");
-      assert(await page.locator(".tc-tcard").count() === 3, "drei fertige Suchen fehlen");
-      assert(await page.locator(".tc-ranks .vu-tile").count() === 4, "vier Bestenlisten fehlen");
-      const kpi = await page.locator(".tc-tiles3 .vu-tile__value").allTextContents();
-      assert(kpi.length === 3 && kpi.every((t) => /\d/.test(t)), "Kennzahlen ohne Werte: " + kpi.join(","));
-      assert(await page.locator(".tc-market [data-verdict]").count() === 1, "Markt heute ohne Urteil");
-      await page.waitForSelector(".tc-newbox .tc-hit, .tc-newbox .tc-note", { timeout: 30000 });
+      await page.waitForSelector(".tc-idc", { timeout: 30000 });
+      assert(/Was zeigt\s*der Chart/.test(await page.locator("h1").innerText()), "Titel als Frage fehlt");
+      assert(await page.locator(".tc-idc").count() === 5, "fünf fertige Suchen fehlen");
+      assert(/über der 200-Tage-Linie/.test(await page.locator(".tc-ms").innerText()), "Markt heute als Zeile fehlt");
+      await page.waitForSelector(".tc-mgrid .tc-mg", { timeout: 30000 });
+      assert(await page.locator(".tc-mgrid .tc-mg").count() === 4, "Muster-Raster fehlt");
+      assert(await page.locator(".tc-tiles3, .tc-ranks, .tc-tcard").count() === 0, "alte Zahlen- oder Bestenlisten-Kacheln");
+      await page.waitForSelector(".tc-rail .tc-nc, .tc-rail .tc-note", { timeout: 30000 });
       await page.waitForFunction(() => !!document.getElementById("vu-dock"), null, { timeout: 10000 });
       await clean("Start");
     });
@@ -252,13 +253,19 @@ async function main() {
 
     await check(key + " Chart einfach", async () => {
       await navigate(page,base + "#/chart/NVDA");
-      await page.waitForSelector(".tc-saycard [data-verdict]", { timeout: 45000 });
+      await page.waitForSelector(".tc-sayrow [data-verdict]", { timeout: 45000 });
       await page.waitForSelector(".tc-chart svg .tc-price-line");
       assert(await page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count() === 0, "Kerzen in der Einsteigeransicht");
       assert(await page.locator(".vu-shead .vu-snav, .vu-shead-nav").count() >= 1, "Aktienkopf mit Perspektiven fehlt");
-      assert(await page.locator(".tc-sent [data-verdict]").count() === 3, "drei Saetze mit Urteil fehlen");
-      assert(await page.locator(".tc-ptile").count() === 2, "Preis-Kacheln fehlen");
-      if (await page.locator(".tc-sigrow").count()) { await page.locator(".tc-sigrow").first().click(); await page.waitForSelector("#tc-signal-sheet:not([hidden])"); await page.keyboard.press("Escape"); }
+      assert(await page.locator(".tc-story-r [data-verdict]").count() === 3, "drei Saetze mit Urteil fehlen");
+      assert(await page.locator(".tc-zt").count() === 2, "Zonen-Kacheln fehlen");
+      assert(await page.locator(".tc-ep").count() === 3, "Kapitel fehlen");
+      assert(await page.locator(".tc-worlds").count() === 0, "Quant-/Supertrader-Block (Entscheidung 6)");
+      if (await page.locator(".tc-bf").count()) {
+        await page.locator(".tc-bf").first().click(); await page.waitForSelector("#tc-signal-sheet:not([hidden])");
+        assert(/Erkannt/.test(await page.locator("#tc-signal-sheet").innerText()), "Befund-Sheet ohne Erkannt");
+        await page.keyboard.press("Escape");
+      }
       /* Kein Rot und kein Gruen auf der Seite (Regel 1): alle sichtbaren Hintergruende und Schriften.
          Einzige Ausnahme: die Tagesveraenderung im gemeinsamen Aktienkopf (Owner 06.11.2026, #1493/#1520, alle Aktien:
          Minus rot, Plus gruen). Sie ist kein Teil von Chart oder Urteil und traegt Pfeil und Vorzeichen, Farbe ist
@@ -285,8 +292,8 @@ async function main() {
       assert(q >= 55 && q <= 70, "3M zeichnet " + q + " Kerzen");
       await page.getByRole("button", { name: "RSI", exact: true }).click();
       await page.waitForSelector(".tc-chart .tc-pane");
-      assert(await page.locator(".tc-signals .tc-signal").count() >= 2, "Befundkarten fehlen");
-      assert(await page.locator(".tc-level-card").count() === 2, "Niveaus fehlen");
+      assert(await page.locator(".tc-signals .tc-bf").count() >= 2, "Befunde unter dem Studio fehlen");
+      assert(await page.locator(".tc-zt").count() === 2, "Zonen unter dem Studio fehlen");
       await page.getByRole("button", { name: "Aroon", exact: true }).click();
       await page.waitForFunction(() => /Aroon/.test((document.querySelector(".tc-chart .tc-pane-title") || {}).textContent || ""));
       const before = await page.locator(".tc-chart .tc-overlay").count();
@@ -297,7 +304,7 @@ async function main() {
       const m0 = await marks();
       await page.getByRole("button", { name: "Kerzenmuster", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart circle.tc-marker").length > n, m0, { timeout: 15000 });
-      assert(await page.locator(".tc-legend", { hasText: "Kerzenmuster bullisch" }).count() === 1, "Legende Kerzenmuster fehlt");
+      assert(await page.locator(".tc-legend", { hasText: "Kerzenmuster nach oben" }).count() === 1, "Legende Kerzenmuster fehlt");
       await page.getByRole("button", { name: "Kerzenmuster", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart circle.tc-marker").length === n, m0);
       /* AP5b: jedes Screener-Indikatorfeld hat eine Darstellung; neue Unterfenster und Schichten zeichnen. */
@@ -309,35 +316,15 @@ async function main() {
       await page.getByRole("button", { name: "Hull MA 20", exact: true }).click();
       await page.getByRole("button", { name: "Chandelier-Stop", exact: true }).click();
       await page.waitForFunction((n) => document.querySelectorAll(".tc-chart .tc-overlay").length >= n + 2, ov);
-      /* Diese Aktie in Quant und Supertrader: bleibt nach jedem Neuzeichnen stehen, Stufen und Links aus den Artefakten. */
-      await page.waitForSelector(".tc-worlds .tc-world-card[data-world=supertrader]", { timeout: 30000 });
-      const w = await page.evaluate(() => {
-        const q = document.querySelector(".tc-world-card[data-world=quant]"), s = document.querySelector(".tc-world-card[data-world=supertrader]");
-        return { n: document.querySelectorAll(".tc-worlds").length, chips: q.querySelectorAll(".tc-world-chips li").length, lead: (q.querySelector(".tc-world-lead") || {}).textContent || "",
-          qHref: (q.querySelector("a.tc-link") || {}).getAttribute ? q.querySelector("a.tc-link").getAttribute("href") : null,
-          sHref: s.querySelector("a.tc-link") ? s.querySelector("a.tc-link").getAttribute("href") : null, sText: s.textContent,
-          digits: [...q.querySelectorAll(".tc-world-chips b")].some((b) => /\d/.test(b.textContent)) };
-      });
-      assert(w.n === 1, "Abschnitt Quant/Supertrader " + w.n + "-mal");
-      assert(w.chips >= 1 && w.lead.length > 20 && !w.digits, "Quant-Stufen fehlen oder zeigen Zahlen: " + JSON.stringify(w));
-      /* Ob NVDA eine Supertrader-Aktienseite hat, steht in supertrader/data/build.json (seit #1479 nur noch ein Teil
-         der Titel, 06.11.2026 ohne NVDA). Mit Seite: Modellsignale und Link dorthin; ohne Seite: der ehrliche Hinweis und
-         der Link auf die Research-Treffer, wenn es welche gibt (sonst keiner). */
-      const stBuild = JSON.parse(await readFile(join(root, "supertrader/data/build.json"), "utf8"));
-      const stCovered = Array.isArray(stBuild.slices && stBuild.slices.stock) && stBuild.slices.stock.includes("NVDA");
-      const hasViews = /Quellentreue Methoden/.test(w.sText) && !/erkennt keine quellentreue Methode/.test(w.sText);
-      const sWant = stCovered ? "/supertrader/stock/NVDA/" : hasViews ? "/supertrader/stock/?s=NVDA#sf" : null;
-      assert(w.qHref === "/quant/#/aktie/NVDA" && w.sHref === sWant, "Links: " + w.qHref + " " + w.sHref + " (erwartet " + sWant + ")");
-      assert(stCovered ? /Modellsignale/.test(w.sText) : /Keine Supertrader-Aktienseite f\u00fcr diesen Titel/.test(w.sText), "Supertrader-Zustand fehlt: " + w.sText.slice(0, 200));
-      if (/Quellentreue Methoden/.test(w.sText)) assert(/Research, keine Empfehlung/.test(w.sText) && /nicht zertifiziert/.test(w.sText), "Research-Status fehlt: " + w.sText.slice(0, 200));
+      assert(await page.locator(".tc-worlds").count() === 0, "Quant-/Supertrader-Block (Entscheidung 6)");
       await clean("Chart Studio");
     });
 
     await check(key + " Formationsfokus", async () => {
-      await navigate(page,base + "#/chart/AAPL/studio");
-      await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
-      assert(await page.locator(".tc-signals .tc-detail dt", { hasText: "Historisch" }).count() >= 1, "Evidenzzeile in der Befundkarte fehlt");
-      const href = await page.locator(".tc-signals a[href*='?f=']").first().getAttribute("href");
+      await navigate(page,base + "#/chart/AAPL/signale");
+      await page.waitForSelector(".tc-history", { timeout: 45000 });
+      assert(await page.locator(".tc-detail dt", { hasText: "Historisch" }).count() >= 1, "Evidenzzeile in der Befundkarte fehlt");
+      const href = await page.locator(".tc-detail a[href*='/studio?f=']").first().getAttribute("href");
       assert(href, "kein Fokus-Link in den Befundkarten");
       await navigate(page,base + href);
       await page.waitForSelector(".tc-focus b", { timeout: 45000 });
@@ -356,8 +343,8 @@ async function main() {
       await navigate(page,base + "#/chart/AAPL/signale");
       await page.waitForSelector(".tc-history", { timeout: 45000 });
       assert(await page.locator(".tc-signal").count() >= 1, "keine Befunde");
-      await page.waitForSelector(".tc-worlds .tc-world-card[data-world=quant]", { timeout: 30000 });
-      assert(await page.locator(".tc-worlds a[href='/quant/#/aktie/AAPL']").count() === 1, "Signale: Link zur Quant-Analyse fehlt");
+      assert(await page.locator(".tc-history .tc-tl-r").count() >= 1, "Verlauf als Zeitleiste fehlt");
+      assert(await page.locator(".tc-worlds").count() === 0, "Quant-/Supertrader-Block (Entscheidung 6)");
       await clean("Signale");
     });
 

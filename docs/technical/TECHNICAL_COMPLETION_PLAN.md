@@ -141,6 +141,18 @@ Verbindlicher Plan für den Owner-Auftrag „Autonomer Fertigstellungsauftrag“
 | L3 Mobile und Desktop, hell und dunkel, Begriffe erklärt, keine Zukunftsaussage | ✔ | Browser-QA 66/66 (360/390/1280 px), Sprachtest | P1 |
 | L4 Owner liest Ziel- und Begriffstexte vor einer Hervorhebung außerhalb von Technical | offen | Freigabe der Produktsprache | P2 |
 
+### M. Oberfläche „Der Chart in drei Sätzen“ (Konzept 09.11.2026, [HANDOVER](../design/technical-2026-11/HANDOVER.md))
+
+Nur Oberfläche und Text; keine Erkennungsregel, keine Musterzählung, keine Daten unter `technical/data` oder `quant/data`.
+
+| Kriterium | Status | Nachweis bzw. Lücke | Prio |
+|---|---|---|---|
+| M1 Wörter: „Befund“ statt Signal/Setup, Richtung in Worten, Alltagssprache im Fließtext, du | ✔ | PR 1; `technical/tests/technical-wording.test.mjs` | P1 |
+| M2 Start und Chart-Seite (drei Sätze, Zonen-Kacheln, Befunde heute, Befund-Sheet, Kapitel), ohne Quant-/Supertrader-Block | ✔ | PR 2; `technical/tests/technical-concept.test.mjs`, Browser-QA 72/72 | P1 |
+| M3 Muster mit Bildern, Lernen als ein Ort (`#/lernen`) | offen | PR 3 | P1 |
+| M4 Screener im neuen Design; Einstieg „Perspektive Chart“ im Hauptscreener | offen | PR 4 | P1 |
+| M5 Markt heute und Universumsgröße mit Stand und Basis bzw. aus einer Quelle | offen | PR 5 | P2 |
+
 ## 2. Arbeitspakete (Reihenfolge = Priorität)
 
 Jedes Paket läuft in Zyklen: analysieren → umsetzen → testen → beheben → erneut prüfen → integrieren. Fachmodelländerungen kommen als eigener PR mit Vorher/Nachher zur Freigabe. Während einer Freigabe läuft das nächste unabhängige Paket weiter.
