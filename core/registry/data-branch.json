@@ -58,6 +58,15 @@
       "workflow": "pipeline-daily.yml",
       "paths": ["quant/data/product/ki-depots-v1.json"],
       "note": "pipeline-daily Teil ki-depots (werktags 23:41 UTC) spielt den Zweig vor dem Export ein und schreibt nur dorthin. Bis zum ersten Lauf liefert Pages die eingefrorene Kopie aus main."
+    },
+    {
+      "id": "technicalWorld",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "pipeline-daily.yml",
+      "paths": ["technical/data/meta.json"],
+      "prefixes": ["technical/data/"],
+      "note": "Vertrag: meta.json; Screener, Spark, Index, Evidenz und die Kurzstaende je Aktie (stock/) folgen ihm. Der Erzeuger (pipeline-daily Teil technical-world) baut vollstaendig aus der Materialisierung neu und braucht keinen bisherigen Stand."
     }
   ],
   "internal": [
@@ -83,7 +92,6 @@
       "indexMembership": {"status": "LATER", "grund": "pipeline-weekly; Verbraucher Discover-Bau"},
       "industryClassificationHistory": {"status": "LATER", "grund": "pipeline-weekly; Verbraucher Fundamental/Supertrader-Adapter"},
       "modelDepots": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-weekly (Track A)"},
-      "technicalWorld": {"status": "LATER", "grund": "Erzeuger im Buendel pipeline-daily (Track A); nach dessen Stufe 7"},
       "companyMaster": {"status": "LAST", "grund": "Produktuniversum"},
       "corporateActions": {"status": "LAST", "grund": "Quant-Kette (market-data-refresh)"},
       "discover": {"status": "LAST", "grund": "Discover-Kette (market-data-refresh)"},
