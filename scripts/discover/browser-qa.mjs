@@ -262,8 +262,13 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  if(width===390)await check(key+' stock title page: story, closed chapters, rows, onward only from a row',async()=>{
   /* Konzept „Reihe für Reihe“ (AX03/AX04): Story in drei Sätzen, 7 Kapitel zu, Reihen der Aktie, „Mehr wie …“; Leiste und Endkarte nur mit ?reihe=. */
   /* Frühere Prüfungen öffnen Kapitel 5; die Seite merkt sich das auf dem Gerät. Für „standardmäßig zu“ ohne Gedächtnis laden. */
+  /* WebKit (09.11.): toggle-Ereignisse der vorigen Darstellung schreiben das Gedächtnis asynchron zurück, ein removeItem vor dem
+     Laden konnte so wieder ueberschrieben werden. Erst NVDA zeichnen und ausstehende Aufgaben abwarten, dann leeren und frisch laden. */
+  await navigate(page,base+'/discover/#/s/US_REAL/NVDA',{waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-ep').first().waitFor();
+  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>setTimeout(r,50))));
   await page.evaluate(()=>{try{localStorage.removeItem('vu-discover-chapters-v1');}catch(e){}});
-  await navigate(page,base+'/discover/#/s/US_REAL/NVDA',{waitUntil:'networkidle'});await page.reload({waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-story').waitFor();
+  await page.reload({waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-story').waitFor();
+  await page.waitForFunction(()=>document.querySelectorAll('.dv3-titel .dv3-ep').length===7);
   assert.equal(await page.locator('.dv3-story .dv3-story-r').count(),3,'Story in three sentences');
   const eps=page.locator('.dv3-titel .dv3-ep');assert.equal(await eps.count(),7,'Seven chapters');
   assert.equal(await page.locator('.dv3-titel .dv3-ep[open]').count(),0,'Chapters closed by default');
