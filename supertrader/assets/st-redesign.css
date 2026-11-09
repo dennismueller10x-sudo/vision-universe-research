@@ -242,6 +242,6 @@
 .st-r-pending-home{min-height:100svh;display:grid;align-content:start;gap:20px}
 .st-r-head,.st-r-pending-head{display:flow-root;min-height:194px}
 .st-r-answer-slot,.st-r-pending-answer{display:flow-root;min-height:166px}
-/* Trade-Entwicklung (Einstieg → Schluss bzw. Ausstieg): Plus neongrün (vu-chg), Minus rot statt schwarz – Owner-Wunsch 07.11.2026 */
-.st-r-res .vu-chg--down{background:#d6303c;color:#fff}
+/* Entwicklung Aufnahme → Schluss bzw. Abgabe: Plus neongrün, Minus schwarz (Konzept „Das Rezept eines Profis“, Entscheidung 5: kein Rot) */
+.st-r-res .vu-chg--down{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
 .st-r-none{display:flex;flex-wrap:wrap;align-items:center;gap:8px}

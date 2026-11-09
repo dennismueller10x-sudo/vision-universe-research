@@ -21,14 +21,14 @@
     DISCOVERED: ['Entdeckt', 'Aktie fällt heute auf, noch ohne Muster.', 'none'],
     WATCH: ['Auf Beobachtung', 'Könnte ein Muster bilden.', 'none'],
     SETUP: ['Muster entsteht', 'Die Regeln sind fast erfüllt.', 'none'],
-    ENTRY_READY: ['Kurz vor der Marke', 'Fehlt nur noch der Sprung über die Einstiegsmarke.', 'mid'],
-    TRIGGERED: ['Marke erreicht', 'Der Kurs ist über die Marke gestiegen.', 'mid'],
-    ACTIVE: ['Modell ist dabei', 'Das Musterdepot hält die Aktie.', 'mid'],
-    WARNING: ['Warnzeichen', 'Eine Regel meldet Schwäche.', 'weak'],
-    EXIT: ['Ausstieg ausgelöst', 'Die Verkaufsregel hat gegriffen.', 'none'],
-    CLOSED: ['Abgeschlossen', 'Ein- und Ausstieg sind verbucht.', 'none'],
-    INVALIDATED: ['Muster geplatzt', 'Der Kurs fiel unter die Grenze.', 'weak'],
-    RETIRED_BY_RULE_VERSION: ['Durch neue Regel ersetzt', 'Eine neue Regelversion hat das Signal abgelöst.', 'none'],
+    ENTRY_READY: ['Plan fertig', 'Zone und Ungültig-Marke laut Methode stehen fest.', 'mid'],
+    TRIGGERED: ['Aufgenommen', 'Das Musterdepot nimmt die Aktie auf.', 'mid'],
+    ACTIVE: ['Im Musterdepot', 'Läuft nach Regel weiter.', 'mid'],
+    WARNING: ['Warnzeichen laut Methode', 'Eine Regel meldet Schwäche.', 'weak'],
+    EXIT: ['Musterdepot gibt ab', 'Die Regel sagt raus.', 'none'],
+    CLOSED: ['Abgegeben', 'Regel sagt raus; Ergebnis im Protokoll.', 'none'],
+    INVALIDATED: ['Muster zerfallen', 'Der Kurs fiel unter die Ungültig-Marke laut Methode.', 'weak'],
+    RETIRED_BY_RULE_VERSION: ['Durch neue Regel ersetzt', 'Eine neue Regelversion hat den Eintrag abgelöst.', 'none'],
     REASSESSED_AFTER_RULE_CHANGE: ['Nach Regeländerung neu bewertet', 'Nach einer Regeländerung erneut geprüft.', 'none']
   };
   var LIFE = ['SETUP', 'ENTRY_READY', 'TRIGGERED', 'ACTIVE', 'WARNING', 'EXIT', 'CLOSED', 'INVALIDATED'];
@@ -39,7 +39,7 @@
   /* Stufen der 13 quellentreuen Methoden (Fachname bleibt im Sheet „Mehr“) */
   var STAGES = ['CHART_CANDIDATE', 'CONFIRMED_RESEARCH_SETUP', 'MODELED_TRADE_PLAN'];
   var STAGE_TXT = { CHART_CANDIDATE: 'Bild passt', CONFIRMED_RESEARCH_SETUP: 'Regel bestätigt', MODELED_TRADE_PLAN: 'Durchgerechnet' };
-  var STAGE_HELP = 'Bild passt: Der Chart sieht aus wie das Muster. Regel bestätigt: Alle prüfbaren Regeln sind erfüllt. Durchgerechnet: Ein- und Ausstieg sind nach Regel geplant.';
+  var STAGE_HELP = 'Bild passt: Der Chart sieht aus wie das Muster. Regel bestätigt: Alle prüfbaren Regeln sind erfüllt. Durchgerechnet: Zone und Ungültig-Marke laut Methode stehen fest.';
 
   /* Darstellung der 13 Methoden: Trader, Stil und ein Satz in Alltagssprache (Folie ST01/ST02). Zahlen kommen aus summary.json. */
   var M13 = {
@@ -135,7 +135,7 @@
       '<p>' + esc(m.plain) + '</p>' + sbar(by, mx) + (s.direction === 'SHORT_RESEARCH_ONLY' ? '<div class="st-r-mv">' + U.verdict('none', 'Nur Forschung') + '</div>' : '') + '</a>';
   }
 
-  /* Leisten: Stop · Einstieg · Schluss (Position) oder Grenze · Kurs · Marke (vor dem Einstieg) */
+  /* Leisten: Ungültig-Marke · Aufnahme · Schluss (im Musterdepot) oder Ungültig-Marke · Kurs · Zone (vor der Aufnahme) */
   function trackPos(stop, entry, close) {
     var vs = [stop, entry, close].filter(isNum); if (vs.length < 2) return '';
     var lo = Math.min.apply(null, vs), hi = Math.max.apply(null, vs), X = function (v) { return (8 + (v - lo) / (hi - lo || 1) * 338).toFixed(1); };
@@ -156,13 +156,13 @@
     if (s.entry && isNum(s.entry.price)) {
       var stop = stopOf(s), luft = isNum(stop) && isNum(close) && close > 0 ? (close - stop) / close : null, since = isNum(close) ? close / s.entry.price - 1 : null;
       return '<a class="st-r-sig" href="' + esc(stockHref(s.symbol)) + '">' + head + trackPos(stop, s.entry.price, close) +
-        '<div class="st-r-trkl vu-num"><span>Stop ' + usd(stop) + '</span><span class="vu-mu">Einstieg ' + usd(s.entry.price) + '</span><span>Schluss ' + usd(close) + '</span></div>' +
-        '<div class="st-r-sfoot"><span><b class="vu-num">' + (isNum(luft) ? U.num(luft * 100, 1) + ' %' : '–') + '</b> Luft bis zum Stop</span>' + '<span class="st-r-res">' + U.chg(isNum(since) ? since * 100 : null) + '</span></div></a>';
+        '<div class="st-r-trkl vu-num"><span>Ungültig ' + usd(stop) + '</span><span class="vu-mu">Aufnahme ' + usd(s.entry.price) + '</span><span>Schluss ' + usd(close) + '</span></div>' +
+        '<div class="st-r-sfoot"><span><b class="vu-num">' + (isNum(luft) ? U.num(luft * 100, 1) + ' %' : '–') + '</b> Abstand zur Ungültig-Marke</span>' + '<span class="st-r-res">' + U.chg(isNum(since) ? since * 100 : null) + '</span></div></a>';
     }
     var dist = isNum(lv.trigger) && isNum(close) && close > 0 ? lv.trigger / close - 1 : null;
     return '<a class="st-r-sig" href="' + esc(stockHref(s.symbol)) + '">' + head + trackPrep(lv.invalidation, close, lv.trigger) +
-      '<div class="st-r-trkl vu-num"><span>Platzt unter ' + usd(lv.invalidation) + '</span><span class="vu-mu">Schluss ' + usd(close) + '</span><span>Marke ' + usd(lv.trigger) + '</span></div>' +
-      '<div class="st-r-sfoot"><span>noch <b class="vu-num">' + (isNum(dist) ? U.num(dist * 100, 1) + ' %' : '–') + '</b> bis zur Marke</span></div></a>';
+      '<div class="st-r-trkl vu-num"><span>Ungültig ' + usd(lv.invalidation) + '</span><span class="vu-mu">Schluss ' + usd(close) + '</span><span>Zone ' + usd(lv.trigger) + '</span></div>' +
+      '<div class="st-r-sfoot"><span>noch <b class="vu-num">' + (isNum(dist) ? U.num(dist * 100, 1) + ' %' : '–') + '</b> bis zur Zone laut Methode</span></div></a>';
   }
 
   /* Chart C06 aus der veröffentlichten Tagesreihe (discover-series, ADR-002) */
@@ -229,13 +229,13 @@
     var rest = document.createElement('div'); main.appendChild(rest);
 
     var prep = (c.SETUP || 0) + (c.ENTRY_READY || 0), held = (c.ACTIVE || 0) + (c.WARNING || 0) + (c.EXIT || 0);
-    append(rest, kick('Lebenslauf der Signale', 'Heute im Musterdepot') +
-      '<div class="vu-grid st-r-tiles">' + [['Muster entsteht', prep, 'vorbereitet'], ['Marke erreicht', c.TRIGGERED || 0, 'heute bestätigt'], ['Modell ist dabei', held, 'offene Positionen'], ['Abgeschlossen', c.CLOSED || 0, 'seit Start']].map(function (t) {
+    append(rest, kick('Ablauf im Musterdepot', 'Heute im Musterdepot') +
+      '<div class="vu-grid st-r-tiles">' + [['Wartet', prep, 'warten'], ['Aufgenommen', c.TRIGGERED || 0, 'heute aufgenommen'], ['Im Musterdepot', held, 'im Musterdepot'], ['Abgegeben', c.CLOSED || 0, 'seit Start']].map(function (t) {
         return '<button type="button" class="st-r-tilebtn" data-sheet="st-life">' + U.tile(t[0], n0(t[1]), t[2]) + '</button>';
       }).join('') + '</div>' +
       '<div class="st-r-gap">' + U.help('Ein Musterdepot ist ein Rechenmodell. Es nimmt Aktien streng nach Regel auf und gibt sie wieder ab, damit man sieht, was die Methode tut. Kein echtes Geld.') + '</div>' +
-      '<button type="button" class="st-r-link" data-sheet="st-life">Der Lebenslauf eines Signals ' + U.glyph('next', 14) + '</button>');
-    addSheet('st-life', 'Der Lebenslauf eines Signals', '<p class="vu-sm vu-mu">Jedes Signal durchläuft dieselben Stationen. Nichts wird gelöscht, auch keine Verlierer.</p>' +
+      '<button type="button" class="st-r-link" data-sheet="st-life">So läuft ein Durchgang ' + U.glyph('next', 14) + '</button>');
+    addSheet('st-life', 'So läuft ein Durchgang', '<p class="vu-sm vu-mu">Jeder Eintrag im Musterdepot durchläuft dieselben Schritte. Nichts wird gelöscht, auch keine Verlierer.</p>' +
       LIFE.map(function (k, i) { return '<div class="st-r-life"><span class="st-r-num' + (k === 'ACTIVE' ? ' is-lime' : '') + '">' + (i + 1) + '</span><div><b>' + esc(STATE[k][0]) + '</b><span>' + esc(STATE[k][1]) + '</span><small>Fachname ' + esc(k) + '</small></div><b class="vu-num">' + n0(c[k] || 0) + '</b></div>'; }).join(''), 'Verstanden');
 
     var newHost = document.createElement('div'); rest.appendChild(newHost);
@@ -269,9 +269,9 @@
       var S = {}; sum.strategies.forEach(function (s) { S[s.candidateId] = s; });
       var rows = []; Object.keys(sum.top || {}).forEach(function (k) { (sum.top[k] || []).forEach(function (r) { if (r.s === 'MODELED_TRADE_PLAN') rows.push(r); }); });
       var seen = {}; rows = rows.sort(function (a, b) { return Math.abs(a.pd || 9) - Math.abs(b.pd || 9); }).filter(function (r) { if (seen[r.t]) return false; seen[r.t] = 1; return true; });
-      newHost.innerHTML = U.sect('Heute durchgerechnet', { href: '/supertrader/signals/', link: 'Alle Signale' }) + (rows.length ? rows.slice(0, 4).map(function (r) {
-        return '<a class="st-r-row" href="' + esc(stockHref(r.t)) + '">' + tk(r.t) + '<div class="st-r-sname"><b>' + esc(r.n || r.t) + '</b><span>' + esc(cleanName(S[r.c] ? S[r.c].name : r.c)) + ' · Stufe 3</span></div><div class="st-r-rv"><b class="vu-num">' + (isNum(r.pd) ? U.pct(r.pd * 100, 1) : '–') + '</b><span>zur Marke' + (isNum(r.v) ? ' · ' + U.num(r.v, 1) + '× Vol.' : '') + '</span></div></a>';
-      }).join('') : U.blank('Heute erreicht keine Aktie die Stufe 3 „Durchgerechnet“.')) + '<div class="st-r-gap">' + U.help('Stufe 3 heißt: Ein- und Ausstieg sind nach Regel geplant. Das ist ein Rechenmodell, keine Order und keine Empfehlung.') + '</div>';
+      newHost.innerHTML = U.sect('Plan fertig', { href: '/supertrader/signals/', link: 'Alle Treffer' }) + (rows.length ? rows.slice(0, 4).map(function (r) {
+        return '<a class="st-r-row" href="' + esc(stockHref(r.t)) + '">' + tk(r.t) + '<div class="st-r-sname"><b>' + esc(r.n || r.t) + '</b><span>' + esc(cleanName(S[r.c] ? S[r.c].name : r.c)) + ' · Stufe 3</span></div><div class="st-r-rv"><b class="vu-num">' + (isNum(r.pd) ? U.pct(r.pd * 100, 1) : '–') + '</b><span>zur Zone' + (isNum(r.v) ? ' · ' + U.num(r.v, 1) + '× Vol.' : '') + '</span></div></a>';
+      }).join('') : U.blank('Heute erreicht keine Aktie die Stufe „Plan fertig“.')) + '<div class="st-r-gap">' + U.help('Plan fertig heißt: Zone und Ungültig-Marke laut Methode stehen fest. Das ist ein Rechenmodell, keine Order und kein Rat.') + '</div>';
     }).catch(function () { sfHost.innerHTML = U.blank('Die Treffer der 13 Methoden sind gerade nicht erreichbar. Bitte später erneut versuchen.'); });
 
     /* Beispiel: ein abgeschlossener Zyklus (NVIDIA, Donchian Turtle) */
@@ -280,7 +280,7 @@
       allOf(st || {}).filter(function (s) { return s.symbol === 'NVDA' && s.state === 'CLOSED'; }).forEach(function (s) { var cy = cycle(s); if (cy && cy.out && (!cyc || cy.inn.date > cyc.inn.date)) cyc = cy; });
       if (!cyc) return;
       return series('NVDA').then(function (ser) {
-        exHost.innerHTML = kick('Beispiel · historisch', 'So lief ein Zyklus bei NVIDIA') + '<div class="vu-box st-r-chartbox"><div data-chart></div><div class="st-r-marks"><span>① ' + dShort(cyc.inn.date) + ' Modell steigt ein · ' + usd(cyc.inn.price) + '</span><span>② ' + dShort(cyc.out.date) + ' Ausstieg nach Regel · ' + usd(cyc.out.price) + '</span></div></div>' +
+        exHost.innerHTML = kick('Beispiel · historisch', 'So lief ein Zyklus bei NVIDIA') + '<div class="vu-box st-r-chartbox"><div data-chart></div><div class="st-r-marks"><span>① ' + dShort(cyc.inn.date) + ' Musterdepot nimmt auf · ' + usd(cyc.inn.price) + '</span><span>② ' + dShort(cyc.out.date) + ' Musterdepot gibt ab · ' + usd(cyc.out.price) + '</span></div></div>' +
           '<div class="st-r-gap">' + U.help('Donchian Turtle als Musterdepot: ein Rechenmodell, kein echter Kauf.') + '</div>';
         drawChart(exHost.querySelector('[data-chart]'), lastMonths(ser.points, 3), { marks: [[cyc.inn.date, '1'], [cyc.out.date, '2']], label: 'NVIDIA', height: 150 });
       });
@@ -331,7 +331,7 @@
 
     /* Reiter Musterdepots */
     var since = null; live.forEach(function (s) { var st = sig.strategies[s.strategy_id]; if (st && st.liveSince && (!since || st.liveSince < since)) since = st.liveSince; });
-    p2.innerHTML = '<p class="vu-sm st-r-gap">' + live.length + ' Methoden laufen als <b>Musterdepot</b>: Sie kaufen und verkaufen streng nach Regel, live seit ' + dDe(since) + '.</p>' +
+    p2.innerHTML = '<p class="vu-sm st-r-gap">' + live.length + ' Methoden laufen als <b>Musterdepot</b>: Sie nehmen Aktien streng nach Regel auf und geben sie wieder ab, live seit ' + dDe(since) + '.</p>' +
       live.map(function (s) {
         var st = sig.strategies[s.strategy_id] || { open: [] }, pos = st.open.filter(function (x) { return x.entry; }).length, e = s.evidence || {};
         return '<a class="st-r-mcard" href="' + esc(X.stratUrl(s)) + '"><div class="st-r-mtop"><div><b>' + esc(s.world_name) + '</b><span>' + esc(s.originator || '') + '</span></div><div class="st-r-mnum"><b class="vu-num">' + n0(pos) + '</b><span>Positionen</span></div></div><p>' + esc(s.tagline) + '</p>' +
@@ -369,11 +369,11 @@
     var id = document.body.getAttribute('data-strategy'), reg = D.registry, sig = D.signals, S = X.stratMap(reg), s = S[id];
     if (!s) return X.legacy(X.main, D);
     var main = page(X.main, X), e = s.evidence || {}, c = (s.rule_cards || [])[0];
-    var sub = s.mode === 'LIVE' ? 'Eingestiegen wird erst, wenn der Kurs über eine feste Marke steigt.' : '';
+    var sub = s.mode === 'LIVE' ? 'Das Musterdepot nimmt erst auf, wenn der Kurs über die Zone laut Methode steigt.' : '';
     append(main, back('/supertrader/strategies/', 'Methoden') +
       '<div class="vu-ltag st-r-kick0">Methode · ' + esc(s.originator || s.strategy_family || '') + '</div><h1 class="vu-lt">' + esc(s.world_name) + '</h1>' +
       '<p class="st-r-leadx">' + esc(s.tagline || '') + (sub ? ' <b>' + esc(sub) + '</b>' : '') + '</p>' +
-      '<div class="vu-box st-r-belast"><div class="st-r-bh"><b>Wie belastbar?</b>' + evVerdict(s) + '</div><p class="vu-sm">' + esc(s.mode === 'LIVE' ? 'Neue Treffer sind Beobachtungen, keine Einstiegschancen. Ein Vorteil ist noch nicht belegt.' : (e.levelPlain || 'Für diese Methode ist kein Vorteil belegt.')) + '</p>' +
+      '<div class="vu-box st-r-belast"><div class="st-r-bh"><b>Wie belastbar?</b>' + evVerdict(s) + '</div><p class="vu-sm">' + esc(s.mode === 'LIVE' ? 'Neue Treffer sind Beobachtungen. Ein Vorteil ist noch nicht belegt.' : (e.levelPlain || 'Für diese Methode ist kein Vorteil belegt.')) + '</p>' +
       '<div class="st-r-gap8">' + U.research() + '</div></div>');
     if (s.mode !== 'LIVE') {
       /* ST03 für Methoden ohne Live-Musterdepot (52W, Teilprüfung, fehlende Daten, Namenskarte): dieselben Bausteine wie die
@@ -404,28 +404,28 @@
     var ready = near.filter(function (x) { return x.state === 'ENTRY_READY'; });
     var held = st.open.filter(function (x) { return x.entry; });
     var tiles = document.createElement('div'); tiles.className = 'vu-grid st-r-gap'; main.appendChild(tiles);
-    tiles.innerHTML = U.tile('Treffer heute', '…', 'Originalregel') + U.tile('Musterdepot', n0(ready.length), 'kurz vor der Marke');
+    tiles.innerHTML = U.tile('Treffer heute', '…', 'Originalregel') + U.tile('Musterdepot', n0(ready.length), 'Plan fertig');
     var cid = SF_OF[id];
     if (cid) X.getJSON('sf-candidates/summary.json').then(function (sum) {
       var m = sum.strategies.filter(function (x) { return x.candidateId === cid; })[0];
-      tiles.innerHTML = '<a class="st-r-tilebtn" href="/supertrader/strategies/?sf=' + cid + '">' + U.tile('Treffer heute', m ? n0(m.counts.published) : '–', m ? cleanName(m.name) + ', Originalregel' : 'nicht verfügbar') + '</a>' + U.tile('Musterdepot', n0(ready.length), 'kurz vor der Marke');
-    }).catch(function () { tiles.innerHTML = U.tile('Treffer heute', '–', 'gerade nicht erreichbar') + U.tile('Musterdepot', n0(ready.length), 'kurz vor der Marke'); });
-    else tiles.innerHTML = U.tile('Offene Einträge', n0(st.open.length), 'im Musterdepot') + U.tile('Musterdepot', n0(ready.length), 'kurz vor der Marke');
+      tiles.innerHTML = '<a class="st-r-tilebtn" href="/supertrader/strategies/?sf=' + cid + '">' + U.tile('Treffer heute', m ? n0(m.counts.published) : '–', m ? cleanName(m.name) + ', Originalregel' : 'nicht verfügbar') + '</a>' + U.tile('Musterdepot', n0(ready.length), 'Plan fertig');
+    }).catch(function () { tiles.innerHTML = U.tile('Treffer heute', '–', 'gerade nicht erreichbar') + U.tile('Musterdepot', n0(ready.length), 'Plan fertig'); });
+    else tiles.innerHTML = U.tile('Offene Einträge', n0(st.open.length), 'im Musterdepot') + U.tile('Musterdepot', n0(ready.length), 'Plan fertig');
 
     var list = near.slice(0, 5);
-    append(main, kick(ready.length ? 'Heute kurz vor der Marke' : 'Heute vorbereitet', 'Musterdepot, Version ' + (s.strategy_version || '–')) +
-      (list.length ? list.map(function (x) { return sigCard(x, X.shortWhy ? X.shortWhy(x) : ''); }).join('') : U.blank('Heute steht keine Aktie kurz vor der Marke.')) +
+    append(main, kick(ready.length ? 'Heute Plan fertig' : 'Heute wartend', 'Musterdepot, Version ' + (s.strategy_version || '–')) +
+      (list.length ? list.map(function (x) { return sigCard(x, X.shortWhy ? X.shortWhy(x) : ''); }).join('') : U.blank('Heute hat keine Aktie einen fertigen Plan.')) +
       (near.length > list.length || held.length ? '<a class="st-r-link" href="/supertrader/signals/?method=' + esc(id) + '">Alle ' + st.open.length + ' Einträge der Methode ' + U.glyph('next', 14) + '</a>' : '') +
-      '<div class="st-r-gap">' + U.help('Marke: Steigt der Kurs darüber, würde das Musterdepot einsteigen. Fällt er unter die Grenze, ist das Muster geplatzt.') + '</div>');
+      '<div class="st-r-gap">' + U.help('Zone laut Methode: Steigt der Kurs darüber, nimmt das Musterdepot die Aktie auf. Fällt er unter die Ungültig-Marke, ist das Muster zerfallen.') + '</div>');
     var first = list[0] || held[0];
     if (first) {
       var ch = document.createElement('div'); main.appendChild(ch);
       append(ch, U.sect(first.symbol + ' im Chart', { href: stockHref(first.symbol), link: 'Zur Aktie' }) + '<div class="vu-box st-r-chartbox"><div data-chart></div></div>');
       identity(X).then(function () { return series(first.symbol); }).then(function (ser) {
         var lv = first.levels || {}, levels = [];
-        if (!first.entry && isNum(lv.trigger)) levels.push({ value: lv.trigger, label: 'Marke', tone: 'lime' });
-        if (!first.entry && isNum(lv.invalidation)) levels.push({ value: lv.invalidation, label: 'Grenze', tone: 'grey' });
-        if (first.entry && isNum(stopOf(first))) levels.push({ value: stopOf(first), label: 'Stop', tone: 'grey' });
+        if (!first.entry && isNum(lv.trigger)) levels.push({ value: lv.trigger, label: 'Zone laut Methode', tone: 'lime' });
+        if (!first.entry && isNum(lv.invalidation)) levels.push({ value: lv.invalidation, label: 'Ungültig', tone: 'grey' });
+        if (first.entry && isNum(stopOf(first))) levels.push({ value: stopOf(first), label: 'Ungültig', tone: 'grey' });
         drawChart(ch.querySelector('[data-chart]'), lastMonths(ser.points, 3), { levels: levels, label: first.symbol, height: 170 });
       }).catch(function () { ch.querySelector('[data-chart]').innerHTML = U.blank('Für ' + first.symbol + ' liegen keine veröffentlichten Tageskurse vor.'); });
     }
@@ -433,9 +433,9 @@
     var mp = D.portfolio && D.portfolio.strategies && D.portfolio.strategies[id], cfg = (mp && mp.config) || {};
     var fidHtml = fidelityBox(s);
     append(after, kick('Protokoll seit ' + dDe(st.liveSince), 'Was bisher passiert ist') +
-      '<div class="vu-grid st-r-g3">' + U.tile('Abgeschlossen', n0(X.closedCount(st)), '') + U.tile('Geplatzt', n0(st.invalidatedTotal || 0), '') + U.tile('Regelwechsel', n0(st.retiredTotal || 0), '') + '</div>' +
-      (mp ? kick('Musterdepot', 'Laufend nach Regel') + '<div class="vu-box st-r-kv">' + [['Investiert', pp(mp.investedPct || 0, 0)], ['Bargeld', pp(mp.cashPct == null ? 1 : mp.cashPct, 0)], ['Positionen', (mp.openCount || 0) + ' von ' + (cfg.maxPositions || '–')], ['Risiko je Kauf', isNum(cfg.riskPerTrade) ? U.num(cfg.riskPerTrade * 100, 2) + ' %' : '–']].map(function (r) { return '<div><span>' + esc(r[0]) + '</span><b class="vu-num">' + esc(r[1]) + '</b></div>'; }).join('') + '</div>' +
-        '<div class="st-r-gap">' + U.help('Risiko je Position (Modell): Wird der Stop erreicht, verliert das Musterdepot höchstens ' + (isNum(cfg.riskPerTrade) ? U.num(cfg.riskPerTrade * 100, 2) + ' %' : 'den festgelegten Anteil') + ' seines Werts.') + '</div>' : '') +
+      '<div class="vu-grid st-r-g3">' + U.tile('Abgegeben', n0(X.closedCount(st)), '') + U.tile('Muster zerfallen', n0(st.invalidatedTotal || 0), '') + U.tile('Regelwechsel', n0(st.retiredTotal || 0), '') + '</div>' +
+      (mp ? kick('Musterdepot', 'Laufend nach Regel') + '<div class="vu-box st-r-kv">' + [['Investiert', pp(mp.investedPct || 0, 0)], ['Bargeld', pp(mp.cashPct == null ? 1 : mp.cashPct, 0)], ['Positionen', (mp.openCount || 0) + ' von ' + (cfg.maxPositions || '–')], ['Anteil je Aufnahme', isNum(cfg.riskPerTrade) ? U.num(cfg.riskPerTrade * 100, 2) + ' %' : '–']].map(function (r) { return '<div><span>' + esc(r[0]) + '</span><b class="vu-num">' + esc(r[1]) + '</b></div>'; }).join('') + '</div>' +
+        '<div class="st-r-gap">' + U.help('Anteil je Aufnahme im Musterdepot: Fällt der Kurs bis zur Ungültig-Marke laut Methode, verliert das Rechenmodell höchstens ' + (isNum(cfg.riskPerTrade) ? U.num(cfg.riskPerTrade * 100, 2) + ' %' : 'den festgelegten Anteil') + ' seines Werts.') + '</div>' : '') +
       fidHtml);
 
     deepDive(after, s, c, D, X);
@@ -454,7 +454,7 @@
   function deepDive(after, s, c, D, X) {
     /* Tiefer einsteigen */
     var srcs = (s.sources || []).map(function (sid) { return D.srcMap[sid] || { title: sid }; });
-    append(after, U.sect('Tiefer einsteigen') + '<div class="st-r-accs">' +
+    append(after, U.sect('Mehr zur Methode') + '<div class="st-r-accs">' +
       acc('So denkt die Methode', '<p>' + esc(s.story || '') + '</p>' + (s.how_it_thinks && s.how_it_thinks.length ? '<ol class="st-r-ol">' + s.how_it_thinks.map(function (q) { return '<li>' + esc(q) + '</li>'; }).join('') + '</ol>' : '')) +
       (c ? '<button type="button" class="st-r-acc st-r-accbtn" data-sheet="st-rulecard"><b>Regelkarte, ' + c.sections.length + ' Abschnitte</b>' + U.pro() + U.glyph('next', 16) + '</button>' : '') +
       '<div data-slot="assess"></div><div data-slot="rules"></div><div data-slot="fid"></div>' +
@@ -494,16 +494,16 @@
     var partial = ['CANSLIM', 'PIOTROSKI_F'].filter(function (id) { return sig.partialChecks && sig.partialChecks[id]; });
     var methods = reg.strategies.filter(function (s) { return s.mode === 'LIVE'; });
     var isSide = function (x) { return !!(x.quality && x.quality.tier === 'B' && (x.state === 'SETUP' || x.state === 'ENTRY_READY')); };
-    var PH = [['', 'Alle'], ['held', 'Modell ist dabei'], ['exit', 'Ausstieg'], ['prep', 'Vorbereitet']];
+    var PH = [['', 'Alle'], ['held', 'Im Musterdepot'], ['exit', 'Abgegeben'], ['prep', 'Wartet']];
     var inPhase = function (x, p) { return !p || (p === 'held' ? x.state === 'ACTIVE' || x.state === 'WARNING' || x.state === 'TRIGGERED' : p === 'exit' ? x.state === 'EXIT' : p === 'prep' ? x.state === 'SETUP' || x.state === 'ENTRY_READY' : true); };
-    append(main, intro('Signale', 'Welche Aktie ist gerade wo im Ablauf einer Methode?') + '<p class="st-r-asof"><span>Schlusskurse vom ' + dDe(sig.asOf) + '</span> ' + U.research() + '</p>' +
+    append(main, intro('Treffer', 'Welche Aktie ist gerade wo im Ablauf einer Methode?') + '<p class="st-r-asof"><span>Schlusskurse vom ' + dDe(sig.asOf) + '</span> ' + U.research() + '</p>' +
       '<label class="st-r-search">' + U.glyph('search', 18) + '<input type="search" placeholder="Aktie suchen, z. B. NVDA" aria-label="Aktie suchen" value="' + esc(f.q) + '"></label>' +
       '<div class="vu-chips st-r-chips" data-row="phase" role="group" aria-label="Phase"></div>' +
       '<div class="vu-chips st-r-chips" data-row="method" role="group" aria-label="Methode"></div>' +
-      '<div class="vu-box vu-box--lime st-r-read">' + U.glyph('line', 22) + '<span><b>So liest du die Leiste:</b> schwarzer Punkt = Stop, Strich = Einstieg des Modells, grüner Punkt = Schluss heute. Vor dem Einstieg: Grenze, Kurs und Marke.</span></div>' +
+      '<div class="vu-box vu-box--lime st-r-read">' + U.glyph('line', 22) + '<span><b>So liest du die Leiste:</b> schwarzer Punkt = Ungültig-Marke laut Methode, Strich = Aufnahme im Musterdepot, grüner Punkt = Schluss heute. Vor der Aufnahme: Ungültig-Marke, Kurs und Zone laut Methode.</span></div>' +
       '<p class="st-r-count vu-num"></p><div class="st-r-list"></div>' +
       '<button type="button" class="vu-btn vu-btn--line vu-btn--block st-r-more">Mehr anzeigen</button>' +
-      '<div class="st-r-gap">' + U.help('Luft bis zum Stop: So weit darf der Kurs fallen, bevor die Regel das Musterdepot verkauft.') + '</div>' +
+      '<div class="st-r-gap">' + U.help('Abstand zur Ungültig-Marke: So weit darf der Kurs fallen, bevor das Musterdepot die Aktie laut Methode abgibt.') + '</div>' +
       '<div class="st-r-accs">' + acc('Was bedeuten die Phasen?', LIFE.map(function (k) { return '<p>' + stateVerdict(k) + ' ' + esc(STATE[k][1]) + '</p>'; }).join('')) + '</div>');
     var phaseRow = main.querySelector('[data-row=phase]'), methodRow = main.querySelector('[data-row=method]'), list = main.querySelector('.st-r-list'), count = main.querySelector('.st-r-count'), more = main.querySelector('.st-r-more');
     var limit = 30, shown = [];
@@ -536,7 +536,7 @@
       }
       shown = base().sort(function (a, b) { return X.sortSignals(a.s, b.s); });
       var side = rows.filter(function (r) { return isSide(r.s); }).length;
-      count.textContent = n0(shown.length) + ' Einträge' + (!f.side && side && f.method !== 'DARVAS_BOX' ? ' · ' + n0(side) + ' Darvas-Nebensignale ausgeblendet' : '');
+      count.textContent = n0(shown.length) + ' Einträge' + (!f.side && side && f.method !== 'DARVAS_BOX' ? ' · ' + n0(side) + ' Darvas-Nebentreffer ausgeblendet' : '');
       list.innerHTML = shown.length ? shown.slice(0, limit).map(function (r) { return sigCard(r.s, S[r.id] ? S[r.id].world_name : r.id); }).join('') : U.blank('Für diese Filter gibt es heute keinen Eintrag.');
       more.hidden = shown.length <= limit;
     }
@@ -552,8 +552,8 @@
     /* Filter-Sheet: Phase (Alltagsnamen), Methode, Schalter */
     var sh = addSheet('st-filter', 'Filter', U.sect('Phase', { level: 3 }) + '<div class="st-r-wrap" data-f="state">' + ['SETUP', 'ENTRY_READY', 'ACTIVE', 'WARNING', 'EXIT'].map(function (k) { return '<button type="button" class="vu-chip" data-v="' + k + '" aria-pressed="false">' + esc(STATE[k][0]) + '</button>'; }).join('') + '</div>' +
       U.sect('Methode', { level: 3 }) + '<div class="st-r-wrap" data-f="method">' + methods.map(function (m) { return '<button type="button" class="vu-chip" data-v="' + esc(m.strategy_id) + '" aria-pressed="' + (f.method === m.strategy_id) + '">' + esc(m.world_name) + '</button>'; }).join('') + '</div>' +
-      U.sect('Anzeigen', { level: 3 }) + '<div class="st-r-kvs"><span>Neu am letzten Handelstag</span>' + U.toggle(false, '', 'fresh') + '</div><div class="st-r-kvs"><span>Darvas-Nebensignale (B-Setups)</span>' + U.toggle(false, '', 'side') + '</div>', 'Signale zeigen');
-    function sheetCount() { var b = sh.querySelector('.st-r-close'); if (b) b.textContent = n0(base().length) + ' Signale zeigen'; }
+      U.sect('Anzeigen', { level: 3 }) + '<div class="st-r-kvs"><span>Neu am letzten Handelstag</span>' + U.toggle(false, '', 'fresh') + '</div><div class="st-r-kvs"><span>Darvas-Nebentreffer (B-Setups)</span>' + U.toggle(false, '', 'side') + '</div>', 'Treffer zeigen');
+    function sheetCount() { var b = sh.querySelector('.st-r-close'); if (b) b.textContent = n0(base().length) + ' Treffer zeigen'; }
     sh.addEventListener('click', function (e) {
       var b = e.target.closest('.st-r-wrap button'); if (!b) return;
       var k = b.parentNode.getAttribute('data-f'), v = b.getAttribute('data-v');
@@ -619,7 +619,7 @@
     });
     var sm2 = pl && pl.strategy && pl.strategy.metrics, tr = pl && pl.strategy && pl.strategy.trades, cmp2 = pl && pl.comparison;
     append(main, U.sect('Wie geprüft wird') + '<div class="st-r-accs">' +
-      acc('Fünf Grundsätze jedes Tests', '<ol class="st-r-ol"><li><b>Vorab festgelegt:</b> Universum, Zeitraum, Regeln, Kosten, Vergleich und Erfolgskriterien werden vor dem Test eingefroren.</li><li><b>Damaliges Universum:</b> alle an jedem Tag gelisteten US-Aktien, einschließlich später delisteter Titel.</li><li><b>Delistings ohne Schönrechnen:</b> drei vorab festgelegte Annahmen für den letzten Kurs.</li><li><b>Gleiche Regeln wie live:</b> derselbe Rechenkern erzeugt Live-Signale und historische Trades.</li><li><b>Keine Nachoptimierung:</b> eine neue Variante ist eine neue Hypothese und braucht eine spätere, unabhängige Prüfung.</li></ol>') +
+      acc('Fünf Grundsätze jedes Tests', '<ol class="st-r-ol"><li><b>Vorab festgelegt:</b> Universum, Zeitraum, Regeln, Kosten, Vergleich und Erfolgskriterien werden vor dem Test eingefroren.</li><li><b>Damaliges Universum:</b> alle an jedem Tag gelisteten US-Aktien, einschließlich später delisteter Titel.</li><li><b>Delistings ohne Schönrechnen:</b> drei vorab festgelegte Annahmen für den letzten Kurs.</li><li><b>Gleiche Regeln wie live:</b> derselbe Rechenkern erzeugt die tägliche Erkennung und die historischen Durchgänge.</li><li><b>Keine Nachoptimierung:</b> eine neue Variante ist eine neue Hypothese und braucht eine spätere, unabhängige Prüfung.</li></ol>') +
       ((bt.nextSteps || []).length ? acc('Nächste Schritte', '<ol class="st-r-ol">' + bt.nextSteps.map(function (x) { return '<li><b>' + esc(x[0]) + '</b><br>' + esc(x[1]) + '</li>'; }).join('') + '</ol>') : '') +
       (sm2 ? acc('Alle Kennzahlen des Piloten', '<div class="st-r-gap8">' + U.research() + '</div><div class="st-r-kv">' + [['Regel p. a.', pctF(sm2.full.cagr, 1)], ['Gleich gewichtet p. a.', pctF(cmp2.equalWeightUniverse.full.cagr, 1)], ['S&P 500 p. a.', pctF(cmp2.spy.full.cagr, 1)], ['Schwankung p. a.', pp(sm2.full.volatility, 0)], ['Größter Einbruch', pctF(sm2.full.maxDrawdown, 1)], ['Trades', tr ? n0(tr.trades) : '–'], ['Trefferquote', tr ? pp(tr.hitRate, 0) : '–'], [pl.period.from.slice(0, 4) + '–2015 p. a.', sm2.inSample ? pctF(sm2.inSample.cagr, 1) : '–'], ['2016–heute p. a.', sm2.outOfSample ? pctF(sm2.outOfSample.cagr, 1) : '–']].map(function (r) { return '<div><span>' + esc(r[0]) + '</span><b class="vu-num">' + esc(r[1]) + '</b></div>'; }).join('') + '</div>' +
         '<p class="vu-xs vu-mu">Explorativ: getestet nur auf heute noch gelisteten Aktien, Wochenbasis, 0,25 % Kosten je Seite.</p>', U.pro()) : '') + '</div>' + note('Keine Anlageberatung.'));
@@ -681,7 +681,7 @@
     headHost.innerHTML = '<header class="vu-shead"><h1 class="vu-shead-name">' + esc(name || sym || '–') + '</h1><p class="vu-shead-meta">' + esc(sym) + '</p></header>';
     if (!sym) { append(main, '<div class="st-emptybox">' + U.blank('Keine Aktie gewählt.') + '</div>'); foot(main, X, sig); return; }
     var kit = X.stockKit();
-    var headApi = kit.then(function () { var ctx = window.VUCore.StockContext.fromUs(sym); return window.VUStockNavigator.head(headHost, { ctx: ctx, current: 'supertrader', name: name || sym, pendingPrice: true, back: { href: '/supertrader/signals/', label: 'Signale' } }); }).catch(function () { return null; });
+    var headApi = kit.then(function () { var ctx = window.VUCore.StockContext.fromUs(sym); return window.VUStockNavigator.head(headHost, { ctx: ctx, current: 'supertrader', name: name || sym, pendingPrice: true, back: { href: '/supertrader/signals/', label: 'Treffer' } }); }).catch(function () { return null; });
     /* Kurse nur für Aktien, die eine Methode führt oder erkennt (keine vergebliche Anfrage für unbekannte Kürzel) */
     var serP = null, ser = function () { return serP || (serP = kit.catch(function () {}).then(function () { return identity(X); }).then(function () { return series(sym); })); };
     var priced = function () { setPrice(); };
@@ -719,7 +719,7 @@
     if (cyc) entries.forEach(function (e) { var c = cycle(e.s); if (c && c.inn.date === cyc.inn.date) { cycIds.push(S[e.id] ? S[e.id].world_name : e.id); if (c.out && (!cyc.out || c.out.date > cyc.out.date)) cyc.out = c.out; } });
     var chartHost = null;
     if (cyc) {
-      append(rest, U.sect(cyc.out ? 'Zuletzt im Musterdepot' : 'Im Musterdepot seit ' + dShort(cyc.inn.date)) + '<div class="vu-box st-r-chartbox"><div data-chart></div><div class="st-r-marks"><span>① ' + dShort(cyc.inn.date) + ' Einstieg ' + esc(cycIds.join(' und ')) + ' · ' + usd(cyc.inn.price) + '</span>' + (cyc.out ? '<span>② ' + dShort(cyc.out.date) + ' Ausstieg · ' + usd(cyc.out.price) + (isNum(cyc.inn.price) && cyc.inn.price > 0 && isNum(cyc.out.price) ? ' <span class="st-r-res">' + U.chg((cyc.out.price / cyc.inn.price - 1) * 100) + '</span>' : '') + '</span>' : '') + '</div></div>');
+      append(rest, U.sect(cyc.out ? 'Zuletzt im Musterdepot' : 'Im Musterdepot seit ' + dShort(cyc.inn.date)) + '<div class="vu-box st-r-chartbox"><div data-chart></div><div class="st-r-marks"><span>① ' + dShort(cyc.inn.date) + ' Musterdepot nimmt auf (' + esc(cycIds.join(' und ')) + ') · ' + usd(cyc.inn.price) + '</span>' + (cyc.out ? '<span>② ' + dShort(cyc.out.date) + ' Musterdepot gibt ab · ' + usd(cyc.out.price) + (isNum(cyc.inn.price) && cyc.inn.price > 0 && isNum(cyc.out.price) ? ' <span class="st-r-res">' + U.chg((cyc.out.price / cyc.inn.price - 1) * 100) + '</span>' : '') + '</span>' : '') + '</div></div>');
       chartHost = rest.querySelector('[data-chart]');
       ser().then(function (s) { drawChart(chartHost, lastMonths(s.points, 3), { marks: [[cyc.inn.date, '1']].concat(cyc.out ? [[cyc.out.date, '2']] : []), label: sym, height: 150 }); }).catch(function () { chartHost.innerHTML = U.blank('Für ' + sym + ' liegen keine veröffentlichten Tageskurse vor.'); });
     }
@@ -742,8 +742,8 @@
     var evs = Object.keys(ev).map(function (k) { return ev[k]; }).sort(function (a, b) { return b.date.localeCompare(a.date) || lifeIx(b.st) - lifeIx(a.st); });
     if (evs.length) {
       var tl = function (list) { return '<ol class="st-r-tl">' + list.map(function (x) {
-        var again = x.st === 'ACTIVE_AGAIN', label = x.st === 'ACTIVE' ? 'Modell steigt ein' : again ? 'Warnzeichen vorbei' : stateName(x.st);
-        return '<li data-st="' + esc(again ? 'ACTIVE' : x.st) + '"><i></i><div><div class="st-r-tlh"><b class="vu-num">' + dShort(x.date) + '</b>' + stateVerdict(again ? 'ACTIVE' : x.st, label) + x.res.map(function (r) { return '<span class="st-r-res">' + U.chg(r * 100) + '</span>'; }).join('') + '</div><span>' + esc(x.methods.join(' und ') + (isNum(x.price) ? ' · Kurs ' + usd(x.price) : '') + (x.res.length === 1 ? ' · Einstieg ' + usd(x.inn) : '')) + '</span></div></li>'; }).join('') + '</ol>'; };
+        var again = x.st === 'ACTIVE_AGAIN', label = x.st === 'ACTIVE' ? 'Musterdepot nimmt auf' : again ? 'Warnzeichen vorbei' : stateName(x.st);
+        return '<li data-st="' + esc(again ? 'ACTIVE' : x.st) + '"><i></i><div><div class="st-r-tlh"><b class="vu-num">' + dShort(x.date) + '</b>' + stateVerdict(again ? 'ACTIVE' : x.st, label) + x.res.map(function (r) { return '<span class="st-r-res">' + U.chg(r * 100) + '</span>'; }).join('') + '</div><span>' + esc(x.methods.join(' und ') + (isNum(x.price) ? ' · Kurs ' + usd(x.price) : '') + (x.res.length === 1 ? ' · Aufnahme ' + usd(x.inn) : '')) + '</span></div></li>'; }).join('') + '</ol>'; };
       append(rest, U.sect('Protokoll') + tl(evs.slice(0, 5)) + (evs.length > 5 ? '<div class="st-r-accs">' + acc('Ältere (' + (evs.length - 5) + ')', tl(evs.slice(5))) + '</div>' : '') +
         '<div class="st-r-gap">' + U.help('Das Musterdepot ist ein Rechenmodell. Es zeigt, was die Regel getan hätte, nicht was du tun solltest.') + '</div>');
     }
@@ -768,10 +768,10 @@
       if (nHit && !entries.length) priced();
       if (!nHit && !entries.length && !t52) headApi.then(function (h) { if (h) h.setPrice(null); headHost.classList.remove('st-r-pending-head'); });
       groupHost.innerHTML = '<div class="vu-grid st-r-g3 st-r-gap">' + GROUPS.map(function (g) { return U.tile(g[0], g[1].filter(function (c) { return hit[c]; }).length + ' von ' + g[1].length, ''); }).join('') + '</div>';
-      var row = function (s) { var m = methodMeta(s), h = hit[s.candidateId]; return '<a class="st-r-wrow" href="/supertrader/strategies/?sf=' + esc(s.candidateId) + '"><div><b>' + esc(cleanName(s.name)) + '</b><span>' + esc(m.plain) + '</span></div>' + (h ? U.verdict(h === 'MODELED_TRADE_PLAN' ? 'strong' : 'mid', 'Stufe ' + (STAGES.indexOf(h) + 1) + ' · ' + STAGE_TXT[h]) : U.verdict('none', 'Nein')) + '</a>'; };
+      var row = function (s) { var m = methodMeta(s), h = hit[s.candidateId]; return '<a class="st-r-wrow" href="/supertrader/strategies/?sf=' + esc(s.candidateId) + '"><div><b>' + esc(cleanName(s.name)) + '</b><span>' + esc(m.plain) + '</span></div>' + (h ? U.verdict(h === 'MODELED_TRADE_PLAN' ? 'strong' : 'mid', STAGE_TXT[h]) : U.verdict('none', 'Nein')) + '</a>'; };
       var shown = Math.max(5, nHit);
       allHost.innerHTML = U.sect('Alle 13 Methoden') + list.slice(0, shown).map(row).join('') + (list.length > shown ? '<div class="st-r-accs">' + acc('+ ' + (list.length - shown) + ' weitere' + (nHit ? '' : ', alle ohne Treffer'), list.slice(shown).map(row).join('')) + '</div>' : '') +
-        note('Signale auf Schlusskursen vom ' + dDe(sum.asOf) + '. Keine Anlageberatung.');
+        note('Erkennung auf Schlusskursen vom ' + dDe(sum.asOf) + '. Keine Anlageberatung.');
     }).catch(function () { answer.classList.remove('st-r-pending-answer'); answer.setAttribute('aria-busy', 'false'); headHost.classList.remove('st-r-pending-head'); answer.innerHTML = U.blank('Die 13 Methoden sind für ' + sym + ' gerade nicht erreichbar.'); });
   }
 

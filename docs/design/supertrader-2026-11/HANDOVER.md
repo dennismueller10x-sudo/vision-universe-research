@@ -50,7 +50,12 @@ Entscheidung 3 in `assets/site-navigation.js`; Core- und Supertrader-CI grün.
 
 ## Entscheidungen beim Bauen
 
-(Hier je Schritt einen Satz eintragen.)
+(Je Schritt ein Satz; Abnahme-Bilder je PR unter `abnahme/`.)
+
+- **PR 1 · Wortwahl:** „Trigger“ und „Marke“ heißen „Zone laut Methode“, „Stop“ und „Grenze“ „Ungültig-Marke laut Methode“, „Einstieg/Ausstieg“ „Aufnahme/Abgabe“ (Musterdepot nimmt auf, gibt ab), „Signale“ „Treffer“ oder „Regel-Ergebnis“; Erläuterungstexte aus dem Datenstand (Hinweis, Beispiel, Prüfstand, Einstufung, Kurzbeschreibungen und Grenzen der 13 Methoden) werden beim Anzeigen umformuliert, die Daten unter `supertrader/data` bleiben unverändert und Regeltexte (Regel-IDs, Regelkarten, Quellen) bleiben wörtliche Zitate der Methode.
+- **PR 1 · Seitenhüllen:** `scripts/supertrader/build.mjs --pages-only` schreibt Titel und Beschreibung aller erzeugten Seiten (auch der noch ausgelieferten älteren Aktienseiten) aus dem veröffentlichten Stand neu, ohne eine Datei unter `supertrader/data` zu berühren.
+- **PR 1 · Farben:** Minus ist schwarz (dunkles Thema: grau), Kerzen und die Ungültig-Linie im Chart sind grau bzw. schwarz; der Test `st-recipe-wording.test.mjs` erkennt Rot über den Farbton, nicht über eine Liste.
+- **PR 1 · Browser:** Die Supertrader-CI prüft wie bisher in Chromium (`browser-qa.mjs`, neu mit Wortwahl-Prüfung); WebKit wird je PR lokal geprüft (Screenshots unter `abnahme/`), damit `ci.yml` als Nicht-Supertrader-Pfad unberührt bleibt.
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 

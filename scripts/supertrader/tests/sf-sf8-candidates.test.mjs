@@ -713,7 +713,7 @@ test('SF8-UI-ORDER-MARKS-ONLY-IN-PLAN: Einstieg, Stop und Limit zeichnet die Vor
   // eine Engine-Marke des modellierten Ablaufs (z. B. RUN_UP_HIGH = Einstieg) wird nie als Chartstruktur gezeigt
   assert.match(ui, /function structOf\(p\) \{ return p && fin\(p\.level\) && STRUCT_TXT\[p\.kind\] \? p : null; \}/);
   assert.doesNotMatch(pushes[0], /chart-trigger|chart-entry|chart-stop/);
-  assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Modell-Stop', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
+  assert.match(pushes[1], /^\s*if \(v\.plan\) \{ levels\.push\(\{ id: 'entry',[^}]*value: v\.plan\.trigger,[^}]*\}\); levels\.push\(\{ id: 'stop', label: 'Ungültig-Marke', value: v\.plan\.stop,[^}]*\}\); \}\s*$/);
   // keine Orderbeschriftung irgendwo im Chart außer im Planzweig; Beschriftungen nur als Literal (keine Konstante von außen)
   const drawNoPlan = draw.split('\n').filter((l) => !/^\s*if \(v\.plan\) \{/.test(l)).join('\n');
   assert.deepEqual([...drawNoPlan.matchAll(/'([^'\\]*)'/g)].map((m) => m[1]).filter((x) => !/^var\(--[a-z0-9-]+\)$/.test(x) && /Stop|Einstieg|Limit|Order|Kauf|Trigger|Risiko/i.test(x)), []);
