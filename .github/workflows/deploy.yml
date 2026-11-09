@@ -26,6 +26,10 @@ on:
         description: 'frage-worker: Nach dem Ausrollen eine echte Testfrage stellen (kostet unter 1 Cent)'
         type: boolean
         default: false
+      nurBericht:
+        description: 'frage-worker: Nur den Zustandsbericht lesen (kein Ausrollen, keine Frage, nur Zaehler und Fehlercodes)'
+        type: boolean
+        default: false
       attachDomain:
         description: 'live-worker: live.visionuniverse.de anlegen (sonst nur workers.dev)'
         type: boolean
@@ -176,6 +180,7 @@ jobs:
 
       - name: Ausrollen
         id: deploy
+        if: ${{ !inputs.nurBericht }}
         working-directory: workers/vu-ask
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -196,6 +201,7 @@ jobs:
 
       - name: Schluessel zu Cloudflare (nie ins Protokoll)
         id: keys
+        if: ${{ !inputs.nurBericht }}
         working-directory: workers/vu-ask
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -271,6 +277,24 @@ jobs:
             console.log("Supertrader:", JSON.stringify(r.supertrader), "| Fehlend:", JSON.stringify(r.missing));
             console.log("Kontingent heute noch:", a.quota && a.quota.remainingToday);
           '
+
+      # Zustandsbericht aus /v1/admin/report. Ausgegeben werden nur Zaehler,
+      # Grenzen und Fehlercodes - nie Fragetexte, nie Schluessel.
+      - name: Zustandsbericht (ohne Fragetexte)
+        if: ${{ always() }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          ADMIN="$VU_ASK_ADMIN_KEY"
+          [ -n "$ADMIN" ] || ADMIN=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
+          echo "::add-mask::$ADMIN"
+          [ -n "$URL" ] || URL=$(grep -oE 'https://vu-ask\.[a-z0-9-]+\.workers\.dev' ask/index.html | head -1)
+          code=$(curl --silent -o /tmp/report.json -w '%{http_code}' -H "authorization: Bearer $ADMIN" "$URL/v1/admin/report?limit=50" || true)
+          echo "Bericht: HTTP $code"
+          [ "$code" = "200" ] || exit 0
+          node workers/vu-ask/scripts/report-summary.mjs /tmp/report.json
 
       - name: Zusammenfassung
         if: always()
