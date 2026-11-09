@@ -183,3 +183,36 @@ test("SZ-11 · dispatchInputs liest Block- und Fluss-Form", () => {
     zahl: { required: false, hasDefault: true, type: "string", options: null },
     zeitplan: { required: false, hasDefault: true, type: "string", options: null } });
 });
+
+/* SZ-12 · Kein YAML-Wert beginnt mit "!": in YAML ist das ein Tag, die Workflow-Datei ist dann ungueltig und GitHub
+   startet sie gar nicht (09.11.2026: core-ci.yml nach #1687, `if: !(github.event_name == 'schedule' || …)`).
+   Ein negierter Ausdruck steht in ${{ }}. Geprueft wird jede Workflow-Datei, ausserhalb von Kommentaren. */
+test("SZ-12 · kein Workflow-Wert beginnt mit '!' (YAML-Tag), negierte Bedingungen stehen in ${{ }}", async () => {
+  const { readdirSync } = await import("node:fs");
+  const fehler = [];
+  for (const f of readdirSync(join(ROOT, ".github/workflows")).filter((x) => /\.ya?ml$/.test(x))) {
+    readFileSync(join(ROOT, ".github/workflows", f), "utf8").split("\n").forEach((l, i) => {
+      if (/^\s*#/.test(l)) return;
+      if (/^\s*(-\s+)?[A-Za-z_][\w-]*:\s+!/.test(l)) fehler.push(f + ":" + (i + 1) + " " + l.trim());
+    });
+  }
+  assert.deepEqual(fehler, []);
+});
+
+test("SZ-12b · schedule-cutover fasst eine mit '!' beginnende if:-Bedingung in ${{ }}", async () => {
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync, cpSync } = await import("node:fs");
+  const { tmpdir } = await import("node:os");
+  const { execFileSync } = await import("node:child_process");
+  const dir = mkdtempSync(join(tmpdir(), "sz12-"));
+  try {
+    mkdirSync(join(dir, ".github/workflows"), { recursive: true });
+    mkdirSync(join(dir, "core/registry"), { recursive: true });
+    mkdirSync(join(dir, "scripts/core"), { recursive: true });
+    cpSync(join(ROOT, "scripts/core"), join(dir, "scripts/core"), { recursive: true });
+    writeFileSync(join(dir, ".github/workflows/probe.yml"), "name: Probe\non:\n  schedule:\n    - cron: '7 7 * * *'\n  workflow_dispatch:\npermissions:\n  contents: read\njobs:\n  a:\n    if: github.event_name != 'schedule'\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo a\n");
+    writeFileSync(join(dir, "core/registry/schedule.json"), JSON.stringify({ schema: "vu-schedule-1", entries: [{ id: "probe", workflow: "probe.yml", cron: "7 7 * * *", timer: "github" }] }));
+    execFileSync(process.execPath, [join(dir, "scripts/core/schedule-cutover.mjs"), "probe.yml"], { cwd: dir, stdio: "pipe" });
+    const y = readFileSync(join(dir, ".github/workflows/probe.yml"), "utf8");
+    assert.match(y, /^    if: \$\{\{ !\(github\.event_name == 'schedule' \|\| inputs\.zeitplan != ''\) \}\}$/m);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

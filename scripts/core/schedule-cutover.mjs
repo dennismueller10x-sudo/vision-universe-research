@@ -60,6 +60,9 @@ export function cutover(text) {
     .replace(/github\.event_name == 'schedule'(?! \|\| inputs\.zeitplan)/g, "(github.event_name == 'schedule' || inputs.zeitplan != '')")
     .replace(/github\.event_name == 'workflow_dispatch'(?! && !inputs\.zeitplan)/g, "(github.event_name == 'workflow_dispatch' && !inputs.zeitplan)")
     .replace(/\$\{\{\s*github\.event_name\s*\}\}/g, "${{ " + EVENT + " }}");
+  // YAML: ein Wert, der mit "!" beginnt, ist ein Tag, kein Ausdruck (09.11.2026: core-ci.yml nach #1687 ungueltig).
+  // Beginnt eine if:-Bedingung nach der Umstellung mit "!", wird sie in ${{ }} gefasst (SZ-12).
+  out = out.split("\n").map((l) => l.replace(/^(\s*-?\s*if:\s*)(!.*)$/, (m, k, v) => k + "${{ " + v.trim() + " }}")).join("\n");
   // ADR-005: Eingaben nie per ${{ }} in den Shell-Text. Wo der Zeitplan dort stand, kommt er ueber env VU_SCHEDULE.
   out = out.split("\n").map((l) => (/\$\{\{[^}]*inputs\.zeitplan[^}]*\}\}/.test(l) && !/^\s*-?\s*[A-Za-z_][A-Za-z0-9_-]*:\s*\$\{\{/.test(l))
     ? l.replace(/\$\{\{ github\.event\.schedule \|\| inputs\.zeitplan \}\}/g, "${VU_SCHEDULE}").replace(/\$\{\{ inputs\.zeitplan && 'schedule' \|\| github\.event_name \}\}/g, "${VU_EVENT}")
