@@ -1,0 +1,27 @@
+<section class="page">
+  <div class="pad" style="inset:12mm 14mm 12mm">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <img src="{{root}}docs/design/redesign-2027/img/vu-logo.png" style="height:5mm" alt="Vision Universe">
+      <span class="pillsoon" style="color:#000;border-color:#000"><i></i>App bald verfügbar</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 66mm;gap:8mm;margin-top:8mm">
+      <div>
+        <span class="ressort">Was ist Vision Universe?</span>
+        <div style="font-size:34pt;font-weight:900;letter-spacing:-.05em;line-height:.92;margin-top:3mm">Wir sagen dir nicht, was du kaufen sollst. <span style="background:var(--lime);padding:0 1.5mm">Wir zeigen dir alles,</span> was du wissen musst.</div>
+        <div class="sub" style="margin-top:4mm;color:#333">Vision Universe ist eine Analyse-Software für Aktien. Jeden Abend rechnet sie über 5.600 US-Aktien durch und erklärt in einfachen Worten, was die Zahlen zeigen.</div>
+        <div style="display:grid;gap:4mm;margin-top:6mm" data-k="schritte"></div>
+      </div>
+      <div style="position:relative">
+        <div class="glowimg" style="left:-14mm;right:-14mm;top:20mm;height:150mm"></div>
+        <div class="phone" style="position:relative;width:66mm"><img src="img/live-willkommen.jpg" alt="App: Mein Bereich"></div>
+        <div class="phone" style="position:relative;width:56mm;margin:6mm 0 0 10mm"><img src="img/live-quant.jpg" alt="App: Quant"></div>
+      </div>
+    </div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:repeat(4,1fr);gap:3mm" data-k="fuer-wen"></div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('schritte',()=>[['1','Daten','Kurse, Pflichtmeldungen der Unternehmen an die US-Börsenaufsicht (SEC), Fondsbestände (13F) und Insider-Meldungen. Keine Meinungen.'],['2','Regeln','Jede Kennzahl, jedes Muster und jede Methode folgt festen, offengelegten Regeln. Für alle Nutzer gleich.'],['3','Klartext','Statt Tabellen ein Satz: „Der Umsatz hat sich in zehn Jahren mehr als verfünffacht.“ Fachbegriffe werden erklärt.']].map(r=>`<div style="display:grid;grid-template-columns:11mm 1fr;gap:3mm;align-items:start"><div style="width:11mm;height:11mm;border-radius:50%;background:#000;color:var(--lime);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13pt">${r[0]}</div><div><div style="font-size:13pt;font-weight:900">${r[1]}</div><div class="body" style="margin-top:.6mm">${r[2]}</div></div></div>`).join(''));
+VUM.k('fuer-wen',()=>[['Einsteiger','Discover und Mein Bereich führen Schritt für Schritt.'],['Langfristig','Fundamental: zehn Jahre Zahlen und Checklisten.'],['Aktiv','Technical, Quant und Supertrader: Muster und Regeln.'],['Neugierig','Hedgefonds und Insider: was die Großen melden.']].map(r=>`<div style="background:var(--g1);border-radius:3mm;padding:3.5mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#000;background:var(--lime);display:inline-block;padding:.5mm 1.5mm;border-radius:1mm">Für ${r[0]}</div><div class="sm" style="margin-top:1.8mm;color:#222">${r[1]}</div></div>`).join(''));
+</script>

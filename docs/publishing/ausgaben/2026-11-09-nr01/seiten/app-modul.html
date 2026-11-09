@@ -1,28 +1,29 @@
-<section class="page dark">
-  <div class="bleed glow" data-bleed style="background:radial-gradient(ellipse at 50% 62%,rgba(200,245,49,.30) 0%,rgba(200,245,49,0) 58%)"></div>
+<section class="page" style="background:#f4f5f0">
+  <div class="glowimg" data-bleed style="left:-20mm;right:-20mm;top:70mm;height:150mm;opacity:.9"></div>
   <div class="pad" style="inset:12mm 12mm 12mm">
     <div style="display:flex;justify-content:space-between;align-items:center">
-      <img src="{{root}}docs/design/redesign-2027/img/vu-logo.png" style="height:5mm;filter:invert(1)" alt="Vision Universe">
-      <span class="pillsoon"><i></i>App bald verfügbar</span>
+      <img src="{{root}}docs/design/redesign-2027/img/vu-logo.png" style="height:5mm" alt="Vision Universe">
+      <span class="pillsoon" style="color:#000;border-color:#000"><i></i>App bald verfügbar</span>
     </div>
-    <div style="font-size:44pt;font-weight:900;letter-spacing:-.055em;line-height:.9;margin-top:9mm;text-align:center">Investieren mit <span style="color:var(--lime)">Weitblick.</span></div>
-    <div style="font-size:15pt;font-weight:800;text-align:center;margin-top:2.5mm">Fünf Werkzeuge. Eine App. Über 5.600 US-Aktien.</div>
+    <div style="font-size:44pt;font-weight:900;letter-spacing:-.055em;line-height:.9;margin-top:9mm;text-align:center">Investieren mit <span style="background:var(--lime);padding:0 2mm">Weitblick.</span></div>
+    <div style="font-size:14pt;font-weight:700;text-align:center;margin-top:3.5mm;color:#333">Aktien finden, prüfen und verstehen. Alles in einer App.</div>
     <div class="appreihe" data-k="app-reihe"></div>
-    <div style="position:absolute;left:0;right:0;bottom:44mm;display:grid;grid-template-columns:repeat(4,1fr);gap:4mm">
-      <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:17pt;font-weight:900">5.600+</div><div class="xs" style="color:#bdbdbd">US-Aktien, jeden Abend neu berechnet</div></div>
-      <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:17pt;font-weight:900">10 Jahre</div><div class="xs" style="color:#bdbdbd">Geschäftszahlen aus der SEC</div></div>
-      <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:17pt;font-weight:900">13</div><div class="xs" style="color:#bdbdbd">Methoden bekannter Trader als Regeln</div></div>
-      <div style="border-top:2px solid var(--lime);padding-top:2mm"><div style="font-size:17pt;font-weight:900">119</div><div class="xs" style="color:#bdbdbd">Fonds mit ausgewerteten 13F-Meldungen</div></div>
+    <div style="position:absolute;left:0;right:0;bottom:42mm;display:grid;grid-template-columns:repeat(4,1fr);gap:4mm">
+      <div style="border-top:2px solid #000;padding-top:2mm"><div style="font-size:17pt;font-weight:900">5.600+</div><div class="xs mu">US-Aktien, jeden Abend neu berechnet</div></div>
+      <div style="border-top:2px solid #000;padding-top:2mm"><div style="font-size:17pt;font-weight:900">10 Jahre</div><div class="xs mu">Geschäftszahlen aus der SEC</div></div>
+      <div style="border-top:2px solid #000;padding-top:2mm"><div style="font-size:17pt;font-weight:900">13</div><div class="xs mu">Methoden bekannter Trader als Regeln</div></div>
+      <div style="border-top:2px solid #000;padding-top:2mm"><div style="font-size:17pt;font-weight:900">119</div><div class="xs mu">Fonds mit ausgewerteten 13F-Meldungen</div></div>
     </div>
-    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:26mm 1fr;gap:6mm;align-items:center;border-top:1px solid #2a2a2a;padding-top:5mm">
-      <img src="img/qr-web.svg" style="width:26mm;height:26mm;border-radius:3px" alt="QR-Code www.visionuniverse.de">
+    <div style="position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:26mm 1fr;gap:6mm;align-items:center;background:#000;color:#fff;border-radius:4mm;padding:4mm 5mm">
+      <img src="img/qr-web.svg" style="width:24mm;height:24mm;border-radius:3px" alt="QR-Code www.visionuniverse.de">
       <div>
         <div style="font-size:15pt;font-weight:900">App-Start nicht verpassen.</div>
-        <div class="sm" style="color:#bdbdbd;margin-top:1mm">Newsletter auf <b style="color:#fff">www.visionuniverse.de</b> abonnieren · Instagram und TikTok: <b style="color:#fff">@app.visionuniverse</b> · Beispielansichten, anderer Datenstand</div>
+        <div class="sm" style="color:#d6d6d6;margin-top:1mm">Newsletter auf <b style="color:#fff">www.visionuniverse.de</b> · Instagram und TikTok: <b style="color:var(--lime)">@app.visionuniverse</b></div>
+        <div class="xs" style="color:#9a9a9a;margin-top:1mm">Echte Ansichten aus der App, Datenstand 09.11.2026</div>
       </div>
     </div>
   </div>
 </section>
 <script>
-VUM.k('app-reihe',()=>[['discover','Discover','Aktien finden, verstehen, merken','app-d01-a'],['quant','Quant','Was sich heute verändert hat','app-q01-a'],['supertrader','Supertrader','Die Methoden der Profis als Regeln','app-st01-a'],['screener','Screener','Eigene Filter in einem Satz','app-s04-a'],['fundamental','Fundamental','Zehn Jahre Geschäftszahlen','app-f01-a']].map((r,i)=>`<div class="appkarte" style="transform:translateY(${[8,2,0,2,8][i]}mm) rotate(${[-4,-2,0,2,4][i]}deg)"><div class="phone"><img src="img/${r[3]}.jpg" alt="App: ${r[1]}"></div><div class="applabel"><svg class="pi"><use href="#${r[0]}"/></svg><div><b>${r[1]}</b><span>${r[2]}</span></div></div></div>`).join(''));
+VUM.k('app-reihe',()=>[['discover','Discover','Was bewegt die Börse heute?','live-discover'],['quant','Quant','Was hat sich heute verändert?','live-quant'],['fundamental','Fundamental','Wie gut ist das Geschäft?','live-fundamental'],['supertrader','Supertrader','Die Methoden der Profis als Regeln','live-supertrader'],['hedgefonds','Hedgefonds','Was große Fonds gemeldet haben','live-hedgefonds']].map((r,i)=>`<div class="appkarte" style="transform:translateY(${[8,2,0,2,8][i]}mm) rotate(${[-4,-2,0,2,4][i]}deg)"><div class="phone"><img src="img/${r[3]}.jpg" alt="App: ${r[1]}"></div><div class="applabel"><svg class="pi" style="color:#000;background:var(--lime);border-radius:1.4mm;padding:.8mm"><use href="#${r[0]}"/></svg><div><b style="color:#000">${r[1]}</b><span style="color:#555">${r[2]}</span></div></div></div>`).join(''));
 </script>

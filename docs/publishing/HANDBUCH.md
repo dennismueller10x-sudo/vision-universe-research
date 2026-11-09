@@ -45,25 +45,29 @@ Gewollter Anschnitt: Attribut `data-bleed`.
 
 ## 3. Heftaufbau
 
-Standard **24 Seiten**, bis **28** bei starker Nachrichtenlage (Nr. 01: 28). Immer durch 4 teilbar (Druck).
+Standard **24 Seiten**, bis **32** bei starker Nachrichtenlage (Nr. 01: 30). Gerade Seitenzahl; für Druck auf 4 teilbar machen.
+Jede Ausgabe hat **mindestens vier App-Seiten** im vollen Seitenformat (Owner 09.11.2026). Sie sagen klar, was Vision Universe
+ist: Analyse-Software für Aktien, die jeden Abend über 5.600 US-Aktien nach festen Regeln durchrechnet und in Klartext erklärt.
 
 | Seite | Rubrik |
 |---|---|
 | 1 | Cover |
-| 2 | App-Modul „Investieren mit Weitblick“: fünf iPhones mit Discover, Quant, Supertrader, Screener, Fundamental (fest) |
+| 2 | **App 1** „Investieren mit Weitblick“: fünf iPhones mit Live-Screens (Discover, Quant, Fundamental, Supertrader, Hedgefonds), Kennzahlen, QR |
 | 3 | Editorial und Inhalt |
 | 4–5 | Das war die Woche, Zahlen der Woche |
 | 6–13 | Titelthema: Auftakt mit Story, Daten, 4–6 Aktienseiten (Vorlage `aktie`), Lesarten und Termine |
-| 14–15 | Zwei Einzelanalysen (Vorlage `aktie`) |
-| 16–17 | Berichtssaison: größte Anstiege und Rückgänge |
-| 18–19 | Hedgefonds-Radar |
-| 20–22 | Chart der Woche, Screening, Markt-Radar |
-| 23–25 | Konjunktur, Deutschland und Europa, Termine |
-| 26 | Quick-Check mit Newsletter-Kasten |
-| 27 | Impressum, Hinweise, Quellen |
-| 28 | Rückseite: App |
+| 14 | **App 2** „Was ist Vision Universe?“: Daten, Regeln, Klartext; für wen |
+| 15–16 | Zwei Einzelanalysen (Vorlage `aktie`) |
+| 17–18 | Berichtssaison: größte Anstiege und Rückgänge |
+| 19–20 | Hedgefonds-Radar |
+| 21–23 | Chart der Woche, Screening, Markt-Radar |
+| 24 | **App 3** „Die Werkzeuge hinter diesem Heft“ (Technical, Hedgefonds, Fundamental) |
+| 25–27 | Konjunktur, Deutschland und Europa, Termine |
+| 28 | Quick-Check mit Newsletter-Kasten |
+| 29 | Impressum, Hinweise, Quellen |
+| 30 | **App 4** Rückseite |
 
-Für 24 Seiten: Titelthema auf 4 Aktien kürzen, Szenarien-Seite und eine Einzelanalyse weglassen.
+Für 24 Seiten: Titelthema auf 4 Aktien kürzen, Szenarien-Seite und eine Einzelanalyse weglassen; die vier App-Seiten bleiben.
 
 ## 4. Wöchentlicher Ablauf
 
@@ -90,7 +94,14 @@ Für 24 Seiten: Titelthema auf 4 Aktien kürzen, Szenarien-Seite und eine Einzel
 
   Negativ: `text, letters, numbers, logo, watermark, cartoon, dark, gloomy, low-key, night, storm, face, recognizable person`.
 - KI-Bilder tragen „KI-Bild“; keine echten Personen, keine fremden Logos im Bild. Charts nur aus Daten (`charts.js`).
-- App-Seiten nur mit echten Screens aus `docs/design/redesign-2027` (Aufnahme: siehe `img/app-*.jpg`), keine Screens mit persönlichen Daten oder Empfehlungswörtern.
+- **Gestaltung hell (Owner 09.11.2026):** Grundton Weiß und Hellgrau `#f4f5f0`, Neongrün als Fläche erlaubt; schwarze Seiten
+  sparsam (Rückseite, einzelne Kästen).
+- App-Seiten nur mit echten Screens der neuen App (`docs/design/redesign-2027`). Aufnahme `img/live-*.jpg`: lokalen Server im
+  Repo starten (`python3 -m http.server`), Seite in Playwright mit iPhone-Größe (390 × 844, Faktor 3) öffnen, Bildschirmfoto.
+  Nur Screens mit echten Daten (keine „Daten nicht verfügbar“), ohne persönliche Daten und ohne Empfehlungswörter.
+- **PDF-sicher gestalten:** keine halbtransparenten `radial-gradient`- oder großen, weichgezeichneten `box-shadow`-Flächen. Manche
+  PDF-Betrachter (iOS, Vorschau) zeigen sie als grüne oder graue Rechtecke. Leuchten nur als Bild (`.glowimg`, Datei
+  `system/glow-lime.png`), iPhones mit Rand statt Schatten.
 - Bildaufträge laufen über den Workflow „Brand Media · Higgsfield Bilder“ und müssen auf `main` liegen; je Gruppe ist nur ein wartender Lauf möglich.
 
 ## 6. Regeln
