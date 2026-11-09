@@ -191,35 +191,6 @@
   function nameOf(p) { return cleanName(p.name || NAMES[p.ticker]) || p.ticker; }
   function pctW(w) { return isNum(w) ? U.num(w * 100, 1) + " %" : "–"; }
   function stockHref(t) { return "/aktie/" + encodeURIComponent(t); }
-  function label() { return '<p class="pf-label">' + U.glyph("check", 14) + "<span>" + LABEL + "</span></p>"; }
-  function perfLine(d) {
-    if (d.pending) return '<span class="pf-perf vu-xs vu-mu">startet am ' + dDe(d.liveSince) + ", erste Werte folgen</span>";
-    if (d.perf) return '<span class="pf-perf">' + U.chg(d.perf.pct, { digits: 1 }) + '<span class="vu-xs vu-mu">seit ' + dDe(d.perf.since) + "</span></span>";
-    return '<span class="pf-perf vu-xs vu-mu">Depot-Wertentwicklung noch nicht veröffentlicht</span>';
-  }
-  function card(d) {
-    var meta = d.pending ? "" : '<span><b class="vu-num">' + d.positions.length + "</b> Positionen</span><span>Stand " + dDe(d.asOf) + "</span>";
-    return '<a class="pf-card" href="' + esc(href(d)) + '"><span class="pf-card__top"><b class="pf-card__name">' + esc(d.name) + "</b>" + U.glyph("next", 16) + "</span>" +
-      (d.by ? '<span class="pf-card__by">' + esc(d.by) + "</span>" : "") +
-      '<span class="pf-card__method">' + esc(d.method) + "</span>" +
-      '<span class="pf-card__meta">' + meta + "</span>" + perfLine(d) + "</a>";
-  }
-  function overview(all, groupId) {
-    var groups = GROUPS.filter(function (g) { return !groupId || g.id === groupId; });
-    var tabs = '<nav class="vu-chips pf-tabs" aria-label="Depotgruppe">' + [{ id: "", label: "Alle " + all.length }].concat(GROUPS.map(function (g) { return { id: g.id, label: g.label + " " + all.filter(function (d) { return d.group === g.id; }).length }; })).map(function (t) {
-      var on = (groupId || "") === t.id;
-      return '<a class="vu-chip" href="#/' + t.id + '"' + (on ? ' aria-current="page"' : "") + ">" + esc(t.label) + "</a>";
-    }).join("") + "</nav>";
-    return '<header class="pf-intro"><p class="vu-ltag">Portfolios</p><h1 class="vu-lt">Alle Musterdepots</h1>' +
-      '<p class="vu-lead">Jedes Depot nimmt Aktien streng nach seiner Methode auf und gibt sie nach Regel wieder ab. So sieht man, was eine Methode tut, nicht, was du tun solltest.</p>' + label() + "</header>" + tabs +
-      groups.map(function (g) {
-        var list = all.filter(function (d) { return d.group === g.id; });
-        return '<section class="pf-sec" aria-labelledby="pf-g-' + g.id + '">' + '<div class="vu-sect"><h2 id="pf-g-' + g.id + '">' + esc(g.title) + "</h2></div>" +
-          '<p class="vu-sm vu-mu pf-glead">' + esc(g.lead) + "</p>" +
-          '<div class="pf-grid">' + (list.length ? list.map(card).join("") : U.blank("Diese Depots sind gerade nicht verfügbar.", { verdict: false })) + "</div></section>";
-      }).join("") +
-      U.help("Wertentwicklung zeigen wir nur ab dem Start des Depots (vorwärts) und nur, wenn der Erzeuger sie veröffentlicht. Ergebnisse aus Rückrechnungen (Backtests) zeigen wir hier nicht.") + foot(null);
-  }
   /* ---------------------------------------------------------------- Methodenbild (rein, festes Bild, kein Fachmodell)
      Konzept mein-bereich-2026-11, Entscheidung 5: Weinstein vier Phasen (Phase 2 hervorgehoben), Darvas Kisten,
      Turtle Kanal, Quant Profil; andere Methoden die schlichte Variante mit Name und Satz (artKind „plain“). */
@@ -236,36 +207,38 @@
   function artKind(d) { return d.group === "quant" && QUANT_PROFILE[d.id] ? "quant" : ART_OF[d.key] || "plain"; }
   function methodArt(kind, o) {
     var x = o || {}, dark = !!x.dark, w = x.width || 330, ink = dark ? "#fff" : "#000", base = dark ? "#1a1a1a" : "#f0f0f0", mute = "#8c8c8c", lime = "#c8f531";
+    /* Hell (Übersicht): Farben über Klassen, damit das Bild dem Theme folgt (portfolios.css .pf-art-*); dunkel (Kopf der Depotseite) fest. */
+    var cls = function (c) { return dark ? "" : ' class="' + c + '"'; };
     var svg = function (h, body, label) { return '<svg class="pf-art" width="' + w + '" height="' + h + '" viewBox="0 0 330 ' + h + '" role="img" aria-label="' + esc(label) + '" style="display:block;max-width:100%;height:auto">' + body + "</svg>"; };
-    var line = function (pts) { return '<path d="' + pts.map(function (p, i) { return (i ? "L" : "M") + p[0] + " " + p[1]; }).join(" ") + '" fill="none" stroke="' + ink + '" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'; };
-    var text = function (xx, y, t, on) { return '<text x="' + xx + '" y="' + y + '" text-anchor="middle" font-size="11" font-weight="800" fill="' + (on ? lime : mute) + '" font-family="Inter,sans-serif">' + esc(t) + "</text>"; };
+    var line = function (pts) { return '<path' + cls("pf-art-i") + ' d="' + pts.map(function (p, i) { return (i ? "L" : "M") + p[0] + " " + p[1]; }).join(" ") + '" fill="none" stroke="' + ink + '" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"/>'; };
+    var text = function (xx, y, t, on) { return '<text' + (on && !dark ? cls("pf-art-it") : "") + ' x="' + xx + '" y="' + y + '" text-anchor="middle" font-size="11" font-weight="800" fill="' + (on ? (dark ? lime : ink) : mute) + '" font-family="Inter,sans-serif">' + esc(t) + "</text>"; };
     if (kind === "weinstein") {
       var zones = [[0, 110, "Basis", 1], [110, 205, "Aufwärts", 2], [205, 265, "Top", 3], [265, 330, "Abwärts", 4]];
       return svg(104, zones.map(function (z) {
         var on = z[3] === 2;
-        return '<rect x="' + z[0] + '" y="0" width="' + (z[1] - z[0]) + '" height="84" rx="8" fill="' + (on ? lime : base) + '" opacity="' + (on ? (dark ? 0.25 : 0.35) : 1) + '"/>' + text((z[0] + z[1]) / 2, 100, z[3] + " · " + z[2], on);
+        return '<rect' + (on ? "" : cls("pf-art-b")) + ' x="' + z[0] + '" y="0" width="' + (z[1] - z[0]) + '" height="84" rx="8" fill="' + (on ? lime : base) + '" opacity="' + (on ? (dark ? 0.25 : 0.35) : 1) + '"/>' + text((z[0] + z[1]) / 2, 100, z[3] + " · " + z[2], on);
       }).join("") + line([[0, 70], [40, 66], [70, 72], [100, 64], [120, 58], [160, 38], [190, 26], [215, 18], [240, 22], [260, 16], [285, 30], [310, 50], [330, 66]]), "Vier Phasen nach Weinstein, das Musterdepot hält Phase 2, den Aufwärtstrend");
     }
     if (kind === "darvas") {
       var boxes = [[20, 52, 70, 22], [100, 34, 70, 22], [180, 16, 70, 22]];
       return svg(104, boxes.map(function (b, i) {
         var on = i === boxes.length - 1;
-        return '<rect x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '" rx="4" fill="' + (on ? lime : base) + '" opacity="' + (on ? 0.3 : 1) + '" stroke="' + (on ? lime : mute) + '" stroke-dasharray="' + (on ? "0" : "3 3") + '"/>';
+        return '<rect' + (on ? "" : cls("pf-art-b")) + ' x="' + b[0] + '" y="' + b[1] + '" width="' + b[2] + '" height="' + b[3] + '" rx="4" fill="' + (on ? lime : base) + '" opacity="' + (on ? 0.3 : 1) + '" stroke="' + (on ? lime : mute) + '" stroke-dasharray="' + (on ? "0" : "3 3") + '"/>';
       }).join("") + line([[0, 80], [20, 70], [40, 58], [60, 70], [85, 56], [100, 46], [125, 54], [150, 40], [170, 50], [190, 28], [215, 36], [240, 22], [260, 8], [300, 4]]) +
-        '<circle cx="260" cy="8" r="4.5" fill="' + lime + '" stroke="' + ink + '" stroke-width="1.6"/>' + text(55, 100, "Kiste", false) + text(135, 100, "Kiste", false) + text(215, 100, "Ausbruch", true), "Darvas-Kisten: Aufnahme beim Ausbruch aus der Kiste");
+        '<circle' + cls("pf-art-s") + ' cx="260" cy="8" r="4.5" fill="' + lime + '" stroke="' + ink + '" stroke-width="1.6"/>' + text(55, 100, "Kiste", false) + text(135, 100, "Kiste", false) + text(215, 100, "Ausbruch", true), "Darvas-Kisten: Aufnahme beim Ausbruch aus der Kiste");
     }
     if (kind === "turtle") {
       return svg(104, '<path d="M0 30 L120 30 L120 22 L330 22" fill="none" stroke="' + mute + '" stroke-width="1.6" stroke-dasharray="4 4"/>' +
         '<path d="M0 76 L150 76 L150 62 L330 62" fill="none" stroke="' + mute + '" stroke-width="1.6" stroke-dasharray="4 4"/>' +
         '<rect x="230" y="0" width="100" height="84" rx="8" fill="' + lime + '" opacity="' + (dark ? 0.2 : 0.3) + '"/>' +
         line([[0, 60], [30, 48], [60, 66], [90, 40], [120, 56], [150, 44], [180, 52], [210, 36], [230, 20], [260, 12], [300, 16], [330, 8]]) +
-        '<circle cx="230" cy="20" r="4.5" fill="' + lime + '" stroke="' + ink + '" stroke-width="1.6"/>' + text(80, 100, "Kanal der letzten 20 Tage", false) + text(280, 100, "Ausbruch", true), "Turtle-Kanal: Aufnahme, wenn der Kurs über das Hoch der letzten 20 Tage steigt");
+        '<circle' + cls("pf-art-s") + ' cx="230" cy="20" r="4.5" fill="' + lime + '" stroke="' + ink + '" stroke-width="1.6"/>' + text(80, 100, "Kanal der letzten 20 Tage", false) + text(280, 100, "Ausbruch", true), "Turtle-Kanal: Aufnahme, wenn der Kurs über das Hoch der letzten 20 Tage steigt");
     }
     if (kind === "quant") {
       var on = QUANT_PROFILE[x.profile] || [];
       return svg(104, FACTORS.map(function (f, i) {
         var hit = on.indexOf(f[0]) >= 0, h = hit ? 64 : 26, bx = 8 + i * 54;
-        return '<rect x="' + bx + '" y="' + (84 - h) + '" width="42" height="' + h + '" rx="7" fill="' + (hit ? lime : base) + '"/>' + text(bx + 21, 100, f[1], hit);
+        return '<rect' + (hit ? "" : cls("pf-art-b")) + ' x="' + bx + '" y="' + (84 - h) + '" width="42" height="' + h + '" rx="7" fill="' + (hit ? lime : base) + '"/>' + text(bx + 21, 100, f[1], hit);
       }).join(""), "Profil: betont " + on.map(function (k) { return FACTORS.filter(function (f) { return f[0] === k; })[0][1]; }).join(", "));
     }
     return "";
@@ -397,9 +370,65 @@
       chapters(d) +
       U.help(d.stops ? "Ungültig-Marke laut Methode: Schließt der Kurs darunter, gibt das Musterdepot die Aktie nach Regel ab. Ein Rechenpunkt, kein Kursziel und keine Order." : "Ein Musterdepot ist ein Rechenmodell. Es zeigt, was die Regel tut, keine echten Orders.") + foot(d) + "</div>";
   }
+  /* ---------------------------------------------------------------- Übersicht (Screen p-home) */
+  /* Quant-Profil in Alltagssprache (Titel der Karte); der Profilname steht als Fachname darüber. */
+  var QUANT_TITLE = {
+    "quality-compounder": "Verlässlich und wächst lange",
+    "momentum-leader": "Die stärksten Kurstrends",
+    "garp": "Wachstum zum fairen Preis",
+    "defensive-quality": "Ruhig und solide",
+    "value-momentum": "Günstig, und der Trend dreht"
+  };
+  var NEW_DAYS = 2; /* „neu“: aufgenommen am Stichtag oder in den zwei Handelstagen davor */
+  function weekdaysBetween(a, b) {
+    var x = new Date(String(a).slice(0, 10) + "T12:00:00Z"), y = new Date(String(b).slice(0, 10) + "T12:00:00Z"), n = 0;
+    if (isNaN(x) || isNaN(y) || x > y) return -1;
+    for (var d = new Date(x); d < y; d.setUTCDate(d.getUTCDate() + 1)) { var w = d.getUTCDay(); if (w && w !== 6) n++; }
+    return n;
+  }
+  /** Zahl der Positionen, die am Stichtag oder in den zwei Handelstagen davor aufgenommen wurden. */
+  function newCount(d) {
+    if (!d.asOf) return 0;
+    return d.positions.filter(function (p) { var k = p.since ? weekdaysBetween(p.since, d.asOf) : -1; return k >= 0 && k <= NEW_DAYS; }).length;
+  }
+  function cardTitle(d) {
+    if (d.group === "quant") return { fach: d.name, name: QUANT_TITLE[d.id] || d.name };
+    if (d.group === "supertrader") return { fach: d.fach || d.by || "", name: d.name };
+    return { fach: "KI-Depot", name: d.name };
+  }
+  function card(d) {
+    var t = cardTitle(d), kind = artKind(d), n = newCount(d);
+    var logos = d.positions.slice().sort(function (a, b) { return (b.weight || 0) - (a.weight || 0); }).slice(0, 5).map(function (p) { return U.logo(p.ticker); }).join("");
+    var foot = d.pending ? '<span class="vu-xs vu-mu pf-dpc__start">startet am ' + dDe(d.liveSince) + ", erste Werte folgen</span>"
+      : (logos ? '<span class="pf-dpc__logos">' + logos + "</span>" : "") + '<span class="vu-xs pf-dpc__n"><b>' + d.positions.length + (d.positions.length === 1 ? " Aktie" : " Aktien") + "</b></span>" +
+        (d.perf ? '<span class="pf-dpc__perf">' + U.chg(d.perf.pct, { digits: 1 }) + '<span class="vu-xs vu-mu">seit ' + esc(dmy(d.perf.since)) + "</span></span>" : "") +
+        (n ? '<span class="pf-new">' + n + " neu</span>" : !d.positions.length ? '<span class="vu-xs vu-mu">Stand ' + esc(dmy(d.asOf)) + "</span>" : "");
+    return '<a class="pf-dpc" href="' + esc(href(d)) + '"><span class="pf-dpc__h"><span><span class="vu-ltag">' + esc(t.fach) + "</span><b>" + esc(t.name) + '</b><span class="vu-xs vu-mu">' + esc(neutralText(d.method)) + "</span></span>" + U.glyph("next", 16) + "</span>" +
+      (kind !== "plain" ? '<span class="pf-dpc__art">' + methodArt(kind, { dark: false, width: 300, profile: d.id }) + "</span>" : "") +
+      '<span class="pf-dpc__f">' + foot + "</span></a>";
+  }
+  function overview(all, groupId) {
+    var groups = GROUPS.filter(function (g) { return !groupId || g.id === groupId; });
+    var count = function (id) { return all.filter(function (d) { return d.group === id; }).length; };
+    var asOf = maxDate(all.map(function (d) { return d.asOf; }));
+    var tabs = '<nav class="vu-chips pf-tabs" aria-label="Depotgruppe">' + [{ id: "", label: "Alle " + all.length }].concat(GROUPS.map(function (g) { return { id: g.id, label: g.label + " " + count(g.id) }; })).map(function (t) {
+      var on = (groupId || "") === t.id;
+      return '<a class="vu-chip" href="#/' + t.id + '"' + (on ? ' aria-current="page"' : "") + ">" + esc(t.label) + "</a>";
+    }).join("") + "</nav>";
+    var today = '<div class="pf-today"><p class="vu-ltag">Musterdepots' + (asOf ? " · Stand " + esc(dmy(asOf)) : "") + '</p><ul class="pf-today__n">' +
+      GROUPS.map(function (g) { return '<li><b class="vu-num">' + count(g.id) + "</b><span>" + esc(g.label) + "</span></li>"; }).join("") +
+      '</ul><p class="vu-xs pf-today__note">Wertentwicklung seit Start: erscheint, sobald belastbar.</p></div>';
+    return '<header class="pf-intro"><p class="vu-ltag">Portfolios</p><h1 class="vu-lt">Was die Regeln<br>gerade halten</h1>' +
+      '<p class="vu-lead">' + all.length + " Musterdepots. Jedes nimmt Aktien streng nach seiner Methode auf und gibt sie ab, ohne echtes Geld.</p></header>" + tabs + today +
+      groups.map(function (g) {
+        var list = all.filter(function (d) { return d.group === g.id; });
+        return '<section class="pf-sec" aria-labelledby="pf-g-' + g.id + '">' + '<div class="vu-sect"><h2 id="pf-g-' + g.id + '">' + esc(g.label) + "</h2>" + (groupId ? "" : '<a href="#/' + g.id + '">Alle ' + list.length + "</a>") + "</div>" +
+          '<div class="pf-grid">' + (list.length ? list.map(card).join("") : U.blank("Diese Depots sind gerade nicht verfügbar.", { verdict: false })) + "</div></section>";
+      }).join("") + foot(null);
+  }
   function foot(d) {
     return (U.legal("modelPortfolio") || "") +
-      '<p class="pf-foot">' + (d ? LABEL + ". Datenstand " + dDe(d.asOf) + ". " : "") + "Kurse: veröffentlichte Schlusskurse, split-bereinigt. Musterdepots sind Rechenmodelle ohne echtes Geld. Keine Anlageberatung, keine Empfehlung.</p>";
+      '<p class="pf-foot">' + LABEL + ". " + (d ? "Datenstand " + dDe(d.asOf) + ". " : "") + "Kurse: veröffentlichte Schlusskurse, split-bereinigt. Musterdepots sind Rechenmodelle ohne echtes Geld. Keine Anlageberatung, keine Empfehlung.</p>";
   }
   function render(all, hash) {
     var r = parseRoute(hash);
@@ -466,6 +495,6 @@
   }
 
   return { LABEL: LABEL, SRC: SRC, GROUPS: GROUPS, KI_START: KI_START, collect: collect, fromSupertrader: fromSupertrader, fromTrend52: fromTrend52, fromHouse: fromHouse,
-    fromQuant: fromQuant, fromKi: fromKi, validKi: validKi, groupedLog: groupedLog, parseRoute: parseRoute, methodArt: function (k, o) { U = U || root.VUUI; return methodArt(k, o); }, artKind: artKind,
+    fromQuant: fromQuant, fromKi: fromKi, validKi: validKi, groupedLog: groupedLog, parseRoute: parseRoute, newCount: newCount, methodArt: function (k, o) { U = U || root.VUUI; return methodArt(k, o); }, artKind: artKind,
     allocation: allocation, posChart: posChart, render: function (all, hash) { U = U || root.VUUI; return render(all, hash); }, start: start, NAMES: NAMES };
 });
