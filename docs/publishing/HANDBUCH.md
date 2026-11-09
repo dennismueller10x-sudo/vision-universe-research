@@ -140,27 +140,37 @@ Für 24 Seiten: Titelthema auf 4 Aktien kürzen, Szenarien-Seite und eine Einzel
 
 Bekannt: Der Kerntest `core/tests/stock-availability.test.mjs` scheitert derzeit auch auf `main` (datenabhängig, nicht Publishing).
 
-## 8. Insights und Reports (Tagesartikel)
+## 8. Insights: Artikel, Aktienmagazin, Reports
 
-Owner-Entscheidung 09.11.2026: kein Newsticker, sondern **ein bis zwei Themenartikel am Tag** (ein großer Wert, ein
-Nebenwert oder ein Zukunftsthema), jeweils mit dem Teil, den nur Vision Universe hat: „Was unsere Daten zeigen“.
-Die Artikel sind frei lesbar, für Google und KI-Suchen gebaut (statisches HTML, `NewsArticle`-JSON-LD, Sitemap
-`/insights/sitemap.xml`, RSS `/insights/feed.xml`) und Rohstoff für Reels, X, TikTok und das Wochenheft.
+Owner-Entscheidungen 09.11.2026: kein Newsticker, sondern **ein bis zwei Themenartikel am Tag** (ein großer Wert, ein
+Nebenwert oder ein Zukunftsthema), jeweils mit dem Teil, den nur Vision Universe hat: „So zeigt Vision Universe …“ mit
+echten App-Screens. Unter `/insights/` stehen die Artikel, das **Aktienmagazin** (`/insights/magazin/`, online lesen und PDF)
+und die **Reports** (`/insights/reports/`, erst mit dem ersten fertigen Report gefüllt; das alte XPeng-Muster ist nicht mehr
+verlinkt, das alte `/magazin/` leitet auf das Aktienmagazin um).
+Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsArticle`-JSON-LD, Sitemap
+`/insights/sitemap.xml`, RSS `/insights/feed.xml`), Rohstoff für Reels, X, TikTok und das Wochenheft.
 
 **Ablauf je Artikel**
 
 1. Thema wählen (Anlass aus dem Tag), recherchieren, jede Zahl mit Quelle. Quellen kommen mit Adresse in `quellen`.
 2. `products/insights/artikel/<datum>-<slug>.json` anlegen (Vorlage: ein bestehender Artikel). Abschnitte als HTML-Absätze;
-   der Abschnitt mit `"daten": "<TICKER>"` bekommt den Datenkasten (Chart, Kennzahlen, Gesundheitscheck, 13F, Links in die App).
-3. Daten einfrieren: `node products/insights/snapshot.mjs products/insights/artikel/<datei>.json`. Ein Artikel zeigt immer den Stand
-   seines Erscheinens.
-4. Bild nach `insights/img/` (16:9, hell, Stil-Satz aus Abschnitt 5; bis neue Higgsfield-Motive da sind, Vorrat mit Aufhellung).
+   der Abschnitt mit `"daten": "<TICKER>"` bekommt danach den App-Teil (Kennzahlen-Kacheln, drei iPhones, Gesundheitscheck, 13F).
+3. Daten einfrieren: `node products/insights/snapshot.mjs <artikel.json>`, App-Screens aufnehmen:
+   `node products/insights/screens.mjs <artikel.json>` (Discover, Fundamental, Hedgefonds je Ticker, nach `insights/img/app/`).
+4. **Bilder mit Bezug statt Symbolbild** (Owner 09.11.2026): offizielles Pressematerial des Unternehmens oder Produkts
+   (Pressefotos, Artwork, Screenshots aus Presseseiten) mit Bildnachweis `quelle` („Bild: Rockstar Games“), sonst eigene
+   App-Screens; KI-Bilder nur, wenn es nichts Echtes gibt (`ki: true`, Hinweis „KI-Bild“). Keine Fotos von Privatpersonen.
+   Aufmacher 16:9 (1600 × 900), im Text `"bild"` je Abschnitt, Porträts mit `"stil": "portrait"`.
 5. Bauen: `node products/insights/build.mjs`; Prüfung: `node --test "products/insights/tests/*.test.mjs"` (aktuell gebaut,
-   Pflichtfelder, Quellen, Wortwahl, JSON-LD, Übersicht/Feed/Sitemap).
-6. Owner liest gegen und gibt frei (redaktionelle Verantwortung; damit gilt die Ausnahme von der KI-Kennzeichnungspflicht
-   für Texte, Art. 50 Abs. 4 KI-Verordnung). Der Hinweis „Mit KI-Unterstützung recherchiert und geschrieben, von der Redaktion
-   geprüft“ steht trotzdem unter jedem Artikel. KI-Bilder tragen „KI-Bild“.
-7. Reports: Eintrag in `products/insights/reports.json`, der Report selbst liegt unter `reports/<id>/`.
+   Pflichtfelder, Bildnachweise, Quellen, Wortwahl, JSON-LD, Magazin-Dateien, Übersicht/Feed/Sitemap vollständig).
+6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Unter jedem Artikel steht „Mit KI-Unterstützung
+   recherchiert und geschrieben, von der Redaktion geprüft“.
+
+**Heft online stellen:** `python3 products/insights/heft_veroeffentlichen.py docs/publishing/ausgaben/<ordner> <NN>`
+(PDF, verkleinerte Seitenbilder, Cover nach `insights/magazin/nr-<NN>/`), dann Eintrag mit Titel, Unterzeile und Inhalt in
+`products/insights/magazin.json` (neueste zuerst) und bauen.
+
+**Report veröffentlichen:** Report unter `reports/<id>/`, Eintrag in `products/insights/reports.json`, bauen.
 
 Regeln wie im Heft (Abschnitt 6). Zusätzlich: Privatpersonen, gegen die nur Vorwürfe bestehen, werden nicht namentlich
 genannt; Vorwürfe stehen im Konjunktiv mit Quelle, die Gegenseite kommt zu Wort.
