@@ -173,7 +173,7 @@ const VISUAL = [
   ['Quant', '/quant/#/aktie/NVDA', '.q-evo', 'Evidenz-Ueberblick der drei Stufen'],
   ['Quant', '/quant/#/aktie/NVDA', '.qx-change-tally', 'Bilanz der Veraenderungen'],
   ['Quant', '/quant/#/strategien/quality-compounder', '.qx-cmeters', 'Bedingungs-Balken "Wer passt heute?"'],
-  ['Technik', '/quant/#/aktie/NVDA/technik', '.cb-checks', 'Zaehlung "Warum dieses Bild?"'],
+  ['Technik', '/quant/#/aktie/NVDA/technik', '.cb-ew-none, .cb-story-r', 'Elliott auf der Aktie: Absage mit Wegen oder Lesart in drei Sätzen (Konzept EHV, EX03)'],
   ['Supertrader', '/supertrader/signals/', '.st-risk, .st-r-sfoot', 'Risiko der Modellposition als Zahl'],
   ['Screener', '/screener/?f=roic:gt:0.1', '.sc-counter', 'Anteil am Universum'],
   ['Vorsorge', '/vorsorge/#/', '.vs-chg', 'Richtungszeichen 1J'],
