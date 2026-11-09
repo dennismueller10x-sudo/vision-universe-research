@@ -107,7 +107,7 @@ Entwarnung; `missingEquityArtifacts` nennt nicht ladbare Quellen.
 
 ### Veröffentlichung durch Strang A
 
-Seit dem E8-Nachlauf (08.11.2026) erzeugt `pipeline-daily.yml`, Teil `datenqualitaet`, den Bericht täglich (Di–Sa 07:13 UTC, nach dem nächtlichen Kurslauf; auch per Dispatch `teil=datenqualitaet`). Er geht nur in den Datenzweig `data/live` (`core/registry/data-branch.json`, `BRANCH_ONLY`); Pages legt ihn beim Bau unter `/status/data-quality.json` ab. Nach `main` wird nichts committet (rund 560 KB je Bericht). Der vorige Bericht im Datenzweig ist der Vortag:
+Seit dem E8-Nachlauf (08.11.2026) erzeugt `pipeline-daily.yml`, Teil `datenqualitaet`, den Bericht täglich (Di–Sa 07:13 UTC, nach dem nächtlichen Kurslauf; auch per Dispatch `teil=datenqualitaet`). Er geht nur in den Datenzweig `data/live` (`core/registry/data-branch.json`, `BRANCH_ONLY`); Pages legt ihn beim Bau unter `/status/data-quality.json` ab. Nach `main` wird nichts committet (rund 560 KB je Bericht). Der Takt kommt vom Cloudflare-Wecker (`core/registry/schedule.json`, Eintrag `pipeline-daily-datenqualitaet`); der erste Lauf war am 09.11.2026 (Run 42585534846, 562 KB), seitdem ist die Datenart `releaseOnly` (`domains.json`) und ohne `pendingFirstRun` (`data-branch.json`). Der vorige Bericht im Datenzweig ist der Vortag:
 
 ```bash
 node scripts/core/data-quality.mjs --out=status/data-quality.json --previous=VORTAG.json
