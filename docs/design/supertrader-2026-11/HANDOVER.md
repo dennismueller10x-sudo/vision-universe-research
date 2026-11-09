@@ -56,6 +56,9 @@ Entscheidung 3 in `assets/site-navigation.js`; Core- und Supertrader-CI grün.
 - **PR 1 · Seitenhüllen:** `scripts/supertrader/build.mjs --pages-only` schreibt Titel und Beschreibung aller erzeugten Seiten (auch der noch ausgelieferten älteren Aktienseiten) aus dem veröffentlichten Stand neu, ohne eine Datei unter `supertrader/data` zu berühren.
 - **PR 1 · Farben:** Minus ist schwarz (dunkles Thema: grau), Kerzen und die Ungültig-Linie im Chart sind grau bzw. schwarz; der Test `st-recipe-wording.test.mjs` erkennt Rot über den Farbton, nicht über eine Liste.
 - **PR 1 · Browser:** Die Supertrader-CI prüft wie bisher in Chromium (`browser-qa.mjs`, neu mit Wortwahl-Prüfung); WebKit wird je PR lokal geprüft (Screenshots unter `abnahme/`), damit `ci.yml` als Nicht-Supertrader-Pfad unberührt bleibt.
+- **PR 2 · Musterdepots:** Die Folie markiert sieben Methoden mit „Musterdepot“, nennt aber „Fünf haben ein Musterdepot“; maßgeblich sind die fünf laufenden Musterdepots des Datenstands (Weinstein · Investor, Minervini · VCP, Darvas · Box, Turtle · 20 Tage, Kullamägi · Breakout), Weinstein · Trader und Turtle · 55 Tage tragen das Etikett nicht.
+- **PR 2 · Bausteine:** Namen in `supertrader/assets/st-names.js`, Ablauf-Leiste in `supertrader/assets/st-flow.js` (beide UMD, auch von `build.mjs` und den Tests gelesen); „Plan fertig“ ist im Musterdepot das Wort für den Zustand vor der Aufnahme (Schritt „Wartet“ der Leiste), so wie im Mockup bei IDT.
+- **PR 2 · Kartenbeschriftung:** Der Kasten im Chart heißt „Box laut Methode“ statt „Darvas-Box“, damit kein alter Methodenname in der Oberfläche steht.
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
