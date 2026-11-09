@@ -83,6 +83,10 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await ctx.addInitScript(()=>{window.__dv2Vitals={cls:0,longTasks:0,longTaskMs:0,shiftSources:[]};try{new PerformanceObserver(list=>list.getEntries().forEach(e=>{if(!e.hadRecentInput){window.__dv2Vitals.cls+=e.value;window.__dv2Vitals.shiftSources.push({value:e.value,sources:(e.sources||[]).map(s=>({node:s.node?.className||s.node?.tagName,previousRect:s.previousRect,currentRect:s.currentRect}))});}})).observe({type:'layout-shift',buffered:true});new PerformanceObserver(list=>list.getEntries().forEach(e=>{window.__dv2Vitals.longTasks++;window.__dv2Vitals.longTaskMs+=e.duration;})).observe({type:'longtask',buffered:true});}catch{}});
  const page=await ctx.newPage();const key=width+'-'+colorScheme+(engine==='webkit'?'-webkit':'');
  page.on('pageerror',e=>errors.push({key,message:e.message}));
+ /* Offene Abrufe der Seite zählen: Ein Hash-Wechsel wartet in Playwright nicht auf networkidle, ein reload direkt danach bricht
+    laufende Abrufe ab (WebKit meldet sie als Seitenfehler „access control checks“). Vor jedem reload erst ruhig werden lassen. */
+ const inflight=new Set();page.on('request',r=>inflight.add(r));page.on('requestfinished',r=>inflight.delete(r));page.on('requestfailed',r=>inflight.delete(r));
+ const quiet=async()=>{const end=Date.now()+15000;let since=0;while(Date.now()<end){if(inflight.size===0){if(!since)since=Date.now();else if(Date.now()-since>=400)return;}else since=0;await page.waitForTimeout(50);}};
  const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
  const entryStarted=Date.now();await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor({state:'visible'});
  // Measure the cold Home entry before unrelated settings, theme and reload checks.
@@ -266,6 +270,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
      Laden konnte so wieder ueberschrieben werden. Erst NVDA zeichnen und ausstehende Aufgaben abwarten, dann leeren und frisch laden. */
   await navigate(page,base+'/discover/#/s/US_REAL/NVDA',{waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-ep').first().waitFor();
   await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>setTimeout(r,50))));
+  await quiet();
   await page.evaluate(()=>{try{localStorage.removeItem('vu-discover-chapters-v1');}catch(e){}});
   await page.reload({waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-story').waitFor();
   await page.waitForFunction(()=>document.querySelectorAll('.dv3-titel .dv3-ep').length===7);
@@ -277,7 +282,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.equal(await page.locator('.dv3-rowctx, .dv3-endcard').count(),0,'No onward bar without origin');
   assert(/\$/.test(await page.locator('.dx-chart-hero-preis > b').first().innerText()),'Head price in dollars');
   await eps.nth(2).locator('summary').click();assert.equal(await eps.nth(2).getAttribute('open'),'');await screenshot(page,key+'-stock-chapter');
-  await navigate(page,base+'/discover/#/s/US_REAL/NVDA?reihe=langfristige-compounder',{waitUntil:'networkidle'});await page.reload({waitUntil:'networkidle'});
+  await navigate(page,base+'/discover/#/s/US_REAL/NVDA?reihe=langfristige-compounder',{waitUntil:'networkidle'});await page.locator('.dv3-titel').first().waitFor();await quiet();await page.reload({waitUntil:'networkidle'});
   await page.locator('.dv3-rowctx').waitFor();assert(/\d+ von \d/.test(await page.locator('.dv3-rowctx').innerText()),'Row position');
   await page.locator('.dv3-endcard').scrollIntoViewIfNeeded();await screenshot(page,key+'-stock-from-row');
   const nh=await page.locator('.dv3-endcard .dv3-endcard-a a').first().getAttribute('href');assert(/\?reihe=langfristige-compounder$/.test(nh),'Next keeps the row: '+nh);
