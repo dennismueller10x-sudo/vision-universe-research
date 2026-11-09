@@ -201,3 +201,7 @@ body.dv2 .dv2-stock:has(.dv3-titel) .dv2-dm>summary:before{content:none}
 .dv3-ep-body .vu-box.vu-box--lime{background:var(--vu-lime,#c8f531);color:#000}
 body.dv2 .dv3-titel .dv3-checks li{align-items:flex-start;padding:5px 0;border-top:0;font-weight:500;line-height:1.4}
 body.dv2 .dv3-titel .dv3-checks li:before{content:"✓";display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--vu-lime,#c8f531);color:#000;font-size:11px}
+/* 1T im Überblick: derselbe Kopf C04, Tagesverlauf in derselben Höhe wie 1J */
+body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-intraday{margin:12px 0 0}
+body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-intraday-chart{height:184px}
+@media(min-width:861px){body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-intraday-chart{height:260px}}
