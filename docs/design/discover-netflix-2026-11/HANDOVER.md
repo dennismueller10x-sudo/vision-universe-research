@@ -97,7 +97,10 @@ Weitere Lesarten, die beim Bauen auftauchen, entscheidet Claude nach der Präsen
 - Reiter der Reihe: „Abstand · Umsatz · Name“ wie im Mockup (Reihen mit SEC-Regel sortieren zweitens nach Umsatz).
 
 **PR 5 · Aktienseite „Überblick“**
-- Der Kopf nennt den Kurs und die Veränderung des gewählten Zeitraums in Dollar (Vorgabe 1J), der Euro-Wert steht klein darunter; die Pille ist neongrün oder schwarz. Statt der Tagesbewegung des Mockups bleibt die Zeitraum-Veränderung, weil die Zeitleiste des Charts sie benennen muss (Browser-QA „chart range updates“); sie ist in Dollar derselbe Jahreswert wie in Story und Kapitel 1.
+- Aktienkopf wie C04 (Nachbesserung 09.11.2026, nach Stichprobe des Owners): eine Zeile mit Kurs in Dollar, Tagesbewegung als Pille (neongrün oder schwarz) und rechts „Schluss …“ und Euro-Wert; der Chart des Überblicks hat keine Kursachse und nennt nur Anfangs- und Enddatum, die Zeitleiste ist die graue Pille. Die frühere Lesart (Zeitraum-Veränderung im großen Chartkopf) wich sichtbar vom Mockup ab und ist zurückgenommen; der gewählte Zeitraum steht an der Datumsachse und für Bildschirmleser im Kopf.
+- „Schluss Freitag“ statt „Schluss Fr. 06.11.“: der Text kommt aus dem Frische-Vertrag der Tagesreihe (zeigt auch „nicht aktuell“), deshalb bleibt seine Wortwahl.
+- Im Kopf steht ein Merken-Knopf (Herz) wie im Mockup; das zweite Lesezeichen derselben Watchlist ist im Überblick ausgeblendet.
+- „Alle ›“ an „Kapitel“ (klappt alle auf), an „… steht in N Reihen“ (Alle Reihen) und „Alle N“ an „Gleiches Thema“ (Themenreihe); „Mehr wie …“ und „Niedrigere Bewertung im Sektor“ bekommen keinen „Alle“-Link, weil es dafür keine eigene Seite gibt.
 - Story „Kurs“: Urteil aus dem Abstand zum Jahreshoch (ab −20 % „Schwächer“, bis −5 % „Nah am Hoch“, sonst „Dazwischen“); „Bewertung“ aus der gelieferten Stufe gegen den Marktmedian.
 - Kapitel sind native `<details>` (Tastatur, Bildschirmleser); der Inhalt ist der bisherige Abschnitt ohne seine eigene Überschrift, offene Kapitel merkt sich das Gerät (`vu-discover-chapters-v1`).
 - Mini-Charts der Schienen „Mehr wie …“ kommen über `core/identity.js#securityIdForTicker` aus der kanonischen Kursreihe; die Karten von `discoverNext` tragen selbst keinen Verweis.
