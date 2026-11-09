@@ -48,3 +48,23 @@ test("TX03 Studio: darunter Befunde und Zonen wie auf der Chart-Seite", () => {
   assert.match(studio, /zoneTiles\(X\.levels\)/);
   assert.doesNotMatch(studio, /renderSignalCards|renderLevels/);
 });
+
+test("Entscheidung 8: Lernen ist ein Ort; #/akademie und #/assistent leiten weiter, Lektionen und Fragen behalten ihre Adresse", () => {
+  assert.equal(M.parseRoute("#/lernen").view, "learn");
+  assert.match(app, /\(r\.view === "academy" \|\| r\.view === "assistant"\) && !r\.id \? "#\/lernen" : null/);
+  assert.match(app, /if \(to\) \{ redirected = true; location\.replace\(to\); return; \}/, "Weiterleitung vor dem Seitenübergang");
+  assert.equal(M.parseRoute("#/akademie/struktur-1").view, "academy");
+  const learn = app.slice(app.indexOf("  function viewLearn(main"), app.indexOf("  function viewAssistant(main, route) {"));
+  for (const s of ["Charts lesen<br>lernen", "8 Lernpfade, 32 kurze Lektionen", "Weiter mit", "Lernpfade", "Eine Frage an den Chart", "#/screener?z="]) assert.ok(learn.includes(s), s);
+  const view = readFileSync("technical/academy/view.js", "utf8");
+  assert.doesNotMatch(view, /'#\/akademie'\)/, "Rückwege der Lektionen führen nach #/lernen");
+  /* Akademie-Inhalte bleiben unverändert (nur Darstellung). */
+  const c = JSON.parse(readFileSync("technical/academy/content.json", "utf8"));
+  assert.equal(c.paths.length, 8); assert.equal(c.lessons.length, 32);
+});
+
+test("TX04 / Entscheidung 11: Muster mit Bild, Zahl und Richtung; „Hilft das Muster?“ mit Urteil und Etikett Forschung", () => {
+  const muster = app.slice(app.indexOf("  function musterTab(slot) {"), app.indexOf("  function indicatorTab(slot, familie) {"));
+  for (const s of ["Heute im Markt", "Hilft das Muster?", "Forschung, nicht zertifiziert", "\"Belegt\"", "\"Kein Vorteil\"", "\"Gegen die Lesart\"", "mgCell("]) assert.ok(muster.includes(s), s);
+  assert.match(app, /Was die Formen<br>im Chart bedeuten/);
+});

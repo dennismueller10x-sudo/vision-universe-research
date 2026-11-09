@@ -231,7 +231,7 @@
       glyph("chevron", "tc-chev")
     ]);
   }
-  var MAIN_TABS = [["home", "#/", "Technical"], ["build", "#/screener", "Screener"], ["templates", "#/screener?reiter=vorlagen", "Vorlagen"], ["assistant", "#/assistent", "Assistent"], ["academy", "#/akademie", "Akademie"], ["method", "#/muster", "Muster"]];
+  var MAIN_TABS = [["home", "#/", "Technical"], ["build", "#/screener", "Screener"], ["templates", "#/screener?reiter=vorlagen", "Vorlagen"], ["learn", "#/lernen", "Lernen"], ["method", "#/muster", "Muster"]];
   function sectionHead(title, href, linkText) {
     return el("div", { class: "tc-sec-head" }, [el("h2", { text: title }), href ? el("a", { href: href, class: "tc-more" }, [linkText || "Alle", glyph("chevron", "tc-chev-s")]) : null]);
   }
@@ -378,7 +378,7 @@
     var fresh = el("div", { class: "tc-rail", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:190px;width:240px;flex:none" })]);
     var freshHead = rh("Heute neu im Chart", null, null, "Muster, die sich zuletzt gebildet oder aufgelöst haben.");
     var searches = el("div", { class: "tc-rail" }), grid = el("div", { class: "tc-mgrid" }), foot = el("div");
-    var learn = el("a", { class: "tc-learn", href: "#/akademie" }, [hudGlyph("book", 42), el("span", { class: "tc-learn-t" }, [el("b", { text: "Chart lesen in 4 Lektionen" }), el("span", { class: "tc-learn-s", text: "Kurskerze, Struktur, Unterstützung und Widerstand" })]), h(U.glyph("next", 18))]);
+    var learn = el("a", { class: "tc-learn", href: "#/lernen" }, [hudGlyph("book", 42), el("span", { class: "tc-learn-t" }, [el("b", { text: "Chart lesen in 4 Lektionen" }), el("span", { class: "tc-learn-s", text: "Kurskerze, Struktur, Unterstützung und Widerstand" })]), h(U.glyph("next", 18))]);
     put(main, [head, searchSlot, chips, market, freshHead, fresh, rh("Fertige Suchen", "#/screener?reiter=vorlagen", "Alle 13", "Tipp öffnet die Treffer im Screener."), searches,
       rh("Muster heute im Markt", "#/muster", "Alle", "So viele Aktien zeigen das Muster."), grid, rh("Lernen"), learn, foot]);
     loadIndex().then(function (X) {
@@ -970,8 +970,52 @@
   /* Ziel waehlen -> Zweck -> Kriterien (an/aus, Begriffe erklaert) -> Abfrage sichtbar und im Screener bearbeitbar
      -> Treffer mit Checkliste -> Chart Studio mit Pruefleiste -> Grenzen und Evidenz-Ebenen. Gerechnet wird nur
      mit templates.js#evaluate auf den Praedikaten von technical-query.js. */
+  /* ------------------------------------------------------- Lernen (TX05) */
+  /* Anzeige-Namen und Sätze der acht Lernpfade (Vorlage c-lernen); Inhalte und Lektionen bleiben in academy/content.json. */
+  var PATH_PLAIN = {
+    struktur: ["Chart lesen", "Kurskerze, Struktur, Unterstützung und Widerstand", "range"], trend: ["Trendfolge", "200-Tage-Linie, relative Stärke", "trend"],
+    breakout: ["Ausbrüche", "Dreiecke, Bestätigung, Fehlausbrüche", "breakout"], momentum: ["Schwung", "RSI, MACD, Trend gegen Schwung", "pulse"],
+    risiko: ["Schwankung und Risiko", "ruhige und unruhige Phasen", "contraction"], wechsel: ["Trendwechsel", "Doppelboden, Kopf-Schulter", "reversal"],
+    zeitrahmen: ["Mehrere Zeitrahmen", "Tag, Woche, Monat", "clock"], routine: ["Eigene Routine", "in 10 Minuten durch einen Chart", "search"]
+  };
+  /* „Eine Frage an den Chart“: die Ziele des Analyse-Assistenten in Alltagsfragen; jede öffnet den Screener mit den Kriterien des Ziels. */
+  var GOAL_QUESTION = { trendfolge: "Welche Aktien sind im Aufwärtstrend?", ausbruch: "Wo gibt es einen Ausbruch?", momentum: "Welche Aktien laufen besser als der Markt?",
+    niveaus: "Wer steht an einer Unterstützung?", trendwende: "Wo dreht der Trend nach einem Rückgang?", ruhephase: "Welche Aktien bewegen sich gerade ruhig?",
+    zeitrahmen: "Zeigen Tag, Woche und Monat in dieselbe Richtung?" };
+  function viewLearn(main, focusReset) {
+    var AM = global.VUAcademyModel, slot = el("div", {}, el("div", { class: "tc-skel", style: "height:220px" }));
+    put(main, [el("header", { class: "tc-phead" }, [el("p", { class: "vu-ltag", text: "Lernen" }), el("h1", { class: "vu-lt", html: "Charts lesen<br>lernen" }),
+      el("p", { class: "vu-lead", text: "8 Lernpfade, 32 kurze Lektionen. Fortschritt bleibt auf diesem Gerät." })]), slot]);
+    fetchJSON("/technical/academy/content.json").then(function (c) {
+      var done = AM ? AM.read(store(), c) : [], resume = null;
+      try { resume = AM && AM.session(global.sessionStorage, c); } catch (e) { resume = null; }
+      var byId = {}; c.lessons.forEach(function (l) { byId[l.id] = l; });
+      var next = resume && byId[resume.id] ? byId[resume.id] : c.lessons.filter(function (l) { return done.indexOf(l.id) < 0; })[0] || c.lessons[0];
+      var path = c.paths.filter(function (p) { return p.id === next.pathId; })[0] || c.paths[0], idx = path.lessons.indexOf(next.id);
+      var pct = Math.round(done.length / c.lessons.length * 100);
+      var today = el("a", { class: "tc-today", href: "#/akademie/" + next.id }, [el("div", { class: "tc-today-h" }, [el("div", {}, [el("span", { class: "vu-ltag tc-ltag", text: "Weiter mit" }),
+        el("b", { text: (PATH_PLAIN[path.id] || [path.title])[0] + " · Lektion " + (idx + 1) }), el("span", { class: "tc-today-s", text: next.title })]), el("span", { class: "tc-go", "aria-hidden": "true" }, h(U.glyph("next", 18)))]),
+        el("div", { class: "tc-prog" }, el("i", { style: "width:" + pct + "%" })), el("span", { class: "tc-today-s", role: "status", text: done.length + " von " + c.lessons.length + " Lektionen" })]);
+      var paths = el("div", { class: "tc-lpg" }, c.paths.map(function (p) {
+        var pp = PATH_PLAIN[p.id] || [p.title, "", "book"], first = p.lessons.filter(function (k) { return done.indexOf(k) < 0; })[0] || p.lessons[0];
+        var n = p.lessons.filter(function (k) { return done.indexOf(k) >= 0; }).length;
+        return el("a", { href: "#/akademie/" + first, "data-path": p.id, "aria-label": pp[0] + ": " + n + " von " + p.lessons.length + " Lektionen" }, [hudGlyph(pp[2], 34), el("b", { text: pp[0] }), el("span", { text: pp[1] }),
+          el("div", { class: "tc-lp-d", "aria-hidden": "true" }, p.lessons.map(function (k) { return el("i", { class: done.indexOf(k) >= 0 ? "is-done" : null }); }))]);
+      }));
+      var goals = AS ? AS.list().filter(function (g) { return GOAL_QUESTION[g.id]; }) : [];
+      var reset = el("button", { type: "button", class: "tc-linkbtn", text: "Lokalen Fortschritt zurücksetzen", onclick: function () { if (!global.confirm("Alle lokalen Lektionsabschlüsse zurücksetzen?")) return; if (AM) AM.save(store(), c, []); viewLearn(main, true); } });
+      put(slot, [today, el("div", { class: "tc-st", text: "Lernpfade" }), paths,
+        AM && AM.outdated(store(), c) ? el("p", { class: "tc-note", role: "status", text: "Lerninhalte wurden überarbeitet. Abschlüsse geänderter Lektionen müssen erneut markiert werden." }) : null,
+        el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "/academy/", text: "← Vision Universe Academy" }), " · ", el("a", { class: "tc-link", href: "#/akademie/glossar", text: "Glossar" }), " · ", reset]),
+        goals.length ? el("div", { class: "tc-st", text: "Eine Frage an den Chart" }) : null,
+        goals.length ? el("div", { class: "vu-chips tc-asks" }, goals.map(function (g) { return el("a", { class: "vu-chip", href: "#/screener?z=" + encodeURIComponent(g.id), text: GOAL_QUESTION[g.id] }); })) : null,
+        goals.length ? h(U.help("Jede Frage öffnet den Screener mit passenden Regeln. Wie die Regeln gewählt sind, steht beim Ziel im Screener. Beispiele in den Lektionen sind konstruiert; keine Anlageempfehlung.")) : null,
+        footNote(null)]);
+      if (focusReset) reset.focus({ preventScroll: true });
+    }).catch(function () { put(slot, stateBox("Lerninhalte nicht geladen", "Die Lektionen konnten nicht geladen werden.", el("a", { class: "tc-link", href: "#/lernen", text: "Erneut versuchen" }))); });
+  }
   function viewAssistant(main, route) {
-    if (!AS) { put(main, [templateHead("#/", "Technical", null, "Analyse-Assistent", "Der Assistent ist derzeit nicht verfügbar."), tabs(MAIN_TABS, "assistant")]); return; }
+    if (!AS) { put(main, [templateHead("#/", "Technical", null, "Analyse-Assistent", "Der Assistent ist derzeit nicht verfügbar."), tabs(MAIN_TABS, "learn")]); return; }
     return route.id ? viewGoal(main, route) : viewGoalList(main);
   }
   function stepHead(n, title) { return el("h2", { class: "tc-step" }, [el("span", { class: "tc-step-n num", "aria-hidden": "true", text: String(n) }), el("span", { class: "tc-sr", text: "Schritt " + n + ": " }), title]); }
@@ -983,7 +1027,7 @@
         el("span", { class: "tc-row-text" }, [el("b", { text: g.title }), el("span", { text: g.question })]),
         glyph("chevron", "tc-chev")]);
     }));
-    put(main, [head, tabs(MAIN_TABS, "assistant"), stepHead(1, "Analyseziel wählen"), list,
+    put(main, [head, tabs(MAIN_TABS, "learn"), stepHead(1, "Analyseziel wählen"), list,
       el("p", { class: "tc-note", text: "Kein Ziel ist eine Handlungsempfehlung. Jede Ansicht nennt, was historisch untersucht ist und was nicht." })]);
   }
   function termDetails(id) {
@@ -992,9 +1036,9 @@
   }
   function viewGoal(main, route) {
     var g = AS.get(route.id);
-    if (!g) { put(main, [templateHead("#/assistent", "Assistent", null, "Analyseziel nicht gefunden", "Dieses Ziel gibt es nicht (mehr)."), tabs(MAIN_TABS, "assistant")]); return; }
+    if (!g) { put(main, [templateHead("#/lernen", "Lernen", null, "Analyseziel nicht gefunden", "Dieses Ziel gibt es nicht (mehr)."), tabs(MAIN_TABS, "learn")]); return; }
     var p = route.params || {}, sel = AS.selectionFromParam(g, p.k), showKey = SHOW[p.zeige] ? p.zeige : "voll", t = AS.build(g.id, sel);
-    var head = templateHead("#/assistent", "Assistent", "ANALYSEZIEL", g.title, g.question);
+    var head = templateHead("#/lernen", "Lernen", "ANALYSEZIEL", g.title, g.question);
     /* Schritt 2: Zweck und allgemein erklaerte Methodik */
     var purpose = el("section", { class: "tc-goal-sec", "aria-labelledby": "tc-g-purpose" }, [
       el("div", { id: "tc-g-purpose" }, stepHead(2, "Zweck")), el("p", { class: "tc-lead-s", text: g.purpose }),
@@ -1030,7 +1074,7 @@
     function jump(id, text) { return el("a", { class: "tc-pill", href: "#", onclick: function (ev) { ev.preventDefault(); var n = doc.getElementById(id); if (n) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, text: text }); }
     var chosen = el("div", { class: "tc-goal-chosen" }, [stepHead(1, "Ziel gewählt"), el("p", { class: "tc-note" }, [g.title + " · ", el("a", { class: "tc-link", href: "#/assistent", text: "anderes Ziel wählen" })]),
       el("nav", { class: "tc-pills tc-goal-jumps", "aria-label": "Abschnitte" }, [jump("tc-g-crit", "Kriterien"), jump("tc-g-query", "Abfrage"), jump("tc-treffer", "Treffer"), jump("tc-g-limits", "Grenzen")])]);
-    put(main, [head, tabs(MAIN_TABS, "assistant"), chosen, purpose, crit, query, results, limits]);
+    put(main, [head, tabs(MAIN_TABS, "learn"), chosen, purpose, crit, query, results, limits]);
     if (!t) {
       put(query, [el("div", { id: "tc-g-query" }, stepHead(4, "Abfrage")), stateBox("Kein Kriterium gewählt", "Bitte mindestens ein Kriterium auswählen.", el("a", { class: "tc-link", href: AS.href(g.id), text: "Vorschlag wiederherstellen" }))]);
       return;
@@ -1679,17 +1723,6 @@
 
   /* ----------------------------------------------------------- Muster (T05, frueher Methodik) */
   /* Heute im Markt: Gruppen aus meta.json#formations (Erkannt + Bestaetigt), Richtung aus formation-evidence.json#types[].direction. */
-  var MARKET_PATTERNS = [
-    ["Dreieck", "Kurs pendelt enger, dann Entscheidung", ["SYMMETRICAL_TRIANGLE", "ASCENDING_TRIANGLE", "DESCENDING_TRIANGLE"], "dreieck"],
-    ["Ausbruch aus Range", "Kurs verlässt eine Seitwärtsphase", ["RANGE_BREAKOUT"], "breakout"],
-    ["Doppelboden", "zweimal am selben Tief abgeprallt (W-Form)", ["DOUBLE_BOTTOM"], "doppelboden"],
-    ["Doppeltop", "zweimal am selben Hoch gescheitert (M-Form)", ["DOUBLE_TOP"], "doppeltop"],
-    ["Kopf-Schulter", "drei Gipfel, der mittlere am höchsten", ["HEAD_AND_SHOULDERS"], "sks"],
-    ["Kurslücke nach unten", "Eröffnung deutlich unter dem Vortagestief", ["GAP_DOWN"], "luecke"],
-    ["Kurslücke nach oben", "Eröffnung deutlich über dem Vortageshoch", ["GAP_UP"], "luecke"],
-    ["Flagge / Wimpel steigend", "kurze Pause nach starkem Anstieg", ["BULL_FLAG", "BULL_PENNANT"], "flagge"],
-    ["Tasse mit Henkel", "runder Boden, kleine Delle, dann Hoch", ["CUP_WITH_HANDLE"], "tasse"]
-  ];
   var FAMILY = [
     ["TREND", "Trend", "wohin der Kurs über Wochen läuft", "trend"], ["MOMENTUM", "Schwung", "wie stark der Kurs gerade drückt", "pulse"],
     ["VOLATILITY", "Schwankung", "wie unruhig der Kurs ist", "contraction"], ["VOLUME", "Volumen", "wie viele mitmachen", "bars"]
@@ -1731,7 +1764,7 @@
   function viewMethod(main, route) {
     var tab = (route && route.params && route.params.reiter) || "muster";
     if (["muster", "indikatoren", "regeln"].indexOf(tab) < 0) tab = "muster";
-    var head = pageHead(null, "Muster", "Was die Formen im Chart bedeuten und wie oft sie heute vorkommen.");
+    var head = el("header", { class: "tc-phead" }, [el("p", { class: "vu-ltag", text: "Muster" }), el("h1", { class: "vu-lt", html: "Was die Formen<br>im Chart bedeuten" })]);
     var tabsBar = h(U.seg([{ id: "muster", label: "Muster", href: "#/muster" }, { id: "indikatoren", label: "Indikatoren", href: "#/muster?reiter=indikatoren" }, { id: "regeln", label: "Regeln", href: "#/muster?reiter=regeln" }], tab, { label: "Muster-Ansicht" }));
     var slot = el("div", { class: "tc-method" }, [el("div", { class: "tc-skel", style: "height:200px" })]);
     put(main, [head, tabsBar, slot]);
@@ -1741,36 +1774,30 @@
       rulesTab(slot);
     }).catch(function () { put(slot, stateBox("Muster nicht geladen", "Die Engine-Dateien konnten nicht geladen werden.")); });
   }
+  /* Musterseite (Vorlage c-muster): Raster mit Bild, Zahl und Richtung; „Hilft das Muster?“ als Liste mit Urteil (Entscheidung 11). */
+  var MUSTER_GRID = [["Dreieck", ["SYMMETRICAL_TRIANGLE", "ASCENDING_TRIANGLE", "DESCENDING_TRIANGLE"], "dreieck", "dreieck"], ["Ausbruch aus Range", ["RANGE_BREAKOUT"], "range", "breakout"],
+    ["Doppelboden", ["DOUBLE_BOTTOM"], "doppelboden", "doppelboden"], ["Doppeltop", ["DOUBLE_TOP"], "doppeltop", "doppeltop"], ["Kopf-Schulter", ["HEAD_AND_SHOULDERS"], "kopf", "sks"],
+    ["Kurslücke nach oben", ["GAP_UP"], "luecke_up", "luecke"], ["Kurslücke nach unten", ["GAP_DOWN"], "luecke_dn", "luecke"], ["Flagge steigend", ["BULL_FLAG", "BULL_PENNANT"], "flagge", "flagge"]];
   function musterTab(slot) {
     Promise.all([fetchJSON(M.META_PATH), loadEvidence()]).then(function (r) {
-      var meta = r[0], E = r[1], counts = meta && meta.formations || {}, by = E ? E.byType : {};
-      function n(types) { return types.reduce(function (a, t) { return a + (counts[t + ":DETECTED"] || 0) + (counts[t + ":CONFIRMED"] || 0); }, 0); }
-      function dir(types) { var d = types.map(function (t) { return by[t] && by[t].direction; }); return d.every(function (x) { return x === "BULLISH"; }) ? "up" : d.every(function (x) { return x === "BEARISH"; }) ? "down" : "open"; }
-      var rows = MARKET_PATTERNS.map(function (m) {
-        var d = dir(m[2]);
-        return el("a", { class: "tc-prow", href: "#/screener?muster=" + m[3] }, [el("span", { class: "tc-row-text" }, [el("b", { text: m[0] }), el("span", { text: m[1] })]), el("strong", { class: "num", text: de(n(m[2])) }),
-          el("span", { class: "tc-dir is-" + d, "aria-label": d === "up" ? "deutet nach oben" : d === "down" ? "deutet nach unten" : "Richtung offen", text: d === "up" ? "▲" : d === "down" ? "▼" : "◆" })]);
-      });
-      var kids = [sect("Heute im Markt"), el("div", { class: "vu-box tc-plist" }, rows),
-        el("p", { class: "tc-note", text: "▲ deutet nach oben, ▼ nach unten, ◆ Richtung offen. Zahl = Aktien mit erkanntem oder bestätigtem Muster, Stand " + M.dateDe(meta.asOf) + "." })];
+      var meta = r[0], E = r[1], nTypes = E && E.doc ? E.doc.types.length : null;
+      var kids = [el("div", { class: "tc-st" }, ["Heute im Markt", nTypes ? el("a", { href: "#/muster?reiter=regeln", text: nTypes + " Muster" }) : null]),
+        el("div", { class: "tc-mgrid" }, MUSTER_GRID.map(function (m) { return mgCell("#/screener?muster=" + m[3], m[0], patternCount(meta, m[1]), patternDir(E, m[1]), m[2]); })),
+        h(U.help("▲ deutet nach oben, ▼ nach unten, ◆ Richtung offen. Zahl: Aktien mit dem Muster am " + (meta && meta.asOf ? dShort(meta.asOf) : "Stichtag") + "."))];
       if (E && E.doc) {
-        var d = E.doc, pub = d.types.filter(function (t) { return t.published; }), sig = pub.filter(function (t) { return t.significant && t.hitRate > 0.5; }).sort(function (a, b) { return b.n - a.n; })[0];
+        var d = E.doc, pub = d.types.filter(function (t) { return t.published; });
         var name = function (t) { return M.plain(Q.FORMATION_TYPES[t.type]) || t.type; };
         var verdictOf = function (t) { return t.significant ? (t.hitRate > 0.5 ? U.verdict("strong", "Belegt") : U.verdict("weak", "Gegen die Lesart")) : U.verdict("none", "Kein Vorteil"); };
-        var window = M.dateDe(d.window.from).slice(3) + "–" + M.dateDe(d.window.to).slice(3);
-        kids.push(sect("Hilft das Muster wirklich?"), h(U.research()));
-        if (sig) kids.push(el("div", { class: "vu-box vu-box--ink tc-evbig" }, [el("p", { text: name(sig) + ", " + d.method.horizonBars + " Tage danach" }),
-          el("p", { class: "tc-market-big" }, [el("b", { class: "num", text: de(sig.hitRate * 100) + " %" }), el("span", { text: "lagen vorn" })]), h(verdictOf(sig)),
-          el("p", { class: "tc-evfoot", text: sig.n.toLocaleString("de-DE") + " Fälle · " + window + " · ohne Kosten" })]));
-        kids.push(el("div", { class: "vu-stack" }, pub.filter(function (t) { return t !== sig; }).sort(function (a, b) { return b.n - a.n; }).slice(0, 4).map(function (t) {
-          return el("div", { class: "vu-box tc-evrow" }, [el("span", {}, [el("b", { text: name(t) }), el("small", { text: de(t.hitRate * 100, 1) + " % lagen vorn · " + t.n.toLocaleString("de-DE") + " Fälle" })]), h(verdictOf(t))]);
-        })), el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/muster?reiter=regeln", text: "Alle " + d.types.length + " Muster mit Belegen" })]),
-        h(U.help("„Lagen vorn“: die Aktie entwickelte sich in den " + d.method.horizonBars + " Handelstagen danach besser als der Durchschnitt aller Aktien (bei fallenden Mustern: schlechter).")));
+        /* Belegte zuerst, dann nach Fallzahl. */
+        var rows = pub.slice().sort(function (a, b) { return (b.significant && b.hitRate > 0.5) - (a.significant && a.hitRate > 0.5) || b.n - a.n; }).slice(0, 4);
+        kids.push(el("div", { class: "tc-st" }, ["Hilft das Muster?", el("a", { href: "#/muster?reiter=regeln", text: "Forschung" })]),
+          el("div", { class: "vu-box tc-hilft" }, rows.map(function (t) {
+            return el("div", { class: "tc-kvrow" }, [el("span", {}, [el("b", { text: name(t) }), el("small", { text: de(t.hitRate * 100, 1) + " % lagen vorn · " + t.n.toLocaleString("de-DE") + " Fälle · " + d.method.horizonBars + " Tage danach" })]), h(verdictOf(t))]);
+          })),
+          h(U.help("„Lagen vorn“: Anteil der Fälle, in denen die Aktie " + d.method.horizonBars + " Handelstage danach besser lief als der Durchschnitt (bei fallenden Mustern: schlechter). Forschung, nicht zertifiziert.")),
+          el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/muster?reiter=regeln", text: "Alle " + d.types.length + " Muster mit Belegen und Regeln" })]));
       }
-      kids.push(sect("Indikatoren in Worten"), el("div", { class: "vu-stack" }, FAMILY.map(function (f) {
-        return el("a", { class: "vu-navcard", href: "#/muster?reiter=indikatoren&familie=" + f[0].toLowerCase() }, [ico(f[3]), el("span", { class: "vu-navcard__text" }, [el("b", { text: f[1] }), el("span", { text: f[2] })]), glyph("chevron", "tc-chev")]);
-      })), sect("Regeln und Grenzen"), el("a", { class: "vu-navcard", href: "#/muster?reiter=regeln" }, [ico("search"), el("span", { class: "vu-navcard__text" }, [el("b", { text: "Daten, Zeitrahmen, Grenzen" }), el("span", { text: "Woher die Kurse kommen, was wir nicht können" })]), glyph("chevron", "tc-chev")]),
-        disclaimer(meta));
+      kids.push(footNote(meta && meta.asOf));
       put(slot, kids);
     }).catch(function () { put(slot, stateBox("Muster nicht geladen", "Die Musterzahlen konnten nicht geladen werden.")); });
   }
@@ -1877,7 +1904,10 @@
     /* Bausteine des Redesigns (vu-ui) gelten fuer Technical; die Akademie behaelt ihre eigene Typografie. */
     main.classList.toggle("vu-ui", route.view !== "academy");
     main.classList.toggle("is-home", route.view === "home");
+    /* Entscheidung 8: die Übersichten von Akademie und Assistent leiten auf „Lernen“; Lektionen und Fragen behalten ihre Adresse. */
+    if (redirectOf(location.hash)) { redirected = true; location.replace(redirectOf(location.hash)); return; }
     if (route.view === "home") { doc.title = "Technical · Vision Universe®"; viewHome(main); }
+    else if (route.view === "learn") { doc.title = "Lernen · Technical · Vision Universe®"; viewLearn(main); }
     else if (route.view === "academy") { global.VUAcademy.render(main, route.id); }
     else if (route.view === "screener") { doc.title = (route.tab === "templates" ? "Vorlagen" : route.tab === "saved" ? "Gespeichert" : "Screener") + " · Technical · Vision Universe®"; viewScreener(main, route); }
     else if (route.view === "chart") { doc.title = (route.ticker ? route.ticker + " · " : "") + (route.tab === "studio" ? "Chart Studio" : "Chart") + " · Technical · Vision Universe®"; viewChart(main, route); }
@@ -1898,7 +1928,16 @@
     lastView = key;
   }
   if (global.VUUI.bindIntent) global.VUUI.bindIntent(function (url) { if (url.origin !== location.origin || url.pathname !== "/technical/") return null; var r = M.parseRoute(url.hash); return r.view === "chart" ? r.ticker : null; }, loadInstrument);
-  global.addEventListener("hashchange", function () { return global.VUUI.transition ? global.VUUI.transition(onHash) : onHash(); });
+  /* Weiterleitungen (Entscheidung 8) vor dem Seitenübergang: sonst bricht der laufende Übergang ab. */
+  function redirectOf(hash) { var r = M.parseRoute(hash); return (r.view === "academy" || r.view === "assistant") && !r.id ? "#/lernen" : null; }
+  var redirected = false;
+  global.addEventListener("hashchange", function () {
+    var to = redirectOf(location.hash);
+    if (to) { redirected = true; location.replace(to); return; }
+    /* Das Ziel einer Weiterleitung erscheint ohne Übergang (ein sofortiger Seitenwechsel bräche ihn sonst ab). */
+    if (redirected) { redirected = false; return onHash(); }
+    return global.VUUI.transition ? global.VUUI.transition(onHash) : onHash();
+  });
   if (doc.readyState === "loading") doc.addEventListener("DOMContentLoaded", onHash); else onHash();
   global.VUTechnicalApp = { render: render };
 })(window);

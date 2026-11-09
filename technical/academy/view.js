@@ -25,7 +25,7 @@
   g.addEventListener('hashchange', function(){capture(true);});
   g.addEventListener('pagehide', function(){capture(false);});
   function store() { try { return g.localStorage; } catch (_) { return null; } }
-  function header(title) { return node('header', null, { class: 'tc-head' }, [link('← Technical', '#/'), node('h1', title, { class: 'tc-title', tabindex: '-1' })]); }
+  function header(title) { return node('header', null, { class: 'tc-head' }, [link('← Lernen', '#/lernen'), node('h1', title, { class: 'tc-title', tabindex: '-1' })]); }
   function figure(visual) {
     var fig = node('figure', null, { class: 'ta-figure' });
     if (visual.type === 'candle') {
@@ -66,18 +66,18 @@
       }); wrap.append(grid);
       wrap.append(link('Einheitliches Glossar', '#/akademie/glossar'));
     } else if (id === 'glossar') {
-      wrap.append(header('Glossar'),link('← Alle Lernpfade','#/akademie'));
+      wrap.append(header('Glossar'),link('← Alle Lernpfade','#/lernen'));
       content.glossary.forEach(function(t){ wrap.append(node('section',null,{id:'begriff-'+t.id},[node('h2',t.title),node('p',t.definition),sources(t.sources)])); });
     } else if (!lesson) {
-      wrap.append(header('Lektion nicht gefunden'),link('Zu den Lernpfaden','#/akademie'));
+      wrap.append(header('Lektion nicht gefunden'),link('Zu den Lernpfaden','#/lernen'));
     } else {
       var terms=node('div',null,{class:'ta-terms'});lesson.glossary.forEach(function(key){var t=content.glossary.find(function(x){return x.id===key;});terms.append(node('details',null,{},[node('summary',t.title),node('p',t.definition)]));});
       var path=content.paths.find(function(p){return p.id===lesson.pathId;}), index=path.lessons.indexOf(id);
-      D.title=lesson.title+' · Strategie-Akademie · Technical';
+      D.title=lesson.title+' · Lernen · Technical';
       var p=lesson.presentation, lab=g.VUAcademyVisuals && g.VUAcademyVisuals.render(p,lesson.id,resume && resume.id===id?resume.scene:null), pilot=!!lab;
       if(pilot){
         wrap.classList.add('ta-pilot');
-        wrap.append(node('nav',null,{'aria-label':'Lernpfad',class:'ta-breadcrumb'},[link('← Alle Lernpfade','#/akademie'),node('span',path.title+' · '+(index+1)+' / 4')]),node('header',null,{class:'ta-lesson-head'},[node('p','VISUELL LERNEN',{class:'ta-eyebrow'}),node('h1',lesson.title,{class:'tc-title',tabindex:'-1'}),node('p',lesson.question,{class:'ta-question'})]));
+        wrap.append(node('nav',null,{'aria-label':'Lernpfad',class:'ta-breadcrumb'},[link('← Alle Lernpfade','#/lernen'),node('span',path.title+' · '+(index+1)+' / 4')]),node('header',null,{class:'ta-lesson-head'},[node('p','VISUELL LERNEN',{class:'ta-eyebrow'}),node('h1',lesson.title,{class:'tc-title',tabindex:'-1'}),node('p',lesson.question,{class:'ta-question'})]));
         var goals=section('Dein Lernziel',[list(lesson.objectives)]);goals.className='ta-goals';
         var chart=section(p.visualHeading||'So sieht es im Chart aus',[lab]);chart.className='ta-visual-block';
         var basics=section('Was ist das?',[node('p',p.intro),node('details',null,{},[node('summary','Grundlagen und Begriffe vertiefen')].concat(lesson.foundations.map(function(s){return node('p',s);})).concat([terms]))]);basics.className='ta-basics';
@@ -85,7 +85,7 @@
         var mistake=section('Typischer Fehler',[node('p',p.mistake,{class:'ta-mistake'}),node('h3','Gegenbeispiel'),node('p',lesson.example.text),list(lesson.limits)]);mistake.className='ta-counterexample';
         wrap.append(chart,goals,basics,why,mistake);
       }else{
-        wrap.append(header(lesson.title),link('← Alle Lernpfade','#/akademie'),node('p',path.title+' · Lektion '+(index+1)+' von 4'),node('p',lesson.question,{class:'ta-question'}),section('Lernziele',[list(lesson.objectives)]),section('Begriffe vorab',[terms]),section('Grundlagen',lesson.foundations.map(function(s){return node('p',s);})),figure(lesson.visual),
+        wrap.append(header(lesson.title),link('← Alle Lernpfade','#/lernen'),node('p',path.title+' · Lektion '+(index+1)+' von 4'),node('p',lesson.question,{class:'ta-question'}),section('Lernziele',[list(lesson.objectives)]),section('Begriffe vorab',[terms]),section('Grundlagen',lesson.foundations.map(function(s){return node('p',s);})),figure(lesson.visual),
           section('Konkretes Beispiel · konstruiert',[node('p',lesson.example.text)]),section('Grenzen und Gegenbeispiel',[list(lesson.limits)]));
       }
       var feedback=node('p','Wähle eine Antwort und prüfe sie.',{role:'status','aria-live':'polite'}), form=node('form'), field=node('fieldset',null,{},[node('legend',lesson.quiz.prompt)]);
@@ -110,7 +110,7 @@
         practice.className='ta-practice';
         practice.append(node('p',p.practiceHint||(lesson.id==='momentum-2'?'Titel wählen → RSI-Unterfenster einschalten → Kurs und RSI vergleichen.':'Kriterien ansehen → im Screener einen Treffer wählen → im Chart prüfen.'),{class:'ta-practice-route'}));
         var more=node('div',null,{class:'ta-practice-links'});
-        if(lesson.practice.target==='chart')more.append(link('Analyse-Assistent öffnen','#/assistent'));
+        if(lesson.practice.target==='chart')more.append(link('Eine Frage an den Chart stellen','#/lernen'));
         more.append(link('Screener öffnen','#/screener'));
         if(lesson.practice.target!=='chart')more.append(link('Chart Studio öffnen','#/chart'));
         practice.append(more,node('p','Zurück kommst du über „Zur Lektion“ in Technical. Deine Quiz-Auswahl und dein lokaler Abschluss bleiben erhalten.',{class:'tc-note'}));
@@ -151,11 +151,11 @@
       if(!state || /^#\/akademie(?:\/|$)/.test(g.location.hash))return;
       var l=c.lessons.find(function(x){return x.id===state.id && x.version===state.lessonVersion;});if(!l)return;
       host.querySelectorAll('.ta-return').forEach(function(n){n.remove();});
-      host.prepend(node('nav',null,{class:'ta ta-return','aria-label':'Zur Akademie zurück'},[link('← Zur Lektion: '+l.title,'#/akademie/'+l.id)]));
+      host.prepend(node('nav',null,{class:'ta ta-return','aria-label':'Zurück zum Lernen'},[link('← Zur Lektion: '+l.title,'#/akademie/'+l.id)]));
     }).catch(function(){ /* A practice view must remain usable if lesson content cannot load. */ });
   }
   function render(host, id) {
-    var token=++request; D.title='Strategie-Akademie · Technical';host.replaceChildren(node('p','Lerninhalte werden geladen …',{role:'status'}));
+    var token=++request; D.title='Lernen · Technical';host.replaceChildren(node('p','Lerninhalte werden geladen …',{role:'status'}));
     load().then(function(c){if(token===request && /^#\/akademie(?:\/|$)/.test(g.location.hash))paint(host,c,id,true);}).catch(function(){cached=null;if(token!==request || !/^#\/akademie(?:\/|$)/.test(g.location.hash))return;var retry=node('button','Erneut versuchen',{type:'button'});retry.addEventListener('click',function(){render(host,id);});host.replaceChildren(node('p','Die Lerninhalte konnten nicht geladen werden.'),retry);});
   }
   g.VUAcademy={render:render, renderReturn:renderReturn};
