@@ -68,6 +68,9 @@ Entscheidungen 12, 15.
 - PR 1 · Die Lesart-Karten unter „Neu“ und den Filtern zeigen statt der Projektionsspanne das Muster (keine Ziele, Entscheidung 4); das Filter-Sheet entfällt (Chips Welle/Richtung bleiben, Status/Rolle per Adresse), damit das Elliott-Bündel unter 64 KB bleibt.
 - PR 1 · Leiste und Menü: „Zählbar“ (`#/?zaehlbar=1`); `#/?welle=3` ohne weitere Filter leitet per `replaceState` dorthin, kombinierte Welle-3-Filter bleiben.
 - PR 1 · Der Kasten „Heute anwendbar“ ist fest schwarz (im Dunkelmodus Dunkelgrau mit Rand), weil `vu-box--ink` im Dunkelmodus hell wird und Neongrün darauf den Kontrast verfehlt.
+- PR 2 · „Zählbar“ auf der Aktie ist dieselbe Einstufung wie auf dem Start (`applicability.level` HIGH/MODERATE ohne Enthaltung); der Chart zeigt im Elliott-Produkt nur die Ungültig-Marke der Hauptlesart (1 Jahr Wochenchart), Ziele und Schlüsselzone entfallen.
+- PR 2 · Kapitel klappen an Ort und Stelle auf (`<details>`): Wellen mit Datum und Kurs, andere Zählungen und Szenarien nur mit Ungültig-Marke, Forschung = bisheriger Block „Was die Historie nahelegt“ samt Zeitreise; „Elliott-Profi“ bleibt als Knopf darunter. Die Zeile „← Elliott · Frag VU“ über dem Aktienkopf bleibt (Rückweg).
+- PR 2 · Ohne geladene Startseite (Direktaufruf) holt die Aktie die kleine Lieferansicht nach, um „nur N von M Aktien“ zu nennen; fehlt sie, steht „nur wenige Aktien“.
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 

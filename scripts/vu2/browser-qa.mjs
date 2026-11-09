@@ -511,16 +511,18 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    danach=async()=>{await page.locator('#qx-main').getByRole('link',{name:'Aktie suchen',exact:true}).click();await bereit(page,'aktien');};
   }
   if(view==='technik'||view==='elliott'||view==='elliott-nativ'||view==='chartbild'){
-   /* CHARTBILD (Technical Intelligence v3): Ausblick, Szenario-Wechsel, Chart mit Zonen. Die alten Routen
-      zeigen dieselbe Seite; ?elliott=1 oeffnet die Profi-Ansicht mit der Elliott-Strukturdeutung. */
-   await page.locator('#qx-main .cb-outlook').first().waitFor();
-   await page.locator('#qx-main .cb-chart svg').first().waitFor();
-   const knoepfe=page.locator('#qx-main .cb-switch-btn');
-   if(await knoepfe.count()<2)befund(view,width,'kein Szenario-Wechsel');
-   else{await knoepfe.nth(1).click();await page.locator('#qx-main .cb-chart svg').first().waitFor();await knoepfe.nth(0).click();}
+   /* Konzept EHV (EX03): Elliott auf der Aktie – zaehlbar (Muster, Chart mit Ungueltig-Marke, Lesart in drei Saetzen, Kapitel)
+      oder ehrliche Absage mit den Wegen zu Technical und zur Zaehlbar-Liste. Kein zweiter technischer Ausblick, keine Ziele.
+      ?elliott=1 bzw. ?ansicht=profi oeffnet die Profi-Ansicht mit der Elliott-Strukturdeutung. */
+   await page.locator('#qx-main .cb-ew-say, #qx-main .cb-ew-none').first().waitFor();
    const text=await page.locator('#qx-main').innerText();
-   if(!/Szenario/i.test(text))befund(view,width,'kein Szenario');
-   if(!/Ungültig|Invalid/i.test(text))befund(view,width,'keine Ungueltig-Linie');
+   if(/Technischer Ausblick|Zielbereich|Ziel 1|abwarten/.test(text))befund(view,width,'Ziel oder zweiter Ausblick im Elliott-Bild');
+   if(await page.locator('#qx-main .cb-ew-say').count()){
+    await page.locator('#qx-main .cb-chart svg').first().waitFor();
+    if(!/Ungültig/i.test(text))befund(view,width,'keine Ungueltig-Marke');
+    if(await page.locator('#qx-main .cb-story-r').count()!==3)befund(view,width,'nicht drei Saetze');
+    if(await page.locator('#qx-main details.cb-ep').count()<3)befund(view,width,'Kapitel fehlen');
+   }else if(!/Chart-Lage in Technical/.test(text)||!/Aktien mit sauberer Zählung/.test(text))befund(view,width,'Absage ohne Wege');
    if(/Validierte Zählung|Method Fit/.test(text))befund(view,width,'V1-Elliott-Wortlaut im Chartbild');
    if(view==='elliott'||view==='elliott-nativ'){
     await page.locator('#qx-main section.cb-pro').waitFor();
