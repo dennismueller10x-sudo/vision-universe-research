@@ -27,6 +27,10 @@
       "paths": ["quant/**", "products/quant/**", "scripts/quant/**", "scripts/market/**", "scripts/technical/**"],
       "ci": "quant-ci.yml",
       "contractTests": ["quant/tests/*.test.mjs"],
+      "pinnedFiles": [
+        {"source": "scripts/quality/ui-protection.mjs#effectiveLock", "test": "quant/tests/backtest-consolidation-boundary.test.mjs"},
+        {"source": "docs/data/security-master/v130-quant-freeze.json#frozen.files", "test": "quant/tests/security-master-v130-freeze.test.mjs"}
+      ],
       "consumes": []
     },
     "technical": {
