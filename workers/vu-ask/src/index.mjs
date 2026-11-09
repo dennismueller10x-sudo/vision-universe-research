@@ -16,11 +16,15 @@ import { AskGate } from "./gate.mjs";
 export { AskGate };
 
 const DEFAULT_ORIGINS = ["https://research.visionuniverse.de", "https://vision-universe-research.vercel.app"];
+/* Die Capacitor-App (app/capacitor.config.json): iOS laedt ihre Seiten unter
+   capacitor://localhost, Android unter https://localhost. Diese Herkuenfte
+   gelten immer, auch wenn VU_ASK_ALLOWED_ORIGINS sie nicht nennt. */
+export const APP_ORIGINS = ["capacitor://localhost", "https://localhost"];
 const MAX_BODY = 8192;
 
-function origins(env) {
+export function origins(env) {
   const list = String(env.VU_ASK_ALLOWED_ORIGINS || "").split(",").map((s) => s.trim()).filter(Boolean);
-  return list.length ? list : DEFAULT_ORIGINS;
+  return [...new Set([...(list.length ? list : DEFAULT_ORIGINS), ...APP_ORIGINS])];
 }
 
 function corsHeaders(origin, env) {
@@ -100,7 +104,7 @@ export default {
       /* Nur die eigenen Seiten. Kein Schutz gegen gezielte Skripte - der
          liegt in den Zaehlern -, aber fremde Websites koennen die Funktion
          nicht still einbetten und fremde Kontingente verbrauchen. */
-      if (!cors["access-control-allow-origin"]) return respond(403, { ok: false, reason: "ORIGIN_NOT_ALLOWED" });
+      if (!cors["access-control-allow-origin"]) return respond(403, { ok: false, reason: "ORIGIN_NOT_ALLOWED", message: "Diese Seite darf die Fragefunktion nicht aufrufen." });
       const raw = await request.text();
       if (raw.length > MAX_BODY) return respond(413, { ok: false, reason: "TOO_LARGE" }, cors);
       let body;

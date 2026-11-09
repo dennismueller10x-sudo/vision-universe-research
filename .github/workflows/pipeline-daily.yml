@@ -117,11 +117,27 @@ jobs:
           TEIL: ${{ inputs.teil }}
           REF: ${{ github.ref }}
           MSG: ${{ github.event.head_commit.message }}
-          COMMITS: ${{ toJSON(github.event.commits) }}
+          # Dateiliste beim push: Compare-API zwischen before und sha (die Commit-Liste des push-Ereignisses traegt in Actions
+          # kein added/modified/removed; Lauf 42598972028 waehlte deshalb nichts). Vertragstest WB-7.
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          files="$(printf '%s' "${COMMITS:-[]}" | jq -r '(. // [])[] | (.added + .modified + .removed)[]' 2>/dev/null | sort -u || true)"
-          touched() { local q; for q in "$@"; do grep -qxF "$q" <<<"$files" && return 0; done; return 1; }
+          # Geaenderte Dateien des Pushs. Neuer Zweig (Basis 000...), API-Fehler oder abgeschnittene Liste
+          # (300 Dateien): unbekannt - dann gilt jede Pfadbedingung als erfuellt (im Zweifel ausfuehren).
+          PUSH_FILES="$RUNNER_TEMP/push-files.txt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=0
+          if [ "${EVENT:-}" = push ]; then
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ]; then PUSH_FILES_UNKNOWN=1
+            elif gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[].filename' > "$PUSH_FILES"; then
+              [ "$(wc -l < "$PUSH_FILES")" -lt 300 ] || PUSH_FILES_UNKNOWN=1
+            else echo "::warning::Compare-API ohne Ergebnis - Pfadbedingungen gelten als erfuellt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=1; fi
+          fi
+          echo "Dateien im Push: $(wc -l < "$PUSH_FILES"), unbekannt=$PUSH_FILES_UNKNOWN"
+          files="$(cat "$PUSH_FILES")"
+          # Unbekannte Dateiliste: im Zweifel ausfuehren
+          touched() { [ "$PUSH_FILES_UNKNOWN" = 1 ] && return 0; local q; for q in "$@"; do grep -qxF "$q" <<<"$files" && return 0; done; return 1; }
           setze() { echo "$1=$2" >> "$GITHUB_OUTPUT"; echo "$1=$2"; }
           zeitplan_von() {
             case "$1" in

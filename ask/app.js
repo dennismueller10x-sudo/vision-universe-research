@@ -230,7 +230,8 @@
         if (!r.ok) throw Error('HTTP ' + r.status);
         unlock(); return r.json();
       }).then(setQuota)
-      .catch(function (e) { if (e.message === 'LOCKED') return; lockedEl.hidden = false; quotaEl.textContent = ''; sendBtn.disabled = true; });
+      /* Nicht erreichbar ist nicht „gesperrt“: Hinweis zeigen, Senden bleibt moeglich und liefert dann eine klare Meldung. */
+      .catch(function (e) { if (e.message === 'LOCKED') return; unlock(); lockedEl.hidden = true; quotaEl.textContent = 'Die Fragefunktion antwortet gerade nicht (' + e.message + ').'; });
   }
 
   function loadTurnstile() {
@@ -356,25 +357,35 @@
     ]);
     conversation.insertBefore(turn, conversation.firstChild);
     try { turn.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+    /* Nie still haengen: nach 45 s wird abgebrochen (der Worker gibt Anthropic 25 s),
+       jede Ablehnung bekommt einen Satz (VUAskEngine.failure). */
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 45000);
     Promise.all([
-      fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }),
+      fetch(ENDPOINT + '/v1/ask', { method: 'POST', headers: authHeaders({ 'content-type': 'application/json' }), signal: ctrl ? ctrl.signal : undefined,
         body: JSON.stringify({ question: question, clientId: clientId(), turnstileToken: turnstileToken, previous: context }) })
-        .then(function (r) { return r.json(); }),
+        .then(function (r) { return r.json().catch(function () { return null; }).then(function (b) { return { status: r.status, body: b }; }); },
+          function (e) { return { status: e && e.name === 'AbortError' ? -1 : 0, body: null }; }),
       adapter.load().catch(function () { return null; })
     ]).then(function (res) {
-      var answer = res[0];
-      if (answer.reason === 'ACCESS_REQUIRED') { turn.remove(); lock(true); return; }
-      if (!answer.ok) speak(answer.message || '');
-      setQuota(answer.quota);
+      var answer = res[0].body;
+      if (answer && answer.reason === 'ACCESS_REQUIRED') { turn.remove(); lock(true); return; }
+      if (answer) setQuota(answer.quota);
       if (turnstileToken && window.turnstile) { window.turnstile.reset(turnstileMount); turnstileToken = null; }
-      turn.lastChild.remove();
-      if (!answer.ok) { turn.appendChild(card('Keine Auswertung', answer.message || 'Die Frage konnte nicht ausgewertet werden.', true)); return; }
+      if (turn.lastChild) turn.lastChild.remove();
+      if (!answer || !answer.ok || !answer.result) {
+        var f = Ask.failure(res[0].status, answer);
+        speak(f.text);
+        turn.appendChild(card(f.title, f.text, true));
+        return;
+      }
       input.value = '';
       return render(turn, answer, context ? context.question + ' → ' + question : question).then(function (summary) { speak(summary); });
     }).catch(function () {
-      turn.lastChild.remove();
-      turn.appendChild(card('Keine Verbindung', 'Die Fragefunktion ist gerade nicht erreichbar. Bitte später erneut versuchen.', true));
-    }).then(function () { busy = false; spokenQuestion = false; document.body.classList.remove('ak-busy'); sendBtn.disabled = !ENDPOINT || !!(quota && !quota.enabled); });
+      var f = Ask.failure(0, { reason: 'INTERNAL' });
+      if (turn.lastChild) turn.lastChild.remove();
+      turn.appendChild(card(f.title, 'Die Antwort ließ sich nicht anzeigen. Bitte die Seite neu laden.', true));
+    }).then(function () { clearTimeout(timer); }).then(function () { busy = false; spokenQuestion = false; document.body.classList.remove('ak-busy'); sendBtn.disabled = !ENDPOINT || !!(quota && !quota.enabled); });
   }
 
   function card(title, text, warn) {
