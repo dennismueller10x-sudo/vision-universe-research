@@ -57,13 +57,13 @@ async function main() {
   let lensSymbol = null;
   for (const st of Object.values(signals.strategies)) { if (st.open[0]) { lensSymbol = st.open[0].symbol; break; } }
   const routes = [
-    ['home', '/supertrader/', '.st-r-intro h1'],
+    ['home', '/supertrader/', 'h1.st-x-lt'],
     ['signals', '/supertrader/signals/', '.st-r-chips button'],
     ['signals-canslim', '/supertrader/signals/?method=CANSLIM', '.st-r-row[data-partial], .st-r .vu-blank'],
-    ['strategies', '/supertrader/strategies/', '.st-r-mcard'],
+    ['strategies', '/supertrader/strategies/', 'h1.st-x-lt'],
     ['backtests', '/supertrader/backtests/', '.st-btrow'],
     ['sources', '/supertrader/sources/', '.st-r-acc'],
-    ...registry.strategies.map((s) => [`strategy-${s.slug}`, `/supertrader/strategies/${s.slug}/`, '.st-r h1.vu-lt']),
+    ...registry.strategies.map((s) => [`strategy-${s.slug}`, `/supertrader/strategies/${s.slug}/`, '.st-r h1.vu-lt, .st-r .st-x-hero h1']),
   ];
   if (lensSymbol) routes.push(['lens', `/supertrader/stock/${lensSymbol}/`, '.st-r-sig']);
   const csSym = signals.partialChecks?.CANSLIM?.candidates?.[0]?.symbol;
@@ -83,7 +83,7 @@ async function main() {
   routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-r, #sf .sf-empty' : '#sf .sf-empty']);
   routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, '.st-r-answer']);
   routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', '.st-r-answer']);
-  const SF_ROUTE_SELECTOR = SF ? { home: '.st-r-hero .st-r-ladder', strategies: '[data-tab=methoden] .st-r-mcard' } : { home: '.st-r .vu-blank', strategies: '[data-tab=methoden] .vu-blank' };
+  const SF_ROUTE_SELECTOR = SF ? { home: '.st-x-today .st-flow', strategies: '.st-x-mr2' } : { home: '.st-r .vu-blank', strategies: '.st-r .vu-blank' };
   // Runde 12: Modelldepot VU Trendfolge 52W - Methode mit Marktampel/Rangliste, Einzelwert mit Status
   const t52file = path.join(SITE, 'supertrader/data/trend52.json');
   if (fs.existsSync(t52file)) {
@@ -200,11 +200,11 @@ async function main() {
         // Gemeinsame Produkt-Leiste der Vision-Universe-Shell (#vu-dock, Shadow DOM): bei jeder Breite unten, mit ☰ fuer das globale Menue.
         bottomNav: (() => { const n = document.querySelector('#vu-dock')?.shadowRoot?.querySelector('nav'); if (!n) return false; const r = n.getBoundingClientRect(); return r.height > 0 && r.bottom <= innerHeight + 1 && r.bottom >= innerHeight - 40 && n.querySelectorAll('a').length === 4 && !!n.querySelector('button.menu') && n.querySelector('a').textContent.trim() === 'Supertrader'; })(),
         homeB: location.pathname === '/supertrader/' ? [...document.querySelectorAll('.st-q[data-q="B"]')].filter((e) => e.textContent.trim() === 'B-Setup').length : 0,
-        researchSection: !!document.querySelector('.st-research, .vu-research') || /Forschung, nicht zertifiziert/.test(document.body.innerText),
+        researchSection: !!document.querySelector('.st-research, .vu-research') || /Forschung, nicht zertifiziert/i.test(document.body.innerText),
         researchInNear: [...document.querySelectorAll('.st-sec')].filter((x) => /Am nächsten an der Zone/.test(x.querySelector('h2')?.textContent || '')).some((x) => x.querySelector('.st-note-tag.research')),
         evBanner: !!document.querySelector('.st-r-belast'),
         fidBanner: !!document.querySelector('.st-r-fid, .st-fidban, .st-fid'),
-        portfolioSec: [...document.querySelectorAll('h2')].some((x) => x.textContent === 'Modellportfolio' || x.textContent === 'Laufend nach Regel'),
+        portfolioSec: [...document.querySelectorAll('h2')].some((x) => x.textContent === 'Modellportfolio' || x.textContent === 'Laufend nach Regel') && !!document.querySelector('.st-x-hero [data-depot], .st-mphead, .st-r-kv, .st-mp'),
         // Regelwechsel darf im Protokoll nicht wie ein zweites Marktereignis aussehen.
         tlDuplicates: (() => { const seen = new Set(); let d = 0; for (const li of document.querySelectorAll('.st-tl li, .st-r-tl li')) { if (li.dataset.kind === 'reassessed') continue; const k = li.textContent.trim(); if (seen.has(k)) d++; seen.add(k); } return d; })(),
         cardsWithoutPhase: [...document.querySelectorAll('.st-card2, .st-r-sig')].filter((c) => !c.querySelector('.st-phase, .vu-verdict')).length,

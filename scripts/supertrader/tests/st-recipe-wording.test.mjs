@@ -73,7 +73,7 @@ function isProse(s) {
 
 export function findings(text) {
   const out = [];
-  const plain = text.replace(/<[^>]*>/g, ' ');
+  const plain = text.replace(/<[^>]*>/g, ' ').replace(/(?:href|src)="[^"]*"?/g, ' ').replace(/\/[a-z0-9_\/.?=&#-]+/gi, ' ');  // Tags und Adressen sind kein Text
   for (const [re, why] of AVOID) {
     for (const m of plain.matchAll(new RegExp(re.source, 'gi'))) {
       if (NEGATION.test(plain.slice(Math.max(0, m.index - 45), m.index))) continue;

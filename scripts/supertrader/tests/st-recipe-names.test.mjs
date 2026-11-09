@@ -36,6 +36,7 @@ test('K3: die fünf Musterdepots tragen den Namen ihrer Methode; alle anderen Mo
   assert.deepEqual(live, Object.keys(N.DEPOT).sort(), 'Musterdepots im Datenstand = Zuordnung');
   for (const s of reg.strategies) {
     if (N.DEPOT[s.strategy_id]) assert.equal(N.ofStrategy(s), K3[N.DEPOT[s.strategy_id]]);
+    else if (N.ALIAS[s.strategy_id]) assert.equal(N.ofStrategy(s), K3[N.ALIAS[s.strategy_id]], s.strategy_id);
     else assert.equal(N.ofStrategy(s), s.world_name, s.strategy_id);
   }
 });
