@@ -954,12 +954,19 @@ export function stockPreloads(sym) {
     `\n<link rel="preload" as="fetch" crossorigin="anonymous" href="${stockSeriesHref(sym)}">`;
 }
 
-function pageShell({ title, description, page, depth, attrs = '', head = '' }) {
+/* Startseite: Schrift und die Bausteine der Oberfläche früh ankündigen (vorher von Hand in supertrader/index.html gepflegt;
+   jetzt im Erzeuger, damit ein Lauf sie nicht wieder entfernt). */
+export const HOME_FONT = '<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>';
+export const HOME_HEAD = ['<link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.3.0">', '<link rel="stylesheet" href="/supertrader/assets/st-redesign.css">',
+  '<link rel="preload" href="/assets/vu-ui.js?v=vu-ui-1.3.0" as="script">', '<link rel="preload" href="/assets/vu-chart.js" as="script">',
+  '<link rel="preload" href="/supertrader/assets/st-redesign.js" as="script">'].join('\n');
+
+function pageShell({ title, description, page, depth, attrs = '', head = '', font = false }) {
   const up = '../'.repeat(depth);
   return `<!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="utf-8">
+<meta charset="utf-8">${font ? '\n' + HOME_FONT : ''}
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#ffffff">
 <script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
@@ -992,21 +999,21 @@ function writeIfChanged(file, content) {
 
 function writeStaticPages() {
   const pages = [
-    ['index.html', 'home', 'Supertrader — Vision Universe®', 'Bewährte Strategien, transparente Regeln, ehrliche Backtests und laufende Modell-Signale.', 1],
-    ['signals/index.html', 'signals', 'Signale — Supertrader — Vision Universe®', 'Signalzentrum: Setup, Einstieg bereit, ausgelöst, aktiv, abgeschlossen — mit vollständiger Historie.', 2],
-    ['strategies/index.html', 'strategies', 'Strategien — Supertrader — Vision Universe®', 'Alle Strategy Worlds von Supertrader mit Research-, Daten- und Backteststatus.', 2],
-    ['backtests/index.html', 'backtests', 'Backtest Lab — Supertrader — Vision Universe®', 'Backtest Lab: Gates, Datenabdeckung, Ausführungsannahmen und Vergleich der Strategien.', 2],
-    ['stock/index.html', 'stock', 'Strategy Lens — Supertrader — Vision Universe®', 'Welche Supertrader-Modelle einen Titel erkennen.', 2],
-    ['beispiel/index.html', 'replay', 'Beispiel eines Modell-Zyklus — Supertrader — Vision Universe®', 'Historisches Beispiel an echten Kursen: wie Bestätigung, Einstieg, Stop und Ausstieg ablaufen. Kein aktuelles Signal.', 2],
-    ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Source Ledger und Methodik der Supertrader-Strategien.', 2],
+    ['index.html', 'home', 'Supertrader — Vision Universe®', '13 Methoden berühmter Trader als feste Regeln, jeden Tag auf alle US-Aktien angewendet. Musterdepots zeigen, was die Regel tun würde. Ohne echtes Geld.', 1],
+    ['signals/index.html', 'signals', 'Treffer — Supertrader — Vision Universe®', 'Wo steht welche Aktie im Ablauf einer Methode? Wartet, Aufgenommen, Im Musterdepot, Abgegeben — mit vollständigem Protokoll.', 2],
+    ['strategies/index.html', 'strategies', 'Methoden — Supertrader — Vision Universe®', 'Was sucht welche Methode? Ein Name je Methode, fünf mit Musterdepot.', 2],
+    ['backtests/index.html', 'backtests', 'Forschung — Supertrader — Vision Universe®', 'Wie belastbar ist welche Methode? Prüfstand, Datenabdeckung und Stand je Methode. Forschung, nicht zertifiziert.', 2],
+    ['stock/index.html', 'stock', 'Methoden — Supertrader — Vision Universe®', 'Welche der 13 Methoden eine Aktie erkennen.', 2],
+    ['beispiel/index.html', 'replay', 'So läuft ein Durchgang — Supertrader — Vision Universe®', 'Historisches Beispiel an echten Kursen: wie Bestätigung, Aufnahme, Ungültig-Marke und Abgabe im Musterdepot ablaufen. Kein aktueller Treffer.', 2],
+    ['sources/index.html', 'sources', 'Quellen — Supertrader — Vision Universe®', 'Woher die Regeln der Supertrader-Methoden stammen: Bücher, Interviews, eigene Websites der Trader.', 2],
     ['hausstrategie/index.html', 'house', 'VU Hausstrategie — Supertrader — Vision Universe®', 'Die eigene Vision-Universe-Strategie: eingefrorene Regeln, Beobachtungsdepot mit Zeitstempel und ehrliche Prüfgeschichte.', 2],
   ];
-  for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth }));
+  for (const [file, page, title, description, depth] of pages) writeIfChanged(path.join(OUT, file), pageShell({ title, description, page, depth, ...(page === 'home' ? { head: HOME_HEAD, font: true } : {}) }));
 }
 
 function writeStrategyPages(registry) {
   for (const s of registry.strategies) {
-    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name} — Supertrader — Vision Universe®`, description: `${s.strategy_name}: Regeln, Evidenz, Signale und Backteststatus.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
+    writeIfChanged(path.join(OUT, 'strategies', s.slug, 'index.html'), pageShell({ title: `${LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name} — Supertrader — Vision Universe®`, description: `${LIVE_CLASSIFICATION[s.strategy_id]?.displayName || s.world_name}: Regeln, Herkunft, Musterdepot und Stand der Forschung.`, page: 'strategy', depth: 3, attrs: ` data-strategy="${s.strategy_id}"` }));
   }
 }
 
@@ -1081,10 +1088,28 @@ export function signalsBySymbol(signals, extra = []) {
 function writeStockPages(signals, extra = []) {
   for (const sym of new Set([...Object.keys(signals.bySymbol), ...extra])) {
     if (!/^[A-Z0-9.\-]+$/.test(sym)) continue;
-    writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Strategy Lens — Supertrader — Vision Universe®`, description: `Welche Supertrader-Modelle ${sym} erkennen — Status, Trigger, Risiko und Historie.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"`, head: stockPreloads(sym) }));
+    writeIfChanged(path.join(OUT, 'stock', sym, 'index.html'), pageShell({ title: `${sym} — Methoden — Supertrader — Vision Universe®`, description: `Welche der 13 Supertrader-Methoden ${sym} erkennen — Ablauf, Musterdepot und Protokoll.`, page: 'stock', depth: 3, attrs: ` data-symbol="${sym}"`, head: stockPreloads(sym) }));
   }
 }
 
+/** Nur die Seitenhüllen neu schreiben (Titel, Beschreibung, Kopf), aus dem veröffentlichten Stand unter <out>/data.
+    Rechnet nichts und schreibt keine Datei unter data/. Gebraucht, wenn sich nur eine Vorlage ändert (z. B. die
+    Wortwahl), damit die erzeugten Seiten über den Erzeuger entstehen und nicht von Hand (CLAUDE.md). */
+export function writePagesOnly() {
+  const registry = readJson(path.join(DATA, 'registry.json'));
+  const signals = readJson(path.join(DATA, 'signals.json'));
+  const t52file = path.join(DATA, 'trend52.json');
+  const t52 = exists(t52file) ? readJson(t52file) : null;
+  /* Auch ältere Hüllen, die noch ausgeliefert werden (Titel ohne heutigen Eintrag), bekommen die aktuelle Vorlage. */
+  const stockDir = path.join(OUT, 'stock');
+  const present = exists(stockDir) ? fs.readdirSync(stockDir, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name) : [];
+  writeStockPages(signals, [...(t52 ? trend52Symbols(t52) : []), ...symbolsIn(signals.partialChecks), ...present]);
+  writeStrategyPages(registry);
+  writeStaticPages();
+  log('Seitenhüllen geschrieben (--pages-only), Daten unverändert');
+}
+
 if (import.meta.url === `file://${process.argv[1]}`) {
-  build();
+  if (args['pages-only']) writePagesOnly();
+  else build();
 }

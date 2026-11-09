@@ -13,7 +13,7 @@
   var STAGE_TXT = {
     CHART_CANDIDATE: ['Chart-Kandidat', 'chart', 'Ein Chartmuster der Methode ist erkannt. Ein vollständiges Setup ist damit nicht bestätigt.', 1],
     CONFIRMED_RESEARCH_SETUP: ['Bestätigtes Research-Setup', 'setup', 'Alle mechanischen Setup-Regeln der Methode sind am Stichtag erfüllt. Ermessensfragen bleiben offen.', 2],
-    MODELED_TRADE_PLAN: ['Modellierter Handelsablauf', 'model', 'Ein Forschungsmodell liefert zusätzlich hypothetische Einstiegs- und Stop-Marken. Keine Order, keine Empfehlung.', 3],
+    MODELED_TRADE_PLAN: ['Modellierter Handelsablauf', 'model', 'Ein Forschungsmodell legt zusätzlich die Zone und die Ungültig-Marke laut Methode fest. Keine Order, kein Rat.', 3],
   };
   var LOCKED = ['Geprüfte Handelsfreigabe', 'Für alle 13 Methoden gesperrt: keine Zertifizierung, keine Freigabe, kein Live-Betrieb.', 4];
   /* Stufennamen kommen aus den Daten (catalog.mjs#STAGE_LABELS, Owner-Entscheidung O-3); die Werte oben sind nur Rückfall */
@@ -41,20 +41,20 @@
     RULE_READING_PENDING_OWNER_DECISION: 'Lesart einer Regel noch nicht freigegeben',
   };
   var BLOCK_TXT = {
-    QUARANTINE_SESSION_IN_LOOKBACK: 'Kurssprung im Rückblick (Quarantäne)', DATA_BLOCKED_SETUP_RULE: 'Setup-Regel ohne Daten nicht prüfbar', DATA_BLOCKED_EXECUTION_RULE: 'Stop- oder Ausstiegsregel ohne Daten',
+    QUARANTINE_SESSION_IN_LOOKBACK: 'Kurssprung im Rückblick (Quarantäne)', DATA_BLOCKED_SETUP_RULE: 'Setup-Regel ohne Daten nicht prüfbar', DATA_BLOCKED_EXECUTION_RULE: 'Regel für Ungültig-Marke oder Abgabe ohne Daten',
     PRIMARY_STATE_BLOCKED: 'Methode in der Quelle unvollständig', LIFECYCLE_INCOMPLETE: 'Handelsablauf der Quelle unvollständig', NOT_MEASURABLE: 'historisch nicht messbar',
     EXECUTION_NOT_PIT: 'Ausführung nicht zeitpunktgenau belegt', NOT_REPRODUCIBLE: 'nicht reproduzierbar belegt', OPEN_DISCRETIONARY_RULE: 'Ermessensregeln offen',
     CERTIFICATION_CRITERION_FAILED: 'Zertifizierungskriterien offen', NOT_CERTIFICATION_CANDIDATE: 'kein Zertifizierungskandidat', OWNER_APPROVAL_MISSING: 'keine Freigabe des Eigentümers',
     PAPER_VALIDATION_NOT_EVALUATED: 'Vorwärtstest nicht ausgewertet', LIVE_NOT_APPROVED: 'nicht für den Live-Betrieb freigegeben', CONTRACT_LOCK: 'oberste Stufe im Vertrag gesperrt',
   };
   var PLAN_BLOCK_TXT = {
-    TURTLE_ENTRY_IS_INTRADAY_ON_ASOF_NOT_MODELLED_FOR_NEXT_SESSION: 'Der Einstieg der Quelle liegt intraday am Stichtag; für die Folgesitzung ist kein Ablauf freigegeben.',
+    TURTLE_ENTRY_IS_INTRADAY_ON_ASOF_NOT_MODELLED_FOR_NEXT_SESSION: 'Die Zone der Quelle liegt intraday am Stichtag; für die Folgesitzung ist kein Ablauf freigegeben.',
     NO_SETUP_PROXY_BREAKOUT_AT_ASOF: 'Kein Ausbruch aus der Konsolidierung am Stichtag.',
     MANUAL_REVIEW_SETUP: 'Korrektur über 10 %: VCP-Charakter muss geprüft werden.',
     CONTEXT_PROXY_MA50_NOT_MET: 'Schluss vor dem Gap nicht über der 50-Tage-Linie.',
     NOT_ALL_TIME_HIGH_LONG_HISTORY: 'Kein Allzeithoch in der langen Kurshistorie.',
     ALREADY_ABOVE_PIVOT: 'Schluss bereits über dem Pivot.',
-    PLANNED_LOSS_ABOVE_10PCT: 'Geplanter Verlust bis zum Stop über 10 %.',
+    PLANNED_LOSS_ABOVE_10PCT: 'Abstand zur Ungültig-Marke laut Methode über 10 %.',
     OUTSIDE_RESEARCH_UNIVERSE: 'Außerhalb des Forschungsuniversums.',
     VOLUME_BELOW_STANDARD_EXCEPTION_REVIEW: 'Volumen unter dem 1,5-fachen Durchschnitt.',
     KK_MOMENTUM_BELOW_P98_INTERPRETATION: 'Momentum unter dem 98. Perzentil (Modell-Interpretation, keine Originalregel); deshalb kein modellierter Ablauf.',
@@ -86,7 +86,19 @@
   // nur belegte Strukturarten; die Engine-Marke eines modellierten Ablaufs (Einstieg) ist keine Chartstruktur
   function structOf(p) { return p && fin(p.level) && STRUCT_TXT[p.kind] ? p : null; }
   var cache = {};
-  function getJSON(rel) { if (!cache[rel]) cache[rel] = fetch(DATA + rel, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); return cache[rel]; }
+  /* Wortwahl (Konzept „Das Rezept eines Profis“, Folie SX08) für Erläuterungen aus dem Datenstand (Felder short, plain, note).
+     Regeltexte (Schlüssel = Regel-ID) sind Zitate der Methode und bleiben wörtlich. */
+  var WORDING = [[/hypothetische Einstiegs- und Stop-Marken/g, 'die Zone und die Ungültig-Marke laut Methode'], [/keine Empfehlung/g, 'kein Rat'], [/kein bestätigter Stop/g, 'keine bestätigte Ungültig-Marke'],
+    [/Kein Stop in der Quelle/g, 'Keine Ungültig-Marke in der Quelle'], [/Leihbarkeit oder Einstieg/g, 'Leihbarkeit oder Aufnahme'], [/Einstiegsmarke/g, 'Zone laut Methode'], [/Einstieg der Quelle/g, 'Zone der Quelle'],
+    [/\bEinstieg\b/g, 'Aufnahme'], [/\bAusstieg\b/g, 'Abgabe'], [/\bStop\b/g, 'Ungültig-Marke']];
+  var WORDED = { short: 1, plain: 1, note: 1, statusPlain: 1, reason: 1, text: 1, limits: 1, recognises: 1 };
+  function worded(o, k) {
+    if (typeof o === 'string') { if (!WORDED[k]) return o; var x = o; WORDING.forEach(function (w) { x = x.replace(w[0], w[1]); }); return x; }
+    if (Array.isArray(o)) return o.map(function (v) { return worded(v, k); });
+    if (o && typeof o === 'object') { var r = {}; Object.keys(o).forEach(function (j) { r[j] = worded(o[j], j); }); return r; }
+    return o;
+  }
+  function getJSON(rel) { if (!cache[rel]) cache[rel] = fetch(DATA + rel, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }).then(function (j) { return worded(j, ''); }); return cache[rel]; }
   function fin(v) { return typeof v === 'number' && isFinite(v); }
   function num(v, d) { if (!fin(v)) return '–'; return Number(v).toLocaleString('de-DE', { minimumFractionDigits: d === undefined ? 2 : d, maximumFractionDigits: d === undefined ? 2 : d }); }
   function usd(v) { return fin(v) ? num(v) + ' $' : '–'; }
@@ -365,11 +377,11 @@
     var p = v.plan, onOpen = /OPEN/.test(p.entryType);
     return h('div', { class: 'sf-plan' }, [
       h('h4', null, [icon(IC.open), 'Modellierter Ablauf (hypothetisch)']),
-      h('dl', { class: 'sf-nums' }, [onOpen ? pair('Referenz (Schluss)', usd(p.trigger), 'Einstieg zur Eröffnung ' + dateDe(p.earliestSession)) : pair('Einstiegsmarke', usd(p.trigger), 'ab ' + dateDe(p.earliestSession)), pair('Modell-Stop', usd(p.stop), pct(p.plannedRiskPct, p.plannedRiskPct < 0.01 ? 2 : 1) + ' Abstand'), fin(p.limit) ? pair('Limit', usd(p.limit)) : null]),
+      h('dl', { class: 'sf-nums' }, [onOpen ? pair('Referenz (Schluss)', usd(p.trigger), 'Zone zur Eröffnung ' + dateDe(p.earliestSession)) : pair('Zone laut Methode', usd(p.trigger), 'ab ' + dateDe(p.earliestSession)), pair('Ungültig-Marke laut Methode', usd(p.stop), pct(p.plannedRiskPct, p.plannedRiskPct < 0.01 ? 2 : 1) + ' Abstand'), fin(p.limit) ? pair('Limit', usd(p.limit)) : null]),
       // Ausführungsfenster der Referenzregel (höchster geplanter Verlust): nur sichtbar machen, nie verändern
       p.fillWindow ? h('p', { class: 'sf-dq', 'data-fill': p.referenceInFillWindow ? 'in' : 'out' }, [icon(p.referenceInFillWindow ? IC.check : IC.alert), p.referenceInFillWindow
-        ? 'Ausführung laut Modell nur bei einer Eröffnung über dem Stop und höchstens ' + usd(p.fillWindow.upTo) + '.'
-        : 'Zum Schlusskurs nicht ausführbar: Das Modell verlangt eine Eröffnung über dem Stop und höchstens ' + usd(p.fillWindow.upTo) + ', sonst entfällt der Einstieg.']) : null,
+        ? 'Laut Modell nur bei einer Eröffnung über der Ungültig-Marke und höchstens ' + usd(p.fillWindow.upTo) + '.'
+        : 'Zum Schlusskurs nicht erreichbar: Das Modell verlangt eine Eröffnung über der Ungültig-Marke und höchstens ' + usd(p.fillWindow.upTo) + ', sonst entfällt die Aufnahme.']) : null,
       p.modelAssumptions && p.modelAssumptions.length ? h('div', null, [h('h4', { text: 'Durch Modellannahmen ersetzt' }), h('ul', { class: 'sf-rules' }, p.modelAssumptions.map(function (id) { return h('li', { 'data-k': 'open' }, [icon(IC.open), h('span', { text: ruleText(L, id) })]); }))]) : null,
       h('p', { class: 'st-hint', text: 'Werte eines Forschungsmodells mit benannten Modellannahmen. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit.' }),
     ]);
@@ -415,7 +427,7 @@
       if (weekly) overlays.push({ id: 'ma150', label: '30-Wochen-Linie (≈150 Tage)', color: 'var(--ma30w)', values: STChart.sma(bars.close, 150) });
       // Einstiegs- und Stop-Marken nur im modellierten Ablauf; sonst nur die Chartstruktur der Methode (Review M2, Owner 28.10.2026)
       if (structOf(v.pivot)) levels.push({ id: 'pivot', label: 'Chartstruktur: ' + STRUCT_TXT[v.pivot.kind], value: v.pivot.level, color: 'var(--chart-box-base)', dash: '6 4' });
-      if (v.plan) { levels.push({ id: 'entry', label: /OPEN/.test(v.plan.entryType) ? 'Referenz (Schluss)' : 'Modell-Einstiegsmarke', value: v.plan.trigger, color: 'var(--chart-entry)', dash: '2 3' }); levels.push({ id: 'stop', label: 'Modell-Stop', value: v.plan.stop, color: 'var(--chart-stop)' }); }
+      if (v.plan) { levels.push({ id: 'entry', label: /OPEN/.test(v.plan.entryType) ? 'Referenz (Schluss)' : 'Zone laut Methode', value: v.plan.trigger, color: 'var(--chart-entry)', dash: '2 3' }); levels.push({ id: 'stop', label: 'Ungültig-Marke', value: v.plan.stop, color: 'var(--chart-stop)' }); }
       if (lv.box && fin(lv.box.top)) boxes.push({ from: lv.box.from, to: null, top: lv.box.top, bottom: lv.box.bottom, color: 'var(--chart-box-darvas)', label: 'Darvas-Box' });
       STChart.render(box, { bars: bars, mode: 'candles', window: weekly ? 180 : 120, overlays: overlays, levels: levels, boxes: boxes, markers: [], showVolume: true, title: v.ticker, status: 'Marken der Methode ' + (s ? s.name : '') + '. Kurse bis ' + dateDe(bars.date[bars.date.length - 1]) + '.' });
     }).catch(function () { host.replaceChildren(empty('Chart nicht verfügbar', 'Die Kursdaten für diesen Titel konnten nicht geladen werden. Es wird kein Ersatzchart gezeichnet.')); });
