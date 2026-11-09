@@ -157,7 +157,7 @@
   {
    "id": "freshness-monitor-7",
    "workflow": "freshness-monitor.yml",
-   "cron": "41 */6 * * 0,6",
+   "cron": "41 0,6,12,18 * * 0,6",
    "timer": "waker"
   },
   {
