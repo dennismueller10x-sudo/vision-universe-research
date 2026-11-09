@@ -7,13 +7,13 @@ name: Konten — Produktion automatisch (Migrationen, Worker)
 #                    Umsatzsteuer, Live-Abrechnung, Kuendigungsautomatik): Owner-Freigabe in account-production
 #   migrationen      neue, NICHT destruktive Migrationen in einer Transaktion mit Integritaetsprobe
 #                    (scripts/account/migrate-production.mjs); destruktiv -> Abbruch, nur ueber
-#                    "Konten — Datenbank mit Freigabe"
+#                    "Konten (Buendel account)", Teil db-freigabe
 #   worker           Code und oeffentliche Konfiguration (wrangler deploy); setzt KEINE Secrets
 #   gesundheit       /v1/health entspricht der Konfiguration
 # Umgebung account-auto: keine Required reviewers, Deployment branches nur main, Secrets nur
 # VU_ACCOUNT_SUPABASE_DB_URL und VU_ACCOUNT_SUPABASE_PUBLISHABLE_KEY. Fehlen sie, wird nichts ausgerollt (Hinweis).
-# Freigabepflichtig bleiben: Secrets (account-production-deploy.yml), Stripe-Produkte und -Preise
-# (account-production-stripe.yml), destruktive Datenbankoperationen (account-db-approved.yml) und jede
+# Freigabepflichtig bleiben: Secrets (account.yml, Teil ausrollen), Stripe-Produkte und -Preise
+# (account.yml, Teil stripe), destruktive Datenbankoperationen (account.yml, Teil db-freigabe) und jede
 # zahlungsrelevante Schalterstellung (Job zahlungsfreigabe).
 on:
   push:
@@ -127,7 +127,7 @@ jobs:
             || { echo "::error::VU_ACCOUNT_SUPABASE_DB_URL gehoert nicht zu $PROJECT_REF"; exit 1; }
           status=0; node scripts/account/migrate-production.mjs || status=$?
           if [ "$status" = 3 ]; then
-            echo "::error::Destruktive Migration erkannt - nichts eingespielt. Nur ueber 'Konten — Datenbank mit Freigabe' (Owner-Freigabe)."
+            echo "::error::Destruktive Migration erkannt - nichts eingespielt. Nur ueber 'Konten (Buendel account)', Teil db-freigabe (Owner-Freigabe)."
           fi
           [ "$status" = 0 ] && echo "ready=true" >> "$GITHUB_OUTPUT"
           exit "$status"

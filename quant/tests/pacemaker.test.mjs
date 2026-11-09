@@ -204,7 +204,10 @@ test("PM-15 ein zweiter Block bricht den laufenden nicht ab, sondern wartet", ()
 
 test("PM-16 der alte Fuenf-Minuten-Zeitplan schreibt nicht mehr parallel", () => {
   const alt = readFileSync(join(root, ".github", "workflows", "intraday-snapshots.yml"), "utf8");
-  const crons = alt.match(/^\s*-\s*cron:.*$/gm) || [];
+  /* Zeitplaene stehen seit Plan Neustart §3 im Register (core/registry/schedule.json, Takt ueber den Wecker),
+     ein Rest-Cron im Workflow zaehlt ebenso. */
+  const reg = JSON.parse(readFileSync(join(root, "core", "registry", "schedule.json"), "utf8"));
+  const crons = (alt.match(/^\s*-\s*cron:.*$/gm) || []).concat(reg.entries.filter((e) => e.workflow === "intraday-snapshots.yml").map((e) => e.cron));
   assert.ok(!crons.some((c) => /\*\/5/.test(c)),
             "zwei Workflows auf denselben Dateien sind ein Wettlauf um denselben Ref");
   assert.ok(crons.length >= 1, "der Universumslauf nach Schluss muss bleiben");

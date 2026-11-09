@@ -17,11 +17,15 @@ name: Security Master + Firmennamen (wöchentlich)
 # Ablauf (fail closed): Engine-Tests → Stamm mit --require-provider (Exit 3 ohne Anbieterliste) → Namen (SEC) →
 # Uebernahme-Gate (Plausibilitaetsgrenzen, Identitaet, Versionssprung; Exit 4) → Artefakt-Tests → CI-Artefakt →
 # Commit NUR mit commit=true UND Gate-Entscheidung COMMIT. Commit-Protokoll ADR-005.
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '41 9 * * 3'
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       commit:
         description: 'Ergebnis committen (sonst nur CI-Artefakt zur Pruefung)'
         type: boolean
@@ -140,7 +144,7 @@ jobs:
           retention-days: 30
 
       - name: Commit (nur mit commit=true und Gate-Entscheidung COMMIT)
-        if: (github.event_name == 'schedule' || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
+        if: ((github.event_name == 'schedule' || inputs.zeitplan != '') || inputs.commit == true) && steps.gate.outputs.decision == 'COMMIT'
         env:
           PUSH_OWNED_PATHS: quant/data/market/security-master/us-security-master.json quant/data/market/security-master/summary.json quant/data/market/security-master/reconciliation.json quant/data/market/security-master/backfill-estimate.json quant/data/market/security-master/company-names.json quant/data/market/security-master/company-names-summary.json
         run: |

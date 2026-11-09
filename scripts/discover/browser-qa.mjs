@@ -207,11 +207,28 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
     const first=await strategies.first().boundingBox();assert(first&&first.width<=page.viewportSize().width,'Strategy row overflows mobile viewport');
     await screenshot(page,key+'-strategies');
     const href=await strategies.first().getAttribute('href');
+    /* Konzept „Reihe für Reihe“ (n-row): #/strategien/<reihe> fuehrt auf die Seite der Reihe #/c/US_REAL/<reihe>. */
     await navigate(page,base+'/discover/'+href,{waitUntil:'networkidle'});
-    assert.equal(await page.locator('.v2-back').getAttribute('href'),'#/strategien');
-    assert(await page.locator('.dv3-rule').count()===1,'Strategy detail shows its rule verbatim');
-    const stock=page.locator('.dv3-hits a[href*="/s/"]').first();await stock.waitFor({state:'visible'});
+    await page.waitForURL(url=>/^#\/c\/US_REAL\/[a-z0-9-]+$/.test(new URL(url).hash));
+    await page.locator('.dr-rowhero h1').waitFor({state:'visible'});
+    assert.equal(await page.locator('.dr-rowhero').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(0, 0, 0)','Row head is dark');
+    assert(await page.locator('.dr-rule .dr-rule__i').count()>=1,'Row page explains its rule');
+    assert.equal(await page.locator('.dr-rowhero a[href^="#/swipen?reihe="]').count(),1,'Row swipe entry');
+    const stock=page.locator('.dr-rks a[href*="/s/"]').first();await stock.waitFor({state:'visible'});
+    assert(await page.locator('.dr-rks .dr-rk').count()>=5,'Row ranking');
     await screenshot(page,key+'-strategy-stocks');
+    /* n-row-swipe: Swipen nur mit den Aktien dieser Reihe, Fortschritt „1 von N“. */
+    await navigate(page,base+'/discover/'+(await page.locator('.dr-rowhero a[href^="#/swipen?reihe="]').getAttribute('href')),{waitUntil:'networkidle'});
+    await page.locator('.dr-rsw__card[data-symbol]').waitFor({state:'visible'});
+    const pos=await page.locator('.dr-rsw__pos').innerText();assert(/^\d+ von \d+$/.test(pos),'Row swipe progress: '+pos);
+    const firstSwipe=await page.locator('.dr-rsw__card').getAttribute('data-symbol');await page.locator('.dr-rsw__b[data-a="skip"]').click();
+    await page.waitForFunction(s=>document.querySelector('.dr-rsw__card')?.dataset.symbol!==s,firstSwipe);
+    await screenshot(page,key+'-row-swipe');
+    /* n-all: alle Reihen nach Genre, mit Trefferzahl. */
+    await navigate(page,base+'/discover/#/reihen',{waitUntil:'networkidle'});
+    assert(await page.locator('.dr-all .dr-all__r').count()>=19,'All rows listed');
+    assert.deepEqual((await page.locator('.dr-all__g h2').allTextContents()).slice(0,4),['Kursbewegung','Unternehmen','Indizes','Entdecken']);
+    await screenshot(page,key+'-all-rows');
     /* Alte Sammlungsadresse leitet weiter (Thema bzw. Strategie). */
     await navigate(page,base+'/discover/#/c/US_REAL/thema-ki',{waitUntil:'networkidle'});
     await page.waitForURL(url=>new URL(url).hash==='#/thema/kuenstliche-intelligenz');
@@ -233,17 +250,41 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' chart range updates evidence',async()=>{const samples=[];for(const [label,range,word] of [['1M','1M','Monat'],['1J','1Y','Jahr']]){const button=page.locator('.dx-tf').getByRole('button',{name:label,exact:true});assert(await button.isEnabled(),'AAPL range unavailable: '+label);await button.click();await page.locator('.dx-range-chart-wrap[data-range="'+range+'"]').waitFor();assert.equal(await button.getAttribute('aria-pressed'),'true');await page.waitForFunction(w=>(document.querySelector('.dx-chart-hero')?.innerText||'').includes(w),word,{timeout:5000}).catch(()=>{});const evidence=await page.locator('.dx-chart-hero').innerText();assert(evidence.includes(word),'Range context missing: '+evidence);samples.push({label,evidence});}assert.notEqual(samples[0].evidence,samples[1].evidence,'Range data did not update');interactionEvidence.push({key,type:'chart-range',samples});});
  await check(key+' stock accessibility',()=>a11y(page,key+'-stock'));
  await check(key+' fundamental metric and year selection update visual evidence',async()=>{/* D09: die Kennzahlen-Reise steht unter „Alle Kennzahlen PRO“ (zugeklappt). */await page.evaluate(()=>{const j=document.querySelector('#journey'),d=j&&j.closest('details');if(d)d.open=true;});const journey=page.locator('#journey');await journey.scrollIntoViewIfNeeded();const tabs=journey.getByRole('tab');assert(await tabs.count()>=2,'AAPL needs multiple canonical metrics');const first=await journey.locator('.dx-journey-kopf').innerText();const svgBefore=await journey.locator('.dx-journey-bild').innerHTML();await tabs.nth(1).click();assert.equal(await tabs.nth(1).getAttribute('aria-selected'),'true');assert.equal(await tabs.nth(0).getAttribute('aria-selected'),'false');const second=await journey.locator('.dx-journey-kopf').innerText();assert(first!==second&&svgBefore!==await journey.locator('.dx-journey-bild').innerHTML(),'Fundamental visual did not change');const bars=journey.locator('.dx-journey-bar');assert(await bars.count()>=3,'Fundamental chart needs selectable fiscal years');assert.equal(await journey.locator('.dx-journey-wert').count(),0,'Loose values must not cover the chart');const target=bars.nth(1);const title=await target.locator('title').textContent();await target.click();assert.equal(await target.getAttribute('aria-pressed'),'true');assert(await target.evaluate(n=>n.classList.contains('is-selected')),'Selected fiscal year is not visually active');const active=await journey.locator('.dx-journey-nach').innerText();const match=title&&title.match(/^GJ\s+([^:]+):\s*(.+)$/);assert(match&&active.includes(match[1])&&active.includes(match[2]),'Selected fiscal year and value did not move to the chart header');interactionEvidence.push({key,type:'fundamental-metric-year',metric:await tabs.nth(1).innerText(),before:first,after:second,selected:title,active});await journey.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-fundamentals');});
- await check(key+' valuation is a distinct canonical metric module',async()=>{if(await page.locator('.dv3-overview').count()){/* Redesign 2027 (D09): „Ist <Firma> teuer?“ mit KGV gegen den Markt und vier Kacheln; die vollständige Bewertung steht unter „Alle Kennzahlen“. */const v3=page.locator('.dv3-overview .dv2-stock-valuation');assert.equal(await v3.count(),1,'D09 valuation section missing');assert(/teuer\?$/.test((await v3.locator('h2').first().innerText()).trim()),'D09 valuation title');const tiles=await v3.locator('.dv2-valuation-components .vu-tile__label').allTextContents();for(const t of ['Börsenwert','Kurs-Umsatz (KUV)','Gewinnrendite','Free-Cashflow-Rendite'])assert(tiles.includes(t),'D09 tile missing: '+t+' in '+tiles.join(', '));await v3.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-valuation');return;}const section=page.locator('.dv2-stock-valuation');assert.equal((await section.locator('h2').first().innerText()).toLocaleLowerCase('de-DE'),'bewertung');const block=section.locator('.dv2-valuation-components');assert(await block.count()===1,'Valuation building-block module missing');const labels=await block.locator('.dv2-valuation-card span').allTextContents();assert(labels.length>=7&&labels.includes('KGV')&&labels.includes('KUV')&&labels.includes('Gewinnrendite')&&labels.includes('KGV / Markt')&&labels.includes('Free-Cashflow-Rendite'),'Expected AAPL valuation components missing: '+labels.join(', '));await section.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-valuation');});
+ await check(key+' valuation is a distinct canonical metric module',async()=>{if(await page.locator('.dv3-overview').count()){/* a-chapter: „Ist … teuer?“ ist Kapitel 5 und zugeklappt; der Inhalt steht unverändert darin. */await page.evaluate(()=>{const d=document.querySelector('.dv3-ep[data-ch="teuer"]');if(d)d.open=true;});/* Redesign 2027 (D09): „Ist <Firma> teuer?“ mit KGV gegen den Markt und vier Kacheln; die vollständige Bewertung steht unter „Alle Kennzahlen“. */const v3=page.locator('.dv3-overview .dv2-stock-valuation');assert.equal(await v3.count(),1,'D09 valuation section missing');assert(/teuer\?$/.test((await v3.locator('h2').first().innerText()).trim()),'D09 valuation title');const tiles=await v3.locator('.dv2-valuation-components .vu-tile__label').allTextContents();for(const t of ['Börsenwert','Kurs-Umsatz (KUV)','Gewinnrendite','Free-Cashflow-Rendite'])assert(tiles.includes(t),'D09 tile missing: '+t+' in '+tiles.join(', '));await v3.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-valuation');return;}const section=page.locator('.dv2-stock-valuation');assert.equal((await section.locator('h2').first().innerText()).toLocaleLowerCase('de-DE'),'bewertung');const block=section.locator('.dv2-valuation-components');assert(await block.count()===1,'Valuation building-block module missing');const labels=await block.locator('.dv2-valuation-card span').allTextContents();assert(labels.length>=7&&labels.includes('KGV')&&labels.includes('KUV')&&labels.includes('Gewinnrendite')&&labels.includes('KGV / Markt')&&labels.includes('Free-Cashflow-Rendite'),'Expected AAPL valuation components missing: '+labels.join(', '));await section.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-valuation');});
  await check(key+' stock offers onward company exploration',async()=>{
   const v3=await page.locator('.dv3-overview').count();
-  const next=page.locator(v3?'.dv3-overview a.vu-lrow[href^="#/s/"]':'.dv2-stock-neighbors .dx-rail a[href^="#/s/"]').first();await next.scrollIntoViewIfNeeded();
+  /* Konzept „Reihe für Reihe“ (a-full): die nächsten Aktien stehen als Poster in „Mehr wie …“. */const next=page.locator(v3?'.dv3-overview .dv3-next a.dr-poster__a[href^="#/s/"]':'.dv2-stock-neighbors .dx-rail a[href^="#/s/"]').first();await next.scrollIntoViewIfNeeded();
   const href=await next.getAttribute('href');assert(href&&!href.endsWith('/AAPL'),'Next stock must differ from current stock');await screenshot(page,key+'-stock-onward');await next.click();await page.waitForURL(url=>url.hash===href);await page.locator('.dx-chart-hero').first().waitFor();
   /* Redesign 2027: zurück zum Entdecken über die Produkt-Leiste (Swipen), nicht über Knöpfe am Seitenende. */
   if(v3)assert(await page.waitForFunction(()=>!!document.getElementById('vu-dock')?.shadowRoot?.querySelector('a[href*="#/einzeln/"]'),null,{timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery (dock)');
   else assert(await page.locator('.dv2-stock-next a[href^="#/einzeln/"]').first().waitFor({state:'attached',timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery');interactionEvidence.push({key,type:'stock-onward',from:'AAPL',to:href});
  });
+ if(width===390)await check(key+' stock title page: story, closed chapters, rows, onward only from a row',async()=>{
+  /* Konzept „Reihe für Reihe“ (AX03/AX04): Story in drei Sätzen, 7 Kapitel zu, Reihen der Aktie, „Mehr wie …“; Leiste und Endkarte nur mit ?reihe=. */
+  /* Frühere Prüfungen öffnen Kapitel 5; die Seite merkt sich das auf dem Gerät. Für „standardmäßig zu“ ohne Gedächtnis laden. */
+  /* WebKit (09.11.): toggle-Ereignisse der vorigen Darstellung schreiben das Gedächtnis asynchron zurück, ein removeItem vor dem
+     Laden konnte so wieder ueberschrieben werden. Erst NVDA zeichnen und ausstehende Aufgaben abwarten, dann leeren und frisch laden. */
+  await navigate(page,base+'/discover/#/s/US_REAL/NVDA',{waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-ep').first().waitFor();
+  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>setTimeout(r,50))));
+  await page.evaluate(()=>{try{localStorage.removeItem('vu-discover-chapters-v1');}catch(e){}});
+  await page.reload({waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-story').waitFor();
+  await page.waitForFunction(()=>document.querySelectorAll('.dv3-titel .dv3-ep').length===7);
+  assert.equal(await page.locator('.dv3-story .dv3-story-r').count(),3,'Story in three sentences');
+  const eps=page.locator('.dv3-titel .dv3-ep');assert.equal(await eps.count(),7,'Seven chapters');
+  assert.equal(await page.locator('.dv3-titel .dv3-ep[open]').count(),0,'Chapters closed by default');
+  assert.equal(await page.locator('.dv3-titel').getByText(/Was dafür spricht|was dagegen|In einem Satz|Auf einen Blick|anderen Welten/).count(),0,'Old blocks are gone');
+  assert(await page.locator('#dv3-reihen .dv3-rk2').count()>=1,'Rows of the stock');
+  assert.equal(await page.locator('.dv3-rowctx, .dv3-endcard').count(),0,'No onward bar without origin');
+  assert(/\$/.test(await page.locator('.dx-chart-hero-preis > b').first().innerText()),'Head price in dollars');
+  await eps.nth(2).locator('summary').click();assert.equal(await eps.nth(2).getAttribute('open'),'');await screenshot(page,key+'-stock-chapter');
+  await navigate(page,base+'/discover/#/s/US_REAL/NVDA?reihe=langfristige-compounder',{waitUntil:'networkidle'});await page.reload({waitUntil:'networkidle'});
+  await page.locator('.dv3-rowctx').waitFor();assert(/\d+ von \d/.test(await page.locator('.dv3-rowctx').innerText()),'Row position');
+  await page.locator('.dv3-endcard').scrollIntoViewIfNeeded();await screenshot(page,key+'-stock-from-row');
+  const nh=await page.locator('.dv3-endcard .dv3-endcard-a a').first().getAttribute('href');assert(/\?reihe=langfristige-compounder$/.test(nh),'Next keeps the row: '+nh);
+  await page.evaluate(()=>{try{localStorage.removeItem('vu-discover-chapters-v1');}catch(e){}});
+ });
  if(engine==='chromium'&&width===390&&colorScheme==='light')await check(key+' CrowdStrike business copy and zero-line chart scale',async()=>{
-  await navigate(page,base+'/discover/#/s/US_REAL/CRWD',{waitUntil:'networkidle'});const bizSel=await page.locator('.dv3-overview [data-sec=firma]').waitFor({timeout:8000}).then(()=>'.dv3-overview [data-sec=firma]',()=>'.dv2-stock-business');await page.locator(bizSel).waitFor();
+  await navigate(page,base+'/discover/#/s/US_REAL/CRWD',{waitUntil:'networkidle'});/* a-chapter: Kapitel 2 „Was macht …?“ ist zugeklappt, der Text steht unverändert darin. */await page.locator('.dv3-overview').waitFor({timeout:8000}).catch(()=>{});await page.evaluate(()=>{const d=document.querySelector('.dv3-ep[data-ch="firma"]');if(d)d.open=true;});const bizSel=await page.locator('.dv3-overview [data-sec=firma]').waitFor({timeout:8000}).then(()=>'.dv3-overview [data-sec=firma]',()=>'.dv2-stock-business');await page.locator(bizSel).waitFor();
   const copy=await page.locator(bizSel+(bizSel==='.dv2-stock-business'?' .dx-chapter-lead':' .dv3-firma-t')).innerText();assert(/Cloud-Plattform/.test(copy)&&/Sicherheit/.test(copy),'CrowdStrike business description still empty: '+copy);
   const chart=page.locator('.dx-chapter--chart svg.dx-micro--intraday');if(await chart.count()){
    await page.waitForFunction(()=>document.querySelector('.dx-chapter--chart svg.dx-micro--intraday')?.dataset.v2PreviousCloseScale==='true');
@@ -312,6 +353,19 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   await page.locator('.dr-sec--strat').scrollIntoViewIfNeeded();assert(await page.locator('.dr-sec--strat .dr-sk').count()>=3,'Strategy cards');
   await page.locator('.dr-sec[data-row="bekannte-namen"]').scrollIntoViewIfNeeded();await page.locator('.dr-sec[data-row="bekannte-namen"] .dr-poster').first().waitFor({timeout:15000});
   assert.equal(await page.locator('.dv3-swipecard[href="#/swipen"]').count(),1,'Swipe teaser');
+  /* n-preview: Halten oder Rechtsklick auf ein Poster zeigt die Vorschau mit den Reihen der Aktie, ohne die Seite zu verlassen. */
+  const pvPoster=page.locator('.dr-sec[data-row="new-52-week-highs"] .dr-poster').first();await pvPoster.scrollIntoViewIfNeeded();await pvPoster.waitFor();
+  const pvUrl=page.url();await pvPoster.click({button:'right'});await page.locator('.dr-pvsheet:not([hidden])').waitFor();
+  await page.waitForFunction(()=>/^Steht heute in \d+ Reihen?$|keiner/.test(document.querySelector('.dr-pv__in')?.textContent||''));
+  assert.equal(page.url(),pvUrl,'Preview keeps the page');await screenshot(page,key+'-preview');await page.keyboard.press('Escape');
+  assert.equal(await page.locator('.dr-allrows[href="#/reihen"]').count(),1,'All rows entry on the home page');
+  /* K1 „Weiterschauen“: eine angesehene Aktie steht danach unter „Zuletzt angesehen“ (nur auf dem Gerät). */
+  const seen=await page.locator('.dr-sec--top10 .dr-poster').first().getAttribute('data-symbol');
+  await navigate(page,base+'/discover/#/s/US_REAL/'+seen,{waitUntil:'networkidle'});await page.locator('h1').first().waitFor();
+  await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
+  const recent=page.locator('.dr-sec--recent');await recent.scrollIntoViewIfNeeded();
+  assert.equal(await recent.locator('.dr-cw[data-symbol="'+seen+'"]').count(),1,'Recently viewed stock on the home page: '+seen);
+  await screenshot(page,key+'-recent');
   for(const sel of ['.dr-bb','.dr-sec--themes','.dr-sec[data-row="new-52-week-highs"]','.dr-sec[data-row="bekannte-namen"]']){await page.locator(sel).first().scrollIntoViewIfNeeded();await screenshot(page,key+'-world'+sel.replace(/[^a-z0-9]+/g,'-'));}
   const before=page.url();await page.evaluate(()=>scrollTo(0,0));await page.locator('.dr-genres button[data-genre="unternehmen"]').click();
   await page.locator('.dr-sec[data-row="umsatz-waechst-stark"]').waitFor();assert.equal(await page.locator('.dr-bb').count(),0,'Genre view without billboard');

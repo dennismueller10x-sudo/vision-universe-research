@@ -12,9 +12,13 @@
      PENDING_FIRST_RUN  neue Datenart (pendingFirstRun) vor ihrem ersten Lauf: noch nichts auszuliefern
      MISSING    weder Datenzweig noch main -> Exit 1
 
-   Aufruf: node scripts/ci/overlay-data-branch.mjs --data <datenzweig-dir> --site <site-dir> [--root .] [--out bericht.json] */
-import { readFileSync, existsSync, copyFileSync, mkdirSync, writeFileSync } from "node:fs";
-import { join, dirname, resolve } from "node:path";
+   Verzeichnisse (Feld prefixes, z. B. Shards) folgen den Schluesseldateien ihrer Datenart: kommen diese aus
+   dem Datenzweig, wird das Verzeichnis aus dem Datenzweig gespiegelt, sonst bleibt der Stand aus main.
+
+   Aufruf: node scripts/ci/overlay-data-branch.mjs --data <datenzweig-dir> --site <site-dir> [--root .] [--out bericht.json]
+           [--only id1,id2] [--mirror false]   (Arbeitsbaum eines Laufs: scripts/ci/seed-data-branch.sh) */
+import { readFileSync, existsSync, copyFileSync, mkdirSync, writeFileSync, readdirSync, rmSync, statSync } from "node:fs";
+import { join, dirname, resolve, relative } from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
@@ -41,13 +45,63 @@ export function inspect(bytes, contract) {
   return { ok: true, ts };
 }
 
-export function overlay({ root, dataDir, siteDir, manifest, domains }) {
+/* Verzeichnisse (prefixes, z. B. Shards): alle Dateien, relativ, sortiert. */
+function filesUnder(dir) {
+  if (!existsSync(dir) || !statSync(dir).isDirectory()) return [];
+  const out = [];
+  const walk = (d) => { for (const e of readdirSync(d, { withFileTypes: true })) { const f = join(d, e.name); if (e.isDirectory()) walk(f); else out.push(relative(dir, f)); } };
+  walk(dir);
+  return out.sort();
+}
+function dirSha(dir) {
+  const files = filesUnder(dir);
+  if (!files.length) return null;
+  const h = createHash("sha256");
+  for (const f of files) h.update(f + "\0" + sha(readFileSync(join(dir, f))) + "\n");
+  return h.digest("hex");
+}
+/* Ziel = Quelle (mirror: auch Loeschen) oder nur Kopieren (Arbeitsbaum eines Laufs, nie loeschen). */
+function copyDir(src, dst, mirror) {
+  if (mirror && existsSync(dst)) rmSync(dst, { recursive: true, force: true });
+  for (const f of filesUnder(src)) { mkdirSync(dirname(join(dst, f)), { recursive: true }); copyFileSync(join(src, f), join(dst, f)); }
+}
+
+/* Verzeichnisse einer Datenart folgen ihren Schluesseldateien: nur wenn die Datenart aus dem Datenzweig kommt
+   (alle Schluesselpfade IDENTICAL/OVERLAID), kommen auch ihre Verzeichnisse aus dem Datenzweig - nie ein Mischstand. */
+function overlayPrefixes(d, keyRows, { root, dataDir, siteDir, mirror }) {
+  const rows = [];
+  /* Massgeblich sind die Schluesseldateien mit Vertrag (domains.json); Begleitdateien ohne Vertrag
+     (z. B. ein abgeleiteter Bericht desselben Laufs) entscheiden nicht ueber das Verzeichnis. */
+  const keys = keyRows.some((r) => r.key) ? keyRows.filter((r) => r.key) : keyRows;
+  const fromBranch = keys.length > 0 && keys.every((r) => r.status === "IDENTICAL" || r.status === "OVERLAID");
+  for (const p of d.prefixes || []) {
+    const row = { domain: d.id, phase: d.phase, path: p, kind: "prefix" };
+    const br = join(dataDir, p), main = join(root, p), site = join(siteDir, p);
+    row.branchSha256 = dirSha(br); row.mainSha256 = dirSha(main);
+    if (fromBranch && row.branchSha256) {
+      row.status = row.branchSha256 === row.mainSha256 ? "IDENTICAL" : "OVERLAID";
+      copyDir(br, site, mirror);
+    } else if (row.mainSha256) {
+      row.status = "KEPT_MAIN"; row.reason = !row.branchSha256 ? "NOT_ON_BRANCH" : "KEY_FROM_MAIN";
+      if (resolve(main) !== resolve(site) && !dirSha(site)) copyDir(main, site, mirror);
+    } else if (d.pendingFirstRun && !row.branchSha256) row.status = "PENDING_FIRST_RUN";
+    else { row.status = "MISSING"; row.reason = fromBranch ? "NOT_ON_BRANCH" : "NOWHERE"; }
+    row.delivered = dirSha(site);
+    row.files = filesUnder(site).length;
+    rows.push(row);
+  }
+  return rows;
+}
+
+export function overlay({ root, dataDir, siteDir, manifest, domains, only, mirror = true }) {
   const rows = [];
   for (const d of manifest.domains) {
+    if (only && !only.includes(d.id)) continue;
+    const keyRows = [];
     for (const p of d.paths) {
       const site = join(siteDir, p), main = join(root, p), branch = join(dataDir, p);
       const contract = contractFor(domains, p);
-      const row = { domain: d.id, phase: d.phase, path: p };
+      const row = { domain: d.id, phase: d.phase, path: p, key: !!contract };
       const mainBytes = existsSync(main) ? readFileSync(main) : null;
       const brBytes = existsSync(branch) ? readFileSync(branch) : null;
       const mainInfo = mainBytes ? inspect(mainBytes, contract) : null;
@@ -60,11 +114,12 @@ export function overlay({ root, dataDir, siteDir, manifest, domains }) {
       else if (d.pendingFirstRun && !brBytes) row.status = "PENDING_FIRST_RUN";
       else row.status = "MISSING", row.reason = brBytes ? brInfo.reason : "NOWHERE";
       if (row.status === "IDENTICAL" || row.status === "OVERLAID") { mkdirSync(dirname(site), { recursive: true }); copyFileSync(branch, site); }
-      else if (row.status === "KEPT_MAIN" && !existsSync(site)) { mkdirSync(dirname(site), { recursive: true }); copyFileSync(main, site); }
+      else if (row.status === "KEPT_MAIN" && !existsSync(site) && resolve(site) !== resolve(main)) { mkdirSync(dirname(site), { recursive: true }); copyFileSync(main, site); }
       row.delivered = existsSync(site) ? sha(readFileSync(site)) : null;
       row.branchTs = brInfo && brInfo.ts || null; row.mainTs = mainInfo && mainInfo.ts || null;
-      rows.push(row);
+      rows.push(row); keyRows.push(row);
     }
+    rows.push(...overlayPrefixes(d, keyRows, { root, dataDir, siteDir, mirror }));
   }
   const complete = rows.every((r) => r.delivered || r.status === "PENDING_FIRST_RUN");
   const count = (s) => rows.filter((r) => r.status === s).length;
@@ -74,14 +129,16 @@ export function overlay({ root, dataDir, siteDir, manifest, domains }) {
 function main(argv) {
   const o = { root: "." };
   for (let i = 0; i < argv.length; i += 2) {
-    const k = argv[i].replace(/^--/, ""); if (!["data", "site", "root", "out"].includes(k) || argv[i + 1] == null) throw Error("INVALID_ARGUMENTS:" + argv[i]);
+    const k = argv[i].replace(/^--/, ""); if (!["data", "site", "root", "out", "only", "mirror"].includes(k) || argv[i + 1] == null) throw Error("INVALID_ARGUMENTS:" + argv[i]);
     o[k] = argv[i + 1];
   }
   if (!o.data || !o.site) throw Error("--data und --site sind Pflicht");
   const root = resolve(o.root);
   const manifest = JSON.parse(readFileSync(join(root, "core/registry/data-branch.json"), "utf8"));
   const domains = JSON.parse(readFileSync(join(root, "core/registry/domains.json"), "utf8"));
-  const rep = overlay({ root, dataDir: resolve(o.data), siteDir: resolve(o.site), manifest, domains });
+  const only = o.only ? o.only.split(",").filter(Boolean) : null;
+  if (only) for (const id of only) if (!manifest.domains.some((d) => d.id === id)) throw Error("UNBEKANNTE_DATENART:" + id);
+  const rep = overlay({ root, dataDir: resolve(o.data), siteDir: resolve(o.site), manifest, domains, only, mirror: o.mirror !== "false" });
   if (o.out) writeFileSync(o.out, JSON.stringify(rep, null, 2) + "\n");
   for (const r of rep.rows) console.log(`[datenzweig] ${r.domain} ${r.path}: ${r.status}${r.reason ? " (" + r.reason + ")" : ""}`);
   console.log(`[datenzweig] vollstaendig: ${rep.complete} ${JSON.stringify(rep.counts)}`);

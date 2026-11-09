@@ -4,20 +4,73 @@ name: Quant CI
 # Acceptance-Kriterien, die Gueltigkeit der praekomputierten Daten und die
 # Uebereinstimmung zwischen Datenstand und Engine.
 
+# Die Pfadlisten enthalten auch die Dateien, deren Hash ein Quant-Test pinnt (UI-Sperre
+# scripts/quality/ui-protection.mjs, Freeze docs/data/security-master/v130-quant-freeze.json): ihre Aenderung
+# muss Quant CI ausloesen (Vertragstest PC-5, Steuerung 09.11.2026).
 on:
   push:
     branches: [main]
-    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
+    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'products/quant/**', 'products/elliott/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
+            'assets/atlas-web.webp',
+            'assets/atlas.png',
+            'assets/discover-perspektiven/**',
+            'assets/fonts/**',
+            'assets/hero-visuals/**',
+            'assets/home/**',
+            'assets/icons/**',
+            'assets/product-hero.css',
+            'assets/product-icons.svg',
+            'assets/pwa.js',
+            'assets/scroll-memory.js',
+            'assets/site-navigation.css',
+            'assets/site-navigation.js',
+            'assets/social/**',
+            'assets/stock-navigator.css',
+            'assets/stock-navigator.js',
+            'assets/themen/**',
+            'assets/vision-universe-logo-web.png',
+            'assets/vision-universe-logo.png',
+            'assets/vu-chart.js',
+            'core/chart-history.js',
+            'core/chart-standard.js',
+            'docs/quant-recovery/**',
+            'docs/quality/ui-protection-revisions.json',
+            'docs/data/security-master/v130-quant-freeze.json',
             '.github/workflows/quant-ci.yml']
   pull_request:
     # Full-universe refresh PRs change well over GitHub's 300-file path-filter
     # window. Keep this workflow file in those PRs so Quant CI cannot be
     # silently omitted while Discover CI still runs.
-    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
+    paths: ['api/history.js', 'api/status.js', 'server/r2_reader.py', 'scripts/vu2/**', 'worker/**', 'quant/**', 'products/quant/**', 'products/elliott/**', 'elliott/**', 'providers/**', 'scripts/quant/**', 'scripts/market/**', 'scripts/technical/**', 'scripts/quality/**',
             'scripts/dashboard/price_semantics.py',
             'scripts/dashboard/migrate_adjustment_semantics.py',
+            'assets/atlas-web.webp',
+            'assets/atlas.png',
+            'assets/discover-perspektiven/**',
+            'assets/fonts/**',
+            'assets/hero-visuals/**',
+            'assets/home/**',
+            'assets/icons/**',
+            'assets/product-hero.css',
+            'assets/product-icons.svg',
+            'assets/pwa.js',
+            'assets/scroll-memory.js',
+            'assets/site-navigation.css',
+            'assets/site-navigation.js',
+            'assets/social/**',
+            'assets/stock-navigator.css',
+            'assets/stock-navigator.js',
+            'assets/themen/**',
+            'assets/vision-universe-logo-web.png',
+            'assets/vision-universe-logo.png',
+            'assets/vu-chart.js',
+            'core/chart-history.js',
+            'core/chart-standard.js',
+            'docs/quant-recovery/**',
+            'docs/quality/ui-protection-revisions.json',
+            'docs/data/security-master/v130-quant-freeze.json',
             '.github/workflows/quant-ci.yml']
   workflow_dispatch:
     inputs:
@@ -37,6 +90,12 @@ on:
 # Nur lesen: reine Pruef-Workflows brauchen kein Schreibrecht (Audit 03.10.2026).
 permissions:
   contents: read
+
+# PR-Laeufe: ueberholte Laeufe desselben PR werden abgebrochen (Runner-Warteschlange, Steuerung 08.11.2026).
+# Alle anderen Ereignisse bekommen eine eigene Gruppe je Lauf, also wie vorher keine Begrenzung.
+concurrency:
+  group: ${{ github.event_name == 'pull_request' && format('quant-ci-pr-{0}', github.event.pull_request.number) || format('quant-ci-{0}', github.run_id) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:

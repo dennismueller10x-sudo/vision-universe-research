@@ -2,7 +2,7 @@
 # V13 – verschlüsselte Archivteile mit vorsignierten URLs übertragen (außerhalb von Actions).
 #   transfer.sh put <artefakt-dir> <archive-priv.pem> <dir-mit-*.tar.enc> <manifest.json>
 #   transfer.sh get <artefakt-dir> <archive-priv.pem> <ziel-dir>
-# <artefakt-dir> enthält urls.json.enc und k.bin.enc aus dem Workflow quant-v13-archive.yml (Modus put bzw. get).
+# <artefakt-dir> enthält urls.json.enc und k.bin.enc aus dem Workflow research.yml, Teil v13-archiv (vormals quant-v13-archive.yml; Modus put bzw. get).
 # Die URLs werden nur im Speicher entschlüsselt und nie ausgegeben.
 set -euo pipefail
 MODE=$1; ART=$2; PRIV=$3; DIR=$4; MANIFEST=${5:-}

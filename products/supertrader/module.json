@@ -1,0 +1,35 @@
+{
+ "schema": "vu-module-2",
+ "id": "supertrader",
+ "label": "Supertrader",
+ "status": "LIVE",
+ "route": "/supertrader/",
+ "access": "free",
+ "navigation": {
+  "group": "products",
+  "order": 5,
+  "label": "Supertrader",
+  "href": "/supertrader/",
+  "icon": "supertrader",
+  "claim": "Methoden der Profis",
+  "entries": [
+   ["Übersicht", "/supertrader/", "⌂"],
+   ["Methoden", "/supertrader/strategies/", "⚑"],
+   ["Signale", "/supertrader/signals/", "◬"],
+   ["Backtests", "/supertrader/backtests/", "▧"],
+   ["Quellen", "/supertrader/sources/", "▤"]
+  ]
+ },
+ "data": ["supertrader", "supertrader-sf8-candidates", "supertrader-paper-2027-log"],
+ "reads": [
+  "discover",
+  "longSeries",
+  "intraday",
+  "companyNames",
+  "fundamentals"
+ ],
+ "tests": [
+  "scripts/supertrader/tests/*.test.mjs",
+  "core/tests/supertrader-chain.test.mjs"
+ ]
+}

@@ -653,7 +653,7 @@ async function main() {
     }
   } else hygiene.push({ kind: "RELEASE_NICHT_GEPRUEFT", detail: "kein gebautes Skript unter " + gebaut });
   /* Ueberwachung und ein reproduzierbarer Weg nach draussen. */
-  const wacht = ["freshness-monitor.yml", "vu2-browser-qa.yml"].filter((d) => existsSync(join(ROOT, ".github/workflows", d)));
+  const wacht = ["freshness-monitor.yml", "ci.yml"].filter((d) => existsSync(join(ROOT, ".github/workflows", d)));
   if (!wacht.length) hygiene.push({ kind: "FEHLT", detail: "UEBERWACHUNG" });
   gates.push(gate("PUBLIC_BETA_HYGIENE", "P1 · Kennzeichnung, Quellen, Aktualitaet, keine Geheimnisse",
     hygiene.length === 0,

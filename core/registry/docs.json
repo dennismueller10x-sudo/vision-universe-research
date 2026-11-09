@@ -1,0 +1,45 @@
+{
+  "schema": "vu-docs-1",
+  "purpose": "Lebende Doku (Plan Neustart §3: ca. 20 lebende Seiten, Rest im Archiv). Lebend sind die Einstiege unten; jede andere Markdown-Seite unter docs/ ist entweder im Archiv (docs/archiv/) oder ein Beleg am Ort. Ein Beleg bleibt am Ort, weil Code, Test, Workflow oder Register ihn beim Pfad nennt, weil er eingefroren oder per SHA-256 gepinnt ist, oder weil ein anderer Beleg auf ihn verlinkt. core/tests/docs-registry.test.mjs prueft die Einordnung; eine neue Seite wird lebend (hier eintragen und in docs/README.md verlinken), Beleg (von Code genannt) oder kommt ins Archiv.",
+  "maxLiving": 25,
+  "living": [
+    "docs/README.md",
+    "docs/PLAN_NEUSTART_2026-11.md",
+    "docs/VISION_UNIVERSE_ARCHITECTURE.md",
+    "docs/operations/RUNBOOK.md",
+    "docs/neustart/E-codex.md",
+    "docs/VU_DISCOVER_ARCHITECTURE.md",
+    "docs/quant/QUANT_FINAL_HANDOVER.md",
+    "docs/SUPERTRADER_9_HANDOVER.md",
+    "docs/technical/TECHNICAL_WORLD_PROGRESS.md",
+    "docs/technical/TECHNICAL_COMPLETION_PLAN.md",
+    "docs/FUNDAMENTAL.md",
+    "docs/studio/README.md",
+    "docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md",
+    "docs/accounts/WATCHLIST.md",
+    "docs/accounts/NUTZERFUEHRUNG.md",
+    "docs/accounts/PRODUKTIONSPLAN.md",
+    "docs/accounts/FREIGABEN.md",
+    "docs/accounts/TARIFVERWALTUNG.md",
+    "docs/accounts/RECHTLICHE_ABNAHME.md",
+    "docs/accounts/BREVO.md",
+    "docs/accounts/STEUER.md",
+    "docs/legal/EINORDNUNG.md",
+    "docs/legal/WORTWAHL.md"
+  ],
+  "workingSets": {
+    "docs/architecture/ADR-*.md": "Architekturentscheidungen (ADR), je Entscheidung eine Seite; Einstieg docs/VISION_UNIVERSE_ARCHITECTURE.md",
+    "docs/studio/*.md": "Arbeitsunterlagen der Skill reel-studio (.claude/skills/reel-studio/SKILL.md); Einstieg docs/studio/README.md",
+    "docs/design/discover-netflix-2026-11/*.md": "laufende Übergabe Discover „Reihe für Reihe“ (#1637 ff.); nach Abschluss ins Archiv",
+    "docs/design/fundamental-screener-2026-11/*.md": "laufende Übergabe Fundamental + Screener „Verstehen. Finden.“ (PR 1–5); nach Abschluss ins Archiv",
+    "docs/design/quant-2026-11/*.md": "Übergabe Quant-Umbau 11/2026 (Bauplan, gemeinsamer Screener mit Fundamental + Screener); nach Abschluss ins Archiv"
+  },
+  "frozen": [
+    "docs/quant-recovery/",
+    "docs/quant/backtest-demos/",
+    "docs/quant/backtest-catalog/",
+    "docs/research/edge/",
+    "docs/research/holdout/",
+    "docs/reports/europe-marketstack-support-report-20261103/"
+  ]
+}

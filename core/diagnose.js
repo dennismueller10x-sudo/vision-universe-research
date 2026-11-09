@@ -44,7 +44,7 @@
     payload: "Discover-Daten neu bauen (build-discover-data.mjs, laeuft im Marktdaten-Refresh).",
     fundamentals: "SEC daily/consumer pruefen (sec-fundamentals-daily.yml, sec-consumer-fundamentals.yml); ohne CIK keine Fundamentals.",
     capabilities: "Capability-Matrix neu bauen (build-capability-matrix.mjs + build-product-capabilities.mjs im Refresh).",
-    intraday: "Intraday-Takt pruefen (intraday-pacemaker.yml / intraday-delivery-watchdog.yml)."
+    intraday: "Intraday-Takt pruefen (intraday-pacemaker.yml / pipeline-intraday.yml, Teil waechter)."
   };
 
   function step(id, label) { return { id: id, label: label, status: "OK", detail: null, cause: null, repair: null }; }

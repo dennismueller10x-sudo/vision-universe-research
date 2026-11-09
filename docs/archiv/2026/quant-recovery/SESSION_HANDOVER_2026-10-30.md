@@ -31,7 +31,7 @@ PRs anderer Sitzungen, die diese Arbeit berühren: #1136 (Security Master Nachho
   - hashgebundener Loader `quant/engines/research-delisted-series.cjs`, opt-in.
 - **Backtest-Engineering P2 (#1133):** sechs Arten, Ergebnisvertrag `backtest-result-2.0.0`, Runner, 16 echte Demofälle, unabhängige QA. Einstieg: `docs/archiv/2026/quant/BACKTEST_ENGINEERING_HANDOVER_V1.md`.
 - **Interne Vorschau (#1138):** Einstieg `docs/quant/BACKTEST_PREVIEW.md`.
-- **Entscheidungsvorlage** Setup-OOS / Strategy / Factor: keine Normänderung, Gates unverändert. Einstieg: [../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](../../../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md).
+- **Entscheidungsvorlage** Setup-OOS / Strategy / Factor: keine Normänderung, Gates unverändert. Einstieg: [../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](../../quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md).
 - **GitHub-Support-Anfrage** zur Bereinigung alter Commits und Blobs: Text an den Owner übergeben. Den Versand macht der Owner.
 
 ## 3. Sechs Backtest-Arten
@@ -171,7 +171,7 @@ Erledigt am 30.10.2026: Der SF8-Kandidatenlauf vom 29.10. (`204a5171bf`) hat DQ-
   | G9 | 592 Namen |
 
   Die Grenzen bleiben unverändert (G6/G7/G9 werden nicht pauschal erhöht).
-- **Weg:** eine exakte, quellengebundene Freigabeliste je Änderung (Draft-PR #1143, Branch `claude/sm130-approval-list-4ho3rd`; Prüfdokument `docs/data/security-master/V130_APPROVAL_LIST_REVIEW.md`). Sie ist gebunden an Versionen und `prevMasterSha256`. Zu klären sind dort die doppelte canonical_id, 83 wiederverwendete Ticker, 100 Deaktivierungen, 82 Eignungswechsel und 592 Namensänderungen.
+- **Weg:** eine exakte, quellengebundene Freigabeliste je Änderung (Draft-PR #1143, Branch `claude/sm130-approval-list-4ho3rd`; Prüfdokument `docs/archiv/data/security-master/V130_APPROVAL_LIST_REVIEW.md`). Sie ist gebunden an Versionen und `prevMasterSha256`. Zu klären sind dort die doppelte canonical_id, 83 wiederverwendete Ticker, 100 Deaktivierungen, 82 Eignungswechsel und 592 Namensänderungen.
 - **Befund der Liste:** canonical_id 60/83 freigabefähig (27 Ticker-Wiederverwendungen mit neuem Listing, 19 Freiverkehr, 6 AMEX→NYSE MKT u. a.; nicht: 15 Altzeile weg, 4 doppelt aktiv, CAM, TRT/TRUE/APAD); Deaktivierungen 84/100 (nicht: EDVA und 13 Identitätsbefunde, deren eigene Reihe weiterläuft); Eignung: die 82 zusätzlichen sind nur Folgen; Namen 591/592 (573 neu aus der SEC, 18 Umfirmierungen; nicht: XRPN). Owner-Entscheidung OKE: a) Korrektur im Erzeuger (empfohlen), b) `--accept-duplicate`, c) abwarten.
 - **Überschneidung:** #1136 (andere Sitzung) führt ebenfalls ein Freigabeschema 1.1.0 ein. Vor einem Merge ist ein Schema zu wählen.
 - **Reihenfolge:**

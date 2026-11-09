@@ -27,15 +27,19 @@ name: Eigentuemer-Signale (SEC EDGAR - Insider, 13D/13G, 13F)
 # mit (CLAUDE.md, Audit 05.10.2026). Committet wird nur auf dem eigenen
 # Zweig eines Dispatch- oder Zeitplanlaufs.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       form4_max:
         description: 'Hoechstzahl einzeln zu holender Form-4-Einreichungen (leer = 25000)'
         type: string
         default: ''
-  schedule:
-    - cron: '23 5 * * 2'
   push:
     branches:
       - 'claude/**'
@@ -46,6 +50,10 @@ permissions:
 concurrency:
   group: ownership-signals-${{ github.ref_name }}
   cancel-in-progress: false
+
+env:
+  # Ereignis wie vor der Umstellung: ein Takt des Weckers heisst schedule.
+  VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
 
 jobs:
   build:
@@ -102,7 +110,7 @@ jobs:
           max="${IN_FORM4_MAX:-}"
           if [ -z "$max" ]; then
             # Der Nachweislauf auf claude/** holt weniger Einzeleinreichungen.
-            if [ "$GITHUB_EVENT_NAME" = "push" ]; then max=6000; else max=25000; fi
+            if [ "${VU_EVENT}" = "push" ]; then max=6000; else max=25000; fi
           fi
           [[ "$max" =~ ^[0-9]+$ ]] || { echo "::error::form4_max muss eine Zahl sein"; exit 1; }
           node scripts/market/build-ownership-signals.mjs --form4-max "$max" --work "$RUNNER_TEMP/ownership-work"

@@ -3,8 +3,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { gunzipSync } from 'node:zlib';
-import { indicators, COLUMNS, technicalIntelligenceColumns, TI_MAX_AGE_DAYS, technicalWorldColumns, TW_MAX_AGE_DAYS } from '../../scripts/screener/build-universe.mjs';
-import { sectorFromSic } from '../../scripts/screener/sic.mjs';
+import { indicators, COLUMNS, technicalIntelligenceColumns, TI_MAX_AGE_DAYS, technicalWorldColumns, TW_MAX_AGE_DAYS } from '../../products/screener/producer/build-universe.mjs';
+import { sectorFromSic } from '../../products/screener/producer/sic.mjs';
 const require = createRequire(import.meta.url);
 const Fields = require('../engine/fields.js');
 const Query = require('../engine/query.js');
@@ -87,7 +87,7 @@ test('Jede verfuegbare Registry-Spalte existiert im Artefakt', () => {
   for (const f of Fields.FIELDS) if (f.available && !f.derive) assert.ok(COLUMNS.includes(f.col), f.id + ' -> ' + f.col);
 });
 
-// Gegen das echte Artefakt, sofern lokal gebaut (node scripts/screener/build-universe.mjs).
+// Gegen das echte Artefakt, sofern lokal gebaut (node products/screener/producer/build-universe.mjs).
 const path = new URL('../data/universe-US_REAL.json', import.meta.url);
 test('Echtes Universum: Umfang, Trichter und Plausibilitaet', { skip: !existsSync(path) && 'Artefakt nicht gebaut' }, () => {
   const art = JSON.parse(readFileSync(path, 'utf8'));
@@ -127,7 +127,7 @@ test('Echtes Universum: Umfang, Trichter und Plausibilitaet', { skip: !existsSyn
 });
 
 test("ST-1 · Supertrader-Methoden (Z5): Spalten aus dem veroeffentlichten Kandidatenstand, fail closed", async () => {
-  const { supertraderColumns } = await import('../../scripts/screener/build-universe.mjs');
+  const { supertraderColumns } = await import('../../products/screener/producer/build-universe.mjs');
   const { screenerColumns } = await import('../../scripts/supertrader/source-faithful/product/screener-export.mjs');
   const { readFileSync, existsSync } = await import('node:fs');
   const { join, dirname } = await import('node:path');

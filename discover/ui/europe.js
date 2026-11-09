@@ -43,6 +43,21 @@
     return el('div',{class:'v2-watch-row','data-withheld':w.reasonClass,'data-security-id':w.securityId},[
       el('a',{href:w.href,text:w.name+(w.ticker?' · '+w.ticker:'')}),el('span',{text:w.message+' '+w.reason})]);
   }
+  /* M5 (08.11.2026): Konzern-Kennzahlen aus dem ESEF-Jahresfinanzbericht des Emittenten (scripts/official-filings/de-esef-facts.mjs).
+     Nur Werte mit bestandener Plausibilitätsprüfung; geladen erst auf einer Europa-Aktienseite ohne Basiszahlen. */
+  let esefPromise=null;
+  function esefFacts(box,id,active){
+    esefPromise=esefPromise||fetch('/discover/data/europe-esef/facts.json',{credentials:'same-origin'}).then(r=>r.ok?r.json():null).catch(()=>null);
+    esefPromise.then(d=>{
+      const row=d&&d.schema==='vu-europe-esef-facts-1'&&(d.rows||[]).find(r=>r.securityId===id&&r.status==='PLAUSIBLE');
+      if(!row||!active()||!box.isConnected)return;
+      const labels={revenue:'Umsatz',netIncome:'Konzernergebnis',operatingCashFlow:'Operativer Cashflow'},fy=row.fiscalYearEnd;
+      const fmt=(v,c)=>new Intl.NumberFormat('de-DE',{style:'currency',currency:c,notation:'compact',maximumFractionDigits:1}).format(v);
+      const list=el('div',{'data-esef-facts':''},row.metrics.map(m=>el('p',{text:labels[m.metric]+' · Geschäftsjahr bis '+fy.slice(8,10)+'.'+fy.slice(5,7)+'.'+fy.slice(0,4)+' · '+fmt(m.value,m.currency)+' (Vorjahr '+fmt(m.priorValue,m.currency)+') · Konzern'})));
+      const src=el('p',{},[document.createTextNode('Quelle: '),el('a',{href:row.sourceDocument,text:'ESEF-Jahresfinanzbericht des Unternehmens',target:'_blank',rel:'noopener noreferrer'}),document.createTextNode('. Nur Kennzahlen, automatisch auf Plausibilität geprüft. Keine Bewertung, keine Quant-Freigabe.')]);
+      box.querySelectorAll('p').forEach(p=>p.remove());box.append(list,src);
+    });
+  }
   async function render(root,{parts,ctx,route,active,message}) {
     if(!D.europeProduct){await ensureLoader();if(D.europePublicLoader){try{await D.europePublicLoader.connect();}catch(_){}}}
     if(!active())return;
@@ -67,7 +82,7 @@
         const labels={revenue:'Umsatz',netIncome:'Gewinn',operatingCashFlow:'Operativer Cashflow'};
         facts.metrics.forEach(m=>{const row=el('p',{},[document.createTextNode(labels[m.metric]+' · Geschäftsjahr '+m.fiscalYear+' · '+new Intl.NumberFormat('de-DE',{style:'currency',currency:m.currency,notation:'compact',maximumFractionDigits:1}).format(m.value)+' · Konzernzahlen · '),el('a',{href:m.sourceDocument,text:m.source+'-Quelle',target:'_blank',rel:'noopener noreferrer'})]);basis.append(row);});
         basis.append(el('p',{text:'Basisinformationen zum Unternehmen. Keine Bewertung oder Quant-Freigabe.'}));
-      }else basis.append(el('p',{text:'Fundamentale Basisdaten für diese Aktie noch nicht verfügbar.'}));
+      }else{basis.append(el('p',{text:'Fundamentale Basisdaten für diese Aktie noch nicht verfügbar.'}));esefFacts(basis,id,active);}
       states.after(basis);
       watchButton(root,id,product,detail.symbol);document.title=(detail.companyName||detail.symbol)+' — Discover';
     }else if(parts[0]==='watchlist'){
@@ -85,18 +100,24 @@
         row.querySelector('button').onclick=()=>{product.remove(member.securityId);route();};list.append(row);
       });
     }else{
-      const result=await product.browse({offset:0,limit:48});if(!active())return;
+      /* Auswahl Deutschland (#/c/EUROPE/de): Emittentenland DE aus der globalen Projektion, Reihenfolge des Katalogs. */
+      const germany=parts[2]==='de';let ids;
+      if(germany){try{ids=(await D.GlobalUniverse.browse('DE',0,5000)).filter(d=>d.region==='EUROPE').map(d=>d.securityId);}catch(_){ids=null;}if(!active())return;
+        if(!ids||!ids.length){message(root,'Deutsche Aktien derzeit nicht verfügbar','Die Liste konnte nicht geladen werden. Die Suche bleibt erreichbar.');return;}}
+      const result=await product.browse({offset:0,limit:48,ids});if(!active())return;
       if(result.state!=='AVAILABLE'){message(root,'Europa noch nicht verfügbar','Geprüfte Daten und Anzeigerechte werden vor der Freigabe benötigt.');return;}
       const grid=D.Cards.grid(result.data.cards,{universeId:'EUROPE'});
       grid.querySelectorAll('.dx-poster').forEach(card=>card.removeAttribute('aria-label'));
-      root.append(el('h1',{text:result.data.title}),el('p',{class:'v2-lead',text:result.data.rule}),grid);
+      document.title=(germany?'Deutsche Aktien':'Europäische Aktien')+' — Discover — Vision Universe®';
+      const chips=el('nav',{class:'vu-chips','aria-label':'Auswahl','data-europe-filter':''},[['all','Ganz Europa'],['de','Deutschland']].map(([k,label])=>el('a',{class:'vu-chip',href:'#/c/EUROPE/'+k,text:label,'aria-current':(k==='de')===germany?'page':null})));
+      root.append(el('h1',{text:germany?'Deutsche Aktien':result.data.title}),el('p',{class:'v2-lead',text:result.data.total+' Aktien · '+(germany?'Unternehmen mit Sitz in Deutschland, Kurse in Euro. Tagesschlusskurse · unbereinigt.':result.data.rule)+' Lücken in der Kursreihe bleiben offen.'}),chips,grid);
       // Nicht freigegebene Aktien bleiben sichtbar, gekennzeichnet und ohne Kurs.
       const held=el('section',{class:'v2-watch-list','aria-label':'Aktien ohne geprüfte aktuelle Kurse','data-europe-withheld':''},[el('h2',{text:'Ohne geprüfte aktuelle Kurse'})]);
       const addHeld=list=>{(list||[]).forEach(w=>held.append(withheldRow(w)));held.hidden=held.childElementCount<2;};
       addHeld(result.data.unavailable);root.append(held);
       let offset=result.data.nextOffset;
       if(offset!==null){const more=el('button',{type:'button',class:'v2-button',text:'Weitere Aktien'});root.append(more);
-        more.onclick=async()=>{more.disabled=true;try{const next=await product.browse({offset,limit:48});if(!active())return;
+        more.onclick=async()=>{more.disabled=true;try{const next=await product.browse({offset,limit:48,ids});if(!active())return;
           if(next.state!=='AVAILABLE'){more.textContent='Weitere Aktien derzeit nicht verfügbar';return;}
           const extra=D.Cards.grid(next.data.cards,{universeId:'EUROPE'});extra.querySelectorAll('.dx-poster').forEach(card=>card.removeAttribute('aria-label'));held.before(extra);addHeld(next.data.unavailable);
           offset=next.data.nextOffset;if(offset===null)more.remove();D.Cards.revealOnScroll(extra);

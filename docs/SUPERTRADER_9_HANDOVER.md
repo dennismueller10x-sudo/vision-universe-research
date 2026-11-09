@@ -17,7 +17,7 @@ Grundregeln des Repositorys: [CLAUDE.md](../CLAUDE.md). Architektur und Datenflu
 1. [CLAUDE.md](../CLAUDE.md): Arbeitsregeln, Gates, Tests, Workflow-Regeln (ADR-005).
 2. Dieses Dokument.
 3. [SUPERTRADER_9_DAILY_OPERATIONS.md](SUPERTRADER_9_DAILY_OPERATIONS.md): Kandidaten-Tageslauf, Veröffentlichungsvertrag C1–C7, Inbetriebnahme.
-4. [SUPERTRADER_9_OWNER_APPROVALS.md](SUPERTRADER_9_OWNER_APPROVALS.md): Owner-Entscheidungen und Verlauf, §15 (Aktivierungsweg) und §17–§19 (Abschluss).
+4. [SUPERTRADER_9_OWNER_APPROVALS.md](archiv/SUPERTRADER_9_OWNER_APPROVALS.md): Owner-Entscheidungen und Verlauf, §15 (Aktivierungsweg) und §17–§19 (Abschluss).
 5. [SUPERTRADER_9_CERTIFICATION_READINESS.md](SUPERTRADER_9_CERTIFICATION_READINESS.md): alle 13 Methoden (CC-1–CC-8, Blocker, Reihenfolge). **Nicht ändern:** Sein SHA-256 `89a6026937f1…cfde` ist im TOP5-Prüfplan gepinnt.
 6. [SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md](SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md) und [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md).
 7. [docs/quant/QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md), Abschnitte B2 (Security Master) und F (V13-Archiv).
@@ -69,7 +69,7 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
 - **Audit am letzten Handelstag:** Ein Kauf am letzten Handelstag vor einem Delisting (Order am Vortag scharf, Füllung zur Eröffnung, Abrechnung zum letzten Kurs) ist ausführbar und wird im Audit `st9-hist-execution-1.2.0` gezählt, nicht als Verstoß gewertet; nur ein Kauf danach bleibt ein Verstoß. Die Engines bleiben unverändert (ihr Code ist in SF6-PAPER-2027 gepinnt). Anlass: V13-Studie 41861419543 und Top-5-Lauf 41869479235 mit je 1–5 solchen Käufen je Methode.
 
 - **Top-5-Backtest nach der Prüfung durch Strang E (`st-hist-top5-1.1.0`):** Der Lauf weist den Delisting-Erlös als Sensitivität aus. Ab `1.2.0` geschieht das in echten Neuläufen mit den Abrechnungsszenarien der Engines: S0 = 100 % (Referenz), S1 = 70 %, S2 = 0 % bei Insolvenz-Delisting, sonst 70 %. Die nachträgliche Kurvenbuchung aus `1.1.0` ergab bei fast leerem Konto Verluste über 100 % und ist ersetzt. DQ-K5 wird als Sensitivität mitgerechnet (dieselben Referenzen ohne Quarantäne). Gezählt werden die Endursachen der Population (DATA_GAP = zensiert) und die Austritte je Methode. Ein nicht bestandener Ausführungsaudit beendet den Lauf mit Exit 4 (fail closed). Grenze: Der Audit prüft Stopps und Füllungen teils mit den Leveln der Engine; Einstiegs- und Add-Trigger leitet er nicht unabhängig her. Die Ergebnisse sind daher „geprüft auf Buchhaltung und Ausführungsregeln“, nicht „unabhängig reproduziert“.
-- **Screener-Kriterien (Plan §7 Z5):** `scripts/supertrader/source-faithful/product/screener-export.mjs#screenerColumns` formt den veröffentlichten Kandidatenstand (`supertrader/data/sf-candidates/index.json`) je Ticker in Spalten um: Methoden, V1 bzw. in Forschung, höchste Stufe je Ticker und je Methode, Datenstand, Etikett „Research, keine Empfehlung“. Es ist kein neues Artefakt und kein Fachmodell. Den Einbau in `scripts/screener/build-universe.mjs` übernimmt der Screener-Erzeuger (Strang A).
+- **Screener-Kriterien (Plan §7 Z5):** `scripts/supertrader/source-faithful/product/screener-export.mjs#screenerColumns` formt den veröffentlichten Kandidatenstand (`supertrader/data/sf-candidates/index.json`) je Ticker in Spalten um: Methoden, V1 bzw. in Forschung, höchste Stufe je Ticker und je Methode, Datenstand, Etikett „Research, keine Empfehlung“. Es ist kein neues Artefakt und kein Fachmodell. Den Einbau in `products/screener/producer/build-universe.mjs` übernimmt der Screener-Erzeuger (Strang A).
 - **FP-ST-01:** Owner-Entscheidung 05.11.2026: keine weiteren Datenanbieter und auch keine Anfragen. Kapitalmaßnahmen kommen nur aus Tiingo und Marketstack. Die 83 ungeklärten Fälle bleiben ausgeschlossen bzw. werden als Sensitivität ausgewiesen; CC-5 bleibt damit offen.
 - **Tiingo-Splits (Strang H, 06.11.2026):** Der freigeschaltete Corporate-Actions-Endpunkt hat die vorregistrierte Abnahme E1 gegen die 83 Sitzungen nicht bestanden (Lauf 42169294842: alle 72 Ticker bekannt, aber nur 2 von 83 Sitzungen mit einem Split im Fenster, beide passen weder zur Eröffnung noch zum Schluss), deshalb wird Tiingo keine Prüfquelle für die DQ-K5-Quarantäne; die 83 bleiben ausgeschlossen, die Preiswahrheit bleibt `return-series.js#splitFactors` (ADR-002), Einzelheiten in [SUPERTRADER_7_TIINGO_SPLITS_PROBE.md](SUPERTRADER_7_TIINGO_SPLITS_PROBE.md).
 
@@ -85,7 +85,7 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
 
 - **Aktienseite, Trade-Entwicklung (Owner-Wunsch 07.11.2026):** Offene Modellpositionen zeigen weiter die Karte mit Balken Stop – Einstieg – Schluss, „Luft bis zum Stop“ und %-Pille; abgeschlossene Einträge im Protokoll und der Ausstieg im Chart tragen jetzt die realisierte Entwicklung Einstieg → Ausstieg (Plus neongrün, Minus rot). Hält das Musterdepot die Aktie nicht, sagt die Seite das ausdrücklich. Eine Rückkehr nach einem Warnzeichen heißt im Protokoll „Warnzeichen vorbei“ statt fälschlich „Modell steigt ein“. Anlass: Der Owner-Screenshot ohne Balken zeigte ABBV (Donchian 07.10. 269,66 $ → 06.11. 280,94 $, keine offene Position), nicht ADP; ADP (Donchian offen seit 15.10. zu 288,29 $, Stop 282,73 $) zeigte die Karte durchgehend, die Daten sind konsistent.
 
-Der Tagesstand des Strangs steht in `docs/neustart/B-supertrader.md`.
+Der Tagesstand des Strangs steht in `docs/archiv/neustart/B-supertrader.md`.
 
 ---
 
@@ -168,7 +168,7 @@ Fail closed: Ein älterer Stand ersetzt nie einen neueren. Es gibt keine Hochstu
 | `SF8_CANDIDATES_ENABLED` | `true` (am 01.11. 13:20 UTC wirksam) | Lauf B 41310744985 hat committet. Der Job läuft nur, wenn `vars.SF8_CANDIDATES_ENABLED == 'true'` (Workflow Z. 56) |
 | `SF8_AUTO_PUBLISH` | **nicht gesetzt** | Zeitplanlauf 41219160911 (31.10.): Jobs `skipped` |
 
-**Aktivierungsweg (a)** (Owner-Entscheidung vom 01.11., [OWNER_APPROVALS §15](SUPERTRADER_9_OWNER_APPROVALS.md#15-owner-entscheidung-01112026-aktivierungsweg-a-für-sf8_auto_publish)):
+**Aktivierungsweg (a)** (Owner-Entscheidung vom 01.11., [OWNER_APPROVALS §15](archiv/SUPERTRADER_9_OWNER_APPROVALS.md#15-owner-entscheidung-01112026-aktivierungsweg-a-für-sf8_auto_publish)):
 - **Nachweis 1:** S1–S6 mit echten Lauf-IDs, Security Master 1.3.0 gültig, Registry ohne `activation`, Eingangsprüfung CURRENT. Erst dann `SF8_AUTO_PUBLISH=true`.
 - **Nachweis 2:** S7 wird nach dem ersten erfolgreichen automatischen Lauf getrennt geprüft.
 - S1–S7 und DQ-Regeln bleiben unverändert, nichts wird gelockert.
@@ -362,14 +362,14 @@ Dazu Python-Quant OK und Testisolation sauber. In der CI waren Quant CI, Core, T
 
 | Thema | Datei |
 |---|---|
-| Betrieb, Owner-Entscheidungen, Verlauf §1–§19 | [SUPERTRADER_9_OWNER_APPROVALS.md](SUPERTRADER_9_OWNER_APPROVALS.md) |
+| Betrieb, Owner-Entscheidungen, Verlauf §1–§19 | [SUPERTRADER_9_OWNER_APPROVALS.md](archiv/SUPERTRADER_9_OWNER_APPROVALS.md) |
 | Tageslauf, Vertrag, Inbetriebnahme | [SUPERTRADER_9_DAILY_OPERATIONS.md](SUPERTRADER_9_DAILY_OPERATIONS.md) |
 | 13 Methoden, CC-1–CC-8, Blocker (gepinnt) | [SUPERTRADER_9_CERTIFICATION_READINESS.md](SUPERTRADER_9_CERTIFICATION_READINESS.md) |
 | TOP5-Vorbereitung | [SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md](SUPERTRADER_9_CERTIFICATION_PREP_TOP5.md) |
 | Historische Infrastruktur | [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md) |
 | V13-Delisting-Vergleichsstudie | [SUPERTRADER_9_V13_DELISTED_REUSE.md](SUPERTRADER_9_V13_DELISTED_REUSE.md) |
-| V1-Stand 30.10. (historisch) | [SUPERTRADER_9_V1_STATUS_20261030.md](SUPERTRADER_9_V1_STATUS_20261030.md) |
-| Übergabe an Quant 30.10. (historisch) | [SUPERTRADER_9_QUANT_UEBERGABE_20261030.md](SUPERTRADER_9_QUANT_UEBERGABE_20261030.md) |
+| V1-Stand 30.10. (historisch) | [SUPERTRADER_9_V1_STATUS_20261030.md](archiv/SUPERTRADER_9_V1_STATUS_20261030.md) |
+| Übergabe an Quant 30.10. (historisch) | [SUPERTRADER_9_QUANT_UEBERGABE_20261030.md](archiv/SUPERTRADER_9_QUANT_UEBERGABE_20261030.md) |
 | V1-Kriterien (Definition) | [SUPERTRADER_8_ACTIVATION_READINESS.md](SUPERTRADER_8_ACTIVATION_READINESS.md) |
 | Erste Veröffentlichung, Rückweg | [SUPERTRADER_8_FIRST_RELEASE.md](SUPERTRADER_8_FIRST_RELEASE.md) |
 | Paper-Protokoll 2027 | [SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md](SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md) |
@@ -453,13 +453,13 @@ Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Beri
 - [SUPERTRADER_2_INDUSTRY_GROUP_DECISIONS.md](SUPERTRADER_2_INDUSTRY_GROUP_DECISIONS.md)
 - [SUPERTRADER_2_PIT_INDUSTRY_GROUPS_CONTRACT.md](SUPERTRADER_2_PIT_INDUSTRY_GROUPS_CONTRACT.md)
 - [SUPERTRADER_2_STRATEGY_COMPLETION_MATRIX.md](SUPERTRADER_2_STRATEGY_COMPLETION_MATRIX.md)
-- [SUPERTRADER_3_MINERVINI_COMPLETION.md](SUPERTRADER_3_MINERVINI_COMPLETION.md)
-- [SUPERTRADER_3_MOMENTUM_AND_DATA_FRONTIER.md](SUPERTRADER_3_MOMENTUM_AND_DATA_FRONTIER.md)
-- [SUPERTRADER_3_STRATEGY_READINESS.md](SUPERTRADER_3_STRATEGY_READINESS.md)
-- [SUPERTRADER_3_TURTLE_CORRELATION_RESEARCH.md](SUPERTRADER_3_TURTLE_CORRELATION_RESEARCH.md)
+- [SUPERTRADER_3_MINERVINI_COMPLETION.md](archiv/SUPERTRADER_3_MINERVINI_COMPLETION.md)
+- [SUPERTRADER_3_MOMENTUM_AND_DATA_FRONTIER.md](archiv/SUPERTRADER_3_MOMENTUM_AND_DATA_FRONTIER.md)
+- [SUPERTRADER_3_STRATEGY_READINESS.md](archiv/SUPERTRADER_3_STRATEGY_READINESS.md)
+- [SUPERTRADER_3_TURTLE_CORRELATION_RESEARCH.md](archiv/SUPERTRADER_3_TURTLE_CORRELATION_RESEARCH.md)
 - [SUPERTRADER_3_WEINSTEIN_INDUSTRY_STRENGTH.md](SUPERTRADER_3_WEINSTEIN_INDUSTRY_STRENGTH.md)
 - [SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md](SUPERTRADER_4_MINERVINI_LIFECYCLE_MATRIX.md)
-- [SUPERTRADER_4_POWER_PLAY_MISSING_LOW_FIX.md](SUPERTRADER_4_POWER_PLAY_MISSING_LOW_FIX.md)
+- [SUPERTRADER_4_POWER_PLAY_MISSING_LOW_FIX.md](archiv/SUPERTRADER_4_POWER_PLAY_MISSING_LOW_FIX.md)
 - [SUPERTRADER_5_LIFECYCLE_MATRIX.md](SUPERTRADER_5_LIFECYCLE_MATRIX.md)
 - [SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md](SUPERTRADER_6_PAPER_VALIDATION_PROTOCOL_2027.md)
 - [SUPERTRADER_6_READINESS_MATRIX.md](SUPERTRADER_6_READINESS_MATRIX.md)
@@ -481,7 +481,7 @@ Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Beri
 - [SUPERTRADER_7_TIINGO_SPLITS_PROBE.md](SUPERTRADER_7_TIINGO_SPLITS_PROBE.md)
 - [SUPERTRADER_7_V4D1_RESOLUTION.md](SUPERTRADER_7_V4D1_RESOLUTION.md)
 - [SUPERTRADER_8_CHART_STRUCTURE.md](SUPERTRADER_8_CHART_STRUCTURE.md)
-- [SUPERTRADER_8_DAILY_RUN.md](SUPERTRADER_8_DAILY_RUN.md)
+- [SUPERTRADER_8_DAILY_RUN.md](archiv/SUPERTRADER_8_DAILY_RUN.md)
 - [SUPERTRADER_8_FIRST_RELEASE.md](SUPERTRADER_8_FIRST_RELEASE.md)
 - [SUPERTRADER_8_INTEGRATION_BLOCKER_V2_V3.md](SUPERTRADER_8_INTEGRATION_BLOCKER_V2_V3.md)
 - [SUPERTRADER_8_PRICE_PARITY_V4.md](SUPERTRADER_8_PRICE_PARITY_V4.md)
@@ -491,54 +491,54 @@ Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Beri
 - [SUPERTRADER_9_CERTIFICATION_READINESS.md](SUPERTRADER_9_CERTIFICATION_READINESS.md)
 - [SUPERTRADER_9_DAILY_OPERATIONS.md](SUPERTRADER_9_DAILY_OPERATIONS.md)
 - [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md)
-- [SUPERTRADER_9_OWNER_APPROVALS.md](SUPERTRADER_9_OWNER_APPROVALS.md)
-- [SUPERTRADER_9_QUANT_UEBERGABE_20261030.md](SUPERTRADER_9_QUANT_UEBERGABE_20261030.md)
+- [SUPERTRADER_9_OWNER_APPROVALS.md](archiv/SUPERTRADER_9_OWNER_APPROVALS.md)
+- [SUPERTRADER_9_QUANT_UEBERGABE_20261030.md](archiv/SUPERTRADER_9_QUANT_UEBERGABE_20261030.md)
 - [SUPERTRADER_9_V13_DELISTED_REUSE.md](SUPERTRADER_9_V13_DELISTED_REUSE.md)
-- [SUPERTRADER_9_V1_STATUS_20261030.md](SUPERTRADER_9_V1_STATUS_20261030.md)
-- [SUPERTRADER_ARCHITECTURE.md](SUPERTRADER_ARCHITECTURE.md)
+- [SUPERTRADER_9_V1_STATUS_20261030.md](archiv/SUPERTRADER_9_V1_STATUS_20261030.md)
+- [SUPERTRADER_ARCHITECTURE.md](archiv/SUPERTRADER_ARCHITECTURE.md)
 - [SUPERTRADER_ATR_WILDER.md](SUPERTRADER_ATR_WILDER.md)
 - [SUPERTRADER_AUDIT_R13.md](SUPERTRADER_AUDIT_R13.md)
 - [SUPERTRADER_BACKTEST_DATA_FEASIBILITY.md](SUPERTRADER_BACKTEST_DATA_FEASIBILITY.md)
-- [SUPERTRADER_BACKTEST_FOUNDATION_REPAIR.md](SUPERTRADER_BACKTEST_FOUNDATION_REPAIR.md)
-- [SUPERTRADER_DEAD_REF_PRUNE.md](SUPERTRADER_DEAD_REF_PRUNE.md)
+- [SUPERTRADER_BACKTEST_FOUNDATION_REPAIR.md](archiv/SUPERTRADER_BACKTEST_FOUNDATION_REPAIR.md)
+- [SUPERTRADER_DEAD_REF_PRUNE.md](archiv/SUPERTRADER_DEAD_REF_PRUNE.md)
 - [SUPERTRADER_DURABLE_RESEARCH_SNAPSHOTS.md](SUPERTRADER_DURABLE_RESEARCH_SNAPSHOTS.md)
 - [SUPERTRADER_ENTRY_EXIT_RULES.md](SUPERTRADER_ENTRY_EXIT_RULES.md)
-- [SUPERTRADER_EUROPE_READINESS.md](SUPERTRADER_EUROPE_READINESS.md)
-- [SUPERTRADER_HOUSE_STRATEGY.md](SUPERTRADER_HOUSE_STRATEGY.md)
+- [SUPERTRADER_EUROPE_READINESS.md](archiv/SUPERTRADER_EUROPE_READINESS.md)
+- [SUPERTRADER_HOUSE_STRATEGY.md](archiv/SUPERTRADER_HOUSE_STRATEGY.md)
 - [SUPERTRADER_INDEPENDENT_AUDIT_R14.md](SUPERTRADER_INDEPENDENT_AUDIT_R14.md)
 - [SUPERTRADER_KK_EP_PS_CHART_FIRST.md](SUPERTRADER_KK_EP_PS_CHART_FIRST.md)
 - [SUPERTRADER_METHOD_FIDELITY.md](SUPERTRADER_METHOD_FIDELITY.md)
 - [SUPERTRADER_MIGRATION_PHASE1.md](SUPERTRADER_MIGRATION_PHASE1.md)
 - [SUPERTRADER_PAPER_2027_ACTIVATION.md](SUPERTRADER_PAPER_2027_ACTIVATION.md)
 - [SUPERTRADER_PAPER_2027_FORWARD_PATH.md](SUPERTRADER_PAPER_2027_FORWARD_PATH.md)
-- [SUPERTRADER_PILOT_AUDIT.md](SUPERTRADER_PILOT_AUDIT.md)
-- [SUPERTRADER_PRODUCT_MATRIX.md](SUPERTRADER_PRODUCT_MATRIX.md)
-- [SUPERTRADER_PRODUCT_READINESS.md](SUPERTRADER_PRODUCT_READINESS.md)
+- [SUPERTRADER_PILOT_AUDIT.md](archiv/SUPERTRADER_PILOT_AUDIT.md)
+- [SUPERTRADER_PRODUCT_MATRIX.md](archiv/SUPERTRADER_PRODUCT_MATRIX.md)
+- [SUPERTRADER_PRODUCT_READINESS.md](archiv/SUPERTRADER_PRODUCT_READINESS.md)
 - [SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md](SUPERTRADER_R15_CANONICAL_RECONSTRUCTION.md)
-- [SUPERTRADER_SF_DARVAS.md](SUPERTRADER_SF_DARVAS.md)
-- [SUPERTRADER_SF_HOLY_GRAIL.md](SUPERTRADER_SF_HOLY_GRAIL.md)
-- [SUPERTRADER_SF_KULLAMAGI.md](SUPERTRADER_SF_KULLAMAGI.md)
-- [SUPERTRADER_SF_MINERVINI.md](SUPERTRADER_SF_MINERVINI.md)
-- [SUPERTRADER_SF_POCKET_PIVOT_BGU.md](SUPERTRADER_SF_POCKET_PIVOT_BGU.md)
-- [SUPERTRADER_SF_TURTLE.md](SUPERTRADER_SF_TURTLE.md)
-- [SUPERTRADER_SF_WEINSTEIN.md](SUPERTRADER_SF_WEINSTEIN.md)
-- [SUPERTRADER_SOURCE_FAITHFUL_CONTRACTS.md](SUPERTRADER_SOURCE_FAITHFUL_CONTRACTS.md)
+- [SUPERTRADER_SF_DARVAS.md](archiv/SUPERTRADER_SF_DARVAS.md)
+- [SUPERTRADER_SF_HOLY_GRAIL.md](archiv/SUPERTRADER_SF_HOLY_GRAIL.md)
+- [SUPERTRADER_SF_KULLAMAGI.md](archiv/SUPERTRADER_SF_KULLAMAGI.md)
+- [SUPERTRADER_SF_MINERVINI.md](archiv/SUPERTRADER_SF_MINERVINI.md)
+- [SUPERTRADER_SF_POCKET_PIVOT_BGU.md](archiv/SUPERTRADER_SF_POCKET_PIVOT_BGU.md)
+- [SUPERTRADER_SF_TURTLE.md](archiv/SUPERTRADER_SF_TURTLE.md)
+- [SUPERTRADER_SF_WEINSTEIN.md](archiv/SUPERTRADER_SF_WEINSTEIN.md)
+- [SUPERTRADER_SOURCE_FAITHFUL_CONTRACTS.md](archiv/SUPERTRADER_SOURCE_FAITHFUL_CONTRACTS.md)
 - [SUPERTRADER_SOURCE_FAITHFUL_IMPLEMENTATION_REPORT.md](SUPERTRADER_SOURCE_FAITHFUL_IMPLEMENTATION_REPORT.md)
 - [SUPERTRADER_SOURCE_TO_CODE_TRACEABILITY.md](SUPERTRADER_SOURCE_TO_CODE_TRACEABILITY.md)
 - [SUPERTRADER_STRATEGY_BACKTEST_READINESS.md](SUPERTRADER_STRATEGY_BACKTEST_READINESS.md)
 - [SUPERTRADER_STRATEGY_COVERAGE_MATRIX.md](SUPERTRADER_STRATEGY_COVERAGE_MATRIX.md)
-- [SUPERTRADER_TECHNICAL_STAND.md](SUPERTRADER_TECHNICAL_STAND.md)
+- [SUPERTRADER_TECHNICAL_STAND.md](archiv/SUPERTRADER_TECHNICAL_STAND.md)
 - [SUPERTRADER_VALIDATION_DATA_PATH.md](SUPERTRADER_VALIDATION_DATA_PATH.md)
 - [SUPERTRADER_VALIDATION_INTERNAL.md](SUPERTRADER_VALIDATION_INTERNAL.md)
-- [neustart/B-supertrader.md](neustart/B-supertrader.md)
+- [neustart/B-supertrader.md](archiv/neustart/B-supertrader.md)
 - [research/supertrader/C08-TREUE.md](research/supertrader/C08-TREUE.md)
-- [research/supertrader/E5-C08-TREUE-CODEX.md](research/supertrader/E5-C08-TREUE-CODEX.md)
+- [research/supertrader/E5-C08-TREUE-CODEX.md](archiv/research/supertrader/E5-C08-TREUE-CODEX.md)
 
 ### Historische Arbeitsstände
 
 Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maßgeblich sind der Einstieg und der aktuelle Plan.
 
-- [SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md](SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md)
+- [SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md](archiv/SUPERTRADER_3_STRATEGY_ADVANCEMENT_REPORT.md)
 - [SUPERTRADER_4_MINERVINI_TRADE_LIFECYCLE_REPORT.md](SUPERTRADER_4_MINERVINI_TRADE_LIFECYCLE_REPORT.md)
 - [SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md](SUPERTRADER_5_FULL_STRATEGY_ADVANCEMENT_REPORT.md)
 - [SUPERTRADER_6_STRATEGY_COMPLETION_CERTIFICATION_REPORT.md](archiv/2026/SUPERTRADER_6_STRATEGY_COMPLETION_CERTIFICATION_REPORT.md)

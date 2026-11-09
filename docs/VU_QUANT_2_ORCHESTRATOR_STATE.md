@@ -8,7 +8,7 @@ Updated: 2026-09-28 UTC
 die Datenarchitektur, die Methodik und die Materialisierungen bleiben unverändert; neu sind
 Informationsarchitektur, Navigation, Verständlichkeit, Hierarchie, Nutzerführung, Transparenz
 und die mobile Erfahrung. Vollständige Herleitung:
-**`docs/VU_QUANT_2_FRONTEND_TRANSFORMATION.md`**.
+**`docs/archiv/VU_QUANT_2_FRONTEND_TRANSFORMATION.md`**.
 
 ### Die Navigation
 
@@ -1545,7 +1545,7 @@ Quant V2 gets its own explicitly versioned namespace. Implemented as decided:
 - Row source follows the methodology, not the caller. Trading status comes from the Company
   Master in both cases; the evidence table never asserts it itself.
 
-Documented in `docs/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
+Documented in `docs/archiv/VU_QUANT_2_METHODOLOGY_NAMESPACES.md`.
 
 ## M32_2026-09-26 — DIE ÜBRIGEN 17 PFADE GEMESSEN, UND DIE KLASSE GESCHLOSSEN
 

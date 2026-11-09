@@ -42,11 +42,9 @@ name: Intraday-Taktgeber (ein Lauf haelt den Takt)
 # =============================================================================
 
 on:
-  schedule:
-    # Stuendlich waehrend des breiten Sitzungsfensters (Cron kennt keine
-    # Sommerzeit). Ein Lauf, der ausserhalb der Sitzung startet, beendet
-    # sich nach wenigen Sekunden von selbst.
-    - cron: '2 13-20 * * 1-5'
+  # Kein GitHub-Cron mehr (Plan Neustart §3, ein Zeitgeber): der Cloudflare-Wecker stoesst diesen
+  # Workflow direkt an (worker-waker/src/index.mjs, INTRADAY_CRON */5 13-21 * * 1-5, mit Laufsperre).
+  # Der fruehere Reserve-Cron (2 13-20 * * 1-5) war seit dem 21.09.2026 nur noch Rueckfall.
   workflow_dispatch:
     inputs:
       intervalSeconds:

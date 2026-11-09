@@ -20,7 +20,7 @@ name: Company Master — Universum, Suchindex, CIK
 #
 # WARUM EIN PUSH-AUSLOESER MIT MARKE
 #
-# Dieselbe Loesung wie in tiingo-scale.yml: workflow_dispatch verlangt,
+# Dieselbe Loesung wie in tiingo-scale (maintenance.yml): workflow_dispatch verlangt,
 # dass die Datei auf dem Default-Branch liegt - vor einem Merge also
 # nicht nutzbar. Bis dahin gilt die Marke [universe-sync] in der
 # Commit-Nachricht. OHNE MARKE LAEUFT DER SYNC NICHT.
@@ -66,9 +66,11 @@ on:
 permissions:
   contents: write
 
+# PR-Laeufe: ueberholte Laeufe desselben PR werden abgebrochen (Runner-Warteschlange, Steuerung 08.11.2026).
+# Push und Dispatch behalten ihre Gruppe <name>-<ref> ohne Abbruch (ADR-005).
 concurrency:
-  group: universe-master-${{ github.ref }}
-  cancel-in-progress: false
+  group: ${{ github.event_name == 'pull_request' && format('universe-master-pr-{0}', github.event.pull_request.number) || format('universe-master-{0}', github.ref) }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   pruefen:

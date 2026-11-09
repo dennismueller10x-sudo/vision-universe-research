@@ -24,7 +24,7 @@ function urlOf(s) { try { const u = new URL(s); return u.protocol === 'https:' &
  * Conservative supported shape: one reports/XHTML file and simple non-dimensional
  * LEI contexts. Unsupported XML shapes are withheld, never guessed or repaired.
  */
-function packageContexts(rawBytes) {
+export function packageContexts(rawBytes) {
   try {
     const b = Buffer.from(rawBytes);
     if (b.length > 32 * 1024 * 1024) return null;

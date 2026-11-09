@@ -1,6 +1,8 @@
 /* Deckungsabweichung je Titel: eine neue Messung ersetzt den
    abgenommenen Stand nur, wenn jeder geaenderte Titel einen belegten
    Grund hat (Abgleich 04.10.2026). */
+import { workflowPart } from "../../scripts/ci/lib/workflow-part.mjs";
+import { fileURLToPath } from "node:url";
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -65,7 +67,7 @@ test("Bilanz: Bezug - Abgaenge + Zugaenge = gemessen", () => {
 });
 
 test("der Workflow erklaert die Abweichung, bevor er committet", () => {
-  const wf = readFileSync(new URL("../../.github/workflows/coverage-metrics.yml", import.meta.url), "utf8");
+  const wf = workflowPart(fileURLToPath(new URL("../..", import.meta.url)), "pipeline-weekly.yml", "deckung"); /* vormals coverage-metrics.yml */
   const erklaeren = wf.indexOf("scripts/diagnose/coverage-delta.mjs");
   assert.ok(erklaeren > 0, "coverage-metrics.yml ruft coverage-delta.mjs nicht auf");
   assert.ok(erklaeren < wf.indexOf("name: Commit und Push"));
@@ -73,7 +75,7 @@ test("der Workflow erklaert die Abweichung, bevor er committet", () => {
 });
 
 test("der Commit-Schritt verwirft Testnebenwirkungen vor dem Rebase und schiebt mit Wiederholung", () => {
-  const wf = readFileSync(new URL("../../.github/workflows/coverage-metrics.yml", import.meta.url), "utf8");
+  const wf = workflowPart(fileURLToPath(new URL("../..", import.meta.url)), "pipeline-weekly.yml", "deckung"); /* vormals coverage-metrics.yml */
   const schritt = wf.slice(wf.indexOf("name: Commit und Push"));
   const commit = schritt.indexOf("git commit"), verwerfen = schritt.indexOf("git checkout -- ."),
         schieben = schritt.indexOf("scripts/ci/push-with-retry.sh");

@@ -7,7 +7,7 @@
    WARUM SIE NICHT EINFACH DASTEHEN DUERFEN
    -------------------------------------------------------------------------
 
-   In scripts/social/production-readiness.mjs stand woertlich:
+   In products/social/producer/production-readiness.mjs stand woertlich:
 
        OWNER_PUBLISHING_GATE: { active: true, trace: ... }
 

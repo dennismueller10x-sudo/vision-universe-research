@@ -14,15 +14,19 @@ name: SEC Consumer-Fundamentals (Produktuniversum, Bulk companyfacts)
 # Ausloeser: Dispatch, woechentlich (Montag frueh, nach dem SEC-Wochenlauf)
 # oder ein Push mit der Marke `[sec-consumer]`.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       limit:
         description: 'Nur die ersten N CIKs (Testlauf); leer = alle'
         type: string
         default: ''
-  schedule:
-    - cron: "30 7 * * 1"
   push:
     branches:
       - 'claude/**'
@@ -188,7 +192,7 @@ jobs:
       # Erzeuger und bleibt aussen vor.
       - name: Commit und Push
         env:
-          PUSH_REGENERATE_PATHS: "discover/data/ !discover/data/europe/"
+          PUSH_REGENERATE_PATHS: "discover/data/ !discover/data/europe/ !discover/data/europe-esef/"
           PUSH_REGENERATE: "node scripts/discover/build-discover-data.mjs && node scripts/discover/verify-discover-data.mjs"
         run: |
           git config user.name "vision-universe-bot"

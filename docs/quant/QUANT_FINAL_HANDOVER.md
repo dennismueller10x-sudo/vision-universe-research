@@ -144,7 +144,7 @@ Quelle: `quant/engines/backtest-kinds.cjs`, `scripts/quant/research/backtest-run
   - EDVA wird als Umfirmierung geführt (Register `security-master-duplicate-resolution.json`).
 - **Evidenz-Register** im Research-Loader: Identität (V10/V12/V13), Kapitalmaßnahmen (`research-ca-evidence.cjs`), Lebenszyklus.
 - **Eine Preiswahrheit** (ADR-002): Split-Faktoren aus `return-series.js#splitFactors`.
-- **Delistete Titel** (`docs/quant/BACKTEST_DELISTED_INTEGRATION.md`):
+- **Delistete Titel** (`docs/archiv/quant/BACKTEST_DELISTED_INTEGRATION.md`):
   - Register `v13/delisted/register-1.0.0.json` mit 1.675 QUALIFIED, `v13b/hist/register-1.1.0.json` mit 1.688;
   - Reihen hashgebunden im privaten Archiv;
   - Profile `V13_DELISTED_F1`, `F1C`, `V13B_DELISTED_F1W`;
@@ -202,7 +202,7 @@ Siehe **Abschnitt F**: Stand der Archivgeneration und Wiederherstellung.
 | Workflow | Auslöser | Zweck | Secrets |
 |---|---|---|---|
 | `quant-ci.yml` | Push/PR auf Quant-Pfade | Tests, Demo-Aktualität | `TIINGO_API_KEY`, `VU_HISTORY_S3_*` |
-| `quant-v13-archive.yml` | Commit-Marke `[v13-archive:<modus>]` | privates Archiv (put/get/verify/keycheck/restore/demos/catalog …) | `V13_ARCHIVE_PRIVATE_KEY`, `VU_HISTORY_S3_*` |
+| `research.yml (Teil v13-archiv, vormals quant-v13-archive.yml)` | Commit-Marke `[v13-archive:<modus>]` | privates Archiv (put/get/verify/keycheck/restore/demos/catalog …) | `V13_ARCHIVE_PRIVATE_KEY`, `VU_HISTORY_S3_*` |
 | `security-master-weekly.yml` | nur manuell | Stamm-Neubau, Gate, optional Commit | – |
 | `market-data-refresh.yml` | täglich 22:30 UTC, manuell | Kurse, Faktoren, Discover, Nachtkette (Technical, Supertrader, Im Blick) | `TIINGO_API_KEY`, `VU_HISTORY_S3_*` |
 | `long-series.yml` | Zeitplan, manuell | lange Wochenreihen | `VU_HISTORY_S3_*` |
@@ -396,7 +396,7 @@ Teil Quant Q1/Q2, umgesetzt vom zentralen Claude-Code-Chat ohne Änderung an Gat
 
 ## Master Completion 3.1 (Stand 02.11.2026): P2 Zertifizierungsdefizite
 
-Bericht, Freigabe-Runbooks und FV-1-Analyse: [BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md). Keine Änderung an Gates, Schwellen, Runner (`CODE_FILES`), Security Master, `quant/data/**`, eingefrorenen Ständen oder gesperrter UI. Zahlen nur als Research unter `docs/quant/research/`, nicht im Produkt.
+Bericht, Freigabe-Runbooks und FV-1-Analyse: [BACKTEST_P2_DEFIZITE.md](../archiv/quant/BACKTEST_P2_DEFIZITE.md). Keine Änderung an Gates, Schwellen, Runner (`CODE_FILES`), Security Master, `quant/data/**`, eingefrorenen Ständen oder gesperrter UI. Zahlen nur als Research unter `docs/quant/research/`, nicht im Produkt.
 - **P3.1:** `scripts/quant/research/survivorship-sensitivity.cjs` (F0 gegen F1 über den unveränderten Runner, gleiche Stichprobe). Der committete Bericht ist `PREPARED_PRIVATE_INPUT_MISSING`, weil die Reihen nur im R2-Archiv liegen. Lauf mit Secret: Runbook R2.
 - **P4.1:** `scripts/quant/research/pattern-total-return.mjs` (Gesamtrendite `canonical-total-return-1.0.0` neben Kursrendite, Parität mit dem Runner). Research auf der Golden-Preview: 4/5 Titel, 62 Ereignispaare, Ausschüttungen im Mittel +0,75 Pp je 13-Wochen-Ereignis. Das Gate `returnBasis` liest den Bericht nicht (P4.2, FV-5).
 - **FV-4:** `catalog-private-recheck.cjs` (Erwartung der 5 privaten Fälle, Auswertung des Laufartefakts, Abbruchkriterien); `[v13-archive:catalog]` nicht ausgeführt.
@@ -409,34 +409,34 @@ Bericht, Freigabe-Runbooks und FV-1-Analyse: [BACKTEST_P2_DEFIZITE.md](BACKTEST_
 Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
 
 - [VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md](../../VISION_UNIVERSE_QUANT_AI_PROJECT_MASTER.md)
-- [VU_BACKTEST_EVIDENCE_PROVIDER_SPEC.md](../VU_BACKTEST_EVIDENCE_PROVIDER_SPEC.md)
-- [VU_BACKTEST_METHODOLOGY.md](../VU_BACKTEST_METHODOLOGY.md)
-- [VU_BACKTEST_TRUST_SCORE.md](../VU_BACKTEST_TRUST_SCORE.md)
-- [VU_QUANT_2_FACTOR_EVIDENCE.md](../VU_QUANT_2_FACTOR_EVIDENCE.md)
-- [VU_QUANT_2_FRONTEND_TRANSFORMATION.md](../VU_QUANT_2_FRONTEND_TRANSFORMATION.md)
-- [VU_QUANT_2_LOST_WORK_REGISTER.md](../VU_QUANT_2_LOST_WORK_REGISTER.md)
-- [VU_QUANT_2_METHODOLOGY.md](../VU_QUANT_2_METHODOLOGY.md)
-- [VU_QUANT_2_METHODOLOGY_NAMESPACES.md](../VU_QUANT_2_METHODOLOGY_NAMESPACES.md)
+- [VU_BACKTEST_EVIDENCE_PROVIDER_SPEC.md](../archiv/VU_BACKTEST_EVIDENCE_PROVIDER_SPEC.md)
+- [VU_BACKTEST_METHODOLOGY.md](../archiv/VU_BACKTEST_METHODOLOGY.md)
+- [VU_BACKTEST_TRUST_SCORE.md](../archiv/VU_BACKTEST_TRUST_SCORE.md)
+- [VU_QUANT_2_FACTOR_EVIDENCE.md](../archiv/VU_QUANT_2_FACTOR_EVIDENCE.md)
+- [VU_QUANT_2_FRONTEND_TRANSFORMATION.md](../archiv/VU_QUANT_2_FRONTEND_TRANSFORMATION.md)
+- [VU_QUANT_2_LOST_WORK_REGISTER.md](../archiv/VU_QUANT_2_LOST_WORK_REGISTER.md)
+- [VU_QUANT_2_METHODOLOGY.md](../archiv/VU_QUANT_2_METHODOLOGY.md)
+- [VU_QUANT_2_METHODOLOGY_NAMESPACES.md](../archiv/VU_QUANT_2_METHODOLOGY_NAMESPACES.md)
 - [VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md](../VU_QUANT_2_MOMENTUM_RETURN_BASIS_STUDY.md)
 - [VU_QUANT_2_ORCHESTRATOR_STATE.md](../VU_QUANT_2_ORCHESTRATOR_STATE.md)
-- [VU_QUANT_2_PATTERN_RESEARCH.md](../VU_QUANT_2_PATTERN_RESEARCH.md)
-- [VU_QUANT_2_PRODUCT_CONSTITUTION.md](../VU_QUANT_2_PRODUCT_CONSTITUTION.md)
+- [VU_QUANT_2_PATTERN_RESEARCH.md](../archiv/VU_QUANT_2_PATTERN_RESEARCH.md)
+- [VU_QUANT_2_PRODUCT_CONSTITUTION.md](../archiv/VU_QUANT_2_PRODUCT_CONSTITUTION.md)
 - [VU_QUANT_2_PRODUCT_LANGUAGE.md](../VU_QUANT_2_PRODUCT_LANGUAGE.md)
-- [VU_QUANT_2_SETUP_OBSERVATION.md](../VU_QUANT_2_SETUP_OBSERVATION.md)
+- [VU_QUANT_2_SETUP_OBSERVATION.md](../archiv/VU_QUANT_2_SETUP_OBSERVATION.md)
 - [VU_QUANT_2_TOTAL_DEBT_CENSUS.md](../VU_QUANT_2_TOTAL_DEBT_CENSUS.md)
-- [VU_QUANT_2_ZERO_FACTOR_CLASSIFICATION.md](../VU_QUANT_2_ZERO_FACTOR_CLASSIFICATION.md)
+- [VU_QUANT_2_ZERO_FACTOR_CLASSIFICATION.md](../archiv/VU_QUANT_2_ZERO_FACTOR_CLASSIFICATION.md)
 - [VU_QUANT_BACKTEST_CERTIFICATION.md](../VU_QUANT_BACKTEST_CERTIFICATION.md)
-- [VU_QUANT_BACKTEST_SIGNAL_INTELLIGENCE.md](../VU_QUANT_BACKTEST_SIGNAL_INTELLIGENCE.md)
-- [VU_QUANT_BAND_SEMANTICS.md](../VU_QUANT_BAND_SEMANTICS.md)
-- [VU_QUANT_DAILY_USEFULNESS.md](../VU_QUANT_DAILY_USEFULNESS.md)
-- [VU_QUANT_FINAL_PRODUCT_READINESS.md](../VU_QUANT_FINAL_PRODUCT_READINESS.md)
+- [VU_QUANT_BACKTEST_SIGNAL_INTELLIGENCE.md](../archiv/VU_QUANT_BACKTEST_SIGNAL_INTELLIGENCE.md)
+- [VU_QUANT_BAND_SEMANTICS.md](../archiv/VU_QUANT_BAND_SEMANTICS.md)
+- [VU_QUANT_DAILY_USEFULNESS.md](../archiv/VU_QUANT_DAILY_USEFULNESS.md)
+- [VU_QUANT_FINAL_PRODUCT_READINESS.md](../archiv/VU_QUANT_FINAL_PRODUCT_READINESS.md)
 - [VU_QUANT_FRONTEND_REBUILD.md](../VU_QUANT_FRONTEND_REBUILD.md)
-- [VU_QUANT_METHODOLOGY.md](../VU_QUANT_METHODOLOGY.md)
+- [VU_QUANT_METHODOLOGY.md](../archiv/VU_QUANT_METHODOLOGY.md)
 - [VU_QUANT_PRODUCT_POSITIONING.md](../VU_QUANT_PRODUCT_POSITIONING.md)
-- [VU_QUANT_SHARE_COUNT_AUDIT.md](../VU_QUANT_SHARE_COUNT_AUDIT.md)
+- [VU_QUANT_SHARE_COUNT_AUDIT.md](../archiv/VU_QUANT_SHARE_COUNT_AUDIT.md)
 - [accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md](../accounts/BACKTEST_VORSCHAU_AKTIVIERUNG.md)
-- [marketstack-europe/QUANT_POPULATION.md](../marketstack-europe/QUANT_POPULATION.md)
-- [neustart/C-quant.md](../neustart/C-quant.md)
+- [marketstack-europe/QUANT_POPULATION.md](../archiv/marketstack-europe/QUANT_POPULATION.md)
+- [neustart/C-quant.md](../archiv/neustart/C-quant.md)
 - [quant-recovery/ALPHA_DISCOVERY_V11.md](../quant-recovery/ALPHA_DISCOVERY_V11.md)
 - [quant-recovery/BACKTEST_V10_CERTIFICATION_READINESS.md](../quant-recovery/BACKTEST_V10_CERTIFICATION_READINESS.md)
 - [quant-recovery/BACKTEST_V10_DATA_RECOVERY.md](../quant-recovery/BACKTEST_V10_DATA_RECOVERY.md)
@@ -505,13 +505,13 @@ Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Beri
 - [quant-recovery/v9/events/README.md](../quant-recovery/v9/events/README.md)
 - [quant-recovery/v9/identity/README.md](../quant-recovery/v9/identity/README.md)
 - [quant/BACKTEST_COVERAGE_MATRIX.md](BACKTEST_COVERAGE_MATRIX.md)
-- [quant/BACKTEST_DELISTED_INTEGRATION.md](BACKTEST_DELISTED_INTEGRATION.md)
-- [quant/BACKTEST_P2_DEFIZITE.md](BACKTEST_P2_DEFIZITE.md)
+- [quant/BACKTEST_DELISTED_INTEGRATION.md](../archiv/quant/BACKTEST_DELISTED_INTEGRATION.md)
+- [quant/BACKTEST_P2_DEFIZITE.md](../archiv/quant/BACKTEST_P2_DEFIZITE.md)
 - [quant/BACKTEST_PREVIEW.md](BACKTEST_PREVIEW.md)
 - [quant/BACKTEST_PRODUCT_READINESS_PLAN.md](BACKTEST_PRODUCT_READINESS_PLAN.md)
 - [quant/BACKTEST_RESULT_CONTRACT_V2.md](BACKTEST_RESULT_CONTRACT_V2.md)
 - [quant/BACKTEST_RUNNER.md](BACKTEST_RUNNER.md)
-- [quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md)
+- [quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md](../archiv/quant/DECISIONS_SETUP_OOS_STRATEGY_FACTOR.md)
 - [quant/PORTFOLIO_STANDARD.md](PORTFOLIO_STANDARD.md)
 - [quant/RESEARCH_POPULATION_AND_PORTFOLIO.md](RESEARCH_POPULATION_AND_PORTFOLIO.md)
 - [quant/SETUP_OOS_DECISION_A1_A6.md](SETUP_OOS_DECISION_A1_A6.md)
@@ -520,10 +520,10 @@ Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Beri
 - [quant/backtest-demos/REBUILD_2026-10-30.md](backtest-demos/REBUILD_2026-10-30.md)
 - [quant/backtest-demos/REBUILD_2026-10-31.md](backtest-demos/REBUILD_2026-10-31.md)
 - [quant/research/portfolio-v1/MODEL_PORTFOLIOS.md](research/portfolio-v1/MODEL_PORTFOLIOS.md)
-- [vu2/phases/06-quant-workspace.md](../vu2/phases/06-quant-workspace.md)
-- [vu2/phases/33-backtest-readiness-evidence.md](../vu2/phases/33-backtest-readiness-evidence.md)
-- [vu2/phases/35-backtest-rule-eligibility-preflight.md](../vu2/phases/35-backtest-rule-eligibility-preflight.md)
-- [vu2/release/QUANT2_RELEASE.md](../vu2/release/QUANT2_RELEASE.md)
+- [vu2/phases/06-quant-workspace.md](../archiv/vu2/phases/06-quant-workspace.md)
+- [vu2/phases/33-backtest-readiness-evidence.md](../archiv/vu2/phases/33-backtest-readiness-evidence.md)
+- [vu2/phases/35-backtest-rule-eligibility-preflight.md](../archiv/vu2/phases/35-backtest-rule-eligibility-preflight.md)
+- [vu2/release/QUANT2_RELEASE.md](../archiv/vu2/release/QUANT2_RELEASE.md)
 
 ### Historische Arbeitsstände
 

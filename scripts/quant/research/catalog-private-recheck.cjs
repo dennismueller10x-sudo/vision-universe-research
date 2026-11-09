@@ -64,7 +64,7 @@ function expectation(dir = path.join(ROOT, CATALOG_DIR)) {
       privateInputHashes: r.inputHashes.private, codeHashesRoot: sha(JSON.stringify(r.inputHashes.code)), verify: verifyCounts(verify, e.specHash) });
   });
   return { schemaVersion: VERSION, catalog: CATALOG_DIR, catalogHash: catalog.catalogHash, runner: catalog.runner, entries: catalog.entries.length,
-    privateCases: cases.length, publicCases: catalog.entries.length - cases.length, run: { mark: MARK, workflow: '.github/workflows/quant-v13-archive.yml', secret: 'V13_ARCHIVE_PRIVATE_KEY (+ VU_HISTORY_S3_*)', artifact: 'v13-archive-catalog-<run_id> (catalog/, verify-report.json)' },
+    privateCases: cases.length, publicCases: catalog.entries.length - cases.length, run: { mark: MARK, workflow: '.github/workflows/research.yml', secret: 'V13_ARCHIVE_PRIVATE_KEY (+ VU_HISTORY_S3_*)', artifact: 'v13-archive-catalog-<run_id> (catalog/, verify-report.json)' },
     verifyBaseline: verify ? { results: verify.results, checks: verify.checks, failures: verify.failures, python: verify.python, tolerance: verify.tolerance } : null, cases };
 }
 

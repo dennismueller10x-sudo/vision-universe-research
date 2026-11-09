@@ -1,0 +1,386 @@
+name: Pipeline intraday (Buendel pipeline-intraday)
+
+# Teile (Schritte unveraendert; Job-Bedingungen der Quelle bleiben und werden mit der Auswahl verknuepft):
+#   realtime-eur                 vormals currency-realtime-proof.yml
+#   waechter                     vormals intraday-delivery-watchdog.yml
+# Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
+# Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
+
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
+on:
+  workflow_dispatch:
+    inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
+      teil:
+        description: 'Welcher Teil'
+        type: choice
+        required: true
+        options:
+          - realtime-eur
+          - waechter
+      force: {description: 'realtime-eur: Auch bei geschlossenem Markt laufen (meldet dann NOT_PROVEN)', type: boolean, default: false}
+      site: {description: 'waechter: Zu pruefende Domain', type: string, default: 'https://research.visionuniverse.de'}
+      recover: {description: 'waechter: Bei FAIL einen Zyklus selbst nachholen', type: boolean, default: true}
+  push:
+    branches:
+      - 'claude/**'
+    paths:
+      - '.github/workflows/pipeline-intraday.yml'
+      - 'scripts/quality/verify-realtime-eur.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  auswahl:
+    name: Auswahl des Teils
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      realtime_eur: ${{ steps.wahl.outputs.realtime_eur }}
+      waechter: ${{ steps.wahl.outputs.waechter }}
+    steps:
+      - name: Teil waehlen
+        id: wahl
+        env:
+          # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
+          ACTION: ${{ github.event.action }}
+          REF: ${{ github.ref }}
+          TEIL: ${{ inputs.teil }}
+          SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
+          WR_NAME: ${{ github.event.workflow_run.name }}
+          WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          # Dateiliste beim push: Compare-API zwischen before und sha (die Commit-Liste des push-Ereignisses traegt in Actions
+          # kein added/modified/removed; Lauf 42598972028 waehlte deshalb nichts). Vertragstest WB-7.
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
+          INPUTS: ${{ toJSON(inputs) }}
+        run: |
+          set -euo pipefail
+          # Geaenderte Dateien des Pushs. Neuer Zweig (Basis 000...), API-Fehler oder abgeschnittene Liste
+          # (300 Dateien): unbekannt - dann gilt jede Pfadbedingung als erfuellt (im Zweifel ausfuehren).
+          PUSH_FILES="$RUNNER_TEMP/push-files.txt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=0
+          if [ "${EVENT:-}" = push ]; then
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ]; then PUSH_FILES_UNKNOWN=1
+            elif gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[].filename' > "$PUSH_FILES"; then
+              [ "$(wc -l < "$PUSH_FILES")" -lt 300 ] || PUSH_FILES_UNKNOWN=1
+            else echo "::warning::Compare-API ohne Ergebnis - Pfadbedingungen gelten als erfuellt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=1; fi
+          fi
+          echo "Dateien im Push: $(wc -l < "$PUSH_FILES"), unbekannt=$PUSH_FILES_UNKNOWN"
+          export PUSH_FILES PUSH_FILES_UNKNOWN
+          python3 - <<'PY'
+          import fnmatch, json, os, re
+          SPEC = json.loads(r"""{"realtime-eur": {"crons": ["0 15 * * 1-5", "0 18 * * 1-5"], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["scripts/quality/verify-realtime-eur.mjs", ".github/workflows/pipeline-intraday.yml"]}, "required": []}, "waechter": {"crons": ["*/15 13-21 * * 1-5"], "dispatch": true, "required": []}}""")
+          ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
+          def glob_re(p):
+              # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
+              out, i = "", 0
+              while i < len(p):
+                  c = p[i]
+                  if p.startswith("**/", i): out += "(?:.*/)?"; i += 3; continue
+                  if p.startswith("**", i): out += ".*"; i += 2; continue
+                  if c == "*": out += "[^/]*"
+                  elif c == "?": out += "[^/]"
+                  elif c == "[":
+                      j = p.index("]", i); out += p[i:j + 1]; i = j + 1; continue
+                  else: out += re.escape(c)
+                  i += 1
+              return re.compile("^" + out + "$")
+          def match_list(pats, value):
+              ok = False
+              for p in pats:
+                  neg = p.startswith("!")
+                  if glob_re(p[1:] if neg else p).match(value): ok = not neg
+              return ok
+          def files():
+              # None = Liste unbekannt (siehe Schritt oben); sonst die geaenderten Pfade des Pushs
+              if os.environ.get("PUSH_FILES_UNKNOWN") == "1": return None
+              with open(os.environ["PUSH_FILES"]) as fh: return {l.strip() for l in fh if l.strip()}
+          def push_ok(r):
+              if ref.startswith("refs/heads/"):
+                  name = ref[11:]
+                  if "branches" in r and not match_list(r["branches"], name): return False
+                  if "branches-ignore" in r and match_list(r["branches-ignore"], name): return False
+                  if ("tags" in r) and "branches" not in r and "branches-ignore" not in r: return False
+              elif ref.startswith("refs/tags/"):
+                  name = ref[10:]
+                  if "tags" in r and not match_list(r["tags"], name): return False
+                  if "tags-ignore" in r and match_list(r["tags-ignore"], name): return False
+                  if ("branches" in r or "branches-ignore" in r) and "tags" not in r and "tags-ignore" not in r: return False
+              else: return False
+              if "paths" in r or "paths-ignore" in r:
+                  fs = files()
+                  if fs is None: return True  # Dateiliste unbekannt: im Zweifel ausfuehren, nie still 'keine Datei'
+                  if "paths" in r and not any(match_list(r["paths"], f) for f in fs): return False
+                  if "paths-ignore" in r and all(match_list(r["paths-ignore"], f) for f in fs): return False
+              return True
+          out = {}
+          for teil, r in SPEC.items():
+              v = False
+              if ev == "workflow_dispatch":
+                  v = bool(r.get("dispatch")) and os.environ.get("TEIL") == teil
+                  if v:
+                      # Pflichteingaben der Quelle gelten nur fuer ihren Teil (im Buendel optional)
+                      vals = json.loads(os.environ.get("INPUTS") or "{}") or {}
+                      fehlt = [n for n in (r.get("required") or []) if str(vals.get(n) if vals.get(n) is not None else "").strip() == ""]
+                      if fehlt: raise SystemExit("Pflichteingabe fehlt fuer Teil " + teil + ": " + ", ".join(fehlt))
+              elif ev == "schedule": v = os.environ.get("SCHEDULE") in (r.get("crons") or [])
+              elif ev == "push": v = "push" in r and push_ok(r["push"])
+              elif ev == "workflow_run" and "workflow_run" in r:
+                  w = r["workflow_run"]; b = os.environ.get("WR_BRANCH", "")
+                  v = os.environ.get("WR_NAME") in w["workflows"] and os.environ.get("ACTION") in w["types"]
+                  if v and w.get("branches") is not None: v = match_list(w["branches"], b)
+                  if v and w.get("branches-ignore") is not None: v = not match_list(w["branches-ignore"], b)
+              elif ev == "repository_dispatch" and "repository_dispatch" in r:
+                  t = r["repository_dispatch"]; v = t is None or os.environ.get("ACTION") in t
+              out[teil.replace("-", "_")] = "true" if v else "false"
+          with open(os.environ["GITHUB_OUTPUT"], "a") as fh:
+              for k, v in out.items(): fh.write(k + "=" + v + "\n"); print(k + "=" + v)
+          PY
+
+  # --- realtime-eur: vormals currency-realtime-proof.yml, Job marker
+  realtime-eur-marker:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.realtime_eur == 'true'
+    permissions: {contents: write}
+    concurrency:
+      group: currency-realtime-proof
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      run: ${{ steps.read.outputs.run }}
+    steps:
+      - name: Marker aus der Betreffzeile lesen
+        id: read
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          EVENT_NAME: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
+        run: |
+          if [ "$EVENT_NAME" != "push" ]; then
+            echo "run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          subject=$(printf '%s\n' "$COMMIT_MESSAGE" | head -n 1)
+          echo "Betreffzeile: $subject"
+          case "$subject" in
+            *"[rt-proof]"*) echo "run=true"  >> "$GITHUB_OUTPUT" ;;
+            *)              echo "run=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+  # --- realtime-eur: vormals currency-realtime-proof.yml, Job proof
+  realtime-eur-proof:
+    needs: [auswahl, realtime-eur-marker]
+    if: >-
+      needs.auswahl.outputs.realtime_eur == 'true' && (needs.realtime-eur-marker.outputs.run == 'true')
+    permissions: {contents: write}
+    concurrency:
+      group: currency-realtime-proof
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist ein Zugang hinterlegt?
+        id: secret
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          if [ -n "$TIINGO_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo 'Kein TIINGO_API_KEY. Der Nachweis kann nicht gefuehrt werden.'
+          fi
+
+      - name: Zentraler Intraday-FX-State
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        continue-on-error: true
+        run: node scripts/market/ingest-fx-intraday.mjs --max-pairs=4
+
+      - name: Realtime-EUR-Nachweis
+        if: steps.secret.outputs.available == 'true'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/quality/verify-realtime-eur.mjs --publish
+
+      - name: Ohne Zugang bleibt der Nachweis offen
+        if: steps.secret.outputs.available != 'true'
+        run: node scripts/quality/verify-realtime-eur.mjs --publish
+
+      - name: Der Bericht enthaelt keinen Schluessel und keine Rohkurse
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: |
+          node -e '
+            const fs = require("fs");
+            const file = "quant/data/market/capabilities/realtime-eur-proof.json";
+            if (!fs.existsSync(file)) { console.log("Kein Bericht."); process.exit(0); }
+            const raw = fs.readFileSync(file, "utf8");
+            const key = process.env.TIINGO_API_KEY;
+            if (key && key.length >= 8 && raw.includes(key)) {
+              console.error("ABBRUCH: der Bericht enthaelt den Zugangsschluessel."); process.exit(1);
+            }
+            if (/[?&]token=/i.test(raw)) {
+              console.error("ABBRUCH: Anfrage-URL mit Token im Bericht."); process.exit(1);
+            }
+            console.log("Bericht frei von Zugangsdaten.");
+          '
+
+      - name: Bericht in den Zweig
+        if: always()
+        run: |
+          if [ -f quant/data/market/capabilities/realtime-eur-proof.json ]; then
+            bash scripts/ci/commit-and-push.sh \
+              "Realtime-EUR-Nachweis (automatischer Lauf)" \
+              quant/data/market/capabilities/realtime-eur-proof.json
+          fi
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Realtime-EUR — Nachweis'
+            echo ''
+            if [ -f quant/data/market/capabilities/realtime-eur-proof.json ]; then
+              node -e '
+                const p = require("./quant/data/market/capabilities/realtime-eur-proof.json");
+                console.log("**REALTIME_FX = " + p.verdict + "**");
+                console.log("");
+                console.log(p.verdictMeaning);
+                console.log("");
+                console.log("| Pruefung | Zustand | Detail |");
+                console.log("|---|---|---|");
+                for (const c of p.checks) console.log("| " + c.id + " " + c.title + " | " + c.state + " | " + (c.detail || "").slice(0, 120) + " |");
+              '
+            else
+              echo 'Kein Bericht erzeugt.'
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # --- waechter: vormals intraday-delivery-watchdog.yml, Job pruefen
+  waechter-pruefen:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.waechter == 'true'
+    permissions: {contents: write}
+    name: Kette pruefen
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    # BEWUSST OHNE Concurrency-Gruppe: das Urteil muss auch dann
+    # entstehen, wenn ein Taktgeber laeuft. Ein Waechter, der hinter dem
+    # wartet, was er ueberwacht, meldet nie etwas.
+    outputs:
+      verdict: ${{ steps.wacht.outputs.verdict }}
+      codes: ${{ steps.wacht.outputs.codes }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Urteil bilden
+        id: wacht
+        env:
+          # Eingaben nur ueber env: (ADR-005); beim Takt gilt die Produktionsseite wie beim Zeitplan.
+          IN_SITE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.site || 'https://research.visionuniverse.de' }}
+        run: |
+          node scripts/market/assert-intraday-delivery.mjs \
+            --site="$IN_SITE" \
+            | tee /tmp/wacht.txt
+          node -e '
+            const w = require("./quant/data/market/commercial/intraday-delivery-watchdog.json");
+            const fs = require("node:fs");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "verdict=" + w.verdict + "\n");
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "codes=" + (w.findings||[]).map(f=>f.code).join(",") + "\n");
+          '
+
+      - name: Zusammenfassung
+        if: always()
+        run: |
+          {
+            echo '### Waechter · '"${{ steps.wacht.outputs.verdict }}"
+            echo ''
+            echo '```'
+            cat /tmp/wacht.txt 2>/dev/null || echo 'kein Urteil'
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Ein FAIL bleibt ein FAIL
+        if: steps.wacht.outputs.verdict == 'FAIL'
+        run: |
+          echo "::error::Intraday-Auslieferung FAIL: ${{ steps.wacht.outputs.codes }}"
+          exit 1
+
+  # --- waechter: vormals intraday-delivery-watchdog.yml, Job nachholen
+  waechter-nachholen:
+    needs: [auswahl, waechter-pruefen]
+    if: >-
+      needs.auswahl.outputs.waechter == 'true' && (always() && needs.waechter-pruefen.outputs.verdict == 'FAIL' && (contains(needs.waechter-pruefen.outputs.codes, 'keinZyklus') || contains(needs.waechter-pruefen.outputs.codes, 'taktAusgefallen') || contains(needs.waechter-pruefen.outputs.codes, 'falscheSitzung')) && (!(github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || inputs.recover))
+    permissions: {contents: write}
+    name: Einen Zyklus nachholen
+    # Nur bei den Befunden, die ein fehlender Takt erzeugt. Ein zu alter
+    # Stand, weil der Anbieter nichts liefert, ist mit einem weiteren
+    # Abruf nicht zu heilen - dort waere ein Nachholen nur Verkehr.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    concurrency:
+      # Dieselbe Gruppe wie der Taktgeber: nie zwei Schreiber auf
+      # denselben Dateien. Laeuft ein Block, wartet die Reparatur -
+      # und ist danach meist ueberfluessig, was sie selbst merkt.
+      # Je Zweig eine Gruppe: Laeufe auf claude/** stehen nicht mehr in der
+      # Warteschlange von main (eine neue wartende Anfrage verdraengt die
+      # aeltere wartende - auch eine uebersprungene). Audit 03.10.2026.
+      group: intraday-pacemaker-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Ist die Lage noch dieselbe?
+        id: nochmal
+        run: |
+          node scripts/market/assert-intraday-delivery.mjs --quiet || true
+          node -e '
+            const w = require("./quant/data/market/commercial/intraday-delivery-watchdog.json");
+            const fs = require("node:fs");
+            console.log("Urteil jetzt: " + w.verdict);
+            fs.appendFileSync(process.env.GITHUB_OUTPUT, "verdict=" + w.verdict + "\n");
+          '
+
+      - name: Einen Zyklus holen
+        if: steps.nochmal.outputs.verdict == 'FAIL'
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/run-pacemaker.mjs --max-cycles=1
+
+      - name: Kein Schluessel im Statusbericht
+        if: always()
+        env:
+          TIINGO_API_KEY: ${{ secrets.TIINGO_API_KEY }}
+        run: node scripts/market/assert-no-secrets.mjs

@@ -4,6 +4,7 @@
 #
 # Aufruf: scripts/ci/push-data-branch.sh <branch> <pfad>...
 # - Jeder Pfad wird aus dem Arbeitsbaum des Laufs in denselben Pfad des Datenzweigs kopiert.
+# - Ein Verzeichnis (z. B. Shards) wird gespiegelt: was im Lauf fehlt, fehlt danach auch im Zweig.
 # - Der Zweig traegt nur Daten (verwaiste Historie, kein Code); fehlt er, wird er angelegt.
 # - Schreibhoheit je Pfad liegt beim Erzeuger: bei einem Wettlauf wird neu geholt und der eigene
 #   Stand erneut eingesetzt, nie zeilenweise zusammengefuehrt.
@@ -14,7 +15,7 @@ BRANCH="${1:?Branch fehlt}"; shift
 case "$BRANCH" in main|master) echo "Datenzweig darf nicht $BRANCH sein" >&2; exit 2;; esac
 for p in "$@"; do
   case "$p" in /*|*..*) echo "unzulaessiger Pfad: $p" >&2; exit 2;; esac
-  [ -f "$p" ] || { echo "Datei fehlt: $p" >&2; exit 2; }
+  [ -f "$p" ] || [ -d "$p" ] || { echo "Datei fehlt: $p" >&2; exit 2; }
 done
 
 SRC="$(pwd)"
@@ -32,8 +33,12 @@ for versuch in 1 2 3 4 5; do
     git -C "$WORK" rm -rq --cached . >/dev/null 2>&1 || true
     find "$WORK" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
   fi
-  for p in "$@"; do mkdir -p "$WORK/$(dirname "$p")"; cp "$SRC/$p" "$WORK/$p"; done
-  git -C "$WORK" add -- "$@"
+  for p in "$@"; do
+    p="${p%/}"
+    mkdir -p "$WORK/$(dirname "$p")"
+    if [ -d "$SRC/$p" ]; then rm -rf "${WORK:?}/$p"; cp -R "$SRC/$p" "$WORK/$p"; else cp "$SRC/$p" "$WORK/$p"; fi
+  done
+  git -C "$WORK" add -A -- "${@%/}"
   if git -C "$WORK" diff --cached --quiet; then echo "Datenzweig $BRANCH unveraendert"; exit 0; fi
   git -C "$WORK" -c user.name="${GIT_AUTHOR_NAME:-vision-universe-bot}" -c user.email="${GIT_AUTHOR_EMAIL:-actions@users.noreply.github.com}" \
     commit --quiet -m "Daten: $* (${GITHUB_WORKFLOW:-lokal}, Lauf ${GITHUB_RUN_ID:-0})"

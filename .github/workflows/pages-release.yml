@@ -43,7 +43,10 @@ on:
       - "Multi-Asset Data Core — Faehigkeiten und Daten"
       # Neue Titel bekommen ihr Logo nach dem Marktdaten-Refresh; der
       # Logo-Lauf pusht mit dem GITHUB_TOKEN und loest sonst nichts aus.
-      - "Firmenlogos (Wikimedia Commons und Firmen-Websites fuer Discover)"
+      # Seit dem Buendel pipeline-weekly (08.11.2026) laufen Logos, Company-Namen,
+      # Deckungskennzahlen und Index-Mitgliedschaft dort als Teile; jeder Buendellauf
+      # fuehrt genau einen Teil aus, also wie vorher je Datenlauf ein Release.
+      - "Pipeline woechentlich (Buendel pipeline-weekly)"
       # Plattform-Audit 03.10.2026: diese Datenlaeufe pushen ebenfalls mit
       # dem GITHUB_TOKEN und kamen bisher erst mit der naechsten Bruecke
       # (Mo-Fr 13-21 UTC) auf die Seite - Samstagslaeufe (Supertrader-
@@ -55,18 +58,18 @@ on:
       # Lauf oder der Bruecke (Mo-Fr ab 13 UTC) auf die Seite.
       - "Supertrader 8 Research-Kandidaten (Tageslauf)"
       - "SEC Fundamentals — Daily Incremental"
-      - "Index-Mitgliedschaft (S&P 500, NASDAQ-100, Dow Jones aus Fondsbestaenden)"
       - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
       - "Company Master — Universum, Suchindex, CIK"
-      - "Company-Namen (kanonische Namensschicht zum Company Master)"
-      - "Kanonische Deckungskennzahlen (R2-Index, Company Master, Abgleich)"
       - "Quant 2.0 Product Intelligence Materialization"
       - "Content (News, Analystenbewertungen, Hedgefonds 13F, Morning)"
       # Die Startseite setzt nach den Datenlaeufen ihre Abbildungswerte neu ein
       # und pusht mit dem GITHUB_TOKEN.
       - "Startseite: Werte der Produktabbildungen"
       # Chartbild (Technical Intelligence v3): neu gebaute Produktdaten, ebenfalls per GITHUB_TOKEN gepusht.
-      - "Chartbild-Produktdaten (Technical Intelligence v3)"
+      # Seit Stufe 7 (08.11.2026) laeuft das Chartbild (vormals technical-intelligence-build.yml) als Teil in
+      # pipeline-daily. Geliefert wird nur ein Buendellauf mit der Marke [seite] im Lauftitel (siehe dort run-name);
+      # alle anderen Buendellaeufe gehen in die Ignorier-Gruppe und ueberspringen den Release mit Hinweis.
+      - "Pipeline taeglich (Buendel pipeline-daily)"
       # Europa-Schlusskurse (werktags nach Handelsschluss, pusht per
       # GITHUB_TOKEN). Der erste Zeitplan-Lauf (04.11.2026, Lauf 41929023243)
       # startete um 22:52 UTC, ausserhalb der Bruecke: ohne diesen Eintrag
@@ -104,8 +107,9 @@ on:
   # Belegt ist allein eine Untergrenze von 5.000 Anfragen je Stunde
   # ohne Ablehnung. Die 527 Titel brauchen damit 5:01, und §7 des
   # Auftrags verbietet, die Drossel ohne Beleg zu lockern.
-  schedule:
-    - cron: '*/5 13-21 * * 1-5'
+  # Kein eigener Zeitplan mehr: der Cloudflare-Wecker stoesst die Auslieferung
+  # werktags */5 13-21 UTC an, wenn keine laeuft (core/registry/schedule.json,
+  # direktImWecker; RUNBOOK §10).
 
   workflow_dispatch:
     inputs:
@@ -130,10 +134,24 @@ permissions:
 concurrency:
   # A skipped workflow_run must not evict a pending, valid consumer release.
   # Successful production triggers still share the existing serialized queue.
-  group: ${{ github.event_name == 'pull_request' && format('pages-production-pr-{0}', github.event.pull_request.number) || github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success' && format('pages-production-ignored-{0}', github.run_id) || 'pages-production' }}
+  group: ${{ github.event_name == 'pull_request' && format('pages-production-pr-{0}', github.event.pull_request.number) || github.event_name == 'workflow_run' && !(github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.name != 'Pipeline taeglich (Buendel pipeline-daily)' || contains(github.event.workflow_run.display_title, '[seite]'))) && format('pages-production-ignored-{0}', github.run_id) || 'pages-production' }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  # Sichtbarer Hinweis, wenn ein Buendellauf von pipeline-daily keine Seitendaten hatte (keine Marke [seite]).
+  ohne-seitendaten:
+    if: >-
+      github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.name == 'Pipeline taeglich (Buendel pipeline-daily)' &&
+      !contains(github.event.workflow_run.display_title, '[seite]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Kein Release
+        env:
+          TITEL: ${{ github.event.workflow_run.display_title }}
+        run: echo "::notice::Kein Release - der Buendellauf '$TITEL' enthielt keinen Teil mit Seitendaten (Marke [seite] fehlt)."
+
   package:
     outputs:
       source_sha: ${{ steps.delivery_contract.outputs.source_sha }}
@@ -145,7 +163,7 @@ jobs:
     # scripts/ci/push-with-retry.sh). Dann gibt es auch nichts zu bauen.
     if: >-
       github.event_name != 'workflow_run' ||
-      github.event.workflow_run.conclusion == 'success'
+      (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.name != 'Pipeline taeglich (Buendel pipeline-daily)' || contains(github.event.workflow_run.display_title, '[seite]')))
     steps:
       - uses: actions/checkout@v4
         with:
@@ -179,6 +197,11 @@ jobs:
       # Fehlt sie, entstehen in diesem Release keine Ereignisse; die Auslieferung haengt nicht davon ab.
       - name: Veroeffentlichte Watchlist-Uebersicht als Vergleichsstand holen
         run: node scripts/watchlist/fetch-published.mjs --site=https://research.visionuniverse.de --out="$RUNNER_TEMP/watchlist-prev" || echo "ohne Vergleichsstand"
+      # Datenzweig vor dem Bau (Plan Neustart §3): der Release-Bau leitet aus Daten ab (Supertrader, Faktor-Shards,
+      # Universum, SEC). Liegen sie nur noch im Datenzweig (BRANCH_ONLY), muss der Bau sie sehen. Commit-sicher
+      # (skip-worktree/exclude); der Schritt nach dem Bau legt danach jede registrierte Datei aus dem Zweig darueber.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build static product delivery
         env:
           VU_WATCHLIST_PREVIOUS: ${{ runner.temp }}/watchlist-prev

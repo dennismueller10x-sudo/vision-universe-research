@@ -48,7 +48,7 @@ Verwaist/tot (Aufräumen separat): `quant/markt` (Datenpfad `market/daily/` fehl
 | `technical-signals-v1` | Materialisierung im selben Lauf | nachts |
 | `discover-series-long` | `long-series.yml` | Volllauf samstags und 1.–7. des Monats; **Reparaturlauf Di–Sa 04:20 UTC** (#858) |
 | `intraday/` | `intraday-pacemaker.yml`, `intraday-snapshots.yml` | 5-Min-Takt in der Sitzung (Live-Umfang ~1 400), Gesamtuniversum nach Schluss (~5 000); **2 Sitzungen** vorgehalten |
-| `technical-intelligence/v3` | `technical-intelligence-build.yml` | täglich 05:35 UTC |
+| `technical-intelligence/v3` | `pipeline-daily.yml`, Teil `technical-intelligence` (vormals `technical-intelligence-build.yml`) | täglich 05:35 UTC |
 | Live | Worker `vu-live` | Echtzeit, nur auf Aktienseiten |
 
 ---
@@ -237,4 +237,4 @@ Jeder Schritt: Vorher/Nachher-Bilder bei 390 und 1 280 px, hell und dunkel, Pari
 5. **Supertrader-Wochenkontext** (`engine/weekly.mjs`): Titel mit offenem DQ-PX-4-Befund aussetzen, bis repariert (seit #858 höchstens bis zum nächsten Reparaturlauf).
 6. **Je Produktwelt die UI-Umsetzung M1–M6.**
 
-Gate-Audit (Bestandsaufnahme, Empfehlungen): `docs/audits/GATE_AUDIT_2026-10-23.md`.
+Gate-Audit (Bestandsaufnahme, Empfehlungen): `docs/archiv/audits/GATE_AUDIT_2026-10-23.md`.

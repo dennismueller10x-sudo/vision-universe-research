@@ -1,0 +1,245 @@
+{
+ "schema": "vu-europe-esef-sources-1",
+ "checkedAt": "2026-11-08",
+ "scope": "DAX, deutsche Emittenten (36; Airbus SE ist kein deutscher Emittent)",
+ "rule": "Nur ESEF-Pakete von der eigenen Website des Emittenten (oder dessen verlinktem Datei-Host); SHA-256 bindet die Datei. Nicht: Unternehmensregister, Bundesanzeiger, Datenanbieter.",
+ "sources": [
+  {
+   "ticker": "BEI.DE",
+   "lei": "L47NHHI0Z9X22DV46U41",
+   "name": "Beiersdorf Aktiengesellschaft",
+   "fiscalYearEnd": "2025-12-31",
+   "language": "de",
+   "scope": "CONSOLIDATED",
+   "zipUrl": "https://www.beiersdorf.de/~/media/Beiersdorf/investors/financial-publication/2026/annual-report/Beiersdorf_AG_KA-2025_ESEF.xbri",
+   "pageUrl": "https://www.beiersdorf.de/investor-relations/finanzberichte/finanzberichte-und-praesentationen",
+   "sha256": "0c17db45d08eb3cd0d199c4f0ace20a77338794ee25444f34f29d00aef0c8f7d",
+   "bytes": 2452900
+  },
+  {
+   "ticker": "DBK.DE",
+   "lei": "7LTWFZYICNSX8D621K86",
+   "name": "DEUTSCHE BANK AKTIENGESELLSCHAFT",
+   "fiscalYearEnd": "2025-12-31",
+   "language": "de",
+   "scope": "CONSOLIDATED",
+   "zipUrl": "https://investor-relations.db.com/files/documents/annual-reports/2025/Deutsche-Bank-AG-KA-KLB-ESEF-2025-12-31.zip",
+   "pageUrl": "https://investor-relations.db.com/reports-and-events/annual-reports/index?language_id=3",
+   "sha256": "875510b4017ffb04d846cd6c9302ceaba36b3715a5367fabb72bdc362b4054c9",
+   "bytes": 5870072
+  },
+  {
+   "ticker": "VOW3.DE",
+   "lei": "529900NNUPAGGOMPXZ31",
+   "name": "VOLKSWAGEN AKTIENGESELLSCHAFT",
+   "fiscalYearEnd": "2025-12-31",
+   "language": "de",
+   "scope": "CONSOLIDATED",
+   "zipUrl": "https://uploads.vw-mms.de/system/production/files/cws/041/941/file/00d8d2096bb900de99e1115b0bb6a000f60579c0/VWAG_JFB_Konzern-2025-12-31-DE.zip?1773119036",
+   "pageUrl": "https://www.volkswagen-group.com/en/financial-reports-18134",
+   "sha256": "c14269a137c3fd41d6909ec889535b41dc1ea7480ac640105c59f59f6544c17a",
+   "bytes": 5790455,
+   "reportFile": "VWAGAbschlussAnhang_IFRS_Konzern-2025-12-31-de.xhtml"
+  }
+ ],
+ "notFound": [
+  {
+   "ticker": "ADS.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Own IR (adidas-group.com/de/investoren/finanzberichte) and report microsite downloads list only PDF/XLSX for 2025; zips on the IR page are older quarterly results bundles, no ESEF package."
+  },
+  {
+   "ticker": "ALV.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Annual report page offers Konzern and Allianz SE Geschaeftsbericht 2025 as PDF only; no ESEF/zip/xbri link in page HTML."
+  },
+  {
+   "ticker": "BAS.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Reporting page and report microsite downloads (bericht.basf.com/2025/de/services/downloads.html) offer BASF-Bericht 2025 as PDF/XLSX only; no ESEF package."
+  },
+  {
+   "ticker": "BAYN.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Annual reports page and reports.bayer.com downloads offer PDF/XLSX only; no ESEF package."
+  },
+  {
+   "ticker": "BMW.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Unternehmensberichte page and report downloads page list BMW Group Bericht 2025, Konzernabschluss and AG Jahresabschluss as PDF/XLSX only; no ESEF package."
+  },
+  {
+   "ticker": "BNR.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Report download center lists only PDFs (9 files); no ESEF package found."
+  },
+  {
+   "ticker": "CBK.DE",
+   "status": "BLOCKED",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "TLS verification fails for investor-relations.commerzbank.com (unable to get local issuer certificate; TLS not bypassed), WebFetch HTTP 503. Search snippets of the page state reports are available exclusively as PDF, so an ESEF package is u"
+  },
+  {
+   "ticker": "CON.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Finanzberichte page offers Geschaeftsbericht 2025 and AG-Bericht 2025 as PDF only. Auditor report names Continental_AG_KAuKLB_ESEF-2025-12-31-1-de.xbri but it is not linked on the site."
+  },
+  {
+   "ticker": "DB1.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Annual report 2025 page offers PDFs and a zip of all chapter PDFs (Pdfs-Dateien-alle-Kapitel-GB-2025.zip), not an ESEF package; no ESEF/xbri link."
+  },
+  {
+   "ticker": "DHL.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Reporting hub (reporting-hub.group.dhl.com) offers Geschaeftsbericht 2025 as PDF only and states ESEF sections are published in the Unternehmensregister; IR download center is JS-rendered (no links in HTML, WebFetch 503)."
+  },
+  {
+   "ticker": "DTE.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Downloads page (~900 PDF links) has only 1996-2000 report zips; Geschaeftsbericht 2025 and AG Einzelabschluss as PDF only; no ESEF package."
+  },
+  {
+   "ticker": "DTG.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "IR financial reports page lists 2025 Geschaeftsbericht and DTH AG Jahresabschluss as PDF only; no ESEF/zip/xbri link."
+  },
+  {
+   "ticker": "ENR.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-09-30",
+   "note": "Publications page lists FY2025 (ending 30 Sep 2025) annual report and AG statements as PDF only; auditor names SiemensEnergyAGEA-2025-09-30-v01-de.zip (single entity) and refers to this page, but no zip/xbri link is in the HTML (also checke"
+  },
+  {
+   "ticker": "EOAN.DE",
+   "status": "BLOCKED",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "HTTP 403 from www.eon.com and annualreport.eon.com for curl and WebFetch (bot protection); could not check for an ESEF package."
+  },
+  {
+   "ticker": "FME.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Only SEC XBRL zips are offered (FY2025: /content/dam/fresenius-medical-care/global/en/03_investors/pdf/03_publications/2025/q4-fy/Fresenius_Medical_Care_AF_20-F_XBRL.zip - Form 20-F, not ESEF; not downloaded). No ESEF package."
+  },
+  {
+   "ticker": "G1A.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "2025 annual report page (cdn.gea.com) offers PDFs only (report, HGB statements, presentations); no ESEF package."
+  },
+  {
+   "ticker": "G24.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "IR reports page lists Geschaeftsbericht 2025 and Einzelabschluss SE 2025 as PDF only; no ESEF package."
+  },
+  {
+   "ticker": "HEI.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "IR reports page lists 2025 report (PDF), Jahresabschluss (PDF), factsheet (XLSX); no ESEF package. Auditor note mentions an ESEF zip for the AG single entity, not published on the site."
+  },
+  {
+   "ticker": "HEN3.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Finanzberichte page lists Geschaeftsbericht 2025 (DE) and Annual Report 2025 (EN) as PDF only; no ESEF package."
+  },
+  {
+   "ticker": "HNR1.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Annual report page (static HTML) has PDF/XLSX only; auditor note names an AG single-entity ESEF zip that is not linked on the site; no group ESEF package."
+  },
+  {
+   "ticker": "HOT.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Page (JS, read via WebFetch) lists Group Report 2025 and AG financial statements as PDF (mmdbdownload) only; no ESEF package visible (some items behind Show More)."
+  },
+  {
+   "ticker": "IFX.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-09-30",
+   "note": "Annual reports page lists FY2025 (ending 30 Sep 2025) Geschaeftsbericht/Jahresabschluss PDFs only; no ESEF package. FY2026 report (due ~Nov 2026) not found yet."
+  },
+  {
+   "ticker": "MRK.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "merckgroup.com redirects to emdgroup.com from this (US) network location; reports page lists PDFs/XLSX only and states the official ESEF annual financial report is filed with the Bundesanzeiger; no ESEF package on site."
+  },
+  {
+   "ticker": "MTX.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Finanzberichte page lists Geschaeftsbericht 2025 and Einzelabschluss PDFs only; no ESEF package."
+  },
+  {
+   "ticker": "MUV2.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Results & Reports pages (DE/EN) list Group and Company annual report 2025 as PDF only; no ESEF package."
+  },
+  {
+   "ticker": "RHM.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Publications page (~290 PDF links) has no ESEF/zip/xbri link; Geschaeftsbericht 2025 and AG Jahresabschluss 2025 as PDF only."
+  },
+  {
+   "ticker": "RWE.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Reporting page lists FY2025 annual report and RWE AG statements as PDF only; no ESEF package."
+  },
+  {
+   "ticker": "SAP.DE",
+   "status": "BLOCKED",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "sap.com returns Akamai Access Denied (HTTP 403) to curl and WebFetch from this network, including the known 2025 PDF URL; could not check. Auditor report names package sap-2025-12-31-DE.xbri; whether it is published on sap.com is unconfirme"
+  },
+  {
+   "ticker": "SHL.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-09-30",
+   "note": "Reports page (133 PDF links) has FY2025 annual report PDF; no ESEF package. FY2026 Q4 results (5 Nov 2026) are out but FY2026 annual report not yet published."
+  },
+  {
+   "ticker": "SIE.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-09-30",
+   "note": "IR pages and siemens.com/siemensreport give the FY2025 report as PDF; report text states the ESEF version is filed only with the Unternehmensregister. FY2026 results out (Nov 2026) but FY2026 annual report not yet published."
+  },
+  {
+   "ticker": "SY1.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Financial results page lists Corporate/Financial Report 2025 and HGB Einzelabschluss as PDF only (signed securedl links); no ESEF package."
+  },
+  {
+   "ticker": "VNA.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Results page and report.vonovia.com/2025/q4 downloads list PDF/XLS only; auditor names Vonovia_SE_KA+LB_ESEF-2025-12-31-1-de.xbri but it is not linked on the site."
+  },
+  {
+   "ticker": "ZAL.DE",
+   "status": "NOT_FOUND",
+   "fiscalYearEnd": "2025-12-31",
+   "note": "Financial reporting and annual-report-2025 pages offer PDF only; no ESEF package."
+  }
+ ]
+}

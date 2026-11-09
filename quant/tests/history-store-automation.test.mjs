@@ -15,6 +15,7 @@
  * abgewiesener Repo-Push ihn nicht mitnimmt.
  */
 import test from "node:test";
+import { takteVon } from "../../scripts/core/schedule-registry.mjs";
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
@@ -44,8 +45,8 @@ test("irgendein Workflow fuehrt den Push in die dauerhafte Ablage aus", () => {
 });
 
 test("der Abruf laeuft planmaessig - sonst zieht ihn niemand nach", () => {
-  assert.match(refresh, /^\s+schedule:/m);
-  assert.match(refresh, /cron:\s*'[^']*'/,
+  /* Zeitplan steht im Register (ein Zeitgeber, RUNBOOK §10) */
+  assert.ok(takteVon("market-data-refresh.yml").length > 0,
     "ohne Zeitplan haengt die Aktualitaet der Ablage an einem Menschen, der dispatcht");
 });
 

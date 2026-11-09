@@ -38,6 +38,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync, spawn } from "node:child_process";
 import { createRequire } from "node:module";
+import { takteVon } from "../../scripts/core/schedule-registry.mjs";
 
 const require = createRequire(import.meta.url);
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -425,21 +426,24 @@ test("RF13 · Monitor: jedes verlangte Feld; Ueberwachung ohne Fehlalarm", () =>
 /* ---------------------------------------------------------------- RF14 */
 test("RF14 · Workflow und Wecker: ADR-005, Namen, Kosten, Isolation", () => {
   const wf = readFileSync(join(ROOT, ".github", "workflows", "discover-im-blick-live.yml"), "utf8");
-  assert.match(wf, /cron: '27 15-21 \* \* 1-5'/);
+  // Takt: der Cloudflare-Wecker stoesst direkt an (Minute 5/35, 15-21 UTC, WK-24); kein GitHub-Cron daneben (Plan Neustart §3, SZ-9).
+  assert.doesNotMatch(wf, /^\s*-\s*cron:/m);
+  assert.match(readFileSync(join(ROOT, "worker-waker", "src", "index.mjs"), "utf8"), /const IMBLICK = "discover-im-blick-live\.yml"/);
   assert.match(wf, /workflow_dispatch:/);
   assert.match(wf, /timeout-minutes: 10/, "kein Dauerlaeufer");
   assert.doesNotMatch(wf, /\bsleep\b|while true|seq 1/, "keine Endlosschleife, keine Wartezeit im Lauf");
-  assert.match(wf, /scripts\/ci\/push-with-retry\.sh/);
+  assert.match(wf, /scripts\/ci\/seed-data-branch\.sh discoverImBlickLive/);
+  assert.match(wf, /scripts\/ci\/push-data-branch\.sh data\/live discover\/live\/im-blick-US_REAL\.json discover\/live\/monitor-US_REAL\.json/);
   assert.match(wf, /cancel-in-progress: false/);
-  assert.match(wf, /git add discover\/live\n/, "schreibt nur discover/live");
+  assert.doesNotMatch(wf, /git commit|push-with-retry/, "schreibt nur discover/live, und nur in den Datenzweig");
   assert.doesNotMatch(wf, /TIINGO|secrets\./);
   const pages = readFileSync(join(ROOT, ".github", "workflows", "pages-release.yml"), "utf8");
   assert.ok(pages.includes('- "' + wf.match(/^name:\s*(.+)$/m)[1] + '"'), "Name unveraendert: die Auslieferung haengt daran");
   const fm = readFileSync(join(ROOT, ".github", "workflows", "freshness-monitor.yml"), "utf8");
   assert.match(fm, /\n  imblick:\n/, "eigener Job fuer die Im-Blick-Pruefung");
   assert.match(fm, /check-im-blick-live\.mjs --strict/);
-  assert.match(fm, /cron: '45 16-19 \* \* 1-5'/);
-  assert.match(fm, /cron: '55 22 \* \* 1-5'/);
+  const fmTakte = takteVon("freshness-monitor.yml", ROOT);
+  assert.ok(fmTakte.includes("45 16-19 * * 1-5") && fmTakte.includes("55 22 * * 1-5"), "Im-Blick-Pruefzeiten (Register/Wecker)");
   /* Wecker: Im Blick getrennt vom Takt, Ausnahmen bleiben im Zweig, kein neues Recht. */
   const src = readFileSync(join(ROOT, "worker-waker", "src", "index.mjs"), "utf8");
   assert.match(src, /try \{ imBlick = await sorgeFuerImBlick/);
@@ -470,7 +474,7 @@ function cronFeld(f, lo, hi) {
 /** Pruefzeitpunkte (Minuten ab 00:00 UTC) je Wochentag (0=So) aus den Cron-Zeilen des Freshness-Monitors. */
 function pruefzeiten() {
   const yml = readFileSync(join(ROOT, ".github", "workflows", "freshness-monitor.yml"), "utf8");
-  const crons = [...yml.matchAll(/^\s*-\s*cron:\s*['"]([^'"]+)['"]/gm)].map((m) => m[1]);
+  const crons = takteVon("freshness-monitor.yml", ROOT);
   const proTag = new Map([0, 1, 2, 3, 4, 5, 6].map((d) => [d, []]));
   for (const c of crons) {
     const [mi, st, , , dow] = c.split(/\s+/);

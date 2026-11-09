@@ -66,7 +66,7 @@
   ];
 
   /* Startseite (Screen n-home), von oben nach unten unter Billboard und Markt.
-     kind: top10 | rail (eine Reihe) | themes | recent | more | strategies.
+     kind: top10 | rail (eine Reihe) | themes | europe (Verweise auf Europa, ohne Daten) | recent | more | strategies.
      movable: Reihen, die nach Regel 3 (neue Treffer seit dem Vortag) nach oben ruecken duerfen –
      sie tauschen nur untereinander die Plaetze, damit der Wechsel Kurs/Unternehmen/Themen/Persoenlich bleibt. */
   var HOME_PLAN = [
@@ -74,6 +74,7 @@
     { kind: "rail", row: "new-52-week-highs", movable: true },
     { kind: "rail", row: "fallen-angels", movable: true, tag: "NEU", pill: "fromHigh" },
     { kind: "themes" },
+    { kind: "europe" },
     { kind: "recent" },
     { kind: "rail", row: "comeback", movable: true },
     { kind: "more" },
@@ -175,7 +176,38 @@
     return m && genre(m[1]) ? m[1] : null;
   }
 
+  /* ---------------------------------------------------------- Persoenliche Reihen (PR 3) */
+  /** NEU-Etikett: die Karte steht seit dem letzten Handelstag in der Reihe (firstSeen = asOf der Reihe). */
+  function isNew(card, asOf) { return !!(card && card.firstSeen && asOf && card.firstSeen === asOf); }
+  /** Reihen mit neuen Treffern seit dem Vortag (meta.rows[].neu), fuer Regel 3. */
+  function freshRows(meta, universeId) {
+    var u = ((meta && meta.rows) || []).filter(function (r) { return r.universeId === (universeId || "US_REAL"); })[0];
+    return ((u && u.rows) || []).filter(function (r) { return r.neu > 0 && r.matched > 0; }).map(function (r) { return r.rowId; });
+  }
+  /** „Mehr aus {Thema}“: das Thema, das unter den zuletzt angesehenen Aktien am haeufigsten vorkommt
+      (bei Gleichstand das juengste). Liefert die Themenreihe, bis zu zwei Namen fuer den Satz und die
+      schon angesehenen Symbole, die die Schiene auslaesst. */
+  function moreFrom(recent, avail) {
+    var list = (recent || []).slice(0, 8), count = {}, first = {};
+    list.forEach(function (e, i) {
+      (e.themes || []).forEach(function (t) {
+        if (!avail || !avail[t]) return;
+        count[t] = (count[t] || 0) + 1;
+        if (!(t in first)) first[t] = i;
+      });
+    });
+    var best = Object.keys(count).sort(function (a, b) { return count[b] - count[a] || first[a] - first[b] || (a < b ? -1 : 1); })[0];
+    if (!best) return null;
+    var names = list.filter(function (e) { return (e.themes || []).indexOf(best) >= 0; }).slice(0, 2).map(function (e) { return e.companyName || e.symbol; });
+    return { row: best, names: names, exclude: list.map(function (e) { return e.symbol; }) };
+  }
+  function moreLine(names) {
+    if (!names || !names.length) return "";
+    return "Du hast zuletzt " + (names.length > 1 ? names[0] + " und " + names[1] : names[0]) + " angesehen.";
+  }
+
   return {
+    isNew: isNew, freshRows: freshRows, moreFrom: moreFrom, moreLine: moreLine,
     MAX_HOME_ROWS: MAX_HOME_ROWS, SHOWCASE_MIN_RETURN_12M: SHOWCASE_MIN_RETURN_12M,
     TITLES: TITLES, GENRES: GENRES, ALL_GROUPS: ALL_GROUPS, HOME_PLAN: HOME_PLAN, STRATEGY_COPY: STRATEGY_COPY,
     title: title, homeTitle: homeTitle, homeSub: homeSub, shortSub: shortSub, genre: genre, genreOfRow: genreOfRow,

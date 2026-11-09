@@ -1,6 +1,6 @@
 # Vision Universe Research – Arbeitsregeln
 
-Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md). Reels (Studio, Hook-Formel, HeyGen-Stimme, Ablauf): [docs/studio/README.md](docs/studio/README.md). Quant (Abschlussübergabe, Backtests, Security-Master-Generationen, offene Entscheidungen): [docs/quant/QUANT_FINAL_HANDOVER.md](docs/quant/QUANT_FINAL_HANDOVER.md). Supertrader (Abschlussübergabe, 13 Methoden, Kandidaten-Tageslauf, V1 S1–S7, Zertifizierungsvorbereitung, offene PRs): [docs/SUPERTRADER_9_HANDOVER.md](docs/SUPERTRADER_9_HANDOVER.md). Technical (Stand, offene Aufgaben): [docs/technical/TECHNICAL_WORLD_PROGRESS.md](docs/technical/TECHNICAL_WORLD_PROGRESS.md); Projektplan bis zur Produktreife mit Completion-Matrix, Abnahmekriterien und Wiederaufnahmepunkt: [docs/technical/TECHNICAL_COMPLETION_PLAN.md](docs/technical/TECHNICAL_COMPLETION_PLAN.md). Konten und Abos (Supabase, Stripe, ausgeschaltet bis zur Freigabe): [docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md](docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md), persönliche Watchlist: [docs/accounts/WATCHLIST.md](docs/accounts/WATCHLIST.md). Nutzerführung (Willkommensseite, `/mein-dashboard/`, Konto, Free/Pro-Ablauf): [docs/accounts/NUTZERFUEHRUNG.md](docs/accounts/NUTZERFUEHRUNG.md); Produktionsplan bis zum öffentlichen Start: [docs/accounts/PRODUKTIONSPLAN.md](docs/accounts/PRODUKTIONSPLAN.md); was automatisch ausrollt und was eine Owner-Freigabe braucht: [docs/accounts/FREIGABEN.md](docs/accounts/FREIGABEN.md); Preise ändern ohne Deployment (`/konto/admin/tarife/`): [docs/accounts/TARIFVERWALTUNG.md](docs/accounts/TARIFVERWALTUNG.md); Rechtstexte und Umschalten auf öffentliches Pro: [docs/accounts/RECHTLICHE_ABNAHME.md](docs/accounts/RECHTLICHE_ABNAHME.md), Brevo/Newsletter: [docs/accounts/BREVO.md](docs/accounts/BREVO.md), Umsatzsteuer: [docs/accounts/STEUER.md](docs/accounts/STEUER.md). Kapitalmarktrecht (Analyse-Software ohne Empfehlungen, Plan §11; Wortwahl, App-Pflichtlinks, Anwaltsmappe): [docs/legal/EINORDNUNG.md](docs/legal/EINORDNUNG.md), Wortwahl [docs/legal/WORTWAHL.md](docs/legal/WORTWAHL.md), Pflicht-Hinweise `assets/legal-notices.json`.
+Einstieg: [docs/VISION_UNIVERSE_ARCHITECTURE.md](docs/VISION_UNIVERSE_ARCHITECTURE.md). Betrieb: [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md). Reels (Studio, Hook-Formel, HeyGen-Stimme, Ablauf): [docs/studio/README.md](docs/studio/README.md). Quant (Abschlussübergabe, Backtests, Security-Master-Generationen, offene Entscheidungen): [docs/quant/QUANT_FINAL_HANDOVER.md](docs/quant/QUANT_FINAL_HANDOVER.md). Supertrader (Abschlussübergabe, 13 Methoden, Kandidaten-Tageslauf, V1 S1–S7, Zertifizierungsvorbereitung, offene PRs): [docs/SUPERTRADER_9_HANDOVER.md](docs/SUPERTRADER_9_HANDOVER.md). Technical (Stand, offene Aufgaben): [docs/technical/TECHNICAL_WORLD_PROGRESS.md](docs/technical/TECHNICAL_WORLD_PROGRESS.md); Projektplan bis zur Produktreife mit Completion-Matrix, Abnahmekriterien und Wiederaufnahmepunkt: [docs/technical/TECHNICAL_COMPLETION_PLAN.md](docs/technical/TECHNICAL_COMPLETION_PLAN.md). Konten und Abos (Supabase, Stripe, ausgeschaltet bis zur Freigabe): [docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md](docs/accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md), persönliche Watchlist: [docs/accounts/WATCHLIST.md](docs/accounts/WATCHLIST.md). Nutzerführung (Willkommensseite, `/mein-dashboard/`, Konto, Free/Pro-Ablauf): [docs/accounts/NUTZERFUEHRUNG.md](docs/accounts/NUTZERFUEHRUNG.md); Produktionsplan bis zum öffentlichen Start: [docs/accounts/PRODUKTIONSPLAN.md](docs/accounts/PRODUKTIONSPLAN.md); was automatisch ausrollt und was eine Owner-Freigabe braucht: [docs/accounts/FREIGABEN.md](docs/accounts/FREIGABEN.md); Preise ändern ohne Deployment (`/konto/admin/tarife/`): [docs/accounts/TARIFVERWALTUNG.md](docs/accounts/TARIFVERWALTUNG.md); Rechtstexte und Umschalten auf öffentliches Pro: [docs/accounts/RECHTLICHE_ABNAHME.md](docs/accounts/RECHTLICHE_ABNAHME.md), Brevo/Newsletter: [docs/accounts/BREVO.md](docs/accounts/BREVO.md), Umsatzsteuer: [docs/accounts/STEUER.md](docs/accounts/STEUER.md). Aktienmagazin (Wochenheft: Aufbau, Vorlagen, Build mit Prüftor, Ablauf): [docs/publishing/HANDBUCH.md](docs/publishing/HANDBUCH.md). Kapitalmarktrecht (Analyse-Software ohne Empfehlungen, Plan §11; Wortwahl, App-Pflichtlinks, Anwaltsmappe): [docs/legal/EINORDNUNG.md](docs/legal/EINORDNUNG.md), Wortwahl [docs/legal/WORTWAHL.md](docs/legal/WORTWAHL.md), Pflicht-Hinweise `assets/legal-notices.json`.
 
 Statische Seite (GitHub Pages, `research.visionuniverse.de`), Node 22 ohne Abhängigkeiten, UMD-Engines (`globalThis` + `module.exports`), Python für SEC.
 Daten entstehen in GitHub-Actions-Läufen und werden nach `main` committet.
@@ -23,11 +23,13 @@ Geltende Vertragstests (alle in Core-CI, laufen auf jedem PR):
 
 | Test | Vertrag |
 |---|---|
-| `core/tests/product-contracts.test.mjs` (PC) | Produktpfade lösen die Produkt-CI aus; Schnittstellen-Schemata stimmen mit Registry und Verbrauchern |
+| `core/tests/product-contracts.test.mjs` (PC) | Produktpfade lösen die Produkt-CI aus; jede Datei, deren Hash ein Produkttest pinnt (`pinnedFiles`), ebenfalls (PC-5); Schnittstellen-Schemata stimmen mit Registry und Verbrauchern |
 | `core/tests/workflow-bundles.test.mjs` (WB) | jede Workflow-Datei hat ein Bündel in `core/registry/workflow-bundles.json`; ein Bündel ersetzt seine Quellen nachweisbar |
 | `core/tests/universe-follow-chain.test.mjs` (UF) | nur `security-master-eligibility.yml` ändert das Produktuniversum, und jede am Produktumfang geprüfte Datenart zieht im selben Lauf nach |
 | `core/tests/data-branch-pilot.test.mjs` (DB) | Datenarten auf dem Datenzweig (`core/registry/data-branch.json`) |
-| `core/tests/module-manifest.test.mjs` (MM) | Modul-Steckbrief `<produkt>/module.json` (Pilot: `analysten`): Route, Menüeintrag, Zugang, Status; Erzeuger, Workflow, Zeitplan und Frische gleich `domains.json` |
+| `core/tests/docs-registry.test.mjs` (DOC) | höchstens 25 lebende Seiten (`core/registry/docs.json`, alle in `docs/README.md` verlinkt); jede andere Seite unter `docs/` liegt in `docs/archiv/` oder ist ein Beleg am Ort (von Code genannt, eingefroren, gepinnt) |
+| `core/tests/module-manifest.test.mjs` (MM) | Modul-Steckbrief `products/<id>/module.json` für jedes Produkt (Web bleibt unter `/<id>/`) (jede oberste Seite ist Produkt oder begründete Seite): Route, Menü, Zugang free/pro/intern, Status, Datenarten (Erzeuger, Zeitplan, Frische nur in `domains.json`); Menü (`assets/site-navigation.js`, `groups`), `core/registry/modules.json`, `/status/` und `system-health` entstehen daraus (`node scripts/core/build-modules.mjs`) |
+| `core/tests/schedule-registry.test.mjs` (SZ) | ein Zeitgeber: jeder Zeitplan steht in `core/registry/schedule.json`; `timer: waker`-Einträge haben keinen Cron im Workflow, aber Eingang `zeitplan`, Marke im `run-name` und die Zeitplan-Weiche |
 
 Was von den Pfad-Gates bleibt:
 
@@ -51,7 +53,7 @@ Veraltete Daten lösen einen Alarm aus und blockieren keinen Code-PR.
 ## Tests
 
 ```bash
-node --test "core/tests/*.test.mjs"           # ~5 s
+node --test "core/tests/*.test.mjs" "products/*/tests/*.test.mjs"   # Core und Produkt-Tests unter products/
 node --test "quant/tests/*.test.mjs"
 node --test "discover/tests/*.test.mjs" "scripts/supertrader/tests/*.test.mjs" "screener/tests/*.test.mjs"
 node --test "technical/tests/*.test.mjs"
@@ -71,6 +73,7 @@ Regeln für Workflows, die committen (ADR-005):
 - Concurrency-Gruppe mit `-${{ github.ref_name }}`.
 - Workflow-Eingaben nur über `env:` in `run`-Blöcke, nie `${{ inputs.* }}` im Shell-Text.
 - Prüf-Workflows bekommen `permissions: contents: read`.
+- Zeitpläne nur über `core/registry/schedule.json` (ein Zeitgeber: Cloudflare-Wecker, RUNBOOK §10). Kein neuer `schedule:`-Cron im Workflow; Vertragstest SZ.
 - Diff-Gates in flachen Checkouts dürfen bei einem Git-Fehler nicht still „0 Dateien“ melden: `set -euo pipefail` und eine erreichbare Basis.
 
 ## Diagnose

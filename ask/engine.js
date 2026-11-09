@@ -147,7 +147,33 @@
     return '/screener/?' + Query.toParams(result.query).toString();
   }
 
-  var API = { runScreen: runScreen, runStock: runStock, runChartbild: runChartbild, chartbildSentence: chartbildSentence, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
+  /**
+   * Klartext fuer eine Antwort ohne Auswertung. Jede Ablehnung des Workers
+   * bekommt einen Satz - nie ein stilles Haengenbleiben.
+   * @param {number} status HTTP-Status (0 = keine Verbindung, -1 = Zeitueberschreitung)
+   * @param {object|null} body JSON-Antwort des Workers, falls lesbar
+   * @returns {{title:string, text:string, code:string}}
+   */
+  var FAILURES = {
+    TIMEOUT: ['Keine Antwort', 'Die Fragefunktion hat nicht rechtzeitig geantwortet. Bitte gleich noch einmal versuchen.'],
+    NETWORK: ['Keine Verbindung', 'Die Fragefunktion ist gerade nicht erreichbar. Bitte die Internetverbindung prüfen und erneut versuchen.'],
+    ORIGIN_NOT_ALLOWED: ['Nicht freigegeben', 'Diese Seite darf die Fragefunktion nicht aufrufen. Bitte über research.visionuniverse.de fragen.'],
+    CREDIT_EXHAUSTED: ['Kontingent aufgebraucht', 'Das Kontingent der Fragefunktion ist aufgebraucht. Bereits gestellte Fragen werden weiter beantwortet.'],
+    DISABLED: ['Abgeschaltet', 'Die Fragefunktion ist gerade abgeschaltet.'],
+    UPSTREAM: ['Keine Auswertung', 'Die Frage konnte gerade nicht ausgewertet werden. Ihr Kontingent wurde nicht belastet. Bitte gleich noch einmal versuchen.'],
+    INVALID_QUESTION: ['Frage zu kurz oder zu lang', 'Bitte eine Frage mit 3 bis 400 Zeichen stellen.'],
+    TOO_LARGE: ['Frage zu lang', 'Bitte eine kürzere Frage stellen.'],
+    INTERNAL: ['Fehler im Dienst', 'Bei der Auswertung ist ein Fehler aufgetreten. Bitte später erneut versuchen.']
+  };
+  function failure(status, body) {
+    var code = body && typeof body.reason === 'string' ? body.reason : status === -1 ? 'TIMEOUT' : status === 0 ? 'NETWORK' : 'HTTP_' + status;
+    var known = FAILURES[code];
+    var text = body && typeof body.message === 'string' && body.message ? body.message : known ? known[1]
+      : 'Die Frage konnte nicht ausgewertet werden (Fehler ' + code + '). Bitte später erneut versuchen.';
+    return { title: known ? known[0] : 'Keine Auswertung', text: text, code: code };
+  }
+
+  var API = { failure: failure, runScreen: runScreen, runStock: runStock, runChartbild: runChartbild, chartbildSentence: chartbildSentence, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
     columnsFor: columnsFor, STRATEGY_LABELS: STRATEGY_LABELS };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   global.VUAskEngine = API;

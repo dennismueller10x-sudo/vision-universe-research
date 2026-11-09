@@ -181,7 +181,9 @@ const VISUAL = [
   ['Hedgefonds', '/hedgefonds/#/', '.hf-card-val .hf-chg', 'Richtung der Fondsgroesse'],
   ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-balance', 'Kaeufer gegen Verkaeufer'],
   ['Elliott', '/elliott/', '.el-split', 'beschrifteter Richtungsbalken'],
-  ['Fundamental', '/fundamental/#/PLTR', '.fu-k .fu-chg', 'Kennzahl mit Richtung zum Vorjahr'],
+  ['Fundamental', '/fundamental/#/PLTR', '.fu-kt .fu-k-v', 'Kennzahlen-Streifen (Konzept „Verstehen. Finden.“, FX02)'],
+  ['Fundamental', '/fundamental/#/PLTR', '.fu-fin-big .vu-chg', 'Finanz-Chart mit Richtung zum Vorjahr'],
+  ['Fundamental', '/fundamental/#/PLTR', '.fu-chap a', 'Kapitel der Aktie'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahlen&t=profit', '.fu-crow .fu-spark i', 'Kennzahlenkatalog mit Mini-Verlauf'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-cagr', 'Wachstum pro Jahr ueber 3/5/10 Jahre'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-bc.is-last .fu-b', 'Verlauf je Geschaeftsjahr als Balken'],
@@ -190,7 +192,8 @@ const VISUAL = [
   ['Fundamental', '/fundamental/#/JPM?ansicht=kennzahl&k=pe', '.fu-lines .fu-l-self', 'KGV nach jedem Jahresbericht als Linie'],
   ['Fundamental', '/fundamental/#/KO?ansicht=vergleich', '.fu-bc.is-self .fu-b', 'Branchenvergleich: eigener Balken neben Vergleichsunternehmen'],
   ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=pe&plus=free_cash_flow', '.fu-mc .fu-l-m.m1', 'Mehrere Kennzahlen in einem Verlauf (KGV + Free Cashflow)'],
-  ['Fundamental', '/fundamental/', '.fu-rnav', 'Start: Ranglisten als Navigationskarten mit Regel'],
+  ['Fundamental', '/fundamental/', '.fu-rlc li', 'Start: Ranglisten als Schiene mit den ersten drei Plätzen (FX01)'],
+  ['Fundamental', '/fundamental/#/NVDA?ansicht=kennzahl&k=revenue', '.fu-firms .fu-fchip-add', 'Kennzahl-Detail: „+ Firma“ (FX03)'],
   ['Fundamental', '/fundamental/#/ranglisten/auswahlen', '.fu-firm .vu-meter i', 'Auswahlen: Firmenkarten mit drei Kennzahlbalken']
 ];
 if (only.has('visual')) await guard('visual', async () => {

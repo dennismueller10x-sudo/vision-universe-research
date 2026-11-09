@@ -24,7 +24,31 @@ SEC_WORKFLOWS = ("update-sec-fundamentals.yml", "sec-fundamentals-ci.yml",
                  "sec-fundamentals-universe.yml")
 
 
+# Gebuendelte Workflows (core/registry/workflow-bundles.json): Datei -> (Buendel, Teil).
+BUNDLED = {"update-sec-fundamentals.yml": ("pipeline-weekly.yml", "sec-fundamentals"),
+           "sec-fundamentals-ci.yml": ("ci.yml", "sec-fundamentals")}
+
+
+def workflow_part(bundle, teil):
+    """Text eines Teils aus einer Buendeldatei (wie scripts/ci/lib/workflow-part.mjs)."""
+    out, in_part = [], False
+    for line in (WORKFLOWS / bundle).read_text(encoding="utf-8").split("\n"):
+        comment = re.match(r"^  # --- ([A-Za-z0-9_-]+):", line)
+        head = re.match(r"^  ([A-Za-z0-9_-]+):\s*$", line)
+        if comment:
+            in_part = comment.group(1) == teil
+        elif head:
+            in_part = head.group(1) == teil or (in_part and head.group(1).startswith(teil + "-"))
+        if in_part:
+            out.append(line)
+    if not out:
+        raise AssertionError("Teil %s fehlt in %s" % (teil, bundle))
+    return "\n".join(out) + "\n"
+
+
 def workflow_text(name):
+    if name in BUNDLED:
+        return workflow_part(*BUNDLED[name])
     return (WORKFLOWS / name).read_text(encoding="utf-8")
 
 

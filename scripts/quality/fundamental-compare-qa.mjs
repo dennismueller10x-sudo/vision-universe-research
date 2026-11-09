@@ -40,6 +40,8 @@ async function open(ctx, path, sel) {
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(base + path, { waitUntil: 'load' });
   await page.waitForSelector(sel, { timeout: 30000 });
+  /* Konzept „Verstehen. Finden.“ (FX03): Diagrammart, Vergleich und „+ Kennzahl“ stehen zugeklappt unter dem Chart. */
+  await page.evaluate(() => document.querySelectorAll('details.fu-opts').forEach((d) => { d.open = true; }));
   await page.waitForTimeout(500);
   return { page, errors };
 }

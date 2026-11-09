@@ -21,13 +21,17 @@ name: Supertrader 8 Research-Kandidaten (Tageslauf)
 # (Exit 3) und es entsteht kein neuer Stand.
 #
 # Commit-Protokoll ADR-005: Spitze des Branches auschecken, push-with-retry.sh, Concurrency je Branch.
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   # Rueckfall, falls der Anstoss nach der Nachtkette ausbleibt (Nachtkette endet ~04:10 UTC, Zeitplaene kommen
   # bis zu 7 h spaet). Di-Sa fuer die Sitzungen Mo-Fr. Ein Lauf auf eine schon veroeffentlichte Sitzung committet nichts.
-  schedule:
-    - cron: '43 11 * * 2-6'
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       mode:
         description: 'manual = Commit nur mit commit=true und expected_sha256; auto = Veroeffentlichungsvertrag (nur main)'
         type: choice
@@ -53,7 +57,7 @@ concurrency:
 
 jobs:
   candidates:
-    if: vars.SF8_CANDIDATES_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || vars.SF8_AUTO_PUBLISH == 'true')
+    if: vars.SF8_CANDIDATES_ENABLED == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || vars.SF8_AUTO_PUBLISH == 'true')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     outputs:
@@ -66,11 +70,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): Daten, die nur noch dort wachsen, wie ausgeliefert lesen (commit-sicher).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
 
       - name: Weg bestimmen (automatisch nur auf main, nur mit SF8_AUTO_PUBLISH)
         id: mode
         env:
-          EVENT: ${{ github.event_name }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
           IN_MODE: ${{ inputs.mode }}
           AUTO_SWITCH: ${{ vars.SF8_AUTO_PUBLISH }}
         run: |
@@ -274,7 +281,7 @@ jobs:
   # ein Probelauf mode=auto auf einem anderen Zweig auch nicht (er scheitert ohnehin im Schritt `mode`).
   alarm:
     needs: candidates
-    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || github.event_name == 'schedule' || (inputs.mode == 'auto' && github.ref == 'refs/heads/main'))
+    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || (github.event_name == 'schedule' || inputs.zeitplan != '') || (inputs.mode == 'auto' && github.ref == 'refs/heads/main'))
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:

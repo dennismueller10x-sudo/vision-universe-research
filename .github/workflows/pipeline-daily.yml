@@ -15,7 +15,7 @@ name: Pipeline taeglich (Buendel pipeline-daily)
 #   datenqualitaet  neu (E8-Nachlauf, docs/data/DATA_QUALITY.md): Datenqualitaetsbericht fuer /status/,
 #                 nur in den Datenzweig data/live, 13 7 * * 2-6 (nach dem naechtlichen Kurslauf)
 # Der Job `auswahl` entscheidet, welcher Teil laeuft:
-#   schedule           der Teil, dem der ausloesende Zeitplan gehoert (github.event.schedule)
+#   schedule           der Teil, dem der ausloesende Zeitplan gehoert ((github.event.schedule || inputs.zeitplan))
 #   workflow_dispatch  genau der gewaehlte Teil (`teil`)
 #   workflow_run       ki-depots nach erfolgreichem 'Marktdaten-Refresh (...)' auf main
 #   push main          ki-depots, wenn ein Pfad aus seiner frueheren paths-Liste beruehrt ist
@@ -24,17 +24,28 @@ name: Pipeline taeglich (Buendel pipeline-daily)
 # Ketten, die AUF einen Workflow-Namen warten, bleiben vorerst in ihren Dateien (siehe A-Doc: Kette als Liste);
 # ki-depots haengt nur selbst an einem fremden Namen, auf ihn wartet niemand.
 
+# Teil-Marke im Lauftitel (display_title), vor Laufbeginn aus dem Ereignis abgeleitet. Wer auf diesen Workflow per
+# workflow_run hoert, filtert darauf: pages-release.yml nur bei [seite] (Teile, deren Quelle schon vorher einen Release
+# ausgeloest hat), home-refresh.yml nur bei technical-intelligence. So bleibt die Zahl der Releases wie vor dem Buendel.
+# Ein Takt des Cloudflare-Weckers endet auf " · Takt <cron>" (daran erkennt der Wecker seinen Lauf, SZ-2).
+run-name: >-
+  ${{ format('{0}{1}{2}', github.workflow,
+  (((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.teil == 'technical-intelligence') ||
+   (github.event.schedule || inputs.zeitplan) == '35 5 * * *' ||
+   (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' &&
+    github.event.workflow_run.name == 'Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)'))
+  && ' · technical-intelligence [seite]'
+  || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && format(' · {0}', inputs.teil) || ''),
+  inputs.zeitplan && format(' · Takt {0}', inputs.zeitplan) || '') }}
+
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
 on:
-  schedule:
-    - cron: '47 15 * * 1-5'   # ezb
-    - cron: '23 3 * * 2-6'   # vorsorge
-    - cron: '30 1 * * 2-6'   # hausstrategie
-    - cron: '15 3 25 * *'   # hausstrategie (SEC-Auffrischung am 25.)
-    - cron: '37 6 16 * *'   # marktvalidierung
-    - cron: '13 7 * * 2-6'   # datenqualitaet
-    - cron: '41 23 * * 1-5'   # ki-depots
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       teil:
         description: 'Welcher Teil'
         type: choice
@@ -46,6 +57,8 @@ on:
           - marktvalidierung
           - datenqualitaet
           - ki-depots
+          - technical-world
+          - technical-intelligence
       mode:
         description: 'hausstrategie: Modus (vormals supertrader-house-live.yml)'
         type: choice
@@ -55,10 +68,17 @@ on:
         description: 'ki-depots: Stichtag YYYY-MM-DD (leer = heute; vormals ki-depots-daily.yml)'
         type: string
         default: ''
+      force:
+        description: 'technical-intelligence: trotz gleicher Eingaben neu bauen (vormals technical-intelligence-build.yml)'
+        type: boolean
+        default: false
   # ki-depots (vormals ki-depots-daily.yml): nach dem Kurslauf
   workflow_run:
     workflows:
       - "Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"
+      # technical-world (vormals technical-world.yml): auch nach Materialisierung und langen Reihen
+      - "Quant 2.0 Product Intelligence Materialization"
+      - "Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)"
     types: [completed]
     branches: [main]
   # hausstrategie: Probelaeufe auf claude/** per Commit-Marke (vormals supertrader-house-live.yml)
@@ -83,23 +103,41 @@ jobs:
       marktvalidierung: ${{ steps.wahl.outputs.marktvalidierung }}
       datenqualitaet: ${{ steps.wahl.outputs.datenqualitaet }}
       ki_depots: ${{ steps.wahl.outputs.ki_depots }}
+      technical_world: ${{ steps.wahl.outputs.technical_world }}
+      technical_intelligence: ${{ steps.wahl.outputs.technical_intelligence }}
     steps:
       - name: Teil waehlen
         id: wahl
         env:
           # Eingaben und Ereignisdaten nur ueber env: (ADR-005)
-          EVENT: ${{ github.event_name }}
-          SCHEDULE: ${{ github.event.schedule }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
+          SCHEDULE: ${{ github.event.schedule || inputs.zeitplan }}
           WR_NAME: ${{ github.event.workflow_run.name }}
           WR_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
           TEIL: ${{ inputs.teil }}
           REF: ${{ github.ref }}
           MSG: ${{ github.event.head_commit.message }}
-          COMMITS: ${{ toJSON(github.event.commits) }}
+          # Dateiliste beim push: Compare-API zwischen before und sha (die Commit-Liste des push-Ereignisses traegt in Actions
+          # kein added/modified/removed; Lauf 42598972028 waehlte deshalb nichts). Vertragstest WB-7.
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          files="$(printf '%s' "${COMMITS:-[]}" | jq -r '(. // [])[] | (.added + .modified + .removed)[]' 2>/dev/null | sort -u || true)"
-          touched() { local q; for q in "$@"; do grep -qxF "$q" <<<"$files" && return 0; done; return 1; }
+          # Geaenderte Dateien des Pushs. Neuer Zweig (Basis 000...), API-Fehler oder abgeschnittene Liste
+          # (300 Dateien): unbekannt - dann gilt jede Pfadbedingung als erfuellt (im Zweifel ausfuehren).
+          PUSH_FILES="$RUNNER_TEMP/push-files.txt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=0
+          if [ "${EVENT:-}" = push ]; then
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ]; then PUSH_FILES_UNKNOWN=1
+            elif gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[].filename' > "$PUSH_FILES"; then
+              [ "$(wc -l < "$PUSH_FILES")" -lt 300 ] || PUSH_FILES_UNKNOWN=1
+            else echo "::warning::Compare-API ohne Ergebnis - Pfadbedingungen gelten als erfuellt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=1; fi
+          fi
+          echo "Dateien im Push: $(wc -l < "$PUSH_FILES"), unbekannt=$PUSH_FILES_UNKNOWN"
+          files="$(cat "$PUSH_FILES")"
+          # Unbekannte Dateiliste: im Zweifel ausfuehren
+          touched() { [ "$PUSH_FILES_UNKNOWN" = 1 ] && return 0; local q; for q in "$@"; do grep -qxF "$q" <<<"$files" && return 0; done; return 1; }
           setze() { echo "$1=$2" >> "$GITHUB_OUTPUT"; echo "$1=$2"; }
           zeitplan_von() {
             case "$1" in
@@ -109,6 +147,8 @@ jobs:
               '37 6 16 * *') echo marktvalidierung ;;
               '13 7 * * 2-6') echo datenqualitaet ;;
               '41 23 * * 1-5') echo ki-depots ;;
+              '10 5 * * 2-6') echo technical-world ;;
+              '35 5 * * *') echo technical-intelligence ;;
               *) echo '' ;;
             esac; }
           gewaehlt=''
@@ -116,14 +156,23 @@ jobs:
             schedule) gewaehlt="$(zeitplan_von "$SCHEDULE")"; [ -n "$gewaehlt" ] || { echo "::error::Unbekannter Zeitplan '$SCHEDULE'"; exit 1; } ;;
             workflow_dispatch) gewaehlt="$TEIL" ;;
             workflow_run)
-              if [ "$WR_NAME" = 'Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)' ] && [ "$WR_CONCLUSION" = success ]; then gewaehlt=ki-depots; fi ;;
+              # Ein Ereignis kann mehrere Teile waehlen (Liste mit Leerzeichen): nach dem Marktlauf ki-depots und
+              # technical-world. Jeder Teil prueft seine eigene Job-Bedingung wie vorher in seiner eigenen Datei.
+              if [ "$WR_CONCLUSION" = success ]; then
+                case "$WR_NAME" in
+                  'Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)') gewaehlt='ki-depots technical-world' ;;
+                  'Quant 2.0 Product Intelligence Materialization') gewaehlt=technical-world ;;
+                  'Lange Kursreihen (Wochenschluss fuer 5J und Max aus der Historienablage)') gewaehlt='technical-world technical-intelligence' ;;
+                esac
+              fi ;;
             push)
               if [ "$REF" = refs/heads/main ]; then
                 if touched 'docs/research/edge2/ki/ledger-A.jsonl' 'docs/research/edge2/ki/ledger-B.jsonl' 'scripts/research/edge2/ki-export.cjs'; then gewaehlt=ki-depots; fi
               elif [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[house-live:"* ]]; then gewaehlt=hausstrategie
               elif [[ "$REF" == refs/heads/claude/* && "${MSG:-}" == *"[mv-data]"* ]] && touched '.github/workflows/pipeline-daily.yml' 'scripts/market/build-validation-sources.mjs' 'scripts/market/validate-market-pulse.mjs' 'scripts/market/lib/market-validation.mjs'; then gewaehlt=marktvalidierung; fi ;;
           esac
-          for k in ezb vorsorge hausstrategie marktvalidierung datenqualitaet ki_depots; do v=false; [ "${k//_/-}" = "$gewaehlt" ] && v=true; setze "$k" "$v"; done
+          for k in ezb vorsorge hausstrategie marktvalidierung datenqualitaet ki_depots technical_world technical_intelligence; do
+            v=false; case " $gewaehlt " in *" ${k//_/-} "*) v=true ;; esac; setze "$k" "$v"; done
 
   # --- ezb: vormals fx-ecb-daily.yml (EZB-Referenzkurse taeglich (EUR-Anzeige))
     # Die EUR-Anzeige rechnet jeden historischen Kurs mit dem EZB-Referenzkurs
@@ -163,6 +212,14 @@ jobs:
         with:
           node-version: '22'
 
+      # Datenzweig (core/registry/data-branch.json, fxReference, BRANCH_ONLY): der bisherige Stand liegt in
+      # data/live, nicht in main. Er ist die Messlatte fuer die Plausibilitaet unten.
+      - name: Bisheriger Stand aus dem Datenzweig
+        run: |
+          set -euo pipefail
+          scripts/ci/seed-data-branch.sh fxReference
+          if [ -f quant/data/market/fx/ecb/EURUSD.json ]; then cp quant/data/market/fx/ecb/EURUSD.json "$RUNNER_TEMP/EURUSD.alt.json"; fi
+
       - name: EZB-Referenzkurse holen und in den ausgelieferten Pfad legen
         run: node scripts/market/build-fx-history-ecb.mjs --feed=FULL_HISTORY --publish
 
@@ -175,7 +232,7 @@ jobs:
             const f = "quant/data/market/fx/ecb/EURUSD.json";
             const neu = JSON.parse(fs.readFileSync(f, "utf8"));
             let alt = null;
-            try { alt = JSON.parse(execFileSync("git", ["show", "HEAD:" + f], { encoding: "utf8", maxBuffer: 64 << 20 })); } catch (e) {}
+            try { alt = JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP + "/EURUSD.alt.json", "utf8")); } catch (e) {}
             const pts = neu.points || [];
             for (let i = 1; i < pts.length; i++) if (!(pts[i][0] > pts[i - 1][0]) || !(pts[i][1] > 0)) { console.error("Reihe nicht sortiert/positiv bei " + pts[i][0]); process.exit(1); }
             if (alt && (pts.length < (alt.points || []).length || neu.asOf < alt.asOf)) { console.error("Neue Reihe kuerzer oder aelter als die vorhandene - nicht veroeffentlicht."); process.exit(1); }
@@ -183,18 +240,12 @@ jobs:
           '
           node scripts/quality/assert-no-local-fx.mjs
 
-      - name: Commit und Push
-        run: |
-          set -euo pipefail
-          git config user.name "vision-universe-bot"
-          git config user.email "actions@users.noreply.github.com"
-          git add quant/data/market/fx/ecb quant/data/market/fx/ecb-coverage.json
-          if git diff --cached --quiet; then
-            echo "EZB unveraendert."
-            exit 0
-          fi
-          git commit -m "EZB-Referenzkurse: Stand $(node -p 'require("./quant/data/market/fx/ecb/EURUSD.json").asOf') (automatischer Lauf)"
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+      # Datenzweig (fxReference, BRANCH_ONLY): nur noch data/live; die Kopie in main ist eingefroren (Rueckfall),
+      # Pages liefert den Datenzweig aus. Unveraenderte Quelle (Wochenende, Feiertag): push-data-branch.sh
+      # committet nichts.
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live quant/data/market/fx/ecb quant/data/market/fx/ecb-coverage.json
 
   # --- vorsorge: vormals vorsorge-daily-rebuild.yml (Vorsorge Daily Rebuild)
   # Taeglicher Neubau des Vorsorge-ETF-Stamms aus den bereits eingecheckten Eingangsdaten
@@ -205,8 +256,8 @@ jobs:
   # es nicht: ab dem Folgetag war das Gate auf main rot und jeder PR auf Vorsorge- oder Shell-Pfaden
   # erbte den Fehler (#782, #800, 19./20.10.2026).
   #
-  # KOSTEN: kein Anbieterabruf. Nur scripts/vorsorge/build-etf-data.mjs (deterministisch, ohne Uhr und
-  # ohne Netz). Der Tiingo-Ingest (vorsorge-etf-universe.yml, rund zwei Anfragen je ETF) bleibt manuell.
+  # KOSTEN: kein Anbieterabruf. Nur products/vorsorge/producer/build-etf-data.mjs (deterministisch, ohne Uhr und
+  # ohne Netz). Der Tiingo-Ingest (research.yml, Teil etf-universum, vormals vorsorge-etf-universe.yml; rund zwei Anfragen je ETF) bleibt manuell.
   #
   # SCHUTZ: Vor dem Commit laufen dieselben Pruefungen wie im Ingest-Lauf (Tests, assert-vorsorge-data
   # mit den Freigaberegeln, z. B. Xetra-Referenzdaten ohne Freigabe nie im veroeffentlichten Verzeichnis,
@@ -232,8 +283,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Vorsorge-Stamm neu bauen (ohne Netz)
-        run: node scripts/vorsorge/build-etf-data.mjs --quiet
+        run: node products/vorsorge/producer/build-etf-data.mjs --quiet
       - name: Nur erwartete Pfade veraendert
         id: scope
         run: |
@@ -247,8 +301,8 @@ jobs:
       - name: Tests, Qualitaets- und Freigabe-Gates, Hygiene
         if: steps.scope.outputs.changed == 'true'
         run: |
-          node --test "vorsorge/tests/*.test.mjs"
-          node scripts/vorsorge/assert-vorsorge-data.mjs
+          node --test "products/vorsorge/tests/*.test.mjs"
+          node products/vorsorge/producer/assert-vorsorge-data.mjs
           node scripts/market/assert-public-data-hygiene.mjs
       - name: Veroeffentlichen
         if: steps.scope.outputs.changed == 'true'
@@ -290,8 +344,8 @@ jobs:
         env:
           MSG: ${{ github.event.head_commit.message }}
           INPUT: ${{ inputs.mode }}
-          EVENT: ${{ github.event_name }}
-          CRON: ${{ github.event.schedule }}
+          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
+          CRON: ${{ github.event.schedule || inputs.zeitplan }}
         run: |
           m="$INPUT"
           if [ "$EVENT" = "schedule" ]; then if [ "$CRON" = "15 3 25 * *" ]; then m=sec; else m=decide; fi; fi
@@ -403,6 +457,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Market Pulse und andere Daten, die nur noch im Datenzweig wachsen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Tests der Validierung
         run: node --test discover/tests/market-validation.test.mjs
       - name: Rohdaten laden (French, FRED)
@@ -448,7 +505,7 @@ jobs:
           done
       - name: Ergebnis in den Zweig
         env:
-          EVENT_NAME: ${{ github.event_name }}
+          EVENT_NAME: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
         run: |
           case "$EVENT_NAME" in
             schedule) art="monatlicher Lauf" ;;
@@ -485,6 +542,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Daten, die nur noch im Datenzweig wachsen, wie ausgeliefert pruefen (core/registry/data-branch.json).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Vorigen Bericht aus dem Datenzweig holen
         run: |
           set -euo pipefail
@@ -536,6 +596,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      # Datenzweig (Plan Neustart §3): bisheriger Stand und Reihen, die nur noch dort wachsen (commit-sicher).
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Tests
         run: node --test scripts/research/edge2/blind.test.cjs
       - name: Export schreiben
@@ -546,12 +609,164 @@ jobs:
           extra=(); if [ -n "${IN_TODAY:-}" ]; then [[ "$IN_TODAY" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || exit 2; extra=(--today "$IN_TODAY"); fi
           node scripts/research/edge2/ki-export.cjs "${extra[@]}"
           node scripts/market/assert-public-data-hygiene.mjs > "$RUNNER_TEMP/hygiene.txt" 2>&1 || { if grep -q 'ki-depots-v1' "$RUNNER_TEMP/hygiene.txt"; then cat "$RUNNER_TEMP/hygiene.txt"; exit 1; fi; }
-      - name: Committen
+      # Datenzweig (core/registry/data-branch.json, kiDepots, BRANCH_ONLY): nur noch data/live; die Kopie in main
+      # ist eingefroren (Rueckfall), Pages liefert den Datenzweig aus. Der Job laeuft ohnehin nur auf main.
+      - name: In den Datenzweig
+        run: scripts/ci/push-data-branch.sh data/live quant/data/product/ki-depots-v1.json
+
+  # --- technical-world: vormals technical-world.yml (Technical - Screener-Datensatz)
+  # Hauptausloeser ist der Anstoss aus market-data-refresh.yml (Job technical, jetzt mit -f teil=technical-world);
+  # workflow_run (Marktlauf, Materialisierung, lange Reihen; nur main) und 05:10 bleiben Rueckfall. Schritte
+  # unveraendert, Workflow-Concurrency technical-world-<ref> an beiden Jobs.
+  technical-world:
+    needs: auswahl
+    permissions:
+      contents: write
+    concurrency:
+      group: technical-world-${{ github.ref_name }}
+      cancel-in-progress: false
+    # workflow_run nur nach einem erfolgreichen Lauf auf main, der kein Push war (Push-Laeufe auf claude/** sind
+    # uebersprungen oder Probelaeufe und duerfen den Datensatz nicht ausloesen).
+    if: >-
+      needs.auswahl.outputs.technical_world == 'true' && (
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main' &&
+       github.event.workflow_run.event != 'push'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # Spitze des Branches: ein Lauf nach der Materialisierung sieht deren Commit (workflow_run laeuft auf main).
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Engine-Tests (rot = kein neuer Datensatz)
+        run: node --test quant/tests/technical-indicators.test.mjs quant/tests/technical-formations.test.mjs quant/tests/technical-query.test.mjs
+
+      - name: Screener-Datensatz bauen
+        run: node --max-old-space-size=4096 scripts/technical/world/build-screener.mjs
+
+      - name: Datensatzvertrag
+        run: node --test technical/tests/*.test.mjs
+
+      - name: Oeffentliche Datenhygiene
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      # Datenzweig (core/registry/data-branch.json, technicalWorld, BRANCH_ONLY): nur noch data/live; die Kopie
+      # in main ist eingefroren (Rueckfall), Pages liefert den Datenzweig aus. Der Erzeuger baut vollstaendig aus der
+      # Materialisierung neu, braucht also keinen bisherigen Stand. technical/data wird im Zweig gespiegelt.
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live technical/data
+
+  # Ein gescheiterter Lauf bleibt nicht still (31.10.2026: der Erzeuger verweigerte wegen des Datenvertrags,
+  # bemerkt erst ueber DQ-TW-1 zwei Tage spaeter). Gleicher Bote wie im Marktlauf: Issue mit Label
+  # pipeline-alarm, ein gruener Lauf schliesst es. Uebersprungene workflow_run-Laeufe melden nichts.
+  technical-world-alarm:
+    needs: [auswahl, technical-world]
+    if: always() && needs.auswahl.outputs.technical_world == 'true' && github.ref == 'refs/heads/main' && needs.technical-world.result != 'skipped'
+    concurrency:
+      group: technical-world-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: technical-world
+          RESULT_BUILD: ${{ needs.technical-world.result }}
+        run: node scripts/ci/pipeline-alarm.mjs
+
+  # --- technical-intelligence: vormals technical-intelligence-build.yml (Chartbild-Produktdaten (Technical Intelligence v3))
+  # Nach den langen Reihen (workflow_run, nur main) und 05:35 als Rueckfall; Dispatch mit force. Schritte unveraendert,
+  # Workflow-Concurrency technical-intelligence-build-<ref> am Job, contents: write am Job.
+  technical-intelligence:
+    needs: auswahl
+    permissions:
+      contents: write
+    concurrency:
+      group: technical-intelligence-build-${{ github.ref_name }}
+      cancel-in-progress: false
+    if: >-
+      needs.auswahl.outputs.technical_intelligence == 'true' && (
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      V3: quant/data/technical-intelligence/v3
+      FORCE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.force == true }}
+    steps:
+      # Spitze des Branches: ein Lauf nach long-series.yml sieht dessen Commit.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Eingaben unveraendert?
+        id: inputs
         run: |
           set -euo pipefail
+          FP=$(for p in quant/data/market/discover-series-long quant/data/market/golden-preview/daily \
+                        quant/data/market/index-membership \
+                        quant/engines/technical/ti quant/engines/technical/elliott quant/engines/technical/projection \
+                        quant/engines/technical/feature-store.js quant/engines/technical/pivot-engine.js \
+                        quant/engines/technical/timeframe.js quant/engines/technical/canonical-bars.js quant/engines/hash.js quant/engines/corporate-action-evidence.js \
+                        scripts/technical/lib scripts/technical/build-technical-intelligence.mjs \
+                        quant/data/technical-intelligence/evidence quant/data/technical-intelligence/elliott-validation \
+                        quant/methodology/technical-method-evidence.json quant/data/market/security-master/eligibility.json; do echo "$p $(git rev-parse "HEAD:$p")"; done | sha256sum | cut -c1-32)
+          OLD=$(node -e 'try{console.log(require("./'"$V3"'/build-inputs.json").fingerprint||"")}catch(e){console.log("")}')
+          echo "fp=$FP" >> "$GITHUB_OUTPUT"
+          echo "Eingaben: $FP · zuletzt gebaut: ${OLD:-nie}"
+          if [ "$FP" = "$OLD" ] && [ "$FORCE" != "true" ]; then
+            echo "noop=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Eingaben unveraendert - Chartbild-Daten sind aktuell."
+          else
+            echo "noop=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Chartbild-Daten bauen
+        if: steps.inputs.outputs.noop != 'true'
+        run: node --max-old-space-size=6144 scripts/technical/build-technical-intelligence.mjs --workers "$(nproc)"
+
+      - name: Drift-Pruefung (Engine = veroeffentlichte Daten)
+        if: steps.inputs.outputs.noop != 'true'
+        run: node scripts/technical/verify-technical-intelligence.mjs --every 50
+
+      - name: Oeffentliche Datenhygiene
+        if: steps.inputs.outputs.noop != 'true'
+        run: node scripts/market/assert-public-data-hygiene.mjs
+
+      - name: Commit (nur Chartbild-Daten)
+        if: steps.inputs.outputs.noop != 'true'
+        env:
+          FP: ${{ steps.inputs.outputs.fp }}
+        run: |
+          set -euo pipefail
+          node -e '
+            const m = require("./'"$V3"'/meta.json");
+            require("fs").writeFileSync("'"$V3"'/build-inputs.json", JSON.stringify({ fingerprint: process.env.FP, commit: process.env.GITHUB_SHA,
+              generatedAt: m.generatedAt, counts: m.counts, sources: m.sources }, null, 1) + "\n");'
           git config user.name "vision-universe-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add quant/data/product/ki-depots-v1.json
-          if git diff --cached --quiet; then echo "Unveraendert."; exit 0; fi
-          git commit -m "KI-Depots: Kursstand $(node -e 'console.log(require("./quant/data/product/ki-depots-v1.json").asOf || "ausstehend")') (automatischer Lauf)"
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+          git add "$V3"
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Chartbild-Produktdaten: $(node -e 'const m=require("./'"$V3"'/meta.json");console.log(JSON.stringify(m.counts))')"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME:-main}"

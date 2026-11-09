@@ -19,28 +19,19 @@ name: Freshness-Monitor (zeigt die Seite den letzten Handelstag?)
 # Der Zeitplan laeuft nur auf dem Default-Branch; auf Entwicklungsbranches
 # dient ein Push mit der Marke `[freshness-check]` als Ausloeser.
 
+# Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
       site:
         description: 'Basis-URL der veroeffentlichten Seite'
         type: string
         default: 'https://research.visionuniverse.de'
-  schedule:
-    - cron: '30 6 * * 2-6'
-    - cron: '5 14 * * 1-5'
-    - cron: '15 15 * * 1-5'
-    - cron: '15 23 * * 1-5'
-    # Im Blick (Intraday): eigener Job `imblick`. Die Termine sind so gelegt,
-    # dass jeder Slot in BEIDEN Lagen (Sommer 15/17/19/20:20 UTC, Winter
-    # 16/18/20/21:20 UTC) irgendwann mindestens 90 Minuten alt ist, bevor der
-    # naechste faellig wird: :45 von 16 bis 19 Uhr sieht I1 (Sommer 16:45,
-    # Winter 17:45) und I2 (Sommer 18:45, Winter 19:45); 22:55 sieht den
-    # Schlussslot (Sommer +155, Winter +95 Min.). Der Test
-    # im-blick-refresh.test.mjs (RF15) rechnet das fuer jeden Handelstag des
-    # Jahres nach. Die beiden anderen Jobs nehmen diese Termine nicht an.
-    - cron: '45 16-19 * * 1-5'
-    - cron: '55 22 * * 1-5'
   # Nach dem Kurslauf (Neustart 04.11.2026): Produktstand, Supertrader und PIT-Snapshots werden geprueft,
   # sobald der Marktdaten-Refresh auf main fertig ist - nicht nur zu festen Uhrzeiten, die vor dem Ende der
   # (von GitHub bis zu 3,5 h verzoegerten) Kette liegen koennen. Die Zeitplaene bleiben als Rueckfall.
@@ -60,8 +51,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      (github.event_name == 'schedule' && github.event.schedule != '45 16-19 * * 1-5' && github.event.schedule != '55 22 * * 1-5') ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) ||
+      ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) != '45 16-19 * * 1-5' && (github.event.schedule || inputs.zeitplan) != '55 22 * * 1-5') ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
       - uses: actions/checkout@v4
@@ -74,7 +65,7 @@ jobs:
         continue-on-error: true
         env:
           # Eingaben nur ueber env: - nie direkt in das Skript interpoliert (Script-Injection, Audit 03.10.2026).
-          IN_SITE: ${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}
+          IN_SITE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.site || 'https://research.visionuniverse.de' }}
         run: |
           set -o pipefail
           SITE="$IN_SITE"
@@ -159,8 +150,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: >-
-      github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run' ||
-      (github.event_name == 'schedule' && github.event.schedule != '15 23 * * 1-5' && github.event.schedule != '45 16-19 * * 1-5' && github.event.schedule != '55 22 * * 1-5') ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || github.event_name == 'workflow_run' ||
+      ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) != '15 23 * * 1-5' && (github.event.schedule || inputs.zeitplan) != '45 16-19 * * 1-5' && (github.event.schedule || inputs.zeitplan) != '55 22 * * 1-5') ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
       - uses: actions/checkout@v4
@@ -274,8 +265,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) ||
+      (github.event_name == 'schedule' || inputs.zeitplan != '') ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
       - uses: actions/checkout@v4
@@ -284,7 +275,7 @@ jobs:
           node-version: '22'
       - name: Im Blick - zum faelligen Termin neu gerechnet?
         env:
-          IN_SITE: ${{ github.event_name == 'workflow_dispatch' && inputs.site || 'https://research.visionuniverse.de' }}
+          IN_SITE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.site || 'https://research.visionuniverse.de' }}
         run: |
           set -o pipefail
           node scripts/discover/check-im-blick-live.mjs --strict --site="$IN_SITE"
@@ -301,8 +292,8 @@ jobs:
       contents: read
       actions: read
     if: >-
-      github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'schedule' || github.event_name == 'workflow_run' ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) ||
+      (github.event_name == 'schedule' || inputs.zeitplan != '') || github.event_name == 'workflow_run' ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
       - uses: actions/checkout@v4
@@ -331,8 +322,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     if: >-
-      github.event_name == 'workflow_dispatch' || github.event_name == 'workflow_run' ||
-      (github.event_name == 'schedule' && github.event.schedule == '30 6 * * 2-6') ||
+      (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || github.event_name == 'workflow_run' ||
+      ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '30 6 * * 2-6') ||
       contains(github.event.head_commit.message, '[freshness-check]')
     steps:
       - uses: actions/checkout@v4

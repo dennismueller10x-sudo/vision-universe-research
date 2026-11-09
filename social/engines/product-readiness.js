@@ -55,7 +55,7 @@
 
    Sie misst nichts. Sie hat kein Netz, kein Dateisystem und keine
    Uhr. Sie bekommt Befunde und beurteilt sie. Die Messung steht in
-   scripts/social/social-os-ready.mjs - dort, wo das Netz ist.
+   products/social/producer/social-os-ready.mjs - dort, wo das Netz ist.
 
    Eine Engine, die selbst misst, laesst sich nicht gegen erfundene
    Lagen pruefen.

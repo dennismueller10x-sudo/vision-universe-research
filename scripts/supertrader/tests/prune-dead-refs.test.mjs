@@ -2,8 +2,10 @@
    sonst nichts. Anlass BZH (27.10.2026): Universum ohne BZH committet,
    Materialisierung rot, Supertrader nicht angestossen -> toter Link.
    Hermetisch: jede Pruefung baut ein Wegwerf-Repository. */
+import { workflowPart } from "../../ci/lib/workflow-part.mjs";
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import { takteVon } from '../../core/schedule-registry.mjs';
 import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
@@ -232,10 +234,10 @@ test('planPrune ist rein und pruefbar; CLI: Abbruch = Exit 2, Trockenlauf schrei
 
 test('Workflow: Bereinigung nur per Modus-Eingabe, ohne Anbieterabruf und ohne vollen Build, Tests vor dem Commit', () => {
   const wf = readFileSync(join(ROOT, '.github', 'workflows', 'supertrader-signals.yml'), 'utf8');
-  assert.match(wf, /cron: '17 6 \* \* 2-6'/, 'Zeitplan unveraendert');
+  assert.ok(takteVon('supertrader-signals.yml').includes('17 6 * * 2-6'), 'Zeitplan unveraendert (Register, Wecker)');
   assert.match(wf, /mode:\s*\n(?:\s+.*\n)*?\s+options:\s*\n\s+- build\s*\n\s+- prune-dead-refs/);
   assert.match(wf, /MODE: \$\{\{ inputs\.mode \|\| 'build' \}\}/, 'Eingabe nur ueber env');
-  assert.doesNotMatch(wf.replace(/MODE: \$\{\{ inputs\.mode \|\| 'build' \}\}/, ''), /\$\{\{\s*inputs\./, 'keine Eingabe im Shell-Text');
+  assert.doesNotMatch(wf.replace(/MODE: \$\{\{ inputs\.mode \|\| 'build' \}\}/, '').replace(/^run-name: .*$/m, ''), /\$\{\{\s*inputs\./, 'keine Eingabe im Shell-Text');
   const schritte = wf.split('\n      - ').slice(1);
   const schritt = (re) => schritte.find((s) => re.test(s)) || '';
   assert.match(schritt(/intraday-prefetch\.mjs/), /if: env\.MODE == 'build'/, 'kein Minutenabruf bei der Bereinigung');
@@ -245,7 +247,7 @@ test('Workflow: Bereinigung nur per Modus-Eingabe, ohne Anbieterabruf und ohne v
   assert.ok(wf.indexOf('node --test "scripts/supertrader/tests/*.test.mjs"') < wf.indexOf('commit-and-push.sh'), 'Tests vor dem Commit');
   /* Heap: Runner-Standard (4144 MB gemessen) - keine Absenkung im Produktivlauf. */
   assert.doesNotMatch(wf, /max-old-space-size|NODE_OPTIONS/);
-  const ci = readFileSync(join(ROOT, '.github', 'workflows', 'supertrader-ci.yml'), 'utf8');
+  const ci = workflowPart(ROOT, 'ci.yml', 'supertrader'); /* seit CI Stufe 2 Teil supertrader in ci.yml, vormals supertrader-ci.yml */
   assert.match(ci, /cp -r supertrader "\$RUNNER_TEMP\/supertrader-inkrementell"\n\s+node scripts\/supertrader\/build\.mjs --out="\$RUNNER_TEMP\/supertrader-inkrementell"/, 'Speicher-Fruehwarnung in der CI');
 });
 

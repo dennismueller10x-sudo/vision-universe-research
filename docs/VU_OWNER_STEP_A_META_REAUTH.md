@@ -58,7 +58,7 @@ Die Messung oben stammt aus diesem Schritt. Wiederholen lässt er sich
 jederzeit, er kostet nichts und keinen Hashtag-Platz:
 
 ```
-VU_SOCIAL_ADMIN_KEY=... node scripts/social/verify-hashtag-access.mjs
+VU_SOCIAL_ADMIN_KEY=... node products/social/producer/verify-hashtag-access.mjs
 ```
 
 Oder über Actions: `social/data/capability-probe-request.json` ändern
@@ -120,7 +120,7 @@ sondern nur ein Antrag.
    > gespeichert werden ausschließlich Muster und Zahlen.
 
    Das ist keine Formulierungshilfe, sondern eine Beschreibung des
-   gebauten Verhaltens: `social/tests/external-patterns.test.mjs`
+   gebauten Verhaltens: `products/social/tests/external-patterns.test.mjs`
    durchsucht die Ausgabe darauf.
 
 6. Absenden. Die Prüfung dauert; eine Frist sagt Meta nicht zu.
@@ -130,7 +130,7 @@ sondern nur ein Antrag.
 ## DANACH — NACHPRÜFEN (Pflicht, nicht Kür)
 
 ```
-VU_SOCIAL_ADMIN_KEY=... node scripts/social/verify-hashtag-access.mjs
+VU_SOCIAL_ADMIN_KEY=... node products/social/producer/verify-hashtag-access.mjs
 ```
 
 Der Lauf prüft in dieser Reihenfolge:

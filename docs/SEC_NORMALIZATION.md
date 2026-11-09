@@ -43,7 +43,7 @@ Nothing is averaged.
 **Issuer extensions.** An issuer-specific XBRL concept (its own extension taxonomy, which companyfacts never carries) is
 not a registry mapping. A reviewed one lives in `quant/config/sec-issuer-extensions.json`: valid for its own CIK only,
 ranked below every generic concept of its metric, admitted only with a value-equal overlap against a generic concept, and
-read from pinned instance documents (SHA-256). See `docs/SEC_ISSUER_EXTENSIONS.md`.
+read from pinned instance documents (SHA-256). See `docs/archiv/SEC_ISSUER_EXTENSIONS.md`.
 
 **There is no company-specific branch anywhere in `scripts/quant/sec/`.** CI
 enforces this: `sec-fundamentals-ci.yml` fails the build if a validation

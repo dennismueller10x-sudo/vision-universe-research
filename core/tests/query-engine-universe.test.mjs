@@ -13,7 +13,7 @@
 // Ohne erreichbaren Commit (flacher Checkout) wird mit Begruendung uebersprungen.
 //
 // Screener-Universum: VU_SCREENER_UNIVERSE=<pfad> oder screener/data/universe-US_REAL.json
-// (node scripts/screener/build-universe.mjs bzw. das veroeffentlichte Artefakt).
+// (node products/screener/producer/build-universe.mjs bzw. das veroeffentlichte Artefakt).
 import test from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
@@ -72,7 +72,9 @@ test("Momentaufnahme der alten Implementierung: Umfang und Abdeckung", () => {
   assert.equal(ids.size, fixture.results.length, "eindeutige Kennungen");
   /* jedes Feld beider Kataloge, jeder Zeitrahmen der Technical-Felder */
   const Fields = require("../../screener/engine/fields.js"), TQ = require("../../quant/engines/technical/technical-query.js"), TPL = require("../../technical/engine/templates.js");
-  for (const f of Fields.FIELDS) assert.ok([...ids].some((id) => id.startsWith("sc:" + f.id + ":") || id === "sc:unavailable:" + f.id || id === "sc:empty:" + f.id), "Screener-Feld " + f.id);
+  /* Felder mit `since` kamen nach der Momentaufnahme dazu (09.11.2026: Technical-Kriterien und Faktor-Abdeckung im
+     Hauptscreener); die alte Implementierung kennt sie nicht. Die Technical-Werte selbst prueft der Teil „technical“. */
+  for (const f of Fields.FIELDS.filter((x) => !x.since)) assert.ok([...ids].some((id) => id.startsWith("sc:" + f.id + ":") || id === "sc:unavailable:" + f.id || id === "sc:empty:" + f.id), "Screener-Feld " + f.id);
   for (const f of TQ.FIELDS) for (const tf of f.tfs) assert.ok([...ids].some((id) => id.startsWith("tq:" + f.id + "@" + tf + ":")), "Technical-Feld " + f.id + "@" + tf);
   for (const t of TPL.TEMPLATES) assert.ok(ids.has("tpl:" + t.id), "Vorlage " + t.id);
   /* jeder Operator, jede Verknuepfung, Sortierungen, Fehler, leere und fehlende Werte */

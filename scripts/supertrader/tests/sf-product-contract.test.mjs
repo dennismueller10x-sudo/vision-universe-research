@@ -11,6 +11,7 @@ import {
   checkStageTransition, loadSf6Readiness, candidateContractSha256,
 } from '../source-faithful/product/candidate-contract.mjs';
 import { CONTRACTS } from '../source-faithful/registry.mjs';
+import { takteVon } from '../../core/schedule-registry.mjs';
 import { contractFingerprint } from '../source-faithful/contract.mjs';
 import { sf8RegistryViolations, SF8_DOMAIN_ID, SF8_DOMAIN_PINNED, SF8_ACTIVATION_STATE, SF8_ACTIVATION_STATES, SF8_PRODUCT_REF, PAPER2027_DOMAIN_ID, PAPER2027_DOMAIN_ENTRY, PAPER2027_DOMAIN_SHA256, PAPER2027_LOG_ARTIFACT, PAPER2027_PRODUCER, PAPER2027_WORKFLOW, paper2027EntrySha256 } from '../source-faithful/product/registry-guard.mjs';
 
@@ -32,7 +33,11 @@ const has = (res, prefix) => res.errors.some((e) => e.startsWith(prefix));
 const PINNED_CONTRACT_SHA256 = 'ea3e59ae8919dcb75bfa28ce6f618b2d2273a53182d44ae82e7a172ba0f6a9b3';
 
 const SF8_DAILY_WORKFLOW = 'supertrader-sf8-candidates.yml';
-const ALARM_IF = "    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || github.event_name == 'schedule' || (inputs.mode == 'auto' && github.ref == 'refs/heads/main'))";
+const ALARM_IF = "    if: always() && needs.candidates.result != 'skipped' && (needs.candidates.outputs.auto == 'true' || (github.event_name == 'schedule' || inputs.zeitplan != '') || (inputs.mode == 'auto' && github.ref == 'refs/heads/main'))";
+// Ein Zeitgeber (RUNBOOK §10): der Takt kommt als workflow_dispatch mit Eingang zeitplan vom Cloudflare-Wecker.
+const JOB_IF = "    if: vars.SF8_CANDIDATES_ENABLED == 'true' && ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) || vars.SF8_AUTO_PUBLISH == 'true')";
+const EVENT_ENV = "          EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}";
+const RUN_NAME = "run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}";
 
 test('SF-PRODUCT-CONTRACT-PINNED: Vertragsdefinition 1.0.0 festgeschrieben, VALIDATED nicht ausgebbar', () => {
   assert.equal(CANDIDATE_CONTRACT_VERSION, '1.0.0');
@@ -365,7 +370,8 @@ test('SF-PAPER2027-REGISTRY-ALLOWANCE: genau ein exakt gepinnter Eintrag fuer da
   if (fs.existsSync(wf)) {
     const y = fs.readFileSync(wf, 'utf8');
     assert.ok(y.includes(PAPER2027_LOG_ARTIFACT.slice(1)), 'Workflow schreibt genau das registrierte Protokoll');
-    for (const cron of ["cron: '37 2 * * 2-6'", "cron: '41 9 * * 2-6'"]) assert.ok(y.includes(cron), cron);
+    const takte = takteVon(PAPER2027_WORKFLOW);
+    for (const cron of ['37 2 * * 2-6', '41 9 * * 2-6']) assert.ok(takte.includes(cron), cron);
     assert.ok(fs.existsSync(path.join(ROOT, PAPER2027_PRODUCER.split(' ')[0])), 'Erzeuger existiert');
   }
 });
@@ -375,12 +381,16 @@ test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nac
   if (!fs.existsSync(p)) return;
   const y = fs.readFileSync(p, 'utf8');
   const code = y.split('\n').filter((l) => !/^\s*#/.test(l)).join('\n');
-  // Auslöser: workflow_dispatch und genau ein Rückfall-Zeitplan; nie push, pull_request oder workflow_run
+  // Auslöser: workflow_dispatch, Takt Di–Sa aus dem Register (Wecker); nie push, pull_request oder workflow_run
   assert.doesNotMatch(code, /^\s*(push|pull_request|pull_request_target|workflow_run|repository_dispatch)\s*:/m, 'kein weiterer automatischer Auslöser');
-  assert.match(code, /^on:\n\s+schedule:\n\s+- cron: '\d+ \d+ \* \* 2-6'\n\s+workflow_dispatch:/m, 'genau ein Zeitplan, Di–Sa');
-  assert.equal((code.match(/cron:/g) || []).length, 1);
+  const takte = takteVon(SF8_DAILY_WORKFLOW);
+  assert.equal(takte.length, 1, 'genau ein Zeitplan');
+  assert.match(takte[0], /^\d+ \d+ \* \* 2-6$/, 'Di–Sa');
+  assert.match(code, /^on:\n\s+workflow_dispatch:/m);
+  assert.equal((code.match(/cron:/g) || []).length, 0, 'kein GitHub-Cron neben dem Wecker');
   // beide Schalter: ohne SF8_CANDIDATES_ENABLED nie; ohne SF8_AUTO_PUBLISH nur manuell (Zeitplan läuft leer)
-  assert.match(code, /^\s+if: vars\.SF8_CANDIDATES_ENABLED == 'true' && \(github\.event_name == 'workflow_dispatch' \|\| vars\.SF8_AUTO_PUBLISH == 'true'\)$/m, 'Job nur mit freigeschalteten Variablen');
+  assert.ok(code.split('\n').includes(JOB_IF), 'Job nur mit freigeschalteten Variablen; der Wecker-Takt zaehlt als Zeitplan');
+  assert.ok(code.split('\n').includes(EVENT_ENV), 'Wecker-Takt heisst im Wegschritt schedule');
   assert.match(code, /if \[ "\$EVENT" = "schedule" \] \|\| \[ "\$IN_MODE" = "auto" \]; then\n\s+if \[ "\$GITHUB_REF" != "refs\/heads\/main" \]; then [^\n]*exit 1; fi\n\s+if \[ "\$AUTO_SWITCH" != "true" \]; then [^\n]*exit 1; fi/, 'automatisch nur auf main und nur mit SF8_AUTO_PUBLISH');
   assert.match(code, /--require-current "\$heute"/, 'Eingangsprüfung gegen veraltete Eingaben');
   assert.equal((code.match(/--require-current "\$heute"/g) || []).length, 2, 'auch der zweite Lauf');
@@ -394,7 +404,7 @@ test('SF8-DAILY-WORKFLOW: Tageslauf nur mit Variablen, automatischer Weg nur nac
   assert.match(code, /expected_sha256:\n\s+description: [^\n]+\n\s+type: string\n\s+default: ''/);
   assert.match(code, /EXPECTED_SHA256: \$\{\{ inputs\.expected_sha256 \}\}/);
   assert.match(code, /if \[ -z "\$EXPECTED_SHA256" \] \|\| \[ "\$EXPECTED_SHA256" != "\$ACTUAL_SHA256" \]; then\n[^\n]*\n\s*exit 1/, 'ohne oder mit abweichendem Fingerabdruck kein Commit');
-  assert.deepEqual(code.split('\n').filter((l) => /inputs\./.test(l) && !/^\s+[A-Z_0-9]+: \$\{\{ inputs\.[a-z_0-9]+ \}\}$/.test(l) && !/^\s+if: inputs\.commit == true && steps\.mode\.outputs\.auto != 'true'$/.test(l) && l !== ALARM_IF), [], 'Eingaben nur über env (ADR-005)');
+  assert.deepEqual(code.split('\n').filter((l) => /inputs\./.test(l) && !/^\s+[A-Z_0-9]+: \$\{\{ inputs\.[a-z_0-9]+ \}\}$/.test(l) && !/^\s+if: inputs\.commit == true && steps\.mode\.outputs\.auto != 'true'$/.test(l) && ![ALARM_IF, JOB_IF, EVENT_ENV, RUN_NAME].includes(l)), [], 'Eingaben nur über env (ADR-005)');
   // automatischer Weg: zweiter Lauf, Vertrag, Commit nur bei PUBLISH; alles nach DQ und Fingerabdruck
   const at = (s) => code.indexOf(s);
   const dq = at('--only=sf8 --sf8-dir="$PUB" --sf8-activated'), fpAt = at('id: fp'), re = at('id: rebuild'), ct = at('id: contract');
@@ -436,13 +446,13 @@ test('SF8-DAILY-ALARM: roter automatischer Lauf alarmiert auch vor dem Schritt m
   const m = y.match(/\n  alarm:\n    needs: candidates\n    if: ([^\n]+)\n/);
   assert.ok(m, 'Alarm-Job mit Bedingung');
   const ausdruck = m[1];
-  const bekannt = /always\(\)|needs\.candidates\.result|needs\.candidates\.outputs\.auto|github\.event_name|github\.ref|inputs\.mode|'[a-z_/]*'|==|!=|&&|\|\||[()\s]/g;
+  const bekannt = /always\(\)|needs\.candidates\.result|needs\.candidates\.outputs\.auto|github\.event_name|github\.ref|inputs\.mode|inputs\.zeitplan|'[a-z_/]*'|==|!=|&&|\|\||[()\s]/g;
   assert.equal(ausdruck.replace(bekannt, ''), '', 'nur bekannte Bausteine: ' + ausdruck);
   const js = ausdruck.replace(/always\(\)/g, 'true').replace(/needs\.candidates\.result/g, 'c.result').replace(/needs\.candidates\.outputs\.auto/g, 'c.auto')
-    .replace(/github\.event_name/g, 'c.event').replace(/github\.ref/g, 'c.ref').replace(/inputs\.mode/g, 'c.mode').replace(/!=/g, '!==').replace(/([^!=])==/g, '$1===');
+    .replace(/github\.event_name/g, 'c.event').replace(/github\.ref/g, 'c.ref').replace(/inputs\.mode/g, 'c.mode').replace(/inputs\.zeitplan/g, 'c.zeitplan').replace(/!=/g, '!==').replace(/([^!=])==/g, '$1===');
   const alarm = new Function('c', 'return (' + js + ');');
   const MAIN = 'refs/heads/main', ZWEIG = 'refs/heads/claude/probe';
-  for (const [event, mode, result, auto, erwartet, fall, ref = MAIN] of [
+  for (const [event, mode, result, auto, erwartet, fall, ref = MAIN, zeitplan = ''] of [
     ['workflow_dispatch', 'auto', 'failure', '', true, 'Anstoß mode=auto scheitert vor dem Schritt mode'],
     ['workflow_dispatch', 'auto', 'cancelled', '', true, 'Anstoß mode=auto abgebrochen vor dem Schritt mode'],
     ['workflow_dispatch', 'auto', 'failure', 'true', true, 'Anstoß mode=auto scheitert nach dem Schritt mode'],
@@ -454,9 +464,11 @@ test('SF8-DAILY-ALARM: roter automatischer Lauf alarmiert auch vor dem Schritt m
     ['workflow_dispatch', 'manual', 'success', 'false', false, 'manueller Lauf grün'],
     ['workflow_dispatch', 'auto', 'skipped', '', false, 'Job übersprungen (Schalter aus)'],
     ['schedule', '', 'skipped', '', false, 'Zeitplan ohne SF8_AUTO_PUBLISH'],
+    ['workflow_dispatch', '', 'failure', '', true, 'Wecker-Takt scheitert vor dem Schritt mode', MAIN, '43 11 * * 2-6'],
+    ['workflow_dispatch', '', 'skipped', '', false, 'Wecker-Takt ohne SF8_AUTO_PUBLISH', MAIN, '43 11 * * 2-6'],
     ['workflow_dispatch', 'auto', 'failure', '', false, 'Probelauf mode=auto auf einem anderen Zweig (scheitert in mode)', ZWEIG],
     ['workflow_dispatch', 'manual', 'failure', '', false, 'manueller Lauf auf einem anderen Zweig', ZWEIG],
-  ]) assert.equal(alarm({ event, mode, result, auto, ref }), erwartet, fall);
+  ]) assert.equal(alarm({ event, mode, result, auto, ref, zeitplan }), erwartet, fall);
   // Eingaben bleiben außerhalb des Shell-Texts: der Alarm-Schritt reicht nur das Jobergebnis über env weiter
   const job = y.slice(y.indexOf('\n  alarm:'));
   const ausdruecke = job.split('\n').filter((l) => /\$\{\{/.test(l));

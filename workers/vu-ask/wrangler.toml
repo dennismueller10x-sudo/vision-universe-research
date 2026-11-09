@@ -18,7 +18,7 @@
 #      kostenlose (Cache), gegen Dauerfeuer
 #
 # SECRETS (nie in diese Datei) setzt der Workflow
-# .github/workflows/cloudflare-ask-deploy.yml. Von Hand einzurichten ist nur
+# .github/workflows/deploy.yml (Teil frage-worker, vormals cloudflare-ask-deploy.yml). Von Hand einzurichten ist nur
 # das GitHub-Secret ANTHROPIC_API_KEY; der Admin-Key wird abgeleitet, das
 # Salz erzeugt der Worker selbst. Optional: TURNSTILE_SECRET.
 # =============================================================================
@@ -73,4 +73,6 @@ VU_ASK_REQUESTS_PER_IP_DAILY = "60"
 # ohne Passwort. Eigenes Passwort statt dieses: GitHub-Secret
 # VU_ASK_ACCESS_PASSWORD anlegen und den Workflow starten.
 VU_ASK_ACCESS_HASH = "8bbfbe561f238f94920bb82202a221f4ec7ae0b867d1d1a0500de455aa64a122"
-VU_ASK_ALLOWED_ORIGINS = "https://research.visionuniverse.de,https://vision-universe-research.vercel.app"
+# Die App-Herkuenfte (capacitor://localhost, https://localhost) gelten im
+# Worker immer zusaetzlich (src/index.mjs, APP_ORIGINS).
+VU_ASK_ALLOWED_ORIGINS = "https://research.visionuniverse.de,https://vision-universe-research.vercel.app,capacitor://localhost,https://localhost"

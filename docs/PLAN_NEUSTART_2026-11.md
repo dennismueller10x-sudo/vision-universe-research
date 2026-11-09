@@ -50,12 +50,14 @@ Danach: ein gemeinsamer Backtest-Kern (`core/backtest/`) für Quant, Supertrader
 | Umbau | Vorher | Nachher |
 |---|---|---|
 | Generierte Daten | in `main` | eigener Datenzweig, später R2; Pages-Build holt die Daten |
-| Workflows | 137 | ca. 12: `pipeline-daily`, `pipeline-intraday`, `ci`, `deploy`, `social`, `account`, `weekly-maintenance` … |
+| Workflows | 137 | 11 Bündel (`account`, `ci`, `content`, `deploy`, `maintenance`, `monitor`, `pipeline-daily`, `pipeline-intraday`, `pipeline-weekly`, `research`, `social`) + begründete Ausnahmen, Stand 08.11.2026; jede Ausnahme steht mit einem Satz in `core/registry/workflow-bundles.json` (Feld `ausnahme`, Vertragstest WB-5) |
 | Zeitgeber | 58 GitHub-Crons | ein Cloudflare-Takt (vorhandener Waker) |
 | Gates | Pfad-Isolation | Vertragstests + CODEOWNERS; Frische alarmiert, blockiert keinen Code |
 | Doku | 619 | ca. 20 lebende Seiten, Rest im Archiv |
 | Offene PRs | 137 | unter 15 |
 | Struktur | 48 Top-Level-Ordner | `products/<id>/{module.json,web,engine,producer.mjs,tests}`, `core/`, `services/`, `pipelines/` |
+
+Datenzweig, Stand 09.11.2026 (Steuerung-Entscheidung A): Die Markt-Kette (Discover, Quant, Supertrader, SEC-Kette, Produktuniversum) bleibt als Konsistenzeinheit auf `main`, weil die Reproduzierbarkeits-Gates (ci.yml/discover baut `discover/data` aus den Quant-Eingängen neu), der UF-Vertrag und Company Intelligence (Sparse-Checkout `quant/data/sec`, `quant/data/universe`) von `main` lesen; alle übrigen Datenarten liegen im Datenzweig `data/live` (`core/registry/data-branch.json`).
 
 `module.json` (Steckbrief) trägt Route, Navigation, Zugang (free/pro/intern), Status, Erzeuger, Zeitplan und Frische-Grenze. Menü, Pipeline, Statusseite und Paywall lesen den Steckbrief.
 
@@ -76,7 +78,7 @@ Jeder Strang ist eine eigene Claude-Sitzung, besitzt seine Pfade, mergt bei grü
 | A Infrastruktur | `.github/workflows`, `scripts/ci`, `core/registry`, Gates, `docs/` | Security Master 1.3.0 (#1240) vor 11.11., Quant-CI grün, Crons News/Security Master, FV-8-Alarm, alte PRs schließen | Datenzweig statt `main`, Workflows bündeln, Pfad-Gates → Vertragstests, Doku-Archiv, Modul-Steckbrief |
 | B Supertrader-Backtest | `supertrader/`, `scripts/supertrader/` | Lesarten entscheiden, Tageslauf wieder frisch | V13-Historienlauf Top 5, Ergebnisse intern, Papierhandel 2027 aktivieren |
 | C Quant-Backtest & Portfolio | `quant/`, `scripts/quant/`, `konto/admin/backtests` | Interne Backtest-Vorschau an (#1227), Strategie-Backtest mit delisteten Titeln | Portfolio-Baukasten nach VU-Standard, Musterportfolios mit Ergebnis |
-| D2 Frontend | Shell, Navigation, Seiten-Design | **ab 04.11.2026:** Redesign 2027 1:1 nach `docs/design/redesign-2027/` (HANDOVER.md, Master-Prompt im README), Fortschritt in `docs/design/redesign-2027/PROGRESS.md`. Baut auf den Entwürfen der früheren Sitzung D auf (#1331, Zweige `neustart/d-*`). | alle Schritte der Tabelle „Umsetzung in Schritten“ |
+| D2 Frontend | Shell, Navigation, Seiten-Design | **ab 04.11.2026:** Redesign 2027 1:1 nach `docs/design/redesign-2027/` (HANDOVER.md, Master-Prompt im README), Fortschritt in `docs/archiv/design/redesign-2027/PROGRESS.md`. Baut auf den Entwürfen der früheren Sitzung D auf (#1331, Zweige `neustart/d-*`). | alle Schritte der Tabelle „Umsetzung in Schritten“ |
 
 Außerhalb der Technik (Owner): Rechtsberatung beauftragen, Fragebogen R2, Steuerberater, Stripe-Branding, Testkauf Z1, Repo-Variable `SF8_AUTO_PUBLISH` setzen.
 

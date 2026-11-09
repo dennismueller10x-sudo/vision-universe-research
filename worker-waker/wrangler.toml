@@ -55,11 +55,14 @@ compatibility_flags = []
 [observability]
 enabled = true
 
-# Alle fuenf Minuten im breiten Sitzungsfenster. Cron kennt keine
-# Sommerzeit; das Fenster ist deshalb breit, und der Taktgeber selbst
-# entscheidet in Sekunden, ob gerade gehandelt wird.
+# Jede Minute (Plan Neustart §3: ein Zeitgeber statt GitHub-Crons). Der
+# Intraday-Takt laeuft weiter nur alle fuenf Minuten im breiten
+# Sitzungsfenster (INTRADAY_CRON in src/index.mjs); jede Minute wird nur
+# core/registry/schedule.json gelesen und, wenn ein Termin faellig ist,
+# der zugehoerige Workflow angestossen. 1.440 Ausloesungen am Tag sind
+# 1,4 % des freien Kontingents; ein Trigger, also im Free-Limit.
 [triggers]
-crons = ["*/5 13-21 * * 1-5"]
+crons = ["* * * * *"]
 
 [vars]
 GITHUB_REPO = "dennismueller10x-sudo/vision-universe-research"

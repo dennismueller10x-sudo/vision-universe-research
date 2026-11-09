@@ -149,7 +149,7 @@
     async function browse(page){
       const offset=page&&page.offset!==undefined?page.offset:0,limit=page&&page.limit!==undefined?page.limit:refs.size;
       if(!Number.isInteger(offset)||offset<0||!Number.isInteger(limit)||limit<1||limit>5000)throw Error('INVALID_EUROPE_PAGE');
-      const ids=Array.from(refs.keys()).slice(offset,offset+limit),rows=new Array(ids.length);let next=0;
+      /* Optionale Auswahl (z. B. Deutschland): nur bekannte IDs, in der Reihenfolge der Referenzen. */const pick=page&&Array.isArray(page.ids)?new Set(page.ids):null,pool=Array.from(refs.keys()).filter(id=>!pick||pick.has(id)),ids=pool.slice(offset,offset+limit),rows=new Array(ids.length);let next=0;
       const held=new Array(ids.length);
       await Promise.all(Array.from({length:Math.min(6,ids.length)},async()=>{while(next<ids.length){const n=next++;const found=blocked.has(ids[n])?null:await admitted(ids[n]);if(found&&found.state==='AVAILABLE')rows[n]=projection(found.data);else held[n]=ids[n];}}));
       const cards=rows.filter(Boolean);
@@ -157,7 +157,7 @@
       if(!cards.length&&!(await anyAdmitted()))return unavailable('DISPLAY_RIGHTS_OR_DISCOVER_GATE_CLOSED');
       const unavailableEntries=(await Promise.all(held.filter(Boolean).map(withheld))).filter(Boolean);
       if(!cards.length&&!unavailableEntries.length)return unavailable('DISPLAY_RIGHTS_OR_DISCOVER_GATE_CLOSED');
-      return available({universeId:'EUROPE',universeLabel:'Europäische Aktien',cards,unavailable:unavailableEntries,nextOffset:offset+limit<refs.size?offset+limit:null,title:'Europäische Aktien',
+      return available({universeId:'EUROPE',universeLabel:'Europäische Aktien',cards,unavailable:unavailableEntries,nextOffset:offset+limit<pool.length?offset+limit:null,total:pool.length,title:'Europäische Aktien',
         rule:privatePreview?'Private Recherche-Vorschau · nicht öffentlich freigegeben.':'Europäische Unternehmen und ihre Kursverläufe. Tagesschlusskurse · unbereinigt.'});
     }
     async function toggle(id){

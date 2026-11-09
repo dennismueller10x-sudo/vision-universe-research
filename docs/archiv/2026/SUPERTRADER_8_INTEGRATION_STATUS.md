@@ -100,7 +100,7 @@ Der volle Anstoß verlangt zu Recht validierte Produktdaten. Ein Weg, nur den to
   - Er liest keine Markt- oder Quant-Daten.
   - Dazu kommt eine Heap-Einstellung für den Build.
 - **#993:** Anstoß dieses Modus im Nachtlauf, nur wenn `refresh` grün und `materialize` oder der Vertrag rot ist.
-- Beschreibung: `docs/SUPERTRADER_DEAD_REF_PRUNE.md` auf dem Branch von #992.
+- Beschreibung: `docs/archiv/SUPERTRADER_DEAD_REF_PRUNE.md` auf dem Branch von #992.
 
 ## Infrastruktur-Hinweis (Vorschlag, nicht umgesetzt)
 

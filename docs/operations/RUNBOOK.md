@@ -53,7 +53,7 @@ Wiederholen: Actions → Workflow → „Run workflow“ auf `main`. Für einen 
 ## 4. Intraday steht
 
 - `intraday/index.json`: `dataSession.asOf` und `regularComplete`.
-- Läuft `intraday-pacemaker.yml`? Schlägt der Wächter (`intraday-delivery-watchdog.yml`) an?
+- Läuft `intraday-pacemaker.yml`? Schlägt der Wächter (`pipeline-intraday.yml`, Teil `waechter`) an?
 - Nach Börsenschluss holt der Lauf um 21:35 UTC (`intraday-snapshots.yml`) den Schluss und das Universum.
 - Ist er gescheitert, holt ein manueller Lauf mit `scope=auto` nach. Das Siegel funktioniert seit 03.10. auch mit Bindestrich-Tickern.
 
@@ -98,3 +98,21 @@ Nach dem Datenlauf löst `workflow_run` das nächste Deployment aus.
 3. Ursache finden: Job `supertrader` im Nachtlauf ansehen (`SKIP/UP_TO_DATE`, `SKIP/ALREADY_QUEUED`, `REFUSE/DATA_NOT_VALIDATED` oder Dispatch abgewiesen: Issue `[market-data-refresh]` mit Fehlertext). Lief der Supertrader-Lauf und ist rot, bleiben die Signale unverändert (Integritätstests vor dem Commit): den Lauf in den Actions ansehen.
 4. Nachholen: `supertrader-signals.yml` von Hand starten. Vorher prüfen: Nachtlauf und Materialisierung fertig, der Lauf schreibt nur `supertrader/`, seine Integritätstests bleiben bindend. Ein Wiederholungslauf ist idempotent (keine neuen Handelstage, keine Minutenabrufe, kein Commit) und kostet nur Laufzeit (rund 2,5 Minuten).
 
+
+## 10. Ein Zeitplan-Lauf kam nicht (Zeitgeber)
+
+Alle Zeitpläne stehen in `core/registry/schedule.json` (Plan Neustart §3: ein Zeitgeber). `timer: "waker"` heißt: der Cloudflare-Wecker `vu-intraday-waker` liest das Register jede Minute von `main` und startet den Workflow per `workflow_dispatch` mit `zeitplan=<cron>`; der Lauf heißt dann `<Workflow> · Takt <cron>`. Kam nichts an, holt der Wecker nach 5, 10 und 15 Minuten nach. `timer: "github"` heißt: der Cron steht noch im Workflow (Altbestand oder begründete Ausnahme, Feld `ausnahme`).
+
+- Inventar und Abweichungen: `node scripts/core/schedule-registry.mjs` (Vertragstest SZ in `core/tests/schedule-registry.test.mjs`).
+- Wecker eingerichtet? `https://vu-intraday-waker.little-credit-15d3.workers.dev/status` (`schluesselHinterlegt: true`).
+- Wecker neu ausrollen: Workflow „Cloudflare — Intraday-Wecker ausrollen“ (`cloudflare-waker-deploy.yml`). Ein Registerwechsel braucht **kein** Ausrollen.
+- Umstellen eines Eintrags: Cron aus dem Workflow und `timer: "waker"` im selben Commit; der Workflow bekommt den Eingang `zeitplan`, `run-name` mit Marke und die Weiche `github.event.schedule || inputs.zeitplan` (SZ-2 prüft das).
+
+## 11. Daten kommen aus dem Datenzweig (`data/live`)
+
+Erzeugte Daten wandern Datenart für Datenart aus `main` in den Datenzweig `data/live` (Plan Neustart §3). Stand und Reihenfolge stehen in `core/registry/data-branch.json`: unter `domains` die umgestellten Datenarten (Phase `BRANCH_ONLY` = Erzeuger schreibt nur noch in den Zweig; die Kopie in `main` ist eingefroren), unter `plan` alle übrigen mit Status (`NEXT`, `LATER`, `LAST`, `EXEMPT`) und Grund. Vertragstest DB in `core/tests/data-branch-pilot.test.mjs`.
+
+- Pages legt den Zweig vor dem Bau in den Arbeitsbaum und nach dem Bau über die Auslieferung (`scripts/ci/overlay-data-branch.mjs`, Bericht in der Step Summary „Datenzweig“). Neuer gewinnt, kaputt oder zu klein ersetzt nie den guten Stand.
+- Ein Workflow, der solche Daten liest, ruft nach dem Checkout `scripts/ci/seed-data-branch.sh alle` auf (commit-sicher, auch bei `git add -A`).
+- Ein Erzeuger schreibt mit `scripts/ci/push-data-branch.sh data/live <pfad>…` (Verzeichnisse werden gespiegelt).
+- „Seite zeigt alten Stand“: Step Summary „Datenzweig“ des letzten Pages-Laufs lesen (`KEPT_MAIN` mit Grund), dann den letzten Lauf des Erzeugers.

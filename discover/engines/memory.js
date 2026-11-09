@@ -14,6 +14,8 @@
      geöffnete Karten              → eine Karte, die man schon kennt,
                                      wird nicht als neu behandelt
      zuletzt besuchte Sammlungen   → später: "Mehr aus …"
+     Themen der angesehenen Aktien → die Reihe "Mehr aus {Thema}"
+     gemerkte Reihen               → rücken auf der Startseite nach oben
      die Position auf der Startseite
 
    Speicher kann fehlen (privates Fenster, gesperrte Website-Daten). Jede
@@ -28,7 +30,7 @@
   var MAX_RECENT = 12;
   var MAX_OPENED = 200;
 
-  function leer() { return { v: 1, recent: [], opened: [], collections: {}, position: {} }; }
+  function leer() { return { v: 1, recent: [], opened: [], collections: {}, position: {}, follow: [] }; }
 
   /**
    * Erzeugt ein Gedächtnis über einem Speicher (localStorage oder ein
@@ -52,6 +54,7 @@
         s.opened = Array.isArray(s.opened) ? s.opened : [];
         s.collections = s.collections && typeof s.collections === "object" ? s.collections : {};
         s.position = s.position && typeof s.position === "object" ? s.position : {};
+        s.follow = Array.isArray(s.follow) ? s.follow : [];
         return s;
       } catch (err) { return leer(); }
     }
@@ -68,7 +71,9 @@
       });
       zustand.recent.unshift({ symbol: symbol, universeId: info.universeId || "US_REAL",
                                companyName: info.companyName || null, world: info.world || null,
-                               sector: info.sector || null, at: Date.now() });
+                               sector: info.sector || null, at: Date.now(),
+                               /* Themenreihen der Aktie (thema-*) fuer „Mehr aus …“ (Konzept „Reihe für Reihe“, PR 3) */
+                               themes: Array.isArray(info.themes) ? info.themes.filter(function (t) { return typeof t === "string"; }).slice(0, 6) : [] });
       if (zustand.recent.length > MAX_RECENT) zustand.recent.length = MAX_RECENT;
       if (zustand.opened.indexOf(symbol) === -1) {
         zustand.opened.push(symbol);
@@ -99,6 +104,16 @@
       var p = zustand.position[universeId || "US_REAL"];
       return typeof p === "number" ? p : 0;
     }
+    /** Reihe merken (Konzept „Reihe für Reihe“, Reihen-Seite): nur auf dem Gerät. */
+    function followRow(rowId, on) {
+      if (!rowId) return false;
+      zustand.follow = zustand.follow.filter(function (id) { return id !== rowId; });
+      if (on !== false) zustand.follow.unshift(rowId);
+      schreiben();
+      return on !== false;
+    }
+    function followedRows() { return zustand.follow.slice(); }
+    function follows(rowId) { return zustand.follow.indexOf(rowId) !== -1; }
     function clear() {
       zustand = leer();
       try { if (store) store.removeItem(KEY); } catch (err) { /* kein Speicher */ }
@@ -107,7 +122,8 @@
 
     return { recordView: recordView, recent: recent, opened: opened,
              recordCollection: recordCollection, preferredCollections: preferredCollections,
-             setPosition: setPosition, position: position, clear: clear, available: available };
+             setPosition: setPosition, position: position, clear: clear, available: available,
+             followRow: followRow, followedRows: followedRows, follows: follows };
   }
 
   var api = { VERSION: VERSION, KEY: KEY, MAX_RECENT: MAX_RECENT, create: create };
