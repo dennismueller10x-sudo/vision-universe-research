@@ -221,8 +221,16 @@
     refreshQuota();
     if (TURNSTILE_KEY) loadTurnstile();
   }
-  var initial = new URLSearchParams(location.search).get('q');
+  var params = new URLSearchParams(location.search), initial = params.get('q');
   if (initial) input.value = initial.slice(0, 400);
+  /* go=1: die Frage kommt aus dem Atlas-Sheet einer Aktie (assets/atlas-sheet.js) und wird sofort gestellt, sobald die Fragefunktion bereit ist. */
+  if (initial && params.get('go') === '1' && ENDPOINT) {
+    var tries = 0, wait = setInterval(function () {
+      if (++tries > 40) return clearInterval(wait);
+      if (quota && !sendBtn.disabled && !busy) { clearInterval(wait); submit(); }
+      else if (quota && !quota.enabled) clearInterval(wait);
+    }, 150);
+  }
 
   function setQuota(q) {
     quota = q || quota;

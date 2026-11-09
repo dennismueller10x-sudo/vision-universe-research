@@ -1425,6 +1425,26 @@
       "from": "0eb594cc2523e1893a63c9b5bff6be58e9b35dd5600c3175e73a8e88719e7b57",
       "to": "4501267a27988548364c26cdf362af2c48da346a986ae0de7054730bebb6d5c0",
       "scope": "Plattform-Kopf-Prüfung: Magazin und Reports liegen jetzt unter /insights/ (Kachel Insights statt /magazin/ und /reports/)"
+    },
+    {
+      "id": "UIP-R143",
+      "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
+      "to": "8b41ebd00f9a3fb5bdea6391234d74b40b76c02588bc0cf7f42302617e950095",
+      "scope": "Atlas auf jeder Aktie: Der Knopf „Atlas“ öffnet auf Seiten mit Aktienkopf (data-vu-stock) das Sheet aus assets/atlas-sheet.js, sonst bleibt er der Link nach /ask/; Aussehen unverändert"
+    },
+    {
+      "id": "UIP-R144",
+      "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/stock-navigator.js",
+      "from": "76e0389d17cb0a2c19754dea03d0e8f43cdbc6a07c4c8fd7422d8e107908133c",
+      "to": "8e1d02130cc4d44e02f7430e6b046ea4006d801fa8246fe9e2d73ce34261a60d",
+      "scope": "Aktienkopf trägt data-vu-stock und data-vu-stock-name für den Atlas-Knopf; Aussehen und Navigator unverändert"
     }
   ]
 }
