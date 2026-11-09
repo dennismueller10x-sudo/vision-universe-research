@@ -1,6 +1,6 @@
 # Elliott, Hedgefonds, Vorsorge · Konzept
 
-Konzept vom 09.11.2026 für die letzten drei Welten, gleicher Ansatz wie Discover, Quant, Fundamental + Screener, Supertrader und Technical (Ordner nebenan). Noch nicht freigegeben, noch nicht umgesetzt.
+Konzept vom 09.11.2026 für die letzten drei Welten, gleicher Ansatz wie Discover, Quant, Fundamental + Screener, Supertrader und Technical (Ordner nebenan). **Vom Owner freigegeben am 09.11.2026.** Bauplan und Master-Prompt: [HANDOVER.md](HANDOVER.md).
 Präsentation online (privat): https://claude.ai/artifact/YbXUWWugLwCpzp8v8uzBa5
 
 | Datei | Zweck |
@@ -11,4 +11,4 @@ Präsentation online (privat): https://claude.ai/artifact/YbXUWWugLwCpzp8v8uzBa5
 | `now/*.jpg` | Heutige Seiten auf 390 px (09.11.2026). |
 | `bundle.py` | Packt alles in eine HTML-Datei. `lib/` ist eine Kopie der Redesign-Bausteine. |
 
-Kern: Elliott ehrlich (heute bei 41 von 5.050 Aktien zählbar), Start mit genau diesen, Aktie zählbar/nicht zählbar ohne zweiten technischen Ausblick, keine Ziele; Hedgefonds mit Quartalsband (gezeigt · gemeldet bis · nächste Meldungen), drei Sätzen je Investor und Aktie, „Gruppen-Käufe“ statt „Smart Money“, Datenfehler Apple in der Berkshire-Positionsliste; Vorsorge als Weg in drei Schritten, Seiten nach Index mit UCITS-ETFs aus dem EU-Register und dem US-Fonds als Marktabbild.
+Kern: Elliott ehrlich (heute bei 41 von 5.050 Aktien zählbar), Start mit genau diesen, Aktie zählbar/nicht zählbar ohne zweiten technischen Ausblick, keine Ziele; Hedgefonds mit Quartalsband (gezeigt · gemeldet bis · nächste Meldungen), drei Sätzen je Investor und Aktie, „Gruppen-Käufe“ statt „Smart Money“, Top-Positionen statt langer Liste; Vorsorge als Weg in drei Schritten, Seiten nach Index mit UCITS-ETFs aus dem EU-Register und dem US-Fonds als Marktabbild.

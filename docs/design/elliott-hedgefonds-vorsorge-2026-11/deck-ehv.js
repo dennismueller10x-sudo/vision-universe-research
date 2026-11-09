@@ -72,7 +72,7 @@ screen('h-investor', { world: 'hedgefonds', dock: 1, h: 1180, body: `<div style=
 <div class="grid2" style="margin-top:14px;gap:8px"><div class="kt" style="width:auto"><small>Depotwert 30.06.</small><b class="num">299,3 Mrd. $</b><span>▲ +13,7 %</span></div><div class="kt" style="width:auto"><small>Positionen</small><b class="num">29</b><span>Top 5 = 68,7 %</span></div></div>
 <div style="margin-top:12px">${story('Das Quartal in drei Sätzen', [['i-pie', 'Größte Position', 'Apple ist mit 22,0 % die größte Position.', vd('m', 'Größte')], ['i-plus', 'Gekauft', 'Mehr Alphabet: Klasse A +45 %, Klasse C mehr als versiebenfacht.', vd('s', 'Aufgestockt')], ['i-x', 'Verkauft', 'Weniger Capital One (−58 %) und Nucor (−52,5 %).', vd('w', 'Reduziert')]])}</div>
 <div class="st">Größte Positionen<a>Alle 29</a></div>
-<div class="card" style="padding:4px 14px">${POS.map(([t, n, w, c]) => `<div class="pp">${logo(t, 30)}<div style="min-width:0"><b>${n}</b><div class="mvb"><i class="up" style="width:${w / 22 * 100}%"></i></div></div><b class="num">${de(w, 1)} %</b>${c ? pillv(c, c[0] === '+') : t === 'AAPL' ? '<span></span>' : '<span class="xs mu b">gleich</span>'}</div>`).join('')}</div>
+<div class="card" style="padding:4px 14px">${POS.map(([t, n, w, c]) => `<div class="pp">${logo(t, 30)}<div style="min-width:0"><b>${n}</b><div class="mvb"><i class="up" style="width:${w / 22 * 100}%"></i></div></div><b class="num">${de(w, 1)} %</b>${c ? pillv(c, c[0] === '+') : '<span class="xs mu b">gleich</span>'}</div>`).join('')}</div>
 <div class="eps ep2" style="margin-top:12px">${[['Depotwert im Verlauf', '8 Quartale', 'i-bars'], ['Käufe (8) und Verkäufe (7)', 'mit Stückzahl und Wert', 'i-list'], ['Werte je Quartal', 'Tabelle', 'i-grid']].map(ep).join('')}</div>` });
 
 screen('h-stock', { world: 'hedgefonds', dock: 2, hdr: false, h: 1180, body: `${stockHead('Investoren')}
@@ -131,9 +131,9 @@ slide({ id: 'EX03', title: 'Elliott auf der Aktie', route: '/elliott/#/NVDA', ne
   spec: { aufbau: ['Aktienkopf + Perspektiven-Leiste', 'Zählbar: Muster, Urteil, Chart mit Ungültig-Zone, drei Sätze (Struktur · Grenze · Sicherheit), Kapitel', 'Nicht zählbar: Karte „keine Zählung“ mit Anteil, Link zu Technical, Liste zählbarer Aktien'], komponenten: ['Story-Karte, Kapitel'], daten: ['wie heute'], weg: ['„Technischer Ausblick“, „Zielbereich“, „Zone 1“, „Rücklauf abwarten“', 'Eigene Marktstruktur-Grafik (gehört zu Technical)'] } });
 
 /* Hedgefonds */
-chapter({ n: '02', title: 'Hedgefonds', icon: 'hedgefonds', anchor: 'kap-hedgefonds', was: 'Schon gut gebaut. Neu: <b>ein klarer Zeitbezug</b> oben, drei Sätze je Investor und Aktie, ein Datenfehler behoben.', pages: 'HX01–HX03' });
+chapter({ n: '02', title: 'Hedgefonds', icon: 'hedgefonds', anchor: 'kap-hedgefonds', was: 'Schon gut gebaut. Neu: <b>ein klarer Zeitbezug</b> oben, drei Sätze je Investor und Aktie, kürzere Listen.', pages: 'HX01–HX03' });
 slide({ t: 'html', id: 'HX01', title: 'Was beim Durchscrollen auffällt', sub: 'Aufgenommen am 09.11.2026 auf 390 px: 7 Seiten von /hedgefonds/.', html: () => `<div class="facts">${[
-  ['Apple fehlt', 'Start: Berkshire mit „Apple 22,0 %“. Auf der Seite von Warren Buffett fehlt Apple in den 29 Positionen; „Top 5 = 68,7 %“ ergibt nur mit Apple einen Sinn. Datenfehler in der Positionsliste.'],
+  ['29 Zeilen', 'Die Seite von Warren Buffett zeigt alle 29 Positionen untereinander auf der Hauptseite, dazu Käufe und Verkäufe als Reiter. Die drei Sätze, die das Quartal erklären, fehlen.'],
   ['Q1 neben Q2', 'Oben „Meldungen für Q2 2026“, die Karte von Bill Ackman sagt „Stand Q1 2026“. Wann ein Depot so aussah, steht nicht überall.'],
   ['413 · 5.955', 'NVIDIA: „413 Fonds halten“ und weiter unten „Halter 5.955“ (alle 13F-Melder inkl. Banken). Zwei große Zahlen, ein Wort.'],
   ['„Smart Money“', 'Leistenplatz und Seite. WORTWAHL.md: „Was Profis kaufen“ lädt zum Nachmachen ein; besser „Gruppen-Käufe: viele Fonds, gleiche Aktie“.'],
@@ -143,9 +143,9 @@ slide({ id: 'HX02', title: 'Hedgefonds · Start', route: '/hedgefonds/', now: 'H
   neu: [['h-home', 'Start']],
   spec: { aufbau: ['Quartalsband: Q2 2026 · Depots am 30.06. · gemeldet bis 14.08. · nächste 14.11.', 'Satz: Meldungen zeigen Vergangenheit', 'Suche', 'Star-Investoren (Schiene)', 'Gekauft · Verkauft · Meistgehalten', 'Gruppen-Käufe'], komponenten: ['Quartalsband', 'Investor-Karte', 'Balkenzeile'], daten: ['hedgefonds/data/* wie heute'], weg: ['Kacheln 788 · 64 · 14.11. → Quartalsband', '„Smart Money“'] } });
 slide({ id: 'HX03', title: 'Investor und Aktie', route: '/hedgefonds/#/fonds/berkshire · #/aktie/NVDA', now: 'H05',
-  sub: 'Investor: Kopf mit Foto, zwei Zahlen, „Das Quartal in drei Sätzen“, Top-Positionen mit Balken (mit Apple), Kapitel. Aktie: „Investoren in drei Sätzen“ (Fonds · Bewegung · Insider), Stars mit Foto, Kapitel für alle Fonds, Insider und alle 13F-Melder.',
+  sub: 'Investor: Kopf mit Foto, zwei Zahlen, „Das Quartal in drei Sätzen“, Top-Positionen mit Balken, Kapitel. Aktie: „Investoren in drei Sätzen“ (Fonds · Bewegung · Insider), Stars mit Foto, Kapitel für alle Fonds, Insider und alle 13F-Melder.',
   neu: [['h-investor', 'Warren Buffett'], ['h-stock', 'NVIDIA, Perspektive Investoren']],
-  spec: { aufbau: ['Investor: Foto, Stil, Name, Depotwert mit Datum, Positionen, drei Sätze, Top 6, Kapitel', 'Aktie: drei Sätze, Stars (4), Kapitel'], komponenten: ['Story-Karte, Kapitel', 'Positionszeile mit Balken'], daten: ['wie heute; Positionsliste muss alle Positionen enthalten (Apple)'], weg: ['Lange Positionsliste auf der Hauptseite → Top 6 + „Alle 29“', 'Rohe Fondsnamen ohne Aufbereitung', 'Tabelle „Alle 13F-Melder“ → Kapitel'] } });
+  spec: { aufbau: ['Investor: Foto, Stil, Name, Depotwert mit Datum, Positionen, drei Sätze, Top 6, Kapitel', 'Aktie: drei Sätze, Stars (4), Kapitel'], komponenten: ['Story-Karte, Kapitel', 'Positionszeile mit Balken'], daten: ['hedgefonds/data/funds/{slug}.json (holdings, trades) wie heute'], weg: ['Lange Positionsliste auf der Hauptseite → Top 6 + „Alle 29“', 'Rohe Fondsnamen ohne Aufbereitung', 'Tabelle „Alle 13F-Melder“ → Kapitel'] } });
 
 /* Vorsorge */
 chapter({ n: '03', title: 'Vorsorge', icon: 'vorsorge', anchor: 'kap-vorsorge', was: 'Ein Weg in drei Schritten statt acht Bereichen. ETFs <b>ehrlich nach Handelbarkeit</b>: US-Fonds als Marktabbild, UCITS für den Kauf.', pages: 'VX01–VX03' });
@@ -164,10 +164,10 @@ slide({ id: 'VX03', title: 'Ein ETF', route: '/vorsorge/#/etf/URTH', newRoute: '
   neu: [['v-etf', 'MSCI World']],
   spec: { aufbau: ['Index-Name, Satz', 'In einem Satz', 'In der EU kaufbar: Anzahl UCITS-ETFs, Beispiele mit ISIN, Quelle, „keine Empfehlung“', 'Marktabbild: Chart des US-Fonds mit Datum', '4 Zahlen', 'Kapitel'], komponenten: ['Kennzahl-Kachel mit kleinem „?“', 'Kapitel'], daten: ['vorsorge/data/eu/etf-eu-ucits.json (ESMA)', 'vorsorge/data/series, holdings wie heute'], weg: ['Reiter + „Mehr:“-Chips → Kapitel', 'Große schwarze „?“'] } });
 
-chapter({ n: '04', title: 'Umsetzung', icon: 'layers', anchor: 'umsetzung', was: 'Oberfläche, Wörter, ein Datenfehler. <b>Keine Modelle, keine neuen Daten.</b>', pages: 'U1' });
+chapter({ n: '04', title: 'Umsetzung', icon: 'layers', anchor: 'umsetzung', was: 'Oberfläche und Wörter. <b>Keine Modelle, keine neuen Daten.</b>', pages: 'U1' });
 slide({ t: 'html', id: 'U1', title: 'Fahrplan und Entscheidungen', html: () => `<div class="plan" style="grid-template-columns:repeat(3,minmax(0,1fr))">${[
   ['Elliott · 2 PRs', 'Wörter und Start; Aktie', 'Ziele/„abwarten“ raus, „Welle 3“ → „Zählbar“, Start mit Anteil und Liste, Leerzustand; Aktie zählbar/nicht zählbar, kein zweiter technischer Ausblick.'],
-  ['Hedgefonds · 2 PRs', 'Datenfehler und Start; Investor und Aktie', 'Apple in der Positionsliste (Ursache im Leser oder Erzeuger finden, nie Daten von Hand), Quartalsband, „Gruppen-Käufe“, drei Sätze, Kapitel, Namen aufbereiten.'],
+  ['Hedgefonds · 2 PRs', 'Start; Investor und Aktie', 'Quartalsband, „Gruppen-Käufe“, drei Sätze, Top 6 statt aller Positionen, Kapitel, Fondsnamen aufbereiten.'],
   ['Vorsorge · 2 PRs', 'Start und Weg; Index-Seite', 'Drei Schritte, Indizes mit Hinweis; Index-Seite mit UCITS aus dem EU-Register, US-Fonds als Marktabbild, Kapitel, kleine „?“.']].map(([a, b, c]) => `<div><span class="tag neu">${a}</span><b>${b}</b><p>${c}</p></div>`).join('')}</div>
 <h3 style="margin-top:36px;font-size:22px;letter-spacing:-.02em">Von dir zu entscheiden</h3>
 <ol class="dec">${[
