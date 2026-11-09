@@ -31,7 +31,7 @@
     VD.theme.onChange(function () { document.dispatchEvent(new Event('vu-theme-change')); });
   }
 
-  var PAGE = 30;
+  var PAGE = 25; /* Treffer in 25er-Schritten (Konzept FX05) */
   var state = { query: Q.empty(), view: 'start', tab: 'screens', critTab: 'zahlen', screenId: null, stock: null, cmp: [], select: false, selected: [], shown: PAGE, error: null, loaded: false, preview: null, invalidLink: null, targetGroup: null };
   var cache = { key: null, result: null };
   var mqDesk = window.matchMedia('(min-width:1024px)');
@@ -82,7 +82,11 @@
     var t = document.querySelector('.sc-toast') || document.body.appendChild(h('div', { class: 'sc-toast', role: 'status', 'aria-live': 'polite' }));
     t.textContent = msg; t.classList.add('is-on'); clearTimeout(toast._t); toast._t = setTimeout(function () { t.classList.remove('is-on'); }, 2200);
   }
-  function logo(sym, lg) { return h('span', { class: 'vu-logo-tile' + (lg ? ' vu-logo-tile--xl' : ''), 'aria-hidden': 'true' }, sym.replace(/[^A-Z0-9.]/g, '').slice(0, 5)); }
+  /* Firmenlogo ueber den gemeinsamen Baustein (assets/vu-ui.js): Kuerzel, bis die Logo-Liste das Bild einsetzt. */
+  function logo(sym, lg) {
+    if (window.VUUI && window.VUUI.logo) { var t = document.createElement('template'); t.innerHTML = window.VUUI.logo(sym, { xl: !!lg }); return t.content.firstChild; }
+    return h('span', { class: 'vu-logo-tile' + (lg ? ' vu-logo-tile--xl' : ''), 'aria-hidden': 'true' }, sym.replace(/[^A-Z0-9.]/g, '').slice(0, 5));
+  }
   function signCls(v) { return v > 0 ? 'sc-up' : v < 0 ? 'sc-down' : 'sc-muted'; }
   function ds() { return adapter.dataset(); }
   /* Vor dem vollen Universum traegt state.preview die Kopfdaten (adapter.loadMeta),
@@ -200,6 +204,8 @@
     state.screenId = p.get('screen') || null;
     state.stock = /^[A-Z0-9.\-]{1,12}$/.test(p.get('stock') || '') ? p.get('stock') : null;
     state.cmp = (p.get('cmp') || '').split(',').filter(function (s) { return /^[A-Z0-9.\-]{1,12}$/.test(s); }).slice(0, 4);
+    /* Einstiege aus Quant (?p=faktoren) und Technical (?p=chart): Perspektive vorgewaehlt (Entscheidung 1). */
+    state.persp = perspById(p.get('p') || '') ? p.get('p') : null;
   }
   function buildURL(over) {
     over = over || {};
@@ -412,17 +418,16 @@
   function viewStart(main) {
     var i = info(), q = state.query, pro = q.mode === 'pro';
     if (state.invalidLink) main.append(invalidNotice());
+    /* Konzept „Verstehen. Finden.“ (FX04): Stand und Universum im Kopf, die Frage „Was suchst du?“, ein Satz. */
     main.append(h('header', { class: 'sc-head' }, [
-      h('div', { class: 'sc-head-row' }, [h('p', { class: 'vu-ltag', text: 'Screener' }), iconBtn('gear', 'Einstellungen', openSettings)]),
+      h('div', { class: 'sc-head-row' }, [h('p', { class: 'vu-ltag sc-universe' }, ['Screener · ', h('strong', { class: 'sc-num', text: nf(i.count) }), ' US-Aktien · Stand ' + dayDe(i.asOf)]), iconBtn('gear', 'Einstellungen', openSettings)]),
       h('h1', { class: 'vu-lt', id: 'sc-product-title', text: pro ? 'Profi-Screener' : 'Was suchst du?' }),
-      pro ? null : h('p', { class: 'vu-lead', text: 'Sag in einem Satz, was dir wichtig ist. Die Trefferzahl unter ' + nf(i.count) + ' US-Aktien siehst du sofort.' })]));
-    main.append(modeSeg(true));
-    /* Europa (Strang M, 08.11.2026): eigene Seite mit einfachen Kursspalten, nicht Teil dieses US-Universums. */
-    main.append(h('p', { class: 'sc-sub', 'data-europe-link': '' }, [h('a', { href: '/screener/europa/', style: { display: 'inline-flex', alignItems: 'center', minHeight: '44px' }, text: 'Europäische Aktien: Kursveränderung, 52-Wochen-Hoch, 50-Tage-Linie →' })]));
+      pro ? null : h('p', { class: 'vu-lead', text: 'Sag in einem Satz, was dir wichtig ist. Die Trefferzahl siehst du sofort.' })]));
+    if (pro) main.append(modeSeg(true));
     if (!pro) {
       main.append(sentenceCard());
-      main.append(sectEl('Fertige Ideen'), ideasGrid(IDEAS), h('div', { class: 'sc-gap-s' }, helpLine('200-Tage-Linie: der Durchschnittskurs der letzten 200 Handelstage. Liegt der Kurs darüber, läuft der Trend eher nach oben.')));
-      main.append(sectEl('Kriterien nach Perspektive'), h('p', { class: 'sc-sub', text: 'Dieselben sechs Blickwinkel wie auf jeder Aktienseite.' }), h('div', { class: 'sc-plist' }, PERSP.map(function (p) { return perspRow(p); })));
+      main.append(railHead('Fertige Ideen', IDEAS.length, 'Bewährte Muster als feste Regeln, jederzeit anpassbar.'), ideasRail(IDEAS));
+      main.append(railHead('Nach Perspektive', null, 'Dieselben Blickwinkel wie auf jeder Aktienseite.'), h('div', { class: 'sc-plist sc-pgrid' }, PERSP.map(function (p) { return perspTile(p); })));
     } else {
       main.append(h('button', { class: 'vu-find sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), h('span', { text: 'Kriterium suchen, z. B. ROIC, RSI, KGV …' }), h('i', { 'aria-hidden': 'true' }, icon('quality'))]));
       var fs = Q.filters(q);
@@ -432,17 +437,37 @@
       main.append(sectEl('Alle ' + F.FIELDS.length + ' Kriterien'), h('div', { class: 'sc-plist' }, PERSP.map(function (p) { return perspRow(p, { pro: false }); })));
       main.append(lockedCard(), h('div', { class: 'sc-gap-s' }, helpLine('Kriterien ohne echte Datenquelle bleiben sichtbar, aber gesperrt. Wir simulieren nichts.')));
     }
-    main.append(h('div', { class: 'vu-box sc-unibox' }, [h('div', { class: 'sc-universe' }, [h('strong', { class: 'sc-num', text: nf(i.count) }),
-      h('span', {}, [h('b', { text: 'US-Aktien im Universum' }), h('small', { text: 'Stammaktien an der Hauptbörse · Stand ' + dateDe(i.asOf) })])])]),
-      h('div', { class: 'sc-gap-s' }, helpLine('Universum: alle Aktien, die der Screener durchsucht. ETFs und Zweitgattungen zählen nicht mit.')));
-    main.append(sectEl('Deine Screens', 'Gespeichert', function () { go({ view: 'saved' }); window.scrollTo(0, 0); }));
+    main.append(railHead('Deine Screens', store.screens().length || null, null, function () { go({ view: 'saved' }); window.scrollTo(0, 0); }));
     var list = store.screens().slice(0, 3);
-    if (!list.length) main.append(h('div', { class: 'vu-box vu-box--line sc-noscreens' }, [verdictEl('none', 'Noch keiner'), h('span', { text: 'Speichere einen Screen. Beim nächsten Datenstand siehst du, welche Aktien neu dazukommen.' })]));
+    if (!list.length) main.append(h('div', { class: 'vu-box sc-noscreens' }, [h('span', { class: 'sc-noscreens-i' }, icon('bookmark')), h('span', {}, [h('b', { text: 'Noch kein gespeicherter Screen' }), h('span', { text: 'Gespeichert sieht man beim nächsten Besuch, was neu dazukam.' })])]));
     else main.append(h('div', { class: 'sc-list' }, list.map(savedRow)));
     if (store.history().length) main.append(recentSection(3));
-    main.append(h('div', { class: 'sc-stack-s' }, [
-      navLink('/vu2/?view=strategies', worldHud('quant', 42), 'Regeln mit Geschichte testen', 'Quant · Strategien und Backtests'),
-      navLink('/quant/#/screener', worldHud('quant', 42), 'Ranglisten nach Quant-Score', 'Quant Screener: eigene Ranglisten statt Filter')]));
+    /* Profi-Modus und Europa bleiben erreichbar, leise unter den eigenen Screens. */
+    main.append(h('div', { class: 'sc-quietlinks' }, [pro ? null : h('button', { class: 'sc-link', type: 'button', onclick: function () { var next = Q.clone(state.query); next.mode = 'pro'; go({ query: next }, { replace: true }); } }, 'Profi-Screener: Gruppen, Gewichte, alle Kriterien →'),
+      h('a', { class: 'sc-link', href: '/screener/europa/', 'data-europe-link': '' }, 'Europäische Aktien: Kursveränderung, 52-Wochen-Hoch, 50-Tage-Linie →')]));
+  }
+  function dayDe(iso) { if (!iso) return '–'; var d = new Date(iso.length === 10 ? iso + 'T12:00:00Z' : iso); return ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'][d.getUTCDay()] + ' ' + d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }); }
+  /** Schienen-Kopf (wie Discover): Titel, „Alle N“, ein Satz. */
+  function railHead(title, n, sub, onAll) {
+    return h('div', { class: 'sc-rh' }, [h('div', { class: 'sc-rh-t' }, [h('h2', { text: title }), onAll || n ? h('button', { class: 'sc-rh-all', type: 'button', onclick: onAll || function () { var r = document.querySelector('.sc-rail'); if (r) r.classList.toggle('is-all'); } }, [n ? 'Alle ' + n : 'Alle', icon('next')]) : null]),
+      sub ? h('p', { text: sub }) : null]);
+  }
+  /** Fertige Ideen als Schiene: Titel, Regel, Logos der ersten Treffer, Trefferzahl (live). */
+  function ideasRail(list) {
+    return h('div', { class: 'sc-rail' }, list.map(function (it) {
+      var q = queryOf(it.fs);
+      /* Logos der ersten Treffer: Kacheln ohne Text (das Bild setzt assets/vu-ui.js ein), damit die Vorschau aus der Kopfdatei
+         und die Ansicht mit dem vollen Universum denselben Text tragen (screener/tests/first-paint.test.mjs). */
+      var logos = h('span', { class: 'sc-idea-logos', 'aria-hidden': 'true' });
+      if (ds()) { try { adapter.screenSync(q, { limit: 4 }).order.slice(0, 4).forEach(function (i) { var t = ds().symbol(i); if (window.VUUI && window.VUUI.logo) window.VUUI.logo(t); logos.append(h('span', { class: 'vu-logo-tile', 'data-t': t })); }); } catch (e) { /* ohne Logos */ } }
+      return h('button', { class: 'sc-idea sc-idc' + (it.lime ? ' is-lime' : ''), type: 'button', 'data-idea': it.id, onclick: needsData(function () { go({ query: queryOf(it.fs, state.query.mode), view: 'results', screenId: null }); window.scrollTo(0, 0); }) }, [
+        h('b', { text: it.title }), h('small', { text: it.sub }), logos,
+        h('span', { class: 'sc-idea-n' }, [liveN(function () { return countOf(q); }), h('small', { text: ' Treffer' })])]);
+    }));
+  }
+  /** Perspektive als Kachel (3 × 2-Raster): Symbol, Name, Anzahl Kriterien. */
+  function perspTile(p) {
+    return h('button', { class: 'sc-prow sc-ptile', type: 'button', 'data-persp': p.id, onclick: function () { openLibrary({ persp: p.id }); } }, [perspIcon(p, 36), h('b', { text: p.label }), h('small', { text: perspFields(p).length + ' Kriterien' })]);
   }
   function navLink(href, lead, title, sub) {
     var a = h('a', { class: 'vu-navcard', href: href }, [lead, h('span', { class: 'vu-navcard__text' }, [h('b', { text: title }), sub ? h('span', { text: sub }) : null])]);
@@ -458,8 +483,10 @@
       card.append(h('button', { class: 'vu-btn vu-btn--block sc-sent-cta', type: 'button', onclick: needsData(function () { go({ view: 'results' }); window.scrollTo(0, 0); }) }, [icon('list'), liveN(function () { return result().total; }), ' Treffer zeigen']),
         h('p', { class: 'sc-sent-desc', text: fs.map(function (f) { return F.describeFilter(f); }).join(' · ') }));
     } else {
-      card.append(h('button', { class: 'vu-btn vu-btn--block sc-sent-cta', type: 'button', onclick: function () { go({ view: 'build' }); window.scrollTo(0, 0); } }, [icon('plus'), 'Eigenschaften wählen']),
-        h('p', { class: 'sc-sent-desc', text: 'Tippe auf „+“ oder wähle eine fertige Idee.' }));
+      /* Die fuenf haeufigsten Ergaenzungen direkt im Satz, je mit Trefferzahl (FX04). Tipp oeffnet das Filter-Sheet. */
+      card.append(h('div', { class: 'sc-satz-c', role: 'list', 'aria-label': 'Ergänzungen' }, PROPS.slice(0, 5).map(function (p) {
+        return h('button', { class: 'sc-satz-o', type: 'button', role: 'listitem', 'data-prop': p.id, onclick: needsData(function () { openDetail(p.f.field, { draft: p.f, toResults: true }); }) }, [p.word, ' ', liveN(function () { return countOf(queryOf([p.f])); })]);
+      })));
     }
     return card;
   }
@@ -476,7 +503,8 @@
     opts = opts || {};
     var dict = ds() ? ds().meta.dict : null;
     var kids = fs.map(function (f) {
-      return h('span', { class: 'sc-rchip', role: 'listitem' }, [h('button', { class: 'sc-mini-chip', type: 'button', onclick: needsData(function () { openDetail(f.field, { filter: f }); }) }, F.describeFilter(f, dict)),
+      var def = F.field(f.field), label = def && def.kind === 'number' ? shortField(f.field) + ' ' + condText(f) : F.describeFilter(f, dict);
+      return h('span', { class: 'sc-rchip', role: 'listitem' }, [h('button', { class: 'sc-mini-chip', type: 'button', onclick: needsData(function () { openDetail(f.field, { filter: f }); }) }, label),
         opts.remove === false ? null : h('button', { class: 'sc-rchip-x', type: 'button', 'aria-label': F.describeFilter(f) + ' entfernen', onclick: function () { go({ query: Q.removeFilter(state.query, f.id) }, { keepScroll: true }); toast('Regel entfernt'); } }, '×')]);
     });
     if (opts.add) kids.push(h('button', { class: 'sc-mini-chip is-add', type: 'button', onclick: function () { openLibrary(); }, 'aria-label': 'Filter hinzufügen' }, '+ Filter'));
@@ -775,32 +803,98 @@
     }
     main.append(h('section', { class: 'vu-box vu-box--ink sc-reshead' }, [desk ? null : sentence(q, { small: true }),
       h('p', { class: 'sc-reshead-n' }, [h('strong', { class: 'sc-count sc-num' }, [nf(r.total), h('small', { text: ' von ' + nf(r.universe) + ' Aktien' })])])]));
-    if (fs.length) main.append(ruleChips(fs, { add: true }));
-    main.append(h('div', { class: 'sc-toolbar' }, [h('span', { class: 'sc-sortlabel', text: 'Sortiert nach ' + sortLabel().replace(/ [↑↓]$/, '') + (q.sort.dir === 'asc' ? ' (aufsteigend)' : '') }),
+    if (fs.length) {
+      var chipsRow = ruleChips(fs, { add: true });
+      /* Ansicht Liste/Karten als kleiner Umschalter am Ende der Filterzeile (FX05). */
+      if (!desk) chipsRow.append(h('div', { class: 'sc-viewtog', role: 'group', 'aria-label': 'Ansicht' }, [['cards', 'list', 'Liste'], ['grid', 'hits', 'Karten']].map(function (v) {
+        return h('button', { type: 'button', 'aria-pressed': String(q.view === v[0] || (v[0] === 'cards' && q.view !== 'grid')), 'aria-label': v[2], onclick: function () { var nq = Q.clone(state.query); nq.view = v[0]; go({ query: nq }, { replace: true, keepScroll: true }); } }, icon(v[1]));
+      })));
+      main.append(chipsRow);
+    }
+    main.append(h('div', { class: 'sc-toolbar' }, [h('h2', { class: 'sc-sortlabel', text: 'Nach ' + sortLabel().replace(/ [↑↓]$/, '') + (q.sort.dir === 'asc' ? ' (aufsteigend)' : '') }),
       h('button', { class: 'vu-chip sc-tool', type: 'button', 'aria-pressed': String(state.select), 'aria-label': state.select ? 'Vergleich beenden' : 'Aktien vergleichen', onclick: function () { state.select = !state.select; if (!state.select) state.selected = []; render({ keepScroll: true }); } }, [icon('compare'), state.select ? 'Fertig' : null]),
       h('button', { class: 'vu-chip sc-tool sc-sortbtn', type: 'button', onclick: openSort, 'aria-label': 'Sortieren und Ansicht: ' + sortLabel() }, [icon('sort'), 'Sortieren'])]));
     if (!r.total) { main.append(emptyResults(r)); return; }
-    var metrics = q.view === 'cards' ? rowMetrics(q) : E.cardMetrics(q, q.view === 'table' ? 7 : 4);
-    if (fs.length && q.view === 'cards' && !state.select) main.append(whyBox(r.order[0]));
+    var grid = q.view === 'grid';
+    var metrics = grid ? rowMetrics(q) : E.cardMetrics(q, q.view === 'table' ? 7 : 4);
+    if (fs.length && grid && !state.select) main.append(whyBox(r.order[0]));
     var list = r.order.slice(0, state.shown);
     var holder;
     if (q.view === 'table') holder = tableView(list, metrics);
     else if (q.view === 'compact') { holder = h('div', { class: 'sc-compact' }); list.forEach(function (i) { holder.append(compactRow(i, metrics)); }); }
-    else { holder = h('div', { class: 'sc-cards' }); list.forEach(function (i) { holder.append(resultCard(i, metrics)); }); }
+    else if (grid) { holder = h('div', { class: 'sc-cards' }); list.forEach(function (i) { holder.append(resultCard(i, metrics)); }); }
+    else { holder = h('div', { class: 'sc-hits' }); list.forEach(function (i) { holder.append(hitRow(i)); }); }
     main.append(holder);
-    if (r.order.length > state.shown) {
-      var more = h('button', { class: 'vu-btn vu-btn--line vu-btn--block', type: 'button', onclick: loadMore }, 'Weitere ' + nf(r.order.length - state.shown) + ' Treffer laden');
-      var wrap = h('div', { class: 'sc-more' }, more);
-      main.append(wrap);
-      if ('IntersectionObserver' in window) { var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { io.disconnect(); loadMore(); } }, { rootMargin: '600px' }); setTimeout(function () { io.observe(wrap); }, 50); }
-    }
+    /* 25 je Schritt, auf Knopfdruck – nichts springt (Regel K3). */
+    if (r.order.length > state.shown) main.append(h('div', { class: 'sc-more' }, h('button', { class: 'vu-btn vu-btn--line vu-btn--block', type: 'button', onclick: loadMore }, 'Weitere ' + nf(Math.min(PAGE, r.order.length - state.shown)) + ' laden')));
     if (!desk && state.view === 'results') {
-      main.append(h('div', { class: 'sc-resact' }, [h('button', { class: 'vu-btn sc-save', type: 'button', onclick: openSave }, [icon('saved'), 'Speichern']),
-        h('button', { class: 'vu-btn vu-btn--ink', type: 'button', onclick: share }, [icon('share'), 'Teilen'])]),
-        navLink('/vu2/?view=strategies', worldHud('quant', 42), 'Diesen Screen in Quant testen', 'Wie hätte er sich früher geschlagen?'),
-        h('div', { class: 'sc-gap-s' }, helpLine('Neongrün markiert sind die Kennzahlen deiner Filter. Tippe eine Aktie an, um sie zu öffnen.')));
+      main.append(h('div', { class: 'sc-resact' }, [h('button', { class: 'vu-btn vu-btn--ink sc-save', type: 'button', onclick: openSave }, [icon('bookmark'), 'Speichern']),
+        h('button', { class: 'vu-btn sc-swipe', type: 'button', onclick: function () { openPeek(d.symbol(r.order[0]), { swipe: true }); } }, [icon('cards'), 'Treffer swipen'])]),
+        h('button', { class: 'sc-link', type: 'button', onclick: share }, 'Link zu diesem Screen teilen'),
+        navLink('/vu2/?view=strategies', worldHud('quant', 42), 'Diesen Screen in Quant testen', 'Wie hätte er sich früher geschlagen?'));
     }
     lazySparks(main);
+  }
+  /** Gesuchte Zahl als Pille: Prozentwerte mit Richtung (Plus neongruen, Minus schwarz), sonst die Zahl. */
+  function valuePill(fieldId, i) {
+    var f = F.field(fieldId), v = ds().value(fieldId, i);
+    if (v === null || v === undefined) return h('span', { class: 'sc-vpill is-none', text: '–' });
+    if (f && f.unit === 'pct' && typeof v === 'number') return h('span', { class: 'vu-chg' + (v < 0 ? ' vu-chg--down' : '') }, [h('span', { 'aria-hidden': 'true', text: v < 0 ? '▼' : '▲' }), ' ' + F.format(f, Math.abs(v), { signed: false }).replace(/,0 %$/, ' %')]);
+    return h('span', { class: 'sc-vpill', text: F.format(f, v) });
+  }
+  /** Trefferzeile (FX05): Logo, Name, was die Firma macht, die gesuchte Zahl als Pille. */
+  function hitRow(i) {
+    var d = ds(), sym = d.symbol(i), fs = Q.filters(state.query), key = fs.length && F.field(fs[0].field) && F.field(fs[0].field).kind === 'number' ? fs[0].field : 'marketCap';
+    var open = function () { if (state.select) toggleSelect(sym); else openPeek(sym); };
+    return h('article', { class: 'sc-hr', tabindex: '0', role: 'button', 'aria-label': d.name(i) + ', ' + sym + ': Vorschau öffnen', onclick: open, onkeydown: function (e) { if (e.key === 'Enter' && e.target === this) open(); } }, [
+      state.select ? selectToggle(sym) : logo(sym),
+      h('div', { class: 'sc-hr-id' }, [h('b', { text: shortName(d.name(i)) }), h('span', { text: d.cols.was && d.cols.was[i] ? d.cols.was[i] : sym })]),
+      h('div', { class: 'sc-hr-r' }, [valuePill(key, i), h('small', { text: shortField(key) })])]);
+  }
+  /** Vorschau eines Treffers als Sheet (FX06): „Erfüllt deinen Filter“, Kurs 1 Jahr, drei Zahlen, Aktie öffnen · Merken · Nächster. */
+  function openPeek(sym, opts) {
+    opts = opts || {};
+    var d = ds(), r = result(), s = openSheet({ title: opts.swipe ? 'Treffer' : 'Vorschau', foot: false });
+    s.sheet.classList.add('sc-peek');
+    function paint(cur) {
+      var i = d.indexOf(cur), pos = r ? r.order.indexOf(i) : -1;
+      if (i < 0) { s.body.replaceChildren(h('p', { text: cur + ' ist nicht im Screener-Universum.' })); return; }
+      var items = Q.count(state.query) ? [].concat.apply([], E.why(d, state.query, i).map(function (g) { return g.items; })) : [];
+      var chart = h('div', { class: 'sc-peek-chart sc-skel', style: { height: '120px' } });
+      var next = pos >= 0 && pos < r.order.length - 1 ? d.symbol(r.order[pos + 1]) : null, prev = pos > 0 ? d.symbol(r.order[pos - 1]) : null;
+      var nm = d.value('netMargin', i);
+      s.body.replaceChildren(
+        h('div', { class: 'sc-peek-head' }, [logo(cur, true), h('div', { class: 'sc-peek-id' }, [h('b', { text: shortName(d.name(i)) }), h('span', { text: cur + (d.cols.was && d.cols.was[i] ? ' · ' + d.cols.was[i] : '') })]),
+          h('div', { class: 'sc-peek-px' }, [h('b', { class: 'sc-num', text: F.format('price', d.value('price', i)) }), chgEl(d.value('perf1d', i))])]),
+        items.length ? h('section', { class: 'sc-peek-why', 'aria-label': 'Erfüllt deinen Filter' }, [h('p', { class: 'vu-ltag', text: 'Erfüllt deinen Filter' + (pos >= 0 ? ' · Treffer ' + nf(pos + 1) + ' von ' + nf(r.total) : '') })].concat(items.map(function (x) {
+          return h('div', { class: 'sc-kvrow' }, [h('b', { text: shortField(x.field.id) + ' ' + x.shown }), h('span', { class: 'sc-peek-want', text: 'gesucht: ' + condText(x.filter) }),
+            x.pass === true ? h('span', { class: 'sc-visually-hidden', 'data-verdict': 'strong', text: 'erfüllt' }) : x.pass === false ? verdictEl('weak', 'nicht erfüllt') : verdictEl('none', 'ohne Angabe')]);
+        }))) : null,
+        chart,
+        h('div', { class: 'sc-peek-nums' }, [['Börsenwert', F.format('marketCap', d.value('marketCap', i)), ''], ['KGV', F.format('pe', d.value('pe', i)), ''], ['Nettomarge', F.format('netMargin', nm), 'GJ']].map(function (x) {
+          return h('div', { class: 'sc-peek-num' }, [h('small', { text: x[0] }), h('b', { class: 'sc-num', text: x[1] }), x[2] ? h('span', { text: x[2] }) : null]);
+        })),
+        h('div', { class: 'sc-peek-act' }, [h('a', { class: 'vu-btn vu-btn--ink sc-peek-open', href: '/aktie/?t=' + encodeURIComponent(cur) }, 'Aktie öffnen'), watchBtn(cur),
+          h('button', { class: 'vu-round sc-peek-next', type: 'button', disabled: next ? null : true, 'aria-label': next ? 'Nächster Treffer: ' + next : 'Kein weiterer Treffer', onclick: function () { if (next) paint(next); } }, icon('next'))]),
+        h('button', { class: 'sc-link sc-peek-more', type: 'button', onclick: function () { closeTop().then(function () { openQuick(cur); }); } }, 'Alle Zahlen und Kennzahlen im Überblick'));
+      s.body.dataset.prev = prev || ''; s.body.dataset.next = next || '';
+      adapter.sparkSeries(cur).then(function (pts) {
+        if (!pts || pts.length < 2 || !window.VUChart) { chart.remove(); return; }
+        var v = pts.slice(-252);
+        chart.classList.remove('sc-skel'); chart.style.height = '';
+        chart.innerHTML = window.VUChart.sparkline(v.map(function (p) { return p[1]; }), { width: 340, height: 120 });
+        chart.append(h('div', { class: 'sc-peek-dates' }, [h('span', { text: dateDe(v[0][0]) }), h('span', { text: dateDe(v[v.length - 1][0]) })]));
+      }, function () { chart.remove(); });
+    }
+    /* Treffer swipen: nach links naechster, nach rechts voriger (wie Discover). */
+    var x0 = null;
+    s.sheet.addEventListener('touchstart', function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    s.sheet.addEventListener('touchend', function (e) {
+      if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null;
+      var to = dx < -60 ? s.body.dataset.next : dx > 60 ? s.body.dataset.prev : '';
+      if (to) paint(to);
+    });
+    paint(sym);
   }
   /** Kennzahlen-Leiste der Trefferzeile: zuerst die Filterkennzahlen, dann Börsenwert und KGV. */
   function rowMetrics(q) {
@@ -961,7 +1055,7 @@
     var q = state.query, s = openSheet({ title: 'Sortieren & Ansicht', foot: true });
     var dir = q.sort.dir, field = q.sort.field, view = q.view;
     var tiles = h('div', { class: 'sc-viewtiles', role: 'radiogroup', 'aria-label': 'Ansicht' });
-    var paintTiles = function () { tiles.replaceChildren.apply(tiles, [['cards', 'Karten', 'cards'], ['compact', 'Kompakt', 'list'], ['table', 'Tabelle', 'table']].map(function (v) {
+    var paintTiles = function () { tiles.replaceChildren.apply(tiles, [['cards', 'Liste', 'list'], ['grid', 'Karten', 'cards'], ['compact', 'Kompakt', 'screen'], ['table', 'Tabelle', 'table']].map(function (v) {
       return h('button', { type: 'button', role: 'radio', 'aria-checked': String(view === v[0]), onclick: function () { view = v[0]; paintTiles(); } }, [icon(v[2]), v[1]]); })); };
     paintTiles();
     s.body.append(h('p', { class: 'sc-label', style: { marginTop: '4px' }, text: 'Ansicht' }), tiles, h('p', { class: 'sc-label', text: 'Sortieren nach' }));
@@ -1077,14 +1171,15 @@
       h('span', { class: 'sc-pill', text: { fundamentals: 'SEC-Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SEC SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen', technicalIntelligence: 'Chartbild (Wochenchart, Szenario)', supertrader: 'Supertrader-Kandidaten', technicalWorld: 'Technical (Tages-OHLCV)' }[f.source] || f.source }),
       f.pro ? h('span', { class: 'sc-pill is-accent', text: 'Pro' }) : null]);
     var pp = perspOf(f);
-    s.body.append(h('div', { class: 'sc-dhead' }, [perspIcon(pp, 44), h('div', {}, [h('p', { class: 'vu-ltag', text: pp.label + ' · ' + F.group(f.group).label }), h('h3', { text: f.label })])]),
-      h('div', { class: 'sc-dbox' }, helpLine(f.desc || f.reason || f.question || '')), meta);
+    var TF = { TTM: '12 Monate', FY: 'Geschäftsjahr', '1D': '1 Tag', '1W': '1 Woche', '1M': '1 Monat', '3M': '3 Monate', '6M': '6 Monate', '1Y': '1 Jahr', YTD: 'seit Jahresbeginn', '3Y': '3 Jahre', '10Y': '10 Jahre' };
+    s.body.append(h('div', { class: 'sc-dhead' }, [h('div', {}, [h('p', { class: 'vu-ltag', text: pp.label + ' · ' + F.group(f.group).label }), h('h3', { text: f.timeframe ? f.label.replace(/ \((TTM|FY|1J|YTD)\)$/, '') : f.label })]), f.timeframe ? h('span', { class: 'sc-dhead-tf', text: TF[f.timeframe] || f.timeframe }) : null]));
+    if (f.kind !== 'number') s.body.append(h('div', { class: 'sc-dbox' }, helpLine(f.desc || f.reason || f.question || '')), meta);
     if (!f.available || !E.isAvailable(d, f.id)) {
       s.body.append(h('div', { class: 'sc-card sc-state' }, [h('h3', { text: 'Keine Daten verfügbar' }), h('p', { text: f.reason || 'Für dieses Kriterium liegen im aktuellen Universum keine Werte vor.' })]));
       s.foot.append(h('button', { class: 'sc-btn sc-btn-secondary', type: 'button', onclick: closeTop }, 'Schließen'));
       return;
     }
-    var draft = editing ? Q.clone(editing) : null;
+    var draft = editing ? Q.clone(editing) : opts.draft ? Q.clone(opts.draft) : null;
     var live = h('div', { class: 'sc-live', 'aria-live': 'polite' });
     var apply = h('button', { class: 'sc-btn sc-btn-primary', type: 'button' });
     function draftQuery() {
@@ -1096,8 +1191,8 @@
       if (!dq) { live.replaceChildren(h('span', { text: 'Bitte einen gültigen Wert eingeben' })); apply.disabled = true; return; }
       apply.disabled = false;
       var r = adapter.screenSync(dq.query, { limit: 0 }), alone = r.perFilter[dq.filter.id];
-      live.replaceChildren(h('div', {}, [h('b', { class: 'sc-num', text: nf(r.total) }), h('span', { text: Q.count(state.query) - (editing ? 1 : 0) > 0 ? ' Treffer zusammen mit deinen anderen Filtern' : ' Treffer' })]), f.kind === 'number' ? null : h('span', { class: 'sc-num', text: alone ? nf(alone.pass) + ' erfüllen allein' : '' }));
-      apply.textContent = (editing ? 'Regel ändern' : 'Regel übernehmen') + ' · ' + nf(r.total) + ' Treffer';
+      live.replaceChildren.apply(live, [h('div', {}, [h('b', { class: 'sc-num', text: nf(r.total) }), h('span', { text: Q.count(state.query) - (editing ? 1 : 0) > 0 ? ' Treffer zusammen mit deinen anderen Filtern' : ' Treffer' })]), f.kind === 'number' ? null : h('span', { class: 'sc-num', text: alone ? nf(alone.pass) + ' erfüllen allein' : '' })].filter(Boolean));
+      apply.textContent = opts.toResults ? nf(r.total) + ' Treffer zeigen' : (editing ? 'Regel ändern' : 'Regel übernehmen') + ' · ' + nf(r.total) + ' Treffer';
       if (repaintViz) repaintViz();
     }, 90);
     var repaintViz = null;
@@ -1148,8 +1243,10 @@
         if (isTech && draft.value === 0 && (draft.op === 'gt' || draft.op === 'gte')) t = 'Über ' + techRef;
         else if (isTech && draft.value === 0 && (draft.op === 'lt' || draft.op === 'lte')) t = 'Unter ' + techRef;
         else if (draft.op === 'between') t = fmtV(draft.value) + ' – ' + fmtV(draft.value2);
-        else t = ({ gt: '> ', gte: '≥ ', lt: '< ', lte: '≤ ', eq: '= ' })[draft.op] + fmtV(draft.value);
-        readout.textContent = t;
+        else t = ({ gt: 'über ', gte: 'ab ', lt: 'unter ', lte: 'bis ', eq: '= ' })[draft.op] + fmtV(draft.value);
+        /* Grosse Schwelle (FX05): „über +20 %“ */
+        var m = /^(über|ab|unter|bis|=) (.*)$/.exec(t);
+        readout.replaceChildren.apply(readout, m ? [h('small', { text: m[1] }), h('b', { text: (f.unit === 'pct' && draft.value > 0 && /^\d/.test(m[2]) ? '+' : '') + m[2] })] : [h('b', { text: t })]);
       };
       var presets = h('div', { class: 'sc-presets' });
       var toPos = function (v) { if (isLog) { var a = Math.log10(dom[0]), b = Math.log10(dom[1]); return Math.round(((Math.log10(Math.max(v, dom[0])) - a) / (b - a)) * 1000); } return Math.round(((v - dom[0]) / (dom[1] - dom[0])) * 1000); };
@@ -1207,10 +1304,16 @@
           } }, o[1]);
         }));
       };
+      var presetN = {};
+      var presetCount = function (p) {
+        var k = p.join('|'); if (presetN[k] !== undefined) return presetN[k];
+        try { var base = editing ? Q.removeFilter(state.query, editing.id) : state.query; presetN[k] = adapter.screenSync(Q.addFilter(base, { field: f.id, op: p[1], value: p[2], value2: p[3] }).query, { limit: 0 }).total; } catch (e) { presetN[k] = null; }
+        return presetN[k];
+      };
       var paintPresets = function () {
         presets.replaceChildren.apply(presets, (f.presets || []).map(function (p) {
-          var on = draft.op === p[1] && draft.value === p[2] && (p[1] !== 'between' || draft.value2 === p[3]);
-          return h('button', { class: 'sc-preset', type: 'button', 'aria-pressed': String(on), onclick: function () { draft.op = p[1]; draft.value = p[2]; draft.value2 = p[3] === undefined ? null : p[3]; paintOps(); paintInputs(); updateLive(); paintPresets(); } }, p[0]);
+          var on = draft.op === p[1] && draft.value === p[2] && (p[1] !== 'between' || draft.value2 === p[3]), n = presetCount(p);
+          return h('button', { class: 'sc-preset', type: 'button', 'aria-pressed': String(on), 'data-n': n === null ? null : nf(n), onclick: function () { draft.op = p[1]; draft.value = p[2]; draft.value2 = p[3] === undefined ? null : p[3]; paintOps(); paintInputs(); updateLive(); paintPresets(); } }, String(p[0]).replace(/^>\s?/, 'über ').replace(/^<\s?/, 'unter '));
         }));
       };
       paintOps(); paintInputs(); paintPresets();
@@ -1233,14 +1336,20 @@
         }
       };
       var hintSlot = h('div', {});
-      if (f.presets && f.presets.length) s.body.append(h('p', { class: 'sc-label', text: 'Schwelle' }), presets);
-      s.body.append(h('p', { class: 'sc-label', text: 'So verteilen sich die Aktien' }), h('p', { class: 'sc-note sc-note-tight', text: 'Neongrün: erfüllt die Regel' }), histSlot, hintSlot);
-      if (isTech) s.body.append(h('p', { class: 'sc-label', text: 'So sieht das aus' }), vizSlot);
-      s.body.append(h('p', { class: 'sc-label', text: 'Genau einstellen' }), ops, readout, sliderWrap, inputs);
-      if (f.formula && info().formulas && info().formulas[f.formula]) s.body.append(h('div', { class: 'sc-formula', text: 'Berechnung: ' + info().formulas[f.formula] }));
+      /* Konzept FX05: grosse Schwelle, Verteilung des Universums mit Regler direkt darunter, Stufen mit Trefferzahl.
+         Bedingung, Eingabefeld, Zahlen und Herkunft stehen zugeklappt unter „Genau einstellen“. */
+      s.body.append(h('div', { class: 'sc-bigthr' }, readout), histSlot, sliderWrap);
+      if (f.presets && f.presets.length) s.body.append(presets);
+      s.body.append(h('div', { class: 'sc-gap-s' }, helpLine('Jede Säule: wie viele der ' + nf(d.size) + ' Aktien diesen Wert haben. Neongrün: deine Auswahl.')));
+      var fine = h('details', { class: 'sc-fine' }, [h('summary', {}, ['Genau einstellen', icon('chevdown')]), h('div', {}, [ops, inputs, hintSlot])]);
+      if (isTech) fine.lastChild.append(h('p', { class: 'sc-label', text: 'So sieht das aus' }), vizSlot);
+      if (f.formula && info().formulas && info().formulas[f.formula]) fine.lastChild.append(h('div', { class: 'sc-formula', text: 'Berechnung: ' + info().formulas[f.formula] }));
+      fine.lastChild.append(h('div', { class: 'sc-dbox' }, helpLine(f.desc || f.reason || f.question || '')), meta);
+      s.body.append(fine);
       repaintViz();
     }
     s.body.append(live);
+    if (opts.toResults) live.style.display = 'none'; /* Die Trefferzahl steht im Hauptknopf (FX05). */
     if (state.query.mode === 'pro' && state.query.groups.length > 1) {
       var gsel = h('select', { 'aria-label': 'Gruppe' }, state.query.groups.map(function (g, gi) { return h('option', { value: g.id, selected: (editing ? groupOf(editing.id) : state.targetGroup || state.query.groups[state.query.groups.length - 1].id) === g.id ? true : null }, g.name || 'Gruppe ' + (gi + 1)); }));
       gsel.addEventListener('change', function () { state.targetGroup = gsel.value; });
@@ -1258,7 +1367,8 @@
         } else dq = Q.addFilter(state.query, draft, state.targetGroup).query;
       } catch (e) { toast('Bitte einen gültigen Wert eingeben'); return; }
       /* Aus der einfachen Startansicht fuehrt eine neue Regel zum Satz-Bauer (S02). */
-      if (state.view === 'start' && dq.mode !== 'pro') go({ query: dq, view: 'build' });
+      if (opts.toResults) go({ query: dq, view: 'results' });
+      else if (state.view === 'start' && dq.mode !== 'pro') go({ query: dq, view: 'build' });
       else go({ query: dq }, { keepScroll: true });
       toast(editing ? 'Regel geändert' : 'Regel hinzugefügt');
     });
@@ -1707,7 +1817,7 @@
       state.preview = i;
       if (previewing()) render();
     });
-    adapter.load().then(function () { var keep = previewing(); state.loaded = true; readURL(); history.replaceState({ sc: 1 }, '', location.href); render({ keepScroll: keep }); })
+    adapter.load().then(function () { var keep = previewing(); state.loaded = true; readURL(); history.replaceState({ sc: 1 }, '', location.href); render({ keepScroll: keep }); if (state.persp) openLibrary({ persp: state.persp }); })
       .catch(function (e) { state.loaded = true; state.error = String(e && e.message || e); render(); });
   }
   boot();

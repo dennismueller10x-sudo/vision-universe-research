@@ -39,3 +39,15 @@ test("WB-4 · Fortschritt ist messbar: Anzahl Dateien gegen Zielbild", () => {
   console.log(`[buendel] ${FILES.length} Workflow-Dateien, Ziel ${Object.keys(DOC.bundles).length}`);
   assert.ok(FILES.length > 0);
 });
+
+test("WB-5 · DoD (Steuerung 08.11.2026): jede eigenstaendige Datei ist begruendete Ausnahme oder noch geplant", () => {
+  const bundleWorkflows = Object.values(DOC.bundles).map((b) => b.workflow).filter(Boolean);
+  for (const f of FILES.filter((x) => !bundleWorkflows.includes(x))) {
+    const e = DOC.workflows[f] || {};
+    const ausnahme = typeof e.ausnahme === "string" ? e.ausnahme.trim() : "";
+    assert.ok(Boolean(ausnahme) !== Boolean(e.geplant), `${f}: genau eins von ausnahme (ein Satz Begruendung) oder geplant`);
+    if (ausnahme) assert.match(ausnahme, /^\S.{20,}[.)]$/, `${f}: Begruendung als ganzer Satz`);
+  }
+  const offen = FILES.filter((f) => DOC.workflows[f]?.geplant);
+  console.log(`[buendel] ${bundleWorkflows.length} Buendel, ${FILES.length - bundleWorkflows.length - offen.length} Ausnahmen, ${offen.length} noch geplant`);
+});
