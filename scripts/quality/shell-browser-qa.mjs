@@ -38,7 +38,7 @@ const ROUTES = [
   ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
   ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', [null, 'Planer']], ['Vorsorge', '/vorsorge/#/monitor', [null, 'Portfolio']], // V03/V05: Förderung gehört zum Planer, Veränderungen zum Portfolio
   ['Screener', '/screener/', 'Screener'], ['Screener','/screener/?f=roic:gt:0.1','Filter'], ['Screener','/screener/?mode=pro','Filter'], ['Screener', '/screener/?view=build', 'Filter'], ['Screener', '/screener/?view=saved', 'Gespeichert'], ['Screener', '/screener/?view=watchlist', 'Gespeichert'],
-  ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/signals/', 'Signale'],
+  ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/signals/', 'Regel-Ergebnisse'],
   ['Supertrader', '/supertrader/backtests/', 'Backtests'], ['Supertrader', '/supertrader/sources/', null],
   ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/smart-money', 'Smart Money'],
   ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'],
@@ -287,7 +287,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Zurueck/Vor ueber die Leiste (Hash-Produkte und Seiten-Produkte).
-  for (const [start, clicks] of [['/quant/#/', ['Screener', 'Aktien']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Signale', 'Backtests']], ['/discover/#/', ['Welten', 'Strategien']]]) {
+  for (const [start, clicks] of [['/quant/#/', ['Screener', 'Aktien']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Regel-Ergebnisse', 'Backtests']], ['/discover/#/', ['Welten', 'Strategien']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {
