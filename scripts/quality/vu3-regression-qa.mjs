@@ -180,7 +180,7 @@ const VISUAL = [
   ['Vorsorge', '/vorsorge/#/etf/VT', '.vs-bilanz', 'Bilanz der Einordnung'],
   ['Hedgefonds', '/hedgefonds/#/', '.hf-card-val .hf-chg', 'Richtung der Fondsgroesse'],
   ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-balance', 'Kaeufer gegen Verkaeufer'],
-  ['Elliott', '/elliott/', '.el-split', 'beschrifteter Richtungsbalken'],
+  ['Elliott', '/elliott/', '.el-ebar', 'Anteil zählbarer Aktien als Balken (Konzept EHV, EX02)'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-kt .fu-k-v', 'Kennzahlen-Streifen (Konzept „Verstehen. Finden.“, FX02)'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-fin-big .vu-chg', 'Finanz-Chart mit Richtung zum Vorjahr'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-chap a', 'Kapitel der Aktie'],
