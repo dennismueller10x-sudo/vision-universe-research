@@ -33,10 +33,20 @@ großen Wert (Rubrik „Tagesthema“), einer über einen Nebenwert (Rubrik „N
    Dritter), keine Aufforderung. Wörtliche Zitate nur mit Sprecher und Medium, englische als „(übersetzt)“.
    Privatpersonen, gegen die nur Vorwürfe bestehen, nicht namentlich nennen.
 5. **Daten und App-Screens.** `node products/insights/snapshot.mjs <datei>`, dann `node products/insights/screens.mjs <datei>`.
-6. **Bild.** Nur offizielles Pressematerial des Unternehmens (Newsroom, Media-/Press-Kit, Investor-Relations), 16:9 auf
-   1600 × 900 zugeschnitten nach `insights/img/<slug>.jpg`, mit `"quelle"` (Firmenname). Keine Agenturfotos, keine Bilder
-   von Medien, keine Personenfotos außer offiziellen Vorstandsporträts. Gibt es kein passendes Pressebild:
-   `"bild": {"typ": "app", "alt": "…"}` (Aufmacher aus den App-Screens).
+6. **Bilder (Pflicht, jeder Artikel).** Jeder Artikel bekommt einen Aufmacher mit Bezug zur Firma und mindestens ein
+   Bild im Text (`abschnitte[].bild` mit `text` als Bildunterschrift). Reihenfolge der Quellen:
+   1. Offizielles Pressematerial: Newsroom, Media-/Press-Kit, Investor-Relations (z. B. Produktbilder auf `newsroom.amd.com`).
+   2. Offizielle Bilder der Firmenwebsite: `og:image` der Startseite, Produkt- und Kampagnenbilder unter der eigenen
+      Domain (z. B. `ui.com/microsite/static/…`).
+   3. Erst wenn beides fehlt: ein KI-Bild mit `"ki": true` (Bildzeile „KI-Bild“), symbolisch zum Thema (Rechenzentrum,
+      Fabrik, Produktkategorie), ohne Logos, ohne erfundene Produkte der Firma, ohne erkennbare Personen.
+      Erzeugt über den Bildauftrag-Weg aus `docs/publishing/HANDBUCH.md` (Higgsfield); das kostet Geld und braucht ein vom
+      Owner freigegebenes Budget. Ohne Budget: Stufe 1 oder 2 gründlicher suchen.
+   Keine Agenturfotos, keine Bilder von Medien, keine Personenfotos außer offiziellen Vorstandsporträts. Bildmarken
+   (Logos) nur auf offiziellem Material. Keine Partner-Logos-Kacheln („AMD × Oracle“) als Aufmacher: lieber Produkt,
+   Standort oder Rechenzentrum. Zuschnitt 16:9 auf 1600 × 900 nach `insights/img/<slug>-<motiv>.jpg`, freigestellte
+   Produktbilder auf Weiß, mit `"quelle"` (Firmenname). Jedes Bild vor dem Einbau ansehen. `"bild": {"typ": "app", …}`
+   (Aufmacher aus App-Screens) nur noch als Notlösung, wenn auch kein KI-Bild möglich ist; dann im Bericht sagen.
 7. **Bauen und prüfen.** `node products/insights/build.mjs`, dann
    `node --test "products/insights/tests/*.test.mjs" "core/tests/*.test.mjs"`. Jede Quellenadresse einmal abrufen; tote
    Adressen ersetzen. Die Artikelseite im Browser ansehen (Desktop und 390 px): keine leeren Bilder, kein Überlauf.
