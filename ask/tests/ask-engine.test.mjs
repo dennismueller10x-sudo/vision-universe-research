@@ -135,3 +135,40 @@ test("/ask/ zeigt Fehler ueber VUAskEngine.failure und bricht nach einer Frist a
   assert.match(src, /AbortController/);
   assert.doesNotMatch(src, /\.then\(function \(r\) \{ return r\.json\(\); \}\)/);
 });
+
+/* ------------------------- Darstellung und Stimme nach Owner-Vorlage (10.11.2026) */
+
+test("Chips sprechen Klartext: Börsenwert 0,3–2 Mrd. $, KGV bis 15, mehr Kasse als Schulden", () => {
+  const t = (field, op, value, value2) => Ask.chipText({ field, op, value, value2 }).replace(/ /g, " ");
+  assert.equal(t("marketCap", "between", 3e8, 2e9), "Börsenwert 0,3–2 Mrd. $");
+  assert.equal(t("pe", "lte", 15), "KGV bis 15");
+  assert.equal(t("netCash", "gt", 0), "mehr Kasse als Schulden");
+  assert.equal(t("netCash", "lt", 0), "mehr Schulden als Kasse");
+  assert.equal(t("marketCap", "gt", 1e10), "Börsenwert über 10 Mrd. $");
+  const r = Ask.rules(screen(null));
+  assert.ok(r.every((x) => x.kind !== "filter" || x.icon), "jede Regel hat ein Symbol");
+});
+
+test("Beträge mit drei Stellen und ohne Umbruch zwischen Zahl und Einheit", () => {
+  assert.equal(Ask.money(1.56e9), "1,56 Mrd. $");
+  assert.equal(Ask.money(2.03e8), "203 Mio. $");
+  assert.equal(Ask.money(-5.31e9), "−5,31 Mrd. $");
+  assert.equal(Ask.name("marketCap"), "Börsenwert");
+  assert.equal(Ask.name("netCash"), "Kasse netto");
+});
+
+test("Vorlesen: Einheiten ausgeschrieben, kurze Sätze, Dezimalzahlen bleiben ganz", () => {
+  assert.deepEqual(Ask.speechText("Der Free Cashflow von NVIDIA stieg von 3,8 Mrd. $ im Geschäftsjahr 2023 auf 96,7 Mrd. $ im Geschäftsjahr 2026. Zuletzt +58,9 % zum Vorjahr."),
+    ["Der Free Cashflow von NVIDIA stieg von 3,8 Milliarden Dollar im Geschäftsjahr 2023 auf 96,7 Milliarden Dollar im Geschäftsjahr 2026.", "Zuletzt plus 58,9 Prozent zum Vorjahr."]);
+  assert.deepEqual(Ask.speechText("Börsenwert 0,3–2 Mrd. $ · KGV ≤ 15"), ["Börsenwert 0,3 bis 2 Milliarden Dollar, K G V bis 15"]);
+  assert.equal(Ask.speechText("Eins. Zwei. Drei. Vier. Fünf.", 3).length, 3);
+  assert.deepEqual(Ask.speechText(""), []);
+});
+
+test("Stimme: neuronale/erweiterte deutsche Stimme vor Kompaktstimme, nie eine fremde Sprache", () => {
+  const v = (name, lang = "de-DE", extra = {}) => ({ name, lang, ...extra });
+  assert.equal(Ask.pickVoice([v("Anna"), v("Anna (Erweitert)"), v("Samantha", "en-US")]).name, "Anna (Erweitert)");
+  assert.equal(Ask.pickVoice([v("Microsoft Hedda - German"), v("Microsoft Katja Online (Natural) - German (Germany)")]).name, "Microsoft Katja Online (Natural) - German (Germany)");
+  assert.equal(Ask.pickVoice([v("Google Deutsch"), v("eSpeak German", "de")]).name, "Google Deutsch");
+  assert.equal(Ask.pickVoice([v("Samantha", "en-US")]), null);
+});

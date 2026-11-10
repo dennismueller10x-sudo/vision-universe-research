@@ -154,6 +154,7 @@ body.ak-answering .ak-body{padding-top:14px}
 .ak-rc{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 10px;border-radius:999px;background:var(--vu-white);border:1.5px solid var(--vu-hair);font-size:12px;font-weight:700}
 :root[data-theme=dark] .ak-rc{background:var(--vu-black)}
 .ak-rc:has(.ak-rc-x){padding-right:2px}
+.ak-rc-i{display:inline-flex;color:var(--vu-mute);margin-right:2px}
 .ak-rc-x{width:26px;height:26px;min-width:26px!important;min-height:26px!important;border:0;border-radius:50%;background:transparent;color:var(--vu-mute);font-size:15px;cursor:pointer;position:relative}
 .ak-rc-x::after{content:"";position:absolute;inset:-9px}
 .ak-count{display:flex;align-items:baseline;gap:8px;margin-top:12px}
