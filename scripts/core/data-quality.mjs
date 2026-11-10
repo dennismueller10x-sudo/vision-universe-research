@@ -24,6 +24,7 @@ import { gunzipSync } from "node:zlib";
 import { args, makeLoader, REPO_ROOT, require } from "./lib.mjs";
 
 import { equityRules } from "./equity-quality.mjs";
+import { productRules } from "./product-quality.mjs";
 
 const a = args();
 const root = typeof a.root === "string" ? a.root : REPO_ROOT;
@@ -234,6 +235,7 @@ let equity = null;
 if (only !== "sf8") {
   equity = await equityRules({ load: makeLoader({ root }), now, expected });
   rules.push(...equity.rules);
+  rules.push(...productRules({ root, now }));
 }
 const report = Object.assign(DQ.summarize(rules), { checkedAt: now.toISOString(), expectedSession: expected });
 
