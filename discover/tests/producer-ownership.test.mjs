@@ -58,6 +58,13 @@ test("actual Discover rebuild preserves only foreign Europe and Europe-ESEF dire
     mkdirSync(join(data, "europe-esef"), { recursive: true });
     writeFileSync(join(data, "europe-esef/opaque-fixture.json"), "opaque foreign payload, not JSON\n");
     const esef = snapshot(join(data, "europe-esef"));
+    /* Vorheriger Stand des Erzeugers (NEU-Etikett, #1663): der Bau liest membership/ und rows/ VOR dem Leeren
+       und traegt firstSeen daraus weiter (build-discover-data.mjs#readPrevious). In Produktion laeuft er ueber
+       dem eingecheckten discover/data; ohne diesen Stand kaeme firstSeen null heraus, und der Bytevergleich
+       unten waere rot, sobald eine Karte ein Datum traegt (seit dem Marktlauf vom 09.11.2026). */
+    for (const entry of ["membership", "rows"]) {
+      if (existsSync(join(root, "discover/data", entry))) cpSync(join(root, "discover/data", entry), join(data, entry), { recursive: true });
+    }
     mkdirSync(join(data, "rows/obsolete"), { recursive: true });
     writeFileSync(join(data, "rows/obsolete/stale.json"), "remove me");
     writeFileSync(join(data, "unknown-producer-entry"), "remove me");
