@@ -97,8 +97,9 @@ test("keine ausgelieferte HTML-Seite enthält den Fuß-Satz außerhalb des Menü
     assert.doesNotMatch(outsideMenu, /(?:legalNotice|legal)\(["']footer["']\)|data-legal(?:-source)?=["']footer["']/i, file + ": dynamische Fuß-Kopie");
     // Landing hat eine eigene Domain und eigene Rechtsseiten; deren Layout gehört nicht zu research.
     if (file.startsWith("landing/")) continue;
-    for (const footer of html.matchAll(/<footer\b[^>]*>[\s\S]*?<\/footer>/gi)) {
-      assert.ok(!(/Impressum/i.test(footer[0]) && /Datenschutz|Risikohinweise/i.test(footer[0])), file + ": eigene Rechtslink-Reihe im Fuß");
+    for (const footer of outsideMenu.matchAll(/<(footer|nav)\b[^>]*>[\s\S]*?<\/\1>/gi)) {
+      if (footer[1].toLowerCase() === "nav" && !/class=["'][^"']*(?:ka-links|pr-legal)/i.test(footer[0])) continue;
+      assert.doesNotMatch(footer[0], /href=["'][^"']*rechtliches\/(?:impressum|datenschutz|agb)["']/i, file + ": eigene Rechtslinks im Fuß");
     }
   }
 });
