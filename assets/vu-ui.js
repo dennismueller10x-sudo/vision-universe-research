@@ -270,7 +270,7 @@
     return '<svg class="vu-bars" viewBox="0 0 ' + w + " " + (h + 18) + '" role="img" aria-label="' + esc(x.label || "Balken") + '">' + d.map(function (r, i) {
       var bh = Math.max(2, Math.max(0, r[1]) / mx * h), last = i === d.length - 1;
       return '<rect' + (last ? ' class="is-last"' : "") + ' x="' + (i * bw + 3).toFixed(1) + '" y="' + (h - bh).toFixed(1) + '" width="' + Math.max(1, bw - 6).toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="4"/>' +
-        (i % 2 === (d.length - 1) % 2 ? '<text x="' + (i * bw + bw / 2).toFixed(1) + '" y="' + (h + 14) + '" text-anchor="middle">' + esc(String(r[0]).slice(-2)) + "</text>" : "");
+        (x.allLabels || i % 2 === (d.length - 1) % 2 ? '<text x="' + (i * bw + bw / 2).toFixed(1) + '" y="' + (h + 14) + '" text-anchor="middle">' + esc(x.allLabels ? "GJ " + String(r[0]).slice(-2) : String(r[0]).slice(-2)) + "</text>" : "");
     }).join("") + "</svg>";
   }
   /** C18 Leerer Zustand: ehrlich sagen, was fehlt. */

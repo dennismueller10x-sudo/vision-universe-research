@@ -296,6 +296,32 @@ jobs:
           check https://research.visionuniverse.de '{"question":"äh zeig mir mal alle Aktien mit neuem Jahreshoch zwischen 300 Millionen und 2 Milliarden, die ins Minervini Raster passen, und den Quant Score","clientId":"livetest-deploy-01"}'
           check capacitor://localhost '{"question":"Welche Aktien mit über 10 Milliarden Börsenwert stehen im Weinstein Stage 2?","clientId":"livetest-app-0001"}'
 
+      # Dieselbe Frage im echten Browser auf /ask/ (kommt aus dem Archiv, kostet nichts).
+      - name: Browser-Test /ask/ (Website)
+        if: ${{ inputs.liveTest && steps.keys.outputs.claude == 'true' && steps.deploy.outputs.url != '' }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+          SITE_URL: https://research.visionuniverse.de
+          QA_OUT: ${{ runner.temp }}/ask-live-qa
+          NODE_PATH: /tmp/ask-live-qa/node_modules
+        run: |
+          ADMIN="$VU_ASK_ADMIN_KEY"
+          [ -n "$ADMIN" ] || ADMIN=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
+          echo "::add-mask::$ADMIN"
+          npm install --prefix /tmp/ask-live-qa --no-audit --no-fund playwright@1.57.0
+          /tmp/ask-live-qa/node_modules/.bin/playwright install --with-deps chromium > /dev/null
+          VU_ASK_ACCESS="$ADMIN" node workers/vu-ask/scripts/browser-live-qa.mjs
+
+      - name: Bildschirmfoto des Browser-Tests
+        if: ${{ always() && inputs.liveTest }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ask-live-qa-${{ github.run_id }}
+          path: ${{ runner.temp }}/ask-live-qa/
+          if-no-files-found: ignore
+
       # Zustandsbericht aus /v1/admin/report. Ausgegeben werden nur Zaehler,
       # Grenzen und Fehlercodes - nie Fragetexte, nie Schluessel.
       - name: Zustandsbericht (ohne Fragetexte)
