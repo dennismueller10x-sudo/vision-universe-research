@@ -578,19 +578,28 @@ jobs:
             extra+=(--var "VU_OPS_ALERT_EMAIL:$OPS_ALERT_EMAIL")
           fi
           npx --yes "$WRANGLER" deploy --env production "${extra[@]}" 2>&1 | sed -E 's/[0-9a-f]{32}/<maskiert>/g; s/sb_publishable_[A-Za-z0-9_-]+/<oeffentlich>/g'
-      - name: Secrets zu Cloudflare (Supabase, Brevo)
+      - name: Secrets zu Cloudflare (Supabase, Brevo, FCM)
         working-directory: workers/vu-account
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           SEC: ${{ secrets.VU_ACCOUNT_SUPABASE_SECRET_KEY }}
           BREVO: ${{ secrets.BREVO_API_KEY }}
+          FCM_SERVICE_ACCOUNT: ${{ secrets.FCM_SERVICE_ACCOUNT }}
         run: |
           set -euo pipefail
           put() { printf '%s' "$2" | npx --yes "$WRANGLER" secret put "$1" --env production > /dev/null 2>&1 && echo "$1 hinterlegt" || { echo "::error::$1 nicht hinterlegt"; exit 1; }; }
           [[ "$SEC" == sb_secret_* ]] || { echo "::error::VU_ACCOUNT_SUPABASE_SECRET_KEY fehlt oder ist kein sb_secret_"; exit 1; }
           put SUPABASE_SECRET_KEY "$SEC"
           if [ -n "$BREVO" ]; then put BREVO_API_KEY "$BREVO"; else echo "::warning::BREVO_API_KEY fehlt - keine Kuendigungsbestaetigungen per E-Mail"; fi
+          # Firebase-Servicekonto (app/README.md E4): Push-Versand. Nie ins Protokoll - die Pruefung liest von stdin und gibt
+          # nur ein Urteil aus, nie einen Wert. Dieselben Pflichtfelder wie workers/vu-account/src/push.mjs (FCM_CONFIG_INVALID).
+          if [ -n "$FCM_SERVICE_ACCOUNT" ]; then
+            printf '%s' "$FCM_SERVICE_ACCOUNT" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>{let a;try{a=JSON.parse(s)}catch{console.log("::error::FCM_SERVICE_ACCOUNT ist kein gueltiges JSON - nicht hinterlegt");process.exit(1)}if(!a||a.type!=="service_account"||!/^[a-z0-9-]+$/.test(a.project_id||"")||!a.client_email||!a.private_key){console.log("::error::FCM_SERVICE_ACCOUNT ist kein Servicekonto (type, project_id, client_email, private_key) - nicht hinterlegt");process.exit(1)}})'
+            put FCM_SERVICE_ACCOUNT "$FCM_SERVICE_ACCOUNT"
+          else
+            echo "::warning::FCM_SERVICE_ACCOUNT fehlt - der Worker-Cron ueberspringt den Push-Versand (app/README.md E4)"
+          fi
 
   # --- ausrollen: vormals account-production-deploy.yml, Job stripe
   ausrollen-stripe:
