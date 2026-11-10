@@ -386,7 +386,8 @@ export async function buildRelease({root,output}){
  const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};
  await writeFile(resolve(output,'release-delivery.json'),JSON.stringify(report,null,2));
  // Generationenmanifest (ADR-008): jeder Releasebau benennt Code, Datenzweig und Nutzdatenhash. Additiv, ohne Einfluss auf den Bericht.
- writeManifest({root,site:output,stage:'BUILT'});return report;
+ try{writeManifest({root,site:output,stage:'BUILT'});}catch(e){console.error('::warning::release-manifest nicht geschrieben: '+String(e&&e.message||e));}
+ return report;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const output=process.argv.find(a=>a.startsWith('--output='))?.slice(9);if(!output)throw Error('OUTPUT_REQUIRED');

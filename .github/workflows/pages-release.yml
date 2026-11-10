@@ -297,11 +297,17 @@ jobs:
       # Generationenmanifest (ADR-008): Code-SHA, Datenzweig-SHA und Nutzdatenhash der AUSZULIEFERNDEN Dateien (nach Overlay und
       # Company-Intelligence-Staging). Schreibt nur /core/release-manifest.json; kein Gate, aendert keine Fehlerlogik.
       - name: Seal release generation manifest
+        # Nie blockierend (Steuerung 10.11.): ein Fehler hier ist nur eine Warnung; im Paket bleibt dann das BUILT-Manifest aus build-release.mjs.
+        # Muss vor dem Hochladen laufen, sonst waere das Manifest nicht in der Auslieferung.
+        continue-on-error: true
         run: |
-          set -euo pipefail
           sha=""; [ -f "$RUNNER_TEMP/data-branch.sha" ] && sha="$(cat "$RUNNER_TEMP/data-branch.sha")"
-          node scripts/vu2/release-manifest.mjs --site="$RUNNER_TEMP/site" --stage=SEALED --data-branch-sha="$sha" | tee "$RUNNER_TEMP/release-manifest-summary.json"
-          { echo '### Release-Generation'; echo '```'; cat "$RUNNER_TEMP/release-manifest-summary.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          if node scripts/vu2/release-manifest.mjs --site="$RUNNER_TEMP/site" --stage=SEALED --data-branch-sha="$sha" > "$RUNNER_TEMP/release-manifest-summary.json"; then
+            { echo '### Release-Generation'; echo '```'; cat "$RUNNER_TEMP/release-manifest-summary.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Release-Manifest nicht versiegelt (BUILT-Stand bleibt); Auslieferung unberuehrt."
+          fi
+          exit 0
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
       # Unterschied ist real: dort laeuft die Seite als ein gebuendeltes
       # Skript, die Artefakte liegen unter ihren Auslieferungspfaden, und

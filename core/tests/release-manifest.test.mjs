@@ -105,7 +105,7 @@ test("RM-7 · writeManifest legt /core/release-manifest.json ab; build-release.m
   const site = tmp("w"); const m = writeManifest(opts(site, { stage: "BUILT" }));
   assert.ok(existsSync(join(site, MANIFEST_PATH))); assert.equal(JSON.parse(readFileSync(join(site, MANIFEST_PATH), "utf8")).payloadHash, m.payloadHash);
   const src = readFileSync(join(ROOT, "scripts/vu2/build-release.mjs"), "utf8");
-  assert.match(src, /writeManifest\(\{root,site:output,stage:'BUILT'\}\)/);
+  assert.match(src, /try\{writeManifest\(\{root,site:output,stage:'BUILT'\}\);\}catch/, "Manifest-Fehler darf den Bau nicht abbrechen");
   /* Gegenprobe: derselbe Aufruf steht NACH dem Bericht und damit auf dem einzigen Rueckgabeweg von buildRelease. */
   assert.ok(src.indexOf("writeManifest({root") > src.indexOf("release-delivery.json"));
 }));
@@ -123,4 +123,7 @@ test("RM-9 · pages-release.yml siegelt das Manifest nach Overlay und Stempel; c
   assert.ok(seal > pages.indexOf("overlay-data-branch.mjs") && seal > pages.indexOf("scripts/vu2/release-id.mjs"), "Siegel nach Overlay und Stempel");
   assert.ok(seal < pages.indexOf("actions/upload-pages-artifact"), "Siegel vor dem Hochladen");
   assert.match(ci, /core\/release-manifest\.json/);
+  /* Der Siegel-Schritt blockiert nie: continue-on-error, Warnung statt Fehlercode, Ende mit exit 0, kein set -e. */
+  const step = pages.slice(pages.indexOf("- name: Seal release generation manifest"), pages.indexOf("# Gegen das GEBAUTE Release"));
+  assert.match(step, /continue-on-error: true/); assert.match(step, /::warning::/); assert.match(step, /exit 0\s*$/m); assert.doesNotMatch(step, /set -e/);
 });
