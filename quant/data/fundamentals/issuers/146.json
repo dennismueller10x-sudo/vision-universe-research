@@ -417,40 +417,40 @@
       "cik": "0000849146",
       "name": "Lifevantage Corp",
       "sic": "2834",
-      "rawFacts": 18258,
-      "mappedFacts": 6951,
-      "unmappedFacts": 11885,
+      "rawFacts": 18512,
+      "mappedFacts": 7037,
+      "unmappedFacts": 12184,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
-      "fiscalYearEnd": "0630",
+      "fiscalYearEnd": "1231",
       "tickers": [
         "LFVN"
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 65,
+      "quarterlyPeriods": 66,
       "firstPeriodEnd": "2010-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
         },
         "free_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0,
@@ -470,21 +470,21 @@
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
@@ -498,14 +498,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
@@ -528,46 +528,47 @@
         }
       },
       "quality": {
-        "HIGH": 650
+        "HIGH": 657
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 650,
-        "resolvedValues": 650
+        "datableValues": 657,
+        "resolvedValues": 657
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 12044,
+        "rules_version": "1.1.0",
+        "total": 12346,
         "by_severity": {
-          "INFO": 11885,
-          "WARNING": 159
+          "INFO": 12184,
+          "WARNING": 162
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 99,
+          "CONCEPT_DISAGREEMENT": 102,
           "PERIOD_MISMATCH": 1,
           "RESTATEMENT_CONFLICT": 53,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 11885
+          "UNKNOWN_CONCEPT": 12184
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-371257",
-        "filing_date": "2026-08-27",
-        "form": "10-K",
-        "periodic_filings": 77
+        "accession": "0001193125-26-453560",
+        "filing_date": "2026-11-09",
+        "form": "10-Q",
+        "periodic_filings": 78,
+        "acceptance_datetime": "2026-11-09T21:05:35.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ad01c429f861d98ba24e4b60c5e3c773a56eebe30e0f3c086c33f777f142a229",
+      "sourceDigest": "8d03b34044b981fdc6d12be9b26cbc6ae87c3f8c62ea15b080cfbff7d469e90d",
       "issuerId": "iss_cik_0000849146"
     },
     {

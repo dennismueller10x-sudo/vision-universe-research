@@ -480,9 +480,9 @@
       "cik": "0001584549",
       "name": "Village Farms International, Inc.",
       "sic": "0100",
-      "rawFacts": 9247,
-      "mappedFacts": 3367,
-      "unmappedFacts": 5933,
+      "rawFacts": 9611,
+      "mappedFacts": 3491,
+      "unmappedFacts": 6222,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -492,28 +492,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 10,
-      "quarterlyPeriods": 33,
+      "quarterlyPeriods": 34,
       "firstPeriodEnd": "2016-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "eps_diluted": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "free_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0,
@@ -526,56 +526,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "net_income": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "operating_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "revenue": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "short_term_debt": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "stockholders_equity": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "total_debt": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0,
@@ -591,45 +591,46 @@
         }
       },
       "quality": {
-        "HIGH": 301,
-        "MEDIUM": 53
+        "HIGH": 309,
+        "MEDIUM": 54
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 354,
-        "resolvedValues": 354
+        "datableValues": 363,
+        "resolvedValues": 363
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6278,
+        "rules_version": "1.1.0",
+        "total": 6574,
         "by_severity": {
-          "INFO": 5933,
-          "WARNING": 345
+          "INFO": 6222,
+          "WARNING": 352
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 245,
-          "RESTATEMENT_CONFLICT": 100,
-          "UNKNOWN_CONCEPT": 5933
+          "CONCEPT_DISAGREEMENT": 254,
+          "RESTATEMENT_CONFLICT": 98,
+          "UNKNOWN_CONCEPT": 6222
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-341194",
-        "filing_date": "2026-08-10",
+        "accession": "0001193125-26-452614",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 35
+        "periodic_filings": 36,
+        "acceptance_datetime": "2026-11-09T12:00:49.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "df0c032fb73dddab1063c44a067f76344476761740aad25ca04e82398ee661a2",
+      "sourceDigest": "9ea957c7b273bba12e28d03c93d9d5e76365ba6aff09a3a28c2f38820eaa4588",
       "issuerId": "iss_cik_0001584549"
     }
   ]

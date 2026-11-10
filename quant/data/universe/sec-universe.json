@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-11-08T13:30:40.509Z",
+  "generated_at_utc": "2026-11-10T06:27:20.238Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5297,
+    "withDeliveredStockPage": 5296,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -34416,17 +34416,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "MGPI",
-      "name": "Mgp Ingredients Inc",
-      "cik": "0000835011",
-      "instrumentId": "vu_d0d2a2e8b7ebfc",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "MGRC",
       "name": "Mcgrath Rentcorp",
       "cik": "0000752714",
@@ -61569,6 +61558,17 @@
       "name": "Mountain Crest Acquisition Corp. V",
       "cik": "0001859035",
       "instrumentId": "vu_7b181b9df11846",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "MGPI",
+      "name": "Mgp Ingredients Inc",
+      "cik": "0000835011",
+      "instrumentId": "vu_d0d2a2e8b7ebfc",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",

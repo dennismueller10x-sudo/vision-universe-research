@@ -6,9 +6,9 @@
       "cik": "0000894627",
       "name": "VAALCO ENERGY INC /DE/",
       "sic": "1311",
-      "rawFacts": 21207,
-      "mappedFacts": 5562,
-      "unmappedFacts": 15490,
+      "rawFacts": 21560,
+      "mappedFacts": 5613,
+      "unmappedFacts": 15866,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 67,
+          "quarterlyPeriods": 68,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -117,46 +117,47 @@
         }
       },
       "quality": {
-        "HIGH": 482,
-        "MEDIUM": 80
+        "HIGH": 491,
+        "MEDIUM": 78
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 562,
-        "resolvedValues": 562
+        "datableValues": 569,
+        "resolvedValues": 569
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 16100,
+        "rules_version": "1.1.0",
+        "total": 16327,
         "by_severity": {
-          "INFO": 15490,
-          "WARNING": 610
+          "INFO": 15866,
+          "WARNING": 461
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 533,
-          "RESTATEMENT_CONFLICT": 75,
+          "CONCEPT_DISAGREEMENT": 392,
+          "RESTATEMENT_CONFLICT": 67,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 15490
+          "UNKNOWN_CONCEPT": 15866
         }
       },
       "latestFiling": {
-        "accession": "0000894627-26-000051",
-        "filing_date": "2026-08-10",
+        "accession": "0000894627-26-000061",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 95
+        "periodic_filings": 96,
+        "acceptance_datetime": "2026-11-09T21:45:10.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "17b305ebfde2708061d6c985e78acb16ee248d5efd7a28843f438cb9c63469ec",
+      "sourceDigest": "d55f38a330e2a8b0e5f87e0a963a0ac1118b1ce3d5f0c9b856e982ae3ea53d7d",
       "issuerId": "iss_cik_0000894627"
     },
     {

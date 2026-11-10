@@ -6,15 +6,15 @@
       "cik": "0000930236",
       "name": "REDWOOD TRUST INC",
       "sic": "6798",
-      "rawFacts": 30447,
-      "mappedFacts": 7006,
-      "unmappedFacts": 23534,
+      "rawFacts": 30904,
+      "mappedFacts": 7105,
+      "unmappedFacts": 24022,
       "calendarYears": 18,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -49,7 +49,7 @@
         },
         "secured_debt": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 48,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -67,9 +67,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
@@ -81,7 +81,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -108,14 +108,14 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -136,14 +136,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -166,45 +166,46 @@
         }
       },
       "quality": {
-        "HIGH": 527,
-        "MEDIUM": 39
+        "HIGH": 531,
+        "MEDIUM": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 566,
-        "resolvedValues": 566
+        "datableValues": 571,
+        "resolvedValues": 571
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 24036,
+        "rules_version": "1.1.0",
+        "total": 24532,
         "by_severity": {
-          "INFO": 23534,
-          "WARNING": 502
+          "INFO": 24022,
+          "WARNING": 510
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 443,
+          "CONCEPT_DISAGREEMENT": 451,
           "RESTATEMENT_CONFLICT": 59,
-          "UNKNOWN_CONCEPT": 23534
+          "UNKNOWN_CONCEPT": 24022
         }
       },
       "latestFiling": {
-        "accession": "0000930236-26-000027",
-        "filing_date": "2026-08-05",
+        "accession": "0000930236-26-000035",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 130
+        "periodic_filings": 131,
+        "acceptance_datetime": "2026-11-09T21:12:03.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "0a9b33059dd09bf25ea6f8e57cb79ab3cd827ef22bea5a99a0501b1fb213d9e8",
+      "sourceDigest": "474b221269a89dd86bdf79dffbf8db522f15470593296196898bc1b0ddba1c4b",
       "issuerId": "iss_cik_0000930236"
     },
     {

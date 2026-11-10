@@ -466,10 +466,10 @@
       "cik": "0001567094",
       "name": "CNH Industrial N.V.",
       "sic": "3531",
-      "rawFacts": 12571,
-      "mappedFacts": 2727,
-      "unmappedFacts": 9892,
-      "calendarYears": 16,
+      "rawFacts": 12953,
+      "mappedFacts": 2823,
+      "unmappedFacts": 10181,
+      "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -478,9 +478,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 33,
+      "quarterlyPeriods": 34,
       "firstPeriodEnd": "2010-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
@@ -492,7 +492,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -519,21 +519,21 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "revenue": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -547,14 +547,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 32,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -577,45 +577,46 @@
         }
       },
       "quality": {
-        "HIGH": 163,
-        "MEDIUM": 71
+        "HIGH": 169,
+        "MEDIUM": 73
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 234,
-        "resolvedValues": 234
+        "datableValues": 242,
+        "resolvedValues": 242
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10344,
+        "rules_version": "1.1.0",
+        "total": 10560,
         "by_severity": {
-          "INFO": 9892,
-          "WARNING": 452
+          "INFO": 10181,
+          "WARNING": 379
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 395,
-          "RESTATEMENT_CONFLICT": 57,
-          "UNKNOWN_CONCEPT": 9892
+          "CONCEPT_DISAGREEMENT": 324,
+          "RESTATEMENT_CONFLICT": 55,
+          "UNKNOWN_CONCEPT": 10181
         }
       },
       "latestFiling": {
-        "accession": "0001567094-26-000018",
-        "filing_date": "2026-08-03",
+        "accession": "0001567094-26-000022",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 28
+        "periodic_filings": 29,
+        "acceptance_datetime": "2026-11-09T15:09:06.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ce219b0ea78ee401c98e46917e9b3269fb4232c55f2de3b8d80a00b92e4ec20d",
+      "sourceDigest": "b4ad411e20ded40bf056442c91c506827b6ca205b7e727893b1a48639fdb8ff7",
       "issuerId": "iss_cik_0001567094"
     },
     {

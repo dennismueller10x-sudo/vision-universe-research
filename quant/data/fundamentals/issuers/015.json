@@ -6,9 +6,9 @@
       "cik": "0000874015",
       "name": "IONIS PHARMACEUTICALS INC",
       "sic": "2834",
-      "rawFacts": 17762,
-      "mappedFacts": 6192,
-      "unmappedFacts": 11677,
+      "rawFacts": 18025,
+      "mappedFacts": 6295,
+      "unmappedFacts": 11971,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -117,48 +117,50 @@
         }
       },
       "quality": {
-        "HIGH": 580,
+        "HIGH": 587,
         "MEDIUM": 34
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 614,
-        "resolvedValues": 614
+        "datableValues": 621,
+        "resolvedValues": 621
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 11970,
+        "rules_version": "1.1.0",
+        "total": 12268,
         "by_severity": {
-          "INFO": 11677,
+          "INFO": 11971,
           "ERROR": 6,
-          "WARNING": 287
+          "WARNING": 291
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 211,
+          "CONCEPT_DISAGREEMENT": 210,
           "FUTURE_DATA_LEAK": 6,
+          "FUTURE_PERIOD_END": 5,
           "RESTATEMENT_CONFLICT": 75,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 11677
+          "UNKNOWN_CONCEPT": 11971
         }
       },
       "latestFiling": {
-        "accession": "0000874015-26-000251",
-        "filing_date": "2026-07-29",
+        "accession": "0000874015-26-000271",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 122
+        "periodic_filings": 123,
+        "acceptance_datetime": "2026-11-09T13:33:01.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "aaf2873fe1d4936e36897b2af090f007a5b3df6656e332f5ef3f3be8582aa9da",
+      "sourceDigest": "006480785839c4a020d8c963f01b20a77535d217d385714eed2c4acbb6782829",
       "issuerId": "iss_cik_0000874015"
     },
     {

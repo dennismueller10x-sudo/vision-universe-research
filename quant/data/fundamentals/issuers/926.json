@@ -554,9 +554,9 @@
       "cik": "0001937926",
       "name": "Brookfield Asset Management Ltd.",
       "sic": "6282",
-      "rawFacts": 1840,
-      "mappedFacts": 580,
-      "unmappedFacts": 1252,
+      "rawFacts": 2193,
+      "mappedFacts": 674,
+      "unmappedFacts": 1503,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -566,14 +566,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 13,
+      "quarterlyPeriods": 14,
       "firstPeriodEnd": "2022-07-03",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -587,7 +587,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -607,21 +607,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -635,14 +635,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -665,45 +665,46 @@
         }
       },
       "quality": {
-        "HIGH": 59,
-        "MEDIUM": 26
+        "HIGH": 64,
+        "MEDIUM": 27
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 85,
-        "resolvedValues": 85
+        "datableValues": 91,
+        "resolvedValues": 91
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1342,
+        "rules_version": "1.1.0",
+        "total": 1581,
         "by_severity": {
-          "INFO": 1252,
-          "WARNING": 90
+          "INFO": 1503,
+          "WARNING": 78
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 54,
+          "CONCEPT_DISAGREEMENT": 42,
           "RESTATEMENT_CONFLICT": 36,
-          "UNKNOWN_CONCEPT": 1252
+          "UNKNOWN_CONCEPT": 1503
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-054933",
-        "filing_date": "2026-08-10",
+        "accession": "0001628280-26-071827",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 9
+        "periodic_filings": 10,
+        "acceptance_datetime": "2026-11-06T23:45:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e2bdee8f7c9f883f8f5fdf169531921e57ed2ee9344b8936f2256064adc9ff2a",
+      "sourceDigest": "b3ef73016aea58cf7b6f62b2700d30524c3be08137c2a863afacd7eb3c02ad4a",
       "issuerId": "iss_cik_0001937926"
     }
   ]
