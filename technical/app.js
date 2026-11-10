@@ -392,9 +392,11 @@
         var b = M.marketBreadth(pulse) || own;
         if (!b) return;
         var v = breadthVerdict(b.share);
-        put(market, el("a", { class: "tc-ms", href: TPL.href("aboveSma200"), "data-source": b.source, "aria-label": "Markt heute: " + v[1] + ", " + M.breadthSentence(b) }, [el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }),
+        /* Ampel in Neonfarben (Owner-Wunsch 10.11.2026): stark = Neongrün, gemischt = Neongelb, schwach = Neonrot; dieselben Schwellen wie das Urteil. */
+        var lamp = el("span", { class: "tc-ampel", "aria-hidden": "true" }, ["weak", "mid", "strong"].map(function (k) { return el("i", { class: "is-" + k + (k === v[0] ? " is-on" : "") }); }));
+        put(market, el("a", { class: "tc-ms tc-ms--" + v[0], href: TPL.href("aboveSma200"), "data-source": b.source, "data-state": v[0], "aria-label": "Markt heute: " + v[1] + ", " + M.breadthSentence(b) }, [el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }),
           el("b", {}, [v[1], el("small", { text: Math.round(b.share) + " % über der 200-Tage-Linie" })]), el("div", { class: "tc-ms-bar" }, el("i", { style: "width:" + Math.round(b.share) + "%" })),
-          el("span", { class: "tc-ms-basis", text: (isNum(b.matched) ? Math.round(b.matched).toLocaleString("de-DE") + " von " : "Basis ") + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien" + (b.asOf ? " · Stand " + M.dateDe(b.asOf) : "") })]), h(U.glyph("next", 14))]));
+          el("span", { class: "tc-ms-basis", text: (isNum(b.matched) ? Math.round(b.matched).toLocaleString("de-DE") + " von " : "Basis ") + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien" + (b.asOf ? " · Stand " + M.dateDe(b.asOf) : "") })]), lamp, h(U.glyph("next", 14))]));
       });
       put(searches, HOME_SEARCHES.filter(function (x) { return TPL.get(x[0]); }).map(function (x) {
         var t = TPL.get(x[0]), tc = ix.templates && ix.templates[x[0]], count = tc ? tc[0] : ix.presets && ix.presets[x[0]];
