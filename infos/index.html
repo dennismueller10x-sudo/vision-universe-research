@@ -17,7 +17,7 @@
 </head>
 <!-- Owner-Entscheidung 07.11.2026 (docs/PLAN_NEUSTART_2026-11.md §11): Rechtliches und Quellen zentral statt auf jeder Seite.
      Diese Seite ist das Ziel von Menü → „Rechtliches & Infos“ → „Datenquellen & Methodik“. Rechtstexte selbst liegen auf
-     konto.visionuniverse.de; der Hinweissatz kommt aus assets/legal-notices.json (über VUUI.legalNotice), nicht von Hand. -->
+     konto.visionuniverse.de; der Software-/Risikosatz steht seit Owner-Entscheidung 10.11.2026 nur im Menü. -->
 <body class="in-body vu-ui"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <main class="in-main" id="in-main">
   <p class="vu-ltag">Vision Universe</p>
@@ -33,7 +33,6 @@
       <li><a href="https://konto.visionuniverse.de/rechtliches/risikohinweise">Risikohinweise</a></li>
       <li><a href="https://konto.visionuniverse.de/rechtliches/methodik">Methodik, Quellen und Interessen</a></li>
     </ul>
-    <p class="in-note" id="in-hinweis" data-legal-source="footer"></p>
   </section>
 
   <section aria-labelledby="quellen" id="quellen-sec">
@@ -71,6 +70,5 @@
   </section>
 </main>
 <script src="/assets/vu-ui.js"></script>
-<script>(function(){var U=window.VUUI,n=U&&U.legalNotice&&U.legalNotice("footer"),p=document.getElementById("in-hinweis");if(n&&p)p.textContent=n.text;else if(p)p.remove();})();</script>
 </body>
 </html>

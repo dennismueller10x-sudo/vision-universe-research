@@ -31,8 +31,8 @@ test("nach der Freigabe trägt jeder Hinweis den Text und die Links der JSON-Dat
   assert.deepEqual(d.notices.backtest.required, json.notices.backtest.required);
 });
 
-/* Owner-Entscheidung 07.11.2026 (PLAN §11): In der App kein Seitenfuß, alles im Menü „Rechtliches & Infos“. Der Fuß darf in
-   der App nur fehlen, weil jeder seiner Links und sein Satz im Menü stehen – das prüfen die folgenden Tests. */
+/* Owner-Entscheidung 10.11.2026: In Browser und App kein Rechtsfuß. Jeder seiner Links und
+   sein Satz bleiben im Menü „Rechtliches & Infos“ erreichbar (§ 5 DDG, zwei Schritte). */
 const NAV = readFileSync("assets/site-navigation.js", "utf8");
 function navMenu(approved) {
   const legal = NAV.match(/var LEGAL = (\{.*\});\n/)[1];
@@ -55,18 +55,52 @@ test("Pflicht-Links der App: jeder Link aus appLinks.always steht im Menü unter
   }
 });
 
-test("App ohne Seitenfuß nur, wenn das Menü jeden Fuß-Link und den Fuß-Satz trägt (§ 5 DDG, Plan §11)", () => {
+test("Browser und App ohne Seitenfuß; Menü trägt jeden Fuß-Link und den Fuß-Satz (§ 5 DDG)", () => {
   const d = legalData(json), foot = d.notices.footer;
   assert.equal(json.notices.footer.app, "menu");
+  assert.equal(json.notices.footer.web, "menu");
   assert.equal(d.footerInApp, false);
+  assert.equal(d.footerOnWeb, false);
   const menu = navMenu(true);
   for (const [label, href] of foot.links) assert.ok(menu.includes('href="' + href + '"'), "Fuß-Link " + label + " fehlt im Menü");
   assert.ok(menu.includes(foot.text), "Software-/Risikosatz fehlt im Menü");
-  const fn = NAV.slice(NAV.indexOf("function legalFooter"), NAV.indexOf("const dockBus"));
-  assert.match(fn, /LEGAL\.footerInApp === false && inApp\(\)/, "Fuß entfällt nur in der App");
-  assert.match(NAV, /function inApp\(\)[\s\S]{0,200}isNativePlatform[\s\S]{0,120}VUApp\\\/1/, "App-Erkennung: Capacitor oder User-Agent VUApp/1");
-  /* Im Browser bleibt der Fuß: das JSON beschreibt ihn weiter für research.visionuniverse.de. */
-  assert.match(json.notices.footer.where, /Browser/);
+  const fn = NAV.slice(NAV.indexOf("function legalFooter"), NAV.indexOf("  if (typeof document", NAV.indexOf("function legalFooter")));
+  for (const app of [false, true]) for (const approved of [false, true]) {
+    const writes = [];
+    const document = { body: { appendChild: n => writes.push(n) }, querySelector: () => null,
+      createElement: tag => { writes.push(tag); return { appendChild() {}, setAttribute() {} }; } };
+    new Function("LEGAL", "inApp", "document", fn + "; legalFooter();")({ ...d, approved }, () => app, document);
+    assert.deepEqual(writes, [], `Kein Fuß im ${app ? "App" : "Browser"}-Modus, Freigabe ${approved}`);
+  }
+  assert.match(NAV, /function inApp\(\)[\s\S]{0,200}isNativePlatform[\s\S]{0,120}VUApp\\\/1/, "App-Erkennung bleibt für externe Rechtslinks erhalten");
+});
+
+test("Seiten mit eigenem Kopf öffnen dasselbe zentrale Menü", () => {
+  for (const file of ["index.html", "scripts/home/index.template.html", "ask/index.html", "preise/index.html", "willkommen/start/index.html"]) {
+    const page = readFileSync(file, "utf8");
+    assert.match(page, /<vu-navigation menu-only no-dock/, file);
+    assert.match(page, /data-vu-menu-toggle/, file);
+    assert.match(page, /src="\/assets\/site-navigation.js"/, file);
+  }
+  assert.match(NAV, /nav\.openMenu\(opener\)/);
+});
+
+test("keine ausgelieferte HTML-Seite enthält den Fuß-Satz außerhalb des Menüs oder einen eigenen Rechtsfuß", () => {
+  const files = execFileSync("git", ["ls-files", "-z", "--", "*.html"], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 }).split("\0").filter(Boolean);
+  assert.ok(files.includes("index.html") && files.includes("infos/index.html") && files.includes("morning/index.html"));
+  for (const file of files) {
+    const html = readFileSync(file, "utf8");
+    // Das globale Menü wird aus site-navigation.js erzeugt; ein statisches Menü darf den Satz ebenfalls tragen.
+    const outsideMenu = html.replace(/<nav\b[^>]*id=["']site-panel["'][^>]*>[\s\S]*?<\/nav>/gi, "");
+    const visibleText = outsideMenu.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ");
+    assert.doesNotMatch(visibleText, /Vision Universe ist eine Software zur Analyse von Aktien/, file + ": Fuß-Satz außerhalb des Menüs");
+    assert.doesNotMatch(outsideMenu, /(?:legalNotice|legal)\(["']footer["']\)|data-legal(?:-source)?=["']footer["']/i, file + ": dynamische Fuß-Kopie");
+    // Landing hat eine eigene Domain und eigene Rechtsseiten; deren Layout gehört nicht zu research.
+    if (file.startsWith("landing/")) continue;
+    for (const footer of html.matchAll(/<footer\b[^>]*>[\s\S]*?<\/footer>/gi)) {
+      assert.ok(!(/Impressum/i.test(footer[0]) && /Datenschutz|Risikohinweise/i.test(footer[0])), file + ": eigene Rechtslink-Reihe im Fuß");
+    }
+  }
 });
 
 test("Datenquellen & Methodik: /infos/ nennt die Anbieter, die Produktseiten nicht mehr", () => {

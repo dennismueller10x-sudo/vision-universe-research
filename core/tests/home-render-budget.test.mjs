@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 /* Startseite (/) nach dem Redesign (Mockup E01): ruhig statt Werbeseite.
    Diese Tests halten fest, was die neue Seite leicht macht und was sie verspricht:
-   - keine Dauer-Animation, kein Hero-JavaScript, nur pwa.js und ein kleines Inline-Skript;
+   - keine Dauer-Animation, kein Hero-JavaScript, nur pwa.js, das zentrale Menü und ein kleines Inline-Skript;
    - alle Bausteine kommen aus der gemeinsamen Grundlage (assets/vu-ui.css, Markup über assets/vu-ui.js);
    - jede Zahl stammt aus dem Generator (index.html = Ausgabe von build-home.mjs);
    - der Pro-Preis steht nie im Code, Free kostet 0 €. */
@@ -23,7 +23,9 @@ test('keine Dauer-Animation und kein Hero-JavaScript', () => {
   assert.doesNotMatch(css, /infinite/);
   assert.doesNotMatch(css, /@keyframes/);
   const scripts = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].map(m => m[1]);
-  assert.deepEqual(scripts, ['/assets/pwa.js']);
+  assert.deepEqual(scripts, ['/assets/pwa.js', '/assets/site-navigation.js']);
+  assert.match(html, /<vu-navigation menu-only no-dock/);
+  assert.match(html, /data-vu-menu-toggle/);
   assert.doesNotMatch(html, /hero-intro\.js|home-motion\.js/);
 });
 
