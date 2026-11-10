@@ -366,9 +366,9 @@
       "cik": "0000918251",
       "name": "MOTORCAR PARTS OF AMERICA INC",
       "sic": "3714",
-      "rawFacts": 22899,
-      "mappedFacts": 7480,
-      "unmappedFacts": 15876,
+      "rawFacts": 23275,
+      "mappedFacts": 7593,
+      "unmappedFacts": 16261,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -378,28 +378,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2009-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0,
@@ -419,21 +419,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
@@ -447,14 +447,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 15.0
@@ -477,47 +477,48 @@
         }
       },
       "quality": {
-        "HIGH": 620,
+        "HIGH": 627,
         "MEDIUM": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 640,
-        "resolvedValues": 640
+        "datableValues": 647,
+        "resolvedValues": 647
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 16201,
+        "rules_version": "1.1.0",
+        "total": 16589,
         "by_severity": {
-          "INFO": 15876,
+          "INFO": 16261,
           "ERROR": 1,
-          "WARNING": 324
+          "WARNING": 327
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 196,
+          "CONCEPT_DISAGREEMENT": 199,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 128,
-          "UNKNOWN_CONCEPT": 15876
+          "UNKNOWN_CONCEPT": 16261
         }
       },
       "latestFiling": {
-        "accession": "0001140361-26-032013",
-        "filing_date": "2026-08-10",
+        "accession": "0001140361-26-042779",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 142
+        "periodic_filings": 143,
+        "acceptance_datetime": "2026-11-09T21:01:14.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "95ac0ada130eddfdd548c0061071481be7089ca434d760a7a23b8772f00fecf1",
+      "sourceDigest": "953a7d1c114fefc3e8bbffee37dc9863811e280bbfb0da3bd1f72d1bd596fb1f",
       "issuerId": "iss_cik_0000918251"
     },
     {

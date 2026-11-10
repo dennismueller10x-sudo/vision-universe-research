@@ -6,9 +6,9 @@
       "cik": "0000317788",
       "name": "Digital Turbine, Inc.",
       "sic": "6794",
-      "rawFacts": 23603,
-      "mappedFacts": 7147,
-      "unmappedFacts": 16593,
+      "rawFacts": 24002,
+      "mappedFacts": 7281,
+      "unmappedFacts": 16993,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 66,
+      "quarterlyPeriods": 67,
       "firstPeriodEnd": "2010-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2014-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 12.0
         },
         "eps_diluted": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2018-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 8.0
         },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2014-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 12.0,
@@ -52,56 +52,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 15.0
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 15.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 15.0
         },
         "short_term_debt": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 15.0
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 15.0,
@@ -117,45 +117,46 @@
         }
       },
       "quality": {
-        "HIGH": 535,
-        "MEDIUM": 37
+        "HIGH": 544,
+        "MEDIUM": 38
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 572,
-        "resolvedValues": 572
+        "datableValues": 582,
+        "resolvedValues": 582
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 17345,
+        "rules_version": "1.1.0",
+        "total": 17588,
         "by_severity": {
-          "INFO": 16593,
-          "WARNING": 752
+          "INFO": 16993,
+          "WARNING": 595
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 621,
-          "RESTATEMENT_CONFLICT": 131,
-          "UNKNOWN_CONCEPT": 16593
+          "CONCEPT_DISAGREEMENT": 458,
+          "RESTATEMENT_CONFLICT": 137,
+          "UNKNOWN_CONCEPT": 16993
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-053446",
-        "filing_date": "2026-08-05",
+        "accession": "0001628280-26-072266",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 92
+        "periodic_filings": 93,
+        "acceptance_datetime": "2026-11-09T21:35:48.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "5686c37f75041a03d1200835a3854ea7ca45a87f81f424f1c9ccc7bfeabba276",
+      "sourceDigest": "86d7e8cc596301834dec22bd28af8a11c144a079ce3fa220e8d828e31046d109",
       "issuerId": "iss_cik_0000317788"
     },
     {

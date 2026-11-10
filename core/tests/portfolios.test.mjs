@@ -159,8 +159,11 @@ test("PF-8 · Verteilung: Summe = Aktien + Bargeld, kleine Anteile als „+N“"
     assert.ok(Math.abs(x.parts.reduce((s, p) => s + p.weight, 0) - (x.invested + x.cash)) < 1e-9, d.id);
     assert.ok(x.invested + x.cash > 0.98 && x.invested + x.cash < 1.02, d.id + ": Gewichte und Bargeld ergeben das Depot");
   }
-  const w = all.find((d) => d.key === "WEINSTEIN_STAGE");
-  assert.match(P.render(all, "#/supertrader/" + w.id), /in 10 Aktien · [\d,]+ % Bargeld laut Regel/);
+  /* Die Bildunterschrift an echten Weinstein-Daten, eingefroren vom Stand vor dem Supertrader-Lauf 256bff4f41 (10.11.2026):
+     der taegliche Lauf aendert die Zahl der Titel (10 -> 8), PF-8 wurde rot, ohne dass sich portfolios.js geaendert hatte. */
+  const fest = P.collect({ ...src(), stPortfolio: JSON.parse(readFileSync(join(root, "core/tests/fixtures/pf8/portfolio.json"), "utf8")) });
+  const w = fest.find((d) => d.key === "WEINSTEIN_STAGE");
+  assert.match(P.render(fest, "#/supertrader/" + w.id), /in 10 Aktien · [\d,]+ % Bargeld laut Regel/);
   assert.equal(P.allocation([], null).count, 0);
 });
 

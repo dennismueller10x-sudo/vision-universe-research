@@ -896,9 +896,9 @@
       "cik": "0002023658",
       "name": "Bicara Therapeutics Inc.",
       "sic": "2834",
-      "rawFacts": 1731,
-      "mappedFacts": 634,
-      "unmappedFacts": 1129,
+      "rawFacts": 1977,
+      "mappedFacts": 728,
+      "unmappedFacts": 1302,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -908,28 +908,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 11,
-          "firstAvailablePeriod": "2023-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
-        },
-        "eps_diluted": {
           "annualPeriods": 3,
           "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
+        "eps_diluted": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 13,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -949,14 +949,14 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -977,14 +977,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -1007,44 +1007,45 @@
         }
       },
       "quality": {
-        "HIGH": 91
+        "HIGH": 97
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 91,
-        "resolvedValues": 91
+        "datableValues": 97,
+        "resolvedValues": 97
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1137,
+        "rules_version": "1.1.0",
+        "total": 1306,
         "by_severity": {
-          "INFO": 1129,
-          "WARNING": 8
+          "INFO": 1302,
+          "WARNING": 4
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 6,
+          "CONCEPT_DISAGREEMENT": 2,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 1129
+          "UNKNOWN_CONCEPT": 1302
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-055765",
-        "filing_date": "2026-08-11",
+        "accession": "0001628280-26-072169",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 8
+        "periodic_filings": 9,
+        "acceptance_datetime": "2026-11-09T21:10:26.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "1a551367311dc817fe0778927cca84a4e9ef377c0572a6e5d3dda2b561a8203a",
+      "sourceDigest": "571c467877a34d02dbfb48376fdac8c4069f282c8d1b5da105c894e14f2978aa",
       "issuerId": "iss_cik_0002023658"
     },
     {

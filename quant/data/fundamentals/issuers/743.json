@@ -744,9 +744,9 @@
       "cik": "0001673743",
       "name": "Hinge Health, Inc.",
       "sic": "7374",
-      "rawFacts": 1957,
-      "mappedFacts": 569,
-      "unmappedFacts": 1401,
+      "rawFacts": 2363,
+      "mappedFacts": 686,
+      "unmappedFacts": 1696,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -756,28 +756,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 12,
+      "quarterlyPeriods": 13,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 8,
-          "firstAvailablePeriod": "2023-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 2.0
-        },
-        "eps_diluted": {
           "annualPeriods": 3,
           "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
+        "eps_diluted": {
+          "annualPeriods": 3,
+          "quarterlyPeriods": 10,
+          "firstAvailablePeriod": "2023-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 2.0
+        },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -797,21 +797,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -825,14 +825,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -855,44 +855,45 @@
         }
       },
       "quality": {
-        "HIGH": 77,
+        "HIGH": 84,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 83,
-        "resolvedValues": 83
+        "datableValues": 90,
+        "resolvedValues": 90
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1443,
+        "rules_version": "1.1.0",
+        "total": 1746,
         "by_severity": {
-          "INFO": 1401,
-          "WARNING": 42
+          "INFO": 1696,
+          "WARNING": 50
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 42,
-          "UNKNOWN_CONCEPT": 1401
+          "CONCEPT_DISAGREEMENT": 50,
+          "UNKNOWN_CONCEPT": 1696
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-054327",
-        "filing_date": "2026-08-06",
+        "accession": "0001628280-26-072251",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 5
+        "periodic_filings": 6,
+        "acceptance_datetime": "2026-11-09T21:30:26.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "fcd3f0d1a210690dd0c5925f744cf6e2ab0dc8389143236c399bc77681bc67bc",
+      "sourceDigest": "e43b84d120d658c08d6ed5f982d704836ffe1d59a849345c5f87b783257d3b64",
       "issuerId": "iss_cik_0001673743"
     },
     {

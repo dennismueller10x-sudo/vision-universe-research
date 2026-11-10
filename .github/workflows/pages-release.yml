@@ -445,13 +445,9 @@ jobs:
       - name: Deploy reviewed release artifact
         id: deployment
         uses: actions/deploy-pages@v4
-        # Eindeutige Build-Version je Lauf und Versuch. deploy-pages nimmt sonst GITHUB_SHA als pages_build_version; ein zweiter
-        # Deploy desselben Commits mit neuem Inhalt wurde nicht uebernommen (10.11.2026: Pages 42753904874 deployte die
-        # CI-Generation 2ff33541 als adbfda1c, live blieb e1d74267; Refresh 42744743112 schaltete danach ab). Nachts kommt oft
-        # kein neuer Commit, aber Refresh und Universe-Release dispatchen trotzdem neue Daten. Der Quell-Commit bleibt in der
-        # Seite (Propagationsbeweis) unveraendert; nur die Deploy-Version ist je Lauf neu.
-        env:
-          GITHUB_SHA: ${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+        # Kein `env: GITHUB_SHA` hier: der Runner reicht es nicht an deploy-pages durch (Lauf 42763174678, 10.11.2026: env zeigte
+        # <sha>-<run>-<attempt>, pages_build_version blieb der Commit). Neue Build-Version = neuer Commit, siehe
+        # scripts/company_intelligence/pages-release-marker.mjs (Refresh und Universe-Release vor dem eigenen Dispatch).
   company-intelligence-live:
     if: github.event_name != 'pull_request'
     needs: [package, deploy]

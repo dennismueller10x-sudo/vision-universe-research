@@ -165,9 +165,9 @@
       "cik": "0001503274",
       "name": "Quanterix Corp",
       "sic": "3826",
-      "rawFacts": 12226,
-      "mappedFacts": 4404,
-      "unmappedFacts": 7844,
+      "rawFacts": 12595,
+      "mappedFacts": 4525,
+      "unmappedFacts": 8176,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -177,28 +177,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 40,
+      "quarterlyPeriods": 41,
       "firstPeriodEnd": "2015-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "eps_diluted": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "free_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0,
@@ -218,21 +218,21 @@
         },
         "net_income": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "operating_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -246,14 +246,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -276,45 +276,46 @@
         }
       },
       "quality": {
-        "HIGH": 326,
-        "MEDIUM": 28
+        "HIGH": 334,
+        "MEDIUM": 27
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 354,
-        "resolvedValues": 354
+        "datableValues": 361,
+        "resolvedValues": 361
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8141,
+        "rules_version": "1.1.0",
+        "total": 8477,
         "by_severity": {
-          "INFO": 7844,
-          "WARNING": 297
+          "INFO": 8176,
+          "WARNING": 301
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 260,
+          "CONCEPT_DISAGREEMENT": 264,
           "RESTATEMENT_CONFLICT": 37,
-          "UNKNOWN_CONCEPT": 7844
+          "UNKNOWN_CONCEPT": 8176
         }
       },
       "latestFiling": {
-        "accession": "0001503274-26-000036",
-        "filing_date": "2026-08-10",
+        "accession": "0001503274-26-000043",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 40
+        "periodic_filings": 41,
+        "acceptance_datetime": "2026-11-09T13:38:44.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "f53c8a4fbf4694d176ebbef019f32ed087bd3ac64d95870f76d5f1d33a8a21b1",
+      "sourceDigest": "7bd0098e69e6d42293977abd5bdaa88adf62d29e196b4022dd44d213e5553f07",
       "issuerId": "iss_cik_0001503274"
     },
     {
@@ -789,9 +790,9 @@
       "cik": "0002105274",
       "name": "InterPrivate Investment Partners V, Inc.",
       "sic": "6770",
-      "rawFacts": 56,
-      "mappedFacts": 32,
-      "unmappedFacts": 28,
+      "rawFacts": 118,
+      "mappedFacts": 66,
+      "unmappedFacts": 59,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -803,9 +804,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 3,
+      "quarterlyPeriods": 4,
       "firstPeriodEnd": "2025-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -844,14 +845,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -872,14 +873,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -902,41 +903,42 @@
         }
       },
       "quality": {
-        "HIGH": 9
+        "HIGH": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 9,
-        "resolvedValues": 9
+        "datableValues": 13,
+        "resolvedValues": 13
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 28,
+        "rules_version": "1.1.0",
+        "total": 59,
         "by_severity": {
-          "INFO": 28
+          "INFO": 59
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 28
+          "UNKNOWN_CONCEPT": 59
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-088436",
-        "filing_date": "2026-08-12",
+        "accession": "0001213900-26-117075",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 1
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-11-07T00:12:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e074228c86201acb1a979c5e96b0bc838df81392e7f5ad642ff49f104b4dcf60",
+      "sourceDigest": "029e00d7eedadafe49b228f127956ce782ffce5284278ae5809e49229b9e15ae",
       "issuerId": "iss_cik_0002105274"
     }
   ]

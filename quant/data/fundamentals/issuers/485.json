@@ -797,9 +797,9 @@
       "cik": "0002085485",
       "name": "APEX Tech Acquisition Inc.",
       "sic": "6770",
-      "rawFacts": 148,
-      "mappedFacts": 66,
-      "unmappedFacts": 82,
+      "rawFacts": 231,
+      "mappedFacts": 101,
+      "unmappedFacts": 140,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -810,11 +810,11 @@
         "TRAD-UN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 1,
-      "quarterlyPeriods": 4,
+      "annualPeriods": 2,
+      "quarterlyPeriods": 5,
       "firstPeriodEnd": "2025-08-31",
-      "lastPeriodEnd": "2026-05-31",
-      "historyYears": 0.0,
+      "lastPeriodEnd": "2026-08-31",
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -851,17 +851,17 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 3,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": "2026-08-31",
+          "lastAvailablePeriod": "2026-08-31",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 1,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 2,
+          "firstAvailablePeriod": "2026-08-31",
+          "lastAvailablePeriod": "2026-08-31",
           "historyYears": 0.0
         },
         "revenue": {
@@ -879,18 +879,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 0.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "annualPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 0.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 1.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -910,43 +910,45 @@
         }
       },
       "quality": {
-        "HIGH": 13
+        "HIGH": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 13,
-        "resolvedValues": 13
+        "datableValues": 21,
+        "resolvedValues": 21
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 84,
+        "rules_version": "1.1.0",
+        "total": 147,
         "by_severity": {
-          "INFO": 82,
-          "WARNING": 2
+          "INFO": 140,
+          "WARNING": 7
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 2,
-          "UNKNOWN_CONCEPT": 82
+          "CONCEPT_DISAGREEMENT": 5,
+          "UNEXPECTED_DURATION": 2,
+          "UNKNOWN_CONCEPT": 140
         }
       },
       "latestFiling": {
-        "accession": "0001477932-26-004322",
-        "filing_date": "2026-07-15",
-        "form": "10-Q",
-        "periodic_filings": 2
+        "accession": "0001493152-26-050743",
+        "filing_date": "2026-11-09",
+        "form": "10-K",
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-09T21:35:36.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bc272eefba2dbb04e00da8a71054959002c98fd956b6f8fbbd839ba791dd5fc5",
+      "sourceDigest": "cc16dea3547110cde47e7945c743bb618eed3ea796abfdc47661d363ac80188e",
       "issuerId": "iss_cik_0002085485"
     }
   ]

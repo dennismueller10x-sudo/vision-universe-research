@@ -655,12 +655,15 @@ jobs:
       - name: Oeffentliche Datenhygiene
         run: node scripts/market/assert-public-data-hygiene.mjs
 
-      # Datenzweig (core/registry/data-branch.json, technicalWorld, BRANCH_ONLY): nur noch data/live; die Kopie
-      # in main ist eingefroren (Rueckfall), Pages liefert den Datenzweig aus. Der Erzeuger baut vollstaendig aus der
-      # Materialisierung neu, braucht also keinen bisherigen Stand. technical/data wird im Zweig gespiegelt.
-      - name: In den Datenzweig (nur main)
-        if: github.ref == 'refs/heads/main'
-        run: scripts/ci/push-data-branch.sh data/live technical/data
+      - name: Commit (nur technical/data)
+        run: |
+          set -euo pipefail
+          git config user.name "vision-universe-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add technical/data
+          if git diff --cached --quiet; then echo "unveraendert"; exit 0; fi
+          git commit -m "Technical-Screener: $(node -e 'const m=require("./technical/data/meta.json");console.log(m.asOf+" · "+m.counts.rows+" Titel")') (automatischer Lauf)"
+          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
   # Ein gescheiterter Lauf bleibt nicht still (31.10.2026: der Erzeuger verweigerte wegen des Datenvertrags,
   # bemerkt erst ueber DQ-TW-1 zwei Tage spaeter). Gleicher Bote wie im Marktlauf: Issue mit Label

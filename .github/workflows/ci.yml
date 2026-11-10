@@ -629,6 +629,10 @@ jobs:
         run: |
           npm install --prefix /tmp/screener-qa-deps --no-audit --no-fund playwright@1.56.1
           node /tmp/screener-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/screener-release"
       - name: Browser QA (390, 430, 820, 1440 · light and dark)
@@ -810,6 +814,10 @@ jobs:
         env:
           NODE_PATH: /tmp/discover-qa-deps/node_modules
         run: node scripts/discover/deploy-switch-qa.mjs --engine chromium,webkit
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/discover-release"
       - name: Browser, accessibility, performance and screenshot gates
@@ -1031,6 +1039,7 @@ jobs:
           fi
           # Canonical R2-backed source remains intact. Measure the actual
           # product artifact, never the full storage source tree.
+          scripts/ci/seed-data-branch.sh alle  # wie pages-release.yml vor dem Bau (DB-16)
           node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/sec-delivery"
           total="$(du -sk "$RUNNER_TEMP/sec-delivery/quant/data/sec" | cut -f1)"
           if [ "$total" -gt 8192 ]; then
@@ -1465,6 +1474,10 @@ jobs:
         run: |
           npm install --prefix /tmp/supertrader-qa-deps --no-audit --no-fund playwright@1.56.1
           node /tmp/supertrader-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Exaktes Pages-Auslieferungsartefakt bauen
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/release"
       - name: Gate F — Browser QA 390 px und 1280 px gegen das Release
@@ -1553,6 +1566,10 @@ jobs:
         run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
       - name: Install Chromium and WebKit
         run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build the exact static release artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/quant2-site"
       - name: Compact delivery script without changing identifiers or removing code
@@ -1840,6 +1857,10 @@ jobs:
         run: |
           npm install --prefix /tmp/shell-qa-deps --no-audit --no-fund playwright@1.56.1
           node -e "const pw=require('/tmp/shell-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/shell-release"
       - name: Browser QA (Chromium 390, 430, 768, 1024, 1440 · WebKit iPhone 390, 430 and 1024)
@@ -1904,6 +1925,10 @@ jobs:
         run: |
           npm install --prefix /tmp/vu3-qa-deps --no-audit --no-fund playwright@1.56.1 axe-core@4.10.3
           node -e "const pw=require('/tmp/vu3-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/vu3-release"
       - name: VU3 regression (Chromium all sections · WebKit iPhone journeys, theme, Visual First)
@@ -1956,6 +1981,10 @@ jobs:
         run: |
           npm install --prefix /tmp/fu-qa-deps --no-audit --no-fund playwright@1.56.1
           node -e "const pw=require('/tmp/fu-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/fu-release"
       - name: Fundamental compare (WebKit iPhone 390, 430 · Chromium 390, 430)
