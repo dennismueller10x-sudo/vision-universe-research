@@ -166,9 +166,14 @@ Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsAr
 6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Kein KI-Hinweis am Text (Owner 10.11.2026):
    der Owner liest jeden Artikel und trägt die redaktionelle Verantwortung; KI-Bilder behalten „KI-Bild“.
 
-**Tageslauf ohne Owner (ab 10.11.2026):** Eine geplante Aufgabe startet an jedem Werktag um 12:41 Uhr (Berlin) eine
-neue Claude-Sitzung, die nach `.claude/skills/insights-tageslauf/SKILL.md` zwei Artikel schreibt (großer Wert und
-Nebenwert, Kandidaten aus `node products/insights/themen.mjs`), prüft und bei grüner CI selbst veröffentlicht. Solche
+**Tageslauf ohne Owner (ab 11.11.2026):** Zwei geplante Aufgaben wecken an jedem Werktag die dauerhafte Sitzung
+„Insights-Tageslauf (dauerhaft)“: um 4:47 Uhr (Frühlauf, Artikel gegen 6 Uhr: Tagesthema aus der US-Sitzung des Vortags)
+und um 10:47 Uhr (Mittagslauf, Artikel gegen 12 Uhr, vor der US-Eröffnung: Nebenwert oder Zukunftsthema). Die Sitzung
+schreibt nach `.claude/skills/insights-tageslauf/SKILL.md` je Lauf einen Artikel, prüft und veröffentlicht bei grüner CI
+selbst. Die Artikel erzählen die Geschichte hinter dem Kursausschlag, damit sie auch nach einer Gegenbewegung stimmen.
+**Öffentlich:** `/insights/` liegt als einziger Bereich ohne Passwortmaske (`scripts/access-gate/build.mjs`,
+`PUBLIC_PREFIXES`) und ist für Google freigegeben (`robots`-Meta, `NewsArticle`- und `BreadcrumbList`-JSON-LD,
+`/robots.txt` mit Sitemap). Solche
 Artikel tragen `"pruefung": "automatisch"` (intern: strengere Prüfregeln, z. B. drei Quellen) und erscheinen wie alle
 Artikel unter „Redaktion Vision Universe“, ohne KI-Hinweis (Owner-Entscheidung 10.11.2026: der Owner liest jeden
 Artikel nach, meldet Korrekturen und trägt die redaktionelle Verantwortung). Bilder nach dem Skill (Pressematerial,

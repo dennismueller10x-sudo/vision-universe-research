@@ -52,6 +52,8 @@ test('IN-4 · Artikelseite: Kanonische Adresse, NewsArticle-JSON-LD, KI-Bild-Hin
     assert.equal(ld['@type'], 'NewsArticle'); assert.equal(ld.datePublished.slice(0, 10), a.datum);
     assert.match(html, a.bild.typ === 'app' ? /<figcaption>Vision-Universe-App<\/figcaption>/ : a.bild.ki ? /<figcaption>KI-Bild<\/figcaption>/ : new RegExp(`<figcaption>Bild: ${a.bild.quelle}</figcaption>`));
     assert.match(html, /keine Anlageberatung/);
+    assert.match(html, /<meta name="robots" content="index,follow/, `${a.slug}: Artikel muss für Suchmaschinen freigegeben sein`);
+    assert.match(html, /"@type":"BreadcrumbList"/);
     assert.match(html, /Redaktion Vision Universe · Stand/);
     assert.doesNotMatch(html, /mit KI (erstellt|recherchiert)|KI-Unterstützung/i, `${a.slug}: kein KI-Hinweis am Text (Owner 10.11.2026)`);
     assert.equal((html.match(/<li>[^<]*: <a href="https:/g) || []).length, a.quellen.length);
