@@ -77,6 +77,7 @@ test('PQ-7: Doppelzeilen-Register faellt, wenn eine Serie fehlt', () => {
   assert.equal(Q.duplicateResolutionSeries(recs, f => f === 'a.json' || f === 'b.json').status, 'PASS');
   assert.deepEqual(Q.duplicateResolutionSeries(recs, f => f === 'a.json').samples, ['ref_B: Serie fehlt (b.json)']);
   assert.equal(Q.duplicateResolutionSeries(null, () => true).checked, 0);
+});
 
 test('PQ-8: Pflichttitel in beiden Regionen auffindbar; fehlender Titel, falsche Region, zu kleiner Index fallen', () => {
   const entries = [...Array(401).fill(0).map((_, i) => ({ region: 'US', n: 'U' + i })), ...Array(401).fill(0).map((_, i) => ({ region: 'EUROPE', n: 'E' + i }))];
