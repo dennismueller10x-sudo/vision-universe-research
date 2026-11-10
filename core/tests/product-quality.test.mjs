@@ -78,3 +78,15 @@ test('PQ-7: Doppelzeilen-Register faellt, wenn eine Serie fehlt', () => {
   assert.deepEqual(Q.duplicateResolutionSeries(recs, f => f === 'a.json').samples, ['ref_B: Serie fehlt (b.json)']);
   assert.equal(Q.duplicateResolutionSeries(null, () => true).checked, 0);
 });
+
+test('PQ-8: Pflichttitel in beiden Regionen auffindbar; fehlender Titel, falsche Region, zu kleiner Index fallen', () => {
+  const entries = [...Array(401).fill(0).map((_, i) => ({ region: 'US', n: 'U' + i })), ...Array(401).fill(0).map((_, i) => ({ region: 'EUROPE', n: 'E' + i }))];
+  const idx = { entries };
+  const cases = [['NVIDIA', 'US'], ['SAP', 'EUROPE']];
+  const search = (_, q) => q === 'NVIDIA' ? [{ region: 'US', n: 'NVIDIA' }] : q === 'SAP' ? [{ region: 'EUROPE', n: 'SAP' }] : [];
+  assert.equal(Q.requiredSearchTitles(idx, search, cases).status, 'PASS');
+  assert.match(Q.requiredSearchTitles(idx, () => [], cases).samples.join(), /NVIDIA nicht auffindbar/);
+  assert.match(Q.requiredSearchTitles(idx, (_, q) => [{ region: 'US', n: q }], cases).samples.join(), /SAP: erster Treffer/);
+  assert.match(Q.requiredSearchTitles({ entries: entries.slice(0, 10) }, search, cases).samples.join(), /beide Regionen/);
+  assert.equal(Q.requiredSearchTitles(null).checked, 0);
+});

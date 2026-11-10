@@ -11,6 +11,7 @@ const require = createRequire(import.meta.url);
 const Factors = require('../engines/market-factors.js');
 const FactorEvidence = require('../engines/factor-evidence.js');
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
+const FX = join(root, 'quant/tests/fixtures/tiingo2-policy'); /* eingefrorene Daten-Wurzel */
 
 const today = '2026-10-02';
 function ready(ticker = 'NEW') {
@@ -67,23 +68,23 @@ test('HOS 21 bars and DNA private arithmetic cannot certify Quant or Factor DNA 
   }
 });
 test('Quant product readiness requires exact existing canonical artifact bytes, record binding and affirmative product gate', () => {
-  const artifactPath = 'quant/data/product/factor-evidence-v1/AA.json.gz';
-  const bytes = readFileSync(join(root, artifactPath)), artifact = JSON.parse(gunzipSync(bytes));
+  const artifactPath = '/quant/data/product/factor-evidence-v1/AA.json.gz'.slice(1);
+  const bytes = readFileSync(join(FX, artifactPath)), artifact = JSON.parse(gunzipSync(bytes)); /* eingefrorene Kopie, README daneben */
   const record = artifact.securities.AA, row = ready('AA');
   row.evidence.sec.cik = record.cik; row.evidence.price.latestDate = record.asOf;
   row.evidence.factors.canonicalEvidence = { state: 'MATERIALIZED', verified: true, artifactPath, artifactSha256: createHash('sha256').update(bytes).digest('hex'), schemaVersion: artifact.schemaVersion, methodologyVersion: artifact.methodologyVersion, ticker: record.ticker, securityId: record.securityId, asOf: record.asOf };
-  assert.equal(classifyCandidate(row, { today: record.asOf }).productReadiness.quant, false, 'artifact alone cannot assert product gate');
+  assert.equal(classifyCandidate(row, { today: record.asOf, root: FX }).productReadiness.quant, false, 'artifact alone cannot assert product gate');
   row.evidence.products.quantReady = true;
-  const valid = classifyCandidate(row, { today: record.asOf });
+  const valid = classifyCandidate(row, { today: record.asOf, root: FX });
   assert.equal(valid.productReadiness.quant, true);
   assert.deepEqual(valid.dataReadiness.availableCanonicalFactors, FactorEvidence.FACTOR_ORDER.filter((id) => record.factors[id].state === 'AVAILABLE'));
   assert.equal(valid.productReadiness.fullQuantScoreReady, false, 'existing full-7F methodology remains inactive');
   for (const patch of [{ artifactSha256: '0'.repeat(64) }, { schemaVersion: 'invented' }, { methodologyVersion: 'invented' }, { securityId: 'ref_SOMETHING_ELSE' }, { ticker: 'OTHER' }, { asOf: '1999-01-01' }, { verified: false }, { artifactPath: '../../outside.json.gz' }]) {
     const wrong = structuredClone(row); Object.assign(wrong.evidence.factors.canonicalEvidence, patch);
-    assert.equal(classifyCandidate(wrong, { today: record.asOf }).productReadiness.quant, false, JSON.stringify(patch));
+    assert.equal(classifyCandidate(wrong, { today: record.asOf, root: FX }).productReadiness.quant, false, JSON.stringify(patch));
   }
   const wrongCik = structuredClone(row); wrongCik.evidence.sec.cik = '0000000001';
-  assert.equal(classifyCandidate(wrongCik, { today: record.asOf }).productReadiness.quant, false, 'same symbol cannot borrow another SEC issuer');
+  assert.equal(classifyCandidate(wrongCik, { today: record.asOf, root: FX }).productReadiness.quant, false, 'same symbol cannot borrow another SEC issuer');
 });
 test('intentional consumer policy is retained; bank/REIT names and SIC are not heuristics', () => {
   for (const [name, instrument_type, sic] of [['River Bank Software', 'EQUITY_COMMON', '7372'], ['A REIT', 'REIT', '6798'], ['A Bank', 'EQUITY_COMMON', '6022']]) assert.equal(evaluateConsumerPolicy({ name, instrument_type, sic }).included, true);
