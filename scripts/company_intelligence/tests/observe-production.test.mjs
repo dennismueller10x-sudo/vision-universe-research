@@ -118,7 +118,7 @@ test('Workflow: nur Exit 3 von observe gilt als Buchfuehrung; alles andere schei
  assert.match(run,/if \[ "\$rc" -eq 3 \]; then\n\s*echo "observe_bookkeeping=true" >> "\$GITHUB_OUTPUT"/);
  assert.match(run,/exit "\$rc"\s*$/,'jeder andere Exit-Code bleibt Exit-Code des Schritts');
  assert.equal((run.match(/-eq 3/g)||[]).length,1,'kein weiterer Code wird abgefangen');
- assert.equal(rollback.if,"failure() && steps.deploy_live.outcome == 'failure' && inputs.verification != true",'Fail-closed-Bedingung unveraendert');
+ assert.equal(rollback.if,"failure() && steps.deploy_live.outcome == 'failure' && steps.deploy_live.outputs.production_unchanged != 'true' && inputs.verification != true",'Fail-closed-Bedingung unveraendert');
 });
 
 test('Workflow: Buchfuehrungsfehler macht den Lauf rot, aber ohne Rollback, disable oder OFF-Dispatch',()=>{
