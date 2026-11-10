@@ -640,9 +640,9 @@
       "cik": "0001552198",
       "name": "WhiteHorse Finance, Inc.",
       "sic": null,
-      "rawFacts": 4777,
-      "mappedFacts": 1137,
-      "unmappedFacts": 3704,
+      "rawFacts": 5102,
+      "mappedFacts": 1206,
+      "unmappedFacts": 3996,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -653,9 +653,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 24,
+      "quarterlyPeriods": 25,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
@@ -667,7 +667,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -687,21 +687,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -722,14 +722,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -752,44 +752,45 @@
         }
       },
       "quality": {
-        "HIGH": 152
+        "HIGH": 158
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 152,
-        "resolvedValues": 152
+        "datableValues": 158,
+        "resolvedValues": 158
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3719,
+        "rules_version": "1.1.0",
+        "total": 4012,
         "by_severity": {
-          "INFO": 3704,
-          "WARNING": 15
+          "INFO": 3996,
+          "WARNING": 16
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 14,
+          "CONCEPT_DISAGREEMENT": 15,
           "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 3704
+          "UNKNOWN_CONCEPT": 3996
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-093465",
-        "filing_date": "2026-08-10",
+        "accession": "0001104659-26-124203",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 57
+        "periodic_filings": 58,
+        "acceptance_datetime": "2026-11-09T13:20:23.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "57e226dc7b9722ee95a6eb30f93c7b8d53c7b3b13de2b0db140ea0638f382f82",
+      "sourceDigest": "60ccc2ef474aa5075b9971e05169caf48822a0a580d21cb2fce68a2742c92d78",
       "issuerId": "iss_cik_0001552198"
     },
     {

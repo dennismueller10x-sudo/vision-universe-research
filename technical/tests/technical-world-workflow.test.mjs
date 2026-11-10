@@ -39,12 +39,11 @@ test("technical-world: workflow_run nur nach Erfolg auf main und nie nach einem 
   assert.match(cond, /github\.event\.workflow_run\.event != 'push'/);
 });
 
-test("technical-world: ADR-005 - Spitze auschecken, Concurrency je Branch ohne Abbruch, nur technical/data, nur in den Datenzweig", () => {
+test("technical-world: ADR-005 - Spitze auschecken, Concurrency je Branch ohne Abbruch, nur technical/data, push-with-retry", () => {
   assert.match(yml, /ref: \$\{\{ github\.ref \}\}/);
   assert.match(yml, /group: technical-world-\$\{\{ github\.ref_name \}\}/);
   assert.match(yml, /cancel-in-progress: false/);
-  /* Datenzweig (technicalWorld, BRANCH_ONLY): nur technical/data, nur in data/live, nur von main. */
-  assert.match(yml, /if: github\.ref == 'refs\/heads\/main'\n\s+run: scripts\/ci\/push-data-branch\.sh data\/live technical\/data\n/);
-  assert.doesNotMatch(yml, /git add technical\/data/, "kein Commit mehr nach main");
+  assert.match(yml, /git add technical\/data\n/);
+  assert.match(yml, /scripts\/ci\/push-with-retry\.sh/);
   assert.doesNotMatch(yml, /\$\{\{\s*inputs\./, "Eingaben nur ueber env:");
 });

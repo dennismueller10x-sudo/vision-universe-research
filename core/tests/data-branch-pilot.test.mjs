@@ -229,9 +229,7 @@ test("DB-14 · Inventar: jede Datenart ist im Datenzweig oder im Plan mit Status
    BRANCH_ONLY-Datenart nennen, und Workflows, die ein solches Skript aufrufen und committen/pushen.
    Pruef-Workflows ohne Schreiben pruefen den Code gegen die Kopie in main und sind ausgenommen. */
 const DB15_AUSNAHMEN = {
-  "scripts/market/assert-public-data-hygiene.mjs": "prueft Quellen-Freigaben im oeffentlichen Baum, nicht die Frische",
-  "scripts/supertrader/browser-qa.mjs": "prueft im Monitor die ausgelieferte Seite (--base/--site mit heruntergeladenem Stand), nicht den Arbeitsbaum",
-  "scripts/technical/world/live-qa.mjs": "prueft die ausgelieferte Seite per HTTP (fetch im Browser), nicht den Arbeitsbaum"
+  "scripts/market/assert-public-data-hygiene.mjs": "prueft Quellen-Freigaben im oeffentlichen Baum, nicht die Frische"
 };
 test("DB-15 · Schreibende Workflows, die BRANCH_ONLY-Daten lesen, saeen den Datenzweig", async () => {
   const { readdirSync, statSync } = await import("node:fs");

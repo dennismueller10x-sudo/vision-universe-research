@@ -6,9 +6,9 @@
       "cik": "0001878897",
       "name": "Douglas Elliman Inc.",
       "sic": "6531",
-      "rawFacts": 7370,
-      "mappedFacts": 2092,
-      "unmappedFacts": 5209,
+      "rawFacts": 7756,
+      "mappedFacts": 2192,
+      "unmappedFacts": 5536,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 25,
+      "quarterlyPeriods": 26,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "eps_diluted": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -117,45 +117,46 @@
         }
       },
       "quality": {
-        "HIGH": 215,
-        "MEDIUM": 19
+        "HIGH": 221,
+        "MEDIUM": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 234,
-        "resolvedValues": 234
+        "datableValues": 241,
+        "resolvedValues": 241
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 5460,
+        "rules_version": "1.1.0",
+        "total": 5783,
         "by_severity": {
-          "INFO": 5209,
-          "WARNING": 251
+          "INFO": 5536,
+          "WARNING": 247
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 211,
+          "CONCEPT_DISAGREEMENT": 207,
           "RESTATEMENT_CONFLICT": 40,
-          "UNKNOWN_CONCEPT": 5209
+          "UNKNOWN_CONCEPT": 5536
         }
       },
       "latestFiling": {
-        "accession": "0001878897-26-000044",
-        "filing_date": "2026-08-10",
+        "accession": "0001878897-26-000052",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 24
+        "periodic_filings": 25,
+        "acceptance_datetime": "2026-11-09T22:05:03.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "78fe7fbd7c7c2a6850a805a17d04b2ef661c1c7db2fc6304a33836817c7d9140",
+      "sourceDigest": "b47071a3edf863241b954f7b2f292e4b6cd4042e097954cf9bb20a8e5b5d80b3",
       "issuerId": "iss_cik_0001878897"
     },
     {

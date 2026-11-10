@@ -53,7 +53,10 @@ test('Musterdepots: Erstlauf baut fünf Depots nach Regel, Aufnahmekurs = veröf
   const dir = mkdtempSync(join(tmpdir(), 'depots-'));
   try {
     const out = join(dir, 'model-depots.json');
-    const today = '2026-11-06';
+    /* Lauftag statt festem Datum: published-close#lastPoint liefert nur Reihen mit asOf <= today (ADR-002).
+       Mit dem festen 2026-11-06 fielen nach dem Marktlauf vom 09.11. alle Aufnahmekurse weg und Depot 0
+       blieb leer - am Modell lag es nicht. Der Lauftag ist der Tag, an dem der Erzeuger in Produktion rechnet. */
+    const today = new Date().toISOString().slice(0, 10);
     const doc = D.build({ out, today });
     contract(doc);
     assert.ok(doc.depots.every(d => d.decision.state === 'CONSTRUCTED' && d.protocol.every(e => e.action === 'REIN')));

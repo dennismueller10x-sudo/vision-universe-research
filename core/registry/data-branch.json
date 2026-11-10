@@ -76,15 +76,6 @@
       "note": "Vertrag: ecb-coverage.json; die Reihen unter ecb/ folgen ihm. Die uebrigen Dateien unter quant/data/market/fx/ (Waehrungsschulden-Register, Paarbedarf, Abdeckung) gehoeren currency-fx-verify.yml und bleiben in main. Verbraucher (Release-Bau, Multi-Asset, Watchlist) saeen den Zweig."
     },
     {
-      "id": "technicalWorld",
-      "phase": "BRANCH_ONLY",
-      "pendingFirstRun": true,
-      "workflow": "pipeline-daily.yml",
-      "paths": ["technical/data/meta.json"],
-      "prefixes": ["technical/data/"],
-      "note": "Vertrag: meta.json; Screener, Spark, Index, Evidenz und die Kurzstaende je Aktie (stock/) folgen ihm. Der Erzeuger (pipeline-daily Teil technical-world) baut vollstaendig aus der Materialisierung neu und braucht keinen bisherigen Stand."
-    },
-    {
       "id": "discoverImBlickLive",
       "phase": "BRANCH_ONLY",
       "pendingFirstRun": true,
@@ -131,6 +122,7 @@
       "companyIntelligence": {"status": "EXEMPT", "grund": "Company Intelligence liegt in R2 und wird vom Release aus R2 projiziert; Strang O fasst CI nicht an (Auftrag 08.11.2026)"},
       "globalDiscoverUniverse": {"status": "EXEMPT", "grund": "Nebenprodukt des Discover-Baus; folgt der Datenart discover"},
       "supertrader-paper-2027-log": {"status": "EXEMPT", "grund": "Papier-Handelsprotokoll (append-only); die Git-Historie in main ist sein Pruefpfad"},
+      "technicalWorld": {"status": "EXEMPT", "grund": "Konsistenzeinheit mit Quant (Steuerung 10.11.2026, Rueckroll von #1703): der Screener-Datensatz technical/data wird in quant/tests (technical-ap8 L1-L3, auch in company-intelligence.yml) gegen die Materialisierung quant/data/product/technical-signals-v1 auf main geprueft; aus dem Zweig allein frierte die main-Kopie ein und L1-L3 wurden rot"},
       "watchlistEvents": {"status": "EXEMPT", "grund": "entsteht im Release-Bau aus der zuletzt ausgelieferten Seite, liegt nie in main"}
     }
   }
