@@ -667,7 +667,7 @@
       if (!x.found) { box.appendChild(h('p', { class: 'ak-sent', text: 'Für diesen Titel liegt kein Chartbild vor.' })); return; }
       if (x.withheld) {
         box.appendChild(h('p', { class: 'ak-sent', text: x.notice || 'Analyse zurückgehalten.' }));
-        box.appendChild(openBtn(x.symbol));
+        box.appendChild(openBtn(x));
         return;
       }
       box.appendChild(h('div', { class: 'ak-cb-head', text: x.structure && x.structure.label || x.outlook && x.outlook.label || 'Chartbild' }));
@@ -681,14 +681,14 @@
       if (lad) box.appendChild(markup(ladderSvg(lad, usd)));
       var p = x.primaryScenario || {};
       if (p.withheld && p.withheld.length) box.appendChild(h('p', { class: 'ak-fine', text: 'Nicht gezeigt, weil rechnerisch unplausibel: ' + p.withheld.map(function (k) { return { entryZone: 'Zone', invalidation: 'Ungültig-Marke', confirmation: 'Bestätigungs-Marke', target1: 'obere Zone' }[k] || k; }).join(', ') + '.' }));
-      box.appendChild(openBtn(x.symbol));
+      box.appendChild(openBtn(x));
       var line = Ask.setupLine(U.legalNotice && U.legalNotice('setup'), { method: 'Chartbild', version: x.status && x.status.schemaVersion, asOf: Ask.dateLong(x.asOf) });
       if (line) box.appendChild(h('p', { class: 'ak-cb-legal' }, [line.text + ' ', line.link ? h('a', { href: line.link.href, text: line.link.label }) : null]));
     });
     return wrap;
   }
-  function openBtn(sym) {
-    return h('a', { class: 'vu-btn vu-btn--ink ak-btn2 ak-cb-open', href: '/elliott/#/' + encodeURIComponent(sym), text: 'Im Chartbild öffnen' });
+  function openBtn(x) {
+    return h('a', { class: 'vu-btn vu-btn--ink ak-btn2 ak-cb-open', href: '/elliott/#/' + encodeURIComponent(x.symbol), text: 'Im Chartbild öffnen' });
   }
   /* Senkrechte Preisleiter: Abstände proportional zum Preis, Hauptszenario im Akzentgelb, Schluss als Punkt.
      Beschriftungen rechts, bei engen Marken nach außen geschoben (die Marke selbst bleibt am Preis). */
