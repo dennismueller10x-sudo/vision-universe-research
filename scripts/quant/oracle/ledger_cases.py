@@ -81,11 +81,18 @@ DAILY = [
           declared=[{"code": "EXIT_PRICE", "class": VARIANTE, "what": "Engine verkauft zu min(Stop, Eroeffnung)=93; der Stop galt erst nach dem Kauf, belegbar ist der Stop (95). Konservativ."}]),
     daily("S12", "BUY_STOP: Hoch genau auf dem Trigger (nicht darueber) -> kein Einstieg", "BUY_STOP",
           [SETUP, (98, 100, 97, 99.5)]),
-    daily("S13", "Delisting/Serienende: Position bleibt offen, Engine bucht sie nicht", "NEXT_OPEN",
+    daily("S13", "Delisting/Serienende (Legacy-Standard): Position bleibt offen, collectTrades bucht sie nicht", "NEXT_OPEN",
           [SETUP, (100, 102, 99.5, 101), (101, 103, 100, 102)],
           declared=[{"code": "OPEN_NOT_BOOKED", "class": FEHLER, "what": "Position bei Delisting/Serienende bleibt offen und wird von collectTrades verworfen: Verluste fehlen (Survivorship)"}]),
     daily("S14", "Portfolio-Cash mit Gebuehr 1 bp je Seite: Einstieg 100, Ausstieg zur naechsten Eroeffnung ueber exit_close_above", "NEXT_OPEN",
           [SETUP, (100, 102, 99.5, 101), (100, 125, 99.5, 124), (121, 125, 120, 124), (120, 121, 119, 120)], exit_close_above=120, portfolio=True,
           declared=[{"code": "PORTFOLIO_FEE", "class": FEHLER, "what": "backtest.mjs#runPortfolio bucht keine Gebuehr (nur Slippage im Preis); closeTrade zieht 2 bps additiv vom Einzelertrag ab"}]),
+]
+# Strang U, Folgeauftrag: dieselben Faelle mit den Opt-ins des Legacy-Pfads (cfg.commissionBps, collectTrades openAtEnd=MARK).
+_s13 = next(c for c in DAILY if c["id"] == "S13")
+_s14 = next(c for c in DAILY if c["id"] == "S14")
+DAILY += [
+    dict(_s13, id="S15", text="S13 mit Opt-in openAtEnd=MARK: offene Position wird zum letzten Schluss bewertet und gebucht", opt_in=True, declared=[]),
+    dict(_s14, id="S16", text="S14 mit Opt-in commissionBps=1: Gebuehr je Seite im Portfolio-Cash, gleich dem produktiven runPortfolioTR", opt_in=True, declared=[]),
 ]
 CASES = WEEKLY + DAILY
