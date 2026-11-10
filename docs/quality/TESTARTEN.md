@@ -22,7 +22,7 @@ Die Liste stammt aus zwei Quellen: Text-Scan (`scripts/quality/test-inputs.mjs`,
 | Kategorie | Anzahl |
 |---|---|
 | datenzustand-offen (Ziel: Datenqualitaet) | 34 |
-| fixture-offen (Ziel: eingefrorene Kopie) | 94 |
+| fixture-offen (Ziel: eingefrorene Kopie) | 91 |
 | schema-vertrag (darf lesen) | 183 |
 
 Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/chart-standard.test.mjs` (Fixtures mit Quell-Commit), neu: `quant/tests/evidence-states.test.mjs`.
@@ -91,12 +91,9 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 | `products/fundamental/tests/history-extension.test.mjs` | 129 | fixture-offen | HOCH | – |
 | `products/fundamental/tests/model.test.mjs` | 8 | fixture-offen | HOCH | discover/data |
 | `products/fundamental/tests/spinoff-share-basis.test.mjs` | 93 | fixture-offen | MITTEL | discover/data, quant/data |
-| `products/social/tests/final-public-text.test.mjs` | 138 | fixture-offen | MITTEL | social/data |
-| `products/social/tests/ladder-in-cycle.test.mjs` | 428 | fixture-offen | HOCH | discover/data |
+| `products/social/tests/final-public-text.test.mjs` | – | fixture-offen (dyn.) | unbekannt | social/data |
 | `products/social/tests/manual-topic-in-cycle.test.mjs` | 228 | fixture-offen | MITTEL | quant/data, social/data |
 | `products/social/tests/orchestrator.test.mjs` | 349 | fixture-offen | MITTEL | – |
-| `products/social/tests/own-performance.test.mjs` | 175 | fixture-offen | HOCH | social/data |
-| `products/social/tests/visual-composition.test.mjs` | 20 | fixture-offen | MITTEL | quant/data |
 | `quant/tests/analysis-lag.test.mjs` | 49 | fixture-offen | HOCH | quant/data |
 | `quant/tests/backtest-certification.test.mjs` | 33 | fixture-offen | HOCH | quant/data |
 | `quant/tests/backtest-refresh.test.mjs` | 13 | fixture-offen | HOCH | quant/data |

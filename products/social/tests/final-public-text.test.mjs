@@ -135,7 +135,7 @@ test("FT5 · Ohne Tagangabe bleibt die Liste leer und wird nicht erfunden", () =
    Owner Tags gezeigt, die der Beitrag nicht traegt.
    ========================================================================= */
 test("FT6 · Was die Projektion an Tags zeigt, steht auch im Sendetext", () => {
-  const ordner = join(ROOT, "social/data/publish-candidates");
+  const ordner = join(ROOT, "products/social/tests/fixtures/final-public-text");
   if (!existsSync(ordner)) return;
 
   let mitTags = 0, ohneTags = 0;
