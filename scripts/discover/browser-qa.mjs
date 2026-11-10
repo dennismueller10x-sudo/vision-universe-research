@@ -9,6 +9,9 @@ import assert from 'node:assert/strict';
 import {SPECS,waitRendered} from './direct-link-lib.mjs';
 import {activeDefects, createRecorder} from './known-defects.mjs';
 const require=createRequire(import.meta.url);
+const Reihen=require('../../discover/engines/reihen.js');
+/* Ueberschriften der Startseiten-Plaetze (discover/ui/reihen.js) fuer den n-home-Reihenfolgevergleich. */
+const NHOME_TITEL={'im-blick':'Top 10 heute','new-52-week-highs':'Neue Jahreshochs',themes:'Themenwelten',comeback:'Comeback?','langfristige-compounder':'Langfristige Compounder',ueberraschungen:'Kennt kaum jemand','bekannte-namen':'Bekannte Namen in Bewegung',strategies:'Strategien','breakout-watch':'Gerade in Bewegung'};
 let playwright;
 try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
 const arg=(key,otherwise)=>{const i=process.argv.indexOf('--'+key);return i<0?otherwise:process.argv[i+1];};
@@ -63,8 +66,16 @@ async function premiumMobileAudit(page,key){
  const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > section')).slice(0,3).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dr-sec--markt')?'markt':n.classList.contains('dr-sec--top10')?'top10':n.className));
  assert.deepEqual(top,['billboard','markt','top10'],'n-home: oben fest Billboard, Markt, Top 10: '+top.join(' | '));
  const order=await page.locator('.v2-journey > section .dr-head h2').allTextContents();
- const expected=['Top 10 heute','Neue Jahreshochs','Themenwelten','Comeback?','Langfristige Compounder','Kennt kaum jemand','Bekannte Namen in Bewegung','Strategien','Gerade in Bewegung'];
- assert.deepEqual(order.filter(t=>expected.includes(t)),expected.filter(t=>order.includes(t)),'n-home section order: '+order.join(' | '));
+ /* Grundreihenfolge (keine Reihe mit neuen Treffern) bleibt Vertrag; die erwartete Reihenfolge der ausgelieferten Seite
+    rechnet dieselbe Regel wie die Seite (Reihen.homePlan, Regel 3 „Reihen mit neuen Treffern ruecken nach oben“) aus der
+    ausgelieferten meta.json. Vorher stand hier nur die feste Liste; seit Karten firstSeen tragen (Marktlauf 666625e416),
+    rueckten Reihen regelgerecht nach oben und die Pruefung wurde rot, ohne dass sich die Seite geaendert hatte. */
+ const basis=['Top 10 heute','Neue Jahreshochs','Themenwelten','Comeback?','Langfristige Compounder','Kennt kaum jemand','Bekannte Namen in Bewegung','Strategien','Gerade in Bewegung'];
+ const homeMeta=await page.evaluate(async()=>(await fetch('/discover/data/meta.json',{cache:'no-store'})).json());
+ const planTitel=fresh=>Reihen.homePlan(Reihen.available(homeMeta),{fresh}).map(s=>NHOME_TITEL[s.row||s.kind]).filter(t=>basis.includes(t));
+ assert.deepEqual(planTitel([]),basis,'n-home Grundreihenfolge (Reihen.homePlan ohne neue Treffer)');
+ const expected=planTitel(Reihen.freshRows(homeMeta));
+ assert.deepEqual(order.filter(t=>expected.includes(t)),expected.filter(t=>order.includes(t)),'n-home section order: '+order.join(' | ')+' (erwartet: '+expected.join(' | ')+')');
  for(const must of ['Top 10 heute','Themenwelten','Strategien'])assert(order.includes(must),'n-home without '+must+': '+order.join(' | '));
  assert(order.length<=14,'At most 14 rows on the home page: '+order.length);
  const palette=await page.evaluate(()=>{const rgb=v=>(v.match(/[\d.]+/g)||[]).slice(0,3).map(Number),hue=c=>{const [r,g,b]=c,mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn;};
