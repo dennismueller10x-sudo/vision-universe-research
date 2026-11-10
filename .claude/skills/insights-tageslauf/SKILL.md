@@ -46,19 +46,23 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    1. Offizielles Pressematerial: Newsroom, Media-/Press-Kit, Investor-Relations (z. B. Produktbilder auf `newsroom.amd.com`).
    2. Offizielle Bilder der Firmenwebsite: `og:image` der Startseite, Produkt- und Kampagnenbilder unter der eigenen
       Domain (z. B. `ui.com/microsite/static/…`).
-   3. Erst wenn beides fehlt: ein KI-Bild mit `"ki": true` (Bildzeile „KI-Bild“), symbolisch zum Thema (Rechenzentrum,
-      Fabrik, Produktkategorie), ohne Logos, ohne erfundene Produkte der Firma, ohne erkennbare Personen. Higgsfield ist
-      vom Owner dauerhaft freigegeben (10.11.2026). Zuerst den Vorrat `insights/img/vorrat/` nehmen (Liste in
-      `vorrat.json`, helle Branchenmotive). Fehlt ein passendes Motiv: Bildauftrag nach `brand-media/publishing/image-jobs/`
-      (Stil-Satz aus HANDBUCH Abschnitt 5, `qwen-image-3`, 2k, höchstens 3 Bilder, Limit 0,40 USD), als eigener kleiner PR
-      mergen, Workflow „Brand Media · Higgsfield Bilder“ mit `generate`, Budget 0,40 und `APPROVE-HIGGSFIELD-IMAGE-JOB`
-      auf `main` starten, Artefakt laden. Dauert das länger als der Lauf erlaubt, heute Stufe 1/2 oder den Vorrat nehmen
-      und das neue Motiv für den nächsten Tag in den Vorrat legen.
+   3. Erst wenn beides fehlt: ein KI-Bild **eigens für diesen Artikel** (Higgsfield, vom Owner dauerhaft freigegeben,
+      10.11.2026), mit `"ki": true` (Bildzeile „KI-Bild“). **Kein Vorrat, keine Standard- oder Branchenbilder**
+      (Owner 10.11.2026: ein allgemeines Gaming-Bild zu GTA VI passte nicht). Das Motiv zeigt den konkreten Gegenstand
+      des Artikels: das Produkt, den Standort, die Anlage, das Ereignis, so nah an der Wirklichkeit wie möglich, ohne
+      Logos, ohne erfundene Produkte der Firma, ohne erkennbare Personen. Vor dem Bestellen in einem Satz prüfen: „Würde
+      ein Leser das Bild ohne Überschrift diesem Artikel zuordnen?“ Wenn nein, anderes Motiv.
+      Weg: Bildauftrag `brand-media/publishing/image-jobs/insights-<datum>-<slug>.json` (Stil-Satz aus HANDBUCH
+      Abschnitt 5, `qwen-image-3`, 2k, 16:9, höchstens 2 Bilder, Limit 0,30 USD) als eigener kleiner PR mergen, dann den
+      Workflow „Brand Media · Higgsfield Bilder“ auf `main` mit `generate`, Budget 0,30 und
+      `APPROVE-HIGGSFIELD-IMAGE-JOB` starten und das Artefakt laden. Jedes erzeugte Bild ansehen; passt es nicht, nicht
+      verwenden. Reicht die Zeit des Laufs nicht, gilt Stufe 4.
+   4. Notlösung: `"bild": {"typ": "app", …}` (Aufmacher aus den App-Screens), im Bericht sagen.
    Keine Agenturfotos, keine Bilder von Medien, keine Personenfotos außer offiziellen Vorstandsporträts. Bildmarken
    (Logos) nur auf offiziellem Material. Keine Partner-Logos-Kacheln („AMD × Oracle“) als Aufmacher: lieber Produkt,
    Standort oder Rechenzentrum. Zuschnitt 16:9 auf 1600 × 900 nach `insights/img/<slug>-<motiv>.jpg`, freigestellte
-   Produktbilder auf Weiß, mit `"quelle"` (Firmenname). Jedes Bild vor dem Einbau ansehen. `"bild": {"typ": "app", …}`
-   (Aufmacher aus App-Screens) nur noch als Notlösung, wenn auch kein KI-Bild möglich ist; dann im Bericht sagen.
+   Produktbilder auf Weiß, mit `"quelle"` (Firmenname). Jedes Bild vor dem Einbau ansehen: Es muss zum Artikel passen,
+   nicht nur zur Branche.
 7. **Bauen und prüfen.** `node products/insights/build.mjs`, dann
    `node --test "products/insights/tests/*.test.mjs" "core/tests/*.test.mjs"`. Jede Quellenadresse einmal abrufen; tote
    Adressen ersetzen. Die Artikelseite im Browser ansehen (Desktop und 390 px): keine leeren Bilder, kein Überlauf.
