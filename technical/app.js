@@ -113,8 +113,8 @@
   }
   function sparkSpan(row) {
     var span = el("span", { class: "tc-hit-spark" });
-    if (sparkMap) span.innerHTML = Chart.sparkline(sparkMap[row.s] || []);
-    else loadSpark().then(function (m) { if (m) span.innerHTML = Chart.sparkline(m[row.s] || []); });
+    if (sparkMap) span.innerHTML = VC ? VC.sparkline(sparkMap[row.s] || []) : "";
+    else loadSpark().then(function (m) { if (m && VC) span.innerHTML = VC.sparkline(m[row.s] || []); });
     return span;
   }
   /* Auf der Vorlagenliste wird der Datensatz im Leerlauf vorgeladen: Die naechste Aktion ist fast immer eine Vorlage, deren
@@ -437,7 +437,8 @@
     host.removeAttribute("aria-busy");
     put(host, pick.length ? pick.slice(0, 3).map(function (p) {
       var row = ds.row(p.i), f = p.f, d = f[1] === "CONFIRMED" && f[4] ? (f[4] === "UP" ? 1 : -1) : patternDir(E, [f[0]]);
-      var sp = el("div", { class: "tc-nc-sp", "aria-hidden": "true" }); sp.innerHTML = sparkMap && sparkMap[row.s] ? Chart.sparkline(sparkMap[row.s]) : "";
+      var sp = el("div", { class: "tc-nc-sp", "aria-hidden": "true" }); /* C06 Kleinform wie im Konzept: Linie mit neongrüner Fläche und Endpunkt (assets/vu-chart.js). */
+      sp.innerHTML = sparkMap && sparkMap[row.s] && VC ? VC.sparkline(sparkMap[row.s], { width: 216, height: 40 }) : "";
       return el("a", { class: "tc-nc", href: M.chartHref(row.s), title: M.hitSentence(row, [f[0]]) }, [
         el("div", { class: "tc-nc-h" }, [h(U.logo(row.s)), el("div", { class: "tc-nc-n" }, [el("b", { text: shortName(row.n) || row.s }), el("span", { text: row.s })]), h(U.chg(isNum(row.chg1d) ? row.chg1d * 100 : null))]),
         el("div", { class: "tc-nc-s" }, [shapeBox(f[0], 30), el("span", { text: freshSentence(f) })]), sp, dirVerdict(d)]);

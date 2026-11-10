@@ -72,6 +72,7 @@ Entscheidung 10.
 - PR 4: Filter-Chips, Baukasten, Trefferliste, Tabelle, Speichern und „Probier auch“ bleiben unter dem Hauptknopf „N Treffer zeigen“; der Satz unter dem Knopf verweist auf den Hauptscreener statt „Technical hat keinen eigenen Screener mehr“.
 - PR 5: Die gemeinsame Quelle gibt es (`quant/data/market/intelligence/market-pulse.json`, Dimension BREADTH, Beleg `above200`, auch von Discover gelesen). Technical liest „Markt heute“ daraus und nennt Stand und Basis („37 % von 5.051 US-Aktien über der 200-Tage-Linie, Stand 06.11.“); fehlt der Beleg oder ist er nicht aktuell, zeigt Technical die eigene Zählung, ebenfalls mit Stand und Basis. Schnittstelle `marketPulse` in `core/registry/product-contracts.json`.
 - PR 5: Quant zeigt seine Marktlage aus dem eigenen Regime-Artefakt in `quant/app/pages.js`; die Datei steht unter UI-Schutz und gehört dem laufenden Quant-Umbau (`docs/design/quant-2026-11`), der die Umstellung auf dieselbe Quelle übernimmt. Technical nennt keine nackte Universumsgröße mehr (Start ohne Zahlenkacheln, Zählungen nur mit Stichtag).
+- Nachtrag 10.11.2026 (Owner-Hinweis): Die Mini-Charts der Karten „Heute neu im Chart“ nutzen den gemeinsamen Baustein `assets/vu-chart.js#sparkline` (Linie mit neongrüner Fläche und Endpunkt) wie im Konzept statt der schwarzen Einzellinie aus `technical/ui/chart.js`.
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
