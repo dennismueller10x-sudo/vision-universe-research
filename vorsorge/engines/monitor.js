@@ -54,7 +54,7 @@
     });
     // Bei sehr vielen neuen Listings (Erstaufnahme) eine Sammelmeldung statt tausender Einzelzeilen
     var news = events.filter(function (e) { return e.type === "NEW_LISTING"; });
-    if (news.length > 50) events = events.filter(function (e) { return e.type !== "NEW_LISTING"; }).concat([{ type: "NEW_LISTING", symbol: null, count: news.length, text: news.length + " ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).", asOf: asOf }]);
+    if (news.length > 50) events = events.filter(function (e) { return e.type !== "NEW_LISTING"; }).concat([{ type: "NEW_LISTING", symbol: null, count: news.length, text: news.length + " ETF-Listings neu im Verzeichnis (Aufnahme des Kursdaten-ETF-Universums).", asOf: asOf }]);
     return { version: VERSION, asOf: asOf, events: events.map(tag), unmonitored: UNMONITORED, categories: CATEGORY_LABEL };
   }
 

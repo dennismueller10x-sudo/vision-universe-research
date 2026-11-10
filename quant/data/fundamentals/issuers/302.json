@@ -482,22 +482,21 @@
       "cik": "0001820302",
       "name": "Bakkt, Inc.",
       "sic": "6199",
-      "rawFacts": 8182,
-      "mappedFacts": 1962,
-      "unmappedFacts": 6158,
+      "rawFacts": 8652,
+      "mappedFacts": 2063,
+      "unmappedFacts": 6515,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
-        "BKKT",
-        "BKKT-WT"
+        "BKKT"
       ],
       "status": "INGESTED",
       "annualPeriods": 6,
-      "quarterlyPeriods": 27,
+      "quarterlyPeriods": 28,
       "firstPeriodEnd": "2020-07-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
@@ -509,7 +508,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -536,14 +535,14 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -564,14 +563,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -594,46 +593,47 @@
         }
       },
       "quality": {
-        "HIGH": 166,
-        "MEDIUM": 26
+        "HIGH": 172,
+        "MEDIUM": 25
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 192,
-        "resolvedValues": 192
+        "datableValues": 197,
+        "resolvedValues": 197
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6619,
+        "rules_version": "1.1.0",
+        "total": 6993,
         "by_severity": {
-          "INFO": 6158,
-          "WARNING": 461
+          "INFO": 6515,
+          "WARNING": 478
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 301,
-          "RESTATEMENT_CONFLICT": 127,
+          "CONCEPT_DISAGREEMENT": 317,
+          "RESTATEMENT_CONFLICT": 128,
           "UNEXPECTED_DURATION": 33,
-          "UNKNOWN_CONCEPT": 6158
+          "UNKNOWN_CONCEPT": 6515
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-055275",
-        "filing_date": "2026-08-10",
+        "accession": "0001628280-26-072258",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 30
+        "periodic_filings": 31,
+        "acceptance_datetime": "2026-11-09T21:33:28.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "a8ca0709c28ffea0cb9b11513c62def38475c50a72489b15f1658ebe414738bc",
+      "sourceDigest": "b3c3cc98ece5e4117e5ea986c435c2ec8cac4806f651975b04e59b7ab6be6de7",
       "issuerId": "iss_cik_0001820302"
     },
     {

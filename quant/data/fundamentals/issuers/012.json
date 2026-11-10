@@ -802,9 +802,9 @@
       "cik": "0001472012",
       "name": "Immunome Inc.",
       "sic": "2834",
-      "rawFacts": 4755,
-      "mappedFacts": 1822,
-      "unmappedFacts": 2927,
+      "rawFacts": 5001,
+      "mappedFacts": 1919,
+      "unmappedFacts": 3122,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -814,28 +814,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 30,
+      "quarterlyPeriods": 31,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -855,21 +855,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -883,14 +883,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -913,46 +913,47 @@
         }
       },
       "quality": {
-        "HIGH": 221,
+        "HIGH": 228,
         "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 226,
-        "resolvedValues": 226
+        "datableValues": 233,
+        "resolvedValues": 233
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2965,
+        "rules_version": "1.1.0",
+        "total": 3161,
         "by_severity": {
-          "INFO": 2927,
-          "WARNING": 38
+          "INFO": 3122,
+          "WARNING": 39
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 27,
+          "CONCEPT_DISAGREEMENT": 28,
           "RESTATEMENT_CONFLICT": 4,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 2927
+          "UNKNOWN_CONCEPT": 3122
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-344636",
-        "filing_date": "2026-08-11",
+        "accession": "0001193125-26-453597",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 24
+        "periodic_filings": 25,
+        "acceptance_datetime": "2026-11-09T21:10:37.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "7e93c06ea880846785201a902ceca9b222fe10fbb09a6c5754285d392bf4391a",
+      "sourceDigest": "94ecd3b7afc0caec04bf86779a4a1e3b6f761e87ca3d89d8fba9a747c3036667",
       "issuerId": "iss_cik_0001472012"
     },
     {

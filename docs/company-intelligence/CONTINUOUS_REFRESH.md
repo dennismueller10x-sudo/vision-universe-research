@@ -743,6 +743,25 @@ erwartete Generation nicht ausgeliefert ist. Nach der Obergrenze wird nicht aufg
 bis die Wartefrist ablaeuft, denn die workflow_run-Pages-Laeufe der Datenjobs liefern die Generation selbst aus (im Vorfall 3,5 min
 nach der alten Frist). Ein echter Fehler des eigenen Pages-Laufs (`failure`, `timed_out`) beendet sofort (Rollback wie bisher).
 
+**Nicht uebernommen, live unveraendert (Exit 4, seit 10.11.2026).** War der eigene Pages-Lauf `success`, kam die neue Generation bis
+zum Fristende aber nie an und liefert die Seite unveraendert die Generation von vor dem Dispatch aus, endet das Skript mit
+`NOT_DELIVERED_PRODUCTION_UNCHANGED` (Exit 4). Das ist keine Regression: kein Rollback, kein `disable`, kein `ROLLBACK_46`; der Lauf
+wird im Schritt "Delivery not taken over" rot, der GOOD-Zeiger steht vor der Produktion (Health MISMATCH), und die naechste
+Pages-Release mit neuem Commit liefert die Generation aus. Steht live eine dritte Generation, bleibt es der bisherige Fehler mit
+Rollback. Anlass: Refresh 42744743112. Pages 42753904874 deployte 2ff33541 um 04:19 mit demselben Commit `adbfda1c` wie die
+Deploys davor (nachts kein neuer Commit); ausgeliefert blieb e1d74267, und der Fail-closed-Schritt schaltete um 04:32 den gesunden
+Vollumfang ab. Der Universe-Release (`--expected`) ist davon nicht betroffen; dort entscheidet seine Recovery.
+
+**Marker-Commit vor dem eigenen Dispatch (seit 10.11.2026).** `actions/deploy-pages@v4` nimmt den Commit als Build-Version; ein
+zweiter Deploy desselben Commits mit neuem Inhalt wird nicht uebernommen (Pages 42753904874 und 42760183738), und `env: GITHUB_SHA`
+am Deploy-Schritt wirkt nicht (Lauf 42763174678). Deshalb starten Refresh, Universe-Release und dessen Rueckweg vor dem eigenen
+Pages-Dispatch den Workflow `pages-release-marker.yml` und warten bis zu 5 min auf ihn (`pages-release-marker.mjs --dispatch`). Nur
+dieser Workflow hat `contents: write`; er schreibt `company-intelligence/release-marker.json` ueber die Contents-API mit dem
+`GITHUB_TOKEN` auf main (kein Pages-Push-Lauf, der den eigenen Dispatch verdraengen wuerde). Refresh und `company-intelligence.yml`
+bleiben lesend. Scheitert der Marker, geht es mit Warnung weiter wie zuvor. Begruendete Ausnahme von ADR-005 (Push nur ueber
+`push-with-retry.sh`): kein Checkout und kein `git push`; den Wettlauf faengt die Datei-SHA als Vergleichswert mit hoechstens
+4 Versuchen ab.
+
 **Ehrliche Rechnung.** 50 min Wartefrist sind rund 8 warme Pages-Laeufe (6 min) oder rund 4 kalte (13 min, siehe
 `FULL_UNIVERSE_ROLLOUT.md`) hintereinander. Eine tiefere Warteschlange scheitert weiterhin, dann Rollback nach der Frist.
 

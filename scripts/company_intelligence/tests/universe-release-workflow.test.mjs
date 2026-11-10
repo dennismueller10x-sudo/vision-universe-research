@@ -47,7 +47,7 @@ test('workflow YAML parses and keeps the main-only job, permissions and concurre
  assert.deepEqual(doc.permissions,['contents: read','actions: write']);
  assert.deepEqual(doc.concurrency,['group: company-intelligence-continuous-production','cancel-in-progress: false']);
  assert.equal(doc.jobIf,"github.ref == 'refs/heads/main'");
- assert.equal(doc.timeout,'120');
+ assert.equal(doc.timeout,'180'); // 09.11.2026: Pages-Warten mit Neu-Dispatch plus Rueckweg mit eigenem Warten (Pruefung zu #1744, MAJOR 3)
 });
 test('mode options add refreeze; scaling_run is optional in the form but mandatory for activate',()=>{
  assert.deepEqual(doc.mode.options,['activate','rollback','health','refreeze','restore-legacy']);
@@ -238,4 +238,12 @@ test('mutation: restore-legacy reaching the Pages wait or the guard being droppe
  assert.ok(stepsFor(m,'restore-legacy').includes('Deploy existing Pages and wait for exact consumer generation'));
  const g=mutate("        if: inputs.mode == 'restore-legacy'\n        env:\n          EXPECT_GENERATION: ${{ inputs.expect_generation }}\n        run: |\n          if !","        if: inputs.mode == 'never'\n        env:\n          EXPECT_GENERATION: ${{ inputs.expect_generation }}\n        run: |\n          if !");
  assert.equal(condition(find(g,'Require expect_generation for restore-legacy').if,{mode:'restore-legacy'}),false);
+});
+
+test('UR-3 activate dispatcht Pages ueber refresh-dispatch-wait (Neu-Dispatch bei Verdraengung), nicht mehr einmal blind',()=>{
+ const text=readFileSync(new URL('../../../.github/workflows/company-intelligence-universe-release.yml',import.meta.url),'utf8');
+ const step=text.slice(text.indexOf('- name: Deploy existing Pages and wait for exact consumer generation'),text.indexOf('- name: Actual production broad sample'));
+ assert.match(step,/node scripts\/company_intelligence\/refresh-dispatch-wait\.mjs --expected "\$expected" --wait-minutes 40/);
+ assert.doesNotMatch(step,/gh workflow run pages-release/);
+ assert.match(step,/EXACT_PRODUCTION_GENERATION_NOT_SERVED/);
 });

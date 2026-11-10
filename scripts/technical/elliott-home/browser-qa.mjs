@@ -1,7 +1,7 @@
 // VISION UNIVERSE ELLIOTT — Browser-QA
 //
 // Kundenwege auf iPhone (390/430), Tablet und Desktop, Hell und Dunkel:
-//   1 Menue -> Elliott -> Welle 3 -> Aktie -> Elliott-Detail
+//   1 Menue -> Elliott -> Zaehlbar-Liste -> Aktie -> Elliott-Detail
 //   2 Elliott -> Suche NVDA -> Detail
 //   3 Aktienseite -> Elliott
 //   4 Elliott -> Filter Abwaerts -> Karte -> Detail
@@ -91,8 +91,8 @@ for (const vp of VIEWPORTS) {
     const small = await page.evaluate(() => [...document.querySelectorAll('.el-card')].slice(0, 20).filter((n) => parseFloat(getComputedStyle(n.querySelector('.el-meta') || n).fontSize) < 12).length);
     check(small === 0, 'keine mikroskopischen Texte');
 
-    // Weg 1: Welle 3 -> Aktie -> Detail
-    const w3 = page.locator('.el-row[data-row="wave3"] a.el-card').first();
+    // Weg 1: Zaehlbar-Liste -> Aktie -> Detail
+    const w3 = page.locator('.el-clist a.el-cr').first();
     if (await w3.count()) {
       const symbol = await w3.getAttribute('data-symbol');
       await w3.click();
@@ -108,7 +108,7 @@ for (const vp of VIEWPORTS) {
       await page.goBack({ waitUntil: 'networkidle' });
       await page.waitForSelector('#el-main[data-state="ready"]');
       check(new URL(page.url()).pathname === '/elliott/', 'Zurueck fuehrt zur Elliott-Startseite');
-    } else fail('keine Welle-3-Karte zum Oeffnen (Datenlage?)');
+    } else fail('keine zaehlbare Aktie zum Oeffnen (Datenlage?)');
 
     // Weg 4: Filter Abwaerts -> Karte -> Detail
     await page.goto(BASE + '/elliott/#/?richtung=ab', { waitUntil: 'networkidle' });
@@ -130,9 +130,9 @@ for (const vp of VIEWPORTS) {
     await page.reload({ waitUntil: 'networkidle' });
     await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
     check(/\/elliott\/#\/[A-Z]/.test(page.url()) && await page.locator('.cb-crumbs').count() === 1, 'Detail-Deep-Link ueberlebt den Reload (bleibt auf der Aktie)');
-    await page.goto(BASE + '/elliott/#/?welle=3&status=bestaetigt', { waitUntil: 'networkidle' });
+    await page.goto(BASE + '/elliott/#/?welle=C&status=bestaetigt', { waitUntil: 'networkidle' });
     await page.waitForSelector('#el-main[data-state="ready"]');
-    check(/Welle 3/.test(await page.locator('h1.el-title').innerText()) && (await page.locator('.el-chip.is-on').allInnerTexts()).some((t) => /Bestätigt/.test(t)), 'Filter-Deep-Link stellt die Auswahl her');
+    check(/Welle C/.test(await page.locator('h1.el-title').innerText()) && (await page.locator('.el-chip.is-on').allInnerTexts()).some((t) => /Bestätigt/.test(t)), 'Filter-Deep-Link stellt die Auswahl her');
     // Redesign 2027: Plus/Minus nur neongrün/schwarz, kein Rot und kein Grün in Karten und Chips
     const loud = await page.evaluate(() => [...document.querySelectorAll('.el-card *, .el-chip, .el-split *')].filter((n) => { const c = getComputedStyle(n); return [c.color, c.backgroundColor].some((v) => { const m = /rgba?\((\d+), (\d+), (\d+)/.exec(v); if (!m) return false; const [r, g, b] = m.slice(1).map(Number); return (r > 150 && g < 110 && b < 110) || (g > 120 && r < 110 && b < 110); }); }).length);
     check(loud === 0, 'keine roten oder grünen Flächen (' + loud + ')');

@@ -194,6 +194,8 @@
     if (!host || !o || !o.ctx) return { setPrice: function () {}, dispose: function () {}, el: null };
     var doc = host.ownerDocument, wrap = doc.createElement("header");
     wrap.className = "vu-shead" + (o.compact ? " vu-shead--compact" : "");
+    /* Aktie der Seite für den Atlas-Knopf der Kopfzeile (assets/atlas-sheet.js). */
+    wrap.setAttribute("data-vu-stock", o.ctx.displaySymbol || ""); wrap.setAttribute("data-vu-stock-name", o.name || o.ctx.displaySymbol || "");
     var meta = [o.ctx.displaySymbol, o.exchange].filter(Boolean).map(esc).join(" · ");
     wrap.innerHTML = (o.back ? '<a class="vu-shead-back" href="' + esc(o.back.href) + '" aria-label="' + esc(o.back.label) + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg><span class="vu-shead-backtext">' + esc(o.back.label) + "</span></a>" : "") +
       '<div class="vu-shead-id">' + logoHtml(o) + '<div class="vu-shead-names"><h1 class="vu-shead-name">' + esc(o.name || o.ctx.displaySymbol) + "</h1>" +
@@ -208,7 +210,7 @@
        Security-Masters (company-names.json#displayName, derselbe Name wie in Discover); er ersetzt den Namen der Welt. */
     loadShard(o.ctx, o.fetch).then(function (m) {
       var n = shardName(o.ctx, m), h = wrap.querySelector(".vu-shead-name");
-      if (alive && n && h && h.textContent !== n) h.textContent = n;
+      if (alive && n && h && h.textContent !== n) { h.textContent = n; wrap.setAttribute("data-vu-stock-name", n); }
     });
     return {
       el: wrap,

@@ -45,6 +45,8 @@
     if (head === "screener") return { view: "screener", tab: path[1] === "gespeichert" || params.reiter === "gespeichert" ? "saved" : params.reiter === "vorlagen" ? "templates" : "build", params: params };
     /* T05: der Leistenplatz "Muster" (#/muster); #/methodik zeigt dieselbe Seite. Reiter ?reiter=indikatoren|regeln. */
     if (head === "methodik" || head === "muster") return { view: "method", params: params };
+    /* Konzept „Der Chart in drei Sätzen“, Entscheidung 8: Akademie und Assistent sind ein Ort „Lernen“. */
+    if (head === "lernen") return { view: "learn", params: params };
     if (head === "akademie") return { view: "academy", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "assistent") return { view: "assistant", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
     if (head === "vorlagen") return { view: "templates", id: path[1] ? decodeURIComponent(path[1]) : null, params: params };
@@ -217,7 +219,7 @@
     var c = {}; (rows || []).forEach(function (r) { c[r.reading] = (c[r.reading] || 0) + 1; });
     var parts = ["NOT_SIGNIFICANT", "MIXED", "WITH_DIRECTION", "AGAINST_DIRECTION", "NEUTRAL_PATTERN"].filter(function (k) { return c[k]; })
       .map(function (k) { return c[k] + " " + READING_SHORT[k]; });
-    return (rows || []).length + " ausgewiesen: " + parts.join(", ") + ". Keine Zeile ist ein Kauf- oder Verkaufssignal.";
+    return (rows || []).length + " ausgewiesen: " + parts.join(", ") + ". Keine Zeile ist eine Handlungsempfehlung.";
   }
 
   /** Umbenennen bzw. Filter einer gespeicherten Suchstrategie ersetzen (gleiche ID, Zeitstempel "updatedAt"). */
@@ -453,31 +455,79 @@
     return out;
   }
 
+  /** Schwung in Worten aus dem RSI 14 (Darstellung, keine Regel): ab 70 stark gestiegen, ab 55 eher gestiegen, bis 30 stark gefallen, bis 45 eher gefallen. */
+  function momentumWords(r) {
+    if (!isNum(r)) return "keine Aussage";
+    return r >= 70 ? "zuletzt stark gestiegen" : r >= 55 ? "zuletzt eher gestiegen" : r <= 30 ? "zuletzt stark gefallen" : r <= 45 ? "zuletzt eher gefallen" : "ausgeglichen";
+  }
+  /** Relatives Volumen in Worten: 1,95 → „fast doppelt so viel Handel wie üblich“. */
+  function volumeWords(v) {
+    if (!isNum(v)) return "keine Angabe";
+    if (v < 0.75) return "deutlich weniger Handel als üblich";
+    if (v < 0.95) return "etwas weniger Handel als üblich";
+    if (v < 1.15) return "Handel wie üblich";
+    if (v < 1.6) return "mehr Handel als üblich";
+    if (v < 1.85) return "deutlich mehr Handel als üblich";
+    if (v < 2) return "fast doppelt so viel Handel wie üblich";
+    if (v < 2.25) return "doppelt so viel Handel wie üblich";
+    if (v < 2.85) return "mehr als doppelt so viel Handel wie üblich";
+    return "etwa " + Math.round(v).toLocaleString("de-DE") + "-mal so viel Handel wie üblich";
+  }
+  /* Anzeige-Namen ohne „bullisch/bärisch“ (Entscheidung 2). Die Engine-Namen (technical-query.js, formations.js) bleiben
+     unverändert, weil /screener/, die Suche in Worten und die Abfrage-Gleichheit sie festhalten; übersetzt wird nur die Anzeige. */
+  var PLAIN_NAMES = [
+    [/Bullische Flaggen und Wimpel/g, "Steigende Flaggen und Wimpel"], [/Bullische Flagge/g, "Flagge steigend"], [/Bärische Flagge/g, "Flagge fallend"],
+    [/Bullischer Wimpel/g, "Wimpel steigend"], [/Bärischer Wimpel/g, "Wimpel fallend"],
+    [/Bullisches Kerzenmuster/g, "Kerzenmuster nach oben"], [/Bärisches Kerzenmuster/g, "Kerzenmuster nach unten"],
+    [/einem bullischen Kerzenmuster/g, "einem Kerzenmuster nach oben"], [/einem bärischen Kerzenmuster/g, "einem Kerzenmuster nach unten"],
+    [/(über|unter) SMA (50|200)\b/g, "$1 der $2-Tage-Linie"], [/\bSMA (50|200)\b/g, "$1-Tage-Linie"],
+    [/\bbullisch(e[nrsm]?)?\b/g, "nach oben deutend"], [/\bbärisch(e[nrsm]?)?\b/g, "nach unten deutend"]
+  ];
+  function plain(text) { var t = String(text == null ? "" : text); PLAIN_NAMES.forEach(function (r) { t = t.replace(r[0], r[1]); }); return t; }
+  /** Richtung in Worten (Entscheidung 2): +1 „deutet nach oben“, −1 „deutet nach unten“, sonst „Richtung offen“. */
+  function directionWords(d) { return d > 0 ? "deutet nach oben" : d < 0 ? "deutet nach unten" : "Richtung offen"; }
+  /* Konzept „Der Chart in drei Sätzen“, Entscheidung 10: Markt heute aus der gemeinsamen Quelle aller Welten
+     (quant/data/market/intelligence/market-pulse.json, Dimension BREADTH, Beleg above200). Liefert Anteil, Basis und Stand
+     oder null, wenn der Beleg fehlt oder nicht aktuell ist; dann zeigt Technical die eigene Zählung mit Stand und Basis. */
+  var MARKET_PULSE_PATH = "/quant/data/market/intelligence/market-pulse.json";
+  function marketBreadth(pulse) {
+    var b = pulse && /^vu-market-pulse-1\./.test(pulse.schemaVersion || "") && pulse.dimensions && pulse.dimensions.BREADTH;
+    var e = b && (b.evidence || []).filter(function (x) { return x.key === "above200"; })[0];
+    if (!e || e.current === false || !isNum(e.value) || !isNum(e.evaluated) || !e.evaluated) return null;
+    return { share: e.value, matched: e.matched, base: e.evaluated, asOf: e.asOf || null, source: "market-pulse" };
+  }
+  /** Ein Satz mit Stand und Basis: „37 % von 5.051 US-Aktien über der 200-Tage-Linie, Stand 06.11.“ */
+  function breadthSentence(b) {
+    if (!b || !isNum(b.share)) return "";
+    return Math.round(b.share).toLocaleString("de-DE") + " % von " + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien über der 200-Tage-Linie" + (b.asOf ? ", Stand " + b.asOf.slice(8, 10) + "." + b.asOf.slice(5, 7) + "." : "");
+  }
   function findings(analysis, features, close) {
     var out = [];
     (analysis && analysis.formations || []).forEach(function (f) {
-      out.push({ kind: "formation", id: f.id, title: f.name, text: formationText(f), badge: stateBadge(f), tone: STATE_TONE[f.state],
+      out.push({ kind: "formation", id: f.id, title: plain(f.name), text: formationText(f), badge: stateBadge(f), tone: STATE_TONE[f.state],
                  icon: FAMILY_ICON[f.family] || "trend", direction: f.direction, formation: f });
     });
     var F = features || {};
+    /* Alltagssprache (Konzept „Der Chart in drei Sätzen“, Entscheidung 3): 200-/50-Tage-Linie statt SMA, Schwung statt RSI-Text,
+       Handel in Worten statt „Volumen 1,95× des 20-Tage-Medians“. Fachwerte stehen in Klammern bzw. im Chart Studio. */
     if (isNum(F.sma200) && isNum(close)) {
       var above = close > F.sma200;
-      out.push({ kind: "indicator", id: "sma200", title: above ? "Kurs über SMA 200" : "Kurs unter SMA 200", icon: "bars",
-                 text: "Schluss " + price(close) + " · SMA 200 " + price(F.sma200) + " (" + pct(close / F.sma200 - 1, 1) + ").", badge: above ? "Bullisch" : "Bärisch", tone: above ? "positive" : "negative" });
+      out.push({ kind: "indicator", id: "sma200", title: above ? "Kurs über der 200-Tage-Linie" : "Kurs unter der 200-Tage-Linie", icon: "bars",
+                 text: price(close) + " zu " + price(F.sma200) + " (" + pct(close / F.sma200 - 1, 1) + ").", badge: above ? "deutet nach oben" : "deutet nach unten", tone: above ? "positive" : "negative" });
     }
     if (isNum(F.sma50) && isNum(F.sma200)) {
       var golden = F.sma50 > F.sma200;
-      out.push({ kind: "indicator", id: "cross", title: golden ? "SMA 50 über SMA 200" : "SMA 50 unter SMA 200", icon: "trend",
-                 text: "SMA 50 " + price(F.sma50) + " · SMA 200 " + price(F.sma200) + ".", badge: golden ? "Bullisch" : "Bärisch", tone: golden ? "positive" : "negative" });
+      out.push({ kind: "indicator", id: "cross", title: golden ? "50-Tage-Linie über der 200-Tage-Linie" : "50-Tage-Linie unter der 200-Tage-Linie", icon: "trend",
+                 text: price(F.sma50) + " zu " + price(F.sma200) + ".", badge: golden ? "deutet nach oben" : "deutet nach unten", tone: golden ? "positive" : "negative" });
     }
     if (isNum(F.rsi14)) {
-      var zone = F.rsi14 >= 70 ? ["Überkauft", "watch"] : F.rsi14 <= 30 ? ["Überverkauft", "watch"] : ["Neutral", "neutral"];
-      out.push({ kind: "indicator", id: "rsi", title: "RSI 14: " + num(F.rsi14, 1), icon: "pulse", text: "Zonen: über 70 überkauft, unter 30 überverkauft (Wilder).", badge: zone[0], tone: zone[1] });
+      var zone = F.rsi14 >= 70 ? ["Überkauft", "watch"] : F.rsi14 <= 30 ? ["Überverkauft", "watch"] : ["Ausgeglichen", "neutral"];
+      out.push({ kind: "indicator", id: "rsi", title: "Schwung: " + momentumWords(F.rsi14), icon: "pulse", text: "Wie stark der Kurs zuletzt gestiegen oder gefallen ist (RSI " + num(F.rsi14, 1) + "; über 70 gilt als „überkauft“, unter 30 als „überverkauft“).", badge: zone[0], tone: zone[1] });
     }
     if (isNum(F.relativeVolume)) {
       var hiVol = F.relativeVolume >= 2 ? ["Spitze", "positive"] : F.relativeVolume > 1 ? ["Erhöht", "neutral"] : ["Normal", "neutral"];
-      out.push({ kind: "indicator", id: "volume", title: "Volumen " + num(F.relativeVolume, 2) + "× des 20-Tage-Medians", icon: "bars",
-                 text: "Relatives Volumen des letzten Handelstags.", badge: hiVol[0], tone: hiVol[1] });
+      out.push({ kind: "indicator", id: "volume", title: (function (w) { return w.charAt(0).toUpperCase() + w.slice(1); })(volumeWords(F.relativeVolume)), icon: "bars",
+                 text: "Gehandelte Stückzahl am letzten Tag im Vergleich zu einem üblichen Tag der letzten 20 (" + num(F.relativeVolume, 2) + "-fach).", badge: hiVol[0], tone: hiVol[1] });
     }
     return out;
   }
@@ -488,7 +538,7 @@
     if (wanted && wanted.length) f = list.filter(function (x) { return wanted.indexOf(x[0]) >= 0; })[0] || null;
     f = f || list[0];
     if (f) {
-      var name = Q.FORMATION_TYPES[f[0]] || f[0], flags = f[5] || "", dir = BREAK_DIR[f[4]];
+      var name = plain(Q.FORMATION_TYPES[f[0]] || f[0]), flags = f[5] || "", dir = BREAK_DIR[f[4]];
       if (f[1] === "CONFIRMED" && flags.indexOf("B") >= 0) return name + ": bei Erkennung am " + dateDe(f[2]) + " bereits ausgebrochen" + (dir ? " (" + dir + ")" : "") + ".";
       if (f[1] === "CONFIRMED") return name + ": Ausbruch" + (dir ? " " + dir : "") + (f[3] ? " am " + dateDe(f[3]) : "") + ", erkannt am " + dateDe(f[2]) + ".";
       if (flags.indexOf("V") >= 0) return name + ": vorläufig (vier Swing-Punkte), erkannt am " + dateDe(f[2]) + ".";
@@ -553,7 +603,7 @@
     defaultState: defaultState, stateFromParams: stateFromParams, paramsFromState: paramsFromState, queryFromState: queryFromState,
     loadScreens: loadScreens, saveScreen: saveScreen, migrateParams: migrateParams, QUERY_TEXT_SEMANTICS: QUERY_TEXT_SEMANTICS, deleteScreen: deleteScreen, updateScreen: updateScreen, linkScreen: linkScreen, addRemoteScreen: addRemoteScreen, exportScreens: exportScreens, importScreens: importScreens,
     builderFromQuery: builderFromQuery, queryFromBuilder: queryFromBuilder, parseFieldInput: parseFieldInput, formatFieldInput: formatFieldInput, defaultRow: defaultRow,
-    findings: findings, seriesState: seriesState, relativeStrength: relativeStrength, BENCHMARK_PATH: BENCHMARK_PATH, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
+    findings: findings, plain: plain, MARKET_PULSE_PATH: MARKET_PULSE_PATH, marketBreadth: marketBreadth, breadthSentence: breadthSentence, momentumWords: momentumWords, volumeWords: volumeWords, directionWords: directionWords, seriesState: seriesState, relativeStrength: relativeStrength, BENCHMARK_PATH: BENCHMARK_PATH, candleMarks: candleMarks, CHART_LAYERS: CHART_LAYERS, CHART_PANES: CHART_PANES, FIELD_CHART: FIELD_CHART, formationText: formationText, hitSentence: hitSentence, wantedFormations: wantedFormations, matchedChips: matchedChips,
     search: search, dateDe: dateDe, price: price, pct: pct, num: num
   };
   if (isNode) module.exports = api;

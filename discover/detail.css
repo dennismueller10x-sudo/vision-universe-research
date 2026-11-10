@@ -18,6 +18,10 @@ body.dv2 .dv2-stock .dx-dhero-meta{margin:0;font-size:12px;line-height:1.6;color
 body.dv2 .dv2-stock .dx-index-badges{margin:10px 0 0}
 body.dv2 .dv2-stock .dx-dhero-right{margin:18px 0 0;text-align:left}
 body.dv2 .dv2-stock:has(.dx-chart-hero) .dx-dhero-right{display:none}
+/* Bedienprüfung 09.11.2026 (CLS 0,17): solange die Kursreihe lädt (.dx-chart leer), hält der Preis-Platzhalter mobil die Höhe des
+   fertigen Kursblocks (.dx-chart-hero, 183 px bei 390 px), damit Bereichsleiste und Chart nicht springen; der leere Chart-Abschnitt (zeigt bis dahin nichts) bleibt so lange unsichtbar,
+   sein Wechsel nach oben zählt dann nicht als Sprung. Fertig oder Leerzustand: frei. */
+@media(max-width:760px){body.dv2 .dv2-stock:has(.dx-chapter--chart > .dx-chart:empty) .dx-dhero-right{min-height:177px}body.dv2 .dv2-stock .dx-chapter--chart:has(> .dx-chart:empty){visibility:hidden}}
 body.dv2 .dv2-stock .dx-chapter{padding:44px 0;margin:0;border-bottom:1px solid var(--discover-line);border-top:0}
 body.dv2 .dv2-stock .dx-chapter h2{font-size:clamp(24px,3vw,36px);line-height:1.12;letter-spacing:-.045em;max-width:27ch;margin:0 0 24px}
 body.dv2 .dv2-stock .dx-chapter--chart{padding:10px 0 24px;border:0}

@@ -229,9 +229,7 @@ test("DB-14 · Inventar: jede Datenart ist im Datenzweig oder im Plan mit Status
    BRANCH_ONLY-Datenart nennen, und Workflows, die ein solches Skript aufrufen und committen/pushen.
    Pruef-Workflows ohne Schreiben pruefen den Code gegen die Kopie in main und sind ausgenommen. */
 const DB15_AUSNAHMEN = {
-  "scripts/market/assert-public-data-hygiene.mjs": "prueft Quellen-Freigaben im oeffentlichen Baum, nicht die Frische",
-  "scripts/supertrader/browser-qa.mjs": "prueft im Monitor die ausgelieferte Seite (--base/--site mit heruntergeladenem Stand), nicht den Arbeitsbaum",
-  "scripts/technical/world/live-qa.mjs": "prueft die ausgelieferte Seite per HTTP (fetch im Browser), nicht den Arbeitsbaum"
+  "scripts/market/assert-public-data-hygiene.mjs": "prueft Quellen-Freigaben im oeffentlichen Baum, nicht die Frische"
 };
 test("DB-15 · Schreibende Workflows, die BRANCH_ONLY-Daten lesen, saeen den Datenzweig", async () => {
   const { readdirSync, statSync } = await import("node:fs");
@@ -257,4 +255,27 @@ test("DB-15 · Schreibende Workflows, die BRANCH_ONLY-Daten lesen, saeen den Dat
     if (treffer.length) fehlt.push(w + " ruft " + treffer.join(", "));
   }
   assert.deepEqual(fehlt, [], "scripts/ci/seed-data-branch.sh alle vor dem Lauf einbauen");
+});
+
+/* DB-16: Ein Release-Bau ausserhalb von pages-release.yml (Produkt-CI, Browserpruefungen) muss denselben Stand bauen wie die
+   Auslieferung. BRANCH_ONLY-Daten liegen in main nur eingefroren; #1771 wurde rot, weil der Discover-Browsertest die Maerkte-Seite
+   aus der eingefrorenen marketPulse-Kopie vom 08.11.2026 baute. Jeder Aufruf von build-release.mjs steht deshalb im selben Job
+   hinter scripts/ci/seed-data-branch.sh alle. Company Intelligence bleibt ausgenommen (eigener Strang, EXEMPT). */
+test("DB-16 · Jeder Release-Bau in einem Workflow saet vorher den Datenzweig wie pages-release.yml", async () => {
+  const { readdirSync } = await import("node:fs");
+  const AUSNAHMEN = { "company-intelligence.yml": "Company Intelligence bleibt EXEMPT und wird von diesem Strang nicht angefasst" };
+  const fehlt = [];
+  let gesehen = 0;
+  for (const w of readdirSync(join(ROOT, ".github/workflows")).filter((f) => f.endsWith(".yml") && !AUSNAHMEN[f])) {
+    const zeilen = readFileSync(join(ROOT, ".github/workflows", w), "utf8").split("\n");
+    let job = null, gesaet = false;
+    zeilen.forEach((z, i) => {
+      if (/^  [A-Za-z0-9_-]+:\s*$/.test(z)) { job = z.trim().slice(0, -1); gesaet = false; }
+      if (/^\s*#/.test(z)) return;
+      if (z.includes("scripts/ci/seed-data-branch.sh alle")) gesaet = true;
+      if (/node scripts\/vu2\/build-release\.mjs\s+--output/.test(z)) { gesehen++; if (!gesaet) fehlt.push(w + ":" + (i + 1) + " (Job " + job + ")"); }
+    });
+  }
+  assert.ok(gesehen >= 8, "Erkennung greift (ci.yml baut in acht Jobs, pages-release.yml einmal): " + gesehen);
+  assert.deepEqual(fehlt, [], "scripts/ci/seed-data-branch.sh alle vor dem Release-Bau einbauen");
 });

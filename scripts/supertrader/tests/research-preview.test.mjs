@@ -30,7 +30,7 @@ test('SF8-REGULAR-DATED: Research-Kennzeichnung mit Datenstand, ohne Beta; ein �
   assert.match(SF, /' – nicht aktuell, kein Hinweis für heute'/);
   assert.match(SF, /function stale\(sum\) \{ return !!\(sum && sum\.nextSession && new Date\(\)\.toISOString\(\)\.slice\(0, 10\) > String\(sum\.nextSession\)/);
   assert.doesNotMatch(SF, /'Heute erkannte Aktien'|erkennt heute|text: 'heute'|Vorschau · noch nicht freigeschaltet/);
-  assert.match(SF, /Tiingo, Inc\./, 'Quelle der Kurse genannt (Lizenzbedingung)');
+  assert.match(SF, /Kursdatenanbieter \(Quellen: \/infos\/#quellen\)/, 'Neutrale Kursquelle mit Verweis auf die zentrale Anbieternennung');
   // jede Ansicht mit Daten trägt die datierte Research-Zeile
   assert.equal((SF.match(/previewBanner\(sum\)/g) || []).length - (SF.match(/function previewBanner\(sum\)/g) || []).length, 5, 'fünf Aufrufe (Start, Methoden, Strategie, Aktie mit und ohne Treffer)');
   assert.doesNotMatch(SF, /previewBanner\(\)/);

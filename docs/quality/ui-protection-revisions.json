@@ -1335,6 +1335,256 @@
       "from": "8092ee8b47b01ccd9e98a2fd95f8c4d0187d296c305408ec98d315e11b8de4c4",
       "to": "c6c4b0ab57e5e1b433843efaa9fec2c0276e62c564540336b836f4f8808f8fe9",
       "scope": "Nachtrag zu #1649: Die Europa-Liste #/c/EUROPE/… markiert in der unteren Navigation „Discover“ statt „Strategien“ (eine Zeile in active()); die Revision fehlte, Quant CI lief auf #1649 nicht"
+    },
+    {
+      "id": "UIP-R134",
+      "date": "2026-11-09",
+      "pr": 1732,
+      "ownerApproval": "Owner/Steuerung 09.11.2026 (Bedienprüfung #1719, Punkt b: Tippziele ohne sichtbare Änderung)",
+      "file": "assets/site-navigation.js",
+      "from": "c6c4b0ab57e5e1b433843efaa9fec2c0276e62c564540336b836f4f8808f8fe9",
+      "to": "9b000c630b5235863655be450744ce4ca500ab5fb0f6e5d77f3b33f678b47eba",
+      "scope": "Kopf mobil: Suche/Profil (.hb, 40 px breit) bekommen über ::after eine 44 px breite Trefferfläche; Aussehen unverändert"
+    },
+    {
+      "id": "UIP-R135",
+      "date": "2026-11-09",
+      "pr": 1653,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „bau daraus dann direkt eine eigene Seite, die dann auch in der App erscheint. Und hinterlege auch direkt noch einen Unterbereich … Reports.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "9b000c630b5235863655be450744ce4ca500ab5fb0f6e5d77f3b33f678b47eba",
+      "to": "24471fe704cd26b77a3bae45877ad1e940852c15e6a50e3e17cc089276b4e503",
+      "scope": "Insights: Menükachel (breit unter Portfolios) aus products/insights/module.json, Einträge Artikel und Reports"
+    },
+    {
+      "id": "UIP-R136",
+      "date": "2026-11-09",
+      "pr": 1653,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „bau daraus dann direkt eine eigene Seite, die dann auch in der App erscheint. Und hinterlege auch direkt noch einen Unterbereich … Reports.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/product-icons.svg",
+      "from": "1676bd5c1ef857cb5b6856701dbe94f834c0f163288949a23e77c43bc4f9c887",
+      "to": "54ef0dfbb654bb2b904964fae89e388b634e88d11751dbac2591ccca6909ec4e",
+      "scope": "Insights: neues Symbol „insights“ (Zeitung) in der HUD-Familie; bestehende Symbole unverändert"
+    },
+    {
+      "id": "UIP-R137",
+      "date": "2026-11-09",
+      "pr": 1737,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (docs/design/elliott-hedgefonds-vorsorge-2026-11/HANDOVER.md, Entscheidung 2)",
+      "file": "assets/site-navigation.js",
+      "from": "24471fe704cd26b77a3bae45877ad1e940852c15e6a50e3e17cc089276b4e503",
+      "to": "f84ff7ef1b8bba4d6727d0768aa34ed9a6f8304cbf2216f028315b2629369464",
+      "scope": "Elliott: Leistenplatz und Menüeintrag „Welle 3“ → „Zählbar“ (#/?zaehlbar=1, alte Adresse markiert Zählbar); Menüeinträge aus products/elliott/module.json neu erzeugt"
+    },
+    {
+      "id": "UIP-R138",
+      "date": "2026-11-09",
+      "pr": 1737,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidung 2)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "011eccec37dde14a35afbd0d6e89b917cec5fdc86cbd1be9b4e8a1eb4c4f3cda",
+      "to": "d8d436c8379d5027353fc3155c65972038efa1a9911860bf18032b44147478d7",
+      "scope": "Erwartete Elliott-Leiste im Aktienbild: „Welle 3“ → „Zählbar“; sonst unverändert"
+    },
+    {
+      "id": "UIP-R139",
+      "date": "2026-11-09",
+      "pr": 1750,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidungen 3 und 4)",
+      "file": "quant/app/page-chartbild.js",
+      "from": "d7ad7992aceee3c9f3a16c82d280afe0108b05ac549c06f5bc65412a5f1b8f2c",
+      "to": "e12c1662c33622edf5b721fdfb949c7778fa3f43881ae3d39f4df34b48cdb234",
+      "scope": "Elliott auf der Aktie (Konzept EHV, EX03): zählbar mit Lesart in drei Sätzen, Chart nur mit Ungültig-Marke und Kapiteln, nicht zählbar mit Karte „Keine Zählung“ und Wegen zu Technical und zur Zählbar-Liste; kein eigener „Technischer Ausblick“ im Elliott-Produkt; „Rücklauf abwarten“ und „Zielbereich erreicht“ umformuliert"
+    },
+    {
+      "id": "UIP-R140",
+      "date": "2026-11-09",
+      "pr": 1750,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidungen 3 und 4)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "d8d436c8379d5027353fc3155c65972038efa1a9911860bf18032b44147478d7",
+      "to": "0eb594cc2523e1893a63c9b5bff6be58e9b35dd5600c3175e73a8e88719e7b57",
+      "scope": "Prüfung des Elliott-Aktienbilds auf den neuen Aufbau (zählbar: drei Sätze, Kapitel, Ungültig-Marke; nicht zählbar: Wege); keine Ziele, kein zweiter Ausblick"
+    },
+    {
+      "id": "UIP-R141",
+      "date": "2026-11-09",
+      "pr": 1743,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „Der Aktienreport Xpeng, der muss da auf jeden Fall raus … Außerdem muss dann unser Magazin rein, also unser Aktienmagazin.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "f84ff7ef1b8bba4d6727d0768aa34ed9a6f8304cbf2216f028315b2629369464",
+      "to": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
+      "scope": "Insights: Einträge Artikel, Aktienmagazin, Reports; „Weitere Produkte“ ohne altes Magazin und XPeng-Muster (aus den Steckbriefen erzeugt)"
+    },
+    {
+      "id": "UIP-R142",
+      "date": "2026-11-09",
+      "pr": 1743,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „Der Aktienreport Xpeng, der muss da auf jeden Fall raus … Außerdem muss dann unser Magazin rein, also unser Aktienmagazin.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "0eb594cc2523e1893a63c9b5bff6be58e9b35dd5600c3175e73a8e88719e7b57",
+      "to": "4501267a27988548364c26cdf362af2c48da346a986ae0de7054730bebb6d5c0",
+      "scope": "Plattform-Kopf-Prüfung: Magazin und Reports liegen jetzt unter /insights/ (Kachel Insights statt /magazin/ und /reports/)"
+    },
+    {
+      "id": "UIP-R143",
+      "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
+      "to": "8b41ebd00f9a3fb5bdea6391234d74b40b76c02588bc0cf7f42302617e950095",
+      "scope": "Atlas auf jeder Aktie: Der Knopf „Atlas“ öffnet auf Seiten mit Aktienkopf (data-vu-stock) das Sheet aus assets/atlas-sheet.js, sonst bleibt er der Link nach /ask/; Aussehen unverändert"
+    },
+    {
+      "id": "UIP-R144",
+      "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/stock-navigator.js",
+      "from": "76e0389d17cb0a2c19754dea03d0e8f43cdbc6a07c4c8fd7422d8e107908133c",
+      "to": "8e1d02130cc4d44e02f7430e6b046ea4006d801fa8246fe9e2d73ce34261a60d",
+      "scope": "Aktienkopf trägt data-vu-stock und data-vu-stock-name für den Atlas-Knopf; Aussehen und Navigator unverändert"
+    },
+    {
+      "id": "UIP-R145",
+      "date": "2026-11-09",
+      "pr": 1756,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidung 7)",
+      "file": "assets/site-navigation.js",
+      "from": "8b41ebd00f9a3fb5bdea6391234d74b40b76c02588bc0cf7f42302617e950095",
+      "to": "159f890551b37f777dd1801683de74b1028648e11011ff08b8c6652cbd0bacfa",
+      "scope": "Hedgefonds: Leistenplatz und Menüeintrag „Smart Money“ → „Gruppen-Käufe“ (#/gruppen-kaeufe; #/smart-money markiert Gruppen-Käufe)"
+    },
+    {
+      "id": "UIP-R150",
+      "date": "2026-11-09",
+      "pr": 1749,
+      "ownerApproval": "Owner 09.11.2026: Supertrader-Konzept „Das Rezept eines Profis“ freigegeben (docs/design/supertrader-2026-11/HANDOVER.md, Entscheidungen 3 und 9: Produkt-Leiste in assets/site-navigation.js)",
+      "file": "assets/site-navigation.js",
+      "from": "159f890551b37f777dd1801683de74b1028648e11011ff08b8c6652cbd0bacfa",
+      "to": "63610eabc84b7280f54b135ea3046d1de4348bcd5fe4c087420c4425e4d29ca0",
+      "scope": "Supertrader-Dock Supertrader · Methoden · Treffer · Forschung (statt Signale/Backtests), Menüeinträge aus products/supertrader/module.json neu erzeugt (build-modules.mjs); signals/stock aktivieren Treffer, backtests aktiviert Forschung"
+    },
+    {
+      "id": "UIP-R151",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-backtest.js",
+      "from": "88f38f7108a0d18f58849135b226cfb5868d7698b9d387c856c6795ab3880aa5",
+      "to": "967a83ca7b6190fe71ae1a7b91da8c376df5fc89f930b1c53241ff4ab9b814cc",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R152",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-chartbild.js",
+      "from": "e12c1662c33622edf5b721fdfb949c7778fa3f43881ae3d39f4df34b48cdb234",
+      "to": "1b441fb4ddd8292fd5e95a893baecc6dcb7a29128275b5f7bcda7f7588fdaa3a",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R153",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-evidence.js",
+      "from": "19bb61c32801938151b0e0ce11b3ab375e63e6780fe3d4cac18cf4a5f0f561e2",
+      "to": "4927f6aee99fe8a88ccb72930619b0387e983988435c74c8a24b60e3b5557e4c",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R154",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-method.js",
+      "from": "fa0d082af375ca5009e9ab8ee99597c30112d69a89d52dba0e8d9521fff18a4d",
+      "to": "a2937fb30ce87782c86872e218358b7d53cf5555e27e455184c6b9fae0ccf183",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R155",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-stock.js",
+      "from": "cb7f686ce448444c19e7dffbbff42dc30f9d97dca8ff7178458e9489db288ab7",
+      "to": "c1419050373e38a41905fae4acff63edcf9f6e9484e4b993f03966018116e70f",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R156",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/pages.js",
+      "from": "36fe10b72251c1a17fac56116349820ce4425bc8cfc0e4d5ab852e80427dfea1",
+      "to": "7621422a355a6b43158d05265673efb55c51f87a1b107b70936aa06bdb136831",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R157",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/ui/shell.js",
+      "from": "14c90145215a9484dcc9efa5a4a98b149ac8aee1bc4de0814f4e1b3093e0560b",
+      "to": "2aa9fd08748799ff098b19091119786d84f73417b33c9f746d7a52fe5c0d16d7",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R158",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/tests/product-language.test.mjs",
+      "from": "639acfa5c58a27b4183a75a7118dab13ad76e5f50d9d7555ba443ce414759998",
+      "to": "d14751e42e0bd16895fa3c53576524bdf58fff19ec9137d5defe7d11c9957247",
+      "scope": "Nur erwartete Anzeigewörter im bestehenden Test an neutrale Produkttexte angepasst; alle Prüfbedingungen bleiben erhalten. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R159",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/tests/product-positioning.test.mjs",
+      "from": "82545772b9b44a2eda5e26b677ae11436d81e1256d99e9f9f639ee67b9dd60d2",
+      "to": "66a5496c054d3c777230b6ca3cbc4b5e3cbe69bb9035bded3d3e2f656f9379d2",
+      "scope": "Nur erwartete Anzeigewörter im bestehenden Test an neutrale Produkttexte angepasst; alle Prüfbedingungen bleiben erhalten. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R160",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "4501267a27988548364c26cdf362af2c48da346a986ae0de7054730bebb6d5c0",
+      "to": "7bbff19d4295aff3d3f3c99e68c64940a4652813ee2005c0aa3b4c669ab79bd4",
+      "scope": "Erwartete Pro/Contra-Überschriften an „Stärken/Schwächen laut Kennzahlen“ angepasst (WORTWAHL.md); Prüfbedingung bleibt."
+    },
+    {
+      "id": "UIP-R161",
+      "date": "2026-11-10",
+      "pr": 1725,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag 09.11.2026 „Morning Briefing abschalten, erst einmal archivieren“.",
+      "file": "assets/site-navigation.js",
+      "from": "63610eabc84b7280f54b135ea3046d1de4348bcd5fe4c087420c4425e4d29ca0",
+      "to": "ec5fd845f84caf763b906c2dc44a1f82f946d90b72f786a5496f56f08c258cca",
+      "scope": "Morning aus „Weitere Produkte“ entfernt (Steckbrief RETIRED, navigation null, build-modules.mjs); vorbereitet als UIP-R146."
+    },
+    {
+      "id": "UIP-R162",
+      "date": "2026-11-10",
+      "pr": 1725,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag 09.11.2026 „Morning Briefing abschalten, erst einmal archivieren“.",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "7bbff19d4295aff3d3f3c99e68c64940a4652813ee2005c0aa3b4c669ab79bd4",
+      "to": "7a654ec026ecf413cf8363e407581a442f60da92404b576b43fecc8640037f18",
+      "scope": "Plattform-Kopf-Prüfung verlangt keinen Link auf /morning/ mehr (Morning eingestellt); übrige Ziele unverändert; vorbereitet als UIP-R147."
     }
   ]
 }

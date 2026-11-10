@@ -155,6 +155,12 @@
    "timer": "waker"
   },
   {
+   "id": "freshness-monitor-7",
+   "workflow": "freshness-monitor.yml",
+   "cron": "41 0,6,12,18 * * 0,6",
+   "timer": "waker"
+  },
+  {
    "id": "intraday-snapshots",
    "workflow": "intraday-snapshots.yml",
    "cron": "35 21 * * 1-5",

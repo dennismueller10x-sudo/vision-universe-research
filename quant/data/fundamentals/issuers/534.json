@@ -936,9 +936,9 @@
       "cik": "0001821534",
       "name": "Exodus Movement, Inc.",
       "sic": "6199",
-      "rawFacts": 2161,
-      "mappedFacts": 708,
-      "unmappedFacts": 1504,
+      "rawFacts": 2450,
+      "mappedFacts": 792,
+      "unmappedFacts": 1711,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -948,14 +948,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -969,7 +969,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -989,21 +989,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -1017,14 +1017,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -1047,44 +1047,46 @@
         }
       },
       "quality": {
-        "HIGH": 101
+        "HIGH": 105,
+        "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 101,
-        "resolvedValues": 101
+        "datableValues": 107,
+        "resolvedValues": 107
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1540,
+        "rules_version": "1.1.0",
+        "total": 1751,
         "by_severity": {
-          "INFO": 1504,
-          "WARNING": 36
+          "INFO": 1711,
+          "WARNING": 40
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 33,
+          "CONCEPT_DISAGREEMENT": 37,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 1504
+          "UNKNOWN_CONCEPT": 1711
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-055453",
-        "filing_date": "2026-08-11",
+        "accession": "0001628280-26-072336",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 10
+        "periodic_filings": 11,
+        "acceptance_datetime": "2026-11-09T22:17:35.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "73a72c54a970dd46da8edbe71f0e6f12232d519f195ca21e818c1019f30a0603",
+      "sourceDigest": "6dfb44cda4f77da02a47450828f9334712dcca968b82578b27d1728c0ae1d968",
       "issuerId": "iss_cik_0001821534"
     },
     {

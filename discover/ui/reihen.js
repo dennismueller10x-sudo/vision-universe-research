@@ -230,7 +230,7 @@
     var ids = slot.rows.filter(function (id) { return avail[id]; });
     var total = Object.keys(avail).filter(function (id) { return !/^thema-/.test(id) && id !== 'sector-leaders'; }).length;
     var sec = h('section', 'dr-sec dr-sec--strat');
-    sec.innerHTML = railHead({ title: 'Strategien', more: 'Alle ' + total, href: '#/strategien', label: 'Alle ' + total + ' Strategien', sub: 'Feste Regeln aus den Geschäftszahlen (SEC).' });
+    sec.innerHTML = railHead({ title: 'Strategien', more: 'Alle ' + total, href: '#/strategien', label: 'Alle ' + total + ' Strategien', sub: 'Feste Regeln aus den Geschäftszahlen (Pflichtmeldungen).' });
     var track = rail('Strategien'); sec.appendChild(track);
     ids.forEach(function (id) {
       var cp = R().STRATEGY_COPY[id] || {}, a = h('a', 'dr-sk'); a.href = rowHref(id); a.setAttribute('role', 'listitem');
@@ -429,7 +429,11 @@
       if (!rows.length) { head.textContent = 'Steht heute in keiner weiteren Reihe'; return; }
       head.textContent = 'Steht heute in ' + rows.length + (rows.length === 1 ? ' Reihe' : ' Reihen');
       rows.sort(function (a, b) { return a.rank / (a.matched || 1) - b.rank / (b.matched || 1); });
-      box.innerHTML = rows.map(function (m, i) { return '<a class="vu-chip' + (i ? '' : ' vu-chip--lime') + '" href="' + esc(rowHref(m.id)) + '" data-dv3-close>' + esc(R().title(m.id)) + '</a>'; }).join('');
+      /* n-preview: die fünf Reihen mit dem besten Platz als Chips, der Rest als „+N weitere“ (öffnet die Liste) */
+      var chip = function (m, i) { return '<a class="vu-chip' + (i ? '' : ' vu-chip--lime') + '" href="' + esc(rowHref(m.id)) + '" data-dv3-close>' + esc(R().title(m.id)) + '</a>'; };
+      box.innerHTML = rows.slice(0, 5).map(chip).join('') + (rows.length > 5 ? '<button type="button" class="vu-chip dr-pv__more">+' + (rows.length - 5) + ' weitere</button>' : '');
+      var more = box.querySelector('.dr-pv__more');
+      if (more) more.addEventListener('click', function () { more.remove(); box.insertAdjacentHTML('beforeend', rows.slice(5).map(function (m) { return chip(m, 1); }).join('')); });
     });
     return el;
   }

@@ -445,6 +445,9 @@ jobs:
       - name: Deploy reviewed release artifact
         id: deployment
         uses: actions/deploy-pages@v4
+        # Kein `env: GITHUB_SHA` hier: der Runner reicht es nicht an deploy-pages durch (Lauf 42763174678, 10.11.2026: env zeigte
+        # <sha>-<run>-<attempt>, pages_build_version blieb der Commit). Neue Build-Version = neuer Commit, siehe
+        # scripts/company_intelligence/pages-release-marker.mjs (Refresh und Universe-Release vor dem eigenen Dispatch).
   company-intelligence-live:
     if: github.event_name != 'pull_request'
     needs: [package, deploy]

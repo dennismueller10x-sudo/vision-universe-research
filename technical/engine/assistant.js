@@ -135,7 +135,7 @@
         o("macdPos", "MACD-Histogramm positiv", "Der kurzfristige Schwung ist zuletzt positiv.", { field: "macdPositive", op: "is", value: true }, true, "macd"),
         o("reversalUp", "Bestätigte Umkehrformation nach oben", "Doppelboden, umgekehrte Schulter-Kopf-Schulter oder fallender Keil mit Ausbruch nach oben.", { field: "formationConfirmedUp", op: "in", value: ["DOUBLE_BOTTOM", "INVERSE_HEAD_AND_SHOULDERS", "FALLING_WEDGE"] }, false, "reversal"),
         o("rsiExitOversold", "RSI vor höchstens 10 Tagen aus dem überverkauften Bereich", "Der RSI ist von unter 30 wieder darüber gestiegen.", { field: "rsiExitOversoldDays", op: "lte", value: 10 }, false, "rsi"),
-        o("candleBull", "Bullisches Kerzenmuster am Stichtag", "Eine Kerze, die üblicherweise als Gegenbewegung gelesen wird.", { field: "candleBullish", op: "in", value: Q.field("candleBullish") ? Object.keys(Q.field("candleBullish").values) : [] }, false, "candle")
+        o("candleBull", "Kerzenmuster, das nach oben deutet, am Stichtag", "Eine Kerze, die üblicherweise als Gegenbewegung gelesen wird.", { field: "candleBullish", op: "in", value: Q.field("candleBullish") ? Object.keys(Q.field("candleBullish").values) : [] }, false, "candle")
       ],
       sort: { field: "crossAboveSma200Days", dir: "asc" }, templates: ["aboveSma200"],
       evidence: { s4: [], signals: ["crossAboveSma200", "rsiExitOversold", "goldenCross"], formations: ["DOUBLE_BOTTOM", "INVERSE_HEAD_AND_SHOULDERS", "FALLING_WEDGE"],

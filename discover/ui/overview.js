@@ -145,8 +145,8 @@
     var html = '<div class="dv3-gesch" data-track="' + have[0][0] + '">' + U().seg(have.map(function (t) { return { id: t[0], label: t[1] }; }), have[0][0], { label: "Kennzahl" }) +
       '<div class="dv3-gesch-body"></div>' +
       (st[0] ? '<div class="vu-box vu-box--lime dv3-kern"><b>' + esc(st[0]) + "</b></div>" : "") +
-      '<div style="margin-top:10px">' + U().help("GJ = Geschäftsjahr. Es endet je Firma in einem anderen Monat; die Zahlen stammen aus den Geschäftsberichten.") + "</div>" +
-      (st.length > 1 ? '<ul class="dv3-checks">' + st.slice(1, 4).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>" : "") + "</div>";
+      (st.length > 1 ? '<ul class="dv3-checks">' + st.slice(1, 4).map(function (s) { return "<li>" + esc(s) + "</li>"; }).join("") + "</ul>" : "") +
+      '<div style="margin-top:10px">' + U().help("GJ = Geschäftsjahr. Es endet je Firma in einem anderen Monat; die Zahlen stammen aus den Geschäftsberichten.") + "</div></div>";
     return section("geschaeft", "Wie sich das Geschäft entwickelt hat", html);
   }
   function geschaeftZeichnen(host, d, track) {
@@ -340,16 +340,16 @@
   function kapitel(d, universe) {
     var ks = kapitelListe(d, universe), open = openSet();
     if (!ks.length) return "";
-    return '<section class="dv3-sec dv3-kapitel" data-sec="kapitel">' + U().sect("Kapitel") + '<p class="dv3-sub">' + ks.length + " Kapitel, je eins aufklappen. Zusammen das, was die Seite bisher untereinander zeigte.</p>" +
+    return '<section class="dv3-sec dv3-kapitel" data-sec="kapitel">' + U().sect("Kapitel").replace("</div>", '<button type="button" class="dv3-alle" aria-label="Alle Kapitel aufklappen">Alle</button></div>') + '<p class="dv3-sub">' + ks.length + " Kapitel, je eins aufklappen. Zusammen das, was die Seite bisher untereinander zeigte.</p>" +
       '<div class="dv3-eps">' + ks.map(function (k, i) {
-        return '<details class="dv3-ep" data-ch="' + k[0] + '"' + (open.indexOf(k[0]) >= 0 ? " open" : "") + '><summary><b class="dv3-ep-n">' + (i + 1) + "</b>" + k[3] + '<span class="dv3-ep-t"><b>' + esc(k[1]) + "</b>" + (k[2] ? "<span>" + esc(k[2]) + "</span>" : "") + '</span><span class="dv3-ep-c" aria-hidden="true">' + U().glyph("next", 15) + '</span></summary><div class="dv3-ep-body">' + k[4] + "</div></details>";
+        return '<details class="dv3-ep" data-ch="' + k[0] + '"' + (open.indexOf(k[0]) >= 0 ? " open" : "") + '><summary><b class="dv3-ep-n">' + (i + 1) + "</b>" + k[3] + '<span class="dv3-ep-t"><b>' + esc(k[1]) + "</b>" + (k[2] ? "<span>" + esc(k[2]) + "</span>" : "") + '</span><span class="dv3-ep-c" aria-hidden="true">' + U().glyph("next", 15) + U().glyph("x", 15) + '</span></summary><div class="dv3-ep-body">' + k[4] + "</div></details>";
       }).join("") + "</div></section>";
   }
   /** „{Name} steht in N Reihen“: Platz groß, Tipp öffnet die Reihe. */
   function reihen(d, universe) {
     var m = sortedMemberships(d);
     if (!m.length) return "";
-    return '<section class="dv3-sec" id="dv3-reihen" data-sec="reihen">' + U().sect((d.companyName || d.symbol) + " steht in " + m.length + (m.length === 1 ? " Reihe" : " Reihen")) + '<p class="dv3-sub">Platz nach der Regel der Reihe. Tipp öffnet die Reihe.</p><div class="dv3-rail" role="list">' + m.map(function (x) {
+    return '<section class="dv3-sec" id="dv3-reihen" data-sec="reihen">' + U().sect((d.companyName || d.symbol) + " steht in " + m.length + (m.length === 1 ? " Reihe" : " Reihen"), { href: "#/reihen" }) + '<p class="dv3-sub">Platz nach der Regel der Reihe. Tipp öffnet die Reihe.</p><div class="dv3-rail" role="list">' + m.map(function (x) {
       return '<a class="dv3-rk2" role="listitem" href="' + esc(rowLink(universe, x.rowId)) + '"><span class="vu-num">' + x.rank + ".</span><b>" + esc(rowName(x.rowId, x.title)) + '</b><span class="vu-xs vu-mu">von ' + num(x.of, 0) + "</span></a>";
     }).join("") + "</div></section>";
   }
@@ -362,18 +362,33 @@
       var n = d.discoverNext && d.discoverNext[x[0]];
       if (!n || !(n.cards || []).length) return "";
       var sub = x[2] != null ? x[2] : "KGV unter 80 % von " + (d.companyName || d.symbol) + ", Nettomarge mindestens 5 %.";
-      return '<section class="dv3-sec dv3-next" data-next="' + x[0] + '">' + U().sect(x[1](d)) + (sub ? '<p class="dv3-sub">' + esc(sub) + "</p>" : "") + '<div class="dv3-rail dv3-posters" role="list"></div></section>';
+      return '<section class="dv3-sec dv3-next" data-next="' + x[0] + '">' + U().sect(x[1](d), x[0] === "sameTheme" && themeOf(d) ? { href: rowLink(universe, themeOf(d).rowId), link: alleN(themeOf(d).rowId) } : null) + (sub ? '<p class="dv3-sub">' + esc(sub) + "</p>" : "") + '<div class="dv3-rail dv3-posters" role="list"></div></section>';
     }).join("");
+  }
+  /** „Alle 41“: Trefferzahl der Reihe aus meta.rows (coverage.matched), sonst nur „Alle“. */
+  function alleN(rowId) {
+    var R = D.Reihen, n = R && R.available ? R.available(global.VUDiscoverMeta, "US_REAL")[rowId] : null;
+    return isNum(n) ? "Alle " + num(n, 0) : "Alle";
+  }
+  /** „Alle“ an den Kapiteln: klappt alle auf, beim zweiten Tipp wieder zu. */
+  function bindAlle(box) {
+    var b = box.querySelector(".dv3-alle"); if (!b) return;
+    b.addEventListener("click", function () {
+      var eps = box.querySelectorAll(".dv3-ep"), zu = Array.prototype.some.call(eps, function (x) { return !x.open; });
+      eps.forEach(function (x) { x.open = zu; });
+      b.textContent = zu ? "Alle zu" : "Alle";
+      b.setAttribute("aria-label", zu ? "Alle Kapitel zuklappen" : "Alle Kapitel aufklappen");
+    });
   }
   function seriesFor(c) {
     var I = global.VUCore && global.VUCore.Identity;
     try { return I ? { status: "CALCULATED", path: "/quant/data/market/discover-series/" + I.securityIdForTicker(c.symbol) + ".json" } : null; } catch (e) { return null; }
   }
-  function fillPosters(box, d, universe) {
+  function fillPosters(box, d, universe, ctx) {
     var UI = D.ReihenUI; if (!UI) return;
     box.querySelectorAll(".dv3-next").forEach(function (sec) {
       var n = d.discoverNext[sec.getAttribute("data-next")], rail = sec.querySelector(".dv3-posters");
-      n.cards.slice(0, 8).forEach(function (c) { rail.appendChild(UI.poster(Object.assign({ priceSeries: seriesFor(c) }, c), { universeId: universe })); });
+      n.cards.slice(0, 8).forEach(function (c) { rail.appendChild(UI.poster(Object.assign({ priceSeries: seriesFor(c) }, c), ctx || { universeId: universe })); });
     });
   }
   /* ------------------------------------------------ Aus einer Reihe gekommen (a-next) */
@@ -416,7 +431,7 @@
       det.addEventListener("toggle", function () { saveOpen(det.getAttribute("data-ch"), det.open); });
     });
   }
-  function renderTitel(d, universe) {
+  function renderTitel(d, universe, opts) {
     var html = [etiketten(d, universe), story(d), kapitel(d, universe), reihen(d, universe), schienen(d, universe)].join("");
     var box = document.createElement("div");
     box.className = "vu-ui dv3-overview dv3-titel";
@@ -432,7 +447,9 @@
       });
     }
     bindKapitel(box);
-    fillPosters(box, d, universe);
+    /* Poster wie auf der Startseite, mit Herz (Merken), wenn die App einen Merkzettel mitgibt (ctx.watch). */
+    fillPosters(box, d, universe, Object.assign({}, opts || {}, { universeId: universe }));
+    bindAlle(box);
     herkunft(box, d, universe);
     U().bindHelp(box);
     return box;
@@ -444,7 +461,7 @@
   function render(d, opts) {
     if (!U() || !d) return null;
     var universe = (opts && opts.universeId) || d.universeId || "US_REAL";
-    if (d.region !== "EUROPE" && D.Reihen && D.ReihenUI) return renderTitel(d, universe);
+    if (d.region !== "EUROPE" && D.Reihen && D.ReihenUI) return renderTitel(d, universe, opts);
     var html = [satz(d), zeitachse(d), spanne(d), blick(d), firma(d, universe), geschaeft(d), gesundheit(d), teuer(d), waage(d), indizes(d), ranglisten(d, universe),
       liste(d, "similar", "Ähnliche Aktien", universe), liste(d, "sameTheme", "Gleiches Thema", universe), liste(d, "cheaperAlternatives", "Günstiger bewertet", universe), welten(d)].join("");
     var box = document.createElement("div");

@@ -363,6 +363,9 @@
 
   VS.views.etf = function (r) {
     var sym = decodeURIComponent(r.args[0] || "").toUpperCase();
+    /* Konzept EHV: Die Seite gehört zum Index. #/etf/URTH → #/index/msci-world; der US-Fonds selbst bleibt unter ?fonds=1. */
+    var ixr = indexOfFund(sym);
+    if (ixr && r.query.fonds !== "1" && !r.query.tab && !r.query.play) { global.location.replace("#/index/" + ixr.id); return; }
     var tab = r.query.tab || "uebersicht";
     var root = VS.render('<section class="vs-section"><div class="vs-loading">' + esc(sym) + ' wird geladen …</div></section>');
     VS.master().then(function (m) { return m.find(sym) ? m : VS.masterAll(); }).then(function (m0) {
@@ -412,6 +415,100 @@
     }).catch(function () {
       VS.render('<section class="vs-hero"><p class="vs-eyebrow">ETF Intelligence</p><h1>' + esc(sym) + ' nicht gefunden.</h1><p class="vs-lead">Dieser Ticker ist nicht im ETF-Verzeichnis. Vielleicht ist er als Aktie geführt oder (noch) nicht im aufgenommenen Universum.</p><div class="vs-tabs"><a class="vs-pill primary" href="#/etfs?q=' + encodeURIComponent(sym) + '">Im Screener suchen</a></div></section>');
     });
+  };
+
+  /* ============================================================== Seite je Index (Konzept EHV, VX03)
+     #/index/<id>: Die Seite gehört zum Index, nicht zum US-Fonds. „In der EU kaufbar“ zählt die UCITS-ETFs auf den Index im
+     ESMA-Fondsregister (vorsorge/data/eu/etf-eu-ucits.json, Fondsname enthält den Index und „UCITS ETF“) und nennt bis zu zwei
+     Beispiele aus dieser offenen Liste (bekannte, große Fonds je Index; keine Bewertung, keine Empfehlung). Der US-Fonds bleibt
+     als Marktabbild mit Kursdatum. #/etf/<US-Fonds> leitet auf die Index-Seite; der Fonds selbst bleibt unter ?fonds=1. */
+  VS.INDEXES = [
+    { id: "msci-world", name: "MSCI World", title: "Aktien Welt", us: "URTH", pat: "MSCI WORLD", what: "Große und mittlere Firmen aus Industrieländern weltweit.", ex: ["IE00B4L5Y983", "IE00BJ0KDQ92"] },
+    { id: "sp-500", name: "S&P 500", title: "Aktien USA", us: "SPY", pat: "S&P 500", what: "Die 500 größten börsennotierten Firmen der USA.", ex: ["IE00B5BMR087", "IE00BFMXXD54"] },
+    { id: "msci-emerging-markets", name: "MSCI Emerging Markets", title: "Schwellenländer", us: "EEM", pat: "MSCI (EMERGING MARKETS|EM)\\b", what: "Große und mittlere Firmen aus Schwellenländern.", ex: ["IE00B4L5YC18", "IE00BTJRMP35"] },
+    { id: "nasdaq-100", name: "Nasdaq-100", title: "USA Technik", us: "QQQ", pat: "NASDAQ.?100", what: "Die 100 größten Firmen an der Nasdaq ohne Finanzwerte.", ex: ["IE00B53SZB19", "IE0032077012"] },
+    { id: "euro-stoxx-50", name: "Euro Stoxx 50", title: "Aktien Europa", us: "FEZ", pat: "EURO STOXX 50", what: "50 große Firmen aus Ländern der Eurozone.", ex: ["IE00B53L3W79", "LU0380865021"] },
+    { id: "russell-2000", name: "Russell 2000", title: "US-Nebenwerte", us: "IWM", pat: "RUSSELL 2000", what: "Rund 2.000 kleinere Firmen aus den USA.", ex: ["IE00BJZ2DD79", "IE00B60SX402"] }
+  ];
+  VS.UCITS_EXAMPLE_LABEL = "Beispiele, keine Empfehlung";
+  function indexById(id) { return VS.INDEXES.filter(function (x) { return x.id === id; })[0] || null; }
+  function indexOfFund(sym) { sym = String(sym || "").toUpperCase(); return VS.INDEXES.filter(function (x) { return x.us === sym; })[0] || null; }
+  VS.indexOfFund = indexOfFund;
+  VS.indexHref = function (e) { var ix = indexOfFund(e && e.symbol); return ix ? "#/index/" + ix.id : VS.etfHref(e); };
+  var ucitsP = null;
+  VS.ucitsRegister = function () {
+    return ucitsP || (ucitsP = VS.getJSON("/vorsorge/data/eu/etf-eu-ucits.json").then(function (u) {
+      var rows = u.rows.map(function (r) { var o = {}; u.fields.forEach(function (f, i) { o[f] = r[i]; }); return o; });
+      return { runDate: u.runDate, source: u.source, attribution: u.attribution, rows: rows };
+    }).catch(function (e) { ucitsP = null; throw e; }));
+  };
+  /** UCITS-ETFs auf einen Index im Register: Anzahl und die Beispiele der offenen Liste, die das Register führt. */
+  VS.ucitsOnIndex = function (reg, ix) {
+    var re = new RegExp(ix.pat, "i");
+    var on = reg.rows.filter(function (r) { var n = String(r.fundName || ""); return r.ucits !== false && re.test(n) && /UCITS ETF/i.test(n); });
+    var byIsin = {}; on.forEach(function (r) { byIsin[r.isin] = r; });
+    return { count: on.length, examples: ix.ex.map(function (i) { return byIsin[i]; }).filter(Boolean).slice(0, 2) };
+  };
+  function chapterEl(n, glyph, title, sub, fill) {
+    var d = document.createElement("details");
+    d.className = "vs-ep";
+    d.innerHTML = '<summary><b class="vs-ep-n num">' + n + '</b><span class="vu-hud" style="--vu-hud:40px;border-radius:12px">' + VS.glyph(glyph, 19) + '</span><span class="vs-ep-t"><b>' + esc(title) + '</b><span>' + sub + '</span></span><span class="vs-ep-go" aria-hidden="true">' + VS.glyph("next", 15) + '</span></summary><div class="vs-ep-body"></div>';
+    var done = false;
+    d.addEventListener("toggle", function () { if (d.open && !done) { done = true; fill(d.querySelector(".vs-ep-body")); } });
+    return d;
+  }
+  function kt(label, value, sub, helpText) {
+    return '<div class="vs-kt vs-kt--q"><small>' + esc(label) + (helpText && VS.U ? " " + VS.U.q(helpText, label) : "") + '</small><b class="num">' + esc(value) + '</b><span>' + esc(sub) + '</span></div>';
+  }
+  VS.views.index = function (r) {
+    var ix = indexById(decodeURIComponent(r.args[0] || ""));
+    if (!ix) { VS.render('<section class="vs-section"><h1 class="vu-mt">Diesen Index gibt es hier nicht.</h1><p class="vu-sm vu-mu" style="margin-top:6px"><a href="#/etfs">Alle ETFs ansehen</a></p></section>'); return; }
+    var U = VS.U, sym = ix.us, watched = VS.state.watchlist.indexOf(sym) >= 0;
+    var root = VS.render('<div class="vs-ixhead"><a class="vu-round" href="#/etfs" aria-label="Zurück">' + U.glyph("back", 18) + '</a><span class="vu-sm vu-mu"><b>ETF · ' + esc(ix.title) + '</b></span>' +
+      '<button type="button" class="vu-round vs-ixwatch" data-vu-watch aria-pressed="' + watched + '" aria-label="Merken">' + U.glyph("heart", 17) + '</button></div>' +
+      '<h1 class="vu-lt" style="margin-top:10px">' + esc(ix.name) + '</h1><p class="vu-sm vu-mu" id="vs-ix-what" style="margin-top:2px">' + esc(ix.what) + '</p>' +
+      '<div class="vu-box vu-box--lime vs-oneline" style="margin-top:12px"><span class="vu-ltag">In einem Satz</span><p id="vs-ix-sum">…</p></div>' +
+      '<section class="vu-box vs-ixeu" id="vs-ix-eu" aria-label="In der EU kaufbar"><div class="vs-row-sb"><span class="vu-ltag">In der EU kaufbar</span>' + VS.verdict("strong", "UCITS") + '</div><p class="vu-sm" style="margin-top:6px">EU-Fondsregister wird geladen …</p></section>' +
+      VS.sect("Marktabbild", "#/etf/" + encodeURIComponent(sym) + "?fonds=1", "US-Fonds " + sym) + '<div class="vu-box"><div id="vs-ix-chart"></div><p class="vu-xs vu-mu" id="vs-ix-chartnote" style="margin-top:6px"></p></div>' +
+      '<div class="vs-kt2" id="vs-ix-kt"></div><div class="vs-eps" id="vs-ix-eps"></div>',
+      { dm: [["Index-Seite", "Kennzahlen, Chart, Bestände und Kosten vom US-Fonds " + esc(sym) + " als Marktabbild des Index. Kaufbar in der EU sind UCITS-ETFs auf denselben Index; deren Kurse und Kosten liegen noch nicht vor."]] });
+    root.querySelector("[data-vu-watch]").onclick = function () { var on = watchToggle(sym); this.setAttribute("aria-pressed", String(on)); };
+    VS.ucitsRegister().then(function (reg) {
+      var u = VS.ucitsOnIndex(reg, ix), box = root.querySelector("#vs-ix-eu");
+      box.innerHTML = '<div class="vs-row-sb"><span class="vu-ltag">In der EU kaufbar</span>' + VS.verdict("strong", "UCITS") + '</div>' +
+        '<p class="vu-sm" style="margin-top:6px"><b>' + u.count.toLocaleString("de-DE") + ' UCITS-ETFs</b> auf ' + esc(ix.name.replace(/ /g, "-")) + '-Indizes stehen im EU-Fondsregister' + (u.examples.length ? ", zum Beispiel:" : ".") + '</p>' +
+        u.examples.map(function (x) { return '<div class="vs-kv"><span class="vu-sm"><b>' + esc(x.fundName) + '</b></span><span class="vu-xs vu-mu vs-mono"><b>' + esc(x.isin) + '</b></span></div>'; }).join("") +
+        '<p class="vu-xs vu-mu" style="margin-top:6px">ESMA-Register, Stand ' + F.date(reg.runDate) + '. ' + VS.UCITS_EXAMPLE_LABEL + '. Kurse und Kosten folgen, sobald EU-Kurse vorliegen.</p>';
+    }).catch(function () { root.querySelector("#vs-ix-eu").innerHTML = '<span class="vu-ltag">In der EU kaufbar</span><p class="vu-sm" style="margin-top:6px">Das EU-Fondsregister ist gerade nicht erreichbar. UCITS-ETFs auf den ' + esc(ix.name) + ' sind bei Banken und Brokern in der EU erhältlich.</p>'; });
+    VS.master().then(function (m) { return Promise.all([m, VS.etf(sym)]); }).then(function (res) {
+      var m = res[0], d = res[1], e = m.find(sym), mt = d.metrics;
+      var trM = d.metricsTotal && d.metricsTotal.windows && d.metricsTotal.windows.MAX, prM = mt && mt.windows && mt.windows.MAX, useM = trM && Number.isFinite(trM.annualized) ? trM : prM;
+      var hasH = d.holdings && d.holdings.status === "AVAILABLE", cost = d.costs && Number.isFinite(d.costs.value) ? d.costs.value : null, ein = einordnung(e, d);
+      root.querySelector("#vs-ix-sum").textContent = hasH && d.holdings.positions && Number.isFinite(d.holdings.top10)
+        ? "Breit gestreut über rund " + (Math.round(d.holdings.positions / 10) * 10).toLocaleString("de-DE") + " Firmen; die zehn größten machen " + F.pct(d.holdings.top10, 0) + " aus."
+        : whatIsIt(e, d);
+      if (hasH && d.holdings.positions) root.querySelector("#vs-ix-what").textContent = "Rund " + (Math.round(d.holdings.positions / 10) * 10).toLocaleString("de-DE") + " Firmen. " + ix.what;
+      root.querySelector("#vs-ix-chartnote").textContent = sym + " (" + (d.exchange || "USA") + ", " + (d.currency || "USD") + "), letzter Kurs " + F.date(mt && mt.priceDate) + ". Vergangene Kurse sind kein Versprechen.";
+      VS.weekly(e.slug).then(function (w) {
+        var host = root.querySelector("#vs-ix-chart");
+        if (!w || w.length < 3 || !global.VUChart) { host.innerHTML = '<p class="vu-sm vu-mu">Für ' + esc(sym) + ' liegt keine Kursreihe vor.</p>'; return; }
+        global.VUChart.mount(host, { currency: d.currency || "USD", label: sym + " als Marktabbild des " + ix.name, height: 120, bleed: false, ranges: [{ id: "1J", label: "1 J", points: w.slice(-53) }, { id: "Max", label: "Max", points: w }] });
+      });
+      root.querySelector("#vs-ix-kt").innerHTML =
+        kt(useM && useM.from ? "Pro Jahr seit " + useM.from.slice(0, 4) : "Pro Jahr", useM && Number.isFinite(useM.annualized) ? F.spct(useM.annualized) : "–", useM === trM ? "mit Ausschüttungen" : "nur Kurs", "Durchschnittliche Entwicklung pro Jahr seit Beginn der Kurshistorie des US-Fonds. Vergangenheit, kein Versprechen.") +
+        kt("Schwankung", mt && mt.volatility && Number.isFinite(mt.volatility.value) ? F.pct(mt.volatility.value, 0) : "–", "pro Jahr", "Wie stark der Kurs typisch hoch und runter geht.") +
+        kt("Kosten", cost !== null ? VS.costPct(cost) : "k. A.", cost !== null ? "pro Jahr laut Prospekt" : "keine amtliche Quelle", "Laufende Kosten des US-Fonds, automatisch vom Fondsvermögen abgezogen. UCITS-ETFs haben eigene Kosten.") +
+        kt("Firmen", hasH && d.holdings.positions ? Number(d.holdings.positions).toLocaleString("de-DE") : "–", hasH ? "Meldung " + F.date(d.holdings.asOf) : "keine Bestandsdaten", "Anzahl der Positionen laut letzter Quartalsmeldung des US-Fonds.");
+      var nOk = ein.filter(function (x) { return x[0] === "ok"; }).length, nInfo = ein.length - nOk;
+      var eps = root.querySelector("#vs-ix-eps"), VKIND = { ok: ["strong", "Passt"], warn: ["weak", "Achtung"], info: ["mid", "Hinweis"] };
+      if (hasH) eps.append(chapterEl(1, "pie", "Größte Firmen und Länder", "Top 10 = " + F.pct(d.holdings.top10, 0) + " · Meldung " + F.date(d.holdings.asOf), function (b) { TAB_VIEWS.bestandteile(b, e, d); }));
+      eps.append(chapterEl(eps.children.length + 1, "check", "Einordnung", nOk + " passt · " + nInfo + (nInfo === 1 ? " Hinweis" : " Hinweise"), function (b) {
+        b.innerHTML = einordnungBilanz(ein) + '<div class="vu-box vs-kvbox">' + ein.map(function (x) { var k = VKIND[x[0]] || VKIND.info; return '<div class="vs-kv"><span class="vu-sm"><b>' + esc(x[1]) + '</b></span>' + VS.verdict(k[0], k[1]) + '</div>'; }).join("") + '</div><p class="vu-xs vu-mu" style="margin-top:6px">Einordnung aus Daten, keine Empfehlung.</p>';
+      }));
+      if (cost !== null) eps.append(chapterEl(eps.children.length + 1, "bars", "Kosten über die Jahre", "Was " + VS.costPct(cost) + " ausmachen", function (b) { TAB_VIEWS.kosten(b, e, d); }));
+      if (hasH || (d.costs && d.costs.previousFiling)) eps.append(chapterEl(eps.children.length + 1, "spark", "Was hat sich geändert?", "Gewichte, Kosten", function (b) { TAB_VIEWS.aenderungen(b, e, d); }));
+      VS.dm([["Kurse", esc(sym) + ", letzter Kurs " + F.date(mt && mt.priceDate)]], mt && mt.asOf);
+    }).catch(function () { root.querySelector("#vs-ix-kt").innerHTML = U.blank("Die Daten des US-Fonds " + sym + " konnten nicht geladen werden."); root.querySelector("#vs-ix-sum").textContent = ix.what; });
   };
 
   function quality(d) {

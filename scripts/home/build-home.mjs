@@ -119,7 +119,7 @@ const worldTiles = (shown.length === 3 ? shown : themes.slice(0, 3)).map(x => `<
 
 // ---------- Neun Welten ----------
 const NINE = [['discover', 'Discover', 'Aktien entdecken', '/discover/'], ['quant', 'Quant', 'Faktoren je Aktie', '/quant/'], ['technical', 'Technical', 'Charts und Muster', '/technical/'],
-  ['fundamental', 'Fundamental', 'Zahlen aus SEC-Berichten', '/fundamental/'], ['supertrader', 'Supertrader', 'Methoden der Profis', '/supertrader/'], ['hedgefonds', 'Hedgefonds', 'Was Investoren halten', '/hedgefonds/'],
+  ['fundamental', 'Fundamental', 'Zahlen aus Unternehmensberichten', '/fundamental/'], ['supertrader', 'Supertrader', 'Methoden der Profis', '/supertrader/'], ['hedgefonds', 'Hedgefonds', 'Was Investoren halten', '/hedgefonds/'],
   ['elliott', 'Elliott', 'Wellenstruktur', '/elliott/'], ['screener', 'Screener', 'Eigene Filter', '/screener/'], ['vorsorge', 'Vorsorge', 'Sparplan und Rente', '/vorsorge/']]
   .map(([i, n, c, h]) => `<a class="vu-box" href="${h}"><span class="vu-hud" style="--vu-hud:38px">${icon(i)}</span><b>${n}</b><small>${c}</small></a>`).join('');
 

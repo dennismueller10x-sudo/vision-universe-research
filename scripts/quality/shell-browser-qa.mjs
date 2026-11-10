@@ -30,7 +30,7 @@ const ROUTES = [
   ['Quant', '/quant/#/', 'Quant'], ['Quant', '/quant/#/screener', 'Screener'], ['Quant', '/quant/#/strategien', 'Strategien'],
   ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', 'Quant'],
   // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext)
-  ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?welle=3', 'Welle 3'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
+  ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?zaehlbar=1', 'Zählbar'], ['Elliott', '/elliott/#/?welle=3', 'Zählbar'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
   ['Elliott', '/elliott/#/?richtung=ab', null], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
   // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext
   ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/ranglisten', 'Ranglisten'], ['Fundamental', '/fundamental/#/branchen', 'Branchen'],
@@ -38,9 +38,9 @@ const ROUTES = [
   ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
   ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', [null, 'Planer']], ['Vorsorge', '/vorsorge/#/monitor', [null, 'Portfolio']], // V03/V05: Förderung gehört zum Planer, Veränderungen zum Portfolio
   ['Screener', '/screener/', 'Screener'], ['Screener','/screener/?f=roic:gt:0.1','Filter'], ['Screener','/screener/?mode=pro','Filter'], ['Screener', '/screener/?view=build', 'Filter'], ['Screener', '/screener/?view=saved', 'Gespeichert'], ['Screener', '/screener/?view=watchlist', 'Gespeichert'],
-  ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/signals/', 'Signale'],
-  ['Supertrader', '/supertrader/backtests/', 'Backtests'], ['Supertrader', '/supertrader/sources/', null],
-  ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/smart-money', 'Smart Money'],
+  ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/treffer/', 'Treffer'],
+  ['Supertrader', '/supertrader/forschung/', 'Forschung'], ['Supertrader', '/supertrader/sources/', null],
+  ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/gruppen-kaeufe', 'Gruppen-Käufe'],
   ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'],
   // Alte Quant-Unterseiten: Weiterleitungen auf die App unter /quant/ (quant/ui/legacy-redirect.js). Erwartet ist die Leiste
   // am Ziel: Ranking -> #/screener (Screener), Watchlist -> #/aktien (Aktien).
@@ -246,10 +246,10 @@ for (const [vpName, width, height] of VIEWPORTS) {
       });
       if (!firstMenu) firstMenu = m.groups.join('|') + '#' + m.links;
       else if (m.groups.join('|') + '#' + m.links !== firstMenu) fail(where, 'anderes Menue als auf Discover');
-      if(m.groups.join('|')!=='Discover|Quant|Technical|Fundamental|Supertrader|Hedgefonds|Elliott|Screener|Vorsorge|Portfolios') fail(where,'Produktraster falsch: '+m.groups.join('|'));
+      if(m.groups.join('|')!=='Discover|Quant|Technical|Fundamental|Supertrader|Hedgefonds|Elliott|Screener|Vorsorge|Portfolios|Insights') fail(where,'Produktraster falsch: '+m.groups.join('|'));
       if(m.moreOpen||!m.hereLinks||!m.search) fail(where,'Menüaufbau falsch: '+JSON.stringify({moreOpen:m.moreOpen,here:m.hereLinks,search:m.search}));
       if(m.panelBg!=='rgb(0, 0, 0)') fail(where,'Menü ist nicht schwarz: '+m.panelBg);
-      if(m.icons.length!==10||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
+      if(m.icons.length!==11||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
       await menuOpen(page, where);
       const menuSmall = await smallTargets(page);
       if(menuSmall.length) fail(where,smallText(menuSmall)+' Menüziele kleiner als 44 px');
@@ -287,7 +287,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Zurueck/Vor ueber die Leiste (Hash-Produkte und Seiten-Produkte).
-  for (const [start, clicks] of [['/quant/#/', ['Screener', 'Aktien']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Signale', 'Backtests']], ['/discover/#/', ['Welten', 'Strategien']]]) {
+  for (const [start, clicks] of [['/quant/#/', ['Screener', 'Aktien']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Treffer', 'Forschung']], ['/discover/#/', ['Welten', 'Strategien']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {

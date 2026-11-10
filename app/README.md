@@ -41,6 +41,18 @@ TestFlight-Lauf 6 vom 07.11.2026 auf Commit `d871426`. Alles bleibt auf `main` g
 | #1629 | Rechtstexte aus dem Menü öffnen im System-Browser (vorher still verworfen) |
 | #1630 (Website-Teil) | `/willkommen/` zählt als Einstieg für Zurück (`assets/vu-gestures.js`); im alten Build ohne Wirkung |
 
+**Website, ohne Build – aus der mobilen Bedienprüfung** (#1719, `docs/reports/app-bedienung-20261109.md`):
+
+| Punkt | Stand |
+|---|---|
+| P2 NVDA-Aktienseite: Layoutsprung beim Laden (CLS 0,17 bzw. 0,22) | #1729: auf ≤ 0,001, fertiges Bild unverändert |
+| P2 Tippziele unter 44 px (Screener „+“/„…“/Chips, Quant „Radar“/„Alle“, Supertrader „Alle 13“/„Alle Signale“, Discover „Alle“, Fundamental-Chips, Kopf Suche/Profil) | in Arbeit (Strang L), nur Trefferfläche, Aussehen gleich |
+| P1 Discover: erster „Merken“-Knopf ragt nur 16 px über das Dock | sichtbare Änderung nötig (Kartenhöhe/Anordnung) – im Discover-Entwurf des Owners |
+| P2 Morning: kein Dock, Pause seit 06.10. ohne Hinweis | Produktentscheidung, offen |
+| P3 Beschriftungen < 12 px, kleine Footer-/Hilfelinks, Name „Mein Bereich“ | offen |
+
+Nicht im Browser prüfbar und deshalb am Gerät mit 0.2.0 abzunehmen: native Rand-Geste, Haptik, Android-Zurück, Safe Areas.
+
 **Build-Weg** (wirkt beim nächsten Build mit, ändert die App nicht): #1633 `npm ci --ignore-scripts` (kein libvips-Download), Gradle-Wrapper aus dem Actions-Cache mit Wiederholung und 60 s Netz-Zeitgrenze – nach dem Ausfall von GitHub Releases am 08.11.2026.
 
 Vor dem Build: Bauprobe Android (`app-android-build.yml`, läuft auf jedem App-PR) und für iOS die Prüfungen ohne Mac
