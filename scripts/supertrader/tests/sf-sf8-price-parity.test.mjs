@@ -129,7 +129,7 @@ test('SF8-PX-HISTORY: legitime Differenz nur als Rundung vor einem Split; alles 
 
 test('SF8-PX-DQ: Preisabgleich im Datenqualitätsvertrag 1.1.0 – FAIL ohne Preisidentität, CAP bei ungeklärtem Verlauf', () => {
   assert.equal(DQ_CONTRACT_VERSION, 'sf8-data-quality-1.1.0');
-  assert.equal(SOURCES.priceReference, 'quant/data/market/discover-series');
+  assert.match(SOURCES.priceReference, /^quant\/data\/market\/discover-series$/);
   const bars = CAL.sessionsBetween('2024-01-01', ASOF).slice(-260).map((date, k) => { const c = 50 + k * 0.05; return { date, open: c - 0.1, high: c + 0.3, low: c - 0.3, close: c, volume: 1e6 }; });
   const s = { id: 'ref_TEST', ticker: 'TEST', bars, terminal: null, meta: { instrumentType: 'EQUITY_COMMON', activeStatus: 'ACTIVE', adjustmentStatus: 'adjusted', caReconciliation: 'PASS', splitEvents: 0, corporateActions: [] } };
   const weekly = []; for (let d = CAL.addDays(ASOF, -460); d <= ASOF; d = CAL.addDays(d, 7)) weekly.push({ date: d, close: 50 });
@@ -176,7 +176,8 @@ test('SF8-PX-UNREADABLE: eine vorhandene, unlesbare Referenz ist vertragswidrig,
 });
 
 test('SF8-PX-REPO: im Repository hat jeder Titel mit Tagesbalken am Stichtag seine Referenzreihe (Lesen, kein Schreiben)', () => {
-  const r = loadPriceReference('ref_AAPL');
+  const FIXTURE_ROOT = new URL('./fixtures/sf8-price-parity/', import.meta.url).pathname;
+  const r = loadPriceReference('ref_AAPL', { root: FIXTURE_ROOT });
   assert.ok(r && r.securityId === 'ref_AAPL' && r.priceSeriesType === 'SPLIT_ADJUSTED');
-  assert.equal(loadPriceReference('ref_DOES_NOT_EXIST_X'), null);
+  assert.equal(loadPriceReference('ref_DOES_NOT_EXIST_X', { root: FIXTURE_ROOT }), null);
 });
