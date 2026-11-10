@@ -118,3 +118,7 @@ Erzeugte Daten wandern Datenart für Datenart aus `main` in den Datenzweig `data
 - Ein Workflow, der solche Daten liest, ruft nach dem Checkout `scripts/ci/seed-data-branch.sh alle` auf (commit-sicher, auch bei `git add -A`).
 - Ein Erzeuger schreibt mit `scripts/ci/push-data-branch.sh data/live <pfad>…` (Verzeichnisse werden gespiegelt).
 - „Seite zeigt alten Stand“: Step Summary „Datenzweig“ des letzten Pages-Laufs lesen (`KEPT_MAIN` mit Grund), dann den letzten Lauf des Erzeugers.
+
+## 12. Vercel-Vorschau „Deployment rate limited“
+
+Das Tageskontingent (100) wird offenbar schon beim Anlegen einer Vorschau gezählt; der Abbruch durch `ignoreCommand` hilft dann nicht (10.11.2026, ein reiner Test-PR bekam den Status). Deshalb schaltet `vercel.json` mit `git.deploymentEnabled` die Vorschau für `claude/*`-Zweige aus (Steuerung 10.11.2026; die Vorschau war ohnehin der 197-Byte-Platzhalter, Oberflächen prüft die Browser-QA in der CI). `main` und Produktion bleiben unberührt; Test in `quant/tests/vercel-preview-boundary.test.mjs`. Der rote Vercel-Status ist keine Pflichtprüfung und kein Codefehler.

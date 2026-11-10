@@ -7,6 +7,7 @@
   "cleanUrls": true,
   "trailingSlash": true,
   "github": { "silent": true },
+  "git": { "deploymentEnabled": { "claude/*": false } },
   "functions": {
     "api/history.js": {
       "maxDuration": 30,
