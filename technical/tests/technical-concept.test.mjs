@@ -93,3 +93,8 @@ test("Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json
   const reg = JSON.parse(readFileSync("core/registry/product-contracts.json", "utf8"));
   assert.ok(reg.products.technical.consumes.includes("marketPulse") && reg.interfaces.marketPulse.artifact === "quant/data/market/intelligence/market-pulse.json");
 });
+
+test("Kleinform im Konzept-Stil: Mini-Charts nutzen VUChart.sparkline (neongrüne Fläche, Endpunkt), keine schwarze Einzellinie", () => {
+  assert.doesNotMatch(app, /Chart\.sparkline\(/, "kein technical/ui/chart.js#sparkline in der Oberfläche");
+  assert.match(app, /VC\.sparkline\(sparkMap\[row\.s\], \{ width: 216, height: 40 \}\)/, "Karte „Heute neu im Chart“");
+});
