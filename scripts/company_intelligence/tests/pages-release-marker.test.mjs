@@ -72,23 +72,23 @@ test('PM-6 Skript: nur Contents-API auf main, kein git, kein R2, kein Gate',()=>
 const refreshWf=loadYamlFile(here('../../../.github/workflows/company-intelligence-refresh.yml'));
 const universeText=readFileSync(here('../../../.github/workflows/company-intelligence-universe-release.yml'),'utf8');
 
-test('PM-7 Refresh: Marker nach der Gate-Pruefung und vor dem Wartescript; Job darf schreiben',()=>{
+test('PM-7 Refresh: Marker (per Dispatch) nach der Gate-Pruefung und vor dem Wartescript; Refresh bleibt lesend',()=>{
  const job=refreshWf.jobs.refresh,run=job.steps.find(s=>s.id==='deploy_live').run;
- const closed=run.indexOf('refresh-publication.mjs closed'),marker=run.indexOf('pages-release-marker.mjs --reason refresh'),wait=run.indexOf('refresh-dispatch-wait.mjs --health');
+ const closed=run.indexOf('refresh-publication.mjs closed'),marker=run.indexOf('pages-release-marker.mjs --dispatch --reason refresh'),wait=run.indexOf('refresh-dispatch-wait.mjs --health');
  assert.ok(closed>=0&&closed<marker&&marker<wait,'Reihenfolge: Gate zu? -> Marker -> Dispatch');
- assert.match(run,/pages-release-marker\.mjs --reason refresh \|\| echo "::warning::/,'Marker-Fehler bricht die Auslieferung nicht ab');
- assert.deepEqual(job.permissions,{contents:'write',actions:'write'});
- assert.deepEqual(refreshWf.permissions,{contents:'read',actions:'write'},'Vorgabe der anderen Jobs bleibt lesend');
+ assert.match(run,/pages-release-marker\.mjs --dispatch --reason refresh \|\| echo "::warning::/,'Marker-Fehler bricht die Auslieferung nicht ab');
+ assert.equal(job.permissions,undefined,'kein eigenes Schreibrecht im Refresh-Job');
+ assert.deepEqual(refreshWf.permissions,{contents:'read',actions:'write'});
 });
 
-test('PM-8 Universe-Release: Marker vor beiden Wartescript-Aufrufen (Freischaltung und Rueckweg); Job darf schreiben',()=>{
+test('PM-8 Universe-Release: Marker (per Dispatch) direkt vor beiden Wartescript-Aufrufen; Workflow bleibt lesend',()=>{
  const waits=[...universeText.matchAll(/refresh-dispatch-wait\.mjs --expected/g)].map(m=>m.index);
  assert.equal(waits.length,2);
  for(const [reason,at] of [['universe-release',waits[0]],['universe-recovery',waits[1]]]){
-  const m=universeText.lastIndexOf('pages-release-marker.mjs --reason '+reason,at);
+  const m=universeText.lastIndexOf('pages-release-marker.mjs --dispatch --reason '+reason,at);
   assert.ok(m>=0&&universeText.slice(m,at).split('\n').length===2,'Marker steht direkt vor dem Wartescript: '+reason);
  }
- assert.match(universeText,/\n  release:\n[\s\S]*?\n    permissions:\n      contents: write\n      actions: write\n/);
+ assert.doesNotMatch(universeText,/contents: write/);
 });
 
 test('PM-9 pages-release.yml: kein wirkungsloses env GITHUB_SHA mehr am Deploy-Schritt',()=>{
@@ -96,16 +96,32 @@ test('PM-9 pages-release.yml: kein wirkungsloses env GITHUB_SHA mehr am Deploy-S
  assert.doesNotMatch(t,/^\s+GITHUB_SHA:/m);
 });
 
-test('PM-10 Marker schreibt mit dem GITHUB_TOKEN (kein App-Token: dessen Commit startete einen Pages-Push-Lauf)',()=>{
- const deploy=refreshWf.jobs.refresh.steps.find(s=>s.id==='deploy_live');
- assert.equal(deploy.env.GH_TOKEN,'${{ secrets.GITHUB_TOKEN }}');
- const tokens=[...universeText.matchAll(/GH_TOKEN: (.*)/g)].map(m=>m[1].trim());
- assert.ok(tokens.length>0&&tokens.every(t=>t==='${{ secrets.GITHUB_TOKEN }}'),'Universe-Release: nur GITHUB_TOKEN');
+test('PM-10 Marker-Workflow: nur Dispatch auf main, einziges Schreibrecht, GITHUB_TOKEN, feste Gruende ueber env',()=>{
+ const wf=loadYamlFile(here('../../../.github/workflows/pages-release-marker.yml'));
+ assert.deepEqual(Object.keys(wf.on),['workflow_dispatch']);
+ assert.deepEqual(wf.on.workflow_dispatch.inputs.reason.options,['refresh','universe-release','universe-recovery']);
+ assert.deepEqual(wf.permissions,{contents:'write'});
+ assert.match(wf.concurrency.group,/-\$\{\{ github\.ref_name \}\}$/);
+ const job=wf.jobs.marker;assert.equal(job.if,"github.ref == 'refs/heads/main'");
+ assert.equal(job.steps[0].with.ref,'${{ github.ref }}');
+ const step=job.steps.find(s=>s.run);
+ assert.equal(step.env.GH_TOKEN,'${{ secrets.GITHUB_TOKEN }}');assert.equal(step.env.REASON,'${{ inputs.reason }}');
+ assert.equal(step.run,'node scripts/company_intelligence/pages-release-marker.mjs --reason "$REASON"');
 });
 
-test('PM-11 Aufrufer des Refresh (workflow_call) geben contents: write, sonst startup_failure',()=>{
+test('PM-11 company-intelligence.yml bleibt ohne contents: write (test_engine.py); Aufrufer des Refresh unveraendert lesend',()=>{
  const t=readFileSync(here('../../../.github/workflows/company-intelligence.yml'),'utf8');
- const callers=[...t.matchAll(/\n  ([a-z-]+):\n((?:    .*\n|\s*\n)*?)    uses: \.\/\.github\/workflows\/company-intelligence-refresh\.yml/g)];
- assert.equal(callers.length,2,'continuous und continuous-verify');
- for(const [,name,body] of callers)assert.match(body,/    permissions:\n      contents: write\n      actions: write\n/,'Aufrufer '+name);
+ assert.doesNotMatch(t,/contents: write/);
+});
+
+test('PM-12 dispatchMarker: eigenen Lauf finden und auf success warten; Fehler, Zeitueberschreitung und fremde Laeufe',async()=>{
+ const mk=(plan)=>{let t=1_700_000_000_000;const runs=[{databaseId:1,status:'completed',conclusion:'success',createdAt:new Date(t-3600e3).toISOString()}];const log={dispatch:[]};
+  return {log,now:()=>t,sleep:async ms=>{t+=ms;},wf:{dispatch:async r=>{log.dispatch.push(r);if(plan==='dispatch-fails')throw Error('x');if(plan!=='never')runs.push({databaseId:2,status:'queued',conclusion:'',createdAt:new Date(t+1000).toISOString(),at:t});},
+   listRuns:async()=>runs.map(r=>r.databaseId===2&&t-r.at>=30e3?{...r,status:'completed',conclusion:plan==='fails'?'failure':'success'}:r)}};};
+ let s=mk('ok');let r=await M.dispatchMarker({wf:s.wf,reason:'refresh',now:s.now,sleep:s.sleep});
+ assert.deepEqual(r,{status:'WRITTEN',run:2});assert.deepEqual(s.log.dispatch,['refresh']);
+ s=mk('fails');r=await M.dispatchMarker({wf:s.wf,reason:'refresh',now:s.now,sleep:s.sleep});assert.equal(r.status,'MARKER_RUN_FAILURE');
+ s=mk('never');r=await M.dispatchMarker({wf:s.wf,reason:'refresh',now:s.now,sleep:s.sleep});assert.equal(r.status,'MARKER_RUN_TIMEOUT','der alte erfolgreiche Lauf zaehlt nicht');
+ s=mk('dispatch-fails');r=await M.dispatchMarker({wf:s.wf,reason:'refresh',now:s.now,sleep:s.sleep});assert.equal(r.status,'DISPATCH_FAILED');
+ assert.equal((await M.dispatchMarker({wf:s.wf,reason:'boese'})).status,'REASON_INVALID');
 });

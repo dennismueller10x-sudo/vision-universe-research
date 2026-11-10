@@ -11,6 +11,10 @@
  * GITHUB_TOKEN loest keinen Workflow aus; der folgende `gh workflow run pages-release.yml --ref main` laeuft auf dem neuen Kopf.
  * Die Datei ist kein Datenartefakt und wird von nichts gelesen.
  *
+ * ZWEI WEGE: Der Workflow pages-release-marker.yml (contents: write, nur workflow_dispatch) schreibt direkt (`--reason`).
+ * Refresh und Universe-Release bleiben lesend (company-intelligence.yml ruft den Refresh auf und muss read-only bleiben,
+ * test_engine.py) und starten ihn nur (`--dispatch --reason`, actions: write): eigenen Lauf finden, bis zu 5 min auf success warten.
+ *
  * Exit 0 = Marker geschrieben, Exit 1 = nicht geschrieben. Der Aufrufer macht dann wie bisher weiter (Warnung): der Dispatch liefert
  * aus, sobald main einen neuen Commit hat, und #1767 verhindert das Abschalten, wenn er es nicht tut. */
 import {execFile} from 'node:child_process';
@@ -59,8 +63,39 @@ export function realGh(repo=process.env.GITHUB_REPOSITORY){
  };
 }
 
+export const MARKER_WORKFLOW='pages-release-marker.yml';
+
+/** Lesender Aufrufer: Marker-Workflow dispatchen, den eigenen Lauf (neu seit dem Dispatch) bis zu waitMs verfolgen.
+    wf: {dispatch(reason):Promise, listRuns():Promise<Array<{databaseId,status,conclusion,createdAt}>>} */
+export async function dispatchMarker({wf,reason,now=()=>Date.now(),sleep=ms=>new Promise(r=>setTimeout(r,ms)),waitMs=300000,pollMs=10000,skewMs=60000}){
+ if(!REASONS.has(reason))return {status:'REASON_INVALID'};
+ const list=async()=>{try{return await wf.listRuns();}catch{return null;}};
+ const known=new Set(((await list())||[]).map(r=>String(r.databaseId)));
+ const start=now();
+ try{await wf.dispatch(reason);}catch{return {status:'DISPATCH_FAILED'};}
+ for(;;){
+  const own=((await list())||[]).filter(r=>!known.has(String(r.databaseId))&&(Date.parse(r.createdAt)||0)>=start-skewMs);
+  const done=own.find(r=>r.status==='completed');
+  if(done)return done.conclusion==='success'?{status:'WRITTEN',run:done.databaseId}:{status:'MARKER_RUN_'+String(done.conclusion||'unknown').toUpperCase(),run:done.databaseId};
+  if(now()-start>=waitMs)return {status:'MARKER_RUN_TIMEOUT'};
+  await sleep(pollMs);
+ }
+}
+
+const runPlain=args=>new Promise((resolve,reject)=>execFile('gh',args,{timeout:60000,maxBuffer:1<<20},(e,out)=>e?reject(e):resolve(String(out))));
+export function realWorkflow(){
+ return {
+  dispatch:reason=>runPlain(['workflow','run',MARKER_WORKFLOW,'--ref','main','-f','reason='+reason]),
+  listRuns:async()=>JSON.parse(await runPlain(['run','list','--workflow',MARKER_WORKFLOW,'--event','workflow_dispatch','--branch','main','--limit','20','--json','databaseId,status,conclusion,createdAt']))
+ };
+}
+
 export async function main(argv=process.argv.slice(2),env=process.env,io={}){
  const i=argv.indexOf('--reason'),reason=i>=0?argv[i+1]:null;
+ if(argv.includes('--dispatch')){
+  const r=await dispatchMarker({wf:io.wf||realWorkflow(),reason,...(io.sleep?{sleep:io.sleep}:{}),...(io.now?{now:io.now}:{})});
+  console.log(JSON.stringify(r));return r;
+ }
  const r=await writeMarker({gh:io.gh||realGh(env.GITHUB_REPOSITORY),reason,runId:env.GITHUB_RUN_ID,...(io.sleep?{sleep:io.sleep}:{})});
  console.log(JSON.stringify(r));
  return r;

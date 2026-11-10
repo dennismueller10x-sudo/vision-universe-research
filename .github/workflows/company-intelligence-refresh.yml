@@ -77,10 +77,6 @@ jobs:
     # 100 min = 25 Pipeline + >= 50 Pages-Wartefrist (serielle Pages-Laeufe zu je 5-6 min, refresh-dispatch-wait.mjs)
     # + 15 Live-QA-Budget + 10 Reserve fuer Rollback, disable, OFF-Dispatch und Upload (refresh-live-verify.mjs, LIMITS).
     timeout-minutes: 100
-    # Marker-Commit vor dem eigenen Pages-Dispatch (pages-release-marker.mjs, Contents-API); sonst nur Lesen und Dispatch.
-    permissions:
-      contents: write
-      actions: write
     steps:
       - uses: actions/checkout@v4
       - name: Record job start (hard deadline for bounded live re-verification)
@@ -175,9 +171,10 @@ jobs:
           # Exit 4 = eigener Pages-Lauf success, die neue Generation kam nie an und live steht unveraendert die bisherige
           # (NOT_DELIVERED_PRODUCTION_UNCHANGED). Keine Regression: kein Rollback, kein disable, kein ROLLBACK_46; der Lauf wird rot.
           # Anlass: Refresh 42744743112 (10.11.2026) schaltete so den gesunden Vollumfang ab (Pages-Deploy desselben Commits).
-          # Neuer Commit auf main vor dem Dispatch (pages-release-marker.mjs): deploy-pages nimmt den Commit als Build-Version und
-          # uebernimmt einen zweiten Deploy desselben Commits nicht (10.11.2026). Scheitert der Marker, wie bisher weiter.
-          node scripts/company_intelligence/pages-release-marker.mjs --reason refresh || echo "::warning::Pages release marker not written; delivery needs a new commit on main."
+          # Neuer Commit auf main vor dem Dispatch: deploy-pages nimmt den Commit als Build-Version und uebernimmt einen zweiten
+          # Deploy desselben Commits nicht (10.11.2026). Der Job bleibt lesend und startet pages-release-marker.yml (schreibt den
+          # Marker) und wartet bis zu 5 min darauf. Scheitert der Marker, wie bisher weiter.
+          node scripts/company_intelligence/pages-release-marker.mjs --dispatch --reason refresh || echo "::warning::Pages release marker not written; delivery needs a new commit on main."
           wait_rc=0
           node scripts/company_intelligence/refresh-dispatch-wait.mjs --health "$RUNNER_TEMP/ci-refresh/health.json" --out "$RUNNER_TEMP/ci-refresh/dispatch-wait.json" || wait_rc=$?
           if [ "$wait_rc" -eq 4 ]; then
