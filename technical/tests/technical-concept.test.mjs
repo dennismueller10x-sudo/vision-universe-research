@@ -98,3 +98,11 @@ test("Kleinform im Konzept-Stil: Mini-Charts nutzen VUChart.sparkline (neongrün
   assert.doesNotMatch(app, /Chart\.sparkline\(/, "kein technical/ui/chart.js#sparkline in der Oberfläche");
   assert.match(app, /VC\.sparkline\(sparkMap\[row\.s\], \{ width: 216, height: 40 \}\)/, "Karte „Heute neu im Chart“");
 });
+
+test("Markt heute als Ampel in Neonfarben (Owner 10.11.2026): Zustand aus dem Urteil, drei Lichter, Karte in der Zustandsfarbe", () => {
+  const home = app.slice(app.indexOf("  function viewHome(main) {"), app.indexOf("  /* Ausgeschlossen: Linien"));
+  assert.match(home, /\["weak", "mid", "strong"\]\.map/);
+  assert.match(home, /"tc-ms tc-ms--" \+ v\[0\]/);
+  const css = readFileSync("technical/technical.css", "utf8");
+  for (const s of ["--tc-neon-green", "--tc-neon-yellow", "--tc-neon-red", ".tc-ms--strong{", ".tc-ms--mid{", ".tc-ms--weak{", ".tc-ampel"]) assert.ok(css.includes(s), s);
+});
