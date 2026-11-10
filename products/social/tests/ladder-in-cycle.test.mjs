@@ -425,7 +425,7 @@ test("LZ24 · Margen bleiben strikt, auch mit Anzeige", () => {
     import.meta.url), "utf8");
   assert.match(quelle, /istMarge\(z\.label\)\s*\?\s*\{\s*ok:\s*false/);
   const reihe = JSON.parse(readFileSync(new URL(
-    "../../../discover/data/rows/US_REAL/cashflow-maschinen.json", import.meta.url), "utf8"));
+    "./fixtures/ladder-in-cycle/cashflow-maschinen.json", import.meta.url), "utf8"));
   const e = DiscoverEvidence.fromRow(reihe);
   assert.equal(e.evidence.filter((x) => /marge/i.test(x.metric || "")).length, 0);
 });

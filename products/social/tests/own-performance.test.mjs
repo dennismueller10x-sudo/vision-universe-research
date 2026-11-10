@@ -14,6 +14,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
 import { createRequire } from "node:module";
+import { fileURLToPath } from "node:url";
 
 const require = createRequire(import.meta.url);
 const OP = require("../../../social/engines/own-performance.js");
@@ -172,7 +173,7 @@ test("OP12 · Die Auswertung ist keine Prognose", () => {
 /* ------------------------------------------------ Gegen den echten Bestand */
 
 test("OP13 · Der reale Bestand wird ohne Beschoenigung beschrieben", () => {
-  const pfad = "social/data/content-memory.json";
+  const pfad = fileURLToPath(new URL("./fixtures/own-performance/content-memory.json", import.meta.url));
   if (!existsSync(pfad)) return;
   const m = JSON.parse(readFileSync(pfad, "utf8"));
   const a = OP.auswerten(m.entries || [], { observe: L.observe });

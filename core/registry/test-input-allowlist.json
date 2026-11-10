@@ -578,7 +578,8 @@
       "liest": [
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "10.11.2026 (S2): die direkte Lesung der Publish-Kandidaten steht jetzt als Fixture (social/tests/fixtures/final-public-text); uebrig bleibt der indirekte Lesezugriff der Producer-Funktionen auf Serien (quant/data/market/discover-series-long), den der Test nicht selbst steuert.",
+      "dynamisch": true
     },
     {
       "file": "products/social/tests/hashtags.test.mjs",
@@ -587,14 +588,6 @@
         "social/data"
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "products/social/tests/ladder-in-cycle.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "discover/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
     },
     {
       "file": "products/social/tests/loop-closure.test.mjs",
@@ -608,7 +601,7 @@
         "quant/data",
         "social/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "10.11.2026 (S2): das Job-Register steht als Fixture; Teil A faehrt bewusst den echten Zyklus (MSFT/NVDA-Bundles aus quant/data) und prueft nur datumsunabhaengige Eigenschaften."
     },
     {
       "file": "products/social/tests/opportunity-slate.test.mjs",
@@ -623,14 +616,6 @@
     {
       "file": "products/social/tests/orchestrator.test.mjs",
       "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
-    },
-    {
-      "file": "products/social/tests/own-performance.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "social/data"
-      ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
     },
     {
@@ -700,14 +685,6 @@
         "social/data"
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "products/social/tests/visual-composition.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
     },
     {
       "file": "products/social/tests/visual-motif.test.mjs",
