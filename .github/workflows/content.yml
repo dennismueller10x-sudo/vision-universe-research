@@ -3,7 +3,7 @@ name: Content (News, Analystenbewertungen, Hedgefonds 13F, Morning)
 # Buendel "content" (Plan Neustart §3, core/registry/workflow-bundles.json). Ersetzt update-news.yml,
 # update-analyst-ratings.yml, update-hedgefonds.yml und build-morning.yml. Jeder Teil ist ein eigener Job
 # mit seinem bisherigen Zeitplan und seinen bisherigen Schritten (unveraendert uebernommen); ein Fehler in
-# einem Teil haelt die anderen nicht auf. Manuell: Eingabe "teil".
+# einem Teil haelt die anderen nicht auf. Manuell: Eingabe "teil". Morning ist eingestellt und laeuft nur von Hand.
 # Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
 run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
@@ -18,12 +18,6 @@ on:
         type: choice
         options: [alle, news, ratings, hedgefonds, morning, analysten, analysten-probe]
         default: alle
-  push:
-    branches: [main]
-    paths:
-      - 'content/morning/**'
-      - 'products/morning/**'
-      - 'morning/assets/**'
 
 permissions:
   contents: write
@@ -233,8 +227,10 @@ jobs:
           # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
+  # Morning Briefing ist eingestellt (Owner 09.11.2026): kein Push-Ausloeser, nicht in "alle";
+  # das Archiv laesst sich nur noch von Hand neu bauen (teil = morning).
   morning:
-    if: (github.event_name == 'push') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'morning'))
+    if: (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.teil == 'morning'
     runs-on: ubuntu-latest
     concurrency:
       group: content-morning-${{ github.ref_name }}
