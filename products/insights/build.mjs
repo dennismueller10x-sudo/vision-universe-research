@@ -80,11 +80,13 @@ function datenBox(t, a) {
 
 // Bild im Text: groß über die Spalte oder als Porträt neben dem Text; Bildnachweis immer sichtbar
 const figur = (b) => `<figure class="in-figur${b.stil === 'portrait' ? ' in-figur--portrait' : ''}"><img src="${b.src}" alt="${esc(b.alt)}" loading="lazy"><figcaption>${b.text ? esc(b.text) + ' · ' : ''}Bild: ${esc(b.quelle)}</figcaption></figure>`;
-// Prüfvermerk: "redaktion" = vom Owner gelesen; "automatisch" = Tageslauf ohne menschliche Einzelprüfung.
+// Prüfvermerk: "redaktion" = vom Owner gelesen; "automatisch" = Tageslauf, der Owner liest nach und gibt Korrekturen.
+// Owner-Entscheidung 10.11.2026: kein KI-Hinweis am Text; die Redaktion (Owner) liest jeden Artikel und trägt die
+// redaktionelle Verantwortung. KI-Bilder behalten ihre Bildzeile „KI-Bild“.
 // Ohne redaktionelle Verantwortung muss KI-erzeugter Text erkennbar sein (Art. 50 Abs. 4 KI-Verordnung).
 const PRUEFVERMERK = {
-  redaktion: 'Mit KI-Unterstützung recherchiert und geschrieben, von der Redaktion geprüft.',
-  automatisch: 'Dieser Artikel wurde automatisch mit KI recherchiert und geschrieben und vor der Veröffentlichung maschinell geprüft (Quellen, Zahlen aus Vision Universe, Wortwahl), nicht von einem Menschen gelesen.',
+  redaktion: '',
+  automatisch: '',
 };
 // Aufmacher: Pressebild oder, ohne passendes Bild (bild.typ "app"), drei App-Screens der ersten Aktie auf Neongrün
 const aufmacher = (a) => (a.bild.typ === 'app'
@@ -161,7 +163,7 @@ ${tabs('artikel')}
   <h1>${esc(a.titel)}</h1>
   <p class="in-lead">${esc(a.unterzeile)}</p>
   ${aufmacher(a)}
-  <p class="in-autor">${a.pruefung === 'automatisch' ? 'Automatisch mit KI erstellt · ' : 'Redaktion Vision Universe · '}Stand ${esc(a.stand)}</p>
+  <p class="in-autor">Redaktion Vision Universe · Stand ${esc(a.stand)}</p>
 </header>
 <div class="in-text">
 ${body}

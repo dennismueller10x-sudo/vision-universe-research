@@ -52,7 +52,8 @@ test('IN-4 · Artikelseite: Kanonische Adresse, NewsArticle-JSON-LD, KI-Bild-Hin
     assert.equal(ld['@type'], 'NewsArticle'); assert.equal(ld.datePublished.slice(0, 10), a.datum);
     assert.match(html, a.bild.typ === 'app' ? /<figcaption>Vision-Universe-App<\/figcaption>/ : a.bild.ki ? /<figcaption>KI-Bild<\/figcaption>/ : new RegExp(`<figcaption>Bild: ${a.bild.quelle}</figcaption>`));
     assert.match(html, /keine Anlageberatung/);
-    assert.match(html, a.pruefung === 'automatisch' ? /automatisch mit KI recherchiert und geschrieben/ : /Mit KI-Unterstützung recherchiert und geschrieben/);
+    assert.match(html, /Redaktion Vision Universe · Stand/);
+    assert.doesNotMatch(html, /mit KI (erstellt|recherchiert)|KI-Unterstützung/i, `${a.slug}: kein KI-Hinweis am Text (Owner 10.11.2026)`);
     assert.equal((html.match(/<li>[^<]*: <a href="https:/g) || []).length, a.quellen.length);
   }
 });
@@ -76,13 +77,10 @@ test('IN-6 · Aktienmagazin: jede Ausgabe hat PDF, Cover und alle Seitenbilder; 
   }
 });
 
-test('IN-7 · automatisch veröffentlichte Artikel: KI-Hinweis sichtbar, mindestens drei Quellen, App-Screens, kein Zitat ohne Quelle', () => {
+test('IN-7 · automatisch veröffentlichte Artikel: mindestens drei Quellen, App-Screens, kein Zitat ohne Quelle', () => {
   for (const a of artikel) {
     assert.ok(['redaktion', 'automatisch', undefined].includes(a.pruefung), `${a.slug}: pruefung ist redaktion oder automatisch`);
     if (a.pruefung !== 'automatisch') continue;
-    const html = read(`insights/${a.slug}/index.html`);
-    assert.match(html, /Automatisch mit KI erstellt/, `${a.slug}: KI-Hinweis im Kopf fehlt`);
-    assert.match(html, /nicht von einem Menschen gelesen/, `${a.slug}: KI-Hinweis unter dem Artikel fehlt`);
     assert.ok(a.quellen.length >= 3, `${a.slug}: automatisch braucht mindestens drei Quellen`);
     assert.ok(a.ticker.every((t) => a.appScreens?.[t]?.length === 3), `${a.slug}: App-Screens fehlen (products/insights/screens.mjs)`);
     assert.ok(a.abschnitte.some((s) => s.daten), `${a.slug}: Abschnitt "Was unsere Daten zeigen" fehlt`);

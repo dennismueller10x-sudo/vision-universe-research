@@ -163,15 +163,16 @@ Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsAr
    Aufmacher 16:9 (1600 × 900), im Text `"bild"` je Abschnitt, Porträts mit `"stil": "portrait"`.
 5. Bauen: `node products/insights/build.mjs`; Prüfung: `node --test "products/insights/tests/*.test.mjs"` (aktuell gebaut,
    Pflichtfelder, Bildnachweise, Quellen, Wortwahl, JSON-LD, Magazin-Dateien, Übersicht/Feed/Sitemap vollständig).
-6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Unter jedem Artikel steht „Mit KI-Unterstützung
-   recherchiert und geschrieben, von der Redaktion geprüft“.
+6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Kein KI-Hinweis am Text (Owner 10.11.2026):
+   der Owner liest jeden Artikel und trägt die redaktionelle Verantwortung; KI-Bilder behalten „KI-Bild“.
 
 **Tageslauf ohne Owner (ab 10.11.2026):** Eine geplante Aufgabe startet an jedem Werktag um 12:41 Uhr (Berlin) eine
 neue Claude-Sitzung, die nach `.claude/skills/insights-tageslauf/SKILL.md` zwei Artikel schreibt (großer Wert und
 Nebenwert, Kandidaten aus `node products/insights/themen.mjs`), prüft und bei grüner CI selbst veröffentlicht. Solche
-Artikel tragen `"pruefung": "automatisch"`: oben „Automatisch mit KI erstellt“, unten der Hinweis, dass kein Mensch
-sie gelesen hat (ohne redaktionelle Verantwortung gilt die Kennzeichnungspflicht nach Art. 50 Abs. 4 KI-Verordnung).
-Ohne passendes Pressebild nimmt der Lauf `"bild": {"typ": "app"}` (Aufmacher aus den App-Screens). Lieber kein Artikel
+Artikel tragen `"pruefung": "automatisch"` (intern: strengere Prüfregeln, z. B. drei Quellen) und erscheinen wie alle
+Artikel unter „Redaktion Vision Universe“, ohne KI-Hinweis (Owner-Entscheidung 10.11.2026: der Owner liest jeden
+Artikel nach, meldet Korrekturen und trägt die redaktionelle Verantwortung). Bilder nach dem Skill (Pressematerial,
+Firmenwebsite, KI-Bild mit „KI-Bild“); App-Screens als Aufmacher nur als Notlösung. Lieber kein Artikel
 als ein schlechter: ohne drei Quellen, bei roten Tests oder heiklen Themen bricht der Lauf ab und meldet nur.
 Pausieren oder ändern: in der App unter den geplanten Aufgaben („Insights-Tageslauf“).
 
