@@ -26,6 +26,10 @@ on:
         description: 'frage-worker: Nach dem Ausrollen eine echte Testfrage stellen (kostet unter 1 Cent)'
         type: boolean
         default: false
+      nurBericht:
+        description: 'frage-worker: Nur den Zustandsbericht lesen (kein Ausrollen, keine Frage, nur Zaehler und Fehlercodes)'
+        type: boolean
+        default: false
       attachDomain:
         description: 'live-worker: live.visionuniverse.de anlegen (sonst nur workers.dev)'
         type: boolean
@@ -68,9 +72,26 @@ jobs:
           SCHEDULE: ${{ github.event.schedule }}
           WR_NAME: ${{ github.event.workflow_run.name }}
           WR_BRANCH: ${{ github.event.workflow_run.head_branch }}
-          COMMITS: ${{ toJSON(github.event.commits) }}
+          # Dateiliste beim push: Compare-API zwischen before und sha (die Commit-Liste des push-Ereignisses traegt in Actions
+          # kein added/modified/removed; Lauf 42598972028 waehlte deshalb nichts). Vertragstest WB-7.
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+          REPO: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
           INPUTS: ${{ toJSON(inputs) }}
         run: |
+          set -euo pipefail
+          # Geaenderte Dateien des Pushs. Neuer Zweig (Basis 000...), API-Fehler oder abgeschnittene Liste
+          # (300 Dateien): unbekannt - dann gilt jede Pfadbedingung als erfuellt (im Zweifel ausfuehren).
+          PUSH_FILES="$RUNNER_TEMP/push-files.txt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=0
+          if [ "${EVENT:-}" = push ]; then
+            if [ -z "${BEFORE:-}" ] || [ "$BEFORE" = 0000000000000000000000000000000000000000 ]; then PUSH_FILES_UNKNOWN=1
+            elif gh api "repos/$REPO/compare/$BEFORE...$AFTER" --jq '.files[].filename' > "$PUSH_FILES"; then
+              [ "$(wc -l < "$PUSH_FILES")" -lt 300 ] || PUSH_FILES_UNKNOWN=1
+            else echo "::warning::Compare-API ohne Ergebnis - Pfadbedingungen gelten als erfuellt"; : > "$PUSH_FILES"; PUSH_FILES_UNKNOWN=1; fi
+          fi
+          echo "Dateien im Push: $(wc -l < "$PUSH_FILES"), unbekannt=$PUSH_FILES_UNKNOWN"
+          export PUSH_FILES PUSH_FILES_UNKNOWN
           python3 - <<'PY'
           import fnmatch, json, os, re
           SPEC = json.loads(r"""{"frage-worker": {"crons": [], "dispatch": true, "push": {"branches": ["main"], "paths": ["workers/vu-ask/**", "quant/engines/technical/ti/ai-tools.js", ".github/workflows/deploy.yml"]}, "required": []}, "landing": {"crons": [], "dispatch": true, "required": []}, "live-worker": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/deploy.yml", "worker/src/**", "worker/wrangler.toml"]}, "required": []}, "navigation": {"crons": [], "dispatch": true, "push": {"branches": ["main"], "paths": ["**/*.html", "scripts/sync-navigation.mjs"]}, "required": []}}""")
@@ -96,12 +117,9 @@ jobs:
                   if glob_re(p[1:] if neg else p).match(value): ok = not neg
               return ok
           def files():
-              try: commits = json.loads(os.environ.get("COMMITS") or "[]") or []
-              except Exception: commits = []
-              fs = set()
-              for c in commits:
-                  for k in ("added", "modified", "removed"): fs.update(c.get(k) or [])
-              return fs, len(commits)
+              # None = Liste unbekannt (siehe Schritt oben); sonst die geaenderten Pfade des Pushs
+              if os.environ.get("PUSH_FILES_UNKNOWN") == "1": return None
+              with open(os.environ["PUSH_FILES"]) as fh: return {l.strip() for l in fh if l.strip()}
           def push_ok(r):
               if ref.startswith("refs/heads/"):
                   name = ref[11:]
@@ -115,10 +133,8 @@ jobs:
                   if ("branches" in r or "branches-ignore" in r) and "tags" not in r and "tags-ignore" not in r: return False
               else: return False
               if "paths" in r or "paths-ignore" in r:
-                  fs, n = files()
-                  if not fs:
-                      # Ereignis ohne Dateiliste (z. B. neuer Zweig): GitHub wertet Pfade dann gegen den Standardzweig aus; hier konservativ: ausloesen
-                      return n == 0
+                  fs = files()
+                  if fs is None: return True  # Dateiliste unbekannt: im Zweifel ausfuehren, nie still 'keine Datei'
                   if "paths" in r and not any(match_list(r["paths"], f) for f in fs): return False
                   if "paths-ignore" in r and all(match_list(r["paths-ignore"], f) for f in fs): return False
               return True
@@ -176,6 +192,7 @@ jobs:
 
       - name: Ausrollen
         id: deploy
+        if: ${{ !inputs.nurBericht }}
         working-directory: workers/vu-ask
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -196,6 +213,7 @@ jobs:
 
       - name: Schluessel zu Cloudflare (nie ins Protokoll)
         id: keys
+        if: ${{ !inputs.nurBericht }}
         working-directory: workers/vu-ask
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -258,19 +276,43 @@ jobs:
           [ -n "$ADMIN" ] || ADMIN=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
           echo "::add-mask::$ADMIN"
           sleep 5
-          body='{"question":"äh zeig mir mal alle Aktien mit neuem Jahreshoch zwischen 300 Millionen und 2 Milliarden, die ins Minervini Raster passen, und den Quant Score","clientId":"livetest-deploy-01"}'
-          curl --silent -X POST "$URL/v1/ask" -H 'content-type: application/json' -H 'origin: https://research.visionuniverse.de' \
-               -H "x-vu-access: $ADMIN" --data "$body" > /tmp/answer.json
-          node -e '
-            const a = JSON.parse(require("fs").readFileSync("/tmp/answer.json", "utf8"));
-            if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.code || "", a.detail || "", a.message || ""); process.exit(1); }
-            const r = a.result;
-            console.log("Quelle:", a.source, "| Status:", a.status, "| Art:", r.kind);
-            console.log("Verstanden:", r.understood);
-            console.log("Filter:", JSON.stringify((r.query ? r.query.groups[0].filters : []).map((f) => [f.field, f.op, f.value, f.value2])));
-            console.log("Supertrader:", JSON.stringify(r.supertrader), "| Fehlend:", JSON.stringify(r.missing));
-            console.log("Kontingent heute noch:", a.quota && a.quota.remainingToday);
-          '
+          # Zwei Herkuenfte: die Website und die Capacitor-App (iOS).
+          check() {
+            curl --silent -X POST "$URL/v1/ask" -H 'content-type: application/json' -H "origin: $1" \
+                 -H "x-vu-access: $ADMIN" --data "$2" -D /tmp/head.txt > /tmp/answer.json
+            grep -qi "^access-control-allow-origin: $1" /tmp/head.txt || { echo "::error::Kein CORS-Kopf fuer $1"; exit 1; }
+            ORIGIN="$1" node -e '
+              const a = JSON.parse(require("fs").readFileSync("/tmp/answer.json", "utf8"));
+              console.log("Herkunft:", process.env.ORIGIN);
+              if (!a.ok) { console.log("::error::Live-Test fehlgeschlagen:", a.reason, a.code || "", a.detail || "", a.message || ""); process.exit(1); }
+              const r = a.result;
+              console.log("Quelle:", a.source, "| Status:", a.status, "| Art:", r.kind);
+              console.log("Verstanden:", r.understood);
+              console.log("Filter:", JSON.stringify((r.query ? r.query.groups[0].filters : []).map((f) => [f.field, f.op, f.value, f.value2])));
+              console.log("Supertrader:", JSON.stringify(r.supertrader), "| Fehlend:", JSON.stringify(r.missing));
+              console.log("Kontingent heute noch:", a.quota && a.quota.remainingToday);
+            '
+          }
+          check https://research.visionuniverse.de '{"question":"äh zeig mir mal alle Aktien mit neuem Jahreshoch zwischen 300 Millionen und 2 Milliarden, die ins Minervini Raster passen, und den Quant Score","clientId":"livetest-deploy-01"}'
+          check capacitor://localhost '{"question":"Welche Aktien mit über 10 Milliarden Börsenwert stehen im Weinstein Stage 2?","clientId":"livetest-app-0001"}'
+
+      # Zustandsbericht aus /v1/admin/report. Ausgegeben werden nur Zaehler,
+      # Grenzen und Fehlercodes - nie Fragetexte, nie Schluessel.
+      - name: Zustandsbericht (ohne Fragetexte)
+        if: ${{ always() }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          VU_ASK_ADMIN_KEY: ${{ secrets.VU_ASK_ADMIN_KEY }}
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          ADMIN="$VU_ASK_ADMIN_KEY"
+          [ -n "$ADMIN" ] || ADMIN=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
+          echo "::add-mask::$ADMIN"
+          [ -n "$URL" ] || URL=$(grep -oE 'https://vu-ask\.[a-z0-9-]+\.workers\.dev' ask/index.html | head -1)
+          code=$(curl --silent -o /tmp/report.json -w '%{http_code}' -H "authorization: Bearer $ADMIN" "$URL/v1/admin/report?limit=50" || true)
+          echo "Bericht: HTTP $code"
+          [ "$code" = "200" ] || exit 0
+          node workers/vu-ask/scripts/report-summary.mjs /tmp/report.json
 
       - name: Zusammenfassung
         if: always()

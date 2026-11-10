@@ -176,7 +176,9 @@
     var p = (punkte || []).filter(function (x) { return x && isNum(x[1]); });
     if (p.length < 2) return null;
     var w = opt.width || 1120, h = opt.height || 380;
-    var padTop = 18, padBottom = 30, padL = 8, padR = 64;
+    /* opt.compact (Überblick, Folie AX01): ohne Kursachse, Datum nur am Anfang und am Ende. */
+    var kompakt = opt.compact === true;
+    var padTop = kompakt ? 10 : 18, padBottom = kompakt ? 24 : 30, padL = kompakt ? 2 : 8, padR = kompakt ? 8 : 64;
     var closes = p.map(function (x) { return x[1]; });
     var lo = Math.min.apply(null, closes), hi = Math.max.apply(null, closes);
     if (lo === hi) { lo -= 1; hi += 1; }
@@ -264,6 +266,7 @@
       [2, 1].forEach(function (k) { stufen.push(log ? Math.exp(tr(lo) + (tr(hi) - tr(lo)) * k / 3) : lo + (hi - lo) * k / 3); });
       stufen.push(lo);
     }
+    if (kompakt) stufen = [];
     stufen.forEach(function (v, i) {
       var klasse = "dx-range-axis" + (i === 0 || i === stufen.length - 1 ? "" : " dx-range-axis--mid");
       if (i !== 0 && i !== stufen.length - 1) node.appendChild(svg("line", { class: "dx-range-grid", x1: padL, x2: w - padR, y1: y(v).toFixed(1), y2: y(v).toFixed(1) }));
@@ -273,12 +276,18 @@
        Bildkoordinaten (die viewBox ist dort pixelgenau). */
     node.__punkte = karte;
     node.__basis = { close: closes[0], date: p[0][0], padBottom: padBottom, padTop: padTop, padL: padL, padR: padR };
-    if (Math.abs(ly - y(hi)) > 14 && Math.abs(ly - y(lo)) > 14) {
+    if (!kompakt && Math.abs(ly - y(hi)) > 14 && Math.abs(ly - y(lo)) > 14) {
       node.appendChild(svg("text", { class: "dx-range-axis dx-range-axis--last", x: w - padR + 8, y: (ly + 4).toFixed(1), text: fmt(closes[closes.length - 1]) }));
     }
     /* Datumsachse: Anfang, Ende, dazwischen drei Stuetzen. */
-    var ticks = 4;
+    var ticks = kompakt ? 1 : 4;
     for (var i = 0; i <= ticks; i++) {
+      if (kompakt) {
+        var ende = i === 0 ? p[0][0] : p[p.length - 1][0];
+        node.appendChild(svg("text", { class: "dx-range-date", x: i === 0 ? padL : (w - padR).toFixed(1), y: h - 6, "text-anchor": i === 0 ? "start" : "end",
+          text: ende.slice(8, 10) + "." + ende.slice(5, 7) + "." + ende.slice(2, 4) }));
+        continue;
+      }
       var tt = t0 + (tspan * i) / ticks;
       var iso = new Date(tt).toISOString().slice(0, 10);
       var anchor = i === 0 ? "start" : i === ticks ? "end" : "middle";

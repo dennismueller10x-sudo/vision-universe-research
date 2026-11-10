@@ -163,7 +163,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await page.click('#vu-dock a[data-id=watchlist]');
   await page.waitForURL(/\/mein-dashboard\/$/);
   await page.waitForSelector('#md-app:not([hidden])');
-  // E08: Tarif-Marke „Free · 0 von 500“.
+  // Tarif-Marke „Free · 0 von 500“ neben dem Datum (Konzept mein-bereich-2026-11, Screen m-home).
   check(/^Free · 0\b/.test(await page.textContent('#md-plan')), 'Dashboard: Tarif Free');
   check(await page.isVisible('#md-watch-empty'), 'Dashboard: Leerstaat fuer neue Nutzer');
   check(await page.locator('.md-tile').count() >= 4, 'Dashboard: Schnellzugriffe');
@@ -173,26 +173,25 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await page.fill('#md-add', 'AAPL');
   await page.waitForSelector('#md-results:not([hidden]) .wl-result');
   await page.click('#md-results .wl-result >> nth=0');
-  // E08: Aktienzeile C10 (VUUI.stockRow, .vu-lrow); das Kuerzel steht in der Unterzeile.
-  await page.waitForSelector('.md-row .vu-lrow');
-  const first = await page.textContent('.md-row .vu-lrow__name span');
+  // Screen m-home: Watchlist als Streifen (.md-wl), das Kuerzel steht fett auf der Karte.
+  await page.waitForSelector('#md-strip .md-wl:not(.md-wl--add)');
+  const first = await page.textContent('#md-strip .md-wl:not(.md-wl--add) > b');
   check(/AAPL/.test(first), `Watchlist: hinzugefuegt (${first})`);
-  check(/\/s\/US_REAL\/AAPL|#\/AAPL|aktie\/AAPL/.test(await page.getAttribute('.md-row a.vu-lrow', 'href') || ''), 'Watchlist: Link zur Aktie');
+  check(/\/s\/US_REAL\/AAPL|#\/AAPL|aktie\/AAPL/.test(await page.getAttribute('#md-strip a.md-wl', 'href') || ''), 'Watchlist: Link zur Aktie');
   await page.fill('#md-add', 'MSFT');
   await page.waitForSelector('#md-results:not([hidden]) .wl-result');
   await page.keyboard.press('Enter');
-  await page.waitForFunction(() => document.querySelectorAll('.md-row .vu-lrow').length === 2);
+  await page.waitForFunction(() => document.querySelectorAll('#md-strip .md-wl:not(.md-wl--add)').length === 2);
   check(true, 'Watchlist: zweite Aktie per Tastatur');
-  // Entfernen und rueckgaengig. E08: „Entfernen“ liegt unter der Zeile (Wischen nach links oder per Tastatur);
-  // am Desktop ohne Touch ist der Weg die Tastatur.
-  await page.locator('.md-row >> nth=0 >> .md-remove').press('Enter');
-  await page.waitForFunction(() => document.querySelectorAll('.md-row .vu-lrow').length === 1);
+  // Entfernen und rueckgaengig: im Bearbeiten-Modus (Suche offen) traegt jede Karte „×“, per Tastatur erreichbar.
+  await page.locator('#md-strip .md-remove >> nth=0').press('Enter');
+  await page.waitForFunction(() => document.querySelectorAll('#md-strip .md-wl:not(.md-wl--add)').length === 1);
   check((await page.textContent('#ka-status')).includes('entfernt'), 'Watchlist: entfernt');
   await page.click('#ka-status .md-undo');
-  await page.waitForFunction(() => document.querySelectorAll('.md-row .vu-lrow').length === 2);
+  await page.waitForFunction(() => document.querySelectorAll('#md-strip .md-wl:not(.md-wl--add)').length === 2);
   check(true, 'Watchlist: rueckgaengig');
-  await page.locator('.md-row >> nth=0 >> .md-remove').press('Enter');
-  await page.waitForFunction(() => document.querySelectorAll('.md-row .vu-lrow').length === 1);
+  await page.locator('#md-strip .md-remove >> nth=0').press('Enter');
+  await page.waitForFunction(() => document.querySelectorAll('#md-strip .md-wl:not(.md-wl--add)').length === 1);
   await audit(page, 'Dashboard mit Watchlist');
   await shot(page, 'free-03-dashboard');
   // Detailansicht unter der bisherigen Adresse
@@ -209,7 +208,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   check(true, 'Anmeldung ohne Ziel: Willkommensseite');
   await page.goto(`${base}/mein-dashboard/`);
   await page.waitForSelector('#md-app:not([hidden])');
-  check(await page.locator('.md-row .vu-lrow').count() === 1, 'gespeicherte Daten bleiben nach erneuter Anmeldung');
+  check(await page.locator('#md-strip .md-wl:not(.md-wl--add)').count() === 1, 'gespeicherte Daten bleiben nach erneuter Anmeldung');
   // Kontoseite: Einstellungen statt Investment-Inhalten
   await page.goto(`${base}/konto/`);
   await page.waitForSelector('#ka-account:not([hidden])');
@@ -241,7 +240,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await other.page.waitForURL(/\/willkommen\//);
   await other.page.goto(`${base}/mein-dashboard/`);
   await other.page.waitForSelector('#md-app:not([hidden])');
-  check(await other.page.isVisible('#md-watch-empty') && !(await other.page.$('.md-row .vu-lrow')), 'zweites Konto: eigene, leere Watchlist');
+  check(await other.page.isVisible('#md-watch-empty') && !(await other.page.$('#md-strip .md-wl:not(.md-wl--add)')), 'zweites Konto: eigene, leere Watchlist');
   await other.ctx.close();
 }
 

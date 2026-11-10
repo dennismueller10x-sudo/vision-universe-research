@@ -39,6 +39,7 @@ Unveränderliche Quell-Snapshots behalten ihre Originalpfade im Text. Der Prüfe
 | Fundamental | [FUNDAMENTAL.md](FUNDAMENTAL.md) |
 | Konten und Abos | [Übersicht](accounts/ACCOUNTS_AND_SUBSCRIPTIONS.md) · [Watchlist](accounts/WATCHLIST.md) · [Nutzerführung](accounts/NUTZERFUEHRUNG.md) · [Produktionsplan](accounts/PRODUKTIONSPLAN.md) · [Freigaben](accounts/FREIGABEN.md) · [Tarifverwaltung](accounts/TARIFVERWALTUNG.md) · [Rechtliche Abnahme](accounts/RECHTLICHE_ABNAHME.md) · [Brevo](accounts/BREVO.md) · [Steuer](accounts/STEUER.md) |
 | Recht | [Einordnung](legal/EINORDNUNG.md) · [Wortwahl](legal/WORTWAHL.md) |
+| Publishing | [Aktienmagazin, Insights und Reports](publishing/HANDBUCH.md) |
 | Studio | [README.md](studio/README.md) (Arbeitsunterlagen der Skill `reel-studio` daneben) |
 
 Produkte, Routen, Zugang und Datenfrische stehen nicht in der Doku, sondern in den Steckbriefen `products/<id>/module.json` (Index `core/registry/modules.json`, Statusseite `/status/`).

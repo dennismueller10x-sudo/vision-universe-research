@@ -944,6 +944,9 @@ body.sc{--sc-lime:#c8f531}
 .sc-rh-t h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-.02em}
 .sc-rh-all{margin-left:auto;display:inline-flex;align-items:center;gap:2px;min-height:44px;padding:0;border:0;background:none;color:var(--sc-muted);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
 .sc-rh-all .sc-i{width:13px;height:13px}
+/* Bedienprüfung 09.11.2026 (#1719): Trefferfläche mindestens 44×44 px über ::after, Aussehen und Abstände unverändert.
+   Nur die Symbolknöpfe des Satzes (inline-block); ausgefüllte Lücken umbrechen als Inline-Text und bleiben, wie sie sind. */
+.sc-gap.is-add,.sc-gap.is-empty,.sc-satz-o,.sc-rh-all{position:relative}.sc-gap.is-add::after,.sc-gap.is-empty::after,.sc-satz-o::after,.sc-rh-all::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
 .sc-rh p{margin:2px 0 0;font-size:12.5px;line-height:1.35;color:var(--sc-muted)}
 .sc-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;margin-right:calc(-1 * var(--sc-gutter));padding-right:var(--sc-gutter);align-items:stretch}
 .sc-rail::-webkit-scrollbar{display:none}
@@ -1040,3 +1043,4 @@ body.sc .sc-sheet .sc-presets{display:flex;flex-wrap:wrap;gap:8px;overflow:visib
 body.sc .sc-sheet .sc-preset{flex:none;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:var(--sc-surface-2);color:var(--sc-text);font-weight:800;font-size:13.5px}
 body.sc .sc-sheet .sc-presets{margin-top:26px}
 body.sc .sc-sheet .sc-preset{display:inline-flex;align-items:center;gap:8px}
+.sc-hr-r small{max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

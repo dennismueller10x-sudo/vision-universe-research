@@ -91,7 +91,7 @@ test("PF-4 · KI-Depots (Schema ki-depots-1.0.0, Edge 2): ohne Export oder ohne 
   assert.ok(Math.abs(b.positions[0].changePct + 5) < 1e-9);
   const d = P.render(live, "#/ki/b");
   assert.match(d, /vu-chg--down/);
-  assert.match(d, /ohne Einstiegskurs/);
+  assert.match(d, /ohne Aufnahmekurs/);
   assert.equal(P.validKi({ ...base, depots: [], recommendation: true }), false);
 });
 
@@ -124,4 +124,69 @@ test("PF-6 · Adressen, Protokoll und Seite", () => {
   // bestehende Seiten verlinken auf den neuen Bereich
   assert.match(readFileSync(join(root, "quant/musterdepots/depots.js"), "utf8"), /\/portfolios\//);
   assert.match(readFileSync(join(root, "supertrader/assets/st-redesign.js"), "utf8"), /\/portfolios\//);
+});
+
+test("PF-7 · Methodenbild je Typ (Konzept mein-bereich-2026-11, Entscheidung 5)", () => {
+  const all = P.collect(src());
+  const kind = (key) => P.artKind(all.find((d) => d.key === key));
+  assert.equal(kind("WEINSTEIN_STAGE"), "weinstein");
+  assert.equal(kind("DARVAS_BOX"), "darvas");
+  assert.equal(kind("DONCHIAN_TURTLE"), "turtle");
+  assert.equal(P.artKind(all.find((d) => d.id === "quality-compounder")), "quant");
+  assert.equal(kind("MINERVINI_VCP"), "plain", "andere Methoden: schlichte Variante");
+  const w = P.methodArt("weinstein", { dark: true });
+  assert.match(w, /<svg[^>]+role="img"/);
+  for (const p of ["1 · Basis", "2 · Aufwärts", "3 · Top", "4 · Abwärts"]) assert.ok(w.includes(p), p);
+  assert.equal((w.match(/#c8f531/g) || []).length, 2, "nur Phase 2 hervorgehoben (Fläche und Beschriftung)");
+  assert.equal((P.methodArt("weinstein", { dark: false }).match(/#c8f531/g) || []).length, 1, "hell: Beschriftung schwarz (Kontrast), nur die Fläche neongrün");
+  assert.match(P.methodArt("darvas"), /Ausbruch/);
+  assert.match(P.methodArt("turtle"), /Kanal der letzten 20 Tage/);
+  assert.match(P.methodArt("quant", { profile: "momentum-leader" }), /betont Trend, Wachstum, Ruhe/);
+  assert.equal(P.methodArt("plain"), "");
+});
+
+test("PF-8 · Verteilung: Summe = Aktien + Bargeld, kleine Anteile als „+N“", () => {
+  const pos = [0.3, 0.2, 0.1, 0.08, 0.05, 0.04, 0.03, 0.02].map((w, i) => ({ ticker: "T" + i, weight: w }));
+  const a = P.allocation(pos, 0.18);
+  assert.equal(a.count, 8);
+  assert.deepEqual(a.parts.map((p) => p.kind), ["stock", "stock", "stock", "stock", "stock", "stock", "rest", "cash"]);
+  assert.equal(a.parts[6].count, 2);
+  assert.ok(Math.abs(a.parts.reduce((s, p) => s + p.weight, 0) - (a.invested + a.cash)) < 1e-12);
+  assert.ok(Math.abs(a.invested + a.cash - 1) < 1e-12);
+  const all = P.collect(src());
+  for (const d of all.filter((x) => x.positions.length)) {
+    const x = P.allocation(d.positions, d.cashPct);
+    assert.ok(Math.abs(x.parts.reduce((s, p) => s + p.weight, 0) - (x.invested + x.cash)) < 1e-9, d.id);
+    assert.ok(x.invested + x.cash > 0.98 && x.invested + x.cash < 1.02, d.id + ": Gewichte und Bargeld ergeben das Depot");
+  }
+  /* Die Bildunterschrift an echten Weinstein-Daten, eingefroren vom Stand vor dem Supertrader-Lauf 256bff4f41 (10.11.2026):
+     der taegliche Lauf aendert die Zahl der Titel (10 -> 8), PF-8 wurde rot, ohne dass sich portfolios.js geaendert hatte. */
+  const fest = P.collect({ ...src(), stPortfolio: JSON.parse(readFileSync(join(root, "core/tests/fixtures/pf8/portfolio.json"), "utf8")) });
+  const w = fest.find((d) => d.key === "WEINSTEIN_STAGE");
+  assert.match(P.render(fest, "#/supertrader/" + w.id), /in 10 Aktien · [\d,]+ % Bargeld laut Regel/);
+  assert.equal(P.allocation([], null).count, 0);
+});
+
+test("PF-9 · Mini-Chart seit Aufnahme mit Aufnahmepunkt, Fläche und Ungültig-Marke", () => {
+  const pts = Array.from({ length: 30 }, (_, i) => ["2026-10-" + String(i + 1).padStart(2, "0"), 100 + i]);
+  const c = P.posChart(pts, "2026-10-20", 95);
+  assert.match(c, /<rect[^>]+fill="#c8f531"/);
+  assert.match(c, /pf-mini__stop/);
+  assert.match(c, /<circle/);
+  assert.doesNotMatch(P.posChart(pts, "2026-10-20", null), /pf-mini__stop/, "ohne Ungültig-Marke, wenn die Methode keine führt");
+  assert.equal(P.posChart([], "2026-10-20", 1), "");
+});
+
+test("PF-10 · Wortwahl: kein „Einstieg“, kein „Stopp“, kein „kauft/verkauft“, keine Begriffe aus wording.avoid", () => {
+  const all = P.collect(src());
+  const files = ["portfolios/portfolios.js", "portfolios/index.html", "portfolios/portfolios.css"].map((f) => readFileSync(join(root, f), "utf8")).join("\n")
+    .split("\n").filter((l) => !/function neutralText|Texte der Erzeuger in der Wortwahl/.test(l)).join("\n"); // die Ersetzung selbst nennt die Wörter
+  assert.doesNotMatch(files, /Einstieg|Stopp|\bkauft\b|\bverkauft\b/);
+  const avoid = read("assets/legal-notices.json").wording.flatMap((w) => String(w.avoid || "").replace(/\([^)]*\)/g, "").split(/,| \/ /)).map((a) => a.trim().toLowerCase()).filter((a) => a.length > 3);
+  for (const r of ["#/"].concat(all.map((d) => "#/" + d.group + "/" + d.id))) {
+    // „keine Empfehlung“ ist erlaubt (docs/legal/WORTWAHL.md: nur verneint)
+    const text = P.render(all, r).replace(/<[^>]+>/g, " ").replace(/\bkeine?n? [\wäöüß-]+/gi, " ");
+    assert.doesNotMatch(text, /Einstieg|Stopp/, r);
+    for (const a of avoid) assert.ok(!text.toLowerCase().includes(a), r + ": " + a);
+  }
 });

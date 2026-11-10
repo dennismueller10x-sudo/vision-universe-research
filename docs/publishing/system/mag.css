@@ -1,0 +1,132 @@
+/* Vision Universe Print-System: A4, Weiß/Schwarz/Neongrün, Inter. Konzept 07.11.2026 */
+@font-face{font-family:Inter;src:url(../../../assets/fonts/inter-latin.woff2) format("woff2");font-weight:100 900;font-display:block}
+@font-face{font-family:Inter;src:url(../../../assets/fonts/inter-latin-ext.woff2) format("woff2");font-weight:100 900;font-display:block;unicode-range:U+0100-024F,U+1E00-1EFF,U+20A0-20AB,U+20AD-20CF}
+:root{--lime:#c8f531;--ink:#000;--paper:#fff;--g1:#f4f4f4;--g2:#e6e6e6;--g3:#8c8c8c;--g4:#5c5c5c;--red:#c4281c}
+@page{size:A4;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#d9d9d9}
+body{font-family:Inter,system-ui,sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;font-feature-settings:"tnum" 1,"ss01" 1}
+.page{width:210mm;height:297mm;background:var(--paper);position:relative;overflow:hidden;margin:10mm auto;break-after:page;page-break-after:always}
+@media print{html,body{background:#fff}.page{margin:0}}
+.pad{position:absolute;inset:14mm 14mm 16mm}
+.dark{background:var(--ink);color:#fff}
+/* Kopf- und Fußzeile */
+.run{position:absolute;left:14mm;right:14mm;top:7mm;display:flex;justify-content:space-between;align-items:center;font-size:7.5pt;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+.run .wm{display:flex;gap:6px;align-items:center}
+.run .dot{width:7px;height:7px;border-radius:50%;background:var(--lime)}
+.foot{position:absolute;left:14mm;right:14mm;bottom:6mm;display:flex;justify-content:space-between;font-size:6.5pt;color:var(--g3);letter-spacing:.02em}
+.dark .foot{color:#777}
+.foot b{color:var(--ink)} .dark .foot b{color:#fff}
+/* Typo */
+.kick{font-size:8pt;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+.kick.l{color:var(--ink);background:var(--lime);display:inline-block;padding:3px 7px;border-radius:3px}
+.h1{font-size:54pt;font-weight:900;letter-spacing:-.045em;line-height:.88}
+.h2{font-size:30pt;font-weight:900;letter-spacing:-.04em;line-height:.95}
+.h3{font-size:14pt;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+.lead{font-size:12pt;line-height:1.38;font-weight:500;letter-spacing:-.005em}
+.body{font-size:9.6pt;line-height:1.5;color:#111}
+.body p+p{margin-top:2.4mm}
+.body p:first-child::first-letter{font-size:30pt;font-weight:900;float:left;line-height:.8;margin:1.2mm 1.6mm 0 0}
+.nodrop p:first-child::first-letter{all:unset}
+.cols2{column-count:2;column-gap:7mm}
+.mu{color:var(--g4)} .dark .mu{color:#9a9a9a}
+.sm{font-size:8.2pt;line-height:1.42}
+.xs{font-size:7pt;line-height:1.38}
+.b{font-weight:800}
+.num{font-variant-numeric:tabular-nums}
+hl{background:var(--lime);padding:0 2px}
+.rule{height:2px;background:var(--ink)} .dark .rule{background:#fff}
+.hair{height:1px;background:var(--g2)}
+.pill{display:inline-flex;align-items:center;gap:3px;border-radius:999px;padding:2px 8px;font-weight:800;font-size:8pt;white-space:nowrap}
+.pill.up{background:var(--lime);color:#000}.pill.dn{background:#000;color:#fff}.dark .pill.dn{background:#fff;color:#000}
+.pill.red{background:var(--red);color:#fff}
+.card{background:var(--g1);border-radius:10px;padding:5mm}
+.card.ink{background:#000;color:#fff}.card.lime{background:var(--lime)}
+.card.line{background:transparent;border:1.5px solid var(--ink)}
+.stat .v{font-size:30pt;font-weight:900;letter-spacing:-.04em;line-height:.95}
+.stat .l{font-size:7.5pt;font-weight:700;margin-top:1.5mm;line-height:1.3}
+.grid{display:grid;gap:5mm}
+.quote{font-size:15pt;font-weight:800;letter-spacing:-.02em;line-height:1.18}
+.quote{border-left:4px solid var(--lime);padding-left:4mm}
+.card.lime .quote{border-color:#000}
+.src{font-size:6.3pt;color:var(--g3);line-height:1.35}
+.tag{display:inline-block;font-size:6.5pt;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border:1px solid currentColor;border-radius:3px;padding:1px 5px}
+.img{position:absolute;background-size:cover;background-position:center}
+.vd{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:8pt}
+.vd i{display:inline-flex;gap:2px}.vd i b{width:9px;height:9px;border-radius:2px;background:var(--g2)}.vd i b.on{background:#000}
+.dark .vd i b{background:#333}.dark .vd i b.on{background:var(--lime)}
+table.t{width:100%;border-collapse:collapse;font-size:8.6pt}
+table.t td,table.t th{padding:1.6mm 0;border-bottom:1px solid var(--g2);text-align:left}
+table.t th{font-size:6.5pt;letter-spacing:.1em;text-transform:uppercase;color:var(--g4);font-weight:800}
+table.t td.r,table.t th.r{text-align:right}
+.dark table.t td,.dark table.t th{border-color:#222}
+.note{position:absolute;right:0;top:0;transform:translateY(-130%);font-size:6pt;color:var(--g3)}
+.imgnote{position:absolute;font-size:5.5pt;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.55);font-weight:700}
+.card.ink .pill.dn{background:#fff;color:#000}
+
+/* ---------- Aktienmagazin-Erweiterung ---------- */
+.logo{height:4.2mm;display:block}
+.dark .logo,.inv{filter:invert(1)}
+.mast-row{display:flex;justify-content:space-between;align-items:flex-end}
+.bleed{position:absolute;inset:0;background-size:cover;background-position:center}
+.shade-b{background:linear-gradient(0deg,#000 0%,rgba(0,0,0,.75) 30%,rgba(0,0,0,0) 62%)}
+.shade-t{background:linear-gradient(180deg,rgba(0,0,0,.85) 0%,rgba(0,0,0,0) 35%)}
+.ph{position:relative;background-size:cover;background-position:center;border-radius:8px;overflow:hidden;background-color:#111}
+.ph .cap{position:absolute;left:0;right:0;bottom:0;padding:3mm 3.5mm;background:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,0));color:#fff;font-size:7pt;font-weight:700}
+.ki{position:absolute;right:2mm;top:2mm;font-size:6.5pt;font-weight:800;letter-spacing:.08em;color:rgba(255,255,255,.7);background:rgba(0,0,0,.45);padding:1px 4px;border-radius:2px}
+.ressort{display:inline-block;background:#000;color:var(--lime);font-size:7.5pt;font-weight:900;letter-spacing:.14em;text-transform:uppercase;padding:2px 7px;border-radius:2px}
+.dark .ressort{background:var(--lime);color:#000}
+.mega{font-size:64pt;font-weight:900;letter-spacing:-.06em;line-height:.84}
+.hx{font-size:34pt;font-weight:900;letter-spacing:-.045em;line-height:.92}
+.hm{font-size:22pt;font-weight:900;letter-spacing:-.035em;line-height:.98}
+.sub{font-size:11pt;line-height:1.38;font-weight:600;letter-spacing:-.005em}
+.cols3{column-count:3;column-gap:5.5mm}
+.byline{font-size:6.8pt;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--g4)}
+.dark .byline{color:#9a9a9a}
+.box{border-radius:8px;padding:4mm}
+.fact{display:grid;grid-template-columns:1fr auto;gap:2mm;padding:1.5mm 0;border-bottom:1px solid var(--g2);font-size:7.8pt}
+.dark .fact,.card.ink .fact{border-color:#262626}
+.fact b{font-weight:800;text-align:right}
+.lg{height:7mm;width:auto;object-fit:contain;display:block}
+.bigq{font-size:17pt;font-weight:900;letter-spacing:-.025em;line-height:1.1}
+.num-xl{font-size:44pt;font-weight:900;letter-spacing:-.055em;line-height:.88}
+.stamp{display:inline-block;transform:rotate(-6deg);background:var(--lime);color:#000;font-weight:900;font-size:10pt;padding:2mm 3mm;border-radius:3px;letter-spacing:-.01em;line-height:1.05}
+.tick{display:flex;gap:2mm;align-items:center}
+.tick .tkr{font-weight:900;font-size:9pt}
+.list-n{counter-reset:n}.list-n>div{counter-increment:n;position:relative;padding-left:9mm}
+.list-n>div::before{content:counter(n);position:absolute;left:0;top:0;font-size:16pt;font-weight:900;color:var(--lime);-webkit-text-stroke:.6px #000;line-height:1}
+.dark .list-n>div::before{-webkit-text-stroke:0}
+.app-badge{display:inline-flex;align-items:center;gap:4px;background:#000;color:#fff;border-radius:999px;padding:2px 8px 2px 3px;font-size:6.8pt;font-weight:800}
+.app-badge i{width:12px;height:12px;border-radius:50%;background:var(--lime);display:inline-block}
+.dark .app-badge,.card.ink .app-badge{background:#fff;color:#000}
+
+.imgtop .run{color:#fff}
+
+table.qc td{padding:1.25mm 0}
+
+/* Handy-Rahmen für echte App-Screens */
+.phone{position:relative;background:#0a0a0a;border-radius:7mm;padding:1.6mm;border:.4mm solid #2a2a2a}
+/* Keine weichen Schatten oder Verläufe mit Transparenz über großen Flächen: manche PDF-Viewer zeigen sie als Kästen. Leuchten nur als Bild (system/glow-lime.png). */
+.glowimg{position:absolute;background:url(glow-lime.png) center/100% 100% no-repeat;pointer-events:none}
+.phone img{display:block;width:100%;border-radius:5.6mm}
+
+.pi{width:7mm;height:7mm;color:var(--lime)}
+.pillsoon{display:inline-flex;align-items:center;gap:2mm;border:1px dashed var(--lime);color:var(--lime);border-radius:999px;padding:1.4mm 3.5mm;font-weight:800;font-size:9pt}
+.pillsoon i{width:2.4mm;height:2.4mm;border-radius:50%;background:var(--lime);box-shadow:0 0 0 1mm rgba(200,245,49,.25)}
+/* Bilder insgesamt heller */
+/* Bilder sind in den Dateien aufgehellt (+20 %) */
+
+/* ---------- Vorlagen (Umbau nach Codex-Prüfung) ---------- */
+.tpl-grid{display:grid;grid-template-columns:minmax(0,1fr) 62mm;gap:6mm;margin-top:4mm}
+.tpl-text{column-count:1}
+.tpl-unten{display:grid;grid-template-columns:1fr 1fr;gap:5mm;margin-top:5mm}
+.qz{display:grid;grid-template-columns:7mm 1fr;gap:1.5mm;padding:.8mm 0;break-inside:avoid}
+.qz a{color:inherit;text-decoration:underline;text-decoration-color:#c8c8c8}
+.appreihe{display:grid;grid-template-columns:repeat(5,1fr);gap:3.5mm;margin-top:10mm;align-items:start}
+.appkarte .phone{border-radius:5mm;padding:1.1mm}
+.appkarte .phone img{border-radius:4mm}
+.applabel{display:flex;gap:1.6mm;align-items:flex-start;margin-top:4mm}
+.applabel .pi{flex:none;width:5.5mm;height:5.5mm}
+.applabel b{display:block;font-size:9.5pt;font-weight:900;color:#fff}
+.applabel span{display:block;font-size:7.6pt;color:#bdbdbd;line-height:1.3;margin-top:.4mm}
+.dark .body{color:#e6e6e6}

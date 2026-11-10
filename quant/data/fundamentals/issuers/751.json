@@ -579,9 +579,9 @@
       "cik": "0001773751",
       "name": "Hims & Hers Health, Inc.",
       "sic": "8011",
-      "rawFacts": 7711,
-      "mappedFacts": 2475,
-      "unmappedFacts": 5452,
+      "rawFacts": 8081,
+      "mappedFacts": 2591,
+      "unmappedFacts": 5713,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -591,28 +591,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 31,
+      "quarterlyPeriods": 32,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "eps_diluted": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "free_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0,
@@ -632,21 +632,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -660,14 +660,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -690,44 +690,45 @@
         }
       },
       "quality": {
-        "HIGH": 225
+        "HIGH": 232
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 225,
-        "resolvedValues": 225
+        "datableValues": 232,
+        "resolvedValues": 232
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 5585,
+        "rules_version": "1.1.0",
+        "total": 5846,
         "by_severity": {
-          "INFO": 5452,
+          "INFO": 5713,
           "WARNING": 133
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 78,
           "RESTATEMENT_CONFLICT": 55,
-          "UNKNOWN_CONCEPT": 5452
+          "UNKNOWN_CONCEPT": 5713
         }
       },
       "latestFiling": {
-        "accession": "0001773751-26-000163",
-        "filing_date": "2026-08-10",
+        "accession": "0001773751-26-000246",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 31
+        "periodic_filings": 32,
+        "acceptance_datetime": "2026-11-09T21:17:20.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "31ee2482ec3a57351149a7fe8b40839e1488b14920c548bb4f23d16a46343e17",
+      "sourceDigest": "65853622ab3e50e0fde37856dba3ba9e4f2c01f0c1e7852dc9943ccf317b15a4",
       "issuerId": "iss_cik_0001773751"
     }
   ]

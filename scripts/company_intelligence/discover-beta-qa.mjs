@@ -4,6 +4,7 @@ import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {runtimeCandidate} from './runtime-candidate.mjs';
 import {openCompanyIntelligence} from './hydrated-consumer-review.mjs';
+import {edgeGutterOk} from './edge-gutter.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const arg=(k,f)=>{const i=process.argv.indexOf('--'+k);return i<0?f:process.argv[i+1]};
 const base=arg('url','http://127.0.0.1:8783').replace(/\/$/,''),out=arg('out','/tmp/discover-beta-qa');
@@ -51,7 +52,8 @@ try{
    assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
    assert.equal(await chapter.evaluate(e=>e.scrollWidth>e.clientWidth),false);
    assert.equal(await chapter.locator('a').evaluateAll(as=>as.filter(a=>a.getBoundingClientRect().height>0).every(a=>a.getBoundingClientRect().height>=44)),true);
-   assert.equal(await chapter.evaluate(e=>parseFloat(getComputedStyle(e).paddingLeft)>=14),true);
+   const gutter=await chapter.evaluate(e=>{const r=e.getBoundingClientRect();return {left:r.left,right:r.right,viewport:document.documentElement.clientWidth};});
+   assert.equal(edgeGutterOk(gutter),true,product+'/'+ticker+'/'+width+' edge gutter '+JSON.stringify(gutter));
    if(phase==='dark'){assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');if(ticker==='XPEV'){assert(text.includes('CNY'));assert(!text.includes('USD'));}await page.screenshot({path:`${out}/${product}-${ticker}-${width}-dark-viewport.png`});}
    if(product==='discover'&&width===390&&['AAPL','ACU','CHE','ROOT','XPEV','VEON'].includes(ticker)){
     await chapter.scrollIntoViewIfNeeded();await page.screenshot({path:`${out}/${product}-${ticker}-${width}-viewport.png`});

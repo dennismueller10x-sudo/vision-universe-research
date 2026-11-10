@@ -6,9 +6,9 @@
       "cik": "0001888886",
       "name": "Structure Therapeutics Inc.",
       "sic": "2834",
-      "rawFacts": 3931,
-      "mappedFacts": 1313,
-      "unmappedFacts": 2627,
+      "rawFacts": 4181,
+      "mappedFacts": 1408,
+      "unmappedFacts": 2808,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 19,
+      "quarterlyPeriods": 20,
       "firstPeriodEnd": "2021-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "free_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0,
@@ -59,14 +59,14 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -117,44 +117,45 @@
         }
       },
       "quality": {
-        "HIGH": 127,
+        "HIGH": 133,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 129,
-        "resolvedValues": 129
+        "datableValues": 135,
+        "resolvedValues": 135
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2635,
+        "rules_version": "1.1.0",
+        "total": 2816,
         "by_severity": {
-          "INFO": 2627,
+          "INFO": 2808,
           "WARNING": 8
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 8,
-          "UNKNOWN_CONCEPT": 2627
+          "UNKNOWN_CONCEPT": 2808
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-092057",
-        "filing_date": "2026-08-06",
+        "accession": "0001104659-26-124503",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 17
+        "periodic_filings": 18,
+        "acceptance_datetime": "2026-11-09T21:15:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "472dfaf1342b409e6faec2805b94a3b28335ce585a0d5e4e0bdb1e3b00dabf2c",
+      "sourceDigest": "0f4c36fcdd519cf04f2daa1c82a19ffed24ffcf3235de381c22b269fec5f9a18",
       "issuerId": "iss_cik_0001888886"
     }
   ]

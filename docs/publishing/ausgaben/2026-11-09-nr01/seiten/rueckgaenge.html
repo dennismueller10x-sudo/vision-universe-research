@@ -1,0 +1,18 @@
+<section class="page dark">
+  <div data-run="Berichtssaison"></div>
+  <div class="pad" style="top:15mm">
+    <span class="ressort">Berichtssaison · Größte Rückgänge</span>
+    <div class="hx" style="margin-top:3mm">Wenn der Ausblick die Zahlen schlägt</div>
+    <div class="sub" style="margin-top:2mm;color:#cfcfcf">Vier Firmen, deren Kurs in der Woche um 11 bis 27&nbsp;% fiel. Der Grund war jedes Mal mehr der Blick nach vorn als das abgelaufene Quartal.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:5mm;margin-top:5mm" data-k="ver"></div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('ver',()=>[
+ ['AXON','hf-bodycam.jpg','Axon: Drohnen-Abwehr verschoben','Umsatz +28 %, aber unter den Erwartungen. Die Jahresprognose sinkt: Drei große Aufträge des Bundes für Drohnen-Abwehr rutschen aus 2026, rund 130 Mio. $ Umsatz.','Das Abo-Geschäft läuft stark: wiederkehrender Umsatz +40 %, Kunden geben 26 % mehr aus als im Vorjahr. KI-Produkte erreichen über 100 Mio. $ im Jahr.'],
+ ['FIS','bv-geldscheine.jpg','FIS: Ausblick und Finanzchef weg','Ein schwacher erster Ausblick auf 2027 (Umsatz −0,5 bis +1 %) und der Abgang des Finanzchefs. −23 % an einem Tag, drei Herabstufungen von Analysten.','Das ausgewiesene Plus von 27 % stammt fast ganz aus einem Zukauf. Ohne ihn wuchs FIS um 3,7 %. Rückkäufe ruhen, bis die Schulden sinken.'],
+ ['DKNG','hf-stadion-handy.jpg','DraftKings: Teure Wette auf Wetten','Der Ausblick für das bereinigte EBITDA 2026 schrumpft von 700–900 Mio. $ auf 175–275 Mio. $. Das Geld fließt in „Predictions“, ein neues Geschäft mit Vorhersagemärkten.','Das Kerngeschäft allein soll 875–925 Mio. $ bereinigtes EBITDA bringen. Die Zahl der zahlenden Kunden stieg um 13 %.'],
+ ['TEAM','hf-software-buero.jpg','Atlassian: Wachstum mit Bremse','Starke Zahlen (Umsatz +24 %), aber das Abo-Wachstum soll bis Jahresende auf rund 18,5 % sinken. −17 % nachbörslich, nach fast einer Verdopplung seit August.','Im Quartal kaufte Atlassian für 581 Mio. $ eigene Aktien, mehr als der freie Cashflow von 463 Mio. $.'],
+].map(r=>{const c=VUM.C(r[0]);return `<div style="background:#111;border:1px solid #262626;border-radius:8px;overflow:hidden">${r[1]?`<div class="ph" style="height:30mm;border-radius:0;background-image:url(img/${r[1]})"><span class="ki">KI-Bild</span></div>`:`<div style="height:30mm;background:#1a1a1a;display:flex;align-items:center;justify-content:center"><div style="filter:invert(1) grayscale(1) brightness(1.5)">${VUM.logo(r[0],12)}</div></div>`}<div style="padding:4mm"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:10pt">${c.n.replace(' Inc','').replace(' Holdings','')}</b>${VUM.pill(c.week)}</div><div style="font-size:12pt;font-weight:900;letter-spacing:-.02em;margin-top:2mm;line-height:1.1">${r[2]}</div><div class="body" style="margin-top:1.5mm;font-size:8pt;color:#d6d6d6">${r[3]}</div><div style="margin-top:2mm;border:1px solid var(--lime);border-radius:4px;padding:2mm 2.5mm;font-size:7.6pt;line-height:1.4;color:#e6e6e6"><b style="color:var(--lime)">Das Detail:</b> ${r[4]}</div></div></div>`}).join(''));
+</script>

@@ -1,6 +1,6 @@
 {
  "schemaVersion": "evidence-status-1.0.0",
- "generatedAt": "2026-11-07T04:16:48.844Z",
+ "generatedAt": "2026-11-10T00:53:41.199Z",
  "kinds": [
   {
    "id": "HISTORICAL_REPLAY",
@@ -35,22 +35,22 @@
     "outOfSample": "nicht anwendbar - beschreibt, prüft keine Regel"
    },
    "coverage": {
-    "universe": 5632,
+    "universe": 5636,
     "covered": 5310,
-    "available": 4452,
+    "available": 4439,
     "sufficient": {
-     "m1": 2184,
-     "m3": 2130,
-     "m6": 2065,
-     "m12": 1976
+     "m1": 2170,
+     "m3": 2115,
+     "m6": 2049,
+     "m12": 1964
     },
     "broad": {
-     "m6": 833
+     "m6": 826
     },
     "reasons": {
-     "NOT_COVERED": 322,
-     "NO_PRICE_CONDITION_TODAY": 726,
-     "NO_COMPARABLE_CASE": 132
+     "NOT_COVERED": 326,
+     "NO_PRICE_CONDITION_TODAY": 736,
+     "NO_COMPARABLE_CASE": 135
     }
    }
   },
@@ -81,7 +81,7 @@
     "sample": 955440,
     "period": [
      "1992-01-31",
-     "2026-11-05"
+     "2026-11-06"
     ],
     "costs": {
      "roundTripBps": 20,
@@ -109,7 +109,7 @@
      "id": "HISTORICAL_UNIVERSE",
      "label": "Historische Index-Zugehörigkeit (Point-in-Time)",
      "required": "mindestens 24 Stichtage",
-     "measured": "7 Stichtage",
+     "measured": "8 Stichtage",
      "state": "FAIL"
     },
     {
@@ -169,7 +169,7 @@
      "id": "PIT",
      "label": "Stände unverändert (contentHash)",
      "required": "bestanden",
-     "measured": "29 von 29 geprüft",
+     "measured": "30 von 30 geprüft",
      "state": "PASS"
     },
     {
@@ -183,14 +183,14 @@
      "id": "HISTORYDATES",
      "label": "veröffentlichte Stichtage",
      "required": "120",
-     "measured": "29",
+     "measured": "30",
      "state": "FAIL"
     },
     {
      "id": "HISTORYSPAN",
      "label": "Spanne der Historie",
      "required": "180 Tage",
-     "measured": "57 Tage",
+     "measured": "60 Tage",
      "state": "FAIL"
     },
     {
@@ -337,22 +337,22 @@
    "setupRules": 9
   },
   "HISTORICAL_REPLAY_COVERAGE": {
-   "universe": 5632,
+   "universe": 5636,
    "covered": 5310,
-   "available": 4452,
+   "available": 4439,
    "sufficient": {
-    "m1": 2184,
-    "m3": 2130,
-    "m6": 2065,
-    "m12": 1976
+    "m1": 2170,
+    "m3": 2115,
+    "m6": 2049,
+    "m12": 1964
    },
    "broad": {
-    "m6": 833
+    "m6": 826
    },
    "reasons": {
-    "NOT_COVERED": 322,
-    "NO_PRICE_CONDITION_TODAY": 726,
-    "NO_COMPARABLE_CASE": 132
+    "NOT_COVERED": 326,
+    "NO_PRICE_CONDITION_TODAY": 736,
+    "NO_COMPARABLE_CASE": 135
    }
   }
  }

@@ -643,9 +643,9 @@
       "cik": "0001630805",
       "name": "Babcock & Wilcox Enterprises, Inc.",
       "sic": "3433",
-      "rawFacts": 23262,
-      "mappedFacts": 4985,
-      "unmappedFacts": 18183,
+      "rawFacts": 23791,
+      "mappedFacts": 5068,
+      "unmappedFacts": 18676,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -656,28 +656,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 14,
-      "quarterlyPeriods": 52,
+      "quarterlyPeriods": 53,
       "firstPeriodEnd": "2012-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "eps_diluted": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "free_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0,
@@ -697,21 +697,21 @@
         },
         "net_income": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "operating_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "revenue": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -725,14 +725,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -755,48 +755,49 @@
         }
       },
       "quality": {
-        "HIGH": 404,
-        "MEDIUM": 58
+        "HIGH": 410,
+        "MEDIUM": 59
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 462,
-        "resolvedValues": 462
+        "datableValues": 469,
+        "resolvedValues": 469
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 19094,
+        "rules_version": "1.1.0",
+        "total": 19599,
         "by_severity": {
-          "INFO": 18183,
+          "INFO": 18676,
           "ERROR": 13,
-          "WARNING": 898
+          "WARNING": 910
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 664,
+          "CONCEPT_DISAGREEMENT": 671,
           "FUTURE_DATA_LEAK": 13,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
-          "RESTATEMENT_CONFLICT": 233,
-          "UNKNOWN_CONCEPT": 18183
+          "RESTATEMENT_CONFLICT": 238,
+          "UNKNOWN_CONCEPT": 18676
         }
       },
       "latestFiling": {
-        "accession": "0001630805-26-000068",
-        "filing_date": "2026-08-10",
+        "accession": "0001630805-26-000082",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 51
+        "periodic_filings": 52,
+        "acceptance_datetime": "2026-11-09T21:29:48.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "7b12dfe0f0baa154c1402434ea6f8934fdc89795b4bde235377a71d162c2be6a",
+      "sourceDigest": "5649b1b2f3a68243d1fe2eb2aa9955e2f501e03d505e623a966d3406496b57e8",
       "issuerId": "iss_cik_0001630805"
     },
     {

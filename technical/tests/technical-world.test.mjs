@@ -113,10 +113,10 @@ test("Seite: Skripte existieren, Engines in Abhaengigkeitsreihenfolge, keine eig
     assert.doesNotMatch(src, /"ref_"\s*\+/, file + ": securityId nur ueber core/identity.js (ADR-001)");
     assert.doesNotMatch(src, /Math\.random\(\)\s*\*|mock|demo/i, file + ": keine Zufalls- oder Demo-Werte");
   }
-  /* Kein Score-Feld; "Setup-Score" erscheint nur in der Methodik als ausdrueckliche Verneinung. */
+  /* Kein Score-Feld; die Methodik verneint ausdruecklich eine Gesamtnote (frueher "Setup-Score", Wortwahl "Befund" seit PR 1 des Konzepts). */
   assert.doesNotMatch(app, /setupScore|opportunityScore|\.score\b/, "kein undokumentierter Score");
-  assert.equal(app.split("Setup-Score").length - 1, 1);
-  assert.match(app, /Es gibt keinen Setup-Score/);
+  assert.equal(app.split("Setup-Score").length - 1, 0);
+  assert.match(app, /Es gibt keine Gesamtnote/);
 });
 
 test("Datensatz: Spalten gleich lang, Zaehler stimmen, jede Vorlage auswertbar", () => {

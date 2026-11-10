@@ -1338,6 +1338,136 @@
     },
     {
       "id": "UIP-R134",
+      "date": "2026-11-09",
+      "pr": 1732,
+      "ownerApproval": "Owner/Steuerung 09.11.2026 (Bedienprüfung #1719, Punkt b: Tippziele ohne sichtbare Änderung)",
+      "file": "assets/site-navigation.js",
+      "from": "c6c4b0ab57e5e1b433843efaa9fec2c0276e62c564540336b836f4f8808f8fe9",
+      "to": "9b000c630b5235863655be450744ce4ca500ab5fb0f6e5d77f3b33f678b47eba",
+      "scope": "Kopf mobil: Suche/Profil (.hb, 40 px breit) bekommen über ::after eine 44 px breite Trefferfläche; Aussehen unverändert"
+    },
+    {
+      "id": "UIP-R135",
+      "date": "2026-11-09",
+      "pr": 1653,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „bau daraus dann direkt eine eigene Seite, die dann auch in der App erscheint. Und hinterlege auch direkt noch einen Unterbereich … Reports.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "9b000c630b5235863655be450744ce4ca500ab5fb0f6e5d77f3b33f678b47eba",
+      "to": "24471fe704cd26b77a3bae45877ad1e940852c15e6a50e3e17cc089276b4e503",
+      "scope": "Insights: Menükachel (breit unter Portfolios) aus products/insights/module.json, Einträge Artikel und Reports"
+    },
+    {
+      "id": "UIP-R136",
+      "date": "2026-11-09",
+      "pr": 1653,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „bau daraus dann direkt eine eigene Seite, die dann auch in der App erscheint. Und hinterlege auch direkt noch einen Unterbereich … Reports.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/product-icons.svg",
+      "from": "1676bd5c1ef857cb5b6856701dbe94f834c0f163288949a23e77c43bc4f9c887",
+      "to": "54ef0dfbb654bb2b904964fae89e388b634e88d11751dbac2591ccca6909ec4e",
+      "scope": "Insights: neues Symbol „insights“ (Zeitung) in der HUD-Familie; bestehende Symbole unverändert"
+    },
+    {
+      "id": "UIP-R137",
+      "date": "2026-11-09",
+      "pr": 1737,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (docs/design/elliott-hedgefonds-vorsorge-2026-11/HANDOVER.md, Entscheidung 2)",
+      "file": "assets/site-navigation.js",
+      "from": "24471fe704cd26b77a3bae45877ad1e940852c15e6a50e3e17cc089276b4e503",
+      "to": "f84ff7ef1b8bba4d6727d0768aa34ed9a6f8304cbf2216f028315b2629369464",
+      "scope": "Elliott: Leistenplatz und Menüeintrag „Welle 3“ → „Zählbar“ (#/?zaehlbar=1, alte Adresse markiert Zählbar); Menüeinträge aus products/elliott/module.json neu erzeugt"
+    },
+    {
+      "id": "UIP-R138",
+      "date": "2026-11-09",
+      "pr": 1737,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidung 2)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "011eccec37dde14a35afbd0d6e89b917cec5fdc86cbd1be9b4e8a1eb4c4f3cda",
+      "to": "d8d436c8379d5027353fc3155c65972038efa1a9911860bf18032b44147478d7",
+      "scope": "Erwartete Elliott-Leiste im Aktienbild: „Welle 3“ → „Zählbar“; sonst unverändert"
+    },
+    {
+      "id": "UIP-R139",
+      "date": "2026-11-09",
+      "pr": 1750,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidungen 3 und 4)",
+      "file": "quant/app/page-chartbild.js",
+      "from": "d7ad7992aceee3c9f3a16c82d280afe0108b05ac549c06f5bc65412a5f1b8f2c",
+      "to": "e12c1662c33622edf5b721fdfb949c7778fa3f43881ae3d39f4df34b48cdb234",
+      "scope": "Elliott auf der Aktie (Konzept EHV, EX03): zählbar mit Lesart in drei Sätzen, Chart nur mit Ungültig-Marke und Kapiteln, nicht zählbar mit Karte „Keine Zählung“ und Wegen zu Technical und zur Zählbar-Liste; kein eigener „Technischer Ausblick“ im Elliott-Produkt; „Rücklauf abwarten“ und „Zielbereich erreicht“ umformuliert"
+    },
+    {
+      "id": "UIP-R140",
+      "date": "2026-11-09",
+      "pr": 1750,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidungen 3 und 4)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "d8d436c8379d5027353fc3155c65972038efa1a9911860bf18032b44147478d7",
+      "to": "0eb594cc2523e1893a63c9b5bff6be58e9b35dd5600c3175e73a8e88719e7b57",
+      "scope": "Prüfung des Elliott-Aktienbilds auf den neuen Aufbau (zählbar: drei Sätze, Kapitel, Ungültig-Marke; nicht zählbar: Wege); keine Ziele, kein zweiter Ausblick"
+    },
+    {
+      "id": "UIP-R141",
+      "date": "2026-11-09",
+      "pr": 1743,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „Der Aktienreport Xpeng, der muss da auf jeden Fall raus … Außerdem muss dann unser Magazin rein, also unser Aktienmagazin.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "f84ff7ef1b8bba4d6727d0768aa34ed9a6f8304cbf2216f028315b2629369464",
+      "to": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
+      "scope": "Insights: Einträge Artikel, Aktienmagazin, Reports; „Weitere Produkte“ ohne altes Magazin und XPeng-Muster (aus den Steckbriefen erzeugt)"
+    },
+    {
+      "id": "UIP-R142",
+      "date": "2026-11-09",
+      "pr": 1743,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „Der Aktienreport Xpeng, der muss da auf jeden Fall raus … Außerdem muss dann unser Magazin rein, also unser Aktienmagazin.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "0eb594cc2523e1893a63c9b5bff6be58e9b35dd5600c3175e73a8e88719e7b57",
+      "to": "4501267a27988548364c26cdf362af2c48da346a986ae0de7054730bebb6d5c0",
+      "scope": "Plattform-Kopf-Prüfung: Magazin und Reports liegen jetzt unter /insights/ (Kachel Insights statt /magazin/ und /reports/)"
+    },
+    {
+      "id": "UIP-R143",
+      "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
+      "to": "8b41ebd00f9a3fb5bdea6391234d74b40b76c02588bc0cf7f42302617e950095",
+      "scope": "Atlas auf jeder Aktie: Der Knopf „Atlas“ öffnet auf Seiten mit Aktienkopf (data-vu-stock) das Sheet aus assets/atlas-sheet.js, sonst bleibt er der Link nach /ask/; Aussehen unverändert"
+    },
+    {
+      "id": "UIP-R144",
+      "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/stock-navigator.js",
+      "from": "76e0389d17cb0a2c19754dea03d0e8f43cdbc6a07c4c8fd7422d8e107908133c",
+      "to": "8e1d02130cc4d44e02f7430e6b046ea4006d801fa8246fe9e2d73ce34261a60d",
+      "scope": "Aktienkopf trägt data-vu-stock und data-vu-stock-name für den Atlas-Knopf; Aussehen und Navigator unverändert"
+    },
+    {
+      "id": "UIP-R145",
+      "date": "2026-11-09",
+      "pr": 1756,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidung 7)",
+      "file": "assets/site-navigation.js",
+      "from": "8b41ebd00f9a3fb5bdea6391234d74b40b76c02588bc0cf7f42302617e950095",
+      "to": "159f890551b37f777dd1801683de74b1028648e11011ff08b8c6652cbd0bacfa",
+      "scope": "Hedgefonds: Leistenplatz und Menüeintrag „Smart Money“ → „Gruppen-Käufe“ (#/gruppen-kaeufe; #/smart-money markiert Gruppen-Käufe)"
+    },
+    {
+      "id": "UIP-R150",
+      "date": "2026-11-09",
+      "pr": 1749,
+      "ownerApproval": "Owner 09.11.2026: Supertrader-Konzept „Das Rezept eines Profis“ freigegeben (docs/design/supertrader-2026-11/HANDOVER.md, Entscheidungen 3 und 9: Produkt-Leiste in assets/site-navigation.js)",
+      "file": "assets/site-navigation.js",
+      "from": "159f890551b37f777dd1801683de74b1028648e11011ff08b8c6652cbd0bacfa",
+      "to": "63610eabc84b7280f54b135ea3046d1de4348bcd5fe4c087420c4425e4d29ca0",
+      "scope": "Supertrader-Dock Supertrader · Methoden · Treffer · Forschung (statt Signale/Backtests), Menüeinträge aus products/supertrader/module.json neu erzeugt (build-modules.mjs); signals/stock aktivieren Treffer, backtests aktiviert Forschung"
+    },
+    {
+      "id": "UIP-R151",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1347,17 +1477,17 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R135",
+      "id": "UIP-R152",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
       "file": "assets/stock-navigator.js",
-      "from": "76e0389d17cb0a2c19754dea03d0e8f43cdbc6a07c4c8fd7422d8e107908133c",
-      "to": "f630f73d0f57cf1be444cd69b925dfea7013c46054b527ac7a7d6d6034fd5dd9",
+      "from": "8e1d02130cc4d44e02f7430e6b046ea4006d801fa8246fe9e2d73ce34261a60d",
+      "to": "52ea79147ed452a3561269ae52d640609bd38ab6521d60aafddeef7a2c493372",
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R136",
+      "id": "UIP-R153",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1367,7 +1497,7 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R137",
+      "id": "UIP-R154",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1377,7 +1507,7 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R138",
+      "id": "UIP-R155",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1387,7 +1517,7 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R139",
+      "id": "UIP-R156",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1397,17 +1527,17 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R140",
+      "id": "UIP-R157",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
       "file": "quant/app/page-chartbild.js",
-      "from": "d7ad7992aceee3c9f3a16c82d280afe0108b05ac549c06f5bc65412a5f1b8f2c",
-      "to": "f7b5d80c1df2ff7ec1084763afda9c2d416138a3daf974d52f001ca059b3c06c",
+      "from": "e12c1662c33622edf5b721fdfb949c7778fa3f43881ae3d39f4df34b48cdb234",
+      "to": "129edd9a5ca9620254bf5915276e35a839f3bfb60444cde6f4df1ebcc4da2b19",
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R141",
+      "id": "UIP-R158",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1417,7 +1547,7 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R142",
+      "id": "UIP-R159",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1427,7 +1557,7 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R143",
+      "id": "UIP-R160",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1437,7 +1567,7 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R144",
+      "id": "UIP-R161",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1447,7 +1577,7 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R145",
+      "id": "UIP-R162",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1457,7 +1587,7 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R146",
+      "id": "UIP-R163",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1467,7 +1597,7 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R147",
+      "id": "UIP-R164",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
@@ -1477,13 +1607,13 @@
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     },
     {
-      "id": "UIP-R148",
+      "id": "UIP-R165",
       "date": "2026-11-08",
       "pr": 1645,
       "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
       "file": "scripts/vu2/browser-qa.mjs",
-      "from": "011eccec37dde14a35afbd0d6e89b917cec5fdc86cbd1be9b4e8a1eb4c4f3cda",
-      "to": "5b0bb760842295b0c4ce409aa03f4e19624c70b2317ae72fefeed5ce7dca2cb1",
+      "from": "4501267a27988548364c26cdf362af2c48da346a986ae0de7054730bebb6d5c0",
+      "to": "ed7789031cd4db73cdfb9412c505a34b95718b88bb3fe0124fda46df03f2b5fc",
       "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
     }
   ]

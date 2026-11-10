@@ -218,8 +218,8 @@
       "⌂"
      ],
      [
-      "Welle 3",
-      "/elliott/#/?welle=3",
+      "Zählbar",
+      "/elliott/#/?zaehlbar=1",
       "◬"
      ],
      [
@@ -378,8 +378,8 @@
       "⌁"
      ],
      [
-      "Smart Money",
-      "/hedgefonds/#/smart-money",
+      "Gruppen-Käufe",
+      "/hedgefonds/#/gruppen-kaeufe",
       "◬"
      ]
     ]
@@ -391,6 +391,50 @@
    ],
    "tests": [
     "products/hedgefonds/tests/test_fetch_edgar_data.py"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "insights",
+   "label": "Insights",
+   "status": "BETA",
+   "route": "/insights/",
+   "access": "free",
+   "navigation": {
+    "group": "products",
+    "order": 11,
+    "label": "Insights",
+    "href": "/insights/",
+    "icon": "insights",
+    "claim": "Tagesthemen, Aktienmagazin und Reports",
+    "entries": [
+     [
+      "Artikel",
+      "/insights/",
+      "▤"
+     ],
+     [
+      "Aktienmagazin",
+      "/insights/magazin/",
+      "▣"
+     ],
+     [
+      "Reports",
+      "/insights/reports/",
+      "▥"
+     ]
+    ]
+   },
+   "data": [],
+   "reads": [],
+   "producers": [
+    "products/insights/build.mjs",
+    "products/insights/snapshot.mjs",
+    "products/insights/screens.mjs",
+    "products/insights/heft_veroeffentlichen.py"
+   ],
+   "tests": [
+    "products/insights/tests/*.test.mjs"
    ]
   },
   {
@@ -418,13 +462,7 @@
    "status": "LIVE",
    "route": "/magazin/",
    "access": "free",
-   "navigation": {
-    "group": "more",
-    "order": 7,
-    "label": "Magazin",
-    "href": "/magazin/",
-    "icon": "▣"
-   },
+   "navigation": null,
    "data": [],
    "reads": [],
    "tests": []
@@ -596,13 +634,7 @@
    "status": "LIVE",
    "route": "/reports/xpeng/",
    "access": "free",
-   "navigation": {
-    "group": "more",
-    "order": 8,
-    "label": "Reports",
-    "href": "/reports/xpeng/",
-    "icon": "▥"
-   },
+   "navigation": null,
    "data": [],
    "reads": [],
    "tests": []
@@ -761,13 +793,13 @@
       "⚑"
      ],
      [
-      "Signale",
-      "/supertrader/signals/",
+      "Treffer",
+      "/supertrader/treffer/",
       "◬"
      ],
      [
-      "Backtests",
-      "/supertrader/backtests/",
+      "Forschung",
+      "/supertrader/forschung/",
       "▧"
      ],
      [
@@ -840,7 +872,8 @@
     "technicalWorld"
    ],
    "reads": [
-    "eodPrices"
+    "eodPrices",
+    "marketPulse"
    ],
    "tests": [
     "technical/tests/*.test.mjs",

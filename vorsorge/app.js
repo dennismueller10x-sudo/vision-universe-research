@@ -445,21 +445,24 @@
   /* ------------------------------------------------------------ Router */
   /* Navigation: die gemeinsame Produkt-Leiste der Vision-Universe-Shell
      traegt Vorsorge | Plan | ETFs | Portfolio | ☰. Die weiteren Bereiche
-     stehen am Ende jeder Ansicht (#vs-more) und im globalen Menue. */
+     stehen je Schritt am Ende jeder Ansicht (#vs-more, VS.WAY) und im globalen Menue. */
   var DOCK = { home: "vorsorge", plan: "plan", etfs: "etfs", portfolio: "portfolio", foerderung: "plan", monitor: "portfolio", vergleichen: "etfs", wissen: "vorsorge" };
-  var MORE = [["vergleichen", "#/vergleichen", "Vergleichen", "grid", "ETFs und Kosten"], ["foerderung", "#/foerderung", "Förderung", "star", "Zulagen 2027"],
-    ["monitor", "#/monitor", "Veränderungen", "bell", "Bin ich auf Kurs?"], ["wissen", "#/wissen", "Wissen", "book", "Begriffe, je ein Satz"]];
+  /* Konzept EHV: der eine Weg in drei Schritten; jeder Bereich gehört zu einem Schritt. */
+  VS.WAY = [["Ziel rechnen", "#/plan", "Wie viel brauchst du im Alter?", [["plan", "#/plan", "Planer"], ["foerderung", "#/foerderung", "Förderung"]]],
+    ["Sparplan bauen", "#/etfs", "Breit streuen, Kosten niedrig", [["etfs", "#/etfs", "ETFs"], ["portfolio", "#/portfolio", "Portfolio"], ["vergleichen", "#/vergleichen", "Vergleichen"]]],
+    ["Auf Kurs bleiben", "#/monitor", "Wir melden, wenn sich etwas ändert", [["monitor", "#/monitor", "Veränderungen"], ["wissen", "#/wissen", "Wissen"]]]];
   VS.SECTION_OF = { home: "home", rechner: "plan", plan: "plan", luecke: "plan", kosten: "vergleichen", szenarien: "portfolio", etfs: "etfs", etf: "etfs",
-    vergleich: "vergleichen", vergleichen: "vergleichen", portfolio: "portfolio", xray: "portfolio", foerderung: "foerderung", riester: "vergleichen",
+    vergleich: "vergleichen", vergleichen: "vergleichen", index: "etfs", portfolio: "portfolio", xray: "portfolio", foerderung: "foerderung", riester: "vergleichen",
     fruehstart: "foerderung", anbieter: "vergleichen", monitor: "monitor", watchlist: "etfs", wissen: "wissen", daten: "wissen", start: "home" };
 
   function sections(active) {
     if (global.VUNavigation) global.VUNavigation.dock({ active: DOCK[active] || null });
     var el = document.getElementById("vs-more"); if (!el) return;
-    var G = global.VUUI;
     el.className = "vs-more vs-wrap vu-ui";
-    el.innerHTML = '<h2 class="vs-more-t">Mehr in Vorsorge</h2><div class="vs-more-grid">' + MORE.map(function (n) {
-      return '<a href="' + n[1] + '"' + (n[0] === active ? ' aria-current="page"' : "") + '><span class="vu-hud" style="--vu-hud:34px;border-radius:10px">' + VS.glyph(n[3], 18) + '</span><b>' + n[2] + '</b><small>' + n[4] + '</small></a>';
+    /* Start zeigt den Weg oben; alle anderen Ansichten enden mit dem Weg und den Bereichen je Schritt. */
+    if (active === "home") { el.innerHTML = ""; return; }
+    el.innerHTML = '<h2 class="vs-more-t">Dein Weg in drei Schritten</h2><div class="vs-way-mini">' + VS.WAY.map(function (w, i) {
+      return '<div><b><span class="num">' + (i + 1) + '</span> ' + w[0] + '</b>' + w[3].map(function (n) { return '<a href="' + n[1] + '"' + (n[0] === active ? ' aria-current="page"' : "") + '>' + n[2] + '</a>'; }).join("") + '</div>';
     }).join("") + '</div>';
   }
 
@@ -483,7 +486,7 @@
     try { view(r); }
     catch (e) { VS.render('<section class="vs-section"><h2>Diese Ansicht konnte nicht geladen werden.</h2><p class="vs-sub">' + VS.esc(e.message) + '</p></section>'); if (global.console) console.error(e); }
     if (!r.query.keepScroll) global.scrollTo(0, 0);
-    var t = { home: "Vorsorge", rechner: "Altersvorsorge-Rechner", plan: "Vorsorgeplaner", etfs: "ETF Intelligence", etf: (r.args[0] || "") + " · ETF", portfolio: "Vorsorge-Portfolio",
+    var t = { home: "Vorsorge", rechner: "Altersvorsorge-Rechner", plan: "Vorsorgeplaner", etfs: "ETF Intelligence", etf: (r.args[0] || "") + " · ETF", index: "Index", portfolio: "Vorsorge-Portfolio",
       vergleichen: "Vergleichen", foerderung: "Förderung", monitor: "Bin ich auf Kurs?", wissen: "Wissen", europa: "Europäische ETFs", start: "Der 10-Euro-Sparplan" }[r.name] || "Vorsorge";
     document.title = t + " — Vision Universe®";
   }

@@ -57,6 +57,7 @@
     filter: '<path d="M4 6h16M7 12h10M10 18h4"/>',
     target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6" fill="currentColor"/>',
     line: '<path d="M3 17l5-6 4 3 7-8"/>',
+    play: '<path d="M8 5.5v13l11-6.5z" fill="currentColor" stroke="none"/>',
     book: '<path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h9"/>',
     check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
     x: '<path d="M6 6l12 12M18 6L6 18"/>',
@@ -199,7 +200,7 @@
     var opt = o || {}, st = s || {};
     var meta = [st.dateLabel ? esc(st.dateLabel) : "", st.eurLabel ? "≈ " + esc(st.eurLabel) : ""].filter(Boolean).join("<br>");
     var back = st.backHref ? '<a class="vu-round" href="' + esc(st.backHref) + '" aria-label="Zurück">' + glyph("back") + "</a>" : '<button type="button" class="vu-round" data-vu-back aria-label="Zurück">' + glyph("back") + "</button>";
-    return '<header class="vu-stockhead"><div class="vu-stockhead__top">' + back + logo(st.ticker, { src: st.logo }) +
+    return '<header class="vu-stockhead" data-vu-stock="' + esc(st.ticker) + '" data-vu-stock-name="' + esc(st.name || st.ticker) + '"><div class="vu-stockhead__top">' + back + logo(st.ticker, { src: st.logo }) +
       '<div class="vu-stockhead__name"><b>' + esc(st.name || st.ticker) + "</b><span>" + esc(st.ticker) + (st.what ? " · " + esc(st.what) : "") + "</span></div>" +
       '<button type="button" class="vu-round" data-vu-watch="' + esc(st.ticker) + '" aria-pressed="' + (st.saved ? "true" : "false") + '" aria-label="' + esc(st.ticker) + ' merken">' + glyph("heart") + "</button></div>" +
       (isNum(st.price) ? '<div class="vu-stockhead__price"><b>' + esc(money(st.price, st.currency)) + "</b>" + chg(st.changePct, { big: true }) + (meta ? '<span class="vu-stockhead__meta">' + meta + "</span>" : "") + "</div>" : "") +

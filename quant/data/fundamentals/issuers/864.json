@@ -265,7 +265,7 @@
       "sic": "6798",
       "rawFacts": 21250,
       "mappedFacts": 6049,
-      "unmappedFacts": 14916,
+      "unmappedFacts": 15045,
       "calendarYears": 18,
       "industry": "REIT",
       "industryMetrics": {
@@ -426,34 +426,35 @@
         "resolvedValues": 613
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 15980,
+        "rules_version": "1.1.0",
+        "total": 16083,
         "by_severity": {
-          "INFO": 14916,
-          "WARNING": 1064
+          "INFO": 15045,
+          "WARNING": 1038
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 709,
-          "RESTATEMENT_CONFLICT": 334,
+          "CONCEPT_DISAGREEMENT": 685,
+          "RESTATEMENT_CONFLICT": 332,
           "UNEXPECTED_DURATION": 21,
-          "UNKNOWN_CONCEPT": 14916
+          "UNKNOWN_CONCEPT": 15045
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-338545",
-        "filing_date": "2026-08-07",
+        "accession": "0001193125-26-453646",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 131
+        "periodic_filings": 132,
+        "acceptance_datetime": "2026-11-09T21:20:40.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "525b6dc755f6bb30bb72e120dfbc22f5ee255e9229fd2031fa7c9c5b3621a7fd",
