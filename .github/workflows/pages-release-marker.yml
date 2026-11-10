@@ -1,0 +1,39 @@
+# Neuer Commit auf main vor dem eigenen Pages-Dispatch von Refresh und Universe-Release.
+# deploy-pages nimmt den Commit als Build-Version; ein zweiter Deploy desselben Commits mit neuem Inhalt wird nicht
+# uebernommen (10.11.2026: Pages 42753904874 und 42760183738). Refresh und Universe-Release bleiben lesend und starten
+# diesen Workflow nur (scripts/company_intelligence/pages-release-marker.mjs --dispatch). Nur er schreibt, und nur die
+# Datei company-intelligence/release-marker.json ueber die Contents-API mit dem GITHUB_TOKEN (loest keinen Push-Lauf aus).
+# Begruendete Ausnahme von ADR-005 (push-with-retry.sh): kein Checkout-Push, Wettlauf ueber die Datei-SHA mit 4 Versuchen.
+name: Pages-Release-Marker
+run-name: Pages-Release-Marker (${{ inputs.reason }})
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: 'Aufrufer'
+        required: true
+        type: choice
+        options: [refresh, universe-release, universe-recovery]
+permissions:
+  contents: write
+concurrency:
+  group: pages-release-marker-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  marker:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          sparse-checkout: scripts/company_intelligence
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Write marker commit on main (Contents API)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REASON: ${{ inputs.reason }}
+        run: node scripts/company_intelligence/pages-release-marker.mjs --reason "$REASON"
