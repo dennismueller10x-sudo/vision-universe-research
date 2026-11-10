@@ -336,31 +336,20 @@
     if (!canSpeak || !text || !(readAloud || spokenQuestion)) return;
     stopSpeaking();
     var voice = bestVoice();
-    /* In Saetzen sprechen: iOS bricht lange Aeusserungen gern ab, und kurze
-       Saetze klingen mit den Systemstimmen natuerlicher. */
-    var clean = text.replace(/\u00a0/g, ' ').replace(/\$/g, ' Dollar').replace(/\s+/g, ' ').trim();
-    (clean.match(/[^.!?]+[.!?]*/g) || [clean]).forEach(function (part) {
-      part = part.trim(); if (!part) return;
+    /* Gesprochene Sprache statt Bildschirmzeile (VUAskEngine.speechText): Einheiten ausgeschrieben, kurze Saetze.
+       Etwas ruhiger als Standard: Systemstimmen klingen bei 0,95 natuerlicher. */
+    Ask.speechText(text, 4).forEach(function (part) {
       var u = new SpeechSynthesisUtterance(part);
-      u.lang = 'de-DE'; u.rate = 1; u.pitch = 1;
+      u.lang = voice && voice.lang ? voice.lang : 'de-DE'; u.rate = 0.95; u.pitch = 1;
       if (voice) try { u.voice = voice; } catch (e) {}
       window.speechSynthesis.speak(u);
     });
   }
-  /* Die beste deutsche Stimme, die das Geraet anbietet. Neuere neuronale
-     Stimmen tragen Namen wie "Premium", "Erweitert"/"Enhanced", "Natural"
-     oder "Online" (Edge), bei Chrome "Google Deutsch". Alte Kompaktstimmen
-     kommen zuletzt. */
-  var VOICE_RANK = [/premium/i, /natural|neural/i, /erweitert|enhanced|verbessert/i, /online/i, /google/i, /siri/i];
-  function bestVoice() {
-    var de = window.speechSynthesis.getVoices().filter(function (v) { return /^de([-_]|$)/i.test(v.lang); });
-    function score(v) {
-      var r = VOICE_RANK.length;
-      for (var i = 0; i < VOICE_RANK.length; i++) if (VOICE_RANK[i].test(v.name)) { r = i; break; }
-      return r - (/^de[-_]DE/i.test(v.lang) ? 0.5 : 0);
-    }
-    return de.length ? de.slice().sort(function (a, b) { return score(a) - score(b); })[0] : null;
-  }
+  /* Die beste deutsche Stimme, die das Geraet anbietet (VUAskEngine.pickVoice): „Anna (Erweitert)“ auf iOS/macOS,
+     „Google Deutsch“ in Chrome, „Katja/Conrad Online (Natural)“ in Edge; alte Kompaktstimmen zuletzt. */
+  var cachedVoice = null;
+  function bestVoice() { return cachedVoice || (cachedVoice = Ask.pickVoice(window.speechSynthesis.getVoices())); }
+  if (canSpeak && window.speechSynthesis.addEventListener) try { window.speechSynthesis.addEventListener('voiceschanged', function () { cachedVoice = null; }); } catch (e) {}
   /* Manche Browser laden die Stimmen erst nach; der erste Aufruf fordert sie an. */
   if (canSpeak) try { window.speechSynthesis.getVoices(); } catch (e) {}
 
@@ -482,8 +471,8 @@
         mount.appendChild(markup(U.help('Eine Liste nach Regeln, keine Empfehlung. Ein niedriges KGV kann auch einmalige Gewinne spiegeln.')));
         mount.appendChild(missingBlock(r));
         var top = res.rows.slice(0, 3).map(function (x) { return x.name || x.symbol; });
-        spoken = !res.matched ? 'Keine Aktie erfüllt alle Bedingungen gleichzeitig.' :
-          (res.matched === 1 ? 'Eine Aktie erfüllt' : res.matched + ' Aktien erfüllen') + ' alle Bedingungen' + (top.length ? ', darunter ' + top.join(', ') : '') + '.';
+        spoken = !res.matched ? 'Keine Aktie erfüllt alle Regeln gleichzeitig.' :
+          (res.matched === 1 ? 'Eine Aktie erfüllt' : res.matched.toLocaleString('de-DE') + ' Aktien erfüllen') + ' alle Regeln.' + (top.length ? ' Ganz oben: ' + top.map(cleanName).join(', ') + '.' : '');
         if (!first) try { mount.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); } catch (e) {}
       }
       refresh(true);
@@ -517,7 +506,7 @@
       h('span', { class: 'vu-ltag', text: 'So hat Atlas übersetzt' }),
       r.understood ? h('p', { class: 'ak-fine', text: r.understood }) : null,
       h('div', { class: 'ak-rcs' }, rules.map(function (x) {
-        return h('span', { class: 'ak-rc' }, [x.text, x.kind !== 'ticker' ? h('button', { class: 'ak-rc-x', type: 'button', 'aria-label': 'Regel entfernen: ' + x.text, title: 'Entfernen (kostenlos neu rechnen)', onclick: function () { onRemove(x.kind, x.id); } }, '×') : null]);
+        return h('span', { class: 'ak-rc' }, [x.icon ? markup('<i class="ak-rc-i">' + U.glyph(x.icon, 13) + '</i>') : null, x.text, x.kind !== 'ticker' ? h('button', { class: 'ak-rc-x', type: 'button', 'aria-label': 'Regel entfernen: ' + x.text, title: 'Entfernen (kostenlos neu rechnen)', onclick: function () { onRemove(x.kind, x.id); } }, '×') : null]);
       })),
       h('div', { class: 'ak-count' }, [h('b', { class: 'vu-num', text: res.matched.toLocaleString('de-DE') }),
         h('span', { text: 'von ' + res.universe.toLocaleString('de-DE') + ' US-Aktien erfüllen ' + Ask.allOf(n) })]),
@@ -535,8 +524,11 @@
     var cols = res.columns, key = cols.indexOf(sortField) >= 0 ? sortField : cols[0], rest = cols.filter(function (c) { return c !== key; }).slice(0, 2);
     return markup('<div class="ak-list">' + res.rows.slice(0, 5).map(function (row) {
       return '<a class="ak-pos" href="/discover/#/s/US_REAL/' + encodeURIComponent(row.symbol) + '">' + U.logo(row.symbol) +
-        '<span class="ak-pos-n"><b>' + U.esc(cleanName(row.name) || row.symbol) + '</b><span>' + U.esc(rest.map(function (c) { return Fields.format(c, row.values[c]) + ' ' + header(c); }).join(' · ')) + '</span></span>' +
-        (key ? '<span class="ak-pos-v"><small>' + U.esc(header(key)) + '</small><b class="vu-num">' + U.esc(Fields.format(key, row.values[key])) + '</b></span>' : '') + '</a>';
+        '<span class="ak-pos-n"><b>' + U.esc(cleanName(row.name) || row.symbol) + '</b><span>' + U.esc(rest.map(function (c, i) {
+          /* wie in der Vorlage: „1,56 Mrd. $ Börsenwert · Kasse netto 5,31 Mrd. $“ */
+          return i === 0 ? Ask.value(c, row.values[c]) + ' ' + Ask.name(c) : Ask.name(c) + ' ' + Ask.value(c, row.values[c]);
+        }).join(' · ')) + '</span></span>' +
+        (key ? '<span class="ak-pos-v"><small>' + U.esc(Ask.name(key)) + '</small><b class="vu-num">' + U.esc(Ask.value(key, row.values[key])) + '</b></span>' : '') + '</a>';
     }).join('') + '</div>');
   }
   function cleanName(n) { return String(n || '').replace(/,? (Inc|Corp|Corporation|Ltd|Limited|plc|N\.V\.|S\.A\.|AG|SE|Holdings?|Co)\.?$/i, '').trim(); }
@@ -616,11 +608,12 @@
         if (unit && a1.slice(-unit[0].length) === unit[0]) a1 = a1.slice(0, -unit[0].length);
         ans.appendChild(h('div', { class: 'ak-big vu-num', text: a1 + ' → ' + a2 }));
         ans.appendChild(h('p', { class: 'ak-sub', text: 'Geschäftsjahr ' + e.fromFy + ' bis ' + e.toFy + (e.lastChange !== null ? ' · zuletzt ' + U.pct(e.lastChange * 100, 1) + ' zum Vorjahr' : '') }));
-        ans.appendChild(markup(U.bars(e.bars, { width: 320, height: 100, label: e.label + ' je Geschäftsjahr' })));
+        ans.appendChild(markup(U.bars(e.bars, { width: 320, height: 100, label: e.label + ' je Geschäftsjahr', allLabels: true })));
         ans.appendChild(markup('<div class="ak-srcs"><span class="ak-src">' + U.worldIcon('fundamental', 12) + 'SEC-Berichte' + (e.asOf ? ', Stand ' + U.esc(dateDe(e.asOf)) : '') + '</span><span class="ak-src">' + U.esc(e.formula) + '</span></div>'));
         calc.querySelector('.ak-rcs').appendChild(h('span', { class: 'ak-rc', text: 'Zeitraum: GJ ' + e.fromFy + '–' + e.toFy }));
         tail();
-        return e.label + ' von ' + (x.name || x.symbol) + ': ' + money(e.first) + ' im Geschäftsjahr ' + e.fromFy + ', ' + money(e.last) + ' im Geschäftsjahr ' + e.toFy + '.' + gapText;
+        return 'Der ' + e.label + ' von ' + (cleanName(x.name) || x.symbol) + ' ' + (e.last >= e.first ? 'stieg' : 'fiel') + ' von ' + money(e.first) + ' im Geschäftsjahr ' + e.fromFy +
+          ' auf ' + money(e.last) + ' im Geschäftsjahr ' + e.toFy + '.' + (e.lastChange !== null ? ' Zuletzt ' + U.pct(e.lastChange * 100, 1) + ' zum Vorjahr.' : '') + gapText;
       })
       .catch(function () { plain(); tail(); return spoken; });
   }
