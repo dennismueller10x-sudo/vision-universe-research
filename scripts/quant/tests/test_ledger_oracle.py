@@ -2,7 +2,7 @@
 
 Drei Schichten:
 1. Das Orakel (exakte Bruchrechnung, scripts/quant/oracle/ledger_oracle.py) gegen Handrechnungen, die hier ohne Orakelcode stehen.
-2. Die Engines (research-portfolio.cjs, simulator.mjs, backtest.mjs) ueber 28 synthetische Faelle gegen das Orakel.
+2. Die Engines (research-portfolio.cjs, simulator.mjs, backtest.mjs) ueber 30 synthetische Faelle gegen das Orakel.
 3. Die Abweichungsmatrix: jede beobachtete Abweichung ist im Fall deklariert (FEHLER / ERLAUBTE_VARIANTE / DATENMEHRDEUTIGKEIT),
    und jede deklarierte Abweichung tritt auf. Ein Fehler wird gemeldet und gepinnt, nicht repariert.
 
@@ -215,7 +215,7 @@ class DailyExecutionGegenOrakel(unittest.TestCase):
 
     def test_matrix_alle_tagesfaelle(self):
         for case in C.DAILY:
-            if case["id"] == "S14":
+            if case["id"] in ("S14", "S16"):
                 continue
             with self.subTest(case=case["id"]):
                 observed = deviations_daily(case, O.settle_daily(case), _Runs.daily[case["id"]])
@@ -231,21 +231,38 @@ class DailyExecutionGegenOrakel(unittest.TestCase):
         self.assertLess(engine, strict)                      # nie guenstiger als belegbar
         self.assertAlmostEqual((strict - engine) / strict, 2 / 95, places=9)   # 2 USD von 95: rund 2,1 %
 
-    def test_s14_portfolio_ohne_gebuehr_ist_ein_fehler_kleiner_groessenordnung(self):
-        """Der Simulator zieht 1 bp je Seite nur in closeTrade (additiv, 2 bps vom Einzelertrag); das Portfolio-Cash buchte keine Gebuehr."""
-        j = _Runs.daily["S14"]["portfolio"]
+    def _s14_oracle(self, j, fee_bps):
+        """Sollbuchung des Portfolio-Cash eines Round Trips mit Gebuehr (Vorschrift im Orakel, ohne Engine-Code)."""
         entry, exit_, stop = Fr(str(j["entryPrice"])), Fr(str(j["exitPrice"])), Fr(str(j["initialStop"]))
         self.assertTrue(close(entry, Fr(100) * Fr("1.001"), 1e-12))
         self.assertTrue(close(exit_, Fr(120) * Fr("0.999"), 1e-12))
+        f = Fr(fee_bps) / 10000
         eq = Fr(100000)
-        shares = min(eq * Fr("0.005") / (entry - stop), eq * Fr("0.20") / entry, eq / entry)
-        gross = eq + shares * (exit_ - entry)
-        net = gross - shares * entry * Fr("0.0001") - shares * exit_ * Fr("0.0001")
-        self.assertTrue(close(gross, j["endEquity"], 1e-12), (float(gross), j["endEquity"]))    # Engine = brutto
-        self.assertFalse(close(net, j["endEquity"], 1e-12))                                      # Orakel = netto
-        self.assertTrue(0 < float(gross - net) < 3.0)                                            # 2,16 USD auf 100 000 USD
-        # Einzelertrag der Engine: additive 2 bps (Kostenform ADDITIVE_FEE)
+        shares = min(eq * Fr("0.005") / (entry - stop), eq * Fr("0.20") / entry, eq / (entry * (1 + f)))
+        return eq + shares * (exit_ * (1 - f) - entry * (1 + f)), shares * (entry + exit_) * f
+
+    def test_s14_legacy_portfolio_ohne_gebuehr_ist_gepinnte_abweichung(self):
+        """Legacy-Standard (C2-Referenz, eingefroren): runPortfolio bucht keine Gebuehr; closeTrade zieht 2 bps additiv vom Einzelertrag ab."""
+        j = _Runs.daily["S14"]["portfolio"]
+        net, fees = self._s14_oracle(j, 1)
+        gross, _ = self._s14_oracle(j, 0)
+        self.assertTrue(close(gross, j["endEquity"], 1e-12))          # Engine (Standard) = brutto
+        self.assertFalse(close(net, j["endEquity"], 1e-12))           # Orakel = netto
+        self.assertTrue(0 < float(gross - net) < 3.0)                 # 2,16 USD auf 100 000 USD
+        self.assertEqual(j["commissions"], 0)
         self.assertTrue(close(float(O.round_trip_net(100, 120, 1, 10, "ADDITIVE_FEE")), j["returnPct"], 1e-6))
+
+    def test_s16_opt_in_gebuehr_gleich_orakel_und_gleich_produktivem_pfad(self):
+        """Korrektur U2-F1 als Opt-in (cfg.commissionBps): Legacy-Portfolio = Orakel = validation/portfolio.mjs runPortfolioTR (Produktion)."""
+        j = _Runs.daily["S16"]["portfolio"]
+        net, fees = self._s14_oracle(j, 1)
+        self.assertTrue(close(net, j["endEquity"], 1e-12), (float(net), j["endEquity"]))
+        self.assertTrue(close(fees, j["commissions"], 1e-12))
+        self.assertTrue(close(net, j["productionEndEquity"], 1e-12))
+        self.assertTrue(close(j["endEquity"], j["productionEndEquity"], 1e-12))
+        # Vorher/Nachher auf dem Beispieltrade: 2,16 USD Gebuehr, 0,0022 % des Kapitals
+        before = _Runs.daily["S14"]["portfolio"]["endEquity"]
+        self.assertTrue(close(before - j["endEquity"], j["commissions"], 1e-9))
 
     def test_split_skaliert_gespeicherte_levels_und_laesst_die_rendite_gleich(self):
         r = _Runs.daily["RESCALE"]

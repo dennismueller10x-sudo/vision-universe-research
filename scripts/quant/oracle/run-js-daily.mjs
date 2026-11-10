@@ -6,7 +6,8 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..', '..');
 const imp = (p) => import(pathToFileURL(path.join(ROOT, p)).href);
 const { simulate, rescaleSignal } = await imp('scripts/supertrader/engine/simulator.mjs');
-const { collectTrades, runPortfolio } = await imp('scripts/supertrader/engine/backtest.mjs');
+const { collectTrades, runPortfolio, PORTFOLIO_DEFAULTS } = await imp('scripts/supertrader/engine/backtest.mjs');
+const { runPortfolioTR } = await imp('scripts/supertrader/validation/portfolio.mjs');
 const args = process.argv.slice(2), outIdx = args.indexOf('--out');
 if (args.length < 3 || outIdx < 0) { console.error('usage: run-js-daily.mjs <cases.json> --out <result.json>'); process.exit(2); }
 const cases = JSON.parse(fs.readFileSync(args[0], 'utf8')).filter((c) => c.kind === 'DAILY_EXEC');
@@ -31,7 +32,7 @@ const view = (res, c) => {
   if (!sig || !sig.entry) return { outcome: sig ? sig.state : 'NO_SIGNAL', entry: null, exit: null, openAtEnd: false };
   const idx = (d) => c.bars.findIndex((b) => b.d === d);
   return { outcome: sig.state, entry: { index: sig.entry.index, price: sig.entry.price }, exit: sig.exits[0] ? { index: sig.exits[0].index, price: sig.exits[0].price, basis: sig.exits[0].priceBasis } : null,
-    openAtEnd: !res.finished.length, sameDayOrder: sig.entry.sameDayOrder || null, collected: collectTrades(stub(c), [ctxOf(c)], c.mode === 'BUY_STOP' ? {} : {}).length };
+    openAtEnd: !res.finished.length, sameDayOrder: sig.entry.sameDayOrder || null, collected: collectTrades(stub(c), [ctxOf(c)], c.opt_in ? { openAtEnd: 'MARK' } : {}).length };
 };
 const out = {};
 for (const c of cases) {
@@ -43,13 +44,22 @@ for (const c of cases) {
   const sim = run({}); const sg = sim.finished[0];
   r.invalidatedRule = sg && !sg.entry ? sg.transitions.at(-1).ruleId : null;
   if (c.portfolio) {
-    const trades = collectTrades(stub(c), [ctxOf(c)], {});
+    const trades = collectTrades(stub(c), [ctxOf(c)], c.opt_in ? { openAtEnd: 'MARK' } : {});
     const cal = c.bars.map((b) => b.d);
     const priceOf = (sym, d) => { const b = c.bars.find((x) => x.d === d); return b ? b.c : null; };
-    const pr = runPortfolio(trades, priceOf, cal);
-    r.portfolio = { endEquity: pr.equity.at(-1).equity, taken: pr.taken.length, shares: null };
+    const cfg = c.opt_in ? { ...PORTFOLIO_DEFAULTS, commissionBps: c.comm_bps } : PORTFOLIO_DEFAULTS;
+    const pr = runPortfolio(trades, priceOf, cal, cfg);
+    r.portfolio = { endEquity: pr.equity.at(-1).equity, taken: pr.taken.length, commissions: pr.commissions ?? 0 };
     const s = trades[0] && trades[0].signal;
-    if (s) { r.portfolio.entryPrice = s.entry.price; r.portfolio.exitPrice = s.exits[0].price; r.portfolio.initialStop = s.initialStop; r.portfolio.returnPct = s.result.returnPct; }
+    if (s) {
+      r.portfolio.entryPrice = s.entry.price; r.portfolio.exitPrice = s.exits[0].price; r.portfolio.initialStop = s.initialStop; r.portfolio.returnPct = s.result.returnPct;
+      // Produktiver Pfad (runPortfolioTR, Standard 1 bp je Seite) auf demselben Trade: Gleichheit mit dem korrigierten Legacy-Pfad.
+      const marks = new Map(c.bars.map((b) => [b.d, b.c]));
+      const tr = { id: s.id, listingId: 'STUB', entry: { date: s.entry.date, price: s.entry.price }, initialStop: s.initialStop, exits: s.exits.map((x) => ({ date: x.date, price: x.price, fraction: x.fraction, ruleId: x.ruleId })), terminal: null, marks, divs: new Map() };
+      const tx = runPortfolioTR([tr], cal, PORTFOLIO_DEFAULTS, { dividends: false, commissionBps: c.comm_bps, sizingSameDay: true, engineCompat: true });
+      r.portfolio.productionEndEquity = tx.equity.at(-1).equity;
+      r.portfolio.productionCommissions = tx.book.commissions;
+    }
   }
   out[c.id] = r;
 }
