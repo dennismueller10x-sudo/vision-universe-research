@@ -127,7 +127,7 @@ test("Markt jetzt: nur aktuelle Werte, keine Stufenreihen, hoechstens zwei je Gr
 });
 
 test("Kalibrierung: Konfiguration reproduziert die Perzentile, alle Phasenpruefungen bestanden", () => {
-  const cal = json("quant/data/market/intelligence/market-pulse-calibration.json");
+  const cal = json("quant/tests/fixtures/multi-asset-market-pulse/market-pulse-calibration.json");
   assert.equal(cal.methodVersion, MP.METHOD_VERSION);
   assert.equal(CFG.risk.vol20.elevated, cal.risk.vol20.p75);
   assert.equal(CFG.risk.vol20.high, cal.risk.vol20.p90);
@@ -142,7 +142,7 @@ test("Kalibrierung: Konfiguration reproduziert die Perzentile, alle Phasenpruefu
 });
 
 test("Artefakt: fuenf Dimensionen mit Methodik, Evidenz je Zustand, kein Regime, kein Score, keine Sektoren ohne Grundlage", () => {
-  const p = "quant/data/market/intelligence/market-pulse.json";
+  const p = "quant/tests/fixtures/multi-asset-market-pulse/market-pulse.json";
   assert.ok(existsSync(new URL(p, root)));
   const r = json(p);
   assert.equal(r.kind, "DESCRIPTIVE_MARKET_PULSE");
@@ -165,17 +165,17 @@ test("Risiko-Referenz: SPY ueber den lizenzierten Tiingo-Pfad - keine FMP-/FRED-
   assert.ok(CFG.trackers.symbols.includes(r.benchmark));
   assert.equal(r.series.path, "quant/data/market/multi-asset/series/SPY.json");
   assert.equal(r.series.source, "tiingo-equity");
-  const ser = json(r.series.path);
+  const ser = json("quant/tests/fixtures/multi-asset-market-pulse/SPY.json");
   assert.equal(ser.symbol, "SPY"); assert.equal(ser.source, "tiingo-equity"); assert.equal(ser.valueSemantics, "PRICE");
   const reg = json("quant/config/multi-asset.json").sourceRegistry["tiingo-equity"];
   assert.equal(reg.provider, "Tiingo"); assert.equal(reg.displayLicense, "LICENSE_CONFIRMED");
-  const cal = json("quant/data/market/intelligence/market-pulse-calibration.json");
+  const cal = json("quant/tests/fixtures/multi-asset-market-pulse/market-pulse-calibration.json");
   assert.equal(cal.risk.vol20.series.symbol, "SPY");
   assert.equal(cal.risk.vol20.series.source, "tiingo-equity");
   assert.equal(cal.risk.vol20.series.path, r.series.path);
   const builder = readFileSync(new URL("scripts/market/build-market-pulse.mjs", root), "utf8");
   assert.doesNotMatch(builder, /providers\/(fmp|fred)|fmp-index|fred-index|\^GSPC|"SP500"|index-source/i);
-  const risk = json("quant/data/market/intelligence/market-pulse.json").dimensions.RISK;
+  const risk = json("quant/tests/fixtures/multi-asset-market-pulse/market-pulse.json").dimensions.RISK;
   assert.match(risk.methodology, /SPY \(S&P-500-Markttracker\)/);
   assert.match(risk.methodology, /Tiingo/);
   assert.match(risk.methodology, /kein Indexstand/);

@@ -15,7 +15,7 @@ test('existing durable layout survives a new runner and preserves incremental EO
  const root=mkdtempSync(join(tmpdir(),'vu2-history-compat-'));
  t.after(()=>rmSync(root,{recursive:true,force:true}));
  const securityId='ref_NVDA', ticker='NVDA';
- const original=JSON.parse(readFileSync(new URL('../data/market/golden-preview/daily/ref_NVDA.json',import.meta.url)));
+ const original=JSON.parse(readFileSync(new URL('./fixtures/history-lifecycle/ref_NVDA.json',import.meta.url)));
  const before=original.bars.filter(b=>b.date<='2026-09-08');
  assert.ok(before.length>400,'full stored history, beyond public excerpt');
  const runner1=createMarketStore({root,workingDir:join(root,'runner1'),providerId:'tiingo'});

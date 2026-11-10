@@ -28,7 +28,7 @@ const require = createRequire(import.meta.url);
 const SecFactPanel = require("../engines/sec-fact-panel.js");
 const Factors = require("../engines/factors.js");
 
-const OUT_PATH = new URL("../data/sec/quant-factor-inputs.json", import.meta.url);
+const OUT_PATH = new URL("./fixtures/sec-quant-panel/quant-factor-inputs.json", import.meta.url);
 
 test("T1 · factsToPeriods gruppiert mehrere Kennzahlen derselben Periode verlustfrei", () => {
   const facts = [
