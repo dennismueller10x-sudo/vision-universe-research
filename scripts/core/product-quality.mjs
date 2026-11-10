@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { gunzipSync } from 'node:zlib';
 import { require, REPO_ROOT } from './lib.mjs';
 import { resolveProductUniverse } from '../market/universe-source.mjs';
+import { loadDuplicateResolution, DEFAULT_DUPLICATE_RESOLUTION_FILE } from '../market/lib/security-master-duplicate-resolution.mjs';
 const PQ = require(join(REPO_ROOT, 'core/product-quality.js'));
 
 export function productRules({ root = REPO_ROOT, now = new Date() } = {}) {
@@ -29,5 +30,7 @@ export function productRules({ root = REPO_ROOT, now = new Date() } = {}) {
   const V3 = 'quant/data/technical-intelligence/v3';
   rules.push(PQ.technicalV3({ index: maybeGz(V3 + '/index.json.gz'), meta: maybe(V3 + '/meta.json'),
     shard: (maybeGz(V3 + '/shards/AA.json.gz') || {}).instruments }, require(join(REPO_ROOT, 'quant/engines/technical/elliott/elliott-v3.js')).ENGINE_VERSION));
+  let dup = null; try { dup = loadDuplicateResolution(DEFAULT_DUPLICATE_RESOLUTION_FILE).doc.records; } catch { /* Register unlesbar: prueft der Code-Test */ }
+  rules.push(PQ.duplicateResolutionSeries(dup, rel => existsSync(p(rel))));
   return rules;
 }

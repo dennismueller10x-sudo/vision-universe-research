@@ -71,3 +71,10 @@ test('PQ-6: Technical v3 besteht mit Methodenschluessel und aktueller Engine; al
   const d = ok(); d.shard.X.versions.elliottStatus = 'X'; assert.match(Q.technicalV3(d, 'e3.1').samples.join(), /elliottStatus/);
   const c = ok(); delete c.shard.X.versions.api; assert.match(Q.technicalV3(c, 'e3.1').samples.join(), /ruleSet\/dataAsOf\/api/);
 });
+
+test('PQ-7: Doppelzeilen-Register faellt, wenn eine Serie fehlt', () => {
+  const recs = [{ securityId: 'ref_A', series: { file: 'a.json' } }, { securityId: 'ref_B', series: { file: 'b.json' } }];
+  assert.equal(Q.duplicateResolutionSeries(recs, f => f === 'a.json' || f === 'b.json').status, 'PASS');
+  assert.deepEqual(Q.duplicateResolutionSeries(recs, f => f === 'a.json').samples, ['ref_B: Serie fehlt (b.json)']);
+  assert.equal(Q.duplicateResolutionSeries(null, () => true).checked, 0);
+});

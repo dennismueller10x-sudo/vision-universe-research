@@ -124,5 +124,12 @@
     return result('DQ-PQ-6', 'Technical v3: Methodenschlüssel, Engine- und Datenversionen', 1, f);
   }
 
-  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3 };
+  /** DQ-PQ-7 (aus quant/tests/security-master-duplicate-resolution): jede Serie, auf die das Doppelzeilen-Register zeigt, liegt im Repository. */
+  function duplicateResolutionSeries(records, exists) {
+    if (!Array.isArray(records)) return result('DQ-PQ-7', 'Doppelzeilen-Register: Serien vorhanden', 0, []);
+    const f = records.filter(r => !(r && r.series && r.series.file && exists(r.series.file))).map(r => (r && r.securityId) + ': Serie fehlt (' + (r && r.series && r.series.file) + ')');
+    return result('DQ-PQ-7', 'Doppelzeilen-Register: Serien vorhanden', records.length, f);
+  }
+
+  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3, duplicateResolutionSeries };
 });

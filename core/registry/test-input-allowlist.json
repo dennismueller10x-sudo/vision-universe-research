@@ -1333,7 +1333,8 @@
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "10.11.2026 (S2): alle Eingaben des Tests stehen als Fixture-Wurzel; uebrig bleibt der indirekte Lesezugriff des Materialisierers auf quant/data/universe/market-capability.json (Produktcode, vom Test nicht steuerbar).",
+      "dynamisch": true
     },
     {
       "file": "quant/tests/product-language.test.mjs",
@@ -1384,14 +1385,6 @@
         "quant/data"
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "quant/tests/quant-radar.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
     },
     {
       "file": "quant/tests/radar-event-quarantine.test.mjs",
@@ -1651,14 +1644,6 @@
         "quant/data"
       ],
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
-    },
-    {
-      "file": "quant/tests/security-master-duplicate-resolution.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
     },
     {
       "file": "quant/tests/security-master-generations.test.mjs",
