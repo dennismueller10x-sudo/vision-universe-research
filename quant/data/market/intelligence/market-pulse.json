@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-10T15:24:07.000Z",
+ "generatedAt": "2026-11-10T18:23:17.158Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-10T15:24:07.000Z",
+  "generatedAt": "2026-11-10T18:23:17.158Z",
   "dataAsOf": "2026-11-09",
   "previousDataAsOf": "2026-11-06",
   "schedule": {
@@ -713,11 +713,11 @@
     {
      "key": "EURUSD",
      "label": "EUR/USD",
-     "text": "−0,1 % · 0,1-fach typisch",
-     "change": -0.116,
-     "ratio": -0.06,
+     "text": "+0,1 % · 0,0-fach typisch",
+     "change": 0.071,
+     "ratio": 0.04,
      "notable": false,
-     "asOf": "2026-11-09",
+     "asOf": "2026-11-10",
      "kind": "PERCENT"
     }
    ],
@@ -1246,13 +1246,13 @@
   },
   "EURUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-09",
-   "last": 1.1193,
-   "observations": 7132,
+   "asOf": "2026-11-10",
+   "last": 1.1214,
+   "observations": 7133,
    "changes": {
-    "1M": -0.12,
-    "3M": -3.13,
-    "1Y": -3.18
+    "1M": 0.07,
+    "3M": -2.82,
+    "1Y": -3.09
    },
    "high52w": {
     "date": "2026-01-28",
@@ -1262,18 +1262,18 @@
     "date": "2026-10-29",
     "value": 1.113
    },
-   "rangePosition": 7.5,
-   "dist50": -1.29,
-   "dist200": -3.03,
+   "rangePosition": 10,
+   "dist50": -1.04,
+   "dist200": -2.82,
    "trend": "NEGATIVE",
-   "drawdown52w": -6.52,
-   "vol20": 5.16,
+   "drawdown52w": -6.35,
+   "vol20": 5.2,
    "volContext": {
     "median": 6.8,
     "p25": 5.3,
     "p75": 8.6,
     "samples": 1279,
-    "from": "2021-11-10",
+    "from": "2021-11-11",
     "state": "LOWER"
    },
    "roles": [
@@ -1281,7 +1281,7 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −0,1 % – das 0,1-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: +0,1 % – das 0,0-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
@@ -1811,9 +1811,9 @@
    },
    "EURUSD": {
     "symbol": "EURUSD",
-    "asOf": "2026-11-09",
-    "horizon": 21,
-    "samples": 2556
+    "asOf": "2026-11-10",
+    "horizon": 22,
+    "samples": 2557
    }
   },
   "breadth": {
