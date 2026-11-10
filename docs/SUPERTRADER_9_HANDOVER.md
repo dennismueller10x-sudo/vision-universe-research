@@ -281,6 +281,38 @@ Details: [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HIS
 - Danach braucht es einen Daten-PR, Snapshot-Generation 3 und Neuläufe gegen dieselben Referenz-Hashes.
 - Belege: `SUPERTRADER_6_V4D1_CONTAINMENT.md`, `SUPERTRADER_7_EDGAR_CA_CHECK.md`, `SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md`, `SUPERTRADER_7_TIINGO_SPLITS_PROBE.md`, `SUPERTRADER_7_OWNER_DECISIONS_E7.md`.
 
+### 7.2 Ausführungsvertrag und Ledger-Orakel (Strang U, Teil 2, 10.11.2026)
+
+Reine Schattenprüfung, Forschung, nicht zertifiziert. Keine Änderung an Engines, Strategien, Gates, Golden-Hashes; keine Holdout-Läufe. Orakel: `scripts/quant/oracle/ledger_oracle.py` (Python, exakte Bruchrechnung, liest keinen Engine-Code), Fälle `ledger_cases.py` (28 synthetische Fälle: W01–W14 Wochen-Ledger, S01–S14 Tagesbalken), Runner `run-js-ledger.cjs` / `run-js-daily.mjs` (schreiben nur nach `--out`), Test `scripts/quant/tests/test_ledger_oracle.py`. Das Wochen-Ledger steht im [Quant-Handover](quant/QUANT_FINAL_HANDOVER.md).
+
+**Buchungssemantik im Vergleich** (aus dem Code gelesen; „nicht geprüft“ = in diesem Lauf nicht verglichen):
+
+| Aspekt | `simulator.mjs` + `backtest.mjs` (Darvas, Turtle/Donchian) | `rotation-52w.mjs` | `source-faithful/runner/run-research.mjs` |
+|---|---|---|---|
+| Order/Fill | Bestätigung per Schluss, Einstieg zur nächsten Eröffnung; `BUY_STOP_INTRADAY`: `max(Open, Trigger)` | Monatsentscheidung, Ausführung zur Eröffnung | Einstiegs-/Ausstiegsfill aus der Komponentenstudie |
+| Slippage | im Preis (`·(1±s)`) | im Preis | im Preis, Gebühr multiplikativ |
+| Gebühr | **nur** in `closeTrade` (−2 bps additiv vom Einzelertrag); **nicht** im Portfolio-Cash | je Seite auf den Umsatz, im Cash | je Seite multiplikativ |
+| Stop | `min(Stop, Open)·(1−s)`; im Einstiegsbalken eindeutig bei Open > Stop | nicht geprüft | nicht geprüft |
+| Spread | keiner | keiner | keiner |
+| Split | adjustierte Reihe + `rescaleSignal` (Levels ×Faktor, Rendite gleich) | nicht geprüft | nicht geprüft |
+| Dividende | nicht gebucht (Reihe) | `book.dividends` | nicht gebucht im Ausschnitt |
+| Delisting | **nicht gebucht** (siehe U2-F2) | Szenarien S0… | `OPEN_AT_DELISTING`, 0,7 · letzter Schluss |
+
+**Abweichungsmatrix.** Wochen-Ledger W01–W14: 0 Abweichungen (Cash, Equity, Stück, Gebühren, Umsatz, Kennzahlen bis 1e-9). Tagesbalken-Fälle S01–S14, jede beobachtete Abweichung im Fall deklariert:
+
+| Fall | Klasse | Befund |
+|---|---|---|
+| U2-F1 / S14 | **Fehler** (klein) | `backtest.mjs#runPortfolio` bucht keine Gebühr (1 bp je Seite); `describeExecution` verspricht „Gebühren und Slippage auf Kauf und Verkauf“. Beispiel: 2,16 USD auf 100 000 USD je Trade bei 20 % Gewinn. Einzelertrag zieht 2 bps additiv ab (Form `ADDITIVE_FEE`), Portfolio-Cash nichts. |
+| U2-F2 / S13, S01, S07, S08, S10 | **Fehler** | `collectTrades` übernimmt nur abgeschlossene Signale. Eine am Serienende oder bei Delisting offene Position wird weder geschlossen noch bewertet: ihre Verluste (und Gewinne) fehlen im Portfolio. Delisting-Verluste fehlen damit systematisch (Survivorship). Die Source-Faithful-Studie behandelt den Fall getrennt (`OPEN_AT_DELISTING`). |
+| S11 | Erlaubte Variante (konservativ) | Öffnet der Einstiegsbalken unter dem Stop, steigt über den Trigger und schließt unter dem Stop, verkauft die Engine zu `Open·(1−s)` (93), belegbar wäre `Stop·(1−s)` (95): 2,1 % ungünstiger, nie günstiger als belegbar. |
+| S10 | Datenmehrdeutigkeit | Hoch > Trigger, Tief < Stop, Schluss > Stop: Reihenfolge nicht belegt. Die Engine kennzeichnet `sameDayOrder = AMBIGUOUS`; Neutralvariante bleibt offen, `PESSIMISTIC` steigt zum Stop aus. Beide Varianten stimmen mit dem Orakel überein. |
+
+Kostenformen je Round Trip (+20 %, 10 bps Slippage, 1 bp Gebühr): `SLIPPAGE_AS_COST` (research-portfolio) und `MULTIPLICATIVE` (rotation-52w, Source-Faithful) unterscheiden sich um weniger als 1e-6, `ADDITIVE_FEE` (Simulator) um weniger als 5e-5; erlaubte Varianten. Ohne Gebühr im Portfolio-Cash fehlt die volle 2-bp-Lücke (U2-F1).
+
+Grenzfälle als Test gepinnt: Eröffnung genau auf dem Stop ergibt keinen Einstieg (`!(open > stop)`), Tief genau auf dem Stop löst aus (`<=`), Hoch genau auf dem Trigger löst keinen Kauf-Stop aus (`>`), Gap unter den Stop später als am Einstiegstag füllt zur Eröffnung.
+
+Nicht repariert: Beide Fehler sind Fachmodell-Änderungen (Portfolio-Equity eines Supertrader-Modells) und brauchen einen eigenen PR mit Vorher/Nachher auf den betroffenen Backtests.
+
 ---
 
 ## 8. Offene PRs
