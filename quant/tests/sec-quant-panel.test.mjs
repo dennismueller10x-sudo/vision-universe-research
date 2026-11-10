@@ -7,9 +7,9 @@
    die auch das synthetische Modelluniversum bedient, kein Duplikat.
 
    T1-T4   factsToPeriods(): reine Umformung, verlustfrei, PIT-Reihenfolge.
-   T5-T6   build-sec-quant-panel.mjs-Ausgabe (quant/data/sec/quant-factor-inputs.json):
+   T5-T6   build-sec-quant-panel.mjs-Ausgabe (Datei quant-factor-inputs.json im SEC-Datenordner):
            alle fuenf Golden-Universe-Titel vorhanden, isMock:false.
-   T7      Wachposten (Phase 5, seitdem quant/data/market/golden-preview/
+   T7      Wachposten (Phase 5, seitdem der Golden-Preview-Ordner der Marktdaten
            echte Tiingo-EOD-Kurse liefert): beta/relativeStrength bleiben
            IMMER UNAVAILABLE — der gleichgewichtete Durchschnitt der fuenf
            Titel selbst ist kein echter Marktindex, und das darf sich auch
@@ -28,7 +28,7 @@ const require = createRequire(import.meta.url);
 const SecFactPanel = require("../engines/sec-fact-panel.js");
 const Factors = require("../engines/factors.js");
 
-const OUT_PATH = new URL("../data/sec/quant-factor-inputs.json", import.meta.url);
+const OUT_PATH = new URL("./fixtures/sec-quant-panel/quant-factor-inputs.json", import.meta.url);
 
 test("T1 · factsToPeriods gruppiert mehrere Kennzahlen derselben Periode verlustfrei", () => {
   const facts = [
