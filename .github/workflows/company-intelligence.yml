@@ -176,8 +176,10 @@ jobs:
   continuous:
     if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'publish'
     needs: validate
+    # Der aufgerufene Refresh-Job schreibt vor dem Pages-Dispatch einen Marker-Commit (pages-release-marker.mjs); ein
+    # Aufrufer mit nur contents: read laesst den Lauf mit startup_failure scheitern (PR #1772, 10.11.2026).
     permissions:
-      contents: read
+      contents: write
       actions: write
     uses: ./.github/workflows/company-intelligence-refresh.yml
     with:
@@ -187,8 +189,10 @@ jobs:
     # Isolated namespace acceptance has no production side effects. Full product
     # regression validation runs independently and still gates publication/merge.
     if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'verify' && !inputs.profile_source_upgrade
+    # Der aufgerufene Refresh-Job schreibt vor dem Pages-Dispatch einen Marker-Commit (pages-release-marker.mjs); ein
+    # Aufrufer mit nur contents: read laesst den Lauf mit startup_failure scheitern (PR #1772, 10.11.2026).
     permissions:
-      contents: read
+      contents: write
       actions: write
     uses: ./.github/workflows/company-intelligence-refresh.yml
     with:

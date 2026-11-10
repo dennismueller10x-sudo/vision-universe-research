@@ -102,3 +102,10 @@ test('PM-10 Marker schreibt mit dem GITHUB_TOKEN (kein App-Token: dessen Commit 
  const tokens=[...universeText.matchAll(/GH_TOKEN: (.*)/g)].map(m=>m[1].trim());
  assert.ok(tokens.length>0&&tokens.every(t=>t==='${{ secrets.GITHUB_TOKEN }}'),'Universe-Release: nur GITHUB_TOKEN');
 });
+
+test('PM-11 Aufrufer des Refresh (workflow_call) geben contents: write, sonst startup_failure',()=>{
+ const t=readFileSync(here('../../../.github/workflows/company-intelligence.yml'),'utf8');
+ const callers=[...t.matchAll(/\n  ([a-z-]+):\n((?:    .*\n|\s*\n)*?)    uses: \.\/\.github\/workflows\/company-intelligence-refresh\.yml/g)];
+ assert.equal(callers.length,2,'continuous und continuous-verify');
+ for(const [,name,body] of callers)assert.match(body,/    permissions:\n      contents: write\n      actions: write\n/,'Aufrufer '+name);
+});
