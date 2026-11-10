@@ -8,8 +8,8 @@ import vm from "node:vm";
 const require = createRequire(import.meta.url);
 const Contract = require("../../quant/api/multi-asset-contract.js");
 const MP = require("../../quant/engines/multi-asset/market-pulse.js");
-const snapshot = require("../../quant/data/market/multi-asset/snapshot.json");
-const pulse = require("../../quant/data/market/intelligence/market-pulse.json");
+const snapshot = require("./fixtures/market-detail/snapshot.json");
+const pulse = require("./fixtures/market-detail/market-pulse.json");
 const pulseCfg = require("../../quant/config/market-pulse.json");
 
 function load() {
