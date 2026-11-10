@@ -30,6 +30,10 @@ jobs:
     # 09.11.2026 (Pruefung zu #1744, MAJOR 3): Pages-Warten mit Neu-Dispatch (bis 50 min) plus Rueckweg mit eigenem
     # Pages-Warten (bis 40 min) brauchen gesicherte Reserve; jeder Schritt mit Wartezeit hat ein eigenes Limit.
     timeout-minutes: 180
+    # Marker-Commit vor dem eigenen Pages-Dispatch (pages-release-marker.mjs, Contents-API, 10.11.2026); sonst nur Lesen und Dispatch.
+    permissions:
+      contents: write
+      actions: write
     env:
       NODE_PATH: /tmp/universe-qa/node_modules
       PYTHONPATH: scripts
@@ -170,6 +174,7 @@ jobs:
           # in der Gruppe pages-production hoechstens 2 Mal neu dispatchen; ein noch nicht gestarteter eigener Lauf wird am Fristende
           # abgebrochen. Anlass: activate 42633299211 (09.11.2026), Dispatch 42638619534 um 15:02 verdraengt, Rueckfall auf 46.
           expected=$(node -e "console.log(JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).generation)" "$RUNNER_TEMP/universe-release/evidence/release.json")
+          node scripts/company_intelligence/pages-release-marker.mjs --reason universe-release || echo "::warning::Pages release marker not written; delivery needs a new commit on main."
           node scripts/company_intelligence/refresh-dispatch-wait.mjs --expected "$expected" --wait-minutes 40 --out "$RUNNER_TEMP/universe-release/evidence/dispatch-wait.json"
           # Danach unveraendert: PASS und (Modus health) abgeglichene Gesundheit muessen ausgeliefert sein.
           node --input-type=module <<'NODE'
@@ -233,6 +238,7 @@ jobs:
           fi
           node scripts/company_intelligence/production-release.mjs enable
           gen=$(node -e "console.log(JSON.parse(require('fs').readFileSync(process.argv[1],'utf8')).generation)" "$RUNNER_TEMP/universe-recovery/evidence/release.json")
+          node scripts/company_intelligence/pages-release-marker.mjs --reason universe-recovery || echo "::warning::Pages release marker not written; delivery needs a new commit on main."
           node scripts/company_intelligence/refresh-dispatch-wait.mjs --expected "$gen" --wait-minutes 30 --out "$RUNNER_TEMP/universe-recovery/evidence/dispatch-wait.json"
           node scripts/company_intelligence/served-scope.mjs --expected "$gen" --stocks 46 --issuers 45
       - uses: actions/upload-artifact@v4
