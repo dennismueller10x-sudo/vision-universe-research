@@ -59,3 +59,15 @@ test('PQ-5: SEC-Universum traegt Ausschlusszahl und Validierungssatz', () => {
   assert.equal(Q.secUniverse({ ...ok, description: '' }).status, 'FAIL');
   assert.equal(Q.secUniverse({ ...ok, totals: {} }).status, 'FAIL');
 });
+
+test('PQ-6: Technical v3 besteht mit Methodenschluessel und aktueller Engine; alte Engine, Gewicht und fehlender Schluessel fallen', () => {
+  const ok = () => ({ index: { methodologyKey: 'elliott-v3' }, meta: { elliott: { engine: 'v3', confluenceWeight: 0, status: 'EXPERIMENTAL_STRUCTURE_MODEL' } },
+    shard: { X: { versions: { elliott: 'e3.1', elliottStatus: 'EXPERIMENTAL_STRUCTURE_MODEL', ruleSet: 'r', dataAsOf: '2026-11-06', api: 'a' } } } });
+  assert.equal(Q.technicalV3(ok(), 'e3.1').status, 'PASS');
+  assert.equal(Q.technicalV3({}, 'e3.1').checked, 0);
+  assert.match(Q.technicalV3(ok(), 'e3.2').samples.join(), /nicht von der aktuellen Engine/);
+  const a = ok(); delete a.index.methodologyKey; assert.match(Q.technicalV3(a, 'e3.1').samples.join(), /methodologyKey/);
+  const b = ok(); b.meta.elliott.confluenceWeight = 1; assert.match(Q.technicalV3(b, 'e3.1').samples.join(), /confluenceWeight/);
+  const d = ok(); d.shard.X.versions.elliottStatus = 'X'; assert.match(Q.technicalV3(d, 'e3.1').samples.join(), /elliottStatus/);
+  const c = ok(); delete c.shard.X.versions.api; assert.match(Q.technicalV3(c, 'e3.1').samples.join(), /ruleSet\/dataAsOf\/api/);
+});

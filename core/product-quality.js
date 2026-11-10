@@ -101,5 +101,28 @@
     return result('DQ-PQ-5', 'SEC-Universum: ETFs/Fonds ausgeschlossen, Validierungssatz benannt', 1, f);
   }
 
-  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse };
+  /** DQ-PQ-6 (aus quant/tests/ti-mission4 M4-4): Elliott-v3-Veroeffentlichung traegt Methodenschluessel und die Engine-Version der Produktion. */
+  function technicalV3(art, engineVersion) {
+    if (!art || (!art.index && !art.meta && !art.shard)) return result('DQ-PQ-6', 'Technical v3: Methodenschlüssel, Engine- und Datenversionen', 0, []);
+    const f = [];
+    if (art.index && !(art.index.methodologyKey && /elliott/.test(art.index.methodologyKey))) f.push('index.json.gz ohne methodologyKey');
+    if (art.meta) {
+      const e = art.meta.elliott || {};
+      if (e.engine !== 'v3') f.push('meta.elliott.engine ist ' + e.engine);
+      if (e.confluenceWeight !== 0) f.push('meta.elliott.confluenceWeight ist ' + e.confluenceWeight);
+      if (e.status !== 'EXPERIMENTAL_STRUCTURE_MODEL') f.push('meta.elliott.status ist ' + e.status);
+    }
+    if (art.shard) {
+      const one = Object.values(art.shard)[0], v = one && one.versions;
+      if (!v) f.push('Shard ohne versions');
+      else {
+        if (v.elliott !== engineVersion) f.push('Shard-Daten stammen nicht von der aktuellen Engine (' + v.elliott + ' != ' + engineVersion + ') – neu bauen');
+        if (!(v.ruleSet && v.dataAsOf && v.api)) f.push('versions ohne ruleSet/dataAsOf/api');
+        if (v.elliottStatus !== 'EXPERIMENTAL_STRUCTURE_MODEL') f.push('versions.elliottStatus ist ' + v.elliottStatus);
+      }
+    }
+    return result('DQ-PQ-6', 'Technical v3: Methodenschlüssel, Engine- und Datenversionen', 1, f);
+  }
+
+  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3 };
 });

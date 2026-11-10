@@ -26,5 +26,8 @@ export function productRules({ root = REPO_ROOT, now = new Date() } = {}) {
   }));
   rules.push(PQ.observationSummary(maybe('quant/data/product/setup-observations-v1/summary.json')));
   rules.push(PQ.secUniverse(maybe('quant/data/universe/sec-universe.json')));
+  const V3 = 'quant/data/technical-intelligence/v3';
+  rules.push(PQ.technicalV3({ index: maybeGz(V3 + '/index.json.gz'), meta: maybe(V3 + '/meta.json'),
+    shard: (maybeGz(V3 + '/shards/AA.json.gz') || {}).instruments }, require(join(REPO_ROOT, 'quant/engines/technical/elliott/elliott-v3.js')).ENGINE_VERSION));
   return rules;
 }
