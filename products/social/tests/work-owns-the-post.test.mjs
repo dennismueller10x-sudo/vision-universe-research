@@ -554,7 +554,7 @@ test("WOP26 · Owner-Storno: nur ein nie gestarteter Auftrag, nur mit gemessener
   assert.ok(Job.KEINE_EVIDENZ.includes("OWNER_VERMUTUNG"), "eine Vermutung bleibt unzulaessig");
 
   /* Die echte Entscheidung nennt genau den Auftrag aus PR #364. */
-  const datei = JSON.parse(readFileSync(join(ROOT, "social/data/owner-job-storno.json"), "utf8"));
+  const datei = JSON.parse(readFileSync(join(ROOT, "products/social/tests/fixtures/work-owns-the-post/owner-job-storno.json"), "utf8"));
   const e = datei.entries.find((x) => x.prNumber === 364);
   assert.equal(e.decidedBy, "OWNER");
   assert.equal(e.contentId, "vu-post-20261002-fd3c1bcd00");

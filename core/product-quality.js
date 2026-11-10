@@ -131,5 +131,19 @@
     return result('DQ-PQ-7', 'Doppelzeilen-Register: Serien vorhanden', records.length, f);
   }
 
-  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3, duplicateResolutionSeries };
+  /** DQ-PQ-8 (aus discover/tests/global-search-lazy-europe): die ausgelieferte Suchdatei enthaelt die Pflichttitel gemeinsam (US und Europa).
+      `search(index, query)` liefert die Treffer (core/discover-universe.js mit Europa-Freigabe), `cases` sind [Suchwort, erwartete Region]. */
+  function requiredSearchTitles(index, search, cases) {
+    if (!index || !Array.isArray(index.entries)) return result('DQ-PQ-8', 'Suchdatei: Pflichttitel gemeinsam auffindbar', 0, []);
+    const f = [], us = index.entries.filter(d => d.region === 'US').length, eu = index.entries.filter(d => d.region === 'EUROPE').length;
+    if (!(us > 400 && eu > 400)) f.push('beide Regionen im selben Index: US ' + us + ', Europa ' + eu);
+    for (const [query, region] of cases) {
+      const hits = search(index, query);
+      if (!hits.length) f.push(query + ' nicht auffindbar');
+      else if (hits[0].region !== region) f.push(query + ': erster Treffer ' + hits[0].n + ' (' + hits[0].region + ', erwartet ' + region + ')');
+    }
+    return result('DQ-PQ-8', 'Suchdatei: Pflichttitel gemeinsam auffindbar', cases.length + 1, f);
+  }
+
+  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3, duplicateResolutionSeries, requiredSearchTitles };
 });
