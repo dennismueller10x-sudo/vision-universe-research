@@ -172,3 +172,37 @@ test("Stimme: neuronale/erweiterte deutsche Stimme vor Kompaktstimme, nie eine f
   assert.equal(Ask.pickVoice([v("Google Deutsch"), v("eSpeak German", "de")]).name, "Google Deutsch");
   assert.equal(Ask.pickVoice([v("Samantha", "en-US")]), null);
 });
+
+/* ------------------------------------------- Chartbild-Karte (Owner 10.11.2026) */
+
+test("Chartbild: deutsches Datum", () => {
+  assert.equal(Ask.dateLong("2026-11-09"), "9. Nov. 2026");
+  assert.equal(Ask.dateLong("2026-03-01"), "1. März 2026");
+});
+
+test("Chartbild: Preisleiter von unten nach oben, Wortwahl laut WORTWAHL.md", () => {
+  const x = { close: 178.67, primaryScenario: { direction: "BULLISH", entryZone: [163.5, 169], invalidation: 150.5, confirmation: 243.37, target1: [187.5, 193] } };
+  const lad = Ask.ladder(x);
+  assert.deepEqual(lad.items.map((i) => i.kind), ["invalid", "zone", "close", "zone", "confirm"]);
+  assert.equal(lad.items[1].main, true, "Zone des Hauptszenarios ist hervorgehoben");
+  assert.equal(lad.min, 150.5); assert.equal(lad.max, 243.37);
+  const words = JSON.stringify(lad.items);
+  for (const bad of ["Zielzone", "Kursziel", "Stopp", "Einstieg", "Kaufzone"]) assert.ok(!words.includes(bad), bad);
+  assert.match(words, /Zone laut Methode/); assert.match(words, /Ungültig-Marke laut Methode/);
+  assert.equal(lad.items[0].prefix, "Schluss unter ");
+  const bear = Ask.ladder({ close: 50, primaryScenario: { direction: "BEARISH", entryZone: [52, 55], invalidation: 60, target1: [40, 42] } });
+  assert.equal(bear.items.find((i) => i.kind === "invalid").prefix, "Schluss über ");
+  assert.equal(Ask.ladder({ close: 10, primaryScenario: null }), null);
+});
+
+test("Chartbild: eine Pflichtzeile aus legal-notices.json (Methode, Regelversion, Stand, Methodik-Link)", async () => {
+  const fs = await import("node:fs");
+  const notices = JSON.parse(fs.readFileSync(new URL("../../assets/legal-notices.json", import.meta.url), "utf8")).notices;
+  const line = Ask.setupLine(notices.setup.text ? { text: notices.setup.text, links: [["Methodik, Quellen und Interessen", "https://x/methodik"]] } : null,
+    { method: "Chartbild", version: "vu-ti-api-3.0.0", asOf: "9. Nov. 2026" });
+  assert.ok(line.text.startsWith(notices.setup.text.split(/[,:]/)[0]), "Satzanfang wörtlich aus der Hinweisdatei");
+  for (const part of ["Chartbild", "Regelversion vu-ti-api-3.0.0", "Stand 9. Nov. 2026", "Zonen laut Methode sind Rechenpunkte"]) assert.ok(line.text.includes(part), part);
+  assert.equal(line.link.href, "https://x/methodik");
+  const src = fs.readFileSync(new URL("../app.js", import.meta.url), "utf8");
+  assert.ok(!/Zielzone/.test(src), "kein „Zielzone“ in der Atlas-Oberfläche");
+});
