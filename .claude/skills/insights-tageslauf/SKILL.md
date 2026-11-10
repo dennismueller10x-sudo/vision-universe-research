@@ -12,13 +12,19 @@ großen Wert (Rubrik „Tagesthema“), einer über einen Nebenwert (Rubrik „N
 
 ## Ablauf
 
-1. **Repo und Zweig.** Auf dem neuesten `main` arbeiten, Zweig `insights/<JJJJ-MM-TT>` (oder der Zweig, den die Sitzung
-   vorgibt). Läuft heute schon ein Insights-PR oder stehen für heute schon zwei Artikel in `insights/artikel.json`: nichts tun.
-2. **Themen wählen.** `node products/insights/themen.mjs` zeigt die größten Tagesbewegungen (groß und Nebenwerte) aus
-   unseren Daten. Je Gruppe den ersten Kandidaten nehmen, für den die Websuche einen klaren Anlass findet (Zahlen,
-   Ausblick, Übernahme, Zulassung, Gericht, Politik). Nicht nehmen: Aktien „(schon in Insights)“, reine Kursbewegung ohne
-   Anlass, Pennystocks, Themen, zu denen es nur eine Quelle gibt.
-3. **Recherchieren.** Mindestens drei unabhängige Quellen mit Adresse (Unternehmensmitteilung, SEC-Meldung oder
+1. **Repo und Zweig.** Auf dem neuesten `main` arbeiten: `git fetch origin main` und den Arbeitszweig der Sitzung neu von
+   `origin/main` anlegen (`git checkout -B <zweig> origin/main`). Lehnt der Push danach ab, weil auf dem Remote-Zweig noch
+   der gestrige, schon gemergte Stand liegt: `git merge -s ours origin/<zweig>` und normal pushen, nie Force-Push. Läuft heute schon ein Insights-PR oder stehen für heute schon zwei Artikel in `insights/artikel.json`: nichts tun.
+2. **Themen wählen.** Zwei Quellen für Kandidaten, in dieser Reihenfolge:
+   - **Nachrichten des Tages:** Quartalszahlen von gestern Abend und heute früh, Übernahmen, Zulassungen, Gerichts- und
+     Politikentscheidungen, Ausblicke (Websuche „earnings today“, „stock movers today“, Wirtschaftskalender).
+   - **Unsere Daten:** `node products/insights/themen.mjs` (größte Tagesbewegungen, groß und Nebenwerte).
+   Ein Thema trägt, wenn es einen benennbaren Anlass gibt. **Branchenbewegungen zählen ausdrücklich** (z. B. „Chipwerte
+   steigen zweistellig“): dann eine Aktie als Hauptwert mit Datenkasten nehmen und die Branche im Text einordnen. Eine
+   Bewegung ohne bekannten Grund darf Thema sein, wenn der Artikel das offen sagt und mit Zahlen, Branche und Daten trägt.
+   Nicht nehmen: Aktien „(schon in Insights)“, Pennystocks unter 2 Mrd. $, reine Gesundheits- oder Strafverfahrensthemen
+   über Personen. Es gibt fast jeden Werktag genug Stoff: erst aufgeben, wenn mindestens sechs Kandidaten geprüft sind.
+3. **Recherchieren.** Mindestens drei Quellen mit Adresse für den Artikel insgesamt (nicht drei Bestätigungen derselben Ursache) (Unternehmensmitteilung, SEC-Meldung oder
    Investor-Relations-Seite zuerst, dann große Medien). Jede Zahl im Text hat eine Quelle oder stammt aus unseren Daten.
    Widersprüche: Spanne nennen oder weglassen. Was nur eine Quelle meldet, so kennzeichnen („laut …“).
 4. **Schreiben.** `products/insights/artikel/<datum>-<slug>.json`, Felder wie in den Vorlagen, dazu
@@ -41,6 +47,6 @@ großen Wert (Rubrik „Tagesthema“), einer über einen Nebenwert (Rubrik „N
 
 ## Wann nichts veröffentlicht wird
 
-Lieber kein Artikel als ein schlechter. Abbrechen ohne Veröffentlichung, wenn: kein Kandidat mit drei Quellen, ein
+Lieber kein Artikel als ein schlechter. Abbrechen ohne Veröffentlichung, wenn: nach sechs geprüften Kandidaten keiner mit drei Quellen trägt, ein
 Test rot bleibt, die Daten von gestern fehlen (`kursStand` älter als drei Handelstage) oder das Thema heikel ist
 (Strafverfahren gegen Personen, Gesundheitsangaben, Kriegsereignisse). Dann nur melden.
