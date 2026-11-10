@@ -17,9 +17,13 @@ test('IN-2 · jeder Artikel hat Pflichtfelder, Bild, Quellen mit Adresse und ein
     for (const k of ['slug', 'datum', 'stand', 'rubrik', 'titel', 'unterzeile', 'teaser', 'ticker', 'bild', 'abschnitte', 'quellen']) assert.ok(a[k], `${a.slug}: ${k} fehlt`);
     assert.match(a.slug, /^[a-z0-9-]+$/); assert.ok(!slugs.has(a.slug), `${a.slug} doppelt`); slugs.add(a.slug);
     assert.match(a.datum, /^\d{4}-\d{2}-\d{2}$/);
-    assert.ok(fs.existsSync('.' + a.bild.src), `${a.slug}: Bild ${a.bild.src} fehlt`);
     assert.ok(a.bild.alt.length > 10);
-    assert.ok(a.bild.ki || a.bild.quelle, `${a.slug}: Bild braucht Bildnachweis (quelle) oder ki: true`);
+    if (a.bild.typ === 'app') assert.ok(a.appScreens?.[a.ticker[0]]?.length, `${a.slug}: App-Aufmacher ohne App-Screens (products/insights/screens.mjs)`);
+    else {
+      assert.ok(fs.existsSync('.' + a.bild.src), `${a.slug}: Bild ${a.bild.src} fehlt`);
+      assert.ok(a.bild.ki || a.bild.quelle, `${a.slug}: Bild braucht Bildnachweis (quelle) oder ki: true`);
+    }
+    assert.ok(!a.pruefung || ['redaktion', 'automatisch'].includes(a.pruefung), `${a.slug}: unbekannte pruefung`);
     for (const s of a.abschnitte) if (s.bild) { assert.ok(s.bild.quelle && fs.existsSync('.' + s.bild.src), `${a.slug}: Bild im Text ohne Nachweis oder Datei`); }
     for (const [t, list] of Object.entries(a.appScreens || {})) for (const sc of list) assert.ok(fs.existsSync('.' + sc.src), `${a.slug}: App-Screen ${sc.src} fehlt (${t})`);
     assert.ok(a.quellen.length >= 2, `${a.slug}: weniger als zwei Quellen`);
@@ -46,9 +50,9 @@ test('IN-4 · Artikelseite: Kanonische Adresse, NewsArticle-JSON-LD, KI-Bild-Hin
     assert.match(html, new RegExp(`<link rel="canonical" href="https://research.visionuniverse.de/insights/${a.slug}/">`));
     const ld = JSON.parse(html.match(/<script type="application\/ld\+json">(.*?)<\/script>/)[1]);
     assert.equal(ld['@type'], 'NewsArticle'); assert.equal(ld.datePublished.slice(0, 10), a.datum);
-    assert.match(html, a.bild.ki ? /<figcaption>KI-Bild<\/figcaption>/ : new RegExp(`<figcaption>Bild: ${a.bild.quelle}</figcaption>`));
+    assert.match(html, a.bild.typ === 'app' ? /<figcaption>Vision-Universe-App<\/figcaption>/ : a.bild.ki ? /<figcaption>KI-Bild<\/figcaption>/ : new RegExp(`<figcaption>Bild: ${a.bild.quelle}</figcaption>`));
     assert.match(html, /keine Anlageberatung/);
-    assert.match(html, /Mit KI-Unterstützung recherchiert und geschrieben/);
+    assert.match(html, a.pruefung === 'automatisch' ? /automatisch mit KI recherchiert und geschrieben/ : /Mit KI-Unterstützung recherchiert und geschrieben/);
     assert.equal((html.match(/<li>[^<]*: <a href="https:/g) || []).length, a.quellen.length);
   }
 });
