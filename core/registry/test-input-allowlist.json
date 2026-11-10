@@ -1028,14 +1028,6 @@
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
     },
     {
-      "file": "quant/tests/history-store.test.mjs",
-      "kategorie": "datenzustand-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): prueft Datenstand gegen Uhr/Frische; in die Datenqualitaet verlegen."
-    },
-    {
       "file": "quant/tests/history-sync-boundary.test.mjs",
       "kategorie": "scan-fehlalarm",
       "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
@@ -1537,14 +1529,6 @@
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
     },
     {
-      "file": "quant/tests/return-series.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
-    },
-    {
       "file": "quant/tests/scale-gate.test.mjs",
       "kategorie": "scan-fehlalarm",
       "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
@@ -1941,11 +1925,11 @@
     },
     {
       "file": "quant/tests/total-return-verification.test.mjs",
-      "kategorie": "fixture-offen",
+      "kategorie": "scan-fehlalarm",
       "liest": [
         "quant/data"
       ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "grund": "10.11.2026 (S2): Daten kommen aus quant/tests/fixtures/golden-preview; der Zustandsteil ist DQ-PQ-9. Die Sandbox schreibt quant/data-Pfade nur in ein Temp-Verzeichnis; Laufzeitmessung 0 Zugriffe, der Scan meldet die Zeichenkette trotzdem."
     },
     {
       "file": "quant/tests/universe-list.test.mjs",

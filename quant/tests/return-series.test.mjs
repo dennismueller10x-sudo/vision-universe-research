@@ -9,7 +9,7 @@ const Series = require("../engines/return-series.js");
 const Compare = require("../engines/return-basis-comparison.js");
 
 const GOLDEN = ["AAPL", "JPM", "MSFT", "NVDA", "XOM"];
-const goldenPath = (t) => `quant/data/market/golden-preview/daily/ref_${t}.json`;
+const goldenPath = (t) => `quant/tests/fixtures/golden-preview/ref_${t}.json`; /* eingefrorene Kopie, README daneben */
 
 /* ------------------------------------------------------------ Konstruktion */
 

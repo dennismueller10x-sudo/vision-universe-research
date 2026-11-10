@@ -145,5 +145,28 @@
     return result('DQ-PQ-8', 'Suchdatei: Pflichttitel gemeinsam auffindbar', cases.length + 1, f);
   }
 
-  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3, duplicateResolutionSeries, requiredSearchTitles };
+  /** DQ-PQ-9 (aus quant/tests/total-return-verification): die committete Total-Return-Messung traegt ein Urteil, das zu ihrer eigenen Evidenz passt. */
+  function totalReturnMeasurement(cur) {
+    if (!cur) return result('DQ-PQ-9', 'Total-Return-Messung: Urteil passt zur Evidenz', 0, []);
+    const f = [], series = cur.series || [], sum = k => series.reduce((n, s) => n + s[k], 0);
+    if (cur.schemaVersion !== 'total-return-verification-1.0.0') f.push('schemaVersion ' + cur.schemaVersion);
+    if (cur.tolerance !== 0.002) f.push('tolerance ' + cur.tolerance);
+    if (!(Number.isInteger(cur.minimumEvents) && cur.minimumEvents > 0)) f.push('minimumEvents ungueltig');
+    if (cur.seriesChecked !== series.length) f.push('seriesChecked ' + cur.seriesChecked + ' != ' + series.length);
+    if (cur.dividendEventsChecked !== sum('dividendEvents')) f.push('dividendEventsChecked passt nicht zur Summe');
+    if (cur.dividendEventsMatching !== sum('matching')) f.push('dividendEventsMatching passt nicht zur Summe');
+    if (!(cur.dividendEventsMatching >= 0 && cur.dividendEventsMatching <= cur.dividendEventsChecked)) f.push('matching ausserhalb 0..checked');
+    for (const row of series) {
+      if ((row.mismatches || []).length !== row.dividendEvents - row.matching) f.push((row.ticker || row.securityId) + ': mismatches passen nicht zu dividendEvents - matching');
+      for (const e of row.mismatches || []) if (!(e.error >= cur.tolerance)) f.push((row.ticker || row.securityId) + ': Abweichung unter der Toleranz als Mismatch gezaehlt');
+    }
+    const expected = cur.dividendEventsChecked < cur.minimumEvents ? 'INSUFFICIENT_EVIDENCE'
+      : cur.dividendEventsMatching === cur.dividendEventsChecked ? 'TOTAL_RETURN_CONFIRMED'
+      : cur.dividendEventsMatching === 0 ? 'SPLIT_ADJUSTED_ONLY' : 'INCONSISTENT';
+    if (cur.verdict !== expected) f.push('Urteil ' + cur.verdict + ', Evidenz ergibt ' + expected);
+    if (cur.verdict === 'TOTAL_RETURN_CONFIRMED' && !(cur.worstRelativeError < cur.tolerance)) f.push('bestaetigt, aber worstRelativeError >= tolerance');
+    return result('DQ-PQ-9', 'Total-Return-Messung: Urteil passt zur Evidenz', 1, f);
+  }
+
+  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3, duplicateResolutionSeries, requiredSearchTitles, totalReturnMeasurement };
 });

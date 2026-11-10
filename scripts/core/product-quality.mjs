@@ -41,5 +41,6 @@ export function productRules({ root = REPO_ROOT, now = new Date() } = {}) {
     rules.push(PQ.requiredSearchTitles(search, (index, query) => Universe.search(index, query, { authority, now: at, limit: 5 }),
       [['NVIDIA', 'US'], ['Palantir', 'US'], ['Rheinmetall', 'EUROPE'], ['Allianz', 'EUROPE'], ['SAP', 'EUROPE'], ['2G Energy', 'EUROPE']]));
   } else rules.push(PQ.requiredSearchTitles(null));
+  rules.push(PQ.totalReturnMeasurement(maybe('quant/data/providers/total-return-verification.json')));
   return rules;
 }

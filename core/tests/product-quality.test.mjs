@@ -90,3 +90,15 @@ test('PQ-8: Pflichttitel in beiden Regionen auffindbar; fehlender Titel, falsche
   assert.match(Q.requiredSearchTitles({ entries: entries.slice(0, 10) }, search, cases).samples.join(), /beide Regionen/);
   assert.equal(Q.requiredSearchTitles(null).checked, 0);
 });
+
+test('PQ-9: Total-Return-Messung besteht bei passendem Urteil; falsches Urteil, falsche Summen, Mismatch unter Toleranz fallen', () => {
+  const ok = () => ({ schemaVersion: 'total-return-verification-1.0.0', tolerance: 0.002, minimumEvents: 2, seriesChecked: 1, dividendEventsChecked: 3, dividendEventsMatching: 3,
+    verdict: 'TOTAL_RETURN_CONFIRMED', worstRelativeError: 0.0001, series: [{ ticker: 'A', dividendEvents: 3, matching: 3, mismatches: [] }] });
+  assert.equal(Q.totalReturnMeasurement(ok()).status, 'PASS');
+  assert.equal(Q.totalReturnMeasurement(null).checked, 0);
+  assert.match(Q.totalReturnMeasurement({ ...ok(), verdict: 'INCONSISTENT' }).samples.join(), /Evidenz ergibt TOTAL_RETURN_CONFIRMED/);
+  assert.match(Q.totalReturnMeasurement({ ...ok(), seriesChecked: 2 }).samples.join(), /seriesChecked/);
+  const m = ok(); m.series[0].matching = 2; m.dividendEventsMatching = 2; m.series[0].mismatches = [{ error: 0.0001 }]; m.verdict = 'INCONSISTENT';
+  assert.match(Q.totalReturnMeasurement(m).samples.join(), /unter der Toleranz/);
+  assert.match(Q.totalReturnMeasurement({ ...ok(), worstRelativeError: 0.01 }).samples.join(), /worstRelativeError/);
+});
