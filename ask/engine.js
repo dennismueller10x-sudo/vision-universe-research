@@ -258,6 +258,46 @@
     return de.length ? de.slice().sort(function (a, b) { return score(a) - score(b); })[0] : null;
   }
 
+  /* ---- Chartbild-Karte (Owner 10.11.2026): deutsches Datum und Preisleiter aus dem Hauptszenario. */
+  var MONTHS = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.', 'Dez.'];
+  /** „2026-11-09“ → „9. Nov. 2026“. */
+  function dateLong(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+    return m ? Number(m[3]) + '. ' + MONTHS[Number(m[2]) - 1] + ' ' + m[1] : String(iso || '');
+  }
+  function okNum(v) { return typeof v === 'number' && isFinite(v) && v > 0; }
+  /**
+   * Marken der Preisleiter, nach Preis aufsteigend (Wortwahl nach docs/legal/WORTWAHL.md: „Zone laut Methode“,
+   * „Ungültig-Marke laut Methode“, keine Kursziele).
+   * @returns {{items:[{kind, label, lo, hi, main?}], min, max}|null}
+   */
+  function ladder(x) {
+    var p = x && x.primaryScenario;
+    if (!x || !p) return null;
+    var bear = p.direction === 'BEARISH', items = [];
+    if (okNum(p.invalidation)) items.push({ kind: 'invalid', label: 'Ungültig-Marke laut Methode', prefix: 'Schluss ' + (bear ? 'über ' : 'unter '), lo: p.invalidation, hi: p.invalidation });
+    if (p.entryZone && okNum(p.entryZone[0]) && okNum(p.entryZone[1])) items.push({ kind: 'zone', main: true, label: 'Zone laut Methode · Hauptszenario', lo: Math.min(p.entryZone[0], p.entryZone[1]), hi: Math.max(p.entryZone[0], p.entryZone[1]) });
+    if (okNum(x.close)) items.push({ kind: 'close', label: 'Letzter Schluss', lo: x.close, hi: x.close });
+    if (p.target1 && okNum(p.target1[0]) && okNum(p.target1[1])) items.push({ kind: 'zone', label: (bear ? 'Untere' : 'Obere') + ' Zone laut Methode', lo: Math.min(p.target1[0], p.target1[1]), hi: Math.max(p.target1[0], p.target1[1]) });
+    if (okNum(p.confirmation)) items.push({ kind: 'confirm', label: 'Bestätigungs-Marke laut Methode', lo: p.confirmation, hi: p.confirmation });
+    if (items.length < 2) return null;
+    items.sort(function (a, b) { return (a.lo + a.hi) - (b.lo + b.hi); });
+    return { items: items, min: Math.min.apply(null, items.map(function (i) { return i.lo; })), max: Math.max.apply(null, items.map(function (i) { return i.hi; })) };
+  }
+  /**
+   * Eine kurze Pflichtzeile aus assets/legal-notices.json (notices.setup): Satzteile wörtlich übernommen,
+   * ergänzt um die Pflichtangaben Methode und Regelversion, Datenstand, Link zur Methodik.
+   */
+  function setupLine(notice, facts) {
+    if (!notice || !notice.text) return null;
+    var lead = notice.text.split(/[,:]/)[0];
+    var zones = (notice.text.match(/[^.:]*Zonen laut Methode[^.]*\./) || [''])[0].trim();
+    var link = (notice.links || []).filter(function (l) { return /methodik/i.test(l[0] + ' ' + l[1]); })[0] || null;
+    var f = facts || {};
+    return { text: lead + ' ' + (f.method || '') + (f.version ? ' (Regelversion ' + f.version + ')' : '') + (f.asOf ? ', Stand ' + f.asOf : '') + '. ' + zones,
+      link: link ? { label: link[0], href: link[1] } : null };
+  }
+
   function rules(result, dict) {
     var out = [];
     if (result && result.query) Query.filters(result.query).forEach(function (f) {
@@ -293,7 +333,7 @@
       bars: pts.map(function (x) { return [String(x.fy), x.v]; }), asOf: f.asOf || null };
   }
 
-  var API = { speechText: speechText, pickVoice: pickVoice, rules: rules, chipText: chipText, name: name, money: money, value: value, allOf: allOf, secTrack: secTrack, explain: explain, failure: failure, runScreen: runScreen, runStock: runStock, runChartbild: runChartbild, chartbildSentence: chartbildSentence, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
+  var API = { dateLong: dateLong, ladder: ladder, setupLine: setupLine, speechText: speechText, pickVoice: pickVoice, rules: rules, chipText: chipText, name: name, money: money, value: value, allOf: allOf, secTrack: secTrack, explain: explain, failure: failure, runScreen: runScreen, runStock: runStock, runChartbild: runChartbild, chartbildSentence: chartbildSentence, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
     columnsFor: columnsFor, STRATEGY_LABELS: STRATEGY_LABELS };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   global.VUAskEngine = API;

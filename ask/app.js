@@ -187,12 +187,25 @@
     h('div', { class: 'ak-askwrap' }, [accessForm, form, voiceEl, statusEl, toolsRow])
   ]);
   /* Antwortansicht (Screens a-screen/a-answer): Zurück, AI ATLAS, Herkunft der Antwort. */
-  var answerTop = h('div', { class: 'ak-anstop', hidden: true }, [
+  /* Eine Kopfzeile (Owner 10.11.2026): Die Herkunft der Antwort steht als Pille in der Seitenkopfzeile;
+     deren Zurück-Pfeil führt in der Antwortansicht zum Start von Atlas. Ohne Seitenkopf (eingebettet) bleibt die eigene Zeile. */
+  var answerPill = h('span', { class: 'ak-anstop-pill' });
+  var pageHead = document.querySelector('.ak-hd');
+  var answerTop = h('div', { class: 'ak-anstop', hidden: true }, pageHead ? [] : [
     h('button', { class: 'vu-round ak-anstop-back', type: 'button', 'aria-label': 'Zurück zum Start von Atlas', onclick: function () { home(); } }, [markup(U.glyph('back', 18))]),
-    h('span', { class: 'vu-ltag', text: 'AI Atlas' }), h('span', { class: 'ak-anstop-pill' })
+    h('span', { class: 'vu-ltag', text: 'AI Atlas' }), answerPill
   ]);
+  if (pageHead) {
+    answerPill.hidden = true;
+    pageHead.insertBefore(answerPill, pageHead.querySelector('.ak-beta') || pageHead.lastChild);
+    var pageBack = pageHead.querySelector('#ak-back');
+    if (pageBack) pageBack.addEventListener('click', function (e) {
+      if (!document.body.classList.contains('ak-answering')) return;
+      e.preventDefault(); home();
+    });
+  }
   function home() {
-    document.body.classList.remove('ak-answering'); answerTop.hidden = true;
+    document.body.classList.remove('ak-answering'); answerTop.hidden = true; if (pageHead) answerPill.hidden = true;
     conversation.textContent = ''; setContext(null);
     try { window.scrollTo(0, 0); } catch (e) {}
   }
@@ -358,7 +371,7 @@
     var question = input.value.replace(/\s+/g, ' ').trim();
     if (busy || !ENDPOINT || question.length < 3) return;
     busy = true; sendBtn.disabled = true; document.body.classList.add('ak-busy');
-    document.body.classList.add('ak-answering'); document.body.classList.remove('ak-asking'); answerTop.hidden = false;
+    document.body.classList.add('ak-answering'); document.body.classList.remove('ak-asking'); answerTop.hidden = !!pageHead; if (pageHead) answerPill.hidden = false;
     var turn = h('section', { class: 'ak-turn', 'aria-live': 'polite' }, [
       context ? h('p', { class: 'ak-q-ref', text: 'Nachfrage zu ' + followText.textContent }) : null,
       h('p', { class: 'ak-bub', text: question }),
@@ -427,7 +440,7 @@
     var r = answer.result;
     var gaps = (r.missing || []).filter(function (m) { return m.type !== 'withheld'; }).map(function (m) { return m.wish; });
     var gapText = gaps.length ? ' Noch nicht verfügbar: ' + gaps.join(', ') + '.' : '';
-    var pill = answerTop.querySelector('.ak-anstop-pill');
+    var pill = answerPill;
     pill.textContent = ''; pill.appendChild(markup(U.verdict('none', answer.source === 'cache' ? 'aus dem Archiv' : 'neu übersetzt')));
     function say(title, text, warn) { turn.appendChild(card(title, text, warn)); turn.appendChild(missingBlock(r)); return Promise.resolve(title + '. ' + text); }
     if (r.kind === 'forecast') return say('Keine Prognosen, keine Beratung', 'Vision Universe sagt keine Kurse voraus, gibt keine Kauf- oder Verkaufsempfehlungen und beantwortet keine Fragen zu deiner persönlichen Lage. Du kannst aber nach Kennzahlen, Trends und Methoden suchen – zum Beispiel „Welche Aktien stehen im Weinstein-Stage-2?“');
@@ -577,7 +590,13 @@
     if (r.chartbild) {
       var text;
       if (!ti) { mount.appendChild(card('Chartbild nicht geladen', 'Die Chartlage kann gerade nicht angezeigt werden.', true)); text = 'Das Chartbild konnte nicht geladen werden.' + gapText; }
-      else { var cb = Ask.runChartbild(ti.index, ti.meta, r); mount.appendChild(chartbildBlock(cb)); text = cb.stocks.map(Ask.chartbildSentence).join(' ') + gapText; }
+      else { var cb = Ask.runChartbild(ti.index, ti.meta, r), names = {}; st.stocks.forEach(function (y) { if (y.found) names[y.symbol] = cleanName(y.name) || y.symbol; }); mount.appendChild(chartbildBlock(cb, names));
+        /* Rechenweg des Chartbilds: Firma, Methode, Stand - nicht die Kennzahlen der Aktienzeile. */
+        var rcs = calc.querySelector('.ak-rcs'); rcs.textContent = '';
+        cb.stocks.forEach(function (y) { rcs.appendChild(h('span', { class: 'ak-rc', text: 'Firma: ' + (names[y.symbol] || y.symbol) })); });
+        rcs.appendChild(h('span', { class: 'ak-rc', text: 'Methode: Chartbild' }));
+        var cbAsOf = cb.stocks.filter(function (y) { return y.asOf; })[0];
+        if (cbAsOf) rcs.appendChild(h('span', { class: 'ak-rc', text: 'Stand: ' + Ask.dateLong(cbAsOf.asOf) })); text = cb.stocks.map(Ask.chartbildSentence).join(' ') + gapText; }
       tail(); return Promise.resolve(text);
     }
     if (!found.length) {
@@ -635,37 +654,67 @@
       .catch(function () { chartbildPromise = null; return null; });
     return chartbildPromise;
   }
-  function chartbildBlock(res) {
-    var usd = function (v) { return v === null || v === undefined ? '–' : Fields.format('price', v); };
-    var zone = function (z) { return z ? usd(z[0]) + ' – ' + usd(z[1]) : '–'; };
-    var box = h('div', { class: 'ak-card' }, [h('h3', { text: 'Chartbild' })]);
+  /* Chartbild-Antwort (Owner 10.11.2026, gleiche Bildsprache wie die Kennzahl-Antwort): Kopf mit Aussage,
+     senkrechte Preisleiter statt Tabelle, Ausblick/Struktur/Elliott als Chips, eine Pflichtzeile (legal-notices setup). */
+  function chartbildBlock(res, names) {
+    var usd = function (v) { return Fields.format('price', v); };
+    var wrap = h('div', { class: 'ak-cb' });
     res.stocks.forEach(function (x) {
-      if (!x.found) { box.appendChild(h('p', { text: x.symbol + ': Für diesen Titel liegt kein Chartbild vor.' })); return; }
+      var nm = names && names[x.symbol] || x.symbol;
+      var box = h('div', { class: 'ak-ans ak-cb-card' });
+      wrap.appendChild(box);
+      box.appendChild(h('span', { class: 'vu-ltag', text: nm + ' · Chartbild' }));
+      if (!x.found) { box.appendChild(h('p', { class: 'ak-sent', text: 'Für diesen Titel liegt kein Chartbild vor.' })); return; }
       if (x.withheld) {
-        box.appendChild(h('p', { text: x.symbol + ': ' + (x.notice || 'Analyse zurückgehalten.') }));
-        box.appendChild(h('div', { class: 'ak-actions' }, [h('a', { class: 'ak-btn ak-btn-sm', href: '/elliott/#/' + encodeURIComponent(x.symbol), text: x.symbol + ' im Chartbild öffnen' })]));
+        box.appendChild(h('p', { class: 'ak-sent', text: x.notice || 'Analyse zurückgehalten.' }));
+        box.appendChild(openBtn(x.symbol));
         return;
       }
+      box.appendChild(h('div', { class: 'ak-cb-head', text: x.structure && x.structure.label || x.outlook && x.outlook.label || 'Chartbild' }));
+      box.appendChild(h('p', { class: 'ak-sub', text: 'Stand ' + Ask.dateLong(x.asOf) + (x.delayed ? ' · verzögert' : x.stale ? ' · veraltet' : '') }));
+      var chips = [];
+      if (x.outlook) chips.push('Ausblick: ' + x.outlook.label);
+      if (x.structure) chips.push('Kursstruktur: ' + x.structure.label);
+      chips.push('Elliott: ' + (x.elliott && !x.elliott.abstained && x.elliott.applicability ? x.elliott.applicability.label : 'keine Zählung'));
+      box.appendChild(h('div', { class: 'ak-rcs' }, chips.map(function (c) { return h('span', { class: 'ak-rc', text: c }); })));
+      var lad = Ask.ladder(x);
+      if (lad) box.appendChild(markup(ladderSvg(lad, usd)));
       var p = x.primaryScenario || {};
-      var rows = [
-        ['Ausblick', x.outlook && x.outlook.label], ['Kursstruktur', x.structure && x.structure.label],
-        ['Zone des Hauptszenarios', zone(p.entryZone)], ['Ungültig bei Schluss ' + (p.direction === 'BEARISH' ? 'über' : 'unter'), usd(p.invalidation)],
-        ['Bestätigung', usd(p.confirmation)], ['Zielzone 1', zone(p.target1)],
-        ['Elliott (experimentell)', x.elliott.abstained ? 'keine belastbare Zählung' : x.elliott.applicability.label + (x.elliott.count ? ' · ' + x.elliott.count : '')]
-      ];
-      box.appendChild(h('div', { class: 'ak-table-wrap' }, [h('table', { class: 'ak-table' }, [
-        h('thead', {}, [h('tr', {}, [h('th', { scope: 'col', text: x.symbol }), h('th', { scope: 'col', text: 'Stand ' + (x.asOf || '–') + (x.delayed ? ' · verzögert' : x.stale ? ' · veraltet' : '') })])]),
-        h('tbody', {}, rows.map(function (rw) { return h('tr', {}, [h('td', { text: rw[0] }), h('td', { text: rw[1] || '–' })]); }))
-      ])]));
-      if (p.withheld && p.withheld.length) box.appendChild(h('p', { class: 'ak-atlas-hint', text: 'Nicht gezeigt, weil rechnerisch unplausibel: ' + p.withheld.map(function (k) { return { entryZone: 'Zone', invalidation: 'Ungültig-Linie', confirmation: 'Bestätigung', target1: 'Zielzone 1' }[k] || k; }).join(', ') + '.' }));
-      box.appendChild(h('div', { class: 'ak-actions' }, [h('a', { class: 'ak-btn ak-btn-sm', href: '/elliott/#/' + encodeURIComponent(x.symbol), text: x.symbol + ' im Chartbild öffnen' })]));
+      if (p.withheld && p.withheld.length) box.appendChild(h('p', { class: 'ak-fine', text: 'Nicht gezeigt, weil rechnerisch unplausibel: ' + p.withheld.map(function (k) { return { entryZone: 'Zone', invalidation: 'Ungültig-Marke', confirmation: 'Bestätigungs-Marke', target1: 'obere Zone' }[k] || k; }).join(', ') + '.' }));
+      box.appendChild(openBtn(x.symbol));
+      var line = Ask.setupLine(U.legalNotice && U.legalNotice('setup'), { method: 'Chartbild', version: x.status && x.status.schemaVersion, asOf: Ask.dateLong(x.asOf) });
+      if (line) box.appendChild(h('p', { class: 'ak-cb-legal' }, [line.text + ' ', line.link ? h('a', { href: line.link.href, text: line.link.label }) : null]));
     });
-    var first = res.stocks.filter(function (x) { return x.disclaimer; })[0];
-    box.appendChild(h('ul', { class: 'ak-notes' }, [
-      h('li', { text: (first && first.elliott ? first.elliott.note : 'Elliott-Wellen sind experimentell und nicht von Experten validiert.') }),
-      h('li', { text: first ? first.disclaimer : 'Keine Prognose und keine Anlageberatung.' })
-    ]));
-    return box;
+    return wrap;
+  }
+  function openBtn(sym) {
+    return h('a', { class: 'vu-btn vu-btn--ink ak-btn2 ak-cb-open', href: '/elliott/#/' + encodeURIComponent(sym), text: 'Im Chartbild öffnen' });
+  }
+  /* Senkrechte Preisleiter: Abstände proportional zum Preis, Hauptszenario im Akzentgelb, Schluss als Punkt.
+     Beschriftungen rechts, bei engen Marken nach außen geschoben (die Marke selbst bleibt am Preis). */
+  function ladderSvg(lad, fmt) {
+    var W = 320, H = 260, top = 14, bottom = H - 14, axis = 50, span = lad.max - lad.min || lad.max * 0.1 || 1;
+    var pad = span * 0.06, lo = lad.min - pad, hi = lad.max + pad;
+    var y = function (v) { return top + (hi - v) / (hi - lo) * (bottom - top); };
+    var parts = ['<svg class="ak-ladder" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Preisleiter des Chartbilds">',
+      '<line class="ak-ladder-axis" x1="' + axis + '" y1="' + top + '" x2="' + axis + '" y2="' + bottom + '"/>'];
+    /* Beschriftungsplätze von oben nach unten, mindestens 30 px auseinander */
+    var items = lad.items.slice().reverse(), slots = [], last = -Infinity;
+    items.forEach(function (it) { var c = y((it.lo + it.hi) / 2); var s = Math.max(c, last + 30); slots.push(s); last = s; });
+    var over = last - (bottom - 6); if (over > 0) slots = slots.map(function (s) { return s - over; });
+    items.forEach(function (it, i) {
+      var y1 = y(it.hi), y2 = y(it.lo), ly = slots[i], cls = 'ak-ladder-' + it.kind + (it.main ? ' is-main' : '');
+      if (it.kind === 'zone') parts.push('<rect class="' + cls + '" x="' + (axis - 30) + '" y="' + y1.toFixed(1) + '" width="60" height="' + Math.max(4, y2 - y1).toFixed(1) + '" rx="6"/>');
+      else if (it.kind === 'close') parts.push('<circle class="ak-ladder-close" cx="' + axis + '" cy="' + y1.toFixed(1) + '" r="6"/>');
+      else parts.push('<line class="' + cls + '" x1="' + (axis - 30) + '" x2="' + (axis + 30) + '" y1="' + y1.toFixed(1) + '" y2="' + y1.toFixed(1) + '"/>');
+      var mid = (y1 + y2) / 2;
+      parts.push('<path class="ak-ladder-lead" d="M' + (axis + 34) + ' ' + mid.toFixed(1) + ' L' + (axis + 46) + ' ' + ly.toFixed(1) + '"/>');
+      var val = (it.prefix || '') + (it.lo === it.hi ? fmt(it.lo) : fmt(it.lo) + ' – ' + fmt(it.hi));
+      parts.push('<text class="ak-ladder-v' + (it.kind === 'close' ? ' is-close' : '') + '" x="' + (axis + 50) + '" y="' + (ly - 1).toFixed(1) + '">' + U.esc(val) + '</text>');
+      parts.push('<text class="ak-ladder-l" x="' + (axis + 50) + '" y="' + (ly + 12).toFixed(1) + '">' + U.esc(it.label) + '</text>');
+    });
+    parts.push('</svg>');
+    return parts.join('');
   }
 
   /* Weiter-Karten (C12). */

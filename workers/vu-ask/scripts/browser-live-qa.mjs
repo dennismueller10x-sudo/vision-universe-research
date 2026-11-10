@@ -26,6 +26,7 @@ if (!password) throw Error("RESEARCH_ACCESS_PASSWORD fehlt");
 if (!askAccess) throw Error("VU_ASK_ACCESS fehlt");
 await mkdir(out, { recursive: true });
 
+export const CHART_QUESTION = "NVIDIA nächste Unterstützung im Chart";
 export const QUESTION = "äh zeig mir mal alle Aktien mit neuem Jahreshoch zwischen 300 Millionen und 2 Milliarden, die ins Minervini Raster passen, und den Quant Score";
 
 const browser = await pw.chromium.launch({ headless: true, args: ["--no-sandbox"] });
@@ -60,6 +61,26 @@ try {
   const chips = await page.locator(".ak-answer .ak-rc").allInnerTexts();
   console.log("Ergebnis:", count.replace(/\s+/g, " "), "| Regeln:", chips.map((c) => c.replace(/[×\s]+$/g, "").trim()).join(" · "));
   assert.ok(count, "Ergebniszahl sichtbar (Warnkarten: " + warn.join(", ") + ")");
+  await page.screenshot({ path: out + "/ask-website.png", fullPage: true });
+
+  /* Zweite Frage: Chartbild-Antwort (Kopf, Preisleiter, eine Pflichtzeile). Kostet beim ersten Mal unter 1 Cent, danach Archiv. */
+  const asked2 = page.waitForResponse((r) => /\/v1\/ask$/.test(new URL(r.url()).pathname) && r.request().method() === "POST", { timeout: 60000 });
+  await page.goto(origin + "/ask/", { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("textarea");
+  await page.fill("textarea", CHART_QUESTION);
+  await page.keyboard.press("Enter");
+  const res2 = await asked2;
+  assert.equal(res2.status(), 200, "Worker-Antwort Chartbild");
+  await page.waitForSelector(".ak-cb-card, .ak-card-warn", { timeout: 60000 });
+  await page.waitForTimeout(1500);
+  await page.screenshot({ path: out + "/ask-chartbild.png", fullPage: true });
+  const head = await page.locator(".ak-cb-card .ak-cb-head").first().innerText().catch(() => "");
+  const ladder = await page.locator(".ak-cb-card .ak-ladder").count();
+  const legal = await page.locator(".ak-cb-card .ak-cb-legal").count();
+  const heads = await page.locator(".ak-hd .ak-anstop-pill:not([hidden]), .ak-anstop:not([hidden])").count();
+  console.log("Chartbild:", head || "(kein Kopf)", "| Preisleiter:", ladder, "| Pflichtzeile:", legal, "| Kopfzeilen mit Herkunft:", heads);
+  assert.ok(head, "Chartbild-Kopf sichtbar");
+  assert.ok(ladder >= 1 && legal >= 1, "Preisleiter und Pflichtzeile");
   assert.deepEqual(errors, [], "keine Skriptfehler");
   console.log("Browser-Test /ask/: bestanden");
 } finally {
