@@ -61,7 +61,6 @@
     {
       "id": "kiDepots",
       "phase": "BRANCH_ONLY",
-      "pendingFirstRun": true,
       "workflow": "pipeline-daily.yml",
       "paths": ["quant/data/product/ki-depots-v1.json"],
       "note": "pipeline-daily Teil ki-depots (werktags 23:41 UTC) spielt den Zweig vor dem Export ein und schreibt nur dorthin. Bis zum ersten Lauf liefert Pages die eingefrorene Kopie aus main."
@@ -69,7 +68,6 @@
     {
       "id": "fxReference",
       "phase": "BRANCH_ONLY",
-      "pendingFirstRun": true,
       "workflow": "pipeline-daily.yml",
       "paths": ["quant/data/market/fx/ecb-coverage.json"],
       "prefixes": ["quant/data/market/fx/ecb/"],
@@ -78,7 +76,6 @@
     {
       "id": "discoverImBlickLive",
       "phase": "BRANCH_ONLY",
-      "pendingFirstRun": true,
       "workflow": "discover-im-blick-live.yml",
       "paths": ["discover/live/im-blick-US_REAL.json", "discover/live/monitor-US_REAL.json"],
       "note": "Zwei Erzeuger: discover-im-blick-live.yml (Wecker, Minute 5/35, 15-21 UTC) und market-data-refresh.yml (Job imblick, Nachtlauf). Beide saeen den Zweig vor dem Rechnen (der Baustein entscheidet am bisherigen Stand, ob der Slot offen ist) und schreiben nur nach data/live. Vertrag: im-blick-US_REAL.json; der Monitor ist Begleitdatei."
