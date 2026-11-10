@@ -1529,6 +1529,14 @@
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
     },
     {
+      "file": "quant/tests/return-series.test.mjs",
+      "kategorie": "fixture-offen",
+      "liest": [
+        "quant/data"
+      ],
+      "grund": "10.11.2026 (S2): bleibt auf Live-Daten. Eine Umstellung auf Fixtures machte den Test zum Vorab-Gate A des Marktlaufs (eod-publish-gates EG8 verbietet das fuer diese Vorfall-Datei); der Helper confirmed-golden-evidence liest bereits die Fixture."
+    },
+    {
       "file": "quant/tests/scale-gate.test.mjs",
       "kategorie": "scan-fehlalarm",
       "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
