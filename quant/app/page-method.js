@@ -98,7 +98,7 @@
       '<div style="margin-top:10px">' + U.help("Die Stufe ist ein Vergleich, kein Gütesiegel. Sie sagt, wo eine Aktie im Feld steht, nicht ob sie für sich gut ist.") + "</div>" +
       U.sect("Alles im Detail") + '<div class="vu-box qv3-liste">' + TOPICS.filter(function (t) { return t.id !== "grenzen"; }).map(function (t) { return '<a class="qv3-li" href="' + U.esc(X.routes.method(t.id)) + '"><span><b class="vu-sm">' + U.esc(t.title) + '</b><span class="vu-xs vu-mu">' + U.esc(t.text) + "</span></span>" + U.glyph("next", 16) + "</a>"; }).join("") + "</div>" +
       U.sect("Was Quant bewusst nicht sagt", { href: X.routes.method("grenzen"), link: "Alle Grenzen" }) + '<div class="vu-grid">' + [["Keine Empfehlung", "Kein Kauf, kein Verkauf, kein Kursziel."], ["Fehlende Daten", "Unter 80 % Abdeckung entsteht kein Wert."], ["Junge Aktien", "Zu wenig Historie wird offen genannt."], ["Backtests", "Noch gesperrt, darum keine Trefferquoten."]].map(function (x) { return '<div class="vu-box">' + U.verdict("none", x[0]) + '<p class="vu-xs vu-mu" style="margin:8px 0 0">' + x[1] + "</p></div>"; }).join("") + "</div>" +
-      '<div class="vu-stack" style="margin-top:14px"><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/methodology/">Technische Dokumentation ' + U.pro() + '</a><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/data-inspector/">SEC-Dateninspektor ' + U.pro() + "</a></div>";
+      '<div class="vu-stack" style="margin-top:14px"><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/methodology/">Technische Dokumentation ' + U.pro() + '</a><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/data-inspector/">Meldedateninspektor ' + U.pro() + "</a></div>";
     var box = el("div", { class: "vu-ui qv3" }); box.innerHTML = h; main.append(box);
     if (ctx && ctx.api && ctx.api.getFactorEvidenceScreening) ctx.api.getFactorEvidenceScreening().then(function (r) {
       var w = r && r.factorWeights; if (!w) return;
@@ -140,7 +140,7 @@
       el("div", {}, [el("b", { text: "Datenbasiert. Nachvollziehbar. Unabhängig." })].concat(
         ["Belegte Daten mit Stichtag", "Gleiche Regeln für jede Aktie", "Lieber keine Aussage als eine falsche", "Keine Gesamtnote, keine Prognose"].map(function (x) { return el("span", { text: x }); })))]),
       el("ol", { class: "q-rows q-principle-list" }, [
-        ["Belegte Daten, mit Stichtag", "Geschäftszahlen aus SEC-Meldungen, Kurse von Tiingo. Jede Zahl trägt ihren Stand. Eine Kennzahl zählt erst ab dem Tag, an dem sie öffentlich bekannt war."],
+        ["Belegte Daten, mit Stichtag", "Geschäftszahlen aus Pflichtmeldungen, Kurse vom Marktdatenanbieter. Jede Zahl trägt ihren Stand. Eine Kennzahl zählt erst ab dem Tag, an dem sie öffentlich bekannt war."],
         ["Gleiche Regeln für jede Aktie", "Faktoren, Setups und Strategien folgen versionierten Regeln. Schwellen werden nicht an Ergebnissen optimiert und nicht für einzelne Titel angepasst."],
         ["Lieber keine Aussage als eine falsche", "Fehlt eine Kennzahl, wird sie nicht geschätzt. Reicht die Datenlage nicht, sagt Quant das – mit der Zahl, die fehlt."],
         ["Keine Gesamtnote, keine Prognose", "Eine einzelne Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird."]
@@ -157,7 +157,7 @@
       { href: X.routes.method("grenzen"), label: "Alle Grenzen" }));
     main.append(X.more("Transparenz-Matrix: was offen liegt und was es nicht gibt", function () { return [el("div", { class: "q-matrix" }, [
       el("div", { class: "is-yes" }, [el("h3", { text: "Offen gelegt" }), el("ul", {}, [
-        "Datenquellen und Stichtag jeder Zahl (SEC EDGAR, Tiingo)", "Kennzahlen, Gewichte und Rohwerte jedes Faktors", "Bedingungen jedes Setups und jeder Strategie",
+        "Datenquellen und Stichtag jeder Zahl (Unternehmensmeldungen, Kursdatenanbieter; Quellen: /infos/#quellen)", "Kennzahlen, Gewichte und Rohwerte jedes Faktors", "Bedingungen jedes Setups und jeder Strategie",
         "Alle Vergleichsfälle im Rückblick – nie ein herausgegriffener", "Versionen jeder Regel"].map(function (x) { return el("li", { text: x }); }))]),
       el("div", { class: "is-no" }, [el("h3", { text: "Gibt es bewusst nicht – oder noch nicht" }), el("ul", {}, [
         "Gesamtnote oder Rangliste", "Kursziele und Prognosen", "Trefferquoten (Backtesting noch nicht freigegeben)", "Sentiment- und News-Auswertung", "Erwartungstrend (keine zeitpunktgenaue Quelle)"].map(function (x) { return el("li", { text: x }); }))])])]; }));
@@ -168,8 +168,8 @@
     topicHead(main, t, "Quant verwendet ausschließlich belegte Quellen – und sagt bei jeder Zahl, von wann sie ist.");
     var sum = await global.QuantShell.loadJSON("/quant/data/product/factor-evidence-v1/summary.json").catch(function () { return null; });
     main.append(el("div", { class: "qx-grid qx-grid-2" }, [
-      X.card([el("h3", { class: "qx-h3", text: "Geschäftszahlen: SEC EDGAR" }), para("Umsatz, Gewinn, Cashflow, Bilanz – aus den Pflichtmeldungen der Unternehmen (10-K, 10-Q). Maßgeblich ist, wann eine Zahl öffentlich wurde, nicht der Berichtszeitraum."), X.btn("Rohdaten prüfen", "/quant/data-inspector/", "secondary")]),
-      X.card([el("h3", { class: "qx-h3", text: "Kurse: Tiingo" }), para("Tagesschlusskurse, splitbereinigt; während der Handelszeit 5-Minuten-Kurse (IEX) und auf der Aktienseite optional ein laufender Kurs. Dividenden sind in Kursentwicklungen nicht enthalten.")])
+      X.card([el("h3", { class: "qx-h3", text: "Geschäftszahlen: Pflichtmeldungen" }), para("Umsatz, Gewinn, Cashflow, Bilanz – aus den Pflichtmeldungen der Unternehmen (10-K, 10-Q). Maßgeblich ist, wann eine Zahl öffentlich wurde, nicht der Berichtszeitraum."), X.btn("Rohdaten prüfen", "/quant/data-inspector/", "secondary")]),
+      X.card([el("h3", { class: "qx-h3", text: "Kurse: Marktdatenanbieter" }), para("Tagesschlusskurse, splitbereinigt; während der Handelszeit 5-Minuten-Kurse (IEX) und auf der Aktienseite optional ein laufender Kurs. Dividenden sind in Kursentwicklungen nicht enthalten.")])
     ]));
     if (sum && sum.counts) main.append(X.section("Wie groß ist das Universum?", "Stand " + X.dateDe(sum.asOf || (sum.generatedAt || "").slice(0, 10)) + ".", [el("div", { class: "dv2-valuation-grid qx-stats" }, [
       ["US-Titel im Produktuniversum", sum.counts.productUniverse], ["mit veröffentlichter Faktoranalyse", sum.counts.published], ["davon mit Geschäftszahlen", sum.counts.withFundamentals], ["mit belegtem Börsenwert", sum.counts.withMarketCap]

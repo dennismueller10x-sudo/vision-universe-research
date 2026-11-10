@@ -100,7 +100,7 @@
   function portfolios(id) { return '<section class="md-sec"><div class="vu-stack">' + U.navcard({ glyph: "grid", title: "Alle Portfolios", sub: id ? "Dieses Depot im Bereich Portfolios, neben Supertrader- und KI-Depots" : "Supertrader-, Quant- und KI-Depots an einer Stelle", href: "/portfolios/" + (id ? "#/quant/" + encodeURIComponent(id) : "#/") }) + "</div></section>"; }
   function foot(doc) {
     return (U.legal("modelPortfolio") || "") +
-      '<p class="md-foot">Datenstand ' + dDe(doc.asOf) + ". Regel und Engine: VU-Portfolio-Standard (" + esc(doc.rules && doc.rules.engine) + "), Kurse: veröffentlichte Schlusskurse (Tiingo, split-bereinigt), Kosten " + esc(doc.rules && doc.rules.costsBpsPerSide) + " Basispunkte je Seite. Keine Anlageberatung, keine Empfehlung.</p>";
+      '<p class="md-foot">Datenstand ' + dDe(doc.asOf) + ". Regel und Engine: VU-Portfolio-Standard (" + esc(doc.rules && doc.rules.engine) + "), Kurse: veröffentlichte Schlusskurse (split-bereinigt), Kosten " + esc(doc.rules && doc.rules.costsBpsPerSide) + " Basispunkte je Seite. Keine Anlageberatung, keine Empfehlung.</p>";
   }
   function render(doc, hash) {
     var id = String(hash || "").replace(/^#\/?/, "").split("?")[0];

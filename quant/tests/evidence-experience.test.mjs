@@ -116,7 +116,7 @@ test("Checkliste: Wichtigstes bestanden + alles Offene, Rest klappt auf", () => 
 });
 
 test("Zertifiziert erscheint nur mit Status CERTIFIED", () => {
-  assert.match(text(E.certifiedLine(null)), /Für dieses Signal liegt noch kein vollständig zertifizierter Backtest vor\./);
+  assert.match(text(E.certifiedLine(null)), /Für dieses Regelereignis liegt noch kein vollständig zertifizierter Backtest vor\./);
   assert.match(text(E.certifiedLine({ status: "LIMITED" })), /noch kein vollständig zertifizierter/);
   assert.match(text(E.certifiedLine({ status: "CERTIFIED" })), /Alle methodischen Prüfungen/);
 });
@@ -158,7 +158,7 @@ test("Beobachtet: Evidenz-Verlauf je Aktie, kein Portfolio", () => {
 
 test("Aktienseite: Was geschah frueher? in drei getrennten Stufen", () => {
   const src = read("quant/app/page-stock.js");
-  const a = src.indexOf("A · Diese Aktie selbst"), b = src.indexOf("B · Marktweit getestetes Signal"), c = src.indexOf("C · Zertifizierter Backtest");
+  const a = src.indexOf("A · Diese Aktie selbst"), b = src.indexOf("B · Marktweit getestetes Regelereignis"), c = src.indexOf("C · Zertifizierter Backtest");
   assert.ok(a > 0 && b > a && c > b, "A, B, C in dieser Reihenfolge");
   assert.match(src, /Beobachtet, nicht getestet/);
   assert.match(src, /historisch entwickelt hat, ist noch nicht getestet und nicht zertifiziert/, "Strategie passt != Strategie getestet");

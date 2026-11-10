@@ -370,7 +370,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.getByText(/Eine Gesamtnote gibt es bewusst nicht/).first().waitFor();
    /* Quant Daily Usefulness: Pro/Contra hat einen eigenen Abschnitt (#dafuer). */
    const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
-   if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')befund(view,width,'Pro/Contra ohne dafuer/dagegen: '+gruppen.join('|'));
+   if(gruppen.join('|')!=='Stärken laut Kennzahlen|Schwächen laut Kennzahlen')befund(view,width,'Pro/Contra ohne Stärken/Schwächen laut Kennzahlen: '+gruppen.join('|'));
    /* Owner-Mockup 23.10.2026: "Was ist jetzt wichtig?" steht bei den Aktuellen Veraenderungen und traegt den Radar-Stand;
       neben dem Chart steht das Quant-Ergebnis. */
    if(!await page.locator('.qx-verdict-card').count())befund(view,width,'Quant-Ergebnis fehlt neben dem Chart');
@@ -723,7 +723,7 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   if(quantLinks.length!==4)befund('platform-header',width,'die Quant-Leiste hat nicht vier Bereiche: '+quantLinks.length);
   if(quantLinks.some(h=>!h||!h.startsWith('/quant/#/')))befund('platform-header',width,'die Quant-Navigation fuehrt aus Quant heraus: '+quantLinks.join(', '));
   const kopf=await page.locator('vu-navigation a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
-  for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/morning/','/insights/','/academy/','/screener/'])
+  for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/insights/','/academy/','/screener/'])
    if(!kopf.some(h=>h&&h.startsWith(path)))befund('platform-header',width,'der Plattform-Kopf fuehrt nicht mehr zu '+path);
   checks.push({view:'platform-header',width,pass:true});
  });

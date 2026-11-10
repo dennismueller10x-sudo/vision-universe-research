@@ -36,7 +36,7 @@
     ['quant', 'Quant', 'Faktor-Scores und Ranglisten', '/quant/'],
     ['screener', 'Screener', 'Eigene Filter auf Kennzahlen', '/screener/'],
     ['technical', 'Technik & Elliott', 'Chartbild und Wellen', '/elliott/'],
-    ['fundamental', 'Fundamental', 'Bilanz und Umsatz aus SEC-Daten', '/fundamental/#/'],
+    ['fundamental', 'Fundamental', 'Bilanz und Umsatz aus Meldedaten', '/fundamental/#/'],
     ['supertrader', 'Supertrader', 'Regelbasierte Strategien', '/supertrader/'],
     ['hedgefonds', 'Hedgefonds', 'Was große Investoren halten', '/hedgefonds/'],
     ['vorsorge', 'Vorsorge', 'Rente, ETFs und Förderung', '/vorsorge/#/']
@@ -194,7 +194,7 @@
           const buildZones = (buyRange, targetRange, invalid, buyCls, targetCls, buyLabelCls, targetLabelCls, buyText, targetText) => `<line class="zone-now" x1="${zoneX0.toFixed(1)}" x2="${zoneX0.toFixed(1)}" y1="${T}" y2="${H - B}"/>${zoneRect(buyRange, buyCls)}${zoneRect(targetRange, targetCls)}<text class="zone-label ${buyLabelCls}" x="${(zoneX0 + 6).toFixed(1)}" y="${(zoneY(buyRange[1]) - 6).toFixed(1)}">${buyText}</text><text class="zone-label ${targetLabelCls}" x="${(zoneX0 + 6).toFixed(1)}" y="${(zoneY(targetRange[1]) - 6).toFixed(1)}">${targetText}</text><line class="zone-stop" x1="${L}" x2="${W - R}" y1="${zoneY(invalid).toFixed(1)}" y2="${zoneY(invalid).toFixed(1)}"/><text class="zone-stop-text" x="${L + 8}" y="${(zoneY(invalid) - 7).toFixed(1)}">Invalidierung · ${fmt2(invalid)} USD</text>`;
           const info = curSide === 'short'
             ? { html: buildZones(shortSell, shortTarget, shortInvalid, 'zone-buy-short', 'zone-target-short', 'zone-label-buy-short', 'zone-label-target-short', 'Zone der Methode', 'Zielzone'), buy: shortSell, target: shortTarget, invalid: shortInvalid, buyLabel: 'Zone der Methode (abwärts)', targetLabel: 'Zielzone (Short)' }
-            : { html: buildZones(longBuy, longTarget, longInvalid, 'zone-buy', 'zone-target', 'zone-label-buy', 'zone-label-target', 'Kaufzone', 'Zielzone'), buy: longBuy, target: longTarget, invalid: longInvalid, buyLabel: 'Zone der Methode (aufwärts)', targetLabel: 'Zielzone (Long)' };
+            : { html: buildZones(longBuy, longTarget, longInvalid, 'zone-buy', 'zone-target', 'zone-label-buy', 'zone-label-target', 'Zone laut Methode', 'Zielzone'), buy: longBuy, target: longTarget, invalid: longInvalid, buyLabel: 'Zone der Methode (aufwärts)', targetLabel: 'Zielzone (Long)' };
           if (visible.zones) zonesHtml = info.html;
           zonesInfo = info;
         }

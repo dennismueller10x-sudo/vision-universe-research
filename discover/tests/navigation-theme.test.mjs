@@ -24,7 +24,7 @@ test('the shared menu groups product routes and Discover destinations', () => {
   const routes = normalized.flatMap(([, entries]) => entries.map(([, href]) => href));
   assert.equal(new Set(routes).size, routes.length);
   for (const route of ['/screener/','/quant/','/elliott/','/supertrader/','/dashboard/','/macro/','/etf/','/analysten/',
-    '/hedgefonds/','/news/','/morning/','/insights/','/insights/magazin/','/insights/reports/','/academy/','/guide/','/budget/','/vorsorge/#/','/fundamental/#/','/portfolios/']) {
+    '/hedgefonds/','/news/','/insights/','/insights/magazin/','/insights/reports/','/academy/','/guide/','/budget/','/vorsorge/#/','/fundamental/#/','/portfolios/']) {
     assert.ok(routes.includes(route), `${route} fehlt`);
   }
   assert.deepEqual(normalized[0][1], [

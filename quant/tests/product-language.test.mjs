@@ -262,7 +262,7 @@ test("both sides are always shown: no upside without its downside", () => {
      what was NOT rated. M40: eine kurze Dafuer-Liste liest sich wie ein
      Urteil, wenn nicht dabeisteht, was ausdruecklich NICHT bewertet wurde. */
   const balance = slice(stockPage, "function verdictCard(", "function setupSection(");
-  assert.match(balance, /col\("Spricht dafür", "good", pc\.pro,[^\n]*\n\s*col\("Spricht dagegen", "bad", pc\.con,/);
+  assert.match(balance, /col\("Stärken laut Kennzahlen", "good", pc\.pro,[^\n]*\n\s*col\("Schwächen laut Kennzahlen", "bad", pc\.con,/);
   assert.match(balance, /"Noch nicht bewertbar/);
   /* Am Verhalten: jede der sieben Eigenschaften landet in genau einer
      Gruppe - dafuer, dagegen, Mittelfeld oder nicht bewertbar. */

@@ -173,7 +173,7 @@
     delayed:          { text: "Verzoegert",     tone: "neutral", note: "Kurse mit Anbieterverzoegerung, typisch 15 Minuten." },
     endOfDay:         { text: "Tagesschluss",   tone: "neutral", note: "Schlusskurse des letzten abgeschlossenen Handelstags." },
     stale:            { text: "Veraltet",       tone: "warn",    note: "Der letzte Abruf ist fehlgeschlagen; angezeigt wird der zuletzt erfolgreiche Stand." },
-    sec:              { text: "SEC-Meldungen",  tone: "good",    note: "Unternehmenszahlen aus den Pflichtmeldungen bei der SEC (siehe Data Inspector)." },
+    sec:              { text: "Pflichtmeldungen",  tone: "good",    note: "Unternehmenszahlen aus den Pflichtmeldungen bei der US-Börsenaufsicht (siehe Data Inspector)." },
     unavailable:      { text: "Nicht verfuegbar", tone: "poor",  note: "Fuer diese Datenklasse liegt keine Quelle vor." },
     capabilityMissing:{ text: "Nicht im Zugang", tone: "poor",   note: "Der angebundene Zugang liefert diese Daten grundsaetzlich nicht." }
   };

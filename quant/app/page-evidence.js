@@ -205,7 +205,7 @@
     if (typeof n !== "number") return null;
     return int(n) + " Fälle " + (scope || "aus dem ganzen Markt") + (typeof effectiveN === "number" ? ", davon etwa " + int(effectiveN) + " unabhängig." : ".");
   }
-  var SAMPLE_WHY = "Mehrere Signale können in derselben Marktphase auftreten. Deshalb zählen wir zusätzlich unabhängige Fälle.";
+  var SAMPLE_WHY = "Mehrere Regelereignisse können in derselben Marktphase auftreten. Deshalb zählen wir zusätzlich unabhängige Fälle.";
   function bar(label, value, cls) {
     return el("div", { class: "q-ev-bar " + (cls || "") }, [el("span", { class: "q-ev-bar-label", text: label }),
       el("span", { class: "q-ev-bar-track", "aria-hidden": "true" }, [el("i", { style: "width:" + Math.max(0, Math.min(100, (value || 0) * 100)).toFixed(1) + "%" })]),
@@ -220,8 +220,8 @@
     var kids = [
       el("p", { class: "q-ev-head" }, [el("span", { class: "q-ev-tier tier-tested", text: "Historisch getestet" }), opts.label ? el("b", { text: opts.label }) : null]),
       el("p", { class: "q-ev-big" }, [el("b", { class: "num", text: share1(b.positiveShare) }), el("span", { text: " der Fälle lagen " + horizon + " höher" })]),
-      el("div", { class: "q-ev-compare", role: "img", "aria-label": "Signal " + share1(b.positiveShare) + ", Markt " + share1(b.basePositiveShare) + ", Unterschied " + pp(b.deltaPositiveShare) }, [
-        bar("Signal", b.positiveShare, "is-signal"), bar("Markt", b.basePositiveShare, "is-base")]),
+      el("div", { class: "q-ev-compare", role: "img", "aria-label": "Regelereignis " + share1(b.positiveShare) + ", Markt " + share1(b.basePositiveShare) + ", Unterschied " + pp(b.deltaPositiveShare) }, [
+        bar("Regelereignis", b.positiveShare, "is-signal"), bar("Markt", b.basePositiveShare, "is-base")]),
       el("p", { class: "q-ev-edge tone-" + e.tone }, [el("b", { class: "num", text: pp(b.deltaPositiveShare) }), el("span", { text: edgeSentence(b) })])
     ];
     if (opts.compact) {
@@ -241,7 +241,7 @@
   }
   /* Zertifiziert: nur mit Status CERTIFIED - sonst ein ruhiger Satz. */
   function certifiedLine(cert, opts) {
-    var ok = cert && cert.status === "CERTIFIED", subject = (opts && opts.subject) || "dieses Signal";
+    var ok = cert && cert.status === "CERTIFIED", subject = (opts && opts.subject) || "dieses Regelereignis";
     return el("div", { class: "q-ev-cert" + (ok ? " is-on" : "") }, [el("span", { class: "q-ev-tier tier-certified" + (ok ? "" : " is-off"), text: "Zertifiziert" }),
       el("p", { text: ok ? "Alle methodischen Prüfungen sind bestanden." : "Für " + subject + " liegt noch kein vollständig zertifizierter Backtest vor. Das ist der normale Stand – nicht ein fehlendes Ergebnis." })]);
   }
@@ -258,7 +258,7 @@
        wird bis dahin, wenn ein Setup nicht mehr erfuellt ist. */
     { id: "SETUP_INVALIDATED", label: "Setup ungültig oder nicht mehr erfüllt", types: ["SETUP_INVALIDATED", "SETUP_WEAKENED"] },
     { id: "RISK_RISING", label: "Risiko steigt" },
-    { id: "EDGE", label: "Neuer historischer Vorteil", hint: "ein getestetes Signal, das historisch messbar über dem Markt lag" },
+    { id: "EDGE", label: "Neuer historischer Vorteil", hint: "ein getestetes Regelereignis, das historisch messbar über dem Markt lag" },
     { id: "STRATEGY_MATCH_NEW", label: "Neu in einer Strategie" },
     { id: "NEW_52W_HIGH", label: "Neues 52-Wochen-Hoch" }
   ];
@@ -291,7 +291,7 @@
     }));
     say();
     return el("details", { class: "q-alerts" }, [el("summary", { text: "Benachrichtige mich, wenn …" }),
-      el("p", { class: "q-alert-note", text: "Beobachtest du die Aktie (☆ oben), verfolgt Quant für dich Setup-Wechsel, neue historische Evidenz, Strategie-Wechsel, Risiken und neue Signale. Hier wählst du, was dir besonders wichtig ist." }), list, status,
+      el("p", { class: "q-alert-note", text: "Beobachtest du die Aktie (☆ oben), verfolgt Quant für dich Setup-Wechsel, neue historische Evidenz, Strategie-Wechsel, Risiken und neue Regelereignisse. Hier wählst du, was dir besonders wichtig ist." }), list, status,
       el("p", { class: "q-alert-note", text: "Benachrichtigungen werden noch nicht verschickt. Deine Auswahl bleibt auf diesem Gerät; Quant zeigt dir passende Ereignisse, sobald du die Seite öffnest." })]);
   }
 

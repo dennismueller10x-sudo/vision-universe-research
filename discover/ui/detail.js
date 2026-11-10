@@ -474,7 +474,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
         ? el("div", { style: "position:relative;margin-top:22px" }, [
             C().note("Modelltitel",
               "Dieser Titel stammt aus dem synthetischen Vision-Universe-Modelluniversum. " +
-              "Kurse, Kennzahlen und Signale sind erzeugt, nicht gemessen.", "warm")
+              "Kurse, Kennzahlen und Regel-Ergebnisse sind erzeugt, nicht gemessen.", "warm")
           ])
         : null,
       detail.discoveryEligible === false
@@ -2036,7 +2036,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       ["Status", inst.active === false
         ? "beendet" + (inst.delistedAt ? " am " + inst.delistedAt : "")
         : (inst.active === true ? "laufendes Listing" : "nicht belegbar")],
-      ["CIK (SEC)", inst.cik || "keine"]
+      ["CIK (US-Meldekennung)", inst.cik || "keine"]
     ];
     var tabelle = el("section", { class: "dx-chapter dx-fade" }, [
       el("h2", { text: "Stammdaten" }),
@@ -2059,7 +2059,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       ["Geschäftszahlen", caps.HAS_FUNDAMENTALS || intelligenceModules.financials,
        inst.cik
          ? "Der Titel hat eine CIK; normalisierte Geschäftszahlen liegen noch nicht vor."
-         : "Ohne CIK gibt es keinen SEC-Einreicher, dem Geschäftszahlen zuzuordnen wären."],
+         : "Ohne CIK gibt es keinen Einreicher bei der US-Börsenaufsicht, dem Geschäftszahlen zuzuordnen wären."],
       ["Bewertung", caps.HAS_VALUATION, "Bewertungskennzahlen brauchen Geschäftszahlen."],
       ["Analystenschätzungen", caps.HAS_ANALYSTS,
        "Analystendaten sind lizenzpflichtig und nicht Teil dieses Systems."],

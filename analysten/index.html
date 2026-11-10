@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#ffffff">
 <script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}document.documentElement.setAttribute("data-theme",w);document.documentElement.setAttribute("data-theme-mode",w);})();</script>
 <title>Analysten – Vision Universe</title>
-<meta name="description" content="Wie Wall-Street-Analysten die Aktien im Vision-Universe-Universum aktuell einstufen — Konsens-Rating, Kursziele und Trend, wöchentlich aktualisiert über Finnhub und FMP.">
+<meta name="description" content="Wie Wall-Street-Analysten die Aktien im Vision-Universe-Universum aktuell einstufen — Konsens-Rating, Kursziele und Trend, wöchentlich aktualisiert aus externen Quellen.">
 <style>
   /* Inter aus /assets/fonts statt von fonts.googleapis.com (keine Uebermittlung an Google, wie macro/ und quant/).
      JetBrains Mono faellt auf die Systemschrift fuer Festbreite zurueck. */
@@ -198,7 +198,7 @@
 
   <div class="topbar-right">
     <span class="last-update-label" id="lastUpdate"></span>
-    <button class="btn-refresh" id="refreshBtn" onclick="AN.reload()" title="Lädt die zuletzt automatisch abgerufenen Daten neu (kein Live-Finnhub-Abruf im Browser)">
+    <button class="btn-refresh" id="refreshBtn" onclick="AN.reload()" title="Lädt die zuletzt automatisch abgerufenen Daten neu (kein Live-Abruf im Browser)">
       <svg id="refreshIcon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4v6h6M20 20v-6h-6"/><path d="M20 10a8 8 0 00-14.6-4.6M4 14a8 8 0 0014.6 4.6"/></svg>
       Aktualisieren
     </button>
@@ -208,7 +208,7 @@
 <div class="wrapper" role="main" id="analyst-main">
 
   <h1 class="page-title">Analysten</h1>
-  <div class="page-sub">Einstufungen der Wall-Street-Analysten für alle Aktien (Angabe Dritter) · Kursziele, wo eine freie Quelle sie liefert · Finnhub &amp; FMP</div>
+  <div class="page-sub">Einstufungen der Wall-Street-Analysten für alle Aktien (Angabe Dritter) · Kursziele, wo eine freie Quelle sie liefert · Angabe Dritter</div>
 
   <!-- Alle Aktien des Produktuniversums: Einstufungs-Konsens je Titel (Angabe Dritter), Kursziel nur aus freier Quelle.
        Daten: dashboard/data/analysts (products/analysten/producer/fetch-consensus.mjs, rotierend). -->
@@ -239,7 +239,7 @@
   <div class="rank-card" id="stockList"></div>
 
   <div class="info-note" id="infoNote">
-    Datenquelle: <a href="https://finnhub.io" target="_blank" rel="noopener">Finnhub</a> (Analyst Recommendation Trends; für alle Aktien des Produktuniversums, rotierend täglich aktualisiert) und <a href="https://financialmodelingprep.com" target="_blank" rel="noopener">FMP</a> (Kursziel-Konsens), aggregiert aus veröffentlichten Analystenmeinungen — ohne Zuordnung zu einzelnen Banken oder Analysten. Aktualisierung jeden Sonntag automatisch. Diese Übersicht ist keine Anlageberatung.
+    Datenquelle: <a href="https://finnhub.io" target="_blank" rel="noopener">Analystendaten</a> (Analyst Recommendation Trends; für alle Aktien des Produktuniversums, rotierend täglich aktualisiert) und <a href="https://financialmodelingprep.com" target="_blank" rel="noopener">FMP</a> (Kursziel-Konsens), aggregiert aus veröffentlichten Analystenmeinungen — ohne Zuordnung zu einzelnen Banken oder Analysten. Aktualisierung jeden Sonntag automatisch. Diese Übersicht ist keine Anlageberatung.
   </div>
 
 </div>
@@ -444,8 +444,8 @@ function renderSummary(){
     /* Ohne Kurs gibt es kein Kurspotenzial - und keine Farbe. null >= 0 ist
        in JavaScript wahr: vorher stand der Strich gruen da, fehlende Daten
        sahen aus wie ein positives Signal. */
-    '<div class="sum-card"><div class="sum-card-label">Ø Kurspotenzial</div><div class="sum-card-value ' + (avgUpside == null ? "" : (avgUpside >= 0 ? "pos" : "neg")) + '">' + fmtPct(avgUpside) + '</div><div class="sum-card-sub">' + (avgUpside == null ? "kein aktueller Kurs hinterlegt" : "Kursziel vs. aktueller Kurs") + '</div></div>' +
-    '<div class="sum-card"><div class="sum-card-label">Nächstes Update</div><div class="sum-card-value">So.</div><div class="sum-card-sub">wöchentlicher Finnhub-Abruf</div></div>'
+    '<div class="sum-card"><div class="sum-card-label">Ø Abstand zum Analysten-Kursziel (Angabe Dritter)</div><div class="sum-card-value ' + (avgUpside == null ? "" : (avgUpside >= 0 ? "pos" : "neg")) + '">' + fmtPct(avgUpside) + '</div><div class="sum-card-sub">' + (avgUpside == null ? "kein aktueller Kurs hinterlegt" : "Analysten-Kursziel vs. aktueller Kurs (Angabe Dritter)") + '</div></div>' +
+    '<div class="sum-card"><div class="sum-card-label">Nächstes Update</div><div class="sum-card-value">So.</div><div class="sum-card-sub">wöchentlicher Datenabruf</div></div>'
   );
 }
 
@@ -544,7 +544,7 @@ function openStock(sym){
   set("#d-name", esc(S.names[sym] || sym));
   set("#d-sym", esc(sym));
   if(!r || r.consensus_label === "no_coverage"){
-    set("#d-stats", '<div class="state-msg">Für diese Aktie liegt keine Analystenabdeckung von Finnhub vor.</div>');
+    set("#d-stats", '<div class="state-msg">Für diese Aktie liegt keine Analystenabdeckung vor.</div>');
     set("#d-ptrange", "");
     set("#d-pt-note", "");
     set("#d-trendhist", "");
@@ -560,7 +560,7 @@ function openStock(sym){
 
   set("#d-stats",
     '<div class="sum-card"><div class="sum-card-label">Konsens</div><div class="sum-card-value">' + esc(meta.label) + '</div><div class="sum-card-sub">' + total + ' Analysten · ' + esc(fmtDateDE(rec.period)) + '</div></div>' +
-    '<div class="sum-card"><div class="sum-card-label">Kurspotenzial</div><div class="sum-card-value ' + (up!=null?(up>=0?"pos":"neg"):"") + '">' + (up!=null?fmtPct(up):"–") + '</div><div class="sum-card-sub">vs. ' + (price!=null?fmtUSD(price):"–") + ' aktuell</div></div>'
+    '<div class="sum-card"><div class="sum-card-label">Abstand zum Analysten-Kursziel (Angabe Dritter)</div><div class="sum-card-value ' + (up!=null?(up>=0?"pos":"neg"):"") + '">' + (up!=null?fmtPct(up):"–") + '</div><div class="sum-card-sub">vs. ' + (price!=null?fmtUSD(price):"–") + ' aktuell</div></div>'
   );
 
   if(r.price_target && price != null){
@@ -601,7 +601,7 @@ function openStock(sym){
     '</div>';
   }).join(""));
 
-  var noteParts = ['Konsens-Rating: Finnhub Recommendation Trends (Anzahl Analysten je Kategorie im jeweiligen Monat).'];
+  var noteParts = ['Konsens-Rating (Angabe Dritter; Datenquellen unter /infos/#quellen) (Anzahl Analysten je Kategorie im jeweiligen Monat).'];
   if(r.price_target_provider) noteParts.push('Kursziel-Konsens: ' + esc(r.price_target_provider) + '.');
   noteParts.push('Keine Einzelnennung, welche Bank oder welcher Analyst welches Kursziel gesetzt hat — diese Detailtiefe ist bei keinem der beiden Anbieter kostenlos verfügbar.');
   set("#d-note", noteParts.join(' '));
@@ -681,7 +681,7 @@ loadData(false);
   }
   function render(e, t){
     if(!e){ return '<div class="u-note">Für '+esc(t)+' liegen noch keine Analystendaten vor (Titel nicht im Produktuniversum oder noch nicht abgerufen).</div>'; }
-    var head='<div class="u-head"><span class="u-name">'+esc(e.ticker)+'</span><span class="u-meta">Angabe Dritter · Quelle '+esc(e.source||"Finnhub")+' · Stand '+month(e.asOf)+' · abgerufen '+day(e.fetchedAt)+'</span></div>';
+    var head='<div class="u-head"><span class="u-name">'+esc(e.ticker)+'</span><span class="u-meta">Angabe Dritter · Quelle '+esc(e.source||"externe Analystendaten")+' · Stand '+month(e.asOf)+' · abgerufen '+day(e.fetchedAt)+'</span></div>';
     if(e.ratingsState!=="AVAILABLE") return head+'<div class="u-note">Keine Analysten-Einstufungen veröffentlicht.</div>';
     var max=Math.max.apply(null,LABELS.map(function(l){return e.counts[l[0]]||0;}))||1;
     var rows=LABELS.map(function(l){ var n=e.counts[l[0]]||0; return '<div class="u-row"><span>'+l[1]+'</span><span class="u-bar"><span style="width:'+Math.round(n/max*100)+'%"></span></span><span class="u-num">'+n+'</span></div>'; }).join("");

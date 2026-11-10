@@ -36,7 +36,7 @@
           k.pop('thit', t, s + 1.5, 24);
           function b5() { return k.ev('app', a + 5) - 1; } } },
       { hl: 'Das ist<br><span class="lime">Supertrader.</span>',
-        html: app('tapp', 'supertrader', 'Supertrader', 'Methoden, Regeln, Backtests') + '<div id="tnote" class="abs" style="left:0;right:0;top:290px;text-align:center;opacity:0"><span class="chip" style="color:#c3c7cc">Modell-Signale, keine Anlageberatung</span></div>',
+        html: app('tapp', 'supertrader', 'Supertrader', 'Methoden, Regeln, Backtests') + '<div id="tnote" class="abs" style="left:0;right:0;top:290px;text-align:center;opacity:0"><span class="chip" style="color:#c3c7cc">Modell-Ergebnisse, keine Anlageberatung</span></div>',
         anim: function (t, k, a) { k.zoom('tapp', t, a + .2, .6); k.pop('tnote', t, a + .5, 20); } }
     ]
   });
