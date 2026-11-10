@@ -756,7 +756,9 @@ Vollumfang ab. Der Universe-Release (`--expected`) ist davon nicht betroffen; do
 zweiter Deploy desselben Commits mit neuem Inhalt wird nicht uebernommen, und `env: GITHUB_SHA` am Deploy-Schritt wirkt nicht
 (Lauf 42763174678). Deshalb schreiben Refresh, Universe-Release und dessen Rueckweg vor dem eigenen Pages-Dispatch
 `company-intelligence/release-marker.json` ueber die Contents-API auf main (`pages-release-marker.mjs`). Scheitert das, geht es mit
-Warnung weiter wie zuvor.
+Warnung weiter wie zuvor. Geschrieben wird mit dem `GITHUB_TOKEN` (`GH_TOKEN` des Jobs), damit der Commit keinen Pages-Push-Lauf
+ausloest, der den eigenen Dispatch verdraengen wuerde. Begruendete Ausnahme von ADR-005 (Push nur ueber `push-with-retry.sh`): kein
+Checkout und kein `git push`; den Wettlauf faengt die Datei-SHA als Vergleichswert mit hoechstens 4 Versuchen ab.
 
 **Ehrliche Rechnung.** 50 min Wartefrist sind rund 8 warme Pages-Laeufe (6 min) oder rund 4 kalte (13 min, siehe
 `FULL_UNIVERSE_ROLLOUT.md`) hintereinander. Eine tiefere Warteschlange scheitert weiterhin, dann Rollback nach der Frist.

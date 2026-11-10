@@ -95,3 +95,10 @@ test('PM-9 pages-release.yml: kein wirkungsloses env GITHUB_SHA mehr am Deploy-S
  const t=readFileSync(here('../../../.github/workflows/pages-release.yml'),'utf8');
  assert.doesNotMatch(t,/^\s+GITHUB_SHA:/m);
 });
+
+test('PM-10 Marker schreibt mit dem GITHUB_TOKEN (kein App-Token: dessen Commit startete einen Pages-Push-Lauf)',()=>{
+ const deploy=refreshWf.jobs.refresh.steps.find(s=>s.id==='deploy_live');
+ assert.equal(deploy.env.GH_TOKEN,'${{ secrets.GITHUB_TOKEN }}');
+ const tokens=[...universeText.matchAll(/GH_TOKEN: (.*)/g)].map(m=>m[1].trim());
+ assert.ok(tokens.length>0&&tokens.every(t=>t==='${{ secrets.GITHUB_TOKEN }}'),'Universe-Release: nur GITHUB_TOKEN');
+});
