@@ -4,7 +4,8 @@
   "kategorien": {
     "schema-vertrag": "Prueft Struktur, Schema oder einen Vertrag am Artefakt; keine festen Datenwerte. Darf Live-Artefakte lesen.",
     "fixture-offen": "Regel- oder Rechentest mit festen Erwartungen (Datum, Ticker, Zaehlung) auf einem Live-Artefakt. Ziel: eingefrorene Kopie unter <produkt>/tests/fixtures/ mit Quell-Commit.",
-    "datenzustand-offen": "Prueft den heutigen Zustand (Frische, Plausibilitaet, Stand). Ziel: scripts/core/data-quality.mjs bzw. Freshness-Monitor; dort Alarm statt roter Code-PR."
+    "datenzustand-offen": "Prueft den heutigen Zustand (Frische, Plausibilitaet, Stand). Ziel: scripts/core/data-quality.mjs bzw. Freshness-Monitor; dort Alarm statt roter Code-PR.",
+    "scan-fehlalarm": "Der Text-Scan meldet einen Datenpfad, den der Test nicht liest (Temp-Root, Pfad nur als Zeichenkette). Laufzeitmessung 10.11.2026 (S2): 0 Zugriffe auf */data. Kein Umbau noetig; bleibt gelistet, solange der Scan den Pfad meldet."
   },
   "eintraege": [
     {
@@ -35,8 +36,8 @@
     },
     {
       "file": "core/tests/equity-quality.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "core/tests/europe-discover-known-invalid.test.mjs",
@@ -235,8 +236,8 @@
     },
     {
       "file": "discover/tests/direct-link-lib.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "discover/tests/einordnung.test.mjs",
@@ -300,8 +301,8 @@
     },
     {
       "file": "discover/tests/im-blick-nachtlauf.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "discover/tests/im-blick-refresh.test.mjs",
@@ -437,8 +438,8 @@
     },
     {
       "file": "products/fundamental/tests/history-extension.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "products/fundamental/tests/model.test.mjs",
@@ -582,8 +583,8 @@
     },
     {
       "file": "products/social/tests/orchestrator.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "products/social/tests/owner-decision.test.mjs",
@@ -1165,13 +1166,13 @@
     },
     {
       "file": "quant/tests/market-data-freshness-p0.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "quant/tests/market-eod-cli.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "quant/tests/market-scale.test.mjs",
@@ -1193,8 +1194,8 @@
     },
     {
       "file": "quant/tests/market-store.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "quant/tests/methodology-change.test.mjs",
@@ -1941,8 +1942,8 @@
     },
     {
       "file": "quant/tests/ticker-reuse-consumers.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "quant/tests/ticker-reuse-quarantine.test.mjs",
@@ -2109,8 +2110,8 @@
     },
     {
       "file": "scripts/supertrader/tests/discover-availability.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "scripts/supertrader/tests/payload-slices.test.mjs",
@@ -2122,8 +2123,8 @@
     },
     {
       "file": "scripts/supertrader/tests/prune-dead-refs.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "scripts/supertrader/tests/r10-cases.test.mjs",
@@ -2188,8 +2189,8 @@
     },
     {
       "file": "scripts/supertrader/tests/sf-product-contract.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "scripts/supertrader/tests/sf-screener-export.test.mjs",
@@ -2219,8 +2220,8 @@
     },
     {
       "file": "scripts/supertrader/tests/sf-sf8-data-adapter.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "scripts/supertrader/tests/sf-sf9-e2e.test.mjs",
@@ -2240,13 +2241,13 @@
     },
     {
       "file": "scripts/supertrader/tests/sf-st9-v13-delisted-study.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "scripts/supertrader/tests/snapshot.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "scripts/supertrader/tests/st-recipe-names.test.mjs",
@@ -2258,8 +2259,8 @@
     },
     {
       "file": "scripts/supertrader/tests/validation.test.mjs",
-      "kategorie": "fixture-offen",
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
+      "kategorie": "scan-fehlalarm",
+      "grund": "10.11.2026 (S2): Laufzeitmessung zeigt 0 Zugriffe auf */data; der Test baut ein Temp-Root oder nennt den Pfad nur als Zeichenkette. Der Scan meldet ihn trotzdem."
     },
     {
       "file": "scripts/vu2/browser-qa.mjs",
