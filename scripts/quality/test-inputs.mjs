@@ -143,7 +143,7 @@ Die Liste stammt aus zwei Quellen: Text-Scan (\`scripts/quality/test-inputs.mjs\
 | schema-vertrag (darf lesen) | ${n("schema-vertrag")} |
 | scan-fehlalarm (Scan meldet, Test liest nicht) | ${n("scan-fehlalarm")} |
 
-Bereits umgestellt: \`discover/tests/market-detail.test.mjs\` und \`core/tests/chart-standard.test.mjs\` (Fixtures mit Quell-Commit), neu: \`quant/tests/evidence-states.test.mjs\`. Seit S2 (10.11.2026) zusaetzlich 17 Tests auf Fixtures umgestellt und 2 weitere durch Auslagerung der Zustandspruefungen als DQ-PQ-1..6 in der Datenqualitaet (\`core/product-quality.js\`).
+Bereits umgestellt: \`discover/tests/market-detail.test.mjs\` und \`core/tests/chart-standard.test.mjs\` (Fixtures mit Quell-Commit), neu: \`quant/tests/evidence-states.test.mjs\`. Seit S2 (10.11.2026) sind Tests auf Fixtures umgestellt (Quell-Commits in den READMEs unter tests/fixtures) und Zustandspruefungen als DQ-PQ-1..9 in der Datenqualitaet (\`core/product-quality.js\`).
 
 ## UI-geschuetzte Skripte
 
