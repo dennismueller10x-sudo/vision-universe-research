@@ -118,3 +118,11 @@ Erzeugte Daten wandern Datenart für Datenart aus `main` in den Datenzweig `data
 - Ein Workflow, der solche Daten liest, ruft nach dem Checkout `scripts/ci/seed-data-branch.sh alle` auf (commit-sicher, auch bei `git add -A`).
 - Ein Erzeuger schreibt mit `scripts/ci/push-data-branch.sh data/live <pfad>…` (Verzeichnisse werden gespiegelt).
 - „Seite zeigt alten Stand“: Step Summary „Datenzweig“ des letzten Pages-Laufs lesen (`KEPT_MAIN` mit Grund), dann den letzten Lauf des Erzeugers.
+
+## 12. Welche Generation ist live? (Release-Manifest)
+
+Jede Auslieferung trägt `/core/release-manifest.json` (ADR-008, [Entscheidung](../architecture/ADR-008-release-generationen.md)): Code-SHA, Datenzweig-SHA, je Datenart Pfad + Inhaltshash, Security-Master- und Company-Intelligence-Generation, Gesamthash der Nutzdaten (`payloadHash`; Zeitstempel ausgenommen, im Manifest unter `volatile` genannt). `stage` ist `BUILT` (Releasebau) oder `SEALED` (Pages, nach Overlay und Staging).
+Prüfen: `node scripts/core/system-health.mjs --site=https://research.visionuniverse.de` (Zeile „Ausgelieferte Generation“, JSON: `report.release`) oder `/status/`. Weicht `code.sha` vom erwarteten Commit ab, hat Pages ihn nicht übernommen (§7, Marker `pages-release-marker.yml`).
+Zwei Bauten mit gleichen Eingaben müssen denselben `payloadHash` haben; `core/tests/release-manifest.test.mjs` (RM) sichert das mit Fixtures und Gegenproben.
+Stand 10.11.2026: Manifest, Siegel-Schritt und Statuszeile umgesetzt; der Vergleich Live ↔ Kandidat (`comparePayload`) blockiert noch nicht, er benennt nur.
+

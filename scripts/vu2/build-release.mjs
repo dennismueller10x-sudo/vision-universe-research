@@ -7,6 +7,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {writeStockHeadViews} from './stock-head-view.mjs';
+import {writeManifest} from './release-manifest.mjs';
 import {createRequire} from 'node:module';
 const require=createRequire(import.meta.url),Master=require('../../quant/engines/company-master.js'),History=require('../../quant/api/fundamentals-contract.js'),FactorProjection=require('../../quant/engines/factor-product-projection.js');
 export const SEC_BUDGET=8*1024*1024;
@@ -383,7 +384,9 @@ export async function buildRelease({root,output}){
  const bytes=emitted.reduce((n,f)=>n+f.bytes,0);
  if(bytes>SEC_BUDGET||emitted.some(f=>f.bytes>2*1024*1024))throw Error('SEC_DELIVERY_BUDGET_EXCEEDED');
  const report={schemaVersion:1,sourceCommit:execFileSync('git',['rev-parse','HEAD'],{cwd:root,encoding:'utf8'}).trim(),storage:'EXISTING_R2_UNCHANGED',secBudget:SEC_BUDGET,secBytes:bytes,files:emitted,excluded:['quant/data/sec/consumer','quant/data/sec/canonical','quant/data/fundamentals'],screener,quantBundle,status:'PASS'};
- await writeFile(resolve(output,'release-delivery.json'),JSON.stringify(report,null,2));return report;
+ await writeFile(resolve(output,'release-delivery.json'),JSON.stringify(report,null,2));
+ // Generationenmanifest (ADR-008): jeder Releasebau benennt Code, Datenzweig und Nutzdatenhash. Additiv, ohne Einfluss auf den Bericht.
+ writeManifest({root,site:output,stage:'BUILT'});return report;
 }
 if(process.argv[1]&&resolve(process.argv[1])===fileURLToPath(import.meta.url)){
  const output=process.argv.find(a=>a.startsWith('--output='))?.slice(9);if(!output)throw Error('OUTPUT_REQUIRED');
