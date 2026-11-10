@@ -43,8 +43,8 @@ async function seite(market) {
   for (let i = 0; i < 5; i++) await new Promise((r) => setTimeout(r, 0));
   const karten = nodes["#summaryGrid"] && nodes["#summaryGrid"].innerHTML;
   assert.ok(karten, "die Zusammenfassung wurde nicht gezeichnet");
-  const karte = karten.split('<div class="sum-card">').filter((k) => /Ø Kurspotenzial/.test(k))[0];
-  assert.ok(karte, "keine Karte Ø Kurspotenzial");
+  const karte = karten.split('<div class="sum-card">').filter((k) => /Ø Abstand zum Analysten-Kursziel \(Angabe Dritter\)/.test(k))[0];
+  assert.ok(karte, "keine Karte Ø Abstand zum Analysten-Kursziel (Angabe Dritter)");
   return karte;
 }
 

@@ -121,15 +121,15 @@ test("Quant vs. Screener vs. Discover: getrennt und benannt", () => {
 
 test("Strategien und Backtesting: 'passt heute' ist nicht 'getestet'; Backtesting fragt nach dem Vorteil", () => {
   assert.match(pages, /„Passt heute“ heißt: die Bedingungen sind heute erfüllt\. Wie sich ein Stil historisch entwickelt hat, ist noch nicht getestet und nicht zertifiziert/);
-  assert.match(backtest, /el\("h1", \{ class: "qx-h1", text: "Hatte ein Signal früher wirklich einen Vorteil\?" \}\)/);
+  assert.match(backtest, /el\("h1", \{ class: "qx-h1", text: "Hatte ein Regelereignis früher wirklich einen Vorteil\?" \}\)/);
   assert.match(backtest, /wie oft der ganze Markt in denselben Wochen/);
 });
 
 test("Beobachten hat einen erklaerten Nutzen - auf der Aktienliste, auf Home und an der Aktie", () => {
   const wv = slice(pages, "var WATCH_VALUE = [", "];");
-  for (const w of ["Setup-Wechsel", "historische Evidenz", "Strategie", "Risiken", "Signale"]) assert.ok(wv.includes(w), "Nutzen fehlt: " + w);
+  for (const w of ["Setup-Wechsel", "historische Evidenz", "Strategie", "Risiken", "Regelereignisse"]) assert.ok(wv.includes(w), "Nutzen fehlt: " + w);
   assert.match(pages, /WATCH_VALUE\.map\(function \(w\) \{ return el\("li"/, "die Aktienliste nennt den Nutzen nicht");
   assert.match(pages, /Quant verfolgt für dich Setup-Wechsel, neue Evidenz, Strategie-Wechsel und Risiken/);
-  assert.match(evidence, /verfolgt Quant für dich Setup-Wechsel, neue historische Evidenz, Strategie-Wechsel, Risiken und neue Signale/);
+  assert.match(evidence, /verfolgt Quant für dich Setup-Wechsel, neue historische Evidenz, Strategie-Wechsel, Risiken und neue Regelereignisse/);
   assert.match(pages, /Kein Depot: keine Stückzahl, kein Einstand\./);
 });

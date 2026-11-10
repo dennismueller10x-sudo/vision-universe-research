@@ -408,8 +408,8 @@
     /* VU3: Universum, Datenstand und Quellen gebuendelt in „Daten & Methodik“; sichtbar bleibt nur die Einordnung. */
     return h('footer', { class: 'sc-foot' }, [
       h('details', { class: 'vu-dm sc-dm' }, [h('summary', {}, ['Daten & Methodik ', h('small', { text: 'Stand ' + dateDe(i.asOf) })]),
-        h('p', { text: 'Universum: ' + nf(i.count) + ' ' + i.universeLabel + ' · Kurse Stand ' + dateDe(i.asOf) + ' · Fundamentaldaten SEC EDGAR bis ' + dateDe(i.fundamentalsAsOf) + '.' }),
-        h('p', { text: 'Branchen aus SEC-SIC-Codes (kein GICS). Fehlt ein Wert, erfüllt die Aktie das Kriterium nicht. Match = gewichteter Durchschnitt der Perzentile im Gesamtuniversum.' }),
+        h('p', { text: 'Universum: ' + nf(i.count) + ' ' + i.universeLabel + ' · Kurse Stand ' + dateDe(i.asOf) + ' · Fundamentaldaten Unternehmensmeldungen bis ' + dateDe(i.fundamentalsAsOf) + '.' }),
+        h('p', { text: 'Branchen aus SIC-Codes (kein GICS). Fehlt ein Wert, erfüllt die Aktie das Kriterium nicht. Match = gewichteter Durchschnitt der Perzentile im Gesamtuniversum.' }),
         h('button', { class: 'sc-link', type: 'button', onclick: function () { openUniverseInfo(); } }, 'Universum und Plausibilitätsprüfung')]),
       h('p', { class: 'sc-legal', text: 'Filter und Übereinstimmung beschreiben Kennzahlen – kein Anlageurteil und keine Kaufempfehlung.' })]);
   }
@@ -525,7 +525,7 @@
     var i = info(), m = ds().meta, s = openSheet({ title: 'Das Universum' });
     var withheld = (m.sanitized && (m.sanitized.FOREIGN_FILER || 0) + (m.sanitized.NON_USD_REPORTING || 0) + (m.sanitized.IMPLAUSIBLE_SHARE_BASIS || 0)) || 0;
     s.body.append(h('p', { class: 'sc-field-desc', text: nf(i.count) + ' US-Stammaktien an ihrer Primärbörse. ETFs, separate Aktiengattungen und Titel in Prüfung sind nicht enthalten.' }),
-      kv([['Kurse', 'Tagesschluss ' + dateDe(i.asOf)], ['Fundamentaldaten', 'SEC EDGAR bis ' + dateDe(i.fundamentalsAsOf)], ['Branchen', 'SEC-SIC-Code (kein GICS)'], ['Quant-Faktoren', 'Faktorevidenz V2, Einzelfaktoren']]),
+      kv([['Kurse', 'Tagesschluss ' + dateDe(i.asOf)], ['Fundamentaldaten', 'Unternehmensmeldungen bis ' + dateDe(i.fundamentalsAsOf)], ['Branchen', 'SIC-Code (kein GICS)'], ['Quant-Faktoren', 'Faktorevidenz V2, Einzelfaktoren']]),
       h('p', { class: 'sc-label', text: 'Plausibilitätsprüfung' }),
       h('p', { class: 'sc-note', text: 'Bei ' + nf(withheld) + ' Aktien werden Marktkapitalisierung und Bewertungskennzahlen nicht gezeigt, weil die gemeldete Aktienzahl oder Währung nicht zum gehandelten Papier passt (z. B. ADRs ausländischer Unternehmen). Margen und Wachstum bleiben filterbar.' }),
       h('p', { class: 'sc-note', text: 'Fehlt ein Wert, erfüllt die Aktie das Kriterium nicht. Der Filter-Impact zeigt, wie viele Aktien dadurch herausfallen.' }));
@@ -1168,7 +1168,7 @@
     var editing = opts.filter || null;
     var s = openSheet({ title: 'Kriterium', full: f.kind === 'enum', back: !!opts.fromLibrary, foot: true });
     var meta = h('div', { class: 'sc-meta' }, [h('span', { class: 'sc-pill', text: F.group(f.group).label }), f.timeframe ? h('span', { class: 'sc-pill', text: f.timeframe }) : null,
-      h('span', { class: 'sc-pill', text: { fundamentals: 'SEC-Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SEC SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen', technicalIntelligence: 'Chartbild (Wochenchart, Szenario)', supertrader: 'Supertrader-Kandidaten', technicalWorld: 'Technical (Tages-OHLCV)' }[f.source] || f.source }),
+      h('span', { class: 'sc-pill', text: { fundamentals: 'Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen', technicalIntelligence: 'Chartbild (Wochenchart, Szenario)', supertrader: 'Supertrader-Kandidaten', technicalWorld: 'Technical (Tages-OHLCV)' }[f.source] || f.source }),
       f.pro ? h('span', { class: 'sc-pill is-accent', text: 'Pro' }) : null]);
     var pp = perspOf(f);
     var TF = { TTM: '12 Monate', FY: 'Geschäftsjahr', '1D': '1 Tag', '1W': '1 Woche', '1M': '1 Monat', '3M': '3 Monate', '6M': '6 Monate', '1Y': '1 Jahr', YTD: 'seit Jahresbeginn', '3Y': '3 Jahre', '10Y': '10 Jahre' };
@@ -1490,7 +1490,7 @@
     var metrics = E.cardMetrics(q, 4);
     var base = ['marketCap', 'pe', 'ps', 'evEbitda', 'revenueGrowth', 'grossMargin', 'roic', 'fcfYield', 'beta', 'distance52wHigh', 'perf1y', 'volatility'];
     var ids = metrics.concat(base.filter(function (b) { return metrics.indexOf(b) < 0; })).slice(0, 12);
-    var VQ = { FOREIGN_FILER: 'Ausländischer Emittent ohne US-Quartalsberichte: Das Verhältnis des US-Papiers (ADR) zur Stammaktie ist unbekannt.', NON_USD_REPORTING: 'Die SEC-Zahlen sind nicht in US-Dollar berichtet; Kurs und Gewinn je Aktie wären vermischt.', IMPLAUSIBLE_SHARE_BASIS: 'Die gemeldete Aktienzahl passt nicht zum gehandelten Papier.' };
+    var VQ = { FOREIGN_FILER: 'Ausländischer Emittent ohne US-Quartalsberichte: Das Verhältnis des US-Papiers (ADR) zur Stammaktie ist unbekannt.', NON_USD_REPORTING: 'Die Geschäftszahlen sind nicht in US-Dollar berichtet; Kurs und Gewinn je Aktie wären vermischt.', IMPLAUSIBLE_SHARE_BASIS: 'Die gemeldete Aktienzahl passt nicht zum gehandelten Papier.' };
     if (d.cols.vq && d.cols.vq[i] && d.cols.vq[i] !== 'OK') panel.append(h('div', { class: 'sc-card', style: { padding: '12px 14px', margin: '14px 0 0', borderColor: 'var(--sc-warn)' } }, [h('b', { text: 'Bewertung zurückgehalten' }), h('p', { class: 'sc-note', style: { margin: '2px 0 0' }, text: (VQ[d.cols.vq[i]] || '') + ' Marktkapitalisierung, KGV und weitere Bewertungskennzahlen werden deshalb nicht gezeigt. Margen und Wachstum bleiben gültig.' })]));
     panel.append(h('p', { class: 'sc-label', text: 'Wichtige Kennzahlen' }), kv(ids.map(function (id) { var v = d.value(id, i); return [fieldName(id), F.format(id, v), F.field(id).unit === 'pct' && F.field(id).group !== 'quality' && F.field(id).group !== 'valuation' ? signCls(v) : '']; })));
     // Faktorevidenz
@@ -1520,7 +1520,7 @@
     if (failed) { panel.append(h('div', { class: 'sc-state' }, [h('h3', { text: 'Kennzahlen nicht verfügbar' }), h('p', { text: 'Die Detaildaten dieser Aktie konnten nicht geladen werden.' })])); return; }
     if (!r) { panel.append(h('div', { class: 'sc-kpis' }, [0, 1, 2, 3].map(function () { return h('div', { class: 'sc-skel', style: { height: '110px' } }); }))); return; }
     var f = r.fundamentals;
-    if (!f || !f.available || !f.journey || !f.journey.available) { panel.append(h('div', { class: 'sc-state' }, [h('h3', { text: 'Keine Fundamentaldaten' }), h('p', { text: 'Für diese Aktie liegen keine SEC-Jahreszahlen vor.' })])); return; }
+    if (!f || !f.available || !f.journey || !f.journey.available) { panel.append(h('div', { class: 'sc-state' }, [h('h3', { text: 'Keine Fundamentaldaten' }), h('p', { text: 'Für diese Aktie liegen keine Jahreszahlen vor.' })])); return; }
     var t = f.journey.tracks;
     function last(arr, n) { return (arr || []).filter(function (p) { return p && p.v !== null && isFinite(p.v); }).slice(-(n || 5)); }
     var items = [
@@ -1545,7 +1545,7 @@
       chart.style.setProperty('--kc', it[3]);
       grid.append(h('div', { class: 'sc-kpi' }, [h('span', { text: it[0] }), h('div', {}, [h('b', { class: 'sc-num', text: val }), ch ? h('em', { class: 'sc-num ' + chCls, text: ch }) : null]), chart, h('small', { text: 'GJ ' + s[s.length - 1].fy + (ch ? ' ggü. Vorjahr' : '') })]));
     });
-    panel.append(grid, h('p', { class: 'sc-note', text: 'Quelle: SEC EDGAR (companyfacts), Geschäftsjahre · Stand ' + dateDe(f.asOf) + '. TTM-Werte bis ' + (f.ttmThrough || '–') + ' stehen in den Kennzahlen der Übersicht.' }));
+    panel.append(grid, h('p', { class: 'sc-note', text: 'Quelle: Unternehmensmeldungen (Companyfacts), Geschäftsjahre · Stand ' + dateDe(f.asOf) + '. TTM-Werte bis ' + (f.ttmThrough || '–') + ' stehen in den Kennzahlen der Übersicht.' }));
   }
   function chartTab(panel, sym, i, series) {
     if (!series) { panel.append(h('div', { class: 'sc-skel', style: { height: '170px' } })); return; }

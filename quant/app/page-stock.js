@@ -285,8 +285,8 @@
       return host;
     }
     var kids = [el("div", { class: "dx-waage qv2-waage" }, [
-      col("Spricht dafür", "good", pc.pro, "Keine der gemessenen Eigenschaften ist stark.", pc.pro.length ? "Top " + Math.min(3, pc.pro.length) + " Stärken" : "Stärken"),
-      col("Spricht dagegen", "bad", pc.con, "Keine der gemessenen Eigenschaften ist schwach.", "Haupt-Risiken")
+      col("Stärken laut Kennzahlen", "good", pc.pro, "Keine der gemessenen Eigenschaften ist stark.", pc.pro.length ? "Top " + Math.min(3, pc.pro.length) + " Stärken" : "Stärken"),
+      col("Schwächen laut Kennzahlen", "bad", pc.con, "Keine der gemessenen Eigenschaften ist schwach.", "Haupt-Risiken")
     ])];
     if (pc.middle.length) kids.push(el("div", { class: "qx-middle qv2-panel tone-neutral" }, [el("div", { class: "qv2-panel-h" }, [el("span", { class: "qv2-panel-ico", "aria-hidden": "true" }, [ico("flat")]),
       el("h3", { text: "Im Mittelfeld" })]), el("ul", {}, pc.middle.map(function (m) { return punkt({ factorId: m.factorId, title: m.title.replace(/: [^:]+$/, ""), score: m.score, text: String(m.label || "durchschnittlich").replace(/\s*\(\d+\)$/, "") + " – weder Stärke noch Schwäche" }, "middle"); }))]));
@@ -481,11 +481,11 @@
         tested.classList.remove("is-off");
         var d = b.deltaPositiveShare, hasD = typeof d === "number" && isFinite(d);
         t.replaceChildren(el("p", { class: "qv2-ev-big" }, [el("b", { class: "num", text: E.share1(b.positiveShare) + " höher" })]),
-          el("p", { class: "qv2-ev-sub" }, [document.createTextNode("Aktien mit demselben getesteten Signal lagen nach 6 Monaten "),
+          el("p", { class: "qv2-ev-sub" }, [document.createTextNode("Aktien mit demselben getesteten Regelereignis lagen nach 6 Monaten "),
           el("b", { class: "num", text: hasD ? (d === 0 ? "genauso oft" : E.pp(Math.abs(d)).replace(/^[+±]/, "").replace(" Pp", " Prozentpunkte")) : E.share1(b.positiveShare) }),
           document.createTextNode(hasD ? (d === 0 ? " im Plus wie der Markt" : (d > 0 ? " häufiger" : " seltener") + " im Plus als der Markt") + (word ? " – " + word : "") + "." : " der Fälle im Plus.")]));
         if (b.trust !== "USABLE" && b.trust !== "ROBUST") why.textContent = why.textContent.replace("noch kein", "marktweite Belege " + (E.TRUST_SHORT[b.trust] || "nicht bereit") + " · noch kein");
-      } else t.replaceChildren(el("p", { class: "qv2-ev-sub", text: "Derzeit löst bei dieser Aktie kein marktweit getestetes Signal aus." }));
+      } else t.replaceChildren(el("p", { class: "qv2-ev-sub", text: "Derzeit löst bei dieser Aktie kein marktweit getestetes Regelereignis aus." }));
     } };
   }
   function replaySection(vm, conditionWords, evidence, signalHost, overview) {
@@ -518,7 +518,7 @@
 
     /* B */
     var bHost = signalHost || el("div", {});
-    var b = [el("p", { class: "q-ev-level-title", text: "B · Marktweit getestetes Signal" }), bHost];
+    var b = [el("p", { class: "q-ev-level-title", text: "B · Marktweit getestetes Regelereignis" }), bHost];
     if (wide && wide.state === "AVAILABLE") b.push(X.more("Ähnliche Lagen im ganzen Markt (Musterforschung)", function () { return marketWideDetails(wide); }));
     else if (wide && !(same && same.text === wide.text)) b.push.apply(b, marketWideDetails(wide));
 
@@ -537,7 +537,7 @@
     if (overview) overview.node.addEventListener("click", function (e) { var t = e.target.closest && e.target.closest("a[href='#ev-a'],a[href='#ev-b']"); if (t) detail.open = true; });
     kids.push(detail);
     kids.push(foot(r.isNot));
-    kids.push(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [X.link("Wie der Rückblick rechnet", X.routes.method("historie")), el("span", { text: " · " }), X.link("Alle getesteten Signale", X.routes.backtest())]));
+    kids.push(el("p", { class: "dx-kapitel-fuss dx-kapitel-fuss--link" }, [X.link("Wie der Rückblick rechnet", X.routes.method("historie")), el("span", { text: " · " }), X.link("Alle getesteten Regelereignisse", X.routes.backtest())]));
     return [el("div", { class: "qx-replay" }, kids)];
   }
   /* Ein geschlossener Backtest in einem Satz statt einer Fachliste. */
@@ -590,7 +590,7 @@
   function signalEvidenceFor(card) {
     var E = global.QXEvidence, T = global.VUQuantRadar ? global.VUQuantRadar.TYPE : {};
     var evs = ((card && card.events) || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; }).slice(0, 2);
-    if (!evs.length) return [el("p", { class: "qx-muted", text: "Zurzeit löst bei dieser Aktie kein marktweit getestetes Signal aus. Welche Signale getestet sind und wie sie abschnitten, steht im Backtesting." })];
+    if (!evs.length) return [el("p", { class: "qx-muted", text: "Zurzeit löst bei dieser Aktie kein marktweit getestetes Regelereignis aus. Welche Regelereignisse getestet sind und wie sie abschnitten, steht im Backtesting." })];
     return evs.map(function (e) {
       return E.signalEvidence(e.backtest, { label: "„" + ((T[e.eventType] || {}).label || e.eventType) + "“ am " + X.dateDe(e.occurredAt) });
     });
@@ -1081,7 +1081,7 @@
     }
 
     /* 3: Staerken & Risiken. */
-    if (hasFactors && o.rated >= 3) grid.append(card(X.section("Was spricht dafür – und was dagegen?", null, balanceSection(vm), null, "Stärken & Risiken", "dafuer")));
+    if (hasFactors && o.rated >= 3) grid.append(card(X.section("Stärken und Schwächen laut Kennzahlen", null, balanceSection(vm), null, "Stärken & Risiken", "dafuer")));
 
     /* 4: Aktuelle Veraenderungen - gemessene Veraenderungen mit Filter, darunter die Radar-Ereignisse ("Was ist jetzt
        wichtig?"), die nachladen. */
@@ -1174,7 +1174,7 @@
        (Verlauf, Benachrichtigung) hinter einer Aufklappzeile. */
     var evidence = await evidenceP;
     var evOverview = evidenceOverview(vm);
-    var signalHost = el("div", { class: "q-ev-signal-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Getestete Signale werden geladen …" })]);
+    var signalHost = el("div", { class: "q-ev-signal-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Getestete Regelereignisse werden geladen …" })]);
     var trackHost = el("div", { class: "q-track-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Radar-Status wird geladen …" })]);
     var alertHost = global.QXEvidence && global.QXEvidence.alertPanel ? global.QXEvidence.alertPanel(ticker) : null;
     var radarMore = el("details", { class: "vu-more qv-more", id: "radar-status" }, [el("summary", { text: "Radar-Status: was Quant für diese Aktie verfolgt" }), el("div", { class: "vu-more-body qv-more-body" }, [trackHost, alertHost].filter(Boolean))]);
