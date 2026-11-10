@@ -118,3 +118,16 @@ test("Produktion fuer Quant ist GitHub Pages, nicht Vercel", () => {
   assert.match(build, /Vision Universe Product Data Service/);
   assert.doesNotMatch(build, /vu2/, "sobald Vercel das Frontend baut, gilt diese Grenze nicht mehr");
 });
+
+test("Agent-Zweige (claude/*) bekommen keine Vorschau; main und die Produktion bleiben unberuehrt", () => {
+  /* 10.11.2026: ein reiner Test-/Doku-PR bekam trotz ignoreCommand den Status
+     "Deployment rate limited" - das Tageskontingent (100) wird offenbar schon beim Anlegen
+     der Vorschau gezaehlt, ein Abbruch durch den Ignored Build Step hilft dann nicht.
+     Verhindern kann nur git.deploymentEnabled. Es nennt ausschliesslich Zweige, nie main. */
+  const cfg = JSON.parse(readFileSync(join(ROOT, "vercel.json"), "utf8"));
+  const regeln = cfg.git && cfg.git.deploymentEnabled;
+  assert.ok(regeln, "git.deploymentEnabled fehlt");
+  assert.equal(regeln["claude/*"], false);
+  assert.ok(!Object.keys(regeln).some((k) => /^(main|\*+)$/.test(k)), "main/Produktion darf hier nie ausgeschaltet werden");
+  assert.ok(Object.values(regeln).every((v) => v === false), "nur Ausschluesse, keine Sonderregeln");
+});
