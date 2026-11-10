@@ -8,8 +8,8 @@ import vm from "node:vm";
 
 const require = createRequire(import.meta.url);
 const MP = require("../../quant/engines/multi-asset/market-pulse.js");
-const PULSE = JSON.parse(readFileSync(new URL("../../quant/data/market/intelligence/market-pulse.json", import.meta.url), "utf8"));
-const EV = JSON.parse(readFileSync(new URL("../../quant/data/market/validation/market-pulse-evidence.json", import.meta.url), "utf8"));
+const PULSE = JSON.parse(readFileSync(new URL("./fixtures/market-pulse/market-pulse.json", import.meta.url), "utf8"));
+const EV = JSON.parse(readFileSync(new URL("./fixtures/market-pulse/market-pulse-evidence.json", import.meta.url), "utf8"));
 
 function load() {
   const el = (tag, attrs, kids) => {
@@ -32,7 +32,7 @@ function find(n, pred, out = []) { if (!n || typeof n !== "object") return out; 
 const byId = (teile, id) => teile.find((t) => t.attrs && t.attrs.id === id);
 
 const JETZT = new Date("2026-09-29T10:00:00Z");
-const HIST = JSON.parse(readFileSync(new URL("../../quant/data/market/intelligence/market-pulse-history.json", import.meta.url), "utf8"));
+const HIST = JSON.parse(readFileSync(new URL("./fixtures/market-pulse/market-pulse-history.json", import.meta.url), "utf8"));
 test("Marktbarometer: Teile in fester Reihenfolge, Details als eigene Unterseite", () => {
   const teile = MB.render(J(PULSE), J(EV), JETZT);
   const ids = teile.map((t) => t.attrs.id || t.attrs.class);
