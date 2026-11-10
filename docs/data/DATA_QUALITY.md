@@ -76,6 +76,10 @@ Von Hand: `long-series.yml` → *Run workflow* mit `mode = repair` (findet die T
 3. Test in `core/tests/data-quality.test.mjs`: der Fehler, für den die Regel geschrieben ist, und eine Gegenprobe.
 4. Zeile in dieser Tabelle.
 
+## PQ – Zustand der Produktartefakte
+
+`core/product-quality.js` (Adapter `scripts/core/product-quality.mjs`, eingebunden in `scripts/core/data-quality.mjs`) meldet als WARN-Regeln, was früher als roter Test auf Live-Artefakten lief (Owner-Auftrag 10.11.2026, `docs/quality/TESTARTEN.md`): DQ-PQ-1 Aktienverzeichnis (Deckung, Kurse, Namen, Bewertungsgrund), DQ-PQ-2 Marktdaten-Statusbericht, DQ-PQ-3 Benchmark SPY in keiner Produkt-/Gate-Liste und Marktfähigkeit = Produktuniversum, DQ-PQ-4 Drift-Feld der Setup-Beobachtungen, DQ-PQ-5 SEC-Universum, DQ-PQ-6 Technical v3 (Methodenschlüssel, Engine- und Datenversionen). Die Regeln bestehen und fallen mit eigener Eingabe in `core/tests/product-quality.test.mjs`; sie blockieren keinen Code-PR.
+
 ## E8 – Datenqualität je Aktie
 
 `scripts/core/data-quality.mjs` ergänzt sechs ausschließlich meldende WARN-Regeln
