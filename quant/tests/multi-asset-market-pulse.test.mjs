@@ -163,7 +163,7 @@ test("Risiko-Referenz: SPY ueber den lizenzierten Tiingo-Pfad - keine FMP-/FRED-
   const r = CFG.risk;
   assert.equal(r.benchmark, "SPY");
   assert.ok(CFG.trackers.symbols.includes(r.benchmark));
-  assert.equal(r.series.path, "quant/data/market/multi-asset/series/SPY.json");
+  assert.match(r.series.path, /^quant\/data\/market\/multi-asset\/series\/SPY\.json$/);
   assert.equal(r.series.source, "tiingo-equity");
   const ser = json("quant/tests/fixtures/multi-asset-market-pulse/SPY.json");
   assert.equal(ser.symbol, "SPY"); assert.equal(ser.source, "tiingo-equity"); assert.equal(ser.valueSemantics, "PRICE");
