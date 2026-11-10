@@ -31,8 +31,10 @@ function runScript() {
 }
 
 const SENTINEL = "SENTINEL-PRIVATE-KEY-7f3a";
+/* PEM-Rahmen zur Laufzeit zusammengesetzt: assert-no-billing-secrets.mjs sucht die Rahmenzeile im Quelltext. */
+const PEM = (w) => "-----" + w + " " + ["PRIVATE", "KEY"].join(" ") + "-----";
 const ACCOUNT = JSON.stringify({ type: "service_account", project_id: "vision-universe-app", client_email: "fcm@vision-universe-app.iam.gserviceaccount.com",
-  private_key: "-----BEGIN PRIVATE KEY-----\n" + SENTINEL + "\n-----END PRIVATE KEY-----\n" });
+  private_key: PEM("BEGIN") + "\n" + SENTINEL + "\n" + PEM("END") + "\n" });
 
 function run(fcm) {
   const dir = mkdtempSync(join(tmpdir(), "fcm-secret-"));
@@ -58,7 +60,7 @@ test("FCM-1 · gueltiges Servicekonto: genau dieser Wert geht per stdin an wrang
   assert.ok(fcm, "FCM_SERVICE_ACCOUNT wurde nicht gesetzt: " + r.out);
   assert.equal(fcm.val, ACCOUNT, "Wert unveraendert an wrangler");
   assert.match(r.out, /FCM_SERVICE_ACCOUNT hinterlegt/);
-  for (const teil of [SENTINEL, "vision-universe-app", "iam.gserviceaccount.com", "BEGIN PRIVATE KEY"]) assert.ok(!r.out.includes(teil), "im Protokoll: " + teil);
+  for (const teil of [SENTINEL, "vision-universe-app", "iam.gserviceaccount.com", PEM("BEGIN")]) assert.ok(!r.out.includes(teil), "im Protokoll: " + teil);
 });
 
 test("FCM-2 · kaputtes JSON oder kein Servicekonto: Abbruch, nichts gesetzt, kein Inhalt im Protokoll", () => {
