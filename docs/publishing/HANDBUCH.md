@@ -166,6 +166,15 @@ Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsAr
 6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Unter jedem Artikel steht „Mit KI-Unterstützung
    recherchiert und geschrieben, von der Redaktion geprüft“.
 
+**Tageslauf ohne Owner (ab 10.11.2026):** Eine geplante Aufgabe startet an jedem Werktag um 12:41 Uhr (Berlin) eine
+neue Claude-Sitzung, die nach `.claude/skills/insights-tageslauf/SKILL.md` zwei Artikel schreibt (großer Wert und
+Nebenwert, Kandidaten aus `node products/insights/themen.mjs`), prüft und bei grüner CI selbst veröffentlicht. Solche
+Artikel tragen `"pruefung": "automatisch"`: oben „Automatisch mit KI erstellt“, unten der Hinweis, dass kein Mensch
+sie gelesen hat (ohne redaktionelle Verantwortung gilt die Kennzeichnungspflicht nach Art. 50 Abs. 4 KI-Verordnung).
+Ohne passendes Pressebild nimmt der Lauf `"bild": {"typ": "app"}` (Aufmacher aus den App-Screens). Lieber kein Artikel
+als ein schlechter: ohne drei Quellen, bei roten Tests oder heiklen Themen bricht der Lauf ab und meldet nur.
+Pausieren oder ändern: in der App unter den geplanten Aufgaben („Insights-Tageslauf“).
+
 **Heft online stellen:** `python3 products/insights/heft_veroeffentlichen.py docs/publishing/ausgaben/<ordner> <NN>`
 (PDF, verkleinerte Seitenbilder, Cover nach `insights/magazin/nr-<NN>/`), dann Eintrag mit Titel, Unterzeile und Inhalt in
 `products/insights/magazin.json` (neueste zuerst) und bauen.

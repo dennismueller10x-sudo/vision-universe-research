@@ -71,3 +71,18 @@ test('IN-6 · Aktienmagazin: jede Ausgabe hat PDF, Cover und alle Seitenbilder; 
     assert.ok(read('insights/magazin/index.html').includes(`/insights/magazin/nr-${h.nr}/`));
   }
 });
+
+test('IN-7 · automatisch veröffentlichte Artikel: KI-Hinweis sichtbar, mindestens drei Quellen, App-Screens, kein Zitat ohne Quelle', () => {
+  for (const a of artikel) {
+    assert.ok(['redaktion', 'automatisch', undefined].includes(a.pruefung), `${a.slug}: pruefung ist redaktion oder automatisch`);
+    if (a.pruefung !== 'automatisch') continue;
+    const html = read(`insights/${a.slug}/index.html`);
+    assert.match(html, /Automatisch mit KI erstellt/, `${a.slug}: KI-Hinweis im Kopf fehlt`);
+    assert.match(html, /nicht von einem Menschen gelesen/, `${a.slug}: KI-Hinweis unter dem Artikel fehlt`);
+    assert.ok(a.quellen.length >= 3, `${a.slug}: automatisch braucht mindestens drei Quellen`);
+    assert.ok(a.ticker.every((t) => a.appScreens?.[t]?.length === 3), `${a.slug}: App-Screens fehlen (products/insights/screens.mjs)`);
+    assert.ok(a.abschnitte.some((s) => s.daten), `${a.slug}: Abschnitt "Was unsere Daten zeigen" fehlt`);
+    if (a.zitat) assert.match(a.zitat.von, /,/, `${a.slug}: Zitat braucht Sprecher und Medium`);
+    if (a.bild.typ !== 'app') assert.ok(a.bild.quelle, `${a.slug}: Pressebild ohne Bildnachweis`);
+  }
+});

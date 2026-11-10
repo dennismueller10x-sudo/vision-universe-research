@@ -169,3 +169,10 @@
 .in-leer{padding:22px}
 .in-leer b{font-size:20px;font-weight:900}
 .in-leer p{margin:6px 0 0;color:var(--vu-mute)}
+
+/* Aufmacher aus App-Screens (bild.typ "app") */
+.in-bild--app{display:flex;justify-content:center;align-items:flex-end;gap:4%;padding:5% 6% 0;background:var(--vu-lime)}
+.in-bild--app img{width:24%;height:auto;object-fit:cover;object-position:top;aspect-ratio:390/700;border:4px solid #111;border-bottom:0;border-radius:22px 22px 0 0}
+.in-bild--app img:nth-child(2){width:27%}
+.in-karte-bild--app{background:var(--vu-lime);display:flex;justify-content:center;align-items:flex-end;padding-top:6%}
+.in-karte-bild--app img{width:42%;height:auto;object-fit:cover;object-position:top;aspect-ratio:390/600;border:4px solid #111;border-bottom:0;border-radius:18px 18px 0 0}
