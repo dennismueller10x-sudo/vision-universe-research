@@ -47,18 +47,19 @@
   if (customElements.get && customElements.get('vu-navigation')) return;
   // Product links navigate directly; their separate disclosure opens existing routes.
   const groups = [
+    /* Portfolios (Owner 06.11.2026): alle Musterdepots gesammelt; breite Kachel unter dem 3 x 3-Raster. */
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
     {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
     {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤']]},
     {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus Geschäftsberichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
-    {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
-    {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Smart Money','/hedgefonds/#/smart-money','◬']]},
-    {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', claim:'Wellenstruktur', entries:[['Übersicht','/elliott/','⌂'],['Welle 3','/elliott/#/?welle=3','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
+    {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Treffer','/supertrader/treffer/','◬'],['Forschung','/supertrader/forschung/','▧'],['Quellen','/supertrader/sources/','▤']]},
+    {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Gruppen-Käufe','/hedgefonds/#/gruppen-kaeufe','◬']]},
+    {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', claim:'Wellenstruktur', entries:[['Übersicht','/elliott/','⌂'],['Zählbar','/elliott/#/?zaehlbar=1','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
     {id:'screener', label:'Screener', href:'/screener/', icon:'screener', claim:'Eigene Filter', entries:[['Übersicht','/screener/','⌂'],['Filter hinzufügen','/screener/?view=build','⧩'],['Treffer','/screener/?view=results','⌕'],['Gespeichert','/screener/?view=saved','▤'],['Watchlist','/screener/?view=watchlist','♡']]},
     {id:'vorsorge', label:'Vorsorge', href:'/vorsorge/#/', icon:'vorsorge', claim:'Sparplan und Rente', entries:[['Vorsorge Home','/vorsorge/#/','☂'],['Planer','/vorsorge/#/plan','◬'],['ETFs','/vorsorge/#/etfs','◫'],['Portfolio','/vorsorge/#/portfolio','◎'],['Vergleichen','/vorsorge/#/vergleichen','⧩'],['Förderung','/vorsorge/#/foerderung','✧'],['Veränderungen','/vorsorge/#/monitor','≋'],['Wissen','/vorsorge/#/wissen','▤']]},
-    /* Portfolios (Owner 06.11.2026): alle Musterdepots gesammelt; breite Kachel unter dem 3 x 3-Raster. */
     {id:'portfolios', label:'Portfolios', href:'/portfolios/', icon:'portfolios', claim:'Alle Musterdepots: Supertrader, Quant, KI', entries:[['Übersicht','/portfolios/','⌂'],['Supertrader','/portfolios/#/supertrader','⚑'],['Quant','/portfolios/#/quant','⧩'],['KI-Depots','/portfolios/#/ki','✧']]},
-    {id:'more', label:'Weitere Produkte', href:null, icon:'layers', claim:'', entries:[['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫'],['Analysten','/analysten/','◇'],['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥'],['Academy','/academy/','✧'],['Guide','/guide/','◈'],['Budget','/budget/','▦']]}
+    {id:'insights', label:'Insights', href:'/insights/', icon:'insights', claim:'Tagesthemen, Aktienmagazin und Reports', entries:[['Artikel','/insights/','▤'],['Aktienmagazin','/insights/magazin/','▣'],['Reports','/insights/reports/','▥']]},
+    {id:'more', label:'Weitere Produkte', href:null, icon:'layers', claim:'', entries:[['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫'],['Analysten','/analysten/','◇'],['News','/news/','▤'],['Morning','/morning/','☼'],['Academy','/academy/','✧'],['Guide','/guide/','◈'],['Budget','/budget/','▦']]}
   ];
   /* Mein Bereich im Menue (Mockup N3). */
   const MINE = [['Mein Dashboard','/mein-dashboard/','person'],['Watchlist','/konto/watchlist/','heart'],['Konto und Tarif','/konto/','gear']];
@@ -86,14 +87,14 @@
         return {welten: 'welten', thema: 'welten', strategien: 'strategien', einzeln: 'entdecken', swipen: 'entdecken'}[k] || null;
       }},
     {id: 'elliott', label: 'Elliott', match: (p, loc) => p.startsWith('/elliott/') || isElliottDetail(p, loc),
-      items: [['elliott','Elliott','/elliott/','elliott'],['welle3','Welle 3','/elliott/#/?welle=3','wave'],['neu','Neu','/elliott/#/?neu=1','spark'],['suche','Suche','/elliott/#/?suche=1','search']],
+      items: [['elliott','Elliott','/elliott/','elliott'],['zaehlbar','Zählbar','/elliott/#/?zaehlbar=1','wave'],['neu','Neu','/elliott/#/?neu=1','spark'],['suche','Suche','/elliott/#/?suche=1','search']],
       active: loc => {
         if (loc.pathname !== '/elliott/') return null;
         if (hashPart(loc, 0)) return null;   // Aktienbild /elliott/#/<T>: nur Produktkontext
         const q = new URLSearchParams((loc.hash || '').split('?')[1] || '');
         if (q.get('suche') === '1') return 'suche';
         if (q.get('neu') === '1') return 'neu';
-        if (q.get('welle') === '3') return 'welle3';
+        if (q.get('zaehlbar') === '1' || q.get('welle') === '3' && !q.get('richtung') && !q.get('status') && !q.get('rolle')) return 'zaehlbar';
         return q.get('welle') || q.get('richtung') || q.get('status') || q.get('rolle') ? null : 'elliott';
       }},
     {id: 'quant', label: 'Quant', match: (p, loc) => p.startsWith('/quant/') && !isElliottDetail(p, loc),
@@ -132,14 +133,14 @@
         return {start: 'screener', build: 'filter', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'gespeichert'}[view] || null;
       }},
     {id: 'supertrader', label: 'Supertrader', match: p => p.startsWith('/supertrader/'),
-      items: [['supertrader','Supertrader','/supertrader/','supertrader'],['methoden','Methoden','/supertrader/strategies/','grid'],['signale','Regel-Ergebnisse','/supertrader/signals/','signals'],['backtests','Backtests','/supertrader/backtests/','backtests']],
+      items: [['supertrader','Supertrader','/supertrader/','supertrader'],['methoden','Methoden','/supertrader/strategies/','grid'],['treffer','Treffer','/supertrader/treffer/','signals'],['forschung','Forschung','/supertrader/forschung/','backtests']],
       active: loc => {
         const k = loc.pathname.split('/')[2] || '';
-        return {'': 'supertrader', strategies: 'methoden', signals: 'signale', stock: 'signale', backtests: 'backtests'}[k] || null;
+        return {'': 'supertrader', strategies: 'methoden', treffer: 'treffer', signals: 'treffer', stock: 'treffer', forschung: 'forschung', backtests: 'forschung'}[k] || null;
       }},
     {id: 'hedgefonds', label: 'Hedgefonds', match: p => p.startsWith('/hedgefonds/'),
-      items: [['hedgefonds','Hedgefonds','/hedgefonds/#/','hedgefonds'],['investoren','Investoren','/hedgefonds/#/investoren','users'],['aktien','Aktien','/hedgefonds/#/aktien','stocks'],['smart','Smart Money','/hedgefonds/#/smart-money','signals']],
-      active: loc => ({'': 'hedgefonds', investoren: 'investoren', datenbank: 'investoren', aktien: 'aktien', aktie: 'aktien', 'smart-money': 'smart'}[hashPart(loc, 0)] || null)},
+      items: [['hedgefonds','Hedgefonds','/hedgefonds/#/','hedgefonds'],['investoren','Investoren','/hedgefonds/#/investoren','users'],['aktien','Aktien','/hedgefonds/#/aktien','stocks'],['gruppen','Gruppen-Käufe','/hedgefonds/#/gruppen-kaeufe','signals']],
+      active: loc => ({'': 'hedgefonds', investoren: 'investoren', datenbank: 'investoren', aktien: 'aktien', aktie: 'aktien', 'gruppen-kaeufe': 'gruppen', 'smart-money': 'gruppen'}[hashPart(loc, 0)] || null)},
     /* Portfolios: #/<gruppe> filtert die Uebersicht, #/<gruppe>/<id> ist ein Depot (gehoert zur Gruppe). */
     {id: 'portfolios', label: 'Portfolios', match: p => p.startsWith('/portfolios/'),
       items: [['portfolios','Portfolios','/portfolios/#/','portfolios'],['supertrader','Supertrader','/portfolios/#/supertrader','signals'],['quant','Quant','/portfolios/#/quant','grid'],['ki','KI','/portfolios/#/ki','spark']],
@@ -455,6 +456,7 @@
         .tile b{display:block;font-size:13.5px;font-weight:800;line-height:1.2}
         .tile small{display:block;margin-top:2px;font-size:10.5px;line-height:1.3;opacity:.7}
         .tile[data-group=portfolios]{grid-column:1/-1;grid-template-columns:38px minmax(0,1fr);align-items:center;min-height:64px}
+        .tile[data-group=insights]{grid-column:1/-1;grid-template-columns:38px minmax(0,1fr);align-items:center;min-height:64px}
         .tile[aria-current=page],.tile.is-current{background:#c8f531;color:#000}
         .links{display:grid;gap:2px}
         .links a,.mine a,.more summary{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 4px;border-bottom:1px solid #222;color:#fff;font-size:15px;font-weight:700;text-decoration:none}
@@ -472,7 +474,7 @@
         .choices [aria-pressed=true]{background:#c8f531;color:#000}
         .panel a:focus-visible,.panel button:focus-visible,.panel input:focus-visible,.panel summary:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
         @media(max-width:1024px){.quick{display:none}}
-        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:56px;gap:8px}.brand img{width:min(150px,40vw)}.tools{gap:2px}.hb{width:40px}.atlas{padding:0 2px}
+        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:56px;gap:8px}.brand img{width:min(150px,40vw)}.tools{gap:2px}.hb{width:40px;position:relative}.hb::after{content:"";position:absolute;inset:0 -2px}.atlas{padding:0 2px}
           .panel{width:100vw;box-shadow:none;transform:none}}
         @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
         @media(max-width:430px){:host(:not([dock])) .atlas .atlas-label{display:none}:host(:not([dock])) .atlas span.pill{width:36px;padding:0;justify-content:center}:host(:not([dock])) .brand img{width:min(132px,34vw)}}
@@ -551,6 +553,16 @@
       };
       syncActive();
       if(location.pathname.startsWith('/ask/'))root.querySelector('.atlas').setAttribute('aria-current','page');
+      /* Atlas auf jeder Aktie (Konzept mein-bereich-2026-11, Screen a-sheet): Zeigt die Seite einen Aktienkopf (data-vu-stock),
+         öffnet „Atlas“ ein Sheet mit Fragen zur Aktie (assets/atlas-sheet.js, beim ersten Tipp geladen); sonst gilt der Link. */
+      root.querySelector('.atlas').addEventListener('click',e=>{
+        if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
+        if(!document.querySelector('[data-vu-stock]'))return;
+        e.preventDefault();
+        const a=e.currentTarget,go=()=>{if(!(window.VUAtlasSheet&&window.VUAtlasSheet.open(document,a)))location.assign('/ask/');};
+        if(window.VUAtlasSheet)return go();
+        const sc=document.createElement('script');sc.src='/assets/atlas-sheet.js';sc.onload=go;sc.onerror=()=>location.assign('/ask/');document.head.appendChild(sc);
+      });
       if(location.pathname.startsWith('/mein-dashboard/')||location.pathname.startsWith('/konto/'))root.querySelector('.profile').setAttribute('aria-current','page');
       const syncQuick=()=>root.querySelectorAll('.quick a').forEach(a=>{const h=a.getAttribute('href'),detail=isElliottDetail(location.pathname,location),on=h==='/elliott/'?(detail||location.pathname.startsWith(h)):h==='/quant/'?(!detail&&location.pathname.startsWith(h)):location.pathname.startsWith(h);if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
       syncQuick();

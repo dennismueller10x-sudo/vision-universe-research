@@ -22,14 +22,14 @@ const loc = (url) => { const u = new URL(url, 'https://research.visionuniverse.d
 test('every product dock starts with the product name, never Home or Start, and has four entries plus the global menu', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(PRODUCTS.map(p => [p.id, p.items.map(([, label]) => label)]))), [
     ['discover', ['Discover','Welten','Strategien','Swipen']],
-    ['elliott', ['Elliott','Welle 3','Neu','Suche']],
+    ['elliott', ['Elliott','Zählbar','Neu','Suche']],
     ['quant', ['Quant','Screener','Strategien','Aktien']],
     ['fundamental', ['Fundamental','Ranglisten','Branchen','Methodik']],
     ['technical', ['Technical','Screener','Chart','Muster']],
     ['vorsorge', ['Vorsorge','Planer','ETFs','Portfolio']],
     ['screener', ['Screener','Filter','Treffer','Gespeichert']],
-    ['supertrader', ['Supertrader','Methoden','Regel-Ergebnisse','Backtests']],
-    ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Smart Money']],
+    ['supertrader', ['Supertrader','Methoden','Treffer','Forschung']],
+    ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Gruppen-Käufe']],
     ['portfolios', ['Portfolios','Supertrader','Quant','KI']],
     ['mein', ['Mein Bereich','Watchlist','Gespeichert','Konto']]
   ]);
@@ -46,8 +46,8 @@ test('every product dock starts with the product name, never Home or Start, and 
 
 test('dock targets are existing routes of their products', () => {
   const files = { '/elliott/': 'elliott/index.html', '/discover/': 'discover/index.html', '/quant/': 'quant/index.html', '/vorsorge/': 'vorsorge/index.html', '/screener/': 'screener/index.html',
-    '/supertrader/': 'supertrader/index.html', '/supertrader/strategies/': 'supertrader/strategies/index.html', '/supertrader/signals/': 'supertrader/signals/index.html',
-    '/supertrader/backtests/': 'supertrader/backtests/index.html', '/hedgefonds/': 'hedgefonds/index.html', '/fundamental/': 'fundamental/index.html', '/technical/': 'technical/index.html',
+    '/supertrader/': 'supertrader/index.html', '/supertrader/strategies/': 'supertrader/strategies/index.html', '/supertrader/treffer/': 'supertrader/treffer/index.html',
+    '/supertrader/forschung/': 'supertrader/forschung/index.html', '/hedgefonds/': 'hedgefonds/index.html', '/fundamental/': 'fundamental/index.html', '/technical/': 'technical/index.html',
     '/willkommen/': 'willkommen/index.html', '/mein-dashboard/': 'mein-dashboard/index.html', '/konto/': 'konto/index.html', '/portfolios/': 'portfolios/index.html' };
   for (const p of PRODUCTS) for (const [, , href] of p.items) {
     const path = new URL(href, 'https://x').pathname;
@@ -56,13 +56,13 @@ test('dock targets are existing routes of their products', () => {
   }
   // Elliott-Dock-Ziele sind Hash-Zustaende der Startseite, die elliott/app.js (VUElliottHome.parseHash) wirklich liest
   const elliottModel = readFileSync(join(root, 'elliott/engine/home-model.js'), 'utf8');
-  for (const k of ['welle', 'neu', 'suche']) assert.ok(elliottModel.includes(`params.get("${k}")`), `Elliott liest ${k}`);
+  for (const k of ['zaehlbar', 'welle', 'neu', 'suche']) assert.ok(elliottModel.includes(`params.get("${k}")`), `Elliott liest ${k}`);
   const quantRoutes = readFileSync(join(root, 'quant/app/app.js'), 'utf8');
   for (const r of ['screener', 'strategien', 'aktien']) assert.match(quantRoutes, new RegExp(`case "${r}"`));
   const vorsorge = ['plan', 'etf', 'portfolio'].map(f => readFileSync(join(root, `vorsorge/ui/${f}.js`), 'utf8')).join('\n');
   for (const r of ['plan', 'etfs', 'portfolio']) assert.match(vorsorge, new RegExp(`VS\\.views\\.${r} = function`), `Vorsorge-Ansicht ${r}`);
   const hedge = readFileSync(join(root, 'hedgefonds/app.js'), 'utf8');
-  for (const r of ['investoren', 'aktien', 'smart-money']) assert.ok(hedge.includes(`#/${r}`));
+  for (const r of ['investoren', 'aktien', 'gruppen-kaeufe']) assert.ok(hedge.includes(`#/${r}`));
   // Fundamental-Dock-Ziele sind Routen, die fundamental/engine/model.js (parseRoute) wirklich kennt
   const fundamentalModel = require(join(root, 'fundamental/engine/model.js'));
   assert.deepEqual(fundamentalModel.parseRoute('#/entdecken'), { view: 'home', focus: 'entdecken' });
@@ -98,10 +98,13 @@ test('active dock state follows deep links after reload', () => {
   assert.equal(active('screener', '/screener/?f=pe'), 'filter', 'Filter in der Adresse: der Filterbereich ist aktiv');
   assert.equal(active('screener', '/screener/'), 'screener');
   assert.equal(active('screener', '/screener/?view=watchlist'), 'gespeichert', 'Watchlist ist ein Reiter unter Gespeichert');
-  assert.equal(active('hedgefonds', '/hedgefonds/#/smart-money'), 'smart');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/gruppen-kaeufe'), 'gruppen');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/smart-money'), 'gruppen', 'alte Adresse markiert Gruppen-Käufe');
   assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank'), 'investoren', 'Datenbank ist ein Reiter unter Investoren');
   assert.equal(active('screener', '/screener/?view=compare'), 'treffer');
-  assert.equal(active('supertrader', '/supertrader/stock/NVDA/'), 'signale');
+  assert.equal(active('supertrader', '/supertrader/stock/NVDA/'), 'treffer');
+  assert.equal(active('supertrader', '/supertrader/signals/'), 'treffer');
+  assert.equal(active('supertrader', '/supertrader/forschung/'), 'forschung');
   assert.equal(active('supertrader', '/supertrader/strategies/darvas-boxes/'), 'methoden');
   assert.equal(active('supertrader', '/supertrader/sources/'), null);
   assert.equal(active('hedgefonds', '/hedgefonds/#/aktie/037833100'), 'aktien');
@@ -149,11 +152,11 @@ test('the shell header loads the slim web logo, not the 129 KB master (stock pag
 
 
 test('compact menu preserves every old destination in nine products, Portfolios and one additional group', () => {
-  // Reihenfolge des 3 x 3-Rasters im Menue (Mockup N3), darunter die breite Kachel Portfolios (Owner 06.11.2026)
-  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','technical','fundamental','supertrader','hedgefonds','elliott','screener','vorsorge','portfolios','more']);
+  // Reihenfolge des 3 x 3-Rasters im Menue (Mockup N3), darunter die breiten Kacheln Portfolios (Owner 06.11.2026) und Insights (Owner 09.11.2026: Artikel, Aktienmagazin, Reports; altes Magazin und XPeng-Muster nicht mehr im Menü)
+  assert.deepEqual(Array.from(groups,g=>g.id), ['discover','quant','technical','fundamental','supertrader','hedgefonds','elliott','screener','vorsorge','portfolios','insights','more']);
   for(const g of groups.filter(g=>g.id!=='more')) assert.ok(g.claim, g.id+': Kurzbeschreibung fuer die Kachel');
   const destinations = new Set(groups.flatMap(g=>[g.href,...g.entries.map(e=>e[1])]).filter(Boolean));
-  const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/magazin/','/reports/xpeng/','/academy/','/guide/','/budget/'];
+  const previous = ['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist','/dashboard/','/macro/','/etf/','/vorsorge/#/','/vorsorge/#/plan','/vorsorge/#/etfs','/vorsorge/#/portfolio','/vorsorge/#/vergleichen','/vorsorge/#/foerderung','/vorsorge/#/monitor','/vorsorge/#/wissen','/screener/','/quant/','/supertrader/','/analysten/','/hedgefonds/','/news/','/morning/','/insights/magazin/','/academy/','/guide/','/budget/'];
   for(const href of previous) assert.ok(destinations.has(href),href+' remains reachable');
   for(const g of groups.filter(g=>g.id!=='more')) assert.equal(g.href, g.entries[0][1]);
   assert.equal(groups.find(g=>g.id==='quant').entries.find(([,href])=>href==='/quant/#/screener')[0],'Quant Screener');
@@ -179,7 +182,7 @@ test('menu routes distinguish home, query, hash segment boundaries and detail pa
     ['/hedgefonds/#/fonds/berkshire','hedgefonds','/hedgefonds/#/datenbank'],
     ['/discover/#/s/US_REAL/NVDA','discover','/discover/#/einzeln/US_REAL'],
     ['/news/','more','/news/'],
-    ['/reports/xpeng/research/','more','/reports/xpeng/']
+    ['/insights/reports/','insights','/insights/reports/']
   ];
   for(const [url,group,href] of examples){assert.equal(state(url).group,group,url);assert.equal(state(url).href,href,url);assert.equal(state(url).expanded,group,url);}
   assert.equal(state('/screener/?view=start&mode=pro').href,'/screener/');
@@ -232,8 +235,9 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   const state = url => menuState(loc(url));
   assert.equal(state('/elliott/').group, 'elliott');
   assert.equal(state('/elliott/').expanded, null, 'Startseite klappt das Menue nicht auf');
-  assert.equal(state('/elliott/#/?welle=3').href, '/elliott/#/?welle=3');
-  assert.equal(state('/elliott/#/?welle=3').expanded, 'elliott', 'Filterzustand oeffnet den Produktbereich');
+  assert.equal(state('/elliott/#/?zaehlbar=1').href, '/elliott/#/?zaehlbar=1');
+  assert.equal(state('/elliott/#/?zaehlbar=1').expanded, 'elliott', 'Listenzustand oeffnet den Produktbereich');
+  assert.equal(state('/elliott/#/?welle=3').expanded, 'elliott', 'alte Adresse (leitet auf Zaehlbar) bleibt im Produktbereich');
   assert.equal(state('/elliott/#/?richtung=ab').expanded, 'elliott');
   assert.equal(state('/elliott/#/?richtung=ab').href, '/elliott/#/?richtung=ab');
   // Aktienbild: Pfad /quant/, aber Produkt Elliott (kein doppelter aktiver Zustand)
@@ -253,7 +257,8 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   for (const url of ['/elliott/', '/elliott/#/NVDA', '/quant/#/elliott/NVDA', '/quant/', '/discover/#/', '/screener/']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 1, url);
   const dock = PRODUCTS.find(p => p.id === 'elliott');
   assert.equal(dock.active(loc('/elliott/')), 'elliott');
-  assert.equal(dock.active(loc('/elliott/#/?welle=3')), 'welle3');
+  assert.equal(dock.active(loc('/elliott/#/?zaehlbar=1')), 'zaehlbar');
+  assert.equal(dock.active(loc('/elliott/#/?welle=3')), 'zaehlbar', 'alte Adresse markiert Zaehlbar');
   assert.equal(dock.active(loc('/elliott/#/?neu=1')), 'neu');
   assert.equal(dock.active(loc('/elliott/#/?suche=1')), 'suche');
   assert.equal(dock.active(loc('/elliott/#/?richtung=ab')), null, 'Filter ohne eigenen Eintrag markiert nur das Produkt');

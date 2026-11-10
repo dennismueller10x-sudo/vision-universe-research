@@ -62,3 +62,36 @@
 :root[data-theme=dark] #el-detail .cb-outlook-sec .cb-hero{background:#151515}
 /* Text in Grau nur mit ausreichendem Kontrast: Linienfarben (--cb-alt, --cb-flat) bleiben Grau, Schrift nimmt das gedämpfte Token */
 #el-detail .cb-pt-exp .cb-pt-v,#el-detail .cb-pj-explore-sum,#el-detail .cb-pj-explore-sum>span{color:var(--vu-mute,#6e6e6e)}
+/* Konzept EHV (EX03): Elliott auf der Aktie – Urteil-Zeile, Lesart in drei Sätzen, Kapitel, keine Zählung */
+.cb-ew-say{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:14px 0 8px}
+.cb-ew-say .vu-mt{margin:2px 0 0;font-size:22px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.cb-ew-say .vu-verdict{flex:none}
+.cb-story{background:#000;color:#fff;border-radius:22px;padding:14px 14px 6px;margin-top:12px}
+.cb-story>.vu-ltag,.cb-story-r .vu-ltag{color:#9b9b9b}
+.cb-story-r{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #262626}
+.cb-story-r:first-of-type{border-top:0}
+.cb-story-r p{margin:1px 0 0;font-size:14px;font-weight:700;line-height:1.3;color:#fff}
+.cb-story .vu-verdict{font-size:11px;padding:4px 8px}
+.cb-story .vu-verdict--mid{background:#262626;color:#fff}
+.cb-story .vu-verdict--weak{background:#fff;color:#000}
+.cb-story .vu-verdict--none{border-color:#9b9b9b;color:#9b9b9b}
+.cb-story .vu-hud{background:#1a1a1a;color:var(--vu-lime)}
+.cb-eps{display:grid;gap:8px;margin-top:12px}
+.cb-ep{background:var(--vu-card);border-radius:18px;color:var(--vu-ink)}
+.cb-ep>summary{display:grid;grid-template-columns:18px 40px 1fr 22px;gap:10px;align-items:center;min-height:56px;padding:8px 10px 8px 12px;cursor:pointer;list-style:none}
+.cb-ep>summary::-webkit-details-marker{display:none}
+.cb-ep-n{font-size:15px;color:var(--vu-mute)}
+.cb-ep-ic{color:var(--vu-lime)}
+.cb-ep-t b{display:block;font-size:14px;letter-spacing:-.01em;line-height:1.2}
+.cb-ep-t span{display:block;font-size:12px;color:var(--vu-mute);margin-top:2px;line-height:1.3}
+.cb-ep-go{font-size:22px;font-weight:700;color:var(--vu-mute);text-align:center;transition:transform .15s}
+.cb-ep[open] .cb-ep-go{transform:rotate(90deg)}
+.cb-ep-body{padding:0 14px 14px}
+.cb-ep-body .vu-sec,.cb-ep-body section{margin:0;padding:0;border:0}
+.cb-ew-waves{margin:0;padding-left:0;list-style:none}
+.cb-ew-none{margin-top:14px;padding:16px;border-radius:20px;background:var(--vu-card)}
+.cb-ew-tags{display:flex;gap:8px;align-items:center;margin:0}
+.cb-ew-none .vu-mt{margin:10px 0 0;font-size:20px;font-weight:900;letter-spacing:-.03em;line-height:1.15}
+.cb-ew-none-p{margin:6px 0 0;font-size:14px;color:var(--vu-mute)}
+.cb-ew-link{margin-top:10px}
+.cb-ew-link .vu-hud{color:var(--vu-lime)}

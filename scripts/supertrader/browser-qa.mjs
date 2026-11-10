@@ -57,13 +57,15 @@ async function main() {
   let lensSymbol = null;
   for (const st of Object.values(signals.strategies)) { if (st.open[0]) { lensSymbol = st.open[0].symbol; break; } }
   const routes = [
-    ['home', '/supertrader/', '.st-r-intro h1'],
-    ['signals', '/supertrader/signals/', '.st-r-chips button'],
-    ['signals-canslim', '/supertrader/signals/?method=CANSLIM', '.st-r-row[data-partial], .st-r .vu-blank'],
-    ['strategies', '/supertrader/strategies/', '.st-r-mcard'],
-    ['backtests', '/supertrader/backtests/', '.st-btrow'],
+    ['home', '/supertrader/', 'h1.st-x-lt'],
+    ['signals', '/supertrader/treffer/', '.st-r-chips button'],
+    ['signals-redirect', '/supertrader/signals/?method=DONCHIAN_TURTLE', '.st-r-chips button[aria-pressed="true"][data-v="DONCHIAN_TURTLE"]'],
+    ['signals-canslim', '/supertrader/treffer/?method=CANSLIM', '.st-r-row[data-partial], .st-r .vu-blank'],
+    ['strategies', '/supertrader/strategies/', 'h1.st-x-lt'],
+    ['backtests', '/supertrader/forschung/', '.st-btrow'],
+    ['backtests-redirect', '/supertrader/backtests/', '.st-btrow'],
     ['sources', '/supertrader/sources/', '.st-r-acc'],
-    ...registry.strategies.map((s) => [`strategy-${s.slug}`, `/supertrader/strategies/${s.slug}/`, '.st-r h1.vu-lt']),
+    ...registry.strategies.map((s) => [`strategy-${s.slug}`, `/supertrader/strategies/${s.slug}/`, '.st-r h1.vu-lt, .st-r .st-x-hero h1']),
   ];
   if (lensSymbol) routes.push(['lens', `/supertrader/stock/${lensSymbol}/`, '.st-r-sig']);
   const csSym = signals.partialChecks?.CANSLIM?.candidates?.[0]?.symbol;
@@ -83,7 +85,7 @@ async function main() {
   routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-r, #sf .sf-empty' : '#sf .sf-empty']);
   routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, '.st-r-answer']);
   routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', '.st-r-answer']);
-  const SF_ROUTE_SELECTOR = SF ? { home: '.st-r-hero .st-r-ladder', strategies: '[data-tab=methoden] .st-r-mcard' } : { home: '.st-r .vu-blank', strategies: '[data-tab=methoden] .vu-blank' };
+  const SF_ROUTE_SELECTOR = SF ? { home: '.st-x-today .st-flow', strategies: '.st-x-mr2' } : { home: '.st-r .vu-blank', strategies: '.st-r .vu-blank' };
   // Runde 12: Modelldepot VU Trendfolge 52W - Methode mit Marktampel/Rangliste, Einzelwert mit Status
   const t52file = path.join(SITE, 'supertrader/data/trend52.json');
   if (fs.existsSync(t52file)) {
@@ -200,11 +202,11 @@ async function main() {
         // Gemeinsame Produkt-Leiste der Vision-Universe-Shell (#vu-dock, Shadow DOM): bei jeder Breite unten, mit ☰ fuer das globale Menue.
         bottomNav: (() => { const n = document.querySelector('#vu-dock')?.shadowRoot?.querySelector('nav'); if (!n) return false; const r = n.getBoundingClientRect(); return r.height > 0 && r.bottom <= innerHeight + 1 && r.bottom >= innerHeight - 40 && n.querySelectorAll('a').length === 4 && !!n.querySelector('button.menu') && n.querySelector('a').textContent.trim() === 'Supertrader'; })(),
         homeB: location.pathname === '/supertrader/' ? [...document.querySelectorAll('.st-q[data-q="B"]')].filter((e) => e.textContent.trim() === 'B-Setup').length : 0,
-        researchSection: !!document.querySelector('.st-research, .vu-research') || /Forschung, nicht zertifiziert/.test(document.body.innerText),
-        researchInNear: [...document.querySelectorAll('.st-sec')].filter((x) => /Am nächsten am Einstieg/.test(x.querySelector('h2')?.textContent || '')).some((x) => x.querySelector('.st-note-tag.research')),
+        researchSection: !!document.querySelector('.st-research, .vu-research') || /Forschung, nicht zertifiziert/i.test(document.body.innerText),
+        researchInNear: [...document.querySelectorAll('.st-sec')].filter((x) => /Am nächsten an der Zone/.test(x.querySelector('h2')?.textContent || '')).some((x) => x.querySelector('.st-note-tag.research')),
         evBanner: !!document.querySelector('.st-r-belast'),
         fidBanner: !!document.querySelector('.st-r-fid, .st-fidban, .st-fid'),
-        portfolioSec: [...document.querySelectorAll('h2')].some((x) => x.textContent === 'Modellportfolio' || x.textContent === 'Laufend nach Regel'),
+        portfolioSec: [...document.querySelectorAll('h2')].some((x) => x.textContent === 'Modellportfolio' || x.textContent === 'Laufend nach Regel') && !!document.querySelector('.st-x-hero [data-depot], .st-mphead, .st-r-kv, .st-mp'),
         // Regelwechsel darf im Protokoll nicht wie ein zweites Marktereignis aussehen.
         tlDuplicates: (() => { const seen = new Set(); let d = 0; for (const li of document.querySelectorAll('.st-tl li, .st-r-tl li')) { if (li.dataset.kind === 'reassessed') continue; const k = li.textContent.trim(); if (seen.has(k)) d++; seen.add(k); } return d; })(),
         cardsWithoutPhase: [...document.querySelectorAll('.st-card2, .st-r-sig')].filter((c) => !c.querySelector('.st-phase, .vu-verdict')).length,
@@ -212,8 +214,8 @@ async function main() {
         textLen: document.body.innerText.length,
         // Ein vorbereitetes Setup darf nie eine Ausfuehrung zeigen.
         // Ein vorbereitetes Setup darf nie eine Ausfuehrung zeigen.
-        preparedWithEntry: [...document.querySelectorAll('.st-r-sig')].filter((b) => /Muster entsteht|Kurz vor der Marke/.test(b.querySelector('.vu-verdict')?.textContent || '') && /Einstieg /.test(b.querySelector('.st-r-trkl')?.textContent || '')).length,
-        plannedUnlabeled: [...document.querySelectorAll('.st-cells .c')].filter((c) => ['Trigger', 'Ungültig'].includes(c.querySelector('.k')?.textContent) && !/geplant/.test(c.querySelector('.d')?.textContent || '')).length,
+        preparedWithEntry: [...document.querySelectorAll('.st-r-sig')].filter((b) => /Wartet|Muster entsteht|Plan fertig/.test(b.querySelector('.vu-verdict')?.textContent || '') && /Aufnahme /.test(b.querySelector('.st-r-trkl')?.textContent || '')).length,
+        plannedUnlabeled: [...document.querySelectorAll('.st-cells .c')].filter((c) => ['Zone', 'Ungültig'].includes(c.querySelector('.k')?.textContent) && !/geplant/.test(c.querySelector('.d')?.textContent || '')).length,
         lensPlanBottom: (() => { const n = document.querySelector('.st-r-sig .st-r-trk'); return n ? n.getBoundingClientRect().bottom : null; })(),
         ruleCard: !!document.querySelector('.st-assess'),
         freshness: !!document.querySelector('.st-fresh, .st-r-asof, .st-r-answer'),
@@ -222,8 +224,10 @@ async function main() {
         watchTile: !!document.querySelector('.st-kpi[data-p="watch"]'),
         // interne Regel-/Gate-Codes nicht im sichtbaren Text
         codes: (document.body.innerText.match(/\b(?:DON|KK|DAR|MIN|WEI|LC|PILOT)-[A-Z0-9-]+\b/g) || []).slice(0, 3),
-        replayBanner: /kein aktuelles Signal/.test(document.body.innerText),
-        partialAsSignal: /CAN-SLIM-Signal(?! )/.test(document.body.innerText.replace(/kein(em)? CAN-SLIM-Signal/gi, '')),
+        replayBanner: /kein aktueller Treffer/.test(document.body.innerText),
+        partialAsSignal: /CAN-SLIM-(?:Signal|Treffer)(?! )/.test(document.body.innerText.replace(/kein(?:em|en)? CAN-SLIM-(?:Signal|Treffer)/gi, '')),
+        /* Konzept „Das Rezept eines Profis“, Folie SX08: diese Wörter stehen in keiner Supertrader-Oberfläche mehr */
+        recipeWording: (document.querySelector('main')?.innerText || '').match(/\bSignal\w*|Luft bis zum Stop|Einstiegschance\w*|schlägt den Markt|Kurz vor der Marke|Modell ist dabei|Modell steigt ein|Risiko je Kauf/)?.[0] ?? null,
         // quellentreue Research-Kandidaten: Stufe sichtbar, Plan nur im modellierten Ablauf, keine Signal-/Freigabesprache
         // kompakte Zeile .sf-r (ST02): Stufe als data-stage und sichtbares Urteil (.vu-verdict)
         sfCardsWithoutStage: [...document.querySelectorAll('.sf-card, .sf-row')].filter((c) => !c.querySelector('.sf-stage')).length
@@ -243,6 +247,7 @@ async function main() {
       if (name === 'home' && m.homeB) errors.push(`${m.homeB} Darvas-B-Setups prominent auf der Startseite`);
       if (m.cardsWithoutPhase) errors.push(`${m.cardsWithoutPhase} Aktienkarten ohne Phasenabzeichen`);
       if (m.partialAsSignal) errors.push('Teiltreffer als CAN-SLIM-Signal bezeichnet');
+      if (m.recipeWording) errors.push('Wortwahl (Folie SX08): „' + m.recipeWording + '“ sichtbar');
       if (m.watchAsPrepared) errors.push(`${m.watchAsPrepared} Donchian-Eintraege als „vorbereitet“ beschriftet (Beobachtungsliste)`);
       const researchIds = registry.strategies.filter((x) => x.evidence?.presentation === 'RESEARCH').map((x) => x.strategy_id);
       if (name === 'home' && researchIds.some((id) => signals.strategies[id]?.open?.length) && !m.researchSection) errors.push('Forschung/Modellbeobachtung fehlt auf der Startseite');

@@ -1,7 +1,5 @@
-/* VISION UNIVERSE ELLIOTT — app.js (Produkt-Shell). /elliott/ Startseite (W01), #/?welle=3|richtung=…|neu=1|reihe=<id> teilbare
-   Filter (W02–W04), #/<TICKER>[?ansicht=profi] Aktienbild (W05). Das Aktienbild ist das vorhandene Chartbild: beim ersten Oeffnen
-   laedt diese Seite genau das Buendel, das /quant/index.html nennt, und haengt es ueber QXApp.mountElliott ein (keine zweite
-   Implementierung). Vorgewaermt wird nur bei Absicht (Zeiger, Fokus), nie beim Laden der Startseite. */
+/* VISION UNIVERSE ELLIOTT — app.js. /elliott/ Start „Wo lassen sich Wellen zählen?“, #/?zaehlbar=1 Liste, #/?neu=1|richtung=…|reihe=<id>
+   Lesarten, #/<TICKER> Aktienbild: laedt das Buendel aus /quant/index.html und haengt es ueber QXApp.mountElliott ein. */
 (function (global) {
   "use strict";
   var M = global.VUElliottHome;
@@ -52,9 +50,10 @@
     if (state.status === "ready" || state.status === "loading") return;
     state.status = "loading";
     loadHome().then(function (home) { state.home = home; state.status = "ready"; if (state.view === "home") render(); })
-      .catch(function (e) { if (global.console) console.error("Elliott home", e); state.status = "error"; if (state.view === "home") render(); });
+      .catch(function (e) { if (global.console) console.error("Elliott home", e); state.status = "error"; state.failure = { status: e && e.status, msg: String(e && e.message || ""), at: new Date() }; if (state.view === "home") render(); });
   }
 
+  function failText() { return M.loadFailText(state.failure); }
   var stackPromise = null, stackLinks = [];
   function loadStack() {
     if (!stackPromise) {
@@ -72,8 +71,6 @@
           loads.push(new Promise(function (ok) { link.onload = link.onerror = function () { ok(); }; }));
           document.head.append(link);
         });
-        // Reuse the critical C04/C05 styles and code from compiled Quant.
-        // Classic source releases keep their external-script path below.
         doc.querySelectorAll('style[data-vu-quant-head]').forEach(function (source) {
           var style = el("style", { media: "not all", dataset: { qxHost: "1" } });
           style.textContent = source.textContent; stackLinks.push(style); document.head.append(style);
@@ -156,9 +153,8 @@
     if (m) { m.setAttribute("tabindex", "-1"); m.focus(); }
   });
 
-  var U = global.VUUI, LIST = 10;
+  var U = global.VUUI, LIST = 25;
   function frag(html) { var t = document.createElement("template"); t.innerHTML = html; return t.content; }
-  function p0(v) { var r = Math.round(v * 100); return (r > 0 ? "+" : r < 0 ? "−" : "") + Math.abs(r).toLocaleString("de-DE"); }
   var ROLE_SHORT = { PRIMARY: "Hauptlesart", ALTERNATIVE: "Alternative", HIGH_UPSIDE: "Alternative", MOTIVE_ALTERNATIVE: "Motiv-Alternative", EXPLORE_HIGHLIGHT: "Explorativ" };
   var TYPE_SHORT = { NEXT_MOVE: "Folgebewegung", REVERSAL: "Gegenbewegung", THRUST: "Ausbruch" };
   var ART = { neu: "NEW", bestaetigt: "CONFIRMED", ueberarbeitet: "REVISED", zone: "ZONE", rolle: "ROLE" };
@@ -167,7 +163,7 @@
   var EXP = "<b>Experimentell.</b> Eine Lesart beschreibt eine mögliche Struktur mit klarer Grenze. Keine Vorhersage, kein Kursziel, keine Empfehlung.";
 
   function card(c, n) {
-    var t = c.tiers || {}, k = t.ext ? "ext" : t.base ? "base" : t.xtr ? "xtr" : null, up = c.dir === "UP", inv = c.inv && c.inv.p > 0 ? c.inv : null;
+    var up = c.dir === "UP", inv = c.inv && c.inv.p > 0 ? c.inv : null;
     var spark = el("span", { class: "el-spark", "aria-hidden": "true", dataset: { t: c.t } });
     if (global.VUElliottSpark) global.VUElliottSpark.observe(spark);
     return el("a", { class: "el-card", href: M.detailHref(c.t), "aria-label": M.ariaLabel(c), dataset: { id: c.id, symbol: c.t, role: c.role } }, [
@@ -177,7 +173,7 @@
         el("span", { class: "el-pill el-dir " + (up ? "is-up" : "is-down"), text: (up ? "▲ " : "▼ ") + M.DIR_LABEL[c.dir] }),
         el("span", { class: "el-pill el-meta", text: M.STATUS_LABEL[c.st] })]),
       el("div", { class: "el-zg" }, [
-        el("span", {}, [el("span", { class: "el-k", text: "Zone " + (k ? M.TIER_LABEL[k] : "") }), el("b", { class: "el-proj-v num", text: k ? p0(t[k][0]) + " bis " + p0(t[k][1]) + " %" : "–" })]),
+        el("span", {}, [el("span", { class: "el-k", text: "Muster" }), el("b", { class: "el-proj-v", text: c.pattern ? M.patternDe(c.pattern) : "–" })]),
         el("span", {}, [el("span", { class: "el-k", text: "Ungültig " + (inv && inv.dir === "above" ? "über" : "unter") }), el("b", { class: "num", text: inv ? U.money(inv.p, c.cur) : "–" })])]),
       c.fr === "DELAYED" ? el("p", { class: "el-delayed", role: "note", text: "Kurs verzögert · " + M.dateDe(c.last) }) : null
     ]);
@@ -186,7 +182,6 @@
   function sect(title, href, link) { return frag(U.sect(title, href ? { href: href, link: link } : null)); }
   function note(html, cls) { return el("div", { class: "vu-box vu-box--line el-note " + (cls || "") }, [frag(U.glyph("book", 18)), el("span", {}, [frag(html)])]); }
   function chip(label, n, href, on) { return el("a", { class: "vu-chip el-chip" + (on ? " is-on" : ""), href: href, "aria-current": on ? "page" : null }, [label, n !== null && n !== undefined ? el("span", { class: "el-chip-n", text: String(n) }) : null]); }
-  function filterBtn(label) { return el("button", { class: "vu-chip el-chip", type: "button", onclick: function () { openFilter(M.parseHash(global.location.hash)); } }, [frag(U.glyph("filter", 14)), label]); }
   function count(s) { return M.filterCards(state.home.cards, s).length; }
   function emptyBox(e) {
     return el("section", { class: "el-empty", role: "status" }, [el("h2", { text: e.title }), el("p", { text: e.text }),
@@ -199,7 +194,6 @@
       shown.welle = shown.richtung = 1;
       row.append(chip("Alle", count({ welle: s.welle }), M.buildHash({ welle: s.welle }), !s.richtung && !M.isFiltered(Object.assign({}, s, { welle: null }))));
       [["auf", "▲ Aufwärts"], ["ab", "▼ Abwärts"]].forEach(function (o) { row.append(chip(o[1], count({ welle: s.welle, richtung: o[0] }), M.buildHash({ welle: s.welle, richtung: o[0] }), s.richtung === o[0])); });
-      row.append(filterBtn("Filter"));
     } else {
       var one = function (k, v) { var x = {}; x[k] = v; return x; }, only = function (k, v) { return !s.reihe && !s.neu && s[k] === v && M.buildHash(s) === M.buildHash(one(k, v)); };
       row.append(chip("Alle", state.home.cards.length, "#/", !M.isFiltered(s)));
@@ -207,7 +201,6 @@
         if (only(o[0], o[1])) shown[o[0]] = 1;
         var n = count(one(o[0], o[1])); if (n) row.append(chip(o[2], n, M.buildHash(one(o[0], o[1])), only(o[0], o[1])));
       });
-      if (!s.richtung || s.welle || s.status || s.reihe || s.neu) row.append(filterBtn("Filter"));
     }
     rows.push(row);
     if (s.richtung && !s.welle && !s.reihe && !s.neu) {
@@ -218,48 +211,30 @@
         if (s[o[0]] === o[1]) shown[o[0]] = 1;
         if (n) sub.append(chip(o[2] + " · " + n, null, M.buildHash(M.withChip(s, o[0], o[1])), s[o[0]] === o[1]));
       });
-      sub.append(filterBtn("Mehr")); rows.push(sub);
+      rows.push(sub);
     }
     var extra = ["welle", "richtung", "status", "rolle"].filter(function (k) { return s[k] && !shown[k]; });
     if (extra.length) rows[0].append.apply(rows[0], extra.map(function (k) { var x = {}; x[k] = s[k]; return chip(M.filterTitle(x) + " ×", null, M.buildHash(M.withChip(s, k, s[k])), true); }));
     return rows;
   }
 
-  var FGROUPS = [["Welle", "welle", [["3", "Welle 3"], ["5", "Welle 5"], ["C", "Welle C"]]], ["Richtung", "richtung", [["auf", "▲ Aufwärts"], ["ab", "▼ Abwärts"]]],
-    ["Status", "status", [["bestaetigt", "Bestätigt"], ["aufbau", "Im Aufbau"]]], ["Rolle", "rolle", [["primaer", "Hauptlesart"], ["alternative", "Alternative"], ["motiv", "Motiv-Alternative"], ["highlight", "Explorativ"]]]];
   var sheetNode = null;
   function sheetShell(title) {
     if (!sheetNode) { sheetNode = frag(U.sheet("el-sheet", title, "")).firstChild; document.body.append(sheetNode); }
     sheetNode.querySelector(".vu-sheet-ui").setAttribute("aria-label", title);
     return sheetNode.querySelector(".vu-sheet-ui");
   }
-  function openFilter(s0) {
-    var d = Object.assign({}, s0, { reihe: null, suche: false, q: "" }), box = sheetShell("Filter");
-    function paint() {
-      var body = [el("div", { class: "el-sheet-head" }, [el("h2", { class: "vu-mt", text: "Filter" }), el("button", { class: "el-link", type: "button", text: "Zurücksetzen", onclick: function () { d = M.parseHash("#/"); paint(); } })])];
-      FGROUPS.forEach(function (g) {
-        var opts = g[2].map(function (o) { var p = {}; p[g[1]] = o[0]; var n = count(p), on = d[g[1]] === o[0];
-          return n || on ? el("button", { type: "button", role: "checkbox", "aria-checked": String(on), class: "vu-chip el-chip" + (on ? " is-on" : ""), onclick: function () { d[g[1]] = on ? null : o[0]; paint(); } }, [o[1], el("span", { class: "el-chip-n", text: String(n) })]) : null; }).filter(Boolean);
-        if (opts.length) body.push(el("p", { class: "vu-ltag el-fl", text: g[0] }), el("div", { class: "el-fwrap" }, opts));
-      });
-      var sw = frag(U.toggle(d.neu, "Nur neu und verändert")).firstChild; sw.classList.add("el-fswitch");
-      sw.querySelector("input").addEventListener("change", function (e) { d.neu = e.target.checked; paint(); });
-      var n = count(d);
-      body.push(sw, frag(U.help("Die Zahlen zeigen, wie viele Lesarten es insgesamt gibt.")),
-        el("a", { class: "vu-btn vu-btn--block el-fgo", href: M.buildHash(d), onclick: function () { U.closeSheet(sheetNode); }, text: n + (n === 1 ? " Lesart" : " Lesarten") + " zeigen" }));
-      box.replaceChildren.apply(box, body);
-    }
-    paint(); U.openSheet(sheetNode);
-  }
   function openAbout() {
-    var box = sheetShell("Was ist eine Elliott-Welle?"), P = [[0, 70], [58, 46], [116, 58], [174, 18], [232, 34], [290, 6], [340, 12]];
+    var box = sheetShell("Wellen in 3 Minuten"), P = [[0, 70], [58, 46], [116, 58], [174, 18], [232, 34], [290, 6], [340, 12]];
     var svg = '<svg class="el-schema" viewBox="-8 0 356 90" role="img" aria-label="Schema: fünf Schritte, drei nach vorn und zwei zurück"><path d="M' + P.map(function (p) { return p.join(" "); }).join(" L") + ' L340 90 L0 90Z" fill="#c8f531" opacity=".35"/><path d="M' + P.map(function (p) { return p.join(" "); }).join(" L") + '" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>' +
       P.slice(1, 6).map(function (p, i) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="9" fill="currentColor"/><text x="' + p[0] + '" y="' + (p[1] + 4) + '" text-anchor="middle" class="el-schema-n">' + (i + 1) + "</text>"; }).join("") + '<circle cx="340" cy="12" r="5" fill="#c8f531" stroke="currentColor" stroke-width="2"/></svg>';
     var term = function (k, v) { return el("div", { class: "el-term" }, [el("b", { text: k }), el("span", { text: v })]); };
-    box.replaceChildren(el("p", { class: "vu-ltag", text: "Kurz erklärt" }), el("h2", { class: "vu-mt", text: "Was ist eine Elliott-Welle?" }),
-      el("p", { class: "el-sheet-p", text: "Kurse laufen oft in 5 Schritten: 3 nach vorn, 2 zurück. Welle 3 ist meist die stärkste." }), frag(svg), el("p", { class: "vu-mu vu-xs", text: "Schema, keine echten Kurse." }),
-      term("Zone (Projektionszone)", "Bereich, in den die Welle nach den Regeln rechnerisch laufen kann."), term("Ungültig unter …", "Schließt der Kurs jenseits dieser Grenze, stimmt die Zählung nicht mehr."), term("Bestätigt / Im Aufbau", "Wie weit die Struktur schon steht."),
-      frag(U.help("Eine Projektion ist keine Wahrscheinlichkeit, keine Prognose und kein Kursziel. Für Projektionszonen liegt noch keine ausreichende historische Prüfung vor.")),
+    box.replaceChildren(el("p", { class: "vu-ltag", text: "Kurz erklärt" }), el("h2", { class: "vu-mt", text: "Wellen in 3 Minuten" }),
+      el("p", { class: "el-sheet-p", text: "Nach Elliott laufen Kurse in Wellen: ein Impuls in 5 Schritten (3 nach vorn, 2 zurück), danach eine Korrektur in 3 Teilen (A, B, C)." }), frag(svg), el("p", { class: "vu-mu vu-xs", text: "Schema, keine echten Kurse." }),
+      term("Impuls", "Fünf Wellen in Trendrichtung. Welle 3 ist nach der Lehre meist die längste."), term("Korrektur", "Drei Teile gegen den Trend: Zickzack, flache Korrektur, Dreieck oder Kombinationen."),
+      term("Warum Zählungen oft wechseln", "Dieselben Kurse lassen sich oft auf mehrere Arten zählen. Die Engine zählt nur, wenn der Chart sauber verläuft, und nennt die Gefahr einer Neuzählung."),
+      term("Ungültig unter …", "Schließt die Woche jenseits dieser Grenze, stimmt die Zählung nicht mehr."),
+      frag(U.help("Eine Lesart ist keine Wahrscheinlichkeit, keine Prognose und kein Kursziel.")),
       el("p", { class: "vu-xs" }, [el("a", { href: "/quant/#/methodik", text: "Methodik ansehen" })]),
       el("button", { class: "vu-btn vu-btn--block", type: "button", text: "Verstanden", onclick: function () { U.closeSheet(sheetNode); } }));
     U.openSheet(sheetNode);
@@ -267,7 +242,7 @@
   var form = null, closeSearch = function () {}, formFocusOut = null;
   document.addEventListener("click", function (ev) { if (form && !form.contains(ev.target)) closeSearch(); });
   function buildSearch(initialQ, autofocus) {
-    var input = el("input", { id: "el-q", class: "el-input", type: "search", placeholder: "Aktie oder Kürzel suchen …", autocomplete: "off", autocapitalize: "off", spellcheck: "false", role: "combobox", "aria-expanded": "false", "aria-controls": "el-results", "aria-autocomplete": "list", "aria-label": "Aktie suchen", value: initialQ || "" });
+    var input = el("input", { id: "el-q", class: "el-input", type: "search", placeholder: "Aktie suchen …", autocomplete: "off", autocapitalize: "off", spellcheck: "false", role: "combobox", "aria-expanded": "false", "aria-controls": "el-results", "aria-autocomplete": "list", "aria-label": "Aktie suchen", value: initialQ || "" });
     var list = el("ul", { id: "el-results", class: "el-results", role: "listbox", hidden: true });
     var live = el("p", { class: "el-sr", role: "status", "aria-live": "polite" });
     var active = -1, hits = [];
@@ -345,37 +320,60 @@
   function head(title, lead, kids) {
     return el("header", { class: "el-hero" }, [kids || null, el("h1", { class: "vu-lt el-title", text: title }), lead ? el("p", { class: "vu-lead el-lead", text: lead }) : null]);
   }
+  /* Start (Konzept EHV, EX02): Frage, ein Satz, wie selten Wellen zaehlbar sind, und genau diese Aktien als ruhige Liste. */
+  function weekday(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); if (!m) return "";
+    var d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
+    return ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."][d.getUTCDay()] + " " + m[3] + "." + m[2] + ".";
+  }
+  function asOfOf(home) { var a = M.applicableOf(home); return (a && a.asOf) || (home && home.dataAsOf) || null; }
   function hero(s) {
-    var home = state.home, sm = (home && home.summary) || {}, up = sm.bullish || 0, down = sm.bearish || 0;
-    var out = [head("Welche Wellen laufen gerade?", "Wir zählen Wellen in US-Charts nach festen Regeln. Jede Lesart hat eine Grenze, ab der sie nicht mehr gilt.",
-      el("p", { class: "el-tag" }, [el("span", { class: "vu-ltag", text: "Elliott" }), frag(U.pro())])), buildSearch(s.q, s.suche)];
-    if (s.suche) { out.push(el("p", { class: "el-suche-hint" }, ["Name oder Kürzel eingeben – jede abgedeckte US-Aktie öffnet ihr Elliott-Bild. ", el("a", { href: "#/", text: "Zur Übersicht" })])); return out; }
-    if (!home) return out;
-    var tile = function (href, label, v, sub) { var a = el(href ? "a" : "div", { class: "el-tile", href: href }); a.append(frag(U.tile(label, String(v), sub))); return a; };
-    out.push(el("nav", { class: "vu-grid el-tiles", "aria-label": "Überblick" }, [tile(null, "Lesarten", sm.theses || home.cards.length, "in " + (sm.securities || "–") + " Aktien"),
-      tile(M.buildHash({ welle: "3" }), "Welle 3", sm.wave3 || 0, "die stärkste Welle"), tile(M.buildHash({ neu: true }), "Neu", sm.recent || 0, "letzte 2 Tage")]));
-    out.push(el("div", { class: "vu-box el-split", role: "img", "aria-label": up + " Aufwärts, " + down + " Abwärts" }, [
-      el("div", { class: "el-split-n", "aria-hidden": "true" }, [el("span", { text: "▲ " + up + " aufwärts" }), el("span", { text: down + " abwärts ▼" })]),
-      el("div", { class: "el-bar", "aria-hidden": "true" }, [el("i", { style: "width:" + Math.round(100 * up / ((up + down) || 1)) + "%" })]),
-      el("p", { class: "vu-mu vu-xs", text: (up === down ? "Gleich viele Aufwärts- und Abwärts-Lesarten" : up > down ? "Mehr Aufwärts-Lesarten als Abwärts" : "Mehr Abwärts-Lesarten als Aufwärts") + " · Stand " + M.dateDe(home.dataAsOf) })]));
-    out.push(el("button", { class: "el-about", type: "button", onclick: openAbout }, [frag(U.glyph("book", 18)), el("span", { text: "Wie ist das gemeint?" }), frag(U.glyph("next", 16))]));
+    var home = state.home, a = M.applicableOf(home), asOf = asOfOf(home);
+    var tag = el("p", { class: "el-tag" }, [el("span", { class: "vu-ltag", text: "Elliott" }), frag(U.pro()), asOf ? el("span", { class: "vu-ltag", text: "Wochencharts " + weekday(asOf) }) : null]);
+    var out = [head("Wo lassen sich Wellen zählen?", "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten.", tag)];
+    if (!s.suche && a) {
+      var share = a.n ? a.count / a.n * 100 : 0;
+      out.push(el("section", { class: "vu-box vu-box--ink el-today", "aria-label": "Heute anwendbar" }, [
+        el("p", { class: "vu-ltag el-today-k", text: "Heute anwendbar" }),
+        el("p", { class: "el-today-n" }, [el("b", { class: "num", text: a.count.toLocaleString("de-DE") }), el("span", { text: "von " + a.n.toLocaleString("de-DE") + " Aktien" })]),
+        el("div", { class: "el-ebar", role: "img", "aria-label": a.count + " von " + a.n + " Aktien zählbar" }, [el("i", { style: "width:" + Math.max(1.2, share).toFixed(1) + "%" })]),
+        el("p", { class: "vu-xs el-today-s", text: "Gut anwendbar: " + a.high + ". Bei allen anderen zeigt die Aktie die Marktstruktur aus Technical." })]));
+    }
+    out.push(buildSearch(s.q, s.suche));
+    if (s.suche) out.push(el("p", { class: "el-suche-hint" }, ["Name oder Kürzel eingeben – jede abgedeckte US-Aktie öffnet ihr Elliott-Bild. ", el("a", { href: "#/", text: "Zur Übersicht" })]));
     return out;
   }
-  var NAV_GLYPH = { trend: "line", strength: "spark", engine: "target", span: "grid", recent: "bell" };
-  var RULE_SHORT = { wave3: "Bestätigt vor im Aufbau, dann Trend und Stärke. Nie nach Größe der Zone." };
-  function homeRows(host) {
-    var rows = M.rowsOf(state.home), big = rows.filter(function (r) { return r.id === "wave3" || r.id === "confirmed"; });
-    big.forEach(function (r) {
-      var n = r.id === "wave3" ? 4 : 3;
-      host.append(el("section", { class: "el-row", "aria-label": r.title, dataset: { row: r.id } }, [sect(r.title, M.rowHref(r), "Alle " + r.total),
-        el("p", { class: "vu-mu vu-xs el-rule", text: RULE_SHORT[r.id] || r.rule }), list(r.cards.slice(0, n), r.id === "wave3")]));
-    });
-    var rest = rows.filter(function (r) { return big.indexOf(r) < 0; });
-    if (rest.length) host.append(sect("Weitere Reihen"), el("div", { class: "vu-stack el-nav" }, rest.map(function (r) {
-      return frag(U.navcard({ href: M.rowHref(r), glyph: NAV_GLYPH[r.id], icon: NAV_GLYPH[r.id] ? null : "elliott", title: r.title, sub: r.total + " Lesarten" }));
-    })));
-    var miss = M.missingRowNote(state.home, "wave5");
-    if (miss) host.append(el("p", { class: "vu-mu vu-xs el-gap", text: miss }));
+  function countRow(r) {
+    var d = M.dirOf(r), inv = M.invalidLine(r);
+    var right = el("span", { class: "el-cr-r" }, [frag(d === "up" ? U.verdict("strong", "nach oben") : d === "down" ? U.verdict("weak", "nach unten") : U.verdict("none", "Richtung offen")), inv ? el("small", { class: "el-cr-inv num", text: inv }) : null]);
+    var a = el("a", { class: "el-cr el-hit", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), d === "up" ? "nach oben" : d === "down" ? "nach unten" : "Richtung offen", inv].filter(Boolean).join(", ") }, [
+      frag(U.logo(r.t)), el("span", { class: "el-cr-t" }, [el("b", { text: M.shortName(r.n, r.t), title: r.n }), el("span", { text: M.countLine(r) })]), right]);
+    return el("li", {}, [a]);
+  }
+  function countList(rows) { return el("ul", { class: "vu-box el-clist", role: "list" }, rows.map(countRow)); }
+  var INV_HELP = "Ungültig: Schließt die Woche jenseits dieser Marke, gilt die Zählung nicht mehr. Eine Lesart ist keine Vorhersage und kein Kursziel.";
+  var EXP_LINE = "Experimentell. Eine Projektion ist keine Wahrscheinlichkeit. Keine Anlageempfehlung.";
+  function noCountBox(a) {
+    return el("p", { class: "el-gap", role: "status", text: a ? "Heute ist bei keiner Aktie eine Wellenzählung anwendbar (Wellen-Index, Stand " + M.dateDe(a.asOf) + "). Das kommt vor: die Engine enthält sich, wenn keine Zählung verlässlich ist." :
+      "Die Liste der zählbaren Aktien fehlt im aktuellen Datenstand (Stand " + M.dateDe(state.home && state.home.dataAsOf) + "). Die Suche oben öffnet jede Aktie direkt." });
+  }
+  function startBody(host) {
+    var a = M.applicableOf(state.home);
+    host.append(sect("Saubere Zählung heute", a && a.count ? M.ZAEHLBAR_HASH : null, a ? "Alle " + a.count : null));
+    if (!a || !a.rows.length) host.append(noCountBox(a));
+    else host.append(countList(a.rows.slice(0, 6)));
+    host.append(el("div", { class: "el-inv-help" }, [frag(U.help(INV_HELP))]));
+    host.append(el("button", { class: "vu-navcard el-about", type: "button", onclick: openAbout }, [el("span", { class: "vu-hud", style: "--vu-hud:42px" }, [frag(U.glyph("book", 20))]),
+      el("span", { class: "vu-navcard__text" }, [el("b", { text: "Wellen in 3 Minuten" }), el("span", { text: "Impuls, Korrektur, warum Zählungen oft wechseln" })]), frag(U.glyph("next", 18))]));
+  }
+  function zaehlbarView(host) {
+    var a = M.applicableOf(state.home);
+    host.append(head("Zählbar heute", a ? a.count + " von " + a.n.toLocaleString("de-DE") + " Aktien, bei denen sich die Wellen laut Engine sauber zählen lassen. Wochencharts, Stand " + M.dateDe(a.asOf) + "." : null));
+    if (!a || !a.rows.length) { host.append(noCountBox(a)); return; }
+    var shown = Math.min(a.rows.length, state.shown);
+    host.append(countList(a.rows.slice(0, shown)));
+    if (a.rows.length > shown) host.append(el("button", { class: "vu-btn vu-btn--line vu-btn--block el-more", type: "button", text: "Weitere " + Math.min(a.rows.length - shown, LIST) + " laden", onclick: function () { state.shown += LIST; render(); var g = root.querySelectorAll(".el-cr"); if (g[shown]) g[shown].focus(); } }));
+    host.append(el("div", { class: "el-inv-help" }, [frag(U.help(INV_HELP + " Reihenfolge: gut anwendbar vor anwendbar, klare Zählung vor unklarer, dann Kürzel."))]));
   }
   function leadFor(s, n, rows) {
     var L = n + (n === 1 ? " Lesart" : " Lesarten");
@@ -430,25 +428,27 @@
     var home = state.home, host = el("div", { class: "el-content", id: "el-content" });
     if (state.status === "loading" || state.status === "idle") { host.append(el("div", { class: "el-skel-row", "aria-hidden": "true" }), el("p", { class: "el-sr", role: "status", text: "Elliott wird geladen …" })); return host; }
     if (state.status === "error") {
-      host.append(el("section", { class: "el-empty", role: "alert" }, [el("h2", { text: "Die Elliott-Übersicht ist gerade nicht verfügbar" }),
-        el("p", { text: "Die Übersicht konnte nicht geladen werden. Die Suche oben funktioniert weiter und öffnet jede Aktie direkt." }),
-        el("button", { class: "vu-btn vu-btn--sm", type: "button", text: "Erneut versuchen", onclick: function () { state.status = "idle"; ensureHome(); render(); } })]));
+      /* Leerzustand (Konzept EHV, Entscheidung 5): ein Satz mit Grund und Stand, kein grauer Kasten. */
+      host.append(el("p", { class: "el-gap el-load-fail", role: "alert" }, [failText(), " ",
+        el("button", { class: "el-link", type: "button", text: "Erneut versuchen", onclick: function () { state.status = "idle"; ensureHome(); render(); } })]));
       return host;
     }
+    if (s.zaehlbar && !s.suche) { zaehlbarView(host); host.append(el("p", { class: "vu-mu vu-xs el-exp", text: EXP_LINE })); return host; }
     if (s.neu && !s.reihe) { newsView(host, s); host.append(note(EXP)); return host; }
-    var list0 = M.isFiltered(s) ? ordered(s, M.filterCards(home.cards, s, home.rows)) : null;
-    if (list0) host.append(head(M.filterTitle(s, home.rows), leadFor(s, list0.length, home.rows)));
+    if (!M.isFiltered(s)) { startBody(host); host.append(el("p", { class: "vu-mu vu-xs el-exp", text: EXP_LINE })); return host; }
+    var list0 = ordered(s, M.filterCards(home.cards, s, home.rows));
+    host.append(head(M.filterTitle(s, home.rows), leadFor(s, list0.length, home.rows)));
     if (!s.reihe) chips(s).forEach(function (r) { host.append(r); });
-    var empty = M.emptyState(home, s, null, list0 ? list0.length : null);
+    var empty = M.emptyState(home, s, null, list0.length);
     if (empty) { host.append(emptyBox(empty)); return host; }
-    if (list0) {
+    {
       if (s.welle) host.append(note("Reihenfolge: bestätigt vor im Aufbau, dann Trend, Rang und relative Stärke. <b>Nie nach Größe der Zone.</b>", "el-order"));
       var shown = Math.min(list0.length, state.shown);
       host.append(list(list0.slice(0, shown), true, "el-grid"));
       more(host, list0.length, shown);
       host.append(frag(U.help(s.welle ? "Motiv-Alternative: eine zweite Zählung, die nach den Regeln ebenfalls passt." : "Hauptlesart: die Zählung, die die Engine bevorzugt. Alternative: eine zweite mögliche Zählung derselben Aktie.")));
-    } else homeRows(host);
-    host.append(note(EXP), el("aside", { class: "el-more-links" }, [el("a", { href: "/screener/", text: "Weitere Filter im Screener" }), el("a", { href: "/quant/", text: "Quantitative Einordnung in Quant" })]));
+      host.append(note(EXP));
+    }
     return host;
   }
 
@@ -462,6 +462,8 @@
   }
 
   function render() {
+    var to = M.redirectOf(global.location.hash);
+    if (to) { try { history.replaceState(null, "", global.location.pathname + global.location.search + to); } catch (e) { global.location.replace(to); return; } }
     var s = M.parseHash(global.location.hash);
     if (s.ticker) { showDetail(s); return; }
     var returning = state.view === "detail";
@@ -479,12 +481,12 @@
     var searchHadFocus = document.activeElement && document.activeElement.id === "el-q", q = searchHadFocus ? document.activeElement.value : s.q;
     root.setAttribute("aria-busy", "true");
     root.classList.toggle("is-suche", !!s.suche);
-    root.replaceChildren.apply(root, (M.isFiltered(s) && !s.suche ? [] : hero(Object.assign({}, s, { q: q }))).concat(s.suche ? [] : [content(s)]));
+    root.replaceChildren.apply(root, ((M.isFiltered(s) || s.zaehlbar) && !s.suche ? [] : hero(Object.assign({}, s, { q: q }))).concat(s.suche ? [] : [content(s)]));
     if (s.suche) global.scrollTo(0, 0);
     if (searchHadFocus) { var i = document.getElementById("el-q"); if (i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) { /* type=search */ } } }
     restoreFocus();
     root.querySelectorAll(".el-chips .is-on").forEach(function (c) { var p = c.parentNode; if (c.offsetLeft + c.offsetWidth > p.clientWidth) p.scrollLeft = c.offsetLeft - 16; });
-    document.title = (M.isFiltered(s) ? M.filterTitle(s, state.home && state.home.rows) + " · " : "") + "Elliott · Vision Universe®";
+    document.title = (s.zaehlbar ? "Zählbar · " : M.isFiltered(s) ? M.filterTitle(s, state.home && state.home.rows) + " · " : "") + "Elliott · Vision Universe®";
     root.setAttribute("aria-busy", "false"); root.dataset.ready = state.status === "ready" || state.status === "error" ? "true" : "false"; root.dataset.state = state.status;
     state.rendered = true; state.renderedStatus = state.status;
     if (returning) global.scrollTo(0, 0);

@@ -107,7 +107,7 @@ test('R9-I8 Produkt: Belegart je Kauf-Stop-Ausführung und methodenbezogener Hin
   const p = planOf(sig);
   assert.equal(p.entry.evidence, 'DAILY_BAR_HIGH_REACHED_TRIGGER'); assert.equal(p.entry.sameDayOrder, 'AMBIGUOUS');
   const js = (await import('node:fs')).readFileSync(new URL('../../../supertrader/assets/supertrader.js', import.meta.url), 'utf8');
-  assert.match(js, /Reihenfolge am Kauftag offen/); assert.match(js, /Ausführung angenommen/);
+  assert.match(js, /Reihenfolge am Aufnahmetag offen/); assert.match(js, /Ausführung angenommen/);
   assert.doesNotMatch(js.slice(js.indexOf('function evidenceNote'), js.indexOf('function qualityRow')), /\d+\s?%/, 'keine Kennzahlen aus Tiingo-Daten im Hinweis');
 });
 

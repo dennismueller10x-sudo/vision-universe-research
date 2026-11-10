@@ -215,7 +215,7 @@ test('Workflow: Jobstart wird vor allen langen Schritten festgehalten (Frist des
 });
 
 test('Workflow: Rollback bleibt fail-closed und unveraendert (sofort bei Fehlschlag des Deploy-/Verify-Schritts)', () => {
- assert.equal(rollback.if, "failure() && steps.deploy_live.outcome == 'failure' && inputs.verification != true");
+ assert.equal(rollback.if, "failure() && steps.deploy_live.outcome == 'failure' && steps.deploy_live.outputs.production_unchanged != 'true' && inputs.verification != true");
  assert.ok(steps.indexOf(rollback) > steps.indexOf(deploy));
  // Rollback jetzt nur bei noch AVAILABLE-Gate (kein Doppel-Rollback nach dem Pages-Handler) und mit CAS-Argument; disable/OFF-Dispatch unveraendert
  assert.match(rollback.run, /if node scripts\/company_intelligence\/pages-rollback-decision\.mjs --refresh; then/);

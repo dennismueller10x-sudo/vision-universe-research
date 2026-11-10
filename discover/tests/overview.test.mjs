@@ -103,3 +103,34 @@ test("OV11 Etiketten: bester Platz, Thema, Index-Gewicht, +N Reihen", () => {
   assert.match(html, /S&amp;P 500 · 6,9 %|S&P 500 · 6,9 %/);
   assert.match(html, /\+12 Reihen/);
 });
+
+test("OV12 Aktienkopf C04 wie Folie AX01 (a-top): Kurs, Tagesbewegung, Schluss und Euro rechts; Chart ohne Kursachse, Datum nur an den Enden", async () => {
+  const vm = await import("node:vm");
+  class N { constructor(tag) { this.tag = tag; this.attrs = {}; this.children = []; this.textContent = ""; } setAttribute(k, v) { this.attrs[k] = String(v); } appendChild(c) { this.children.push(c); return c; } }
+  const context = vm.createContext({ document: { createElementNS: (_ns, tag) => new N(tag) } });
+  context.window = context;
+  vm.runInContext(readFileSync(new URL("../ui/microchart.js", import.meta.url), "utf8"), context);
+  const pts = [["2025-11-05", 190], ["2026-03-01", 170], ["2026-08-01", 230], ["2026-11-06", 186.64]];
+  const svg = context.VUDiscover.MicroChart.renderRange(pts, { width: 358, height: 176, range: "1Y", compact: true });
+  const texts = (cls) => svg.children.filter((c) => c.tag === "text" && (c.attrs.class || "").split(" ").includes(cls)).map((c) => c.textContent);
+  assert.deepEqual(texts("dx-range-axis"), [], "keine Kursachse");
+  assert.deepEqual(texts("dx-range-date"), ["05.11.25", "06.11.26"]);
+  const voll = context.VUDiscover.MicroChart.renderRange(pts, { width: 358, height: 176, range: "1Y" });
+  assert.ok(voll.children.some((c) => (c.attrs.class || "").includes("dx-range-axis")), "ohne compact bleibt die Kursachse");
+  const detail = readFileSync(new URL("../ui/detail.js", import.meta.url), "utf8");
+  assert.match(detail, /dx-chart-hero dx-chart-hero--c04/);
+  assert.match(detail, /compact: !!dollarKopf/);
+  assert.match(detail, /title: "zum Vortagesschluss"/, "die Pille ist die Tagesbewegung");
+  const css = readFileSync(new URL("../ui/overview.css", import.meta.url), "utf8");
+  assert.match(css, /dx-chart-hero--c04 \.dx-chart-hero-preis>b\{font-size:34px/);
+  assert.match(css, /vu-shead-watch\{display:none\}/, "ein Merken-Knopf im Kopf (Herz), kein zweites Lesezeichen");
+});
+
+test("OV13 Überblick startet mit 1J wie im Mockup (auch bei offener Börse); 1T trägt denselben Kopf C04 in Dollar", () => {
+  const detail = readFileSync(new URL("../ui/detail.js", import.meta.url), "utf8");
+  assert.match(detail, /if \(state\.intraday && !\(loaded && ueberblickUS\(state\)\)\) state\.range = "1D";/);
+  assert.match(detail, /ueberblickUS\(state\) && leiste\.some\(function \(r\) \{ return r\.id === "1Y" && r\.available; \}\)\) \{\s*state\.rangeStarted = true; state\.range = "1Y";/);
+  const intraday = detail.slice(detail.indexOf("function zeichneIntraday"), detail.indexOf("function staleSatzAusZustand") > 0 ? detail.indexOf("function staleSatzAusZustand") : undefined);
+  assert.match(intraday, /dx-chart-hero dx-chart-hero--c04", "data-range": "1D"/);
+  assert.match(intraday, /umgerechnet = \{ snap: snapNativ, waehrung: "USD" \}/, "1T im Überblick in Dollar");
+});

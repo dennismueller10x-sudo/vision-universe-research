@@ -1,0 +1,418 @@
+{
+ "nummer": 1,
+ "datum": "2026-11-09",
+ "datumText": "09.11.2026",
+ "kw": 46,
+ "redaktionsschluss": "2026-11-08T20:00:00+01:00",
+ "redaktionsschlussText": "Sonntag, 08.11.2026",
+ "datenstandText": "Freitag, 06.11.2026",
+ "datenstandKurz": "06.11.",
+ "umfang": "30 Seiten mit 4 App-Seiten (Standard 24 mit 3 App-Seiten, bis 32 bei starker Nachrichtenlage)",
+ "daten": {
+  "fenster": {
+   "von": "2026-10-30",
+   "bis": "2026-11-06"
+  },
+  "aktien": [
+   "NVDA",
+   "AMD",
+   "MU",
+   "VRT",
+   "CRWV",
+   "ORCL",
+   "AVGO",
+   "LITE",
+   "MRVL",
+   "APP",
+   "PLTR",
+   "ABNB",
+   "FISV",
+   "AXON",
+   "IDXX",
+   "FSLR",
+   "MOS",
+   "TSM",
+   "DKNG",
+   "TEAM",
+   "FIS"
+  ],
+  "quickCheck": [
+   "AAPL",
+   "MSFT",
+   "NVDA",
+   "AMZN",
+   "GOOGL",
+   "META",
+   "TSLA",
+   "AVGO",
+   "AMD",
+   "PLTR",
+   "NFLX",
+   "ORCL",
+   "MU",
+   "JPM",
+   "LLY",
+   "COST",
+   "V",
+   "WMT",
+   "XOM",
+   "BRK.B",
+   "UNH",
+   "CRWD"
+  ]
+ },
+ "seiten": [
+  {
+   "id": "cover",
+   "quellen": false
+  },
+  {
+   "id": "app-modul",
+   "quellen": false
+  },
+  {
+   "id": "editorial",
+   "quellen": [
+    "vu-daten",
+    "nbc-0511",
+    "yahoo-0511"
+   ]
+  },
+  {
+   "id": "das-war",
+   "quellen": [
+    "cnbc-rally-0411",
+    "nbc-0511",
+    "cnbc-rz-0511",
+    "marvell-ir",
+    "techstartups-orcl-0311",
+    "wallst-orcl-0611",
+    "applovin-ir",
+    "cnbc-brk-0711",
+    "yahoo-jobs-0611",
+    "yahoo-anthropic-0611"
+   ],
+   "toc": {
+    "rubrik": "Woche",
+    "titel": "Das war die Woche"
+   }
+  },
+  {
+   "id": "zahlen",
+   "quellen": [
+    "nbc-0511",
+    "yahoo-0511",
+    "yahoo-jobs-0611",
+    "te-maerkte-0611",
+    "cnbc-rz-0511",
+    "cnbc-brk-0711",
+    "marvell-ir",
+    "hedgeweek-0211",
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Woche",
+    "titel": "Zahlen der Woche"
+   }
+  },
+  {
+   "id": "titel-story",
+   "quellen": [
+    "cnbc-wahl-0411",
+    "cnbc-rz-0511",
+    "cnbc-ballotpedia",
+    "capex-q3",
+    "stocktitan-0511",
+    "hedgeweek-0211",
+    "nbc-0511",
+    "stocktitan-0611",
+    "tikr-vrt-0511",
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Titel",
+    "titel": "Die KI-Bremse",
+    "bild": "img/hf-capitol-sturm.jpg"
+   }
+  },
+  {
+   "id": "titel-daten",
+   "quellen": [
+    "vu-daten",
+    "hedgeweek-0211"
+   ]
+  },
+  {
+   "id": "nvidia",
+   "vorlage": "aktie",
+   "quellen": [
+    "stocktitan-0511",
+    "stocktitan-0611",
+    "forbes-huang-0511",
+    "yahoo-nvda-0611",
+    "nvidia-ir",
+    "nbc-0511",
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Titel",
+    "titel": "Sieben KI-Aktien im Stresstest",
+    "bild": "img/hf-gpu-rack.jpg"
+   }
+  },
+  {
+   "id": "micron",
+   "vorlage": "aktie",
+   "quellen": [
+    "fool-mu-0611",
+    "vu-daten"
+   ]
+  },
+  {
+   "id": "vertiv",
+   "vorlage": "aktie",
+   "quellen": [
+    "vertiv-ir",
+    "stocktitan-vrt-0411",
+    "tikr-vrt-0511",
+    "marvell-ir",
+    "trefis-lite-0611",
+    "vu-daten"
+   ]
+  },
+  {
+   "id": "oracle",
+   "vorlage": "aktie",
+   "quellen": [
+    "techstartups-orcl-0311",
+    "wallst-orcl-0611",
+    "wallst-burry-1410",
+    "wallst-crwv-0611",
+    "hedgeweek-0211",
+    "vu-daten"
+   ]
+  },
+  {
+   "id": "amd",
+   "vorlage": "aktie",
+   "quellen": [
+    "amd-8k",
+    "cbs-0611",
+    "yahoo-0511",
+    "vu-daten"
+   ]
+  },
+  {
+   "id": "titel-szenarien",
+   "quellen": [
+    "burry-substack",
+    "wallst-burry-1410",
+    "dalio",
+    "hedgeweek-0211",
+    "stocktitan-0611",
+    "nbc-0511",
+    "nvidia-ir",
+    "stocktitan-termine",
+    "bls-kalender",
+    "fed-warsh"
+   ],
+   "toc": {
+    "rubrik": "Titel",
+    "titel": "Delle, Bremse oder Wende?",
+    "bild": "img/hf-cover-sturz.jpg"
+   }
+  },
+  {
+   "id": "app-erklaert",
+   "quellen": false,
+   "toc": {
+    "rubrik": "Vision Universe",
+    "titel": "Was ist Vision Universe?"
+   }
+  },
+  {
+   "id": "applovin",
+   "vorlage": "aktie",
+   "quellen": [
+    "applovin-ir",
+    "stockanalysis-app-0511",
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Analyse",
+    "titel": "AppLovin: größter Wochenanstieg im S&amp;P 500",
+    "bild": "img/hf-mobile-games-werbung.jpg"
+   }
+  },
+  {
+   "id": "palantir",
+   "vorlage": "aktie",
+   "quellen": [
+    "palantir-8k",
+    "wallst-burry-1410",
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Analyse",
+    "titel": "Palantir: Wenn sehr gut nicht reicht",
+    "bild": "img/bv-serverraum-blau.jpg"
+   }
+  },
+  {
+   "id": "anstiege",
+   "quellen": [
+    "airbnb-0511",
+    "idexx-8k",
+    "fiserv-8k",
+    "mosaic-call-0411",
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Berichtssaison",
+    "titel": "Größte Anstiege und Rückgänge",
+    "bild": "img/hf-ferienhaus-nacht.jpg"
+   }
+  },
+  {
+   "id": "rueckgaenge",
+   "quellen": [
+    "axon-8k",
+    "fis-8k",
+    "draftkings-ir",
+    "siliconangle-team-0511",
+    "vu-daten"
+   ]
+  },
+  {
+   "id": "hedgefonds",
+   "quellen": [
+    "hedgeweek-0211",
+    "hedgeweek-0411",
+    "sedaily-0511",
+    "krypton-0711",
+    "pershing-0211"
+   ],
+   "toc": {
+    "rubrik": "Hedgefonds",
+    "titel": "Der Oktober der Profis",
+    "bild": "img/hf-schach-trading.jpg"
+   }
+  },
+  {
+   "id": "profis",
+   "quellen": [
+    "cnbc-brk-0711",
+    "wallst-burry-1410",
+    "intel-form4",
+    "pershing-0211",
+    "vu-daten"
+   ]
+  },
+  {
+   "id": "chart",
+   "quellen": [
+    "vu-daten",
+    "nvidia-ir"
+   ],
+   "toc": {
+    "rubrik": "Chart der Woche",
+    "titel": "Nvidias Doppeltop",
+    "bild": "img/bv-bildschirme-rot.jpg"
+   }
+  },
+  {
+   "id": "screening",
+   "quellen": [
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Screening",
+    "titel": "19 Aktien, die in der Crash-Woche stiegen",
+    "bild": "img/hf-lupe-tabellen.jpg"
+   }
+  },
+  {
+   "id": "radar",
+   "quellen": [
+    "vu-daten",
+    "fox-0611",
+    "stocktitan-0611",
+    "onvista-dax",
+    "te-maerkte-0611"
+   ],
+   "toc": {
+    "rubrik": "Markt",
+    "titel": "Markt-Radar"
+   }
+  },
+  {
+   "id": "app-werkzeuge",
+   "quellen": false
+  },
+  {
+   "id": "konjunktur",
+   "quellen": [
+    "yahoo-jobs-0611",
+    "te-maerkte-0611",
+    "fed-warsh",
+    "coingecko"
+   ],
+   "toc": {
+    "rubrik": "Konjunktur",
+    "titel": "Jobs-Wunder und Zinsangst",
+    "bild": "img/hf-fed-gebaeude.jpg"
+   }
+  },
+  {
+   "id": "deutschland",
+   "quellen": [
+    "onvista-dax",
+    "ariva-rhm-0511",
+    "dwn-ezb-2910",
+    "finanzen-vorschau"
+   ],
+   "toc": {
+    "rubrik": "Deutschland",
+    "titel": "Deutschland und Europa"
+   }
+  },
+  {
+   "id": "termine",
+   "quellen": [
+    "finanzen-vorschau",
+    "stocktitan-termine",
+    "bls-kalender",
+    "nvidia-ir",
+    "eu-gipfel",
+    "yahoo-anthropic-0611"
+   ],
+   "toc": {
+    "rubrik": "Termine",
+    "titel": "Das wird die Woche",
+    "bild": "img/hf-boersenglocke.jpg"
+   }
+  },
+  {
+   "id": "quickcheck",
+   "quellen": [
+    "vu-daten"
+   ],
+   "toc": {
+    "rubrik": "Service",
+    "titel": "Quick-Check"
+   }
+  },
+  {
+   "id": "impressum",
+   "quellen": false,
+   "toc": {
+    "rubrik": "Service",
+    "titel": "Impressum und Quellen"
+   }
+  },
+  {
+   "id": "rueckseite",
+   "quellen": false
+  }
+ ]
+}

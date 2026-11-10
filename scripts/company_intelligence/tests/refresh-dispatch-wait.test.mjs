@@ -21,7 +21,7 @@ const runPlan=(...steps)=>steps.map(([m,s,c=''])=>[m*MIN,s,c]);
  *  plans: je Dispatch (n-ter) der Plan des entstehenden Laufs oder null (Lauf erscheint nie)
  *  deliveredAtMin: Minute ab T0, ab der die Generation ausgeliefert ist (null = nie)
  */
-function sim(mod,{plans,deliveredAtMin=null,deliveredAfterCalls=null,jobStartMin=-25,limits,dispatchFails=0,extraKnown=[],jobs=null}){
+function sim(mod,{plans,deliveredAtMin=null,deliveredAfterCalls=null,otherAtMin=null,jobStartMin=-25,limits,dispatchFails=0,extraKnown=[],jobs=null}){
  let t=T0,genCalls=0;const log={dispatch:[],cancel:[],list:0},runs=[...extraKnown];
  const gh={
   dispatch:async()=>{
@@ -40,7 +40,7 @@ function sim(mod,{plans,deliveredAtMin=null,deliveredAfterCalls=null,jobStartMin
   ...(jobs?{jobs:async id=>{log.jobs=(log.jobs||0)+1;const n=Number(id)-1000-dispatchFails,v=jobs[n];if(typeof v==='function')return v();return v??[];}}:{})
  };
  const deadlines=mod.planDeadlines({jobStartMs:T0+jobStartMin*MIN,nowMs:T0,limits:limits||mod.LIMITS});
- const run=()=>mod.waitForDelivery({expected:EXPECTED,gh,generation:async()=>{genCalls++;return (deliveredAfterCalls!==null?genCalls>deliveredAfterCalls:deliveredAtMin!==null&&t>=T0+deliveredAtMin*MIN)?EXPECTED:'gen-old';},
+ const run=()=>mod.waitForDelivery({expected:EXPECTED,gh,generation:async()=>{genCalls++;return (deliveredAfterCalls!==null?genCalls>deliveredAfterCalls:deliveredAtMin!==null&&t>=T0+deliveredAtMin*MIN)?EXPECTED:otherAtMin!==null&&t>=T0+otherAtMin*MIN?'gen-other':'gen-old';},
   now:()=>t,sleep:async ms=>{t+=ms;},limits:limits||mod.LIMITS,deadlines});
  return {run,log,deadlines,clock:()=>t};
 }
@@ -79,7 +79,8 @@ const scenarios={
   const s=sim(mod,{plans:[runPlan([0,'completed','cancelled'])],deliveredAtMin:0});const r=await s.run();
   assert.equal(r.served,true);assert.equal(s.log.dispatch.length,1);
   // Auslieferung erscheint genau zwischen Schleifenpruefung und Re-Dispatch-Entscheidung: unmittelbar davor wird erneut geprueft
-  const race=sim(mod,{plans:[runPlan([0,'completed','cancelled'])],deliveredAfterCalls:1});const rr=await race.run();
+  // Aufruf 1 = baseline vor dem Dispatch, Aufruf 2 = Schleifenpruefung, ab Aufruf 3 ausgeliefert
+  const race=sim(mod,{plans:[runPlan([0,'completed','cancelled'])],deliveredAfterCalls:2});const rr=await race.run();
   assert.equal(rr.served,true);assert.equal(race.log.dispatch.length,1,'kein Re-Dispatch, wenn die Generation inzwischen ausgeliefert ist');
  },
  async longSerialQueueStillFits(mod){
@@ -105,7 +106,14 @@ const scenarios={
  },
  async successButNotVisibleFailsAfterSettle(mod){
   const s=sim(mod,{plans:[runPlan([0,'completed','success'])]});const r=await s.run();
-  assert.equal(r.reason,'PRODUCTION_PUBLICATION_SLO_FAILED');assert.equal(s.log.dispatch.length,1);assert.ok(s.clock()>=s.deadlines.waitDeadlineMs,'erst nach der Wartefrist');
+  // Live steht unveraendert die bisherige Generation (Refresh 42744743112, 10.11.2026): keine Regression -> kein Rollback (Exit 4)
+  assert.equal(r.reason,'NOT_DELIVERED_PRODUCTION_UNCHANGED');assert.equal(r.unchanged,true);assert.equal(r.served,false);
+  assert.equal(s.log.dispatch.length,1);assert.ok(s.clock()>=s.deadlines.waitDeadlineMs,'erst nach der Wartefrist');
+ },
+ async successButOtherGenerationLiveStaysFailure(mod){
+  // Live steht weder die neue noch die bisherige Generation: unklarer Zustand -> wie bisher Fehler (Rollback im Workflow)
+  const s=sim(mod,{plans:[runPlan([0,'completed','success'])],otherAtMin:5});const r=await s.run();
+  assert.equal(r.reason,'PRODUCTION_PUBLICATION_SLO_FAILED');assert.equal(r.unchanged,undefined);
  },
  async failedDispatchConsumesAttempt(mod){
   const s=sim(mod,{plans:[runPlan([0,'queued'],[1,'completed','success'])],deliveredAtMin:3,dispatchFails:1});const r=await s.run();
@@ -211,7 +219,7 @@ test('Workflow: Deploy-Verify nutzt das Wartescript statt Einmal-Dispatch und 15
 });
 
 test('Workflow: Rollback-Schritt unveraendert fail-closed; Rechte, ADR-005 und Beleg-Upload',()=>{
- assert.equal(rollback.if,"failure() && steps.deploy_live.outcome == 'failure' && inputs.verification != true");
+ assert.equal(rollback.if,"failure() && steps.deploy_live.outcome == 'failure' && steps.deploy_live.outputs.production_unchanged != 'true' && inputs.verification != true");
  assert.deepEqual(wf.permissions,{contents:'read',actions:'write'});
  for(const s of steps)if(s.run)assert.doesNotMatch(s.run,/\$\{\{\s*inputs\./,'Eingabe im run-Block: '+(s.name||s.id));
  assert.match(wf.concurrency.group,/company-intelligence-continuous-/);assert.equal(wf.concurrency['cancel-in-progress'],false);
@@ -245,7 +253,7 @@ const mutants={
  'Re-Dispatch-Obergrenze entfernt':s=>s.replace('maxRedispatch:2','maxRedispatch:99'),
  'echter Fehler wird wiederholt statt sofort beendet':s=>s.replace("if(j.verdict==='FAILED'){","if(false){"),
  'Vor-Deploy-Ausnahme gilt fuer jeden Fehler (auch nach dem Deploy)':s=>s.replace("export function preDeployFailure(run,jobs){","export function preDeployFailure(run,jobs){return true;"),
- 'Re-Dispatch auch bei bereits ausgelieferter Generation':s=>s.replace("if(await served())return 'SERVED';\n","")
+ 'Re-Dispatch auch bei bereits ausgelieferter Generation':s=>s.replace("if(!requireOwnSuccess&&await served())return 'SERVED';\n","")
   ,
  'cancelled gilt nicht als verdraengt':s=>s.replace("const SUPERSEDED=new Set(['cancelled','skipped'])","const SUPERSEDED=new Set([])"),
  'Rollback schon vor Fristende (Frist ignoriert)':s=>s.replace('if(t>=deadlines.waitDeadlineMs){','if(t>=deadlines.waitDeadlineMs-3600000+0*1&&true){'),
@@ -256,7 +264,9 @@ const mutants={
  'Obergrenze gibt sofort auf statt bis zur Wartefrist zu lesen':s=>s.replace("capped=true;lastReason=reason;note('redispatch-limit-reached',{reason});","return finish(result(false,'REDISPATCH_LIMIT_REACHED'));"),
  'Vorher-Menge je Dispatch neu gebildet (spaeter Lauf #1 geht verloren)':s=>s.replace('if(known===null){','if(true){'),
  'kein Status-Recheck vor dem Abbruch':s=>s.replace("if(!r||!PENDING.has(r.status)){note('cancel-skipped',{id,status:r?.status??'unknown'});return;}",""),
- 'Erscheinungsfrist wird ignoriert':s=>s.replace("t-dispatchedAt>=limits.appearMs","t-dispatchedAt>=0")
+ 'Erscheinungsfrist wird ignoriert':s=>s.replace("t-dispatchedAt>=limits.appearMs","t-dispatchedAt>=0"),
+ 'unveraendert-Ausnahme auch ohne eigenen erfolgreichen Lauf':s=>s.replace("verdict!=='SUCCESS'||",""),
+ 'unveraendert-Ausnahme ohne Vergleich mit der bisherigen Generation':s=>s.replace("return (await current())===baseline;","return true;")
 };
 for(const [name,mutate] of Object.entries(mutants)){
  test('Mutation erkannt: '+name,async()=>{
@@ -327,3 +337,76 @@ scenarios.postDeployFailureImmediate=async mod=>{
  const s=sim(mod,{plans:[failedRun,okRun],jobs:[[PRE[0],{...PRE[1],conclusion:'success'},{...PRE[2],conclusion:'failure'}]],deliveredAtMin:12});const r=await s.run();
  assert.equal(r.reason,'PAGES_RUN_FAILED');assert.equal(s.log.dispatch.length,1);
 };
+
+/* --- Universe-Release (company-intelligence-universe-release.yml): --expected/--wait-minutes, Anlass activate 42633299211 --- */
+test('UR-1 Universe-CLI: verdraengter Dispatch wird neu dispatcht und die erwartete Generation abgewartet',async()=>{
+ let t=T0,n=0;const dispatched=[];const runs=[];
+ const gh={dispatch:async()=>{dispatched.push(t);runs.push({databaseId:5000+n,createdAt:new Date(t+2000).toISOString(),status:'queued',conclusion:'',at:t,first:n===0});n++;},
+  listRuns:async()=>runs.map(r=>r.first&&t-r.at>=MIN?{...r,status:'completed',conclusion:'cancelled'}:!r.first&&t-r.at>=5*MIN?{...r,status:'completed',conclusion:'success'}:r),
+  cancel:async()=>{},jobs:async()=>[]};
+ const gen='a'.repeat(24);
+ const r=await real.main(['--expected',gen,'--wait-minutes','40'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},
+  generation:async()=>dispatched.length>=2&&t-dispatched[1]>=6*MIN?gen:'b'.repeat(24)});
+ assert.equal(r.served,true);assert.equal(r.reason,'DELIVERED');assert.equal(dispatched.length,2,'verdraengter erster Dispatch -> genau ein Neu-Dispatch');
+});
+
+test('UR-2 Universe-CLI: Frist aus --wait-minutes, fail-closed bei fehlender oder ungueltiger Eingabe (kein Dispatch)',async()=>{
+ const d=real.fixedDeadlines({nowMs:T0,minutes:40});
+ assert.equal(d.waitDeadlineMs,T0+40*MIN);assert.equal(d.hardDeadlineMs,T0+50*MIN);
+ const io={gh:{dispatch:async()=>{throw Error('darf nicht dispatchen');},listRuns:async()=>[],cancel:async()=>{}}};
+ assert.equal((await real.main(['--expected','zz','--wait-minutes','40'],{},io)).reason,'EXPECTED_GENERATION_UNKNOWN');
+ assert.equal((await real.main(['--expected','a'.repeat(24)],{},io)).reason,'WAIT_MINUTES_INVALID');
+ assert.equal((await real.main(['--expected','a'.repeat(24),'--wait-minutes','500'],{},io)).reason,'WAIT_MINUTES_INVALID');
+ // nie ausgeliefert: Ende erst nach der Wartefrist, hoechstens 3 Dispatches
+ let t=T0;const ds=[];const gh={dispatch:async()=>{ds.push(t);},listRuns:async()=>[],cancel:async()=>{}};
+ const r=await real.main(['--expected','a'.repeat(24),'--wait-minutes','40'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},generation:async()=>'b'.repeat(24)});
+ assert.equal(r.served,false);assert.equal(ds.length,3);assert.ok(t>=T0+40*MIN,'nicht vor Fristende aufgeben');
+});
+
+/* --- Pruefung Steuerung 09.11.2026 zu #1744, MAJOR 2: im Universe-Modus erst Erfolg, wenn der eigene Pages-Lauf success ist --- */
+test('UR-4 strenger Modus: sichtbare Generation bei noch laufendem eigenen Lauf ist KEIN Erfolg; erst nach success',async()=>{
+ let t=T0;const gen='c'.repeat(24);const runs=[];
+ const gh={dispatch:async()=>{runs.push({databaseId:7000,createdAt:new Date(t+2000).toISOString(),at:t});},
+  listRuns:async()=>runs.map(r=>t-r.at<20*MIN?{...r,status:'in_progress',conclusion:''}:{...r,status:'completed',conclusion:'success'}),cancel:async()=>{}};
+ // Generation ist ab Minute 3 sichtbar, der eigene Lauf aber erst ab Minute 20 abgeschlossen
+ const r=await real.main(['--expected',gen,'--wait-minutes','40'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},
+  generation:async()=>t-T0>=3*MIN?gen:'d'.repeat(24)});
+ assert.equal(r.served,true);
+ assert.ok(t-T0>=20*MIN,'Erfolg erst nach Abschluss des eigenen Laufs, nicht bei erster Sichtbarkeit');
+});
+
+test('UR-5 strenger Modus: eigener Lauf rot trotz sichtbarer Generation -> kein Erfolg (echter Fehler)',async()=>{
+ let t=T0;const gen='e'.repeat(24);const runs=[];
+ const gh={dispatch:async()=>{runs.push({databaseId:7100,createdAt:new Date(t+2000).toISOString(),at:t});},
+  listRuns:async()=>runs.map(r=>t-r.at<8*MIN?{...r,status:'in_progress',conclusion:''}:{...r,status:'completed',conclusion:'failure'}),cancel:async()=>{},
+  jobs:async()=>[{name:'package',status:'completed',conclusion:'success'},{name:'deploy',status:'completed',conclusion:'success'},{name:'company-intelligence-live',status:'completed',conclusion:'failure'}]};
+ const r=await real.main(['--expected',gen,'--wait-minutes','40'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},generation:async()=>gen});
+ assert.equal(r.served,false);assert.equal(r.reason,'PAGES_RUN_FAILED');
+});
+
+test('UR-6 Refresh-Modus (--health) bleibt: sichtbare Generation genuegt wie bisher',async()=>{
+ const s=sim(real,{plans:[runPlan([0,'queued'],[2,'in_progress'],[30,'completed','success'])],deliveredAtMin:3});
+ const r=await s.run();assert.equal(r.served,true);assert.ok(s.clock()-T0<10*MIN);
+});
+
+/* --- Refresh 42744743112 (10.11.2026): Pages deployte 2ff33541 mit demselben Commit wie zuvor, live blieb e1d74267 ---
+   Der Fail-closed-Schritt rollte zurueck, setzte ROLLBACK_46 und schaltete den gesunden Vollumfang ab. Jetzt: Exit 4, Gate bleibt. */
+test('UC-1 Workflow: Exit 4 (live unveraendert) ueberspringt Rollback und disable, der Lauf wird trotzdem rot',()=>{
+ const run=deploy.run;
+ assert.match(run,/refresh-dispatch-wait\.mjs --health [^\n]*\|\| wait_rc=\$\?/);
+ assert.match(run,/if \[ "\$wait_rc" -eq 4 \]; then\n\s*echo "production_unchanged=true" >> "\$GITHUB_OUTPUT"[\s\S]*?exit 1\n\s*fi/);
+ assert.match(run,/if \[ "\$wait_rc" -ne 0 \]; then exit "\$wait_rc"; fi/,'jeder andere Fehler bleibt Fehler (Fail closed)');
+ assert.match(rollback.if,/steps\.deploy_live\.outputs\.production_unchanged != 'true'/);
+ const red=steps.find(s=>/^Delivery not taken over/.test(s.name||''));
+ assert.ok(red,'eigener roter Schritt');assert.equal(red.if,"always() && steps.deploy_live.outputs.production_unchanged == 'true'");
+ assert.match(red.run,/exit 1/);assert.doesNotMatch(red.run,/refresh-run\.mjs|production-release\.mjs|gh workflow run/);
+});
+
+test('UC-2 CLI: Exit-Code 4 nur fuer NOT_DELIVERED_PRODUCTION_UNCHANGED, im Universe-Modus nie',async()=>{
+ assert.equal(real.UNCHANGED_EXIT,4);assert.equal(real.UNCHANGED_REASON,'NOT_DELIVERED_PRODUCTION_UNCHANGED');
+ // Universe-Release (--expected): eigener Lauf success, live unveraendert -> weiterhin Fehler (dort entscheidet die Recovery)
+ let t=T0;const runs=[];const gen='f'.repeat(24);
+ const gh={dispatch:async()=>{runs.push({databaseId:7300,createdAt:new Date(t+2000).toISOString(),status:'completed',conclusion:'success'});},listRuns:async()=>runs,cancel:async()=>{}};
+ const r=await real.main(['--expected',gen,'--wait-minutes','10'],{},{gh,now:()=>t,sleep:async ms=>{t+=ms;},generation:async()=>'0'.repeat(24)});
+ assert.equal(r.served,false);assert.notEqual(r.reason,real.UNCHANGED_REASON);
+});

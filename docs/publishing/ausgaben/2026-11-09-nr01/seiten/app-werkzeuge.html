@@ -1,0 +1,18 @@
+<section class="page" style="background:var(--lime)">
+  <div class="pad" style="inset:12mm 14mm 12mm">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <img src="{{root}}docs/design/redesign-2027/img/vu-logo.png" style="height:5mm" alt="Vision Universe">
+      <span class="pillsoon" style="color:#000;border-color:#000"><i style="background:#000"></i>App bald verfügbar</span>
+    </div>
+    <div style="font-size:36pt;font-weight:900;letter-spacing:-.05em;line-height:.92;margin-top:8mm">Die Werkzeuge hinter diesem Heft.</div>
+    <div class="sub" style="margin-top:3mm;color:#1a1a1a;max-width:150mm">Chart der Woche, Hedgefonds-Radar, Quick-Check: Jede dieser Seiten gibt es in der App für jede Aktie, jeden Tag neu.</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6mm;margin-top:8mm" data-k="werkzeuge"></div>
+    <div style="position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;align-items:center;border-top:2px solid #000;padding-top:4mm">
+      <div><div style="font-size:16pt;font-weight:900">www.visionuniverse.de</div><div class="sm">Newsletter abonnieren · Instagram und TikTok @app.visionuniverse</div></div>
+      <img src="img/qr-web-w.svg" style="width:22mm;height:22mm;border-radius:3px" alt="QR-Code">
+    </div>
+  </div>
+</section>
+<script>
+VUM.k('werkzeuge',()=>[['technical','Technical','Was zeigt der Chart? Muster wie das Doppeltop bei Nvidia, nach festen Regeln erkannt.','live-technical'],['hedgefonds','Hedgefonds','Was große Fonds gemeldet haben: 13F-Bestände, Käufe und Verkäufe, Star-Investoren.','live-hedgefonds'],['fundamental','Fundamental','Checklisten für Qualität, Wachstum und Bewertung, aus zehn Jahren Pflichtmeldungen.','live-fundamental']].map(r=>`<div><div class="phone"><img src="img/${r[3]}.jpg" alt="App: ${r[1]}"></div><div style="display:flex;gap:2mm;align-items:center;margin-top:4mm"><svg class="pi" style="color:var(--lime);background:#000;border-radius:1.4mm;padding:.8mm"><use href="#${r[0]}"/></svg><b style="font-size:12pt">${r[1]}</b></div><div class="sm" style="margin-top:1.5mm;color:#1a1a1a">${r[2]}</div></div>`).join(''));
+</script>

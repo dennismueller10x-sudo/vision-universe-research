@@ -21,6 +21,8 @@ body.dv2.v2-feed-active .v2-main{height:calc(100dvh - var(--vu-navigation-height
 body.dv2{--v2-bg:#000;--v2-ink:#f4f2e9;--v2-muted:#b4b4bc;--v2-panel:#1a1a1b;--v2-line:#3b3d40;--v2-accent:#d4f775}
 html[data-theme=light] body.dv2{--v2-bg:#fff;--v2-ink:#171819;--v2-muted:#5d6063;--v2-panel:#f2f2f2;--v2-line:#d4d4d4}
 .dv2 #v2-shell{position:relative}
+/* Direktaufruf (z. B. #/s/US_REAL/NVDA): index.html entfernt den vorgerenderten Start, bis die Ansicht rendert ist die Hülle leer. Solange reserviert sie den Bildschirm, sonst steht der Rechtshinweis-Fuß oben und springt danach weg (CLS 0,22 gedrosselt, Bedienprüfung 09.11.2026). */
+.dv2 #v2-shell:not(:has(*)){min-height:calc(100svh - var(--vu-navigation-height,56px))}
 .dv2 .v2-world-directory{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:36px}
 .dv2 .v2-world-door{display:flex;flex-direction:column;min-height:290px;padding:26px;text-decoration:none;border-radius:22px;background:#d7c7f4;color:#251938;transition:transform .2s ease}
 .dv2 .v2-world-door[data-tone="1"]{background:#d4f0de;color:#17342d}.dv2 .v2-world-door[data-tone="2"]{background:#f1d991;color:#362b10}.dv2 .v2-world-door[data-tone="3"]{background:#c5e9ee;color:#19383b}
