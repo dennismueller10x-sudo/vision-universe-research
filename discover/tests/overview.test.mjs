@@ -38,8 +38,11 @@ test("OV5 Aktienroute lädt Bausteine, Überblick und Stil; nur Weiß/Schwarz/Ne
   for (const c of css.match(/#[0-9a-f]{3,8}\b/gi) || []) assert.ok(["#c8f531", "#000", "#fff", "#f4f4f4", "#e9e9e9", "#6e6e6e", "#c4281c"].includes(c.toLowerCase()), c); // #c4281c: Minus-Pille im Aktienkopf (BAUKASTEN Regel 1, Ausnahme Owner 06.11.2026)
 });
 
-/* Konzept „Reihe für Reihe“, PR 5 (Folien AX01–AX05): die Aktie als Titelseite. Geprüft an der ausgelieferten NVIDIA-Datei. */
-const NVDA = JSON.parse(readFileSync(new URL("../data/stocks/US_REAL/NVDA.json", import.meta.url), "utf8"));
+/* Konzept „Reihe für Reihe“, PR 5 (Folien AX01–AX05): die Aktie als Titelseite. Geprüft an der ausgelieferten NVIDIA-Datei,
+   eingefroren vom Stand vor dem Marktlauf 666625e416 (09.11.2026): die Tests nennen echte Werte (23 % unter dem Hoch, −4,4 %
+   in 12 Monaten, Platz 2, +12 Reihen), und die täglich neu gebaute discover/data/stocks/US_REAL/NVDA.json änderte sie
+   mit jedem Marktlauf - OV6, OV9 und OV11 wurden rot, ohne dass sich discover/ui/overview.js geändert hatte. */
+const NVDA = JSON.parse(readFileSync(new URL("./fixtures/NVDA-2026-11-09.json", import.meta.url), "utf8"));
 globalThis.VUUI = require("../../assets/vu-ui.js");
 globalThis.VUDiscover = globalThis.VUDiscover || {};
 globalThis.VUDiscover.Einordnung = require("../engines/einordnung.js");
