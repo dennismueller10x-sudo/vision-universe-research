@@ -310,7 +310,7 @@ jobs:
           ADMIN="$VU_ASK_ADMIN_KEY"
           [ -n "$ADMIN" ] || ADMIN=$(printf '%s' "vu-ask-admin-v1" | openssl dgst -sha256 -hmac "$CLOUDFLARE_API_TOKEN" -r | cut -d' ' -f1)
           echo "::add-mask::$ADMIN"
-          npm install --prefix /tmp/ask-live-qa --no-audit --no-fund playwright@1.57.0 > /dev/null
+          npm install --prefix /tmp/ask-live-qa --no-audit --no-fund playwright@1.57.0
           /tmp/ask-live-qa/node_modules/.bin/playwright install --with-deps chromium > /dev/null
           VU_ASK_ACCESS="$ADMIN" node workers/vu-ask/scripts/browser-live-qa.mjs
 
