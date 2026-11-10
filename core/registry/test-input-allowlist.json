@@ -94,14 +94,6 @@
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
     },
     {
-      "file": "core/tests/identity-adoption.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "discover/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
-    },
-    {
       "file": "core/tests/identity.test.mjs",
       "kategorie": "fixture-offen",
       "liest": [
@@ -129,15 +121,6 @@
       "file": "core/tests/long-series-repair.test.mjs",
       "kategorie": "schema-vertrag",
       "grund": "Altbestand 10.11.2026 (Inventur Strang S): liest Live-Artefakte fuer Struktur-/Vertragspruefung; heuristisch ohne feste Datenwerte."
-    },
-    {
-      "file": "core/tests/portfolios.test.mjs",
-      "kategorie": "fixture-offen",
-      "liest": [
-        "quant/data",
-        "supertrader/data"
-      ],
-      "grund": "Altbestand 10.11.2026 (Inventur Strang S): feste Erwartungen (Datum/Ticker/Zaehlung) in einer Datei, die Live-Artefakte liest; auf Fixture umstellen."
     },
     {
       "file": "core/tests/product-contracts.test.mjs",
