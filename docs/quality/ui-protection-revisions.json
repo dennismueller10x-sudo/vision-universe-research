@@ -1585,6 +1585,16 @@
       "from": "7bbff19d4295aff3d3f3c99e68c64940a4652813ee2005c0aa3b4c669ab79bd4",
       "to": "7a654ec026ecf413cf8363e407581a442f60da92404b576b43fecc8640037f18",
       "scope": "Plattform-Kopf-Prüfung verlangt keinen Link auf /morning/ mehr (Morning eingestellt); übrige Ziele unverändert; vorbereitet als UIP-R147."
+    },
+    {
+      "id": "UIP-R163",
+      "date": "2026-11-10",
+      "pr": 1775,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): Freigabe UI-Schutz-Revision für die Anpassung der Chartbild-Prüfung (Prüftitel aus den Daten statt fest NVDA).",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "7a654ec026ecf413cf8363e407581a442f60da92404b576b43fecc8640037f18",
+      "to": "f32d0d8e7b2bf61585957cefdde481577cf850aad7dac196cf8f95f3d3f316bb",
+      "scope": "Prüftitel der Perspektive Chart aus den Chartbild-Daten (confidence.empirical OK, Vorrang NVDA, AAPL, MSFT) statt fest NVDA; Assertions unverändert."
     }
   ]
 }

@@ -35,6 +35,22 @@ const profiles=JSON.parse(await readFile(resolve(root,'quant/methodology/strateg
 const universeIndex=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz'))).toString('utf8'));
 const nvdaName=(universeIndex.entries||[]).find(e=>e.s==='NVDA')?.n;
 if(!nvdaName)throw Error('das Verzeichnis nennt keinen Namen fuer NVDA');
+// Perspektive Chart: der Prueftitel kommt aus den ausgelieferten Chartbild-Daten. Die Historie gegen den Zufall
+// steht nur bei confidence.empirical OK (page-chartbild.js); ein Datenlauf kann NVDA auf INSUFFICIENT_SAMPLE setzen.
+// NVDA bleibt erste Wahl, sonst AAPL/MSFT, sonst der erste Titel mit belastbarer Historie.
+const chartTicker=await (async()=>{
+ const {readdir}=await import('node:fs/promises');const dir=resolve(root,'quant/data/technical-intelligence/v3/shards');const ok=new Set();
+ for(const f of (await readdir(dir)).filter(x=>x.endsWith('.json.gz')).sort()){
+  const j=JSON.parse(gunzipSync(await readFile(resolve(dir,f))).toString('utf8'));
+  for(const a of (Array.isArray(j.instruments)?j.instruments:Object.values(j.instruments||{}))){
+   const ev=a&&a.confidence&&a.confidence.empirical;
+   if(ev&&ev.status==='OK'&&typeof ev.t1HitRate==='number'&&typeof ev.baselineRate==='number')ok.add(a.ticker||a.symbol);
+  }
+ }
+ const t=['NVDA','AAPL','MSFT'].find(x=>ok.has(x))||[...ok].sort()[0];
+ if(!t)throw Error('kein Titel mit belastbarer Chartbild-Historie (confidence.empirical OK)');
+ return t;
+})();
 // Der Aktienkopf zeigt den Anzeigenamen des Security-Masters, wo der ausgelieferte
 // Verfuegbarkeits-Ausschnitt ihn traegt (assets/stock-navigator.js#head/shardName,
 // VU3: ein Name je Aktie in allen Welten - im Release "NVIDIA"), sonst den Namen des
@@ -80,7 +96,7 @@ const ROUTES=[
  /* Native Elliott-Route: dieselbe Seite, ohne /quant/ in der Adresse. */
  ['elliott-nativ','/elliott/#/NVDA?ansicht=profi'],
  ['chartbild','#/aktie/NVDA/chartbild'],
- ['chart','#/aktie/NVDA/chart'],
+ ['chart','#/aktie/'+chartTicker+'/chart'],
  ['chartlagen','#/chartlagen'],
  ['zahlen','#/aktie/NVDA/zahlen'],
  ['vergleich','#/vergleich/NVDA,MSFT'],
@@ -536,7 +552,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!/Szenari/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Szenarien fehlen');
    if(!/Zufall/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Historie ohne Zufallsvergleich');
    if(!await page.locator('#qx-main input.qv3-ch-range').count())befund(view,width,'Zeitreise fehlt');
-   if(!/^#\/aktie\/NVDA\/chart/.test(await page.evaluate(()=>location.hash)))befund(view,width,'Chart verlaesst Quant');
+   if(!(await page.evaluate(()=>location.hash)).startsWith('#/aktie/'+chartTicker+'/chart'))befund(view,width,'Chart verlaesst Quant');
   }
   if(view==='chartlagen'){
    if(!/Chart|Lage/i.test(await page.locator('#qx-main').innerText()))befund(view,width,'Chartlagen leer');
