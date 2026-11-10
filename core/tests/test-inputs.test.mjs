@@ -57,6 +57,9 @@ test("TI-5 · der Scan erkennt Live-Zugriffe und ignoriert URL-Literale und Komm
   assert.equal(scanFile(root, live2)?.reads, true);
   assert.equal(scanFile(root, url), null);
   assert.equal(scanFile(root, kom), null);
+  const rel = put("f.test.mjs", 'import {readFileSync} from "node:fs";\nconst d = new URL("./quant/data/", base); readFileSync(new URL("x.json", d));\n');
+  assert.equal(scanFile(root, rel), null, "relativer Pfad unter einer Fixture-Wurzel");
+
   assert.equal(scanFile(root, fix), null);
 });
 

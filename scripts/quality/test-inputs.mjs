@@ -28,9 +28,9 @@ export const TEST_DIRS = ["core/tests", "quant/tests", "discover/tests", "script
 export const EXTRA_FILES = ["scripts/vu2/browser-qa.mjs", "scripts/discover/browser-qa.mjs"];
 export const DATA_DIRS = ["quant", "discover", "supertrader", "social", "technical", "core"];
 
-/* "/quant/data/..." direkt nach dem Anfuehrungszeichen ist ein URL-Literal (Testeingabe), kein Dateizugriff. */
+/* "/quant/data/..." oder "./quant/data/..." direkt nach dem Anfuehrungszeichen ist ein URL-Literal bzw. ein Pfad unter einer Fixture-Wurzel (Testeingabe), kein Dateizugriff auf die Produktionsdaten. */
 const LIVE_RE = new RegExp(
-  "(?<![\"'`]/)\\b(?:" + DATA_DIRS.join("|") + ")/data\\b"
+  "(?<![\"'`](?:\\./|/))\\b(?:" + DATA_DIRS.join("|") + ")/data\\b"
   + "|[\"'`](?:" + DATA_DIRS.join("|") + ")[\"'`]\\s*,\\s*[\"'`]data[\"'`]"
 );
 const READ_RE = /readFileSync|readFile\(|readJson|loadJson|readJSON|JSON\.parse|readdirSync|statSync|existsSync|\bimport\(|\brequire\(/;
