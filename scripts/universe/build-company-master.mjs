@@ -49,6 +49,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
 
 const Master = require(join(root, "quant", "engines", "company-master.js"));
+const IssuerAlias = require(join(root, "core", "issuer-alias.js"));
 
 const argv = process.argv.slice(2);
 function arg(name, fallback) {
@@ -267,8 +268,28 @@ function buildCikMap() {
     }
   }
 
+  /* Holding-Umgruendungen (quant/config/sec-successor-issuers.json): zeigt
+     die gewaehlte CIK auf einen Vorgaenger, gilt die Nachfolgerin. Der
+     Vorgaenger bleibt ueber core/issuer-alias.js#resolveIssuerId aufloesbar.
+     Die Fundamentals-Konfiguration (sec-universe.json) bleibt davon
+     unberuehrt: die SEC-Pipeline fuehrt beide CIKs im Consumer zusammen. */
+  const successorFile = join(root, "quant", "config", "sec-successor-issuers.json");
+  let successors = 0;
+  if (existsSync(successorFile)) {
+    const aliases = IssuerAlias.issuerAliases(readJSON(successorFile));
+    for (const [ticker, row] of map) {
+      const alt = "iss_cik_" + row.cik;
+      const neu = IssuerAlias.resolveIssuerId(alt, aliases);
+      if (neu === alt) continue;
+      map.set(ticker, { cik: neu.slice(8), exchange: row.exchange,
+                        source: "successor:sec-successor-issuers(" + row.cik + ">" + neu.slice(8) + ")",
+                        confidence: "HIGH" });
+      successors++;
+    }
+  }
+
   return { map, ambiguous, status: secStatus, generatedAt: secGeneratedAt, reason: secReason,
-           declared, overrides };
+           declared, overrides, successors };
 }
 
 /** "MERCK & CO INC" -> "Merck & Co Inc". Mehr wird nicht versucht. */
@@ -687,7 +708,7 @@ function main() {
     },
     identifiers: {
       cikMap: { status: ciks.status, generatedAt: ciks.generatedAt, entries: ciks.map.size,
-                fromConfig: ciks.declared, declaredOverrides: ciks.overrides,
+                fromConfig: ciks.declared, declaredOverrides: ciks.overrides, successorResolved: ciks.successors,
                 ambiguous: ciks.ambiguous.size, reason: ciks.reason },
       withIssuerId: published.filter((i) => i.issuerId).length,
       distinctIssuers: new Set(published.filter((i) => i.issuerId).map((i) => i.issuerId)).size,

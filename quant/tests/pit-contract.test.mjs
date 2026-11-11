@@ -12,6 +12,7 @@ const PIT = require('../engines/pit-fundamental-history.js');
 const PF = require('../engines/portfolio-pit-factors.cjs');
 const PB = require('../engines/portfolio-backtest.cjs');
 const ID = require('../../core/identity.js');
+const LR = require('../../core/listing-register.js');
 const IC = require('../../core/industry-classification.js');
 
 // Spalten wie im Verbraucher-Bundle: [fy, fp, end, v, filed, accn, derived].
@@ -237,17 +238,90 @@ test('PIT-17 Fundamental-Lookahead im Panel: Filing nach t wirkt nicht auf Fakto
   assert.equal(early.fundamentalsAsOfEnd, '2018-12-31');
 });
 
-test('BEFUND PIT-F2 Branche im Panel ist heutig (CURRENT_SIC_CLASSIFICATION_NOT_HISTORICAL): eine spätere Umklassifizierung ändert frühere Entscheidungen', () => {
-  const t = 60, p1 = panelOf(), p2 = panelOf({ sectorOf: () => 'S0' });
-  // Gleiche Kurse, nur das Branchenetikett (heutiger Stand) unterscheidet sich: die Auswahl hängt davon ab (Branchengrenze).
-  assert.notDeepEqual(decideAt(p2, t).weights, decideAt(p1, t).weights);
-  // portfolio-backtest.cjs listet das offen: CURRENT_SIC_CLASSIFICATION_NOT_HISTORICAL. core/industry-classification.js kann es lösen, ist aber nicht angeschlossen.
+test('PIT-F2 Branche im Panel: sectorAt (zum Entscheidungstag) ersetzt die heutige SIC; Künftiges und Unbekanntes wirken nicht zurück', () => {
+  const t = 60, withSector = (p, at) => { p.securities.forEach((s, i) => { s.sectorAt = at(i, p.calendar.length); }); return p; };
+  const base = (i, T) => Array.from({ length: T }, () => 'S' + (i % 4));
+  const ref = decideAt(withSector(panelOf(), base), t);
+  // Gleiche Entscheidung wie mit statischer Branche, wenn sectorAt dieselben Werte trägt.
+  assert.deepEqual(ref, decideAt(panelOf(), t));
+  // Eine Umklassifizierung NACH t (Index > t) ändert die Entscheidung bei t nicht.
+  const later = decideAt(withSector(panelOf(), (i, T) => base(i, T).map((x, k) => (k > t ? 'S0' : x))), t);
+  assert.deepEqual(later, ref);
+  // Die heutige Branche (sector) wird ignoriert, sobald sectorAt vorhanden ist.
+  const stale = panelOf({ sectorOf: () => 'S0' });
+  assert.deepEqual(decideAt(withSector(stale, base), t), ref);
+  // Umklassifizierung VOR t verändert die Entscheidung (Branchengrenze), und unbekannt (null) bleibt unbekannt: der Titel fällt heraus.
+  assert.notDeepEqual(decideAt(withSector(panelOf(), (i, T) => base(i, T).map((x, k) => (k >= t - 3 ? 'S0' : x))), t).weights, ref.weights);
+  const unknown = decideAt(withSector(panelOf(), (i, T) => base(i, T).map((x, k) => (i === 3 && k === t ? null : x))), t);
+  assert.equal(unknown.universe, ref.universe - 1);
+  // Länge muss zum Kalender passen.
+  assert.throws(() => PB.runModelPortfolio(withSector(panelOf(), () => ['S0']), { profileId: 'momentum-leader', window: ['2020-01-03', '2021-04-30'] }), /PANEL_SECTOR_SERIES_LENGTH/);
 });
 
-test('BEFUND PIT-F3 Universum ist heutige Dateimenge (kein Listing-Intervall im Panel): Titel ohne Delisting-Angabe werden an der letzten Beobachtung beendet', () => {
+test('PIT-F2 Builder: pitSectorSeries liest die SIC je Woche aus core/industry-classification.js; ohne Beobachtung null', () => {
+  const MP = require('../../scripts/quant/portfolio/model-portfolios.cjs');
+  const ic = IC.create(sicData([O('2020-03-02T14:00:00Z', '3571'), O('2022-03-10T21:30:00Z', '2834')]));
+  const cal = ['2019-12-27', '2020-03-06', '2022-03-04', '2022-03-11', '2025-06-27'];
+  const s = MP.pitSectorSeries(ic, '0000000001', cal);
+  assert.equal(s[0], null);                    // vor der ersten Beobachtung: unbekannt
+  assert.equal(s[1], MP.ff12('3571'));
+  assert.equal(s[2], MP.ff12('3571'));         // Wechsel 2022-03-10 21:30Z nach 16:00 ET am 04.03.: noch alt
+  assert.equal(s[3], MP.ff12('2834'));
+  assert.equal(s[4], null);                    // älter als die deklarierte Höchstdauer (1100 Tage): unbekannt statt Fortschreibung
+  assert.notEqual(MP.ff12('3571'), MP.ff12('2834'));
+  assert.deepEqual(MP.pitSectorSeries(ic, null, cal), cal.map(() => null));
+});
+
+test('BEFUND PIT-F3 Universum ist heutige Dateimenge (kein Terminal ohne Quelle): Titel ohne Delisting-Angabe werden an der letzten Beobachtung beendet', () => {
   const p = panelOf(); p.securities[0].adj = p.securities[0].adj.map((x, i) => (i > 40 ? NaN : x)); // Reihe endet bei 40
-  // decide kennt nur Kurs zu t: die Reihe ist bei t=60 leer, der Titel fällt heraus. Ein Ticker, dessen Reihe später unter anderer Identität weiterläuft, ist nicht verbunden.
+  // decide kennt nur Kurs zu t: die Reihe ist bei t=60 leer, der Titel fällt heraus. Offen bleibt die Population (ADR-001 A1, Teil 2).
   const t = 60; assert.equal(decideAt(p, t).universe, decideAt(panelOf(), t).universe - 1);
+});
+
+test('PIT-F3 Listing-Register: Umbenennung hält die Entität (CIK), Wiederverwendung wird je Tag eindeutig, Überlappung ist AMBIGUOUS', () => {
+  const reg = LR.createListingRegister([
+    { cik: 1, ticker: 'FB', validTo: '2022-06-08' }, { cik: 1, ticker: 'META', validFrom: '2022-06-09' },
+    { cik: 5, ticker: 'XYZ', validTo: '2015-01-01' }, { cik: 9, ticker: 'XYZ', validFrom: '2016-01-01' },
+    { cik: 7, ticker: 'DUP', validFrom: '2020-01-01' }, { cik: 8, ticker: 'DUP', validFrom: '2020-06-01' },
+  ]);
+  // Umbenennung: zwei securityIds, ein Emittent; die securityId selbst bleibt tickerbasiert (ADR-001).
+  assert.equal(reg.resolve('FB', '2021-01-01').issuerId, 'iss_cik_0000000001');
+  assert.equal(reg.resolve('META', '2023-01-01').issuerId, 'iss_cik_0000000001');
+  assert.equal(reg.resolve('META', '2021-01-01').status, 'UNKNOWN');
+  assert.deepEqual(reg.listingsOf('iss_cik_0000000001').map((l) => l.securityId), ['ref_FB', 'ref_META']);
+  // Wiederverwendung: dieselbe securityId, je Tag der richtige Emittent; dazwischen unbekannt.
+  assert.equal(reg.resolve('ref_XYZ', '2010-01-01').issuerId, 'iss_cik_0000000005');
+  assert.equal(reg.resolve('ref_XYZ', '2018-01-01').issuerId, 'iss_cik_0000000009');
+  assert.equal(reg.resolve('ref_XYZ', '2015-06-01').status, 'UNKNOWN');
+  // Überlappung wird nie geraten.
+  assert.equal(reg.resolve('DUP', '2020-07-01').status, 'AMBIGUOUS');
+  assert.equal(reg.resolve('DUP', '2020-03-01').issuerId, 'iss_cik_0000000007');
+  assert.deepEqual(reg.census(), { listings: 6, reusedSecurityIds: ['ref_DUP', 'ref_XYZ'], renamedIssuers: ['0000000001'] });
+  // Rückwärtskompatibel: die securityId-Regel ist unverändert, die Listing-Kennung ist eigener Namensraum.
+  assert.equal(ID.securityIdForTicker('META'), 'ref_META');
+  assert.equal(LR.listingId(1, 'META', '2022-06-09'), 'lst_0000000001_META_20220609');
+  assert.ok(LR.isListingId(LR.listingId(1, 'BRK.B')) && !ID.isSecurityId('lst_0000000001_META_20220609'));
+});
+
+test('PIT-F3 Panel mit Listing-Intervall: außerhalb des Intervalls kein Kandidat; Ticker-Kollision und ungültiges Intervall werden abgewiesen', () => {
+  const t = 60, ref = decideAt(panelOf(), t), p = panelOf();
+  // Intervall endet vor t: der Titel fällt heraus, auch wenn Kurse existieren (Ticker an anderen Emittenten vergeben).
+  p.securities[0].listing = { cik: 1, from: null, to: p.calendar[t - 1] };
+  assert.equal(decideAt(p, t).universe, ref.universe - 1);
+  // Intervall beginnt erst nach t: ebenfalls kein Kandidat.
+  const q = panelOf(); q.securities[0].listing = { cik: 1, from: p.calendar[t + 1], to: null };
+  assert.equal(decideAt(q, t).universe, ref.universe - 1);
+  // Intervall enthält t: Entscheidung unverändert.
+  const r = panelOf(); r.securities[0].listing = { cik: 1, from: p.calendar[0], to: null };
+  assert.deepEqual(decideAt(r, t), ref);
+  const run = (pp) => PB.runModelPortfolio(pp, { profileId: 'momentum-leader', window: [pp.calendar[0], pp.calendar.at(-1)] });
+  const bad = panelOf(); bad.securities[0].listing = { cik: 'x', from: null, to: null };
+  assert.throws(() => run(bad), /PANEL_LISTING_INVALID/);
+  const coll = panelOf(); coll.securities.push({ ...coll.securities[0], listing: { cik: 2, from: null, to: null } }); coll.securities[0].listing = { cik: 1, from: null, to: null };
+  assert.throws(() => run(coll), /PANEL_LISTING_COLLISION/);
+  // Disjunkte Fenster desselben Tickers sind erlaubt (Wiederverwendung mit Intervallen).
+  const ok = panelOf(); ok.securities.push({ ...ok.securities[0], listing: { cik: 2, from: ok.calendar[30], to: null } }); ok.securities[0].listing = { cik: 1, from: null, to: ok.calendar[29] };
+  assert.doesNotThrow(() => run(ok));
 });
 
 // ---------- Vertragsmatrix (maschinenlesbar, gepinnt) ----------
@@ -264,4 +338,5 @@ test('PIT-18 Vertragsmatrix: Versionen und Stichtagssemantik der vier Module sin
   // Identität: nur der Ticker bestimmt die securityId; keine Zeit, keine CIK.
   assert.equal(ID.securityIdForTicker('BRK.B'), 'ref_BRK_B');
   assert.equal(ID.securityIdForTicker.length, 1);
+  assert.equal(LR.VERSION, 'core-listing-register-1.0.0');
 });

@@ -322,9 +322,9 @@
       "cik": "0001357459",
       "name": "PALISADE BIO, INC.",
       "sic": "2836",
-      "rawFacts": 12938,
-      "mappedFacts": 4693,
-      "unmappedFacts": 8634,
+      "rawFacts": 13123,
+      "mappedFacts": 4768,
+      "unmappedFacts": 8832,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -334,9 +334,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -348,7 +348,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -375,21 +375,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -403,14 +403,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -433,46 +433,47 @@
         }
       },
       "quality": {
-        "HIGH": 522,
+        "HIGH": 528,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 534,
-        "resolvedValues": 534
+        "datableValues": 540,
+        "resolvedValues": 540
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8893,
+        "rules_version": "1.1.0",
+        "total": 9093,
         "by_severity": {
-          "INFO": 8634,
-          "WARNING": 259
+          "INFO": 8832,
+          "WARNING": 261
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 102,
+          "CONCEPT_DISAGREEMENT": 104,
           "FISCAL_PERIOD_CONFLICT": 7,
           "RESTATEMENT_CONFLICT": 150,
-          "UNKNOWN_CONCEPT": 8634
+          "UNKNOWN_CONCEPT": 8832
         }
       },
       "latestFiling": {
-        "accession": "0001357459-26-000016",
-        "filing_date": "2026-08-10",
+        "accession": "0001357459-26-000024",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 78
+        "periodic_filings": 79,
+        "acceptance_datetime": "2026-11-10T21:07:46.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e332a8b13c13a32643c1ad3561b40f3732e6d9b0b2084e08f6a835ff7c7d78e7",
+      "sourceDigest": "52fad0ad015e62f9d17a3ac59d6b749d7bfd21a0326e54e11e86740d749fa7b5",
       "issuerId": "iss_cik_0001357459"
     },
     {

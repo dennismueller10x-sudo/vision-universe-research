@@ -231,9 +231,9 @@
       "cik": "0001617867",
       "name": "Autonomix Medical, Inc.",
       "sic": "3841",
-      "rawFacts": 2079,
-      "mappedFacts": 817,
-      "unmappedFacts": 1324,
+      "rawFacts": 2268,
+      "mappedFacts": 896,
+      "unmappedFacts": 1462,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -243,9 +243,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 18,
+      "quarterlyPeriods": 19,
       "firstPeriodEnd": "2022-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
@@ -284,21 +284,21 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2023-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 3.0
         },
         "revenue": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2023-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 3.0
@@ -312,14 +312,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 3.0
@@ -342,44 +342,45 @@
         }
       },
       "quality": {
-        "HIGH": 120
+        "HIGH": 125
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 120,
-        "resolvedValues": 120
+        "datableValues": 125,
+        "resolvedValues": 125
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1361,
+        "rules_version": "1.1.0",
+        "total": 1504,
         "by_severity": {
-          "INFO": 1324,
-          "WARNING": 37
+          "INFO": 1462,
+          "WARNING": 42
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 13,
-          "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 1324
+          "CONCEPT_DISAGREEMENT": 14,
+          "RESTATEMENT_CONFLICT": 28,
+          "UNKNOWN_CONCEPT": 1462
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-027429",
-        "filing_date": "2026-08-13",
+        "accession": "0001437749-26-036033",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 14
+        "periodic_filings": 15,
+        "acceptance_datetime": "2026-11-10T15:33:32.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "43c07dc48eed12ce2db73d8d1bc82d2c5e02e78bbcd61bb2738328fdc0eddfff",
+      "sourceDigest": "32038ce4a88c119c1d93e50825eb4a319264f4cd95be495ebef6683b9055e38b",
       "issuerId": "iss_cik_0001617867"
     },
     {

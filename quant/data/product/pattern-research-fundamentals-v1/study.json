@@ -7,7 +7,7 @@
   "count": 15
  },
  "family": "PIT_FUNDAMENTAL_OVERLAY",
- "generatedAt": "2026-11-11T00:37:54.000Z",
+ "generatedAt": "2026-11-11T08:29:11.000Z",
  "backtest": "NOT_CERTIFIED",
  "publication": {
   "predictionAllowed": false,
@@ -41,7 +41,7 @@
   },
   "restriction": "Nur Beobachtungen, zu deren Stichtag mindestens eine Bilanz eingereicht war. Die Basisquote gilt fuer genau diese Grundgesamtheit.",
   "firstDate": "2018-01-24",
-  "lastDate": "2026-11-09",
+  "lastDate": "2026-11-10",
   "priceSeriesType": "SPLIT_ADJUSTED",
   "totalReturn": false,
   "totalReturnNote": "Split-, nicht dividendenbereinigt. Ein Titel mit hoher Ausschuettung ist hier systematisch schwaecher als seine Gesamtrendite. Das betrifft Gewinner und Nicht-Gewinner gleichermassen und wird nicht durch einen Schaetzwert ersetzt."
@@ -1108,8 +1108,8 @@
      "state": "MEASURED",
      "medianLift": 1.5104,
      "minLift": 1.3695,
-     "maxLift": 1.5528,
-     "relativeSpread": 0.1214
+     "maxLift": 1.5526,
+     "relativeSpread": 0.1213
     },
     "verdict": "ROBUST",
     "halves": {
@@ -3416,7 +3416,7 @@
      "state": "MEASURED",
      "medianLift": 1.3936,
      "minLift": 1.3755,
-     "maxLift": 1.4119,
+     "maxLift": 1.4118,
      "relativeSpread": 0.0261
     },
     "verdict": "ROBUST",
@@ -16749,7 +16749,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "cash-rich",
@@ -18710,28 +18710,28 @@
       "value": false
      }
     ],
-    "support": 9562,
+    "support": 9558,
     "winners": 876,
     "population": 242177,
     "notMeasurable": 155,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.117571,
-    "conditionalRate": 0.091613,
-    "lift": 0.7792,
+    "conditionalRate": 0.091651,
+    "lift": 0.7795,
     "wilsonInterval": [
-     0.085993,
-     0.09756
+     0.086029,
+     0.097601
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
     "losses": 1013,
     "baseLossRate": 0.166597,
-    "conditionalLossRate": 0.10594,
-    "lossLift": 0.6359,
+    "conditionalLossRate": 0.105985,
+    "lossLift": 0.6362,
     "asymmetry": 1.2254,
-    "medianForwardReturn": 0.0371,
-    "medianForwardReturnNetOfFrictions": 0.034,
+    "medianForwardReturn": 0.0374,
+    "medianForwardReturnNetOfFrictions": 0.0343,
     "medianForwardReturnPopulation": 0.028,
     "medianMaxDrawdownWithinHorizon": -0.4156,
     "inSample": {
@@ -18740,23 +18740,23 @@
      "winners": 691
     },
     "outOfSample": {
-     "lift": 0.7674,
-     "support": 6406,
+     "lift": 0.7679,
+     "support": 6402,
      "winners": 540
     },
     "parameterStability": {
      "state": "MEASURED",
-     "medianLift": 0.7792,
+     "medianLift": 0.7795,
      "minLift": 0.657,
      "maxLift": 0.9067,
-     "relativeSpread": 0.3205
+     "relativeSpread": 0.3203
     },
     "verdict": "IN_SAMPLE_ONLY",
     "halves": {
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "loss-making",
@@ -18764,7 +18764,7 @@
       "support": 88382
      }
     },
-    "incremental": 0.6043,
+    "incremental": 0.6045,
     "addsOverBetterHalf": false
    },
    {
@@ -20000,7 +20000,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "very-high-revenue-growth",
@@ -20292,7 +20292,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "low-gross-margin",
@@ -20438,7 +20438,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "strong-equity-base",
@@ -20657,7 +20657,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "high-revenue-growth",
@@ -20816,28 +20816,28 @@
       "value": 0
      }
     ],
-    "support": 10608,
+    "support": 10604,
     "winners": 720,
     "population": 150502,
     "notMeasurable": 91830,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.112663,
-    "conditionalRate": 0.067873,
-    "lift": 0.6024,
+    "conditionalRate": 0.067899,
+    "lift": 0.6027,
     "wilsonInterval": [
-     0.063241,
-     0.072818
+     0.063265,
+     0.072845
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
     "losses": 605,
     "baseLossRate": 0.152603,
-    "conditionalLossRate": 0.057032,
-    "lossLift": 0.3737,
+    "conditionalLossRate": 0.057054,
+    "lossLift": 0.3739,
     "asymmetry": 1.612,
-    "medianForwardReturn": 0.0864,
-    "medianForwardReturnNetOfFrictions": 0.0831,
+    "medianForwardReturn": 0.0865,
+    "medianForwardReturnNetOfFrictions": 0.0832,
     "medianForwardReturnPopulation": 0.028,
     "medianMaxDrawdownWithinHorizon": -0.3108,
     "inSample": {
@@ -20846,23 +20846,23 @@
      "winners": 198
     },
     "outOfSample": {
-     "lift": 0.5916,
-     "support": 9922,
+     "lift": 0.5919,
+     "support": 9918,
      "winners": 622
     },
     "parameterStability": {
      "state": "MEASURED",
-     "medianLift": 0.6024,
+     "medianLift": 0.6027,
      "minLift": 0.4733,
      "maxLift": 0.6977,
-     "relativeSpread": 0.3724
+     "relativeSpread": 0.3723
     },
     "verdict": "IN_SAMPLE_ONLY",
     "halves": {
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "shrinking-revenue",
@@ -20870,7 +20870,7 @@
       "support": 42142
      }
     },
-    "incremental": 0.5003,
+    "incremental": 0.5005,
     "addsOverBetterHalf": false
    },
    {
@@ -20935,7 +20935,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "burning-cash",
@@ -21300,7 +21300,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "no-dilution",
@@ -21446,7 +21446,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "positive-free-cash-flow",
@@ -21473,28 +21473,28 @@
       "value": 0.2
      }
     ],
-    "support": 16904,
+    "support": 16900,
     "winners": 932,
     "population": 236014,
     "notMeasurable": 6318,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.118603,
-    "conditionalRate": 0.055135,
-    "lift": 0.4649,
+    "conditionalRate": 0.055148,
+    "lift": 0.465,
     "wilsonInterval": [
-     0.051794,
-     0.058678
+     0.051806,
+     0.058692
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
     "losses": 926,
     "baseLossRate": 0.167342,
-    "conditionalLossRate": 0.05478,
+    "conditionalLossRate": 0.054793,
     "lossLift": 0.3274,
     "asymmetry": 1.4201,
-    "medianForwardReturn": 0.107,
-    "medianForwardReturnNetOfFrictions": 0.1037,
+    "medianForwardReturn": 0.1073,
+    "medianForwardReturnNetOfFrictions": 0.104,
     "medianForwardReturnPopulation": 0.028,
     "medianMaxDrawdownWithinHorizon": -0.3433,
     "inSample": {
@@ -21503,23 +21503,23 @@
      "winners": 612
     },
     "outOfSample": {
-     "lift": 0.5003,
-     "support": 11596,
+     "lift": 0.5005,
+     "support": 11592,
      "winners": 637
     },
     "parameterStability": {
      "state": "MEASURED",
-     "medianLift": 0.4649,
+     "medianLift": 0.465,
      "minLift": 0.3887,
      "maxLift": 0.5387,
-     "relativeSpread": 0.3227
+     "relativeSpread": 0.3226
     },
     "verdict": "IN_SAMPLE_ONLY",
     "halves": {
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "thin-equity-base",
@@ -21527,7 +21527,7 @@
       "support": 66900
      }
     },
-    "incremental": 0.4527,
+    "incremental": 0.4528,
     "addsOverBetterHalf": false
    },
    {
@@ -21665,7 +21665,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "high-gross-margin",
@@ -21738,7 +21738,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "profitable",
@@ -21765,53 +21765,53 @@
       "value": 0.2
      }
     ],
-    "support": 7004,
+    "support": 7000,
     "winners": 334,
     "population": 164616,
     "notMeasurable": 77716,
     "outcomeUnavailableInPattern": 0,
     "baseRate": 0.116435,
-    "conditionalRate": 0.047687,
-    "lift": 0.4096,
+    "conditionalRate": 0.047714,
+    "lift": 0.4098,
     "wilsonInterval": [
-     0.042939,
-     0.052931
+     0.042964,
+     0.052961
     ],
     "pValue": 0,
     "significantAfterCorrection": true,
     "lossThreshold": -0.5,
     "losses": 525,
     "baseLossRate": 0.158362,
-    "conditionalLossRate": 0.074957,
-    "lossLift": 0.4733,
+    "conditionalLossRate": 0.075,
+    "lossLift": 0.4736,
     "asymmetry": 0.8653,
-    "medianForwardReturn": 0.0234,
-    "medianForwardReturnNetOfFrictions": 0.0203,
+    "medianForwardReturn": 0.0238,
+    "medianForwardReturnNetOfFrictions": 0.0208,
     "medianForwardReturnPopulation": 0.028,
-    "medianMaxDrawdownWithinHorizon": -0.3534,
+    "medianMaxDrawdownWithinHorizon": -0.353,
     "inSample": {
      "lift": 0.4183,
      "support": 3759,
      "winners": 235
     },
     "outOfSample": {
-     "lift": 0.3966,
-     "support": 5292,
+     "lift": 0.3969,
+     "support": 5288,
      "winners": 222
     },
     "parameterStability": {
      "state": "MEASURED",
-     "medianLift": 0.4096,
+     "medianLift": 0.4098,
      "minLift": 0.3169,
      "maxLift": 0.5616,
-     "relativeSpread": 0.5976
+     "relativeSpread": 0.5973
     },
     "verdict": "IN_SAMPLE_ONLY",
     "halves": {
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "heavy-dilution",
@@ -21819,7 +21819,7 @@
       "support": 42096
      }
     },
-    "incremental": 0.3553,
+    "incremental": 0.3555,
     "addsOverBetterHalf": false
    },
    {
@@ -22103,7 +22103,7 @@
      "price": {
       "id": "quiet-range",
       "lift": 0.4859,
-      "support": 73715
+      "support": 73711
      },
      "fundamental": {
       "id": "capex-heavy",
@@ -24041,8 +24041,8 @@
     "state": "MEASURED",
     "medianLift": 1.5104,
     "minLift": 1.3695,
-    "maxLift": 1.5528,
-    "relativeSpread": 0.1214
+    "maxLift": 1.5526,
+    "relativeSpread": 0.1213
    },
    "verdict": "ROBUST",
    "halves": {
@@ -26349,7 +26349,7 @@
     "state": "MEASURED",
     "medianLift": 1.3936,
     "minLift": 1.3755,
-    "maxLift": 1.4119,
+    "maxLift": 1.4118,
     "relativeSpread": 0.0261
    },
    "verdict": "ROBUST",
@@ -39682,7 +39682,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "cash-rich",
@@ -41643,28 +41643,28 @@
      "value": false
     }
    ],
-   "support": 9562,
+   "support": 9558,
    "winners": 876,
    "population": 242177,
    "notMeasurable": 155,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.117571,
-   "conditionalRate": 0.091613,
-   "lift": 0.7792,
+   "conditionalRate": 0.091651,
+   "lift": 0.7795,
    "wilsonInterval": [
-    0.085993,
-    0.09756
+    0.086029,
+    0.097601
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
    "losses": 1013,
    "baseLossRate": 0.166597,
-   "conditionalLossRate": 0.10594,
-   "lossLift": 0.6359,
+   "conditionalLossRate": 0.105985,
+   "lossLift": 0.6362,
    "asymmetry": 1.2254,
-   "medianForwardReturn": 0.0371,
-   "medianForwardReturnNetOfFrictions": 0.034,
+   "medianForwardReturn": 0.0374,
+   "medianForwardReturnNetOfFrictions": 0.0343,
    "medianForwardReturnPopulation": 0.028,
    "medianMaxDrawdownWithinHorizon": -0.4156,
    "inSample": {
@@ -41673,23 +41673,23 @@
     "winners": 691
    },
    "outOfSample": {
-    "lift": 0.7674,
-    "support": 6406,
+    "lift": 0.7679,
+    "support": 6402,
     "winners": 540
    },
    "parameterStability": {
     "state": "MEASURED",
-    "medianLift": 0.7792,
+    "medianLift": 0.7795,
     "minLift": 0.657,
     "maxLift": 0.9067,
-    "relativeSpread": 0.3205
+    "relativeSpread": 0.3203
    },
    "verdict": "IN_SAMPLE_ONLY",
    "halves": {
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "loss-making",
@@ -41697,7 +41697,7 @@
      "support": 88382
     }
    },
-   "incremental": 0.6043,
+   "incremental": 0.6045,
    "addsOverBetterHalf": false
   },
   {
@@ -42933,7 +42933,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "very-high-revenue-growth",
@@ -43225,7 +43225,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "low-gross-margin",
@@ -43371,7 +43371,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "strong-equity-base",
@@ -43590,7 +43590,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "high-revenue-growth",
@@ -43749,28 +43749,28 @@
      "value": 0
     }
    ],
-   "support": 10608,
+   "support": 10604,
    "winners": 720,
    "population": 150502,
    "notMeasurable": 91830,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.112663,
-   "conditionalRate": 0.067873,
-   "lift": 0.6024,
+   "conditionalRate": 0.067899,
+   "lift": 0.6027,
    "wilsonInterval": [
-    0.063241,
-    0.072818
+    0.063265,
+    0.072845
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
    "losses": 605,
    "baseLossRate": 0.152603,
-   "conditionalLossRate": 0.057032,
-   "lossLift": 0.3737,
+   "conditionalLossRate": 0.057054,
+   "lossLift": 0.3739,
    "asymmetry": 1.612,
-   "medianForwardReturn": 0.0864,
-   "medianForwardReturnNetOfFrictions": 0.0831,
+   "medianForwardReturn": 0.0865,
+   "medianForwardReturnNetOfFrictions": 0.0832,
    "medianForwardReturnPopulation": 0.028,
    "medianMaxDrawdownWithinHorizon": -0.3108,
    "inSample": {
@@ -43779,23 +43779,23 @@
     "winners": 198
    },
    "outOfSample": {
-    "lift": 0.5916,
-    "support": 9922,
+    "lift": 0.5919,
+    "support": 9918,
     "winners": 622
    },
    "parameterStability": {
     "state": "MEASURED",
-    "medianLift": 0.6024,
+    "medianLift": 0.6027,
     "minLift": 0.4733,
     "maxLift": 0.6977,
-    "relativeSpread": 0.3724
+    "relativeSpread": 0.3723
    },
    "verdict": "IN_SAMPLE_ONLY",
    "halves": {
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "shrinking-revenue",
@@ -43803,7 +43803,7 @@
      "support": 42142
     }
    },
-   "incremental": 0.5003,
+   "incremental": 0.5005,
    "addsOverBetterHalf": false
   },
   {
@@ -43868,7 +43868,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "burning-cash",
@@ -44233,7 +44233,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "no-dilution",
@@ -44379,7 +44379,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "positive-free-cash-flow",
@@ -44406,28 +44406,28 @@
      "value": 0.2
     }
    ],
-   "support": 16904,
+   "support": 16900,
    "winners": 932,
    "population": 236014,
    "notMeasurable": 6318,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.118603,
-   "conditionalRate": 0.055135,
-   "lift": 0.4649,
+   "conditionalRate": 0.055148,
+   "lift": 0.465,
    "wilsonInterval": [
-    0.051794,
-    0.058678
+    0.051806,
+    0.058692
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
    "losses": 926,
    "baseLossRate": 0.167342,
-   "conditionalLossRate": 0.05478,
+   "conditionalLossRate": 0.054793,
    "lossLift": 0.3274,
    "asymmetry": 1.4201,
-   "medianForwardReturn": 0.107,
-   "medianForwardReturnNetOfFrictions": 0.1037,
+   "medianForwardReturn": 0.1073,
+   "medianForwardReturnNetOfFrictions": 0.104,
    "medianForwardReturnPopulation": 0.028,
    "medianMaxDrawdownWithinHorizon": -0.3433,
    "inSample": {
@@ -44436,23 +44436,23 @@
     "winners": 612
    },
    "outOfSample": {
-    "lift": 0.5003,
-    "support": 11596,
+    "lift": 0.5005,
+    "support": 11592,
     "winners": 637
    },
    "parameterStability": {
     "state": "MEASURED",
-    "medianLift": 0.4649,
+    "medianLift": 0.465,
     "minLift": 0.3887,
     "maxLift": 0.5387,
-    "relativeSpread": 0.3227
+    "relativeSpread": 0.3226
    },
    "verdict": "IN_SAMPLE_ONLY",
    "halves": {
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "thin-equity-base",
@@ -44460,7 +44460,7 @@
      "support": 66900
     }
    },
-   "incremental": 0.4527,
+   "incremental": 0.4528,
    "addsOverBetterHalf": false
   },
   {
@@ -44598,7 +44598,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "high-gross-margin",
@@ -44671,7 +44671,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "profitable",
@@ -44698,53 +44698,53 @@
      "value": 0.2
     }
    ],
-   "support": 7004,
+   "support": 7000,
    "winners": 334,
    "population": 164616,
    "notMeasurable": 77716,
    "outcomeUnavailableInPattern": 0,
    "baseRate": 0.116435,
-   "conditionalRate": 0.047687,
-   "lift": 0.4096,
+   "conditionalRate": 0.047714,
+   "lift": 0.4098,
    "wilsonInterval": [
-    0.042939,
-    0.052931
+    0.042964,
+    0.052961
    ],
    "pValue": 0,
    "significantAfterCorrection": true,
    "lossThreshold": -0.5,
    "losses": 525,
    "baseLossRate": 0.158362,
-   "conditionalLossRate": 0.074957,
-   "lossLift": 0.4733,
+   "conditionalLossRate": 0.075,
+   "lossLift": 0.4736,
    "asymmetry": 0.8653,
-   "medianForwardReturn": 0.0234,
-   "medianForwardReturnNetOfFrictions": 0.0203,
+   "medianForwardReturn": 0.0238,
+   "medianForwardReturnNetOfFrictions": 0.0208,
    "medianForwardReturnPopulation": 0.028,
-   "medianMaxDrawdownWithinHorizon": -0.3534,
+   "medianMaxDrawdownWithinHorizon": -0.353,
    "inSample": {
     "lift": 0.4183,
     "support": 3759,
     "winners": 235
    },
    "outOfSample": {
-    "lift": 0.3966,
-    "support": 5292,
+    "lift": 0.3969,
+    "support": 5288,
     "winners": 222
    },
    "parameterStability": {
     "state": "MEASURED",
-    "medianLift": 0.4096,
+    "medianLift": 0.4098,
     "minLift": 0.3169,
     "maxLift": 0.5616,
-    "relativeSpread": 0.5976
+    "relativeSpread": 0.5973
    },
    "verdict": "IN_SAMPLE_ONLY",
    "halves": {
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "heavy-dilution",
@@ -44752,7 +44752,7 @@
      "support": 42096
     }
    },
-   "incremental": 0.3553,
+   "incremental": 0.3555,
    "addsOverBetterHalf": false
   },
   {
@@ -45036,7 +45036,7 @@
     "price": {
      "id": "quiet-range",
      "lift": 0.4859,
-     "support": 73715
+     "support": 73711
     },
     "fundamental": {
      "id": "capex-heavy",
@@ -45969,6 +45969,6 @@
    "addsOverBetterHalf": false
   }
  ],
- "runtimeMs": 54243,
- "contentHash": "a61de2f9cdadc456"
+ "runtimeMs": 35964,
+ "contentHash": "c2e448758d9f7151"
 }

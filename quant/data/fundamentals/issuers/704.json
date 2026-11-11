@@ -366,9 +366,9 @@
       "cik": "0001279704",
       "name": "Cellectar Biosciences, Inc.",
       "sic": "2834",
-      "rawFacts": 13201,
-      "mappedFacts": 4525,
-      "unmappedFacts": 8874,
+      "rawFacts": 13366,
+      "mappedFacts": 4603,
+      "unmappedFacts": 9105,
       "calendarYears": 23,
       "industry": null,
       "industryMetrics": {},
@@ -378,28 +378,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 24,
-      "quarterlyPeriods": 74,
+      "quarterlyPeriods": 75,
       "firstPeriodEnd": "2002-11-06",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 23.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0,
@@ -419,14 +419,14 @@
         },
         "net_income": {
           "annualPeriods": 23,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2003-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 22.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -447,14 +447,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 24,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2002-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 23.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -477,48 +477,49 @@
         }
       },
       "quality": {
-        "HIGH": 439,
+        "HIGH": 445,
         "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 449,
-        "resolvedValues": 449
+        "datableValues": 455,
+        "resolvedValues": 455
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 9285,
+        "rules_version": "1.1.0",
+        "total": 9514,
         "by_severity": {
-          "INFO": 8874,
+          "INFO": 9105,
           "ERROR": 1,
-          "WARNING": 410
+          "WARNING": 408
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 70,
+          "CONCEPT_DISAGREEMENT": 68,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 167,
           "UNEXPECTED_DURATION": 173,
-          "UNKNOWN_CONCEPT": 8874
+          "UNKNOWN_CONCEPT": 9105
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-095426",
-        "filing_date": "2026-08-13",
+        "accession": "0001104659-26-124765",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 85
+        "periodic_filings": 86,
+        "acceptance_datetime": "2026-11-10T11:55:39.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "0f5ba8574d99082302f955928d4b79760f547bb5b7f45cac20fc992bc8c30097",
+      "sourceDigest": "a50c5b19717bb888adcdc42e4bb4666ae706cf684193e7e9a64f0e7034578635",
       "issuerId": "iss_cik_0001279704"
     },
     {

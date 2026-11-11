@@ -34,7 +34,7 @@ function args(argv) {
     const k = argv[i], v = argv[i + 1];
     if (k === '--out') { a.out = v; i++; } else if (k === '--fundamentals') { a.fundamentals = v; i++; } else if (k === '--work-dir') { a.workDir = v; i++; }
     else if (k === '--delisted-dir') { a.delistedDir = v; i++; } else if (k === '--delisted-raw-dir') { a.delistedRawDir = v; i++; } else if (k === '--profiles') { a.profiles = v.split(','); i++; } else if (k === '--weighting') { a.weighting = v; i++; }
-    else if (k === '--window') { a.window = v.split(','); i++; } else if (k === '--limit') { a.limit = Number(v); i++; } else if (k === '--sensitivity') a.sensitivity = true; else if (k === '--no-dq') a.noDq = true;
+    else if (k === '--window') { a.window = v.split(','); i++; } else if (k === '--limit') { a.limit = Number(v); i++; } else if (k === '--sensitivity') a.sensitivity = true; else if (k === '--pit-sector') a.pitSector = true; else if (k === '--listing') a.listing = true; else if (k === '--no-dq') a.noDq = true;
     else if (k === '--help') { console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(2, 13).join('\n')); process.exit(0); }
     else throw Error('UNKNOWN_ARG ' + k);
   }
@@ -143,6 +143,74 @@ function delistedRawWeekly(doc, rawSeries, weekOf) {
   return { raw, dv, checked, bad };
 }
 
+// PIT-F3 (ADR-001 A1): Listing-Intervall je Panel-Titel aus dem Company Master. Opt-in (`a.listing`), eingefrorene Läufe bleiben unverändert.
+// Setzt `listing {cik, from, to}` nur, wenn Master-CIK und Bündel-CIK übereinstimmen (oder das Bündel fehlt); bei Widerspruch bleibt
+// `listing` leer (unbekannt bleibt unbekannt). Verbindet KEINE Renditen über einen Tickerwechsel: chainCandidates ist nur ein Schattenbericht
+// (gleiche CIK, Intervall der einen Zeile endet höchstens 14 Tage vor dem Beginn der nächsten).
+function loadListingIndex() {
+  const dir = path.join(ROOT, 'quant/data/universe/instruments'), byId = new Map();
+  for (const f of fs.readdirSync(dir).filter(x => x.endsWith('.json')).sort())
+    for (const i of JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')).instruments || []) {
+      if (!i.cik) continue;
+      const to = i.active === false ? (i.lastTradeDate || i.delistedAt || null) : null;
+      for (const id of new Set([...(i.legacyIds || []), i.masterMemberId].filter(Boolean))) byId.set(id, { cik: i.cik, from: i.firstTradeDate || null, to });
+    }
+  return byId;
+}
+function attachListing(securities, index) {
+  const c = { withListing: 0, noMasterEntry: 0, cikConflict: 0 }, byCik = new Map();
+  for (const s of securities) {
+    const m = index.get(s.id);
+    if (!m) { c.noMasterEntry++; continue; }
+    if (s.bundle && s.bundle.cik && Number(s.bundle.cik) !== Number(m.cik)) { c.cikConflict++; continue; }
+    s.listing = { cik: m.cik, from: m.from, to: m.to };
+    c.withListing++;
+    if (!byCik.has(m.cik)) byCik.set(m.cik, []);
+    byCik.get(m.cik).push(s);
+  }
+  let chainCandidates = 0;
+  for (const list of byCik.values()) for (const a of list) for (const b of list) {
+    if (a === b || !a.listing.to || !b.listing.from) continue;
+    const gap = (Date.parse(b.listing.from) - Date.parse(a.listing.to)) / 86400000;
+    if (gap >= 0 && gap <= 14) chainCandidates++;
+  }
+  return { ...c, chainCandidates };
+}
+
+// PIT-F2: Branche zum Entscheidungstag statt heutiger SIC. Opt-in (`a.pitSector`), damit eingefrorene Läufe unverändert bleiben.
+// `ic` = core/industry-classification.js#create(...). Je Woche die zeitgenaue SIC (knownAt <= Wochenschluss, 16:00 ET); die
+// Fortschreibung ist deklariert (PIT_SECTOR_MAX_AGE_DAYS, Annahme PIT_SECTOR_ASSUMPTION). Alles außer OBSERVED bleibt null (unbekannt).
+const PIT_SECTOR_MAX_AGE_DAYS = 1100, PIT_SECTOR_ASSUMPTION = 'PIT-F2: SIC bleibt bis zur nächsten Beobachtung gültig, höchstens 1100 Tage (Entscheidung 11.11.2026)';
+function pitSectorSeries(ic, cik, calendar) {
+  const out = new Array(calendar.length).fill(null);
+  if (!cik) return out;
+  calendar.forEach((d, i) => {
+    const r = ic.getIndustryClassification(cik, d, { maxAgeDays: PIT_SECTOR_MAX_AGE_DAYS, assumptionRef: PIT_SECTOR_ASSUMPTION });
+    out[i] = r.status === 'OBSERVED' ? ff12(r.sic) : null;
+  });
+  return out;
+}
+function loadSicHistoryIC(ciks) {
+  const IC = require(path.join(ROOT, 'core/industry-classification.js')), zlib = require('node:zlib'), dir = path.join(ROOT, 'quant/data/sec/sic-history');
+  const index = JSON.parse(fs.readFileSync(path.join(dir, 'index.json'), 'utf8')), codesFile = path.join(dir, 'sic-codes.json');
+  const codes = fs.existsSync(codesFile) ? JSON.parse(fs.readFileSync(codesFile, 'utf8')).codes : {};
+  const wanted = new Set([...ciks].map(IC.normalizeCik).filter(Boolean)), issuers = {};
+  for (const sh of [...new Set([...wanted].map(IC.shardOf))].sort()) {
+    const f = path.join(dir, 'issuers', sh + '.json.gz');
+    if (!fs.existsSync(f)) continue;
+    for (const [c, rec] of Object.entries(JSON.parse(zlib.gunzipSync(fs.readFileSync(f)).toString('utf8')).issuers)) if (wanted.has(c)) issuers[c] = rec;
+  }
+  return IC.create({ issuers, codes, index });
+}
+function attachPitSector(securities, calendar, ic) {
+  let changed = 0;
+  for (const s of securities) {
+    s.sectorAt = pitSectorSeries(ic, s.bundle && s.bundle.cik, calendar);
+    if (s.sectorAt.some(x => x && x !== s.sector)) changed++;
+  }
+  return { securities: securities.length, withDifferentSectorAtSomeDate: changed, maxAgeDays: PIT_SECTOR_MAX_AGE_DAYS };
+}
+
 function buildPanel(a) {
   const basis = a.workDir ? 'TOTAL_RETURN' : 'PRICE_RETURN';
   // a.benchmark: eigener Wochenkalender (Musterdepots vorwärts: SPY-Tagesreihe, weil die Vorsorge-Reihe früher endet).
@@ -239,10 +307,12 @@ function buildPanel(a) {
     populationEvidence: sha({ rule: 'ALL_LISTED_US_COMMON_WITH_SIC_AND_PRICE_AT_DECISION', ids: sourceHashes.length }), corporateActionEvidence: sha({ basis, splitFactors: 'return-series.js#splitFactors' }),
     lifecycleEvidence: sha({ delisted: a.delistedDir ? 'V13_REGISTER_1.0.0' : 'NONE' }), licenseEvidence: sha('TIINGO_COMMERCIAL_LICENSE_DERIVED_RESULTS_ONLY'),
   };
+  const pitSector = a.pitSector ? attachPitSector(securities, calendar, loadSicHistoryIC(securities.map(s => s.bundle && s.bundle.cik).filter(Boolean))) : null;
+  const listing = a.listing ? attachListing(securities, loadListingIndex()) : null;
   return {
     calendar, basis, benchmark: { label: bench.label, levels, sourceHash: bench.sourceHash, file: bench.file, lastDate: calendar.at(-1) }, securities, provenance: prov,
     population: { label: 'CUSTOM_STRATEGY_UNIVERSE', description: 'Heute vorhandene Kursdateien (' + (a.workDir ? 'R2-Tagesbalken' : 'committete Wochenreihen') + ') mit heutigem SIC-Code' + (a.delistedDir ? ' plus qualifizierte V13-Ketten delisteter Titel (Register 1.0.0)' : '') + '; keine vollständige damalige Population, keine historische Indexmitgliedschaft.' },
-    meta: { counts, securities: securities.length, withFundamentals: securities.filter(s => s.bundle).length, fundamentalsSource: a.fundamentals ? 'PIT_ORIGINAL_FILING' : 'LAGGED_LATEST_FILING_COMMITTED_CONSUMER', fundamentalsFiles: bundles.files },
+    meta: { counts, ...(pitSector ? { pitSector } : {}), ...(listing ? { listing } : {}), securities: securities.length, withFundamentals: securities.filter(s => s.bundle).length, fundamentalsSource: a.fundamentals ? 'PIT_ORIGINAL_FILING' : 'LAGGED_LATEST_FILING_COMMITTED_CONSUMER', fundamentalsFiles: bundles.files },
   };
 }
 
@@ -354,4 +424,4 @@ function main() {
 }
 
 if (require.main === module) main();
-module.exports = { isoWeek, ff12, buildPanel, applyDq, DQ_POLICIES, coverageByYear, delistedRawWeekly, loadRawByTicker, DEFAULT_PROFILES, VERSION };
+module.exports = { isoWeek, ff12, buildPanel, attachListing, loadListingIndex, pitSectorSeries, attachPitSector, loadSicHistoryIC, PIT_SECTOR_MAX_AGE_DAYS, applyDq, DQ_POLICIES, coverageByYear, delistedRawWeekly, loadRawByTicker, DEFAULT_PROFILES, VERSION };

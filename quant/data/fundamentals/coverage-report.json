@@ -1,5 +1,5 @@
 {
-  "generatedAtUtc": "2026-11-10T06:34:37+00:00",
+  "generatedAtUtc": "2026-11-11T09:28:07+00:00",
   "versions": {
     "normalization_schema": "1.0.0",
     "normalization_logic": "1.14.0",
@@ -13,9 +13,9 @@
   },
   "note": "Gezaehlt gegen das Produktuniversum, nicht gegen die ingestierten Emittenten. Ein Nenner aus dem eigenen Bestand wuerde jede Luecke wegdefinieren (\u00a719).",
   "universe": {
-    "PRODUCT_TITLES": 6308,
+    "PRODUCT_TITLES": 6309,
     "PRODUCT_ISSUERS": 5404,
-    "PRODUCT_TITLES_WITHOUT_ISSUER": 736,
+    "PRODUCT_TITLES_WITHOUT_ISSUER": 737,
     "MASTER_ISSUERS": 5481
   },
   "identity": {
@@ -26,48 +26,49 @@
   "fundamentals": {
     "COMPANY_FACTS_AVAILABLE": 5404,
     "COMPANY_FACTS_UNAVAILABLE": 0,
-    "ISSUERS_INGESTED_TOTAL": 5480,
-    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 76,
+    "ISSUERS_INGESTED_TOTAL": 5481,
+    "ISSUERS_INGESTED_OUTSIDE_PRODUCT_UNIVERSE": 77,
     "BY_SOURCE": {
-      "INGESTED": 5480
+      "INGESTED": 5480,
+      "DELIVERED_CANONICAL": 1
     }
   },
   "metrics": {
     "revenue": {
       "COUNT": 4401,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 69.7685
+      "PERCENT_OF_PRODUCT_UNIVERSE": 69.7575
     },
     "net_income": {
       "COUNT": 5023,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 79.629
+      "PERCENT_OF_PRODUCT_UNIVERSE": 79.6164
     },
     "eps_diluted": {
       "COUNT": 4759,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 75.4439
+      "PERCENT_OF_PRODUCT_UNIVERSE": 75.4319
     },
     "operating_cash_flow": {
       "COUNT": 5010,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 79.423
+      "PERCENT_OF_PRODUCT_UNIVERSE": 79.4104
     },
     "capital_expenditures": {
-      "COUNT": 4523,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 71.7026
+      "COUNT": 4524,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 71.7071
     },
     "free_cash_flow": {
-      "COUNT": 4513,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 71.5441
+      "COUNT": 4514,
+      "PERCENT_OF_PRODUCT_UNIVERSE": 71.5486
     },
     "total_assets": {
       "COUNT": 5241,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 83.085
+      "PERCENT_OF_PRODUCT_UNIVERSE": 83.0718
     },
     "total_debt": {
       "COUNT": 2848,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 45.149
+      "PERCENT_OF_PRODUCT_UNIVERSE": 45.1419
     },
     "stockholders_equity": {
       "COUNT": 5211,
-      "PERCENT_OF_PRODUCT_UNIVERSE": 82.6094
+      "PERCENT_OF_PRODUCT_UNIVERSE": 82.5963
     }
   },
   "pointInTime": {
@@ -75,9 +76,9 @@
     "denominator": "PRODUCT_TITLES",
     "PIT_READY_SECURITIES": 5434,
     "PIT_PARTIAL_SECURITIES": 0,
-    "PIT_UNAVAILABLE_SECURITIES": 874,
+    "PIT_UNAVAILABLE_SECURITIES": 875,
     "BY_ISSUER": {
-      "PIT_READY": 5345,
+      "PIT_READY": 5346,
       "PIT_UNAVAILABLE": 135
     },
     "SURVIVORSHIP_FREE_UNIVERSE": false,

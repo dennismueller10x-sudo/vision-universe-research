@@ -162,9 +162,9 @@
       "cik": "0001947244",
       "name": "U.S. GoldMining Inc.",
       "sic": "1040",
-      "rawFacts": 2810,
-      "mappedFacts": 965,
-      "unmappedFacts": 1791,
+      "rawFacts": 3025,
+      "mappedFacts": 1054,
+      "unmappedFacts": 1945,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -174,28 +174,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 23,
+      "quarterlyPeriods": 24,
       "firstPeriodEnd": "2021-11-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.08,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2023-11-30",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 1.08
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-11-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.08
         },
         "free_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2023-11-30",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 1.08,
@@ -215,14 +215,14 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-11-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.08
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-11-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.08
@@ -243,14 +243,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-11-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.08
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-11-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.08
@@ -273,46 +273,46 @@
         }
       },
       "quality": {
-        "HIGH": 112,
-        "MEDIUM": 1
+        "HIGH": 119
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 113,
-        "resolvedValues": 113
+        "datableValues": 119,
+        "resolvedValues": 119
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1928,
+        "rules_version": "1.1.0",
+        "total": 2087,
         "by_severity": {
-          "INFO": 1791,
-          "WARNING": 137
+          "INFO": 1945,
+          "WARNING": 142
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 64,
+          "CONCEPT_DISAGREEMENT": 69,
           "RESTATEMENT_CONFLICT": 24,
           "UNEXPECTED_DURATION": 49,
-          "UNKNOWN_CONCEPT": 1791
+          "UNKNOWN_CONCEPT": 1945
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037397",
-        "filing_date": "2026-08-12",
+        "accession": "0001493152-26-051013",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 14
+        "periodic_filings": 15,
+        "acceptance_datetime": "2026-11-10T21:58:46.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "892b318fd5b655a0dcebc891e699f5758f04b07f080aedc0dc829c9b33265f2b",
+      "sourceDigest": "94e2c3cbfc812c5b09f7bdb702fdec9db7879ea3350bee1aa2b7b393ee7cc54f",
       "issuerId": "iss_cik_0001947244"
     }
   ]

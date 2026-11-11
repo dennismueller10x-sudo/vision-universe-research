@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-input-audit-1.0.0",
- "generatedAt": "2026-11-11T00:12:15.000Z",
+ "generatedAt": "2026-11-11T08:12:46.000Z",
  "versions": {
   "audit_logic": "1.0.0"
  },
@@ -9,22 +9,22 @@
  "scope": "CANONICAL_HISTORY",
  "scopeNote": "Gelesen wurde der wiederhergestellte kanonische Barstore.",
  "counters": {
-  "CANONICAL_PRODUCT_UNIVERSE": 6308,
-  "CANONICAL_HISTORY_UNIVERSE": 6307,
-  "RAW_CLOSE_AVAILABLE": 6307,
-  "SPLIT_FACTOR_AVAILABLE": 6307,
-  "DIVIDEND_COLUMN_AVAILABLE": 6307,
+  "CANONICAL_PRODUCT_UNIVERSE": 6309,
+  "CANONICAL_HISTORY_UNIVERSE": 6308,
+  "RAW_CLOSE_AVAILABLE": 6308,
+  "SPLIT_FACTOR_AVAILABLE": 6308,
+  "DIVIDEND_COLUMN_AVAILABLE": 6308,
   "DIVIDEND_EVENTS_AVAILABLE": 3017,
-  "ADJUSTED_CLOSE_AVAILABLE": 6307,
-  "TRADING_DATES_AVAILABLE": 6307,
-  "ADJUSTMENT_STATUS_PRESENT": 6307,
-  "RETURN_BASIS_IDENTIFIABLE_UNIVERSE": 6307
+  "ADJUSTED_CLOSE_AVAILABLE": 6308,
+  "TRADING_DATES_AVAILABLE": 6308,
+  "ADJUSTMENT_STATUS_PRESENT": 6308,
+  "RETURN_BASIS_IDENTIFIABLE_UNIVERSE": 6308
  },
  "bySource": {
-  "CANONICAL_STORE": 6307
+  "CANONICAL_STORE": 6308
  },
  "byAdjustmentStatus": {
-  "adjusted": 6307
+  "adjusted": 6308
  },
  "exclusions": {
   "NO_SERIES": 1
@@ -39,7 +39,7 @@
   "Energy": 8,
   "Utilities": 7,
   "Real Estate": 8,
-  "(unclassified)": 6207
+  "(unclassified)": 6208
  },
  "series": [
   {
@@ -75121,6 +75121,18 @@
    "bars": 331,
    "from": "2025-07-21",
    "to": "2026-11-10",
+   "dividendEvents": 0,
+   "splitEvents": 0,
+   "adjustmentStatus": "adjusted",
+   "source": "CANONICAL_STORE"
+  },
+  {
+   "securityId": "ref_WTIB",
+   "ticker": "WTIB",
+   "sector": "(unclassified)",
+   "bars": 228,
+   "from": "2025-12-10",
+   "to": "2026-11-05",
    "dividendEvents": 0,
    "splitEvents": 0,
    "adjustmentStatus": "adjusted",

@@ -105,7 +105,7 @@ export function classifyCanonical(P, N, { today, secBy }) {
 }
 
 /** Klassiert eine Deaktivierung (aktiv → inaktiv) einer Bestands-securityId (rein). */
-export function classifyDeactivation(P, N, { secBy, register, canonical, seriesEnd = () => null }) {
+export function classifyDeactivation(P, N, { secBy, register, canonical, seriesEnd = () => null, seriesMovedAfter = null, hold = null }) {
   const ticker = P[0].ticker, chk = secCheck(null, ticker, secBy), reg = register.get(P[0].baseline_security_id) || null;
   const same = P.length === N.length && P.every((r) => N.some((n) => n.canonical_id === r.canonical_id && n.end_date === r.end_date));
   const provider = `prev [${P.map(rowText).join("; ")}] → next [${N.map(rowText).join("; ")}]`;
@@ -115,7 +115,16 @@ export function classifyDeactivation(P, N, { secBy, register, canonical, seriesE
   if (chk.status === "CONTRADICTS") reason = `SEC führt den Ticker weiter an einer Börse (${chk.ref})`;
   // eigene veröffentlichte Tagesreihe läuft über das Anbieter-Ende hinaus: Kurse gehören einem laufenden Listing → Identitätsbefund
   const end = N.map((r) => r.end_date).filter(Boolean).sort().at(-1) ?? null, own = seriesEnd(P[0].baseline_security_id);
-  if (own && end && own > end) { approvable = false; reason = `eigene Tagesreihe (discover-series) läuft bis ${own}, Anbieter-Ende ${end}: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting`; }
+  if (own && end && own > end) {
+    // Mit seriesMovedAfter (11.11.2026, Steuerung): ein konstanter fortgeschriebener Schluss ist Anbieter-Fortschreibung und blockiert nicht;
+    // nur eine sich bewegende Reihe nach dem Ende (plus Karenz) ist ein Identitätsbefund. Ohne die Funktion: alte Regel (jeder spätere Kurs).
+    const moved = seriesMovedAfter ? seriesMovedAfter(P[0].baseline_security_id, end) : true;
+    if (moved === false) reason += `; eigene Tagesreihe (discover-series) nach dem Anbieter-Ende ${end} konstant bis ${own} (Anbieter-Fortschreibung, Kurse ab dem Ende gelten nicht)`;
+    else { approvable = false; reason = `eigene Tagesreihe (discover-series) läuft bis ${own}, Anbieter-Ende ${end}: Kurse stammen von einem laufenden Listing (Ticker-Wiederverwendung oder Anbieterkorrektur), Identitätsbefund statt Delisting`; }
+  }
+  // ausdrücklich ausgewiesen und nicht freigegeben (Auffälliges, z. B. große, bekannte Titel): bleibt im Gate gezählt
+  const held = hold && (hold.get(P[0].baseline_security_id) || hold.get(ticker));
+  if (held) { approvable = false; reason = `ausdrücklich ausgewiesen, nicht freigegeben: ${held}`; }
   return { seriesEnd: own, class: cls, approvable, reason, provider, sec: chk, form25: reg && { form: reg.form, accession: reg.accession, filingDate: reg.filingDate, effectiveDate: reg.effectiveDate, url: reg.url } };
 }
 
@@ -233,16 +242,17 @@ export function applyRenameContinuation(c, P, N, secBy) {
 }
 
 /** Kern (rein): Klassierung aller vom Gate gezählten Änderungen und Freigabeliste 1.1.0. */
-export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nextNames = null, baseApproval = null, sec = null, secAsOf = null, secSha256 = null, register = null, registerRef = null, runId = null, gateReport = null, acceptDuplicates = [], seriesEnd = () => null, canonicalEvidence = null, canonicalEvidenceRef = null }) {
+export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nextNames = null, baseApproval = null, sec = null, secAsOf = null, secSha256 = null, register = null, registerRef = null, runId = null, gateReport = null, acceptDuplicates = [], seriesEnd = () => null, canonicalEvidence = null, canonicalEvidenceRef = null, seriesMovedAfter = null, hold = null, notes = null }) {
   const today = String(next.today || next.generatedAt || "").slice(0, 10), secBy = indexSec(sec);
   const reg = new Map((register?.records || []).map((r) => [r.securityId, r]));
   const cmp = compareMasters(prev, next), a = baselineIndex(prev), b = baselineIndex(next);
   if (gateReport?.report?.counts) for (const [k, v] of Object.entries(gateReport.report.counts)) if (cmp[k] && cmp[k].length !== v) throw new Error(`Gate-Bericht passt nicht zu prev/next: ${k} ${v} ≠ ${cmp[k].length}`);
   const run = runId ? `Lauf ${runId}` : "Probelauf";
   const provSrc = `tiingo supported_tickers.csv (${run}, sm-next/us-security-master.json gegen committeten Stamm ${prev.version})`;
-  const secSrc = `sec company_tickers_exchange.json (${secAsOf || "Abrufdatum unbekannt"}${secSha256 ? `, sha256 ${secSha256.slice(0, 12)}` : ""})`;
+  const secSrc = sec ? `sec company_tickers_exchange.json (${secAsOf || "Abrufdatum unbekannt"}${secSha256 ? `, sha256 ${secSha256.slice(0, 12)}` : ""})` : "SEC-Tickerliste nicht Teil dieses Laufs (Abgleich auf Börsenfortführung entfällt; Stichproben gegen data.sec.gov/submissions im PR)";
   const ev = (source, ref) => ({ source, ref });
-  const evProvSec = (c) => ev(`${provSrc}; ${secSrc}`, `${c.provider} | SEC: ${c.sec.ref}`);
+  const noteOf = (c) => (notes && c.ticker && notes.get(c.ticker) ? ` | Beleg: ${notes.get(c.ticker)}` : "");
+  const evProvSec = (c) => ev(`${provSrc}; ${secSrc}`, `${c.provider} | SEC: ${c.sec.ref}${noteOf(c)}`);
 
   const evIdx = indexCanonicalEvidence(canonicalEvidence), evUsed = new Map();
   const prevCikBy = new Map((prevNames?.rows || []).map((r) => [r.securityId, r.cik || null])), prevCikOf = (id) => prevCikBy.get(id) || null;
@@ -263,7 +273,7 @@ export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nex
     return c;
   });
   const canBy = new Map(canonical.map((c) => [c.securityId, c]));
-  const deactivations = cmp.deactivations.map((x) => ({ securityId: x.securityId, from: "ACTIVE", to: "INACTIVE", ticker: x.ticker, ...classifyDeactivation(a.get(x.securityId), b.get(x.securityId), { secBy, register: reg, canonical: canBy.get(x.securityId), seriesEnd }) }));
+  const deactivations = cmp.deactivations.map((x) => ({ securityId: x.securityId, from: "ACTIVE", to: "INACTIVE", ticker: x.ticker, ...classifyDeactivation(a.get(x.securityId), b.get(x.securityId), { secBy, register: reg, canonical: canBy.get(x.securityId), seriesEnd, seriesMovedAfter, hold }) }));
   const deBy = new Map(deactivations.map((d) => [d.securityId, d]));
   const baseKey = (x) => `${x.securityId}|${x.from}|${x.to}`;
   const baseType = new Set((baseApproval?.instrumentTypeChanges || []).map(baseKey)), baseElig = new Set((baseApproval?.eligibilityFlips || []).map(baseKey));
@@ -314,10 +324,10 @@ export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nex
 
   const pickEntry = (x, evidence) => ({ securityId: x.securityId, from: x.from, to: x.to, evidence, class: x.class });
   const baseEv = ev("docs/data/security-master/v130-approved-changes.json (security-master-approved-changes-1.0.0, Owner P1/P3 28.10.2026)", "docs/data/security-master/v130-switch-evidence.json");
-  const derivedEv = (x) => x.class === "APPROVED_1_0_0" ? baseEv : ev(`${provSrc}; ${secSrc}`, `${x.reason} | ${x.provider || ""} | SEC: ${x.sec?.ref ?? "–"}`);
+  const derivedEv = (x) => x.class === "APPROVED_1_0_0" ? baseEv : ev(`${provSrc}; ${secSrc}`, `${x.reason} | ${x.provider || ""} | SEC: ${x.sec?.ref ?? "–"}${notes && notes.get(x.ticker) ? ` | Beleg: ${notes.get(x.ticker)}` : ""}`);
   const approval = {
     schema: APPROVED_CHANGES_SCHEMA_V11,
-    purpose: "AUFHOLLAUF 1.1.0 → 1.3.0: exakt abgegrenzte, quellengebundene Freigabeliste (Owner-Entscheidung 30.10.2026); Entwurf bis zur gesonderten Owner-Freigabe",
+    purpose: `AUFHOLLAUF ${prev.version} → ${next.version}: exakt abgegrenzte, quellengebundene Freigabeliste; nur der Dispatch mit Sonderfreigabe wendet sie an`,
     generatedBy: `scripts/market/build-security-master-approval-list.mjs (${BUILDER_VERSION})`,
     fromVersion: prev.version, toVersion: next.version, prevMasterSha256: sha256(prevBytes),
     sourceRun: { runId, nextGeneratedAt: next.generatedAt, today, secAsOf, secSha256, delistingRegister: registerRef, ...(evIdx ? { canonicalEvidence: { ref: canonicalEvidenceRef, records: evIdx.size, applied: [...evUsed].filter(([, v]) => v.applied).map(([k]) => k).sort(), notApplied: [...evIdx.keys()].filter((k) => !(evUsed.get(k) || {}).applied).sort().map((k) => ({ securityId: k, reason: evUsed.has(k) ? evUsed.get(k).reason : "NO_CANONICAL_CHANGE_IN_RUN" })) } } : {}) },
@@ -376,6 +386,29 @@ function main() {
     sec: secBytes && JSON.parse(secBytes.toString("utf8")), secAsOf: arg("--sec-as-of"), secSha256: secBytes && sha256(secBytes),
     register: opt("--delisting-register"), registerRef: arg("--delisting-register-ref"), runId: rec?.run?.runId ?? null, gateReport: opt("--gate-report"),
     seriesEnd: (id) => { const p = join(arg("--series-dir") || join(ROOT, "quant/data/market/discover-series"), `${id}.json`); try { const s = existsSync(p) ? J(p) : null; return s && typeof s.to === "string" ? s.to.slice(0, 10) : null; } catch { return null; } },
+    // Bewegung der eigenen Tagesreihe nach dem Anbieter-Ende (Karenz wie im SEC-Delisting-Register): true = bewegt sich, false = konstant, null = unbekannt
+    seriesMovedAfter: (id, end) => {
+      const p = join(arg("--series-dir") || join(ROOT, "quant/data/market/discover-series"), `${id}.json`);
+      try {
+        const s = existsSync(p) ? J(p) : null, pts = s && Array.isArray(s.points) ? s.points : null;
+        if (!pts) return null;
+        const d = new Date(`${end}T00:00:00Z`); d.setUTCDate(d.getUTCDate() + 7); const limit = d.toISOString().slice(0, 10);
+        for (let i = 1; i < pts.length; i++) if (pts[i][0] > limit && pts[i][1] !== pts[i - 1][1]) return true;
+        return false;
+      } catch { return null; }
+    },
+    ...(() => {
+      const f = arg("--evidence-notes");
+      if (!f) return {};
+      if (!existsSync(f)) throw new Error(`Belegnotizen fehlen: ${f}`);
+      return { notes: new Map(Object.entries(J(f))) };
+    })(),
+    ...(() => {
+      const f = arg("--hold-list");
+      if (!f) return {};
+      if (!existsSync(f)) throw new Error(`Rückhalteliste fehlt: ${f}`);
+      return { hold: new Map(J(f).map((x) => [x.securityId || x.ticker, x.reason])) };
+    })(),
     ...(() => {
       const f = arg("--canonical-evidence");
       if (!f) return {};
