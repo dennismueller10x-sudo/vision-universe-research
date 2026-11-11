@@ -5,8 +5,8 @@ import {createRequire} from 'node:module';
 import {gzipSync,gunzipSync} from 'node:zlib';
 import {projectQuarterly} from '../../scripts/vu2/build-release.mjs';
 const require=createRequire(import.meta.url),History=require('../api/fundamentals-contract.js'),Service=require('../api/product-services.js'),Policy=require('../engines/display-policy.js'),Query=require('../engines/query.js');
-const root=new URL('../../',import.meta.url),load=async p=>JSON.parse(await readFile(new URL(p.replace(/^\//,''),root),'utf8'));
-const source=await load('quant/data/sec/consumer/CIK0001318605.json'),projected=projectQuarterly(source);
+const root=new URL('./fixtures/quarterly-delivery/',import.meta.url),repo=new URL('../../',import.meta.url),load=async p=>JSON.parse(await readFile(new URL(p.replace(/^\//,''),p.startsWith('/quant/config/')?repo:root),'utf8')); /* Daten: eingefrorene Wurzel (README); Konfiguration ist Code und kommt aus dem Repository */
+const source=await load('/quant/data/sec/consumer/CIK0001318605.json'),projected=projectQuarterly(source);
 const shardOf=p=>({schema:'vu-quant-quarterly-shard-1.0.0',shard:'05',issuers:{'0001318605':p}});
 const options={ticker:'TSLA',name:'Tesla',cik:'0001318605',securityId:'vu_abc',masterMemberId:'ref_TSLA',period:'quarterly'};
 test('projection preserves existing standalone quarter facts and excludes annual/TTM payloads',()=>{
@@ -57,7 +57,7 @@ test('future-dated share facts are withheld by the same validator, never repaire
  // Der Validator muss ihn trotzdem zurueckhalten, wenn er ihn erreicht: deshalb wird er hier gezielt eingesetzt,
  // statt ihn im Produktionsbestand vorauszusetzen.
  for(const cik of ['0000006201','0000006207','0001056943','0001754170']){
-  const original=structuredClone(await load('quant/data/sec/consumer/CIK'+cik+'.json')),rows=original.quarterly.shares_outstanding;
+  const original=structuredClone(await load('/quant/data/sec/consumer/CIK'+cik+'.json')),rows=original.quarterly.shares_outstanding;
   assert.ok(Array.isArray(rows)&&rows.length>0,cik+': shares_outstanding im Bestand');
   const last=rows[rows.length-1],filed=last[4];
   rows.push([last[0]+1,last[1],(Number(filed.slice(0,4))+1)+filed.slice(4),last[3],filed,last[5],0]);

@@ -45,7 +45,7 @@ test("Kein Produkt- oder Erzeugercode bildet eine securityId selbst", () => {
 });
 
 test("company-master.legacySecurityId ist dieselbe Regel wie core/identity.js", () => {
-  const symbole = JSON.parse(readFileSync(join(ROOT, "discover", "data", "stock-index", "US_REAL.json"), "utf8")).symbols;
+  const symbole = JSON.parse(readFileSync(join(ROOT, "core/tests/fixtures/identity-adoption/US_REAL.json"), "utf8")).symbols;
   assert.ok(symbole.length > 5000);
   for (const s of [...symbole, "BRK-B", "BRK.B", "MOG-A", "BF/B"]) assert.equal(CompanyMaster.legacySecurityId(s), Identity.securityIdForTicker(s), s);
 });

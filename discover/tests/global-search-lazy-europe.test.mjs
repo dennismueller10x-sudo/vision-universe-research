@@ -106,20 +106,7 @@ test('Suchfeld stoesst beim Oeffnen das Vorladen an', () => {
   assert.match(source, /D\.GlobalUniverse\.warm\(\)/);
 });
 
-test('die ausgelieferte Suchdatei enthaelt die Pflichttitel gemeinsam: NVIDIA, Palantir, Rheinmetall, Allianz, SAP, 2G Energy', () => {
-  const index = json('discover/data/search/GLOBAL.json');
-  const europe = index.entries.filter(d => d.region === 'EUROPE'), us = index.entries.filter(d => d.region === 'US');
-  assert.ok(us.length > 400 && europe.length > 400, 'beide Regionen im selben Index');
-  // Nur bewerten, was die Freigabe zulaesst: Stand der Europa-Daten als "jetzt" (die Kalender liegen als Datenartefakt bei)
-  const asOf = europe.map(d => d.asOf).sort().at(-1), now = asOf + 'T20:00:00Z';
-  const calendar = json('discover/data/europe/calendar.json'), manifest = json('discover/data/europe/manifest.json');
-  const authority = { allowed: true, catalogSha256: manifest.catalog.sha256, calendar };
-  for (const [query, region] of [['NVIDIA', 'US'], ['Palantir', 'US'], ['Rheinmetall', 'EUROPE'], ['Allianz', 'EUROPE'], ['SAP', 'EUROPE'], ['2G Energy', 'EUROPE']]) {
-    const hits = Universe.search(index, query, { authority, now, limit: 5 });
-    assert.ok(hits.length > 0, query + ' nicht auffindbar');
-    assert.equal(hits[0].region, region, query + ': erster Treffer ' + hits[0].n);
-  }
-});
+/* Die ausgelieferte Suchdatei enthaelt die Pflichttitel (NVIDIA, Palantir, Rheinmetall, Allianz, SAP, 2G Energy): Datenqualitaetsregel DQ-PQ-8 (core/product-quality.js), kein Test mehr. */
 
 test('Suche vor dem letzten Startskript (europe-bootstrap.js): wartet, statt ohne Europa zu antworten', async () => {
   const { calendar, lastCompleted } = liveCalendar('XETR');

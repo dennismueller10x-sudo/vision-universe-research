@@ -4,7 +4,7 @@
 // werden sie chronologisch in ein Portfolio mit Kapital, Positionslimit und
 // maximaler Auslastung uebersetzt. Gleichzeitig ausgeloeste Trades werden
 // deterministisch nach Symbol sortiert - nie nach ihrem spaeteren Ergebnis.
-import { simulate } from './simulator.mjs';
+import { simulate, closeTrade } from './simulator.mjs';
 
 export const PORTFOLIO_DEFAULTS = Object.freeze({
   initialEquity: 100000,
@@ -16,16 +16,39 @@ export const PORTFOLIO_DEFAULTS = Object.freeze({
 });
 
 // Laeuft eine Strategie ueber alle Kontexte (ein Kontext je Symbol).
+// opts.openAtEnd === 'MARK' (Strang U, U2-F2; Standard unveraendert = Legacy): Eine am Serienende offene Position
+// (Fensterende oder Delisting ohne Terminalangabe) geht nicht verloren, sondern als Trade mit einer Bewertungszeile
+// OPEN_AT_END_MARK zum letzten gueltigen Schluss ein - wie validation/analyze.mjs. Das ist eine Bewertung, keine Order:
+// runPortfolio laesst die Position offen und bewertet sie ueber priceOf. Ohne die Option bleibt das alte Verhalten
+// (offene Positionen werden verworfen), weil eingefrorene Referenzen (C2-Gleichheit, Runden) daran haengen.
+function markOpenSignal(sig, ctx) {
+  let last = -1;
+  for (let i = ctx.bars.date.length - 1; i >= 0; i--) if (Number.isFinite(ctx.bars.close[i])) { last = i; break; }
+  if (last < 0 || last < sig.entry.index) return null;
+  sig.exits.push({ date: ctx.bars.date[last], index: last, price: ctx.bars.close[last], fraction: sig.remaining ?? 1, ruleId: 'OPEN_AT_END_MARK', priceBasis: 'MARK_LAST_CLOSE' });
+  sig.openAtEnd = true;
+  closeTrade(sig);
+  sig.result.basis = 'OPEN_AT_END_MARK';
+  return sig;
+}
+
 export function collectTrades(strategy, contexts, opts = {}) {
   const trades = [];
   for (const ctx of contexts) {
     const res = simulate(strategy, ctx, { ...opts, from: opts.from ?? 0 });
     for (const s of res.finished) if (s.entry && s.exits.length) trades.push({ symbol: ctx.symbol, signal: s });
+    const open = res.state.signal;
+    if (opts.openAtEnd === 'MARK' && open && open.entry && !(res.finished.includes(open)) && markOpenSignal(open, ctx)) trades.push({ symbol: ctx.symbol, signal: open });
   }
   return trades;
 }
 
+// cfg.commissionBps (Strang U, U2-F1; Standard unveraendert = 0, Legacy): Gebuehr je Seite auf den Umsatz im Cash, wie
+// validation/portfolio.mjs runPortfolioTR (Kauf: Stueck = Cash / (Preis * (1 + Gebuehr)); Verkauf: Erloes * (1 - Gebuehr)).
+// Zeilen OPEN_AT_END_MARK sind Bewertungen, keine Orders: die Position bleibt offen und wird ueber priceOf bewertet.
 export function runPortfolio(trades, priceOf, calendar, cfg = PORTFOLIO_DEFAULTS) {
+  const comm = (cfg.commissionBps ?? 0) / 10000;
+  let commissions = 0;
   const byEntry = new Map();
   for (const tr of trades) {
     const d = tr.signal.entry.date;
@@ -41,9 +64,9 @@ export function runPortfolio(trades, priceOf, calendar, cfg = PORTFOLIO_DEFAULTS
     // Ausstiege dieses Tages
     for (let i = open.length - 1; i >= 0; i--) {
       const p = open[i];
-      for (const x of p.signal.exits) if (x.date === date && !x._done) {
+      for (const x of p.signal.exits) if (x.date === date && !x._done && x.ruleId !== 'OPEN_AT_END_MARK') {
         const q = p.shares * x.fraction / p.remainingFraction;
-        cash += q * x.price; traded += q * x.price;
+        cash += q * x.price * (1 - comm); traded += q * x.price; commissions += q * x.price * comm;
         p.shares -= q; p.remainingFraction -= x.fraction; x._done = true;
       }
       if (p.remainingFraction <= 1e-9) open.splice(i, 1);
@@ -51,30 +74,30 @@ export function runPortfolio(trades, priceOf, calendar, cfg = PORTFOLIO_DEFAULTS
     // Einstiege dieses Tages
     for (const tr of byEntry.get(date) || []) {
       const s = tr.signal;
-      const eq = cash + open.reduce((a, p) => a + p.shares * (priceOf(p.symbol, date) ?? p.signal.entry.price), 0);
+      const eq = cash + open.reduce((a, p) => a + p.shares * (priceOf(p.symbol, date) ?? p.mark ?? p.signal.entry.price), 0);
       const risk = s.entry.price - s.initialStop;
       if (open.length >= cfg.maxPositions || !(risk > 0)) { skipped.push({ id: s.id, reason: open.length >= cfg.maxPositions ? 'MAX_POSITIONS' : 'NO_RISK' }); continue; }
       let shares = (eq * cfg.riskPerTrade) / risk;
-      shares = Math.min(shares, (eq * cfg.maxPositionPct) / s.entry.price, cash / s.entry.price);
+      shares = Math.min(shares, (eq * cfg.maxPositionPct) / s.entry.price, cash / (s.entry.price * (1 + comm)));
       const invested = eq - cash;
       shares = Math.min(shares, Math.max(0, eq * cfg.maxExposure - invested) / s.entry.price);
       if (!(shares > 0)) { skipped.push({ id: s.id, reason: 'NO_CASH' }); continue; }
-      cash -= shares * s.entry.price; traded += shares * s.entry.price;
-      open.push({ symbol: tr.symbol, signal: s, shares, remainingFraction: 1 });
+      cash -= shares * s.entry.price * (1 + comm); traded += shares * s.entry.price; commissions += shares * s.entry.price * comm;
+      open.push({ symbol: tr.symbol, signal: s, shares, remainingFraction: 1, mark: s.exits.find((x) => x.ruleId === 'OPEN_AT_END_MARK')?.price });
       taken.push(s);
       // Same-Bar-Ausstieg am Einstiegstag
-      for (const x of s.exits) if (x.date === date && !x._done) {
+      for (const x of s.exits) if (x.date === date && !x._done && x.ruleId !== 'OPEN_AT_END_MARK') {
         const p = open[open.length - 1];
         const q = p.shares * x.fraction / p.remainingFraction;
-        cash += q * x.price; p.shares -= q; p.remainingFraction -= x.fraction; x._done = true;
+        cash += q * x.price * (1 - comm); commissions += q * x.price * comm; p.shares -= q; p.remainingFraction -= x.fraction; x._done = true;
         if (p.remainingFraction <= 1e-9) open.pop();
       }
     }
-    const mv = open.reduce((a, p) => a + p.shares * (priceOf(p.symbol, date) ?? p.signal.entry.price), 0);
+    const mv = open.reduce((a, p) => a + p.shares * (priceOf(p.symbol, date) ?? p.mark ?? p.signal.entry.price), 0);
     equity.push({ date, equity: cash + mv, exposure: (cash + mv) > 0 ? mv / (cash + mv) : 0 });
   }
   for (const tr of trades) for (const x of tr.signal.exits) delete x._done;
-  return { equity, taken, skipped, turnoverNotional: traded };
+  return { equity, taken, skipped, turnoverNotional: traded, ...(comm > 0 ? { commissions } : {}) };
 }
 
 function std(a) { const m = a.reduce((s, v) => s + v, 0) / a.length; return Math.sqrt(a.reduce((s, v) => s + (v - m) ** 2, 0) / (a.length - 1)); }

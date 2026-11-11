@@ -72,7 +72,7 @@ test('Technical-Spalten: Abbildung, Wahrheitswerte als 1/0, veraltete Titel blei
   for (const t of ['BULL_FLAG', 'GAP_UP']) assert.notEqual(Fields.enumLabel('chartPattern', t, { formations: { BULL_FLAG: 'Bullenflagge', GAP_UP: 'Kurslücke aufwärts' } }), t);
 });
 
-const tiIndex = new URL('../../quant/data/technical-intelligence/v3/index.json.gz', import.meta.url);
+const tiIndex = new URL('./fixtures/universe/index.json.gz', import.meta.url);
 test('Chartbild-Index im Repo deckt die Registry-Zustaende ab', { skip: !existsSync(tiIndex) && 'Index fehlt' }, () => {
   const { byTicker } = technicalIntelligenceColumns(JSON.parse(gunzipSync(readFileSync(tiIndex)).toString('utf8')));
   assert.ok(byTicker.size > 1000, 'zu wenige Chartbild-Titel: ' + byTicker.size);
@@ -134,7 +134,7 @@ test("ST-1 · Supertrader-Methoden (Z5): Spalten aus dem veroeffentlichten Kandi
   const { fileURLToPath } = await import('node:url');
   const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
   for (const c of ['stMeth', 'stV1', 'stStage']) assert.ok(COLUMNS.includes(c), c);
-  const file = join(ROOT, 'supertrader/data/sf-candidates/index.json');
+  const file = join(ROOT, 'screener/tests/fixtures/universe/index.json');
   if (existsSync(file)) {
     const st = supertraderColumns(JSON.parse(readFileSync(file, 'utf8')), screenerColumns);
     assert.ok(st.byTicker.size > 0);

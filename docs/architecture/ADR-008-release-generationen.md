@@ -1,6 +1,6 @@
 # ADR-008 · Release-Generationen: Code und Daten jeder Auslieferung benennen
 
-Stand 10.11.2026 (Strang T). Betrieb: [RUNBOOK §12](../operations/RUNBOOK.md). Ausgangspunkt: Audit vom 10.11. (Commit 6ba4661); geprüft gegen `main` 7b50e6f, nicht gegen PR-Beschreibungen.
+Stand 10.11.2026 (Strang T). Betrieb: [RUNBOOK §13](../operations/RUNBOOK.md). Ausgangspunkt: Audit vom 10.11. (Commit 6ba4661); geprüft gegen `main` 7b50e6f, nicht gegen PR-Beschreibungen.
 
 ## Entscheidung
 
