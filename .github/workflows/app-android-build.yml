@@ -32,6 +32,8 @@ jobs:
       RUN_NUMBER: ${{ github.run_number }}
       VU_SUPABASE_URL: ${{ vars.VU_SUPABASE_URL }}                       # oeffentlich
       VU_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VU_SUPABASE_PUBLISHABLE_KEY }} # oeffentlich
+      VU_AUTH_TRANSPORT: worker                                       # Anmeldung ueber die Konto-API (kein Supabase-Schluessel noetig, gleiche Limits wie im Web)
+      VU_ACCOUNT_API: https://konto.visionuniverse.de                  # oeffentlich
     steps:
       - uses: actions/checkout@v4
         with:

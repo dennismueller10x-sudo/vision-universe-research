@@ -30,6 +30,7 @@ TestFlight-Lauf 6 vom 07.11.2026 auf Commit `d871426`. Alles bleibt auf `main` g
 | Strang Y | Firebase-Push im Build: Workflows schreiben `GoogleService-Info.plist` / `google-services.json` aus den Secrets `FIREBASE_IOS_PLIST` (Umgebung `app-testflight`) und `FIREBASE_ANDROID_JSON` (Umgebung `app-android`); iOS-Entitlement im TestFlight-Lauf `production`; ohne Secret Build ohne Push (siehe E4) | `.github/workflows/app-ios-testflight.yml`, `app-android-release.yml`, `ci/fastlane/Fastfile` |
 | #1600 (K1) | natives Rand-Wischen vor/zurück auf iOS mit Vorschau und Haptik | `ios/App/App/VUBridgeViewController.swift`, `Main.storyboard`, `www/js/main.js` (Brücke `vuNav`, Haptik) |
 | #1602 (K4, Teil) | kurzer Haptik-Impuls bei langem Drücken | Empfang in `www/js/main.js` aus K1; die Website sendet schon |
+| Strang AA | Eine Anmeldung in der App: die Seite im Rahmen nutzt die native Sitzung (Token-Brücke `vu:token-request`, Bearer statt Cookie, Anmelde-Links → `vu:open`); Build mit `VU_AUTH_TRANSPORT=worker` (E4). Nur mit neuem App-Build wirksam (`www/js/main.js`) | `www/js/main.js`, `konto/account-api.js`, `docs/mobile/SECURITY_LOGIN.md` §3a |
 | #1630 | App startet mit der Willkommensseite `/willkommen/` statt mit Discover; Zurück endet dort | `www/index.html`, `www/js/main.js` |
 
 **Wirkt schon ohne Build** (Website, live nach dem Pages-Deploy; die App lädt sie im Rahmen):

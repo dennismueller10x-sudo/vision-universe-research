@@ -60,6 +60,30 @@ addEventListener('message', event => {
   if (d.type === 'vu:haptic') haptic(d.style === 'impact' ? 'impact' : 'selection');
 });
 
+// ---- Token-Bruecke fuer die Website im Rahmen (Strang AA) --------------------
+// Cookies von konto.visionuniverse.de sind im Rahmen unter capacitor://localhost Drittanbieter-Cookies (WKWebView/ITP blockiert sie).
+// Darum gibt es genau eine Anmeldung, die native; die Website bekommt das Zugriffstoken NUR auf Anfrage, NUR von einem unserer Rahmen
+// (Herkunft = contentOrigin und Fenster = ein Rahmen dieser Shell) und die Antwort geht mit targetOrigin = contentOrigin (nie '*').
+// Das Refresh-Token verlaesst die Shell nie; Erneuerung macht auth.accessToken()/forceRefresh().
+let restoreDone = () => {};
+const restored = new Promise(resolve => { restoreDone = resolve; });
+const frameWindows = () => [...document.querySelectorAll('.frame-view iframe')].map(f => f.contentWindow).filter(Boolean);
+addEventListener('message', async event => {
+  const d = event.data || {};
+  if (d.type !== 'vu:token-request' || event.origin !== config.contentOrigin || !frameWindows().includes(event.source)) return;
+  if (!(typeof d.id === 'string' || typeof d.id === 'number') || String(d.id).length > 64) return;
+  await Promise.race([restored, new Promise(resolve => setTimeout(resolve, 20000))]);   // Start/Face ID abwarten
+  let token = null;
+  try { token = d.force ? await auth.forceRefresh() : await auth.accessToken(); } catch { token = null; }
+  try { event.source.postMessage({type: 'vu:token', id: d.id, token: token || null}, config.contentOrigin); } catch { /* Rahmen weg */ }
+});
+// Anmelden/Abmelden in der Shell: geladene Seiten holen sich ein neues Token (sie laden sich neu, kein Zustand im Rahmen).
+let wasSignedIn = null;
+auth.onChange(s => {
+  if (wasSignedIn !== null && wasSignedIn !== s.signedIn) frameWindows().forEach(w => { try { w.postMessage({type: 'vu:auth-changed'}, config.contentOrigin); } catch { /* optional */ } });
+  wasSignedIn = s.signedIn;
+});
+
 // ---- Navigation ----------------------------------------------------------
 function show(name) {
   pendingBack = null;
@@ -161,6 +185,7 @@ $('config-missing').hidden = config.configured;
     if (biometric?.enabled()) await auth.restore({forceRefresh: true});
     else await Promise.race([auth.restore(), new Promise(resolve => setTimeout(resolve, 4000))]);
   } catch { /* ohne gespeicherte Sitzung weiter */ }
+  restoreDone();
   if (auth.state().signedIn) await push.resume().catch(() => {});
   // Ohne Sitzung zuerst die Anmeldung anbieten (die App hat keine eigene Leiste mehr); "Spaeter anmelden" fuehrt in die App.
   if (native && !auth.state().signedIn && current === 'start') { gate = true; $('skip-login').hidden = false; show('account'); }
@@ -169,11 +194,6 @@ $('config-missing').hidden = config.configured;
     hideSplash();
     let backRequest = 0;
     // Die Webseite darf Konto oder Watchlist der App oeffnen (z. B. aus ihrem Menue): {type:'vu:open', view:'account'|'watchlist'}
-    addEventListener('message', event => {
-      const frame = $('v-' + current)?.querySelector('iframe');
-      if (event.origin !== config.contentOrigin || event.source !== frame?.contentWindow || event.data?.type !== 'vu:open') return;
-      if (event.data.view === 'account' || event.data.view === 'watchlist') show(event.data.view);
-    });
     addEventListener('message', event => {
       const frame = $('v-' + current)?.querySelector('iframe');
       if (event.origin !== config.contentOrigin || event.source !== frame?.contentWindow || event.data?.type !== 'vu:open') return;

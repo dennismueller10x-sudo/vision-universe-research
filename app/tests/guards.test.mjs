@@ -62,6 +62,8 @@ test('Gate-Hygiene: nur App-Pfade und ausdruecklich freigegebene Integrationen',
     // Owner-Auftrag Strang E4: Konto-API, FCM-Versand und zugehoerige SQL/RLS-Tests.
     'workers/vu-account/src/auth.mjs', 'workers/vu-account/src/index.mjs', 'workers/vu-account/src/push.mjs',
     'workers/vu-account/tests/push.test.mjs', 'workers/vu-account/tests/flows.test.mjs',
+    // Strang AA: Konto-Client im App-Rahmen (Bearer statt Cookie, native Anmeldung).
+    'konto/account-api.js', 'konto/konto.js', 'konto/tests/app-frame.test.mjs',
     'supabase/migrations/20261106000400_mobile_push.sql', 'supabase/tests/15_mobile_push.sql']);
   const bad = files.filter(f => !approved.has(f) && !/^(app\/|docs\/architecture\/ADR-00[4-9]|docs\/mobile\/|docs\/handover\/)/.test(f));
   assert.deepEqual(bad, []);
@@ -211,6 +213,17 @@ test('App-Shell: in der App keine eigene Leiste, Inhalt bis unten, Anmeldung err
   assert.match(html, /id="skip-login"/); assert.equal((html.match(/class="secondary back"/g) || []).length, 2, 'Rueckweg aus Konto und Watchlist');
   const open = main.slice(main.indexOf("'vu:open'") - 400, main.indexOf("'vu:open'") + 400);
   assert.match(open, /event\.origin !== config\.contentOrigin/); assert.match(open, /event\.source !== frame\?\.contentWindow/, 'nur die eigene Seite darf Konto oeffnen');
+});
+
+test('AA: Token-Bruecke - nur auf Anfrage, nur contentOrigin, nur eigene Rahmen, Refresh-Token bleibt in der Shell', () => {
+  const main = read(path.join(app, 'www/js/main.js'));
+  assert.equal((main.match(/type !== 'vu:open'/g) || []).length, 1, 'vu:open-Listener genau einmal registriert');
+  const i = main.indexOf("'vu:token-request'"), bridge = main.slice(i - 200, i + 1400);
+  assert.ok(i > 0);
+  assert.match(bridge, /event\.origin !== config\.contentOrigin/); assert.match(bridge, /frameWindows\(\)\.includes\(event\.source\)/);
+  assert.match(bridge, /postMessage\(\{type: 'vu:token', id: d\.id, token: token \|\| null\}, config\.contentOrigin\)/, 'Antwort nie an "*"');
+  assert.doesNotMatch(bridge, /refreshToken/, 'Refresh-Token verlaesst die Shell nie');
+  assert.doesNotMatch(main, /postMessage\([^)]*'\*'\)/);
 });
 
 test('K1: iOS nutzt den eigenen Bridge-Controller mit nativer Randgeste (Datei im Xcode-Ziel, Storyboard umgestellt)', () => {
