@@ -273,7 +273,10 @@ for(const width of [1440,390]){
      fangen also den Fall "nichts gerendert", ohne einen Inhaltsstand
      einzufrieren - gemessen werden soll ein Rueckschritt, nicht der
      Tagesstand. */
-  if(!absage&&!ausgeschieden&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
+  /* Konzept Quant 2026-11 (QX06, #1819): der Vergleich ist bewusst knapp - sieben Eigenschaften je Aktie und zwei Saetze,
+     die Kennzahlen-Tabelle zugeklappt. Er gilt als gerendert, wenn alle sieben Eigenschaften und die zwei Saetze stehen. */
+  const vergleichVoll=route==='vergleich'&&/in zwei s(ä|ae)tzen/i.test(text)&&['Verdient gut','Wächst','Zahlen solide','Kurs läuft','Günstig','Ruhiger Kurs','Analysten'].every(w=>text.includes(w));
+  if(!absage&&!ausgeschieden&&!vergleichVoll&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
   if(ausgeschieden){
    const kopf=(await page.locator('main#qx-main h1').first().innerText().catch(()=>'')).trim();
    if(kopf!==ausgeschieden.name)bad.push('NAME_FALSCH:'+kopf);
@@ -513,6 +516,9 @@ for(const width of [1440,390]){
      console.log('     Auskunft: '+kopfsatz.slice(0,74)+' · '+Math.round(oben)+'px');
     }
     /* Und die Setup-Frage mit ihrer Folgefrage. */
+    /* Konzept Quant 2026-11 (QX05, #1819): Setup und Grenzen stehen in zugeklappten Kapiteln (details.qk-chap);
+       innerText eines zugeklappten Kapitels ist leer. Geprueft wird der Inhalt, also erst aufklappen. */
+    await allesAufklappen(page);
     const setupText=await page.locator('#setup').innerText().catch(()=>'');
     const grenzen=await page.locator('#grenzen').innerText().catch(()=>'');
     /* innerText folgt text-transform (Dachzeilen stehen in Versalien) -
