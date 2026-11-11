@@ -508,6 +508,35 @@ def build_reports(root, documents, registry=None, universe=None, progress_every=
     return reports_from_records(root, per_issuer, registry=registry, universe=universe)
 
 
+def apply_successor_issuers(per_issuer, successors):
+    """Holding-Umgruendung: die Bilanz der Vorgaenger-CIK gehoert zum Nachfolge-Emittenten.
+
+    Der Company Master fuehrt einen Emittenten nach einer Umgruendung unter
+    der CIK der Nachfolgerin (quant/config/sec-successor-issuers.json, XOM
+    seit 01.07.2026), die Historie liegt aber unter der alten CIK. Hat die
+    Nachfolgerin noch keinen eigenen Satz, wird der Satz der Vorgaengerin
+    unter ihrem Schluessel gefuehrt (nicht doppelt): sonst haette der
+    Emittent keine Fundamentals, obwohl die Historie vorliegt. Hat sie schon
+    einen eigenen Satz, bleibt er unveraendert.
+
+    successors: {Nachfolger-CIK: [Vorgaenger-CIKs]}. Gibt ein neues dict zurueck.
+    """
+    out = dict(per_issuer)
+    for successor, predecessors in sorted((successors or {}).items()):
+        key = "iss_cik_" + successor
+        if key in out:
+            continue
+        for predecessor in predecessors:
+            old = "iss_cik_" + predecessor
+            if old in out:
+                row = dict(out.pop(old))
+                row["cik"] = successor
+                row["predecessorCik"] = predecessor
+                out[key] = row
+                break
+    return out
+
+
 def reports_from_records(root, per_issuer, registry=None, universe=None):
     """Die Berichte aus bereits gerechneten Emittentensaetzen.
 
@@ -519,6 +548,10 @@ def reports_from_records(root, per_issuer, registry=None, universe=None):
     registry = registry or MetricRegistry.load()
     universe = universe or load_universe(root)
     per_issuer = dict(per_issuer)
+
+    from .consumer import load_successor_issuers
+    per_issuer = apply_successor_issuers(
+        per_issuer, load_successor_issuers(Path(root) / "quant" / "config" / "sec-successor-issuers.json"))
 
     members = product_members(universe["instruments"])
     issuers_in_master = {row["issuerId"]: row for row in universe["issuers"]}

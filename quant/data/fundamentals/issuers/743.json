@@ -900,10 +900,10 @@
       "cik": "0002095743",
       "name": "Rare Earths Americas, Inc.",
       "sic": "1000",
-      "rawFacts": 439,
-      "mappedFacts": 154,
-      "unmappedFacts": 271,
-      "calendarYears": 1,
+      "rawFacts": 733,
+      "mappedFacts": 254,
+      "unmappedFacts": 462,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -912,28 +912,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 6,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2024-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -953,14 +953,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -981,14 +981,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1011,46 +1011,47 @@
         }
       },
       "quality": {
-        "HIGH": 25,
-        "MEDIUM": 3
+        "HIGH": 37,
+        "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 28,
-        "resolvedValues": 28
+        "datableValues": 39,
+        "resolvedValues": 39
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 280,
+        "rules_version": "1.1.0",
+        "total": 476,
         "by_severity": {
-          "INFO": 271,
-          "WARNING": 9
+          "INFO": 462,
+          "WARNING": 14
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 7,
-          "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 1,
-          "UNKNOWN_CONCEPT": 271
+          "CONCEPT_DISAGREEMENT": 10,
+          "PERIOD_MISMATCH": 2,
+          "RESTATEMENT_CONFLICT": 2,
+          "UNKNOWN_CONCEPT": 462
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-344825",
-        "filing_date": "2026-08-11",
+        "accession": "0001193125-26-455611",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-10T21:33:49.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b17b1ea8d67c78005c1037276d09a77a53aa6d0aed5f119b0c9a52d28bf71e56",
+      "sourceDigest": "4faa85a59eb960d8a864d05d210b79943d535d088d9c4e246a36c74b382a5ce4",
       "issuerId": "iss_cik_0002095743"
     }
   ]

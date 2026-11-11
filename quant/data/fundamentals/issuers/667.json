@@ -801,9 +801,9 @@
       "cik": "0001826667",
       "name": "TriSalus Life Sciences, Inc.",
       "sic": "3841",
-      "rawFacts": 4771,
-      "mappedFacts": 1750,
-      "unmappedFacts": 3099,
+      "rawFacts": 5063,
+      "mappedFacts": 1867,
+      "unmappedFacts": 3305,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -814,28 +814,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 6,
-      "quarterlyPeriods": 24,
+      "quarterlyPeriods": 25,
       "firstPeriodEnd": "2020-09-10",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 4,
-          "quarterlyPeriods": 15,
-          "firstAvailablePeriod": "2022-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 3.0
-        },
-        "eps_diluted": {
           "annualPeriods": 4,
           "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
+        "eps_diluted": {
+          "annualPeriods": 4,
+          "quarterlyPeriods": 17,
+          "firstAvailablePeriod": "2022-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
+        },
         "free_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0,
@@ -848,28 +848,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "revenue": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -883,14 +883,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -913,46 +913,47 @@
         }
       },
       "quality": {
-        "HIGH": 173,
-        "MEDIUM": 12
+        "HIGH": 182,
+        "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 185,
-        "resolvedValues": 185
+        "datableValues": 193,
+        "resolvedValues": 193
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3313,
+        "rules_version": "1.1.0",
+        "total": 3523,
         "by_severity": {
-          "INFO": 3099,
-          "WARNING": 214
+          "INFO": 3305,
+          "WARNING": 218
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 106,
+          "CONCEPT_DISAGREEMENT": 110,
           "RESTATEMENT_CONFLICT": 82,
           "UNEXPECTED_DURATION": 26,
-          "UNKNOWN_CONCEPT": 3099
+          "UNKNOWN_CONCEPT": 3305
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-054275",
-        "filing_date": "2026-08-06",
+        "accession": "0001628280-26-072515",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 27
+        "periodic_filings": 28,
+        "acceptance_datetime": "2026-11-10T13:08:50.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "a5fbf869f859c4c64b68849183363adc7f0605f70be0ea5048950c0fa07988a3",
+      "sourceDigest": "614c1a282c0d814e4570c2f098854846a82e3e3278d969ec417c6a1c82bb23f3",
       "issuerId": "iss_cik_0001826667"
     },
     {

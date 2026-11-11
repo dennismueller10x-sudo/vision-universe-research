@@ -318,9 +318,9 @@
       "cik": "0001852353",
       "name": "Dakota Gold Corp.",
       "sic": "1000",
-      "rawFacts": 3199,
-      "mappedFacts": 1181,
-      "unmappedFacts": 2024,
+      "rawFacts": 3445,
+      "mappedFacts": 1275,
+      "unmappedFacts": 2201,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -330,28 +330,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 22,
+      "quarterlyPeriods": 23,
       "firstPeriodEnd": "2020-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.75,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.75
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.75
         },
         "free_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.75,
@@ -371,14 +371,14 @@
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.75
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.75
@@ -399,14 +399,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.75
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.75
@@ -429,47 +429,49 @@
         }
       },
       "quality": {
-        "HIGH": 129,
-        "MEDIUM": 12
+        "HIGH": 136,
+        "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 141,
-        "resolvedValues": 141
+        "datableValues": 147,
+        "resolvedValues": 147
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2159,
+        "rules_version": "1.1.0",
+        "total": 2337,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 2024,
-          "WARNING": 134
+          "INFO": 2201,
+          "WARNING": 135
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 79,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "RESTATEMENT_CONFLICT": 55,
-          "UNKNOWN_CONCEPT": 2024
+          "UNKNOWN_CONCEPT": 2201
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-094733",
-        "filing_date": "2026-08-12",
+        "accession": "0001104659-26-125154",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 17
+        "periodic_filings": 18,
+        "acceptance_datetime": "2026-11-10T21:05:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "4bec47742ba9bcc8f66ab06630bf7a0f7da0cccd091324546268c83e2fc15f77",
+      "sourceDigest": "d8b0bd3822d420199fc4e8b94bc01ffc48afad83bc2b26f7855b1f7205750b87",
       "issuerId": "iss_cik_0001852353"
     },
     {

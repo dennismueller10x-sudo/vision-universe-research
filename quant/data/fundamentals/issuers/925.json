@@ -322,10 +322,10 @@
       "cik": "0001437925",
       "name": "Meridian Holdings Inc./NV",
       "sic": "7372",
-      "rawFacts": 13362,
-      "mappedFacts": 4533,
-      "unmappedFacts": 8667,
-      "calendarYears": 19,
+      "rawFacts": 14162,
+      "mappedFacts": 4776,
+      "unmappedFacts": 9366,
+      "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -334,28 +334,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 69,
       "firstPeriodEnd": "2008-07-31",
-      "lastPeriodEnd": "2026-03-31",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.42,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2012-07-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.42
         },
         "eps_diluted": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 45,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2012-07-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.42
         },
         "free_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2012-07-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.42,
@@ -368,56 +368,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2009-07-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.42
         },
         "operating_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2011-07-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.42
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2014-07-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.42
         },
         "short_term_debt": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2008-07-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.42
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2011-07-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.42
         },
         "total_debt": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -433,48 +433,49 @@
         }
       },
       "quality": {
-        "HIGH": 381,
+        "HIGH": 402,
         "MEDIUM": 27
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 408,
-        "resolvedValues": 408
+        "datableValues": 429,
+        "resolvedValues": 429
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 9566,
+        "rules_version": "1.1.0",
+        "total": 10253,
         "by_severity": {
-          "INFO": 8667,
-          "WARNING": 899
+          "INFO": 9366,
+          "WARNING": 887
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 275,
-          "FISCAL_PERIOD_CONFLICT": 19,
+          "CONCEPT_DISAGREEMENT": 279,
+          "FISCAL_PERIOD_CONFLICT": 13,
           "NEGATIVE_WHERE_IMPOSSIBLE": 16,
-          "RESTATEMENT_CONFLICT": 381,
+          "RESTATEMENT_CONFLICT": 371,
           "UNEXPECTED_DURATION": 208,
-          "UNKNOWN_CONCEPT": 8667
+          "UNKNOWN_CONCEPT": 9366
         }
       },
       "latestFiling": {
-        "accession": "0001477932-26-004577",
-        "filing_date": "2026-07-29",
+        "accession": "0001477932-26-006791",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 95
+        "periodic_filings": 96,
+        "acceptance_datetime": "2026-11-10T11:31:29.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "be70e9c204b73e6294321e48995f6cae615e744bcfc411f143004cfce053b3a1",
+      "sourceDigest": "8fb86e0787763455b0d5cb93412c519e33f14cf7a7bf0a3c740fe5358886504c",
       "issuerId": "iss_cik_0001437925"
     },
     {

@@ -893,10 +893,10 @@
       "cik": "0002084026",
       "name": "QumulusAI, Inc.",
       "sic": "7374",
-      "rawFacts": 475,
-      "mappedFacts": 108,
-      "unmappedFacts": 355,
-      "calendarYears": 1,
+      "rawFacts": 977,
+      "mappedFacts": 210,
+      "unmappedFacts": 757,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -905,28 +905,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 6,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2024-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "eps_diluted": {
           "annualPeriods": 0,
           "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -946,21 +946,21 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -974,14 +974,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1004,44 +1004,46 @@
         }
       },
       "quality": {
-        "HIGH": 16,
+        "HIGH": 29,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 19,
-        "resolvedValues": 19
+        "datableValues": 32,
+        "resolvedValues": 32
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 365,
+        "rules_version": "1.1.0",
+        "total": 779,
         "by_severity": {
-          "INFO": 355,
-          "WARNING": 10
+          "INFO": 757,
+          "WARNING": 22
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 10,
-          "UNKNOWN_CONCEPT": 355
+          "CONCEPT_DISAGREEMENT": 19,
+          "RESTATEMENT_CONFLICT": 3,
+          "UNKNOWN_CONCEPT": 757
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-059295",
-        "filing_date": "2026-08-28",
-        "form": "10-Q/A",
-        "periodic_filings": 2
+        "accession": "0002084026-26-000010",
+        "filing_date": "2026-11-10",
+        "form": "10-Q",
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-10T21:08:20.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3a3b7c992ec155f969c8fce3f3118503c28e92250a486dda26640c2a15432086",
+      "sourceDigest": "17f3212d0e47f674cccfd227c8281cdd9c91d9458c8dac15046edf5fffc81286",
       "issuerId": "iss_cik_0002084026"
     }
   ]

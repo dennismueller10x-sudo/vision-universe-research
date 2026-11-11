@@ -325,10 +325,10 @@
       "cik": "0001488917",
       "name": "Electromed, Inc.",
       "sic": "3845",
-      "rawFacts": 12871,
-      "mappedFacts": 5854,
-      "unmappedFacts": 7517,
-      "calendarYears": 18,
+      "rawFacts": 13082,
+      "mappedFacts": 5966,
+      "unmappedFacts": 7779,
+      "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0630",
@@ -337,28 +337,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 65,
+      "quarterlyPeriods": 66,
       "firstPeriodEnd": "2010-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
         },
         "eps_diluted": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
         },
         "free_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0,
@@ -378,21 +378,21 @@
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
@@ -406,14 +406,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2011-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 15.0
@@ -436,45 +436,46 @@
         }
       },
       "quality": {
-        "HIGH": 598,
+        "HIGH": 613,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 610,
-        "resolvedValues": 610
+        "datableValues": 625,
+        "resolvedValues": 625
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7736,
+        "rules_version": "1.1.0",
+        "total": 7954,
         "by_severity": {
-          "INFO": 7517,
-          "WARNING": 219
+          "INFO": 7779,
+          "WARNING": 175
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 138,
-          "RESTATEMENT_CONFLICT": 81,
-          "UNKNOWN_CONCEPT": 7517
+          "CONCEPT_DISAGREEMENT": 105,
+          "RESTATEMENT_CONFLICT": 70,
+          "UNKNOWN_CONCEPT": 7779
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-028914",
-        "filing_date": "2026-08-25",
-        "form": "10-K",
-        "periodic_filings": 67
+        "accession": "0001437749-26-036166",
+        "filing_date": "2026-11-10",
+        "form": "10-Q",
+        "periodic_filings": 68,
+        "acceptance_datetime": "2026-11-10T21:10:55.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "4a58bdad53c7705da34aedb7c0628a0901eaa7fb1c0e6db9d80fb708a761675e",
+      "sourceDigest": "9229cf1b15cc6031b21b1728356235488db78c7f77be4b9702545e4883cd5c0b",
       "issuerId": "iss_cik_0001488917"
     },
     {
