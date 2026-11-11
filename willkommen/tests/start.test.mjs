@@ -44,7 +44,9 @@ test('Seite: drei Schritte, überspringbar, keine Produkt-Leiste, nur bestehende
   const html = read('willkommen/start/index.html'), js = read('willkommen/start/start.js');
   assert.equal((html.match(/class="fs-step"/g) || []).length, 3);
   assert.match(html, /id="fs-skip"/);
-  assert.doesNotMatch(html, /<vu-navigation/);
+  assert.match(html, /<vu-navigation menu-only no-dock/);
+  assert.match(html, /data-vu-menu-toggle/);
+  assert.doesNotMatch(html, /VUNavigation\.dock\(/, "keine Produkt-Leiste im ersten Start");
   const calls = [...js.matchAll(/A\.(get|post|patch)\('([^']+)'/g)].map(m => m[2]);
   assert.deepEqual([...new Set(calls)].sort(), ['/v1/me', '/v1/session', '/v1/watchlist/items'], 'nur bestehende Konto-Aufrufe (PATCH /v1/me: Z1-Einstellungen)');
   assert.doesNotMatch(js, /localStorage\.setItem/, 'schreibt nur über prefs.js');
