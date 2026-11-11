@@ -583,9 +583,19 @@ jobs:
     needs: auswahl
     if: needs.auswahl.outputs.research_access == 'true'
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.57.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -593,15 +603,12 @@ jobs:
         env:
           BUILD_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: |
-          python3 - <<'PY'
-          import os
-          print('GITHUB_RESEARCH_ACCESS_PASSWORD_CONFIGURED=' + str(bool(os.environ.get('BUILD_PASSWORD'))).lower())
-          PY
+          if [ -n "$BUILD_PASSWORD" ]; then echo GITHUB_RESEARCH_ACCESS_PASSWORD_CONFIGURED=true; else echo GITHUB_RESEARCH_ACCESS_PASSWORD_CONFIGURED=false; fi
       - run: node --test scripts/access-gate/build.test.mjs
       - name: Browser dependencies
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/research-access-qa --no-audit --no-fund playwright@1.57.0
-          /tmp/research-access-qa/node_modules/.bin/playwright install --with-deps chromium webkit
       - name: Password flow, no content flash and persistent shared access in Chromium and iPhone WebKit
         env:
           PLAYWRIGHT_PATH: /tmp/research-access-qa/node_modules/playwright
@@ -615,9 +622,19 @@ jobs:
       group: screener-qa-${{ github.ref }}-ci
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -626,9 +643,9 @@ jobs:
       - name: Engine, registry and universe tests
         run: node --test "screener/tests/*.test.mjs" discover/tests/navigation-theme.test.mjs
       - name: Browser QA dependencies
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/screener-qa-deps --no-audit --no-fund playwright@1.56.1
-          node /tmp/screener-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
       # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
       # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
       - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
@@ -641,7 +658,7 @@ jobs:
         run: |
           mkdir -p /tmp/screener-evidence
           test -f "$RUNNER_TEMP/screener-release/screener/data/universe-US_REAL.json"
-          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/screener-release" > /tmp/screener-evidence/server.log 2>&1 &
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/screener-release" --port=8765 > /tmp/screener-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/screener/ > /dev/null && break; sleep 1; done
@@ -790,12 +807,22 @@ jobs:
       group: discover-frontend-qa-${{ github.ref }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     # Bekannte Fehler (scripts/discover/known-defects.json) warten je Ladevorgang
     # bis zum Zeitlimit der Pruefung; mit Direktlink-Schritt in beiden Engines
     # reichen 35 Minuten dann nicht. Kein Check wird dadurch gelockert.
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -804,9 +831,9 @@ jobs:
       - name: Existing contract and navigation tests
         run: node --test discover/tests/*.test.mjs quant/tests/site-navigation.test.mjs
       - name: Browser quality dependencies
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/discover-qa-deps --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
-          node /tmp/discover-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
       # Offener Tab ueber ein Deployment (lazy.js + Release-Waechter, hinter der Sperre). Setzt den Quant-PR voraus
       # (quant/ui/release-guard.js, scripts/vu2/deploy-switch-lib.mjs); davor uebersprungen.
       - name: Deployment switch with an open tab
@@ -826,7 +853,7 @@ jobs:
           SITE: ${{ inputs.site }}
         run: |
           mkdir -p /tmp/discover-evidence
-          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/discover-release" > /tmp/discover-evidence/server.log 2>&1 &
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/discover-release" --port=8765 > /tmp/discover-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/discover/ > /dev/null && break; sleep 1; done
@@ -1384,6 +1411,14 @@ jobs:
       group: supertrader-ci-${{ github.ref }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     # 45 statt 30 Minuten: der Checkout des vollen Arbeitsbaums (~2-3 GB) schwankt
     # GitHub-seitig stark (2:46 in Lauf 41686237365, 14:43 im parallel
     # gestarteten core-ci-Lauf 41686237440, >15 min im package-Job von Lauf
@@ -1404,6 +1439,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 1 }}
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -1471,9 +1508,9 @@ jobs:
       - name: Quant-2.0-Regression (bestehende Tests)
         run: node --test "quant/tests/*.test.mjs"
       - name: Browser QA dependencies
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/supertrader-qa-deps --no-audit --no-fund playwright@1.56.1
-          node /tmp/supertrader-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
       # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
       # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
       - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
@@ -1512,9 +1549,19 @@ jobs:
       group: technical-ci-${{ github.ref_name }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -1529,9 +1576,9 @@ jobs:
       - name: Hero-Block synchron
         run: node scripts/design/sync-product-hero.mjs --check
       - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/tc-qa playwright@1.58.2 axe-core@4.10.3
-          /tmp/tc-qa/node_modules/.bin/playwright install --with-deps chromium
       - name: Browser-Pruefung (390/1280 px, Hell/Dunkel, alle Ansichten)
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
@@ -1559,18 +1606,27 @@ jobs:
       group: ${{ github.event_name == 'pull_request' && format('vu2-browser-qa-pr-{0}', github.event.pull_request.number) || format('vu2-browser-qa-{0}', github.run_id) }}
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Test resource budget failure cases
         run: node --test scripts/vu2/resource-budget.test.mjs
       - name: Install isolated browser test dependency
+        timeout-minutes: 8
         run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
-      - name: Install Chromium and WebKit
-        run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium webkit
       # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
       # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
       - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
@@ -1767,6 +1823,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: PostgreSQL-Client
+        timeout-minutes: 8
         run: |
           set -euo pipefail
           apt-get update -qq
