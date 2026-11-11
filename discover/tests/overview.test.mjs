@@ -84,7 +84,7 @@ test("OV9 ein Jahreswert: alle 12-Monats-Angaben der Titelseite sind derselbe Do
   assert.match(detail, /var dollarKopf = state\.detail\.region !== "EUROPE"/);
   assert.match(detail, /dx-chart-hero-eur/);
   const css = readFileSync(new URL("../ui/overview.css", import.meta.url), "utf8");
-  assert.match(css, /dx-chart-hero-preis>\.down\{background:#d92d20;color:#fff\}/, "Minus rot (Owner 11.11.2026)");
+  assert.match(css, /dx-chart-hero-preis>\.down\{background:#c4281c;color:#fff\}/, "Minus rot (#c4281c, Owner 11.11.2026)");
   assert.match(css, /dx-chart-hero-preis>\.up\{background:#c8f531/, "Plus neongruen");
   assert.match(css, /max-width:480px\)\{[^}]*dx-chart-hero--c04\{flex-wrap:wrap/, "Kopf bricht bei schmaler Breite um");
 });
