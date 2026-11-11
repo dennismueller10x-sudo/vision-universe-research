@@ -24,15 +24,28 @@
   "use strict";
 
   var isNode = typeof module !== "undefined" && module.exports;
-  var VERSION = "pit-fundamental-history-1.0.0";
+  var VERSION = "pit-fundamental-history-1.1.0";
 
   /* The consumer column layout: [fy, fp, end, v, filed, accn, derived]. */
-  var FY = 0, END = 2, VALUE = 3, FILED = 4;
+  var FY = 0, END = 2, VALUE = 3, FILED = 4, ACCN = 5;
 
   function finite(value) { return typeof value === "number" && Number.isFinite(value); }
   function ratio(numerator, denominator) {
     if (!finite(numerator) || !finite(denominator) || denominator === 0) return null;
     return numerator / denominator;
+  }
+
+  /* Total order on two filings of the same fiscal year (PIT-F1): the later
+     `filed` day wins; on the same day the lexicographically larger accession
+     number wins (SEC accessions of one filer ascend, so the amendment follows
+     the original); if that is equal too, the larger value. Independent of the
+     input order. Real consumer bundles carry one row per period, so this only
+     decides ties that synthetic or future inputs create. */
+  function supersedes(row, kept) {
+    if (row[FILED] !== kept[FILED]) return row[FILED] > kept[FILED];
+    var a = String(row[ACCN] == null ? "" : row[ACCN]), b = String(kept[ACCN] == null ? "" : kept[ACCN]);
+    if (a !== b) return a > b;
+    return row[VALUE] > kept[VALUE];
   }
 
   /* Rows of one metric that had been filed by `asOf`, newest fiscal year
@@ -50,7 +63,7 @@
       if (!finite(row[VALUE])) continue;
       var year = row[FY];
       var kept = byYear[year];
-      if (!kept || filed > kept[FILED]) byYear[year] = row;
+      if (!kept || supersedes(row, kept)) byYear[year] = row;
     }
     return Object.keys(byYear)
       .map(function (year) { return byYear[year]; })

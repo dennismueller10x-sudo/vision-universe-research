@@ -22,6 +22,8 @@ trap 'rm -rf "$D"' EXIT
 if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
   git fetch --quiet --depth=1 origin "refs/heads/$BRANCH"
   git archive FETCH_HEAD | tar -x -C "$D"
+  # Stand des Datenzweigs fuer das Generationenmanifest (scripts/vu2/release-manifest.mjs); liegt im .git-Verzeichnis, nie im Arbeitsbaum.
+  git rev-parse FETCH_HEAD > "$(git rev-parse --git-path vu-data-branch.sha)" || true
 else
   echo "Datenzweig $BRANCH fehlt noch: Arbeitsbaum bleibt beim Stand aus main"
 fi

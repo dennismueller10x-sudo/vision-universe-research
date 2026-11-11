@@ -1480,6 +1480,11 @@ jobs:
         run: scripts/ci/seed-data-branch.sh alle
       - name: Exaktes Pages-Auslieferungsartefakt bauen
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/release"
+      - name: Generationenmanifest im Releasebau (ADR-008)
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/release/core/release-manifest.json"
+          node -e 'const m=JSON.parse(require("fs").readFileSync(process.argv[1]));if(m.schema!=="vu-release-manifest-1"||!/^[0-9a-f]{40}$/.test(m.code.sha)||!/^[0-9a-f]{64}$/.test(m.payloadHash))process.exit(1);console.log("Nutzdatenhash "+m.payloadHash+" Code "+m.code.sha+" Datenzweig "+m.dataBranch.sha)' "$RUNNER_TEMP/release/core/release-manifest.json"
       - name: Gate F — Browser QA 390 px und 1280 px gegen das Release
         run: |
           test -f "$RUNNER_TEMP/release/supertrader/index.html"
