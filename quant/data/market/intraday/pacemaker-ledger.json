@@ -2,40 +2,16 @@
   "schemaVersion": "intraday-pacemaker-ledger-1.1.0",
   "note": "Zeitstempel je Zyklus. Keine Kurse - nur Uhrzeiten, Zahlen und Gruende.",
   "block": {
-    "startedAt": "2026-11-11T18:51:25.474Z",
-    "runId": "43075975015",
-    "runNumber": "117",
+    "startedAt": "2026-11-11T19:06:50.568Z",
+    "runId": "43083859546",
+    "runNumber": "1399",
     "trigger": "workflow_dispatch",
     "intervalMs": 300000,
     "blockMaxMs": 20700000,
-    "branch": "main",
-    "endedAt": "2026-11-11T19:05:34.179Z",
-    "reason": "maxCycles",
-    "cycles": 1
+    "branch": "main"
   },
-  "updatedAt": "2026-11-11T19:05:34.180Z",
+  "updatedAt": "2026-11-11T19:20:53.101Z",
   "cycles": [
-    {
-      "cycle": 1,
-      "runId": "42883380276",
-      "triggerAt": "2026-11-10T19:18:48.694Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "14:18:48",
-      "fetchStartAt": "2026-11-10T19:18:48.705Z",
-      "fetchEndAt": "2026-11-10T19:32:52.014Z",
-      "session": "2026-11-10",
-      "written": 1338,
-      "requests": 1455,
-      "notPublishable": 56,
-      "addAt": null,
-      "commitAt": null,
-      "pushAt": null,
-      "sha": null,
-      "changed": false,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-11-10T19:32:51.987Z"
-    },
     {
       "cycle": 1,
       "runId": "42885891255",
@@ -746,6 +722,27 @@
       "ok": true,
       "reason": null,
       "snapshotAt": "2026-11-11T19:05:29.022Z"
+    },
+    {
+      "cycle": 1,
+      "runId": "43083859546",
+      "triggerAt": "2026-11-11T19:06:50.579Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "14:06:50",
+      "fetchStartAt": "2026-11-11T19:06:50.618Z",
+      "fetchEndAt": "2026-11-11T19:20:53.098Z",
+      "session": "2026-11-11",
+      "written": 1328,
+      "requests": 1453,
+      "notPublishable": 67,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-11-11T19:20:53.067Z"
     }
   ]
 }
