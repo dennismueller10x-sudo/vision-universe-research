@@ -326,7 +326,7 @@ for(const width of [1440,390]){
       bleibt so pruefbar). Methodik ist sekundaer (Hero, Fuss). */
    /* Elliott ist ein eigenes Produkt: sein Aktienbild (/elliott/#/<T>, auch ueber die alten Technik-/Chartbild-Adressen) traegt die Elliott-Leiste, nicht die Quant-Leiste. */
    const elliottBild=/^\/elliott\/#\/|#\/elliott\/|#\/aktie\/[^/?]+\/(technik|chartbild)/.test(view);
-   const sollBereiche=elliottBild?['Elliott','Zählbar','Neu','Suche']:['Quant','Screener','Strategien','Aktien'];
+   const sollBereiche=elliottBild?['Elliott','Zählbar','Neu','Suche']:['Quant','Screener','Anlagestile','Aktien']; /* Konzept Quant 2026-11 (#1819): Strategien heißen Anlagestile */
    /* DISCOVER-ANGLEICHUNG (30.09.2026): Kopf- und Tab-Leiste sind EINE
       Leiste wie Discovers v2-dock - am Desktop oben mittig im Rahmen, am
       Handy unten am Bildschirmrand. Geprueft wird dieselbe Absicht wie
@@ -363,7 +363,7 @@ for(const width of [1440,390]){
      (82)"), bei "nahe am Hoch" den Abstand und den Kurs. */
   if(route==='screener'&&!view.includes('/profi')){
    const frage=new URLSearchParams((ort.split('#')[1]||'').split('?')[1]||'').get('frage')||'qualitaet';
-   const fragen=await page.locator('button.qx-question[data-question]').evaluateAll(b=>b.map(x=>({id:x.dataset.question,on:x.getAttribute('aria-pressed')})));
+   const fragen=await page.locator('main#qx-main button[data-question]').evaluateAll(b=>b.map(x=>({id:x.dataset.question,on:x.getAttribute('aria-pressed')})));
    if(fragen.length!==7)bad.push('FRAGEN='+fragen.length);
    const an=fragen.filter(f=>f.on==='true').map(f=>f.id);
    if(an.join('|')!==frage)bad.push('FRAGE_MARKE:'+an.join('|'));
@@ -372,8 +372,11 @@ for(const width of [1440,390]){
    if(!satz)bad.push('SATZ_FEHLT');
    if(/undefined|NaN/.test(satz+' '+stand))bad.push('UNDEFINED_IM_SATZ');
    /* Redesign 2027 (Q02): zuerst 10 Zeilen, dann „Alle N zeigen“ - gezaehlt wird die ganze Liste. */
-   const alle=page.locator('main#qx-main button.qv3-all');if(await alle.count()){await alle.first().click();await page.waitForTimeout(400);}
-   const zeilen=await page.locator('main#qx-main a.qx-row').allInnerTexts();
+   /* Konzept Quant 2026-11 (QX03, #1819): Fragen als Chips (button[data-question]), Trefferzeile a.qk-pr mit Profil
+      (Name, „KUERZEL · Grund“, dann der gesuchte Wert), zuerst 7 Zeilen, dann „Alle N zeigen“ (button.qk-more). */
+   const ZEILE='main#qx-main a.qk-pr, main#qx-main a.qx-row';
+   const alle=page.locator('main#qx-main button.qv3-all, main#qx-main button.qk-more');if(await alle.count()){await alle.first().click();await page.waitForTimeout(400);}
+   const zeilen=await page.locator(ZEILE).allInnerTexts();
    if(!zeilen.length)bad.push('KEINE_TREFFER');
    else if(frage!=='setups'){
     const mitZahl=zeilen.filter(t=>/\d/.test(t.split('\n').slice(2).join(' '))&&!/Nicht verfügbar|nicht bewertbar|ohne Wert/.test(t)).length;
@@ -389,7 +392,7 @@ for(const width of [1440,390]){
       werden Kurse und Namen gezaehlt, Namen zusaetzlich auf jeder
       Trefferliste. Die Schwelle von 0,95 faengt einen Rueckfall und friert
       keinen Tagesstand ein - Titel ohne Anbieternamen duerfen fehlen. */
-   const namen=await page.locator('main#qx-main a.qx-row .qx-row-title').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||'',n:(n.querySelector('span')||{}).textContent||''})));
+   const namen=await page.locator(ZEILE).evaluateAll(ns=>ns.map(a=>a.classList.contains('qk-pr')?{t:(a.getAttribute('href')||'').split('/').pop(),n:(a.querySelector('.qk-pr-n b')||{}).textContent||''}:(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||'',n:(n.querySelector('span')||{}).textContent||''}))(a.querySelector('.qx-row-title')||a)));
    const mitName=namen.filter(x=>x.n&&x.n!==x.t&&x.n!=='Firmenname nicht veröffentlicht').length;
    if(namen.length&&mitName/namen.length<0.95)bad.push('NAMEN='+mitName+'/'+namen.length);
    if(frage==='hoch'){
@@ -403,7 +406,8 @@ for(const width of [1440,390]){
    /* Redesign 2027 (Q02, #1410): dunkle Profi-Flaeche mit Bereichsreglern (.qv3-cond) und Treffertabelle (a.qv3-prow);
       der Regel-Editor (.qx-rule, a.qx-row) bleibt fuer ?daten=v1. Geprueft wird dasselbe: eine Regel und Treffer sichtbar. */
    await page.waitForFunction(()=>document.querySelectorAll('main#qx-main a.qx-row, main#qx-main a.qv3-prow').length>0,null,{timeout:20000}).catch(()=>{});
-   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule, main#qx-main .qv3-cond').count();
+   /* Konzept Quant 2026-11 (QX03, #1819): Bedingungen als Chips (.qv3-conds .qk-rc ohne „+“), Regler erst im Sheet. */
+   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule, main#qx-main .qv3-cond, main#qx-main .qv3-conds .qk-rc:not(.qk-add)').count();
    if(!regeln)bad.push('KEINE_REGEL');
    const zeilen=await page.locator('main#qx-main a.qx-row, main#qx-main a.qv3-prow').count();
    if(!zeilen)bad.push('KEINE_TREFFER');
@@ -659,9 +663,11 @@ for(const width of [1440,390]){
   await page.goto('about:blank');await page.goto(origin+'/quant/#/');await bereit(page).catch(()=>bad.push('NICHT_BEREIT'));
   await page.locator(leiste).getByRole('link',{name:'Quant Screener',exact:true}).click();
   if(!await ansicht('screener'))bad.push('SCREENER_NICHT_ERREICHT');
-  await page.locator('main#qx-main a.qx-row').first().waitFor({timeout:30000}).catch(()=>bad.push('KEIN_TREFFER'));
-  const ziel=await page.locator('main#qx-main a.qx-row').first().getAttribute('href').catch(()=>null);
-  await page.locator('main#qx-main a.qx-row').first().click().catch(()=>{});
+  /* Konzept Quant 2026-11 (QX03, #1819): Trefferzeile mit Profil (a.qk-pr); a.qx-row bleibt fuer die Ansicht ohne VUUI. */
+  const treffer='main#qx-main a.qk-pr, main#qx-main a.qx-row';
+  await page.locator(treffer).first().waitFor({timeout:30000}).catch(()=>bad.push('KEIN_TREFFER'));
+  const ziel=await page.locator(treffer).first().getAttribute('href').catch(()=>null);
+  await page.locator(treffer).first().click().catch(()=>{});
   if(!await ansicht('aktie'))bad.push('AKTIE_NICHT_ERREICHT');
   if(ziel&&!(await page.evaluate(()=>location.hash)).startsWith(ziel))bad.push('FALSCHE_AKTIE');
   await page.goBack();
