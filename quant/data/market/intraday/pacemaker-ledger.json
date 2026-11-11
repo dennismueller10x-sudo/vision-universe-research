@@ -10,29 +10,8 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-11T20:45:55.903Z",
+  "updatedAt": "2026-11-11T21:00:02.050Z",
   "cycles": [
-    {
-      "cycle": 7,
-      "runId": "42885891255",
-      "triggerAt": "2026-11-10T20:59:24.459Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "15:59:24",
-      "fetchStartAt": "2026-11-10T20:59:24.460Z",
-      "fetchEndAt": "2026-11-10T21:13:28.008Z",
-      "session": "2026-11-10",
-      "written": 1353,
-      "requests": 1455,
-      "notPublishable": 46,
-      "addAt": null,
-      "commitAt": null,
-      "pushAt": null,
-      "sha": null,
-      "changed": false,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-11-10T21:13:27.978Z"
-    },
     {
       "cycle": 1,
       "runId": "43025188005",
@@ -739,6 +718,35 @@
       "written": 1358,
       "requests": 1453,
       "notPublishable": 56,
+      "addAt": "2026-11-11T20:45:55.903Z",
+      "commitAt": "2026-11-11T20:45:56.561Z",
+      "pushAt": "2026-11-11T20:45:59.276Z",
+      "sha": "a79484c917",
+      "changed": true,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-11-11T20:45:55.864Z",
+      "pushed": true,
+      "watchdog": {
+        "verdict": "FAIL",
+        "codes": [
+          "auslieferungZuWeitHinterher",
+          "seiteStandZuAlt"
+        ]
+      }
+    },
+    {
+      "cycle": 8,
+      "runId": "43083859546",
+      "triggerAt": "2026-11-11T20:45:59.572Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "15:45:59",
+      "fetchStartAt": "2026-11-11T20:45:59.573Z",
+      "fetchEndAt": "2026-11-11T21:00:02.048Z",
+      "session": "2026-11-11",
+      "written": 1354,
+      "requests": 1453,
+      "notPublishable": 55,
       "addAt": null,
       "commitAt": null,
       "pushAt": null,
@@ -746,7 +754,7 @@
       "changed": false,
       "ok": true,
       "reason": null,
-      "snapshotAt": "2026-11-11T20:45:55.864Z"
+      "snapshotAt": "2026-11-11T21:00:02.012Z"
     }
   ]
 }
