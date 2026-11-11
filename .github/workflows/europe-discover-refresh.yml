@@ -16,12 +16,14 @@
 # Either one alone does nothing. Switching off: unset the variable (or set
 # it to anything but 'true'); a scheduled event then ends as a skipped job.
 #
-# Cron '47 17 * * 1-5' (UTC): 18:47 CET in winter, 19:47 CEST in summer.
+# Cron '47 21 * * 1-5' (UTC, Cloudflare-Wecker): 22:47 CET in winter, 23:47 CEST in summer.
 # All ten venues are on Central European time (CET/CEST switch together on
 # the last Sundays of March and October, both Sundays without a run). Every
 # venue closes at 17:30 local (Copenhagen 17:00); closing auctions end about
-# 17:35. 17:47 UTC is 18:47 CET (77 min after the 16:30 UTC close) in winter
-# and 19:47 CEST (137 min after the 15:30 UTC close) in summer, so the run
+# 17:35. Until 11.11.2026 the run started 17:47 UTC and Marketstack often had
+# only the previous session (lag 1); 21:47 UTC leaves about five hours after
+# the close for the provider's end-of-day close and stays before midnight UTC,
+# so the run
 # is after the last close in both. The preflight compares against the exact
 # close of core/europe-exchange-calendar.js in UTC. A start delayed past
 # midnight UTC becomes the next date and is skipped (before that day's
