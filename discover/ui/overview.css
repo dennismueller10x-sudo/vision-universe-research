@@ -16,7 +16,8 @@ body.dv2 .dv2-stock .dx-chart-hero-preis>b{font-weight:900;letter-spacing:-.045e
 body.dv2 .dv2-stock .dx-chart-hero-preis>.up,body.dv2 .dv2-stock .dx-chart-hero-preis>.down{display:inline-flex;align-items:center;padding:5px 11px;border-radius:999px;font-size:15px;font-weight:800;align-self:center}
 body.dv2 .dv2-stock .dx-chart-hero-preis>.up{background:#c8f531;color:#000}
 /* Konzept „Reihe für Reihe“, Entscheidung 7 (Owner 08.11.2026, ersetzt 06.11.): keine rote Pille, Plus neongrün, Minus schwarz. */
-body.dv2 .dv2-stock .dx-chart-hero-preis>.down{background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+/* Owner 11.11.2026 (Befund iPhone): Minus wieder rot, Plus neongruen; ersetzt Entscheidung 7 vom 08.11. */
+body.dv2 .dv2-stock .dx-chart-hero-preis>.down{background:#d92d20;color:#fff}
 body.dv2 .dv2-stock .dx-chart-hero-preis>.up::before{content:"▲\00a0" / "";font-size:.8em}body.dv2 .dv2-stock .dx-chart-hero-preis>.down::before{content:"▼\00a0" / "";font-size:.8em}
 /* Index-Etiketten: eine ruhige Zeile kleiner Pillen statt eines Stapels unter dem Namen. */
 body.dv2 .dv2-head .dx-index-badges{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 0 50px}
@@ -205,3 +206,9 @@ body.dv2 .dv3-titel .dv3-checks li:before{content:"✓";display:grid;place-items
 body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-intraday{margin:12px 0 0}
 body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-intraday-chart{height:184px}
 @media(min-width:861px){body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-intraday-chart{height:260px}}
+
+/* Kopf bei schmaler Breite: Kurs und Pille bleiben in einer Zeile, Schluss/Euro/Stale-Hinweis rutschen darunter (vorher Ueberlappung bei 360-430 px). */
+@media (max-width:480px){
+body.dv2 .dv2-stock .dx-chart-hero.dx-chart-hero--c04{flex-wrap:wrap;row-gap:6px}
+body.dv2 .dv2-stock .dx-chart-hero--c04 .dx-chart-hero-meta{flex:1 1 100%;margin-left:0;align-items:flex-start;text-align:left}
+}
