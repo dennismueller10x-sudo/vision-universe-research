@@ -1,90 +1,10 @@
 {
   "version": "fundamentals-store-1.0.0",
-  "generatedAt": "2026-11-11T06:30:38.235Z",
+  "generatedAt": "2026-11-11T07:30:49.191Z",
   "driver": "s3",
   "endpointKind": "s3",
   "prefix": "v1/sec/fundamentals",
   "localFactbooks": 5483,
-  "push": {
-    "changed": 187,
-    "unchanged": 5296,
-    "objectCount": 5483,
-    "bytesUploaded": 19798800,
-    "dryRun": false,
-    "spent": {
-      "classA": 189,
-      "classB": 1,
-      "bytesUploaded": 19798800,
-      "bytesDownloaded": 0,
-      "writesSkipped": 5296
-    }
-  },
-  "persisted": {
-    "PERSISTED_ISSUERS": 5483,
-    "PERSISTED_ANNUAL_HISTORIES": 5316,
-    "PERSISTED_QUARTERLY_HISTORIES": 5350,
-    "PERSISTED_PIT_HISTORIES": 5350,
-    "PERSISTED_METADATA": 5400,
-    "PERSISTED_STORAGE_BYTES": 647760446,
-    "PERSISTENCE_LOCATION": "r2:vision-universe-history/v1/sec/fundamentals/",
-    "byNormalizationVersion": {
-      "1.10.0": 348,
-      "1.14.0": 2669,
-      "1.9.0": 2431,
-      "1.13.0": 35
-    },
-    "currencies": {
-      "USD": 4991,
-      "TWD": 9,
-      "EUR": 93,
-      "CAD": 122,
-      "INR": 7,
-      "JPY": 20,
-      "PHP": 1,
-      "GBP": 30,
-      "ZAR": 5,
-      "DKK": 2,
-      "NZD": 1,
-      "SEK": 2,
-      "CNY": 178,
-      "MXN": 13,
-      "KRW": 10,
-      "CLP": 5,
-      "AFN": 3,
-      "ARS": 12,
-      "BRL": 28,
-      "ILS": 15,
-      "PEN": 4,
-      "IDR": 1,
-      "TRY": 3,
-      "AUD": 19,
-      "COP": 3,
-      "HKD": 36,
-      "RUB": 1,
-      "CHF": 8,
-      "SAR": 1,
-      "BSD": 1,
-      "SGD": 26,
-      "VND": 2,
-      "MYR": 5,
-      "KZT": 1,
-      "AED": 1,
-      "MOP": 1
-    }
-  },
-  "restore": {
-    "indexObjects": 5483,
-    "alreadyLocal": 5483,
-    "restored": 0,
-    "mismatched": 0,
-    "spent": {
-      "classA": 0,
-      "classB": 1,
-      "bytesUploaded": 0,
-      "bytesDownloaded": 0,
-      "writesSkipped": 0
-    }
-  },
   "reload": {
     "requested": 12,
     "passed": 12,
@@ -519,9 +439,94 @@
       "writesSkipped": 0
     }
   },
+  "restore": {
+    "indexObjects": 5483,
+    "alreadyLocal": 5483,
+    "restored": 0,
+    "mismatched": 0,
+    "spent": {
+      "classA": 0,
+      "classB": 1,
+      "bytesUploaded": 0,
+      "bytesDownloaded": 0,
+      "writesSkipped": 0
+    }
+  },
+  "dailyState": {
+    "key": "v1/sec/fundamentals/_daily-state.json",
+    "bytes": 1725950,
+    "pushed": true
+  },
+  "push": {
+    "changed": 0,
+    "unchanged": 5483,
+    "objectCount": 5483,
+    "bytesUploaded": 0,
+    "dryRun": false,
+    "spent": {
+      "classA": 0,
+      "classB": 1,
+      "bytesUploaded": 0,
+      "bytesDownloaded": 0,
+      "writesSkipped": 5483
+    }
+  },
+  "persisted": {
+    "PERSISTED_ISSUERS": 5483,
+    "PERSISTED_ANNUAL_HISTORIES": 5316,
+    "PERSISTED_QUARTERLY_HISTORIES": 5350,
+    "PERSISTED_PIT_HISTORIES": 5350,
+    "PERSISTED_METADATA": 5400,
+    "PERSISTED_STORAGE_BYTES": 647760446,
+    "PERSISTENCE_LOCATION": "r2:vision-universe-history/v1/sec/fundamentals/",
+    "byNormalizationVersion": {
+      "1.10.0": 348,
+      "1.14.0": 2669,
+      "1.9.0": 2431,
+      "1.13.0": 35
+    },
+    "currencies": {
+      "USD": 4991,
+      "TWD": 9,
+      "EUR": 93,
+      "CAD": 122,
+      "INR": 7,
+      "JPY": 20,
+      "PHP": 1,
+      "GBP": 30,
+      "ZAR": 5,
+      "DKK": 2,
+      "NZD": 1,
+      "SEK": 2,
+      "CNY": 178,
+      "MXN": 13,
+      "KRW": 10,
+      "CLP": 5,
+      "AFN": 3,
+      "ARS": 12,
+      "BRL": 28,
+      "ILS": 15,
+      "PEN": 4,
+      "IDR": 1,
+      "TRY": 3,
+      "AUD": 19,
+      "COP": 3,
+      "HKD": 36,
+      "RUB": 1,
+      "CHF": 8,
+      "SAR": 1,
+      "BSD": 1,
+      "SGD": 26,
+      "VND": 2,
+      "MYR": 5,
+      "KZT": 1,
+      "AED": 1,
+      "MOP": 1
+    }
+  },
   "witness": {
     "allowedPrefix": "v1/sec/fundamentals/",
-    "touchedKeys": 12,
+    "touchedKeys": 2,
     "keysOutsidePrefix": 0,
     "priceStoreUntouched": true,
     "note": "Der Zeuge um den Treiber wirft bei jedem Schluessel ausserhalb von v1/sec/fundamentals/. Dass hier 0 steht, ist deshalb kein Zaehlergebnis, sondern eine Eigenschaft: das Skript KANN v1/tiingo/ nicht anfassen."
