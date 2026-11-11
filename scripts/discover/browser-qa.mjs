@@ -165,7 +165,9 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
    await home.goto(base+'/',{waitUntil:'domcontentloaded'});
    /* Seit 06.10.2026 traegt die Startseite ihren eigenen Landingpage-Kopf
       (<meta name="vu-navigation" content="none">) statt der Plattform-Navigation. */
-   assert.equal(await home.locator('vu-navigation').count(),0,'Landing page must not stack the platform header on its own');
+   /* Seit 11.11.2026 (Owner 10.11.2026: Rechtliches nur im Menue) traegt die Startseite zusaetzlich das zentrale Menue
+      ohne zweiten Kopf (<vu-navigation menu-only>); ein vollstaendiger Plattform-Kopf bleibt ausgeschlossen. */
+   assert.equal(await home.locator('vu-navigation:not([menu-only])').count(),0,'Landing page must not stack the platform header on its own');
    /* Redesign 2027 (E01): Kopf header.hd mit .hd-logo; bis dahin #lp-head mit .lp-logo. */
    const bounds=await home.locator('#lp-head, header.hd').first().evaluate(n=>{const logo=n.querySelector('.lp-logo, .hd-logo').getBoundingClientRect();return {viewport:innerWidth,logo:logo.toJSON(),overflow:document.documentElement.scrollWidth-innerWidth};});
    assert(bounds.logo.left>=0&&bounds.logo.right<=bounds.viewport&&bounds.overflow<=1,'Landing header overflows: '+JSON.stringify(bounds));
