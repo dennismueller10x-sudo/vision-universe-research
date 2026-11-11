@@ -1,6 +1,8 @@
 // Wirksame UI-Byte-Sperre: eingefrorene Basis (docs/quant-recovery/v51/ui-protection.json, unveraendert) plus die
 // einzeln freigegebenen Revisionen aus docs/quality/ui-protection-revisions.json. Fail closed bei jeder Abweichung:
 // Basis-Hash geaendert, Revision ohne Pflichtfeld, Datei nicht gesperrt, alter Hash passt nicht zur Kette.
+// Revisionsart "unlock" (Owner-Freigabe 11.11.2026, nur Quant-Darstellung): nimmt eine Datei aus der wirksamen Sperre.
+// Die eingefrorene Basis bleibt byte-gleich; "unlock" hat kein "to", "from" muss der wirksame Hash sein.
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { createHash } from "node:crypto";
@@ -32,20 +34,30 @@ export function effectiveLock(root, revisionsDoc = null) {
   const files = { ...base.files };
   const seen = new Set();
   for (const r of rev.revisions) {
-    for (const k of ["id", "date", "pr", "ownerApproval", "file", "from", "to", "scope"]) if (r[k] === undefined || r[k] === "") throw new Error("UI_PROTECTION_REVISION_FIELD_MISSING:" + k);
+    if (r.kind !== undefined && r.kind !== "unlock") throw new Error("UI_PROTECTION_REVISION_KIND_INVALID:" + r.id);
+    const unlock = r.kind === "unlock";
+    if (unlock && r.to !== undefined) throw new Error("UI_PROTECTION_UNLOCK_HAS_TO:" + r.id);
+    for (const k of (unlock ? ["id", "date", "pr", "ownerApproval", "file", "from", "scope"] : ["id", "date", "pr", "ownerApproval", "file", "from", "to", "scope"])) if (r[k] === undefined || r[k] === "") throw new Error("UI_PROTECTION_REVISION_FIELD_MISSING:" + k);
     if (seen.has(r.id)) throw new Error("UI_PROTECTION_REVISION_DUPLICATE:" + r.id);
     seen.add(r.id);
     if (!Object.hasOwn(files, r.file)) throw new Error("UI_PROTECTION_REVISION_FILE_NOT_LOCKED:" + r.file);
-    if (!HEX.test(r.from) || !HEX.test(r.to) || r.from === r.to) throw new Error("UI_PROTECTION_REVISION_HASH_INVALID:" + r.id);
+    if (!HEX.test(r.from) || (!unlock && (!HEX.test(r.to) || r.from === r.to))) throw new Error("UI_PROTECTION_REVISION_HASH_INVALID:" + r.id);
   }
   // Kette je Datei: eine Revision gilt, wenn ihr "from" der aktuelle Hash ist. Die Reihenfolge der Dateien im Ordner ist
   // egal (keine Nummer, kein Abgleich bei parallelen PRs); zwei Revisionen mit demselben "from" brechen die Kette.
-  let offen = rev.revisions;
+  const unlocks = rev.revisions.filter((r) => r.kind === "unlock");
+  let offen = rev.revisions.filter((r) => r.kind !== "unlock");
   while (offen.length) {
     const rest = [];
     for (const r of offen) { if (files[r.file] === r.from) files[r.file] = r.to; else rest.push(r); }
     if (rest.length === offen.length) throw new Error("UI_PROTECTION_REVISION_CHAIN_BROKEN:" + rest[0].id);
     offen = rest;
+  }
+  // Entsperren zuletzt: die Datei muss zu diesem Zeitpunkt gesperrt sein und den wirksamen Hash tragen.
+  for (const r of unlocks) {
+    if (!Object.hasOwn(files, r.file)) throw new Error("UI_PROTECTION_UNLOCK_NOT_LOCKED:" + r.id);
+    if (files[r.file] !== r.from) throw new Error("UI_PROTECTION_UNLOCK_HASH_MISMATCH:" + r.id);
+    delete files[r.file];
   }
   return { ...base, files, revisions: rev.revisions.map((r) => r.id) };
 }

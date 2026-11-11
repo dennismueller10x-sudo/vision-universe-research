@@ -140,6 +140,7 @@ test("Quant: QX.watch wird im Browser gekoppelt, ohne gesperrte Quant-Dateien zu
   assert.ok(html.indexOf('<script src="/quant/app/ui.js"></script>') < html.indexOf('<script src="/assets/watchlist-button.js"></script>'), "QX steht vorher");
   assert.ok(html.indexOf('<script src="/assets/watchlist-button.js"></script>') < html.indexOf('<script src="/quant/app/page-stock.js"></script>'), "vor dem ersten Zeichnen");
   const lock = (await import("../../scripts/quality/ui-protection.mjs")).effectiveLock(ROOT);
-  for (const f of ["quant/app/ui.js", "quant/app/page-stock.js", "quant/app/pages.js", "quant/index.html"])
+  // ui.js und index.html sind seit 11.11.2026 entsperrt (Darstellung); page-stock.js und pages.js bleiben gesperrt
+  for (const f of ["quant/app/page-stock.js", "quant/app/pages.js"])
     assert.equal(createHash("sha256").update(readFileSync(join(ROOT, f))).digest("hex"), lock.files[f], f);
 });

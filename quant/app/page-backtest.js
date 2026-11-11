@@ -326,6 +326,10 @@
       await render(legacy, ctx, ruleId, true);
       var hero = legacy.querySelector(".q-hero"); if (hero) hero.remove();
       var picks = legacy.querySelector(".q-bt-picks"); if (picks) picks.remove();
+      /* Die Regelseite braucht eine eigene Hauptüberschrift (der alte Kopf mit h1 entfällt); Name der Regel bzw. des Setups. */
+      var rh = el("h1", { class: "vu-lt qk-bt-t", text: RULE_LABEL[ruleId] || "Regel" });
+      var sub = legacy.querySelector(".q-bt-head h2"); if (sub && sub.textContent === rh.textContent) sub.remove();
+      legacy.before(rh);
       return;
     }
     var nOf = function (st) { return cert.kinds.filter(function (k) { return k.status === st; }).length; };

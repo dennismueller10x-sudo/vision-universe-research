@@ -172,6 +172,20 @@
            "Der ausgelieferte Stand wurde nicht gemessen.");
     }
 
+    /* --- 5. Der Stand auf der Seite ist absolut zu alt -------------------
+       11.11.2026: die Auslieferung scheiterte stundenlang (apt-DNS im Release-
+       Smoke); im Repository lag alles frisch, die Seite zeigte den Vortag.
+       Unabhaengig vom Repository gilt: waehrend der US-Sitzung darf der
+       ausgelieferte Intraday-Stand hoechstens 30 Minuten alt sein. */
+    if (offen && geliefert && typeof geliefert.asOfMs === "number") {
+      var geliefertAlter = jetzt - geliefert.asOfMs;
+      if (geliefertAlter > 30 * 60000) {
+        sage("FAIL", "seiteStandZuAlt",
+             "Der Intraday-Stand auf der veroeffentlichten Seite ist " + min(geliefertAlter) +
+             " min alt (Grenze 30 min).");
+      }
+    }
+
     var hoechste = befunde.reduce(function (a, b) {
       return SCHWEREGRADE[b.severity] > SCHWEREGRADE[a] ? b.severity : a;
     }, "PASS");

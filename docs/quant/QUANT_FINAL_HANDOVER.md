@@ -71,6 +71,7 @@ Quant ist eine Single-Page-App: `quant/index.html`, Routen in `quant/app/app.js`
 **Anzeigeregeln:**
 - `quant/engines/display-policy.js` und `quant/config/development-preview.json` (Owner-Entscheidung 13.09.2026) erlauben die öffentliche Anzeige der Tiingo-Kurse des Produktuniversums.
 - Die gesamte Quant-Oberfläche ist byte-gesperrt: Basis `docs/quant-recovery/v51/ui-protection.json`, Revisionen in `docs/quality/ui-protection-revisions.json` (PR #1236).
+  Seit 11.11.2026 (Owner) gilt die Sperre nur noch für zahlenerzeugende Dateien; entsperrt (Revisionen `kind: "unlock"` in `docs/quality/ui-protection-revisions/quant-darstellung-frei-*.json`) sind `quant/app/{app,stock,chartbild}.css`, `quant/ui/{quant,technical-chart}.css`, `quant/index.html`, `quant/app/ui.js`, `quant/ui/legacy-redirect.js`. `view-model.js`, `page-*.js`, `pages.js`, `app.js`, `shell.js`, Chart-Module und Tests bleiben gesperrt, weil sie sortieren, Anteile bilden oder Daten laden.
 
 ### A2. Implementiert, aber nicht aktiviert (DEAKTIVIERT)
 
