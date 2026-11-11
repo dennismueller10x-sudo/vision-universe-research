@@ -1,54 +1,54 @@
 {
  "schemaVersion": "vu-vorsorge-data-qa-2.0.0",
- "asOf": "2026-11-05",
+ "asOf": "2026-11-10",
  "scope": "TIINGO_ETF_INGEST",
  "ingest": {
   "status": "COMPLETE",
   "report": {
    "schemaVersion": "vu-vorsorge-ingest-report-1.0.0",
    "ingest": "vorsorge-ingest-2.0.0",
-   "activeTickers": 398,
-   "extraEtfs": 388,
+   "activeTickers": 409,
+   "extraEtfs": 387,
    "onlyExtra": true,
-   "universeRows": 7732,
-   "keptFromPreviousRuns": 7345,
-   "processedOk": 387,
+   "universeRows": 7553,
+   "keptFromPreviousRuns": 7148,
+   "processedOk": 405,
    "notFound": 0,
-   "noPrices": 11,
-   "failed": 11,
+   "noPrices": 4,
+   "failed": 4,
    "pending": 0,
    "complete": true,
    "stoppedBecause": null,
    "thisRun": {
-    "requests": 1,
+    "requests": 819,
     "rateLimited": 0,
-    "minutes": 0,
-    "newlyAttempted": 0
+    "minutes": 11,
+    "newlyAttempted": 409
    }
   },
   "catalog": {
    "schemaVersion": "vu-vorsorge-catalog-stats-1.0.0",
    "source": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
-   "catalogRows": 109219,
-   "etfRows": 9906,
-   "malformedRows": 152,
-   "activeRows": 7356,
-   "inactiveRows": 2398,
+   "catalogRows": 109256,
+   "etfRows": 9924,
+   "malformedRows": 158,
+   "activeRows": 7171,
+   "inactiveRows": 2595,
    "rowsWithoutPriceDates": 0,
-   "uniqueTickers": 9538,
-   "tickersWithMultipleRows": 212,
-   "activeUniqueTickers": 7355,
+   "uniqueTickers": 9548,
+   "tickersWithMultipleRows": 214,
+   "activeUniqueTickers": 7170,
    "byExchange": {
-    "SHE": 425,
+    "SHE": 426,
     "SHG": 424,
-    "NYSE": 2946,
-    "BATS": 1811,
+    "NYSE": 2945,
+    "BATS": 1813,
     "NASDAQ": 1633,
     "NYSE MKT": 24,
-    "NYSE ARCA": 1595,
+    "NYSE ARCA": 1601,
     "PINK": 585,
     "AMEX": 50,
-    "OTCMKTS": 89,
+    "OTCMKTS": 93,
     "OTCQB": 8,
     "OTCGREY": 112,
     "NMFQS": 14,
@@ -58,73 +58,73 @@
     "OTCCE": 1
    },
    "byCurrency": {
-    "USD": 8998,
+    "USD": 9010,
     "CNY": 754,
     "AUD": 2
    },
    "activeByExchange": {
-    "SHE": 399,
+    "SHE": 400,
     "SHG": 424,
-    "NYSE": 2642,
-    "BATS": 1557,
-    "NASDAQ": 1370,
-    "NYSE ARCA": 302,
-    "PINK": 522,
+    "NYSE": 2641,
+    "BATS": 1478,
+    "NASDAQ": 1319,
+    "NYSE ARCA": 284,
+    "PINK": 486,
     "AMEX": 31,
     "OTCMKTS": 72,
     "OTCQB": 8,
     "OTCD": 2,
-    "OTCGREY": 16,
     "EXPM": 9,
+    "OTCGREY": 15,
     "OTCBB": 1,
     "NMFQS": 1
    },
    "otherAssetTypes": {
-    "Stock": 49433,
+    "Stock": 49452,
     "Mutual Fund": 49880
    },
-   "staleBefore": "2026-10-06",
-   "maxEndDate": "2026-11-05"
+   "staleBefore": "2026-10-11",
+   "maxEndDate": "2026-11-10"
   },
-  "failedCount": 11
+  "failedCount": 4
  },
  "layers": {
-  "raw": 9906,
-  "canonical": 7724,
-  "listings": 7742,
-  "publicAnalysis": 4065,
-  "complex": 2155,
+  "raw": 9924,
+  "canonical": 7546,
+  "listings": 7563,
+  "publicAnalysis": 3967,
+  "complex": 2127,
   "archive": 8,
-  "review": 1514
+  "review": 1461
  },
  "counts": {
-  "rowsRead": 15567,
-  "listings": 7742,
-  "canonicalFunds": 7724,
-  "shareClasses": 7724,
-  "uniqueTickers": 7741,
-  "publicAnalysis": 4065,
-  "complex": 2155,
+  "rowsRead": 15388,
+  "listings": 7563,
+  "canonicalFunds": 7546,
+  "shareClasses": 7546,
+  "uniqueTickers": 7562,
+  "publicAnalysis": 3967,
+  "complex": 2127,
   "archive": 8,
-  "review": 1514,
-  "consumerVisible": 6220,
-  "withPriceHistory": 7732,
-  "withHistory1Y": 5212,
-  "withHistory3Y": 3521,
-  "withHistory5Y": 2760,
-  "withHistory10Y": 1620,
-  "withTotalReturn": 7318,
-  "leveragedOrInverse": 845,
+  "review": 1461,
+  "consumerVisible": 6094,
+  "withPriceHistory": 7553,
+  "withHistory1Y": 5144,
+  "withHistory3Y": 3478,
+  "withHistory5Y": 2733,
+  "withHistory10Y": 1613,
+  "withTotalReturn": 7165,
+  "leveragedOrInverse": 837,
   "inactive": 8
  },
  "priceCoverage": {
-  "withAnyHistory": 7732,
-  "ratio": 0.9987083440971325,
-  "y1": 5212,
-  "y3": 3521,
-  "y5": 2760,
-  "y10": 1620,
-  "totalReturn": 7318
+  "withAnyHistory": 7553,
+  "ratio": 0.9986777733703557,
+  "y1": 5144,
+  "y3": 3478,
+  "y5": 2733,
+  "y10": 1613,
+  "totalReturn": 7165
  },
  "metadataCoverage": {
   "symbol": 1,
@@ -132,43 +132,43 @@
   "exchange": 1,
   "currency": 1,
   "country": 1,
-  "assetClass": 0.881,
-  "issuer": 0.569,
-  "index": 0.145,
+  "assetClass": 0.882,
+  "issuer": 0.568,
+  "index": 0.148,
   "category": 1,
-  "region": 0.441,
+  "region": 0.444,
   "sector": 0,
   "theme": 0.205,
   "leverage": 1,
   "inverse": 1,
-  "distributionPolicy": 0.644,
+  "distributionPolicy": 0.654,
   "replicationMethod": 0,
   "ter": 0,
   "fundSize": 0,
   "inceptionDate": 0,
   "holdingsCount": 0,
-  "benchmark": 0.145,
+  "benchmark": 0.148,
   "isin": 0,
   "wkn": 0,
   "tiingoAvailable": 1,
   "priceHistoryAvailable": 1
  },
  "missingMetadata": {
-  "issuer": 3335,
-  "sector": 7742,
-  "theme": 6158,
-  "distributionPolicy": 2754,
-  "replicationMethod": 7742,
-  "ter": 7742,
-  "fundSize": 7742,
-  "inceptionDate": 7742,
-  "holdingsCount": 7742,
-  "isin": 7742,
-  "wkn": 7742,
-  "index": 6620,
-  "benchmark": 6620,
-  "assetClass": 921,
-  "region": 4328,
+  "issuer": 3270,
+  "sector": 7563,
+  "theme": 6011,
+  "distributionPolicy": 2619,
+  "replicationMethod": 7563,
+  "ter": 7563,
+  "fundSize": 7563,
+  "inceptionDate": 7563,
+  "holdingsCount": 7563,
+  "isin": 7563,
+  "wkn": 7563,
+  "index": 6444,
+  "benchmark": 6444,
+  "assetClass": 895,
+  "region": 4202,
   "name": 11
  },
  "missingName": 11,
@@ -267,13 +267,6 @@
     "symbols": [
      "ISVUF",
      "IUVDF"
-    ]
-   },
-   {
-    "canonicalETFId": "vu-etf-bc252077",
-    "symbols": [
-     "LXRCF",
-     "RSLGF"
     ]
    },
    {
@@ -507,22 +500,6 @@
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "AllianceBernstein Global High Income Fund Inc"
-   ]
-  },
-  {
-   "symbol": "AYTEF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
-   "symbol": "BALTF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
    ]
   },
   {
@@ -799,14 +776,6 @@
    ]
   },
   {
-   "symbol": "CETHF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "XBT Provider AB Open Ended Ethereum Ctf"
-   ]
-  },
-  {
    "symbol": "CGOV",
    "exchange": "BATS",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -868,14 +837,6 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "CASINO MAGIC CORP"
-   ]
-  },
-  {
-   "symbol": "COWTF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
    ]
   },
   {
@@ -1127,14 +1088,6 @@
    ]
   },
   {
-   "symbol": "EBQZF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "WisdomTree Broad Commodities"
-   ]
-  },
-  {
    "symbol": "ECC",
    "exchange": "NYSE",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -1172,14 +1125,6 @@
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "European Equity Fund Inc"
-   ]
-  },
-  {
-   "symbol": "EFMSF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "WisdomTree Physical Gold Individual Securities"
    ]
   },
   {
@@ -1375,14 +1320,6 @@
    ]
   },
   {
-   "symbol": "FORL",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Four Leaf Acquisition Corp - Class A"
-   ]
-  },
-  {
    "symbol": "FOTO",
    "exchange": "NASDAQ",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -1436,14 +1373,6 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Guggenheim Taxbl Muni Bnd & Invtmnt Grd Debt Trst Com Shrs Of benf Int"
-   ]
-  },
-  {
-   "symbol": "GBBEF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
    ]
   },
   {
@@ -1590,14 +1519,6 @@
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Eagle Capital Growth Fund Inc"
-   ]
-  },
-  {
-   "symbol": "GRNTF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
    ]
   },
   {
@@ -1753,14 +1674,6 @@
    ]
   },
   {
-   "symbol": "ICITF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
    "symbol": "IDYN",
    "exchange": "NYSE",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -1790,14 +1703,6 @@
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
    "names": [
     "Morgan Stanley India Investment Fund Inc"
-   ]
-  },
-  {
-   "symbol": "IMLP",
-   "exchange": "BATS",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
    ]
   },
   {
@@ -1881,32 +1786,8 @@
    ]
   },
   {
-   "symbol": "JJATF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
-   "symbol": "JJCTF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
    "symbol": "JJE",
    "exchange": "NYSE ARCA",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
-   "symbol": "JJGTF",
-   "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Barclays Bank PLC"
@@ -1921,30 +1802,6 @@
    ]
   },
   {
-   "symbol": "JJMTF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
-   "symbol": "JJNTF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
-   "symbol": "JJOFF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
    "symbol": "JJP",
    "exchange": "NYSE ARCA",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -1953,40 +1810,8 @@
    ]
   },
   {
-   "symbol": "JJPFF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
    "symbol": "JJS",
    "exchange": "NYSE ARCA",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
-   "symbol": "JJSSF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
-   "symbol": "JJTFF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
-   "symbol": "JJUFF",
-   "exchange": "PINK",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Barclays Bank PLC"
@@ -2062,14 +1887,6 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "PLUS Korea Manufacturing Core Alliance Index"
-   ]
-  },
-  {
-   "symbol": "KMET",
-   "exchange": "NYSE ARCA",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "KraneShares Electrification Metals"
    ]
   },
   {
@@ -2385,6 +2202,14 @@
    ]
   },
   {
+   "symbol": "NBNTS",
+   "exchange": "OTCMKTS",
+   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
+   "names": [
+    "Unit (Blanton Ser LLC Unit)"
+   ]
+  },
+  {
    "symbol": "NEMD",
    "exchange": "NYSE",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -2601,22 +2426,6 @@
    ]
   },
   {
-   "symbol": "PGDDF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
-   "symbol": "PGMFF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
    "symbol": "PHD",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -2793,14 +2602,6 @@
    ]
   },
   {
-   "symbol": "SBUG",
-   "exchange": "NYSE ARCA",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
-   ]
-  },
-  {
    "symbol": "SCA",
    "exchange": "NASDAQ",
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
@@ -2846,14 +2647,6 @@
    "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
    "names": [
     "Scopus Video Networks Ltd. Foreign"
-   ]
-  },
-  {
-   "symbol": "SGGFF",
-   "exchange": "PINK",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "Barclays Bank PLC"
    ]
   },
   {
@@ -3359,37 +3152,22 @@
   "ABI",
   "ACII",
   "ADX",
-  "AIRL",
-  "AMDS",
   "AMSPF",
   "APRD",
   "APRM",
   "APRQ",
-  "AQGX",
   "ARB",
   "ARCX",
-  "ARKA",
-  "ARKC",
-  "ARKZ",
   "ARMH",
   "ASA",
   "ASG",
   "ATC",
   "AVGG",
-  "AWYX",
-  "AYTEF",
-  "BALTF",
   "BBAGF",
-  "BBIP",
-  "BBSA",
   "BCV",
   "BECBF",
-  "BFIT",
-  "BKIV",
   "BKKCF",
   "BKT",
-  "BKWO",
-  "BLLD",
   "BLPEF",
   "BMCBF",
   "BMJJF",
@@ -3400,12 +3178,6 @@
   "BNKD",
   "BNKU",
   "BREW",
-  "BSCN",
-  "BSCO",
-  "BSJN",
-  "BSJO",
-  "BSMO",
-  "BTEC",
   "BVAL",
   "CAM",
   "CAS",
@@ -3415,53 +3187,39 @@
   "CEFZ",
   "CEGX",
   "CEM",
-  "CETHF",
-  "CFCV",
   "CFYFF",
   "CGBLF",
   "CHMCF",
   "CHNYF",
   "CHRI",
-  "CID",
   "CIK",
   "CIRC",
-  "CIZ",
   "CLUB",
   "CLYAF",
-  "CNCR",
   "COOL",
-  "COWTF",
   "CPAI",
   "CPSN",
   "CPSR",
   "CPTFF",
   "CRCO",
   "CRF",
-  "CROC",
   "CRTC",
-  "CSA",
   "CSETF",
-  "CSML",
   "CSRE",
   "CTR",
   "DAXXF",
   "DBXKF",
   "DBXRF",
   "DBXXF",
-  "DDG",
   "DEMWF",
   "DIVY",
   "DJXSF",
   "DNP",
   "DRGN",
-  "DTOX",
   "DULL",
-  "DWAT",
   "DWCR",
-  "DWMC",
   "DXMEF",
   "DYNI",
-  "EBQZF",
   "ECSTF",
   "ECYAF",
   "EEA",
@@ -3472,48 +3230,30 @@
   "EMSWF",
   "ERCTF",
   "EROTF",
-  "ESCR",
-  "ESEB",
   "ESEFF",
   "ESGX",
-  "ESHY",
   "ETSLF",
-  "FAIL",
   "FAX",
-  "FDCE",
-  "FDGR",
-  "FDTB",
-  "FDVL",
   "FIEE",
   "FIEGF",
-  "FINE",
   "FIXT",
-  "FLRU",
   "FLXI",
   "FLYT",
   "FSSTF",
   "GAB",
   "GAM",
-  "GBBEF",
   "GERM",
   "GGM",
   "GHEE",
-  "GIGI",
   "GIGL",
   "GLDN",
   "GLDW",
   "GOP",
-  "GPOW",
-  "GRNTF",
   "GRW",
   "GSOL",
   "GTIP",
   "HAPR",
   "HBCGF",
-  "HEWG",
-  "HJAN",
-  "HJUL",
-  "HOCT",
   "HOLD",
   "HQH",
   "HRZSF",
@@ -3523,38 +3263,26 @@
   "HZBRF",
   "HZMXF",
   "IAF",
-  "IAUF",
-  "IBBJ",
   "IBCA",
-  "IBHD",
-  "IBMM",
   "IBTE",
   "ICDXF",
   "ICDZF",
-  "ICITF",
   "ICNGF",
-  "ICSTF",
-  "IDHD",
   "IDJEF",
   "IDSEF",
   "IEDGF",
   "IERNF",
-  "IEXXF",
   "IG",
   "IGREF",
   "IHIIF",
   "IHRPF",
   "IHSXF",
   "IIQSF",
-  "IMLP",
   "IMPRF",
   "IMVEF",
-  "INAV",
   "IND",
   "INVN",
-  "IPDP",
   "IPPIF",
-  "IPPP",
   "IRSVF",
   "ISAGF",
   "ISCKF",
@@ -3578,64 +3306,29 @@
   "ITRYF",
   "IUNTF",
   "IUYBF",
-  "IVECF",
-  "IVEG",
   "IVTRF",
-  "IWTR",
   "IWTSF",
   "IXLCF",
-  "JAND",
-  "JANQ",
-  "JGLD",
   "JHDG",
   "JHI",
   "JHS",
-  "JJATF",
-  "JJCTF",
-  "JJGTF",
-  "JJMTF",
-  "JJNTF",
-  "JJOFF",
-  "JJPFF",
-  "JJSSF",
-  "JJTFF",
-  "JJUFF",
-  "JPX",
-  "JULD",
-  "JULQ",
   "JUSA",
   "KF",
-  "LBJ",
   "LDER",
   "LDRI",
   "LDRR",
-  "LFAX",
-  "LFAZ",
-  "LFBB",
   "LFBD",
-  "LIAV",
-  "LIAW",
-  "LIAX",
   "LIAY",
   "LOGO",
   "LWLDF",
-  "LXRCF",
   "LYXRF",
   "LYYXF",
   "MCI",
   "MCVT",
-  "MDCP",
   "MFM",
   "MGF",
   "MIN",
-  "MLTUF",
   "MMT",
-  "MNTL",
-  "MOHR",
-  "MOTE",
-  "MRJOF",
-  "MSVX",
-  "MVP",
   "MXF",
   "MXXEF",
   "MYHA",
@@ -3644,28 +3337,18 @@
   "NGHT",
   "NNY",
   "NTRL",
-  "NTZG",
   "NUV",
-  "NXTV",
   "NYNY",
-  "OCTD",
-  "OCTQ",
   "OIA",
   "OILD",
   "OIO",
   "ONG",
   "PAI",
   "PANG",
-  "PBDM",
-  "PBEE",
-  "PBND",
-  "PBSM",
   "PCF",
   "PCI",
   "PCS",
   "PEO",
-  "PGDDF",
-  "PGMFF",
   "PIM",
   "PLCQF",
   "PMFXF",
@@ -3675,38 +3358,21 @@
   "PPT",
   "PRMAF",
   "PRXG",
-  "PSMB",
-  "PSMC",
-  "PSMG",
-  "PSMM",
-  "PTEC",
   "PTLC",
-  "QCON",
-  "QPFF",
-  "QQQN",
-  "QYLE",
-  "RAYS",
   "REFA",
   "REMG",
-  "RNEW",
-  "RODE",
   "RVT",
   "SABA",
-  "SBM",
-  "SBUG",
   "SCA",
   "SEA",
   "SGACF",
-  "SGGFF",
   "SGGSF",
   "SIRLF",
   "SIXD",
   "SMCP",
-  "SMI",
   "SMRZF",
   "SOR",
   "SPCL",
-  "SPYB",
   "SSDVF",
   "SSGAF",
   "SSGGF",
@@ -3714,11 +3380,8 @@
   "SSHXF",
   "SSTMF",
   "SSWRF",
-  "STCN",
   "STSB",
-  "STXEF",
   "STXX",
-  "SUBZ",
   "SWOOF",
   "SWZ",
   "SXERF",
@@ -3730,22 +3393,15 @@
   "TIPD",
   "TMED",
   "TMH",
-  "TRES",
   "TSI",
-  "TSLH",
   "TSLI",
   "TY",
   "UBSVF",
   "USA",
-  "USBF",
   "USMD",
   "USUTF",
-  "VGDSF",
   "VGDVF",
   "VGFFF",
-  "VGFUF",
-  "VGRRF",
-  "VIRS",
   "VLGDF",
   "VNFTF",
   "VNRDF",
@@ -3753,12 +3409,8 @@
   "VTA",
   "VTG",
   "VUKEF",
-  "WBAT",
-  "WBND",
-  "WEIX",
   "WINC",
   "WMTEF",
-  "WNDY",
   "WR",
   "WSDDF",
   "WSEMF",
@@ -3766,14 +3418,8 @@
   "WTIU",
   "WZRD",
   "XDAP",
-  "XDJA",
-  "XDJL",
-  "XDOC",
-  "XLISF",
   "XMMEF",
   "XMTCF",
-  "XSFDF",
-  "XSGIF",
   "XTNAF",
   "XXV",
   "ZKPLF",
@@ -3846,133 +3492,133 @@
   }
  ],
  "productTypes": {
-  "ETF": 7645,
+  "ETF": 7466,
   "ETN": 19,
   "CEF": 37,
   "ETP": 33,
   "ETC": 8
  },
  "strategies": {
-  "EQUITY": 3155,
-  "THEMATIC": 521,
-  "COMMODITY": 145,
-  "UNKNOWN": 793,
-  "BOND": 1178,
-  "ALTERNATIVE": 158,
-  "MULTI_ASSET": 73,
-  "LEVERAGED": 642,
-  "LEVERAGED_INVERSE": 156,
+  "EQUITY": 3074,
+  "THEMATIC": 508,
+  "COMMODITY": 141,
+  "UNKNOWN": 775,
+  "BOND": 1151,
+  "ALTERNATIVE": 154,
+  "MULTI_ASSET": 62,
+  "LEVERAGED": 636,
+  "LEVERAGED_INVERSE": 154,
   "INVERSE": 47,
-  "SINGLE_STOCK": 78,
-  "BUFFER": 354,
+  "SINGLE_STOCK": 77,
+  "BUFFER": 356,
   "DEFINED_OUTCOME": 74,
-  "CRYPTO": 140,
-  "OPTION_INCOME": 155,
+  "CRYPTO": 135,
+  "OPTION_INCOME": 146,
   "COVERED_CALL": 45,
   "MONEY_MARKET": 28
  },
  "retirementClasses": {
-  "STANDARD": 4717,
-  "KOMPLEX": 1392,
-  "NICHT_EINORDENBAR": 710,
-  "SEHR_KOMPLEX": 923
+  "STANDARD": 4588,
+  "KOMPLEX": 1369,
+  "NICHT_EINORDENBAR": 692,
+  "SEHR_KOMPLEX": 914
  },
- "leveragedInverse": 845,
- "singleStock": 454,
+ "leveragedInverse": 837,
+ "singleStock": 449,
  "currencies": {
-  "USD": 7012,
+  "USD": 6833,
   "CNY": 728,
   "AUD": 2
  },
  "exchanges": {
-  "SHE": 398,
+  "SHE": 400,
   "SHG": 424,
-  "NYSE": 2834,
-  "BATS": 1747,
-  "NYSE ARCA": 264,
-  "NASDAQ": 1415,
-  "PINK": 524,
+  "NYSE": 2833,
+  "BATS": 1669,
+  "NYSE ARCA": 247,
+  "NASDAQ": 1365,
+  "PINK": 488,
   "AMEX": 31,
-  "OTCMKTS": 68,
+  "OTCMKTS": 70,
   "OTCQB": 8,
   "OTCD": 2,
-  "OTCGREY": 16,
   "EXPM": 9,
+  "OTCGREY": 15,
   "OTCBB": 1,
   "NMFQS": 1
  },
  "countries": {
-  "CN": 822,
-  "US": 6920
+  "CN": 824,
+  "US": 6739
  },
  "assetClasses": {
-  "EQUITY": 4797,
-  "COMMODITY": 180,
-  "UNKNOWN": 921,
-  "BOND": 1229,
-  "MULTI_ASSET": 300,
-  "CRYPTO": 188,
+  "EQUITY": 4694,
+  "COMMODITY": 176,
+  "UNKNOWN": 895,
+  "BOND": 1201,
+  "MULTI_ASSET": 287,
+  "CRYPTO": 183,
   "REAL_ESTATE": 74,
   "MONEY_MARKET": 53
  },
  "regions": {
-  "CHINA": 879,
-  "GERMANY": 8,
-  "USA": 1483,
-  "UNKNOWN": 4328,
-  "GLOBAL": 429,
-  "JAPAN": 42,
-  "INTERNATIONAL": 223,
-  "EMERGING_MARKETS": 174,
-  "EUROPE": 78,
+  "CHINA": 878,
+  "GERMANY": 6,
+  "USA": 1454,
+  "UNKNOWN": 4202,
+  "GLOBAL": 421,
+  "JAPAN": 41,
+  "INTERNATIONAL": 220,
+  "EMERGING_MARKETS": 169,
+  "EUROPE": 75,
   "INDIA": 23,
-  "DEVELOPED_EX_US": 73,
+  "DEVELOPED_EX_US": 72,
   "VIETNAM": 2
  },
  "issuers": {
-  "UNKNOWN": 3335,
-  "Invesco": 323,
-  "UBS": 16,
+  "UNKNOWN": 3270,
+  "Invesco": 305,
+  "UBS": 15,
   "Corgi": 205,
-  "Columbia Threadneedle": 24,
+  "Columbia Threadneedle": 26,
   "PGIM": 70,
-  "Pacer": 75,
-  "Goldman Sachs": 51,
+  "Pacer": 74,
+  "Goldman Sachs": 49,
   "Leverage Shares": 116,
-  "Tradr": 83,
-  "GraniteShares": 88,
-  "Direxion": 142,
-  "Innovator": 195,
-  "REX Shares (T-Rex)": 48,
-  "Tema": 17,
-  "BlackRock (iShares)": 749,
-  "VictoryShares": 33,
-  "American Century": 21,
-  "Global X": 141,
-  "ProShares": 174,
-  "State Street (SPDR)": 228,
-  "First Trust": 335,
+  "Tradr": 82,
+  "GraniteShares": 86,
+  "Direxion": 141,
+  "Innovator": 181,
+  "REX Shares (T-Rex)": 47,
+  "Tema": 16,
+  "BlackRock (iShares)": 733,
+  "VictoryShares": 27,
+  "American Century": 19,
+  "Global X": 134,
+  "ProShares": 171,
+  "State Street (SPDR)": 226,
+  "First Trust": 332,
   "Bitwise": 14,
-  "VanEck": 100,
-  "Simplify": 42,
-  "WisdomTree": 115,
+  "VanEck": 97,
+  "Simplify": 41,
+  "WisdomTree": 113,
   "SoFi": 5,
-  "KraneShares": 42,
-  "Defiance": 103,
-  "Amundi": 10,
+  "KraneShares": 38,
+  "Defiance": 100,
+  "Amundi": 7,
   "Alger": 5,
-  "21Shares": 18,
+  "21Shares": 15,
   "ARK": 12,
-  "DWS (Xtrackers)": 73,
+  "DWS (Xtrackers)": 67,
   "Avantis": 31,
-  "J.P. Morgan": 92,
+  "J.P. Morgan": 89,
   "Baron": 7,
-  "Principal": 19,
+  "Principal": 18,
   "Grayscale": 16,
-  "Vanguard": 157,
+  "Vanguard": 156,
   "MFS": 15,
-  "AllianceBernstein": 22,
-  "Franklin Templeton": 71,
+  "AllianceBernstein": 21,
+  "Franklin Templeton": 70,
   "DoubleLine": 13,
   "VegaShares": 7,
   "Cohen & Steers": 13,
@@ -3981,38 +3627,38 @@
   "Fidelity": 82,
   "Schwab": 34,
   "HSBC": 1,
-  "Nuveen": 62,
-  "Amundi (Lyxor)": 7,
+  "Nuveen": 60,
+  "Amundi (Lyxor)": 6,
   "T. Rowe Price": 36
  },
  "statuses": {
-  "ACTIVE": 7356,
-  "REVIEW": 378,
+  "ACTIVE": 7202,
+  "REVIEW": 353,
   "INACTIVE": 8
  },
- "unknownClassification": 921,
+ "unknownClassification": 895,
  "intelligence": {
-  "publicUniverse": 6220,
+  "publicUniverse": 6094,
   "coverage": {
    "costs": {
-    "count": 3994,
-    "ratio": 0.6421
+    "count": 3964,
+    "ratio": 0.6505
    },
    "aum": {
-    "count": 3829,
-    "ratio": 0.6156
+    "count": 3799,
+    "ratio": 0.6234
    },
    "holdings": {
-    "count": 3829,
-    "ratio": 0.6156
+    "count": 3799,
+    "ratio": 0.6234
    },
    "domicile": {
-    "count": 3829,
-    "ratio": 0.6156
+    "count": 3799,
+    "ratio": 0.6234
    },
    "ucitsStatus": {
-    "count": 3829,
-    "ratio": 0.6156
+    "count": 3799,
+    "ratio": 0.6234
    },
    "isin": {
     "count": 0,
@@ -4122,8 +3768,8 @@
     "id": "TIINGO",
     "type": "MARKET_DATA_PROVIDER",
     "status": "HEALTHY",
-    "lastSuccessfulFetch": "2026-11-05",
-    "items": 7732,
+    "lastSuccessfulFetch": "2026-11-10",
+    "items": 7553,
     "fields": "Kurse, Ausschüttungen, Splits, Namen"
    },
    {

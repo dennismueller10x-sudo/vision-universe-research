@@ -1,6 +1,6 @@
 {
  "version": "vorsorge-monitor-1.0.0",
- "asOf": "2026-11-05",
+ "asOf": "2026-11-10",
  "events": [
   {
    "type": "COST_CHANGE",
@@ -65,30 +65,71 @@
    "category": "PRODUCT_CHANGE"
   },
   {
+   "type": "NEW_LISTING",
+   "symbol": "158076",
+   "text": "158076 ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE",
+   "relevance": "HIGH"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "HYB",
+   "text": "HYB ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE",
+   "relevance": "HIGH"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "LYR",
+   "text": "LYR ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE",
+   "relevance": "HIGH"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "LYRI",
+   "text": "LYRI ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE",
+   "relevance": "HIGH"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "SIX",
+   "text": "SIX ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE",
+   "relevance": "HIGH"
+  },
+  {
    "type": "COST_CHANGE",
    "symbol": null,
-   "count": 513,
+   "count": 511,
    "relevance": "LOW",
    "asOf": "2026-03-26",
-   "text": "513 weitere Listings mit geänderter Expense Ratio laut US-Prospekt (z. B. FXED, YOLO, BBP, SNAV, PJFV).",
+   "text": "511 weitere Listings mit geänderter Expense Ratio laut US-Prospekt (z. B. FXED, YOLO, BBP, SNAV, PJFV).",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": null,
+   "count": 198,
+   "relevance": "LOW",
+   "asOf": "2026-11-10",
+   "text": "198 weitere Listings nicht mehr im Verzeichnis (z. B. ADFI, AIRL, AMDS, AQGX, ARKA).",
    "category": "PRODUCT_CHANGE"
   },
   {
    "type": "NEW_LISTING",
    "symbol": null,
-   "count": 250,
-   "text": "250 ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).",
-   "asOf": "2026-11-05",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "DATA_REVIEW",
-   "symbol": null,
-   "count": 2,
+   "count": 14,
    "relevance": "LOW",
-   "asOf": "2026-11-05",
-   "text": "2 Listings wegen unvollständiger Daten zurück in Prüfung (z. B. GLNK, ZCSH).",
-   "category": "DATA_UPDATE"
+   "asOf": "2026-11-10",
+   "text": "14 weitere Listings neu im Verzeichnis (z. B. 158081, BBLX, DFIT, DLAY, IBDCF).",
+   "category": "PRODUCT_CHANGE"
   }
  ],
  "unmonitored": [
@@ -118,31 +159,1524 @@
  },
  "rawEvents": [
   {
-   "type": "STATUS_CHANGE",
-   "symbol": "GLNK",
-   "from": "ACTIVE",
-   "to": "REVIEW",
-   "text": "Status von GLNK: ACTIVE → REVIEW.",
-   "asOf": "2026-11-05",
-   "category": "PRODUCT_CHANGE"
-  },
-  {
-   "type": "STATUS_CHANGE",
-   "symbol": "ZCSH",
-   "from": "ACTIVE",
-   "to": "REVIEW",
-   "text": "Status von ZCSH: ACTIVE → REVIEW.",
-   "asOf": "2026-11-05",
+   "type": "NEW_LISTING",
+   "symbol": "158076",
+   "text": "158076 ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
    "category": "PRODUCT_CHANGE"
   },
   {
    "type": "NEW_LISTING",
-   "symbol": null,
-   "count": 250,
-   "text": "250 ETF-Listings neu im Verzeichnis (Aufnahme des Tiingo-ETF-Universums).",
-   "asOf": "2026-11-05",
+   "symbol": "158081",
+   "text": "158081 ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "BBLX",
+   "text": "BBLX ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "DFIT",
+   "text": "DFIT ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "DLAY",
+   "text": "DLAY ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "HYB",
+   "text": "HYB ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "IBDCF",
+   "text": "IBDCF ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "INJC",
+   "text": "INJC ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "IVIDF",
+   "text": "IVIDF ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "LYR",
+   "text": "LYR ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "LYRI",
+   "text": "LYRI ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "NBNTS",
+   "text": "NBNTS ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "RECD",
+   "text": "RECD ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "RECM",
+   "text": "RECM ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "SIX",
+   "text": "SIX ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "VCADF",
+   "text": "VCADF ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "VGLAF",
+   "text": "VGLAF ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "WRARF",
+   "text": "WRARF ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "NEW_LISTING",
+   "symbol": "XDLR",
+   "text": "XDLR ist neu im ETF-Verzeichnis.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "ADFI",
+   "text": "ADFI ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "AIRL",
+   "text": "AIRL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "AMDS",
+   "text": "AMDS ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "AQGX",
+   "text": "AQGX ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "ARKA",
+   "text": "ARKA ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "ARKC",
+   "text": "ARKC ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "ARKZ",
+   "text": "ARKZ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "AWYX",
+   "text": "AWYX ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BBIP",
+   "text": "BBIP ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BBSA",
+   "text": "BBSA ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BFIT",
+   "text": "BFIT ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BIGB",
+   "text": "BIGB ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BLLD",
+   "text": "BLLD ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BSCN",
+   "text": "BSCN ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BSCO",
+   "text": "BSCO ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BSJN",
+   "text": "BSJN ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BSJO",
+   "text": "BSJO ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BSMO",
+   "text": "BSMO ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BTEC",
+   "text": "BTEC ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CA",
+   "text": "CA ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CFCV",
+   "text": "CFCV ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CHIH",
+   "text": "CHIH ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CHIU",
+   "text": "CHIU ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CID",
+   "text": "CID ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CIL",
+   "text": "CIL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CRIT",
+   "text": "CRIT ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CROC",
+   "text": "CROC ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CSA",
+   "text": "CSA ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CSML",
+   "text": "CSML ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CVSE",
+   "text": "CVSE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "DDG",
+   "text": "DDG ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "DFND",
+   "text": "DFND ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "DWAT",
+   "text": "DWAT ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "DWMC",
+   "text": "DWMC ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "EAOA",
+   "text": "EAOA ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "EAOK",
+   "text": "EAOK ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "EAOM",
+   "text": "EAOM ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "EAOR",
+   "text": "EAOR ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "EMFQ",
+   "text": "EMFQ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "EMTL",
+   "text": "EMTL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "ESCR",
+   "text": "ESCR ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "ESEB",
+   "text": "ESEB ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "ESHY",
+   "text": "ESHY ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FAIL",
+   "text": "FAIL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FDGR",
+   "text": "FDGR ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FDVL",
+   "text": "FDVL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FINE",
+   "text": "FINE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FLRU",
+   "text": "FLRU ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "GCLN",
+   "text": "GCLN ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "GPOW",
+   "text": "GPOW ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "HEWG",
+   "text": "HEWG ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "HJAN",
+   "text": "HJAN ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "HJUL",
+   "text": "HJUL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "HOCT",
+   "text": "HOCT ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IAUF",
+   "text": "IAUF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IBBJ",
+   "text": "IBBJ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IBHD",
+   "text": "IBHD ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IBHE",
+   "text": "IBHE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IBMM",
+   "text": "IBMM ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IBMN",
+   "text": "IBMN ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IBTF",
+   "text": "IBTF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IDHD",
+   "text": "IDHD ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "INAV",
+   "text": "INAV ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "INFR",
+   "text": "INFR ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IPDP",
+   "text": "IPDP ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IPPP",
+   "text": "IPPP ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IVEG",
+   "text": "IVEG ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IVRA",
+   "text": "IVRA ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IWTR",
+   "text": "IWTR ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JAND",
+   "text": "JAND ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JANQ",
+   "text": "JANQ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JGLD",
+   "text": "JGLD ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JPX",
+   "text": "JPX ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JULD",
+   "text": "JULD ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JULQ",
+   "text": "JULQ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "KALL",
+   "text": "KALL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "KBUY",
+   "text": "KBUY ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "KGRO",
+   "text": "KGRO ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LBJ",
+   "text": "LBJ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LEAD",
+   "text": "LEAD ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LFAX",
+   "text": "LFAX ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LFAZ",
+   "text": "LFAZ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LFBB",
+   "text": "LFBB ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LGCF",
+   "text": "LGCF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LIAV",
+   "text": "LIAV ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LIAW",
+   "text": "LIAW ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LIAX",
+   "text": "LIAX ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MBNE",
+   "text": "MBNE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MDCP",
+   "text": "MDCP ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MNTL",
+   "text": "MNTL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MOHR",
+   "text": "MOHR ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MOTE",
+   "text": "MOTE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MVP",
+   "text": "MVP ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "NTZG",
+   "text": "NTZG ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "NXTV",
+   "text": "NXTV ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "OCTD",
+   "text": "OCTD ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "OCTQ",
+   "text": "OCTQ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PBDM",
+   "text": "PBDM ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PBEE",
+   "text": "PBEE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PBND",
+   "text": "PBND ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PBSM",
+   "text": "PBSM ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PSMB",
+   "text": "PSMB ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PSMC",
+   "text": "PSMC ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PSMG",
+   "text": "PSMG ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PSMM",
+   "text": "PSMM ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PTEC",
+   "text": "PTEC ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PUTD",
+   "text": "PUTD ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "QCON",
+   "text": "QCON ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "QHDG",
+   "text": "QHDG ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "QPFF",
+   "text": "QPFF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "QQJG",
+   "text": "QQJG ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "QQQN",
+   "text": "QQQN ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "QRFT",
+   "text": "QRFT ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "QYLE",
+   "text": "QYLE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "RAYS",
+   "text": "RAYS ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "RNEW",
+   "text": "RNEW ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "RODE",
+   "text": "RODE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "SBM",
+   "text": "SBM ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "SMI",
+   "text": "SMI ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "SPYB",
+   "text": "SPYB ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "STCN",
+   "text": "STCN ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "SUBZ",
+   "text": "SUBZ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "TRES",
+   "text": "TRES ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "TXSS",
+   "text": "TXSS ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "USBF",
+   "text": "USBF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "USRD",
+   "text": "USRD ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "VWID",
+   "text": "VWID ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "WBAT",
+   "text": "WBAT ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "WEIX",
+   "text": "WEIX ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "WNDY",
+   "text": "WNDY ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "WTIB",
+   "text": "WTIB ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "XDJA",
+   "text": "XDJA ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "XDJL",
+   "text": "XDJL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "XDOC",
+   "text": "XDOC ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "XVOL",
+   "text": "XVOL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "AYTEF",
+   "text": "AYTEF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BALTF",
+   "text": "BALTF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BKIV",
+   "text": "BKIV ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "BKWO",
+   "text": "BKWO ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CETHF",
+   "text": "CETHF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CIZ",
+   "text": "CIZ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CNCR",
+   "text": "CNCR ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "COWTF",
+   "text": "COWTF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "CZAR",
+   "text": "CZAR ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "DTOX",
+   "text": "DTOX ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "EBQZF",
+   "text": "EBQZF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "EFMSF",
+   "text": "EFMSF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FBZ",
+   "text": "FBZ ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FDCE",
+   "text": "FDCE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FDTB",
+   "text": "FDTB ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FORL",
+   "text": "FORL ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "FYXGF",
+   "text": "FYXGF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "GBBEF",
+   "text": "GBBEF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "GIGI",
+   "text": "GIGI ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "GRNTF",
+   "text": "GRNTF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "ICITF",
+   "text": "ICITF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "ICSTF",
+   "text": "ICSTF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IEXXF",
+   "text": "IEXXF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IMLP",
+   "text": "IMLP ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "IVECF",
+   "text": "IVECF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJATF",
+   "text": "JJATF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJCTF",
+   "text": "JJCTF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJGTF",
+   "text": "JJGTF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJMTF",
+   "text": "JJMTF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJNTF",
+   "text": "JJNTF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJOFF",
+   "text": "JJOFF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJPFF",
+   "text": "JJPFF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJSSF",
+   "text": "JJSSF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJTFF",
+   "text": "JJTFF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "JJUFF",
+   "text": "JJUFF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "KMET",
+   "text": "KMET ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "LXRCF",
+   "text": "LXRCF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MLTUF",
+   "text": "MLTUF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MLUZF",
+   "text": "MLUZF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MRJOF",
+   "text": "MRJOF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MSVX",
+   "text": "MSVX ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "MVPS",
+   "text": "MVPS ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "NSCR",
+   "text": "NSCR ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "NXTUF",
+   "text": "NXTUF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PGDDF",
+   "text": "PGDDF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "PGMFF",
+   "text": "PGMFF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "RMIF",
+   "text": "RMIF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "RVRB",
+   "text": "RVRB ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "RYSE",
+   "text": "RYSE ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "SBUG",
+   "text": "SBUG ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "SGGFF",
+   "text": "SGGFF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "STGF",
+   "text": "STGF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "STXEF",
+   "text": "STXEF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "TSLH",
+   "text": "TSLH ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "UBSCF",
+   "text": "UBSCF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "VGDSF",
+   "text": "VGDSF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "VGFUF",
+   "text": "VGFUF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "VGRRF",
+   "text": "VGRRF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "VIRS",
+   "text": "VIRS ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "WBND",
+   "text": "WBND ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "XLISF",
+   "text": "XLISF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "XSFDF",
+   "text": "XSFDF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
+   "category": "PRODUCT_CHANGE"
+  },
+  {
+   "type": "REMOVED",
+   "symbol": "XSGIF",
+   "text": "XSGIF ist nicht mehr im Verzeichnis des Anbieters.",
+   "asOf": "2026-11-10",
    "category": "PRODUCT_CHANGE"
   }
  ],
- "costEvents": 518
+ "costEvents": 516
 }
