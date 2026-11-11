@@ -1583,6 +1583,35 @@ jobs:
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
         run: node scripts/technical/world/browser-qa.mjs --out "$RUNNER_TEMP/technical-qa"
+      - name: Pruefbericht sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: technical-browser-qa
+          path: ${{ runner.temp }}/technical-qa
+          if-no-files-found: ignore
+          retention-days: 14
+
+  technical-akademie:
+    # 11.11.2026: aus `technical` herausgeloest (909 s allein), laeuft parallel zu dessen Tests und Browser-Pruefung.
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.technical == 'true'
+    # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
+    concurrency:
+      group: technical-ci-${{ github.ref_name }}-akademie
+      cancel-in-progress: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
+        run: |
+          npm install --prefix /tmp/tc-qa playwright@1.58.2 axe-core@4.10.3
+          /tmp/tc-qa/node_modules/.bin/playwright install --with-deps chromium
       - name: Strategie-Akademie (360/390/1280 px, Hell/Dunkel, alle 32 Lektionen)
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
@@ -1591,7 +1620,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: technical-browser-qa
+          name: technical-akademie-qa
           path: ${{ runner.temp }}/technical-qa
           if-no-files-found: ignore
           retention-days: 14
@@ -1895,12 +1924,21 @@ jobs:
 
   # --- shell: vormals shell-ci.yml
   shell-shell:
+    name: shell-shell (${{ matrix.id }})
     needs: auswahl
     if: needs.auswahl.outputs.shell == 'true'
     # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    # 11.11.2026: Chromium (Handy, Desktop) und WebKit laufen parallel statt nacheinander (vorher ein Job, rund 35 min).
     concurrency:
-      group: shell-qa-${{ github.ref }}-shell
+      group: shell-qa-${{ github.ref }}-shell-${{ matrix.id }}
       cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { id: chromium-handy, engine: chromium, viewports: '390x844,430x932,768x1024', legal: chromium }
+          - { id: chromium-desktop, engine: chromium, viewports: '1024x768,1440x900', legal: '' }
+          - { id: webkit, engine: webkit, viewports: '390x844,430x932,1024x768', legal: webkit }
     # Browser aus dem Playwright-Image statt apt-get bei jedem Lauf - Begruendung beim Job vu3-regression.
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -1925,35 +1963,31 @@ jobs:
         run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/shell-release"
-      - name: Browser QA (Chromium 390, 430, 768, 1024, 1440 · WebKit iPhone 390, 430 and 1024)
+      - name: Browser QA (${{ matrix.engine }} ${{ matrix.viewports }})
         env:
           PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+          QA_ENGINE: ${{ matrix.engine }}
+          QA_VIEWPORTS: ${{ matrix.viewports }}
         run: |
           mkdir -p /tmp/shell-evidence
           node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/shell-release" --port=8765 > /tmp/shell-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
-          chromium_status=0
-          webkit_status=0
-          node scripts/quality/shell-browser-qa.mjs --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/chromium || chromium_status=$?
-          node scripts/quality/shell-browser-qa.mjs --engine=webkit --viewports=390x844,430x932,1024x768 --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/webkit || webkit_status=$?
-          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
-      - name: App-QA Rechtliches & Infos (App-Hülle mit CSP, App-UA, echter Tipp je Menüeintrag; Chromium und WebKit)
+          node scripts/quality/shell-browser-qa.mjs --engine="$QA_ENGINE" --viewports="$QA_VIEWPORTS" --url=http://127.0.0.1:8765 --out="/tmp/shell-evidence/$QA_ENGINE"
+      - name: App-QA Rechtliches & Infos (App-Hülle mit CSP, App-UA, echter Tipp je Menüeintrag)
+        if: matrix.legal != ''
         env:
           PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+          QA_LEGAL: ${{ matrix.legal }}
         run: |
           mkdir -p /tmp/shell-evidence
-          chromium_status=0
-          webkit_status=0
-          node scripts/quality/app-legal-menu-qa.mjs --browser chromium --out /tmp/shell-evidence/app-legal-chromium.json || chromium_status=$?
-          node scripts/quality/app-legal-menu-qa.mjs --browser webkit --out /tmp/shell-evidence/app-legal-webkit.json || webkit_status=$?
-          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+          node scripts/quality/app-legal-menu-qa.mjs --browser "$QA_LEGAL" --out "/tmp/shell-evidence/app-legal-$QA_LEGAL.json"
       - name: Preserve screenshots and results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: shell-browser-evidence
+          name: shell-browser-evidence-${{ matrix.id }}
           path: /tmp/shell-evidence
           if-no-files-found: warn
 
