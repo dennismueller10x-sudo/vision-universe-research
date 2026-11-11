@@ -2,11 +2,11 @@
  "schema": "vu-eligibility-catchup-1",
  "id": "eligibility-catchup-2026-11-11",
  "prevSha256": "50465da8b6cf0caf1d7ac53fca29a88aa14b6bed635691d661e5c586386d44ee",
- "sourceRun": "lokal 11.11.2026 (Kette build-us-eligibility, apply-name-layer-class DEBT, apply-exchange-directory) gegen us-security-master-1.3.0 mit dem SEC-Delisting-Register aus #1816 (130 Saetze)",
+ "sourceRun": "lokal 11.11.2026 nach dem Stamm-Lauf (security-master-weekly commit=true, Commit 39f2075; Kette build-us-eligibility, apply-name-layer-class DEBT, apply-exchange-directory) gegen us-security-master-1.3.0 mit dem SEC-Delisting-Register aus #1816",
  "productUniverseBefore": 6308,
  "productUniverseAfter": 6309,
  "counts": {
-  "changes": 113,
+  "changes": 201,
   "leaveProduct": 0,
   "enterProduct": 1
  },
@@ -58,6 +58,14 @@
  },
  "changes": [
   {
+   "securityId": "ref_FL",
+   "ticker": "FL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_ALE",
    "ticker": "ALE",
    "from": "ELIGIBLE",
@@ -74,8 +82,48 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_EQC",
+   "ticker": "EQC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_IMGN",
+   "ticker": "IMGN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_NWLI",
+   "ticker": "NWLI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_ODP",
    "ticker": "ODP",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TSRI",
+   "ticker": "TSRI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ELSE",
+   "ticker": "ELSE",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -100,6 +148,14 @@
   {
    "securityId": "ref_ZEUS",
    "ticker": "ZEUS",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HMNF",
+   "ticker": "HMNF",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -162,8 +218,24 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_CHL",
+   "ticker": "CHL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_HTBK",
    "ticker": "HTBK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HTLF",
+   "ticker": "HTLF",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -194,6 +266,14 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_TRUE",
+   "ticker": "TRUE",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_CSCI",
    "ticker": "CSCI",
    "from": "ELIGIBLE",
@@ -202,8 +282,40 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_CHU",
+   "ticker": "CHU",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_MBT",
+   "ticker": "MBT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_NURO",
    "ticker": "NURO",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CEO",
+   "ticker": "CEO",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SGEN",
+   "ticker": "SGEN",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -234,6 +346,30 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_SP",
+   "ticker": "SP",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TTM",
+   "ticker": "TTM",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_KNL",
+   "ticker": "KNL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_EBTC",
    "ticker": "EBTC",
    "from": "ELIGIBLE",
@@ -244,6 +380,14 @@
   {
    "securityId": "ref_WBD",
    "ticker": "WBD",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GENE",
+   "ticker": "GENE",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -274,8 +418,32 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_VEDL",
+   "ticker": "VEDL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_MOFG",
    "ticker": "MOFG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BEST",
+   "ticker": "BEST",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HOLI",
+   "ticker": "HOLI",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -290,8 +458,48 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_ALIM",
+   "ticker": "ALIM",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_PVG",
+   "ticker": "PVG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_AL",
+   "ticker": "AL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_THR",
    "ticker": "THR",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SPLK",
+   "ticker": "SPLK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_IBTX",
+   "ticker": "IBTX",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -306,6 +514,30 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_MRTX",
+   "ticker": "MRTX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_MIXT",
+   "ticker": "MIXT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ZIONL",
+   "ticker": "ZIONL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_RVNC",
    "ticker": "RVNC",
    "from": "ELIGIBLE",
@@ -314,8 +546,24 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_ARAV",
+   "ticker": "ARAV",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_TBPH",
    "ticker": "TBPH",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_RDUS",
+   "ticker": "RDUS",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -354,6 +602,14 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_ALPN",
+   "ticker": "ALPN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_PVBC",
    "ticker": "PVBC",
    "from": "ELIGIBLE",
@@ -362,8 +618,48 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_AGR",
+   "ticker": "AGR",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_ADVM",
    "ticker": "ADVM",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_VIVKD",
+   "ticker": "VIVKD",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_LSXMA",
+   "ticker": "LSXMA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_LSXMK",
+   "ticker": "LSXMK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_LSXMB",
+   "ticker": "LSXMB",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -386,6 +682,22 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_LN",
+   "ticker": "LN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_EVBG",
+   "ticker": "EVBG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_REVG",
    "ticker": "REVG",
    "from": "ELIGIBLE",
@@ -402,8 +714,40 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_ARD",
+   "ticker": "ARD",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_ICCH",
    "ticker": "ICCH",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_PIXY",
+   "ticker": "PIXY",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GOEV",
+   "ticker": "GOEV",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SOL",
+   "ticker": "SOL",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -426,6 +770,22 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_MOR",
+   "ticker": "MOR",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ASLN",
+   "ticker": "ASLN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_NKLA",
    "ticker": "NKLA",
    "from": "ELIGIBLE",
@@ -434,8 +794,32 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_BYU",
+   "ticker": "BYU",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BMTX",
+   "ticker": "BMTX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_VTAK",
    "ticker": "VTAK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_WKEY",
+   "ticker": "WKEY",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -458,8 +842,32 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_GHSI",
+   "ticker": "GHSI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_AXLA",
+   "ticker": "AXLA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_APLT",
    "ticker": "APLT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_KRTX",
+   "ticker": "KRTX",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -490,6 +898,22 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_SACC",
+   "ticker": "SACC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CALT",
+   "ticker": "CALT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_ETWO",
    "ticker": "ETWO",
    "from": "ELIGIBLE",
@@ -498,8 +922,40 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_FREE",
+   "ticker": "FREE",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_QHUOY",
+   "ticker": "QHUOY",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GOCOQ",
+   "ticker": "GOCOQ",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_VSTA",
    "ticker": "VSTA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_FRLN",
+   "ticker": "FRLN",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -524,6 +980,14 @@
   {
    "securityId": "ref_SCCC",
    "ticker": "SCCC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ASTR",
+   "ticker": "ASTR",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -594,6 +1058,14 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_STEC",
+   "ticker": "STEC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_RILYK",
    "ticker": "RILYK",
    "from": "ELIGIBLE",
@@ -610,6 +1082,30 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_KRNL",
+   "ticker": "KRNL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CHAA",
+   "ticker": "CHAA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_EDR",
+   "ticker": "EDR",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_TRML",
    "ticker": "TRML",
    "from": "ELIGIBLE",
@@ -620,6 +1116,22 @@
   {
    "securityId": "ref_ATCOL",
    "ticker": "ATCOL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_MMV",
+   "ticker": "MMV",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_WKME",
+   "ticker": "WKME",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -666,8 +1178,40 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_LILM",
+   "ticker": "LILM",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SOVO",
+   "ticker": "SOVO",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_PFTA",
+   "ticker": "PFTA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_FNA",
    "ticker": "FNA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SDIG",
+   "ticker": "SDIG",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -698,8 +1242,24 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_RGF",
+   "ticker": "RGF",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_FOSLL",
    "ticker": "FOSLL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HHGC",
+   "ticker": "HHGC",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -714,8 +1274,48 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_SEVCF",
+   "ticker": "SEVCF",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_ARBKL",
    "ticker": "ARBKL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_AHI",
+   "ticker": "AHI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_LCW",
+   "ticker": "LCW",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ONYX",
+   "ticker": "ONYX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BNOX",
+   "ticker": "BNOX",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -730,8 +1330,56 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_RCFA",
+   "ticker": "RCFA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BLEU",
+   "ticker": "BLEU",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_FEXD",
+   "ticker": "FEXD",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_ZIMV",
    "ticker": "ZIMV",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GAQ",
+   "ticker": "GAQ",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_LATG",
+   "ticker": "LATG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GHIX",
+   "ticker": "GHIX",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -746,6 +1394,14 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_TRINL",
+   "ticker": "TRINL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_PET",
    "ticker": "PET",
    "from": "ELIGIBLE",
@@ -754,8 +1410,24 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_AKLI",
+   "ticker": "AKLI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_RWAYZ",
    "ticker": "RWAYZ",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HUDA",
+   "ticker": "HUDA",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -788,6 +1460,14 @@
   {
    "securityId": "ref_AACT",
    "ticker": "AACT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_WRNT",
+   "ticker": "WRNT",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -890,6 +1570,14 @@
    "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
   },
   {
+   "securityId": "ref_NNAG",
+   "ticker": "NNAG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
    "securityId": "ref_PTNM",
    "ticker": "PTNM",
    "from": "ELIGIBLE",
@@ -900,6 +1588,14 @@
   {
    "securityId": "ref_QRTEA",
    "ticker": "QRTEA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_RYZB",
+   "ticker": "RYZB",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
@@ -932,6 +1628,14 @@
   {
    "securityId": "ref_TBHC",
    "ticker": "TBHC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TCGL",
+   "ticker": "TCGL",
    "from": "ELIGIBLE",
    "to": "REVIEW",
    "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
