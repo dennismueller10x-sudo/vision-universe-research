@@ -163,8 +163,23 @@ Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsAr
    Aufmacher 16:9 (1600 × 900), im Text `"bild"` je Abschnitt, Porträts mit `"stil": "portrait"`.
 5. Bauen: `node products/insights/build.mjs`; Prüfung: `node --test "products/insights/tests/*.test.mjs"` (aktuell gebaut,
    Pflichtfelder, Bildnachweise, Quellen, Wortwahl, JSON-LD, Magazin-Dateien, Übersicht/Feed/Sitemap vollständig).
-6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Unter jedem Artikel steht „Mit KI-Unterstützung
-   recherchiert und geschrieben, von der Redaktion geprüft“.
+6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Kein KI-Hinweis am Text (Owner 10.11.2026):
+   der Owner liest jeden Artikel und trägt die redaktionelle Verantwortung; KI-Bilder behalten „KI-Bild“.
+
+**Tageslauf ohne Owner (ab 11.11.2026):** Zwei geplante Aufgaben wecken an jedem Werktag die dauerhafte Sitzung
+„Insights-Tageslauf (dauerhaft)“: um 4:47 Uhr (Frühlauf, Artikel gegen 6 Uhr: Tagesthema aus der US-Sitzung des Vortags)
+und um 10:47 Uhr (Mittagslauf, Artikel gegen 12 Uhr, vor der US-Eröffnung: Nebenwert oder Zukunftsthema). Die Sitzung
+schreibt nach `.claude/skills/insights-tageslauf/SKILL.md` je Lauf einen Artikel, prüft und veröffentlicht bei grüner CI
+selbst. Die Artikel erzählen die Geschichte hinter dem Kursausschlag, damit sie auch nach einer Gegenbewegung stimmen.
+**Öffentlich:** `/insights/` liegt als einziger Bereich ohne Passwortmaske (`scripts/access-gate/build.mjs`,
+`PUBLIC_PREFIXES`) und ist für Google freigegeben (`robots`-Meta, `NewsArticle`- und `BreadcrumbList`-JSON-LD,
+`/robots.txt` mit Sitemap). Solche
+Artikel tragen `"pruefung": "automatisch"` (intern: strengere Prüfregeln, z. B. drei Quellen) und erscheinen wie alle
+Artikel unter „Redaktion Vision Universe“, ohne KI-Hinweis (Owner-Entscheidung 10.11.2026: der Owner liest jeden
+Artikel nach, meldet Korrekturen und trägt die redaktionelle Verantwortung). Bilder nach dem Skill (Pressematerial,
+Firmenwebsite, KI-Bild mit „KI-Bild“); App-Screens als Aufmacher nur als Notlösung. Lieber kein Artikel
+als ein schlechter: ohne drei Quellen, bei roten Tests oder heiklen Themen bricht der Lauf ab und meldet nur.
+Pausieren oder ändern: in der App unter den geplanten Aufgaben („Insights-Tageslauf“).
 
 **Heft online stellen:** `python3 products/insights/heft_veroeffentlichen.py docs/publishing/ausgaben/<ordner> <NN>`
 (PDF, verkleinerte Seitenbilder, Cover nach `insights/magazin/nr-<NN>/`), dann Eintrag mit Titel, Unterzeile und Inhalt in

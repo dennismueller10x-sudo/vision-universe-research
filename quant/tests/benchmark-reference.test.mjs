@@ -34,17 +34,8 @@ test("the benchmark is SPY with role BENCHMARK_REFERENCE", () => {
 
 test("PRODUCT_UNIVERSE_BEFORE == PRODUCT_UNIVERSE_AFTER: SPY is in no product or gate list", () => {
   const isSpy = (x) => x && (x.securityId === "ref_SPY" || x.ticker === "SPY" || x.s === "SPY" || x.m === "ref_SPY");
-  /* Produktuniversum (Company Master), Gate-Universum der Ablage, Marktfaehigkeit,
-     Security-Master-Entscheidungen, Aktienliste: SPY steht in keiner. */
-  const product = resolveProductUniverse(ROOT);
-  assert.equal(product.securities.some(isSpy), false, "SPY im Produktuniversum");
-  assert.equal(json("quant/data/market/scale/universe-FULL_UNIVERSE.json").securities.some(isSpy), false, "SPY im Gate-Universum");
-  const cap = json("quant/data/universe/market-capability.json");
-  assert.equal(cap.members.some(isSpy), false, "SPY in der Marktfaehigkeit");
-  assert.equal(cap.members.length, product.securities.length, "Marktfaehigkeit und Produktuniversum sind dieselbe Menge");
-  const decisions = json("quant/data/market/security-master/eligibility.json").decisions || [];
-  assert.equal((Array.isArray(decisions) ? decisions : Object.values(decisions)).some(isSpy), false, "SPY im Security Master");
-  assert.equal(existsSync(join(ROOT, "quant/data/market/discover-series-long/ref_SPY.json")), false, "SPY in den Titelreihen der Studien");
+  /* Der Stand der Listen (SPY in keiner, Marktfaehigkeit = Produktuniversum) ist seit 10.11.2026 die Datenqualitaetsregel
+     DQ-PQ-3 (core/product-quality.js), kein Test mehr. */
   /* Die Hinzufuegung betrifft nur die Mitglieder der vollen Ablage. */
   const members = [{ ticker: "AAA", securityId: "ref_AAA" }];
   assert.deepEqual(withBenchmark("GATE_100", members), members, "ein Teil-Gate bekommt keine Benchmark");

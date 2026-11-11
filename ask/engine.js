@@ -177,11 +177,132 @@
      Nur Aufbereitung dessen, was die Übersetzung und die Rechnung oben liefern; keine eigene Rechnung über die Daten. */
 
   /** Regel-Chips „So hat Atlas übersetzt“: je Filter ein Chip (Text aus der Screener-Beschreibung), dazu Methode und Aktien. */
+  /* ---- Klartext fuer Chips und Trefferzeilen (Owner-Vorlage „NEU“, 10.11.2026):
+     „Börsenwert 0,3–2 Mrd. $“, „KGV bis 15“, „mehr Kasse als Schulden“ statt Operatorzeichen. */
+  var NAMES = { marketCap: 'Börsenwert', netCash: 'Kasse netto', pe: 'KGV', cash: 'Kasse', totalDebt: 'Schulden' };
+  /** Kurzer deutscher Name einer Kennzahl (englische Kurzform → deutsches Label). */
+  function name(id) {
+    if (NAMES[id]) return NAMES[id];
+    var f = Fields.field(id);
+    if (!f) return id;
+    return f.short && f.short !== f.en ? f.short : f.label;
+  }
+  function deNum(v, digits) {
+    var r = Number(v.toFixed(digits === undefined ? 2 : digits));
+    return r.toLocaleString('de-DE', { maximumFractionDigits: digits === undefined ? 2 : digits });
+  }
+  var MONEY_UNITS = [[1e12, 'Bio.'], [1e9, 'Mrd.'], [1e6, 'Mio.'], [1e3, 'Tsd.']];
+  function moneyUnit(v) { var a = Math.abs(v); for (var i = 0; i < MONEY_UNITS.length; i++) if (a >= MONEY_UNITS[i][0]) return MONEY_UNITS[i]; return [1, '']; }
+  /** Dollarbetrag mit drei gueltigen Stellen: 1,56 Mrd. $, 203 Mio. $. */
+  function money(v, unit) {
+    if (typeof v !== 'number' || !isFinite(v)) return '–';
+    var u = unit || moneyUnit(v), x = v / u[0], a = Math.abs(x);
+    /* geschuetzte Leerzeichen: „5,31 Mrd. $“ bricht nicht um */
+    return (v < 0 ? '−' : '') + deNum(Math.abs(x), a >= 100 ? 0 : a >= 10 ? 1 : 2) + (u[1] ? '\u00a0' + u[1] : '') + '\u00a0$';
+  }
+  /** Wert einer Trefferzeile: Dollar mit drei Stellen, sonst wie im Screener. */
+  function value(id, v) { var f = Fields.field(id); return f && f.unit === 'usd' ? money(v) : Fields.format(id, v); }
+  var GROUP_ICON = { size: 'grid', valuation: 'target', balance: 'check', growth: 'line', profitability: 'line', momentum: 'line', technical: 'line', company: 'list' };
+  var OP_WORD = { lt: 'unter', lte: 'bis', gt: 'über', gte: 'ab' };
+  /** Chip-Text einer Regel in Worten. */
+  function chipText(filter, dict) {
+    var f = Fields.field(filter.field);
+    if (!f || f.kind === 'enum' || f.kind === 'bool' || f.tech) return Fields.describeFilter(filter, dict);
+    if (filter.field === 'netCash' && filter.value === 0 && OP_WORD[filter.op]) return /^g/.test(filter.op) ? 'mehr Kasse als Schulden' : 'mehr Schulden als Kasse';
+    var nm = name(filter.field);
+    var plain = function (v) { return f.unit === 'usd' ? money(v) : f.unit === 'x' ? deNum(v, 1) : Fields.format(filter.field, v); };
+    if (filter.op === 'between') {
+      if (f.unit === 'usd') {
+        var u = moneyUnit(Math.max(Math.abs(filter.value), Math.abs(filter.value2)));
+        return nm + ' ' + money(filter.value, u).replace(/[\s\u00a0]+\S*[\s\u00a0]\$$/, '').replace(/[\s\u00a0]\$$/, '') + '–' + money(filter.value2, u);
+      }
+      return nm + ' ' + plain(filter.value) + '–' + plain(filter.value2);
+    }
+    return OP_WORD[filter.op] ? nm + ' ' + OP_WORD[filter.op] + ' ' + plain(filter.value) : Fields.describeFilter(filter, dict);
+  }
+
+  /* ---- Vorlesen (Owner 10.11.2026: Stimme klang schlecht). Aus der Bildschirmzeile wird gesprochene Sprache:
+     „96,7 Mrd. $“ → „96,7 Milliarden Dollar“, „+58,9 %“ → „plus 58,9 Prozent“, „3,8 → 96,7“ → „3,8 bis 96,7“,
+     „GJ 2026“ → „Geschäftsjahr 2026“. Danach in kurze Sätze geteilt (iOS bricht lange Äußerungen ab). */
+  var SPOKEN = [
+    [/(\d)\s*Bio\.?(?=[\s ]|$)/g, '$1 Billionen'], [/(\d)\s*Mrd\.?(?=[\s ]|$)/g, '$1 Milliarden'],
+    [/(\d)\s*Mio\.?(?=[\s ]|$)/g, '$1 Millionen'], [/(\d)\s*Tsd\.?(?=[\s ]|$)/g, '$1 Tausend'],
+    [/\bGJ\b\.?/g, 'Geschäftsjahr'], [/\bz\.\s?B\./g, 'zum Beispiel'], [/\bca\./g, 'etwa'], [/\bbzw\./g, 'beziehungsweise'],
+    [/\bUS-/g, 'U S '], [/\bKGV\b/g, 'K G V'], [/\bSEC\b/g, 'S E C'], [/\bTTM\b/g, 'letzte zwölf Monate'],
+    [/\s*→\s*/g, ' bis '], [/(\d)\s*[–-]\s*(\d)/g, '$1 bis $2'], [/≤/g, ' bis '], [/≥/g, ' ab '], [/</g, ' unter '], [/>/g, ' über '],
+    [/[+]\s?(\d)/g, 'plus $1'], [/[−]\s?(\d)/g, 'minus $1'], [/(\d)\s*%/g, '$1 Prozent'], [/(\d)\s*\$/g, '$1 Dollar'], [/\$/g, 'Dollar'],
+    [/\s*·\s*/g, ', '], [/[„“"»«]/g, ''], [/\s*×\s*/g, ' mal ']
+  ];
+  /** Text zum Vorlesen: ausgeschriebene Einheiten, kurze Sätze (höchstens maxSentences). */
+  function speechText(text, maxSentences) {
+    var t = String(text || '').replace(/ /g, ' ');
+    SPOKEN.forEach(function (r) { t = t.replace(r[0], r[1]); });
+    t = t.replace(/\s+/g, ' ').trim();
+    if (!t) return [];
+    /* Satzende nur vor Großbuchstaben, Ziffer oder Textende - Dezimalkommas und Kürzel bleiben ganz. */
+    var parts = t.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ0-9])/).map(function (x) { return x.trim(); }).filter(Boolean);
+    return parts.slice(0, maxSentences || 4);
+  }
+  /* Rangfolge der Systemstimmen (keine Zusatzkosten): neuronale/erweiterte zuerst, alte Kompaktstimmen zuletzt. */
+  var VOICE_RANK = [/premium/i, /natural|neural/i, /erweitert|enhanced|verbessert/i, /^google deutsch/i, /online/i, /google/i, /siri/i,
+    /\b(anna|petra|helena|marlene|katja|conrad|amala|seraphina|florian)\b/i];
+  /** Beste deutsche Stimme aus speechSynthesis.getVoices() - oder null. */
+  function pickVoice(voices) {
+    var de = (voices || []).filter(function (v) { return v && /^de([-_]|$)/i.test(v.lang || ''); });
+    function score(v) {
+      var r = VOICE_RANK.length;
+      for (var i = 0; i < VOICE_RANK.length; i++) if (VOICE_RANK[i].test(v.name || '')) { r = i; break; }
+      if (/compact|eloquence|espeak/i.test(v.name || '')) r += 10;
+      return r - (/^de[-_]DE/i.test(v.lang) ? 0.5 : 0) - (v.localService === false ? 0.2 : 0);
+    }
+    return de.length ? de.slice().sort(function (a, b) { return score(a) - score(b); })[0] : null;
+  }
+
+  /* ---- Chartbild-Karte (Owner 10.11.2026): deutsches Datum und Preisleiter aus dem Hauptszenario. */
+  var MONTHS = ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sept.', 'Okt.', 'Nov.', 'Dez.'];
+  /** „2026-11-09“ → „9. Nov. 2026“. */
+  function dateLong(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || ''));
+    return m ? Number(m[3]) + '. ' + MONTHS[Number(m[2]) - 1] + ' ' + m[1] : String(iso || '');
+  }
+  function okNum(v) { return typeof v === 'number' && isFinite(v) && v > 0; }
+  /**
+   * Marken der Preisleiter, nach Preis aufsteigend (Wortwahl nach docs/legal/WORTWAHL.md: „Zone laut Methode“,
+   * „Ungültig-Marke laut Methode“, keine Kursziele).
+   * @returns {{items:[{kind, label, lo, hi, main?}], min, max}|null}
+   */
+  function ladder(x) {
+    var p = x && x.primaryScenario;
+    if (!x || !p) return null;
+    var bear = p.direction === 'BEARISH', items = [];
+    if (okNum(p.invalidation)) items.push({ kind: 'invalid', label: 'Ungültig-Marke laut Methode', prefix: 'Schluss ' + (bear ? 'über ' : 'unter '), lo: p.invalidation, hi: p.invalidation });
+    if (p.entryZone && okNum(p.entryZone[0]) && okNum(p.entryZone[1])) items.push({ kind: 'zone', main: true, label: 'Zone laut Methode · Hauptszenario', lo: Math.min(p.entryZone[0], p.entryZone[1]), hi: Math.max(p.entryZone[0], p.entryZone[1]) });
+    if (okNum(x.close)) items.push({ kind: 'close', label: 'Letzter Schluss', lo: x.close, hi: x.close });
+    if (p.target1 && okNum(p.target1[0]) && okNum(p.target1[1])) items.push({ kind: 'zone', label: (bear ? 'Untere' : 'Obere') + ' Zone laut Methode', lo: Math.min(p.target1[0], p.target1[1]), hi: Math.max(p.target1[0], p.target1[1]) });
+    if (okNum(p.confirmation)) items.push({ kind: 'confirm', label: 'Bestätigungs-Marke laut Methode', lo: p.confirmation, hi: p.confirmation });
+    if (items.length < 2) return null;
+    items.sort(function (a, b) { return (a.lo + a.hi) - (b.lo + b.hi); });
+    return { items: items, min: Math.min.apply(null, items.map(function (i) { return i.lo; })), max: Math.max.apply(null, items.map(function (i) { return i.hi; })) };
+  }
+  /**
+   * Eine kurze Pflichtzeile aus assets/legal-notices.json (notices.setup): Satzteile wörtlich übernommen,
+   * ergänzt um die Pflichtangaben Methode und Regelversion, Datenstand, Link zur Methodik.
+   */
+  function setupLine(notice, facts) {
+    if (!notice || !notice.text) return null;
+    var lead = notice.text.split(/[,:]/)[0];
+    var zones = (notice.text.match(/[^.:]*Zonen laut Methode[^.]*\./) || [''])[0].trim();
+    var link = (notice.links || []).filter(function (l) { return /methodik/i.test(l[0] + ' ' + l[1]); })[0] || null;
+    var f = facts || {};
+    return { text: lead + ' ' + (f.method || '') + (f.version ? ' (Regelversion ' + f.version + ')' : '') + (f.asOf ? ', Stand ' + f.asOf : '') + '. ' + zones,
+      link: link ? { label: link[0], href: link[1] } : null };
+  }
+
   function rules(result, dict) {
     var out = [];
     if (result && result.query) Query.filters(result.query).forEach(function (f) {
       var fld = Fields.field(f.field);
-      out.push({ kind: 'filter', id: f.id, field: f.field, text: Fields.describeFilter(f, dict), source: fld ? fld.source : null });
+      out.push({ kind: 'filter', id: f.id, field: f.field, text: chipText(f, dict), icon: fld && GROUP_ICON[fld.group] || 'filter', source: fld ? fld.source : null });
     });
     if (result && result.supertrader) out.push({ kind: 'strategy', text: (result.supertrader.mode === 'require' ? 'erfüllt: ' : 'Status: ') + (STRATEGY_LABELS[result.supertrader.strategy] || result.supertrader.strategy) });
     (result && result.tickers || []).forEach(function (t) { out.push({ kind: 'ticker', text: 'Aktie: ' + t }); });
@@ -212,7 +333,7 @@
       bars: pts.map(function (x) { return [String(x.fy), x.v]; }), asOf: f.asOf || null };
   }
 
-  var API = { rules: rules, allOf: allOf, secTrack: secTrack, explain: explain, failure: failure, runScreen: runScreen, runStock: runStock, runChartbild: runChartbild, chartbildSentence: chartbildSentence, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
+  var API = { dateLong: dateLong, ladder: ladder, setupLine: setupLine, speechText: speechText, pickVoice: pickVoice, rules: rules, chipText: chipText, name: name, money: money, value: value, allOf: allOf, secTrack: secTrack, explain: explain, failure: failure, runScreen: runScreen, runStock: runStock, runChartbild: runChartbild, chartbildSentence: chartbildSentence, strategyIndex: strategyIndex, screenerUrl: screenerUrl,
     columnsFor: columnsFor, STRATEGY_LABELS: STRATEGY_LABELS };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   global.VUAskEngine = API;

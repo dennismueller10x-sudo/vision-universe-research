@@ -47,7 +47,7 @@
       lead: "Reihen aus dem Kursverlauf: Hochs, Trends und Ausbrüche.",
       rows: ["new-52-week-highs", "momentum-leaders", "relative-strength", "trend-quality", "breakout-watch", "comeback", "fallen-angels"] },
     { id: "unternehmen", label: "Unternehmen", kicker: "Unternehmen", title: "Firmen mit\nstarken Zahlen",
-      lead: "Reihen aus den Jahresabschlüssen (SEC), ohne Fachwissen erklärt.",
+      lead: "Reihen aus den Jahresabschlüssen (Pflichtmeldungen), ohne Fachwissen erklärt.",
       rows: ["umsatz-waechst-stark", "fallen-angels", "gewinne-beschleunigen", "fundamentale-turnarounds", "starke-bilanz-wachstum",
         "margen-werden-staerker", "cashflow-maschinen", "qualitaet-wachstum", "profitables-wachstum", "langfristige-compounder", "qualitaet-zum-preis"] },
     { id: "themen", label: "Themen", kicker: "Themen", title: "Themen und\nMegatrends",

@@ -141,22 +141,4 @@ test("untouched pinned conflict rows produce nonzero INCONSISTENT in an isolated
 });
 
 
-test("current committed measurement carries a verdict consistent with its actual recorded evidence", () => {
-  const current = JSON.parse(readFileSync(new URL("quant/data/providers/total-return-verification.json", ROOT), "utf8"));
-  assert.equal(current.schemaVersion, "total-return-verification-1.0.0");
-  assert.equal(current.tolerance, 0.002);
-  assert.ok(Number.isInteger(current.minimumEvents) && current.minimumEvents > 0);
-  assert.equal(current.seriesChecked, current.series.length);
-  assert.equal(current.dividendEventsChecked, current.series.reduce((n,s) => n + s.dividendEvents, 0));
-  assert.equal(current.dividendEventsMatching, current.series.reduce((n,s) => n + s.matching, 0));
-  assert.ok(current.dividendEventsMatching >= 0 && current.dividendEventsMatching <= current.dividendEventsChecked);
-  for (const row of current.series) {
-    assert.equal(row.mismatches.length, row.dividendEvents - row.matching);
-    for (const event of row.mismatches) assert.ok(event.error >= current.tolerance);
-  }
-  const expected = current.dividendEventsChecked < current.minimumEvents ? "INSUFFICIENT_EVIDENCE"
-    : current.dividendEventsMatching === current.dividendEventsChecked ? "TOTAL_RETURN_CONFIRMED"
-    : current.dividendEventsMatching === 0 ? "SPLIT_ADJUSTED_ONLY" : "INCONSISTENT";
-  assert.equal(current.verdict, expected);
-  if (current.verdict === "TOTAL_RETURN_CONFIRMED") assert.ok(current.worstRelativeError < current.tolerance);
-});
+/* Urteil der committeten Messung passt zu ihrer Evidenz: Datenqualitaetsregel DQ-PQ-9 (core/product-quality.js), kein Test mehr. */

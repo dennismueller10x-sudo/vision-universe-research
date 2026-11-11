@@ -135,3 +135,74 @@ test("/ask/ zeigt Fehler ueber VUAskEngine.failure und bricht nach einer Frist a
   assert.match(src, /AbortController/);
   assert.doesNotMatch(src, /\.then\(function \(r\) \{ return r\.json\(\); \}\)/);
 });
+
+/* ------------------------- Darstellung und Stimme nach Owner-Vorlage (10.11.2026) */
+
+test("Chips sprechen Klartext: Börsenwert 0,3–2 Mrd. $, KGV bis 15, mehr Kasse als Schulden", () => {
+  const t = (field, op, value, value2) => Ask.chipText({ field, op, value, value2 }).replace(/ /g, " ");
+  assert.equal(t("marketCap", "between", 3e8, 2e9), "Börsenwert 0,3–2 Mrd. $");
+  assert.equal(t("pe", "lte", 15), "KGV bis 15");
+  assert.equal(t("netCash", "gt", 0), "mehr Kasse als Schulden");
+  assert.equal(t("netCash", "lt", 0), "mehr Schulden als Kasse");
+  assert.equal(t("marketCap", "gt", 1e10), "Börsenwert über 10 Mrd. $");
+  const r = Ask.rules(screen(null));
+  assert.ok(r.every((x) => x.kind !== "filter" || x.icon), "jede Regel hat ein Symbol");
+});
+
+test("Beträge mit drei Stellen und ohne Umbruch zwischen Zahl und Einheit", () => {
+  assert.equal(Ask.money(1.56e9), "1,56 Mrd. $");
+  assert.equal(Ask.money(2.03e8), "203 Mio. $");
+  assert.equal(Ask.money(-5.31e9), "−5,31 Mrd. $");
+  assert.equal(Ask.name("marketCap"), "Börsenwert");
+  assert.equal(Ask.name("netCash"), "Kasse netto");
+});
+
+test("Vorlesen: Einheiten ausgeschrieben, kurze Sätze, Dezimalzahlen bleiben ganz", () => {
+  assert.deepEqual(Ask.speechText("Der Free Cashflow von NVIDIA stieg von 3,8 Mrd. $ im Geschäftsjahr 2023 auf 96,7 Mrd. $ im Geschäftsjahr 2026. Zuletzt +58,9 % zum Vorjahr."),
+    ["Der Free Cashflow von NVIDIA stieg von 3,8 Milliarden Dollar im Geschäftsjahr 2023 auf 96,7 Milliarden Dollar im Geschäftsjahr 2026.", "Zuletzt plus 58,9 Prozent zum Vorjahr."]);
+  assert.deepEqual(Ask.speechText("Börsenwert 0,3–2 Mrd. $ · KGV ≤ 15"), ["Börsenwert 0,3 bis 2 Milliarden Dollar, K G V bis 15"]);
+  assert.equal(Ask.speechText("Eins. Zwei. Drei. Vier. Fünf.", 3).length, 3);
+  assert.deepEqual(Ask.speechText(""), []);
+});
+
+test("Stimme: neuronale/erweiterte deutsche Stimme vor Kompaktstimme, nie eine fremde Sprache", () => {
+  const v = (name, lang = "de-DE", extra = {}) => ({ name, lang, ...extra });
+  assert.equal(Ask.pickVoice([v("Anna"), v("Anna (Erweitert)"), v("Samantha", "en-US")]).name, "Anna (Erweitert)");
+  assert.equal(Ask.pickVoice([v("Microsoft Hedda - German"), v("Microsoft Katja Online (Natural) - German (Germany)")]).name, "Microsoft Katja Online (Natural) - German (Germany)");
+  assert.equal(Ask.pickVoice([v("Google Deutsch"), v("eSpeak German", "de")]).name, "Google Deutsch");
+  assert.equal(Ask.pickVoice([v("Samantha", "en-US")]), null);
+});
+
+/* ------------------------------------------- Chartbild-Karte (Owner 10.11.2026) */
+
+test("Chartbild: deutsches Datum", () => {
+  assert.equal(Ask.dateLong("2026-11-09"), "9. Nov. 2026");
+  assert.equal(Ask.dateLong("2026-03-01"), "1. März 2026");
+});
+
+test("Chartbild: Preisleiter von unten nach oben, Wortwahl laut WORTWAHL.md", () => {
+  const x = { close: 178.67, primaryScenario: { direction: "BULLISH", entryZone: [163.5, 169], invalidation: 150.5, confirmation: 243.37, target1: [187.5, 193] } };
+  const lad = Ask.ladder(x);
+  assert.deepEqual(lad.items.map((i) => i.kind), ["invalid", "zone", "close", "zone", "confirm"]);
+  assert.equal(lad.items[1].main, true, "Zone des Hauptszenarios ist hervorgehoben");
+  assert.equal(lad.min, 150.5); assert.equal(lad.max, 243.37);
+  const words = JSON.stringify(lad.items);
+  for (const bad of ["Zielzone", "Kursziel", "Stopp", "Einstieg", "Kaufzone"]) assert.ok(!words.includes(bad), bad);
+  assert.match(words, /Zone laut Methode/); assert.match(words, /Ungültig-Marke laut Methode/);
+  assert.equal(lad.items[0].prefix, "Schluss unter ");
+  const bear = Ask.ladder({ close: 50, primaryScenario: { direction: "BEARISH", entryZone: [52, 55], invalidation: 60, target1: [40, 42] } });
+  assert.equal(bear.items.find((i) => i.kind === "invalid").prefix, "Schluss über ");
+  assert.equal(Ask.ladder({ close: 10, primaryScenario: null }), null);
+});
+
+test("Chartbild: eine Pflichtzeile aus legal-notices.json (Methode, Regelversion, Stand, Methodik-Link)", async () => {
+  const fs = await import("node:fs");
+  const notices = JSON.parse(fs.readFileSync(new URL("../../assets/legal-notices.json", import.meta.url), "utf8")).notices;
+  const line = Ask.setupLine(notices.setup.text ? { text: notices.setup.text, links: [["Methodik, Quellen und Interessen", "https://x/methodik"]] } : null,
+    { method: "Chartbild", version: "vu-ti-api-3.0.0", asOf: "9. Nov. 2026" });
+  assert.ok(line.text.startsWith(notices.setup.text.split(/[,:]/)[0]), "Satzanfang wörtlich aus der Hinweisdatei");
+  for (const part of ["Chartbild", "Regelversion vu-ti-api-3.0.0", "Stand 9. Nov. 2026", "Zonen laut Methode sind Rechenpunkte"]) assert.ok(line.text.includes(part), part);
+  assert.equal(line.link.href, "https://x/methodik");
+  const src = fs.readFileSync(new URL("../app.js", import.meta.url), "utf8");
+  assert.ok(!/Zielzone/.test(src), "kein „Zielzone“ in der Atlas-Oberfläche");
+});

@@ -80,6 +80,19 @@ function datenBox(t, a) {
 
 // Bild im Text: groß über die Spalte oder als Porträt neben dem Text; Bildnachweis immer sichtbar
 const figur = (b) => `<figure class="in-figur${b.stil === 'portrait' ? ' in-figur--portrait' : ''}"><img src="${b.src}" alt="${esc(b.alt)}" loading="lazy"><figcaption>${b.text ? esc(b.text) + ' · ' : ''}Bild: ${esc(b.quelle)}</figcaption></figure>`;
+// Prüfvermerk: "redaktion" = vom Owner gelesen; "automatisch" = Tageslauf, der Owner liest nach und gibt Korrekturen.
+// Owner-Entscheidung 10.11.2026: kein KI-Hinweis am Text; die Redaktion (Owner) liest jeden Artikel und trägt die
+// redaktionelle Verantwortung. KI-Bilder behalten ihre Bildzeile „KI-Bild“.
+// Ohne redaktionelle Verantwortung muss KI-erzeugter Text erkennbar sein (Art. 50 Abs. 4 KI-Verordnung).
+const PRUEFVERMERK = {
+  redaktion: '',
+  automatisch: '',
+};
+// Aufmacher: Pressebild oder, ohne passendes Bild (bild.typ "app"), drei App-Screens der ersten Aktie auf Neongrün
+const aufmacher = (a) => (a.bild.typ === 'app'
+  ? `<figure class="in-bild in-bild--app" aria-label="${esc(a.bild.alt)}">${(a.appScreens?.[a.ticker[0]] || []).map((s) => `<img src="${s.src}" alt="${esc(s.label)}-Ansicht in der Vision-Universe-App" width="390" height="844">`).join('')}<figcaption>Vision-Universe-App</figcaption></figure>`
+  : `<figure class="in-bild"><img src="${a.bild.src}" alt="${esc(a.bild.alt)}" width="1600" height="900" fetchpriority="high"><figcaption>${nachweis(a.bild)}</figcaption></figure>`);
+const bildSrc = (a) => (a.bild.typ === 'app' ? a.appScreens?.[a.ticker[0]]?.[0]?.src : a.bild.src);
 const nachweis = (b) => (b.ki ? 'KI-Bild' : `Bild: ${esc(b.quelle)}`);
 
 const appBox = (a) => `<section class="in-app vu-box vu-box--lime" aria-label="Über Vision Universe">
@@ -99,9 +112,11 @@ function head({ title, description, canonical, image, type = 'website', extra = 
 <meta name="theme-color" content="#ffffff">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <link rel="canonical" href="${SITE}${canonical}">
 <meta property="og:type" content="${type}">
 <meta property="og:site_name" content="Vision Universe">
+<meta property="og:locale" content="de_DE">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${SITE}${canonical}">
@@ -127,29 +142,35 @@ const fuss = `<footer class="in-fuss"><p>${esc(LEGAL.notices.editorial.text)}</p
 
 function artikelSeite(a) {
   const url = `/insights/${a.slug}/`;
+  const iso = `${a.datum}T${a.zeit || '13:00'}:00+01:00`;
   const ld = {
     '@context': 'https://schema.org', '@type': 'NewsArticle', headline: a.seoTitel || a.titel, description: a.teaser,
-    image: [SITE + a.bild.src], datePublished: `${a.datum}T13:00:00+01:00`, dateModified: `${a.datum}T13:00:00+01:00`,
+    image: [SITE + bildSrc(a)], datePublished: iso, dateModified: iso, articleSection: a.rubrik, isAccessibleForFree: true,
     inLanguage: 'de-DE', mainEntityOfPage: SITE + url, keywords: a.tags.join(', '),
     author: { '@type': 'Organization', name: 'Redaktion Vision Universe', url: SITE + '/' },
     publisher: { '@type': 'Organization', name: 'Vision Universe', logo: { '@type': 'ImageObject', url: SITE + '/assets/vision-universe-logo-web.png' } },
     about: a.ticker.map((t) => ({ '@type': 'Corporation', name: a.daten.aktien[t].name, tickerSymbol: t })),
   };
-  const extra = `<meta property="article:published_time" content="${a.datum}T13:00:00+01:00">\n<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>\n`;
+  const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Vision Universe', item: SITE + '/' },
+    { '@type': 'ListItem', position: 2, name: 'Insights', item: SITE + '/insights/' },
+    { '@type': 'ListItem', position: 3, name: a.titel, item: SITE + url }] };
+  const ldTag = (o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, '\\u003c')}</script>`;
+  const extra = `<meta property="article:published_time" content="${iso}">\n<meta property="article:section" content="${esc(a.rubrik)}">\n${a.tags.map((t) => `<meta property="article:tag" content="${esc(t)}">`).join('\n')}\n${ldTag(ld)}\n${ldTag(crumbs)}\n`;
   const body = a.abschnitte.map((s, i) => {
     const kopf = s.h ? `<h2>${esc(s.h)}</h2>` : '';
     let h = s.daten ? kopf + s.html + datenBox(s.daten, a) : kopf + (s.bild?.stil === 'portrait' ? figur(s.bild) : '') + s.html + (s.bild && s.bild.stil !== 'portrait' ? figur(s.bild) : '');
     if (i === 2 && a.zitat) h += `<blockquote class="in-zitat"><p>„${esc(a.zitat.text)}“</p><cite>${esc(a.zitat.von)}</cite></blockquote>`;
     return h;
   }).join('\n');
-  return head({ title: `${a.seoTitel || a.titel} · Vision Universe`, description: a.teaser, canonical: url, image: a.bild.src, type: 'article', extra }) + `<main id="in-main" class="in-wrap in-artikel">
+  return head({ title: `${a.seoTitel || a.titel} · Vision Universe`, description: a.teaser, canonical: url, image: bildSrc(a), type: 'article', extra }) + `<main id="in-main" class="in-wrap in-artikel">
 ${tabs('artikel')}
 <article>
 <header class="in-kopf">
   <p class="in-meta"><span class="in-pill">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumLang(a.datum)}</time><span>·</span><span>${lesezeit(a)} Min. Lesezeit</span></p>
   <h1>${esc(a.titel)}</h1>
   <p class="in-lead">${esc(a.unterzeile)}</p>
-  <figure class="in-bild"><img src="${a.bild.src}" alt="${esc(a.bild.alt)}" width="1600" height="900" fetchpriority="high"><figcaption>${nachweis(a.bild)}</figcaption></figure>
+  ${aufmacher(a)}
   <p class="in-autor">Redaktion Vision Universe · Stand ${esc(a.stand)}</p>
 </header>
 <div class="in-text">
@@ -157,7 +178,7 @@ ${body}
 ${a.termine?.length ? `<section class="in-termine"><h2>Termine</h2><ul>${a.termine.map(([d, t]) => `<li><b>${esc(d)}</b><span>${esc(t)}</span></li>`).join('')}</ul></section>` : ''}
 ${appBox(a)}
 <section class="in-quellen"><h2>Quellen</h2><ol>${a.quellen.map((q) => `<li>${esc(q.medium)}: <a href="${esc(q.url)}" rel="noopener">${esc(q.titel)}</a>, ${esc(q.datum)}</li>`).join('')}</ol>
-<p class="in-klein">Zitate aus englischen Quellen sind übersetzt. Kurse, Kennzahlen und Fondsdaten im Kasten stammen aus Vision Universe (Stand siehe Kasten). ${esc(LEGAL.notices.thirdParty.text)} Mit KI-Unterstützung recherchiert und geschrieben, von der Redaktion geprüft.</p></section>
+<p class="in-klein">Zitate aus englischen Quellen sind übersetzt. Kurse, Kennzahlen und Fondsdaten im Kasten stammen aus Vision Universe (Stand siehe Kasten). ${esc(LEGAL.notices.thirdParty.text)} ${PRUEFVERMERK[a.pruefung || 'redaktion']}</p></section>
 </div>
 </article>
 ${weitere(a)}
@@ -166,13 +187,13 @@ ${weitere(a)}
 }
 
 let ALLE = [];
-const karte = (a, gross = false) => `<a class="in-karte${gross ? ' in-karte--gross' : ''}" href="/insights/${a.slug}/"><span class="in-karte-bild"><img src="${a.bild.src}" alt="" loading="${gross ? 'eager' : 'lazy'}" width="1600" height="900"></span><span class="in-karte-text"><span class="in-meta"><span class="in-pill">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumDE(a.datum)}</time></span><b>${esc(a.titel)}</b><span class="in-karte-teaser">${esc(a.teaser)}</span></span></a>`;
+const karte = (a, gross = false) => `<a class="in-karte${gross ? ' in-karte--gross' : ''}" href="/insights/${a.slug}/"><span class="in-karte-bild${a.bild.typ === 'app' ? ' in-karte-bild--app' : ''}"><img src="${bildSrc(a)}" alt="" loading="${gross ? 'eager' : 'lazy'}" width="1600" height="900"></span><span class="in-karte-text"><span class="in-meta"><span class="in-pill">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumDE(a.datum)}</time></span><b>${esc(a.titel)}</b><span class="in-karte-teaser">${esc(a.teaser)}</span></span></a>`;
 const weitere = (a) => { const w = ALLE.filter((x) => x.slug !== a.slug).slice(0, 3); return w.length ? `<section class="in-weitere"><h2>Weitere Insights</h2><div class="in-raster">${w.map((x) => karte(x)).join('')}</div></section>` : ''; };
 const reportKarte = (r) => `<a class="in-report" href="${esc(r.href)}"><span class="in-report-kopf"><span class="in-pill">${esc(r.art)}</span><time datetime="${r.datum}">${datumDE(r.datum)}</time></span><b>${esc(r.titel)}</b><span>${esc(r.text)}</span><em>Report öffnen${ICON.next}</em></a>`;
 
 function uebersicht(artikel, reports) {
   const [erst, ...rest] = artikel;
-  return head({ title: 'Insights · Tagesthemen, Aktienmagazin und Reports · Vision Universe', description: 'Tagesthemen von der Börse, recherchiert und mit den Daten von Vision Universe eingeordnet: Kurse, Geschäftszahlen, Charttechnik und große Fonds. Dazu jede Woche das Aktienmagazin.', canonical: '/insights/', image: erst?.bild.src }) + `<main id="in-main" class="in-wrap">
+  return head({ title: 'Insights · Tagesthemen, Aktienmagazin und Reports · Vision Universe', description: 'Tagesthemen von der Börse, recherchiert und mit den Daten von Vision Universe eingeordnet: Kurse, Geschäftszahlen, Charttechnik und große Fonds. Dazu jede Woche das Aktienmagazin.', canonical: '/insights/', image: erst && bildSrc(erst) }) + `<main id="in-main" class="in-wrap">
 ${tabs('artikel')}
 <header class="in-hub"><span class="in-kicker">Insights</span><h1>Was die Börse heute bewegt. Und was die Daten dazu sagen.</h1><p class="in-lead">Jeden Tag ein bis zwei Themen: recherchiert, eingeordnet und mit Kursen, Geschäftszahlen und Fondsdaten aus Vision Universe unterlegt.</p></header>
 ${erst ? karte(erst, true) : '<p>Noch keine Artikel.</p>'}
@@ -255,7 +276,7 @@ export function build() {
     'insights/feed.xml': feed(artikel),
     'insights/sitemap.xml': sitemap(artikel, hefte),
     'insights/magazin/index.html': magazinUebersicht(hefte),
-    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, bild }) => ({ slug, datum, rubrik, titel, teaser, ticker, bild: bild.src, href: `/insights/${slug}/` })) }, null, 1) + '\n',
+    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, bild }) => ({ slug, datum, rubrik, titel, teaser, ticker, bild: bild.typ === 'app' ? null : bild.src, href: `/insights/${slug}/` })) }, null, 1) + '\n',
   };
   for (const a of artikel) files[`insights/${a.slug}/index.html`] = artikelSeite(a);
   for (const h of hefte) files[`insights/magazin/nr-${h.nr}/index.html`] = heftSeite(h);

@@ -36,16 +36,16 @@
   function originNote(view) {
     var profile = (view && view.profile) || {};
     return el("div", { class: "q-state" }, [
-      el("b", { text: "Echte SEC-Daten · Primaerquelle" }),
+      el("b", { text: "Echte Meldedaten · Primaerquelle" }),
       el("div", { class: "q-provenance-tags" }, [
         S.provenanceTag("MODE", "REAL", "strong"),
         S.provenanceTag("FORM", "PRECOMPUTED", "neutral"),
-        S.provenanceTag("SOURCE", "SEC", "neutral")
+        S.provenanceTag("SOURCE", "Pflichtmeldung", "neutral")
       ]),
       el("span", { text:
         "Alle Werte stammen aus data.sec.gov (Company Facts, XBRL). Abgeleitete "
         + "Kennzahlen sind in der Spalte Quelle als VU DERIVED gekennzeichnet und "
-        + "nie als SEC-Meldung ausgegeben. "
+        + "nie als Pflichtmeldung ausgegeben. "
         + (profile.name ? profile.name + " · SIC " + (profile.sic || "—") + " · " : "")
         + "Restatement-Policy: " + ((view && view.policy) || "—") + "." })
     ]);
@@ -53,7 +53,7 @@
 
   function notIngestedNote() {
     return el("div", { class: "q-state q-state--warn" }, [
-      el("b", { text: "Noch keine SEC-Daten ingestiert" }),
+      el("b", { text: "Noch keine Meldedaten ingestiert" }),
       el("span", { text:
         "Der Workflow „Update SEC fundamentals\" erzeugt sie gegen data.sec.gov. "
         + "Bis dahin tragen die Artefakte unter quant/data/sec/ absichtlich "
@@ -64,7 +64,7 @@
   /* -------------------------------------------------------------- Tabelle */
 
   var COLUMNS = ["Periode", "Wert", "Einheit", "Periodenende", "Verfuegbar ab",
-                 "Formular", "Accession", "SEC Concept", "Quelle", "Transformation",
+                 "Formular", "Accession", "Meldekonzept", "Quelle", "Transformation",
                  "Qualitaet"];
 
   function factTable(view) {
@@ -108,7 +108,7 @@
         el("td", { text: row.concept || "" }),
         el("td", {}, [el("span", {
           class: "tag " + (isDerived ? "tag--derived" : "tag--sec"),
-          text: isDerived ? "VU DERIVED" : "SEC"
+          text: isDerived ? "VU DERIVED" : "Pflichtmeldung"
         })]),
         el("td", { text: row.transformation || "" }),
         el("td", {}, [el("span", { class: "tag tag--" + row.quality, text: row.quality })])
@@ -233,7 +233,7 @@
     var results = (report && report.provider_level && report.provider_level.results) || [];
     if (!results.length) {
       return S.stateBox("Qualifikations-Gates", "Noch nicht gelaufen. Die Gates A/B/C aus "
-        + "quant/engines/gate-tests.js laufen gegen den SEC-Adapter, sobald echte Daten "
+        + "quant/engines/gate-tests.js laufen gegen den Meldedaten-Adapter, sobald echte Daten "
         + "vorliegen.", "warn");
     }
     return el("div", {}, results.map(function (gate) {
@@ -253,9 +253,9 @@
     S.clear(root);
     root.appendChild(el("header", {}, [
       el("p", { class: "q-kicker", text: "Internes Validierungswerkzeug" }),
-      el("h1", { class: "q-h1", text: "SEC Data Inspector" }),
+      el("h1", { class: "q-h1", text: "Fundamentaldaten-Inspektor" }),
       el("p", { class: "q-lead", text:
-        "Jede normalisierte Fundamentalzahl mit ihrer Herkunft: SEC-Concept, Accession "
+        "Jede normalisierte Fundamentalzahl mit ihrer Herkunft: Meldekonzept, Accession "
         + "Number, Formular, Einreichungsdatum und der Zeitpunkt, ab dem der Wert im "
         + "Backtest sichtbar sein darf." })
     ]));

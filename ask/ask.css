@@ -154,6 +154,7 @@ body.ak-answering .ak-body{padding-top:14px}
 .ak-rc{display:inline-flex;align-items:center;gap:4px;min-height:28px;padding:0 10px;border-radius:999px;background:var(--vu-white);border:1.5px solid var(--vu-hair);font-size:12px;font-weight:700}
 :root[data-theme=dark] .ak-rc{background:var(--vu-black)}
 .ak-rc:has(.ak-rc-x){padding-right:2px}
+.ak-rc-i{display:inline-flex;color:var(--vu-mute);margin-right:2px}
 .ak-rc-x{width:26px;height:26px;min-width:26px!important;min-height:26px!important;border:0;border-radius:50%;background:transparent;color:var(--vu-mute);font-size:15px;cursor:pointer;position:relative}
 .ak-rc-x::after{content:"";position:absolute;inset:-9px}
 .ak-count{display:flex;align-items:baseline;gap:8px;margin-top:12px}
@@ -185,3 +186,23 @@ body.ak-answering .ak-body{padding-top:14px}
 .ak-none{margin:0}
 .ak-can-card:focus-visible,.ak-often-q:focus-visible,.ak-more:focus-visible,.ak-anstop-back:focus-visible,.ak-pos:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
 .ak-limits .vu-q{min-width:22px!important;min-height:22px!important;width:22px;height:22px}
+
+/* Chartbild-Antwort (Owner 10.11.2026): Kopf, Preisleiter, Pflichtzeile */
+.ak-cb{display:grid;gap:12px}
+.ak-cb-head{font-size:26px;line-height:1.15;font-weight:900;letter-spacing:-.01em;margin-top:2px}
+.ak-cb-open{display:flex;align-items:center;justify-content:center;width:100%;margin-top:12px;border-radius:999px}
+.ak-cb-legal{margin:12px 0 0;font-size:11.5px;line-height:1.45;color:var(--vu-mute)}
+.ak-cb-legal a{color:inherit;text-decoration:underline}
+.ak-ladder{display:block;width:100%;height:auto;margin-top:10px}
+.ak-ladder-axis{stroke:var(--vu-hair);stroke-width:2}
+.ak-ladder-zone{fill:var(--vu-ink);fill-opacity:.16}
+.ak-ladder-zone.is-main{fill:var(--vu-lime,#d4f25a);fill-opacity:1}
+.ak-ladder-invalid{stroke:var(--vu-ink);stroke-width:2.5;stroke-dasharray:5 4}
+.ak-ladder-confirm{stroke:var(--vu-ink);stroke-width:2.5}
+.ak-ladder-close{fill:var(--vu-ink);stroke:var(--vu-white);stroke-width:3}
+.ak-ladder-lead{fill:none;stroke:var(--vu-mute);stroke-width:1}
+.ak-ladder-v{font-size:13px;font-weight:800;fill:var(--vu-ink)}
+.ak-ladder-v.is-close{font-size:14px}
+.ak-ladder-l{font-size:10.5px;fill:var(--vu-mute)}
+.ak-hd .ak-anstop-pill{margin-left:auto}
+.ak-hd .ak-anstop-pill:not([hidden])~.ak-beta{margin-left:6px}

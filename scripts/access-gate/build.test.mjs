@@ -104,3 +104,27 @@ test('link previews: the mask carries og:/twitter: tags and description of the p
     assert.doesNotMatch(await readFile(join(output, 'plain/index.html'), 'utf8'), /og:|twitter:/);
   } finally { await rm(output, {recursive: true, force: true}); }
 });
+
+test('public prefixes (Insights) stay readable without the mask; everything else is still masked', async () => {
+  const {PUBLIC_PREFIXES} = await import('./build.mjs');
+  assert.deepEqual([...PUBLIC_PREFIXES], ['insights/']);
+  const output = await mkdtemp(join(tmpdir(), 'research-gate-public-'));
+  try {
+    const password = randomBytes(32).toString('hex');
+    const pages = {'insights/index.html': 'PUBLIC_INSIGHTS', 'insights/artikel-a/index.html': 'PUBLIC_ARTICLE', 'quant/index.html': 'PRIVATE_APP', 'insightsfake/index.html': 'PRIVATE_LOOKALIKE'};
+    for (const [path, marker] of Object.entries(pages)) {
+      await mkdir(join(output, path, '..'), {recursive: true});
+      await writeFile(join(output, path), `<!doctype html><body>${marker}</body>`);
+    }
+    const report = await protectRelease({output, password});
+    assert.equal(report.publicPages, 2);
+    assert.equal(report.pages, 2);
+    assert.match(await readFile(join(output, 'insights/index.html'), 'utf8'), /PUBLIC_INSIGHTS/);
+    assert.match(await readFile(join(output, 'insights/artikel-a/index.html'), 'utf8'), /PUBLIC_ARTICLE/);
+    for (const path of ['quant/index.html', 'insightsfake/index.html']) {
+      const wrapper = await readFile(join(output, path), 'utf8');
+      assert.match(wrapper, /research-access-gate/);
+      assert.doesNotMatch(wrapper, /PRIVATE_/);
+    }
+  } finally { await rm(output, {recursive: true, force: true}); }
+});

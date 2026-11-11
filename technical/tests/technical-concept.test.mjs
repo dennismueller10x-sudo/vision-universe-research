@@ -80,7 +80,7 @@ test("TX06 / Entscheidung 9 mit Owner-Änderung 09.11.: Technical-Screener bleib
 });
 
 test("Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json) mit Stand und Basis; eigene Zählung nur als Rückfall, ebenfalls mit Basis", () => {
-  const pulse = JSON.parse(readFileSync("quant/data/market/intelligence/market-pulse.json", "utf8"));
+  const pulse = JSON.parse(readFileSync(new URL("./fixtures/technical-concept/market-pulse.json", import.meta.url), "utf8"));
   const b = M.marketBreadth(pulse);
   assert.ok(b && b.source === "market-pulse" && b.base > 1000 && b.share > 0 && b.share < 100 && /^\d{4}-\d{2}-\d{2}$/.test(b.asOf));
   assert.match(M.breadthSentence(b), /^\d+ % von [\d.]+ US-Aktien über der 200-Tage-Linie, Stand \d\d\.\d\d\.$/);
@@ -91,5 +91,18 @@ test("Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json
   assert.match(home, /M\.marketBreadth\(pulse\) \|\| own/);
   assert.match(home, /M\.breadthSentence\(b\)/);
   const reg = JSON.parse(readFileSync("core/registry/product-contracts.json", "utf8"));
-  assert.ok(reg.products.technical.consumes.includes("marketPulse") && reg.interfaces.marketPulse.artifact === "quant/data/market/intelligence/market-pulse.json");
+  assert.ok(reg.products.technical.consumes.includes("marketPulse") && /^quant\/data\/market\/intelligence\/market-pulse\.json$/.test(reg.interfaces.marketPulse.artifact));
+});
+
+test("Kleinform im Konzept-Stil: Mini-Charts nutzen VUChart.sparkline (neongrüne Fläche, Endpunkt), keine schwarze Einzellinie", () => {
+  assert.doesNotMatch(app, /Chart\.sparkline\(/, "kein technical/ui/chart.js#sparkline in der Oberfläche");
+  assert.match(app, /VC\.sparkline\(sparkMap\[row\.s\], \{ width: 216, height: 40 \}\)/, "Karte „Heute neu im Chart“");
+});
+
+test("Markt heute als Ampel in Neonfarben (Owner 10.11.2026): Zustand aus dem Urteil, drei Lichter, Karte in der Zustandsfarbe", () => {
+  const home = app.slice(app.indexOf("  function viewHome(main) {"), app.indexOf("  /* Ausgeschlossen: Linien"));
+  assert.match(home, /\["weak", "mid", "strong"\]\.map/);
+  assert.match(home, /"tc-ms tc-ms--" \+ v\[0\]/);
+  const css = readFileSync("technical/technical.css", "utf8");
+  for (const s of ["--tc-neon-green", "--tc-neon-yellow", "--tc-neon-red", ".tc-ms--strong{", ".tc-ms--mid{", ".tc-ms--weak{", ".tc-ampel"]) assert.ok(css.includes(s), s);
 });

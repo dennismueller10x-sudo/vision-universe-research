@@ -24,7 +24,7 @@
      der Anbieter grundsaetzlich liefern kann (laut Produktbeschreibung).
      Die tatsaechliche Abdeckung misst fieldCoverage je Datensatz. */
   var PROVIDERS = {
-    tiingo: { label: "Tiingo", status: "CONNECTED", kind: "MARKET_DATA", rank: { meta: 50, prices: 10 },
+    tiingo: { label: "Kursdatenanbieter", status: "CONNECTED", kind: "MARKET_DATA", rank: { meta: 50, prices: 10 },
       capabilities: ["symbol", "name", "exchange", "currency", "inceptionDate", "prices", "dividends", "splits", "description"] },
     issuer: { label: "ETF-Emittenten (Factsheets, Holdings-Dateien)", status: "NOT_CONNECTED", kind: "ISSUER", rank: { meta: 10, prices: 90 },
       capabilities: ["isin", "ter", "fundSize", "holdings", "holdingsCount", "distributionPolicy", "replicationMethod", "benchmark", "domicile"] },
@@ -56,7 +56,7 @@
       inceptionDate: { type: "date" }, nav: { type: "number" }, navDate: { type: "date" },
       trackingDifference: { type: "number", unit: "fraction p.a." }, holdings: { type: "contract", contract: "etf-holdings-2.0.0" }
     },
-    rules: ["Kein Feld ohne Quelle und Stichtag.", "ISIN ist der Schluessel fuer FUND/SHARE CLASS; ohne ISIN kein Merge mit Tiingo-Listings.", "Konflikte zwischen Anbietern werden protokolliert, nicht still ueberschrieben."] };
+    rules: ["Kein Feld ohne Quelle und Stichtag.", "ISIN ist der Schluessel fuer FUND/SHARE CLASS; ohne ISIN kein Merge mit Kursdaten-Listings.", "Konflikte zwischen Anbietern werden protokolliert, nicht still ueberschrieben."] };
 
   /** Prueft einen Fremddatensatz gegen den Mapping-Vertrag. */
   function validateMapped(fields) {

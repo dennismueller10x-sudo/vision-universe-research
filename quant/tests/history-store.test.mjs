@@ -32,7 +32,7 @@ const { createFsDriver } = await import(join(root, "scripts", "market", "storage
 const { createS3Driver, signRequest, parseListXml, uriEncode } =
   await import(join(root, "scripts", "market", "storage", "s3-driver.mjs"));
 
-const GOLDEN = join(root, "quant", "data", "market", "golden-preview", "daily");
+const GOLDEN = join(root, "quant/tests/fixtures/golden-preview"); /* eingefrorene Kopie, README daneben */
 function realBars(ticker) {
   const f = join(GOLDEN, `ref_${ticker}.json`);
   return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : null;

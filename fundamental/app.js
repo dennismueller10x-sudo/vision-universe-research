@@ -1764,7 +1764,7 @@
           el('ul', { class: 'fu-legend' }, keys.map(function (k, i) { return el('li', {}, [el('i', { class: 'sw d' + i }), k[1] + ' ' + (L[k[0]] || 0)]); }))]) : null,
         a.history.length > 1 ? el('div', { class: 'fu-table-wrap' }, el('table', { class: 'fu-table' }, [el('thead', {}, el('tr', {}, [el('th', { text: 'Monat' })].concat(keys.map(function (k) { return el('th', { class: 'r', text: k[1] }); })))),
           el('tbody', {}, a.history.slice().reverse().map(function (h) { return el('tr', {}, [el('th', { scope: 'row', text: monthDe(h.period) })].concat(keys.map(function (k) { return el('td', { class: 'r fu-num', text: String(h[k[0]] || 0) }); }))); }))])) : null,
-        el('p', { class: 'fu-note', text: 'Quelle: ' + (a.provider || 'Finnhub + FMP') + ' · Stand ' + M.dateDe((a.generatedAt || '').slice(0, 10)) + '. Einschätzungen Dritter, keine Empfehlung von Vision Universe.' }));
+        el('p', { class: 'fu-note', text: 'Quelle: ' + (a.provider || 'externe Analystendaten') + ' · Stand ' + M.dateDe((a.generatedAt || '').slice(0, 10)) + '. Einschätzungen Dritter, keine Empfehlung von Vision Universe.' }));
     }).catch(function () { put(box, notice('Analystendaten gerade nicht verfügbar.')); });
     return box;
   }
@@ -1801,7 +1801,7 @@
       if (!b.years.some(function (y) { return isNum(m[y]); })) return;
       lines.push(['"' + d.label + '"', d.kind === 'money' ? b.currency : d.kind === 'perShare' ? b.currency + '/Aktie' : d.kind === 'shares' ? 'Aktien' : d.kind === 'multiple' ? 'Faktor' : 'Anteil'].concat(b.years.map(function (y) { return isNum(m[y]) ? String(m[y]).replace('.', ',') : ''; })).join(';'));
     });
-    var blob = new Blob(['﻿' + lines.join('\n') + '\n# Quelle: SEC EDGAR Companyfacts, aufbereitet von Vision Universe · Stand ' + (b.asOf || '') + '\n'], { type: 'text/csv;charset=utf-8' });
+    var blob = new Blob(['﻿' + lines.join('\n') + '\n# Quelle: Unternehmensmeldungen (Companyfacts), aufbereitet von Vision Universe · Stand ' + (b.asOf || '') + '\n'], { type: 'text/csv;charset=utf-8' });
     var a = el('a', { href: URL.createObjectURL(blob), download: co.t + '-fundamental-' + (b.asOf || 'stand') + '.csv' });
     document.body.append(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 500);
   }
@@ -1853,7 +1853,7 @@
     paintList();
     var full = el('details', { class: 'fu-allformulas' }, [el('summary', { class: 'vu-btn vu-btn--line vu-btn--block' }, ['Alle Formeln ', frag(UI.pro())]), methodFull()]);
     put(main, intro('Methodik', 'Woher die Zahlen kommen und was sie bedeuten.', false),
-      el('div', { class: 'vu-box vu-box--ink fu-gap' }, [el('p', { class: 'vu-ltag', text: 'Quelle' }), el('p', { class: 'fu-src-t', text: 'Pflichtmeldungen an die SEC' }), el('p', { class: 'vu-xs fu-src-s', text: 'Companyfacts von SEC EDGAR. Dieselben Zahlen nutzen Discover, Quant und Screener.' })]),
+      el('div', { class: 'vu-box vu-box--ink fu-gap' }, [el('p', { class: 'vu-ltag', text: 'Quelle' }), el('p', { class: 'fu-src-t', text: 'Pflichtmeldungen der Unternehmen' }), el('p', { class: 'vu-xs fu-src-s', text: 'Companyfacts aus Unternehmensmeldungen. Dieselben Zahlen nutzen Discover, Quant und Screener.' })]),
       sectEl('Drei Zeiträume'),
       el('div', { class: 'vu-grid', style: '--vu-cols:3' }, [frag(UI.tile('GJ', 'Jahr', 'aus dem Jahresbericht')), frag(UI.tile('Quartal', '3 Mon.', 'einzeln, ggf. berechnet')), frag(UI.tile('LTM', '12 Mon.', 'letzte 4 Quartale'))]),
       el('div', { class: 'vu-sect' }, [el('h2', { text: 'Kennzahlen in Worten' }), el('span', { class: 'vu-mu vu-sm', text: String(C.METRICS.length) })]),
@@ -1862,7 +1862,7 @@
       el('p', { class: 'vu-sm fu-p', text: 'Aktuell: KGV, KUV, Börsenwert zum letzten Schlusskurs. Verlauf: je Jahresbericht mit dem Kurs nach der Veröffentlichung, splitbereinigt und gegengeprüft.' }),
       el('div', { class: 'fu-gap-s' }, helpEl('Splitbereinigt: Teilt eine Firma ihre Aktien (z. B. 1 wird 10), rechnen wir alte Kurse um, damit nichts springt.')),
       sectEl('Vergleich mit der Branche'),
-      el('p', { class: 'vu-sm fu-p', text: 'Wettbewerber = Firmen derselben SEC-Branche (mindestens 5). Wir zeigen die Lage („höher als 80 % der Gruppe“), keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel.' }),
+      el('p', { class: 'vu-sm fu-p', text: 'Wettbewerber = Firmen derselben SIC-Branche (mindestens 5). Wir zeigen die Lage („höher als 80 % der Gruppe“), keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel.' }),
       sectEl('Checklisten'),
       el('p', { class: 'vu-sm fu-p', text: 'Eine Checkliste prüft mehrere Bedingungen auf einmal und zeigt, wie viele erfüllt sind („N von M Punkten erfüllt“). Es gibt keine Gesamtnote und kein Urteil über den künftigen Kurs. Fehlt ein Wert, gilt der Punkt als nicht erfüllt; Vielfache (KGV, Börsenwert/Free Cashflow, PEG, EV/EBITDA) zählen nur bei positivem Wert. Dieselben Regeln stehen im Screener als fertige Ideen.' }),
       CK ? el('div', { class: 'vu-stack fu-ckm' }, CK.CHECKLISTS.map(function (l) { return el('div', { class: 'vu-box' }, [el('b', { text: l.name + ' · ' + l.items.length + ' Punkte' }), el('ul', {}, l.items.map(function (i) { return el('li', { text: i.label }); }))]); })) : null,
@@ -1876,7 +1876,7 @@
   /* Volltext der bisherigen Methodik (alle Formeln, vollstaendig) – hinter „Alle Formeln“. */
   function methodFull() {
     return el('article', { class: 'fu-method' }, [
-      el('p', { text: 'Fundamental zeigt Geschäftszahlen, die US-Unternehmen in ihren Pflichtmeldungen an die SEC berichten (Companyfacts von SEC EDGAR). Es ist dieselbe Aufbereitung, die Discover, Quant und der Screener verwenden – Fundamental macht sie vollständig zugänglich.' }),
+      el('p', { text: 'Fundamental zeigt Geschäftszahlen, die US-Unternehmen in ihren Pflichtmeldungen der Unternehmen berichten (Companyfacts aus Unternehmensmeldungen). Es ist dieselbe Aufbereitung, die Discover, Quant und der Screener verwenden – Fundamental macht sie vollständig zugänglich.' }),
       el('h2', { text: 'Zeiträume' }),
       el('ul', {}, [el('li', { text: 'Geschäftsjahr (GJ): der Jahreswert aus dem Jahresbericht. Geschäftsjahre enden je Unternehmen zu unterschiedlichen Zeitpunkten; das Ende steht an jeder Reihe.' }),
         el('li', { text: 'Quartal: eigenständige Quartalswerte; wo Unternehmen nur Halbjahres- oder Jahreswerte melden, herausgerechnet („berechnet“).' }),
@@ -1885,11 +1885,11 @@
       el('ul', {}, C.METRICS.filter(function (m) { return m.formula; }).map(function (m) { return el('li', {}, [el('b', { text: m.label + ': ' }), m.formula]); })),
       el('h2', { text: 'Bewertung' }),
       el('p', { text: 'Aktuell: KGV, KUV, Börsenwert und Free-Cashflow-Rendite aus der Discover-Bewertung, KBV, EV-Kennzahlen und PEG aus dem Screener – jeweils zum letzten Schlusskurs.' }),
-      el('p', { text: 'Verlauf je Jahresbericht (KGV, KUV, KBV, EV/Umsatz, EV/EBITDA, Free-Cashflow- und Dividendenrendite, Börsenwert, Unternehmenswert): Kurs = erster Wochenschluss nach Einreichung des 10-K (Datum aus dem SEC-Meldeverlauf), Aktienzahl und Bilanz dieses Geschäftsjahres, Umsatz, EBITDA und Cashflow des Geschäftsjahres – also derselbe Aufbau wie der aktuelle Wert, mit dem Kurs nach der Veröffentlichung. Kurse sind splitbereinigt; Gewinn je Aktie und Aktienzahl werden mit dem Split-Beleg des Kursanbieters auf dieselbe Basis gebracht und gegengeprüft (Nettogewinn ÷ Aktien, ausstehende gegen verwässerte Aktien, höchstens 10 % Abweichung, kein Sprung in Split-Größe). Nur Unternehmen, die in US-Dollar berichten. Ein Jahr ohne bestandene Prüfung bleibt leer.' }),
-      el('p', { text: 'Einschränkung: Die Zahlen stammen aus der jeweils neuesten SEC-Meldung. Hat ein Unternehmen einen Jahreswert später korrigiert (Restatement, z. B. in einem 10-K/A oder in den Vorjahresspalten des nächsten Jahresberichts), steht im Verlauf der korrigierte Wert, nicht der am Meldetag veröffentlichte. Die ursprünglich gemeldeten Fassungen liegen nicht vor; ein Jahr mit Korrektur kann daher vom damals sichtbaren Wert abweichen.' }),
+      el('p', { text: 'Verlauf je Jahresbericht (KGV, KUV, KBV, EV/Umsatz, EV/EBITDA, Free-Cashflow- und Dividendenrendite, Börsenwert, Unternehmenswert): Kurs = erster Wochenschluss nach Einreichung des 10-K (Datum aus dem Meldeverlauf), Aktienzahl und Bilanz dieses Geschäftsjahres, Umsatz, EBITDA und Cashflow des Geschäftsjahres – also derselbe Aufbau wie der aktuelle Wert, mit dem Kurs nach der Veröffentlichung. Kurse sind splitbereinigt; Gewinn je Aktie und Aktienzahl werden mit dem Split-Beleg des Kursanbieters auf dieselbe Basis gebracht und gegengeprüft (Nettogewinn ÷ Aktien, ausstehende gegen verwässerte Aktien, höchstens 10 % Abweichung, kein Sprung in Split-Größe). Nur Unternehmen, die in US-Dollar berichten. Ein Jahr ohne bestandene Prüfung bleibt leer.' }),
+      el('p', { text: 'Einschränkung: Die Zahlen stammen aus der jeweils neuesten Pflichtmeldung. Hat ein Unternehmen einen Jahreswert später korrigiert (Restatement, z. B. in einem 10-K/A oder in den Vorjahresspalten des nächsten Jahresberichts), steht im Verlauf der korrigierte Wert, nicht der am Meldetag veröffentlichte. Die ursprünglich gemeldeten Fassungen liegen nicht vor; ein Jahr mit Korrektur kann daher vom damals sichtbaren Wert abweichen.' }),
       el('p', { text: 'Nicht im Katalog: Gewinnrendite und Kurs/Free Cashflow – sie sind die Kehrwerte von KGV und Free-Cashflow-Rendite und sagen dasselbe.' }),
       el('h2', { text: 'Vergleich und Ranglisten' }),
-      el('p', { text: 'Wettbewerber = Unternehmen derselben SEC-Branche (SIC, vier Stellen), wenn es mindestens 5 sind; sonst die Branchen-Hauptgruppe. Branche = SEC-Branchen-Hauptgruppe (SIC, zwei Stellen), Sektor = Sektor des Verzeichnisses. Median und Lage beziehen sich auf alle Unternehmen der Gruppe mit gültigem Wert; der Median je Geschäftsjahr braucht mindestens 5 Unternehmen. Lage heißt „höher als x % der Gruppe“ – keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel und Plausibilitätsgrenzen; sie sind keine Empfehlung.' }),
+      el('p', { text: 'Wettbewerber = Unternehmen derselben SIC-Branche (SIC, vier Stellen), wenn es mindestens 5 sind; sonst die Branchen-Hauptgruppe. Branche = SIC-Branchen-Hauptgruppe (SIC, zwei Stellen), Sektor = Sektor des Verzeichnisses. Median und Lage beziehen sich auf alle Unternehmen der Gruppe mit gültigem Wert; der Median je Geschäftsjahr braucht mindestens 5 Unternehmen. Lage heißt „höher als x % der Gruppe“ – keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel und Plausibilitätsgrenzen; sie sind keine Empfehlung.' }),
       el('h2', { text: 'Das Geschäft in einem Satz' }),
       el('p', { text: BUSINESS_RULE + ' Stufen und Schwellen stammen aus den Discover-Fundamentaldaten (dieselben wie auf der Discover-Aktienseite).' }),
       el('h2', { text: 'Lücken und Grenzen' }),

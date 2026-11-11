@@ -500,7 +500,7 @@ for(const width of [1440,390]){
         dritte Gruppe nur, wenn etwas offen ist. */
      /* Quant Daily Usefulness: Pro/Contra steht in einem eigenen Abschnitt. */
      const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
-     if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')bad.push('GRUPPEN:'+gruppen.join('|'));
+     if(gruppen.join('|')!=='Stärken laut Kennzahlen|Schwächen laut Kennzahlen')bad.push('GRUPPEN:'+gruppen.join('|'));
      const oben=await auskunft.evaluate(n=>n.getBoundingClientRect().top+scrollY);
      if(width===390&&oben>1800)bad.push('AUSKUNFT_ZU_TIEF='+Math.round(oben));
      if(width===1440&&oben>900)bad.push('AUSKUNFT_ZU_TIEF='+Math.round(oben));

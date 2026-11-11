@@ -1091,7 +1091,7 @@
         ]),
         r ? el("p", { class: "dx-m3-pr-juenger", text: "Seit " + jahr(r.from) + ": " + pct(r.cagr) + " statt " + pct(r.buyAndHold.cagr) +
           " pro Jahr, größter Verlust " + pct(r.maxDrawdown) + " statt " + pct(r.buyAndHold.maxDrawdown) + "." }) : null,
-        el("p", { class: "dx-m3-fuss", text: "* Sonst Geldmarkt. Signal am Schlusskurs, umgesetzt einen Handelstag später. Ohne Kosten und Steuern; " +
+        el("p", { class: "dx-m3-fuss", text: "* Sonst Geldmarkt. Regelereignis am Schlusskurs, umgesetzt einen Handelstag später. Ohne Kosten und Steuern; " +
           "der US-Gesamtmarkt ist nicht direkt investierbar. Vergangene Ergebnisse sind kein verlässlicher Hinweis auf künftige Entwicklungen." })
       ].filter(Boolean));
     }
@@ -1158,10 +1158,10 @@
       el("summary", { text: "Alle Zahlen, Grenzen und Quelle" }),
       el("div", { class: "dx-m3-pr-tabelle-box", tabindex: "0", role: "region", "aria-label": "Tabelle: Rückgänge je Stufe und Zeitraum" }, [tabelle]),
       el("h3", { text: "Jeder Zeitabschnitt einzeln (" + h + ")" }), el("ul", {}, perioden),
-      el("h3", { text: "Wie sicher sind die Zahlen?" }),
-      el("p", { text: "Mit 95 % Sicherheit liegt der wahre Anteil nach „" + erste.label + "“ zwischen " + spanne(erste) + " von 100, nach „" + letzte.label + "“ zwischen " +
+      el("h3", { text: "Wie groß ist die statistische Unsicherheit?" }),
+      el("p", { text: "Das 95-%-Konfidenzintervall für den Anteil liegt nach „" + erste.label + "“ zwischen " + spanne(erste) + " von 100, nach „" + letzte.label + "“ zwischen " +
         spanne(letzte) + " von 100." + (erste.drawdownCI95 && letzte.drawdownCI95 ? (erste.drawdownCI95[0] > letzte.drawdownCI95[1]
-          ? " Die Spannen überschneiden sich nicht – der Unterschied ist kein Zufall." : " Die Spannen überschneiden sich – der Unterschied ist nicht sicher.") : "") }),
+          ? " Die Spannen überschneiden sich nicht – der Unterschied ist kein Zufall." : " Die Spannen überschneiden sich – der Unterschied ist statistisch nicht belegt.") : "") }),
       weitere.length ? el("h3", { text: "Weitere Modellrechnung" }) : null, weitere.length ? el("ul", {}, weitere) : null,
       el("h3", { text: "Grenzen" }),
       el("ul", {}, [

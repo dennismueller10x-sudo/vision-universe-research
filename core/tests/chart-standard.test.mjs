@@ -11,7 +11,7 @@ const Contract = require("../../quant/engines/fx/currency-contract.js");
 
 const mem = () => ({ m: {}, getItem(k) { return this.m[k] || null; }, setItem(k, v) { this.m[k] = String(v); } });
 function layer(pref) {
-  const ecb = JSON.parse(readFileSync(new URL("../../quant/data/market/fx/ecb/EURUSD.json", import.meta.url)));
+  const ecb = JSON.parse(readFileSync(new URL("./fixtures/chart-standard/EURUSD.json", import.meta.url)));
   const store = Rates.createStore();
   store.ingest("EUR", "USD", ecb.points, { source: "ecb", frequency: "DAILY" });
   const L = Contract.createLayer({ store, storage: mem() });

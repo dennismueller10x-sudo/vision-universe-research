@@ -14,12 +14,13 @@ const Service = require("../api/product-services.js");
 const Policy = require("../engines/display-policy.js");
 const Query = require("../engines/query.js");
 const root = new URL("../../", import.meta.url).pathname;
+const fx = join(root, "quant/tests/fixtures/product-intelligence-materialization"); /* eingefrorene Daten-Wurzel, README daneben */
 
 test("existing canonical histories materialize static Technical, Signals and Elliott Product Data", async () => {
   const dir = mkdtempSync(join(tmpdir(), "vu-product-intelligence-"));
   const work = join(dir, "work", "tiingo", "daily"), out = join(dir, "out");
   mkdirSync(work, { recursive: true });
-  for (const ticker of ["NVDA", "MSFT"]) copyFileSync(join(root, "quant/data/market/golden-preview/daily/ref_" + ticker + ".json"), join(work, "ref_" + ticker + ".json"));
+  for (const ticker of ["NVDA", "MSFT"]) copyFileSync(join(fx, "./quant/data/market/golden-preview/daily/ref_" + ticker + ".json"), join(work, "ref_" + ticker + ".json"));
   const summary = materialize({ workDir: join(dir, "work"), outDir: out, tickers: ["NVDA", "MSFT"] });
   assert.equal(summary.counts.productUniverse, 2);
   assert.equal(summary.counts.historiesValidated, 2);
@@ -39,7 +40,7 @@ test("existing canonical histories materialize static Technical, Signals and Ell
   assert.equal(signals.scope, "CANONICAL_PRODUCT_UNIVERSE");
   assert.equal(signals.counts.requested, 2);
   assert.equal(signals.counts.available, 2);
-  const loadJSON = async path => JSON.parse(readFileSync(join(root, path.slice(1)), "utf8"));
+  const loadJSON = async path => JSON.parse(readFileSync(join(path.startsWith("/quant/config/") ? root : fx, path.slice(1)), "utf8")); /* Konfiguration ist Code */
   const loadCompressedJSON = async path => JSON.parse(gunzipSync(readFileSync(join(out, path.split("/").at(-1)))));
   const api = Service.create({ loadJSON, loadCompressedJSON, displayPolicy: Policy, queryEngine: Query });
   assert.equal((await api.getTechnicalWorkspace("NVDA")).state, "AVAILABLE");
@@ -52,7 +53,7 @@ test("Technical materialization remains independent when the Signals contract re
   const dir = mkdtempSync(join(tmpdir(), "vu-product-intelligence-independent-"));
   const work = join(dir, "work", "tiingo", "daily"), out = join(dir, "out");
   mkdirSync(work, { recursive: true });
-  const source = JSON.parse(readFileSync(join(root, "quant/data/market/golden-preview/daily/ref_MSFT.json"), "utf8"));
+  const source = JSON.parse(readFileSync(join(fx, "./quant/data/market/golden-preview/daily/ref_MSFT.json"), "utf8"));
   source.currency = "EUR";
   writeFileSync(join(work, "ref_MSFT.json"), JSON.stringify(source));
   const summary = materialize({ workDir: join(dir, "work"), outDir: out, tickers: ["MSFT"] });
@@ -64,7 +65,7 @@ test("Technical materialization remains independent when the Signals contract re
 });
 
 test("canonical security identity, not ticker punctuation, owns class-share artifacts", () => {
-  const source = JSON.parse(readFileSync(join(root, "quant/data/technical/instruments/NVDA.json"), "utf8"));
+  const source = JSON.parse(readFileSync(join(fx, "./quant/data/technical/instruments/NVDA.json"), "utf8"));
   const ticker = "NVDA-P-A", series = { ...source.bars, instrumentId: ticker,
     priceSeriesType: "SPLIT_ADJUSTED", length: source.bars.timestamps.length };
   const bundle = { ...source.bundle, instrumentId: ticker };

@@ -30,7 +30,7 @@ const PRICE_KEYS = ['trigger', 'invalidation', 'pivot', 'resistance', 'baseSuppo
 
 function round(v, d = 4) { return Number.isFinite(v) ? Math.round(v * 10 ** d) / 10 ** d : v; }
 
-function closeTrade(sig) {
+export function closeTrade(sig) {
   const e = sig.entry.price;
   let proceeds = 0, frac = 0;
   for (const x of sig.exits) { proceeds += x.fraction * x.price; frac += x.fraction; }

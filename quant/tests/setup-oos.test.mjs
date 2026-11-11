@@ -65,14 +65,14 @@ function gateAsBuilder(outcomes, rowsDoc = null) {
 }
 
 test("Heute: veroeffentlichter Stand ergibt je Ereignisart OOS_NOT_MEASURABLE_YET, Gate FAIL", () => {
-  const outcomes = json("quant/data/product/setup-outcomes-v1.json");
+  const outcomes = json("quant/tests/fixtures/setup-oos/setup-outcomes-v1.json");
   const combined = gateAsBuilder(outcomes);
   for (const t of ["SETUP_NEW", "SETUP_CONFIRMED"]) {
     const completed = outcomes.study[t].variants.NEXT_CLOSE.m6.status.COMPLETED;
     if (completed < 2 * MIN) assert.equal(O.evaluateSetupOos({ rows: null, completedCount: completed, minPerSegment: MIN, segmentation: O.segmentationFromMethodology(M) }).reasonCode, "OOS_NOT_MEASURABLE_YET", t);
   }
   assert.equal(combined.status, "FAIL");
-  const cert = json("quant/data/product/backtest-certification-v1.json");
+  const cert = json("quant/tests/fixtures/setup-oos/backtest-certification-v1.json");
   const gate = cert.kinds.find((k) => k.id === "SETUP_BACKTEST").gates.find((g) => g.id === "oos");
   assert.equal(gate.state, "FAIL");
   /* Das veroeffentlichte Artefakt kann von einem Lauf ohne Zeilenexport stammen (rows: null). Vor 60 M6-Ergebnissen
@@ -238,7 +238,7 @@ test("Nie CERTIFIED fuer SETUP ohne Owner-Freigabe, auch wenn OOS und alle ander
   /* Ein synthetisches OOS-PASS bei sonst bestandenen Gates: die Owner-Freigabe fehlt -> WITHHELD. */
   const pass = O.evaluateSetupOos({ rows: rows(120, { netFn: () => 0.05, baseFn: () => 0 }), minPerSegment: MIN, segmentation: seg() });
   assert.equal(pass.status, "PASS");
-  const cert = json("quant/data/product/backtest-certification-v1.json");
+  const cert = json("quant/tests/fixtures/setup-oos/backtest-certification-v1.json");
   const setup = cert.kinds.find((k) => k.id === "SETUP_BACKTEST");
   const gates = setup.gates.map((g) => C.gate(g.id, g.label, g.category, g.id === "oos" ? pass.status === "PASS" : true, g.value, g.required, g.reason));
   const owner = { required: setupMethod.requirements.backtestCertification !== "CERTIFIED", given: setupMethod.requirements.backtestCertification === "CERTIFIED" };

@@ -66,7 +66,7 @@
   }
   function check(status, family, statement) {
     var mark = { SUPPORTS: "✓", CONTRADICTS: "✕", NEUTRAL: "○", UNAVAILABLE: "–" }[status] || "○";
-    var word = { SUPPORTS: "spricht dafür", CONTRADICTS: "spricht dagegen", NEUTRAL: "neutral", UNAVAILABLE: "nicht verfügbar" }[status];
+    var word = { SUPPORTS: "stützt die Struktur", CONTRADICTS: "widerspricht der Struktur", NEUTRAL: "neutral", UNAVAILABLE: "nicht verfügbar" }[status];
     return el("li", { class: "cb-check cb-check-" + String(status).toLowerCase() }, [
       el("span", { class: "cb-check-mark", "aria-hidden": "true", text: mark }),
       el("span", { class: "cb-check-body" }, [el("b", { text: (Ex ? Ex.FAMILY[family] : family) || family }), el("span", { text: " " + statement }), el("span", { class: "cb-sr", text: " (" + word + ")" })])

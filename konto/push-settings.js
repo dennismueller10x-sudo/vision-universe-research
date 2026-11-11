@@ -29,7 +29,7 @@
   var TYPES = [
     { key: 'PRICE_MOVE', title: 'Kursbewegung über ±5 % am Tag', sub: 'Tagesbewegung eines Titels', ready: true },
     { key: 'PRICE_EVENT', title: 'Neues Jahreshoch', sub: 'Höchster Schlusskurs seit 52 Wochen oder auffälliges Volumen', ready: true },
-    { key: 'EARNINGS', title: 'Neue Quartalszahlen', sub: 'Neuer Bericht bei der SEC', ready: true },
+    { key: 'EARNINGS', title: 'Neue Quartalszahlen', sub: 'Neuer Unternehmensbericht', ready: true },
     { key: 'SUPERTRADER_SIGNAL', title: 'Setups der Methoden', sub: 'Eine Regel einer Methode ist neu erfüllt oder nicht mehr erfüllt', ready: true },
     { key: 'QUANT_CHANGE', title: 'Quant-Eigenschaften', sub: 'Eine Eigenschaft ändert sich um mindestens zwei Stufen', ready: true },
     { key: 'FUND_13F', title: 'Neue 13F-Meldungen', sub: 'Ein großer Fonds meldet seine Positionen', ready: true },

@@ -17,7 +17,7 @@ const C = require("../../../social/engines/visual-composition.js");
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
 const SERIE = JSON.parse(readFileSync(
-  join(ROOT, "quant/data/market/discover-series/ref_XOM.json"), "utf8"));
+  join(ROOT, "products/social/tests/fixtures/visual-composition/ref_XOM.json"), "utf8"));
 
 const BEITRAEGE = [
   { label: "Trendstruktur", value: 27.35, max: 30 },

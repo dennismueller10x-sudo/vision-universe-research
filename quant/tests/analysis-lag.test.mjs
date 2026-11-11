@@ -36,17 +36,18 @@ const Policy = require(join(root, "quant/engines/display-policy.js"));
 const Query = require(join(root, "quant/engines/query.js"));
 const Freshness = require(join(root, "quant/engines/realtime/freshness.js"));
 const calendar = require(join(root, "quant/config/market-calendar.json"));
+const FX = join(root, "quant/tests/fixtures/analysis-lag"); /* eingefrorene Daten, README daneben */
 
 const api = Service.create({
-  loadJSON: async (path) => JSON.parse(readFileSync(join(root, path.slice(1)), "utf8")),
-  loadCompressedJSON: async (path) => JSON.parse(gunzipSync(readFileSync(join(root, path.slice(1))))),
+  loadJSON: async (path) => JSON.parse(readFileSync(join(FX, path.slice(1)), "utf8")),
+  loadCompressedJSON: async (path) => JSON.parse(gunzipSync(readFileSync(join(FX, path.slice(1))))),
   displayPolicy: Policy, queryEngine: Query
 });
 
 test("the service names the lag with both dates, or none at all", async () => {
   const technical = await api.getTechnicalIntelligence("NVDA");
   if (technical.state !== "AVAILABLE" || !technical.fullWorkspace) return;
-  const serie = JSON.parse(readFileSync(join(root, "quant/data/market/discover-series/ref_NVDA.json"), "utf8"));
+  const serie = JSON.parse(readFileSync(join(FX, "/quant/data/market/discover-series/ref_NVDA.json".slice(1)), "utf8"));
   const erwartet = Freshness.lagSessions(technical.asOf, serie.asOf, calendar);
 
   if (erwartet > 0) {

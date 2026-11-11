@@ -42,7 +42,7 @@
     { id: "belastbar", title: "Wissen, wie belastbar das ist", text: "Beobachtet, getestet oder zertifiziert – und was geprüft ist und was noch fehlt.", route: function () { return X.routes.method(); } }
   ];
   /* Was Quant fuer eine beobachtete Aktie verfolgt - der Nutzen von "Beobachten". */
-  var WATCH_VALUE = ["Setup-Wechsel (entsteht, bestätigt, nicht mehr erfüllt)", "neue historische Evidenz zu einem Signal", "Wechsel in oder aus einer Strategie", "steigende Risiken", "neue Signale wie ein 52-Wochen-Hoch"];
+  var WATCH_VALUE = ["Setup-Wechsel (entsteht, bestätigt, nicht mehr erfüllt)", "neue historische Evidenz zu einem Regelereignis", "Wechsel in oder aus einer Strategie", "steigende Risiken", "neue Regelereignisse wie ein 52-Wochen-Hoch"];
   function promiseList() {
     return el("ol", { class: "q-promises", "aria-label": "Was Quant für dich tut" }, PROMISES.map(function (p, i) {
       return el("li", {}, [el("a", { href: p.route(), dataset: { promise: p.id } }, [el("span", { class: "q-promise-n", "aria-hidden": "true", text: String(i + 1) }),
@@ -61,7 +61,7 @@
     return el("div", { class: "q-proof" }, [
       el("p", { class: "q-proof-claim" }, [el("b", { text: "Nicht „stark“, sondern gemessen." }), el("span", { text: " So sieht ein Beleg bei Quant aus – live aus dem heutigen Radar:" })]),
       E.signalEvidence(ev.backtest, { compact: true, label: "„" + label + "“ marktweit" }),
-      el("p", { class: "qx-small", text: "Gezeigt wird immer, wie oft das Signal früher höher lag, neben der Quote des ganzen Markts in denselben Wochen. Liegt der Unterschied im Rauschen, steht dort „kein messbarer Vorteil“." })]);
+      el("p", { class: "qx-small", text: "Gezeigt wird immer, wie oft das Regelereignis früher höher lag, neben der Quote des ganzen Markts in denselben Wochen. Liegt der Unterschied im Rauschen, steht dort „kein messbarer Vorteil“." })]);
   }
   /* Eine Aktienkarte mit eigener Aussage: die staerkste gemessene
      Eigenschaft als Wert ("Kursstärke 92"), die Quant-Einordnung als Satz -
@@ -197,8 +197,8 @@
       tile("Neues 52-Wochen-Hoch", String(sm.newHighs), "Stand " + X.dateDe(radar.sources.market.asOf), "up", "hoch"),
       tile("Neu in einer Strategie", String(sm.newStrategyMatches), "Stand " + X.dateDe(radar.sources.strategy.to), "up", "strategien")]
       .concat(typeof sm.edgeTickers === "number" ? [
-        tile("Mit messbarem historischen Vorteil", sm.edgeTickers.toLocaleString("de-DE"), "Signal lag historisch über dem Markt – meist nur leicht", "tested", "vorteil"),
-        tile("Historisch schwächer als der Markt", sm.weakerEdgeTickers.toLocaleString("de-DE"), "Signal lag historisch unter dem Markt", "down", null)] : []);
+        tile("Mit messbarem historischen Vorteil", sm.edgeTickers.toLocaleString("de-DE"), "Regelereignis lag historisch über dem Markt – meist nur leicht", "tested", "vorteil"),
+        tile("Historisch schwächer als der Markt", sm.weakerEdgeTickers.toLocaleString("de-DE"), "Regelereignis lag historisch unter dem Markt", "down", null)] : []);
   }
   /* Richtung eines Ereignisses wie im Typ-Katalog der Engine (tone up/down/info; FACTOR_CHANGED mit eigener Richtung). */
   function eventTone(e) {
@@ -227,7 +227,7 @@
       if (b && b.state === "AVAILABLE" && Array.isArray(b.deltaCi) && b.deltaCi[0] > 0 && (!best || b.deltaPositiveShare > best.b.deltaPositiveShare)) best = { id: k, b: b };
     });
     var base = "Ein historischer Vorteil gegenüber dem Markt sortiert eine Karte bewusst nicht nach oben";
-    if (!best) return base + ": Zum aktuellen Stand hat kein getestetes Signal einen messbaren Vorteil.";
+    if (!best) return base + ": Zum aktuellen Stand hat kein getestetes Regelereignis einen messbaren Vorteil.";
     var label = (RadarC && RadarC.TYPE[best.id] || {}).label || best.id;
     return base + ": Der größte messbare Vorteil („" + label + "“) beträgt " + (E ? E.pp(best.b.deltaPositiveShare) : "") +
       (best.b.edgeOutOfSample ? "." : " und hat sich in neueren Daten nicht bestätigt.") + " Wer nur solche Fälle sehen will, nutzt den Filter „Mit messbarem Vorteil“.";

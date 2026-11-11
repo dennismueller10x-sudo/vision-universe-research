@@ -404,6 +404,37 @@ Bericht, Freigabe-Runbooks und FV-1-Analyse: [BACKTEST_P2_DEFIZITE.md](../archiv
 - **FV-8:** `pit-snapshot-integrity.cjs --fail-on-missing-month --alarm-detail`. Offen ist nur der Workflow-Schritt.
 - **Coverage-Matrix** neu gebaut, mit Abschnitt I (Research-Nachweise) und einer Spalte „Research-Nachweis“. Befund unverändert 0/6. Pattern hat jetzt 0 „heute technisch“ und 3 Owner-Blocker.
 
+## PIT-, Identitäts- und Provenienzvertrag (Strang U, Teil 1, 10.11.2026)
+
+Reine Schattenprüfung, Forschung, nicht zertifiziert. Keine Änderung an Engines, Scores, Strategien, Golden-Hashes oder Forschungssperren; keine Holdout-Läufe, keine Anbieterabfragen. Gepinnt in `quant/tests/pit-contract.test.mjs` (18 Vertragsfälle PIT-01…18, drei Befund-Tests PIT-F1…F3, nur synthetische Fixtures). Prüfregel in jedem Fall: eine nur künftige Information verändert keine frühere Entscheidung.
+
+**Vertragsmatrix.** Evidenzklasse: B = belegt (Quelle trägt den Zeitpunkt), R = rekonstruiert (aus Belegen abgeleitet), A = angenommen (Modellregel ohne Beleg).
+
+| Modul | Sichtbar, wenn | effectiveAt | knownAt | observedAt | Listing-Intervall | Herkunft | Evidenz |
+|---|---|---|---|---|---|---|---|
+| `quant/engines/pit-fundamental-history.js` | `filed <= asOf` (Stichtag **inklusive**), je Geschäftsjahr die jüngste Einreichung ≤ asOf | Geschäftsjahresende (`end`) | Einreichungsdatum `filed` (nur Tag, keine Uhrzeit) | keines | keines | SEC-Consumer-Bundle `annual` | B (filed), A (Tagesgranularität) |
+| `quant/engines/portfolio-pit-factors.cjs` | `filed < Entscheidungstag` (asOf = Vortag, **strikt davor**); Frische ≤ 548 Tage | wie oben | wie oben, um einen Tag konservativ | keines | keines | PIT-Modul + Panel-Rohschluss | R (Rekonstruktion, nicht Live-Evidenz) |
+| `core/industry-classification.js` | `knownAt <= cutoff`; Datum-asOf endet 16:00 ET (DST ab 1987 kodiert), asOf mit Zeit exakt | nicht belegt (`validFrom/validTo = null`) | frühester belegter öffentlicher Zeitpunkt (UTC, mit Präzision) | `datasetObservedThrough` | über `resolveIssuer` (`validFrom/validTo` je Kandidat) | SEC FSDS/Filing-Header, je CIK | B (Beobachtung), A (Fortschreibung, deklarationspflichtig) |
+| `core/identity.js` | nie zeitabhängig | keines | keines | keines | **keines**: `securityId = ref_<TICKER>` | Ticker | A (Ticker ist kein stabiler Schlüssel) |
+| `portfolio-backtest.cjs#decide` | Kurs zu t, Historie ≥ riskWindow, `terminal.lastIdx >= t`, Branche gesetzt | Wochenschluss t | Wochenschluss t | keines | `terminal`/erste Beobachtung des Panels | Panel (heutige Dateimenge + V13-Ketten) | R/A |
+
+Lesart der Abweichung „inklusive“ gegen „strikt“: Das PIT-Modul liest am Einreichungstag, die Portfolio-Faktoren erst am Folgetag. Das ist keine Verletzung, sondern eine konservative Variante (Uhrzeit der Einreichung ist im Bundle nicht belegt; `core/industry-classification.js` kennt sie und würde dasselbe Filing am selben Handelstag vor 16:00 ET sehen).
+
+**Befunde (nur gemeldet, nichts repariert; Fachmodell-Änderung = eigener PR mit Vorher/Nachher).**
+
+| ID | Befund | Wirkung | Einordnung |
+|---|---|---|---|
+| PIT-F1 | `visibleAnnual` löst zwei Einreichungen desselben Geschäftsjahres am selben `filed`-Tag nach Eingabereihenfolge auf (10-K und 10-K/A am selben Tag). Beleg: Test vertauscht die Reihenfolge, der Wert wechselt. | Determinismus-Lücke, kein Lookahead. Ein Erzeuger, der die Reihenfolge ändert, ändert Faktoren. | Verletzung (Determinismus). Vorschlag: Tie-Break über Accession (`accn`) aufsteigend/absteigend als eigener PR mit Vorher/Nachher auf den Golden-Hashes. |
+| PIT-F2 | `portfolio-backtest.cjs` nutzt `security.sector` aus der heutigen SIC (`CURRENT_SIC_CLASSIFICATION_NOT_HISTORICAL` steht bereits in den `limitations`). Beleg: gleiche Kurse, anderes Branchenetikett → andere Gewichte. | Eine spätere Umklassifizierung ändert frühere Entscheidungen (Branchenlimit, Filter `!s.sector`). | Dokumentierte Verletzung. `core/industry-classification.js` liefert die zeitgenaue SIC, ist aber nicht angeschlossen. Anschluss = Fachmodell-PR. |
+| PIT-F3 | Das Panel hat kein Listing-Intervall: Universum = heutige Dateien + V13-Ketten; eine Reihe ohne Terminal-Angabe endet an der letzten Beobachtung (`SERIES_END`, Erlös = letzter Schluss). `securityId` bricht bei Tickerwechsel, bei Ticker-Wiederverwendung teilen zwei Emittenten dieselbe `securityId` (`core/identity.js` kennt keine Zeit). | Survivorship und Identitätsbruch im Panel; CIK + `resolveIssuer` mit Fenstern hält beides, wird im Panel nicht genutzt. | Dokumentierte Einschränkung (`POPULATION_IS_TODAYS_FILES…`), kein neuer Fehler. Test PIT-13/14 zeigen die Brücke über CIK. |
+
+Nicht verletzt (durch Test belegt): verspätetes Filing (PIT-01), Restatement (PIT-03/04), Aktienzahl und Frischegrenze (PIT-05), Split nach t (PIT-06; Marktkapitalisierung nimmt den Rohschluss, ADR-002), Filing ohne Datum (PIT-07), SIC-Wechsel und Handelsschluss in Winter- und Sommerzeit (PIT-08/09), Fortschreibung nur deklariert (PIT-11), Delisting nach t (PIT-16), Kurse nach t (PIT-15), Fundamentaldaten nach t im Panel (PIT-17).
+## Wochen-Ledger gegen unabhängiges Orakel (Strang U, Teil 2, 10.11.2026)
+
+Reine Schattenprüfung, Forschung, nicht zertifiziert; Engines, Scores und Golden-Hashes unverändert. Das Orakel (`scripts/quant/oracle/ledger_oracle.py`, exakte Bruchrechnung, geschlossene statt bisektierte Lösung der Kostengleichung) buchte 14 synthetische Fälle (W01–W14: Kauf/Halten, Kosten je Seite, Umschichtung, Vollausstieg, Dividende mit Zahltag, Kauf am Ex-Tag, Split 2:1 und 1:5, Split ohne Bestand, Delisting mit Wiedererlös 0,7, Delisting mit Wiederanlage, Dividende ohne Zahltag, Teilinvestition, offene Forderung blockiert Vollinvestition) unabhängig von `research-portfolio.cjs`. Ergebnis: **0 Abweichungen** bei Cash, Equity, Stück, Gebühren, Slippage, Umsatz, Gesamtrendite und Maximum Drawdown (`backtest-metrics.cjs`) bis 1e-9; `UNSETTLED_CASH_NOT_INVESTABLE` stimmt überein. Test: `scripts/quant/tests/test_ledger_oracle.py`. Die Tagesbalken- und Supertrader-Seite samt Abweichungsmatrix, den Befunden U2-F1/F2 und deren Opt-in-Korrektur steht im [Supertrader-Handover](../SUPERTRADER_9_HANDOVER.md) §7.2.
+
+Erlaubte Varianten (kein Fehler): Der halbe Spread wird in `portfolio-backtest.cjs` als proportionaler Abschlag auf den Portfoliowert am Handelstag gebucht; am Handelstag gleicher Wert wie eine Abbuchung je Fill, danach schrumpft der Abschlag auch die Positionen. Differenz = Spread · Positionsertrag / Portfoliowert (bei 10 % Folgerendite und 500 USD Spread auf 1 Mio. USD: 45 USD, 0,45 bp), konservativ. Stops im Wochen-Ledger (`WEEKLY_CLOSE_STOP`) werden auf den Wochenschluss geprüft und zum nächsten Schluss ausgeführt, nie intrawoche; das ist eine andere, bewusst gröbere Semantik als die Tagesbalken-Stops. Der Erlös delisteter Titel ist eine vorregistrierte Annahme je Klasse (`terminalRecovery`).
+
 ## Fachbelege und weiterführende Dokumentation
 
 Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.
