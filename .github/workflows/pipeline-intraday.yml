@@ -280,7 +280,7 @@ jobs:
     needs: [auswahl]
     if: >-
       needs.auswahl.outputs.waechter == 'true'
-    permissions: {contents: write}
+    permissions: {contents: write, issues: write, actions: read}
     name: Kette pruefen
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -325,6 +325,19 @@ jobs:
             cat /tmp/wacht.txt 2>/dev/null || echo 'kein Urteil'
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
+      # 11.11.2026: das FAIL stand nur als rotes Hakerl in der Actions-Liste, waehrend die Seite
+      # Stunden lang den Vortag zeigte. Jetzt wie bei den Datenlaeufen: Issue mit Label
+      # pipeline-alarm (Benachrichtigung), ein gruener Lauf schliesst es.
+      - name: Alarm bei FAIL (Issue)
+        if: always() && steps.wacht.outputs.verdict != '' && github.ref == 'refs/heads/main'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: intraday-auslieferung
+          ALARM_TITLE: Intraday-Stand auf der Seite zu alt oder Auslieferung haengt
+          ALARM_DETAIL_FILE: /tmp/wacht.txt
+          RESULT_WAECHTER: ${{ steps.wacht.outputs.verdict == 'FAIL' && 'failure' || 'success' }}
+        run: node scripts/ci/pipeline-alarm.mjs
 
       - name: Ein FAIL bleibt ein FAIL
         if: steps.wacht.outputs.verdict == 'FAIL'

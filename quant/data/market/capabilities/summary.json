@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-11-11T09:57:02.238Z",
+  "generatedAt": "2026-11-11T19:05:34.054Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -11,8 +11,8 @@
   "sources": {
     "ingestStatus": "2026-11-10T23:35:09.133Z",
     "factors": "2026-11-10T23:37:10.553Z",
-    "intradaySession": "2026-11-10",
-    "discover": "2026-11-11T09:56:59.322Z"
+    "intradaySession": "2026-11-11",
+    "discover": "2026-11-11T10:04:20.172Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -23,8 +23,8 @@
     "marketDataFetched": 6308,
     "historicalAvailable": 5714,
     "historicalQualityAccepted": 6306,
-    "intradayAvailable": 4798,
-    "liveCapable": 1404,
+    "intradayAvailable": 1383,
+    "liveCapable": 1383,
     "factorEligible": 6171,
     "fundamentals": 5416,
     "fundamentals10y": 2330,
@@ -36,8 +36,7 @@
     "providerMappingsMissing": 1
   },
   "gapReasons": {
-    "NOT_IN_LIVE_SCOPE": 3394,
-    "NO_IEX_BARS": 1509,
+    "NO_INTRADAY_SNAPSHOT": 4856,
     "NO_FUNDAMENTALS:NO_CIK": 769,
     "NO_STOCK_PAGE": 609,
     "INSUFFICIENT_HISTORY": 583,
@@ -47,6 +46,7 @@
     "NO_FACTOR_ROW:FAIL": 132,
     "NO_DISCOVER_CARD": 129,
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 124,
+    "NO_IEX_BARS": 70,
     "NAME_MISSING": 27,
     "NO_COMPACT_SERIES": 9,
     "NOT_TRADING:DATA_QUALITY_REVIEW": 9,
@@ -54,7 +54,6 @@
     "NOT_CONSUMER_INSTRUMENT:UNIT": 7,
     "NO_FACTOR_ROW:SOURCE_MISSING": 5,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 4,
-    "NO_INTRADAY_SNAPSHOT": 2,
     "QUALITY_REJECTED:too_few_bars": 2,
     "PROVIDER_MAPPING_MISSING": 1,
     "NOT_INGESTED_YET": 1,
@@ -268,7 +267,7 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": true,
+        "HAS_INTRADAY": false,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
@@ -280,7 +279,7 @@
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NOT_IN_LIVE_SCOPE"
+        "NO_INTRADAY_SNAPSHOT"
       ]
     },
     {

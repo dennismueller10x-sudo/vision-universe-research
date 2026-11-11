@@ -18,9 +18,8 @@ test("ci-gate: offener Check wartet, roter Check faellt", () => {
 test("ci-gate: ohne weitere Checks (z. B. reiner Doku-PR) besteht es", () => {
   assert.equal(evaluate([r("ci-gate", "in_progress", null)]).state, "pass");
 });
-test("ci-gate: externe Checks (Vercel, Cloudflare) blockieren nicht", () => {
-  const ext = { name: "Vercel", app: { slug: "vercel" }, status: "completed", conclusion: "failure" };
-  assert.equal(evaluate([ext, { ...r("a", "completed", "success"), app: { slug: "github-actions" } }]).state, "pass");
+test("ci-gate: wartender Lauf ohne Jobs (queued) haelt das Gate offen", () => {
+  assert.equal(evaluate([r("CI", "queued", null), r("Core", "completed", "success")]).state, "wait");
 });
 test("ci-gate: neuester Lauf je Name zaehlt (abgebrochener Altlauf, Wiederholung)", () => {
   assert.equal(evaluate([{ ...r("x", "completed", "cancelled"), id: 1 }, { ...r("x", "completed", "skipped"), id: 2 }]).state, "pass");

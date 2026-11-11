@@ -1,7 +1,7 @@
 name: ci-gate
 
-# Sammel-Check fuer die Pflichtpruefung im Ruleset (Auto-Merge, CLAUDE.md "Freigaben und Merge").
-# Laeuft bei JEDEM PR (kein Pfadfilter), wartet auf alle anderen Checks des Commits und ist nur gruen,
+# Sammel-Check fuer "Merge bei Gruen" (CLAUDE.md "Freigaben und Merge", RUNBOOK §14).
+# Laeuft bei JEDEM PR (kein Pfadfilter), wartet auf alle anderen Workflow-Laeufe des Commits (auch wartende) und ist nur gruen,
 # wenn keiner rot ist. Nicht gestartete Produkt-CIs zaehlen nicht. Entscheidung: scripts/ci/ci-gate.mjs.
 on:
   pull_request:
@@ -9,7 +9,7 @@ on:
 
 permissions:
   contents: read
-  checks: read
+  actions: read
 
 concurrency:
   group: ci-gate-${{ github.ref }}
