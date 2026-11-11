@@ -37,23 +37,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      # Datenzweig (Plan Neustart §3, core/registry/data-branch.json, Phase BRANCH_ONLY seit 11.11.2026): news waechst nur
+      # noch in data/live; die Kopie in main ist eingefroren (Rueckfall). Ohne frische Kandidaten laesst der Erzeuger die Datei
+      # unveraendert - deshalb zuerst den Stand des Zweigs einspielen, sonst ginge die eingefrorene Kopie zurueck in den Zweig.
+      - name: Datenzweig in den Arbeitsbaum (news)
+        run: scripts/ci/seed-data-branch.sh news
       - name: Fetch primary-source news
         run: node products/news/producer/update_news.mjs
-      - name: Commit fresh news data
-        shell: bash
-        run: |
-          if git diff --quiet -- dashboard/data/news_feed.json; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dashboard/data/news_feed.json
-          git commit -m "chore: update dashboard news"
-          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
-      # Datenzweig-Pilot (Plan Neustart §3, core/registry/data-branch.json, Phase DUAL_WRITE):
-      # derselbe Stand zusaetzlich in den Datenzweig; Pages liefert ihn aus und weist Gleichheit mit main nach.
-      - name: News in den Datenzweig
+      - name: News in den Datenzweig (nur main)
         if: github.ref == 'refs/heads/main'
         run: scripts/ci/push-data-branch.sh data/live dashboard/data/news_feed.json
 
