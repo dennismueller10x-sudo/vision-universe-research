@@ -107,6 +107,16 @@
    "note": "ratings"
   },
   {
+   "id": "content-search-console",
+   "workflow": "content.yml",
+   "cron": "23 2 * * *",
+   "timer": "waker",
+   "inputs": {
+    "teil": "search-console"
+   },
+   "note": "search-console (Insights: Sitemap, Indexierung, Suchanalyse; vor dem Fruehlauf)"
+  },
+  {
    "id": "core-ci",
    "workflow": "core-ci.yml",
    "cron": "47 7 * * *",

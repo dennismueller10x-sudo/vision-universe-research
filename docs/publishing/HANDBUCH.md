@@ -173,7 +173,11 @@ schreibt nach `.claude/skills/insights-tageslauf/SKILL.md` je Lauf einen Artikel
 selbst. Die Artikel erzählen die Geschichte hinter dem Kursausschlag, damit sie auch nach einer Gegenbewegung stimmen.
 **Öffentlich:** `/insights/` liegt als einziger Bereich ohne Passwortmaske (`scripts/access-gate/build.mjs`,
 `PUBLIC_PREFIXES`) und ist für Google freigegeben (`robots`-Meta, `NewsArticle`- und `BreadcrumbList`-JSON-LD,
-`/robots.txt` mit Sitemap). Solche
+`/robots.txt` mit Sitemap). **Google Search Console** (11.11.2026): Dienstkonto `search-console` im Google-Cloud-Projekt
+„Vision Universe“, Nutzer der Domain-Property `visionuniverse.de`, Schlüssel im Secret `GSC_SERVICE_ACCOUNT_JSON`.
+`content.yml` (Teil `search-console`, täglich 03:23 UTC) reicht die Sitemap ein, prüft die Indexierung der neuesten
+Artikel und legt Klicks, Impressionen und Suchbegriffe intern in den Datenzweig (`seo/search-console/latest.json`);
+der Tageslauf liest den Bericht vor der Themenwahl. Solche
 Artikel tragen `"pruefung": "automatisch"` (intern: strengere Prüfregeln, z. B. drei Quellen) und erscheinen wie alle
 Artikel unter „Redaktion Vision Universe“, ohne KI-Hinweis (Owner-Entscheidung 10.11.2026: der Owner liest jeden
 Artikel nach, meldet Korrekturen und trägt die redaktionelle Verantwortung). Bilder nach dem Skill (Pressematerial,

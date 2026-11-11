@@ -26,6 +26,10 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    - **Nachrichten des Tages:** Quartalszahlen von gestern Abend und heute früh, Übernahmen, Zulassungen, Gerichts- und
      Politikentscheidungen, Ausblicke (Websuche „earnings today“, „stock movers today“, Wirtschaftskalender).
    - **Unsere Daten:** `node products/insights/themen.mjs` (größte Tagesbewegungen, groß und Nebenwerte).
+   - **Was gesucht wird:** der Search-Console-Bericht (täglich 03:23 UTC, intern im Datenzweig):
+     `git fetch -q origin data/live && git show origin/data/live:seo/search-console/latest.json`. Er nennt je Artikel
+     Klicks, Impressionen, Position, die Suchbegriffe und den Indexierungsstand. Nutzen: Themen, nach denen Leser schon
+     suchen, und Begriffe, die in Titel und Teaser gehören. Fehlt der Bericht, ohne ihn weiter.
    Ein Thema trägt, wenn es einen benennbaren Anlass gibt. **Branchenbewegungen zählen ausdrücklich** (z. B. „Chipwerte
    steigen zweistellig“): dann eine Aktie als Hauptwert mit Datenkasten nehmen und die Branche im Text einordnen. Eine
    Bewegung ohne bekannten Grund darf Thema sein, wenn der Artikel das offen sagt und mit Zahlen, Branche und Daten trägt.
@@ -70,7 +74,8 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    „rate limited“ zählt nicht) mit Squash mergen. Konflikte mit `main` durch Einspielen von `main` lösen, nie Force-Push.
    Danach prüfen, dass der Artikel unter research.visionuniverse.de antwortet (die Auslieferung kann wegen der
    Datenläufe bis zu einer Stunde dauern; `/insights/` ist öffentlich, ohne Passwortmaske).
-9. **Melden.** Zum Schluss zwei Zeilen: welcher Artikel live ist (Adresse) oder warum nichts erschien.
+9. **Melden.** Zum Schluss zwei Zeilen: welcher Artikel live ist (Adresse) oder warum nichts erschien. Meldet der
+   Search-Console-Bericht einen älteren Artikel als nicht indexiert (`urteil` nicht `PASS`), das in einem Satz dazuschreiben.
 
 ## Wann nichts veröffentlicht wird
 
