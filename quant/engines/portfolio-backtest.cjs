@@ -39,13 +39,21 @@ function fail(code, detail) { const e = new Error(code + (detail ? ': ' + detail
 const at = d => d + 'T23:59:59.999Z';
 
 // panel = { calendar: [YYYY-MM-DD], basis: 'TOTAL_RETURN'|'PRICE_RETURN', benchmark: {label, levels: number[] (NaN fehlt), sourceHash},
-//           securities: [{id, sector, mic, adj: number[], raw: number[], dv: number[]|null, bundle|null, terminal: {lastIdx, kind}|null}],
+//           securities: [{id, sector, listing?: {cik, from, to} (PIT-F3, optional), mic, adj: number[], raw: number[], dv: number[]|null, bundle|null, terminal: {lastIdx, kind}|null}],
 //           provenance: {datasetHash, identityEvidence, populationEvidence, corporateActionEvidence, lifecycleEvidence, licenseEvidence} }
 function validatePanel(panel) {
   if (!panel || !Array.isArray(panel.calendar) || panel.calendar.length < 60) fail('PANEL_CALENDAR_REQUIRED');
   if (!['TOTAL_RETURN', 'PRICE_RETURN'].includes(panel.basis)) fail('PANEL_BASIS_REQUIRED');
   const T = panel.calendar.length;
   if (!panel.benchmark || panel.benchmark.levels.length !== T) fail('PANEL_BENCHMARK_REQUIRED');
+  const seen = new Map();
+  for (const s of panel.securities) if (s.listing) {
+    const l = s.listing, iso = x => x === null || x === undefined || /^\d{4}-\d{2}-\d{2}$/.test(x);
+    if (!/^\d{1,10}$/.test(String(l.cik)) || !iso(l.from) || !iso(l.to) || (l.from && l.to && l.to < l.from)) fail('PANEL_LISTING_INVALID', s.id);
+    // Gleiche id (securityId) bei überlappenden Intervallen anderer Emittenten = Ticker-Kollision, nie raten.
+    for (const o of seen.get(s.id) || []) if (Number(o.cik) !== Number(l.cik) && (!o.to || !l.from || l.from <= o.to) && (!l.to || !o.from || o.from <= l.to)) fail('PANEL_LISTING_COLLISION', s.id);
+    seen.set(s.id, [...(seen.get(s.id) || []), l]);
+  }
   for (const s of panel.securities) if (s.adj.length !== T || s.raw.length !== T || (s.dv && s.dv.length !== T)) fail('PANEL_SERIES_LENGTH', s.id);
   if (panel.basis === 'PRICE_RETURN' && panel.securities.some(s => s.terminal)) fail('PRICE_RETURN_PANEL_IS_SURVIVOR_ONLY');
   return T;
@@ -57,6 +65,8 @@ function decide(panel, t, cfg, std, held = null) {
   const W = cfg.riskWindowWeeks, date = panel.calendar[t], rows = [], secs = [];
   for (const s of panel.securities) {
     if (!(s.adj[t] > 0) || !s.sector) continue;
+    // PIT-F3: optionales Listing-Intervall {cik, from, to} (inklusive, null = offen); außerhalb ist der Titel kein Kandidat.
+    if (s.listing && ((s.listing.from && date < s.listing.from) || (s.listing.to && date > s.listing.to))) continue;
     const f0 = firstIndex(s);
     if (f0 < 0 || t - f0 < W) continue;
     if (s.terminal && s.terminal.lastIdx < t) continue;

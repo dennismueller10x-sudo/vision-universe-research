@@ -49,3 +49,21 @@ Belegte Folgen:
 
 - Der nächste Marktdaten-Refresh holt BRK-B unter `ref_BRK_B`. Die alte Datei `ref_BRKB.json` wird nicht mehr fortgeschrieben.
 - Neue Skripte importieren `core/identity.js`. Test-Fixtures, die Skripte in einen Temp-Baum kopieren, müssen `core/` mitkopieren.
+
+## Ergänzung A1 (11.11.2026): Listing-Intervall und stabile Entität (PIT-F3)
+
+**Problem.** Die `securityId` ist tickerbasiert. Bei einer Umbenennung (FB → META) bricht die Kette; bei Ticker-Wiederverwendung teilen zwei Emittenten dieselbe `securityId`. Das Backtest-Panel kennt kein Listing-Intervall.
+
+**Entscheidung.**
+1. **Stabile Entität = Emittent (`issuerId`, CIK).** Die `securityId` bleibt Artefaktschlüssel und ändert sich nicht. Bestehende Schlüssel und Shards (`shardKey`) bleiben gültig; es gibt keine Migration und keine Doppelschreibphase.
+2. **Listing = (Emittent, Ticker, von, bis)**, Grenzen inklusive, `null` = offen. Kennung `lst_<CIK10>_<Ticker ohne ref_>_<von|00000000>` (`core/identity.js#listingId`, eigener Namensraum, nie als Artefaktschlüssel).
+3. **Übersetzungsregister** `core/identity.js#createListingRegister(rows).resolve(securityId|Ticker, asOf)` ordnet eine vorhandene `securityId` zu einem Tag einem Emittenten zu: `OK`, `UNKNOWN` (außerhalb jedes Intervalls) oder `AMBIGUOUS` (zwei Emittenten am selben Tag). Es wird nie geraten. `listingsOf(issuer)` liefert die Kette über Tickerwechsel.
+4. **Panel (optional, rückwärtskompatibel):** `securities[i].listing = {cik, from, to}`. `portfolio-backtest.cjs#decide` nimmt einen Titel außerhalb seines Intervalls nicht als Kandidat; `validatePanel` weist ungültige Intervalle (`PANEL_LISTING_INVALID`) und gleiche `id` zweier Emittenten mit überlappenden Intervallen (`PANEL_LISTING_COLLISION`) ab. Ohne `listing` ändert sich nichts.
+5. Quelle der Intervalle: Company Master (`firstTradeDate`, `lastTradeDate`/`delistedAt`, `cik`). Fehlt ein Datum, ist das Intervall offen; Unbekanntes bleibt unbekannt.
+
+**Schattenprüfung** (`scripts/quant/pit-listing-shadow.mjs`, nur lesend, 11.11.2026): 6461 Instrumente mit CIK, 6461 Listings; jede aktive `securityId` löst am Stichtag auf ihren eigenen Emittenten auf (6461 OK, 0 AMBIGUOUS, 0 UNKNOWN, 0 falscher Emittent). 613 Emittenten tragen mehr als eine `securityId` (überwiegend weitere Anteilsklassen, nicht nur Umbenennungen); 0 Ticker mit mehreren Emittenten im heutigen Stamm (die Wiederverwendung betrifft beendete Titel, die der heutige Stamm nicht führt). 1348 Instrumente ohne CIK bleiben ohne Zuordnung.
+
+**Bewusst offen.**
+- Migration der Artefaktschlüssel auf `instrumentId`/Listing-Kennung (weiter eigenes Projekt, ISIN/FIGI/`permaTicker` sind 0 von 7.809 befüllt).
+- Das Panel-Universum bleibt „heutige Dateien plus V13-Ketten“; Intervalle aus dem Company Master ergänzen es, ersetzen aber keine vollständige Historie beendeter Titel. Eine Panel-Kette über einen Tickerwechsel hinweg (zwei Panel-Zeilen eines Emittenten zu einer Rendite verbinden) braucht Kurs- und Kapitalmaßnahmen-Belege und ist ein eigener Fachmodell-PR.
+- Der Builder (`model-portfolios.cjs`) befüllt `listing` noch nicht; das Register ist der Vertrag dafür.
