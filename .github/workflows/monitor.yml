@@ -487,9 +487,18 @@ jobs:
     env:
       IN_SITE: ${{ inputs.site }}
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser aus dem Playwright-Image (Version = npm playwright@ unten) statt apt-get/playwright install (apt-DNS-Haenger).
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -499,7 +508,6 @@ jobs:
       - name: Playwright (Chromium)
         run: |
           npm install --no-save --no-audit --no-fund playwright@1.63.0
-          npx playwright install --with-deps chromium
 
       # Kommt der Vertrag ueberhaupt aus main beim Nutzer an? Das ist die
       # erste Frage und die billigste: ohne die Module rechnet der Browser
@@ -578,9 +586,18 @@ jobs:
     env:
       IN_SITE: ${{ inputs.site }}
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser aus dem Playwright-Image (Version = npm playwright@ unten) statt apt-get/playwright install (apt-DNS-Haenger).
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -589,7 +606,6 @@ jobs:
         run: |
           npm init -y > /dev/null
           npm install --no-save --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
-          npx playwright install --with-deps chromium webkit
 
       - name: Freshness der veroeffentlichten Seite (streng)
         id: freshness
@@ -675,12 +691,21 @@ jobs:
       cancel-in-progress: false
     name: Aktienseite mit echtem Strom
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser aus dem Playwright-Image (Version = npm playwright@ unten) statt apt-get/playwright install (apt-DNS-Haenger).
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
           # Spitze des Zweigs, nicht der Ausloese-Commit (wartende Laeufe, Audit 03.10.2026)
           ref: ${{ github.ref }}
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -701,7 +726,6 @@ jobs:
         run: |
           npm init -y > /dev/null
           npm install --no-save --no-audit --no-fund playwright@1.63.0
-          npx playwright install --with-deps chromium
 
       - name: Zertifikat fuer den echten Namen
         run: |
@@ -841,6 +865,13 @@ jobs:
       group: europe-discover-live-qa-${{ github.ref_name }}-${{ github.sha }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser aus dem Playwright-Image (Version = npm playwright@ unten) statt apt-get/playwright install (apt-DNS-Haenger).
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 90
     env:
       # Validated as a 40-hex SHA by the resolver before any request.
@@ -863,6 +894,8 @@ jobs:
           sparse-checkout: |
             scripts/discover
             scripts/access-gate
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -930,7 +963,6 @@ jobs:
       - name: Install pinned browser tools
         run: |
           npm install --prefix /tmp/europe-qa --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
-          /tmp/europe-qa/node_modules/.bin/playwright install --with-deps chromium webkit
       - name: Resolve verified actual publication for europe-live-target.json
         id: resolve_europe
         if: ${{ !cancelled() }}
@@ -1013,11 +1045,20 @@ jobs:
       cancel-in-progress: false
     name: Aktienseite in Produktion, mit echtem Strom
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser aus dem Playwright-Image (Version = npm playwright@ unten) statt apt-get/playwright install (apt-DNS-Haenger).
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -1035,7 +1076,6 @@ jobs:
         run: |
           npm init -y > /dev/null
           npm install --no-save --no-audit --no-fund playwright@1.63.0
-          npx playwright install --with-deps chromium
 
       - name: Aktienseiten in Produktion beobachten
         id: smoke
@@ -1315,11 +1355,20 @@ jobs:
       group: supertrader-live-smoke-${{ github.ref_name }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser aus dem Playwright-Image (Version = npm playwright@ unten) statt apt-get/playwright install (apt-DNS-Haenger).
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 20
     env:
       SITE: https://research.visionuniverse.de
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -1368,7 +1417,6 @@ jobs:
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: |
           npm install --prefix /tmp/st-qa --no-audit --no-fund playwright@1.56.1
-          node /tmp/st-qa/node_modules/playwright/cli.js install --with-deps chromium
           mkdir -p /tmp/site/supertrader/data
           cp /tmp/signals.json /tmp/registry.json /tmp/site/supertrader/data/
           # Research-Kandidaten (Supertrader 8): die QA erwartet die befuellten Ansichten genau dann, wenn
@@ -1405,6 +1453,13 @@ jobs:
     env:
       IN_SITE: ${{ inputs.site || 'https://research.visionuniverse.de' }}
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser aus dem Playwright-Image (Version = npm playwright@ unten) statt apt-get/playwright install (apt-DNS-Haenger).
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -1416,13 +1471,14 @@ jobs:
             technical/academy/content.json
             scripts/quality/browser-navigation.mjs
             scripts/access-gate
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Playwright (Chromium)
         run: |
           npm install --prefix /tmp/pw --no-save --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
-          /tmp/pw/node_modules/.bin/playwright install --with-deps chromium
       - name: Live-QA (390 px, CPU x4, 150 ms, 1,6 Mbit/s)
         env:
           PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
@@ -1476,6 +1532,13 @@ jobs:
     env:
       IN_SITE: ${{ inputs.site || 'https://research.visionuniverse.de' }}
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser aus dem Playwright-Image (Version = npm playwright@ unten) statt apt-get/playwright install (apt-DNS-Haenger).
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -1483,13 +1546,14 @@ jobs:
           sparse-checkout: |
             products/vorsorge/producer/live-smoke.mjs
             scripts/access-gate
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Playwright (Chromium)
         run: |
           npm install --prefix /tmp/pw --no-save --no-audit --no-fund playwright@1.63.0
-          /tmp/pw/node_modules/.bin/playwright install --with-deps chromium
       - name: Live-Smoke
         env:
           PLAYWRIGHT_PATH: /tmp/pw/node_modules/playwright
