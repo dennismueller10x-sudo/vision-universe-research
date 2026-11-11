@@ -24,8 +24,8 @@
      Zone", "Higher High"). Die Karte uebersetzt genau diese zwei festen Saetze;
      jeder andere Text bleibt, wie er ist. */
   var PLAIN_TRIGGER = {
-    "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.": "der Kurs über der Einstiegszone bzw. dem letzten Tief bleibt und ein neues Hoch bildet.",
-    "Kurs scheitert an der Entry Zone bzw. dem letzten Strukturhoch und erzeugt ein neues Lower Low.": "der Kurs an der Einstiegszone bzw. dem letzten Hoch scheitert und ein neues Tief bildet."
+    "Kurs haelt die Entry Zone bzw. das letzte Strukturtief und erzeugt ein neues Higher High.": "der Kurs über der Zone laut Methode bzw. dem letzten Tief bleibt und ein neues Hoch bildet.",
+    "Kurs scheitert an der Entry Zone bzw. dem letzten Strukturhoch und erzeugt ein neues Lower Low.": "der Kurs an der Zone laut Methode bzw. dem letzten Hoch scheitert und ein neues Tief bildet."
   };
   function plainTrigger(t) { return PLAIN_TRIGGER[t] || t; }
   function nameOf(ctx, t) { var s = ctx.names && ctx.names[t]; return s || ""; }
@@ -117,10 +117,9 @@
     var first = c.events[0], t0 = T[first.eventType] || {};
     var rows = [];
     var tr = c.trade && c.trade.state === "AVAILABLE" ? c.trade : null;
-    if (tr && zoneText(tr.entry)) rows.push(["Einstiegsmarke der Methode", zoneText(tr.entry)]);
+    if (tr && zoneText(tr.entry)) rows.push(["Zone laut Methode", zoneText(tr.entry)]);
     var inv = tr && typeof tr.invalidation === "number" ? tr.invalidation : c.setup && typeof c.setup.invalidation === "number" ? c.setup.invalidation : null;
-    if (inv !== null && c.setup && c.setup.state !== "NO_SETUP") rows.push(["Ungültig unter", usd(inv)]);
-    if (tr && tr.targets && tr.targets[0]) rows.push(["Zielzone 1", zoneText(tr.targets[0])]);
+    if (inv !== null && c.setup && c.setup.state !== "NO_SETUP") rows.push(["Ungültig laut Methode", usd(inv)]);
     var ev = c.replay && c.replay.sufficient
       ? Math.round(c.replay.positiveShare * 100) + " % der " + c.replay.completed + " ähnlichen Fälle lagen nach 6 Monaten höher (Median " + VM.pct(c.replay.medianReturn, 1, true) + ")"
       : c.replay && c.replay.state === "AVAILABLE" ? "zu wenige ähnliche Fälle (" + c.replay.episodes + ")" : null;
@@ -237,7 +236,7 @@
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Quant Radar" }),
       el("h1", { class: "qx-h1", text: "Was ist heute neu?" }),
       el("p", { class: "q-hero-lead v2-lead", text: "Quant prüft jeden Tag alle Aktien nach denselben Regeln und meldet, wo sich etwas verändert hat. Jede Karte sagt: was passiert ist, was als Nächstes fehlt – und wie oft so etwas früher besser lief als der Markt." }),
-      el("p", { class: "q-intro-note", text: "So liest du eine Karte: oben das Ereignis mit Datum, darunter Einstieg, Ungültig-Marke und die nächste Bedingung, unten der historische Vergleich mit dem Markt und wie belastbar er ist. Keine Kaufempfehlung, keine Prognose." })]));
+      el("p", { class: "q-intro-note", text: "So liest du eine Karte: oben das Ereignis mit Datum, darunter Zone und Ungültig-Marke laut Methode und die nächste Bedingung, unten der historische Vergleich mit dem Markt und wie belastbar er ist. Keine Kaufempfehlung, keine Prognose." })]));
     var r = await ctx.api.getQuantRadar();
     if (!r || r.state !== "AVAILABLE") { main.append(X.notice("Radar derzeit nicht verfügbar", "Der aktuelle Radar-Stand konnte nicht geladen werden.")); return; }
     var current = params && params.get("filter") || "alle";
@@ -319,7 +318,7 @@
     var close = closeBy && typeof closeBy[c.ticker] === "number" ? " · Schluss " + usd(closeBy[c.ticker]) : "";
     var frueher = c.replay && c.replay.sufficient ? "in " + Math.round(c.replay.positiveShare * 100) + " % von " + c.replay.completed + " Fällen höher" : c.replay && c.replay.state === "AVAILABLE" ? "zu wenige Fälle für eine Aussage" : null;
     return '<a class="vu-box qv3-setup" href="' + U().esc(X.routes.stock(c.ticker)) + '"><div class="qv3-setup-h">' + U().logo(c.ticker) + '<span class="qv3-setup-n"><b>' + U().esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U().esc(c.ticker + close) + "</b></span></span>" + U().verdict("strong", "Bestätigt") + "</div>" +
-      '<div class="qv3-pboxes">' + box("Einstiegsmarke", tr && zoneText(tr.entry)) + box("Stopp-Marke", inv != null ? usd(inv) : null) + box("Zielzone", tr && tr.targets && tr.targets[0] && zoneText(tr.targets[0])) + "</div>" +
+      '<div class="qv3-pboxes">' + box("Zone laut Methode", tr && zoneText(tr.entry)) + box("Ungültig laut Methode", inv != null ? usd(inv) : null) + "</div>" +
       '<div class="vu-xs vu-mu qv3-pnote">Marken der Methode, keine Empfehlung.</div>' +
       (frueher ? '<div class="vu-xs qv3-frueher"><b>Früher:</b> <span class="vu-mu">' + U().esc(frueher) + "</span></div>" : "") + "</a>";
   }
@@ -358,7 +357,7 @@
       U().navcard({ glyph: "line", title: "Technische Lagen", sub: "Charts mit klarer Lage, nach Regel", href: X.routes.chartlagen() }) +
       U().navcard({ glyph: "grid", title: "Musterdepots", sub: "Fünf Profile nach Regel, Rechenmodell", href: "/quant/musterdepots/" }) + "</div>" +
       '<a class="vu-box vu-box--lime qv3-trust" href="' + U().esc(X.routes.method()) + '"><span class="qv3-trust-i">' + U().glyph("book", 18) + '</span><span><b>Warum kann ich dem vertrauen?</b><span class="vu-xs">Methodik, Daten und Grenzen offen erklärt</span></span>' + U().glyph("next", 18) + "</a>" +
-      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Einstieg, Ungültig-Marke und Ziele sind Szenarien der technischen Analyse.</p></div>'));
+      '<div class="vu-box vu-box--line qv3-note"><b class="vu-sm">Keine Anlageempfehlung</b><p class="vu-xs vu-mu">Quant ordnet ein und vergleicht. Keine Prognose, kein Kursziel. Zone und Ungültig-Marke laut Methode beschreiben Szenarien der technischen Analyse.</p></div>'));
 
     var watched = X.watch.list();
     var TI = global.VUTechnicalIntelligence;
@@ -410,13 +409,13 @@
       todayHost.replaceChildren(frag(html));
       var proof = proofCard(radar);
       if (proof) proofHost.append(proof);
-      /* Setup bestätigt: drei Karten mit Interessant ab / Ungültig unter / Ziel 1 und früherer Quote. */
+      /* Setup bestätigt: Karten mit Zone und Ungültig-Marke laut Methode und früherer Quote. */
       var confirmed = (radar.cards || []).filter(function (c) { return c.events && c.events.some(function (e) { return e.eventType === "SETUP_CONFIRMED"; }); });
       var conf = setupIdx && setupIdx.state === "AVAILABLE" ? (setupIdx.states || []).filter(function (st) { return st.state === "CONFIRMED" && typeof st.count === "number"; })[0] : null;
       if (confirmed.length) {
         setupHost.replaceChildren(frag(U().sect("Setup bestätigt", { href: X.routes.screener("frage=setups"), link: conf ? "Alle " + conf.count.toLocaleString("de-DE") : "Alle" }) +
           '<div class="vu-stack">' + confirmed.slice(0, 3).map(function (c) { return setupCardV3(ctx, c, null); }).join("") + "</div>" +
-          '<div style="margin-top:10px">' + U().help("Setup: Der Chart zeigt eine Lage mit klaren Regeln. „Ungültig unter“ heißt: fällt der Kurs darunter, gilt das Setup nicht mehr.") + "</div>"));
+          '<div style="margin-top:10px">' + U().help("Setup: Der Chart zeigt eine Lage mit klaren Regeln. „Ungültig laut Methode“ heißt: fällt der Kurs darunter, gilt das Setup nicht mehr.") + "</div>"));
       }
       var hits = watched.length ? await ctx.api.getRadarCards(watched).catch(function () { return []; }) : [];
       if (watched.length) watchHost.replaceChildren(X.world("Deine beobachteten Aktien", hits.length ? hits.length + " von " + watched.length + " beobachteten Aktien melden eine Veränderung." : "Bei deinen " + watched.length + " beobachteten Aktien hat sich zum letzten Stand nichts geändert.",
@@ -494,7 +493,7 @@
       { kicker: "Kursbild", icon: "setups", title: "Aktuelle Setups", text: "Wo im Kursbild gerade etwas entsteht", href: X.routes.screener("frage=setups") }
     ])], { href: X.routes.backtest(), label: "Backtesting" }));
     page.append(X.actions([X.btn("Warum kann ich dem vertrauen?", X.routes.method(), "secondary")]),
-      el("p", { class: "qx-small", text: "Quant gibt keine Anlageempfehlungen und macht keine Prognosen. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." }));
+      el("p", { class: "qx-small", text: "Quant gibt keine Anlageempfehlungen und macht keine Prognosen. Zone und Ungültig-Marke laut Methode beschreiben Szenarien der technischen Analyse." }));
 
     /* Chartbild-Ereignisse der beobachteten Aktien - nur in der App. Ohne
        sauberen Vergleichslauf (Ausgangszustand, Methodikwechsel) bleibt der
@@ -758,7 +757,7 @@
       var FIRST = global.VUUI ? 10 : 40, shown = el("div", { class: "qx-list" }, result.rows.slice(0, FIRST));
       var moreBtn = result.rows.length > FIRST ? el("button", { type: "button", class: "vu-btn vu-btn--line vu-btn--block qv3-all", text: "Alle " + Math.min(total, result.rows.length).toLocaleString("de-DE") + " zeigen",
         onclick: function () { shown.append.apply(shown, result.rows.slice(FIRST)); moreBtn.remove(); } }) : null;
-      out.replaceChildren(el("div", { class: "q-results-head" }, [el("b", { text: total.toLocaleString("de-DE") + (global.VUUI ? " Treffer" : " Ergebnisse") }), el("span", { text: global.VUUI ? "Sortiert: " + (result.sortLabel || "Nach Wert").replace(/^Nach /, "") : result.sortLabel || "Nach Wert" })]),
+      X.fill(out, el("div", { class: "q-results-head" }, [el("b", { text: total.toLocaleString("de-DE") + (global.VUUI ? " Treffer" : " Ergebnisse") }), el("span", { text: global.VUUI ? "Sortiert: " + (result.sortLabel || "Nach Wert").replace(/^Nach /, "") : result.sortLabel || "Nach Wert" })]),
         el("p", { class: "qx-count", text: result.summary }),
         result.rows.length ? shown : X.notice("Keine Treffer", "Heute erfüllt keine Aktie alle Bedingungen dieser Auswahl."),
         moreBtn,
@@ -1101,7 +1100,7 @@
       if (!res || res.state !== "AVAILABLE") { out.replaceChildren(X.notice("Ergebnisse derzeit nicht verfügbar", "Die Daten konnten nicht geladen werden. Deine Regeln bleiben erhalten.")); return; }
       var sel = fields().filter(function (f) { return f.id === sort.value; })[0];
       var v2 = current.id !== "legacy";
-      out.replaceChildren(el("p", { class: "qx-count", text: res.stocks.length.toLocaleString("de-DE") + " Treffer in " + (res.eligible || 0).toLocaleString("de-DE") + " auswertbaren Aktien · " + current.label + (res.asOf ? " · Stand " + X.dateDe(res.asOf) : "") }),
+      X.fill(out, el("p", { class: "qx-count", text: res.stocks.length.toLocaleString("de-DE") + " Treffer in " + (res.eligible || 0).toLocaleString("de-DE") + " auswertbaren Aktien · " + current.label + (res.asOf ? " · Stand " + X.dateDe(res.asOf) : "") }),
         res.stocks.length ? el("div", { class: "qx-list" }, res.stocks.slice(0, 100).map(function (s) {
           var why, side = null;
           if (v2 && s.evidence) {
@@ -1220,7 +1219,7 @@
     var dist = await distOrNull(ctx);
     var rowBy = {}; ((screening && screening.rows) || []).forEach(function (r) { rowBy[r.ticker] = r; });
     var ids = p.conditions.map(function (c) { return c.id; });
-    membersHost.append(!countable ? X.notice("Keine Zuordnung", "Solange eine benötigte Eigenschaft keine Werte hat, wird keine Aktie diesem Stil zugeordnet – auch nicht näherungsweise.") : members.length ? el("div", {}, [el("p", { class: "qx-small qx-cm-legend", text: "Je Bedingung: Balken = Wert 0–100, Strich = Schwelle der Bedingung, Farbe = Stufe unter allen bewerteten Aktien." }), el("div", { class: "qx-list" }, members.slice(0, 30).map(function (t) {
+    X.add(membersHost, !countable ? X.notice("Keine Zuordnung", "Solange eine benötigte Eigenschaft keine Werte hat, wird keine Aktie diesem Stil zugeordnet – auch nicht näherungsweise.") : members.length ? el("div", {}, [el("p", { class: "qx-small qx-cm-legend", text: "Je Bedingung: Balken = Wert 0–100, Strich = Schwelle der Bedingung, Farbe = Stufe unter allen bewerteten Aktien." }), el("div", { class: "qx-list" }, members.slice(0, 30).map(function (t) {
       var row = rowBy[t];
       return X.stockRow({ ticker: t, name: nameOf(ctx, t), why: row ? screeningWhy(row, ids, dist) : null, whyNode: row ? condMeters(row, p.conditions, dist) : null });
     }))]) : X.notice("Heute kein Treffer", "Keine Aktie erfüllt derzeit alle Bedingungen."),
@@ -1294,7 +1293,7 @@
       U.tile("Seit gestern", inN == null ? "–" : "+" + inN + " · −" + outN, "neu · herausgefallen") + "</div>" +
       U.sect("Die Regeln") + '<div class="vu-box qv3-liste">' + rules + "</div>" +
       (firstName && VM.FACTORS[first.id].measures ? '<div style="margin-top:8px">' + U.help(firstName + ": " + VM.FACTORS[first.id].measures) + "</div>" : "") +
-      (countable && members.length ? U.sect("Bekannte Namen in der Liste", { href: "#qv3-all", link: "Alle " + members.length.toLocaleString("de-DE") }) +
+      (countable && members.length ? U.sect("Die " + members.length.toLocaleString("de-DE") + (members.length === 1 ? " Aktie" : " Aktien"), { href: "#qv3-all", link: "Alle " + members.length.toLocaleString("de-DE") }) +
         '<div class="qv3-rows">' + known.slice(0, 5).map(function (t) { return U.stockRow({ ticker: t, name: nameOf(ctx, t) || t, sub: recBy[t] && recBy[t].was ? recBy[t].was : t, href: X.routes.stock(t), noPrice: true }); }).join("") + "</div>" :
         '<div class="vu-box vu-box--line" style="margin-top:14px">' + U.verdict("none", countable ? "Heute kein Treffer" : "Nicht prüfbar") + '<p class="vu-xs vu-mu" style="margin:6px 0 0">' + U.esc(countable ? "Keine Aktie erfüllt derzeit alle Regeln." : VM.reasonText(ix && ix.availability && ix.availability.reason, "Eine benötigte Eigenschaft hat für keine Aktie Werte.")) + "</p></div>") +
       (entered.length ? U.sect("Neu seit gestern") + '<div class="vu-chips qv3-new">' + entered.slice(0, 2).map(function (t) { return '<a class="vu-chip" href="' + U.esc(X.routes.stock(t)) + '">' + U.esc(nameOf(ctx, t) || t) + "</a>"; }).join("") +
@@ -1360,8 +1359,8 @@
       var confirmed = (radar.cards || []).filter(function (c) { return c.events && c.events.some(function (e) { return e.eventType === "SETUP_CONFIRMED"; }); }).slice(0, 3);
       var conf = setupIdx && setupIdx.state === "AVAILABLE" ? (setupIdx.states || []).filter(function (st) { return st.state === "CONFIRMED" && typeof st.count === "number"; })[0] : null;
       if (confirmed.length) setupHost.append(html(U.sect("Setup bestätigt", { href: X.routes.screener("frage=setups"), link: conf ? "Alle " + conf.count.toLocaleString("de-DE") : "Alle" }) + '<div class="vu-stack">' + confirmed.map(function (c) {
-        var tr = c.trade && c.trade.state === "AVAILABLE" ? c.trade : null, z = tr && tr.targets && tr.targets[0] && zoneText(tr.targets[0]);
-        return '<a class="vu-box qv3-mini" href="' + U.esc(X.routes.stock(c.ticker)) + '">' + U.logo(c.ticker) + '<span class="qv3-mini-t"><b>' + U.esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U.esc(z ? "Ziel 1: " + z : c.ticker) + "</b></span></span>" + U.verdict("strong", "Bestätigt") + "</a>";
+        var tr = c.trade && c.trade.state === "AVAILABLE" ? c.trade : null, z = tr && zoneText(tr.entry);
+        return '<a class="vu-box qv3-mini" href="' + U.esc(X.routes.stock(c.ticker)) + '">' + U.logo(c.ticker) + '<span class="qv3-mini-t"><b>' + U.esc(nameOf(ctx, c.ticker) || c.ticker) + '</b><span class="vu-xs vu-mu"><b>' + U.esc(z ? "Zone laut Methode: " + z : c.ticker) + "</b></span></span>" + U.verdict("strong", "Bestätigt") + "</a>";
       }).join("") + "</div>"));
     }
     if (idx && idx.historicalEvidence && idx.historicalEvidence.transitions) {

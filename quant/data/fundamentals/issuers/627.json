@@ -549,9 +549,9 @@
       "cik": "0001228627",
       "name": "Opus Genetics, Inc.",
       "sic": "2834",
-      "rawFacts": 14483,
-      "mappedFacts": 4220,
-      "unmappedFacts": 10380,
+      "rawFacts": 14739,
+      "mappedFacts": 4321,
+      "unmappedFacts": 10661,
       "calendarYears": 24,
       "industry": null,
       "industryMetrics": {},
@@ -561,9 +561,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 25,
-      "quarterlyPeriods": 76,
+      "quarterlyPeriods": 77,
       "firstPeriodEnd": "2001-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 24.0,
       "metrics": {
         "capital_expenditures": {
@@ -575,7 +575,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 32,
+          "quarterlyPeriods": 33,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -595,28 +595,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "net_income": {
           "annualPeriods": 24,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2002-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 23.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 45,
+          "quarterlyPeriods": 46,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -630,14 +630,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 25,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2001-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 24.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -660,47 +660,49 @@
         }
       },
       "quality": {
-        "HIGH": 459
+        "HIGH": 466
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 459,
-        "resolvedValues": 459
+        "datableValues": 466,
+        "resolvedValues": 466
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10631,
+        "rules_version": "1.1.0",
+        "total": 10913,
         "by_severity": {
-          "INFO": 10380,
+          "INFO": 10661,
           "ERROR": 1,
-          "WARNING": 250
+          "WARNING": 251
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 38,
+          "CONCEPT_DISAGREEMENT": 39,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "RESTATEMENT_CONFLICT": 93,
-          "UNEXPECTED_DURATION": 119,
-          "UNKNOWN_CONCEPT": 10380
+          "UNEXPECTED_DURATION": 118,
+          "UNKNOWN_CONCEPT": 10661
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-054381",
-        "filing_date": "2026-08-06",
+        "accession": "0001628280-26-072697",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 77
+        "periodic_filings": 78,
+        "acceptance_datetime": "2026-11-10T21:04:44.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ee5013ccfe20936f98a0d25c98af9bd8ce0694d6e0af7a79cf4a675fa722ebff",
+      "sourceDigest": "6a6c63a132da0a270e6dda384d695e390b6bd1e32ad611d9d7af17cae94a20ae",
       "issuerId": "iss_cik_0001228627"
     },
     {

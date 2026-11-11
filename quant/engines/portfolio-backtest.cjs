@@ -39,7 +39,7 @@ function fail(code, detail) { const e = new Error(code + (detail ? ': ' + detail
 const at = d => d + 'T23:59:59.999Z';
 
 // panel = { calendar: [YYYY-MM-DD], basis: 'TOTAL_RETURN'|'PRICE_RETURN', benchmark: {label, levels: number[] (NaN fehlt), sourceHash},
-//           securities: [{id, sector, listing?: {cik, from, to} (PIT-F3, optional), mic, adj: number[], raw: number[], dv: number[]|null, bundle|null, terminal: {lastIdx, kind}|null}],
+//           securities: [{id, sector, sectorAt?: (string|null)[] (PIT-F2, optional), listing?: {cik, from, to} (PIT-F3, optional), mic, adj: number[], raw: number[], dv: number[]|null, bundle|null, terminal: {lastIdx, kind}|null}],
 //           provenance: {datasetHash, identityEvidence, populationEvidence, corporateActionEvidence, lifecycleEvidence, licenseEvidence} }
 function validatePanel(panel) {
   if (!panel || !Array.isArray(panel.calendar) || panel.calendar.length < 60) fail('PANEL_CALENDAR_REQUIRED');
@@ -54,6 +54,7 @@ function validatePanel(panel) {
     for (const o of seen.get(s.id) || []) if (Number(o.cik) !== Number(l.cik) && (!o.to || !l.from || l.from <= o.to) && (!l.to || !o.from || o.from <= l.to)) fail('PANEL_LISTING_COLLISION', s.id);
     seen.set(s.id, [...(seen.get(s.id) || []), l]);
   }
+  for (const s of panel.securities) if (s.sectorAt && s.sectorAt.length !== T) fail('PANEL_SECTOR_SERIES_LENGTH', s.id);
   for (const s of panel.securities) if (s.adj.length !== T || s.raw.length !== T || (s.dv && s.dv.length !== T)) fail('PANEL_SERIES_LENGTH', s.id);
   if (panel.basis === 'PRICE_RETURN' && panel.securities.some(s => s.terminal)) fail('PRICE_RETURN_PANEL_IS_SURVIVOR_ONLY');
   return T;
@@ -64,7 +65,9 @@ function firstIndex(s) { if (s._first === undefined) s._first = s.adj.findIndex(
 function decide(panel, t, cfg, std, held = null) {
   const W = cfg.riskWindowWeeks, date = panel.calendar[t], rows = [], secs = [];
   for (const s of panel.securities) {
-    if (!(s.adj[t] > 0) || !s.sector) continue;
+    // PIT-F2: `sectorAt` (optional, Länge T, null = zum Tag unbekannt) ersetzt das heutige `sector`; unbekannt bleibt unbekannt.
+    const sector = s.sectorAt ? s.sectorAt[t] : s.sector;
+    if (!(s.adj[t] > 0) || !sector) continue;
     // PIT-F3: optionales Listing-Intervall {cik, from, to} (inklusive, null = offen); außerhalb ist der Titel kein Kandidat.
     if (s.listing && ((s.listing.from && date < s.listing.from) || (s.listing.to && date > s.listing.to))) continue;
     const f0 = firstIndex(s);
@@ -78,7 +81,7 @@ function decide(panel, t, cfg, std, held = null) {
   rows.forEach((r, i) => {
     if (!isNum(score[i])) return;
     const s = secs[i];
-    cands.push({ id: s.id, score: score[i], sector: s.sector, price: s.raw[t], dollarVolume: s.dv ? s.dv[t] : undefined, marketCap: isNum(r.marketCap) ? r.marketCap : undefined, sec: s });
+    cands.push({ id: s.id, score: score[i], sector: s.sectorAt ? s.sectorAt[t] : s.sector, price: s.raw[t], dollarVolume: s.dv ? s.dv[t] : undefined, marketCap: isNum(r.marketCap) ? r.marketCap : undefined, sec: s });
   });
   let liquid = cands.filter(c => C.liquidity(c, std).eligible).sort((a, b) => b.score - a.score || (a.id < b.id ? -1 : 1));
   // Puffer (opt-in, cfg.bufferRank): gehaltene Titel bleiben, solange sie unter den besten bufferRank liegen. Sie rücken in der
@@ -263,7 +266,7 @@ function runModelPortfolio(panel, config) {
     ledger: { schemaVersion: result.schemaVersion, resultHash: result.resultHash, inputHash: result.inputHash, metricsResultHash: metrics.resultHash },
     equity: rows.map(r => [r.date, r.value, r.benchmark]),
     holdingsSnapshot: delayedHoldings(targets, cal[last], HOLDINGS_DELAY_DAYS),
-    limitations: [...new Set([...result.limitations, 'PIT_RECONSTRUCTION_NOT_LIVE_FACTOR_EVIDENCE', 'CURRENT_SIC_CLASSIFICATION_NOT_HISTORICAL', 'NO_HISTORICAL_INDEX_MEMBERSHIP_UNIVERSE_IS_ALL_LISTED_US_COMMON',
+    limitations: [...new Set([...result.limitations, 'PIT_RECONSTRUCTION_NOT_LIVE_FACTOR_EVIDENCE', panel.securities.length && panel.securities.every(x => x.sectorAt) ? 'SIC_AT_DECISION_DATE_CARRY_FORWARD_DECLARED_UNKNOWN_STAYS_UNKNOWN' : 'CURRENT_SIC_CLASSIFICATION_NOT_HISTORICAL', 'NO_HISTORICAL_INDEX_MEMBERSHIP_UNIVERSE_IS_ALL_LISTED_US_COMMON',
       'SPREAD_IS_MODELLED_BY_LIQUIDITY_BUCKET_NOT_OBSERVED_QUOTES', 'SPREAD_PROPORTIONAL_EQUITY_HAIRCUT_AT_TRADE_SESSION', 'TERMINAL_VALUE_ASSUMPTION_BY_DELISTING_CLASS',
       'RULES_PREREGISTERED_NOT_FITTED_WALK_FORWARD_IS_ROLLING_ESTIMATION', 'NO_UNTOUCHED_HOLDOUT_NO_MULTIPLE_TESTING_CORRECTION_ACROSS_PROFILES',
       'POPULATION_IS_TODAYS_FILES_PLUS_QUALIFIED_V13_CHAINS_NOT_COMPLETE_HISTORICAL_LISTINGS', 'MEMBERSHIP_SNAPSHOT_EQUALS_EXECUTABLE_FILLS_PLANNED_TARGETS_REPORTED_SEPARATELY', 'WEEKLY_CLOSE_EXECUTION_NEXT_WEEK', ...(panel.basis === 'PRICE_RETURN' ? ['PRICE_RETURN_SURVIVOR_PANEL_NOT_PIT_POPULATION'] : []),

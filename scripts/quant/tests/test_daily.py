@@ -432,3 +432,29 @@ class DownstreamUnterbefehleTests(unittest.TestCase):
         quelle = inspect.getsource(cli.cmd_daily_downstream)
         self.assertNotIn("SimpleNamespace(", quelle)
         self.assertIn("_unterbefehl(", quelle)
+
+
+class NachfolgeEmittentenTests(unittest.TestCase):
+    """Holding-Umgruendung: die Bilanz der Vorgaenger-CIK gehoert zur Nachfolgerin (XOM, 11.11.2026)."""
+
+    def test_vorgaengerbilanz_wird_unter_der_nachfolgerin_gefuehrt(self):
+        from quant.sec import universe_coverage as uc
+        per = {"iss_cik_0000034088": {"cik": "0000034088", "name": "Exxon Mobil Corp", "metrics": {"revenue": {"annualPeriods": 12}}},
+               "iss_cik_0000000007": {"cik": "0000000007", "name": "X", "metrics": {}}}
+        out = uc.apply_successor_issuers(per, {"0002115436": ["0000034088"]})
+        self.assertNotIn("iss_cik_0000034088", out)
+        self.assertEqual(out["iss_cik_0002115436"]["cik"], "0002115436")
+        self.assertEqual(out["iss_cik_0002115436"]["predecessorCik"], "0000034088")
+        self.assertEqual(out["iss_cik_0002115436"]["metrics"]["revenue"]["annualPeriods"], 12)
+        self.assertEqual(len(out), len(per))
+        self.assertIn("iss_cik_0000034088", per, "die Eingabe wird nicht veraendert")
+
+    def test_eigener_satz_der_nachfolgerin_bleibt_und_ohne_vorgaenger_aendert_sich_nichts(self):
+        from quant.sec import universe_coverage as uc
+        eigen = {"cik": "0002115436", "name": "Holding", "metrics": {}}
+        per = {"iss_cik_0002115436": eigen, "iss_cik_0000034088": {"cik": "0000034088", "name": "Alt", "metrics": {}}}
+        out = uc.apply_successor_issuers(per, {"0002115436": ["0000034088"]})
+        self.assertEqual(out, per)
+        self.assertEqual(uc.apply_successor_issuers({"iss_cik_0000000001": {"cik": "0000000001"}}, {"0002115436": ["0000034088"]}),
+                         {"iss_cik_0000000001": {"cik": "0000000001"}})
+        self.assertEqual(uc.apply_successor_issuers(per, {}), per)

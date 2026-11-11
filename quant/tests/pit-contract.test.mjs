@@ -237,11 +237,38 @@ test('PIT-17 Fundamental-Lookahead im Panel: Filing nach t wirkt nicht auf Fakto
   assert.equal(early.fundamentalsAsOfEnd, '2018-12-31');
 });
 
-test('BEFUND PIT-F2 Branche im Panel ist heutig (CURRENT_SIC_CLASSIFICATION_NOT_HISTORICAL): eine spätere Umklassifizierung ändert frühere Entscheidungen', () => {
-  const t = 60, p1 = panelOf(), p2 = panelOf({ sectorOf: () => 'S0' });
-  // Gleiche Kurse, nur das Branchenetikett (heutiger Stand) unterscheidet sich: die Auswahl hängt davon ab (Branchengrenze).
-  assert.notDeepEqual(decideAt(p2, t).weights, decideAt(p1, t).weights);
-  // portfolio-backtest.cjs listet das offen: CURRENT_SIC_CLASSIFICATION_NOT_HISTORICAL. core/industry-classification.js kann es lösen, ist aber nicht angeschlossen.
+test('PIT-F2 Branche im Panel: sectorAt (zum Entscheidungstag) ersetzt die heutige SIC; Künftiges und Unbekanntes wirken nicht zurück', () => {
+  const t = 60, withSector = (p, at) => { p.securities.forEach((s, i) => { s.sectorAt = at(i, p.calendar.length); }); return p; };
+  const base = (i, T) => Array.from({ length: T }, () => 'S' + (i % 4));
+  const ref = decideAt(withSector(panelOf(), base), t);
+  // Gleiche Entscheidung wie mit statischer Branche, wenn sectorAt dieselben Werte trägt.
+  assert.deepEqual(ref, decideAt(panelOf(), t));
+  // Eine Umklassifizierung NACH t (Index > t) ändert die Entscheidung bei t nicht.
+  const later = decideAt(withSector(panelOf(), (i, T) => base(i, T).map((x, k) => (k > t ? 'S0' : x))), t);
+  assert.deepEqual(later, ref);
+  // Die heutige Branche (sector) wird ignoriert, sobald sectorAt vorhanden ist.
+  const stale = panelOf({ sectorOf: () => 'S0' });
+  assert.deepEqual(decideAt(withSector(stale, base), t), ref);
+  // Umklassifizierung VOR t verändert die Entscheidung (Branchengrenze), und unbekannt (null) bleibt unbekannt: der Titel fällt heraus.
+  assert.notDeepEqual(decideAt(withSector(panelOf(), (i, T) => base(i, T).map((x, k) => (k >= t - 3 ? 'S0' : x))), t).weights, ref.weights);
+  const unknown = decideAt(withSector(panelOf(), (i, T) => base(i, T).map((x, k) => (i === 3 && k === t ? null : x))), t);
+  assert.equal(unknown.universe, ref.universe - 1);
+  // Länge muss zum Kalender passen.
+  assert.throws(() => PB.runModelPortfolio(withSector(panelOf(), () => ['S0']), { profileId: 'momentum-leader', window: ['2020-01-03', '2021-04-30'] }), /PANEL_SECTOR_SERIES_LENGTH/);
+});
+
+test('PIT-F2 Builder: pitSectorSeries liest die SIC je Woche aus core/industry-classification.js; ohne Beobachtung null', () => {
+  const MP = require('../../scripts/quant/portfolio/model-portfolios.cjs');
+  const ic = IC.create(sicData([O('2020-03-02T14:00:00Z', '3571'), O('2022-03-10T21:30:00Z', '2834')]));
+  const cal = ['2019-12-27', '2020-03-06', '2022-03-04', '2022-03-11', '2025-06-27'];
+  const s = MP.pitSectorSeries(ic, '0000000001', cal);
+  assert.equal(s[0], null);                    // vor der ersten Beobachtung: unbekannt
+  assert.equal(s[1], MP.ff12('3571'));
+  assert.equal(s[2], MP.ff12('3571'));         // Wechsel 2022-03-10 21:30Z nach 16:00 ET am 04.03.: noch alt
+  assert.equal(s[3], MP.ff12('2834'));
+  assert.equal(s[4], null);                    // älter als die deklarierte Höchstdauer (1100 Tage): unbekannt statt Fortschreibung
+  assert.notEqual(MP.ff12('3571'), MP.ff12('2834'));
+  assert.deepEqual(MP.pitSectorSeries(ic, null, cal), cal.map(() => null));
 });
 
 test('BEFUND PIT-F3 Universum ist heutige Dateimenge (kein Terminal ohne Quelle): Titel ohne Delisting-Angabe werden an der letzten Beobachtung beendet', () => {

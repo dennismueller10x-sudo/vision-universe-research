@@ -10,7 +10,7 @@
    ========================================================================= */
 (function (global) {
   "use strict";
-  var X = global.QX, el = X.el;
+  var X = global.QX, el = X.el, VM = global.VUQuantViewModel;
   function price(v) { return typeof v === "number" && isFinite(v) ? v.toLocaleString("de-DE", { maximumFractionDigits: 2 }) : "–"; }
   function select(label, options, value) {
     var s = el("select", { class: "qx-select", "aria-label": label }, options.map(function (o) { return el("option", { value: o[0], text: o[1] }); }));
@@ -49,8 +49,7 @@
     if (primary) host.append(X.section(primary.label, "Szenarien beschreiben Bedingungen – keine gesicherten Vorhersagen.", [el("div", { class: "qx-grid qx-grid-2" }, (data.scenarios || []).map(function (s) {
       return X.card([el("span", { class: "v2-eyebrow", text: s.kind === "PRIMARY" ? "Hauptszenario" : "Alternative" }), el("h3", { class: "qx-h3", text: s.label }),
         el("dl", { class: "qx-kv" }, [el("dt", { text: "Bestätigung" }), el("dd", { style: "text-align:left", text: s.confirmation || "–" }),
-          el("dt", { text: "Ungültig bei" }), el("dd", { text: price(s.invalidation && s.invalidation.price) }),
-          el("dt", { text: "Zielzonen" }), el("dd", { text: (s.targets || []).map(function (t) { return price(t.zoneLow) + "–" + price(t.zoneHigh); }).join(" · ") || "–" })]),
+          el("dt", { text: "Ungültig laut Methode" }), el("dd", { text: price(s.invalidation && s.invalidation.price) })]),
         X.more("Dafür und dagegen", function () { return (s.support || []).map(function (e) { return el("p", { class: "qx-small", text: "Dafür: " + e.statement }); }).concat((s.conflicts || []).map(function (e) { return el("p", { class: "qx-small", text: "Dagegen: " + e.statement }); })); })]);
     }))], null, "Szenarien"));
     var E = data.elliott;
@@ -195,6 +194,15 @@
   }
 
   /* ============================================================= VERGLEICH */
+  /* Grund eines fehlenden Vergleichswerts in einem Satz, aus Zustand und Datenstand des Unternehmens. */
+  function missingWhy(v, c) {
+    var asOf = c && c.fundamentalsAsOf ? X.dateDe(c.fundamentalsAsOf) : null, name = c ? c.ticker : v.ticker;
+    if (c && c.state !== "AVAILABLE") return "für " + name + " liegt keine Auswertung vor";
+    if (v.reason === "SOURCE_OR_DEFINITION_UNAVAILABLE") return asOf ? "aus den Geschäftszahlen von " + name + " vom " + asOf + " nicht nach derselben Definition berechenbar" : "nicht nach derselben Definition berechenbar";
+    if (v.reason === "NONFINITE_VALUE") return "Rechnung ergibt keinen endlichen Wert";
+    if (v.reason === "SOURCE_MISSING") return asOf ? "in den Daten von " + name + " (Geschäftszahlen vom " + asOf + ") nicht enthalten" : "in den Daten nicht enthalten";
+    return VM && VM.reasonText && v.reason ? VM.reasonText(v.reason) : "Wert nicht verfügbar";
+  }
   async function compare(main, ctx, list) {
     main.append(el("span", { class: "v2-eyebrow", text: "Vergleich" }), el("h1", { class: "qx-h1", text: "Aktien im direkten Vergleich" }),
       el("p", { class: "v2-lead qx-lead", text: "Ertragskraft, Wachstum, Bewertung und Kursverhalten aus derselben Kennzahlenbasis – ohne Rangfolge und ohne Empfehlung." }));
@@ -210,17 +218,25 @@
     var data = await ctx.api.getComparison(selected).catch(function () { return null; });
     if (!data || data.state !== "AVAILABLE") { target.replaceChildren(X.notice("Vergleich nicht auswertbar", "Für die gewählten Unternehmen fehlen belastbare Daten.")); return; }
     var head = [el("th", { text: "Kennzahl" })].concat(data.companies.map(function (c) { return el("th", {}, [el("a", { href: X.routes.stock(c.ticker), text: c.ticker })]); }));
-    var rows = [];
+    var rows = [], gaps = {}, byTicker = {};
+    data.companies.forEach(function (c) { byTicker[c.ticker] = c; });
     data.families.forEach(function (f) {
       rows.push(el("tr", {}, [el("th", { colspan: String(data.companies.length + 1), style: "text-align:left;padding-top:16px", text: f.label })]));
       f.metrics.forEach(function (m) {
         rows.push(el("tr", {}, [el("td", { text: m.label })].concat(m.values.map(function (v) {
-          return el("td", { class: "num", text: typeof v.value === "number" ? v.value.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + (m.unit === "pct" ? " %" : m.unit === "x" ? " ×" : "") : "–" });
+          if (typeof v.value === "number") return el("td", { class: "num", text: v.value.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + (m.unit === "pct" ? " %" : m.unit === "x" ? " ×" : "") });
+          /* Fehlende Werte nie stumm (Konzept Quant 2026-11, Entscheidung 9): „–“ mit Fußnote, der Grund steht unter der Tabelle. */
+          var why = missingWhy(v, byTicker[v.ticker]);
+          (gaps[v.ticker] = gaps[v.ticker] || {})[why] = ((gaps[v.ticker] || {})[why] || 0) + 1;
+          return el("td", { class: "num", title: why, "aria-label": "kein Wert: " + why }, [document.createTextNode("–"), el("sup", { "aria-hidden": "true", text: "¹" })]);
         }))));
       });
     });
-    target.replaceChildren(el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Vergleichstabelle, seitlich scrollbar" }, [el("table", { class: "qx-table" }, [el("thead", {}, [el("tr", {}, head)]), el("tbody", {}, rows)])]),
+    X.fill(target, el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Vergleichstabelle, seitlich scrollbar" }, [el("table", { class: "qx-table" }, [el("thead", {}, [el("tr", {}, head)]), el("tbody", {}, rows)])]),
       el("p", { class: "qx-small", text: "Berichtszeiträume können abweichen; Datenstände je Unternehmen: " + data.companies.map(function (c) { return c.ticker + " " + (c.fundamentalsAsOf ? X.dateDe(c.fundamentalsAsOf) : "–"); }).join(", ") + "." }),
+      Object.keys(gaps).length ? el("p", { class: "qx-small qx-gaps" }, [el("b", { text: "¹ Warum Werte fehlen: " }), document.createTextNode(Object.keys(gaps).map(function (t) {
+        return Object.keys(gaps[t]).map(function (w) { return t + " (" + gaps[t][w] + "×): " + w; }).join("; ");
+      }).join(" · ") + ".")]) : null,
       data.partial ? X.notice("Nicht alle Unternehmen auswertbar", "Spalten ohne passende Daten bleiben leer und werden nicht mit Ersatzwerten gefüllt.") : null);
   }
 

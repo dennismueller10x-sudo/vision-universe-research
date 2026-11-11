@@ -166,9 +166,9 @@
       "cik": "0001816017",
       "name": "Spire Global, Inc.",
       "sic": "4899",
-      "rawFacts": 10261,
-      "mappedFacts": 2777,
-      "unmappedFacts": 7538,
+      "rawFacts": 10693,
+      "mappedFacts": 2908,
+      "unmappedFacts": 7840,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -178,28 +178,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 26,
+      "quarterlyPeriods": 27,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 23,
-          "firstAvailablePeriod": "2020-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 5.0
-        },
-        "eps_diluted": {
           "annualPeriods": 6,
           "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
+        "eps_diluted": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 25,
+          "firstAvailablePeriod": "2020-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 5.0
+        },
         "free_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0,
@@ -219,21 +219,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -247,14 +247,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -277,46 +277,47 @@
         }
       },
       "quality": {
-        "HIGH": 233,
-        "MEDIUM": 11
+        "HIGH": 247,
+        "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 244,
-        "resolvedValues": 244
+        "datableValues": 251,
+        "resolvedValues": 251
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7871,
+        "rules_version": "1.1.0",
+        "total": 8178,
         "by_severity": {
-          "INFO": 7538,
-          "WARNING": 333
+          "INFO": 7840,
+          "WARNING": 338
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 125,
-          "RESTATEMENT_CONFLICT": 169,
+          "CONCEPT_DISAGREEMENT": 129,
+          "RESTATEMENT_CONFLICT": 170,
           "UNEXPECTED_DURATION": 39,
-          "UNKNOWN_CONCEPT": 7538
+          "UNKNOWN_CONCEPT": 7840
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-347865",
-        "filing_date": "2026-08-13",
+        "accession": "0001628280-26-072823",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 33
+        "periodic_filings": 34,
+        "acceptance_datetime": "2026-11-10T22:04:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "4c12f3e8317b7ddd00ee4681f27ed962342fa7b11dc8809daa36073b2df20e4b",
+      "sourceDigest": "3a147bf0a0fb9acb6fb22677d270d9a8d8f0bdfec53ce2c814d1f39b1a37f721",
       "issuerId": "iss_cik_0001816017"
     },
     {

@@ -254,7 +254,20 @@
     add: function (t) { var l = readList(RECENT_KEY).filter(function (x) { return x !== t; }); l.unshift(t); writeList(RECENT_KEY, l.slice(0, 12)); }
   };
 
+  /* Wortwahl (docs/legal/WORTWAHL.md, Konzept Quant 2026-11 Entscheidung 5): Saetze aus den Daten (z. B. Evidenz-Texte
+     „erreichten Zielzone 1“) sprechen in der Oberflaeche von Zone, Marke und Ungueltig-Marke laut Methode, nie von Zielen.
+     Die Daten bleiben unberuehrt; nur die Anzeige uebersetzt. */
+  var SAY = [[/Erste Zielzone/g, "Erste Marke der Methode"], [/erste[nr]? Zielzone/g, "ersten Marke der Methode"], [/Zielzonen?\s*(\d)/g, "Marke $1 der Methode"], [/Zielzonen?/g, "Marke der Methode"],
+    [/Zielbereich(e)?\s*(\d)?/g, function (m, e, n) { return n ? "Marke " + n + " der Methode" : "Marke der Methode"; }], [/\bZiel ([12])\b/g, "Marke $1"],
+    [/Einstiegszone|Einstiegsmarke|Kaufzone/g, "Zone laut Methode"], [/Stopp-Marke|Stop-Loss/g, "Ungültig-Marke laut Methode"], [/Chance\/Risiko/g, "Abstand der Marken"]];
+  /* Kinder ohne Luecken: native append/replaceChildren schreiben null als Text „null“ (Konzept Quant 2026-11, Entscheidung 9). */
+  function kids(a) { return Array.prototype.slice.call(a, 1).filter(function (k) { return k != null && k !== false && k !== ""; }); }
+  function fill(host) { host.replaceChildren.apply(host, kids(arguments)); return host; }
+  function add(host) { host.append.apply(host, kids(arguments)); return host; }
+  function say(t) { if (t == null) return t; var s = String(t); SAY.forEach(function (r) { s = s.replace(r[0], r[1]); }); return s; }
+
   global.QX = {
+    say: say, fill: fill, add: add,
     icon: icon, routes: routes, link: link, btn: btn, actions: actions, section: section, world: world, card: card, notice: notice,
     pill: pill, more: more, loading: loading, dateDe: dateDe, money: money, signed: signed, companyName: companyName, logo: logo,
     stockRow: stockRow, poster: poster, rail: rail, tickerChips: tickerChips, stat: stat, stats: stats, toneClass: toneClass,

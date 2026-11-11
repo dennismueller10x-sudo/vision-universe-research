@@ -99,6 +99,9 @@ const WORK_DIR = arg("--work-dir",
 const { loadDuplicateResolution, DEFAULT_DUPLICATE_RESOLUTION_FILE } =
   await import(join(root, "scripts", "market", "lib", "security-master-duplicate-resolution.mjs"));
 const DUPLICATE_RESOLUTION_ARG = arg("--duplicate-resolution", DEFAULT_DUPLICATE_RESOLUTION_FILE);
+const { loadDelistingEvidence, DEFAULT_DELISTING_EVIDENCE_FILE } =
+  await import(join(root, "scripts", "market", "lib", "security-master-delisting-evidence.mjs"));
+const DELISTING_EVIDENCE_ARG = arg("--delisting-evidence", DEFAULT_DELISTING_EVIDENCE_FILE);
 
 /* ------------------------------------------------------------ ZIP/CSV
 
@@ -427,6 +430,7 @@ async function main() {
     process.exit(3);
   }
 
+  const delisting = loadDelistingEvidence(DELISTING_EVIDENCE_ARG);
   let dupRegister;
   try { dupRegister = loadDuplicateResolution(DUPLICATE_RESOLUTION_ARG); }
   catch (err) { console.error("ABBRUCH: " + err.message + " Nichts geschrieben."); process.exit(2); }
@@ -434,7 +438,8 @@ async function main() {
   const result = Master.buildSecurityMaster({
     providerRows, baseline, today: TODAY,
     providerAvailable: providerRows.length > 0, stamp,
-    duplicateResolution: dupRegister.doc
+    duplicateResolution: dupRegister.doc,
+    delistingEvidence: delisting.doc
   });
   /* Nur mit Register im Kopf der Artefakte; ohne Register bleibt jede Datei byte-gleich. */
   const dupHeader = result.duplicateResolution
@@ -656,6 +661,7 @@ async function main() {
     additions: additionBreakdown,
     counts: c,
     ...dupHeader,
+    delistingEvidence: result.delistingEvidence,
     invariants: result.invariants,
     nonDestructive: {
       baselineFile: BASELINE_FILE.replace(root + "/", ""),
@@ -742,6 +748,7 @@ async function main() {
     },
     counts: c,
     ...dupHeader,
+    delistingEvidence: result.delistingEvidence,
     rowsDelivered: masterRows.length
   }, masterRows);
 
@@ -750,6 +757,7 @@ async function main() {
     status: result.providerAvailable ? "OK" : "BASELINE_ONLY",
     headline, counts: c,
     ...dupHeader,
+    delistingEvidence: result.delistingEvidence,
     exchangeBreakdown: c.byExchange,
     venueBreakdown: c.byVenueTier,
     activeBreakdown: c.byActiveStatus,

@@ -174,7 +174,9 @@
     return '<div class="vu-shead-price" data-direction="' + dir + '"><b class="vu-shead-value">' + esc(money(p.value, p.currency)) + "</b>" +
       (ch == null ? "" : '<span role="img" aria-label="' + esc((ch > 0 ? 'Plus ' : ch < 0 ? 'Minus ' : 'Unverändert ') + num(Math.abs(ch), 2) + ' Prozent' + (p.changeLabel ? ' ' + p.changeLabel : '')) + '" class="vu-shead-change">' + arrow + "\u00a0" + esc((ch > 0 ? "+" : "") + num(ch, 2).replace("-", "−")) + "\u00a0%" +
         (p.changeLabel ? '<small> ' + esc(p.changeLabel) + "</small>" : "") + "</span>") +
-      (when ? '<span class="vu-shead-when">' + (p.kind === "live" ? '<i class="vu-shead-live" aria-hidden="true"></i>' : "") + esc(when) + "</span>" : "") + "</div>";
+      (when || p.alt ? '<span class="vu-shead-when">' + (p.kind === "live" ? '<i class="vu-shead-live" aria-hidden="true"></i>' : "") + esc(when) +
+        /* p.alt: derselbe Kurs in einer zweiten Waehrung, klein (Quant: Dollar gross, Euro daneben; Konzept Quant 2026-11). */
+        (p.alt ? '<span class="vu-shead-alt">≈\u00a0' + esc(p.alt) + "</span>" : "") + "</span>" : "") + "</div>";
   }
   function logoHtml(o) {
     var t = esc(o.ctx.displaySymbol), mono = esc((o.name || o.ctx.displaySymbol || "?").replace(/[^A-Za-z0-9ÄÖÜäöü]/g, "").slice(0, 1).toUpperCase());
