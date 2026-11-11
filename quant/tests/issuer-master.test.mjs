@@ -210,7 +210,7 @@ test("ein Emittent ohne Geschaeftszahlen sagt das, statt das Feld wegzulassen",
   }
 });
 
-test("die erklaerte CIK-Uebersteuerung ueberlebt", { skip: !vorhanden }, () => {
+test("die erklaerte CIK-Uebersteuerung gilt fuer die Pipeline, der Emittent folgt dem Successor-Register", { skip: !vorhanden }, () => {
   /* XOM: der Ticker zeigt bei der SEC auf eine neue Holding, die
      Fundamentalhistorie liegt beim alten CIK. Die Konfiguration
      uebersteuert das mit belegter Begruendung - und diese Uebersteuerung
@@ -226,6 +226,13 @@ test("die erklaerte CIK-Uebersteuerung ueberlebt", { skip: !vorhanden }, () => {
   const r = baue(p);
   const iss = r.issuers.find((x) => x.tickers.includes("XOM"));
   assert.ok(iss, "XOM hat keinen Emittenten");
-  assert.equal(iss.cik, "0000034088",
-               "die erklaerte Uebersteuerung wurde von der SEC-Zuordnung gekippt");
+  /* Die Konfiguration (Fundamentals-Pipeline) bleibt auf der alten CIK. Der
+     Emittent im Company Master ist die Nachfolgerin aus dem Successor-Register;
+     die alte issuerId bleibt als Vorgaenger aufloesbar. */
+  assert.equal(iss.cik, "0002115436", "XOM muss auf die Nachfolgerin zeigen");
+  assert.equal(iss.issuerId, "iss_cik_0002115436");
+  assert.deepEqual(iss.predecessorIssuerIds, ["iss_cik_0000034088"]);
+  assert.match(iss.cikSource, /^successor:sec-successor-issuers\(0000034088>0002115436\)$/);
+  assert.ok(!r.issuers.some((x) => x.issuerId === "iss_cik_0000034088"),
+            "der Vorgaenger darf nicht daneben als eigener Emittent stehen");
 });
