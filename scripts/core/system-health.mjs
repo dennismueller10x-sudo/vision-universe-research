@@ -31,10 +31,15 @@ const report = E.Health.evaluate(E.registry, artifacts, { now, calendar: E.calen
 report.target = a.site || "repository";
 /* Produkte aus den Steckbriefen (products/<id>/module.json): schlechtester Zustand ihrer Datenarten. */
 report.products = Modules.productHealth(loadModules().map((x) => x.m), report);
+/* Live ausgelieferte Generation (ADR-008, /core/release-manifest.json). Im Repository-Stand gibt es kein Manifest (nur Auslieferung). */
+report.release = await load("/core/release-manifest.json").then(
+  (m) => ({ state: "DELIVERED", stage: m.stage, codeSha: m.code?.sha || null, dataBranchSha: m.dataBranch?.sha || null, payloadHash: m.payloadHash, builtAt: m.builtAt }),
+  (e) => ({ state: a.site ? "UNREADABLE" : "NOT_APPLICABLE", reason: String(e.message || e) }));
 
 if (a.json) console.log(JSON.stringify(report, null, 2));
 else {
   console.log(E.Health.formatText(report));
+  console.log(report.release.state === "DELIVERED" ? `\nAusgelieferte Generation: Code ${String(report.release.codeSha).slice(0, 7)} · Datenzweig ${String(report.release.dataBranchSha || "?").slice(0, 7)} · Nutzdaten ${report.release.payloadHash.slice(0, 12)} · ${report.release.stage}` : `\nAusgelieferte Generation: ${report.release.state}`);
   console.log("\nProdukte (module.json):");
   for (const p of report.products) console.log(`  ${p.label.padEnd(22)} ${p.status.padEnd(9)} ${p.access.padEnd(6)} ${p.cause.join(", ")}`);
 }
