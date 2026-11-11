@@ -1,0 +1,608 @@
+{
+  "schemaVersion": "security-master-delisting-evidence-1.0.0",
+  "generatedBy": "scripts/market/build-security-master-delisting-evidence.mjs (security-master-delisting-evidence-builder-1.1.0)",
+  "consumer": "scripts/market/build-us-security-master.mjs -> quant/engines/us-security-master.js#indexDelistingEvidence",
+  "effect": "Nur ACTIVE/UNKNOWN -> INACTIVE, nie umgekehrt; nur Zeilen desselben Tickers mit Anbieter-startDate <= effectiveDate; erst ab effectiveDate.",
+  "rule": {
+    "candidatesOnly": "8-K mit Item 2.01 UND 3.01 (wirksam am Einreichungstag) oder Form 25/25-NSE (wirksam 10 Tage nach Einreichung, 17 CFR 240.12d2-2(d)(1)), Form 25 nur wenn die SEC den Ticker beim Abruf nicht mehr dem Emittenten zuordnet. Item 3.01 allein, Form 15 allein und Prospekte zaehlen nicht.",
+    "blocking": "Jeder Tages- oder Wochenkurs nach effectiveDate blockiert INACTIVE, auch bei konstantem Schluss. Klassenbezug, Datum und Ende ohne Nachfolger muessen im Beleg explizit bestaetigt sein; Boersen-/Tickerwechsel und Nachfolger bleiben ACTIVE mit Befund.",
+    "series": "Tagesreihe endet mit >= 5 gleichen Schluessen; Endlauf beginnt spaetestens 7 Tage nach dem Wirksamkeitstag des fruehesten Belegs.",
+    "excluded": "Faelle mit LIFECYCLE_SOURCE_CONFLICT; securityId nicht core/identity.js-konform."
+  },
+  "source": {
+    "file": "docs/quant-recovery/v10/population/lifecycle-cases.json",
+    "sha256": "b42530d65fd8ab83f0cfbdfc47476304e9af9b54167fa916701bc2bad3d225ff",
+    "schemaVersion": "v10-population-lifecycle-cases-1.0.0",
+    "generatedAt": "2026-10-28T16:09:57Z",
+    "protocolSha256": "b4632f505d89dd369c0ffc30d8b77fd889892b494948170c2bc6c057ea621d5c",
+    "secTickersNowNote": "secTickersNow ist der SEC-Tickerstand zum Abrufzeitpunkt der Quelle."
+  },
+  "counts": {
+    "cases": 475,
+    "records": 0,
+    "rejectedByReason": {
+      "LIFECYCLE_SOURCE_CONFLICT": 2,
+      "NO_COMPLETED_DELISTING_EVIDENCE": 331,
+      "PRICE_AFTER_DELISTING": 142
+    }
+  },
+  "findings": [
+    {
+      "ticker": "AACB",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "AACT",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ACHL",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ACVA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ADVM",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "AFAR",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "AFBI",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "AITR",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ALE",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ALOT",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ANSC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ANSS",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "APAD",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "APLT",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ARBKL",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ATCOL",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ATMC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "AVGR",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "AVNS",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "BBCQ",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "BGFV",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "BHAT",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "BLFS",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "BLFY",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "BOWN",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "BRNS",
+      "reason": "LIFECYCLE_SOURCE_CONFLICT"
+    },
+    {
+      "ticker": "BSII",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "BWNB",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CALT",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CASI",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CCCX",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CCIX",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CFB",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CFFS",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CGBDL",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CMRX",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "COLA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CPTAF",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CREV",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CSCI",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "CVAC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "DENN",
+      "reason": "LIFECYCLE_SOURCE_CONFLICT"
+    },
+    {
+      "ticker": "DYCQ",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "EBR-B",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "EBTC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "EMPG",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ENFN",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "EPWK",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "EQC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ESHA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ETWO",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "EVE",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "EVGR",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "FFNW",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "FITBI",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "FLIC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "FNA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "FOSLL",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "FRGE",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "FTRK",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "GAINL",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "GHLD",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "GIFI",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "GLADZ",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "GLDD",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "GORV",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "HBI",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "HNNAZ",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "HONE",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "HSII",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "HTBK",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "HYZN",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ICCH",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "INFA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "IPEX",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ISPO",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "JFB",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "LPSN",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "LSXMA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "LSXMB",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "LSXMK",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "MAYA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "MCAA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "MDV",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "METCL",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "MGIC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "MODV",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "MOFG",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "MURA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "MYNA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "NKLA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "NPAB",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "NURO",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "OAKU",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ODP",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "OMGA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ONCT",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ORGN",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "OXSQZ",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "PET",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "PLYA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "PRLH",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "PTNM",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "PVBC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "QRTEA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "QRTEB",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "REE",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "REVG",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "RILYK",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "RVNC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "RWAYZ",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "RZB",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SASR",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SAT",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SBT",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SCCC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SDM",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SELX",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SHLT",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SLP",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SLRN",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SNBR",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SNCR",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SNCRL",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "STRM",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "SVAC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "TBHC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "TBMC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "TBNK",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "TBPH",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "TFFP",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "THR",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "THRD",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "TIRX",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "TRINL",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "TRML",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "UBFO",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "VBTX",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "VCIC",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "VSTA",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "XTKG",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ZEUS",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ZIMV",
+      "reason": "PRICE_AFTER_DELISTING"
+    },
+    {
+      "ticker": "ZK",
+      "reason": "PRICE_AFTER_DELISTING"
+    }
+  ],
+  "records": []
+}

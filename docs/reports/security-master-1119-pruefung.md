@@ -1,0 +1,170 @@
+# Security Master: unabhängige Prüfung und Nachbesserung von #1119
+
+Stand 09.11.2026. Arbeitsregeln CLAUDE.md und QUANT_FINAL_HANDOVER.md, Security-Master-Teil, gelesen. Nicht mergen: Rückmeldung der Steuerung steht aus.
+
+## Befunde und Regelkorrektur
+
+| Fehlfall | Ursache | Regression |
+|---|---|---|
+| QRTEB | Emittenten-CIK und Form-25-Metadaten belegen keine konkrete Aktienklasse. Kein Nachweis, dass die Einreichung Klasse B betrifft. | Klassenbindung erforderlich; spätere Kurse sperren zusätzlich |
+| TRINL | Form-25-Metadaten sind kein Beleg für die Notes-Klasse; heutige SEC-Symbole TRIN/TRNI/TRNZ zeigen Fortführung. | Falsche Klasse sowie Fortführung abgedeckt |
+| FITBI | Börsen-/Symbolwechsel auf FITB-PI darf nicht als terminales Ende gelten. | Fortführung und exchangeTransfer ausgeschlossen |
+| BLAC → OSRH, Tickerfortführung | Andere SEC-Symbole desselben Emittenten sind kein Beleg für ein Ende ohne Nachfolger. | secTickersNow sowie terminal.acquirerTicker/stockRatio sperren |
+| Abweichende Daten | Einreichungstag ist kein nachgewiesenes Abschlussdatum; 8-K-Items reichen nicht. | Expliziter Klassenbeleg mit übereinstimmendem Wirksamkeitsdatum erforderlich |
+| SHLT | Form 25 vom 21.03.2025: bisher 31.03.2025 abgeleitet; Tageskurse bis 26.10.2026, frozenSince sogar erst 02.04.2025. | Jeder spätere Tages-/Wochenkurs sperrt, auch konstant |
+
+Kein Ticker-Sonderfall in der Ableitung. Ein echter terminaler Beleg benötigt Identität, konkrete Klasse, Datumsbindung und explizit keinen Nachfolger/Börsenwechsel. Fehlende Angaben werden nicht ergänzt. Die historische V10-Quelle liefert diese Bindung nicht. **0 statt 133 qualifizierter Registereinträge**; 142 Kandidaten mit späteren Kursen werden als Befund erhalten. Die bisherige 7-Tage-Toleranz heilt keinen Widerspruch mehr. Der Verbraucher weist ein Register mit späterem Reihenende ebenfalls zurück. ACTIVE-Zeilen bleiben ACTIVE mit `SEC_DELISTING_BLOCKED:PRICE_AFTER_DELISTING`; Anbieter-INACTIVE wird nicht künstlich reaktiviert.
+
+## Reproduzierbarer Neubau
+
+Quelle des Registers: `docs/quant-recovery/v10/population/lifecycle-cases.json`, SHA-256 `b42530d65fd8ab83f0cfbdfc47476304e9af9b54167fa916701bc2bad3d225ff`. Register ausschließlich durch `build-security-master-delisting-evidence.mjs` neu gebaut.
+
+Zusätzlich `build-us-security-master.mjs --from-zip supported_tickers.zip --today 2026-11-09 --stamp 2026-11-09T00:00:00Z --out <scratch> --work-dir <scratch>` mit expliziter Baseline und Anbieterzusammenfassung ausgeführt. Keine produktiven Daten überschrieben. ZIP-SHA-256 `e7e6bd8230de0abe659ff43d36be417df859ad17a83a2409958851b1d13bea43`; Baseline-SHA-256 `8d4f64c6c750ee44f3d39569047469fcdd66183bc15d846973f71e3a9be69741`. Der Vergleich nutzt auf beiden Seiten aktuelle Klassifikation und dasselbe Doppelzeilenregister; nur die Delisting-Regel unterscheidet sich. Der ursprüngliche Tiingo-Schnappschuss vom 29.10. ist nicht vorhanden; dessen Zahlen werden deshalb nicht als heutiger Vergleich ausgegeben.
+
+| Umfang | Vorher | Nachher |
+|---|---:|---:|
+| INACTIVE im gesamten neu gebauten Stamm | 43362 | 43231 |
+| durch SEC-Regel deaktiviert | 131 | 0 |
+| qualifizierte Registereinträge | 133 | 0 |
+
+Maschinenlesbarer Vergleich: [security-master-1119-vergleich.json](security-master-1119-vergleich.json). Keine Klassifizierung von QRTEB/TRINL von Hand geändert. Das Refresh-Gate, Forschungsgenerationen und die produktive Übernahme bleiben unverändert.
+
+## Vorher/Nachher je geänderter Zeile
+
+| Ticker | Vorher | Nachher | Befund |
+|---|---|---|---|
+| AACB | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| AACT | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ACHL | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ACVA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ADVM | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| AFAR | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| AFBI | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| AITR | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ALE | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ALOT | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ANSC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ANSS | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| APAD | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| APLT | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ARBKL | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ATCOL | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ATMC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| AVGR | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| AVNS | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| BBCQ | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| BGFV | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| BHAT | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| BLFS | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| BLFY | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| BOWN | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| BSII | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| BWNB | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CASI | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CCCX | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CCIX | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CFB | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CFFS | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CGBDL | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CMRX | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| COLA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CREV | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CSCI | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| CVAC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| DYCQ | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| EBR-B | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| EBTC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| EMPG | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ENFN | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| EPWK | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ESHA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ETWO | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| EVGR | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| FITBI | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| FLIC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| FNA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| FOSLL | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| FRGE | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| FTRK | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| GAINL | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| GHLD | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| GIFI | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| GLADZ | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| GLDD | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| GORV | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| HBI | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| HNNAZ | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| HONE | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| HSII | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| HTBK | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| HYZN | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ICCH | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| INFA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| IPEX | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ISPO | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| JFB | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| LPSN | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| MAYA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| MCAA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| METCL | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| MGIC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| MODV | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| MOFG | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| MURA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| MYNA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| NKLA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| NPAB | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| NURO | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| OAKU | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ODP | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| OMGA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ONCT | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ORGN | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| OXSQZ | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| PET | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| PLYA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| PRLH | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| PTNM | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| PVBC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| QRTEA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| QRTEB | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| REE | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| REVG | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| RILYK | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| RVNC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| RWAYZ | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| RZB | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SASR | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SBT | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SCCC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SDM | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SELX | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SHLT | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SLP | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SLRN | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SNBR | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SNCR | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SNCRL | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| STRM | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| SVAC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| TBHC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| TBMC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| TBNK | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| TBPH | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| TFFP | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| THR | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| TIRX | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| TRINL | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| TRML | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| UBFO | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| VBTX | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| VCIC | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| VSTA | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| XTKG | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ZEUS | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ZIMV | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+| ZK | INACTIVE | ACTIVE | PRICE_AFTER_DELISTING |
+
+## Verifikation
+
+21 neue/aktualisierte Delisting-Prüfungen grün. Weitere Master-, Doppelzeilen-, Identitätssperr- und Umfirmierungsprüfungen im lokalen Prüfprotokoll; CI-Ergebnis im PR separat beachten. Keine Aussage einer grünen Gesamtsuite ohne Actions-Beleg.
