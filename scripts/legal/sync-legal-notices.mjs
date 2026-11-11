@@ -2,7 +2,7 @@
 /* Pflicht-Hinweise (assets/legal-notices.json, Strang F) ins Frontend übernehmen.
    Die Texte stehen nur in der JSON-Datei. Dieses Skript schreibt einen erzeugten Block in
    assets/vu-ui.js (VUUI.legal(key) für Atlas, Backtests, Musterdepots …) und in
-   assets/site-navigation.js (einheitlicher Seitenfuß). Angezeigt wird nur, wenn die Datei
+   assets/site-navigation.js (Menü „Rechtliches & Infos“). Angezeigt wird nur, wenn die Datei
    legalApproved: true trägt (Owner + Anwalt, docs/accounts/RECHTLICHE_ABNAHME.md A15).
    Aufruf: node scripts/legal/sync-legal-notices.mjs [--check]   (--check: nur prüfen, Exit 1 bei Abweichung) */
 import { readFileSync, writeFileSync } from "node:fs";
@@ -25,7 +25,8 @@ export function legalData(src) {
   /* Owner-Entscheidung 07.11.2026: In der App ersetzt das Menü „Rechtliches & Infos“ den Seitenfuß (notices.footer.app = "menu"). */
   const menuTitle = (d.appLinks && d.appLinks.menuTitle) || "Rechtliches";
   const footerInApp = !(d.notices.footer && d.notices.footer.app === "menu");
-  return { approved: d.legalApproved === true, version: d.version, notices, appLinks, menuTitle, footerInApp };
+  const footerOnWeb = !(d.notices.footer && d.notices.footer.web === "menu");
+  return { approved: d.legalApproved === true, version: d.version, notices, appLinks, menuTitle, footerInApp, footerOnWeb };
 }
 export function block(data, indent) {
   return BEGIN + "\n" + indent + "var LEGAL = " + JSON.stringify(data) + ";\n" + indent + END;

@@ -135,7 +135,7 @@ ${extra}</head>
 }
 const TABS = [['artikel', 'Artikel', '/insights/'], ['magazin', 'Aktienmagazin', '/insights/magazin/'], ['reports', 'Reports', '/insights/reports/']];
 const tabs = (aktiv) => `<nav class="in-tabs" aria-label="Insights">${TABS.map(([id, label, href]) => `<a href="${href}"${aktiv === id ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>`;
-const fuss = `<footer class="in-fuss"><p>${esc(LEGAL.notices.editorial.text)}</p><p><a href="${LEGAL.links.methodik}">Methodik, Quellen und Interessen</a> · <a href="${LEGAL.links.risikohinweise}">Risikohinweise</a> · <a href="${LEGAL.links.impressum}">Impressum</a> · <a href="/insights/feed.xml">RSS</a></p></footer>
+const fuss = `<footer class="in-fuss"><p>${esc(LEGAL.notices.editorial.text)}</p><p><a href="${LEGAL.links.methodik}">Methodik, Quellen und Interessen</a> · <a href="/insights/feed.xml">RSS</a></p></footer>
 </body>
 </html>
 `;

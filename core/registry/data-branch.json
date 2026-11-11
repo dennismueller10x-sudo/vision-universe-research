@@ -90,6 +90,15 @@
       "producer": "scripts/insider/form4-compact.mjs (aus derselben Abholung wie insider/data/purchases.json)",
       "consumers": ["ownership-signals.yml (saet .ownership-cache/form4 vor dem Bau)"],
       "note": "Nicht ausgeliefert (kein Pages-Overlay). Eine Form-4-Abholung fuer Insider-Kaeufe (E2) und Eigentuemer-Signale."
+    },
+    {
+      "id": "searchConsole",
+      "workflow": "content.yml",
+      "pathPrefix": "seo/search-console/",
+      "files": "latest.json (Bericht des letzten Laufs)",
+      "producer": "products/insights/search-console.mjs (Google Search Console, Dienstkonto GSC_SERVICE_ACCOUNT_JSON)",
+      "consumers": ["content.yml (Teil search-console schreibt; der Insights-Tageslauf liest per git show origin/data/live:seo/search-console/latest.json)"],
+      "note": "Nicht ausgeliefert (kein Pages-Overlay): Suchbegriffe und Klickzahlen sind intern."
     }
   ],
   "plan": {

@@ -12,6 +12,7 @@ const PIT = require('../engines/pit-fundamental-history.js');
 const PF = require('../engines/portfolio-pit-factors.cjs');
 const PB = require('../engines/portfolio-backtest.cjs');
 const ID = require('../../core/identity.js');
+const LR = require('../../core/listing-register.js');
 const IC = require('../../core/industry-classification.js');
 
 // Spalten wie im Verbraucher-Bundle: [fy, fp, end, v, filed, accn, derived].
@@ -271,10 +272,56 @@ test('PIT-F2 Builder: pitSectorSeries liest die SIC je Woche aus core/industry-c
   assert.deepEqual(MP.pitSectorSeries(ic, null, cal), cal.map(() => null));
 });
 
-test('BEFUND PIT-F3 Universum ist heutige Dateimenge (kein Listing-Intervall im Panel): Titel ohne Delisting-Angabe werden an der letzten Beobachtung beendet', () => {
+test('BEFUND PIT-F3 Universum ist heutige Dateimenge (kein Terminal ohne Quelle): Titel ohne Delisting-Angabe werden an der letzten Beobachtung beendet', () => {
   const p = panelOf(); p.securities[0].adj = p.securities[0].adj.map((x, i) => (i > 40 ? NaN : x)); // Reihe endet bei 40
-  // decide kennt nur Kurs zu t: die Reihe ist bei t=60 leer, der Titel fällt heraus. Ein Ticker, dessen Reihe später unter anderer Identität weiterläuft, ist nicht verbunden.
+  // decide kennt nur Kurs zu t: die Reihe ist bei t=60 leer, der Titel fällt heraus. Offen bleibt die Population (ADR-001 A1, Teil 2).
   const t = 60; assert.equal(decideAt(p, t).universe, decideAt(panelOf(), t).universe - 1);
+});
+
+test('PIT-F3 Listing-Register: Umbenennung hält die Entität (CIK), Wiederverwendung wird je Tag eindeutig, Überlappung ist AMBIGUOUS', () => {
+  const reg = LR.createListingRegister([
+    { cik: 1, ticker: 'FB', validTo: '2022-06-08' }, { cik: 1, ticker: 'META', validFrom: '2022-06-09' },
+    { cik: 5, ticker: 'XYZ', validTo: '2015-01-01' }, { cik: 9, ticker: 'XYZ', validFrom: '2016-01-01' },
+    { cik: 7, ticker: 'DUP', validFrom: '2020-01-01' }, { cik: 8, ticker: 'DUP', validFrom: '2020-06-01' },
+  ]);
+  // Umbenennung: zwei securityIds, ein Emittent; die securityId selbst bleibt tickerbasiert (ADR-001).
+  assert.equal(reg.resolve('FB', '2021-01-01').issuerId, 'iss_cik_0000000001');
+  assert.equal(reg.resolve('META', '2023-01-01').issuerId, 'iss_cik_0000000001');
+  assert.equal(reg.resolve('META', '2021-01-01').status, 'UNKNOWN');
+  assert.deepEqual(reg.listingsOf('iss_cik_0000000001').map((l) => l.securityId), ['ref_FB', 'ref_META']);
+  // Wiederverwendung: dieselbe securityId, je Tag der richtige Emittent; dazwischen unbekannt.
+  assert.equal(reg.resolve('ref_XYZ', '2010-01-01').issuerId, 'iss_cik_0000000005');
+  assert.equal(reg.resolve('ref_XYZ', '2018-01-01').issuerId, 'iss_cik_0000000009');
+  assert.equal(reg.resolve('ref_XYZ', '2015-06-01').status, 'UNKNOWN');
+  // Überlappung wird nie geraten.
+  assert.equal(reg.resolve('DUP', '2020-07-01').status, 'AMBIGUOUS');
+  assert.equal(reg.resolve('DUP', '2020-03-01').issuerId, 'iss_cik_0000000007');
+  assert.deepEqual(reg.census(), { listings: 6, reusedSecurityIds: ['ref_DUP', 'ref_XYZ'], renamedIssuers: ['0000000001'] });
+  // Rückwärtskompatibel: die securityId-Regel ist unverändert, die Listing-Kennung ist eigener Namensraum.
+  assert.equal(ID.securityIdForTicker('META'), 'ref_META');
+  assert.equal(LR.listingId(1, 'META', '2022-06-09'), 'lst_0000000001_META_20220609');
+  assert.ok(LR.isListingId(LR.listingId(1, 'BRK.B')) && !ID.isSecurityId('lst_0000000001_META_20220609'));
+});
+
+test('PIT-F3 Panel mit Listing-Intervall: außerhalb des Intervalls kein Kandidat; Ticker-Kollision und ungültiges Intervall werden abgewiesen', () => {
+  const t = 60, ref = decideAt(panelOf(), t), p = panelOf();
+  // Intervall endet vor t: der Titel fällt heraus, auch wenn Kurse existieren (Ticker an anderen Emittenten vergeben).
+  p.securities[0].listing = { cik: 1, from: null, to: p.calendar[t - 1] };
+  assert.equal(decideAt(p, t).universe, ref.universe - 1);
+  // Intervall beginnt erst nach t: ebenfalls kein Kandidat.
+  const q = panelOf(); q.securities[0].listing = { cik: 1, from: p.calendar[t + 1], to: null };
+  assert.equal(decideAt(q, t).universe, ref.universe - 1);
+  // Intervall enthält t: Entscheidung unverändert.
+  const r = panelOf(); r.securities[0].listing = { cik: 1, from: p.calendar[0], to: null };
+  assert.deepEqual(decideAt(r, t), ref);
+  const run = (pp) => PB.runModelPortfolio(pp, { profileId: 'momentum-leader', window: [pp.calendar[0], pp.calendar.at(-1)] });
+  const bad = panelOf(); bad.securities[0].listing = { cik: 'x', from: null, to: null };
+  assert.throws(() => run(bad), /PANEL_LISTING_INVALID/);
+  const coll = panelOf(); coll.securities.push({ ...coll.securities[0], listing: { cik: 2, from: null, to: null } }); coll.securities[0].listing = { cik: 1, from: null, to: null };
+  assert.throws(() => run(coll), /PANEL_LISTING_COLLISION/);
+  // Disjunkte Fenster desselben Tickers sind erlaubt (Wiederverwendung mit Intervallen).
+  const ok = panelOf(); ok.securities.push({ ...ok.securities[0], listing: { cik: 2, from: ok.calendar[30], to: null } }); ok.securities[0].listing = { cik: 1, from: null, to: ok.calendar[29] };
+  assert.doesNotThrow(() => run(ok));
 });
 
 // ---------- Vertragsmatrix (maschinenlesbar, gepinnt) ----------
@@ -291,4 +338,5 @@ test('PIT-18 Vertragsmatrix: Versionen und Stichtagssemantik der vier Module sin
   // Identität: nur der Ticker bestimmt die securityId; keine Zeit, keine CIK.
   assert.equal(ID.securityIdForTicker('BRK.B'), 'ref_BRK_B');
   assert.equal(ID.securityIdForTicker.length, 1);
+  assert.equal(LR.VERSION, 'core-listing-register-1.0.0');
 });

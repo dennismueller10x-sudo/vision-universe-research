@@ -4,7 +4,7 @@
   "status": "freigegeben",
   "legalApproved": true,
   "updated": "2026-11-07",
-  "about": "Pflicht-Hinweistexte für das Frontend. Freigeschaltet am 06.11.2026 durch den Owner zusammen mit den Rechtstexten vu-recht-2026-11-06-1; anwaltliche Prüfung offen (docs/legal/ANWALTSMAPPE.md). Owner-Linie: docs/PLAN_NEUSTART_2026-11.md §11 (Analyse-Software ohne Empfehlungen und ohne Signale). Grundlage: docs/legal/EINORDNUNG.md, Regeln: docs/legal/WORTWAHL.md. Owner-Entscheidung 07.11.2026: in der App (VUApp/Capacitor) kein Seitenfuß, sondern Menü → „Rechtliches & Infos“; Datenquellen stehen zentral auf /infos/ statt in den Produktseiten. Texte nur hier ändern, nicht in die Seiten kopieren.",
+  "about": "Pflicht-Hinweistexte für das Frontend. Freigeschaltet am 06.11.2026 durch den Owner zusammen mit den Rechtstexten vu-recht-2026-11-06-1; anwaltliche Prüfung offen (docs/legal/ANWALTSMAPPE.md). Owner-Linie: docs/PLAN_NEUSTART_2026-11.md §11 (Analyse-Software ohne Empfehlungen und ohne Signale). Grundlage: docs/legal/EINORDNUNG.md, Regeln: docs/legal/WORTWAHL.md. Owner-Entscheidung 07.11.2026: in der App (VUApp/Capacitor) kein Seitenfuß, sondern Menü → „Rechtliches & Infos“; Datenquellen stehen zentral auf /infos/ statt in den Produktseiten. Texte nur hier ändern, nicht in die Seiten kopieren. Owner-Entscheidung 10.11.2026: auch im Browser kein Seitenfuß, Satz und Links nur im Menü ‚Rechtliches & Infos‘.",
   "links": {
     "impressum": "https://konto.visionuniverse.de/rechtliches/impressum",
     "kontakt": "https://konto.visionuniverse.de/kontakt",
@@ -26,7 +26,7 @@
   },
   "notices": {
     "footer": {
-      "where": "Seitenfuß jeder Seite von research.visionuniverse.de im Browser. In der App (User-Agent VUApp/1 oder Capacitor) entfällt der Seitenfuß; derselbe Satz und alle Links stehen im Menü unter „Rechtliches & Infos“ (Owner-Entscheidung 07.11.2026).",
+      "where": "Seitenfuß jeder Seite von research.visionuniverse.de im Browser. In der App (User-Agent VUApp/1 oder Capacitor) entfällt der Seitenfuß; derselbe Satz und alle Links stehen im Menü unter „Rechtliches & Infos“ (Owner-Entscheidung 07.11.2026). Owner-Entscheidung 10.11.2026: auch im Browser kein Seitenfuß, Satz und Links nur im Menü ‚Rechtliches & Infos‘.",
       "text": "Vision Universe ist eine Software zur Analyse von Aktien. Die Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Keine Anlageberatung, keine Anlageempfehlung, keine Kauf- oder Verkaufsempfehlung. Aktien können bis zum Totalverlust fallen. Frühere und simulierte Ergebnisse sind kein verlässlicher Hinweis auf die Zukunft.",
       "links": [
         "impressum",
@@ -35,7 +35,8 @@
         "bedingungen",
         "risikohinweise"
       ],
-      "app": "menu"
+      "app": "menu",
+      "web": "menu"
     },
     "stock": {
       "where": "Aktienseiten (Quant, Fundamental, Discover, Technical, Supertrader-Aktienseite)",
