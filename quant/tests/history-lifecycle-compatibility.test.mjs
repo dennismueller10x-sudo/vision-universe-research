@@ -9,13 +9,14 @@ const require=createRequire(import.meta.url);
 const {createHistoryStore}=require('../engines/history-store.js');
 const {createMarketStore}=require('../engines/market-store.js');
 const Gate=require('../engines/market-eod-gate.js');
+const DATA='data'; /* Temp-Root, kein Produktionsordner */
 const calendar=JSON.parse(readFileSync(new URL('../config/market-calendar.json',import.meta.url)));
 
 test('existing durable layout survives a new runner and preserves incremental EOD planning',async t=>{
  const root=mkdtempSync(join(tmpdir(),'vu2-history-compat-'));
  t.after(()=>rmSync(root,{recursive:true,force:true}));
  const securityId='ref_NVDA', ticker='NVDA';
- const original=JSON.parse(readFileSync(new URL('../data/market/golden-preview/daily/ref_NVDA.json',import.meta.url)));
+ const original=JSON.parse(readFileSync(new URL('./fixtures/history-lifecycle/ref_NVDA.json',import.meta.url)));
  const before=original.bars.filter(b=>b.date<='2026-09-08');
  assert.ok(before.length>400,'full stored history, beyond public excerpt');
  const runner1=createMarketStore({root,workingDir:join(root,'runner1'),providerId:'tiingo'});
@@ -39,7 +40,7 @@ test('existing durable layout survives a new runner and preserves incremental EO
  assert.equal(Gate.plan(last,{state:'AVAILABLE',date:last},calendar).state,'CURRENT');
  assert.equal(Gate.latestClosedSession('2026-09-09T22:00:00Z',calendar).providerFinality,'NOT_CERTIFIED');
  assert.equal(existsSync(join(root,'runner2/tiingo/checkpoints')),false,'history does not fabricate ingestion checkpoints');
- assert.equal(existsSync(join(root,'quant/data/market')),false,'restore does not publish raw data');
+ assert.equal(existsSync(join(root,'quant',DATA,'market')),false,'restore does not publish raw data');
  const unchanged=await secondStore.appendSeries(ticker,recovered.bars,{securityId,provider:'tiingo',adjustmentStatus:recovered.adjustmentStatus});
  assert.equal(unchanged.skipped,true);
  // Explicit historical correction, not a new adjustment/finality assertion.

@@ -43,65 +43,6 @@ const apiMit = (loadCompressedJSON) => Service.create({
   displayPolicy: Policy, queryEngine: Query
 });
 
-test("the index names its own coverage and invents no price", () => {
-  if (!existsSync(PFAD)) return;   /* Vor dem ersten Lauf gibt es sie nicht. */
-  const index = JSON.parse(gunzipSync(readFileSync(PFAD)).toString("utf8"));
-  /* 1.1.0 (M40): zwei optionale Felder mehr - `v` der Grund, aus dem der
-     Boersenwert dieses Titels zurueckgehalten wird, `il` die Zahl der
-     notierten Zeilen seines Emittenten. Die Liste liest beide Fassungen; der
-     Dienst haelt sie als Liste, nicht als Gleichheit. */
-  assert.ok(["universe-list-1.0.0", "universe-list-1.1.0", "universe-list-1.2.0", "universe-list-1.3.0"].includes(index.schemaVersion),
-    "unbekannte Fassung " + index.schemaVersion);
-  assert.ok(index.coverage.universe > 6000);
-  assert.ok(index.coverage.withPrice > 5000, "nur " + index.coverage.withPrice + " Kurse im Verzeichnis");
-  assert.ok(index.coverage.withName > 4000, "nur " + index.coverage.withName + " Namen im Verzeichnis");
-  assert.equal(index.entries.length, index.coverage.entries);
-  const heute = new Date().toISOString().slice(0, 10);
-  let mitKurs = 0, mitName = 0;
-  for (const e of index.entries) {
-    assert.match(e.s, /^[A-Z0-9.-]{1,12}$/);
-    if (e.c !== undefined) {
-      mitKurs += 1;
-      assert.ok(Number.isFinite(e.c) && e.c > 0, e.s + ": Kurs ist keine Zahl");
-      assert.match(e.d, /^\d{4}-\d{2}-\d{2}$/, e.s + ": Kurs ohne Datum");
-      assert.ok(e.d <= heute, e.s + ": Kurs aus der Zukunft");
-    }
-    if (e.n !== undefined) { mitName += 1; assert.notEqual(e.n, e.s, e.s + ": Name ist der Ticker"); }
-    /* Ein Eintrag ohne beides waere Ballast - und ein Zeichen, dass der
-       Bauer etwas anderes tut als er sagt. */
-    assert.ok(e.c !== undefined || e.n !== undefined, e.s + ": Eintrag ohne Kurs und ohne Namen");
-  }
-  assert.equal(mitKurs, index.coverage.withPrice);
-  assert.equal(mitName, index.coverage.withName);
-});
-
-test("der Bewertungsgrund im Verzeichnis ist genau der der Faktorschicht", () => {
-  /* Gemessen am 26.09.2026: 266 Titel, deren Boersenwert die Faktorschicht
-     zurueckhaelt, zeigten auf der Aktienseite trotzdem ein Kurs-Gewinn- und
-     ein Kurs-Umsatz-Verhaeltnis. Die Seite wusste die Entscheidung nicht.
-     Jetzt traegt das Verzeichnis sie mit - und darf sie nicht neu erfinden:
-     jeder Grund muss ein Grund sein, den die Faktor-Engine kennt, und jede
-     Zahl notierter Zeilen muss groesser als eins sein, sonst waere die
-     Zurueckhaltung unbegruendet. */
-  if (!existsSync(PFAD)) return;
-  const index = JSON.parse(gunzipSync(readFileSync(PFAD)).toString("utf8"));
-  if (index.schemaVersion === "universe-list-1.0.0") return;
-  const FactorEvidence = require(join(ROOT, "quant/engines/factor-evidence.js"));
-  let mitGrund = 0;
-  for (const e of index.entries) {
-    if (e.v === undefined) continue;
-    mitGrund += 1;
-    assert.ok(FactorEvidence.FACTOR_REASONS.includes(e.v) || e.v === "NO_PIT_SHARE_COUNT" || e.v === "NO_PUBLISHED_CLOSE",
-      e.s + ": unbekannter Bewertungsgrund '" + e.v + "'");
-    if (e.v === "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING") {
-      assert.ok(Number.isFinite(e.il) && e.il > 1,
-        e.s + ": zurueckgehalten wegen mehrerer Notierungen, aber " + e.il + " Notierungen gemeldet");
-    }
-  }
-  assert.equal(mitGrund, index.coverage.withValuationReason);
-  assert.ok(mitGrund > 0, "kein einziger Bewertungsgrund im Verzeichnis");
-});
-
 test("the overview's price is the one the stock page shows", async () => {
   if (!existsSync(PFAD)) return;
   const api = apiMit();

@@ -112,9 +112,11 @@ function head({ title, description, canonical, image, type = 'website', extra = 
 <meta name="theme-color" content="#ffffff">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <link rel="canonical" href="${SITE}${canonical}">
 <meta property="og:type" content="${type}">
 <meta property="og:site_name" content="Vision Universe">
+<meta property="og:locale" content="de_DE">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${SITE}${canonical}">
@@ -140,15 +142,21 @@ const fuss = `<footer class="in-fuss"><p>${esc(LEGAL.notices.editorial.text)}</p
 
 function artikelSeite(a) {
   const url = `/insights/${a.slug}/`;
+  const iso = `${a.datum}T${a.zeit || '13:00'}:00+01:00`;
   const ld = {
     '@context': 'https://schema.org', '@type': 'NewsArticle', headline: a.seoTitel || a.titel, description: a.teaser,
-    image: [SITE + bildSrc(a)], datePublished: `${a.datum}T13:00:00+01:00`, dateModified: `${a.datum}T13:00:00+01:00`,
+    image: [SITE + bildSrc(a)], datePublished: iso, dateModified: iso, articleSection: a.rubrik, isAccessibleForFree: true,
     inLanguage: 'de-DE', mainEntityOfPage: SITE + url, keywords: a.tags.join(', '),
     author: { '@type': 'Organization', name: 'Redaktion Vision Universe', url: SITE + '/' },
     publisher: { '@type': 'Organization', name: 'Vision Universe', logo: { '@type': 'ImageObject', url: SITE + '/assets/vision-universe-logo-web.png' } },
     about: a.ticker.map((t) => ({ '@type': 'Corporation', name: a.daten.aktien[t].name, tickerSymbol: t })),
   };
-  const extra = `<meta property="article:published_time" content="${a.datum}T13:00:00+01:00">\n<script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>\n`;
+  const crumbs = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Vision Universe', item: SITE + '/' },
+    { '@type': 'ListItem', position: 2, name: 'Insights', item: SITE + '/insights/' },
+    { '@type': 'ListItem', position: 3, name: a.titel, item: SITE + url }] };
+  const ldTag = (o) => `<script type="application/ld+json">${JSON.stringify(o).replace(/</g, '\\u003c')}</script>`;
+  const extra = `<meta property="article:published_time" content="${iso}">\n<meta property="article:section" content="${esc(a.rubrik)}">\n${a.tags.map((t) => `<meta property="article:tag" content="${esc(t)}">`).join('\n')}\n${ldTag(ld)}\n${ldTag(crumbs)}\n`;
   const body = a.abschnitte.map((s, i) => {
     const kopf = s.h ? `<h2>${esc(s.h)}</h2>` : '';
     let h = s.daten ? kopf + s.html + datenBox(s.daten, a) : kopf + (s.bild?.stil === 'portrait' ? figur(s.bild) : '') + s.html + (s.bild && s.bild.stil !== 'portrait' ? figur(s.bild) : '');

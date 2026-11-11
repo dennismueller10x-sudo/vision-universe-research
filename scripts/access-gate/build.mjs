@@ -81,6 +81,11 @@ button:disabled{opacity:.65;cursor:wait}input:focus-visible,button:focus-visible
 <script src="/__research/access.js?v=${runtimeVersion}" data-content="${escape(content)}" defer></script></body></html>`;
 }
 
+// Oeffentliche Bereiche ohne Maske (Owner 10.11.2026): Insights mit Artikeln, Aktienmagazin und Reports soll fuer
+// Leser ohne Passwort, Google und KI-Suchen lesbar sein. Nur diese Praefixe; alles andere bleibt hinter der Maske.
+export const PUBLIC_PREFIXES = Object.freeze(['insights/']);
+export const isPublicPage = (path) => PUBLIC_PREFIXES.some((prefix) => path.startsWith(prefix));
+
 export async function protectRelease({output, password = process.env.RESEARCH_ACCESS_PASSWORD}) {
   const config = verificationFor(password); // Refuse missing secrets before writing any files.
   output = resolve(output);
@@ -102,8 +107,10 @@ export async function protectRelease({output, password = process.env.RESEARCH_AC
   await mkdir(internal, {recursive: true});
   await writeFile(join(internal, 'access.js'), runtime);
   await writeFile(join(internal, 'config.json'), JSON.stringify(config));
+  let publicPages = 0;
   for (const page of pages) {
     const path = relative(output, page).split('\\').join('/');
+    if (isPublicPage(path)) { publicPages++; continue; }
     const original = await readFile(page);
     const saved = join(internal, 'content', path);
     await mkdir(dirname(saved), {recursive: true});
@@ -115,7 +122,7 @@ export async function protectRelease({output, password = process.env.RESEARCH_AC
     await mkdir(join(internal, route), {recursive: true});
     await writeFile(join(internal, route, 'index.html'), gatePage(config, '', runtimeVersion));
   }
-  const report = {version: ACCESS_VERSION, kind: 'CLIENT_SIDE_DEVELOPMENT_MARKETING_GATE', pages: pages.length,
+  const report = {version: ACCESS_VERSION, kind: 'CLIENT_SIDE_DEVELOPMENT_MARKETING_GATE', pages: pages.length - publicPages, publicPages, publicPrefixes: PUBLIC_PREFIXES,
     durationDays: 30, plaintextPasswordEmitted: false, cloudflareRequired: false};
   await writeFile(join(internal, 'build-report.json'), JSON.stringify(report));
   return report;

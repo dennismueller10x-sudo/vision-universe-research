@@ -46,9 +46,7 @@ test("M4-2 alerts: no events from a methodology change or unchanged data date", 
   /* neuer Titel ohne vorige Zeile: Ausgangszustand, kein Ereignis (Code-Review M1) */
   assert.equal(Alerts.diffRun(prev, { methodologyKey: "A", rows: [row("X", "2026-10-01", { inEntryZone: false }), row("NEW", "2026-10-08", { inEntryZone: true })] }).events.length, 0);
   assert.equal(Alerts.diffRun(null, { methodologyKey: "A", rows: [row("X", "2026-10-08", { inEntryZone: true })] }).suppressed, "BASELINE");
-  /* der veroeffentlichte Index traegt den Methodenschluessel, sonst greift der Schutz beim naechsten Lauf nicht */
-  const idx = join(ROOT, "quant/data/technical-intelligence/v3/index.json.gz");
-  if (existsSync(idx)) { const j = JSON.parse(gunzipSync(readFileSync(idx)).toString()); assert.ok(j.methodologyKey && /elliott/.test(j.methodologyKey), "index.json.gz ohne methodologyKey"); }
+  /* Methodenschluessel im veroeffentlichten Index: Datenqualitaetsregel DQ-PQ-6 (core/product-quality.js), seit 10.11.2026 kein Test mehr. */
 });
 
 /* §90 WXY-Schieflage: in Produktion war WXY die haeufigste Hauptzaehlung (1.877 von 5.292), Impulse fast nie (44). Auf sauberen
@@ -64,18 +62,7 @@ test("M4-3 WXY does not win on clean textbook structures", () => {
   assert.ok(wxy <= 2, "WXY als Hauptzaehlung auf " + wxy + " von " + n + " sauberen Nicht-WXY-Strukturen");
 });
 
-/* §91 API-Versionen: jeder Titel nennt Engine-, Regel- und Datenversion; meta.json nennt die Produktions-Engine. */
-test("M4-4 API carries consistent engine versions", () => {
-  const V = join(ROOT, "quant/data/technical-intelligence/v3");
-  if (!existsSync(join(V, "meta.json"))) return;
-  const meta = JSON.parse(readFileSync(join(V, "meta.json"), "utf8"));
-  assert.equal(meta.elliott.engine, "v3"); assert.equal(meta.elliott.confluenceWeight, 0); assert.equal(meta.elliott.status, "EXPERIMENTAL_STRUCTURE_MODEL");
-  const shard = JSON.parse(gunzipSync(readFileSync(join(V, "shards", "AA.json.gz"))).toString()).instruments;
-  const one = Object.values(shard)[0];
-  assert.equal(one.versions.elliott, EV3.ENGINE_VERSION, "Shard-Daten stammen nicht von der aktuellen Engine — neu bauen");
-  assert.ok(one.versions.ruleSet && one.versions.dataAsOf && one.versions.api);
-  assert.equal(one.versions.elliottStatus, "EXPERIMENTAL_STRUCTURE_MODEL");
-});
+/* §91 API-Versionen (Engine-, Regel- und Datenversion je Titel, meta.json nennt die Produktions-Engine): DQ-PQ-6, kein Test mehr. */
 
 /* §92 Unmoegliche Kursniveaus: 328 von 5.292 Titeln (6 %) trugen Niveaus ≤ 0 oder > Faktor 10 vom Kurs (ACON: Kurs 2,44,
    Ziel −2.695, Bestaetigung 949,73), weil der Measured Move linear in Kurspunkten nach einem Einbruch um 99,9 % rechnete. */
@@ -98,7 +85,7 @@ test("M4-5 scenario levels are positive and plausible after a collapse", async (
   check(out.res, s.close[s.length - 1], "synthetisch");
   /* echte Faelle: ACON (Ziel −2.695), AIXI (Einstiegszone 5× ueber dem Kurs wegen ATR aus Vor-Einbruch-Kursen), BYND, BRNX, ATOS */
   for (const t of ["ACON", "AIXI", "BYND", "BRNX", "ATOS"]) {
-    const f = join(ROOT, "quant/data/market/discover-series-long/ref_" + t + ".json");
+    const f = join(ROOT, "quant/tests/fixtures/ti-mission4/ref_" + t + ".json");
     if (existsSync(f)) { const s2 = weeklySeriesFromPoints(JSON.parse(readFileSync(f, "utf8")).points, t); check(analyzeProduct(s2, {}).res, s2.close[s2.length - 1], t); }
   }
 });
@@ -112,7 +99,7 @@ test("M4-6 no scenarios on dead series; abstained Elliott never shapes scenarios
   const dead = analyzeProduct(weeklySeriesFromPoints(pts, "DEAD"), {}).res;
   assert.equal(dead.scenarios.length, 0, "Szenario auf toter Reihe"); assert.equal(dead.confidence.overall, "LOW");
   for (const t of ["ALPN", "VLCN", "AIXI", "ACON", "HCTI", "TALK", "SLAB", "GRDX", "AAPL", "MSFT"]) {
-    const f = join(ROOT, "quant/data/market/discover-series-long/ref_" + t + ".json"); if (!existsSync(f)) continue;
+    const f = join(ROOT, "quant/tests/fixtures/ti-mission4/ref_" + t + ".json"); if (!existsSync(f)) continue;
     const s = weeklySeriesFromPoints(JSON.parse(readFileSync(f, "utf8")).points, t), out = analyzeProduct(s, {}), r = out.res, close = s.close[s.length - 1];
     const E = r.methods && r.methods.elliott, abst = !E || !E.applicability || E.applicability.abstain;
     for (const sc of r.scenarios) {

@@ -10,19 +10,20 @@ import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
 const root = new URL("../../", import.meta.url);
+const data = new URL("./fixtures/quant-radar/", import.meta.url), dataDir = new URL("./quant/data/", data); /* eingefrorene Daten-Wurzel, README daneben */
 const Radar = require("../engines/quant-radar.js");
 const Service = require("../api/product-services.js");
 const Policy = require("../engines/display-policy.js");
 const Query = require("../engines/query.js");
-const gz = (p) => JSON.parse(gunzipSync(readFileSync(new URL(p, root))));
+const gz = (p) => JSON.parse(gunzipSync(readFileSync(new URL(p, dataDir))));
 const api = Service.create({
-  loadJSON: async (p) => JSON.parse(await readFile(new URL(p.slice(1), root), "utf8")),
-  loadCompressedJSON: async (p) => JSON.parse(gunzipSync(await readFile(new URL(p.slice(1), root))).toString("utf8")),
+  loadJSON: async (p) => JSON.parse(await readFile(new URL(p.slice(1), data), "utf8")),
+  loadCompressedJSON: async (p) => JSON.parse(gunzipSync(await readFile(new URL(p.slice(1), data))).toString("utf8")),
   displayPolicy: Policy, queryEngine: Query
 });
-const radar = gz("quant/data/product/radar-v1.json.gz");
-const lifecycle = gz("quant/data/product/setup-lifecycle-v1.json.gz");
-const evidence = JSON.parse(readFileSync(new URL("quant/data/product/evidence-status-v1.json", root), "utf8"));
+const radar = gz("product/radar-v1.json.gz");
+const lifecycle = gz("product/setup-lifecycle-v1.json.gz");
+const evidence = JSON.parse(readFileSync(new URL("product/evidence-status-v1.json", dataDir), "utf8"));
 
 test("jedes veroeffentlichte Ereignis erfuellt den Alert-Vertrag", () => {
   assert.equal(radar.schemaVersion, "quant-radar-1.2.0");
@@ -74,10 +75,10 @@ test("der Vertrag weist verbotene Felder und unbekannte Typen zurueck", () => {
 });
 
 test("jedes Setup-Ereignis ist ein Wechsel zwischen den letzten beiden Setup-Staenden", () => {
-  const dir = new URL("quant/data/product/setup-observation-history/setup-mapping-1.0.0/", root);
+  const dir = new URL("product/setup-observation-history/setup-mapping-1.0.0/", dataDir);
   const dates = readdirSync(dir).filter((f) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(f)).map((f) => f.slice(0, 10)).sort();
-  const cur = gz("quant/data/product/setup-observation-history/setup-mapping-1.0.0/" + dates.at(-1) + ".json.gz").rows;
-  const prev = gz("quant/data/product/setup-observation-history/setup-mapping-1.0.0/" + dates.at(-2) + ".json.gz").rows;
+  const cur = gz("product/setup-observation-history/setup-mapping-1.0.0/" + dates.at(-1) + ".json.gz").rows;
+  const prev = gz("product/setup-observation-history/setup-mapping-1.0.0/" + dates.at(-2) + ".json.gz").rows;
   const setupEvents = radar.events.filter((e) => e.source === "SETUP");
   assert.ok(setupEvents.length > 0);
   for (const e of setupEvents) {
@@ -111,7 +112,7 @@ test("die Kartenreihenfolge ist die offen gelegte Sortierregel - keine Note", ()
 test("Einstieg, Stop und Ziele einer Karte stammen aus dem veroeffentlichten Trade-Setup", () => {
   const card = radar.cards.find((c) => c.trade && c.trade.state === "AVAILABLE");
   assert.ok(card, "keine angereicherte Karte");
-  const shard = gz("quant/data/product/technical-signals-v1/" + (card.ticker + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_") + ".json.gz");
+  const shard = gz("product/technical-signals-v1/" + (card.ticker + "_").slice(0, 2).replace(/[^A-Z0-9._-]/g, "_") + ".json.gz");
   const ts = shard.instruments[card.ticker].bundle.tradeSetup;
   assert.deepEqual(card.trade.entry, [ts.entry.zoneLow, ts.entry.zoneHigh]);
   assert.equal(card.trade.invalidation, ts.analysisInvalidation.price);
@@ -128,7 +129,7 @@ test("Vergleichsfaelle einer Karte erscheinen nur ueber der Schwelle", () => {
 
 test("Lebenszyklus: 'seit' ist der erste Stichtag der laufenden Folge", () => {
   const dates = lifecycle.snapshots;
-  const snaps = dates.map((d) => gz("quant/data/product/setup-observation-history/setup-mapping-1.0.0/" + d + ".json.gz").rows);
+  const snaps = dates.map((d) => gz("product/setup-observation-history/setup-mapping-1.0.0/" + d + ".json.gz").rows);
   let geprueft = 0;
   for (const [t, row] of Object.entries(lifecycle.rows).slice(0, 400)) {
     const k = dates.indexOf(row[1]);
@@ -182,7 +183,7 @@ test("eine Karten-Invalidierung liegt immer unter dem Kurs (Aufwaerts-Setup)", (
 });
 
 test("QUANT_DECISION_INTELLIGENCE ist gemessen und jedes Kriterium belegt", () => {
-  const di = JSON.parse(readFileSync(new URL("quant/data/product/decision-intelligence-v1.json", root), "utf8"));
+  const di = JSON.parse(readFileSync(new URL("product/decision-intelligence-v1.json", dataDir), "utf8"));
   assert.equal(di.schemaVersion, "decision-intelligence-1.0.0");
   assert.equal(di.criteria.length, 8);
   for (const c of di.criteria) assert.ok(typeof c.measured === "string" && c.measured.length > 5, c.question);
@@ -212,7 +213,7 @@ test("alert ledger: a key alarms once, a re-run of the same radar date keeps it 
 test("Startseite: die Radar-Projektion ist eine Teilmenge desselben Radars, beobachtete Titel kommen aus den Scherben", async () => {
   /* Gemessen 03.10.2026: der ganze Radar (211 KB) hob die Startseite ueber
      ihr Ressourcenbudget. Die Projektion darf nichts Eigenes rechnen. */
-  const home = gz("quant/data/product/radar-home-v1.json.gz");
+  const home = gz("product/radar-home-v1.json.gz");
   assert.equal(home.schemaVersion, Radar.HOME_PROJECTION_SCHEMA);
   assert.equal(home.asOf, radar.asOf);
   assert.deepEqual(home.summary, radar.summary);
@@ -274,7 +275,7 @@ test("MC3 · der veroeffentlichte Radar: ein Methodikwechsel erzeugt weder Radar
   assert.equal(radar.measures.METHOD_REBASES, rebases.length);
   assert.equal(radar.measures.TRANSITIONS_SUPPRESSED_BY_METHOD_CHANGE, rebases.reduce((n, r) => n + r.suppressedTransitions, 0));
   const typesOf = { EVIDENCE: ["EVIDENCE_CHANGED"], PATTERN: ["PATTERN_MATCH_NEW"], FACTOR: ["FACTOR_CHANGED", "RISK_RISING"], STRATEGY: ["STRATEGY_MATCH_NEW", "STRATEGY_MATCH_LOST"] };
-  const history = gz("quant/data/product/radar-history/events/" + radar.asOf + ".json.gz");
+  const history = gz("product/radar-history/events/" + radar.asOf + ".json.gz");
   for (const r of rebases) {
     assert.equal(r.userVisible, false);
     const types = typesOf[r.source];
@@ -290,12 +291,12 @@ test("MC3 · der veroeffentlichte Radar: ein Methodikwechsel erzeugt weder Radar
 
 test("MC4 · unabhaengig nachgerechnet: wo die Staende keine belegt gleiche Methodik tragen, steht ein REBASE und kein Ereignis", () => {
   const latestTwo = (dir) => {
-    const dates = readdirSync(new URL(dir, root)).filter((f) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(f)).sort();
+    const dates = readdirSync(new URL(dir, dataDir)).filter((f) => /^\d{4}-\d{2}-\d{2}\.json\.gz$/.test(f)).sort();
     return dates.length >= 2 ? dates.slice(-2).map((f) => gz(dir + f)) : null;
   };
-  const factorDir = "quant/data/product/factor-evidence-history/" + readdirSync(new URL("quant/data/product/factor-evidence-history/", root)).filter((d) => /^vu-factor-evidence-/.test(d)).sort().pop() + "/";
-  const cases = [["EVIDENCE", "quant/data/product/radar-history/replay-evidence/", ["EVIDENCE_CHANGED"]],
-    ["PATTERN", "quant/data/product/radar-history/pattern-holds/", ["PATTERN_MATCH_NEW"]],
+  const factorDir = "product/factor-evidence-history/" + readdirSync(new URL("product/factor-evidence-history/", dataDir)).filter((d) => /^vu-factor-evidence-/.test(d)).sort().pop() + "/";
+  const cases = [["EVIDENCE", "product/radar-history/replay-evidence/", ["EVIDENCE_CHANGED"]],
+    ["PATTERN", "product/radar-history/pattern-holds/", ["PATTERN_MATCH_NEW"]],
     ["FACTOR", factorDir, ["FACTOR_CHANGED", "RISK_RISING"]]];
   let geprueft = 0;
   for (const [source, dir, types] of cases) {

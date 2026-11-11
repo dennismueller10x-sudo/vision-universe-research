@@ -341,3 +341,6 @@ html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--
 /* Ausklapper „weitere“ auf der schwarzen Risiko-Karte: Schrift der Karte statt eigener dunkler Farbe (Kontrast). */
 .qd .qv-stock .qv2-panel.tone-bad .dx-waage-weitere>summary,.qd .qv-stock .qv2-panel.tone-bad .dx-waage-weitere>summary *{color:inherit}
 .qd .qv-stock .qv2-panel.tone-good .dx-waage-weitere>summary,.qd .qv-stock .qv2-panel.tone-good .dx-waage-weitere>summary *{color:inherit}
+/* Konzept Quant 2026-11 (PR 1): in der schwarzen Karte „Spricht dagegen“ trug der weiße Kreis eine weiße Ikone (leerer Kreis). */
+.qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico,.qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico *{color:#000}
+.qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico{background:#fff}

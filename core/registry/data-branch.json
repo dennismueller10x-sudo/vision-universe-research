@@ -9,7 +9,7 @@
   "domains": [
     {
       "id": "news",
-      "phase": "DUAL_WRITE",
+      "phase": "BRANCH_ONLY",
       "workflow": "content.yml",
       "paths": ["dashboard/data/news_feed.json"]
     },
@@ -95,7 +95,6 @@
   "plan": {
     "purpose": "Jede Datenart aus core/registry/domains.json steht entweder unter domains (im Datenzweig) oder hier mit Status und Grund (DB-14). NEXT = als Naechstes, LATER = nach dem Buendel/der Kette, LAST = Quant/Supertrader/Discover zuletzt (Plan §3), EXEMPT = begruendet ausgenommen.",
     "entries": {
-      "news": {"status": "NEXT", "grund": "Pilot DUAL_WRITE; BRANCH_ONLY nach der Abnahme am 11.11.2026"},
       "companyNames": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
       "europeDiscoverDisplay": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
       "europeEsefFacts": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},

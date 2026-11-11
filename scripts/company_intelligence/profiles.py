@@ -4,7 +4,10 @@ Only explicit issuer business sentences are eligible. Missing facts stay empty;
 SEC identity/industry alone never becomes a business description.
 """
 import hashlib
+import json
 import re
+from functools import lru_cache
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
@@ -14,12 +17,14 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.20'
+PARSER_VERSION = 'company-profile-parser-1.0.22'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
 ACTIVITY = re.compile(r'\b(?:designs?|develops?|manufactures?|markets?|sells?|provides?|operates?|offers?|distributes?|produces?|supplies?|commercializes?|researches?|licenses?|delivers?|builds?|serves?|specializes?|engages?|focuses?)\b', re.I)
 BUSINESS = re.compile(r'\b(?:software|platforms?|products?|services?|solutions?|bank|banking|insurance|insurer|manufacturer|provider|supplier|developer|retailer|retail|holding company|biotechnology|biopharmaceutical|pharmaceutical|semiconductors?|computing|infrastructure|power management|energy|mining|real estate|transportation|technology|equipment|devices?|vehicles?|EVs?|NEVs?|food|beverages?|materials|merchandise|airline|utilities|utility|producers?|drilling|agribusiness|land management|telecommunications|communications|logistics|restaurants?|medical|furnishings|clothing|chemicals|oil|gas|gold|silver|copper|steel|REIT|education|training|publishing|media|entertainment|gaming|hospitality|hotels?|travel|apparel|textiles|fabrics|construction|engineering|aerospace|defen[sc]e|financial|investments?|asset management|mortgages?|lending|loans?|blank check company|acquisition company|furniture|personal care|cosmetics|candles|packaging|paper|forestry|wood|lumber|timber|electricity|renewable|water|waste|shipping|freight|oilfield|distribution|healthcare|payroll|concrete|wire|metals?|breweries|brewing|cidery|multimedia|television|pipelines?|broadband|internet access|containerboard|cat litters?|resin|hospitals?|health care|kiosks?|pizza|burgers?|salads?|wealth management)\b', re.I)
+# Second pass only (extract, when the first pass found nothing): business nouns missing above.
+RELAXED_BUSINESS = re.compile(r'\b(?:membership warehouses?|warehouse clubs?)\b', re.I)
 EXCLUDED = re.compile(r'\b(?:headcount|forward.looking|may|might|could|will|expects?|intends?|plans?|believes?|aims?|aspires?|best|revolutionary|unrivaled|unparalleled|world.class|award.winning|visionary|transforming the future|market leader)\b', re.I)
 PROMOTION = re.compile(r'\b(?:(?:world[’\']?s?[ -]|nation[’\']s[ -]|global[ -]|industry[ -]|market[ -])?(?:leading|largest|premier|top.ranked)|growth.oriented|high.return|iconic|innovative|cutting.edge|state.of.the.art|intelligent|novel|differentiated|fashionable|comprehensive|most advanced|effectively)\s*,?\s*', re.I)
 
@@ -115,8 +120,12 @@ def annual_filing(company, submissions, now):
     return max(found, key=lambda f: (f['filedAt'], f['filingId'])) if found else None
 
 
-def business_blocks(doc, form):
+def business_blocks(doc, form, relaxed=False):
     patterns = [r'^(?:part\s+i\s*)?item\s*1[.| :–-]*business\b', r'^items?\s*1\.?\s*(?:and|&)\s*2[.| :–-]*business(?: and properties)?\b'] if form == '10-K' else [r'^item\s*4[.| :–-]*information on the company\b', r'^(?:[bB][. :–-]*)?business overview\b']
+    if relaxed and form == '10-K':
+        # Second pass only (extract): an em-dash heading ("Item 1—Business", Costco 10-K 2026) and the inline
+        # section heading of a cross-reference 10-K, whose Item 1 is only an index entry ("ABOUT GE AEROSPACE. ...", GE 10-K 2025).
+        patterns = patterns + [r'^(?:part\s+i\s*)?item\s*1\s*[—–-]\s*business\b', r'^about\s+[a-z0-9][a-z0-9 &.,\'-]{1,60}?\.\s+\S']
     starts = [i for i, text in enumerate(doc.blocks) if any(re.search(p, text, re.I) for p in patterns)]
     for i in range(len(doc.blocks) - 1):
         if re.fullmatch(r'item\s*1[. :–-]*', doc.blocks[i], re.I) and re.fullmatch(r'business[. :–-]*', doc.blocks[i + 1], re.I) and form == '10-K':
@@ -161,7 +170,7 @@ def sentences(text):
     return [s.replace('\u2024', '.') for s in re.split(r'(?<=[.!?])\s+(?=[A-Z“\"])', text)]
 
 
-def issuer_sentence(raw, company, sec=False, allow_first_person=True):
+def issuer_sentence(raw, company, sec=False, allow_first_person=True, relaxed=False):
     """Require a first-person SEC business statement or exact issuer subject.
 
     Holding-company/subsidiary names are never interchangeable. Web evidence
@@ -287,7 +296,7 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
         # An exact legal issuer with consolidated subsidiaries takes a plural
         # predicate in filings; use the same tested issuer-voice conjugation.
         tail = re.sub(r'\bwe monetize\b', 'it monetizes', tail, flags=re.I)
-        return issuer_sentence('We ' + tail.strip(' ,'), company, sec=True, allow_first_person=True)
+        return issuer_sentence('We ' + tail.strip(' ,'), company, sec=True, allow_first_person=True, relaxed=relaxed)
     if not possessive and not re.match(r'^\s*,?\s*(?:(?:is|are|has)\b|(?:designs|develops|manufactures|markets|sells|provides|operates|offers|produces|distributes|supplies|commercializes|researches|licenses|delivers|builds|makes|engineers|serves|specializes|engages|focuses)\b)', tail, re.I):
         return None
     if sec and not possessive and subject != name:
@@ -328,9 +337,13 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True):
     active = re.match(r'^(?:designs|develops|manufactures|markets|sells|provides|operates|offers|produces|distributes|supplies|commercializes|researches|licenses|delivers|builds|makes|engineers|serves|specializes|engages|focuses)\b|^has (?:built|developed|manufactured)\b', predicate, re.I)
     if re.match(r'^builds (?:upon|on|within)\b', predicate, re.I):
         active = None
+    if relaxed and not (possessive or active or nominal) and re.match(r'^(?:is|are) (?:principally |primarily |mainly )?engaged in (?:the )?(?:operation|business) of\b', predicate, re.I):
+        # Second pass only: "We are principally engaged in the operation of membership warehouses" (Costco 10-K).
+        active = True
+    business = BUSINESS.search(text[len(subject):]) or (relaxed and RELAXED_BUSINESS.search(text[len(subject):]))
     # A legal name containing 'Energy' or 'Financial' does not turn
     # corporate administration or acreage statistics into a business.
-    if not BUSINESS.search(text[len(subject):]) or not (possessive or active or nominal):
+    if not business or not (possessive or active or nominal):
         return None
     if re.match(re.escape(subject) + r' operates ', text):
         # Region headings do not travel with isolated sentences. Preserve the
@@ -365,7 +378,15 @@ def extract(company, body, source, now, official_website=None):
     doc = blocks(body)
     if doc.language and doc.language != 'en':
         return {'state': 'UNAVAILABLE', 'reason': 'UNSUPPORTED_SOURCE_LANGUAGE'}
-    selected_blocks = business_blocks(doc, source['form']) if sec else web_business_blocks(doc)
+    first = _eligible(company, doc, source, sec, relaxed=False)
+    # Second, relaxed pass ONLY when the unchanged first pass found nothing: an issuer that already has a
+    # profile keeps exactly the same description (and with it its reviewed German copy, reviewed_profiles.py).
+    eligible = first if first[0] or not sec else _eligible(company, doc, source, sec, relaxed=True)
+    return _profile(company, body, source, now, official_website, url, sec, eligible)
+
+
+def _eligible(company, doc, source, sec, relaxed):
+    selected_blocks = business_blocks(doc, source['form'], relaxed=relaxed) if sec else web_business_blocks(doc)
     if sec:
         # A filing may explicitly define a short issuer name (e.g. BD).
         # Accept only the immediate parenthetical after an exact legal issuer
@@ -380,6 +401,14 @@ def extract(company, body, source, now, official_website=None):
                 for alias in re.findall(r'[“"\']([^“”"\']{1,60})[”"\']', match[1]):
                     if alias.lower() not in ('we', 'us', 'our', 'the company', 'company', 'parent') and not re.search(r'\bsubsidiar|together with|incorporated\b', alias, re.I):
                         aliases.append(alias)
+            if relaxed:
+                # Second pass only: the issuer's own explicit trade-name statement directly after its legal
+                # name ("General Electric Company operates as GE Aerospace (GE Aerospace or the Company)").
+                body = re.sub(r'^about\s+[^.]{1,60}\.\s+', '', normalized, flags=re.I)
+                for name in company['names']:
+                    trade = re.match(re.escape(name) + r'(?!\w)(?:[, ]+(?i:company|corporation|incorporated|inc\.?))?\s+operates as ([A-Z][\w&.\' -]{1,40}?)\s*\(\s*\1\b', body)
+                    if trade:
+                        aliases.append(trade[1].strip())
         if aliases:
             company = {**company, 'names': company['names'] + sorted(set(aliases))}
     eligible = []
@@ -388,7 +417,7 @@ def extract(company, body, source, now, official_website=None):
             # Combined annual reports can change the meaning of 'we' by
             # subsidiary section. Exact requested-issuer subjects remain safe;
             # a shared CIK archive route alone cannot resolve that voice.
-            normalized = issuer_sentence(raw, company, sec=sec, allow_first_person=len(doc.registrants) <= 1)
+            normalized = issuer_sentence(raw, company, sec=sec, allow_first_person=len(doc.registrants) <= 1, relaxed=relaxed)
             if normalized and normalized not in [s[1] for s in eligible]:
                 # Repeated platform lists with the same issuer predicate add
                 # no consumer value; keep the shorter complete statement.
@@ -403,6 +432,11 @@ def extract(company, body, source, now, official_website=None):
                 break
         if len(eligible) == 8:
             break
+    return eligible, company
+
+
+def _profile(company, body, source, now, official_website, url, sec, found):
+    eligible, company = found
     if not eligible:
         return {'state': 'UNAVAILABLE', 'reason': 'NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION'}
     # Put what the issuer does before who it serves. A customers-only sentence
@@ -448,6 +482,24 @@ def extract(company, body, source, now, official_website=None):
             'lastVerifiedAt': now, 'nextReviewAt': later(now, WEB_DAYS) if not sec else None, 'refreshPolicy': 'NEW_ANNUAL_FILING' if sec else 'QUARTERLY'}
 
 
+SUCCESSOR_REGISTER = Path(__file__).resolve().parents[2] / 'quant/config/sec-successor-issuers.json'
+
+
+@lru_cache(maxsize=1)
+def successor_predecessors():
+    """Rule 12g-3 holding successions (quant/config/sec-successor-issuers.json): successor CIK -> predecessor CIKs.
+    Only this documented register lets a successor issuer keep the predecessor's annual report as profile
+    source (ExxonMobil Holdings Corp 0002115436 <- Exxon Mobil Corporation 0000034088, effective 2026-07-01)."""
+    try:
+        value = json.loads(SUCCESSOR_REGISTER.read_text())
+    except (OSError, ValueError):
+        return {}
+    if value.get('schema') != 'vu-sec-successor-issuers-1.0.0' or not isinstance(value.get('successors'), dict):
+        return {}
+    return {cik: tuple(p for p in (row.get('predecessors') or []) if isinstance(p, str) and re.fullmatch(r'\d{10}', p))
+            for cik, row in value['successors'].items() if re.fullmatch(r'\d{10}', cik) and isinstance(row, dict)}
+
+
 def public_profile(value, cid, now):
     """Prepared factual fields only. Private excerpts, failures and run cursors stay private."""
     if not isinstance(value, dict) or value.get('state') != 'AVAILABLE' or value.get('companyId') != cid or value.get('schema') != VERSION:
@@ -460,7 +512,10 @@ def public_profile(value, cid, now):
     for source in sources:
         if source['type'] == 'SEC':
             cik = cid.removeprefix('iss_cik_')
-            if not re.fullmatch(r'\d{10}', cik) or source.get('form') not in ('10-K', '20-F', '40-F') or not source['url'].startswith('https://www.sec.gov/Archives/edgar/data/' + str(int(cik)) + '/'):
+            if not re.fullmatch(r'\d{10}', cik) or source.get('form') not in ('10-K', '20-F', '40-F'):
+                return None
+            allowed = (cik,) + successor_predecessors().get(cik, ())
+            if not any(source['url'].startswith('https://www.sec.gov/Archives/edgar/data/' + str(int(c)) + '/') for c in allowed):
                 return None
     for field in ('businessActivities', 'productsServices', 'customerMarkets', 'majorSegments'):
         if not isinstance(value.get(field), list) or len(value[field]) > 5 or any(not isinstance(s, str) or len(s) > 700 for s in value[field]):

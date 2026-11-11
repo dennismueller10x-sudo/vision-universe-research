@@ -118,3 +118,14 @@ Erzeugte Daten wandern Datenart für Datenart aus `main` in den Datenzweig `data
 - Ein Workflow, der solche Daten liest, ruft nach dem Checkout `scripts/ci/seed-data-branch.sh alle` auf (commit-sicher, auch bei `git add -A`).
 - Ein Erzeuger schreibt mit `scripts/ci/push-data-branch.sh data/live <pfad>…` (Verzeichnisse werden gespiegelt).
 - „Seite zeigt alten Stand“: Step Summary „Datenzweig“ des letzten Pages-Laufs lesen (`KEPT_MAIN` mit Grund), dann den letzten Lauf des Erzeugers.
+
+## 12. Vercel-Vorschau „Deployment rate limited“
+
+Das Tageskontingent (100) wird offenbar schon beim Anlegen einer Vorschau gezählt; der Abbruch durch `ignoreCommand` hilft dann nicht (10.11.2026, ein reiner Test-PR bekam den Status). Deshalb schaltet `vercel.json` mit `git.deploymentEnabled` die Vorschau für `claude/*`-Zweige aus (Steuerung 10.11.2026; die Vorschau war ohnehin der 197-Byte-Platzhalter, Oberflächen prüft die Browser-QA in der CI). `main` und Produktion bleiben unberührt; Test in `quant/tests/vercel-preview-boundary.test.mjs`. Der rote Vercel-Status ist keine Pflichtprüfung und kein Codefehler.
+
+## 13. Welche Generation ist live? (Release-Manifest)
+
+Jede Auslieferung trägt `/core/release-manifest.json` (ADR-008, [Entscheidung](../architecture/ADR-008-release-generationen.md)): Code-SHA, Datenzweig-SHA, je Datenart Pfad + Inhaltshash, Security-Master- und Company-Intelligence-Generation, Gesamthash der Nutzdaten (`payloadHash`; Zeitstempel ausgenommen, im Manifest unter `volatile` genannt). `stage` ist `BUILT` (Releasebau) oder `SEALED` (Pages, nach Overlay und Staging).
+Prüfen: `node scripts/core/system-health.mjs --site=https://research.visionuniverse.de` (Zeile „Ausgelieferte Generation“, JSON: `report.release`) oder `/status/`. Weicht `code.sha` vom erwarteten Commit ab, hat Pages ihn nicht übernommen (§7, Marker `pages-release-marker.yml`).
+Zwei Bauten mit gleichen Eingaben müssen denselben `payloadHash` haben; `core/tests/release-manifest.test.mjs` (RM) sichert das mit Fixtures und Gegenproben.
+Der Siegel-Schritt ist nie blockierend (continue-on-error, nur Warnung) und läuft vor dem Hochladen, sonst läge das Manifest nicht im Paket. Stand 10.11.2026: Manifest, Siegel-Schritt und Statuszeile umgesetzt; der Vergleich Live ↔ Kandidat (`comparePayload`) blockiert noch nicht, er benennt nur.
