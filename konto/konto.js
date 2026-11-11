@@ -138,6 +138,13 @@
     // Bestaetigungslink auf einem anderen Geraet: die Tarifwahl kommt ueber den Link mit.
     if (param('plan') === 'pro') rememberChoice('pro');
     loginTargets();
+    // App-Rahmen: es gibt genau eine Anmeldung, die native der Shell (Face ID, Keychain). Mit Sitzung geht es weiter zum Ziel.
+    if (A.inApp()) {
+      $('ka-login').hidden = true; if ($('ka-after')) $('ka-after').hidden = true;
+      notice('In der App meldest du dich im Bereich „Konto“ der App an.', 'info');
+      A.appToken().then(function (token) { if (token) return continueSignedIn({next: param('next')}); A.openNativeAccount(); });
+      return;
+    }
     $('ka-login').addEventListener('submit', function (e) {
       e.preventDefault();
       var email = $('email').value.trim(), pw = $('password').value, btn = e.submitter || this.querySelector('button[type=submit]');
@@ -352,6 +359,8 @@
       busy(this, true);
       forgetWatchlist();
       forgetChoice();
+      // App-Rahmen: abgemeldet wird nativ (Shell), nicht ueber ein Cookie.
+      if (A.inApp()) { busy(this, false); return A.openNativeAccount(); }
       A.post('/v1/auth/logout').then(function () { go('/konto/anmelden/'); });
     });
   };

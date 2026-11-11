@@ -42,6 +42,8 @@ jobs:
       IOS_PROFILE_NAME: ${{ vars.IOS_PROFILE_NAME }}
       VU_SUPABASE_URL: ${{ vars.VU_SUPABASE_URL }}                       # oeffentlich
       VU_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VU_SUPABASE_PUBLISHABLE_KEY }} # oeffentlich
+      VU_AUTH_TRANSPORT: worker                                       # Anmeldung ueber die Konto-API (kein Supabase-Schluessel noetig, gleiche Limits wie im Web)
+      VU_ACCOUNT_API: https://konto.visionuniverse.de                  # oeffentlich
       FIREBASE_IOS_PLIST: ${{ secrets.FIREBASE_IOS_PLIST }}              # optional: Klartext von GoogleService-Info.plist; ohne bleibt der Build ohne Push
     steps:
       - uses: actions/checkout@v4
