@@ -22,6 +22,11 @@ test("ci-gate: externe Checks (Vercel, Cloudflare) blockieren nicht", () => {
   const ext = { name: "Vercel", app: { slug: "vercel" }, status: "completed", conclusion: "failure" };
   assert.equal(evaluate([ext, { ...r("a", "completed", "success"), app: { slug: "github-actions" } }]).state, "pass");
 });
+test("ci-gate: neuester Lauf je Name zaehlt (abgebrochener Altlauf, Wiederholung)", () => {
+  assert.equal(evaluate([{ ...r("x", "completed", "cancelled"), id: 1 }, { ...r("x", "completed", "skipped"), id: 2 }]).state, "pass");
+  assert.equal(evaluate([{ ...r("x", "completed", "failure"), id: 1 }, { ...r("x", "in_progress", null), id: 2 }]).state, "wait");
+  assert.equal(evaluate([{ ...r("x", "completed", "success"), id: 1 }, { ...r("x", "completed", "failure"), id: 2 }]).state, "fail");
+});
 test("infra-retry: Signaturen ja, Testfehler nein", () => {
   assert.ok(istInfrastruktur("E: Failed to fetch http://azure.archive.ubuntu.com Temporary failure resolving 'azure.archive.ubuntu.com'"));
   assert.ok(istInfrastruktur("npm ERR! code ECONNRESET"));
