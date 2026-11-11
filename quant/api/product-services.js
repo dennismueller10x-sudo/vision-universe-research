@@ -278,7 +278,7 @@ function create(options){
   ['Full Chart','/quant/#/aktie/'+q],['Technical','/elliott/#/'+q],
   ['Elliott','/elliott/#/'+q+'?ansicht=profi'],
   ['Historische Fundamentals','/quant/#/aktie/'+q+'/zahlen'],['Quant','/quant/#/aktie/'+q],
-  ['Vergleichen','/quant/#/vergleich/'+q],['Strategie definieren','/quant/#/strategien']
+  ['Vergleichen','/quant/#/vergleich/'+q],['Anlagestil wählen','/quant/#/stile']
  ].map(([label,href])=>({label,href}));}
  function technicalShard(ticker){return (ticker+'_').slice(0,2).replace(/[^A-Z0-9._-]/g,'_');}
  /* Factor DNA and What-Changed for one title. The artifact carries a

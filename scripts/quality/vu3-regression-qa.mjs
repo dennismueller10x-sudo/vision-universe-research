@@ -166,13 +166,13 @@ if (only.has('theme')) await guard('theme', async () => {
 /* ---------------------------------------------------------------- 3 Visual-First-Bausteine */
 // [Welt, Route, Selektor, Beschreibung]; Inhalte stammen aus den Visual-First-PRs (#759-#783, #794).
 const VISUAL = [
-  ['Quant', '/quant/#/radar', '.q-rc-chip', 'Radar-Kompaktkarte mit Belegchips (Redesign Q01: Radar-Karten stehen im Radar, die Startseite zeigt „Heute bei Quant“)'],
-  ['Quant', '/quant/#/radar', '.q-radar-stats', 'Radar mit Richtungszeichen und Zaehlungen'],
-  ['Quant', '/quant/#/radar', '.q-chip-n', 'Filterzaehlungen'],
+  ['Quant', '/quant/#/meldungen', '.qk-mr', 'Meldungen: eine Zeile je Aktie (Konzept Quant 2026-11, QX02)'],
+  ['Quant', '/quant/#/meldungen', '.qk-seg', 'Meldungen: Reiter Alle · Besser · Schlechter mit Zaehlung'],
+  ['Quant', '/quant/#/meldungen', '.qk-chips small', 'Filterzaehlungen'],
   ['Quant', '/quant/#/aktie/NVDA', '.q-check-count', 'Setup-Regelcheckliste', 'setupDirection'],
   ['Quant', '/quant/#/aktie/NVDA', '.q-evo', 'Evidenz-Ueberblick der drei Stufen'],
   ['Quant', '/quant/#/aktie/NVDA', '.qx-change-tally', 'Bilanz der Veraenderungen'],
-  ['Quant', '/quant/#/strategien/quality-compounder', '.qx-cmeters', 'Bedingungs-Balken "Wer passt heute?"'],
+  ['Quant', '/quant/#/stile/quality-compounder', '.qx-cmeters', 'Bedingungs-Balken "Wer passt heute?"'],
   ['Technik', '/quant/#/aktie/NVDA/technik', '.cb-ew-none, .cb-story-r', 'Elliott auf der Aktie: Absage mit Wegen oder Lesart in drei Sätzen (Konzept EHV, EX03)'],
   ['Supertrader', '/supertrader/signals/', '.st-risk, .st-r-sfoot', 'Risiko der Modellposition als Zahl'],
   ['Screener', '/screener/?f=roic:gt:0.1', '.sc-counter', 'Anteil am Universum'],
@@ -236,7 +236,7 @@ if (only.has('visual')) await guard('visual', async () => {
 
 /* ---------------------------------------------------------------- 4 Kontrast und Ueberlauf */
 const CONTRAST = [
-  '/quant/#/', '/quant/#/radar', '/quant/#/aktie/NVDA', '/quant/#/aktie/NVDA/technik', '/quant/#/strategien',
+  '/quant/#/', '/quant/#/meldungen', '/quant/#/aktie/NVDA', '/quant/#/aktie/NVDA/technik', '/quant/#/stile',
   '/supertrader/', '/supertrader/signals/', '/supertrader/stock/NVDA/',
   '/screener/', '/screener/?f=roic:gt:0.1',
   '/vorsorge/#/', '/vorsorge/#/etf/VT', '/vorsorge/#/etfs', '/vorsorge/#/plan', '/vorsorge/#/portfolio',

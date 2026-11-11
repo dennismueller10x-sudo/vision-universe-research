@@ -45,14 +45,17 @@ const STOCK_CORE = '.qx-stock-hero, .q-stock-price, .qc-chart';
 const STOCK_CHART = {scope: '.qc-chart', minW: 150, minH: 100, minGeom: 2};
 const GLOBE = {scope: '.q-hero', minW: 100, minH: 100, minGeom: 5};
 export const SPECS = {
-  nvda: {path: '/quant/#/aktie/NVDA', critical: true, h1: '^NVIDIA', price: {selector: '.q-stock-price', re: PRICE}, chart: STOCK_CHART, core: STOCK_CORE, minText: 4000, includes: ['NVDA'], technik: 'NVDA'},
-  aapl: {path: '/quant/#/aktie/AAPL', critical: true, h1: '^Apple', price: {selector: '.q-stock-price', re: PRICE}, chart: STOCK_CHART, core: STOCK_CORE, minText: 4000, includes: ['AAPL'], technik: 'AAPL'},
-  /* Redesign 2027 (Q01): Frage als Titel, Suche, „So arbeitet Quant“, Markt als Balken, „Heute bei Quant“ - kein Globus mehr.
+  /* Konzept Quant 2026-11 (QX05): Profil, „Quant in drei Sätzen“ und sechs Kapitel; zugeklappte Kapitel zählen nicht zum
+     sichtbaren Text (vorher alle Abschnitte offen, ≥ 4000 Zeichen), daher 1200 Zeichen und die Kapitelzeile (Geschäftszahlen) als Pflicht. */
+  nvda: {path: '/quant/#/aktie/NVDA', critical: true, h1: '^NVIDIA', price: {selector: '.q-stock-price', re: PRICE}, chart: STOCK_CHART, core: STOCK_CORE, minText: 1200, includes: ['NVDA', 'Geschäftszahlen'], technik: 'NVDA'},
+  aapl: {path: '/quant/#/aktie/AAPL', critical: true, h1: '^Apple', price: {selector: '.q-stock-price', re: PRICE}, chart: STOCK_CHART, core: STOCK_CORE, minText: 1200, includes: ['AAPL', 'Geschäftszahlen'], technik: 'AAPL'},
+  /* Konzept Quant 2026-11 (QX01): Frage als Titel, Tageskarte, Marktzeile, Leisten, „So arbeitet Quant“ - kein Globus.
      Gezeichnet ist der Marktbalken (C17); geprueft wird weiter: Titel, genug Inhalt, Quant genannt. */
-  start: {path: '/quant/', critical: true, h1: 'Was hat sich heute verändert', minText: 2000, includes: ['Quant', 'Heute bei Quant']},
-  radar: {path: '/quant/#/radar', h1: 'Was ist heute neu', minText: 8000, chart: GLOBE},
-  /* Redesign 2027 (Q03): Frage als Titel, Strategie-Karten statt Globus. */
-  strategien: {path: '/quant/#/strategien', h1: 'Welche Art von Firma', minText: 1500, includes: ['Aktien heute']},
+  start: {path: '/quant/', critical: true, h1: 'Was hat sich heute verändert', minText: 2000, includes: ['Quant', 'So arbeitet Quant']},
+  /* Konzept Quant 2026-11 (QX02): Radar heißt „Meldungen“, eine Zeile je Aktie, kein Globus. */
+  radar: {path: '/quant/#/meldungen', h1: 'Was ist heute neu', minText: 600, includes: ['Meldungen', 'Neueste zuerst']},
+  /* Konzept Quant 2026-11 (QX04): Anlagestile als kurze Karten (Regel, Treffer); die Auswertung steht je Stil, daher 1000 Zeichen. */
+  strategien: {path: '/quant/#/stile', h1: 'Welche Art von Firma', minText: 1000, includes: ['Aktien heute']},
   /* Redesign 2027 (Q02): „Quant Screener“ bleibt die Überschrift, Einstieg leitet in den Profi-Screener (Bedingungen) statt Globus. */
   screener: {path: '/quant/screener/', h1: 'Quant Screener', minText: 1000},
   // emptyOk: "Zuletzt analysiert" ist beim Erstbesuch ehrlich leer (die Einleitung erklaert, wo Aktien erscheinen) - kein Fehler.

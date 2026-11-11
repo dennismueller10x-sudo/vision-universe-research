@@ -309,7 +309,53 @@
       ])]);
   }
 
-  async function render(main, ctx, ruleId) {
+  /* Konzept Quant 2026-11 (QX07, Screen q-backtest): Backtesting heißt „Forschung“ (#/forschung) und trägt immer das Etikett
+     „Forschung, nicht zertifiziert“. Stand in drei Zahlen, „Marktweit geprüft“ mit Balken um die Null in Prozentpunkten,
+     „Sammelt noch Historie“, „Was zur Zertifizierung fehlt“ (die bisherige Übersicht, aufklappbar). Nur vorhandene Zahlen. */
+  var KIND_SHORT = { SETUP_BACKTEST: null, STRATEGY_BACKTEST: "Anlagestile", FACTOR_RANKING_BACKTEST: "Eigenschaften-Rang" };
+  async function renderV4(main, ctx, ruleId) {
+    var U = global.VUUI, page = el("div", { class: "vu-ui qv3 qk qk-bt" });
+    main.append(page);
+    var all = await Promise.all([ctx.api.getBacktest("signal"), ctx.api.getBacktest("certification"), ctx.api.getBacktest("outcomes")]);
+    var signal = all[0], cert = all[1];
+    var head = '<span class="qk-tag qk-tag--ink">Forschung, nicht zertifiziert</span>';
+    if (signal.state !== "AVAILABLE" || cert.state !== "AVAILABLE") { page.innerHTML = head + U.blank("Die Studien konnten gerade nicht geladen werden."); return; }
+    if (ruleId) {
+      page.innerHTML = '<a class="qv3-back" href="' + U.esc(X.routes.backtest()) + '"><span class="vu-round" aria-hidden="true">' + U.glyph("back", 18) + '</span><span class="vu-sm vu-mu">Forschung</span></a>' + head;
+      var legacy = el("div", { class: "qk-bt-legacy" }); page.append(legacy);
+      await render(legacy, ctx, ruleId, true);
+      var hero = legacy.querySelector(".q-hero"); if (hero) hero.remove();
+      var picks = legacy.querySelector(".q-bt-picks"); if (picks) picks.remove();
+      return;
+    }
+    var nOf = function (st) { return cert.kinds.filter(function (k) { return k.status === st; }).length; };
+    var rules = signal.rules.filter(function (r) { return r.horizons.m6 && r.horizons.m6.baseRate && typeof r.horizons.m6.baseRate.deltaPositiveShare === "number"; })
+      .sort(function (a, b) { return b.horizons.m6.baseRate.deltaPositiveShare - a.horizons.m6.baseRate.deltaPositiveShare; });
+    var max = Math.max.apply(null, [0.005].concat(rules.map(function (r) { return Math.abs(r.horizons.m6.baseRate.deltaPositiveShare); })));
+    var ppTxt = function (v) { var x = v * 100; return (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }); };
+    var setupCert = cert.kinds.filter(function (k) { return k.id === "SETUP_BACKTEST"; })[0];
+    var collecting = [];
+    if (setupCert && setupCert.status !== "CERTIFIED") collecting.push(["Setup bestätigt", X.routes.backtest("SETUP_CONFIRMED")], ["Setup entsteht", X.routes.backtest("SETUP_NEW")]);
+    cert.kinds.forEach(function (k) { if (KIND_SHORT[k.id] && k.status === "COLLECTING_HISTORY") collecting.push([KIND_SHORT[k.id], null]); });
+    var h = head + '<h1 class="vu-lt qk-bt-t">Hatte eine Meldung früher einen Vorteil?</h1><p class="vu-lead">Für jede Meldung: wie es 6 Monate danach im Vergleich zum Markt derselben Wochen lief.</p>' +
+      '<div class="qk-today qk-bt-stand"><span class="qk-tg">' + [[nOf("CERTIFIED") + " von " + cert.kinds.length, "zertifiziert"], [String(nOf("LIMITED")), "eingeschränkt geprüft"], [String(nOf("COLLECTING_HISTORY")), "sammeln Historie"]].map(function (x) { return '<span><b class="vu-num">' + x[0] + "</b><span>" + x[1] + "</span></span>"; }).join("") + "</span></div>" +
+      '<div class="qk-rh"><div class="qk-rh-t"><h2>Marktweit geprüft</h2><span class="vu-xs vu-mu qk-sort">Prozentpunkte zum Markt</span></div></div><div class="vu-box qk-list">' +
+      rules.map(function (r) {
+        var d = r.horizons.m6.baseRate.deltaPositiveShare, w = Math.max(2, Math.round(Math.abs(d) / max * 50)), edge = global.QXEvidence.edgeOf(ruleEvidence(r));
+        return '<a class="qk-bt-r" href="' + U.esc(X.routes.backtest(r.id)) + '"><span><b>' + U.esc(RULE_LABEL[r.id] || r.id) + '</b><span>' + U.esc(edge.label) + '</span></span><span class="qk-bt-bar" aria-hidden="true"><i class="' + (d >= 0 ? "is-up" : "is-dn") + '" style="width:' + w + "%;" + (d >= 0 ? "left:50%" : "right:50%") + '"></i></span><b class="vu-num">' + ppTxt(d) + "</b></a>";
+      }).join("") + "</div>" +
+      '<div class="qk-help">' + U.help("+1,4 heißt: Nach der Meldung lagen 1,4 Prozentpunkte mehr Fälle nach 6 Monaten höher als im Markt derselben Wochen. Vergangenheit, keine Prognose.") + "</div>" +
+      (collecting.length ? '<div class="qk-rh"><div class="qk-rh-t"><h2>Sammelt noch Historie</h2></div></div><div class="vu-box qk-list">' + collecting.map(function (c) {
+        return (c[1] ? '<a class="qk-bt-c" href="' + U.esc(c[1]) + '">' : '<div class="qk-bt-c">') + "<b>" + U.esc(c[0]) + "</b>" + U.verdict("none", "sammelt") + (c[1] ? "</a>" : "</div>"); }).join("") + "</div>" : "");
+    page.innerHTML = h;
+    var more = el("details", { class: "vu-box qk-bt-more" }, [el("summary", {}, [el("b", { text: "Was zur Zertifizierung fehlt" })])]);
+    var body = el("div", { class: "qk-bt-legacy" }); more.append(body); page.append(more);
+    await render(body, ctx, null, true);
+    var hero = body.querySelector(".q-hero"); if (hero) hero.remove();
+    var picks = body.querySelector(".q-bt-picks"); if (picks) picks.remove();
+  }
+  async function render(main, ctx, ruleId, inner) {
+    if (!inner && global.VUUI) return renderV4(main, ctx, ruleId);
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Backtesting" }),
       el("h1", { class: "qx-h1", text: "Hatte ein Regelereignis früher wirklich einen Vorteil?" }),
       el("p", { class: "q-hero-lead v2-lead", text: "Für jede Regel: wie oft die Fälle nach 6 Monaten höher lagen – und wie oft der ganze Markt in denselben Wochen. Dazu, wie belastbar der Vergleich ist und was noch fehlt. Keine Prognose, keine Empfehlung." })]));

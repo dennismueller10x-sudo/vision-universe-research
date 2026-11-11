@@ -185,7 +185,7 @@ test("every hash route the app links to is understood by QXApp.parse", () => {
      (die meisten Links entstehen ueber X.routes.*, siehe naechster Test);
      die Untergrenze 8 faengt einen kaputten Auszug, ohne bei jeder
      entfernten Route nachgezogen werden zu muessen. */
-  for (const r of ["#/", "#/screener", "#/strategien", "#/aktien", "#/methodik"]) {
+  for (const r of ["#/", "#/screener", "#/stile", "#/aktien", "#/methodik"]) {
     assert.ok(liste.includes(r), "der Auszug findet " + r + " nicht mehr (" + liste.length + " Routen)");
   }
   assert.ok(liste.length >= 8, "nur " + liste.length + " Hash-Routen gefunden - der Auszug greift nicht mehr");
@@ -205,6 +205,8 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
     technical: ["technik", "NVDA"], fundamentals: ["zahlen", "NVDA"], compare: ["vergleich", ["NVDA", "AAPL"]],
     /* Quant Radar (01.10.2026): taegliche Ereignisse, Bereich HOME. */
     radar: ["radar", "filter=setups"],
+    /* Konzept Quant 2026-11 (Entscheidung 3): #/meldungen zeigt die Ansicht „radar“; #/stile und #/forschung ebenso die alten Ansichten. */
+    meldungen: ["radar", "filter=setups"],
     /* Backtest & Signal Intelligence (01.10.2026): Regel oder Setup waehlen. */
     backtest: ["backtest", "NEW_52W_HIGH"],
     /* Chartbild (02.10.2026): technische Lage einer Aktie und Uebersicht der Lagen. */

@@ -77,7 +77,7 @@ test("every screener question, methodology topic and strategy is in the smoke's 
   const fehlen = [
     ...fragen.filter((id) => !liste.includes("#/screener?frage=" + id + "'")).map((id) => "frage=" + id),
     ...themen.filter((id) => !liste.includes("#/methodik/" + id + "'")).map((id) => "methodik/" + id),
-    ...profiles.map((p) => p.profileId).filter((id) => !liste.includes("#/strategien/" + id + "'")).map((id) => "strategien/" + id)
+    ...profiles.map((p) => p.profileId).filter((id) => !liste.includes("#/stile/" + id + "'")).map((id) => "stile/" + id)
   ];
   assert.deepEqual(fehlen, [], "der Smoke prueft nicht: " + fehlen.join(", "));
   /* Die Zahl der Fragen, die der Smoke auf der Seite erwartet, ist die der Quelle. */

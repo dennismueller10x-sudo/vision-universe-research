@@ -54,12 +54,16 @@
   var routes = {
     home: function () { return "#/"; },
     stock: function (t) { return "#/aktie/" + encodeURIComponent(String(t || "").toUpperCase()); },
-    radar: function (q) { return "#/radar" + (q ? "?" + q : ""); },
-    backtest: function (id) { return "#/backtest" + (id ? "/" + encodeURIComponent(id) : ""); },
+    /* Konzept Quant 2026-11 (Entscheidung 3): Radar heißt „Meldungen“; #/radar leitet weiter (app.js, renamed). */
+    radar: function (q) { return "#/meldungen" + (q ? "?" + q : ""); },
+    meldungen: function (q) { return "#/meldungen" + (q ? "?" + q : ""); },
+    /* Konzept Quant 2026-11 (Entscheidung 3): Backtesting heißt „Forschung“ (#/forschung); #/backtest leitet weiter. */
+    backtest: function (id) { return "#/forschung" + (id ? "/" + encodeURIComponent(id) : ""); },
     screener: function (q) { return "#/screener" + (q ? "?" + q : ""); },
     screenerPro: function (q) { return "#/screener/profi" + (q ? "?" + q : ""); },
-    strategies: function () { return "#/strategien"; },
-    strategy: function (id) { return "#/strategien/" + encodeURIComponent(id); },
+    /* Konzept Quant 2026-11 (Entscheidung 3): Strategien heißen „Anlagestile“ (#/stile); #/strategien leitet weiter. */
+    strategies: function () { return "#/stile"; },
+    strategy: function (id) { return "#/stile/" + encodeURIComponent(id); },
     stocks: function () { return "#/aktien"; },
     method: function (topic) { return "#/methodik" + (topic ? "/" + topic : ""); },
     technical: function (t) { return "#/aktie/" + encodeURIComponent(t) + "/technik"; },
@@ -169,6 +173,8 @@
         o.verdict ? el("span", { class: "qx-row-verdict" }, [pill(o.verdict.text, o.verdict.tone)]) : null
       ]),
       el("div", { class: "qx-row-side" }, [
+        /* Profil klein (Konzept Quant 2026-11): sechs Säulen, gleiche Reihenfolge wie überall. */
+        o.profile && global.VUUI && global.VUUI.profileMini ? (function () { var t = document.createElement("template"); t.innerHTML = global.VUUI.profileMini(o.profile, { width: 60, height: 26 }); return t.content.firstChild; })() : null,
         o.score ? scoreBox(o.score.label, o.score.value, o.score.tone) : null,
         o.pill ? pill(o.pill.text, o.pill.tone) : null,
         o.side ? el("b", { class: "num", text: o.side }) : null,

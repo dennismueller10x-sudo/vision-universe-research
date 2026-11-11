@@ -79,10 +79,12 @@
     }));
   }
 
-  /* Redesign 2027 (Folie Q05): Frage als Titel, Kapitel-Chips, drei Rollen, sechs Fragen, Stufenleiste Schwarz bis
+  /* Redesign 2027 (Folie Q05): Frage als Titel, Kapitel-Chips, drei Rollen, sieben Eigenschaften, Stufenleiste Schwarz bis
      Neongrün, alle Unterkapitel als Liste, Grenzen als Kacheln „Keine Aussage“. Anteil je Frage (PRO) aus factorWeights des
      veröffentlichten Screening-Artefakts (factor-evidence-v1), nie fest im Code; fehlt es, bleibt die Spalte leer. */
-  var Q6 = [["momentum", "Läuft der Kurs gut?"], ["growth", "Wächst die Firma?"], ["profitability", "Verdient sie gut?"], ["value", "Ist sie günstig?"], ["quality", "Sind die Zahlen solide?"], ["risk", "Wie ruhig ist der Kurs?"]];
+  /* Konzept Quant 2026-11 (Entscheidung 1): die sieben Eigenschaften in der Reihenfolge des Profils, ein Wort je Eigenschaft;
+     die Frage steht klein darunter. „Analysten“ hat heute keine Daten und steht trotzdem in der Liste. */
+  var Q6 = [["profitability", "Verdient sie gut?"], ["growth", "Wächst die Firma?"], ["quality", "Sind die Zahlen solide?"], ["momentum", "Läuft der Kurs gut?"], ["value", "Ist sie günstig?"], ["risk", "Wie ruhig ist der Kurs?"]];
   function startV3(main, ctx) {
     var U = global.VUUI, h = '<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Wie kommt Quant zu seinem Urteil?</h1><p class="vu-lead">Keine Blackbox. Jedes Urteil hat einen Grund, und jeder Grund führt zu den Daten.</p></header>' +
       '<nav class="vu-chips qv3-mchips" aria-label="Methodik">' + [["#qv3-was", "Überblick"], [X.routes.method("faktoren"), "Eigenschaften"], [X.routes.method("daten"), "Daten"], [X.routes.method("historie"), "Backtests"], [X.routes.method("grenzen"), "Grenzen"]].map(function (c, i) { return '<a class="vu-chip' + (i ? "" : " vu-chip--on") + '" href="' + U.esc(c[0]) + '">' + c[1] + "</a>"; }).join("") + "</nav>" +
@@ -90,9 +92,9 @@
       U.navcard({ icon: "quant", title: "Quant", sub: "Meldet Veränderungen nach festen Regeln und vergleicht mit früher. Quant meldet sich, du musst nicht suchen.", href: X.routes.radar() }) +
       U.navcard({ glyph: "filter", title: "Quant Screener", sub: "Findet Aktien, die deine Bedingungen heute erfüllen. Du gibst die Frage vor.", href: X.routes.screener() }) +
       U.navcard({ icon: "discover", title: "Discover", sub: "Themen und Geschichten zum Stöbern. Keine Regeln, keine Backtests.", href: "/discover/" }) + "</div></section>" +
-      U.sect("Die sechs Fragen", { href: X.routes.method("gewichtung"), link: "Gewichtung" }) + '<p class="vu-xs vu-mu qv3-q6-head"><b>Plus eine siebte, für die Daten fehlen.</b><b>Anteil ' + U.pro() + '</b></p><div class="vu-box qv3-liste">' +
-      Q6.map(function (q) { return '<a class="qv3-li" href="' + U.esc(X.routes.method("faktoren")) + '"><span><b class="vu-sm">' + q[1] + '</b><span class="vu-xs vu-mu">' + U.esc(VM.FACTORS[q[0]] ? VM.FACTORS[q[0]].name : q[0]) + '</span></span><b class="vu-sm num qv3-w" data-w="' + q[0] + '"></b>' + U.glyph("next", 16) + "</a>"; }).join("") +
-      '<div class="qv3-li is-off"><span><b class="vu-sm">Heben Analysten Schätzungen an?</b><span class="vu-xs vu-mu">Erwartungstrend · keine Daten</span></span><b class="vu-sm num qv3-w" data-w="revisions"></b></div></div>' +
+      U.sect("Die sieben Eigenschaften", { href: X.routes.method("gewichtung"), link: "Gewichtung" }) + '<p class="vu-xs vu-mu qv3-q6-head"><b>Jede Aktie hat ein Profil aus sieben Eigenschaften.</b><b>Anteil ' + U.pro() + '</b></p><div class="vu-box qv3-liste">' +
+      Q6.map(function (q) { return '<a class="qv3-li" href="' + U.esc(X.routes.method("faktoren")) + '"><span class="qv3-q7"><b class="vu-sm">' + U.glyph(U.PROFILE ? U.PROFILE.glyph[q[0]] : "check", 15) + U.esc(VM.FACTORS[q[0]] ? VM.FACTORS[q[0]].name : q[0]) + '</b><span class="vu-xs vu-mu">' + q[1] + '</span></span><b class="vu-sm num qv3-w" data-w="' + q[0] + '"></b>' + U.glyph("next", 16) + "</a>"; }).join("") +
+      '<div class="qv3-li is-off"><span class="qv3-q7"><b class="vu-sm">' + U.glyph(U.PROFILE ? U.PROFILE.glyph.revisions : "check", 15) + 'Analysten</b><span class="vu-xs vu-mu">Heben Analysten Schätzungen an? · heute keine Daten</span></span><b class="vu-sm num qv3-w" data-w="revisions"></b></div></div>' +
       U.sect("So liest du eine Zahl") + '<div class="vu-box"><div class="qv3-bands"><span class="b1">Sehr schwach</span><span class="b2">Schwach</span><span class="b3">Mittel</span><span class="b4">Stark</span><span class="b5">Sehr stark</span></div>' +
       '<div class="qv3-bands-x vu-xs vu-mu"><b>Rang 0 %</b><b>25</b><b>45</b><b>75</b><b>90</b></div><p class="vu-sm" style="margin:10px 0 0"><b>„Sehr stark“</b> heißt: besser als 90 % aller bewerteten US-Aktien, am selben Tag gezählt.</p></div>' +
       '<div style="margin-top:10px">' + U.help("Die Stufe ist ein Vergleich, kein Gütesiegel. Sie sagt, wo eine Aktie im Feld steht, nicht ob sie für sich gut ist.") + "</div>" +
@@ -188,11 +190,11 @@
     var focus = params && params.get("faktor");
     var gap = await emptyFactors(ctx);
     var emptyText = {}; gap.empty.forEach(function (e) { emptyText[e.id] = e.text; });
-    main.append(el("div", { class: "qx-factors" }, VM.ORDER.map(function (id) {
+    main.append(el("div", { class: "qx-factors" }, VM.PROFILE_ORDER.map(function (id) {
       var f = VM.FACTORS[id];
       var comps = Object.keys(cs).filter(function (k) { return k.indexOf(id + ":") === 0; }).map(function (k) { return cs[k]; });
       var d = el("details", { class: "qx-factor tone-neutral", id: "m-" + id, open: focus === id ? true : null }, [
-        el("summary", {}, [el("span", { class: "qx-factor-name", text: f.name }), el("span", { class: "dx-index-badge qx-tag", text: f.method }), el("span", { class: "qx-factor-q", text: f.question })]),
+        el("summary", {}, [el("span", { class: "qx-factor-name", text: f.name }), el("span", { class: "dx-index-badge qx-tag", text: f.longName + " · " + f.method }), el("span", { class: "qx-factor-q", text: f.question })]),
         el("div", { class: "qx-factor-body" }, [para(f.measures), f.notMeasures ? el("p", { class: "qx-small", text: f.notMeasures }) : null, el("p", { class: "qx-small", text: f.higher }),
           emptyText[id] ? X.notice("Derzeit für keine Aktie ein Wert", emptyText[id]) : null,
           comps.length ? el("div", {}, comps.map(function (c) {

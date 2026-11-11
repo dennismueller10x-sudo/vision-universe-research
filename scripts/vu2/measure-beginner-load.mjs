@@ -66,7 +66,7 @@ export const FACHBEGRIFFE = [
 const ANSICHTEN = [
   ['Start', '/quant/#/'],
   ['Screener', '/quant/#/screener'],
-  ['Strategien', '/quant/#/strategien'],
+  ['Anlagestile', '/quant/#/stile'],
   ['Aktien', '/quant/#/aktien'],
   ['Aktie NVDA', '/quant/#/aktie/NVDA'],
   ['Methodik', '/quant/#/methodik'],

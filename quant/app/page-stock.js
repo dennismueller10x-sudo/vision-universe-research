@@ -196,16 +196,17 @@
   /* Redesign 2027 (Q07): Kacheln mit Alltagswort statt Fachname. */
   var KEY_SHORT = { profitability: "Verdient gut", risk: "Kurs ruhig", quality: "Zahlen solide", growth: "Wächst", momentum: "Kurs läuft", value: "Günstig", revisions: "Schätzungen" };
   function capitalWord(w) { return w ? w.charAt(0).toUpperCase() + w.slice(1) : w; }
-  /* Gesamturteil als schwarze Karte: Zahl starker Eigenschaften von allen bewerteten, Segmente, Satz (Mockup Q07). */
-  function overallInk(vm) {
-    var rated = vm.factors.filter(function (f) { return f.state === "AVAILABLE"; });
-    var n = function (t) { return rated.filter(function (f) { return f.tone === t; }).length; };
-    var good = n("good"), mid = n("neutral"), bad = n("bad");
-    return el("div", { class: "qv3-ink" }, [
-      el("div", { class: "qv3-ink-top" }, [el("b", { class: "qv3-ink-n num", text: good + "/" + rated.length }),
-        el("div", {}, [el("h2", { class: "qv3-ink-t", text: "So liegen die Faktoren" }), el("p", { class: "qv3-ink-s", text: good + " stark · " + mid + " Mittelfeld · " + bad + " schwach" })])]),
-      el("div", { class: "qv3-segs", "aria-hidden": "true" }, rated.map(function (f) { return el("i", { class: "is-" + f.tone }); }).concat(vm.factors.filter(function (f) { return f.state !== "AVAILABLE"; }).map(function () { return el("i", { class: "is-none" }); }))),
-      el("p", { class: "qv3-ink-note", text: "Im Vergleich zu allen bewerteten US-Aktien. Keine Empfehlung." })]);
+  /* Profil groß (VUUI.profileFull): „Das Profil von {Name}“, Rang-Hinweis, Legende der Stufen. */
+  function profileCard(vm, ticker, displayName) {
+    var U = global.VUUI, rated = vm.factors.filter(function (f) { return f.state === "AVAILABLE"; });
+    var total = Math.max.apply(null, [0].concat(rated.map(function (f) { return f.rank && f.rank.total; }).filter(function (n) { return typeof n === "number"; }))) || null;
+    var why = {}; vm.factors.forEach(function (f) { if (f.state !== "AVAILABLE") why[f.id] = f.missingText || ""; });
+    var name = displayName || ticker;
+    var card = el("div", { class: "vu-box qv3-profile" });
+    card.innerHTML = '<div class="qv3-profile-h"><h2 class="vu-sm">Das Profil von ' + U.esc(String(name).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "")) + '</h2><span class="vu-xs vu-mu"><b>0–100' + (total ? " · Rang unter " + total.toLocaleString("de-DE") : "") + "</b></span></div>" +
+      U.profileFull(VM.profileValues(vm.factors), { why: why }) +
+      '<div class="qv3-profile-help">' + U.help("Jede Zahl ordnet die Aktie unter den bewerteten US-Aktien ein: 0 bis 100, 50 ist die Mitte. Eine Gesamtnote gibt es bewusst nicht.") + "</div>";
+    return card;
   }
   function keyTiles(vm) {
     var list = keyFactors(vm);
@@ -218,13 +219,14 @@
         el("span", { class: "qx-sr", id: description, text: f.name + ". Skala von 0 bis 100." })]);
     })) : null;
   }
-  function verdictCard(vm, factorsReason, missingNote, earlyQuestion) {
+  function verdictCard(vm, factorsReason, missingNote, earlyQuestion, ticker, displayName) {
     var o = vm.overall;
     /* qx-verdict-card nur, wo es eine Aussage gibt - ein ETF oder ein Titel
        ohne Faktorzeile traegt keine. */
     var node = el("section", { class: "qx-glance qv-glance qv2-glance" + (vm.factorState === "AVAILABLE" ? " qx-verdict-card" : " qx-verdict-none"), id: "einordnung-kurz" });
     if (vm.factorState === "AVAILABLE" && o.rated >= 3) {
-      node.append(el("p", { class: "qv3-step-k" }, [el("span", { text: "Überblick" })]), (earlyQuestion && earlyQuestion.className === "qv3-step-q" ? earlyQuestion : el("h2", { class: "qv3-step-q", text: "Was sagt Quant insgesamt?" })), overallInk(vm), keyTiles(vm) || el("span"));
+      /* Konzept Quant 2026-11 (Entscheidung 2): das große Profil statt Zählkarte und Kacheln – sieben Zeilen, keine Gesamtnote. */
+      node.append(profileCard(vm, ticker, displayName));
     } else if (vm.factorState === "AVAILABLE") {
       node.append(el("div", { class: "qx-verdict-top qv2-result", dataset: { tone: o.tone } }, [
         el("span", { class: "qv2-result-ico", "aria-hidden": "true" }, [ico(o.tone === "good" ? "up" : o.tone === "bad" ? "down" : "flat")]),
@@ -344,19 +346,26 @@
       var all = [{ id: st.best.id, label: st.best.label, conditions: st.best.met.concat(st.best.notMet, st.best.open), fits: st.best.fits }].concat(st.others.map(function (o) {
         return { id: o.id, label: o.label, conditions: o.conditions, fits: o.conditions.every(function (c) { return c.state === "MET"; }) };
       }));
+      /* Konzept Quant 2026-11 (QX05, Screen q-stock-ch): je Stil der deutsche Name, die Bedingungen „{Eigenschaft} ab {Schwelle}“
+         mit Haken und Wert, darunter „Es fehlen N Punkte bei …“ für die knappste verfehlte Bedingung. */
       all.slice(0, 2).forEach(function (p) {
+        var miss = p.conditions.filter(function (c) { return c.state === "NOT_MET" && c.value != null && c.threshold != null; })
+          .map(function (c) { return { c: c, gap: Math.abs(Number(c.threshold) - c.value) }; }).sort(function (a, b) { return a.gap - b.gap; })[0];
+        var fewOpen = p.conditions.filter(function (c) { return c.state !== "MET"; }).length;
         kids.push(el("a", { class: "vu-box qv3-strat-card", href: X.routes.strategy(p.id) }, [
-          el("div", { class: "qv3-setup-h" }, [el("b", { text: p.label }), vuHtml("span", null, U.verdict(p.fits ? "strong" : "mid", p.fits ? "Passt" : "Knapp verfehlt"))]),
+          el("div", { class: "qv3-setup-h" }, [el("span", {}, [el("span", { class: "vu-ltag", text: String(p.label || p.id).split(" · ")[0] }), el("b", { text: VM.styleName(p.id, p.label) })]),
+            vuHtml("span", null, U.verdict(p.fits ? "strong" : fewOpen === 1 ? "mid" : "none", p.fits ? "Passt" : fewOpen === 1 ? "Knapp verfehlt" : "Verfehlt"))]),
           el("ul", { class: "qv3-rules" }, p.conditions.map(function (c) {
             var k = c.state === "MET" ? "check" : c.state === "NOT_MET" ? "x" : null;
             return el("li", { class: "is-" + (c.state === "MET" ? "met" : c.state === "NOT_MET" ? "miss" : "open") }, [
               k ? vuHtml("i", null, U.glyph(k, 13)) : el("i", { text: "–" }),
-              el("span", { text: askOf(c.label) + (c.threshold != null ? " " + (c.operator === "lte" ? "≤ " : "≥ ") + c.threshold : "") }),
+              el("span", { text: c.label + (c.threshold != null ? " " + (c.operator === "lte" ? "bis " : "ab ") + c.threshold : "") }),
               el("b", { class: "num", text: c.value != null ? String(c.value) : "–" })]);
-          }))]));
+          })),
+          miss ? el("p", { class: "qk-miss", text: "Es fehlen " + Math.ceil(miss.gap) + (Math.ceil(miss.gap) === 1 ? " Punkt" : " Punkte") + " bei „" + miss.c.label + "“." }) : null]));
       });
       var fitN = all.filter(function (p) { return p.fits; }).length;
-      kids.push(el("p", { class: "vu-xs vu-mu", text: "Erfüllt heute " + fitN + " von " + all.length + " Strategien." }));
+      kids.push(el("p", { class: "vu-xs vu-mu", text: "Erfüllt heute " + fitN + " von " + all.length + " Stilen." }));
     } else kids.push(el("p", { class: "qx-small", text: st.text }));
     return kids;
   }
@@ -811,6 +820,105 @@
     return { on: on, refresh: later, current: function () { return active ? active.id : null; }, dispose: function () { if (ro) ro.disconnect(); if (mq && mq.removeEventListener) mq.removeEventListener("change", later); } };
   }
 
+  /* ------------------------------------------------ Konzept Quant 2026-11 (QX05): drei Sätze, Kapitel, ähnliches Profil */
+  var STRONG_SAY = { profitability: "Verdient besser als {p} % aller US-Aktien", growth: "Wächst stärker als {p} % aller US-Aktien", quality: "Hat solidere Zahlen als {p} % aller US-Aktien",
+    momentum: "Der Kurs läuft besser als bei {p} % aller US-Aktien", value: "Ist günstiger als {p} % aller US-Aktien", risk: "Hat einen ruhigeren Kurs als {p} % aller US-Aktien" };
+  var WEAK_SAY = { profitability: "Verdient weniger als die meisten", growth: "Wächst langsamer als die meisten", quality: "Die Zahlen sind weniger solide", momentum: "Der Kurs läuft schwächer als bei den meisten",
+    value: "Ist eher teuer bewertet", risk: "Der Kurs schwankt stärker als bei den meisten" };
+  var LOWER = { profitability: "verdient gut", growth: "wächst stark", quality: "hat solide Zahlen", momentum: "der Kurs läuft", value: "ist günstig", risk: "hat einen ruhigen Kurs" };
+  function stageKind(v) { return v >= 75 ? "strong" : v >= 45 ? "mid" : "weak"; }
+  /* Quant in drei Sätzen: Stärke, Schwäche, Zuletzt – aus den vorhandenen Faktor- und Veränderungsdaten, keine neue Rechnung. */
+  function storyCard(vm) {
+    var U = global.VUUI;
+    if (!U || vm.factorState !== "AVAILABLE") return null;
+    var rated = vm.factors.filter(function (f) { return f.state === "AVAILABLE" && f.id !== "revisions"; }).sort(function (a, b) { return b.score - a.score; });
+    if (rated.length < 2) return null;
+    var rows = [], top = rated[0], low = rated[rated.length - 1], second = rated[1];
+    var pct = top.rank && typeof top.rank.share === "number" ? Math.min(99, Math.floor(top.rank.share * 100)) : null;
+    var strong = (pct != null && STRONG_SAY[top.id] ? STRONG_SAY[top.id].replace("{p}", pct) : top.name + " " + Math.round(top.score)) +
+      (second && second.score >= 75 ? ", " + LOWER[second.id] + " (" + Math.round(second.score) + ")" : "") + ".";
+    rows.push(["bars", "Stärke", strong, U.verdict(stageKind(top.score), U.PROFILE.stage(top.score))]);
+    var weakWhy = low.why && (String(low.why).match(/Schwach: ([^.]+)/) || [])[1];
+    if (low.score < 75) rows.push(["check", "Schwäche", (WEAK_SAY[low.id] || low.name) + " (" + Math.round(low.score) + ")" + (weakWhy ? ": " + weakWhy + "." : "."), U.verdict(stageKind(low.score), U.PROFILE.stage(low.score))]);
+    var ch = vm.change && vm.change.state === "AVAILABLE" ? vm.change.items : [];
+    var moved = ch.filter(function (i) { return i.tone === "bad"; })[0] || ch.filter(function (i) { return i.tone === "good"; })[0];
+    if (moved) {
+      var nb = ch.filter(function (i) { return i.tone === "bad"; }).length, ng = ch.filter(function (i) { return i.tone === "good"; }).length;
+      rows.push(["line", "Zuletzt", moved.text + (/[.!?]$/.test(moved.text) ? "" : "."), nb >= ng ? U.verdict("weak", nb + " von " + ch.length + " schlechter") : U.verdict("strong", ng + " von " + ch.length + " besser")]);
+    }
+    var box = el("div", { class: "qk-story" });
+    box.innerHTML = '<span class="vu-ltag">Quant in drei Sätzen</span>' + rows.map(function (r) {
+      return '<div class="qk-story-r"><span class="qk-hud" aria-hidden="true">' + U.glyph(r[0], 17) + '</span><div><span class="vu-ltag">' + r[1] + "</span><p>" + U.esc(r[2]) + "</p></div>" + r[3] + "</div>";
+    }).join("");
+    return box;
+  }
+  var CHAP_KEY = "vu.quant.kapitel.v1";
+  function chapOpen() { try { var v = JSON.parse(global.localStorage.getItem(CHAP_KEY) || "[]"); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+  function chapRemember(id, open) { try { var l = chapOpen().filter(function (x) { return x !== id; }); if (open) l.push(id); global.localStorage.setItem(CHAP_KEY, JSON.stringify(l)); } catch (e) { /* privat oder voll */ } }
+  /* Sechs Kapitel, standardmäßig zugeklappt; offene merkt sich das Gerät (gleiches Muster wie Discover). Die Inhalte der
+     bisherigen Abschnitte wandern unverändert hinein. */
+  function chapterize(grid, vm, ticker, displayName, s) {
+    var U = global.VUUI;
+    if (!U) return null;
+    var pc = vm.proCon || { pro: [], con: [], middle: [] };
+    var ch = vm.change && vm.change.state === "AVAILABLE" ? vm.change.items : [];
+    var st = vm.strategy, styleN = st && st.state === "AVAILABLE" ? 1 + st.others.length : 0;
+    var fit = st && st.state === "AVAILABLE" ? [st.best].concat(st.others).filter(function (p) { var cs = p.conditions || (p.met || []).concat(p.notMet || [], p.open || []); return cs.length && cs.every(function (c) { return c.state === "MET"; }); }).length : 0;
+    var near = st && st.state === "AVAILABLE" ? [{ conditions: (st.best.met || []).concat(st.best.notMet || [], st.best.open || []) }].concat(st.others).filter(function (p) { return p.conditions.filter(function (c) { return c.state !== "MET"; }).length === 1; }).length : 0;
+    var same = vm.replay && (vm.replay.levels || []).filter(function (l) { return l.id === "SAME_STOCK"; })[0];
+    var name = String(displayName || ticker).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "");
+    var plural = function (n, a, b) { return n + " " + (n === 1 ? a : b); };
+    var CH = [
+      ["einordnung", "Die sieben Eigenschaften im Detail", "Belege bis zu den Rohdaten", "grid"],
+      ["dafuer", "Stärken und Schwächen laut Kennzahlen", plural(pc.pro.length, "Stärke", "Stärken") + " · " + plural(pc.con.length, "Schwäche", "Schwächen") + " · " + pc.middle.length + " im Mittelfeld", "pie"],
+      ["veraenderung", "Was hat sich bewegt?", ch.length ? ch.filter(function (i) { return i.tone === "good"; }).length + " besser · " + ch.filter(function (i) { return i.tone === "bad"; }).length + " schlechter" : "Zuletzt keine gemessene Veränderung", "pulse"],
+      ["setup", "Anlagestile und Setup", styleN ? fit + " von " + styleN + " Stilen erfüllt" + (near ? " · " + near + " knapp verfehlt" : "") : "Setup und Anlagestile", "target"],
+      ["historie", "Früher bei " + name, same && same.state === "AVAILABLE" ? same.episodes + " ähnliche Lagen · Forschung" : "Rückblick · Forschung", "book"],
+      ["zahlen", "Geschäftszahlen", "Umsatz, Marge, Bewertung · Zahlen", "bars"]];
+    var opened = chapOpen(), host = el("div", { class: "qk-chaps", id: "kapitel" }), n = 0;
+    host.innerHTML = '<div class="qk-rh"><div class="qk-rh-t"><h2>Kapitel</h2><button type="button" class="qk-all">Alle ' + U.glyph("next", 13) + "</button></div></div>";
+    var allBtn = host.querySelector(".qk-all");
+    if (allBtn) allBtn.addEventListener("click", function () { var all = host.querySelectorAll("details.qk-chap"), open = Array.prototype.some.call(all, function (d) { return !d.open; }); all.forEach(function (d) { d.open = open; }); });
+    CH.forEach(function (c) {
+      var sec = grid.querySelector("#" + c[0]) || host.querySelector("#" + c[0]);
+      if (!sec) return;
+      n++;
+      var d = el("details", { class: "qk-chap qv3-more", dataset: { chap: c[0] } });
+      if (opened.indexOf(c[0]) >= 0) d.open = true;
+      var sum = el("summary", {});
+      sum.innerHTML = '<span class="qk-chap-n">' + n + '</span><span class="qk-hud" aria-hidden="true">' + U.glyph(c[3], 19) + '</span><span class="qk-chap-t"><b>' + U.esc(c[1]) + "</b><span>" + U.esc(c[2]) + "</span></span>" + U.glyph("next", 16);
+      var body = el("div", { class: "qk-chap-b" });
+      /* Ein Abschnitt, der in einer anderen Karte steckt (Geschäftszahlen in den Eigenschaften), zieht allein um. */
+      body.append(sec);
+      d.append(sum, body);
+      d.addEventListener("toggle", function () { chapRemember(c[0], d.open); });
+      host.append(d);
+    });
+    return n ? host : null;
+  }
+  /* Ähnliches Profil: kleinster Abstand über die sechs Eigenschaften, nur Aktien mit vollständigem Profil. */
+  function similarProfiles(host, vm, ticker, displayName, ctx) {
+    var U = global.VUUI;
+    if (!U || vm.factorState !== "AVAILABLE") return;
+    var K = U.PROFILE.keys.slice(0, 6), me = VM.profileValues(vm.factors);
+    if (K.some(function (k) { return me[k] == null; })) return;
+    Promise.all([ctx.api.getFactorEvidenceScreening().catch(function () { return null; }), ctx.loadNames ? ctx.loadNames().catch(function () { return null; }) : null]).then(function (r) {
+      var scr = r[0]; if (!scr || scr.state !== "AVAILABLE" || !host.isConnected) return;
+      var near = scr.rows.filter(function (row) { return row.ticker !== ticker; }).map(function (row) {
+        var v = VM.profileValues(row), d = 0;
+        for (var i = 0; i < K.length; i++) { if (v[K[i]] == null) return null; d += Math.pow(v[K[i]] - me[K[i]], 2); }
+        return { t: row.ticker, v: v, d: d };
+      }).filter(Boolean).sort(function (a, b) { return a.d - b.d; }).slice(0, 5);
+      if (!near.length) return;
+      var nm = function (t) { return String((ctx.names && ctx.names[t]) || t).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, ""); };
+      var best = function (v) { var k = K.slice().sort(function (a, b) { return v[b] - v[a]; })[0]; return U.PROFILE.label[k] + " " + Math.round(v[k]); };
+      host.innerHTML = '<div class="qk-rh"><div class="qk-rh-t"><h2>Ähnliches Profil</h2></div><p>Aktien, deren sieben Eigenschaften ' + U.esc(String(displayName || ticker).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "")) + " am nächsten liegen.</p></div>" +
+        '<div class="qk-rail" role="list" tabindex="0" aria-label="Ähnliches Profil">' + near.map(function (x) {
+          return '<div role="listitem"><a class="qk-pc" href="' + U.esc(X.routes.stock(x.t)) + '">' + U.logo(x.t) + '<b class="qk-pc-n">' + U.esc(nm(x.t)) + '</b><span class="qk-pc-t">' + U.esc(x.t) + '</span><span class="qk-pc-p">' + U.profileMini(x.v, { width: 110, height: 34 }) + '</span><span class="qk-pc-c">' + U.esc(best(x.v)) + "</span></a></div>";
+        }).join("") + "</div>" + '<p class="vu-xs vu-mu qk-foot">Rang im Vergleich zu allen bewerteten US-Aktien, Stand ' + U.esc(X.dateDe(scr.asOf || "")) + ". Keine Anlageempfehlung.</p>";
+    });
+  }
+
   /**
    * @param {HTMLElement} main
    * @param {string} ticker
@@ -823,6 +931,7 @@
     var cssReady = global.QXLoadStockCss ? global.QXLoadStockCss() : Promise.resolve(true);
     var early = global.VUQuantBoot && global.VUQuantBoot.get(ticker, main);
     var page = early ? early.article : el("article", { class: "qx-stock q-stock qv-stock" });
+    page.classList.add("qk");
     if (!early) main.append(page);
     var heroHost = early ? early.heroHost : el("div", { class: "qx-hero-host" }), bodyHost = early ? early.bodyHost : el("div", { class: "qx-body-host" }, [X.loading("Analyse wird geladen …")]);
     if (!early) { heroHost.setAttribute("aria-busy", "true"); if (global.VUUI && global.VUUI.skeleton) heroHost.innerHTML = global.VUUI.skeleton("head"); page.append(heroHost, bodyHost); }
@@ -1047,10 +1156,13 @@
     /* 1: Chart und daneben das Quant-Ergebnis. */
     var layout = el("div", { class: "qx-stock-layout" });
     layout.id = "ueberblick"; layout.classList.add("qv2-overview");
-    layout.append(chart.node);
-    layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten & Methodik“.", early && early.question));
-    /* Die Pillen stehen ueber dem Chart und kleben beim Scrollen oben: die sechs Ansichten sind jederzeit sichtbar. */
-    bodyHost.append(tabs, layout);
+    /* Konzept Quant 2026-11 (QX05, Screen q-stock): Profil groß, „Quant in drei Sätzen“, Kapitel, Kurs, „Ähnliches Profil“.
+       Keine zweite Schritt-Leiste unter der Perspektiven-Leiste (Entscheidung 7): die Pillen entstehen weiter für die
+       Markierung, stehen aber nicht auf der Seite. */
+    layout.append(verdictCard(vm, factors && factors.reason, "Quant bildet keine Ersatzwerte. Was vorhanden ist, steht weiter unten; was fehlt, steht unter „Daten & Methodik“.", early && early.question, ticker, displayName));
+    var story = storyCard(vm);
+    if (story) layout.append(story);
+    bodyHost.append(layout);
     var grid = el("div", { class: "qv2-grid" });
     bodyHost.append(grid);
     var swipe = deck(grid, setCurrent);
@@ -1059,7 +1171,7 @@
     /* 2: Die sieben Eigenschaften bis zu den Rohdaten - eine Zeile je Eigenschaft. */
     if (hasFactors && o.rated > 0) {
       grid.append(card(X.section("Was macht diese Aktie stark oder schwach?", "Jede Eigenschaft von 0 bis 100 – antippen zeigt die Belege bis zu den Rohdaten.",
-        [el("div", { class: "qx-factors qv-frows" }, vm.factors.map(function (f) { return factorCard(f, ticker); }))].concat(returnsBlock(vm), [
+        [el("div", { class: "qx-factors qv-frows" }, VM.byProfile(vm.factors, "id").map(function (f) { return factorCard(f, ticker); }))].concat(returnsBlock(vm), [
           moreText("Was bedeuten die Eigenschaften?", "Wert 0–100: gewichtetes Mittel der Rangplätze der einzelnen Kennzahlen, 50 ist die Mitte. Die Stufe ist die Position unter allen bewerteten Aktien (stärkste 10 % sehr stark, bis 75 % stark, ab 45 % durchschnittlich, ab 25 % schwach) – eine relative Einordnung, kein absolutes Urteil.")]),
         { href: X.routes.method("faktoren"), label: "Methodik" }, "Die Quant-Eigenschaften", "einordnung")));
     } else if (!hasFactors) {
@@ -1246,6 +1358,17 @@
       disposers.push(global.VUCompanyIntelligenceStock.mount(ciHost, ticker));
       if (!ciHost.firstChild) ciMore = null;
     }
+    var chapHost = chapterize(grid, vm, ticker, displayName, s);
+    /* Der Kursverlauf bleibt auf der Seite (eine Preiswahrheit, ADR-002) – unter den Kapiteln, wie Discover ihn in der Übersicht trägt. */
+    var chartSec = el("section", { class: "qk-chart", id: "kurs-verlauf", "aria-label": "Kursverlauf" }, [el("h2", { class: "qk-h2", text: "Kursverlauf" }), chart.node]);
+    var simHost = el("div", { class: "qk-sim" });
+    if (grid.before && grid.after) { if (chapHost) grid.before(chapHost); grid.after(chartSec); chartSec.after(simHost); }
+    else bodyHost.append(chapHost, chartSec, simHost);
+    /* Erst in Sichtweite laden: die Screening-Datei (alle Profile) gehört nicht zum ersten Bild (Ressourcenbudget der Aktienseite). */
+    if (global.IntersectionObserver && simHost.getBoundingClientRect) {
+      var simSpy = new global.IntersectionObserver(function (entries) { if (entries.some(function (e) { return e.isIntersecting; })) { simSpy.disconnect(); similarProfiles(simHost, vm, ticker, displayName, ctx); } }, { rootMargin: "0px 0px 200px 0px" });
+      simSpy.observe(simHost); disposers.push(function () { simSpy.disconnect(); });
+    } else similarProfiles(simHost, vm, ticker, displayName, ctx);
     swipe.refresh();
 
     /* ------------------------------------------------- Daten & Methodik */

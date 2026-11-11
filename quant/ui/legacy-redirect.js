@@ -94,12 +94,12 @@
         return APP + "#/screener/profi";
       case "/quant/strategies/": {
         var profile = STRATEGY[String(p.get("id") || "").toLowerCase()];
-        return APP + "#/strategien" + (profile ? "/" + profile : "");
+        return APP + "#/stile" + (profile ? "/" + profile : "");
       }
       case "/quant/strategies/builder/":
         return APP + "#/screener/profi?hinweis=strategy-lab";
       case "/quant/backtests/":
-        return APP + "#/backtest";
+        return APP + "#/forschung";
       case "/quant/watchlist/":
         return APP + "#/aktien";
       case "/quant/stock/":
@@ -109,7 +109,7 @@
       case "/quant/ai/":
         return "/ask/";
       case "/quant/radar/":
-        return APP + "#/radar";
+        return APP + "#/meldungen";
       default:
         return null;
     }
