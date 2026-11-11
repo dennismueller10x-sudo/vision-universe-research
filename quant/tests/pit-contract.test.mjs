@@ -105,13 +105,18 @@ test('PIT-07 unbekanntes Einreichungsdatum: eine Zeile ohne filed ist nie sichtb
   assert.equal(PIT.firstFiled(b), '2021-02-20');
 });
 
-test('BEFUND PIT-F1 gleiches Einreichungsdatum, zwei Werte: die Eingabereihenfolge entscheidet (Gleichstand ohne Regel)', () => {
-  // 10-K und 10-K/A am selben Tag mit verschiedenem Wert. visibleAnnual nimmt bei Gleichstand die zuerst gelistete Zeile.
-  const a = row(2022, '2022-12-31', 120, '2023-02-20', 'orig'), b = row(2022, '2022-12-31', 90, '2023-02-20', 'amend');
+test('PIT-F1 gleiches Einreichungsdatum, zwei Werte: die größere Accession gewinnt, unabhängig von der Eingabereihenfolge', () => {
+  // 10-K und 10-K/A am selben Tag mit verschiedenem Wert. Ordnung: filed, dann accn (lexikografisch größer), dann Wert.
+  const a = row(2022, '2022-12-31', 120, '2023-02-20', '0001-23-000001'), b = row(2022, '2022-12-31', 90, '2023-02-20', '0001-23-000002');
   const x = bundleOf({ revenue: [a, b] }), y = bundleOf({ revenue: [b, a] });
-  assert.equal(PIT.latest(x, 'revenue', '2023-03-01'), 120);
+  assert.equal(PIT.latest(x, 'revenue', '2023-03-01'), 90);
   assert.equal(PIT.latest(y, 'revenue', '2023-03-01'), 90);
-  // Das ist eine echte Determinismus-Lücke (kein Lookahead): dieselbe Wahrheit, andere Entscheidung je nach Sortierung des Erzeugers.
+  // Gleiche accn: der größere Wert, ebenfalls reihenfolgeunabhängig.
+  const c = row(2022, '2022-12-31', 120, '2023-02-20', 'same'), d = row(2022, '2022-12-31', 90, '2023-02-20', 'same');
+  assert.equal(PIT.latest(bundleOf({ revenue: [c, d] }), 'revenue', '2023-03-01'), PIT.latest(bundleOf({ revenue: [d, c] }), 'revenue', '2023-03-01'));
+  // Ein späterer filed-Tag schlägt weiter jede accn.
+  const e = row(2022, '2022-12-31', 77, '2023-02-21', '0000-00-000000');
+  assert.equal(PIT.latest(bundleOf({ revenue: [a, b, e] }), 'revenue', '2023-03-01'), 77);
 });
 
 // ---------- Branchenklassifikation: knownAt mit Uhrzeit ----------
@@ -248,7 +253,7 @@ test('BEFUND PIT-F3 Universum ist heutige Dateimenge (kein Listing-Intervall im 
 // ---------- Vertragsmatrix (maschinenlesbar, gepinnt) ----------
 
 test('PIT-18 Vertragsmatrix: Versionen und Stichtagssemantik der vier Module sind gepinnt', () => {
-  assert.equal(PIT.VERSION, 'pit-fundamental-history-1.0.0');
+  assert.equal(PIT.VERSION, 'pit-fundamental-history-1.1.0');
   assert.equal(PF.VERSION, 'portfolio-pit-factors-1.0.0');
   assert.equal(IC.VERSION, 'core-industry-classification-1.0.0');
   assert.equal(ID.VERSION, 'core-identity-1.0.0');
