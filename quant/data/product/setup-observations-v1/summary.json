@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-10T00:34:20.000Z",
- "asOf": "2026-11-09",
+ "generatedAt": "2026-11-11T00:29:21.000Z",
+ "asOf": "2026-11-10",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5636,
- "observed": 5636,
+ "universe": 5638,
+ "observed": 5638,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4471,
-  "WATCH": 638,
-  "SETUP_FORMING": 494,
-  "CONFIRMED": 33,
+  "NO_SETUP": 4499,
+  "WATCH": 614,
+  "SETUP_FORMING": 490,
+  "CONFIRMED": 35,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 494,
-  "setup.none.fallback": 4471,
-  "setup.watch.bullish-trend": 409,
-  "setup.confirmed.structure-trend-volume": 33,
-  "setup.watch.confirmed-structure-near-high": 229
+  "setup.forming.complete-setup-awaiting-trigger": 490,
+  "setup.none.fallback": 4499,
+  "setup.watch.bullish-trend": 400,
+  "setup.confirmed.structure-trend-volume": 35,
+  "setup.watch.confirmed-structure-near-high": 214
  },
  "pathTier": {
   "states": [
@@ -389,14 +389,15 @@
    "2026-11-04",
    "2026-11-05",
    "2026-11-06",
-   "2026-11-09"
+   "2026-11-09",
+   "2026-11-10"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5636
+   "instruments": 5638
   }
  },
  "shards": [
@@ -1035,12 +1036,13 @@
  ],
  "observationDrift": null,
  "staleBundles": {
-  "count": 255,
-  "cutoff": "2026-11-09",
+  "count": 256,
+  "cutoff": "2026-11-10",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
-   "2026-11-06": 159,
+   "2026-11-06": 150,
    "2026-10-23": 6,
+   "2026-11-09": 10,
    "2026-10-29": 4,
    "2026-09-29": 5,
    "2026-09-15": 1,
@@ -1097,6 +1099,10 @@
     "dataCutoff": "2026-10-23"
    },
    {
+    "ticker": "ACHV",
+    "dataCutoff": "2026-11-09"
+   },
+   {
     "ticker": "ACVA",
     "dataCutoff": "2026-11-06"
    },
@@ -1138,10 +1144,6 @@
    },
    {
     "ticker": "ALOT",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "AMZE",
     "dataCutoff": "2026-11-06"
    },
    {
@@ -1285,8 +1287,8 @@
     "dataCutoff": "2026-11-06"
    },
    {
-    "ticker": "CNO-P-A",
-    "dataCutoff": "2026-11-06"
+    "ticker": "CLRCU",
+    "dataCutoff": "2026-11-09"
    }
   ]
  }
