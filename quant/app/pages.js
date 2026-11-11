@@ -360,7 +360,8 @@
   function deDay(iso) { var d = iso ? new Date(iso + "T12:00:00Z") : null; return d && !isNaN(d) ? ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"][d.getUTCDay()] + ". " + iso.slice(8, 10) + "." + iso.slice(5, 7) + "." : ""; }
   /* Anzeigename wie im Mockup: ohne Rechtsform-Anhang („Inc.“, „Corp“, „Holdings, Inc.“, „/New/“). */
   function cleanName(n) { return String(n || "").replace(/\s*\/[A-Za-z]{2,}\/?$|\/$/g, "").replace(/,?\s+(Holdings?,?\s+Inc\.?|Inc\.?|Corp(oration)?\.?|Co\.?|Ltd\.?|plc|N\.?V\.?|S\.?A\.?|Companies,?\s+Inc\.?|Group,?\s+Inc\.?)$/i, "").replace(/,?\s+(Inc\.?|Corp\.?)$/i, "").trim(); }
-  function qName(ctx, t) { return cleanName(nameOf(ctx, t)) || t; }
+  /* Kürzt die Rechtsform weg; bliebe dadurch nur das Kürzel stehen (FIGS Inc., YETI Holdings, CTS Corp), gilt der volle Name. */
+  function qName(ctx, t) { var full = nameOf(ctx, t), c = cleanName(full); return (c && c.toUpperCase() !== String(t).toUpperCase() ? c : String(full || "").trim()) || t; }
   function railHead(title, count, href, sub, tag) {
     return '<div class="qk-rh"><div class="qk-rh-t"><h2>' + U().esc(title) + "</h2>" + (tag ? '<span class="qk-tag">' + U().esc(tag) + "</span>" : "") +
       (href ? '<a href="' + U().esc(href) + '">' + (count != null ? "Alle " + U().esc(typeof count === "number" ? count.toLocaleString("de-DE") : count) : "Alle") + U().glyph("next", 13) + "</a>" : "") + "</div>" + (sub ? "<p>" + U().esc(sub) + "</p>" : "") + "</div>";
