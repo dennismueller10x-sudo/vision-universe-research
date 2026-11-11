@@ -157,6 +157,7 @@ jobs:
       source_sha: ${{ steps.delivery_contract.outputs.source_sha }}
       ci_enabled: ${{ steps.ci_stage.outputs.enabled }}
       ci_full_acceptance: ${{ steps.consumer_review.outputs.required }}
+      indexnow: ${{ steps.indexnow.outputs.liste }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Ein gescheiterter Datenlauf hat nichts veroeffentlicht (siehe
@@ -443,10 +444,48 @@ jobs:
           await writeFile(join(process.env.SITE_ROOT,'release-package.json'),JSON.stringify(report)+'\n');
           console.log(JSON.stringify(report));
           NODE
+      # IndexNow (products/insights/indexnow.mjs): VOR dem Ausrollen die noch ausgelieferte Insights-Sitemap mit der neuen
+      # vergleichen. Neue oder geaenderte Adressen meldet der Job indexnow nach dem Ausrollen. Scheitert nie das Release.
+      - name: IndexNow - neue und geaenderte Insights-Adressen ermitteln
+        id: indexnow
+        if: github.event_name != 'pull_request'
+        env:
+          SITE_ROOT: ${{ runner.temp }}/site
+        run: |
+          set -uo pipefail
+          key=$(ls | grep -E '^[0-9a-f]{32}\.txt$' | head -1)
+          test -n "$key" && cmp "$key" "$SITE_ROOT/$key" || { echo "::warning::IndexNow-Schluessel fehlt in der Auslieferung"; exit 0; }
+          node products/insights/indexnow.mjs vergleichen --neu "$SITE_ROOT/insights/sitemap.xml" --out "$RUNNER_TEMP/indexnow.json"
+          if [ -s "$RUNNER_TEMP/indexnow.json" ]; then
+            echo "liste=$(node -e 'process.stdout.write(JSON.stringify(require(process.argv[1])))' "$RUNNER_TEMP/indexnow.json")" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ runner.temp }}/site
+
+  # IndexNow: neue und geaenderte Insights-Adressen nach dem Ausrollen melden (Bing und alle IndexNow-Suchen).
+  # Nur lesend; ein Fehler bei IndexNow ist eine Warnung, kein roter Lauf.
+  indexnow:
+    if: github.event_name != 'pull_request' && contains(needs.package.outputs.indexnow, 'https://')
+    needs: [package, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.package.outputs.source_sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: IndexNow melden
+        env:
+          LISTE: ${{ needs.package.outputs.indexnow }}
+        run: |
+          printf '%s' "$LISTE" > "$RUNNER_TEMP/indexnow.json"
+          node products/insights/indexnow.mjs melden --liste "$RUNNER_TEMP/indexnow.json"
 
   deploy:
     if: github.event_name != 'pull_request'
