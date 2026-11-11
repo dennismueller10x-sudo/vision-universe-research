@@ -110,6 +110,8 @@ async function main() {
   fs.writeFileSync(out, JSON.stringify(bericht, null, 1) + '\n');
   const ix = bericht.indexierung || [];
   console.log(`Search Console ${bericht.zeitraum.von} bis ${bericht.zeitraum.bis}: Insights ${bericht.insights?.klicks ?? '?'} Klicks, ${bericht.insights?.impressionen ?? '?'} Impressionen; indexiert ${ix.filter((x) => x.urteil === 'PASS').length}/${ix.length}`);
+  for (const x of ix) console.log(`  ${x.url}: ${x.fehler ? 'Fehler ' + x.fehler : (x.urteil || '?') + ' · ' + (x.stand || '?') + (x.zuletztGecrawlt ? ' · gecrawlt ' + x.zuletztGecrawlt.slice(0, 10) : '')}`);
+  for (const s of bericht.sitemaps || []) console.log(`  Sitemap ${s.pfad}: gelesen ${s.gelesen || 'noch nicht'}, ${s.eingereicht} Adressen, ${s.fehler} Fehler`);
   for (const h of bericht.hinweise) console.log('Hinweis: ' + h);
   if (bericht.hinweise.length && !bericht.insights && !ix.some((x) => !x.fehler)) process.exit(1);
 }
