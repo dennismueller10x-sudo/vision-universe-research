@@ -4,7 +4,10 @@ Only explicit issuer business sentences are eligible. Missing facts stay empty;
 SEC identity/industry alone never becomes a business description.
 """
 import hashlib
+import json
 import re
+from functools import lru_cache
+from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
@@ -479,6 +482,24 @@ def _profile(company, body, source, now, official_website, url, sec, found):
             'lastVerifiedAt': now, 'nextReviewAt': later(now, WEB_DAYS) if not sec else None, 'refreshPolicy': 'NEW_ANNUAL_FILING' if sec else 'QUARTERLY'}
 
 
+SUCCESSOR_REGISTER = Path(__file__).resolve().parents[2] / 'quant/config/sec-successor-issuers.json'
+
+
+@lru_cache(maxsize=1)
+def successor_predecessors():
+    """Rule 12g-3 holding successions (quant/config/sec-successor-issuers.json): successor CIK -> predecessor CIKs.
+    Only this documented register lets a successor issuer keep the predecessor's annual report as profile
+    source (ExxonMobil Holdings Corp 0002115436 <- Exxon Mobil Corporation 0000034088, effective 2026-07-01)."""
+    try:
+        value = json.loads(SUCCESSOR_REGISTER.read_text())
+    except (OSError, ValueError):
+        return {}
+    if value.get('schema') != 'vu-sec-successor-issuers-1.0.0' or not isinstance(value.get('successors'), dict):
+        return {}
+    return {cik: tuple(p for p in (row.get('predecessors') or []) if isinstance(p, str) and re.fullmatch(r'\d{10}', p))
+            for cik, row in value['successors'].items() if re.fullmatch(r'\d{10}', cik) and isinstance(row, dict)}
+
+
 def public_profile(value, cid, now):
     """Prepared factual fields only. Private excerpts, failures and run cursors stay private."""
     if not isinstance(value, dict) or value.get('state') != 'AVAILABLE' or value.get('companyId') != cid or value.get('schema') != VERSION:
@@ -491,7 +512,10 @@ def public_profile(value, cid, now):
     for source in sources:
         if source['type'] == 'SEC':
             cik = cid.removeprefix('iss_cik_')
-            if not re.fullmatch(r'\d{10}', cik) or source.get('form') not in ('10-K', '20-F', '40-F') or not source['url'].startswith('https://www.sec.gov/Archives/edgar/data/' + str(int(cik)) + '/'):
+            if not re.fullmatch(r'\d{10}', cik) or source.get('form') not in ('10-K', '20-F', '40-F'):
+                return None
+            allowed = (cik,) + successor_predecessors().get(cik, ())
+            if not any(source['url'].startswith('https://www.sec.gov/Archives/edgar/data/' + str(int(c)) + '/') for c in allowed):
                 return None
     for field in ('businessActivities', 'productsServices', 'customerMarkets', 'majorSegments'):
         if not isinstance(value.get(field), list) or len(value[field]) > 5 or any(not isinstance(s, str) or len(s) > 700 for s in value[field]):
