@@ -39,7 +39,8 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  const context=await createContext({viewport:{width,height:844},deviceScaleFactor:1,isMobile:width<500,hasTouch:width<500});
  await context.addInitScript(t=>localStorage.setItem('vu-discover-theme-v1',t),theme);
  const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
- page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+ /* Chromium meldet abgebrochene View-Transitions bei Hash-Navigation als Konsolenfehler; Browser-Hinweis, kein App-Fehler. */
+ page.on('console',m=>{if(m.type()==='error'&&!/^Transition was aborted because of invalid state\. ViewTransition opt-in disabled$/.test(m.text().trim()))errors.push(m.text());});
  const prefix=width+'-'+theme;
  async function overflow(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'horizontal overflow');}
  await check(prefix+' central Academy single strategy entry',async()=>{
