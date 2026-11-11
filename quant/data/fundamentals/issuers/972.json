@@ -956,9 +956,9 @@
       "cik": "0001789972",
       "name": "Cullinan Therapeutics, Inc.",
       "sic": "2836",
-      "rawFacts": 4772,
-      "mappedFacts": 1599,
-      "unmappedFacts": 3196,
+      "rawFacts": 4961,
+      "mappedFacts": 1670,
+      "unmappedFacts": 3364,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -968,9 +968,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 27,
+      "quarterlyPeriods": 28,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
@@ -1009,14 +1009,14 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1037,14 +1037,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1067,19 +1067,19 @@
         }
       },
       "quality": {
-        "HIGH": 166,
+        "HIGH": 170,
         "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 179,
-        "resolvedValues": 179
+        "datableValues": 183,
+        "resolvedValues": 183
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3273,
+        "rules_version": "1.1.0",
+        "total": 3441,
         "by_severity": {
-          "INFO": 3196,
+          "INFO": 3364,
           "ERROR": 1,
           "WARNING": 76
         },
@@ -1087,27 +1087,28 @@
           "CONCEPT_DISAGREEMENT": 72,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 3196
+          "UNKNOWN_CONCEPT": 3364
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-336717",
-        "filing_date": "2026-08-06",
+        "accession": "0001193125-26-454417",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 23
+        "periodic_filings": 24,
+        "acceptance_datetime": "2026-11-10T12:09:38.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "15f7b2bfe8db06b9fbe03f230f3ea33995433f6edb51e55c484fcb070880990a",
+      "sourceDigest": "a366d62240f4f6a7f04c666928e7f58f2be0a5b5dd78743c7a1e834bccae9859",
       "issuerId": "iss_cik_0001789972"
     },
     {

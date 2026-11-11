@@ -6,9 +6,9 @@
       "cik": "0001725430",
       "name": "INTELLIGENT BIO SOLUTIONS INC.",
       "sic": "3841",
-      "rawFacts": 5251,
-      "mappedFacts": 1669,
-      "unmappedFacts": 3635,
+      "rawFacts": 5433,
+      "mappedFacts": 1737,
+      "unmappedFacts": 3749,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 30,
+      "quarterlyPeriods": 31,
       "firstPeriodEnd": "2019-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 4.0
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2020-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 6.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 29,
+          "quarterlyPeriods": 30,
           "firstAvailablePeriod": "2019-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 6.0
@@ -117,48 +117,48 @@
         }
       },
       "quality": {
-        "HIGH": 186,
-        "MEDIUM": 12
+        "HIGH": 193,
+        "MEDIUM": 11
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 198,
-        "resolvedValues": 198
+        "datableValues": 204,
+        "resolvedValues": 204
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3851,
+        "rules_version": "1.1.0",
+        "total": 3976,
         "by_severity": {
-          "INFO": 3635,
-          "WARNING": 216
+          "INFO": 3749,
+          "WARNING": 227
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 150,
+          "CONCEPT_DISAGREEMENT": 146,
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 62,
-          "UNKNOWN_CONCEPT": 3635
+          "RESTATEMENT_CONFLICT": 77,
+          "UNKNOWN_CONCEPT": 3749
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-047925",
-        "filing_date": "2026-10-21",
-        "form": "10-K/A",
-        "periodic_filings": 28,
-        "acceptance_datetime": "2026-10-22T01:00:17.000Z"
+        "accession": "0001493152-26-050881",
+        "filing_date": "2026-11-10",
+        "form": "10-Q",
+        "periodic_filings": 29,
+        "acceptance_datetime": "2026-11-10T13:30:34.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.6.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bc4d78248268a180ef7b2d1b2b3da2f4812326c7ecb530aa5ab3919c022d1a1b",
+      "sourceDigest": "597abde611ca0f1b82f86dc254544a7b52593fe2f123e6ce0ee9a879f087d5f8",
       "issuerId": "iss_cik_0001725430"
     },
     {
