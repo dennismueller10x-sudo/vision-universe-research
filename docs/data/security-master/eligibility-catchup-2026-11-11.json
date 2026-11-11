@@ -1,0 +1,974 @@
+{
+ "schema": "vu-eligibility-catchup-1",
+ "id": "eligibility-catchup-2026-11-11",
+ "prevSha256": "50465da8b6cf0caf1d7ac53fca29a88aa14b6bed635691d661e5c586386d44ee",
+ "sourceRun": "lokal 11.11.2026 (Kette build-us-eligibility, apply-name-layer-class DEBT, apply-exchange-directory) gegen us-security-master-1.3.0 mit dem SEC-Delisting-Register aus #1816 (130 Saetze)",
+ "productUniverseBefore": 6308,
+ "productUniverseAfter": 6309,
+ "counts": {
+  "changes": 113,
+  "leaveProduct": 0,
+  "enterProduct": 1
+ },
+ "leaveReasons": {},
+ "enterReasons": {
+  "ELIGIBLE <- CONFIRMED_NON_EQUITY:ETF": 1
+ },
+ "impact": {
+  "discover": {
+   "before": 5700,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "elliott": {
+   "before": 5050,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "fundamental": {
+   "before": 5245,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "hedgefonds": {
+   "before": 4451,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "quant": {
+   "before": 6306,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "supertrader": {
+   "before": 1547,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "technical": {
+   "before": 5635,
+   "removed": 0,
+   "addedWithPage": 0
+  },
+  "technik": {
+   "before": 5050,
+   "removed": 0,
+   "addedWithPage": 0
+  }
+ },
+ "changes": [
+  {
+   "securityId": "ref_ALE",
+   "ticker": "ALE",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ALOT",
+   "ticker": "ALOT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ODP",
+   "ticker": "ODP",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_MGIC",
+   "ticker": "MGIC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BLFS",
+   "ticker": "BLFS",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ZEUS",
+   "ticker": "ZEUS",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_FLIC",
+   "ticker": "FLIC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SASR",
+   "ticker": "SASR",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_STRM",
+   "ticker": "STRM",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CASI",
+   "ticker": "CASI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ANSS",
+   "ticker": "ANSS",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GIFI",
+   "ticker": "GIFI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SLP",
+   "ticker": "SLP",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HTBK",
+   "ticker": "HTBK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_UBFO",
+   "ticker": "UBFO",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HSII",
+   "ticker": "HSII",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_LPSN",
+   "ticker": "LPSN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CSCI",
+   "ticker": "CSCI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_NURO",
+   "ticker": "NURO",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BGFV",
+   "ticker": "BGFV",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_MODV",
+   "ticker": "MODV",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ONCT",
+   "ticker": "ONCT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_EBTC",
+   "ticker": "EBTC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_WBD",
+   "ticker": "WBD",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SNCR",
+   "ticker": "SNCR",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HBI",
+   "ticker": "HBI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GLDD",
+   "ticker": "GLDD",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_MOFG",
+   "ticker": "MOFG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TBNK",
+   "ticker": "TBNK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_THR",
+   "ticker": "THR",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CMRX",
+   "ticker": "CMRX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_RVNC",
+   "ticker": "RVNC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TBPH",
+   "ticker": "TBPH",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_EBR_B",
+   "ticker": "EBR-B",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_VBTX",
+   "ticker": "VBTX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_AVNS",
+   "ticker": "AVNS",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_AVGR",
+   "ticker": "AVGR",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_PVBC",
+   "ticker": "PVBC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ADVM",
+   "ticker": "ADVM",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_RZB",
+   "ticker": "RZB",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HONE",
+   "ticker": "HONE",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_REVG",
+   "ticker": "REVG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_PLYA",
+   "ticker": "PLYA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ICCH",
+   "ticker": "ICCH",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SBT",
+   "ticker": "SBT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GORV",
+   "ticker": "GORV",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_NKLA",
+   "ticker": "NKLA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_VTAK",
+   "ticker": "VTAK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_XTKG",
+   "ticker": "XTKG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_OXSQZ",
+   "ticker": "OXSQZ",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_APLT",
+   "ticker": "APLT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BHAT",
+   "ticker": "BHAT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CFB",
+   "ticker": "CFB",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TFFP",
+   "ticker": "TFFP",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ETWO",
+   "ticker": "ETWO",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_VSTA",
+   "ticker": "VSTA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CVAC",
+   "ticker": "CVAC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ORGN",
+   "ticker": "ORGN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SCCC",
+   "ticker": "SCCC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GHLD",
+   "ticker": "GHLD",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_LESL",
+   "ticker": "LESL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HYZN",
+   "ticker": "HYZN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_AFBI",
+   "ticker": "AFBI",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TIRX",
+   "ticker": "TIRX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_FRGE",
+   "ticker": "FRGE",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ISPO",
+   "ticker": "ISPO",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ACVA",
+   "ticker": "ACVA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_RILYK",
+   "ticker": "RILYK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ACHL",
+   "ticker": "ACHL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TRML",
+   "ticker": "TRML",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ATCOL",
+   "ticker": "ATCOL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SNCRL",
+   "ticker": "SNCRL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_METCL",
+   "ticker": "METCL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BLFY",
+   "ticker": "BLFY",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_REE",
+   "ticker": "REE",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_OMGA",
+   "ticker": "OMGA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_FNA",
+   "ticker": "FNA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ENFN",
+   "ticker": "ENFN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_HNNAZ",
+   "ticker": "HNNAZ",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_INFA",
+   "ticker": "INFA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_FOSLL",
+   "ticker": "FOSLL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_MYNA",
+   "ticker": "MYNA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ARBKL",
+   "ticker": "ARBKL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BWNB",
+   "ticker": "BWNB",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_ZIMV",
+   "ticker": "ZIMV",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_EVGR",
+   "ticker": "EVGR",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_PET",
+   "ticker": "PET",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_RWAYZ",
+   "ticker": "RWAYZ",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SLRN",
+   "ticker": "SLRN",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TBMC",
+   "ticker": "TBMC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GAINL",
+   "ticker": "GAINL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_AACT",
+   "ticker": "AACT",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_GLADZ",
+   "ticker": "GLADZ",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_AACB",
+   "ticker": "AACB",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_APAD",
+   "ticker": "APAD",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_BSII",
+   "ticker": "BSII",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CCCX",
+   "ticker": "CCCX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CCIX",
+   "ticker": "CCIX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CGBDL",
+   "ticker": "CGBDL",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_CREV",
+   "ticker": "CREV",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_EMPG",
+   "ticker": "EMPG",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_FTRK",
+   "ticker": "FTRK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_JFB",
+   "ticker": "JFB",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_MURA",
+   "ticker": "MURA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_PTNM",
+   "ticker": "PTNM",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_QRTEA",
+   "ticker": "QRTEA",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SDM",
+   "ticker": "SDM",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SELX",
+   "ticker": "SELX",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_SVAC",
+   "ticker": "SVAC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_TBHC",
+   "ticker": "TBHC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_VCIC",
+   "ticker": "VCIC",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  },
+  {
+   "securityId": "ref_WTIB",
+   "ticker": "WTIB",
+   "from": "EXCLUDED",
+   "to": "ELIGIBLE",
+   "reasonBefore": "CONFIRMED_NON_EQUITY:ETF",
+   "reasonAfter": "US_COMMON_EQUITY_ON_PRIMARY_VENUE"
+  },
+  {
+   "securityId": "ref_ZK",
+   "ticker": "ZK",
+   "from": "ELIGIBLE",
+   "to": "REVIEW",
+   "reasonBefore": "US_COMMON_EQUITY_ON_PRIMARY_VENUE",
+   "reasonAfter": "UNCONFIRMED:LISTING_INACTIVE"
+  }
+ ],
+ "leave": [],
+ "enter": [
+  {
+   "ticker": "WTIB",
+   "securityId": "ref_WTIB",
+   "status": "ELIGIBLE",
+   "before": "CONFIRMED_NON_EQUITY:ETF"
+  }
+ ]
+}
