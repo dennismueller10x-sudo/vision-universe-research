@@ -107,9 +107,9 @@ POLICY_STAND_1010 = {
     "TECHNICAL_HISTORY_ELIGIBLE": 5644,
 }
 AKTUELLER_POLICY_STAND = {
-    "PRODUCT_TITLES": 6308,
-    "HISTORICAL_CHART_AVAILABLE": 6305,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5655,
+    "PRODUCT_TITLES": 6309,
+    "HISTORICAL_CHART_AVAILABLE": 6306,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5656,
 }
 VERZEICHNIS_AUSGESCHLOSSEN = 167
 # Verzeichnisbelege im Abgleich heute (06.11.2026, jede Eignung rechnet den Abgleich
@@ -117,7 +117,12 @@ VERZEICHNIS_AUSGESCHLOSSEN = 167
 # der Bereinigung (eligibility-cleanup-2026-11-06) + 1 Optionsschein (BNCWW) = 435.
 VERZEICHNIS_WIEDER_STAMMAKTIE = {"GREEL", "SWKHL"}
 VERZEICHNIS_ETF_0611, VERZEICHNIS_WARRANT_0611 = 269, {"BNCWW"}
-VERZEICHNIS_AUSGESCHLOSSEN_0611 = 435
+# 11.11.2026 (Eignung nach dem Stamm-Lauf, eligibility-catchup-2026-11-11, Lauf 42981455555): WTIB, einer der 269 ETFs der
+# Bereinigung, ist wieder Stammaktie (EXCLUDED -> ELIGIBLE, US_COMMON_EQUITY_ON_PRIMARY_VENUE) und der Verzeichnisbeleg entfaellt:
+# 435 - 1 = 434 Verzeichnisbelege, Produkt 6308 + 1 = 6309, darstellbar 6305 + 1 = 6306, technisch bereit 5655 + 1 = 5656.
+# Die 200 Wechsel ELIGIBLE -> REVIEW desselben Laufs aendern den Umfang nicht (REVIEW gehoert zum Produkt).
+VERZEICHNIS_WIEDER_STAMMAKTIE_1111 = {"WTIB"}
+VERZEICHNIS_AUSGESCHLOSSEN_0611 = 434
 ENTFERNTE_DEBT_TITEL = {
     "ADAMH", "BNH", "CICB", "CIMN", "CTGG", "CTHH", "DCOMG", "MFAN",
     "MFICL", "MHNC", "PRHIZ", "RWTN", "SAX", "SRJN", "SSSSL", "TMUSI",
@@ -234,13 +239,14 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                 and c["from"]["productEligibility"] != "EXCLUDED"}
         self.assertEqual(len(raus), VERZEICHNIS_AUSGESCHLOSSEN_0611)
         self.assertEqual(VERZEICHNIS_AUSGESCHLOSSEN - len(VERZEICHNIS_WIEDER_STAMMAKTIE) + VERZEICHNIS_ETF_0611
-                         + len(VERZEICHNIS_WARRANT_0611), VERZEICHNIS_AUSGESCHLOSSEN_0611)
-        self.assertFalse(VERZEICHNIS_WIEDER_STAMMAKTIE & raus)
+                         + len(VERZEICHNIS_WARRANT_0611) - len(VERZEICHNIS_WIEDER_STAMMAKTIE_1111),
+                         VERZEICHNIS_AUSGESCHLOSSEN_0611)
+        self.assertFalse((VERZEICHNIS_WIEDER_STAMMAKTIE | VERZEICHNIS_WIEDER_STAMMAKTIE_1111) & raus)
         self.assertTrue(VERZEICHNIS_WARRANT_0611 <= raus)
         bereinigung = lade(ROOT / "docs/data/security-master/eligibility-cleanup-2026-11-06.json")
         etf = {x["ticker"] for x in bereinigung["leave"]}
         self.assertEqual(len(etf), VERZEICHNIS_ETF_0611)
-        self.assertTrue(etf <= raus, "ETF der Bereinigung ohne Verzeichnisbeleg im Abgleich")
+        self.assertTrue(etf - VERZEICHNIS_WIEDER_STAMMAKTIE_1111 <= raus, "ETF der Bereinigung ohne Verzeichnisbeleg im Abgleich")
         for c in abgleich["changes"]:
             if c.get("source") == "NASDAQ_TRADER_SYMBOL_DIRECTORY":
                 self.assertTrue(c.get("securityName") and c.get("rule"), c["ticker"] + " ohne Beleg")
