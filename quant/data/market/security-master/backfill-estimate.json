@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-04T00:00:00Z",
+  "generatedAt": "2026-11-11T00:00:00Z",
   "version": "us-security-master-1.3.0",
   "provider": "tiingo",
   "status": "ESTIMATE_FOR_MEASURED_ADDITIONS",
@@ -21,27 +21,27 @@
       "seconds": 0.592,
       "bytesReceived": 769658,
       "storageBytes": 1395845,
-      "factorRuntimeMs": 3.89
+      "factorRuntimeMs": 3.06
     },
     "incremental": {
-      "newSymbols": 96,
+      "newSymbols": 103,
       "staleSymbols": 34,
       "staleBasis": "gate-FULL_UNIVERSE.json dataQuality.reasons.stale_last_bar - Titel, deren letzte Kerze im Referenzlauf veraltet war. Beendete Listings zaehlen ausdruecklich nicht mit: ihre Historie ist vollstaendig.",
-      "symbolsToFetch": 130,
-      "estimatedRequests": 131,
-      "estimatedRuntimeMinutes": 1.3,
-      "estimatedDownloadMB": 95.4,
-      "estimatedAdditionalStorageMB": 173.1,
-      "estimatedFactorRuntimeSeconds": 0.5,
+      "symbolsToFetch": 137,
+      "estimatedRequests": 138,
+      "estimatedRuntimeMinutes": 1.4,
+      "estimatedDownloadMB": 100.6,
+      "estimatedAdditionalStorageMB": 182.4,
+      "estimatedFactorRuntimeSeconds": 0.4,
       "fitsInOneHourBudget": true,
       "requestBudgetPerHour": 12000,
       "providerObservedLowerBoundPerRun": 5686
     },
     "fullRerun": {
-      "symbols": 5814,
-      "estimatedRequests": 5817,
-      "estimatedRuntimeMinutes": 57.4,
-      "estimatedDownloadMB": 4267.5,
+      "symbols": 5821,
+      "estimatedRequests": 5824,
+      "estimatedRuntimeMinutes": 57.5,
+      "estimatedDownloadMB": 4272.6,
       "necessary": false,
       "reason": "Die vorhandenen Historien liegen in der Arbeitsablage und sind nach Titel getrennt. Ein Titel, der sich nicht geaendert hat, liefert dieselbe Reihe noch einmal - das ist kein Gewinn, sondern derselbe Verkehr."
     },
