@@ -66,4 +66,6 @@ Belegte Folgen:
 **Bewusst offen.**
 - Migration der Artefaktschlüssel auf `instrumentId`/Listing-Kennung (weiter eigenes Projekt, ISIN/FIGI/`permaTicker` sind 0 von 7.809 befüllt).
 - Das Panel-Universum bleibt „heutige Dateien plus V13-Ketten“; Intervalle aus dem Company Master ergänzen es, ersetzen aber keine vollständige Historie beendeter Titel. Eine Panel-Kette über einen Tickerwechsel hinweg (zwei Panel-Zeilen eines Emittenten zu einer Rendite verbinden) braucht Kurs- und Kapitalmaßnahmen-Belege und ist ein eigener Fachmodell-PR.
-- Der Builder (`model-portfolios.cjs`) befüllt `listing` noch nicht; das Register ist der Vertrag dafür.
+- **Panel-Kette über Tickerwechsel** wird nicht umgesetzt: Der Schattenbericht (`chainCandidates`) findet im heutigen Panel 0 Kandidaten (gleiche CIK, Intervalle höchstens 14 Tage getrennt). Ein Verbinden braucht Kurs- und Kapitalmaßnahmen-Belege und tritt erst mit beendeten Titeln auf; eigener Fachmodell-PR.
+
+**Builder (umgesetzt, opt-in `--listing` / `buildPanel({listing:true})`).** `model-portfolios.cjs` setzt `listing` aus dem Company Master, nur wenn Master-CIK und Bündel-CIK übereinstimmen (3 Widersprüche bleiben ohne `listing`). Vorher/Nachher auf dem Panel 2012–2026: 5165 von 5168 Titeln mit Intervall; 4789 von 4.239.872 Kurs-Titelwochen (0,11 %, 5 Titel) liegen außerhalb ihres Intervalls; Ø Universum 3117,0 → 3115,8; quality-compounder CAGR unverändert 2,92 %, momentum-leader 0,67 % → 0,95 % (Forschung, nicht zertifiziert). Einschalten ist eine Forschungsentscheidung für den nächsten Research-Lauf.
