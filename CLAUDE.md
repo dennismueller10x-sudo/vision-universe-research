@@ -11,6 +11,7 @@ Daten entstehen in GitHub-Actions-Läufen und werden nach `main` committet.
 - **Kein generiertes Artefakt von Hand ändern oder „mitbringen“.** Dateien unter `quant/data`, `discover/data`, `supertrader/data` und `social/data` gehören ihrem Erzeuger (`core/registry/domains.json`, Feld `producer`). Ein PR, der sie mitbringt, lässt Datenläufe in Konflikte laufen (`core-ci.yml` warnt). Ausnahme: ein Gate verlangt den Neubau (Discover-Reproduzierbarkeit, Währungsschulden-Register). Dann mit dem Erzeuger neu bauen, nie editieren.
 - **Identität nur über `core/identity.js`** (`securityIdForTicker`, `shardKey`, `matchKey`). Keine eigenen `"ref_" + ticker`-Bildungen (ADR-001).
 - **Eine Preiswahrheit (ADR-002):** Split-Faktoren aus `quant/engines/return-series.js#splitFactors`, veröffentlichte Schlüsse über `quant/engines/published-close.js`. Keine neue Ableitung daneben.
+- **UI-Schutz-Revisionen nummerieren (11.11.2026):** Die `UIP-R`-Nummer in `docs/quality/ui-protection-revisions.json` wird erst unmittelbar vor dem Merge vergeben, nach dem letzten Abgleich mit `main`, als nächste freie Nummer. Konflikt nur in dieser Datei: eigene Einträge ans Ende, neu nummerieren, Hashes neu rechnen; inhaltlich ändert sich nichts. Die Owner-Freigabe gilt weiter je Revision in der Sitzung, die sie schreibt.
 
 ## Vertragstests statt Pfad-Gates
 
