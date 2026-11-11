@@ -44,7 +44,7 @@ const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
 const Master = require(join(root, "quant", "engines", "company-master.js"));
-const Identity = require(join(root, "core", "identity.js"));
+const IssuerAlias = require(join(root, "core", "issuer-alias.js"));
 
 const argv = process.argv.slice(2);
 function arg(name, fallback) {
@@ -115,9 +115,9 @@ function main() {
   const cikMap = existsSync(cikMapFile) ? readJSON(cikMapFile) : { status: "ABSENT", byTicker: {} };
 
   /* Holding-Umgruendungen: die alte issuerId bleibt als Vorgaenger der
-     Nachfolgerin aufloesbar (core/identity.js#resolveIssuerId). */
+     Nachfolgerin aufloesbar (core/issuer-alias.js#resolveIssuerId). */
   const successorFile = join(root, "quant", "config", "sec-successor-issuers.json");
-  const aliases = existsSync(successorFile) ? Identity.issuerAliases(readJSON(successorFile)) : {};
+  const aliases = existsSync(successorFile) ? IssuerAlias.issuerAliases(readJSON(successorFile)) : {};
 
   /* ------------------------------------------------- CIK-Aufloesung (§3) */
   const issuers = new Map();
@@ -140,7 +140,7 @@ function main() {
     const rohSource = inst.cik ? (inst.cikSource || null) : (ausMap && ausMap.source);
     /* Holding-Umgruendung: zeigt die CIK auf einen Vorgaenger, gilt die
        Nachfolgerin (auch wenn die Instrumente noch vom Stand davor sind). */
-    const nachId = rohCik ? Identity.resolveIssuerId("iss_cik_" + rohCik, aliases) : null;
+    const nachId = rohCik ? IssuerAlias.resolveIssuerId("iss_cik_" + rohCik, aliases) : null;
     const gewechselt = !!rohCik && nachId !== "iss_cik_" + rohCik;
     const cik = gewechselt ? nachId.slice(8) : rohCik;
     const cikSource = gewechselt
@@ -205,7 +205,7 @@ function main() {
   for (const iss of issuers.values()) {
     const memberList = Array.from(iss.members).sort();
     const imProdukt = iss.inProductUniverse;
-    const vorgaenger = Identity.predecessorIssuerIds(iss.issuerId, aliases);
+    const vorgaenger = IssuerAlias.predecessorIssuerIds(iss.issuerId, aliases);
     rows.push({
       issuerId: iss.issuerId,
       cik: iss.cik,
