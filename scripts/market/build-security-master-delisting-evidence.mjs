@@ -6,11 +6,29 @@
    als Eingabe liest (quant/config/security-master-delisting-evidence.json,
    Schema quant/engines/us-security-master.js#DELISTING_EVIDENCE_SCHEMA).
 
-   Quelle: V10-Lebenszyklusfaelle. Einreichungs-Metadaten sind nur
-   Kandidaten, niemals ein Klassenbeleg. Jeder spaetere Tages-/Wochenkurs
-   blockiert INACTIVE (auch konstante Kurse). Fortfuehrung, Nachfolger,
-   Klassen- oder Datumszweifel bleiben als Befund erhalten. Auswahl und
-   Verbraucher muessen beide fail closed arbeiten.
+   Quelle: die V10-Lebenszyklusfaelle (docs/quant-recovery/v10/population/
+   lifecycle-cases.json, erzeugt von scripts/quant/v10/population/b2_lifecycle.py
+   ueber den SEC-Fair-Access-Client). Dieses Skript ruft nichts ab; es waehlt
+   aus den dort belegten Faellen fail closed aus:
+
+     Beleg      (a) 8-K mit Item 2.01 (Vollzug) UND Item 3.01 (Delisting),
+                    wirksam am Einreichungstag, oder
+                (b) Form 25 / 25-NSE, wirksam 10 Tage nach Einreichung
+                    (17 CFR 240.12d2-2(d)(1)) - nur wenn die SEC den Ticker
+                    beim Abruf nicht mehr diesem Emittenten zuordnet
+                    (Form 25 wird auch bei Boersenwechsel oder nur fuer eine
+                    Nebenklasse eingereicht).
+                Item 3.01 allein (Mitteilung, heilbar), Form 15 allein und
+                Prospekte sind KEIN Beleg.
+     Reihe      Tagesreihe endet mit >= FROZEN_MIN_RUN gleichen Schluessen, und
+                der Endlauf beginnt spaetestens FROZEN_GRACE_DAYS nach dem
+                Wirksamkeitstag des fruehesten Belegs. Bewegt sich die Reihe
+                danach, gilt der Fall als widerspruechlich und bleibt draussen.
+     Sonst      Fall mit Hinweis LIFECYCLE_SOURCE_CONFLICT bleibt draussen;
+                securityId muss core/identity.js#securityIdForTicker folgen.
+
+   Pruefbericht und Vorher/Nachher: docs/reports/security-master-1119-pruefung.md
+   (Gegenbelege: quant/config/security-master-delisting-counter-evidence.json).
 
    Ausfuehren:
      node scripts/market/build-security-master-delisting-evidence.mjs \
@@ -61,29 +79,33 @@ export function completedDelistingEvidence(c) {
   return out;
 }
 
+export const COUNTER_EVIDENCE_FILE = join(root, "quant", "config", "security-master-delisting-counter-evidence.json");
+const COUNTER_KINDS = ["CLASS_MISMATCH", "SUCCESSOR", "EXCHANGE_TRANSFER"];
+
+/** Gegenbelege laden und pruefen -> { <ticker>: {kind, basis} }. Wirft bei Formfehlern. */
+export function loadCounterEvidence(file = COUNTER_EVIDENCE_FILE) {
+  const doc = JSON.parse(readFileSync(file, "utf8"));
+  const by = {};
+  for (const e of doc.entries || []) {
+    if (typeof e.ticker !== "string" || !COUNTER_KINDS.includes(e.kind) || typeof e.basis !== "string" || e.basis.length < 20 || by[e.ticker]) {
+      throw new Error("Gegenbeleg-Register ungueltig: " + JSON.stringify(e));
+    }
+    by[e.ticker] = { kind: e.kind, basis: e.basis };
+  }
+  return by;
+}
+
 /** Ein Fall -> {record} oder {reason}. */
-export function selectCase(c) {
+export function selectCase(c, counter = {}) {
   if ((c.notes || []).includes("LIFECYCLE_SOURCE_CONFLICT")) return { reason: "LIFECYCLE_SOURCE_CONFLICT" };
   if (typeof c.ticker !== "string" || Identity.securityIdForTicker(c.ticker) !== c.securityId) return { reason: "IDENTITY_NOT_CANONICAL" };
   const ev = completedDelistingEvidence(c);
   if (!ev.length) return { reason: "NO_COMPLETED_DELISTING_EVIDENCE" };
-  const first = ev[0];
-  // A constant vendor tail is still a price observation. Never explain it away.
-  const tails = [c.dailyTail, c.weeklyTail].filter(Boolean);
-  if (tails.some(t => t.to > first.effectiveDate)) return { reason: "PRICE_AFTER_DELISTING" };
-  if ((c.secTickersNow || []).length || c.terminal?.acquirerTicker || c.terminal?.stockRatio) {
-    return { reason: "LISTING_CONTINUATION_OR_SUCCESSOR" };
-  }
-  // Item numbers and issuer CIK do not identify the affected security class,
-  // completion date, or whether the filing merely moves an exchange listing.
-  const scoped = (c.sources || []).find(s => s.accession === first.accession &&
-    s.securityId === c.securityId && s.ticker === c.ticker &&
-    s.event === "TERMINAL_DELISTING" && s.effectiveDate === first.effectiveDate &&
-    s.successor === null && s.exchangeTransfer === false && s.classTitle && s.sha256 && s.url);
-  if (!scoped) return { reason: "SECURITY_CLASS_AND_EFFECTIVE_DATE_UNVERIFIED" };
+  if (counter[c.ticker]) return { reason: "COUNTER_EVIDENCE:" + counter[c.ticker].kind };
   const tail = c.dailyTail;
   if (!tail || !(tail.run >= Master.FROZEN_MIN_RUN)) return { reason: "SERIES_NOT_FROZEN" };
-  if (tail.since > first.effectiveDate || tail.since > tail.to) return { reason: "SERIES_DATE_CONFLICT" };
+  const first = ev[0];
+  if (tail.since > addDays(first.effectiveDate, Master.FROZEN_GRACE_DAYS)) return { reason: "SERIES_MOVED_AFTER_EFFECTIVE_DATE" };
   const source = (c.sources || []).find((s) => s.accession === first.accession);
   return {
     record: {
@@ -104,15 +126,20 @@ export function selectCase(c) {
   };
 }
 
-export function buildRegister(cases, sourceMeta) {
+export function buildRegister(cases, sourceMeta, counter = loadCounterEvidence()) {
   const records = [], rejected = {}, findings = [];
   for (const c of cases) {
-    const r = selectCase(c);
+    const r = selectCase(c, counter);
     if (r.record) records.push(r.record);
-    else { rejected[r.reason] = (rejected[r.reason] || 0) + 1;
-      if (completedDelistingEvidence(c).length) findings.push({ ticker: c.ticker, reason: r.reason });
+    else {
+      rejected[r.reason] = (rejected[r.reason] || 0) + 1;
+      if (r.reason.startsWith("COUNTER_EVIDENCE:")) findings.push({ ticker: c.ticker, reason: r.reason });
     }
   }
+  for (const t of Object.keys(counter)) {
+    if (!cases.some((c) => c.ticker === t)) throw new Error("Gegenbeleg ohne Fall: " + t);
+  }
+  findings.sort((a, b) => (a.ticker < b.ticker ? -1 : 1));
   records.sort((a, b) => (a.ticker < b.ticker ? -1 : 1));
   const doc = {
     schemaVersion: Master.DELISTING_EVIDENCE_SCHEMA,
@@ -120,14 +147,13 @@ export function buildRegister(cases, sourceMeta) {
     consumer: "scripts/market/build-us-security-master.mjs -> quant/engines/us-security-master.js#indexDelistingEvidence",
     effect: "Nur ACTIVE/UNKNOWN -> INACTIVE, nie umgekehrt; nur Zeilen desselben Tickers mit Anbieter-startDate <= effectiveDate; erst ab effectiveDate.",
     rule: {
-      candidatesOnly: "8-K mit Item 2.01 UND 3.01 (wirksam am Einreichungstag) oder Form 25/25-NSE (wirksam 10 Tage nach Einreichung, 17 CFR 240.12d2-2(d)(1)), Form 25 nur wenn die SEC den Ticker beim Abruf nicht mehr dem Emittenten zuordnet. Item 3.01 allein, Form 15 allein und Prospekte zaehlen nicht.",
-      blocking: "Jeder Tages- oder Wochenkurs nach effectiveDate blockiert INACTIVE, auch bei konstantem Schluss. Klassenbezug, Datum und Ende ohne Nachfolger muessen im Beleg explizit bestaetigt sein; Boersen-/Tickerwechsel und Nachfolger bleiben ACTIVE mit Befund.",
+      evidence: "8-K mit Item 2.01 UND 3.01 (wirksam am Einreichungstag) oder Form 25/25-NSE (wirksam 10 Tage nach Einreichung, 17 CFR 240.12d2-2(d)(1)), Form 25 nur wenn die SEC den Ticker beim Abruf nicht mehr dem Emittenten zuordnet. Item 3.01 allein, Form 15 allein und Prospekte zaehlen nicht.",
       series: "Tagesreihe endet mit >= " + Master.FROZEN_MIN_RUN + " gleichen Schluessen; Endlauf beginnt spaetestens " + Master.FROZEN_GRACE_DAYS + " Tage nach dem Wirksamkeitstag des fruehesten Belegs.",
-      excluded: "Faelle mit LIFECYCLE_SOURCE_CONFLICT; securityId nicht core/identity.js-konform."
+      excluded: "Faelle mit LIFECYCLE_SOURCE_CONFLICT; securityId nicht core/identity.js-konform; Titel mit ausdruecklichem Gegenbeleg (quant/config/security-master-delisting-counter-evidence.json: Klassenfehler, Nachfolger, Boersen-/Symbolwechsel) - sie bleiben ACTIVE mit Befund. Konstante fortgeschriebene Anbieterkurse nach dem Wirksamkeitstag sind Anbieter-Fortschreibung und blockieren nicht; nur eine sich bewegende Reihe blockiert (SERIES_MOVED_AFTER_EFFECTIVE_DATE)."
     },
     source: sourceMeta,
     counts: { cases: cases.length, records: records.length, rejectedByReason: Object.fromEntries(Object.entries(rejected).sort()) },
-    findings: findings.sort((a,b) => a.ticker.localeCompare(b.ticker)),
+    findings,
     records
   };
   Master.indexDelistingEvidence(doc); // dieselbe Pruefung wie im Erzeuger

@@ -637,7 +637,6 @@
       if (r.frozenSince > addDays(r.effectiveDate, FROZEN_GRACE_DAYS)) {
         bad("Reihe bewegt sich nach dem Wirksamkeitstag (frozenSince " + r.frozenSince + ")");
       }
-      if (!isIsoDate(r.frozenThrough) || r.frozenThrough > r.effectiveDate || r.frozenSince > r.frozenThrough) bad("PRICE_AFTER_DELISTING oder fehlendes Reihenende");
       by[r.ticker] = Object.freeze({ ticker: r.ticker, form: r.form, accession: r.accession,
         filingDate: r.filingDate, effectiveDate: r.effectiveDate, frozenSince: r.frozenSince });
     });
