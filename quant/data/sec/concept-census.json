@@ -1,6 +1,6 @@
 {
   "schema": "sec-concept-census-1.0.0",
-  "generated_at_utc": "2026-11-10T15:09:15+00:00",
+  "generated_at_utc": "2026-11-11T09:55:55+00:00",
   "versions": {
     "census_logic": "1.1.0",
     "metric_registry": {
@@ -41,14 +41,14 @@
       "servesMetrics": [
         "total_debt"
       ],
-      "issuers": 374
+      "issuers": 373
     },
     {
       "concept": "ifrs-full:LongtermBorrowings",
       "servesMetrics": [
         "long_term_debt"
       ],
-      "issuers": 343
+      "issuers": 342
     }
   ],
   "unmapped": [
@@ -78,19 +78,19 @@
     },
     {
       "concept": "us-gaap:RepaymentsOfLongTermDebt",
-      "issuers": 2110
+      "issuers": 2111
     },
     {
       "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive",
-      "issuers": 2108
+      "issuers": 2109
     },
     {
       "concept": "us-gaap:PaymentsOfDebtIssuanceCosts",
-      "issuers": 2062
+      "issuers": 2064
     },
     {
       "concept": "us-gaap:ProceedsFromIssuanceOfLongTermDebt",
-      "issuers": 2027
+      "issuers": 2028
     },
     {
       "concept": "us-gaap:DebtInstrumentCarryingAmount",
@@ -98,7 +98,7 @@
     },
     {
       "concept": "us-gaap:LongTermDebtMaturitiesRepaymentsOfPrincipalAfterYearFive",
-      "issuers": 1755
+      "issuers": 1756
     },
     {
       "concept": "us-gaap:FinanceLeaseLiability",
@@ -114,7 +114,7 @@
     },
     {
       "concept": "us-gaap:FinanceLeaseRightOfUseAssetAmortization",
-      "issuers": 1442
+      "issuers": 1443
     },
     {
       "concept": "us-gaap:FinanceLeaseWeightedAverageDiscountRatePercent",
@@ -130,7 +130,7 @@
     },
     {
       "concept": "us-gaap:FinanceLeaseRightOfUseAsset",
-      "issuers": 1431
+      "issuers": 1432
     },
     {
       "concept": "us-gaap:FinanceLeaseLiabilityUndiscountedExcessAmount",
@@ -150,7 +150,7 @@
     },
     {
       "concept": "us-gaap:AvailableForSaleSecuritiesDebtSecurities",
-      "issuers": 1390
+      "issuers": 1391
     },
     {
       "concept": "us-gaap:FinanceLeaseLiabilityNoncurrent",
@@ -170,7 +170,7 @@
     },
     {
       "concept": "us-gaap:FinanceLeaseInterestExpense",
-      "issuers": 1322
+      "issuers": 1323
     }
   ],
   "slots": [
@@ -181,7 +181,7 @@
         "us-gaap:LongTermDebt",
         "ifrs-full:LongtermBorrowings"
       ],
-      "issuers": 3606
+      "issuers": 3605
     },
     {
       "slot": "ST",
@@ -209,7 +209,7 @@
         "us-gaap:DebtLongtermAndShorttermCombinedAmount",
         "ifrs-full:Borrowings"
       ],
-      "issuers": 900
+      "issuers": 899
     }
   ],
   "compositions": [
@@ -218,7 +218,7 @@
       "requires": [
         "COMBINED"
       ],
-      "issuers": 900,
+      "issuers": 899,
       "semantics": "Nur die gemeldete Sammelangabe. Der heutige Registry-Stand ohne Ableitung."
     },
     {
@@ -226,7 +226,7 @@
       "requires": [
         "COMBINED|LT+ST"
       ],
-      "issuers": 3050,
+      "issuers": 3049,
       "semantics": "Sammelangabe, sonst long_term_debt + short_term_debt. Das ist der heutige Zustand."
     },
     {
@@ -234,7 +234,7 @@
       "requires": [
         "LT"
       ],
-      "issuers": 3606,
+      "issuers": 3605,
       "semantics": "Nur die langfristige Schuld. Weitere Reichweite, aber eine ANDERE Kennzahl: kurzfristige Schulden fehlen darin, und das ist keine Abdeckungsluecke, sondern eine andere Aussage."
     },
     {
@@ -251,7 +251,7 @@
       "requires": [
         "COMBINED|LT+ST|FL"
       ],
-      "issuers": 3539,
+      "issuers": 3538,
       "semantics": "Wie heute, und wo das nicht traegt, ersatzweise Finanzierungsleasing allein. Zur Vollstaendigkeit gemessen; semantisch am wenigsten sauber."
     }
   ],
