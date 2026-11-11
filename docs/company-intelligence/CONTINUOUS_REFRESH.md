@@ -835,3 +835,26 @@ Der Sammel-Fehler `CONTINUOUS_REFRESH_FAILED (<Code>)` nutzt dieselbe Klassifika
 **Tests.** `observe-production.test.mjs` (Klassifikation), `observe-cli.test.mjs` (CLI-Zweig im Kindprozess mit Fake-R2: Exit 0/1/3, Log-Zeile,
 Verdrahtung `keyFor`/`--health`/`--same-generation-only`, Wiederholungs-Default 3 x 20 s, GOOD-Wechsel, Diagnose-Codes gegen die echten
 Fehlerformate des S3-Treibers; die Workflow-Snippets beider Workflows werden mit einem `node`-Stub tatsaechlich in bash ausgefuehrt).
+
+## Top-30 ohne Profil oder Finanzen (Prüfung 11.11.2026, Generation 432a05cc)
+
+Grundlage: Live-Vollumfang, Top-30 nach Marktkapitalisierung, dazu ausdrücklich XOM, UNH und SPCX. Das Profil-Modul erscheint nur mit einer geprüften
+deutschen Fassung in `company-intelligence/config/profile-reviewed-de.json`, die per Hash an der englischen Quelle in `company-profiles.json` hängt.
+
+**Entscheidung (Steuerung 11.11.2026):** Fehlende deutsche Fassungen für Titel mit gültiger 10-K-Quelle trägt Strang R wie die 2.830 vom 12.10. als
+`APPROVED`/`MODEL_ASSISTED_STATIC_PARAPHRASE` ein (neutral nach `docs/legal/WORTWAHL.md`, keine Bewertung, Hash an der Quelle); das ist keine
+Owner-Freigabe.
+
+| Titel | Ursache | Behoben |
+|---|---|---|
+| BRK.A/B, WMT, LLY, V, JNJ, PG, KO | gültige 10-K-Quelle, aber keine geprüfte deutsche Fassung | ja: 7 Fassungen eingetragen (`approved_copy` geprüft) |
+| COST | Parser: Überschrift „Item 1—Business“ (Geviertstrich) nicht erkannt; Satz „is principally engaged in the operation of membership warehouses“ nicht als Tätigkeit gewertet | ja (Code): zweiter, gelockerter Durchgang in `profiles.py`, nur wenn der unveränderte erste nichts findet; deutsche Fassung folgt, sobald der Refresh die Quelle schreibt |
+| UNH | aktueller 10-K (2026-03-02) wird schon heute korrekt gelesen; der frühere Fehlversuch ist ohne privaten Checkpoint nicht nachvollziehbar | Code nicht nötig; Parser-Version 1.0.21 stößt die Neuauswertung an; deutsche Fassung folgt nach dem Refresh |
+| CVX | Item 1 beschreibt nur die Holding („manages its investments in subsidiaries …“); Holding-/Tochter-Sätze sind absichtlich ausgeschlossen | nein (Absicht) |
+| GE | 10-K im Querverweis-Format; das Geschäft steht unter „ABOUT GE AEROSPACE“ mit Handelsname „GE Aerospace“ statt Item 1; strenge Identität ohne Markennamen | nein; offen für einen eigenen Parser-PR mit Vorher/Nachher |
+| SPCX | Space Exploration Technologies hat noch keinen Jahresbericht (nur S-1, 424B4, 10-Q) | nein (Quelldokument fehlt) |
+| XOM (Finanzen) | Identitätsbruch: Seit 01.07.2026 ist ExxonMobil Holdings Corp (CIK 0002115436) die börsennotierte Gesellschaft für XOM; der Security-Master führt noch CIK 0000034088 (`quant/data/sec/universe_resolution.json`, match false), daher keine Consumer-Fundamentals | nein: Änderung im Security-Master über dessen Erzeuger (Strang Quant/O), nicht in Company Intelligence |
+
+Der Parser-Durchgang ist rückwirkungsfrei: Vorher/Nachher auf 19 echten 10-Ks (COST, GE, CVX, UNH, XOM, KO, WMT, PG, LLY, V, JNJ, AAPL, MSFT,
+NVDA, JPM, BRK, AMZN, META, HD): 18 unverändert, nur COST wechselt von UNAVAILABLE zu AVAILABLE. Bestehende Beschreibungen und damit ihre geprüften
+deutschen Fassungen bleiben unverändert.
