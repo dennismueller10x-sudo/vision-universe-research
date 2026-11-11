@@ -1,3 +1,4 @@
+import {failureDetail} from './failure-detail.mjs';
 import {productionObservation} from './production-observation.mjs';
 import {observeProduction,codeOf} from './observe-production.mjs';
 /* Deterministic Actions runner. No AI, Git commits, universe discovery or secrets
@@ -185,6 +186,7 @@ export async function runRefresh(driver,{temporary,identityRoot,verification=fal
   await commitGood(driver,{namespace:consumerNamespace,payloadNamespace:result.payloadNamespace,manifest:result.manifest,health,inventory,expectedGood:good});
   report.published=true;report.retainedLastGood=false;report.publication={generation:result.generation,status:result.status,uploadedObjects:result.uploadedObjects,uploadedBytes:result.uploadedBytes,unchangedObjects:result.unchangedObjects};report.status='SUCCESS';report.failureStage=null;
  }catch(error){report.status='PIPELINE_FAILURE';report.failureStage=stage;report.failureCode=/^[A-Z0-9_:-]+$/.test(error.message)?error.message:'REFRESH_STAGE_FAILED';
+  if(!/^[A-Z0-9_:-]+$/.test(error.message))report.failureDetail=failureDetail(error);
   if(error.consumerDiagnostic)report.consumerDiagnostic=error.consumerDiagnostic;
   if(stage==='CANDIDATE_QA'&&existsSync(join(root,'candidate-qa.json')))report.candidateQA=json(join(root,'candidate-qa.json'));
  }
@@ -278,7 +280,7 @@ if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
    process.exitCode=await runObserve(args,driver);
   }else{
    const r=await runRefresh(driver,{temporary:arg('--temporary'),identityRoot:arg('--identity-root'),verification:args.includes('--verification'),universe:args.includes('--universe'),sourceAudit:args.includes('--source-audit'),network:!args.includes('--offline'),financial:args.includes('--financial'),runId:process.env.GITHUB_RUN_ID});
-   console.log(JSON.stringify({status:r.status,generation:r.consumerGeneration,published:r.published,failureStage:r.failureStage,failureCode:r.failureCode,
+   console.log(JSON.stringify({status:r.status,generation:r.consumerGeneration,published:r.published,failureStage:r.failureStage,failureCode:r.failureCode,failureDetail:r.failureDetail,
     restoredGeneration:r.restoredGeneration,newPrivateGeneration:r.newPrivateGeneration,freshRestoreVerified:r.freshRestoreVerified,
     checkpointSha256:r.certifiedBootstrap?.sha256,privateCompanies:r.certifiedBootstrap?.privateCompanies,
     runtimeSeconds:r.durationSeconds,sourcesChecked:r.sourcesChecked,publicRequests:r.publicRequests,secRequests:r.secRequests,
