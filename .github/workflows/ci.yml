@@ -561,7 +561,7 @@ jobs:
           cache: npm
           cache-dependency-path: landing/package-lock.json
       - run: npm ci --ignore-scripts
-      - run: node node_modules/playwright/cli.js install --with-deps chromium webkit
+      - run: bash scripts/ci/retry-cmd.sh node node_modules/playwright/cli.js install --with-deps chromium webkit
       - run: npm test
       - run: npm run test:edge
       - run: npm run test:browser
@@ -601,7 +601,7 @@ jobs:
       - name: Browser dependencies
         run: |
           npm install --prefix /tmp/research-access-qa --no-audit --no-fund playwright@1.57.0
-          /tmp/research-access-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+          bash scripts/ci/retry-cmd.sh /tmp/research-access-qa/node_modules/.bin/playwright install --with-deps chromium webkit
       - name: Password flow, no content flash and persistent shared access in Chromium and iPhone WebKit
         env:
           PLAYWRIGHT_PATH: /tmp/research-access-qa/node_modules/playwright
@@ -628,7 +628,7 @@ jobs:
       - name: Browser QA dependencies
         run: |
           npm install --prefix /tmp/screener-qa-deps --no-audit --no-fund playwright@1.56.1
-          node /tmp/screener-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+          bash scripts/ci/retry-cmd.sh node /tmp/screener-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
       # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
       # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
       - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
@@ -806,7 +806,7 @@ jobs:
       - name: Browser quality dependencies
         run: |
           npm install --prefix /tmp/discover-qa-deps --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
-          node /tmp/discover-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
+          bash scripts/ci/retry-cmd.sh node /tmp/discover-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
       # Offener Tab ueber ein Deployment (lazy.js + Release-Waechter, hinter der Sperre). Setzt den Quant-PR voraus
       # (quant/ui/release-guard.js, scripts/vu2/deploy-switch-lib.mjs); davor uebersprungen.
       - name: Deployment switch with an open tab
@@ -1473,7 +1473,7 @@ jobs:
       - name: Browser QA dependencies
         run: |
           npm install --prefix /tmp/supertrader-qa-deps --no-audit --no-fund playwright@1.56.1
-          node /tmp/supertrader-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+          bash scripts/ci/retry-cmd.sh node /tmp/supertrader-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
       # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
       # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
       - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
@@ -1531,7 +1531,7 @@ jobs:
       - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
         run: |
           npm install --prefix /tmp/tc-qa playwright@1.58.2 axe-core@4.10.3
-          /tmp/tc-qa/node_modules/.bin/playwright install --with-deps chromium
+          bash scripts/ci/retry-cmd.sh /tmp/tc-qa/node_modules/.bin/playwright install --with-deps chromium
       - name: Browser-Pruefung (390/1280 px, Hell/Dunkel, alle Ansichten)
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
@@ -1570,7 +1570,7 @@ jobs:
       - name: Install isolated browser test dependency
         run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
       - name: Install Chromium and WebKit
-        run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+        run: bash scripts/ci/retry-cmd.sh /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium webkit
       # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
       # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
       - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
@@ -1769,8 +1769,8 @@ jobs:
       - name: PostgreSQL-Client
         run: |
           set -euo pipefail
-          apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-client > /dev/null
+          bash scripts/ci/retry-cmd.sh apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive bash scripts/ci/retry-cmd.sh apt-get install -y -qq postgresql-client > /dev/null
           psql --version
       - name: Playwright (Chromium und WebKit liegen im Image)
         run: |

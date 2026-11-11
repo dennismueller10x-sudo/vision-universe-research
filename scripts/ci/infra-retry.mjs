@@ -25,17 +25,22 @@ async function main() {
   const { GITHUB_REPOSITORY: repo, GH_TOKEN: token, RUN_ID: runId, RUN_ATTEMPT: attempt } = process.env;
   if (Number(attempt) > 1) { console.log("Schon ein Wiederholungslauf: kein weiterer Retry."); return 0; }
   const jobs = (await (await api(`/repos/${repo}/actions/runs/${runId}/jobs?per_page=100`, token)).json()).jobs || [];
-  const rote = jobs.filter((j) => j.conclusion === "failure" || j.conclusion === "timed_out");
+  // "cancelled" zaehlt nur mit Infrastruktur-Signatur im Log (Zeitlimit durch haengende apt-/DNS-Abrufe); ein per Concurrency abgebrochener Job ohne Signatur wird ignoriert.
+  const rote = jobs.filter((j) => ["failure", "timed_out", "cancelled"].includes(j.conclusion));
   if (!rote.length) { console.log("Kein roter Job."); return 0; }
+  let belegt = 0;
   for (const j of rote) {
     const r = await api(`/repos/${repo}/actions/jobs/${j.id}/logs`, token);
     const log = r.ok ? await r.text() : "";
     const failedStep = (j.steps || []).find((s) => s.conclusion === "failure");
     // Ein Job ohne lesbares Log, aber mit rotem Setup-Schritt (vor dem eigentlichen Test), gilt als Infrastruktur.
     const setup = failedStep && /^(Set up job|Initialize containers|Run actions\/checkout|Post )/i.test(failedStep.name);
+    if (j.conclusion === "cancelled" && !istInfrastruktur(log)) { console.log(`Job "${j.name}": abgebrochen ohne Signatur, ignoriert.`); continue; }
     if (!istInfrastruktur(log) && !(log === "" && setup)) { console.log(`Job "${j.name}": echter Fehler, kein Retry.`); return 0; }
     console.log(`Job "${j.name}": Infrastruktur-Signatur.`);
+    belegt++;
   }
+  if (!belegt) { console.log("Keine Infrastruktur-Signatur belegt."); return 0; }
   const r = await api(`/repos/${repo}/actions/runs/${runId}/rerun-failed-jobs`, token, { method: "POST" });
   console.log(`rerun-failed-jobs: HTTP ${r.status}`);
   return r.ok ? 0 : 1;
