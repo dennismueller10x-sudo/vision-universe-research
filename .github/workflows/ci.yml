@@ -1864,8 +1864,15 @@ jobs:
         timeout-minutes: 8
         run: |
           set -euo pipefail
-          apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-client > /dev/null
+          # psql (apply-migrations.mjs) kommt nicht im Playwright-Image mit. apt mit kurzen Zeitlimits, bis zu 3 Versuchen;
+          # bei Spiegel-/DNS-Ausfall bricht der Schritt nach hoechstens 8 min ab (timeout-minutes), statt eine Stunde zu haengen.
+          apt_opts="-o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20"
+          for versuch in 1 2 3; do
+            # shellcheck disable=SC2086
+            if apt-get $apt_opts update -qq && DEBIAN_FRONTEND=noninteractive apt-get $apt_opts install -y -qq postgresql-client > /dev/null; then break; fi
+            [ "$versuch" -lt 3 ] || { echo "::error::postgresql-client nicht installierbar (apt)"; exit 1; }
+            echo "::warning::apt Versuch $versuch fehlgeschlagen, neuer Versuch"; sleep $((versuch * 20))
+          done
           psql --version
       - name: Playwright (Chromium und WebKit liegen im Image)
         run: |
