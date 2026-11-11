@@ -37,6 +37,28 @@ platform :ios do
     puts "Profil-Berechtigungen (Schluessel):"
     puts sh("/usr/bin/plutil -extract Entitlements xml1 -o - '#{profile_plist}' | grep '<key>' | sed 's/^[[:space:]]*//'", log: false)
 
+    # Push (TestFlight): Entitlement "production" statt "development" (Distributionsprofil). Fehlt Push im Profil, entfaellt es,
+    # sonst scheitert die Signierung; der Build laeuft dann ohne Push. Nur auf dem Runner, die Datei im Repo bleibt unveraendert.
+    entitlements = File.expand_path("../../ios/App/App/App.entitlements", __dir__)
+    if system("/usr/libexec/PlistBuddy -c 'Print :Entitlements:aps-environment' '#{profile_plist}' >/dev/null 2>&1")
+      sh("/usr/libexec/PlistBuddy -c 'Set :aps-environment production' '#{entitlements}'", log: false)
+    else
+      UI.important("Profil ohne aps-environment: Push-Entitlement entfaellt, Build ohne Push")
+      system("/usr/libexec/PlistBuddy -c 'Delete :aps-environment' '#{entitlements}' >/dev/null 2>&1")
+    end
+
+    # GoogleService-Info.plist (vom Workflow aus FIREBASE_IOS_PLIST geschrieben) als Bundle-Ressource einbinden; ohne Datei bleibt das Projekt unveraendert.
+    firebase_plist = File.expand_path("../../ios/App/App/GoogleService-Info.plist", __dir__)
+    if File.exist?(firebase_plist)
+      require "xcodeproj"
+      proj = Xcodeproj::Project.open(project)
+      group = proj.main_group.find_subpath("App", false)
+      ref = group.files.find { |f| f.path == "GoogleService-Info.plist" } || group.new_file("GoogleService-Info.plist")
+      proj.targets.find { |t| t.name == "App" }.resources_build_phase.add_file_reference(ref, true)
+      proj.save
+      puts "GoogleService-Info.plist als Ressource eingebunden"
+    end
+
     update_code_signing_settings(
       use_automatic_signing: false, path: project, team_id: team, targets: ["App"], profile_name: profile,
       code_sign_identity: identity, bundle_identifier: bundle_id

@@ -39,6 +39,7 @@ jobs:
       ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_PASSWORD }}
       VU_SUPABASE_URL: ${{ vars.VU_SUPABASE_URL }}                       # oeffentlich
       VU_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VU_SUPABASE_PUBLISHABLE_KEY }} # oeffentlich
+      FIREBASE_ANDROID_JSON: ${{ secrets.FIREBASE_ANDROID_JSON }}        # optional: Klartext von google-services.json; ohne bleibt der Build ohne Push
     steps:
       - uses: actions/checkout@v4
         with:
@@ -89,6 +90,17 @@ jobs:
           npm test
           npm run build:www
           ./node_modules/.bin/cap sync android
+      - name: Firebase-Konfiguration ablegen (optional, gibt keine Werte aus)
+        if: ${{ !inputs.preflight_only }}
+        run: |
+          set -euo pipefail
+          json=app/android/app/google-services.json
+          if [ -z "${FIREBASE_ANDROID_JSON:-}" ]; then echo "::warning::FIREBASE_ANDROID_JSON fehlt: Build laeuft ohne Push"; exit 0; fi
+          printf '%s' "$FIREBASE_ANDROID_JSON" > "$json"
+          if ! jq -e '.client[]?.client_info.android_client_info | select(.package_name == "de.visionuniverse.app")' "$json" >/dev/null 2>&1; then
+            rm -f "$json"; echo "::warning::FIREBASE_ANDROID_JSON ist keine gueltige Datei fuer de.visionuniverse.app: Build laeuft ohne Push"; exit 0
+          fi
+          echo "google-services.json abgelegt (Push-Konfiguration vorhanden)."
       - name: Signiertes Bundle bauen
         if: ${{ !inputs.preflight_only }}
         working-directory: app/android

@@ -42,6 +42,7 @@ jobs:
       IOS_PROFILE_NAME: ${{ vars.IOS_PROFILE_NAME }}
       VU_SUPABASE_URL: ${{ vars.VU_SUPABASE_URL }}                       # oeffentlich
       VU_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VU_SUPABASE_PUBLISHABLE_KEY }} # oeffentlich
+      FIREBASE_IOS_PLIST: ${{ secrets.FIREBASE_IOS_PLIST }}              # optional: Klartext von GoogleService-Info.plist; ohne bleibt der Build ohne Push
     steps:
       - uses: actions/checkout@v4
         with:
@@ -73,6 +74,7 @@ jobs:
           [ "$(pl TeamIdentifier:0)" = "$APPLE_TEAM_ID" ] || { echo "::error::Team-ID im Profil weicht von APPLE_TEAM_ID ab"; exit 1; }
           [ "$(pl Entitlements:application-identifier)" = "$APPLE_TEAM_ID.$BUNDLE_ID" ] || { echo "::error::Profil gehoert nicht zur Bundle-ID $BUNDLE_ID"; exit 1; }
           pl ProvisionsAllDevices >/dev/null 2>&1 && { echo "::error::Profil ist ein Enterprise-Profil (nicht erwartet)"; exit 1; }
+          pl Entitlements:aps-environment >/dev/null 2>&1 || echo "::warning::Profil enthaelt kein Push (aps-environment): Build laeuft, aber ohne Push. Profil nach Aktivierung von Push Notifications fuer die App-ID neu erzeugen."
           pexp=$(pl ExpirationDate); echo "Zertifikat gueltig bis: $notafter"; echo "Profil gueltig bis: $pexp"
           # Passt das Zertifikat zum Profil? (SHA-1 des Zertifikats in der Liste des Profils)
           fp=$(openssl x509 -in "$RUNNER_TEMP/pre/c.pem" -noout -fingerprint -sha1 | cut -d= -f2 | tr -d ':')
@@ -115,6 +117,17 @@ jobs:
           chmod 600 "$RUNNER_TEMP"/sign/*
           echo "IOS_DIST_P12_PATH=$RUNNER_TEMP/sign/dist-compat.p12" >> "$GITHUB_ENV"
           echo "IOS_PROFILE_PATH=$RUNNER_TEMP/sign/app.mobileprovision" >> "$GITHUB_ENV"
+      - name: Firebase-Konfiguration ablegen (optional, gibt keine Werte aus)
+        if: ${{ !inputs.preflight_only }}
+        run: |
+          set -euo pipefail
+          plist=app/ios/App/App/GoogleService-Info.plist
+          if [ -z "${FIREBASE_IOS_PLIST:-}" ]; then echo "::warning::FIREBASE_IOS_PLIST fehlt: Build laeuft ohne Push"; exit 0; fi
+          printf '%s' "$FIREBASE_IOS_PLIST" > "$plist"
+          if ! plutil -lint "$plist" >/dev/null 2>&1 || [ "$(/usr/libexec/PlistBuddy -c 'Print :BUNDLE_ID' "$plist" 2>/dev/null || true)" != "de.visionuniverse.app" ]; then
+            rm -f "$plist"; echo "::warning::FIREBASE_IOS_PLIST ist keine gueltige Datei fuer de.visionuniverse.app: Build laeuft ohne Push"; exit 0
+          fi
+          echo "GoogleService-Info.plist abgelegt (Push-Konfiguration vorhanden)."
       - name: Archiv, Signierung und Upload zu TestFlight (fastlane, vorinstalliert)
         if: ${{ !inputs.preflight_only }}
         working-directory: app/ci
