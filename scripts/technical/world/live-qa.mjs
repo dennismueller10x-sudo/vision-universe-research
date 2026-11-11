@@ -101,6 +101,7 @@ if (!gated || gate) {
     timings.coldTemplateList = ms(t0);
     if (THROTTLE) await cdp.send("Network.setCacheDisabled", { cacheDisabled: false });
   });
+  /* Gewartet wird, bis die Segmentleiste auf die neue Vorlage zeigt; sonst liest der Test die Zaehler der vorigen Vorlage (Wettlauf). */
   /* Nutzerpfad: Liste lesen (3 s), dann die erste Vorlage antippen. Gemessen ab dem Antippen. */
   await page.waitForTimeout(3000);
   const ix = await page.evaluate(() => fetch("/technical/data/index-v1.json").then((r) => r.json())).catch(() => null);
@@ -115,7 +116,7 @@ if (!gated || gate) {
     await step("Vorlage " + t.id, async () => {
       const t0 = performance.now();
       await hashTo("#/vorlagen/" + t.id);
-      await page.waitForFunction((id) => location.hash.indexOf(id) >= 0 && document.querySelector(".tc-tpl-seg") && (document.querySelector(".tc-hits .tc-hit") || /Keine/.test(document.body.innerText)), t.id, { timeout: 120000 });
+      await page.waitForFunction((id) => location.hash.indexOf(id) >= 0 && [...document.querySelectorAll(".tc-tpl-seg a")].some((a) => (a.getAttribute("href") || "").indexOf("/" + id) >= 0) && (document.querySelector(".tc-hits .tc-hit") || /Keine/.test(document.body.innerText)), t.id, { timeout: 120000 });
       const dt = ms(t0);
       if (k === 0) timings.firstTemplateWithDataset = dt; else switchTimes.push(dt);
       row.ms = dt;
