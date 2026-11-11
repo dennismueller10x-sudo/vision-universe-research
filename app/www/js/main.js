@@ -4,6 +4,7 @@ import {createAuth, OFFLINE} from './auth.js';
 import {createApi} from './api.js';
 import {biometricStore, nativePreferences} from './biometric.js';
 import {createPush} from './push.js';
+import {startFlow, isNativeApp} from './start-flow.js';
 
 const $ = id => document.getElementById(id);
 // Startbild: wird nach dem Start ausgeblendet; zusaetzlich nach spaetestens 5 s, damit ein Fehler nie ein weisses Startbild stehen laesst.
@@ -19,7 +20,7 @@ await biometric?.init();
 const auth = createAuth({config, store: biometric || baseStore});
 const api = createApi({config, auth});
 const cap = globalThis.Capacitor;
-const native = Boolean(cap?.isNativePlatform?.());
+const native = isNativeApp();
 if (native) document.documentElement.classList.add('native');
 let gate = false;   // Anmelde-Bildschirm beim Start (nur nativ, nur ohne Sitzung)
 const push = createPush({plugin: n?.PushNotifications, api, platform: cap?.getPlatform?.(), preferences: n ? nativePreferences(n, 'vu.push.v1') : {get: async () => null, set: async () => {}}});
@@ -27,6 +28,7 @@ await push.init();
 let current = null;
 let pendingBack = null;
 let lastFrame = 'start';
+let returnTo = null;   // Frame-Ansicht, die die native Anmeldung geoeffnet hat (nach der Anmeldung dorthin zurueck)
 
 // ---- Native Randgeste (iOS, VUBridgeViewController) ------------------------
 // Die Shell reicht nur Navigationszustand und Haptik-Wuensche weiter; die Website im Iframe kann native Funktionen nie direkt rufen.
@@ -99,7 +101,7 @@ function show(name) {
   else panelState(name);
 }
 document.querySelectorAll('#tabs button, .back').forEach(b => b.addEventListener('click', () => show(b.dataset.view)));
-$('skip-login').addEventListener('click', () => { gate = false; show('start'); });
+$('skip-login').addEventListener('click', () => { gate = false; $('skip-login').hidden = true; show('start'); });
 
 // ---- Verbindung ----------------------------------------------------------
 function setOffline(off) { $('offline').hidden = !off; }
@@ -129,7 +131,8 @@ $('login').addEventListener('submit', async ev => {
       await biometric.choose(enabled).catch(() => { text('settings-state', 'Biometrie konnte nicht aktiviert werden.'); });
     }
     await push.resume().catch(() => { text('settings-state', 'Benachrichtigungen konnten nicht synchronisiert werden.'); }); renderAccount();
-    if (gate) { gate = false; show('start'); } }
+    if (gate) { gate = false; $('skip-login').hidden = true; show('start'); }                 // Tor: danach die Willkommensseite
+    else if (returnTo) { const back = returnTo; returnTo = null; show(back); } }             // von einer Webseite geschickt: dorthin zurueck
   catch (e) {
     err.textContent = {INVALID_CREDENTIALS: 'E-Mail oder Passwort stimmt nicht.', invalid_credentials: 'E-Mail oder Passwort stimmt nicht.',
       email_not_confirmed: 'Bitte zuerst die E-Mail-Adresse bestätigen.', [OFFLINE]: 'Keine Verbindung. Bitte später erneut versuchen.',
@@ -138,7 +141,8 @@ $('login').addEventListener('submit', async ev => {
   }
 });
 $('logout').addEventListener('click', async () => { try { await push.disable(); } catch { /* Serverbereinigung beim naechsten Anmelden wiederholen. */ }
-  await auth.signOut(); renderAccount(); renderWatchlist(null); });
+  await auth.signOut(); renderWatchlist(null);
+  if (native) { gate = true; returnTo = null; $('skip-login').hidden = false; show('account'); } else renderAccount(); });   // Abmelden: zurueck zur Maske
 $('biometric-enabled').addEventListener('change', async ev => {
   try { await biometric.choose(ev.target.checked); } catch { ev.target.checked = biometric.enabled(); }
 });
@@ -178,17 +182,14 @@ async function loadWatchlist() {
 // ---- Start ---------------------------------------------------------------
 $('config-missing').hidden = config.configured;
 (async () => {
-  show('start');
+  // Erst die Sitzung klaeren (Face ID/Keychain), dann die erste Ansicht: ohne Sitzung die native Maske, sonst /willkommen/.
+  const start = await startFlow({native, auth, biometricEnabled: Boolean(biometric?.enabled())});
+  gate = start.gate;
+  if (gate) $('skip-login').hidden = false;   // "Spaeter anmelden" fuehrt auf die Willkommensseite ohne Konto
+  show(start.view);
   hideSplash();
-  // Ohne Biometrie wie vor E4: ein haengender Speicher blockiert den Start nicht. Mit Biometrie: Pruefung und Refresh abwarten.
-  try {
-    if (biometric?.enabled()) await auth.restore({forceRefresh: true});
-    else await Promise.race([auth.restore(), new Promise(resolve => setTimeout(resolve, 4000))]);
-  } catch { /* ohne gespeicherte Sitzung weiter */ }
   restoreDone();
-  if (auth.state().signedIn) await push.resume().catch(() => {});
-  // Ohne Sitzung zuerst die Anmeldung anbieten (die App hat keine eigene Leiste mehr); "Spaeter anmelden" fuehrt in die App.
-  if (native && !auth.state().signedIn && current === 'start') { gate = true; $('skip-login').hidden = false; show('account'); }
+  if (start.signedIn) await push.resume().catch(() => {});
   if (native) {
     const n = globalThis.VUNative || {};
     hideSplash();
@@ -197,7 +198,7 @@ $('config-missing').hidden = config.configured;
     addEventListener('message', event => {
       const frame = $('v-' + current)?.querySelector('iframe');
       if (event.origin !== config.contentOrigin || event.source !== frame?.contentWindow || event.data?.type !== 'vu:open') return;
-      if (event.data.view === 'account' || event.data.view === 'watchlist') show(event.data.view);
+      if (event.data.view === 'account' || event.data.view === 'watchlist') { if (event.data.view === 'account' && current !== 'account' && isFrameView(current)) returnTo = current; show(event.data.view); }
     });
     addEventListener('message', event => {
       const frame = $('v-' + current)?.querySelector('iframe');

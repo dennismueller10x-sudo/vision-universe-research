@@ -9,7 +9,7 @@ const gestures = fs.readFileSync(new URL('../../assets/vu-gestures.js', import.m
 
 test('Startansicht der App-Hülle ist /willkommen/', () => {
   assert.match(html, /<section id="v-start" class="view frame-view" data-path="\/willkommen\/"/);
-  assert.match(main, /\n  show\('start'\);\n  hideSplash\(\);/, 'erste Ansicht beim Start');
+  assert.match(main, /show\(start\.view\);\n  hideSplash\(\);/, 'erste Ansicht beim Start (start = Willkommensseite, ohne Sitzung die Maske)');
   assert.match(main, /let lastFrame = 'start';/);
   assert.doesNotMatch(main, /show\('discover'\)/, 'kein Rückfall auf Discover');
   for (const m of html.matchAll(/data-view="([a-z]+)"/g)) assert.ok(html.includes(`id="v-${m[1]}"`), 'Ansicht fehlt: ' + m[1]);

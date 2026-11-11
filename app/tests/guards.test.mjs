@@ -190,8 +190,10 @@ test('Shell: das native Bundle wird vom richtigen Pfad geladen und das Startbild
   const target = path.resolve(app, 'www/js', m[1]);
   assert.equal(target, path.join(app, 'www/vendor/native.js'), 'Pfad ist relativ zu www/js/main.js');
   assert.match(main, /setTimeout\(hideSplash, 5000\)/, 'Startbild verschwindet spaetestens nach 5 s');
-  assert.match(main, /Promise\.race\(\[auth\.restore\(\)/, 'ein haengender Speicher blockiert den Start nicht');
-  assert.match(main, /if \(biometric\?\.enabled\(\)\) await auth\.restore\(\{forceRefresh: true\}\)/, 'nur mit Biometrie: Pruefung und Refresh vor Sitzungsfreigabe abwarten');
+  const flow = read(path.join(app, 'www/js/start-flow.js'));   // Startablauf liegt in start-flow.js (Test: start-flow.test.mjs)
+  assert.match(main, /startFlow\(\{native, auth, biometricEnabled: Boolean\(biometric\?\.enabled\(\)\)\}\)/);
+  assert.match(flow, /Promise\.race\(\[auth\.restore\(\)/, 'ein haengender Speicher blockiert den Start nicht');
+  assert.match(flow, /if \(biometricEnabled\) await auth\.restore\(\{forceRefresh: true\}\)/, 'nur mit Biometrie: Pruefung und Refresh vor Sitzungsfreigabe abwarten');
 });
 
 test('iOS: Mindestversion mindestens 15.0 (Apple verlangt ab April 2027 iOS 15, Warnung ITMS-90068)', () => {
