@@ -10,17 +10,17 @@
     },
     "eligibilityFlips": {
       "total": 238,
-      "approvable": 228,
-      "notApprovable": 10,
+      "approvable": 234,
+      "notApprovable": 4,
       "byClass": {
-        "CAUSED_BY:Deaktivierung=freigabefähig": 228,
-        "CAUSED_BY:Deaktivierung=nicht": 10
+        "CAUSED_BY:Deaktivierung=freigabefähig": 234,
+        "CAUSED_BY:Deaktivierung=nicht": 4
       }
     },
     "deactivations": {
       "total": 392,
-      "approvable": 382,
-      "notApprovable": 10,
+      "approvable": 388,
+      "notApprovable": 4,
       "byClass": {
         "PROVIDER_ENDDATE_RESTATED": 388,
         "PROVIDER_ENDDATE_AGED": 4
@@ -303,8 +303,8 @@
         "from": true,
         "to": false,
         "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig)",
+        "approvable": true,
+        "reason": "Folge von Deaktivierung (freigabefähig)",
         "provider": "prev [NASDAQ:1996-06-21..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:1996-06-21..2026-11-10 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -779,8 +779,8 @@
         "from": true,
         "to": false,
         "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig)",
+        "approvable": true,
+        "reason": "Folge von Deaktivierung (freigabefähig)",
         "provider": "prev [NYSE:2001-02-27..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NYSE:2001-02-27..2021-03-08 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -1815,8 +1815,8 @@
         "from": true,
         "to": false,
         "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig)",
+        "approvable": true,
+        "reason": "Folge von Deaktivierung (freigabefähig)",
         "provider": "prev [NASDAQ:2019-06-28..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2019-06-28..2024-04-01 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -2207,8 +2207,8 @@
         "from": true,
         "to": false,
         "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig)",
+        "approvable": true,
+        "reason": "Folge von Deaktivierung (freigabefähig)",
         "provider": "prev [NASDAQ:1990-03-26..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:1990-03-26..2024-07-08 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -2781,8 +2781,8 @@
         "from": true,
         "to": false,
         "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig)",
+        "approvable": true,
+        "reason": "Folge von Deaktivierung (freigabefähig)",
         "provider": "prev [NASDAQ:2001-03-09..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2001-03-09..2024-01-09 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -2907,8 +2907,8 @@
         "from": true,
         "to": false,
         "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "Folge von Deaktivierung (PROVIDER_ENDDATE_RESTATED, nicht freigabefähig)",
+        "approvable": true,
+        "reason": "Folge von Deaktivierung (freigabefähig)",
         "provider": "prev [NASDAQ:2012-04-19..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2012-04-19..2024-09-04 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -3943,8 +3943,8 @@
         "ticker": "ANSS",
         "seriesEnd": "2026-11-10",
         "class": "PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "ausdrücklich ausgewiesen, nicht freigegeben: letzter Kurs 374.3 USD (>= 100), Anbieter-Ende 2026-11-10; SEC geprueft: 2024-01-16 425; 2025-07-17 425; 2025-07-17 8-K:1.02,2.01,3.01,3.03,5.01,5.02,5.03,9.01; 2025-07-29 15-12G",
+        "approvable": true,
+        "reason": "Anbieter meldet als letztes Handelsdatum 2026-11-10 (älter als 30 Tage)",
         "provider": "prev [NASDAQ:1996-06-21..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:1996-06-21..2026-11-10 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -5060,8 +5060,8 @@
         "ticker": "CEO",
         "seriesEnd": "2026-11-06",
         "class": "PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "ausdrücklich ausgewiesen, nicht freigegeben: letzter Kurs 121.76 USD (>= 100), Anbieter-Ende 2021-03-08; keine SEC-Pruefung moeglich (keine CIK im Ticker-Verzeichnis)",
+        "approvable": true,
+        "reason": "Anbieter meldet als letztes Handelsdatum 2021-03-08 (älter als 30 Tage); eigene Tagesreihe (discover-series) nach dem Anbieter-Ende 2021-03-08 konstant bis 2026-11-06 (Anbieter-Fortschreibung, Kurse ab dem Ende gelten nicht)",
         "provider": "prev [NYSE:2001-02-27..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NYSE:2001-02-27..2021-03-08 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -7419,8 +7419,8 @@
         "ticker": "KRTX",
         "seriesEnd": "2026-11-06",
         "class": "PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "ausdrücklich ausgewiesen, nicht freigegeben: letzter Kurs 329.83 USD (>= 100), Anbieter-Ende 2024-04-01; keine SEC-Pruefung moeglich (keine CIK im Ticker-Verzeichnis)",
+        "approvable": true,
+        "reason": "Anbieter meldet als letztes Handelsdatum 2024-04-01 (älter als 30 Tage); eigene Tagesreihe (discover-series) nach dem Anbieter-Ende 2024-04-01 konstant bis 2026-11-06 (Anbieter-Fortschreibung, Kurse ab dem Ende gelten nicht)",
         "provider": "prev [NASDAQ:2019-06-28..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2019-06-28..2024-04-01 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -8273,8 +8273,8 @@
         "ticker": "NWLI",
         "seriesEnd": "2026-11-06",
         "class": "PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "ausdrücklich ausgewiesen, nicht freigegeben: letzter Kurs 499.98 USD (>= 100), Anbieter-Ende 2024-07-08; keine SEC-Pruefung moeglich (keine CIK im Ticker-Verzeichnis)",
+        "approvable": true,
+        "reason": "Anbieter meldet als letztes Handelsdatum 2024-07-08 (älter als 30 Tage); eigene Tagesreihe (discover-series) nach dem Anbieter-Ende 2024-07-08 konstant bis 2026-11-06 (Anbieter-Fortschreibung, Kurse ab dem Ende gelten nicht)",
         "provider": "prev [NASDAQ:1990-03-26..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:1990-03-26..2024-07-08 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -9077,7 +9077,7 @@
         "seriesEnd": "2026-10-05",
         "class": "PROVIDER_ENDDATE_AGED",
         "approvable": false,
-        "reason": "ausdrücklich ausgewiesen, nicht freigegeben: letzter Kurs 114.17 USD (>= 100), Anbieter-Ende 2026-10-05; SEC geprueft: 2025-10-28 425; 2026-10-05 25-NSE; 2026-10-05 8-K:1.02,2.01,3.01,3.03,5.01,5.02,5.03,9.01; 2026-10-15 15-12G",
+        "reason": "ausdrücklich ausgewiesen, nicht freigegeben: letzter Kurs 114.17 USD (>= 100), Anbieter-Ende 2026-10-05; SEC-Beleg vollstaendig (Form 25-NSE und 8-K 2.01/3.01 vom 2026-10-05, Form 15-12G vom 2026-10-15), auf Anweisung der Steuerung zunaechst zurueckgehalten",
         "provider": "prev [NASDAQ:2015-01-02..2026-10-05 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2015-01-02..2026-10-05 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -9533,8 +9533,8 @@
         "ticker": "SGEN",
         "seriesEnd": "2026-11-06",
         "class": "PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "ausdrücklich ausgewiesen, nicht freigegeben: letzter Kurs 228.74 USD (>= 100), Anbieter-Ende 2024-01-09; keine SEC-Pruefung moeglich (keine CIK im Ticker-Verzeichnis)",
+        "approvable": true,
+        "reason": "Anbieter meldet als letztes Handelsdatum 2024-01-09 (älter als 30 Tage); eigene Tagesreihe (discover-series) nach dem Anbieter-Ende 2024-01-09 konstant bis 2026-11-06 (Anbieter-Fortschreibung, Kurse ab dem Ende gelten nicht)",
         "provider": "prev [NASDAQ:2001-03-09..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2001-03-09..2024-01-09 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -9739,8 +9739,8 @@
         "ticker": "SPLK",
         "seriesEnd": "2026-11-06",
         "class": "PROVIDER_ENDDATE_RESTATED",
-        "approvable": false,
-        "reason": "ausdrücklich ausgewiesen, nicht freigegeben: letzter Kurs 156.9 USD (>= 100), Anbieter-Ende 2024-09-04; keine SEC-Pruefung moeglich (keine CIK im Ticker-Verzeichnis)",
+        "approvable": true,
+        "reason": "Anbieter meldet als letztes Handelsdatum 2024-09-04 (älter als 30 Tage); eigene Tagesreihe (discover-series) nach dem Anbieter-Ende 2024-09-04 konstant bis 2026-11-06 (Anbieter-Fortschreibung, Kurse ab dem Ende gelten nicht)",
         "provider": "prev [NASDAQ:2012-04-19..2026-11-03 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2012-04-19..2024-09-04 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",

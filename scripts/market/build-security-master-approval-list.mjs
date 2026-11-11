@@ -242,7 +242,7 @@ export function applyRenameContinuation(c, P, N, secBy) {
 }
 
 /** Kern (rein): Klassierung aller vom Gate gezählten Änderungen und Freigabeliste 1.1.0. */
-export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nextNames = null, baseApproval = null, sec = null, secAsOf = null, secSha256 = null, register = null, registerRef = null, runId = null, gateReport = null, acceptDuplicates = [], seriesEnd = () => null, canonicalEvidence = null, canonicalEvidenceRef = null, seriesMovedAfter = null, hold = null }) {
+export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nextNames = null, baseApproval = null, sec = null, secAsOf = null, secSha256 = null, register = null, registerRef = null, runId = null, gateReport = null, acceptDuplicates = [], seriesEnd = () => null, canonicalEvidence = null, canonicalEvidenceRef = null, seriesMovedAfter = null, hold = null, notes = null }) {
   const today = String(next.today || next.generatedAt || "").slice(0, 10), secBy = indexSec(sec);
   const reg = new Map((register?.records || []).map((r) => [r.securityId, r]));
   const cmp = compareMasters(prev, next), a = baselineIndex(prev), b = baselineIndex(next);
@@ -251,7 +251,8 @@ export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nex
   const provSrc = `tiingo supported_tickers.csv (${run}, sm-next/us-security-master.json gegen committeten Stamm ${prev.version})`;
   const secSrc = sec ? `sec company_tickers_exchange.json (${secAsOf || "Abrufdatum unbekannt"}${secSha256 ? `, sha256 ${secSha256.slice(0, 12)}` : ""})` : "SEC-Tickerliste nicht Teil dieses Laufs (Abgleich auf Börsenfortführung entfällt; Stichproben gegen data.sec.gov/submissions im PR)";
   const ev = (source, ref) => ({ source, ref });
-  const evProvSec = (c) => ev(`${provSrc}; ${secSrc}`, `${c.provider} | SEC: ${c.sec.ref}`);
+  const noteOf = (c) => (notes && c.ticker && notes.get(c.ticker) ? ` | Beleg: ${notes.get(c.ticker)}` : "");
+  const evProvSec = (c) => ev(`${provSrc}; ${secSrc}`, `${c.provider} | SEC: ${c.sec.ref}${noteOf(c)}`);
 
   const evIdx = indexCanonicalEvidence(canonicalEvidence), evUsed = new Map();
   const prevCikBy = new Map((prevNames?.rows || []).map((r) => [r.securityId, r.cik || null])), prevCikOf = (id) => prevCikBy.get(id) || null;
@@ -323,7 +324,7 @@ export function buildApprovalList({ prevBytes, prev, next, prevNames = null, nex
 
   const pickEntry = (x, evidence) => ({ securityId: x.securityId, from: x.from, to: x.to, evidence, class: x.class });
   const baseEv = ev("docs/data/security-master/v130-approved-changes.json (security-master-approved-changes-1.0.0, Owner P1/P3 28.10.2026)", "docs/data/security-master/v130-switch-evidence.json");
-  const derivedEv = (x) => x.class === "APPROVED_1_0_0" ? baseEv : ev(`${provSrc}; ${secSrc}`, `${x.reason} | ${x.provider || ""} | SEC: ${x.sec?.ref ?? "–"}`);
+  const derivedEv = (x) => x.class === "APPROVED_1_0_0" ? baseEv : ev(`${provSrc}; ${secSrc}`, `${x.reason} | ${x.provider || ""} | SEC: ${x.sec?.ref ?? "–"}${notes && notes.get(x.ticker) ? ` | Beleg: ${notes.get(x.ticker)}` : ""}`);
   const approval = {
     schema: APPROVED_CHANGES_SCHEMA_V11,
     purpose: `AUFHOLLAUF ${prev.version} → ${next.version}: exakt abgegrenzte, quellengebundene Freigabeliste; nur der Dispatch mit Sonderfreigabe wendet sie an`,
@@ -396,6 +397,12 @@ function main() {
         return false;
       } catch { return null; }
     },
+    ...(() => {
+      const f = arg("--evidence-notes");
+      if (!f) return {};
+      if (!existsSync(f)) throw new Error(`Belegnotizen fehlen: ${f}`);
+      return { notes: new Map(Object.entries(J(f))) };
+    })(),
     ...(() => {
       const f = arg("--hold-list");
       if (!f) return {};
