@@ -1,30 +1,30 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-11-10T23:38:46.936Z",
+  "generatedAt": "2026-11-11T07:43:50.053Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
-    "generatedAt": "2026-11-06T07:08:43.009Z",
+    "generatedAt": "2026-11-11T07:43:37.195Z",
     "total": 7803,
-    "productUniverse": 6308
+    "productUniverse": 6309
   },
   "sources": {
     "ingestStatus": "2026-11-10T23:35:09.133Z",
     "factors": "2026-11-10T23:37:10.553Z",
     "intradaySession": "2026-11-10",
-    "discover": "2026-11-10T23:38:43.076Z"
+    "discover": "2026-11-11T04:24:53.731Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
-    "productUniverse": 6308,
-    "activeEquities": 5422,
-    "tiingoResolved": 6307,
+    "productUniverse": 6309,
+    "activeEquities": 5220,
+    "tiingoResolved": 6308,
     "tiingoUnresolved": 1,
     "marketDataFetched": 6308,
     "historicalAvailable": 5714,
     "historicalQualityAccepted": 6306,
-    "intradayAvailable": 1410,
-    "liveCapable": 1353,
+    "intradayAvailable": 4798,
+    "liveCapable": 1403,
     "factorEligible": 6171,
     "fundamentals": 5417,
     "fundamentals10y": 2329,
@@ -36,18 +36,17 @@
     "providerMappingsMissing": 1
   },
   "gapReasons": {
-    "NO_INTRADAY_SNAPSHOT": 4852,
-    "NO_FUNDAMENTALS:NO_CIK": 768,
-    "NO_STOCK_PAGE": 608,
+    "NOT_IN_LIVE_SCOPE": 3395,
+    "NO_IEX_BARS": 1509,
+    "NO_FUNDAMENTALS:NO_CIK": 769,
+    "NO_STOCK_PAGE": 609,
     "INSUFFICIENT_HISTORY": 583,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 460,
+    "INACTIVE": 357,
     "NOT_TRADING:STALE_SERIES": 187,
     "NO_FACTOR_ROW:FAIL": 132,
-    "NO_DISCOVER_CARD": 128,
+    "NO_DISCOVER_CARD": 129,
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 123,
-    "INACTIVE": 93,
-    "NOT_IN_LIVE_SCOPE": 57,
-    "NO_IEX_BARS": 46,
     "NAME_MISSING": 27,
     "NO_COMPACT_SERIES": 9,
     "NOT_TRADING:DATA_QUALITY_REVIEW": 9,
@@ -55,8 +54,11 @@
     "NOT_CONSUMER_INSTRUMENT:UNIT": 7,
     "NO_FACTOR_ROW:SOURCE_MISSING": 5,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 4,
+    "NO_INTRADAY_SNAPSHOT": 2,
     "QUALITY_REJECTED:too_few_bars": 2,
-    "PROVIDER_MAPPING_MISSING": 1
+    "PROVIDER_MAPPING_MISSING": 1,
+    "NOT_INGESTED_YET": 1,
+    "NO_FACTOR_ROW:NO_MARKET_DATA": 1
   },
   "spotCheck": [
     {
@@ -266,7 +268,7 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
+        "HAS_INTRADAY": true,
         "HAS_LIVE": false,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
@@ -278,7 +280,7 @@
         "HAS_STOCK_PAGE": true
       },
       "gaps": [
-        "NO_INTRADAY_SNAPSHOT"
+        "NOT_IN_LIVE_SCOPE"
       ]
     },
     {
