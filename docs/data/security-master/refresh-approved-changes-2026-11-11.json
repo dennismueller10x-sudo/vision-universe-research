@@ -1746,6 +1746,16 @@
       "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_RESTATED"
     },
     {
+      "securityId": "ref_QRVO",
+      "from": true,
+      "to": false,
+      "evidence": {
+        "source": "tiingo supported_tickers.csv (Probelauf, sm-next/us-security-master.json gegen committeten Stamm us-security-master-1.3.0); SEC-Tickerliste nicht Teil dieses Laufs (Abgleich auf Börsenfortführung entfällt; Stichproben gegen data.sec.gov/submissions im PR)",
+        "ref": "Folge von Deaktivierung (freigabefähig) | prev [NASDAQ:2015-01-02..2026-10-05 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2015-01-02..2026-10-05 INACTIVE EQUITY_COMMON] | SEC: QRVO nicht gelistet"
+      },
+      "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_AGED"
+    },
+    {
       "securityId": "ref_RCFA",
       "from": true,
       "to": false,
@@ -5368,6 +5378,16 @@
       "class": "PROVIDER_ENDDATE_RESTATED"
     },
     {
+      "securityId": "ref_QRVO",
+      "from": "ACTIVE",
+      "to": "INACTIVE",
+      "evidence": {
+        "source": "tiingo supported_tickers.csv (Probelauf, sm-next/us-security-master.json gegen committeten Stamm us-security-master-1.3.0); SEC-Tickerliste nicht Teil dieses Laufs (Abgleich auf Börsenfortführung entfällt; Stichproben gegen data.sec.gov/submissions im PR)",
+        "ref": "prev [NASDAQ:2015-01-02..2026-10-05 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2015-01-02..2026-10-05 INACTIVE EQUITY_COMMON] | SEC: QRVO nicht gelistet | Beleg: SEC (CIK 1604778, Qorvo): Form 25-NSE und 8-K 1.02/2.01/3.01 vom 2026-10-05 (Vollzug), Form 15-12G vom 2026-10-15; Freigabe durch die Steuerung 11.11.2026"
+      },
+      "class": "PROVIDER_ENDDATE_AGED"
+    },
+    {
       "securityId": "ref_RCFA",
       "from": "ACTIVE",
       "to": "INACTIVE",
@@ -6250,13 +6270,13 @@
     },
     "eligibilityFlips": {
       "total": 238,
-      "approved": 234,
-      "notApproved": 4
+      "approved": 235,
+      "notApproved": 3
     },
     "deactivations": {
       "total": 392,
-      "approved": 388,
-      "notApproved": 4
+      "approved": 389,
+      "notApproved": 3
     },
     "canonicalIdChanges": {
       "total": 9,

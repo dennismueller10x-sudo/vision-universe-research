@@ -10,17 +10,17 @@
     },
     "eligibilityFlips": {
       "total": 238,
-      "approvable": 234,
-      "notApprovable": 4,
+      "approvable": 235,
+      "notApprovable": 3,
       "byClass": {
-        "CAUSED_BY:Deaktivierung=freigabefähig": 234,
-        "CAUSED_BY:Deaktivierung=nicht": 4
+        "CAUSED_BY:Deaktivierung=freigabefähig": 235,
+        "CAUSED_BY:Deaktivierung=nicht": 3
       }
     },
     "deactivations": {
       "total": 392,
-      "approvable": 388,
-      "notApprovable": 4,
+      "approvable": 389,
+      "notApprovable": 3,
       "byClass": {
         "PROVIDER_ENDDATE_RESTATED": 388,
         "PROVIDER_ENDDATE_AGED": 4
@@ -2487,8 +2487,8 @@
         "from": true,
         "to": false,
         "class": "CAUSED_BY:Deaktivierung=PROVIDER_ENDDATE_AGED",
-        "approvable": false,
-        "reason": "Folge von Deaktivierung (PROVIDER_ENDDATE_AGED, nicht freigabefähig)",
+        "approvable": true,
+        "reason": "Folge von Deaktivierung (freigabefähig)",
         "provider": "prev [NASDAQ:2015-01-02..2026-10-05 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2015-01-02..2026-10-05 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
@@ -9076,8 +9076,8 @@
         "ticker": "QRVO",
         "seriesEnd": "2026-10-05",
         "class": "PROVIDER_ENDDATE_AGED",
-        "approvable": false,
-        "reason": "ausdrücklich ausgewiesen, nicht freigegeben: letzter Kurs 114.17 USD (>= 100), Anbieter-Ende 2026-10-05; SEC-Beleg vollstaendig (Form 25-NSE und 8-K 2.01/3.01 vom 2026-10-05, Form 15-12G vom 2026-10-15), auf Anweisung der Steuerung zunaechst zurueckgehalten",
+        "approvable": true,
+        "reason": "Anbieter-Enddatum unverändert, inzwischen älter als 30 Tage (Schwelle des Erzeugers)",
         "provider": "prev [NASDAQ:2015-01-02..2026-10-05 ACTIVE EQUITY_COMMON geeignet] → next [NASDAQ:2015-01-02..2026-10-05 INACTIVE EQUITY_COMMON]",
         "sec": {
           "status": "CONSISTENT",
