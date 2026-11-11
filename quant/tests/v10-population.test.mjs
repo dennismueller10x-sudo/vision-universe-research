@@ -20,6 +20,8 @@ const FIVE=['ref_BGC','ref_COHR','ref_DCOM','ref_SGI','ref_TRAK'];
 // sha256(JSON.stringify(registry without the v10 extension)) on main a1a0dd972a: the five owner-approved 1.0.0 records stay byte-identical.
 const BASE_REGISTRY_SHA256='b471d52e7a903eb53048a4842db933ccc19f3f8802e705aabd963ad01bfd08b9';
 const V10=Identity.v10.records,LC=Lifecycle.records;
+// V10-Sätze, deren Mehrdeutigkeit im Produktstamm aufgelöst ist. Der V10-Satz selbst bleibt unverändert und ist bei der nächsten V10-Überarbeitung als "aufgelöst" zu bewerten (QUANT_FINAL_HANDOVER).
+const AMBIGUITY_RESOLVED={ref_INM:{ticker:'INM',cause:'HISTORICAL_ROW_DROPPED',droppedRow:'tiingo:NASDAQ:INM:2020-11-12',masterCommit:'39f2075',date:'2026-11-11'}};
 const FRAME={identityEvidence:true,identityEvidenceProtocolV10:true,corporateActionEvidence:true,listingLifecycleEvidence:true};
 const frozenRun=pts=>{let n=1;for(let i=pts.length-2;i>=0&&pts[i][1]===pts.at(-1)[1];i--)n++;return n;};
 // Evidence files (lifecycle cases, population frame) were derived from the long weekly series as of a fixed date. The
@@ -85,7 +87,13 @@ test('V10 identity bindings select the recorded master row on the sourced interv
  const L=R.createResearchLoader(root,{identityEvidence:true,identityEvidenceProtocolV10:true});
  let qualified=0;
  for(const rec of V10){
-  assert.throws(()=>A.createLoader(root)(rec.securityId),/^Error: AMBIGUOUS_LISTING_IDENTITY$/);
+  // Ausdrückliche, begründete Ausnahme (Steuerung 11.11.2026): genau die hier gelisteten Fälle sind im Produktstamm nicht mehr mehrdeutig; jeder weitere Fall bleibt ein Fehler.
+  const resolved=AMBIGUITY_RESOLVED[rec.securityId];
+  if(resolved){
+   const rows=JSON.parse(readFileSync(join(root,'quant/data/market/security-master/us-security-master.json'),'utf8')).rows.filter(r=>r.ticker===resolved.ticker);
+   assert.equal(rows.length,1,rec.securityId+': Ausnahme gilt nur, solange der Produktstamm genau eine Zeile führt ('+resolved.cause+', Stamm-Commit '+resolved.masterCommit+')');
+   assert.doesNotThrow(()=>A.createLoader(root)(rec.securityId));
+  } else assert.throws(()=>A.createLoader(root)(rec.securityId),/^Error: AMBIGUOUS_LISTING_IDENTITY$/);
   const o=outcome(()=>L(rec.securityId));
   // Ein Split nach dem Pruefstand rechnet die split-bereinigte Reihe rueckwirkend um: der Verlaufsschutz schlaegt dann zu Recht fehl (fail closed).
   // Zugelassen nur, wenn die Live-Reihe einen Split nach historyGuard.checkedTo belegt; jede andere Abweichung bleibt ein Fehler.
