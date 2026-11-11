@@ -118,6 +118,23 @@ class ProfileTests(unittest.TestCase):
         other = body.replace(b'Example Holdings Inc. operates as Example Aero (Example Aero or the Company)', b'Partners call the group Example Aero')
         self.assertEqual(extract(company, other, source, NOW)['state'], 'UNAVAILABLE')
 
+    def test_successor_issuer_keeps_predecessor_annual_report_only_via_register(self):
+        from company_intelligence.profiles import successor_predecessors
+        # ExxonMobil Holdings Corp (0002115436) succeeded Exxon Mobil Corporation (0000034088) on 2026-07-01;
+        # its last 10-K is still filed under the predecessor CIK.
+        self.assertIn('0000034088', successor_predecessors()['0002115436'])
+        old = 'https://www.sec.gov/Archives/edgar/data/34088/000003408826000012/xom-20251231.htm'
+        def profile(cid, url):
+            return {'schema': VERSION, 'state': 'AVAILABLE', 'companyId': cid, 'companyName': 'Exxon Mobil Corporation',
+                    'description': 'Exxon Mobil Corporation explores for and produces crude oil and natural gas.', 'confidence': 'HIGH',
+                    'lastVerifiedAt': NOW, 'businessActivities': [], 'productsServices': [], 'customerMarkets': [], 'majorSegments': [],
+                    'sources': [{'companyId': cid, 'type': 'SEC', 'url': url, 'form': '10-K', 'filedAt': '2026-02-18', 'contentHash': 'a' * 64}]}
+        self.assertIsNotNone(public_profile(profile('iss_cik_0002115436', old), 'iss_cik_0002115436', NOW))
+        self.assertIsNotNone(public_profile(profile('iss_cik_0000034088', old), 'iss_cik_0000034088', NOW))
+        # Not in the register: another issuer's archive path stays rejected.
+        self.assertIsNone(public_profile(profile(CID, old), CID, NOW))
+        self.assertIsNone(public_profile(profile('iss_cik_0002115436', old.replace('/34088/', '/12345/')), 'iss_cik_0002115436', NOW))
+
     def test_combined_registrant_report_requires_named_issuer_not_subsidiary_voice(self):
         source = annual_filing(COMPANY, submissions(), NOW)
         header = b'<ix:hidden><ix:nonNumeric name="dei:EntityRegistrantName">Example Holdings Inc.</ix:nonNumeric><ix:nonNumeric name="dei:EntityRegistrantName">Example Operating LLC</ix:nonNumeric></ix:hidden>'

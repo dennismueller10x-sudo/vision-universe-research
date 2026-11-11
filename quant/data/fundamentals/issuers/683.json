@@ -1113,9 +1113,9 @@
       "cik": "0002064683",
       "name": "Cohen Circle Acquisition Corp. II",
       "sic": "6770",
-      "rawFacts": 305,
-      "mappedFacts": 177,
-      "unmappedFacts": 148,
+      "rawFacts": 396,
+      "mappedFacts": 228,
+      "unmappedFacts": 191,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1127,9 +1127,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 7,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2024-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
@@ -1168,14 +1168,14 @@
         },
         "net_income": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1196,14 +1196,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -1226,43 +1226,44 @@
         }
       },
       "quality": {
-        "HIGH": 29
+        "HIGH": 33
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 29,
-        "resolvedValues": 29
+        "datableValues": 33,
+        "resolvedValues": 33
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 152,
+        "rules_version": "1.1.0",
+        "total": 195,
         "by_severity": {
-          "INFO": 148,
+          "INFO": 191,
           "WARNING": 4
         },
         "by_code": {
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 148
+          "UNKNOWN_CONCEPT": 191
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-087419",
-        "filing_date": "2026-08-11",
+        "accession": "0001213900-26-118032",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 5
+        "periodic_filings": 6,
+        "acceptance_datetime": "2026-11-10T21:15:30.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "aedf97db0f05da348c9cb0c7bba056af40d1110381d388aa2987ab2e3267adbf",
+      "sourceDigest": "1d80450cb00086f81e16ee42745ef43c0f03dcbf71d059317bae6e6fef5b5749",
       "issuerId": "iss_cik_0002064683"
     }
   ]

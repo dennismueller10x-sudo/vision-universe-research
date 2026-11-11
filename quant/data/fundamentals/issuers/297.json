@@ -473,9 +473,9 @@
       "cik": "0001787297",
       "name": "Passage BIO, Inc.",
       "sic": "2836",
-      "rawFacts": 5236,
-      "mappedFacts": 1769,
-      "unmappedFacts": 3590,
+      "rawFacts": 5430,
+      "mappedFacts": 1847,
+      "unmappedFacts": 3761,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -485,9 +485,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 31,
+      "quarterlyPeriods": 32,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
@@ -499,7 +499,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -526,14 +526,14 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -554,14 +554,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -584,44 +584,45 @@
         }
       },
       "quality": {
-        "HIGH": 176
+        "HIGH": 181
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 176,
-        "resolvedValues": 176
+        "datableValues": 181,
+        "resolvedValues": 181
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3646,
+        "rules_version": "1.1.0",
+        "total": 3798,
         "by_severity": {
-          "INFO": 3590,
-          "WARNING": 56
+          "INFO": 3761,
+          "WARNING": 37
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 25,
+          "CONCEPT_DISAGREEMENT": 6,
           "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 3590
+          "UNKNOWN_CONCEPT": 3761
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-093021",
-        "filing_date": "2026-08-10",
+        "accession": "0001104659-26-124783",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 26
+        "periodic_filings": 27,
+        "acceptance_datetime": "2026-11-10T12:16:02.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "923412dca70f5d24e38991406200bbf20706cd7f2a20268ce12c15bf63c96897",
+      "sourceDigest": "c577708e59b689681b20d6f35fd4df6f64c20e8f738f2ab77cab444b4154315b",
       "issuerId": "iss_cik_0001787297"
     },
     {

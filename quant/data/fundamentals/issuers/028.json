@@ -6,9 +6,9 @@
       "cik": "0001447028",
       "name": "Arbutus Biopharma Corp",
       "sic": "2834",
-      "rawFacts": 13612,
-      "mappedFacts": 4832,
-      "unmappedFacts": 9140,
+      "rawFacts": 13862,
+      "mappedFacts": 4933,
+      "unmappedFacts": 9401,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 59,
+      "quarterlyPeriods": 60,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 32,
+          "quarterlyPeriods": 33,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -117,49 +117,50 @@
         }
       },
       "quality": {
-        "HIGH": 481,
+        "HIGH": 488,
         "MEDIUM": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 497,
-        "resolvedValues": 497
+        "datableValues": 504,
+        "resolvedValues": 504
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 9273,
+        "rules_version": "1.1.0",
+        "total": 9537,
         "by_severity": {
-          "INFO": 9140,
+          "INFO": 9401,
           "ERROR": 1,
-          "WARNING": 132
+          "WARNING": 135
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 104,
+          "CONCEPT_DISAGREEMENT": 107,
           "EXTREME_VALUE": 2,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 24,
-          "UNKNOWN_CONCEPT": 9140
+          "UNKNOWN_CONCEPT": 9401
         }
       },
       "latestFiling": {
-        "accession": "0001447028-26-000045",
-        "filing_date": "2026-08-12",
+        "accession": "0001447028-26-000064",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 63
+        "periodic_filings": 64,
+        "acceptance_datetime": "2026-11-10T12:34:01.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "6a57fcb1aa26eafd010658f1f571adac006e9bdd3f2605504a4489ec2fed5c1e",
+      "sourceDigest": "03c0ad748f21c1cb0180d340ccc693476c91d4a75c6e58c8c5b927504e8691b2",
       "issuerId": "iss_cik_0001447028"
     },
     {

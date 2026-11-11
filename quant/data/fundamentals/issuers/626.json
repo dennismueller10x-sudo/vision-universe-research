@@ -158,9 +158,9 @@
       "cik": "0002022626",
       "name": "Upstream Bio, Inc.",
       "sic": "2834",
-      "rawFacts": 2165,
-      "mappedFacts": 671,
-      "unmappedFacts": 1507,
+      "rawFacts": 2445,
+      "mappedFacts": 768,
+      "unmappedFacts": 1709,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -170,28 +170,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -211,21 +211,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -239,14 +239,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -269,44 +269,45 @@
         }
       },
       "quality": {
-        "HIGH": 93,
+        "HIGH": 100,
         "MEDIUM": 6
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 99,
-        "resolvedValues": 99
+        "datableValues": 106,
+        "resolvedValues": 106
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1523,
+        "rules_version": "1.1.0",
+        "total": 1725,
         "by_severity": {
-          "INFO": 1507,
+          "INFO": 1709,
           "WARNING": 16
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 16,
-          "UNKNOWN_CONCEPT": 1507
+          "UNKNOWN_CONCEPT": 1709
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-343417",
-        "filing_date": "2026-08-11",
+        "accession": "0001193125-26-454422",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 8
+        "periodic_filings": 9,
+        "acceptance_datetime": "2026-11-10T12:10:34.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ee50be92af68d15593f94834c773f68fa3d61ad6b34db2047fbf81c5ae461f03",
+      "sourceDigest": "315cbadc32afd3f81af6377411b639dca4c178de166f8423a9b02f4b5ffe5f07",
       "issuerId": "iss_cik_0002022626"
     },
     {

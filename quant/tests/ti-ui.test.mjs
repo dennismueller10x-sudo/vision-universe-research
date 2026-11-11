@@ -72,7 +72,7 @@ test("UI-4 · Datenzugriff nur ueber erlaubte Pfade", async () => {
 test("UI-5 · Chart-Beschreibung fuer Screenreader nennt Zonen und Szenario-Charakter", () => {
   const g = {}; new Function("window", read("quant/ui/ti-chart.js"))(g);
   const d = g.VUTIChart.describe({ entryZone: { zoneLow: 10, zoneHigh: 11 }, targets: [{ zoneLow: 13, zoneHigh: 14 }], invalidation: { price: 9, direction: "below" } }, "$");
-  assert.match(d, /Schlüsselzone/); assert.match(d, /Zielbereich 1/); assert.match(d, /ungültig unter/); assert.match(d, /ohne Zeitangabe/);
+  assert.match(d, /Zone laut Methode/); assert.doesNotMatch(d, /Ziel/, "keine Ziele in der Oberfläche (Konzept Quant 2026-11, Entscheidung 5)"); assert.match(d, /ungültig unter/); assert.match(d, /ohne Zeitangabe/);
   assert.ok(read("quant/ui/ti-chart.js").includes("Szenario · keine Zeitangabe"));
   /* Datenvertrag v3: Pfad mit wachsendem Korridor aus overlays */
   const v = g.VUTIChart.viewOf({ scenarioKind: "ALTERNATIVE", overlays: { zones: [{ scenario: "ALTERNATIVE", kind: "ENTRY", low: 1, high: 2 }, { scenario: "PRIMARY", kind: "ENTRY", low: 5, high: 6 }], invalidations: [{ scenario: "ALTERNATIVE", price: 0.5, direction: "below" }], projectedPaths: [] } });

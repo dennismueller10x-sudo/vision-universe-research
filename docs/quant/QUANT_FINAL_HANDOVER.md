@@ -372,7 +372,7 @@ Eine zweite Engine oder Anwendung gibt es nicht. Die Seite liest nur den hashgeb
 | #1236 | NVDA-Browser-QA, versionierte UI-Sperre (Basis eingefroren) | Qualität | bereit, Owner-Freigabe |
 | #1240 | Freigabevorlage Security Master 1.3.0 (Liste am Lauftag neu) | H1 | Draft, Owner-Datum |
 | #1241 | V13-Archiv Generation 2.0.0 (Prüfung, neue Generation, unabhängige Wiederherstellung) | H3 | Draft, Owner-Freigabe |
-| #1119 | 132 SEC-Statuskorrekturen | H6 | zurückgestellt bis nach H1 |
+| #1119 | SEC-Delisting-Regel, nachgebessert (11.11.): QRTEB/TRINL (Emittenten- statt Klassenbeleg), FITBI (Börsenwechsel), SHLT (Kurse nach Delisting) an den Quelldaten bestätigt; Register jetzt 0 statt 133 Einträge, kein INACTIVE aus der SEC-Regel; die 132 Statuskorrekturen entfallen | H6 | Code und Register in eigenem PR; Stamm-Übernahme weiter nach H1 |
 | #1203 | Sitzungsübergaben 3.0.0–5.0.0 (historisch) | – | optional, nur Doku |
 
 **Arbeitsstände, die nie verloren gehen dürfen:**
