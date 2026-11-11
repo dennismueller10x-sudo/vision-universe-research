@@ -47,6 +47,7 @@ Veraltete Daten lösen einen Alarm aus und blockieren keinen Code-PR.
 
 - **Ein PR pro Ergebnis**, nicht pro Zwischenschritt. Keine neuen „Sitzungsübergabe x.0.0“-, „Nachtrag“- oder Versions-Dokumente; der Stand steht im Plan und im jeweiligen Produktdokument.
 - **Grüne CI genügt.** Code, Doku, interne Daten, Design und Umbauten werden ohne Owner-Freigabe gemergt.
+- **Auto-Merge ist Standard (11.11.2026):** Jeder PR bekommt nach dem Erstellen Auto-Merge (Squash, `enable_pr_auto_merge`). Das wirkt nur, wenn das Ruleset die Pflichtprüfung `ci-gate` verlangt (Sammel-Check `.github/workflows/ci-gate.yml`, läuft auf jedem PR und fasst alle ausgelösten Prüfungen zusammen; Owner-Klicks in [docs/operations/RUNBOOK.md](docs/operations/RUNBOOK.md)); ohne diese Pflichtprüfung mergt GitHub sofort. Rote Jobs mit Infrastruktur-Signatur (apt-DNS, Netz) startet `ci-retry.yml` einmal neu.
 - **Owner-Freigabe nur für vier Dinge:** Geld (Zahlungen, Checkout öffentlich, Käufe), Recht (Rechtstexte), öffentliche Aussagen über Rendite oder Performance, endgültiges Löschen von Daten.
 - **Entscheidungen, die bisher „Owner-Lesart“ hießen** (Regel-Lesarten, Varianten, Schwellen), trifft Claude nach der dokumentierten Empfehlung, schreibt sie in einen Satz ins Produktdokument und macht weiter.
 - **Backtests sind Forschung:** historische Läufe dürfen jetzt laufen und intern gezeigt werden, beschriftet „Forschung, nicht zertifiziert“. Zertifizierung ist ein späteres Etikett, keine Voraussetzung.
