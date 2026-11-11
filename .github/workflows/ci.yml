@@ -1601,17 +1601,26 @@ jobs:
     concurrency:
       group: technical-ci-${{ github.ref_name }}-akademie
       cancel-in-progress: true
+    # Browser aus dem Playwright-Image (wie `technical`), kein apt/playwright install.
     runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/tc-qa playwright@1.58.2 axe-core@4.10.3
-          /tmp/tc-qa/node_modules/.bin/playwright install --with-deps chromium
       - name: Strategie-Akademie (360/390/1280 px, Hell/Dunkel, alle 32 Lektionen)
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
