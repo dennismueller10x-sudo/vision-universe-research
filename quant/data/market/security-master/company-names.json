@@ -1,11 +1,11 @@
 {
  "version": "company-names-1.0.0",
- "generatedAt": "2026-11-11T07:22:00.698Z",
+ "generatedAt": "2026-11-11T07:43:43.041Z",
  "master": {
   "file": "quant/data/market/security-master/eligibility.json",
   "version": "us-security-master-1.3.0",
-  "sha256": "50465da8b6cf0caf1d7ac53fca29a88aa14b6bed635691d661e5c586386d44ee",
-  "productUniverse": 6308
+  "sha256": "8f7ddd4117343dd4bfebdba1ac7d1e8f2f61cf4e0ef1c9e7553f211846222415",
+  "productUniverse": 6309
  },
  "sourcePriority": [
   "TIINGO_METADATA",
@@ -19,23 +19,16 @@
   "membership": "Zeilen = Produktuniversum des Company Masters; diese Datei aendert keine Mitgliedschaft"
  },
  "stats": {
-  "sec": {
-   "entries": 10414,
-   "matched": 6297,
-   "unmatched": 1506,
-   "nyseAmericanAsNyse": 214,
-   "asOf": "2026-11-11",
-   "source": "https://www.sec.gov/files/company_tickers_exchange.json"
-  },
+  "sec": null,
   "tiingo": null
  },
  "counts": {
   "rows": 7803,
-  "productRows": 6308,
-  "resolved": 6281,
+  "productRows": 6309,
+  "resolved": 6282,
   "unresolved": 27,
   "bySource": {
-   "TIINGO_METADATA": 6080,
+   "TIINGO_METADATA": 6081,
    "SEC_COMPANY_TICKERS": 201
   },
   "conflicts": 187,
@@ -223509,13 +223502,13 @@
    "ticker": "WTIB",
    "exchange": "NYSE",
    "providerSymbol": "WTIB",
-   "inProductUniverse": false,
+   "inProductUniverse": true,
    "companyName": "USCF Oil Plus Bitcoin Strategy Fund",
    "displayName": "USCF Oil Plus Bitcoin Strategy Fund",
    "nameSource": "TIINGO_METADATA",
    "nameAsOf": "2026-09-14",
    "cik": null,
-   "status": "RESOLVED_OUTSIDE_PRODUCT",
+   "status": "RESOLVED",
    "reason": null,
    "nameConflict": null,
    "confirmedBy": null,
