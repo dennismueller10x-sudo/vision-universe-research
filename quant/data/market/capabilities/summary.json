@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-11-11T21:00:07.396Z",
+  "generatedAt": "2026-11-11T23:39:57.855Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -9,10 +9,10 @@
     "productUniverse": 6309
   },
   "sources": {
-    "ingestStatus": "2026-11-10T23:35:09.133Z",
-    "factors": "2026-11-10T23:37:10.553Z",
+    "ingestStatus": "2026-11-11T23:37:10.580Z",
+    "factors": "2026-11-11T23:38:21.639Z",
     "intradaySession": "2026-11-11",
-    "discover": "2026-11-11T10:04:20.172Z"
+    "discover": "2026-11-11T23:39:53.698Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -20,11 +20,11 @@
     "activeEquities": 5220,
     "tiingoResolved": 6308,
     "tiingoUnresolved": 1,
-    "marketDataFetched": 6308,
-    "historicalAvailable": 5714,
-    "historicalQualityAccepted": 6306,
+    "marketDataFetched": 6309,
+    "historicalAvailable": 5717,
+    "historicalQualityAccepted": 6307,
     "intradayAvailable": 1398,
-    "liveCapable": 1398,
+    "liveCapable": 1345,
     "factorEligible": 6171,
     "fundamentals": 5416,
     "fundamentals10y": 2330,
@@ -39,14 +39,15 @@
     "NO_INTRADAY_SNAPSHOT": 4856,
     "NO_FUNDAMENTALS:NO_CIK": 769,
     "NO_STOCK_PAGE": 609,
-    "INSUFFICIENT_HISTORY": 583,
+    "INSUFFICIENT_HISTORY": 581,
     "NOT_CONSUMER_INSTRUMENT:PREFERRED": 460,
     "INACTIVE": 357,
     "NOT_TRADING:STALE_SERIES": 187,
-    "NO_FACTOR_ROW:FAIL": 132,
+    "NO_FACTOR_ROW:FAIL": 133,
     "NO_DISCOVER_CARD": 129,
     "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 124,
     "NO_IEX_BARS": 55,
+    "NOT_IN_LIVE_SCOPE": 53,
     "NAME_MISSING": 27,
     "NO_COMPACT_SERIES": 9,
     "NOT_TRADING:DATA_QUALITY_REVIEW": 9,
@@ -55,9 +56,7 @@
     "NO_FACTOR_ROW:SOURCE_MISSING": 5,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 4,
     "QUALITY_REJECTED:too_few_bars": 2,
-    "PROVIDER_MAPPING_MISSING": 1,
-    "NOT_INGESTED_YET": 1,
-    "NO_FACTOR_ROW:NO_MARKET_DATA": 1
+    "PROVIDER_MAPPING_MISSING": 1
   },
   "spotCheck": [
     {
