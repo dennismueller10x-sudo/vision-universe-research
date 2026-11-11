@@ -136,3 +136,7 @@ Das Ruleset „Schutz vor Verlust“ gilt für `main` und die Datenzweige (`data
 Stattdessen merged die Sitzung ihren PR selbst, sobald `ci-gate` grün ist: `scripts/ci/wait-gate.sh <PR>` (Exit 0 = grün). `ci-gate` läuft auf jedem PR, wartet auf alle ausgelösten Prüfungen (übersprungen = ok, je Name zählt der neueste Lauf, nur GitHub-Actions-Jobs) und ist nur grün, wenn keine rot ist.
 Wer doch Auto-Merge will, braucht zuerst eine GitHub-App (Owner-Entscheidung): Datenläufe pushen mit deren Token (`actions/create-github-app-token`), die App kommt als Bypass-Akteur in ein eigenes Ruleset nur für den Default-Branch mit der Pflichtprüfung `ci-gate`. Das ist ein eigener Umbau aller Datenläufe, nicht Teil des Schnellwegs.
 Infrastrukturfehler (apt-DNS, Netz, Runner-Verlust) startet `ci-retry.yml` einmal selbst neu; echte Testfehler nicht.
+
+## 15. Schnellweg für kleine Oberflächenänderungen
+
+Ziel: Push bis live in rund 30 Minuten ohne Handarbeit. PR öffnen, `scripts/ci/wait-gate.sh <PR>` abwarten, bei Grün selbst squash-mergen (§14). Browser-Jobs laufen im Playwright-Image (kein apt, kein `playwright install`), `ci-retry.yml` startet Infrastrukturfehler einmal neu, die Shell-QA läuft in drei parallelen Jobs. Eine neue UI-Schutz-Revision ist eine eigene Datei in `docs/quality/ui-protection-revisions/` ohne Nummer, also ohne Konflikt bei bewegtem `main`. Echte Testfehler bleiben rot und werden repariert, nicht wiederholt.
