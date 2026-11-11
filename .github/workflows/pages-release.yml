@@ -159,7 +159,15 @@ jobs:
       ci_full_acceptance: ${{ steps.consumer_review.outputs.required }}
       indexnow: ${{ steps.indexnow.outputs.liste }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 11.11.2026: Browser aus dem Playwright-Image (= npm playwright@ im Production smoke) statt per apt-get; der apt-/DNS-Hang
+    # liess den Job ins Zeitlimit laufen. Smoke-Limit 15 -> 25 min (Runner-Last), die Pruefung selbst bleibt unveraendert.
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 25
     # Ein gescheiterter Datenlauf hat nichts veroeffentlicht (siehe
     # scripts/ci/push-with-retry.sh). Dann gibt es auch nichts zu bauen.
     if: >-
@@ -172,6 +180,8 @@ jobs:
           # Datenlauf STARTETE - nicht auf den, den er erzeugt hat. Der
           # frische Stand ist der Kopf von main.
           ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -325,7 +335,7 @@ jobs:
           # immer uebersprungen und der Start scheiterte am fehlenden
           # headless_shell. Deshalb wie in allen anderen Workflows dieses
           # Repositories: unbedingt installieren, mit der gepinnten CLI.
-          node scripts/company_intelligence/install-browser-deps.mjs /tmp/vu2-smoke/node_modules/.bin/playwright
+          # Chromium kommt aus dem Image (PLAYWRIGHT_BROWSERS_PATH), gleiche Version wie oben.
           NODE_PATH=/tmp/vu2-smoke/node_modules node scripts/vu2/production-smoke.mjs "$SITE_ROOT"
       # Ein Tab, der vor einem Release geoeffnet wurde, bleibt nach dem Wechsel benutzbar (Daten weg, Nachlade-Skript
       # getauscht, Eingabe laeuft, kein sessionStorage, veralteter Cache). Echter Code, echte Sperre, kleine Releases.
@@ -356,7 +366,8 @@ jobs:
           # bricht weiter ab.
           HEAD_SHA=$(git rev-parse HEAD)
           if [ "$EVENT_NAME" != "workflow_run" ] && [ "$HEAD_SHA" != "$EVENT_SHA" ]; then
-            STATUS=$(gh api "repos/$GITHUB_REPOSITORY/compare/$EVENT_SHA...$HEAD_SHA" --jq .status || echo unbekannt)
+            # gh fehlt im Playwright-Image: dieselbe Abfrage per curl.
+            STATUS=$(curl -fsS -H "authorization: Bearer $GH_TOKEN" -H "accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/compare/$EVENT_SHA...$HEAD_SHA" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).status))' || echo unbekannt)
             if [ "$STATUS" != "ahead" ]; then
               echo "CHECKOUT_COMMIT_MISMATCH: $HEAD_SHA != $EVENT_SHA (Vergleich: $STATUS)" >&2
               exit 1
