@@ -129,3 +129,10 @@ Jede Auslieferung trägt `/core/release-manifest.json` (ADR-008, [Entscheidung](
 Prüfen: `node scripts/core/system-health.mjs --site=https://research.visionuniverse.de` (Zeile „Ausgelieferte Generation“, JSON: `report.release`) oder `/status/`. Weicht `code.sha` vom erwarteten Commit ab, hat Pages ihn nicht übernommen (§7, Marker `pages-release-marker.yml`).
 Zwei Bauten mit gleichen Eingaben müssen denselben `payloadHash` haben; `core/tests/release-manifest.test.mjs` (RM) sichert das mit Fixtures und Gegenproben.
 Der Siegel-Schritt ist nie blockierend (continue-on-error, nur Warnung) und läuft vor dem Hochladen, sonst läge das Manifest nicht im Paket. Stand 10.11.2026: Manifest, Siegel-Schritt und Statuszeile umgesetzt; der Vergleich Live ↔ Kandidat (`comparePayload`) blockiert noch nicht, er benennt nur.
+
+## 14. Auto-Merge und Pflichtprüfung `ci-gate` (Owner-Klicks, einmalig)
+
+Ohne Pflichtprüfung mergt Auto-Merge sofort. Das Ruleset „Schutz vor Verlust“ hat nur `deletion` und `non_fast_forward`. Einrichten:
+GitHub → Repo → **Settings → Rules → Rulesets → „Schutz vor Verlust“** → unten **Add rule → „Require status checks to pass“** anhaken → **Add checks** → `ci-gate` eingeben und wählen (Quelle „GitHub Actions“) → **Save changes**. Nicht „Require branches to be up to date“ anhaken (erzwingt Neu-Läufe nach jedem main-Push). Nur `ci-gate` eintragen: er läuft immer und ist erst grün, wenn alle ausgelösten Prüfungen grün sind; Prüfungen, die der Pfadfilter überspringt, blockieren so nie.
+Zuerst muss `ci-gate.yml` auf main liegen (ein Check, der nie lief, lässt sich nicht auswählen). Zeigt das Ruleset „Target branches“ nur Default-Branch plus Datenzweige, gilt die Regel für `main` und lässt Datenzweige ungehindert (dort sind die Datenläufe).
+Infrastrukturfehler (apt-DNS, Netz, Runner-Verlust) startet `ci-retry.yml` einmal selbst neu; echte Testfehler nicht.

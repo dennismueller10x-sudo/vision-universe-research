@@ -238,6 +238,14 @@
    "bundle": "ci",
    "ausnahme": "Company Intelligence: Workflows bleiben auf Anweisung der Steuerung unangetastet (eigene Regressionsklassifikation, Freeze und Rollback)."
   },
+  "ci-gate.yml": {
+   "bundle": "ci",
+   "ausnahme": "Sammel-Check fuer die Pflichtpruefung im Ruleset: laeuft ohne Pfadfilter auf jedem PR und kann deshalb nicht Teil der pfadgefilterten Pruef-Matrix sein."
+  },
+  "ci-retry.yml": {
+   "bundle": "ci",
+   "ausnahme": "Reagiert per workflow_run auf rote Pruef-Laeufe und startet sie bei Infrastruktur-Signaturen einmal neu; ist selbst kein Pruef-Job der Matrix."
+  },
   "core-ci.yml": {
    "bundle": "ci",
    "ausnahme": "Heimat der Vertragstests (CLAUDE.md, Datenlauf-Warnung) mit eigenem taeglichen Live-Lauf auf dem Wecker-Takt; bleibt als eigener Pruef-Workflow sichtbar."
