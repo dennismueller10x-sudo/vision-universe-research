@@ -1681,9 +1681,9 @@
       "cik": "0002131524",
       "name": "Braveheart Bio, Inc.",
       "sic": "2834",
-      "rawFacts": 223,
-      "mappedFacts": 74,
-      "unmappedFacts": 148,
+      "rawFacts": 516,
+      "mappedFacts": 154,
+      "unmappedFacts": 364,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1693,28 +1693,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 6,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2024-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "eps_diluted": {
           "annualPeriods": 0,
           "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -1734,14 +1734,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1762,14 +1762,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1792,44 +1792,44 @@
         }
       },
       "quality": {
-        "HIGH": 16,
-        "MEDIUM": 1
+        "HIGH": 28
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 17,
-        "resolvedValues": 17
+        "datableValues": 28,
+        "resolvedValues": 28
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 153,
+        "rules_version": "1.1.0",
+        "total": 369,
         "by_severity": {
-          "INFO": 148,
+          "INFO": 364,
           "WARNING": 5
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 5,
-          "UNKNOWN_CONCEPT": 148
+          "UNKNOWN_CONCEPT": 364
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-060905",
-        "filing_date": "2026-09-08",
+        "accession": "0001628280-26-072709",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 1
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-11-10T21:06:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "755bb9ab0e540039236316babeea0f7dc18c6231abed9276b335adafc7a01b2a",
+      "sourceDigest": "0896c525eba40cbd6aa8bc9ccad2fc7a9ab506164ce5809aeff738466600f1f2",
       "issuerId": "iss_cik_0002131524"
     }
   ]

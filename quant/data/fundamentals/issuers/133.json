@@ -634,9 +634,9 @@
       "cik": "0001534133",
       "name": "CalciMedica, Inc.",
       "sic": "2834",
-      "rawFacts": 4744,
-      "mappedFacts": 1746,
-      "unmappedFacts": 3061,
+      "rawFacts": 4991,
+      "mappedFacts": 1840,
+      "unmappedFacts": 3249,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -646,28 +646,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 31,
+      "quarterlyPeriods": 32,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -687,14 +687,14 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -715,14 +715,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -745,45 +745,46 @@
         }
       },
       "quality": {
-        "HIGH": 192,
+        "HIGH": 198,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 200,
-        "resolvedValues": 200
+        "datableValues": 206,
+        "resolvedValues": 206
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3177,
+        "rules_version": "1.1.0",
+        "total": 3375,
         "by_severity": {
-          "INFO": 3061,
-          "WARNING": 116
+          "INFO": 3249,
+          "WARNING": 126
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 22,
-          "RESTATEMENT_CONFLICT": 94,
-          "UNKNOWN_CONCEPT": 3061
+          "RESTATEMENT_CONFLICT": 104,
+          "UNKNOWN_CONCEPT": 3249
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-344689",
-        "filing_date": "2026-08-11",
+        "accession": "0001193125-26-455490",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 27
+        "periodic_filings": 28,
+        "acceptance_datetime": "2026-11-10T21:15:36.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "5b197d770302587540a67e47937f7215f5791e29ecb8b24f3d3ee1183802a8ed",
+      "sourceDigest": "953bbb12873c09f6f5c130ca06e6c8c703dadad9fac5f4b09589f6a86634be0c",
       "issuerId": "iss_cik_0001534133"
     },
     {

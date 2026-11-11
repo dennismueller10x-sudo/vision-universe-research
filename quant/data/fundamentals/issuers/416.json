@@ -948,9 +948,9 @@
       "cik": "0001840416",
       "name": "Sono Group N.V.",
       "sic": "6199",
-      "rawFacts": 2782,
-      "mappedFacts": 736,
-      "unmappedFacts": 2115,
+      "rawFacts": 3134,
+      "mappedFacts": 815,
+      "unmappedFacts": 2380,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -960,9 +960,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 16,
+      "quarterlyPeriods": 17,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
@@ -974,7 +974,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -1001,21 +1001,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -1029,14 +1029,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1059,46 +1059,47 @@
         }
       },
       "quality": {
-        "HIGH": 106,
-        "MEDIUM": 6
+        "HIGH": 108,
+        "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 112,
-        "resolvedValues": 112
+        "datableValues": 118,
+        "resolvedValues": 118
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2176,
+        "rules_version": "1.1.0",
+        "total": 2467,
         "by_severity": {
-          "INFO": 2115,
-          "WARNING": 61
+          "INFO": 2380,
+          "WARNING": 87
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 16,
-          "RESTATEMENT_CONFLICT": 43,
+          "CONCEPT_DISAGREEMENT": 25,
+          "RESTATEMENT_CONFLICT": 60,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 2115
+          "UNKNOWN_CONCEPT": 2380
         }
       },
       "latestFiling": {
-        "accession": "0001171843-26-005543",
-        "filing_date": "2026-08-14",
+        "accession": "0001171843-26-007281",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 10
+        "periodic_filings": 11,
+        "acceptance_datetime": "2026-11-09T22:45:41.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "08fbb1c9e663b2f0a937b541bcf459788ef42de2d3034aa0b8cc807c82d6a7a8",
+      "sourceDigest": "cc86574592454ea321e89d97329e40aab3bad7029e4b6993c807a01b70e797a7",
       "issuerId": "iss_cik_0001840416"
     },
     {

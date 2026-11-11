@@ -992,9 +992,9 @@
       "cik": "0001853825",
       "name": "Datacentrex, Inc.",
       "sic": "7374",
-      "rawFacts": 3275,
-      "mappedFacts": 1557,
-      "unmappedFacts": 1686,
+      "rawFacts": 3481,
+      "mappedFacts": 1642,
+      "unmappedFacts": 1849,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1004,9 +1004,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 6,
-      "quarterlyPeriods": 23,
+      "quarterlyPeriods": 24,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
@@ -1018,7 +1018,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -1045,21 +1045,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -1073,14 +1073,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1103,49 +1103,51 @@
         }
       },
       "quality": {
-        "HIGH": 170,
+        "HIGH": 176,
         "MEDIUM": 4
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 174,
-        "resolvedValues": 174
+        "datableValues": 180,
+        "resolvedValues": 180
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1800,
+        "rules_version": "1.1.0",
+        "total": 1984,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 1686,
-          "WARNING": 113
+          "INFO": 1849,
+          "WARNING": 134
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 65,
+          "CONCEPT_DISAGREEMENT": 67,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
-          "RESTATEMENT_CONFLICT": 44,
+          "RESTATEMENT_CONFLICT": 62,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 1686
+          "UNKNOWN_CONCEPT": 1849
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037377",
-        "filing_date": "2026-08-12",
+        "accession": "0001493152-26-050990",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 26
+        "periodic_filings": 27,
+        "acceptance_datetime": "2026-11-10T21:31:03.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "95251bc8f5a5c3f32a2730ebad964cc2e97b85b66bd7739594b03b7f8267b102",
+      "sourceDigest": "33c06ffc8d685d55a5c0ac85fcaa02b5ce2fdf5e8c41ad0238898aaadbf4f032",
       "issuerId": "iss_cik_0001853825"
     },
     {

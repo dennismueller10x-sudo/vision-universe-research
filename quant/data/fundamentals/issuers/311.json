@@ -997,9 +997,9 @@
       "cik": "0001829311",
       "name": "BITMINE IMMERSION TECHNOLOGIES, INC.",
       "sic": "6199",
-      "rawFacts": 3692,
-      "mappedFacts": 1681,
-      "unmappedFacts": 2101,
+      "rawFacts": 4069,
+      "mappedFacts": 1749,
+      "unmappedFacts": 2457,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -1009,11 +1009,11 @@
         "BMNP"
       ],
       "status": "INGESTED",
-      "annualPeriods": 6,
-      "quarterlyPeriods": 25,
+      "annualPeriods": 7,
+      "quarterlyPeriods": 26,
       "firstPeriodEnd": "2020-07-15",
-      "lastPeriodEnd": "2026-05-31",
-      "historyYears": 5.0,
+      "lastPeriodEnd": "2026-08-31",
+      "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
@@ -1023,11 +1023,11 @@
           "historyYears": 4.0
         },
         "eps_diluted": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 4.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 5,
@@ -1050,25 +1050,25 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 23,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2021-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 4.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 5.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 23,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2021-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 4.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 5.0
         },
         "revenue": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "annualPeriods": 6,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 4.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 5.0
         },
         "short_term_debt": {
           "annualPeriods": 0,
@@ -1078,18 +1078,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "annualPeriods": 7,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 5.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 6.0
         },
         "total_assets": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "annualPeriods": 7,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-08-31",
-          "lastAvailablePeriod": "2025-08-31",
-          "historyYears": 5.0
+          "lastAvailablePeriod": "2026-08-31",
+          "historyYears": 6.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -1109,48 +1109,48 @@
         }
       },
       "quality": {
-        "HIGH": 190,
-        "MEDIUM": 4
+        "HIGH": 208
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 194,
-        "resolvedValues": 194
+        "datableValues": 208,
+        "resolvedValues": 208
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2219,
+        "rules_version": "1.1.0",
+        "total": 2566,
         "by_severity": {
-          "INFO": 2101,
+          "INFO": 2457,
           "ERROR": 1,
-          "WARNING": 117
+          "WARNING": 108
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 26,
+          "CONCEPT_DISAGREEMENT": 30,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 80,
+          "RESTATEMENT_CONFLICT": 67,
           "UNEXPECTED_DURATION": 11,
-          "UNKNOWN_CONCEPT": 2101
+          "UNKNOWN_CONCEPT": 2457
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-048157",
-        "filing_date": "2026-07-14",
-        "form": "10-Q",
-        "periodic_filings": 25
+        "accession": "0001628280-26-072846",
+        "filing_date": "2026-11-10",
+        "form": "10-K",
+        "periodic_filings": 26,
+        "acceptance_datetime": "2026-11-10T22:23:39.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "7206914a1bb4486db356a3c2d89e49ac4b4b12ac6b0886344303a7e46f2124ee",
+      "sourceDigest": "50b9895f9b9206af35050299ed334d9925677dbbfeae0476d0970043048c1d6f",
       "issuerId": "iss_cik_0001829311"
     },
     {

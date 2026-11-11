@@ -1376,9 +1376,9 @@
       "cik": "0002086545",
       "name": "Art Technology Acquisition Corp.",
       "sic": "6770",
-      "rawFacts": 182,
-      "mappedFacts": 69,
-      "unmappedFacts": 118,
+      "rawFacts": 273,
+      "mappedFacts": 104,
+      "unmappedFacts": 173,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1390,9 +1390,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 3,
-      "firstPeriodEnd": "2025-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "quarterlyPeriods": 5,
+      "firstPeriodEnd": "2025-09-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1431,14 +1431,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1459,14 +1459,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1489,44 +1489,45 @@
         }
       },
       "quality": {
-        "HIGH": 12
+        "HIGH": 17
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 12,
-        "resolvedValues": 12
+        "datableValues": 17,
+        "resolvedValues": 17
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 123,
+        "rules_version": "1.1.0",
+        "total": 182,
         "by_severity": {
-          "INFO": 118,
-          "WARNING": 5
+          "INFO": 173,
+          "WARNING": 9
         },
         "by_code": {
-          "PERIOD_MISMATCH": 2,
-          "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 118
+          "PERIOD_MISMATCH": 3,
+          "UNEXPECTED_DURATION": 6,
+          "UNKNOWN_CONCEPT": 173
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-086724",
-        "filing_date": "2026-08-07",
+        "accession": "0001213900-26-118060",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 3
+        "periodic_filings": 4,
+        "acceptance_datetime": "2026-11-10T21:30:28.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bd7e3ba0a74dd8a37ccb03f8d3878fddd1f93499d922e7fdcb6f390eab8c7bc8",
+      "sourceDigest": "07eed9d0f807ad4d3dee7a623704da64a76050306735459f43c6df2d24fe40c1",
       "issuerId": "iss_cik_0002086545"
     }
   ]

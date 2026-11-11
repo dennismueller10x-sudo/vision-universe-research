@@ -2,39 +2,39 @@
   "note": "Drei Ebenen, drei Nenner. Sie duerfen NICHT addiert werden - die erste zaehlt aufgeloeste Werte, die zweite rohe XBRL-Fakten, die dritte Titel.",
   "values": {
     "denominator": {
-      "RESOLVED_VALUES": 1893640,
+      "RESOLVED_VALUES": 1895166,
       "ISSUERS_WITH_VALUES": 5345
     },
     "byState": {
-      "VALID": 1723587,
-      "WARNING": 170053
+      "VALID": 1725100,
+      "WARNING": 170066
     },
     "note": "Zustand je aufgeloestem Wert. VALID entspricht der internen Stufe HIGH, WARNING der Stufe MEDIUM."
   },
   "findings": {
     "denominator": {
-      "RAW_XBRL_FACTS_WITH_FINDING": 50184406
+      "RAW_XBRL_FACTS_WITH_FINDING": 50231513
     },
     "byState": {
-      "AMBIGUOUS": 1275518,
-      "RESTATED": 304267,
-      "NON_COMPARABLE": 70884,
-      "MISSING": 48515609,
-      "WARNING": 18128
+      "AMBIGUOUS": 1272626,
+      "RESTATED": 304118,
+      "NON_COMPARABLE": 70938,
+      "MISSING": 48565760,
+      "WARNING": 18071
     },
     "byCode": {
-      "UNKNOWN_CONCEPT": 48515609,
-      "CONCEPT_DISAGREEMENT": 1265083,
-      "RESTATEMENT_CONFLICT": 304267,
-      "UNEXPECTED_DURATION": 54734,
-      "PERIOD_MISMATCH": 14889,
-      "FISCAL_PERIOD_CONFLICT": 12864,
-      "FUTURE_DATA_LEAK": 7501,
-      "UNPLACEABLE_PERIOD": 2934,
+      "UNKNOWN_CONCEPT": 48565760,
+      "CONCEPT_DISAGREEMENT": 1262153,
+      "RESTATEMENT_CONFLICT": 304118,
+      "UNEXPECTED_DURATION": 54779,
+      "PERIOD_MISMATCH": 14898,
+      "FISCAL_PERIOD_CONFLICT": 12783,
+      "FUTURE_DATA_LEAK": 7503,
+      "UNPLACEABLE_PERIOD": 2970,
       "NEGATIVE_WHERE_IMPOSSIBLE": 2577,
       "EXTREME_VALUE": 2204,
       "UNIT_MISMATCH": 1261,
-      "FUTURE_PERIOD_END": 470,
+      "FUTURE_PERIOD_END": 494,
       "IMPLAUSIBLE_FILING_FY": 13
     },
     "note": "Befunde je ROHEM Fakt. UNKNOWN_CONCEPT heisst 'von der Registry nicht gemappt' und nicht 'fehlerhaft' - ein Emittent meldet Tausende Konzepte, von denen die wenigsten gebraucht werden."
@@ -44,8 +44,8 @@
       "PRODUCT_TITLES": 6308
     },
     "byState": {
-      "AVAILABLE": 4965,
-      "PARTIAL": 469,
+      "AVAILABLE": 4966,
+      "PARTIAL": 468,
       "MISSING": 85,
       "NOT_APPLICABLE": 53,
       "REQUIRES_REVIEW": 0,
@@ -66,13 +66,13 @@
     },
     {
       "metric": "free_cash_flow",
-      "MISSING_COUNT": 818,
-      "MISSING_RATE": 15.304
+      "MISSING_COUNT": 817,
+      "MISSING_RATE": 15.2853
     },
     {
       "metric": "capital_expenditures",
-      "MISSING_COUNT": 808,
-      "MISSING_RATE": 15.1169
+      "MISSING_COUNT": 807,
+      "MISSING_RATE": 15.0982
     },
     {
       "metric": "eps_diluted",
@@ -116,5 +116,5 @@
       "mapping_version": "1.7.0"
     }
   },
-  "generatedAtUtc": "2026-11-10T06:34:38+00:00"
+  "generatedAtUtc": "2026-11-11T06:31:39+00:00"
 }

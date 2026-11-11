@@ -165,9 +165,9 @@
       "cik": "0001134115",
       "name": "INTERNATIONAL TOWER HILL MINES LTD",
       "sic": "1000",
-      "rawFacts": 10676,
-      "mappedFacts": 2980,
-      "unmappedFacts": 7843,
+      "rawFacts": 10875,
+      "mappedFacts": 3041,
+      "unmappedFacts": 8090,
       "calendarYears": 28,
       "industry": null,
       "industryMetrics": {},
@@ -177,9 +177,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 29,
-      "quarterlyPeriods": 73,
+      "quarterlyPeriods": 74,
       "firstPeriodEnd": "1997-06-01",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 28.5,
       "metrics": {
         "capital_expenditures": {
@@ -191,7 +191,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -218,14 +218,14 @@
         },
         "net_income": {
           "annualPeriods": 28,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "1998-05-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 27.58
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-05-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.58
@@ -246,14 +246,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 29,
-          "quarterlyPeriods": 72,
+          "quarterlyPeriods": 73,
           "firstAvailablePeriod": "1997-06-01",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 28.5
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -276,49 +276,51 @@
         }
       },
       "quality": {
-        "HIGH": 367,
+        "HIGH": 372,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 368,
-        "resolvedValues": 368
+        "datableValues": 373,
+        "resolvedValues": 373
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7938,
+        "rules_version": "1.1.0",
+        "total": 8186,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 7843,
-          "WARNING": 94
+          "INFO": 8090,
+          "WARNING": 95
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 21,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 15,
           "UNEXPECTED_DURATION": 56,
-          "UNKNOWN_CONCEPT": 7843
+          "UNKNOWN_CONCEPT": 8090
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-094923",
-        "filing_date": "2026-08-12",
+        "accession": "0001104659-26-125330",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 72
+        "periodic_filings": 73,
+        "acceptance_datetime": "2026-11-10T22:10:18.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "1e712e07d60db5602be40ffd9da88d9624a09907687e54cb177825ce3819ffcc",
+      "sourceDigest": "1e88824f3790c62825fade01422c3291641d1c39ba27a441ecdefbf682f7e321",
       "issuerId": "iss_cik_0001134115"
     },
     {
