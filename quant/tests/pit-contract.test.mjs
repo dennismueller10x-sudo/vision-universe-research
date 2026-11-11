@@ -12,6 +12,7 @@ const PIT = require('../engines/pit-fundamental-history.js');
 const PF = require('../engines/portfolio-pit-factors.cjs');
 const PB = require('../engines/portfolio-backtest.cjs');
 const ID = require('../../core/identity.js');
+const LR = require('../../core/listing-register.js');
 const IC = require('../../core/industry-classification.js');
 
 // Spalten wie im Verbraucher-Bundle: [fy, fp, end, v, filed, accn, derived].
@@ -278,7 +279,7 @@ test('BEFUND PIT-F3 Universum ist heutige Dateimenge (kein Terminal ohne Quelle)
 });
 
 test('PIT-F3 Listing-Register: Umbenennung hält die Entität (CIK), Wiederverwendung wird je Tag eindeutig, Überlappung ist AMBIGUOUS', () => {
-  const reg = ID.createListingRegister([
+  const reg = LR.createListingRegister([
     { cik: 1, ticker: 'FB', validTo: '2022-06-08' }, { cik: 1, ticker: 'META', validFrom: '2022-06-09' },
     { cik: 5, ticker: 'XYZ', validTo: '2015-01-01' }, { cik: 9, ticker: 'XYZ', validFrom: '2016-01-01' },
     { cik: 7, ticker: 'DUP', validFrom: '2020-01-01' }, { cik: 8, ticker: 'DUP', validFrom: '2020-06-01' },
@@ -298,8 +299,8 @@ test('PIT-F3 Listing-Register: Umbenennung hält die Entität (CIK), Wiederverwe
   assert.deepEqual(reg.census(), { listings: 6, reusedSecurityIds: ['ref_DUP', 'ref_XYZ'], renamedIssuers: ['0000000001'] });
   // Rückwärtskompatibel: die securityId-Regel ist unverändert, die Listing-Kennung ist eigener Namensraum.
   assert.equal(ID.securityIdForTicker('META'), 'ref_META');
-  assert.equal(ID.listingId(1, 'META', '2022-06-09'), 'lst_0000000001_META_20220609');
-  assert.ok(ID.isListingId(ID.listingId(1, 'BRK.B')) && !ID.isSecurityId('lst_0000000001_META_20220609'));
+  assert.equal(LR.listingId(1, 'META', '2022-06-09'), 'lst_0000000001_META_20220609');
+  assert.ok(LR.isListingId(LR.listingId(1, 'BRK.B')) && !ID.isSecurityId('lst_0000000001_META_20220609'));
 });
 
 test('PIT-F3 Panel mit Listing-Intervall: außerhalb des Intervalls kein Kandidat; Ticker-Kollision und ungültiges Intervall werden abgewiesen', () => {
@@ -329,7 +330,7 @@ test('PIT-18 Vertragsmatrix: Versionen und Stichtagssemantik der vier Module sin
   assert.equal(PIT.VERSION, 'pit-fundamental-history-1.1.0');
   assert.equal(PF.VERSION, 'portfolio-pit-factors-1.0.0');
   assert.equal(IC.VERSION, 'core-industry-classification-1.0.0');
-  assert.equal(ID.VERSION, 'core-identity-1.1.0');
+  assert.equal(ID.VERSION, 'core-identity-1.0.0');
   // Stichtagssemantik: Datum -> Cutoff
   assert.equal(IC.cutoffOf('2022-03-10').cutoff, '2022-03-10T21:00:00Z');
   assert.equal(IC.cutoffOf('2022-07-11').cutoff, '2022-07-11T20:00:00Z');
@@ -337,4 +338,5 @@ test('PIT-18 Vertragsmatrix: Versionen und Stichtagssemantik der vier Module sin
   // Identität: nur der Ticker bestimmt die securityId; keine Zeit, keine CIK.
   assert.equal(ID.securityIdForTicker('BRK.B'), 'ref_BRK_B');
   assert.equal(ID.securityIdForTicker.length, 1);
+  assert.equal(LR.VERSION, 'core-listing-register-1.0.0');
 });
