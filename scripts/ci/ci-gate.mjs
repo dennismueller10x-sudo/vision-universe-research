@@ -9,7 +9,8 @@ const BAD = new Set(["failure", "timed_out", "cancelled", "action_required", "st
 
 /** runs: check-runs[] (name, status, conclusion). Liefert {state: wait|pass|fail, offen, rot}. */
 export function evaluate(runs) {
-  const others = runs.filter((r) => r.name !== SELF);
+  // Nur GitHub-Actions-Jobs: externe Checks (Vercel, Cloudflare Pages) haben eigene Ausfaelle und gehoeren nicht in die Pflichtpruefung.
+  const others = runs.filter((r) => r.name !== SELF && (!r.app || r.app.slug === "github-actions"));
   const offen = others.filter((r) => r.status !== "completed").map((r) => r.name);
   const rot = others.filter((r) => r.status === "completed" && BAD.has(r.conclusion)).map((r) => `${r.name} (${r.conclusion})`);
   if (offen.length) return { state: "wait", offen, rot };

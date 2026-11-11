@@ -18,6 +18,10 @@ test("ci-gate: offener Check wartet, roter Check faellt", () => {
 test("ci-gate: ohne weitere Checks (z. B. reiner Doku-PR) besteht es", () => {
   assert.equal(evaluate([r("ci-gate", "in_progress", null)]).state, "pass");
 });
+test("ci-gate: externe Checks (Vercel, Cloudflare) blockieren nicht", () => {
+  const ext = { name: "Vercel", app: { slug: "vercel" }, status: "completed", conclusion: "failure" };
+  assert.equal(evaluate([ext, { ...r("a", "completed", "success"), app: { slug: "github-actions" } }]).state, "pass");
+});
 test("infra-retry: Signaturen ja, Testfehler nein", () => {
   assert.ok(istInfrastruktur("E: Failed to fetch http://azure.archive.ubuntu.com Temporary failure resolving 'azure.archive.ubuntu.com'"));
   assert.ok(istInfrastruktur("npm ERR! code ECONNRESET"));
