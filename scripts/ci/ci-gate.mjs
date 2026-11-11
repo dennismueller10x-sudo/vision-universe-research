@@ -10,6 +10,11 @@ const BAD = new Set(["failure", "timed_out", "cancelled", "action_required", "st
 /** runs: check-runs[] (name, status, conclusion). Liefert {state: wait|pass|fail, offen, rot}. */
 export function evaluate(runs) {
   // Nur GitHub-Actions-Jobs: externe Checks (Vercel, Cloudflare Pages) haben eigene Ausfaelle und gehoeren nicht in die Pflichtpruefung.
+  // Je Name zaehlt nur der neueste Lauf (hoechste id): ein durch Concurrency abgebrochener Altlauf desselben Commits
+  // oder ein Wiederholungslauf (ci-retry) ersetzt den alten Stand.
+  const latest = new Map();
+  for (const r of runs) { const k = `${r.app?.slug || ""}/${r.name}`; if (!latest.has(k) || (r.id ?? 0) > (latest.get(k).id ?? 0)) latest.set(k, r); }
+  runs = [...latest.values()];
   const others = runs.filter((r) => r.name !== SELF && (!r.app || r.app.slug === "github-actions"));
   const offen = others.filter((r) => r.status !== "completed").map((r) => r.name);
   const rot = others.filter((r) => r.status === "completed" && BAD.has(r.conclusion)).map((r) => `${r.name} (${r.conclusion})`);
