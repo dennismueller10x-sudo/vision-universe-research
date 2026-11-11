@@ -244,3 +244,27 @@ test("SMA-7 · Vorgeschlagene Freigabedatei v130-approved-changes-1.1.0.json: ge
   if (sha !== a.prevMasterSha256) return; // Stamm seit der Liste geändert: dann gilt sie ohnehin nicht mehr (G8)
   assert.equal(a.sourceRun.runId, "41877792353");
 });
+
+test("SMA-8 · konstante fortgeschriebene Anbieterkurse nach dem Ende blockieren nicht, eine bewegte Reihe und die Rückhalteliste schon (11.11.2026)", () => {
+  const ids = ["GON", "MOV", "BIG"];
+  const prev = master(ids.map((i) => row(i)), { version: "us-security-master-1.3.0", generatedAt: "2026-11-04T00:00:00Z" });
+  const next = master(ids.map((i) => row(i, { active_status: "INACTIVE", end_date: "2026-09-01", eligible_us_equity: false })), { version: "us-security-master-1.3.0" });
+  const prevBytes = Buffer.from(JSON.stringify(prev));
+  const own = () => "2026-11-10"; // Tagesreihe läuft über das Ende hinaus
+  const moved = (id) => id === "ref_MOV";
+  const hold = new Map([["BIG", "großer, bekannter Titel (Test)"]]);
+  const a = buildApprovalList({ prevBytes, prev, next, seriesEnd: own, seriesMovedAfter: moved, hold });
+  const by = (r) => Object.fromEntries(r.classification.items.deactivations.map((d) => [d.securityId, d]));
+  const d = by(a);
+  assert.equal(d.ref_GON.approvable, true, "konstante Fortschreibung blockiert nicht");
+  assert.match(d.ref_GON.reason, /konstant/);
+  assert.equal(d.ref_MOV.approvable, false); assert.match(d.ref_MOV.reason, /Identitätsbefund/);
+  assert.equal(d.ref_BIG.approvable, false); assert.match(d.ref_BIG.reason, /ausdrücklich ausgewiesen, nicht freigegeben/);
+  assert.deepEqual(a.approval.deactivations.map((x) => x.securityId), ["ref_GON"]);
+  // Ohne seriesMovedAfter gilt die alte Regel: jeder spätere Kurs blockiert.
+  const old = buildApprovalList({ prevBytes, prev, next, seriesEnd: own });
+  assert.deepEqual(old.approval.deactivations, []);
+  // Unbekannte Bewegung (null) blockiert ebenfalls.
+  const unknown = buildApprovalList({ prevBytes, prev, next, seriesEnd: own, seriesMovedAfter: () => null });
+  assert.deepEqual(unknown.approval.deactivations, []);
+});

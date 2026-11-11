@@ -133,6 +133,7 @@ Quelle: `quant/engines/backtest-kinds.cjs`, `scripts/quant/research/backtest-run
 
 - **Register** `quant/config/security-master-generations.json`, Auflösung über `quant/engines/security-master-generation.cjs` (fail closed). Tests MG-1…6, SMF, MCH.
 - Research-Loader mit Evidenz-Optionen lesen immer 1.1.0. Der Produkt-Adapter (`weekly-real-adapter.cjs`) bleibt bytegleich und liest den Produktstamm.
+- **Aufholungslauf 11.11.2026:** Der Stamm stand seit 04.11. (Anbieterbewegung über G7); die Freigabeliste `docs/data/security-master/refresh-approved-changes-2026-11-11.json` (Erzeuger `build-security-master-approval-list.mjs`) nimmt 389 Deaktivierungen und 235 Eignungswechsel auf, 3 Titel (TCGL, WBD, REE) bleiben zurückgehalten. Regel: ein konstanter fortgeschriebener Anbieterkurs nach dem Ende ist Anbieter-Fortschreibung und kein Handel, nur eine sich bewegende Reihe blockiert (gleich im SEC-Delisting-Register); Dispatch `security-master-weekly.yml` mit `freigabe=<Datei>`.
 - Gate, Freigabeliste und Ablauf stehen in `docs/data/SECURITY_MASTER_WEEKLY.md`, `docs/data/security-master/SECURITY_MASTER_GENERATIONS.md` und in der Freigabevorlage (PR #1240).
 
 ### B3. PIT-Identitäten, Survivorship, Delistings, Kapitalmaßnahmen (ERLEDIGT)
