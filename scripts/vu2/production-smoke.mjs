@@ -73,16 +73,16 @@ const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/produ
    die Themen aus quant/app/page-method.js (TOPICS) und die Strategien aus
    quant/methodology/strategy-profiles-v1.json - und verlangt jede davon in
    dieser Liste. Was der Smoke nicht anschaut, verfaellt (M26, M28, M29). */
-const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups','/quant/#/radar?filter=historisch',
- '/quant/#/backtest','/quant/#/backtest/NEW_52W_HIGH','/quant/#/backtest/SETUP_CONFIRMED',
+const VIEWS=['/quant/#/','/quant/#/meldungen','/quant/#/meldungen?filter=setups','/quant/#/meldungen?filter=historisch','/quant/#/radar',
+ '/quant/#/forschung','/quant/#/forschung/NEW_52W_HIGH','/quant/#/forschung/SETUP_CONFIRMED','/quant/#/backtest',
  '/quant/#/screener',
  '/quant/#/screener?frage=qualitaet','/quant/#/screener?frage=momentum','/quant/#/screener?frage=wachstum-qualitaet',
  '/quant/#/screener?frage=guenstig','/quant/#/screener?frage=ruhig','/quant/#/screener?frage=setups','/quant/#/screener?frage=hoch',
  '/quant/#/screener/profi',
- '/quant/#/strategien',
- '/quant/#/strategien/quality-compounder','/quant/#/strategien/momentum-leader','/quant/#/strategien/quality-momentum',
- '/quant/#/strategien/garp','/quant/#/strategien/future-leader','/quant/#/strategien/defensive-quality',
- '/quant/#/strategien/value-momentum','/quant/#/strategien/earnings-revision-leader',
+ '/quant/#/stile','/quant/#/strategien',
+ '/quant/#/stile/quality-compounder','/quant/#/stile/momentum-leader','/quant/#/stile/quality-momentum',
+ '/quant/#/stile/garp','/quant/#/stile/future-leader','/quant/#/stile/defensive-quality',
+ '/quant/#/stile/value-momentum','/quant/#/stile/earnings-revision-leader',
  '/quant/#/aktien',
  /* Datenreich (NVDA, AAPL, MSFT, T, SO), Bank (JPM), REIT (O), Hypotheken-
     REIT (AGNC), datenarm (ACAA, EDVA, ABTC), Vorzugspapiere (AHT-P-D,
@@ -174,7 +174,7 @@ for(const t of ['AAAC']){
 }
 /* Markierter Eintrag der gemeinsamen Produkt-Leiste je Ansicht; Methodik
    ist sekundaer und markiert keinen der vier Eintraege (leer). */
-const SECTION={home:'Quant',screener:'Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Quant'}; /* Q00 (#1412): Methodik gehoert zum Start „Quant“ */
+const SECTION={home:'Quant',screener:'Screener',strategien:'Anlagestile',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Quant'}; /* Q00 (#1412): Methodik gehoert zum Start „Quant“ */
 
 /* Bereit ist eine Route, wenn die App sie fertig gemeldet hat, kein
    Ladeplatzhalter mehr steht und der Chart (falls es einen gibt) einen
@@ -421,19 +421,21 @@ for(const width of [1440,390]){
    if(zeilen.length&&mitName/zeilen.length<0.95)bad.push('NAMEN='+mitName+'/'+zeilen.length);
    console.log('     Aktien: '+zeilen.length+' Zeilen · '+mitName+' mit Namen');
   }
-  if(route==='strategien'&&!/strategien\/[a-z]/.test(view)){
-   const karten=await page.locator('main#qx-main a.qx-strat, main#qx-main a.qv3-scard').count();
+  if(route==='strategien'&&!/(strategien|stile)\/[a-z]/.test(view)){
+   /* Konzept Quant 2026-11 (QX04): Stil-Karten (a.qk-stc); ein Stil ohne Daten steht als Fussnote (p[data-profile]). */
+   const karten=await page.locator('main#qx-main a.qx-strat, main#qx-main a.qv3-scard, main#qx-main a.qk-stc, main#qx-main p[data-profile]').count();
    if(karten<8)bad.push('STRATEGIEN='+karten);
    /* KEINE TREFFERQUOTE: die Seite sagt, dass es keine gibt. */
    if(!/keine (Erfolgs- oder )?Trefferquote/.test(text))bad.push('TREFFERQUOTE_UNGENANNT');
   }
-  if(route==='strategien'&&/strategien\/[a-z]/.test(view)){
+  if(route==='strategien'&&/(strategien|stile)\/[a-z]/.test(view)){
    /* Redesign 2027 (Q03, #1410): „Die Regeln“ als Fragen mit Schwelle und „Erfüllen heute“ mit Trefferzahl; die bisherige
       Auswertung steht unter „Mehr zu dieser Strategie“. Geprueft wird dasselbe: Bedingungen und heutige Treffer sichtbar. */
    const v3s=await page.locator('main#qx-main .qv3-sdetail').count();
    if(v3s){
-    if(!/Die Regeln/.test(text)||!await page.locator('main#qx-main .qv3-sdetail .qv3-liste .qv3-li').count())bad.push('BEDINGUNGEN_FEHLEN');
-    if(!/Erfüllen heute\s*(\d[\d.]*\s+Aktien|nicht prüfbar)/.test(text))bad.push('TREFFER_FEHLEN');
+    /* Konzept Quant 2026-11 (QX04): „Die Regel“ mit Schwellen-Balken, „Erfüllen heute N von Gesamt“. */
+    if(!/Die Regel/i.test(text)||!await page.locator('main#qx-main .qv3-sdetail .qk-thr').count())bad.push('BEDINGUNGEN_FEHLEN');
+    if(!/Erfüllen heute\s*(\d[\d.]*(\s+von\s+\d[\d.]*|\s+Aktien)|nicht prüfbar)/.test(text))bad.push('TREFFER_FEHLEN');
    }else{
     if(!/Welche Bedingungen gelten\?/.test(text))bad.push('BEDINGUNGEN_FEHLEN');
     if(!/Wer passt heute\?/.test(text))bad.push('TREFFER_FEHLEN');
@@ -488,8 +490,8 @@ for(const width of [1440,390]){
     const auskunft=page.locator('.qx-verdict-card');
     if(!await auskunft.count())bad.push('AUSKUNFT_FEHLT');
     else{
-     /* Redesign 2027 (Q07): der Kopfsatz steht in der schwarzen Gesamtkarte (.qv3-ink), sonst wie bisher. */
-     const kopfsatz=(await auskunft.locator('.qx-verdict-top, .qv3-ink').first().innerText().catch(()=>'')).replace(/\n+/g,' ');
+     /* Redesign 2027 (Q07): der Kopfsatz steht in der schwarzen Gesamtkarte (.qv3-ink), seit dem Konzept Quant 2026-11 im Profil (.qv3-profile). */
+     const kopfsatz=(await auskunft.locator('.qx-verdict-top, .qv3-ink, .qv3-profile').first().innerText().catch(()=>'')).replace(/\n+/g,' ');
      if(kopfsatz.length<40)bad.push('KOPFSATZ_ZU_KURZ='+kopfsatz.length);
      const ganz=await auskunft.innerText();
      /* Kein interner Code und keine Handlungs- oder Prognosesprache - §81

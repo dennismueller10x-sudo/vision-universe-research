@@ -76,13 +76,13 @@ const Q=origin+'/quant/';
    Unterseite ohne axe-Lauf ist eine ungepruefte Unterseite. */
 const ROUTES=[
  ['home','#/','home'],
- ['radar','#/radar'],
+ ['radar','#/meldungen'],
  ['screener','#/screener','screener'],
  ['screener-hoch','#/screener?frage=hoch'],
  ['screener-setups','#/screener?frage=setups'],
  ['screener-profi','#/screener/profi','screenerPro'],
- ['strategien','#/strategien'],
- ...profiles.map(p=>['strategie-'+p.profileId,'#/strategien/'+p.profileId]),
+ ['strategien','#/stile'],
+ ...profiles.map(p=>['strategie-'+p.profileId,'#/stile/'+p.profileId]),
  ['aktien','#/aktien'],
  ['aktie-nvda','#/aktie/NVDA','stock'],
  ['aktie-jpm','#/aktie/JPM'],
@@ -107,7 +107,7 @@ const ROUTES=[
 /* UI-Vereinheitlichung 10/2026: die gemeinsame Produkt-Leiste der Shell.
    Der erste Eintrag ist der Produktname; "Screener" heisst fuer
    Screenreader "Quant Screener". Methodik ist sekundaer (Hero, Fuss). */
-const SOLL_BEREICHE=['Quant','Screener','Strategien','Aktien'];
+const SOLL_BEREICHE=['Quant','Screener','Anlagestile','Aktien']; /* Konzept Quant 2026-11, Entscheidung 3 */
 async function bereit(page,view){
  await page.waitForFunction(v=>{const m=document.querySelector('main#qx-main');return !!m&&m.dataset.ready==='true'&&m.getAttribute('aria-busy')==='false'&&(!v||m.dataset.view===v)&&!m.querySelector('.qx-loading');},view||null,{timeout:45000});
  await page.waitForFunction(()=>{const c=document.querySelector('section.qc-chart');return !c||!!c.dataset.range||!/Chart wird geladen/.test(c.textContent);},null,{timeout:10000}).catch(()=>{});
@@ -197,22 +197,22 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   /* Redesign 2027: Seiten mit den Bausteinen (VUUI) tragen qv3-Klassen; die Release-Seite laedt VUUI immer mit. */
   const v3=await page.evaluate(()=>!!globalThis.VUUI);
   if(view==='home'&&v3){
-   /* Redesign 2027 (Q01): dieselben Zusagen in der neuen Gestalt - ein Satz, was Quant prueft, die Suche, die Wege
-      mit ihrem Ziel, "Heute bei Quant" mit Stichtag oder ehrlichem Rueckfall, Fusszeile mit Quellen. */
-   if(!(await page.locator('.qv3-intro .vu-lead').innerText()).includes('US-Aktien'))befund(view,width,'Home sagt nicht, was Quant prueft');
+   /* Konzept Quant „Ein Profil je Aktie“ (QX01, docs/design/quant-2026-11): ein Satz zum Profil, die Suche, „Heute bei Quant“
+      mit Weg zu allen Meldungen, Anlagestile, Vertrauen; Stichtag oder ehrlicher Rueckfall; Fusszeile mit Absage. */
+   if(!(await page.locator('.qv3-intro .vu-lead').innerText()).includes('Profil aus sieben Eigenschaften'))befund(view,width,'Home sagt nicht, was Quant misst');
    if(!/früher/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Home verliert den historischen Marktvergleich');
    await page.locator('button.qv3-search').waitFor();
-   const wege=await page.locator('#qx-main a.vu-navcard').evaluateAll(ns=>ns.map(n=>n.getAttribute('href')||''));
-   for(const ziel of ['#/aktien','#/screener','#/strategien'])if(!wege.includes(ziel))befund(view,width,'Weg nach '+ziel+' fehlt auf Home');
-   await page.waitForFunction(()=>/Stand \d{2}\.\d{2}\.\d{4}|Gerade keine Veränderungen abrufbar/.test(document.querySelector('#qx-main').innerText),null,{timeout:30000}).catch(()=>befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall'));
+   await page.waitForFunction(()=>/Stand \d{2}\.\d{2}\.\d{4}|Gerade keine Meldungen abrufbar/.test(document.querySelector('#qx-main').innerText),null,{timeout:30000}).catch(()=>befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall'));
+   const wege=await page.locator('#qx-main a').evaluateAll(ns=>ns.map(n=>n.getAttribute('href')||''));
+   for(const ziel of ['#/meldungen','#/stile','#/methodik'])if(!wege.includes(ziel))befund(view,width,'Weg nach '+ziel+' fehlt auf Home');
    const fuss=await page.locator('footer.qx-foot').innerText();
    if(!fuss.includes('Keine Anlageempfehlung'))befund(view,width,'Fusszeile ohne Keine Anlageempfehlung');
    /* Owner-Entscheidung 07.11.2026 (PLAN §11): Anbieter stehen zentral auf /infos/#quellen, nicht im Fuß. */
    for(const name of ['SEC EDGAR','Tiingo'])if(fuss.includes(name))befund(view,width,'Fusszeile nennt Anbieter '+name);
    await page.route('**/quant/config/market-calendar.json',route=>{absichtlich++;return route.abort();});
    await page.reload();await bereit(page,'home');
-   /* Fünf Einstiege unter „Selbst suchen“: Aktie, Screener, Anlagestil, Technische Lagen, Musterdepots (#1497). */
-   if(await page.locator('#qx-main a.vu-navcard').count()!==5||!await page.locator('#qx-main a.vu-navcard[href="/quant/musterdepots/"]').count())befund(view,width,'Ohne Kalender verliert die Startseite ihre Einstiege');
+   /* Ohne Kalender bleiben Suche, Vertrauen und der Weg zu den Meldungen. */
+   if(!await page.locator('#qx-main a.qv3-trust').count()||!await page.locator('button.qv3-search').count())befund(view,width,'Ohne Kalender verliert die Startseite ihre Einstiege');
    await page.unroute('**/quant/config/market-calendar.json');
    await frisch(page,hash,'home');
   }
@@ -248,28 +248,20 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await frisch(page,hash,'home');
   }
   if(view==='screener'){
-   /* Sieben Fragen, genau eine gedrueckt, ein Satz, der sie vorliest, und
-      bei jedem Treffer der gemessene Wert als Antwort auf "warum ist die
-      Aktie hier?". */
-   const fragen=page.locator('button.qx-question[data-question]');
+   /* Konzept Quant 2026-11 (QX03): sieben Fragen als Chips, genau eine gedrueckt, „Deine Frage“ liest sie vor; jede
+      Trefferzeile traegt das Profil (sechs Saeulen) und den gemessenen Wert der gesuchten Eigenschaft. */
+   const fragen=page.locator('#qx-main button.vu-chip[data-question]');
    if(await fragen.count()!==7)befund(view,width,'nicht sieben Fragen: '+await fragen.count());
-   if(await page.locator('button.qx-question[aria-pressed="true"]').count()!==1)befund(view,width,'nicht genau eine Frage gewaehlt');
-   await page.locator('button.qx-question[data-question="momentum"]').click();
-   await page.waitForFunction(()=>location.hash==='#/screener?frage=momentum'&&!document.querySelector('#qx-main .qx-loading'),null,{timeout:30000});
-   if(await page.locator('button.qx-question[data-question="momentum"]').getAttribute('aria-pressed')!=='true')befund(view,width,'die gewaehlte Frage ist nicht markiert');
-   if(!/Kursentwicklung|Kurs besser läuft|Kurs läuft/.test(await page.locator('.qx-sentence').innerText()))befund(view,width,'der Satz liest die Frage nicht vor');
-   const ohneWert=(await page.locator('#qx-main a.qx-row .qx-row-why').allInnerTexts()).filter(t=>!/\d/.test(t));
-   if(!await page.locator('#qx-main a.qx-row').count())befund(view,width,'der einfache Einstieg zeigt keine Treffer');
+   if(await page.locator('#qx-main button.vu-chip[data-question][aria-pressed="true"]').count()!==1)befund(view,width,'nicht genau eine Frage gewaehlt');
+   await page.locator('#qx-main button.vu-chip[data-question="momentum"]').click();
+   await page.waitForFunction(()=>location.hash==='#/screener?frage=momentum'&&!document.querySelector('#qx-main .qx-loading')&&document.querySelector('#qx-main a.qk-pr'),null,{timeout:30000});
+   if(await page.locator('#qx-main button.vu-chip[data-question="momentum"]').getAttribute('aria-pressed')!=='true')befund(view,width,'die gewaehlte Frage ist nicht markiert');
+   if(!/Kurs läuft/.test(await page.locator('.qx-sentence').innerText()))befund(view,width,'der Satz liest die Frage nicht vor');
+   const zeilen=page.locator('#qx-main a.qk-pr');
+   if(!await zeilen.count())befund(view,width,'der einfache Einstieg zeigt keine Treffer');
+   const ohneWert=(await page.locator('#qx-main a.qk-pr .qk-sp b').allInnerTexts()).filter(t=>!/\d/.test(t));
    if(ohneWert.length)befund(view,width,'Trefferzeile ohne gemessenen Wert: '+ohneWert[0]);
-   /* Jede Trefferzeile traegt ein URTEIL in Worten, keine zweite Zahl.
-      Konzept-Design: es steht unter dem Namen (.qx-row-verdict), die rechte
-      Spalte zeigt den Wert der gefilterten Eigenschaft - mit ihrem Namen.
-      Die Marke stellt "Eigenschaften:" voran - geprueft wird das Urteil. */
-   const urteile=(await page.locator('#qx-main a.qx-row .qx-row-verdict .qx-pill').allTextContents()).map(t=>t.trim().replace(/^[▲▼◆●○]\s*/,'').replace(/^(Gesamt|Eigenschaften):\s*/,'').toLowerCase());
-   /* Owner-Linie L7 (Plan §11): kein Gesamturteil als Wort, sondern die Zaehlung „k von n Faktoren stark“. */
-   const fremdesUrteil=urteile.filter(t=>!/^\d+ von \d+ faktoren stark$/.test(t));
-   if(!urteile.length)befund(view,width,'keine einzige Trefferzeile traegt ein Urteil');
-   if(fremdesUrteil.length)befund(view,width,'Trefferzeile traegt kein Klartext-Urteil: '+JSON.stringify(fremdesUrteil[0]));
+   if(await page.locator('#qx-main a.qk-pr svg.vu-pmini').count()!==await zeilen.count())befund(view,width,'Trefferzeile ohne Profil');
    /* Die Methodik der Frage steht dabei: die Schwelle ist ein WERT (70),
       die Stufe daneben eine POSITION (factor-band-2.0.0) - beides gesagt. */
    await page.getByText(/Gesucht wird ein Wert von 70 oder mehr .*Die Stufe neben jeder Aktie .* ist dagegen ihre Position unter allen bewerteten Aktien/).waitFor();
@@ -277,24 +269,33 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.getByRole('link',{name:'Im Profi-Modus verfeinern',exact:true}).click();
    await bereit(page,'screener');
    if(!/^#\/screener\/profi\?query=/.test(await page.evaluate(()=>location.hash)))befund(view,width,'der Profi-Modus bekommt die Regel nicht');
-   if(await page.locator(v3?'.qv3-cond':'.qx-rules .qx-rule').count()<1)befund(view,width,'Profi-Modus ohne Regel');
+   if(await page.locator('.qv3-conds .qk-rc:not(.qk-add)').count()<1)befund(view,width,'Profi-Modus ohne Regel');
   }
   if(view==='screener-hoch'){
-   /* Redesign 2027 (Q02): zuerst 10 Zeilen und „Alle N zeigen“ - gezaehlt wird die ganze Liste. */
-   const alle=page.locator('#qx-main button.qv3-all');if(await alle.count()){await alle.first().click();await page.waitForTimeout(300);}
-   const zeilen=await page.locator('#qx-main a.qx-row').allInnerTexts();
+   /* Konzept Quant 2026-11 (QX03): zuerst 7 Zeilen und „Alle N zeigen“ - gezaehlt wird die ganze Liste. */
+   const alle=page.locator('#qx-main button.qk-more');if(await alle.count()){await alle.first().click();await page.waitForTimeout(300);}
+   const zeilen=await page.locator('#qx-main a.qk-pr').allInnerTexts();
    if(zeilen.length<20)befund(view,width,'nahe am Hoch: nur '+zeilen.length+' Zeilen');
    const mitKurs=zeilen.filter(t=>/\d+,\d+\s*\$/.test(t)&&/\d{2}\.\d{2}\.\d{4}/.test(t)).length;
    if(mitKurs<zeilen.length*0.8)befund(view,width,'nahe am Hoch: nur '+mitKurs+' von '+zeilen.length+' Zeilen mit Kurs und Datum');
   }
   if(view==='screener-profi'&&v3){
-   /* Redesign 2027 (Q02, q02-b): dunkle Profi-Fläche. Dieselben Zusagen: andere Datenbasis waehlbar, Regeln sichtbar und
-      teilbar, eine unerfuellbare Regel liefert keine Treffer statt Ersatz, ungueltige Regeln werden nicht still ersetzt. */
+   /* Konzept Quant 2026-11 (QX03, Entscheidung 8): Profi hell, Bedingungen als Chips (Antippen oeffnet den Regler).
+      Dieselben Zusagen: andere Datenbasis waehlbar, Regeln sichtbar und teilbar, eine unerfuellbare Regel liefert keine
+      Treffer statt Ersatz, ungueltige Regeln werden nicht still ersetzt. */
    if(!await page.locator('#qx-main a[href*="daten=v1"]').count())befund(view,width,'screener methodologies missing');
-   if(await page.locator('.qv3-cond').count()<1)befund(view,width,'Profi-Modus ohne Regel');
+   const chips=page.locator('.qv3-conds .qk-rc:not(.qk-add)');
+   if(await chips.count()<1)befund(view,width,'Profi-Modus ohne Regel');
+   if(await page.locator('.qk-pro-light').count()!==1)befund(view,width,'Profi-Modus nicht im hellen Schema');
    await page.waitForFunction(()=>document.querySelectorAll('#qx-main a.qv3-prow').length>0,null,{timeout:15000}).catch(()=>{});
    if(!await page.locator('#qx-main a.qv3-prow').count())befund(view,width,'Profi-Modus liefert nichts');
-   await page.evaluate(()=>document.querySelectorAll('.qv3-cond input[aria-label$=" ab"]').forEach(i=>{i.value='100';i.dispatchEvent(new Event('input',{bubbles:true}));}));
+   const n=await chips.count();
+   for(let k=0;k<n;k++){
+    await page.locator('.qv3-conds .qk-rc:not(.qk-add)').nth(k).click();
+    await page.evaluate(()=>document.querySelectorAll('#qv3-pro-edit .qv3-cond input[aria-label$=" ab"]').forEach(i=>{i.value='100';i.dispatchEvent(new Event('input',{bubbles:true}));}));
+    await page.evaluate(()=>{const sh=document.getElementById('qv3-pro-edit');if(sh&&globalThis.VUUI)globalThis.VUUI.closeSheet(sh);});
+    await page.waitForTimeout(250);
+   }
    const leer=await page.waitForFunction(()=>/^0 Treffer$/.test((document.querySelector('.qv3-pro-n')||{}).textContent||''),null,{timeout:10000}).then(()=>true,()=>false);
    if(!leer)befund(view,width,'unerfuellbare Regel (100–100 je Bedingung): keine Antwort oder Treffer');
    else if(await page.locator('#qx-main a.qv3-prow').count())befund(view,width,'unerfuellbare Regel liefert Treffer');
@@ -337,8 +338,9 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   }
   if(view==='strategien'&&v3){
    /* Redesign 2027 (Q03): Karten ohne Bild (Mockup), dieselben Zusagen: jeder Ansatz, seine heutigen Treffer, keine Trefferquote. */
-   const karten=await page.locator('#qx-main a.qv3-scard').count();
-   if(karten!==profiles.length)befund(view,width,'der Strategie-Katalog zeigt '+karten+' von '+profiles.length+' Ansaetzen');
+   /* Konzept Quant 2026-11 (QX04, Entscheidung 4): ein Stil ohne Daten steht als Fussnote, nicht als Karte. */
+   const karten=await page.locator('#qx-main a.qk-stc, #qx-main p[data-profile]').count();
+   if(karten!==profiles.length)befund(view,width,'der Katalog der Anlagestile zeigt '+karten+' von '+profiles.length+' Ansaetzen');
    const katalog=await page.locator('#qx-main').innerText();
    if(!/Aktien erfüllen heute|erfüllen heute alle|\d[\d.]*\s+Aktien heute/.test(katalog))befund(view,width,'kein Ansatz nennt seine heutigen Treffer');
    if(!/keine (Erfolgs- oder )?Trefferquote/i.test(katalog))befund(view,width,'die Absage an eine Trefferquote fehlt');
@@ -358,15 +360,17 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const text=await page.locator('#qx-main').innerText();
    if(/Gerade nicht erreichbar/.test(text))befund(view,width,'Strategieseite faellt in die Wiederherstellung');
    /* Redesign 2027 (Q03, q03-b): „Die Regeln“ und „Erfüllen heute“ oben; die bisherige Auswertung unter „Mehr zu dieser Strategie“. */
-   for(const satz of v3?['Die Regeln','Erfüllen heute','Mehr zu dieser Strategie']:['Welche Bedingungen gelten?','Wer passt heute?'])if(!text.includes(satz))befund(view,width,'fehlt: '+satz);
+   for(const satz of v3?['Die Regel','Erfüllen heute','Mehr zu diesem Anlagestil']:['Welche Bedingungen gelten?','Wer passt heute?'])if(!text.toLowerCase().includes(satz.toLowerCase()))befund(view,width,'fehlt: '+satz);
   }
   if(view==='aktie-nvda'){
    /* Redesign 2027 (Q07): die bisherigen Inhalte stehen vollstaendig unter den Ausklappern von Schritt 5 und 6. */
    await page.evaluate(()=>document.querySelectorAll('#qx-main details.qv3-more').forEach(d=>{d.open=true;}));
-   /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES KANONS - gelesen aus
-      der Engine. Eine Gesamtnote gibt es bewusst nicht. */
+   /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES PROFILS (Konzept Quant 2026-11: Verdient gut, Wächst, Zahlen solide,
+      Kurs läuft, Günstig, Ruhiger Kurs, Analysten) - dieselben sieben wie in der Engine. Eine Gesamtnote gibt es bewusst nicht. */
    const ids=await page.locator('details.qx-factor[data-factor]').evaluateAll(ns=>ns.map(n=>n.dataset.factor));
-   if(ids.join('|')!==factorEvidence.FACTOR_ORDER.join('|'))befund(view,width,'factor order drifted: '+ids.join('|'));
+   const PROFIL=['profitability','growth','quality','momentum','value','risk','revisions'];
+   if(PROFIL.slice().sort().join('|')!==factorEvidence.FACTOR_ORDER.slice().sort().join('|'))befund(view,width,'Profil und Engine kennen verschiedene Eigenschaften');
+   if(ids.join('|')!==PROFIL.join('|'))befund(view,width,'factor order drifted: '+ids.join('|'));
    await page.getByText(/Eine Gesamtnote gibt es bewusst nicht/).first().waitFor();
    /* Quant Daily Usefulness: Pro/Contra hat einen eigenen Abschnitt (#dafuer). */
    const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
@@ -441,8 +445,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.waitForFunction(()=>document.querySelector('section.qc-chart').dataset.range==='1Y');
    /* Die Abschnitte der Analyse und die Vertiefungen. */
    const abschnitte=await page.locator('#qx-main section[id]').evaluateAll(ns=>ns.map(n=>n.id));
-   /* Reihenfolge nach Owner-Mockup "Quant – Optimiertes UI Konzept" (23.10.2026); die Unternehmenszahlen sind Teil der Eigenschaften. */
-   const soll=['einordnung','zahlen','dafuer','veraenderung','setup','strategie','technik','historie','grenzen'];
+   /* Reihenfolge nach dem Konzept Quant „Ein Profil je Aktie“ (QX05): sechs Kapitel, die Geschäftszahlen als Kapitel 6. */
+   const soll=['einordnung','dafuer','veraenderung','setup','strategie','technik','historie','zahlen','grenzen'];
    for(const id of soll)if(!abschnitte.includes(id))befund(view,width,'Abschnitt fehlt: '+id);
    const ist=abschnitte.filter(id=>soll.includes(id));
    if(ist.join('|')!==soll.filter(id=>ist.includes(id)).join('|'))befund(view,width,'Abschnitte in falscher Reihenfolge: '+ist.join('|'));
@@ -461,45 +465,34 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Die sechs Pillen (Live-Befund 24.10.2026): Ein Klick markiert immer die gewaehlte Pille - auf dem Desktop-Raster
       stehen zwei Karten nebeneinander, dort markierte das Beobachtungsband die rechte. Danach: Scrollen (Desktop)
       und Wischen (Mobil) markieren den Bereich, der vorne steht. */
-   {const pillen=await page.locator('.qv2-toc a[data-target]').evaluateAll(as=>as.map(a=>a.dataset.target));
-    if(pillen.join('|')!=='ueberblick|einordnung|dafuer|veraenderung|setup|historie')befund(view,width,'nicht die sechs Pillen: '+pillen.join('|'));
-    const aktiv=()=>page.locator('.qv2-toc a[aria-current="true"]').evaluateAll(as=>as.map(a=>a.dataset.target).join('|'));
-    const ruhig=async()=>{let vorher=null;for(let i=0;i<40;i++){await page.waitForTimeout(100);const jetzt=await page.evaluate(()=>scrollY+'/'+(document.querySelector('.qv2-grid')||{}).scrollLeft);if(jetzt===vorher)return;vorher=jetzt;}};
-    for(const ziel of [...pillen.slice(1),...pillen.slice(0,-1).reverse()]){
-     await page.locator(`.qv2-toc a[data-target="${ziel}"]`).click();await ruhig();await page.waitForTimeout(700);
-     const ist=await aktiv();if(ist!==ziel)befund(view,width,`Pille "${ziel}" angeklickt, markiert ist "${ist}"`);}
-    if(v3&&width<760){
-     /* Redesign 2027 (Q07): eine lange Seite auch auf dem Handy - die Pille folgt dem senkrechten Scrollen. */
-     for(const ziel of ['setup','dafuer','historie','veraenderung']){
-      await page.evaluate(id=>{const n=document.getElementById(id);scrollTo({top:scrollY+n.getBoundingClientRect().top-innerHeight*0.32,behavior:'instant'});},ziel);
-      await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Scrollen zu "${ziel}" markiert ist "${ist}"`);}
-    }else if(width>=760){
-     for(const ziel of ['einordnung','veraenderung'])/* links in ihrer Zeile, rechts daneben dafuer bzw. setup */{
-      await page.evaluate(id=>{const n=document.getElementById(id);scrollTo({top:scrollY+n.getBoundingClientRect().top-innerHeight*0.32,behavior:'instant'});},ziel);
-      await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Scrollen zu "${ziel}" markiert ist "${ist}"`);}
-    }else{
-     for(const ziel of ['setup','dafuer','historie']){
-      await page.locator('.qv2-grid').evaluate((g,id)=>g.scrollTo({left:g.querySelector('#'+id).offsetLeft,behavior:'instant'}),ziel);
-      await page.waitForTimeout(700);const ist=await aktiv();if(ist!==ziel)befund(view,width,`beim Wischen zu "${ziel}" markiert ist "${ist}"`);}
-    }
+   /* Konzept Quant 2026-11 (QX05, Entscheidung 7): keine zweite Schritt-Leiste; sechs Kapitel in fester Reihenfolge,
+      standardmäßig zugeklappt, offene merkt sich das Gerät. */
+   {const kap=await page.locator('#qx-main details.qk-chap').evaluateAll(ds=>ds.map(d=>d.dataset.chap));
+    if(kap.join('|')!=='einordnung|dafuer|veraenderung|setup|historie|zahlen')befund(view,width,'nicht die sechs Kapitel: '+kap.join('|'));
+    if(await page.locator('.qv2-toc').count())befund(view,width,'zweite Schritt-Leiste unter der Perspektiven-Leiste');
+    const gemerkt=await page.evaluate(()=>{const d=document.querySelector('#qx-main details.qk-chap[data-chap="dafuer"]');d.open=false;d.dispatchEvent(new Event('toggle'));d.open=true;d.dispatchEvent(new Event('toggle'));return localStorage.getItem('vu.quant.kapitel.v1')||'';});
+    if(!/dafuer/.test(gemerkt))befund(view,width,'offenes Kapitel wird nicht gemerkt');
     await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));}
   }
   if(view==='radar'){
-   /* QUANT RADAR: Karten mit Ereignis, Datum und - wo vorhanden - Niveaus;
-      die Sortierregel und die geschlossenen Ereignistypen stehen offen da. */
-   /* Visual First (VU3): die Karte ist ein article; Link zur Aktie ist ihr Kopf, "Details" klappt den bisherigen Inhalt auf. */
-   const karten=page.locator('.q-radar-card');
-   if(!await karten.count())befund(view,width,'Radar ohne Karten');
-   if(!await karten.first().locator('a.q-rc-head[href*="/aktie/"]').count())befund(view,width,'Radar-Karte ohne Link zur Aktie');
-   const erste=await karten.first().innerText();
-   if(!/Stand \d{2}\.\d{2}\.\d{4}/.test(erste))befund(view,width,'Radar-Karte ohne Datum');
+   /* MELDUNGEN (Konzept Quant 2026-11, QX02): eine Zeile je Aktie, Details im Sheet mit Datum und Weg zur Aktie;
+      die Sortierregel steht offen da; Chips filtern nach Art. */
+   const zeilen=page.locator('button.qk-mr');
+   if(!await zeilen.count())befund(view,width,'Meldungen ohne Zeilen');
+   const hoehe=await page.evaluate(()=>document.querySelector('#qx-main').getBoundingClientRect().height);
+   if(hoehe>1600)befund(view,width,'Meldungen am Anfang zu lang: '+Math.round(hoehe)+' px');
+   await zeilen.first().click();
+   const sheet=page.locator('#qk-meld-sheet');
+   await sheet.locator('a.q-rc-head[href*="/aktie/"]').waitFor({timeout:5000}).catch(()=>befund(view,width,'Meldung ohne Link zur Aktie'));
+   if(!/Stand \d{2}\.\d{2}\.\d{4}/.test(await sheet.innerText().catch(()=>'')))befund(view,width,'Meldung ohne Datum');
+   await sheet.locator('[data-close]').click().catch(()=>{});
    /* "keine Gesamtnote" ist die Absage, nicht die Note. */
    const radarText=await page.locator('#qx-main').innerText();
-   if(/(?<![Kk]eine )Gesamtnote|\b(Kaufen|Verkaufen|Kursziel)\b/i.test(radarText))befund(view,width,'Radar mit Noten- oder Handlungssprache');
-   const regel=await page.locator('section.qx-section').filter({hasText:'Wie der Radar sortiert'}).innerText();
+   if(/(?<![Kk]eine )Gesamtnote|\b(Kaufen|Verkaufen|Kursziel)\b/i.test(radarText))befund(view,width,'Meldungen mit Noten- oder Handlungssprache');
+   const regel=await page.locator('details.qk-how').evaluate(d=>{d.open=true;return d.innerText;}).catch(()=>'');
    if(!/radar-priority-1\.0\.0/.test(regel))befund(view,width,'Sortierregel nicht offen gelegt');
-   await page.locator('button.q-chip[data-filter="setups"]').click();
-   if(await page.locator('button.q-chip[data-filter="setups"]').getAttribute('aria-pressed')!=='true')befund(view,width,'Filter nicht markiert');
+   await page.locator('.qk-chips button[data-filter="setups"]').click();
+   if(await page.locator('.qk-chips button[data-filter="setups"]').getAttribute('aria-pressed')!=='true')befund(view,width,'Filter nicht markiert');
   }
   if(view==='aktie-jpm'){
    /* A bank keeps its industry template instead of inventing factors. */
@@ -664,7 +657,8 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
   if(await page.locator('#qx-main .qv3').count()){
    /* Redesign 2027 (Q01): kurze Frage als H1, Nutzen in einem Satz. */
    await page.locator('#qx-main h1').filter({hasText:'Was hat sich heute verändert?'}).waitFor();
-   await page.locator('#qx-main .qv3-intro .vu-lead').filter({hasText:'über 6.000 US-Aktien nach festen Regeln'}).waitFor();
+   /* Konzept Quant 2026-11 (QX01): ein Satz zum Profil. */
+   await page.locator('#qx-main .qv3-intro .vu-lead').filter({hasText:'Profil aus sieben Eigenschaften'}).waitFor();
   } else {
   await page.locator('#qx-main h1').filter({hasText:'Jeden Tag sehen, was sich verändert.'}).waitFor();
   await page.locator('#qx-main .q-hero-lead').filter({hasText:'wie oft das früher besser lief als der Markt'}).waitFor();

@@ -66,6 +66,11 @@
     plus: '<path d="M12 5v14M5 12h14"/>',
     share: '<path d="M12 15V3M8 7l4-4 4 4"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',
     gear: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+    bars: '<path d="M5 20V13M11 20V7M17 20V4"/>',
+    pulse: '<path d="M3 12h4l2-6 4 12 2-6h6"/>',
+    wave: '<path d="M3 14c2.5 0 2.5-4 5-4s2.5 4 5 4 2.5-4 5-4 2.5 4 3 4"/>',
+    person: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+    pie: '<circle cx="12" cy="12" r="8"/><path d="M12 4v8h8"/>',
     grid: '<rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><rect x="13" y="13" width="7" height="7" rx="1.5"/>'
   };
   function glyph(name, size) {
@@ -408,7 +413,44 @@
     return v;
   }
 
+  /* ------------------------------------------------------------ Profil (Konzept Quant „Ein Profil je Aktie“, 08.11.2026)
+     Sieben Eigenschaften, ein Wort je Eigenschaft, überall gleich (docs/design/quant-2026-11, Entscheidungen 1 und 2).
+     Werte 0–100 (Rang unter den bewerteten US-Aktien) oder null = keine Daten. Keine Gesamtnote. */
+  var PROFILE_KEYS = ["profitability", "growth", "quality", "momentum", "value", "risk", "revisions"];
+  var PROFILE_LABEL = { profitability: "Verdient gut", growth: "Wächst", quality: "Zahlen solide", momentum: "Kurs läuft", value: "Günstig", risk: "Ruhiger Kurs", revisions: "Analysten" };
+  var PROFILE_GLYPH = { profitability: "bars", growth: "pulse", quality: "check", momentum: "line", value: "target", risk: "wave", revisions: "person" };
+  var STAGE_MARKS = [25, 45, 75, 90];
+  /** Stufe einer Eigenschaft: Sehr schwach < 25 ≤ Schwach < 45 ≤ Mittel < 75 ≤ Stark < 90 ≤ Sehr stark. */
+  function profileStage(v) { return !isNum(v) ? "Keine Daten" : v >= 90 ? "Sehr stark" : v >= 75 ? "Stark" : v >= 45 ? "Mittel" : v >= 25 ? "Schwach" : "Sehr schwach"; }
+  function profileStrong(v) { return isNum(v) && v >= 75; }
+  function profileValue(values, k) { var v = values ? values[k] : null; return isNum(v) ? Math.max(0, Math.min(100, Math.round(v))) : null; }
+  function profileAria(values, keys) {
+    return "Profil: " + keys.map(function (k) { var v = profileValue(values, k); return PROFILE_LABEL[k] + " " + (v == null ? "keine Daten" : v); }).join(", ");
+  }
+  /** Profil klein: sechs Säulen in fester Reihenfolge (ohne Analysten), stark neongrün mit schwarzem Rand, fehlend gestrichelt. */
+  function profileMini(values, o) {
+    var x = o || {}, w = x.width || 66, h = x.height || 30, keys = PROFILE_KEYS.slice(0, 6), gap = 4, bw = (w - gap * (keys.length - 1)) / keys.length;
+    return '<svg class="vu-pmini" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" role="img" aria-label="' + esc(x.label || profileAria(values, keys)) + '">' + keys.map(function (k, i) {
+      var v = profileValue(values, k), bh = v == null ? 3 : Math.max(3, v / 100 * h), cls = v == null ? "is-na" : profileStrong(v) ? "is-hi" : "";
+      return '<rect' + (cls ? ' class="' + cls + '"' : "") + ' x="' + (i * (bw + gap)).toFixed(1) + '" y="' + (h - bh).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + bh.toFixed(1) + '" rx="2"/>';
+    }).join("") + "</svg>";
+  }
+  /** Legende zum kleinen Profil: die sechs Wörter unter den Säulen. */
+  function profileLegend() { return '<div class="vu-plg" aria-hidden="true">' + PROFILE_KEYS.slice(0, 6).map(function (k) { return "<span>" + esc(PROFILE_LABEL[k]) + "</span>"; }).join("") + "</div>"; }
+  /** Profil groß: sieben Zeilen mit Symbol, Wort, Balken (Stufen-Marken 25 · 45 · 75 · 90), Zahl und Stufe. o.why: {key: Grund}. */
+  function profileFull(values, o) {
+    var x = o || {};
+    return '<div class="vu-pf" role="list">' + PROFILE_KEYS.map(function (k) {
+      var v = profileValue(values, k), why = x.why && x.why[k];
+      return '<div class="vu-pf-r' + (v == null ? " is-na" : "") + '" role="listitem"' + (v == null && why ? ' title="' + esc(why) + '"' : "") + ' data-key="' + k + '"><span class="vu-pf-l">' + glyph(PROFILE_GLYPH[k], 15) + esc(PROFILE_LABEL[k]) + "</span>" +
+        '<span class="vu-pf-b" aria-hidden="true"><i class="' + (profileStrong(v) ? "is-hi" : "") + '" style="width:' + (v == null ? 0 : v) + '%"></i>' + STAGE_MARKS.map(function (m) { return '<em style="left:' + m + '%"></em>'; }).join("") + "</span>" +
+        '<b class="vu-num">' + (v == null ? "–" : v) + "</b>" + (x.noStage ? "" : '<span class="vu-pf-s">' + esc(profileStage(v)) + "</span>") + "</div>";
+    }).join("") + "</div>";
+  }
+
   return Object.freeze({
+    PROFILE: Object.freeze({ keys: PROFILE_KEYS, label: PROFILE_LABEL, glyph: PROFILE_GLYPH, marks: STAGE_MARKS, stage: profileStage, strong: profileStrong }),
+    profileMini: profileMini, profileFull: profileFull, profileLegend: profileLegend,
     VERSION: VERSION, skeleton: skeleton, bindIntent: bindIntent, transition: transition, legal: legal, legalNotice: legalNotice, neutralSourceText: neutralSourceText, neutralSources: neutralSources, PERSPECTIVES: PERSPECTIVES, esc: esc, num: num, pct: pct, money: money,
     glyph: glyph, worldIcon: worldIcon, hud: hud, logo: logo,
     chg: chg, movementLabel: movementLabel, verdict: verdict, help: help, q: q,

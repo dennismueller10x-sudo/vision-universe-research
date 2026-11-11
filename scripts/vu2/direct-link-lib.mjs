@@ -50,9 +50,10 @@ export const SPECS = {
   /* Redesign 2027 (Q01): Frage als Titel, Suche, „So arbeitet Quant“, Markt als Balken, „Heute bei Quant“ - kein Globus mehr.
      Gezeichnet ist der Marktbalken (C17); geprueft wird weiter: Titel, genug Inhalt, Quant genannt. */
   start: {path: '/quant/', critical: true, h1: 'Was hat sich heute verändert', minText: 2000, includes: ['Quant', 'Heute bei Quant']},
-  radar: {path: '/quant/#/radar', h1: 'Was ist heute neu', minText: 8000, chart: GLOBE},
+  /* Konzept Quant 2026-11 (QX02): Radar heißt „Meldungen“, eine Zeile je Aktie, kein Globus. */
+  radar: {path: '/quant/#/meldungen', h1: 'Was ist heute neu', minText: 600, includes: ['Meldungen', 'Neueste zuerst']},
   /* Redesign 2027 (Q03): Frage als Titel, Strategie-Karten statt Globus. */
-  strategien: {path: '/quant/#/strategien', h1: 'Welche Art von Firma', minText: 1500, includes: ['Aktien heute']},
+  strategien: {path: '/quant/#/stile', h1: 'Welche Art von Firma', minText: 1500, includes: ['Aktien heute']},
   /* Redesign 2027 (Q02): „Quant Screener“ bleibt die Überschrift, Einstieg leitet in den Profi-Screener (Bedingungen) statt Globus. */
   screener: {path: '/quant/screener/', h1: 'Quant Screener', minText: 1000},
   // emptyOk: "Zuletzt analysiert" ist beim Erstbesuch ehrlich leer (die Einleitung erklaert, wo Aktien erscheinen) - kein Fehler.

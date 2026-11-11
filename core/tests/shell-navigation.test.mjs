@@ -23,7 +23,7 @@ test('every product dock starts with the product name, never Home or Start, and 
   assert.deepEqual(JSON.parse(JSON.stringify(PRODUCTS.map(p => [p.id, p.items.map(([, label]) => label)]))), [
     ['discover', ['Discover','Welten','Strategien','Swipen']],
     ['elliott', ['Elliott','Zählbar','Neu','Suche']],
-    ['quant', ['Quant','Screener','Strategien','Aktien']],
+    ['quant', ['Quant','Screener','Anlagestile','Aktien']], /* Konzept Quant 2026-11, Entscheidung 3 */
     ['fundamental', ['Fundamental','Ranglisten','Branchen','Methodik']],
     ['technical', ['Technical','Screener','Chart','Muster']],
     ['vorsorge', ['Vorsorge','Planer','ETFs','Portfolio']],
@@ -169,7 +169,7 @@ test('menu routes distinguish home, query, hash segment boundaries and detail pa
     ['/quant/#/methodik/faktoren','quant','/quant/#/methodik'],
     ['/quant/#/aktie/AAPL/technik','quant','/quant/#/aktien'],
     ['/quant/stock/?ticker=AAPL','quant','/quant/#/aktien'],
-    ['/quant/strategies/builder/','quant','/quant/#/strategien'],
+    ['/quant/strategies/builder/','quant','/quant/#/stile'],
     ['/quant/methodology/','quant','/quant/#/methodik'],
     ['/screener/?view=saved&f=pe','screener','/screener/?view=saved'],
     ['/screener/?view=compare','screener','/screener/?view=results'],

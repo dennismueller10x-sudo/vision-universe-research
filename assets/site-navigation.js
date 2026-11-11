@@ -49,7 +49,7 @@
   const groups = [
     /* Portfolios (Owner 06.11.2026): alle Musterdepots gesammelt; breite Kachel unter dem 3 x 3-Raster. */
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
-    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
+    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Anlagestile','/quant/#/stile','◬'],['Meldungen','/quant/#/meldungen','◉'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
     {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤']]},
     {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus Geschäftsberichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
     {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Treffer','/supertrader/treffer/','◬'],['Forschung','/supertrader/forschung/','▧'],['Quellen','/supertrader/sources/','▤']]},
@@ -98,14 +98,15 @@
         return q.get('welle') || q.get('richtung') || q.get('status') || q.get('rolle') ? null : 'elliott';
       }},
     {id: 'quant', label: 'Quant', match: (p, loc) => p.startsWith('/quant/') && !isElliottDetail(p, loc),
-      items: [['quant','Quant','/quant/#/','quant'],['screener','Screener','/quant/#/screener','screener','Quant Screener'],['strategien','Strategien','/quant/#/strategien','strategies'],['aktien','Aktien','/quant/#/aktien','stocks']],
+      items: [['quant','Quant','/quant/#/','quant'],['screener','Screener','/quant/#/screener','screener','Quant Screener'],['strategien','Anlagestile','/quant/#/stile','strategies'],['aktien','Aktien','/quant/#/aktien','stocks']],
       active: loc => {
         const legacy = {'/quant/screener/': 'screener', '/quant/strategies/': 'strategien', '/quant/strategies/builder/': 'strategien', '/quant/stock/': 'aktien', '/quant/technical/': 'aktien', '/quant/ranking/': 'aktien', '/quant/methodology/': 'quant'}[loc.pathname];
         if (legacy) return legacy;
         if (loc.pathname !== '/quant/') return null;
         const k = hashPart(loc, 0);
-        /* Q00: Methodik und Backtest gehören zum Start „Quant“, Technische Lagen zu „Aktien“. */
-        return {'': 'quant', radar: 'quant', methodik: 'quant', backtest: 'quant', screener: 'screener', strategien: 'strategien', aktien: 'aktien', aktie: 'aktien', vergleich: 'aktien', chartlagen: 'aktien'}[k] || null;
+        /* Q00: Methodik und Backtest gehören zum Start „Quant“, Technische Lagen zu „Aktien“. Konzept Quant 2026-11: Meldungen,
+           Anlagestile (#/stile) und Forschung heißen neu; die alten Adressen leiten weiter und markieren dasselbe. */
+        return {'': 'quant', radar: 'quant', meldungen: 'quant', methodik: 'quant', backtest: 'quant', forschung: 'quant', screener: 'screener', strategien: 'strategien', stile: 'strategien', aktien: 'aktien', aktie: 'aktien', vergleich: 'aktien', chartlagen: 'aktien'}[k] || null;
       }},
     /* Fundamental: eigenes Produkt. #/<TICKER> ist die Unternehmensseite (nur Produktkontext); Entdecken und Suche sind
        Ansichten der Startseite, die fundamental/app.js (VUFundamental.Model.parseRoute) liest. */

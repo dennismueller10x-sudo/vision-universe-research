@@ -139,9 +139,9 @@
   var NAV = [
     { href: BASE + "#/", label: "Quant Home" },
     { href: BASE + "#/screener", label: "Screener" },
-    { href: BASE + "#/radar", label: "Radar" },
-    { href: BASE + "#/strategien", label: "Strategien" },
-    { href: BASE + "#/backtest", label: "Backtests" },
+    { href: BASE + "#/meldungen", label: "Meldungen" },
+    { href: BASE + "#/stile", label: "Anlagestile" },
+    { href: BASE + "#/forschung", label: "Forschung" },
     { href: BASE + "#/aktien", label: "Aktien" },
     { href: BASE + "#/methodik", label: "Methodik" },
     { href: "/ask/", label: "AI Atlas" },

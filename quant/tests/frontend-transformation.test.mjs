@@ -99,7 +99,7 @@ test("Die Quant-Navigation führt genau die vier Hauptbereiche plus das globale 
   /* Erster Eintrag = Produktname (nie "Home"), dann Screener, Strategien, Aktien. */
   assert.deepEqual(items, [
     ["quant", "Quant", "/quant/#/", null], ["screener", "Screener", "/quant/#/screener", "Quant Screener"],
-    ["strategien", "Strategien", "/quant/#/strategien", null], ["aktien", "Aktien", "/quant/#/aktien", null]
+    ["strategien", "Anlagestile", "/quant/#/stile", null], ["aktien", "Aktien", "/quant/#/aktien", null]
   ]);
   /* Jeder Bereich fuehrt auf eine Route, die der Router kennt. */
   for (const [, label, href] of QUANT_DOCK.items) {

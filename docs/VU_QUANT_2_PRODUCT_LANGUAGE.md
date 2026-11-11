@@ -284,13 +284,13 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 
 ## Die sieben Eigenschaften
 
-### Bilanz- & Ergebnisqualität
+### Zahlen solide
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `quality / qualityScore` |
 | Schlüssel | `quality` |
-| **User Label** | **Bilanz- & Ergebnisqualität** |
+| **User Label** | **Zahlen solide** |
 | Als Frage | Wie belastbar sind Bilanz und ausgewiesene Gewinne? |
 | Erklärung für Einsteiger | Wie solide das Unternehmen finanziert ist, ob seine Gewinne durch echten Zahlungsfluss gedeckt sind und wie stabil die Marge war. Wie viel es verdient, misst die Profitabilität. |
 | Professional Label | Quality (quantV2.factorEvidence.quality) |
@@ -298,13 +298,13 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Bilanz oder Gewinnqualität sind schwächer als bei den meisten anderen. |
 | Nicht verfügbar | Zur Bilanz- und Ergebnisqualität liegen nicht genug geprüfte Geschäftszahlen vor. |
 
-### Wachstum
+### Wächst
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `growth / growthScore` |
 | Schlüssel | `growth` |
-| **User Label** | **Wachstum** |
+| **User Label** | **Wächst** |
 | Als Frage | Wächst das Geschäft? |
 | Erklärung für Einsteiger | Ob Umsatz, Gewinn und Cashflow zulegen — und ob das Tempo zunimmt oder nachlässt. |
 | Professional Label | Growth (quantV2.factorEvidence.growth) |
@@ -312,13 +312,13 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Das Geschäft wächst langsamer als bei den meisten anderen. |
 | Nicht verfügbar | Zum Wachstum fehlt die nötige Mehrjahresreihe. |
 
-### Kursstärke
+### Kurs läuft
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `momentum / momentumScore (quant-v2.1.0, Kursbasis)` |
 | Schlüssel | `momentum` |
-| **User Label** | **Kursstärke** |
+| **User Label** | **Kurs läuft** |
 | Als Frage | Läuft der Kurs besser als der Rest? |
 | Erklärung für Einsteiger | Wie sich der Kurs zuletzt entwickelt hat — auch im Vergleich zum Gesamtmarkt. Dividenden zählen hier nicht mit; die stehen bei der Anlegerrendite. |
 | Professional Label | Momentum (quantV2.factorEvidence.momentum) |
@@ -326,13 +326,13 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Der Kurs läuft schwächer als bei den meisten anderen. |
 | Nicht verfügbar | Zur Kursstärke reicht die Kurshistorie nicht aus. |
 
-### Bewertung
+### Günstig
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `value / valueScore` |
 | Schlüssel | `value` |
-| **User Label** | **Bewertung** |
+| **User Label** | **Günstig** |
 | Als Frage | Ist der Preis im Verhältnis zum Geschäft hoch oder niedrig? |
 | Erklärung für Einsteiger | Was du für das bezahlst, was das Unternehmen tatsächlich verdient und umsetzt. |
 | Professional Label | Value (quantV2.factorEvidence.value) |
@@ -340,13 +340,13 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Gemessen am Geschäft ist dieser Titel teurer als die meisten anderen. |
 | Nicht verfügbar | Zur Bewertung fehlen Börsenwert oder Geschäftszahlen. |
 
-### Profitabilität
+### Verdient gut
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `profitability / profitability` |
 | Schlüssel | `profitability` |
-| **User Label** | **Profitabilität** |
+| **User Label** | **Verdient gut** |
 | Als Frage | Wie gut verdient das Unternehmen an dem, was es tut? |
 | Erklärung für Einsteiger | Wie viel vom Umsatz am Ende wirklich hängen bleibt und wie gut das eingesetzte Kapital arbeitet. |
 | Professional Label | Profitability (quantV2.factorEvidence.profitability) |
@@ -354,13 +354,13 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Es bleibt weniger hängen als bei den meisten anderen. |
 | Nicht verfügbar | Zur Profitabilität fehlen Ergebnis- oder Bilanzpositionen. |
 
-### Erwartungstrend
+### Analysten
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `revisions / revisions` |
 | Schlüssel | `revisions` |
-| **User Label** | **Erwartungstrend** |
+| **User Label** | **Analysten** |
 | Als Frage | Werden die Erwartungen angehoben oder gesenkt? |
 | Erklärung für Einsteiger | Ob Analysten ihre Schätzungen für dieses Unternehmen zuletzt nach oben oder nach unten geschraubt haben. |
 | Professional Label | Revisions (quantV2.factorEvidence.revisions) |
@@ -368,13 +368,13 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Die Erwartungen werden gesenkt. |
 | Nicht verfügbar | Es liegt keine lizenzierte, zeitpunktgenaue Schätzquelle vor. Ein Ersatz wäre erfunden und wird nicht gebildet. |
 
-### Risiko
+### Ruhiger Kurs
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `risk / riskScore` |
 | Schlüssel | `risk` |
-| **User Label** | **Risiko** |
+| **User Label** | **Ruhiger Kurs** |
 | Als Frage | Wie ruhig oder wie wild läuft dieser Titel? |
 | Erklärung für Einsteiger | Wie stark der Kurs schwankt und wie tief er in schlechten Phasen gefallen ist. |
 | Professional Label | Risk (quantV2.factorEvidence.risk) |
