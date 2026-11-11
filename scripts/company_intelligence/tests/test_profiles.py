@@ -81,6 +81,28 @@ class ProfileTests(unittest.TestCase):
             extract(COMPANY, body, wrong, NOW)
         self.assertIsNone(annual_filing(COMPANY, {**submissions(), 'cik': '0000000002'}, NOW))
 
+    def test_relaxed_second_pass_only_when_first_pass_finds_nothing(self):
+        # Costco 10-K (filed 2026-10-07): heading "Item 1—Business" (em dash) and
+        # "We are principally engaged in the operation of membership warehouses ...".
+        source = annual_filing(COMPANY, submissions(), NOW)
+        costco = ('<h2>Item 1\u2014Business</h2><p>We are principally engaged in the operation of membership warehouses '
+                  'in the United States and Canada.</p><p>We operate membership warehouses and e-commerce sites based on the concept '
+                  'that offering low prices on a limited selection of nationally-branded and private-label products in a wide range of '
+                  'categories will produce high sales volumes and rapid inventory turnover.</p><h2>Item 1A. Risk Factors</h2>').encode()
+        p = extract(COMPANY, costco, source, NOW)
+        self.assertEqual(p['state'], 'AVAILABLE')
+        self.assertEqual(p['description'], 'Example Holdings Inc. is principally engaged in the operation of membership warehouses in the United States and Canada.')
+        # An issuer the unchanged first pass already describes keeps exactly that description;
+        # the relaxed rules never add or replace sentences (reviewed German copy stays pinned).
+        both = ('<h2>Item 1. Business</h2><p>We design software products for financial institutions.</p>'
+                '<p>We are principally engaged in the operation of membership warehouses in Canada.</p>'
+                '<h2>Item 1A. Risk Factors</h2>').encode()
+        self.assertEqual(extract(COMPANY, both, source, NOW)['description'],
+                         'Example Holdings Inc. designs software products for financial institutions.')
+        # "Engaged in" alone without a business noun or operation/business-of clause still abstains.
+        vague = '<h2>Item 1\u2014Business</h2><p>We are engaged in various activities around the world.</p>'.encode()
+        self.assertEqual(extract(COMPANY, vague, source, NOW)['state'], 'UNAVAILABLE')
+
     def test_combined_registrant_report_requires_named_issuer_not_subsidiary_voice(self):
         source = annual_filing(COMPANY, submissions(), NOW)
         header = b'<ix:hidden><ix:nonNumeric name="dei:EntityRegistrantName">Example Holdings Inc.</ix:nonNumeric><ix:nonNumeric name="dei:EntityRegistrantName">Example Operating LLC</ix:nonNumeric></ix:hidden>'
