@@ -148,7 +148,7 @@ export function assessResourceBudget(view,resources){
  for(const r of resources){
   if(typeof r.path!=='string'||!r.path.startsWith('/')||!Number.isFinite(r.bytes)||r.bytes<0)throw Error('Invalid resource evidence: '+view);
   if(r.path.includes('/fixtures/'))throw Error('Fixture loaded: '+view);
-  if(!budget.history&&r.path.includes('/daily/ref_'))throw Error('Unexpected price-history fanout: '+view);
+  if(!budget.history&&r.path.includes('/daily/ref_'))throw Error('Unexpected price-history fanout: '+view+' ('+r.path+')');
  }
  const decodedBytes=resources.reduce((s,r)=>s+r.bytes,0),requests=resources.length;
  const failures=[];
