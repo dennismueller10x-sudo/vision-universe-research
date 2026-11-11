@@ -103,6 +103,21 @@ class ProfileTests(unittest.TestCase):
         vague = '<h2>Item 1\u2014Business</h2><p>We are engaged in various activities around the world.</p>'.encode()
         self.assertEqual(extract(COMPANY, vague, source, NOW)['state'], 'UNAVAILABLE')
 
+    def test_cross_reference_10k_about_heading_and_explicit_trade_name(self):
+        # GE 10-K 2025 (cross-reference format): Item 1 is only an index entry; the business section is
+        # "ABOUT GE AEROSPACE." and the issuer states its trade name explicitly after its legal name.
+        company = {**COMPANY, 'names': ['Example Holdings']}
+        source = annual_filing(company, submissions(), NOW)
+        body = (b'<p>ABOUT EXAMPLE AERO. Example Holdings Inc. operates as Example Aero (Example Aero or the Company). '
+                b'Example Aero is a global aerospace leader.</p><p>SEGMENTS. Example Aero operates through two reportable segments: '
+                b'Commercial Engines &amp; Services and Defense Systems.</p><p>Item 1. Business</p><p>Page 4</p>')
+        p = extract(company, body, source, NOW)
+        self.assertEqual(p['state'], 'AVAILABLE')
+        self.assertTrue(p['description'].startswith('Example Holdings operates through two reportable segments'))
+        # A trade name that is not stated by the issuer itself never becomes an alias.
+        other = body.replace(b'Example Holdings Inc. operates as Example Aero (Example Aero or the Company)', b'Partners call the group Example Aero')
+        self.assertEqual(extract(company, other, source, NOW)['state'], 'UNAVAILABLE')
+
     def test_combined_registrant_report_requires_named_issuer_not_subsidiary_voice(self):
         source = annual_filing(COMPANY, submissions(), NOW)
         header = b'<ix:hidden><ix:nonNumeric name="dei:EntityRegistrantName">Example Holdings Inc.</ix:nonNumeric><ix:nonNumeric name="dei:EntityRegistrantName">Example Operating LLC</ix:nonNumeric></ix:hidden>'

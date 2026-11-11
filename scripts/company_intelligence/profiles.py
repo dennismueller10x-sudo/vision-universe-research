@@ -14,7 +14,7 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.21'
+PARSER_VERSION = 'company-profile-parser-1.0.22'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
@@ -120,8 +120,9 @@ def annual_filing(company, submissions, now):
 def business_blocks(doc, form, relaxed=False):
     patterns = [r'^(?:part\s+i\s*)?item\s*1[.| :–-]*business\b', r'^items?\s*1\.?\s*(?:and|&)\s*2[.| :–-]*business(?: and properties)?\b'] if form == '10-K' else [r'^item\s*4[.| :–-]*information on the company\b', r'^(?:[bB][. :–-]*)?business overview\b']
     if relaxed and form == '10-K':
-        # Second pass only (extract): an em-dash heading ("Item 1—Business", Costco 10-K 2026).
-        patterns = [r'^(?:part\s+i\s*)?item\s*1\s*[—–-]\s*business\b']
+        # Second pass only (extract): an em-dash heading ("Item 1—Business", Costco 10-K 2026) and the inline
+        # section heading of a cross-reference 10-K, whose Item 1 is only an index entry ("ABOUT GE AEROSPACE. ...", GE 10-K 2025).
+        patterns = patterns + [r'^(?:part\s+i\s*)?item\s*1\s*[—–-]\s*business\b', r'^about\s+[a-z0-9][a-z0-9 &.,\'-]{1,60}?\.\s+\S']
     starts = [i for i, text in enumerate(doc.blocks) if any(re.search(p, text, re.I) for p in patterns)]
     for i in range(len(doc.blocks) - 1):
         if re.fullmatch(r'item\s*1[. :–-]*', doc.blocks[i], re.I) and re.fullmatch(r'business[. :–-]*', doc.blocks[i + 1], re.I) and form == '10-K':
@@ -397,6 +398,14 @@ def _eligible(company, doc, source, sec, relaxed):
                 for alias in re.findall(r'[“"\']([^“”"\']{1,60})[”"\']', match[1]):
                     if alias.lower() not in ('we', 'us', 'our', 'the company', 'company', 'parent') and not re.search(r'\bsubsidiar|together with|incorporated\b', alias, re.I):
                         aliases.append(alias)
+            if relaxed:
+                # Second pass only: the issuer's own explicit trade-name statement directly after its legal
+                # name ("General Electric Company operates as GE Aerospace (GE Aerospace or the Company)").
+                body = re.sub(r'^about\s+[^.]{1,60}\.\s+', '', normalized, flags=re.I)
+                for name in company['names']:
+                    trade = re.match(re.escape(name) + r'(?!\w)(?:[, ]+(?i:company|corporation|incorporated|inc\.?))?\s+operates as ([A-Z][\w&.\' -]{1,40}?)\s*\(\s*\1\b', body)
+                    if trade:
+                        aliases.append(trade[1].strip())
         if aliases:
             company = {**company, 'names': company['names'] + sorted(set(aliases))}
     eligible = []
