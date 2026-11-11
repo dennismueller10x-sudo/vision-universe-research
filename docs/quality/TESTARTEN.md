@@ -30,7 +30,7 @@ Bereits umgestellt: `discover/tests/market-detail.test.mjs` und `core/tests/char
 
 ## UI-geschuetzte Skripte
 
-`scripts/vu2/browser-qa.mjs` und `scripts/discover/browser-qa.mjs` stehen unter UI-Schutz (`docs/quality/ui-protection-revisions.json`). Sie stehen in der Inventur, sind aber nicht umgestellt; eine Aenderung braucht eine Revision mit Owner-Freigabe.
+`scripts/vu2/browser-qa.mjs` und `scripts/discover/browser-qa.mjs` stehen unter UI-Schutz (`docs/quality/ui-protection-revisions/<slug>.json`, alte: `ui-protection-revisions.json`). Sie stehen in der Inventur, sind aber nicht umgestellt; eine Aenderung braucht eine Revision mit Owner-Freigabe.
 
 ## Inventur
 
