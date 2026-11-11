@@ -175,7 +175,7 @@ selbst. Die Artikel erzählen die Geschichte hinter dem Kursausschlag, damit sie
 `PUBLIC_PREFIXES`) und ist für Google freigegeben (`robots`-Meta, `NewsArticle`- und `BreadcrumbList`-JSON-LD,
 `/robots.txt` mit Sitemap). **Google Search Console** (11.11.2026): Dienstkonto `search-console` im Google-Cloud-Projekt
 „Vision Universe“, Nutzer der Domain-Property `visionuniverse.de`, Schlüssel im Secret `GSC_SERVICE_ACCOUNT_JSON`.
-`content.yml` (Teil `search-console`, täglich 03:23 UTC) reicht die Sitemap ein, prüft die Indexierung der neuesten
+`content.yml` (Teil `search-console`, täglich 02:23 UTC, 03:23 Uhr Berlin) reicht die Sitemap ein, prüft die Indexierung der neuesten
 Artikel und legt Klicks, Impressionen und Suchbegriffe intern in den Datenzweig (`seo/search-console/latest.json`);
 der Tageslauf liest den Bericht vor der Themenwahl. Solche
 Artikel tragen `"pruefung": "automatisch"` (intern: strengere Prüfregeln, z. B. drei Quellen) und erscheinen wie alle
