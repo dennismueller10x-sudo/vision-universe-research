@@ -30,3 +30,13 @@ button.secondary{background:transparent;color:var(--accent);border:1px solid var
 .native .view{bottom:max(0px,calc(env(safe-area-inset-bottom) - 14px))}
 .native .view.panel{bottom:0;padding-bottom:max(24px,env(safe-area-inset-bottom))}
 .panel .back{margin:0 0 12px}
+
+/* Native Anmeldemaske: Gestaltung der Web-Anmeldung (Limettengruen #c8f531, schwarze Schrift, grosse Knoepfe), aber nativ (Strang AA) */
+:root{--lime:#c8f531}
+#login{max-width:480px;margin:0 auto}
+#login .login-title{font-size:1.8rem;font-weight:800;letter-spacing:-.01em;margin:.4em 0 .2em}
+#login .login-lead{margin:0 0 20px}
+#login input{min-height:52px;border-radius:12px;border-width:1.5px}
+#login input:focus{outline:2px solid var(--lime);outline-offset:1px;border-color:#000}
+#login button[type=submit]{width:100%;min-height:54px;margin:4px 0 10px;font-weight:800;background:var(--lime);color:#000;border-radius:12px}
+#login button.secondary{width:100%;min-height:48px;color:var(--fg);border-color:var(--line);border-radius:12px}

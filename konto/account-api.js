@@ -120,27 +120,114 @@
     } catch (e) { /* nur Komfort */ }
   }
 
+  /* ---- App-Rahmen (Strang AA) ------------------------------------------------------------------------------
+     In der App laeuft die Seite als iframe unter capacitor://localhost: Cookies des API-Hosts sind dort
+     Drittanbieter-Cookies und werden von WKWebView (ITP) nicht gehalten. Die Sitzung gehoert der nativen Shell
+     (app/www/js/main.js, Keychain/Face ID). Die Seite bittet die Shell per postMessage um das Zugriffstoken, haelt
+     es nur im Arbeitsspeicher dieses Dokuments und schickt es als "Authorization: Bearer" (ohne Cookie). Anmeldung
+     und Abmeldung gibt es im Rahmen nicht: sie laufen nativ (vu:open). Siehe docs/mobile/SECURITY_LOGIN.md. */
+  var APP_PARENTS = ['capacitor://localhost', 'https://localhost', 'http://localhost'];
+  var pendingTokens = {}, tokenSeq = 0, appListening = null;
+
+  function inApp(win) {
+    win = win || globalThis;
+    try { return !!(win.parent && win.parent !== win && /VUEdge\/1/.test(win.navigator.userAgent || '')); } catch (e) { return false; }
+  }
+
+  function parentOrigin(win) {
+    var o = win.location && win.location.ancestorOrigins, first = o && o.length ? o[0] : null;
+    return APP_PARENTS.indexOf(first) >= 0 ? first : '*';   // die Nachricht traegt kein Geheimnis
+  }
+
+  function listen(win) {
+    if (appListening === win) return;
+    appListening = win;
+    win.addEventListener('message', function (e) {
+      if (e.source !== win.parent || APP_PARENTS.indexOf(e.origin) < 0) return;
+      var d = e.data || {};
+      if (d.type === 'vu:token' && Object.prototype.hasOwnProperty.call(pendingTokens, d.id)) {
+        var p = pendingTokens[d.id]; delete pendingTokens[d.id];
+        clearTimeout(p.timer); p.resolve(typeof d.token === 'string' && d.token ? d.token : null);
+      }
+      // Die Shell meldet Anmelden/Abmelden: das Dokument neu laden (kein Token wird je gespeichert).
+      if (d.type === 'vu:auth-changed') {
+        try { win.localStorage.removeItem(SESSION_HINT); } catch (x) { /* nur Komfort */ }
+        try { win.location.reload(); } catch (x) { /* nicht erreichbar */ }
+      }
+    });
+  }
+
+  // Zugriffstoken der Shell oder null (nicht angemeldet, keine Antwort). force: erneuern lassen (nach einer 401).
+  function appToken(force, win) {
+    win = win || globalThis;
+    if (!inApp(win)) return Promise.resolve(null);
+    listen(win);
+    return new Promise(function (resolve) {
+      var id = 't' + (++tokenSeq) + '-' + Date.now();
+      var timer = setTimeout(function () { delete pendingTokens[id]; resolve(null); }, 8000);
+      pendingTokens[id] = {resolve: resolve, timer: timer};
+      try { win.parent.postMessage({type: 'vu:token-request', id: id, force: !!force}, parentOrigin(win)); }
+      catch (e) { clearTimeout(timer); delete pendingTokens[id]; resolve(null); }
+    });
+  }
+
+  // Die native Anmeldung/das native Konto oeffnen (Shell prueft Herkunft und Fenster).
+  function openNativeAccount(win) {
+    win = win || globalThis;
+    if (!inApp(win)) return false;
+    try { win.parent.postMessage({type: 'vu:open', view: 'account'}, parentOrigin(win)); return true; } catch (e) { return false; }
+  }
+
+  // Anmelde-Links der Seite fuehren in der App zur nativen Anmeldung statt zur Web-Anmeldeseite.
+  function interceptLoginLinks(win) {
+    win = win || globalThis;
+    if (!inApp(win) || !win.document) return;
+    win.document.addEventListener('click', function (e) {
+      var link = e.target && e.target.closest && e.target.closest('a[href]');
+      if (!link || e.defaultPrevented) return;
+      var url; try { url = new URL(link.getAttribute('href'), win.location.href); } catch (x) { return; }
+      if (url.origin === win.location.origin && /^\/konto\/anmelden\/?$/.test(url.pathname) && openNativeAccount(win)) e.preventDefault();
+    }, true);
+  }
+  if (typeof document !== 'undefined' && inApp()) interceptLoginLinks();
+
   function request(method, path, body, opts) {
     opts = opts || {};
     var endpoint = config().endpoint;
     if (!endpoint) return Promise.resolve({ok: false, status: 0, state: 'ACCOUNTS_NOT_CONFIGURED', data: null});
     var fetchImpl = opts.fetch || globalThis.fetch;
-    var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
-    var timer = controller ? setTimeout(function () { controller.abort(); }, opts.timeoutMs || 15000) : null;
-    var headers = {'X-VU-Client': 'web'};
-    if (body !== undefined) headers['Content-Type'] = 'application/json';
-    return fetchImpl(endpoint + path, {method: method, credentials: 'include', headers: headers, cache: 'no-store',
-      body: body === undefined ? undefined : JSON.stringify(body), signal: controller ? controller.signal : undefined})
-      .then(function (res) {
-        return res.text().then(function (text) {
-          var data = null;
-          try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
-          return {ok: res.ok, status: res.status, state: (data && data.state) || (res.ok ? 'OK' : 'ERROR'), data: data};
+    var app = inApp(opts.win);
+
+    function attempt(token, retried) {
+      var controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      var timer = controller ? setTimeout(function () { controller.abort(); }, opts.timeoutMs || 15000) : null;
+      var headers = {'X-VU-Client': 'web'};
+      if (body !== undefined) headers['Content-Type'] = 'application/json';
+      if (app && token) headers.Authorization = 'Bearer ' + token;
+      // Im App-Rahmen nie Cookies (Drittanbieter): ohne Token geht die Anfrage anonym und wird mit 401 beantwortet.
+      return fetchImpl(endpoint + path, {method: method, credentials: app ? 'omit' : 'include', headers: headers, cache: 'no-store',
+        body: body === undefined ? undefined : JSON.stringify(body), signal: controller ? controller.signal : undefined})
+        .then(function (res) {
+          return res.text().then(function (text) {
+            var data = null;
+            try { data = text ? JSON.parse(text) : null; } catch (e) { data = null; }
+            return {ok: res.ok, status: res.status, state: (data && data.state) || (res.ok ? 'OK' : 'ERROR'), data: data};
+          });
+        }, function (err) {
+          return {ok: false, status: 0, state: err && err.name === 'AbortError' ? 'TIMEOUT' : 'NETWORK', data: null};
+        })
+        .then(function (r) {
+          if (timer) clearTimeout(timer);
+          // Token knapp abgelaufen: die Shell einmal erneuern lassen und wiederholen.
+          if (app && token && r.status === 401 && !retried) {
+            return appToken(true, opts.win).then(function (fresh) { return fresh ? attempt(fresh, true) : r; });
+          }
+          return r;
         });
-      }, function (err) {
-        return {ok: false, status: 0, state: err && err.name === 'AbortError' ? 'TIMEOUT' : 'NETWORK', data: null};
-      })
-      .then(function (r) { if (timer) clearTimeout(timer); remember(path, r); return r; });
+    }
+
+    return (app ? appToken(false, opts.win) : Promise.resolve(null)).then(function (token) { return attempt(token, false); })
+      .then(function (r) { remember(path, r); return r; });
   }
 
   // Dieselben Regeln wie workers/vu-account/src/validate.mjs.
@@ -227,6 +314,7 @@
   return {
     HOME: HOME, PRO_CONFIRM: PRO_CONFIRM, safePath: safePath, proPending: proPending, nextAfterSignIn: nextAfterSignIn,
     checkoutState: checkoutState,
+    inApp: inApp, appToken: appToken, openNativeAccount: openNativeAccount, interceptLoginLinks: interceptLoginLinks,
     config: config, available: function () { return Boolean(config().endpoint); }, request: request, message: message,
     statusMessage: function (code) { return STATUS[code] || null; },
     subscriptionStatus: function (s) { return SUBSCRIPTION_STATUS[s] || s; },
