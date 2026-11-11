@@ -85,11 +85,12 @@ ABGENOMMEN_1010 = {
 #   Technik 5644  -42 (technisch bereite ETFs) +53 gealtert ueber 300 Bars       = 5655
 #           (die 18 neuen waren am Stichtag nicht technisch bereit)
 ETF_RAUS_0611, NEU_0611, ETF_TECHNISCH_BEREIT_0611, GEALTERT_0611 = 396, 18, 42, 53
+# Stand 11.11.2026 (Neuabnahme nach der Eignung vom 11.11., Herleitung unten bei AKTUELLER_POLICY_STAND).
 ABGENOMMEN = {
-    "PRODUCT_TITLES": 6308,
+    "PRODUCT_TITLES": 6309,
     "R2_SERIES_AVAILABLE": 7802,
-    "HISTORICAL_CHART_AVAILABLE": 6305,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5655,
+    "HISTORICAL_CHART_AVAILABLE": 6306,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5661,
 }
 # Stand der Mitgliedschaft nach dem Gattungsbeleg aus dem Boersenverzeichnis
 # (scripts/market/apply-exchange-directory.mjs, 09.10.2026): 167 Titel belegt
@@ -109,7 +110,7 @@ POLICY_STAND_1010 = {
 AKTUELLER_POLICY_STAND = {
     "PRODUCT_TITLES": 6309,
     "HISTORICAL_CHART_AVAILABLE": 6306,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5656,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5661,
 }
 VERZEICHNIS_AUSGESCHLOSSEN = 167
 # Verzeichnisbelege im Abgleich heute (06.11.2026, jede Eignung rechnet den Abgleich
@@ -119,10 +120,13 @@ VERZEICHNIS_WIEDER_STAMMAKTIE = {"GREEL", "SWKHL"}
 VERZEICHNIS_ETF_0611, VERZEICHNIS_WARRANT_0611 = 269, {"BNCWW"}
 # 11.11.2026 (Eignung nach dem Stamm-Lauf, eligibility-catchup-2026-11-11, Lauf 42981455555): WTIB, einer der 269 ETFs der
 # Bereinigung, ist wieder Stammaktie (EXCLUDED -> ELIGIBLE, US_COMMON_EQUITY_ON_PRIMARY_VENUE) und der Verzeichnisbeleg entfaellt:
-# 435 - 1 = 434 Verzeichnisbelege, Produkt 6308 + 1 = 6309, darstellbar 6305 + 1 = 6306, technisch bereit 5655 + 1 = 5656.
+# 435 - 1 = 434 Verzeichnisbelege, Produkt 6308 + 1 = 6309, darstellbar 6305 + 1 = 6306. Technisch bereit 5655 + 6 = 5661: WTIB ist
+# neu im Produkt, aber noch zu kurz (SHORT, kein Zugewinn); sechs Titel (ABTC, ELVR, NMP, PLT, PMI, TONX) sind ueber 300 Bars
+# gealtert (AGED_PAST_THRESHOLD, Deckungsabweichung je Titel, deckung-Lauf 42987197248).
 # Die 200 Wechsel ELIGIBLE -> REVIEW desselben Laufs aendern den Umfang nicht (REVIEW gehoert zum Produkt).
 VERZEICHNIS_WIEDER_STAMMAKTIE_1111 = {"WTIB"}
 VERZEICHNIS_AUSGESCHLOSSEN_0611 = 434
+WTIB_1111, GEALTERT_1111 = 1, 6
 ENTFERNTE_DEBT_TITEL = {
     "ADAMH", "BNH", "CICB", "CIMN", "CTGG", "CTHH", "DCOMG", "MFAN",
     "MFICL", "MHNC", "PRHIZ", "RWTN", "SAX", "SRJN", "SSSSL", "TMUSI",
@@ -264,10 +268,10 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                          POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"])
         self.assertEqual(POLICY_STAND_1010, {k: ABGENOMMEN_1010[k] for k in POLICY_STAND_1010})
         # Uebergang 10.10. -> 06.11. (Eignungs-Bereinigung, Deltabericht Lauf 42201411281)
-        self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611, AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
-        self.assertEqual(POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"] - ETF_RAUS_0611 + NEU_0611,
+        self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111, AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
+        self.assertEqual(POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111,
                          AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
-        self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611,
+        self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611 + GEALTERT_1111,
                          AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
         eignung = lade(ROOT / "quant/data/market/security-master/eligibility.json")
         etf_raus = [d for d in eignung["decisions"] if d["product_eligibility"] == "EXCLUDED"
