@@ -588,6 +588,9 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.57.0-noble
       options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -624,6 +627,9 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.56.1-noble
       options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -806,6 +812,9 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.63.0-noble
       options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     # Bekannte Fehler (scripts/discover/known-defects.json) warten je Ladevorgang
     # bis zum Zeitlimit der Pruefung; mit Direktlink-Schritt in beiden Engines
     # reichen 35 Minuten dann nicht. Kein Check wird dadurch gelockert.
@@ -1407,6 +1416,9 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.56.1-noble
       options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     # 45 statt 30 Minuten: der Checkout des vollen Arbeitsbaums (~2-3 GB) schwankt
     # GitHub-seitig stark (2:46 in Lauf 41686237365, 14:43 im parallel
     # gestarteten core-ci-Lauf 41686237440, >15 min im package-Job von Lauf
@@ -1542,6 +1554,9 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
       options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
@@ -1596,6 +1611,9 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.58.2-noble
       options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
