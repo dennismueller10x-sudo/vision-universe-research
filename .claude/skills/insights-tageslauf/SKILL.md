@@ -26,7 +26,7 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
    - **Nachrichten des Tages:** Quartalszahlen von gestern Abend und heute früh, Übernahmen, Zulassungen, Gerichts- und
      Politikentscheidungen, Ausblicke (Websuche „earnings today“, „stock movers today“, Wirtschaftskalender).
    - **Unsere Daten:** `node products/insights/themen.mjs` (größte Tagesbewegungen, groß und Nebenwerte).
-   - **Was gesucht wird:** der Search-Console-Bericht (täglich 03:23 UTC, intern im Datenzweig):
+   - **Was gesucht wird:** der Search-Console-Bericht (täglich 02:23 UTC, 03:23 Uhr Berlin, intern im Datenzweig):
      `git fetch -q origin data/live && git show origin/data/live:seo/search-console/latest.json`. Er nennt je Artikel
      Klicks, Impressionen, Position, die Suchbegriffe und den Indexierungsstand. Nutzen: Themen, nach denen Leser schon
      suchen, und Begriffe, die in Titel und Teaser gehören. Fehlt der Bericht, ohne ihn weiter.
