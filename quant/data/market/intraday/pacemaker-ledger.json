@@ -10,29 +10,8 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-11T18:32:05.574Z",
+  "updatedAt": "2026-11-11T18:46:14.117Z",
   "cycles": [
-    {
-      "cycle": 18,
-      "runId": "42820546828",
-      "triggerAt": "2026-11-10T18:32:29.654Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "13:32:29",
-      "fetchStartAt": "2026-11-10T18:32:29.655Z",
-      "fetchEndAt": "2026-11-10T18:46:32.916Z",
-      "session": "2026-11-10",
-      "written": 1319,
-      "requests": 1455,
-      "notPublishable": 63,
-      "addAt": null,
-      "commitAt": null,
-      "pushAt": null,
-      "sha": null,
-      "changed": false,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-11-10T18:46:32.885Z"
-    },
     {
       "cycle": 1,
       "runId": "42878362658",
@@ -748,6 +727,35 @@
       "written": 1311,
       "requests": 1453,
       "notPublishable": 74,
+      "addAt": "2026-11-11T18:32:05.575Z",
+      "commitAt": "2026-11-11T18:32:06.095Z",
+      "pushAt": "2026-11-11T18:32:10.391Z",
+      "sha": "186c48fdde",
+      "changed": true,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-11-11T18:32:05.546Z",
+      "pushed": true,
+      "watchdog": {
+        "verdict": "FAIL",
+        "codes": [
+          "auslieferungZuWeitHinterher",
+          "seiteStandZuAlt"
+        ]
+      }
+    },
+    {
+      "cycle": 18,
+      "runId": "43025188005",
+      "triggerAt": "2026-11-11T18:32:10.740Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "13:32:10",
+      "fetchStartAt": "2026-11-11T18:32:10.740Z",
+      "fetchEndAt": "2026-11-11T18:46:14.115Z",
+      "session": "2026-11-11",
+      "written": 1310,
+      "requests": 1453,
+      "notPublishable": 71,
       "addAt": null,
       "commitAt": null,
       "pushAt": null,
@@ -755,7 +763,7 @@
       "changed": false,
       "ok": true,
       "reason": null,
-      "snapshotAt": "2026-11-11T18:32:05.546Z"
+      "snapshotAt": "2026-11-11T18:46:14.088Z"
     }
   ]
 }
