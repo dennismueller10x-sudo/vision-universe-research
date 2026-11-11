@@ -49,7 +49,7 @@ const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
 
 const Master = require(join(root, "quant", "engines", "company-master.js"));
-const Identity = require(join(root, "core", "identity.js"));
+const IssuerAlias = require(join(root, "core", "issuer-alias.js"));
 
 const argv = process.argv.slice(2);
 function arg(name, fallback) {
@@ -270,16 +270,16 @@ function buildCikMap() {
 
   /* Holding-Umgruendungen (quant/config/sec-successor-issuers.json): zeigt
      die gewaehlte CIK auf einen Vorgaenger, gilt die Nachfolgerin. Der
-     Vorgaenger bleibt ueber core/identity.js#resolveIssuerId aufloesbar.
+     Vorgaenger bleibt ueber core/issuer-alias.js#resolveIssuerId aufloesbar.
      Die Fundamentals-Konfiguration (sec-universe.json) bleibt davon
      unberuehrt: die SEC-Pipeline fuehrt beide CIKs im Consumer zusammen. */
   const successorFile = join(root, "quant", "config", "sec-successor-issuers.json");
   let successors = 0;
   if (existsSync(successorFile)) {
-    const aliases = Identity.issuerAliases(readJSON(successorFile));
+    const aliases = IssuerAlias.issuerAliases(readJSON(successorFile));
     for (const [ticker, row] of map) {
       const alt = "iss_cik_" + row.cik;
-      const neu = Identity.resolveIssuerId(alt, aliases);
+      const neu = IssuerAlias.resolveIssuerId(alt, aliases);
       if (neu === alt) continue;
       map.set(ticker, { cik: neu.slice(8), exchange: row.exchange,
                         source: "successor:sec-successor-issuers(" + row.cik + ">" + neu.slice(8) + ")",
