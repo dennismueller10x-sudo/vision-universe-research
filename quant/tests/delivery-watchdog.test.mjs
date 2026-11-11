@@ -306,3 +306,17 @@ test("WD-19 Gegenprobe: das Ende gewinnt gegen den Beginn, nicht umgekehrt", () 
   assert.ok(codes(ohneEnde).includes("taktVerspaetet"),
             "ohne Ende bleibt es der alte, strengere Massstab");
 });
+
+test("WD-AD Seite absolut zu alt: ausgeliefert 35 min alt (Repository gleich alt) ist FAIL seiteStandZuAlt, 25 min nicht", () => {
+  const alt = Watchdog.beurteile(gesund({
+    snapshot: { sessionDate: HEUTE, asOfMs: JETZT - 35 * MIN },
+    delivered: { sessionDate: HEUTE, asOfMs: JETZT - 35 * MIN }
+  }));
+  assert.ok(codes(alt).includes("seiteStandZuAlt"), JSON.stringify(codes(alt)));
+  assert.equal(alt.verdict, "FAIL");
+  const frisch = Watchdog.beurteile(gesund({
+    snapshot: { sessionDate: HEUTE, asOfMs: JETZT - 25 * MIN },
+    delivered: { sessionDate: HEUTE, asOfMs: JETZT - 25 * MIN }
+  }));
+  assert.ok(!codes(frisch).includes("seiteStandZuAlt"));
+});
