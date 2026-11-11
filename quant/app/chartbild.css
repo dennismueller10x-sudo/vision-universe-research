@@ -5,12 +5,12 @@
    zuerst das Ergebnis in grosser Schrift, dann wenige Zahlen, dann der
    Chart. Farben tragen Bedeutung, nie allein: jede Zone hat ein Textlabel,
    die Ungueltig-Linie ist gestrichelt, Pruefpunkte haben Zeichen (✓ ✕ ○).
-     Lime   Einstiegszone / Hauptszenario
-     Blau   Zielzonen (Kontext)
+     Lime   Zone laut Methode / Hauptszenario
+     Blau   Kontextbaender (nicht gezeigt)
      Rot    Ungueltig-Linie, Risikobereich
      Violett Alternative (Szenario-Farbe der Markets-Art-Direction)
    ========================================================================= */
-.qd .cb,.qd .cb-teaser{--cb-entry:#c8f531;--cb-target:#8cc8ff;--cb-invalid:#ff6b5e;--cb-alt:#b3a6ff;--cb-up:#b9ee3c;--cb-down:#ff6b5e;--cb-flat:#a6abb3;--cb-mixed:#f2c14e;
+.qd .cb,.qd .cb-teaser{--cb-entry:#c8f531;--cb-target:#8cc8ff;--cb-invalid:var(--q-text);--cb-alt:#b3a6ff;--cb-up:#b9ee3c;--cb-down:var(--q-text);--cb-flat:#a6abb3;--cb-mixed:#f2c14e;
   max-width:1100px;margin:0 auto}
 .qd .cb-hero{padding:8px 0 20px}
 .qd .cb-eyebrow{margin:0 0 18px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--q-dim);font-weight:700}
@@ -18,7 +18,7 @@
 .qd .cb-outlook{display:flex;align-items:center;gap:14px;margin:4px 0 2px;font-size:clamp(46px,10vw,88px);line-height:1;font-weight:850;letter-spacing:-.035em}
 .qd .cb-dot{width:.28em;height:.28em;border-radius:50%;background:var(--cb-flat);flex:none}
 .qd .cb-tone-up .cb-dot{background:var(--cb-up);box-shadow:0 0 0 6px rgba(185,238,60,.14)}
-.qd .cb-tone-down .cb-dot{background:var(--cb-down);box-shadow:0 0 0 6px rgba(255,107,94,.14)}
+.qd .cb-tone-down .cb-dot{background:var(--cb-down);box-shadow:0 0 0 6px rgba(140,140,140,.14)}
 .qd .cb-tone-mixed .cb-dot{background:var(--cb-mixed)}
 .qd .cb-structure{margin:6px 0 14px;font-size:clamp(19px,3.4vw,26px);font-weight:700;color:var(--q-text)}
 .qd .cb-hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
@@ -33,7 +33,7 @@
 .qd .cb-level-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .qd .cb-level-entry{border-color:rgba(200,245,49,.35)} .qd .cb-level-entry .cb-level-icon{color:var(--cb-entry)}
 .qd .cb-level-target .cb-level-icon{color:var(--cb-target)}
-.qd .cb-level-invalid{border-color:rgba(255,107,94,.35)} .qd .cb-level-invalid .cb-level-icon{color:var(--cb-invalid)}
+.qd .cb-level-invalid{border-color:rgba(140,140,140,.35)} .qd .cb-level-invalid .cb-level-icon{color:var(--cb-invalid)}
 .qd .cb-level-label{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--q-muted)}
 .qd .cb-level-value{font-size:clamp(22px,3.2vw,30px);font-weight:820;letter-spacing:-.02em;white-space:nowrap}
 .qd .cb-level-sub{font-size:12px;color:var(--q-dim)}
@@ -61,7 +61,7 @@
 .qd .ti-invalid line{stroke:var(--cb-invalid);stroke-width:1.6;stroke-dasharray:7 5}
 .qd .ti-invalid-label{fill:var(--cb-invalid);font-size:12px;font-weight:800;paint-order:stroke;stroke:#0b0d10;stroke-width:3px}
 .qd .ti-risk{opacity:.9}
-.qd .ti-risk-hatch{stroke:rgba(255,107,94,.22);stroke-width:2}
+.qd .ti-risk-hatch{stroke:rgba(140,140,140,.22);stroke-width:2}
 .qd .ti-candle line{stroke-width:1}
 .qd .ti-up line{stroke:var(--cb-up)} .qd .ti-up rect{fill:var(--cb-up)}
 .qd .ti-down line{stroke:var(--cb-down)} .qd .ti-down rect{fill:var(--cb-down)}
@@ -339,7 +339,7 @@
 .qd .cb-pt-warn{border-color:rgba(242,193,78,.4)} .qd .cb-pt-warn .cb-pt-v::before{content:"! ";color:var(--cb-mixed)}
 .qd .cb-pt-exp .cb-pt-v{color:var(--cb-alt)}
 .qd .cb-pt-ok .cb-pt-v::before{content:"✓ ";color:var(--cb-up)} .qd .cb-pt-bad .cb-pt-v::before{content:"✕ ";color:var(--cb-down)}
-.qd .cb-ewp-bound{display:flex;align-items:center;gap:10px;margin:2px 0 0;padding:10px 14px;border-radius:12px;background:rgba(255,107,94,.06);border:1px solid rgba(255,107,94,.25);font-size:14px}
+.qd .cb-ewp-bound{display:flex;align-items:center;gap:10px;margin:2px 0 0;padding:10px 14px;border-radius:12px;background:rgba(140,140,140,.06);border:1px solid rgba(140,140,140,.25);font-size:14px}
 .qd .cb-bound-icon{flex:none;width:22px;height:0;border-top:2px dashed var(--cb-invalid)}
 .qd .cb-ewp-over > .cb-small{margin:2px 0 0}
 
@@ -367,7 +367,7 @@
 .qd summary.cb-rule-head{cursor:pointer;list-style:none;border-radius:12px}
 .qd summary.cb-rule-head::-webkit-details-marker{display:none}
 .qd .cb-rule-mark{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:900;background:var(--q-panel)}
-.qd .cb-mark-ok{color:var(--cb-up)} .qd .cb-mark-bad{color:var(--cb-down);background:rgba(255,107,94,.12)} .qd .cb-mark-open{color:var(--q-muted)}
+.qd .cb-mark-ok{color:var(--cb-up)} .qd .cb-mark-bad{color:var(--cb-down);background:rgba(140,140,140,.12)} .qd .cb-mark-open{color:var(--q-muted)}
 .qd .cb-rule-text{flex:1;min-width:0}
 .qd .cb-rule-val{flex:none;font-size:13px;font-weight:800;color:var(--q-text)}
 .qd .cb-rule-src-btn{flex:none;font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--q-muted);padding:3px 9px;border-radius:99px;border:1px solid var(--q-line2)}
@@ -467,7 +467,7 @@
 .qd .cb-pj-tier-p{grid-column:2;grid-row:1 / span 2;align-self:center;text-align:right;font-weight:800;font-size:14px;overflow-wrap:anywhere;max-width:16ch}
 .qd .cb-pj-tier.is-omitted .cb-pj-tier-p{grid-column:1;grid-row:2;text-align:left;max-width:none;font-weight:500;font-size:12px;color:var(--q-dim)}
 .qd .cb-pj-chip{grid-column:1 / -1;font-size:11px;font-weight:800;color:var(--cb-up)}
-.qd .cb-pj-inv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:baseline;padding:10px 12px;border-radius:12px;border:1px dashed rgba(255,107,94,.5);margin:0 0 10px}
+.qd .cb-pj-inv{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:baseline;padding:10px 12px;border-radius:12px;border:1px dashed rgba(140,140,140,.5);margin:0 0 10px}
 .qd .cb-pj-inv-k{font-size:12px;font-weight:800;color:var(--cb-invalid);text-transform:uppercase;letter-spacing:.04em} .qd .cb-pj-inv strong{font-size:18px;text-align:right}
 .qd .cb-pj-inv-t{grid-column:1 / -1;font-size:13px;color:var(--q-dim)}
 .qd .cb-pj-conf{margin:0 0 10px;font-size:13px}

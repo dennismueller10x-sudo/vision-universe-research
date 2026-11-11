@@ -30,7 +30,7 @@
   var TEMPLATE_LABEL = { BALANCE_SHEET_FINANCIAL: "Banken und bilanzbasierte Finanzunternehmen", INSURANCE_CARRIER: "Versicherer", REAL_ESTATE_TRUST: "Immobilien-REITs" };
 
   function topicHead(main, t, lead) {
-    main.append(tabs(t.id), el("a", { class: "v2-back qx-back", href: X.routes.method(), text: "← Methodik" }),
+    X.add(main, tabs(t.id), el("a", { class: "v2-back qx-back", href: X.routes.method(), text: "← Methodik" }),
       el("span", { class: "v2-eyebrow", text: "Methodik" }), el("h1", { class: "qx-h1", text: t.title }), lead ? el("p", { class: "v2-lead qx-lead", text: lead }) : null);
   }
   function para(t) { return el("p", { text: t }); }
@@ -296,7 +296,7 @@
     main.append(el("div", { class: "qx-grid qx-grid-2" }, VM.SETUP_STAGES.map(function (s) {
       var st = idx && idx.state === "AVAILABLE" ? idx.states.filter(function (x) { return x.state === s.id; })[0] : null;
       return X.card([el("h3", { class: "qx-h3", text: s.label }), el("p", { class: "qx-small", text: s.short + "." }),
-        st ? el("ul", { class: "qx-small" }, st.rules.map(function (r) { return el("li", { text: r.plain + " (" + r.matched.toLocaleString("de-DE") + " Aktien)" }); })) : null]);
+        st ? el("ul", { class: "qx-small" }, st.rules.map(function (r) { return el("li", { text: X.say(r.plain) + " (" + r.matched.toLocaleString("de-DE") + " Aktien)" }); })) : null]);
     })));
     main.append(el("p", { class: "qx-small", text: "Die Stufen werden in fester Reihenfolge geprüft; die erste zutreffende Regel entscheidet. Verlaufszustände wie „läuft“ oder „beendet“ brauchen eine lückenlose Beobachtungshistorie und sind noch nicht freigeschaltet." + (idx && idx.state === "AVAILABLE" ? " Zuordnung " + idx.mappingVersion + ", freigegeben am " + X.dateDe(idx.approval && idx.approval.approvedAt) + "." : "") }));
   }
