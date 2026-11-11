@@ -60,7 +60,13 @@ Wichtige Dateien: `quant/app/app.js` (Router), `quant/app/ui.js` (Adressen `rout
 
 ## Entscheidungen beim Bauen
 
-(Hier je Schritt einen Satz eintragen.)
+**PR 1 · Wortwahl und Fehler**
+- Sätze aus den Daten, die Ziele nennen (z. B. Evidenz „erreichten Zielzone 1“), übersetzt die Oberfläche beim Anzeigen mit `QX.say` in „Marke 1 der Methode“; die Daten bleiben unberührt.
+- Vorhandene Rückblick-Quoten der Chart-Perspektive („Ziel erreicht“) bleiben an ihrer Stelle und heißen „Marke 1 erreicht“; Zielbänder, Zielkacheln und das Abstandsverhältnis Ziel : Stopp entfallen ganz.
+- Im Abwärtsszenario heißt die Marke über dem Kurs „Ungültig laut Methode“ (Kurzform aus Entscheidung 5), die Kartenrichtung steht weiter im Satz darunter.
+- Der Aktienkopf zeigt Dollar und Tagesbewegung in Dollar; der Euro-Wert steht als „≈ 167,17 €“ unter „Schlusskurs · Datum“ (wie im Mockup rechts), umgerechnet über die vorhandene Anzeigewährung.
+- Fehlende Vergleichswerte tragen „–¹“; unter der Tabelle steht je Aktie der Grund mit dem Datum ihrer Geschäftszahlen.
+- Rote Töne in Quant (Pillen, Marken, Chart-Linie „ungültig“) werden schwarz bzw. grau mit schwarzem Rand.
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 

@@ -478,15 +478,15 @@
       "cik": "0001786248",
       "name": "NexPoint Real Estate Finance, Inc.",
       "sic": "6798",
-      "rawFacts": 6552,
-      "mappedFacts": 1790,
-      "unmappedFacts": 4831,
+      "rawFacts": 6832,
+      "mappedFacts": 1866,
+      "unmappedFacts": 5090,
       "calendarYears": 6,
       "industry": "REIT",
       "industryMetrics": {
         "dividends_declared_per_share": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -500,7 +500,7 @@
         },
         "real_estate_accumulated_depreciation": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -514,14 +514,14 @@
         },
         "real_estate_net": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "secured_debt": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -534,9 +534,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 27,
+      "quarterlyPeriods": 28,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
@@ -548,7 +548,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -575,14 +575,14 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -603,14 +603,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -633,46 +633,47 @@
         }
       },
       "quality": {
-        "HIGH": 160,
-        "MEDIUM": 32
+        "HIGH": 164,
+        "MEDIUM": 33
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 192,
-        "resolvedValues": 192
+        "datableValues": 197,
+        "resolvedValues": 197
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4992,
+        "rules_version": "1.1.0",
+        "total": 5212,
         "by_severity": {
-          "INFO": 4831,
-          "WARNING": 161
+          "INFO": 5090,
+          "WARNING": 122
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 134,
+          "CONCEPT_DISAGREEMENT": 95,
           "PERIOD_MISMATCH": 7,
           "RESTATEMENT_CONFLICT": 20,
-          "UNKNOWN_CONCEPT": 4831
+          "UNKNOWN_CONCEPT": 5090
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-347504",
-        "filing_date": "2026-08-13",
+        "accession": "0001193125-26-455345",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 26
+        "periodic_filings": 27,
+        "acceptance_datetime": "2026-11-10T20:52:51.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "cab6203d1e3873ab50d7ff464dc1ccff22180a3da8a26f1a95dda728567bccdb",
+      "sourceDigest": "04bfa02d741b556749ef61b40cded4b0163a17dcbb19f37d6084dbb47f732e4e",
       "issuerId": "iss_cik_0001786248"
     },
     {

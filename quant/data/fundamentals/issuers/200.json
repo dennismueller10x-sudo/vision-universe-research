@@ -322,22 +322,21 @@
       "cik": "0001865200",
       "name": "Angel Studios, Inc.",
       "sic": "7812",
-      "rawFacts": 2936,
-      "mappedFacts": 1046,
-      "unmappedFacts": 1928,
+      "rawFacts": 3247,
+      "mappedFacts": 1151,
+      "unmappedFacts": 2148,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
-        "ANGX",
-        "PORT-UN"
+        "ANGX"
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 22,
+      "quarterlyPeriods": 23,
       "firstPeriodEnd": "2021-04-12",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
@@ -349,7 +348,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -376,21 +375,21 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -404,14 +403,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -434,47 +433,48 @@
         }
       },
       "quality": {
-        "HIGH": 120,
+        "HIGH": 126,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 122,
-        "resolvedValues": 122
+        "datableValues": 128,
+        "resolvedValues": 128
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2017,
+        "rules_version": "1.1.0",
+        "total": 2241,
         "by_severity": {
-          "INFO": 1928,
-          "WARNING": 89
+          "INFO": 2148,
+          "WARNING": 93
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 8,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 79,
+          "RESTATEMENT_CONFLICT": 83,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 1928
+          "UNKNOWN_CONCEPT": 2148
         }
       },
       "latestFiling": {
-        "accession": "0001865200-26-000070",
-        "filing_date": "2026-08-04",
+        "accession": "0001865200-26-000100",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 19
+        "periodic_filings": 20,
+        "acceptance_datetime": "2026-11-10T21:43:22.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ef1d4cf9ae3edd933e46dd3a03e00e3ac49ef6ef9fc66529a46786d2fe0a4ed5",
+      "sourceDigest": "1d7ef82f895d715838c8d3c868bd477ce615fe5155e92df7829667401a23378c",
       "issuerId": "iss_cik_0001865200"
     }
   ]

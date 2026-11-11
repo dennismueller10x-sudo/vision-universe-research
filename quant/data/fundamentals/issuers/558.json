@@ -383,9 +383,9 @@
       "cik": "0001494558",
       "name": "Ambow Education Holding Ltd.",
       "sic": "8200",
-      "rawFacts": 7844,
-      "mappedFacts": 1843,
-      "unmappedFacts": 5801,
+      "rawFacts": 8108,
+      "mappedFacts": 1959,
+      "unmappedFacts": 5956,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -395,9 +395,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 25,
+      "quarterlyPeriods": 27,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -409,7 +409,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -429,56 +429,56 @@
         },
         "long_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "short_term_debt": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0,
@@ -494,45 +494,46 @@
         }
       },
       "quality": {
-        "HIGH": 198,
-        "MEDIUM": 18
+        "HIGH": 212,
+        "MEDIUM": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 216,
-        "resolvedValues": 216
+        "datableValues": 233,
+        "resolvedValues": 233
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6501,
+        "rules_version": "1.1.0",
+        "total": 6662,
         "by_severity": {
-          "INFO": 5801,
-          "WARNING": 700
+          "INFO": 5956,
+          "WARNING": 706
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 557,
+          "CONCEPT_DISAGREEMENT": 563,
           "RESTATEMENT_CONFLICT": 143,
-          "UNKNOWN_CONCEPT": 5801
+          "UNKNOWN_CONCEPT": 5956
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-090008",
-        "filing_date": "2026-08-14",
+        "accession": "0001213900-26-118013",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 21
+        "periodic_filings": 22,
+        "acceptance_datetime": "2026-11-10T21:06:02.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "cfb1e41d455c4577d1ce164078bc0322fc599997fa985a968c4ed534ba56d4a6",
+      "sourceDigest": "3b4b4c8bbdf4eb71d672fbbbd5f4082d45c6652bfc2044cf75dc4e67914add3e",
       "issuerId": "iss_cik_0001494558"
     },
     {

@@ -635,9 +635,9 @@
       "cik": "0002019804",
       "name": "Terrestrial Energy Inc. /DE/",
       "sic": "3443",
-      "rawFacts": 1246,
-      "mappedFacts": 435,
-      "unmappedFacts": 829,
+      "rawFacts": 1492,
+      "mappedFacts": 533,
+      "unmappedFacts": 985,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -648,28 +648,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 3,
-      "quarterlyPeriods": 10,
+      "quarterlyPeriods": 11,
       "firstPeriodEnd": "2023-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "eps_diluted": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 5,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "free_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0,
@@ -689,14 +689,14 @@
         },
         "net_income": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "operating_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -717,14 +717,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -747,44 +747,45 @@
         }
       },
       "quality": {
-        "HIGH": 58
+        "HIGH": 68
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 58,
-        "resolvedValues": 58
+        "datableValues": 68,
+        "resolvedValues": 68
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 866,
+        "rules_version": "1.1.0",
+        "total": 1033,
         "by_severity": {
-          "INFO": 829,
-          "WARNING": 37
+          "INFO": 985,
+          "WARNING": 48
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 6,
-          "RESTATEMENT_CONFLICT": 31,
-          "UNKNOWN_CONCEPT": 829
+          "CONCEPT_DISAGREEMENT": 7,
+          "RESTATEMENT_CONFLICT": 41,
+          "UNKNOWN_CONCEPT": 985
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-094085",
-        "filing_date": "2026-08-11",
+        "accession": "0001104659-26-125193",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 12
+        "periodic_filings": 13,
+        "acceptance_datetime": "2026-11-10T21:15:45.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "14f2eede76b888acc0535c961cd393e29125759a1500aebbd3bbec8f3b327efd",
+      "sourceDigest": "9a68d342bbaa54efc0f5a079d3264ba3b45bac4e0528741c06859cc70b6c085b",
       "issuerId": "iss_cik_0002019804"
     }
   ]

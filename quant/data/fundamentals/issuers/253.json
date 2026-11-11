@@ -1658,9 +1658,9 @@
       "cik": "0002079253",
       "name": "Apex Treasury Corp",
       "sic": "6770",
-      "rawFacts": 211,
-      "mappedFacts": 88,
-      "unmappedFacts": 122,
+      "rawFacts": 279,
+      "mappedFacts": 125,
+      "unmappedFacts": 152,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1672,9 +1672,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 5,
+      "quarterlyPeriods": 6,
       "firstPeriodEnd": "2025-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1713,14 +1713,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1741,14 +1741,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 5,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1772,44 +1772,45 @@
       },
       "quality": {
         "MEDIUM": 2,
-        "HIGH": 16
+        "HIGH": 20
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 18,
-        "resolvedValues": 18
+        "datableValues": 22,
+        "resolvedValues": 22
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 130,
+        "rules_version": "1.1.0",
+        "total": 164,
         "by_severity": {
-          "INFO": 122,
-          "WARNING": 8
+          "INFO": 152,
+          "WARNING": 12
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 4,
-          "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 122
+          "CONCEPT_DISAGREEMENT": 7,
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 152
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-087813",
-        "filing_date": "2026-08-11",
+        "accession": "0001213900-26-118126",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 4
+        "periodic_filings": 5,
+        "acceptance_datetime": "2026-11-10T22:20:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b4c83c23312f0ca090112b65bf0caa83f8a3a28e848142f94b4b976b227b44bb",
+      "sourceDigest": "58ce90659391130735deade98907a40042612d9843c8753328fadda465c6ad97",
       "issuerId": "iss_cik_0002079253"
     }
   ]

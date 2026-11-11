@@ -321,9 +321,9 @@
       "cik": "0002049662",
       "name": "Factorial Energy Inc.",
       "sic": "3690",
-      "rawFacts": 586,
-      "mappedFacts": 246,
-      "unmappedFacts": 335,
+      "rawFacts": 900,
+      "mappedFacts": 362,
+      "unmappedFacts": 530,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -334,28 +334,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 8,
+      "quarterlyPeriods": 9,
       "firstPeriodEnd": "2024-10-28",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 0,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
-        },
-        "eps_diluted": {
           "annualPeriods": 0,
           "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
+        "eps_diluted": {
+          "annualPeriods": 0,
+          "quarterlyPeriods": 4,
+          "firstAvailablePeriod": null,
+          "lastAvailablePeriod": null,
+          "historyYears": 0.0
+        },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -375,21 +375,21 @@
         },
         "net_income": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -403,14 +403,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -433,45 +433,46 @@
         }
       },
       "quality": {
-        "HIGH": 33
+        "HIGH": 43
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 33,
-        "resolvedValues": 33
+        "datableValues": 43,
+        "resolvedValues": 43
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 392,
+        "rules_version": "1.1.0",
+        "total": 611,
         "by_severity": {
-          "INFO": 335,
-          "WARNING": 57
+          "INFO": 530,
+          "WARNING": 81
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 12,
-          "RESTATEMENT_CONFLICT": 33,
+          "CONCEPT_DISAGREEMENT": 17,
+          "RESTATEMENT_CONFLICT": 52,
           "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 335
+          "UNKNOWN_CONCEPT": 530
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-055707",
-        "filing_date": "2026-08-11",
+        "accession": "0001628280-26-072741",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 6
+        "periodic_filings": 7,
+        "acceptance_datetime": "2026-11-10T21:15:55.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ee06bcbd1ae46d9bbd6679c7e62264a0b16ae13562c565c523edb28e5aa5fcc3",
+      "sourceDigest": "f7712cd448446be40c6e9febfa314e1a823e00553517680974f97dc5a62feec8",
       "issuerId": "iss_cik_0002049662"
     }
   ]

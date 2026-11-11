@@ -1090,9 +1090,9 @@
       "cik": "0002081909",
       "name": "SilverBox Corp V",
       "sic": "6770",
-      "rawFacts": 185,
-      "mappedFacts": 70,
-      "unmappedFacts": 113,
+      "rawFacts": 275,
+      "mappedFacts": 106,
+      "unmappedFacts": 162,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1104,9 +1104,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 4,
+      "quarterlyPeriods": 6,
       "firstPeriodEnd": "2025-05-28",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1145,14 +1145,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1173,14 +1173,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1203,45 +1203,46 @@
         }
       },
       "quality": {
-        "HIGH": 12,
+        "HIGH": 18,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 13,
-        "resolvedValues": 13
+        "datableValues": 19,
+        "resolvedValues": 19
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 124,
+        "rules_version": "1.1.0",
+        "total": 180,
         "by_severity": {
-          "INFO": 113,
-          "WARNING": 11
+          "INFO": 162,
+          "WARNING": 18
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1,
-          "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 113
+          "CONCEPT_DISAGREEMENT": 2,
+          "UNEXPECTED_DURATION": 16,
+          "UNKNOWN_CONCEPT": 162
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-094851",
-        "filing_date": "2026-08-12",
+        "accession": "0001104659-26-125143",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 3
+        "periodic_filings": 4,
+        "acceptance_datetime": "2026-11-10T21:02:04.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "728354fb62d92817210abb897f7c4d8236774fec12b02a51f45b526e511656a1",
+      "sourceDigest": "51c13b63e90700ad797348bb271c63acb4071c794a6fd845308dfb3ecb986bc1",
       "issuerId": "iss_cik_0002081909"
     }
   ]
