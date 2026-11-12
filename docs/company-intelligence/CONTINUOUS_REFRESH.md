@@ -862,3 +862,15 @@ deutschen Fassungen bleiben unverändert.
 Die deutschen Fassungen für COST, UNH und GE hängen an der englischen Quelle, die Parser 1.0.22 aus dem jeweils aktuellen 10-K
 erzeugt (lokal nachgebaut, `approved_copy` geprüft). Weicht die Quelle im privaten Zustand ab, greift die Fassung nicht
 (PROFILE_COPY_SOURCE_CHANGED) und das Modul bleibt aus; es entsteht kein falscher Text.
+
+## Universum-Aktivierung: Startfenster und Vorbedingungen (Vorfall 11./12.11.2026)
+
+Entscheidung (Steuerung 12.11.2026): `universe-release.yml` mode=activate startet **nicht zwischen 23:00 und 00:00 UTC** und so, dass der Lauf (ca. 55 min) vor dem
+nächsten UTC-Mitternachtswechsel endet. Grund: Der Aufbau (`universe_eligibility.py`, `upcoming()`) und die Seite (`stock-section.js`) bewerten geschätzte
+Termine mit `dateEnd >= today`. Läuft das Live-QA nach Mitternacht, fehlt ein am Bautag endender Schätztermin (Lauf 43116431258, Fall `MBNKO:events`), und der
+Fail-closed-Schritt rollt auf die 46er-Kohorte zurück. Ein Neubau nach Mitternacht ist wieder konsistent.
+
+Weitere Vorbedingungen von activate (aus dem Vorfall): (1) `scaling_run` ist byte-gleich zu den sechs Quittungsdateien (`continuous_refresh.py`,
+`universe_scheduler.py`, `universe_eligibility.py`, `refresh-run.mjs`, `public-delivery.mjs`, `refresh-storage.mjs`; `git diff --exit-code <Quittungs-Commit> HEAD -- …`
+leer); (2) der Rollback-Freeze liegt höchstens 24 h hinter dem Legacy-GOOD (`REFREEZE_MAX_LAG_MS`), sonst vorher `mode=refreeze` mit der Legacy-Generation;
+(3) Live-Auslieferung = Legacy-GOOD (46/45). Zwischen refreeze und activate keinen Refresh starten.
