@@ -59,7 +59,8 @@ den Stand nennen („Schlusskurs vom …“) und die nächsten Termine. Grundlag
       Weg: Bildauftrag `brand-media/publishing/image-jobs/insights-<datum>-<slug>.json` (Stil-Satz aus HANDBUCH
       Abschnitt 5, `qwen-image-3`, 2k, 16:9, höchstens 2 Bilder, Limit 0,30 USD) als eigener kleiner PR mergen, dann den
       Workflow „Brand Media · Higgsfield Bilder“ auf `main` mit `generate`, Budget 0,30 und
-      `APPROVE-HIGGSFIELD-IMAGE-JOB` starten und das Artefakt laden. Jedes erzeugte Bild ansehen; passt es nicht, nicht
+      `APPROVE-HIGGSFIELD-IMAGE-JOB` starten. Nach dem Lauf liegen die Bilder auf dem Zweig `media/higgsfield-images`
+      unter `<job_id>/` (`git fetch origin media/higgsfield-images` und `git show FETCH_HEAD:<job_id>/<datei>`). Jedes erzeugte Bild ansehen; passt es nicht, nicht
       verwenden. Reicht die Zeit des Laufs nicht, gilt Stufe 4.
    4. Notlösung: `"bild": {"typ": "app", …}` (Aufmacher aus den App-Screens), im Bericht sagen.
    Keine Agenturfotos, keine Bilder von Medien, keine Personenfotos außer offiziellen Vorstandsporträts. Bildmarken
