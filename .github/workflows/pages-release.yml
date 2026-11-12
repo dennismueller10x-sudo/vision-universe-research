@@ -564,7 +564,9 @@ jobs:
   # IndexNow: neue und geaenderte Insights-Adressen nach dem Ausrollen melden (Bing und alle IndexNow-Suchen).
   # Nur lesend; ein Fehler bei IndexNow ist eine Warnung, kein roter Lauf.
   indexnow:
-    if: github.event_name != 'pull_request' && contains(needs.package.outputs.indexnow, 'https://')
+    # Statusfunktion noetig: package haengt an intraday-schnell, der bei push uebersprungen wird; ohne !cancelled() erbt jeder Folgejob das Skip (12.11.2026).
+    if: >-
+      !cancelled() && needs.package.result == 'success' && needs.deploy.result == 'success' && github.event_name != 'pull_request' && contains(needs.package.outputs.indexnow, 'https://')
     needs: [package, deploy]
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -585,7 +587,9 @@ jobs:
           node products/insights/indexnow.mjs melden --liste "$RUNNER_TEMP/indexnow.json"
 
   deploy:
-    if: github.event_name != 'pull_request'
+    # Statusfunktion noetig (siehe indexnow): package hat intraday-schnell als Vorfahren, der bei push uebersprungen wird.
+    if: >-
+      !cancelled() && needs.package.result == 'success' && github.event_name != 'pull_request'
     needs: package
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -600,7 +604,8 @@ jobs:
         # <sha>-<run>-<attempt>, pages_build_version blieb der Commit). Neue Build-Version = neuer Commit, siehe
         # scripts/company_intelligence/pages-release-marker.mjs (Refresh und Universe-Release vor dem eigenen Dispatch).
   company-intelligence-live:
-    if: github.event_name != 'pull_request'
+    if: >-
+      !cancelled() && needs.package.result == 'success' && needs.deploy.result == 'success' && github.event_name != 'pull_request'
     needs: [package, deploy]
     permissions:
       contents: read
