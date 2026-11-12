@@ -19,6 +19,11 @@ test('FP-2 jede andere Datei erzwingt den Voll-Release; ohne Intraday-Aenderung 
   assert.equal(klassifiziere([]).mode, 'FULL');
   assert.ok(!isIntraday(I + 'X/a.json'));
 });
+test('FP-2b Nicht ausgelieferte Pfade zaehlen nicht, Bau-Eingaben und pages-release.yml schon', () => {
+  const ok = (extra) => klassifiziere([I + '/index.json', ...extra]).mode;
+  for (const p of ['docs/a/b.md', 'app/src/x.ts', 'scripts/quality/x.mjs', 'scripts/technical/world/academy-browser-qa.mjs', 'quant/tests/x.test.mjs', '.github/workflows/ci.yml', 'README.md']) assert.equal(ok([p]), 'FAST', p);
+  for (const p of ['scripts/vu2/build-release.mjs', 'scripts/core/stock-availability.mjs', '.github/workflows/pages-release.yml', 'company-intelligence/config/x.json', 'scripts/access-gate/build.mjs']) assert.equal(ok([p]), 'FULL', p);
+});
 test('FP-3 overlay legt die Dateien byte-gleich ueber das Paket, smoke findet Abweichungen', async () => {
   const repo = mkdtempSync(join(tmpdir(), 'fp-repo-')), site = mkdtempSync(join(tmpdir(), 'fp-site-'));
   const d = join(repo, I + '/2026-11-11');
