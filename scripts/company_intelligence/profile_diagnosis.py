@@ -39,6 +39,10 @@ def diagnose(company, body, source):
         section = ' '.join(doc.blocks[first:first + 6])
         out['class'] = 'ITEM1_CROSS_REFERENCE' if CROSS_REF.search(section) else 'ITEM1_NO_BUSINESS_SENTENCES'
         out['sample'] = [_snip(t) for t in doc.blocks[first:first + 3]]
+        # Blockauszug fuer die Ursachenklaerung (Layout der Ueberschrift, Zellen, Abschnittsende): Block-Nr. und Anfang je Block.
+        out['afterHeading'] = [[i, _snip(doc.blocks[i])[:110]] for i in range(first, min(first + 14, len(doc.blocks)))]
+        out['headingBlocks'] = sorted(set(heads))[:6]
+        out['itemOneLike'] = [[i, _snip(doc.blocks[i])[:90]] for i, tx in enumerate(doc.blocks) if re.search(r'\bitem\s*1\b', tx, re.I) and len(tx) < 160][:8]
         return out
     allow_first = len(doc.registrants) <= 1
     names = list(company.get('names') or [])
