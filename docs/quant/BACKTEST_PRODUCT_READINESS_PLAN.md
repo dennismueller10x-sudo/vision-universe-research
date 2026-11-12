@@ -33,6 +33,7 @@ Keine der sieben Methoden speist die Zertifizierung. Der Zertifizierungs-Builder
 
 - **`quant/api/backtest-research-adapter.js` (gemergt).** Prüft den Ergebnisvertrag v2 und gibt standardmäßig `DISABLED` zurück. Auch eingeschaltet setzt er immer `display.allowed=false` und `trust NOT_READY`. Kein Produktmodul importiert ihn; ein Isolationstest stellt das sicher.
 - **Interne Vorschau (#1138, Draft, nicht gemergt).** Lesemodell `backtest-preview-1.0.0`, Schalter `options.backtestPreview {enabled, audience: INTERNAL_REVIEW}`. Nicht verdrahtet.
+- **Artefakt `backtest-research-v1.json` (12.11.2026, Steuerung nach Owner-Frage „Monte Carlo“).** Erzeuger `scripts/quant/research/build-backtest-research.cjs` rechnet die 16 festen Prüffälle (`docs/quant/backtest-demos/cases.json`) wöchentlich (pipeline-weekly, Teil `backtest-forschung`, Datenzweig) und schreibt je Fall die sieben Zusatzmethoden kompakt, unverändert aus dem Ergebnisvertrag v2. Etikett „Forschung, nicht zertifiziert“, `audience INTERNAL`, `display.public=false`; die Anzeige folgt intern auf der Forschungsseite. Öffentliche Rendite- oder Performancezahlen daraus brauchen eine Owner-Freigabe.
 - **Produktadapter für Strategy/Factor:** existiert nicht. Er ist laut Entscheidungsvorlage B2/C2 bewusst zurückgestellt.
 
 ## 2. Was Produktreife hier bedeutet
