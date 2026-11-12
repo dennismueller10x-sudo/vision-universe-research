@@ -163,7 +163,7 @@ def backfill(args, root, catalogue_path, checkpoint_path):
     alias_pipeline = Pipeline(root, companies, None, object())
     sites = json.loads((root / 'company-intelligence/config/official-sites.json').read_text())
     raw = JsonRawStore(root / 'quant/data/sec/raw')
-    counts = Counter(); new = []; attempts = 0; consecutive_failures = 0
+    counts = Counter(); new = []; attempts = 0; consecutive_failures = 0; reasons = Counter()
     now = utcnow()
     if checkpoint.get('retryAfter', '') > now and args.network:
         print(json.dumps({'status': 'CIRCUIT_COOLDOWN', 'requests': 0, 'retryAfter': checkpoint['retryAfter']}))
@@ -191,6 +191,8 @@ def backfill(args, root, catalogue_path, checkpoint_path):
             body = client.get_bytes(filing['url']) if filing else None
             result = extract(company, body, filing, verified_at, sites.get(company['cik'], {}).get('url')) if filing else {'state': 'UNAVAILABLE', 'reason': 'NO_EXPLICIT_ANNUAL_PRIMARY_DOCUMENT'}
             status = result['state']; consecutive_failures = 0
+            if status != 'AVAILABLE':
+                reasons[str(result.get('reason') or status)] += 1
             if status == 'AVAILABLE':
                 public = public_profile(result, cid, now)
                 if public is None:
@@ -233,7 +235,7 @@ def backfill(args, root, catalogue_path, checkpoint_path):
     created = [cid for cid in new if cid not in before_ids]
     batch = {'generatedAt': now, 'attempted': attempts, 'acceptedProfiles': len(new), 'newProfiles': len(created), 'newIssuerIds': created,
              'updatedProfiles': len(new) - len(created), 'retiredProfiles': len(before_ids - set(catalogue['profiles'])), 'ratePerSecond': args.rate,
-             'outcomes': dict(counts), 'secStats': dict(client.stats), 'networkRequests': network_requests, 'downloadedBytes': downloaded,
+             'outcomes': dict(counts), 'reasons': dict(reasons), 'secStats': dict(client.stats), 'networkRequests': network_requests, 'downloadedBytes': downloaded,
              'runtimeSeconds': round(time.monotonic() - started, 3), 'catalogueAvailable': len(catalogue['profiles'])}
     checkpoint['batches'].append(batch)
     atomic_json(checkpoint_path, checkpoint)
