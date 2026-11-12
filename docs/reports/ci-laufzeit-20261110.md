@@ -19,13 +19,9 @@ Erhoben am 09.11.2026, bis 18:08 UTC. Je ci.yml und Produkt-Prüfworkflow die le
 
 Die Shell-QA dominiert mit seriellen Browser-Routen und pro Navigation/Reload `networkidle` plus 500 ms festem Warten. Danach folgt VU3 mit seriellen Reisen. Technical prüft sechs Kombinationen × 32 Lektionen × drei Szenen einschließlich axe, Quiz und Speicherzustand. Social und Supertrader führen große Regressionen und Isolation aus. Der Pages-Neubau kostet mehrfach etwa 140–160 Sekunden; Checkout typischerweise 58–64 Sekunden. Playwright-Installation ist in diesen langsamsten Browserjobs wegen des Container-Images nicht der Hauptanteil.
 
-## Änderung nur im Prüfcode
+## Versuch im Prüfcode (zurückgenommen)
 
-Shell-QA wartet auf vorhandenen Kopf und Dock, fertige Schriften und beendete Shell-Animationen sowie zwei Layout-Frames. Die feste 500-ms-Pause und das Warten auf fachfremde Marktdaten entfallen. Die 15-s-Grenze bleibt; Fehler werden nicht mehr verschluckt. Alle Routen, Reloads, Ziele ≥44 px, Fokus-, Überlauf- und Zurück/Vor-Prüfungen bleiben erhalten. Kein Produktcode, Workflow oder Registry geändert.
-
-## Vorher/Nachher
-
-Paarmessung derselben gebauten Pages-Auslieferung (main b9ee52c7d48eeb7d5e12ae886e77335355a1a6fb), Chromium entsprechend Shell-CI mit Playwright 1.56.1, unveränderter vollständiger Routenliste bei 390×844. Vorher und Nachher seriell auf derselben Maschine. Messung noch in Arbeit; keine End-to-End-Beschleunigung behauptet. Vergleich gegen die ungebaute Arbeitskopie wurde wegen fehlender erzeugter Seitenteile verworfen und nicht als Beleg gezählt.
+Ein erster Entwurf (#1760) ersetzte in der Shell-QA `networkidle` plus 500 ms durch das Warten auf vorhandenen Kopf und Dock, fertige Schriften und beendete Shell-Animationen. Auf dem aktuellen `main` lief er in der Shell-CI (Lauf 43242962859, 12.11.2026) rot: Auf `/supertrader/…` und `/screener/?view=build` war die Produkt-Leiste zum Messzeitpunkt noch nicht da („keine Produkt-Leiste“), und `/konto/` brach mit „Execution context was destroyed“ ab. Das alte Warten fängt die späte Shell-Montage dieser Seiten ab. Der Code wurde zurückgenommen; die Shell-QA bleibt unverändert. Eine Beschleunigung ist damit weder belegt noch behauptet.
 
 ## Ausschließlich Vorschläge für Workflows
 
