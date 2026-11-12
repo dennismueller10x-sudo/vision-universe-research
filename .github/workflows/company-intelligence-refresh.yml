@@ -1,12 +1,12 @@
 name: Company Intelligence Continuous Production Refresh
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '17 */4 * * *'
-    # Weitere Schedule-Slots gehoeren NICHT hierher: jeder Schedule-Lauf besetzt die
-    # Schreibergruppe, ein neuer wartender verdraengt den alten. Redundanz liefert
-    # company-intelligence-refresh-watchdog.yml (eigene Gruppe, dispatcht nur bei Veraltung).
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Von Cloudflare-Wecker gesetzt (Cron des Eintrags in core/registry/schedule.json); nicht von Hand'
+        type: string
+        default: ''
       verification:
         description: 'Independent isolated R2 runner; never advances production'
         type: boolean
@@ -66,6 +66,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_FINANCIAL: ${{ inputs.financial }}
+          VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
         run: node scripts/company_intelligence/scheduler-gate.mjs
   refresh:
     needs: gate

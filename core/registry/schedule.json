@@ -40,36 +40,35 @@
    "id": "company-intelligence-health",
    "workflow": "company-intelligence-health.yml",
    "cron": "57 */4 * * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker"
   },
   {
    "id": "company-intelligence-profile-source",
    "workflow": "company-intelligence-profile-source.yml",
    "cron": "47 3 * * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker"
   },
   {
    "id": "company-intelligence-refreeze-auto",
    "workflow": "company-intelligence-refreeze-auto.yml",
    "cron": "23 5 */2 * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker"
   },
   {
    "id": "company-intelligence-refresh",
    "workflow": "company-intelligence-refresh.yml",
    "cron": "17 */4 * * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
   },
   {
    "id": "company-intelligence-refresh-watchdog",
    "workflow": "company-intelligence-refresh-watchdog.yml",
    "cron": "47 2-22/4 * * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker"
   },
   {
    "id": "content-analysten",

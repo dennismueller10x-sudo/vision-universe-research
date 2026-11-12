@@ -1,3 +1,4 @@
+import json
 import sys
 import tempfile
 import unittest
@@ -68,12 +69,15 @@ class CoverageCostTests(unittest.TestCase):
         self.assertNotIn("cron: '43 * * * *'", workflow)
         self.assertNotIn('cron:', workflow)
         production=(root / '.github/workflows/company-intelligence-refresh.yml').read_text()
-        # Der Refresh behaelt nur den Primaerslot; weitere Schedule-Ankuenfte wuerden
-        # wartende Laeufe der Schreibergruppe verdraengen. Redundanz: Waechter-Workflow.
-        self.assertEqual(production.count("cron: '17 */4 * * *'"),1)
-        self.assertEqual(production.count('cron:'),1)
+        # Der Refresh hat nur den Primaerslot, und zwar im Wecker-Register (kein GitHub-Cron mehr);
+        # weitere Schedule-Ankuenfte wuerden wartende Laeufe der Schreibergruppe verdraengen. Redundanz: Waechter-Workflow.
+        self.assertEqual(production.count('cron:'),0)
+        entries=json.loads((root / 'core/registry/schedule.json').read_text())['entries']
+        refresh=[e for e in entries if e['workflow']=='company-intelligence-refresh.yml']
+        self.assertEqual([(e['cron'],e['timer']) for e in refresh],[('17 */4 * * *','waker')])
         watchdog=(root / '.github/workflows/company-intelligence-refresh-watchdog.yml').read_text()
-        self.assertEqual(watchdog.count('cron:'),1)
+        self.assertEqual(watchdog.count('cron:'),0)
+        self.assertEqual(len([e for e in entries if e['workflow']=='company-intelligence-refresh-watchdog.yml']),1)
         self.assertNotIn('company-intelligence-continuous-',watchdog)
         self.assertIn('scheduler-gate.mjs',production)
         self.assertIn("needs.gate.outputs.run != 'false'",production)

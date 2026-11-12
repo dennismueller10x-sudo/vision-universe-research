@@ -4,10 +4,14 @@ name: Company Intelligence Refresh Watchdog
 # Eigene Concurrency-Gruppe: er besetzt die Schreibergruppe des Refresh nie selbst und
 # dispatcht nur, wenn dort nichts laeuft oder wartet und der letzte Produktionslauf
 # veraltet ist. Dispatch -> Refresh mit verification=false (Produktion).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '47 2-22/4 * * *'
   workflow_dispatch:
+    inputs:
+      zeitplan:
+        description: 'Von Cloudflare-Wecker gesetzt (Cron des Eintrags in core/registry/schedule.json); nicht von Hand'
+        type: string
+        default: ''
 permissions:
   contents: read
 concurrency:
