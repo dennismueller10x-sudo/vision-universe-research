@@ -115,7 +115,7 @@ class InlineBlockLayoutTests(unittest.TestCase):
             r = extract(c, body, SRC, NOW)
         self.assertEqual(r['state'], 'AVAILABLE')
         self.assertEqual(compare(c, body, SRC, NOW)['verdict'], 'NEWLY_AVAILABLE')
-        self.assertIn('egg company in the United States', r['description'])
+        self.assertIn('is an egg company in the United States', r['description'], 'kein "the egg company" (klingt nach einziger)')
 
     def test_normal_documents_never_reach_the_third_pass(self):
         """Ein Dokument mit inline-block-Fetzen, dessen erster Durchlauf etwas findet, bleibt wortgleich."""

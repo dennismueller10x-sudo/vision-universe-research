@@ -34,7 +34,7 @@ PROMOTION = re.compile(r'\b(?:(?:world[’\']?s?[ -]|nation[’\']s[ -]|global[ 
 # (relaxed) Durchlauf, der nur laeuft, wenn der erste nichts findet; kein bisheriger Titel aendert damit seinen Text.
 # experiment(False) liefert den Stand 1.0.22 fuer den Vergleich (profile_diagnosis.compare).
 # 'inline': dritter Durchlauf fuer inline-block-Fetzen (CALM, CATO), bis zur Freigabe nach Vorher/Nachher aus.
-_EXPERIMENT = {'on': True, 'inline': False}
+_EXPERIMENT = {'on': True, 'inline': False, 'third': False}
 LEGAL_SUFFIX = re.compile(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|company|co\.?|group|holdings?|limited|ltd\.?|plc|llc|l\.p\.|lp)\s*$', re.I)
 
 
@@ -356,6 +356,9 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True, relaxed=Fa
     predicate = re.sub(r'^ is the (?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|\d+(?:st|nd|rd|th)) largest ([a-z -]{0,60})(company|provider|supplier|manufacturer|producer|retailer|operator|distributor|bank)\b', r' is a \1\2', predicate, flags=re.I)
     text = subject + predicate
     text = re.sub(r'\bsecure,\s*trusted,\s*and\s*innovative\s+', '', text, flags=re.I)
+    if _EXPERIMENT['third']:
+        # Dritter Durchlauf: "is the largest egg company" darf nicht zu "is the egg company" (= einzige) werden, sondern "is an egg company".
+        text = subject + re.sub(r'(?<=\s)(is|are) the (?:largest|leading|biggest|premier|top-ranked|first) (?=(\w))', lambda m: m[1] + (' an ' if m[2].lower() in 'aeiou' else ' a '), text[len(subject):], flags=re.I)
     text = subject + PROMOTION.sub('', text[len(subject):])
     text = subject + re.sub(r'\b(?:precise and reliable |trusted and |high.quality |robust |highly engineered |patient.centric |unique |advanced )', '', text[len(subject):], flags=re.I)
     text = re.sub(r'\b(broad|extensive|diverse|full|complete) and (portfolio|range|set|suite|solutions|services|products)\b', r'\1 \2', text, flags=re.I)
@@ -427,7 +430,11 @@ def extract(company, body, source, now, official_website=None):
     eligible = first if first[0] or not sec else _eligible(company, doc, source, sec, relaxed=True)
     if _EXPERIMENT['on'] and _EXPERIMENT['inline'] and sec and not eligible[0] and re.search(rb'display\s*:\s*inline-block', body, re.I):
         # Dritter Durchlauf, nur wenn die beiden ersten nichts fanden und das Dokument inline-block-Fetzen enthaelt (Strang AF).
-        eligible = _eligible(company, blocks(body, inline_div=True), source, sec, relaxed=True)
+        _EXPERIMENT['third'] = True
+        try:
+            eligible = _eligible(company, blocks(body, inline_div=True), source, sec, relaxed=True)
+        finally:
+            _EXPERIMENT['third'] = False
     return _profile(company, body, source, now, official_website, url, sec, eligible)
 
 
