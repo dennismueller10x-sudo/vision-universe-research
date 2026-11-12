@@ -1,0 +1,71 @@
+name: Company Intelligence Profile Catalogue
+# Erzeuger-Lauf fuer company-intelligence/config/company-profiles.json (scripts/company_intelligence/profile_catalogue.py):
+# liest je Aktie den aktuellen 10-K bei der SEC und bildet die englische Profilquelle (Parser PARSER_VERSION).
+# Nur von Hand (kein Zeitplan, SZ). Schreibt NICHT nach main: Ergebnis ist das Artefakt
+# profile-catalogue-<run> (Katalogdatei + Patch + Bericht); daraus entsteht ein PR (Vertragstests, ci-gate).
+# Die SEC-Kennung kommt aus dem Secret SEC_USER_AGENT, sonst gilt der Repo-Standard in scripts/quant/sec/http_client.py.
+on:
+  workflow_dispatch:
+    inputs:
+      tickers:
+        description: 'Kommagetrennte Ticker (z. B. COST,UNH,GE); leer = naechste Aktien ohne aktuellen Katalogeintrag nach companyId'
+        type: string
+        default: ''
+      limit:
+        description: 'Hoechstens so viele Emittenten (1 bis 100)'
+        type: string
+        default: '30'
+permissions:
+  contents: read
+concurrency:
+  group: company-intelligence-profile-catalogue-${{ github.ref_name }}
+  cancel-in-progress: false
+jobs:
+  catalogue:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 1
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check inputs
+        env:
+          TICKERS: ${{ inputs.tickers }}
+          LIMIT: ${{ inputs.limit }}
+        run: |
+          set -euo pipefail
+          [[ "$LIMIT" =~ ^[0-9]+$ ]] && [ "$LIMIT" -ge 1 ] && [ "$LIMIT" -le 100 ] || { echo "::error::limit must be 1..100"; exit 1; }
+          [[ -z "$TICKERS" || "$TICKERS" =~ ^[A-Za-z0-9.,-]{1,300}$ ]] || { echo "::error::tickers must be a comma separated list of symbols"; exit 1; }
+      - name: Build catalogue entries with the producer (SEC, bounded, cache and rate limit of the SEC client)
+        env:
+          TICKERS: ${{ inputs.tickers }}
+          LIMIT: ${{ inputs.limit }}
+          SEC_UA: ${{ secrets.SEC_USER_AGENT }}
+          PYTHONPATH: scripts
+        run: |
+          set -euo pipefail
+          if [ -n "$SEC_UA" ]; then export SEC_USER_AGENT="$SEC_UA"; fi
+          args=(--root . --network --limit "$LIMIT" --request-budget 200 --max-seconds 1200)
+          if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
+          mkdir -p "$RUNNER_TEMP/profile-catalogue"
+          python3 -m company_intelligence.profile_catalogue "${args[@]}" | tee "$RUNNER_TEMP/profile-catalogue/report.json"
+      - name: Patch and file for the pull request
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/profile-catalogue"
+          git diff --stat -- company-intelligence/config/company-profiles.json | tee "$out/diffstat.txt"
+          git diff -- company-intelligence/config/company-profiles.json > "$out/company-profiles.patch"
+          cp company-intelligence/config/company-profiles.json "$out/company-profiles.json"
+          if [ ! -s "$out/company-profiles.patch" ]; then echo "::notice::catalogue unchanged"; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: profile-catalogue-${{ github.run_id }}
+          path: ${{ runner.temp }}/profile-catalogue/
+          if-no-files-found: ignore
+          retention-days: 14
