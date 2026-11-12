@@ -58,3 +58,13 @@ test('FP-4 Skip-Erben verhindert: jeder Job hinter package (deploy, indexnow, co
   }
   assert.match(job('deploy'), /needs\.package\.result == 'success'/);
 });
+
+test('FP-5 Schnellweg nur ohne laufende Company-Intelligence-Veroeffentlicher (Weiche haengt an der Pruefung)', async () => {
+  const {readFileSync} = await import('node:fs');
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const a = wf.indexOf('\n  intraday-schnell:\n'), b = wf.indexOf('\n  deploy-schnell:\n');
+  const job = wf.slice(a, b);
+  for (const w of ['company-intelligence-profile-source', 'company-intelligence-refresh', 'company-intelligence-universe-release', 'pages-release-marker']) assert.ok(job.includes(w), w);
+  assert.match(job, /id: weiche\n\s+if: [^\n]*steps\.pub\.outputs\.frei == 'true'/);
+  assert.match(job, /id: bereit\n\s+if: steps\.weiche\.outputs\.mode == 'FAST'/);
+});
