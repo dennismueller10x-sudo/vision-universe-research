@@ -23,15 +23,15 @@ class CandidateTests(unittest.TestCase):
         self.assertIsNone(short_name('Apple Inc.'), 'zu kurz: kein Kurzname')
         self.assertIsNone(short_name('Abbott Laboratories'))
 
-    def test_default_parser_is_unchanged_and_candidate_is_opt_in(self):
+    def test_parser_1_0_23_adds_the_subsidiary_appositive(self):
         c = company('The Example Company')
         body = doc('The Example Company, together with the subsidiaries through which businesses are conducted (the Company), is a diversified worldwide entertainment company with operations in media and parks.')
-        self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE')
-        with experiment():
-            r = extract(c, body, SRC, NOW)
+        with experiment(False):
+            self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Stand 1.0.22')
+        r = extract(c, body, SRC, NOW)
         self.assertEqual(r['state'], 'AVAILABLE')
+        self.assertEqual(r['parserVersion'], 'company-profile-parser-1.0.23')
         self.assertTrue(r['description'].startswith('The Example Company is a diversified'))
-        self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Schalter ist wieder aus')
 
     def test_through_our_subsidiaries(self):
         c = company('Baxterish International Inc.')
