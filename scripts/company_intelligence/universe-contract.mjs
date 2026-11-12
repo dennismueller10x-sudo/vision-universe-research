@@ -7,6 +7,7 @@ import {createRequire} from 'node:module';
 import {runInNewContext} from 'node:vm';
 import {validateManifest} from './public-delivery.mjs';
 import {eligibilityValid,moduleNames} from './universe-approval.mjs';
+import {failureDetail} from './failure-detail.mjs';
 const require=createRequire(import.meta.url),api=require('../../company-intelligence/api/contract.js');
 const sandbox={VUCompanyIntelligence:api};runInNewContext(readFileSync(new URL('../../company-intelligence/ui/stock-section.js',import.meta.url),'utf8'),sandbox);
 export async function universeContracts(directory){
@@ -47,6 +48,8 @@ export async function universeContracts(directory){
  }catch(error){
   const match=String(error.message||'').match(/iss_cik_\d{10}:(profile|financials|whatChanged|aktuelles|nextEvent|link|private)(?::([A-Za-z][A-Za-z0-9]*))?/);
   const diagnostic={companyId:/^iss_cik_\d{10}$/.test(currentIssuer||'')?currentIssuer:null,check:match?.[1]||'STRUCTURAL_CONTRACT',field:match?.[2]||null};
+  // Ohne erkannte Pruefung (Vorfall 12.11.2026, XOM neue CIK): bereinigte Fehlerangabe mitschreiben (Name, Code, gekuerzte Meldung ohne URL/Pfad/Schluessel).
+  if(!match)diagnostic.detail=failureDetail(error);
   const failure=Error('CONSUMER_CONTRACT_REJECTED');failure.consumerDiagnostic=diagnostic;throw failure;
  }
 }
