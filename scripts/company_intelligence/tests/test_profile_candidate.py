@@ -30,7 +30,7 @@ class CandidateTests(unittest.TestCase):
             self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Stand 1.0.22')
         r = extract(c, body, SRC, NOW)
         self.assertEqual(r['state'], 'AVAILABLE')
-        self.assertEqual(r['parserVersion'], 'company-profile-parser-1.0.23')
+        self.assertEqual(r['parserVersion'], 'company-profile-parser-1.0.24')
         self.assertTrue(r['description'].startswith('The Example Company is a diversified'))
 
     def test_through_our_subsidiaries(self):
@@ -110,10 +110,11 @@ class InlineBlockLayoutTests(unittest.TestCase):
     def test_fragmented_filing_is_read_only_in_the_third_pass(self):
         c = company('Example Foods, Inc.')
         body = self.pdf_doc()
-        self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Standard (Schalter aus): Wortfetzen wie bisher')
-        with experiment(True, inline=True):
-            r = extract(c, body, SRC, NOW)
-        self.assertEqual(r['state'], 'AVAILABLE')
+        with experiment(True, inline=False):
+            self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Stand 1.0.23: Wortfetzen')
+        r = extract(c, body, SRC, NOW)
+        self.assertEqual(r['state'], 'AVAILABLE', 'Parser 1.0.24: dritter Durchlauf')
+        self.assertEqual(r['parserVersion'], 'company-profile-parser-1.0.24')
         self.assertEqual(compare(c, body, SRC, NOW)['verdict'], 'NEWLY_AVAILABLE')
         self.assertIn('is an egg company in the United States', r['description'], 'kein "the egg company" (klingt nach einziger)')
 
@@ -122,6 +123,6 @@ class InlineBlockLayoutTests(unittest.TestCase):
         c = company('Example Holdings Inc.')
         body = doc('Example Holdings Inc. develops software platforms for banks and insurance companies worldwide.').replace(b'<p>', b'<p style="display:inline-block">')
         a = extract(c, body, SRC, NOW)
-        with experiment(True, inline=True):
+        with experiment(True, inline=False):
             b = extract(c, body, SRC, NOW)
         self.assertEqual(a['description'], b['description'])
