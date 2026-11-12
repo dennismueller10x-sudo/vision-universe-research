@@ -8,7 +8,8 @@ import {runRefresh} from './refresh-run.mjs';
 import assert from 'node:assert/strict';
 import {universeActive} from './refresh-storage.mjs';
 import {prepareProfileRecovery,finishProfileRecovery} from './profile-release-recovery.mjs';
-const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];
+// Fehlt die Option, ist der Wert undefined (frueher args[0] = '--temporary': wurde als --run-id an das Onboarding gereicht, argparse Exit 2).
+const args=process.argv.slice(2),arg=k=>{const i=args.indexOf(k);return i<0?undefined:args[i+1];};
 const verification=!args.includes('--publish'),driver=createS3DriverFromEnv();
 const recover=args.includes('--recover-full-scope');
 if(recover&&verification)throw Error('RECOVERY_REQUIRES_EXPLICIT_PRODUCTION_PUBLICATION');
