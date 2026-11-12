@@ -63,7 +63,7 @@
       "phase": "BRANCH_ONLY",
       "workflow": "pipeline-daily.yml",
       "paths": ["quant/data/product/ki-depots-v1.json"],
-      "note": "pipeline-daily Teil ki-depots (werktags 23:41 UTC) spielt den Zweig vor dem Export ein und schreibt nur dorthin. Bis zum ersten Lauf liefert Pages die eingefrorene Kopie aus main."
+      "note": "pipeline-daily Teil ki-depots (Di–Sa 01:41 UTC, nach dem Marktdaten-Refresh) spielt den Zweig vor dem Export ein und schreibt nur dorthin. Bis zum ersten Lauf liefert Pages die eingefrorene Kopie aus main."
     },
     {
       "id": "fxReference",
