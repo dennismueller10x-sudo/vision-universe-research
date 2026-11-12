@@ -1,0 +1,35 @@
+<section class="page dark">
+  <div data-run="Die Zahlen auf einen Blick"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Die Zahlen auf einen Blick</span>
+    <div class="hx" style="margin-top:2.5mm">Take-Two in zwölf Zahlen</div>
+    <div class="grid" style="grid-template-columns:repeat(3,minmax(0,1fr));gap:3.5mm;margin-top:5mm" data-k="kz"></div>
+    <div class="grid" style="grid-template-columns:1.3fr 1fr;gap:3.5mm;margin-top:3.5mm">
+      <div style="background:#111;border:1px solid #262626;border-radius:10px;padding:4mm"><div class="kick" style="color:#9a9a9a">Umsatz je Geschäftsjahr, Mrd. $</div><div style="margin-top:2.5mm" data-k="kzumsatz"></div></div>
+      <div style="background:#111;border:1px solid #262626;border-radius:10px;padding:4mm"><div class="kick" style="color:#9a9a9a">Kurs, 12 Monate (Index)</div><div style="margin-top:2.5mm" data-k="kzkurs"></div></div>
+    </div>
+    <div class="xs" style="color:#8c8c8c;margin-top:2mm">Kurse bis 11.11.2026 (Tiingo); Geschäftszahlen GAAP aus den SEC-Meldungen, 12 Monate bis 30.09.2026; Prognose: Take-Two, 09.11.2026; Vorbestellungen: Schätzung Sensor Tower. Rechnungen: Vision Universe.</div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const D=VUM.D,a=D.aktie,de=VUM.de,sg=VUM.sg;
+const t=(v,l,s,hl)=>`<div style="background:${hl==='lime'?'var(--lime)':hl==='pink'?'#ff3d9a':'#111'};color:${hl==='lime'?'#000':'#fff'};border:1px solid ${hl?'transparent':'#262626'};border-radius:10px;padding:6.5mm 4.5mm 6mm"><div style="font-size:25pt;font-weight:900;letter-spacing:-.045em;line-height:1">${v}</div><div style="font-size:9.6pt;font-weight:900;margin-top:2.5mm">${l}</div><div style="font-size:7.8pt;margin-top:.8mm;opacity:.75">${s}</div></div>`;
+VUM.k('kz',()=>[
+ t(de(a.price,2)+'&nbsp;$','Schlusskurs','am 11.11.2026'),
+ t(de(a.mcap/1e9,1)+'&nbsp;Mrd.&nbsp;$','Börsenwert','Kurs × 187,2 Mio. Aktien'),
+ t(sg(a.r1m*100,1)+'&nbsp;%','Kurs in einem Monat',`12 Monate: ${sg(a.r12m*100,1)} %`,'lime'),
+ t('8,0–8,2&nbsp;Mrd.&nbsp;$','Ziel Buchungen GJ 2027','bis 31.03.2027, nach 6,72 Mrd. $','lime'),
+ t(de(D.ttm.revenue/1e9,2)+'&nbsp;Mrd.&nbsp;$','Umsatz','12 Monate bis 30.09.2026'),
+ t(sg(D.ttm.net_income/1e6,0)+'&nbsp;Mio.&nbsp;$','Ergebnis','12 Monate bis 30.09.2026'),
+ t('≈&nbsp;0,85&nbsp;Mrd.&nbsp;$','Nettoschulden','am 30.09.2026'),
+ t(de(a.ps,1),'Kurs-Umsatz-Verhältnis',`Median US-Aktien: ${de(a.psMedian,1)}`),
+ t('49&nbsp;%','Anteil Handy am Umsatz','Quartal Juli bis September 2026'),
+ t('&gt;&nbsp;230&nbsp;Mio.','verkaufte GTA V','seit 2013, Stand 08/2026','pink'),
+ t('≈&nbsp;10,3&nbsp;Mio.','Vorbestellungen GTA VI','Schätzung Sensor Tower','pink'),
+ t('19.11.','Start von GTA VI','PS5 und Xbox Series X|S','pink'),
+].join(''));
+VUM.k('kzumsatz',()=>VUC.vbars(D.tracks.umsatz.filter(r=>r[0]>=2017).map(r=>[String(r[0]).slice(2),r[1]/1e9]),{w:340,h:215,allvals:true,dark:1,fmt:v=>de(v,1)}));
+VUM.k('kzkurs',()=>{const b=D.daily[0][1];return VUC.line(D.daily.map(p=>[p[0],p[1]/b*100]),{w:260,h:215,pr:26,tick:20,mstep:3,ink:'#fff',grid:'#2a2a2a'})});
+})();
+</script>

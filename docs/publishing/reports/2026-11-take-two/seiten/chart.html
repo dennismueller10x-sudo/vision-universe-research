@@ -35,9 +35,9 @@
 <script>
 (function(){const D=VUM.D,a=D.aktie,de=VUM.de,sg=VUM.sg,b0=D.daily[0][1],P=D.daily.map(p=>[p[0],p[1]/b0*100]),n=v=>v==null?null:v/b0*100;
 const ix=d=>P.findIndex(p=>p[0]>=d);
-VUM.k('tageschart',()=>VUC.line(P,{w:600,h:250,pr:34,tick:10,mstep:2,lines:[{v:D.sma50.map(n),name:'50 T.',c:'#5c5c5c',dy:-6},{v:D.sma200.map(n),name:'200 T.',c:'#000',dash:'5 3',dy:8}],marks:[
+VUM.k('tageschart',()=>VUC.line(P,{w:600,h:285,pr:40,pt:40,pb:20,tick:10,mstep:2,lines:[{v:D.sma50.map(n),name:'50 T.',c:'#5c5c5c',dy:-6},{v:D.sma200.map(n),name:'200 T.',c:'#000',dash:'5 3',dy:8}],marks:[
  {i:ix('2025-10-20'),t:'Rekordhoch',s:'20.10.25',anchor:'start',dx:-2},
- {i:ix('2025-11-07'),t:'2. Verschiebung',s:'−8,1 % · 07.11.25',up:false},
+ {i:ix('2025-11-07'),t:'2. Verschiebung',s:'−8,1 % · 07.11.25',up:false,anchor:'start',dx:-3},
  {i:ix('2026-01-30'),t:'Google Genie',s:'−7,9 % · 30.01.26',up:false},
  {i:ix('2026-11-10'),t:'Quartalszahlen',s:'+8,3 % · 10.11.26',anchor:'end',dx:-4},
 ]}));

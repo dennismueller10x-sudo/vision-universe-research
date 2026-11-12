@@ -203,7 +203,11 @@ Serienregeln nach der Prüfung von Nr. 01 (12.11.2026): jede Kennzahl mit Zeitra
 der Branche; Kursvergleiche um Ereignisse als „beschreibend, keine Ereignisstudie“ kennzeichnen; Kursverläufe als Index statt
 in Dollar (Tiingo-Kursniveaus nicht weitergeben); wörtliche Zitate nur mit geprüftem Wortlaut, sonst Paraphrase; eigene
 Quellenseite mit Titeln und Links (Fußzeilen verweisen darauf), Inhaltsverzeichnis im PDF verlinkt (`#seite-<id>`); die
-App-Seite heißt „Eigenwerbung“; Geschäftsmodell und finanzielle Kernaussage früh. Offen für die Anwaltsprüfung der Vorlage:
+App-Seite heißt „Eigenwerbung“; Geschäftsmodell und finanzielle Kernaussage früh. Gestaltung (Owner 12.11.2026): Titel ohne Börsenkürzel, mit großem Aufhänger (z. B. „GTA VI“-Button) und
+Themen-Buttons; Seite 2 ein Inhaltsverzeichnis mit Bildern in verschiedenen Größen; Seite 3 nur Zahlen („auf einen Blick“),
+Zahlen und Fließtext sonst nicht mischen; Platz ausnutzen; nie helle Schrift auf Neongrün; letzte Seite ein großes
+Vision-Universe-Werbebild mit nur www.visionuniverse.de. Das Prüftor meldet helle Schrift auf Grün als Fehler und
+Weißraum über 20 mm vor der Fußzeile als Hinweis (`"weissraum": false` je Seite schaltet ab). Offen für die Anwaltsprüfung der Vorlage:
 Einordnung nach MAR/DelVO 2016/958, konkrete Angaben zu Interessenkonflikten, Bildrechte (Pressematerial), Weitergabe von Kursdaten.
 
 Regeln wie im Heft (Abschnitt 6). Zusätzlich: Privatpersonen, gegen die nur Vorwürfe bestehen, werden nicht namentlich

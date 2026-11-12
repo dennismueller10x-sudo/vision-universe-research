@@ -25,7 +25,7 @@
 </section>
 <script>
 (function(){const D=VUM.D,de=VUM.de,sg=VUM.sg,W0=D.weekly,b0=W0[0][1],W=W0.map(p=>[p[0],p[1]/b0]);
-VUM.k('langchart',()=>{const w=600,h=255,pl=0,pr=34,pt=12,pb=16;const mn=Math.log(.5),mx=Math.log(100);
+VUM.k('langchart',()=>{const w=600,h=320,pl=0,pr=34,pt=12,pb=16;const mn=Math.log(.5),mx=Math.log(100);
  const X=i=>pl+(w-pl-pr)*i/(W.length-1),Y=v=>pt+(h-pt-pb)*(1-(Math.log(v)-mn)/(mx-mn));
  let s=`<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block;overflow:visible">`;
  [1,2,5,10,20,50].forEach(v=>{s+=`<line x1="0" x2="${w-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e0e0e0"/><text x="${w-pr+5}" y="${Y(v)+3}" font-size="8.5" fill="#8c8c8c" font-weight="600">${v}×</text>`});
