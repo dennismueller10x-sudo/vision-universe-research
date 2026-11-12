@@ -81,3 +81,15 @@ class SkipTests(unittest.TestCase):
         self.assertTrue(skip_company(self.args(compare_parser=True, only_missing=True), cur, None, {}), 'ohne tickers: nur Fehlende, auch im Vergleich')
         old = {'parserVersion': 'company-profile-parser-1.0.10'}
         self.assertFalse(skip_company(self.args(), old, None, {}), 'CLI-Vertrag ohne --only-missing: aeltere Version wird neu geparst (Qualitaetsruecknahme)')
+
+
+class FirstPassUnchangedTests(unittest.TestCase):
+    def test_candidate_never_changes_a_title_the_first_pass_already_describes(self):
+        """Clorox-Fall (Vergleich 13:49): ein Satz mit Kurzname darf den Text eines vorhandenen Titels nicht ersetzen."""
+        c = company('The Example Company')
+        body = doc('The Example Company markets products for professional customers, including cleaning and disinfecting products.',
+                   'Example markets some of the most recognized consumer brand names, including cleaning products and dressings.')
+        before = extract(c, body, SRC, NOW)
+        self.assertEqual(before['state'], 'AVAILABLE')
+        cmp = compare(c, body, SRC, NOW)
+        self.assertEqual(cmp['verdict'], 'SAME')

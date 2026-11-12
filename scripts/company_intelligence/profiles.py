@@ -244,7 +244,7 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True, relaxed=Fa
         n = re.sub(r'\s+(?:class\s+[a-z]|ordinary shares|common stock)\b.*', '', n, flags=re.I)
         names.append(n.strip())
         names.append(re.sub(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|limited|ltd\.?|plc)\s*$', '', n, flags=re.I).strip())
-        if _EXPERIMENT['on'] and sec and short_name(n):
+        if _EXPERIMENT['on'] and relaxed and sec and short_name(n):
             names.append(short_name(n))
     subject = None
     for n in sorted(set(names), key=len, reverse=True):
@@ -295,7 +295,8 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True, relaxed=Fa
     delegation = None
     if sec:
         tail = re.sub(r'^\s*,?\s*(?:and|together with) its (?:consolidated )?subsidiaries\b', '', tail, flags=re.I)
-        if _EXPERIMENT['on']:
+        if _EXPERIMENT['on'] and relaxed:
+            # Nur im zweiten Durchlauf (relaxed): findet der erste etwas, bleibt der Text jedes bisherigen Titels unveraendert.
             # "X, together with the subsidiaries through which businesses are conducted (the Company), is a ..." und "X, through our subsidiaries, provides ..."
             tail = re.sub(r'^\s*,\s*together with (?:the|its|our) (?:consolidated )?subsidiaries(?: through which [^,(]{0,100}?)?\s*(?:\([^)]{0,60}\))?\s*(?=,)', '', tail, flags=re.I)
             tail = re.sub(r'^\s*,\s*through (?:our|its) (?:consolidated |wholly[- ]owned )?subsidiaries\s*(?=,)', '', tail, flags=re.I)
