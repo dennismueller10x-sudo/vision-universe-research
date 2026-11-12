@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-11-11T09:28:02.698Z",
+  "generated_at_utc": "2026-11-12T06:26:47.242Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5295,
+    "withDeliveredStockPage": 5294,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -23452,17 +23452,6 @@
       "name": "Genasys Inc.",
       "cik": "0000924383",
       "instrumentId": "vu_9b5d4de875322b",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "GNTA",
-      "name": "Genenta Science S.p.A.",
-      "cik": "0001838716",
-      "instrumentId": "vu_000114c1ab36d5",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -61246,6 +61235,17 @@
       "cik": "0001357660",
       "instrumentId": "vu_ac4c1da1601ac0",
       "exchange": "NYSE",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "GNTA",
+      "name": "Genenta Science S.p.A.",
+      "cik": "0001838716",
+      "instrumentId": "vu_000114c1ab36d5",
+      "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
       "why": "Aus dem Company Master; US-Emittent mit CIK.",
