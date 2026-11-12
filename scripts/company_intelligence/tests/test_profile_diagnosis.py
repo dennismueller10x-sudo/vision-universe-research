@@ -27,6 +27,9 @@ class DiagnosisTests(unittest.TestCase):
         self.assertEqual(got['ITEM1_NOT_FOUND'], 'ITEM1_NOT_FOUND')
         self.assertEqual(got['ITEM1_CROSS_REFERENCE'], 'ITEM1_CROSS_REFERENCE')
         self.assertEqual(got['ITEM1_NO_BUSINESS_SENTENCES'], 'ITEM1_NO_BUSINESS_SENTENCES')
+        d = diagnose(COMPANY, cases['ITEM1_NO_BUSINESS_SENTENCES'], SRC)
+        self.assertEqual(d['afterHeading'][0][1], 'Item 1. Business')
+        self.assertTrue(all(len(x[1]) <= 110 for x in d['afterHeading']))
 
     def test_diagnosis_never_changes_the_parser_result(self):
         body = html('Item 1. Business', 'Example Holdings Inc. develops software platforms for banks and insurance companies worldwide.', 'Item 1A. Risk Factors')
