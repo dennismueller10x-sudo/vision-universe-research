@@ -48,7 +48,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$LIMIT" =~ ^[0-9]+$ ]] && [ "$LIMIT" -ge 1 ] && [ "$LIMIT" -le 100 ] || { echo "::error::limit must be 1..100"; exit 1; }
-          [[ -z "$TICKERS" || "$TICKERS" =~ ^[A-Za-z0-9.,-]{1,300}$ ]] || { echo "::error::tickers must be a comma separated list of symbols"; exit 1; }
+          [[ -z "$TICKERS" || "$TICKERS" =~ ^[A-Za-z0-9.,-]{1,1500}$ ]] || { echo "::error::tickers must be a comma separated list of symbols (up to 1500 characters)"; exit 1; }
       - name: Build catalogue entries with the producer (SEC, bounded, cache and rate limit of the SEC client)
         env:
           TICKERS: ${{ inputs.tickers }}

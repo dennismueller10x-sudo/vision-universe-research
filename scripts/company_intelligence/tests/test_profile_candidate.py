@@ -93,3 +93,31 @@ class FirstPassUnchangedTests(unittest.TestCase):
         self.assertEqual(before['state'], 'AVAILABLE')
         cmp = compare(c, body, SRC, NOW)
         self.assertEqual(cmp['verdict'], 'SAME')
+
+
+class InlineBlockLayoutTests(unittest.TestCase):
+    PIECES = ['We', 'are the', 'largest', 'egg company', 'in the United', 'States', 'and a', 'leading', 'player in', 'the egg-based', 'food', 'industry,', 'producing', 'shell eggs', 'for retail', 'and foodservice customers.']
+
+    def pdf_doc(self):
+        spacer = '<div style="display:inline-block;width:5px;white-space:pre"> </div>'
+        text = spacer.join(self.PIECES)
+        return ('<html lang="en"><div style="position:absolute">ITEM 1.</div><div style="position:absolute">BUSINESS</div><div style="position:absolute">Overview </div>'
+                '<div style="position:absolute;left:66px">' + text + '</div><div style="position:absolute">ITEM 1A.</div></html>').encode()
+
+    def test_fragmented_filing_is_read_only_in_the_third_pass(self):
+        c = company('Example Foods, Inc.')
+        body = self.pdf_doc()
+        with experiment(False):
+            self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Stand vorher: Wortfetzen')
+        r = extract(c, body, SRC, NOW)
+        self.assertEqual(r['state'], 'AVAILABLE')
+        self.assertIn('egg company in the United States', r['description'])
+
+    def test_normal_documents_never_reach_the_third_pass(self):
+        """Ein Dokument mit inline-block-Fetzen, dessen erster Durchlauf etwas findet, bleibt wortgleich."""
+        c = company('Example Holdings Inc.')
+        body = doc('Example Holdings Inc. develops software platforms for banks and insurance companies worldwide.').replace(b'<p>', b'<p style="display:inline-block">')
+        a = extract(c, body, SRC, NOW)
+        with experiment(False):
+            b = extract(c, body, SRC, NOW)
+        self.assertEqual(a['description'], b['description'])
