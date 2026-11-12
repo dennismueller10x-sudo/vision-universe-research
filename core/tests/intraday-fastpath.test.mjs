@@ -39,3 +39,17 @@ test('FP-3 overlay legt die Dateien byte-gleich ueber das Paket, smoke findet Ab
   assert.ok(bad.fehler.some((f) => /Pruefsumme/.test(f)) && bad.fehler.some((f) => /Schema/.test(f)));
   assert.equal(JSON.parse(readFileSync(join(site, 'intraday-fastpath.json'), 'utf8')).kind, 'INTRADAY_FASTPATH');
 });
+
+test('FP-4 Skip-Erben verhindert: jeder Job hinter package (deploy, indexnow, company-intelligence-live) hat eine Statusfunktion im if', async () => {
+  /* 12.11.2026: package haengt an intraday-schnell (bei push uebersprungen); ohne !cancelled()/always() erbt jeder Folgejob das Skip,
+     der Voll-Release baut dann, liefert aber nicht aus. */
+  const {readFileSync} = await import('node:fs');
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const job = (name) => { const a = wf.indexOf('\n  ' + name + ':\n'); assert.ok(a > 0, name + ' fehlt'); const rest = wf.slice(a + 1); const m = rest.slice(2).search(/\n  [a-z][a-z0-9-]*:\n/); return m < 0 ? rest : rest.slice(0, m + 2); };
+  assert.match(job('package'), /needs: intraday-schnell/);
+  for (const name of ['package', 'deploy', 'indexnow', 'company-intelligence-live']) {
+    const j = job(name), ifPart = j.slice(j.indexOf('if:'), j.indexOf('needs:') > j.indexOf('if:') ? j.indexOf('needs:') : j.indexOf('steps:'));
+    assert.match(ifPart, /!cancelled\(\)|always\(\)/, name + ': if ohne Statusfunktion erbt das Skip von intraday-schnell');
+  }
+  assert.match(job('deploy'), /needs\.package\.result == 'success'/);
+});
