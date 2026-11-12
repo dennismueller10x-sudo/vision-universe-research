@@ -30,7 +30,10 @@ const beforeBuild=async({state,temporary,identityRoot})=>{
   const text=String(error.stderr||'');
   const code=text.match(/(?:ValueError|RuntimeError): ([A-Z0-9_:-]+)\s*$/)?.[1];
   const line=[...text.matchAll(/File "[^\n]*\/(source_onboarding\.py|current_state_acceptance\.py)", line (\d+)/g)].at(-1);
-  throw Error(code||'ONBOARDING_'+(text.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:''));
+  // Ohne erkennbare Fehlerklasse (Vorfall 10./11.11.2026, ONBOARDING_PROCESS_FAILURE ohne Ursache): Beendigung des Kindprozesses mitschreiben
+  // (Signal bzw. Exit-Status, ggf. Zeitueberschreitung), nur Grossbuchstaben, Ziffern und Unterstriche.
+  const ending=error.code==='ETIMEDOUT'?'_TIMEOUT':error.signal?'_'+String(error.signal).replace(/[^A-Z0-9]/g,''):Number.isInteger(error.status)?'_EXIT'+error.status:'';
+  throw Error(code||'ONBOARDING_'+(text.match(/([A-Za-z]+Error):[^\n]*\s*$/)?.[1]||'PROCESS_FAILURE').toUpperCase()+(line?'_L'+line[2]:'')+(code?'':ending));
  }
  preparation=JSON.parse(readFileSync(out));
  }
