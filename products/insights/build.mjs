@@ -103,6 +103,8 @@ const appBox = (a) => `<section class="in-app vu-box vu-box--lime" aria-label="�
   <p class="in-klein">App bald im App Store und bei Google Play · Instagram und TikTok: @app.visionuniverse</p>
 </section>`;
 
+// Teilen-Bild der Übersicht (Owner 12.11.2026): fest statt des Bilds des neuesten Artikels.
+const TEILBILD = '/insights/img/insights-teilen.jpg';
 function head({ title, description, canonical, image, type = 'website', extra = '', css = '/insights/insights.css' }) {
   return `<!DOCTYPE html>
 <html lang="de">
@@ -193,7 +195,7 @@ const reportKarte = (r) => `<a class="in-report" href="${esc(r.href)}"><span cla
 
 function uebersicht(artikel, reports) {
   const [erst, ...rest] = artikel;
-  return head({ title: 'Insights · Tagesthemen, Aktienmagazin und Reports · Vision Universe', description: 'Tagesthemen von der Börse, recherchiert und mit den Daten von Vision Universe eingeordnet: Kurse, Geschäftszahlen, Charttechnik und große Fonds. Dazu jede Woche das Aktienmagazin.', canonical: '/insights/', image: erst && bildSrc(erst) }) + `<main id="in-main" class="in-wrap">
+  return head({ title: 'Insights · Tagesthemen, Aktienmagazin und Reports · Vision Universe', description: 'Tagesthemen von der Börse, recherchiert und mit den Daten von Vision Universe eingeordnet: Kurse, Geschäftszahlen, Charttechnik und große Fonds. Dazu jede Woche das Aktienmagazin.', canonical: '/insights/', image: TEILBILD }) + `<main id="in-main" class="in-wrap">
 ${tabs('artikel')}
 <header class="in-hub"><span class="in-kicker">Insights</span><h1>Was die Börse heute bewegt. Und was die Daten dazu sagen.</h1><p class="in-lead">Jeden Tag ein bis zwei Themen: recherchiert, eingeordnet und mit Kursen, Geschäftszahlen und Fondsdaten aus Vision Universe unterlegt.</p></header>
 ${erst ? karte(erst, true) : '<p>Noch keine Artikel.</p>'}
@@ -205,7 +207,7 @@ ${reports.length ? `<section id="reports"><div class="in-h2-zeile"><h2 class="in
 }
 
 function reportsSeite(reports) {
-  return head({ title: 'Reports · Aktienreports von Vision Universe', description: 'Aktienreports von Vision Universe: einzelne Unternehmen ausführlich, mit Geschäftsmodell, Zahlen und Daten.', canonical: '/insights/reports/' }) + `<main id="in-main" class="in-wrap">
+  return head({ title: 'Reports · Aktienreports von Vision Universe', description: 'Aktienreports von Vision Universe: einzelne Unternehmen ausführlich, mit Geschäftsmodell, Zahlen und Daten.', canonical: '/insights/reports/', image: TEILBILD }) + `<main id="in-main" class="in-wrap">
 ${tabs('reports')}
 <header class="in-hub"><span class="in-kicker">Reports</span><h1>Aktienreports</h1><p class="in-lead">Ein Unternehmen ausführlich: Geschäftsmodell, Zahlen, Bewertung im Vergleich und was die Daten von Vision Universe zeigen. Neue Reports erscheinen hier.</p></header>
 ${reports.length ? `<div class="in-raster">${reports.map(reportKarte).join('')}</div>` : `<div class="in-leer vu-box"><b>Der erste Aktienreport ist in Arbeit.</b><p>Bis dahin: jeden Tag neue Artikel unter Insights und jede Woche das Aktienmagazin.</p><div class="in-links"><a class="in-btn in-btn--ink" href="/insights/magazin/">Zum Aktienmagazin${ICON.next}</a><a class="in-btn" href="/insights/">Zu den Artikeln</a></div></div>`}
