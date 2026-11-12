@@ -80,11 +80,11 @@ def _summary(result):
 
 
 def compare(company, body, source, now):
-    """Vorher (Standardparser) / Nachher (Kandidat 1.0.23) auf demselben 10-K. Aendert nichts am Katalog.
+    """Vorher (Stand 1.0.22, experiment(False)) / Nachher (aktueller Parser) auf demselben 10-K. Aendert nichts am Katalog.
     verdict: SAME | NEWLY_AVAILABLE | TEXT_CHANGED (verfuegbarer Titel mit anderem Text, nicht erlaubt) | NEWLY_UNAVAILABLE (nicht erlaubt)."""
-    before = _summary(extract(company, body, source, now))
-    with experiment():
-        after = _summary(extract(company, body, source, now))
+    with experiment(False):
+        before = _summary(extract(company, body, source, now))
+    after = _summary(extract(company, body, source, now))
     if before == after:
         verdict = 'SAME'
     elif before['state'] != 'AVAILABLE' and after['state'] == 'AVAILABLE':

@@ -18,7 +18,7 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.22'
+PARSER_VERSION = 'company-profile-parser-1.0.23'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
@@ -30,14 +30,15 @@ EXCLUDED = re.compile(r'\b(?:headcount|forward.looking|may|might|could|will|expe
 PROMOTION = re.compile(r'\b(?:(?:world[’\']?s?[ -]|nation[’\']s[ -]|global[ -]|industry[ -]|market[ -])?(?:leading|largest|premier|top.ranked)|growth.oriented|high.return|iconic|innovative|cutting.edge|state.of.the.art|intelligent|novel|differentiated|fashionable|comprehensive|most advanced|effectively)\s*,?\s*', re.I)
 
 
-# Strang AF (12.11.2026): Kandidat fuer Parser 1.0.23, zunaechst nur im Vergleichslauf (profile_diagnosis.compare) eingeschaltet.
-# Standard: aus, die Ausgabe des Parsers aendert sich dadurch nicht.
-_EXPERIMENT = {'on': False}
+# Parser 1.0.23 (Strang AF, 12.11.2026, Freigabe Steuerung): Kurzname als Subjekt und Subsidiary-Appositive, nur im zweiten
+# (relaxed) Durchlauf, der nur laeuft, wenn der erste nichts findet; kein bisheriger Titel aendert damit seinen Text.
+# experiment(False) liefert den Stand 1.0.22 fuer den Vergleich (profile_diagnosis.compare).
+_EXPERIMENT = {'on': True}
 LEGAL_SUFFIX = re.compile(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|company|co\.?|group|holdings?|limited|ltd\.?|plc|llc|l\.p\.|lp)\s*$', re.I)
 
 
 @contextmanager
-def experiment(on=True):
+def experiment(on=False):
     before = _EXPERIMENT['on']
     _EXPERIMENT['on'] = on
     try:
