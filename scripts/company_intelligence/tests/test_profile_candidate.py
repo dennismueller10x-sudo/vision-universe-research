@@ -52,3 +52,32 @@ class CandidateTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class SkipTests(unittest.TestCase):
+    def args(self, **kw):
+        from argparse import Namespace
+        return Namespace(**{'reparse': False, 'tickers': None, 'compare_parser': False, **kw})
+
+    def test_default_run_parses_only_missing_entries(self):
+        from company_intelligence.profile_catalogue import skip_company
+        from company_intelligence.profiles import PARSER_VERSION
+        a = self.args(only_missing=True)
+        self.assertFalse(skip_company(a, None, None, {}), 'fehlt: parsen')
+        self.assertTrue(skip_company(a, {'parserVersion': PARSER_VERSION}, None, {}))
+        self.assertTrue(skip_company(a, {'parserVersion': 'company-profile-parser-1.0.10'}, None, {}), 'aelterer Parser, aber Eintrag da: kein Neu-Parsing im Standardlauf')
+        self.assertFalse(skip_company(a, {'parserVersion': 'company-profile-parser-1.0.10', 'stale': True}, None, {}), 'veraltet: erneut')
+        self.assertTrue(skip_company(a, None, {'parserVersion': PARSER_VERSION}, {}), 'mit aktuellem Parser schon zurueckgezogen')
+        self.assertFalse(skip_company(a, None, {'parserVersion': 'company-profile-parser-1.0.10'}, {}))
+
+    def test_explicit_tickers_and_compare(self):
+        from company_intelligence.profile_catalogue import skip_company
+        from company_intelligence.profiles import PARSER_VERSION
+        cur = {'parserVersion': PARSER_VERSION}
+        self.assertTrue(skip_company(self.args(tickers='A'), cur, None, {}))
+        self.assertFalse(skip_company(self.args(tickers='A'), {'parserVersion': 'x'}, None, {}))
+        self.assertFalse(skip_company(self.args(tickers='A', compare_parser=True), cur, None, {}))
+        self.assertFalse(skip_company(self.args(compare_parser=True), None, None, {}))
+        self.assertTrue(skip_company(self.args(compare_parser=True, only_missing=True), cur, None, {}), 'ohne tickers: nur Fehlende, auch im Vergleich')
+        old = {'parserVersion': 'company-profile-parser-1.0.10'}
+        self.assertFalse(skip_company(self.args(), old, None, {}), 'CLI-Vertrag ohne --only-missing: aeltere Version wird neu geparst (Qualitaetsruecknahme)')

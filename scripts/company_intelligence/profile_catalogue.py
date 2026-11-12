@@ -119,6 +119,7 @@ def main(argv=None):
     p.add_argument('--network', action='store_true')
     p.add_argument('--reparse', action='store_true', help='Reinterpret existing catalogue profiles from cached immutable evidence only')
     p.add_argument('--tickers')
+    p.add_argument('--only-missing', action='store_true', help='Ohne tickers nur Emittenten ohne Katalogzeile parsen (keine Neu-Parsings bestehender Eintraege)')
     p.add_argument('--compare-parser', action='store_true', help='Vergleich Standardparser / Kandidat je Titel im Bericht (nur Bericht, Katalog nach Standardparser); mit --tickers auch Titel mit aktuellem Eintrag')
     p.add_argument('--limit', type=int, default=50)
     p.add_argument('--request-budget', type=int, default=100)
@@ -134,6 +135,28 @@ def main(argv=None):
     checkpoint_path = args.checkpoint or root / '.company-intelligence/profile-catalogue-checkpoint.json'
     with writer_lock(checkpoint_path):
         return backfill(args, root, catalogue_path, checkpoint_path)
+
+
+def skip_company(args, prior, withdrawal, old):
+    """Wer im Lauf nicht neu geparst wird.
+    Ausdrueckliche tickers mit --compare-parser: nie ueberspringen (Vergleich auch fuer aktuelle Eintraege).
+    --reparse (nur Cache): nur Eintraege mit Katalogeintrag oder frueherem Versuch.
+    --only-missing ohne tickers (Strang AF, Entscheidung Steuerung 12.11.2026; Standard des Katalog-Workflows): nur FEHLENDE Eintraege.
+    Ein Eintrag mit Katalogzeile (ausser als veraltet markiert) wird nicht neu geparst, auch nicht bei aelterer Parserversion;
+    ein zurueckgezogener Eintrag nur, wenn er mit einer anderen Parserversion zurueckgezogen wurde.
+    Ohne --only-missing bleibt der CLI-Vertrag: aeltere Parserversion wird neu geparst (Qualitaetsruecknahme, siehe Test
+    test_independent_backfill_quality_retirement...). Mit tickers: ueberspringen, wenn der Eintrag die aktuelle Parserversion hat."""
+    if getattr(args, 'compare_parser', False) and args.tickers:
+        return False
+    if args.reparse:
+        return not prior and not old
+    if args.tickers:
+        return bool(prior and prior.get('parserVersion') == PARSER_VERSION)
+    if getattr(args, 'only_missing', False):
+        if prior and not prior.get('stale'):
+            return True
+        return bool(withdrawal and withdrawal.get('parserVersion') == PARSER_VERSION)
+    return bool(prior and prior.get('parserVersion') == PARSER_VERSION)
 
 
 def backfill(args, root, catalogue_path, checkpoint_path):
@@ -173,7 +196,7 @@ def backfill(args, root, catalogue_path, checkpoint_path):
     for company in sorted(selected, key=lambda c: c['companyId']):
         cid = company['companyId']; prior = catalogue['profiles'].get(cid)
         old = checkpoint['attempts'].get(cid, {})
-        if not company.get('cik') or (not (getattr(args, 'compare_parser', False) and args.tickers) and ((args.reparse and not prior and not old) or (not args.reparse and prior and prior.get('parserVersion') == PARSER_VERSION))):
+        if not company.get('cik') or skip_company(args, prior, catalogue.get('withdrawals', {}).get(cid), old):
             continue
         if old.get('parserVersion') == PARSER_VERSION and old.get('nextCheck', '') > now:
             continue

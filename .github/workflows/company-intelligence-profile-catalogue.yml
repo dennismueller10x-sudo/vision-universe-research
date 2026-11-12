@@ -15,6 +15,10 @@ on:
         description: 'Hoechstens so viele Emittenten (1 bis 100)'
         type: string
         default: '30'
+      only_missing:
+        description: 'Ohne tickers nur Emittenten ohne Katalogzeile parsen; bestehende Eintraege nicht neu parsen (Standard: an)'
+        type: boolean
+        default: true
       compare:
         description: 'Vergleich Standardparser / Kandidat je Titel im Bericht (mit tickers auch Emittenten mit aktuellem Eintrag); Katalog bleibt nach Standardparser'
         type: boolean
@@ -50,6 +54,7 @@ jobs:
           TICKERS: ${{ inputs.tickers }}
           LIMIT: ${{ inputs.limit }}
           COMPARE: ${{ inputs.compare }}
+          ONLY_MISSING: ${{ inputs.only_missing }}
           SEC_UA: ${{ secrets.SEC_USER_AGENT }}
           PYTHONPATH: scripts
         run: |
@@ -58,6 +63,7 @@ jobs:
           args=(--root . --network --limit "$LIMIT" --request-budget 200 --max-seconds 1200)
           if [ -n "$TICKERS" ]; then args+=(--tickers "$TICKERS"); fi
           if [ "$COMPARE" = true ]; then args+=(--compare-parser); fi
+          if [ "$ONLY_MISSING" != false ]; then args+=(--only-missing); fi
           mkdir -p "$RUNNER_TEMP/profile-catalogue"
           python3 -m company_intelligence.profile_catalogue "${args[@]}" | tee "$RUNNER_TEMP/profile-catalogue/report.json"
       - name: Patch and file for the pull request
