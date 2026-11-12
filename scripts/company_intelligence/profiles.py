@@ -33,18 +33,20 @@ PROMOTION = re.compile(r'\b(?:(?:world[’\']?s?[ -]|nation[’\']s[ -]|global[ 
 # Parser 1.0.23 (Strang AF, 12.11.2026, Freigabe Steuerung): Kurzname als Subjekt und Subsidiary-Appositive, nur im zweiten
 # (relaxed) Durchlauf, der nur laeuft, wenn der erste nichts findet; kein bisheriger Titel aendert damit seinen Text.
 # experiment(False) liefert den Stand 1.0.22 fuer den Vergleich (profile_diagnosis.compare).
-_EXPERIMENT = {'on': True}
+# 'inline': dritter Durchlauf fuer inline-block-Fetzen (CALM, CATO), bis zur Freigabe nach Vorher/Nachher aus.
+_EXPERIMENT = {'on': True, 'inline': False}
 LEGAL_SUFFIX = re.compile(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|company|co\.?|group|holdings?|limited|ltd\.?|plc|llc|l\.p\.|lp)\s*$', re.I)
 
 
 @contextmanager
-def experiment(on=False):
-    before = _EXPERIMENT['on']
+def experiment(on=False, inline=False):
+    before = dict(_EXPERIMENT)
     _EXPERIMENT['on'] = on
+    _EXPERIMENT['inline'] = inline
     try:
         yield
     finally:
-        _EXPERIMENT['on'] = before
+        _EXPERIMENT.update(before)
 
 
 def short_name(legal):
@@ -71,8 +73,11 @@ def display_name(value):
 
 class TextBlocks(HTMLParser):
     """Visible paragraphs/headings; navigation, scripts and inline XBRL hidden facts excluded."""
-    def __init__(self):
+    def __init__(self, inline_div=False):
         super().__init__(convert_charrefs=True)
+        # inline_div: PDF-artig gesetzte Filings (CALM, CATO: jedes Wort und jeder Leerraum in einem <div style="display:inline-block">)
+        # zerfielen in Wortfetzen. Nur im dritten Durchlauf (extract) gesetzt; dort fuegt ein solches <div> den Text zusammen.
+        self.inline_div = inline_div
         self.blocks, self.parts, self.stack = [], [], []
         self.language = None
         self.registrants = set()
@@ -91,10 +96,11 @@ class TextBlocks(HTMLParser):
         if tag == 'html':
             self.language = (attrs.get('lang') or '').lower().split('-')[0]
         hidden = bool(self.stack and self.stack[-1][1]) or tag in ('script', 'style', 'nav', 'footer', 'header', 'ix:hidden') or 'hidden' in attrs or re.search(r'display\s*:\s*none', attrs.get('style', ''), re.I) is not None
-        if tag in ('p', 'div', 'h1', 'h2', 'h3', 'h4', 'li', 'td', 'br'):
+        inline = self.inline_div and tag == 'div' and re.search(r'display\s*:\s*inline-block', attrs.get('style', ''), re.I) is not None
+        if tag in ('p', 'div', 'h1', 'h2', 'h3', 'h4', 'li', 'td', 'br') and not inline:
             self.flush()
         if tag not in ('meta', 'link', 'img', 'br', 'hr', 'input', 'source', 'wbr'):
-            self.stack.append((tag, hidden))
+            self.stack.append((tag, hidden, inline))
 
     def handle_endtag(self, tag):
         if tag == 'ix:nonnumeric' and self.registrant_parts is not None:
@@ -102,7 +108,8 @@ class TextBlocks(HTMLParser):
             if name:
                 self.registrants.add(name)
             self.registrant_parts = None
-        if tag in ('p', 'div', 'h1', 'h2', 'h3', 'h4', 'li', 'td'):
+        closing_inline = tag == 'div' and any(item[0] == 'div' for item in self.stack) and [item for item in self.stack if item[0] == 'div'][-1][2]
+        if tag in ('p', 'div', 'h1', 'h2', 'h3', 'h4', 'li', 'td') and not closing_inline:
             self.flush()
         for i in range(len(self.stack) - 1, -1, -1):
             if self.stack[i][0] == tag:
@@ -116,10 +123,10 @@ class TextBlocks(HTMLParser):
             self.parts.append(data)
 
 
-def blocks(body):
+def blocks(body, inline_div=False):
     if not isinstance(body, bytes) or len(body) > MAX_DOCUMENT:
         raise SourceError('PROFILE_DOCUMENT_TOO_LARGE_OR_INVALID')
-    doc = TextBlocks()
+    doc = TextBlocks(inline_div)
     doc.feed(body.decode('utf-8', 'replace'))
     doc.flush()
     return doc
@@ -418,6 +425,9 @@ def extract(company, body, source, now, official_website=None):
     # Second, relaxed pass ONLY when the unchanged first pass found nothing: an issuer that already has a
     # profile keeps exactly the same description (and with it its reviewed German copy, reviewed_profiles.py).
     eligible = first if first[0] or not sec else _eligible(company, doc, source, sec, relaxed=True)
+    if _EXPERIMENT['on'] and _EXPERIMENT['inline'] and sec and not eligible[0] and re.search(rb'display\s*:\s*inline-block', body, re.I):
+        # Dritter Durchlauf, nur wenn die beiden ersten nichts fanden und das Dokument inline-block-Fetzen enthaelt (Strang AF).
+        eligible = _eligible(company, blocks(body, inline_div=True), source, sec, relaxed=True)
     return _profile(company, body, source, now, official_website, url, sec, eligible)
 
 
