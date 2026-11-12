@@ -3,8 +3,8 @@
  "engineVersion": "vu-setup-1.0.0",
  "mappingVersion": "setup-mapping-1.0.0",
  "methodologyVersion": "setup-state-v1.0.0",
- "generatedAt": "2026-11-11T08:23:23.000Z",
- "asOf": "2026-11-10",
+ "generatedAt": "2026-11-12T00:26:23.000Z",
+ "asOf": "2026-11-11",
  "approval": {
   "state": "APPROVED",
   "approvedBy": "info@visionuniverse.de",
@@ -323,25 +323,25 @@
    "predicateHash": null
   }
  ],
- "universe": 5638,
- "observed": 5638,
+ "universe": 5642,
+ "observed": 5642,
  "unavailable": 0,
  "stateCounts": {
-  "NO_SETUP": 4499,
-  "WATCH": 614,
-  "SETUP_FORMING": 490,
-  "CONFIRMED": 35,
+  "NO_SETUP": 4468,
+  "WATCH": 600,
+  "SETUP_FORMING": 553,
+  "CONFIRMED": 21,
   "ACTIVE": 0,
   "RISK_RISING": 0,
   "INVALIDATED": 0,
   "EXIT": 0
  },
  "ruleCounts": {
-  "setup.forming.complete-setup-awaiting-trigger": 490,
-  "setup.none.fallback": 4499,
-  "setup.watch.bullish-trend": 400,
-  "setup.confirmed.structure-trend-volume": 35,
-  "setup.watch.confirmed-structure-near-high": 214
+  "setup.forming.complete-setup-awaiting-trigger": 553,
+  "setup.none.fallback": 4468,
+  "setup.watch.bullish-trend": 392,
+  "setup.confirmed.structure-trend-volume": 21,
+  "setup.watch.confirmed-structure-near-high": 208
  },
  "pathTier": {
   "states": [
@@ -390,14 +390,15 @@
    "2026-11-05",
    "2026-11-06",
    "2026-11-09",
-   "2026-11-10"
+   "2026-11-10",
+   "2026-11-11"
   ],
   "minimumRequired": 2
  },
  "inputs": {
   "technical": {
    "artifact": "technical-product-artifact-1.0.0",
-   "instruments": 5638
+   "instruments": 5642
   }
  },
  "shards": [
@@ -1037,12 +1038,12 @@
  "observationDrift": null,
  "staleBundles": {
   "count": 256,
-  "cutoff": "2026-11-10",
+  "cutoff": "2026-11-11",
   "rule": "Bundles mit dataCutoff vor dem Stichtag gehen nicht in die Beobachtung dieses Stichtags ein.",
   "byDataCutoff": {
-   "2026-11-06": 150,
+   "2026-11-06": 149,
    "2026-10-23": 6,
-   "2026-11-09": 10,
+   "2026-11-09": 1,
    "2026-10-29": 4,
    "2026-09-29": 5,
    "2026-09-15": 1,
@@ -1056,6 +1057,7 @@
    "2026-10-19": 1,
    "2026-10-14": 1,
    "2026-11-04": 1,
+   "2026-11-10": 10,
    "2026-09-01": 3,
    "2026-09-18": 3,
    "2026-09-30": 2,
@@ -1132,10 +1134,6 @@
    },
    {
     "ticker": "AL",
-    "dataCutoff": "2026-11-06"
-   },
-   {
-    "ticker": "ALCYF",
     "dataCutoff": "2026-11-06"
    },
    {
@@ -1287,8 +1285,12 @@
     "dataCutoff": "2026-11-06"
    },
    {
-    "ticker": "CLRCU",
-    "dataCutoff": "2026-11-09"
+    "ticker": "CNO-P-A",
+    "dataCutoff": "2026-11-10"
+   },
+   {
+    "ticker": "CREV",
+    "dataCutoff": "2026-11-06"
    }
   ]
  }

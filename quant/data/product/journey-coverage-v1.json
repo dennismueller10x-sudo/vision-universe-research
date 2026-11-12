@@ -1,10 +1,10 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-11-11T08:40:07.000Z",
+ "generatedAt": "2026-11-12T00:46:43.000Z",
  "universe": 6309,
  "sample": 500,
  "sampling": "jeder 12. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
- "evidenceAsOf": "2026-11-10",
+ "evidenceAsOf": "2026-11-11",
  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
  "stations": [
   {
@@ -42,39 +42,37 @@
   {
    "id": "change",
    "label": "Was hat sich veraendert",
-   "answered": 478,
+   "answered": 479,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 22,
-   "share": 0.956,
+   "withheld": 21,
+   "share": 0.958,
    "reasons": {
-    "NO_COMPARABLE_OBSERVATION": 22
+    "NO_COMPARABLE_OBSERVATION": 21
    }
   },
   {
    "id": "setup",
    "label": "Baut sich eine Situation auf",
-   "answered": 448,
+   "answered": 450,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 52,
-   "share": 0.896,
+   "withheld": 50,
+   "share": 0.9,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 51,
-    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
+    "INSUFFICIENT_HISTORY": 50
    }
   },
   {
    "id": "setupChange",
    "label": "Was diesen Zustand aendern wuerde",
-   "answered": 448,
+   "answered": 450,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 52,
-   "share": 0.896,
+   "withheld": 50,
+   "share": 0.9,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 51,
-    "TECHNICAL_WINDOW_OUTSIDE_CALENDAR": 1
+    "INSUFFICIENT_HISTORY": 50
    }
   },
   {
@@ -111,9 +109,9 @@
    "id": "assignmentChange",
    "label": "Hat sich die Zuordnung geaendert",
    "answered": 500,
-   "findings": 499,
+   "findings": 497,
    "findingReasons": {
-    "NO_ASSIGNMENT_CHANGE": 499
+    "NO_ASSIGNMENT_CHANGE": 497
    },
    "withheld": 0,
    "share": 1,
@@ -122,13 +120,13 @@
   {
    "id": "technical",
    "label": "Kursstruktur",
-   "answered": 449,
+   "answered": 450,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 51,
-   "share": 0.898,
+   "withheld": 50,
+   "share": 0.9,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 51
+    "INSUFFICIENT_HISTORY": 50
    }
   },
   {
@@ -144,39 +142,38 @@
  ],
  "answeredStationsPerTitle": {
   "4": 4,
-  "5": 4,
-  "6": 35,
-  "7": 9,
-  "8": 14,
+  "5": 3,
+  "6": 36,
+  "7": 8,
+  "8": 13,
   "9": 2,
-  "10": 23,
+  "10": 25,
   "11": 409
  },
  "shapes": {
-  "full": 432,
-  "reduced": 68,
+  "full": 434,
+  "reduced": 66,
   "minimal": 0,
-  "noticeBoxesBefore": 410,
-  "noticeBoxesAfter": 168,
+  "noticeBoxesBefore": 404,
+  "noticeBoxesAfter": 167,
   "worstPageNoticeBoxes": 4,
-  "dataPoorPages": 68,
-  "dataPoorNoticeBoxesBefore": 387,
-  "dataPoorNoticeBoxesAfter": 145,
+  "dataPoorPages": 66,
+  "dataPoorNoticeBoxesBefore": 379,
+  "dataPoorNoticeBoxesAfter": 142,
   "substantiveStationsPerTitle": {
-   "3": 8,
-   "4": 16,
+   "3": 7,
+   "4": 17,
    "5": 19,
-   "7": 22,
-   "8": 3,
-   "10": 23,
+   "7": 21,
+   "8": 2,
+   "10": 25,
    "11": 409
   },
   "causes": {
    "SHORT_HISTORY": 78,
    "NO_WEEKLY_SERIES": 27,
    "NO_FIGURES": 59,
-   "NOT_AN_EQUITY_LISTING": 3,
-   "RARELY_TRADED": 1
+   "NOT_AN_EQUITY_LISTING": 3
   },
   "note": "FULL: hoechstens zwei Absagen, die volle Reise bleibt. REDUCED: verdichtete Auskunft, vorhandene Erkenntnisse zuerst, Absagen zu Ursachen gruppiert. MINIMAL: hoechstens eine gehaltvolle Station - eine eigene Aussage statt einer kurzen Reise."
  },
