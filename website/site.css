@@ -56,15 +56,20 @@ section{padding:72px 0 0}
 .nav a:hover{color:#fff;background:rgb(255 255 255/.08)}
 .nav a[aria-current=page]{background:#fff;color:#000}
 .hdr .right{margin-left:auto;display:flex;gap:10px;align-items:center}
-.burger{display:none;width:44px;height:44px;border-radius:50%;background:rgb(255 255 255/.12);place-items:center}
+.burger{display:grid;width:44px;height:44px;border-radius:50%;background:rgb(255 255 255/.12);place-items:center}
 .burger svg{width:20px;height:20px}
 .menu{position:fixed;inset:0;z-index:60;background:#000;padding:0 18px 40px;overflow:auto;display:none}
 .menu.open{display:block}
 .menu .top{height:64px;display:flex;align-items:center;justify-content:space-between}
 .menu nav{display:grid;margin-top:12px}
-.menu nav a{display:flex;justify-content:space-between;align-items:center;padding:16px 2px;border-bottom:1px solid var(--line);font-size:24px;font-weight:900;letter-spacing:-.03em}
-.menu nav a span{color:var(--mute);font-size:14px;font-weight:600;letter-spacing:0}
+.menu nav > a{display:flex;justify-content:space-between;align-items:center;padding:16px 2px;border-bottom:1px solid var(--line);font-size:24px;font-weight:900;letter-spacing:-.03em}
+.menu nav > a span{color:var(--mute);font-size:14px;font-weight:600;letter-spacing:0}
 .menu .bottom{display:grid;gap:12px;margin-top:26px}
+.menu nav{max-width:720px;margin-left:auto;margin-right:auto}
+.legal-menu{margin-top:30px;border-top:1px solid var(--line);padding-top:20px;color:#a6a6a6;font-size:13px}
+.legal-menu h4{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8a8a8a}
+.legal-menu p{margin-top:10px}
+.legal-menu ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:12px;font-weight:700;color:#fff}
 
 /* Kino-Held */
 .hero{position:relative;min-height:760px;overflow:hidden;margin-top:-73px;padding-top:73px}
@@ -239,7 +244,6 @@ dialog.player button{position:absolute;right:10px;top:10px;z-index:2;width:44px;
 @media (max-width:1080px){
   :root{--pad:28px}
   .nav{display:none}
-  .burger{display:grid}
   .hdr .soon{display:none}
   .mods{grid-template-columns:repeat(4,1fr)}
   .explore{grid-template-columns:repeat(2,1fr)}

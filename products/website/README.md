@@ -10,7 +10,7 @@ Neue öffentliche Produktseite von Vision Universe, Variante „Kino K1“ (Owne
 
 - App noch nicht verfügbar: nirgends ein Link in die App oder in einen Store, überall „App bald verfügbar“. Der einzige Aufruf ist der Newsletter. Er führt zur bestehenden Anmeldung auf `https://www.visionuniverse.de/#newsletter`, weil die Brevo-Anmeldung nur Anfragen von der eigenen Domain annimmt. Nach dem Umzug auf www kommt das E-Mail-Feld direkt in die Seite.
 - Social Media nur Instagram und TikTok (`@app.visionuniverse`, laut `docs/publishing/HANDBUCH.md`).
-- Preise ausgeblendet. Wortwahl nach `docs/legal/WORTWAHL.md`, Pflichtsatz und Rechtslinks aus `assets/legal-notices.json`.
+- Preise ausgeblendet. Wortwahl nach `docs/legal/WORTWAHL.md`. Pflichtsatz und Rechtslinks aus `assets/legal-notices.json` stehen wie auf ganz research nur im Menü unter „Rechtliches & Infos“ (Owner 10.11.2026, Test `core/tests/legal-notices-frontend.test.mjs`), der Fuß verlinkt `/infos/`. Auf www kann ein eigener Rechtsfuß dazukommen.
 - Die Startseite zeigt die Unterseiten prominent: Schnellzugriff unter dem Helden und der Abschnitt „Alles über Vision Universe“.
 
 ## Bauen

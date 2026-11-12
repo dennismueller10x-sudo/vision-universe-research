@@ -117,7 +117,7 @@ const VIDEOS = [
 const FAQ = [
   ["Was ist Vision Universe?", "Eine Analyse-App für Aktien, ETFs und Vorsorge. Elf Module arbeiten auf einer gemeinsamen Datenbasis und erklären jede Zahl in klaren Worten, vom ersten Sparplan bis zur Profi-Analyse."],
   ["Wann kommt die App?", "Bald, für iPhone und Android. Wer den Newsletter abonniert, erfährt als Erstes vom Start."],
-  ["Ist das eine Anlageberatung?", "Nein. Vision Universe ist eine Software zur Analyse von Aktien. Die Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Es gibt keine Kauf- oder Verkaufsempfehlungen und keine Kursziele."],
+  ["Ist das eine Anlageberatung?", "Nein. Vision Universe ist Analyse-Software: Die Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Es gibt keine Kauf- oder Verkaufsempfehlungen und keine Kursziele."],
   ["Woher kommen die Daten?", "Geschäftszahlen aus den Pflichtberichten an die US-Börsenaufsicht SEC, Tageskurse von einem Marktdatenanbieter, Fondsbestände aus 13F-Meldungen. Jede Zahl steht mit Datum."],
   ["Kann ich bei Vision Universe Aktien kaufen?", "Nein. Vision Universe ist kein Broker. Gekauft wird bei deiner Bank oder deinem Broker. Vision Universe hilft dir zu verstehen, was in einer Aktie steckt."],
   ["Was kostet die App?", "Zum Start ist Vision Universe kostenlos. Bevor sich daran etwas ändert, sagen wir es rechtzeitig."],
@@ -139,26 +139,27 @@ const videoBtn = (id, label, cls = "btn ghost") => `<button type="button" class=
 const soc = () => `<div class="soc">${SOCIAL.map(([i, n, u]) => `<a href="${u}" rel="noopener" target="_blank" aria-label="${n}">${g(i)}</a>`).join("")}</div>`;
 
 function header(active) {
+  const L = legal();
   return `<a class="skip" href="#inhalt">Zum Inhalt</a>
 <header class="hdr"><div class="wrap"><a class="logo" href="${BASE}" aria-label="Vision Universe Startseite"><img src="${BASE}img/logo-hell.png" alt="Vision Universe" width="844" height="71"></a>
 <nav class="nav" aria-label="Hauptmenü">${NAV.map(([n, h]) => `<a href="${BASE}${h}"${active === h ? ' aria-current="page"' : ""}>${n}</a>`).join("")}</nav>
 <div class="right">${soon()}${nlBtn("Newsletter", "sm")}<button class="burger" type="button" data-menu="open" aria-controls="menu" aria-expanded="false" aria-label="Menü öffnen">${g("menu")}</button></div></div></header>
 <div class="menu" id="menu" role="dialog" aria-modal="true" aria-label="Menü"><div class="top"><a class="logo" href="${BASE}"><img src="${BASE}img/logo-hell.png" alt="Vision Universe" width="844" height="71"></a><button class="burger" type="button" data-menu="close" aria-label="Menü schließen" style="display:grid">${g("close")}</button></div>
-<nav aria-label="Menü">${[["Start", ""], ...NAV, ["Daten und Methodik", "daten/"], ["App", "app/"], ["Häufige Fragen", "faq/"], ["Kontakt", "kontakt/"]].map(([n, h]) => `<a href="${BASE}${h}">${n}<span>→</span></a>`).join("")}</nav>
-<div class="bottom">${nlBtn()}<div style="display:flex;justify-content:center">${soon()}</div>${soc()}</div></div>`;
+<nav id="site-panel" aria-label="Menü">${[["Start", ""], ...NAV, ["Daten und Methodik", "daten/"], ["App", "app/"], ["Häufige Fragen", "faq/"], ["Kontakt", "kontakt/"]].map(([n, h]) => `<a href="${BASE}${h}">${n}<span>→</span></a>`).join("")}
+<div class="bottom">${nlBtn()}<div style="display:flex;justify-content:center">${soon()}</div>${soc()}</div>
+<div class="legal-menu"><h4>Rechtliches &amp; Infos</h4><p>${esc(L.text)}</p><ul>${[["Impressum", "impressum"], ["Kontakt", "kontakt"], ["Datenschutz", "datenschutz"], ["Nutzungsbedingungen", "bedingungen"], ["Risikohinweise", "risikohinweise"]].map(([n, k]) => `<li><a href="${L.links[k]}">${n}</a></li>`).join("")}<li><a href="/infos/#quellen">Datenquellen und Methodik</a></li></ul></div></nav></div>`;
 }
 
 function footer() {
-  const L = legal();
   const cols = [
     ["Produkt", [["Funktionen", `${BASE}funktionen/`], ["Für wen", `${BASE}fuer-wen/`], ["Videos", `${BASE}videos/`], ["App (bald)", `${BASE}app/`], ["Newsletter", NEWSLETTER]]],
     ["Module", [...["discover", "quant", "fundamental", "technical", "vorsorge"].map((id) => [MOD[id].name, modHref(id)]), ["Alle 11 Module", `${BASE}funktionen/`]]],
     ["Wissen", [["Insights", `${BASE}insights/`], ["Aktienmagazin", "/insights/magazin/"], ["Aktienreports", "/insights/reports/"], ["Daten und Methodik", `${BASE}daten/`], ["Häufige Fragen", `${BASE}faq/`]]],
-    ["Unternehmen", [["Über uns", `${BASE}ueber-uns/`], ["Kontakt", `${BASE}kontakt/`], ["Impressum", L.links.impressum], ["Datenschutz", L.links.datenschutz], ["Nutzungsbedingungen", L.links.bedingungen], ["Risikohinweise", L.links.risikohinweise]]]
+    ["Unternehmen", [["Über uns", `${BASE}ueber-uns/`], ["Kontakt", `${BASE}kontakt/`], ["Rechtliches &amp; Infos", "/infos/"]]]
   ];
   return `<footer class="foot"><div class="wrap"><div class="cols"><div class="brand"><a class="logo" href="${BASE}"><img src="${BASE}img/logo-hell.png" alt="Vision Universe" width="844" height="71"></a><p>Die Analyse-App für Aktien, ETFs und Vorsorge. Bald für iPhone und Android.</p>${soc()}</div>
 ${cols.map(([t, l]) => `<div><h4>${t}</h4><ul>${l.map(([n, h]) => `<li><a href="${h}">${n}</a></li>`).join("")}</ul></div>`).join("\n")}</div>
-<div class="legal"><p>${esc(L.text)}</p><p>© 2026 Vision Universe®</p></div></div></footer>`;
+<div class="legal"><p>© 2026 Vision Universe® · Pflichthinweise und Rechtstexte im Menü unter „Rechtliches &amp; Infos“.</p></div></div></footer>`;
 }
 
 const nlBlock = () => `<section><div class="wrap"><div class="nl" id="newsletter"><div><div class="kick ink">App bald verfügbar</div><div class="h2">App-Start nicht verpassen.</div><p>Trag dich in den Newsletter ein und erfahre als Erstes, wann Vision Universe im App Store und bei Google Play startet. Dazu neue Research-Inhalte per E-Mail.</p></div><div class="act">${nlBtn("Newsletter abonnieren", "ink")}<small>Anmeldung auf www.visionuniverse.de · Bestätigung per E-Mail, Abmeldung jederzeit.</small></div></div></div></section>`;
