@@ -264,6 +264,23 @@
       "consumers": ["Quant (/quant/musterdepots/)"]
     },
     {
+      "id": "backtestResearch",
+      "label": "Backtest-Forschung (Zusatzmethoden)",
+      "layer": "PRODUCT",
+      "group": "Quant",
+      "critical": false,
+      "artifact": "/quant/data/product/backtest-research-v1.json",
+      "timestamp": ["asOf"],
+      "records": "cases",
+      "role": "Feste Prüffälle (docs/quant/backtest-demos/cases.json) mit Monte Carlo, Walk-Forward, Out-of-Sample, Marktregime, Parameter-Sensitivität, Ereignis-Studie und Rebalancing aus dem Research-Runner. Forschung, nicht zertifiziert; nur interne Ansicht, keine öffentliche Rendite-Aussage.",
+      "producer": "scripts/quant/research/build-backtest-research.cjs",
+      "workflow": "pipeline-weekly.yml (Teil backtest-forschung)",
+      "schedule": "sonntags 05:41 UTC",
+      "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 504 },
+      "consumers": ["Quant Forschung (intern)"],
+      "activation": {"state": "ACTIVATING", "decision": "Steuerung 12.11.2026 (Owner-Frage Monte Carlo): interne Forschungsansicht, Etikett „Forschung, nicht zertifiziert“; erster Lauf pipeline-weekly Teil backtest-forschung nach dem Merge, danach Feld entfernen."}
+    },
+    {
       "id": "technical",
       "label": "Technical Analysis",
       "layer": "INTELLIGENCE",

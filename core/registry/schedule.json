@@ -404,6 +404,16 @@
    }
   },
   {
+   "id": "pipeline-weekly-backtest-forschung",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "41 5 * * 0",
+   "timer": "waker",
+   "note": "backtest-forschung",
+   "inputs": {
+    "teil": "backtest-forschung"
+   }
+  },
+  {
    "id": "pipeline-weekly-sec-fundamentals",
    "workflow": "pipeline-weekly.yml",
    "cron": "0 6 * * 1",

@@ -59,6 +59,14 @@
       "note": "Der Erzeuger rechnet vom bisherigen Stand weiter (Bestand, Protokoll); pipeline-weekly spielt den Zweig vor dem Lauf ein (seed-data-branch.sh alle). Bis zum ersten Lauf (Sa 07:23 UTC) liefert Pages die eingefrorene Kopie aus main."
     },
     {
+      "id": "backtestResearch",
+      "phase": "BRANCH_ONLY",
+      "pendingFirstRun": true,
+      "workflow": "pipeline-weekly.yml",
+      "paths": ["quant/data/product/backtest-research-v1.json"],
+      "note": "Neu (11/2026), nur im Datenzweig. Bis zum ersten Lauf (So 05:41 UTC oder Dispatch teil=backtest-forschung) fehlt die Datei; die interne Forschungsansicht sagt das."
+    },
+    {
       "id": "kiDepots",
       "phase": "BRANCH_ONLY",
       "workflow": "pipeline-daily.yml",
