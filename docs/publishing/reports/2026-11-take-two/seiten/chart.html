@@ -1,0 +1,52 @@
+<section class="page">
+  <div data-run="Die Aktie"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Die Aktie · Chart und Technik</span>
+    <div class="hx" style="margin-top:3mm">Ein Jahr Achterbahn</div>
+    <div class="sub" style="margin-top:3mm;max-width:172mm">Rekordhoch im Oktober 2025, dann zwei harte Tage: die zweite Verschiebung und die Angst vor KI-Spielen. Seit den Quartalszahlen geht es wieder aufwärts.</div>
+    <div class="card" style="margin-top:5mm;padding:4mm 4mm 2mm">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="kick">Tagesschlusskurse in $, mit 50- und 200-Tage-Linie</div><span class="app-badge"><i></i>VU-Daten</span></div>
+      <div style="margin-top:4mm" data-k="tageschart"></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:5mm">
+      <div>
+        <div class="kick">Kennzahlen zum Kurs</div>
+        <div style="margin-top:2mm" data-k="kurskz"></div>
+      </div>
+      <div>
+        <div class="card ink" style="padding:4.5mm">
+          <div class="kick" style="color:var(--lime)">Was die Technik-Engine zeigt</div>
+          <div class="sm" style="margin-top:2mm;color:#e6e6e6" data-k="technik"></div>
+        </div>
+        <div class="body" style="margin-top:3.5mm;font-size:9pt">
+          <p>Die drei markierten Tage erzählen die Geschichte des Jahres. Am 7.&nbsp;November 2025 verlor die Aktie gut 8&nbsp;%, nachdem Rockstar den Start auf November 2026 verschoben hatte. Am 30.&nbsp;Januar 2026 fielen Spieleaktien weltweit, als Google sein KI-Werkzeug Genie für Nutzer öffnete, das spielbare Welten aus Text erzeugt. Und am 10.&nbsp;November 2026, nach den Quartalszahlen und Berichten über Rekord-Vorbestellungen, stieg Take-Two um gut 8&nbsp;%.</p>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:5mm;padding:4.5mm;display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:5mm;align-items:start">
+      <div class="kick" style="max-width:30mm">Chart-ABC für Einsteiger</div>
+      <div class="xs" style="font-size:7.6pt"><b>50- und 200-Tage-Linie:</b> der Durchschnitt der Schlusskurse der letzten 50 bzw. 200 Handelstage. Liegt der Kurs darüber, war er zuletzt stärker als im Schnitt dieser Zeit.</div>
+      <div class="xs" style="font-size:7.6pt"><b>Volatilität:</b> wie stark der Kurs schwankt, aufs Jahr gerechnet. 35&nbsp;% ist für eine große US-Aktie viel; der Gesamtmarkt liegt meist deutlich darunter.</div>
+      <div class="xs" style="font-size:7.6pt"><b>Relative Stärke:</b> wie sich die Aktie im Vergleich zu allen anderen US-Aktien entwickelt hat. 47 heißt: knapp unter der Mitte.</div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const D=VUM.D,a=D.aktie,de=VUM.de,sg=VUM.sg,P=D.daily;
+const ix=d=>P.findIndex(p=>p[0]>=d);
+VUM.k('tageschart',()=>VUC.line(P,{w:600,h:250,pr:34,tick:20,mstep:2,lines:[{v:D.sma50,name:'50 T.',c:'#5c5c5c',dy:-6},{v:D.sma200,name:'200 T.',c:'#000',dash:'5 3',dy:8}],marks:[
+ {i:ix('2025-10-20'),t:'Rekordhoch',s:'262,29 $ · 20.10.25',anchor:'start',dx:-2},
+ {i:ix('2025-11-07'),t:'2. Verschiebung',s:'−8,1 % · 07.11.25',up:false},
+ {i:ix('2026-01-30'),t:'Google Genie',s:'−7,9 % · 30.01.26',up:false},
+ {i:ix('2026-11-10'),t:'Quartalszahlen',s:'+8,3 % · 10.11.26',anchor:'end',dx:-4},
+]}));
+VUM.k('kurskz',()=>[
+ ['1 Monat',VUM.pill(a.r1m*100)],['3 Monate',VUM.pill(a.r3m*100)],['12 Monate',VUM.pill(a.r12m*100)],
+ ['Abstand zum 52-Wochen-Hoch',de(a.hi*100,1)+'&nbsp;%'],['Abstand zur 200-Tage-Linie',sg(a.sma200*100,1)+'&nbsp;%'],
+ ['Schwankung (Volatilität, 1 Jahr)',de(a.vol*100,0)+'&nbsp;%'],['Größter Rückgang im Jahr',de(a.dd*100,0)+'&nbsp;%'],
+ ['Relative Stärke (Perzentil, US-Aktien)',de(a.rs.relativeStrengthPercentile,0)],
+].map(r=>`<div class="fact" style="font-size:8.4pt"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')+`<div class="xs mu" style="margin-top:1.5mm">Stand 11.11.2026, Schlusskurse. Relative Stärke: Rang unter ${de(a.rs.universeSize,0)} US-Aktien, 100 = stärkste.</div>`);
+VUM.k('technik',()=>`Die Engine stuft die <b style="color:#fff">Trendstruktur als abwärts</b> ein: Seit dem Rekord im Oktober 2025 liegen die Hochs tiefer. Gleichzeitig notiert der Kurs <b style="color:#fff">über der 50- und der 200-Tage-Linie</b>. Am 11.11. hat sie einen <b style="color:#fff">Ausbruch über einen Widerstand</b> erkannt, Status „in Bildung“. Das ist eine Beschreibung des Charts, keine Vorhersage.`);
+})();
+</script>

@@ -189,7 +189,15 @@ Pausieren oder ändern: in der App unter den geplanten Aufgaben („Insights-Tag
 (PDF, verkleinerte Seitenbilder, Cover nach `insights/magazin/nr-<NN>/`), dann Eintrag mit Titel, Unterzeile und Inhalt in
 `products/insights/magazin.json` (neueste zuerst) und bauen.
 
-**Report veröffentlichen:** Report unter `reports/<id>/`, Eintrag in `products/insights/reports.json`, bauen.
+**Aktienreport** (ab 12.11.2026, Nr. 01 Take-Two): gebaut mit dem Heft-System wie das Magazin, ein Ordner je Report unter
+`docs/publishing/reports/<ordner>/` (`ausgabe.json` mit `"reihe": "Aktienreport"` und `"pdf"`, `seiten/`, `fakten.json`,
+`img/`, Datenschnappschuss `data.js` aus dem eigenen `daten.mjs`). Bilder: offizielles Pressematerial (bei GTA VI die
+Downloads unter rockstargames.com/VI, „Media & Artwork“) mit Bildnachweis, App-Ansichten über `products/insights/screens.mjs`.
+Bauen mit `node docs/publishing/system/build.mjs <ordner> --scale 2 --vorschau --out <tmp>`, PDF nach `<ordner>/pdf/`, dann
+`python3 products/insights/report_veroeffentlichen.py <ordner> <id>` (PDF, Seitenbilder und Cover nach
+`insights/reports/<id>/`, öffentlich wie alles unter `/insights/`), Eintrag mit Kurzfassung in `products/insights/reports.json`,
+`node products/insights/build.mjs`. `pdf/` und `vorschau/` im Report-Ordner werden nicht eingecheckt (die Online-Fassung
+enthält das PDF). Ein Report nennt kein Kursziel; Bullen- und Bärenfall stehen immer nebeneinander, mit Beobachtungspunkten.
 
 Regeln wie im Heft (Abschnitt 6). Zusätzlich: Privatpersonen, gegen die nur Vorwürfe bestehen, werden nicht namentlich
 genannt; Vorwürfe stehen im Konjunktiv mit Quelle, die Gegenseite kommt zu Wort.

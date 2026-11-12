@@ -1,0 +1,52 @@
+<section class="page">
+  <div data-run="Die Zahlen"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Bilanz, Cashflow, Bewertung</span>
+    <div class="hx" style="margin-top:3mm">Was die Aktie heute kostet</div>
+    <div class="sub" style="margin-top:3mm;max-width:172mm">Gemessen an den Zahlen der Vergangenheit ist Take-Two teuer. Gemessen an der eigenen Prognose immer noch. Der Preis setzt darauf, dass GTA VI das Geschäft auf eine neue Stufe hebt.</div>
+    <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:3.5mm;margin-top:5mm" data-k="gesund"></div>
+    <div class="xs mu" style="margin-top:1.5mm">Gesundheits-Check von Vision Universe aus den SEC-Zahlen (Geschäftsjahr bis 31.03.2026, Wachstum über zehn Jahre). Feste Schwellen, für alle Aktien gleich.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div>
+        <div class="kick">Bilanz am 30.09.2026</div>
+        <table class="t" style="margin-top:2mm">
+          <tr><td>Kasse</td><td class="r">1.149&nbsp;Mio.&nbsp;$</td></tr>
+          <tr><td>Kurzfristige Geldanlagen</td><td class="r">524&nbsp;Mio.&nbsp;$</td></tr>
+          <tr><td>Schulden, kurzfristig</td><td class="r">629&nbsp;Mio.&nbsp;$</td></tr>
+          <tr><td>Schulden, langfristig</td><td class="r">1.891&nbsp;Mio.&nbsp;$</td></tr>
+          <tr><td><b>Nettoschulden</b> (Rechnung VU)</td><td class="r"><b>≈&nbsp;850&nbsp;Mio.&nbsp;$</b></td></tr>
+          <tr><td>Operativer Cashflow April–Sept. 2026</td><td class="r">−174&nbsp;Mio.&nbsp;$</td></tr>
+          <tr><td>Free Cashflow GJ 2026</td><td class="r">462&nbsp;Mio.&nbsp;$</td></tr>
+        </table>
+        <div class="body" style="margin-top:3mm;font-size:9pt"><p>Die Schulden sind beherrschbar, aber nicht klein. Vor einem großen Start gibt ein Spielekonzern viel Geld für Entwicklung und Werbung aus, die Einnahmen kommen danach. Deshalb war der Cashflow im ersten Halbjahr negativ. Für das ganze Geschäftsjahr erwartet Take-Two mehr als 1&nbsp;Mrd.&nbsp;$.</p></div>
+      </div>
+      <div>
+        <div class="kick">Bewertung, gerechnet von Vision Universe</div>
+        <div style="margin-top:2mm" data-k="bewertung"></div>
+        <div class="kick" style="margin-top:5mm">Aktienzahl in Millionen</div>
+        <div style="margin-top:2.5mm" data-k="aktien"></div>
+        <div class="xs mu" style="margin-top:1.5mm">Der Sprung 2023 kommt vom Zynga-Kauf, der zum Teil mit neuen Aktien bezahlt wurde. Jeder Aktionär hält seither einen kleineren Teil des Unternehmens.</div>
+      </div>
+    </div>
+    <div class="card lime" style="margin-top:6mm;padding:5mm;display:grid;grid-template-columns:auto 1fr;gap:6mm;align-items:center">
+      <div><div class="kick">Rechenbeispiel</div><div class="num-xl" style="font-size:38pt;margin-top:1mm" data-k="noetig"></div><div class="xs" style="font-weight:800;margin-top:1mm">Jahresgewinn nötig</div></div>
+      <div class="sm" data-k="noetigtext"></div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const D=VUM.D,a=D.aktie,de=VUM.de;
+VUM.k('gesund',()=>D.health.map(h=>{const gut=/Stark|Solide/.test(h.grade);return `<div class="card${gut?'':' ink'}" style="padding:4mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.1em;text-transform:uppercase;opacity:.75">${h.label}</div><div style="font-size:15pt;font-weight:900;margin-top:1mm;${gut?'':'color:var(--lime)'}">${h.grade}</div><div class="xs" style="margin-top:1mm;${gut?'color:#5c5c5c':'color:#bdbdbd'}">${h.detail}</div></div>`}).join(''));
+const ev=a.mcap+850e6;
+VUM.k('bewertung',()=>[
+ ['Kurs-Umsatz-Verhältnis (12 Monate)',de(a.ps,1),`Median aller US-Aktien: ${de(a.psMedian,1)}`],
+ ['Unternehmenswert / EBITDA-Prognose GJ 2027',`${de(ev/1.082e9,0)}–${de(ev/1.024e9,0)}`,'EBITDA laut Take-Two 1,02–1,08 Mrd. $ (bereinigt)'],
+ ['Kurs-Gewinn-Verhältnis auf GJ-2027-Prognose',`${de(a.price/0.75,0)}–${de(a.price/0.57,0)}`,'Gewinn je Aktie laut Take-Two 0,57–0,75 $ (GAAP)'],
+ ['Free-Cashflow-Rendite (12 Monate)',de(a.fcfYield*100,1)+'&nbsp;%','Free Cashflow im Verhältnis zum Börsenwert'],
+].map(r=>`<div style="display:grid;grid-template-columns:1fr auto;gap:3mm;padding:2mm 0;border-bottom:1px solid var(--g2);align-items:center"><div><div style="font-size:8.4pt;font-weight:800">${r[0]}</div><div class="xs mu">${r[2]}</div></div><div style="font-size:15pt;font-weight:900;letter-spacing:-.03em">${r[1]}</div></div>`).join(''));
+VUM.k('noetig',()=>'≈&nbsp;'+de(a.mcap/20.44/1e9,1)+'&nbsp;Mrd.&nbsp;$');
+VUM.k('noetigtext',()=>`Damit das Kurs-Gewinn-Verhältnis von Take-Two beim heutigen Börsenwert (${de(a.mcap/1e9,1)} Mrd. $) dem Median aller US-Aktien mit Gewinn entspräche (20,4), müsste das Unternehmen rund ${de(a.mcap/20.44/1e9,1)} Mrd. $ Gewinn im Jahr machen. Der bisherige Rekord liegt bei 0,59 Mrd. $ im Geschäftsjahr 2021. Für das laufende Jahr erwartet Take-Two 0,11 bis 0,14 Mrd. $. Das ist keine Prognose, sondern zeigt, wie viel Zukunft im Kurs steckt.`);
+VUM.k('aktien',()=>VUC.vbars(D.tracks.aktien.filter(r=>r[0]>=2017).map(r=>[String(r[0]).slice(2),r[1]/1e6]).concat([['9/26',a.aktien/1e6]]),{w:300,h:80,allvals:true,fmt:v=>de(v,0)}));
+})();
+</script>

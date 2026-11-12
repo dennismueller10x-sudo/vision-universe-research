@@ -1,0 +1,53 @@
+<section class="page">
+  <div data-run="Die Zahlen"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Die Zahlen</span>
+    <div class="hx" style="margin-top:3mm">Wachstum ja, Gewinn noch nicht</div>
+    <div class="sub" style="margin-top:3mm;max-width:172mm">In zehn Jahren hat sich der Umsatz fast verfünffacht. Unter dem Strich stehen seit dem Zynga-Kauf aber Verluste. Das Geschäftsjahr 2027 soll das drehen.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:5mm">
+      <div><div class="kick">Umsatz je Geschäftsjahr, Mrd. $</div><div style="margin-top:3mm" data-k="umsatz"></div></div>
+      <div><div class="kick">Ergebnis je Geschäftsjahr, Mrd. $</div><div style="margin-top:3mm" data-k="gewinn"></div></div>
+    </div>
+    <div class="xs mu" style="margin-top:2mm">Geschäftsjahr endet am 31. März (GJ 2026 = April 2025 bis März 2026). GAAP-Zahlen aus den Jahresberichten bei der SEC, ausgewertet von Vision Universe. Die Verluste 2024 und 2025 stammen vor allem aus Abschreibungen auf Firmenwerte.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div>
+        <div class="kick">Das letzte Quartal (Juli bis September 2026)</div>
+        <table class="t" style="margin-top:2mm">
+          <tr><th></th><th class="r">Q2 GJ 2027</th><th class="r">Vorjahr</th><th class="r">Veränderung</th></tr>
+          <tr><td>Buchungen</td><td class="r">1.601&nbsp;Mio.&nbsp;$</td><td class="r">1.961&nbsp;Mio.&nbsp;$</td><td class="r"><span class="pill dn">−18&nbsp;%</span></td></tr>
+          <tr><td>Umsatz (GAAP)</td><td class="r">1.497&nbsp;Mio.&nbsp;$</td><td class="r">1.774&nbsp;Mio.&nbsp;$</td><td class="r"><span class="pill dn">−16&nbsp;%</span></td></tr>
+          <tr><td>davon Handy</td><td class="r">731&nbsp;Mio.&nbsp;$</td><td class="r">822&nbsp;Mio.&nbsp;$</td><td class="r"><span class="pill dn">−11&nbsp;%</span></td></tr>
+          <tr><td>Ergebnis</td><td class="r">−54&nbsp;Mio.&nbsp;$</td><td class="r">−134&nbsp;Mio.&nbsp;$</td><td class="r"><span class="pill up">besser</span></td></tr>
+          <tr><td>Ergebnis je Aktie</td><td class="r">−0,29&nbsp;$</td><td class="r">−0,73&nbsp;$</td><td class="r"></td></tr>
+        </table>
+        <div class="body" style="margin-top:3mm;font-size:9pt"><p>Das Quartal war schwächer als im Vorjahr und lag bei den Buchungen unter der eigenen Prognose von 1,62 bis 1,67&nbsp;Mrd.&nbsp;$. Ein Jahr zuvor hatten Borderlands&nbsp;4 und Mafia: The Old Country die Zahlen gehoben. Die Börse schaute trotzdem nach vorn: Am Tag danach stieg die Aktie um gut 8&nbsp;%.</p></div>
+      </div>
+      <div>
+        <div class="card ink" style="padding:5mm">
+          <div class="kick" style="color:var(--lime)">Das Versprechen für das GJ 2027</div>
+          <div style="font-size:7.4pt;color:#9a9a9a;margin-top:1mm">April 2026 bis März 2027, Prognose von Take-Two</div>
+          <div style="margin-top:3mm">
+            <div class="fact"><span>Buchungen</span><b>8,0–8,2&nbsp;Mrd.&nbsp;$</b></div>
+            <div class="fact"><span>Veränderung zum GJ 2026</span><b>+19 bis +22&nbsp;%</b></div>
+            <div class="fact"><span>Umsatz (GAAP)</span><b>7,98–8,18&nbsp;Mrd.&nbsp;$</b></div>
+            <div class="fact"><span>Ergebnis je Aktie (GAAP)</span><b>0,57–0,75&nbsp;$</b></div>
+            <div class="fact"><span>Operativer Cashflow</span><b>über 1&nbsp;Mrd.&nbsp;$</b></div>
+            <div class="fact" style="border:0"><span>Buchungen Okt. bis Dez. 2026</span><b>3,35–3,50&nbsp;Mrd.&nbsp;$</b></div>
+          </div>
+          <div class="sm" style="margin-top:3mm;color:#d6d6d6">Rechnung von Vision Universe: Allein das Weihnachtsquartal mit dem Start von GTA VI soll mehr als doppelt so viel bringen wie das Quartal davor. Erstmals seit dem GJ 2022 wäre das Ergebnis wieder positiv.</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:3.5mm;margin-top:6mm">
+      <div class="ph" style="height:48mm;background-image:url(img/vice-city-03.jpg)"><div class="cap">Vice City von oben. Bild: Rockstar Games</div></div>
+      <div class="ph" style="height:48mm;background-image:url(img/leonida-keys-06.jpg)"><div class="cap">Ein Leguan in den Leonida Keys. Bild: Rockstar Games</div></div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const T=VUM.D.tracks,de=VUM.de;
+VUM.k('umsatz',()=>VUC.vbars(T.umsatz.map(r=>[String(r[0]).slice(2),r[1]/1e9]),{w:300,h:120,allvals:true,fmt:v=>de(v,1)}));
+VUM.k('gewinn',()=>VUC.vbars(T.gewinn.map(r=>[String(r[0]).slice(2),r[1]/1e9]),{w:300,h:120,allvals:true,fmt:v=>de(v,1),hl:(r)=>r[1]>0}));
+})();
+</script>

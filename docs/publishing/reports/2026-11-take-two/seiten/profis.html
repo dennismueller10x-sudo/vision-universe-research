@@ -1,0 +1,43 @@
+<section class="page">
+  <div data-run="Die Aktie"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Die Aktie · Wer handelt?</span>
+    <div class="hx" style="margin-top:3mm">Fonds kaufen, Insider verkaufen, Spieler bestellen vor</div>
+    <div class="sub" style="margin-top:3mm;max-width:172mm">Drei Blickwinkel auf dieselbe Aktie: was große Fonds bei der SEC gemeldet haben, was das Management mit eigenen Aktien tut und wie viele Spieler GTA VI schon bezahlt haben.</div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:5mm">
+      <div>
+        <div class="kick">Große Fonds (13F), Stand 30.06.2026</div>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:3mm;margin-top:2.5mm" data-k="fonds"></div>
+        <div class="kick" style="margin-top:4.5mm">Größte neue Positionen im 2. Quartal</div>
+        <div style="margin-top:1.5mm" data-k="neue"></div>
+        <div class="xs mu" style="margin-top:1.5mm">13F-Meldungen bei der SEC, ausgewertet von Vision Universe. Fonds melden mit bis zu 45 Tagen Verzug; die Bestände zum 30.09. folgen bis Mitte November.</div>
+      </div>
+      <div>
+        <div class="kick">Insider (Form 4)</div>
+        <div class="grid" style="grid-template-columns:1fr 1fr;gap:3mm;margin-top:2.5mm" data-k="insider"></div>
+        <div class="body" style="margin-top:3mm;font-size:9pt"><p>Insider haben zuletzt nur verkauft, nicht gekauft. Das ist bei großen US-Konzernen häufig: Führungskräfte werden in Aktien bezahlt und verkaufen regelmäßig, oft nach vorher festgelegten Plänen. Für sich allein sagt es wenig.</p></div>
+        <div class="card lime" style="margin-top:3mm;padding:4.5mm">
+          <div class="kick">Vorbestellungen GTA VI (Schätzung)</div>
+          <div style="display:flex;gap:5mm;align-items:baseline;margin-top:2mm"><div class="num-xl" style="font-size:34pt">≈&nbsp;10,3&nbsp;Mio.</div><div class="sm" style="font-weight:800">Exemplare,<br>rund 1&nbsp;Mrd.&nbsp;$</div></div>
+          <div class="sm" style="margin-top:2mm">Davon etwa 7,7 Mio. auf PlayStation 5 und 2,6 Mio. auf Xbox, gezählt seit Beginn der Vorbestellungen am 25. Juni. Take-Two selbst nennt keine Zahl und spricht von „beispiellosen“ Vorbestellungen.</div>
+          <div class="xs" style="margin-top:1.5mm">Schätzung von Sensor Tower, laut Tech-ish vom 11.11.2026. Nicht vom Unternehmen bestätigt.</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:3.5mm;margin-top:6mm">
+      <div class="ph" style="height:42mm;background-image:url(img/vice-city-24.jpg)"><div class="cap">Vice City: Autos, Kameras, Social Media</div></div>
+      <div class="ph" style="height:42mm;background-image:url(img/leonida-keys-05.jpg)"><div class="cap">Bootsparty in den Leonida Keys</div></div>
+      <div class="ph" style="height:42mm;background-image:url(img/vice-city-09.jpg)"><div class="cap">Straßenleben in Vice City</div></div>
+    </div>
+    <div class="xs mu" style="margin-top:1.2mm">Bilder: Rockstar Games</div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const O=VUM.D.own,I=O.inst,N=O.insider,de=VUM.de;
+const k=(v,l,lime)=>`<div class="card${lime?' lime':''}" style="padding:3.5mm"><div style="font-size:18pt;font-weight:900;letter-spacing:-.03em">${v}</div><div class="xs" style="margin-top:.8mm;font-weight:700">${l}</div></div>`;
+VUM.k('fonds',()=>k(de(I.fh,0),`meldende Fonds (Vorquartal ${de(I.fhp,0)})`)+k(de(I.fnew,0),'neu eingestiegen',1)+k(de(I.finc,0),'haben aufgestockt')+k(de(I.fdec,0)+' / '+de(I.fexit,0),'verkleinert / ganz verkauft'));
+VUM.k('neue',()=>`<table class="t">${I.topNew.slice(0,5).map(r=>`<tr><td style="font-size:8pt">${r.manager.replace(/, L\.P\.|,? LP| LLC| Management Company/g,'').replace('VIKING GLOBAL INVESTORS','Viking Global Investors').replace('Caisse de depot et placement du Quebec','Caisse de dépôt et placement du Québec')}</td><td class="r" style="font-size:8pt">${de(r.shares/1e6,2)}&nbsp;Mio. Aktien</td><td class="r" style="font-size:8pt"><b>${de(r.valueUsd/1e6,0)}&nbsp;Mio.&nbsp;$</b></td></tr>`).join('')}</table>`);
+VUM.k('insider',()=>k(String(N.ib90),'Käufe in 90 Tagen')+k(String(N.is90),'Insider mit Verkäufen (90 Tage)')+k(de(-N.nbv90/1e6,1)+'&nbsp;Mio.&nbsp;$','netto verkauft, 90 Tage')+k(de(-N.nbv180/1e6,0)+'&nbsp;Mio.&nbsp;$','netto verkauft, 180 Tage'));
+})();
+</script>

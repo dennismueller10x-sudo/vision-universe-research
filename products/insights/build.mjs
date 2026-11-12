@@ -201,7 +201,27 @@ ${tabs('artikel')}
 ${erst ? karte(erst, true) : '<p>Noch keine Artikel.</p>'}
 ${rest.length ? `<section><h2 class="in-h2">Neueste Artikel</h2><div class="in-raster">${rest.map((a) => karte(a)).join('')}</div></section>` : ''}
 ${magazinTeaser(LOADED.magazin[0])}
-${reports.length ? `<section id="reports"><div class="in-h2-zeile"><h2 class="in-h2">Reports</h2><a href="/insights/reports/">Alle Reports${ICON.next}</a></div><div class="in-raster">${reports.slice(0, 3).map(reportKarte).join('')}</div></section>` : ''}
+${reports.filter((r) => r.seiten).slice(0, 1).map(reportTeaser).join('')}
+${reports.filter((r) => !r.seiten).length ? `<section id="reports"><div class="in-h2-zeile"><h2 class="in-h2">Reports</h2><a href="/insights/reports/">Alle Reports${ICON.next}</a></div><div class="in-raster">${reports.filter((r) => !r.seiten).slice(0, 3).map(reportKarte).join('')}</div></section>` : ''}
+</main>
+` + fuss;
+}
+
+// Aktienreports mit Seiten (aus dem Heft-System): Leseseite wie beim Magazin plus Kurzfassung als Text
+const reportPdf = (r) => `${r.href}${r.pdf}`;
+const reportTeaser = (r) => `<section class="in-heft-teaser"><a href="${esc(r.href)}"><img src="${esc(r.href)}cover.jpg" alt="Titelseite ${esc(r.titel)}" width="560" height="792" loading="lazy"></a><div><span class="in-kicker">${esc(r.art)} · Nr. ${r.nr}</span><h2>${esc(r.titel)}</h2><p>${esc(r.text)}</p><p class="in-klein">${datumLang(r.datum)} · ${r.seiten} Seiten</p><div class="in-links"><a class="in-btn in-btn--ink" href="${esc(r.href)}">Online lesen${ICON.next}</a><a class="in-btn" href="${esc(reportPdf(r))}" download>PDF laden (${r.pdfMB} MB)</a></div></div></section>`;
+function reportSeite(r) {
+  const nr = (n) => String(n).padStart(2, '0');
+  const seiten = Array.from({ length: r.seiten }, (_, i) => `<img id="s${nr(i + 1)}" src="${r.href}seiten/s${nr(i + 1)}.jpg" alt="Seite ${i + 1}" width="1100" height="1556" loading="${i < 2 ? 'eager' : 'lazy'}">`).join('\n');
+  return head({ title: `${r.art}: ${r.titel} · Vision Universe`, description: r.text, canonical: r.href, image: r.href + 'cover.jpg' }) + `<main id="in-main" class="in-wrap">
+${tabs('reports')}
+<header class="in-heft-kopf"><span class="in-kicker">${esc(r.art)} · Nr. ${r.nr} · ${datumLang(r.datum)}</span><h1>${esc(r.titel)}</h1><p class="in-lead">${esc(r.unterzeile)}</p><div class="in-links"><a class="in-btn in-btn--ink" href="#s01">Lesen${ICON.next}</a><a class="in-btn" href="${esc(reportPdf(r))}" download>PDF laden (${r.pdfMB} MB)</a></div></header>
+<nav class="in-heft-inhalt" aria-label="Inhalt"><b class="in-vu-label">Inhalt</b><ol>${r.inhalt.map(([s, rubrik, titel]) => `<li><a href="#s${nr(s)}"><span>${nr(s)}</span><em>${esc(rubrik)}</em>${esc(titel)}</a></li>`).join('')}</ol></nav>
+<div class="in-heft-seiten">
+${seiten}
+</div>
+<section class="in-heft-kurz"><h2 class="in-h2">Kurzfassung</h2>${r.kurzfassung.map((p) => `<p>${esc(p)}</p>`).join('')}</section>
+<p class="in-klein">Keine Anlageberatung. Der Report nennt keine Kursziele und gibt keine Empfehlung. Bilder aus Grand Theft Auto VI: Rockstar Games.</p>
 </main>
 ` + fuss;
 }
@@ -210,7 +230,7 @@ function reportsSeite(reports) {
   return head({ title: 'Reports · Aktienreports von Vision Universe', description: 'Aktienreports von Vision Universe: einzelne Unternehmen ausführlich, mit Geschäftsmodell, Zahlen und Daten.', canonical: '/insights/reports/', image: TEILBILD }) + `<main id="in-main" class="in-wrap">
 ${tabs('reports')}
 <header class="in-hub"><span class="in-kicker">Reports</span><h1>Aktienreports</h1><p class="in-lead">Ein Unternehmen ausführlich: Geschäftsmodell, Zahlen, Bewertung im Vergleich und was die Daten von Vision Universe zeigen. Neue Reports erscheinen hier.</p></header>
-${reports.length ? `<div class="in-raster">${reports.map(reportKarte).join('')}</div>` : `<div class="in-leer vu-box"><b>Der erste Aktienreport ist in Arbeit.</b><p>Bis dahin: jeden Tag neue Artikel unter Insights und jede Woche das Aktienmagazin.</p><div class="in-links"><a class="in-btn in-btn--ink" href="/insights/magazin/">Zum Aktienmagazin${ICON.next}</a><a class="in-btn" href="/insights/">Zu den Artikeln</a></div></div>`}
+${reports.length ? `${reports.filter((r) => r.seiten).map(reportTeaser).join('')}<div class="in-raster">${reports.filter((r) => !r.seiten).map(reportKarte).join('')}</div>` : `<div class="in-leer vu-box"><b>Der erste Aktienreport ist in Arbeit.</b><p>Bis dahin: jeden Tag neue Artikel unter Insights und jede Woche das Aktienmagazin.</p><div class="in-links"><a class="in-btn in-btn--ink" href="/insights/magazin/">Zum Aktienmagazin${ICON.next}</a><a class="in-btn" href="/insights/">Zu den Artikeln</a></div></div>`}
 </main>
 ` + fuss;
 }
@@ -260,8 +280,8 @@ ${artikel.map((a) => `<item><title>${xml(a.titel)}</title><link>${SITE}/insights
 </rss>
 `;
 }
-function sitemap(artikel, hefte) {
-  const urls = [['/insights/', artikel[0]?.datum], ['/insights/magazin/', hefte[0]?.datum], ...hefte.map((h) => [heftUrl(h), h.datum]), ['/insights/reports/', null], ...artikel.map((a) => [`/insights/${a.slug}/`, a.datum])];
+function sitemap(artikel, hefte, reports = []) {
+  const urls = [['/insights/', artikel[0]?.datum], ['/insights/magazin/', hefte[0]?.datum], ...hefte.map((h) => [heftUrl(h), h.datum]), ['/insights/reports/', reports[0]?.datum ?? null], ...reports.filter((r) => r.seiten).map((r) => [r.href, r.datum]), ...artikel.map((a) => [`/insights/${a.slug}/`, a.datum])];
   return `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map(([u, d]) => `<url><loc>${SITE}${u}</loc>${d ? `<lastmod>${d}</lastmod>` : ''}</url>`).join('\n')}
@@ -276,12 +296,13 @@ export function build() {
     'insights/index.html': uebersicht(artikel, reports),
     'insights/reports/index.html': reportsSeite(reports),
     'insights/feed.xml': feed(artikel),
-    'insights/sitemap.xml': sitemap(artikel, hefte),
+    'insights/sitemap.xml': sitemap(artikel, hefte, reports),
     'insights/magazin/index.html': magazinUebersicht(hefte),
     'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, bild }) => ({ slug, datum, rubrik, titel, teaser, ticker, bild: bild.typ === 'app' ? null : bild.src, href: `/insights/${slug}/` })) }, null, 1) + '\n',
   };
   for (const a of artikel) files[`insights/${a.slug}/index.html`] = artikelSeite(a);
   for (const h of hefte) files[`insights/magazin/nr-${h.nr}/index.html`] = heftSeite(h);
+  for (const r of reports.filter((x) => x.seiten)) files[`${r.href.slice(1)}index.html`] = reportSeite(r);
   return files;
 }
 

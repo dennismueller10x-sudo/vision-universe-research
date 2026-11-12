@@ -59,12 +59,12 @@
       const n = Number(p.dataset.nr);
       p.querySelectorAll('[data-run]').forEach((el) => {
         el.className = 'run';
-        el.innerHTML = `<span class="wm"><img class="logo" src="${ROOT}docs/design/redesign-2027/img/vu-logo.png" style="height:2.6mm;${p.classList.contains('dark') || p.classList.contains('imgtop') ? 'filter:invert(1)' : ''}"><span style="margin-left:2mm">Aktienmagazin · Nr. ${nr2(A.nummer)}</span></span><span>${el.dataset.run}</span>`;
+        el.innerHTML = `<span class="wm"><img class="logo" src="${ROOT}docs/design/redesign-2027/img/vu-logo.png" style="height:2.6mm;${p.classList.contains('dark') || p.classList.contains('imgtop') ? 'filter:invert(1)' : ''}"><span style="margin-left:2mm">${A.reihe || 'Aktienmagazin'} · Nr. ${nr2(A.nummer)}</span></span><span>${el.dataset.run}</span>`;
       });
       p.querySelectorAll('[data-foot]').forEach((el) => {
         el.className = 'foot';
         const sd = A.seiten.find((x) => x.nr === n) || {}; const qs = quellNummern(sd);
-        el.innerHTML = `<span><b>${nr2(n)}</b> · Vision Universe Aktienmagazin · ${A.datumText}</span><span>Keine Anlageberatung${qs && impressum ? ` · Quellen ${qs} (S. ${nr2(impressum.nr)})` : ''}</span>`;
+        el.innerHTML = `<span><b>${nr2(n)}</b> · Vision Universe ${A.reihe || 'Aktienmagazin'} · ${A.datumText}</span><span>Keine Anlageberatung${qs && impressum ? ` · Quellen ${qs} (S. ${nr2(impressum.nr)})` : ''}</span>`;
       });
     });
     K.quellen = quellenListe;

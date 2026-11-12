@@ -77,10 +77,11 @@ const teile = seiten.map((s) => {
 });
 const zusatz = fs.existsSync(path.join(dir, 'seiten', '_kennzahlen.html')) ? ersetze(fs.readFileSync(path.join(dir, 'seiten', '_kennzahlen.html'), 'utf8'), 'Kennzahlen') : '';
 const icons = fs.readFileSync(path.join(repo, 'assets/product-icons.svg'), 'utf8').replace(/<svg /, '<svg style="display:none" ');
-const meta = { nummer: A.nummer, datumText: A.datumText, kw: A.kw, redaktionsschlussText: A.redaktionsschlussText, seiten: seiten.map(({ id, nr, toc, quellen: q }) => ({ id, nr, toc, quellen: q })), quellen };
+const REIHE = A.reihe || 'Aktienmagazin';
+const meta = { reihe: REIHE, nummer: A.nummer, datumText: A.datumText, kw: A.kw, redaktionsschlussText: A.redaktionsschlussText, seiten: seiten.map(({ id, nr, toc, quellen: q }) => ({ id, nr, toc, quellen: q })), quellen };
 const html = `<!doctype html>
 <html lang="de"><head><meta charset="utf-8">
-<title>Vision Universe Aktienmagazin · Nr. ${String(A.nummer).padStart(2, '0')} · ${A.datumText}</title>
+<title>Vision Universe ${REIHE} · Nr. ${String(A.nummer).padStart(2, '0')} · ${A.datumText}</title>
 <link rel="stylesheet" href="${sysRel}mag.css">
 <script>window.VU_ROOT=${JSON.stringify(root)};window.VU_AUSGABE=${JSON.stringify(meta)};</script>
 <script src="data.js"></script><script src="${sysRel}charts.js"></script><script src="${sysRel}lib.js"></script>
@@ -125,9 +126,9 @@ if (argv.includes('--vorschau')) {
   fs.rmSync(vp, { recursive: true, force: true }); fs.mkdirSync(vp, { recursive: true });
   for (let i = 0; i < pages.length; i++) await pages[i].screenshot({ path: path.join(vp, `s${String(i + 1).padStart(2, '0')}.jpg`), type: 'jpeg', quality: 80 });
   const titel = seiten.map((s) => (s.toc ? s.toc.titel : s.id.replace(/-/g, ' ')).replace(/&amp;/g, '&'));
-  fs.writeFileSync(path.join(vd, 'index.html'), `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vorschau Aktienmagazin Nr. ${String(A.nummer).padStart(2, '0')}</title><style>body{margin:0;background:#0b0b0b;color:#fff;font-family:system-ui,sans-serif}h1{padding:24px 20px 0;margin:0;font-size:32px}h1 span{color:#c8f531}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:20px}figure{margin:0;background:#161616;border-radius:10px;padding:8px}img{width:100%;display:block}figcaption{font-size:13px;color:#9a9a9a;margin-top:6px}figcaption b{color:#c8f531}</style></head><body><h1>Aktien<span>magazin</span> Nr. ${String(A.nummer).padStart(2, '0')} · ${A.datumText}</h1><div class="g">${seiten.map((s, i) => `<figure><a href="p/s${String(i + 1).padStart(2, '0')}.jpg"><img loading="lazy" src="p/s${String(i + 1).padStart(2, '0')}.jpg" alt="Seite ${i + 1}"></a><figcaption><b>${String(i + 1).padStart(2, '0')}</b> · ${titel[i]}</figcaption></figure>`).join('')}</div></body></html>`);
+  fs.writeFileSync(path.join(vd, 'index.html'), `<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vorschau ${REIHE} Nr. ${String(A.nummer).padStart(2, '0')}</title><style>body{margin:0;background:#0b0b0b;color:#fff;font-family:system-ui,sans-serif}h1{padding:24px 20px 0;margin:0;font-size:32px}h1 span{color:#c8f531}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:20px}figure{margin:0;background:#161616;border-radius:10px;padding:8px}img{width:100%;display:block}figcaption{font-size:13px;color:#9a9a9a;margin-top:6px}figcaption b{color:#c8f531}</style></head><body><h1>${REIHE.replace(/^Aktien/, 'Aktien<span>')}</span> Nr. ${String(A.nummer).padStart(2, '0')} · ${A.datumText}</h1><div class="g">${seiten.map((s, i) => `<figure><a href="p/s${String(i + 1).padStart(2, '0')}.jpg"><img loading="lazy" src="p/s${String(i + 1).padStart(2, '0')}.jpg" alt="Seite ${i + 1}"></a><figcaption><b>${String(i + 1).padStart(2, '0')}</b> · ${titel[i]}</figcaption></figure>`).join('')}</div></body></html>`);
 }
-const pdfName = `aktienmagazin-${String(A.nummer).padStart(2, '0')}.pdf`;
+const pdfName = A.pdf || `aktienmagazin-${String(A.nummer).padStart(2, '0')}.pdf`;
 if (!argv.includes('--no-pdf')) await page.pdf({ path: path.join(out, pdfName), format: 'A4', printBackground: true, preferCSSPageSize: true, outline: true, tagged: true });
 await browser.close();
 

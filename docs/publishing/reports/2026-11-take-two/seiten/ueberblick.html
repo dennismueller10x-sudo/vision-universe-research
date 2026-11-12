@@ -1,0 +1,44 @@
+<section class="page">
+  <div data-run="Auf einen Blick"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Auf einen Blick</span>
+    <div class="hx" style="margin-top:3mm">Ein Spiel, eine Aktie,<br>ein Jahrzehnt.</div>
+    <div class="grid" style="grid-template-columns:1fr 66mm;gap:7mm;margin-top:5mm">
+      <div class="body">
+        <p>Am 19. November erscheint Grand Theft Auto VI. Für viele Spieler ist das der wichtigste Termin seit Jahren, für Take-Two Interactive ist es der wichtigste der Firmengeschichte. Zwölf Jahre lagen zwischen GTA V und dem Nachfolger. In dieser Zeit hat sich GTA V mehr als 230 Millionen Mal verkauft und mit seinem Online-Modus Jahr für Jahr Geld eingebracht.</p>
+        <p>Take-Two hat für das laufende Geschäftsjahr bis Ende März 2027 Buchungen von 8,0 bis 8,2 Milliarden Dollar angekündigt, rund ein Fünftel mehr als im Vorjahr. Den größten Teil davon soll GTA VI liefern. Die Börse hat einen Teil dieser Erwartung längst im Kurs: Take-Two ist heute rund <span data-k="mcap"></span> wert, obwohl das Unternehmen in den letzten zwölf Monaten unter dem Strich Verlust gemacht hat.</p>
+        <p>Dieser Report erzählt beides: die Geschichte des Spiels, für alle, die GTA lieben, und die Geschichte der Aktie, für alle, die investieren. Er zeigt Zahlen, Chart und Bewertung, stellt Bullen- und Bärenfall nebeneinander und denkt um die Ecke: Was passiert mit einem Unterhaltungskonzern, wenn künstliche Intelligenz Menschen mehr freie Zeit verschafft? Ein Kursziel nennt dieser Report nicht, und er gibt keine Empfehlung. Er ordnet ein.</p>
+      </div>
+      <div>
+        <div class="card ink" style="padding:4.5mm">
+          <div class="kick" style="color:var(--lime)">Für Gamer in 30 Sekunden</div>
+          <div class="sm" style="margin-top:2mm;color:#e6e6e6">Zwei Hauptfiguren, Jason und Lucia. Ein Staat nach dem Vorbild Floridas, Leonida, mit Vice City als Metropole. Erscheint am 19.11. für PS5 und Xbox Series X|S, Standardfassung 79,99&nbsp;$.</div>
+        </div>
+        <div class="card lime" style="padding:4.5mm;margin-top:3.5mm">
+          <div class="kick">Für Aktionäre in 30 Sekunden</div>
+          <div class="sm" style="margin-top:2mm">Take-Two setzt im Geschäftsjahr 2027 auf einen Sprung bei Buchungen und Gewinn. Bewertung hoch, Bilanz mit Schulden, Kurs schwankungsreich. Der Start entscheidet, ob die Rechnung aufgeht.</div>
+        </div>
+      </div>
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:6mm" data-k="kennzahlen"></div>
+    <div style="margin-top:6mm;border-top:2px solid #000;padding-top:3mm">
+      <span class="kick">Inhalt</span>
+      <div style="margin-top:2.5mm;display:grid;grid-template-columns:1fr 1fr 1fr;column-gap:6mm" data-k="toc"></div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+(function(){const D=VUM.D,a=D.aktie,de=VUM.de;
+VUM.k('mcap',()=>de(a.mcap/1e9,1)+'&nbsp;Mrd.&nbsp;$');
+VUM.k('kennzahlen',()=>[
+ [de(a.price,2)+'&nbsp;$','Schlusskurs 11.11.2026',`${VUM.sg(a.r1m*100,1)}&nbsp;% in einem Monat, ${VUM.sg(a.r12m*100,1)}&nbsp;% in zwölf Monaten`],
+ [de(a.mcap/1e9,1)+'&nbsp;Mrd.&nbsp;$','Börsenwert','Kurs × 187,2 Mio. Aktien (Stand 30.09.2026)'],
+ ['8,0–8,2&nbsp;Mrd.&nbsp;$','Ziel Buchungen GJ 2027','nach 6,72 Mrd. $ im GJ 2026 (bis 31.03.)'],
+ [de(D.ttm.revenue/1e9,2)+'&nbsp;Mrd.&nbsp;$','Umsatz letzte 12 Monate',`Ergebnis ${VUM.sg(D.ttm.net_income/1e6,0)}&nbsp;Mio.&nbsp;$ (bis 30.09.2026)`],
+ ['&gt;&nbsp;230&nbsp;Mio.','verkaufte GTA V','seit 2013, laut Take-Two'],
+ ['≈&nbsp;10&nbsp;Mio.','Vorbestellungen GTA VI','Schätzung Sensor Tower, PS5 und Xbox'],
+].map((r,i)=>`<div class="card${i===2?' lime':''}" style="padding:4mm"><div style="font-size:19pt;font-weight:900;letter-spacing:-.04em;line-height:1">${r[0]}</div><div style="font-size:8pt;font-weight:800;margin-top:1.5mm">${r[1]}</div><div class="xs mu" style="margin-top:.6mm">${r[2]}</div></div>`).join(''));
+VUM.k('toc',()=>VUM.A.seiten.filter(s=>s.toc).map(s=>`<div style="display:grid;grid-template-columns:6mm 1fr;gap:1.5mm;padding:1mm 0;border-bottom:1px solid var(--g2)"><b style="font-size:8.4pt">${String(s.nr).padStart(2,'0')}</b><span style="font-size:7.8pt;line-height:1.25">${s.toc.titel}</span></div>`).join(''));
+})();
+</script>

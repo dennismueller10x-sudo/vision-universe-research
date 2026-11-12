@@ -1,0 +1,32 @@
+<section class="page dark imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:104mm;background-image:linear-gradient(0deg,#000 0%,rgba(0,0,0,.1) 60%),url(img/grassrivers-04.jpg);background-position:50% 55%"></div>
+  <span class="imgnote" style="right:14mm;top:15mm">Bild: Rockstar Games</span>
+  <div data-run="Szenarien"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:68mm;color:#fff">
+    <span class="ressort">Der Bärenfall</span>
+    <div class="hx" style="margin-top:2.5mm">Was gegen die Aktie spricht</div>
+  </div>
+  <div class="pad" style="top:110mm">
+    <div class="sub" style="color:#e6e6e6">Sechs Argumente der Skeptiker. Sie bestreiten selten, dass GTA VI ein Erfolg wird. Sie fragen, ob der Erfolg groß genug ist für den Preis der Aktie.</div>
+    <div class="grid list-n" style="grid-template-columns:1fr 1fr;gap:4.5mm 7mm;margin-top:5mm" data-k="bearpunkte"></div>
+    <div style="margin-top:6mm;padding:5mm;border:1.5px solid var(--lime);border-radius:10px">
+      <div class="kick" style="color:var(--lime)">Woran man erkennen würde, dass der Bärenfall eintritt</div>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:5mm;margin-top:3mm">
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Schwache Bewertungen</b><br>Technische Probleme, gemischte Kritiken oder eine Debatte über den Preis in den ersten Tagen.</div>
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Verfehlte Prognose</b><br>Buchungen im Weihnachtsquartal unter 3,35&nbsp;Mrd.&nbsp;$ oder ein gesenkter Jahresausblick.</div>
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Kein zweiter Motor</b><br>Das Handygeschäft schrumpft weiter, und ein Online-Modus lässt lange auf sich warten.</div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('bearpunkte',()=>[
+ ['Der Erfolg ist schon im Kurs','Take-Two kostet das 6,7-Fache seines Jahresumsatzes, der Median aller US-Aktien liegt bei 1,9. Selbst auf die eigene Prognose für das GJ 2027 gerechnet liegt das Kurs-Gewinn-Verhältnis über 300.'],
+ ['Kaufen beim Gerücht, verkaufen bei der Nachricht','Nach GTA IV fiel die Aktie in einem Jahr um zwei Drittel, nach Red Dead Redemption 2 im ersten Monat um 12 %. Ein großer Start kann auch der Höhepunkt der Erwartungen sein.'],
+ ['Abhängig von einem Spiel','Den Sprung auf über 8 Mrd. $ Buchungen soll vor allem GTA VI liefern. Das Handygeschäft von Zynga lag im letzten Quartal 11 % unter Vorjahr, NBA 2K27 blieb laut Berichten unter den Erwartungen.'],
+ ['Schulden und neue Aktien','Rund 2,5 Mrd. $ Schulden, Milliarden-Abschreibungen auf frühere Zukäufe und eine Aktienzahl, die seit 2021 um gut 60 % gestiegen ist. Gewinn je Aktie wächst so langsamer als der Gewinn.'],
+ ['KI als Konkurrenz','Am 30.01.2026 fiel die Aktie um 7,9 %, als Google sein KI-Werkzeug Genie öffnete. Wenn KI Spielwelten billig macht, könnten aufwendige Produktionen ihren Vorsprung verlieren und neue Konkurrenten entstehen.'],
+ ['Streit und Druck im Studio','In Großbritannien klagen rund 30 entlassene Rockstar-Mitarbeiter. Rockstar nennt die Weitergabe vertraulicher Informationen als Grund, die Gewerkschaft spricht von Gewerkschaftsfeindlichkeit. Ein Urteil steht aus.'],
+].map(r=>`<div><div style="font-size:11.5pt;font-weight:900;letter-spacing:-.01em;line-height:1.15;color:#fff">${r[0]}</div><div class="sm" style="margin-top:1.2mm;color:#d6d6d6">${r[1]}</div></div>`).join(''));
+</script>

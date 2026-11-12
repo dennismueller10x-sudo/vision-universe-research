@@ -1,0 +1,32 @@
+<section class="page dark">
+  <div data-run="Langfristig"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Langfristig</span>
+    <div class="hx" style="margin-top:3mm">Leonida 2035: drei Wege</div>
+    <div class="sub" style="margin-top:3mm;color:#e6e6e6;max-width:172mm">GTA V verkauft sich nach 13 Jahren noch. Wie lange wird GTA VI tragen, und was kommt danach? Drei Lesarten, mit dem, woran man sie erkennen würde. Das sind Beobachtungspunkte, keine Prognosen.</div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:5mm" data-k="wege"></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:6mm">
+      <div>
+        <div class="kick" style="color:var(--lime)">Die KI-Frage im Studio</div>
+        <div class="body" style="margin-top:2mm;font-size:9pt">
+          <p>Take-Two nutzt KI nach eigenen Angaben in Hunderten Pilotprojekten, vor allem um effizienter zu arbeiten. Bei GTA VI zieht Zelnick eine klare Grenze: Die Welten von Rockstar seien handgemacht, generative KI spiele dabei keine Rolle. Das ist das Versprechen der Marke, und zugleich die offene Flanke. Kann KI in einigen Jahren in Wochen bauen, wofür Rockstar Jahre braucht, verschiebt sich der Wettbewerb. Kann Take-Two selbst mit KI schneller produzieren, könnten die Abstände zwischen großen Spielen kürzer werden.</p>
+        </div>
+      </div>
+      <div>
+        <div style="border-left:4px solid var(--lime);padding-left:4mm"><div style="font-size:12pt;font-weight:800;line-height:1.25">„Bei GTA VI spielt generative KI überhaupt keine Rolle in dem, was Rockstar baut. Ihre Welten sind handgemacht. Das unterscheidet sie.“</div><div class="xs" style="color:#bdbdbd;margin-top:1.5mm"><b style="color:#fff">Strauss Zelnick</b>, Februar 2026, laut Berichten über ein Interview mit GamesIndustry.biz, übersetzt</div></div>
+        <div class="card" style="background:#111;border:1px solid #262626;margin-top:4mm;padding:4mm">
+          <div class="kick" style="color:#9a9a9a">Zum Vergleich</div>
+          <div class="sm" style="margin-top:1.5mm;color:#e6e6e6">Der weltweite Spielemarkt lag 2025 laut Newzoo bei 201,6&nbsp;Mrd.&nbsp;$, davon 56&nbsp;% auf dem Handy, je 22&nbsp;% auf Konsole und PC. Take-Two hat seinen Umsatz in zehn Jahren im Schnitt um 17&nbsp;% pro Jahr gesteigert, schneller als der Markt.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('wege',()=>[
+ ['Weg 1','Die neue Plattform','GTA VI wird wie GTA V ein Spiel für ein Jahrzehnt: Online-Welt, später PC, Rollenspiel-Server einer großen Gemeinschaft. Rockstar hat dafür 2023 das Team hinter FiveM übernommen, der beliebtesten Plattform für solche Server.','Online-Modus startet früh · PC-Fassung angekündigt · laufende Ausgaben steigen 2027 und 2028 weiter',1],
+ ['Weg 2','Der Hit, der ausläuft','Ein Rekordjahr, danach fallen Umsatz und Gewinn zurück. Bis zum nächsten großen Rockstar-Spiel vergehen wieder Jahre, und die Aktie hängt an NBA 2K und dem Handygeschäft.','Buchungen sinken nach dem GJ 2027 deutlich · Online bleibt klein · Mobil schrumpft weiter',0],
+ ['Weg 3','Die KI-Wende','KI verändert die Branche. Entweder baut Take-Two damit schneller und billiger, oder neue Werkzeuge wie Googles Genie machen große Welten zur Massenware und drücken die Preise.','Kürzere Abstände zwischen Spielen · KI-Spiele mit Millionen Spielern · Druck auf Preise und Margen',0],
+].map(r=>`<div style="background:${r[4]?'var(--lime)':'#111'};color:${r[4]?'#000':'#fff'};border:1px solid ${r[4]?'var(--lime)':'#262626'};border-radius:8px;padding:4mm"><div style="font-size:7pt;font-weight:900;letter-spacing:.12em;text-transform:uppercase;opacity:.75">${r[0]}</div><div style="font-size:14pt;font-weight:900;letter-spacing:-.02em;margin-top:1mm">${r[1]}</div><div style="font-size:8.6pt;line-height:1.45;margin-top:2mm">${r[2]}</div><div style="font-size:7.8pt;line-height:1.45;margin-top:2.5mm;padding-top:2mm;border-top:1px solid ${r[4]?'rgba(0,0,0,.25)':'#333'}"><b>Woran erkennbar:</b> ${r[3]}</div></div>`).join(''));
+</script>
