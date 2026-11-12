@@ -6,7 +6,7 @@ Katalog-Laufs (Artefakt), je Emittent eine Klasse und zwei kurze Satzanfaenge de
 """
 import re
 
-from company_intelligence.profiles import blocks, business_blocks, sentences, issuer_sentence
+from company_intelligence.profiles import blocks, business_blocks, sentences, issuer_sentence, extract, experiment
 
 ITEM1 = re.compile(r'^(?:part\s+i\s*)?items?\s*1\s*(?:[.:|—–-]|and|&|\s)*(?:and\s*2[.:| –-]*)?business', re.I)
 ITEM1_SPLIT = re.compile(r'^item\s*1[. :–-]*$', re.I)
@@ -71,3 +71,26 @@ def diagnose(company, body, source):
         out['sample'] = [_snip(s) for s in subject_sents[:2]]
     out['subjectSentences'] = len(subject_sents)
     return out
+
+
+def _summary(result):
+    if result.get('state') == 'AVAILABLE':
+        return {'state': 'AVAILABLE', 'description': result.get('description')}
+    return {'state': result.get('state'), 'reason': result.get('reason')}
+
+
+def compare(company, body, source, now):
+    """Vorher (Standardparser) / Nachher (Kandidat 1.0.23) auf demselben 10-K. Aendert nichts am Katalog.
+    verdict: SAME | NEWLY_AVAILABLE | TEXT_CHANGED (verfuegbarer Titel mit anderem Text, nicht erlaubt) | NEWLY_UNAVAILABLE (nicht erlaubt)."""
+    before = _summary(extract(company, body, source, now))
+    with experiment():
+        after = _summary(extract(company, body, source, now))
+    if before == after:
+        verdict = 'SAME'
+    elif before['state'] != 'AVAILABLE' and after['state'] == 'AVAILABLE':
+        verdict = 'NEWLY_AVAILABLE'
+    elif before['state'] == 'AVAILABLE' and after['state'] == 'AVAILABLE':
+        verdict = 'TEXT_CHANGED'
+    else:
+        verdict = 'NEWLY_UNAVAILABLE'
+    return {'verdict': verdict, 'before': before, 'after': after}
