@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from company_intelligence.model import load_universe, timestamp
 from company_intelligence.pipeline import Pipeline, utcnow
+from company_intelligence.profile_diagnosis import diagnose
 from company_intelligence.profiles import VERSION, PARSER_VERSION, annual_filing, extract, public_profile, later
 from company_intelligence.store import atomic_json
 from company_intelligence.transport import BudgetExhausted
@@ -163,7 +164,7 @@ def backfill(args, root, catalogue_path, checkpoint_path):
     alias_pipeline = Pipeline(root, companies, None, object())
     sites = json.loads((root / 'company-intelligence/config/official-sites.json').read_text())
     raw = JsonRawStore(root / 'quant/data/sec/raw')
-    counts = Counter(); new = []; attempts = 0; consecutive_failures = 0; reasons = Counter()
+    counts = Counter(); new = []; attempts = 0; consecutive_failures = 0; reasons = Counter(); diagnoses = {}
     now = utcnow()
     if checkpoint.get('retryAfter', '') > now and args.network:
         print(json.dumps({'status': 'CIRCUIT_COOLDOWN', 'requests': 0, 'retryAfter': checkpoint['retryAfter']}))
@@ -193,6 +194,12 @@ def backfill(args, root, catalogue_path, checkpoint_path):
             status = result['state']; consecutive_failures = 0
             if status != 'AVAILABLE':
                 reasons[str(result.get('reason') or status)] += 1
+                if filing and body and result.get('reason') == 'NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION':
+                    # Nur Diagnose fuer den Bericht (Ursachenklasse je Emittent); aendert Ergebnis und Katalog nicht.
+                    try:
+                        diagnoses[(company['listings'][0]['symbol'] if company.get('listings') else cid)] = diagnose(company, body, filing)
+                    except Exception as exc:
+                        diagnoses[cid] = {'class': 'DIAGNOSIS_FAILED', 'error': str(exc)[:120]}
             if status == 'AVAILABLE':
                 public = public_profile(result, cid, now)
                 if public is None:
@@ -236,7 +243,8 @@ def backfill(args, root, catalogue_path, checkpoint_path):
     batch = {'generatedAt': now, 'attempted': attempts, 'acceptedProfiles': len(new), 'newProfiles': len(created), 'newIssuerIds': created,
              'updatedProfiles': len(new) - len(created), 'retiredProfiles': len(before_ids - set(catalogue['profiles'])), 'ratePerSecond': args.rate,
              'outcomes': dict(counts), 'reasons': dict(reasons), 'secStats': dict(client.stats), 'networkRequests': network_requests, 'downloadedBytes': downloaded,
-             'runtimeSeconds': round(time.monotonic() - started, 3), 'catalogueAvailable': len(catalogue['profiles'])}
+             'runtimeSeconds': round(time.monotonic() - started, 3), 'catalogueAvailable': len(catalogue['profiles']),
+             'diagnoses': diagnoses, 'diagnosisClasses': dict(Counter(d.get('class') for d in diagnoses.values()))}
     checkpoint['batches'].append(batch)
     atomic_json(checkpoint_path, checkpoint)
     print(json.dumps(batch, sort_keys=True))
