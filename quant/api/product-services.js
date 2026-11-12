@@ -589,11 +589,14 @@ function create(options){
  const backtestCache={};
  async function getBacktest(kind){
   const files={signal:'/quant/data/product/signal-backtest-v1.json',setup:'/quant/data/product/setup-backtest-v1.json',readiness:'/quant/data/product/backtest-readiness-v2.json',
-   certification:'/quant/data/product/backtest-certification-v1.json',outcomes:'/quant/data/product/setup-outcomes-v1.json'};
+   certification:'/quant/data/product/backtest-certification-v1.json',outcomes:'/quant/data/product/setup-outcomes-v1.json',
+   research:'/quant/data/product/backtest-research-v1.json'};
   if(!files[kind])return {state:'UNAVAILABLE',reason:'UNKNOWN_BACKTEST_KIND'};
   if(!backtestCache[kind])backtestCache[kind]=(async()=>{
    try{const s=await load(files[kind]);
     if(kind==='readiness')return s?.schemaVersion==='backtest-readiness-2.0.0'?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
+    /* Backtest-Forschung (Zusatzmethoden der Pruefffaelle): nur als interne Forschung, nie oeffentlich, nie zertifiziert. */
+    if(kind==='research')return s?.schemaVersion==='backtest-research-1.0.0'&&s.audience==='INTERNAL'&&s.display&&s.display.public===false&&s.productionApproved===false&&Array.isArray(s.cases)?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
     if(kind==='outcomes')return s?.schemaVersion==='setup-outcomes-1.0.0'&&s.source&&s.source.reconstructed===false?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
     if(kind==='certification'){const Cx=g.VUBacktestCertification||(typeof module!=='undefined'&&module.exports?require('../engines/backtest-certification.js'):null);
      if(!Cx)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};const e=Cx.certificationViolations(s);return e.length?{state:'UNAVAILABLE',reason:'CERTIFICATION_CONTRACT_VIOLATED',errors:e}:{state:'AVAILABLE',...s};}

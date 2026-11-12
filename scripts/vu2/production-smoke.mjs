@@ -75,6 +75,7 @@ const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/produ
    dieser Liste. Was der Smoke nicht anschaut, verfaellt (M26, M28, M29). */
 const VIEWS=['/quant/#/','/quant/#/meldungen','/quant/#/meldungen?filter=setups','/quant/#/meldungen?filter=historisch','/quant/#/radar',
  '/quant/#/forschung','/quant/#/forschung/NEW_52W_HIGH','/quant/#/forschung/SETUP_CONFIRMED','/quant/#/backtest',
+ '/quant/#/forschung/fall/replay-nvda-winner-splits','/quant/#/forschung/fall/strategy-dividends-tr',
  '/quant/#/screener',
  '/quant/#/screener?frage=qualitaet','/quant/#/screener?frage=momentum','/quant/#/screener?frage=wachstum-qualitaet',
  '/quant/#/screener?frage=guenstig','/quant/#/screener?frage=ruhig','/quant/#/screener?frage=setups','/quant/#/screener?frage=hoch',
@@ -276,7 +277,10 @@ for(const width of [1440,390]){
   /* Konzept Quant 2026-11 (QX06, #1819): der Vergleich ist bewusst knapp - sieben Eigenschaften je Aktie und zwei Saetze,
      die Kennzahlen-Tabelle zugeklappt. Er gilt als gerendert, wenn alle sieben Eigenschaften und die zwei Saetze stehen. */
   const vergleichVoll=route==='vergleich'&&/in zwei s(ä|ae)tzen/i.test(text)&&['Verdient gut','Wächst','Zahlen solide','Kurs läuft','Günstig','Ruhiger Kurs','Analysten'].every(w=>text.includes(w));
-  if(!absage&&!ausgeschieden&&!vergleichVoll&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
+  /* Backtest-Forschung (backtest-research-v1.json, Datenzweig): bis zum ersten Wochenlauf sagt die Prueffall-Seite ehrlich,
+     dass die Ergebnisse noch nicht vorliegen - das ist kein leeres Rendering. */
+  const forschungWartet=/#\/forschung\/fall\//.test(view)&&/liegen noch nicht vor/.test(text);
+  if(!absage&&!ausgeschieden&&!vergleichVoll&&!forschungWartet&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
   if(ausgeschieden){
    const kopf=(await page.locator('main#qx-main h1').first().innerText().catch(()=>'')).trim();
    if(kopf!==ausgeschieden.name)bad.push('NAME_FALSCH:'+kopf);

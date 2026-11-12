@@ -59,6 +59,7 @@
     meldungen: function (q) { return "#/meldungen" + (q ? "?" + q : ""); },
     /* Konzept Quant 2026-11 (Entscheidung 3): Backtesting heißt „Forschung“ (#/forschung); #/backtest leitet weiter. */
     backtest: function (id) { return "#/forschung" + (id ? "/" + encodeURIComponent(id) : ""); },
+    backtestCase: function (id) { return "#/forschung/fall/" + encodeURIComponent(id); },
     screener: function (q) { return "#/screener" + (q ? "?" + q : ""); },
     screenerPro: function (q) { return "#/screener/profi" + (q ? "?" + q : ""); },
     /* Konzept Quant 2026-11 (Entscheidung 3): Strategien heißen „Anlagestile“ (#/stile); #/strategien leitet weiter. */
