@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 import json
 import tempfile
 import unittest
@@ -15,7 +16,10 @@ class ProfileCatalogueSeedTests(unittest.TestCase):
             state = Path(tmp)
             Store(state / 'state.sqlite').close()
             catalogue = ROOT / 'company-intelligence/config/company-profiles.json'
-            first = seeder.run(state, ROOT, catalogue, '2026-11-12T06:00:00Z')
+            # Pruefzeit nach der juengsten Verifikation des Katalogs (ein fester Wert wuerde mit jedem neuen Lauf des Erzeugers ungueltig).
+            latest = max(p['lastVerifiedAt'] for p in json.loads(catalogue.read_text())['profiles'].values())
+            now = (datetime.strptime(latest, '%Y-%m-%dT%H:%M:%SZ') + timedelta(minutes=1)).strftime('%Y-%m-%dT%H:%M:%SZ')
+            first = seeder.run(state, ROOT, catalogue, now)
             self.assertGreater(first['seeded'], 3000)
             store = Store(state / 'state.sqlite')
             try:
@@ -24,7 +28,7 @@ class ProfileCatalogueSeedTests(unittest.TestCase):
                 self.assertEqual(cost['companyId'], 'iss_cik_0000909832')
             finally:
                 store.close()
-            second = seeder.run(state, ROOT, catalogue, '2026-11-12T06:00:00Z')
+            second = seeder.run(state, ROOT, catalogue, now)
             self.assertEqual(second['seeded'], 0)
 
     def test_invalid_catalogue_fails_closed(self):
