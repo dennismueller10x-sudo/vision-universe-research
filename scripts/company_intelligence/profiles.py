@@ -4,6 +4,7 @@ Only explicit issuer business sentences are eligible. Missing facts stay empty;
 SEC identity/industry alone never becomes a business description.
 """
 import hashlib
+from contextlib import contextmanager
 import json
 import re
 from functools import lru_cache
@@ -27,6 +28,33 @@ BUSINESS = re.compile(r'\b(?:software|platforms?|products?|services?|solutions?|
 RELAXED_BUSINESS = re.compile(r'\b(?:membership warehouses?|warehouse clubs?)\b', re.I)
 EXCLUDED = re.compile(r'\b(?:headcount|forward.looking|may|might|could|will|expects?|intends?|plans?|believes?|aims?|aspires?|best|revolutionary|unrivaled|unparalleled|world.class|award.winning|visionary|transforming the future|market leader)\b', re.I)
 PROMOTION = re.compile(r'\b(?:(?:world[’\']?s?[ -]|nation[’\']s[ -]|global[ -]|industry[ -]|market[ -])?(?:leading|largest|premier|top.ranked)|growth.oriented|high.return|iconic|innovative|cutting.edge|state.of.the.art|intelligent|novel|differentiated|fashionable|comprehensive|most advanced|effectively)\s*,?\s*', re.I)
+
+
+# Strang AF (12.11.2026): Kandidat fuer Parser 1.0.23, zunaechst nur im Vergleichslauf (profile_diagnosis.compare) eingeschaltet.
+# Standard: aus, die Ausgabe des Parsers aendert sich dadurch nicht.
+_EXPERIMENT = {'on': False}
+LEGAL_SUFFIX = re.compile(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|company|co\.?|group|holdings?|limited|ltd\.?|plc|llc|l\.p\.|lp)\s*$', re.I)
+
+
+@contextmanager
+def experiment(on=True):
+    before = _EXPERIMENT['on']
+    _EXPERIMENT['on'] = on
+    try:
+        yield
+    finally:
+        _EXPERIMENT['on'] = before
+
+
+def short_name(legal):
+    """Rechtsname ohne angehaengte Rechtsform-/Gruppenwoerter ('Goldman Sachs Group, Inc.' -> 'Goldman Sachs'); sonst None."""
+    value = re.sub(r'^the\s+', '', legal.strip(), flags=re.I)
+    for _ in range(4):
+        shorter = LEGAL_SUFFIX.sub('', value).strip(' ,')
+        if shorter == value:
+            break
+        value = shorter
+    return value if len(value) >= 6 and value.lower() != re.sub(r'^the\s+', '', legal.strip(), flags=re.I).lower() else None
 
 
 def later(now, days):
@@ -216,6 +244,8 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True, relaxed=Fa
         n = re.sub(r'\s+(?:class\s+[a-z]|ordinary shares|common stock)\b.*', '', n, flags=re.I)
         names.append(n.strip())
         names.append(re.sub(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|limited|ltd\.?|plc)\s*$', '', n, flags=re.I).strip())
+        if _EXPERIMENT['on'] and sec and short_name(n):
+            names.append(short_name(n))
     subject = None
     for n in sorted(set(names), key=len, reverse=True):
         match = re.match(r'^' + re.escape(n) + r'(?!\w)(?:[, ]+(?:incorporated|inc\.?|corporation|corp\.?|limited|ltd\.?|plc)(?!\w))?', text, re.I) if n else None
@@ -265,6 +295,10 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True, relaxed=Fa
     delegation = None
     if sec:
         tail = re.sub(r'^\s*,?\s*(?:and|together with) its (?:consolidated )?subsidiaries\b', '', tail, flags=re.I)
+        if _EXPERIMENT['on']:
+            # "X, together with the subsidiaries through which businesses are conducted (the Company), is a ..." und "X, through our subsidiaries, provides ..."
+            tail = re.sub(r'^\s*,\s*together with (?:the|its|our) (?:consolidated )?subsidiaries(?: through which [^,(]{0,100}?)?\s*(?:\([^)]{0,60}\))?\s*(?=,)', '', tail, flags=re.I)
+            tail = re.sub(r'^\s*,\s*through (?:our|its) (?:consolidated |wholly[- ]owned )?subsidiaries\s*(?=,)', '', tail, flags=re.I)
         for _ in range(3):
             # Nested legal definitions are common in business introductions.
             # Bound the balanced prefix and never consume the predicate.

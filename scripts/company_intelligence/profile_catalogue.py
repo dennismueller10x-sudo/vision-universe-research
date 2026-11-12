@@ -20,7 +20,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from company_intelligence.model import load_universe, timestamp
 from company_intelligence.pipeline import Pipeline, utcnow
-from company_intelligence.profile_diagnosis import diagnose
+from company_intelligence.profile_diagnosis import diagnose, compare
 from company_intelligence.profiles import VERSION, PARSER_VERSION, annual_filing, extract, public_profile, later
 from company_intelligence.store import atomic_json
 from company_intelligence.transport import BudgetExhausted
@@ -119,6 +119,7 @@ def main(argv=None):
     p.add_argument('--network', action='store_true')
     p.add_argument('--reparse', action='store_true', help='Reinterpret existing catalogue profiles from cached immutable evidence only')
     p.add_argument('--tickers')
+    p.add_argument('--compare-parser', action='store_true', help='Vergleich Standardparser / Kandidat je Titel im Bericht (nur Bericht, Katalog nach Standardparser); mit --tickers auch Titel mit aktuellem Eintrag')
     p.add_argument('--limit', type=int, default=50)
     p.add_argument('--request-budget', type=int, default=100)
     p.add_argument('--max-seconds', type=int, default=600)
@@ -164,7 +165,7 @@ def backfill(args, root, catalogue_path, checkpoint_path):
     alias_pipeline = Pipeline(root, companies, None, object())
     sites = json.loads((root / 'company-intelligence/config/official-sites.json').read_text())
     raw = JsonRawStore(root / 'quant/data/sec/raw')
-    counts = Counter(); new = []; attempts = 0; consecutive_failures = 0; reasons = Counter(); diagnoses = {}
+    counts = Counter(); new = []; attempts = 0; consecutive_failures = 0; reasons = Counter(); diagnoses = {}; comparisons = {}
     now = utcnow()
     if checkpoint.get('retryAfter', '') > now and args.network:
         print(json.dumps({'status': 'CIRCUIT_COOLDOWN', 'requests': 0, 'retryAfter': checkpoint['retryAfter']}))
@@ -172,7 +173,7 @@ def backfill(args, root, catalogue_path, checkpoint_path):
     for company in sorted(selected, key=lambda c: c['companyId']):
         cid = company['companyId']; prior = catalogue['profiles'].get(cid)
         old = checkpoint['attempts'].get(cid, {})
-        if not company.get('cik') or (args.reparse and not prior and not old) or (not args.reparse and prior and prior.get('parserVersion') == PARSER_VERSION):
+        if not company.get('cik') or (not (getattr(args, 'compare_parser', False) and args.tickers) and ((args.reparse and not prior and not old) or (not args.reparse and prior and prior.get('parserVersion') == PARSER_VERSION))):
             continue
         if old.get('parserVersion') == PARSER_VERSION and old.get('nextCheck', '') > now:
             continue
@@ -192,6 +193,11 @@ def backfill(args, root, catalogue_path, checkpoint_path):
             body = client.get_bytes(filing['url']) if filing else None
             result = extract(company, body, filing, verified_at, sites.get(company['cik'], {}).get('url')) if filing else {'state': 'UNAVAILABLE', 'reason': 'NO_EXPLICIT_ANNUAL_PRIMARY_DOCUMENT'}
             status = result['state']; consecutive_failures = 0
+            if getattr(args, 'compare_parser', False) and filing and body:
+                try:
+                    comparisons[(company['listings'][0]['symbol'] if company.get('listings') else cid)] = compare(company, body, filing, verified_at)
+                except Exception as exc:
+                    comparisons[cid] = {'verdict': 'COMPARE_FAILED', 'error': str(exc)[:120]}
             if status != 'AVAILABLE':
                 reasons[str(result.get('reason') or status)] += 1
                 if filing and body and result.get('reason') == 'NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION':
@@ -244,7 +250,8 @@ def backfill(args, root, catalogue_path, checkpoint_path):
              'updatedProfiles': len(new) - len(created), 'retiredProfiles': len(before_ids - set(catalogue['profiles'])), 'ratePerSecond': args.rate,
              'outcomes': dict(counts), 'reasons': dict(reasons), 'secStats': dict(client.stats), 'networkRequests': network_requests, 'downloadedBytes': downloaded,
              'runtimeSeconds': round(time.monotonic() - started, 3), 'catalogueAvailable': len(catalogue['profiles']),
-             'diagnoses': diagnoses, 'diagnosisClasses': dict(Counter(d.get('class') for d in diagnoses.values()))}
+             'diagnoses': diagnoses, 'diagnosisClasses': dict(Counter(d.get('class') for d in diagnoses.values())),
+             'comparisons': comparisons, 'comparisonVerdicts': dict(Counter(c.get('verdict') for c in comparisons.values()))}
     checkpoint['batches'].append(batch)
     atomic_json(checkpoint_path, checkpoint)
     print(json.dumps(batch, sort_keys=True))
