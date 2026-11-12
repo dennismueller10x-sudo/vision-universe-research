@@ -31,6 +31,10 @@ on:
         description: 'One bounded resumable native source onboarding/HTTPS repair batch; no broad crawl'
         type: boolean
         default: true
+      source_limit:
+        description: 'Optional batch size 1-100 (as the scheduled run, which uses 100); empty = default 16'
+        type: string
+        default: ''
 permissions:
   contents: read
   actions: write
@@ -99,6 +103,7 @@ jobs:
           VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
           PUBLISH: ${{ inputs.publish }}
           SOURCES: ${{ inputs.sources }}
+          SOURCE_LIMIT: ${{ inputs.source_limit }}
           RECOVER_FULL_SCOPE: ${{ inputs.recover_full_scope }}
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -112,6 +117,7 @@ jobs:
           if [ "$SOURCES" = true ]; then options+=(--sources); fi
           if [ "$RECOVER_FULL_SCOPE" = true ]; then options+=(--recover-full-scope); fi
           if [ "$VU_EVENT" = schedule ]; then options+=(--sources --source-limit 100); fi
+          if [[ "$SOURCE_LIMIT" =~ ^[0-9]{1,3}$ ]]; then options+=(--sources --source-limit "$SOURCE_LIMIT"); fi
           node scripts/company_intelligence/profile-source-run.mjs --temporary "$RUNNER_TEMP/ci-profile-source" --identity-root .accepted-identities "${options[@]}"
       # Der fruehere Sammelschritt "live" ist in vier Schritte geteilt, damit der Fehlerpfad (failure-gate-decision.mjs) zwischen
       # Dispatch-/Auslieferungsfehlern und einer roten Live-QA der eigenen Veroeffentlichung unterscheiden kann.
@@ -219,6 +225,7 @@ jobs:
           path: |
             ${{ runner.temp }}/ci-profile-source/health.json
             ${{ runner.temp }}/ci-profile-source/source-onboarding.json
+            ${{ runner.temp }}/ci-profile-source/source-onboarding-stderr.txt
             ${{ runner.temp }}/ci-profile-source/source-registry-before.json
             ${{ runner.temp }}/ci-profile-source/source-registry-audit.json
             ${{ runner.temp }}/ci-profile-source/candidate-qa.json

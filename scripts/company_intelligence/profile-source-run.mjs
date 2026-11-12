@@ -1,14 +1,15 @@
 /* Existing full-state runner with an optional bounded onboarding batch.
    No model, paid service, partial state promotion or production gate change. */
 import {execFileSync} from 'node:child_process';
-import {readFileSync} from 'node:fs';
+import {readFileSync,writeFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
 import {runRefresh} from './refresh-run.mjs';
 import assert from 'node:assert/strict';
 import {universeActive} from './refresh-storage.mjs';
 import {prepareProfileRecovery,finishProfileRecovery} from './profile-release-recovery.mjs';
-const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1];
+// Fehlt die Option, ist der Wert undefined (frueher args[0] = '--temporary': wurde als --run-id an das Onboarding gereicht, argparse Exit 2).
+const args=process.argv.slice(2),arg=k=>{const i=args.indexOf(k);return i<0?undefined:args[i+1];};
 const verification=!args.includes('--publish'),driver=createS3DriverFromEnv();
 const recover=args.includes('--recover-full-scope');
 if(recover&&verification)throw Error('RECOVERY_REQUIRES_EXPLICIT_PRODUCTION_PUBLICATION');
@@ -30,6 +31,8 @@ const beforeBuild=async({state,temporary,identityRoot})=>{
    {stdio:['ignore','ignore','pipe'],timeout:720000,maxBuffer:1024*1024});
  }catch(error){
   const text=String(error.stderr||'');
+  // Ende von stderr (nur Python-Traceback, kein Inhalt) neben die Berichte legen: Ursache fuer Exit-/Signal-Faelle ohne Fehlerklasse.
+  try{writeFileSync(join(temporary,'source-onboarding-stderr.txt'),`status=${error.status} signal=${error.signal} code=${error.code}\n`+text.slice(-3000));}catch{}
   const code=text.match(/(?:ValueError|RuntimeError): ([A-Z0-9_:-]+)\s*$/)?.[1];
   const line=[...text.matchAll(/File "[^\n]*\/(source_onboarding\.py|current_state_acceptance\.py)", line (\d+)/g)].at(-1);
   // Ohne erkennbare Fehlerklasse (Vorfall 10./11.11.2026, ONBOARDING_PROCESS_FAILURE ohne Ursache): Beendigung des Kindprozesses mitschreiben
