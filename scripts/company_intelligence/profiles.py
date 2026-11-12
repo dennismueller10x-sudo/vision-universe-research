@@ -18,7 +18,7 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.23'
+PARSER_VERSION = 'company-profile-parser-1.0.24'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
@@ -33,8 +33,8 @@ PROMOTION = re.compile(r'\b(?:(?:world[’\']?s?[ -]|nation[’\']s[ -]|global[ 
 # Parser 1.0.23 (Strang AF, 12.11.2026, Freigabe Steuerung): Kurzname als Subjekt und Subsidiary-Appositive, nur im zweiten
 # (relaxed) Durchlauf, der nur laeuft, wenn der erste nichts findet; kein bisheriger Titel aendert damit seinen Text.
 # experiment(False) liefert den Stand 1.0.22 fuer den Vergleich (profile_diagnosis.compare).
-# 'inline': dritter Durchlauf fuer inline-block-Fetzen (CALM, CATO), bis zur Freigabe nach Vorher/Nachher aus.
-_EXPERIMENT = {'on': True, 'inline': False, 'third': False}
+# 'inline': dritter Durchlauf fuer inline-block-Fetzen (CALM), ab 1.0.24 an (Freigabe Steuerung 12.11.2026 nach Vorher/Nachher: 320 Titel, TEXT_CHANGED 0).
+_EXPERIMENT = {'on': True, 'inline': True, 'third': False}
 LEGAL_SUFFIX = re.compile(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|company|co\.?|group|holdings?|limited|ltd\.?|plc|llc|l\.p\.|lp)\s*$', re.I)
 
 
