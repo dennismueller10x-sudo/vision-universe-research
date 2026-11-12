@@ -160,7 +160,8 @@ test('CLI: API 401 -> dispatch=false und Exit 1 (sichtbarer Fehler)',async()=>{
 
 const wdPath=join(repoRoot,'.github/workflows/company-intelligence-refresh-watchdog.yml');
 export function checkWatchdogWorkflow(wf){
-  assert.deepEqual([...wf.matchAll(/- cron: '([^']+)'/g)].map(m=>m[1]),['47 2-22/4 * * *']);
+  assert.deepEqual([...wf.matchAll(/- cron: '([^']+)'/g)].map(m=>m[1]),[],'Zeitplan nur ueber den Wecker');
+  assert.match(wf,/^run-name: \$\{\{ inputs\.zeitplan && format\('\{0\} · Takt \{1\}'/m);
   assert.match(wf,/group: company-intelligence-watchdog-\$\{\{ github\.ref_name \}\}\n  cancel-in-progress: false/,'eigene Gruppe');
   assert.doesNotMatch(wf,/company-intelligence-continuous-/,'nie in der Schreibergruppe');
   assert.match(wf,/^permissions:\n  contents: read\n/m);

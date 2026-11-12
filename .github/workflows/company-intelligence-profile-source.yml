@@ -1,7 +1,6 @@
 name: Company Intelligence Reviewed Profiles and Source Onboarding
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '47 3 * * *'
   workflow_call:
     inputs:
       publish:
@@ -12,6 +11,10 @@ on:
         default: true
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Von Cloudflare-Wecker gesetzt (Cron des Eintrags in core/registry/schedule.json); nicht von Hand'
+        type: string
+        default: ''
       live_review_only:
         description: Read-only completion of the frozen 38308985623 production sample; never modifies state or gates
         type: boolean
@@ -32,11 +35,11 @@ permissions:
   contents: read
   actions: write
 concurrency:
-  group: company-intelligence-continuous-${{ (inputs.publish || github.event_name == 'schedule') && 'production' || 'profile-source-verification' }}
+  group: ${{ format('company-intelligence-continuous-{0}', (inputs.publish || github.event_name == 'schedule' || inputs.zeitplan) && 'production' || 'profile-source-verification') }}
   cancel-in-progress: false
 jobs:
   upgrade:
-    if: ${{ !inputs.live_review_only && ((!inputs.publish && github.event_name != 'schedule') || github.ref == 'refs/heads/main') }}
+    if: ${{ !inputs.live_review_only && ((!(inputs.publish || github.event_name == 'schedule' || inputs.zeitplan)) || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
@@ -93,6 +96,7 @@ jobs:
         id: run
         env:
           NODE_PATH: /tmp/ci-profile-source/node_modules
+          VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
           PUBLISH: ${{ inputs.publish }}
           SOURCES: ${{ inputs.sources }}
           RECOVER_FULL_SCOPE: ${{ inputs.recover_full_scope }}
@@ -104,10 +108,10 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           options=()
-          if [ "$PUBLISH" = true ] || [ "$GITHUB_EVENT_NAME" = schedule ]; then options+=(--publish); fi
+          if [ "$PUBLISH" = true ] || [ "$VU_EVENT" = schedule ]; then options+=(--publish); fi
           if [ "$SOURCES" = true ]; then options+=(--sources); fi
           if [ "$RECOVER_FULL_SCOPE" = true ]; then options+=(--recover-full-scope); fi
-          if [ "$GITHUB_EVENT_NAME" = schedule ]; then options+=(--sources --source-limit 100); fi
+          if [ "$VU_EVENT" = schedule ]; then options+=(--sources --source-limit 100); fi
           node scripts/company_intelligence/profile-source-run.mjs --temporary "$RUNNER_TEMP/ci-profile-source" --identity-root .accepted-identities "${options[@]}"
       # Der fruehere Sammelschritt "live" ist in vier Schritte geteilt, damit der Fehlerpfad (failure-gate-decision.mjs) zwischen
       # Dispatch-/Auslieferungsfehlern und einer roten Live-QA der eigenen Veroeffentlichung unterscheiden kann.

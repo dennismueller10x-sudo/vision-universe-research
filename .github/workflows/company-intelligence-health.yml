@@ -1,8 +1,12 @@
 name: Company Intelligence Refresh Health
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '57 */4 * * *'
   workflow_dispatch:
+    inputs:
+      zeitplan:
+        description: 'Von Cloudflare-Wecker gesetzt (Cron des Eintrags in core/registry/schedule.json); nicht von Hand'
+        type: string
+        default: ''
 permissions:
   contents: read
 concurrency:
