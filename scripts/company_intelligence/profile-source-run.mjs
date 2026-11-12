@@ -16,6 +16,8 @@ const recovery=recover?await prepareProfileRecovery(driver,resolve(arg('--tempor
 if(!verification&&!recovery&&!await universeActive(driver))throw Error('CURRENT_FULL_ELIGIBLE_PRODUCTION_REQUIRED');
 const sourceBatch=args.includes('--sources');
 const beforeBuild=async({state,temporary,identityRoot})=>{
+ // Katalog (company-profiles.json) in den wiederhergestellten privaten Zustand saeen: ohne diesen Schritt fehlt geprueften deutschen Fassungen die Quelle (NO_PROFILE_SOURCE).
+ execFileSync('python3',['scripts/company_intelligence/profile_catalogue_seed.py','--state',state,'--identity-root',identityRoot,'--out',join(temporary,'profile-catalogue-seed.json')],{stdio:['ignore','ignore','pipe'],timeout:300000});
  execFileSync('python3',['scripts/company_intelligence/profile_source_audit.py','--state',state,'--identity-root',identityRoot,'--out',join(temporary,'profile-before-funnel.json')],{stdio:['ignore','ignore','pipe'],timeout:300000});
  let preparation={sourceRequests:0,universeDiscovery:false};
  if(sourceBatch){
