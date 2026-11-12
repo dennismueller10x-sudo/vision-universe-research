@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-12T03:23:05.766Z",
+ "generatedAt": "2026-11-12T06:22:49.837Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-12T03:23:05.766Z",
+  "generatedAt": "2026-11-12T06:22:49.837Z",
   "dataAsOf": "2026-11-11",
   "previousDataAsOf": "2026-11-10",
   "schedule": {
@@ -683,9 +683,9 @@
     {
      "key": "GOLD",
      "label": "Gold",
-     "text": "−3,0 % · 0,6-fach typisch",
-     "change": -3.008,
-     "ratio": -0.57,
+     "text": "−4,6 % · 0,9-fach typisch",
+     "change": -4.603,
+     "ratio": -0.87,
      "notable": false,
      "asOf": "2026-11-11",
      "kind": "PERCENT"
@@ -852,12 +852,12 @@
   "XAUUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-11",
-   "last": 4045.37,
+   "last": 3978.83,
    "observations": 1530,
    "changes": {
-    "1M": -3.01,
-    "3M": -8.36,
-    "1Y": -2.35
+    "1M": -4.6,
+    "3M": -9.87,
+    "1Y": -3.96
    },
    "high52w": {
     "date": "2026-01-28",
@@ -867,12 +867,12 @@
     "date": "2026-10-30",
     "value": 3873.01
    },
-   "rangePosition": 10.5,
-   "dist50": -2.28,
-   "dist200": -6.73,
+   "rangePosition": 6.5,
+   "dist50": -3.85,
+   "dist200": -8.25,
    "trend": "NEGATIVE",
-   "drawdown52w": -26.62,
-   "vol20": 24.4,
+   "drawdown52w": -27.83,
+   "vol20": 24.87,
    "volContext": {
     "median": 13.7,
     "p25": 10.5,
@@ -886,19 +886,19 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −3,0 % – das 0,6-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −4,6 % – das 0,9-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "XAGUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-11",
-   "last": 52.523,
+   "last": 51.259,
    "observations": 1530,
    "changes": {
-    "1M": -12.82,
-    "3M": -19.58,
-    "1Y": 2.42
+    "1M": -14.92,
+    "3M": -21.51,
+    "1Y": -0.04
    },
    "high52w": {
     "date": "2026-01-28",
@@ -908,12 +908,12 @@
     "date": "2026-10-30",
     "value": 49.0705
    },
-   "rangePosition": 5,
-   "dist50": -9.53,
-   "dist200": -20.24,
+   "rangePosition": 3.2,
+   "dist50": -11.67,
+   "dist200": -22.15,
    "trend": "NEGATIVE",
-   "drawdown52w": -55.41,
-   "vol20": 42.17,
+   "drawdown52w": -56.48,
+   "vol20": 41.36,
    "volContext": {
     "median": 25.7,
     "p25": 20.5,
@@ -927,12 +927,12 @@
   "XPTUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-11",
-   "last": 1568.34,
+   "last": 1532.19,
    "observations": 1508,
    "changes": {
-    "1M": -7.11,
-    "3M": -10.79,
-    "1Y": -1.25
+    "1M": -9.25,
+    "3M": -12.85,
+    "1Y": -3.52
    },
    "high52w": {
     "date": "2026-01-23",
@@ -942,12 +942,12 @@
     "date": "2026-11-03",
     "value": 1433.03
    },
-   "rangePosition": 10,
-   "dist50": -4.5,
-   "dist200": -12.02,
+   "rangePosition": 7.3,
+   "dist50": -6.66,
+   "dist200": -14.04,
    "trend": "NEGATIVE",
-   "drawdown52w": -43.66,
-   "vol20": 33.97,
+   "drawdown52w": -44.96,
+   "vol20": 33.63,
    "volContext": {
     "median": 24.4,
     "p25": 20.3,
@@ -961,12 +961,12 @@
   "XPDUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-11",
-   "last": 1047.345,
+   "last": 1032.78,
    "observations": 1500,
    "changes": {
-    "1M": -8.25,
-    "3M": -23.4,
-    "1Y": -27.57
+    "1M": -9.53,
+    "3M": -24.47,
+    "1Y": -28.58
    },
    "high52w": {
     "date": "2026-01-28",
@@ -976,12 +976,12 @@
     "date": "2026-11-03",
     "value": 937.425
    },
-   "rangePosition": 9.8,
-   "dist50": -8.98,
-   "dist200": -20.45,
+   "rangePosition": 8.5,
+   "dist50": -10.23,
+   "dist200": -21.55,
    "trend": "NEGATIVE",
-   "drawdown52w": -49.01,
-   "vol20": 36.77,
+   "drawdown52w": -49.72,
+   "vol20": 36.05,
    "volContext": {
     "median": 33.1,
     "p25": 27.5,
