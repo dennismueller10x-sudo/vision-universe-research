@@ -1,0 +1,13 @@
+<section class="page">
+  <div data-run="Quellen"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Quellen</span>
+    <div class="sm" style="margin-top:3mm;max-width:172mm">Die Nummern stehen in der Fußzeile jeder Seite; jeder Eintrag ist im PDF anklickbar. Kurse: Tiingo (Schlusskurse, split-bereinigt). Fundamentaldaten, Insider-Meldungen (Form 4) und Fondsbestände (13F): SEC EDGAR. Kennzahlen: Vision Universe, Marktdaten bis {{datenstand}}. Wörtliche Zitate sind übersetzt; englische Originale stehen in den verlinkten Quellen.</div>
+    <div style="margin-top:5mm;column-count:2;column-gap:8mm;font-size:8.2pt;line-height:1.45" data-k="quellenlang"></div>
+  </div>
+  <div class="foot"><span><b>Vision Universe</b> Aktienreport · Nr. {{nr}}</span><span>Redaktionsschluss {{schluss}}</span></div>
+</section>
+<script>
+VUM.k('quellenlang',()=>{const Q=VUM.A.quellen,seen=[];VUM.A.seiten.forEach(s=>(s.quellen||[]).forEach(id=>{if(!seen.includes(id))seen.push(id)}));
+return seen.map((id,i)=>{const q=Q[id];return `<div style="display:grid;grid-template-columns:7mm 1fr;gap:1.5mm;padding:1.2mm 0;break-inside:avoid;border-bottom:1px solid var(--g2)"><b>${i+1}</b><span><b>${q.medium}</b>, ${q.datum}<br>${q.url?`<a href="${q.url}" style="color:inherit">${q.titel}</a>`:q.titel}</span></div>`}).join('')});
+</script>

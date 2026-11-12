@@ -15,11 +15,13 @@
         <div style="margin-top:3mm" data-k="plattform"></div>
         <div class="kick" style="margin-top:5mm">Umsatz nach Region</div>
         <div style="margin-top:3mm" data-k="region"></div>
-        <div class="xs mu" style="margin-top:2mm">Quartal Juli bis September 2026, GAAP-Umsatz 1,50&nbsp;Mrd.&nbsp;$. Quelle: Take-Two, 8-K vom 09.11.2026.</div>
+        <div class="kick" style="margin-top:5mm">Aktienzahl in Millionen (Geschäftsjahresende 31.03.)</div>
+        <div style="margin-top:2.5mm" data-k="aktienzahl"></div>
+        <div class="xs mu" style="margin-top:2mm">Plattform und Region: Quartal Juli bis September 2026, GAAP-Umsatz 1,50&nbsp;Mrd.&nbsp;$. Quelle: Take-Two, 8-K vom 09.11.2026. Aktienzahl: SEC-Jahresberichte, zuletzt Stand 30.09.2026; der Sprung 2023 kommt vom Zynga-Kauf.</div>
       </div>
       <div class="body">
         <p>Zwei Wörter tauchen in jedem Quartalsbericht auf. <b>Net Bookings</b> (Buchungen) ist die Kennzahl, mit der Take-Two selbst plant: alles, was in einem Zeitraum verkauft wurde, auch wenn es nach den Bilanzregeln erst später als Umsatz zählt. <b>Recurrent consumer spending</b> sind laufende Ausgaben der Spieler in bestehenden Spielen. Sie machten zuletzt 81&nbsp;% der Buchungen aus.</p>
-        <p>Der Kauf von Zynga hat Take-Two verändert. Er brachte das Handygeschäft, aber auch Schulden und neue Aktien. In den Geschäftsjahren 2024 und 2025 musste Take-Two zusammen mehrere Milliarden Dollar auf Firmenwerte abschreiben; daher stammen die großen Verluste dieser Jahre (Seite {{seite:zahlen}}).</p>
+        <p>Der Kauf von Zynga hat Take-Two verändert. Er brachte das Handygeschäft, aber auch Schulden und neue Aktien: Wer seine Aktienzahl unverändert hielt, besitzt seither einen kleineren prozentualen Anteil, an einem allerdings größeren Unternehmen. In den Geschäftsjahren 2024 und 2025 musste Take-Two zusammen mehrere Milliarden Dollar auf Firmenwerte abschreiben; daher stammen die großen Verluste dieser Jahre (Seite {{seite:zahlen}}).</p>
         <p>Geführt wird Take-Two seit 2007 von Strauss Zelnick, erst als Vorsitzender, seit 2011 auch als Vorstandschef. Bei GTA VI hat er zweimal Zeit nachgegeben und das mit dem Anspruch begründet, ein ausgereiftes Spiel zu veröffentlichen. Die Aktie hat dafür beide Male bezahlt (Seite {{seite:chart}}).</p>
       </div>
     </div>
@@ -32,5 +34,6 @@
 </section>
 <script>
 VUM.k('plattform',()=>VUC.hbars([{l:'Mobil',v:731.1},{l:'Konsole',v:615.4},{l:'PC u. a.',v:150.5}],{w:300,rh:24,lw:62,vw:84,fmt:v=>VUM.de(v,0)+' Mio. $'}));
+VUM.k('aktienzahl',()=>VUC.vbars(VUM.D.tracks.aktien.filter(r=>r[0]>=2017).map(r=>[String(r[0]).slice(2),r[1]/1e6]).concat([['9/26',VUM.D.aktie.aktien/1e6]]),{w:300,h:70,allvals:true,fmt:v=>VUM.de(v,0)}));
 VUM.k('region',()=>VUC.hbars([{l:'USA',v:888.9},{l:'Ausland',v:608.1}],{w:300,rh:24,lw:62,vw:84,fmt:v=>VUM.de(v,0)+' Mio. $'}));
 </script>

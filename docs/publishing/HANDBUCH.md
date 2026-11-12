@@ -198,6 +198,13 @@ Bauen mit `node docs/publishing/system/build.mjs <ordner> --scale 2 --vorschau -
 `insights/reports/<id>/`, öffentlich wie alles unter `/insights/`), Eintrag mit Kurzfassung in `products/insights/reports.json`,
 `node products/insights/build.mjs`. `pdf/` und `vorschau/` im Report-Ordner werden nicht eingecheckt (die Online-Fassung
 enthält das PDF). Ein Report nennt kein Kursziel; Bullen- und Bärenfall stehen immer nebeneinander, mit Beobachtungspunkten.
+Serienregeln nach der Prüfung von Nr. 01 (12.11.2026): jede Kennzahl mit Zeitraum, Stichtag, Einheit, Definition und Quelle
+(GAAP, bereinigt, TTM, Prognose sichtbar); Bewertung neben dem Marktmedian auch gegen die eigene Geschichte und andere Werte
+der Branche; Kursvergleiche um Ereignisse als „beschreibend, keine Ereignisstudie“ kennzeichnen; Kursverläufe als Index statt
+in Dollar (Tiingo-Kursniveaus nicht weitergeben); wörtliche Zitate nur mit geprüftem Wortlaut, sonst Paraphrase; eigene
+Quellenseite mit Titeln und Links (Fußzeilen verweisen darauf), Inhaltsverzeichnis im PDF verlinkt (`#seite-<id>`); die
+App-Seite heißt „Eigenwerbung“; Geschäftsmodell und finanzielle Kernaussage früh. Offen für die Anwaltsprüfung der Vorlage:
+Einordnung nach MAR/DelVO 2016/958, konkrete Angaben zu Interessenkonflikten, Bildrechte (Pressematerial), Weitergabe von Kursdaten.
 
 Regeln wie im Heft (Abschnitt 6). Zusätzlich: Privatpersonen, gegen die nur Vorwürfe bestehen, werden nicht namentlich
 genannt; Vorwürfe stehen im Konjunktiv mit Quelle, die Gegenseite kommt zu Wort.

@@ -5,15 +5,15 @@
     <div class="hx" style="margin-top:3mm">Was die Aktie bei früheren Starts tat</div>
     <div class="sub" style="margin-top:3mm;max-width:172mm">Seit dem Börsengang hat sich der Kurs vervielfacht, aber nie in gerader Linie. Ein Blick zurück auf sechs große Rockstar-Starts zeigt: Ein Rekordspiel garantiert keinen steigenden Kurs.</div>
     <div class="card" style="margin-top:5mm;padding:4mm 4mm 2mm">
-      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="kick">Take-Two seit 1997, Wochenschlusskurse in $ (logarithmisch)</div><span class="app-badge"><i></i>VU-Daten</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="kick">Take-Two seit 1997, Wertentwicklung als Vielfaches (April 1997 = 1, logarithmisch)</div><span class="app-badge"><i></i>VU-Daten</span></div>
       <div style="margin-top:2mm" data-k="langchart"></div>
     </div>
-    <div class="xs mu" style="margin-top:1.5mm">Split-bereinigte Schlusskurse (Tiingo), bis 06.11.2026. Logarithmische Achse: gleiche Abstände bedeuten gleiche prozentuale Veränderung.</div>
+    <div class="xs mu" style="margin-top:1.5mm">Aus split-bereinigten Wochenschlusskursen (Tiingo) bis 06.11.2026, ohne Dividenden. Logarithmische Achse: gleiche Abstände bedeuten gleiche prozentuale Veränderung.</div>
     <div class="grid" style="grid-template-columns:1.25fr 1fr;gap:7mm;margin-top:5mm">
       <div>
         <div class="kick">Kurs rund um große Starts</div>
         <div style="margin-top:2mm" data-k="starts"></div>
-        <div class="xs mu" style="margin-top:1.5mm">Rechnung von Vision Universe aus Wochenschlusskursen: 26 Wochen vor dem Start bis zur Startwoche, Startwoche bis 4 und 52 Wochen danach.</div>
+        <div class="xs mu" style="margin-top:1.5mm">Rechnung von Vision Universe aus Wochenschlusskursen: 26 Wochen vor dem Start bis zur Startwoche, Startwoche bis 4 und 52 Wochen danach. Beschreibend: eine kleine Auswahl, ohne Vergleich zum Gesamtmarkt, keine statistische Ereignisstudie.</div>
       </div>
       <div class="body" style="font-size:9pt">
         <p>Die Tabelle zeigt ein Muster, das Anleger kennen: Die Vorfreude steckt oft schon vor dem Start im Kurs. Vor GTA&nbsp;IV stieg die Aktie in sechs Monaten um fast die Hälfte, danach fiel sie in einem Jahr um zwei Drittel. Das lag nicht nur am Spiel: 2008 kamen die Finanzkrise und ein geplatzter Übernahmeversuch von Electronic Arts dazu.</p>
@@ -24,11 +24,11 @@
   <div data-foot></div>
 </section>
 <script>
-(function(){const D=VUM.D,de=VUM.de,sg=VUM.sg,W=D.weekly;
-VUM.k('langchart',()=>{const w=600,h=255,pl=0,pr=34,pt=12,pb=16;const lv=W.map(p=>Math.log(p[1]));const mn=Math.log(2),mx=Math.log(400);
+(function(){const D=VUM.D,de=VUM.de,sg=VUM.sg,W0=D.weekly,b0=W0[0][1],W=W0.map(p=>[p[0],p[1]/b0]);
+VUM.k('langchart',()=>{const w=600,h=255,pl=0,pr=34,pt=12,pb=16;const mn=Math.log(.5),mx=Math.log(100);
  const X=i=>pl+(w-pl-pr)*i/(W.length-1),Y=v=>pt+(h-pt-pb)*(1-(Math.log(v)-mn)/(mx-mn));
  let s=`<svg viewBox="0 0 ${w} ${h}" width="100%" style="display:block;overflow:visible">`;
- [2.5,5,10,25,50,100,250].forEach(v=>{s+=`<line x1="0" x2="${w-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e0e0e0"/><text x="${w-pr+5}" y="${Y(v)+3}" font-size="8.5" fill="#8c8c8c" font-weight="600">${de(v,v<10?1:0)}</text>`});
+ [1,2,5,10,20,50].forEach(v=>{s+=`<line x1="0" x2="${w-pr}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e0e0e0"/><text x="${w-pr+5}" y="${Y(v)+3}" font-size="8.5" fill="#8c8c8c" font-weight="600">${v}×</text>`});
  let ly='';W.forEach((p,i)=>{const y=p[0].slice(0,4);if(y!==ly&&+y%4===1){s+=`<text x="${X(i)}" y="${h-3}" font-size="8.5" fill="#8c8c8c" text-anchor="middle" font-weight="600">${y}</text>`}ly=y});
  const d=W.map((p,i)=>`${i?'L':'M'}${X(i).toFixed(1)},${Y(p[1]).toFixed(1)}`).join('');
  s+=`<path d="${d}L${X(W.length-1)},${h-pb}L0,${h-pb}Z" fill="#c8f531" opacity=".85"/><path d="${d}" fill="none" stroke="#000" stroke-width="1.5"/>`;

@@ -73,7 +73,7 @@ const teile = seiten.map((s) => {
   }
   html = ersetze(html, `Seite ${s.nr} (${s.id})`);
   // Seiten-ID an die Section heften
-  return html.replace(/<section class="/, `<section data-id="${s.id}" data-nr="${s.nr}" class="`);
+  return html.replace(/<section class="/, `<section id="seite-${s.id}" data-id="${s.id}" data-nr="${s.nr}" class="`);
 });
 const zusatz = fs.existsSync(path.join(dir, 'seiten', '_kennzahlen.html')) ? ersetze(fs.readFileSync(path.join(dir, 'seiten', '_kennzahlen.html'), 'utf8'), 'Kennzahlen') : '';
 const icons = fs.readFileSync(path.join(repo, 'assets/product-icons.svg'), 'utf8').replace(/<svg /, '<svg style="display:none" ');

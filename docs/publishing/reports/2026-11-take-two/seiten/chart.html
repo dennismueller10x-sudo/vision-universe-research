@@ -5,7 +5,7 @@
     <div class="hx" style="margin-top:3mm">Ein Jahr Achterbahn</div>
     <div class="sub" style="margin-top:3mm;max-width:172mm">Rekordhoch im Oktober 2025, dann zwei harte Tage: die zweite Verschiebung und die Angst vor KI-Spielen. Seit den Quartalszahlen geht es wieder aufwärts.</div>
     <div class="card" style="margin-top:5mm;padding:4mm 4mm 2mm">
-      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="kick">Tagesschlusskurse in $, mit 50- und 200-Tage-Linie</div><span class="app-badge"><i></i>VU-Daten</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><div class="kick">Kursverlauf als Index (16.10.2025 = 100), mit 50- und 200-Tage-Linie</div><span class="app-badge"><i></i>VU-Daten</span></div>
       <div style="margin-top:4mm" data-k="tageschart"></div>
     </div>
     <div class="grid" style="grid-template-columns:1fr 1fr;gap:7mm;margin-top:5mm">
@@ -33,10 +33,10 @@
   <div data-foot></div>
 </section>
 <script>
-(function(){const D=VUM.D,a=D.aktie,de=VUM.de,sg=VUM.sg,P=D.daily;
+(function(){const D=VUM.D,a=D.aktie,de=VUM.de,sg=VUM.sg,b0=D.daily[0][1],P=D.daily.map(p=>[p[0],p[1]/b0*100]),n=v=>v==null?null:v/b0*100;
 const ix=d=>P.findIndex(p=>p[0]>=d);
-VUM.k('tageschart',()=>VUC.line(P,{w:600,h:250,pr:34,tick:20,mstep:2,lines:[{v:D.sma50,name:'50 T.',c:'#5c5c5c',dy:-6},{v:D.sma200,name:'200 T.',c:'#000',dash:'5 3',dy:8}],marks:[
- {i:ix('2025-10-20'),t:'Rekordhoch',s:'262,29 $ · 20.10.25',anchor:'start',dx:-2},
+VUM.k('tageschart',()=>VUC.line(P,{w:600,h:250,pr:34,tick:10,mstep:2,lines:[{v:D.sma50.map(n),name:'50 T.',c:'#5c5c5c',dy:-6},{v:D.sma200.map(n),name:'200 T.',c:'#000',dash:'5 3',dy:8}],marks:[
+ {i:ix('2025-10-20'),t:'Rekordhoch',s:'20.10.25',anchor:'start',dx:-2},
  {i:ix('2025-11-07'),t:'2. Verschiebung',s:'−8,1 % · 07.11.25',up:false},
  {i:ix('2026-01-30'),t:'Google Genie',s:'−7,9 % · 30.01.26',up:false},
  {i:ix('2026-11-10'),t:'Quartalszahlen',s:'+8,3 % · 10.11.26',anchor:'end',dx:-4},
@@ -45,8 +45,8 @@ VUM.k('kurskz',()=>[
  ['1 Monat',VUM.pill(a.r1m*100)],['3 Monate',VUM.pill(a.r3m*100)],['12 Monate',VUM.pill(a.r12m*100)],
  ['Abstand zum 52-Wochen-Hoch',de(a.hi*100,1)+'&nbsp;%'],['Abstand zur 200-Tage-Linie',sg(a.sma200*100,1)+'&nbsp;%'],
  ['Schwankung (Volatilität, 1 Jahr)',de(a.vol*100,0)+'&nbsp;%'],['Größter Rückgang im Jahr',de(a.dd*100,0)+'&nbsp;%'],
- ['Relative Stärke (Perzentil, US-Aktien)',de(a.rs.relativeStrengthPercentile,0)],
-].map(r=>`<div class="fact" style="font-size:8.4pt"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')+`<div class="xs mu" style="margin-top:1.5mm">Stand 11.11.2026, Schlusskurse. Relative Stärke: Rang unter ${de(a.rs.universeSize,0)} US-Aktien, 100 = stärkste.</div>`);
+ ['Relative Stärke (Rang, 100 = stärkste)',de(a.rs.relativeStrengthPercentile,0)],
+].map(r=>`<div class="fact" style="font-size:8.4pt"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')+`<div class="xs mu" style="margin-top:1.5mm">Stand 11.11.2026, Schlusskurse (Tiingo). Volatilität: Schwankung der täglichen Kursänderungen über 252 Handelstage, aufs Jahr gerechnet. Größter Rückgang: vom Hoch zum Tief innerhalb der letzten 252 Handelstage. Relative Stärke: Wertentwicklung gegenüber dem Markt über 3, 6 und 12 Monate (Gewichte 30/30/40 %), als Rang unter ${de(a.rs.universeSize,0)} US-Aktien.</div>`);
 VUM.k('technik',()=>`Die Engine stuft die <b style="color:#fff">Trendstruktur als abwärts</b> ein: Seit dem Rekord im Oktober 2025 liegen die Hochs tiefer. Gleichzeitig notiert der Kurs <b style="color:#fff">über der 50- und der 200-Tage-Linie</b>. Am 11.11. hat sie einen <b style="color:#fff">Ausbruch über einen Widerstand</b> erkannt, Status „in Bildung“. Das ist eine Beschreibung des Charts, keine Vorhersage.`);
 })();
 </script>

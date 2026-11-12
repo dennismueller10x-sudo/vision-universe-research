@@ -5,8 +5,8 @@
     <div class="hx" style="margin-top:3mm">Ein Spiel, eine Aktie,<br>ein Jahrzehnt.</div>
     <div class="grid" style="grid-template-columns:1fr 66mm;gap:7mm;margin-top:5mm">
       <div class="body">
-        <p>Am 19. November erscheint Grand Theft Auto VI. Für viele Spieler ist das der wichtigste Termin seit Jahren, für Take-Two Interactive ist es der wichtigste der Firmengeschichte. Zwölf Jahre lagen zwischen GTA V und dem Nachfolger. In dieser Zeit hat sich GTA V mehr als 230 Millionen Mal verkauft und mit seinem Online-Modus Jahr für Jahr Geld eingebracht.</p>
-        <p>Take-Two hat für das laufende Geschäftsjahr bis Ende März 2027 Buchungen von 8,0 bis 8,2 Milliarden Dollar angekündigt, rund ein Fünftel mehr als im Vorjahr. Den größten Teil davon soll GTA VI liefern. Die Börse hat einen Teil dieser Erwartung längst im Kurs: Take-Two ist heute rund <span data-k="mcap"></span> wert, obwohl das Unternehmen in den letzten zwölf Monaten unter dem Strich Verlust gemacht hat.</p>
+        <p>Am 19. November erscheint Grand Theft Auto VI. Für viele Spieler ist das der wichtigste Termin seit Jahren, für Take-Two Interactive ist es der wichtigste der Firmengeschichte. Gut 13 Jahre liegen zwischen GTA V und dem Nachfolger. In dieser Zeit hat sich GTA V mehr als 230 Millionen Mal verkauft und mit seinem Online-Modus Jahr für Jahr Geld eingebracht.</p>
+        <p>Take-Two hat für das laufende Geschäftsjahr bis Ende März 2027 Buchungen von 8,0 bis 8,2 Milliarden Dollar angekündigt, rund ein Fünftel mehr als im Vorjahr. Den größten Teil des Zuwachses soll laut Take-Two der Start von GTA VI bringen. Die Börse hat einen Teil dieser Erwartung längst im Kurs: Take-Two ist heute rund <span data-k="mcap"></span> wert, obwohl das Unternehmen in den letzten zwölf Monaten unter dem Strich Verlust gemacht hat.</p>
         <p>Dieser Report erzählt beides: die Geschichte des Spiels, für alle, die GTA lieben, und die Geschichte der Aktie, für alle, die investieren. Er zeigt Zahlen, Chart und Bewertung, stellt Bullen- und Bärenfall nebeneinander und denkt um die Ecke: Was passiert mit einem Unterhaltungskonzern, wenn künstliche Intelligenz Menschen mehr freie Zeit verschafft? Ein Kursziel nennt dieser Report nicht, und er gibt keine Empfehlung. Er ordnet ein.</p>
       </div>
       <div>
@@ -36,9 +36,9 @@ VUM.k('kennzahlen',()=>[
  [de(a.mcap/1e9,1)+'&nbsp;Mrd.&nbsp;$','Börsenwert','Kurs × 187,2 Mio. Aktien (Stand 30.09.2026)'],
  ['8,0–8,2&nbsp;Mrd.&nbsp;$','Ziel Buchungen GJ 2027','nach 6,72 Mrd. $ im GJ 2026 (bis 31.03.)'],
  [de(D.ttm.revenue/1e9,2)+'&nbsp;Mrd.&nbsp;$','Umsatz letzte 12 Monate',`Ergebnis ${VUM.sg(D.ttm.net_income/1e6,0)}&nbsp;Mio.&nbsp;$ (bis 30.09.2026)`],
- ['&gt;&nbsp;230&nbsp;Mio.','verkaufte GTA V','seit 2013, laut Take-Two'],
- ['≈&nbsp;10&nbsp;Mio.','Vorbestellungen GTA VI','Schätzung Sensor Tower, PS5 und Xbox'],
+ ['&gt;&nbsp;230&nbsp;Mio.','verkaufte GTA V','seit 2013, laut Take-Two (Stand 08/2026)'],
+ ['≈&nbsp;10&nbsp;Mio.','Vorbestellungen GTA VI','Schätzung Sensor Tower, nicht von Take-Two'],
 ].map((r,i)=>`<div class="card${i===2?' lime':''}" style="padding:4mm"><div style="font-size:19pt;font-weight:900;letter-spacing:-.04em;line-height:1">${r[0]}</div><div style="font-size:8pt;font-weight:800;margin-top:1.5mm">${r[1]}</div><div class="xs mu" style="margin-top:.6mm">${r[2]}</div></div>`).join(''));
-VUM.k('toc',()=>VUM.A.seiten.filter(s=>s.toc).map(s=>`<div style="display:grid;grid-template-columns:6mm 1fr;gap:1.5mm;padding:1mm 0;border-bottom:1px solid var(--g2)"><b style="font-size:8.4pt">${String(s.nr).padStart(2,'0')}</b><span style="font-size:7.8pt;line-height:1.25">${s.toc.titel}</span></div>`).join(''));
+VUM.k('toc',()=>VUM.A.seiten.filter(s=>s.toc).map(s=>`<a href="#seite-${s.id}" style="color:inherit;text-decoration:none;display:block"><div style="display:grid;grid-template-columns:6mm 1fr;gap:1.5mm;padding:1mm 0;border-bottom:1px solid var(--g2)"><b style="font-size:8.4pt">${String(s.nr).padStart(2,'0')}</b><span style="font-size:7.8pt;line-height:1.25">${s.toc.titel}</span></div></a>`).join(''));
 })();
 </script>

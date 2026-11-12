@@ -54,7 +54,7 @@
   }
 
   function finish() {
-    const impressum = A.seiten.find((s) => s.id === 'impressum');
+    const impressum = A.seiten.find((s) => s.id === 'quellen') || A.seiten.find((s) => s.id === 'impressum');
     document.querySelectorAll('.page').forEach((p) => {
       const n = Number(p.dataset.nr);
       p.querySelectorAll('[data-run]').forEach((el) => {
