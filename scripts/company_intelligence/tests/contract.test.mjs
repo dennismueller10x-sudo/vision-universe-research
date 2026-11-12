@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFileSync } from 'node:fs';
-const require = createRequire(import.meta.url), { load, SCHEMA, safeLink } = require('../../../company-intelligence/api/contract.js');
+const require = createRequire(import.meta.url), { load, SCHEMA, safeLink, validProfile, SUCCESSOR_PREDECESSORS } = require('../../../company-intelligence/api/contract.js');
 const cid = 'iss_cik_0000320193', iid = 'vu_b8ae31d1562481';
 function data() { return { schema: SCHEMA, state: 'AVAILABLE', companyId: cid, listings: [{ symbol: 'AAPL', instrumentId: iid }], generatedAt: '2026-10-01T12:00:00Z', news: [], events: [], earnings: [], filings: [], calls: [], timeline: [] }; }
 function fetcher(payload = data(), index = {}) {
@@ -85,4 +85,16 @@ test('wrong issuer, private source, malformed facts and wrong SEC CIK invalidate
 test('issuer data with a different preparation timestamp cannot join the current index',async()=>{
  const result=await load('AAPL',{...options,fetch:fetcher(data(),{generatedAt:'2026-10-01T11:00:00Z'})});
  assert.equal(result.reason,'COMPANY_GENERATION_MISMATCH');
+});
+
+test('successor issuer keeps the predecessor annual report as profile source; the browser map mirrors the register', () => {
+ const register = JSON.parse(readFileSync(new URL('../../../quant/config/sec-successor-issuers.json', import.meta.url), 'utf8')).successors;
+ assert.deepEqual(SUCCESSOR_PREDECESSORS, Object.fromEntries(Object.entries(register).map(([cik, row]) => [cik, row.predecessors])));
+ const id = 'iss_cik_0002115436', hash = 'a'.repeat(64);
+ const profile = url => ({ schema: 'company-profile-1.0.0', state: 'AVAILABLE', companyId: id, companyName: 'ExxonMobil Holdings Corp', language: 'de', confidence: 'HIGH',
+  description: 'ExxonMobil ist ein Energieunternehmen mit Erdöl, Erdgas und Chemie.', lastVerifiedAt: '2026-10-05T09:28:15Z', businessActivities: [], productsServices: [], customerMarkets: [], majorSegments: [],
+  sources: [{ companyId: id, type: 'SEC', url, form: '10-K', filingId: '0000034088-26-000045', filedAt: '2026-02-18', verifiedAt: '2026-10-05T09:28:15Z', contentHash: hash }] });
+ assert.equal(validProfile(profile('https://www.sec.gov/Archives/edgar/data/34088/000003408826000045/xom-20251231.htm'), id, '2026-11-12T00:00:00Z'), true);
+ assert.equal(validProfile(profile('https://www.sec.gov/Archives/edgar/data/2115436/000000000026000001/x.htm'), id, '2026-11-12T00:00:00Z'), true);
+ assert.equal(validProfile(profile('https://www.sec.gov/Archives/edgar/data/320193/000032019326000001/x.htm'), id, '2026-11-12T00:00:00Z'), false);
 });

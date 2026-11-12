@@ -33,6 +33,9 @@
     try { const url = new URL(value); const host = url.hostname.toLowerCase().replace(/\.$/, ''); const privateHost = host.endsWith('.localhost') || /^(?:localhost|127\.|0\.|10\.|192\.168\.|169\.254\.|172\.(?:1[6-9]|2[0-9]|3[01])\.|\[|metadata\.)/.test(host) || /\.(?:local|internal)$/.test(host); return ['https:', 'http:'].includes(url.protocol) && !url.username && !url.password && !privateHost && (!url.port || ['80','443'].includes(url.port)) ? url.href : null; }
     catch { return null; }
   }
+  // Rule 12g-3 holding successions (quant/config/sec-successor-issuers.json; mirrored by core test): a successor issuer may
+  // keep the predecessor's annual report as profile source, like scripts/company_intelligence/profiles.py#public_profile.
+  const SUCCESSOR_PREDECESSORS = { '0002115436': ['0000034088'], '0002119322': ['0001438231'], '0002058897': ['0001071371'], '0001973832': ['0001067428'] };
   function validProfile(p, companyId, generatedAt) {
     if (!p || p.schema !== 'company-profile-1.0.0' || p.state !== 'AVAILABLE' || p.companyId !== companyId ||
         typeof p.companyName !== 'string' || p.companyName.length > 200 || typeof p.description !== 'string' || p.description.length < 40 || p.description.length > 1200 ||
@@ -43,7 +46,7 @@
     }
     return Array.isArray(p.sources) && p.sources.length > 0 && p.sources.length <= 4 && p.sources.every(s => {
       if (!s || s.companyId !== companyId || !['SEC','FIRST_PARTY_WEB'].includes(s.type) || !safeLink(s.url) || !/^[a-f0-9]{64}$/.test(s.contentHash)) return false;
-      if (s.type === 'SEC') { const cik = companyId.match(/^iss_cik_(\d{10})$/)?.[1]; const path = new URL(s.url); return Boolean(cik) && path.hostname === 'www.sec.gov' && path.pathname.startsWith('/Archives/edgar/data/' + Number(cik) + '/') && ['10-K','20-F','40-F'].includes(s.form); }
+      if (s.type === 'SEC') { const cik = companyId.match(/^iss_cik_(\d{10})$/)?.[1]; const path = new URL(s.url); return Boolean(cik) && path.hostname === 'www.sec.gov' && [cik, ...(SUCCESSOR_PREDECESSORS[cik] || [])].some(c => path.pathname.startsWith('/Archives/edgar/data/' + Number(c) + '/')) && ['10-K','20-F','40-F'].includes(s.form); }
       return true;
     });
   }
@@ -100,7 +103,7 @@
       return { ...payload, ticker: symbol, preview: index.state === 'PREVIEW' && !options.expectedGeneration, stale: now - generated > 48 * 3600000 };
     } catch (error) { return unavailable(error?.name === 'AbortError' ? 'REQUEST_ABORTED' : 'FETCH_FAILED'); }
   }
-  const api = { SCHEMA, load, safeLink, validProfile, fetchWithRetry };
+  const api = { SCHEMA, load, safeLink, validProfile, fetchWithRetry, SUCCESSOR_PREDECESSORS };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else global.VUCompanyIntelligence = api;
 })(typeof globalThis !== 'undefined' ? globalThis : this);
