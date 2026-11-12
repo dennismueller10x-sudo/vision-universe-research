@@ -65,7 +65,7 @@ jobs:
       - uses: actions/checkout@v4
         if: inputs.mode != 'health' && inputs.mode != 'refreeze' && inputs.mode != 'restore-legacy'
         with:
-          ref: abbea154a90ffece598e494530eea38661a20a95
+          ref: 42957c9e0a8885cd70a32a4bdaa2413b95b509e4
           path: .accepted-identities
           sparse-checkout: |
             company-master
