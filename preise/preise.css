@@ -10,6 +10,8 @@ body.pr-body{padding-top:0!important;background:var(--vu-white)}
 :root[data-theme=dark] .pr-hd-logo img{filter:invert(1)}
 .pr-hd-btn{width:44px;height:44px}
 .pr-hd-login{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border-radius:999px;background:var(--vu-ink);color:var(--vu-inv);font-weight:800;font-size:14px;text-decoration:none}
+button.pr-hd-login{justify-content:center;width:44px;padding:0;border:0;font:inherit;font-size:18px;font-weight:800;cursor:pointer}
+@media (max-width:380px){.pr-hd{gap:4px;padding:0 10px}.pr-hd-logo img{width:96px}a.pr-hd-login{padding:0 12px}}
 .pr{--ka-max:640px;padding-top:18px}
 .pr-head{margin-bottom:16px}
 .pr-plans{display:flex;flex-direction:column;gap:12px}

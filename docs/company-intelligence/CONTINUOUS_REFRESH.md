@@ -743,6 +743,25 @@ erwartete Generation nicht ausgeliefert ist. Nach der Obergrenze wird nicht aufg
 bis die Wartefrist ablaeuft, denn die workflow_run-Pages-Laeufe der Datenjobs liefern die Generation selbst aus (im Vorfall 3,5 min
 nach der alten Frist). Ein echter Fehler des eigenen Pages-Laufs (`failure`, `timed_out`) beendet sofort (Rollback wie bisher).
 
+**Nicht uebernommen, live unveraendert (Exit 4, seit 10.11.2026).** War der eigene Pages-Lauf `success`, kam die neue Generation bis
+zum Fristende aber nie an und liefert die Seite unveraendert die Generation von vor dem Dispatch aus, endet das Skript mit
+`NOT_DELIVERED_PRODUCTION_UNCHANGED` (Exit 4). Das ist keine Regression: kein Rollback, kein `disable`, kein `ROLLBACK_46`; der Lauf
+wird im Schritt "Delivery not taken over" rot, der GOOD-Zeiger steht vor der Produktion (Health MISMATCH), und die naechste
+Pages-Release mit neuem Commit liefert die Generation aus. Steht live eine dritte Generation, bleibt es der bisherige Fehler mit
+Rollback. Anlass: Refresh 42744743112. Pages 42753904874 deployte 2ff33541 um 04:19 mit demselben Commit `adbfda1c` wie die
+Deploys davor (nachts kein neuer Commit); ausgeliefert blieb e1d74267, und der Fail-closed-Schritt schaltete um 04:32 den gesunden
+Vollumfang ab. Der Universe-Release (`--expected`) ist davon nicht betroffen; dort entscheidet seine Recovery.
+
+**Marker-Commit vor dem eigenen Dispatch (seit 10.11.2026).** `actions/deploy-pages@v4` nimmt den Commit als Build-Version; ein
+zweiter Deploy desselben Commits mit neuem Inhalt wird nicht uebernommen (Pages 42753904874 und 42760183738), und `env: GITHUB_SHA`
+am Deploy-Schritt wirkt nicht (Lauf 42763174678). Deshalb starten Refresh, Universe-Release und dessen Rueckweg vor dem eigenen
+Pages-Dispatch den Workflow `pages-release-marker.yml` und warten bis zu 5 min auf ihn (`pages-release-marker.mjs --dispatch`). Nur
+dieser Workflow hat `contents: write`; er schreibt `company-intelligence/release-marker.json` ueber die Contents-API mit dem
+`GITHUB_TOKEN` auf main (kein Pages-Push-Lauf, der den eigenen Dispatch verdraengen wuerde). Refresh und `company-intelligence.yml`
+bleiben lesend. Scheitert der Marker, geht es mit Warnung weiter wie zuvor. Begruendete Ausnahme von ADR-005 (Push nur ueber
+`push-with-retry.sh`): kein Checkout und kein `git push`; den Wettlauf faengt die Datei-SHA als Vergleichswert mit hoechstens
+4 Versuchen ab.
+
 **Ehrliche Rechnung.** 50 min Wartefrist sind rund 8 warme Pages-Laeufe (6 min) oder rund 4 kalte (13 min, siehe
 `FULL_UNIVERSE_ROLLOUT.md`) hintereinander. Eine tiefere Warteschlange scheitert weiterhin, dann Rollback nach der Frist.
 
@@ -816,3 +835,62 @@ Der Sammel-Fehler `CONTINUOUS_REFRESH_FAILED (<Code>)` nutzt dieselbe Klassifika
 **Tests.** `observe-production.test.mjs` (Klassifikation), `observe-cli.test.mjs` (CLI-Zweig im Kindprozess mit Fake-R2: Exit 0/1/3, Log-Zeile,
 Verdrahtung `keyFor`/`--health`/`--same-generation-only`, Wiederholungs-Default 3 x 20 s, GOOD-Wechsel, Diagnose-Codes gegen die echten
 Fehlerformate des S3-Treibers; die Workflow-Snippets beider Workflows werden mit einem `node`-Stub tatsaechlich in bash ausgefuehrt).
+
+## Top-30 ohne Profil oder Finanzen (Prüfung 11.11.2026, Generation 432a05cc)
+
+Grundlage: Live-Vollumfang, Top-30 nach Marktkapitalisierung, dazu ausdrücklich XOM, UNH und SPCX. Das Profil-Modul erscheint nur mit einer geprüften
+deutschen Fassung in `company-intelligence/config/profile-reviewed-de.json`, die per Hash an der englischen Quelle in `company-profiles.json` hängt.
+
+**Entscheidung (Steuerung 11.11.2026):** Fehlende deutsche Fassungen für Titel mit gültiger 10-K-Quelle trägt Strang R wie die 2.830 vom 12.10. als
+`APPROVED`/`MODEL_ASSISTED_STATIC_PARAPHRASE` ein (neutral nach `docs/legal/WORTWAHL.md`, keine Bewertung, Hash an der Quelle); das ist keine
+Owner-Freigabe.
+
+| Titel | Ursache | Behoben |
+|---|---|---|
+| BRK.A/B, WMT, LLY, V, JNJ, PG, KO | gültige 10-K-Quelle, aber keine geprüfte deutsche Fassung | ja: 7 Fassungen eingetragen (`approved_copy` geprüft) |
+| COST | Parser: Überschrift „Item 1—Business“ (Geviertstrich) nicht erkannt; Satz „is principally engaged in the operation of membership warehouses“ nicht als Tätigkeit gewertet | ja (Code) und deutsche Fassung: zweiter, gelockerter Durchgang in `profiles.py`, nur wenn der unveränderte erste nichts findet |
+| UNH | aktueller 10-K (2026-03-02) wird schon heute korrekt gelesen; der frühere Fehlversuch ist ohne privaten Checkpoint nicht nachvollziehbar | ja: Parser-Version 1.0.21 stößt die Neuauswertung an, deutsche Fassung eingetragen |
+| CVX | Item 1 beschreibt nur die Holding („manages its investments in subsidiaries …“); Holding-/Tochter-Sätze sind absichtlich ausgeschlossen. Geprüft (Auftrag Steuerung): Die Segmentteile von Item 1 enthalten fast nur Beteiligungs- und Feldangaben („has a 60 percent-owned … interest in …“) oder nur den Vertrieb („markets petroleum products under …“); ein erweitertes Lesefenster lieferte eine falsche Aussage („is the producer of LNG in Australia“ aus „largest producer“). Item 7 enthält Ergebnisanalysen, keine Beschreibung. | nein (keine zulässige Gesamtbeschreibung) |
+| GE | 10-K im Querverweis-Format; das Geschäft steht unter „ABOUT GE AEROSPACE“ mit Handelsname „GE Aerospace“ statt Item 1 | ja (Code, Parser 1.0.22): im zweiten Durchgang zählt die Inline-Überschrift „ABOUT …“, und ein vom Emittenten selbst genannter Handelsname („General Electric Company operates as GE Aerospace (GE Aerospace or the Company)“) gilt als Alias; deutsche Fassung eingetragen |
+| SPCX | Space Exploration Technologies hat noch keinen Jahresbericht (nur S-1, 424B4, 10-Q) | nein (Quelldokument fehlt) |
+| XOM (Finanzen) | Identitätsbruch: Seit 01.07.2026 ist ExxonMobil Holdings Corp (CIK 0002115436) die börsennotierte Gesellschaft für XOM; der Security-Master führt noch CIK 0000034088 (`quant/data/sec/universe_resolution.json`, match false), daher keine Consumer-Fundamentals | Finanzen: Strang X stellt XOM auf `iss_cik_0002115436` um (#1820; Consumer-Datei `CIK0002115436.json` führt beide CIKs zusammen). Profil: Eintrag in `company-profiles.json` und `profile-reviewed-de.json` unter der neuen companyId (gleicher Text, Quelle 10-K der Vorgänger-CIK, zulässig über `quant/config/sec-successor-issuers.json`, #1818); greift erst, wenn die neue companyId im Universum ist. Der Profil-Erzeuger (`profile_catalogue.py`) kann den Eintrag nicht selbst bilden, weil unter der neuen CIK noch kein 10-K liegt; er ist eine Kopie seiner Ausgabe für die Vorgänger-ID mit neuer companyId. Die IR-Quelle in `sources.json` zieht ebenfalls auf die neue companyId um (sourceId bleibt, damit Quellenzustand und Verlauf erhalten bleiben) |
+
+Der Parser-Durchgang ist rückwirkungsfrei (1.0.22 gegen main: 17 unverändert, COST und GE neu verfügbar): Vorher/Nachher auf 19 echten 10-Ks (COST, GE, CVX, UNH, XOM, KO, WMT, PG, LLY, V, JNJ, AAPL, MSFT,
+NVDA, JPM, BRK, AMZN, META, HD): 18 unverändert, nur COST wechselt von UNAVAILABLE zu AVAILABLE. Bestehende Beschreibungen und damit ihre geprüften
+deutschen Fassungen bleiben unverändert.
+
+Die deutschen Fassungen für COST, UNH und GE hängen an der englischen Quelle, die Parser 1.0.22 aus dem jeweils aktuellen 10-K
+erzeugt (lokal nachgebaut, `approved_copy` geprüft). Weicht die Quelle im privaten Zustand ab, greift die Fassung nicht
+(PROFILE_COPY_SOURCE_CHANGED) und das Modul bleibt aus; es entsteht kein falscher Text.
+
+## Universum-Aktivierung: Startfenster und Vorbedingungen (Vorfall 11./12.11.2026)
+
+Entscheidung (Steuerung 12.11.2026): `universe-release.yml` mode=activate startet **nicht zwischen 23:00 und 00:00 UTC** und so, dass der Lauf (ca. 55 min) vor dem
+nächsten UTC-Mitternachtswechsel endet. Grund: Der Aufbau (`universe_eligibility.py`, `upcoming()`) und die Seite (`stock-section.js`) bewerten geschätzte
+Termine mit `dateEnd >= today`. Läuft das Live-QA nach Mitternacht, fehlt ein am Bautag endender Schätztermin (Lauf 43116431258, Fall `MBNKO:events`), und der
+Fail-closed-Schritt rollt auf die 46er-Kohorte zurück. Ein Neubau nach Mitternacht ist wieder konsistent.
+
+Weitere Vorbedingungen von activate (aus dem Vorfall): (1) `scaling_run` ist byte-gleich zu den sechs Quittungsdateien (`continuous_refresh.py`,
+`universe_scheduler.py`, `universe_eligibility.py`, `refresh-run.mjs`, `public-delivery.mjs`, `refresh-storage.mjs`; `git diff --exit-code <Quittungs-Commit> HEAD -- …`
+leer); (2) der Rollback-Freeze liegt höchstens 24 h hinter dem Legacy-GOOD (`REFREEZE_MAX_LAG_MS`), sonst vorher `mode=refreeze` mit der Legacy-Generation;
+(3) Live-Auslieferung = Legacy-GOOD (46/45). Zwischen refreeze und activate keinen Refresh starten.
+
+## Stand 12.11.2026 (Strang AE): Freeze, Universum, Profile COST/UNH/GE, XOM neue CIK
+
+**Freeze:** Rollback-Freeze `8fb1232a` (46er-Projektion des Universe-GOOD `0d07937d`, `refreeze-auto` 12.11. 01:55Z, gültig 7 Tage ab dessen generatedAt, also bis ca. 19.11. 00:52Z). Vorher `eb2e8ca9`, davor `128c2192`. Der Auto-Refreeze läuft weiter alle 2 Tage; Quelle bei aktivem Universum ist `universe`.
+
+**Universum-Aktivierung (Regeln aus dem Vorfall):** `activate` prüft `LATEST_GOOD_46_REQUIRED` und `LIVE_DELIVERY_46` und ist nur für den Wechsel von 46er-Scope auf Universum da; bei bereits aktivem Universum veröffentlichen die normalen Produktionsläufe in den Universe-Namespace, `activate` würde scheitern. Nicht zwischen 23:00 und 00:00 UTC starten (geschätzte Termine mit `dateEnd >= today` fallen nach Mitternacht aus, Lauf 43116431258). Der Freeze darf höchstens 24 h hinter dem Legacy-GOOD liegen (`REFREEZE_MAX_LAG_MS`), sonst vorher `refreeze`. Die Skalierungsquittung verlangt Byte-Gleichheit von `continuous_refresh.py`, `universe_scheduler.py`, `universe_eligibility.py`, `refresh-run.mjs`, `public-delivery.mjs`, `refresh-storage.mjs` (Quittung 43179353807 auf 5b942c9a). Manuelle Refresh-Dispatches brauchen `verification=false` für Produktion (Standard ist `true`, ein isolierter Lauf ohne Wirkung).
+
+**Profile COST/UNH/GE:** Die deutschen Fassungen standen im Reviewed-Register ohne englische Quelle im privaten Zustand (`NO_PROFILE_SOURCE`). Die Produktionsläufe säten den Katalog `company-profiles.json` nicht; nur die manuellen CLI-Befehle taten das. Fix: Erzeuger-Workflow `company-intelligence-profile-catalogue.yml` (nur Dispatch, Ergebnis als Artefakt, daraus ein PR), Re-Pin der Reviewed-Einträge an die Erzeuger-Quelle (#1872), Quellsnapshot (#1879) und `profile_catalogue_seed.py` im profile-source-Lauf (#1880). Katalog-Tranche der 139 Indexmitglieder ohne Eintrag: 3 von 139 verfügbar (EXPD, DELL, BE); die übrigen scheitern am Parser (67× `NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION`, 1× `NO_EXPLICIT_ANNUAL_PRIMARY_DOCUMENT`). Offen: Parser-Arbeit (eigener PR mit Vorher/Nachher auf echten 10-Ks) und deutsche Fassungen für ca. 1.383 Titel ohne Quelle und Fassung.
+
+**XOM unter der neuen CIK 0002115436:** Ursachen (1) Pin des Identitätsstands `abbea154` in `refresh`, `profile-source`, `universe-release` kannte nur die alte CIK (#1873, neuer Pin `42957c9e`, geprüfter Vorher/Nachher: 14 neue, 278 wegfallende Emittenten, keiner live außer XOM) und (2) `validProfile` in `company-intelligence/api/contract.js` lehnte das Profil mit dem 10-K der Vorgängerin ab (`SUCCESSOR_PREDECESSORS`, #1885, gleich dem Register `quant/config/sec-successor-issuers.json`). Live: XOM mit deutschem Profil unter `iss_cik_0002115436`; Nachrichten, Ereignisse und Finanzzahlen fehlen noch (neue Firma im privaten Zustand), die alte ID `iss_cik_0000034088` wird nicht mehr ausgeliefert, bleibt aber in `official-sites.json` und `sources.json` als Alias der Konfiguration.
+
+**Offen/Betrieb:** GitHub startet geplante Läufe verzögert (Refresh ca. alle 8 h statt 4 h); profile-source im Schedule scheitert seit 10.11. im Quellen-Onboarding (`ONBOARDING_PROCESS_FAILURE`, Diagnose seit #1867 mit Signal/Exit); Fehlerdiagnose der Läufe: `failureDetail` (#1862, vorübergehend zurückgenommen wegen der Quittung, #1864) und `consumerDiagnostic.detail` (#1883).
+
+## Stand 12.11.2026 (Strang AF): Zeitpläne über den Cloudflare-Wecker
+
+Die fünf Workflows `refresh`, `refresh-watchdog`, `health`, `profile-source`, `refreeze-auto` haben keinen GitHub-`schedule:` mehr; ihre Einträge stehen in `core/registry/schedule.json` (`timer: waker`, Crons unverändert), Vertragstest SZ-3 verlangt das. Grund: GitHub startete sie nur etwa alle 8 h oder gar nicht (Frische ab 8 h WARNING, ab 12 h CRITICAL). Der Wecker startet per `workflow_dispatch` mit `inputs.zeitplan`; der Refresh-Eintrag setzt `verification=false` (Standard wäre der isolierte Lauf ohne Wirkung). Im Workflow gilt `inputs.zeitplan` wie `schedule` (`VU_EVENT`, Concurrency-Gruppe, Onboarding `--sources --source-limit 100`); `scheduler-gate.mjs` liest `VU_EVENT` und wertet Wecker-Läufe (Titel „· Takt …“) bei der Fehler-Abkühlung wie Schedule-Läufe. Die sechs Quittungsdateien sind unverändert.
+
+**Profil-Parser 1.0.23 (Strang AF, Freigabe Steuerung 12.11.2026):** Kurzname des Rechtsnamens als Subjekt und Überspringen von „, together with the subsidiaries … (the Company),“ bzw. „, through our/its subsidiaries,“, nur im zweiten Durchlauf (`relaxed`), der nur läuft, wenn der erste nichts findet. Vorher/Nachher auf 115 Titeln (Läufe 43234880109, 43234886631): 113 gleich, 2 neu verfügbar (BAX, DIS), kein bisher verfügbarer Titel mit anderem Text. Ursachenklassen der 31 Titel ohne Beschreibung und Blockauszug: `profile_diagnosis.py`, Bericht im Katalog-Lauf (`diagnoses`, `comparisons`); der Katalog-Workflow hat die Eingänge `compare` und `only_missing` (Standard an: ohne `tickers` nur fehlende Einträge, kein Neu-Parsing bestehender). Offen: Blockbau für CALM/CATO (10-K in Wortfetzen), Satzklassen A(c)/A(d), 40-F und Verbundberichte bleiben außen vor.
+
+**Profil-Parser 1.0.24 (Strang AF, Freigabe Steuerung 12.11.2026):** dritter Durchlauf für PDF-artig gesetzte 10-K (jedes Wort in `<div style="display:inline-block">`, Wortfetzen statt Sätzen), nur wenn Durchlauf 1 und 2 nichts finden; „is the largest X“ wird dort „is a/an X“. Vorher/Nachher auf 320 Titeln (120 aus der Diagnose plus 199 Zufallstitel, Seed 20261112): ein neuer Treffer (CALM), 0 Textänderungen. Katalog-Serie: `only_missing` parst nur Titel ohne Katalogzeile; da der Lauf keinen Checkpoint behält, bekommt jeder Lauf eine feste Tickerliste (höchstens 100), sonst belegen früh scheiternde Titel jedes Mal dieselben Plätze.

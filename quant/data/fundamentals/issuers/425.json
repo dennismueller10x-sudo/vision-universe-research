@@ -933,10 +933,10 @@
       "cik": "0001841425",
       "name": "Verde Clean Fuels, Inc.",
       "sic": "2860",
-      "rawFacts": 3253,
-      "mappedFacts": 1253,
-      "unmappedFacts": 2080,
-      "calendarYears": 8,
+      "rawFacts": 3456,
+      "mappedFacts": 1327,
+      "unmappedFacts": 2201,
+      "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -946,28 +946,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 6,
-      "quarterlyPeriods": 25,
+      "quarterlyPeriods": 26,
       "firstPeriodEnd": "2020-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 3.0
         },
         "free_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0,
@@ -987,14 +987,14 @@
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -1015,14 +1015,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1045,48 +1045,48 @@
         }
       },
       "quality": {
-        "HIGH": 122,
-        "MEDIUM": 18
+        "HIGH": 132,
+        "MEDIUM": 19
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 140,
-        "resolvedValues": 140
+        "datableValues": 151,
+        "resolvedValues": 151
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2238,
+        "rules_version": "1.1.0",
+        "total": 2319,
         "by_severity": {
-          "INFO": 2080,
-          "WARNING": 158
+          "INFO": 2201,
+          "WARNING": 118
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 61,
-          "FISCAL_PERIOD_CONFLICT": 9,
+          "CONCEPT_DISAGREEMENT": 55,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 84,
+          "RESTATEMENT_CONFLICT": 59,
           "UNEXPECTED_DURATION": 3,
-          "UNKNOWN_CONCEPT": 2080
+          "UNKNOWN_CONCEPT": 2201
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-055390",
-        "filing_date": "2026-08-11",
+        "accession": "0001628280-26-072226",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 23
+        "periodic_filings": 24,
+        "acceptance_datetime": "2026-11-09T21:19:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ad32920022802e1c58edd1a794d0da8db57ad977c6092db6a309f1346e43cb97",
+      "sourceDigest": "29a39e2734dab4d71ae8728ece627a6114005bf6e8ea7fc6bc6a2f6af350bb23",
       "issuerId": "iss_cik_0001841425"
     },
     {

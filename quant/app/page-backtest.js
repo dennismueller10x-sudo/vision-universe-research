@@ -38,7 +38,7 @@
     var W = 640, H = 220, P = { l: 44, r: 10, t: 12, b: 26 };
     var vals = finiteAll([].concat(path.median, path.p25, path.p75, path.baseMedian || [], [0]));
     var y = scale(Math.min.apply(null, vals), Math.max.apply(null, vals), H - P.b, P.t), x = scale(0, path.weeks.length - 1, P.l, W - P.r);
-    var s = svg(W, H, opts.label || "Typischer Verlauf nach dem Signal");
+    var s = svg(W, H, opts.label || "Typischer Verlauf nach dem Regelereignis");
     function line(arr, cls) { var d = ""; arr.forEach(function (v, i) { if (typeof v === "number") d += (d ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1); }); return node("path", { d: d, class: cls, fill: "none" }); }
     var band = ""; path.p75.forEach(function (v, i) { band += (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1); });
     for (var i = path.p25.length - 1; i >= 0; i--) band += "L" + x(i).toFixed(1) + " " + y(path.p25[i]).toFixed(1);
@@ -125,27 +125,27 @@
   function ruleBody(r, study, kind) {
     var out = [], h = r.horizons, m6 = h.m6, unitDays = kind === "setup";
     var hz = ["m1", "m3", "m6", "m12"];
-    if (kind === "signal") out.push(X.section("Auf einen Blick", "Wie oft lag das Signal nach 6 Monaten höher – und wie oft der Markt in denselben Wochen.", [evidenceFlags(r, study), global.QXEvidence.signalEvidence(ruleEvidence(r)), global.QXEvidence.certifiedLine(null)]));
-    out.push(X.section("Regel", null, [el("p", { class: "dx-bewertung-lesart", text: r.plain }),
+    if (kind === "signal") out.push(X.section("Auf einen Blick", "Wie oft lag das Regelereignis nach 6 Monaten höher – und wie oft der Markt in denselben Wochen.", [evidenceFlags(r, study), global.QXEvidence.signalEvidence(ruleEvidence(r)), global.QXEvidence.certifiedLine(null)]));
+    out.push(X.section("Regel", null, [el("p", { class: "dx-bewertung-lesart", text: X.say(r.plain) }),
       el("dl", { class: "qx-kv" }, [].concat.apply([], [
         ["Version", (r.version ? r.id + " " + r.version : r.id) + " · " + (study.engineVersion || "")],
         r.dailyDefinition ? ["Tagessignal im Radar", r.dailyDefinition] : null,
         ["Raster", r.grain === "WEEKLY" ? "Wochenschluss" : "Handelstag"],
-        ["Einstieg", "Schluss " + (r.grain === "WEEKLY" ? "der Woche" : "des Tages") + " nach dem Signal"],
+        ["Einstieg", "Schluss " + (r.grain === "WEEKLY" ? "der Woche" : "des Tages") + " nach dem Regelereignis"],
         ["Ausstieg", "nach festem Zeitraum (1, 3, 6, 12 Monate)" + (r.contractTrade && r.contractTrade.n ? "; daneben Ausstieg nach Setup-Vertrag" : r.oppositeExit && r.oppositeExit.n ? "; daneben beim Gegensignal" : "")],
         ["Rendite", returnWord(r.returnType) + ", abzüglich " + r.semantics.frictionsBps + " bps je Runde"]
       ].filter(Boolean).map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; })))]));
     out.push(X.section("Zeitraum & Universum", null, [el("dl", { class: "qx-kv" }, [].concat.apply([], [
       ["Zeitraum", (r.firstEvent ? X.dateDe(r.firstEvent) : study.source.titles ? "seit " + (study.source.titles.map(function (t) { return t.from; }).sort()[0] || "–") : "–") + " – " + X.dateDe(r.lastEvent || study.asOf)],
       ["Universum", study.source.titles && study.source.titles.length ? study.source.titles.length + " Titel mit vollständiger Tageshistorie (" + study.source.titles.map(function (t) { return t.ticker; }).slice(0, 12).join(", ") + ")" : int(study.source.titles) + " US-Aktien mit Wochenhistorie"],
-      ["Titel mit Signal", int(r.titles)],
+      ["Titel mit Regelereignis", int(r.titles)],
       ["Überlebende", study.survivorship ? study.survivorship.plain : "Nur heute gelistete Titel – Ergebnisse eher zu günstig."]
     ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; })))]));
     if (kind === "signal") { var sb = sensitivityBlock(r, study); if (sb) out.push(X.section("Überlebenden-Effekt", null, [sb])); }
 
     var years = (r.rolling || []);
-    var timeline = years.length ? bars(years.map(function (y) { return { label: y.year.slice(2), value: y.n, tone: "" }; }), { label: "Signale je Jahr", fmt: int }) : null;
-    out.push(X.section("Signale", r.display.sentence, [timeline, el("p", { class: "qx-small", text: "Signale je Jahr" + (r.semantics.cooldownWeeks ? "; nach einem Signal zählt dasselbe Signal derselben Aktie erst nach " + r.semantics.cooldownWeeks + " Wochen wieder." : ".") })]));
+    var timeline = years.length ? bars(years.map(function (y) { return { label: y.year.slice(2), value: y.n, tone: "" }; }), { label: "Regelereignisse je Jahr", fmt: int }) : null;
+    out.push(X.section("Regelereignisse", r.display.sentence, [timeline, el("p", { class: "qx-small", text: "Regelereignisse je Jahr" + (r.semantics.cooldownWeeks ? "; nach einem Signal zählt dasselbe Regelereignis derselben Aktie erst nach " + r.semantics.cooldownWeeks + " Wochen wieder." : ".") })]));
 
     if (!r.display.allowed) {
       out.push(X.section("Historischer Backtest noch nicht freigegeben", null, [
@@ -153,19 +153,19 @@
           .concat(study.certification && study.certification !== "CERTIFIED" ? [el("li", { text: reasonText("NOT_CERTIFIED") })] : [])),
         el("p", { class: "qx-small", text: "Ergebniszahlen erscheinen erst, wenn die Vertrauensregel sie trägt. Gemessen und geprüft wird trotzdem – siehe Vertrauen." })]));
     } else {
-      out.push(X.section("Ergebnis", "Was nach dem Signal geschah – alle Fälle zusammen, kein einzelner herausgegriffen.", [
+      out.push(X.section("Ergebnis", "Was nach dem Regelereignis geschah – alle Fälle zusammen, kein einzelner herausgegriffen.", [
         el("div", { class: "q-evidence" }, [
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: int(m6.n) }), el("span", { text: "Fälle" }), el("small", { text: "≈ " + int(r.independence ? r.independence.effectiveN : null) + " unabhängig (" + int(r.independence ? r.independence.independentClusters : null) + " Quartale)" })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num " + (m6.baseRate && m6.baseRate.deltaPositiveShare > 0 ? "up" : m6.baseRate && m6.baseRate.deltaPositiveShare < 0 ? "down" : ""), text: m6.baseRate ? pp(m6.baseRate.deltaPositiveShare) : share(m6.positiveShare) }),
             el("span", { text: "gegenüber dem Markt" }), el("small", { text: share(m6.positiveShare) + " im Plus vs. " + (m6.baseRate ? share(m6.baseRate.matchedPositiveShare) : "–") + " derselben Wochen" + (m6.baseRate && m6.baseRate.ci ? " · 95 %: " + pp(m6.baseRate.ci[0]) + " bis " + pp(m6.baseRate.ci[1]) : "") })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: pct(m6.median, 1, true) }), el("span", { text: "Median 6 M." }), el("small", { text: "Markt derselben Woche: Abstand " + pct(m6.vsMarket.medianExcess, 1, true) + " · Mittel " + pct(m6.mean, 1, true) })]),
           el("div", { class: "q-ev-tile" }, [el("b", { class: "num down", text: pct(m6.maxDrawdown.median, 1) }), el("span", { text: "typischer Rückgang" }), el("small", { text: "größter Rückgang im Zeitraum (Median)" })]),
-          el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: num(m6.chanceRisk) }), el("span", { text: "Chance / Risiko" }), el("small", { text: "Median größter Anstieg ÷ größter Rückgang" })])]),
+          el("div", { class: "q-ev-tile" }, [el("b", { class: "num", text: num(m6.chanceRisk) }), el("span", { text: "Anstieg / Rückgang (historisch)" }), el("small", { text: "Median größter Anstieg ÷ größter Rückgang" })])]),
         el("p", { class: "qx-small", text: "Kosten je Runde: " + ["LOW", "BASE", "HIGH"].map(function (k) { var c = m6.costSensitivity && m6.costSensitivity[k]; return k + " " + (c ? c.bps + " bps → Median " + pct(c.median, 1, true) : "–"); }).join(" · ") + ". Base Rate und SPY tragen keine Kosten." }),
         el("h3", { class: "qx-sub", text: "Ergebnis nach Zeitraum" }),
         bars(hz.map(function (k) { return { label: h[k].label, value: h[k].median }; }), { label: "Median nach Zeitraum", fmt: function (v) { return pct(v, 1, true); }, signed: true }),
-        el("h3", { class: "qx-sub", text: "Typischer Verlauf nach dem Signal (Equity-Kurve je Fall)" }),
-        pathChart(r.path, { label: "Median-Verlauf nach dem Signal mit mittlerer Hälfte und Marktbasis", unit: unitDays ? "Tage" : "Wochen" }),
+        el("h3", { class: "qx-sub", text: "Typischer Verlauf nach dem Regelereignis (Equity-Kurve je Fall)" }),
+        pathChart(r.path, { label: "Median-Verlauf nach dem Regelereignis mit mittlerer Hälfte und Marktbasis", unit: unitDays ? "Tage" : "Wochen" }),
         el("p", { class: "q-bt-legend" }, [el("i", { class: "l-line" }), el("span", { text: "Median" }), el("i", { class: "l-band" }), el("span", { text: "mittlere Hälfte der Fälle" }), r.path.baseMedian ? el("i", { class: "l-base" }) : null, r.path.baseMedian ? el("span", { text: "alle Aktien, beliebige Woche" }) : null]),
         el("h3", { class: "qx-sub", text: "Verteilung nach 6 Monaten" }),
         bars(r.distribution.events.map(function (b, i) {
@@ -178,12 +178,12 @@
           el("div", { class: "dx-bewertung-zeile tone-bad" }, [el("span", { class: "dx-bewertung-name", text: "im Minus · Ø " + pct(m6.avgLoss, 1, true) }), el("span", { class: "dx-bewertung-balken", "aria-hidden": "true" }, [el("i", { style: "width:" + Math.round((1 - (m6.positiveShare || 0)) * 100) + "%" })]), el("b", { class: "num", text: share(1 - (m6.positiveShare || 0)) })])])
       ]));
       out.push(X.section("Rückgang", "Wie tief es zwischendurch typischerweise ging.", [
-        areaChart(r.path.drawdownMedian || [], [unitDays ? "0 Tage" : "0 Wochen", (r.path.weeks || r.path.days || []).slice(-1)[0] + (unitDays ? " Tage" : " Wochen")], { label: "Typischer Rückgang vom bisherigen Hoch nach dem Signal" }),
+        areaChart(r.path.drawdownMedian || [], [unitDays ? "0 Tage" : "0 Wochen", (r.path.weeks || r.path.days || []).slice(-1)[0] + (unitDays ? " Tage" : " Wochen")], { label: "Typischer Rückgang vom bisherigen Hoch nach dem Regelereignis" }),
         el("p", { class: "qx-small", text: "Median des Abstands zum bisherigen Hoch seit dem Einstieg. Schlimmste 10 % der Fälle nach 6 Monaten: " + pct(m6.maxDrawdown.p10, 1) + "." })].filter(Boolean)));
       var vs = hz.map(function (k) { return [h[k].label, pct(h[k].median, 1, true), pct(h[k].base.median, 1, true), h[k].vsMarket ? pct(h[k].vsMarket.medianExcess, 1, true) : "–", h[k].vsMarket ? share(h[k].vsMarket.shareAboveMarket) : "–", h[k].vsSpy ? pct(h[k].vsSpy.medianExcess, 1, true) : "–"]; });
-      out.push(X.section("Vergleich", "Eine Rendite ohne Vergleich sagt nichts über das Signal.", [
+      out.push(X.section("Vergleich", "Eine Rendite ohne Vergleich sagt nichts über das Regelereignis.", [
         el("div", { class: "q-bt-table", role: "region", "aria-label": "Vergleich mit Markt und SPY", tabindex: "0" }, [el("table", {}, [
-          el("thead", {}, [el("tr", {}, ["Zeitraum", "Signal (Median)", "Alle Aktien", "Abstand zum Marktmedian derselben Woche", "Anteil über Marktmedian", "Abstand zu SPY"].map(function (t) { return el("th", { text: t }); }))]),
+          el("thead", {}, [el("tr", {}, ["Zeitraum", "Regelereignis (Median)", "Alle Aktien", "Abstand zum Marktmedian derselben Woche", "Anteil über Marktmedian", "Abstand zu SPY"].map(function (t) { return el("th", { text: t }); }))]),
           el("tbody", {}, vs.map(function (row) { return el("tr", {}, row.map(function (t, i) { return el(i ? "td" : "th", { class: i ? "num" : null, text: t }); })); }))])]),
         el("h3", { class: "qx-sub", text: "Abstand zum Marktmedian je Jahr (rollierend)" }),
         bars(years.map(function (y) { return { label: y.year.slice(2), value: y.medianExcess }; }), { label: "Median-Abstand zum Markt je Jahr", fmt: function (v) { return pct(v, 0, true); }, signed: true })]));
@@ -195,11 +195,11 @@
         return el("li", { class: k.state === "PASS" ? "is-pass" : "is-fail" }, [el("span", { text: (k.state === "PASS" ? "✓ " : "✗ ") + c.label }),
           el("small", { text: typeof k.value === "string" ? k.value : k.reason ? reasonText(k.reason) : "" })]);
       })),
-      el("p", { class: "qx-small", text: study.trustRule.plain })]));
+      el("p", { class: "qx-small", text: X.say(study.trustRule.plain) })]));
 
     out.push(X.section("Methodik", null, [el("ul", { class: "q-trust" }, [
       el("li", { text: "Alle Regeln und Parameter stehen vor dem Lauf fest; es wird nichts auf die Daten optimiert." }),
-      el("li", { text: "Ein Signal liest nur Kurse bis zur Signalwoche; der Einstieg liegt danach. Geprüft an echten Fällen mit abgeschnittener und verfälschter Zukunft." }),
+      el("li", { text: "Ein Regelereignis liest nur Kurse bis zur Signalwoche; der Einstieg liegt danach. Geprüft an echten Fällen mit abgeschnittener und verfälschter Zukunft." }),
       el("li", { text: "Lernen, Prüfen, Testen: bis 2010, 2010–2017, ab 2018 – dazu fünf zeitliche Walk-Forward-Abschnitte." }),
       el("li", { text: returnWord(r.returnType) + "; Kosten " + study.frictions.roundTripBps + " bps und Ausführungsabschlag " + study.frictions.slippageBps + " bps je Runde." }),
       el("li", { text: "Keine Prognose und keine Empfehlung: beschrieben wird, was früher folgte." })]),
@@ -218,7 +218,7 @@
       })));
       if (r.parameterStability) kids.push(el("h3", { class: "qx-sub", text: "Parameter-Stabilität" }), el("ul", { class: "qx-small" }, [r.parameterStability.main].concat(r.parameterStability.neighbours).map(function (p, i) {
         return el("li", { text: (i ? "Nachbar " : "Regel ") + p.params.weeks + " Wochen: Median-Abstand " + pct(p.medianExcessM6, 1, true) });
-      }).concat((r.parameterStability.entryDelay || []).map(function (d) { return el("li", { text: "Einstieg " + d.delayWeeks + " Woche(n) nach dem Signal: Median-Abstand " + pct(d.medianExcessM6, 1, true) }); }))));
+      }).concat((r.parameterStability.entryDelay || []).map(function (d) { return el("li", { text: "Einstieg " + d.delayWeeks + " Woche(n) nach dem Regelereignis: Median-Abstand " + pct(d.medianExcessM6, 1, true) }); }))));
       if (r.independence) kids.push(el("h3", { class: "qx-sub", text: "Unabhängigkeit" }), el("p", { class: "qx-small", text: int(r.independence.uniqueTitles) + " Titel, " + int(r.independence.uniquePeriods) + " Wochen, " + int(r.independence.independentClusters) + " Quartale. Weil Fälle derselben Zeit zusammenhängen, entsprechen die Fälle etwa " + int(r.independence.effectiveN) + " unabhängigen (Design-Effekt " + num(r.independence.designEffect) + ")." }));
       if (r.display.allowed && r.oppositeExit && r.oppositeExit.n) kids.push(el("h3", { class: "qx-sub", text: "Ausstieg beim Gegensignal" }), el("p", { class: "qx-small", text: int(r.oppositeExit.n) + " Fälle, Median " + pct(r.oppositeExit.median, 1, true) + ", " + share(r.oppositeExit.positiveShare) + " im Plus, Haltedauer im Median " + r.oppositeExit.medianHoldingWeeks + " Wochen; " + share(r.oppositeExit.shareEndedByOpposite) + " endeten durch das Gegensignal, der Rest nach 12 Monaten." }));
       if (r.display.allowed && r.timeToOutcome) kids.push(el("h3", { class: "qx-sub", text: "Zeit bis zum Ausgang (±10 %)" }), el("p", { class: "qx-small", text: share(r.timeToOutcome.upFirstShare) + " erreichten zuerst +10 % (Median " + (r.timeToOutcome.medianWeeksUp || r.timeToOutcome.medianDaysUp) + (unitDays ? " Tage" : " Wochen") + "), " + share(r.timeToOutcome.downFirstShare) + " zuerst −10 % (Median " + (r.timeToOutcome.medianWeeksDown || r.timeToOutcome.medianDaysDown) + (unitDays ? " Tage" : " Wochen") + ")." }));
@@ -246,7 +246,7 @@
         ["Genug Stichtage", kindCert.eta && kindCert.eta.historyDates && kindCert.eta.historyDates.date ? "etwa " + X.dateDe(kindCert.eta.historyDates.date) : "–"],
         ["Freigabe", kindCert.ownerApproval && kindCert.ownerApproval.required ? "Die Setup-Methodik verlangt nach bestandenen Gates eine ausdrückliche Owner-Freigabe." : "automatisch"]
       ].map(function (x) { return [el("dt", { text: x[0] }), el("dd", { text: x[1] })]; }))) : null,
-      el("p", { class: "qx-small", text: "Einstieg zum Schluss des Folgetags (Vergleich: Schluss des Stichtags); Ausstieg bei Schluss unter der Invalidierung, Schluss an der ersten Zielzone, veröffentlichtem Abstieg oder nach 126 Handelstagen. Kosten LOW/BASE/HIGH. Ergebniszahlen erscheinen erst nach der Zertifizierung." }),
+      el("p", { class: "qx-small", text: "Einstieg zum Schluss des Folgetags (Vergleich: Schluss des Stichtags); Ausstieg bei Schluss unter der Ungültig-Marke laut Methode, an der ersten Marke der Methode oberhalb, bei veröffentlichtem Abstieg oder nach 126 Handelstagen. Kosten LOW/BASE/HIGH. Ergebniszahlen erscheinen erst nach der Zertifizierung." }),
       kindCert.replay ? el("p", { class: "qx-small", text: "Nachgeprüft: " + kindCert.replay.parity + " veröffentlichte Setup-Stände wurden aus Kursen bis zum jeweiligen Tag exakt nachgerechnet. Die Rekonstruktion ist kein Ersatz für veröffentlichte Stände und liefert keine Ergebnisse." }) : null
     ]));
     return out;
@@ -309,9 +309,59 @@
       ])]);
   }
 
-  async function render(main, ctx, ruleId) {
+  /* Konzept Quant 2026-11 (QX07, Screen q-backtest): Backtesting heißt „Forschung“ (#/forschung) und trägt immer das Etikett
+     „Forschung, nicht zertifiziert“. Stand in drei Zahlen, „Marktweit geprüft“ mit Balken um die Null in Prozentpunkten,
+     „Sammelt noch Historie“, „Was zur Zertifizierung fehlt“ (die bisherige Übersicht, aufklappbar). Nur vorhandene Zahlen. */
+  var KIND_SHORT = { SETUP_BACKTEST: null, STRATEGY_BACKTEST: "Anlagestile", FACTOR_RANKING_BACKTEST: "Eigenschaften-Rang" };
+  async function renderV4(main, ctx, ruleId) {
+    var U = global.VUUI, page = el("div", { class: "vu-ui qv3 qk qk-bt" });
+    main.append(page);
+    var all = await Promise.all([ctx.api.getBacktest("signal"), ctx.api.getBacktest("certification"), ctx.api.getBacktest("outcomes")]);
+    var signal = all[0], cert = all[1];
+    var head = '<span class="qk-tag qk-tag--ink">Forschung, nicht zertifiziert</span>';
+    if (signal.state !== "AVAILABLE" || cert.state !== "AVAILABLE") { page.innerHTML = head + U.blank("Die Studien konnten gerade nicht geladen werden."); return; }
+    if (ruleId) {
+      page.innerHTML = '<a class="qv3-back" href="' + U.esc(X.routes.backtest()) + '"><span class="vu-round" aria-hidden="true">' + U.glyph("back", 18) + '</span><span class="vu-sm vu-mu">Forschung</span></a>' + head;
+      var legacy = el("div", { class: "qk-bt-legacy" }); page.append(legacy);
+      await render(legacy, ctx, ruleId, true);
+      var hero = legacy.querySelector(".q-hero"); if (hero) hero.remove();
+      var picks = legacy.querySelector(".q-bt-picks"); if (picks) picks.remove();
+      /* Die Regelseite braucht eine eigene Hauptüberschrift (der alte Kopf mit h1 entfällt); Name der Regel bzw. des Setups. */
+      var rh = el("h1", { class: "vu-lt qk-bt-t", text: RULE_LABEL[ruleId] || "Regel" });
+      var sub = legacy.querySelector(".q-bt-head h2"); if (sub && sub.textContent === rh.textContent) sub.remove();
+      legacy.before(rh);
+      return;
+    }
+    var nOf = function (st) { return cert.kinds.filter(function (k) { return k.status === st; }).length; };
+    var rules = signal.rules.filter(function (r) { return r.horizons.m6 && r.horizons.m6.baseRate && typeof r.horizons.m6.baseRate.deltaPositiveShare === "number"; })
+      .sort(function (a, b) { return b.horizons.m6.baseRate.deltaPositiveShare - a.horizons.m6.baseRate.deltaPositiveShare; });
+    var max = Math.max.apply(null, [0.005].concat(rules.map(function (r) { return Math.abs(r.horizons.m6.baseRate.deltaPositiveShare); })));
+    var ppTxt = function (v) { var x = v * 100; return (x > 0 ? "+" : x < 0 ? "−" : "") + Math.abs(x).toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }); };
+    var setupCert = cert.kinds.filter(function (k) { return k.id === "SETUP_BACKTEST"; })[0];
+    var collecting = [];
+    if (setupCert && setupCert.status !== "CERTIFIED") collecting.push(["Setup bestätigt", X.routes.backtest("SETUP_CONFIRMED")], ["Setup entsteht", X.routes.backtest("SETUP_NEW")]);
+    cert.kinds.forEach(function (k) { if (KIND_SHORT[k.id] && k.status === "COLLECTING_HISTORY") collecting.push([KIND_SHORT[k.id], null]); });
+    var h = head + '<h1 class="vu-lt qk-bt-t">Hatte eine Meldung früher einen Vorteil?</h1><p class="vu-lead">Für jede Meldung: wie es 6 Monate danach im Vergleich zum Markt derselben Wochen lief.</p>' +
+      '<div class="qk-today qk-bt-stand"><span class="qk-tg">' + [[nOf("CERTIFIED") + " von " + cert.kinds.length, "zertifiziert"], [String(nOf("LIMITED")), "eingeschränkt geprüft"], [String(nOf("COLLECTING_HISTORY")), "sammeln Historie"]].map(function (x) { return '<span><b class="vu-num">' + x[0] + "</b><span>" + x[1] + "</span></span>"; }).join("") + "</span></div>" +
+      '<div class="qk-rh"><div class="qk-rh-t"><h2>Marktweit geprüft</h2><span class="vu-xs vu-mu qk-sort">Prozentpunkte zum Markt</span></div></div><div class="vu-box qk-list">' +
+      rules.map(function (r) {
+        var d = r.horizons.m6.baseRate.deltaPositiveShare, w = Math.max(2, Math.round(Math.abs(d) / max * 50)), edge = global.QXEvidence.edgeOf(ruleEvidence(r));
+        return '<a class="qk-bt-r" href="' + U.esc(X.routes.backtest(r.id)) + '"><span><b>' + U.esc(RULE_LABEL[r.id] || r.id) + '</b><span>' + U.esc(edge.label) + '</span></span><span class="qk-bt-bar" aria-hidden="true"><i class="' + (d >= 0 ? "is-up" : "is-dn") + '" style="width:' + w + "%;" + (d >= 0 ? "left:50%" : "right:50%") + '"></i></span><b class="vu-num">' + ppTxt(d) + "</b></a>";
+      }).join("") + "</div>" +
+      '<div class="qk-help">' + U.help("+1,4 heißt: Nach der Meldung lagen 1,4 Prozentpunkte mehr Fälle nach 6 Monaten höher als im Markt derselben Wochen. Vergangenheit, keine Prognose.") + "</div>" +
+      (collecting.length ? '<div class="qk-rh"><div class="qk-rh-t"><h2>Sammelt noch Historie</h2></div></div><div class="vu-box qk-list">' + collecting.map(function (c) {
+        return (c[1] ? '<a class="qk-bt-c" href="' + U.esc(c[1]) + '">' : '<div class="qk-bt-c">') + "<b>" + U.esc(c[0]) + "</b>" + U.verdict("none", "sammelt") + (c[1] ? "</a>" : "</div>"); }).join("") + "</div>" : "");
+    page.innerHTML = h;
+    var more = el("details", { class: "vu-box qk-bt-more" }, [el("summary", {}, [el("b", { text: "Was zur Zertifizierung fehlt" })])]);
+    var body = el("div", { class: "qk-bt-legacy" }); more.append(body); page.append(more);
+    await render(body, ctx, null, true);
+    var hero = body.querySelector(".q-hero"); if (hero) hero.remove();
+    var picks = body.querySelector(".q-bt-picks"); if (picks) picks.remove();
+  }
+  async function render(main, ctx, ruleId, inner) {
+    if (!inner && global.VUUI) return renderV4(main, ctx, ruleId);
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Backtesting" }),
-      el("h1", { class: "qx-h1", text: "Hatte ein Signal früher wirklich einen Vorteil?" }),
+      el("h1", { class: "qx-h1", text: "Hatte ein Regelereignis früher wirklich einen Vorteil?" }),
       el("p", { class: "q-hero-lead v2-lead", text: "Für jede Regel: wie oft die Fälle nach 6 Monaten höher lagen – und wie oft der ganze Markt in denselben Wochen. Dazu, wie belastbar der Vergleich ist und was noch fehlt. Keine Prognose, keine Empfehlung." })]));
     var all = await Promise.all([ctx.api.getBacktest("signal"), ctx.api.getBacktest("certification"), ctx.api.getBacktest("outcomes")]);
     var signal = all[0], cert = all[1], outcomes = all[2].state === "AVAILABLE" ? all[2] : null;

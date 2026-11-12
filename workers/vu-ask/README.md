@@ -56,7 +56,9 @@ curl -s -H "Authorization: Bearer $VU_ASK_ADMIN_KEY" https://vu-ask.little-credi
 
 ## Herkunft und Fehlermeldungen
 
-Fragen dürfen von `VU_ASK_ALLOWED_ORIGINS` und immer von der App kommen (`capacitor://localhost` für iOS, `https://localhost` für Android; `src/index.mjs`, `APP_ORIGINS`). `/ask/` zeigt jede Ablehnung als Karte mit Titel und Satz (`ask/engine.js`, `failure`) und bricht nach 45 Sekunden ab; der Live-Test im Deploy fragt einmal als Website und einmal als App.
+Fragen dürfen von `VU_ASK_ALLOWED_ORIGINS` und immer von der App kommen (`capacitor://localhost` für iOS, `https://localhost` für Android; `src/index.mjs`, `APP_ORIGINS`). `/ask/` zeigt jede Ablehnung als Karte mit Titel und Satz (`ask/engine.js`, `failure`) und bricht nach 45 Sekunden ab; der Live-Test im Deploy fragt einmal als Website und einmal als App und stellt dieselbe Frage danach im echten Browser auf `/ask/` (`scripts/browser-live-qa.mjs`, Bildschirmfoto als Artefakt).
+
+Darstellung und Stimme (Owner-Vorlage 10.11.2026): Regeln als Klartext-Chips („Börsenwert 0,3–2 Mrd. $“, „KGV bis 15“, „mehr Kasse als Schulden“; `ask/engine.js`, `chipText`), Dollarbeträge mit drei Stellen. Vorgelesen wird mit der besten Systemstimme des Geräts (`pickVoice`: „Anna (Erweitert)“, „Google Deutsch“, „Katja Online (Natural)“), Tempo 0,95, Einheiten ausgeschrieben (`speechText`: „96,7 Milliarden Dollar“). Keine bezahlte Stimme.
 
 ## Einrichtung (einmalig, etwa 5 Minuten)
 

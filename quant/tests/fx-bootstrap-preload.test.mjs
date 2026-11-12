@@ -8,7 +8,7 @@ import vm from "node:vm";
 const ROOT = new URL("../../", import.meta.url);
 const SCRIPTS = ["fx-provider-registry", "fx-rates", "fx-freshness", "currency-registry", "currency-class",
   "currency-engine", "money-format", "currency-preference", "currency-contract", "bootstrap"];
-const ecb = JSON.parse(readFileSync(new URL("quant/data/market/fx/ecb/EURUSD.json", ROOT)));
+const ecb = JSON.parse(readFileSync(new URL("./fixtures/fx-bootstrap/EURUSD.json", import.meta.url)));
 const license = JSON.parse(readFileSync(new URL("quant/config/fx-license.json", ROOT)));
 
 function context() {

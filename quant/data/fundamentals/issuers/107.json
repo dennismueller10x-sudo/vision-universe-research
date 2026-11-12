@@ -6,9 +6,9 @@
       "cik": "0000031107",
       "name": "EASTERN CO",
       "sic": "3420",
-      "rawFacts": 17502,
-      "mappedFacts": 6815,
-      "unmappedFacts": 10982,
+      "rawFacts": 17853,
+      "mappedFacts": 6895,
+      "unmappedFacts": 11324,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 61,
+      "quarterlyPeriods": 62,
       "firstPeriodEnd": "2009-01-03",
-      "lastPeriodEnd": "2026-07-04",
+      "lastPeriodEnd": "2026-10-03",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-01-02",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 16.0
         },
         "eps_diluted": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-01-02",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 16.0
         },
         "free_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-01-02",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 16.0,
@@ -52,28 +52,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 14.08
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-01-02",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-01-02",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2010-01-02",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 16.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2009-01-03",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2026-01-03",
           "historyYears": 14.08
@@ -117,58 +117,60 @@
         }
       },
       "quality": {
-        "HIGH": 607,
+        "HIGH": 615,
         "MEDIUM": 44
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 651,
-        "resolvedValues": 651
+        "datableValues": 659,
+        "resolvedValues": 659
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 11883,
+        "rules_version": "1.1.0",
+        "total": 12073,
         "by_severity": {
-          "INFO": 10982,
+          "INFO": 11324,
           "ERROR": 6,
-          "WARNING": 895
+          "WARNING": 743
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 603,
+          "CONCEPT_DISAGREEMENT": 464,
           "FISCAL_PERIOD_CONFLICT": 12,
           "FUTURE_DATA_LEAK": 6,
+          "FUTURE_PERIOD_END": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
-          "RESTATEMENT_CONFLICT": 276,
-          "UNKNOWN_CONCEPT": 10982
+          "RESTATEMENT_CONFLICT": 262,
+          "UNKNOWN_CONCEPT": 11324
         }
       },
       "latestFiling": {
-        "accession": "0001654954-26-007478",
-        "filing_date": "2026-08-11",
+        "accession": "0001654954-26-009665",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 131
+        "periodic_filings": 132,
+        "acceptance_datetime": "2026-11-10T22:09:38.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "a84b7ef8e9159153ad11d71f5a8b3fd96e0174f45f8be6d61290d9a5a5a0377b",
+      "sourceDigest": "8e591e0d795d2d22eeadac3c19b2e835a095b071f45ecbb16deb0182d3a3b72a",
       "issuerId": "iss_cik_0000031107"
     },
     {
       "cik": "0000883107",
       "name": "SOLESENCE, INC.",
       "sic": "2844",
-      "rawFacts": 13244,
-      "mappedFacts": 5211,
-      "unmappedFacts": 8217,
+      "rawFacts": 14438,
+      "mappedFacts": 5636,
+      "unmappedFacts": 9157,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -286,36 +288,37 @@
         "resolvedValues": 534
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8557,
+        "rules_version": "1.1.0",
+        "total": 9544,
         "by_severity": {
-          "INFO": 8217,
-          "WARNING": 340
+          "INFO": 9157,
+          "WARNING": 387
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 301,
-          "RESTATEMENT_CONFLICT": 39,
-          "UNKNOWN_CONCEPT": 8217
+          "CONCEPT_DISAGREEMENT": 302,
+          "RESTATEMENT_CONFLICT": 85,
+          "UNKNOWN_CONCEPT": 9157
         }
       },
       "latestFiling": {
-        "accession": "0001999371-26-018231",
-        "filing_date": "2026-08-19",
-        "form": "10-Q",
-        "periodic_filings": 126
+        "accession": "0001999371-26-025096",
+        "filing_date": "2026-11-10",
+        "form": "10-Q/A",
+        "periodic_filings": 131,
+        "acceptance_datetime": "2026-11-10T21:44:02.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "fe49f1bcec0cde8260c07c7c0c24da61fd85fb3ea72bc687ae26ca62dd31af6a",
+      "sourceDigest": "868913257117d26643c17de95607e86c73ac24718b0aa69e4de3667c3d02014b",
       "issuerId": "iss_cik_0000883107"
     },
     {
@@ -324,7 +327,7 @@
       "sic": "6798",
       "rawFacts": 28639,
       "mappedFacts": 6822,
-      "unmappedFacts": 21444,
+      "unmappedFacts": 21582,
       "calendarYears": 19,
       "industry": "REIT",
       "industryMetrics": {
@@ -485,37 +488,39 @@
         "resolvedValues": 592
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 22347,
+        "rules_version": "1.1.0",
+        "total": 22460,
         "by_severity": {
-          "INFO": 21444,
+          "INFO": 21582,
           "ERROR": 9,
-          "WARNING": 894
+          "WARNING": 869
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 742,
+          "CONCEPT_DISAGREEMENT": 724,
           "FUTURE_DATA_LEAK": 9,
-          "RESTATEMENT_CONFLICT": 140,
-          "UNEXPECTED_DURATION": 4,
+          "FUTURE_PERIOD_END": 1,
+          "RESTATEMENT_CONFLICT": 133,
+          "UNEXPECTED_DURATION": 3,
           "UNIT_MISMATCH": 8,
-          "UNKNOWN_CONCEPT": 21444
+          "UNKNOWN_CONCEPT": 21582
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-326170",
-        "filing_date": "2026-07-30",
+        "accession": "0001193125-26-453735",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 125
+        "periodic_filings": 126,
+        "acceptance_datetime": "2026-11-09T21:42:28.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
       "sourceDigest": "856692883f610d48297f44e39d411d554f49702e82c59021c5a32b454952b5f8",

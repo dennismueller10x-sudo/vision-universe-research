@@ -11,9 +11,10 @@
   "label": "Insights",
   "href": "/insights/",
   "icon": "insights",
-  "claim": "Tagesthemen und Reports, eingeordnet mit unseren Daten",
+  "claim": "Tagesthemen, Aktienmagazin und Reports",
   "entries": [
    ["Artikel", "/insights/", "▤"],
+   ["Aktienmagazin", "/insights/magazin/", "▣"],
    ["Reports", "/insights/reports/", "▥"]
   ]
  },
@@ -21,7 +22,11 @@
  "reads": [],
  "producers": [
   "products/insights/build.mjs",
-  "products/insights/snapshot.mjs"
+  "products/insights/snapshot.mjs",
+  "products/insights/screens.mjs",
+  "products/insights/heft_veroeffentlichen.py",
+  "products/insights/themen.mjs",
+  "products/insights/indexnow.mjs"
  ],
  "tests": [
   "products/insights/tests/*.test.mjs"

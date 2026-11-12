@@ -10,6 +10,7 @@ name: Pipeline woechentlich (Buendel pipeline-weekly)
 #   deckung                      vormals coverage-metrics.yml
 #   index                        vormals index-membership.yml
 #   musterdepots                 vormals quant-model-depots.yml
+#   backtest-forschung           neu (11/2026): Zusatzmethoden der Backtest-Pruefffaelle, Forschung, nicht zertifiziert
 #   sic-historie                 vormals sec-sic-history.yml
 #   tiingo2-universum            vormals tiingo2-universe-refresh.yml
 #   sec-fundamentals             vormals update-sec-fundamentals.yml
@@ -35,6 +36,7 @@ on:
           - deckung
           - index
           - musterdepots
+          - backtest-forschung
           - sic-historie
           - tiingo2-universum
           - sec-fundamentals
@@ -100,6 +102,7 @@ jobs:
       deckung: ${{ steps.wahl.outputs.deckung }}
       index: ${{ steps.wahl.outputs.index }}
       musterdepots: ${{ steps.wahl.outputs.musterdepots }}
+      backtest_forschung: ${{ steps.wahl.outputs.backtest_forschung }}
       sic_historie: ${{ steps.wahl.outputs.sic_historie }}
       tiingo2_universum: ${{ steps.wahl.outputs.tiingo2_universum }}
       sec_fundamentals: ${{ steps.wahl.outputs.sec_fundamentals }}
@@ -137,7 +140,7 @@ jobs:
           export PUSH_FILES PUSH_FILES_UNKNOWN
           python3 - <<'PY'
           import fnmatch, json, os, re
-          SPEC = json.loads(r"""{"deckung": {"crons": ["0 6 * * 0"], "dispatch": true, "required": []}, "index": {"crons": ["20 7 * * 6"], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "logos": {"crons": ["17 4 * * 1", "47 3 * * 2-6"], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": [], "workflow_run": {"branches": ["main"], "branches-ignore": null, "types": ["completed"], "workflows": ["Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"]}}, "musterdepots": {"crons": ["23 7 * * 6"], "dispatch": true, "required": []}, "namen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "sec-fundamentals": {"crons": ["0 6 * * 1"], "dispatch": true, "required": []}, "sic-historie": {"crons": [], "dispatch": true, "required": []}, "tiingo2-universum": {"crons": ["20 8 * * 1-5"], "dispatch": true, "push": {"branches": ["codex/tiingo2-universe-hardening"]}, "required": ["max_symbols"]}}""")
+          SPEC = json.loads(r"""{"backtest-forschung": {"crons": ["41 5 * * 0"], "dispatch": true, "required": []}, "deckung": {"crons": ["0 6 * * 0"], "dispatch": true, "required": []}, "index": {"crons": ["20 7 * * 6"], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "logos": {"crons": ["17 4 * * 1", "47 3 * * 2-6"], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": [], "workflow_run": {"branches": ["main"], "branches-ignore": null, "types": ["completed"], "workflows": ["Marktdaten-Refresh (Produktuniversum, Tageskurse + Faktoren + Discover)"]}}, "musterdepots": {"crons": ["23 7 * * 6"], "dispatch": true, "required": []}, "namen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "sec-fundamentals": {"crons": ["0 6 * * 1"], "dispatch": true, "required": []}, "sic-historie": {"crons": [], "dispatch": true, "required": []}, "tiingo2-universum": {"crons": ["20 8 * * 1-5"], "dispatch": true, "push": {"branches": ["codex/tiingo2-universe-hardening"]}, "required": ["max_symbols"]}}""")
           ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
           def glob_re(p):
               # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
@@ -588,6 +591,45 @@ jobs:
       - name: In den Datenzweig (nur main)
         if: github.ref == 'refs/heads/main'
         run: scripts/ci/push-data-branch.sh data/live quant/data/product/model-depots-v1.json
+
+  # --- backtest-forschung: neu (11/2026). Rechnet die festen Pruefffaelle (docs/quant/backtest-demos/cases.json)
+  # mit dem Research-Runner und schreibt die Zusatzmethoden (Monte Carlo, Walk-Forward, OOS, Regime,
+  # Sensitivitaet, Ereignis, Rebalancing) kompakt nach quant/data/product/backtest-research-v1.json.
+  # Forschung, nicht zertifiziert; nur interne Ansicht (audience INTERNAL). Datenzweig, BRANCH_ONLY.
+  backtest-forschung:
+    needs: [auswahl]
+    if: >-
+      needs.auswahl.outputs.backtest_forschung == 'true'
+    permissions:
+      contents: write
+    concurrency:
+      group: backtest-research-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Datenzweig in den Arbeitsbaum
+        run: scripts/ci/seed-data-branch.sh alle
+
+      - name: Backtest-Forschung rechnen (Erzeuger)
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=6144 scripts/quant/research/build-backtest-research.cjs --out quant/data/product/backtest-research-v1.json
+
+      - name: Vertrag und Tests
+        run: |
+          set -euo pipefail
+          BACKTEST_RESEARCH_ARTIFACT=quant/data/product/backtest-research-v1.json node --test quant/tests/backtest-research.test.mjs
+
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live quant/data/product/backtest-research-v1.json
 
   # --- sic-historie: vormals sec-sic-history.yml
   sic-historie:

@@ -473,7 +473,8 @@ test("EHV-1 · Heute anwendbar: Anteil und genau diese Aktien aus elliottApplica
   assert.equal(a.asOf, "2026-11-06");
   assert.deepEqual(a.rows.map((r) => r.t), ["AAA", "BBB"], "gut anwendbar zuerst");
   assert.equal(a.rows[0].n, "MINISO Group Holding Limited", "Rohname bleibt im Datensatz");
-  assert.equal(M.shortName(a.rows[0].n, "AAA"), "Miniso");
+  assert.equal(M.shortName(a.rows[0].n, "AAA"), "MINISO");
+  assert.equal(M.shortName("NVIDIA Corporation", "NVDA"), "NVIDIA");
   assert.equal(M.countLine(a.rows[0]), "Zickzack abgeschlossen · Erholung im Abwärtstrend");
   assert.equal(M.countLine(a.rows[1]), "Flache Korrektur abgeschlossen · Aufwärtstrend läuft");
   assert.equal(M.invalidLine(a.rows[0]), "ungültig über 13,30 $");
@@ -519,4 +520,19 @@ test("EHV-5 · Leerzustand: ein Satz mit Grund und Stand statt eines grauen Kast
   const app = read("elliott/app.js");
   assert.match(app, /role: "alert" \}, \[failText\(\)/, "Fehler zeigt den Satz");
   assert.doesNotMatch(app, /Die Elliott-Übersicht ist gerade nicht verfügbar/, "kein Kasten ohne Grund");
+});
+
+test("EHV-3 · Aktie, zwei Fälle: zählbar mit drei Sätzen und Kapiteln, nicht zählbar mit Karte und zwei Wegen", () => {
+  const cb = read("quant/app/page-chartbild.js");
+  const seg = cb.slice(cb.indexOf("function wavesPage(o) {"), cb.indexOf("async function chartbild("));
+  assert.ok(seg.length > 1000, "wavesPage gefunden");
+  assert.match(cb, /function ewCountable\(E\) \{ var ap = E && E\.applicability; return !!\(E && E\.primary && ap && !ap\.abstain && \(ap\.level === "HIGH" \|\| ap\.level === "MODERATE"\)\); \}/, "dieselbe Einstufung wie die Startseite");
+  for (const t of ["Die Lesart in drei Sätzen", "Struktur", "Grenze", "Sicherheit", "Die Wellen im Chart", "Andere Lesarten", "Was früher in ähnlichen Lagen geschah", "Forschung, nicht zertifiziert",
+    "Keine Zählung", "lassen sich gerade keine Wellen sauber zählen.", "Chart-Lage in Technical ansehen", "Aktien mit sauberer Zählung", "/technical/#/chart/", "/elliott/#/?zaehlbar=1"]) assert.ok(seg.includes(t), t);
+  assert.doesNotMatch(seg, /Zielbereich|Ziel\s*[12]|Zone\s*1|abwarten|Technischer Ausblick/, "keine Ziele, kein zweiter Ausblick");
+  const asm = cb.slice(cb.indexOf("    if (inElliott) {\n      /* Konzept EHV"), cb.indexOf("    } else {\n      order.forEach"));
+  assert.match(asm, /wavesPage\(/);
+  assert.doesNotMatch(asm.replace(/\/\*[\s\S]*?\*\//g, ""), /Technischer Ausblick|hero|levels/, "Elliott hängt keinen Ausblick, keine Kennzahlen mit Zielbereich an");
+  assert.doesNotMatch(cb, /Rücklauf abwarten/);
+  assert.match(cb, /var io = inElliott && !replayStep && !pjOnChart && a\.overlays \? \{ zones: \[\], invalidations:/, "Chart im Elliott-Produkt: nur die Ungültig-Marke");
 });

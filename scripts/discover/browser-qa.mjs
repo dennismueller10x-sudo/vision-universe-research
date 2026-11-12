@@ -9,6 +9,9 @@ import assert from 'node:assert/strict';
 import {SPECS,waitRendered} from './direct-link-lib.mjs';
 import {activeDefects, createRecorder} from './known-defects.mjs';
 const require=createRequire(import.meta.url);
+const Reihen=require('../../discover/engines/reihen.js');
+/* Ueberschriften der Startseiten-Plaetze (discover/ui/reihen.js) fuer den n-home-Reihenfolgevergleich. */
+const NHOME_TITEL={'im-blick':'Top 10 heute','new-52-week-highs':'Neue Jahreshochs',themes:'Themenwelten',comeback:'Comeback?','langfristige-compounder':'Langfristige Compounder',ueberraschungen:'Kennt kaum jemand','bekannte-namen':'Bekannte Namen in Bewegung',strategies:'Strategien','breakout-watch':'Gerade in Bewegung'};
 let playwright;
 try{playwright=require('playwright');}catch{playwright=require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES+'/playwright');}
 const arg=(key,otherwise)=>{const i=process.argv.indexOf('--'+key);return i<0?otherwise:process.argv[i+1];};
@@ -63,8 +66,16 @@ async function premiumMobileAudit(page,key){
  const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > section')).slice(0,3).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dr-sec--markt')?'markt':n.classList.contains('dr-sec--top10')?'top10':n.className));
  assert.deepEqual(top,['billboard','markt','top10'],'n-home: oben fest Billboard, Markt, Top 10: '+top.join(' | '));
  const order=await page.locator('.v2-journey > section .dr-head h2').allTextContents();
- const expected=['Top 10 heute','Neue Jahreshochs','Themenwelten','Comeback?','Langfristige Compounder','Kennt kaum jemand','Bekannte Namen in Bewegung','Strategien','Gerade in Bewegung'];
- assert.deepEqual(order.filter(t=>expected.includes(t)),expected.filter(t=>order.includes(t)),'n-home section order: '+order.join(' | '));
+ /* Grundreihenfolge (keine Reihe mit neuen Treffern) bleibt Vertrag; die erwartete Reihenfolge der ausgelieferten Seite
+    rechnet dieselbe Regel wie die Seite (Reihen.homePlan, Regel 3 „Reihen mit neuen Treffern ruecken nach oben“) aus der
+    ausgelieferten meta.json. Vorher stand hier nur die feste Liste; seit Karten firstSeen tragen (Marktlauf 666625e416),
+    rueckten Reihen regelgerecht nach oben und die Pruefung wurde rot, ohne dass sich die Seite geaendert hatte. */
+ const basis=['Top 10 heute','Neue Jahreshochs','Themenwelten','Comeback?','Langfristige Compounder','Kennt kaum jemand','Bekannte Namen in Bewegung','Strategien','Gerade in Bewegung'];
+ const homeMeta=await page.evaluate(async()=>(await fetch('/discover/data/meta.json',{cache:'no-store'})).json());
+ const planTitel=fresh=>Reihen.homePlan(Reihen.available(homeMeta),{fresh}).map(s=>NHOME_TITEL[s.row||s.kind]).filter(t=>basis.includes(t));
+ assert.deepEqual(planTitel([]),basis,'n-home Grundreihenfolge (Reihen.homePlan ohne neue Treffer)');
+ const expected=planTitel(Reihen.freshRows(homeMeta));
+ assert.deepEqual(order.filter(t=>expected.includes(t)),expected.filter(t=>order.includes(t)),'n-home section order: '+order.join(' | ')+' (erwartet: '+expected.join(' | ')+')');
  for(const must of ['Top 10 heute','Themenwelten','Strategien'])assert(order.includes(must),'n-home without '+must+': '+order.join(' | '));
  assert(order.length<=14,'At most 14 rows on the home page: '+order.length);
  const palette=await page.evaluate(()=>{const rgb=v=>(v.match(/[\d.]+/g)||[]).slice(0,3).map(Number),hue=c=>{const [r,g,b]=c,mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn;};
@@ -83,6 +94,10 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await ctx.addInitScript(()=>{window.__dv2Vitals={cls:0,longTasks:0,longTaskMs:0,shiftSources:[]};try{new PerformanceObserver(list=>list.getEntries().forEach(e=>{if(!e.hadRecentInput){window.__dv2Vitals.cls+=e.value;window.__dv2Vitals.shiftSources.push({value:e.value,sources:(e.sources||[]).map(s=>({node:s.node?.className||s.node?.tagName,previousRect:s.previousRect,currentRect:s.currentRect}))});}})).observe({type:'layout-shift',buffered:true});new PerformanceObserver(list=>list.getEntries().forEach(e=>{window.__dv2Vitals.longTasks++;window.__dv2Vitals.longTaskMs+=e.duration;})).observe({type:'longtask',buffered:true});}catch{}});
  const page=await ctx.newPage();const key=width+'-'+colorScheme+(engine==='webkit'?'-webkit':'');
  page.on('pageerror',e=>errors.push({key,message:e.message}));
+ /* Offene Abrufe der Seite zählen: Ein Hash-Wechsel wartet in Playwright nicht auf networkidle, ein reload direkt danach bricht
+    laufende Abrufe ab (WebKit meldet sie als Seitenfehler „access control checks“). Vor jedem reload erst ruhig werden lassen. */
+ const inflight=new Set();page.on('request',r=>inflight.add(r));page.on('requestfinished',r=>inflight.delete(r));page.on('requestfailed',r=>inflight.delete(r));
+ const quiet=async()=>{const end=Date.now()+15000;let since=0;while(Date.now()<end){if(inflight.size===0){if(!since)since=Date.now();else if(Date.now()-since>=400)return;}else since=0;await page.waitForTimeout(50);}};
  const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
  const entryStarted=Date.now();await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor({state:'visible'});
  // Measure the cold Home entry before unrelated settings, theme and reload checks.
@@ -150,7 +165,9 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
    await home.goto(base+'/',{waitUntil:'domcontentloaded'});
    /* Seit 06.10.2026 traegt die Startseite ihren eigenen Landingpage-Kopf
       (<meta name="vu-navigation" content="none">) statt der Plattform-Navigation. */
-   assert.equal(await home.locator('vu-navigation').count(),0,'Landing page must not stack the platform header on its own');
+   /* Seit 11.11.2026 (Owner 10.11.2026: Rechtliches nur im Menue) traegt die Startseite zusaetzlich das zentrale Menue
+      ohne zweiten Kopf (<vu-navigation menu-only>); ein vollstaendiger Plattform-Kopf bleibt ausgeschlossen. */
+   assert.equal(await home.locator('vu-navigation:not([menu-only])').count(),0,'Landing page must not stack the platform header on its own');
    /* Redesign 2027 (E01): Kopf header.hd mit .hd-logo; bis dahin #lp-head mit .lp-logo. */
    const bounds=await home.locator('#lp-head, header.hd').first().evaluate(n=>{const logo=n.querySelector('.lp-logo, .hd-logo').getBoundingClientRect();return {viewport:innerWidth,logo:logo.toJSON(),overflow:document.documentElement.scrollWidth-innerWidth};});
    assert(bounds.logo.left>=0&&bounds.logo.right<=bounds.viewport&&bounds.overflow<=1,'Landing header overflows: '+JSON.stringify(bounds));
@@ -266,6 +283,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
      Laden konnte so wieder ueberschrieben werden. Erst NVDA zeichnen und ausstehende Aufgaben abwarten, dann leeren und frisch laden. */
   await navigate(page,base+'/discover/#/s/US_REAL/NVDA',{waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-ep').first().waitFor();
   await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>setTimeout(r,50))));
+  await quiet();
   await page.evaluate(()=>{try{localStorage.removeItem('vu-discover-chapters-v1');}catch(e){}});
   await page.reload({waitUntil:'networkidle'});await page.locator('.dv3-titel .dv3-story').waitFor();
   await page.waitForFunction(()=>document.querySelectorAll('.dv3-titel .dv3-ep').length===7);
@@ -277,7 +295,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.equal(await page.locator('.dv3-rowctx, .dv3-endcard').count(),0,'No onward bar without origin');
   assert(/\$/.test(await page.locator('.dx-chart-hero-preis > b').first().innerText()),'Head price in dollars');
   await eps.nth(2).locator('summary').click();assert.equal(await eps.nth(2).getAttribute('open'),'');await screenshot(page,key+'-stock-chapter');
-  await navigate(page,base+'/discover/#/s/US_REAL/NVDA?reihe=langfristige-compounder',{waitUntil:'networkidle'});await page.reload({waitUntil:'networkidle'});
+  await navigate(page,base+'/discover/#/s/US_REAL/NVDA?reihe=langfristige-compounder',{waitUntil:'networkidle'});await page.locator('.dv3-titel').first().waitFor();await quiet();await page.reload({waitUntil:'networkidle'});
   await page.locator('.dv3-rowctx').waitFor();assert(/\d+ von \d/.test(await page.locator('.dv3-rowctx').innerText()),'Row position');
   await page.locator('.dv3-endcard').scrollIntoViewIfNeeded();await screenshot(page,key+'-stock-from-row');
   const nh=await page.locator('.dv3-endcard .dv3-endcard-a a').first().getAttribute('href');assert(/\?reihe=langfristige-compounder$/.test(nh),'Next keeps the row: '+nh);

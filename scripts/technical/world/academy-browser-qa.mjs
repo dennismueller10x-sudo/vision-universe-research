@@ -31,6 +31,7 @@ async function createContext(options){
  if(gate)await context.addInitScript(([key,value,origin])=>{if(location.origin===origin){try{localStorage.setItem(key,value);}catch(_){}}},[gate.key,gate.value,new URL(site).origin]);
  return context;
 }
+const viewTransitionHint=t=>/^Transition was aborted because of invalid state\. ViewTransition opt-in disabled$/.test(String(t).trim());
 const assert=(x,msg)=>{if(!x)throw Error(msg);};
 async function check(name,fn){try{await fn();results.push({name,pass:true});}catch(e){results.push({name,pass:false,error:e.message});}}
 try{
@@ -38,8 +39,9 @@ if(site){const response=await fetch(site+'/technical/academy/content.json');asse
 for(const width of [360,390,1280])for(const theme of ['light','dark']){
  const context=await createContext({viewport:{width,height:844},deviceScaleFactor:1,isMobile:width<500,hasTouch:width<500});
  await context.addInitScript(t=>localStorage.setItem('vu-discover-theme-v1',t),theme);
- const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
- page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+ const page=await context.newPage(),errors=[];page.on('pageerror',e=>{if(!viewTransitionHint(e.message))errors.push(e.message);});
+ /* Chromium bricht View-Transitions bei Hash-Navigation ab und meldet das als Konsolenfehler oder als unbehandelte Ablehnung (pageerror); Browser-Hinweis, kein App-Fehler. Beide Kanaele gleich filtern. */
+ page.on('console',m=>{if(m.type()==='error'&&!viewTransitionHint(m.text()))errors.push(m.text());});
  const prefix=width+'-'+theme;
  async function overflow(){assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'horizontal overflow');}
  await check(prefix+' central Academy single strategy entry',async()=>{
@@ -187,7 +189,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
  await context.close();
 }
 if(!site)await check('central Academy registry failure and retry',async()=>{
- const context=await createContext(),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+ const context=await createContext(),page=await context.newPage(),errors=[];page.on('pageerror',e=>{if(!viewTransitionHint(e.message))errors.push(e.message);});
  await page.route('**/academy/data/experiences.json',r=>r.abort());await navigate(page,base.replace('/technical/','/academy/'));await page.locator('.vu-a-error').waitFor();
  await page.unroute('**/academy/data/experiences.json');await page.route('**/academy/data/experiences.json',r=>r.fulfill({json:{}}));await page.getByRole('button',{name:'Neu laden',exact:true}).click();await page.locator('.vu-a-error').waitFor();
  await page.unroute('**/academy/data/experiences.json');await page.getByRole('button',{name:'Neu laden',exact:true}).click();await page.locator('a.vu-a-world-card[href="/technical/#/akademie"]').waitFor();assert(!errors.length,errors.join(';'));await context.close();

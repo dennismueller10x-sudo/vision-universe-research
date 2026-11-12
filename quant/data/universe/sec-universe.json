@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "generated": true,
-  "generated_at_utc": "2026-11-08T13:30:40.509Z",
+  "generated_at_utc": "2026-11-12T06:26:47.242Z",
   "generator": "scripts/universe/build-sec-universe.mjs",
   "description": "SEC-Universum aus dem kanonischen Company Master. NICHT von Hand pflegen - Aenderungen gehoeren in den Master oder in die CIK-Zuordnung. quant/config/sec-universe.json bleibt der handgepflegte Validierungssatz und steht hier an erster Stelle; eine Regression an diesen fuenf Titeln faellt damit weiterhin zuerst auf. Das Feld `cik` ist wie dort ein Hinweis: die Pipeline loest den Ticker gegen die SEC-Ticker-Map auf. Fuer ein generiertes Universum gehoert `--skip-unresolved` dazu - ein Kuerzel, das die SEC nicht kennt, ist hier der Normalfall und kein Konfigurationsfehler.",
   "sources": {
@@ -27,7 +27,7 @@
     "candidates": 5469,
     "companies": 5470,
     "validationSet": 5,
-    "withDeliveredStockPage": 5297,
+    "withDeliveredStockPage": 5294,
     "excluded": {
       "noCik": 1204,
       "notUs": 0,
@@ -23459,17 +23459,6 @@
       "role": "deliveredStockPage"
     },
     {
-      "ticker": "GNTA",
-      "name": "Genenta Science S.p.A.",
-      "cik": "0001838716",
-      "instrumentId": "vu_000114c1ab36d5",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
       "ticker": "GNTX",
       "name": "Gentex Corp",
       "cik": "0000355811",
@@ -27591,17 +27580,6 @@
       "name": "Indaptus Therapeutics, Inc.",
       "cik": "0001857044",
       "instrumentId": "vu_0b6b57f0375242",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "INDV",
-      "name": "Indivior Pharmaceuticals, Inc.",
-      "cik": "0001625297",
-      "instrumentId": "vu_815aace214764f",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -34409,17 +34387,6 @@
       "name": "Macrogenics Inc",
       "cik": "0001125345",
       "instrumentId": "vu_368918451aac90",
-      "exchange": "NASDAQ",
-      "active": true,
-      "cikSource": "sec:company_tickers_exchange",
-      "why": "Traegt heute eine Aktienseite.",
-      "role": "deliveredStockPage"
-    },
-    {
-      "ticker": "MGPI",
-      "name": "Mgp Ingredients Inc",
-      "cik": "0000835011",
-      "instrumentId": "vu_d0d2a2e8b7ebfc",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -61274,6 +61241,17 @@
       "role": "universe"
     },
     {
+      "ticker": "GNTA",
+      "name": "Genenta Science S.p.A.",
+      "cik": "0001838716",
+      "instrumentId": "vu_000114c1ab36d5",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
       "ticker": "GPJA",
       "name": "Georgia Power Co",
       "cik": "0000041091",
@@ -61395,6 +61373,17 @@
       "name": "Terrestrial Energy Inc. /DE/",
       "cik": "0002019804",
       "instrumentId": "vu_95daf24f482bf3",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "INDV",
+      "name": "Indivior Pharmaceuticals, Inc.",
+      "cik": "0001625297",
+      "instrumentId": "vu_815aace214764f",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",
@@ -61569,6 +61558,17 @@
       "name": "Mountain Crest Acquisition Corp. V",
       "cik": "0001859035",
       "instrumentId": "vu_7b181b9df11846",
+      "exchange": "NASDAQ",
+      "active": true,
+      "cikSource": "sec:company_tickers_exchange",
+      "why": "Aus dem Company Master; US-Emittent mit CIK.",
+      "role": "universe"
+    },
+    {
+      "ticker": "MGPI",
+      "name": "Mgp Ingredients Inc",
+      "cik": "0000835011",
+      "instrumentId": "vu_d0d2a2e8b7ebfc",
       "exchange": "NASDAQ",
       "active": true,
       "cikSource": "sec:company_tickers_exchange",

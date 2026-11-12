@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "security-master-delisting-counter-evidence-1.0.0",
+  "purpose": "Ausdrueckliche Gegenbelege zum SEC-Delisting-Register. Ein Titel mit Eintrag bekommt keinen Registersatz (bleibt Anbieter-/Stammstatus) und erscheint als Befund. Nur Klassenfehler, Nachfolger und Boersen-/Symbolwechsel; fehlende Belege sind kein Gegenbeleg. Konstante fortgeschriebene Anbieterkurse sind keiner.",
+  "kinds": ["CLASS_MISMATCH", "SUCCESSOR", "EXCHANGE_TRANSFER"],
+  "decidedAt": "2026-11-11",
+  "entries": [
+    {
+      "ticker": "QRTEB",
+      "kind": "CLASS_MISMATCH",
+      "basis": "Form 25-NSE (0001354457-26-000540) und Form 15-12G (0001104659-26-099689) betreffen den Emittenten Old QVC Group (CIK 1355096) und nennen keine Aktienklasse; Klasse B ist nicht belegt (Pruefung 09.11.2026)."
+    },
+    {
+      "ticker": "TRINL",
+      "kind": "CLASS_MISMATCH",
+      "basis": "Form 25 (0001213900-26-081363) des Emittenten Trinity Capital betrifft die Notes-Klasse, nicht eine Stammaktie; die SEC fuehrt TRIN, TRNI und TRNZ weiter (Pruefung 09.11.2026)."
+    },
+    {
+      "ticker": "FITBI",
+      "kind": "EXCHANGE_TRANSFER",
+      "basis": "Form 25 (0001193125-26-267509) vom 11.06.2026; die SEC fuehrt die Serie unter FITB-PI weiter, also Symbol-/Boersenwechsel statt Ende (Pruefung 09.11.2026)."
+    }
+  ]
+}

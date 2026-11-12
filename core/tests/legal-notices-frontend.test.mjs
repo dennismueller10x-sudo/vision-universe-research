@@ -31,8 +31,8 @@ test("nach der Freigabe trägt jeder Hinweis den Text und die Links der JSON-Dat
   assert.deepEqual(d.notices.backtest.required, json.notices.backtest.required);
 });
 
-/* Owner-Entscheidung 07.11.2026 (PLAN §11): In der App kein Seitenfuß, alles im Menü „Rechtliches & Infos“. Der Fuß darf in
-   der App nur fehlen, weil jeder seiner Links und sein Satz im Menü stehen – das prüfen die folgenden Tests. */
+/* Owner-Entscheidung 10.11.2026: In Browser und App kein Rechtsfuß. Jeder seiner Links und
+   sein Satz bleiben im Menü „Rechtliches & Infos“ erreichbar (§ 5 DDG, zwei Schritte). */
 const NAV = readFileSync("assets/site-navigation.js", "utf8");
 function navMenu(approved) {
   const legal = NAV.match(/var LEGAL = (\{.*\});\n/)[1];
@@ -55,18 +55,53 @@ test("Pflicht-Links der App: jeder Link aus appLinks.always steht im Menü unter
   }
 });
 
-test("App ohne Seitenfuß nur, wenn das Menü jeden Fuß-Link und den Fuß-Satz trägt (§ 5 DDG, Plan §11)", () => {
+test("Browser und App ohne Seitenfuß; Menü trägt jeden Fuß-Link und den Fuß-Satz (§ 5 DDG)", () => {
   const d = legalData(json), foot = d.notices.footer;
   assert.equal(json.notices.footer.app, "menu");
+  assert.equal(json.notices.footer.web, "menu");
   assert.equal(d.footerInApp, false);
+  assert.equal(d.footerOnWeb, false);
   const menu = navMenu(true);
   for (const [label, href] of foot.links) assert.ok(menu.includes('href="' + href + '"'), "Fuß-Link " + label + " fehlt im Menü");
   assert.ok(menu.includes(foot.text), "Software-/Risikosatz fehlt im Menü");
-  const fn = NAV.slice(NAV.indexOf("function legalFooter"), NAV.indexOf("const dockBus"));
-  assert.match(fn, /LEGAL\.footerInApp === false && inApp\(\)/, "Fuß entfällt nur in der App");
-  assert.match(NAV, /function inApp\(\)[\s\S]{0,200}isNativePlatform[\s\S]{0,120}VUApp\\\/1/, "App-Erkennung: Capacitor oder User-Agent VUApp/1");
-  /* Im Browser bleibt der Fuß: das JSON beschreibt ihn weiter für research.visionuniverse.de. */
-  assert.match(json.notices.footer.where, /Browser/);
+  const fn = NAV.slice(NAV.indexOf("function legalFooter"), NAV.indexOf("  if (typeof document", NAV.indexOf("function legalFooter")));
+  for (const app of [false, true]) for (const approved of [false, true]) {
+    const writes = [];
+    const document = { body: { appendChild: n => writes.push(n) }, querySelector: () => null,
+      createElement: tag => { writes.push(tag); return { appendChild() {}, setAttribute() {} }; } };
+    new Function("LEGAL", "inApp", "document", fn + "; legalFooter();")({ ...d, approved }, () => app, document);
+    assert.deepEqual(writes, [], `Kein Fuß im ${app ? "App" : "Browser"}-Modus, Freigabe ${approved}`);
+  }
+  assert.match(NAV, /function inApp\(\)[\s\S]{0,200}isNativePlatform[\s\S]{0,120}VUApp\\\/1/, "App-Erkennung bleibt für externe Rechtslinks erhalten");
+});
+
+test("Seiten mit eigenem Kopf öffnen dasselbe zentrale Menü", () => {
+  for (const file of ["index.html", "scripts/home/index.template.html", "ask/index.html", "preise/index.html", "willkommen/start/index.html"]) {
+    const page = readFileSync(file, "utf8");
+    assert.match(page, /<vu-navigation menu-only no-dock/, file);
+    assert.match(page, /data-vu-menu-toggle/, file);
+    assert.match(page, /src="\/assets\/site-navigation.js"/, file);
+  }
+  assert.match(NAV, /nav\.openMenu\(opener\)/);
+});
+
+test("keine ausgelieferte HTML-Seite enthält den Fuß-Satz außerhalb des Menüs oder einen eigenen Rechtsfuß", () => {
+  const files = execFileSync("git", ["ls-files", "-z", "--", "*.html"], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 }).split("\0").filter(Boolean);
+  assert.ok(files.includes("index.html") && files.includes("infos/index.html") && files.includes("morning/index.html"));
+  for (const file of files) {
+    const html = readFileSync(file, "utf8");
+    // Das globale Menü wird aus site-navigation.js erzeugt; ein statisches Menü darf den Satz ebenfalls tragen.
+    const outsideMenu = html.replace(/<nav\b[^>]*id=["']site-panel["'][^>]*>[\s\S]*?<\/nav>/gi, "");
+    const visibleText = outsideMenu.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ");
+    assert.doesNotMatch(visibleText, /Vision Universe ist eine Software zur Analyse von Aktien/, file + ": Fuß-Satz außerhalb des Menüs");
+    assert.doesNotMatch(outsideMenu, /(?:legalNotice|legal)\(["']footer["']\)|data-legal(?:-source)?=["']footer["']/i, file + ": dynamische Fuß-Kopie");
+    // Landing hat eine eigene Domain und eigene Rechtsseiten; deren Layout gehört nicht zu research.
+    if (file.startsWith("landing/")) continue;
+    for (const footer of outsideMenu.matchAll(/<(footer|nav)\b[^>]*>[\s\S]*?<\/\1>/gi)) {
+      if (footer[1].toLowerCase() === "nav" && !/class=["'][^"']*(?:ka-links|pr-legal)/i.test(footer[0])) continue;
+      assert.doesNotMatch(footer[0], /href=["'][^"']*rechtliches\/(?:impressum|datenschutz|agb)["']/i, file + ": eigene Rechtslinks im Fuß");
+    }
+  }
 });
 
 test("Datenquellen & Methodik: /infos/ nennt die Anbieter, die Produktseiten nicht mehr", () => {
@@ -104,4 +139,31 @@ test("App 08.11.: Rechtstexte auf anderer Herkunft öffnen im System-Browser, we
   assert.ok(foreign.length >= 5, "Impressum, Kontakt, Datenschutz, Nutzungsbedingungen, Risikohinweise liegen auf konto.visionuniverse.de");
   assert.match(nav, /function appExternalLink\(a\) \{[\s\S]*?u\.origin === location\.origin\) return false;\s*a\.target = '_blank'; a\.rel = 'noopener';/);
   assert.match(nav, /if \(typeof document !== 'undefined' && inApp\(\)\) \{\s*document\.addEventListener\('click'/, "nur in der App, im Web unverändert");
+});
+
+/* Konzept Quant „Ein Profil je Aktie“ (docs/design/quant-2026-11, Entscheidung 5): die Quant-Oberfläche sagt „Zone laut Methode“
+   und „Ungültig-Marke laut Methode“, zeigt keine Ziele und keinen „dafür/dagegen“-Satz. Die Begriffe kommen aus wording[].avoid;
+   verneinte Hinweise („kein Kursziel“, „keine Kaufempfehlung“) bleiben erlaubt. Kommentare und die Übersetzungstabelle QX.say
+   (quant/app/ui.js, SAY) zählen nicht: dort steht, was übersetzt wird. */
+test("Quant-Oberfläche: keine Begriffe aus wording[].avoid (Einstieg, Stopp, Ziel) in quant/app und im Chart", () => {
+  const { readdirSync } = require("node:fs");
+  const avoid = json.wording.flatMap((w) => w.avoid.replace(/\(.*?\)/g, "").split(/,|\s\/\s/)).map((t) => t.replace(/[„“"]/g, "").trim()).filter(Boolean);
+  for (const must of ["Einstiegszone", "Einstiegsmarke", "Kaufzone", "Stop-Loss", "Stopp", "Ziel 1/2", "Chance/Risiko", "Kursziel", "Interessant ab"]) assert.ok(avoid.includes(must), must + " fehlt in wording[].avoid");
+  const terms = avoid.flatMap((t) => (t === "Ziel 1/2" ? ["Ziel 1", "Ziel 2"] : [t]))
+    .concat(["Stopp-Marke", "Zielzone", "Zielbereich", "Was spricht dafür"]) /* Entscheidung 5, Konzept Quant 2026-11 */
+    .filter((t) => !/^(kaufen|verkaufen|sicher|Signal|Empfehlung)$/i.test(t)); /* Alltagswörter: nur als Aufforderung verboten, nicht prüfbar per Wortliste */
+  const files = readdirSync("quant/app").filter((f) => /\.(js|css)$/.test(f)).map((f) => "quant/app/" + f).concat(["quant/ui/ti-chart.js"]);
+  const hits = [];
+  for (const f of files) {
+    const src = readFileSync(f, "utf8").replace(/var SAY = \[[\s\S]*?\]\];/, "").replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:"'\\])\/\/.*$/gm, "$1");
+    for (const t of terms) {
+      const re = new RegExp("(^|[^A-Za-zÄÖÜäöüß-])(" + t.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&") + ")(?![a-zäöüß])", "g");
+      let m; while ((m = re.exec(src))) {
+        const before = src.slice(Math.max(0, m.index - 14), m.index + m[1].length);
+        if (/\bkeine?[nrs]?\s*$|\bohne\s*$/i.test(before)) continue; /* „kein Kursziel“, „keine Kaufempfehlung“ */
+        hits.push(f + ": " + t + " … " + src.slice(m.index, m.index + 60).replace(/\s+/g, " "));
+      }
+    }
+  }
+  assert.deepEqual(hits, []);
 });

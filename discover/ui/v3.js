@@ -216,7 +216,7 @@
     var reasons = (c.imBlick && c.imBlick.reasons) || c.reasons || [];
     var m = c.metrics || {}, rows = reasons.map(function (r) { return [r.label, r.value, '']; });
     if (isNum(m.return6M)) rows.push(['Seit 6 Monaten', 'Kursbewegung', U().chg(m.return6M * 100, { digits: 0 })]);
-    if (c.hook && c.hook.text) rows.push(['Geschäft', c.hook.text + ' (SEC)', '']);
+    if (c.hook && c.hook.text) rows.push(['Geschäft', c.hook.text + ' (Pflichtmeldungen)', '']);
     var cfg = ((ctx.meta && ctx.meta.rowConfigs) || []).filter(function (x) { return x.id === 'im-blick'; })[0];
     var score = c.imBlick && isNum(c.imBlick.score) ? Math.round(c.imBlick.score) : null;
     var body = '<p class="vu-ltag">' + esc((surface && surface.live ? 'Heute im Blick · laufende Sitzung' : 'Heute im Blick') + ' · ' + name(c)) + '</p>' +
@@ -443,7 +443,7 @@
     page.innerHTML = '<a class="v2-back dv3-back" href="#/strategien">' + U().glyph('back', 16) + ' Strategien</a>' + (g ? '<p class="vu-ltag">' + esc(g.title) + '</p>' : '') +
       '<h1 class="vu-lt">' + esc(title) + '</h1><p class="vu-lead">' + esc(row.subtitle || '') + '</p>' +
       '<div class="vu-grid dv3-tiles" style="--vu-cols:3">' + U().tile('Treffer', isNum(cov.matched) ? num(cov.matched, 0) : '–', isNum(cov.universeSize) ? 'von ' + num(cov.universeSize, 0) : '') +
-      U().tile('Gezeigt', String(cards.length), 'die stärksten') + U().tile('Quelle', sec ? 'SEC' : 'Kurse', sec ? 'Jahresberichte' : 'Tagesschluss') + '</div>' +
+      U().tile('Gezeigt', String(cards.length), 'die stärksten') + U().tile('Quelle', sec ? 'Pflichtmeldungen' : 'Kurse', sec ? 'Jahresberichte' : 'Tagesschluss') + '</div>' +
       (row.index && row.index.asOf ? '<p class="v2-collection-source vu-xs vu-mu">Mitglieder laut ' + esc(row.index.proxy && row.index.proxy.etf ? 'ETF-Bestand ' + row.index.proxy.etf : 'Indexeigentümer') + ' · ' + esc(dayYear(row.index.asOf)) + '</p>' : '') +
       (row.rule ? '<div class="vu-box vu-box--line dv3-rule"><p class="vu-ltag">Die Regel</p><p>' + esc(row.rule) + '</p></div>' : '') +
       (cov.note ? U().help(cov.note) : '') +

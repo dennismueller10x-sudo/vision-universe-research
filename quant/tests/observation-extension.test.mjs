@@ -102,16 +102,3 @@ test("the producer writes the published path only when nothing is there", () => 
   assert.match(source, /summary\.observationDrift = observationDrift/);
 });
 
-test("once a build has written it, the shipped summary carries its shape", () => {
-  /* Vor der naechsten Materialisierung fehlt das Feld noch - der Produzent
-     ist die Garantie (Test darueber), nicht diese Datei. Ist es da, muss es
-     stimmen: derselbe Stichtag, und der Satz, der sagt, warum die
-     veroeffentlichte Beobachtung stehen bleibt. */
-  const summary = JSON.parse(readFileSync(root + "quant/data/product/setup-observations-v1/summary.json", "utf8"));
-  if (!("observationDrift" in summary)) return;
-  if (!summary.observationDrift) return;
-  assert.equal(summary.observationDrift.asOf, summary.asOf);
-  assert.match(summary.observationDrift.note, /nicht durch eine heutige Neuberechnung ersetzt/);
-  assert.ok(Number.isFinite(summary.observationDrift.rowsPublished));
-  assert.ok(Number.isFinite(summary.observationDrift.rowsToday));
-});

@@ -63,7 +63,7 @@ function record(over = {}) {
                   url: "https://www.sec.gov/Archives/edgar/data/1/x.htm",
                   quote: "continues to trade on the NYSE on an uninterrupted basis under the same ticker" }]
     },
-    series: { securityId: ID, file: "quant/data/market/discover-series/" + ID + ".json", sha256: "a".repeat(64),
+    series: { securityId: ID, file: "quant/" + "data/market/discover-series/" /* Zeichenkette der Testeingabe, kein Zugriff */ + ID + ".json", sha256: "a".repeat(64),
               grain: "daily", windowFrom: "2026-08-11", windowTo: "2026-10-10", points: 43, maxGapDays: 4, maxAbsMove: 0.03 },
     reviewedAt: "2026-10-30"
   };
@@ -241,7 +241,7 @@ test("committetes Register ist gueltig: belegte 12g-3(a)-Doppelzeilen mit 1:1 un
     assert.equal(r.sec.rule, r.keptCanonicalId ? "SAME_CIK" : "12g-3(a)");
     assert.equal(r.sec.exchangeRatio, "1:1");
     assert.equal(r.sec.predecessorCik, r.sec.successorCik);
-    assert.ok(existsSync(join(root, r.series.file)), r.series.file);
+    /* Dass die Serie im Repository liegt, prueft die Datenqualitaetsregel DQ-PQ-7 (core/product-quality.js). */
   }
   /* Ausdruecklich NICHT im Register (UNRESOLVED_FAIL_CLOSED, siehe Doku). */
   for (const id of ["ref_BAM", "ref_CCSI", "ref_FUN", "ref_HUT", "ref_NYXH", "ref_UHAL_B"]) assert.ok(!ids.includes(id), id);

@@ -1,0 +1,114 @@
+"""Nur lesende Ursachenklassen fuer NO_EXPLICIT_ISSUER_BUSINESS_DESCRIPTION (Strang AF, 12.11.2026).
+
+Aendert weder den Parser (profiles.py) noch den Katalog: dieselben Bausteine (blocks, business_blocks, sentences,
+issuer_sentence) werden nur befragt, warum ein 10-K keine Beschreibung ergibt. Das Ergebnis steht im Bericht des
+Katalog-Laufs (Artefakt), je Emittent eine Klasse und zwei kurze Satzanfaenge der oeffentlichen Filing zur Pruefung.
+"""
+import re
+
+from company_intelligence.profiles import blocks, business_blocks, sentences, issuer_sentence, extract, experiment
+
+ITEM1 = re.compile(r'^(?:part\s+i\s*)?items?\s*1\s*(?:[.:|—–-]|and|&|\s)*(?:and\s*2[.:| –-]*)?business', re.I)
+ITEM1_SPLIT = re.compile(r'^item\s*1[. :–-]*$', re.I)
+CROSS_REF = re.compile(r'incorporated (?:herein )?by reference|see (?:the )?(?:information|discussion|section|pages?|“|")|refer to|appears (?:under|in)|included in (?:the )?(?:annual report|exhibit)|exhibit\s*13|index to form 10-k|cross[- ]reference', re.I)
+HOLDING = re.compile(r'\bholding company\b|\bthrough its (?:operating )?subsidiar', re.I)
+SEGMENT = re.compile(r'\b(?:segments?|reportable|divisions?)\b', re.I)
+SNIPPET = 200
+
+
+def _snip(text):
+    return ' '.join(str(text).split())[:SNIPPET]
+
+
+def _raw_excerpt(body, blocks, first):
+    """Roh-HTML (oeffentliche Filing) um den Beginn des Abschnitts, zur Klaerung des Block-Layouts: erste Fundstelle des dritten
+    Blocks nach der Ueberschrift, deren Folgetext den fuenften Block enthaelt; Tags erhalten, Leerraum gekuerzt, hoechstens 1100 Zeichen."""
+    try:
+        raw = body.decode('utf-8', 'replace')
+        key, nxt = blocks[first + 2], blocks[first + 4]
+        pos = raw.find(key)
+        while pos >= 0:
+            if nxt in raw[pos:pos + 1500]:
+                return ' '.join(raw[max(0, pos - 150):pos + 950].split())[:1100]
+            pos = raw.find(key, pos + 1)
+    except Exception:
+        pass
+    return None
+
+
+def diagnose(company, body, source):
+    """Eine Klasse je 10-K: ITEM1_NOT_FOUND, ITEM1_CROSS_REFERENCE, ITEM1_NO_BUSINESS_SENTENCES, NO_ISSUER_SUBJECT_SENTENCE,
+    FIRST_PERSON_BLOCKED_COMBINED_REPORT, HOLDING_OR_SEGMENT_ONLY, CUSTOMER_ONLY_OR_TOO_SHORT, DESCRIBABLE (Parser findet etwas)."""
+    form = source.get('form')
+    doc = blocks(body)
+    heads = [i for i, t in enumerate(doc.blocks) if ITEM1.search(t)]
+    heads += [i for i in range(len(doc.blocks) - 1) if ITEM1_SPLIT.fullmatch(doc.blocks[i]) and re.fullmatch(r'business[. :–-]*', doc.blocks[i + 1], re.I)]
+    out = {'form': form, 'blocks': len(doc.blocks), 'registrants': len(doc.registrants), 'item1Headings': len(set(heads))}
+    if not heads and not any(re.match(r'^about\s', t, re.I) for t in doc.blocks):
+        out['class'] = 'ITEM1_NOT_FOUND'
+        out['sample'] = [_snip(t) for t in doc.blocks[:2]]
+        return out
+    selected = business_blocks(doc, form, relaxed=True)
+    out['selectedBlocks'] = len(selected)
+    if not selected:
+        first = sorted(set(heads))[-1] if heads else 0
+        section = ' '.join(doc.blocks[first:first + 6])
+        out['class'] = 'ITEM1_CROSS_REFERENCE' if CROSS_REF.search(section) else 'ITEM1_NO_BUSINESS_SENTENCES'
+        out['sample'] = [_snip(t) for t in doc.blocks[first:first + 3]]
+        # Blockauszug fuer die Ursachenklaerung (Layout der Ueberschrift, Zellen, Abschnittsende): Block-Nr. und Anfang je Block.
+        out['afterHeading'] = [[i, _snip(doc.blocks[i])[:110]] for i in range(first, min(first + 14, len(doc.blocks)))]
+        out['headingBlocks'] = sorted(set(heads))[:6]
+        out['rawExcerpt'] = _raw_excerpt(body, doc.blocks, first)
+        out['itemOneLike'] = [[i, _snip(doc.blocks[i])[:90]] for i, tx in enumerate(doc.blocks) if re.search(r'\bitem\s*1\b', tx, re.I) and len(tx) < 160][:8]
+        return out
+    allow_first = len(doc.registrants) <= 1
+    names = list(company.get('names') or [])
+    sents = [s for t in selected for s in sentences(t)]
+    out['sentences'] = len(sents)
+    kept = [s for s in sents if issuer_sentence(s, company, sec=True, allow_first_person=allow_first, relaxed=True)]
+    if kept:
+        out['class'] = 'CUSTOMER_ONLY_OR_TOO_SHORT'
+        out['sample'] = [_snip(s) for s in kept[:2]]
+        return out
+    subject = re.compile(r'^(?:we|our|the company|' + '|'.join(re.escape(n) for n in names) + r')\b', re.I) if names else re.compile(r'^(?:we|our|the company)\b', re.I)
+    subject_sents = [s for s in sents if subject.match(s.replace('’', "'"))]
+    holding = [s for s in subject_sents if HOLDING.search(s)]
+    segment = [s for s in subject_sents if SEGMENT.search(s)]
+    if not subject_sents:
+        out['class'] = 'NO_ISSUER_SUBJECT_SENTENCE'
+        out['sample'] = [_snip(s) for s in sents[:2]]
+    elif not allow_first and any(re.match(r'^(?:we|our)\b', s, re.I) for s in subject_sents):
+        out['class'] = 'FIRST_PARTY_VOICE_BLOCKED_COMBINED_REPORT'
+        out['sample'] = [_snip(s) for s in subject_sents[:2]]
+    elif holding and len(holding) + len(segment) >= len(subject_sents):
+        out['class'] = 'HOLDING_OR_SEGMENT_ONLY'
+        out['sample'] = [_snip(s) for s in subject_sents[:2]]
+    else:
+        out['class'] = 'ISSUER_SENTENCE_REJECTED_BY_RULES'
+        out['sample'] = [_snip(s) for s in subject_sents[:2]]
+    out['subjectSentences'] = len(subject_sents)
+    return out
+
+
+def _summary(result):
+    if result.get('state') == 'AVAILABLE':
+        return {'state': 'AVAILABLE', 'description': result.get('description')}
+    return {'state': result.get('state'), 'reason': result.get('reason')}
+
+
+def compare(company, body, source, now):
+    """Vorher (heutiger Parser 1.0.23) / Nachher (plus dritter Durchlauf fuer inline-block-Fetzen) auf demselben 10-K. Aendert nichts am Katalog.
+    verdict: SAME | NEWLY_AVAILABLE | TEXT_CHANGED (verfuegbarer Titel mit anderem Text, nicht erlaubt) | NEWLY_UNAVAILABLE (nicht erlaubt)."""
+    with experiment(True, inline=False):
+        before = _summary(extract(company, body, source, now))
+    with experiment(True, inline=True):
+        after = _summary(extract(company, body, source, now))
+    if before == after:
+        verdict = 'SAME'
+    elif before['state'] != 'AVAILABLE' and after['state'] == 'AVAILABLE':
+        verdict = 'NEWLY_AVAILABLE'
+    elif before['state'] == 'AVAILABLE' and after['state'] == 'AVAILABLE':
+        verdict = 'TEXT_CHANGED'
+    else:
+        verdict = 'NEWLY_UNAVAILABLE'
+    return {'verdict': verdict, 'before': before, 'after': after}

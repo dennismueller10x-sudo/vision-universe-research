@@ -341,3 +341,48 @@ html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--
 /* Ausklapper „weitere“ auf der schwarzen Risiko-Karte: Schrift der Karte statt eigener dunkler Farbe (Kontrast). */
 .qd .qv-stock .qv2-panel.tone-bad .dx-waage-weitere>summary,.qd .qv-stock .qv2-panel.tone-bad .dx-waage-weitere>summary *{color:inherit}
 .qd .qv-stock .qv2-panel.tone-good .dx-waage-weitere>summary,.qd .qv-stock .qv2-panel.tone-good .dx-waage-weitere>summary *{color:inherit}
+/* Konzept Quant 2026-11 (PR 1): in der schwarzen Karte „Spricht dagegen“ trug der weiße Kreis eine weiße Ikone (leerer Kreis). */
+.qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico,.qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico *{color:#000}
+.qd .qv-stock .qv2-panel.tone-bad .qv2-pt-ico{background:#fff}
+/* Profil groß (Konzept Quant 2026-11, Folie K1 / Screen q-stock) */
+.qd .qv-stock .qv3-profile{padding:14px;margin-top:4px}
+.qd .qv-stock .qv3-profile-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px}
+.qd .qv-stock .qv3-profile-h h2{margin:0;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.qd .qv-stock .qv3-profile-help{margin-top:10px}
+/* Konzept Quant 2026-11 (QX05): drei Sätze, Kapitel, Kurs, ähnliches Profil */
+.qd .qv-stock .qk-story{background:#000;color:#fff;border-radius:22px;padding:14px 14px 6px;margin-top:12px}
+.qd .qv-stock .qk-story .vu-ltag{color:#9b9b9b}
+.qd .qv-stock .qk-story-r{display:grid;grid-template-columns:34px 1fr auto;gap:10px;align-items:center;padding:10px 0;border-top:1px solid #262626}
+.qd .qv-stock .qk-story-r:first-of-type{border-top:0}
+.qd .qv-stock .qk-story-r p{margin:1px 0 0;font-size:14px;font-weight:700;line-height:1.3;color:#fff}
+.qd .qv-stock .qk-story .vu-verdict--mid{background:#262626;color:#fff}
+.qd .qv-stock .qk-story .vu-verdict--weak{background:#fff;color:#000}
+.qd .qv-stock .qk-hud{width:34px;height:34px;border-radius:28%;background:#0e1013;color:#c8f531;display:grid;place-items:center;box-shadow:0 0 0 1px #262a2f inset;flex:none}
+.qd .qv-stock .qk-chap .qk-hud{width:42px;height:42px;background:#000}
+.qd .qv-stock .qk-chaps{margin-top:6px}
+.qd .qv-stock .qk-chap{background:var(--vu-card,#f4f4f4);border-radius:18px;margin-top:8px}
+.qd .qv-stock .qk-chap>summary{display:grid;grid-template-columns:16px 42px 1fr 18px;gap:12px;align-items:center;padding:12px 14px;cursor:pointer;list-style:none;min-height:56px}
+.qd .qv-stock .qk-chap>summary::-webkit-details-marker{display:none}
+.qd .qv-stock .qk-chap-n{font-weight:900;color:var(--vu-mute,#6e6e6e);font-variant-numeric:tabular-nums}
+.qd .qv-stock .qk-chap-t b{display:block;font-size:15px;font-weight:800;line-height:1.2}
+.qd .qv-stock .qk-chap-t span{display:block;font-size:12.5px;color:var(--vu-mute,#6e6e6e);margin-top:2px}
+.qd .qv-stock .qk-chap>summary>svg{color:var(--vu-mute,#6e6e6e);transition:transform .15s}
+.qd .qv-stock .qk-chap[open]>summary>svg{transform:rotate(90deg)}
+.qd .qv-stock .qk-chap-b{padding:0 10px 10px}
+.qd .qv-stock .qk-chap-b .qx-section{margin:0;box-shadow:none}
+.qd .qv-stock .qk-chap-b .qx-section>.q-kicker{display:none}
+.qd .qv-stock .qk-chap-b .qv2-card{flex:none;margin:0}
+.qd .qv-stock .qk-h2{margin:22px 0 10px;font-size:17px;font-weight:800;letter-spacing:-.02em}
+.qd .qv-stock .qk-miss{margin:8px 0 0;font-size:12.5px;font-weight:700}
+.qd .qv-stock .qk-sim{margin-top:6px}
+@media (prefers-reduced-motion:reduce){.qd .qv-stock .qk-chap>summary>svg{transition:none}}
+.qd .qv-stock .qx-verdict-card:has(.qv3-profile){background:none;box-shadow:none;border:0;padding:0}
+.qd .qv-stock .qx-verdict-card:has(.qv3-profile)>.qv-limit{display:none}
+.qd .qv-stock .qv3-profile{background:var(--vu-card,#f4f4f4);border:0;border-radius:20px}
+.qd .qv-stock .qk-all{margin-left:auto;background:none;border:0;font:700 13px/1 var(--vu-font,inherit);color:var(--vu-mute,#6e6e6e);display:inline-flex;align-items:center;gap:2px;min-height:44px;cursor:pointer}
+/* Im Kapitel trägt die Zusammenfassung den Titel; der Abschnittskopf darunter entfällt (Mockup q-stock-ch). */
+.qd .qv-stock .qk-chap-b>.qx-section>.q-sec-head,.qd .qv-stock .qk-chap-b>.qv2-card>.q-sec-head{display:none}
+.qd .qv-stock .qk-chap-b>.qx-section>.q-sec-intro{margin-top:4px}
+.qd .qv-stock .qv3-strat-card .qv3-setup-h>span:first-child>.vu-ltag{display:block;margin-bottom:2px}
+.qd .qv-stock .qv3-strat-card .qv3-setup-h>span:first-child>b{display:block}
+.qd .qv-stock .qk-sim{min-height:1px}

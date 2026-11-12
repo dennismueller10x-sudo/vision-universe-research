@@ -157,13 +157,23 @@ jobs:
       source_sha: ${{ steps.delivery_contract.outputs.source_sha }}
       ci_enabled: ${{ steps.ci_stage.outputs.enabled }}
       ci_full_acceptance: ${{ steps.consumer_review.outputs.required }}
+      indexnow: ${{ steps.indexnow.outputs.liste }}
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 11.11.2026: Browser aus dem Playwright-Image (= npm playwright@ im Production smoke) statt per apt-get; der apt-/DNS-Hang
+    # liess den Job ins Zeitlimit laufen. Smoke-Limit 15 -> 25 min (Runner-Last), die Pruefung selbst bleibt unveraendert.
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 25
     # Ein gescheiterter Datenlauf hat nichts veroeffentlicht (siehe
     # scripts/ci/push-with-retry.sh). Dann gibt es auch nichts zu bauen.
+    needs: intraday-schnell
     if: >-
-      github.event_name != 'workflow_run' ||
-      (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.name != 'Pipeline taeglich (Buendel pipeline-daily)' || contains(github.event.workflow_run.display_title, '[seite]')))
+      !cancelled() && needs.intraday-schnell.outputs.fertig != 'true' && (github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && (github.event.workflow_run.name != 'Pipeline taeglich (Buendel pipeline-daily)' || contains(github.event.workflow_run.display_title, '[seite]'))))
     steps:
       - uses: actions/checkout@v4
         with:
@@ -171,6 +181,8 @@ jobs:
           # Datenlauf STARTETE - nicht auf den, den er erzeugt hat. Der
           # frische Stand ist der Kopf von main.
           ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -218,6 +230,7 @@ jobs:
           if git ls-remote --exit-code --heads origin "$DATA_BRANCH" >/dev/null; then
             git fetch --quiet --depth=1 origin "refs/heads/$DATA_BRANCH"
             git archive FETCH_HEAD | tar -x -C "$D"
+            git rev-parse FETCH_HEAD > "$RUNNER_TEMP/data-branch.sha"
           else
             echo "Datenzweig $DATA_BRANCH fehlt noch: Auslieferung aus main"
           fi
@@ -293,6 +306,20 @@ jobs:
       # Zusaetzlich nur Stempel (?v=<Hash>) an allen Supertrader-Seiten, ohne Meta-Tag und ohne Eintrag in /release-id.json.
       - name: Stamp code identity per product
         run: node scripts/vu2/release-id.mjs "$RUNNER_TEMP/site"
+      # Generationenmanifest (ADR-008): Code-SHA, Datenzweig-SHA und Nutzdatenhash der AUSZULIEFERNDEN Dateien (nach Overlay und
+      # Company-Intelligence-Staging). Schreibt nur /core/release-manifest.json; kein Gate, aendert keine Fehlerlogik.
+      - name: Seal release generation manifest
+        # Nie blockierend (Steuerung 10.11.): ein Fehler hier ist nur eine Warnung; im Paket bleibt dann das BUILT-Manifest aus build-release.mjs.
+        # Muss vor dem Hochladen laufen, sonst waere das Manifest nicht in der Auslieferung.
+        continue-on-error: true
+        run: |
+          sha=""; [ -f "$RUNNER_TEMP/data-branch.sha" ] && sha="$(cat "$RUNNER_TEMP/data-branch.sha")"
+          if node scripts/vu2/release-manifest.mjs --site="$RUNNER_TEMP/site" --stage=SEALED --data-branch-sha="$sha" > "$RUNNER_TEMP/release-manifest-summary.json"; then
+            { echo '### Release-Generation'; echo '```'; cat "$RUNNER_TEMP/release-manifest-summary.json"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Release-Manifest nicht versiegelt (BUILT-Stand bleibt); Auslieferung unberuehrt."
+          fi
+          exit 0
       # Gegen das GEBAUTE Release, nicht gegen den Quelltext. Der
       # Unterschied ist real: dort laeuft die Seite als ein gebuendeltes
       # Skript, die Artefakte liegen unter ihren Auslieferungspfaden, und
@@ -309,7 +336,7 @@ jobs:
           # immer uebersprungen und der Start scheiterte am fehlenden
           # headless_shell. Deshalb wie in allen anderen Workflows dieses
           # Repositories: unbedingt installieren, mit der gepinnten CLI.
-          node scripts/company_intelligence/install-browser-deps.mjs /tmp/vu2-smoke/node_modules/.bin/playwright
+          # Chromium kommt aus dem Image (PLAYWRIGHT_BROWSERS_PATH), gleiche Version wie oben.
           NODE_PATH=/tmp/vu2-smoke/node_modules node scripts/vu2/production-smoke.mjs "$SITE_ROOT"
       # Ein Tab, der vor einem Release geoeffnet wurde, bleibt nach dem Wechsel benutzbar (Daten weg, Nachlade-Skript
       # getauscht, Eingabe laeuft, kein sessionStorage, veralteter Cache). Echter Code, echte Sperre, kleine Releases.
@@ -340,7 +367,8 @@ jobs:
           # bricht weiter ab.
           HEAD_SHA=$(git rev-parse HEAD)
           if [ "$EVENT_NAME" != "workflow_run" ] && [ "$HEAD_SHA" != "$EVENT_SHA" ]; then
-            STATUS=$(gh api "repos/$GITHUB_REPOSITORY/compare/$EVENT_SHA...$HEAD_SHA" --jq .status || echo unbekannt)
+            # gh fehlt im Playwright-Image: dieselbe Abfrage per curl.
+            STATUS=$(curl -fsS -H "authorization: Bearer $GH_TOKEN" -H "accept: application/vnd.github+json" "https://api.github.com/repos/$GITHUB_REPOSITORY/compare/$EVENT_SHA...$HEAD_SHA" | node -e 'let s="";process.stdin.on("data",d=>s+=d).on("end",()=>console.log(JSON.parse(s).status))' || echo unbekannt)
             if [ "$STATUS" != "ahead" ]; then
               echo "CHECKOUT_COMMIT_MISMATCH: $HEAD_SHA != $EVENT_SHA (Vergleich: $STATUS)" >&2
               exit 1
@@ -428,13 +456,140 @@ jobs:
           await writeFile(join(process.env.SITE_ROOT,'release-package.json'),JSON.stringify(report)+'\n');
           console.log(JSON.stringify(report));
           NODE
+      # IndexNow (products/insights/indexnow.mjs): VOR dem Ausrollen die noch ausgelieferte Insights-Sitemap mit der neuen
+      # vergleichen. Neue oder geaenderte Adressen meldet der Job indexnow nach dem Ausrollen. Scheitert nie das Release.
+      - name: IndexNow - neue und geaenderte Insights-Adressen ermitteln
+        id: indexnow
+        if: github.event_name != 'pull_request'
+        env:
+          SITE_ROOT: ${{ runner.temp }}/site
+        run: |
+          set -uo pipefail
+          key=$(ls | grep -E '^[0-9a-f]{32}\.txt$' | head -1)
+          test -n "$key" && cmp "$key" "$SITE_ROOT/$key" || { echo "::warning::IndexNow-Schluessel fehlt in der Auslieferung"; exit 0; }
+          node products/insights/indexnow.mjs vergleichen --neu "$SITE_ROOT/insights/sitemap.xml" --out "$RUNNER_TEMP/indexnow.json"
+          if [ -s "$RUNNER_TEMP/indexnow.json" ]; then
+            echo "liste=$(node -e 'process.stdout.write(JSON.stringify(require(process.argv[1])))' "$RUNNER_TEMP/indexnow.json")" >> "$GITHUB_OUTPUT"
+          fi
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ${{ runner.temp }}/site
 
+  # SCHNELLWEG FUER INTRADAY (Steuerung 11.11.2026): hat sich seit dem letzten Voll-Release nichts ausser Intraday-Dateien
+  # geaendert, bekommt das ausgelieferte Paket nur die neuen Dateien (kein Bau, kein Browser-Smoke, ~3 Minuten statt ~20).
+  # Jede Unsicherheit (kein Basis-Paket, andere Dateien geaendert, Smoke rot) heisst: fertig=false, der Voll-Release laeuft wie bisher.
+  # Gleiche Concurrency-Gruppe wie der Voll-Release; ein wartender Lauf nimmt immer den Kopf von main, geht also keinen Stand verloren.
+  intraday-schnell:
+    if: >-
+      github.event_name != 'pull_request' && github.event_name != 'push' &&
+      !(github.event_name == 'workflow_dispatch' && (inputs.company_intelligence_acceptance || inputs.company_intelligence_off)) &&
+      (github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      fertig: ${{ steps.bereit.outputs.fertig }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_run' && 'main' || github.ref }}
+          fetch-depth: 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Basis-Paket holen (zuletzt ausgeliefertes Pages-Artefakt)
+        id: basis
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          B="$RUNNER_TEMP/basis"; mkdir -p "$B/site"
+          url=$(gh api "repos/$REPO/actions/artifacts?name=github-pages&per_page=10" \
+            --jq '[.artifacts[] | select(.expired==false)] | sort_by(.created_at) | reverse | .[0].archive_download_url')
+          test -n "$url" && [ "$url" != null ]
+          gh api "$url" > "$B/artifact.zip"
+          unzip -q "$B/artifact.zip" -d "$B"
+          tar -xf "$B/artifact.tar" -C "$B/site"
+          test -f "$B/site/release-delivery.json"
+          node -e 'process.stdout.write(require(process.argv[1]).sourceCommit)' "$B/site/release-delivery.json" > "$B/base.sha"
+          echo "base=$(cat "$B/base.sha")" >> "$GITHUB_OUTPUT"
+      - name: Weiche (nur Intraday seit dem Basis-Release?)
+        id: weiche
+        if: steps.basis.outcome == 'success'
+        continue-on-error: true
+        env:
+          BASE: ${{ steps.basis.outputs.base }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "$BASE"
+          node scripts/ci/intraday-fastpath.mjs klassifiziere --base="$BASE" --head=HEAD
+      - name: Intraday-Dateien ueber das Paket legen und pruefen
+        id: bereit
+        if: steps.weiche.outputs.mode == 'FAST'
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          S="$RUNNER_TEMP/basis/site"
+          node scripts/ci/intraday-fastpath.mjs overlay --repo=. --site="$S"
+          node scripts/ci/intraday-fastpath.mjs smoke --repo=. --site="$S"
+          echo "fertig=true" >> "$GITHUB_OUTPUT"
+      - name: Voll-Release noetig
+        if: steps.bereit.outputs.fertig != 'true'
+        run: echo "::notice::Schnellweg nicht moeglich (Basis ${{ steps.basis.outcome }}, Weiche ${{ steps.weiche.outcome }}/${{ steps.weiche.outputs.mode }}, Smoke ${{ steps.bereit.outcome }}); Voll-Release folgt."
+      - uses: actions/configure-pages@v5
+        if: steps.bereit.outputs.fertig == 'true'
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.bereit.outputs.fertig == 'true'
+        with:
+          path: ${{ runner.temp }}/basis/site
+
+  deploy-schnell:
+    needs: intraday-schnell
+    if: needs.intraday-schnell.outputs.fertig == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy intraday fast path
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # IndexNow: neue und geaenderte Insights-Adressen nach dem Ausrollen melden (Bing und alle IndexNow-Suchen).
+  # Nur lesend; ein Fehler bei IndexNow ist eine Warnung, kein roter Lauf.
+  indexnow:
+    # Statusfunktion noetig: package haengt an intraday-schnell, der bei push uebersprungen wird; ohne !cancelled() erbt jeder Folgejob das Skip (12.11.2026).
+    if: >-
+      !cancelled() && needs.package.result == 'success' && needs.deploy.result == 'success' && github.event_name != 'pull_request' && contains(needs.package.outputs.indexnow, 'https://')
+    needs: [package, deploy]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.package.outputs.source_sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: IndexNow melden
+        env:
+          LISTE: ${{ needs.package.outputs.indexnow }}
+        run: |
+          printf '%s' "$LISTE" > "$RUNNER_TEMP/indexnow.json"
+          node products/insights/indexnow.mjs melden --liste "$RUNNER_TEMP/indexnow.json"
+
   deploy:
-    if: github.event_name != 'pull_request'
+    # Statusfunktion noetig (siehe indexnow): package hat intraday-schnell als Vorfahren, der bei push uebersprungen wird.
+    if: >-
+      !cancelled() && needs.package.result == 'success' && github.event_name != 'pull_request'
     needs: package
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -445,8 +600,12 @@ jobs:
       - name: Deploy reviewed release artifact
         id: deployment
         uses: actions/deploy-pages@v4
+        # Kein `env: GITHUB_SHA` hier: der Runner reicht es nicht an deploy-pages durch (Lauf 42763174678, 10.11.2026: env zeigte
+        # <sha>-<run>-<attempt>, pages_build_version blieb der Commit). Neue Build-Version = neuer Commit, siehe
+        # scripts/company_intelligence/pages-release-marker.mjs (Refresh und Universe-Release vor dem eigenen Dispatch).
   company-intelligence-live:
-    if: github.event_name != 'pull_request'
+    if: >-
+      !cancelled() && needs.package.result == 'success' && needs.deploy.result == 'success' && github.event_name != 'pull_request'
     needs: [package, deploy]
     permissions:
       contents: read

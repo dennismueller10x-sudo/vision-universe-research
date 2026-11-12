@@ -378,8 +378,8 @@
       "⌁"
      ],
      [
-      "Smart Money",
-      "/hedgefonds/#/smart-money",
+      "Gruppen-Käufe",
+      "/hedgefonds/#/gruppen-kaeufe",
       "◬"
      ]
     ]
@@ -406,12 +406,17 @@
     "label": "Insights",
     "href": "/insights/",
     "icon": "insights",
-    "claim": "Tagesthemen und Reports, eingeordnet mit unseren Daten",
+    "claim": "Tagesthemen, Aktienmagazin und Reports",
     "entries": [
      [
       "Artikel",
       "/insights/",
       "▤"
+     ],
+     [
+      "Aktienmagazin",
+      "/insights/magazin/",
+      "▣"
      ],
      [
       "Reports",
@@ -424,7 +429,11 @@
    "reads": [],
    "producers": [
     "products/insights/build.mjs",
-    "products/insights/snapshot.mjs"
+    "products/insights/snapshot.mjs",
+    "products/insights/screens.mjs",
+    "products/insights/heft_veroeffentlichen.py",
+    "products/insights/themen.mjs",
+    "products/insights/indexnow.mjs"
    ],
    "tests": [
     "products/insights/tests/*.test.mjs"
@@ -455,13 +464,7 @@
    "status": "LIVE",
    "route": "/magazin/",
    "access": "free",
-   "navigation": {
-    "group": "more",
-    "order": 7,
-    "label": "Magazin",
-    "href": "/magazin/",
-    "icon": "▣"
-   },
+   "navigation": null,
    "data": [],
    "reads": [],
    "tests": []
@@ -470,16 +473,10 @@
    "schema": "vu-module-2",
    "id": "morning",
    "label": "Morning",
-   "status": "LIVE",
+   "status": "RETIRED",
    "route": "/morning/",
    "access": "free",
-   "navigation": {
-    "group": "more",
-    "order": 6,
-    "label": "Morning",
-    "href": "/morning/",
-    "icon": "☼"
-   },
+   "navigation": null,
    "data": [],
    "reads": [],
    "producers": [
@@ -584,9 +581,14 @@
       "⧩"
      ],
      [
-      "Strategien",
-      "/quant/#/strategien",
+      "Anlagestile",
+      "/quant/#/stile",
       "◬"
+     ],
+     [
+      "Meldungen",
+      "/quant/#/meldungen",
+      "◉"
      ],
      [
       "Aktien",
@@ -633,13 +635,7 @@
    "status": "LIVE",
    "route": "/reports/xpeng/",
    "access": "free",
-   "navigation": {
-    "group": "more",
-    "order": 8,
-    "label": "Reports",
-    "href": "/reports/xpeng/",
-    "icon": "▥"
-   },
+   "navigation": null,
    "data": [],
    "reads": [],
    "tests": []
@@ -798,13 +794,13 @@
       "⚑"
      ],
      [
-      "Signale",
-      "/supertrader/signals/",
+      "Treffer",
+      "/supertrader/treffer/",
       "◬"
      ],
      [
-      "Backtests",
-      "/supertrader/backtests/",
+      "Forschung",
+      "/supertrader/forschung/",
       "▧"
      ],
      [
@@ -963,6 +959,23 @@
    ],
    "tests": [
     "products/vorsorge/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
+   "id": "website",
+   "label": "Website (Vorschau)",
+   "status": "BETA",
+   "route": "/website/",
+   "access": "intern",
+   "navigation": null,
+   "data": [],
+   "reads": [],
+   "producers": [
+    "products/website/build.mjs"
+   ],
+   "tests": [
+    "products/website/tests/*.test.mjs"
    ]
   }
  ],

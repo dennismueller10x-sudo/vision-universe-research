@@ -1,0 +1,31 @@
+name: ci-gate
+
+# Sammel-Check fuer "Merge bei Gruen" (CLAUDE.md "Freigaben und Merge", RUNBOOK §14).
+# Laeuft bei JEDEM PR (kein Pfadfilter), wartet auf alle anderen Workflow-Laeufe des Commits (auch wartende) und ist nur gruen,
+# wenn keiner rot ist. Nicht gestartete Produkt-CIs zaehlen nicht. Entscheidung: scripts/ci/ci-gate.mjs.
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: ci-gate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci-gate:
+    name: ci-gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 85
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - name: Auf alle Pruefungen dieses Commits warten
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GATE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/ci/ci-gate.mjs

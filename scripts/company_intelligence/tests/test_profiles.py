@@ -81,6 +81,60 @@ class ProfileTests(unittest.TestCase):
             extract(COMPANY, body, wrong, NOW)
         self.assertIsNone(annual_filing(COMPANY, {**submissions(), 'cik': '0000000002'}, NOW))
 
+    def test_relaxed_second_pass_only_when_first_pass_finds_nothing(self):
+        # Costco 10-K (filed 2026-10-07): heading "Item 1—Business" (em dash) and
+        # "We are principally engaged in the operation of membership warehouses ...".
+        source = annual_filing(COMPANY, submissions(), NOW)
+        costco = ('<h2>Item 1\u2014Business</h2><p>We are principally engaged in the operation of membership warehouses '
+                  'in the United States and Canada.</p><p>We operate membership warehouses and e-commerce sites based on the concept '
+                  'that offering low prices on a limited selection of nationally-branded and private-label products in a wide range of '
+                  'categories will produce high sales volumes and rapid inventory turnover.</p><h2>Item 1A. Risk Factors</h2>').encode()
+        p = extract(COMPANY, costco, source, NOW)
+        self.assertEqual(p['state'], 'AVAILABLE')
+        self.assertEqual(p['description'], 'Example Holdings Inc. is principally engaged in the operation of membership warehouses in the United States and Canada.')
+        # An issuer the unchanged first pass already describes keeps exactly that description;
+        # the relaxed rules never add or replace sentences (reviewed German copy stays pinned).
+        both = ('<h2>Item 1. Business</h2><p>We design software products for financial institutions.</p>'
+                '<p>We are principally engaged in the operation of membership warehouses in Canada.</p>'
+                '<h2>Item 1A. Risk Factors</h2>').encode()
+        self.assertEqual(extract(COMPANY, both, source, NOW)['description'],
+                         'Example Holdings Inc. designs software products for financial institutions.')
+        # "Engaged in" alone without a business noun or operation/business-of clause still abstains.
+        vague = '<h2>Item 1\u2014Business</h2><p>We are engaged in various activities around the world.</p>'.encode()
+        self.assertEqual(extract(COMPANY, vague, source, NOW)['state'], 'UNAVAILABLE')
+
+    def test_cross_reference_10k_about_heading_and_explicit_trade_name(self):
+        # GE 10-K 2025 (cross-reference format): Item 1 is only an index entry; the business section is
+        # "ABOUT GE AEROSPACE." and the issuer states its trade name explicitly after its legal name.
+        company = {**COMPANY, 'names': ['Example Holdings']}
+        source = annual_filing(company, submissions(), NOW)
+        body = (b'<p>ABOUT EXAMPLE AERO. Example Holdings Inc. operates as Example Aero (Example Aero or the Company). '
+                b'Example Aero is a global aerospace leader.</p><p>SEGMENTS. Example Aero operates through two reportable segments: '
+                b'Commercial Engines &amp; Services and Defense Systems.</p><p>Item 1. Business</p><p>Page 4</p>')
+        p = extract(company, body, source, NOW)
+        self.assertEqual(p['state'], 'AVAILABLE')
+        self.assertTrue(p['description'].startswith('Example Holdings operates through two reportable segments'))
+        # A trade name that is not stated by the issuer itself never becomes an alias.
+        other = body.replace(b'Example Holdings Inc. operates as Example Aero (Example Aero or the Company)', b'Partners call the group Example Aero')
+        self.assertEqual(extract(company, other, source, NOW)['state'], 'UNAVAILABLE')
+
+    def test_successor_issuer_keeps_predecessor_annual_report_only_via_register(self):
+        from company_intelligence.profiles import successor_predecessors
+        # ExxonMobil Holdings Corp (0002115436) succeeded Exxon Mobil Corporation (0000034088) on 2026-07-01;
+        # its last 10-K is still filed under the predecessor CIK.
+        self.assertIn('0000034088', successor_predecessors()['0002115436'])
+        old = 'https://www.sec.gov/Archives/edgar/data/34088/000003408826000012/xom-20251231.htm'
+        def profile(cid, url):
+            return {'schema': VERSION, 'state': 'AVAILABLE', 'companyId': cid, 'companyName': 'Exxon Mobil Corporation',
+                    'description': 'Exxon Mobil Corporation explores for and produces crude oil and natural gas.', 'confidence': 'HIGH',
+                    'lastVerifiedAt': NOW, 'businessActivities': [], 'productsServices': [], 'customerMarkets': [], 'majorSegments': [],
+                    'sources': [{'companyId': cid, 'type': 'SEC', 'url': url, 'form': '10-K', 'filedAt': '2026-02-18', 'contentHash': 'a' * 64}]}
+        self.assertIsNotNone(public_profile(profile('iss_cik_0002115436', old), 'iss_cik_0002115436', NOW))
+        self.assertIsNotNone(public_profile(profile('iss_cik_0000034088', old), 'iss_cik_0000034088', NOW))
+        # Not in the register: another issuer's archive path stays rejected.
+        self.assertIsNone(public_profile(profile(CID, old), CID, NOW))
+        self.assertIsNone(public_profile(profile('iss_cik_0002115436', old.replace('/34088/', '/12345/')), 'iss_cik_0002115436', NOW))
+
     def test_combined_registrant_report_requires_named_issuer_not_subsidiary_voice(self):
         source = annual_filing(COMPANY, submissions(), NOW)
         header = b'<ix:hidden><ix:nonNumeric name="dei:EntityRegistrantName">Example Holdings Inc.</ix:nonNumeric><ix:nonNumeric name="dei:EntityRegistrantName">Example Operating LLC</ix:nonNumeric></ix:hidden>'

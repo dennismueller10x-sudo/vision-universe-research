@@ -304,7 +304,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
         state.seriesAsOf = loaded.asOf || null;
         state.closeOnly = !!loaded.closeOnly;
       }
-      if (state.intraday) state.range = "1D";
+      /* Überblick (Folie AX01): startet mit 1J wie im Mockup, auch während die Börse offen ist; 1T bleibt wählbar. */
+      if (state.intraday && !(loaded && ueberblickUS(state))) state.range = "1D";
       else if (!loaded) { chartHost.appendChild(noSeries(detail)); return; }
       chartHost.appendChild(chartSection(state));
     }).catch(function (err) {
@@ -473,7 +474,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
         ? el("div", { style: "position:relative;margin-top:22px" }, [
             C().note("Modelltitel",
               "Dieser Titel stammt aus dem synthetischen Vision-Universe-Modelluniversum. " +
-              "Kurse, Kennzahlen und Signale sind erzeugt, nicht gemessen.", "warm")
+              "Kurse, Kennzahlen und Regel-Ergebnisse sind erzeugt, nicht gemessen.", "warm")
           ])
         : null,
       detail.discoveryEligible === false
@@ -862,6 +863,9 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     /* Start nach dem Chartstandard, einmal je Aktie: gemerkte Wahl (gilt in allen Welten), sonst 1T,
        sonst der laengste abgedeckte Zeitraum bis 1J. */
     var CS = CStd();
+    if (!state.rangeStarted && ueberblickUS(state) && leiste.some(function (r) { return r.id === "1Y" && r.available; })) {
+      state.rangeStarted = true; state.range = "1Y";
+    }
     if (CS && !state.rangeStarted) {
       state.rangeStarted = true;
       var start = CS.startRange(function (c) { return leiste.some(function (r) { return r.available && CS.canonical(r.id) === c; }); });
@@ -1288,6 +1292,9 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     return kopie;
   }
 
+  /* Konzept „Reihe für Reihe“ (Entscheidung 7, Folie AX01): US-Aktien im Überblick mit Kopf C04 in Dollar. */
+  function ueberblickUS(state) { return !!(state && state.detail && state.detail.region !== "EUROPE" && D.Overview && D.Reihen); }
+
   function zeichneIntraday(state, chartBox, paneHost, controls) {
     var MC = D.MicroChart;
     var p = state.intraday;
@@ -1306,6 +1313,13 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        den Vortagesschluss stand dann mit einem Euro-Zaehler und einem
        Dollar-Nenner da - eine Zahl, die nichts bedeutet. */
     var umgerechnet = inAnzeigewaehrungSnapshot(snapNativ);
+    /* Überblick (Kopf C04): Dollar wie an der Börse, der Euro-Wert des letzten Kurses steht klein daneben. */
+    var dollarKopf = ueberblickUS(state), euroDaneben = null;
+    if (dollarKopf) {
+      var eurPunkte = (umgerechnet.snap.points || []).filter(function (x) { return x && isNum(x[1]); });
+      if (umgerechnet.waehrung !== "USD" && eurPunkte.length) euroDaneben = (function (letzterEuro, waehrung) { return alsAngezeigt(letzterEuro, waehrung); })(eurPunkte[eurPunkte.length - 1][1], umgerechnet.waehrung);
+      umgerechnet = { snap: snapNativ, waehrung: "USD" };
+    }
     var snap = umgerechnet.snap, waehrung = umgerechnet.waehrung;
     /* Kopf wie beim Zeitraum-Chart: letzter Kurs, Veraenderung gegen den
        Vortagesschluss, das Wort dazu - eine Sprache fuer alle Zeitraeume. */
@@ -1333,7 +1347,18 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     var quellenText = quelle && quelle.sourceText ? quelle.sourceText : "5-Minuten-Kurse";
     var eingefroren = !!(quelle && quelle.isFrozen);
 
-    var kopf = el("div", { class: "dx-chart-hero" }, [
+    var kopf = dollarKopf ? el("div", { class: "dx-chart-hero dx-chart-hero--c04", "data-range": "1D" }, [
+      el("div", { class: "dx-chart-hero-preis" }, [
+        el("b", { class: "num", text: isNum(letzterKurs) ? alsAngezeigt(letzterKurs, waehrung) : "" }),
+        el("span", { class: "num " + C().toneClass(tagesDelta), title: isNum(snap.previousClose) ? "seit Vortagesschluss" : "seit dem ersten Kurs des Tages", text: isNum(tagesDelta) ? prozentGross(tagesDelta) : "" }),
+        el("span", { class: "dx-chart-hero-wort" })
+      ]),
+      el("div", { class: "dx-chart-hero-meta" }, [
+        C().liveLabel(etikett, snap),
+        euroDaneben ? el("span", { class: "dx-chart-hero-eur", text: "≈ " + euroDaneben }) : null,
+        el("span", { class: "dx-chart-hero-span dv3-sr", text: (eingefroren ? "Tagesverlauf am " + C().dateShort(snap.sessionDate) : "Tagesverlauf heute") + ": " + (isNum(snap.previousClose) ? "seit Vortagesschluss " + alsAngezeigt(snap.previousClose, waehrung) : "seit dem ersten Kurs des Tages") + " · " + quellenText })
+      ].filter(Boolean))
+    ]) : el("div", { class: "dx-chart-hero" }, [
       el("div", { class: "dx-chart-hero-preis" }, [
         el("b", { class: "num", text: isNum(letzterKurs) ? alsAngezeigt(letzterKurs, waehrung) : "" }),
         el("span", { class: "num " + C().toneClass(tagesDelta), text: isNum(tagesDelta) ? prozentGross(tagesDelta) : "" }),
@@ -1346,6 +1371,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     ]);
     chartBox.appendChild(kopf);
     var mass = chartMass(chartBox, mobil);
+    if (dollarKopf) mass.h = mobil ? 184 : 260;
     /* Auch der Tagesverlauf wird in der Anzeigewaehrung gezeichnet.
 
        Die Zahlen an der Achse standen sonst in Dollar, waehrend der Kurs
@@ -2010,7 +2036,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       ["Status", inst.active === false
         ? "beendet" + (inst.delistedAt ? " am " + inst.delistedAt : "")
         : (inst.active === true ? "laufendes Listing" : "nicht belegbar")],
-      ["CIK (SEC)", inst.cik || "keine"]
+      ["CIK (US-Meldekennung)", inst.cik || "keine"]
     ];
     var tabelle = el("section", { class: "dx-chapter dx-fade" }, [
       el("h2", { text: "Stammdaten" }),
@@ -2033,7 +2059,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       ["Geschäftszahlen", caps.HAS_FUNDAMENTALS || intelligenceModules.financials,
        inst.cik
          ? "Der Titel hat eine CIK; normalisierte Geschäftszahlen liegen noch nicht vor."
-         : "Ohne CIK gibt es keinen SEC-Einreicher, dem Geschäftszahlen zuzuordnen wären."],
+         : "Ohne CIK gibt es keinen Einreicher bei der US-Börsenaufsicht, dem Geschäftszahlen zuzuordnen wären."],
       ["Bewertung", caps.HAS_VALUATION, "Bewertungskennzahlen brauchen Geschäftszahlen."],
       ["Analystenschätzungen", caps.HAS_ANALYSTS,
        "Analystendaten sind lizenzpflichtig und nicht Teil dieses Systems."],

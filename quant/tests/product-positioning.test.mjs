@@ -43,14 +43,19 @@ test("Vier Kernversprechen, jedes mit einem Weg zu der Funktion, die es einloest
   for (const t of titles) assert.ok(doc.includes(t), "Versprechen fehlt im Dokument: " + t);
 });
 
-/* Redesign 2027 (Folie Q01): die neue Startseite. Frage als Titel, Suche, „So arbeitet Quant“, Markt, heute, Werkzeuge.
+/* Konzept Quant „Ein Profil je Aktie“ (QX01, docs/design/quant-2026-11): Frage, ein Satz zum Profil, Suche, „Heute bei Quant“
+   als schwarze Karte, Markt als eine Zeile, Schienen (neu in einem Anlagestil, Setup bestätigt, Anlagestile), „So arbeitet
+   Quant“, Vertrauen, Hinweis. Entfallen: sechs Zahlenkacheln, Pro-Kachel, fünf Navigationskarten.
    Die bisherige Startseite bleibt als homeLegacy (ohne VUUI) und behaelt ihre Pruefung unten. */
-test("Q01 · Home: Frage, Suche, So arbeitet Quant, Markt, Heute bei Quant, Selbst suchen", () => {
+test("QX01 · Home: Frage, Profil-Satz, Suche, Heute bei Quant, Markt, Schienen, So arbeitet Quant, Vertrauen", () => {
   const home = slice(pages, "async function home(", "async function homeLegacy(");
   const at = (s) => { const i = home.indexOf(s); assert.ok(i >= 0, "fehlt auf Home: " + s); return i; };
-  const order = [at("Was hat sich heute verändert?"), at("page.append(search)"), at("page.append(how)"), at("page.append(regimeHost)"),
-    at('sect("Heute bei Quant"'), at('sect("Selbst suchen")')];
-  assert.deepEqual(order.slice().sort((a, b) => a - b), order, "Reihenfolge der Startseite weicht vom Mockup Q01 ab");
+  const order = [at("Was hat sich heute verändert?"), at("Profil aus sieben Eigenschaften"), at("page.append(search)"),
+    at("page.append(todayHost, regimeHost"), at('railHead("So arbeitet Quant"'), at("Warum kann ich dem vertrauen?")];
+  assert.deepEqual(order.slice().sort((a, b) => a - b), order, "Reihenfolge der Startseite weicht vom Mockup QX01 ab");
+  for (const s of ["Heute bei Quant · Stand", "neu in einem Anlagestil", "Setups bestätigt", "Risiko steigt", "Meldungen", "Markt heute",
+    '"Neu in einem Anlagestil"', '"Setup bestätigt"', '"Anlagestile"']) at(s);
+  for (const alt of ["homeStat(", "navcard(", "qv3-edge", 'sect("Selbst suchen")']) assert.ok(!home.includes(alt), "alter Inhalt: " + alt);
   assert.ok(!/KNOWN\b/.test(home), "Home zeigt feste Demo-Aktien");
   assert.match(home, /promiseList\(\)/, "das Versprechen (Beleg) fehlt");
 });
@@ -80,9 +85,13 @@ test("Beweis statt Behauptung: das Beispiel kommt aus dem Radar und traegt die M
   assert.match(fn, /if \(!ev\) return null/, "ohne getestetes Signal erfindet die Seite kein Beispiel");
 });
 
-test("Radar: Bedeutung, naechste Bedingung, Vergleich mit dem Markt - und keine Kaufempfehlung", () => {
-  const head = slice(pages, "async function radar(", "var r = await ctx.api.getQuantRadar()");
-  for (const w of ["was passiert ist", "was als Nächstes fehlt", "besser lief als der Markt", "Keine Kaufempfehlung"]) assert.ok(head.includes(w), "Radar-Kopf ohne: " + w);
+test("Meldungen: eine Zeile je Aktie, Details im Sheet, Vergleich unter Forschung - und keine Kaufempfehlung", () => {
+  /* Konzept Quant 2026-11 (QX02): Radar heißt „Meldungen“. Die Zeile sagt, was passiert ist; das Sheet zeigt Marken laut
+     Methode, die nächste Bedingung und den Vergleich mit dem Markt (radarCard); der Hinweis nennt Forschung. */
+  const page = slice(pages, "async function radar(", "/* ================================================================ HOME");
+  for (const w of ["Eine Zeile je Aktie, Details beim Antippen", "meldungRow(", "openDetail(", "radarCard(ctx, c", "Ob das früher einen Vorteil hatte, steht unter Forschung", "keine Gesamtnote"]) assert.ok(page.includes(w), "Meldungen ohne: " + w);
+  const card = slice(pages, "function radarCard(", "function evChip(");
+  for (const w of ["Zone laut Methode", "Bestätigt, wenn ", "Nächster Schritt: ", "Zur Analyse von "]) assert.ok(card.includes(w), "Detail ohne: " + w);
   /* Die zwei festen Fachsaetze der Szenario-Engine werden uebersetzt - und
      die Uebersetzung bricht nicht still, wenn die Engine sie aendert. */
   const engine = read("quant/engines/technical/scenario-engine.js");
@@ -121,15 +130,15 @@ test("Quant vs. Screener vs. Discover: getrennt und benannt", () => {
 
 test("Strategien und Backtesting: 'passt heute' ist nicht 'getestet'; Backtesting fragt nach dem Vorteil", () => {
   assert.match(pages, /„Passt heute“ heißt: die Bedingungen sind heute erfüllt\. Wie sich ein Stil historisch entwickelt hat, ist noch nicht getestet und nicht zertifiziert/);
-  assert.match(backtest, /el\("h1", \{ class: "qx-h1", text: "Hatte ein Signal früher wirklich einen Vorteil\?" \}\)/);
+  assert.match(backtest, /el\("h1", \{ class: "qx-h1", text: "Hatte ein Regelereignis früher wirklich einen Vorteil\?" \}\)/);
   assert.match(backtest, /wie oft der ganze Markt in denselben Wochen/);
 });
 
 test("Beobachten hat einen erklaerten Nutzen - auf der Aktienliste, auf Home und an der Aktie", () => {
   const wv = slice(pages, "var WATCH_VALUE = [", "];");
-  for (const w of ["Setup-Wechsel", "historische Evidenz", "Strategie", "Risiken", "Signale"]) assert.ok(wv.includes(w), "Nutzen fehlt: " + w);
+  for (const w of ["Setup-Wechsel", "historische Evidenz", "Strategie", "Risiken", "Regelereignisse"]) assert.ok(wv.includes(w), "Nutzen fehlt: " + w);
   assert.match(pages, /WATCH_VALUE\.map\(function \(w\) \{ return el\("li"/, "die Aktienliste nennt den Nutzen nicht");
   assert.match(pages, /Quant verfolgt für dich Setup-Wechsel, neue Evidenz, Strategie-Wechsel und Risiken/);
-  assert.match(evidence, /verfolgt Quant für dich Setup-Wechsel, neue historische Evidenz, Strategie-Wechsel, Risiken und neue Signale/);
+  assert.match(evidence, /verfolgt Quant für dich Setup-Wechsel, neue historische Evidenz, Strategie-Wechsel, Risiken und neue Regelereignisse/);
   assert.match(pages, /Kein Depot: keine Stückzahl, kein Einstand\./);
 });

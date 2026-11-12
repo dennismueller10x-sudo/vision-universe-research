@@ -169,7 +169,7 @@
     var f = detail.fundamentals || {};
     return el("section", { class: "dx-chapter dx-fade" }, [
       el("h2", { text: titel }),
-      el("p", { class: "dx-why-empty", text: f.message || "Für diesen Titel liegen keine Geschäftszahlen der SEC vor." })
+      el("p", { class: "dx-why-empty", text: f.message || "Für diesen Titel liegen keine Geschäftszahlen aus Pflichtmeldungen vor." })
     ]);
   }
   /* V4.1 §11: kein Quellenblock im Kapitel - eine Zeile mit dem Zeitraum

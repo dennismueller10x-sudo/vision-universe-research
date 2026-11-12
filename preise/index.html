@@ -13,7 +13,7 @@
 <script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 <link rel="stylesheet" href="/preise/preise.css">
-<!-- Eigene Kopfzeile nach der Vorlage 2027 (E03/E10/E11): keine gemeinsame Navigation (scripts/sync-navigation.mjs). -->
+<!-- Eigene Kopfzeile nach der Vorlage 2027 (E03/E10/E11); gemeinsames Menü ohne zweiten Kopf. Automatische Kopf-Ersetzung bleibt aus (scripts/sync-navigation.mjs). -->
 <meta name="vu-navigation" content="none">
 </head>
 <body class="ka-body pr-body vu-ui">
@@ -22,7 +22,9 @@
 <a class="pr-hd-logo" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" width="150" height="50" alt="Vision Universe"></a>
 <a class="vu-round pr-hd-btn" href="/discover/#/suche" aria-label="Aktie suchen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg></a>
 <a class="pr-hd-login" id="pr-login" href="/konto/anmelden/">Anmelden</a>
+<button type="button" class="pr-hd-login" data-vu-menu-toggle aria-label="Menü öffnen" aria-expanded="false">☰</button>
 </header>
+<vu-navigation menu-only no-dock theme="light" theme-switch></vu-navigation><script src="/assets/site-navigation.js"></script>
 <main class="ka pr" id="main">
 <header class="pr-head">
 <p class="vu-ltag">Preise</p>
@@ -59,7 +61,7 @@
 <p class="vu-mu vu-xs pr-same" id="pr-same" hidden>Der Funktionsumfang ist in Free und Pro identisch; Pro unterscheidet nur die Zahlung.</p>
 <div class="vu-box vu-box--line pr-never">
 <b>In keinem Tarif enthalten</b>
-<ul><li>Quant-Gesamtscore</li><li>Unveröffentlichte Supertrader-Signale</li></ul>
+<ul><li>Quant-Gesamtscore</li><li>Unveröffentlichte Supertrader-Regel-Ergebnisse</li></ul>
 <div class="vu-help"><i aria-hidden="true">?</i><span>Diese Werte sind noch nicht freigegeben. Wir zeigen sie erst, wenn sie geprüft sind, auch nicht gegen Geld.</span></div>
 </div>
 </section>
@@ -71,7 +73,7 @@
 <details><summary>Wie kann ich bezahlen?</summary><p>Auf der Zahlungsseite von Stripe, je nach Gerät und Verfügbarkeit mit Karte, Apple Pay, Google Pay, PayPal oder SEPA-Lastschrift. Zahlungsdaten erreichen Vision Universe nie.</p></details>
 </section>
 <a class="vu-btn vu-btn--line vu-btn--block pr-have" id="pr-have" href="/konto/anmelden/">Ich habe schon ein Konto</a>
-<nav class="pr-legal" aria-label="Rechtliches"><a href="/konto/kuendigen/">Verträge hier kündigen</a><a href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a href="https://konto.visionuniverse.de/rechtliches/agb">Bedingungen</a><a href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a><a href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></nav>
+<nav class="pr-legal" aria-label="Vertrag"><a href="/konto/kuendigen/">Verträge hier kündigen</a><a href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a></nav>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

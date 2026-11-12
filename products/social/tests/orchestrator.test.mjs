@@ -349,11 +349,17 @@ test("OR14 · storyBestesThema() waehlt nach Story, nicht nach Opportunity.score
     mkdirSync(join(wurzel, "quant/data/technical/instruments"), { recursive: true });
     /* Echte Bundles, keine Fixtures von Hand - eine handgebaute
        Evidenz haette genau die Frage entschieden, die dieser Test
-       stellen soll: ob echte Evidenz eine echte Story traegt. */
-    cpSync(join(REPO_ROOT, "quant/data/technical/instruments/MSFT.json"),
-      join(wurzel, "quant/data/technical/instruments/MSFT.json"));
-    cpSync(join(REPO_ROOT, "quant/data/technical/instruments/AAPL.json"),
-      join(wurzel, "quant/data/technical/instruments/AAPL.json"));
+       stellen soll: ob echte Evidenz eine echte Story traegt.
+       Eingefroren (Stand vor dem Marktdaten-Refresh 666625e416,
+       09.11.2026): der Test las vorher die taeglich neu gebauten
+       Bundles aus quant/data/technical/instruments/, und mit den
+       Kursen vom 09.11. hatte AAPL die staerkere Story - OR14 wurde
+       rot, ohne dass sich storyBestesThema() geaendert hatte. Die
+       Pruefung bleibt dieselbe: score-basiert waehlt AAPL, story-
+       basiert waehlt MSFT, weil MSFT hier die staerkere Story traegt. */
+    const FIX = join(REPO_ROOT, "products/social/tests/fixtures/or14");
+    cpSync(join(FIX, "MSFT.json"), join(wurzel, "quant/data/technical/instruments/MSFT.json"));
+    cpSync(join(FIX, "AAPL.json"), join(wurzel, "quant/data/technical/instruments/AAPL.json"));
     mkdirSync(join(wurzel, "social/data"), { recursive: true });
     writeFileSync(join(wurzel, "social/data/cycle-report.json"), JSON.stringify({
       generatedAt: "2026-09-23T12:00:00Z",

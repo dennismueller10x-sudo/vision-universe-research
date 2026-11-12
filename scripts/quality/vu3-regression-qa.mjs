@@ -166,20 +166,20 @@ if (only.has('theme')) await guard('theme', async () => {
 /* ---------------------------------------------------------------- 3 Visual-First-Bausteine */
 // [Welt, Route, Selektor, Beschreibung]; Inhalte stammen aus den Visual-First-PRs (#759-#783, #794).
 const VISUAL = [
-  ['Quant', '/quant/#/radar', '.q-rc-chip', 'Radar-Kompaktkarte mit Belegchips (Redesign Q01: Radar-Karten stehen im Radar, die Startseite zeigt „Heute bei Quant“)'],
-  ['Quant', '/quant/#/radar', '.q-radar-stats', 'Radar mit Richtungszeichen und Zaehlungen'],
-  ['Quant', '/quant/#/radar', '.q-chip-n', 'Filterzaehlungen'],
+  ['Quant', '/quant/#/meldungen', '.qk-mr', 'Meldungen: eine Zeile je Aktie (Konzept Quant 2026-11, QX02)'],
+  ['Quant', '/quant/#/meldungen', '.qk-seg', 'Meldungen: Reiter Alle · Besser · Schlechter mit Zaehlung'],
+  ['Quant', '/quant/#/meldungen', '.qk-chips small', 'Filterzaehlungen'],
   ['Quant', '/quant/#/aktie/NVDA', '.q-check-count', 'Setup-Regelcheckliste', 'setupDirection'],
   ['Quant', '/quant/#/aktie/NVDA', '.q-evo', 'Evidenz-Ueberblick der drei Stufen'],
   ['Quant', '/quant/#/aktie/NVDA', '.qx-change-tally', 'Bilanz der Veraenderungen'],
-  ['Quant', '/quant/#/strategien/quality-compounder', '.qx-cmeters', 'Bedingungs-Balken "Wer passt heute?"'],
-  ['Technik', '/quant/#/aktie/NVDA/technik', '.cb-checks', 'Zaehlung "Warum dieses Bild?"'],
+  ['Quant', '/quant/#/stile/quality-compounder', '.qx-cmeters', 'Bedingungs-Balken "Wer passt heute?"'],
+  ['Technik', '/quant/#/aktie/NVDA/technik', '.cb-ew-none, .cb-story-r', 'Elliott auf der Aktie: Absage mit Wegen oder Lesart in drei Sätzen (Konzept EHV, EX03)'],
   ['Supertrader', '/supertrader/signals/', '.st-risk, .st-r-sfoot', 'Risiko der Modellposition als Zahl'],
   ['Screener', '/screener/?f=roic:gt:0.1', '.sc-counter', 'Anteil am Universum'],
   ['Vorsorge', '/vorsorge/#/', '.vs-chg', 'Richtungszeichen 1J'],
   ['Vorsorge', '/vorsorge/#/etf/VT', '.vs-bilanz', 'Bilanz der Einordnung'],
   ['Hedgefonds', '/hedgefonds/#/', '.hf-card-val .hf-chg', 'Richtung der Fondsgroesse'],
-  ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-balance', 'Kaeufer gegen Verkaeufer'],
+  ['Hedgefonds', '/hedgefonds/#/aktie/NVDA', '.hf-story-r .vu-verdict', 'Investoren in drei Sätzen mit Urteil (Konzept EHV, HX03)'],
   ['Elliott', '/elliott/', '.el-ebar', 'Anteil zählbarer Aktien als Balken (Konzept EHV, EX02)'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-kt .fu-k-v', 'Kennzahlen-Streifen (Konzept „Verstehen. Finden.“, FX02)'],
   ['Fundamental', '/fundamental/#/PLTR', '.fu-fin-big .vu-chg', 'Finanz-Chart mit Richtung zum Vorjahr'],
@@ -208,7 +208,7 @@ if (only.has('visual')) await guard('visual', async () => {
       let sel = baseSel, label = baseLabel;
       if (variant === 'setupDirection') {
         /* Die Setup-Karte hat zwei Formen: Aufwaertsszenario mit Regelcheckliste, Abwaertsszenario (bzw. ohne Richtung)
-           mit "Ungueltig ueber" und Zielzonen abwaerts, ohne Einstieg und ohne Checkliste (quant/app/page-stock.js
+           mit "Ungueltig laut Methode", ohne Einstieg und ohne Checkliste (quant/app/page-stock.js
            renderSetupCard). Welche gilt, entscheidet das veroeffentlichte Basisszenario - hier unabhaengig von der
            Karte ueber die Produkt-API gelesen. Ohne Szenario bleibt die strenge Erwartung (Checkliste). */
         const dir = await page.evaluate(async () => {
@@ -222,7 +222,7 @@ if (only.has('visual')) await guard('visual', async () => {
         });
         if (dir && dir !== 'BULLISH') {
           if (await page.evaluate(() => document.querySelectorAll('#setup .q-check-count').length)) fail('visual ' + world, 'Abwaertsszenario (' + dir + '), aber Setup-Regelcheckliste in #setup auf ' + route);
-          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Marke "Ungültig über" statt Regelcheckliste';
+          sel = '#setup .q-levels.is-bear .is-inv'; label = 'Setup-Karte im Abwaertsszenario (' + dir + '): Marke "Ungültig laut Methode" statt Regelcheckliste';
         }
       }
       const state = await page.evaluate((s) => { const n = document.querySelector(s); if (!n) return 'missing'; const r = n.getBoundingClientRect(); return r.width > 0 && r.height > 0 ? 'visible' : 'hidden'; }, sel);
@@ -236,7 +236,7 @@ if (only.has('visual')) await guard('visual', async () => {
 
 /* ---------------------------------------------------------------- 4 Kontrast und Ueberlauf */
 const CONTRAST = [
-  '/quant/#/', '/quant/#/radar', '/quant/#/aktie/NVDA', '/quant/#/aktie/NVDA/technik', '/quant/#/strategien',
+  '/quant/#/', '/quant/#/meldungen', '/quant/#/aktie/NVDA', '/quant/#/aktie/NVDA/technik', '/quant/#/stile',
   '/supertrader/', '/supertrader/signals/', '/supertrader/stock/NVDA/',
   '/screener/', '/screener/?f=roic:gt:0.1',
   '/vorsorge/#/', '/vorsorge/#/etf/VT', '/vorsorge/#/etfs', '/vorsorge/#/plan', '/vorsorge/#/portfolio',

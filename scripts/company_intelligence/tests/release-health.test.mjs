@@ -27,9 +27,9 @@ test('sparse health checkout includes the renderer source required by full-unive
 });
 test('bounded daily onboarding shares the production writer lock and uses a bounded candidate batch',()=>{
  const workflow=readFileSync(resolve('.github/workflows/company-intelligence-profile-source.yml'),'utf8');
- assert.match(workflow,/cron: '47 3 \* \* \*'/);
- assert.match(workflow,/\(inputs\.publish \|\| github\.event_name == 'schedule'\) && 'production'/);
- assert.match(workflow,/GITHUB_EVENT_NAME" = schedule.*--sources --source-limit 100/);
+ assert.doesNotMatch(workflow,/cron:/,'Zeitplan nur ueber den Wecker');
+ assert.match(workflow,/\(inputs\.publish \|\| github\.event_name == 'schedule' \|\| inputs\.zeitplan\) && 'production'/);
+ assert.match(workflow,/VU_EVENT" = schedule.*--sources --source-limit 100/);
  assert.match(workflow,/source-onboarding\.json/);
 });
 test('isolated full-universe verification emits before/after source audit without production writes',()=>{

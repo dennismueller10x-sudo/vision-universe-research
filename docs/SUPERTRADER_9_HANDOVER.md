@@ -281,6 +281,49 @@ Details: [SUPERTRADER_9_HISTORICAL_BACKTEST_INFRASTRUCTURE.md](SUPERTRADER_9_HIS
 - Danach braucht es einen Daten-PR, Snapshot-Generation 3 und Neuläufe gegen dieselben Referenz-Hashes.
 - Belege: `SUPERTRADER_6_V4D1_CONTAINMENT.md`, `SUPERTRADER_7_EDGAR_CA_CHECK.md`, `SUPERTRADER_7_EDGAR_EXHIBITS_1_4_2.md`, `SUPERTRADER_7_TIINGO_SPLITS_PROBE.md`, `SUPERTRADER_7_OWNER_DECISIONS_E7.md`.
 
+### 7.2 Ausführungsvertrag und Ledger-Orakel (Strang U, Teil 2, 10.11.2026)
+
+Reine Schattenprüfung, Forschung, nicht zertifiziert. Keine Änderung an Engines, Strategien, Gates, Golden-Hashes; keine Holdout-Läufe. Orakel: `scripts/quant/oracle/ledger_oracle.py` (Python, exakte Bruchrechnung, liest keinen Engine-Code), Fälle `ledger_cases.py` (28 synthetische Fälle: W01–W14 Wochen-Ledger, S01–S14 Tagesbalken), Runner `run-js-ledger.cjs` / `run-js-daily.mjs` (schreiben nur nach `--out`), Test `scripts/quant/tests/test_ledger_oracle.py`. Das Wochen-Ledger steht im [Quant-Handover](quant/QUANT_FINAL_HANDOVER.md).
+
+**Buchungssemantik im Vergleich** (aus dem Code gelesen; „nicht geprüft“ = in diesem Lauf nicht verglichen):
+
+| Aspekt | `simulator.mjs` + `backtest.mjs` (Darvas, Turtle/Donchian) | `rotation-52w.mjs` | `source-faithful/runner/run-research.mjs` |
+|---|---|---|---|
+| Order/Fill | Bestätigung per Schluss, Einstieg zur nächsten Eröffnung; `BUY_STOP_INTRADAY`: `max(Open, Trigger)` | Monatsentscheidung, Ausführung zur Eröffnung | Einstiegs-/Ausstiegsfill aus der Komponentenstudie |
+| Slippage | im Preis (`·(1±s)`) | im Preis | im Preis, Gebühr multiplikativ |
+| Gebühr | Legacy-Standard: nur in `closeTrade` (−2 bps additiv vom Einzelertrag), **nicht** im Portfolio-Cash; Opt-in `cfg.commissionBps` bucht sie je Seite (U2-F1). Produktiv (`runPortfolioTR`): 1 bp je Seite im Cash | je Seite auf den Umsatz, im Cash | je Seite multiplikativ |
+| Stop | `min(Stop, Open)·(1−s)`; im Einstiegsbalken eindeutig bei Open > Stop | nicht geprüft | nicht geprüft |
+| Spread | keiner | keiner | keiner |
+| Split | adjustierte Reihe + `rescaleSignal` (Levels ×Faktor, Rendite gleich) | nicht geprüft | nicht geprüft |
+| Dividende | nicht gebucht (Reihe) | `book.dividends` | nicht gebucht im Ausschnitt |
+| Delisting / offen am Serienende | Legacy-Standard: nicht gebucht (U2-F2); Opt-in `collectTrades(..., { openAtEnd: 'MARK' })` bewertet zum letzten Schluss. Produktiv (`analyze.mjs`): `OPEN_AT_END_MARK` | Szenarien S0… | `OPEN_AT_DELISTING`, 0,7 · letzter Schluss |
+
+**Abweichungsmatrix.** Wochen-Ledger W01–W14: 0 Abweichungen (Cash, Equity, Stück, Gebühren, Umsatz, Kennzahlen bis 1e-9). Tagesbalken-Fälle S01–S14, jede beobachtete Abweichung im Fall deklariert:
+
+| Fall | Klasse | Befund |
+|---|---|---|
+| U2-F1 / S14 → S16 | Fehler im Legacy-Referenzpfad, behoben als Opt-in | `backtest.mjs#runPortfolio` buchte keine Gebühr (1 bp je Seite); `describeExecution` verspricht „Gebühren und Slippage auf Kauf und Verkauf“. Beispiel S14: 2,16 USD auf 100 000 USD. **Der produktive Pfad `validation/portfolio.mjs#runPortfolioTR` (Backtests, `model-portfolio.mjs`, `snapshot/replay.mjs`) bucht die Gebühr bereits**; betroffen war nur die Legacy-Referenz, gegen die C2 prüft und die eingefroren bleibt. |
+| U2-F2 / S13 → S15 | Fehler im Legacy-Referenzpfad, behoben als Opt-in | `collectTrades` übernahm nur abgeschlossene Signale: am Serienende oder bei Delisting offene Positionen fielen weg (Survivorship). Produktiv markiert `validation/analyze.mjs` sie mit `OPEN_AT_END_MARK`; betroffen war wieder nur der Legacy-Pfad. |
+| S01, S07, S08, S10 | wie U2-F2 | Am Fensterende offene Position im Legacy-Standard nicht gebucht; S10 zusätzlich Mehrdeutigkeit (unten). |
+| S11 | Erlaubte Variante (konservativ) | Öffnet der Einstiegsbalken unter dem Stop, steigt über den Trigger und schließt unter dem Stop, verkauft die Engine zu `Open·(1−s)` (93), belegbar wäre `Stop·(1−s)` (95): 2,1 % ungünstiger, nie günstiger als belegbar. |
+| S10 | Datenmehrdeutigkeit | Hoch > Trigger, Tief < Stop, Schluss > Stop: Reihenfolge nicht belegt. Die Engine kennzeichnet `sameDayOrder = AMBIGUOUS`; Neutralvariante bleibt offen, `PESSIMISTIC` steigt zum Stop aus. Beide Varianten stimmen mit dem Orakel überein. |
+
+Kostenformen je Round Trip (+20 %, 10 bps Slippage, 1 bp Gebühr): `SLIPPAGE_AS_COST` (research-portfolio) und `MULTIPLICATIVE` (rotation-52w, Source-Faithful) unterscheiden sich um weniger als 1e-6, `ADDITIVE_FEE` (Simulator) um weniger als 5e-5; erlaubte Varianten. Ohne Gebühr im Portfolio-Cash fehlt die volle 2-bp-Lücke (U2-F1).
+
+Grenzfälle als Test gepinnt: Eröffnung genau auf dem Stop ergibt keinen Einstieg (`!(open > stop)`), Tief genau auf dem Stop löst aus (`<=`), Hoch genau auf dem Trigger löst keinen Kauf-Stop aus (`>`), Gap unter den Stop später als am Einstiegstag füllt zur Eröffnung.
+
+**Korrektur U2-F1/F2 (Owner-Auftrag 10.11.2026, eigener PR).** Die Korrektur ist ein Opt-in; der Standard bleibt Byte für Byte der alte Legacy-Pfad, weil eingefrorene Referenzen (C2-Gleichheit `runPortfolioTR` gegen `runPortfolio`, Runden 8–15) daran hängen und kein Test eine Änderung der Standardwerte verlangt. `runPortfolio(trades, priceOf, cal, { ...PORTFOLIO_DEFAULTS, commissionBps: 1 })` bucht die Gebühr (Stück = Cash / (Preis · (1 + Gebühr)), Erlös · (1 − Gebühr), Feld `commissions`); `collectTrades(strategy, contexts, { openAtEnd: 'MARK' })` nimmt offene Positionen mit einer Bewertungszeile `OPEN_AT_END_MARK` (zum letzten Schluss, auch nach Delisting) auf; `runPortfolio` lässt sie offen und bewertet sie. Beweis: `scripts/quant/tests/test_ledger_oracle.py` (S15/S16: Orakel = korrigierter Legacy-Pfad = `runPortfolioTR`, 1e-12) und `scripts/supertrader/tests/backtest-ledger-opt-in.test.mjs`. Forschung, nicht zertifiziert; keine öffentliche Aussage.
+
+Vorher/Nachher auf synthetischem Panel (24 Zufallsreihen, 900 Handelstage, 4 delistet, 100 000 USD; Strategien unverändert, nur der Ledger unterscheidet sich; keine Produktionsdaten). Gesamtrendite / maximaler Drawdown:
+
+| Strategie | offen markiert | alt (Legacy) | nur Gebühr (F1) | nur Offene (F2) | beides |
+|---|---|---|---|---|---|
+| Darvas Box 3.0.0 (Buy-Stop) | 3 | 46,92 % / −5,07 % | 46,11 % / −5,14 % | 55,07 % / −5,07 % | 54,22 % / −5,14 % (Gebühr 656 USD) |
+| Turtle S1 (Donchian 2.0.0) | 6 | 39,40 % / −8,35 % | 38,46 % / −8,46 % | 40,23 % / −8,35 % | 39,28 % / −8,46 % (770 USD) |
+| Donchian 1.1.0 | 7 | 78,25 % / −3,80 % | 77,41 % / −3,81 % | 83,54 % / −3,13 % | 82,68 % / −3,15 % (610 USD) |
+
+Lesart: Die Gebühr kostet auf dem Panel rund 0,8–0,9 Prozentpunkte Gesamtrendite; die Bewertung offener Positionen ändert das Ergebnis in beide Richtungen und hängt am Panel (hier gewinnen die offenen Positionen). Die Zahlen sind ein Funktionsnachweis, keine Aussage über echte Märkte. Auf Produktionsergebnisse hat die Korrektur keine Wirkung, weil diese `runPortfolioTR` nutzen.
+
 ---
 
 ## 8. Offene PRs

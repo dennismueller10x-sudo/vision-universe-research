@@ -11,7 +11,7 @@ export function confirmedPayload(ticker) {
   assert.equal(confirmedReport.verdict, 'TOTAL_RETURN_CONFIRMED', 'historical report must actually certify its recorded interval');
   const measured = confirmedReport.series.find((s) => s.ticker === ticker);
   assert.ok(measured && /^\d{4}-\d{2}-\d{2}$/.test(measured.to), ticker + ': missing confirmed interval');
-  const payload = JSON.parse(readFileSync(new URL('quant/data/market/golden-preview/daily/' + measured.securityId + '.json', ROOT), 'utf8'));
+  const payload = JSON.parse(readFileSync(new URL('../fixtures/golden-preview/' + measured.securityId + '.json', import.meta.url) /* eingefrorene Kopie, README daneben */, 'utf8'));
   const bars = payload.bars.filter((b) => b.date.slice(0,10) >= measured.from && b.date.slice(0,10) <= measured.to);
   assert.equal(bars.length, measured.barCount, ticker + ': historical input interval no longer reproduces the report');
   assert.equal(bars[0].date.slice(0,10), measured.from);

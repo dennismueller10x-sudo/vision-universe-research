@@ -636,7 +636,7 @@
       "sic": "2011",
       "rawFacts": 624,
       "mappedFacts": 74,
-      "unmappedFacts": 553,
+      "unmappedFacts": 551,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -745,8 +745,8 @@
         }
       },
       "quality": {
-        "HIGH": 24,
-        "MEDIUM": 8
+        "HIGH": 22,
+        "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
@@ -754,36 +754,37 @@
         "resolvedValues": 32
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
+        "rules_version": "1.1.0",
         "total": 567,
         "by_severity": {
-          "INFO": 553,
-          "WARNING": 14
+          "INFO": 551,
+          "WARNING": 16
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 12,
+          "CONCEPT_DISAGREEMENT": 14,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 553
+          "UNKNOWN_CONCEPT": 551
         }
       },
       "latestFiling": {
-        "accession": "0001791942-26-000004",
-        "filing_date": "2026-08-10",
+        "accession": "0001791942-26-000011",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-09T21:32:21.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "8e1f2c9e134e75371923f93ebe3136c3dbd0f6f2239b203cb437fa16155971e6",
+      "sourceDigest": "91625cad158772e021247d17191eb9ae1d449f5aadd10bb4434813c10819d188",
       "issuerId": "iss_cik_0001791942"
     },
     {

@@ -118,7 +118,7 @@
       }
       p.appendChild(doc.createTextNode("Logo: "));
       if (c.source === "SEC_FILING") {
-        p.appendChild(link("SEC-Einreichung des Unternehmens" + (c.form ? " (" + c.form + ")" : ""), c.page));
+        p.appendChild(link("Pflichtmeldung des Unternehmens" + (c.form ? " (" + c.form + ")" : ""), c.page));
         p.appendChild(doc.createTextNode(" · Marke des jeweiligen Inhabers, nur zur Identifizierung"));
         p.hidden = false;
         return;

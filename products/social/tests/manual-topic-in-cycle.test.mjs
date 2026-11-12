@@ -275,7 +275,7 @@ test("MT12 · POST ZU THEMA MSFT findet und hydriert das echte VERIFIED Creative
     "Fehler war ein Hash aus kurzname() statt dieser Formel.");
 
   const register = JSON.parse(
-    readFileSync(join(ROOT, "social/data/creative-jobs.json"), "utf8"));
+    readFileSync(join(ROOT, "products/social/tests/fixtures/manual-topic-in-cycle/creative-jobs.json"), "utf8"));
   const verifiziert = CreativeJob.createRegistry(register.jobs || [])
     .byContent(archivierteContentId)
     .filter((j) => j.state === "CREATIVE_JOB_VERIFIED");

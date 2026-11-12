@@ -63,7 +63,7 @@ function problems(workflow){
  // ADR-005 und Rechte
  for(const s of steps)if(/\$\{\{\s*(github\.event\.)?inputs\./.test(s.run||''))add('inputs im run-Text: '+s.name);
  if(JSON.stringify(workflow.permissions)!==JSON.stringify({contents:'read',actions:'write'}))add('Rechte veraendert');
- if(workflow.concurrency?.group!=="company-intelligence-continuous-${{ (inputs.publish || github.event_name == 'schedule') && 'production' || 'profile-source-verification' }}"||workflow.concurrency['cancel-in-progress']!==false)add('Concurrency veraendert');
+ if(workflow.concurrency?.group!=="${{ format('company-intelligence-continuous-{0}', (inputs.publish || github.event_name == 'schedule' || inputs.zeitplan) && 'production' || 'profile-source-verification') }}"||workflow.concurrency['cancel-in-progress']!==false)add('Concurrency veraendert');
  return out;
 }
 

@@ -8,8 +8,8 @@ import vm from "node:vm";
 
 const require = createRequire(import.meta.url);
 const MP = require("../../quant/engines/multi-asset/market-pulse.js");
-const PULSE = JSON.parse(readFileSync(new URL("../../quant/data/market/intelligence/market-pulse.json", import.meta.url), "utf8"));
-const HIST = JSON.parse(readFileSync(new URL("../../quant/data/market/intelligence/market-pulse-history.json", import.meta.url), "utf8"));
+const PULSE = JSON.parse(readFileSync(new URL("./fixtures/market-pulse/market-pulse.json", import.meta.url), "utf8"));
+const HIST = JSON.parse(readFileSync(new URL("./fixtures/market-pulse/market-pulse-history.json", import.meta.url), "utf8"));
 const SRC = readFileSync(new URL("../ui/market-intelligence.js", import.meta.url), "utf8");
 
 function load() {
@@ -119,7 +119,7 @@ test("Keine Providerlogik, keine Zustandsberechnung in der Oberflaeche", () => {
   assert.doesNotMatch(SRC, /environmentLevel|seriesSignals|moveRatio/, "Zustaende kommen fertig aus dem Core");
 });
 
-const EVIDENCE = JSON.parse(readFileSync(new URL("../../quant/data/market/validation/market-pulse-evidence.json", import.meta.url), "utf8"));
+const EVIDENCE = JSON.parse(readFileSync(new URL("./fixtures/market-pulse/market-pulse-evidence.json", import.meta.url), "utf8"));
 
 test("Wie verlaesslich: Pruefung aus dem Auszug - Kernaussage, Modellrechnung nie allein, Methode, Grenzen, Quelle", () => {
   const s = MI.pruefung(J(EVIDENCE), J(PULSE));

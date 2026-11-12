@@ -680,7 +680,7 @@
       var hold = p.holdChecks ? (p.holdChecks.perf && p.holdChecks.freshHigh ? 'Halteregeln erfüllt' : 'Abgabe aus dem Musterdepot am Monatsende droht: ' + (!p.holdChecks.perf ? 'unter 100 % seit Tief' : 'kein neues Hoch in 65 Tagen')) : '';
       return h('li', null, [h('a', { href: stockUrl(p.symbol) }, [
         h('div', { class: 'r1' }, [h('strong', { text: p.symbol }), h('span', { class: 'w', text: pct(p.weight, 1) })]),
-        h('div', { class: 'r2', text: 'Kauf ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' (Rang ' + (p.rankAtEntry || '–') + ') · ' + pct(p.perfSinceLow, 0) + ' über 52-W-Tief · ' + hold }),
+        h('div', { class: 'r2', text: 'Aufnahme (Musterdepot) ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' (Rang ' + (p.rankAtEntry || '–') + ') · ' + pct(p.perfSinceLow, 0) + ' über 52-W-Tief · ' + hold }),
       ])]);
     })));
     pk.push(h('p', { class: 'st-hint', text: t.publication }));
@@ -688,7 +688,7 @@
     // Ausgeloeste Modellorders
     if (t.orders && (t.orders.buys.length || t.orders.sells.length)) main.appendChild(sec('Ausgelöste Modellorders', [
       h('p', { class: 'st-p', text: 'Am ' + dateDe(t.orders.decidedOn) + ' beschlossen, Ausführung zur ' + t.orders.executesAt + '.' }),
-      h('ul', { class: 'st-ul' }, t.orders.sells.map(function (x) { return h('li', { text: 'Abgabe (Musterdepot) ' + x.symbol + (x.target ? ' auf ' + pct(x.target, 0) : '') + ' · ' + t52Rule(x.ruleId, x) }); }).concat(t.orders.buys.map(function (x) { return h('li', { text: 'Kauf ' + x.symbol + ' · Rang ' + x.rank + ' · 10 %' }); }))),
+      h('ul', { class: 'st-ul' }, t.orders.sells.map(function (x) { return h('li', { text: 'Abgabe (Musterdepot) ' + x.symbol + (x.target ? ' auf ' + pct(x.target, 0) : '') + ' · ' + t52Rule(x.ruleId, x) }); }).concat(t.orders.buys.map(function (x) { return h('li', { text: 'Aufnahme (Musterdepot) ' + x.symbol + ' · Rang ' + x.rank + ' · 10 %' }); }))),
     ], { kicker: 'Beschlossen, noch nicht ausgeführt' }));
     // Vorbereitete Einstiege
     var pr = t.prepared || { candidates: [] };
@@ -710,7 +710,7 @@
     var hist = [];
     if (t.closed && t.closed.length) hist.push(details('Geschlossene Trades (' + t.closed.length + ')', [h('ul', { class: 'st-ul' }, t.closed.map(function (x) { return h('li', { text: x.symbol + ' · ' + dateShort(x.entryDate) + ' → ' + dateShort(x.exitDate) + ' · ' + t52Rule(x.exitRuleId, { text: x.exitText }) + ' · ' + pct(x.returnPct, 1, true) }); }))]));
     if (t.notTaken && t.notTaken.length) hist.push(details('Nicht übernommen (' + t.notTaken.length + ')', [h('ul', { class: 'st-ul' }, t.notTaken.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + x.symbol + ' · ' + t52Rule(x.reason, x) }); }))]));
-    if (t.executions && t.executions.length) hist.push(details('Ausführungen (' + t.executions.length + ')', [h('ul', { class: 'st-ul' }, t.executions.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + (x.side === 'BUY' ? 'Kauf ' : 'Verkauf ') + x.symbol + ' zu ' + num(x.price) + (x.text ? ' · ' + x.text : '') }); }))]));
+    if (t.executions && t.executions.length) hist.push(details('Ausführungen (' + t.executions.length + ')', [h('ul', { class: 'st-ul' }, t.executions.map(function (x) { return h('li', { text: dateShort(x.date) + ' · ' + (x.side === 'BUY' ? 'Aufnahme (Musterdepot) ' : 'Abgabe (Musterdepot) ') + x.symbol + ' zu ' + num(x.price) + (x.text ? ' · ' + x.text : '') }); }))]));
     if (t.decisions && t.decisions.length) hist.push(details('Monatsentscheidungen (' + t.decisions.length + ')', [h('ul', { class: 'st-ul' }, t.decisions.map(function (d) { return h('li', { text: dateShort(d.date) + ' · Ampel ' + (d.green ? 'grün' : 'rot') + ' · ' + d.candidates + ' Kandidaten · Aufnahme: ' + (d.buys.join(', ') || '–') + ' · Abgabe: ' + (d.sells.map(function (x) { return x.symbol; }).join(', ') || '–') }); }))]));
     if (!hist.length) hist.push(h('p', { class: 'st-hint', text: 'Noch keine Monatsentscheidung im Protokoll — das Ledger beginnt am ' + dateDe(t.liveSince) + ' und rechnet nicht zurück.' }));
     main.appendChild(sec('Protokoll', hist, { kicker: 'Jede Entscheidung mit Regel' }));
@@ -718,7 +718,7 @@
   function trend52For(D, sym) {
     var t = D.trend52; if (!t) return null;
     var p = t.portfolio.positions.filter(function (x) { return x.symbol === sym; })[0];
-    if (p) return ['Im Modelldepot', 'good', 'Gewicht ' + pct(p.weight, 1) + ' · Kauf ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' · ' + pct(p.perfSinceLow, 0) + ' über 52-Wochen-Tief'];
+    if (p) return ['Im Modelldepot', 'good', 'Gewicht ' + pct(p.weight, 1) + ' · Aufnahme (Musterdepot) ' + dateShort(p.entryDate) + ' zu ' + num(p.entryPrice) + ' · ' + pct(p.perfSinceLow, 0) + ' über 52-Wochen-Tief'];
     var c = (t.prepared.candidates || []).filter(function (x) { return x.symbol === sym; })[0];
     if (c) return ['Kandidat · Rang ' + c.rank, 'warn', c.wouldGetSlot ? 'Würde am Monatsende einen Platz bekommen (Entscheidung ' + dateDe(t.schedule.nextDecision) + ').' : 'Erfüllt alle Kaufregeln, aber kein freier Platz.'];
     var n = (t.nearMisses || []).filter(function (x) { return x.symbol === sym; })[0];
@@ -1546,7 +1546,7 @@
   /* ================================================ VU HAUSSTRATEGIE */
   var HOUSE_HISTORY = [
     ['Breite Faktor-Depots (HS1)', '12 gleichgewichtete Varianten aus Momentum, Gewinnüberraschung, 52-Wochen-Hoch und niedriger Schwankung, 2016–2021 mit delisteten Titeln und Kosten. Ergebnis: kein Vorteil gegenüber dem S&P 500.'],
-    ['Indexnahe Faktorneigung (HS2, HS3)', 'Gewichtung nach Größe mit leichter Faktorneigung, zuletzt nach echter Marktkapitalisierung aus SEC-Meldungen. Eine Datenprüfung fand vorher drei Datenfehler. Ergebnis im versiegelten Testzeitraum 2022–2026: praktisch gleichauf mit dem Index.'],
+    ['Indexnahe Faktorneigung (HS2, HS3)', 'Gewichtung nach Größe mit leichter Faktorneigung, zuletzt nach echter Marktkapitalisierung aus Pflichtmeldungen. Eine Datenprüfung fand vorher drei Datenfehler. Ergebnis im versiegelten Testzeitraum 2022–2026: praktisch gleichauf mit dem Index.'],
     ['Volumenprofil, konzentriert (HS4)', '20 Titel aus den 500 größten US-Firmen mit Aufwärtstrend, Akkumulation im Volumen und starken Quartalszahlen. Das Volumen verbesserte die Auswahl gegenüber derselben Regel ohne Volumen. Der Vorsprung gegenüber dem Index entstand aber vor allem 2024–2026 und ist statistisch nicht belastbar.'],
     ['Gegenprobe 2008–2015', 'Die eingefrorene HS4-Regel lief einmal auf einem Zeitraum, den sie nie gesehen hatte. Ergebnis: nicht bestätigt. Ab dem ersten investierten Monat lag sie hinter dem Index, und dieselbe Regel ohne Volumen schnitt besser ab.'],
     ['Deshalb jetzt: Vorwärtslauf', 'Die Regeln von HS4 sind eingefroren. Ab dem Start wird jede Monatsentscheidung vor der Umsetzung mit Zeitstempel veröffentlicht. Erst dieser Verlauf zeigt, wie die Regel im Vergleich zum S&P 500 läuft.'],
@@ -1582,7 +1582,7 @@
       kids.push(h('p', { class: 'st-hint', text: 'Umsetzung zur Eröffnung am ' + (last.executeOn ? dateDe(last.executeOn) : 'nächsten Handelstag') + '. Live seit ' + dateDe(L.liveSince) + '. Veröffentlicht werden Titel und Zielgewichte, keine Kurse und keine Renditen.' }));
       main.appendChild(sec('Modelldepot', kids, { kicker: 'Aktuelle Zusammensetzung' }));
       main.appendChild(sec('Protokoll', [h('ul', { class: 'st-ul' }, L.decisions.slice().reverse().map(function (d) {
-        return h('li', { text: dateDe(d.date) + (d.kind === 'START' ? ' · Start' : ' · Monatsende') + ' · Kauf: ' + ((d.buys || []).join(', ') || '–') + ' · Verkauf: ' + ((d.sells || []).join(', ') || '–') + ' · festgeschrieben ' + dateDe(d.decidedAt) });
+        return h('li', { text: dateDe(d.date) + (d.kind === 'START' ? ' · Start' : ' · Monatsende') + ' · Aufnahme (Musterdepot): ' + ((d.buys || []).join(', ') || '–') + ' · Abgabe (Musterdepot): ' + ((d.sells || []).join(', ') || '–') + ' · festgeschrieben ' + dateDe(d.decidedAt) });
       }))], { kicker: 'Jede Entscheidung mit Zeitstempel' }));
     }
     main.appendChild(sec('Regeln', [h('ol', { class: 'st-chain' }, ((L && L.rules) || []).map(function (r) { return h('li', null, [h('p', { text: r })]); })),

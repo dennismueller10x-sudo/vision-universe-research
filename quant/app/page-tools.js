@@ -10,7 +10,7 @@
    ========================================================================= */
 (function (global) {
   "use strict";
-  var X = global.QX, el = X.el;
+  var X = global.QX, el = X.el, VM = global.VUQuantViewModel;
   function price(v) { return typeof v === "number" && isFinite(v) ? v.toLocaleString("de-DE", { maximumFractionDigits: 2 }) : "–"; }
   function select(label, options, value) {
     var s = el("select", { class: "qx-select", "aria-label": label }, options.map(function (o) { return el("option", { value: o[0], text: o[1] }); }));
@@ -49,8 +49,7 @@
     if (primary) host.append(X.section(primary.label, "Szenarien beschreiben Bedingungen – keine gesicherten Vorhersagen.", [el("div", { class: "qx-grid qx-grid-2" }, (data.scenarios || []).map(function (s) {
       return X.card([el("span", { class: "v2-eyebrow", text: s.kind === "PRIMARY" ? "Hauptszenario" : "Alternative" }), el("h3", { class: "qx-h3", text: s.label }),
         el("dl", { class: "qx-kv" }, [el("dt", { text: "Bestätigung" }), el("dd", { style: "text-align:left", text: s.confirmation || "–" }),
-          el("dt", { text: "Ungültig bei" }), el("dd", { text: price(s.invalidation && s.invalidation.price) }),
-          el("dt", { text: "Zielzonen" }), el("dd", { text: (s.targets || []).map(function (t) { return price(t.zoneLow) + "–" + price(t.zoneHigh); }).join(" · ") || "–" })]),
+          el("dt", { text: "Ungültig laut Methode" }), el("dd", { text: price(s.invalidation && s.invalidation.price) })]),
         X.more("Dafür und dagegen", function () { return (s.support || []).map(function (e) { return el("p", { class: "qx-small", text: "Dafür: " + e.statement }); }).concat((s.conflicts || []).map(function (e) { return el("p", { class: "qx-small", text: "Dagegen: " + e.statement }); })); })]);
     }))], null, "Szenarien"));
     var E = data.elliott;
@@ -195,12 +194,75 @@
   }
 
   /* ============================================================= VERGLEICH */
+  /* Grund eines fehlenden Vergleichswerts in einem Satz, aus Zustand und Datenstand des Unternehmens. */
+  function missingWhy(v, c) {
+    var asOf = c && c.fundamentalsAsOf ? X.dateDe(c.fundamentalsAsOf) : null, name = c ? c.ticker : v.ticker;
+    if (c && c.state !== "AVAILABLE") return "für " + name + " liegt keine Auswertung vor";
+    if (v.reason === "SOURCE_OR_DEFINITION_UNAVAILABLE") return asOf ? "aus den Geschäftszahlen von " + name + " vom " + asOf + " nicht nach derselben Definition berechenbar" : "nicht nach derselben Definition berechenbar";
+    if (v.reason === "NONFINITE_VALUE") return "Rechnung ergibt keinen endlichen Wert";
+    if (v.reason === "SOURCE_MISSING") return asOf ? "in den Daten von " + name + " (Geschäftszahlen vom " + asOf + ") nicht enthalten" : "in den Daten nicht enthalten";
+    return VM && VM.reasonText && v.reason ? VM.reasonText(v.reason) : "Wert nicht verfügbar";
+  }
+  /* Konzept Quant 2026-11 (QX06, Screen q-compare): Profil gegen Profil. Chips je Aktie (bis 4), je Eigenschaft ein Balken
+     und eine Zahl je Aktie, zwei Sätze, die Kennzahlen-Tabelle aufklappbar, jedes „–“ mit Grund (Entscheidung 9). */
+  var CMP_BETTER = { profitability: "verdient {d}besser", growth: "wächst {d}schneller", quality: "hat die {d}solideren Zahlen", momentum: "läuft am Kurs {d}besser", value: "ist {d}günstiger", risk: "hat den {d}ruhigeren Kurs" };
+  function cleanName(n) { return String(n || "").replace(/\s*\/[A-Za-z]{2,}\/?$|\/$/g, "").replace(/,?\s+(Holdings?,?\s+Inc\.?|Inc\.?|Corp(oration)?\.?|Co\.?|Ltd\.?|plc|Companies,?\s+Inc\.?)$/i, "").trim(); }
+  async function compareV4(main, ctx, selected) {
+    var U = global.VUUI, page = el("div", { class: "vu-ui qv3 qk qk-cmp" });
+    main.append(page);
+    var r = await Promise.all([ctx.api.getFactorEvidenceScreening().catch(function () { return null; }), ctx.loadNames ? ctx.loadNames().catch(function () { return null; }) : null]);
+    var scr = r[0], rowBy = {}; ((scr && scr.rows) || []).forEach(function (x) { rowBy[x.ticker] = x; });
+    /* Kurzname wie im Mockup („AMD“ statt „Advanced Micro Devices“): lange Namen weichen dem Kürzel. */
+    var nm = function (t) { var n = cleanName(ctx.names && ctx.names[t]); return n && n.length <= 16 ? n : t; };
+    var prof = selected.map(function (t) { return rowBy[t] ? VM.profileValues(rowBy[t]) : null; });
+    var K = U.PROFILE.keys;
+    var title = selected.length === 2 ? U.esc(nm(selected[0])) + "<br>gegen " + U.esc(nm(selected[1])) : selected.map(function (t) { return U.esc(nm(t)); }).join(", ");
+    var h = '<header class="qv3-intro"><p class="vu-ltag">Vergleich</p><h1 class="vu-lt">' + title + "</h1></header>" +
+      '<div class="vu-chips qk-cmp-chips">' + selected.map(function (t, i) { return '<span class="vu-chip qk-cmp-c' + i + '">' + U.logo(t) + U.esc(t) + (selected.length > 2 ? '<button type="button" class="qk-x" data-drop="' + U.esc(t) + '" aria-label="' + U.esc(t) + ' entfernen">×</button>' : "") + "</span>"; }).join("") +
+      (selected.length < 4 ? '<button type="button" class="vu-chip qk-add-stock">' + U.glyph("plus", 15) + "Aktie</button>" : "") + "</div>" +
+      '<form class="qk-cmp-add" hidden><input class="qx-select" name="t" placeholder="Kürzel, z. B. MSFT" aria-label="Kürzel hinzufügen" autocomplete="off"><button class="vu-btn vu-btn--ink" type="submit">Hinzufügen</button></form>';
+    var rows = K.map(function (k) {
+      var vals = prof.map(function (p) { return p ? p[k] : null; });
+      return '<div class="qk-cmp-r' + (vals.every(function (v) { return v == null; }) ? " is-na" : "") + '"><span class="qk-cmp-l">' + U.glyph(U.PROFILE.glyph[k], 15) + U.esc(U.PROFILE.label[k]) + '</span><span class="qk-cmp-b" aria-hidden="true">' +
+        vals.map(function (v, i) { return '<span class="qk-cmp-bar"><i class="qk-cmp-c' + i + '" style="width:' + (v == null ? 0 : Math.round(v)) + '%"></i></span>'; }).join("") + '</span><span class="qk-cmp-v">' +
+        vals.map(function (v, i) { return '<b class="vu-num" aria-label="' + U.esc(selected[i] + " " + U.PROFILE.label[k] + " " + (v == null ? "keine Daten" : Math.round(v))) + '">' + (v == null ? "–" : Math.round(v)) + "</b>"; }).join("") + "</span></div>";
+    }).join("");
+    /* Zwei Sätze: je Aktie die zwei Eigenschaften mit dem größten Vorsprung (nur aus den Profilwerten). */
+    var sentences = [];
+    if (selected.length >= 2 && prof[0] && prof[1]) [0, 1].forEach(function (a) {
+      var b = 1 - a, lead = K.slice(0, 6).filter(function (k) { return prof[a][k] != null && prof[b][k] != null && prof[a][k] > prof[b][k]; })
+        .sort(function (x, y) { return (prof[a][y] - prof[b][y]) - (prof[a][x] - prof[b][x]); }).slice(0, 2);
+      if (!lead.length) return;
+      sentences.push(nm(selected[a]) + " " + lead.map(function (k, i) { var d = prof[a][k] - prof[b][k]; return (i ? "" : "") + CMP_BETTER[k].replace("{d}", d >= 20 && i === 0 ? "deutlich " : "") + " (" + Math.round(prof[a][k]) + " zu " + Math.round(prof[b][k]) + ")"; }).join(" und ") + ".");
+    });
+    var missing = selected.filter(function (t, i) { return !prof[i]; });
+    h += '<div class="vu-box qk-cmp-box">' + rows + "</div>" +
+      (sentences.length ? '<div class="qk-story qk-cmp-s"><span class="vu-ltag">In zwei Sätzen</span>' + sentences.map(function (t) { return "<p>" + U.esc(t) + "</p>"; }).join("") + "</div>" : "") +
+      (missing.length ? '<div class="qk-help">' + U.help("Für " + missing.join(", ") + " ist kein Profil veröffentlicht; die Zeilen bleiben leer statt geschätzt.") + "</div>" : "");
+    page.innerHTML = h;
+    var table = el("details", { class: "vu-box qk-cmp-t" }, [el("summary", { text: "Alle Kennzahlen als Tabelle" })]);
+    var tHost = el("section", { "aria-live": "polite" });
+    table.append(tHost); page.append(table);
+    var note = el("div", { class: "qk-help" }); page.append(note);
+    var go = function (list) { location.hash = X.routes.compare(list); };
+    page.querySelectorAll("[data-drop]").forEach(function (b) { b.addEventListener("click", function () { go(selected.filter(function (t) { return t !== b.dataset.drop; })); }); });
+    var addBtn = page.querySelector(".qk-add-stock"), form = page.querySelector(".qk-cmp-add");
+    if (addBtn) addBtn.addEventListener("click", function () { form.hidden = false; form.querySelector("input").focus(); });
+    form.addEventListener("submit", function (e) { e.preventDefault(); var t = String(form.querySelector("input").value || "").trim().toUpperCase(); if (/^[A-Z0-9.-]{1,12}$/.test(t) && selected.indexOf(t) < 0) go(selected.concat([t])); });
+    /* Die Kennzahlen-Tabelle (bisheriger Vergleich) mit den Gründen für fehlende Werte. */
+    var data = await ctx.api.getComparison(selected).catch(function () { return null; });
+    if (!data || data.state !== "AVAILABLE") { tHost.replaceChildren(X.notice("Kennzahlen nicht auswertbar", "Für die gewählten Unternehmen fehlen belastbare Kennzahlen.")); return; }
+    compareTable(tHost, data);
+    var gaps = tHost.querySelector(".qx-gaps");
+    if (gaps) note.innerHTML = U.help(gaps.textContent.replace(/^¹ Warum Werte fehlen:\s*/, "In der Tabelle steht „–“, wo ein Wert fehlt: "));
+  }
   async function compare(main, ctx, list) {
-    main.append(el("span", { class: "v2-eyebrow", text: "Vergleich" }), el("h1", { class: "qx-h1", text: "Aktien im direkten Vergleich" }),
-      el("p", { class: "v2-lead qx-lead", text: "Ertragskraft, Wachstum, Bewertung und Kursverhalten aus derselben Kennzahlenbasis – ohne Rangfolge und ohne Empfehlung." }));
     var selected;
     try { selected = global.VUCompareWorkspace.validate(list && list.length > 1 ? list : (list && list.length === 1 ? [list[0], list[0] === "MSFT" ? "AAPL" : "MSFT"] : ["NVDA", "MSFT"])); }
-    catch (e) { main.append(X.notice("Auswahl prüfen", "Wähle zwei bis vier unterschiedliche Kürzel. Diese Auswahl wird nicht automatisch ersetzt.")); return; }
+    catch (e) { if (!global.VUUI) main.append(el("h1", { class: "qx-h1", text: "Aktien im direkten Vergleich" })); main.append(X.notice("Auswahl prüfen", "Wähle zwei bis vier unterschiedliche Kürzel. Diese Auswahl wird nicht automatisch ersetzt.")); return; }
+    if (global.VUUI) return compareV4(main, ctx, selected);
+    main.append(el("span", { class: "v2-eyebrow", text: "Vergleich" }), el("h1", { class: "qx-h1", text: "Aktien im direkten Vergleich" }),
+      el("p", { class: "v2-lead qx-lead", text: "Ertragskraft, Wachstum, Bewertung und Kursverhalten aus derselben Kennzahlenbasis – ohne Rangfolge und ohne Empfehlung." }));
     var input = el("input", { class: "qx-select", value: selected.join(", "), "aria-label": "Kürzel, mit Komma getrennt" });
     var go = el("button", { type: "button", class: "qx-btn", text: "Vergleichen" });
     go.onclick = function () { location.hash = X.routes.compare(input.value.toUpperCase().split(/[\s,;]+/).filter(Boolean)); };
@@ -209,18 +271,29 @@
     target.append(X.loading());
     var data = await ctx.api.getComparison(selected).catch(function () { return null; });
     if (!data || data.state !== "AVAILABLE") { target.replaceChildren(X.notice("Vergleich nicht auswertbar", "Für die gewählten Unternehmen fehlen belastbare Daten.")); return; }
+    compareTable(target, data);
+  }
+  function compareTable(target, data) {
     var head = [el("th", { text: "Kennzahl" })].concat(data.companies.map(function (c) { return el("th", {}, [el("a", { href: X.routes.stock(c.ticker), text: c.ticker })]); }));
-    var rows = [];
+    var rows = [], gaps = {}, byTicker = {};
+    data.companies.forEach(function (c) { byTicker[c.ticker] = c; });
     data.families.forEach(function (f) {
       rows.push(el("tr", {}, [el("th", { colspan: String(data.companies.length + 1), style: "text-align:left;padding-top:16px", text: f.label })]));
       f.metrics.forEach(function (m) {
         rows.push(el("tr", {}, [el("td", { text: m.label })].concat(m.values.map(function (v) {
-          return el("td", { class: "num", text: typeof v.value === "number" ? v.value.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + (m.unit === "pct" ? " %" : m.unit === "x" ? " ×" : "") : "–" });
+          if (typeof v.value === "number") return el("td", { class: "num", text: v.value.toLocaleString("de-DE", { maximumFractionDigits: 2 }) + (m.unit === "pct" ? " %" : m.unit === "x" ? " ×" : "") });
+          /* Fehlende Werte nie stumm (Konzept Quant 2026-11, Entscheidung 9): „–“ mit Fußnote, der Grund steht unter der Tabelle. */
+          var why = missingWhy(v, byTicker[v.ticker]);
+          (gaps[v.ticker] = gaps[v.ticker] || {})[why] = ((gaps[v.ticker] || {})[why] || 0) + 1;
+          return el("td", { class: "num", title: why, "aria-label": "kein Wert: " + why }, [document.createTextNode("–"), el("sup", { "aria-hidden": "true", text: "¹" })]);
         }))));
       });
     });
-    target.replaceChildren(el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Vergleichstabelle, seitlich scrollbar" }, [el("table", { class: "qx-table" }, [el("thead", {}, [el("tr", {}, head)]), el("tbody", {}, rows)])]),
+    X.fill(target, el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Vergleichstabelle, seitlich scrollbar" }, [el("table", { class: "qx-table" }, [el("thead", {}, [el("tr", {}, head)]), el("tbody", {}, rows)])]),
       el("p", { class: "qx-small", text: "Berichtszeiträume können abweichen; Datenstände je Unternehmen: " + data.companies.map(function (c) { return c.ticker + " " + (c.fundamentalsAsOf ? X.dateDe(c.fundamentalsAsOf) : "–"); }).join(", ") + "." }),
+      Object.keys(gaps).length ? el("p", { class: "qx-small qx-gaps" }, [el("b", { text: "¹ Warum Werte fehlen: " }), document.createTextNode(Object.keys(gaps).map(function (t) {
+        return Object.keys(gaps[t]).map(function (w) { return t + " (" + gaps[t][w] + "×): " + w; }).join("; ");
+      }).join(" · ") + ".")]) : null,
       data.partial ? X.notice("Nicht alle Unternehmen auswertbar", "Spalten ohne passende Daten bleiben leer und werden nicht mit Ersatzwerten gefüllt.") : null);
   }
 

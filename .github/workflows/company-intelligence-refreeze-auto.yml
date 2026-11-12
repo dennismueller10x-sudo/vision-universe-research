@@ -5,10 +5,14 @@ name: Company Intelligence Auto Refreeze
 # `universe-release.mjs refreeze`. Gate, Aktivierung, Pages und Produktion bleiben unberuehrt.
 # Quelle (Preflight-Ausgabe `source`): legacy = ausgeliefertes Legacy-GOOD; universe = bei aktivem Universum
 # die 46er-Projektion des ausgelieferten Universe-GOOD (`--from-universe`, Entscheidung Steuerung 08.11.2026).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '23 5 */2 * *'
   workflow_dispatch:
+    inputs:
+      zeitplan:
+        description: 'Von Cloudflare-Wecker gesetzt (Cron des Eintrags in core/registry/schedule.json); nicht von Hand'
+        type: string
+        default: ''
 permissions:
   contents: read
 # Gleiche Gruppe wie Refresh und Universe-Release: nie parallel zu einem schreibenden Lauf.

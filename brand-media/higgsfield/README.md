@@ -58,6 +58,6 @@ Actions:
 
 - `validate` checks the job file without an API call.
 - `estimate` uploads references and asks the estimate endpoint for every image. The documented response is `{"usd": "…"}`; a missing value is reported as unknown, never as zero.
-- `generate` needs `budget_usd` and `APPROVE-HIGGSFIELD-IMAGE-JOB`. It blocks when the summed estimate exceeds the budget. If the provider returns no price, only `APPROVE-HIGGSFIELD-IMAGE-JOB-WITHOUT-ESTIMATE` lets it continue. Images are submitted once each, sequentially, with run-specific idempotency keys and no retries; reruns are blocked. Images, `manifest.json` and a `contact-sheet.jpg` are kept as a 14-day workflow artifact. Nothing is published.
+- `generate` needs `budget_usd` and `APPROVE-HIGGSFIELD-IMAGE-JOB`. It blocks when the summed estimate exceeds the budget. If the provider returns no price, only `APPROVE-HIGGSFIELD-IMAGE-JOB-WITHOUT-ESTIMATE` lets it continue. Images are submitted once each, sequentially, with run-specific idempotency keys and no retries; reruns are blocked. Images, `manifest.json` and a `contact-sheet.jpg` are kept as a 14-day workflow artifact and, from the `publish` job, also committed to the branch `media/higgsfield-images` under `<job_id>/` so sessions without artifact access can fetch them with git. Nothing is published on the site and `main` is never written.
 
 Local check: `python brand-media/higgsfield/images.py --action validate --job brand-media/<area>/image-jobs/<job>.json`.

@@ -161,6 +161,11 @@ Entscheidung 11.
 - Rechts in der Trefferliste steht die Kennzahl, nach der sortiert ist (z. B. KGV), sonst die erste Spalte; die übrigen Werte stehen in der Unterzeile.
 - „Erklären“ zeigt bei einer Aktie die Jahresreihe aus den SEC-Berichten der veröffentlichten Aktiendatei (`/discover/data/stocks/US_REAL/<T>.json`, dieselben Werte wie in Fundamental), wenn die Kennzahl der Frage eine hat (Free Cashflow, Umsatz, Gewinn); sonst Zahl und Kacheln. Atlas rechnet weiterhin nicht selbst, der Worker bleibt unverändert.
 
+**PR 5 · Atlas auf jeder Aktie**
+- Der Atlas-Knopf ist der Knopf „Atlas“ der gemeinsamen Kopfzeile: Auf einer Seite mit Aktienkopf (Merkmal `data-vu-stock` in `assets/stock-navigator.js#head` und `assets/vu-ui.js#stockHead`) öffnet er das Sheet, sonst führt er wie bisher nach `/ask/`.
+- Das Sheet stellt die Frage auf `/ask/` (Parameter `go=1`); fehlt die Aktie in der Frage, wird „(Name, Kürzel)“ angehängt. Nichts wird gespeichert, der Worker bleibt unverändert.
+- Die dritte Frage heißt „Wie hoch ist die Marge?“ statt „Wer hält NVIDIA?“, weil Atlas Fondsbestände (13F) heute nicht beantworten kann; die drei Fragen sind Umsatz, Marge und Chart.
+
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 
 ```

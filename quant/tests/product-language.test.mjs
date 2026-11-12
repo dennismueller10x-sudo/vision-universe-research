@@ -262,7 +262,7 @@ test("both sides are always shown: no upside without its downside", () => {
      what was NOT rated. M40: eine kurze Dafuer-Liste liest sich wie ein
      Urteil, wenn nicht dabeisteht, was ausdruecklich NICHT bewertet wurde. */
   const balance = slice(stockPage, "function verdictCard(", "function setupSection(");
-  assert.match(balance, /col\("Spricht dafür", "good", pc\.pro,[^\n]*\n\s*col\("Spricht dagegen", "bad", pc\.con,/);
+  assert.match(balance, /col\("Stärken laut Kennzahlen", "good", pc\.pro,[^\n]*\n\s*col\("Schwächen laut Kennzahlen", "bad", pc\.con,/);
   assert.match(balance, /"Noch nicht bewertbar/);
   /* Am Verhalten: jede der sieben Eigenschaften landet in genau einer
      Gruppe - dafuer, dagegen, Mittelfeld oder nicht bewertbar. */
@@ -375,9 +375,10 @@ test("the entry page answers the two headline questions itself", async () => {
      Aktienseite - die Einordnung folgt UNMITTELBAR auf den einen Chart,
      nichts steht dazwischen. Ihre Lage (erste Bildschirmhoehe bei 1440 px,
      hoechstens zwei bei 390 px) misst der Production-Smoke (M40). */
-  const chartAt = render.indexOf("layout.append(chart.node);");
-  assert.ok(chartAt > 0, "der Chart wird nicht in die Einordnungs-Zeile gesetzt");
-  assert.match(render.slice(chartAt), /^layout\.append\(chart\.node\);\s*layout\.append\(verdictCard\(vm/, "zwischen Chart und Einordnung steht etwas anderes");
+  /* Konzept Quant „Ein Profil je Aktie“ (QX05, 08.11.2026): das Profil (verdictCard) steht ganz oben, danach „Quant in drei
+     Sätzen“ und die Kapitel; der eine Kurschart bleibt auf der Seite, unter den Kapiteln. */
+  assert.ok(render.indexOf("layout.append(verdictCard(vm") < render.indexOf("var chapHost = chapterize("), "das Profil steht nicht vor den Kapiteln");
+  assert.match(render, /el\("section", \{ class: "qk-chart"[^\n]*chart\.node\]\)/, "der Kurschart fehlt auf der Seite");
   /* Chance gegen Risiko: die Marktmuster (Gewinn- UND Verlustseite) im
      Replay derselben Seite. */
   /* Quant Daily Usefulness: replaySection bekommt zusaetzlich den
@@ -684,7 +685,7 @@ test("a no-fit verdict names the nearest style and what is open on it", () => {
       { label: "Quant V2 · Bewertung", state: "NOT_MET", value: 10, threshold: 70, operator: "gte" }] }] });
   /* Der naechste Stil ist genannt, und die offene Bedingung dazu. */
   assert.match(view.sentence, /Stil A/);
-  assert.deepEqual(view.best.notMet.map((c) => c.label), ["Wachstum"]);
+  assert.deepEqual(view.best.notMet.map((c) => c.label), ["Wächst"]); /* ein Wort je Eigenschaft (Konzept Quant 2026-11) */
   /* Die offenen Bedingungen sind die NICHT ERFUELLTEN, nicht die nicht
      messbaren - die zaehlen getrennt, wie im Vertrag. */
   assert.equal(view.best.open.length, 0);

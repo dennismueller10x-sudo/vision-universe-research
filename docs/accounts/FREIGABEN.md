@@ -20,7 +20,7 @@ ist nötig – Begründung unten.
 | **Interne Backtest-Vorschau einschalten** (`VU_BACKTEST_REVIEW_ENABLED` → `"true"`) | `account-production-auto.yml` → `worker` (nach Merge) | nur per eigenem PR | **Owner** (ausdrückliche Zustimmung im PR; standardmäßig `"false"`) |
 | **Rolle `backtest_reviewer` vergeben** | keiner – SQL über den Datenbankzugang des Betriebs | von Hand | **Owner** (ausdrückliche Zustimmung, wie `pricing_admin`) |
 | **Stripe-Produkte, Portal, Webhook, Zahlungsmethoden** (Ersteinrichtung) | `account.yml` (Teil `stripe`) | von Hand | **Owner** (`account-production`, `account-dev`) |
-| **Secrets** setzen/erneuern (Supabase, Stripe, Brevo) | `account.yml` (Teil `ausrollen`) | von Hand | **Owner** (`account-dev`, `account-production`) |
+| **Secrets** setzen/erneuern (Supabase, Stripe, Brevo, Firebase-Push `FCM_SERVICE_ACCOUNT`) | `account.yml` (Teil `ausrollen`) | von Hand | **Owner** (`account-dev`, `account-production`) |
 | **Destruktive Migration** (DROP, TRUNCATE, Kundendaten ändern, RLS aus, Rollen, Preise) | `account.yml` (Teil `db-freigabe`) (Eingabe `DESTRUKTIV`) | von Hand | **Owner** (`account-dev`) |
 | **Kündigungen ausführen**, Supabase Auth | `account.yml` (Teil `kuendigungen`), `account.yml` (Teil `auth`) | von Hand | **Owner** (`account-dev`) |
 

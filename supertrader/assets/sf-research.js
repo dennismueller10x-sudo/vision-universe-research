@@ -34,7 +34,7 @@
     DATA_SESSIONS: 'Fehlende Handelstage in der Kursreihe',
     DATA_LIQUIDITY_RESEARCH_UNIVERSE: 'Unter der Liquiditätsgrenze des Forschungsuniversums',
     DATA_IDENTITY_INSTRUMENT_TYPE: 'Instrument nicht im Security Master bestätigt',
-    DATA_IDENTITY_SEC_BLANK_CHECK: 'Mantelgesellschaft laut SEC-Branchencode: Kursmuster ohne Aussagekraft',
+    DATA_IDENTITY_SEC_BLANK_CHECK: 'Mantelgesellschaft laut SIC-Branchencode: Kursmuster ohne Aussagekraft',
     DATA_IDENTITY_LISTING_CONTINUITY: 'Reihe nach Listing-Unterbrechung neu begonnen',
     DATA_ADJUSTMENT: 'Abgleich der Corporate Actions unbekannt',
     DATA_IDENTITY_ACTIVE: 'Listing-Status nicht bestätigt',
@@ -64,7 +64,7 @@
   };
   var DQ_TXT = {
     QUARANTINE_V4_D1: 'Kurssprung im Rückblick', QUARANTINE_LOOKBACK_COVERAGE: 'Rückblick unvollständig', SESSIONS: 'Handelstage fehlen',
-    LIQUIDITY_RESEARCH_UNIVERSE: 'geringe Liquidität', IDENTITY_SEC_BLANK_CHECK: 'Mantelgesellschaft (SEC)', IDENTITY_SPAC_NAME_HINT: 'Name deutet auf Mantelgesellschaft (unsicher)', IDENTITY_ADR_LISTING: 'ADR-Listing',
+    LIQUIDITY_RESEARCH_UNIVERSE: 'geringe Liquidität', IDENTITY_SEC_BLANK_CHECK: 'Mantelgesellschaft (Pflichtmeldungen)', IDENTITY_SPAC_NAME_HINT: 'Name deutet auf Mantelgesellschaft (unsicher)', IDENTITY_ADR_LISTING: 'ADR-Listing',
     IDENTITY_INSTRUMENT_TYPE: 'Identität offen', IDENTITY_LISTING_CONTINUITY: 'Listing-Unterbrechung', ADJUSTMENT: 'Adjustierung offen',
   };
 
@@ -148,7 +148,7 @@
     var v = sum.versions || {}, dq = sum.dataQuality || {}, inp = sum.inputs || {};
     var rows = [
       ['Datenstand', dateDe(sum.asOf) + ' (Tagesschluss US) · nächste Sitzung ' + dateDe(sum.nextSession)],
-      ['Kurse', 'Tiingo, Inc. · split-adjustierte Tagesschlusskurse der Vision-Universe-Dateninfrastruktur (keine neuen Abrufe)'],
+      ['Kurse', 'Kursdatenanbieter (Quellen: /infos/#quellen) · split-adjustierte Tagesschlusskurse der Vision-Universe-Dateninfrastruktur (keine neuen Abrufe)'],
       ['Universum', num(dq.securities, 0) + ' Aktien mit Tagesreihe · ' + num(dq.FAIL, 0) + ' wegen Datenqualität nicht bewertet'],
       ['Regeln', 'Bestehende quellentreue Research-Engines, Referenzkonfiguration; Stufen nach dem Produktvertrag 7.0'],
       ['Prüfsumme der Eingaben', String(inp.inputsSha256 || '').slice(0, 12)],

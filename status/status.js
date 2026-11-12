@@ -35,7 +35,21 @@
     return n;
   }
 
+  /* Live ausgelieferte Generation (ADR-008): Code, Datenzweig und Nutzdatenhash aus /core/release-manifest.json. */
+  async function releaseGeneration() {
+    var p = document.getElementById("release-gen");
+    if (!p) return;
+    try {
+      var m = await load("/core/release-manifest.json");
+      var s7 = function (x) { return x ? String(x).slice(0, 7) : "?"; };
+      p.textContent = "Ausgeliefert: Code " + s7(m.code && m.code.sha) + " · Datenzweig " + s7(m.dataBranch && m.dataBranch.sha) +
+        " · Nutzdaten " + s7(m.payloadHash) + " · Stufe " + m.stage + " · gebaut " + m.builtAt;
+    } catch (e) { p.textContent = "Ausgelieferte Generation nicht lesbar (" + e.message + ")."; }
+    p.hidden = false;
+  }
+
   async function health() {
+    releaseGeneration();
     var overall = document.getElementById("overall");
     var body = document.querySelector("#systems tbody");
     body.textContent = "";

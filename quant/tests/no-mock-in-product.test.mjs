@@ -178,16 +178,16 @@ const TABLE = [
   ["/quant/ranking/index.html", "", "/quant/#/screener"],
   ["/quant/ranking", "", "/quant/#/screener"],
   ["/quant/screener/", "?q=momentum", "/quant/#/screener/profi"],
-  ["/quant/strategies/", "", "/quant/#/strategien"],
-  ["/quant/strategies/", "?id=vu-quality-compounders", "/quant/#/strategien/quality-compounder"],
-  ["/quant/strategies/", "?id=vu-momentum-leaders&version=2", "/quant/#/strategien/momentum-leader"],
-  ["/quant/strategies/", "?id=vu-quality-momentum", "/quant/#/strategien/quality-momentum"],
-  ["/quant/strategies/", "?id=vu-garp", "/quant/#/strategien/garp"],
-  ["/quant/strategies/", "?id=vu-future-leaders", "/quant/#/strategien/future-leader"],
-  ["/quant/strategies/", "?id=usr_123", "/quant/#/strategien"],
-  ["/quant/strategies/", "?id=../../etc", "/quant/#/strategien"],
+  ["/quant/strategies/", "", "/quant/#/stile"],
+  ["/quant/strategies/", "?id=vu-quality-compounders", "/quant/#/stile/quality-compounder"],
+  ["/quant/strategies/", "?id=vu-momentum-leaders&version=2", "/quant/#/stile/momentum-leader"],
+  ["/quant/strategies/", "?id=vu-quality-momentum", "/quant/#/stile/quality-momentum"],
+  ["/quant/strategies/", "?id=vu-garp", "/quant/#/stile/garp"],
+  ["/quant/strategies/", "?id=vu-future-leaders", "/quant/#/stile/future-leader"],
+  ["/quant/strategies/", "?id=usr_123", "/quant/#/stile"],
+  ["/quant/strategies/", "?id=../../etc", "/quant/#/stile"],
   ["/quant/strategies/builder/", "?from=vu-garp", "/quant/#/screener/profi?hinweis=strategy-lab"],
-  ["/quant/backtests/", "?id=bt_1", "/quant/#/backtest"],
+  ["/quant/backtests/", "?id=bt_1", "/quant/#/forschung"],
   ["/quant/watchlist/", "", "/quant/#/aktien"],
   ["/quant/stock/", "?ticker=NVDA", "/quant/#/aktie/NVDA"],
   ["/quant/stock/", "?ticker=brk.b", "/quant/#/aktie/BRK.B"],
@@ -203,7 +203,7 @@ const TABLE = [
   ["/quant/technical/", "?symbol=VUF003&layer=ELLIOTT", "/quant/#/aktien"],
   ["/quant/technical/", "", "/quant/#/aktien"],
   ["/quant/ai/", "?q=momentum", "/ask/"],
-  ["/quant/radar/", "", "/quant/#/radar"]
+  ["/quant/radar/", "", "/quant/#/meldungen"]
 ];
 
 test("c · legacyPathRoute bildet jede alte Adresse auf ihr Ziel ab", () => {

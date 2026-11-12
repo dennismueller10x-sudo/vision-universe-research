@@ -118,3 +118,26 @@ Erzeugte Daten wandern Datenart für Datenart aus `main` in den Datenzweig `data
 - Ein Workflow, der solche Daten liest, ruft nach dem Checkout `scripts/ci/seed-data-branch.sh alle` auf (commit-sicher, auch bei `git add -A`).
 - Ein Erzeuger schreibt mit `scripts/ci/push-data-branch.sh data/live <pfad>…` (Verzeichnisse werden gespiegelt).
 - „Seite zeigt alten Stand“: Step Summary „Datenzweig“ des letzten Pages-Laufs lesen (`KEPT_MAIN` mit Grund), dann den letzten Lauf des Erzeugers.
+
+## 12. Vercel-Vorschau „Deployment rate limited“
+
+Das Tageskontingent (100) wird offenbar schon beim Anlegen einer Vorschau gezählt; der Abbruch durch `ignoreCommand` hilft dann nicht (10.11.2026, ein reiner Test-PR bekam den Status). Deshalb schaltet `vercel.json` mit `git.deploymentEnabled` die Vorschau für `claude/*`-Zweige aus (Steuerung 10.11.2026; die Vorschau war ohnehin der 197-Byte-Platzhalter, Oberflächen prüft die Browser-QA in der CI). `main` und Produktion bleiben unberührt; Test in `quant/tests/vercel-preview-boundary.test.mjs`. Der rote Vercel-Status ist keine Pflichtprüfung und kein Codefehler.
+
+## 13. Welche Generation ist live? (Release-Manifest)
+
+Jede Auslieferung trägt `/core/release-manifest.json` (ADR-008, [Entscheidung](../architecture/ADR-008-release-generationen.md)): Code-SHA, Datenzweig-SHA, je Datenart Pfad + Inhaltshash, Security-Master- und Company-Intelligence-Generation, Gesamthash der Nutzdaten (`payloadHash`; Zeitstempel ausgenommen, im Manifest unter `volatile` genannt). `stage` ist `BUILT` (Releasebau) oder `SEALED` (Pages, nach Overlay und Staging).
+Prüfen: `node scripts/core/system-health.mjs --site=https://research.visionuniverse.de` (Zeile „Ausgelieferte Generation“, JSON: `report.release`) oder `/status/`. Weicht `code.sha` vom erwarteten Commit ab, hat Pages ihn nicht übernommen (§7, Marker `pages-release-marker.yml`).
+Zwei Bauten mit gleichen Eingaben müssen denselben `payloadHash` haben; `core/tests/release-manifest.test.mjs` (RM) sichert das mit Fixtures und Gegenproben.
+Der Siegel-Schritt ist nie blockierend (continue-on-error, nur Warnung) und läuft vor dem Hochladen, sonst läge das Manifest nicht im Paket. Stand 10.11.2026: Manifest, Siegel-Schritt und Statuszeile umgesetzt; der Vergleich Live ↔ Kandidat (`comparePayload`) blockiert noch nicht, er benennt nur.
+
+## 14. Merge bei Grün statt Auto-Merge (`ci-gate`)
+
+Das Ruleset „Schutz vor Verlust“ gilt für `main` und die Datenzweige (`data/**`, `backup/**`, `rollback/**`, `evidence/**`, `brevo-newsletter-state`). Die Datenläufe pushen dort mit dem `GITHUB_TOKEN` (github-actions[bot], `push-with-retry.sh`) direkt, ohne PR. „Require status checks to pass“ im selben Ruleset würde diese Pushes ablehnen, und der Actions-Akteur lässt sich in Rulesets nicht als Bypass eintragen (nur Rollen, Deploy-Keys, installierte Apps). **Deshalb: keine Pflichtprüfung, kein Auto-Merge.** Nichts im Ruleset ändern.
+Stattdessen merged die Sitzung ihren PR selbst, sobald `ci-gate` grün ist: `scripts/ci/wait-gate.sh <PR>` (Exit 0 = grün). `ci-gate` läuft auf jedem PR, wartet auf alle ausgelösten Prüfungen (übersprungen = ok, je Name zählt der neueste Lauf, nur GitHub-Actions-Jobs) und ist nur grün, wenn keine rot ist.
+Wer doch Auto-Merge will, braucht zuerst eine GitHub-App (Owner-Entscheidung): Datenläufe pushen mit deren Token (`actions/create-github-app-token`), die App kommt als Bypass-Akteur in ein eigenes Ruleset nur für den Default-Branch mit der Pflichtprüfung `ci-gate`. Das ist ein eigener Umbau aller Datenläufe, nicht Teil des Schnellwegs.
+Infrastrukturfehler (apt-DNS, Netz, Runner-Verlust) startet `ci-retry.yml` einmal selbst neu; echte Testfehler nicht.
+
+## 15. Schnellweg für kleine Oberflächenänderungen
+
+Ziel: Push bis live in rund 30 Minuten ohne Handarbeit. PR öffnen, `scripts/ci/wait-gate.sh <PR>` abwarten, bei Grün selbst squash-mergen (§14). Browser-Jobs laufen im Playwright-Image (kein apt, kein `playwright install`), `ci-retry.yml` startet Infrastrukturfehler einmal neu, die Shell-QA läuft in drei parallelen Jobs. Eine neue UI-Schutz-Revision ist eine eigene Datei in `docs/quality/ui-protection-revisions/` ohne Nummer, also ohne Konflikt bei bewegtem `main`. Echte Testfehler bleiben rot und werden repariert, nicht wiederholt.
+Offen, braucht eine UI-Schutz-Revision mit Owner-Freigabe (`scripts/vu2/browser-qa.mjs` ist byte-gesperrt): (1) ein einmaliger Wiederholungsversuch in `versuch()` für die schwankende Meldung „Unexpected price-history fanout: screenerPro@1440“ (lokal nicht reproduzierbar; die Meldung nennt seit #1855 den Pfad, daran die Ursache klären, dann ggf. Retry unnötig); (2) die Direktlink-QA (`scripts/vu2/direct-link-lib.mjs`) hängt an Wortlaut („vollständige technische Auswertung … noch nicht veröffentlicht“, „Chartbild öffnen“): stabile Markup-Anker (`data-*`) in den gesperrten Seitendateien würden den Text ablösen.

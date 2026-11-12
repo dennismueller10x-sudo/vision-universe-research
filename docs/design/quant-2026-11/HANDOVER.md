@@ -60,7 +60,44 @@ Wichtige Dateien: `quant/app/app.js` (Router), `quant/app/ui.js` (Adressen `rout
 
 ## Entscheidungen beim Bauen
 
-(Hier je Schritt einen Satz eintragen.)
+**PR 1 · Wortwahl und Fehler**
+- Sätze aus den Daten, die Ziele nennen (z. B. Evidenz „erreichten Zielzone 1“), übersetzt die Oberfläche beim Anzeigen mit `QX.say` in „Marke 1 der Methode“; die Daten bleiben unberührt.
+- Vorhandene Rückblick-Quoten der Chart-Perspektive („Ziel erreicht“) bleiben an ihrer Stelle und heißen „Marke 1 erreicht“; Zielbänder, Zielkacheln und das Abstandsverhältnis Ziel : Stopp entfallen ganz.
+- Im Abwärtsszenario heißt die Marke über dem Kurs „Ungültig laut Methode“ (Kurzform aus Entscheidung 5), die Kartenrichtung steht weiter im Satz darunter.
+- Der Aktienkopf zeigt Dollar und Tagesbewegung in Dollar; der Euro-Wert steht als „≈ 167,17 €“ unter „Schlusskurs · Datum“ (wie im Mockup rechts), umgerechnet über die vorhandene Anzeigewährung.
+- Fehlende Vergleichswerte tragen „–¹“; unter der Tabelle steht je Aktie der Grund mit dem Datum ihrer Geschäftszahlen.
+- Rote Töne in Quant (Pillen, Marken, Chart-Linie „ungültig“) werden schwarz bzw. grau mit schwarzem Rand.
+
+**PR 2 · Profil-Baustein und Begriffe**
+- Das eine Wort je Eigenschaft steht an der Quelle: im Wörterbuch (`quant/methodology/product-language-v1.json`, `userLabel`) und in den Anzeige-Labels der Faktor-Engine (`FACTOR_MEANING.label`, nur Text, keine Rechnung); der Fachname bleibt als `longName` (z. B. „Bilanz- & Ergebnisqualität“) in Methodik und Belegen.
+- Die Anzeige-Reihenfolge folgt dem Profil (Verdient gut … Analysten, `VM.PROFILE_ORDER`); die Reihenfolge der Methodik (`FACTOR_ORDER`) bleibt für Rechnung und Daten unverändert.
+- Der Hinweis unter dem großen Profil sagt „0 bis 100, 50 ist die Mitte“ statt „99 heißt besser als 99 %“, weil der Wert ein gewichtetes Mittel von Rängen ist und nicht genau der Anteil; die Position steht weiter in jeder Eigenschaft („besser als 97 % der Aktien“).
+- „N von M Faktoren stark“ entfällt; Trefferzeilen im Screener tragen das kleine Profil, die Zählung heißt „N Eigenschaften stark“.
+
+**PR 3 · Start und Meldungen**
+- Die Startseite liest wie bisher nur die Projektion `radar-home-v1` (nicht den ganzen Radar); „Setup bestätigt“ zeigt deshalb die bestätigten Setups unter den sechs Karten der Projektion, „Alle N“ führt in den Screener.
+- Das Urteil rechts in Meldungen: „Neu“ für Setup bestätigt, neu in einem Anlagestil, Jahreshoch und neues Muster; „Besser“/„Schlechter“ für die übrigen Richtungen; „Beobachten“ für ein entstehendes Setup und Meldungen ohne Richtung (wie im Mockup).
+- Die Zahlen der Reiter „Besser · Schlechter“ zählen Aktien (Zeilen) nach ihrer ersten Meldung in der gewählten Art, nicht einzelne Ereignisse, damit Reiter und Liste dieselbe Menge zeigen.
+- Ohne „Weitere laden“ stehen 8 Zeilen; die Seite misst am Anfang 1.142 px Inhalt (vorher 20.813 px). Sortierregel und Quellen stehen zugeklappt unter „Wie Meldungen entstehen und sortiert sind“.
+- Der Filter „Anlagestile“ heißt in der Adresse `filter=stile`; alte Adressen mit `filter=strategien` leiten dorthin weiter.
+- Chips bleiben 44 px hoch (bestehende Tippflächen-Regel der Quant-Oberfläche), im Mockup 36 px.
+
+**PR 4 · Screener und Anlagestile**
+- „Eigene Bedingung“ steht im einfachen Screener als letzter Chip hinter den sieben Fragen (das Mockup zeigt sie nicht, die Funktion bleibt); „Deine Frage“ nennt dann die gewählten Eigenschaften mit Schwelle.
+- Die Methodik der Frage (Wert ab 70 gegen Position unter allen Aktien) und die Trefferzahl im Universum stehen als Hinweis unter „Im Profi-Modus verfeinern“, nicht über der Liste.
+- Im Profi-Modus sind die Bedingungen Chips; Antippen öffnet den Bereichsregler im Sheet. Datenbasis, Sortierung, „Regeln teilen“ und „Regeln speichern“ stehen unter der Tabelle. Die Spalten folgen der Profil-Reihenfolge (Verdient, Wächst, Zahlen, Kurs, Ruhiger), Günstig ist über „Spalten“ zuschaltbar.
+- Anlagestile heißen in der Adresse `#/stile` und `#/stile/{id}`; `#/strategien…` leitet mit Pfad weiter. Die Produkt-Leiste heißt Quant · Screener · Anlagestile · Aktien · Menü; das Menü führt zusätzlich „Meldungen“.
+- Auf der Stil-Seite steht der Satz unter der Regel als „ein Wert von mindestens 70 von 100“ statt „besser als etwa 70 % der Aktien“, weil die Schwelle auf den Wert und nicht auf die Position wirkt. Die bisherige Auswertung (alle Treffer, Veränderung, „Was verhindert einen Match?“) steht vollständig unter „Mehr zu diesem Anlagestil“.
+- Die Glocke im dunklen Kopf ist sichtbar, aber noch ohne Funktion („bald über Mein Bereich“), wie bisher die Melden-Karte.
+
+**PR 5 · Aktie, Vergleich, Forschung**
+- Der Kurschart bleibt auf der Aktienseite (eine Preiswahrheit, Direktlink-Prüfung), steht aber unter den sechs Kapiteln, weil das Mockup der Perspektive Faktoren oben Profil, drei Sätze und Kapitel zeigt.
+- Die Kapitel nehmen die bisherigen Abschnitte unverändert auf (Eigenschaften, Stärken und Schwächen, Veränderungen, Setup und Anlagestile, Historie, Geschäftszahlen); ihr eigener Titel steht nur noch in der Kapitelzeile. „Alle“ öffnet bzw. schließt alle Kapitel; offene merkt sich das Gerät unter `vu.quant.kapitel.v1`.
+- „Quant in drei Sätzen“ nimmt die stärkste und die schwächste gemessene Eigenschaft (mit Position bzw. dem ersten schwachen Treiber) und die erste Verschlechterung aus den Veränderungen; das Urteil rechts ist die Stufe bzw. „N von M schlechter“.
+- „Knapp verfehlt“ heißt: genau eine Bedingung des Stils ist nicht erfüllt; „Es fehlen N Punkte bei …“ nennt die verfehlte Bedingung mit dem kleinsten Abstand.
+- „Ähnliches Profil“ lädt erst, wenn der Bereich in Sichtweite kommt (Ressourcenbudget der Aktienseite); verglichen werden nur Aktien mit allen sechs Werten, Abstand ist die Summe der quadrierten Unterschiede.
+- Der Vergleich nimmt die Profile aus derselben Screening-Datei wie Screener und Start; Namen über 16 Zeichen weichen dem Kürzel („AMD“). Die zwei Sätze nennen je Aktie die zwei Eigenschaften mit dem größten Vorsprung, „deutlich“ ab 20 Punkten. Die Kennzahlen-Tabelle mit den Gründen für „–“ steht aufklappbar darunter.
+- Forschung (`#/forschung`, `#/backtest…` leitet weiter): Der Satz unter „Marktweit geprüft“ erklärt die Zahl als Unterschied im Anteil der Fälle, die nach 6 Monaten höher lagen (so ist sie gerechnet), nicht als durchschnittlichen Vorsprung. Die bisherige Übersicht steht vollständig unter „Was zur Zertifizierung fehlt“; einzelne Regeln behalten ihre Seite unter `#/forschung/{id}` mit dem Etikett.
 
 ## Master-Prompt (in einen neuen Claude-Code-Chat einfügen)
 

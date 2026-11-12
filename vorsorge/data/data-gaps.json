@@ -1,6 +1,6 @@
 {
  "schemaVersion": "vu-vorsorge-data-gaps-1.0.0",
- "asOf": "2026-11-05",
+ "asOf": "2026-11-10",
  "fields": [
   {
    "field": "US-Kurse",
@@ -14,7 +14,7 @@
    "field": "Gesamtrendite",
    "primarySource": "Tiingo divCash + kanonische Rekonstruktion",
    "tiingo": "Tiingo divCash + kanonische Rekonstruktion",
-   "coverage": 0.9452,
+   "coverage": 0.9474,
    "gap": "nein",
    "secondProviderNeeded": "nein"
   },
@@ -30,7 +30,7 @@
    "field": "US-Holdings",
    "primarySource": "SEC N-PORT (quartalsweise)",
    "tiingo": "SEC N-PORT (quartalsweise)",
-   "coverage": 0.6156,
+   "coverage": 0.6544,
    "gap": "aktuelle Tagesbestände nur über lizenzierte Emittentendaten",
    "secondProviderNeeded": "aktuelle Tagesbestände nur über lizenzierte Emittentendaten"
   },
@@ -46,7 +46,7 @@
    "field": "Kostenquote (US)",
    "primarySource": "SEC Prospektdaten (Risk/Return)",
    "tiingo": "SEC Prospektdaten (Risk/Return)",
-   "coverage": 0.6421,
+   "coverage": 0.6505,
    "gap": "TER/laufende Kosten für UCITS: EMT/Emittent (Lizenz)",
    "secondProviderNeeded": "TER/laufende Kosten für UCITS: EMT/Emittent (Lizenz)"
   },
@@ -54,7 +54,7 @@
    "field": "Fondsvermögen (US)",
    "primarySource": "SEC N-PORT (Fondsebene)",
    "tiingo": "SEC N-PORT (Fondsebene)",
-   "coverage": 0.6156,
+   "coverage": 0.6544,
    "gap": "Anteilklassen-Ebene: Emittent",
    "secondProviderNeeded": "Anteilklassen-Ebene: Emittent"
   },
@@ -86,7 +86,7 @@
    "field": "Domizil",
    "primarySource": "SEC (US) · GLEIF (EU)",
    "tiingo": "SEC (US) · GLEIF (EU)",
-   "coverage": 0.6156,
+   "coverage": 0.6544,
    "gap": "nein",
    "secondProviderNeeded": "nein"
   },
@@ -94,7 +94,7 @@
    "field": "UCITS-Status",
    "primarySource": "SEC (US = kein UCITS) · ESMA-Fondsregister (EU, amtlich, Namenszuordnung)",
    "tiingo": "SEC (US = kein UCITS) · ESMA-Fondsregister (EU, amtlich, Namenszuordnung)",
-   "coverage": 0.6156,
+   "coverage": 0.6544,
    "gap": "EU-Anteilklassen ohne eindeutigen Registertreffer: nur Hinweis aus dem Namen",
    "secondProviderNeeded": "EU-Anteilklassen ohne eindeutigen Registertreffer: nur Hinweis aus dem Namen"
   },
@@ -118,7 +118,7 @@
    "field": "Ertragsverwendung",
    "primarySource": "Ausschüttungen beobachtet (US) · CFI (EU)",
    "tiingo": "Ausschüttungen beobachtet (US) · CFI (EU)",
-   "coverage": 0.6443,
+   "coverage": 0.6537,
    "gap": "thesaurierend (US) nicht belegbar",
    "secondProviderNeeded": "thesaurierend (US) nicht belegbar"
   },
@@ -134,7 +134,7 @@
    "field": "Index (verbindlich)",
    "primarySource": "aus Namen abgeleitet",
    "tiingo": "aus Namen abgeleitet",
-   "coverage": 0.145,
+   "coverage": 0.148,
    "gap": "ja",
    "secondProviderNeeded": "ja"
   },

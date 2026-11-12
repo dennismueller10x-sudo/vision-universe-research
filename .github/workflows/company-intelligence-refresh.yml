@@ -1,12 +1,12 @@
 name: Company Intelligence Continuous Production Refresh
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '17 */4 * * *'
-    # Weitere Schedule-Slots gehoeren NICHT hierher: jeder Schedule-Lauf besetzt die
-    # Schreibergruppe, ein neuer wartender verdraengt den alten. Redundanz liefert
-    # company-intelligence-refresh-watchdog.yml (eigene Gruppe, dispatcht nur bei Veraltung).
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Von Cloudflare-Wecker gesetzt (Cron des Eintrags in core/registry/schedule.json); nicht von Hand'
+        type: string
+        default: ''
       verification:
         description: 'Independent isolated R2 runner; never advances production'
         type: boolean
@@ -66,6 +66,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           INPUT_FINANCIAL: ${{ inputs.financial }}
+          VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
         run: node scripts/company_intelligence/scheduler-gate.mjs
   refresh:
     needs: gate
@@ -85,7 +86,7 @@ jobs:
         run: echo "JOB_STARTED_AT=$(date +%s)" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
         with:
-          ref: abbea154a90ffece598e494530eea38661a20a95
+          ref: 42957c9e0a8885cd70a32a4bdaa2413b95b509e4
           path: .accepted-identities
           sparse-checkout: |
             company-master
@@ -168,7 +169,21 @@ jobs:
           # Concurrency-Gruppe pages-production (nur ein wartender Lauf) hoechstens 2 Mal neu dispatchen, nur solange die erwartete
           # Generation noch nicht ausgeliefert ist. Frist laeuft bis zur Reserve vor dem Job-Timeout (>= 40 min garantiert); echte
           # Fehler (Pages-Lauf failure) enden sofort. Erst danach folgt der Rollback-Schritt unten (Lauf 38798312279, 15.10.2026).
-          node scripts/company_intelligence/refresh-dispatch-wait.mjs --health "$RUNNER_TEMP/ci-refresh/health.json" --out "$RUNNER_TEMP/ci-refresh/dispatch-wait.json"
+          # Exit 4 = eigener Pages-Lauf success, die neue Generation kam nie an und live steht unveraendert die bisherige
+          # (NOT_DELIVERED_PRODUCTION_UNCHANGED). Keine Regression: kein Rollback, kein disable, kein ROLLBACK_46; der Lauf wird rot.
+          # Anlass: Refresh 42744743112 (10.11.2026) schaltete so den gesunden Vollumfang ab (Pages-Deploy desselben Commits).
+          # Neuer Commit auf main vor dem Dispatch: deploy-pages nimmt den Commit als Build-Version und uebernimmt einen zweiten
+          # Deploy desselben Commits nicht (10.11.2026). Der Job bleibt lesend und startet pages-release-marker.yml (schreibt den
+          # Marker) und wartet bis zu 5 min darauf. Scheitert der Marker, wie bisher weiter.
+          node scripts/company_intelligence/pages-release-marker.mjs --dispatch --reason refresh || echo "::warning::Pages release marker not written; delivery needs a new commit on main."
+          wait_rc=0
+          node scripts/company_intelligence/refresh-dispatch-wait.mjs --health "$RUNNER_TEMP/ci-refresh/health.json" --out "$RUNNER_TEMP/ci-refresh/dispatch-wait.json" || wait_rc=$?
+          if [ "$wait_rc" -eq 4 ]; then
+            echo "production_unchanged=true" >> "$GITHUB_OUTPUT"
+            echo "::error::New generation not taken over by Pages; production unchanged on the previous generation. Gate stays open, no rollback."
+            exit 1
+          fi
+          if [ "$wait_rc" -ne 0 ]; then exit "$wait_rc"; fi
           # Live-QA mit begrenzter, lesender Wiederholung NUR bei belegtem transientem Auslieferungsfehler (Mischstand, STALE, 5xx;
           # Klassifikator und Propagationsbeweis aus Pages-Release). Echte Fehler und erschoepfte Obergrenze enden mit Exit 1:
           # der Schritt "Fail closed" unten rollt dann wie bisher sofort zurueck.
@@ -185,7 +200,7 @@ jobs:
           fi
           exit "$rc"
       - name: Fail closed on actual production regression
-        if: failure() && steps.deploy_live.outcome == 'failure' && inputs.verification != true
+        if: failure() && steps.deploy_live.outcome == 'failure' && steps.deploy_live.outputs.production_unchanged != 'true' && inputs.verification != true
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -240,6 +255,11 @@ jobs:
           name: ${{ env.MARKER }}
           path: ${{ runner.temp }}/ci-refresh-mode.txt
           retention-days: 14
+      - name: Delivery not taken over, production unchanged (run red, gate untouched)
+        if: always() && steps.deploy_live.outputs.production_unchanged == 'true'
+        run: |
+          echo "Company Intelligence: Pages did not take over the new generation; production still serves the previous verified generation. No rollback, gate open. The next Pages release with a new commit delivers it." >> "$GITHUB_STEP_SUMMARY"
+          exit 1
       - name: Observation bookkeeping failed (run red, gate untouched)
         if: steps.deploy_live.outputs.observe_bookkeeping == 'true'
         run: |

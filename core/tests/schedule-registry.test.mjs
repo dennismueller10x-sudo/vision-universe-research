@@ -54,11 +54,12 @@ test("SZ-2 · Wecker-Eintraege: kein Cron im Workflow, Eingang zeitplan, Marke i
   }
 });
 
-test("SZ-3 · Company Intelligence bleibt bei GitHub (Auftrag Strang O)", () => {
+test("SZ-3 · Company Intelligence laeuft ueber den Wecker (GitHub startet sie nur etwa alle 8 h; Strang AF 12.11.2026)", () => {
   for (const e of REG.entries.filter((x) => /^company-intelligence/.test(x.workflow))) {
-    assert.equal(e.timer, "github", e.id);
-    assert.ok(e.ausnahme, e.id + " braucht eine Begruendung");
+    assert.equal(e.timer, "waker", e.id);
+    assert.ok(!e.ausnahme, e.id + ": keine Ausnahme mehr");
   }
+  assert.deepEqual(REG.entries.find((e) => e.id === "company-intelligence-refresh").inputs, { verification: false, universe: false }, "Produktion, nicht die isolierte Verifikation");
 });
 
 test("SZ-4 · Cron-Lesart wie GitHub: UTC, Listen, Bereiche, Schritte, Sonntag 0/7, Tag ODER Wochentag", () => {

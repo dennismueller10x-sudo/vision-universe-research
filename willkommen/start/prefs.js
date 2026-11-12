@@ -28,7 +28,7 @@
       label: 'Dein Ziel: Eine Aktie verstehen', step: 'Starte mit NVIDIA im Überblick', href: '/discover/#/s/US_REAL/NVDA' },
     ideen: { title: 'Ideen finden', text: 'Themen, Listen und Swipen statt langer Tabellen.', world: 'discover', worldName: 'Discover',
       label: 'Dein Ziel: Ideen finden', step: 'Starte mit den Themenwelten', href: '/discover/#/welten' },
-    signale: { title: 'Strategien und Signale', text: 'Methoden der Profis, Backtests, 13F-Daten der Fonds.', world: 'supertrader', worldName: 'Supertrader',
+    signale: { title: 'Strategien und Regel-Ergebnisse', text: 'Methoden der Profis, Backtests, 13F-Daten der Fonds.', world: 'supertrader', worldName: 'Supertrader',
       label: 'Dein Ziel: Wie ein Profi analysieren', step: 'Starte mit den Methoden', href: '/supertrader/strategies/' }
   };
   var GOAL_ORDER = ['vorsorge', 'aktie', 'ideen', 'signale'];

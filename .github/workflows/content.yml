@@ -3,7 +3,7 @@ name: Content (News, Analystenbewertungen, Hedgefonds 13F, Morning)
 # Buendel "content" (Plan Neustart §3, core/registry/workflow-bundles.json). Ersetzt update-news.yml,
 # update-analyst-ratings.yml, update-hedgefonds.yml und build-morning.yml. Jeder Teil ist ein eigener Job
 # mit seinem bisherigen Zeitplan und seinen bisherigen Schritten (unveraendert uebernommen); ein Fehler in
-# einem Teil haelt die anderen nicht auf. Manuell: Eingabe "teil".
+# einem Teil haelt die anderen nicht auf. Manuell: Eingabe "teil". Morning ist eingestellt und laeuft nur von Hand.
 # Zeitplan: core/registry/schedule.json, Takt ueber den Cloudflare-Wecker (RUNBOOK §10).
 run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
@@ -16,14 +16,8 @@ on:
       teil:
         description: 'Welcher Teil laufen soll'
         type: choice
-        options: [alle, news, ratings, hedgefonds, morning, analysten, analysten-probe]
+        options: [alle, news, ratings, hedgefonds, morning, analysten, analysten-probe, search-console]
         default: alle
-  push:
-    branches: [main]
-    paths:
-      - 'content/morning/**'
-      - 'products/morning/**'
-      - 'morning/assets/**'
 
 permissions:
   contents: write
@@ -43,23 +37,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
+      # Datenzweig (Plan Neustart §3, core/registry/data-branch.json, Phase BRANCH_ONLY seit 11.11.2026): news waechst nur
+      # noch in data/live; die Kopie in main ist eingefroren (Rueckfall). Ohne frische Kandidaten laesst der Erzeuger die Datei
+      # unveraendert - deshalb zuerst den Stand des Zweigs einspielen, sonst ginge die eingefrorene Kopie zurueck in den Zweig.
+      - name: Datenzweig in den Arbeitsbaum (news)
+        run: scripts/ci/seed-data-branch.sh news
       - name: Fetch primary-source news
         run: node products/news/producer/update_news.mjs
-      - name: Commit fresh news data
-        shell: bash
-        run: |
-          if git diff --quiet -- dashboard/data/news_feed.json; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add dashboard/data/news_feed.json
-          git commit -m "chore: update dashboard news"
-          # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
-          scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
-      # Datenzweig-Pilot (Plan Neustart §3, core/registry/data-branch.json, Phase DUAL_WRITE):
-      # derselbe Stand zusaetzlich in den Datenzweig; Pages liefert ihn aus und weist Gleichheit mit main nach.
-      - name: News in den Datenzweig
+      - name: News in den Datenzweig (nur main)
         if: github.ref == 'refs/heads/main'
         run: scripts/ci/push-data-branch.sh data/live dashboard/data/news_feed.json
 
@@ -233,8 +218,10 @@ jobs:
           # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
+  # Morning Briefing ist eingestellt (Owner 09.11.2026): kein Push-Ausloeser, nicht in "alle";
+  # das Archiv laesst sich nur noch von Hand neu bauen (teil = morning).
   morning:
-    if: (github.event_name == 'push') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'morning'))
+    if: (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.teil == 'morning'
     runs-on: ubuntu-latest
     concurrency:
       group: content-morning-${{ github.ref_name }}
@@ -261,3 +248,31 @@ jobs:
           git commit -m "chore: build Morning Briefing"
           # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # Google Search Console fuer Insights (11.11.2026): Sitemap einreichen, Indexierung der neuesten Artikel pruefen,
+  # Klicks/Impressionen/Suchbegriffe der letzten 28 Tage. Intern: nur in den Datenzweig (seo/search-console/, nicht
+  # ausgeliefert, core/registry/data-branch.json internal); der Insights-Tageslauf liest den Bericht vor der Themenwahl.
+  search-console:
+    if: ((github.event_name == 'schedule' || inputs.zeitplan != '') && (github.event.schedule || inputs.zeitplan) == '23 2 * * *') || ((github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && (inputs.teil == 'alle' || inputs.teil == 'search-console'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: content-search-console-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Search-Console-Bericht
+        env:
+          GSC_SERVICE_ACCOUNT_JSON: ${{ secrets.GSC_SERVICE_ACCOUNT_JSON }}
+        run: |
+          set -euo pipefail
+          node products/insights/search-console.mjs --out seo/search-console/latest.json | tee "$RUNNER_TEMP/gsc.txt"
+          { echo '### Search Console (Insights)'; echo '```'; cat "$RUNNER_TEMP/gsc.txt"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: scripts/ci/push-data-branch.sh data/live seo/search-console/latest.json

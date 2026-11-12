@@ -285,7 +285,7 @@ const stepOf=(doc,id)=>doc.jobs.refreeze.steps.find(s=>s.id===id);
 function assertWorkflow(doc,raw){
  assert.deepEqual(doc.permissions,{contents:'read'});
  assert.deepEqual(doc.concurrency,{group:'company-intelligence-continuous-production','cancel-in-progress':false});
- assert.deepEqual(Object.keys(doc.on).sort(),['schedule','workflow_dispatch']);
+ assert.deepEqual(Object.keys(doc.on).sort(),['workflow_dispatch'],'Zeitplan nur ueber den Wecker (core/registry/schedule.json)');
  const job=doc.jobs.refreeze;assert.deepEqual(Object.keys(doc.jobs),['refreeze']);
  assert.equal(job.if,"github.ref == 'refs/heads/main'");
  const checkout=job.steps.find(s=>s.uses==='actions/checkout@v4');
@@ -311,7 +311,7 @@ function assertWorkflow(doc,raw){
  const runs=job.steps.map(s=>s.run||'').join('\n');
  assert.equal([...runs.matchAll(/universe-release\.mjs/g)].length,1);
  for(const re of [/\binputs\./,/\bgh\s/,/workflow run/,/\b(enable|disable|stage|activate|restore46|recover|recover_full_scope)\b/i,/\brollback\b/i,/\bhealth\b/i,/setProductionGate/,/pages-release/,/gate\.json/])assert.doesNotMatch(runs,re,String(re));
- assert.doesNotMatch(raw,/\$\{\{\s*inputs\./);assert.doesNotMatch(raw,/actions:\s*write|contents:\s*write/);assert.doesNotMatch(raw,/gh workflow run|workflow_dispatch:\s*\n\s+inputs/);
+ const ohneMarke=raw.replace(/^run-name: .*\n/m,'');assert.doesNotMatch(ohneMarke,/\$\{\{\s*inputs\./,'Eingaben nur als Wecker-Marke im run-name');assert.doesNotMatch(raw,/actions:\s*write|contents:\s*write/);assert.doesNotMatch(raw,/gh workflow run/);assert.deepEqual(Object.keys(doc.on.workflow_dispatch.inputs),['zeitplan'],'einziger Eingang: die Marke des Weckers');
  for(const s of job.steps)assert.doesNotMatch(s.run||'',/\$\{\{/,'keine Ausdruecke im Shell-Text: '+s.name);
 }
 const raw=()=>readFileSync(WORKFLOW_PATH,'utf8');
@@ -350,7 +350,8 @@ function nextRuns(cron,from,count){
  return out;
 }
 test('Zeitplan (Tag-des-Monats-Raster, Monatswechsel): Minuten-Jitter nicht auf :00/:30, Abstand hoechstens 2 Tage, erster Lauf nach 2026-10-16 ist 2026-10-17 05:23 UTC',()=>{
- const cron=loadText(raw()).on.schedule[0].cron;
+ const reg=JSON.parse(readFileSync(join(new URL('../../..',import.meta.url).pathname,'core/registry/schedule.json'),'utf8')).entries.find(e=>e.workflow==='company-intelligence-refreeze-auto.yml');
+ assert.equal(reg.timer,'waker');const cron=reg.cron;
  assert.equal(cron,'23 5 */2 * *');
  const [mi]=cron.split(' ');assert.ok(!['0','30'].includes(mi));
  const runs=nextRuns(cron,new Date('2026-10-16T09:33:00Z'),3);

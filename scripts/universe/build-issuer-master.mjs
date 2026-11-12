@@ -44,6 +44,7 @@ const require = createRequire(import.meta.url);
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, "..", "..");
 const Master = require(join(root, "quant", "engines", "company-master.js"));
+const IssuerAlias = require(join(root, "core", "issuer-alias.js"));
 
 const argv = process.argv.slice(2);
 function arg(name, fallback) {
@@ -113,6 +114,11 @@ function main() {
   const cikMapFile = pfad(arg("--cik-map", join(CONFIG.storage.root, "cik-map.json")));
   const cikMap = existsSync(cikMapFile) ? readJSON(cikMapFile) : { status: "ABSENT", byTicker: {} };
 
+  /* Holding-Umgruendungen: die alte issuerId bleibt als Vorgaenger der
+     Nachfolgerin aufloesbar (core/issuer-alias.js#resolveIssuerId). */
+  const successorFile = join(root, "quant", "config", "sec-successor-issuers.json");
+  const aliases = existsSync(successorFile) ? IssuerAlias.issuerAliases(readJSON(successorFile)) : {};
+
   /* ------------------------------------------------- CIK-Aufloesung (§3) */
   const issuers = new Map();
   const resolved = [], unresolved = [], ambiguous = [];
@@ -130,8 +136,15 @@ function main() {
       ? { cik: String(eintragImMap.cik).replace(/\D/g, "").padStart(10, "0"),
           source: "sec:" + (eintragImMap.source || "cik-map") }
       : null;
-    const cik = inst.cik || (ausMap && ausMap.cik) || null;
-    const cikSource = inst.cik ? (inst.cikSource || null) : (ausMap && ausMap.source);
+    const rohCik = inst.cik || (ausMap && ausMap.cik) || null;
+    const rohSource = inst.cik ? (inst.cikSource || null) : (ausMap && ausMap.source);
+    /* Holding-Umgruendung: zeigt die CIK auf einen Vorgaenger, gilt die
+       Nachfolgerin (auch wenn die Instrumente noch vom Stand davor sind). */
+    const nachId = rohCik ? IssuerAlias.resolveIssuerId("iss_cik_" + rohCik, aliases) : null;
+    const gewechselt = !!rohCik && nachId !== "iss_cik_" + rohCik;
+    const cik = gewechselt ? nachId.slice(8) : rohCik;
+    const cikSource = gewechselt
+      ? "successor:sec-successor-issuers(" + rohCik + ">" + cik + ")" : rohSource;
 
     if (cik) {
       const issuerId = Master.issuerIdFromCik(cik);
@@ -192,10 +205,12 @@ function main() {
   for (const iss of issuers.values()) {
     const memberList = Array.from(iss.members).sort();
     const imProdukt = iss.inProductUniverse;
+    const vorgaenger = IssuerAlias.predecessorIssuerIds(iss.issuerId, aliases);
     rows.push({
       issuerId: iss.issuerId,
       cik: iss.cik,
       cikSource: iss.cikSource,
+      ...(vorgaenger.length ? { predecessorIssuerIds: vorgaenger } : {}),
       name: iss.name,
       nameSource: iss.nameSource,
       memberCount: memberList.length,

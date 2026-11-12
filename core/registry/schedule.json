@@ -40,36 +40,35 @@
    "id": "company-intelligence-health",
    "workflow": "company-intelligence-health.yml",
    "cron": "57 */4 * * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker"
   },
   {
    "id": "company-intelligence-profile-source",
    "workflow": "company-intelligence-profile-source.yml",
    "cron": "47 3 * * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker"
   },
   {
    "id": "company-intelligence-refreeze-auto",
    "workflow": "company-intelligence-refreeze-auto.yml",
    "cron": "23 5 */2 * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker"
   },
   {
    "id": "company-intelligence-refresh",
    "workflow": "company-intelligence-refresh.yml",
    "cron": "17 */4 * * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker",
+   "inputs": {
+    "verification": false,
+    "universe": false
+   }
   },
   {
    "id": "company-intelligence-refresh-watchdog",
    "workflow": "company-intelligence-refresh-watchdog.yml",
    "cron": "47 2-22/4 * * *",
-   "timer": "github",
-   "ausnahme": "Company Intelligence: von Strang O ausdruecklich nicht angefasst (Auftrag 08.11.2026)"
+   "timer": "waker"
   },
   {
    "id": "content-analysten",
@@ -107,6 +106,16 @@
    "note": "ratings"
   },
   {
+   "id": "content-search-console",
+   "workflow": "content.yml",
+   "cron": "23 2 * * *",
+   "timer": "waker",
+   "inputs": {
+    "teil": "search-console"
+   },
+   "note": "search-console (Insights: Sitemap, Indexierung, Suchanalyse; vor dem Fruehlauf)"
+  },
+  {
    "id": "core-ci",
    "workflow": "core-ci.yml",
    "cron": "47 7 * * *",
@@ -115,7 +124,7 @@
   {
    "id": "europe-discover-refresh",
    "workflow": "europe-discover-refresh.yml",
-   "cron": "47 17 * * 1-5",
+   "cron": "47 21 * * 1-5",
    "timer": "waker"
   },
   {
@@ -267,7 +276,7 @@
   {
    "id": "pipeline-daily-ki-depots",
    "workflow": "pipeline-daily.yml",
-   "cron": "41 23 * * 1-5",
+   "cron": "41 1 * * 2-6",
    "timer": "waker",
    "note": "ki-depots",
    "inputs": {
@@ -392,6 +401,16 @@
    "note": "musterdepots",
    "inputs": {
     "teil": "musterdepots"
+   }
+  },
+  {
+   "id": "pipeline-weekly-backtest-forschung",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "41 5 * * 0",
+   "timer": "waker",
+   "note": "backtest-forschung",
+   "inputs": {
+    "teil": "backtest-forschung"
    }
   },
   {

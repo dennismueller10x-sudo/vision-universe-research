@@ -7,8 +7,8 @@
      #/                      Home
      #/screener              Quant Screener (einfach)   ?frage=<id>
      #/screener/profi        Quant Screener (Profi)     ?query=<regeln>
-     #/strategien            Strategien
-     #/strategien/<id>       eine Strategie
+     #/stile                 Anlagestile (#/strategien leitet weiter)
+     #/stile/<id>            ein Anlagestil
      #/aktien                Aktien (Suche, zuletzt, gemerkt)
      #/aktie/<TICKER>        Aktienanalyse
      #/elliott/<T>           ALT, wird zu /elliott/#/<T> (Elliott ist ein eigenes Produkt)
@@ -51,12 +51,12 @@
     var okT = /^[A-Z0-9.-]{1,12}$/.test(t);
     var map = {
       home: "#/", stock: okT ? "#/aktie/" + t : "#/aktien", quant: okT ? "#/aktie/" + t : "#/aktien",
-      aktien: "#/aktien", stocks: "#/aktien", screener: "#/screener", strategies: "#/strategien", strategien: "#/strategien",
+      aktien: "#/aktien", stocks: "#/aktien", screener: "#/screener", strategies: "#/stile", strategien: "#/stile",
       explain: "#/methodik", methodik: "#/methodik", methodology: "#/methodik",
       technical: okT ? "#/aktie/" + t + "/technik" : "#/aktien", elliott: okT ? "/elliott/#/" + t + "?ansicht=profi" : "/elliott/",
       fundamentals: okT ? "#/aktie/" + t + "/zahlen" : "#/aktien",
       compare: "#/vergleich" + (p.get("tickers") ? "/" + p.get("tickers") : okT ? "/" + t : ""),
-      watchlist: "#/aktien", signals: "#/radar", radar: "#/radar", backtest: "#/backtest", backtesting: "#/backtest", discover: "#/screener", markets: "#/", research: "#/methodik", portfolio: "#/", atlas: "#/methodik"
+      watchlist: "#/aktien", signals: "#/meldungen", radar: "#/meldungen", meldungen: "#/meldungen", backtest: "#/forschung", backtesting: "#/forschung", forschung: "#/forschung", discover: "#/screener", markets: "#/", research: "#/methodik", portfolio: "#/", atlas: "#/methodik"
     };
     var target = map[view] || "#/";
     if (view === "screener") {
@@ -75,6 +75,15 @@
     return "/elliott/#/" + encodeURIComponent(r.ticker) + (qs ? "?" + qs : "");
   }
 
+  /* Alte Namen → neue Namen (Konzept Quant 2026-11, Entscheidung 3). Pfad und Parameter bleiben erhalten. */
+  var RENAMED = { radar: "meldungen", strategien: "stile", backtest: "forschung" };
+  function renamed(hash) {
+    var h = String(hash || "").replace(/^#\/?/, ""), q = h.indexOf("?"), path = q >= 0 ? h.slice(0, q) : h, qs = q >= 0 ? h.slice(q) : "";
+    var parts = path.split("/");
+    if (RENAMED[parts[0]]) parts[0] = RENAMED[parts[0]];
+    if (parts[0] === "meldungen") qs = qs.replace(/([?&]filter=)strategien\b/, "$1stile");
+    return "#/" + parts.join("/") + qs;
+  }
   function parse(hash) {
     var h = String(hash || "").replace(/^#/, "");
     if (!h || h === "/") return { view: "home", params: new URLSearchParams() };
@@ -83,15 +92,18 @@
     var r = { params: params, parts: parts };
     switch (parts[0]) {
       case "screener": r.view = "screener"; r.pro = parts[1] === "profi"; break;
-      case "strategien": r.view = "strategien"; r.id = parts[1] || null; break;
+      case "stile": r.view = "strategien"; r.id = parts[1] || null; break;
+      case "strategien": r.view = "renamed"; break;
       case "aktien": r.view = "aktien"; break;
       case "elliott":
         r.ticker = String(parts[1] || "").toUpperCase();
         r.view = !parts[1] ? "elliottHome" : /^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "elliott" : "notfound";
         break;
-      case "radar": r.view = "radar"; break;
+      case "meldungen": r.view = "radar"; break;
+      case "radar": r.view = "renamed"; break;
       case "chartlagen": r.view = "chartlagen"; break;
-      case "backtest": r.view = "backtest"; r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
+      case "forschung": r.view = "backtest"; r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
+      case "backtest": r.view = "renamed"; break;
       case "aktie":
         r.ticker = String(parts[1] || "").toUpperCase();
         r.view = !/^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "notfound" : parts[2] === "technik" ? "technik" : parts[2] === "chartbild" ? "chartbild" : parts[2] === "chart" ? "chart" : parts[2] === "zahlen" ? "zahlen" : "aktie";
@@ -102,8 +114,8 @@
     }
     return r;
   }
-  var SECTION = { home: "home", radar: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", chartbild: "aktien", chart: "aktien", elliott: "elliott", chartlagen: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
-  var TITLE = { home: "Quant – Aktien verstehen", radar: "Quant Radar", backtest: "Backtesting", screener: "Quant Screener", strategien: "Strategien", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", chart: "Chartbild", elliott: "Elliott", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
+  var SECTION = { home: "home", radar: "home", renamed: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", chartbild: "aktien", chart: "aktien", elliott: "elliott", chartlagen: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
+  var TITLE = { home: "Quant – Aktien verstehen", radar: "Meldungen", backtest: "Forschung", screener: "Quant Screener", strategien: "Anlagestile", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", chart: "Chartbild", elliott: "Elliott", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
 
   /* -------------------------------------------------------- Kontext */
   /* CHARTBILD (Technical Intelligence v3) LAEDT NUR, WO ES GEBRAUCHT WIRD.
@@ -273,7 +285,7 @@
     ]) : el("footer", { class: "q-foot qx-foot" }, [
       el("b", { text: "VISION UNIVERSE® QUANT" }),
       /* VU3-Finalisierung: ein Absatz Hinweis statt drei; Quellen und Stichtage stehen je Seite in "Daten & Methodik". */
-      el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Keine Anlageempfehlung, keine Prognose, kein Kursziel. Einstieg, Stop-Loss und Ziele sind Szenarien der technischen Analyse." })]),
+      el("p", {}, [el("span", { class: "q-beta", text: "Beta" }), el("span", { text: " Keine Anlageempfehlung, keine Prognose, kein Kursziel. Zone und Ungültig-Marke laut Methode beschreiben Szenarien der technischen Analyse." })]),
       el("p", {}, [el("a", { href: "#/methodik", text: "Methodik" }), el("span", { text: " · " }), el("a", { href: "/quant/methodology/", text: "Methodik im Detail" }), el("span", { text: " · " }), el("a", { href: "#/backtest", text: "Backtesting" }), el("span", { text: " · " }), el("a", { href: "/quant/data-inspector/", text: "Dateninspektor" }), el("span", { text: " · " }), el("a", { href: "/discover/", text: "Discover" })])
     ]);
     if (earlyMain) root.appendChild(foot); else root.replaceChildren(main, foot);
@@ -381,6 +393,8 @@
     /* Alte Chartbild-/Technik-Adressen und der Elliott-Hauptlink: eine Adresse, ohne Verlaufseintrag (location.replace loest hashchange aus). */
     if (r.view === "chartbild" || r.view === "technik" || r.view === "elliott") { global.location.replace(canonicalElliott(r)); return; }
     if (r.view === "elliottHome") { global.location.replace("/elliott/"); return; }
+    /* Konzept Quant 2026-11 (Entscheidung 3): alte Adressen leiten mit ihren Parametern weiter, ohne Verlaufseintrag. */
+    if (r.view === "renamed") { global.location.replace(renamed(location.hash)); return; }
     search.close();
     markNav(SECTION[r.view] || null);
     document.title = (TITLE[r.view] || "Quant") + " · Vision Universe®";
@@ -515,7 +529,7 @@
     if (hostedObserver) { hostedObserver.disconnect(); hostedObserver = null; }
   }
 
-  global.QXApp = { parse: parse, canonicalElliott: canonicalElliott, legacyRoute: legacyRoute, ctx: ctx, route: route, mountElliott: mountElliott, unmountElliott: unmountElliott, hosted: HOSTED };
+  global.QXApp = { parse: parse, renamed: renamed, canonicalElliott: canonicalElliott, legacyRoute: legacyRoute, ctx: ctx, route: route, mountElliott: mountElliott, unmountElliott: unmountElliott, hosted: HOSTED };
   if (HOSTED) { /* kein eigener Router */ }
   else if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot); else boot();
 })(window);

@@ -30,7 +30,7 @@
   var TEMPLATE_LABEL = { BALANCE_SHEET_FINANCIAL: "Banken und bilanzbasierte Finanzunternehmen", INSURANCE_CARRIER: "Versicherer", REAL_ESTATE_TRUST: "Immobilien-REITs" };
 
   function topicHead(main, t, lead) {
-    main.append(tabs(t.id), el("a", { class: "v2-back qx-back", href: X.routes.method(), text: "← Methodik" }),
+    X.add(main, tabs(t.id), el("a", { class: "v2-back qx-back", href: X.routes.method(), text: "← Methodik" }),
       el("span", { class: "v2-eyebrow", text: "Methodik" }), el("h1", { class: "qx-h1", text: t.title }), lead ? el("p", { class: "v2-lead qx-lead", text: lead }) : null);
   }
   function para(t) { return el("p", { text: t }); }
@@ -79,10 +79,12 @@
     }));
   }
 
-  /* Redesign 2027 (Folie Q05): Frage als Titel, Kapitel-Chips, drei Rollen, sechs Fragen, Stufenleiste Schwarz bis
+  /* Redesign 2027 (Folie Q05): Frage als Titel, Kapitel-Chips, drei Rollen, sieben Eigenschaften, Stufenleiste Schwarz bis
      Neongrün, alle Unterkapitel als Liste, Grenzen als Kacheln „Keine Aussage“. Anteil je Frage (PRO) aus factorWeights des
      veröffentlichten Screening-Artefakts (factor-evidence-v1), nie fest im Code; fehlt es, bleibt die Spalte leer. */
-  var Q6 = [["momentum", "Läuft der Kurs gut?"], ["growth", "Wächst die Firma?"], ["profitability", "Verdient sie gut?"], ["value", "Ist sie günstig?"], ["quality", "Sind die Zahlen solide?"], ["risk", "Wie ruhig ist der Kurs?"]];
+  /* Konzept Quant 2026-11 (Entscheidung 1): die sieben Eigenschaften in der Reihenfolge des Profils, ein Wort je Eigenschaft;
+     die Frage steht klein darunter. „Analysten“ hat heute keine Daten und steht trotzdem in der Liste. */
+  var Q6 = [["profitability", "Verdient sie gut?"], ["growth", "Wächst die Firma?"], ["quality", "Sind die Zahlen solide?"], ["momentum", "Läuft der Kurs gut?"], ["value", "Ist sie günstig?"], ["risk", "Wie ruhig ist der Kurs?"]];
   function startV3(main, ctx) {
     var U = global.VUUI, h = '<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Wie kommt Quant zu seinem Urteil?</h1><p class="vu-lead">Keine Blackbox. Jedes Urteil hat einen Grund, und jeder Grund führt zu den Daten.</p></header>' +
       '<nav class="vu-chips qv3-mchips" aria-label="Methodik">' + [["#qv3-was", "Überblick"], [X.routes.method("faktoren"), "Eigenschaften"], [X.routes.method("daten"), "Daten"], [X.routes.method("historie"), "Backtests"], [X.routes.method("grenzen"), "Grenzen"]].map(function (c, i) { return '<a class="vu-chip' + (i ? "" : " vu-chip--on") + '" href="' + U.esc(c[0]) + '">' + c[1] + "</a>"; }).join("") + "</nav>" +
@@ -90,15 +92,15 @@
       U.navcard({ icon: "quant", title: "Quant", sub: "Meldet Veränderungen nach festen Regeln und vergleicht mit früher. Quant meldet sich, du musst nicht suchen.", href: X.routes.radar() }) +
       U.navcard({ glyph: "filter", title: "Quant Screener", sub: "Findet Aktien, die deine Bedingungen heute erfüllen. Du gibst die Frage vor.", href: X.routes.screener() }) +
       U.navcard({ icon: "discover", title: "Discover", sub: "Themen und Geschichten zum Stöbern. Keine Regeln, keine Backtests.", href: "/discover/" }) + "</div></section>" +
-      U.sect("Die sechs Fragen", { href: X.routes.method("gewichtung"), link: "Gewichtung" }) + '<p class="vu-xs vu-mu qv3-q6-head"><b>Plus eine siebte, für die Daten fehlen.</b><b>Anteil ' + U.pro() + '</b></p><div class="vu-box qv3-liste">' +
-      Q6.map(function (q) { return '<a class="qv3-li" href="' + U.esc(X.routes.method("faktoren")) + '"><span><b class="vu-sm">' + q[1] + '</b><span class="vu-xs vu-mu">' + U.esc(VM.FACTORS[q[0]] ? VM.FACTORS[q[0]].name : q[0]) + '</span></span><b class="vu-sm num qv3-w" data-w="' + q[0] + '"></b>' + U.glyph("next", 16) + "</a>"; }).join("") +
-      '<div class="qv3-li is-off"><span><b class="vu-sm">Heben Analysten Schätzungen an?</b><span class="vu-xs vu-mu">Erwartungstrend · keine Daten</span></span><b class="vu-sm num qv3-w" data-w="revisions"></b></div></div>' +
+      U.sect("Die sieben Eigenschaften", { href: X.routes.method("gewichtung"), link: "Gewichtung" }) + '<p class="vu-xs vu-mu qv3-q6-head"><b>Jede Aktie hat ein Profil aus sieben Eigenschaften.</b><b>Anteil ' + U.pro() + '</b></p><div class="vu-box qv3-liste">' +
+      Q6.map(function (q) { return '<a class="qv3-li" href="' + U.esc(X.routes.method("faktoren")) + '"><span class="qv3-q7"><b class="vu-sm">' + U.glyph(U.PROFILE ? U.PROFILE.glyph[q[0]] : "check", 15) + U.esc(VM.FACTORS[q[0]] ? VM.FACTORS[q[0]].name : q[0]) + '</b><span class="vu-xs vu-mu">' + q[1] + '</span></span><b class="vu-sm num qv3-w" data-w="' + q[0] + '"></b>' + U.glyph("next", 16) + "</a>"; }).join("") +
+      '<div class="qv3-li is-off"><span class="qv3-q7"><b class="vu-sm">' + U.glyph(U.PROFILE ? U.PROFILE.glyph.revisions : "check", 15) + 'Analysten</b><span class="vu-xs vu-mu">Heben Analysten Schätzungen an? · heute keine Daten</span></span><b class="vu-sm num qv3-w" data-w="revisions"></b></div></div>' +
       U.sect("So liest du eine Zahl") + '<div class="vu-box"><div class="qv3-bands"><span class="b1">Sehr schwach</span><span class="b2">Schwach</span><span class="b3">Mittel</span><span class="b4">Stark</span><span class="b5">Sehr stark</span></div>' +
       '<div class="qv3-bands-x vu-xs vu-mu"><b>Rang 0 %</b><b>25</b><b>45</b><b>75</b><b>90</b></div><p class="vu-sm" style="margin:10px 0 0"><b>„Sehr stark“</b> heißt: besser als 90 % aller bewerteten US-Aktien, am selben Tag gezählt.</p></div>' +
       '<div style="margin-top:10px">' + U.help("Die Stufe ist ein Vergleich, kein Gütesiegel. Sie sagt, wo eine Aktie im Feld steht, nicht ob sie für sich gut ist.") + "</div>" +
       U.sect("Alles im Detail") + '<div class="vu-box qv3-liste">' + TOPICS.filter(function (t) { return t.id !== "grenzen"; }).map(function (t) { return '<a class="qv3-li" href="' + U.esc(X.routes.method(t.id)) + '"><span><b class="vu-sm">' + U.esc(t.title) + '</b><span class="vu-xs vu-mu">' + U.esc(t.text) + "</span></span>" + U.glyph("next", 16) + "</a>"; }).join("") + "</div>" +
       U.sect("Was Quant bewusst nicht sagt", { href: X.routes.method("grenzen"), link: "Alle Grenzen" }) + '<div class="vu-grid">' + [["Keine Empfehlung", "Kein Kauf, kein Verkauf, kein Kursziel."], ["Fehlende Daten", "Unter 80 % Abdeckung entsteht kein Wert."], ["Junge Aktien", "Zu wenig Historie wird offen genannt."], ["Backtests", "Noch gesperrt, darum keine Trefferquoten."]].map(function (x) { return '<div class="vu-box">' + U.verdict("none", x[0]) + '<p class="vu-xs vu-mu" style="margin:8px 0 0">' + x[1] + "</p></div>"; }).join("") + "</div>" +
-      '<div class="vu-stack" style="margin-top:14px"><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/methodology/">Technische Dokumentation ' + U.pro() + '</a><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/data-inspector/">SEC-Dateninspektor ' + U.pro() + "</a></div>";
+      '<div class="vu-stack" style="margin-top:14px"><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/methodology/">Technische Dokumentation ' + U.pro() + '</a><a class="vu-btn vu-btn--line vu-btn--block" href="/quant/data-inspector/">Meldedateninspektor ' + U.pro() + "</a></div>";
     var box = el("div", { class: "vu-ui qv3" }); box.innerHTML = h; main.append(box);
     if (ctx && ctx.api && ctx.api.getFactorEvidenceScreening) ctx.api.getFactorEvidenceScreening().then(function (r) {
       var w = r && r.factorWeights; if (!w) return;
@@ -140,7 +142,7 @@
       el("div", {}, [el("b", { text: "Datenbasiert. Nachvollziehbar. Unabhängig." })].concat(
         ["Belegte Daten mit Stichtag", "Gleiche Regeln für jede Aktie", "Lieber keine Aussage als eine falsche", "Keine Gesamtnote, keine Prognose"].map(function (x) { return el("span", { text: x }); })))]),
       el("ol", { class: "q-rows q-principle-list" }, [
-        ["Belegte Daten, mit Stichtag", "Geschäftszahlen aus SEC-Meldungen, Kurse von Tiingo. Jede Zahl trägt ihren Stand. Eine Kennzahl zählt erst ab dem Tag, an dem sie öffentlich bekannt war."],
+        ["Belegte Daten, mit Stichtag", "Geschäftszahlen aus Pflichtmeldungen, Kurse vom Marktdatenanbieter. Jede Zahl trägt ihren Stand. Eine Kennzahl zählt erst ab dem Tag, an dem sie öffentlich bekannt war."],
         ["Gleiche Regeln für jede Aktie", "Faktoren, Setups und Strategien folgen versionierten Regeln. Schwellen werden nicht an Ergebnissen optimiert und nicht für einzelne Titel angepasst."],
         ["Lieber keine Aussage als eine falsche", "Fehlt eine Kennzahl, wird sie nicht geschätzt. Reicht die Datenlage nicht, sagt Quant das – mit der Zahl, die fehlt."],
         ["Keine Gesamtnote, keine Prognose", "Eine einzelne Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird."]
@@ -157,7 +159,7 @@
       { href: X.routes.method("grenzen"), label: "Alle Grenzen" }));
     main.append(X.more("Transparenz-Matrix: was offen liegt und was es nicht gibt", function () { return [el("div", { class: "q-matrix" }, [
       el("div", { class: "is-yes" }, [el("h3", { text: "Offen gelegt" }), el("ul", {}, [
-        "Datenquellen und Stichtag jeder Zahl (SEC EDGAR, Tiingo)", "Kennzahlen, Gewichte und Rohwerte jedes Faktors", "Bedingungen jedes Setups und jeder Strategie",
+        "Datenquellen und Stichtag jeder Zahl (Unternehmensmeldungen, Kursdatenanbieter; Quellen: /infos/#quellen)", "Kennzahlen, Gewichte und Rohwerte jedes Faktors", "Bedingungen jedes Setups und jeder Strategie",
         "Alle Vergleichsfälle im Rückblick – nie ein herausgegriffener", "Versionen jeder Regel"].map(function (x) { return el("li", { text: x }); }))]),
       el("div", { class: "is-no" }, [el("h3", { text: "Gibt es bewusst nicht – oder noch nicht" }), el("ul", {}, [
         "Gesamtnote oder Rangliste", "Kursziele und Prognosen", "Trefferquoten (Backtesting noch nicht freigegeben)", "Sentiment- und News-Auswertung", "Erwartungstrend (keine zeitpunktgenaue Quelle)"].map(function (x) { return el("li", { text: x }); }))])])]; }));
@@ -168,8 +170,8 @@
     topicHead(main, t, "Quant verwendet ausschließlich belegte Quellen – und sagt bei jeder Zahl, von wann sie ist.");
     var sum = await global.QuantShell.loadJSON("/quant/data/product/factor-evidence-v1/summary.json").catch(function () { return null; });
     main.append(el("div", { class: "qx-grid qx-grid-2" }, [
-      X.card([el("h3", { class: "qx-h3", text: "Geschäftszahlen: SEC EDGAR" }), para("Umsatz, Gewinn, Cashflow, Bilanz – aus den Pflichtmeldungen der Unternehmen (10-K, 10-Q). Maßgeblich ist, wann eine Zahl öffentlich wurde, nicht der Berichtszeitraum."), X.btn("Rohdaten prüfen", "/quant/data-inspector/", "secondary")]),
-      X.card([el("h3", { class: "qx-h3", text: "Kurse: Tiingo" }), para("Tagesschlusskurse, splitbereinigt; während der Handelszeit 5-Minuten-Kurse (IEX) und auf der Aktienseite optional ein laufender Kurs. Dividenden sind in Kursentwicklungen nicht enthalten.")])
+      X.card([el("h3", { class: "qx-h3", text: "Geschäftszahlen: Pflichtmeldungen" }), para("Umsatz, Gewinn, Cashflow, Bilanz – aus den Pflichtmeldungen der Unternehmen (10-K, 10-Q). Maßgeblich ist, wann eine Zahl öffentlich wurde, nicht der Berichtszeitraum."), X.btn("Rohdaten prüfen", "/quant/data-inspector/", "secondary")]),
+      X.card([el("h3", { class: "qx-h3", text: "Kurse: Marktdatenanbieter" }), para("Tagesschlusskurse, splitbereinigt; während der Handelszeit 5-Minuten-Kurse (IEX) und auf der Aktienseite optional ein laufender Kurs. Dividenden sind in Kursentwicklungen nicht enthalten.")])
     ]));
     if (sum && sum.counts) main.append(X.section("Wie groß ist das Universum?", "Stand " + X.dateDe(sum.asOf || (sum.generatedAt || "").slice(0, 10)) + ".", [el("div", { class: "dv2-valuation-grid qx-stats" }, [
       ["US-Titel im Produktuniversum", sum.counts.productUniverse], ["mit veröffentlichter Faktoranalyse", sum.counts.published], ["davon mit Geschäftszahlen", sum.counts.withFundamentals], ["mit belegtem Börsenwert", sum.counts.withMarketCap]
@@ -188,11 +190,11 @@
     var focus = params && params.get("faktor");
     var gap = await emptyFactors(ctx);
     var emptyText = {}; gap.empty.forEach(function (e) { emptyText[e.id] = e.text; });
-    main.append(el("div", { class: "qx-factors" }, VM.ORDER.map(function (id) {
+    main.append(el("div", { class: "qx-factors" }, VM.PROFILE_ORDER.map(function (id) {
       var f = VM.FACTORS[id];
       var comps = Object.keys(cs).filter(function (k) { return k.indexOf(id + ":") === 0; }).map(function (k) { return cs[k]; });
       var d = el("details", { class: "qx-factor tone-neutral", id: "m-" + id, open: focus === id ? true : null }, [
-        el("summary", {}, [el("span", { class: "qx-factor-name", text: f.name }), el("span", { class: "dx-index-badge qx-tag", text: f.method }), el("span", { class: "qx-factor-q", text: f.question })]),
+        el("summary", {}, [el("span", { class: "qx-factor-name", text: f.name }), el("span", { class: "dx-index-badge qx-tag", text: f.longName + " · " + f.method }), el("span", { class: "qx-factor-q", text: f.question })]),
         el("div", { class: "qx-factor-body" }, [para(f.measures), f.notMeasures ? el("p", { class: "qx-small", text: f.notMeasures }) : null, el("p", { class: "qx-small", text: f.higher }),
           emptyText[id] ? X.notice("Derzeit für keine Aktie ein Wert", emptyText[id]) : null,
           comps.length ? el("div", {}, comps.map(function (c) {
@@ -296,7 +298,7 @@
     main.append(el("div", { class: "qx-grid qx-grid-2" }, VM.SETUP_STAGES.map(function (s) {
       var st = idx && idx.state === "AVAILABLE" ? idx.states.filter(function (x) { return x.state === s.id; })[0] : null;
       return X.card([el("h3", { class: "qx-h3", text: s.label }), el("p", { class: "qx-small", text: s.short + "." }),
-        st ? el("ul", { class: "qx-small" }, st.rules.map(function (r) { return el("li", { text: r.plain + " (" + r.matched.toLocaleString("de-DE") + " Aktien)" }); })) : null]);
+        st ? el("ul", { class: "qx-small" }, st.rules.map(function (r) { return el("li", { text: X.say(r.plain) + " (" + r.matched.toLocaleString("de-DE") + " Aktien)" }); })) : null]);
     })));
     main.append(el("p", { class: "qx-small", text: "Die Stufen werden in fester Reihenfolge geprüft; die erste zutreffende Regel entscheidet. Verlaufszustände wie „läuft“ oder „beendet“ brauchen eine lückenlose Beobachtungshistorie und sind noch nicht freigeschaltet." + (idx && idx.state === "AVAILABLE" ? " Zuordnung " + idx.mappingVersion + ", freigegeben am " + X.dateDe(idx.approval && idx.approval.approvedAt) + "." : "") }));
   }

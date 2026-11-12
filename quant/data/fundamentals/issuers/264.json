@@ -320,9 +320,9 @@
       "cik": "0001206264",
       "name": "SOMNIGROUP INTERNATIONAL INC.",
       "sic": "2510",
-      "rawFacts": 23598,
-      "mappedFacts": 7230,
-      "unmappedFacts": 16450,
+      "rawFacts": 23912,
+      "mappedFacts": 7309,
+      "unmappedFacts": 16679,
       "calendarYears": 18,
       "industry": null,
       "industryMetrics": {},
@@ -332,28 +332,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 19,
-      "quarterlyPeriods": 71,
+      "quarterlyPeriods": 72,
       "firstPeriodEnd": "2007-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 18.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 18,
-          "quarterlyPeriods": 68,
-          "firstAvailablePeriod": "2008-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 17.0
-        },
-        "eps_diluted": {
           "annualPeriods": 18,
           "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
+        "eps_diluted": {
+          "annualPeriods": 18,
+          "quarterlyPeriods": 70,
+          "firstAvailablePeriod": "2008-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 17.0
+        },
         "free_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0,
@@ -373,21 +373,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "operating_cash_flow": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
         },
         "revenue": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 69,
+          "quarterlyPeriods": 70,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 17.0
@@ -401,14 +401,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 19,
-          "quarterlyPeriods": 68,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2007-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 18.0
         },
         "total_assets": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -431,46 +431,47 @@
         }
       },
       "quality": {
-        "HIGH": 637,
+        "HIGH": 644,
         "MEDIUM": 62
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 699,
-        "resolvedValues": 699
+        "datableValues": 706,
+        "resolvedValues": 706
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 17052,
+        "rules_version": "1.1.0",
+        "total": 17221,
         "by_severity": {
-          "INFO": 16450,
-          "WARNING": 602
+          "INFO": 16679,
+          "WARNING": 542
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 467,
+          "CONCEPT_DISAGREEMENT": 437,
           "NEGATIVE_WHERE_IMPOSSIBLE": 9,
-          "RESTATEMENT_CONFLICT": 126,
-          "UNKNOWN_CONCEPT": 16450
+          "RESTATEMENT_CONFLICT": 96,
+          "UNKNOWN_CONCEPT": 16679
         }
       },
       "latestFiling": {
-        "accession": "0001206264-26-000113",
-        "filing_date": "2026-08-07",
+        "accession": "0001206264-26-000134",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 93
+        "periodic_filings": 94,
+        "acceptance_datetime": "2026-11-09T21:12:50.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3ebcb78e414b5671e5d5d75517c6adf307170f97f2ec163157c54eecadc65993",
+      "sourceDigest": "13a7637d6f6e9a68cc50526525b523af553f28697638bfebb660cdb382f57f86",
       "issuerId": "iss_cik_0001206264"
     },
     {

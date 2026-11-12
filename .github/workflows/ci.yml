@@ -583,9 +583,19 @@ jobs:
     needs: auswahl
     if: needs.auswahl.outputs.research_access == 'true'
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.57.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -593,15 +603,12 @@ jobs:
         env:
           BUILD_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
         run: |
-          python3 - <<'PY'
-          import os
-          print('GITHUB_RESEARCH_ACCESS_PASSWORD_CONFIGURED=' + str(bool(os.environ.get('BUILD_PASSWORD'))).lower())
-          PY
+          if [ -n "$BUILD_PASSWORD" ]; then echo GITHUB_RESEARCH_ACCESS_PASSWORD_CONFIGURED=true; else echo GITHUB_RESEARCH_ACCESS_PASSWORD_CONFIGURED=false; fi
       - run: node --test scripts/access-gate/build.test.mjs
       - name: Browser dependencies
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/research-access-qa --no-audit --no-fund playwright@1.57.0
-          /tmp/research-access-qa/node_modules/.bin/playwright install --with-deps chromium webkit
       - name: Password flow, no content flash and persistent shared access in Chromium and iPhone WebKit
         env:
           PLAYWRIGHT_PATH: /tmp/research-access-qa/node_modules/playwright
@@ -615,9 +622,19 @@ jobs:
       group: screener-qa-${{ github.ref }}-ci
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -626,9 +643,13 @@ jobs:
       - name: Engine, registry and universe tests
         run: node --test "screener/tests/*.test.mjs" discover/tests/navigation-theme.test.mjs
       - name: Browser QA dependencies
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/screener-qa-deps --no-audit --no-fund playwright@1.56.1
-          node /tmp/screener-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/screener-release"
       - name: Browser QA (390, 430, 820, 1440 · light and dark)
@@ -637,7 +658,7 @@ jobs:
         run: |
           mkdir -p /tmp/screener-evidence
           test -f "$RUNNER_TEMP/screener-release/screener/data/universe-US_REAL.json"
-          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/screener-release" > /tmp/screener-evidence/server.log 2>&1 &
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/screener-release" --port=8765 > /tmp/screener-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/screener/ > /dev/null && break; sleep 1; done
@@ -786,12 +807,22 @@ jobs:
       group: discover-frontend-qa-${{ github.ref }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.63.0-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     # Bekannte Fehler (scripts/discover/known-defects.json) warten je Ladevorgang
     # bis zum Zeitlimit der Pruefung; mit Direktlink-Schritt in beiden Engines
     # reichen 35 Minuten dann nicht. Kein Check wird dadurch gelockert.
     timeout-minutes: 75
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -800,9 +831,9 @@ jobs:
       - name: Existing contract and navigation tests
         run: node --test discover/tests/*.test.mjs quant/tests/site-navigation.test.mjs
       - name: Browser quality dependencies
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/discover-qa-deps --no-audit --no-fund playwright@1.63.0 axe-core@4.10.3
-          node /tmp/discover-qa-deps/node_modules/playwright/cli.js install --with-deps chromium webkit
       # Offener Tab ueber ein Deployment (lazy.js + Release-Waechter, hinter der Sperre). Setzt den Quant-PR voraus
       # (quant/ui/release-guard.js, scripts/vu2/deploy-switch-lib.mjs); davor uebersprungen.
       - name: Deployment switch with an open tab
@@ -810,6 +841,10 @@ jobs:
         env:
           NODE_PATH: /tmp/discover-qa-deps/node_modules
         run: node scripts/discover/deploy-switch-qa.mjs --engine chromium,webkit
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/discover-release"
       - name: Browser, accessibility, performance and screenshot gates
@@ -818,7 +853,7 @@ jobs:
           SITE: ${{ inputs.site }}
         run: |
           mkdir -p /tmp/discover-evidence
-          python -m http.server 8765 --bind 127.0.0.1 --directory "$RUNNER_TEMP/discover-release" > /tmp/discover-evidence/server.log 2>&1 &
+          node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/discover-release" --port=8765 > /tmp/discover-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/discover/ > /dev/null && break; sleep 1; done
@@ -1031,6 +1066,7 @@ jobs:
           fi
           # Canonical R2-backed source remains intact. Measure the actual
           # product artifact, never the full storage source tree.
+          scripts/ci/seed-data-branch.sh alle  # wie pages-release.yml vor dem Bau (DB-16)
           node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/sec-delivery"
           total="$(du -sk "$RUNNER_TEMP/sec-delivery/quant/data/sec" | cut -f1)"
           if [ "$total" -gt 8192 ]; then
@@ -1375,6 +1411,14 @@ jobs:
       group: supertrader-ci-${{ github.ref }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.56.1-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     # 45 statt 30 Minuten: der Checkout des vollen Arbeitsbaums (~2-3 GB) schwankt
     # GitHub-seitig stark (2:46 in Lauf 41686237365, 14:43 im parallel
     # gestarteten core-ci-Lauf 41686237440, >15 min im package-Job von Lauf
@@ -1395,6 +1439,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: ${{ github.event_name == 'pull_request' && 2 || 1 }}
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -1462,11 +1508,20 @@ jobs:
       - name: Quant-2.0-Regression (bestehende Tests)
         run: node --test "quant/tests/*.test.mjs"
       - name: Browser QA dependencies
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/supertrader-qa-deps --no-audit --no-fund playwright@1.56.1
-          node /tmp/supertrader-qa-deps/node_modules/playwright/cli.js install --with-deps chromium
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Exaktes Pages-Auslieferungsartefakt bauen
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/release"
+      - name: Generationenmanifest im Releasebau (ADR-008)
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/release/core/release-manifest.json"
+          node -e 'const m=JSON.parse(require("fs").readFileSync(process.argv[1]));if(m.schema!=="vu-release-manifest-1"||!/^[0-9a-f]{40}$/.test(m.code.sha)||!/^[0-9a-f]{64}$/.test(m.payloadHash))process.exit(1);console.log("Nutzdatenhash "+m.payloadHash+" Code "+m.code.sha+" Datenzweig "+m.dataBranch.sha)' "$RUNNER_TEMP/release/core/release-manifest.json"
       - name: Gate F — Browser QA 390 px und 1280 px gegen das Release
         run: |
           test -f "$RUNNER_TEMP/release/supertrader/index.html"
@@ -1494,9 +1549,19 @@ jobs:
       group: technical-ci-${{ github.ref_name }}
       cancel-in-progress: true
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
@@ -1511,13 +1576,51 @@ jobs:
       - name: Hero-Block synchron
         run: node scripts/design/sync-product-hero.mjs --check
       - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
+        timeout-minutes: 8
         run: |
           npm install --prefix /tmp/tc-qa playwright@1.58.2 axe-core@4.10.3
-          /tmp/tc-qa/node_modules/.bin/playwright install --with-deps chromium
       - name: Browser-Pruefung (390/1280 px, Hell/Dunkel, alle Ansichten)
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
         run: node scripts/technical/world/browser-qa.mjs --out "$RUNNER_TEMP/technical-qa"
+      - name: Pruefbericht sichern
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: technical-browser-qa
+          path: ${{ runner.temp }}/technical-qa
+          if-no-files-found: ignore
+          retention-days: 14
+
+  technical-akademie:
+    # 11.11.2026: aus `technical` herausgeloest (909 s allein), laeuft parallel zu dessen Tests und Browser-Pruefung.
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.technical == 'true'
+    # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
+    concurrency:
+      group: technical-ci-${{ github.ref_name }}-akademie
+      cancel-in-progress: true
+    # Browser aus dem Playwright-Image (wie `technical`), kein apt/playwright install.
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Browser-Abhaengigkeit (isoliert, wie vu2-browser-qa.yml)
+        timeout-minutes: 8
+        run: |
+          npm install --prefix /tmp/tc-qa playwright@1.58.2 axe-core@4.10.3
       - name: Strategie-Akademie (360/390/1280 px, Hell/Dunkel, alle 32 Lektionen)
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
@@ -1526,7 +1629,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: technical-browser-qa
+          name: technical-akademie-qa
           path: ${{ runner.temp }}/technical-qa
           if-no-files-found: ignore
           retention-days: 14
@@ -1541,18 +1644,31 @@ jobs:
       group: ${{ github.event_name == 'pull_request' && format('vu2-browser-qa-pr-{0}', github.event.pull_request.number) || format('vu2-browser-qa-{0}', github.run_id) }}
       cancel-in-progress: ${{ github.event_name == 'pull_request' }}
     runs-on: ubuntu-latest
+    # 11.11.2026: Browser kommen aus dem Playwright-Image (Version = npm playwright@ unten) statt per apt-get/playwright install
+    # (apt-DNS auf azure.archive.ubuntu.com haengt zeitweise > 60 min). Python fehlt im Image: statischer Server scripts/ci/static-server.mjs.
+    container:
+      image: mcr.microsoft.com/playwright:v1.58.2-noble
+      options: --ipc=host
+    defaults:
+      run:
+        shell: bash
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
+      - name: Workspace fuer git freigeben (Container laeuft als root)
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Test resource budget failure cases
         run: node --test scripts/vu2/resource-budget.test.mjs
       - name: Install isolated browser test dependency
+        timeout-minutes: 8
         run: npm install --prefix /tmp/vu2-qa playwright@1.58.2 axe-core@4.10.3 esbuild@0.25.10
-      - name: Install Chromium and WebKit
-        run: /tmp/vu2-qa/node_modules/.bin/playwright install --with-deps chromium webkit
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build the exact static release artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/quant2-site"
       - name: Compact delivery script without changing identifiers or removing code
@@ -1745,10 +1861,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: PostgreSQL-Client
+        timeout-minutes: 8
         run: |
           set -euo pipefail
-          apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y -qq postgresql-client > /dev/null
+          # psql (apply-migrations.mjs) kommt nicht im Playwright-Image mit. apt mit kurzen Zeitlimits, bis zu 3 Versuchen;
+          # bei Spiegel-/DNS-Ausfall bricht der Schritt nach hoechstens 8 min ab (timeout-minutes), statt eine Stunde zu haengen.
+          apt_opts="-o Acquire::Retries=2 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20"
+          for versuch in 1 2 3; do
+            # shellcheck disable=SC2086
+            if apt-get $apt_opts update -qq && DEBIAN_FRONTEND=noninteractive apt-get $apt_opts install -y -qq postgresql-client > /dev/null; then break; fi
+            [ "$versuch" -lt 3 ] || { echo "::error::postgresql-client nicht installierbar (apt)"; exit 1; }
+            echo "::warning::apt Versuch $versuch fehlgeschlagen, neuer Versuch"; sleep $((versuch * 20))
+          done
           psql --version
       - name: Playwright (Chromium und WebKit liegen im Image)
         run: |
@@ -1816,12 +1940,21 @@ jobs:
 
   # --- shell: vormals shell-ci.yml
   shell-shell:
+    name: shell-shell (${{ matrix.id }})
     needs: auswahl
     if: needs.auswahl.outputs.shell == 'true'
     # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
+    # 11.11.2026: Chromium (Handy, Desktop) und WebKit laufen parallel statt nacheinander (vorher ein Job, rund 35 min).
     concurrency:
-      group: shell-qa-${{ github.ref }}-shell
+      group: shell-qa-${{ github.ref }}-shell-${{ matrix.id }}
       cancel-in-progress: true
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { id: chromium-handy, engine: chromium, viewports: '390x844,430x932,768x1024', legal: chromium }
+          - { id: chromium-desktop, engine: chromium, viewports: '1024x768,1440x900', legal: '' }
+          - { id: webkit, engine: webkit, viewports: '390x844,430x932,1024x768', legal: webkit }
     # Browser aus dem Playwright-Image statt apt-get bei jedem Lauf - Begruendung beim Job vu3-regression.
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -1840,37 +1973,37 @@ jobs:
         run: |
           npm install --prefix /tmp/shell-qa-deps --no-audit --no-fund playwright@1.56.1
           node -e "const pw=require('/tmp/shell-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/shell-release"
-      - name: Browser QA (Chromium 390, 430, 768, 1024, 1440 · WebKit iPhone 390, 430 and 1024)
+      - name: Browser QA (${{ matrix.engine }} ${{ matrix.viewports }})
         env:
           PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+          QA_ENGINE: ${{ matrix.engine }}
+          QA_VIEWPORTS: ${{ matrix.viewports }}
         run: |
           mkdir -p /tmp/shell-evidence
           node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/shell-release" --port=8765 > /tmp/shell-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
-          chromium_status=0
-          webkit_status=0
-          node scripts/quality/shell-browser-qa.mjs --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/chromium || chromium_status=$?
-          node scripts/quality/shell-browser-qa.mjs --engine=webkit --viewports=390x844,430x932,1024x768 --url=http://127.0.0.1:8765 --out=/tmp/shell-evidence/webkit || webkit_status=$?
-          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
-      - name: App-QA Rechtliches & Infos (App-Hülle mit CSP, App-UA, echter Tipp je Menüeintrag; Chromium und WebKit)
+          node scripts/quality/shell-browser-qa.mjs --engine="$QA_ENGINE" --viewports="$QA_VIEWPORTS" --url=http://127.0.0.1:8765 --out="/tmp/shell-evidence/$QA_ENGINE"
+      - name: App-QA Rechtliches & Infos (App-Hülle mit CSP, App-UA, echter Tipp je Menüeintrag)
+        if: matrix.legal != ''
         env:
           PLAYWRIGHT_PATH: /tmp/shell-qa-deps/node_modules/playwright
+          QA_LEGAL: ${{ matrix.legal }}
         run: |
           mkdir -p /tmp/shell-evidence
-          chromium_status=0
-          webkit_status=0
-          node scripts/quality/app-legal-menu-qa.mjs --browser chromium --out /tmp/shell-evidence/app-legal-chromium.json || chromium_status=$?
-          node scripts/quality/app-legal-menu-qa.mjs --browser webkit --out /tmp/shell-evidence/app-legal-webkit.json || webkit_status=$?
-          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+          node scripts/quality/app-legal-menu-qa.mjs --browser "$QA_LEGAL" --out "/tmp/shell-evidence/app-legal-$QA_LEGAL.json"
       - name: Preserve screenshots and results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: shell-browser-evidence
+          name: shell-browser-evidence-${{ matrix.id }}
           path: /tmp/shell-evidence
           if-no-files-found: warn
 
@@ -1904,6 +2037,10 @@ jobs:
         run: |
           npm install --prefix /tmp/vu3-qa-deps --no-audit --no-fund playwright@1.56.1 axe-core@4.10.3
           node -e "const pw=require('/tmp/vu3-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/vu3-release"
       - name: VU3 regression (Chromium all sections · WebKit iPhone journeys, theme, Visual First)
@@ -1956,6 +2093,10 @@ jobs:
         run: |
           npm install --prefix /tmp/fu-qa-deps --no-audit --no-fund playwright@1.56.1
           node -e "const pw=require('/tmp/fu-qa-deps/node_modules/playwright');for(const b of [pw.chromium,pw.webkit])require('fs').accessSync(b.executablePath())"
+      # Datenzweig vor dem Bau wie pages-release.yml (Plan Neustart §3): BRANCH_ONLY-Daten (z. B. marketPulse) liegen in main
+      # nur eingefroren; ohne diesen Schritt prueft der Bau einen anderen Stand als die ausgelieferte Seite. Vertragstest DB-16.
+      - name: Datenzweig in den Arbeitsbaum (vor dem Bau)
+        run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/fu-release"
       - name: Fundamental compare (WebKit iPhone 390, 430 · Chromium 390, 430)

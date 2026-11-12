@@ -1,0 +1,17 @@
+{
+ "schema": "vu-module-2",
+ "id": "website",
+ "label": "Website (Vorschau)",
+ "status": "BETA",
+ "route": "/website/",
+ "access": "intern",
+ "navigation": null,
+ "data": [],
+ "reads": [],
+ "producers": [
+  "products/website/build.mjs"
+ ],
+ "tests": [
+  "products/website/tests/*.test.mjs"
+ ]
+}

@@ -39,6 +39,8 @@ export function parseMarker(name,runId){
 export function markerName(runId,{verification,financial}){
   return `${MARKER_PREFIX}${runId}-${verification?'verification':'production'}-${financial?'financial':'plain'}`;
 }
+// Lauf des Cloudflare-Wecker (core/registry/schedule.json): workflow_dispatch mit Marke "· Takt <cron>" im Titel; zaehlt wie ein Schedule-Lauf.
+const takt=r=>r&&r.event==='workflow_dispatch'&&/ · Takt \S/.test(String(r.display_title||r.name||''));
 function ms(value){const t=Date.parse(value);return Number.isFinite(t)?t:NaN;}
 function failSafe(reason,event){return {run:true,financial:true,reason,event,failSafe:true};}
 
@@ -88,7 +90,7 @@ export async function collectRuns({fetchJson,repo,workflowFile,branch='main',lim
   const sorted=[...list.workflow_runs].sort((a,b)=>Date.parse(b.created_at)-Date.parse(a.created_at));
   for(const r of sorted){
     if(r.status!=='completed')continue;
-    const item={id:r.id,event:r.event,conclusion:r.conclusion,startedAt:r.run_started_at||r.created_at,completedAt:r.updated_at,marker:null};
+    const item={id:r.id,event:takt(r)?'schedule':r.event,conclusion:r.conclusion,startedAt:r.run_started_at||r.created_at,completedAt:r.updated_at,marker:null};
     if(r.conclusion==='success'&&(needProd||needFin)&&lookups<maxArtifactLookups&&total<limit){
       lookups++;total++;
       const a=await fetchJson(`/repos/${repo}/actions/runs/${r.id}/artifacts?per_page=100`);
@@ -149,7 +151,7 @@ async function main(){
   const env=process.env;
   if(env.CI_GATE_TEST_CRASH)throw new Error('TEST_CRASH');
   const result=await evaluate({
-    event:env.GITHUB_EVENT_NAME,repo:env.GITHUB_REPOSITORY,workflowFile:'company-intelligence-refresh.yml',
+    event:env.VU_EVENT||env.GITHUB_EVENT_NAME,repo:env.GITHUB_REPOSITORY,workflowFile:'company-intelligence-refresh.yml',
     fetchJson:makeFetchJson(env.GH_TOKEN,env.CI_GATE_API_BASE||undefined),configPath:'company-intelligence/config/continuous-refresh.json',env});
   const lines=[`run=${result.run}`,`financial=${result.financial}`,`reason=${result.reason}`];
   if(env.GITHUB_OUTPUT)appendFileSync(env.GITHUB_OUTPUT,lines.join('\n')+'\n');

@@ -19,6 +19,8 @@
 > Router des kanonischen Frontends. Konsolidierung: `VU_DISCOVER_CONSOLIDATION.md`,
 > Namensbereinigung: `VU_DISCOVER_NAMESPACE_CLEANUP.md`.
 
+> **Owner-Entscheidung 11.11.2026 (Aktienkopf):** Die Tagesbewegung im Aktienkopf ist bei Plus neongrün und bei Minus rot (`#c4281c`); das ersetzt „Minus schwarz“ (Entscheidung 7 vom 08.11.2026). Geprüft von `scripts/discover/browser-qa-stockhead.mjs`.
+
 Stand: 2026-09-11 · Modul `discover-1.0.0` · Methodik `discover-v1.0.0` ·
 Contract `discover-contract-1.0.0`
 

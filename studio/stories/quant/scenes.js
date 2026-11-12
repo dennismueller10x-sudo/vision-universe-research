@@ -52,8 +52,8 @@
           '<div class="abs" style="left:0;right:0;top:200px"><div class="kicker" style="font-size:24px;color:#8b919a;margin-bottom:22px">Heute bei Quant</div>' + note('n1', 'Aktie A', 'Neues Hoch', ARROW) + note('n2', 'Aktie B', 'Neues Setup', SPARK) + note('n3', 'Aktie C', 'Risiko steigt', WARN) + '</div>',
         anim: function (t, k, a) { var b = k.ev('bell', a + .8); k.$('bell').style.transform = 'rotate(' + (Math.sin((t - b) * 22) * 14 * k.pulse(t, b, .9)) + 'deg)'; k.pop('n1', t, b + .2, 40); k.pop('n2', t, b + 1.0, 40); k.pop('n3', t, b + 1.8, 40); } },
       { hl: 'Besser als<br>der <span class="lime">Markt?</span>',
-        html: '<div class="card abs" style="left:0;right:0;top:0;padding:34px 40px"><div class="kicker" style="font-size:24px;color:#8b919a">Jedes Signal gegen den Markt</div>' +
-          '<div class="lab" style="margin:30px 0 14px">Signal</div><div class="bar" style="height:34px;border-radius:18px"><i id="hb1" style="border-radius:18px"></i></div>' +
+        html: '<div class="card abs" style="left:0;right:0;top:0;padding:34px 40px"><div class="kicker" style="font-size:24px;color:#8b919a">Jedes Regel-Ergebnis im Marktvergleich</div>' +
+          '<div class="lab" style="margin:30px 0 14px">Regel-Ergebnis</div><div class="bar" style="height:34px;border-radius:18px"><i id="hb1" style="border-radius:18px"></i></div>' +
           '<div class="lab" style="margin:26px 0 14px">Markt</div><div class="bar" style="height:34px;border-radius:18px"><i id="hb2" style="border-radius:18px;background:#5a616b"></i></div></div>' +
           '<div class="abs" style="left:0;right:0;top:470px"><div class="lab" style="margin-bottom:22px">Frühere Fälle</div><div style="display:grid;grid-template-columns:repeat(10,30px);gap:20px 58px">' + dots + '</div></div>',
         anim: function (t, k, a) { var h = k.ev('hist', a + .6); k.fill('hb1', t, h, 82, 1.2); k.fill('hb2', t, h + .2, 58, 1.2);

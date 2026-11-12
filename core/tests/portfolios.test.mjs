@@ -12,20 +12,21 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const require = createRequire(import.meta.url);
 globalThis.VUUI = require(join(root, "assets/vu-ui.js"));
 const P = require(join(root, "portfolios/portfolios.js"));
+const F = "core/tests/fixtures/portfolios/";
 const read = (p) => JSON.parse(readFileSync(join(root, p), "utf8"));
 const src = () => ({
-  stPortfolio: read("supertrader/data/portfolio.json"),
-  stTrend: read("supertrader/data/trend52.json"),
-  stHouse: read("supertrader/data/ledger/VU_HOUSE_HS4_V03.json"),
-  stRegistry: read("supertrader/data/registry-core.json"),
-  quant: read("quant/data/product/model-depots-v1.json"),
-  ki: existsSync(join(root, "quant/data/product/ki-depots-v1.json")) ? read("quant/data/product/ki-depots-v1.json") : null
+  stPortfolio: read(F+"portfolio.json"),
+  stTrend: read(F+"trend52.json"),
+  stHouse: read(F+"VU_HOUSE_HS4_V03.json"),
+  stRegistry: read(F+"registry-core.json"),
+  quant: read(F+"model-depots-v1.json"),
+  ki: existsSync(join(root, F+"ki-depots-v1.json")) ? read(F+"ki-depots-v1.json") : null
 });
 
 test("PF-1 · Alle Depots: Supertrader je Methode, Trendfolge, Hausstrategie, fünf Quant-Profile, KI A und B", () => {
   const all = P.collect(src());
   const st = all.filter((d) => d.group === "supertrader"), q = all.filter((d) => d.group === "quant"), ki = all.filter((d) => d.group === "ki");
-  for (const id of Object.keys(read("supertrader/data/portfolio.json").strategies)) assert.ok(st.some((d) => d.key === id), id);
+  for (const id of Object.keys(read(F+"portfolio.json").strategies)) assert.ok(st.some((d) => d.key === id), id);
   assert.ok(st.some((d) => d.id === "hausstrategie"));
   assert.ok(st.some((d) => d.key === "VU_TREND_52W"));
   assert.ok(st.some((d) => /Minervini/.test(d.name)));
@@ -40,7 +41,7 @@ test("PF-1 · Alle Depots: Supertrader je Methode, Trendfolge, Hausstrategie, f�
 
 test("PF-2 · Positionen: Gewicht, Aufnahme, Aufnahmekurs; Veränderung = Schluss laut Export gegen Aufnahmekurs; Stopp nur bei Supertrader-Methoden", () => {
   const all = P.collect(src());
-  const pf = read("supertrader/data/portfolio.json");
+  const pf = read(F+"portfolio.json");
   const w = all.find((d) => d.key === "WEINSTEIN_STAGE"), raw = pf.strategies.WEINSTEIN_STAGE.positions;
   assert.equal(w.positions.length, raw.length);
   assert.ok(w.stops);
@@ -159,8 +160,11 @@ test("PF-8 · Verteilung: Summe = Aktien + Bargeld, kleine Anteile als „+N“"
     assert.ok(Math.abs(x.parts.reduce((s, p) => s + p.weight, 0) - (x.invested + x.cash)) < 1e-9, d.id);
     assert.ok(x.invested + x.cash > 0.98 && x.invested + x.cash < 1.02, d.id + ": Gewichte und Bargeld ergeben das Depot");
   }
-  const w = all.find((d) => d.key === "WEINSTEIN_STAGE");
-  assert.match(P.render(all, "#/supertrader/" + w.id), /in 10 Aktien · [\d,]+ % Bargeld laut Regel/);
+  /* Die Bildunterschrift an echten Weinstein-Daten, eingefroren vom Stand vor dem Supertrader-Lauf 256bff4f41 (10.11.2026):
+     der taegliche Lauf aendert die Zahl der Titel (10 -> 8), PF-8 wurde rot, ohne dass sich portfolios.js geaendert hatte. */
+  const fest = P.collect({ ...src(), stPortfolio: JSON.parse(readFileSync(join(root, "core/tests/fixtures/pf8/portfolio.json"), "utf8")) });
+  const w = fest.find((d) => d.key === "WEINSTEIN_STAGE");
+  assert.match(P.render(fest, "#/supertrader/" + w.id), /in 10 Aktien · [\d,]+ % Bargeld laut Regel/);
   assert.equal(P.allocation([], null).count, 0);
 });
 

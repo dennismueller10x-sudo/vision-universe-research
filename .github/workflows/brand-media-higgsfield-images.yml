@@ -88,3 +88,51 @@ jobs:
           path: brand-media/output/higgsfield-images/
           if-no-files-found: warn
           retention-days: 14
+
+  # Insights-Tageslauf (12.11.2026): Sitzungen ohne Artefakt-Download holen die Bilder per git.
+  # Jeder generate-Lauf legt Bilder, manifest.json und contact-sheet.jpg zusätzlich auf dem
+  # Zweig media/higgsfield-images unter <job_id>/ ab (nur dieser Zweig, nie main).
+  publish:
+    needs: images
+    if: github.ref == 'refs/heads/main' && inputs.action == 'generate'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: higgsfield-images-publish-${{ github.ref_name }}
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: higgsfield-images-${{ github.run_id }}
+          path: bilder
+      - name: Bilder auf den Zweig media/higgsfield-images legen
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          ziel=media/higgsfield-images
+          mkdir zweig && cd zweig
+          git init -q
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          if git fetch -q --depth 1 origin "$ziel"; then git checkout -q -b arbeit FETCH_HEAD; else git checkout -q --orphan arbeit; fi
+          for dir in ../bilder/*/; do
+            job=$(basename "$dir")
+            mkdir -p "$job"
+            cp -R "$dir". "$job"/
+          done
+          git add -A
+          if git diff --cached --quiet; then echo "Keine neuen Bilder."; exit 0; fi
+          git commit -q -m "Higgsfield-Bilder aus Lauf ${RUN_ID}"
+          for i in 1 2 3 4 5; do
+            if git push -q origin "HEAD:refs/heads/${ziel}"; then echo "Bilder auf ${ziel} abgelegt."; exit 0; fi
+            sleep $((i * 5))
+            git fetch -q --depth 1 origin "$ziel" && git rebase -q FETCH_HEAD || true
+          done
+          echo "Push auf ${ziel} fehlgeschlagen." >&2
+          exit 1

@@ -139,6 +139,14 @@ test('collectRuns/evaluate: liest nur Lauflisten und Artefaktnamen und entscheid
   assert.deepEqual([skipped.run,skipped.financial],[false,false]);
 });
 
+test('Wecker-Lauf (workflow_dispatch mit Marke "· Takt") zaehlt wie ein Schedule-Lauf: Fehlschlag loest die Abkuehlung aus',async()=>{
+  const takt={...apiRun(5,0.2,{conclusion:'failure',event:'workflow_dispatch'}),display_title:'Company Intelligence Continuous Production Refresh · Takt 17 */4 * * *'};
+  const manuell={...apiRun(6,0.2,{conclusion:'failure',event:'workflow_dispatch'}),display_title:'manueller Lauf'};
+  const kalt=async list=>evaluate({event:'schedule',now:NOW,fetchJson:apiFor(list,{}).fetchJson,repo:'o/r',workflowFile:'w.yml'});
+  assert.equal((await kalt([takt])).reason,'FAILURE_COOLDOWN');
+  assert.notEqual((await kalt([manuell])).reason,'FAILURE_COOLDOWN');
+});
+
 test('API-Fehler, fehlerhafte Antwort, ungueltige Konfiguration: fail-safe',async()=>{
   const bad=[async()=>{throw new Error('HTTP_500');},async()=>({}),async()=>({workflow_runs:[apiRun(1,1)]}),async()=>null];
   for(const fetchJson of bad){
@@ -181,7 +189,7 @@ export function checkRefreshWorkflow(wf){
   assert.match(wf,/name: company-intelligence-refresh-health-\$\{\{ github\.run_id \}\}\n/,'Gesundheits-Artefaktname unveraendert');
   assert.match(wf,/  gate:\n[\s\S]*?    permissions:\n      actions: read\n      contents: read\n    outputs:/,'Gate-Job: minimale Rechte');
   const crons=[...wf.matchAll(/- cron: '([^']+)'/g)].map(m=>m[1]);
-  assert.deepEqual(crons,['17 */4 * * *'],'nur der Primaerslot; Redundanz liegt im Waechter-Workflow');
+  assert.deepEqual(crons,[],'kein GitHub-Cron: der Wecker startet den Primaerslot (core/registry/schedule.json); Redundanz liegt im Waechter-Workflow');
   for(const block of wf.split(/\n\s+run: /).slice(1)){
     const body=block.split(/\n\s{6}- /)[0];
     assert.doesNotMatch(body,/\$\{\{\s*inputs\./,'Eingabe im run-Block');
@@ -260,7 +268,7 @@ if(!process.env.SCHEDULER_GATE_MODULE){
     'Workflow: continue-on-error am Gate entfernt':["id: gate\n        continue-on-error: true\n","id: gate\n"],
     'Workflow: Finanz-Bedingung == true':['if [ "$FINANCIAL" != false ]; then options','if [ "$FINANCIAL" = true ]; then options'],
     'Workflow: Finanz-Gate immer aus':['if [ "$FINANCIAL" != false ]; then options','if false; then options'],
-    'Workflow: zweiter Cron im Refresh':["- cron: '17 */4 * * *'\n","- cron: '17 */4 * * *'\n    - cron: '47 2-22/4 * * *'\n"],
+    'Workflow: Cron im Refresh':["on:\n  workflow_dispatch:\n","on:\n  schedule:\n    - cron: '17 */4 * * *'\n  workflow_dispatch:\n"],
     'Workflow: Marker-Upload ohne continue-on-error':["        if: success()\n        continue-on-error: true\n","        if: success()\n"],
     'Workflow: Gate-Job ohne Rechte':["    permissions:\n      actions: read\n      contents: read\n",""],
     'Workflow: inputs im run-Text':['run: node scripts/company_intelligence/scheduler-gate.mjs','run: echo ${{ inputs.verification }} && node scripts/company_intelligence/scheduler-gate.mjs']

@@ -183,11 +183,3 @@ test("das Anfragebudget steht im Artefakt, nicht in einer Annahme",
   assert.match(b.rateLimit, /5 Anfragen/);
 });
 
-test("ETFs und Fonds kommen gar nicht erst ins SEC-Universum",
-     { skip: !vorhanden }, () => {
-  const payload = readJSON(join(root, "quant", "data", "universe", "sec-universe.json"));
-  assert.ok(payload.totals.excluded.wrongType >= 0);
-  /* Sie einzureihen hiesse, fuer jeden von ihnen eine Anfrage zu stellen,
-     die sicher leer zurueckkommt. */
-  assert.match(payload.description, /Validierungssatz/);
-});

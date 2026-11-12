@@ -22,6 +22,9 @@
  *     - `success`, Generation aber nicht sichtbar: weiter lesen (CDN); die Frist entscheidet.
  *     Obergrenze erreicht: kein weiterer Dispatch, aber weiter nur lesen bis zur Wartefrist (andere Pages-Laeufe liefern evtl. aus).
  *     Nach einem eigenen `success` ohne sichtbare Generation ebenfalls bis zur Wartefrist weiter lesen.
+ *  2a. Refresh: vor dem Dispatch wird die ausgelieferte Generation gemerkt (baseline). War der eigene Lauf success, kam die neue
+ *     Generation bis zum Ende aber nie an und steht live unveraendert die baseline, endet das Skript mit Exit 4
+ *     (NOT_DELIVERED_PRODUCTION_UNCHANGED): Produktion nicht regrediert, Workflow rollt NICHT zurueck und schaltet NICHT ab.
  *  3. Frist (waitDeadline, siehe planDeadlines): Rollback darf erst danach folgen. Laeuft ein eigener Lauf noch (in_progress), wird bis
  *     zur harten Frist weiter gewartet (er liefert evtl. gerade aus); ein noch nicht gestarteter (queued/pending) eigener Lauf wird
  *     abgebrochen, damit er nicht NACH dem Rollback mit altem Stand ausliefert. Ein laufender Lauf wird nie abgebrochen.
@@ -38,7 +41,7 @@
  *   eigener, noch nicht gestarteter Lauf abgebrochen, nie ein laufender und nie ein fremder.
  *
  * Das Skript fuehrt weder Rollback noch Gate-Aenderung aus. Exit 0 = ausgeliefert, Exit 1 = nicht ausgeliefert (der Workflow rollt
- * danach wie bisher zurueck). gh und Auslieferungs-Abfrage sind injizierbar (testbar ohne Netz und ohne Workflow-Lauf).
+ * danach wie bisher zurueck), Exit 4 = nicht uebernommen, live unveraendert (kein Rollback, Lauf rot). gh und Auslieferungs-Abfrage sind injizierbar (testbar ohne Netz und ohne Workflow-Lauf).
  */
 import {readFileSync,writeFileSync,mkdirSync,appendFileSync} from 'node:fs';
 import {dirname} from 'node:path';
@@ -47,6 +50,8 @@ import {pathToFileURL} from 'node:url';
 import {LIMITS as VERIFY_LIMITS} from './refresh-live-verify.mjs';
 
 export const WORKFLOW='pages-release.yml';
+/** Exit 4: eigener Pages-Lauf success, live unveraendert die bisherige Generation (kein Rollback, Gate bleibt offen). */
+export const UNCHANGED_REASON='NOT_DELIVERED_PRODUCTION_UNCHANGED',UNCHANGED_EXIT=4;
 export const DELIVERY_URL='https://research.visionuniverse.de/company-intelligence-delivery.json';
 
 export const LIMITS=Object.freeze({
@@ -112,9 +117,14 @@ export function preDeployFailure(run,jobs){
  *       jobs?(id):Promise<Array<{name,status,conclusion}>>}  (fehlt jobs oder wirft es: jeder Fehlschlag bleibt ein echter Fehler)
  *  generation(): Promise<string|null>  ausgelieferte Generation (null = unbekannt)
  */
-export async function waitForDelivery({expected,gh,generation,now=()=>Date.now(),sleep=async()=>{},limits=LIMITS,deadlines}){
+/* requireOwnSuccess (Universe-Release, --expected): sichtbare Generation allein genuegt NICHT. Erfolg erst, wenn ein eigener
+   Pages-Lauf abgeschlossen ist (conclusion success, also samt Live-Pruefung company-intelligence-live) UND die erwartete
+   Generation ausgeliefert wird. Sonst koennte der Handler eines noch laufenden Pages-Laufs das Gate danach noch schliessen
+   (Pruefung Steuerung 09.11.2026 zu #1744, MAJOR 2). Der Refresh (--health) behaelt sein bisheriges Verhalten. */
+export async function waitForDelivery({expected,gh,generation,now=()=>Date.now(),sleep=async()=>{},limits=LIMITS,deadlines,requireOwnSuccess=false}){
  const log=[],note=(event,extra={})=>log.push({at:now(),event,...extra});
- const served=async()=>{try{return (await generation())===expected;}catch{return false;}};
+ const current=async()=>{try{return (await generation())??null;}catch{return null;}};
+ const served=async()=>(await current())===expected;
  const list=async()=>{try{return await gh.listRuns();}catch{return null;}};
  let redispatches=0,known=null,firstAt=0,dispatchedAt=0,dispatchFailed=false,successSeenAt=null,graceNoted=false,capped=false,lastReason=null;
  const handled=new Set(); // verdraengte Laeufe frueherer Dispatches: nicht erneut beurteilen
@@ -131,7 +141,7 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
  const finish=(res)=>({...res,dispatches:redispatches+1,log});
  const own=runs=>ownRuns(runs,{known,sinceMs:firstAt,skewMs:limits.skewMs}).filter(r=>!handled.has(String(r.databaseId)));
  const supersede=async(reason,ownNow)=>{ // Re-Dispatch nur mit Rest-Budget und nur wenn die Generation noch nicht ausgeliefert ist
-  if(await served())return 'SERVED';
+  if(!requireOwnSuccess&&await served())return 'SERVED';
   if(redispatches>=limits.maxRedispatch)return 'LIMIT';
   redispatches++;note('redispatch',{reason,n:redispatches});
   for(const r of ownNow)if(r.status==='completed')handled.add(String(r.databaseId));
@@ -144,13 +154,25 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
   try{await gh.cancel(id);note('cancel-pending',{id});}catch{note('cancel-failed',{id});}
  };
 
+ /* Refresh: Generation, die VOR dem Dispatch ausgeliefert wird (die bisher live gepruefte). Siehe productionUnchanged. */
+ const baseline=requireOwnSuccess?null:await current();
+ /* Eigener Pages-Lauf success, die neue Generation kam aber nie an und live steht unveraendert die bisherige: Produktion ist
+    nicht regrediert, nur nicht uebernommen. Kein Rollback, kein Abschalten (Workflow: Exit 4, Gate bleibt offen, Lauf rot).
+    Anlass: Refresh 42744743112 (10.11.2026). Pages 42753904874 deployte 2ff33541 um 04:19 mit demselben Commit adbfda1c wie der
+    vorige Deploy; ausgeliefert blieb e1d74267. Der Fail-closed-Schritt rollte zurueck, setzte ROLLBACK_46 und schaltete den
+    gesunden Vollumfang ab. */
+ const productionUnchanged=async(verdict)=>{
+  if(requireOwnSuccess||verdict!=='SUCCESS'||!baseline||baseline===expected)return false;
+  return (await current())===baseline;
+ };
  await dispatch();
  for(;;){
-  if(await served())return finish(result(true,'DELIVERED'));
+  if(!requireOwnSuccess&&await served())return finish(result(true,'DELIVERED'));
   const t=now();
   const runs=await list();
   const ownNow=runs?own(runs):[];
   const j=runs?judge(ownNow):{verdict:'UNKNOWN'};
+  if(requireOwnSuccess&&j.verdict==='SUCCESS'&&await served())return finish(result(true,'DELIVERED'));
   if(j.verdict==='SUCCESS')successSeenAt??=t;
   if(t>=deadlines.waitDeadlineMs){
    /* Frist abgelaufen. Rollback erst, wenn kein eigener Lauf mehr laeuft (und ein gerade erfolgreicher seine Auslieferung zeigen konnte). */
@@ -160,6 +182,7 @@ export async function waitForDelivery({expected,gh,generation,now=()=>Date.now()
     for(const r of j.active.filter(r=>PENDING.has(r.status)))await cancelIfStillPending(r.databaseId);
     return finish(result(false,j.verdict==='ACTIVE'?'RUN_STILL_ACTIVE_AT_HARD_DEADLINE':'PRODUCTION_PUBLICATION_SLO_FAILED',{ownRun:j.verdict,capped,lastReason}));
    }
+   if(await productionUnchanged(j.verdict))return finish(result(false,'NOT_DELIVERED_PRODUCTION_UNCHANGED',{ownRun:j.verdict,unchanged:true,capped,lastReason}));
    return finish(result(false,'PRODUCTION_PUBLICATION_SLO_FAILED',{ownRun:j.verdict,capped,lastReason}));
   }
   if(j.verdict==='FAILED'){
@@ -227,7 +250,7 @@ export async function main(argv=process.argv.slice(2),env=process.env,io={}){
  const started=Number(env.JOB_STARTED_AT),jobStartMs=Number.isFinite(started)&&started>0&&started*1000<=Date.now()?started*1000:null;
  const deadlines=given?fixedDeadlines({nowMs:(io.now||Date.now)(),minutes:waitMinutes}):planDeadlines({jobStartMs});
  const res=await waitForDelivery({expected,gh:io.gh||realGh(env),generation:io.generation||(()=>realGeneration()),
-  sleep:io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),deadlines,...(io.now?{now:io.now}:{})});
+  sleep:io.sleep||(ms=>new Promise(r=>setTimeout(r,ms))),deadlines,requireOwnSuccess:!!given,...(io.now?{now:io.now}:{})});
  const safe=v=>String(v??'').replace(/[^A-Za-z0-9_,.:()<>=\- ]/g,'?').slice(0,200);
  const line=`${given?'Universe-Auslieferung':'Refresh-Auslieferung'}: ${res.served?'OK':'FEHLER'} (${safe(res.reason)}), Dispatches: ${res.dispatches}`;
  console.log(line);
@@ -238,5 +261,5 @@ export async function main(argv=process.argv.slice(2),env=process.env,io={}){
 }
 
 if(process.argv[1]&&import.meta.url===pathToFileURL(process.argv[1]).href){
- try{const r=await main();process.exitCode=r.served?0:1;}catch(error){console.error('REFRESH_DISPATCH_WAIT_ERROR',error?.name);process.exitCode=1;} // fail-closed
+ try{const r=await main();process.exitCode=r.served?0:r.reason===UNCHANGED_REASON?UNCHANGED_EXIT:1;}catch(error){console.error('REFRESH_DISPATCH_WAIT_ERROR',error?.name);process.exitCode=1;} // fail-closed
 }

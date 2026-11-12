@@ -9,7 +9,7 @@
   "domains": [
     {
       "id": "news",
-      "phase": "DUAL_WRITE",
+      "phase": "BRANCH_ONLY",
       "workflow": "content.yml",
       "paths": ["dashboard/data/news_feed.json"]
     },
@@ -59,35 +59,31 @@
       "note": "Der Erzeuger rechnet vom bisherigen Stand weiter (Bestand, Protokoll); pipeline-weekly spielt den Zweig vor dem Lauf ein (seed-data-branch.sh alle). Bis zum ersten Lauf (Sa 07:23 UTC) liefert Pages die eingefrorene Kopie aus main."
     },
     {
-      "id": "kiDepots",
+      "id": "backtestResearch",
       "phase": "BRANCH_ONLY",
       "pendingFirstRun": true,
+      "workflow": "pipeline-weekly.yml",
+      "paths": ["quant/data/product/backtest-research-v1.json"],
+      "note": "Neu (11/2026), nur im Datenzweig. Bis zum ersten Lauf (So 05:41 UTC oder Dispatch teil=backtest-forschung) fehlt die Datei; die interne Forschungsansicht sagt das."
+    },
+    {
+      "id": "kiDepots",
+      "phase": "BRANCH_ONLY",
       "workflow": "pipeline-daily.yml",
       "paths": ["quant/data/product/ki-depots-v1.json"],
-      "note": "pipeline-daily Teil ki-depots (werktags 23:41 UTC) spielt den Zweig vor dem Export ein und schreibt nur dorthin. Bis zum ersten Lauf liefert Pages die eingefrorene Kopie aus main."
+      "note": "pipeline-daily Teil ki-depots (Di–Sa 01:41 UTC, nach dem Marktdaten-Refresh) spielt den Zweig vor dem Export ein und schreibt nur dorthin. Bis zum ersten Lauf liefert Pages die eingefrorene Kopie aus main."
     },
     {
       "id": "fxReference",
       "phase": "BRANCH_ONLY",
-      "pendingFirstRun": true,
       "workflow": "pipeline-daily.yml",
       "paths": ["quant/data/market/fx/ecb-coverage.json"],
       "prefixes": ["quant/data/market/fx/ecb/"],
       "note": "Vertrag: ecb-coverage.json; die Reihen unter ecb/ folgen ihm. Die uebrigen Dateien unter quant/data/market/fx/ (Waehrungsschulden-Register, Paarbedarf, Abdeckung) gehoeren currency-fx-verify.yml und bleiben in main. Verbraucher (Release-Bau, Multi-Asset, Watchlist) saeen den Zweig."
     },
     {
-      "id": "technicalWorld",
-      "phase": "BRANCH_ONLY",
-      "pendingFirstRun": true,
-      "workflow": "pipeline-daily.yml",
-      "paths": ["technical/data/meta.json"],
-      "prefixes": ["technical/data/"],
-      "note": "Vertrag: meta.json; Screener, Spark, Index, Evidenz und die Kurzstaende je Aktie (stock/) folgen ihm. Der Erzeuger (pipeline-daily Teil technical-world) baut vollstaendig aus der Materialisierung neu und braucht keinen bisherigen Stand."
-    },
-    {
       "id": "discoverImBlickLive",
       "phase": "BRANCH_ONLY",
-      "pendingFirstRun": true,
       "workflow": "discover-im-blick-live.yml",
       "paths": ["discover/live/im-blick-US_REAL.json", "discover/live/monitor-US_REAL.json"],
       "note": "Zwei Erzeuger: discover-im-blick-live.yml (Wecker, Minute 5/35, 15-21 UTC) und market-data-refresh.yml (Job imblick, Nachtlauf). Beide saeen den Zweig vor dem Rechnen (der Baustein entscheidet am bisherigen Stand, ob der Slot offen ist) und schreiben nur nach data/live. Vertrag: im-blick-US_REAL.json; der Monitor ist Begleitdatei."
@@ -102,12 +98,20 @@
       "producer": "scripts/insider/form4-compact.mjs (aus derselben Abholung wie insider/data/purchases.json)",
       "consumers": ["ownership-signals.yml (saet .ownership-cache/form4 vor dem Bau)"],
       "note": "Nicht ausgeliefert (kein Pages-Overlay). Eine Form-4-Abholung fuer Insider-Kaeufe (E2) und Eigentuemer-Signale."
+    },
+    {
+      "id": "searchConsole",
+      "workflow": "content.yml",
+      "pathPrefix": "seo/search-console/",
+      "files": "latest.json (Bericht des letzten Laufs)",
+      "producer": "products/insights/search-console.mjs (Google Search Console, Dienstkonto GSC_SERVICE_ACCOUNT_JSON)",
+      "consumers": ["content.yml (Teil search-console schreibt; der Insights-Tageslauf liest per git show origin/data/live:seo/search-console/latest.json)"],
+      "note": "Nicht ausgeliefert (kein Pages-Overlay): Suchbegriffe und Klickzahlen sind intern."
     }
   ],
   "plan": {
     "purpose": "Jede Datenart aus core/registry/domains.json steht entweder unter domains (im Datenzweig) oder hier mit Status und Grund (DB-14). NEXT = als Naechstes, LATER = nach dem Buendel/der Kette, LAST = Quant/Supertrader/Discover zuletzt (Plan §3), EXEMPT = begruendet ausgenommen.",
     "entries": {
-      "news": {"status": "NEXT", "grund": "Pilot DUAL_WRITE; BRANCH_ONLY nach der Abnahme am 11.11.2026"},
       "companyNames": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
       "europeDiscoverDisplay": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
       "europeEsefFacts": {"status": "EXEMPT", "grund": "Markt-Kette bleibt als Konsistenzeinheit auf main (Steuerung 09.11.2026, Plan §3): die Reproduzierbarkeits-Gates (ci.yml/discover baut discover/data aus den Quant-Eingaengen neu), der UF-Vertrag und Company Intelligence lesen von main"},
@@ -131,6 +135,7 @@
       "companyIntelligence": {"status": "EXEMPT", "grund": "Company Intelligence liegt in R2 und wird vom Release aus R2 projiziert; Strang O fasst CI nicht an (Auftrag 08.11.2026)"},
       "globalDiscoverUniverse": {"status": "EXEMPT", "grund": "Nebenprodukt des Discover-Baus; folgt der Datenart discover"},
       "supertrader-paper-2027-log": {"status": "EXEMPT", "grund": "Papier-Handelsprotokoll (append-only); die Git-Historie in main ist sein Pruefpfad"},
+      "technicalWorld": {"status": "EXEMPT", "grund": "Konsistenzeinheit mit Quant (Steuerung 10.11.2026, Rueckroll von #1703): der Screener-Datensatz technical/data wird in quant/tests (technical-ap8 L1-L3, auch in company-intelligence.yml) gegen die Materialisierung quant/data/product/technical-signals-v1 auf main geprueft; aus dem Zweig allein frierte die main-Kopie ein und L1-L3 wurden rot"},
       "watchlistEvents": {"status": "EXEMPT", "grund": "entsteht im Release-Bau aus der zuletzt ausgelieferten Seite, liegt nie in main"}
     }
   }

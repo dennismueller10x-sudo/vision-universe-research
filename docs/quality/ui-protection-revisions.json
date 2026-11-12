@@ -1385,6 +1385,376 @@
       "from": "011eccec37dde14a35afbd0d6e89b917cec5fdc86cbd1be9b4e8a1eb4c4f3cda",
       "to": "d8d436c8379d5027353fc3155c65972038efa1a9911860bf18032b44147478d7",
       "scope": "Erwartete Elliott-Leiste im Aktienbild: „Welle 3“ → „Zählbar“; sonst unverändert"
+    },
+    {
+      "id": "UIP-R139",
+      "date": "2026-11-09",
+      "pr": 1750,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidungen 3 und 4)",
+      "file": "quant/app/page-chartbild.js",
+      "from": "d7ad7992aceee3c9f3a16c82d280afe0108b05ac549c06f5bc65412a5f1b8f2c",
+      "to": "e12c1662c33622edf5b721fdfb949c7778fa3f43881ae3d39f4df34b48cdb234",
+      "scope": "Elliott auf der Aktie (Konzept EHV, EX03): zählbar mit Lesart in drei Sätzen, Chart nur mit Ungültig-Marke und Kapiteln, nicht zählbar mit Karte „Keine Zählung“ und Wegen zu Technical und zur Zählbar-Liste; kein eigener „Technischer Ausblick“ im Elliott-Produkt; „Rücklauf abwarten“ und „Zielbereich erreicht“ umformuliert"
+    },
+    {
+      "id": "UIP-R140",
+      "date": "2026-11-09",
+      "pr": 1750,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidungen 3 und 4)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "d8d436c8379d5027353fc3155c65972038efa1a9911860bf18032b44147478d7",
+      "to": "0eb594cc2523e1893a63c9b5bff6be58e9b35dd5600c3175e73a8e88719e7b57",
+      "scope": "Prüfung des Elliott-Aktienbilds auf den neuen Aufbau (zählbar: drei Sätze, Kapitel, Ungültig-Marke; nicht zählbar: Wege); keine Ziele, kein zweiter Ausblick"
+    },
+    {
+      "id": "UIP-R141",
+      "date": "2026-11-09",
+      "pr": 1743,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „Der Aktienreport Xpeng, der muss da auf jeden Fall raus … Außerdem muss dann unser Magazin rein, also unser Aktienmagazin.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "f84ff7ef1b8bba4d6727d0768aa34ed9a6f8304cbf2216f028315b2629369464",
+      "to": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
+      "scope": "Insights: Einträge Artikel, Aktienmagazin, Reports; „Weitere Produkte“ ohne altes Magazin und XPeng-Muster (aus den Steckbriefen erzeugt)"
+    },
+    {
+      "id": "UIP-R142",
+      "date": "2026-11-09",
+      "pr": 1743,
+      "ownerApproval": "Owner 09.11.2026 im Chat: „Der Aktienreport Xpeng, der muss da auf jeden Fall raus … Außerdem muss dann unser Magazin rein, also unser Aktienmagazin.“ Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "0eb594cc2523e1893a63c9b5bff6be58e9b35dd5600c3175e73a8e88719e7b57",
+      "to": "4501267a27988548364c26cdf362af2c48da346a986ae0de7054730bebb6d5c0",
+      "scope": "Plattform-Kopf-Prüfung: Magazin und Reports liegen jetzt unter /insights/ (Kachel Insights statt /magazin/ und /reports/)"
+    },
+    {
+      "id": "UIP-R143",
+      "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/site-navigation.js",
+      "from": "f1337199edc900d5ea51e98bf0e06806da0f86926654a63bc19c6b3286c6bcb7",
+      "to": "8b41ebd00f9a3fb5bdea6391234d74b40b76c02588bc0cf7f42302617e950095",
+      "scope": "Atlas auf jeder Aktie: Der Knopf „Atlas“ öffnet auf Seiten mit Aktienkopf (data-vu-stock) das Sheet aus assets/atlas-sheet.js, sonst bleibt er der Link nach /ask/; Aussehen unverändert"
+    },
+    {
+      "id": "UIP-R144",
+      "date": "2026-11-09",
+      "pr": 1748,
+      "ownerApproval": "Owner 09.11.2026: „Setze das freigegebene Konzept für Mein Dashboard, Portfolios und AI-Atlas vollständig und 1:1 um“ (docs/design/mein-bereich-2026-11/HANDOVER.md, Entscheidung 11). Design und Umbauten bei grüner CI ohne Einzelfreigabe (CLAUDE.md „Freigaben und Merge“)",
+      "file": "assets/stock-navigator.js",
+      "from": "76e0389d17cb0a2c19754dea03d0e8f43cdbc6a07c4c8fd7422d8e107908133c",
+      "to": "8e1d02130cc4d44e02f7430e6b046ea4006d801fa8246fe9e2d73ce34261a60d",
+      "scope": "Aktienkopf trägt data-vu-stock und data-vu-stock-name für den Atlas-Knopf; Aussehen und Navigator unverändert"
+    },
+    {
+      "id": "UIP-R145",
+      "date": "2026-11-09",
+      "pr": 1756,
+      "ownerApproval": "Owner 09.11.2026: Konzept Elliott, Hedgefonds, Vorsorge freigegeben (HANDOVER.md, Entscheidung 7)",
+      "file": "assets/site-navigation.js",
+      "from": "8b41ebd00f9a3fb5bdea6391234d74b40b76c02588bc0cf7f42302617e950095",
+      "to": "159f890551b37f777dd1801683de74b1028648e11011ff08b8c6652cbd0bacfa",
+      "scope": "Hedgefonds: Leistenplatz und Menüeintrag „Smart Money“ → „Gruppen-Käufe“ (#/gruppen-kaeufe; #/smart-money markiert Gruppen-Käufe)"
+    },
+    {
+      "id": "UIP-R150",
+      "date": "2026-11-09",
+      "pr": 1749,
+      "ownerApproval": "Owner 09.11.2026: Supertrader-Konzept „Das Rezept eines Profis“ freigegeben (docs/design/supertrader-2026-11/HANDOVER.md, Entscheidungen 3 und 9: Produkt-Leiste in assets/site-navigation.js)",
+      "file": "assets/site-navigation.js",
+      "from": "159f890551b37f777dd1801683de74b1028648e11011ff08b8c6652cbd0bacfa",
+      "to": "63610eabc84b7280f54b135ea3046d1de4348bcd5fe4c087420c4425e4d29ca0",
+      "scope": "Supertrader-Dock Supertrader · Methoden · Treffer · Forschung (statt Signale/Backtests), Menüeinträge aus products/supertrader/module.json neu erzeugt (build-modules.mjs); signals/stock aktivieren Treffer, backtests aktiviert Forschung"
+    },
+    {
+      "id": "UIP-R151",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-backtest.js",
+      "from": "88f38f7108a0d18f58849135b226cfb5868d7698b9d387c856c6795ab3880aa5",
+      "to": "967a83ca7b6190fe71ae1a7b91da8c376df5fc89f930b1c53241ff4ab9b814cc",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R152",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-chartbild.js",
+      "from": "e12c1662c33622edf5b721fdfb949c7778fa3f43881ae3d39f4df34b48cdb234",
+      "to": "1b441fb4ddd8292fd5e95a893baecc6dcb7a29128275b5f7bcda7f7588fdaa3a",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R153",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-evidence.js",
+      "from": "19bb61c32801938151b0e0ce11b3ab375e63e6780fe3d4cac18cf4a5f0f561e2",
+      "to": "4927f6aee99fe8a88ccb72930619b0387e983988435c74c8a24b60e3b5557e4c",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R154",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-method.js",
+      "from": "fa0d082af375ca5009e9ab8ee99597c30112d69a89d52dba0e8d9521fff18a4d",
+      "to": "a2937fb30ce87782c86872e218358b7d53cf5555e27e455184c6b9fae0ccf183",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R155",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/page-stock.js",
+      "from": "cb7f686ce448444c19e7dffbbff42dc30f9d97dca8ff7178458e9489db288ab7",
+      "to": "c1419050373e38a41905fae4acff63edcf9f6e9484e4b993f03966018116e70f",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R156",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/app/pages.js",
+      "from": "36fe10b72251c1a17fac56116349820ce4425bc8cfc0e4d5ab852e80427dfea1",
+      "to": "7621422a355a6b43158d05265673efb55c51f87a1b107b70936aa06bdb136831",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R157",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/ui/shell.js",
+      "from": "14c90145215a9484dcc9efa5a4a98b149ac8aee1bc4de0814f4e1b3093e0560b",
+      "to": "2aa9fd08748799ff098b19091119786d84f73417b33c9f746d7a52fe5c0d16d7",
+      "scope": "Nur Anzeigetexte: Wortwahl und Anbieternamen; keine Logik, Daten, Modelle oder Layoutänderungen. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R158",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/tests/product-language.test.mjs",
+      "from": "639acfa5c58a27b4183a75a7118dab13ad76e5f50d9d7555ba443ce414759998",
+      "to": "d14751e42e0bd16895fa3c53576524bdf58fff19ec9137d5defe7d11c9957247",
+      "scope": "Nur erwartete Anzeigewörter im bestehenden Test an neutrale Produkttexte angepasst; alle Prüfbedingungen bleiben erhalten. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R159",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "quant/tests/product-positioning.test.mjs",
+      "from": "82545772b9b44a2eda5e26b677ae11436d81e1256d99e9f9f639ee67b9dd60d2",
+      "to": "66a5496c054d3c777230b6ca3cbc4b5e3cbe69bb9035bded3d3e2f656f9379d2",
+      "scope": "Nur erwartete Anzeigewörter im bestehenden Test an neutrale Produkttexte angepasst; alle Prüfbedingungen bleiben erhalten. Beleg: docs/reports/wortwahl-scan-20261109.md (umnummeriert aus der Codex-Fassung)"
+    },
+    {
+      "id": "UIP-R160",
+      "date": "2026-11-10",
+      "pr": 1717,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag Wortwahl-Scan 09.11.2026.",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "4501267a27988548364c26cdf362af2c48da346a986ae0de7054730bebb6d5c0",
+      "to": "7bbff19d4295aff3d3f3c99e68c64940a4652813ee2005c0aa3b4c669ab79bd4",
+      "scope": "Erwartete Pro/Contra-Überschriften an „Stärken/Schwächen laut Kennzahlen“ angepasst (WORTWAHL.md); Prüfbedingung bleibt."
+    },
+    {
+      "id": "UIP-R161",
+      "date": "2026-11-10",
+      "pr": 1725,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag 09.11.2026 „Morning Briefing abschalten, erst einmal archivieren“.",
+      "file": "assets/site-navigation.js",
+      "from": "63610eabc84b7280f54b135ea3046d1de4348bcd5fe4c087420c4425e4d29ca0",
+      "to": "ec5fd845f84caf763b906c2dc44a1f82f946d90b72f786a5496f56f08c258cca",
+      "scope": "Morning aus „Weitere Produkte“ entfernt (Steckbrief RETIRED, navigation null, build-modules.mjs); vorbereitet als UIP-R146."
+    },
+    {
+      "id": "UIP-R162",
+      "date": "2026-11-10",
+      "pr": 1725,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): alle nötigen UI-Schutz-Revisionen für #1717, #1724 und #1725 eintragen, inklusive Umnummerierung, Reihenfolge #1717 → #1724 → #1725. Grundlage: Owner-Auftrag 09.11.2026 „Morning Briefing abschalten, erst einmal archivieren“.",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "7bbff19d4295aff3d3f3c99e68c64940a4652813ee2005c0aa3b4c669ab79bd4",
+      "to": "7a654ec026ecf413cf8363e407581a442f60da92404b576b43fecc8640037f18",
+      "scope": "Plattform-Kopf-Prüfung verlangt keinen Link auf /morning/ mehr (Morning eingestellt); übrige Ziele unverändert; vorbereitet als UIP-R147."
+    },
+    {
+      "id": "UIP-R163",
+      "date": "2026-11-10",
+      "pr": 1775,
+      "ownerApproval": "Owner 10.11.2026 in der Sitzung (Strang Q): Freigabe UI-Schutz-Revision für die Anpassung der Chartbild-Prüfung (Prüftitel aus den Daten statt fest NVDA).",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "7a654ec026ecf413cf8363e407581a442f60da92404b576b43fecc8640037f18",
+      "to": "f32d0d8e7b2bf61585957cefdde481577cf850aad7dac196cf8f95f3d3f316bb",
+      "scope": "Prüftitel der Perspektive Chart aus den Chartbild-Daten (confidence.empirical OK, Vorrang NVDA, AAPL, MSFT) statt fest NVDA; Assertions unverändert."
+    },
+    {
+      "id": "UIP-R164",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "assets/stock-navigator.css",
+      "from": "eee527229ecaa16c728969817b7e48a93100f7570fa4eecb34593c91768c57fb",
+      "to": "7543b663f2bcccd93f92d12a55ff6037d3ae3067c1d7ec9d71906a97e2bd9b48",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R165",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "assets/stock-navigator.js",
+      "from": "8e1d02130cc4d44e02f7430e6b046ea4006d801fa8246fe9e2d73ce34261a60d",
+      "to": "52ea79147ed452a3561269ae52d640609bd38ab6521d60aafddeef7a2c493372",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R166",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/app.css",
+      "from": "3b9a3891b881ad005c830c9265b932d0df25c9aea5650280a07040975786508b",
+      "to": "0a666cd32ecedbcf1e9caa62be7e5b3403873299319fec275b716a7a0f4d1551",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R167",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/app.js",
+      "from": "b4c850b3a78ecec8ec504d9888fbe5cd9ae40bffd394637cef4ca0f3ab666a4b",
+      "to": "b67ac23a7c68daa87ffe5a0189cf80dd2b58f8ca96f876dccba0ac1e4fe82343",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R168",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/chartbild.css",
+      "from": "c74dd1b96239ad5f25f085c4503b3b5722c48ef9080290094371bf8ad9d122c8",
+      "to": "c1554a198dd2eacd0f7b223be67dcce63b7958f2c2d6636bd4faa0018e40ebf0",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R169",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/page-backtest.js",
+      "from": "967a83ca7b6190fe71ae1a7b91da8c376df5fc89f930b1c53241ff4ab9b814cc",
+      "to": "9ab30e8725d85820cca1f742c62c5dfcfd5c84f8e234078c094ba3e058bdd5d8",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R170",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/page-chartbild.js",
+      "from": "1b441fb4ddd8292fd5e95a893baecc6dcb7a29128275b5f7bcda7f7588fdaa3a",
+      "to": "a034c18a00273bd40841a76d1c06e46d1487a2c9da1cf89d35a0f48a8b6fb715",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R171",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/page-method.js",
+      "from": "a2937fb30ce87782c86872e218358b7d53cf5555e27e455184c6b9fae0ccf183",
+      "to": "5e6d9a2d190ed6a456d8b77127e49e7ad9e71c1ecb4f1048311f30a2e6b765df",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R172",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/page-stock.js",
+      "from": "c1419050373e38a41905fae4acff63edcf9f6e9484e4b993f03966018116e70f",
+      "to": "a03b9a483406ff13e97e42f711fa05c69e86a5f2f664e4c55c088a7c9825dd54",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R173",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/page-tools.js",
+      "from": "3297e3534433955be2b332ae2870a3bede82aa3dbaf44f7633d45a886268f97b",
+      "to": "31915884419c68b7693499f881d58064d0954157174ae33dc6e691b7c9f62838",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R174",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/pages.js",
+      "from": "7621422a355a6b43158d05265673efb55c51f87a1b107b70936aa06bdb136831",
+      "to": "180b388fdcdf5b945b3b7bfcf912b0330d43630d60490d2b68efe65e561f2dc9",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R175",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/stock.css",
+      "from": "a03898cfeb28b3db30fab541a7c42b6a8560cf0bb72bd5f0d524b4ece272b9c8",
+      "to": "fc7cbc759a26f1681789df7244594654fa3fb7ee19461a2cf9675142ccc81890",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R176",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/app/ui.js",
+      "from": "13c76e77185cbe60ed59c8e1087aeccd6509e43937944eae7725bd944695ebdb",
+      "to": "fdc96d22a6d908b5fb503f1b80d0f29272866fbe05ba8fbdf68869402f7c93b9",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R177",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "quant/ui/ti-chart.js",
+      "from": "65474abd8e49cc9a8cb99b8d39833957aff898789893697f283b7e8969236b96",
+      "to": "978ef956938e5e95f9fefcf060226733d1a8bd86ffa4c35586743db4839180be",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R178",
+      "date": "2026-11-08",
+      "pr": 1645,
+      "ownerApproval": "Owner 08.11.2026: Konzept Quant „Ein Profil je Aktie“ zur 1:1-Umsetzung freigegeben (docs/design/quant-2026-11/HANDOVER.md)",
+      "file": "scripts/vu2/browser-qa.mjs",
+      "from": "f32d0d8e7b2bf61585957cefdde481577cf850aad7dac196cf8f95f3d3f316bb",
+      "to": "fd0bc27f29ab98d69cc34c4ab35c67e5067bfd03996ef6624807d592e2bebf56",
+      "scope": "PR 1: Wortwahl (Zone/Ungültig-Marke laut Methode, keine Ziele), kein null-Text, kein Rot, Aktienkopf in Dollar"
+    },
+    {
+      "id": "UIP-R179",
+      "date": "2026-11-11",
+      "pr": 1831,
+      "ownerApproval": "Owner 11.11.2026 im Chat dieser Sitzung: „Freigabe: UI-Schutz-Revision Seitenfuß entfernen (assets/site-navigation.js).“",
+      "file": "assets/site-navigation.js",
+      "from": "ec5fd845f84caf763b906c2dc44a1f82f946d90b72f786a5496f56f08c258cca",
+      "to": "7ae0044483165af2233e4e6cc9e7e3bae6765817eca17a6388a859ea35fef4b5",
+      "scope": "Rechts-Seitenfuß auch im Browser über footerOnWeb:false unterdrückt; LEGAL-Block ausschließlich durch sync-legal-notices.mjs erzeugt. Dasselbe zentrale Menü als menu-only ohne zweiten Kopf und ohne Produkt-Leiste für Startseite, Preise, Atlas und ersten Start; gemeinsamer Menüöffner mit aria-expanded und Fokus-Rückgabe. Rechtstexte, Kontext-Hinweise, Modelle, Daten und Discover-Budget unverändert."
     }
   ]
 }

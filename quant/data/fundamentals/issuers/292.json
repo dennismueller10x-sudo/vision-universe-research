@@ -1016,9 +1016,9 @@
       "cik": "0002042292",
       "name": "BTC Development Corp.",
       "sic": "6770",
-      "rawFacts": 285,
-      "mappedFacts": 150,
-      "unmappedFacts": 155,
+      "rawFacts": 378,
+      "mappedFacts": 196,
+      "unmappedFacts": 206,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1030,9 +1030,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 3,
-      "quarterlyPeriods": 11,
+      "quarterlyPeriods": 12,
       "firstPeriodEnd": "2023-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
@@ -1071,14 +1071,14 @@
         },
         "net_income": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "operating_cash_flow": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1099,14 +1099,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 5,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -1129,52 +1129,53 @@
         }
       },
       "quality": {
-        "HIGH": 36
+        "HIGH": 40
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 36,
-        "resolvedValues": 36
+        "datableValues": 40,
+        "resolvedValues": 40
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 158,
+        "rules_version": "1.1.0",
+        "total": 209,
         "by_severity": {
-          "INFO": 155,
+          "INFO": 206,
           "WARNING": 3
         },
         "by_code": {
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 155
+          "UNKNOWN_CONCEPT": 206
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-087351",
-        "filing_date": "2026-08-10",
+        "accession": "0001213900-26-118036",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 4
+        "periodic_filings": 5,
+        "acceptance_datetime": "2026-11-10T21:15:36.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "fb897e18f9d966d3e0f2b8c7dd80dbe91185265454b4e9d09e1fa0c6276d642e",
+      "sourceDigest": "dbad3467c39589a5c7da3149fed69009a2f44bfedc1778b2f205ab2ff443b69d",
       "issuerId": "iss_cik_0002042292"
     },
     {
       "cik": "0002079292",
       "name": "Insight Digital Partners II",
       "sic": "6770",
-      "rawFacts": 187,
-      "mappedFacts": 90,
-      "unmappedFacts": 112,
+      "rawFacts": 264,
+      "mappedFacts": 130,
+      "unmappedFacts": 154,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1186,9 +1187,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 5,
+      "quarterlyPeriods": 6,
       "firstPeriodEnd": "2025-09-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1227,14 +1228,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1255,14 +1256,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1285,41 +1286,42 @@
         }
       },
       "quality": {
-        "HIGH": 17
+        "HIGH": 21
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 17,
-        "resolvedValues": 17
+        "datableValues": 21,
+        "resolvedValues": 21
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 112,
+        "rules_version": "1.1.0",
+        "total": 154,
         "by_severity": {
-          "INFO": 112
+          "INFO": 154
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 112
+          "UNKNOWN_CONCEPT": 154
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-087412",
-        "filing_date": "2026-08-11",
+        "accession": "0001213900-26-117524",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 4
+        "periodic_filings": 5,
+        "acceptance_datetime": "2026-11-09T21:11:15.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "07084916f7125dac782c759c034c3a76ea8b854bec179922361ee5d4c647f7ef",
+      "sourceDigest": "8f1e84e3b3b77eac0c649e9a313f5827c7221dc73dbe143fb28bdbcff9559ca3",
       "issuerId": "iss_cik_0002079292"
     },
     {

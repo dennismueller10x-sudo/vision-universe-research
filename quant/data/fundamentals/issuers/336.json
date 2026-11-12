@@ -162,9 +162,9 @@
       "cik": "0001633336",
       "name": "Crescent Capital BDC, Inc.",
       "sic": null,
-      "rawFacts": 4893,
-      "mappedFacts": 1119,
-      "unmappedFacts": 3874,
+      "rawFacts": 5216,
+      "mappedFacts": 1189,
+      "unmappedFacts": 4165,
       "calendarYears": 8,
       "industry": null,
       "industryMetrics": {},
@@ -174,9 +174,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 23,
+      "quarterlyPeriods": 24,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
@@ -208,21 +208,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -243,14 +243,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -273,43 +273,44 @@
         }
       },
       "quality": {
-        "HIGH": 150
+        "HIGH": 155
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 150,
-        "resolvedValues": 150
+        "datableValues": 155,
+        "resolvedValues": 155
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3878,
+        "rules_version": "1.1.0",
+        "total": 4170,
         "by_severity": {
-          "INFO": 3874,
-          "WARNING": 4
+          "INFO": 4165,
+          "WARNING": 5
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 4,
-          "UNKNOWN_CONCEPT": 3874
+          "CONCEPT_DISAGREEMENT": 5,
+          "UNKNOWN_CONCEPT": 4165
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-342351",
-        "filing_date": "2026-08-10",
+        "accession": "0001193125-26-453562",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 47
+        "periodic_filings": 48,
+        "acceptance_datetime": "2026-11-09T21:07:19.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "12eb2e5c60ae5454f10d8a3e397f652792e9f0c8a53eeb1bd5714403b3526352",
+      "sourceDigest": "febc5fa6c52ad6851913492ed6eda25f364367b8ce1767f88b02ee63cf5212d8",
       "issuerId": "iss_cik_0001633336"
     },
     {

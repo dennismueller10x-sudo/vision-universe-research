@@ -1,7 +1,7 @@
 // Kuendigungslink im Footer der Startseite (§ 312k BGB, "Verträge hier kündigen").
 // Erscheint erst, wenn Konten freigeschaltet sind: einziger Schalter ist der
 // Endpunkt in konto/config.js (leer = Konten aus, kein Link). Steht unauffaellig
-// in der bestehenden Spalte "Rechtliches"; die Menuestruktur bleibt unveraendert.
+// als eigenständiger Vertragslink; Rechtslinks und Risikosatz stehen nur im Menü.
 import { runInNewContext } from 'node:vm';
 
 export function accountsEnabled(configSource) {

@@ -36,7 +36,7 @@
   var SHORTCUTS = [
     {id: 'discover', name: 'Discover', text: 'Aktien entdecken', href: '/discover/#/'},
     {id: 'quant', name: 'Quant', text: 'Faktoren je Aktie', href: '/quant/'},
-    {id: 'fundamental', name: 'Fundamental', text: 'Zahlen aus SEC-Berichten', href: '/fundamental/#/'},
+    {id: 'fundamental', name: 'Fundamental', text: 'Zahlen aus Unternehmensberichten', href: '/fundamental/#/'},
     {id: 'technical', name: 'Technical', text: 'Charts und Muster', href: '/technical/#/'},
     {id: 'screener', name: 'Screener', text: 'Eigene Filter', href: '/screener/'},
     {id: 'supertrader', name: 'Supertrader', text: 'Methoden der Profis', href: '/supertrader/'}

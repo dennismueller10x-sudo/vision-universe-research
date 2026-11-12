@@ -69,73 +69,48 @@
   }
   VS.attachSearch = attachSearch;
 
-  /* V01 (Redesign 2027): ein Hauptweg „Starte mit 10 €“, drei Wege nach Lage, eine markierte Beispielrechnung,
-     Förderung in drei Zahlen, Kern-ETFs mit Mini-Chart, drei Änderungen. Die Lage aus dem ersten Besuch steuert die Reihenfolge. */
   var CORE = ["URTH","SPY","EEM","QQQ","FEZ","IWM"];
   var CORE_TITLE = { URTH: "Aktien Welt", SPY: "Aktien USA", EEM: "Schwellenländer", QQQ: "USA Technik", FEZ: "Aktien Europa", IWM: "US-Nebenwerte" };
   VS.CORE_TITLE = CORE_TITLE;
-  var LAGEN = [["neu", "spark", "Ich habe noch nie gespart", "10-Euro-Sparplan, Schritt für Schritt"], ["plan", "target", "Ich will wissen, ob es reicht", "Planer mit drei Beispielen"],
-    ["etfs", "pie", "Ich habe schon ETFs", "Portfolio-X-Ray und Veränderungen"], ["profi", "bars", "Ich kenne mich aus", "Alle ETFs, Kosten, Bestände"]];
-  function firstVisit() {
-    var U = VS.U, el = VS.sheet("vs-lage", "Womit fängst du an?", '<p class="vu-ltag">Erster Besuch</p><p class="vu-lead" style="margin-top:4px">Wir zeigen dir zuerst, was zu dir passt. Ändern kannst du es jederzeit.</p><div class="vu-stack vs-lagen">' +
-      LAGEN.map(function (l, i) { return '<button type="button" class="vs-lage' + (i === 0 ? " is-ink" : "") + '" data-lage="' + l[0] + '"><span class="vu-hud" style="--vu-hud:38px;border-radius:11px">' + VS.glyph(l[1], 20) + '</span><span><b>' + esc(l[2]) + (l[0] === "profi" ? " " + U.pro() : "") + '</b><small>' + esc(l[3]) + '</small></span>' + VS.glyph("next", 16) + '</button>'; }).join("") + '</div>');
-    if (!el) return;
-    el.addEventListener("click", function (ev) {
-      var b = ev.target.closest && ev.target.closest("[data-lage]");
-      if (!b) return;
-      VS.state.lage = b.getAttribute("data-lage"); VS.save(); U.closeSheet(el); VS.views.home({ query: {} });
-    });
-  }
-
+  /* Konzept EHV (VX02): ein Weg in drei Schritten statt acht Einstiegen. Vergleichen, Förderung, Veränderungen und Wissen
+     bleiben erreichbar und gehören je zu einem Schritt (VS.WAY, auch am Ende jeder Ansicht). Planer, Beispielrechnung
+     und Förderung bleiben inhaltlich unverändert; die großen Indizes nennen den US-Fonds als Marktabbild. */
+  var BIG = [["URTH", "Aktien Welt"], ["SPY", "Aktien USA"], ["EEM", "Schwellenländer"]];
   VS.views.home = function (r) {
     var U = VS.U, pl = VS.state.plan, done = VS.state.planDone;
-    var p = VS.currentPlan(), base = p.scenarios[1];
-    var lage = VS.state.lage || "neu";
-    var mx = Math.max.apply(null, p.scenarios.map(function (s) { return s.real; }).concat([1]));
-    var LBL = { konservativ: "Vorsichtig", basis: "Mittel", optimistisch: "Gut" };
-    var calc = VS.sect(done ? "Dein Plan" : "So könnte es aussehen") + '<div class="vu-box vs-calc">' +
-      '<div class="vs-row-sb">' + (done ? VS.trackVerdict(V.Monitor.onTrack(base.goalAttainment)) : VS.bsp()) + '<span class="vu-xs vu-mu"><b>' + F.eur(pl.monthly) + ' im Monat · ' + p.input.age + ' → ' + p.input.targetAge + ' J.</b></span></div>' +
-      '<p class="vs-big num">' + F.eurK(base.real) + '</p><p class="vu-sm vu-mu">mit ' + p.input.targetAge + ', in heutiger Kaufkraft, bei ' + F.pct(base.annualReturn, 0) + ' pro Jahr</p>' +
-      '<div class="vs-wbars">' + p.scenarios.map(function (s) { return VS.wbar((LBL[s.id] || s.label) + " · " + F.pct(s.annualReturn, 0), F.eurK(s.real), s.real / mx * 100, s.id === "basis"); }).join("") + '</div>' +
-      VS.help("Heutige Kaufkraft: was das Geld nach " + F.pct(p.input.inflation, 0) + " Inflation pro Jahr heute wert wäre. Keine Prognose.") + '</div>';
-    var hero = '<a class="vu-box vu-box--lime vs-start-card" href="#/start"><span class="vu-ltag">Neu hier?</span><span class="vs-start-t">Starte mit 10&nbsp;€ im Monat.</span><span class="vu-sm">In 6 Schritten zu deinem ersten ETF-Sparplan. Dauert 3 Minuten.</span><span class="vu-btn vu-btn--ink vu-btn--block">10-Euro-Sparplan starten ' + VS.glyph("next", 18) + '</span></a>';
-    var ways = VS.sect("Wo stehst du?") + '<div class="vu-stack">' + VS.navcard({ href: "#/start", glyph: "spark", title: "Ich fange an", sub: "Sparplan in 6 Schritten" }) +
-      VS.navcard({ href: "#/plan", glyph: "target", title: "Ich plane meine Rente", sub: "Planer: wie viel muss ich sparen?" }) + VS.navcard({ href: "#/portfolio", glyph: "pie", title: "Ich habe schon ETFs", sub: "Portfolio durchleuchten" }) + '</div>' +
-      '<p class="vu-xs vs-lage-link"><button type="button" class="vs-link" id="vs-lage-open">Lage ändern</button></p>';
-    var funding = '<section id="vs-home-fd">' + VS.sect("Was der Staat ab 2027 dazulegt") + '<div class="vu-grid" style="--vu-cols:3">' + VS.tile("Grundzulage", "…") + VS.tile("Je Kind", "…") + VS.tile("Unter 25", "…") + '</div></section>';
-    var etfs = '<section id="vs-home-world">' + VS.sect("Kern-ETFs", "#/etfs", "Alle") + '<div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section>';
-    var changes = '<section id="vs-home-changes">' + VS.sect("Was hat sich geändert?", "#/monitor", "Alle") + '<div class="vs-loading">…</div></section>';
-    var order = lage === "profi" ? [etfs, hero, ways, calc, funding, changes] : lage === "etfs" ? [ways, hero, calc, etfs, changes, funding] : lage === "plan" ? [calc, hero, ways, funding, etfs, changes] : [hero, ways, calc, funding, etfs, changes];
-    var root = VS.render(VS.intro("Was wird aus deiner Rente?", "Rechnen, verstehen, anfangen. Ohne Produktverkauf, mit amtlichen Regeln.") + order.join(""), { dm: [["Beispielrechnung", "Planer-Formel mit " + (done ? "deinen gespeicherten Angaben" : "Standardannahmen") + ": " + F.eur(pl.monthly) + " im Monat, " + F.eur(pl.start) + " Startvermögen, Kosten " + F.pct(pl.cost, 2) + ", Inflation " + F.pct(pl.inflation, 1) + ", Szenarien 3 / 5 / 7 % pro Jahr vor Kosten."]] });
-    root.querySelector("#vs-lage-open").onclick = firstVisit;
-    if ((!VS.state.lage && !(global.navigator && global.navigator.webdriver)) || (r && r.query && r.query.lage === "1")) firstVisit();
+    var p = VS.currentPlan(), base = p.scenarios[1], cur = done ? 2 : 1;
+    var way = '<section class="vs-way" aria-label="Dein Weg in drei Schritten"><p class="vu-ltag">Dein Weg in drei Schritten</p>' + VS.WAY.map(function (w, i) {
+      return '<a class="vs-way-r' + (i + 1 === cur ? " is-on" : "") + '" href="' + w[1] + '"><span class="vs-way-n num">' + (i + 1) + '</span><span><b>' + VS.esc(w[0]) + '</b><small>' + VS.esc(w[2]) + '</small></span>' + VS.glyph("next", 16) + '</a>';
+    }).join("") + '</section>';
+    var hero = '<a class="vu-box vu-box--lime vs-start-card" href="#/start"><span class="vu-ltag">Neu hier?</span><span class="vs-start-t">Mit 10&nbsp;€ im Monat anfangen</span><span class="vu-sm">6 Fragen, 3 Minuten.</span><span class="vu-btn vu-btn--ink vu-btn--block">Los geht’s</span></a>';
+    var calc = VS.sect(done ? "Dein Plan" : "Beispielrechnung", "#/plan", "Selbst rechnen") + '<div class="vu-box vs-calc">' +
+      '<p class="vu-xs vu-mu"><b>' + F.eur(pl.monthly) + ' im Monat · ' + p.input.age + ' → ' + p.input.targetAge + ' Jahre · heutige Kaufkraft</b></p>' +
+      '<p class="vs-calc-big"><b class="num">' + F.eurK(base.real) + '</b><span class="vu-sm vu-mu"><b>bei ' + F.pct(base.annualReturn, 0) + ' pro Jahr</b></span></p>' +
+      '<div class="vs-kt3">' + p.scenarios.map(function (s) { return '<div class="vs-kt' + (s.id === "basis" ? " is-lime" : "") + '"><small>' + F.pct(s.annualReturn, 0) + '</small><b class="num">' + F.eurK(s.real).replace(" €", "") + '</b></div>'; }).join("") + '</div>' +
+      (done ? '<div style="margin-top:8px">' + VS.trackVerdict(V.Monitor.onTrack(base.goalAttainment)) + '</div>' : "") + '</div>';
+    var funding = '<section id="vs-home-fd">' + VS.sect("Was der Staat ab 2027 dazulegt", "#/foerderung", "Förderung") + '<div class="vs-kt3"><div class="vs-kt"><b>…</b></div><div class="vs-kt"><b>…</b></div><div class="vs-kt"><b>…</b></div></div></section>';
+    var etfs = '<section id="vs-home-world">' + VS.sect("Die großen Indizes", "#/etfs", "Alle ETFs") + '<div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section>';
+    var root = VS.render(VS.intro("Was wird aus deiner Rente?", "Rechnen, verstehen, anfangen. Ohne Produktverkauf, mit amtlichen Regeln.") + way + hero + calc + funding + etfs,
+      { dm: [["Beispielrechnung", "Planer-Formel mit " + (done ? "deinen gespeicherten Angaben" : "Standardannahmen") + ": " + F.eur(pl.monthly) + " im Monat, " + F.eur(pl.start) + " Startvermögen, Kosten " + F.pct(pl.cost, 2) + ", Inflation " + F.pct(pl.inflation, 1) + ", Szenarien 3 / 5 / 7 % pro Jahr vor Kosten. Heutige Kaufkraft: was das Geld nach Inflation heute wert wäre. Keine Prognose."]] });
 
     VS.rules().then(function (rules) {
-      var avd = rules.filter(function (x) { return x.ruleId === "DE-ALTERSVORSORGEDEPOT"; })[0] || rules[0], mf = avd.maximumFunding || {}, cr = avd.contributionRules || {};
-      var min = cr.minimumAnnualOwnContribution, z = V.Funding.altersvorsorgedepot(avd, { ownContribution: min });
-      root.querySelector("#vs-home-fd").innerHTML = VS.sect("Was der Staat ab 2027 dazulegt") + '<div class="vu-grid" style="--vu-cols:3">' + VS.tile("Grundzulage", F.eur(mf.basicAllowancePerYear), "höchstens / Jahr") +
-        VS.tile("Je Kind", F.eur(mf.childAllowancePerChildPerYear), "höchstens / Jahr") + VS.tile("Unter 25", F.eur(mf.careerStarterOneTime), "einmalig") + '</div>' +
-        VS.help("Gilt für das neue geförderte Altersvorsorgedepot. Schon ab " + F.eur(min / 12) + " im Monat gibt es " + F.eur(z.total) + " Zulage im Jahr.") +
-        '<div style="margin-top:10px">' + VS.navcard({ href: "#/foerderung", glyph: "star", title: "Förderung ausrechnen", sub: "Altersvorsorgedepot ab " + F.date(avd.validFrom) }) + '</div>';
+      var avd = rules.filter(function (x) { return x.ruleId === "DE-ALTERSVORSORGEDEPOT"; })[0] || rules[0], mf = avd.maximumFunding || {};
+      var kt = function (v, l) { return '<div class="vs-kt"><b class="num">' + VS.esc(v) + '</b><small>' + VS.esc(l) + '</small></div>'; };
+      root.querySelector("#vs-home-fd").innerHTML = VS.sect("Was der Staat ab 2027 dazulegt", "#/foerderung", "Förderung") + '<div class="vs-kt3 vs-kt3--fd">' + kt(F.eur(mf.basicAllowancePerYear), "Grundzulage / Jahr") +
+        kt(F.eur(mf.childAllowancePerChildPerYear), "je Kind / Jahr") + kt(F.eur(mf.careerStarterOneTime), "einmalig unter 25") + '</div>';
     }).catch(function () { root.querySelector("#vs-home-fd").innerHTML = VS.sect("Was der Staat ab 2027 dazulegt") + U.blank("Die Förderregeln konnten nicht geladen werden."); });
 
-    VS.masterFor(CORE).then(function (m) {
+    VS.masterFor(BIG.map(function (b) { return b[0]; })).then(function (m) {
       var world = root.querySelector("#vs-home-world");
-      var core = CORE.map(function (s) { return m._bySymbol[s]; }).filter(Boolean);
-      world.innerHTML = VS.sect("Kern-ETFs", "#/etfs", "Alle " + m.counts.publicAnalysis.toLocaleString("de-DE")) + '<div class="vs-erows">' + core.map(function (e) { return VS.etfRow(e, { title: CORE_TITLE[e.symbol], sub: e.index || "" }); }).join("") + '</div>' +
-        VS.help("Ein ETF ist ein Korb mit vielen Aktien. „1 Jahr“ zeigt, wie sich der Kurs in 12 Monaten bewegt hat.");
-      VS.fillSparks(world);
-      VS.dm([["ETF-Daten", "Kurse · Holdings aus den Pflichtmeldungen der Fonds · Kategorien aus dem Fondsnamen"]], m.asOf);
-    }).catch(function () { root.querySelector("#vs-home-world").innerHTML = VS.sect("Kern-ETFs") + U.blank("Das ETF-Verzeichnis ist nicht erreichbar. Planer und Rechner funktionieren weiter."); });
-
-    VS.holdingsFeed().then(function (hi) {
-      var mine = {}; VS.state.watchlist.concat(VS.state.portfolio.map(function (x) { return x.symbol; })).forEach(function (s) { mine[String(s).toUpperCase()] = 1; });
-      var feed = (hi.feed || []).slice(), own = feed.filter(function (f) { return mine[f.symbol]; });
-      var list = (own.length ? own : feed).slice(0, 3);
-      root.querySelector("#vs-home-changes").innerHTML = VS.sect("Was hat sich geändert?", "#/monitor", "Alle") + (list.length ? '<div class="vu-box vs-kvbox">' + list.map(function (f) {
-        return '<a class="vs-kv" href="#/etf/' + encodeURIComponent(f.symbol) + '?tab=aenderungen"><span class="vu-sm"><b>' + esc(f.symbol) + '</b> ' + esc(String(f.text || "").replace(/\s*\([^)]*Prozentpunkte\)\.?$/, "")) + '</span>' + VS.glyph("next", 15) + '</a>'; }).join("") + '</div>' : U.blank("Keine Änderungen seit dem letzten Datenstand."));
-      VS.dm([["Veränderungen", "Bestände: Quartalsmeldungen, Stand " + esc((hi.quarters || []).join(", "))]]);
-    }).catch(function () { root.querySelector("#vs-home-changes").innerHTML = VS.sect("Was hat sich geändert?") + U.blank("Die Änderungsliste konnte nicht geladen werden."); });
+      var rows = BIG.map(function (b) { var e = m._bySymbol[b[0]]; return e ? [b, e] : null; }).filter(Boolean);
+      var last = rows.reduce(function (d, x) { var pd = (x[1].m && x[1].m.priceDate) || ""; return pd > d ? pd : d; }, "");
+      world.innerHTML = VS.sect("Die großen Indizes", "#/etfs", "Alle ETFs") + '<div class="vu-box vs-bigidx">' + rows.map(function (x) {
+        var e = x[1], v = e.m && e.m.p ? e.m.p["1Y"] : null;
+        return '<a class="vs-kv" href="' + (VS.indexHref ? VS.indexHref(e) : VS.etfHref(e)) + '"><span><b class="vu-sm">' + VS.esc(x[0][1]) + '</b><small class="vu-xs vu-mu">' + VS.esc(e.index || "") + ' · 12 Monate</small></span>' + VS.chg(v) + '</a>';
+      }).join("") + '</div>' +
+        '<div style="margin-top:8px">' + VS.help("Gemessen an US-Fonds als Marktabbild" + (last ? ", Kurse bis " + F.date(last) : "") + ". Kaufbar in der EU sind UCITS-ETFs auf denselben Index.") + '</div>';
+      VS.dm([["Die großen Indizes", "12-Monats-Veränderung der US-Fonds " + rows.map(function (x) { return VS.esc(x[1].symbol); }).join(", ") + " als Marktabbild" + (last ? ", letzter Kurs " + F.date(last) : "") + "."]], m.asOf);
+    }).catch(function () { root.querySelector("#vs-home-world").innerHTML = VS.sect("Die großen Indizes") + U.blank("Das ETF-Verzeichnis ist nicht erreichbar. Planer und Rechner funktionieren weiter."); });
   };
 
 
@@ -242,7 +217,7 @@
         ["Nötige Sparrate", function (s) { return s.requiredMonthly === null ? "–" : F.eur(s.requiredMonthly); }]].map(function (rw) {
         return '<div class="vs-tbl"><b>' + esc(rw[0]) + '</b>' + p.scenarios.map(function (s) { return '<span class="num' + (s.id === "basis" ? " is-hi" : "") + '">' + rw[1](s) + '</span>'; }).join("") + '</div>'; }).join("") +
       '<p class="vu-xs vu-mu" style="margin-top:6px">Vermögen in Tsd. € mit ' + p.input.targetAge + ' · nötige Sparrate für 100 % Ziel · Beispielrechnung</p>' +
-      '<h3 class="vu-mt" style="font-size:16px;margin-top:16px">Wie sicher ist das Ziel?</h3><div class="vs-row-sb" style="margin-top:8px;justify-content:flex-start">' + VS.verdict("none") + '<span class="vu-sm">Wir rechnen feste Szenarien, keine Wahrscheinlichkeiten.</span></div>' +
+      '<h3 class="vu-mt" style="font-size:16px;margin-top:16px">Welche Annahmen bestimmen das Ziel?</h3><div class="vs-row-sb" style="margin-top:8px;justify-content:flex-start">' + VS.verdict("none") + '<span class="vu-sm">Wir rechnen feste Szenarien, keine Wahrscheinlichkeiten.</span></div>' +
       '<p class="vu-xs vu-mu" style="margin-top:8px">Zur Einordnung der Schwankung: In ' + prob.paths.toLocaleString("de-DE") + ' simulierten Verläufen mit 15 % Schwankung lag das Endvermögen (nominal) zwischen ' + F.eurK(prob.percentiles ? prob.percentiles.p10 : null) + ' und ' + F.eurK(prob.percentiles ? prob.percentiles.p90 : null) + ' (10.–90. Perzentil, feste Saat). Das ist eine Spanne, keine Wahrscheinlichkeit für dein Ziel.</p>' +
       '<h3 class="vu-mt" style="font-size:16px;margin-top:16px">Formel</h3><div class="vu-box vs-mono" style="margin-top:8px">V(t+1) = V(t) · (1 + r − k) + 12 · Rate<br>Kaufkraft = V / (1 + i)^t</div>' +
       '<p class="vu-xs vu-mu" style="margin-top:8px">Monatliche Verzinsung, Sparrate am Monatsende, Kosten als laufender Abzug. Entnahme mit gleichbleibender Kaufkraft über ' + p.input.payoutYears + ' Jahre; modellierte Entnahme, keine garantierte Rente. Steuern und Sozialabgaben nicht berücksichtigt.</p></div></details>';

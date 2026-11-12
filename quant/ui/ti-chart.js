@@ -4,7 +4,7 @@
 
    Ein Chart, der zuerst Ergebnis zeigt, nicht Methode:
      • Kursverlauf als ruhige Linie mit Flaeche (Kerzen optional)
-     • Schluesselzone (Band), Zielbereich (Baender), Ungueltig-Linie
+     • Zone laut Methode (Band), Ungueltig-Linie; keine Ziele
      • Szenario-Raum rechts von "Heute": weicher Pfad mit Korridor, der
        mit dem Abstand zu heute breiter wird — ausdruecklich KEINE
        Zeitprognose (rechts von heute gibt es keine Datumsachse)
@@ -132,12 +132,12 @@
       return g;
     }
     v.range.forEach(function (z) { root.appendChild(band(z, "ti-zone-range" + (z.tone ? " ti-zone-" + z.tone : ""), z.label || (z.kind === "RANGE_LOW" ? "Untergrenze" : "Obergrenze"))); });
-    v.targets.slice(0, 2).forEach(function (z, q) { var b = band(z, "ti-zone-target", narrow ? (q ? "Ziel 2" : "Ziel 1") : "Zielbereich " + (q + 1)); if (b) root.appendChild(b); });
-    var eb = band(v.entry, "ti-zone-entry", v.kind === "TAIL" ? "Tiefere Zone" : "Schlüsselzone"); if (eb) root.appendChild(eb);
+    /* Keine Ziele in der Oberflaeche (docs/legal/WORTWAHL.md, Konzept Quant 2026-11): die Daten tragen sie weiter, der Chart zeichnet sie nicht. */
+    var eb = band(v.entry, "ti-zone-entry", v.kind === "TAIL" ? "Tiefere Zone" : "Zone laut Methode"); if (eb) root.appendChild(eb);
     if (v.invalidation && isNum(v.invalidation.price)) {
       var iy = clampY(v.invalidation.price), ig = svg("g", { class: "ti-invalid" });
       ig.appendChild(svg("line", { x1: x0, x2: xEnd, y1: iy, y2: iy }));
-      if (o.labels !== false) ig.appendChild(svg("text", { x: xEnd - 8, y: iy + (v.invalidation.direction === "below" ? 15 : -7), "text-anchor": "end", class: "ti-invalid-label" }, ["Ungültig " + (v.invalidation.direction === "below" ? "unter " : "über ") + fmt(v.invalidation.price)]));
+      if (o.labels !== false) ig.appendChild(svg("text", { x: xEnd - 8, y: iy + (v.invalidation.direction === "below" ? 15 : -7), "text-anchor": "end", class: "ti-invalid-label" }, ["Ungültig laut Methode " + (v.invalidation.direction === "below" ? "unter " : "über ") + fmt(v.invalidation.price)]));
       root.appendChild(ig);
     }
     /* ---------------------------------------------------------- Elliott-Projektion */
@@ -297,10 +297,9 @@
 
   /** Textfassung fuer Screenreader. */
   function describe(v, uncertain) {
-    if (!v || (!v.entry && !v.targets.length && !v.range.length)) return "Kursverlauf ohne Szenario.";
+    if (!v || (!v.entry && !v.invalidation && !v.range.length)) return "Kursverlauf ohne Szenario.";
     var t = [];
-    if (v.entry) t.push("Schlüsselzone " + fmt(v.entry.low) + " bis " + fmt(v.entry.high));
-    v.targets.forEach(function (z, q) { t.push("Zielbereich " + (q + 1) + " " + fmt(z.low) + " bis " + fmt(z.high)); });
+    if (v.entry) t.push("Zone laut Methode " + fmt(v.entry.low) + " bis " + fmt(v.entry.high));
     if (v.invalidation) t.push("ungültig " + (v.invalidation.direction === "below" ? "unter " : "über ") + fmt(v.invalidation.price));
     return "Kursverlauf mit Szenario. " + t.join(", ") + ". Der Bereich rechts von heute zeigt ein Szenario ohne Zeitangabe" + (uncertain ? "; die Struktur ist derzeit unklar, deshalb ist der Korridor breiter" : "") + ".";
   }

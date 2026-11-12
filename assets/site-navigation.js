@@ -49,17 +49,17 @@
   const groups = [
     /* Portfolios (Owner 06.11.2026): alle Musterdepots gesammelt; breite Kachel unter dem 3 x 3-Raster. */
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
-    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Strategien','/quant/#/strategien','◬'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
+    {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Anlagestile','/quant/#/stile','◬'],['Meldungen','/quant/#/meldungen','◉'],['Aktien','/quant/#/aktien','⌁'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
     {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤']]},
     {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus Geschäftsberichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
-    {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Signale','/supertrader/signals/','◬'],['Backtests','/supertrader/backtests/','▧'],['Quellen','/supertrader/sources/','▤']]},
-    {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Smart Money','/hedgefonds/#/smart-money','◬']]},
+    {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Treffer','/supertrader/treffer/','◬'],['Forschung','/supertrader/forschung/','▧'],['Quellen','/supertrader/sources/','▤']]},
+    {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Gruppen-Käufe','/hedgefonds/#/gruppen-kaeufe','◬']]},
     {id:'elliott', label:'Elliott', href:'/elliott/', icon:'elliott', claim:'Wellenstruktur', entries:[['Übersicht','/elliott/','⌂'],['Zählbar','/elliott/#/?zaehlbar=1','◬'],['Aufwärts','/elliott/#/?richtung=auf','↗'],['Abwärts','/elliott/#/?richtung=ab','↘'],['Neu und verändert','/elliott/#/?neu=1','✧'],['Suchen','/elliott/#/?suche=1','⌕']]},
     {id:'screener', label:'Screener', href:'/screener/', icon:'screener', claim:'Eigene Filter', entries:[['Übersicht','/screener/','⌂'],['Filter hinzufügen','/screener/?view=build','⧩'],['Treffer','/screener/?view=results','⌕'],['Gespeichert','/screener/?view=saved','▤'],['Watchlist','/screener/?view=watchlist','♡']]},
     {id:'vorsorge', label:'Vorsorge', href:'/vorsorge/#/', icon:'vorsorge', claim:'Sparplan und Rente', entries:[['Vorsorge Home','/vorsorge/#/','☂'],['Planer','/vorsorge/#/plan','◬'],['ETFs','/vorsorge/#/etfs','◫'],['Portfolio','/vorsorge/#/portfolio','◎'],['Vergleichen','/vorsorge/#/vergleichen','⧩'],['Förderung','/vorsorge/#/foerderung','✧'],['Veränderungen','/vorsorge/#/monitor','≋'],['Wissen','/vorsorge/#/wissen','▤']]},
     {id:'portfolios', label:'Portfolios', href:'/portfolios/', icon:'portfolios', claim:'Alle Musterdepots: Supertrader, Quant, KI', entries:[['Übersicht','/portfolios/','⌂'],['Supertrader','/portfolios/#/supertrader','⚑'],['Quant','/portfolios/#/quant','⧩'],['KI-Depots','/portfolios/#/ki','✧']]},
-    {id:'insights', label:'Insights', href:'/insights/', icon:'insights', claim:'Tagesthemen und Reports, eingeordnet mit unseren Daten', entries:[['Artikel','/insights/','▤'],['Reports','/insights/reports/','▥']]},
-    {id:'more', label:'Weitere Produkte', href:null, icon:'layers', claim:'', entries:[['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫'],['Analysten','/analysten/','◇'],['News','/news/','▤'],['Morning','/morning/','☼'],['Magazin','/magazin/','▣'],['Reports','/reports/xpeng/','▥'],['Academy','/academy/','✧'],['Guide','/guide/','◈'],['Budget','/budget/','▦']]}
+    {id:'insights', label:'Insights', href:'/insights/', icon:'insights', claim:'Tagesthemen, Aktienmagazin und Reports', entries:[['Artikel','/insights/','▤'],['Aktienmagazin','/insights/magazin/','▣'],['Reports','/insights/reports/','▥']]},
+    {id:'more', label:'Weitere Produkte', href:null, icon:'layers', claim:'', entries:[['Dashboard','/dashboard/','▧'],['Macro','/macro/','≋'],['ETF','/etf/','◫'],['Analysten','/analysten/','◇'],['News','/news/','▤'],['Academy','/academy/','✧'],['Guide','/guide/','◈'],['Budget','/budget/','▦']]}
   ];
   /* Mein Bereich im Menue (Mockup N3). */
   const MINE = [['Mein Dashboard','/mein-dashboard/','person'],['Watchlist','/konto/watchlist/','heart'],['Konto und Tarif','/konto/','gear']];
@@ -98,14 +98,15 @@
         return q.get('welle') || q.get('richtung') || q.get('status') || q.get('rolle') ? null : 'elliott';
       }},
     {id: 'quant', label: 'Quant', match: (p, loc) => p.startsWith('/quant/') && !isElliottDetail(p, loc),
-      items: [['quant','Quant','/quant/#/','quant'],['screener','Screener','/quant/#/screener','screener','Quant Screener'],['strategien','Strategien','/quant/#/strategien','strategies'],['aktien','Aktien','/quant/#/aktien','stocks']],
+      items: [['quant','Quant','/quant/#/','quant'],['screener','Screener','/quant/#/screener','screener','Quant Screener'],['strategien','Anlagestile','/quant/#/stile','strategies'],['aktien','Aktien','/quant/#/aktien','stocks']],
       active: loc => {
         const legacy = {'/quant/screener/': 'screener', '/quant/strategies/': 'strategien', '/quant/strategies/builder/': 'strategien', '/quant/stock/': 'aktien', '/quant/technical/': 'aktien', '/quant/ranking/': 'aktien', '/quant/methodology/': 'quant'}[loc.pathname];
         if (legacy) return legacy;
         if (loc.pathname !== '/quant/') return null;
         const k = hashPart(loc, 0);
-        /* Q00: Methodik und Backtest gehören zum Start „Quant“, Technische Lagen zu „Aktien“. */
-        return {'': 'quant', radar: 'quant', methodik: 'quant', backtest: 'quant', screener: 'screener', strategien: 'strategien', aktien: 'aktien', aktie: 'aktien', vergleich: 'aktien', chartlagen: 'aktien'}[k] || null;
+        /* Q00: Methodik und Backtest gehören zum Start „Quant“, Technische Lagen zu „Aktien“. Konzept Quant 2026-11: Meldungen,
+           Anlagestile (#/stile) und Forschung heißen neu; die alten Adressen leiten weiter und markieren dasselbe. */
+        return {'': 'quant', radar: 'quant', meldungen: 'quant', methodik: 'quant', backtest: 'quant', forschung: 'quant', screener: 'screener', strategien: 'strategien', stile: 'strategien', aktien: 'aktien', aktie: 'aktien', vergleich: 'aktien', chartlagen: 'aktien'}[k] || null;
       }},
     /* Fundamental: eigenes Produkt. #/<TICKER> ist die Unternehmensseite (nur Produktkontext); Entdecken und Suche sind
        Ansichten der Startseite, die fundamental/app.js (VUFundamental.Model.parseRoute) liest. */
@@ -133,14 +134,14 @@
         return {start: 'screener', build: 'filter', results: 'treffer', compare: 'treffer', saved: 'gespeichert', changes: 'gespeichert', watchlist: 'gespeichert'}[view] || null;
       }},
     {id: 'supertrader', label: 'Supertrader', match: p => p.startsWith('/supertrader/'),
-      items: [['supertrader','Supertrader','/supertrader/','supertrader'],['methoden','Methoden','/supertrader/strategies/','grid'],['signale','Signale','/supertrader/signals/','signals'],['backtests','Backtests','/supertrader/backtests/','backtests']],
+      items: [['supertrader','Supertrader','/supertrader/','supertrader'],['methoden','Methoden','/supertrader/strategies/','grid'],['treffer','Treffer','/supertrader/treffer/','signals'],['forschung','Forschung','/supertrader/forschung/','backtests']],
       active: loc => {
         const k = loc.pathname.split('/')[2] || '';
-        return {'': 'supertrader', strategies: 'methoden', signals: 'signale', stock: 'signale', backtests: 'backtests'}[k] || null;
+        return {'': 'supertrader', strategies: 'methoden', treffer: 'treffer', signals: 'treffer', stock: 'treffer', forschung: 'forschung', backtests: 'forschung'}[k] || null;
       }},
     {id: 'hedgefonds', label: 'Hedgefonds', match: p => p.startsWith('/hedgefonds/'),
-      items: [['hedgefonds','Hedgefonds','/hedgefonds/#/','hedgefonds'],['investoren','Investoren','/hedgefonds/#/investoren','users'],['aktien','Aktien','/hedgefonds/#/aktien','stocks'],['smart','Smart Money','/hedgefonds/#/smart-money','signals']],
-      active: loc => ({'': 'hedgefonds', investoren: 'investoren', datenbank: 'investoren', aktien: 'aktien', aktie: 'aktien', 'smart-money': 'smart'}[hashPart(loc, 0)] || null)},
+      items: [['hedgefonds','Hedgefonds','/hedgefonds/#/','hedgefonds'],['investoren','Investoren','/hedgefonds/#/investoren','users'],['aktien','Aktien','/hedgefonds/#/aktien','stocks'],['gruppen','Gruppen-Käufe','/hedgefonds/#/gruppen-kaeufe','signals']],
+      active: loc => ({'': 'hedgefonds', investoren: 'investoren', datenbank: 'investoren', aktien: 'aktien', aktie: 'aktien', 'gruppen-kaeufe': 'gruppen', 'smart-money': 'gruppen'}[hashPart(loc, 0)] || null)},
     /* Portfolios: #/<gruppe> filtert die Uebersicht, #/<gruppe>/<id> ist ein Depot (gehoert zur Gruppe). */
     {id: 'portfolios', label: 'Portfolios', match: p => p.startsWith('/portfolios/'),
       items: [['portfolios','Portfolios','/portfolios/#/','portfolios'],['supertrader','Supertrader','/portfolios/#/supertrader','signals'],['quant','Quant','/portfolios/#/quant','grid'],['ki','KI','/portfolios/#/ki','spark']],
@@ -281,10 +282,10 @@
      badges}). Klicks auf die Leiste melden sich vorher als abbrechbares
      Ereignis vu-dock-navigate {product,id,href}; wer preventDefault ruft,
      navigiert selbst. */
-  /* Einheitlicher Seitenfuß (Strang F, Hinweis „footer“ aus assets/legal-notices.json). Erscheint erst mit
-     legalApproved: true; eine Seite kann ihn mit <meta name="vu-legal-footer" content="none"> abwählen. */
+  /* Rechtliches & Infos (Strang F): Texte aus assets/legal-notices.json.
+     Owner-Entscheidung 10.11.2026: Satz und Links im Menü, kein Seitenfuß in Browser und App. */
   /* VU-LEGAL:BEGIN – erzeugt aus assets/legal-notices.json (scripts/legal/sync-legal-notices.mjs), nicht von Hand ändern */
-  var LEGAL = {"approved":true,"version":"vu-hinweise-2026-11-07-1","notices":{"footer":{"text":"Vision Universe ist eine Software zur Analyse von Aktien. Die Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Keine Anlageberatung, keine Anlageempfehlung, keine Kauf- oder Verkaufsempfehlung. Aktien können bis zum Totalverlust fallen. Frühere und simulierte Ergebnisse sind kein verlässlicher Hinweis auf die Zukunft.","label":null,"required":null,"links":[["Impressum","https://konto.visionuniverse.de/rechtliches/impressum"],["Kontakt","https://konto.visionuniverse.de/kontakt"],["Datenschutz","https://konto.visionuniverse.de/rechtliches/datenschutz"],["Nutzungsbedingungen","https://konto.visionuniverse.de/rechtliches/agb"],["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"]]},"stock":{"text":"Einstufungen und Werte beschreiben, wie diese Aktie nach den Regeln der jeweiligen Methode im Vergleich zu anderen Aktien abschneidet – Datenstand siehe oben. Sie berücksichtigen deine persönliche Situation nicht und sind keine Empfehlung, diese Aktie zu kaufen, zu halten oder zu verkaufen.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"ranking":{"text":"Diese Liste zeigt Aktien, die die beschriebenen Bedingungen zum Datenstand rechnerisch erfüllen. Die Reihenfolge folgt der Regel, nicht einer Einschätzung, welche Aktie besser für dich ist.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"setup":{"text":"Regel-Ergebnis der Methode, für alle gleich: Die Aktie erfüllt zum Datenstand die beschriebenen Bedingungen. Zonen laut Methode sind Rechenpunkte, kein Kursziel und keine Prognose. Das ist keine Empfehlung, die Aktie zu kaufen oder zu verkaufen.","label":null,"required":["Methode und Regelversion","Datenstand","Link zur Methodik"],"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"],["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"backtest":{"text":"Forschung, nicht zertifiziert: Dieser Backtest rechnet eine Regel rückwirkend auf historische Kurse. Das Ergebnis hängt von Zeitraum, Kosten, Ausführung und Datenumfang ab (Angaben unten). Es ist keine Prognose und kein Renditeversprechen. Frühere und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse.","label":"Forschung, nicht zertifiziert","required":["Zeitraum","Kosten je Trade","Vergleichsmaßstab (z. B. S&P 500 Gesamtrendite)","Enthält delistete Titel: ja/nein","Anzahl getesteter Varianten","größter Verlust (max. Drawdown)"],"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"]]},"modelPortfolio":{"text":"Musterdepot: ein Rechenmodell ohne echtes Geld, das eine Methode nach Regel rechnet. Es zeigt, was die Methode tut, nicht, was du tun solltest, und ist keine Empfehlung. Reale Ergebnisse weichen durch Kosten, Steuern, Kurslücken und Ausführungszeitpunkt ab.","label":"Rechenmodell, kein echtes Geld","required":null,"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"],["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"thirdParty":{"text":"Angabe Dritter: zusammengefasste Einschätzungen externer Analysten bzw. Pflichtmeldungen an die SEC, unverändert mit Quelle und Datum. Nicht von Vision Universe erstellt und keine Einschätzung von Vision Universe.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"ai":{"text":"Die KI übersetzt deine Frage in Filter; die Zahlen rechnet Vision Universe aus seinen Daten. KI-Texte können Fehler enthalten. Der Atlas beantwortet keine Fragen zu deiner persönlichen Situation und sagt nicht, was du kaufen oder verkaufen sollst.","label":null,"required":null,"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"]]},"editorial":{"text":"Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Methodik und Interessen: siehe Seite „Methodik, Quellen und Interessen“.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]}},"appLinks":[["Impressum","https://konto.visionuniverse.de/rechtliches/impressum"],["Kontakt","https://konto.visionuniverse.de/kontakt"],["Datenschutz","https://konto.visionuniverse.de/rechtliches/datenschutz"],["Nutzungsbedingungen","https://konto.visionuniverse.de/rechtliches/agb"],["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"],["Datenquellen & Methodik","https://research.visionuniverse.de/infos/#quellen"]],"menuTitle":"Rechtliches & Infos","footerInApp":false};
+  var LEGAL = {"approved":true,"version":"vu-hinweise-2026-11-07-1","notices":{"footer":{"text":"Vision Universe ist eine Software zur Analyse von Aktien. Die Ergebnisse entstehen automatisch nach beschriebenen Regeln und sind für alle gleich. Keine Anlageberatung, keine Anlageempfehlung, keine Kauf- oder Verkaufsempfehlung. Aktien können bis zum Totalverlust fallen. Frühere und simulierte Ergebnisse sind kein verlässlicher Hinweis auf die Zukunft.","label":null,"required":null,"links":[["Impressum","https://konto.visionuniverse.de/rechtliches/impressum"],["Kontakt","https://konto.visionuniverse.de/kontakt"],["Datenschutz","https://konto.visionuniverse.de/rechtliches/datenschutz"],["Nutzungsbedingungen","https://konto.visionuniverse.de/rechtliches/agb"],["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"]]},"stock":{"text":"Einstufungen und Werte beschreiben, wie diese Aktie nach den Regeln der jeweiligen Methode im Vergleich zu anderen Aktien abschneidet – Datenstand siehe oben. Sie berücksichtigen deine persönliche Situation nicht und sind keine Empfehlung, diese Aktie zu kaufen, zu halten oder zu verkaufen.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"ranking":{"text":"Diese Liste zeigt Aktien, die die beschriebenen Bedingungen zum Datenstand rechnerisch erfüllen. Die Reihenfolge folgt der Regel, nicht einer Einschätzung, welche Aktie besser für dich ist.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"setup":{"text":"Regel-Ergebnis der Methode, für alle gleich: Die Aktie erfüllt zum Datenstand die beschriebenen Bedingungen. Zonen laut Methode sind Rechenpunkte, kein Kursziel und keine Prognose. Das ist keine Empfehlung, die Aktie zu kaufen oder zu verkaufen.","label":null,"required":["Methode und Regelversion","Datenstand","Link zur Methodik"],"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"],["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"backtest":{"text":"Forschung, nicht zertifiziert: Dieser Backtest rechnet eine Regel rückwirkend auf historische Kurse. Das Ergebnis hängt von Zeitraum, Kosten, Ausführung und Datenumfang ab (Angaben unten). Es ist keine Prognose und kein Renditeversprechen. Frühere und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse.","label":"Forschung, nicht zertifiziert","required":["Zeitraum","Kosten je Trade","Vergleichsmaßstab (z. B. S&P 500 Gesamtrendite)","Enthält delistete Titel: ja/nein","Anzahl getesteter Varianten","größter Verlust (max. Drawdown)"],"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"]]},"modelPortfolio":{"text":"Musterdepot: ein Rechenmodell ohne echtes Geld, das eine Methode nach Regel rechnet. Es zeigt, was die Methode tut, nicht, was du tun solltest, und ist keine Empfehlung. Reale Ergebnisse weichen durch Kosten, Steuern, Kurslücken und Ausführungszeitpunkt ab.","label":"Rechenmodell, kein echtes Geld","required":null,"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"],["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"thirdParty":{"text":"Angabe Dritter: zusammengefasste Einschätzungen externer Analysten bzw. Pflichtmeldungen an die SEC, unverändert mit Quelle und Datum. Nicht von Vision Universe erstellt und keine Einschätzung von Vision Universe.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]},"ai":{"text":"Die KI übersetzt deine Frage in Filter; die Zahlen rechnet Vision Universe aus seinen Daten. KI-Texte können Fehler enthalten. Der Atlas beantwortet keine Fragen zu deiner persönlichen Situation und sagt nicht, was du kaufen oder verkaufen sollst.","label":null,"required":null,"links":[["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"]]},"editorial":{"text":"Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Methodik und Interessen: siehe Seite „Methodik, Quellen und Interessen“.","label":null,"required":null,"links":[["Methodik, Quellen und Interessen","https://konto.visionuniverse.de/rechtliches/methodik"]]}},"appLinks":[["Impressum","https://konto.visionuniverse.de/rechtliches/impressum"],["Kontakt","https://konto.visionuniverse.de/kontakt"],["Datenschutz","https://konto.visionuniverse.de/rechtliches/datenschutz"],["Nutzungsbedingungen","https://konto.visionuniverse.de/rechtliches/agb"],["Risikohinweise","https://konto.visionuniverse.de/rechtliches/risikohinweise"],["Datenquellen & Methodik","https://research.visionuniverse.de/infos/#quellen"]],"menuTitle":"Rechtliches & Infos","footerInApp":false,"footerOnWeb":false};
   /* VU-LEGAL:END */
   /* App-Hülle (iOS/Android): Capacitor oder User-Agent VUApp/1 (app/capacitor.config.json appendUserAgent). */
   function inApp() {
@@ -292,7 +293,7 @@
   }
   /* Pflicht-Links (assets/legal-notices.json appLinks.always): Menü → „Rechtliches & Infos“, aus jedem Bereich in zwei
      Schritten (§ 5 DDG). Owner-Entscheidung 07.11.2026: dort auch der kurze Software-/Risikosatz (notices.footer) und
-     „Datenquellen & Methodik“; in der App ersetzt dieser Menüpunkt den Seitenfuß. */
+     „Datenquellen & Methodik“; seit 10.11.2026 ersetzt dieser Menüpunkt auch im Browser den Seitenfuß. */
   function legalMenu() {
     var l = (typeof LEGAL !== 'undefined' && LEGAL.appLinks) || [];
     if (!l.length) return '';
@@ -304,7 +305,7 @@
   function legalFooter() {
     var n = LEGAL.approved && LEGAL.notices && LEGAL.notices.footer;
     if (!n || typeof document === 'undefined' || !document.body || document.querySelector('.vu-legal-foot')) return;
-    if (LEGAL.footerInApp === false && inApp()) return;
+    if (inApp() ? LEGAL.footerInApp === false : LEGAL.footerOnWeb === false) return;
     var off = document.querySelector('meta[name="vu-legal-footer"]');
     if (off && off.getAttribute('content') === 'none') return;
     var foot = document.createElement('aside');
@@ -479,6 +480,7 @@
         @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
         @media(max-width:430px){:host(:not([dock])) .atlas .atlas-label{display:none}:host(:not([dock])) .atlas span.pill{width:36px;padding:0;justify-content:center}:host(:not([dock])) .brand img{width:min(132px,34vw)}}
         @media(max-width:360px){.shell{width:calc(100% - 20px)}.world{font-size:15px}.atlas .atlas-label{display:none}.atlas span.pill{width:36px;padding:0;justify-content:center}.panel{padding-inline:14px}.tile{padding:10px 8px}}
+        :host([menu-only]) header{display:none}
         :host([theme="dark"]) header .brand img{filter:invert(1) brightness(1.08)}
         :host([dock]) .quick,:host([dock]) .toggle{display:none}
         @media(prefers-reduced-motion:reduce){.backdrop,.panel{transition:none}}
@@ -553,6 +555,16 @@
       };
       syncActive();
       if(location.pathname.startsWith('/ask/'))root.querySelector('.atlas').setAttribute('aria-current','page');
+      /* Atlas auf jeder Aktie (Konzept mein-bereich-2026-11, Screen a-sheet): Zeigt die Seite einen Aktienkopf (data-vu-stock),
+         öffnet „Atlas“ ein Sheet mit Fragen zur Aktie (assets/atlas-sheet.js, beim ersten Tipp geladen); sonst gilt der Link. */
+      root.querySelector('.atlas').addEventListener('click',e=>{
+        if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
+        if(!document.querySelector('[data-vu-stock]'))return;
+        e.preventDefault();
+        const a=e.currentTarget,go=()=>{if(!(window.VUAtlasSheet&&window.VUAtlasSheet.open(document,a)))location.assign('/ask/');};
+        if(window.VUAtlasSheet)return go();
+        const sc=document.createElement('script');sc.src='/assets/atlas-sheet.js';sc.onload=go;sc.onerror=()=>location.assign('/ask/');document.head.appendChild(sc);
+      });
       if(location.pathname.startsWith('/mein-dashboard/')||location.pathname.startsWith('/konto/'))root.querySelector('.profile').setAttribute('aria-current','page');
       const syncQuick=()=>root.querySelectorAll('.quick a').forEach(a=>{const h=a.getAttribute('href'),detail=isElliottDetail(location.pathname,location),on=h==='/elliott/'?(detail||location.pathname.startsWith(h)):h==='/quant/'?(!detail&&location.pathname.startsWith(h)):location.pathname.startsWith(h);if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
       syncQuick();
@@ -561,7 +573,7 @@
       /* Ein Menue fuer zwei Oeffner: den Knopf im Kopf (Seiten ohne Leiste)
          und ☰ in der Produkt-Leiste. Der Fokus kehrt zum Oeffner zurueck. */
       let opener=null;
-      const setExpanded=open=>{[button,this.dockMenuButton].forEach(b=>{if(!b)return;b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Menü schließen':(b===button?'Menü öffnen':'Vision Universe Menü öffnen'));});};
+      const setExpanded=open=>{[button,this.dockMenuButton,opener].forEach(b=>{if(!b)return;b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Menü schließen':(b===button?'Menü öffnen':'Vision Universe Menü öffnen'));});};
       const close=()=>{if(!this.hasAttribute('open'))return;this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');setExpanded(false);document.documentElement.classList.remove('vu-menu-open');if(this.dockHost)this.dockHost.inert=false;};
       const restore=()=>{const target=opener&&opener.isConnected&&opener.getClientRects().length?opener:button;if(target&&target.focus)target.focus();};
       this.openMenu=from=>{if(this.hasAttribute('open')){close();restore();return;}opener=from||button;syncActive();root.querySelectorAll('.menu-product-icon use[data-href]').forEach(icon=>{icon.setAttribute('href',icon.getAttribute('data-href'));icon.removeAttribute('data-href');});this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');setExpanded(true);document.documentElement.classList.add('vu-menu-open');if(this.dockHost)this.dockHost.inert=true;const focusClose=()=>{if(!this.hasAttribute('open'))return;if(getComputedStyle(panel).visibility!=='visible'){requestAnimationFrame(focusClose);return;}root.querySelector('.close').focus();};requestAnimationFrame(focusClose);};
@@ -659,6 +671,13 @@
     }
   }
   customElements.define('vu-navigation', VisionNavigation);
+
+  /* Seiten mit eigenem Kopf verwenden dasselbe Menü (Impressum in zwei Schritten, § 5 DDG). */
+  if (typeof document !== 'undefined') document.addEventListener('click', event => {
+    const opener = event.target.closest && event.target.closest('[data-vu-menu-toggle]');
+    const nav = opener && document.querySelector('vu-navigation[menu-only]');
+    if (nav && nav.openMenu) nav.openMenu(opener);
+  });
 
   /* VU3: Die ganze Aktienkarte ist der Einstieg in die Aktie. Eine Karte traegt ihr Ziel in data-vu-href;
      ein Tippen oder Klick auf jede Flaeche, die kein eigenes Bedienelement ist (Logo, Name, Kennzahlen,

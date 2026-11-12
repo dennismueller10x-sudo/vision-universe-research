@@ -73,16 +73,16 @@ const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/produ
    die Themen aus quant/app/page-method.js (TOPICS) und die Strategien aus
    quant/methodology/strategy-profiles-v1.json - und verlangt jede davon in
    dieser Liste. Was der Smoke nicht anschaut, verfaellt (M26, M28, M29). */
-const VIEWS=['/quant/#/','/quant/#/radar','/quant/#/radar?filter=setups','/quant/#/radar?filter=historisch',
- '/quant/#/backtest','/quant/#/backtest/NEW_52W_HIGH','/quant/#/backtest/SETUP_CONFIRMED',
+const VIEWS=['/quant/#/','/quant/#/meldungen','/quant/#/meldungen?filter=setups','/quant/#/meldungen?filter=historisch','/quant/#/radar',
+ '/quant/#/forschung','/quant/#/forschung/NEW_52W_HIGH','/quant/#/forschung/SETUP_CONFIRMED','/quant/#/backtest',
  '/quant/#/screener',
  '/quant/#/screener?frage=qualitaet','/quant/#/screener?frage=momentum','/quant/#/screener?frage=wachstum-qualitaet',
  '/quant/#/screener?frage=guenstig','/quant/#/screener?frage=ruhig','/quant/#/screener?frage=setups','/quant/#/screener?frage=hoch',
  '/quant/#/screener/profi',
- '/quant/#/strategien',
- '/quant/#/strategien/quality-compounder','/quant/#/strategien/momentum-leader','/quant/#/strategien/quality-momentum',
- '/quant/#/strategien/garp','/quant/#/strategien/future-leader','/quant/#/strategien/defensive-quality',
- '/quant/#/strategien/value-momentum','/quant/#/strategien/earnings-revision-leader',
+ '/quant/#/stile','/quant/#/strategien',
+ '/quant/#/stile/quality-compounder','/quant/#/stile/momentum-leader','/quant/#/stile/quality-momentum',
+ '/quant/#/stile/garp','/quant/#/stile/future-leader','/quant/#/stile/defensive-quality',
+ '/quant/#/stile/value-momentum','/quant/#/stile/earnings-revision-leader',
  '/quant/#/aktien',
  /* Datenreich (NVDA, AAPL, MSFT, T, SO), Bank (JPM), REIT (O), Hypotheken-
     REIT (AGNC), datenarm (ACAA, EDVA, ABTC), Vorzugspapiere (AHT-P-D,
@@ -174,7 +174,7 @@ for(const t of ['AAAC']){
 }
 /* Markierter Eintrag der gemeinsamen Produkt-Leiste je Ansicht; Methodik
    ist sekundaer und markiert keinen der vier Eintraege (leer). */
-const SECTION={home:'Quant',screener:'Screener',strategien:'Strategien',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Quant'}; /* Q00 (#1412): Methodik gehoert zum Start „Quant“ */
+const SECTION={home:'Quant',screener:'Screener',strategien:'Anlagestile',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Quant'}; /* Q00 (#1412): Methodik gehoert zum Start „Quant“ */
 
 /* Bereit ist eine Route, wenn die App sie fertig gemeldet hat, kein
    Ladeplatzhalter mehr steht und der Chart (falls es einen gibt) einen
@@ -273,7 +273,10 @@ for(const width of [1440,390]){
      fangen also den Fall "nichts gerendert", ohne einen Inhaltsstand
      einzufrieren - gemessen werden soll ein Rueckschritt, nicht der
      Tagesstand. */
-  if(!absage&&!ausgeschieden&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
+  /* Konzept Quant 2026-11 (QX06, #1819): der Vergleich ist bewusst knapp - sieben Eigenschaften je Aktie und zwei Saetze,
+     die Kennzahlen-Tabelle zugeklappt. Er gilt als gerendert, wenn alle sieben Eigenschaften und die zwei Saetze stehen. */
+  const vergleichVoll=route==='vergleich'&&/in zwei s(ä|ae)tzen/i.test(text)&&['Verdient gut','Wächst','Zahlen solide','Kurs läuft','Günstig','Ruhiger Kurs','Analysten'].every(w=>text.includes(w));
+  if(!absage&&!ausgeschieden&&!vergleichVoll&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
   if(ausgeschieden){
    const kopf=(await page.locator('main#qx-main h1').first().innerText().catch(()=>'')).trim();
    if(kopf!==ausgeschieden.name)bad.push('NAME_FALSCH:'+kopf);
@@ -326,7 +329,7 @@ for(const width of [1440,390]){
       bleibt so pruefbar). Methodik ist sekundaer (Hero, Fuss). */
    /* Elliott ist ein eigenes Produkt: sein Aktienbild (/elliott/#/<T>, auch ueber die alten Technik-/Chartbild-Adressen) traegt die Elliott-Leiste, nicht die Quant-Leiste. */
    const elliottBild=/^\/elliott\/#\/|#\/elliott\/|#\/aktie\/[^/?]+\/(technik|chartbild)/.test(view);
-   const sollBereiche=elliottBild?['Elliott','Zählbar','Neu','Suche']:['Quant','Screener','Strategien','Aktien'];
+   const sollBereiche=elliottBild?['Elliott','Zählbar','Neu','Suche']:['Quant','Screener','Anlagestile','Aktien']; /* Konzept Quant 2026-11 (#1819): Strategien heißen Anlagestile */
    /* DISCOVER-ANGLEICHUNG (30.09.2026): Kopf- und Tab-Leiste sind EINE
       Leiste wie Discovers v2-dock - am Desktop oben mittig im Rahmen, am
       Handy unten am Bildschirmrand. Geprueft wird dieselbe Absicht wie
@@ -363,7 +366,7 @@ for(const width of [1440,390]){
      (82)"), bei "nahe am Hoch" den Abstand und den Kurs. */
   if(route==='screener'&&!view.includes('/profi')){
    const frage=new URLSearchParams((ort.split('#')[1]||'').split('?')[1]||'').get('frage')||'qualitaet';
-   const fragen=await page.locator('button.qx-question[data-question]').evaluateAll(b=>b.map(x=>({id:x.dataset.question,on:x.getAttribute('aria-pressed')})));
+   const fragen=await page.locator('main#qx-main button[data-question]').evaluateAll(b=>b.map(x=>({id:x.dataset.question,on:x.getAttribute('aria-pressed')})));
    if(fragen.length!==7)bad.push('FRAGEN='+fragen.length);
    const an=fragen.filter(f=>f.on==='true').map(f=>f.id);
    if(an.join('|')!==frage)bad.push('FRAGE_MARKE:'+an.join('|'));
@@ -372,8 +375,11 @@ for(const width of [1440,390]){
    if(!satz)bad.push('SATZ_FEHLT');
    if(/undefined|NaN/.test(satz+' '+stand))bad.push('UNDEFINED_IM_SATZ');
    /* Redesign 2027 (Q02): zuerst 10 Zeilen, dann „Alle N zeigen“ - gezaehlt wird die ganze Liste. */
-   const alle=page.locator('main#qx-main button.qv3-all');if(await alle.count()){await alle.first().click();await page.waitForTimeout(400);}
-   const zeilen=await page.locator('main#qx-main a.qx-row').allInnerTexts();
+   /* Konzept Quant 2026-11 (QX03, #1819): Fragen als Chips (button[data-question]), Trefferzeile a.qk-pr mit Profil
+      (Name, „KUERZEL · Grund“, dann der gesuchte Wert), zuerst 7 Zeilen, dann „Alle N zeigen“ (button.qk-more). */
+   const ZEILE='main#qx-main a.qk-pr, main#qx-main a.qx-row';
+   const alle=page.locator('main#qx-main button.qv3-all, main#qx-main button.qk-more');if(await alle.count()){await alle.first().click();await page.waitForTimeout(400);}
+   const zeilen=await page.locator(ZEILE).allInnerTexts();
    if(!zeilen.length)bad.push('KEINE_TREFFER');
    else if(frage!=='setups'){
     const mitZahl=zeilen.filter(t=>/\d/.test(t.split('\n').slice(2).join(' '))&&!/Nicht verfügbar|nicht bewertbar|ohne Wert/.test(t)).length;
@@ -389,7 +395,7 @@ for(const width of [1440,390]){
       werden Kurse und Namen gezaehlt, Namen zusaetzlich auf jeder
       Trefferliste. Die Schwelle von 0,95 faengt einen Rueckfall und friert
       keinen Tagesstand ein - Titel ohne Anbieternamen duerfen fehlen. */
-   const namen=await page.locator('main#qx-main a.qx-row .qx-row-title').evaluateAll(ns=>ns.map(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||'',n:(n.querySelector('span')||{}).textContent||''})));
+   const namen=await page.locator(ZEILE).evaluateAll(ns=>ns.map(a=>a.classList.contains('qk-pr')?{t:(a.getAttribute('href')||'').split('/').pop(),n:(a.querySelector('.qk-pr-n b')||{}).textContent||''}:(n=>({t:(n.querySelector('.qx-ticker')||{}).textContent||'',n:(n.querySelector('span')||{}).textContent||''}))(a.querySelector('.qx-row-title')||a)));
    const mitName=namen.filter(x=>x.n&&x.n!==x.t&&x.n!=='Firmenname nicht veröffentlicht').length;
    if(namen.length&&mitName/namen.length<0.95)bad.push('NAMEN='+mitName+'/'+namen.length);
    if(frage==='hoch'){
@@ -403,7 +409,8 @@ for(const width of [1440,390]){
    /* Redesign 2027 (Q02, #1410): dunkle Profi-Flaeche mit Bereichsreglern (.qv3-cond) und Treffertabelle (a.qv3-prow);
       der Regel-Editor (.qx-rule, a.qx-row) bleibt fuer ?daten=v1. Geprueft wird dasselbe: eine Regel und Treffer sichtbar. */
    await page.waitForFunction(()=>document.querySelectorAll('main#qx-main a.qx-row, main#qx-main a.qv3-prow').length>0,null,{timeout:20000}).catch(()=>{});
-   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule, main#qx-main .qv3-cond').count();
+   /* Konzept Quant 2026-11 (QX03, #1819): Bedingungen als Chips (.qv3-conds .qk-rc ohne „+“), Regler erst im Sheet. */
+   const regeln=await page.locator('main#qx-main .qx-rules .qx-rule, main#qx-main .qv3-cond, main#qx-main .qv3-conds .qk-rc:not(.qk-add)').count();
    if(!regeln)bad.push('KEINE_REGEL');
    const zeilen=await page.locator('main#qx-main a.qx-row, main#qx-main a.qv3-prow').count();
    if(!zeilen)bad.push('KEINE_TREFFER');
@@ -421,19 +428,21 @@ for(const width of [1440,390]){
    if(zeilen.length&&mitName/zeilen.length<0.95)bad.push('NAMEN='+mitName+'/'+zeilen.length);
    console.log('     Aktien: '+zeilen.length+' Zeilen · '+mitName+' mit Namen');
   }
-  if(route==='strategien'&&!/strategien\/[a-z]/.test(view)){
-   const karten=await page.locator('main#qx-main a.qx-strat, main#qx-main a.qv3-scard').count();
+  if(route==='strategien'&&!/(strategien|stile)\/[a-z]/.test(view)){
+   /* Konzept Quant 2026-11 (QX04): Stil-Karten (a.qk-stc); ein Stil ohne Daten steht als Fussnote (p[data-profile]). */
+   const karten=await page.locator('main#qx-main a.qx-strat, main#qx-main a.qv3-scard, main#qx-main a.qk-stc, main#qx-main p[data-profile]').count();
    if(karten<8)bad.push('STRATEGIEN='+karten);
    /* KEINE TREFFERQUOTE: die Seite sagt, dass es keine gibt. */
    if(!/keine (Erfolgs- oder )?Trefferquote/.test(text))bad.push('TREFFERQUOTE_UNGENANNT');
   }
-  if(route==='strategien'&&/strategien\/[a-z]/.test(view)){
+  if(route==='strategien'&&/(strategien|stile)\/[a-z]/.test(view)){
    /* Redesign 2027 (Q03, #1410): „Die Regeln“ als Fragen mit Schwelle und „Erfüllen heute“ mit Trefferzahl; die bisherige
       Auswertung steht unter „Mehr zu dieser Strategie“. Geprueft wird dasselbe: Bedingungen und heutige Treffer sichtbar. */
    const v3s=await page.locator('main#qx-main .qv3-sdetail').count();
    if(v3s){
-    if(!/Die Regeln/.test(text)||!await page.locator('main#qx-main .qv3-sdetail .qv3-liste .qv3-li').count())bad.push('BEDINGUNGEN_FEHLEN');
-    if(!/Erfüllen heute\s*(\d[\d.]*\s+Aktien|nicht prüfbar)/.test(text))bad.push('TREFFER_FEHLEN');
+    /* Konzept Quant 2026-11 (QX04): „Die Regel“ mit Schwellen-Balken, „Erfüllen heute N von Gesamt“. */
+    if(!/Die Regel/i.test(text)||!await page.locator('main#qx-main .qv3-sdetail .qk-thr').count())bad.push('BEDINGUNGEN_FEHLEN');
+    if(!/Erfüllen heute\s*(\d[\d.]*(\s+von\s+\d[\d.]*|\s+Aktien)|nicht prüfbar)/.test(text))bad.push('TREFFER_FEHLEN');
    }else{
     if(!/Welche Bedingungen gelten\?/.test(text))bad.push('BEDINGUNGEN_FEHLEN');
     if(!/Wer passt heute\?/.test(text))bad.push('TREFFER_FEHLEN');
@@ -488,8 +497,8 @@ for(const width of [1440,390]){
     const auskunft=page.locator('.qx-verdict-card');
     if(!await auskunft.count())bad.push('AUSKUNFT_FEHLT');
     else{
-     /* Redesign 2027 (Q07): der Kopfsatz steht in der schwarzen Gesamtkarte (.qv3-ink), sonst wie bisher. */
-     const kopfsatz=(await auskunft.locator('.qx-verdict-top, .qv3-ink').first().innerText().catch(()=>'')).replace(/\n+/g,' ');
+     /* Redesign 2027 (Q07): der Kopfsatz steht in der schwarzen Gesamtkarte (.qv3-ink), seit dem Konzept Quant 2026-11 im Profil (.qv3-profile). */
+     const kopfsatz=(await auskunft.locator('.qx-verdict-top, .qv3-ink, .qv3-profile').first().innerText().catch(()=>'')).replace(/\n+/g,' ');
      if(kopfsatz.length<40)bad.push('KOPFSATZ_ZU_KURZ='+kopfsatz.length);
      const ganz=await auskunft.innerText();
      /* Kein interner Code und keine Handlungs- oder Prognosesprache - §81
@@ -500,13 +509,16 @@ for(const width of [1440,390]){
         dritte Gruppe nur, wenn etwas offen ist. */
      /* Quant Daily Usefulness: Pro/Contra steht in einem eigenen Abschnitt. */
      const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
-     if(gruppen.join('|')!=='Spricht dafür|Spricht dagegen')bad.push('GRUPPEN:'+gruppen.join('|'));
+     if(gruppen.join('|')!=='Stärken laut Kennzahlen|Schwächen laut Kennzahlen')bad.push('GRUPPEN:'+gruppen.join('|'));
      const oben=await auskunft.evaluate(n=>n.getBoundingClientRect().top+scrollY);
      if(width===390&&oben>1800)bad.push('AUSKUNFT_ZU_TIEF='+Math.round(oben));
      if(width===1440&&oben>900)bad.push('AUSKUNFT_ZU_TIEF='+Math.round(oben));
      console.log('     Auskunft: '+kopfsatz.slice(0,74)+' · '+Math.round(oben)+'px');
     }
     /* Und die Setup-Frage mit ihrer Folgefrage. */
+    /* Konzept Quant 2026-11 (QX05, #1819): Setup und Grenzen stehen in zugeklappten Kapiteln (details.qk-chap);
+       innerText eines zugeklappten Kapitels ist leer. Geprueft wird der Inhalt, also erst aufklappen. */
+    await allesAufklappen(page);
     const setupText=await page.locator('#setup').innerText().catch(()=>'');
     const grenzen=await page.locator('#grenzen').innerText().catch(()=>'');
     /* innerText folgt text-transform (Dachzeilen stehen in Versalien) -
@@ -657,9 +669,11 @@ for(const width of [1440,390]){
   await page.goto('about:blank');await page.goto(origin+'/quant/#/');await bereit(page).catch(()=>bad.push('NICHT_BEREIT'));
   await page.locator(leiste).getByRole('link',{name:'Quant Screener',exact:true}).click();
   if(!await ansicht('screener'))bad.push('SCREENER_NICHT_ERREICHT');
-  await page.locator('main#qx-main a.qx-row').first().waitFor({timeout:30000}).catch(()=>bad.push('KEIN_TREFFER'));
-  const ziel=await page.locator('main#qx-main a.qx-row').first().getAttribute('href').catch(()=>null);
-  await page.locator('main#qx-main a.qx-row').first().click().catch(()=>{});
+  /* Konzept Quant 2026-11 (QX03, #1819): Trefferzeile mit Profil (a.qk-pr); a.qx-row bleibt fuer die Ansicht ohne VUUI. */
+  const treffer='main#qx-main a.qk-pr, main#qx-main a.qx-row';
+  await page.locator(treffer).first().waitFor({timeout:30000}).catch(()=>bad.push('KEIN_TREFFER'));
+  const ziel=await page.locator(treffer).first().getAttribute('href').catch(()=>null);
+  await page.locator(treffer).first().click().catch(()=>{});
   if(!await ansicht('aktie'))bad.push('AKTIE_NICHT_ERREICHT');
   if(ziel&&!(await page.evaluate(()=>location.hash)).startsWith(ziel))bad.push('FALSCHE_AKTIE');
   await page.goBack();

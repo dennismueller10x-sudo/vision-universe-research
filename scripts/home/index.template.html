@@ -40,8 +40,10 @@
     <a class="hd-logo" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" width="150" height="50" alt="Vision Universe"></a>
     <a class="hd-btn" href="/discover/#/suche" aria-label="Aktie suchen"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg></a>
     <a class="hd-login" href="/konto/anmelden/">Anmelden</a>
+    <button type="button" class="vu-round hd-btn" data-vu-menu-toggle aria-label="Menü öffnen" aria-expanded="false">☰</button>
   </div>
 </header>
+<vu-navigation menu-only no-dock theme="light" theme-switch></vu-navigation><script src="/assets/site-navigation.js"></script>
 
 <main id="main">
 <section class="shell hero" aria-labelledby="hero-title">
@@ -69,7 +71,7 @@
 <section class="shell band" aria-label="Vision Universe in Zahlen">
   <div><b>6.000+</b><span>US-Aktien</span></div>
   <div><b>9</b><span>Welten in einer App</span></div>
-  <div><b>12 J.</b><span>Zahlen je Aktie aus SEC-Berichten</span></div>
+  <div><b>12 J.</b><span>Zahlen je Aktie aus Unternehmensberichten</span></div>
   <div><b>7.000+</b><span>ETFs für deine Vorsorge</span></div>
 </section>
 
@@ -132,7 +134,7 @@
 <section class="shell sec" aria-labelledby="trust-title">
   <p class="vu-ltag" id="trust-title">Darauf kannst du dich verlassen</p>
   <ul class="trust">
-    <li>Echte Daten aus SEC-Berichten und Börsenkursen, jede Zahl mit Datum.</li>
+    <li>Echte Daten aus Unternehmensberichten und Börsenkursen, jede Zahl mit Datum.</li>
     <li>Unabhängig: keine Kauf- oder Verkaufsempfehlung.</li>
     <li>Fehlt etwas, sagt die App es ehrlich, statt zu raten.</li>
     <li>Hell oder dunkel, Handy oder Desktop, ein Konto.</li>
@@ -149,18 +151,11 @@
 </main>
 
 <footer class="shell ft">
-  <h4 class="ft-h">Rechtliches</h4>
-  <ul class="ft-legal">
-    <li><a href="https://konto.visionuniverse.de/rechtliches/impressum">Impressum</a></li>
-    <li><a href="https://konto.visionuniverse.de/rechtliches/datenschutz">Datenschutz</a></li>
-    <li><a href="https://konto.visionuniverse.de/rechtliches/agb">Nutzungs- und Vertragsbedingungen</a></li>
-    <li><a href="https://konto.visionuniverse.de/rechtliches/widerrufsbelehrung">Widerrufsbelehrung</a></li>
-    <li><a href="mailto:info@visionuniverse.de">Kontakt</a></li>%%CANCEL_LINK%%
+  <ul class="ft-legal" aria-label="Vertrag">%%CANCEL_LINK%%
   </ul>
   <ul class="ft-more">
-    <li><a href="/dashboard/">Dashboard</a></li><li><a href="/macro/">Macro</a></li><li><a href="/news/">News</a></li><li><a href="/morning/">Morning</a></li><li><a href="/magazin/">Magazin</a></li><li><a href="/academy/">Academy</a></li>
+    <li><a href="/dashboard/">Dashboard</a></li><li><a href="/macro/">Macro</a></li><li><a href="/news/">News</a></li><li><a href="/magazin/">Magazin</a></li><li><a href="/academy/">Academy</a></li>
   </ul>
-  <p class="disclaimer">Alle Inhalte dienen ausschließlich der Information und stellen keine Anlageberatung, Empfehlung oder Aufforderung zum Kauf oder Verkauf von Wertpapieren dar. Historische Entwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse. Die Werte auf dieser Seite stammen aus den veröffentlichten Produktdaten (Kurse Stand %%NVDA_DATE%%).</p>
   <p class="disclaimer">© <span data-year>2026</span> Vision Universe®</p>
 </footer>
 <script>

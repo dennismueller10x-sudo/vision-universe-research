@@ -113,8 +113,8 @@
   }
   function sparkSpan(row) {
     var span = el("span", { class: "tc-hit-spark" });
-    if (sparkMap) span.innerHTML = Chart.sparkline(sparkMap[row.s] || []);
-    else loadSpark().then(function (m) { if (m) span.innerHTML = Chart.sparkline(m[row.s] || []); });
+    if (sparkMap) span.innerHTML = VC ? VC.sparkline(sparkMap[row.s] || []) : "";
+    else loadSpark().then(function (m) { if (m && VC) span.innerHTML = VC.sparkline(m[row.s] || []); });
     return span;
   }
   /* Auf der Vorlagenliste wird der Datensatz im Leerlauf vorgeladen: Die naechste Aktion ist fast immer eine Vorlage, deren
@@ -392,9 +392,11 @@
         var b = M.marketBreadth(pulse) || own;
         if (!b) return;
         var v = breadthVerdict(b.share);
-        put(market, el("a", { class: "tc-ms", href: TPL.href("aboveSma200"), "data-source": b.source, "aria-label": "Markt heute: " + v[1] + ", " + M.breadthSentence(b) }, [el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }),
+        /* Ampel in Neonfarben (Owner-Wunsch 10.11.2026): stark = Neongrün, gemischt = Neongelb, schwach = Neonrot; dieselben Schwellen wie das Urteil. */
+        var lamp = el("span", { class: "tc-ampel", "aria-hidden": "true" }, ["weak", "mid", "strong"].map(function (k) { return el("i", { class: "is-" + k + (k === v[0] ? " is-on" : "") }); }));
+        put(market, el("a", { class: "tc-ms tc-ms--" + v[0], href: TPL.href("aboveSma200"), "data-source": b.source, "data-state": v[0], "aria-label": "Markt heute: " + v[1] + ", " + M.breadthSentence(b) }, [el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }),
           el("b", {}, [v[1], el("small", { text: Math.round(b.share) + " % über der 200-Tage-Linie" })]), el("div", { class: "tc-ms-bar" }, el("i", { style: "width:" + Math.round(b.share) + "%" })),
-          el("span", { class: "tc-ms-basis", text: (isNum(b.matched) ? Math.round(b.matched).toLocaleString("de-DE") + " von " : "Basis ") + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien" + (b.asOf ? " · Stand " + M.dateDe(b.asOf) : "") })]), h(U.glyph("next", 14))]));
+          el("span", { class: "tc-ms-basis", text: (isNum(b.matched) ? Math.round(b.matched).toLocaleString("de-DE") + " von " : "Basis ") + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien" + (b.asOf ? " · Stand " + M.dateDe(b.asOf) : "") })]), lamp, h(U.glyph("next", 14))]));
       });
       put(searches, HOME_SEARCHES.filter(function (x) { return TPL.get(x[0]); }).map(function (x) {
         var t = TPL.get(x[0]), tc = ix.templates && ix.templates[x[0]], count = tc ? tc[0] : ix.presets && ix.presets[x[0]];
@@ -437,7 +439,8 @@
     host.removeAttribute("aria-busy");
     put(host, pick.length ? pick.slice(0, 3).map(function (p) {
       var row = ds.row(p.i), f = p.f, d = f[1] === "CONFIRMED" && f[4] ? (f[4] === "UP" ? 1 : -1) : patternDir(E, [f[0]]);
-      var sp = el("div", { class: "tc-nc-sp", "aria-hidden": "true" }); sp.innerHTML = sparkMap && sparkMap[row.s] ? Chart.sparkline(sparkMap[row.s]) : "";
+      var sp = el("div", { class: "tc-nc-sp", "aria-hidden": "true" }); /* C06 Kleinform wie im Konzept: Linie mit neongrüner Fläche und Endpunkt (assets/vu-chart.js). */
+      sp.innerHTML = sparkMap && sparkMap[row.s] && VC ? VC.sparkline(sparkMap[row.s], { width: 216, height: 40 }) : "";
       return el("a", { class: "tc-nc", href: M.chartHref(row.s), title: M.hitSentence(row, [f[0]]) }, [
         el("div", { class: "tc-nc-h" }, [h(U.logo(row.s)), el("div", { class: "tc-nc-n" }, [el("b", { text: shortName(row.n) || row.s }), el("span", { text: row.s })]), h(U.chg(isNum(row.chg1d) ? row.chg1d * 100 : null))]),
         el("div", { class: "tc-nc-s" }, [shapeBox(f[0], 30), el("span", { text: freshSentence(f) })]), sp, dirVerdict(d)]);
@@ -1717,7 +1720,7 @@
   function dataQuality(inst, D, weekly) {
     var b = inst.bars, bundle = inst.bundle || {};
     return el("details", { class: "tc-dq" }, [el("summary", { text: "Datenqualität und Herkunft" }), el("dl", {}, [
-      el("dt", { text: "Kursreihe" }), el("dd", { text: "Tiingo EOD, split-bereinigt (" + (inst.priceSeriesType || "–") + "), " + b.close.length + " Tagesbars bis " + M.dateDe(b.timestamps[b.timestamps.length - 1]) }),
+      el("dt", { text: "Kursreihe" }), el("dd", { text: "Tagesschlusskurse, split-bereinigt (" + (inst.priceSeriesType || "–") + "), " + b.close.length + " Tagesbars bis " + M.dateDe(b.timestamps[b.timestamps.length - 1]) }),
       el("dt", { text: "Gleitende Durchschnitte" }), el("dd", { text: "SMA 50/200 und RSI auf der Vollhistorie (" + (bundle.analysisLookback ? bundle.analysisLookback.bars + " Bars seit " + M.dateDe(bundle.analysisLookback.from) : "Bundle") + "); " + (bundle.chartSeries && bundle.chartSeries.ema200 ? "EMA 20/50/200 ebenfalls auf der Vollhistorie, erst nach ihrer Aufwärmphase; " : "EMA, ") + "Bollinger, MACD, Stochastik auf dem Anzeigefenster nach der Aufwärmphase" }),
       (function () {
         var es = bundle.emaSettlement, p = es && es.periods && es.periods.filter(function (x) { return x.period === 200; })[0];
@@ -1849,7 +1852,7 @@
       }, [])))]);
     var data = el("details", { class: "tc-filter vu-box", open: true }, [el("summary", {}, [el("b", { text: "Daten, Zeitrahmen und Grenzen" }), glyph("chevron", "tc-chev tc-rot")]),
       el("div", { class: "tc-filter-body" }, [el("ul", { class: "tc-bullets" }, [
-        "Tageskurse: Tiingo EOD, split-bereinigt nach der einen Preiswahrheit der Plattform (ADR-002); 270 Tagesbars je Titel aus der Produkt-Materialisierung.",
+        "Tageskurse: Tagesschlusskurse, split-bereinigt nach der einen Preiswahrheit der Plattform (ADR-002); 270 Tagesbars je Titel aus der Produkt-Materialisierung.",
         "SMA 50/200, RSI 14, ADX, MACD, 52-Wochen-Hoch und -Tief und relatives Volumen im Screener stammen aus der Vollhistorie (feature-store.js, dieselbe Rechnung wie Quant). Das 52-Wochen-Hoch bzw. -Tief des Tages vergleicht Tageshoch bzw. Tagestief mit dem höchsten Hoch bzw. tiefsten Tief der letzten 252 Handelstage.",
         "EMA 20/50/200 werden auf der Vollhistorie gerechnet und an einem Tag nur gezeigt, wenn ihr möglicher Fehler gegenüber jeder anderen Startkonvention höchstens 0,1 % des Kurses beträgt (Schranke: Restgewicht des Startwerts × Spanne des Startfensters ÷ Schlusskurs) und der Startwert höchstens noch mit 5 % wirkt. Frühestens ab 500 Tagesbars (EMA 200), 125 (EMA 50) und 50 (EMA 20). Bei stark gefallenen Titeln kann die EMA 200 trotz langer Historie fehlen; der 200-Tage-Trend steht dann über die SMA 200.",
         "Woche und Monat: Kennzahlen am letzten abgeschlossenen Wochen- bzw. Monatsbar, gebildet in der Materialisierung aus der vollen Tageshistorie (Eröffnung, Hoch, Tief, Schluss, Volumen; Monatsschluss = Schluss des letzten Handelstags im Monat). Veröffentlicht werden nur die Kennzahlen, keine Wochen- oder Monatsbars. 52-Wochen- bzw. 12-Monats-Hoch und -Tief vergleichen dort Schlusskurse. Ereignisse je Woche/Monat zählen Bars seit dem Ereignis. Titel ohne Materialisierung nutzen Wochenschlüsse aus der langen Reihe.",

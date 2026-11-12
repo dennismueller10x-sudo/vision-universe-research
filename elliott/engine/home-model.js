@@ -58,7 +58,6 @@
   function shortName(name, ticker) {
     var x = String(name || "").trim();
     for (var i = 0; i < 4; i++) x = x.replace(/,?\s+(Class [A-Z]|Inc\.?|Holdings?|Ltd\.?|Limited|Corporation|Corp\.?|Co\.?|Company|plc|N\.V\.|S\.A\.|AG|SE|- New|\(Cayman\)|Group|Group Holding|L\.P\.|LP|Trust)$/i, "");
-    if (/^[A-Z0-9 &.-]+$/.test(x) && x.length > 4) x = x.toLowerCase().replace(/(^|[\s-])([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); });
     return x || String(ticker || "");
   }
   /** Leerzustand (Konzept EHV, Entscheidung 5): laedt die Uebersicht nicht, sagt die Seite in einem Satz Grund und Stand. */

@@ -6,9 +6,9 @@
       "cik": "0001555279",
       "name": "908 Devices Inc.",
       "sic": "3826",
-      "rawFacts": 6585,
-      "mappedFacts": 2203,
-      "unmappedFacts": 4401,
+      "rawFacts": 6994,
+      "mappedFacts": 2318,
+      "unmappedFacts": 4726,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -18,28 +18,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 27,
+      "quarterlyPeriods": 28,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0,
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -117,45 +117,46 @@
         }
       },
       "quality": {
-        "HIGH": 226,
+        "HIGH": 233,
         "MEDIUM": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 238,
-        "resolvedValues": 238
+        "datableValues": 245,
+        "resolvedValues": 245
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4524,
+        "rules_version": "1.1.0",
+        "total": 4853,
         "by_severity": {
-          "INFO": 4401,
-          "WARNING": 123
+          "INFO": 4726,
+          "WARNING": 127
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 74,
+          "CONCEPT_DISAGREEMENT": 78,
           "RESTATEMENT_CONFLICT": 49,
-          "UNKNOWN_CONCEPT": 4401
+          "UNKNOWN_CONCEPT": 4726
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-093731",
-        "filing_date": "2026-08-11",
+        "accession": "0001104659-26-124787",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 23
+        "periodic_filings": 24,
+        "acceptance_datetime": "2026-11-10T12:20:43.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "244568cb7acb90fbe35b703e0adfb4264d88fe8f42878b44d729cfd79563bfd1",
+      "sourceDigest": "08868108a036729b92bf317c1c023fc38a2d790a1e69bb8d75a74a26ba0cd5f8",
       "issuerId": "iss_cik_0001555279"
     },
     {
@@ -473,9 +474,9 @@
       "cik": "0001785279",
       "name": "Metagenomi Therapeutics, Inc.",
       "sic": "2836",
-      "rawFacts": 2721,
-      "mappedFacts": 892,
-      "unmappedFacts": 1829,
+      "rawFacts": 2993,
+      "mappedFacts": 997,
+      "unmappedFacts": 2017,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -485,28 +486,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -526,21 +527,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -554,14 +555,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -584,54 +585,55 @@
         }
       },
       "quality": {
-        "HIGH": 117
+        "HIGH": 124
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 117,
-        "resolvedValues": 117
+        "datableValues": 124,
+        "resolvedValues": 124
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1884,
+        "rules_version": "1.1.0",
+        "total": 2076,
         "by_severity": {
-          "INFO": 1829,
-          "WARNING": 55
+          "INFO": 2017,
+          "WARNING": 59
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 47,
+          "CONCEPT_DISAGREEMENT": 51,
           "PERIOD_MISMATCH": 4,
           "RESTATEMENT_CONFLICT": 4,
-          "UNKNOWN_CONCEPT": 1829
+          "UNKNOWN_CONCEPT": 2017
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-342400",
-        "filing_date": "2026-08-10",
+        "accession": "0001193125-26-455441",
+        "filing_date": "2026-11-10",
         "form": "10-Q",
-        "periodic_filings": 11
+        "periodic_filings": 12,
+        "acceptance_datetime": "2026-11-10T21:08:53.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "8fb0cb5dd358899d6754823c8f309e82615208622667ff635389ffd78b80cf5e",
+      "sourceDigest": "5d45c6d6149246074d9423dc4c083f185d0af0f883be0422419f7b333a632574",
       "issuerId": "iss_cik_0001785279"
     },
     {
       "cik": "0001842279",
       "name": "OPAL Fuels Inc.",
       "sic": "4932",
-      "rawFacts": 7522,
-      "mappedFacts": 1759,
-      "unmappedFacts": 5698,
+      "rawFacts": 7960,
+      "mappedFacts": 1900,
+      "unmappedFacts": 5985,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -641,28 +643,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 6,
-      "quarterlyPeriods": 24,
+      "quarterlyPeriods": 25,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "free_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0,
@@ -675,28 +677,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "revenue": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -710,14 +712,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -740,55 +742,56 @@
         }
       },
       "quality": {
-        "HIGH": 143,
-        "MEDIUM": 64
+        "HIGH": 150,
+        "MEDIUM": 65
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 207,
-        "resolvedValues": 207
+        "datableValues": 215,
+        "resolvedValues": 215
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6045,
+        "rules_version": "1.1.0",
+        "total": 6343,
         "by_severity": {
-          "INFO": 5698,
-          "WARNING": 347
+          "INFO": 5985,
+          "WARNING": 358
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 258,
+          "CONCEPT_DISAGREEMENT": 222,
           "FISCAL_PERIOD_CONFLICT": 12,
-          "RESTATEMENT_CONFLICT": 77,
-          "UNKNOWN_CONCEPT": 5698
+          "RESTATEMENT_CONFLICT": 124,
+          "UNKNOWN_CONCEPT": 5985
         }
       },
       "latestFiling": {
-        "accession": "0001628280-26-054995",
-        "filing_date": "2026-08-10",
+        "accession": "0001628280-26-072348",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 26
+        "periodic_filings": 27,
+        "acceptance_datetime": "2026-11-09T22:30:28.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b2ff872c001e2e857827ec8d7c40c1015841b0d28f8bb28112c4e77a460fb23c",
+      "sourceDigest": "4cb60490262aa395b5f288bbe8a4069a3bdc82b6996e13b388179abb0138c059",
       "issuerId": "iss_cik_0001842279"
     },
     {
       "cik": "0001868279",
       "name": "ArriVent BioPharma, Inc.",
       "sic": "2834",
-      "rawFacts": 2001,
-      "mappedFacts": 686,
-      "unmappedFacts": 1286,
+      "rawFacts": 2238,
+      "mappedFacts": 769,
+      "unmappedFacts": 1455,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -798,9 +801,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
@@ -812,7 +815,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -839,21 +842,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -867,14 +870,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -897,44 +900,45 @@
         }
       },
       "quality": {
-        "HIGH": 84
+        "HIGH": 90
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 84,
-        "resolvedValues": 84
+        "datableValues": 90,
+        "resolvedValues": 90
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1318,
+        "rules_version": "1.1.0",
+        "total": 1491,
         "by_severity": {
-          "INFO": 1286,
-          "WARNING": 32
+          "INFO": 1455,
+          "WARNING": 36
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 30,
+          "CONCEPT_DISAGREEMENT": 34,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 1286
+          "UNKNOWN_CONCEPT": 1455
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-094902",
-        "filing_date": "2026-08-12",
+        "accession": "0001104659-26-124513",
+        "filing_date": "2026-11-09",
         "form": "10-Q",
-        "periodic_filings": 11
+        "periodic_filings": 12,
+        "acceptance_datetime": "2026-11-09T21:21:01.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "c2d1a358e24c1138d9fc92d603716adb11822fd3cf55a6199980396a5662559b",
+      "sourceDigest": "858064b867c38e9f348b433f0b5e4998185a019173de9ea9561d6750f1d666e8",
       "issuerId": "iss_cik_0001868279"
     },
     {

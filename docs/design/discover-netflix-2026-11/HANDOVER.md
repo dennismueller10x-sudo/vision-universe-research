@@ -98,6 +98,7 @@ Weitere Lesarten, die beim Bauen auftauchen, entscheidet Claude nach der Präsen
 
 **PR 5 · Aktienseite „Überblick“**
 - Aktienkopf wie C04 (Nachbesserung 09.11.2026, nach Stichprobe des Owners): eine Zeile mit Kurs in Dollar, Tagesbewegung als Pille (neongrün oder schwarz) und rechts „Schluss …“ und Euro-Wert; der Chart des Überblicks hat keine Kursachse und nennt nur Anfangs- und Enddatum, die Zeitleiste ist die graue Pille. Die frühere Lesart (Zeitraum-Veränderung im großen Chartkopf) wich sichtbar vom Mockup ab und ist zurückgenommen; der gewählte Zeitraum steht an der Datumsachse und für Bildschirmleser im Kopf.
+- Der Überblick startet immer mit 1J wie im Mockup, auch während die Börse offen ist (vorher 1T nach dem Chartstandard; Owner-Stichprobe 09.11.2026 bei offener Börse). 1T bleibt wählbar und zeigt denselben Kopf C04 in Dollar mit Live-Zustand und Euro-Wert rechts.
 - „Schluss Freitag“ statt „Schluss Fr. 06.11.“: der Text kommt aus dem Frische-Vertrag der Tagesreihe (zeigt auch „nicht aktuell“), deshalb bleibt seine Wortwahl.
 - Im Kopf steht ein Merken-Knopf (Herz) wie im Mockup; das zweite Lesezeichen derselben Watchlist ist im Überblick ausgeblendet.
 - „Alle ›“ an „Kapitel“ (klappt alle auf), an „… steht in N Reihen“ (Alle Reihen) und „Alle N“ an „Gleiches Thema“ (Themenreihe); „Mehr wie …“ und „Niedrigere Bewertung im Sektor“ bekommen keinen „Alle“-Link, weil es dafür keine eigene Seite gibt.

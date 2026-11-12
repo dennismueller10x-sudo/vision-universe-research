@@ -1,7 +1,6 @@
 name: Company Intelligence Reviewed Profiles and Source Onboarding
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
-  schedule:
-    - cron: '47 3 * * *'
   workflow_call:
     inputs:
       publish:
@@ -12,6 +11,10 @@ on:
         default: true
   workflow_dispatch:
     inputs:
+      zeitplan:
+        description: 'Von Cloudflare-Wecker gesetzt (Cron des Eintrags in core/registry/schedule.json); nicht von Hand'
+        type: string
+        default: ''
       live_review_only:
         description: Read-only completion of the frozen 38308985623 production sample; never modifies state or gates
         type: boolean
@@ -28,22 +31,26 @@ on:
         description: 'One bounded resumable native source onboarding/HTTPS repair batch; no broad crawl'
         type: boolean
         default: true
+      source_limit:
+        description: 'Optional batch size 1-100 (as the scheduled run, which uses 100); empty = default 16'
+        type: string
+        default: ''
 permissions:
   contents: read
   actions: write
 concurrency:
-  group: company-intelligence-continuous-${{ (inputs.publish || github.event_name == 'schedule') && 'production' || 'profile-source-verification' }}
+  group: ${{ format('company-intelligence-continuous-{0}', (inputs.publish || github.event_name == 'schedule' || inputs.zeitplan) && 'production' || 'profile-source-verification') }}
   cancel-in-progress: false
 jobs:
   upgrade:
-    if: ${{ !inputs.live_review_only && ((!inputs.publish && github.event_name != 'schedule') || github.ref == 'refs/heads/main') }}
+    if: ${{ !inputs.live_review_only && ((!(inputs.publish || github.event_name == 'schedule' || inputs.zeitplan)) || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
-          ref: abbea154a90ffece598e494530eea38661a20a95
+          ref: 42957c9e0a8885cd70a32a4bdaa2413b95b509e4
           path: .accepted-identities
           sparse-checkout: |
             company-master
@@ -93,8 +100,10 @@ jobs:
         id: run
         env:
           NODE_PATH: /tmp/ci-profile-source/node_modules
+          VU_EVENT: ${{ inputs.zeitplan && 'schedule' || github.event_name }}
           PUBLISH: ${{ inputs.publish }}
           SOURCES: ${{ inputs.sources }}
+          SOURCE_LIMIT: ${{ inputs.source_limit }}
           RECOVER_FULL_SCOPE: ${{ inputs.recover_full_scope }}
           RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
@@ -104,10 +113,11 @@ jobs:
           VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
         run: |
           options=()
-          if [ "$PUBLISH" = true ] || [ "$GITHUB_EVENT_NAME" = schedule ]; then options+=(--publish); fi
+          if [ "$PUBLISH" = true ] || [ "$VU_EVENT" = schedule ]; then options+=(--publish); fi
           if [ "$SOURCES" = true ]; then options+=(--sources); fi
           if [ "$RECOVER_FULL_SCOPE" = true ]; then options+=(--recover-full-scope); fi
-          if [ "$GITHUB_EVENT_NAME" = schedule ]; then options+=(--sources --source-limit 100); fi
+          if [ "$VU_EVENT" = schedule ]; then options+=(--sources --source-limit 100); fi
+          if [[ "$SOURCE_LIMIT" =~ ^[0-9]{1,3}$ ]]; then options+=(--sources --source-limit "$SOURCE_LIMIT"); fi
           node scripts/company_intelligence/profile-source-run.mjs --temporary "$RUNNER_TEMP/ci-profile-source" --identity-root .accepted-identities "${options[@]}"
       # Der fruehere Sammelschritt "live" ist in vier Schritte geteilt, damit der Fehlerpfad (failure-gate-decision.mjs) zwischen
       # Dispatch-/Auslieferungsfehlern und einer roten Live-QA der eigenen Veroeffentlichung unterscheiden kann.
@@ -215,6 +225,7 @@ jobs:
           path: |
             ${{ runner.temp }}/ci-profile-source/health.json
             ${{ runner.temp }}/ci-profile-source/source-onboarding.json
+            ${{ runner.temp }}/ci-profile-source/source-onboarding-stderr.txt
             ${{ runner.temp }}/ci-profile-source/source-registry-before.json
             ${{ runner.temp }}/ci-profile-source/source-registry-audit.json
             ${{ runner.temp }}/ci-profile-source/candidate-qa.json

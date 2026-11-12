@@ -641,12 +641,12 @@
       var set = {}; px.groups[s4].forEach(function (t) { set[t] = true; });
       members = U.rows(function (cc, i) { return set[cc.s[i]] === true; });
       if (members.filter(function (r) { return isNum(r.mcap); }).length < PEER_MIN) return null;
-      key = s4; label = 'SIC ' + s4 + (px.labels && px.labels[s4] ? ' · ' + px.labels[s4] : ''); file = 'sic4-' + s4; rule = 'gleicher vierstelliger SEC-Branchencode (SIC ' + s4 + ')';
+      key = s4; label = 'SIC ' + s4 + (px.labels && px.labels[s4] ? ' · ' + px.labels[s4] : ''); file = 'sic4-' + s4; rule = 'gleicher vierstelliger SIC-Branchencode (SIC ' + s4 + ')';
     } else {
       var col = by === 'sector' ? 'sec' : 'sic2', val = self[col]; if (!val) return null;
       members = U.rows(function (cc, i) { return cc[col][i] === val; });
       key = val; label = by === 'sector' ? U.sectorLabel(val) : U.industryLabel(val); file = by === 'sector' ? 'sec-' + val : 'sic-' + val;
-      rule = by === 'sector' ? 'gleicher Sektor' : 'gleiche SEC-Branchen-Hauptgruppe (SIC ' + val + ')';
+      rule = by === 'sector' ? 'gleicher Sektor' : 'gleiche SIC-Branchen-Hauptgruppe (SIC ' + val + ')';
     }
     var size = function (r) { return isNum(r.mcap) ? r.mcap : -1; };
     var sorted = members.filter(function (r) { return isNum(r.mcap) || isNum(r.revenue); }).sort(function (a, b) { return size(b) - size(a) || (b.revenue || 0) - (a.revenue || 0); });

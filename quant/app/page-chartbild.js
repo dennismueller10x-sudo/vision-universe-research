@@ -32,7 +32,7 @@
   function writeView(v) { try { global.localStorage.setItem(VIEW_KEY, v); } catch (e) { /* privat */ } }
 
   var TONE = { BULLISH: "up", BEARISH: "down", NEUTRAL: "flat", MIXED: "mixed" };
-  var STATUS = { IN_ENTRY_ZONE: "Kurs in der Zone", APPROACHING: "Kurs nähert sich der Zone", EXTENDED: "Kurs weit über der Zone – Rücklauf abwarten", BEYOND_ENTRY: "Kurs jenseits der Zone",
+  var STATUS = { IN_ENTRY_ZONE: "Kurs in der Zone", APPROACHING: "Kurs nähert sich der Zone", EXTENDED: "Kurs weit über der Zone", BEYOND_ENTRY: "Kurs jenseits der Zone",
                  INVALIDATED: "Szenario ungültig", IN_RANGE: "Kurs innerhalb der Spanne", BREAKING: "Kurs verlässt die Spanne", WATCH: "Beobachten" };
   function statusText(s) {
     if (!s) return "";
@@ -66,7 +66,7 @@
   }
   function check(status, family, statement) {
     var mark = { SUPPORTS: "✓", CONTRADICTS: "✕", NEUTRAL: "○", UNAVAILABLE: "–" }[status] || "○";
-    var word = { SUPPORTS: "spricht dafür", CONTRADICTS: "spricht dagegen", NEUTRAL: "neutral", UNAVAILABLE: "nicht verfügbar" }[status];
+    var word = { SUPPORTS: "stützt die Struktur", CONTRADICTS: "widerspricht der Struktur", NEUTRAL: "neutral", UNAVAILABLE: "nicht verfügbar" }[status];
     return el("li", { class: "cb-check cb-check-" + String(status).toLowerCase() }, [
       el("span", { class: "cb-check-mark", "aria-hidden": "true", text: mark }),
       el("span", { class: "cb-check-body" }, [el("b", { text: (Ex ? Ex.FAMILY[family] : family) || family }), el("span", { text: " " + statement }), el("span", { class: "cb-sr", text: " (" + word + ")" })])
@@ -85,9 +85,8 @@
     ];
     var dl = el("dl", { class: "cb-sc-dl" });
     function row(k, v) { if (v) dl.append(el("dt", { text: k }), el("dd", { class: "num", text: v === "–" ? v : v + UNIT })); }
-    if (s.entryZone) row(s.kind === "TAIL" ? "Zone" : "Einstiegszone", zoneText(s.entryZone));
-    (s.targets || []).forEach(function (z, q) { row("Zielzone " + (q + 1), zoneText(z)); });
-    if (s.invalidation) row(s.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über", fmt(s.invalidation.price));
+    if (s.entryZone) row(s.kind === "TAIL" ? "Zone" : "Zone laut Methode", zoneText(s.entryZone));
+    if (s.invalidation) row(s.invalidation.direction === "below" ? "Ungültig laut Methode (unter)" : "Ungültig laut Methode (über)", fmt(s.invalidation.price));
     if (s.range) { row("Untergrenze", zoneText(s.range.support)); row("Obergrenze", zoneText(s.range.resistance)); }
     kids.push(dl);
     if (s.confirmation && isNum(s.confirmation.price)) kids.push(el("p", { class: "cb-sc-note", text: "Bestätigt bei Schluss " + (s.direction === "BEARISH" ? "unter " : "über ") + fmt(s.confirmation.price) + UNIT }));
@@ -95,7 +94,6 @@
     if (s.expectedStructure) kids.push(el("p", { class: "cb-sc-note", text: "Erwartete Struktur: " + s.expectedStructure }));
     if (s.elliottAlternative) kids.push(el("p", { class: "cb-sc-note", text: "Alternative Wellenzählung: " + s.elliottAlternative.pattern + ", Welle " + s.elliottAlternative.wave }));
     if (s.note) kids.push(el("p", { class: "cb-sc-note", text: s.note }));
-    if (isNum(s.rewardRiskT1) && s.kind === "PRIMARY") kids.push(el("p", { class: "cb-sc-rr" }, [el("span", { text: "Chance gegen Risiko bis Zielzone 1 " }), el("b", { class: "num", text: "≈ " + s.rewardRiskT1.toFixed(1).replace(".", ",") + " : 1" })]));
     var card = el("button", { type: "button", class: "cb-sc" + (selected ? " is-selected" : ""), "aria-pressed": selected ? "true" : "false" }, kids);
     card.addEventListener("click", function () { onSelect(s); });
     return card;
@@ -167,7 +165,7 @@
       el("p", { class: "cb-count-stand", text: stand }),
       el("div", { class: "cb-count-bound" }, [el("span", { class: "cb-bound-icon", "aria-hidden": "true" }), kv([kill, killRule, rev, !kill && !rev ? ["Grenze", "keine harte Grenze in Reichweite"] : null])]),
       X.more("Wellen und Zonen (" + c.waves.length + ")", function () {
-        var zones = (c.zones || []).map(function (z) { return el("li", {}, [el("b", { class: "num", text: zoneText(z) + UNIT }), el("span", { text: " · Welle " + z.phase + (z.kind === "COMPLETION" ? " (Abschluss)" : " (Ziel)") + " · " + (z.relations || []).slice(0, 2).join("; ") })]); });
+        var zones = (c.zones || []).map(function (z) { return el("li", {}, [el("b", { class: "num", text: zoneText(z) + UNIT }), el("span", { text: " · Welle " + z.phase + (z.kind === "COMPLETION" ? " (Abschluss)" : " (Projektion)") + " · " + (z.relations || []).slice(0, 2).join("; ") })]); });
         return [el("ol", { class: "cb-waves" }, c.waves.map(function (x) {
           return el("li", { class: x.status === "DEVELOPING" ? "is-dev" : "" }, [el("b", { text: x.notation || x.label }), el("span", { class: "num", text: " " + X.dateDe(x.fromTime) + " → " + (x.status === "DEVELOPING" ? "läuft" : X.dateDe(x.toTime)) + " · " + fmt(x.fromPrice) + " → " + fmt(x.toPrice) }),
             x.subdivision && x.subdivision.count > 1 ? el("small", { text: " · " + x.subdivision.count + " Unterwellen" + (x.subdivision.pattern ? " (" + x.subdivision.pattern + ")" : "") }) : null]);
@@ -528,6 +526,89 @@
     };
   }
 
+  /* ================================================================ Elliott auf der Aktie (Konzept EHV, EX03, Screens e-stock / e-none)
+     Zaehlbar heisst: die Engine stuft die Wellenzaehlung als anwendbar ein (applicability HIGH oder MODERATE, keine Enthaltung) –
+     dieselbe Einstufung wie „Heute anwendbar“ auf der Elliott-Startseite (elliottApplicable im Wellen-Index). */
+  var EW_RR = { LOW: "gering", MEDIUM: "mittel", HIGH: "hoch" };
+  function ewCountable(E) { var ap = E && E.applicability; return !!(E && E.primary && ap && !ap.abstain && (ap.level === "HIGH" || ap.level === "MODERATE")); }
+  function ewModel() { return global.VUElliottHome || null; }
+  function ewPattern(code, fallback) { var M = ewModel(); return M ? M.patternDe(code) : fallback || code; }
+  function ewName(ctx, ticker) { var n = (ctx && ctx.names && ctx.names[ticker]) || ticker, M = ewModel(); return M && M.shortName ? M.shortName(n, ticker) : n; }
+  function ewShare() { var A = global.VUElliottApp, M = ewModel(), ap = A && A.state && M && M.applicableOf(A.state.home); return ap && ap.n ? ap : null; }
+  /* Direktaufruf einer Aktie: die Startseite hat den Index nicht geladen – dann einmal die kleine Lieferansicht holen. */
+  var ewShareP = null;
+  function ewShareLoad() {
+    var have = ewShare(), M = ewModel();
+    if (have || !M) return Promise.resolve(have);
+    return ewShareP || (ewShareP = fetch(M.INDEX_PATH, { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (h) { var ap = h && M.validate(h).ok ? M.applicableOf(h) : null; return ap && ap.n ? ap : null; }).catch(function () { ewShareP = null; return null; }));
+  }
+  function ewPrice(v) { return isNum(v) ? v.toLocaleString("de-DE", { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + UNIT : "–"; }
+  var EW_KIND = { FLAT: "c", ZIGZAG: "c", DOUBLE_ZIGZAG: "x", TRIPLE_ZIGZAG: "x", WXY: "x", TRIANGLE: "t", IMPULSE: "i", ENDING_DIAGONAL: "d", LEADING_DIAGONAL: "d" };
+  function ewStructSentence(c, structure) {
+    var k = EW_KIND[c.pattern] || "c";
+    var what = { c: "Eine Korrektur in drei Teilen", x: "Eine zusammengesetzte Korrektur", t: "Ein Dreieck in fünf Teilen", i: "Ein Impuls in fünf Wellen", d: "Eine Diagonale in fünf Wellen" }[k];
+    var st = { UPTREND_ADVANCING: "Der Aufwärtstrend läuft.", CORRECTION_IN_UPTREND: "Im Aufwärtstrend läuft ein Rücksetzer.", RALLY_IN_DOWNTREND: "Im Abwärtstrend läuft eine Erholung.", DOWNTREND_ADVANCING: "Der Abwärtstrend läuft.", NO_CLEAR_TREND: "Einen klaren Trend gibt es nicht.", SIDEWAYS_RANGE: "Der Kurs läuft seitwärts." }[structure] || "";
+    return what + (c.complete ? " ist abgeschlossen." : " läuft, gerade Welle " + ((c.currentWave && c.currentWave.label) || "–").replace(/^nach /, "") + ".") + (st ? " " + st : "");
+  }
+  function ewChapter(n, icon, title, sub, body) {
+    var d = el("details", { class: "cb-ep" }, [el("summary", {}, [el("b", { class: "cb-ep-n num", text: String(n) }), el("span", { class: "vu-hud cb-ep-ic", style: "--vu-hud:40px", "aria-hidden": "true" }, [icon]),
+      el("span", { class: "cb-ep-t" }, [el("b", { text: title }), el("span", { text: sub })]), el("span", { class: "cb-ep-go", "aria-hidden": "true", text: "›" })])]);
+    var filled = false;
+    d.addEventListener("toggle", function () { if (d.open && !filled) { filled = true; d.append(el("div", { class: "cb-ep-body" }, [].concat(body()).filter(Boolean))); } });
+    return d;
+  }
+  function ewIcon(path) { var n = document.createElementNS("http://www.w3.org/2000/svg", "svg"); n.setAttribute("viewBox", "0 0 24 24"); n.setAttribute("width", "19"); n.setAttribute("height", "19"); n.setAttribute("fill", "none"); n.setAttribute("stroke", "currentColor"); n.setAttribute("stroke-width", "2"); n.setAttribute("stroke-linecap", "round"); n.setAttribute("stroke-linejoin", "round"); n.innerHTML = path; return n; }
+  var EW_IC = { wave: '<path d="M3 17l4-6 3 3 5-8 3 4 3-3"/>', shapes: '<path d="M3 19l6-10 4 6 3-4 5 8z"/>', bars: '<path d="M6 20V12M12 20V6M18 20v-9"/>', target: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/>', book: '<path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h9"/>', list: '<path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/>', chart: '<path d="M4 19h16M6 15l4-5 3 3 5-7"/>' };
+  function ewVerdict(kind, text) { var U = global.VUUI; if (U) { var t = document.createElement("template"); t.innerHTML = U.verdict(kind, text); return t.content.firstChild; } return el("span", { class: "vu-verdict vu-verdict--" + kind, text: text }); }
+  function wavesPage(o) {
+    var a = o.a, E = o.E, host = o.host, ticker = o.ticker, name = ewName(o.ctx, o.ticker), share = ewShare();
+    if (!ewCountable(E)) {
+      var noneP, listSub, shareText = function (sh) { return "Der Chart verläuft zu unruhig für eine belastbare Lesart. Das ist der Normalfall: " + (sh ? "nur " + sh.count.toLocaleString("de-DE") + " von " + sh.n.toLocaleString("de-DE") + " Aktien sind heute zählbar." : "nur wenige Aktien sind heute zählbar."); };
+      if (!share) ewShareLoad().then(function (sh) { if (sh && noneP) { noneP.textContent = shareText(sh); listSub.textContent = sh.count.toLocaleString("de-DE") + " heute"; } });
+      host.append(el("section", { class: "cb-ew-none", "aria-label": "Elliott " + name }, [
+        el("p", { class: "cb-ew-tags" }, [ewVerdict("none", "Keine Zählung"), el("span", { class: "vu-ltag", text: "Elliott · " + name })]),
+        el("h2", { class: "vu-mt", text: "Bei " + name + " lassen sich gerade keine Wellen sauber zählen." }),
+        noneP = el("p", { class: "cb-ew-none-p", text: shareText(share) })]),
+        el("a", { class: "vu-navcard cb-ew-link", href: "/technical/#/chart/" + encodeURIComponent(ticker) }, [el("span", { class: "vu-hud", style: "--vu-hud:42px", "aria-hidden": "true" }, [ewIcon(EW_IC.chart)]), el("span", { class: "vu-navcard__text" }, [el("b", { text: "Chart-Lage in Technical ansehen" }), el("span", { text: "Trend, Zonen, Befunde" })]), el("span", { class: "cb-ep-go", "aria-hidden": "true", text: "›" })]),
+        el("a", { class: "vu-navcard cb-ew-link", href: "/elliott/#/?zaehlbar=1" }, [el("span", { class: "vu-hud", style: "--vu-hud:42px", "aria-hidden": "true" }, [ewIcon(EW_IC.list)]), el("span", { class: "vu-navcard__text" }, [el("b", { text: "Aktien mit sauberer Zählung" }), listSub = el("span", { text: share ? share.count.toLocaleString("de-DE") + " heute" : "Liste der zählbaren Aktien" })]), el("span", { class: "cb-ep-go", "aria-hidden": "true", text: "›" })]));
+      if (o.isPro) host.append(o.proHost);   // ?ansicht=profi: Regeln und Niveaus auch ohne Zaehlung
+      return;
+    }
+    var c = E.primary, prim = (a.scenarios || []).filter(function (x) { return x.kind === "PRIMARY"; })[0] || null, inv = prim && prim.invalidation;
+    var up = prim && prim.direction === "BULLISH", down = prim && prim.direction === "BEARISH";
+    var weekly = a.timeframe === "1W", cl = E.clarityLevel || "MODERATE", ap = E.applicability.level, rr = o.T && o.T.relabeling ? o.T.relabeling.risk : null;
+    var title = ewPattern(c.pattern, c.patternName) + (c.complete ? " abgeschlossen" : " · Welle " + ((c.currentWave && c.currentWave.label) || "–"));
+    var CLV = { HIGH: ["strong", "Zählung klar"], MODERATE: ["mid", "Zählung mittel"] }[cl] || ["weak", "Zählung unklar"];
+    host.append(el("div", { class: "cb-ew-say" }, [el("div", {}, [el("p", { class: "vu-ltag", text: "Wellen · " + o.tfLabel }), el("h2", { class: "vu-mt", text: title })]), ewVerdict(CLV[0], CLV[1])]), o.chartCard);
+    var rows = [
+      ["wave", "Struktur", ewStructSentence(c, a.outlook && a.outlook.structure), up ? ewVerdict("strong", "nach oben") : down ? ewVerdict("weak", "nach unten") : ewVerdict("none", "Richtung offen")],
+      ["target", "Grenze", inv ? "Die Lesart gilt, solange " + (weekly ? "die Woche" : "der Tag") + " " + (inv.direction === "below" ? "über " : "unter ") + ewPrice(inv.price) + " schließt." : "Für diese Lesart gibt es keine Ungültig-Marke.", ewVerdict("mid", "Ungültig-Marke")],
+      ["book", "Sicherheit", "Zählung " + ({ HIGH: "klar", MODERATE: "mittel" }[cl] || "unklar") + (rr && EW_RR[rr] ? ", Gefahr einer Neuzählung " + EW_RR[rr] : "") + ". Anwendbarkeit: " + (ap === "HIGH" ? "gut" : "mittel") + ".", ewVerdict(ap === "HIGH" ? "strong" : "mid", ap === "HIGH" ? "Gut" : "Mittel")]
+    ];
+    host.append(el("section", { class: "cb-story", "aria-label": "Die Lesart in drei Sätzen" }, [el("p", { class: "vu-ltag", text: "Die Lesart in drei Sätzen" })].concat(rows.map(function (r) {
+      return el("div", { class: "cb-story-r" }, [el("span", { class: "vu-hud", style: "--vu-hud:34px", "aria-hidden": "true" }, [ewIcon(EW_IC[r[0]])]), el("div", {}, [el("span", { class: "vu-ltag", text: r[1] }), el("p", { text: r[2] })]), r[3]]);
+    }))));
+    var ov = a.overlays && a.overlays.waves, waves = (ov && ov.primary) || [];
+    var alts = (E.alternatives || []).slice(0, 3), others = (a.scenarios || []).filter(function (x) { return x.kind !== "PRIMARY"; });
+    host.append(el("div", { class: "cb-eps" }, [
+      ewChapter(1, ewIcon(EW_IC.wave), "Die Wellen im Chart", waves.length ? waves.map(function (w) { return w.label; }).join(" · ") + " mit Datum" : "Wellen der Lesart", function () {
+        return [el("ol", { class: "cb-list cb-ew-waves" }, waves.map(function (w) { return el("li", { class: "num" }, [el("b", { text: "Welle " + w.label }), " · " + X.dateDe(w.time) + " · " + ewPrice(w.price) + (w.status === "DEVELOPING" ? " · im Aufbau" : "")]); })),
+          ov && ov.alternative && ov.alternative.length ? segmented("Lesart im Chart", [["primary", "Hauptlesart"], ["alt", "Alternative"]], "primary", o.onWaves) : null,
+          el("p", { class: "cb-small cb-dim", text: "Eine Wellenmarke im Chart antippen erklärt die Welle." })];
+      }),
+      ewChapter(2, ewIcon(EW_IC.shapes), "Andere Lesarten", "Alternative und Randszenario", function () {
+        var li = alts.map(function (x, i) { return el("li", {}, [el("b", { text: (i ? "Weitere Lesart: " : "Alternative Zählung: ") + ewPattern(x.pattern, x.patternName) + (x.complete ? " abgeschlossen" : ", Welle " + ((x.currentWave && x.currentWave.label) || "–")) }),
+          x.invalidation ? " · ungültig bei Schluss " + (x.invalidation.direction === "below" ? "unter " : "über ") + ewPrice(x.invalidation.price) : null]); });
+        others.forEach(function (x) { li.push(el("li", {}, [el("b", { text: (x.kind === "TAIL" ? "Randszenario" : "Alternative") + ": " + (x.direction === "BULLISH" ? "nach oben" : x.direction === "BEARISH" ? "nach unten" : "seitwärts") }),
+          x.invalidation ? " · gilt, solange kein Schluss " + (x.invalidation.direction === "below" ? "unter " : "über ") + ewPrice(x.invalidation.price) + " liegt" : null])); });
+        return [li.length ? el("ul", { class: "cb-list" }, li) : el("p", { class: "cb-small", text: "Keine materiell andere Lesart." }),
+          el("p", { class: "cb-small cb-dim", text: "Hauptlesart = derzeit bevorzugte Interpretation, nicht „die richtige Zählung“." })];
+      }),
+      ewChapter(3, ewIcon(EW_IC.bars), "Was früher in ähnlichen Lagen geschah", "Forschung, nicht zertifiziert", function () { return [o.evidence, o.replay]; })
+    ]));
+    host.append(o.proOpen, o.proHost);
+  }
+
   async function chartbild(main, ctx, ticker, params, opts) {
     var inElliott = !!(opts && opts.product === "elliott");
     /* Im Elliott-Produkt bestimmt die Adresse die Ansicht: /elliott/#/<T> = Technik (Einfach), ?ansicht=profi = Elliott (Profi). */
@@ -635,14 +716,12 @@
       if (!s) return;
       if (s.range) { levels.append(levelTile("range", "Untergrenze", zoneText(s.range.support)), levelTile("range", "Obergrenze", zoneText(s.range.resistance))); return; }
       if (s.entryZone) levels.append(levelTile("entry", s.kind === "TAIL" ? "Tiefere Zone" : "Schlüsselzone", zoneText(s.entryZone) + UNIT, statusText(s)));
-      var t = s.targets || [];
-      if (t.length) levels.append(levelTile("target", "Zielbereich", (t.length > 1 ? fmt(t[0].zoneLow) + "–" + fmt(t[t.length > 1 ? 1 : 0].zoneHigh) : zoneText(t[0])) + UNIT, t.length > 1 ? "Zone 1 ab " + fmt(t[0].zoneLow) + UNIT : null));
-      if (s.invalidation) levels.append(levelTile("invalid", s.invalidation.direction === "below" ? "Ungültig unter" : "Ungültig über", fmt(s.invalidation.price) + UNIT, "per Schlusskurs"));
+      if (s.invalidation) levels.append(levelTile("invalid", "Ungültig laut Methode", fmt(s.invalidation.price) + UNIT, (s.invalidation.direction === "below" ? "Schluss darunter" : "Schluss darüber")));
     }
 
     // ---------------------------------------------- Chart
     var chartHost = el("div", { class: "cb-chart", tabindex: "0", role: "region", "aria-label": "Chart mit Zonen und Szenario" });
-    var range = a.timeframe === "1W" ? "3J" : "6M", mode = "line", wavesOn = view === "pro" || (!abstain && E && E.primary);
+    var range = a.timeframe === "1W" ? (inElliott ? "1J" : "3J") : "6M", mode = "line", wavesOn = view === "pro" || (!abstain && E && E.primary);
     var ranges = a.timeframe === "1W" ? [["1J", "1 J", 52], ["3J", "3 J", 156], ["5J", "5 J", 260]] : [["3M", "3 M", 63], ["6M", "6 M", 126], ["1J", "1 J", 252]];
     var replayStep = null, waveSet = "primary";
     /* Elliott-Projektion als eigene Chart-Ebene (Szenario | Projektion), Preisachse logarithmisch bei großer Spanne */
@@ -679,11 +758,13 @@
       if (waveSeg) waveSeg.querySelectorAll("button").forEach(function (b, q) { b.setAttribute("aria-pressed", (q === 1) === !!wavesOn ? "true" : "false"); }); var scLeg = chartCard && chartCard.querySelector(".cb-legend-sc"); if (scLeg) scLeg.hidden = pjOnChart;
       chartHost.dataset.direction = direction(); chartHost.dataset.mode = mode;
       /* W05: in Elliott ohne belastbare Lesart zeigt der Chart die Marktstruktur (Unterstützung neongrün, Widerstand grau) statt Szenario-Zonen. */
-      var ms = structureOnly() ? structureOverlay() : null;
-      if (scLeg0) scLeg0.hidden = !!ms; if (msLeg) msLeg.hidden = !ms;
-      chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: ms ? ms : replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: ms ? "STRUCTURE" : replayStep ? "PRIMARY" : kind, scenario: ms ? null : scenarioOf(kind),
+      var ms = inElliott ? null : structureOnly() ? structureOverlay() : null;
+      /* Konzept EHV: im Elliott-Produkt zeigt der Chart nur die Ungueltig-Marke der Hauptlesart, keine Ziele. */
+      var io = inElliott && !replayStep && !pjOnChart && a.overlays ? { zones: [], invalidations: (a.overlays.invalidations || []).filter(function (x) { return x.scenario === "PRIMARY"; }), projectedPaths: [] } : null;
+      if (scLeg0) scLeg0.hidden = !!ms || inElliott; if (msLeg) msLeg.hidden = !ms;
+      chartHost.replaceChildren(Chart.render({ chart: a.chart, overlays: ms ? ms : io ? io : replayStep ? overlaysFromStep(replayStep) : a.overlays, scenarioKind: ms ? "STRUCTURE" : replayStep ? "PRIMARY" : kind, scenario: ms ? null : scenarioOf(kind),
         projection: pjOnChart ? pjChart(pjT, pjT.source === "ALTERNATIVE" || altSource(pjT) ? "alt" : null) : null, logScale: pjOnChart ? (pjLog === null ? pjAutoLog(pjT) : pjLog) : false,
-        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep && !ms, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
+        cutoff: replayStep ? replayStep.d : null, showPath: !replayStep && !ms && !io, uncertain: replayStep ? replayStep.cl === "AMBIGUOUS" : uncertain,
         waves: wavesOn ? waveMarks() : null, waveTone: !replayStep && (waveSet === "alt" || (pjOnChart && altSource(pjT))) ? "alt" : null, onWave: replayStep || waveSet === "alt" || (pjOnChart && (pjT.degree === "HIGHER" || altSource(pjT))) ? null : function (w) { waveInspector(a, w, rules, methodEv); },
         width: width, height: width < 520 ? 380 : 460, bars: barsFor(), mode: mode, title: ticker + " · Chartbild · " + tfLabel, labels: true }));
       if (replayStep) chartHost.prepend(el("p", { class: "cb-replay-flag", role: "status", text: "Zeitreise · Stand " + X.dateDe(replayStep.d) + " · nur damals verfügbare Daten" }));
@@ -723,7 +804,7 @@
     var chartCard = el("section", { class: "cb-chart-card", "aria-label": "Chart" }, [chartHost, controls,
       pjLegend, motiveNote, exploreNote, candidateNote,
       msLeg = el("p", { class: "cb-legend cb-legend-ms", hidden: true }, [el("span", { class: "cb-key cb-key-support", text: "Unterstützung" }), el("span", { class: "cb-key cb-key-resistance", text: "Widerstand" }), el("span", { class: "cb-dim", text: "Preisbereiche, an denen der Kurs früher gedreht hat" })]),
-      scLeg0 = el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Schlüsselzone" }), el("span", { class: "cb-key cb-key-target", text: "Zielbereich" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
+      scLeg0 = el("p", { class: "cb-legend cb-legend-sc" }, [el("span", { class: "cb-key cb-key-entry", text: "Zone laut Methode" }), el("span", { class: "cb-key cb-key-invalid", text: "Ungültig (Schlusskurs)" }), el("span", { class: "cb-key cb-key-path", text: "Szenario-Korridor – keine Zeitangabe" })]),
       wavesOn && !abstain && E && E.primary ? el("p", { class: "cb-small cb-dim", text: "Tipp: Eine Wellenmarke antippen erklärt die Welle." }) : null]);
 
     // ---------------------------------------------- Elliott-Bereich (Mission III §41–§47, §57, §98–§100)
@@ -750,16 +831,16 @@
     // ---------------------------------------------- Evidenz (§53): Zahlen sichtbar, Pruefweg auf Klick
     var ev = a.explain.evidence, evKids = [];
     if (badge.level === "NOT_ESTABLISHED" || badge.level === "EXPERIMENTAL") {
-      evKids.push(el("p", { class: "cb-evidence-verdict cb-edge-" + (badge.level === "EXPERIMENTAL" ? "slightly_better_uncertain" : "no_edge"), text: badge.text }));
+      evKids.push(el("p", { class: "cb-evidence-verdict cb-edge-" + (badge.level === "EXPERIMENTAL" ? "slightly_better_uncertain" : "no_edge"), text: X.say(badge.text) }));
       if (ev && ev.status === "OK") evKids.push(el("div", { class: "cb-stats vu-kpis" }, [
-        stat("Zielbereich erreicht", pct(ev.hitRate), "vor der Ungültig-Linie"),
+        stat("Zone laut Methode erreicht", pct(ev.hitRate), "vor der Ungültig-Linie"),
         stat("Zufall", pct(ev.baseline), "gleiche Abstände"),
         stat("Unterschied", isNum(ev.hitRate) && isNum(ev.baseline) ? ((ev.hitRate - ev.baseline) * 100 >= 0 ? "+" : "") + ((ev.hitRate - ev.baseline) * 100).toFixed(1).replace(".", ",") + " Pp." : "–", "Prozentpunkte"),
         stat("Ähnliche Lagen", ev.n.toLocaleString("de-DE"), a.timeframe === "1W" ? "Wochencharts" : "Tagescharts")
       ]));
-    } else evKids.push(el("p", { class: "vu-empty", text: badge.text }));
+    } else evKids.push(el("p", { class: "vu-empty", text: X.say(badge.text) }));
     evKids.push(X.more("Wie wurde geprüft?", function () { return el("p", { class: "cb-small", text: "Vision Universe trennt, was der Chart zeigt, von dem, was frühere Fälle belegen. Prüfung nur mit Daten bis zum jeweiligen Tag, Einstieg erst danach, Kosten berücksichtigt. Nur heute gelistete Titel (Survivorship-Verzerrung möglich). Keine Gewähr für die Zukunft." }); }));
-    if (a.history && a.history.length) evKids.push(X.more("Frühere Fälle bei " + ticker + " (" + a.history.length + ")", function () { return el("ul", { class: "cb-list" }, a.history.map(function (h) { return el("li", { class: "num", text: X.dateDe(h.date) + " · " + ((Ex && Ex.TEMPLATE[h.template]) || h.template).split(" —")[0] + " · " + ({ TARGET1: "Zielbereich erreicht", INVALIDATED: "ungültig", TIMEOUT: "ohne Ergebnis abgelaufen", NO_ENTRY: "Zone nicht erreicht" }[h.outcome] || h.outcome) + (isNum(h.barsToT1) ? " nach " + h.barsToT1 + (a.timeframe === "1W" ? " Wochen" : " Tagen") : "") }); })); }));
+    if (a.history && a.history.length) evKids.push(X.more("Frühere Fälle bei " + ticker + " (" + a.history.length + ")", function () { return el("ul", { class: "cb-list" }, a.history.map(function (h) { return el("li", { class: "num", text: X.dateDe(h.date) + " · " + ((Ex && Ex.TEMPLATE[h.template]) || h.template).split(" —")[0] + " · " + ({ TARGET1: "Zone laut Methode erreicht", INVALIDATED: "ungültig", TIMEOUT: "ohne Ergebnis abgelaufen", NO_ENTRY: "Zone nicht erreicht" }[h.outcome] || h.outcome) + (isNum(h.barsToT1) ? " nach " + h.barsToT1 + (a.timeframe === "1W" ? " Wochen" : " Tagen") : "") }); })); }));
     var evidence = X.section("Was die Historie nahelegt", null, evKids, null, null, "evidenz", "vu-sec cb-sec");
 
     // ---------------------------------------------- Zeitreise (Replay)
@@ -841,13 +922,10 @@
     var ewSec = X.section("Elliott", null, ewKids, null, null, "elliott", "vu-sec cb-sec cb-elliott");
     if (staleAlert) host.append(staleAlert);
     if (inElliott) {
-      var CLV = { CLEAR: ["strong", "▲ Stark"], MODERATE: ["mid", "◆ Mittel"], AMBIGUOUS: ["weak", "▼ Schwach"] }[clarity.level];
-      var kick = hero.querySelector(".cb-kicker"); if (kick) kick.textContent = tfLabel;
-      if (CLV) hero.append(el("span", { class: "vu-verdict vu-verdict--" + CLV[0] + " cb-hero-verdict", "data-verdict": CLV[0], title: "Strukturklarheit: " + (clarity.text || ""), text: CLV[1] }));
-      var evHead = evidence.querySelector("h2"); if (evHead && badge.label) evHead.parentNode.after(el("p", { class: "cb-ev-verdict" }, [el("span", { class: "vu-verdict vu-verdict--none", "data-verdict": "none", text: "○ " + badge.label })]));
-      [ewSec, X.section("Technischer Ausblick", null, [hero, levels, tabsBlock, textBlock], null, null, "ausblick", "vu-sec cb-sec cb-outlook-sec"), why, evidence, proOpen, proHost].forEach(function (n) { if (n) host.append(n); });
-      host.append(el("div", { class: "cb-pro-extra" }, [replay, el("div", { class: "cb-more-end" }, [tfs])].filter(Boolean)),
-        el("p", { class: "cb-exp" }, [el("b", { text: "Experimentell. " }), "Eine Lesart beschreibt eine mögliche Struktur mit klarer Grenze. Keine Vorhersage, kein Kursziel, keine Empfehlung."]));
+      /* Konzept EHV (EX03): Zwei Faelle. Zaehlbar: Muster und Urteil, Chart mit Ungueltig-Marke, „Die Lesart in drei Saetzen“, Kapitel.
+         Nicht zaehlbar: eine Karte „Keine Zaehlung“ mit Anteil, Weg zur Chart-Lage in Technical und zur Zaehlbar-Liste.
+         Kein eigener „Technischer Ausblick“ mehr: die Chart-Aussage je Aktie gibt es nur in Technical. */
+      wavesPage({ a: a, E: E, T: T, ticker: ticker, ctx: ctx, host: host, tfLabel: tfLabel, chartCard: chartCard, evidence: evidence, replay: replay, proOpen: proOpen, proHost: proHost, isPro: view === "pro", onWaves: function (set) { waveSet = set; wavesOn = true; draw(); } });
     } else {
       order.forEach(function (n) { if (n) host.append(n); });
       [ewSec, why, evidence, replay].forEach(function (n) { if (n) host.append(n); });
@@ -1249,7 +1327,7 @@
     var QS = [["trend", "Wohin zeigt der Trend?", [["ALL", "Alle"], ["BULLISH", "Aufwärts"], ["NEUTRAL", "Seitwärts"], ["BEARISH", "Abwärts"]]],
       ["clarity", "Wie klar ist das Bild?", [["ALL", "Alle"], ["CLEAR", "Struktur klar"], ["UNCLEAR", "Unklar"]]],
       ["universe", "Welche Aktien?", [["INDEX", "S&P 500, Nasdaq-100, Dow"], ["ALL", "Alle US"]]]];
-    var sheetEl = html(U.sheet("qv3-lagen-sheet", "Eigene Auswahl", '<p class="vu-sm vu-mu" style="margin:-8px 0 0">Filter in Alltagssprache. Kein Filter ist ein Kaufsignal.</p>' +
+    var sheetEl = html(U.sheet("qv3-lagen-sheet", "Eigene Auswahl", '<p class="vu-sm vu-mu" style="margin:-8px 0 0">Filter in Alltagssprache. Ein Filter ist kein Kaufsignal.</p>' +
       QS.map(function (q) { return '<p class="vu-sm qv3-lq"><b>' + U.esc(q[1]) + '</b></p><div class="vu-chips qv3-lqc" data-k="' + q[0] + '">' + q[2].map(function (o) { return '<button type="button" class="vu-chip" data-v="' + o[0] + '">' + U.esc(o[1]) + "</button>"; }).join("") + "</div>"; }).join("") +
       '<div class="qv3-lsw">' + [["near", "Nahe der Schlüsselzone", ""], ["clear", "Klare Struktur", ""], ["elliott", "Klare Elliott-Zählung", " " + U.pro()]].map(function (w) { return '<label class="qv3-lswr"><b class="vu-sm">' + U.esc(w[1]) + w[2] + '</b><input type="checkbox" role="switch" class="vu-switch" data-sw="' + w[0] + '"></label>'; }).join("") + "</div>" +
       '<button type="button" class="vu-btn vu-btn--ink vu-btn--block" data-go style="margin-top:12px"></button>')).firstElementChild;
@@ -1281,8 +1359,8 @@
   }
 
   /* ------------------------------------------------ Q09 Perspektive „Chart“ in Quant (Redesign 2027)
-     Aktienkopf mit Perspektive „Chart“, die Quant-Leiste bleibt. Urteil, der eine Chart (C06) mit Schlüsselzone,
-     Zielbereich und gestrichelter Ungültig-Linie, drei Kacheln, drei Szenarien, Gründe, Querverweise; darunter
+     Aktienkopf mit Perspektive „Chart“, die Quant-Leiste bleibt. Urteil, der eine Chart (C06) mit Zone laut Methode
+     und gestrichelter Ungültig-Linie (keine Ziele, Konzept 2026-11), drei Kacheln, drei Szenarien, Gründe, Querverweise; darunter
      Historie gegen Zufall, Prüfweg, frühere Fälle und Zeitreise. Werte unverändert aus der Analyse (shards/<XX>.json.gz). */
   var CH_DIR = { BULLISH: "Aufwärts", BEARISH: "Abwärts", NEUTRAL: "Seitwärts", MIXED: "Gemischt" };
   var CH_FAMILY = { TREND: "Trend", MOMENTUM: "Bewegungsstärke", STRUCTURE: "Hochs und Tiefs", HIGHER_TIMEFRAME: "Großes Bild", VOLUME: "Volumen", PATTERN: "Formation", ELLIOTT: "Wellen", WYCKOFF: "Wyckoff", VOLATILITY: "Schwankung" };
@@ -1318,19 +1396,18 @@
     host.append(html('<div class="qv3-ch-h"><div><p class="vu-ltag">Chartbild · ' + tf + '</p><h2 class="vu-lt">' + U.esc(CH_DIR[a.outlook.label] || "Keine Aussage") + "</h2></div>" + U.verdict(lage[0], lage[1]) + "</div>" +
       '<p class="vu-sm vu-mu qv3-ch-sub"><b>' + U.esc([structure, clarity].filter(Boolean).join(" · ")) + "</b></p>"));
 
-    // Der eine Chart (C06): Linie aus der Analyse, Schlüsselzone neongrün, Zielbereich grau, Ungültig-Linie gestrichelt.
+    // Der eine Chart (C06): Linie aus der Analyse, Zone laut Methode neongrün, Ungültig-Linie gestrichelt (keine Ziele).
     var c = a.chart || {}, pts = (c.timestamps || []).map(function (d, i) { return [d, c.close[i]]; }).filter(function (p) { return isNum(p[1]); });
-    var entry = P && P.entryZone, tg = P && P.targets || [], t1 = tg[0], tLast = tg.length > 1 ? tg[1] : tg[0], inv = P && P.invalidation && P.invalidation.price;
+    var entry = P && P.entryZone, inv = P && P.invalidation && P.invalidation.price;
     var zones = [];
-    if (entry) zones.push({ lo: entry.zoneLow, hi: entry.zoneHigh, k: "key", label: "Schlüsselzone " + band(entry.zoneLow, entry.zoneHigh) });
-    if (t1) zones.push({ lo: t1.zoneLow, hi: tLast.zoneHigh, k: "target", label: "Zielbereich " + band(t1.zoneLow, tLast.zoneHigh) });
+    if (entry) zones.push({ lo: entry.zoneLow, hi: entry.zoneHigh, k: "key", label: "Zone laut Methode " + band(entry.zoneLow, entry.zoneHigh) });
     var chartHost = el("div", { class: "qv3-ch-chart" }); host.append(chartHost);
     if (chartLib && pts.length > 1) {
       var last = pts[pts.length - 1][0], since = function (days) { var lim = new Date(Date.parse(last) - days * 864e5).toISOString().slice(0, 10); return pts.filter(function (p) { return p[0] >= lim; }); };
       var NS = "http://www.w3.org/2000/svg";
       chartLib.mount(chartHost, {
         label: ticker + " " + tf, currency: "USD", height: 200, initial: "1J",
-        levels: isNum(inv) ? [{ value: inv, label: "", tone: "" }] : [], /* gestrichelt, ohne Beschriftung: die Kachel „Ungültig unter“ nennt den Wert */
+        levels: isNum(inv) ? [{ value: inv, label: "", tone: "" }] : [], /* gestrichelt, ohne Beschriftung: die Kachel „Ungültig laut Methode“ nennt den Wert */
         extent: zones.reduce(function (acc, z) { return acc.concat([z.lo, z.hi]); }, []),
         ranges: [{ id: "1T", disabled: true, reason: "Das Chartbild rechnet mit Tagesschlüssen" }, { id: "1W", points: since(8) }, { id: "1M", points: since(31) }, { id: "1J", points: pts },
           { id: "5J", disabled: true, reason: "Das Chartbild zeigt höchstens ein Jahr" }, { id: "Max", disabled: true, reason: "Das Chartbild zeigt höchstens ein Jahr" }],
@@ -1349,19 +1426,18 @@
 
     // Drei Kacheln + Erklärung
     if (P) {
-      host.append(html('<div class="vu-grid qv3-ch-tiles" style="--vu-cols:3">' +
-        U.tile("Schlüsselzone", entry ? band(entry.zoneLow, entry.zoneHigh) : "–", CH_ZONE_NOW[P.status] || "") +
-        U.tile("Zielbereich", t1 ? band(t1.zoneLow, tLast.zoneHigh) : "–", t1 ? "Ziel 1 ab " + n0(t1.zoneLow) + " $" : "") +
-        U.tile("Ungültig unter", isNum(inv) ? n0(inv) + " $" : "–", P.invalidation && P.invalidation.closeBasis ? "auf Schlusskurs" : "") + "</div>" +
-        '<div class="qv3-ch-help">' + U.help((entry ? "Schlüsselzone: dort hat der Kurs früher oft gedreht. " : "") + (isNum(inv) ? "Fällt er auf Schlusskurs unter " + n0(inv) + " $, gilt dieses Bild nicht mehr." : "")) + "</div>"));
+      host.append(html('<div class="vu-grid qv3-ch-tiles" style="--vu-cols:2">' +
+        U.tile("Zone laut Methode", entry ? band(entry.zoneLow, entry.zoneHigh) : "–", entry ? CH_ZONE_NOW[P.status] || "" : "keine Zone in diesem Bild") +
+        U.tile("Ungültig laut Methode", isNum(inv) ? n0(inv) + " $" : "–", isNum(inv) ? (P.invalidation && P.invalidation.closeBasis ? "auf Schlusskurs" : "") : "keine Marke in diesem Bild") + "</div>" +
+        '<div class="qv3-ch-help">' + U.help((entry ? "Zone laut Methode: dort hat der Kurs früher oft gedreht. " : "") + (isNum(inv) ? "Fällt er auf Schlusskurs unter " + n0(inv) + " $, gilt dieses Bild nicht mehr." : "")) + "</div>"));
       // Drei Szenarien, Hauptszenario schwarz; Tippen zeigt die Marken des Szenarios.
       host.append(html(U.sect(sc.length === 3 ? "Drei Szenarien" : "Szenarien")));
       var list = el("div", { class: "vu-stack qv3-ch-scen" });
       sc.forEach(function (s) {
-        var main0 = s.kind === "PRIMARY", e = s.entryZone, ts = s.targets || [], iv = s.invalidation && s.invalidation.price;
+        var main0 = s.kind === "PRIMARY", e = s.entryZone, iv = s.invalidation && s.invalidation.price;
         var b = el("button", { type: "button", class: "vu-box qv3-ch-sc" + (main0 ? " vu-box--ink" : ""), "aria-expanded": "false" });
         b.innerHTML = '<span class="qv3-ch-sct"><b class="vu-sm">' + U.esc(chScenarioTitle(s, P)) + '</b><span class="vu-xs">' + U.esc(CH_KIND[s.kind] || "") + "</span></span>" + (main0 ? U.verdict("strong", "Bevorzugt") : U.glyph("next", 16)) +
-          '<span class="qv3-ch-scd vu-xs" hidden>' + U.esc([e ? "Zone " + band(e.zoneLow, e.zoneHigh) : "", ts.length ? "Ziel " + band(ts[0].zoneLow, ts[ts.length - 1].zoneHigh) : "", isNum(iv) ? "ungültig " + (s.invalidation.direction === "above" ? "über " : "unter ") + n0(iv) + " $" : ""].filter(Boolean).join(" · ")) + "</span>";
+          '<span class="qv3-ch-scd vu-xs" hidden>' + U.esc([e ? "Zone laut Methode " + band(e.zoneLow, e.zoneHigh) : "", isNum(iv) ? "ungültig laut Methode " + (s.invalidation.direction === "above" ? "über " : "unter ") + n0(iv) + " $" : ""].filter(Boolean).join(" · ")) + "</span>";
         b.addEventListener("click", function () { var d = b.querySelector(".qv3-ch-scd"), open = d.hidden; d.hidden = !open; b.setAttribute("aria-expanded", String(open)); });
         list.append(b);
       });
@@ -1392,13 +1468,13 @@
     if (ev && ev.status === "OK" && isNum(ev.t1HitRate) && isNum(ev.baselineRate)) {
       var diff = (ev.t1HitRate - ev.baselineRate) * 100;
       host.append(html(U.sect("Was die Historie nahelegt") + '<div class="vu-box vu-box--ink qv3-ch-hist"><div class="qv3-ch-hh"><span class="vu-ltag">' + ev.n.toLocaleString("de-DE") + " ähnliche Lagen</span>" + U.verdict(badge.level === "NOT_ESTABLISHED" || !(ev.liftCiLow > 0) ? "none" : "mid", badge.label || "Kein Vorteil belegt") + "</div>" +
-        '<div class="vu-grid qv3-ch-hv"><div><span class="vu-xs">Ziel erreicht</span><b class="vu-num is-lime">' + pctTxt(ev.t1HitRate) + '</b><span class="vu-xs">vor der Ungültig-Linie</span></div><div><span class="vu-xs">Reiner Zufall</span><b class="vu-num">' + pctTxt(ev.baselineRate) + '</b><span class="vu-xs">gleiche Abstände</span></div></div>' +
-        '<span class="vu-xs qv3-ch-hd">Unterschied</span>' + U.meter(ev.t1HitRate * 100, { lime: true, label: "Ziel erreicht" }) + U.meter(ev.baselineRate * 100, { label: "Reiner Zufall" }) +
+        '<div class="vu-grid qv3-ch-hv"><div><span class="vu-xs">Marke 1 erreicht</span><b class="vu-num is-lime">' + pctTxt(ev.t1HitRate) + '</b><span class="vu-xs">vor der Ungültig-Linie</span></div><div><span class="vu-xs">Reiner Zufall</span><b class="vu-num">' + pctTxt(ev.baselineRate) + '</b><span class="vu-xs">gleiche Abstände</span></div></div>' +
+        '<span class="vu-xs qv3-ch-hd">Unterschied</span>' + U.meter(ev.t1HitRate * 100, { lime: true, label: "Marke 1 erreicht" }) + U.meter(ev.baselineRate * 100, { label: "Reiner Zufall" }) +
         '<b class="vu-num qv3-ch-hp">' + (diff > 0 ? "+" : "−") + Math.abs(diff).toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + " Prozentpunkte</b></div>" +
-        '<div class="qv3-ch-help">' + U.help("Zufall heißt: Wir haben an zufälligen Tagen mit gleichem Abstand zu Ziel und Linie gemessen. " + (diff < 0 ? "Das Bild schnitt schlechter ab als der Zufall." : "Ein kleiner Abstand ist noch kein belegter Vorteil.")) + "</div>"));
+        '<div class="qv3-ch-help">' + U.help("Zufall heißt: Wir haben an zufälligen Tagen mit gleichem Abstand zu Marke und Linie gemessen. " + (diff < 0 ? "Das Bild schnitt schlechter ab als der Zufall." : "Ein kleiner Abstand ist noch kein belegter Vorteil.")) + "</div>"));
     }
     var hist = (a.history || []).filter(function (h0) { return h0.outcome && h0.outcome !== "NO_DATA"; });
-    var OUT = { TARGET1: "Ziel 1 erreicht", TARGET2: "Ziel 2 erreicht", INVALIDATED: "Ungültig geworden", NO_ENTRY: "Zone nie erreicht", TIMEOUT: "Ohne Ergebnis ausgelaufen" };
+    var OUT = { TARGET1: "Marke 1 erreicht", TARGET2: "Marke 2 erreicht", INVALIDATED: "Ungültig geworden", NO_ENTRY: "Zone nie erreicht", TIMEOUT: "Ohne Ergebnis ausgelaufen" };
     var links = html('<div class="vu-box qv3-ch-links"><a class="qv3-ch-lk" href="' + U.esc(X.routes.method("chartbild")) + '"><b class="vu-sm">Wie wurde geprüft?</b>' + U.glyph("next", 16) + "</a>" +
       '<button type="button" class="qv3-ch-lk" aria-expanded="false"' + (hist.length ? "" : " disabled") + '><b class="vu-sm">Frühere Fälle bei ' + U.esc((ctx.names && ctx.names[ticker]) || ticker) + '</b><span class="vu-sm vu-mu"><b>' + hist.length + "</b></span>" + U.glyph("next", 16) + "</button>" +
       '<div class="qv3-ch-cases" hidden>' + hist.map(function (h0) { return '<div class="qv3-li"><span class="vu-sm"><b>' + U.esc(X.dateDe(h0.date)) + '</b> · <span class="vu-mu">' + U.esc(chScenarioTitle({ template: h0.template, direction: h0.direction, kind: "PRIMARY" })) + '</span></span><span class="vu-xs"><b>' + U.esc(OUT[h0.outcome] || h0.outcome) + "</b></span></div>"; }).join("") + "</div></div>").firstElementChild;
@@ -1484,7 +1560,7 @@
       el("div", { class: "cb-filter-toggles" }, [toggle("Nahe der Schlüsselzone", "near"), toggle("Klare Struktur", "clear"), toggle("Klare Elliott-Zählung (beschreibend)", "elliott")])
     ]);
     function sel(opts, on) { var s0 = el("select", { class: "cb-select" }, opts.map(function (o) { return el("option", { value: o[0], text: o[1] }); })); s0.addEventListener("change", function () { on(s0.value); }); return s0; }
-    host.append(X.section("Eigene Auswahl", "Filter in Alltagssprache statt Indikatorwerten. Kein Filter ist ein Kaufsignal; für keine Lage ist ein Prognosevorteil belegt.", [filters, count, out], null, null, "auswahl"));
+    host.append(X.section("Eigene Auswahl", "Filter in Alltagssprache statt Indikatorwerten. Ein Filter ist kein Kaufsignal; für keine Lage ist ein Prognosevorteil belegt.", [filters, count, out], null, null, "auswahl"));
     apply();
   }
 
@@ -1508,27 +1584,27 @@
         para("Grundlage: Frost & Prechter, Elliott Wave Principle. Harte Regeln (z. B. Welle 2 nie unter den Ursprung von Welle 1, Welle 3 nie die kürzeste, Welle 4 nie im Gebiet von Welle 1) verwerfen eine Zählung. Definitionen trennen Musterklassen (Flat: B mindestens 90 % von A). Richtlinien (Fibonacci-Verhältnisse, Alternation, Kanal) ordnen nur die Rangfolge."),
         para("Muster: Impuls, Leading/Ending Diagonal, Zigzag, Flat, Dreieck, doppelte Korrekturen. Jede Welle wird auf der nächstfeineren Ebene geprüft (5 oder 3 Unterwellen) und mit dem höheren Grad abgeglichen. Alternativen werden immer gezeigt.")]),
       X.card([el("h3", { class: "qx-h3", text: "Strukturklarheit ist keine Wahrscheinlichkeit" }),
-        para("‚Strukturklarheit‘ beschreibt, wie eindeutig und gleichgerichtet das Bild der Verfahren ist – nicht, wie wahrscheinlich ein Ziel erreicht wird. Eine Wahrscheinlichkeit wird nur gezeigt, wenn eine Kalibrierung auf ungesehenen Jahren besteht. Das ist derzeit nicht der Fall – deshalb erscheinen keine Prozentwerte für die Zukunft, sondern historische Häufigkeiten mit Vergleich zum Zufall.")]),
+        para("‚Strukturklarheit‘ beschreibt, wie eindeutig und gleichgerichtet das Bild der Verfahren ist – nicht, wie wahrscheinlich eine Marke erreicht wird. Eine Wahrscheinlichkeit wird nur gezeigt, wenn eine Kalibrierung auf ungesehenen Jahren besteht. Das ist derzeit nicht der Fall – deshalb erscheinen keine Prozentwerte für die Zukunft, sondern historische Häufigkeiten mit Vergleich zum Zufall.")]),
       X.card([el("h3", { class: "qx-h3", text: "Wie geprüft wird" }),
-        para("Jede historische Lage wird so berechnet, wie sie am damaligen Tag sichtbar war (keine Zukunftsdaten, Test mit ‚vergifteter‘ Zukunft). Einstieg frühestens am Folgetag, Ungültigkeit per Schlusskurs, Kosten 0,1 % je Seite, nur nicht überlappende Signale je Aktie. Vergleich: dieselben Abstände zu Ziel und Grenze an zufälligen Tagen. Zeiträume: Entwicklung bis 2018, Prüfung ab 2019 nach dem Einfrieren der Regeln. Nach der Korrektur von Messfehlern wurde der Prüfzeitraum ein zweites Mal gerechnet, nach der vorab registrierten Elliott-Entscheidung (Gewicht 0) ein drittes Mal – jeweils ohne sonstige Regeländerung.")])
+        para("Jede historische Lage wird so berechnet, wie sie am damaligen Tag sichtbar war (keine Zukunftsdaten, Test mit ‚vergifteter‘ Zukunft). Einstieg frühestens am Folgetag, Ungültigkeit per Schlusskurs, Kosten 0,1 % je Seite, nur nicht überlappende Signale je Aktie. Vergleich: dieselben Abstände zu Marke und Grenze an zufälligen Tagen. Zeiträume: Entwicklung bis 2018, Prüfung ab 2019 nach dem Einfrieren der Regeln. Nach der Korrektur von Messfehlern wurde der Prüfzeitraum ein zweites Mal gerechnet, nach der vorab registrierten Elliott-Entscheidung (Gewicht 0) ein drittes Mal – jeweils ohne sonstige Regeländerung.")])
     ]));
     var st = ev && ev.studies && ev.studies.weekly;
     if (st) {
       var per = st.byPeriod || {}, test = per.TEST || {};
       var rows = [["Datenbasis", st.universe.symbolsWithEvents.toLocaleString("de-DE") + " Aktien, Wochencharts " + st.universe.dateRange[0].slice(0, 4) + "–" + st.universe.dateRange[1].slice(0, 4)],
         ["Ausgewertete Lagen (gesamt)", (st.overall.n || 0).toLocaleString("de-DE")],
-        ["Zielzone 1 erreicht (Prüfzeitraum ab 2019)", pct(test.t1HitRate) + " (Zufall gleicher Abstände: " + pct(test.baselineRate) + ")"],
+        ["Marke 1 der Methode erreicht (Prüfzeitraum ab 2019)", pct(test.t1HitRate) + " (Zufall gleicher Abstände: " + pct(test.baselineRate) + ")"],
         ["Vorteil gegenüber Zufall (ab 2019)", isNum(test.lift) ? (test.lift * 100).toFixed(1).replace(".", ",") + " Prozentpunkte (95 %-Intervall " + (test.liftCiLow * 100).toFixed(1).replace(".", ",") + " bis " + (test.liftCiHigh * 100).toFixed(1).replace(".", ",") + ")" : "–"],
         ["Durchschnittliches Ergebnis je Lage nach Kosten", isNum(st.overall.meanReturn) ? (st.overall.meanReturn * 100).toFixed(1).replace(".", ",") + " %" : "–"],
         ["Kalibrierung bestanden", st.calibration.passed ? "ja" : "nein – deshalb keine Wahrscheinlichkeiten"]];
       var edgeText = isNum(test.liftCiLow) && test.liftCiLow > 0 ? "Ehrlich: Der Vorteil gegenüber dem Zufall ist klein. Das Chartbild ordnet ein – es ist kein Signalgeber."
-        : "Ehrlich: Im Prüfzeitraum treffen die Szenarien ihre Zielzone nicht messbar häufiger als zufällig gewählte Tage mit denselben Abständen. Das Chartbild ordnet ein – es ist kein Signalgeber.";
+        : "Ehrlich: Im Prüfzeitraum erreichen die Szenarien ihre Marke 1 nicht messbar häufiger als zufällig gewählte Tage mit denselben Abständen. Das Chartbild ordnet ein – es ist kein Signalgeber.";
       host.append(X.section("Was die eigene Prüfung zeigt", edgeText, [
         X.card([el("dl", { class: "qx-kv" }, [].concat.apply([], rows.map(function (x) { return [el("dt", { text: x[0] }), el("dd", { class: "num", text: x[1] })]; })))]),
         st.elliott ? X.card([el("h3", { class: "qx-h3", text: "Empirisches Elliott" }), el("ul", { class: "cb-list" }, Object.keys(st.elliott.bySetup).map(function (k) {
           var e = st.elliott.bySetup[k], name = { IMPULSE_W3_AFTER_W2: "Nach Welle 2: Welle 3 überschreitet Welle 1", IMPULSE_W5_AFTER_W4: "Nach Welle 4: Welle 5 überschreitet Welle 3", ZIGZAG_C_AFTER_B: "Zigzag nach B: Welle C überschreitet A", FLAT_C_AFTER_B: "Flat nach B: Welle C überschreitet A" }[k] || k;
           return el("li", { text: name + ": " + pct(e.confirmRate) + " (Zufall gleicher Abstände " + pct(e.baselineRate) + ", n = " + e.n.toLocaleString("de-DE") + ")" });
-        })), para("Hohe Quoten entstehen aus der Geometrie (Ziel nah, Grenze fern). Gegen den Zufall gemessen trafen die Lehrbuch-Erwartungen " + (Object.keys(st.elliott.bySetup).every(function (k) { return !(st.elliott.bySetup[k].lift > 0); }) ? "in keinem Setup häufiger ein – Elliott-Zählungen sind hier Beschreibung, keine Vorhersage." : "nur teilweise häufiger ein.")) ]) : null,
+        })), para("Hohe Quoten entstehen aus der Geometrie (Marke nah, Grenze fern). Gegen den Zufall gemessen trafen die Lehrbuch-Erwartungen " + (Object.keys(st.elliott.bySetup).every(function (k) { return !(st.elliott.bySetup[k].lift > 0); }) ? "in keinem Setup häufiger ein – Elliott-Zählungen sind hier Beschreibung, keine Vorhersage." : "nur teilweise häufiger ein.")) ]) : null,
         ev.elliottValidation && ev.elliottValidation.confirmatory ? elliottValidationCard(ev.elliottValidation.confirmatory) : null,
         mev && mev.methods ? methodEvidenceCard(mev) : null,
         st.fibonacci ? X.card([el("h3", { class: "qx-h3", text: "Fibonacci-Niveaus" }), para("In " + st.fibonacci.n.toLocaleString("de-DE") + " bestätigten Gegenbewegungen endeten Rückläufe an 38,2 %, 50 % und 61,8 % nicht häufiger als knapp daneben (Verhältnis zum Nachbarbereich: " + Object.keys(st.fibonacci.levels).map(function (k) { return (k * 100).toFixed(1).replace(".", ",") + " % → " + String(st.fibonacci.levels[k].ratio).replace(".", ","); }).join(" · ") + "). Fibonacci zählt deshalb nur, wo mehrere Anker zusammenfallen.")]) : null

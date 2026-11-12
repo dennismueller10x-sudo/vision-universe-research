@@ -140,27 +140,108 @@ Für 24 Seiten: Titelthema auf 4 Aktien kürzen, Szenarien-Seite und eine Einzel
 
 Bekannt: Der Kerntest `core/tests/stock-availability.test.mjs` scheitert derzeit auch auf `main` (datenabhängig, nicht Publishing).
 
-## 8. Insights und Reports (Tagesartikel)
+## 8. Insights: Artikel, Aktienmagazin, Reports
 
-Owner-Entscheidung 09.11.2026: kein Newsticker, sondern **ein bis zwei Themenartikel am Tag** (ein großer Wert, ein
-Nebenwert oder ein Zukunftsthema), jeweils mit dem Teil, den nur Vision Universe hat: „Was unsere Daten zeigen“.
-Die Artikel sind frei lesbar, für Google und KI-Suchen gebaut (statisches HTML, `NewsArticle`-JSON-LD, Sitemap
-`/insights/sitemap.xml`, RSS `/insights/feed.xml`) und Rohstoff für Reels, X, TikTok und das Wochenheft.
+Owner-Entscheidungen 09.11.2026: kein Newsticker, sondern **ein bis zwei Themenartikel am Tag** (ein großer Wert, ein
+Nebenwert oder ein Zukunftsthema), jeweils mit dem Teil, den nur Vision Universe hat: „So zeigt Vision Universe …“ mit
+echten App-Screens. Unter `/insights/` stehen die Artikel, das **Aktienmagazin** (`/insights/magazin/`, online lesen und PDF)
+und die **Reports** (`/insights/reports/`, erst mit dem ersten fertigen Report gefüllt; das alte XPeng-Muster ist nicht mehr
+verlinkt, das alte `/magazin/` leitet auf das Aktienmagazin um).
+Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsArticle`-JSON-LD, Sitemap
+`/insights/sitemap.xml`, RSS `/insights/feed.xml`), Rohstoff für Reels, X, TikTok und das Wochenheft.
 
 **Ablauf je Artikel**
 
 1. Thema wählen (Anlass aus dem Tag), recherchieren, jede Zahl mit Quelle. Quellen kommen mit Adresse in `quellen`.
 2. `products/insights/artikel/<datum>-<slug>.json` anlegen (Vorlage: ein bestehender Artikel). Abschnitte als HTML-Absätze;
-   der Abschnitt mit `"daten": "<TICKER>"` bekommt den Datenkasten (Chart, Kennzahlen, Gesundheitscheck, 13F, Links in die App).
-3. Daten einfrieren: `node products/insights/snapshot.mjs products/insights/artikel/<datei>.json`. Ein Artikel zeigt immer den Stand
-   seines Erscheinens.
-4. Bild nach `insights/img/` (16:9, hell, Stil-Satz aus Abschnitt 5; bis neue Higgsfield-Motive da sind, Vorrat mit Aufhellung).
+   der Abschnitt mit `"daten": "<TICKER>"` bekommt danach den App-Teil (Kennzahlen-Kacheln, drei iPhones, Gesundheitscheck, 13F).
+3. Daten einfrieren: `node products/insights/snapshot.mjs <artikel.json>`, App-Screens aufnehmen:
+   `node products/insights/screens.mjs <artikel.json>` (Discover, Fundamental, Hedgefonds je Ticker, nach `insights/img/app/`).
+4. **Bilder mit Bezug statt Symbolbild** (Owner 09.11.2026): offizielles Pressematerial des Unternehmens oder Produkts
+   (Pressefotos, Artwork, Screenshots aus Presseseiten) mit Bildnachweis `quelle` („Bild: Rockstar Games“), sonst eigene
+   App-Screens; KI-Bilder nur, wenn es nichts Echtes gibt (`ki: true`, Hinweis „KI-Bild“). Keine Fotos von Privatpersonen.
+   Aufmacher 16:9 (1600 × 900), im Text `"bild"` je Abschnitt, Porträts mit `"stil": "portrait"`.
 5. Bauen: `node products/insights/build.mjs`; Prüfung: `node --test "products/insights/tests/*.test.mjs"` (aktuell gebaut,
-   Pflichtfelder, Quellen, Wortwahl, JSON-LD, Übersicht/Feed/Sitemap).
-6. Owner liest gegen und gibt frei (redaktionelle Verantwortung; damit gilt die Ausnahme von der KI-Kennzeichnungspflicht
-   für Texte, Art. 50 Abs. 4 KI-Verordnung). Der Hinweis „Mit KI-Unterstützung recherchiert und geschrieben, von der Redaktion
-   geprüft“ steht trotzdem unter jedem Artikel. KI-Bilder tragen „KI-Bild“.
-7. Reports: Eintrag in `products/insights/reports.json`, der Report selbst liegt unter `reports/<id>/`.
+   Pflichtfelder, Bildnachweise, Quellen, Wortwahl, JSON-LD, Magazin-Dateien, Übersicht/Feed/Sitemap vollständig).
+6. Owner sieht es sich live an; Korrekturen kommen als eigener kleiner PR. Kein KI-Hinweis am Text (Owner 10.11.2026):
+   der Owner liest jeden Artikel und trägt die redaktionelle Verantwortung; KI-Bilder behalten „KI-Bild“.
+
+**Tageslauf ohne Owner (ab 11.11.2026):** Zwei geplante Aufgaben wecken an jedem Werktag die dauerhafte Sitzung
+„Insights-Tageslauf (dauerhaft)“: um 4:47 Uhr (Frühlauf, Artikel gegen 6 Uhr: Tagesthema aus der US-Sitzung des Vortags)
+und um 10:47 Uhr (Mittagslauf, Artikel gegen 12 Uhr, vor der US-Eröffnung: Nebenwert oder Zukunftsthema). Die Sitzung
+schreibt nach `.claude/skills/insights-tageslauf/SKILL.md` je Lauf einen Artikel, prüft und veröffentlicht bei grüner CI
+selbst. Die Artikel erzählen die Geschichte hinter dem Kursausschlag, damit sie auch nach einer Gegenbewegung stimmen.
+**Öffentlich:** `/insights/` liegt als einziger Bereich ohne Passwortmaske (`scripts/access-gate/build.mjs`,
+`PUBLIC_PREFIXES`) und ist für Google freigegeben (`robots`-Meta, `NewsArticle`- und `BreadcrumbList`-JSON-LD,
+`/robots.txt` mit Sitemap). **Google Search Console** (11.11.2026): Dienstkonto `search-console` im Google-Cloud-Projekt
+„Vision Universe“, Nutzer der Domain-Property `visionuniverse.de`, Schlüssel im Secret `GSC_SERVICE_ACCOUNT_JSON`.
+`content.yml` (Teil `search-console`, täglich 02:23 UTC, 03:23 Uhr Berlin) reicht die Sitemap ein, prüft die Indexierung der neuesten
+Artikel und legt Klicks, Impressionen und Suchbegriffe intern in den Datenzweig (`seo/search-console/latest.json`);
+der Tageslauf liest den Bericht vor der Themenwahl. **IndexNow** (11.11.2026, für Bing, Copilot, ChatGPT-Suche, Yandex u. a.): der Schlüssel liegt als `<schlüssel>.txt` im Wurzelverzeichnis; `pages-release.yml` vergleicht vor jedem Ausrollen die ausgelieferte mit der neuen Insights-Sitemap und meldet neue oder geänderte Adressen danach an api.indexnow.org (`products/insights/indexnow.mjs`, Job `indexnow`; Fehler sind nur Warnungen, kein eigener Zeitplan). Solche
+Artikel tragen `"pruefung": "automatisch"` (intern: strengere Prüfregeln, z. B. drei Quellen) und erscheinen wie alle
+Artikel unter „Redaktion Vision Universe“, ohne KI-Hinweis (Owner-Entscheidung 10.11.2026: der Owner liest jeden
+Artikel nach, meldet Korrekturen und trägt die redaktionelle Verantwortung). Bilder nach dem Skill (Pressematerial,
+Firmenwebsite, KI-Bild mit „KI-Bild“); App-Screens als Aufmacher nur als Notlösung. Lieber kein Artikel
+als ein schlechter: ohne drei Quellen, bei roten Tests oder heiklen Themen bricht der Lauf ab und meldet nur.
+Pausieren oder ändern: in der App unter den geplanten Aufgaben („Insights-Tageslauf“).
+
+**Heft online stellen:** `python3 products/insights/heft_veroeffentlichen.py docs/publishing/ausgaben/<ordner> <NN>`
+(PDF, verkleinerte Seitenbilder, Cover nach `insights/magazin/nr-<NN>/`), dann Eintrag mit Titel, Unterzeile und Inhalt in
+`products/insights/magazin.json` (neueste zuerst) und bauen.
+
+**Report veröffentlichen:** Report unter `reports/<id>/`, Eintrag in `products/insights/reports.json`, bauen.
 
 Regeln wie im Heft (Abschnitt 6). Zusätzlich: Privatpersonen, gegen die nur Vorwürfe bestehen, werden nicht namentlich
 genannt; Vorwürfe stehen im Konjunktiv mit Quelle, die Gegenseite kommt zu Wort.
+
+## 9. Suche: Plan für die Freischaltung der ganzen Website
+
+Stand 11.11.2026: nur `/insights/` ist öffentlich und indexierbar (Sitemap, Search Console, IndexNow). Die Freischaltung
+weiterer Bereiche entscheidet der Owner; dieser Plan sagt, was dafür technisch vorbereitet wird.
+
+**Befund.** Die Bereichsseiten (`/quant/`, `/discover/`, `/hedgefonds/` …) sind leere Hüllen von 1–4 KB, der Inhalt entsteht
+erst im Browser. Google rendert das verzögert, KI-Suchen (ChatGPT, Perplexity, Claude) lesen meist nur das rohe HTML und
+sähen fast nichts. Aktienadressen wie `/aktie/NVDA` laufen über `404.html` und melden Suchmaschinen einen Fehler 404. Keine
+Bereichsseite hat strukturierte Daten; `llms.txt` gibt es nicht.
+
+**Schritte (je ein PR, in dieser Reihenfolge):**
+
+1. **Statische Aktienseiten** `/aktie/<ticker>/` aus den vorhandenen Daten (größter Hebel: Suchen wie „Nvidia Aktie
+   Kennzahlen“). Je Seite ein Fakten-Absatz oben (was das Unternehmen macht, drei bis fünf Kennzahlen mit Stand-Datum
+   und Quelle, Wortwahl nach `docs/legal/WORTWAHL.md`), darunter der Sprung in die App. Start mit dem Discover-Umfang,
+   später das Produktuniversum. Die bisherigen Links (`/aktie/NVDA?p=zahlen`) bleiben gültig.
+2. **Sitemap-Index** `/sitemap.xml` aus `core/registry/modules.json` (nur `access: free`, Status LIVE/BETA, Route
+   öffentlich) plus Insights- und Aktien-Sitemap; `robots.txt` zeigt auf den Index. IndexNow liest dann den Index statt
+   nur die Insights-Sitemap, die Search Console reicht ihn ein.
+3. **Titel, Beschreibung, strukturierte Daten je Bereich** (aus `products/<id>/module.json`, damit es nicht auseinanderläuft):
+   | Bereich | Titelmuster | Strukturierte Daten |
+   |---|---|---|
+   | Startseite | „Vision Universe – Aktien verstehen mit Daten“ | `Organization`, `WebSite` |
+   | Bereiche (Quant, Discover, Technical, Hedgefonds, Screener, Vorsorge, Academy) | „<Bereich>: <Nutzen in 5 Wörtern> · Vision Universe“ | `WebApplication` (Kategorie Finance), `BreadcrumbList` |
+   | Aktienseiten | „<Name> Aktie (<Ticker>): Kennzahlen, Bewertung, Investoren“ | `WebPage` mit `about` = `Corporation` (`tickerSymbol`), `BreadcrumbList` |
+   | Hedgefonds je Fonds | „<Fonds>: Depot und Käufe laut 13F“ | `WebPage`, `BreadcrumbList` |
+   | Academy-Lektionen | Frage als Titel | `Article`, bei echten Fragen `FAQPage` |
+   | Insights | wie heute | `NewsArticle`, `BreadcrumbList` |
+   Jede Seite: genau ein `canonical`, `og:`-Bild, Beschreibung 120–155 Zeichen; ein Test prüft das je Bereich.
+4. **Interne Verlinkung.** Artikel → statische Aktienseite; Aktienseite → neueste Artikel zum Ticker und verwandte Werte
+   (gleiche Branche); Bereichsseiten mit Brotkrumen und einer Fußzeile zu allen öffentlichen Bereichen. Keine Seite ohne
+   eingehenden Link (Test über die Sitemap).
+5. **Auswertung je Suchbegriff.** `search-console.mjs` von Insights auf die ganze Property erweitern: je Bereich und
+   Begriff Klicks, Impressionen, Position; daraus zwei Listen für die Tagesarbeit: viele Impressionen bei schwacher
+   Klickrate (Titel verbessern) und Position 8–20 (Seite ausbauen). Optional Bing Webmaster Tools (Owner meldet sich
+   einmal an und übernimmt die Domain aus der Search Console).
+6. **KI-Suche.**
+   - Bing/IndexNow: läuft für Insights; mit Schritt 2 für alle Seiten. ChatGPT-Suche und Copilot stützen sich auf Bing.
+   - Fakten-Absätze: der erste Absatz jeder Seite beantwortet die Frage allein (Wer, Was, Zahl, Datum, Quelle), ohne
+     Klick und ohne JavaScript lesbar.
+   - `robots.txt`: Such-Crawler zulassen (`OAI-SearchBot`, `PerplexityBot`, `Claude-SearchBot`, `Bingbot`, `Googlebot`).
+     Ob Trainings-Crawler (`GPTBot`, `ClaudeBot`, `CCBot`, `Google-Extended`) ausgeschlossen werden, entscheidet der
+     Owner mit der Freischaltung; Empfehlung: zulassen, weil Bekanntheit in KI-Antworten das Ziel ist.
+   - `llms.txt`: geringer Nutzen (keine große Suche nutzt sie verbindlich), aber billig. Mit Schritt 2 aus derselben
+     Liste erzeugen (Bereiche mit einem Satz, neueste Artikel), nicht von Hand pflegen.
+7. **Nicht öffentlich** bleiben: `/konto/`, `/mein-dashboard/`, `/status/`, `/social/`, `/company-intelligence/`, alles mit
+   `access: intern`; `/preise/` erst nach der rechtlichen Abnahme (`docs/accounts/RECHTLICHE_ABNAHME.md`).
+
+**Freischaltung selbst** (Owner-Entscheidung, danach ein PR): weitere Präfixe in `PUBLIC_PREFIXES`
+(`scripts/access-gate/build.mjs`), `robots`-Meta der freigegebenen Seiten auf `index`; IndexNow und Search Console melden
+die neuen Adressen beim nächsten Ausrollen von selbst.
