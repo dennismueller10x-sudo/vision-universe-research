@@ -1,0 +1,1770 @@
+{
+ "schemaVersion": "backtest-research-1.0.0",
+ "asOf": "2026-11-12",
+ "runner": "backtest-runner-1.0.0",
+ "label": "Forschung, nicht zertifiziert",
+ "audience": "INTERNAL",
+ "display": {
+  "public": false,
+  "reason": "Öffentliche Rendite- oder Performanceaussagen brauchen eine Owner-Freigabe (CLAUDE.md, Freigaben)."
+ },
+ "certificationStatus": "NOT_CERTIFIED",
+ "productionApproved": false,
+ "source": "docs/quant/backtest-demos/cases.json",
+ "summary": {
+  "cases": 16,
+  "executed": 12,
+  "dataLimited": 4,
+  "methods": {
+   "MONTE_CARLO": 5,
+   "WALK_FORWARD": 4,
+   "OUT_OF_SAMPLE": 3,
+   "MARKET_REGIME": 9,
+   "PARAMETER_SENSITIVITY": 3,
+   "EVENT_DRIVEN": 1,
+   "PORTFOLIO_REBALANCING": 5
+  }
+ },
+ "cases": [
+  {
+   "id": "replay-nvda-winner-splits",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_WINNER",
+    "CORPORATE_ACTION_SPLIT"
+   ],
+   "purpose": "Gleiche-Aktie-Wiederholung einer festen Regel (Wochenschluss höchstens 5 % unter dem 52-Wochen-Hoch) auf NVDA 2010–2024; Fenster enthält die Splits 2021-07-20 (4:1) und 2024-06-10 (10:1).",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "OBSERVED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2011-01-07",
+    "to": "2025-05-30",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 37,
+    "completed": 37
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.8648648648648649,
+    "maxDrawdown": -0.16433566433566427,
+    "trades": 37,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "EXECUTED",
+     "model": "TRADE_IID",
+     "simulations": 2000,
+     "horizon": 10,
+     "sourceObservations": 20,
+     "totalReturn": {
+      "p5": 0.39619295578015196,
+      "p50": 7.890615888814502,
+      "p95": 44.27926605379634
+     },
+     "maxDrawdown": {
+      "p5": -0.6441075223565831,
+      "p50": -0.3912480481395437,
+      "p95": 0
+     },
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
+     "inputHash": "5ed3bedee86091a307cafe007d75d1fee905ce3e0e318d58d04ca5d806d6a5f2"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 5,
+     "sizes": {
+      "train": 156,
+      "validation": 52,
+      "test": 104,
+      "step": 104
+     },
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 16,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 16
+     },
+     "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "EXECUTED",
+     "endpoint": "netReturn",
+     "n": 29,
+     "mean": 0.3265475035407173,
+     "perFold": [
+      {
+       "fold": 0,
+       "test": [
+        "2014-01-03",
+        "2015-12-24"
+       ],
+       "n": 7,
+       "mean": 0.1306421293660916
+      },
+      {
+       "fold": 1,
+       "test": [
+        "2015-12-31",
+        "2017-12-22"
+       ],
+       "n": 7,
+       "mean": 0.6189034809400012
+      },
+      {
+       "fold": 2,
+       "test": [
+        "2017-12-29",
+        "2019-12-20"
+       ],
+       "n": 4,
+       "mean": -0.025763187319357783
+      },
+      {
+       "fold": 3,
+       "test": [
+        "2019-12-27",
+        "2021-12-17"
+       ],
+       "n": 8,
+       "mean": 0.3403630413449361
+      },
+      {
+       "fold": 4,
+       "test": [
+        "2021-12-23",
+        "2023-12-15"
+       ],
+       "n": 3,
+       "mean": 0.5344022496853648
+      }
+     ],
+     "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
+     "resultHash": "7532b2d73c1a302687da948bf41dbc8363c29773bd90d8076e1541082858b922"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 2,
+       "mean": 0.4953033547391571,
+       "median": 0.4953033547391571,
+       "interval95": null
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 1,
+       "mean": 0.3663919972644807,
+       "median": 0.3663919972644807,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 2,
+       "mean": 0.32632411859248606,
+       "median": 0.326324118592486,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 32,
+       "mean": 0.2716182743808648,
+       "median": 0.17301532584022872,
+       "interval95": null
+      }
+     ],
+     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "EXECUTED",
+     "grid": [
+      {
+       "parameters": {
+        "holdingPeriods": 13
+       },
+       "n": 37,
+       "estimate": 0.14483716674112956,
+       "ci": [
+        0.0715026531827212,
+        0.21376603155656146
+       ],
+       "adjustedPValue": 0.003
+      },
+      {
+       "parameters": {
+        "holdingPeriods": 26
+       },
+       "n": 37,
+       "estimate": 0.2892278844355524,
+       "ci": [
+        0.14158642209036776,
+        0.43092978495716555
+       ],
+       "adjustedPValue": 0.003
+      },
+      {
+       "parameters": {
+        "holdingPeriods": 52
+       },
+       "n": 37,
+       "estimate": 0.7176501863970329,
+       "ci": [
+        0.3654241050711744,
+        1.0284338530651915
+       ],
+       "adjustedPValue": 0.003
+      }
+     ]
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "eff0ea99a3a9ff577713c4beb505aa2198f6a9e918e3971438cd2252810df2c8"
+  },
+  {
+   "id": "replay-intc-loser",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_LOSER"
+   ],
+   "purpose": "Dieselbe Regel auf einem starken Verlierer: INTC 2019–2025 (Kurs etwa halbiert).",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "OBSERVED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2019-03-15",
+    "to": "2024-05-10",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 6,
+    "completed": 6
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.3333333333333333,
+    "maxDrawdown": -0.2828832007585582,
+    "trades": 6,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "EXECUTED",
+     "model": "TRADE_IID",
+     "simulations": 2000,
+     "horizon": 10,
+     "sourceObservations": 4,
+     "totalReturn": {
+      "p5": -0.5585888197195292,
+      "p50": -0.0787919996626637,
+      "p95": 0.8627376185481636
+     },
+     "maxDrawdown": {
+      "p5": -0.5929869419545452,
+      "p50": -0.3279031172902114,
+      "p95": -0.17622466408373383
+     },
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
+     "inputHash": "92ec37f18a572d34a7ad8cdbac76331c615a33e659a4e2ec4056b3e64c8cf09b"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 1,
+       "mean": -0.04959329067477758,
+       "median": -0.04959329067477758,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 5,
+       "mean": -0.08793670221604163,
+       "median": -0.17622466408373394,
+       "interval95": null
+      }
+     ],
+     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "befaaf0a6c42e3747a13acc196d2981bbae6f4014f493e2569bd8a6dcf6ce550"
+  },
+  {
+   "id": "ledger-smci-winner-split",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_WINNER",
+    "CORPORATE_ACTION_SPLIT"
+   ],
+   "purpose": "Realer Wochen-Ledger (eine finanzierte Position, NEW_52W_HIGH, 26 Wochen) auf SMCI, 10 Jahre bis 2025-12-31; enthält den 10:1-Split 2024-10-01.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "SIMULATED_LEDGER",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2015-12-31",
+    "to": "2025-12-26",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 8,
+    "completed": 6
+   },
+   "metrics": {
+    "basis": "PORTFOLIO",
+    "hitRate": 1,
+    "maxDrawdown": -0.4152249134948097,
+    "trades": 6,
+    "totalReturn": 5.807572892993535,
+    "cagr": 0.21171440663298036
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "EXECUTED",
+     "model": "TRADE_IID",
+     "simulations": 2000,
+     "horizon": 6,
+     "sourceObservations": 6,
+     "totalReturn": {
+      "p5": 1.7936339539627784,
+      "p50": 5.807476073401013,
+      "p95": 15.768558119486105
+     },
+     "maxDrawdown": {
+      "p5": 0,
+      "p50": 0,
+      "p95": 0
+     },
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
+     "inputHash": "3d6a74a7d317376724a416e967165faa818b76daeeb9760957dff46375a897ea"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_APPLICABLE"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "0344dad9c83270343adc946ae196311c1b881bdd3ff86a0e7032c8ae2c21fb3d"
+  },
+  {
+   "id": "pattern-2015-sideways",
+   "kind": "PATTERN_EVIDENCE",
+   "scenarios": [
+    "SIDEWAYS"
+   ],
+   "purpose": "Musterstudie (Wochenschluss ≥ 20 % unter dem bisherigen Hoch) über 30 Large Caps im Seitwärtsjahr 2015 (SPY etwa ±0 %), 13 Wochen Horizont, gleichzeitige Kontrollen.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "OBSERVED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2015-01-02",
+    "to": "2016-03-24",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 62,
+    "completed": 62
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.5,
+    "maxDrawdown": -0.0849599380758847,
+    "trades": 62,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 2,
+     "sizes": {
+      "train": 13,
+      "validation": 4,
+      "test": 13,
+      "step": 13
+     },
+     "excludedByReason": {
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 37
+     },
+     "partitionHash": "405bb435ca4893e257e76c6ac334410380f7c86d9cd621c61da75f59f970f59e"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "EXECUTED",
+     "endpoint": "netReturn",
+     "n": 33,
+     "mean": -0.01832344242719679,
+     "perFold": [
+      {
+       "fold": 0,
+       "test": [
+        "2015-05-01",
+        "2015-07-24"
+       ],
+       "n": 15,
+       "mean": -0.06130325564475803
+      },
+      {
+       "fold": 1,
+       "test": [
+        "2015-07-31",
+        "2015-10-23"
+       ],
+       "n": 18,
+       "mean": 0.017493068587437585
+      }
+     ],
+     "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
+     "resultHash": "03f86f6636331d00203dab1f7c343604a81256ed1fd70f954c8abfeb9021facb"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 28,
+       "mean": 0.028269136619967713,
+       "median": 0.029145834621172928,
+       "interval95": [
+        -0.021230890925368385,
+        0.07776916416530381
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 34,
+       "mean": -0.018285150572845504,
+       "median": -0.03019679189106761,
+       "interval95": [
+        -0.06011010389891144,
+        0.02353980275322044
+       ]
+      }
+     ],
+     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "5829e7c4489559bf1b90864dd45b24b38fc16b80f481c6de45dfddc79a600b84"
+  },
+  {
+   "id": "signal-2008-crash",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH"
+   ],
+   "purpose": "Alle fünf Signalregeln auf 30 Large Caps, Signale 2007-10 bis 2009-03 (Finanzkrise), 26 Wochen; finanzierte Variante TREND_UP (max. 5 Positionen) über research-portfolio.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2007-10-05",
+    "to": "2009-10-02",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 201,
+    "completed": 201
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.26865671641791045,
+    "maxDrawdown": -0.21942697414395518,
+    "trades": 201,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "EXECUTED",
+     "model": "CIRCULAR_BLOCK",
+     "simulations": 2000,
+     "horizon": 26,
+     "sourceObservations": 104,
+     "totalReturn": {
+      "p5": -0.34949511411773587,
+      "p50": -0.07615529977155266,
+      "p95": 0.14672355347036686
+     },
+     "maxDrawdown": {
+      "p5": -0.38915715812925117,
+      "p50": -0.17446433328365257,
+      "p95": -0.061743077040011765
+     },
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
+     "inputHash": "559e9bb196c436a381b746bb40ff9cc401b592d9f2b738538112ba6e487de7a2"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 1,
+     "sizes": {
+      "train": 26,
+      "validation": 8,
+      "test": 26,
+      "step": 26
+     },
+     "excludedByReason": {
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 118
+     },
+     "partitionHash": "b5f32145256b77bcf60d65cc637495e0952406a46cc8e52cccdc5dfe8078590f"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "EXECUTED",
+     "endpoint": "netReturn",
+     "n": 62,
+     "mean": -0.2375545312103218,
+     "perFold": [
+      {
+       "fold": 0,
+       "test": [
+        "2008-05-30",
+        "2008-11-21"
+       ],
+       "n": 62,
+       "mean": -0.2375545312103218
+      }
+     ],
+     "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
+     "resultHash": "dd987f7c94aa7ed6ccd32a22c2134acaedb947af781493774249c6ac36b353be"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 78,
+       "mean": -0.05347303558887285,
+       "median": -0.06321309395463293,
+       "interval95": [
+        -0.1113179552996808,
+        0.0043718841219351
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 113,
+       "mean": -0.17056625747494675,
+       "median": -0.17178257427220067,
+       "interval95": [
+        -0.24948309227467366,
+        -0.09164942267521983
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 10,
+       "mean": -0.11262458869715908,
+       "median": -0.12170819512604164,
+       "interval95": [
+        -0.19933544984409177,
+        -0.02591372755022639
+       ]
+      }
+     ],
+     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "EXECUTED",
+     "rule": "TREND_UP",
+     "maxPositions": 5,
+     "holdingWeeks": 26,
+     "rebalances": null,
+     "from": "2007-10-05",
+     "to": "2009-10-02",
+     "totalReturn": -0.33827965669059035,
+     "cagr": -0.18711457755508598,
+     "maxDrawdown": -0.4036233473762205,
+     "volatility": 0.2781238360756752,
+     "benchmarkTotalReturn": -0.34238049406480586,
+     "oneWayTurnoverSum": null
+    }
+   },
+   "resultHash": "dfe2aee820405d6ac7fac8d976ca9e24b3116bdc349b3c1456684dd0468d4516"
+  },
+  {
+   "id": "signal-2009-recovery",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "RECOVERY"
+   ],
+   "purpose": "Signalregeln in der Erholung 2009-03 bis 2010-12 (30 Large Caps), mit Parameter-Sensitivität (Horizont 13/26/52, Kosten 5/25 Bp).",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2009-03-27",
+    "to": "2011-07-01",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 315,
+    "completed": 315
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.8031746031746032,
+    "maxDrawdown": -0.0990322580645161,
+    "trades": 315,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 72,
+       "mean": 0.18797423128309199,
+       "median": 0.18380680703775154,
+       "interval95": [
+        0.13711223753042184,
+        0.23883622503576213
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 36,
+       "mean": 0.1146100547591017,
+       "median": 0.06647554846525705,
+       "interval95": [
+        0.021548065823925572,
+        0.20767204369427783
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 80,
+       "mean": 0.1524785323026362,
+       "median": 0.13974990526714692,
+       "interval95": [
+        0.09838985205077819,
+        0.2065672125544942
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 127,
+       "mean": 0.04449288227935123,
+       "median": 0.04931436488040286,
+       "interval95": [
+        0.007905439539440638,
+        0.08108032501926182
+       ]
+      }
+     ],
+     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "EXECUTED",
+     "grid": [
+      {
+       "parameters": {
+        "feeBps": 5,
+        "holdingPeriods": 13
+       },
+       "n": 315,
+       "estimate": 0.05452798237072442,
+       "ci": [
+        0.01807984037797694,
+        0.09861781032748713
+       ],
+       "adjustedPValue": 0.014
+      },
+      {
+       "parameters": {
+        "feeBps": 5,
+        "holdingPeriods": 26
+       },
+       "n": 315,
+       "estimate": 0.11272693732507552,
+       "ci": [
+        0.06778285538301193,
+        0.16475860584389557
+       ],
+       "adjustedPValue": 0.006
+      },
+      {
+       "parameters": {
+        "feeBps": 5,
+        "holdingPeriods": 52
+       },
+       "n": 315,
+       "estimate": 0.15521107405905007,
+       "ci": [
+        0.09677072775036966,
+        0.22324472339043933
+       ],
+       "adjustedPValue": 0.006
+      },
+      {
+       "parameters": {
+        "feeBps": 25,
+        "holdingPeriods": 13
+       },
+       "n": 315,
+       "estimate": 0.05031827722242269,
+       "ci": [
+        0.014015637230151229,
+        0.09423209735498327
+       ],
+       "adjustedPValue": 0.014
+      },
+      {
+       "parameters": {
+        "feeBps": 25,
+        "holdingPeriods": 26
+       },
+       "n": 315,
+       "estimate": 0.10828490032366701,
+       "ci": [
+        0.06352023641156587,
+        0.16010885696902308
+       ],
+       "adjustedPValue": 0.006
+      },
+      {
+       "parameters": {
+        "feeBps": 25,
+        "holdingPeriods": 52
+       },
+       "n": 315,
+       "estimate": 0.15059943919763205,
+       "ci": [
+        0.0923923883830847,
+        0.21836149630137436
+       ],
+       "adjustedPValue": 0.006
+      }
+     ]
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "e64cec3f7381ea8bebb8ac4ccc5f5510516f209707a14f3100cb06e9a3aee068"
+  },
+  {
+   "id": "signal-2020-covid",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "purpose": "Corona-Crash und Erholung: Signale 2020-01 bis 2020-12, 30 Large Caps, 13 Wochen; finanzierte Variante NEW_52W_HIGH.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2020-01-10",
+    "to": "2021-04-09",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 196,
+    "completed": 196
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.6428571428571429,
+    "maxDrawdown": -0.10075808557834737,
+    "trades": 196,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 58,
+       "mean": 0.09238443771227405,
+       "median": 0.049184311940272174,
+       "interval95": [
+        -0.0062670967158332674,
+        0.19103597214038137
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 7,
+       "mean": 0.05131709539961945,
+       "median": 0.01576606136701053,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 59,
+       "mean": 0.06194620857333299,
+       "median": 0.03503269946979026,
+       "interval95": [
+        -0.011447225996007095,
+        0.13533964314267308
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 72,
+       "mean": 0.05076078697963779,
+       "median": 0.02718189310905106,
+       "interval95": [
+        -0.07126018853517854,
+        0.17278176249445412
+       ]
+      }
+     ],
+     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "EXECUTED",
+     "rule": "NEW_52W_HIGH",
+     "maxPositions": 5,
+     "holdingWeeks": 13,
+     "rebalances": null,
+     "from": "2020-01-03",
+     "to": "2021-04-09",
+     "totalReturn": 0.136446919868765,
+     "cagr": 0.10641052118385641,
+     "maxDrawdown": -0.2350019731426617,
+     "volatility": 0.2195128079278119,
+     "benchmarkTotalReturn": 0.2762941596104338,
+     "oneWayTurnoverSum": null
+    }
+   },
+   "resultHash": "56e6f60fa2d9181d27a3499613f1ae49abcce48ad3fea2aba309187ebb5e344a"
+  },
+  {
+   "id": "signal-2022-bear",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH"
+   ],
+   "purpose": "Bärenmarkt 2022: Signale 2022-01 bis 2022-12, 30 Large Caps, 26 Wochen.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2022-01-07",
+    "to": "2023-07-07",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 156,
+    "completed": 156
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.2948717948717949,
+    "maxDrawdown": -0.17650429799426937,
+    "trades": 156,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 70,
+       "mean": 0.03257498696984601,
+       "median": -0.019484662664266794,
+       "interval95": [
+        -0.042051830911517846,
+        0.10720180485120986
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 40,
+       "mean": -0.0795691560769181,
+       "median": -0.07377261839517135,
+       "interval95": [
+        -0.13193840311511498,
+        -0.027199909038721222
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 23,
+       "mean": -0.06737299793786337,
+       "median": -0.09528677094549098,
+       "interval95": [
+        -0.18325132298324195,
+        0.048505327107515206
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 23,
+       "mean": -0.1479381899369465,
+       "median": -0.18118723381881285,
+       "interval95": [
+        -0.17380513385182783,
+        -0.12207124602206515
+       ]
+      }
+     ],
+     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "6ea1004ef59e37999a808a688266fec2e03fdcbfee91e99084fe44d059c9a40e"
+  },
+  {
+   "id": "setup-reconstruction-2016-2024",
+   "kind": "SETUP_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION"
+   ],
+   "purpose": "Setup-Backtest auf rekonstruierten Zuständen (setup-replay-v1, alle Replay-Titel im V10-Frame), SETUP_NEW/SETUP_CONFIRMED, Einstieg nächster Wochenschluss, 26 Wochen; Setup-OOS-Status aus dem Zertifizierungspfad.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": "2016-01-08",
+    "to": "2025-07-03",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 2750,
+    "completed": 2750
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.536,
+    "maxDrawdown": -0.1795696047702775,
+    "trades": 2750,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 3,
+     "sizes": {
+      "train": 104,
+      "validation": 52,
+      "test": 104,
+      "step": 104
+     },
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 1528,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 895
+     },
+     "partitionHash": "f1a7d214aa9cffb9274384725b69eda38371d2239cc1438662f9af7ef72208d0"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "e3e96aef970f0ca1a80456e2c54750871bc6fdb1637e0e84a59c748077c7b206"
+  },
+  {
+   "id": "strategy-2019-bull",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "BULL"
+   ],
+   "purpose": "Gleichgewichtete Strategie aus 10 Large Caps, Rebalancing alle 4 Wochen, 2019 (SPY +29 %); Monte Carlo (Blockbootstrap), Regime, Kostensensitivität.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "SIMULATED_LEDGER",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": "2019-01-04",
+    "to": "2019-12-27",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 130,
+    "completed": 130
+   },
+   "metrics": {
+    "basis": "PORTFOLIO",
+    "hitRate": null,
+    "maxDrawdown": -0.08863713315752031,
+    "trades": 130,
+    "totalReturn": 0.2777096914656281,
+    "cagr": 0.28496635469065645
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "EXECUTED",
+     "model": "CIRCULAR_BLOCK",
+     "simulations": 2000,
+     "horizon": 52,
+     "sourceObservations": 51,
+     "totalReturn": {
+      "p5": 0.07019011257256345,
+      "p50": 0.29020052320163203,
+      "p95": 0.5160238215175815
+     },
+     "maxDrawdown": {
+      "p5": -0.1380026570806674,
+      "p50": -0.08042370707369623,
+      "p95": -0.03750638977623477
+     },
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
+     "inputHash": "713be8f9600b6453b59f59240be49cdb1ac12f80d5a464f2fc669594324fbb3f"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 11,
+       "mean": 0.008420704071363123,
+       "median": 0.003693850952419364,
+       "interval95": null
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 3,
+       "mean": 0.029150034897163907,
+       "median": 0.020755670364006384,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 37,
+       "mean": 0.001979847724856736,
+       "median": 0.0034846094641114433,
+       "interval95": null
+      }
+     ],
+     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "EXECUTED",
+     "grid": [
+      {
+       "parameters": {
+        "everySessions": 1,
+        "feeBps": 0
+       },
+       "n": 51,
+       "estimate": -0.000007962880215162987,
+       "ci": [
+        -0.0022561648352365684,
+        0.002170131732457526
+       ],
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 1,
+        "feeBps": 5
+       },
+       "n": 51,
+       "estimate": -0.000025851759888884323,
+       "ci": [
+        -0.0022839385057848473,
+        0.0021718798844302363
+       ],
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 1,
+        "feeBps": 25
+       },
+       "n": 51,
+       "estimate": -0.00009731365768099438,
+       "ci": [
+        -0.0023931418710256666,
+        0.002145704756805406
+       ],
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 4,
+        "feeBps": 0
+       },
+       "n": 51,
+       "estimate": 0.00003224402431536607,
+       "ci": [
+        -0.002190879844999092,
+        0.0022055277377780493
+       ],
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 4,
+        "feeBps": 5
+       },
+       "n": 51,
+       "estimate": 0.000018244211034196157,
+       "ci": [
+        -0.002206014929757329,
+        0.0022108699703165856
+       ],
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 4,
+        "feeBps": 25
+       },
+       "n": 51,
+       "estimate": -0.000037655992872529565,
+       "ci": [
+        -0.0022978416676842856,
+        0.0022303169846544435
+       ],
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 13,
+        "feeBps": 0
+       },
+       "n": 51,
+       "estimate": 0.000027629210721289694,
+       "ci": [
+        -0.0021098119141754494,
+        0.0021447839929787747
+       ],
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 13,
+        "feeBps": 5
+       },
+       "n": 51,
+       "estimate": 0.000015869693832105658,
+       "ci": [
+        -0.002130055512056481,
+        0.0021418984825666947
+       ],
+       "adjustedPValue": 1
+      },
+      {
+       "parameters": {
+        "everySessions": 13,
+        "feeBps": 25
+       },
+       "n": 51,
+       "estimate": -0.00003107237796618141,
+       "ci": [
+        -0.002209199338968706,
+        0.002146638764794186
+       ],
+       "adjustedPValue": 1
+      }
+     ]
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "EXECUTED",
+     "rule": null,
+     "maxPositions": null,
+     "holdingWeeks": null,
+     "rebalances": 13,
+     "from": null,
+     "to": null,
+     "totalReturn": null,
+     "cagr": null,
+     "maxDrawdown": null,
+     "volatility": null,
+     "benchmarkTotalReturn": null,
+     "oneWayTurnoverSum": 0.7153239035034699
+    }
+   },
+   "resultHash": "5777281f60bf7d86be9aae6b1068ac1883af4c677ac46e54d1860475e362f14e"
+  },
+  {
+   "id": "strategy-2013-2014-bull",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "BULL"
+   ],
+   "purpose": "Gleichgewichtete Strategie aus 30 Large Caps, monatliches Rebalancing, 2013–2014.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "SIMULATED_LEDGER",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": "2013-01-04",
+    "to": "2014-12-26",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 690,
+    "completed": 690
+   },
+   "metrics": {
+    "basis": "PORTFOLIO",
+    "hitRate": null,
+    "maxDrawdown": -0.06092001927846258,
+    "trades": 690,
+    "totalReturn": 0.30930971658981377,
+    "cagr": 0.14628412837062466
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 103,
+       "mean": 0.0027190530053712142,
+       "median": 0.003913707643419029,
+       "interval95": null
+      }
+     ],
+     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "EXECUTED",
+     "rule": null,
+     "maxPositions": null,
+     "holdingWeeks": null,
+     "rebalances": 23,
+     "from": null,
+     "to": null,
+     "totalReturn": null,
+     "cagr": null,
+     "maxDrawdown": null,
+     "volatility": null,
+     "benchmarkTotalReturn": null,
+     "oneWayTurnoverSum": 0.8163442758928923
+    }
+   },
+   "resultHash": "ced070d3ab6dfda177ae5ba9a61f43dc14d1339a28bc4472c3ec7ef17cf1b2ae"
+  },
+  {
+   "id": "strategy-dividends-tr",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "DIVIDENDS",
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "purpose": "Gesamtrendite mit Dividenden aus dem TR-Register (MSFT, WMT, IBM gleichgewichtet, Kauf und Halten 2016–2020, enthält den Corona-Crash), Vergleich mit derselben Strategie ohne Dividenden; Ereignisstudie Dividendenmeldung. Kein periodisches Rebalancing: der Ledger verweigert Entscheidungen vor später veröffentlichten Dividendeninformationen (DECISION_BEFORE_EVENT_INFORMATION, z. B. WMT 2017-03-10), also korrektes PIT-Verhalten.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "SIMULATED_LEDGER",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": "2016-01-08",
+    "to": "2020-12-31",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 3,
+    "completed": 3
+   },
+   "metrics": {
+    "basis": "PORTFOLIO",
+    "hitRate": null,
+    "maxDrawdown": -0.19714479540341157,
+    "trades": 3,
+    "totalReturn": 1.7442684441611416,
+    "cagr": 0.22471434938735446
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "EXECUTED",
+     "coverage": {
+      "expected": 60,
+      "observed": 60,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "maturedDenominator": 60,
+      "observedShareMatured": 1
+     },
+     "meanNet": 0.019305673580136604,
+     "medianNet": 0.010627059681911577,
+     "interval95": [
+      -0.01105154798005624,
+      0.04966289514032945
+     ]
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "EXECUTED",
+     "rule": null,
+     "maxPositions": null,
+     "holdingWeeks": null,
+     "rebalances": 1,
+     "from": null,
+     "to": null,
+     "totalReturn": null,
+     "cagr": null,
+     "maxDrawdown": null,
+     "volatility": null,
+     "benchmarkTotalReturn": null,
+     "oneWayTurnoverSum": 0.49999999999999994
+    }
+   },
+   "resultHash": "6df62d7036c7c935749730df91bd88b6c807577021008f462f247608c2b28201"
+  },
+  {
+   "id": "strategy-profile-prepared",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "STATE_B"
+   ],
+   "purpose": "Profil-Strategie (buildProfileTargets): Engine bereit, PIT-Faktor-Snapshots und beobachtete Provenienz fehlen → Zustand B mit genauen fehlenden Eingaben.",
+   "privateData": null,
+   "state": "PREPARED_DATA_LIMITED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": null,
+    "to": null,
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": null,
+    "completed": null
+   },
+   "metrics": {
+    "basis": "NONE",
+    "hitRate": null,
+    "maxDrawdown": null,
+    "trades": null,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [
+    "MISSING_INPUT:PROFILE_TARGETS_REQUIRE_PIT_FACTOR_SNAPSHOTS_WITH_ROW_AVAILABILITY (research-portfolio.buildProfileTargets)",
+    "MISSING_INPUT:HISTORICAL_OBSERVED_PROVENANCE_EVIDENCE_HASHES (identity, population, corporate actions, lifecycle, license)"
+   ],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_RUN"
+    }
+   },
+   "resultHash": "70f4be8b347cb8f9880bebb122a299a7e359afb830836a3849f9c0f2141d06e6"
+  },
+  {
+   "id": "factor-momentum-v10-panel",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION",
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "purpose": "Faktor-Ranking (Momentum, 5 Buckets, 13 Wochen) auf dem privaten V10-PIT-Panel, Rangtage 2019–2020, gesamter V10-Primary-Frame. Ohne Panel: Zustand B mit fehlender Eingabe.",
+   "privateData": "factorPanel",
+   "state": "PREPARED_DATA_LIMITED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": null,
+    "to": null,
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": null,
+    "completed": null
+   },
+   "metrics": {
+    "basis": "NONE",
+    "hitRate": null,
+    "maxDrawdown": null,
+    "trades": null,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [
+    "MISSING_INPUT:PRIVATE_FACTOR_PANEL panel.jsonl.gz (scripts/quant/v10/factor/panel.cjs from SEC companyfacts PIT documents, scripts/quant/v10/factor/pit_docs.py)"
+   ],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_RUN"
+    }
+   },
+   "resultHash": "1b2179e0d89e6e3c03c329dda88a5292117f9d7958970fb75090b0bf0dc89cac"
+  },
+  {
+   "id": "delisted-xco-bankruptcy",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "DELISTED"
+   ],
+   "purpose": "Delisteter Titel (EXCO Resources, Insolvenz, letzter Handel 2017-12-22) aus der privaten, hash-gebundenen V13-Reihe: Regel-Wiederholung, Ereignisse nach dem letzten Handelstag werden zensiert.",
+   "privateData": "delistedSeries",
+   "state": "PREPARED_DATA_LIMITED",
+   "evidenceKind": "OBSERVED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": null,
+    "to": null,
+    "asOf": "2025-12-31",
+    "grain": "UNSPECIFIED"
+   },
+   "events": {
+    "occurrences": null,
+    "completed": null
+   },
+   "metrics": {
+    "basis": "NONE",
+    "hitRate": null,
+    "maxDrawdown": null,
+    "trades": null,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [
+    "MISSING_INPUT:PRIVATE_DATA_UNAVAILABLE:delistedSeries (docs/quant-recovery/v13/delisted/register-1.0.0.json, private hash-bound series)"
+   ],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_RUN"
+    }
+   },
+   "resultHash": "6565c647a32799d7dd40c3d125ace1cec5067f46637ec0568eec3d24eaee51d9"
+  },
+  {
+   "id": "acquisition-agn",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "ACQUISITION"
+   ],
+   "purpose": "Übernommener Titel (Allergan, Übernahme abgeschlossen, letzter Handel 2020-05-08) aus der privaten V13-Reihe: Signalregeln 2015–2020, offene Ergebnisse nach dem letzten Handel zensiert, Abfindungsszenarien nur dokumentiert.",
+   "privateData": "delistedSeries",
+   "state": "PREPARED_DATA_LIMITED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": null,
+    "to": null,
+    "asOf": "2025-12-31",
+    "grain": "UNSPECIFIED"
+   },
+   "events": {
+    "occurrences": null,
+    "completed": null
+   },
+   "metrics": {
+    "basis": "NONE",
+    "hitRate": null,
+    "maxDrawdown": null,
+    "trades": null,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [
+    "MISSING_INPUT:PRIVATE_DATA_UNAVAILABLE:delistedSeries (docs/quant-recovery/v13/delisted/register-1.0.0.json, private hash-bound series)"
+   ],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_RUN"
+    }
+   },
+   "resultHash": "0fd741e70b455617ee88710c67025b85307100655753bb5c1e2d5765240ce28e"
+  }
+ ]
+}
