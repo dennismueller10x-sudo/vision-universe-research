@@ -33,18 +33,20 @@ PROMOTION = re.compile(r'\b(?:(?:world[’\']?s?[ -]|nation[’\']s[ -]|global[ 
 # Parser 1.0.23 (Strang AF, 12.11.2026, Freigabe Steuerung): Kurzname als Subjekt und Subsidiary-Appositive, nur im zweiten
 # (relaxed) Durchlauf, der nur laeuft, wenn der erste nichts findet; kein bisheriger Titel aendert damit seinen Text.
 # experiment(False) liefert den Stand 1.0.22 fuer den Vergleich (profile_diagnosis.compare).
-_EXPERIMENT = {'on': True}
+# 'inline': dritter Durchlauf fuer inline-block-Fetzen (CALM, CATO), bis zur Freigabe nach Vorher/Nachher aus.
+_EXPERIMENT = {'on': True, 'inline': False}
 LEGAL_SUFFIX = re.compile(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|company|co\.?|group|holdings?|limited|ltd\.?|plc|llc|l\.p\.|lp)\s*$', re.I)
 
 
 @contextmanager
-def experiment(on=False):
-    before = _EXPERIMENT['on']
+def experiment(on=False, inline=False):
+    before = dict(_EXPERIMENT)
     _EXPERIMENT['on'] = on
+    _EXPERIMENT['inline'] = inline
     try:
         yield
     finally:
-        _EXPERIMENT['on'] = before
+        _EXPERIMENT.update(before)
 
 
 def short_name(legal):
@@ -423,7 +425,7 @@ def extract(company, body, source, now, official_website=None):
     # Second, relaxed pass ONLY when the unchanged first pass found nothing: an issuer that already has a
     # profile keeps exactly the same description (and with it its reviewed German copy, reviewed_profiles.py).
     eligible = first if first[0] or not sec else _eligible(company, doc, source, sec, relaxed=True)
-    if _EXPERIMENT['on'] and sec and not eligible[0] and re.search(rb'display\s*:\s*inline-block', body, re.I):
+    if _EXPERIMENT['on'] and _EXPERIMENT['inline'] and sec and not eligible[0] and re.search(rb'display\s*:\s*inline-block', body, re.I):
         # Dritter Durchlauf, nur wenn die beiden ersten nichts fanden und das Dokument inline-block-Fetzen enthaelt (Strang AF).
         eligible = _eligible(company, blocks(body, inline_div=True), source, sec, relaxed=True)
     return _profile(company, body, source, now, official_website, url, sec, eligible)

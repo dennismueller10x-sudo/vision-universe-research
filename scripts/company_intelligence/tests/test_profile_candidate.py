@@ -36,7 +36,10 @@ class CandidateTests(unittest.TestCase):
     def test_through_our_subsidiaries(self):
         c = company('Baxterish International Inc.')
         body = doc('Baxterish International Inc., through our subsidiaries, provides a broad portfolio of essential healthcare products and services worldwide.')
-        self.assertEqual(compare(c, body, SRC, NOW)['verdict'], 'NEWLY_AVAILABLE')
+        with experiment(False):
+            self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Stand 1.0.22')
+        self.assertEqual(extract(c, body, SRC, NOW)['state'], 'AVAILABLE', 'Parser 1.0.23')
+        self.assertEqual(compare(c, body, SRC, NOW)['verdict'], 'SAME', 'compare vergleicht 1.0.23 mit dem dritten Durchlauf')
 
     def test_available_titles_keep_their_text(self):
         c = company('Example Holdings Inc.')
@@ -107,10 +110,11 @@ class InlineBlockLayoutTests(unittest.TestCase):
     def test_fragmented_filing_is_read_only_in_the_third_pass(self):
         c = company('Example Foods, Inc.')
         body = self.pdf_doc()
-        with experiment(False):
-            self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Stand vorher: Wortfetzen')
-        r = extract(c, body, SRC, NOW)
+        self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Standard (Schalter aus): Wortfetzen wie bisher')
+        with experiment(True, inline=True):
+            r = extract(c, body, SRC, NOW)
         self.assertEqual(r['state'], 'AVAILABLE')
+        self.assertEqual(compare(c, body, SRC, NOW)['verdict'], 'NEWLY_AVAILABLE')
         self.assertIn('egg company in the United States', r['description'])
 
     def test_normal_documents_never_reach_the_third_pass(self):
@@ -118,6 +122,6 @@ class InlineBlockLayoutTests(unittest.TestCase):
         c = company('Example Holdings Inc.')
         body = doc('Example Holdings Inc. develops software platforms for banks and insurance companies worldwide.').replace(b'<p>', b'<p style="display:inline-block">')
         a = extract(c, body, SRC, NOW)
-        with experiment(False):
+        with experiment(True, inline=True):
             b = extract(c, body, SRC, NOW)
         self.assertEqual(a['description'], b['description'])
