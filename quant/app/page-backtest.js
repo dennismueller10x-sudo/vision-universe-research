@@ -340,9 +340,10 @@
     var cert = brCert(res, k), n = { PROVEN: 0, REGIME_DEPENDENT: 0, LIMITED: 0, FAILED: 0 };
     BR_METHOD.forEach(function (m) { var v = brVerdictOf(res.matrix[k][m[0]]); if (v) n[v] += 1; });
     var total = n.PROVEN + n.REGIME_DEPENDENT + n.LIMITED + n.FAILED;
-    if (total && n.LIMITED * 2 >= total && !n.FAILED) return ["none", "eingeschränkt geprüft"];
     if (!total || (cert && cert.status !== "CERTIFIED")) return ["none", "noch offen"];
-    if (n.FAILED * 2 > total) return ["weak", "nicht bewährt"];
+    /* Strengste Lesart zuerst: hat die Hälfte versagt, ist die Methode nicht bewährt; ein „eingeschränkt“ deckelt den Rest. */
+    if (n.FAILED * 2 >= total) return ["weak", "nicht bewährt"];
+    if (n.LIMITED) return ["none", "eingeschränkt geprüft"];
     if (!n.REGIME_DEPENDENT && !n.FAILED) return ["strong", "bewährt"];
     if (n.PROVEN * 2 > total) return ["strong", "meist bewährt"];
     return ["mid", "nur manchmal"];
