@@ -343,6 +343,11 @@ function readPanelOnce(file) {
   const Panel = req('scripts/quant/v10/factor/panel.cjs');
   return Panel.readPanel(file, { withRaws: false });
 }
+const PROFILE_MEAN_MIN = 4;
+function profileMean(sc, X) {
+  const v = X.FACTORS.map(f => sc[f]).filter(x => X.finite(x));
+  return v.length >= PROFILE_MEAN_MIN ? v.reduce((a, b) => a + b, 0) / v.length : null;
+}
 function runFactor(spec, pop, ctx, E) {
   const file = ctx.privateDirs.factorPanel;
   const missing = ['PRIVATE_FACTOR_PANEL panel.jsonl.gz (scripts/quant/v10/factor/panel.cjs from SEC companyfacts PIT documents, scripts/quant/v10/factor/pit_docs.py)', 'REVISIONS_FACTOR_HAS_NO_LICENSED_PIT_CONSENSUS_SOURCE (not reconstructable)'];
@@ -353,14 +358,17 @@ function runFactor(spec, pop, ctx, E) {
   if (sha(panel.loaderOptions) !== sha(loaderOptions)) fail('PANEL_LOADER_OPTIONS_MISMATCH', spec.population.profile);
   const X = req('scripts/quant/v10/factor/factors.cjs');
   const eng = spec.engine;
-  if (!X.SIGNALS.includes(eng.factorId)) fail('SPEC_INVALID', 'engine.factorId');
+  // PROFILE_MEAN (Forschung zum Quant-Profilwert, 13.11.2026): gleichgewichteter Mittelwert der sechs Faktor-Perzentile
+  // (quality, growth, value, profitability, momentum, risk), nur mit mindestens PROFILE_MEAN_MIN belegten Faktoren.
+  if (!X.SIGNALS.includes(eng.factorId) && eng.factorId !== 'PROFILE_MEAN') fail('SPEC_INVALID', 'engine.factorId');
+  const valueOf = eng.factorId === 'PROFILE_MEAN' ? (sc) => profileMean(sc, X) : (sc) => (X.finite(sc[eng.factorId]) ? sc[eng.factorId] : null);
   const ids = new Set(pop.listings.map(l => l.securityId));
   const snaps = panel.dates.filter(d => d.date >= spec.window.from && d.date <= spec.window.to);
   if (!snaps.length) return { missing: ['FACTOR_PANEL_HAS_NO_RANK_DATE_IN_WINDOW'] };
   const factorSnapshots = snaps.map(s => {
     const availableAt = s.date + DAY_END;
     return { date: s.date, availableAt, sourceHash: sha({ date: s.date, signal: eng.factorId }),
-      rows: s.rows.filter(r => ids.has(r.id)).map(r => ({ listingId: r.id, value: X.finite(r.scores[eng.factorId]) ? r.scores[eng.factorId] : null, availableAt, sourceHash: sha([r.id, s.date, r.scores]) })) };
+      rows: s.rows.filter(r => ids.has(r.id)).map(r => ({ listingId: r.id, value: valueOf(r.scores), availableAt, sourceHash: sha([r.id, s.date, r.scores]) })) };
   });
   const used = new Set(factorSnapshots.flatMap(s => s.rows.map(r => r.listingId)));
   // Factor values come from the panel; prices are only needed for outcomes: bars from the first rank date to the last
@@ -736,7 +744,10 @@ function runBacktest(spec, options = {}) {
     limitations.push('EVIDENCE_KIND_RECONSTRUCTION_PRIVATE_V10_PIT_PANEL', 'PRIVATE_DATA_REQUIRED');
     const periods = res.periods || [];
     const sp = periods.map(p => p.spearmanObservedOnly).filter(Number.isFinite), tmb = periods.map(p => p.topMinusBottom).filter(Number.isFinite);
-    common.metricsExtra = { perEvent: { factor: { factorId: spec.engine.factorId, rankDates: periods.length, meanSpearmanObservedOnly: mean(sp), spearmanDates: sp.length, meanTopMinusBottomCompleteCohort: mean(tmb), topMinusBottomDates: tmb.length, buckets: spec.engine.buckets || 5 } } };
+    common.metricsExtra = { perEvent: { factor: { factorId: spec.engine.factorId, rankDates: periods.length, meanSpearmanObservedOnly: mean(sp), spearmanDates: sp.length, meanTopMinusBottomCompleteCohort: mean(tmb), topMinusBottomDates: tmb.length, buckets: spec.engine.buckets || 5,
+      // Fuenftel-Vergleich (13.11.2026): Mittel je Bucket ueber die Rangtage (nur vollstaendige Kohorten), Anteil der Rangtage mit oben > unten.
+      bucketMeansCompleteCohort: Array.from({ length: spec.engine.buckets || 5 }, (_, k) => mean(periods.map(p => p.buckets && p.buckets[k] ? p.buckets[k].completeCohortMean : null).filter(Number.isFinite))),
+      topBeatsBottomShare: tmb.length ? tmb.filter(x => x > 0).length / tmb.length : null } } };
   }
   if (spec.kind === 'SAME_STOCK_REPLAY') limitations.push('SINGLE_LISTING_RULE_NOT_MARKET_EVIDENCE');
   if (methodsCfg.WALK_FORWARD || methodsCfg.OUT_OF_SAMPLE) {
@@ -816,4 +827,4 @@ function kindEvents(spec, options = {}, override = {}) {
   return windowed(runPerEventKind(spec, pop, ctx, E, override).raw, spec.window, E.S);
 }
 
-module.exports = { kindEvents, VERSION, SPEC_SCHEMA, RESULT_SCHEMA, METHOD_FIT, ENGINE_KEYS, validateSpec, specHash, runBacktest, windowed, canonical, hash: sha, CERTIFICATION_PATH };
+module.exports = { profileMean, PROFILE_MEAN_MIN, kindEvents, VERSION, SPEC_SCHEMA, RESULT_SCHEMA, METHOD_FIT, ENGINE_KEYS, validateSpec, specHash, runBacktest, windowed, canonical, hash: sha, CERTIFICATION_PATH };

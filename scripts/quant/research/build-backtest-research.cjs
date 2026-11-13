@@ -101,6 +101,13 @@ function disclosure(c, r) {
     maxDrawdown: num(e.metrics && e.metrics.maxDrawdown) };
 }
 
+// Faktor-Rang: Fuenftel-Vergleich aus dem Runner (oberstes minus unterstes Fuenftel, je Rangtag), unveraendert uebernommen.
+function factorRow(e) {
+  const f = e.metrics && e.metrics.perEvent && e.metrics.perEvent.factor;
+  if (!f) return null;
+  return { factorId: f.factorId, buckets: f.buckets, rankDates: num(f.rankDates), meanTopMinusBottom: num(f.meanTopMinusBottomCompleteCohort),
+    topBeatsBottomShare: num(f.topBeatsBottomShare), bucketMeans: Array.isArray(f.bucketMeansCompleteCohort) ? f.bucketMeansCompleteCohort.map(num) : null, meanSpearman: num(f.meanSpearmanObservedOnly) };
+}
 function caseRow(c, r) {
   const e = r.envelope;
   const byId = Object.fromEntries(e.methods.map(m => [m.method, m]));
@@ -116,6 +123,7 @@ function caseRow(c, r) {
       if (ms.WALK_FORWARD.state === 'EXECUTED' && ms.OUT_OF_SAMPLE.verdict) Object.assign(ms.WALK_FORWARD, { verdict: ms.OUT_OF_SAMPLE.verdict, basis: 'Testfenster der Walk-Forward-Teilung im Plus' });
       return ms;
     })(),
+    factor: factorRow(e),
     disclosure: disclosure(c, r),
     resultHash: r.resultHash
   };
@@ -212,4 +220,4 @@ function main(argv = process.argv.slice(2)) {
   return doc;
 }
 if (require.main === module) { try { main(); } catch (e) { console.error(e.stack); process.exitCode = 1; } }
-module.exports = { build, compact, caseRow, matrix, certify, verdict, disclosure, METHODS, KINDS, SCHEMA };
+module.exports = { build, compact, caseRow, factorRow, matrix, certify, verdict, disclosure, METHODS, KINDS, SCHEMA };

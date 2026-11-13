@@ -1,0 +1,32 @@
+{
+ "schemaVersion": "backtest-runner-spec-1.0.0",
+ "version": "1.0.0",
+ "registeredAt": "2026-11-13T00:00:00Z",
+ "asOf": "2025-12-31",
+ "costs": {
+  "feeBps": 5,
+  "slippageBps": 5
+ },
+ "benchmark": "SPY",
+ "id": "matrix-profile-mean",
+ "description": "Quant-Profilwert (Forschung 13.11.2026): gleichgewichteter Mittelwert der sechs Faktor-Perzentile (mindestens 4 belegt), Fünftel nach Profilwert, 13 Wochen, gesamte V10-Population 2019–2020.",
+ "kind": "FACTOR_RANKING_BACKTEST",
+ "window": {
+  "from": "2019-01-01",
+  "to": "2020-12-31"
+ },
+ "population": {
+  "profile": "V10_PRIMARY",
+  "privateInputs": [
+   "factorPanel"
+  ]
+ },
+ "engine": {
+  "factorId": "PROFILE_MEAN",
+  "horizonBars": 13,
+  "buckets": 5
+ },
+ "methods": {
+  "MARKET_REGIME": {}
+ }
+}
