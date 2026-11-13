@@ -8,6 +8,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { overlay, inspect, contractFor } from "../../scripts/ci/overlay-data-branch.mjs";
+import { vergleiche } from "../../scripts/ci/assert-data-branch-equal.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const MANIFEST = JSON.parse(readFileSync(join(ROOT, "core/registry/data-branch.json"), "utf8"));
@@ -303,4 +304,22 @@ test("DB-17 · repositoryOnly: nie in der Seite, nur auf ausdrueckliche Nennung 
   assert.match(sh, /d\.phase === "BRANCH_ONLY" && !d\.repositoryOnly/);
   // Die Seite prueft weiter, dass das Verzeichnis fehlt (pages-release.yml).
   assert.match(readFileSync(join(ROOT, ".github/workflows/pages-release.yml"), "utf8"), /test ! -d "\$SITE_ROOT\/quant\/data\/sec\/consumer"/);
+});
+
+test("DB-18 · Gleichheitsnachweis (DUAL_WRITE): gleiche Dateimenge und gleicher Inhalt, sonst rot", () => {
+  const a = mkdtempSync(join(tmpdir(), "db18-a-")), b = mkdtempSync(join(tmpdir(), "db18-b-"));
+  for (const r of [a, b]) { put(r, "x/consumer/index.json", "{\"n\":2}"); put(r, "x/consumer/CIK1.json", "{\"a\":1}"); put(r, "x/coverage.json", "{}"); }
+  let r = vergleiche(a, b, ["x/consumer/", "x/coverage.json"]);
+  assert.equal(r.ok, true); assert.equal(r.files, 3);
+  put(b, "x/consumer/CIK1.json", "{\"a\":2}"); // anderer Inhalt
+  assert.deepEqual(vergleiche(a, b, ["x/consumer/"]).differences.map((d) => d.art), ["INHALT_ANDERS"]);
+  put(b, "x/consumer/CIK1.json", "{\"a\":1}"); put(b, "x/consumer/CIK9.json", "{}"); // Datei nur im Zweig
+  assert.deepEqual(vergleiche(a, b, ["x/consumer/"]).differences.map((d) => d.art), ["NUR_IM_ZWEIG"]);
+  put(a, "x/consumer/CIK5.json", "{}"); // Datei fehlt im Zweig
+  assert.ok(vergleiche(a, b, ["x/consumer/"]).differences.some((d) => d.art === "FEHLT_IM_ZWEIG"));
+  // Ein leerer Arbeitsbaum darf nie als "gleich" durchgehen.
+  assert.equal(vergleiche(mkdtempSync(join(tmpdir(), "db18-e-")), b, ["x/consumer/"]).ok, false);
+  // Der Workflow ruft den Nachweis nach dem Push auf.
+  const wf = readFileSync(join(ROOT, ".github/workflows/sec-consumer-fundamentals.yml"), "utf8");
+  assert.match(wf, /push-data-branch\.sh data\/live \$PFADE[\s\S]*assert-data-branch-equal\.mjs data\/live \$PFADE/);
 });
