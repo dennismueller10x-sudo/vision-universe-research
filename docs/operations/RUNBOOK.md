@@ -36,6 +36,8 @@ Die Zustände bedeuten:
 
 ## 3. Ein Datenlauf ist rot
 
+**Quant-Produktionscheck (täglich 05:40 UTC, `quant-produktionscheck.yml`, Zeitplan über `core/registry/schedule.json`):** öffnet jede Quant-Route der ausgelieferten Seite in einem frischen Browser (bereit, kein JS-Fehler, keine fehlgeschlagene Anfrage, Inhalt; Zeit, Anfragen und KB als Messbasis fürs Frontend-Budget, Artefakt `quant-produktionscheck`, 30 Tage) und bewertet jede Datenart unter `/quant/` nach dem Frischevertrag. Rot öffnet das Issue `[quant-produktionscheck]` (Label `pipeline-alarm`), der nächste grüne Lauf schließt es. Von Hand: `node scripts/quant/production-check.mjs --site=https://research.visionuniverse.de [--nur-daten|--nur-routen]`.
+
 Ein roter Marktdaten-Refresh oder ein roter Freshness-Monitor öffnet automatisch ein Issue mit dem Label `pipeline-alarm` (`scripts/ci/pipeline-alarm.mjs`): Lauf, fehlgeschlagene Schritte, rote Tests. Der nächste grüne Lauf schließt es. Tests, die erst nach der Veröffentlichung rot werden (Gate C), stehen in einem eigenen Issue `[market-data-refresh · Beobachtung]`.
 
 Datenarten, die AN sein sollen (`expectLive: true` in `core/registry/domains.json`, derzeit Company Intelligence), prüft der Freshness-Monitor gegen die Seite (`node scripts/core/expect-live.mjs --site=https://research.visionuniverse.de`): steht eine davon live auf DISABLED, wird er rot und öffnet das Alarm-Issue; `/status/` zeigt `DISABLED_BUT_EXPECTED_LIVE`. Anlass: 08.11.2026 schloss ein Fail-closed-Rollback des Company-Intelligence-Refresh (Lauf 42493495646, Pages-Läufe im Runner-Stau) das Gate, und der eigene Health-Lauf wertete das als „bewusst aus“. Wer bewusst abschaltet, setzt `expectLive:false` im selben PR.
