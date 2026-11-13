@@ -113,7 +113,10 @@ async function bereit(page,view){
  await page.waitForFunction(()=>{const c=document.querySelector('section.qc-chart');return !c||!!c.dataset.range||!/Chart wird geladen/.test(c.textContent);},null,{timeout:10000}).catch(()=>{});
  await page.waitForTimeout(150);
 }
-async function frisch(page,hash,view){await page.goto('about:blank');await page.goto(hash.startsWith('/')?origin+hash:Q+hash);await bereit(page,view);}
+/* Mauszeiger vor jedem Aufruf in die Ecke: Quant laedt beim Ueberfahren eines Aktienlinks die Aktie vorab (app.js intent, gewollt).
+   Ein Zeiger, der von der vorigen Seite liegen bleibt, erzeugte bei 1440 px im Profi-Screener einen Kurshistorien-Abruf
+   (Befund 11.11. und 13.11., ref_KNSL) - gemessen werden soll das Laden der Seite, nicht eine simulierte Nutzerabsicht. */
+async function frisch(page,hash,view){await page.mouse.move(0,0).catch(()=>{});await page.goto('about:blank');await page.goto(hash.startsWith('/')?origin+hash:Q+hash);await bereit(page,view);}
 /* ALLE AUFKLAPPER OEFFNEN - UND ZWAR WIRKLICH ALLE. Ein geoeffneter
    Aufklapper legt verschachtelte nach; deshalb nach jedem Oeffnen neu
    suchen, mit einer Schranke gegen eine Endlosschleife. */

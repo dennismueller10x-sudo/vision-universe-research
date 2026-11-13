@@ -368,7 +368,8 @@
   }
   var BR_STATE = { EXECUTED: ["mid", "gerechnet"], NOT_APPLICABLE: ["none", "passt nicht"], DATA_MISSING: ["weak", "Daten fehlen"], NOT_RUN: ["none", "nicht gerechnet"], NO_CASE: ["none", "kein Fall"] };
   var BR_MISSING = { PRIVATE_FACTOR_PANEL: "privates Faktorpanel", PRIVATE_DATA_UNAVAILABLE: "private Reihen zurückgezogener Aktien", PROFILE_TARGETS_REQUIRE_PIT_FACTOR_SNAPSHOTS_WITH_ROW_AVAILABILITY: "historische Faktorstände je Stichtag" };
-  var BR_REASON = { RECONSTRUCTION_IS_NOT_OOS_EVIDENCE: "Rekonstruktion ist kein Beleg auf späteren Testfenstern", NO_TR_REGISTER_EVENTS_FOR_POPULATION_IN_WINDOW: "keine Dividendentermine im Zeitraum" };
+  var BR_REASON = { RECONSTRUCTION_IS_NOT_OOS_EVIDENCE: "Rekonstruktion ist kein Beleg auf späteren Testfenstern", NO_TR_REGISTER_EVENTS_FOR_POPULATION_IN_WINDOW: "keine Dividendentermine im Zeitraum",
+    PURGE_OPERATION_BUDGET: "zu viele Ereignisse für die Fensterteilung (Rechenbudget)" };
   function brCellNote(c) { return c.state === "DATA_MISSING" ? "Daten fehlen: " + (c.missing || []).map(function (x) { return BR_MISSING[x] || x; }).join(", ") : c.state === "NOT_RUN" && c.reason ? BR_REASON[c.reason] || c.reason : ""; }
   var BR_SHORT = { MONTE_CARLO: "Monte Carlo", WALK_FORWARD: "Walk-Fwd", OUT_OF_SAMPLE: "Test~fenster", MARKET_REGIME: "Markt~lage", PARAMETER_SENSITIVITY: "Sensi~tivität", EVENT_DRIVEN: "Divi~dende", PORTFOLIO_REBALANCING: "Depot" };
   function brMatrix(res) {
