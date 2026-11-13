@@ -1852,6 +1852,16 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qk-bt .qk-bt-bar i.is-dn{background:var(--qk-ink)}
 .qk-bt .qk-bt-c{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--qk-line);color:inherit;text-decoration:none}
 .qk-bt .qk-bt-c:first-child{border-top:0}
+/* Backtest-Forschung (intern): Pruefffall-Liste und Methodenkarten */
+.qk-bt .qk-bt-c > span:first-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+.qk-bt .qk-bt-c > span:first-child > span{font-size:12px;color:var(--qk-mute,#5c5c5c)}
+.qk-bt .qk-bt-research{margin-top:18px}
+.qk-bt .qk-br-m{margin-top:12px;padding:14px 16px}
+.qk-bt .qk-br-m h2{margin:0 0 8px}
+.qk-bt .qk-br-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--qk-line)}
+.qk-bt .qk-br-row:first-of-type{border-top:0}
+.qk-bt .qk-br-row span{min-width:0}
+.qk-bt .qk-br-row b{white-space:nowrap}
 .qk-bt .qk-bt-more{margin-top:12px;padding:12px 14px}
 .qk-bt .qk-bt-more summary{cursor:pointer}
 .qk-bt .qv3-back{display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;text-decoration:none}

@@ -209,6 +209,8 @@ test("the route builders and the legacy mapping only produce routes QXApp.parse 
     meldungen: ["radar", "filter=setups"],
     /* Backtest & Signal Intelligence (01.10.2026): Regel oder Setup waehlen. */
     backtest: ["backtest", "NEW_52W_HIGH"],
+    /* Backtest-Forschung (12.11.2026): Prueffall-Seite #/forschung/fall/{id}, intern. */
+    backtestCase: ["backtest", "replay-nvda-winner-splits"],
     /* Chartbild (02.10.2026): technische Lage einer Aktie und Uebersicht der Lagen. */
     chartbild: ["elliott", "NVDA"], elliott: ["elliott", "NVDA"], chart: ["chart", "NVDA"], chartlagen: ["chartlagen", "reihe=near-entry"]
   };
