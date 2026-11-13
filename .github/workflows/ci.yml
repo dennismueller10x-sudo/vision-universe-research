@@ -1634,6 +1634,10 @@ jobs:
         env:
           NODE_PATH: /tmp/tc-qa/node_modules
         run: node scripts/technical/world/browser-qa.mjs --out "$RUNNER_TEMP/technical-qa"
+      - name: Derselbe Chart in jeder Welt (Quant, Technical; AFG/NVDA, 390/1440 px)
+        env:
+          NODE_PATH: /tmp/tc-qa/node_modules
+        run: node scripts/quality/chart-worlds-qa.mjs --worlds quant,technical --out "$RUNNER_TEMP/technical-qa/chart-worlds"
       - name: Pruefbericht sichern
         if: always()
         uses: actions/upload-artifact@v4
