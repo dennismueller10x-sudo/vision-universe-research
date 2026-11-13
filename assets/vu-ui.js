@@ -417,7 +417,7 @@
      Sieben Eigenschaften, ein Wort je Eigenschaft, überall gleich (docs/design/quant-2026-11, Entscheidungen 1 und 2).
      Werte 0–100 (Rang unter den bewerteten US-Aktien) oder null = keine Daten. Keine Gesamtnote. */
   var PROFILE_KEYS = ["profitability", "growth", "quality", "momentum", "value", "risk", "revisions"];
-  var PROFILE_LABEL = { profitability: "Verdient gut", growth: "Wächst", quality: "Zahlen solide", momentum: "Kurs läuft", value: "Günstig", risk: "Ruhiger Kurs", revisions: "Analysten" };
+  var PROFILE_LABEL = { profitability: "Verdient gut", growth: "Ist gewachsen", quality: "Gewinn gedeckt & stabil", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", risk: "Ruhig für die Branche", revisions: "Analysten" };
   var PROFILE_GLYPH = { profitability: "bars", growth: "pulse", quality: "check", momentum: "line", value: "target", risk: "wave", revisions: "person" };
   var STAGE_MARKS = [25, 45, 75, 90];
   /* Ein Faktor ohne einen einzigen Wert im Produktuniversum (Abdeckung 0, aus den veroeffentlichten Daten: bandSemantics.universe,

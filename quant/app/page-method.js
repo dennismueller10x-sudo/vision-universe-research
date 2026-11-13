@@ -84,7 +84,7 @@
      veröffentlichten Screening-Artefakts (factor-evidence-v1), nie fest im Code; fehlt es, bleibt die Spalte leer. */
   /* Konzept Quant 2026-11 (Entscheidung 1): die sieben Eigenschaften in der Reihenfolge des Profils, ein Wort je Eigenschaft;
      die Frage steht klein darunter. „Analysten“ steht nur in der Liste, wenn der Faktor Werte hat (VM.isOpen). */
-  var Q6 = [["profitability", "Verdient sie gut?"], ["growth", "Wächst die Firma?"], ["quality", "Sind die Zahlen solide?"], ["momentum", "Läuft der Kurs gut?"], ["value", "Ist sie günstig?"], ["risk", "Wie ruhig ist der Kurs?"]];
+  var Q6 = [["profitability", "Verdient sie gut?"], ["growth", "Ist die Firma gewachsen?"], ["quality", "Ist der Gewinn gedeckt und stabil?"], ["momentum", "Lief der Kurs gut?"], ["value", "Wie ist der Preis im Branchenvergleich?"], ["risk", "Wie ruhig ist der Kurs für die Branche?"]];
   function startV3(main, ctx) {
     var U = global.VUUI, h = '<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Wie kommt Quant zu seinem Urteil?</h1><p class="vu-lead">Keine Blackbox. Jedes Urteil hat einen Grund, und jeder Grund führt zu den Daten.</p></header>' +
       '<nav class="vu-chips qv3-mchips" aria-label="Methodik">' + [["#qv3-was", "Überblick"], [X.routes.method("faktoren"), "Eigenschaften"], [X.routes.method("daten"), "Daten"], [X.routes.method("historie"), "Backtests"], [X.routes.method("grenzen"), "Grenzen"]].map(function (c, i) { return '<a class="vu-chip' + (i ? "" : " vu-chip--on") + '" href="' + U.esc(c[0]) + '">' + c[1] + "</a>"; }).join("") + "</nav>" +

@@ -275,7 +275,7 @@ function funktionen() {
 }
 
 /* ---------- Bereichsseite ---------- */
-const QUANT_PROFIL = [["Verdient gut", 99, "Sehr stark"], ["Wächst", 86, "Stark"], ["Ruhiger Kurs", 83, "Stark"], ["Günstig", 62, "Mittel"], ["Kurs läuft", 53, "Mittel"], ["Zahlen solide", 44, "Schwach"]];
+const QUANT_PROFIL = [["Verdient gut", 99, "Sehr stark"], ["Ist gewachsen", 86, "Stark"], ["Ruhig für die Branche", 83, "Stark"], ["Preis im Branchenvergleich", 62, "Mittel"], ["Kurs lief gut", 53, "Mittel"], ["Gewinn gedeckt & stabil", 44, "Schwach"]];
 function modulPage(m) {
   const grp = GROUP_OF[m.id];
   const note = (n, t) => `<div class="note"><i>${n}</i><b>${t}</b></div>`;

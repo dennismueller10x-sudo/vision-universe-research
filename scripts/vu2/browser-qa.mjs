@@ -264,7 +264,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.locator('#qx-main button.vu-chip[data-question="momentum"]').click();
    await page.waitForFunction(()=>location.hash==='#/screener?frage=momentum'&&!document.querySelector('#qx-main .qx-loading')&&document.querySelector('#qx-main a.qk-pr'),null,{timeout:30000});
    if(await page.locator('#qx-main button.vu-chip[data-question="momentum"]').getAttribute('aria-pressed')!=='true')befund(view,width,'die gewaehlte Frage ist nicht markiert');
-   if(!/Kurs läuft/.test(await page.locator('.qx-sentence').innerText()))befund(view,width,'der Satz liest die Frage nicht vor');
+   if(!/Kurs lief/.test(await page.locator('.qx-sentence').innerText()))befund(view,width,'der Satz liest die Frage nicht vor');
    const zeilen=page.locator('#qx-main a.qk-pr');
    if(!await zeilen.count())befund(view,width,'der einfache Einstieg zeigt keine Treffer');
    const ohneWert=(await page.locator('#qx-main a.qk-pr .qk-sp b').allInnerTexts()).filter(t=>!/\d/.test(t));
@@ -373,8 +373,8 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view==='aktie-nvda'){
    /* Redesign 2027 (Q07): die bisherigen Inhalte stehen vollstaendig unter den Ausklappern von Schritt 5 und 6. */
    await page.evaluate(()=>document.querySelectorAll('#qx-main details.qv3-more').forEach(d=>{d.open=true;}));
-   /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES PROFILS (Konzept Quant 2026-11: Verdient gut, Wächst, Zahlen solide,
-      Kurs läuft, Günstig, Ruhiger Kurs, Analysten) - dieselben sieben wie in der Engine. Eine Gesamtnote gibt es bewusst nicht. */
+   /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES PROFILS (Konzept Quant 2026-11, Etiketten 13.11.2026: Verdient gut, Ist gewachsen, Gewinn gedeckt & stabil,
+      Kurs lief gut, Preis im Branchenvergleich, Ruhig für die Branche, Analysten) - dieselben sieben wie in der Engine. Eine Gesamtnote gibt es bewusst nicht. */
    const ids=await page.locator('details.qx-factor[data-factor]').evaluateAll(ns=>ns.map(n=>n.dataset.factor));
    const PROFIL=['profitability','growth','quality','momentum','value','risk','revisions'];
    if(PROFIL.slice().sort().join('|')!==factorEvidence.FACTOR_ORDER.slice().sort().join('|'))befund(view,width,'Profil und Engine kennen verschiedene Eigenschaften');
