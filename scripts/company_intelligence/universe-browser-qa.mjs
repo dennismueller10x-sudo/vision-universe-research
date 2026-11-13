@@ -13,6 +13,8 @@ import {objectPool} from './bounded-objects.mjs';
 import {readLiveAsset} from './live-asset-read.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
 import {expectsEstimatedWindow,mustShowEstimatedWindow} from './estimated-window-expectation.mjs';
+// Wartezeit je Seite: Runner mit hoher Last brauchten ueber 30 s (Laeufe 43256989488, 43298776094: TimeoutError, Kandidaten-QA rot).
+const QA_WAIT_MS=90000;
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live'),directory=arg('--consumer'),out=arg('--out');
 const origin='https://research.visionuniverse.de';mkdirSync(dirname(out),{recursive:true});
@@ -51,10 +53,10 @@ try{
    page.on('pageerror',e=>errors.push(String(e.stack||e.message).slice(0,500)));page.on('response',r=>{if(r.url().includes('/company-intelligence/data/'))requests.push({path:new URL(r.url()).pathname,status:r.status()});if(r.url().includes('/discover/data/stocks/'))stockResponses.push({path:new URL(r.url()).pathname,status:r.status()});if(r.request().resourceType()==='script'&&r.status()>=400)scriptFailures.push({path:new URL(r.url()).pathname,status:r.status()});});page.on('requestfailed',r=>{if(r.resourceType()==='script')scriptFailures.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText});if(r.url().includes('/discover/data/stocks/'))stockResponses.push({path:new URL(r.url()).pathname,error:r.failure()?.errorText});});
    const navigationStarted=Date.now();
    await page.goto(origin+'/discover/#/s/US_REAL/'+ticker,{waitUntil:'domcontentloaded'});
-   await page.waitForFunction(({cid,generatedAt})=>{const e=document.querySelector('.ci-company-intelligence');return document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false'&&e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.dataset.generatedAt===generatedAt&&e.getAttribute('aria-busy')==='false';},{cid,generatedAt:expected.generatedAt},{timeout:30000});
+   await page.waitForFunction(({cid,generatedAt})=>{const e=document.querySelector('.ci-company-intelligence');return document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false'&&e?.dataset.state==='AVAILABLE'&&e.dataset.companyId===cid&&e.dataset.generatedAt===generatedAt&&e.getAttribute('aria-busy')==='false';},{cid,generatedAt:expected.generatedAt},{timeout:QA_WAIT_MS});
    // Price/screener hydration can replace the chapter after its first ready
    // marker. Inspect the settled real page, preserving every content assertion.
-   await waitForHydratedConsumer(page,{companyId:cid,generatedAt:expected.generatedAt,timeout:30000});
+   await waitForHydratedConsumer(page,{companyId:cid,generatedAt:expected.generatedAt,timeout:QA_WAIT_MS});
    const consumerReadyMilliseconds=Date.now()-navigationStarted;
    const chapter=page.locator('.ci-company-intelligence'),text=await chapter.innerText();
    assert.equal(await chapter.locator('.ci-profile[lang=de]').count()>0,flags.profile,ticker+':profile');
@@ -97,7 +99,7 @@ try{
  for(const ticker of sample.ineligible){
   const page=await browser.newPage({serviceWorkers:'block',viewport:{width:390,height:860}});await routes(page);await page.addInitScript(({key,state})=>localStorage.setItem(key,JSON.stringify(state)),{key:STORAGE_KEY,state});let requests=0;const errors=[];
   page.on('request',r=>{if(r.url().includes('/company-intelligence/data/'))requests++;});page.on('pageerror',e=>errors.push(e.message));
-  await page.goto(origin+'/discover/#/s/US_REAL/'+ticker);await page.waitForFunction(()=>document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false',null,{timeout:30000});
+  await page.goto(origin+'/discover/#/s/US_REAL/'+ticker);await page.waitForFunction(()=>document.querySelector('#v2-main')?.getAttribute('aria-busy')==='false',null,{timeout:QA_WAIT_MS});
   assert.equal(requests,0,ticker+':ineligible-request');assert.equal(await page.locator('.ci-company-intelligence').count(),0,ticker);assert.equal(await page.locator('vu-navigation').count(),1);assert.deepEqual(errors,[]);
   cases.push({ticker,status:'PASS',eligible:false,consumerRequests:0});await page.close();
  }
