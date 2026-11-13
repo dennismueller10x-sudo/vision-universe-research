@@ -1124,6 +1124,26 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     };
   }
 
+  /* DER EINE CHART (Owner 13.11.2026): US-Aktien zeichnen im Ueberblick mit demselben Baustein wie Quant und Technical
+     (assets/vu-chart.js, VUChart.render): gleiche Linie, Flaeche, Startlinie und Achse. Discover behaelt Kopf, Zeitraumleiste,
+     Beruehrung und die Quellenzeile; hier entstehen nur die Haken, die sie am Bild erwarten (__punkte, __basis, Klassen). */
+  function gemeinsamerChart(punkte, o) {
+    var VC = global.VUChart;
+    if (!VC || !VC.render) return null;
+    var svg = VC.render(punkte, { width: o.width, height: o.height, base: o.base, sessionEnd: o.sessionEnd, label: o.label, axis: o.axis });
+    if (!svg) return null;
+    var g = svg.__vuGeometry;
+    svg.__punkte = g.pts.map(function (q) { return { x: q.x, y: q.y, close: q.v, date: String(q.t).slice(0, 10), time: String(q.t).slice(11, 16) }; });
+    svg.__basis = { close: g.first, date: g.pts[0].t.slice(0, 10), time: g.pts[0].t.slice(11, 16), padTop: 14, padBottom: g.padBottom, padL: 2, padR: g.padR,
+                    previousClose: isNum(o.previousClose) ? o.previousClose : null };
+    svg.classList.add(o.intraday ? "dx-micro--intraday" : "dx-range-chart");
+    if (o.intraday && isNum(o.previousClose)) svg.setAttribute("data-v2-previous-close-scale", "true");
+    if (o.range) svg.setAttribute("data-range", o.range);
+    var basis = svg.querySelector(".vu-chart-base"); if (basis) basis.classList.add("dx-art-base");
+    [].forEach.call(svg.querySelectorAll("text.vu-chart-axis"), function (t) { t.classList.add(o.intraday ? "dx-micro-axis" : "dx-range-axis"); });
+    return svg;
+  }
+
   function zeichneVerbraucher(state, chartBox, paneHost, controls, redraw) {
     var SS = global.VUQuant && global.VUQuant.SeriesSampling, MC = D.MicroChart;
     S.clear(chartBox); S.clear(paneHost); S.clear(controls);
@@ -1211,7 +1231,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
     if (dollarKopf) mass.h = mobil ? 184 : 260;   /* Mockup ~170 px; die Browser-QA verlangt auf dem Telefon mindestens 180 px (Chart bleibt die Hauptfläche) */
-    var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol, compact: !!dollarKopf,
+    var svgNode = (dollarKopf && gemeinsamerChart(sel.points.map(function (q) { return [String(q[0]).slice(0, 10), q[1]]; }), { width: mass.w, height: mass.h, label: state.detail.symbol + " " + z.wort, range: z.id }))
+      || MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol, compact: !!dollarKopf,
                                                  range: z.id, label: z.wort, grain: woechentlich ? "weekly" : "daily",
                                                  segments: state.detail.region === 'EUROPE' ? state.europeSegments || undefined : undefined });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {
@@ -1396,7 +1417,11 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        darueber in Euro steht - derselbe Chart mit zwei Waehrungen. Alle
        Punkte gehoeren zu einem Tag, es gilt also ein Kurs; er kommt
        trotzdem aus dem Vertrag und nicht aus einer Rechnung hier. */
-    var svgNode = MC.renderIntraday(snap, { width: mass.w, height: mass.h,
+    var tag = String(snap.sessionDate || "").slice(0, 10), iso = function (hm) { return tag + "T" + String(hm).slice(0, 5) + ":00"; };
+    var svgNode = (dollarKopf && tag && gemeinsamerChart((snap.points || []).filter(function (q) { return q && isNum(q[1]); }).map(function (q) { return [iso(q[0]), q[1]]; }),
+        { width: mass.w, height: mass.h, base: isNum(snap.previousClose) ? snap.previousClose : undefined, previousClose: snap.previousClose, intraday: true,
+          sessionEnd: (snap.sessionCloseLocal || snap.closeLocal) ? iso(snap.sessionCloseLocal || snap.closeLocal) : undefined, label: state.detail.symbol + " heute", range: "1D" }))
+      || MC.renderIntraday(snap, { width: mass.w, height: mass.h,
                                             axis: true, symbol: state.detail.symbol,
                                             label: p.label && p.label.label });
     if (!svgNode) {
