@@ -5,7 +5,7 @@ name: Quant-Produktionscheck (taeglich, Routen und Datenarten live)
 # jede Quant-Route in einem frischen Browser (bereit, kein JS-Fehler, keine fehlgeschlagene Anfrage, Inhalt; Zeit, Anfragen
 # und Bytes als Messbasis fuer ein Frontend-Budget) und jede Quant-Datenart nach dem Frischevertrag der Registry.
 # Rot oeffnet ein Issue (Label pipeline-alarm), ein gruener Lauf schliesst es (scripts/ci/pipeline-alarm.mjs).
-# Kein Abruf beim Anbieter, kein Schluessel, kein Commit. Skript: scripts/quant/production-check.mjs.
+# Dazu die Datenstand-Abnahme des Produktuniversums (Job abnahme). Kein Abruf beim Anbieter, kein Commit. Skript: scripts/quant/production-check.mjs.
 # Zeitplan: core/registry/schedule.json (Cloudflare-Wecker, RUNBOOK §10).
 run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
 on:
@@ -63,8 +63,38 @@ jobs:
           if-no-files-found: ignore
           retention-days: 30
 
+  # Datenstand-Abnahme (Strang AK, Owner-Regel "Daten loesen Alarm aus und blockieren keinen Code-PR"): die Pruefungen, die die
+  # Zahlen des Live-Produktuniversums festschreiben (quant/config/product-universe-acceptance.json), sind im Code-PR uebersprungen
+  # und laufen stattdessen hier, taeglich auf main. Abweichung = Alarm-Issue am selben Tag; neue Abnahme = PR auf die Konfig.
+  abnahme:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Abnahme des Produktuniversums (Titel, Charts, technisch bereit)
+        env:
+          VU_DATENSTAND_ABNAHME: '1'
+        run: |
+          mkdir -p quant-check
+          set -o pipefail
+          python3 -m unittest scripts/quant/tests/test_canonical_market.py 2>&1 | tail -60 | tee quant-check/abnahme.txt
+      - name: Befund sichern
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: quant-abnahme
+          path: quant-check/
+          if-no-files-found: ignore
+          retention-days: 30
+
   alarm:
-    needs: [check]
+    needs: [check, abnahme]
     if: always() && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -80,8 +110,12 @@ jobs:
       - uses: actions/download-artifact@v4
         continue-on-error: true
         with:
-          name: quant-produktionscheck
+          pattern: quant-*
+          merge-multiple: true
           path: ${{ runner.temp }}/befund
+      - name: Befundtexte zusammenfuehren
+        continue-on-error: true
+        run: cat "$RUNNER_TEMP"/befund/*.txt > "$RUNNER_TEMP/befund/alles.txt"
       - name: Alarm oeffnen, ergaenzen oder schliessen
         # Der Bote darf den Befund nicht veraendern: ein Zustellfehler macht den Lauf nicht rot.
         continue-on-error: true
@@ -90,5 +124,6 @@ jobs:
           ALARM_SOURCE: quant-produktionscheck
           ALARM_TITLE: 'Quant live: Route kaputt oder Datenart veraltet'
           RESULT_CHECK: ${{ needs.check.result }}
-          ALARM_DETAIL_FILE: ${{ runner.temp }}/befund/quant-check.txt
+          RESULT_ABNAHME: ${{ needs.abnahme.result }}
+          ALARM_DETAIL_FILE: ${{ runner.temp }}/befund/alles.txt
         run: node scripts/ci/pipeline-alarm.mjs

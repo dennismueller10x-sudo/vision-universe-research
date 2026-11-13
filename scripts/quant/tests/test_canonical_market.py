@@ -16,6 +16,7 @@ Diese Tests halten drei Dinge fest:
      Artefakt es, statt still auf die Stichprobe zurueckzufallen.
 """
 import json
+import os
 import sys
 import unittest
 from pathlib import Path
@@ -23,6 +24,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 ROOT = Path(__file__).resolve().parents[3]
+ABNAHME = json.loads((ROOT / "quant" / "config" / "product-universe-acceptance.json").read_text(encoding="utf-8"))
+# Datenstand-Abnahme (13.11.2026, Strang AK): Pruefungen, die die Zahlen des LIVE-Produktuniversums festschreiben, werden bei
+# jedem Eignungslauf rot und blockierten bisher jeden Code-PR (11.11.: 3 PRs und main). Sie laufen jetzt taeglich im
+# Quant-Produktionscheck (quant-produktionscheck.yml, VU_DATENSTAND_ABNAHME=1); Abweichung = Alarm-Issue.
+nur_datenstand = unittest.skipUnless(
+    os.environ.get("VU_DATENSTAND_ABNAHME") == "1",
+    "Datenstand-Abnahme: laeuft taeglich im Quant-Produktionscheck (VU_DATENSTAND_ABNAHME=1), blockiert keinen Code-PR")
 METRIKEN = ROOT / "quant" / "data" / "market" / "history" / "coverage-metrics.json"
 TECHNIK = (ROOT / "quant" / "data" / "technical" / "scale" /
            "technical-coverage-ELIGIBLE_US_EQUITY.json")
@@ -86,12 +94,7 @@ ABGENOMMEN_1010 = {
 #           (die 18 neuen waren am Stichtag nicht technisch bereit)
 ETF_RAUS_0611, NEU_0611, ETF_TECHNISCH_BEREIT_0611, GEALTERT_0611 = 396, 18, 42, 53
 # Stand 11.11.2026 (Neuabnahme nach der Eignung vom 11.11., Herleitung unten bei AKTUELLER_POLICY_STAND).
-ABGENOMMEN = {
-    "PRODUCT_TITLES": 6309,
-    "R2_SERIES_AVAILABLE": 7802,
-    "HISTORICAL_CHART_AVAILABLE": 6306,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5661,
-}
+ABGENOMMEN = ABNAHME["abgenommen"]  # Werte: quant/config/product-universe-acceptance.json
 # Stand der Mitgliedschaft nach dem Gattungsbeleg aus dem Boersenverzeichnis
 # (scripts/market/apply-exchange-directory.mjs, 09.10.2026): 167 Titel belegt
 # keine Stammaktie (127 Schuldverschreibungen, 32 ETN, 8 bestaetigte
@@ -107,11 +110,7 @@ POLICY_STAND_1010 = {
     "HISTORICAL_CHART_AVAILABLE": 6683,
     "TECHNICAL_HISTORY_ELIGIBLE": 5644,
 }
-AKTUELLER_POLICY_STAND = {
-    "PRODUCT_TITLES": 6309,
-    "HISTORICAL_CHART_AVAILABLE": 6306,
-    "TECHNICAL_HISTORY_ELIGIBLE": 5661,
-}
+AKTUELLER_POLICY_STAND = ABNAHME["aktuellerPolicyStand"]
 VERZEICHNIS_AUSGESCHLOSSEN = 167
 # Verzeichnisbelege im Abgleich heute (06.11.2026, jede Eignung rechnet den Abgleich
 # vollstaendig neu): 167 vom 10.10. - 2 wieder Stammaktie (GREEL, SWKHL) + 269 ETFs
@@ -125,7 +124,7 @@ VERZEICHNIS_ETF_0611, VERZEICHNIS_WARRANT_0611 = 269, {"BNCWW"}
 # gealtert (AGED_PAST_THRESHOLD, Deckungsabweichung je Titel, deckung-Lauf 42987197248).
 # Die 200 Wechsel ELIGIBLE -> REVIEW desselben Laufs aendern den Umfang nicht (REVIEW gehoert zum Produkt).
 VERZEICHNIS_WIEDER_STAMMAKTIE_1111 = {"WTIB"}
-VERZEICHNIS_AUSGESCHLOSSEN_0611 = 434
+VERZEICHNIS_AUSGESCHLOSSEN_0611 = ABNAHME["verzeichnisAusgeschlossen"]
 WTIB_1111, GEALTERT_1111 = 1, 6
 ENTFERNTE_DEBT_TITEL = {
     "ADAMH", "BNH", "CICB", "CIMN", "CTGG", "CTHH", "DCOMG", "MFAN",
@@ -161,6 +160,7 @@ class QuelleVorhandenTests(unittest.TestCase):
             self.assertEqual(r["workflow"], "coverage-metrics.yml")
             self.assertTrue(r.get("runId") and r.get("commit"), "Neurechnung ohne Lauf-ID oder Commit")
 
+    @nur_datenstand
     def test_die_quelle_traegt_den_abgenommenen_stand(self):
         m = lade(METRIKEN)
         self.assertEqual(m["STORAGE_COVERAGE"]["stored"],
@@ -200,6 +200,7 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
                          "Die Befundliste deckt nicht alle nicht-READY Titel ab - "
                          "dann waere die Umkehrung falsch und die Deckung zu hoch.")
 
+    @nur_datenstand
     def test_die_chart_ausnahmen_bleiben_im_aktuellen_universum(self):
         self.assertEqual(set(lade(METRIKEN)["CHART_AVAILABILITY"]["notRenderableSymbols"]), CHART_AUSNAHMEN)
         aktuell = {s["ticker"] for s in lade(KANON_UNIVERSUM)["securities"]}
@@ -231,6 +232,7 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         self.assertEqual(HISTORISCH_ABGENOMMEN["HISTORICAL_CHART_AVAILABLE"] - len(debt),
                          STAND_0920_OHNE_DEBT["HISTORICAL_CHART_AVAILABLE"])
 
+    @nur_datenstand
     def test_der_verzeichnisbeleg_erklaert_den_rest_je_titel(self):
         """apply-exchange-directory.mjs: jeder seit der Abnahme ausgeschlossene Titel steht mit
         Wertpapierbezeichnung und Regel im Abgleich. Die Kennzahlen des Stands vom 04.10.
@@ -288,6 +290,7 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
 class IdentitaetsjoinTests(unittest.TestCase):
     """§3: der Join muss auditierbar sein."""
 
+    @nur_datenstand
     def test_securityid_und_mastermemberid_sind_dieselbe_menge(self):
         kanon = {s["securityId"]: s["ticker"] for s in lade(KANON_UNIVERSUM)["securities"]}
         self.assertEqual(len(kanon), AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
@@ -322,12 +325,14 @@ class DieRechnungTrifftDenStandTests(unittest.TestCase):
                          "Es wurde aus den alten Gate-Laeufen gerechnet - das ist eine "
                          "Stichprobe und keine Deckung.")
 
+    @nur_datenstand
     def test_kurshistorie_und_technik_reproduzieren_den_stand(self):
         t = self.mc["totals"]
         self.assertEqual(t["MEMBERS"], AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
         self.assertEqual(t["WITH_PRICE_HISTORY"], AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
         self.assertEqual(t["TECHNICAL_READY"], AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
 
+    @nur_datenstand
     def test_der_abgleich_trifft_den_neu_abgenommenen_stand(self):
         path = ROOT / "quant" / "data" / "fundamentals" / "reconciliation.json"
         if not path.exists():
@@ -353,6 +358,7 @@ class DieRechnungTrifftDenStandTests(unittest.TestCase):
                          "quant/data/market/history/coverage-metrics.json"
                          "#TECHNICAL_HISTORY_ELIGIBILITY.tooShortSymbols")
 
+    @nur_datenstand
     def test_die_ablagedeckung_wird_nicht_in_die_schnittmengen_gerechnet(self):
         """7.802 zaehlt gegen den Wertpapierstamm, nicht gegen das Produktuniversum."""
         path = ROOT / "quant" / "data" / "fundamentals" / "reconciliation.json"
