@@ -212,6 +212,17 @@ jobs:
           # Einheitlicher Push (scripts/ci/push-with-retry.sh): neu aufsetzen, wiederholen, bei echtem Konflikt laut scheitern - kein '|| true' (Plattform-Audit 03.10.2026).
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
 
+      # Datenzweig (fundamentalsConsumer, DUAL_WRITE, repositoryOnly): zusaetzlich nach data/live; main bleibt Rueckfall
+      # und Quelle der Leser, bis BRANCH_ONLY (nach dem ersten gruenen Zweig-Lauf). Die Seite bekommt diese Daten nie
+      # (overlay-data-branch.mjs ueberspringt repositoryOnly). Gleichheit wird im selben Lauf bewiesen.
+      - name: In den Datenzweig (nur main)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          PFADE="quant/data/sec/consumer quant/data/sec/consumer-history quant/data/sec/consumer_coverage.json"
+          scripts/ci/push-data-branch.sh data/live $PFADE
+          node scripts/ci/assert-data-branch-equal.mjs data/live $PFADE
+
       - name: Zusammenfassung
         if: always()
         run: |
