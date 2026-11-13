@@ -115,6 +115,11 @@ const VIEWS=['/quant/#/','/quant/#/meldungen','/quant/#/meldungen?filter=setups'
     der richtigen neuen Route landen, nicht auf Home. */
  '/vu2/?view=stock&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/','/quant/?view=screener',
  '/quant/?view=screener&faktoren=momentum','/Quant/?view=explain','/vu2/?view=fundamentals&ticker=NVDA'];
+/* Ein Faktor ohne Wert im Produktuniversum (Abdeckung 0, Screening bandSemantics.universe) ruht, mit ihm der Anlagestil, der ihn braucht:
+   dessen Seite ist dann bewusst "nicht gefunden" und kein Ziel der Pruefung (Owner-Entscheidung 13.11.2026, heute Analysten). */
+{const {gunzipSync}=await import('node:zlib');
+ try{const u=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/factor-evidence-v1/screening.json.gz'))).toString('utf8')).bandSemantics?.universe||{};
+  if(u.revisions===0){const i=VIEWS.indexOf('/quant/#/stile/earnings-revision-leader');if(i>=0)VIEWS.splice(i,1);}}catch{/* ohne Screening bleibt die Liste vollstaendig */}}
 /* Wohin eine alte Adresse fuehren muss - pathname+search+hash nach dem Laden. */
 const LEGACY={
  '/vu2/?view=stock&ticker=NVDA':'/quant/#/aktie/NVDA',

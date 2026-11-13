@@ -32,6 +32,11 @@ await mkdir(out,{recursive:true});
 const factorEvidence=require(resolve(root,'quant/engines/factor-evidence.js'));
 if(factorEvidence.FACTOR_ORDER.length!==7)throw Error('der Faktorkanon hat nicht sieben Faktoren');
 const profiles=JSON.parse(await readFile(resolve(root,'quant/methodology/strategy-profiles-v1.json'),'utf8')).profiles;
+/* Ein Faktor ohne einen Wert im Produktuniversum (Abdeckung 0 im Screening, bandSemantics.universe) ruht und mit ihm der Anlagestil, der ihn
+   braucht (Owner-Entscheidung 13.11.2026, heute Analysten). Die Erwartung der QA folgt denselben Daten wie die Oberflaeche. */
+const GESCHLOSSEN=Object.entries(JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/factor-evidence-v1/screening.json.gz'))).toString('utf8')).bandSemantics?.universe||{}).filter(([,n])=>n===0).map(([k])=>k);
+const STYLE_NEEDS={'earnings-revision-leader':['revisions']};
+const sichtbar=profiles.filter(p=>!(STYLE_NEEDS[p.profileId]||[]).some(f=>GESCHLOSSEN.includes(f)));
 const universeIndex=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz'))).toString('utf8'));
 const nvdaName=(universeIndex.entries||[]).find(e=>e.s==='NVDA')?.n;
 if(!nvdaName)throw Error('das Verzeichnis nennt keinen Namen fuer NVDA');
@@ -82,7 +87,7 @@ const ROUTES=[
  ['screener-setups','#/screener?frage=setups'],
  ['screener-profi','#/screener/profi','screenerPro'],
  ['strategien','#/stile'],
- ...profiles.map(p=>['strategie-'+p.profileId,'#/stile/'+p.profileId]),
+ ...sichtbar.map(p=>['strategie-'+p.profileId,'#/stile/'+p.profileId]),
  ['aktien','#/aktien'],
  ['aktie-nvda','#/aktie/NVDA','stock'],
  ['aktie-jpm','#/aktie/JPM'],
@@ -343,14 +348,14 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Redesign 2027 (Q03): Karten ohne Bild (Mockup), dieselben Zusagen: jeder Ansatz, seine heutigen Treffer, keine Trefferquote. */
    /* Konzept Quant 2026-11 (QX04, Entscheidung 4): ein Stil ohne Daten steht als Fussnote, nicht als Karte. */
    const karten=await page.locator('#qx-main a.qk-stc, #qx-main p[data-profile]').count();
-   if(karten!==profiles.length)befund(view,width,'der Katalog der Anlagestile zeigt '+karten+' von '+profiles.length+' Ansaetzen');
+   if(karten!==sichtbar.length)befund(view,width,'der Katalog der Anlagestile zeigt '+karten+' von '+sichtbar.length+' Ansaetzen');
    const katalog=await page.locator('#qx-main').innerText();
    if(!/Aktien erfüllen heute|erfüllen heute alle|\d[\d.]*\s+Aktien heute/.test(katalog))befund(view,width,'kein Ansatz nennt seine heutigen Treffer');
    if(!/keine (Erfolgs- oder )?Trefferquote/i.test(katalog))befund(view,width,'die Absage an eine Trefferquote fehlt');
   }
   if(view==='strategien'&&!v3){
    const karten=await page.locator('#qx-main a.qx-strat').count();
-   if(karten!==profiles.length)befund(view,width,'der Strategie-Katalog zeigt '+karten+' von '+profiles.length+' Ansaetzen');
+   if(karten!==sichtbar.length)befund(view,width,'der Strategie-Katalog zeigt '+karten+' von '+sichtbar.length+' Ansaetzen');
    /* Bildwelt der Anlagestile: steht seit den Paketen je Ansicht (QUANT_PACKS) in pages.js, nicht mehr auf der Aktienseite. */
    const bilder=await page.locator('#qx-main a.qx-strat img.v2-collection-image').count();
    if(bilder!==karten)befund(view,width,'Strategie-Karten ohne Bild: '+bilder+' von '+karten);
@@ -502,7 +507,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   }
   if(view==='aktie-jpm'){
    /* A bank keeps its industry template instead of inventing factors. */
-   if(await page.locator('details.qx-factor').count()!==7)befund(view,width,'factor DNA incomplete for JPM');
+   if(await page.locator('details.qx-factor').count()!==factorEvidence.FACTOR_ORDER.length-GESCHLOSSEN.filter(k=>factorEvidence.FACTOR_ORDER.includes(k)).length)befund(view,width,'factor DNA incomplete for JPM');
    await alleAufklappen(page);
    if(!/Branchenvorlage/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Branchenvorlage ungenannt');
   }
