@@ -105,7 +105,8 @@
     (kids || []).forEach(function (c) { if (c !== null && c !== undefined && c !== false) node.append(c); });
     return node;
   }
-  function money(v, cur) { return global.VUChart && global.VUChart.money ? global.VUChart.money(v, cur) : v.toFixed(2) + " " + (cur || ""); }
+  /* Geld: in Quant der zentrale Formatierer (X.money -> VUFx.Format); ohne ihn (Technical, Discover) der des gemeinsamen Charts. */
+  function showPrice(v, cur) { return global.QX && global.QX.money ? global.QX.money(v, cur) : global.VUChart && global.VUChart.money ? global.VUChart.money(v, cur) : v.toFixed(2) + " " + (cur || ""); }
   /* Geld wird an EINER Stelle formatiert: QX.money -> VUFx.Format. */
   function signedPct(v) {
     if (!isNum(v)) return "";
@@ -311,7 +312,7 @@
         on = true; node.classList.add("is-scrub");
         cross.setAttribute("x1", best.x.toFixed(1)); cross.setAttribute("x2", best.x.toFixed(1)); cross.style.display = "";
         headPrice.hidden = false;
-        headPrice.textContent = money(best.v, st.cur) + " · " + fmtWhen(best.t);
+        headPrice.textContent = showPrice(best.v, st.cur) + " · " + fmtWhen(best.t);
         headPrice.style.left = Math.min(rect.width - 70, Math.max(70, best.x * rect.width / g.w)) + "px";
         var b = isNum(g.base) ? g.base : base;
         var d = isNum(b) && b > 0 ? (best.v / b - 1) * 100 : null;
