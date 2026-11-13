@@ -180,6 +180,20 @@
     return enginesReady;
   }
 
+  /* Der gemeinsame Aktienchart (quant/app/chart.js, assets/vu-chart.js): dieselbe Zeichnung, Leiste, Tagesverlauf (Hub) und
+     Waehrungsregel wie in Quant und Discover. Er kommt erst, wenn die Chartseite ihn braucht. */
+  var CHART_WIDGET_SCRIPTS = ["/assets/vu-chart.js", "/quant/engines/realtime/market-hours.js", "/quant/engines/realtime/trading-session.js",
+    "/quant/engines/realtime/freshness.js", "/quant/engines/realtime/source-state.js", "/quant/engines/realtime/intraday-snapshot.js",
+    "/discover/ui/live-hub.js", "/quant/engines/series-sampling.js", "/core/chart-history.js", "/quant/app/chart.js"];
+  var chartWidgetReady = null;
+  function loadChartWidget() {
+    if (chartWidgetReady) return chartWidgetReady;
+    chartWidgetReady = Promise.all(CHART_WIDGET_SCRIPTS.filter(function (src) { return !doc.querySelector('script[src="' + src + '"]'); }).map(function (src) {
+      return new Promise(function (ok) { var sc = doc.createElement("script"); sc.src = src; sc.async = false; sc.onload = sc.onerror = ok; doc.head.appendChild(sc); });
+    })).then(function () { return global.VUQuantChart || null; });
+    return chartWidgetReady;
+  }
+
   function store() { try { return global.localStorage; } catch (e) { return null; } }
   function lastTicker() { try { return (store() && store().getItem(M.LAST_KEY)) || null; } catch (e) { return null; } }
   function rememberTicker(t) { try { store() && store().setItem(M.LAST_KEY, t); } catch (e) { /* privat */ } }
@@ -1267,7 +1281,7 @@
       /* Verlauf der letzten 12 Monate: im Kapitel sofort, im Befund-Sheet erst beim Öffnen (dieselbe Rechnung). */
       var histOf = function () { if (!hist.length && !st.frozenSince) hist = VT.Formations.history(prep, fromIdx, t); return hist; };
       if (route.tab === "signals") return renderSignals(body, { T: T, S: S, analysis: analysis, F: F, levels: levels, hist: histOf(), inst: inst, D: D, st: st, name: name, teil: route.params && route.params.teil });
-      if (route.tab !== "studio") return renderSimple(body, { T: T, S: S, cs: cs, analysis: analysis, levels: levels, F: F, inst: inst, D: D, st: st, name: name, histOf: histOf, fromDate: b.timestamps[fromIdx] });
+      if (route.tab !== "studio") return renderSimple(body, { head: head, T: T, S: S, cs: cs, analysis: analysis, levels: levels, F: F, inst: inst, D: D, st: st, name: name, histOf: histOf, fromDate: b.timestamps[fromIdx] });
       var ind = { ema20: VT.Indicators.compute(S, "ema", { period: 20 }).values, ema50: VT.Indicators.compute(S, "ema", { period: 50 }).values, sma150: VT.Indicators.compute(S, "sma", { period: 150 }).values,
         bb: VT.Indicators.compute(S, "bollinger").values, rsi: VT.Indicators.compute(S, "rsi").values, macd: VT.Indicators.compute(S, "macd").values, stoch: VT.Indicators.compute(S, "stochastic").values };
       /* Weitere Katalog-Indikatoren; ohne Volumen liefert compute() einen Fehler und die Schicht bleibt leer. */
@@ -1395,31 +1409,61 @@
     var S = X.S, n = S.close.length, t = n - 1, F = X.F, lv = X.levels || {}, R = lv.nearestResistance, Su = lv.nearestSupport;
     var sum = chartSummary(S.close[t], F.sma50, F.sma200);
     var host = el("div", { class: "tc-chart-host tc-simple-chart" }), legend = el("p", { class: "tc-note tc-chart-note" });
-    var RANGE = { "1T": null, "1W": 5, "1M": 21, "1J": 252, "5J": "W260", "Max": "W0" };
-    var chart = null;
-    function draw() {
-      var win = RANGE[simple.range];
-      if (typeof win === "string") {
-        put(legend, "Wochenschlüsse aus der langen Kursreihe. Zonen und Linien gelten für den Tageschart.");
-        loadWeekly(X.T).then(function (w) {
-          var pts = (w.points || []).filter(function (p) { return isNum(p[1]); }), dates = pts.map(function (p) { return p[0]; }), close = pts.map(function (p) { return p[1]; });
-          var VT = global.VUTechnical, ov = simple.avg ? [{ id: "s40", label: "40-Wochen-Linie", values: VT.Indicators.sma(close, 40), color: "var(--tc-c2)", dash: "5 4" }] : [];
-          chart = Chart.render(host, { title: X.T + " Wochenchart", mode: "line", area: true, height: 170, window: win === "W260" ? 260 : 0, data: { dates: dates, close: close, open: close, high: close, low: close, volume: [] }, overlays: ov, lines: [], zones: [], levels: [], markers: [], volume: false, pane: null });
-        }).catch(function () { put(host, stateBox("Keine Wochenreihe", "Für diese Aktie liegt keine lange Wochenreihe vor.")); });
-        return;
-      }
-      var zones = [], lines = [], markers = [], overlays = [];
-      if (simple.zones && R) zones.push({ low: R.zoneLow, high: R.zoneHigh, tone: "negative", label: "Widerstand " + de(R.zoneLow) + "–" + de(R.zoneHigh) });
-      if (simple.zones && Su) zones.push({ low: Su.zoneLow, high: Su.zoneHigh, tone: "positive", label: "Unterstützung " + de(Su.zoneLow) + "–" + de(Su.zoneHigh) });
-      if (simple.trend) formationLayers(X.analysis, S, { trend: true, muster: false }, null, S.dates[Math.max(0, n - win)], lines, [], markers);
-      if (simple.avg && X.cs.sma200) overlays.push({ id: "sma200", label: "200-Tage-Linie", values: X.cs.sma200, color: "var(--tc-c2)", dash: "5 4" });
-      put(legend, simple.avg ? "Gestrichelt: 200-Tage-Linie." : "");
-      chart = Chart.render(host, { title: X.T + " Kurs", mode: "line", area: true, height: 170, window: win, data: S, overlays: overlays, lines: lines, zones: zones, levels: [], markers: markers, volume: false, pane: null });
+    var widget = null;
+    /* Ebenen der Technical-Welt auf DEM Chart (kein zweiter Zeichner): Zonen, Trendlinie, 200-Tage-Linie.
+       Sie gelten fuer die Tagesansicht; im Tagesverlauf (1T) und in Wochenraster-Zeitraeumen bleibt die Kurslinie allein. */
+    var NSV = "http://www.w3.org/2000/svg";
+    function svgEl(tag, attrs) { var n = doc.createElementNS(NSV, tag); Object.keys(attrs).forEach(function (k) { n.setAttribute(k, attrs[k]); }); return n; }
+    function xOf(g, iso) {
+      var P = g.pts, i;
+      if (!P.length || iso < P[0].t.slice(0, 10)) return null;
+      for (i = 0; i < P.length; i++) if (P[i].t.slice(0, 10) >= iso) return P[i].x;
+      return null;
     }
-    var rangeBar = el("div", { class: "vu-seg tc-ranges2", role: "group", "aria-label": "Zeitraum" }, Object.keys(RANGE).map(function (k) {
-      return el("button", { type: "button", "aria-pressed": String(simple.range === k), disabled: RANGE[k] === null ? true : null, title: RANGE[k] === null ? "Ein Tag braucht Kurse im Tagesverlauf; Technical rechnet mit Tagesschlüssen." : null, text: k,
-        onclick: function () { simple.range = k; [].forEach.call(rangeBar.children, function (b) { b.setAttribute("aria-pressed", String(b.textContent === k)); }); draw(); } });
-    }));
+    function paintLayers(svg, g, rangeId) {
+      if (!svg || !g || !g.pts || g.intraday) { put(legend, ""); return; }
+      var dailyGrain = svg.parentNode && svg.parentNode.dataset && svg.parentNode.dataset.grain === "daily";
+      var plotBottom = g.h - g.padBottom, right = g.w - g.padR, note = [];
+      var layer = svgEl("g", { class: "tc-layers" });
+      function inView(y) { return y >= 0 && y <= plotBottom; }
+      if (simple.zones) [[R, "negative", "Widerstand"], [Su, "positive", "Unterstützung"]].forEach(function (z) {
+        var zone = z[0]; if (!zone) return;
+        var y1 = g.y(zone.zoneHigh), y2 = g.y(zone.zoneLow); if (!inView(y1) && !inView(y2)) return;
+        var top = Math.max(0, Math.min(y1, y2)), bot = Math.min(plotBottom, Math.max(y1, y2));
+        layer.appendChild(svgEl("rect", { class: "tc-zone tc-zone--" + z[1], x: 2, y: top.toFixed(1), width: Math.max(0, right - 2), height: Math.max(2, bot - top).toFixed(1) }));
+        var tx = svgEl("text", { class: "tc-zone-label", x: 6, y: (top + 12).toFixed(1) }); tx.textContent = z[2] + " " + de(zone.zoneLow) + "–" + de(zone.zoneHigh); layer.appendChild(tx);
+      });
+      if (simple.trend && dailyGrain) {
+        var lines = []; formationLayers(X.analysis, S, { trend: true, muster: false }, null, g.pts[0].t.slice(0, 10), lines, [], []);
+        lines.forEach(function (l) {
+          var x1 = xOf(g, l.from.time), x2 = xOf(g, l.to.time); if (x2 === null) x2 = g.pts[0].x;
+          if (x1 === null) return;
+          var y1 = g.y(l.from.price), y2 = g.y(l.to.price), x3 = x2, y3 = y2;
+          if (l.extend && g.pts.length > 1 && x2 < right) { var k = (y2 - y1) / Math.max(1, x2 - x1); x3 = g.pts[g.pts.length - 1].x; y3 = y2 + k * (x3 - x2); }
+          layer.appendChild(svgEl("line", { class: "tc-trend tc-trend--" + l.tone, x1: x1.toFixed(1), y1: y1.toFixed(1), x2: x3.toFixed(1), y2: y3.toFixed(1), "stroke-dasharray": l.dash || "" }));
+        });
+        note.push("Trendlinien gelten für den Tageschart");
+      }
+      if (simple.avg && dailyGrain && X.cs.sma200) {
+        var d = "";
+        g.pts.forEach(function (p) { var i = S.dates.indexOf(p.t.slice(0, 10)), v = i >= 0 ? X.cs.sma200[i] : null; if (isNum(v)) d += (d ? "L" : "M") + p.x.toFixed(1) + " " + g.y(v).toFixed(1) + " "; });
+        if (d) layer.appendChild(svgEl("path", { class: "tc-avg", d: d.trim(), fill: "none", "stroke-dasharray": "5 4" }));
+        note.push("gestrichelt: 200-Tage-Linie");
+      }
+      var line = svg.querySelector(".vu-chart-line");
+      if (layer.childNodes.length) svg.insertBefore(layer, line || null);
+      put(legend, note.length ? note.join(" · ") + "." : "");
+    }
+    function draw() { if (widget && widget.draw && widget.range()) widget.draw(widget.range()); }
+    loadChartWidget().then(function (Chart) {
+      if (!Chart || !Chart.create) { put(host, stateBox("Chart nicht verfügbar", "Die Chart-Komponente konnte nicht geladen werden.")); return; }
+      var eod = S.dates.map(function (d, i) { return [d, S.close[i]]; });
+      widget = Chart.create({ ticker: X.T, eod: eod, currency: "USD", adjusted: true, onPaint: paintLayers,
+        longPath: M.LONG_DIR + global.VUCore.Identity.securityIdForTicker(X.T) + ".json", loadJSON: fetchJSON,
+        /* Der Kopf zeigt denselben Kurs wie Quant und Discover: laufender oder letzter Tageskurs aus dem Tagesverlauf. */
+        onPrice: function (p) { if (X.head && X.head.setPrice && typeof p.price === "number") X.head.setPrice({ value: p.price, currency: "USD", changePct: typeof p.delta === "number" ? p.delta : null, changeLabel: "heute", kind: p.kind || "delayed", at: p.at || p.when }); } });
+      put(host, widget.node);
+    });
     function tog(key, label) { return el("button", { type: "button", class: "vu-chip", "aria-pressed": String(simple[key]), text: label, onclick: function (ev) { simple[key] = !simple[key]; ev.currentTarget.setAttribute("aria-pressed", String(simple[key])); draw(); } }); }
     var story = el("div", { class: "tc-story" }, [el("p", { class: "vu-ltag tc-ltag", text: "Der Chart in drei Sätzen" })].concat(threeSentences(X).map(function (s) {
       return el("div", { class: "tc-story-r" }, [hudGlyph(s[0], 34), el("div", {}, [el("span", { class: "vu-ltag tc-ltag", text: s[1] }), el("p", { text: s[2] })]), h(U.verdict(s[3]))]);
@@ -1433,11 +1477,10 @@
       ep(3, M.chartHref(X.T, "studio"), "trend", "Chart Studio", "Kerzen, Linien, RSI, MACD · PRO")]);
     put(body, [seriesNote(X.st),
       el("div", { class: "tc-sayrow" }, [el("div", {}, [el("p", { class: "vu-ltag", text: "Was der Chart sagt" }), el("h2", { class: "vu-mt", text: sum[0] })]), h(U.verdict(sum[1]))]),
-      host, legend, rangeBar, el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("avg", "200-Tage-Linie")]),
+      host, legend, el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("avg", "200-Tage-Linie")]),
       story, h(U.help("Schwung: wie stark der Kurs zuletzt gestiegen oder gefallen ist. Fachleute messen das mit dem RSI (0 bis 100); über 70 gilt als „überkauft“, unter 30 als „überverkauft“.")),
       X.st.frozenSince ? null : zoneTiles(lv), bh[0], bh[1], chapters,
       dataQuality(X.inst, X.D, false), footNote(X.D && (X.D.meta && X.D.meta.asOf), "Quant und Supertrader zur selben Aktie: oben in der Leiste. ")]);
-    draw();
   }
 
   var benchP = null;

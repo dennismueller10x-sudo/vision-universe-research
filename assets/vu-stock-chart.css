@@ -1,0 +1,24 @@
+/* Aktienchart ausserhalb von Quant (quant/app/chart.js, assets/vu-chart.js): Kopfzeile mit Veraenderung, Zeitraumleiste,
+   Hinweis. In Quant stehen dieselben Regeln unter .qd (quant/app/app.css). Ebenen der Welt (Zonen, Trendlinie) sind
+   Aufgabe der Welt; hier nur der gemeinsame Rahmen. */
+.qc-chart{background:none;border:0;border-radius:0;padding:0;margin:0}
+.qc-chart>h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.qc-chart svg{touch-action:pan-y}
+.qc-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 6px;margin:0;font-size:13px;color:var(--vu-text-secondary);min-height:20px}
+.qc-head .qc-delta{font-size:15px;font-weight:850;color:var(--vu-text)}
+.qc-head .qc-word{font-weight:700;color:var(--vu-text-secondary)}
+.qc-plot{position:relative}
+.qc-chart .vu-chart-empty b{display:block;color:var(--vu-text);font-size:14px}
+.qc-chart .vu-ranges button{color:var(--vu-text-secondary)}
+.qc-chart .vu-ranges button[aria-pressed=true]{background:var(--vu-text);color:var(--vu-bg)}
+.qc-range{min-width:40px;font-size:13px}
+.qc-range[hidden]{display:none}
+.qc-chart .vu-chart-axis{fill:var(--vu-text-secondary)}
+.qc-about{margin-top:6px}.qc-about .qc-note{margin:0;font-size:12.5px;color:var(--vu-text-secondary)}
+.qc-chart .vu-chart-tip{top:4px}
+.qx-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+/* Technical-Ebenen auf dem gemeinsamen Chart */
+.tc-layers .tc-zone{opacity:.16}.tc-layers .tc-zone--positive{fill:var(--vu-chart-up,#2e7d32)}.tc-layers .tc-zone--negative{fill:var(--vu-chart-down,#c62828)}
+.tc-layers .tc-zone-label{font:700 11px Inter,-apple-system,sans-serif;fill:var(--vu-text-secondary)}
+.tc-layers .tc-trend{stroke:var(--vu-text);stroke-width:1.5;opacity:.7}.tc-layers .tc-trend--negative{stroke:var(--vu-chart-down,#c62828)}.tc-layers .tc-trend--positive{stroke:var(--vu-chart-up,#2e7d32)}
+.tc-layers .tc-avg{stroke:var(--vu-text-secondary);stroke-width:1.5}
