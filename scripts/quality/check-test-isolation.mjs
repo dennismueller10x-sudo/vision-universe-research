@@ -98,10 +98,14 @@ function abdruck() {
 export function pruefe(suite) {
   const vorher = abdruck();
   let exitCode = 0;
+  /* Die Ausgabe des Testlaufs wird mitgegeben: wer ohnehin die Isolation misst, muss die Suite nicht ein
+     zweites Mal fahren, um ihre TAP-Zusammenfassung zu zaehlen (products/social/producer/verify-suites.mjs). */
+  let testsOutput = "";
   try {
-    execFileSync(process.execPath, ["--test", suite],
-      { cwd: ROOT, stdio: "pipe", timeout: 900000 });
+    testsOutput = execFileSync(process.execPath, ["--test", suite],
+      { cwd: ROOT, stdio: "pipe", timeout: 900000, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
   } catch (err) {
+    testsOutput = String((err.stdout || "") + (err.stderr || ""));
     exitCode = err.status === undefined ? 1 : err.status;
   }
   const nachher = abdruck();
@@ -127,6 +131,7 @@ export function pruefe(suite) {
   return {
     suite,
     testsExitCode: exitCode,
+    testsOutput,
     violations: neu,
     contentChanged: inhaltGeaendert,
     ok: neu.length === 0,

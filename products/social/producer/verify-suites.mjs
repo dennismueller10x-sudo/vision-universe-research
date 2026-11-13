@@ -43,6 +43,7 @@ import { writeFileSync, mkdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { pruefe } from "../../../scripts/quality/check-test-isolation.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const argv = process.argv.slice(2);
@@ -111,17 +112,7 @@ export function bilanzGeht(z) {
   return bestanden + (z.skipped || 0) + (z.todo || 0) === tests;
 }
 
-function laufen(suite) {
-  let ausgabe = "";
-  let code = 0;
-  try {
-    ausgabe = execFileSync("node", ["--test", suite.muster],
-      { cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024,
-        stdio: ["ignore", "pipe", "pipe"] });
-  } catch (err) {
-    ausgabe = String((err.stdout || "") + (err.stderr || ""));
-    code = err.status === undefined ? 1 : err.status;
-  }
+function laufen(suite, ausgabe, code) {
   const zahl = (name) => {
     const m = ausgabe.match(new RegExp("^# " + name + " (\\d+)", "m"));
     return m ? Number(m[1]) : null;
@@ -173,24 +164,6 @@ function laufen(suite) {
   });
 }
 
-/** Die Isolationspruefung, je Suite. */
-function isolation(suite) {
-  let ausgabe = "";
-  let code = 0;
-  try {
-    ausgabe = execFileSync("node",
-      ["scripts/quality/check-test-isolation.mjs", "--suite", suite.muster],
-      { cwd: ROOT, encoding: "utf8", maxBuffer: 64 * 1024 * 1024,
-        stdio: ["ignore", "pipe", "pipe"] });
-  } catch (err) {
-    ausgabe = String((err.stdout || "") + (err.stderr || ""));
-    code = err.status === undefined ? 1 : err.status;
-  }
-  const unveraendert = /keine Produktionsdatei veraendert/.test(ausgabe);
-  return { id: suite.id, ok: code === 0 && unveraendert, exitCode: code,
-    satz: ausgabe.trim().split("\n").slice(-1)[0] || null };
-}
-
 /* ------------------------------------------------------------------ Lauf
    Nur beim direkten Aufruf. Wer `bilanzGeht` importiert, um die Regel
    zu pruefen, soll damit nicht die Suiten starten - die erste Fassung
@@ -200,9 +173,13 @@ if (import.meta.url !== `file://${process.argv[1]}`) {
 } else {
 console.log("VISION UNIVERSE SOCIAL — Suiten und Isolation messen\n");
 
-const laeufe = SUITEN.map((s) => {
+/* EIN Lauf je Suite: check-test-isolation fuehrt die Suite aus und misst dabei die Isolation; ihre
+   TAP-Zusammenfassung wird aus derselben Ausgabe gezaehlt. Vorher lief jede Suite zweimal hintereinander
+   (zaehlen, dann Isolation), das verdoppelte die Laufzeit des Social-Jobs (~1560 s). */
+const messungen = SUITEN.map((s) => {
   process.stdout.write("  " + s.id.padEnd(8) + " laeuft ... ");
-  const r = laufen(s);
+  const m = pruefe(s.muster);
+  const r = laufen(s, m.testsOutput, m.testsExitCode);
   console.log(r.ok
     ? (r.pass + " gruen" +
        (r.skipped ? ", " + r.skipped + " uebersprungen" : ""))
@@ -214,15 +191,15 @@ const laeufe = SUITEN.map((s) => {
                 " (abgebrochen " + r.cancelled + ", uebersprungen " +
                 r.skipped + ", offen " + r.todo + ")"
               : "kein Test gelaufen"))) + ")"));
-  return r;
+  console.log("  " + s.id.padEnd(8) + " Isolation ... " + (m.ok ? "unveraendert" : "VERAENDERT"));
+  return { suite: s, lauf: r, m };
 });
 
-const isolationen = SUITEN.map((s) => {
-  process.stdout.write("  " + s.id.padEnd(8) + " Isolation ... ");
-  const r = isolation(s);
-  console.log(r.ok ? "unveraendert" : "VERAENDERT");
-  return r;
-});
+const laeufe = messungen.map((x) => x.lauf);
+const isolationen = messungen.map((x) => ({
+  id: x.suite.id, ok: x.m.ok, exitCode: x.m.ok ? 0 : 1,
+  satz: x.m.explanation.trim().split("\n").slice(-1)[0] || null
+}));
 
 const befund = {
   generatedAt: new Date().toISOString(),
