@@ -19,6 +19,11 @@ test('FP-2 jede andere Datei erzwingt den Voll-Release; ohne Intraday-Aenderung 
   assert.equal(klassifiziere([]).mode, 'FULL');
   assert.ok(!isIntraday(I + 'X/a.json'));
 });
+test('FP-2b Nicht ausgelieferte Pfade zaehlen nicht, Bau-Eingaben und pages-release.yml schon', () => {
+  const ok = (extra) => klassifiziere([I + '/index.json', ...extra]).mode;
+  for (const p of ['docs/a/b.md', 'app/src/x.ts', 'scripts/quality/x.mjs', 'scripts/technical/world/academy-browser-qa.mjs', 'quant/tests/x.test.mjs', '.github/workflows/ci.yml', 'README.md']) assert.equal(ok([p]), 'FAST', p);
+  for (const p of ['scripts/vu2/build-release.mjs', 'scripts/core/stock-availability.mjs', '.github/workflows/pages-release.yml', 'company-intelligence/config/x.json', 'scripts/access-gate/build.mjs']) assert.equal(ok([p]), 'FULL', p);
+});
 test('FP-3 overlay legt die Dateien byte-gleich ueber das Paket, smoke findet Abweichungen', async () => {
   const repo = mkdtempSync(join(tmpdir(), 'fp-repo-')), site = mkdtempSync(join(tmpdir(), 'fp-site-'));
   const d = join(repo, I + '/2026-11-11');
@@ -38,4 +43,28 @@ test('FP-3 overlay legt die Dateien byte-gleich ueber das Paket, smoke findet Ab
   const bad = await pruefe(repo, site);
   assert.ok(bad.fehler.some((f) => /Pruefsumme/.test(f)) && bad.fehler.some((f) => /Schema/.test(f)));
   assert.equal(JSON.parse(readFileSync(join(site, 'intraday-fastpath.json'), 'utf8')).kind, 'INTRADAY_FASTPATH');
+});
+
+test('FP-4 Skip-Erben verhindert: jeder Job hinter package (deploy, indexnow, company-intelligence-live) hat eine Statusfunktion im if', async () => {
+  /* 12.11.2026: package haengt an intraday-schnell (bei push uebersprungen); ohne !cancelled()/always() erbt jeder Folgejob das Skip,
+     der Voll-Release baut dann, liefert aber nicht aus. */
+  const {readFileSync} = await import('node:fs');
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const job = (name) => { const a = wf.indexOf('\n  ' + name + ':\n'); assert.ok(a > 0, name + ' fehlt'); const rest = wf.slice(a + 1); const m = rest.slice(2).search(/\n  [a-z][a-z0-9-]*:\n/); return m < 0 ? rest : rest.slice(0, m + 2); };
+  assert.match(job('package'), /needs: intraday-schnell/);
+  for (const name of ['package', 'deploy', 'indexnow', 'company-intelligence-live']) {
+    const j = job(name), ifPart = j.slice(j.indexOf('if:'), j.indexOf('needs:') > j.indexOf('if:') ? j.indexOf('needs:') : j.indexOf('steps:'));
+    assert.match(ifPart, /!cancelled\(\)|always\(\)/, name + ': if ohne Statusfunktion erbt das Skip von intraday-schnell');
+  }
+  assert.match(job('deploy'), /needs\.package\.result == 'success'/);
+});
+
+test('FP-5 Schnellweg nur ohne laufende Company-Intelligence-Veroeffentlicher (Weiche haengt an der Pruefung)', async () => {
+  const {readFileSync} = await import('node:fs');
+  const wf = readFileSync(new URL('../../.github/workflows/pages-release.yml', import.meta.url), 'utf8');
+  const a = wf.indexOf('\n  intraday-schnell:\n'), b = wf.indexOf('\n  deploy-schnell:\n');
+  const job = wf.slice(a, b);
+  for (const w of ['company-intelligence-profile-source', 'company-intelligence-refresh', 'company-intelligence-universe-release', 'pages-release-marker']) assert.ok(job.includes(w), w);
+  assert.match(job, /id: weiche\n\s+if: [^\n]*steps\.pub\.outputs\.frei == 'true'/);
+  assert.match(job, /id: bereit\n\s+if: steps\.weiche\.outputs\.mode == 'FAST'/);
 });

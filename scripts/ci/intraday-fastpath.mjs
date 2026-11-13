@@ -27,9 +27,16 @@ import {pathToFileURL} from 'node:url';
 /* Was der Schnellweg ausliefert (alles andere erzwingt den Voll-Release). */
 export const INTRADAY_DIR = 'quant/data/market/intraday';
 export const INTRADAY_FILES = ['quant/data/market/commercial/intraday-delivery-watchdog.json'];
-/* Aenderungen, die nicht in die Auslieferung gehen: sie zaehlen nicht gegen den Schnellweg. */
-export const IGNORED_PREFIXES = ['docs/', '.github/', 'tests/'];
-export const IGNORED_PATTERNS = [/\.md$/, /\/tests\/[^/]+$/];
+/* Aenderungen, die nicht in die Auslieferung gehen und nichts am Bau aendern: sie zaehlen nicht gegen den Schnellweg.
+   Gemessen am gebauten Release (12.11.2026): diese Pfade kommen darin nicht vor. NICHT dazu gehoert, was der Bau liest oder
+   ausfuehrt (scripts/vu2, scripts/core, scripts/account, scripts/watchlist, scripts/mobile, scripts/technical/elliott-home,
+   scripts/market, scripts/company_intelligence, scripts/access-gate) und pages-release.yml selbst. */
+export const IGNORED_PREFIXES = ['docs/', '.claude/', 'app/', 'brand-media/', 'providers/', 'worker/', 'worker-waker/',
+  'scripts/quality/', 'scripts/ci/', 'scripts/quant/', 'scripts/supertrader/', 'scripts/research/', 'scripts/design/',
+  'scripts/diagnose/', 'scripts/brevo/', 'scripts/legal/', 'scripts/insider/', 'scripts/marketstack/',
+  'scripts/official-filings/', 'scripts/dashboard/', 'scripts/home/', 'scripts/discover/'];
+export const IGNORED_PATTERNS = [/\.md$/, /(^|\/)tests\/[^/]+/, /-qa\.mjs$/, /^\.github\/(?!workflows\/pages-release\.yml$)/,
+  /^(\.gitignore|\.vercelignore|\.env\.example)$/];
 
 export function isIntraday(path) {
   return path.startsWith(INTRADAY_DIR + '/') || INTRADAY_FILES.includes(path);

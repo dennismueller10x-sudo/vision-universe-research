@@ -30,13 +30,16 @@ class CandidateTests(unittest.TestCase):
             self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Stand 1.0.22')
         r = extract(c, body, SRC, NOW)
         self.assertEqual(r['state'], 'AVAILABLE')
-        self.assertEqual(r['parserVersion'], 'company-profile-parser-1.0.23')
+        self.assertEqual(r['parserVersion'], 'company-profile-parser-1.0.24')
         self.assertTrue(r['description'].startswith('The Example Company is a diversified'))
 
     def test_through_our_subsidiaries(self):
         c = company('Baxterish International Inc.')
         body = doc('Baxterish International Inc., through our subsidiaries, provides a broad portfolio of essential healthcare products and services worldwide.')
-        self.assertEqual(compare(c, body, SRC, NOW)['verdict'], 'NEWLY_AVAILABLE')
+        with experiment(False):
+            self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Stand 1.0.22')
+        self.assertEqual(extract(c, body, SRC, NOW)['state'], 'AVAILABLE', 'Parser 1.0.23')
+        self.assertEqual(compare(c, body, SRC, NOW)['verdict'], 'SAME', 'compare vergleicht 1.0.23 mit dem dritten Durchlauf')
 
     def test_available_titles_keep_their_text(self):
         c = company('Example Holdings Inc.')
@@ -93,3 +96,33 @@ class FirstPassUnchangedTests(unittest.TestCase):
         self.assertEqual(before['state'], 'AVAILABLE')
         cmp = compare(c, body, SRC, NOW)
         self.assertEqual(cmp['verdict'], 'SAME')
+
+
+class InlineBlockLayoutTests(unittest.TestCase):
+    PIECES = ['We', 'are the', 'largest', 'egg company', 'in the United', 'States', 'and a', 'leading', 'player in', 'the egg-based', 'food', 'industry,', 'producing', 'shell eggs', 'for retail', 'and foodservice customers.']
+
+    def pdf_doc(self):
+        spacer = '<div style="display:inline-block;width:5px;white-space:pre"> </div>'
+        text = spacer.join(self.PIECES)
+        return ('<html lang="en"><div style="position:absolute">ITEM 1.</div><div style="position:absolute">BUSINESS</div><div style="position:absolute">Overview </div>'
+                '<div style="position:absolute;left:66px">' + text + '</div><div style="position:absolute">ITEM 1A.</div></html>').encode()
+
+    def test_fragmented_filing_is_read_only_in_the_third_pass(self):
+        c = company('Example Foods, Inc.')
+        body = self.pdf_doc()
+        with experiment(True, inline=False):
+            self.assertEqual(extract(c, body, SRC, NOW)['state'], 'UNAVAILABLE', 'Stand 1.0.23: Wortfetzen')
+        r = extract(c, body, SRC, NOW)
+        self.assertEqual(r['state'], 'AVAILABLE', 'Parser 1.0.24: dritter Durchlauf')
+        self.assertEqual(r['parserVersion'], 'company-profile-parser-1.0.24')
+        self.assertEqual(compare(c, body, SRC, NOW)['verdict'], 'NEWLY_AVAILABLE')
+        self.assertIn('is an egg company in the United States', r['description'], 'kein "the egg company" (klingt nach einziger)')
+
+    def test_normal_documents_never_reach_the_third_pass(self):
+        """Ein Dokument mit inline-block-Fetzen, dessen erster Durchlauf etwas findet, bleibt wortgleich."""
+        c = company('Example Holdings Inc.')
+        body = doc('Example Holdings Inc. develops software platforms for banks and insurance companies worldwide.').replace(b'<p>', b'<p style="display:inline-block">')
+        a = extract(c, body, SRC, NOW)
+        with experiment(True, inline=False):
+            b = extract(c, body, SRC, NOW)
+        self.assertEqual(a['description'], b['description'])
