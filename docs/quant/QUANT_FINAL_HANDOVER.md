@@ -438,6 +438,10 @@ Reine Schattenprüfung, Forschung, nicht zertifiziert; Engines, Scores und Golde
 
 Erlaubte Varianten (kein Fehler): Der halbe Spread wird in `portfolio-backtest.cjs` als proportionaler Abschlag auf den Portfoliowert am Handelstag gebucht; am Handelstag gleicher Wert wie eine Abbuchung je Fill, danach schrumpft der Abschlag auch die Positionen. Differenz = Spread · Positionsertrag / Portfoliowert (bei 10 % Folgerendite und 500 USD Spread auf 1 Mio. USD: 45 USD, 0,45 bp), konservativ. Stops im Wochen-Ledger (`WEEKLY_CLOSE_STOP`) werden auf den Wochenschluss geprüft und zum nächsten Schluss ausgeführt, nie intrawoche; das ist eine andere, bewusst gröbere Semantik als die Tagesbalken-Stops. Der Erlös delisteter Titel ist eine vorregistrierte Annahme je Klasse (`terminalRecovery`).
 
+## Datenstand-Abnahme des Produktuniversums (Strang AK, 13.11.2026)
+
+Entscheidung (Steuerung, 13.11.2026): Die Prüfungen, die die Zahlen des Live-Produktuniversums festschreiben (`scripts/quant/tests/test_canonical_market.py`, sieben Methoden mit `@nur_datenstand`), blockieren keinen Code-PR mehr, weil sie bei jedem Eignungslauf rot wurden (11.11.: drei PRs und main); der Abnahmewert steht in `quant/config/product-universe-acceptance.json`, die Prüfung läuft täglich als Job `abnahme` in `quant-produktionscheck.yml` (`VU_DATENSTAND_ABNAHME=1`), eine Abweichung öffnet am selben Tag ein Alarm-Issue (`[quant-produktionscheck]`), und eine neue Abnahme ist ein PR auf diese Konfig mit Herleitung je Titel.
+
 ## Fachbelege und weiterführende Dokumentation
 
 Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.

@@ -82,3 +82,20 @@ test("PCK-6 · Pages-Deploy wartet und versucht es einmal erneut, wenn ein ander
     assert.match(block, /url: \$\{\{ steps\.deployment2\.outputs\.page_url \|\| steps\.deployment\.outputs\.page_url \}\}/, job + ": URL aus beiden Versuchen");
   }
 });
+
+test("PCK-7 · Datenstand-Abnahme: Schalter im Test, Abnahmewert in der Konfig, taeglicher Job mit Alarm", () => {
+  const cfg = JSON.parse(readFileSync(join(ROOT, "quant/config/product-universe-acceptance.json"), "utf8"));
+  assert.equal(cfg.schema, "vu-product-universe-acceptance-1");
+  for (const k of ["PRODUCT_TITLES", "HISTORICAL_CHART_AVAILABLE", "TECHNICAL_HISTORY_ELIGIBLE"]) {
+    assert.ok(Number.isInteger(cfg.abgenommen[k]) && Number.isInteger(cfg.aktuellerPolicyStand[k]), k);
+    assert.ok(cfg.aktuellerPolicyStand[k] <= cfg.abgenommen.PRODUCT_TITLES, k);
+  }
+  const py = readFileSync(join(ROOT, "scripts/quant/tests/test_canonical_market.py"), "utf8");
+  assert.doesNotMatch(py, /^(ABGENOMMEN|AKTUELLER_POLICY_STAND) = \{\n\s+"PRODUCT_TITLES": 63/m, "keine festen Live-Zahlen mehr im Test");
+  assert.equal((py.match(/@nur_datenstand/g) || []).length, 7);
+  const wf = readFileSync(join(ROOT, ".github/workflows/quant-produktionscheck.yml"), "utf8");
+  assert.match(wf, /\n  abnahme:\n/);
+  assert.match(wf, /VU_DATENSTAND_ABNAHME: '1'/);
+  assert.match(wf, /needs: \[check, abnahme\]/);
+  assert.match(wf, /RESULT_ABNAHME: \$\{\{ needs\.abnahme\.result \}\}/);
+});
