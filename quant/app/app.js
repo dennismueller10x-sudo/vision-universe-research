@@ -102,7 +102,7 @@
       case "meldungen": r.view = "radar"; break;
       case "radar": r.view = "renamed"; break;
       case "chartlagen": r.view = "chartlagen"; break;
-      case "forschung": r.view = "backtest"; if (parts[1] === "fall") { r.id = null; r.fall = parts[2] ? String(parts[2]).toLowerCase() : null; } else r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
+      case "forschung": r.view = "backtest"; if (parts[1] === "fall" || parts[1] === "art" || parts[1] === "methode") { r.id = null; r.fall = {}; r.fall[parts[1]] = parts[2] ? String(parts[2]) : ""; if (parts[1] === "fall") r.fall.fall = String(parts[2] || "").toLowerCase(); } else r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
       case "backtest": r.view = "renamed"; break;
       case "aktie":
         r.ticker = String(parts[1] || "").toUpperCase();

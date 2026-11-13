@@ -338,13 +338,86 @@
       return;
     }
     host.innerHTML = '<div class="qk-rh"><div class="qk-rh-t"><h2>Robustheit der Prüffälle</h2><span class="vu-xs vu-mu qk-sort">Stand ' + U.esc(String(res.asOf).split("-").reverse().join(".")) + "</span></div>" +
-      "<p>Feste Prüffälle aus der Vergangenheit, je mit Monte Carlo, Walk-Forward, späteren Testfenstern und Aufteilung nach Marktlage. Keine Prognose, kein Renditeversprechen.</p></div>" +
-      BR_TAG + '<div class="vu-box qk-list">' + res.cases.map(function (c) {
+      "<p>Sechs Backtest-Arten, sieben Prüfmethoden. Jedes Feld zeigt, ob gerechnet wurde, und wenn nicht, warum. Keine Prognose, kein Renditeversprechen.</p></div>" +
+      BR_TAG + brMatrix(res) + '<details class="vu-box qk-bt-more"><summary><b>Alle ' + res.cases.length + ' Prüffälle</b></summary><div class="qk-list">' + res.cases.map(function (c) {
         var ran = brRan(c);
         return '<a class="qk-bt-c" href="' + U.esc(X.routes.backtestCase(c.id)) + '"><span><b>' + U.esc(brTitle(c)) + "</b><span>" + U.esc(brYears(c.period)) +
           (c.state === "PREPARED_DATA_LIMITED" ? " · Daten begrenzt" : " · " + ran.length + " von 7 Methoden") + "</span></span>" +
           U.verdict(c.state === "PREPARED_DATA_LIMITED" ? "none" : "mid", c.state === "PREPARED_DATA_LIMITED" ? "wartet" : "gerechnet") + "</a>";
-      }).join("") + "</div>";
+      }).join("") + "</div></details>";
+  }
+  /* Diagramme (SVG, ohne Bibliothek): Monte-Carlo-Band, Testfenster-Zeitleiste, Marktlage-Balken. Farben aus dem Konzept:
+     positiv lime mit schwarzem Rand, negativ schwarz, Nulllinie grau. */
+  function brScale(vals) { var lo = Math.min(0, Math.min.apply(null, vals)), hi = Math.max(0, Math.max.apply(null, vals)); if (hi - lo < 1e-9) hi = lo + 1; return function (v) { return 8 + (v - lo) / (hi - lo) * 304; }; }
+  function brBand(q, label) {
+    if (!q || typeof q.p5 !== "number") return "";
+    var x = brScale([q.p5, q.p50, q.p95]), z = x(0), a = x(q.p5), b = x(q.p95), m = x(q.p50);
+    return '<figure class="qk-br-fig"><svg viewBox="0 0 320 54" role="img" aria-label="' + global.VUUI.esc(label + ": 5 % " + brPct(q.p5) + ", Mitte " + brPct(q.p50) + ", 95 % " + brPct(q.p95)) + '">' +
+      '<line x1="' + z + '" x2="' + z + '" y1="6" y2="40" class="qk-br-zero"/><rect x="' + a + '" y="14" width="' + Math.max(2, b - a) + '" height="18" rx="4" class="qk-br-band"/>' +
+      '<line x1="' + m + '" x2="' + m + '" y1="10" y2="36" class="qk-br-mid"/>' +
+      '<text x="' + a + '" y="52" class="qk-br-t" text-anchor="start">' + brPct(q.p5) + '</text><text x="' + b + '" y="52" class="qk-br-t" text-anchor="end">' + brPct(q.p95) + "</text></svg>" +
+      '<figcaption class="vu-xs vu-mu">' + global.VUUI.esc(label) + ": Band = 5 % bis 95 % der Neuziehungen, Strich = mittlerer Fall.</figcaption></figure>";
+  }
+  function brBars(rows, label) {
+    rows = rows.filter(function (r) { return typeof r[1] === "number"; });
+    if (!rows.length) return "";
+    var x = brScale(rows.map(function (r) { return r[1]; })), z = x(0), h = rows.length * 26 + 8;
+    return '<figure class="qk-br-fig"><svg viewBox="0 0 320 ' + h + '" role="img" aria-label="' + global.VUUI.esc(label) + '">' + '<line x1="' + z + '" x2="' + z + '" y1="2" y2="' + (h - 2) + '" class="qk-br-zero"/>' +
+      rows.map(function (r, i) { var v = x(r[1]), y = 6 + i * 26; return '<rect x="' + Math.min(z, v) + '" y="' + y + '" width="' + Math.max(2, Math.abs(v - z)) + '" height="16" rx="3" class="' + (r[1] >= 0 ? "qk-br-up" : "qk-br-dn") + '"><title>' + global.VUUI.esc(r[0] + ": " + brPct(r[1])) + "</title></rect>"; }).join("") +
+      "</svg><figcaption class=\"vu-xs vu-mu\">" + global.VUUI.esc(label) + "</figcaption></figure>";
+  }
+  var BR_STATE = { EXECUTED: ["mid", "gerechnet"], NOT_APPLICABLE: ["none", "passt nicht"], DATA_MISSING: ["weak", "Daten fehlen"], NOT_RUN: ["none", "nicht gerechnet"], NO_CASE: ["none", "kein Fall"] };
+  var BR_MISSING = { PRIVATE_FACTOR_PANEL: "privates Faktorpanel", PRIVATE_DATA_UNAVAILABLE: "private Reihen zurückgezogener Aktien", PROFILE_TARGETS_REQUIRE_PIT_FACTOR_SNAPSHOTS_WITH_ROW_AVAILABILITY: "historische Faktorstände je Stichtag" };
+  var BR_REASON = { RECONSTRUCTION_IS_NOT_OOS_EVIDENCE: "Rekonstruktion ist kein Beleg auf späteren Testfenstern", NO_TR_REGISTER_EVENTS_FOR_POPULATION_IN_WINDOW: "keine Dividendentermine im Zeitraum" };
+  function brCellNote(c) { return c.state === "DATA_MISSING" ? "Daten fehlen: " + (c.missing || []).map(function (x) { return BR_MISSING[x] || x; }).join(", ") : c.state === "NOT_RUN" && c.reason ? BR_REASON[c.reason] || c.reason : ""; }
+  var BR_SHORT = { MONTE_CARLO: "Monte Carlo", WALK_FORWARD: "Walk-Fwd", OUT_OF_SAMPLE: "Test~fenster", MARKET_REGIME: "Markt~lage", PARAMETER_SENSITIVITY: "Sensi~tivität", EVENT_DRIVEN: "Divi~dende", PORTFOLIO_REBALANCING: "Depot" };
+  function brMatrix(res) {
+    var U = global.VUUI;
+    if (!res.matrix) return "";
+    return '<div class="qk-br-mx" role="table" aria-label="Arten und Methoden"><div class="qk-br-mxr qk-br-mxh" role="row"><span role="columnheader">Art</span>' +
+      BR_METHOD.map(function (m) { return '<a role="columnheader" href="' + U.esc(X.routes.backtestMethod(m[0])) + '" title="' + U.esc(m[1]) + '">' + U.esc(BR_SHORT[m[0]]).replace(/~/g, "&shy;") + "</a>"; }).join("") + "</div>" +
+      res.kinds.map(function (k) {
+        return '<div class="qk-br-mxr" role="row"><a role="rowheader" href="' + U.esc(X.routes.backtestKind(k)) + '">' + U.esc(BR_KIND[k] || k) + "</a>" + BR_METHOD.map(function (m) {
+          var c = res.matrix[k][m[0]], st = BR_STATE[c.state] || BR_STATE.NOT_RUN;
+          return '<span role="cell" class="qk-br-cell is-' + c.state.toLowerCase().replace(/_/g, "-") + '" title="' + U.esc(st[1] + (brCellNote(c) ? " – " + brCellNote(c) : "")) + '">' + (c.state === "EXECUTED" ? "●" : c.state === "NOT_APPLICABLE" ? "·" : c.state === "DATA_MISSING" ? "◌" : "○") + '<span class="qk-sr">' + U.esc(st[1]) + "</span></span>";
+        }).join("") + "</div>";
+      }).join("") + '</div><p class="vu-xs vu-mu qk-br-legend">● gerechnet · ◌ Daten fehlen · ○ nicht gerechnet · · passt methodisch nicht</p>';
+  }
+  async function brLoad(ctx) { var x = await ctx.api.getBacktest("research").catch(function () { return null; }); return x && x.state === "AVAILABLE" ? x : null; }
+  function brHead(title, lead) {
+    var U = global.VUUI;
+    return '<a class="qv3-back" href="' + U.esc(X.routes.backtest()) + '"><span class="vu-round" aria-hidden="true">' + U.glyph("back", 18) + '</span><span class="vu-sm vu-mu">Forschung</span></a>' + BR_TAG +
+      '<h1 class="vu-lt qk-bt-t">' + U.esc(title) + "</h1>" + (lead ? '<p class="vu-lead">' + U.esc(lead) + "</p>" : "");
+  }
+  var BR_KIND_LEAD = { SAME_STOCK_REPLAY: "Eine feste Regel auf einer einzelnen Aktie, Woche für Woche nachgespielt.", PATTERN_EVIDENCE: "Wie es nach einem Kursmuster weiterging, über viele Aktien.",
+    SIGNAL_BACKTEST: "Die Meldungsregeln von Quant, rückwirkend auf viele Aktien angewendet.", SETUP_BACKTEST: "Setups aus der Chartanalyse, rückwirkend rekonstruiert.",
+    STRATEGY_BACKTEST: "Ein Depot nach fester Regel, mit Umschichtung und Kosten.", FACTOR_RANKING_BACKTEST: "Aktien nach einer Eigenschaft sortiert und in Gruppen verglichen." };
+  var BR_METHOD_LEAD = { MONTE_CARLO: "Zieht die beobachteten Ergebnisse vielfach neu und zeigt die Spanne. Keine Prognose.", WALK_FORWARD: "Teilt die Zeit in Fenster; die Regel bleibt fest, es wird nichts angepasst.",
+    OUT_OF_SAMPLE: "Ergebnis in späteren Testfenstern einer vorab festen Regel.", MARKET_REGIME: "Ergebnis getrennt nach Marktlage (Trend und Schwankung des S&P 500).",
+    PARAMETER_SENSITIVITY: "Wie stark das Ergebnis von einer vorab festgelegten Stellschraube abhängt.", EVENT_DRIVEN: "Verlauf rund um Dividendentermine.", PORTFOLIO_REBALANCING: "Ein Rechendepot mit Umschichtung, verglichen mit dem S&P 500." };
+  async function renderKind(main, ctx, kind) {
+    var U = global.VUUI, page = el("div", { class: "vu-ui qv3 qk qk-bt" }); main.append(page);
+    var res = await brLoad(ctx), K = String(kind || "").toUpperCase();
+    if (!res || !res.matrix || !res.matrix[K]) { page.innerHTML = brHead("Art nicht gefunden") + U.blank(res ? "Diese Backtest-Art gibt es nicht." : "Die Ergebnisse der Zusatzmethoden liegen noch nicht vor."); return; }
+    var cases = res.cases.filter(function (c) { return c.kind === K; });
+    page.innerHTML = brHead(BR_KIND[K] || K, BR_KIND_LEAD[K]) + '<div class="vu-box qk-list">' + BR_METHOD.map(function (m) {
+      var c = res.matrix[K][m[0]], st = BR_STATE[c.state] || BR_STATE.NOT_RUN, link = c.state === "EXECUTED" && c.cases && c.cases[0] ? X.routes.backtestCase(c.cases[0]) : X.routes.backtestMethod(m[0]);
+      return '<a class="qk-bt-c" href="' + U.esc(link) + '"><span><b>' + U.esc(m[1]) + "</b><span>" + U.esc(brCellNote(c) || (c.state === "EXECUTED" ? c.cases.length + (c.cases.length === 1 ? " Prüffall" : " Prüffälle") : st[1])) + "</span></span>" + U.verdict(st[0], st[1]) + "</a>";
+    }).join("") + '</div><div class="qk-rh"><div class="qk-rh-t"><h2>Prüffälle</h2></div></div><div class="vu-box qk-list">' + cases.map(function (c) {
+      return '<a class="qk-bt-c" href="' + U.esc(X.routes.backtestCase(c.id)) + '"><span><b>' + U.esc(brTitle(c)) + "</b><span>" + U.esc(brYears(c.period)) + " · " + (c.state === "PREPARED_DATA_LIMITED" ? "Daten begrenzt" : brRan(c).length + " Methoden") + "</span></span></a>";
+    }).join("") + "</div>" + '<div class="qk-help">' + U.help("Vergangenheit, keine Prognose und kein Renditeversprechen. Forschung, nicht zertifiziert.") + "</div>";
+  }
+  async function renderMethod(main, ctx, method) {
+    var U = global.VUUI, page = el("div", { class: "vu-ui qv3 qk qk-bt" }); main.append(page);
+    var res = await brLoad(ctx), M = String(method || "").toUpperCase(), def = BR_METHOD.filter(function (x) { return x[0] === M; })[0];
+    if (!res || !res.matrix || !def) { page.innerHTML = brHead("Methode nicht gefunden") + U.blank(res ? "Diese Methode gibt es nicht." : "Die Ergebnisse der Zusatzmethoden liegen noch nicht vor."); return; }
+    var blocks = res.cases.filter(function (c) { return c.methods[M] && c.methods[M].state === "EXECUTED"; });
+    page.innerHTML = brHead(def[1], BR_METHOD_LEAD[M]) + '<div class="vu-box qk-list">' + res.kinds.map(function (k) {
+      var c = res.matrix[k][M], st = BR_STATE[c.state] || BR_STATE.NOT_RUN;
+      return '<a class="qk-bt-c" href="' + U.esc(X.routes.backtestKind(k)) + '"><span><b>' + U.esc(BR_KIND[k] || k) + "</b><span>" + U.esc(brCellNote(c) || st[1]) + "</span></span>" + U.verdict(st[0], st[1]) + "</a>";
+    }).join("") + "</div>" + blocks.map(function (c) {
+      return '<div class="qk-rh"><div class="qk-rh-t"><h2><a href="' + U.esc(X.routes.backtestCase(c.id)) + '">' + U.esc(brTitle(c)) + "</a></h2><span class=\"vu-xs vu-mu qk-sort\">" + U.esc(brYears(c.period)) + "</span></div></div>" + brMethod(M, c.methods[M]);
+    }).join("") + '<div class="qk-help">' + U.help("Vergangenheit, keine Prognose und kein Renditeversprechen. Forschung, nicht zertifiziert.") + "</div>";
   }
   function brPct(v) { return pct(v, 1, true); }
   function brRow(label, value) { return '<div class="qk-br-row"><span>' + global.VUUI.esc(label) + '</span><b class="vu-num">' + value + "</b></div>"; }
@@ -353,6 +426,7 @@
     if (id === "MONTE_CARLO") {
       rows = brRow("Gesamtergebnis, mittlerer Fall", brPct(m.totalReturn.p50)) + brRow("Spanne (5 % bis 95 % der Ziehungen)", brPct(m.totalReturn.p5) + " bis " + brPct(m.totalReturn.p95)) +
         brRow("Größter Rückgang, mittlerer Fall", brPct(m.maxDrawdown.p50));
+      rows += brBand(m.totalReturn, "Gesamtergebnis");
       note = m.simulations + " Neuziehungen aus " + m.sourceObservations + " beobachteten Werten über " + m.horizon + " Schritte. Bedingte Neuziehung, keine Prognose.";
     } else if (id === "WALK_FORWARD") {
       rows = brRow("Zeitfenster", String(m.folds)) + brRow("Ausgeschlossen (Überlappung, unreif)", String(Object.values(m.excludedByReason || {}).reduce(function (a, b) { return a + b; }, 0)));
@@ -360,9 +434,11 @@
     } else if (id === "OUT_OF_SAMPLE") {
       rows = brRow("Mittel über alle Testfenster (" + m.n + " Fälle)", brPct(m.mean)) + (m.perFold || []).map(function (f) {
         return brRow((f.test ? String(f.test[0]).slice(0, 4) + "–" + String(f.test[1]).slice(0, 4) : "Fenster " + f.fold) + " (" + f.n + ")", brPct(f.mean)); }).join("");
+      rows += brBars((m.perFold || []).map(function (f) { return [f.test ? String(f.test[0]).slice(0, 4) + "–" + String(f.test[1]).slice(0, 4) : "Fenster " + f.fold, f.mean]; }), "Mittel je Testfenster, zeitlich geordnet");
       note = "Testfenster einer vorab festen Regel, kein unberührter Rest.";
     } else if (id === "MARKET_REGIME") {
       rows = (m.states || []).filter(function (s) { return s.n; }).map(function (s) { return brRow((BR_REGIME[s.state] || s.state) + " (" + s.n + ")", brPct(s.mean)); }).join("");
+      rows += brBars((m.states || []).filter(function (s) { return s.n; }).map(function (s) { return [BR_REGIME[s.state] || s.state, s.mean]; }), "Mittel je Marktlage");
       note = "Marktlage nach dem Wochentrend und der Schwankung des S&P 500 (zum jeweiligen Zeitpunkt bekannt).";
     } else if (id === "PARAMETER_SENSITIVITY") {
       rows = (m.grid || []).map(function (g) { var k = Object.keys(g.parameters || {}).map(function (x) { return x === "holdingPeriods" ? g.parameters[x] + " Wochen gehalten" : x + " " + g.parameters[x]; }).join(", ");
@@ -440,7 +516,11 @@
     var picks = body.querySelector(".q-bt-picks"); if (picks) picks.remove();
   }
   async function render(main, ctx, ruleId, inner, fall) {
-    if (!inner && global.VUUI) return fall ? renderCase(main, ctx, fall) : renderV4(main, ctx, ruleId);
+    if (!inner && global.VUUI) {
+      if (fall && fall.art) return renderKind(main, ctx, fall.art);
+      if (fall && fall.methode) return renderMethod(main, ctx, fall.methode);
+      return fall ? renderCase(main, ctx, fall.fall || fall) : renderV4(main, ctx, ruleId);
+    }
     main.append(el("header", { class: "q-hero q-hero--page" }, [X.globe(), el("p", { class: "q-kicker", text: "Backtesting" }),
       el("h1", { class: "qx-h1", text: "Hatte ein Regelereignis früher wirklich einen Vorteil?" }),
       el("p", { class: "q-hero-lead v2-lead", text: "Für jede Regel: wie oft die Fälle nach 6 Monaten höher lagen – und wie oft der ganze Markt in denselben Wochen. Dazu, wie belastbar der Vergleich ist und was noch fehlt. Keine Prognose, keine Empfehlung." })]));
