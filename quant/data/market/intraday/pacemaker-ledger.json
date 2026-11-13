@@ -10,37 +10,8 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-13T16:52:45.958Z",
+  "updatedAt": "2026-11-13T17:06:58.197Z",
   "cycles": [
-    {
-      "cycle": 11,
-      "runId": "43223095938",
-      "triggerAt": "2026-11-12T16:53:00.742Z",
-      "marketStateAtTrigger": "OPEN",
-      "localTimeAtTrigger": "11:53:00",
-      "fetchStartAt": "2026-11-12T16:53:00.743Z",
-      "fetchEndAt": "2026-11-12T17:07:03.156Z",
-      "session": "2026-11-12",
-      "written": 1312,
-      "requests": 1453,
-      "notPublishable": 80,
-      "addAt": "2026-11-12T17:07:03.158Z",
-      "commitAt": "2026-11-12T17:07:03.795Z",
-      "pushAt": "2026-11-12T17:07:06.723Z",
-      "sha": "98e6263292",
-      "changed": true,
-      "ok": true,
-      "reason": null,
-      "snapshotAt": "2026-11-12T17:07:03.127Z",
-      "pushed": true,
-      "watchdog": {
-        "verdict": "FAIL",
-        "codes": [
-          "auslieferungZuWeitHinterher",
-          "seiteStandZuAlt"
-        ]
-      }
-    },
     {
       "cycle": 12,
       "runId": "43223095938",
@@ -758,6 +729,35 @@
       "written": 1308,
       "requests": 1453,
       "notPublishable": 80,
+      "addAt": "2026-11-13T16:52:45.959Z",
+      "commitAt": "2026-11-13T16:52:46.457Z",
+      "pushAt": "2026-11-13T16:52:55.140Z",
+      "sha": "1f5af27759",
+      "changed": true,
+      "ok": true,
+      "reason": null,
+      "snapshotAt": "2026-11-13T16:52:45.933Z",
+      "pushed": true,
+      "watchdog": {
+        "verdict": "FAIL",
+        "codes": [
+          "auslieferungZuWeitHinterher",
+          "seiteStandZuAlt"
+        ]
+      }
+    },
+    {
+      "cycle": 11,
+      "runId": "43429876581",
+      "triggerAt": "2026-11-13T16:52:55.418Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "11:52:55",
+      "fetchStartAt": "2026-11-13T16:52:55.418Z",
+      "fetchEndAt": "2026-11-13T17:06:58.195Z",
+      "session": "2026-11-13",
+      "written": 1301,
+      "requests": 1453,
+      "notPublishable": 77,
       "addAt": null,
       "commitAt": null,
       "pushAt": null,
@@ -765,7 +765,7 @@
       "changed": false,
       "ok": true,
       "reason": null,
-      "snapshotAt": "2026-11-13T16:52:45.933Z"
+      "snapshotAt": "2026-11-13T17:06:58.172Z"
     }
   ]
 }
