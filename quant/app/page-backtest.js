@@ -599,5 +599,35 @@
       int(cert.survivorship.DELISTED_IDENTIFIED) + " delistete Titel bekannt, davon " + int(cert.survivorship.DELISTED_WITH_HISTORY) + " mit sauberer Kurshistorie. " + SURVIVORSHIP_PLAIN })], { href: X.routes.method("historie"), label: "Methodik" }));
   }
 
-  global.QXBacktest = { TRUST_WORD: TRUST_WORD, STATUS_WORD: STATUS_WORD, tierWord: tierWord, statusBadge: statusBadge, reasonText: reasonText, evidenceBlock: evidenceBlock, trackingSection: trackingSection, render: render, pathChart: pathChart };
+  /* Aktienseite, Ebene 1: „Was die Geschichte zu diesem Signal sagt“. Nur bei öffentlichem Schalter (display.public) und
+     nur aus der Forschung: Trefferquote des auslösenden Signals (marktweit), schlechtester geprüfter Fall (Finanzkrise),
+     Marktlage aller Meldungsregeln zusammen, Pflichtangaben. Keine Prognose. */
+  function historyCard(res, card) {
+    var U = global.VUUI;
+    if (!U || !res || res.state !== "AVAILABLE" || !res.display || res.display.public !== true) return null;
+    var byId = function (id) { return (res.cases || []).find(function (c) { return c.id === id; }); };
+    var all = byId("matrix-signal"), crash = byId("signal-2008-crash");
+    if (!all) return null;
+    var T = global.VUQuantRadar ? global.VUQuantRadar.TYPE : {};
+    var ev = ((card && card.events) || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0];
+    var badge = function (x) { var v = brVerdictOf(x); return v ? U.verdict(BR_VERDICT[v][0], BR_VERDICT[v][1]) : ""; };
+    var rows = "";
+    if (ev) rows += brRow("Trefferquote „" + ((T[ev.eventType] || {}).label || ev.eventType) + "“: nach 6 Monaten höher", brPct(ev.backtest.positiveShare).replace(/^\+/, "") + " (Markt " + brPct(ev.backtest.basePositiveShare).replace(/^\+/, "") + ")");
+    if (all.metrics && typeof all.metrics.hitRate === "number") rows += brRow("Trefferquote aller Meldungsregeln (" + (all.metrics.trades || 0).toLocaleString("de-DE") + " Fälle)", brPct(all.metrics.hitRate).replace(/^\+/, ""));
+    var mr = all.methods && all.methods.MARKET_REGIME, states = (mr && mr.states || []).filter(function (x) { return x.n; });
+    var regime = states.length ? states.slice().sort(function (a, b) { return a.mean - b.mean; }) : [];
+    var worstMc = crash && crash.methods && crash.methods.MONTE_CARLO;
+    var html = '<div class="qk-br-hist"><h3>Was die Geschichte zu diesem Signal sagt</h3>' +
+      '<p class="vu-sm vu-mu">' + U.esc(ev ? "Bei dieser Aktie löst gerade ein marktweit getestetes Signal aus. So schnitten die Meldungsregeln rückwirkend ab." : "Zurzeit löst bei dieser Aktie kein getestetes Signal aus. So schnitten die Meldungsregeln insgesamt rückwirkend ab.") + "</p>" +
+      '<div class="qk-br-tbl">' + rows +
+      (crash ? '<div class="qk-br-row"><span>Schlechtester geprüfter Fall: Finanzkrise ' + U.esc(brYears(crash.period)) + "</span><b>" + badge(worstMc) + "</b></div>" +
+        (worstMc && worstMc.totalReturn ? brRow("… mittleres Ergebnis", brPct(worstMc.totalReturn.p50)) + brRow("… Spanne (5 % bis 95 %)", brPct(worstMc.totalReturn.p5) + " bis " + brPct(worstMc.totalReturn.p95)) : "") : "") +
+      (regime.length ? '<div class="qk-br-row"><span>Marktlage</span><b>' + badge(mr) + "</b></div>" + brRow("… schwächste Lage: " + (BR_REGIME[regime[0].state] || regime[0].state), brPct(regime[0].mean)) + brRow("… stärkste Lage: " + (BR_REGIME[regime[regime.length - 1].state] || regime[regime.length - 1].state), brPct(regime[regime.length - 1].mean)) : "") +
+      "</div>" + (U.legal ? U.legal("backtest", { facts: brFacts(all) }) : "") +
+      '<p class="vu-sm"><a href="' + U.esc(X.routes.backtestKind("SIGNAL_BACKTEST")) + '">Alle Prüffälle der Meldungsregeln</a></p></div>';
+    var box = document.createElement("div"); box.className = "q-ev-history"; box.innerHTML = html;
+    return box;
+  }
+
+  global.QXBacktest = { TRUST_WORD: TRUST_WORD, STATUS_WORD: STATUS_WORD, tierWord: tierWord, statusBadge: statusBadge, reasonText: reasonText, evidenceBlock: evidenceBlock, trackingSection: trackingSection, render: render, pathChart: pathChart, historyCard: historyCard };
 })(typeof window !== "undefined" ? window : globalThis);

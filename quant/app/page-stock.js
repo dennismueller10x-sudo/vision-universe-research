@@ -595,6 +595,23 @@
     c.push(el("p", { class: "qx-small", text: [lv.sample, lv.robust, lv.coverageText, "Historisch beobachtet: eine Häufigkeitsauswertung, kein Test einer Handelsregel."].filter(Boolean).join(" ") }));
     return c;
   }
+  /* Ebene 1 der Backtest-Forschung („Was die Geschichte zu diesem Signal sagt“): erst in Sichtweite, und nur wenn der
+     Schalter quant/methodology/backtest-research-display.json mit Owner-Satz oeffentlich steht. Vorher kein Abruf der Forschung. */
+  function historyWhenVisible(host, card, ctx) {
+    if (typeof global.fetch !== "function" || !ctx || !ctx.api || !ctx.api.getBacktest || !ctx.loadBacktest) return;
+    var go = function () {
+      global.fetch("/quant/methodology/backtest-research-display.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (sw) {
+        if (!sw || sw.public !== true || !sw.approval || sw.approval.text !== sw.approvalPhrase) return null;
+        return Promise.all([ctx.api.getBacktest("research"), ctx.loadBacktest()]).then(function (all) {
+          var node = global.QXBacktest && global.QXBacktest.historyCard ? global.QXBacktest.historyCard(all[0], card) : null;
+          if (node && host.isConnected) host.replaceChildren(node);
+        });
+      }).catch(function () {});
+    };
+    if (!global.IntersectionObserver) return go();
+    var spy = new global.IntersectionObserver(function (entries) { if (entries.some(function (e) { return e.isIntersecting; })) { spy.disconnect(); go(); } }, { rootMargin: "200px" });
+    spy.observe(host);
+  }
   /* B: die marktweit getesteten Signale, die bei dieser Aktie gerade ausloesen. */
   function signalEvidenceFor(card) {
     var E = global.QXEvidence, T = global.VUQuantRadar ? global.VUQuantRadar.TYPE : {};
@@ -1285,11 +1302,13 @@
     var evidence = await evidenceP;
     var evOverview = evidenceOverview(vm);
     var signalHost = el("div", { class: "q-ev-signal-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Getestete Regelereignisse werden geladen …" })]);
+    /* Ohne VUUI steht die Karte im alten Abschnitt; mit VUUI zieht sie unten in den sichtbaren Abschnitt um. */
+    var historyHost = el("div", { class: "q-ev-history-host" });
     var trackHost = el("div", { class: "q-track-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Radar-Status wird geladen …" })]);
     var alertHost = global.QXEvidence && global.QXEvidence.alertPanel ? global.QXEvidence.alertPanel(ticker) : null;
     var radarMore = el("details", { class: "vu-more qv-more", id: "radar-status" }, [el("summary", { text: "Radar-Status: was Quant für diese Aktie verfolgt" }), el("div", { class: "vu-more-body qv-more-body" }, [trackHost, alertHost].filter(Boolean))]);
-    var histOld = card(X.section("Was geschah früher in ähnlichen Situationen?", null, replaySection(vm, words, evidence, signalHost, evOverview).concat([radarMore]), { href: X.routes.method("historie"), label: "Methodik" }, global.VUUI ? null : "Historischer Vergleich", global.VUUI ? null : "historie"));
-    if (global.VUUI) grid.append(card(X.section("Was geschah früher bei " + (displayName || ticker) + "?", null, historyV3(vm).concat([keepBelow("Alle Belege: diese Aktie, marktweit, Zertifizierung, Radar", histOld)]), { href: X.routes.method("historie"), label: "Methodik" }, "Historie", "historie")));
+    var histOld = card(X.section("Was geschah früher in ähnlichen Situationen?", null, replaySection(vm, words, evidence, signalHost, evOverview).concat([historyHost, radarMore]), { href: X.routes.method("historie"), label: "Methodik" }, global.VUUI ? null : "Historischer Vergleich", global.VUUI ? null : "historie"));
+    if (global.VUUI) grid.append(card(X.section("Was geschah früher bei " + (displayName || ticker) + "?", null, historyV3(vm).concat([historyHost, keepBelow("Alle Belege: diese Aktie, marktweit, Zertifizierung, Radar", histOld)]), { href: X.routes.method("historie"), label: "Methodik" }, "Historie", "historie")));
     else grid.append(histOld);
     cardPromise.then(function (rc) {
       if (!signalHost.isConnected) return;
@@ -1300,6 +1319,7 @@
       var tested = ((card && card.events) || []).some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; });
       var certHost = signalHost.closest ? signalHost.closest(".qx-replay") : null, certLine = certHost ? certHost.querySelector(".q-ev-cert") : null;
       if (!tested && certLine && global.QXEvidence) certLine.replaceWith(global.QXEvidence.certifiedLine(null, { subject: "diese Aktie" }));
+      historyWhenVisible(historyHost, card, ctx);
     });
     (api.getSignalTracking ? api.getSignalTracking(ticker).catch(function () { return null; }) : Promise.resolve(null)).then(function (tr) {
       if (!trackHost.isConnected) return;

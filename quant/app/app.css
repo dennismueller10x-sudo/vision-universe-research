@@ -1893,3 +1893,11 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qk .qk-seg small,.qk .qk-chips .vu-chip--on small,.qk .qk-chips .vu-chip[aria-pressed=true] small{opacity:1} /* Kontrast (vu3-regression) */
 .qd .qk a.qk-pro,.qd .qk a.qk-pro:visited{color:var(--vu-inv,#fff)} /* Kontrast: Link-Farbe nicht erben */
 .qv3-back + .qk-tag { margin-left: 10px; }
+/* Aktienseite: Ebene 1 der Backtest-Forschung („Was die Geschichte zu diesem Signal sagt“) */
+.q-ev-history .qk-br-hist{margin-top:16px;padding:16px;border-radius:16px;background:var(--vu-surface-2,#f2f2f2)}
+.q-ev-history h3{margin:0 0 6px;font-size:1.05rem}
+.q-ev-history .qk-br-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid rgba(0,0,0,.08)}
+.q-ev-history .qk-br-row:first-child{border-top:0}
+.q-ev-history .qk-br-row span{min-width:0;flex:1}
+.q-ev-history .qk-br-row b{white-space:nowrap}
+.q-ev-history .vu-legal{margin-top:12px}
