@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-11-12T00:45:35.631Z",
+ "generatedAt": "2026-11-13T00:54:27.118Z",
  "signalStudy": {
   "asOf": "2026-11-13",
-  "generatedAt": "2026-11-12T00:43:01.850Z",
+  "generatedAt": "2026-11-13T00:51:07.803Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -49,10 +49,10 @@
   {
    "id": "setupObservations",
    "label": "Setup-Beobachtungen und Wechsel",
-   "count": 32,
+   "count": 33,
    "from": "2026-09-10",
-   "to": "2026-11-11",
-   "spanDays": 62,
+   "to": "2026-11-12",
+   "spanDays": 63,
    "replay": {
     "titles": 160,
     "observations": 127433,
@@ -62,17 +62,17 @@
   {
    "id": "factorSnapshots",
    "label": "Faktor-Snapshots",
-   "count": 32,
+   "count": 33,
    "from": "2026-09-23",
-   "to": "2026-11-11",
-   "spanDays": 49
+   "to": "2026-11-12",
+   "spanDays": 50
   },
   {
    "id": "strategyAssignments",
    "label": "Strategie-Zuordnungen und Wechsel",
-   "count": 32,
-   "from": "2026-11-10",
-   "to": "2026-11-11",
+   "count": 33,
+   "from": "2026-11-11",
+   "to": "2026-11-12",
    "spanDays": 1
   },
   {
@@ -112,7 +112,7 @@
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-11-13",
-    "generatedAt": "2026-11-12T00:43:01.850Z"
+    "generatedAt": "2026-11-13T00:51:07.803Z"
    },
    "daily": {
     "titles": 5,
@@ -128,7 +128,7 @@
   {
    "id": "regimeHistory",
    "label": "Marktphasen-Historie",
-   "count": 32,
+   "count": 33,
    "from": "2026-09-10",
    "derivable": {
     "from": "1995-01-03",
@@ -154,7 +154,7 @@
   {
    "id": "levels",
    "label": "Einstieg, Invalidierung, Ziele",
-   "publishedSnapshots": 32,
+   "publishedSnapshots": 33,
    "reconstructible": {
     "titles": 5
    }
@@ -164,7 +164,7 @@
    "label": "Corporate Actions",
    "titles": 5,
    "splits": 3,
-   "dividends": 236,
+   "dividends": 237,
    "universe": "nur im privaten Historienspeicher"
   },
   {
@@ -242,7 +242,7 @@
      "id": "pit",
      "label": "Point-in-Time-Wiederholung",
      "state": "PASS",
-     "value": "4881 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
+     "value": "5031 veröffentlichte Stände exakt nachgerechnet, 0 Verstöße",
      "reason": null
     },
     {
@@ -414,7 +414,7 @@
      "id": "pitFactors",
      "label": "Faktorhistorie point-in-time",
      "state": "PASS",
-     "value": "32 Faktor-Snapshots seit 2026-09-23",
+     "value": "33 Faktor-Snapshots seit 2026-09-23",
      "reason": null
     },
     {
@@ -456,7 +456,7 @@
      "id": "factorHistory",
      "label": "Faktorhistorie",
      "state": "PASS",
-     "value": "32 Snapshots über 49 Tage",
+     "value": "33 Snapshots über 50 Tage",
      "reason": null
     },
     {
