@@ -886,6 +886,35 @@ jobs:
           path: /tmp/discover-evidence
           if-no-files-found: warn
 
+  # Die Quant-Suite des SEC-Adapters: er ist Teil des bestehenden Quant-Systems, es genuegt
+  # nicht, nur seine eigenen Tests zu fahren - die Phase-1-3-Suite muss gruen bleiben.
+  # Drei Shards (node --test-shard) statt eines 400-s-Schritts in sec-fundamentals.
+  sec-fundamentals-quant-suite:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.sec_fundamentals == 'true'
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && format('sec-fundamentals-quant-suite-pr-{0}-{1}', github.event.pull_request.number, matrix.shard) || format('sec-fundamentals-quant-suite-{0}-{1}', github.run_id, matrix.shard) }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run the quant test suite shard (JS, no network)
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: node --test --test-shard="$SHARD/3" "quant/tests/*.test.mjs"
+
   # --- sec-fundamentals: vormals sec-fundamentals-ci.yml
   sec-fundamentals:
     needs: auswahl
@@ -916,10 +945,9 @@ jobs:
       - name: Run the SEC ingestion test suite (Python, no network)
         run: python3 scripts/quant/cli.py test
 
-      - name: Run the whole quant test suite (JS, no network)
-        # The SEC adapter is part of the existing quant system, so it is not
-        # enough to run its own tests: the Phase 1-3 suite has to stay green too.
-        run: node --test "quant/tests/*.test.mjs"
+      # Die ganze Quant-Suite (JS) laeuft parallel in sec-fundamentals-quant-suite
+      # (3 Shards): sie war mit ~400 s der laengste Schritt dieses Jobs und damit
+      # die Laufzeit von ci-gate bei Quant-/SEC-PRs.
 
       - name: Verify the SEC adapter satisfies the existing provider interface
         run: |
