@@ -44,14 +44,25 @@ for (const breite of [390, 1440]) {
   const verbunden = await p.evaluate(() => !!window.__ws);
   ok(breite + "px Strom verbindet", verbunden);
   /* 14:36 bis 14:40 UTC: Ticks in zwei 5-Minuten-Faechern (10:35 und 10:40 waere falsch - 09:35 und 09:40 New York) */
-  const ticks = [[JETZT - 4 * 60000, 101.0], [JETZT - 3 * 60000, 101.4], [JETZT - 1000, 102.2]];
-  await p.evaluate(({ t, ticks }) => {
+  const senden = (ticks) => p.evaluate(({ t, ticks }) => {
     const ws = window.__ws;
-    ws.onmessage({ data: JSON.stringify({ op: "hello", priceType: "REALTIME_REFERENCE", source: "TIINGO_IEX_LEVEL6" }) });
     ticks.forEach(([at, preis]) => ws.onmessage({ data: JSON.stringify({ op: "u", v: [[t, preis, at, preis, preis, preis, preis, at - 50]] }) }));
   }, { t: TICKER, ticks });
+  await p.evaluate(() => window.__ws.onmessage({ data: JSON.stringify({ op: "hello", priceType: "REALTIME_REFERENCE", source: "TIINGO_IEX_LEVEL6" }) }));
+  /* ERSTER Tick: Kopf, Kurs und Tagesveraenderung sofort live (Steuerung 13.11.); nur die Linie darf auf den zweiten Punkt warten. */
+  await senden([[JETZT - 4 * 60000, 101.0]]);
   await p.clock.runFor(1500);
   await p.locator(".dx-tf button", { hasText: /^1T$/ }).first().click();
+  await p.clock.runFor(1500);
+  const erster = await p.evaluate(() => {
+    const kopf = document.querySelector(".dx-chart-hero");
+    const pille = kopf && kopf.querySelector(".dx-chart-hero-preis > span.num");
+    return { kopf: kopf ? kopf.textContent : "", pille: pille ? pille.textContent : "", leer: [...document.querySelectorAll(".dx-empty")].some((e) => /Der Verlauf beginnt gleich/.test(e.textContent)) };
+  });
+  ok(breite + "px erster Tick: Kopfkurs ist der Live-Kurs", /101,00/.test(erster.kopf), erster.kopf.slice(0, 80));
+  ok(breite + "px erster Tick: Tagesveraenderung gegen den Vortagesschluss, Live-Etikett", /Live/.test(erster.kopf) && /%/.test(erster.pille) && !/heutige Kurse fehlen/.test(erster.kopf), erster.pille);
+  ok(breite + "px erster Tick: Linie folgt, ehrlicher Hinweis", erster.leer);
+  await senden([[JETZT - 3 * 60000, 101.4], [JETZT - 1000, 102.2]]);
   await p.clock.runFor(1500);
   const befund = await p.evaluate(() => {
     const note = document.querySelector(".dx-intraday-note");

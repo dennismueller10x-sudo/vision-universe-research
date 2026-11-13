@@ -394,7 +394,8 @@ test("LS-17 ohne Snapshot der laufenden Sitzung baut der Strom den Verlauf (Minu
   assert.equal(a.letzte().snapshot.sessionDate, "2026-09-16", "vor dem ersten Tick: der Vortag, wie bisher");
   h.sockets[0].oeffnen();
   h.sockets[0].sagt(tick("AAPL", 200.1, Date.parse(OFFEN) + 2 * MIN));     /* 10:02 */
-  assert.equal(a.letzte().snapshot.sessionDate, "2026-09-16", "ein Punkt ist noch kein Verlauf");
+  assert.equal(a.letzte().snapshot.fromStream, true, "schon der erste Tick ersetzt den Vortag (Kopf und Kurs sind live)");
+  assert.equal(a.letzte().snapshot.points.length, 1);
   h.sockets[0].sagt(tick("AAPL", 200.4, Date.parse(OFFEN) + 2 * MIN + 5000)); /* 10:02, gleiche Minute */
   h.sockets[0].sagt(tick("AAPL", 201.0, Date.parse(OFFEN) + 7 * MIN));     /* 10:07 */
   h.vor(7 * MIN);
@@ -411,7 +412,7 @@ test("LS-17 ohne Snapshot der laufenden Sitzung baut der Strom den Verlauf (Minu
   assert.equal(p.freshness.freshnessState, "LIVE");
 });
 
-test("LS-18 ganz ohne Snapshot (neuer Titel) entsteht der Verlauf aus dem Strom, sobald es zwei Minuten gibt", async () => {
+test("LS-18 ganz ohne Snapshot (neuer Titel) entsteht der Verlauf aus dem Strom, schon ab dem ersten Tick", async () => {
   const h = weltOhneHeute(OFFEN, STROM, false);
   const a = await aufAktienseite(h);
   h.sockets[0].oeffnen();
@@ -421,6 +422,7 @@ test("LS-18 ganz ohne Snapshot (neuer Titel) entsteht der Verlauf aus dem Strom,
   assert.ok(p && p.snapshot, "es gibt einen Verlauf");
   assert.equal(p.snapshot.fromStream, true);
   assert.equal(p.snapshot.points.length, 2);
+  assert.equal(p.live.price, 55.7);
 });
 
 test("LS-19 Ist der Snapshot der laufenden Sitzung da, bleibt er der Verlauf: der Strom ersetzt ihn nicht", async () => {
@@ -451,4 +453,6 @@ test("LS-21 die Detailseite beschriftet den Verlauf aus dem Strom ehrlich und ho
   const d = src("discover/ui/detail.js");
   assert.match(d, /Verlauf ab " \+ snap\.fromStreamSince \+ " aus dem Live-Strom/);
   assert.match(d, /snap\.fromStream && letzterTag < snap\.sessionDate/);
+  assert.match(d, /Der Verlauf beginnt gleich/, "mit nur einem Punkt: Kopf live, Linie folgt");
+  assert.match(d, /vortagSchlussAusTagesreihe\(state && state\.dailyPoints, heute\)/, "Tagesveraenderung gegen den Vortagesschluss der Tagesreihe");
 });

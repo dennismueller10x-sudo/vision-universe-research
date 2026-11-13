@@ -557,7 +557,7 @@
      laufenden Sitzung (fehlt oder ist von einem frueheren Tag). Das Original bleibt Original: p.snapshotVorStrom. */
   function verlaufAusStrom(p, sym) {
     var r = lv.reihe[sym], w = lv.werte[sym];
-    if (!r || r.punkte.length < 2 || !w || !p.resolution || p.resolution.marketState !== "OPEN") return false;
+    if (!r || r.punkte.length < 1 || !w || !p.resolution || p.resolution.marketState !== "OPEN") return false;
     var heute = (p.resolution.displaySession && p.resolution.displaySession.sessionDate) || p.resolution.localDate;
     if (!heute || r.tag !== heute) return false;
     if (p.snapshot && p.snapshot.sessionDate && p.snapshot.sessionDate >= heute) return false;
