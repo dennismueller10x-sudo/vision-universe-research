@@ -549,7 +549,7 @@ jobs:
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$BASE"
-          node scripts/ci/intraday-fastpath.mjs klassifiziere --base="$BASE" --head=HEAD
+          node scripts/ci/intraday-fastpath.mjs klassifiziere --base="$BASE" --head=HEAD --list="$RUNNER_TEMP/fast-liste.txt"
       - name: Intraday-Dateien ueber das Paket legen und pruefen
         id: bereit
         if: steps.weiche.outputs.mode == 'FAST'
@@ -557,8 +557,8 @@ jobs:
         run: |
           set -euo pipefail
           S="$RUNNER_TEMP/basis/site"
-          node scripts/ci/intraday-fastpath.mjs overlay --repo=. --site="$S"
-          node scripts/ci/intraday-fastpath.mjs smoke --repo=. --site="$S"
+          node scripts/ci/intraday-fastpath.mjs overlay --repo=. --site="$S" --list="$RUNNER_TEMP/fast-liste.txt"
+          node scripts/ci/intraday-fastpath.mjs smoke --repo=. --site="$S" --list="$RUNNER_TEMP/fast-liste.txt"
           echo "fertig=true" >> "$GITHUB_OUTPUT"
       - name: Voll-Release noetig
         if: steps.bereit.outputs.fertig != 'true'
