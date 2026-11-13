@@ -2001,9 +2001,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { id: chromium-handy, engine: chromium, viewports: '390x844,430x932,768x1024', legal: chromium }
+          # 13.11.2026: je Viewport ein Job (vorher 3 Jobs mit 12-17 min; der Bau dauert ~3 min, die QA je Viewport ~4 min).
+          - { id: chromium-390, engine: chromium, viewports: '390x844', legal: chromium }
+          - { id: chromium-430, engine: chromium, viewports: '430x932', legal: '' }
+          - { id: chromium-768, engine: chromium, viewports: '768x1024', legal: '' }
           - { id: chromium-desktop, engine: chromium, viewports: '1024x768,1440x900', legal: '' }
-          - { id: webkit, engine: webkit, viewports: '390x844,430x932,1024x768', legal: webkit }
+          - { id: webkit-390, engine: webkit, viewports: '390x844', legal: webkit }
+          - { id: webkit-430, engine: webkit, viewports: '430x932', legal: '' }
+          - { id: webkit-1024, engine: webkit, viewports: '1024x768', legal: '' }
     # Browser aus dem Playwright-Image statt apt-get bei jedem Lauf - Begruendung beim Job vu3-regression.
     runs-on: ubuntu-latest
     timeout-minutes: 40
@@ -2057,12 +2062,21 @@ jobs:
           if-no-files-found: warn
 
   shell-vu3-regression:
+    name: shell-vu3-regression (${{ matrix.id }})
     needs: auswahl
     if: needs.auswahl.outputs.shell == 'true'
     # Workflow-Gruppe der Quelle je Job (parallele Jobs, gleiche Abbruch-Regel)
     concurrency:
-      group: shell-qa-${{ github.ref }}-vu3-regression
+      group: shell-qa-${{ github.ref }}-vu3-regression-${{ matrix.id }}
       cancel-in-progress: true
+    # 13.11.2026: drei parallele Teile statt eines Laufs (Chromium alle Abschnitte + WebKit nacheinander: ~16 min).
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { id: chromium-wege, engine: chromium, only: 'journeys,theme' }
+          - { id: chromium-bausteine, engine: chromium, only: 'visual,contrast' }
+          - { id: webkit, engine: webkit, only: 'journeys,theme,visual' }
     # VU3-Regression (scripts/quality/vu3-regression-qa.mjs): Wege zwischen den Welten (dieselbe Aktie bleibt dieselbe),
     # Farbschema ueber die Welten, Visual-First-Bausteine je Welt und Kontrast (axe color-contrast) hell/dunkel, 390/1440 px.
     # Eigener Job neben shell, damit dessen 40-Minuten-Budget unberuehrt bleibt. Europa-Routen bewusst ausgenommen.
@@ -2092,26 +2106,24 @@ jobs:
         run: scripts/ci/seed-data-branch.sh alle
       - name: Build exact Pages delivery artifact
         run: node scripts/vu2/build-release.mjs --output="$RUNNER_TEMP/vu3-release"
-      - name: VU3 regression (Chromium all sections · WebKit iPhone journeys, theme, Visual First)
+      - name: "VU3 regression (${{ matrix.engine }} / ${{ matrix.only }})"
         env:
           PLAYWRIGHT_PATH: /tmp/vu3-qa-deps/node_modules/playwright
           AXE_PATH: /tmp/vu3-qa-deps/node_modules/axe-core/axe.min.js
+          QA_ENGINE: ${{ matrix.engine }}
+          QA_ONLY: ${{ matrix.only }}
         run: |
           mkdir -p /tmp/vu3-evidence
           node scripts/ci/static-server.mjs --dir="$RUNNER_TEMP/vu3-release" --port=8765 > /tmp/vu3-evidence/server.log 2>&1 &
           server_pid=$!
           trap 'kill "$server_pid" 2>/dev/null || true' EXIT
           for i in 1 2 3 4 5; do curl --fail --silent http://127.0.0.1:8765/quant/ > /dev/null && break; sleep 1; done
-          chromium_status=0
-          webkit_status=0
-          node scripts/quality/vu3-regression-qa.mjs --url=http://127.0.0.1:8765 --out=/tmp/vu3-evidence/chromium || chromium_status=$?
-          node scripts/quality/vu3-regression-qa.mjs --engine=webkit --only=journeys,theme,visual --url=http://127.0.0.1:8765 --out=/tmp/vu3-evidence/webkit || webkit_status=$?
-          test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
+          node scripts/quality/vu3-regression-qa.mjs --engine="$QA_ENGINE" --only="$QA_ONLY" --url=http://127.0.0.1:8765 --out="/tmp/vu3-evidence/$QA_ENGINE"
       - name: Preserve results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: vu3-regression-evidence
+          name: vu3-regression-evidence-${{ matrix.id }}
           path: /tmp/vu3-evidence
           if-no-files-found: warn
 
