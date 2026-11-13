@@ -23,9 +23,22 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-chart-2.1.0";
+  var VERSION = "vu-chart-2.2.0";
   /* C06: gleiche Zeitleiste in allen Welten (Folie A3, Regel 2). */
   var RANGES = Object.freeze(["1T", "1W", "1M", "1J", "5J", "Max"]);
+  /* Hauptleiste fest in dieser Reihenfolge und mit diesen Beschriftungen (Chartstandard, core/chart-standard.js#PRIMARY);
+     alles andere (3M, 6M, YTD, 3J, 10J, 5T ...) steht hinter "Mehr". Alte Kennungen werden auf die kanonischen abgebildet. */
+  var ALIAS = { "1D": "1T", "5D": "1W", "5T": "1W", "1Y": "1J", "5Y": "5J", "MAX": "Max", "ALL": "Max" };
+  var EXTRA_ORDER = ["3M", "6M", "YTD", "3J", "3Y", "10J", "10Y"];
+  function canonRange(id) { var s = String(id || ""); return ALIAS[s.toUpperCase()] || ALIAS[s] || s; }
+  /** Rang einer Kennung: Hauptleiste 0-5, weitere dahinter. */
+  function rangeRank(id) {
+    var c = canonRange(id), p = RANGES.indexOf(c);
+    if (p >= 0) return p;
+    var e = EXTRA_ORDER.indexOf(c);
+    return RANGES.length + (e >= 0 ? e : EXTRA_ORDER.length);
+  }
+  function isPrimaryRange(id) { return RANGES.indexOf(canonRange(id)) >= 0; }
   var fillSeq = 0;
   var NS = "http://www.w3.org/2000/svg";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
@@ -40,6 +53,16 @@
   function dateLabel(iso, intraday) {
     if (intraday && iso.length > 10) return iso.slice(11, 16);
     return iso.slice(8, 10) + "." + iso.slice(5, 7) + "." + iso.slice(2, 4);
+  }
+
+  /* x-Marken: Anfang, Mitte, Ende; eine Marke, die der vorigen naeher als ~44 px kommt (Intraday kurz nach der Eroeffnung:
+     09:30, 10:00, 10:40), entfaellt. Die letzte bleibt, die mittlere weicht zuerst. */
+  function xTicks(p, X, right) {
+    var idx = [0, Math.floor((p.length - 1) / 2), p.length - 1], T = idx.map(function (i) { return { x: X(p[i][0]), t: p[i][0] }; });
+    var min = 44;
+    if (T[1].x - T[0].x < min || T[2].x - T[1].x < min) T.splice(1, 1);
+    if (T.length === 2 && T[1].x - T[0].x < min) T.splice(1, 1);
+    return T;
   }
 
   /** Geometrie ohne DOM (fuer Tests und den Zeichner): Pfad, Achsen, Richtung. */
@@ -71,7 +94,7 @@
       w: w, h: h, padR: padR, padBottom: padBottom, log: log, d: d.trim(), pts: pts, base: base, baseY: Y(base),
       direction: last > base ? "up" : last < base ? "down" : "flat", first: vals[0], last: last, hi: hi, lo: lo,
       yTicks: [hi, lo].map(function (v) { return { v: v, y: Y(v) }; }).concat([{ v: last, y: Y(last), last: true }]),
-      xTicks: [0, Math.floor((p.length - 1) / 2), p.length - 1].map(function (i) { return { x: X(p[i][0]), t: p[i][0] }; }),
+      xTicks: xTicks(p, X, w - padR),
       intraday: isIntraday(p), y: Y,
       levels: levels.map(function (l) { return { value: l.value, label: l.label || "", tone: l.tone || "", y: Y(l.value) }; })
     };
@@ -114,7 +137,7 @@
         tx.textContent = fmt(t.v); svg.appendChild(tx);
       });
       g.xTicks.forEach(function (t, i) {
-        var tx = el("text", { class: "vu-chart-axis", x: t.x.toFixed(1), y: g.h - 6, "text-anchor": i === 0 ? "start" : i === 2 ? "end" : "middle" });
+        var tx = el("text", { class: "vu-chart-axis", x: t.x.toFixed(1), y: g.h - 6, "text-anchor": i === 0 ? "start" : i === g.xTicks.length - 1 ? "end" : "middle" });
         tx.textContent = dateLabel(t.t, g.intraday); svg.appendChild(tx);
       });
     }
@@ -132,7 +155,11 @@
    */
   function mount(host, o) {
     if (!host) return { dispose: function () {} };
-    var doc = host.ownerDocument, ranges = (o && o.ranges || []).filter(Boolean), alive = true;
+    var doc = host.ownerDocument, alive = true;
+    /* Feste Reihenfolge (stabil: gleiche Rangzahl behaelt die Reihenfolge des Aufrufers) und einheitliche Beschriftung. */
+    var ranges = (o && o.ranges || []).filter(Boolean).map(function (r, i) { return { r: r, i: i }; })
+      .sort(function (a, b) { return rangeRank(a.r.id) - rangeRank(b.r.id) || a.i - b.i; }).map(function (x) { return x.r; });
+    var extras = ranges.filter(function (r) { return !isPrimaryRange(r.id); });
     var box = doc.createElement("div"); box.className = "vu-chart" + (o.bleed === false ? "" : " vu-chart--bleed");
     var plot = doc.createElement("div"); plot.className = "vu-chart-plot"; plot.style.position = "relative";
     var tip = doc.createElement("div"); tip.className = "vu-chart-tip"; tip.hidden = true;
@@ -142,12 +169,19 @@
     host.replaceChildren(box);
     var current = null, cache = {}, svg = null, cross = null;
     ranges.forEach(function (r) {
-      var b = doc.createElement("button"); b.type = "button"; b.textContent = r.label || r.id; b.dataset.range = r.id;
+      var b = doc.createElement("button"); b.type = "button"; b.textContent = isPrimaryRange(r.id) ? canonRange(r.id) : (r.label || r.id); b.dataset.range = r.id;
+      if (!isPrimaryRange(r.id)) { b.hidden = true; b.className = "vu-ranges-extra"; }
       b.setAttribute("aria-pressed", "false");
       if (r.disabled) { b.disabled = true; if (r.reason) b.title = r.reason; }
       b.addEventListener("click", function () { if (r.disabled) return; show(r.id); if (o.onSelect) o.onSelect(r.id); });
       bar.appendChild(b);
     });
+    var more = null;
+    if (extras.length) {
+      more = doc.createElement("button"); more.type = "button"; more.textContent = "Mehr"; more.className = "vu-ranges-more"; more.setAttribute("aria-expanded", "false");
+      more.addEventListener("click", function () { var open = more.getAttribute("aria-expanded") !== "true"; more.setAttribute("aria-expanded", String(open)); [].forEach.call(bar.querySelectorAll(".vu-ranges-extra"), function (b) { b.hidden = !open; }); });
+      bar.appendChild(more);
+    }
     function size() { var w = Math.max(280, Math.round(plot.clientWidth || host.clientWidth || 640)); return { w: w, h: o.height || (w < 560 ? 220 : 300) }; }
     function draw(r, pts) {
       var s = size();
@@ -166,6 +200,7 @@
       var r = usable.filter(function (x) { return x.id === id; })[0] || usable[0];
       if (!r) return;
       current = r.id;
+      if (more && !isPrimaryRange(r.id) && more.getAttribute("aria-expanded") !== "true") more.click();
       [].forEach.call(bar.children, function (b) { b.setAttribute("aria-pressed", String(b.dataset.range === current)); });
       var got = r.points ? Promise.resolve(r.points) : cache[r.id] || (cache[r.id] = Promise.resolve(r.load ? r.load() : []).catch(function () { return []; }));
       got.then(function (pts) { if (alive && current === r.id) { r.points = pts; draw(r, pts); } });
@@ -217,5 +252,5 @@
       '<circle cx="' + lx + '" cy="' + ly + '" r="3.5" fill="#c8f531" stroke="currentColor" stroke-width="2"/></svg>';
   }
 
-  return Object.freeze({ VERSION: VERSION, RANGES: RANGES, geometry: geometry, render: render, mount: mount, money: money, sparkline: sparkline });
+  return Object.freeze({ VERSION: VERSION, RANGES: RANGES, canonRange: canonRange, rangeRank: rangeRank, geometry: geometry, render: render, mount: mount, money: money, sparkline: sparkline });
 });

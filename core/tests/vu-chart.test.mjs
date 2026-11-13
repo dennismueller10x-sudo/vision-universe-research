@@ -62,3 +62,14 @@ test("Geometrie · extent haelt eigene Marken im Bild, ohne sie zu zeichnen", ()
   assert.equal(g.levels.length, 0, "extent zeichnet keine Linie");
   assert.equal(C.geometry(pts, {}).hi, 88, "ohne extent unveraendert");
 });
+
+test("Chart-Baustein: feste Hauptleiste und x-Marken ohne Überlappung (Owner 13.11.2026)", () => {
+  assert.deepEqual(C.RANGES.slice(), ["1T", "1W", "1M", "1J", "5J", "Max"]);
+  const ids = ["MAX", "3M", "1Y", "1T", "5T", "6M", "5Y", "1M", "YTD"].sort((a, b) => C.rangeRank(a) - C.rangeRank(b));
+  assert.deepEqual(ids.map(C.canonRange).slice(0, 6), ["1T", "1W", "1M", "1J", "5J", "Max"]);
+  assert.deepEqual(ids.slice(6), ["3M", "6M", "YTD"]);
+  // Intraday kurz nach der Eröffnung: 09:30, 10:00, 10:40 dürfen nicht übereinander stehen.
+  const pts = []; for (let m = 0; m <= 70; m += 5) { const t = 570 + m; pts.push(["2026-11-13T" + String(Math.floor(t / 60)).padStart(2, "0") + ":" + String(t % 60).padStart(2, "0") + ":00", 100 + m / 10]); }
+  const g = C.geometry(pts, { width: 360, height: 180, sessionEnd: "2026-11-13T16:00:00" });
+  for (let i = 1; i < g.xTicks.length; i++) assert.ok(g.xTicks[i].x - g.xTicks[i - 1].x >= 44);
+});
