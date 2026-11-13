@@ -76,6 +76,7 @@ const FORBIDDEN=JSON.parse(await readFile(new URL('../../quant/methodology/produ
 const VIEWS=['/quant/#/','/quant/#/meldungen','/quant/#/meldungen?filter=setups','/quant/#/meldungen?filter=historisch','/quant/#/radar',
  '/quant/#/forschung','/quant/#/forschung/NEW_52W_HIGH','/quant/#/forschung/SETUP_CONFIRMED','/quant/#/backtest',
  '/quant/#/forschung/fall/replay-nvda-winner-splits','/quant/#/forschung/fall/strategy-dividends-tr',
+ '/quant/#/forschung/art/signal_backtest','/quant/#/forschung/art/factor_ranking_backtest','/quant/#/forschung/methode/monte_carlo','/quant/#/forschung/methode/market_regime',
  '/quant/#/screener',
  '/quant/#/screener?frage=qualitaet','/quant/#/screener?frage=momentum','/quant/#/screener?frage=wachstum-qualitaet',
  '/quant/#/screener?frage=guenstig','/quant/#/screener?frage=ruhig','/quant/#/screener?frage=setups','/quant/#/screener?frage=hoch',
@@ -279,7 +280,7 @@ for(const width of [1440,390]){
   const vergleichVoll=route==='vergleich'&&/in zwei s(ä|ae)tzen/i.test(text)&&['Verdient gut','Wächst','Zahlen solide','Kurs läuft','Günstig','Ruhiger Kurs','Analysten'].every(w=>text.includes(w));
   /* Backtest-Forschung (backtest-research-v1.json, Datenzweig): bis zum ersten Wochenlauf sagt die Prueffall-Seite ehrlich,
      dass die Ergebnisse noch nicht vorliegen - das ist kein leeres Rendering. */
-  const forschungWartet=/#\/forschung\/fall\//.test(view)&&/liegen noch nicht vor/.test(text);
+  const forschungWartet=/#\/forschung\/(fall|art|methode)\//.test(view)&&/liegen noch nicht vor/.test(text);
   if(!absage&&!ausgeschieden&&!vergleichVoll&&!forschungWartet&&text.length<400)bad.push('ZU_WENIG_INHALT='+text.length);
   if(ausgeschieden){
    const kopf=(await page.locator('main#qx-main h1').first().innerText().catch(()=>'')).trim();
