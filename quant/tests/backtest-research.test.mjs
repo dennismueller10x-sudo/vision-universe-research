@@ -146,3 +146,25 @@ test("BR-7 · Quant-Profilwert (Forschung): Mittel der sechs Faktoren, mindesten
   assert.deepEqual(B.factorRow({ metrics: { perEvent: { factor: { factorId: "PROFILE_MEAN", buckets: 5, rankDates: 24, meanTopMinusBottomCompleteCohort: 0.02, topBeatsBottomShare: 0.6, bucketMeansCompleteCohort: [0.01, 0.02, 0.02, 0.025, 0.03], meanSpearmanObservedOnly: 0.05 } } } }),
     { factorId: "PROFILE_MEAN", buckets: 5, rankDates: 24, meanTopMinusBottom: 0.02, topBeatsBottomShare: 0.6, bucketMeans: [0.01, 0.02, 0.02, 0.025, 0.03], meanSpearman: 0.05 });
 });
+
+test("BR-8 · Ampel vergleicht: bewährt nur besser als der Vergleich, nie nur „im Mittel im Plus“", () => {
+  const ev = (ex) => ({ metrics: { basis: "PER_EVENT", excess: { meanExcess: ex, n: 10 } } });
+  assert.equal(B.comparison("SIGNAL_BACKTEST", ev(-0.006)).state, "LOSES");
+  assert.equal(B.comparison("SIGNAL_BACKTEST", ev(0.02)).state, "BEATS");
+  assert.equal(B.comparison("STRATEGY_BACKTEST", { metrics: { basis: "PORTFOLIO", benchmark: { id: "ZERO_RATE_CASH", totalReturn: 0 } } }), null, "Bargeld ist kein Marktvergleich");
+  assert.match(B.comparison("SAME_STOCK_REPLAY", { metrics: { basis: "PORTFOLIO", totalReturn: 1, benchmark: { id: "SAME_LISTING_BUY_AND_HOLD", totalReturn: 2 } } }).basis, /Kaufen und Halten/);
+  const f = (d, sh) => B.comparison("FACTOR_RANKING_BACKTEST", {}, { meanTopMinusBottom: d, topBeatsBottomShare: sh });
+  assert.equal(f(-0.10, 0.5).state, "LOSES"); assert.equal(f(0.01, 0.55).state, "MIXED"); assert.equal(f(0.02, 0.7).state, "BEATS");
+  const pr = { verdict: "PROVEN", basis: "x" };
+  assert.equal(B.combine(pr, { state: "LOSES", basis: "S&P" }).verdict, "FAILED", "im Plus, aber hinter dem Markt: hat versagt");
+  assert.equal(B.combine(pr, { state: "MIXED", basis: "Q" }).verdict, "REGIME_DEPENDENT");
+  assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }).verdict, "PROVEN");
+  assert.equal(B.combine(pr, null).verdict, null, "ohne Vergleich keine Einordnung");
+});
+
+test("BR-9 · Überlebenden-Auswahl: besser als der Vergleich heißt dann nur „eingeschränkt geprüft“", () => {
+  const pr = { verdict: "PROVEN", basis: "x" };
+  assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }, true).verdict, "LIMITED");
+  assert.equal(B.combine(pr, { state: "LOSES", basis: "S&P" }, true).verdict, "FAILED", "verloren bleibt verloren");
+  assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }, false).verdict, "PROVEN", "mit delisteten Titeln bleibt bewährt möglich");
+});
