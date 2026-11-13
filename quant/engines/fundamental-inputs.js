@@ -318,7 +318,13 @@
     /* ------------------------------------------------------------ Value */
     if (finite(marketCap) && marketCap > 0) {
       if (fcfT) raws.fcfYield = fcfT.value / marketCap;
-      if (netIncomeT) raws.earningsYield = netIncomeT.value / marketCap;
+      /* quant-v2.3.0 (13.11.2026, Entscheidung b): Gewinnrendite aus dem operativen Ergebnis nach Steuern, damit
+         nicht-operative Ertraege (Beteiligungs-Bewertungsgewinne, NVDA rund 32 Mrd.) den Preis nicht guenstiger machen.
+         Ohne operatives Ergebnis oder Steuerquote (Banken, Versicherer, Verlustjahre) bleibt es beim Nettogewinn. */
+      var eyTaxRate = taxT && pretaxT ? effectiveTaxRate(taxT.value, pretaxT.value) : null;
+      if (operatingIncomeT && finite(eyTaxRate) && revenueT && operatingIncomeT.end === revenueT.end) {
+        raws.earningsYield = operatingIncomeT.value * (1 - eyTaxRate) / marketCap;
+      } else if (netIncomeT) raws.earningsYield = netIncomeT.value / marketCap;
       if (finite(latestEquity)) raws.bookToMarket = latestEquity / marketCap;
       var enterpriseValue = netDebtT ? marketCap + netDebtT.value : null;
       if (finite(enterpriseValue) && enterpriseValue > 0) {
