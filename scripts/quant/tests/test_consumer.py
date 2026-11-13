@@ -85,6 +85,12 @@ class ConsumerBundleTest(unittest.TestCase):
         self.assertEqual(debt["kind"], "INSTANT"); self.assertTrue(debt["filed"])
         self.assertAlmostEqual(debt["v"], R(q["total_debt"][-1])["v"], places=2)
         self.assertEqual(ttm["net_debt"]["inputs"], ["total_debt", "cash_and_equivalents"])
+    def test_total_assets_has_a_quarterly_series(self):
+        # b3 (13.11.2026): die Bilanzsumme je Quartal, damit ein Durchschnitt ueber dasselbe TTM-Fenster moeglich ist.
+        rows = [R(r) for r in self.bundle["quarterly"]["total_assets"]]
+        self.assertTrue(rows)
+        self.assertTrue(all(r["fp"] in ("Q1", "Q2", "Q3", "Q4") and r.get("filed") for r in rows))
+        self.assertEqual(self.bundle["ttm"]["total_assets"]["kind"], "INSTANT")
 
     def test_point_in_time_hides_unfiled_periods(self):
         early = consumer.build_consumer_bundle(
