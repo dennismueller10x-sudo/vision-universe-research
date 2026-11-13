@@ -744,6 +744,15 @@ jobs:
         timeout-minutes: 5
         with:
           node-version: '22'
+      # 13.11.2026: SPY (quant/data/market/multi-asset/series) wird seit dem Umzug auf den Datenzweig (marketPulse,
+      # BRANCH_ONLY) nur dort fortgeschrieben; main stand seit 06.11. fest. Ohne Einspielen meldete der Anstoss jede
+      # Nacht INPUT_NOT_CURRENT (Issue #1765) und Supertrader lief erst im Zeitplan-Rueckfall, Stunden zu spaet.
+      - name: Datenzweig in den Arbeitsbaum (SPY fuer die Eingabepruefung)
+        id: datenzweig
+        if: steps.checkout.outcome == 'success' && steps.node.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 5
+        run: scripts/ci/seed-data-branch.sh marketPulse
       - name: Supertrader anstossen (nur bei validierten Daten und wenn noetig)
         id: anstossen
         if: steps.checkout.outcome == 'success' && steps.node.outcome == 'success'
