@@ -27,6 +27,7 @@ test("DB-1 · Steckbrief: jede Datenart ist registriert, ihr Pfad gehoert genau 
   for (const d of MANIFEST.domains) {
     assert.ok(Object.keys(MANIFEST.phases).includes(d.phase), d.id);
     const reg = DOMAINS.domains.find((x) => x.id === d.id); assert.ok(reg, d.id + " fehlt in domains.json");
+    if (d.repositoryOnly) assert.equal(reg.repositoryOnly, true, d.id + ": repositoryOnly im Steckbrief verlangt repositoryOnly in domains.json");
     for (const p of d.paths) {
       // Jede Datei gehoert hoechstens dieser Datenart; mindestens eine Datei der Datenart traegt ihren Vertrag (DB-1b).
       const c = contractFor(DOMAINS, p); assert.ok(!c || c.id === d.id, p + " gehoert " + (c && c.id));
@@ -278,4 +279,28 @@ test("DB-16 · Jeder Release-Bau in einem Workflow saet vorher den Datenzweig wi
   }
   assert.ok(gesehen >= 8, "Erkennung greift (ci.yml baut in acht Jobs, pages-release.yml einmal): " + gesehen);
   assert.deepEqual(fehlt, [], "scripts/ci/seed-data-branch.sh alle vor dem Release-Bau einbauen");
+});
+
+test("DB-17 · repositoryOnly: nie in der Seite, nur auf ausdrueckliche Nennung im Arbeitsbaum; \"alle\" nimmt sie nicht mit", () => {
+  const KEY = "quant/data/sec/consumer_coverage.json", DIR = "quant/data/sec/consumer/";
+  const mk = () => {
+    const root = mkdtempSync(join(tmpdir(), "db17-root-")), data = mkdtempSync(join(tmpdir(), "db17-data-")), site = mkdtempSync(join(tmpdir(), "db17-site-"));
+    const cov = JSON.stringify({ generated_at_utc: "2026-11-13T07:30:00Z", n: 1 });
+    put(data, KEY, cov); put(data, DIR + "index.json", "{\"a\":1}"); put(data, DIR + "CIK0000000001.json", "{\"b\":2}");
+    const manifest = { branch: "data/live", domains: [{ id: "fundamentalsConsumer", phase: "BRANCH_ONLY", repositoryOnly: true, workflow: "sec-consumer-fundamentals.yml", paths: [KEY], prefixes: [DIR] }] };
+    return { root, dataDir: data, siteDir: site, manifest, domains: DOMAINS };
+  };
+  // Pages-Stufe (kein --only): nichts davon gelangt in die Seite, der Bericht bleibt vollstaendig.
+  let w = mk(); let r = overlay(w);
+  assert.equal(r.complete, true); assert.equal(r.rows.length, 0); assert.deepEqual(r.repositoryOnlySkipped, ["fundamentalsConsumer"]);
+  assert.ok(!existsSync(join(w.siteDir, "quant/data/sec")), "repositoryOnly-Daten duerfen nicht in die Seite gelangen");
+  // Verbraucher nennt die Datenart ausdruecklich (seed-data-branch.sh fundamentalsConsumer): Schluesseldatei und Verzeichnis kommen.
+  w = mk(); r = overlay({ ...w, only: ["fundamentalsConsumer"], siteDir: w.root });
+  assert.equal(r.complete, true);
+  assert.ok(existsSync(join(w.root, KEY)) && existsSync(join(w.root, DIR + "CIK0000000001.json")));
+  // "alle" (seed-data-branch.sh) waehlt nur BRANCH_ONLY ohne repositoryOnly.
+  const sh = readFileSync(join(ROOT, "scripts/ci/seed-data-branch.sh"), "utf8");
+  assert.match(sh, /d\.phase === "BRANCH_ONLY" && !d\.repositoryOnly/);
+  // Die Seite prueft weiter, dass das Verzeichnis fehlt (pages-release.yml).
+  assert.match(readFileSync(join(ROOT, ".github/workflows/pages-release.yml"), "utf8"), /test ! -d "\$SITE_ROOT\/quant\/data\/sec\/consumer"/);
 });
