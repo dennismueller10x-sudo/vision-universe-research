@@ -743,3 +743,13 @@ keine geänderten Verträge.
 5. **Ein Block kann sterben**, ohne dass jemand es merkt, bis das nächste
    stündliche Ereignis greift — bis zu einer Stunde. Genau die Lücke, die (c)
    schließen würde.
+
+## Teilcommits im Taktgeber (Steuerung 12.11.2026)
+
+Ein Zyklus braucht rund 14 Minuten für 1453 Anfragen (Anbieter-Drossel, nicht das 5-Minuten-Intervall) und wurde erst am Ende
+committet. Seit diesem Stand holt und veröffentlicht `scripts/market/run-pacemaker.mjs` einen Zyklus in drei Teilen
+(`--parts=3`, nur Discover-Umfang; `--parts=1` ist der Rückfall): `ingest-intraday.mjs --part=k/N` nimmt jeden N-ten Titel
+der Sortierung, die Teile sind disjunkt und decken den Umfang genau ab. Gleiche Anfragen, gleiche Kosten, kein Fachmodell.
+Jeder Teil schreibt nur seine eigenen Snapshot-Dateien (sie wachsen nur um neue Bars) und das Register im selben Commit, nie
+einen älteren Stand über einen neueren. Der Abstand der Seite zur Börse sinkt für den jüngsten Stand von rund 19 auf rund 10
+Minuten; ein einzelner Titel wird weiter nur einmal je Zyklus abgerufen (Spitzenalter bis ~24 Minuten statt ~33).
