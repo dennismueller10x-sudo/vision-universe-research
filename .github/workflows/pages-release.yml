@@ -577,10 +577,21 @@ jobs:
     timeout-minutes: 10
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment2.outputs.page_url || steps.deployment.outputs.page_url }}
     steps:
+      # 13.11.2026 (Strang AK): Lauf 43296967376 scheiterte mit "Deployment request failed ... due to in progress deployment":
+      # ein anderes Deployment (Company-Intelligence-Veroeffentlicher, voriger Lauf) war bei GitHub Pages noch nicht fertig.
+      # Das Artefakt ist unveraendert, ein zweiter Versuch nach einer Wartezeit ist idempotent.
       - name: Deploy intraday fast path
         id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - name: Warten, dann erneut (ein anderes Deployment lief noch)
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 120
+      - name: Deploy intraday fast path (zweiter Versuch)
+        id: deployment2
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
 
   # IndexNow: neue und geaenderte Insights-Adressen nach dem Ausrollen melden (Bing und alle IndexNow-Suchen).
@@ -617,10 +628,18 @@ jobs:
     timeout-minutes: 10
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment2.outputs.page_url || steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy reviewed release artifact
         id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - name: Warten, dann erneut (ein anderes Deployment lief noch, siehe deploy-schnell)
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 120
+      - name: Deploy reviewed release artifact (zweiter Versuch)
+        id: deployment2
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
         # Kein `env: GITHUB_SHA` hier: der Runner reicht es nicht an deploy-pages durch (Lauf 42763174678, 10.11.2026: env zeigte
         # <sha>-<run>-<attempt>, pages_build_version blieb der Commit). Neue Build-Version = neuer Commit, siehe
