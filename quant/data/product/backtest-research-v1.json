@@ -1,5 +1,5 @@
 {
- "schemaVersion": "backtest-research-1.2.0",
+ "schemaVersion": "backtest-research-1.3.0",
  "asOf": "2026-11-13",
  "runner": "backtest-runner-1.0.0",
  "label": "Forschung, nicht zertifiziert",
@@ -46,21 +46,27 @@
      "replay-intc-loser",
      "ledger-smci-winner-split",
      "matrix-replay"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-replay"
    },
    "WALK_FORWARD": {
     "state": "EXECUTED",
     "cases": [
      "replay-nvda-winner-splits",
      "matrix-replay"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-replay"
    },
    "OUT_OF_SAMPLE": {
     "state": "EXECUTED",
     "cases": [
      "replay-nvda-winner-splits",
      "matrix-replay"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-replay"
    },
    "MARKET_REGIME": {
     "state": "EXECUTED",
@@ -69,20 +75,26 @@
      "replay-intc-loser",
      "delisted-xco-bankruptcy",
      "matrix-replay"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-replay"
    },
    "PARAMETER_SENSITIVITY": {
     "state": "EXECUTED",
     "cases": [
      "replay-nvda-winner-splits",
      "matrix-replay"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-replay"
    },
    "EVENT_DRIVEN": {
     "state": "EXECUTED",
     "cases": [
      "matrix-replay"
-    ]
+    ],
+    "verdict": "REGIME_DEPENDENT",
+    "verdictCase": "matrix-replay"
    },
    "PORTFOLIO_REBALANCING": {
     "state": "NOT_APPLICABLE"
@@ -97,33 +109,43 @@
     "cases": [
      "pattern-2015-sideways",
      "matrix-pattern"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-pattern"
    },
    "OUT_OF_SAMPLE": {
     "state": "EXECUTED",
     "cases": [
      "pattern-2015-sideways",
      "matrix-pattern"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-pattern"
    },
    "MARKET_REGIME": {
     "state": "EXECUTED",
     "cases": [
      "pattern-2015-sideways",
      "matrix-pattern"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-pattern"
    },
    "PARAMETER_SENSITIVITY": {
     "state": "EXECUTED",
     "cases": [
      "matrix-pattern"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-pattern"
    },
    "EVENT_DRIVEN": {
     "state": "EXECUTED",
     "cases": [
      "matrix-pattern"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-pattern"
    },
    "PORTFOLIO_REBALANCING": {
     "state": "NOT_APPLICABLE"
@@ -135,21 +157,27 @@
     "cases": [
      "signal-2008-crash",
      "matrix-signal"
-    ]
+    ],
+    "verdict": "REGIME_DEPENDENT",
+    "verdictCase": "matrix-signal"
    },
    "WALK_FORWARD": {
     "state": "EXECUTED",
     "cases": [
      "signal-2008-crash",
      "matrix-signal"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-signal"
    },
    "OUT_OF_SAMPLE": {
     "state": "EXECUTED",
     "cases": [
      "signal-2008-crash",
      "matrix-signal"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-signal"
    },
    "MARKET_REGIME": {
     "state": "EXECUTED",
@@ -160,20 +188,26 @@
      "signal-2022-bear",
      "acquisition-agn",
      "matrix-signal"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-signal"
    },
    "PARAMETER_SENSITIVITY": {
     "state": "EXECUTED",
     "cases": [
      "signal-2009-recovery",
      "matrix-signal"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-signal"
    },
    "EVENT_DRIVEN": {
     "state": "EXECUTED",
     "cases": [
      "matrix-signal"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-signal"
    },
    "PORTFOLIO_REBALANCING": {
     "state": "EXECUTED",
@@ -181,7 +215,9 @@
      "signal-2008-crash",
      "signal-2020-covid",
      "matrix-signal"
-    ]
+    ],
+    "verdict": "REGIME_DEPENDENT",
+    "verdictCase": "matrix-signal"
    }
   },
   "SETUP_BACKTEST": {
@@ -193,7 +229,9 @@
     "cases": [
      "setup-reconstruction-2016-2024",
      "matrix-setup"
-    ]
+    ],
+    "verdict": null,
+    "verdictCase": "matrix-setup"
    },
    "OUT_OF_SAMPLE": {
     "state": "NOT_RUN",
@@ -207,7 +245,9 @@
     "state": "EXECUTED",
     "cases": [
      "matrix-setup"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-setup"
    },
    "PARAMETER_SENSITIVITY": {
     "state": "NOT_APPLICABLE"
@@ -216,7 +256,9 @@
     "state": "EXECUTED",
     "cases": [
      "matrix-setup"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-setup"
    },
    "PORTFOLIO_REBALANCING": {
     "state": "NOT_APPLICABLE"
@@ -228,7 +270,9 @@
     "cases": [
      "strategy-2019-bull",
      "matrix-strategy"
-    ]
+    ],
+    "verdict": "REGIME_DEPENDENT",
+    "verdictCase": "matrix-strategy"
    },
    "WALK_FORWARD": {
     "state": "NOT_APPLICABLE"
@@ -242,20 +286,26 @@
      "strategy-2019-bull",
      "strategy-2013-2014-bull",
      "matrix-strategy"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-strategy"
    },
    "PARAMETER_SENSITIVITY": {
     "state": "EXECUTED",
     "cases": [
      "strategy-2019-bull",
      "matrix-strategy"
-    ]
+    ],
+    "verdict": "PROVEN",
+    "verdictCase": "matrix-strategy"
    },
    "EVENT_DRIVEN": {
     "state": "EXECUTED",
     "cases": [
      "strategy-dividends-tr"
-    ]
+    ],
+    "verdict": "REGIME_DEPENDENT",
+    "verdictCase": "strategy-dividends-tr"
    },
    "PORTFOLIO_REBALANCING": {
     "state": "EXECUTED",
@@ -264,7 +314,9 @@
      "strategy-2013-2014-bull",
      "strategy-dividends-tr",
      "matrix-strategy"
-    ]
+    ],
+    "verdict": null,
+    "verdictCase": "matrix-strategy"
    }
   },
   "FACTOR_RANKING_BACKTEST": {
@@ -275,20 +327,26 @@
     "state": "EXECUTED",
     "cases": [
      "matrix-factor-sample"
-    ]
+    ],
+    "verdict": "REGIME_DEPENDENT",
+    "verdictCase": "matrix-factor-sample"
    },
    "OUT_OF_SAMPLE": {
     "state": "EXECUTED",
     "cases": [
      "matrix-factor-sample"
-    ]
+    ],
+    "verdict": "REGIME_DEPENDENT",
+    "verdictCase": "matrix-factor-sample"
    },
    "MARKET_REGIME": {
     "state": "EXECUTED",
     "cases": [
      "factor-momentum-v10-panel",
      "matrix-factor"
-    ]
+    ],
+    "verdict": "REGIME_DEPENDENT",
+    "verdictCase": "matrix-factor"
    },
    "PARAMETER_SENSITIVITY": {
     "state": "NOT_APPLICABLE"
@@ -297,7 +355,9 @@
     "state": "EXECUTED",
     "cases": [
      "matrix-factor"
-    ]
+    ],
+    "verdict": "REGIME_DEPENDENT",
+    "verdictCase": "matrix-factor"
    },
    "PORTFOLIO_REBALANCING": {
     "state": "NOT_APPLICABLE"
@@ -914,7 +974,9 @@
       "p95": 0
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "5ed3bedee86091a307cafe007d75d1fee905ce3e0e318d58d04ca5d806d6a5f2"
+     "inputHash": "5ed3bedee86091a307cafe007d75d1fee905ce3e0e318d58d04ca5d806d6a5f2",
+     "verdict": "PROVEN",
+     "basis": "Spanne 5 %/Mitte"
     },
     "WALK_FORWARD": {
      "state": "EXECUTED",
@@ -930,7 +992,9 @@
       "PURGED_INFORMATION_OUTCOME_OVERLAP": 16,
       "OUTCOME_NOT_MATURE_AT_CUTOFF": 16
      },
-     "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a"
+     "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a",
+     "verdict": "PROVEN",
+     "basis": "Testfenster der Walk-Forward-Teilung im Plus"
     },
     "OUT_OF_SAMPLE": {
      "state": "EXECUTED",
@@ -985,7 +1049,9 @@
       }
      ],
      "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
-     "resultHash": "7532b2d73c1a302687da948bf41dbc8363c29773bd90d8076e1541082858b922"
+     "resultHash": "7532b2d73c1a302687da948bf41dbc8363c29773bd90d8076e1541082858b922",
+     "verdict": "PROVEN",
+     "basis": "Anteil Testfenster im Plus"
     },
     "MARKET_REGIME": {
      "state": "EXECUTED",
@@ -1025,7 +1091,9 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -1066,7 +1134,9 @@
        ],
        "adjustedPValue": 0.003
       }
-     ]
+     ],
+     "verdict": "PROVEN",
+     "basis": "Stellschrauben mit positivem Ergebnis"
     },
     "EVENT_DRIVEN": {
      "state": "NOT_RUN"
@@ -1074,6 +1144,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2011-01-07",
+     "to": "2025-05-30"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 3,
+    "maxDrawdown": -0.16433566433566427
    },
    "resultHash": "6005feccafb393e589fbaa8f43951119f2155479182e9b380673a01e64ee1afa",
    "group": "DEMO"
@@ -1126,7 +1216,9 @@
       "p95": -0.17622466408373383
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "92ec37f18a572d34a7ad8cdbac76331c615a33e659a4e2ec4056b3e64c8cf09b"
+     "inputHash": "92ec37f18a572d34a7ad8cdbac76331c615a33e659a4e2ec4056b3e64c8cf09b",
+     "verdict": "FAILED",
+     "basis": "Spanne 5 %/Mitte"
     },
     "WALK_FORWARD": {
      "state": "NOT_RUN"
@@ -1156,7 +1248,9 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "FAILED",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1167,6 +1261,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2019-03-15",
+     "to": "2024-05-10"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.2828832007585582
    },
    "resultHash": "cef8a2bd775dd72b1fcbc8a0cf9694a54113d2a16b06e35bf6070275abeab1cd",
    "group": "DEMO"
@@ -1220,7 +1334,9 @@
       "p95": 0
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "af90d4929a9266606fb923b4db00123146f4b1537a9fc7289d9b674d2ef96144"
+     "inputHash": "af90d4929a9266606fb923b4db00123146f4b1537a9fc7289d9b674d2ef96144",
+     "verdict": "PROVEN",
+     "basis": "Spanne 5 %/Mitte"
     },
     "WALK_FORWARD": {
      "state": "NOT_RUN"
@@ -1240,6 +1356,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2015-12-31",
+     "to": "2025-12-26"
+    },
+    "costs": {
+     "feeBpsPerSide": null,
+     "slippageBpsPerSide": null,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.4152249134948097
    },
    "resultHash": "dea6b9209cbb64cbc8741ffd5cfac0f9701fe7d1af7da5a18c7dc5cb583e5fcb",
    "group": "DEMO"
@@ -1291,7 +1427,9 @@
      "excludedByReason": {
       "OUTCOME_NOT_MATURE_AT_CUTOFF": 37
      },
-     "partitionHash": "405bb435ca4893e257e76c6ac334410380f7c86d9cd621c61da75f59f970f59e"
+     "partitionHash": "405bb435ca4893e257e76c6ac334410380f7c86d9cd621c61da75f59f970f59e",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Testfenster der Walk-Forward-Teilung im Plus"
     },
     "OUT_OF_SAMPLE": {
      "state": "EXECUTED",
@@ -1319,7 +1457,9 @@
       }
      ],
      "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
-     "resultHash": "03f86f6636331d00203dab1f7c343604a81256ed1fd70f954c8abfeb9021facb"
+     "resultHash": "03f86f6636331d00203dab1f7c343604a81256ed1fd70f954c8abfeb9021facb",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Anteil Testfenster im Plus"
     },
     "MARKET_REGIME": {
      "state": "EXECUTED",
@@ -1349,7 +1489,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1360,6 +1502,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2015-01-02",
+     "to": "2016-03-24"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.0849599380758847
    },
    "resultHash": "d34ea6dd11ac5c513b9afa3a2cd939ac536b911107e8241d55f3e22d6da878e2",
    "group": "DEMO"
@@ -1412,7 +1574,9 @@
       "p95": -0.061743077040011765
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "84bae25342df86ed5b7cb1f90ff2cb952c78a6292fed3aa1d2a6fb7b4ba491ba"
+     "inputHash": "84bae25342df86ed5b7cb1f90ff2cb952c78a6292fed3aa1d2a6fb7b4ba491ba",
+     "verdict": "FAILED",
+     "basis": "Spanne 5 %/Mitte"
     },
     "WALK_FORWARD": {
      "state": "EXECUTED",
@@ -1427,7 +1591,9 @@
      "excludedByReason": {
       "OUTCOME_NOT_MATURE_AT_CUTOFF": 118
      },
-     "partitionHash": "b5f32145256b77bcf60d65cc637495e0952406a46cc8e52cccdc5dfe8078590f"
+     "partitionHash": "b5f32145256b77bcf60d65cc637495e0952406a46cc8e52cccdc5dfe8078590f",
+     "verdict": "FAILED",
+     "basis": "Testfenster der Walk-Forward-Teilung im Plus"
     },
     "OUT_OF_SAMPLE": {
      "state": "EXECUTED",
@@ -1446,7 +1612,9 @@
       }
      ],
      "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
-     "resultHash": "dd987f7c94aa7ed6ccd32a22c2134acaedb947af781493774249c6ac36b353be"
+     "resultHash": "dd987f7c94aa7ed6ccd32a22c2134acaedb947af781493774249c6ac36b353be",
+     "verdict": "FAILED",
+     "basis": "Anteil Testfenster im Plus"
     },
     "MARKET_REGIME": {
      "state": "EXECUTED",
@@ -1487,7 +1655,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "FAILED",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1508,8 +1678,30 @@
      "maxDrawdown": -0.4036233473762205,
      "volatility": 0.2781238360756752,
      "benchmarkTotalReturn": -0.34238049406480586,
-     "oneWayTurnoverSum": null
+     "oneWayTurnoverSum": null,
+     "verdict": "PROVEN",
+     "basis": "Depot gegen S&P 500 im selben Zeitraum"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2007-10-05",
+     "to": "2009-10-02"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.21942697414395518
    },
    "resultHash": "a6ee5512bf8340d24809440b90b3c0cd6c797a12c80cd9b2337f23158a36dc8a",
    "group": "DEMO"
@@ -1604,7 +1796,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -1687,7 +1881,9 @@
        ],
        "adjustedPValue": 0.006
       }
-     ]
+     ],
+     "verdict": "PROVEN",
+     "basis": "Stellschrauben mit positivem Ergebnis"
     },
     "EVENT_DRIVEN": {
      "state": "NOT_RUN"
@@ -1695,6 +1891,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2009-03-27",
+     "to": "2011-07-01"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 6,
+    "maxDrawdown": -0.0990322580645161
    },
    "resultHash": "7a6f031e687023c7681712804a7047db11b9b8aac2aa48a9d19ff7c5fbff8f6c",
    "group": "DEMO"
@@ -1787,7 +2003,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1808,8 +2026,30 @@
      "maxDrawdown": -0.2350019731426617,
      "volatility": 0.2195128079278119,
      "benchmarkTotalReturn": 0.2762941596104338,
-     "oneWayTurnoverSum": null
+     "oneWayTurnoverSum": null,
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Depot gegen S&P 500 im selben Zeitraum"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2020-01-10",
+     "to": "2021-04-09"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.10075808557834737
    },
    "resultHash": "c95db2b86e44b7ca9df212d91e095c790d9e249c70adb8306ed920913aed3f35",
    "group": "DEMO"
@@ -1904,7 +2144,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1915,6 +2157,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2022-01-07",
+     "to": "2023-07-07"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.17650429799426937
    },
    "resultHash": "d20a886dac42506070774e346d144652b3fa9024368f5d12dea52e1334becdad",
    "group": "DEMO"
@@ -1986,6 +2248,26 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "disclosure": {
+    "period": {
+     "from": "2016-01-08",
+     "to": "2025-07-03"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.1795696047702775
+   },
    "resultHash": "b4323a5f8017d077f89c10d0c59e9f36401817deec8ad9301ac5228ed1499f4d",
    "group": "DEMO"
   },
@@ -2037,7 +2319,9 @@
       "p95": -0.03750638977623477
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "abbd7720e41359e73dadb9c142abae2bfdc716490a49499af0ece7ce046a49f4"
+     "inputHash": "abbd7720e41359e73dadb9c142abae2bfdc716490a49499af0ece7ce046a49f4",
+     "verdict": "PROVEN",
+     "basis": "Spanne 5 %/Mitte"
     },
     "WALK_FORWARD": {
      "state": "NOT_RUN"
@@ -2075,7 +2359,9 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -2197,7 +2483,9 @@
        ],
        "adjustedPValue": 1
       }
-     ]
+     ],
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Stellschrauben mit positivem Ergebnis"
     },
     "EVENT_DRIVEN": {
      "state": "NOT_RUN"
@@ -2217,6 +2505,26 @@
      "benchmarkTotalReturn": null,
      "oneWayTurnoverSum": 0.7153239035034699
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2019-01-04",
+     "to": "2019-12-27"
+    },
+    "costs": {
+     "feeBpsPerSide": null,
+     "slippageBpsPerSide": null,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 9,
+    "maxDrawdown": -0.08863713315752031
    },
    "resultHash": "ca0ecdd27c8d3c533aa82d320e99c14df98b5bb0291d9964a3e144eda02256c2",
    "group": "DEMO"
@@ -2275,7 +2583,9 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -2298,6 +2608,26 @@
      "benchmarkTotalReturn": null,
      "oneWayTurnoverSum": 0.8163442758928923
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2013-01-04",
+     "to": "2014-12-26"
+    },
+    "costs": {
+     "feeBpsPerSide": null,
+     "slippageBpsPerSide": null,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.06092001927846258
    },
    "resultHash": "228a0fa4a52110fe5ce87cf1439979385e1ec50c48c552b0b9ea8b78c3e8666f",
    "group": "DEMO"
@@ -2366,7 +2696,9 @@
      "interval95": [
       -0.01105154798005624,
       0.04966289514032945
-     ]
+     ],
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Mittel netto und 95-%-Spanne"
     },
     "PORTFOLIO_REBALANCING": {
      "state": "EXECUTED",
@@ -2383,6 +2715,26 @@
      "benchmarkTotalReturn": null,
      "oneWayTurnoverSum": 0.49999999999999994
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2016-01-08",
+     "to": "2020-12-31"
+    },
+    "costs": {
+     "feeBpsPerSide": null,
+     "slippageBpsPerSide": null,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "TOTAL_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.19714479540341157
    },
    "resultHash": "3a511d187f95065f2d0be39da889c6ccc3a64599523f919e83118a4dd7caeda1",
    "group": "DEMO"
@@ -2442,6 +2794,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_RUN"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": null,
+     "to": null
+    },
+    "costs": {
+     "feeBpsPerSide": null,
+     "slippageBpsPerSide": null,
+     "model": null
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": null
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": null
    },
    "resultHash": "070e73f7c7c02e8f9570ba61c2b173c0a86f01a666806f110a876c1c8799c61b",
    "group": "DEMO"
@@ -2538,7 +2910,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -2549,6 +2923,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2019-01-25",
+     "to": "2021-04-09"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.1403508771929824
    },
    "resultHash": "1d05efa9f95614a16747511b021974c78303e57f3f57c76d4e9ea899a4e20c27",
    "group": "DEMO"
@@ -2623,7 +3017,9 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "FAILED",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -2634,6 +3030,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2012-01-27",
+     "to": "2017-10-27"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": true,
+    "survivorship": "INCLUDES_PRIVATE_DELISTED_SERIES",
+    "variants": 1,
+    "maxDrawdown": -0.46533799880881477
    },
    "resultHash": "8dc67d642e1a2d1bd1b1fcac4caca0e3b1fee7a7b1ef8aec310d37c36de0ea19",
    "group": "DEMO"
@@ -2700,7 +3116,9 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "FAILED",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -2711,6 +3129,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2015-07-31",
+     "to": "2020-05-08"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": true,
+    "survivorship": "INCLUDES_PRIVATE_DELISTED_SERIES",
+    "variants": 1,
+    "maxDrawdown": -0.23399673889673311
    },
    "resultHash": "57c4f56b9895339b1610d471a42f4f683657aefe691d1b4efe3eaf3be2502515",
    "group": "DEMO"
@@ -2764,7 +3202,9 @@
       "p95": 0
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "76117d4515832e3c9504e6e688d1fca64efac6ecc18c6a09855ee82f4cddafd6"
+     "inputHash": "76117d4515832e3c9504e6e688d1fca64efac6ecc18c6a09855ee82f4cddafd6",
+     "verdict": "PROVEN",
+     "basis": "Spanne 5 %/Mitte"
     },
     "WALK_FORWARD": {
      "state": "EXECUTED",
@@ -2780,7 +3220,9 @@
       "PURGED_INFORMATION_OUTCOME_OVERLAP": 16,
       "OUTCOME_NOT_MATURE_AT_CUTOFF": 16
      },
-     "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a"
+     "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a",
+     "verdict": "PROVEN",
+     "basis": "Testfenster der Walk-Forward-Teilung im Plus"
     },
     "OUT_OF_SAMPLE": {
      "state": "EXECUTED",
@@ -2835,7 +3277,9 @@
       }
      ],
      "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
-     "resultHash": "7532b2d73c1a302687da948bf41dbc8363c29773bd90d8076e1541082858b922"
+     "resultHash": "7532b2d73c1a302687da948bf41dbc8363c29773bd90d8076e1541082858b922",
+     "verdict": "PROVEN",
+     "basis": "Anteil Testfenster im Plus"
     },
     "MARKET_REGIME": {
      "state": "EXECUTED",
@@ -2875,7 +3319,9 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -2916,7 +3362,9 @@
        ],
        "adjustedPValue": 0.003
       }
-     ]
+     ],
+     "verdict": "PROVEN",
+     "basis": "Stellschrauben mit positivem Ergebnis"
     },
     "EVENT_DRIVEN": {
      "state": "EXECUTED",
@@ -2931,11 +3379,33 @@
      },
      "meanNet": 0.026902064340486042,
      "medianNet": 0.048197081127695274,
-     "interval95": null
+     "interval95": null,
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Mittel netto und 95-%-Spanne"
     },
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2011-01-07",
+     "to": "2025-05-30"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 3,
+    "maxDrawdown": -0.16433566433566427
    },
    "resultHash": "6892b6688792be62f729900251e48a0f06771387782db714da3aab4a29dac1f3",
    "group": "MATRIX"
@@ -2988,7 +3458,9 @@
       "PURGED_INFORMATION_OUTCOME_OVERLAP": 603,
       "OUTCOME_NOT_MATURE_AT_CUTOFF": 145
      },
-     "partitionHash": "5b5f49f33da1c1025be7a05134cbadab0456d671ab18654387731582756f9dc9"
+     "partitionHash": "5b5f49f33da1c1025be7a05134cbadab0456d671ab18654387731582756f9dc9",
+     "verdict": "PROVEN",
+     "basis": "Testfenster der Walk-Forward-Teilung im Plus"
     },
     "OUT_OF_SAMPLE": {
      "state": "EXECUTED",
@@ -3043,7 +3515,9 @@
       }
      ],
      "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
-     "resultHash": "c8abbfd41486515c4f875028a2d5510db8d65d06fb396eefc1751455a24152aa"
+     "resultHash": "c8abbfd41486515c4f875028a2d5510db8d65d06fb396eefc1751455a24152aa",
+     "verdict": "PROVEN",
+     "basis": "Anteil Testfenster im Plus"
     },
     "MARKET_REGIME": {
      "state": "EXECUTED",
@@ -3095,7 +3569,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -3124,7 +3600,9 @@
        ],
        "adjustedPValue": 0.002
       }
-     ]
+     ],
+     "verdict": "PROVEN",
+     "basis": "Stellschrauben mit positivem Ergebnis"
     },
     "EVENT_DRIVEN": {
      "state": "EXECUTED",
@@ -3142,11 +3620,33 @@
      "interval95": [
       0.00910953829886387,
       0.03189488135675406
-     ]
+     ],
+     "verdict": "PROVEN",
+     "basis": "Mittel netto und 95-%-Spanne"
     },
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2010-01-08",
+     "to": "2025-04-04"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 2,
+    "maxDrawdown": -0.08383751080380297
    },
    "resultHash": "f5eb62bff8a385beb0484c7ff19b44d2faaa042b922d321a1375ee74c7c3d729",
    "group": "MATRIX"
@@ -3201,7 +3701,9 @@
       "p95": -0.019242539832195038
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "a8a32f1cb1e7f6d68ee6d411e914c493fdbb197791b6b56de103ab1927e815e0"
+     "inputHash": "a8a32f1cb1e7f6d68ee6d411e914c493fdbb197791b6b56de103ab1927e815e0",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Spanne 5 %/Mitte"
     },
     "WALK_FORWARD": {
      "state": "EXECUTED",
@@ -3217,7 +3719,9 @@
       "PURGED_INFORMATION_OUTCOME_OVERLAP": 202,
       "OUTCOME_NOT_MATURE_AT_CUTOFF": 382
      },
-     "partitionHash": "eb6efff1de7541000f187b18f13840fe17c86cb2388c124ec2e6dba11f7bc8e4"
+     "partitionHash": "eb6efff1de7541000f187b18f13840fe17c86cb2388c124ec2e6dba11f7bc8e4",
+     "verdict": "PROVEN",
+     "basis": "Testfenster der Walk-Forward-Teilung im Plus"
     },
     "OUT_OF_SAMPLE": {
      "state": "EXECUTED",
@@ -3254,7 +3758,9 @@
       }
      ],
      "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
-     "resultHash": "c0fad6be4caaadc645c8bc9765704be35e955c4381ffd7742e07ea2e764a692a"
+     "resultHash": "c0fad6be4caaadc645c8bc9765704be35e955c4381ffd7742e07ea2e764a692a",
+     "verdict": "PROVEN",
+     "basis": "Anteil Testfenster im Plus"
     },
     "MARKET_REGIME": {
      "state": "EXECUTED",
@@ -3306,7 +3812,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -3389,7 +3897,9 @@
        ],
        "adjustedPValue": 0.006
       }
-     ]
+     ],
+     "verdict": "PROVEN",
+     "basis": "Stellschrauben mit positivem Ergebnis"
     },
     "EVENT_DRIVEN": {
      "state": "EXECUTED",
@@ -3407,7 +3917,9 @@
      "interval95": [
       0.0011272116518552186,
       0.04045866943698967
-     ]
+     ],
+     "verdict": "PROVEN",
+     "basis": "Mittel netto und 95-%-Spanne"
     },
     "PORTFOLIO_REBALANCING": {
      "state": "EXECUTED",
@@ -3422,8 +3934,30 @@
      "maxDrawdown": -0.2777959070133821,
      "volatility": 0.160017179844268,
      "benchmarkTotalReturn": 1.2692788661942478,
-     "oneWayTurnoverSum": null
+     "oneWayTurnoverSum": null,
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Depot gegen S&P 500 im selben Zeitraum"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2016-01-08",
+     "to": "2021-07-09"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 6,
+    "maxDrawdown": -0.11129363449691998
    },
    "resultHash": "0a954f45916d5aaca208d773db34e3282f732c8b277ca39bcbf4f2b7f985afe9",
    "group": "MATRIX"
@@ -3532,7 +4066,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -3553,11 +4089,33 @@
      "interval95": [
       0.004754962084868806,
       0.028430024997498915
-     ]
+     ],
+     "verdict": "PROVEN",
+     "basis": "Mittel netto und 95-%-Spanne"
     },
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2016-01-08",
+     "to": "2025-07-03"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.1795696047702775
    },
    "resultHash": "1d067d16e9c4d8aa4ee7346efb5d9f2dd890640fd3a7c09e25c821647692a5e0",
    "group": "MATRIX"
@@ -3612,7 +4170,9 @@
       "p95": -0.03645678185512934
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "92322bee417c8ad70bb7fffc9217c2051324fc95398c1af43dc9661c374fd704"
+     "inputHash": "92322bee417c8ad70bb7fffc9217c2051324fc95398c1af43dc9661c374fd704",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Spanne 5 %/Mitte"
     },
     "WALK_FORWARD": {
      "state": "NOT_RUN"
@@ -3658,7 +4218,9 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "PROVEN",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -3780,7 +4342,9 @@
        ],
        "adjustedPValue": 0.378
       }
-     ]
+     ],
+     "verdict": "PROVEN",
+     "basis": "Stellschrauben mit positivem Ergebnis"
     },
     "EVENT_DRIVEN": {
      "state": "NOT_RUN"
@@ -3800,6 +4364,26 @@
      "benchmarkTotalReturn": null,
      "oneWayTurnoverSum": 1.808796082700731
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2016-01-08",
+     "to": "2020-12-31"
+    },
+    "costs": {
+     "feeBpsPerSide": null,
+     "slippageBpsPerSide": null,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 9,
+    "maxDrawdown": -0.2738039816404989
    },
    "resultHash": "8a0267b7828bd88b977114f7c4ce1c4a77bf8ba7bce7fe513551ac3e853b74af",
    "group": "MATRIX"
@@ -3896,7 +4480,9 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -3917,11 +4503,33 @@
      "interval95": [
       -0.01777574440542208,
       0.08206493906547674
-     ]
+     ],
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Mittel netto und 95-%-Spanne"
     },
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2019-01-25",
+     "to": "2021-04-09"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.1403508771929824
    },
    "resultHash": "26584c0fd6b8521b3e888476dc6a1963c3cc2aaa2a1f768a8976a8a1e11f8831",
    "group": "MATRIX"
@@ -3974,7 +4582,9 @@
       "PURGED_INFORMATION_OUTCOME_OVERLAP": 798,
       "OUTCOME_NOT_MATURE_AT_CUTOFF": 2864
      },
-     "partitionHash": "b17899f6e08c2521b34747bd8d1a8c6ed9475691be5de40a6abfb2ba294a0de0"
+     "partitionHash": "b17899f6e08c2521b34747bd8d1a8c6ed9475691be5de40a6abfb2ba294a0de0",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Testfenster der Walk-Forward-Teilung im Plus"
     },
     "OUT_OF_SAMPLE": {
      "state": "EXECUTED",
@@ -4002,7 +4612,9 @@
       }
      ],
      "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
-     "resultHash": "3302054191571fb1eb44346117725976e4c847aff5e602dde6998f2f9a1f5f7b"
+     "resultHash": "3302054191571fb1eb44346117725976e4c847aff5e602dde6998f2f9a1f5f7b",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Anteil Testfenster im Plus"
     },
     "MARKET_REGIME": {
      "state": "NOT_RUN"
@@ -4016,6 +4628,26 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "disclosure": {
+    "period": {
+     "from": "2019-01-25",
+     "to": "2021-04-09"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.14426202046786646
    },
    "resultHash": "57bd0b3bb4ae33ed543d884444ba25c8886fbca0f54d2192921dd5a144fb514e",
    "group": "MATRIX"
