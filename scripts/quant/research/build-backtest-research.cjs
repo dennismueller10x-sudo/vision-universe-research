@@ -116,16 +116,20 @@ function comparison(kind, e, factor) {
   return { state: ex > 0 ? 'BEATS' : 'LOSES', value: ex, n: num(m.excess.n), basis: 'mittlerer Vorsprung je Fall gegen den S&P 500' };
 }
 // Ampel aus Robustheit (verdict) und Vergleich: bewährt nur, wenn beides trägt; ohne geschlagenen Vergleich „hat versagt“.
-function combine(vd, cmp) {
+// Ueberlebenden-Auswahl (Gegenpruefung 13.11.2026): Wer den Vergleich nur auf heute noch notierten, nachtraeglich
+// gewaehlten Titeln schlaegt (keine delisteten Titel), ist hoechstens „eingeschraenkt geprueft“ (LIMITED), nie „bewaehrt“.
+// Verloren bleibt verloren: wer selbst mit dieser Bevorzugung hinter dem Vergleich liegt, „hat versagt“.
+function combine(vd, cmp, survivorOnly) {
   if (!vd) return null;
   if (!cmp) return { verdict: null, basis: vd.basis, robustness: vd.verdict, comparison: null };
-  const v = cmp.state === 'LOSES' ? 'FAILED' : cmp.state === 'MIXED' ? (vd.verdict === 'FAILED' ? 'FAILED' : 'REGIME_DEPENDENT') : vd.verdict;
-  return { verdict: v, basis: vd.basis + '; Vergleich: ' + cmp.basis, robustness: vd.verdict, comparison: cmp.state };
+  let v = cmp.state === 'LOSES' ? 'FAILED' : cmp.state === 'MIXED' ? (vd.verdict === 'FAILED' ? 'FAILED' : 'REGIME_DEPENDENT') : vd.verdict;
+  if (survivorOnly && (v === 'PROVEN' || v === 'REGIME_DEPENDENT')) v = 'LIMITED';
+  return { verdict: v, basis: vd.basis + '; Vergleich: ' + cmp.basis + (survivorOnly ? '; nur heutige Überlebende, ohne delistete Titel' : ''), robustness: vd.verdict, comparison: cmp.state };
 }
 function disclosure(c, r) {
   const e = r.envelope, costs = (e.metrics && e.metrics.costs) || {}, sens = e.methods.find(x => x.method === 'PARAMETER_SENSITIVITY');
   return { period: e.period ? { from: e.period.from, to: e.period.to } : null,
-    costs: { feeBpsPerSide: num(costs.feeBpsPerSide), slippageBpsPerSide: num(costs.slippageBpsPerSide), model: costs.model || null },
+    costs: { feeBpsPerSide: num(costs.feeBpsPerSide) ?? num(r.spec && r.spec.costs && r.spec.costs.feeBps), slippageBpsPerSide: num(costs.slippageBpsPerSide) ?? num(r.spec && r.spec.costs && r.spec.costs.slippageBps), model: costs.model || null },
     benchmark: { id: (r.spec && r.spec.benchmark) || null, label: 'S&P 500 (SPY)', returnBasis: (e.metrics && e.metrics.benchmark && e.metrics.benchmark.returnBasis) || null },
     delistedIncluded: c.privateData === 'delistedSeries' || /DELISTED/.test(JSON.stringify((r.spec && r.spec.population) || {})),
     survivorship: (e.dataQuality && e.dataQuality.survivorship && e.dataQuality.survivorship.state) || null,
@@ -150,8 +154,9 @@ function caseRow(c, r) {
     metrics: { basis: e.metrics.basis, hitRate: num(e.metrics.hitRate), maxDrawdown: num(e.metrics.maxDrawdown), trades: num(e.metrics.trades), totalReturn: num(e.metrics.totalReturn), cagr: num(e.metrics.cagr) },
     missingInputs: e.limitations.filter(x => x.startsWith('MISSING_INPUT:')),
     methods: (() => {
-      const cmp = comparison(c.kind, e, factorRow(e));
-      const ms = Object.fromEntries(METHODS.map(id => { const m = byId[id] ? compact(id, byId[id]) : { state: 'NOT_APPLICABLE' }; const vd = combine(verdict(id, m), cmp); return [id, vd ? { ...m, ...vd } : m]; }));
+      const cmp = comparison(c.kind, e, factorRow(e)), dis = disclosure(c, r);
+      const survivorOnly = !dis.delistedIncluded && dis.survivorship === 'CONDITIONAL_CURRENT_SURVIVOR_COHORT';
+      const ms = Object.fromEntries(METHODS.map(id => { const m = byId[id] ? compact(id, byId[id]) : { state: 'NOT_APPLICABLE' }; const vd = combine(verdict(id, m), cmp, survivorOnly); return [id, vd ? { ...m, ...vd } : m]; }));
       // Walk-Forward teilt nur die Zeit; sein Ergebnis steht in den Testfenstern derselben Teilung (OUT_OF_SAMPLE).
       if (ms.WALK_FORWARD.state === 'EXECUTED' && ms.OUT_OF_SAMPLE.robustness) Object.assign(ms.WALK_FORWARD, { verdict: ms.OUT_OF_SAMPLE.verdict, robustness: ms.OUT_OF_SAMPLE.robustness, comparison: ms.OUT_OF_SAMPLE.comparison, basis: 'Testfenster der Walk-Forward-Teilung; Vergleich wie dort' });
       return ms;

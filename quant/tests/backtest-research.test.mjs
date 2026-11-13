@@ -161,3 +161,10 @@ test("BR-8 · Ampel vergleicht: bewährt nur besser als der Vergleich, nie nur �
   assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }).verdict, "PROVEN");
   assert.equal(B.combine(pr, null).verdict, null, "ohne Vergleich keine Einordnung");
 });
+
+test("BR-9 · Überlebenden-Auswahl: besser als der Vergleich heißt dann nur „eingeschränkt geprüft“", () => {
+  const pr = { verdict: "PROVEN", basis: "x" };
+  assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }, true).verdict, "LIMITED");
+  assert.equal(B.combine(pr, { state: "LOSES", basis: "S&P" }, true).verdict, "FAILED", "verloren bleibt verloren");
+  assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }, false).verdict, "PROVEN", "mit delisteten Titeln bleibt bewährt möglich");
+});

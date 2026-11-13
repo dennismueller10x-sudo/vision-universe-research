@@ -337,9 +337,10 @@
     STRATEGY_BACKTEST: "Wie hätte ein Depot nach einem Anlagestil abgeschnitten?",
     FACTOR_RANKING_BACKTEST: "Schnitten Aktien mit starken Eigenschaften besser ab als der Rest?" };
   function brPlainVerdict(res, k) {
-    var cert = brCert(res, k), n = { PROVEN: 0, REGIME_DEPENDENT: 0, FAILED: 0 };
+    var cert = brCert(res, k), n = { PROVEN: 0, REGIME_DEPENDENT: 0, LIMITED: 0, FAILED: 0 };
     BR_METHOD.forEach(function (m) { var v = brVerdictOf(res.matrix[k][m[0]]); if (v) n[v] += 1; });
-    var total = n.PROVEN + n.REGIME_DEPENDENT + n.FAILED;
+    var total = n.PROVEN + n.REGIME_DEPENDENT + n.LIMITED + n.FAILED;
+    if (total && n.LIMITED * 2 >= total && !n.FAILED) return ["none", "eingeschränkt geprüft"];
     if (!total || (cert && cert.status !== "CERTIFIED")) return ["none", "noch offen"];
     if (n.FAILED * 2 > total) return ["weak", "nicht bewährt"];
     if (!n.REGIME_DEPENDENT && !n.FAILED) return ["strong", "bewährt"];
@@ -408,7 +409,7 @@
   function brCellNote(c) { return c.state === "DATA_MISSING" ? "Daten fehlen: " + (c.missing || []).map(function (x) { return BR_MISSING[x] || x; }).join(", ") : c.state === "NOT_RUN" && c.reason ? BR_REASON[c.reason] || c.reason : ""; }
   var BR_SHORT = { MONTE_CARLO: "Monte Carlo", WALK_FORWARD: "Walk-Fwd", OUT_OF_SAMPLE: "Test~fenster", MARKET_REGIME: "Markt~lage", PARAMETER_SENSITIVITY: "Sensi~tivität", EVENT_DRIVEN: "Divi~dende", PORTFOLIO_REBALANCING: "Depot" };
   /* Methoden-Ampel (Erzeuger build-backtest-research.cjs#verdict): feste Regel je Methode, Forschung, keine Prognose. */
-  var BR_VERDICT = { PROVEN: ["strong", "hat sich bewährt", "✓"], REGIME_DEPENDENT: ["mid", "nur in bestimmten Marktlagen", "◐"], FAILED: ["weak", "hat versagt", "✗"] };
+  var BR_VERDICT = { PROVEN: ["strong", "hat sich bewährt", "✓"], REGIME_DEPENDENT: ["mid", "nur in bestimmten Marktlagen", "◐"], LIMITED: ["none", "eingeschränkt geprüft", "◇"], FAILED: ["weak", "hat versagt", "✗"] };
   function brVerdictOf(x) { var v = x && (typeof x.verdict === "string" ? x.verdict : x.verdict && x.verdict.verdict); return BR_VERDICT[v] ? v : null; }
   function brCert(res, k) { var c = res.certification && res.certification.kinds && res.certification.kinds[k]; return c || null; }
   function brCertBadge(res, k) {
@@ -438,7 +439,7 @@
           var vd = c.state === "EXECUTED" ? brVerdictOf(c) : null, vw = vd ? BR_VERDICT[vd] : null;
           return '<span role="cell" class="qk-br-cell is-' + c.state.toLowerCase().replace(/_/g, "-") + (vd ? " is-" + vd.toLowerCase().replace(/_/g, "-") : "") + '" title="' + U.esc((vw ? vw[1] : st[1]) + (brCellNote(c) ? " – " + brCellNote(c) : "")) + '">' + (vw ? vw[2] : c.state === "EXECUTED" ? "●" : c.state === "NOT_APPLICABLE" ? "·" : c.state === "DATA_MISSING" ? "◌" : "○") + '<span class="qk-sr">' + U.esc(vw ? vw[1] : st[1]) + "</span></span>";
         }).join("") + "</div>";
-      }).join("") + '</div><p class="vu-xs vu-mu qk-br-legend">✓ hat sich bewährt (besser als der Vergleich) · ◐ nur in bestimmten Marktlagen · ✗ hat versagt (nicht besser als der Vergleich) · ● gerechnet, noch ohne Einordnung · ◌ Daten fehlen · ○ nicht gerechnet · · passt methodisch nicht</p>' +
+      }).join("") + '</div><p class="vu-xs vu-mu qk-br-legend">✓ hat sich bewährt (besser als der Vergleich) · ◐ nur in bestimmten Marktlagen · ◇ eingeschränkt geprüft (nur heutige Überlebende) · ✗ hat versagt (nicht besser als der Vergleich) · ● gerechnet, noch ohne Einordnung · ◌ Daten fehlen · ○ nicht gerechnet · · passt methodisch nicht</p>' +
       (res.certification ? '<p class="vu-xs vu-mu qk-br-legend">' + U.esc(res.certification.certifiedKinds.length + " von " + res.kinds.length + " Arten methodisch geprüft: nachvollziehbar gerechnet und alle zulässigen Robustheitsprüfungen bestanden. Das sagt nichts über die Höhe des Ergebnisses.") + "</p>" : "");
   }
   async function brLoad(ctx) { var x = await ctx.api.getBacktest("research").catch(function () { return null; }); return x && x.state === "AVAILABLE" ? x : null; }
