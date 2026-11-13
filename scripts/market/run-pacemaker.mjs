@@ -58,6 +58,8 @@ const INTERVAL_MS = parseInt(arg("interval-ms", "300000"), 10);
 const BLOCK_MAX_MS = parseInt(arg("block-max-ms", String(Pacemaker.BLOCK_MAX_MS)), 10);
 const MAX_CYCLES = parseInt(arg("max-cycles", "0"), 10) || Infinity;
 const SCOPE = arg("scope", "discover");
+const PARTS = Math.max(1, parseInt(arg("parts", "3"), 10) || 1);
+const TEILE = SCOPE === "discover" ? PARTS : 1;   /* nur der Discover-Umfang laeuft im 5-min-Takt */
 const PUSH = !flag("no-push");
 const BRANCH = process.env.GITHUB_REF_NAME || "main";
 
@@ -230,45 +232,65 @@ while (nummer < MAX_CYCLES) {
   };
   console.log("\n=== Zyklus " + nummer + " · " + lage.localTime + " New York · " + lage.marketState + " ===");
 
+  /* Ein Zyklus in TEILE Teilen (Boersenstart-Auswertung 12.11.2026): ein Zyklus braucht ~14 min fuer 1453 Anfragen,
+     veroeffentlicht wurde erst am Ende. Jetzt holt und veroeffentlicht jeder Teil fuer sich (disjunkte Titel, gleiche
+     Anfragen, gleiche Kosten); ein Teil beruehrt nur seine eigenen Dateien und waechst sie nur um neue Bars, ueberschreibt
+     also nie einen neueren Stand. Mit --parts=1 (oder ausserhalb von discover) wie bisher ein Durchgang. */
   zyklus.fetchStartAt = iso(jetzt());
-  const geholt = lauf(process.execPath, ["scripts/market/ingest-intraday.mjs", "--scope=" + SCOPE], {
-    env: { ...process.env }
-  });
-  zyklus.fetchEndAt = iso(jetzt());
+  zyklus.parts = [];
+  let teileOk = 0, summeGeschrieben = 0, summeAnfragen = 0, summeNichtPublizierbar = 0, hatBericht = false;
+  for (let teil = 1; teil <= TEILE; teil++) {
+    const teilStart = jetzt();
+    const teilArgs = ["scripts/market/ingest-intraday.mjs", "--scope=" + SCOPE].concat(TEILE > 1 ? ["--part=" + teil + "/" + TEILE] : []);
+    const teilOk = lauf(process.execPath, teilArgs, { env: { ...process.env } });
+    zyklus.fetchEndAt = iso(jetzt());
+    const info = { part: teil, of: TEILE, fetchStartAt: iso(teilStart), fetchEndAt: zyklus.fetchEndAt, ok: teilOk, written: null, requests: null };
 
-  /* Nur den Bericht DIESES Zyklus lesen. Der erste Rauchtest am
-     21.09.2026 meldete "8 geschrieben" fuer einen Zyklus, der gar nichts
-     geholt hatte - status.json lag noch vom Lauf davor da. Eine Zahl aus
-     einer fremden Messung ist schlimmer als keine: sie sieht aus wie ein
-     Beleg. Der Zeitstempel muss aus diesem Zyklus stammen. */
-  const st = statusLesen();
-  const ausDiesemZyklus = st && st.generatedAt &&
-    Date.parse(st.generatedAt) >= Date.parse(zyklus.fetchStartAt);
-  if (ausDiesemZyklus && st.summary) {
-    zyklus.session = st.session ? st.session.sessionDate : null;
-    zyklus.written = st.summary.written;
-    zyklus.requests = st.summary.requests;
-    zyklus.notPublishable = st.summary.notPublishable;
-    zyklus.snapshotAt = st.generatedAt;
-  } else if (st) {
-    zyklus.reason = "statusberichtNichtAusDiesemZyklus";
-  }
+    /* Nur den Bericht DIESES Teils lesen (siehe 21.09.2026: ein Bericht aus einem fremden Lauf sieht aus wie ein Beleg). */
+    const st = statusLesen();
+    const ausDiesemTeil = st && st.generatedAt && Date.parse(st.generatedAt) >= teilStart;
+    if (ausDiesemTeil && st.summary) {
+      zyklus.session = st.session ? st.session.sessionDate : null;
+      summeGeschrieben += st.summary.written || 0;
+      summeAnfragen += st.summary.requests || 0;
+      summeNichtPublizierbar += st.summary.notPublishable || 0;
+      hatBericht = true;
+      zyklus.snapshotAt = st.generatedAt;
+      info.written = st.summary.written; info.requests = st.summary.requests;
+    } else if (st) {
+      zyklus.reason = "statusberichtNichtAusDiesemZyklus";
+    }
+    if (hatBericht) { zyklus.written = summeGeschrieben; zyklus.requests = summeAnfragen; zyklus.notPublishable = summeNichtPublizierbar; }
 
-  if (!geholt) {
-    fehlerInFolge++;
-    zyklus.reason = "ingestFehlgeschlagen";
-    console.log("  Zyklus " + nummer + ": Ingest fehlgeschlagen (" + fehlerInFolge + " in Folge)");
-  } else {
-    fehlerInFolge = 0;
-    zyklus.ok = true;
-    const nachricht = "Intraday-Takt " + nummer + ": " + SCOPE + " (" +
+    if (!teilOk) {
+      console.log("  Zyklus " + nummer + (TEILE > 1 ? " Teil " + teil + "/" + TEILE : "") + ": Ingest fehlgeschlagen");
+      zyklus.parts.push(info);
+      continue;
+    }
+    teileOk++;
+    const nachricht = "Intraday-Takt " + nummer + (TEILE > 1 ? "." + teil + "/" + TEILE : "") + ": " + SCOPE + " (" +
       (zyklus.session || "?") + " " + lage.marketState + ", " +
       (zyklus.written === null ? "?" : zyklus.written) + " geschrieben, " +
       (zyklus.requests === null ? "?" : zyklus.requests) + " Anfragen)";
     /* Das Register gehoert in denselben Commit wie die Daten, die es
        beschreibt. Sonst beschreibt es einen Stand, der noch nicht da ist. */
+    zyklus.ok = true;
+    zyklus.parts.push(info);
     ledgerSchreiben(zyklen.concat([zyklus]), block);
-    Object.assign(zyklus, veroeffentlichen(ZYKLUS_PFADE, nachricht));
+    const veroeff = veroeffentlichen(ZYKLUS_PFADE, nachricht);
+    info.sha = veroeff.sha; info.pushAt = veroeff.pushAt; info.changed = veroeff.changed;
+    const vorherGeaendert = zyklus.changed;
+    Object.assign(zyklus, veroeff);
+    zyklus.changed = zyklus.changed || vorherGeaendert;
+  }
+  if (teileOk === 0) {
+    fehlerInFolge++;
+    zyklus.ok = false;
+    zyklus.reason = "ingestFehlgeschlagen";
+    console.log("  Zyklus " + nummer + ": Ingest fehlgeschlagen (" + fehlerInFolge + " in Folge)");
+  } else {
+    fehlerInFolge = 0;
+    if (teileOk < TEILE) zyklus.reason = "teilweise (" + teileOk + "/" + TEILE + ")";
   }
 
   /* Der Waechter im eigenen Takt. Das ist der Kontrollpfad, der NICHT am
