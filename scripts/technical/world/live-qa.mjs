@@ -153,7 +153,7 @@ if (!gated || gate) {
     if (!tgt) throw new Error("kein erster Treffer fuer establishedUptrend");
     const t0 = performance.now();
     await hashTo("#/chart/" + tgt + "?v=establishedUptrend");
-    await page.waitForSelector(".tc-chart svg", { timeout: 90000 });
+    await page.waitForSelector(".tc-chart svg, .qc-chart svg", { timeout: 90000 });
     timings.chartStudio = ms(t0);
     await page.waitForSelector(".tc-tpl-panel .tc-crit-why", { timeout: 60000 });
     await page.click(".tc-tpl-panel > summary");

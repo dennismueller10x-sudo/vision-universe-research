@@ -177,7 +177,7 @@ for(const width of [360,390,1280])for(const theme of ['light','dark']){
   await page.locator('a[data-practice]').click();await page.locator('.tc-hit .tc-ticks').first().waitFor();
   const goal=await page.locator('#tc-main h1').innerText();
   await page.locator('a',{hasText:'Im Screener bearbeiten'}).click();await page.locator('.tc-cta').waitFor();const matches=await page.locator('.tc-cta').innerText();await page.locator('.tc-cta').click();
-  await page.locator('.tc-hits .tc-hit').first().click();await page.locator('.tc-chart svg').first().waitFor();const chart=await page.evaluate(()=>location.hash);
+  await page.locator('.tc-hits .tc-hit').first().click();await page.locator('.tc-chart svg, .qc-chart svg').first().waitFor();const chart=await page.evaluate(()=>location.hash);
   if(width===390)await page.screenshot({path:out+'/'+prefix+'-'+id+'-practice.png',fullPage:true});
   await page.getByRole('link',{name:'← Zur Lektion: '+l.title,exact:true}).click();await page.locator('fieldset').waitFor();assert(await page.getByLabel(expected,{exact:true}).isChecked(),'quiz restored after analysis');await page.getByRole('status').filter({hasText:'Richtig.'}).waitFor();
   await page.getByRole('button',{name:'Lektion als abgeschlossen markieren',exact:true}).click();await page.reload();await page.getByRole('button',{name:'Abschluss aufheben',exact:true}).waitFor();
