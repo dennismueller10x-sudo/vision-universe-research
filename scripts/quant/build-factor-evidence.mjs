@@ -520,9 +520,17 @@ function main() {
     const quote = closeByTicker.get(ticker) || null;
     /* The certified price factors plus the one value derived here from the
        published bar series. Derived values keep their own basis label. */
-    const price = !finite(security.values?.downsideVolatility252d) && finite(quote?.downsideVolatility252d)
+    const priceRaw = !finite(security.values?.downsideVolatility252d) && finite(quote?.downsideVolatility252d)
       ? { ...(security.values || {}), downsideVolatility252d: quote.downsideVolatility252d }
       : (security.values || {});
+    /* EINGEFRORENER KURS (Plausibilitaetspruefung 13.11.2026, Befund b4; V10-Studie Befund 5):
+     * Ein Jahr ohne jede Tagesbewegung (Schwankungsbreite exakt 0) ist kein ruhiger Kurs, sondern
+     * ein Kurs, der nicht mehr gehandelt oder nicht mehr geliefert wird. Solche Titel bekamen
+     * Risk 97,6 und ein mittleres Momentum. Ihre Kursbausteine fallen weg (Momentum und Risk
+     * dann nicht verfuegbar), statt eine Bestnote aus einer Datenluecke zu machen. */
+    const frozenPrice = finite(priceRaw.volatility252d) && priceRaw.volatility252d === 0;
+    if (frozenPrice) countGap("STALE_PRICE_SERIES_ZERO_VOLATILITY");
+    const price = frozenPrice ? {} : priceRaw;
     const priceStatus = security.fieldStatus || {};
 
     let fundamentals = null;
