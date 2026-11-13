@@ -1398,36 +1398,59 @@ jobs:
           done
           echo "$(find social -name 'index.html' | wc -l) Seiten geprueft"
 
-      - name: Der bestehende Quant-Bereich bleibt unberuehrt
-        # §48: Social ist eine neue Faehigkeit INNERHALB des bestehenden
-        # Systems. Wenn dieser Schritt rot wird, hat der Social-Build etwas
-        # angefasst, das ihm nicht gehoert.
-        run: node --test "quant/tests/*.test.mjs"
+  # §48: Der bestehende Quant-Bereich bleibt unberuehrt (Social-Guard). Vormals ein 400-s-Schritt im Job social; jetzt 3 Shards.
+  social-quant-suite:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.social == 'true'
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && format('social-quant-suite-pr-{0}-{1}', github.event.pull_request.number, matrix.shard) || format('social-quant-suite-{0}-{1}', github.run_id, matrix.shard) }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
 
-      - name: Hinweis - der Quant-Lauf veraendert zwei committete Artefakte
-        # BESTEHENDER BEFUND, NICHT VOM SOCIAL-BUILD VERURSACHT.
-        #
-        # `node --test "quant/tests/*.test.mjs"` schreibt
-        # quant/data/universe/cik-resolution.json und issuer-manifest.json
-        # neu - es aendert sich nur `generatedAt`, aber es aendert sich.
-        # Das widerspricht MASTER §31.10 ("Tests duerfen Produktionsdaten
-        # nicht veraendern", die Lehre aus technical_scenarios.json).
-        #
-        # Dieser Schritt macht den Befund SICHTBAR, statt ihn wegzuraeumen:
-        # er meldet ihn und laesst den Lauf gruen, weil die Ursache im
-        # Quant-Bereich liegt und dort behoben gehoert. Er bricht bewusst
-        # nicht ab - eine rote Social-CI wegen eines fremden Befunds wuerde
-        # nur dazu fuehren, dass jemand diesen Schritt entfernt.
-        if: always()
-        run: |
-          if ! git diff --quiet -- quant/data; then
-            echo "::warning::Der Quant-Testlauf hat committete Artefakte unter quant/data veraendert."
-            git diff --stat -- quant/data
-            echo "Siehe docs/archiv/2026/VU_SOCIAL_HANDOFF.md, Abschnitt 'Befund am Rande'."
-            git checkout -- quant/data
-          else
-            echo "Keine Veraenderung an quant/data."
-          fi
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run the quant test suite shard (JS, no network)
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: node --test --test-shard="$SHARD/3" "quant/tests/*.test.mjs"
+
+  # Quant-2.0-Regression des Supertrader-Jobs (bestehende Tests); vormals ein Schritt in supertrader, jetzt 3 Shards.
+  supertrader-quant-suite:
+    needs: auswahl
+    if: >-
+      needs.auswahl.outputs.supertrader == 'true'
+    concurrency:
+      group: ${{ github.event_name == 'pull_request' && format('supertrader-quant-suite-pr-{0}-{1}', github.event.pull_request.number, matrix.shard) || format('supertrader-quant-suite-{0}-{1}', github.run_id, matrix.shard) }}
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run the quant test suite shard (JS, no network)
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: node --test --test-shard="$SHARD/3" "quant/tests/*.test.mjs"
 
   # --- supertrader: vormals supertrader-ci.yml
   supertrader:
@@ -1533,8 +1556,6 @@ jobs:
           node scripts/supertrader/build.mjs --out="$RUNNER_TEMP/supertrader-inkrementell"
       - name: Discovery-Regression (bestehende Tests)
         run: node --test "discover/tests/*.test.mjs"
-      - name: Quant-2.0-Regression (bestehende Tests)
-        run: node --test "quant/tests/*.test.mjs"
       - name: Browser QA dependencies
         timeout-minutes: 8
         run: |
