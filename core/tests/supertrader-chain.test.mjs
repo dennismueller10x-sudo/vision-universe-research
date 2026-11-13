@@ -221,9 +221,11 @@ test("SC5 · Verdrahtung: eigene Stufe nach allen Pruefungen, entkoppelt, Zeitpl
   assert.doesNotMatch(job, /\n    concurrency:/);
   /* Nachtlauf bleibt gruen: jeder Schritt continue-on-error + Limit */
   const schritte = job.split("\n      - ").slice(1);
-  assert.equal(schritte.length, 3);
+  assert.equal(schritte.length, 4);
   for (const s of schritte) { assert.match(s, /continue-on-error: true/); assert.match(s, /timeout-minutes: \d+/); }
   assert.match(job, /node scripts\/ci\/supertrader-chain\.mjs dispatch/);
+  /* SPY liegt seit dem Umzug (marketPulse, BRANCH_ONLY) nur im Datenzweig: vor der Eingabepruefung einspielen (#1765) */
+  assert.ok(job.indexOf("seed-data-branch.sh marketPulse") > 0 && job.indexOf("seed-data-branch.sh marketPulse") < job.indexOf("supertrader-chain.mjs dispatch"));
   assert.doesNotMatch(job, /TIINGO|MARKETSTACK/i);
   assert.doesNotMatch(job, /\$\{\{\s*inputs\./);
   /* der Alarm sieht nur den ANSTOSS */
