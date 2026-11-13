@@ -440,7 +440,7 @@ Erlaubte Varianten (kein Fehler): Der halbe Spread wird in `portfolio-backtest.c
 
 ## Datenstand-Abnahme des Produktuniversums (Strang AK, 13.11.2026)
 
-Entscheidung (Steuerung, 13.11.2026): Die Prüfungen, die die Zahlen des Live-Produktuniversums festschreiben (`scripts/quant/tests/test_canonical_market.py`, sieben Methoden mit `@nur_datenstand`), blockieren keinen Code-PR mehr, weil sie bei jedem Eignungslauf rot wurden (11.11.: drei PRs und main); der Abnahmewert steht in `quant/config/product-universe-acceptance.json`, die Prüfung läuft täglich als Job `abnahme` in `quant-produktionscheck.yml` (`VU_DATENSTAND_ABNAHME=1`), eine Abweichung öffnet am selben Tag ein Alarm-Issue (`[quant-produktionscheck]`), und eine neue Abnahme ist ein PR auf diese Konfig mit Herleitung je Titel.
+Entscheidung (Steuerung, 13.11.2026): Die Prüfungen, die die Zahlen des Live-Produktuniversums festschreiben (`scripts/quant/tests/test_canonical_market.py`, sieben Methoden mit `@nur_datenstand`, und der Test der V10-Identitätsbindung gegen den Produktstamm in `quant/tests/v10-population.test.mjs`, Ausnahme `ref_INM`), blockieren keinen Code-PR mehr, weil sie bei jedem Eignungslauf rot wurden (11.11.: drei PRs und main); der Abnahmewert steht in `quant/config/product-universe-acceptance.json`, die Prüfung läuft täglich als Job `abnahme` in `quant-produktionscheck.yml` (`VU_DATENSTAND_ABNAHME=1`), eine Abweichung öffnet am selben Tag ein Alarm-Issue (`[quant-produktionscheck]`), und eine neue Abnahme ist ein PR auf diese Konfig mit Herleitung je Titel.
 
 ## Fachbelege und weiterführende Dokumentation
 

@@ -76,6 +76,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
       - name: Abnahme des Produktuniversums (Titel, Charts, technisch bereit)
         env:
           VU_DATENSTAND_ABNAHME: '1'
@@ -83,6 +86,12 @@ jobs:
           mkdir -p quant-check
           set -o pipefail
           python3 -m unittest scripts/quant/tests/test_canonical_market.py 2>&1 | tail -60 | tee quant-check/abnahme.txt
+      - name: Abnahme der V10-Evidenz gegen den Produktstamm
+        env:
+          VU_DATENSTAND_ABNAHME: '1'
+        run: |
+          set -o pipefail
+          node --test quant/tests/v10-population.test.mjs 2>&1 | grep -vE "^\s+(duration_ms|type:|\.\.\.|---)" | tail -60 | tee quant-check/abnahme-v10.txt
       - name: Befund sichern
         if: always()
         continue-on-error: true
