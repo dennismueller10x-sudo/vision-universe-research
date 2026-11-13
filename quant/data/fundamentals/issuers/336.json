@@ -473,9 +473,9 @@
       "cik": "0002028336",
       "name": "New ERA Energy & Digital, Inc.",
       "sic": "1311",
-      "rawFacts": 2129,
-      "mappedFacts": 637,
-      "unmappedFacts": 1462,
+      "rawFacts": 2415,
+      "mappedFacts": 740,
+      "unmappedFacts": 1657,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -486,28 +486,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 12,
+      "quarterlyPeriods": 13,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "free_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0,
@@ -527,21 +527,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -555,14 +555,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -585,46 +585,46 @@
         }
       },
       "quality": {
-        "HIGH": 95,
-        "MEDIUM": 1
+        "HIGH": 103
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 96,
-        "resolvedValues": 96
+        "datableValues": 103,
+        "resolvedValues": 103
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1518,
+        "rules_version": "1.1.0",
+        "total": 1709,
         "by_severity": {
-          "INFO": 1462,
-          "WARNING": 56
+          "INFO": 1657,
+          "WARNING": 52
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 37,
+          "CONCEPT_DISAGREEMENT": 32,
           "PERIOD_MISMATCH": 5,
-          "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 1462
+          "RESTATEMENT_CONFLICT": 15,
+          "UNKNOWN_CONCEPT": 1657
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-090138",
-        "filing_date": "2026-08-14",
+        "accession": "0001193125-26-456806",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 9
+        "periodic_filings": 10,
+        "acceptance_datetime": "2026-11-12T11:38:31.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "21fe1b88446672871dcca8cd4566edd4c6ecedd8b5abffdf930a4345fa27f68f",
+      "sourceDigest": "1299c3b5e02f97b46bcf20f217818526f7fe02c6bc198b1f45a1d2222c4b3c22",
       "issuerId": "iss_cik_0002028336"
     },
     {

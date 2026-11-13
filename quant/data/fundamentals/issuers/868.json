@@ -946,9 +946,9 @@
       "cik": "0001831868",
       "name": "SeaStar Medical Holding Corp",
       "sic": "3841",
-      "rawFacts": 3692,
-      "mappedFacts": 1631,
-      "unmappedFacts": 2125,
+      "rawFacts": 3907,
+      "mappedFacts": 1729,
+      "unmappedFacts": 2275,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -959,9 +959,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 6,
-      "quarterlyPeriods": 23,
+      "quarterlyPeriods": 24,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
@@ -1000,21 +1000,21 @@
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -1028,14 +1028,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -1058,47 +1058,49 @@
         }
       },
       "quality": {
-        "HIGH": 163
+        "HIGH": 168
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 163,
-        "resolvedValues": 163
+        "datableValues": 168,
+        "resolvedValues": 168
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2283,
+        "rules_version": "1.1.0",
+        "total": 2436,
         "by_severity": {
-          "INFO": 2125,
+          "INFO": 2275,
           "ERROR": 1,
-          "WARNING": 157
+          "WARNING": 160
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 24,
+          "CONCEPT_DISAGREEMENT": 23,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 128,
+          "FUTURE_PERIOD_END": 1,
+          "RESTATEMENT_CONFLICT": 131,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 2125
+          "UNKNOWN_CONCEPT": 2275
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-027353",
-        "filing_date": "2026-08-12",
+        "accession": "0001437749-26-036392",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 27
+        "periodic_filings": 28,
+        "acceptance_datetime": "2026-11-12T13:15:35.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bbe244983c6357695c57d0e7d2585b33dd518f1ddc772450f4cb90a3c72ab976",
+      "sourceDigest": "c92b1b0549fac2e3daba3eeaa4cf477326d2cd49576bedf677d148736a1b59d6",
       "issuerId": "iss_cik_0001831868"
     },
     {

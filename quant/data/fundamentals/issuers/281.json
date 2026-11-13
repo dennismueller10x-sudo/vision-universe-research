@@ -647,9 +647,9 @@
       "cik": "0001404281",
       "name": "Eledon Pharmaceuticals, Inc.",
       "sic": "2834",
-      "rawFacts": 9348,
-      "mappedFacts": 3562,
-      "unmappedFacts": 6109,
+      "rawFacts": 9571,
+      "mappedFacts": 3649,
+      "unmappedFacts": 6352,
       "calendarYears": 14,
       "industry": null,
       "industryMetrics": {},
@@ -659,9 +659,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 15,
-      "quarterlyPeriods": 56,
+      "quarterlyPeriods": 57,
       "firstPeriodEnd": "2011-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 14.0,
       "metrics": {
         "capital_expenditures": {
@@ -673,7 +673,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -700,14 +700,14 @@
         },
         "net_income": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 54,
+          "quarterlyPeriods": 55,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "operating_cash_flow": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -728,21 +728,21 @@
         },
         "stockholders_equity": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 49,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "total_debt": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -758,45 +758,46 @@
         }
       },
       "quality": {
-        "HIGH": 351,
-        "MEDIUM": 10
+        "HIGH": 358,
+        "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 361,
-        "resolvedValues": 361
+        "datableValues": 367,
+        "resolvedValues": 367
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6285,
+        "rules_version": "1.1.0",
+        "total": 6533,
         "by_severity": {
-          "INFO": 6109,
-          "WARNING": 176
+          "INFO": 6352,
+          "WARNING": 181
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 48,
+          "CONCEPT_DISAGREEMENT": 53,
           "RESTATEMENT_CONFLICT": 128,
-          "UNKNOWN_CONCEPT": 6109
+          "UNKNOWN_CONCEPT": 6352
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-349314",
-        "filing_date": "2026-08-13",
+        "accession": "0001193125-26-458564",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 55
+        "periodic_filings": 56,
+        "acceptance_datetime": "2026-11-12T21:30:38.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "4c1af1f408bb3d8680006b854b8be0e37d2bf5d56549ba259270451164b53fb6",
+      "sourceDigest": "4c77a341fa986a761940002760ea74769c53fe93a9b3c9c9a34534c50138f185",
       "issuerId": "iss_cik_0001404281"
     },
     {

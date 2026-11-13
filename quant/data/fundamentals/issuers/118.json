@@ -164,10 +164,10 @@
       "cik": "0001400118",
       "name": "Sagimet Biosciences Inc.",
       "sic": "2834",
-      "rawFacts": 2499,
-      "mappedFacts": 873,
-      "unmappedFacts": 1688,
-      "calendarYears": 5,
+      "rawFacts": 2703,
+      "mappedFacts": 953,
+      "unmappedFacts": 1822,
+      "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -176,9 +176,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 19,
+      "quarterlyPeriods": 20,
       "firstPeriodEnd": "2021-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
@@ -190,7 +190,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -217,14 +217,14 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -245,14 +245,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -275,45 +275,46 @@
         }
       },
       "quality": {
-        "HIGH": 110
+        "HIGH": 115
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 110,
-        "resolvedValues": 110
+        "datableValues": 115,
+        "resolvedValues": 115
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1697,
+        "rules_version": "1.1.0",
+        "total": 1831,
         "by_severity": {
-          "INFO": 1688,
+          "INFO": 1822,
           "WARNING": 9
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 5,
           "RESTATEMENT_CONFLICT": 3,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 1688
+          "UNKNOWN_CONCEPT": 1822
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-343441",
-        "filing_date": "2026-08-11",
+        "accession": "0001193125-26-456948",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 13
+        "periodic_filings": 14,
+        "acceptance_datetime": "2026-11-12T12:30:31.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "cbfb0acab6b3b629a6f57c9007af88a49d80030d1a4c4aa80ea94ed73cf63829",
+      "sourceDigest": "3ecb63ab18028ae748f68f6cf06bb63f4e5259f5df6c236d33662e4af33a7081",
       "issuerId": "iss_cik_0001400118"
     },
     {

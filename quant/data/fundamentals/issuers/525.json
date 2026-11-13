@@ -4,23 +4,23 @@
   "issuers": [
     {
       "cik": "0001513525",
-      "name": "ADIAL PHARMACEUTICALS, INC.",
+      "name": "Azora Therapeutics, Inc. (DE)",
       "sic": "2834",
-      "rawFacts": 6554,
-      "mappedFacts": 2307,
-      "unmappedFacts": 4432,
+      "rawFacts": 6775,
+      "mappedFacts": 2388,
+      "unmappedFacts": 4575,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
       "tickers": [
-        "ADIL"
+        "AZR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 10,
-      "quarterlyPeriods": 38,
+      "annualPeriods": 11,
+      "quarterlyPeriods": 39,
       "firstPeriodEnd": "2016-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -59,14 +59,14 @@
         },
         "net_income": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "operating_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 36,
+          "quarterlyPeriods": 37,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2016-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 9.0
+          "lastAvailablePeriod": "2025-09-30",
+          "historyYears": 8.75
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -117,59 +117,59 @@
         }
       },
       "quality": {
-        "HIGH": 190,
-        "MEDIUM": 16
+        "HIGH": 193,
+        "MEDIUM": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 206,
-        "resolvedValues": 206
+        "datableValues": 211,
+        "resolvedValues": 211
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4632,
+        "rules_version": "1.1.0",
+        "total": 4788,
         "by_severity": {
-          "INFO": 4432,
+          "INFO": 4575,
           "ERROR": 2,
-          "WARNING": 198
+          "WARNING": 211
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 108,
+          "CONCEPT_DISAGREEMENT": 113,
           "FISCAL_PERIOD_CONFLICT": 6,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 83,
+          "RESTATEMENT_CONFLICT": 91,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 4432
+          "UNKNOWN_CONCEPT": 4575
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-111121",
-        "filing_date": "2026-10-21",
-        "form": "10-Q/A",
-        "periodic_filings": 35,
-        "acceptance_datetime": "2026-10-21T04:25:58.000Z"
+        "accession": "0001213900-26-118910",
+        "filing_date": "2026-11-12",
+        "form": "10-Q",
+        "periodic_filings": 36,
+        "acceptance_datetime": "2026-11-12T21:05:39.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.6.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "6881fa3e491b495f020c5f87d205582c01931d54d11d6cbb4f2c2647e1561e62",
+      "sourceDigest": "d4e569cc842d72c85261bf5d7820bc3054f9a5a97cc6c8f5ec2658bc919324c8",
       "issuerId": "iss_cik_0001513525"
     },
     {
       "cik": "0001534525",
       "name": "Xenetic Biosciences, Inc.",
       "sic": "2834",
-      "rawFacts": 9504,
-      "mappedFacts": 4061,
-      "unmappedFacts": 5645,
+      "rawFacts": 9648,
+      "mappedFacts": 4117,
+      "unmappedFacts": 5841,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -181,7 +181,7 @@
       "annualPeriods": 17,
       "quarterlyPeriods": 69,
       "firstPeriodEnd": "2011-08-08",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 14.33,
       "metrics": {
         "capital_expenditures": {
@@ -193,7 +193,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -213,28 +213,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2011-08-31",
           "lastAvailablePeriod": "2013-08-31",
           "historyYears": 2.0
         },
         "net_income": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "operating_cash_flow": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "revenue": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
@@ -248,14 +248,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-08-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.33
         },
         "total_assets": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-08-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.33
@@ -278,49 +278,51 @@
         }
       },
       "quality": {
-        "HIGH": 416,
+        "HIGH": 421,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 425,
-        "resolvedValues": 425
+        "datableValues": 430,
+        "resolvedValues": 430
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6103,
+        "rules_version": "1.1.0",
+        "total": 6232,
         "by_severity": {
-          "INFO": 5645,
+          "INFO": 5841,
           "ERROR": 2,
-          "WARNING": 456
+          "WARNING": 389
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 228,
+          "CONCEPT_DISAGREEMENT": 161,
           "FISCAL_PERIOD_CONFLICT": 12,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 165,
+          "FUTURE_PERIOD_END": 1,
+          "RESTATEMENT_CONFLICT": 164,
           "UNEXPECTED_DURATION": 51,
-          "UNKNOWN_CONCEPT": 5645
+          "UNKNOWN_CONCEPT": 5841
         }
       },
       "latestFiling": {
-        "accession": "0001683168-26-006061",
-        "filing_date": "2026-08-06",
+        "accession": "0001683168-26-008628",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 76
+        "periodic_filings": 77,
+        "acceptance_datetime": "2026-11-12T22:00:27.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "ffc4279bc2f27dbdfd763b54d9f59c7ded6daf84fa7be95739a883e5bfd42d6f",
+      "sourceDigest": "c0a07bfa48113b9d2b60156854c34d039d7a230b1ea1c00ce1ee85a4ac77bf9a",
       "issuerId": "iss_cik_0001534525"
     },
     {

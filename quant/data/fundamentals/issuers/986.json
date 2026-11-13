@@ -2026,9 +2026,9 @@
       "cik": "0002097986",
       "name": "Forefront Tech Holdings Acquisition Corp",
       "sic": "6770",
-      "rawFacts": 101,
-      "mappedFacts": 52,
-      "unmappedFacts": 56,
+      "rawFacts": 174,
+      "mappedFacts": 86,
+      "unmappedFacts": 98,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -2040,9 +2040,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 3,
+      "quarterlyPeriods": 4,
       "firstPeriodEnd": "2025-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -2081,14 +2081,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 1,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -2109,14 +2109,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -2139,41 +2139,42 @@
         }
       },
       "quality": {
-        "HIGH": 10
+        "HIGH": 14
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 10,
-        "resolvedValues": 10
+        "datableValues": 14,
+        "resolvedValues": 14
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 56,
+        "rules_version": "1.1.0",
+        "total": 98,
         "by_severity": {
-          "INFO": 56
+          "INFO": 98
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 56
+          "UNKNOWN_CONCEPT": 98
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-089208",
-        "filing_date": "2026-08-13",
+        "accession": "0001213900-26-118221",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-11T02:06:57.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "58043b06795aeeedd717e51bfa87fdd4fdd4136438f849d989bff30aa4357cb2",
+      "sourceDigest": "3533a6b609467c4bc7095fc42e75674ba0d4facff121fc72bb69cce7ad8fa4b1",
       "issuerId": "iss_cik_0002097986"
     }
   ]

@@ -6,10 +6,10 @@
       "cik": "0001211583",
       "name": "FENNEC PHARMACEUTICALS INC.",
       "sic": "2836",
-      "rawFacts": 11926,
-      "mappedFacts": 4878,
-      "unmappedFacts": 7171,
-      "calendarYears": 29,
+      "rawFacts": 12147,
+      "mappedFacts": 4970,
+      "unmappedFacts": 7425,
+      "calendarYears": 28,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 30,
-      "quarterlyPeriods": 81,
+      "quarterlyPeriods": 82,
       "firstPeriodEnd": "1996-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 29.5,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 29,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "1997-06-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 28.5
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "revenue": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 56,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 30,
-          "quarterlyPeriods": 79,
+          "quarterlyPeriods": 80,
           "firstAvailablePeriod": "1996-06-30",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 29.5
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -117,48 +117,50 @@
         }
       },
       "quality": {
-        "HIGH": 530,
+        "HIGH": 536,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 532,
-        "resolvedValues": 532
+        "datableValues": 538,
+        "resolvedValues": 538
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7554,
+        "rules_version": "1.1.0",
+        "total": 7810,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 7171,
-          "WARNING": 381
+          "INFO": 7425,
+          "WARNING": 383
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 137,
+          "CONCEPT_DISAGREEMENT": 136,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 66,
+          "FUTURE_PERIOD_END": 1,
+          "RESTATEMENT_CONFLICT": 68,
           "UNEXPECTED_DURATION": 178,
-          "UNKNOWN_CONCEPT": 7171
+          "UNKNOWN_CONCEPT": 7425
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-095884",
-        "filing_date": "2026-08-13",
+        "accession": "0001104659-26-126203",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 88
+        "periodic_filings": 89,
+        "acceptance_datetime": "2026-11-12T21:05:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "0b938345372c0ab11297d3a12e5ac506165a0fe356603cc7f82e287652748c2e",
+      "sourceDigest": "379e13df2aebe122ac169410821d96226abe9a7318acb69a8c6d617b310d9179",
       "issuerId": "iss_cik_0001211583"
     },
     {

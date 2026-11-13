@@ -640,9 +640,9 @@
       "cik": "0001401040",
       "name": "DiaMedica Therapeutics Inc.",
       "sic": "2834",
-      "rawFacts": 5876,
-      "mappedFacts": 2164,
-      "unmappedFacts": 3875,
+      "rawFacts": 6086,
+      "mappedFacts": 2248,
+      "unmappedFacts": 4068,
       "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
@@ -652,14 +652,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 10,
-      "quarterlyPeriods": 36,
+      "quarterlyPeriods": 37,
       "firstPeriodEnd": "2016-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 9.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -673,7 +673,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0,
@@ -693,14 +693,14 @@
         },
         "net_income": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
         },
         "operating_cash_flow": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -721,14 +721,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 36,
+          "quarterlyPeriods": 37,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "total_assets": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 32,
+          "quarterlyPeriods": 33,
           "firstAvailablePeriod": "2017-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 8.0
@@ -751,44 +751,45 @@
         }
       },
       "quality": {
-        "HIGH": 215
+        "HIGH": 220
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 215,
-        "resolvedValues": 215
+        "datableValues": 220,
+        "resolvedValues": 220
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3882,
+        "rules_version": "1.1.0",
+        "total": 4075,
         "by_severity": {
-          "INFO": 3875,
+          "INFO": 4068,
           "WARNING": 7
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 5,
           "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 3875
+          "UNKNOWN_CONCEPT": 4068
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-026792",
-        "filing_date": "2026-08-10",
+        "accession": "0001437749-26-036602",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 32
+        "periodic_filings": 33,
+        "acceptance_datetime": "2026-11-12T21:42:05.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "d5ca72b87722a485d092e869e91a341107d73dcd6cfb9bb2dc4ca8fd404259d0",
+      "sourceDigest": "58c8d665831f27244503ba055442011f1cb9e35d4b57cb055987effdb90751f2",
       "issuerId": "iss_cik_0001401040"
     },
     {
@@ -1339,9 +1340,9 @@
       "cik": "0002131040",
       "name": "Robinhood Ventures Fund II",
       "sic": null,
-      "rawFacts": 78,
-      "mappedFacts": 22,
-      "unmappedFacts": 57,
+      "rawFacts": 221,
+      "mappedFacts": 47,
+      "unmappedFacts": 178,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1351,9 +1352,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 2,
+      "quarterlyPeriods": 3,
       "firstPeriodEnd": "2026-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1392,14 +1393,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1420,14 +1421,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2026-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": "2026-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 0.0
@@ -1450,44 +1451,45 @@
         }
       },
       "quality": {
-        "HIGH": 8
+        "HIGH": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 8,
-        "resolvedValues": 8
+        "datableValues": 12,
+        "resolvedValues": 12
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 58,
+        "rules_version": "1.1.0",
+        "total": 181,
         "by_severity": {
-          "INFO": 57,
-          "WARNING": 1
+          "INFO": 178,
+          "WARNING": 3
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1,
-          "UNKNOWN_CONCEPT": 57
+          "CONCEPT_DISAGREEMENT": 2,
+          "RESTATEMENT_CONFLICT": 1,
+          "UNKNOWN_CONCEPT": 178
         }
       },
       "latestFiling": {
-        "accession": "0002131040-26-000008",
-        "filing_date": "2026-09-28",
+        "accession": "0002131040-26-000013",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 1,
-        "acceptance_datetime": "2026-09-28T20:05:41.000Z"
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-11-12T21:27:25.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "53af518b00ac3fb578d87f97acdaae1d91c836f011056d29e74b6698168ef6aa",
+      "sourceDigest": "3957caf911a715c7220f6b5bb117811c442fe0aa3af704d5f4e45a525ddf83d7",
       "issuerId": "iss_cik_0002131040"
     }
   ]

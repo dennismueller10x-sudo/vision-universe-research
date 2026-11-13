@@ -1259,9 +1259,9 @@
       "cik": "0002035832",
       "name": "Aktis Oncology, Inc.",
       "sic": "2834",
-      "rawFacts": 482,
-      "mappedFacts": 152,
-      "unmappedFacts": 324,
+      "rawFacts": 757,
+      "mappedFacts": 245,
+      "unmappedFacts": 508,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1271,28 +1271,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 6,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2024-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -1312,21 +1312,21 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1340,14 +1340,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1370,43 +1370,44 @@
         }
       },
       "quality": {
-        "HIGH": 32
+        "HIGH": 45
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 32,
-        "resolvedValues": 32
+        "datableValues": 45,
+        "resolvedValues": 45
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 335,
+        "rules_version": "1.1.0",
+        "total": 525,
         "by_severity": {
-          "INFO": 324,
-          "WARNING": 11
+          "INFO": 508,
+          "WARNING": 17
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 11,
-          "UNKNOWN_CONCEPT": 324
+          "CONCEPT_DISAGREEMENT": 17,
+          "UNKNOWN_CONCEPT": 508
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-349144",
-        "filing_date": "2026-08-13",
+        "accession": "0001193125-26-457054",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 3
+        "periodic_filings": 4,
+        "acceptance_datetime": "2026-11-12T13:08:35.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "d1b6d7b581755240a2248734312cf85e42a81a1ac136e7f456b7bfa896c4f283",
+      "sourceDigest": "b4db6cd3b6564cf86820e5564a0d55a92bc343ebdf3d173ad8a1ffbdc44d546b",
       "issuerId": "iss_cik_0002035832"
     }
   ]

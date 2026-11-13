@@ -799,9 +799,9 @@
       "cik": "0001655923",
       "name": "Alpha Cognition Inc.",
       "sic": "2836",
-      "rawFacts": 2122,
-      "mappedFacts": 718,
-      "unmappedFacts": 1406,
+      "rawFacts": 2341,
+      "mappedFacts": 816,
+      "unmappedFacts": 1550,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -811,28 +811,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "free_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0,
@@ -852,21 +852,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 14,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -880,14 +880,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -910,46 +910,47 @@
         }
       },
       "quality": {
-        "HIGH": 94
+        "HIGH": 101
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 94,
-        "resolvedValues": 94
+        "datableValues": 101,
+        "resolvedValues": 101
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1484,
+        "rules_version": "1.1.0",
+        "total": 1633,
         "by_severity": {
-          "INFO": 1406,
-          "WARNING": 78
+          "INFO": 1550,
+          "WARNING": 83
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 30,
+          "CONCEPT_DISAGREEMENT": 29,
           "PERIOD_MISMATCH": 4,
-          "RESTATEMENT_CONFLICT": 34,
+          "RESTATEMENT_CONFLICT": 40,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 1406
+          "UNKNOWN_CONCEPT": 1550
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-089188",
-        "filing_date": "2026-08-13",
+        "accession": "0001213900-26-118702",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 9
+        "periodic_filings": 10,
+        "acceptance_datetime": "2026-11-12T16:39:33.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "2672434ac54fc65dcf6955b8fba73e49053fa42c4607f90ceb24b5f64cdf1d70",
+      "sourceDigest": "2fa3e3cf05a7f7846a610ba8b37a1a67de480095cc12fa19ffe373d4621aeaa9",
       "issuerId": "iss_cik_0001655923"
     },
     {

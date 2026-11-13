@@ -800,9 +800,9 @@
       "cik": "0001427570",
       "name": "Vyome Holdings, Inc",
       "sic": "2834",
-      "rawFacts": 10683,
-      "mappedFacts": 3803,
-      "unmappedFacts": 6980,
+      "rawFacts": 10946,
+      "mappedFacts": 3903,
+      "unmappedFacts": 7222,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -812,9 +812,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 13,
-      "quarterlyPeriods": 48,
+      "quarterlyPeriods": 49,
       "firstPeriodEnd": "2013-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 12.0,
       "metrics": {
         "capital_expenditures": {
@@ -826,7 +826,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -853,21 +853,21 @@
         },
         "net_income": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "operating_cash_flow": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 43,
+          "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "revenue": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -881,14 +881,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 43,
+          "quarterlyPeriods": 44,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 41,
+          "quarterlyPeriods": 42,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
@@ -911,47 +911,48 @@
         }
       },
       "quality": {
-        "HIGH": 386,
-        "MEDIUM": 18
+        "HIGH": 393,
+        "MEDIUM": 17
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 404,
-        "resolvedValues": 404
+        "datableValues": 410,
+        "resolvedValues": 410
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7455,
+        "rules_version": "1.1.0",
+        "total": 7702,
         "by_severity": {
-          "INFO": 6980,
+          "INFO": 7222,
           "ERROR": 7,
-          "WARNING": 468
+          "WARNING": 473
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 162,
+          "CONCEPT_DISAGREEMENT": 166,
           "FUTURE_DATA_LEAK": 7,
-          "RESTATEMENT_CONFLICT": 306,
-          "UNKNOWN_CONCEPT": 6980
+          "RESTATEMENT_CONFLICT": 307,
+          "UNKNOWN_CONCEPT": 7222
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-088402",
-        "filing_date": "2026-08-12",
+        "accession": "0001213900-26-118943",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 43
+        "periodic_filings": 44,
+        "acceptance_datetime": "2026-11-12T21:15:32.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "845a1f865d441656470d265d1d3a4efa9debeb7ce0860fff162edbda474380c2",
+      "sourceDigest": "480dcb9183f66cf8b15b0bbcc1b9fb2d59dd5f3e409262bd9ed9884fc4816545",
       "issuerId": "iss_cik_0001427570"
     },
     {

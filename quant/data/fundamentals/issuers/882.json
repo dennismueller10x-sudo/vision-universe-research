@@ -528,10 +528,10 @@
       "cik": "0002104882",
       "name": "EagleRock Land, LLC",
       "sic": "6792",
-      "rawFacts": 312,
-      "mappedFacts": 85,
-      "unmappedFacts": 222,
-      "calendarYears": 1,
+      "rawFacts": 624,
+      "mappedFacts": 166,
+      "unmappedFacts": 447,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -540,14 +540,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 4,
+      "quarterlyPeriods": 6,
       "firstPeriodEnd": "2025-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -561,7 +561,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -574,28 +574,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -609,14 +609,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -639,45 +639,46 @@
         }
       },
       "quality": {
-        "MEDIUM": 4,
-        "HIGH": 12
+        "HIGH": 22,
+        "MEDIUM": 5
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 16,
-        "resolvedValues": 16
+        "datableValues": 27,
+        "resolvedValues": 27
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 237,
+        "rules_version": "1.1.0",
+        "total": 475,
         "by_severity": {
-          "INFO": 222,
-          "WARNING": 15
+          "INFO": 447,
+          "WARNING": 28
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 13,
-          "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 222
+          "CONCEPT_DISAGREEMENT": 25,
+          "RESTATEMENT_CONFLICT": 3,
+          "UNKNOWN_CONCEPT": 447
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-349110",
-        "filing_date": "2026-08-13",
+        "accession": "0001193125-26-458250",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-12T21:00:43.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "0da54a00b744b23b91076ef50da981db3037a7cd8844923f4e1537b2e869be79",
+      "sourceDigest": "928150164a3768579005b647594d36b2ddebf0b5d022aa695de5701fc5083934",
       "issuerId": "iss_cik_0002104882"
     }
   ]

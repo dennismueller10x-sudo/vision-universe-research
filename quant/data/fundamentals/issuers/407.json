@@ -6,10 +6,10 @@
       "cik": "0000879407",
       "name": "ARROWHEAD PHARMACEUTICALS, INC.",
       "sic": "2834",
-      "rawFacts": 19414,
-      "mappedFacts": 5397,
-      "unmappedFacts": 13888,
-      "calendarYears": 24,
+      "rawFacts": 19945,
+      "mappedFacts": 5502,
+      "unmappedFacts": 14450,
+      "calendarYears": 25,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0930",
@@ -17,32 +17,32 @@
         "ARWR"
       ],
       "status": "INGESTED",
-      "annualPeriods": 23,
-      "quarterlyPeriods": 72,
+      "annualPeriods": 24,
+      "quarterlyPeriods": 73,
       "firstPeriodEnd": "2003-09-30",
-      "lastPeriodEnd": "2026-06-30",
-      "historyYears": 22.0,
+      "lastPeriodEnd": "2026-09-30",
+      "historyYears": 23.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "annualPeriods": 16,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 14.0
-        },
-        "eps_diluted": {
-          "annualPeriods": 11,
-          "quarterlyPeriods": 42,
-          "firstAvailablePeriod": "2010-09-30",
-          "lastAvailablePeriod": "2025-09-30",
+          "lastAvailablePeriod": "2026-09-30",
           "historyYears": 15.0
         },
+        "eps_diluted": {
+          "annualPeriods": 12,
+          "quarterlyPeriods": 43,
+          "firstAvailablePeriod": "2010-09-30",
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 16.0
+        },
         "free_cash_flow": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "annualPeriods": 16,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 14.0,
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 15.0,
           "derivedFrom": [
             [
               "operating_cash_flow",
@@ -58,25 +58,25 @@
           "historyYears": 0.0
         },
         "net_income": {
-          "annualPeriods": 23,
-          "quarterlyPeriods": 65,
+          "annualPeriods": 24,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2003-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 22.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 23.0
         },
         "operating_cash_flow": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 15.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 16.0
         },
         "revenue": {
-          "annualPeriods": 15,
-          "quarterlyPeriods": 63,
+          "annualPeriods": 16,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2011-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 14.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 15.0
         },
         "short_term_debt": {
           "annualPeriods": 0,
@@ -86,18 +86,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 23,
-          "quarterlyPeriods": 68,
+          "annualPeriods": 24,
+          "quarterlyPeriods": 69,
           "firstAvailablePeriod": "2003-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 22.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 23.0
         },
         "total_assets": {
-          "annualPeriods": 16,
-          "quarterlyPeriods": 61,
+          "annualPeriods": 17,
+          "quarterlyPeriods": 62,
           "firstAvailablePeriod": "2010-09-30",
-          "lastAvailablePeriod": "2025-09-30",
-          "historyYears": 15.0
+          "lastAvailablePeriod": "2026-09-30",
+          "historyYears": 16.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -117,48 +117,49 @@
         }
       },
       "quality": {
-        "HIGH": 487,
-        "MEDIUM": 50
+        "HIGH": 499,
+        "MEDIUM": 52
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 537,
-        "resolvedValues": 537
+        "datableValues": 551,
+        "resolvedValues": 551
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 14596,
+        "rules_version": "1.1.0",
+        "total": 15160,
         "by_severity": {
-          "INFO": 13888,
+          "INFO": 14450,
           "ERROR": 1,
-          "WARNING": 707
+          "WARNING": 709
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 462,
+          "CONCEPT_DISAGREEMENT": 464,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 52,
           "UNEXPECTED_DURATION": 193,
-          "UNKNOWN_CONCEPT": 13888
+          "UNKNOWN_CONCEPT": 14450
         }
       },
       "latestFiling": {
-        "accession": "0000879407-26-000057",
-        "filing_date": "2026-08-04",
-        "form": "10-Q",
-        "periodic_filings": 88
+        "accession": "0000879407-26-000078",
+        "filing_date": "2026-11-12",
+        "form": "10-K",
+        "periodic_filings": 89,
+        "acceptance_datetime": "2026-11-12T21:02:24.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "08722f7561aaa215bd9b1cedb50c41ceef871086a6365a04bf4f9812de28548f",
+      "sourceDigest": "b8208a53bcc58f9d0551a81b7e063e54ee7d2ccc01fc6e0b738559bc5f70b091",
       "issuerId": "iss_cik_0000879407"
     },
     {

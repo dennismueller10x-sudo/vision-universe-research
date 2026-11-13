@@ -802,9 +802,9 @@
       "cik": "0001780201",
       "name": "Lulu's Fashion Lounge Holdings, Inc.",
       "sic": "5961",
-      "rawFacts": 5653,
-      "mappedFacts": 1969,
-      "unmappedFacts": 3625,
+      "rawFacts": 5936,
+      "mappedFacts": 2085,
+      "unmappedFacts": 3839,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -814,28 +814,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 28,
+      "quarterlyPeriods": 29,
       "firstPeriodEnd": "2018-12-30",
-      "lastPeriodEnd": "2026-06-28",
+      "lastPeriodEnd": "2026-09-27",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 19,
-          "firstAvailablePeriod": "2019-12-29",
-          "lastAvailablePeriod": "2025-12-28",
-          "historyYears": 6.0
-        },
-        "eps_diluted": {
           "annualPeriods": 6,
           "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0
         },
+        "eps_diluted": {
+          "annualPeriods": 6,
+          "quarterlyPeriods": 21,
+          "firstAvailablePeriod": "2019-12-29",
+          "lastAvailablePeriod": "2025-12-28",
+          "historyYears": 6.0
+        },
         "free_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0,
@@ -855,21 +855,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2019-12-29",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 6.0
@@ -883,14 +883,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2018-12-30",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-01-03",
           "lastAvailablePeriod": "2025-12-28",
           "historyYears": 4.92
@@ -913,45 +913,46 @@
         }
       },
       "quality": {
-        "HIGH": 188,
+        "HIGH": 195,
         "MEDIUM": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 196,
-        "resolvedValues": 196
+        "datableValues": 203,
+        "resolvedValues": 203
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4001,
+        "rules_version": "1.1.0",
+        "total": 4216,
         "by_severity": {
-          "INFO": 3625,
-          "WARNING": 376
+          "INFO": 3839,
+          "WARNING": 377
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 237,
+          "CONCEPT_DISAGREEMENT": 238,
           "RESTATEMENT_CONFLICT": 139,
-          "UNKNOWN_CONCEPT": 3625
+          "UNKNOWN_CONCEPT": 3839
         }
       },
       "latestFiling": {
-        "accession": "0001104659-26-094904",
-        "filing_date": "2026-08-12",
+        "accession": "0001104659-26-126280",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 20
+        "periodic_filings": 21,
+        "acceptance_datetime": "2026-11-12T21:31:03.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e35b1bfb2aef1ddb1168cf97f9f507175ba26c45bd0f5d9ac2fc8b3147c618b5",
+      "sourceDigest": "3d84b828d74a8206634d75c4bce882a8c0662a640da4c8b58b04fdf9d4f4887e",
       "issuerId": "iss_cik_0001780201"
     },
     {

@@ -551,9 +551,9 @@
       "cik": "0001821175",
       "name": "Motorsport Games Inc.",
       "sic": "7372",
-      "rawFacts": 5511,
-      "mappedFacts": 1838,
-      "unmappedFacts": 3705,
+      "rawFacts": 5820,
+      "mappedFacts": 1943,
+      "unmappedFacts": 3907,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -563,28 +563,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 27,
+      "quarterlyPeriods": 28,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -604,21 +604,21 @@
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "revenue": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -632,14 +632,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -662,48 +662,50 @@
         }
       },
       "quality": {
-        "HIGH": 189,
-        "MEDIUM": 24
+        "HIGH": 197,
+        "MEDIUM": 23
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 213,
-        "resolvedValues": 213
+        "datableValues": 220,
+        "resolvedValues": 220
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3957,
+        "rules_version": "1.1.0",
+        "total": 4174,
         "by_severity": {
-          "INFO": 3705,
+          "INFO": 3907,
           "ERROR": 4,
-          "WARNING": 248
+          "WARNING": 263
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 197,
+          "CONCEPT_DISAGREEMENT": 206,
           "FUTURE_DATA_LEAK": 4,
-          "RESTATEMENT_CONFLICT": 49,
-          "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 3705
+          "FUTURE_PERIOD_END": 2,
+          "RESTATEMENT_CONFLICT": 54,
+          "UNEXPECTED_DURATION": 1,
+          "UNKNOWN_CONCEPT": 3907
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-038360",
-        "filing_date": "2026-08-14",
+        "accession": "0001493152-26-051464",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 23
+        "periodic_filings": 24,
+        "acceptance_datetime": "2026-11-12T22:00:43.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "abfd3fe91f1234c25e3ef3ecaa124b1622bdf4a6c289c695b86a31c0180b9c21",
+      "sourceDigest": "0be938af03cc80f2c13067cf536f76bba334e5bfe1f23e98ab7657d8116063ea",
       "issuerId": "iss_cik_0001821175"
     },
     {

@@ -8,8 +8,8 @@
   "denominator": {
     "PRODUCT_TITLES": 6309
   },
-  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 4966,
-  "TITLES_WITH_GAP": 1343,
+  "TITLES_WITH_SUFFICIENT_FUNDAMENTALS": 4967,
+  "TITLES_WITH_GAP": 1342,
   "byCause": [
     {
       "cause": "VERY_YOUNG_LISTING",
@@ -127,8 +127,8 @@
     },
     {
       "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-      "count": 109,
-      "percent": 1.7277,
+      "count": 108,
+      "percent": 1.7118,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
@@ -165,8 +165,8 @@
     },
     {
       "cause": "INSUFFICIENT_HISTORY",
-      "count": 57,
-      "percent": 0.9035,
+      "count": 56,
+      "percent": 0.8876,
       "recoverability": "EXTERNAL_PROVIDER_CANDIDATE",
       "examples": [
         {
@@ -203,14 +203,14 @@
     },
     {
       "cause": "FOREIGN_ISSUER",
-      "count": 27,
-      "percent": 0.428,
+      "count": 28,
+      "percent": 0.4438,
       "recoverability": "SEC_RECOVERABLE",
       "examples": [
         {
           "symbol": "AGBK",
           "cik": "0002081206",
-          "form": "20-F",
+          "form": "20-F/A",
           "securityType": "COMMON_STOCK"
         },
         {
@@ -242,7 +242,7 @@
   ],
   "byRecoverability": {
     "SEC_RECOVERABLE": 2,
-    "EXTERNAL_PROVIDER_CANDIDATE": 99,
+    "EXTERNAL_PROVIDER_CANDIDATE": 98,
     "RESOLVES_WITH_TIME": 536,
     "BY_DESIGN": 373,
     "REQUIRES_REVIEW": 333
@@ -250,7 +250,7 @@
   "mainGroups": {
     "note": "\u00a77 verlangt zwei Hauptgruppen. Das sind diese beiden - und nur sie tragen die Anbieterfrage.",
     "SEC_RECOVERABLE": 2,
-    "EXTERNAL_PROVIDER_CANDIDATE": 99
+    "EXTERNAL_PROVIDER_CANDIDATE": 98
   },
   "recoverabilityNote": "REQUIRES_REVIEW ist keine dritte Meinung, sondern die Weigerung zu raten: Titel ohne CIK, deren Kuerzel auch die beiden SEC-Verzeichnisse nicht fuehren. Ob dort etwas liegt, ist von hier aus nicht entscheidbar. Sie in eine der beiden Hauptgruppen zu schieben hiesse, die Anbieterfrage per Rundung zu beantworten. RESOLVES_WITH_TIME und BY_DESIGN sind aus dem gleichen Grund eigene Zustaende: eine Notiz von 2026 hat keine drei Jahresabschluesse, und ein Vorzug meldet keinen eigenen - beides kann kein Anbieter liefern, und beides als Anbieterkandidat zu zaehlen wuerde den Einkauf begruenden, den diese Titel nicht brauchen. byRecoverability traegt die Gruppe NACH der Feinklassifikation (\u00a75): ein SPAC ohne Umsatz ist BY_DESIGN, eine junge Notierung RESOLVES_WITH_TIME, ein leeres companyfacts EXTERNAL_PROVIDER_CANDIDATE. byRecoverabilityCoarse ist die Zaehlung davor.",
   "secTickerDirectory": {
@@ -261,7 +261,7 @@
   "providerDecision": "OFFEN. Die Trennung oben ist die Entscheidungsgrundlage und nicht die Entscheidung (\u00a715). Solange die groesste Gruppe SEC_RECOVERABLE heisst, waere ein zugekaufter Anbieter Geld fuer Daten, die bereits bei der SEC liegen und nur nicht gemappt sind.",
   "byRecoverabilityCoarse": {
     "SEC_RECOVERABLE": 136,
-    "EXTERNAL_PROVIDER_CANDIDATE": 57,
+    "EXTERNAL_PROVIDER_CANDIDATE": 56,
     "RESOLVES_WITH_TIME": 497,
     "BY_DESIGN": 320,
     "REQUIRES_REVIEW": 333
@@ -318,7 +318,7 @@
           },
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-            "count": 109
+            "count": 108
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
@@ -326,7 +326,7 @@
           },
           {
             "cause": "FOREIGN_ISSUER",
-            "count": 27
+            "count": 28
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -339,8 +339,8 @@
       {
         "priority": "PRIORITY_3_HISTORY_TOO_SHORT",
         "description": "Fundamentaldaten vorhanden, Historie zu kurz",
-        "COUNT": 468,
-        "PERCENT": 7.418,
+        "COUNT": 467,
+        "PERCENT": 7.4021,
         "TOP_CAUSES": [
           {
             "cause": "VERY_YOUNG_LISTING",
@@ -348,11 +348,11 @@
           },
           {
             "cause": "INSUFFICIENT_HISTORY",
-            "count": 57
+            "count": 56
           }
         ],
         "SEC_RECOVERABLE_COUNT": 0,
-        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 57
+        "EXTERNAL_PROVIDER_CANDIDATE_COUNT": 56
       },
       {
         "priority": "PRIORITY_4_PIT_INSUFFICIENT",
@@ -362,11 +362,11 @@
         "TOP_CAUSES": [
           {
             "cause": "SEC_DATA_PRESENT_BUT_NOT_NORMALIZED",
-            "count": 109
+            "count": 108
           },
           {
             "cause": "FOREIGN_ISSUER",
-            "count": 27
+            "count": 28
           },
           {
             "cause": "SPECIAL_SECURITY_STRUCTURE",
@@ -408,5 +408,5 @@
       }
     ]
   },
-  "generatedAtUtc": "2026-11-12T06:26:52+00:00"
+  "generatedAtUtc": "2026-11-13T06:34:46+00:00"
 }

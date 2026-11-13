@@ -798,9 +798,9 @@
       "cik": "0001621221",
       "name": "ARTELO BIOSCIENCES, INC.",
       "sic": "2834",
-      "rawFacts": 7041,
-      "mappedFacts": 2914,
-      "unmappedFacts": 4357,
+      "rawFacts": 7264,
+      "mappedFacts": 2990,
+      "unmappedFacts": 4611,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -810,9 +810,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 13,
-      "quarterlyPeriods": 55,
+      "quarterlyPeriods": 56,
       "firstPeriodEnd": "2014-02-28",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 11.33,
       "metrics": {
         "capital_expenditures": {
@@ -824,7 +824,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2018-08-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.33
@@ -851,14 +851,14 @@
         },
         "net_income": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2014-08-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.33
         },
         "operating_cash_flow": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 48,
           "firstAvailablePeriod": "2014-08-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.33
@@ -879,14 +879,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2014-08-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.33
         },
         "total_assets": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 46,
+          "quarterlyPeriods": 47,
           "firstAvailablePeriod": "2014-08-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.33
@@ -909,49 +909,50 @@
         }
       },
       "quality": {
-        "HIGH": 258,
+        "HIGH": 263,
         "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 265,
-        "resolvedValues": 265
+        "datableValues": 270,
+        "resolvedValues": 270
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4582,
+        "rules_version": "1.1.0",
+        "total": 4841,
         "by_severity": {
-          "INFO": 4357,
+          "INFO": 4611,
           "ERROR": 2,
-          "WARNING": 223
+          "WARNING": 228
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 114,
+          "CONCEPT_DISAGREEMENT": 115,
           "FISCAL_PERIOD_CONFLICT": 3,
           "FUTURE_DATA_LEAK": 2,
-          "RESTATEMENT_CONFLICT": 95,
+          "RESTATEMENT_CONFLICT": 99,
           "UNEXPECTED_DURATION": 11,
-          "UNKNOWN_CONCEPT": 4357
+          "UNKNOWN_CONCEPT": 4611
         }
       },
       "latestFiling": {
-        "accession": "0001640334-26-001400",
-        "filing_date": "2026-08-20",
-        "form": "10-Q/A",
-        "periodic_filings": 52
+        "accession": "0001640334-26-001776",
+        "filing_date": "2026-11-12",
+        "form": "10-Q",
+        "periodic_filings": 53,
+        "acceptance_datetime": "2026-11-12T13:00:53.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "8867481424d0e5ca37ed38cc5710f62941ac39fbdec9b4847ee9be6c95915744",
+      "sourceDigest": "4f2b06321853c8de1712ee2685f23631a56539a184621e764427eae5681f9127",
       "issuerId": "iss_cik_0001621221"
     },
     {

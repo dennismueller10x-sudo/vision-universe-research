@@ -800,9 +800,9 @@
       "cik": "0001645469",
       "name": "Monopar Therapeutics",
       "sic": "2834",
-      "rawFacts": 5831,
-      "mappedFacts": 2188,
-      "unmappedFacts": 3784,
+      "rawFacts": 6057,
+      "mappedFacts": 2264,
+      "unmappedFacts": 4012,
       "calendarYears": 10,
       "industry": null,
       "industryMetrics": {},
@@ -812,9 +812,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 11,
-      "quarterlyPeriods": 40,
+      "quarterlyPeriods": 41,
       "firstPeriodEnd": "2015-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 10.0,
       "metrics": {
         "capital_expenditures": {
@@ -853,21 +853,21 @@
         },
         "net_income": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "operating_cash_flow": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "revenue": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -881,14 +881,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
         },
         "total_assets": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 36,
+          "quarterlyPeriods": 37,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -911,47 +911,49 @@
         }
       },
       "quality": {
-        "HIGH": 210
+        "HIGH": 215
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 210,
-        "resolvedValues": 210
+        "datableValues": 215,
+        "resolvedValues": 215
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3912,
+        "rules_version": "1.1.0",
+        "total": 4141,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 3784,
-          "WARNING": 127
+          "INFO": 4012,
+          "WARNING": 128
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 84,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "RESTATEMENT_CONFLICT": 39,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 3784
+          "UNKNOWN_CONCEPT": 4012
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-027164",
-        "filing_date": "2026-08-12",
+        "accession": "0001437749-26-036384",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 40
+        "periodic_filings": 41,
+        "acceptance_datetime": "2026-11-12T13:00:51.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "4537b78c86c2c470cded557abb8189b38960e4f6584dd6b842523de7b342d047",
+      "sourceDigest": "4823d44cc4a3bc21c3b1a9e06d9be1627f754ce2c88cac1815ee3a4f37ee429b",
       "issuerId": "iss_cik_0001645469"
     },
     {

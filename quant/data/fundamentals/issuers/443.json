@@ -361,10 +361,10 @@
     {
       "cik": "0001469443",
       "name": "Arcadia Biosciences, Inc.",
-      "sic": "1311",
-      "rawFacts": 12554,
-      "mappedFacts": 4109,
-      "unmappedFacts": 8633,
+      "sic": "2080",
+      "rawFacts": 12791,
+      "mappedFacts": 4213,
+      "unmappedFacts": 8863,
       "calendarYears": 12,
       "industry": null,
       "industryMetrics": {},
@@ -374,9 +374,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 13,
-      "quarterlyPeriods": 51,
+      "quarterlyPeriods": 52,
       "firstPeriodEnd": "2013-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 12.0,
       "metrics": {
         "capital_expenditures": {
@@ -388,7 +388,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -415,21 +415,21 @@
         },
         "net_income": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "operating_cash_flow": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
         },
         "revenue": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -443,14 +443,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "total_assets": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 48,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -473,45 +473,46 @@
         }
       },
       "quality": {
-        "HIGH": 396,
+        "HIGH": 402,
         "MEDIUM": 53
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 449,
-        "resolvedValues": 449
+        "datableValues": 455,
+        "resolvedValues": 455
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8972,
+        "rules_version": "1.1.0",
+        "total": 9203,
         "by_severity": {
-          "INFO": 8633,
-          "WARNING": 339
+          "INFO": 8863,
+          "WARNING": 340
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 240,
+          "CONCEPT_DISAGREEMENT": 241,
           "RESTATEMENT_CONFLICT": 99,
-          "UNKNOWN_CONCEPT": 8633
+          "UNKNOWN_CONCEPT": 8863
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-349205",
-        "filing_date": "2026-08-13",
+        "accession": "0001193125-26-458412",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 51
+        "periodic_filings": 52,
+        "acceptance_datetime": "2026-11-12T21:13:09.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "6d90427cf208fb4f5bfadd580e7f9693377c05db1748fe738554357a4b836af9",
+      "sourceDigest": "6497c263771cb075455b128a8b3fecab6c853337469f1722bfc83bef0ab435c5",
       "issuerId": "iss_cik_0001469443"
     },
     {

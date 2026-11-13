@@ -322,9 +322,9 @@
       "cik": "0001946573",
       "name": "Nakamoto Inc.",
       "sic": "6199",
-      "rawFacts": 2305,
-      "mappedFacts": 862,
-      "unmappedFacts": 1481,
+      "rawFacts": 2676,
+      "mappedFacts": 970,
+      "unmappedFacts": 1754,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -335,28 +335,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 15,
+      "quarterlyPeriods": 16,
       "firstPeriodEnd": "2022-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 1.0
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "free_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 1.0,
@@ -376,21 +376,21 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -404,14 +404,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -434,45 +434,46 @@
         }
       },
       "quality": {
-        "HIGH": 113,
-        "MEDIUM": 4
+        "HIGH": 114,
+        "MEDIUM": 10
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 117,
-        "resolvedValues": 117
+        "datableValues": 124,
+        "resolvedValues": 124
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1522,
+        "rules_version": "1.1.0",
+        "total": 1825,
         "by_severity": {
-          "INFO": 1481,
-          "WARNING": 41
+          "INFO": 1754,
+          "WARNING": 71
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 27,
-          "RESTATEMENT_CONFLICT": 14,
-          "UNKNOWN_CONCEPT": 1481
+          "CONCEPT_DISAGREEMENT": 38,
+          "RESTATEMENT_CONFLICT": 33,
+          "UNKNOWN_CONCEPT": 1754
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037603",
-        "filing_date": "2026-08-13",
+        "accession": "0001628280-26-073455",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 11
+        "periodic_filings": 12,
+        "acceptance_datetime": "2026-11-12T21:38:44.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "cfa5759dbe45bada566358b07a93bab3c1f42b5ee0b935a06b13ba58e8f99b09",
+      "sourceDigest": "62b4b842ec54e4177456bfb7faf720156925ad50b9d0cdd07e82348aa190f909",
       "issuerId": "iss_cik_0001946573"
     }
   ]

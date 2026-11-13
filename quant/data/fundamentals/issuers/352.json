@@ -165,9 +165,9 @@
       "cik": "0001527352",
       "name": "Nexalin Technology, Inc.",
       "sic": "3845",
-      "rawFacts": 3721,
-      "mappedFacts": 1565,
-      "unmappedFacts": 2245,
+      "rawFacts": 4008,
+      "mappedFacts": 1679,
+      "unmappedFacts": 2447,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -177,9 +177,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 6,
-      "quarterlyPeriods": 23,
+      "quarterlyPeriods": 24,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
@@ -191,7 +191,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -218,21 +218,21 @@
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "revenue": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -246,14 +246,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -276,44 +276,45 @@
         }
       },
       "quality": {
-        "HIGH": 148
+        "HIGH": 154
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 148,
-        "resolvedValues": 148
+        "datableValues": 154,
+        "resolvedValues": 154
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2285,
+        "rules_version": "1.1.0",
+        "total": 2506,
         "by_severity": {
-          "INFO": 2245,
-          "WARNING": 40
+          "INFO": 2447,
+          "WARNING": 59
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 35,
-          "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 2245
+          "CONCEPT_DISAGREEMENT": 44,
+          "RESTATEMENT_CONFLICT": 15,
+          "UNKNOWN_CONCEPT": 2447
         }
       },
       "latestFiling": {
-        "accession": "0001829126-26-008709",
-        "filing_date": "2026-08-12",
+        "accession": "0001829126-26-012319",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 18
+        "periodic_filings": 19,
+        "acceptance_datetime": "2026-11-12T22:01:04.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "7a91d80feaa514273e0efa7bba50e99fbfde979b7c69d1bb5d6207fe7bdbf355",
+      "sourceDigest": "11993bd02d8bf70fb7fde2771062c1cb65cf5b9cae13be9594c347503a072b78",
       "issuerId": "iss_cik_0001527352"
     },
     {

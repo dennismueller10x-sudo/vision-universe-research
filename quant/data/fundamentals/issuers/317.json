@@ -264,9 +264,9 @@
       "cik": "0001840317",
       "name": "VEEA INC.",
       "sic": "7373",
-      "rawFacts": 3900,
-      "mappedFacts": 1394,
-      "unmappedFacts": 2550,
+      "rawFacts": 4220,
+      "mappedFacts": 1501,
+      "unmappedFacts": 2773,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -277,9 +277,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 23,
+      "quarterlyPeriods": 24,
       "firstPeriodEnd": "2021-01-10",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
@@ -291,7 +291,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -311,28 +311,28 @@
         },
         "long_term_debt": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 1.0
         },
         "net_income": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "operating_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -346,14 +346,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -376,48 +376,49 @@
         }
       },
       "quality": {
-        "HIGH": 154
+        "HIGH": 161
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 154,
-        "resolvedValues": 154
+        "datableValues": 161,
+        "resolvedValues": 161
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2696,
+        "rules_version": "1.1.0",
+        "total": 2940,
         "by_severity": {
-          "INFO": 2550,
+          "INFO": 2773,
           "ERROR": 1,
-          "WARNING": 145
+          "WARNING": 166
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 65,
+          "CONCEPT_DISAGREEMENT": 75,
           "FUTURE_DATA_LEAK": 1,
-          "PERIOD_MISMATCH": 3,
-          "RESTATEMENT_CONFLICT": 75,
+          "PERIOD_MISMATCH": 4,
+          "RESTATEMENT_CONFLICT": 85,
           "UNEXPECTED_DURATION": 2,
-          "UNKNOWN_CONCEPT": 2550
+          "UNKNOWN_CONCEPT": 2773
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-087946",
-        "filing_date": "2026-08-12",
+        "accession": "0001213900-26-118215",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 23
+        "periodic_filings": 24,
+        "acceptance_datetime": "2026-11-11T01:46:47.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e4e8a3c1309dfd6de2e8fd29f267d4a1815509f4f1d3ea6be24469e8bbaf1ab2",
+      "sourceDigest": "ff6653e39ee835e6e067e2ba92dd0885fef292be873eaa50c90b061910c69102",
       "issuerId": "iss_cik_0001840317"
     },
     {

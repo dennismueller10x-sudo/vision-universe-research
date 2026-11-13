@@ -229,9 +229,9 @@
       "cik": "0001326190",
       "name": "Altimmune, Inc.",
       "sic": "2834",
-      "rawFacts": 14645,
-      "mappedFacts": 5219,
-      "unmappedFacts": 9627,
+      "rawFacts": 14906,
+      "mappedFacts": 5321,
+      "unmappedFacts": 9907,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -241,28 +241,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 66,
+      "quarterlyPeriods": 67,
       "firstPeriodEnd": "2009-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "eps_diluted": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 48,
+          "quarterlyPeriods": 49,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "free_cash_flow": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0,
@@ -275,21 +275,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 40,
+          "quarterlyPeriods": 41,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -310,14 +310,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -340,47 +340,48 @@
         }
       },
       "quality": {
-        "HIGH": 535,
+        "HIGH": 542,
         "MEDIUM": 30
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 565,
-        "resolvedValues": 565
+        "datableValues": 572,
+        "resolvedValues": 572
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 9966,
+        "rules_version": "1.1.0",
+        "total": 10240,
         "by_severity": {
-          "INFO": 9627,
-          "WARNING": 339
+          "INFO": 9907,
+          "WARNING": 333
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 219,
+          "CONCEPT_DISAGREEMENT": 213,
           "EXTREME_VALUE": 2,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
           "RESTATEMENT_CONFLICT": 116,
-          "UNKNOWN_CONCEPT": 9627
+          "UNKNOWN_CONCEPT": 9907
         }
       },
       "latestFiling": {
-        "accession": "0001326190-26-000052",
-        "filing_date": "2026-08-12",
+        "accession": "0001326190-26-000070",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 93
+        "periodic_filings": 94,
+        "acceptance_datetime": "2026-11-12T21:33:32.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "fbdf13db3da2b3f9b169a3dfb6d030224233036fa2a19dcaea8d725fc5f83fd9",
+      "sourceDigest": "b9a3b0f16555dee64d7f98d16b2ca781782d1e9825f078bdf9fb245fd8652aec",
       "issuerId": "iss_cik_0001326190"
     },
     {
