@@ -48,16 +48,18 @@ jobs:
           # Eingaben nur ueber env: (ADR-005).
           IN_SITE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.site || 'https://research.visionuniverse.de' }}
           NODE_PATH: /tmp/vu-qpc/node_modules
-        run: node scripts/quant/production-check.mjs --site="$IN_SITE" --out="$RUNNER_TEMP/quant-check.json" --detail="$RUNNER_TEMP/quant-check.txt"
+          # Zugangs-Tor: wie die bestehenden Live-QAs (nie ausgegeben, der Check leitet daraus nur den Browser-Zustand ab).
+          RESEARCH_ACCESS_PASSWORD: ${{ secrets.RESEARCH_ACCESS_PASSWORD }}
+        run: |
+          mkdir -p quant-check
+          node scripts/quant/production-check.mjs --site="$IN_SITE" --out=quant-check/quant-check.json --detail=quant-check/quant-check.txt
       - name: Befund und Messwerte sichern
         if: always()
         continue-on-error: true
         uses: actions/upload-artifact@v4
         with:
           name: quant-produktionscheck
-          path: |
-            ${{ runner.temp }}/quant-check.json
-            ${{ runner.temp }}/quant-check.txt
+          path: quant-check/
           if-no-files-found: ignore
           retention-days: 30
 
