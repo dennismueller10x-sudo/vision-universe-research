@@ -1,28 +1,330 @@
 {
- "schemaVersion": "backtest-research-1.0.0",
- "asOf": "2026-11-12",
+ "schemaVersion": "backtest-research-1.1.0",
+ "asOf": "2026-11-13",
  "runner": "backtest-runner-1.0.0",
  "label": "Forschung, nicht zertifiziert",
  "audience": "INTERNAL",
  "display": {
   "public": false,
+  "switch": "quant/methodology/backtest-research-display.json",
+  "approvalPhrase": "Freigabe Backtest-Darstellung öffentlich",
   "reason": "Öffentliche Rendite- oder Performanceaussagen brauchen eine Owner-Freigabe (CLAUDE.md, Freigaben)."
  },
  "certificationStatus": "NOT_CERTIFIED",
  "productionApproved": false,
- "source": "docs/quant/backtest-demos/cases.json",
+ "source": [
+  "docs/quant/backtest-demos/cases.json",
+  "docs/quant/backtest-research/cases.json"
+ ],
+ "kinds": [
+  "SAME_STOCK_REPLAY",
+  "PATTERN_EVIDENCE",
+  "SIGNAL_BACKTEST",
+  "SETUP_BACKTEST",
+  "STRATEGY_BACKTEST",
+  "FACTOR_RANKING_BACKTEST"
+ ],
+ "methods": [
+  "MONTE_CARLO",
+  "WALK_FORWARD",
+  "OUT_OF_SAMPLE",
+  "MARKET_REGIME",
+  "PARAMETER_SENSITIVITY",
+  "EVENT_DRIVEN",
+  "PORTFOLIO_REBALANCING"
+ ],
+ "matrix": {
+  "SAME_STOCK_REPLAY": {
+   "MONTE_CARLO": {
+    "state": "EXECUTED",
+    "cases": [
+     "replay-nvda-winner-splits",
+     "replay-intc-loser",
+     "ledger-smci-winner-split",
+     "matrix-replay"
+    ]
+   },
+   "WALK_FORWARD": {
+    "state": "EXECUTED",
+    "cases": [
+     "replay-nvda-winner-splits",
+     "matrix-replay"
+    ]
+   },
+   "OUT_OF_SAMPLE": {
+    "state": "EXECUTED",
+    "cases": [
+     "replay-nvda-winner-splits",
+     "matrix-replay"
+    ]
+   },
+   "MARKET_REGIME": {
+    "state": "EXECUTED",
+    "cases": [
+     "replay-nvda-winner-splits",
+     "replay-intc-loser",
+     "matrix-replay"
+    ]
+   },
+   "PARAMETER_SENSITIVITY": {
+    "state": "EXECUTED",
+    "cases": [
+     "replay-nvda-winner-splits",
+     "matrix-replay"
+    ]
+   },
+   "EVENT_DRIVEN": {
+    "state": "EXECUTED",
+    "cases": [
+     "matrix-replay"
+    ]
+   },
+   "PORTFOLIO_REBALANCING": {
+    "state": "NOT_APPLICABLE"
+   }
+  },
+  "PATTERN_EVIDENCE": {
+   "MONTE_CARLO": {
+    "state": "NOT_APPLICABLE"
+   },
+   "WALK_FORWARD": {
+    "state": "EXECUTED",
+    "cases": [
+     "pattern-2015-sideways",
+     "matrix-pattern"
+    ]
+   },
+   "OUT_OF_SAMPLE": {
+    "state": "EXECUTED",
+    "cases": [
+     "pattern-2015-sideways",
+     "matrix-pattern"
+    ]
+   },
+   "MARKET_REGIME": {
+    "state": "EXECUTED",
+    "cases": [
+     "pattern-2015-sideways",
+     "matrix-pattern"
+    ]
+   },
+   "PARAMETER_SENSITIVITY": {
+    "state": "EXECUTED",
+    "cases": [
+     "matrix-pattern"
+    ]
+   },
+   "EVENT_DRIVEN": {
+    "state": "EXECUTED",
+    "cases": [
+     "matrix-pattern"
+    ]
+   },
+   "PORTFOLIO_REBALANCING": {
+    "state": "NOT_APPLICABLE"
+   }
+  },
+  "SIGNAL_BACKTEST": {
+   "MONTE_CARLO": {
+    "state": "EXECUTED",
+    "cases": [
+     "signal-2008-crash",
+     "matrix-signal"
+    ]
+   },
+   "WALK_FORWARD": {
+    "state": "EXECUTED",
+    "cases": [
+     "signal-2008-crash",
+     "matrix-signal"
+    ]
+   },
+   "OUT_OF_SAMPLE": {
+    "state": "EXECUTED",
+    "cases": [
+     "signal-2008-crash",
+     "matrix-signal"
+    ]
+   },
+   "MARKET_REGIME": {
+    "state": "EXECUTED",
+    "cases": [
+     "signal-2008-crash",
+     "signal-2009-recovery",
+     "signal-2020-covid",
+     "signal-2022-bear",
+     "matrix-signal"
+    ]
+   },
+   "PARAMETER_SENSITIVITY": {
+    "state": "EXECUTED",
+    "cases": [
+     "signal-2009-recovery",
+     "matrix-signal"
+    ]
+   },
+   "EVENT_DRIVEN": {
+    "state": "EXECUTED",
+    "cases": [
+     "matrix-signal"
+    ]
+   },
+   "PORTFOLIO_REBALANCING": {
+    "state": "EXECUTED",
+    "cases": [
+     "signal-2008-crash",
+     "signal-2020-covid",
+     "matrix-signal"
+    ]
+   }
+  },
+  "SETUP_BACKTEST": {
+   "MONTE_CARLO": {
+    "state": "NOT_APPLICABLE"
+   },
+   "WALK_FORWARD": {
+    "state": "EXECUTED",
+    "cases": [
+     "setup-reconstruction-2016-2024",
+     "matrix-setup"
+    ]
+   },
+   "OUT_OF_SAMPLE": {
+    "state": "NOT_RUN",
+    "cases": [
+     "setup-reconstruction-2016-2024",
+     "matrix-setup"
+    ],
+    "reason": "RECONSTRUCTION_IS_NOT_OOS_EVIDENCE"
+   },
+   "MARKET_REGIME": {
+    "state": "EXECUTED",
+    "cases": [
+     "matrix-setup"
+    ]
+   },
+   "PARAMETER_SENSITIVITY": {
+    "state": "NOT_APPLICABLE"
+   },
+   "EVENT_DRIVEN": {
+    "state": "EXECUTED",
+    "cases": [
+     "matrix-setup"
+    ]
+   },
+   "PORTFOLIO_REBALANCING": {
+    "state": "NOT_APPLICABLE"
+   }
+  },
+  "STRATEGY_BACKTEST": {
+   "MONTE_CARLO": {
+    "state": "EXECUTED",
+    "cases": [
+     "strategy-2019-bull",
+     "matrix-strategy"
+    ]
+   },
+   "WALK_FORWARD": {
+    "state": "NOT_APPLICABLE"
+   },
+   "OUT_OF_SAMPLE": {
+    "state": "NOT_APPLICABLE"
+   },
+   "MARKET_REGIME": {
+    "state": "EXECUTED",
+    "cases": [
+     "strategy-2019-bull",
+     "strategy-2013-2014-bull",
+     "matrix-strategy"
+    ]
+   },
+   "PARAMETER_SENSITIVITY": {
+    "state": "EXECUTED",
+    "cases": [
+     "strategy-2019-bull",
+     "matrix-strategy"
+    ]
+   },
+   "EVENT_DRIVEN": {
+    "state": "EXECUTED",
+    "cases": [
+     "strategy-dividends-tr"
+    ]
+   },
+   "PORTFOLIO_REBALANCING": {
+    "state": "EXECUTED",
+    "cases": [
+     "strategy-2019-bull",
+     "strategy-2013-2014-bull",
+     "strategy-dividends-tr",
+     "matrix-strategy"
+    ]
+   }
+  },
+  "FACTOR_RANKING_BACKTEST": {
+   "MONTE_CARLO": {
+    "state": "NOT_APPLICABLE"
+   },
+   "WALK_FORWARD": {
+    "state": "DATA_MISSING",
+    "cases": [
+     "factor-momentum-v10-panel",
+     "matrix-factor"
+    ],
+    "missing": [
+     "PRIVATE_FACTOR_PANEL"
+    ]
+   },
+   "OUT_OF_SAMPLE": {
+    "state": "DATA_MISSING",
+    "cases": [
+     "factor-momentum-v10-panel",
+     "matrix-factor"
+    ],
+    "missing": [
+     "PRIVATE_FACTOR_PANEL"
+    ]
+   },
+   "MARKET_REGIME": {
+    "state": "DATA_MISSING",
+    "cases": [
+     "factor-momentum-v10-panel",
+     "matrix-factor"
+    ],
+    "missing": [
+     "PRIVATE_FACTOR_PANEL"
+    ]
+   },
+   "PARAMETER_SENSITIVITY": {
+    "state": "NOT_APPLICABLE"
+   },
+   "EVENT_DRIVEN": {
+    "state": "DATA_MISSING",
+    "cases": [
+     "factor-momentum-v10-panel",
+     "matrix-factor"
+    ],
+    "missing": [
+     "PRIVATE_FACTOR_PANEL"
+    ]
+   },
+   "PORTFOLIO_REBALANCING": {
+    "state": "NOT_APPLICABLE"
+   }
+  }
+ },
  "summary": {
-  "cases": 16,
-  "executed": 12,
-  "dataLimited": 4,
+  "cases": 22,
+  "executed": 17,
+  "dataLimited": 5,
   "methods": {
-   "MONTE_CARLO": 5,
-   "WALK_FORWARD": 4,
-   "OUT_OF_SAMPLE": 3,
-   "MARKET_REGIME": 9,
-   "PARAMETER_SENSITIVITY": 3,
-   "EVENT_DRIVEN": 1,
-   "PORTFOLIO_REBALANCING": 5
+   "MONTE_CARLO": 8,
+   "WALK_FORWARD": 8,
+   "OUT_OF_SAMPLE": 6,
+   "MARKET_REGIME": 14,
+   "PARAMETER_SENSITIVITY": 7,
+   "EVENT_DRIVEN": 5,
+   "PORTFOLIO_REBALANCING": 7
   }
  },
  "cases": [
@@ -186,7 +488,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -236,7 +538,8 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "eff0ea99a3a9ff577713c4beb505aa2198f6a9e918e3971438cd2252810df2c8"
+   "resultHash": "07babbf40f52ba35abc3d2feae03a5afc63e9b44e0b24c7ed4e3ab8769bf623f",
+   "group": "DEMO"
   },
   {
    "id": "replay-intc-loser",
@@ -316,7 +619,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -328,7 +631,8 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "befaaf0a6c42e3747a13acc196d2981bbae6f4014f493e2569bd8a6dcf6ce550"
+   "resultHash": "b585be6aa496966f4939c97ff7102bf901b80278ad1f1e4faa0024c631634c8b",
+   "group": "DEMO"
   },
   {
    "id": "ledger-smci-winner-split",
@@ -379,7 +683,7 @@
       "p95": 0
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "3d6a74a7d317376724a416e967165faa818b76daeeb9760957dff46375a897ea"
+     "inputHash": "9120a6675f1b2044ece0e45c7afcf15196fc58468cae4167a36bd8a6f0207b6d"
     },
     "WALK_FORWARD": {
      "state": "NOT_RUN"
@@ -400,7 +704,8 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "0344dad9c83270343adc946ae196311c1b881bdd3ff86a0e7032c8ae2c21fb3d"
+   "resultHash": "ab6e32e747125498a27e12a5a97781cad89d705725105e302e2a8e07c764fd8c",
+   "group": "DEMO"
   },
   {
    "id": "pattern-2015-sideways",
@@ -507,7 +812,7 @@
        ]
       }
      ],
-     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -519,7 +824,8 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "5829e7c4489559bf1b90864dd45b24b38fc16b80f481c6de45dfddc79a600b84"
+   "resultHash": "b1ac88648696eb80b40c672cc025d717eb26f6813c7489ec6c3f643cd5e81c4f",
+   "group": "DEMO"
   },
   {
    "id": "signal-2008-crash",
@@ -569,7 +875,7 @@
       "p95": -0.061743077040011765
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "559e9bb196c436a381b746bb40ff9cc401b592d9f2b738538112ba6e487de7a2"
+     "inputHash": "d1857f15f2b49ca9f4bdf61991a31d9446b6a0df60c572cb9f92ed90f37bc752"
     },
     "WALK_FORWARD": {
      "state": "EXECUTED",
@@ -644,7 +950,7 @@
        ]
       }
      ],
-     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -668,7 +974,8 @@
      "oneWayTurnoverSum": null
     }
    },
-   "resultHash": "dfe2aee820405d6ac7fac8d976ca9e24b3116bdc349b3c1456684dd0468d4516"
+   "resultHash": "1aa9245194d65c8572b41eca21538926d334f00fe9d2e37971b8940727d0e48b",
+   "group": "DEMO"
   },
   {
    "id": "signal-2009-recovery",
@@ -760,7 +1067,7 @@
        ]
       }
      ],
-     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -852,7 +1159,8 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "e64cec3f7381ea8bebb8ac4ccc5f5510516f209707a14f3100cb06e9a3aee068"
+   "resultHash": "d2f3e3f51b2694cf7caba219d2bdd066a58780da4cbe07b07ba69d8664c4654c",
+   "group": "DEMO"
   },
   {
    "id": "signal-2020-covid",
@@ -942,7 +1250,7 @@
        ]
       }
      ],
-     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -966,7 +1274,8 @@
      "oneWayTurnoverSum": null
     }
    },
-   "resultHash": "56e6f60fa2d9181d27a3499613f1ae49abcce48ad3fea2aba309187ebb5e344a"
+   "resultHash": "ddff85648a1b3e5316a9ede01e33825fc62502ab4d7f316c36470a403c9078bc",
+   "group": "DEMO"
   },
   {
    "id": "signal-2022-bear",
@@ -1058,7 +1367,7 @@
        ]
       }
      ],
-     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1070,7 +1379,8 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "6ea1004ef59e37999a808a688266fec2e03fdcbfee91e99084fe44d059c9a40e"
+   "resultHash": "2ccf2cd7d0f20c3b7575c00a93ddacf2ba12e992bea953b03c2b68beebce1a3d",
+   "group": "DEMO"
   },
   {
    "id": "setup-reconstruction-2016-2024",
@@ -1123,7 +1433,8 @@
      "partitionHash": "f1a7d214aa9cffb9274384725b69eda38371d2239cc1438662f9af7ef72208d0"
     },
     "OUT_OF_SAMPLE": {
-     "state": "NOT_RUN"
+     "state": "NOT_RUN",
+     "reason": "RECONSTRUCTION_IS_NOT_OOS_EVIDENCE"
     },
     "MARKET_REGIME": {
      "state": "NOT_RUN"
@@ -1138,7 +1449,8 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "e3e96aef970f0ca1a80456e2c54750871bc6fdb1637e0e84a59c748077c7b206"
+   "resultHash": "23a5f4a01eb5f1228efe41ddf39b7f256aed302adb577cbe07c3de7abf849b20",
+   "group": "DEMO"
   },
   {
    "id": "strategy-2019-bull",
@@ -1188,7 +1500,7 @@
       "p95": -0.03750638977623477
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "713be8f9600b6453b59f59240be49cdb1ac12f80d5a464f2fc669594324fbb3f"
+     "inputHash": "1ad000bc6ee2cf77913215bd0250605afa7f3ce78fc463ba301b29a287b76905"
     },
     "WALK_FORWARD": {
      "state": "NOT_RUN"
@@ -1226,7 +1538,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -1369,7 +1681,8 @@
      "oneWayTurnoverSum": 0.7153239035034699
     }
    },
-   "resultHash": "5777281f60bf7d86be9aae6b1068ac1883af4c677ac46e54d1860475e362f14e"
+   "resultHash": "2d20a389f698e0abe7fda0111b9e03016dd8534c2708c5ec4d2ce0c933e6db9f",
+   "group": "DEMO"
   },
   {
    "id": "strategy-2013-2014-bull",
@@ -1425,7 +1738,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "f14c7ac767a4e16c6edb6638138c3c8e5254b188ba485482ccc583bbaee11d49"
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1449,7 +1762,8 @@
      "oneWayTurnoverSum": 0.8163442758928923
     }
    },
-   "resultHash": "ced070d3ab6dfda177ae5ba9a61f43dc14d1339a28bc4472c3ec7ef17cf1b2ae"
+   "resultHash": "0fcccdc53570d2f3ffd6ffd36118cdab0f19f60919358e7f62abbe9b1dbb7d00",
+   "group": "DEMO"
   },
   {
    "id": "strategy-dividends-tr",
@@ -1533,7 +1847,8 @@
      "oneWayTurnoverSum": 0.49999999999999994
     }
    },
-   "resultHash": "6df62d7036c7c935749730df91bd88b6c807577021008f462f247608c2b28201"
+   "resultHash": "1959fd61ab0c90a67e37d3ed1f6ab152fd80ca81b7e10a6fb2d76fa9ed252eab",
+   "group": "DEMO"
   },
   {
    "id": "strategy-profile-prepared",
@@ -1591,7 +1906,8 @@
      "state": "NOT_RUN"
     }
    },
-   "resultHash": "70f4be8b347cb8f9880bebb122a299a7e359afb830836a3849f9c0f2141d06e6"
+   "resultHash": "1f2aada5e94fdd33d951b3a0d943053d4857e5b126619da2e20f55fdbce539a7",
+   "group": "DEMO"
   },
   {
    "id": "factor-momentum-v10-panel",
@@ -1650,7 +1966,8 @@
      "state": "NOT_RUN"
     }
    },
-   "resultHash": "1b2179e0d89e6e3c03c329dda88a5292117f9d7958970fb75090b0bf0dc89cac"
+   "resultHash": "f63554a8f01b08a3fec45b0281dca7815ec14df1e99166f18ff0517afcb0423e",
+   "group": "DEMO"
   },
   {
    "id": "delisted-xco-bankruptcy",
@@ -1707,7 +2024,8 @@
      "state": "NOT_RUN"
     }
    },
-   "resultHash": "6565c647a32799d7dd40c3d125ace1cec5067f46637ec0568eec3d24eaee51d9"
+   "resultHash": "1f90865fe6fd1c16deff1f12e4e355a5a69b4fbeb9c6fe87d934f9c28a27dfd2",
+   "group": "DEMO"
   },
   {
    "id": "acquisition-agn",
@@ -1764,7 +2082,1155 @@
      "state": "NOT_RUN"
     }
    },
-   "resultHash": "0fd741e70b455617ee88710c67025b85307100655753bb5c1e2d5765240ce28e"
+   "resultHash": "4316bb5d05c4813174ab727661d9b0d1436a06d0578f212ae76d30fcc4bbd286",
+   "group": "DEMO"
+  },
+  {
+   "id": "matrix-replay",
+   "kind": "SAME_STOCK_REPLAY",
+   "scenarios": [
+    "STRONG_WINNER",
+    "CORPORATE_ACTION_SPLIT"
+   ],
+   "purpose": "NVDA 2010–2024, Wochenschluss höchstens 5 % unter dem 52-Wochen-Hoch; alle sechs zulässigen Methoden.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "OBSERVED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2011-01-07",
+    "to": "2025-05-30",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 37,
+    "completed": 37
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.8648648648648649,
+    "maxDrawdown": -0.16433566433566427,
+    "trades": 37,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "EXECUTED",
+     "model": "TRADE_IID",
+     "simulations": 2000,
+     "horizon": 10,
+     "sourceObservations": 20,
+     "totalReturn": {
+      "p5": 0.39619295578015196,
+      "p50": 7.890615888814502,
+      "p95": 44.27926605379634
+     },
+     "maxDrawdown": {
+      "p5": -0.6441075223565831,
+      "p50": -0.3912480481395437,
+      "p95": 0
+     },
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
+     "inputHash": "76117d4515832e3c9504e6e688d1fca64efac6ecc18c6a09855ee82f4cddafd6"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 5,
+     "sizes": {
+      "train": 156,
+      "validation": 52,
+      "test": 104,
+      "step": 104
+     },
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 16,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 16
+     },
+     "partitionHash": "b56a5b97d960b1a72915236244bc5d66a5ec36f8f8306506db72179bfb595a7a"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "EXECUTED",
+     "endpoint": "netReturn",
+     "n": 29,
+     "mean": 0.3265475035407173,
+     "perFold": [
+      {
+       "fold": 0,
+       "test": [
+        "2014-01-03",
+        "2015-12-24"
+       ],
+       "n": 7,
+       "mean": 0.1306421293660916
+      },
+      {
+       "fold": 1,
+       "test": [
+        "2015-12-31",
+        "2017-12-22"
+       ],
+       "n": 7,
+       "mean": 0.6189034809400012
+      },
+      {
+       "fold": 2,
+       "test": [
+        "2017-12-29",
+        "2019-12-20"
+       ],
+       "n": 4,
+       "mean": -0.025763187319357783
+      },
+      {
+       "fold": 3,
+       "test": [
+        "2019-12-27",
+        "2021-12-17"
+       ],
+       "n": 8,
+       "mean": 0.3403630413449361
+      },
+      {
+       "fold": 4,
+       "test": [
+        "2021-12-23",
+        "2023-12-15"
+       ],
+       "n": 3,
+       "mean": 0.5344022496853648
+      }
+     ],
+     "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
+     "resultHash": "7532b2d73c1a302687da948bf41dbc8363c29773bd90d8076e1541082858b922"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 2,
+       "mean": 0.4953033547391571,
+       "median": 0.4953033547391571,
+       "interval95": null
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 1,
+       "mean": 0.3663919972644807,
+       "median": 0.3663919972644807,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 2,
+       "mean": 0.32632411859248606,
+       "median": 0.326324118592486,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 32,
+       "mean": 0.2716182743808648,
+       "median": 0.17301532584022872,
+       "interval95": null
+      }
+     ],
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "EXECUTED",
+     "grid": [
+      {
+       "parameters": {
+        "holdingPeriods": 13
+       },
+       "n": 37,
+       "estimate": 0.14483716674112956,
+       "ci": [
+        0.0715026531827212,
+        0.21376603155656146
+       ],
+       "adjustedPValue": 0.003
+      },
+      {
+       "parameters": {
+        "holdingPeriods": 26
+       },
+       "n": 37,
+       "estimate": 0.2892278844355524,
+       "ci": [
+        0.14158642209036776,
+        0.43092978495716555
+       ],
+       "adjustedPValue": 0.003
+      },
+      {
+       "parameters": {
+        "holdingPeriods": 52
+       },
+       "n": 37,
+       "estimate": 0.7176501863970329,
+       "ci": [
+        0.3654241050711744,
+        1.0284338530651915
+       ],
+       "adjustedPValue": 0.003
+      }
+     ]
+    },
+    "EVENT_DRIVEN": {
+     "state": "EXECUTED",
+     "coverage": {
+      "expected": 36,
+      "observed": 36,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "maturedDenominator": 36,
+      "observedShareMatured": 1
+     },
+     "meanNet": 0.026902064340486042,
+     "medianNet": 0.048197081127695274,
+     "interval95": null
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "9e5951115abeb039344f7a16d884eebd6fdaa89be3770bb02f33648c7acbf915",
+   "group": "MATRIX"
+  },
+  {
+   "id": "matrix-pattern",
+   "kind": "PATTERN_EVIDENCE",
+   "scenarios": [
+    "RECONSTRUCTION"
+   ],
+   "purpose": "Rückgang von 20 % vom Hoch, 30 Large Caps 2010–2024; alle fünf zulässigen Methoden.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "OBSERVED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2010-01-08",
+    "to": "2025-04-04",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 965,
+    "completed": 965
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.5917098445595855,
+    "maxDrawdown": -0.08383751080380297,
+    "trades": 965,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 5,
+     "sizes": {
+      "train": 156,
+      "validation": 52,
+      "test": 104,
+      "step": 104
+     },
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 603,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 145
+     },
+     "partitionHash": "5b5f49f33da1c1025be7a05134cbadab0456d671ab18654387731582756f9dc9"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "EXECUTED",
+     "endpoint": "netReturn",
+     "n": 611,
+     "mean": 0.026357524916133652,
+     "perFold": [
+      {
+       "fold": 0,
+       "test": [
+        "2014-01-03",
+        "2015-12-24"
+       ],
+       "n": 112,
+       "mean": 0.01141753130046509
+      },
+      {
+       "fold": 1,
+       "test": [
+        "2015-12-31",
+        "2017-12-22"
+       ],
+       "n": 109,
+       "mean": 0.04100068184948087
+      },
+      {
+       "fold": 2,
+       "test": [
+        "2017-12-29",
+        "2019-12-20"
+       ],
+       "n": 110,
+       "mean": 0.01812455228830368
+      },
+      {
+       "fold": 3,
+       "test": [
+        "2019-12-27",
+        "2021-12-17"
+       ],
+       "n": 127,
+       "mean": 0.04153244736939815
+      },
+      {
+       "fold": 4,
+       "test": [
+        "2021-12-23",
+        "2023-12-15"
+       ],
+       "n": 153,
+       "mean": 0.020184891038465217
+      }
+     ],
+     "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
+     "resultHash": "c8abbfd41486515c4f875028a2d5510db8d65d06fb396eefc1751455a24152aa"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 173,
+       "mean": 0.06311443530846546,
+       "median": 0.062271530494252714,
+       "interval95": [
+        0.037305996310178766,
+        0.08892287430675215
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 104,
+       "mean": 0.027751183197438103,
+       "median": 0.028153977263292607,
+       "interval95": [
+        -0.0022262358479801375,
+        0.05772860224285634
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 49,
+       "mean": 0.08053781047939917,
+       "median": 0.055699881114878336,
+       "interval95": [
+        0.04143719812943622,
+        0.11963842282936213
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 639,
+       "mean": 0.016984164399493608,
+       "median": 0.011006709249754554,
+       "interval95": [
+        0.006275240285535314,
+        0.027693088513451904
+       ]
+      }
+     ],
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "EXECUTED",
+     "grid": [
+      {
+       "parameters": {
+        "holdingPeriods": 13
+       },
+       "n": 965,
+       "estimate": 0.02964161049291717,
+       "ci": [
+        0.013309771350063254,
+        0.04684398523649508
+       ],
+       "adjustedPValue": 0.002
+      },
+      {
+       "parameters": {
+        "holdingPeriods": 26
+       },
+       "n": 965,
+       "estimate": 0.06120228157250285,
+       "ci": [
+        0.034618143946494484,
+        0.08702233397682146
+       ],
+       "adjustedPValue": 0.002
+      }
+     ]
+    },
+    "EVENT_DRIVEN": {
+     "state": "EXECUTED",
+     "coverage": {
+      "expected": 180,
+      "observed": 180,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "maturedDenominator": 180,
+      "observedShareMatured": 1
+     },
+     "meanNet": 0.020502209827808964,
+     "medianNet": 0.012784294085650849,
+     "interval95": [
+      0.00910953829886387,
+      0.03189488135675406
+     ]
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "406673d71a48340e5c70ebb7aa9b30938b9cc568fcc439de083a9c1c7a75e693",
+   "group": "MATRIX"
+  },
+  {
+   "id": "matrix-signal",
+   "kind": "SIGNAL_BACKTEST",
+   "scenarios": [
+    "BEAR_CRASH",
+    "RECOVERY",
+    "DIVIDENDS"
+   ],
+   "purpose": "Alle fünf Meldungsregeln auf 30 Large Caps 2016–2020 (mit Corona-Crash und Dividenden-Register); alle sieben Methoden.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "LIMITED",
+   "period": {
+    "from": "2016-01-08",
+    "to": "2021-07-09",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 833,
+    "completed": 833
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.6626650660264105,
+    "maxDrawdown": -0.11129363449691998,
+    "trades": 833,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "EXECUTED",
+     "model": "CIRCULAR_BLOCK",
+     "simulations": 2000,
+     "horizon": 26,
+     "sourceObservations": 287,
+     "totalReturn": {
+      "p5": -0.13309267476452263,
+      "p50": 0.0563503783077941,
+      "p95": 0.249282041901572
+     },
+     "maxDrawdown": {
+      "p5": -0.23166943041195914,
+      "p50": -0.06333380330350885,
+      "p95": -0.019242539832195038
+     },
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
+     "inputHash": "0be7d7388af45dabfe8434ebdcd4e4a7ec21c34b65b7e1768eda163031090b59"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 3,
+     "sizes": {
+      "train": 52,
+      "validation": 13,
+      "test": 52,
+      "step": 52
+     },
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 202,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 382
+     },
+     "partitionHash": "eb6efff1de7541000f187b18f13840fe17c86cb2388c124ec2e6dba11f7bc8e4"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "EXECUTED",
+     "endpoint": "netReturn",
+     "n": 507,
+     "mean": 0.03590689433303784,
+     "perFold": [
+      {
+       "fold": 0,
+       "test": [
+        "2017-04-07",
+        "2018-03-29"
+       ],
+       "n": 132,
+       "mean": 0.041792627588896326
+      },
+      {
+       "fold": 1,
+       "test": [
+        "2018-04-06",
+        "2019-03-29"
+       ],
+       "n": 168,
+       "mean": 0.03699832468791226
+      },
+      {
+       "fold": 2,
+       "test": [
+        "2019-04-05",
+        "2020-03-27"
+       ],
+       "n": 207,
+       "mean": 0.03126787457751992
+      }
+     ],
+     "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
+     "resultHash": "c0fad6be4caaadc645c8bc9765704be35e955c4381ffd7742e07ea2e764a692a"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 104,
+       "mean": 0.1181130653026481,
+       "median": 0.07429711761234592,
+       "interval95": [
+        0.02678900393887082,
+        0.2094371266664254
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 85,
+       "mean": 0.11009863527448867,
+       "median": 0.11426968317267527,
+       "interval95": [
+        0.06678900434910096,
+        0.15340826619987638
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 87,
+       "mean": 0.11278394481410493,
+       "median": 0.0765031359382089,
+       "interval95": [
+        0.03979618120695254,
+        0.18577170842125734
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 557,
+       "mean": 0.05454959966055017,
+       "median": 0.034686844569043584,
+       "interval95": [
+        0.023450530221247542,
+        0.08564866909985279
+       ]
+      }
+     ],
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "EXECUTED",
+     "grid": [
+      {
+       "parameters": {
+        "feeBps": 5,
+        "holdingPeriods": 13
+       },
+       "n": 833,
+       "estimate": 0.03620260686110227,
+       "ci": [
+        0.009716442980520462,
+        0.062406401882330494
+       ],
+       "adjustedPValue": 0.016
+      },
+      {
+       "parameters": {
+        "feeBps": 5,
+        "holdingPeriods": 26
+       },
+       "n": 833,
+       "estimate": 0.07423586194425032,
+       "ci": [
+        0.034159335307328245,
+        0.11277562825071404
+       ],
+       "adjustedPValue": 0.006
+      },
+      {
+       "parameters": {
+        "feeBps": 5,
+        "holdingPeriods": 52
+       },
+       "n": 833,
+       "estimate": 0.12724343509614505,
+       "ci": [
+        0.08094104213556527,
+        0.1755949905873472
+       ],
+       "adjustedPValue": 0.006
+      },
+      {
+       "parameters": {
+        "feeBps": 25,
+        "holdingPeriods": 13
+       },
+       "n": 833,
+       "estimate": 0.03206605712348386,
+       "ci": [
+        0.005685626748613476,
+        0.058165245863371
+       ],
+       "adjustedPValue": 0.018
+      },
+      {
+       "parameters": {
+        "feeBps": 25,
+        "holdingPeriods": 26
+       },
+       "n": 833,
+       "estimate": 0.06994748239044224,
+       "ci": [
+        0.03003094236680115,
+        0.10833339687377097
+       ],
+       "adjustedPValue": 0.006
+      },
+      {
+       "parameters": {
+        "feeBps": 25,
+        "holdingPeriods": 52
+       },
+       "n": 833,
+       "estimate": 0.12274344783033027,
+       "ci": [
+        0.07662589531522326,
+        0.17090198256202432
+       ],
+       "adjustedPValue": 0.006
+      }
+     ]
+    },
+    "EVENT_DRIVEN": {
+     "state": "EXECUTED",
+     "coverage": {
+      "expected": 88,
+      "observed": 88,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "maturedDenominator": 88,
+      "observedShareMatured": 1
+     },
+     "meanNet": 0.020792940544422444,
+     "medianNet": 0.011650571793175524,
+     "interval95": [
+      0.0011272116518552186,
+      0.04045866943698967
+     ]
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "EXECUTED",
+     "rule": "TREND_UP",
+     "maxPositions": 5,
+     "holdingWeeks": 26,
+     "rebalances": null,
+     "from": "2016-01-08",
+     "to": "2021-07-09",
+     "totalReturn": 0.8207597174454226,
+     "cagr": 0.11510488154088927,
+     "maxDrawdown": -0.2777959070133821,
+     "volatility": 0.160017179844268,
+     "benchmarkTotalReturn": 1.2692788661942478,
+     "oneWayTurnoverSum": null
+    }
+   },
+   "resultHash": "b456c5ee8067f870a786180f06264db9b235956f9aebfe8f18752722471e6fc6",
+   "group": "MATRIX"
+  },
+  {
+   "id": "matrix-setup",
+   "kind": "SETUP_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION"
+   ],
+   "purpose": "Setup-Rekonstruktion 2016–2024; alle vier zulässigen Methoden.",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": "2016-01-08",
+    "to": "2025-07-03",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 2750,
+    "completed": 2750
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.536,
+    "maxDrawdown": -0.1795696047702775,
+    "trades": 2750,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 3,
+     "sizes": {
+      "train": 104,
+      "validation": 52,
+      "test": 104,
+      "step": 104
+     },
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 1528,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 895
+     },
+     "partitionHash": "f1a7d214aa9cffb9274384725b69eda38371d2239cc1438662f9af7ef72208d0"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN",
+     "reason": "RECONSTRUCTION_IS_NOT_OOS_EVIDENCE"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 203,
+       "mean": 0.13309450226532146,
+       "median": 0.030228631098688563,
+       "interval95": [
+        -0.040995889169090666,
+        0.30718489369973356
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 163,
+       "mean": 0.02035251925140933,
+       "median": -0.005494505494505364,
+       "interval95": [
+        -0.06019271980306389,
+        0.10089775830588255
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 214,
+       "mean": 0.10110183966977569,
+       "median": 0.07260644034206509,
+       "interval95": [
+        0.024923304206240227,
+        0.17728037513331116
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 2170,
+       "mean": 0.03778515076774387,
+       "median": 0.01314267525681867,
+       "interval95": [
+        0.012054521040578182,
+        0.06351578049490957
+       ]
+      }
+     ],
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "EXECUTED",
+     "coverage": {
+      "expected": 88,
+      "observed": 88,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "maturedDenominator": 88,
+      "observedShareMatured": 1
+     },
+     "meanNet": 0.01659249354118386,
+     "medianNet": 0.009915120368706565,
+     "interval95": [
+      0.004754962084868806,
+      0.028430024997498915
+     ]
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "2f5510df2ac7f74e3c2705313c2adb8293f0958dc6119a2b88090adebab09ea5",
+   "group": "MATRIX"
+  },
+  {
+   "id": "matrix-strategy",
+   "kind": "STRATEGY_BACKTEST",
+   "scenarios": [
+    "BULL",
+    "BEAR_CRASH",
+    "RECOVERY"
+   ],
+   "purpose": "Gleichgewichtetes Depot aus 10 Large Caps 2016–2020; Monte Carlo, Marktlage, Sensitivität und Umschichtung (Dividenden-Ereignis aus strategy-dividends-tr).",
+   "privateData": null,
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "SIMULATED_LEDGER",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": "2016-01-08",
+    "to": "2020-12-31",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 650,
+    "completed": 650
+   },
+   "metrics": {
+    "basis": "PORTFOLIO",
+    "hitRate": null,
+    "maxDrawdown": -0.2738039816404989,
+    "trades": 650,
+    "totalReturn": 1.4921755891998107,
+    "cagr": 0.20124572957993525
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "EXECUTED",
+     "model": "CIRCULAR_BLOCK",
+     "simulations": 2000,
+     "horizon": 52,
+     "sourceObservations": 260,
+     "totalReturn": {
+      "p5": -0.08466967679200436,
+      "p50": 0.2124580976545487,
+      "p95": 0.469597674199361
+     },
+     "maxDrawdown": {
+      "p5": -0.2817160242498506,
+      "p50": -0.09062204990569,
+      "p95": -0.03645678185512934
+     },
+     "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
+     "inputHash": "6b7923c81a24f3b5c0e0d205f4c7bff145fe96a62cb348da4749b406dd6de21c"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 35,
+       "mean": 0.0068517451179189596,
+       "median": 0.010153305376165322,
+       "interval95": null
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 20,
+       "mean": 0.017096287925684857,
+       "median": 0.012836188288049333,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 21,
+       "mean": 0.002807462691762992,
+       "median": 0.0026218329993046297,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 184,
+       "mean": 0.0018941674133247655,
+       "median": 0.003889008720838638,
+       "interval95": null
+      }
+     ],
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "EXECUTED",
+     "grid": [
+      {
+       "parameters": {
+        "everySessions": 1,
+        "feeBps": 0
+       },
+       "n": 260,
+       "estimate": 0.0009069551466784342,
+       "ci": [
+        -0.00003857121676696445,
+        0.00188025305164068
+       ],
+       "adjustedPValue": 0.40800000000000003
+      },
+      {
+       "parameters": {
+        "everySessions": 1,
+        "feeBps": 5
+       },
+       "n": 260,
+       "estimate": 0.0008956602311220649,
+       "ci": [
+        -0.00004976774924251594,
+        0.0018675763376814773
+       ],
+       "adjustedPValue": 0.40800000000000003
+      },
+      {
+       "parameters": {
+        "everySessions": 1,
+        "feeBps": 25
+       },
+       "n": 260,
+       "estimate": 0.0008505022358446378,
+       "ci": [
+        -0.0000942742530653253,
+        0.0018209235922145408
+       ],
+       "adjustedPValue": 0.40800000000000003
+      },
+      {
+       "parameters": {
+        "everySessions": 4,
+        "feeBps": 0
+       },
+       "n": 260,
+       "estimate": 0.000930636302692247,
+       "ci": [
+        -0.000013604294240283574,
+        0.0019115525419252136
+       ],
+       "adjustedPValue": 0.40800000000000003
+      },
+      {
+       "parameters": {
+        "everySessions": 4,
+        "feeBps": 5
+       },
+       "n": 260,
+       "estimate": 0.0009236750568442125,
+       "ci": [
+        -0.00001850259370522896,
+        0.0019043434056981434
+       ],
+       "adjustedPValue": 0.40800000000000003
+      },
+      {
+       "parameters": {
+        "everySessions": 4,
+        "feeBps": 25
+       },
+       "n": 260,
+       "estimate": 0.000895852575182382,
+       "ci": [
+        -0.000041668935053680665,
+        0.0018755278235947984
+       ],
+       "adjustedPValue": 0.40800000000000003
+      },
+      {
+       "parameters": {
+        "everySessions": 13,
+        "feeBps": 0
+       },
+       "n": 260,
+       "estimate": 0.0010007997778880998,
+       "ci": [
+        0.000030578638467828375,
+        0.001967657757835508
+       ],
+       "adjustedPValue": 0.378
+      },
+      {
+       "parameters": {
+        "everySessions": 13,
+        "feeBps": 5
+       },
+       "n": 260,
+       "estimate": 0.0009958823446498113,
+       "ci": [
+        0.000027648662869850064,
+        0.001962888990726421
+       ],
+       "adjustedPValue": 0.378
+      },
+      {
+       "parameters": {
+        "everySessions": 13,
+        "feeBps": 25
+       },
+       "n": 260,
+       "estimate": 0.0009762355528630841,
+       "ci": [
+        0.000006952007259581564,
+        0.0019446710176405889
+       ],
+       "adjustedPValue": 0.378
+      }
+     ]
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "EXECUTED",
+     "rule": null,
+     "maxPositions": null,
+     "holdingWeeks": null,
+     "rebalances": 65,
+     "from": null,
+     "to": null,
+     "totalReturn": null,
+     "cagr": null,
+     "maxDrawdown": null,
+     "volatility": null,
+     "benchmarkTotalReturn": null,
+     "oneWayTurnoverSum": 1.808796082700731
+    }
+   },
+   "resultHash": "d892c19e19b0f0ee51d262fdab69f78bf1c7a9bd1dc16ef13725c71a2e94cdca",
+   "group": "MATRIX"
+  },
+  {
+   "id": "matrix-factor",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION"
+   ],
+   "purpose": "Rang nach Kursdynamik 2019–2020 auf dem V10-Faktorpanel; alle vier zulässigen Methoden.",
+   "privateData": "factorPanel",
+   "state": "PREPARED_DATA_LIMITED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": null,
+    "to": null,
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": null,
+    "completed": null
+   },
+   "metrics": {
+    "basis": "NONE",
+    "hitRate": null,
+    "maxDrawdown": null,
+    "trades": null,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [
+    "MISSING_INPUT:PRIVATE_FACTOR_PANEL panel.jsonl.gz (scripts/quant/v10/factor/panel.cjs from SEC companyfacts PIT documents, scripts/quant/v10/factor/pit_docs.py)"
+   ],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_RUN"
+    }
+   },
+   "resultHash": "c43a3cf90e77de3799b91fdcd58a77a9b8c2685e01d0f797f7ecdaadc3a79830",
+   "group": "MATRIX"
   }
  ]
 }
