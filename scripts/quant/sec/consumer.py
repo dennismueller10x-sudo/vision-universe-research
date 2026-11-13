@@ -193,6 +193,28 @@ def _ttm(resolver, registry, as_of, policy):
         out["ebitda"] = {"fp": "TTM", "end": op["end"], "v": op["v"] + da["v"], "unit": op["unit"],
                          "through": op.get("through"), "kind": "TTM", "derived": True,
                          "inputs": ["operating_income", "depreciation_and_amortization"]}
+    # Abgeleitete Zeilen, die ein Emittent nicht selbst meldet (Plausibilitaetspruefung 13.11.2026, b6):
+    # AMZN, GOOGL, META, WMT, PG, XOM melden keinen Rohertrag und keine Gesamtschulden als eigene Zeile.
+    # Die Quartalsreihe leitet beide schon ab (derived.py); das TTM-Fenster folgt denselben Formeln,
+    # nur aus Eingaengen desselben Fensters bzw. desselben Bilanzstichtags.
+    if "gross_profit" not in out and "revenue" in out and out["revenue"].get("through"):
+        cor = resolver.ttm("cost_of_revenue", as_of, policy=policy)
+        if cor.available:
+            tag = next((f for f in (cor.flags or []) if f.startswith("TTM_THROUGH")), None)
+            if tag and tag.replace("TTM_THROUGH_", "") == out["revenue"]["through"]:
+                rev, cor_row = out["revenue"], rowdict(_row(cor))
+                filed = max([d for d in (rev.get("filed"), cor_row.get("filed")) if d] or [None])
+                out["gross_profit"] = {"fp": "TTM", "end": rev["end"], "v": rev["v"] - cor.value, "unit": rev["unit"], "filed": filed,
+                                       "through": rev.get("through"), "kind": "TTM", "derived": True,
+                                       "inputs": ["revenue", "cost_of_revenue"]}
+    if "total_debt" not in out:
+        parts = [resolver.ttm(m, as_of, policy=policy) for m in ("long_term_debt", "short_term_debt")]
+        rows = [rowdict(_row(f)) for f in parts if f.available]
+        if rows and len({r["end"] for r in rows}) == 1:
+            out["total_debt"] = {"fp": "LATEST", "end": rows[0]["end"], "v": sum(r["v"] for r in rows), "unit": parts[0].unit if parts[0].available else parts[1].unit,
+                                 "filed": max([r["filed"] for r in rows if r.get("filed")] or [None]),
+                                 "kind": "INSTANT", "derived": True,
+                                 "inputs": [m for m, f in zip(("long_term_debt", "short_term_debt"), parts) if f.available]}
     if "total_debt" in out and "cash_and_equivalents" in out:
         debt, cash = out["total_debt"], out["cash_and_equivalents"]
         out["net_debt"] = {"fp": "LATEST", "end": debt["end"], "v": debt["v"] - cash["v"], "unit": debt["unit"],
