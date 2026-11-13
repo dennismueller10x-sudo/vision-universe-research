@@ -272,20 +272,16 @@
     "state": "NOT_APPLICABLE"
    },
    "WALK_FORWARD": {
-    "state": "NOT_RUN",
+    "state": "EXECUTED",
     "cases": [
-     "factor-momentum-v10-panel",
-     "matrix-factor"
-    ],
-    "reason": "PURGE_OPERATION_BUDGET"
+     "matrix-factor-sample"
+    ]
    },
    "OUT_OF_SAMPLE": {
-    "state": "NOT_RUN",
+    "state": "EXECUTED",
     "cases": [
-     "factor-momentum-v10-panel",
-     "matrix-factor"
-    ],
-    "reason": "PURGE_OPERATION_BUDGET"
+     "matrix-factor-sample"
+    ]
    },
    "MARKET_REGIME": {
     "state": "EXECUTED",
@@ -309,13 +305,13 @@
   }
  },
  "summary": {
-  "cases": 22,
-  "executed": 21,
+  "cases": 23,
+  "executed": 22,
   "dataLimited": 1,
   "methods": {
    "MONTE_CARLO": 8,
-   "WALK_FORWARD": 8,
-   "OUT_OF_SAMPLE": 6,
+   "WALK_FORWARD": 9,
+   "OUT_OF_SAMPLE": 7,
    "MARKET_REGIME": 18,
    "PARAMETER_SENSITIVITY": 7,
    "EVENT_DRIVEN": 6,
@@ -3382,6 +3378,100 @@
     }
    },
    "resultHash": "14a1d048fcb99925bef1a0f0ad9dd00ca230291a3f47a6384c65d9e07e03717f",
+   "group": "MATRIX"
+  },
+  {
+   "id": "matrix-factor-sample",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION"
+   ],
+   "purpose": "Rang nach Kursdynamik 2019–2020, Stichprobe von 250 Titeln; Walk-Forward und spätere Testfenster (Vollpopulation sprengt das Rechenbudget).",
+   "privateData": "factorPanel",
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": "2019-01-25",
+    "to": "2021-04-09",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 5022,
+    "completed": 5022
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.5577459179609717,
+    "maxDrawdown": -0.14426202046786646,
+    "trades": 5022,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 2,
+     "sizes": {
+      "train": 26,
+      "validation": 13,
+      "test": 26,
+      "step": 26
+     },
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 798,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 2864
+     },
+     "partitionHash": "b17899f6e08c2521b34747bd8d1a8c6ed9475691be5de40a6abfb2ba294a0de0"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "EXECUTED",
+     "endpoint": "netReturn",
+     "n": 2557,
+     "mean": 0.05406459831726755,
+     "perFold": [
+      {
+       "fold": 0,
+       "test": [
+        "2019-10-04",
+        "2020-03-27"
+       ],
+       "n": 1255,
+       "mean": -0.012443870173490797
+      },
+      {
+       "fold": 1,
+       "test": [
+        "2020-04-03",
+        "2020-09-25"
+       ],
+       "n": 1302,
+       "mean": 0.11817222347541019
+      }
+     ],
+     "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
+     "resultHash": "3302054191571fb1eb44346117725976e4c847aff5e602dde6998f2f9a1f5f7b"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "resultHash": "69d162da3bd4cf6b5263fbb6da52894bb61535235828079593bb7ede7661c960",
    "group": "MATRIX"
   }
  ]
