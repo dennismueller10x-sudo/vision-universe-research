@@ -18,7 +18,7 @@
 .qc-chart .vu-chart-tip{top:4px}
 .qx-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 /* Technical-Ebenen auf dem gemeinsamen Chart */
-.tc-layers .tc-zone{opacity:.16}.tc-layers .tc-zone--positive{fill:var(--vu-chart-up,#2e7d32)}.tc-layers .tc-zone--negative{fill:var(--vu-chart-down,#c62828)}
+.tc-layers .tc-zone{opacity:.16}.tc-layers .tc-zone--positive{fill:#c8f531}.tc-layers .tc-zone--negative{fill:var(--vu-text-secondary)}
 .tc-layers .tc-zone-label{font:700 11px Inter,-apple-system,sans-serif;fill:var(--vu-text-secondary)}
-.tc-layers .tc-trend{stroke:var(--vu-text);stroke-width:1.5;opacity:.7}.tc-layers .tc-trend--negative{stroke:var(--vu-chart-down,#c62828)}.tc-layers .tc-trend--positive{stroke:var(--vu-chart-up,#2e7d32)}
+.tc-layers .tc-trend{stroke:var(--vu-text);stroke-width:1.5;opacity:.7}.tc-layers .tc-trend--negative{stroke-dasharray:6 4}
 .tc-layers .tc-avg{stroke:var(--vu-text-secondary);stroke-width:1.5}

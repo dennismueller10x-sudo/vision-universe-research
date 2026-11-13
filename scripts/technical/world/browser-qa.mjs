@@ -256,8 +256,11 @@ async function main() {
     await check(key + " Chart einfach", async () => {
       await navigate(page,base + "#/chart/NVDA");
       await page.waitForSelector(".tc-sayrow [data-verdict]", { timeout: 45000 });
-      await page.waitForSelector(".tc-chart svg .tc-price-line");
+      /* Seit 13.11.2026 zeichnet die Einsteigeransicht den gemeinsamen Aktienchart (quant/app/chart.js, assets/vu-chart.js). */
+      await page.waitForSelector(".tc-simple-chart .qc-chart svg .vu-chart-line", { timeout: 45000 });
       assert(await page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count() === 0, "Kerzen in der Einsteigeransicht");
+      const leiste = await page.locator(".tc-simple-chart .qc-ranges button:not([hidden])").allInnerTexts();
+      assert(leiste.join(",") === "1T,1W,1M,1J,5J,Max,Mehr", "Zeitraumleiste nicht 1T 1W 1M 1J 5J Max: " + leiste.join(","));
       assert(await page.locator(".vu-shead .vu-snav, .vu-shead-nav").count() >= 1, "Aktienkopf mit Perspektiven fehlt");
       assert(await page.locator(".tc-story-r [data-verdict]").count() === 3, "drei Saetze mit Urteil fehlen");
       assert(await page.locator(".tc-zt").count() === 2, "Zonen-Kacheln fehlen");
