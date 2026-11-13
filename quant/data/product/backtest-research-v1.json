@@ -1,5 +1,5 @@
 {
- "schemaVersion": "backtest-research-1.1.0",
+ "schemaVersion": "backtest-research-1.2.0",
  "asOf": "2026-11-13",
  "runner": "backtest-runner-1.0.0",
  "label": "Forschung, nicht zertifiziert",
@@ -304,6 +304,552 @@
    }
   }
  },
+ "certification": {
+  "methodology": "backtest-method-certification-1.0.0",
+  "definition": "Ein Backtest gilt als zertifiziert, wenn er nachvollziehbar rückwärts gerechnet ist (Research-Runner, Ergebnisvertrag v2, Ergebnis-Hash) und die für seine Art zulässigen Robustheitsprüfungen besteht (kinds.*.robustness: Monte Carlo, Walk-Forward, spätere Testfenster, Marktlage, Sensitivität). Kein hartes Gate des Prüfstands (Point-in-Time, Look-ahead) darf verletzt sein. Zertifiziert heißt nicht profitabel: ein zertifizierter Backtest darf schwache oder negative Ergebnisse zeigen. Jahre vorwärts gesammelter Daten sind keine Voraussetzung; Historie, Überlebende, Renditebasis und das Ergebnis der Regel werden offengelegt.",
+  "forward": {
+   "file": "quant/data/product/backtest-certification-v1.json",
+   "asOf": "2026-11-13",
+   "methodology": "backtest-certification-1.1.0"
+  },
+  "kinds": {
+   "SAME_STOCK_REPLAY": {
+    "status": "CERTIFIED",
+    "label": "Zertifiziert · methodisch geprüft",
+    "reason": null,
+    "criteria": [
+     {
+      "id": "reproducible",
+      "state": "PASS",
+      "value": [
+       "replay-nvda-winner-splits",
+       "replay-intc-loser",
+       "ledger-smci-winner-split",
+       "delisted-xco-bankruptcy",
+       "matrix-replay"
+      ],
+      "reason": null
+     },
+     {
+      "id": "MONTE_CARLO",
+      "state": "PASS",
+      "value": [
+       "replay-nvda-winner-splits",
+       "replay-intc-loser",
+       "ledger-smci-winner-split",
+       "matrix-replay"
+      ],
+      "reason": null
+     },
+     {
+      "id": "WALK_FORWARD",
+      "state": "PASS",
+      "value": [
+       "replay-nvda-winner-splits",
+       "matrix-replay"
+      ],
+      "reason": null
+     },
+     {
+      "id": "OUT_OF_SAMPLE",
+      "state": "PASS",
+      "value": [
+       "replay-nvda-winner-splits",
+       "matrix-replay"
+      ],
+      "reason": null
+     },
+     {
+      "id": "MARKET_REGIME",
+      "state": "PASS",
+      "value": [
+       "replay-nvda-winner-splits",
+       "replay-intc-loser",
+       "delisted-xco-bankruptcy",
+       "matrix-replay"
+      ],
+      "reason": null
+     },
+     {
+      "id": "PARAMETER_SENSITIVITY",
+      "state": "PASS",
+      "value": [
+       "replay-nvda-winner-splits",
+       "matrix-replay"
+      ],
+      "reason": null
+     },
+     {
+      "id": "hard:pit",
+      "state": "PASS",
+      "value": "Leckage-Vertrag der Musterstudie (historical-cases)",
+      "reason": null
+     }
+    ],
+    "disclosures": [
+     {
+      "id": "survivorship",
+      "label": "Überlebende",
+      "reason": "SURVIVOR_BY_CONSTRUCTION",
+      "value": "Eine Aktie mit langer Historie hat überlebt"
+     },
+     {
+      "id": "ruleTest",
+      "label": "prüft eine Regel außerhalb des Lernzeitraums",
+      "reason": "DESCRIPTIVE_NOT_A_TEST",
+      "value": "beschreibt, prüft keine Regel"
+     }
+    ],
+    "forwardStatus": "LIMITED"
+   },
+   "PATTERN_EVIDENCE": {
+    "status": "CERTIFIED",
+    "label": "Zertifiziert · methodisch geprüft",
+    "reason": null,
+    "criteria": [
+     {
+      "id": "reproducible",
+      "state": "PASS",
+      "value": [
+       "pattern-2015-sideways",
+       "matrix-pattern"
+      ],
+      "reason": null
+     },
+     {
+      "id": "WALK_FORWARD",
+      "state": "PASS",
+      "value": [
+       "pattern-2015-sideways",
+       "matrix-pattern"
+      ],
+      "reason": null
+     },
+     {
+      "id": "OUT_OF_SAMPLE",
+      "state": "PASS",
+      "value": [
+       "pattern-2015-sideways",
+       "matrix-pattern"
+      ],
+      "reason": null
+     },
+     {
+      "id": "MARKET_REGIME",
+      "state": "PASS",
+      "value": [
+       "pattern-2015-sideways",
+       "matrix-pattern"
+      ],
+      "reason": null
+     },
+     {
+      "id": "PARAMETER_SENSITIVITY",
+      "state": "PASS",
+      "value": [
+       "matrix-pattern"
+      ],
+      "reason": null
+     },
+     {
+      "id": "hard:pit",
+      "state": "PASS",
+      "value": "assert in observe()",
+      "reason": null
+     }
+    ],
+    "disclosures": [
+     {
+      "id": "survivorship",
+      "label": "Überlebende",
+      "reason": "PRESENT_AND_UNQUANTIFIED_IN_PART",
+      "value": "teilweise nicht quantifiziert"
+     },
+     {
+      "id": "returnBasis",
+      "label": "Gesamtrendite",
+      "reason": "STUDY_RETURN_BASIS_NOT_TOTAL_RETURN",
+      "value": "Diese Musterstudie verwendet Kursrendite"
+     },
+     {
+      "id": "certifiedAsBacktest",
+      "label": "als Backtest freigegeben",
+      "reason": "STUDY_DECLARES_BACKTEST_NOT_CERTIFIED",
+      "value": "Häufigkeitsauswertung"
+     }
+    ],
+    "forwardStatus": "LIMITED"
+   },
+   "SIGNAL_BACKTEST": {
+    "status": "CERTIFIED",
+    "label": "Zertifiziert · methodisch geprüft",
+    "reason": null,
+    "criteria": [
+     {
+      "id": "reproducible",
+      "state": "PASS",
+      "value": [
+       "signal-2008-crash",
+       "signal-2009-recovery",
+       "signal-2020-covid",
+       "signal-2022-bear",
+       "acquisition-agn",
+       "matrix-signal"
+      ],
+      "reason": null
+     },
+     {
+      "id": "MONTE_CARLO",
+      "state": "PASS",
+      "value": [
+       "signal-2008-crash",
+       "matrix-signal"
+      ],
+      "reason": null
+     },
+     {
+      "id": "WALK_FORWARD",
+      "state": "PASS",
+      "value": [
+       "signal-2008-crash",
+       "matrix-signal"
+      ],
+      "reason": null
+     },
+     {
+      "id": "OUT_OF_SAMPLE",
+      "state": "PASS",
+      "value": [
+       "signal-2008-crash",
+       "matrix-signal"
+      ],
+      "reason": null
+     },
+     {
+      "id": "MARKET_REGIME",
+      "state": "PASS",
+      "value": [
+       "signal-2008-crash",
+       "signal-2009-recovery",
+       "signal-2020-covid",
+       "signal-2022-bear",
+       "acquisition-agn",
+       "matrix-signal"
+      ],
+      "reason": null
+     },
+     {
+      "id": "PARAMETER_SENSITIVITY",
+      "state": "PASS",
+      "value": [
+       "signal-2009-recovery",
+       "matrix-signal"
+      ],
+      "reason": null
+     },
+     {
+      "id": "hard:pit",
+      "state": "PASS",
+      "value": "abgeschnittene und verfälschte Zukunft",
+      "reason": null
+     },
+     {
+      "id": "hard:lookahead",
+      "state": "PASS",
+      "value": "Schluss der Folgewoche",
+      "reason": null
+     }
+    ],
+    "disclosures": [
+     {
+      "id": "survivorship",
+      "label": "Überlebende-Kontrolle",
+      "reason": "PARTIAL_SENSITIVITY_ONLY",
+      "value": "teilweise (Sensitivität ab 2016, nicht in der Hauptstudie)"
+     },
+     {
+      "id": "ruleCertified",
+      "label": "mindestens eine Regel zertifiziert",
+      "reason": "NO_RULE_CERTIFIED",
+      "value": "0 von 5"
+     }
+    ],
+    "forwardStatus": "LIMITED"
+   },
+   "SETUP_BACKTEST": {
+    "status": "LIMITED",
+    "label": "Eingeschränkt geprüft",
+    "reason": "RECONSTRUCTION_IS_NOT_OOS_EVIDENCE",
+    "criteria": [
+     {
+      "id": "reproducible",
+      "state": "PASS",
+      "value": [
+       "setup-reconstruction-2016-2024",
+       "matrix-setup"
+      ],
+      "reason": null
+     },
+     {
+      "id": "WALK_FORWARD",
+      "state": "PASS",
+      "value": [
+       "setup-reconstruction-2016-2024",
+       "matrix-setup"
+      ],
+      "reason": null
+     },
+     {
+      "id": "OUT_OF_SAMPLE",
+      "state": "FAIL",
+      "value": [
+       "setup-reconstruction-2016-2024",
+       "matrix-setup"
+      ],
+      "reason": "RECONSTRUCTION_IS_NOT_OOS_EVIDENCE"
+     },
+     {
+      "id": "MARKET_REGIME",
+      "state": "PASS",
+      "value": [
+       "matrix-setup"
+      ],
+      "reason": null
+     },
+     {
+      "id": "hard:publishedOnly",
+      "state": "PASS",
+      "value": "setup-observation-history",
+      "reason": null
+     },
+     {
+      "id": "hard:pit",
+      "state": "PASS",
+      "value": "33 von 33 geprüft",
+      "reason": null
+     },
+     {
+      "id": "hard:lookahead",
+      "state": "PASS",
+      "value": "Schluss des Folgetags (Standard), Signalschluss nur als Vergleich",
+      "reason": null
+     }
+    ],
+    "disclosures": [
+     {
+      "id": "historyDates",
+      "label": "veröffentlichte Stichtage",
+      "reason": "SETUP_HISTORY_TOO_SHORT",
+      "value": 33
+     },
+     {
+      "id": "historySpan",
+      "label": "Spanne der Historie",
+      "reason": "SETUP_HISTORY_SPAN_TOO_SHORT",
+      "value": "63 Tage"
+     },
+     {
+      "id": "completedOutcomes",
+      "label": "abgeschlossene 6-Monats-Ergebnisse",
+      "reason": "COMPLETED_OUTCOMES_TOO_FEW",
+      "value": 0
+     },
+     {
+      "id": "titles",
+      "label": "Titel mit abgeschlossenem Ergebnis",
+      "reason": "TOO_FEW_TITLES",
+      "value": 0
+     },
+     {
+      "id": "independence",
+      "label": "verschiedene Monate mit Ereignissen",
+      "reason": "EVENTS_CLUSTERED_IN_TIME",
+      "value": 3
+     },
+     {
+      "id": "returnBasis",
+      "label": "Gesamtrendite",
+      "reason": "TOTAL_RETURN_NOT_IN_THIS_RUN",
+      "value": "lokal Kursrendite; Pipeline rechnet mit Gesamtrendite"
+     },
+     {
+      "id": "entryVariant",
+      "label": "Einstiegsvarianten stimmen überein",
+      "reason": "VARIANTS_NOT_MEASURABLE_YET",
+      "value": "noch nicht messbar"
+     },
+     {
+      "id": "oos",
+      "label": "Lernen/Testen (zeitlich)",
+      "reason": "OOS_NOT_MEASURABLE_YET",
+      "value": "erst mit abgeschlossenen Ergebnissen messbar"
+     }
+    ],
+    "forwardStatus": "COLLECTING_HISTORY"
+   },
+   "STRATEGY_BACKTEST": {
+    "status": "CERTIFIED",
+    "label": "Zertifiziert · methodisch geprüft",
+    "reason": null,
+    "criteria": [
+     {
+      "id": "reproducible",
+      "state": "PASS",
+      "value": [
+       "strategy-2019-bull",
+       "strategy-2013-2014-bull",
+       "strategy-dividends-tr",
+       "matrix-strategy"
+      ],
+      "reason": null
+     },
+     {
+      "id": "MONTE_CARLO",
+      "state": "PASS",
+      "value": [
+       "strategy-2019-bull",
+       "matrix-strategy"
+      ],
+      "reason": null
+     },
+     {
+      "id": "MARKET_REGIME",
+      "state": "PASS",
+      "value": [
+       "strategy-2019-bull",
+       "strategy-2013-2014-bull",
+       "matrix-strategy"
+      ],
+      "reason": null
+     },
+     {
+      "id": "PARAMETER_SENSITIVITY",
+      "state": "PASS",
+      "value": [
+       "strategy-2019-bull",
+       "matrix-strategy"
+      ],
+      "reason": null
+     },
+     {
+      "id": "hard:contract",
+      "state": "PASS",
+      "value": "strategy-backtest-contract-1.0.0",
+      "reason": null
+     },
+     {
+      "id": "hard:pitGuards",
+      "state": "PASS",
+      "value": "profile-backtest-1.0.0: Stand strikt vor dem Termin, kein heutiges Universum",
+      "reason": null
+     }
+    ],
+    "disclosures": [
+     {
+      "id": "membershipHistory",
+      "label": "Monate mit Index-Zugehörigkeit",
+      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+      "value": "3 (8 Stände seit 2026-09-15)"
+     },
+     {
+      "id": "factorHistory",
+      "label": "Monate mit Faktor-Snapshots",
+      "reason": "FACTOR_HISTORY_TOO_SHORT",
+      "value": "3 (33 Stände seit 2026-09-23)"
+     }
+    ],
+    "forwardStatus": "COLLECTING_HISTORY"
+   },
+   "FACTOR_RANKING_BACKTEST": {
+    "status": "CERTIFIED",
+    "label": "Zertifiziert · methodisch geprüft",
+    "reason": null,
+    "criteria": [
+     {
+      "id": "reproducible",
+      "state": "PASS",
+      "value": [
+       "factor-momentum-v10-panel",
+       "matrix-factor",
+       "matrix-factor-sample"
+      ],
+      "reason": null
+     },
+     {
+      "id": "WALK_FORWARD",
+      "state": "PASS",
+      "value": [
+       "matrix-factor-sample"
+      ],
+      "reason": null
+     },
+     {
+      "id": "OUT_OF_SAMPLE",
+      "state": "PASS",
+      "value": [
+       "matrix-factor-sample"
+      ],
+      "reason": null
+     },
+     {
+      "id": "MARKET_REGIME",
+      "state": "PASS",
+      "value": [
+       "factor-momentum-v10-panel",
+       "matrix-factor"
+      ],
+      "reason": null
+     },
+     {
+      "id": "hard:contract",
+      "state": "PASS",
+      "value": "strategy-backtest-contract-1.0.0 factorRanking",
+      "reason": null
+     },
+     {
+      "id": "hard:pitGuards",
+      "state": "PASS",
+      "value": "Stand strikt vor dem Einstieg",
+      "reason": null
+     },
+     {
+      "id": "hard:noRetroactive",
+      "state": "PASS",
+      "value": "nur veröffentlichte Snapshots",
+      "reason": null
+     }
+    ],
+    "disclosures": [
+     {
+      "id": "factorHistory",
+      "label": "Monate mit Faktor-Snapshots",
+      "reason": "FACTOR_HISTORY_TOO_SHORT",
+      "value": 3
+     },
+     {
+      "id": "completedForward",
+      "label": "Monate mit abgeschlossenem 3-Monats-Ergebnis",
+      "reason": "FORWARD_OUTCOMES_TOO_FEW",
+      "value": 0
+     },
+     {
+      "id": "membershipHistory",
+      "label": "Monate mit Index-Zugehörigkeit",
+      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING",
+      "value": 3
+     }
+    ],
+    "forwardStatus": "COLLECTING_HISTORY"
+   }
+  },
+  "certifiedKinds": [
+   "SAME_STOCK_REPLAY",
+   "PATTERN_EVIDENCE",
+   "SIGNAL_BACKTEST",
+   "STRATEGY_BACKTEST",
+   "FACTOR_RANKING_BACKTEST"
+  ]
+ },
  "summary": {
   "cases": 23,
   "executed": 22,
@@ -479,7 +1025,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -529,7 +1075,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "07babbf40f52ba35abc3d2feae03a5afc63e9b44e0b24c7ed4e3ab8769bf623f",
+   "resultHash": "6005feccafb393e589fbaa8f43951119f2155479182e9b380673a01e64ee1afa",
    "group": "DEMO"
   },
   {
@@ -610,7 +1156,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -622,7 +1168,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "b585be6aa496966f4939c97ff7102bf901b80278ad1f1e4faa0024c631634c8b",
+   "resultHash": "cef8a2bd775dd72b1fcbc8a0cf9694a54113d2a16b06e35bf6070275abeab1cd",
    "group": "DEMO"
   },
   {
@@ -674,7 +1220,7 @@
       "p95": 0
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "9120a6675f1b2044ece0e45c7afcf15196fc58468cae4167a36bd8a6f0207b6d"
+     "inputHash": "af90d4929a9266606fb923b4db00123146f4b1537a9fc7289d9b674d2ef96144"
     },
     "WALK_FORWARD": {
      "state": "NOT_RUN"
@@ -695,7 +1241,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "ab6e32e747125498a27e12a5a97781cad89d705725105e302e2a8e07c764fd8c",
+   "resultHash": "dea6b9209cbb64cbc8741ffd5cfac0f9701fe7d1af7da5a18c7dc5cb583e5fcb",
    "group": "DEMO"
   },
   {
@@ -803,7 +1349,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -815,7 +1361,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "b1ac88648696eb80b40c672cc025d717eb26f6813c7489ec6c3f643cd5e81c4f",
+   "resultHash": "d34ea6dd11ac5c513b9afa3a2cd939ac536b911107e8241d55f3e22d6da878e2",
    "group": "DEMO"
   },
   {
@@ -866,7 +1412,7 @@
       "p95": -0.061743077040011765
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "d1857f15f2b49ca9f4bdf61991a31d9446b6a0df60c572cb9f92ed90f37bc752"
+     "inputHash": "84bae25342df86ed5b7cb1f90ff2cb952c78a6292fed3aa1d2a6fb7b4ba491ba"
     },
     "WALK_FORWARD": {
      "state": "EXECUTED",
@@ -941,7 +1487,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -965,7 +1511,7 @@
      "oneWayTurnoverSum": null
     }
    },
-   "resultHash": "1aa9245194d65c8572b41eca21538926d334f00fe9d2e37971b8940727d0e48b",
+   "resultHash": "a6ee5512bf8340d24809440b90b3c0cd6c797a12c80cd9b2337f23158a36dc8a",
    "group": "DEMO"
   },
   {
@@ -1058,7 +1604,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -1150,7 +1696,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "d2f3e3f51b2694cf7caba219d2bdd066a58780da4cbe07b07ba69d8664c4654c",
+   "resultHash": "7a6f031e687023c7681712804a7047db11b9b8aac2aa48a9d19ff7c5fbff8f6c",
    "group": "DEMO"
   },
   {
@@ -1241,7 +1787,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1265,7 +1811,7 @@
      "oneWayTurnoverSum": null
     }
    },
-   "resultHash": "ddff85648a1b3e5316a9ede01e33825fc62502ab4d7f316c36470a403c9078bc",
+   "resultHash": "c95db2b86e44b7ca9df212d91e095c790d9e249c70adb8306ed920913aed3f35",
    "group": "DEMO"
   },
   {
@@ -1358,7 +1904,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1370,7 +1916,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "2ccf2cd7d0f20c3b7575c00a93ddacf2ba12e992bea953b03c2b68beebce1a3d",
+   "resultHash": "d20a886dac42506070774e346d144652b3fa9024368f5d12dea52e1334becdad",
    "group": "DEMO"
   },
   {
@@ -1440,7 +1986,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "23a5f4a01eb5f1228efe41ddf39b7f256aed302adb577cbe07c3de7abf849b20",
+   "resultHash": "b4323a5f8017d077f89c10d0c59e9f36401817deec8ad9301ac5228ed1499f4d",
    "group": "DEMO"
   },
   {
@@ -1491,7 +2037,7 @@
       "p95": -0.03750638977623477
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "1ad000bc6ee2cf77913215bd0250605afa7f3ce78fc463ba301b29a287b76905"
+     "inputHash": "abbd7720e41359e73dadb9c142abae2bfdc716490a49499af0ece7ce046a49f4"
     },
     "WALK_FORWARD": {
      "state": "NOT_RUN"
@@ -1529,7 +2075,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -1672,7 +2218,7 @@
      "oneWayTurnoverSum": 0.7153239035034699
     }
    },
-   "resultHash": "2d20a389f698e0abe7fda0111b9e03016dd8534c2708c5ec4d2ce0c933e6db9f",
+   "resultHash": "ca0ecdd27c8d3c533aa82d320e99c14df98b5bb0291d9964a3e144eda02256c2",
    "group": "DEMO"
   },
   {
@@ -1729,7 +2275,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1753,7 +2299,7 @@
      "oneWayTurnoverSum": 0.8163442758928923
     }
    },
-   "resultHash": "0fcccdc53570d2f3ffd6ffd36118cdab0f19f60919358e7f62abbe9b1dbb7d00",
+   "resultHash": "228a0fa4a52110fe5ce87cf1439979385e1ec50c48c552b0b9ea8b78c3e8666f",
    "group": "DEMO"
   },
   {
@@ -1838,7 +2384,7 @@
      "oneWayTurnoverSum": 0.49999999999999994
     }
    },
-   "resultHash": "1959fd61ab0c90a67e37d3ed1f6ab152fd80ca81b7e10a6fb2d76fa9ed252eab",
+   "resultHash": "3a511d187f95065f2d0be39da889c6ccc3a64599523f919e83118a4dd7caeda1",
    "group": "DEMO"
   },
   {
@@ -1897,7 +2443,7 @@
      "state": "NOT_RUN"
     }
    },
-   "resultHash": "1f2aada5e94fdd33d951b3a0d943053d4857e5b126619da2e20f55fdbce539a7",
+   "resultHash": "070e73f7c7c02e8f9570ba61c2b173c0a86f01a666806f110a876c1c8799c61b",
    "group": "DEMO"
   },
   {
@@ -1992,7 +2538,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -2004,7 +2550,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "5d2a387750e49b13b5f69df2f4c9e8ffd10412f96a5d3e6f904a2f9705eec8d2",
+   "resultHash": "1d05efa9f95614a16747511b021974c78303e57f3f57c76d4e9ea899a4e20c27",
    "group": "DEMO"
   },
   {
@@ -2077,7 +2623,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -2089,7 +2635,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "f13bd508734f940ef54df3e192a9596980ca1e2b3959f9c252e366fc3dd8dcd8",
+   "resultHash": "8dc67d642e1a2d1bd1b1fcac4caca0e3b1fee7a7b1ef8aec310d37c36de0ea19",
    "group": "DEMO"
   },
   {
@@ -2154,7 +2700,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -2166,7 +2712,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "7d8b73e50b0217f252d52b5228111d2cfd05e2fc3d27197c9cc733a6a9353d41",
+   "resultHash": "57c4f56b9895339b1610d471a42f4f683657aefe691d1b4efe3eaf3be2502515",
    "group": "DEMO"
   },
   {
@@ -2329,7 +2875,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -2391,7 +2937,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "9e5951115abeb039344f7a16d884eebd6fdaa89be3770bb02f33648c7acbf915",
+   "resultHash": "6892b6688792be62f729900251e48a0f06771387782db714da3aab4a29dac1f3",
    "group": "MATRIX"
   },
   {
@@ -2549,7 +3095,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -2602,7 +3148,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "406673d71a48340e5c70ebb7aa9b30938b9cc568fcc439de083a9c1c7a75e693",
+   "resultHash": "f5eb62bff8a385beb0484c7ff19b44d2faaa042b922d321a1375ee74c7c3d729",
    "group": "MATRIX"
   },
   {
@@ -2655,7 +3201,7 @@
       "p95": -0.019242539832195038
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "0be7d7388af45dabfe8434ebdcd4e4a7ec21c34b65b7e1768eda163031090b59"
+     "inputHash": "a8a32f1cb1e7f6d68ee6d411e914c493fdbb197791b6b56de103ab1927e815e0"
     },
     "WALK_FORWARD": {
      "state": "EXECUTED",
@@ -2760,7 +3306,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -2879,7 +3425,7 @@
      "oneWayTurnoverSum": null
     }
    },
-   "resultHash": "b456c5ee8067f870a786180f06264db9b235956f9aebfe8f18752722471e6fc6",
+   "resultHash": "0a954f45916d5aaca208d773db34e3282f732c8b277ca39bcbf4f2b7f985afe9",
    "group": "MATRIX"
   },
   {
@@ -2986,7 +3532,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -3013,7 +3559,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "2f5510df2ac7f74e3c2705313c2adb8293f0958dc6119a2b88090adebab09ea5",
+   "resultHash": "1d067d16e9c4d8aa4ee7346efb5d9f2dd890640fd3a7c09e25c821647692a5e0",
    "group": "MATRIX"
   },
   {
@@ -3066,7 +3612,7 @@
       "p95": -0.03645678185512934
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "6b7923c81a24f3b5c0e0d205f4c7bff145fe96a62cb348da4749b406dd6de21c"
+     "inputHash": "92322bee417c8ad70bb7fffc9217c2051324fc95398c1af43dc9661c374fd704"
     },
     "WALK_FORWARD": {
      "state": "NOT_RUN"
@@ -3112,7 +3658,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "EXECUTED",
@@ -3255,7 +3801,7 @@
      "oneWayTurnoverSum": 1.808796082700731
     }
    },
-   "resultHash": "d892c19e19b0f0ee51d262fdab69f78bf1c7a9bd1dc16ef13725c71a2e94cdca",
+   "resultHash": "8a0267b7828bd88b977114f7c4ce1c4a77bf8ba7bce7fe513551ac3e853b74af",
    "group": "MATRIX"
   },
   {
@@ -3350,7 +3896,7 @@
        ]
       }
      ],
-     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
+     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -3377,7 +3923,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "14a1d048fcb99925bef1a0f0ad9dd00ca230291a3f47a6384c65d9e07e03717f",
+   "resultHash": "26584c0fd6b8521b3e888476dc6a1963c3cc2aaa2a1f768a8976a8a1e11f8831",
    "group": "MATRIX"
   },
   {
@@ -3471,7 +4017,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "69d162da3bd4cf6b5263fbb6da52894bb61535235828079593bb7ede7661c960",
+   "resultHash": "57bd0b3bb4ae33ed543d884444ba25c8886fbca0f54d2192921dd5a144fb514e",
    "group": "MATRIX"
   }
  ]
