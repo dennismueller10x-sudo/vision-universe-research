@@ -372,3 +372,83 @@ test("LS-16 ohne Anbieterzeitstempel wird nichts erfunden", () => {
     assert.equal(l.price, 123.45);
   });
 });
+
+/* ---------------------------------------- Verlauf aus dem Strom (13.11.2026) */
+
+/* Welt, in der der Snapshot der laufenden Sitzung noch fehlt: nur der Vortag (16.09.) liegt vor. */
+function weltOhneHeute(now, stream, mitVortag) {
+  const antworten = {}, eintraege = {};
+  if (mitVortag) {
+    const s = snap("AAPL", 78, true); s.sessionDate = "2026-09-16"; s.asOf = "2026-09-16T20:00:00.000Z";
+    antworten["/snap/AAPL.json"] = s; eintraege.AAPL = eintrag("AAPL", s);
+  }
+  antworten["/idx.json"] = idx(eintraege, { sessionDate: "2026-09-17", isComplete: false });
+  return fenster(antworten, now, stream);
+}
+const tick = (sym, preis, ms) => ({ op: "u", v: [[sym, preis, ms, preis, preis, preis, preis]] });
+const MIN = 60000;
+
+test("LS-17 ohne Snapshot der laufenden Sitzung baut der Strom den Verlauf (Minutentakt, ab dem zweiten Punkt; Vortag bleibt Original)", async () => {
+  const h = weltOhneHeute(OFFEN, STROM, true);
+  const a = await aufAktienseite(h);
+  assert.equal(a.letzte().snapshot.sessionDate, "2026-09-16", "vor dem ersten Tick: der Vortag, wie bisher");
+  h.sockets[0].oeffnen();
+  h.sockets[0].sagt(tick("AAPL", 200.1, Date.parse(OFFEN) + 2 * MIN));     /* 10:02 */
+  assert.equal(a.letzte().snapshot.sessionDate, "2026-09-16", "ein Punkt ist noch kein Verlauf");
+  h.sockets[0].sagt(tick("AAPL", 200.4, Date.parse(OFFEN) + 2 * MIN + 5000)); /* 10:02, gleiche Minute */
+  h.sockets[0].sagt(tick("AAPL", 201.0, Date.parse(OFFEN) + 7 * MIN));     /* 10:07 */
+  h.vor(7 * MIN);
+  const p = a.letzte();
+  assert.equal(p.snapshot.sessionDate, "2026-09-17");
+  assert.equal(p.snapshot.fromStream, true);
+  assert.equal(p.snapshot.fromStreamSince, "10:02");
+  assert.deepEqual(p.snapshot.points, [["10:02", 200.4], ["10:07", 201.0]]);
+  assert.equal(p.snapshot.regularComplete, false);
+  assert.equal(p.snapshotVorStrom.sessionDate, "2026-09-16", "das Original bleibt Original");
+  assert.deepEqual(h.w.VURealtime.IntradaySnapshot.validate(p.snapshot).findings, [], "der Chart verlangt einen gueltigen Snapshot");
+  assert.equal(p.live.fromStream, true);
+  assert.equal(p.live.priceType, "REALTIME_REFERENCE");
+  assert.equal(p.freshness.freshnessState, "LIVE");
+});
+
+test("LS-18 ganz ohne Snapshot (neuer Titel) entsteht der Verlauf aus dem Strom, sobald es zwei Minuten gibt", async () => {
+  const h = weltOhneHeute(OFFEN, STROM, false);
+  const a = await aufAktienseite(h);
+  h.sockets[0].oeffnen();
+  h.sockets[0].sagt(tick("AAPL", 55.5, Date.parse(OFFEN) + 1 * MIN));
+  h.sockets[0].sagt(tick("AAPL", 55.7, Date.parse(OFFEN) + 2 * MIN));
+  const p = a.letzte();
+  assert.ok(p && p.snapshot, "es gibt einen Verlauf");
+  assert.equal(p.snapshot.fromStream, true);
+  assert.equal(p.snapshot.points.length, 2);
+});
+
+test("LS-19 Ist der Snapshot der laufenden Sitzung da, bleibt er der Verlauf: der Strom ersetzt ihn nicht", async () => {
+  const h = welt(OFFEN, STROM);
+  const a = await aufAktienseite(h);
+  h.sockets[0].oeffnen();
+  h.sockets[0].sagt(tick("AAPL", 123.45, Date.parse(OFFEN)));
+  const p = a.letzte();
+  assert.equal(p.snapshot.fromStream, undefined);
+  assert.equal(p.snapshot.points.length, 7);
+  assert.equal(p.snapshotVorStrom, undefined);
+});
+
+test("LS-20 ein Tick von gestern oder geschlossene Boerse erzeugt keinen Verlauf", async () => {
+  const h = weltOhneHeute(OFFEN, STROM, true);
+  const a = await aufAktienseite(h);
+  h.sockets[0].oeffnen();
+  h.sockets[0].sagt(tick("AAPL", 200, Date.parse(OFFEN) - 24 * 60 * MIN));   /* Tick von gestern */
+  assert.equal(a.letzte().snapshot.sessionDate, "2026-09-16");
+  assert.equal(a.letzte().snapshot.fromStream, undefined);
+  const g = weltOhneHeute(SAMSTAG, STROM, true);
+  const b = await aufAktienseite(g);
+  assert.equal(g.protokoll.opens, 0);
+  assert.equal(b.letzte().snapshot.fromStream, undefined);
+});
+
+test("LS-21 die Detailseite beschriftet den Verlauf aus dem Strom ehrlich und holt die Startlinie aus der Tagesreihe", () => {
+  const d = src("discover/ui/detail.js");
+  assert.match(d, /Verlauf ab " \+ snap\.fromStreamSince \+ " aus dem Live-Strom/);
+  assert.match(d, /snap\.fromStream && letzterTag < snap\.sessionDate/);
+});

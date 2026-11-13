@@ -87,6 +87,7 @@
       cfg: null, socket: null, state: "IDLE", reason: null, seit: null,
       subs: Object.create(null),        /* SYMBOL -> [cb] */
       werte: Object.create(null),       /* SYMBOL -> {price, at, o,h,l,c, receivedAt} */
+      reihe: Object.create(null),       /* SYMBOL -> {tag, punkte: [[HH:MM, Kurs]]} der Strom-Ticks im Minutentakt */
       abgelehnt: Object.create(null),   /* SYMBOL -> Grund */
       angemeldet: Object.create(null),  /* was der Worker bestaetigt hat */
       hello: null, versuche: 0, retry: null, ping: null, verfall: null,
@@ -527,6 +528,54 @@
     if (weg.length) { stromSenden({ op: "unsubscribe", symbols: weg }); weg.forEach(function (s2) { delete lv.angemeldet[s2]; }); }
   }
 
+  /* DER VERLAUF AUS DEM STROM (13.11.2026)
+     Bis der erste Datenlauf des Tages ausgeliefert ist (am 12.11. rund 20 Minuten nach der Eroeffnung), gibt es keinen Snapshot
+     der laufenden Sitzung; die Seite zeigte den Vortag mit "heutige Kurse fehlen", obwohl der Strom Kurse lieferte. Jeder Tick
+     faellt deshalb auch in einen Minuten-Faecher (Ortszeit New York, letzter Kurs je Minute). Daraus
+     entsteht - nur solange kein Snapshot der laufenden Sitzung da ist - ein ehrlich beschrifteter Verlauf ab dem ersten Tick. */
+  function faecherZeit(ms) {
+    var z = ortszeit(ms, "America/New_York");
+    return z && /^\d{2}:\d{2}$/.test(z) ? z : null;
+  }
+  function ortsTag(ms) {
+    try { return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(new Date(ms)); }
+    catch (err) { return null; }
+  }
+  function reiheFuehren(sym, w) {
+    if (!w || typeof w.price !== "number" || !(w.price > 0)) return;
+    var tag = ortsTag(w.at), zeit = faecherZeit(w.at);
+    if (!tag || !zeit || zeit < "09:30" || zeit >= "16:00") return;
+    var r = lv.reihe[sym];
+    if (!r || r.tag !== tag) r = lv.reihe[sym] = { tag: tag, punkte: [] };
+    var l = r.punkte.length ? r.punkte[r.punkte.length - 1] : null;
+    if (l && l[0] === zeit) l[1] = w.price;
+    else if (!l || l[0] < zeit) r.punkte.push([zeit, w.price]);
+    /* ein Nachzuegler aus einem frueheren Faecher aendert nichts */
+    if (r.punkte.length > 400) r.punkte.shift();
+  }
+  /* Der Verlauf aus dem Strom, wenn er die Luecke fuellen darf: Boerse offen, frischer Tick, und der Snapshot ist nicht von der
+     laufenden Sitzung (fehlt oder ist von einem frueheren Tag). Das Original bleibt Original: p.snapshotVorStrom. */
+  function verlaufAusStrom(p, sym) {
+    var r = lv.reihe[sym], w = lv.werte[sym];
+    if (!r || r.punkte.length < 2 || !w || !p.resolution || p.resolution.marketState !== "OPEN") return false;
+    var heute = (p.resolution.displaySession && p.resolution.displaySession.sessionDate) || p.resolution.localDate;
+    if (!heute || r.tag !== heute) return false;
+    if (p.snapshot && p.snapshot.sessionDate && p.snapshot.sessionDate >= heute) return false;
+    var asOf = new Date(w.at).toISOString();
+    p.snapshotVorStrom = p.snapshot || null;
+    p.snapshot = {
+      schemaVersion: "intraday-snapshot-1.0.0", sessionDate: heute, timezone: "America/New_York", symbol: sym,
+      sessionOpenLocal: "09:30", sessionCloseLocal: "16:00", interval: "1min",
+      publishBasis: "Live-Strom: Kursreferenz aus einem Teilmarkt, Verlauf aus den Ticks dieser Sitzung",
+      points: r.punkte.map(function (x) { return [x[0], x[1]]; }), pointCount: r.punkte.length,
+      previousClose: null, regularComplete: false, isComplete: false,
+      asOf: asOf, lastBarTimestamp: asOf, asOfLocal: ortszeit(w.at, "America/New_York"),
+      isLive: false, isDelayed: false, dataMode: "real", provider: "tiingo",
+      fromStream: true, fromStreamSince: r.punkte[0][0]
+    };
+    return true;
+  }
+
   function stromNachricht(n) {
     if (n.op === "u" && Array.isArray(n.v)) {
       var jetzt = st.now().getTime();
@@ -541,6 +590,7 @@
                           providerAt: typeof z[7] === "number" ? z[7] : null,
                           receivedAt: jetzt };
         delete lv.abgelehnt[sym];
+        reiheFuehren(sym, lv.werte[sym]);
         lv.stats.ticks++;
         betroffen.push(sym);
       });
@@ -624,6 +674,8 @@
          das ist keine Herkunftsangabe, sondern eine Einschraenkung. */
       note: "Kursreferenz aus einem Teilmarkt. Kein offizieller Abschluss."
     };
+    if (frisch) verlaufAusStrom(p, sym);
+    if (p.live && p.snapshot && p.snapshot.fromStream) p.live.fromStream = true;
     if (frisch && p.snapshot) {
       var sicht = {};
       Object.keys(p.snapshot).forEach(function (k) { sicht[k] = p.snapshot[k]; });
@@ -723,6 +775,7 @@
       if (!liste.length) {
         delete lv.subs[sym];
         delete lv.werte[sym];
+        delete lv.reihe[sym];
         delete lv.abgelehnt[sym];
         if (lv.state === "OPEN") stromAbgleichen();
       }
