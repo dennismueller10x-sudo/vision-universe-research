@@ -1140,7 +1140,11 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     if (o.intraday && isNum(o.previousClose)) svg.setAttribute("data-v2-previous-close-scale", "true");
     if (o.range) svg.setAttribute("data-range", o.range);
     var basis = svg.querySelector(".vu-chart-base"); if (basis) basis.classList.add("dx-art-base");
-    [].forEach.call(svg.querySelectorAll("text.vu-chart-axis"), function (t) { t.classList.add(o.intraday ? "dx-micro-axis" : "dx-range-axis"); });
+    /* Zeitmarken (unten) und Kursmarken (rechts) behalten die Klassen, an denen die QA sie erkennt. */
+    [].forEach.call(svg.querySelectorAll("text.vu-chart-axis"), function (t) {
+      var unten = Number(t.getAttribute("y")) > g.h - 12;
+      t.classList.add(o.intraday ? "dx-micro-axis" : (unten ? "dx-range-date" : "dx-range-axis"));
+    });
     return svg;
   }
 
