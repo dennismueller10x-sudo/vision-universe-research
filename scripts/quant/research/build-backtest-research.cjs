@@ -2,6 +2,7 @@
 'use strict';
 // Erzeuger des Produktartefakts quant/data/product/backtest-research-v1.json (Datenart backtestResearch).
 //   node scripts/quant/research/build-backtest-research.cjs [--out <datei>] [--as-of YYYY-MM-DD]
+//        [--private-delisted <dir>] [--private-factor-panel <panel.jsonl.gz>]   (im Wochenlauf aus dem R2-Archiv)
 //
 // Rechnet die festen Prüffälle aus docs/quant/backtest-demos/cases.json mit dem Research-Runner
 // (scripts/quant/research/backtest-runner.cjs) und schreibt je Fall die Zusatzmethoden in kompakter Form:
@@ -28,7 +29,7 @@ const METHODS = ['MONTE_CARLO', 'WALK_FORWARD', 'OUT_OF_SAMPLE', 'MARKET_REGIME'
 function parse(argv) {
   const o = {};
   for (let i = 0; i < argv.length; i += 2) {
-    const k = { '--out': 'out', '--as-of': 'asOf' }[argv[i]];
+    const k = { '--out': 'out', '--as-of': 'asOf', '--private-delisted': 'delisted', '--private-factor-panel': 'factorPanel' }[argv[i]];
     if (!k || !argv[i + 1]) throw Error('INVALID_ARGUMENTS:' + argv[i]);
     o[k] = argv[i + 1];
   }
@@ -100,7 +101,7 @@ function build(opts = {}) {
   const list = [CASES, MATRIX_CASES].flatMap(f => JSON.parse(fs.readFileSync(f, 'utf8')).cases.map(c => ({ ...c, file: f, group: f === MATRIX_CASES ? 'MATRIX' : 'DEMO' })));
   const cases = list.filter(c => !opts.only || opts.only.includes(c.id)).map(c => {
     const s = JSON.parse(fs.readFileSync(path.join(path.dirname(c.file), c.spec), 'utf8'));
-    return { ...caseRow(c, R.runBacktest(s, { cacheDir: null, privateDirs: { delistedSeries: null, factorPanel: null } })), group: c.group };
+    return { ...caseRow(c, R.runBacktest(s, { cacheDir: null, privateDirs: { delistedSeries: opts.delisted || null, factorPanel: opts.factorPanel || null } })), group: c.group };
   });
   const display = JSON.parse(fs.readFileSync(DISPLAY, 'utf8'));
   const isPublic = display.public === true && !!(display.approval && display.approval.text === display.approvalPhrase);
@@ -115,6 +116,8 @@ function build(opts = {}) {
       reason: isPublic ? null : 'Öffentliche Rendite- oder Performanceaussagen brauchen eine Owner-Freigabe (CLAUDE.md, Freigaben).' },
     certificationStatus: 'NOT_CERTIFIED',
     productionApproved: false,
+    // Private Eingaenge (delistete Reihen, V10-Faktorpanel) aus dem verschluesselten Archiv; veroeffentlicht werden nur abgeleitete Kennzahlen.
+    privateInputs: { delistedSeries: !!opts.delisted, factorPanel: !!opts.factorPanel },
     source: ['docs/quant/backtest-demos/cases.json', 'docs/quant/backtest-research/cases.json'],
     kinds: KINDS, methods: METHODS,
     matrix: matrix(cases),
@@ -128,7 +131,7 @@ function build(opts = {}) {
 function main(argv = process.argv.slice(2)) {
   const o = parse(argv);
   const out = path.resolve(o.out || DEFAULT_OUT);
-  const doc = build({ asOf: o.asOf });
+  const doc = build({ asOf: o.asOf, delisted: o.delisted, factorPanel: o.factorPanel });
   fs.mkdirSync(path.dirname(out), { recursive: true });
   fs.writeFileSync(out, JSON.stringify(doc, null, 1) + '\n');
   console.log(JSON.stringify({ out: path.relative(ROOT, out), ...doc.summary }));
