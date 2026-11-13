@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-13T03:23:35.759Z",
+ "generatedAt": "2026-11-13T06:30:58.768Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -82,9 +82,9 @@
    "context": [
     {
      "dimension": "CROSS_ASSET",
-     "state": "CALM",
-     "label": "Ruhiges Gesamtbild",
-     "text": "Im letzten Monat gab es keine ungewöhnlich großen Bewegungen über die Anlageklassen hinweg."
+     "state": "OBSERVED",
+     "label": "Auffällige Bewegungen",
+     "text": "Gold ist deutlich gefallen."
     }
    ]
   },
@@ -99,13 +99,13 @@
    "MOMENTUM": "FALLING",
    "RISK": "ELEVATED",
    "BREADTH": "NARROW",
-   "CROSS_ASSET": "CALM"
+   "CROSS_ASSET": "OBSERVED"
   },
   "methodology": "Feste Entscheidungstabelle (market-environment-1.0.0): Trend und Momentum bilden gemeinsam die Basisstufe (sie überschneiden sich und zählen deshalb nicht doppelt). Das Risiko begrenzt nach oben (erhöht: höchstens „Selektiv“, hoch: höchstens „Vorsichtig“). Die Marktbreite bestätigt: „Breit konstruktiv“ nur mit aktueller breiter Beteiligung; schmale Breite begrenzt auf „Selektiv“. Fehlt die Marktbreite, zählt sie weder dafür noch dagegen. Der Cross-Asset-Kontext beschreibt Beziehungen und stimmt nicht mit ab. Kein Score, keine Gewichte, keine Prognose.",
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-13T03:23:35.759Z",
+  "generatedAt": "2026-11-13T06:30:58.768Z",
   "dataAsOf": "2026-11-12",
   "previousDataAsOf": "2026-11-11",
   "schedule": {
@@ -297,6 +297,19 @@
    "anchor": "puls-trend"
   },
   {
+   "dimension": "CROSS_ASSET",
+   "title": "Kontext: Gold ist deutlich gefallen",
+   "state": "OBSERVED",
+   "stateLabel": "Auffällige Bewegungen",
+   "why": "Gold wird oft als defensiver Baustein beobachtet. Ob es in dieser Phase so wirkt, zeigt erst der Verlauf.",
+   "watch": [],
+   "symbols": [
+    "XAUUSD"
+   ],
+   "near": false,
+   "anchor": "maerkte-crossasset"
+  },
+  {
    "dimension": "MOMENTUM",
    "title": "Dynamik über 3 und 6 Monate",
    "state": "FALLING",
@@ -435,13 +448,13 @@
    "previousDate": "2026-11-11"
   },
   "CROSS_ASSET": {
-   "value": 0,
+   "value": 1,
    "min": 0,
    "max": 6,
    "unit": "COUNT",
    "context": true,
    "marks": [],
-   "valueText": "0 von 6 Anlageklassen deutlich bewegt",
+   "valueText": "1 von 6 Anlageklassen deutlich bewegt",
    "zones": [
     {
      "from": 0,
@@ -663,9 +676,9 @@
   },
   "CROSS_ASSET": {
    "id": "CROSS_ASSET",
-   "state": "CALM",
-   "label": "Ruhiges Gesamtbild",
-   "summary": "Im letzten Monat gab es keine ungewöhnlich großen Bewegungen über die Anlageklassen hinweg.",
+   "state": "OBSERVED",
+   "label": "Auffällige Bewegungen",
+   "summary": "Gold ist deutlich gefallen.",
    "evidence": [
     {
      "key": "EQUITY",
@@ -690,10 +703,10 @@
     {
      "key": "GOLD",
      "label": "Gold",
-     "text": "−4,2 % · 0,8-fach typisch",
-     "change": -4.238,
-     "ratio": -0.8,
-     "notable": false,
+     "text": "−6,6 % · 1,2-fach typisch (deutlich)",
+     "change": -6.606,
+     "ratio": -1.25,
+     "notable": true,
      "asOf": "2026-11-12",
      "kind": "PERCENT"
     },
@@ -730,7 +743,15 @@
    ],
    "explanation": "Anlageklassen hängen oft zusammen, aber nicht immer gleich. Hier steht, was sich gleichzeitig bewegt hat – nicht, warum.",
    "methodology": "Veränderung über einen Monat (21 Beobachtungen) je Anlageklasse, verglichen mit der typischen Veränderung desselben Zeitraums in den letzten 10 Jahren (Standardabweichung). Deutlich ab 1,0-fach typisch. Beschrieben werden nur gleichzeitige deutliche Bewegungen – keine Ursache, keine Bewertung. Steigende Renditen, steigendes Gold oder Bitcoin gelten nicht automatisch als gut oder schlecht.",
-   "observations": []
+   "observations": [
+    {
+     "id": "GOLD_DOWN",
+     "text": "Gold ist deutlich gefallen.",
+     "symbols": [
+      "XAUUSD"
+     ]
+    }
+   ]
   }
  },
  "dimensionStates": {
@@ -738,7 +759,7 @@
   "BREADTH": "NARROW",
   "MOMENTUM": "FALLING",
   "RISK": "ELEVATED",
-  "CROSS_ASSET": "CALM"
+  "CROSS_ASSET": "OBSERVED"
  },
  "movers": {
   "session": "2026-11-12",
@@ -851,12 +872,12 @@
   "XAUUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-12",
-   "last": 3979.13,
+   "last": 3880.71,
    "observations": 1530,
    "changes": {
-    "1M": -4.24,
-    "3M": -8.66,
-    "1Y": -5.06
+    "1M": -6.61,
+    "3M": -10.92,
+    "1Y": -7.41
    },
    "high52w": {
     "date": "2026-01-28",
@@ -866,12 +887,12 @@
     "date": "2026-10-30",
     "value": 3873.01
    },
-   "rangePosition": 6.5,
-   "dist50": -3.7,
-   "dist200": -8.2,
+   "rangePosition": 0.5,
+   "dist50": -6.04,
+   "dist200": -10.46,
    "trend": "NEGATIVE",
-   "drawdown52w": -27.82,
-   "vol20": 24.86,
+   "drawdown52w": -29.61,
+   "vol20": 26.18,
    "volContext": {
     "median": 13.7,
     "p25": 10.5,
@@ -883,21 +904,21 @@
    "roles": [
     {
      "dimension": "CROSS_ASSET",
-     "state": "CALM",
-     "stateLabel": "Ruhiges Gesamtbild",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −4,2 % – das 0,8-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "state": "OBSERVED",
+     "stateLabel": "Auffällige Bewegungen",
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −6,6 % – das 1,3-Fache einer typischen Monatsbewegung, also deutlich."
     }
    ]
   },
   "XAGUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-12",
-   "last": 51.5295,
+   "last": 50.1165,
    "observations": 1530,
    "changes": {
-    "1M": -12.64,
-    "3M": -20.17,
-    "1Y": -3.22
+    "1M": -15.04,
+    "3M": -22.36,
+    "1Y": -5.87
    },
    "high52w": {
     "date": "2026-01-28",
@@ -907,12 +928,12 @@
     "date": "2026-10-30",
     "value": 49.0705
    },
-   "rangePosition": 3.6,
-   "dist50": -10.83,
-   "dist200": -21.63,
+   "rangePosition": 1.5,
+   "dist50": -13.24,
+   "dist200": -23.77,
    "trend": "NEGATIVE",
-   "drawdown52w": -56.25,
-   "vol20": 40.83,
+   "drawdown52w": -57.45,
+   "vol20": 41.03,
    "volContext": {
     "median": 25.7,
     "p25": 20.5,
@@ -926,12 +947,12 @@
   "XPTUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-12",
-   "last": 1539.02,
+   "last": 1526.09,
    "observations": 1509,
    "changes": {
-    "1M": -7.31,
-    "3M": -10.55,
-    "1Y": -4.69
+    "1M": -8.09,
+    "3M": -11.3,
+    "1Y": -5.49
    },
    "high52w": {
     "date": "2026-01-23",
@@ -941,12 +962,12 @@
     "date": "2026-11-03",
     "value": 1433.03
    },
-   "rangePosition": 7.8,
-   "dist50": -5.98,
-   "dist200": -13.57,
+   "rangePosition": 6.9,
+   "dist50": -6.75,
+   "dist200": -14.29,
    "trend": "NEGATIVE",
-   "drawdown52w": -44.71,
-   "vol20": 33.45,
+   "drawdown52w": -45.18,
+   "vol20": 33.31,
    "volContext": {
     "median": 24.4,
     "p25": 20.3,
@@ -960,12 +981,12 @@
   "XPDUSD": {
    "kind": "PRICE",
    "asOf": "2026-11-12",
-   "last": 1036.605,
+   "last": 998.765,
    "observations": 1501,
    "changes": {
-    "1M": -7.94,
-    "3M": -21.05,
-    "1Y": -29.62
+    "1M": -11.3,
+    "3M": -23.94,
+    "1Y": -32.19
    },
    "high52w": {
     "date": "2026-01-28",
@@ -975,12 +996,12 @@
     "date": "2026-11-03",
     "value": 937.425
    },
-   "rangePosition": 8.9,
-   "dist50": -9.47,
-   "dist200": -21.13,
+   "rangePosition": 5.5,
+   "dist50": -12.72,
+   "dist200": -23.99,
    "trend": "NEGATIVE",
-   "drawdown52w": -49.53,
-   "vol20": 36.1,
+   "drawdown52w": -51.38,
+   "vol20": 37.47,
    "volContext": {
     "median": 33.1,
     "p25": 27.5,
@@ -1026,8 +1047,8 @@
    "roles": [
     {
      "dimension": "CROSS_ASSET",
-     "state": "CALM",
-     "stateLabel": "Ruhiges Gesamtbild",
+     "state": "OBSERVED",
+     "stateLabel": "Auffällige Bewegungen",
      "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −5,7 % – das 0,3-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
@@ -1135,8 +1156,8 @@
    "roles": [
     {
      "dimension": "CROSS_ASSET",
-     "state": "CALM",
-     "stateLabel": "Ruhiges Gesamtbild",
+     "state": "OBSERVED",
+     "stateLabel": "Auffällige Bewegungen",
      "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −14,1 % – das 0,6-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
@@ -1278,8 +1299,8 @@
    "roles": [
     {
      "dimension": "CROSS_ASSET",
-     "state": "CALM",
-     "stateLabel": "Ruhiges Gesamtbild",
+     "state": "OBSERVED",
+     "stateLabel": "Auffällige Bewegungen",
      "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −1,0 % – das 0,5-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
@@ -1354,8 +1375,8 @@
    "roles": [
     {
      "dimension": "CROSS_ASSET",
-     "state": "CALM",
-     "stateLabel": "Ruhiges Gesamtbild",
+     "state": "OBSERVED",
+     "stateLabel": "Auffällige Bewegungen",
      "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −11 bp – das 0,5-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
@@ -1563,8 +1584,8 @@
     },
     {
      "dimension": "CROSS_ASSET",
-     "state": "CALM",
-     "stateLabel": "Ruhiges Gesamtbild",
+     "state": "OBSERVED",
+     "stateLabel": "Auffällige Bewegungen",
      "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −2,7 % – das 0,6-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
