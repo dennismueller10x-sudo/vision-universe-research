@@ -326,7 +326,8 @@
    "WALK_FORWARD": {
     "state": "EXECUTED",
     "cases": [
-     "matrix-factor-sample"
+     "matrix-factor-sample",
+     "matrix-profile-mean-sample"
     ],
     "verdict": "REGIME_DEPENDENT",
     "verdictCase": "matrix-factor-sample"
@@ -334,7 +335,8 @@
    "OUT_OF_SAMPLE": {
     "state": "EXECUTED",
     "cases": [
-     "matrix-factor-sample"
+     "matrix-factor-sample",
+     "matrix-profile-mean-sample"
     ],
     "verdict": "REGIME_DEPENDENT",
     "verdictCase": "matrix-factor-sample"
@@ -343,7 +345,8 @@
     "state": "EXECUTED",
     "cases": [
      "factor-momentum-v10-panel",
-     "matrix-factor"
+     "matrix-factor",
+     "matrix-profile-mean"
     ],
     "verdict": "REGIME_DEPENDENT",
     "verdictCase": "matrix-factor"
@@ -831,7 +834,9 @@
       "value": [
        "factor-momentum-v10-panel",
        "matrix-factor",
-       "matrix-factor-sample"
+       "matrix-factor-sample",
+       "matrix-profile-mean",
+       "matrix-profile-mean-sample"
       ],
       "reason": null
      },
@@ -839,7 +844,8 @@
       "id": "WALK_FORWARD",
       "state": "PASS",
       "value": [
-       "matrix-factor-sample"
+       "matrix-factor-sample",
+       "matrix-profile-mean-sample"
       ],
       "reason": null
      },
@@ -847,7 +853,8 @@
       "id": "OUT_OF_SAMPLE",
       "state": "PASS",
       "value": [
-       "matrix-factor-sample"
+       "matrix-factor-sample",
+       "matrix-profile-mean-sample"
       ],
       "reason": null
      },
@@ -856,7 +863,8 @@
       "state": "PASS",
       "value": [
        "factor-momentum-v10-panel",
-       "matrix-factor"
+       "matrix-factor",
+       "matrix-profile-mean"
       ],
       "reason": null
      },
@@ -911,14 +919,14 @@
   ]
  },
  "summary": {
-  "cases": 23,
-  "executed": 22,
+  "cases": 25,
+  "executed": 24,
   "dataLimited": 1,
   "methods": {
    "MONTE_CARLO": 8,
-   "WALK_FORWARD": 9,
-   "OUT_OF_SAMPLE": 7,
-   "MARKET_REGIME": 18,
+   "WALK_FORWARD": 10,
+   "OUT_OF_SAMPLE": 8,
+   "MARKET_REGIME": 19,
    "PARAMETER_SENSITIVITY": 7,
    "EVENT_DRIVEN": 6,
    "PORTFOLIO_REBALANCING": 7
@@ -1091,7 +1099,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -1145,6 +1153,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2011-01-07",
@@ -1165,7 +1174,7 @@
     "variants": 3,
     "maxDrawdown": -0.16433566433566427
    },
-   "resultHash": "6005feccafb393e589fbaa8f43951119f2155479182e9b380673a01e64ee1afa",
+   "resultHash": "9ddcb8d64fe40afd099457c67b2b6de30d4671e7fb14377b4d3ce1bb3ae542ec",
    "group": "DEMO"
   },
   {
@@ -1248,7 +1257,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "FAILED",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -1262,6 +1271,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2019-03-15",
@@ -1282,7 +1292,7 @@
     "variants": 1,
     "maxDrawdown": -0.2828832007585582
    },
-   "resultHash": "cef8a2bd775dd72b1fcbc8a0cf9694a54113d2a16b06e35bf6070275abeab1cd",
+   "resultHash": "fee9bab807f837073bf19dca14f069a7368e752a230506dc7858dea6dcbbc289",
    "group": "DEMO"
   },
   {
@@ -1334,7 +1344,7 @@
       "p95": 0
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "af90d4929a9266606fb923b4db00123146f4b1537a9fc7289d9b674d2ef96144",
+     "inputHash": "eb6a552c5f56302291e8108eeb21889562f2b8c5974a9bb5234aae73ecbdecbd",
      "verdict": "PROVEN",
      "basis": "Spanne 5 %/Mitte"
     },
@@ -1357,6 +1367,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2015-12-31",
@@ -1377,7 +1388,7 @@
     "variants": 1,
     "maxDrawdown": -0.4152249134948097
    },
-   "resultHash": "dea6b9209cbb64cbc8741ffd5cfac0f9701fe7d1af7da5a18c7dc5cb583e5fcb",
+   "resultHash": "70f6b729bc87250c9828b3f87dd368a326c1c87073fdb9ee18565309c5a47157",
    "group": "DEMO"
   },
   {
@@ -1489,7 +1500,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "REGIME_DEPENDENT",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -1503,6 +1514,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2015-01-02",
@@ -1523,7 +1535,7 @@
     "variants": 1,
     "maxDrawdown": -0.0849599380758847
    },
-   "resultHash": "d34ea6dd11ac5c513b9afa3a2cd939ac536b911107e8241d55f3e22d6da878e2",
+   "resultHash": "35f8445f93bbde5bf85dae2ded3becb17dc5633a3c9e8e2f7b7d1532a734f368",
    "group": "DEMO"
   },
   {
@@ -1574,7 +1586,7 @@
       "p95": -0.061743077040011765
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "84bae25342df86ed5b7cb1f90ff2cb952c78a6292fed3aa1d2a6fb7b4ba491ba",
+     "inputHash": "9dd9a723e7fc713300a5fab047d445e6bde1a79840cdfa8ddafa17364e145f5b",
      "verdict": "FAILED",
      "basis": "Spanne 5 %/Mitte"
     },
@@ -1655,7 +1667,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "FAILED",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -1683,6 +1695,7 @@
      "basis": "Depot gegen S&P 500 im selben Zeitraum"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2007-10-05",
@@ -1703,7 +1716,7 @@
     "variants": 1,
     "maxDrawdown": -0.21942697414395518
    },
-   "resultHash": "a6ee5512bf8340d24809440b90b3c0cd6c797a12c80cd9b2337f23158a36dc8a",
+   "resultHash": "ecbc4bf3685d259313b35ebd98c0cfe8168ae43385cbc3344521639cfc83b21b",
    "group": "DEMO"
   },
   {
@@ -1796,7 +1809,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -1892,6 +1905,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2009-03-27",
@@ -1912,7 +1926,7 @@
     "variants": 6,
     "maxDrawdown": -0.0990322580645161
    },
-   "resultHash": "7a6f031e687023c7681712804a7047db11b9b8aac2aa48a9d19ff7c5fbff8f6c",
+   "resultHash": "1b84cb6cbf9864df1f40f6c00f8dbb3ea5a536b1bb7be84a61cb73250059ed3d",
    "group": "DEMO"
   },
   {
@@ -2003,7 +2017,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -2031,6 +2045,7 @@
      "basis": "Depot gegen S&P 500 im selben Zeitraum"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2020-01-10",
@@ -2051,7 +2066,7 @@
     "variants": 1,
     "maxDrawdown": -0.10075808557834737
    },
-   "resultHash": "c95db2b86e44b7ca9df212d91e095c790d9e249c70adb8306ed920913aed3f35",
+   "resultHash": "3dacd116db756c222f047433d1deca49e9ad47c391b20481ff68ed2d7b020eab",
    "group": "DEMO"
   },
   {
@@ -2144,7 +2159,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "REGIME_DEPENDENT",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -2158,6 +2173,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2022-01-07",
@@ -2178,7 +2194,7 @@
     "variants": 1,
     "maxDrawdown": -0.17650429799426937
    },
-   "resultHash": "d20a886dac42506070774e346d144652b3fa9024368f5d12dea52e1334becdad",
+   "resultHash": "741851daccf11383a544861125f14c8e2b0da64589eb35860369cae986b95ff4",
    "group": "DEMO"
   },
   {
@@ -2248,6 +2264,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2016-01-08",
@@ -2268,7 +2285,7 @@
     "variants": 1,
     "maxDrawdown": -0.1795696047702775
    },
-   "resultHash": "b4323a5f8017d077f89c10d0c59e9f36401817deec8ad9301ac5228ed1499f4d",
+   "resultHash": "1333b5dda4b0d8148a6cb4951b429cd707bc83b68cd7edc075526b8d5ab7d484",
    "group": "DEMO"
   },
   {
@@ -2319,7 +2336,7 @@
       "p95": -0.03750638977623477
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "abbd7720e41359e73dadb9c142abae2bfdc716490a49499af0ece7ce046a49f4",
+     "inputHash": "b2d3cd995b1d0ff48e3c64d06d2831da2ad3f0a02ff4f575f167b648a1dbf76d",
      "verdict": "PROVEN",
      "basis": "Spanne 5 %/Mitte"
     },
@@ -2359,7 +2376,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -2506,6 +2523,7 @@
      "oneWayTurnoverSum": 0.7153239035034699
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2019-01-04",
@@ -2526,7 +2544,7 @@
     "variants": 9,
     "maxDrawdown": -0.08863713315752031
    },
-   "resultHash": "ca0ecdd27c8d3c533aa82d320e99c14df98b5bb0291d9964a3e144eda02256c2",
+   "resultHash": "914fa12503c321cf018be53460a632ebe21c59d22c53233845369d96e782fe4c",
    "group": "DEMO"
   },
   {
@@ -2583,7 +2601,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -2609,6 +2627,7 @@
      "oneWayTurnoverSum": 0.8163442758928923
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2013-01-04",
@@ -2629,7 +2648,7 @@
     "variants": 1,
     "maxDrawdown": -0.06092001927846258
    },
-   "resultHash": "228a0fa4a52110fe5ce87cf1439979385e1ec50c48c552b0b9ea8b78c3e8666f",
+   "resultHash": "55522223d508f4ff3665c52398949726fbcfc07176c80dea9d2708313f550769",
    "group": "DEMO"
   },
   {
@@ -2716,6 +2735,7 @@
      "oneWayTurnoverSum": 0.49999999999999994
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2016-01-08",
@@ -2736,7 +2756,7 @@
     "variants": 1,
     "maxDrawdown": -0.19714479540341157
    },
-   "resultHash": "3a511d187f95065f2d0be39da889c6ccc3a64599523f919e83118a4dd7caeda1",
+   "resultHash": "08da56f0e3eb99efc3104ba03c94b82f5e224fb4cc121c4a650dd198f76eb7c9",
    "group": "DEMO"
   },
   {
@@ -2795,6 +2815,7 @@
      "state": "NOT_RUN"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": null,
@@ -2815,7 +2836,7 @@
     "variants": 1,
     "maxDrawdown": null
    },
-   "resultHash": "070e73f7c7c02e8f9570ba61c2b173c0a86f01a666806f110a876c1c8799c61b",
+   "resultHash": "9a1cbe4fc4d597880ce55153a98f8b250a2b1ead2bbb37f9eca6f96020649697",
    "group": "DEMO"
   },
   {
@@ -2910,7 +2931,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "REGIME_DEPENDENT",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -2923,6 +2944,21 @@
     "PORTFOLIO_REBALANCING": {
      "state": "NOT_APPLICABLE"
     }
+   },
+   "factor": {
+    "factorId": "momentum",
+    "buckets": 5,
+    "rankDates": 24,
+    "meanTopMinusBottom": -0.01582030584659121,
+    "topBeatsBottomShare": 0.5,
+    "bucketMeans": [
+     0.09679329039595348,
+     0.0539022119979872,
+     0.04912583778490855,
+     0.05171046132319684,
+     0.08097298454936228
+    ],
+    "meanSpearman": 0.03567899657604861
    },
    "disclosure": {
     "period": {
@@ -2944,7 +2980,7 @@
     "variants": 1,
     "maxDrawdown": -0.1403508771929824
    },
-   "resultHash": "1d05efa9f95614a16747511b021974c78303e57f3f57c76d4e9ea899a4e20c27",
+   "resultHash": "2b6e9a63365dfd3390784710fd49af2b0275b57b98b1a671ff47106c419930e3",
    "group": "DEMO"
   },
   {
@@ -3017,7 +3053,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "FAILED",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -3031,6 +3067,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2012-01-27",
@@ -3051,7 +3088,7 @@
     "variants": 1,
     "maxDrawdown": -0.46533799880881477
    },
-   "resultHash": "8dc67d642e1a2d1bd1b1fcac4caca0e3b1fee7a7b1ef8aec310d37c36de0ea19",
+   "resultHash": "8897b1a3a0827fdffe4ce3993da410653cf55fb19e922d8c98ac14763bee4b34",
    "group": "DEMO"
   },
   {
@@ -3116,7 +3153,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "FAILED",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -3130,6 +3167,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2015-07-31",
@@ -3150,7 +3188,7 @@
     "variants": 1,
     "maxDrawdown": -0.23399673889673311
    },
-   "resultHash": "57c4f56b9895339b1610d471a42f4f683657aefe691d1b4efe3eaf3be2502515",
+   "resultHash": "95ebb55dde77243dcf0b8d87f2cc46a792b1d7c96b3371c7474232340f3fa62a",
    "group": "DEMO"
   },
   {
@@ -3319,7 +3357,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -3387,6 +3425,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2011-01-07",
@@ -3407,7 +3446,7 @@
     "variants": 3,
     "maxDrawdown": -0.16433566433566427
    },
-   "resultHash": "6892b6688792be62f729900251e48a0f06771387782db714da3aab4a29dac1f3",
+   "resultHash": "96f71f0cb6673b9b6d0bdcc0f26d8626cf0815d53b3d6b188b6ab1d831440c97",
    "group": "MATRIX"
   },
   {
@@ -3569,7 +3608,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -3628,6 +3667,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2010-01-08",
@@ -3648,7 +3688,7 @@
     "variants": 2,
     "maxDrawdown": -0.08383751080380297
    },
-   "resultHash": "f5eb62bff8a385beb0484c7ff19b44d2faaa042b922d321a1375ee74c7c3d729",
+   "resultHash": "b88d79bab14001bdb8a97ee0cb2224128e0a6710f40d765b8a80d1c12d6c2ded",
    "group": "MATRIX"
   },
   {
@@ -3701,7 +3741,7 @@
       "p95": -0.019242539832195038
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "a8a32f1cb1e7f6d68ee6d411e914c493fdbb197791b6b56de103ab1927e815e0",
+     "inputHash": "728ae28c0ed019c37b6045c02921c8a0f3aa8e7bb4ef3f7d7f103a8a862681cd",
      "verdict": "REGIME_DEPENDENT",
      "basis": "Spanne 5 %/Mitte"
     },
@@ -3812,7 +3852,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -3939,6 +3979,7 @@
      "basis": "Depot gegen S&P 500 im selben Zeitraum"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2016-01-08",
@@ -3959,7 +4000,7 @@
     "variants": 6,
     "maxDrawdown": -0.11129363449691998
    },
-   "resultHash": "0a954f45916d5aaca208d773db34e3282f732c8b277ca39bcbf4f2b7f985afe9",
+   "resultHash": "a55eca28fde653dd00f74f7675da53a7fd492b7a0431bb5e61566b9c4d2cc114",
    "group": "MATRIX"
   },
   {
@@ -4066,7 +4107,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -4097,6 +4138,7 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2016-01-08",
@@ -4117,7 +4159,7 @@
     "variants": 1,
     "maxDrawdown": -0.1795696047702775
    },
-   "resultHash": "1d067d16e9c4d8aa4ee7346efb5d9f2dd890640fd3a7c09e25c821647692a5e0",
+   "resultHash": "8218c483e838bdcafd5d4c6fcb83fd1904fafd5662215130cf894dd309474cc9",
    "group": "MATRIX"
   },
   {
@@ -4170,7 +4212,7 @@
       "p95": -0.03645678185512934
      },
      "scope": "CONDITIONAL_RESAMPLING_NOT_A_FORECAST",
-     "inputHash": "92322bee417c8ad70bb7fffc9217c2051324fc95398c1af43dc9661c374fd704",
+     "inputHash": "05021cb3eaf3e50ab848267e8677d119b02eb5a7538b9acd65a1f552dab0af98",
      "verdict": "REGIME_DEPENDENT",
      "basis": "Spanne 5 %/Mitte"
     },
@@ -4218,7 +4260,7 @@
        "interval95": null
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "PROVEN",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -4365,6 +4407,7 @@
      "oneWayTurnoverSum": 1.808796082700731
     }
    },
+   "factor": null,
    "disclosure": {
     "period": {
      "from": "2016-01-08",
@@ -4385,7 +4428,7 @@
     "variants": 9,
     "maxDrawdown": -0.2738039816404989
    },
-   "resultHash": "8a0267b7828bd88b977114f7c4ce1c4a77bf8ba7bce7fe513551ac3e853b74af",
+   "resultHash": "a5c9a816efc21167d0ceb18f50d36bbaafd4d86fea74b7b885c661a5564ddc3e",
    "group": "MATRIX"
   },
   {
@@ -4480,7 +4523,7 @@
        ]
       }
      ],
-     "regimeResultHash": "100586e1a309e9ea2e14c73dafabc4abc7e92d34fc6e14a259790834325db6e6",
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
      "verdict": "REGIME_DEPENDENT",
      "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
     },
@@ -4511,6 +4554,21 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": {
+    "factorId": "momentum",
+    "buckets": 5,
+    "rankDates": 24,
+    "meanTopMinusBottom": -0.01582030584659121,
+    "topBeatsBottomShare": 0.5,
+    "bucketMeans": [
+     0.09679329039595348,
+     0.0539022119979872,
+     0.04912583778490855,
+     0.05171046132319684,
+     0.08097298454936228
+    ],
+    "meanSpearman": 0.03567899657604861
+   },
    "disclosure": {
     "period": {
      "from": "2019-01-25",
@@ -4531,7 +4589,7 @@
     "variants": 1,
     "maxDrawdown": -0.1403508771929824
    },
-   "resultHash": "26584c0fd6b8521b3e888476dc6a1963c3cc2aaa2a1f768a8976a8a1e11f8831",
+   "resultHash": "8044b9e461888a06492a2b652a5845d618981a2894a024fd394b2e4a8defb45f",
    "group": "MATRIX"
   },
   {
@@ -4629,6 +4687,21 @@
      "state": "NOT_APPLICABLE"
     }
    },
+   "factor": {
+    "factorId": "momentum",
+    "buckets": 5,
+    "rankDates": 24,
+    "meanTopMinusBottom": -0.050216051273275254,
+    "topBeatsBottomShare": 0.5416666666666666,
+    "bucketMeans": [
+     0.13151405588378662,
+     0.027554872067622017,
+     0.026597114635480066,
+     0.04261506430287837,
+     0.08129800461051136
+    ],
+    "meanSpearman": 0.02787020696091121
+   },
    "disclosure": {
     "period": {
      "from": "2019-01-25",
@@ -4649,7 +4722,282 @@
     "variants": 1,
     "maxDrawdown": -0.14426202046786646
    },
-   "resultHash": "57bd0b3bb4ae33ed543d884444ba25c8886fbca0f54d2192921dd5a144fb514e",
+   "resultHash": "7c986f2a3cd8af126496798cd39a9f5bd1b65a6b2d6e4baad4a8680edb82230c",
+   "group": "MATRIX"
+  },
+  {
+   "id": "matrix-profile-mean",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION"
+   ],
+   "purpose": "Quant-Profilwert (Mittel der sechs Faktoren, mindestens 4 belegt): Schnitten Aktien im obersten Fünftel besser ab als im untersten? 2019–2020, gesamte Population, Marktlage.",
+   "privateData": "factorPanel",
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": "2019-01-25",
+    "to": "2021-04-09",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 38070,
+    "completed": 38070
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.5824271079590229,
+    "maxDrawdown": -0.141962229387379,
+    "trades": 38070,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "NOT_RUN"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "NOT_RUN"
+    },
+    "MARKET_REGIME": {
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 9415,
+       "mean": 0.1469134700042285,
+       "median": 0.07342485499385876,
+       "interval95": [
+        -0.007213556845574037,
+        0.301040496854031
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 3051,
+       "mean": -0.0014456009683418074,
+       "median": 0.0010012526917111408,
+       "interval95": [
+        -0.012562543302486308,
+        0.009671341365802692
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 6584,
+       "mean": 0.12614617678256063,
+       "median": 0.07050909268716832,
+       "interval95": [
+        0.06462548539339616,
+        0.1876668681717251
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 19020,
+       "mean": 0.04374931504721076,
+       "median": 0.016600136273549282,
+       "interval95": [
+        -0.07693372847222185,
+        0.16443235856664337
+       ]
+      }
+     ],
+     "regimeResultHash": "82160579f82ad255606b3fec93fdfc92b58356e43d6ff07674df2d206365dc79",
+     "verdict": "REGIME_DEPENDENT",
+     "basis": "Marktlagen mit mindestens 5 Fällen im Plus"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "factor": {
+    "factorId": "PROFILE_MEAN",
+    "buckets": 5,
+    "rankDates": 24,
+    "meanTopMinusBottom": -0.10203321363307151,
+    "topBeatsBottomShare": 0.5,
+    "bucketMeans": [
+     0.14872549193553278,
+     0.08118735607136852,
+     0.05727662867476025,
+     0.04770499600896311,
+     0.046692278302461254
+    ],
+    "meanSpearman": -0.0024756154269171583
+   },
+   "disclosure": {
+    "period": {
+     "from": "2019-01-25",
+     "to": "2021-04-09"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.141962229387379
+   },
+   "resultHash": "9b445472652cc7c0042efaf5826771a4bf8cd9a9029017be3bb75591f2aed871",
+   "group": "MATRIX"
+  },
+  {
+   "id": "matrix-profile-mean-sample",
+   "kind": "FACTOR_RANKING_BACKTEST",
+   "scenarios": [
+    "RECONSTRUCTION"
+   ],
+   "purpose": "Quant-Profilwert, Stichprobe von 250 Titeln: Walk-Forward und spätere Testfenster.",
+   "privateData": "factorPanel",
+   "state": "RESEARCH_EXECUTED",
+   "evidenceKind": "TESTED",
+   "certificationStatus": "COLLECTING_HISTORY",
+   "period": {
+    "from": "2019-01-25",
+    "to": "2021-04-09",
+    "asOf": "2025-12-31",
+    "grain": "WEEKLY"
+   },
+   "events": {
+    "occurrences": 2860,
+    "completed": 2860
+   },
+   "metrics": {
+    "basis": "PER_EVENT",
+    "hitRate": 0.5769230769230769,
+    "maxDrawdown": -0.13905925583508966,
+    "trades": 2860,
+    "totalReturn": null,
+    "cagr": null
+   },
+   "missingInputs": [],
+   "methods": {
+    "MONTE_CARLO": {
+     "state": "NOT_RUN"
+    },
+    "WALK_FORWARD": {
+     "state": "EXECUTED",
+     "mode": "ROLLING",
+     "folds": 2,
+     "sizes": {
+      "train": 26,
+      "validation": 13,
+      "test": 26,
+      "step": 26
+     },
+     "excludedByReason": {
+      "PURGED_INFORMATION_OUTCOME_OVERLAP": 449,
+      "OUTCOME_NOT_MATURE_AT_CUTOFF": 1629
+     },
+     "partitionHash": "65e373304851fcc0967d49904b94ac1bece0c45ca1724563db55e2c374a9fe18",
+     "verdict": "PROVEN",
+     "basis": "Testfenster der Walk-Forward-Teilung im Plus"
+    },
+    "OUT_OF_SAMPLE": {
+     "state": "EXECUTED",
+     "endpoint": "netReturn",
+     "n": 1458,
+     "mean": 0.09193803329448778,
+     "perFold": [
+      {
+       "fold": 0,
+       "test": [
+        "2019-10-04",
+        "2020-03-27"
+       ],
+       "n": 709,
+       "mean": 0.027306919058661738
+      },
+      {
+       "fold": 1,
+       "test": [
+        "2020-04-03",
+        "2020-09-25"
+       ],
+       "n": 749,
+       "mean": 0.15311755264455545
+      }
+     ],
+     "note": "TEST_WINDOW_MEANS_OF_A_PRE_FIXED_RULE_NOT_AN_UNTOUCHED_HOLDOUT",
+     "resultHash": "75d3a22af601770da25858767617cd3f3af1da352c3be187e3be805c425e1ad0",
+     "verdict": "PROVEN",
+     "basis": "Anteil Testfenster im Plus"
+    },
+    "MARKET_REGIME": {
+     "state": "NOT_RUN"
+    },
+    "PARAMETER_SENSITIVITY": {
+     "state": "NOT_RUN"
+    },
+    "EVENT_DRIVEN": {
+     "state": "NOT_RUN"
+    },
+    "PORTFOLIO_REBALANCING": {
+     "state": "NOT_APPLICABLE"
+    }
+   },
+   "factor": {
+    "factorId": "PROFILE_MEAN",
+    "buckets": 5,
+    "rankDates": 24,
+    "meanTopMinusBottom": -0.10820577924096132,
+    "topBeatsBottomShare": 0.5416666666666666,
+    "bucketMeans": [
+     0.1589026655097642,
+     0.09016739550373971,
+     0.03829626462232329,
+     0.04385245652999092,
+     0.050696886268802845
+    ],
+    "meanSpearman": 0.0055641612152140495
+   },
+   "disclosure": {
+    "period": {
+     "from": "2019-01-25",
+     "to": "2021-04-09"
+    },
+    "costs": {
+     "feeBpsPerSide": 5,
+     "slippageBpsPerSide": 5,
+     "model": "PER_SIDE_NOTIONAL"
+    },
+    "benchmark": {
+     "id": "SPY",
+     "label": "S&P 500 (SPY)",
+     "returnBasis": "PRICE_RETURN"
+    },
+    "delistedIncluded": false,
+    "survivorship": "CONDITIONAL_CURRENT_SURVIVOR_COHORT",
+    "variants": 1,
+    "maxDrawdown": -0.13905925583508966
+   },
+   "resultHash": "383d3a578052404466fd2d8ff7e57e80643a0a3ed12cd2ac17635408cc676b79",
    "group": "MATRIX"
   }
  ]
