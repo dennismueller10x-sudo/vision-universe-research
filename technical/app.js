@@ -190,7 +190,15 @@
     if (chartWidgetReady) return chartWidgetReady;
     chartWidgetReady = Promise.all(CHART_WIDGET_SCRIPTS.filter(function (src) { return !doc.querySelector('script[src="' + src + '"]'); }).map(function (src) {
       return new Promise(function (ok) { var sc = doc.createElement("script"); sc.src = src; sc.async = false; sc.onload = sc.onerror = ok; doc.head.appendChild(sc); });
-    })).then(function () { return global.VUQuantChart || null; });
+    })).then(function () {
+      /* Derselbe Hub wie Discover und Quant (quant/app/app.js#hubReady): ohne Konfiguration kein Tagesverlauf und kein 1T. */
+      var Hub = global.VUDiscover && global.VUDiscover.LiveHub;
+      if (!Hub || !Hub.init) return global.VUQuantChart || null;
+      return Promise.all([fetchJSON("/discover/data/meta.json").catch(function () { return null; }), fetchJSON("/quant/config/market-calendar.json").catch(function () { return null; })]).then(function (v) {
+        if (v[0] && v[0].realtime) Hub.init({ realtime: v[0].realtime, calendar: v[1] });
+        return global.VUQuantChart || null;
+      });
+    });
     return chartWidgetReady;
   }
 
