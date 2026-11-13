@@ -128,6 +128,12 @@
    "timer": "waker"
   },
   {
+   "id": "quant-produktionscheck",
+   "workflow": "quant-produktionscheck.yml",
+   "cron": "40 5 * * *",
+   "timer": "waker"
+  },
+  {
    "id": "freshness-monitor",
    "workflow": "freshness-monitor.yml",
    "cron": "30 6 * * 2-6",

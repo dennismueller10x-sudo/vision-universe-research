@@ -1,0 +1,92 @@
+name: Quant-Produktionscheck (taeglich: Routen und Datenarten live)
+
+# Strang AK, 13.11.2026. Owner-Klage: Quant hat immer wieder Fehler und Ausfaelle. Die Stoerungen der 30 Tage davor
+# fielen erst auf, wenn jemand die Seite oeffnete oder ein Test rot wurde. Dieser Check misst die AUSGELIEFERTE Seite:
+# jede Quant-Route in einem frischen Browser (bereit, kein JS-Fehler, keine fehlgeschlagene Anfrage, Inhalt; Zeit, Anfragen
+# und Bytes als Messbasis fuer ein Frontend-Budget) und jede Quant-Datenart nach dem Frischevertrag der Registry.
+# Rot oeffnet ein Issue (Label pipeline-alarm), ein gruener Lauf schliesst es (scripts/ci/pipeline-alarm.mjs).
+# Kein Abruf beim Anbieter, kein Schluessel, kein Commit. Skript: scripts/quant/production-check.mjs.
+# Zeitplan: core/registry/schedule.json (Cloudflare-Wecker, RUNBOOK §10).
+run-name: ${{ inputs.zeitplan && format('{0} · Takt {1}', github.workflow, inputs.zeitplan) || '' }}
+on:
+  workflow_dispatch:
+    inputs:
+      zeitplan:
+        description: 'Vom Cloudflare-Wecker gesetzt (Cron des Termins, core/registry/schedule.json); manuell leer lassen'
+        type: string
+        default: ''
+      site:
+        description: 'Basis-URL der veroeffentlichten Seite'
+        type: string
+        default: 'https://research.visionuniverse.de'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quant-produktionscheck-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    container:
+      image: mcr.microsoft.com/playwright:v1.55.0-noble
+      options: --ipc=host
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Playwright (gleiche Version wie das Image)
+        run: npm install --prefix /tmp/vu-qpc playwright@1.55.0
+      - name: Routen und Datenarten gegen die veroeffentlichte Seite
+        env:
+          # Eingaben nur ueber env: (ADR-005).
+          IN_SITE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.site || 'https://research.visionuniverse.de' }}
+          NODE_PATH: /tmp/vu-qpc/node_modules
+        run: node scripts/quant/production-check.mjs --site="$IN_SITE" --out="$RUNNER_TEMP/quant-check.json" --detail="$RUNNER_TEMP/quant-check.txt"
+      - name: Befund und Messwerte sichern
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: quant-produktionscheck
+          path: |
+            ${{ runner.temp }}/quant-check.json
+            ${{ runner.temp }}/quant-check.txt
+          if-no-files-found: ignore
+          retention-days: 30
+
+  alarm:
+    needs: [check]
+    if: always() && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: quant-produktionscheck
+          path: ${{ runner.temp }}/befund
+      - name: Alarm oeffnen, ergaenzen oder schliessen
+        # Der Bote darf den Befund nicht veraendern: ein Zustellfehler macht den Lauf nicht rot.
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ALARM_SOURCE: quant-produktionscheck
+          ALARM_TITLE: 'Quant live: Route kaputt oder Datenart veraltet'
+          RESULT_CHECK: ${{ needs.check.result }}
+          ALARM_DETAIL_FILE: ${{ runner.temp }}/befund/quant-check.txt
+        run: node scripts/ci/pipeline-alarm.mjs

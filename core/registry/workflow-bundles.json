@@ -262,6 +262,10 @@
    "bundle": "pipeline-daily",
    "ausnahme": "Zwei parallele Jobs unter einer Workflow-Gruppe; als Job-Gruppen nicht gleichwertig."
   },
+  "quant-produktionscheck.yml": {
+   "bundle": "monitor",
+   "ausnahme": "Taeglicher Quant-Produktionscheck mit Browser-Container und eigenem Wecker-Takt (Strang AK); als Job von monitor.yml braeuchte er dessen Ereignisweichen."
+  },
   "freshness-monitor.yml": {
    "bundle": "monitor",
    "ausnahme": "Waechter mit eigenem Wecker-Takt und sechs Jobs, deren Ereignisweichen sechs Vertragstests woertlich pruefen."
