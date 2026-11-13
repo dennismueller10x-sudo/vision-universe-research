@@ -86,6 +86,8 @@ Quant ist eine Single-Page-App: `quant/index.html`, Routen in `quant/app/app.js`
 
 Quelle: `quant/engines/backtest-kinds.cjs`, `scripts/quant/research/backtest-runner.cjs` (`METHOD_FIT`).
 
+**Zertifizierung neu gefasst (Owner-Lesart 13.11.2026):** „Zertifiziert“ heißt methodisch geprüft – nachvollziehbar rückwärts gerechnet und die für die Art zulässigen Robustheitsprüfungen bestanden (`quant/methodology/backtest-method-certification-v1.json`, Status je Art in `backtest-research-v1.json` → `certification`), nicht profitabel; der bisherige Prüfstand `backtest-certification-v1.json` bleibt unverändert als „Vorwärts-Nachweis“ und liefert harte Gates und Offenlegungen. Stand 13.11.: 5 von 6 Arten zertifiziert, Setup eingeschränkt (Rekonstruktion ist kein Beleg auf späteren Testfenstern).
+
 | Art | Was sie rechnet | Echte historische Ergebnisse heute | Zertifizierung | Einschränkung |
 |---|---|---|---|---|
 | SAME_STOCK_REPLAY | feste Regel auf einer Aktie oder echter Wochen-Ledger | ja (Katalog A) | LIMITED | genau ein Listing; Ledger ohne delistete Titel |

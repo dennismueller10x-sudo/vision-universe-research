@@ -36,6 +36,21 @@ function checkDoc(doc) {
       if (cell.state === "DATA_MISSING") assert.ok(cell.missing.length > 0, k + "/" + m + ": fehlender Eingang benannt");
     }
   }
+  // Zertifizierung „methodisch geprueft“ (Owner-Lesart 13.11.2026): CERTIFIED genau dann, wenn alle Kriterien bestehen.
+  if (doc.certification) {
+    const meth = JSON.parse(readFileSync(new URL("../methodology/backtest-method-certification-v1.json", import.meta.url), "utf8"));
+    assert.equal(doc.certification.methodology, meth.schemaVersion);
+    for (const k of B.KINDS) {
+      const c = doc.certification.kinds[k];
+      const want = (meth.kinds[k].robustness || []).concat(["reproducible"]);
+      for (const id of want) assert.ok(c.criteria.some((x) => x.id === id), k + ": Kriterium " + id);
+      const hardFail = c.criteria.some((x) => x.id.startsWith("hard:") && x.state !== "PASS"), restFail = c.criteria.some((x) => !x.id.startsWith("hard:") && x.state !== "PASS");
+      assert.equal(c.status, hardFail ? "WITHHELD" : restFail ? "LIMITED" : "CERTIFIED", k);
+      assert.equal(c.label, meth.labels[c.status]);
+      if (c.status !== "CERTIFIED") assert.ok(c.reason, k + " ohne Grund");
+    }
+    assert.deepEqual(doc.certification.certifiedKinds, B.KINDS.filter((k) => doc.certification.kinds[k].status === "CERTIFIED"));
+  }
   // Ein Schalter: oeffentlich nur mit dem Freigabesatz in quant/methodology/backtest-research-display.json.
   assert.equal(doc.display.public, doc.audience === "PUBLIC");
   for (const c of doc.cases) {
@@ -90,6 +105,22 @@ test("BR-5 · Matrix aus Fallzeilen: anwendbar/nicht anwendbar, Daten fehlen, ni
   assert.equal(mx.SETUP_BACKTEST.OUT_OF_SAMPLE.reason, "R");
   assert.deepEqual(mx.FACTOR_RANKING_BACKTEST.WALK_FORWARD.missing, ["PRIVATE_FACTOR_PANEL"]);
   assert.equal(mx.STRATEGY_BACKTEST.MONTE_CARLO.state, "NO_CASE");
+});
+
+test("BR-6 · Zertifizierung: methodisch geprueft, nicht profitabel; Offenlegung aus dem Vorwaerts-Pruefstand", () => {
+  const meth = JSON.parse(readFileSync(new URL("../methodology/backtest-method-certification-v1.json", import.meta.url), "utf8"));
+  assert.match(meth.definition, /nicht profitabel/);
+  const mk = (id, kind, state, hash) => ({ id, kind, state, resultHash: hash, methods: {} });
+  const mx = Object.fromEntries(B.KINDS.map((k) => [k, Object.fromEntries(B.METHODS.map((m) => [m, { state: "EXECUTED", cases: ["x"] }]))]));
+  mx.SETUP_BACKTEST.OUT_OF_SAMPLE = { state: "NOT_RUN", reason: "R" };
+  const forward = { kinds: B.KINDS.map((k) => ({ id: k, status: "LIMITED", gates: [{ id: "pit", category: "HARD", state: k === "FACTOR_RANKING_BACKTEST" ? "FAIL" : "PASS", reason: "PIT" }, { id: "survivorship", label: "Ü", category: "STRUCTURAL", state: "FAIL", reason: "S" }] })) };
+  const cases = B.KINDS.map((k) => mk("c-" + k, k, "RESEARCH_EXECUTED", "a".repeat(64)));
+  const r = B.certify(cases, mx, meth, forward);
+  assert.equal(r.SIGNAL_BACKTEST.status, "CERTIFIED");
+  assert.deepEqual(r.SIGNAL_BACKTEST.disclosures.map((d) => d.id), ["survivorship"], "Ueberlebende offengelegt, blockiert nicht");
+  assert.equal(r.SETUP_BACKTEST.status, "LIMITED"); assert.equal(r.SETUP_BACKTEST.reason, "R");
+  assert.equal(r.FACTOR_RANKING_BACKTEST.status, "WITHHELD");
+  assert.equal(B.certify([], mx, meth, forward).SIGNAL_BACKTEST.reason, "NO_REPRODUCIBLE_CASE");
 });
 
 test("BR-3 · Erzeugtes Artefakt (falls angegeben) erfuellt den Vertrag", { skip: !process.env.BACKTEST_RESEARCH_ARTIFACT }, () => {
