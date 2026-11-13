@@ -287,11 +287,15 @@ function create(options){
  /* Quant-V2-Evidenz als Screening-Zeile. Die Spalten sind kanonische
   * Katalogfelder des Namensraums quantV2.factorEvidence; Quant V1 bleibt
   * davon unberuehrt und wird nie in dieselbe Zeile gemischt. */
+ /* Abdeckung je Faktor (Anzahl Aktien mit Wert im Produktuniversum, bandSemantics.universe) fuer die Oberflaeche: ein Faktor mit 0
+  * wird nicht angezeigt, bis er Werte hat (VUFactorCoverage, gelesen von assets/vu-ui.js und quant/app/view-model.js). */
+ function noteCoverage(p){try{const u=p&&p.bandSemantics&&p.bandSemantics.universe;if(u&&typeof u==='object')globalThis.VUFactorCoverage=Object.assign({},globalThis.VUFactorCoverage||{},u);}catch(e){}}
  let screeningPromise=null;
  async function getFactorEvidenceScreening(){
   if(!screeningPromise)screeningPromise=(async()=>{
    try{
     const payload=await compressedJSON('/quant/data/product/factor-evidence-v1/screening.json.gz');
+    noteCoverage(payload);
     const versionState=FactorEvidence.screeningVersionState(payload);
     /* Ein Artefakt aus der vorigen Methodikversion ist nicht kaputt,
        sondern veraltet - und das sagt es auch. Beides als INVALID zu
@@ -740,6 +744,7 @@ function create(options){
   try{
    const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/factor-evidence-v1/'+key+'.json.gz');
    if(!FactorEvidence.validShard(shard,key))return {state:'UNAVAILABLE',reason:'INVALID_FACTOR_EVIDENCE_ARTIFACT'};
+   noteCoverage(shard);
    const source=shard.securities?.[ticker];
    if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE'};
    const violations=FactorEvidence.publicationViolations(source);

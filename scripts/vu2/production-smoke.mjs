@@ -115,6 +115,12 @@ const VIEWS=['/quant/#/','/quant/#/meldungen','/quant/#/meldungen?filter=setups'
     der richtigen neuen Route landen, nicht auf Home. */
  '/vu2/?view=stock&ticker=NVDA','/vu2/?view=quant&ticker=JPM','/vu2/','/quant/?view=screener',
  '/quant/?view=screener&faktoren=momentum','/Quant/?view=explain','/vu2/?view=fundamentals&ticker=NVDA'];
+/* Ein Faktor ohne Wert im Produktuniversum (Abdeckung 0, Screening bandSemantics.universe) ruht, mit ihm der Anlagestil, der ihn braucht:
+   dessen Seite ist dann bewusst "nicht gefunden" und kein Ziel der Pruefung (Owner-Entscheidung 13.11.2026, heute Analysten). */
+const GESCHLOSSEN=await(async()=>{const {gunzipSync}=await import('node:zlib');
+ try{const u=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/factor-evidence-v1/screening.json.gz'))).toString('utf8')).bandSemantics?.universe||{};
+  return Object.entries(u).filter(([,n])=>n===0).map(([k])=>k);}catch{return [];/* ohne Screening bleibt alles wie bisher */}})();
+if(GESCHLOSSEN.includes('revisions')){const i=VIEWS.indexOf('/quant/#/stile/earnings-revision-leader');if(i>=0)VIEWS.splice(i,1);}
 /* Wohin eine alte Adresse fuehren muss - pathname+search+hash nach dem Laden. */
 const LEGACY={
  '/vu2/?view=stock&ticker=NVDA':'/quant/#/aktie/NVDA',
@@ -277,7 +283,7 @@ for(const width of [1440,390]){
      Tagesstand. */
   /* Konzept Quant 2026-11 (QX06, #1819): der Vergleich ist bewusst knapp - sieben Eigenschaften je Aktie und zwei Saetze,
      die Kennzahlen-Tabelle zugeklappt. Er gilt als gerendert, wenn alle sieben Eigenschaften und die zwei Saetze stehen. */
-  const vergleichVoll=route==='vergleich'&&/in zwei s(ä|ae)tzen/i.test(text)&&['Verdient gut','Wächst','Zahlen solide','Kurs läuft','Günstig','Ruhiger Kurs','Analysten'].every(w=>text.includes(w));
+  const vergleichVoll=route==='vergleich'&&/in zwei s(ä|ae)tzen/i.test(text)&&['Verdient gut','Wächst','Zahlen solide','Kurs läuft','Günstig','Ruhiger Kurs'].every(w=>text.includes(w)); /* Analysten ruhen, solange der Faktor keine Werte hat (13.11.2026) */
   /* Backtest-Forschung (backtest-research-v1.json, Datenzweig): bis zum ersten Wochenlauf sagt die Prueffall-Seite ehrlich,
      dass die Ergebnisse noch nicht vorliegen - das ist kein leeres Rendering. */
   const forschungWartet=/#\/forschung\/(fall|art|methode)\//.test(view)&&/liegen noch nicht vor/.test(text);
@@ -436,7 +442,7 @@ for(const width of [1440,390]){
   if(route==='strategien'&&!/(strategien|stile)\/[a-z]/.test(view)){
    /* Konzept Quant 2026-11 (QX04): Stil-Karten (a.qk-stc); ein Stil ohne Daten steht als Fussnote (p[data-profile]). */
    const karten=await page.locator('main#qx-main a.qx-strat, main#qx-main a.qv3-scard, main#qx-main a.qk-stc, main#qx-main p[data-profile]').count();
-   if(karten<8)bad.push('STRATEGIEN='+karten);
+   if(karten<8-(GESCHLOSSEN.includes('revisions')?1:0))bad.push('STRATEGIEN='+karten);
    /* KEINE TREFFERQUOTE: die Seite sagt, dass es keine gibt. */
    if(!/keine (Erfolgs- oder )?Trefferquote/.test(text))bad.push('TREFFERQUOTE_UNGENANNT');
   }
@@ -542,7 +548,7 @@ for(const width of [1440,390]){
       prueft danach ALLE Komponentenzeilen. */
    if(DATENREICH.includes(stock)){
     const faktoren=await page.locator('details.qx-factor[data-factor]').count();
-    if(faktoren!==7)bad.push('FAKTOREN='+faktoren);
+    if(faktoren!==7-GESCHLOSSEN.length)bad.push('FAKTOREN='+faktoren);
     for(const d of await page.locator('main#qx-main details').all())
      await d.evaluate(node=>{node.open=true;}).catch(()=>{});
     await page.waitForTimeout(250);

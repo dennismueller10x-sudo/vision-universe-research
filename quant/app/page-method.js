@@ -17,7 +17,7 @@
 
   var TOPICS = [
     { id: "daten", title: "Daten", text: "Woher die Zahlen kommen und wie aktuell sie sind." },
-    { id: "faktoren", title: "Die sieben Eigenschaften", text: "Was jeder Faktor misst – und was nicht." },
+    { id: "faktoren", get title() { return "Die " + VM.nWord() + " Eigenschaften"; }, text: "Was jeder Faktor misst – und was nicht." },
     { id: "gewichtung", title: "Gewichtung & Vergleich", text: "Wie Kennzahlen eingeordnet und zusammengeführt werden." },
     { id: "branchen", title: "Branchenvorlagen", text: "Warum Banken, Versicherer und REITs eigene Kennzahlen bekommen." },
     { id: "setups", title: "Setups", text: "Wie ein Setup entsteht, bestätigt wird oder endet." },
@@ -83,7 +83,7 @@
      Neongrün, alle Unterkapitel als Liste, Grenzen als Kacheln „Keine Aussage“. Anteil je Frage (PRO) aus factorWeights des
      veröffentlichten Screening-Artefakts (factor-evidence-v1), nie fest im Code; fehlt es, bleibt die Spalte leer. */
   /* Konzept Quant 2026-11 (Entscheidung 1): die sieben Eigenschaften in der Reihenfolge des Profils, ein Wort je Eigenschaft;
-     die Frage steht klein darunter. „Analysten“ hat heute keine Daten und steht trotzdem in der Liste. */
+     die Frage steht klein darunter. „Analysten“ steht nur in der Liste, wenn der Faktor Werte hat (VM.isOpen). */
   var Q6 = [["profitability", "Verdient sie gut?"], ["growth", "Wächst die Firma?"], ["quality", "Sind die Zahlen solide?"], ["momentum", "Läuft der Kurs gut?"], ["value", "Ist sie günstig?"], ["risk", "Wie ruhig ist der Kurs?"]];
   function startV3(main, ctx) {
     var U = global.VUUI, h = '<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Wie kommt Quant zu seinem Urteil?</h1><p class="vu-lead">Keine Blackbox. Jedes Urteil hat einen Grund, und jeder Grund führt zu den Daten.</p></header>' +
@@ -92,9 +92,9 @@
       U.navcard({ icon: "quant", title: "Quant", sub: "Meldet Veränderungen nach festen Regeln und vergleicht mit früher. Quant meldet sich, du musst nicht suchen.", href: X.routes.radar() }) +
       U.navcard({ glyph: "filter", title: "Quant Screener", sub: "Findet Aktien, die deine Bedingungen heute erfüllen. Du gibst die Frage vor.", href: X.routes.screener() }) +
       U.navcard({ icon: "discover", title: "Discover", sub: "Themen und Geschichten zum Stöbern. Keine Regeln, keine Backtests.", href: "/discover/" }) + "</div></section>" +
-      U.sect("Die sieben Eigenschaften", { href: X.routes.method("gewichtung"), link: "Gewichtung" }) + '<p class="vu-xs vu-mu qv3-q6-head"><b>Jede Aktie hat ein Profil aus sieben Eigenschaften.</b><b>Anteil ' + U.pro() + '</b></p><div class="vu-box qv3-liste">' +
-      Q6.map(function (q) { return '<a class="qv3-li" href="' + U.esc(X.routes.method("faktoren")) + '"><span class="qv3-q7"><b class="vu-sm">' + U.glyph(U.PROFILE ? U.PROFILE.glyph[q[0]] : "check", 15) + U.esc(VM.FACTORS[q[0]] ? VM.FACTORS[q[0]].name : q[0]) + '</b><span class="vu-xs vu-mu">' + q[1] + '</span></span><b class="vu-sm num qv3-w" data-w="' + q[0] + '"></b>' + U.glyph("next", 16) + "</a>"; }).join("") +
-      '<div class="qv3-li is-off"><span class="qv3-q7"><b class="vu-sm">' + U.glyph(U.PROFILE ? U.PROFILE.glyph.revisions : "check", 15) + 'Analysten</b><span class="vu-xs vu-mu">Heben Analysten Schätzungen an? · heute keine Daten</span></span><b class="vu-sm num qv3-w" data-w="revisions"></b></div></div>' +
+      U.sect("Die " + VM.nWord() + " Eigenschaften", { href: X.routes.method("gewichtung"), link: "Gewichtung" }) + '<p class="vu-xs vu-mu qv3-q6-head"><b>Jede Aktie hat ein Profil aus ' + VM.nWord() + ' Eigenschaften.</b><b>Anteil ' + U.pro() + '</b></p><div class="vu-box qv3-liste">' +
+      Q6.concat(VM.isOpen("revisions") ? [["revisions", "Heben Analysten Schätzungen an?"]] : []).map(function (q) { return '<a class="qv3-li" href="' + U.esc(X.routes.method("faktoren")) + '"><span class="qv3-q7"><b class="vu-sm">' + U.glyph(U.PROFILE ? U.PROFILE.glyph[q[0]] : "check", 15) + U.esc(VM.FACTORS[q[0]] ? VM.FACTORS[q[0]].name : q[0]) + '</b><span class="vu-xs vu-mu">' + q[1] + '</span></span><b class="vu-sm num qv3-w" data-w="' + q[0] + '"></b>' + U.glyph("next", 16) + "</a>"; }).join("") +
+      '</div>' +
       U.sect("So liest du eine Zahl") + '<div class="vu-box"><div class="qv3-bands"><span class="b1">Sehr schwach</span><span class="b2">Schwach</span><span class="b3">Mittel</span><span class="b4">Stark</span><span class="b5">Sehr stark</span></div>' +
       '<div class="qv3-bands-x vu-xs vu-mu"><b>Rang 0 %</b><b>25</b><b>45</b><b>75</b><b>90</b></div><p class="vu-sm" style="margin:10px 0 0"><b>„Sehr stark“</b> heißt: besser als 90 % aller bewerteten US-Aktien, am selben Tag gezählt.</p></div>' +
       '<div style="margin-top:10px">' + U.help("Die Stufe ist ein Vergleich, kein Gütesiegel. Sie sagt, wo eine Aktie im Feld steht, nicht ob sie für sich gut ist.") + "</div>" +
@@ -107,7 +107,9 @@
       box.querySelectorAll("[data-w]").forEach(function (n) { var v = w[n.getAttribute("data-w")]; if (typeof v === "number") n.textContent = Math.round(v * 100) + " %"; });
     }).catch(function () { /* ohne Artefakt bleibt der Anteil leer */ });
   }
-  function start(main, ctx) {
+  async function start(main, ctx) {
+    /* Die Abdeckung je Faktor (VM.isOpen) steht vor dem Aufbau fest: Zahlwort, Liste und Themen sind gleich beim ersten Zeichnen richtig. */
+    if (ctx && ctx.api && ctx.api.getFactorEvidenceScreening) await ctx.api.getFactorEvidenceScreening().catch(function () { return null; });
     if (global.VUUI) return startV3(main, ctx);
     main.append(el("header", { class: "q-hero q-hero--method" }, [X.globe(),
       el("p", { class: "q-kicker", text: "Methodik" }),
@@ -183,14 +185,20 @@
       el("li", { text: "Liegt eine Auswertung hinter dem Kurs zurück, steht das auf der Seite – mit der Zahl der Handelstage." })])]));
   }
 
+  /* Ein Faktor ohne Werte ruht: ein Satz statt Balken, Zeilen und Tabellenreihen (Owner-Entscheidung 13.11.2026). */
+  function ruhtSaetze() {
+    return VM.ORDER.filter(function (id) { return !VM.isOpen(id); }).map(function (id) {
+      return el("p", { class: "qx-small", text: VM.FACTORS[id].name + ": derzeit ohne Daten, ruht." });
+    });
+  }
   async function faktoren(main, ctx, t, params) {
-    topicHead(main, t, "Sieben Eigenschaften, jede für sich eingeordnet. Keine Gesamtnote.");
+    var gap = await emptyFactors(ctx); /* lädt auch die Abdeckung je Faktor (VM.isOpen) */
+    topicHead(main, t, VM.nWord().charAt(0).toUpperCase() + VM.nWord().slice(1) + " Eigenschaften, jede für sich eingeordnet. Keine Gesamtnote.");
     var shard = await specs(ctx).catch(function () { return null; });
     var cs = (shard && shard.componentSpecs) || {};
     var focus = params && params.get("faktor");
-    var gap = await emptyFactors(ctx);
     var emptyText = {}; gap.empty.forEach(function (e) { emptyText[e.id] = e.text; });
-    main.append(el("div", { class: "qx-factors" }, VM.PROFILE_ORDER.map(function (id) {
+    main.append(el("div", { class: "qx-factors" }, VM.PROFILE_ORDER.filter(VM.isOpen).map(function (id) {
       var f = VM.FACTORS[id];
       var comps = Object.keys(cs).filter(function (k) { return k.indexOf(id + ":") === 0; }).map(function (k) { return cs[k]; });
       var d = el("details", { class: "qx-factor tone-neutral", id: "m-" + id, open: focus === id ? true : null }, [
@@ -203,6 +211,7 @@
           })) : null])]);
       return d;
     })));
+    ruhtSaetze().forEach(function (p) { main.append(p); });
     main.append(X.section("Warum kann eine sehr profitable Aktie bei „Bilanz- & Ergebnisqualität“ schwach sein?", null, [X.card([
       para("Dieser Faktor fragt nicht, wie viel ein Unternehmen verdient – das misst die Profitabilität. Er fragt, wie belastbar Bilanz und ausgewiesene Gewinne sind: Sind die Gewinne durch echten Zahlungsfluss gedeckt? Wie hoch ist das Eigenkapital? War die Marge über fünf Jahre stabil?"),
       para("Ein Beispiel ist NVIDIA (Stand der Prüfung: 28.09.2026). Eigenkapitalquote (76 %) und fünf von fünf Jahren mit positivem freien Zahlungsfluss sind stark. Schwach sind zwei Kennzahlen: Der ausgewiesene Gewinn der letzten zwölf Monate lag deutlich über dem operativen Zahlungsfluss, ein großer Teil davon nicht-operative Erträge und gebundenes Umlaufvermögen. Und die operative Marge hat sich in fünf Jahren stark verändert (16 % bis 62 %) – ein struktureller Anstieg, den die Stabilitätsmessung als Schwankung zählt. Die Verschuldungskennzahl fehlt für diesen Titel und fällt aus der Gewichtung."),
@@ -214,7 +223,7 @@
       main.append(X.section("Welcher Wert reicht heute für welche Stufe?", "Die Stufe ist die Position unter allen bewerteten Aktien. Weil ein Faktorwert ein Mittel aus mehreren Rangplätzen ist, liegen die Werte je Eigenschaft unterschiedlich eng beieinander – derselbe Wert kann deshalb bei einer Eigenschaft „stark“ und bei einer anderen „durchschnittlich“ sein. Gezählt über alle veröffentlichten Werte:", [
         el("div", { class: "qx-card qx-table-wrap", tabindex: "0", "aria-label": "Mindestwert je Stufe und Eigenschaft" }, [el("table", { class: "qx-table" }, [
           el("thead", {}, [el("tr", {}, ["Eigenschaft", "bewertet", "sehr stark ab", "stark ab", "durchschn. ab", "schwach ab"].map(function (h) { return el("th", { text: h }); }))]),
-          el("tbody", {}, VM.ORDER.map(function (id) {
+          el("tbody", {}, VM.openOrder().map(function (id) {
             var d = VM.distributionOf(dist[id] || []);
             return el("tr", {}, [el("td", { text: VM.FACTORS[id].name }), el("td", { class: "num", text: d.n.toLocaleString("de-DE") })].concat(["VERY_STRONG", "STRONG", "NEUTRAL", "WEAK"].map(function (b) {
               return el("td", { class: "num", text: d.n && typeof d.cuts[b] === "number" ? "Wert " + Math.ceil(d.cuts[b]) : "–" });
@@ -304,7 +313,8 @@
   }
 
   async function strategien(main, ctx, t) {
-    topicHead(main, t, "Ein Anlagestil ist eine Liste von Bedingungen an die sieben Eigenschaften. Quant zählt, welche davon eine Aktie heute erfüllt.");
+    if (ctx && ctx.api && ctx.api.getFactorEvidenceScreening) await ctx.api.getFactorEvidenceScreening().catch(function () { return null; });
+    topicHead(main, t, "Ein Anlagestil ist eine Liste von Bedingungen an die " + VM.nWord() + " Eigenschaften. Quant zählt, welche davon eine Aktie heute erfüllt.");
     var p = await ctx.api.getStrategyProfiles().catch(function () { return null; });
     main.append(X.card([
       para("Passt eine Aktie? Das Verhältnis aus dem Gewicht der erfüllten Bedingungen und dem Gewicht aller messbaren Bedingungen. Eine Bedingung ohne Wert zählt weder als erfüllt noch als verletzt – sie wird als offen ausgewiesen."),
@@ -348,8 +358,8 @@
     topicHead(main, t, "Was Quant bewusst nicht sagt – und wo die Daten derzeit enden.");
     var gap = await emptyFactors(ctx);
     main.append(el("div", { class: "qx-grid qx-grid-2" }, [].concat(gap.empty.map(function (e) {
-      return X.card([el("h3", { class: "qx-h3", text: e.name + ": derzeit ohne Werte" }), para(e.text),
-        el("p", { class: "qx-small", text: "Deshalb werden für jede Aktie höchstens " + (VM.ORDER.length - gap.empty.length) + " von " + VM.ORDER.length + " Eigenschaften bewertet – für alle gleich." })]);
+      return X.card([el("h3", { class: "qx-h3", text: e.name + ": derzeit ohne Werte, ruht" }), para(e.text),
+        el("p", { class: "qx-small", text: "Deshalb werden für jede Aktie höchstens " + (VM.ORDER.length - gap.empty.length) + " Eigenschaften bewertet – für alle gleich." })]);
     }), [
       X.card([el("h3", { class: "qx-h3", text: "Keine Gesamtnote" }), para("Ein Gesamtwert ist spezifiziert, aber nicht freigegeben, solange Erwartungstrend, Branchenvergleich und zeitpunktgenaue Historie nicht produktionsreif sind.")]),
       X.card([el("h3", { class: "qx-h3", text: "Fehlende Kennzahlen" }), para("Fehlt eine Kennzahl, fällt ihr Gewicht aus dem Faktor. Unter 80 % Abdeckung entsteht kein Faktorwert. Auf jeder Aktienseite steht, welche Kennzahl fehlt."),

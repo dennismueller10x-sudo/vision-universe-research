@@ -152,6 +152,21 @@
 
   var NAMES_VIEW = "/quant/data/product/universe-names-v1.json.gz";
   var api = global.VUProductServices.create({ loadJSON: S.loadJSON, displayPolicy: global.VUDisplayPolicy, queryEngine: global.VUQuery });
+  /* Anlagestile, die einen geschlossenen Faktor brauchen (heute: Analysten), stehen in keiner Liste, bis der Faktor Werte hat
+     (VUQuantViewModel.styleOpen, Abdeckung aus dem Screening). Nur die Anzeige: der Stilabgleich im Dienst rechnet unveraendert
+     mit allen Profilen (Owner-Entscheidung 13.11.2026). */
+  (function () {
+    var raw = api.getStrategyProfiles;
+    if (typeof raw !== "function") return;
+    api.getStrategyProfiles = function () {
+      return Promise.all([raw.apply(api, arguments), api.getFactorEvidenceScreening().catch(function () { return null; })]).then(function (r) {
+        var p = r[0], VM = global.VUQuantViewModel;
+        if (!p || p.state !== "AVAILABLE" || !p.contract || !Array.isArray(p.contract.profiles) || !VM || !VM.styleOpen) return p;
+        var keep = p.contract.profiles.filter(function (x) { return VM.styleOpen(x.profileId); });
+        return keep.length === p.contract.profiles.length ? p : Object.assign({}, p, { contract: Object.assign({}, p.contract, { profiles: keep }) });
+      });
+    };
+  })();
   var namesPromise = null, distPromise = null, wordsPromise = null, langPromise = null, hubPromise = null;
   /* Backtesting nur dort laden, wo es gebraucht wird (Startseite, Radar,
      Aktienseite, Backtesting) - nicht im gemeinsamen Buendel, damit der

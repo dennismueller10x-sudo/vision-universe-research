@@ -50,7 +50,7 @@ test("Vier Kernversprechen, jedes mit einem Weg zu der Funktion, die es einloest
 test("QX01 · Home: Frage, Profil-Satz, Suche, Heute bei Quant, Markt, Schienen, So arbeitet Quant, Vertrauen", () => {
   const home = slice(pages, "async function home(", "async function homeLegacy(");
   const at = (s) => { const i = home.indexOf(s); assert.ok(i >= 0, "fehlt auf Home: " + s); return i; };
-  const order = [at("Was hat sich heute verändert?"), at("Profil aus sieben Eigenschaften"), at("page.append(search)"),
+  const order = [at("Was hat sich heute verändert?"), at("Jede Aktie hat ein Profil aus"), at("page.append(search)"),
     at("page.append(todayHost, regimeHost"), at('railHead("So arbeitet Quant"'), at("Warum kann ich dem vertrauen?")];
   assert.deepEqual(order.slice().sort((a, b) => a - b), order, "Reihenfolge der Startseite weicht vom Mockup QX01 ab");
   for (const s of ["Heute bei Quant · Stand", "neu in einem Anlagestil", "Setups bestätigt", "Risiko steigt", "Meldungen", "Markt heute",
