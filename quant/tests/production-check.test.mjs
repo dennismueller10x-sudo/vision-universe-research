@@ -32,7 +32,7 @@ test("PCK-2 · Route: gesund = kein Befund; JS-Fehler, 404, leere Seite, fehlend
   assert.equal(bewerteRoute({}, { ...gut, fehler: ["JS-Fehler: x"] }).befunde.length, 1);
   const vt = bewerteRoute({}, { ...gut, fehler: ["JS-Fehler: Transition was aborted because of invalid state. ViewTransition opt-in disabled"] });
   assert.equal(vt.befunde.length, 0); assert.equal(vt.hinweise.length, 1);
-  assert.match(bewerteRoute({}, { ...gut, fehler: ["HTTP 404 /quant/data/x.json"] }).befunde[0], /404/);
+  assert.match(bewerteRoute({}, { ...gut, fehler: ["HTTP 404 /quant/app/x.js"] }).befunde[0], /404/);
   assert.match(bewerteRoute({}, { ...gut, text: 10 }).befunde[0], /kaum Inhalt/);
   assert.match(bewerteRoute({ preis: true }, { ...gut, preisGesehen: false }).befunde[0], /kein Kurs/);
   assert.match(bewerteRoute({}, { ...gut, bereit: false, readyMs: 45000, text: 0 }).befunde[0], /nicht bereit/);
