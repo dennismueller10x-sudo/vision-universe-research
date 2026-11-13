@@ -83,7 +83,11 @@ test('V10 identity extension: schema fail-closed, every record SEC same-day pric
  for(const mutate of broken){const copy=structuredClone(Identity);mutate(copy);assert.throws(()=>R.validateIdentityEvidenceV10(copy),/^Error: INVALID_RESEARCH_IDENTITY_EVIDENCE_V10/);}
 });
 
-test('V10 identity bindings select the recorded master row on the sourced interval and fail closed',()=>{
+// Datenstand-Abnahme (13.11.2026, Strang AK): dieser Test vergleicht die V10-Evidenz mit dem LIVE-Produktstamm und wird bei jeder
+// Aenderung des Stamms rot (11.11.: ref_INM, drei PRs). Er blockiert keinen Code-PR mehr, sondern laeuft taeglich im
+// Quant-Produktionscheck (VU_DATENSTAND_ABNAHME=1, Job abnahme in quant-produktionscheck.yml); Abweichung = Alarm-Issue.
+const DATENSTAND_ABNAHME=process.env.VU_DATENSTAND_ABNAHME==='1';
+test('V10 identity bindings select the recorded master row on the sourced interval and fail closed',{skip:DATENSTAND_ABNAHME?false:'Datenstand-Abnahme: laeuft taeglich im Quant-Produktionscheck (VU_DATENSTAND_ABNAHME=1), blockiert keinen Code-PR'},()=>{
  const L=R.createResearchLoader(root,{identityEvidence:true,identityEvidenceProtocolV10:true});
  let qualified=0;
  for(const rec of V10){

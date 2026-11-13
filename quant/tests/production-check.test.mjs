@@ -96,6 +96,8 @@ test("PCK-7 · Datenstand-Abnahme: Schalter im Test, Abnahmewert in der Konfig, 
   const wf = readFileSync(join(ROOT, ".github/workflows/quant-produktionscheck.yml"), "utf8");
   assert.match(wf, /\n  abnahme:\n/);
   assert.match(wf, /VU_DATENSTAND_ABNAHME: '1'/);
+  assert.match(wf, /node --test quant\/tests\/v10-population\.test\.mjs/);
+  assert.match(readFileSync(join(ROOT, "quant/tests/v10-population.test.mjs"), "utf8"), /skip:DATENSTAND_ABNAHME\?false:/);
   assert.match(wf, /needs: \[check, abnahme\]/);
   assert.match(wf, /RESULT_ABNAHME: \$\{\{ needs\.abnahme\.result \}\}/);
 });
