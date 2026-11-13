@@ -357,7 +357,7 @@
     var U = global.VUUI;
     if (!res.matrix) return "";
     return '<div class="vu-box qk-list qk-br-simple">' + res.kinds.map(function (k) {
-      var v = brPlainVerdict(res, k), ex = brPlainException(res, k);
+      var v = brPlainVerdict(res, k), ex = v[0] === "strong" || v[0] === "mid" ? brPlainException(res, k) : "";
       return '<a class="qk-bt-c" href="' + U.esc(X.routes.backtestKind(k)) + '"><span><b>' + U.esc(BR_PLAIN_Q[k] || BR_KIND[k] || k) + "</b><span>" + U.esc(BR_KIND[k] || k) + (ex ? " · " + ex : "") + "</span></span>" + U.verdict(v[0], v[1]) + "</a>";
     }).join("") + "</div>";
   }
@@ -371,7 +371,7 @@
     }
     host.innerHTML = (top ? '<p class="vu-xs vu-mu">Stand ' + U.esc(String(res.asOf).split("-").reverse().join(".")) + "</p>" :
       '<div class="qk-rh"><div class="qk-rh-t"><h2>Was können die Quant-Methoden?</h2><span class="vu-xs vu-mu qk-sort">Stand ' + U.esc(String(res.asOf).split("-").reverse().join(".")) + "</span></div>" +
-      "<p>Wir haben jede Methode rückwärts auf echte Kurse angewendet. Hier steht, ob sie sich bewährt hat. Keine Prognose.</p></div>" + BR_TAG) +
+      "<p>Wir haben jede Methode rückwärts auf echte Kurse angewendet. „Bewährt“ heißt: besser als der Vergleich, also der S&P 500 oder bei Ranglisten das unterste Fünftel. Keine Prognose.</p></div>" + BR_TAG) +
       brSimple(res) +
       '<details class="vu-box qk-bt-more"><summary><b>Alle Prüfungen im Detail</b></summary>' + brMatrix(res) + "</details>" +
       '<details class="vu-box qk-bt-more"><summary><b>Alle ' + res.cases.length + ' Prüffälle</b></summary><div class="qk-list">' + res.cases.map(function (c) {
@@ -438,7 +438,7 @@
           var vd = c.state === "EXECUTED" ? brVerdictOf(c) : null, vw = vd ? BR_VERDICT[vd] : null;
           return '<span role="cell" class="qk-br-cell is-' + c.state.toLowerCase().replace(/_/g, "-") + (vd ? " is-" + vd.toLowerCase().replace(/_/g, "-") : "") + '" title="' + U.esc((vw ? vw[1] : st[1]) + (brCellNote(c) ? " – " + brCellNote(c) : "")) + '">' + (vw ? vw[2] : c.state === "EXECUTED" ? "●" : c.state === "NOT_APPLICABLE" ? "·" : c.state === "DATA_MISSING" ? "◌" : "○") + '<span class="qk-sr">' + U.esc(vw ? vw[1] : st[1]) + "</span></span>";
         }).join("") + "</div>";
-      }).join("") + '</div><p class="vu-xs vu-mu qk-br-legend">✓ hat sich bewährt · ◐ nur in bestimmten Marktlagen · ✗ hat versagt · ● gerechnet, noch ohne Einordnung · ◌ Daten fehlen · ○ nicht gerechnet · · passt methodisch nicht</p>' +
+      }).join("") + '</div><p class="vu-xs vu-mu qk-br-legend">✓ hat sich bewährt (besser als der Vergleich) · ◐ nur in bestimmten Marktlagen · ✗ hat versagt (nicht besser als der Vergleich) · ● gerechnet, noch ohne Einordnung · ◌ Daten fehlen · ○ nicht gerechnet · · passt methodisch nicht</p>' +
       (res.certification ? '<p class="vu-xs vu-mu qk-br-legend">' + U.esc(res.certification.certifiedKinds.length + " von " + res.kinds.length + " Arten methodisch geprüft: nachvollziehbar gerechnet und alle zulässigen Robustheitsprüfungen bestanden. Das sagt nichts über die Höhe des Ergebnisses.") + "</p>" : "");
   }
   async function brLoad(ctx) { var x = await ctx.api.getBacktest("research").catch(function () { return null; }); return x && x.state === "AVAILABLE" ? x : null; }
@@ -575,7 +575,7 @@
     /* Für Kunden zuerst die einfache Übersicht (eine Frage und ein Urteil je Methode); der Meldungsvergleich in Prozentpunkten steht aufgeklappt darunter. */
     var simple = await ctx.api.getBacktest("research").catch(function () { return null; });
     if (simple && simple.state === "AVAILABLE" && simple.matrix) {
-      page.innerHTML = head + '<h1 class="vu-lt qk-bt-t">Was können die Quant-Methoden?</h1><p class="vu-lead">Wir haben jede Methode rückwärts auf echte Kurse angewendet. Hier steht, ob sie sich bewährt hat. Keine Prognose.</p>';
+      page.innerHTML = head + '<h1 class="vu-lt qk-bt-t">Was können die Quant-Methoden?</h1><p class="vu-lead">Wir haben jede Methode rückwärts auf echte Kurse angewendet. „Bewährt“ heißt: besser als der Vergleich, also der S&P 500 oder bei Ranglisten das unterste Fünftel. Keine Prognose.</p>';
       await researchSection(page, ctx, true);
       var byRule = el("details", { class: "vu-box qk-bt-more" }, [el("summary", {}, [el("b", { text: "Meldungen im Einzelnen" })])]);
       var byRuleBody = el("div", {}); byRuleBody.innerHTML = h.replace(head, "").replace('<h1 class="vu-lt qk-bt-t">Hatte eine Meldung früher einen Vorteil?</h1>', '<h2 class="vu-h3">Hatte eine Meldung früher einen Vorteil?</h2>');
@@ -657,11 +657,14 @@
     var share = ev ? ev.backtest.positiveShare : all.metrics && all.metrics.hitRate;
     if (typeof share !== "number") return null;
     var name = ev ? "„" + ((T[ev.eventType] || {}).label || ev.eventType) + "“" : null;
-    var v = brPlainVerdict(res, "SIGNAL_BACKTEST"), ex = brPlainException(res, "SIGNAL_BACKTEST");
+    var v = brPlainVerdict(res, "SIGNAL_BACKTEST"), ex = v[0] === "strong" || v[0] === "mid" ? brPlainException(res, "SIGNAL_BACKTEST") : "";
+    var cmp = all.comparison, pp = cmp && typeof cmp.value === "number" ? Math.abs(cmp.value * 100).toLocaleString("de-DE", { maximumFractionDigits: 1 }) : null;
+    var vsMarket = pp ? (cmp.value > 0 ? "Im Schnitt " + pp + " Prozentpunkte besser als der S&P 500 im selben Zeitraum." : "Im Schnitt " + pp + " Prozentpunkte schlechter als der S&P 500 im selben Zeitraum.") : "";
     var facts = brFacts(all);
     var html = '<div class="qk-br-hist">' +
       '<h3>' + U.esc(name ? "Hat das Signal " + name + " früher funktioniert?" : "Haben die Quant-Meldungen früher funktioniert?") + "</h3>" +
       '<p class="qk-br-big"><b class="vu-num">' + Math.round(share * 100) + " von 100</b> Fällen lagen ein halbes Jahr später höher.</p>" +
+      (vsMarket ? '<p class="vu-sm">' + U.esc(vsMarket) + "</p>" : "") +
       '<p class="qk-br-verdict">' + U.verdict(v[0], v[1]) + (ex ? '<span class="vu-sm">' + U.esc(ex) + "</span>" : "") + "</p>" +
       (U.legal ? U.legal("backtest") : "") +
       '<details class="qk-br-facts"><summary class="vu-sm">Wie wurde gerechnet?</summary><ul class="vu-sm">' + Object.keys(facts).map(function (k) {
