@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { ROUTEN, SCHWELLEN, bewerteDaten, bewerteRoute } from "../../scripts/quant/production-check.mjs";
+import { ROUTEN, SCHWELLEN, bewerteDaten, bewerteRoute, pruefeBudget, ladeBudget } from "../../scripts/quant/production-check.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -100,4 +100,21 @@ test("PCK-7 · Datenstand-Abnahme: Schalter im Test, Abnahmewert in der Konfig, 
   assert.match(readFileSync(join(ROOT, "quant/tests/v10-population.test.mjs"), "utf8"), /skip:DATENSTAND_ABNAHME\?false:/);
   assert.match(wf, /needs: \[check, abnahme\]/);
   assert.match(wf, /RESULT_ABNAHME: \$\{\{ needs\.abnahme\.result \}\}/);
+});
+
+test("PCK-8 · Frontend-Budget: jede gepruefte Route hat eine Grenze, Ueberschreitung ist Befund, gesunde Messung nicht", () => {
+  const budget = ladeBudget();
+  assert.equal(budget.schema, "vu-quant-frontend-budget-1");
+  for (const r of ROUTEN) {
+    const b = budget.routen[r.pfad];
+    assert.ok(b, "Route ohne Budget: " + r.pfad);
+    assert.ok(b.maxKb >= b.gemessenKb && b.maxRequests >= b.gemessenRequests, r.pfad);
+    assert.ok(b.maxKb <= b.gemessenKb * 1.3, "Puffer zu gross, nichts wuerde auffallen: " + r.pfad);
+  }
+  const pfad = "/quant/#/aktie/NVDA", b = budget.routen[pfad];
+  assert.deepEqual(pruefeBudget(pfad, { kb: b.gemessenKb, requests: b.gemessenRequests, readyMs: 1200 }, budget), []);
+  assert.match(pruefeBudget(pfad, { kb: b.maxKb + 1, requests: b.gemessenRequests, readyMs: 1200 }, budget)[0], /Budget: \d+ KB/);
+  assert.match(pruefeBudget(pfad, { kb: 1, requests: b.maxRequests + 1, readyMs: 1200 }, budget)[0], /Anfragen/);
+  assert.match(pruefeBudget(pfad, { kb: 1, requests: 1, readyMs: budget.maxBereitMs + 1 }, budget)[0], /bereit nach/);
+  assert.deepEqual(pruefeBudget("/quant/#/unbekannt", { kb: 99999, requests: 999, readyMs: 1 }, budget), []);
 });

@@ -25,7 +25,7 @@
      node scripts/quant/production-check.mjs --site=https://research.visionuniverse.de \
           --out=check.json --detail=befund.txt [--nur-daten] [--nur-routen]
    ========================================================================= */
-import { writeFileSync, appendFileSync } from "node:fs";
+import { writeFileSync, appendFileSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 import { args, makeLoader, loadEngines, loadArtifacts } from "../core/lib.mjs";
 import { accessStateFor, verifierForKey, STORAGE_KEY } from "../access-gate/build.mjs";
@@ -55,6 +55,22 @@ export const ROUTEN = [
 /* Schwellen. Nicht streng: ein GitHub-Runner ist langsamer als ein Nutzer.
    Sie fangen "haengt" und "kaputt", nicht "etwas langsamer". */
 export const SCHWELLEN = { bereitWarnMs: 8000, bereitFehlerMs: 25000, minText: 150 };
+
+/* Frontend-Budget je Route (quant/config/frontend-budget.json, Grenze = Messwert vom 13.11.2026 + Puffer). */
+export function ladeBudget(pfad = new URL("../../quant/config/frontend-budget.json", import.meta.url)) {
+  try { return JSON.parse(readFileSync(pfad, "utf8")); } catch { return null; }
+}
+
+/** Rein: Messung gegen das Budget der Route. Routen ohne Eintrag werden nicht begrenzt. */
+export function pruefeBudget(pfad, m, budget) {
+  const b = budget && budget.routen && budget.routen[pfad];
+  const befunde = [];
+  if (!b) return befunde;
+  if (m.kb > b.maxKb) befunde.push(`Budget: ${m.kb} KB (Grenze ${b.maxKb} KB, gemessen ${b.gemessenKb} KB am ${budget.gemessenAm})`);
+  if (m.requests > b.maxRequests) befunde.push(`Budget: ${m.requests} Anfragen (Grenze ${b.maxRequests}, gemessen ${b.gemessenRequests})`);
+  if (budget.maxBereitMs && m.readyMs > budget.maxBereitMs) befunde.push(`Budget: bereit nach ${m.readyMs} ms (Grenze ${budget.maxBereitMs} ms)`);
+  return befunde;
+}
 
 const FAIL = new Set(["FAILED", "STALE"]);
 const WARN = new Set(["DEGRADED", "UNKNOWN"]);
@@ -108,7 +124,8 @@ async function pruefeRoute(browser, site, route, zugang) {
   page.on("pageerror", (e) => fehler.push("JS-Fehler: " + String(e.message).split("\n")[0]));
   page.on("response", (r) => { if (r.url().startsWith(origin) && r.status() >= 400 && !/favicon/.test(r.url())) fehler.push(`HTTP ${r.status()} ${r.url().replace(origin, "")}`); });
   page.on("requestfailed", (r) => { if (r.url().startsWith(origin) && !/ERR_ABORTED/.test((r.failure() || {}).errorText || "")) fehler.push(`Anfrage fehlgeschlagen ${r.url().replace(origin, "")}`); });
-  page.on("requestfinished", (r) => { requests++; offen.push(r.sizes().then((z) => { bytes += (z.responseBodySize || 0) + (z.responseHeadersSize || 0); }, () => {})); });
+  const ressourcen = [];
+  page.on("requestfinished", (r) => { requests++; offen.push(r.sizes().then((z) => { const b = (z.responseBodySize || 0) + (z.responseHeadersSize || 0); bytes += b; ressourcen.push({ url: r.url().replace(origin, "").slice(0, 110), kb: Math.round(b / 102.4) / 10 }); }, () => {})); });
   const t0 = Date.now();
   let bereit = false, gateGesehen = false;
   try {
@@ -129,7 +146,9 @@ async function pruefeRoute(browser, site, route, zugang) {
   await Promise.all(offen);
   await ctx.close();
   const m = { fehler: [...new Set(fehler)].slice(0, 8), readyMs, text: inhalt.text, bereit, preisGesehen: inhalt.preis, gate: gateGesehen || !!inhalt.gate, requests, kb: Math.round(bytes / 1024) };
-  return Object.assign({ pfad: route.pfad, name: route.name }, m, bewerteRoute(route, m));
+  const res = Object.assign({ pfad: route.pfad, name: route.name }, m, bewerteRoute(route, m));
+  res.top = ressourcen.sort((a, b) => b.kb - a.kb).slice(0, 8); /* Messbasis: wohin gehen die Bytes */
+  return res;
 }
 
 async function main() {
@@ -151,10 +170,13 @@ async function main() {
     const zugang = await ladeZugang(site);
     const browser = await chromium.launch({ args: ["--no-sandbox"] });
     try {
+      const budget = ladeBudget();
       for (const r of ROUTEN.filter((x) => typeof a.route !== "string" || x.pfad.includes(a.route))) {
         let res;
         try { res = await pruefeRoute(browser, site, r, zugang); }
         catch (e) { res = { pfad: r.pfad, name: r.name, bereit: false, readyMs: 0, requests: 0, kb: 0, fehler: [], befunde: ["Pruefung abgebrochen: " + String(e.message).split("\n")[0]], hinweise: [] }; }
+        const ueber = pruefeBudget(r.pfad, res, budget);
+        res.befunde.push(...ueber);
         out.routen.push(res);
         if (res.gate) { befunde.push("Zugangs-Tor statt Seite - restliche Routen nicht pruefbar (RESEARCH_ACCESS_PASSWORD fehlt oder passt nicht)"); break; }
         befunde.push(...res.befunde.map((b) => `Route ${r.pfad}: ${b}`));
@@ -167,6 +189,7 @@ async function main() {
   const zeilen = [`Quant-Produktionscheck ${site} · ${out.checkedAt} · ${out.ok ? "OK" : "BEFUND"}`, ""];
   if (out.daten) zeilen.push("Datenarten: " + out.daten.rows.map((r) => `${r.id}=${r.status}`).join(" "), "");
   if (out.routen.length) zeilen.push("Routen (bereit ms · Anfragen · KB):", ...out.routen.map((r) => `  ${r.befunde.length ? "FEHLER" : "ok    "} ${r.pfad.padEnd(36)} ${String(r.readyMs).padStart(6)} · ${String(r.requests).padStart(3)} · ${String(r.kb).padStart(5)}`), "");
+  if (out.routen.length) zeilen.push("Groesste Ressourcen (KB):", ...out.routen.map((r) => `  ${r.pfad}: ` + (r.top || []).slice(0, 4).map((t) => `${t.kb} ${t.url.split("?")[0].split("/").slice(-1)[0] || t.url}`).join(" · ")), "");
   if (befunde.length) zeilen.push("BEFUNDE:", ...befunde.map((b) => "  - " + b), "");
   if (hinweise.length) zeilen.push("Hinweise:", ...hinweise.map((b) => "  - " + b), "");
   const text = zeilen.join("\n");
