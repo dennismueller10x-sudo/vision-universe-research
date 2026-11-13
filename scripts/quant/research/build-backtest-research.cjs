@@ -23,7 +23,9 @@ const MATRIX_CASES = path.join(ROOT, 'docs/quant/backtest-research/cases.json');
 const DISPLAY = path.join(ROOT, 'quant/methodology/backtest-research-display.json');
 const KINDS = ['SAME_STOCK_REPLAY', 'PATTERN_EVIDENCE', 'SIGNAL_BACKTEST', 'SETUP_BACKTEST', 'STRATEGY_BACKTEST', 'FACTOR_RANKING_BACKTEST'];
 const DEFAULT_OUT = path.join(ROOT, 'quant/data/product/backtest-research-v1.json');
-const SCHEMA = 'backtest-research-1.1.0';
+const SCHEMA = 'backtest-research-1.2.0';
+const CERT_METHOD = path.join(ROOT, 'quant/methodology/backtest-method-certification-v1.json');
+const FORWARD_CERT = path.join(ROOT, 'quant/data/product/backtest-certification-v1.json');
 const METHODS = ['MONTE_CARLO', 'WALK_FORWARD', 'OUT_OF_SAMPLE', 'MARKET_REGIME', 'PARAMETER_SENSITIVITY', 'EVENT_DRIVEN', 'PORTFOLIO_REBALANCING'];
 
 function parse(argv) {
@@ -97,6 +99,29 @@ function matrix(cases) {
   return out;
 }
 
+// Zertifizierung „methodisch geprueft“ (backtest-method-certification-1.0.0, Owner-Lesart 13.11.2026) je Art:
+// nachvollziehbar gerechnet + alle zulaessigen Robustheitspruefungen + kein hartes Gate des Vorwaerts-Pruefstands verletzt.
+// Offenlegungen (Historie, Ueberlebende, Renditebasis, Ergebnis) kommen unveraendert aus dem Vorwaerts-Pruefstand.
+function certify(cases, mx, method, forward) {
+  const out = {};
+  for (const k of KINDS) {
+    const reproducible = cases.filter(c => c.kind === k && c.state === 'RESEARCH_EXECUTED' && /^[0-9a-f]{64}$/.test(c.resultHash || ''));
+    const fk = forward && Array.isArray(forward.kinds) ? forward.kinds.find(x => x.id === k) : null;
+    const hard = fk ? fk.gates.filter(g => g.category === 'HARD') : [];
+    const criteria = [{ id: 'reproducible', state: reproducible.length ? 'PASS' : 'FAIL', value: reproducible.map(c => c.id), reason: reproducible.length ? null : 'NO_REPRODUCIBLE_CASE' }]
+      .concat((method.kinds[k] || {}).robustness.map(m => { const c = mx[k][m]; return { id: m, state: c.state === 'EXECUTED' ? 'PASS' : 'FAIL', value: c.cases || [], reason: c.state === 'EXECUTED' ? null : c.reason || c.state }; }))
+      .concat(hard.map(g => ({ id: 'hard:' + g.id, state: g.state, value: g.value, reason: g.reason })));
+    if (!fk) criteria.push({ id: 'hard:forwardCertification', state: 'FAIL', value: null, reason: 'FORWARD_CERTIFICATION_MISSING' });
+    const failHard = criteria.find(c => c.id.startsWith('hard:') && c.state !== 'PASS');
+    const failRest = criteria.find(c => !c.id.startsWith('hard:') && c.state !== 'PASS');
+    const status = failHard ? 'WITHHELD' : failRest ? 'LIMITED' : 'CERTIFIED';
+    out[k] = { status, label: method.labels[status], reason: (failHard || failRest || {}).reason || null, criteria,
+      disclosures: fk ? fk.gates.filter(g => g.category !== 'HARD' && g.state !== 'PASS').map(g => ({ id: g.id, label: g.label, reason: g.reason, value: g.value })) : [],
+      forwardStatus: fk ? fk.status : null };
+  }
+  return out;
+}
+
 function build(opts = {}) {
   const list = [CASES, MATRIX_CASES].flatMap(f => JSON.parse(fs.readFileSync(f, 'utf8')).cases.map(c => ({ ...c, file: f, group: f === MATRIX_CASES ? 'MATRIX' : 'DEMO' })));
   const cases = list.filter(c => !opts.only || opts.only.includes(c.id)).map(c => {
@@ -106,6 +131,7 @@ function build(opts = {}) {
   const display = JSON.parse(fs.readFileSync(DISPLAY, 'utf8'));
   const isPublic = display.public === true && !!(display.approval && display.approval.text === display.approvalPhrase);
   const executed = m => cases.filter(c => c.methods[m].state === 'EXECUTED').length;
+  const mx = matrix(cases);
   return {
     schemaVersion: SCHEMA,
     asOf: opts.asOf || new Date().toISOString().slice(0, 10),
@@ -120,7 +146,11 @@ function build(opts = {}) {
     privateInputs: { delistedSeries: !!opts.delisted, factorPanel: !!opts.factorPanel },
     source: ['docs/quant/backtest-demos/cases.json', 'docs/quant/backtest-research/cases.json'],
     kinds: KINDS, methods: METHODS,
-    matrix: matrix(cases),
+    matrix: mx,
+    certification: (() => { const method = JSON.parse(fs.readFileSync(CERT_METHOD, 'utf8')); const forward = fs.existsSync(FORWARD_CERT) ? JSON.parse(fs.readFileSync(FORWARD_CERT, 'utf8')) : null;
+      const kinds = certify(cases, mx, method, forward);
+      return { methodology: method.schemaVersion, definition: method.definition, forward: forward ? { file: 'quant/data/product/backtest-certification-v1.json', asOf: forward.asOf, methodology: forward.methodology } : null,
+        kinds, certifiedKinds: KINDS.filter(k => kinds[k].status === 'CERTIFIED') }; })(),
     summary: { cases: cases.length, executed: cases.filter(c => c.state === 'RESEARCH_EXECUTED').length,
       dataLimited: cases.filter(c => c.state === 'PREPARED_DATA_LIMITED').length,
       methods: Object.fromEntries(METHODS.map(m => [m, executed(m)])) },
@@ -138,4 +168,4 @@ function main(argv = process.argv.slice(2)) {
   return doc;
 }
 if (require.main === module) { try { main(); } catch (e) { console.error(e.stack); process.exitCode = 1; } }
-module.exports = { build, compact, caseRow, matrix, METHODS, KINDS, SCHEMA };
+module.exports = { build, compact, caseRow, matrix, certify, METHODS, KINDS, SCHEMA };
