@@ -156,7 +156,7 @@ async function main() {
       await page.waitForFunction(() => /[?&]v=uptrendBasic/.test(location.hash));
       await page.waitForSelector(".tc-tpl-panel .tc-crit-why", { timeout: 30000 });
       assert(/fast erfüllt/.test(await page.locator(".tc-tpl-panel summary").innerText()), "Pruefleiste nennt den Status nicht");
-      await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
+      await page.waitForSelector(".tc-chart svg, .qc-chart svg", { timeout: 45000 });
       await clean("Vorlage und Chart");
     });
 
@@ -201,7 +201,7 @@ async function main() {
       await page.waitForFunction(() => /[?&]z=trendfolge/.test(location.hash));
       await page.waitForSelector(".tc-tpl-panel .tc-crit-why", { timeout: 30000 });
       assert(/Trendfolge/.test(await page.locator(".tc-tpl-panel summary").innerText()), "Pruefleiste ohne Analyseziel");
-      await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
+      await page.waitForSelector(".tc-chart svg, .qc-chart svg", { timeout: 45000 });
       await clean("Analyseziel und Chart");
       await navigate(page,base + "#/assistent/ausbruch?k=");
       await page.waitForSelector(".tc-state", { timeout: 15000 });
