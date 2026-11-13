@@ -324,11 +324,28 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
    * Prozentzahlen auf einem Bildschirm, die dasselbe zu messen
    * behaupten.
    */
+  /* Letzter veroeffentlichter Tagesschluss vor `heute` - nur wenn er nicht aelter ist als ein langes Wochenende. */
+  function vortagSchlussAusTagesreihe(punkte, heute) {
+    if (!punkte || !punkte.length || !heute) return null;
+    var vor = null, tag = null;
+    for (var i = 0; i < punkte.length && punkte[i][0] < heute; i++) { vor = punkte[i][1]; tag = punkte[i][0]; }
+    if (!isNum(vor) || !(vor > 0) || !tag) return null;
+    return (Date.parse(heute) - Date.parse(tag)) / 86400000 <= 4 ? vor : null;
+  }
+
   function heroKurs(detail, state) {
     var live = state && state.intraday && state.intraday.live;
     var snap = vortagAusReihe(state && state.intraday && state.intraday.snapshot, state && state.dailyPoints);
     if (!live || !live.fresh || !isNum(live.price)) return { hat: false };
     var basis = snap && isNum(snap.previousClose) ? snap.previousClose : null;
+    /* Kein Snapshot der laufenden Sitzung (13.11.2026): dessen Vortagesschluss waere der falsche Bezug - es gilt der letzte
+       veroeffentlichte Tagesschluss vor heute aus der Tagesreihe. */
+    var res = state && state.intraday && state.intraday.resolution;
+    var heute = res && ((res.displaySession && res.displaySession.sessionDate) || res.localDate);
+    if (heute && (!snap || snap.sessionDate !== heute)) {
+      var vor = vortagSchlussAusTagesreihe(state && state.dailyPoints, heute);
+      basis = isNum(vor) ? vor : null;
+    }
     return {
       hat: true,
       preis: live.price,
@@ -1345,6 +1362,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
           timezoneNote: "Uhrzeiten in New Yorker Zeit" }
       : p.label;
     var quellenText = quelle && quelle.sourceText ? quelle.sourceText : "5-Minuten-Kurse";
+    if (snap.fromStream) quellenText = "Live-Kurse im Minutentakt (Kursreferenz aus einem Teilmarkt)";
     var eingefroren = !!(quelle && quelle.isFrozen);
 
     var kopf = dollarKopf ? el("div", { class: "dx-chart-hero dx-chart-hero--c04", "data-range": "1D" }, [
@@ -1382,6 +1400,12 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
                                             axis: true, symbol: state.detail.symbol,
                                             label: p.label && p.label.label });
     if (!svgNode) {
+      /* Erster Live-Kurs des Tages (13.11.2026): Kopf, Kurs und Tagesveraenderung stehen schon; die Linie braucht zwei Punkte. */
+      if (snap.fromStream) {
+        chartBox.appendChild(C().emptyState("Der Verlauf beginnt gleich",
+          "Der erste Live-Kurs des Tages ist da (" + snap.fromStreamSince + " New York); die Linie erscheint mit dem nächsten Kurs."));
+        return;
+      }
       chartBox.appendChild(C().emptyState("Kein Tagesverlauf", "Der Snapshot dieses Titels ist unvollständig."));
       return;
     }
@@ -1411,7 +1435,11 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       FINAL_SESSION: " · die Sitzung ist abgeschlossen; dieser Verlauf bleibt so stehen",
       STALE: ""
     };
-    var text = " · " + quellenText + " · Uhrzeiten New York" +
+    /* Verlauf aus dem Live-Strom (13.11.2026): bis der Tagesverlauf des Datenlaufs da ist, beginnt die Linie mit dem ersten Tick. */
+    var ausStrom = snap.fromStream
+      ? " · Verlauf ab " + snap.fromStreamSince + " aus dem Live-Strom; der frühere Tagesverlauf folgt mit dem nächsten Datenlauf"
+      : "";
+    var text = " · " + quellenText + ausStrom + " · Uhrzeiten New York" +
       (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
       (quelle && quelle.state === "STALE"
         ? staleSatzAusZustand(quelle)
@@ -1712,7 +1740,12 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
      4.941 vergleichbare Snapshots, genau 3 Aenderungen (die Splits). */
   function vortagAusReihe(snap, punkte) {
     if (!snap || !snap.sessionDate || !punkte || !punkte.length) return snap;
-    if (punkte[punkte.length - 1][0] < snap.sessionDate) return snap;
+    var letzterTag = punkte[punkte.length - 1][0];
+    /* Verlauf aus dem Strom (13.11.2026): die Tagesreihe endet am Vortag - genau der Vortagesschluss, den die Startlinie braucht.
+       Nur wenn sie nicht mehr als ein langes Wochenende zurueckliegt. */
+    var vortagGenuegt = snap.fromStream && letzterTag < snap.sessionDate &&
+      (Date.parse(snap.sessionDate) - Date.parse(letzterTag)) / 86400000 <= 4;
+    if (letzterTag < snap.sessionDate && !vortagGenuegt) return snap;
     var vor = null;
     for (var i = 0; i < punkte.length && punkte[i][0] < snap.sessionDate; i++) vor = punkte[i][1];
     if (!isNum(vor) || !(vor > 0) || vor === snap.previousClose) return snap;

@@ -741,7 +741,8 @@ jobs:
           node scripts/discover/serve-https.mjs --port 8443 > /tmp/tls.log 2>&1 &
           sleep 3
           cat /tmp/tls.log
-          curl -sk https://127.0.0.1:8443/discover/data/meta.json | head -c 120 && echo ""
+          # kein Pipe in head: curl meldet bei vorzeitigem Schliessen Exit 23 und liess den Schritt unter pipefail scheitern (13.11.2026)
+          curl -sk -o /tmp/meta-head.json https://127.0.0.1:8443/discover/data/meta.json && head -c 120 /tmp/meta-head.json && echo ""
 
       - name: Der Schalter steht auf an
         run: |
