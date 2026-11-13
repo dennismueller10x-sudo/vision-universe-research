@@ -51,6 +51,14 @@ test('Partnerpräsentation bleibt eigenständig, ohne fremde Quellen und außerh
   for(const src of html.matchAll(/(?:src|poster)="\.\/(media\/[^"]+)"/g))await readFile(resolve(output,'partner',src[1]));
   assert.match(await readFile(resolve(output,'_headers'),'utf8'),/media-src 'self'/);
 });
+test('Instagram-Teilnahmebedingungen: eigene Rechtsseite ohne Fremdlinks',async()=>{
+  const output=resolve(root,'tests/output/instagram-tnb');await build({output});
+  const html=await readFile(resolve(output,'instagram/teilnahmebedingungen/index.html'),'utf8');
+  assert.match(html,/<meta name="robots" content="noindex, nofollow">/);assert.match(html,/legal\.css\?v=[0-9a-f]{16}/);
+  assert.doesNotMatch(html,/vu-navigation|site-navigation/);assert.doesNotMatch(html,/(src|href)="https?:\/\//);assert.doesNotMatch(html,/<iframe|<form|<script/);
+  assert.match(html,/RAM Consulting UG/);assert.match(html,/in keiner Verbindung zu Instagram/);assert.match(html,/ab 18 Jahren/);
+  for(const m of html.matchAll(/(?:src|href)="(\.{1,2}\/[^"?#]+\.(?:css|png))(?:\?v=[0-9a-f]{16})?"/g))await readFile(resolve(output,'instagram/teilnahmebedingungen',m[1]));
+});
 test('Instagram-Seiten: keine App-Links, nur eigene Quellen, Listen verlinkt',async()=>{
   const output=resolve(root,'tests/output/instagram');await build({output});
   for(const page of ['instagram/index.html','instagram/robotaxi/index.html','instagram/energie/index.html','instagram/zonen/index.html']){
