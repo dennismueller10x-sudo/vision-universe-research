@@ -799,10 +799,10 @@ jobs:
 
   # --- discover-frontend: vormals discover-frontend-ci.yml
   discover-frontend:
-    name: discover-frontend (${{ matrix.part }})
     needs: auswahl
     if: >-
       needs.auswahl.outputs.discover_frontend == 'true'
+    name: discover-frontend (${{ matrix.part }})
     # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
     concurrency:
       group: discover-frontend-qa-${{ github.ref }}-${{ matrix.part }}
@@ -1699,10 +1699,10 @@ jobs:
 
   # --- vu2-browser-qa: vormals vu2-browser-qa.yml
   vu2-browser-qa:
-    name: vu2-browser-qa (${{ matrix.part }})
     needs: auswahl
     if: >-
       needs.auswahl.outputs.vu2_browser_qa == 'true'
+    name: vu2-browser-qa (${{ matrix.part }})
     # Workflow-Concurrency der Quelle (PR-Abbruch bzw. Gruppe je Zweig) am Job
     concurrency:
       group: ${{ github.event_name == 'pull_request' && format('vu2-browser-qa-pr-{0}-{1}', github.event.pull_request.number, matrix.part) || format('vu2-browser-qa-{0}-{1}', github.run_id, matrix.part) }}
