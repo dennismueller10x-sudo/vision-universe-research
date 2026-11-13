@@ -128,3 +128,43 @@ test("BR-3 · Erzeugtes Artefakt (falls angegeben) erfuellt den Vertrag", { skip
   assert.ok(existsSync(f), f);
   checkDoc(JSON.parse(readFileSync(f, "utf8")));
 });
+
+test("BR-7 · Quant-Profilwert (Forschung): Mittel der sechs Faktoren, mindestens 4 belegt; Prüffälle registriert", () => {
+  const Run = require("../../scripts/quant/research/backtest-runner.cjs");
+  const X = require("../../scripts/quant/v10/factor/factors.cjs");
+  assert.equal(Run.PROFILE_MEAN_MIN, 4);
+  assert.equal(Run.profileMean({ quality: 80, growth: 60, value: null, profitability: 70, momentum: 50, risk: 40, composite: 99 }, X), 60, "composite zählt nicht mit");
+  assert.equal(Run.profileMean({ quality: null, growth: 60, value: null, profitability: null, momentum: 50, risk: 40 }, X), null, "unter 4 belegten Faktoren kein Wert");
+  const cases = JSON.parse(readFileSync(new URL("../../docs/quant/backtest-research/cases.json", import.meta.url), "utf8")).cases;
+  for (const id of ["matrix-profile-mean", "matrix-profile-mean-sample"]) {
+    const c = cases.find((x) => x.id === id);
+    assert.ok(c && c.kind === "FACTOR_RANKING_BACKTEST" && c.privateData === "factorPanel", id);
+    const spec = JSON.parse(readFileSync(new URL("../../docs/quant/backtest-research/" + c.spec, import.meta.url), "utf8"));
+    Run.validateSpec(spec); assert.equal(spec.engine.factorId, "PROFILE_MEAN");
+  }
+  assert.equal(B.factorRow({ metrics: { perEvent: null } }), null);
+  assert.deepEqual(B.factorRow({ metrics: { perEvent: { factor: { factorId: "PROFILE_MEAN", buckets: 5, rankDates: 24, meanTopMinusBottomCompleteCohort: 0.02, topBeatsBottomShare: 0.6, bucketMeansCompleteCohort: [0.01, 0.02, 0.02, 0.025, 0.03], meanSpearmanObservedOnly: 0.05 } } } }),
+    { factorId: "PROFILE_MEAN", buckets: 5, rankDates: 24, meanTopMinusBottom: 0.02, topBeatsBottomShare: 0.6, bucketMeans: [0.01, 0.02, 0.02, 0.025, 0.03], meanSpearman: 0.05 });
+});
+
+test("BR-8 · Ampel vergleicht: bewährt nur besser als der Vergleich, nie nur „im Mittel im Plus“", () => {
+  const ev = (ex) => ({ metrics: { basis: "PER_EVENT", excess: { meanExcess: ex, n: 10 } } });
+  assert.equal(B.comparison("SIGNAL_BACKTEST", ev(-0.006)).state, "LOSES");
+  assert.equal(B.comparison("SIGNAL_BACKTEST", ev(0.02)).state, "BEATS");
+  assert.equal(B.comparison("STRATEGY_BACKTEST", { metrics: { basis: "PORTFOLIO", benchmark: { id: "ZERO_RATE_CASH", totalReturn: 0 } } }), null, "Bargeld ist kein Marktvergleich");
+  assert.match(B.comparison("SAME_STOCK_REPLAY", { metrics: { basis: "PORTFOLIO", totalReturn: 1, benchmark: { id: "SAME_LISTING_BUY_AND_HOLD", totalReturn: 2 } } }).basis, /Kaufen und Halten/);
+  const f = (d, sh) => B.comparison("FACTOR_RANKING_BACKTEST", {}, { meanTopMinusBottom: d, topBeatsBottomShare: sh });
+  assert.equal(f(-0.10, 0.5).state, "LOSES"); assert.equal(f(0.01, 0.55).state, "MIXED"); assert.equal(f(0.02, 0.7).state, "BEATS");
+  const pr = { verdict: "PROVEN", basis: "x" };
+  assert.equal(B.combine(pr, { state: "LOSES", basis: "S&P" }).verdict, "FAILED", "im Plus, aber hinter dem Markt: hat versagt");
+  assert.equal(B.combine(pr, { state: "MIXED", basis: "Q" }).verdict, "REGIME_DEPENDENT");
+  assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }).verdict, "PROVEN");
+  assert.equal(B.combine(pr, null).verdict, null, "ohne Vergleich keine Einordnung");
+});
+
+test("BR-9 · Überlebenden-Auswahl: besser als der Vergleich heißt dann nur „eingeschränkt geprüft“", () => {
+  const pr = { verdict: "PROVEN", basis: "x" };
+  assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }, true).verdict, "LIMITED");
+  assert.equal(B.combine(pr, { state: "LOSES", basis: "S&P" }, true).verdict, "FAILED", "verloren bleibt verloren");
+  assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }, false).verdict, "PROVEN", "mit delisteten Titeln bleibt bewährt möglich");
+});

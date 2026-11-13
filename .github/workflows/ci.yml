@@ -861,6 +861,8 @@ jobs:
           webkit_status=0
           node scripts/discover/browser-qa.mjs --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-evidence || chromium_status=$?
           node scripts/discover/browser-qa.mjs --engine webkit --url "${SITE:-http://127.0.0.1:8765}" --out /tmp/discover-evidence/webkit || webkit_status=$?
+          # 13.11.2026: Aktienseite zur Eroeffnung - kein Snapshot der laufenden Sitzung, der Strom liefert (gefaelschter WebSocket, 390 und 1440 px)
+          node scripts/discover/browser-qa-stream-verlauf.mjs "http://127.0.0.1:8765" NVDA || chromium_status=$?
           test "$chromium_status" -eq 0 && test "$webkit_status" -eq 0
       # Phase 4: die Direktlink-Pruefung vergleicht meta vu-release mit /release-id.json und jeden ?v= mit den ausgelieferten Bytes. Dafuer
       # braucht der Release die Kennung - in pages-release.yml steht dieser Schritt nach dem Verkleinern und vor der Passwortsperre.

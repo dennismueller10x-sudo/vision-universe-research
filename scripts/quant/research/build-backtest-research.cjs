@@ -90,10 +90,46 @@ function verdict(id, m) {
   }
   return v ? { verdict: v, basis } : null;
 }
+// Vergleich je Fall (Steuerung 13.11.2026): „hat sich bewährt“ heißt nie nur „im Mittel im Plus“, sondern „besser als der
+// Vergleich“. Ereignis-Arten: mittlerer Vorsprung je Fall gegen den S&P 500 (Kursrendite, gleiches Fenster je Fall);
+// Depots: Gesamtergebnis gegen den S&P 500 im selben Zeitraum; Faktor-Ranglisten: oberstes gegen unterstes Fünftel je Rangtag.
+//   BEATS  Vergleich klar geschlagen   MIXED  nur teilweise   LOSES  nicht geschlagen   null  kein Vergleich messbar
+function comparison(kind, e, factor) {
+  const m = e.metrics || {};
+  if (kind === 'FACTOR_RANKING_BACKTEST') {
+    if (!factor || typeof factor.meanTopMinusBottom !== 'number' || typeof factor.topBeatsBottomShare !== 'number') return null;
+    const d = factor.meanTopMinusBottom, sh = factor.topBeatsBottomShare;
+    return { state: d > 0 && sh >= 2 / 3 ? 'BEATS' : d > 0 || sh > 0.5 ? 'MIXED' : 'LOSES', value: d, share: sh, basis: 'oberstes gegen unterstes Fünftel' };
+  }
+  if (m.basis === 'PORTFOLIO') {
+    const b = m.benchmark || {}, id = b.id || '';
+    // Bargeld ist kein Marktvergleich (Gesamtrendite-Depot mit Dividenden-Register): ohne Einordnung statt „besser als nichts“.
+    if (id === 'ZERO_RATE_CASH') return null;
+    const ex = b.pathStatistics && b.pathStatistics.excessTotalReturn;
+    const x = typeof ex === 'number' ? ex : (typeof m.totalReturn === 'number' && typeof b.totalReturn === 'number' ? m.totalReturn - b.totalReturn : null);
+    if (x === null) return null;
+    const basis = id === 'SAME_LISTING_BUY_AND_HOLD' ? 'Regel gegen Kaufen und Halten derselben Aktie' : 'Depot gegen S&P 500 im selben Zeitraum';
+    return { state: x > 0 ? 'BEATS' : 'LOSES', value: x, basis };
+  }
+  const ex = m.excess && m.excess.meanExcess;
+  if (typeof ex !== 'number') return null;
+  return { state: ex > 0 ? 'BEATS' : 'LOSES', value: ex, n: num(m.excess.n), basis: 'mittlerer Vorsprung je Fall gegen den S&P 500' };
+}
+// Ampel aus Robustheit (verdict) und Vergleich: bewährt nur, wenn beides trägt; ohne geschlagenen Vergleich „hat versagt“.
+// Ueberlebenden-Auswahl (Gegenpruefung 13.11.2026): Wer den Vergleich nur auf heute noch notierten, nachtraeglich
+// gewaehlten Titeln schlaegt (keine delisteten Titel), ist hoechstens „eingeschraenkt geprueft“ (LIMITED), nie „bewaehrt“.
+// Verloren bleibt verloren: wer selbst mit dieser Bevorzugung hinter dem Vergleich liegt, „hat versagt“.
+function combine(vd, cmp, survivorOnly) {
+  if (!vd) return null;
+  if (!cmp) return { verdict: null, basis: vd.basis, robustness: vd.verdict, comparison: null };
+  let v = cmp.state === 'LOSES' ? 'FAILED' : cmp.state === 'MIXED' ? (vd.verdict === 'FAILED' ? 'FAILED' : 'REGIME_DEPENDENT') : vd.verdict;
+  if (survivorOnly && (v === 'PROVEN' || v === 'REGIME_DEPENDENT')) v = 'LIMITED';
+  return { verdict: v, basis: vd.basis + '; Vergleich: ' + cmp.basis + (survivorOnly ? '; nur heutige Überlebende, ohne delistete Titel' : ''), robustness: vd.verdict, comparison: cmp.state };
+}
 function disclosure(c, r) {
   const e = r.envelope, costs = (e.metrics && e.metrics.costs) || {}, sens = e.methods.find(x => x.method === 'PARAMETER_SENSITIVITY');
   return { period: e.period ? { from: e.period.from, to: e.period.to } : null,
-    costs: { feeBpsPerSide: num(costs.feeBpsPerSide), slippageBpsPerSide: num(costs.slippageBpsPerSide), model: costs.model || null },
+    costs: { feeBpsPerSide: num(costs.feeBpsPerSide) ?? num(r.spec && r.spec.costs && r.spec.costs.feeBps), slippageBpsPerSide: num(costs.slippageBpsPerSide) ?? num(r.spec && r.spec.costs && r.spec.costs.slippageBps), model: costs.model || null },
     benchmark: { id: (r.spec && r.spec.benchmark) || null, label: 'S&P 500 (SPY)', returnBasis: (e.metrics && e.metrics.benchmark && e.metrics.benchmark.returnBasis) || null },
     delistedIncluded: c.privateData === 'delistedSeries' || /DELISTED/.test(JSON.stringify((r.spec && r.spec.population) || {})),
     survivorship: (e.dataQuality && e.dataQuality.survivorship && e.dataQuality.survivorship.state) || null,
@@ -101,6 +137,13 @@ function disclosure(c, r) {
     maxDrawdown: num(e.metrics && e.metrics.maxDrawdown) };
 }
 
+// Faktor-Rang: Fuenftel-Vergleich aus dem Runner (oberstes minus unterstes Fuenftel, je Rangtag), unveraendert uebernommen.
+function factorRow(e) {
+  const f = e.metrics && e.metrics.perEvent && e.metrics.perEvent.factor;
+  if (!f) return null;
+  return { factorId: f.factorId, buckets: f.buckets, rankDates: num(f.rankDates), meanTopMinusBottom: num(f.meanTopMinusBottomCompleteCohort),
+    topBeatsBottomShare: num(f.topBeatsBottomShare), bucketMeans: Array.isArray(f.bucketMeansCompleteCohort) ? f.bucketMeansCompleteCohort.map(num) : null, meanSpearman: num(f.meanSpearmanObservedOnly) };
+}
 function caseRow(c, r) {
   const e = r.envelope;
   const byId = Object.fromEntries(e.methods.map(m => [m.method, m]));
@@ -111,11 +154,15 @@ function caseRow(c, r) {
     metrics: { basis: e.metrics.basis, hitRate: num(e.metrics.hitRate), maxDrawdown: num(e.metrics.maxDrawdown), trades: num(e.metrics.trades), totalReturn: num(e.metrics.totalReturn), cagr: num(e.metrics.cagr) },
     missingInputs: e.limitations.filter(x => x.startsWith('MISSING_INPUT:')),
     methods: (() => {
-      const ms = Object.fromEntries(METHODS.map(id => { const m = byId[id] ? compact(id, byId[id]) : { state: 'NOT_APPLICABLE' }; const vd = verdict(id, m); return [id, vd ? { ...m, ...vd } : m]; }));
+      const cmp = comparison(c.kind, e, factorRow(e)), dis = disclosure(c, r);
+      const survivorOnly = !dis.delistedIncluded && dis.survivorship === 'CONDITIONAL_CURRENT_SURVIVOR_COHORT';
+      const ms = Object.fromEntries(METHODS.map(id => { const m = byId[id] ? compact(id, byId[id]) : { state: 'NOT_APPLICABLE' }; const vd = combine(verdict(id, m), cmp, survivorOnly); return [id, vd ? { ...m, ...vd } : m]; }));
       // Walk-Forward teilt nur die Zeit; sein Ergebnis steht in den Testfenstern derselben Teilung (OUT_OF_SAMPLE).
-      if (ms.WALK_FORWARD.state === 'EXECUTED' && ms.OUT_OF_SAMPLE.verdict) Object.assign(ms.WALK_FORWARD, { verdict: ms.OUT_OF_SAMPLE.verdict, basis: 'Testfenster der Walk-Forward-Teilung im Plus' });
+      if (ms.WALK_FORWARD.state === 'EXECUTED' && ms.OUT_OF_SAMPLE.robustness) Object.assign(ms.WALK_FORWARD, { verdict: ms.OUT_OF_SAMPLE.verdict, robustness: ms.OUT_OF_SAMPLE.robustness, comparison: ms.OUT_OF_SAMPLE.comparison, basis: 'Testfenster der Walk-Forward-Teilung; Vergleich wie dort' });
       return ms;
     })(),
+    comparison: comparison(c.kind, e, factorRow(e)),
+    factor: factorRow(e),
     disclosure: disclosure(c, r),
     resultHash: r.resultHash
   };
@@ -212,4 +259,4 @@ function main(argv = process.argv.slice(2)) {
   return doc;
 }
 if (require.main === module) { try { main(); } catch (e) { console.error(e.stack); process.exitCode = 1; } }
-module.exports = { build, compact, caseRow, matrix, certify, verdict, disclosure, METHODS, KINDS, SCHEMA };
+module.exports = { build, compact, caseRow, factorRow, comparison, combine, matrix, certify, verdict, disclosure, METHODS, KINDS, SCHEMA };

@@ -156,7 +156,7 @@ async function main() {
       await page.waitForFunction(() => /[?&]v=uptrendBasic/.test(location.hash));
       await page.waitForSelector(".tc-tpl-panel .tc-crit-why", { timeout: 30000 });
       assert(/fast erfüllt/.test(await page.locator(".tc-tpl-panel summary").innerText()), "Pruefleiste nennt den Status nicht");
-      await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
+      await page.waitForSelector(".tc-chart svg, .qc-chart svg", { timeout: 45000 });
       await clean("Vorlage und Chart");
     });
 
@@ -201,7 +201,7 @@ async function main() {
       await page.waitForFunction(() => /[?&]z=trendfolge/.test(location.hash));
       await page.waitForSelector(".tc-tpl-panel .tc-crit-why", { timeout: 30000 });
       assert(/Trendfolge/.test(await page.locator(".tc-tpl-panel summary").innerText()), "Pruefleiste ohne Analyseziel");
-      await page.waitForSelector(".tc-chart svg", { timeout: 45000 });
+      await page.waitForSelector(".tc-chart svg, .qc-chart svg", { timeout: 45000 });
       await clean("Analyseziel und Chart");
       await navigate(page,base + "#/assistent/ausbruch?k=");
       await page.waitForSelector(".tc-state", { timeout: 15000 });
@@ -256,8 +256,11 @@ async function main() {
     await check(key + " Chart einfach", async () => {
       await navigate(page,base + "#/chart/NVDA");
       await page.waitForSelector(".tc-sayrow [data-verdict]", { timeout: 45000 });
-      await page.waitForSelector(".tc-chart svg .tc-price-line");
+      /* Seit 13.11.2026 zeichnet die Einsteigeransicht den gemeinsamen Aktienchart (quant/app/chart.js, assets/vu-chart.js). */
+      await page.waitForSelector(".tc-simple-chart .qc-chart svg .vu-chart-line", { timeout: 45000 });
       assert(await page.locator(".tc-chart .tc-up rect, .tc-chart .tc-down rect").count() === 0, "Kerzen in der Einsteigeransicht");
+      const leiste = await page.locator(".tc-simple-chart .qc-ranges button:not([hidden])").allInnerTexts();
+      assert(leiste.join(",") === "1T,1W,1M,1J,5J,Max,Mehr", "Zeitraumleiste nicht 1T 1W 1M 1J 5J Max: " + leiste.join(","));
       assert(await page.locator(".vu-shead .vu-snav, .vu-shead-nav").count() >= 1, "Aktienkopf mit Perspektiven fehlt");
       assert(await page.locator(".tc-story-r [data-verdict]").count() === 3, "drei Saetze mit Urteil fehlen");
       assert(await page.locator(".tc-zt").count() === 2, "Zonen-Kacheln fehlen");
