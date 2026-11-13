@@ -753,3 +753,12 @@ der Sortierung, die Teile sind disjunkt und decken den Umfang genau ab. Gleiche 
 Jeder Teil schreibt nur seine eigenen Snapshot-Dateien (sie wachsen nur um neue Bars) und das Register im selben Commit, nie
 einen älteren Stand über einen neueren. Der Abstand der Seite zur Börse sinkt für den jüngsten Stand von rund 19 auf rund 10
 Minuten; ein einzelner Titel wird weiter nur einmal je Zyklus abgerufen (Spitzenalter bis ~24 Minuten statt ~33).
+
+## Schnellweg für Datenverzeichnisse (13.11.2026, Steuerung-Entscheidung B)
+
+Auf vollen Handelstagen lösten Discover- und andere Datenläufe Voll-Releases (~20 Minuten) aus; die Seite lag dann 28–47 Minuten hinter dem Takt. Der Schnellweg (`scripts/ci/intraday-fastpath.mjs`) trägt deshalb auch Dateien in `quant/data/market/**` und `discover/data/**`, die der Bau **nachweislich byte-gleich** ins Paket kopiert (Vollbau 13.11.2026: jede Datei dort liegt mit gleicher Prüfsumme im Paket).
+
+- **Bleibt VOLL:** Code, `quant/data/product/**`, Datenzweig-Pfade (`core/registry/data-branch.json`) und alle Bau-Eingaben (`FAST_EXCLUDE`: factors, fx, capabilities, security-master, discover-series; discover stock-index, stocks, europe). Ein SEC-Lauf, der `discover/data/stocks/**` ändert, löst also weiter den Voll-Release aus.
+- **Vertrag FP-6:** `core/tests/intraday-fastpath.test.mjs` prüft, dass kein Bau-Skript eine Datei innerhalb der Allowlist liest oder projiziert; wer das ändert, trägt den Pfad nach `FAST_EXCLUDE` ein (und prüft den Vollbau).
+- **Ablauf:** Weiche schreibt `git diff --name-status` in eine Liste; Overlay kopiert/löscht diese Dateien; Smoke vergleicht Prüfsummen, parst JSON und ruft die Seite auf. Ist der Smoke rot, fällt der Lauf auf VOLL zurück. FP-4/FP-5 (Statusfunktionen, Company-Intelligence-Veröffentlicher) bleiben unverändert wirksam.
+- **Abnahme (Mo. 16.11.):** Seite ≤ 12 Minuten hinter dem Takt, auch während Discover-Läufen.
