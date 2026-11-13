@@ -253,17 +253,46 @@ const live = () => `<section class="sec k"><div class="w"><div class="head two">
 <div class="ticker" data-live-davor hidden><span class="slot">Davor erschienen</span></div>
 <div class="cta" style="margin-top:28px"><a class="txt" href="${BASE}insights/">Alle Insights →</a></div></div></section>`;
 
-/* ---------- Startseite (Idee 5 „Das Plakat“, Owner 13.11.2026) ---------- */
+/* ---------- Startseite (Idee 5 „Das Plakat“, Owner 13.11.2026; wenig Text, bewegte Module, Owner 13.11. abends) ---------- */
+/* Das Kernmodul: eine Aktie, sieben Blickwinkel, je ein Satz und das echte App-Bild. site.js schaltet durch (data-core).
+   Alle Angaben sind die der App vom 11.11.2026 (NVIDIA); Methoden und Wellen beschreiben nur, was der Bereich tut. */
+const CORE = [
+  { id: "discover", tab: "Überblick", shot: "nvda-ueberblick", say: "Alles zu einer Aktie. Auf einer Seite.",
+    vis: `<div class="cv-price"><b>173,73 $</b><span class="chg">▲ +2,87 %</span></div>`, note: "NVIDIA · Schluss 11.11.2026" },
+  { id: "fundamental", tab: "Zahlen", shot: "nvda-fundamental", say: "„Wächst stark und verdient sehr gut.“",
+    vis: `<div class="cv-split"><i style="--v:63.66%"></i></div>`, note: "Von 100 $ Umsatz bleiben 63,66 $ Gewinn" },
+  { id: "quant", tab: "Faktoren", shot: "nvda-quant", say: "Verdient besser als 99 % aller US-Aktien.",
+    vis: `<div class="cv-bars">${[["Verdient gut", 99], ["Wächst", 86], ["Zahlen solide", 44]].map(([n, v]) => `<div><span>${n}</span><u><s style="--v:${v}%"${v >= 80 ? ' class="h"' : ""}></s></u><b>${v}</b></div>`).join("")}</div>`, note: "0 bis 100 · 50 ist die Mitte aller US-Aktien" },
+  { id: "technical", tab: "Chart", shot: "nvda-technical", say: "„Abwärtstrend.“",
+    vis: `<div class="cv-line"><span>200-Tage-Linie</span><i></i></div>`, note: "Der Kurs liegt 15,0 % unter der 200-Tage-Linie" },
+  { id: "supertrader", tab: "Methoden", shot: "nvda-supertrader", say: "13 Methoden bekannter Trader. Jeden Tag geprüft.",
+    vis: `<div class="cv-dots">${Array.from({ length: 13 }, (_, k) => `<i style="--d:${k}"></i>`).join("")}</div>`, note: "Feste Regeln · Forschung, nicht zertifiziert" },
+  { id: "elliott", tab: "Wellen", shot: "nvda-elliott", say: "Wellen. Nur wo sie sich sauber zählen lassen.",
+    vis: `<svg class="cv-wave" viewBox="0 0 320 90" aria-hidden="true"><path d="M4 78 62 40 104 58 186 12 232 36 316 6" pathLength="1"/></svg>`, note: "Schema einer Wellenzählung" },
+  { id: "hedgefonds", tab: "Investoren", shot: "nvda-hedgefonds", say: "413 Hedgefonds halten die Aktie.",
+    vis: `<div class="cv-count"><b>413</b><span>darunter 34 Star-Investoren</span></div>`, note: "13F-Meldungen · Q2 2026" }
+];
+const core = () => `<section class="k core" id="kern" data-core><div class="w"><div class="core-head"><span class="kick">Das können wir · Beispiel NVIDIA</span><h2 class="h2">Eine Aktie.<br>Sieben <em class="hl">Blickwinkel.</em></h2></div>
+<div class="core-stage"><div class="core-say">${CORE.map((c, i) => `<div class="cs${i ? "" : " on"}" data-core-panel><span class="cs-tab">${ic(c.id)}${c.tab}</span><p class="cs-say">${c.say}</p><div class="cs-vis">${c.vis}</div><span class="cs-note">${c.note}</span></div>`).join("")}</div>
+<div class="core-phone"><div class="ph">${CORE.map((c, i) => `<img${i ? "" : ' class="on"'} data-core-shot src="${BASE}img/app-${c.shot}.webp" alt="NVIDIA in der App: ${c.tab}" width="585" height="1266"${i ? ' loading="lazy"' : ""} decoding="async">`).join("")}</div></div></div>
+<div class="core-tabs" role="tablist" aria-label="Sieben Blickwinkel">${CORE.map((c, i) => `<button type="button" role="tab" aria-selected="${i ? "false" : "true"}" data-core-tab>${ic(c.id)}<span>${c.tab}</span></button>`).join("")}</div>
+<div class="core-more">${CORE.map((c) => `<a href="${modHref(c.id)}">${MOD[c.id].name}</a>`).join("")}</div></div></section>`;
+const TILE_NOTE = { entdecken: "Was ist heute los?", verstehen: "Was steckt in der Aktie?", methoden: "Wie arbeiten Profis?", vorsorgen: "Was wird aus meiner Rente?" };
+const tiles = () => `<section class="sec g"><div class="w"><div class="head"><h2 class="h2">Was willst du wissen?</h2></div>
+<div class="tiles">${GROUPS.map(([id, n, , ids], k) => `<div class="tile${k === 1 ? " dark" : ""}"><a class="tile-h" href="${BASE}funktionen/#${id}"><h3>${n}</h3><p>${TILE_NOTE[id]}</p></a><div class="tile-i">${ids.map((m) => `<a href="${modHref(m)}">${hud(m)}<span>${MOD[m].name}</span></a>`).join("")}</div></div>`).join("")}</div></div></section>`;
+const filmrow = () => `<section class="sec k"><div class="w"><div class="head two"><h2 class="h2">Jeder Bereich in<br><em class="hl">30 Sekunden.</em></h2><div class="cta"><a class="txt" href="${BASE}videos/">Alle Filme →</a></div></div>
+<div class="films">${[["start", "Vision Universe"], ["quant", "Quant"], ["fundamental", "Fundamental"], ["supertrader", "Supertrader"], ["discover", "Discover"]].map(([id, n]) => film(id, `${n} in 30 Sekunden`)).join("")}</div></div></section>`;
+const liveShort = () => live().replace(/<p class="lead">Jeden Werktag[^<]*<\/p>/, `<div class="cta"><a class="txt" href="${BASE}insights/">Alle Insights →</a></div>`).replace(/<div class="cta" style="margin-top:28px"><a class="txt" href="[^"]*">Alle Insights →<\/a><\/div>/, "").replace("Insights: immer das Neueste vorn.", "Heute neu.");
 function home() {
-  const body = `<section class="k h5x"><div class="poster"><img src="${BASE}img/kino-hero.webp" alt="Zwei Dirigenten vor einem Orchester im Konzertsaal" width="900" height="1600" fetchpriority="high"></div><div class="w"><div class="stack">${pill()}<h1 class="h1">Die Börse<br>ist laut.<br>Wir bringen<br><em class="hl">Ordnung</em><br>hinein.</h1><p class="lead">Die Analyse-App für Aktien, ETFs und Vorsorge. Jede Zahl mit Quelle und einem Satz, der sie erklärt.</p><div class="cta">${nlBtn()}</div>${badges()}</div></div>
-<div class="w nw"><div class="nums">${NUMS.map(([n, t]) => `<div><b>${n}</b><span>${t}</span></div>`).join("")}</div></div></section>
-${seven()}
-${want()}
-${live()}
-<section class="sec"><div class="w"><div class="head"><span class="kick">Unsere Haltung</span><h2 class="h2">Daten statt Meinung.</h2></div>
-${stand([["Jede Zahl mit Quelle", "Aus den Pflichtberichten an die US-Börsenaufsicht und echten Tageskursen, mit Datum."], ["Jede Zahl erklärt", "Ein Satz sagt, was sie bedeutet. Ohne Fachwörter."], ["Keine Empfehlung", "Wir zeigen, was die Daten sagen. Entscheiden tust du."], ["Keine Provision", "Wir verkaufen keine Aktien und keine Fonds. Kein Broker, keine Bank."]])}
-<div class="cta" style="margin-top:32px"><a class="txt" href="${BASE}fuer-wen/">Für wen ist das? →</a><a class="txt" href="${BASE}daten/">Woher die Zahlen kommen →</a><a class="txt" href="${BASE}videos/">Jeder Bereich in 30 Sekunden →</a></div></div></section>`;
-  return page({ path: "", title: "Vision Universe · Die Börse ist laut. Wir bringen Ordnung hinein.", desc: "Die Analyse-App für Aktien, ETFs und Vorsorge: jede Aktie aus sieben Blickwinkeln, jede Zahl mit Quelle und einem Satz, der sie erklärt. Bald für iPhone und Android.", active: "", body });
+  const body = `<section class="k h5x"><div class="poster"><img src="${BASE}img/kino-hero.webp" alt="Zwei Dirigenten vor einem Orchester im Konzertsaal" width="900" height="1600" fetchpriority="high"></div><div class="w"><div class="stack">${pill()}<h1 class="h1">Die Börse<br>ist laut.<br>Wir bringen<br><em class="hl">Ordnung</em><br>hinein.</h1><p class="lead">Jede Aktie aus sieben Blickwinkeln. Jede Zahl in einem Satz.</p><div class="cta">${nlBtn()}</div>${badges()}</div></div></section>
+${core()}
+<section class="k numband"><div class="w"><div class="nums">${NUMS.map(([n, t]) => `<div><b>${n}</b><span>${t}</span></div>`).join("")}</div></div></section>
+${tiles()}
+${liveShort()}
+${filmrow()}
+<section class="sec"><div class="w"><ul class="nots lt"><li><s>Keine</s> Empfehlungen</li><li><s>Keine</s> Kursziele</li><li><s>Keine</s> Provisionen</li><li><s>Keine</s> erfundenen Zahlen</li></ul>
+<div class="cta" style="margin-top:32px"><a class="txt" href="${BASE}daten/">Woher die Zahlen kommen →</a><a class="txt" href="${BASE}fuer-wen/">Für wen ist das? →</a></div></div></section>`;
+  return page({ path: "", title: "Vision Universe · Die Börse ist laut. Wir bringen Ordnung hinein.", desc: "Die Analyse-App für Aktien, ETFs und Vorsorge: jede Aktie aus sieben Blickwinkeln, jede Zahl mit Quelle und einem Satz, der sie erklärt. Bald für iPhone und Android.", active: "", body, player: 1 });
 }
 
 /* ---------- Produkt (Übersicht) ---------- */

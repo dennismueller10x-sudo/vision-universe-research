@@ -37,6 +37,32 @@
     dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
   }
 
+  /* Startseite: Kernmodul schaltet die sieben Blickwinkel durch (Klick wählt, Zeigen oder Fokus hält an). */
+  var core = d.querySelector('[data-core]');
+  if (core) {
+    var panels = core.querySelectorAll('[data-core-panel]'), shots = core.querySelectorAll('[data-core-shot]'), tabs = core.querySelectorAll('[data-core-tab]');
+    var MS = 3800, cur = 0, timer = null, seen = false, hold = false;
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var show = function (i) {
+      cur = (i + panels.length) % panels.length;
+      panels.forEach(function (p, k) { p.classList.toggle('on', k === cur); });
+      shots.forEach(function (s, k) { if (k === cur) s.loading = 'eager'; s.classList.toggle('on', k === cur); });
+      tabs.forEach(function (t, k) { t.setAttribute('aria-selected', String(k === cur)); });
+    };
+    var stop = function () { clearInterval(timer); timer = null; core.classList.remove('auto'); };
+    var start = function () {
+      if (calm || timer || !seen || hold) return;
+      core.style.setProperty('--core-ms', MS + 'ms'); core.classList.add('auto');
+      timer = setInterval(function () { show(cur + 1); }, MS);
+    };
+    tabs.forEach(function (t, k) { t.addEventListener('click', function () { stop(); show(k); start(); }); });
+    ['mouseenter', 'focusin'].forEach(function (e) { core.addEventListener(e, function () { hold = true; stop(); }); });
+    ['mouseleave', 'focusout'].forEach(function (e) { core.addEventListener(e, function () { hold = false; start(); }); });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) { seen = es[0].isIntersecting; if (seen) start(); else stop(); }, { threshold: .35 }).observe(core);
+    } else { seen = true; start(); }
+  }
+
   /* Insights live aus /insights/artikel.json (jeden Werktag neu): neuester Artikel, neuestes Heft, neuester Report.
      Was neu erscheint, steht dort an erster Stelle und rückt hier von selbst nach vorn. */
   var q = function (s) { return d.querySelector(s); };

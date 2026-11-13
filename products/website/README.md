@@ -13,6 +13,7 @@ Neue öffentliche Produktseite von Vision Universe. Startseite „Das Plakat“ 
 - Insights aktualisiert sich selbst (Owner 13.11.2026): Startseite und `/website/insights/` lesen bei jedem Aufruf `/insights/artikel.json` und zeigen den neuesten Artikel, das neueste Aktienmagazin (`magazin[0]`) und den neuesten Aktienreport (`reports[0]`). `products/insights/build.mjs` schreibt Heft und Reports dafür mit in die Liste. Ohne Report steht dort „Der erste Aktienreport ist in Arbeit.“ (Test WEB-9).
 - Social Media nur Instagram und TikTok (`@app.visionuniverse`, laut `docs/publishing/HANDBUCH.md`).
 - Preise ausgeblendet. Wortwahl nach `docs/legal/WORTWAHL.md`. Pflichtsatz und Rechtslinks aus `assets/legal-notices.json` stehen wie auf ganz research nur im Menü unter „Rechtliches & Infos“ (Owner 10.11.2026, Test `core/tests/legal-notices-frontend.test.mjs`), der Fuß verlinkt `/infos/`. Auf www kann ein eigener Rechtsfuß dazukommen.
+- Startseite mit wenig Text und bewegten Modulen (Owner 13.11.2026 abends): Das Kernmodul „Eine Aktie. Sieben Blickwinkel.“ schaltet am Beispiel NVIDIA durch die sieben Blickwinkel, je ein Satz, eine kleine Grafik und das echte App-Bild (`CORE` in `build.mjs`, Ablauf in `site.js`; hält bei Zeigen oder Fokus an, ohne Bewegung bei `prefers-reduced-motion`). Dazu vier Kacheln, Insights live, Filmstreifen und vier „Keine …“-Zeilen. Erklärtexte stehen auf den Unterseiten.
 - Die Startseite führt zu jedem Bereich („Was willst du wissen?“) und zu den Unterseiten. Sammelwort ist „Bereiche“, nicht „Module“.
 
 ## Bauen
