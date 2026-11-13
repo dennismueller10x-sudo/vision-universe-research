@@ -60,3 +60,25 @@ test("PCK-4 · Workflow: nur lesen ausser dem Alarm-Job, kein Cron, Eingaben ueb
   const reg = JSON.parse(readFileSync(join(ROOT, "core/registry/schedule.json"), "utf8"));
   assert.ok(reg.entries.some((e) => e.workflow === "quant-produktionscheck.yml" && e.timer === "waker"));
 });
+
+test("PCK-5 · Jeder Menue-Eintrag von Quant (module.json) steht in den Ansichten des Release-Smoke", () => {
+  const mod = JSON.parse(readFileSync(join(ROOT, "products/quant/module.json"), "utf8"));
+  const smoke = readFileSync(join(ROOT, "scripts/vu2/production-smoke.mjs"), "utf8");
+  for (const [, raw] of mod.navigation.entries) {
+    const href = raw === "/quant/" ? "/quant/#/" : raw; /* die Startseite heisst im Smoke /quant/#/ */
+    assert.ok(smoke.includes("'" + href + "'"), "Menue-Eintrag fehlt im Release-Smoke (scripts/vu2/production-smoke.mjs VIEWS): " + href);
+  }
+});
+
+test("PCK-6 · Pages-Deploy wartet und versucht es einmal erneut, wenn ein anderes Deployment noch lief (Lauf 43296967376)", () => {
+  const wf = readFileSync(join(ROOT, ".github/workflows/pages-release.yml"), "utf8");
+  for (const job of ["deploy", "deploy-schnell"]) {
+    const i = wf.indexOf("\n  " + job + ":\n");
+    assert.ok(i > 0, job);
+    const block = wf.slice(i, wf.indexOf("\n  # ===", i + 10) > 0 ? i + 3000 : i + 3000);
+    assert.match(block, /id: deployment\n\s+uses: actions\/deploy-pages@v4\n\s+continue-on-error: true/, job + ": erster Versuch muss continue-on-error sein");
+    assert.match(block, /steps\.deployment\.outcome == 'failure'\n\s+run: sleep 120/, job + ": Wartezeit fehlt");
+    assert.match(block, /id: deployment2\n\s+if: steps\.deployment\.outcome == 'failure'\n\s+uses: actions\/deploy-pages@v4/, job + ": zweiter Versuch fehlt");
+    assert.match(block, /url: \$\{\{ steps\.deployment2\.outputs\.page_url \|\| steps\.deployment\.outputs\.page_url \}\}/, job + ": URL aus beiden Versuchen");
+  }
+});
