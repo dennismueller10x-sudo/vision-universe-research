@@ -12,6 +12,10 @@
  },
  "certificationStatus": "NOT_CERTIFIED",
  "productionApproved": false,
+ "privateInputs": {
+  "delistedSeries": true,
+  "factorPanel": true
+ },
  "source": [
   "docs/quant/backtest-demos/cases.json",
   "docs/quant/backtest-research/cases.json"
@@ -63,6 +67,7 @@
     "cases": [
      "replay-nvda-winner-splits",
      "replay-intc-loser",
+     "delisted-xco-bankruptcy",
      "matrix-replay"
     ]
    },
@@ -153,6 +158,7 @@
      "signal-2009-recovery",
      "signal-2020-covid",
      "signal-2022-bear",
+     "acquisition-agn",
      "matrix-signal"
     ]
    },
@@ -266,46 +272,35 @@
     "state": "NOT_APPLICABLE"
    },
    "WALK_FORWARD": {
-    "state": "DATA_MISSING",
+    "state": "NOT_RUN",
     "cases": [
      "factor-momentum-v10-panel",
      "matrix-factor"
     ],
-    "missing": [
-     "PRIVATE_FACTOR_PANEL"
-    ]
+    "reason": "PURGE_OPERATION_BUDGET"
    },
    "OUT_OF_SAMPLE": {
-    "state": "DATA_MISSING",
+    "state": "NOT_RUN",
     "cases": [
      "factor-momentum-v10-panel",
      "matrix-factor"
     ],
-    "missing": [
-     "PRIVATE_FACTOR_PANEL"
-    ]
+    "reason": "PURGE_OPERATION_BUDGET"
    },
    "MARKET_REGIME": {
-    "state": "DATA_MISSING",
+    "state": "EXECUTED",
     "cases": [
      "factor-momentum-v10-panel",
      "matrix-factor"
-    ],
-    "missing": [
-     "PRIVATE_FACTOR_PANEL"
     ]
    },
    "PARAMETER_SENSITIVITY": {
     "state": "NOT_APPLICABLE"
    },
    "EVENT_DRIVEN": {
-    "state": "DATA_MISSING",
+    "state": "EXECUTED",
     "cases": [
-     "factor-momentum-v10-panel",
      "matrix-factor"
-    ],
-    "missing": [
-     "PRIVATE_FACTOR_PANEL"
     ]
    },
    "PORTFOLIO_REBALANCING": {
@@ -315,15 +310,15 @@
  },
  "summary": {
   "cases": 22,
-  "executed": 17,
-  "dataLimited": 5,
+  "executed": 21,
+  "dataLimited": 1,
   "methods": {
    "MONTE_CARLO": 8,
    "WALK_FORWARD": 8,
    "OUT_OF_SAMPLE": 6,
-   "MARKET_REGIME": 14,
+   "MARKET_REGIME": 18,
    "PARAMETER_SENSITIVITY": 7,
-   "EVENT_DRIVEN": 5,
+   "EVENT_DRIVEN": 6,
    "PORTFOLIO_REBALANCING": 7
   }
  },
@@ -1919,30 +1914,28 @@
    ],
    "purpose": "Faktor-Ranking (Momentum, 5 Buckets, 13 Wochen) auf dem privaten V10-PIT-Panel, Rangtage 2019–2020, gesamter V10-Primary-Frame. Ohne Panel: Zustand B mit fehlender Eingabe.",
    "privateData": "factorPanel",
-   "state": "PREPARED_DATA_LIMITED",
+   "state": "RESEARCH_EXECUTED",
    "evidenceKind": "TESTED",
    "certificationStatus": "COLLECTING_HISTORY",
    "period": {
-    "from": null,
-    "to": null,
+    "from": "2019-01-25",
+    "to": "2021-04-09",
     "asOf": "2025-12-31",
     "grain": "WEEKLY"
    },
    "events": {
-    "occurrences": null,
-    "completed": null
+    "occurrences": 65128,
+    "completed": 65128
    },
    "metrics": {
-    "basis": "NONE",
-    "hitRate": null,
-    "maxDrawdown": null,
-    "trades": null,
+    "basis": "PER_EVENT",
+    "hitRate": 0.5672061171846211,
+    "maxDrawdown": -0.1403508771929824,
+    "trades": 65128,
     "totalReturn": null,
     "cagr": null
    },
-   "missingInputs": [
-    "MISSING_INPUT:PRIVATE_FACTOR_PANEL panel.jsonl.gz (scripts/quant/v10/factor/panel.cjs from SEC companyfacts PIT documents, scripts/quant/v10/factor/pit_docs.py)"
-   ],
+   "missingInputs": [],
    "methods": {
     "MONTE_CARLO": {
      "state": "NOT_RUN"
@@ -1954,7 +1947,56 @@
      "state": "NOT_RUN"
     },
     "MARKET_REGIME": {
-     "state": "NOT_RUN"
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 16175,
+       "mean": 0.12385332158987077,
+       "median": 0.052438470620288946,
+       "interval95": [
+        -0.016041214693445813,
+        0.26374785787318733
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 5230,
+       "mean": -0.00043182320193729356,
+       "median": 0.000010082830268598464,
+       "interval95": [
+        -0.007624123763477586,
+        0.006760477359602998
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 11197,
+       "mean": 0.10743221031838049,
+       "median": 0.06095289326058584,
+       "interval95": [
+        0.03270712356896946,
+        0.18215729706779152
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 32526,
+       "mean": 0.039468649733057325,
+       "median": 0.011786345200215376,
+       "interval95": [
+        -0.08115730701399801,
+        0.16009460648011267
+       ]
+      }
+     ],
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -1963,10 +2005,10 @@
      "state": "NOT_RUN"
     },
     "PORTFOLIO_REBALANCING": {
-     "state": "NOT_RUN"
+     "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "f63554a8f01b08a3fec45b0281dca7815ec14df1e99166f18ff0517afcb0423e",
+   "resultHash": "5d2a387750e49b13b5f69df2f4c9e8ffd10412f96a5d3e6f904a2f9705eec8d2",
    "group": "DEMO"
   },
   {
@@ -1977,30 +2019,28 @@
    ],
    "purpose": "Delisteter Titel (EXCO Resources, Insolvenz, letzter Handel 2017-12-22) aus der privaten, hash-gebundenen V13-Reihe: Regel-Wiederholung, Ereignisse nach dem letzten Handelstag werden zensiert.",
    "privateData": "delistedSeries",
-   "state": "PREPARED_DATA_LIMITED",
+   "state": "RESEARCH_EXECUTED",
    "evidenceKind": "OBSERVED",
    "certificationStatus": "LIMITED",
    "period": {
-    "from": null,
-    "to": null,
+    "from": "2012-01-27",
+    "to": "2017-10-27",
     "asOf": "2025-12-31",
-    "grain": "UNSPECIFIED"
+    "grain": "WEEKLY"
    },
    "events": {
-    "occurrences": null,
-    "completed": null
+    "occurrences": 24,
+    "completed": 22
    },
    "metrics": {
-    "basis": "NONE",
-    "hitRate": null,
-    "maxDrawdown": null,
-    "trades": null,
+    "basis": "PER_EVENT",
+    "hitRate": 0.3181818181818182,
+    "maxDrawdown": -0.46533799880881477,
+    "trades": 22,
     "totalReturn": null,
     "cagr": null
    },
-   "missingInputs": [
-    "MISSING_INPUT:PRIVATE_DATA_UNAVAILABLE:delistedSeries (docs/quant-recovery/v13/delisted/register-1.0.0.json, private hash-bound series)"
-   ],
+   "missingInputs": [],
    "methods": {
     "MONTE_CARLO": {
      "state": "NOT_RUN"
@@ -2012,7 +2052,36 @@
      "state": "NOT_RUN"
     },
     "MARKET_REGIME": {
-     "state": "NOT_RUN"
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 2,
+       "mean": 0.2558890689142791,
+       "median": 0.2558890689142791,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 1,
+       "mean": 0.012300020896009567,
+       "median": 0.012300020896009567,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 19,
+       "mean": -0.2497965438208748,
+       "median": -0.3717495619134963,
+       "interval95": null
+      }
+     ],
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -2021,10 +2090,10 @@
      "state": "NOT_RUN"
     },
     "PORTFOLIO_REBALANCING": {
-     "state": "NOT_RUN"
+     "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "1f90865fe6fd1c16deff1f12e4e355a5a69b4fbeb9c6fe87d934f9c28a27dfd2",
+   "resultHash": "f13bd508734f940ef54df3e192a9596980ca1e2b3959f9c252e366fc3dd8dcd8",
    "group": "DEMO"
   },
   {
@@ -2035,30 +2104,28 @@
    ],
    "purpose": "Übernommener Titel (Allergan, Übernahme abgeschlossen, letzter Handel 2020-05-08) aus der privaten V13-Reihe: Signalregeln 2015–2020, offene Ergebnisse nach dem letzten Handel zensiert, Abfindungsszenarien nur dokumentiert.",
    "privateData": "delistedSeries",
-   "state": "PREPARED_DATA_LIMITED",
+   "state": "RESEARCH_EXECUTED",
    "evidenceKind": "TESTED",
    "certificationStatus": "LIMITED",
    "period": {
-    "from": null,
-    "to": null,
+    "from": "2015-07-31",
+    "to": "2020-05-08",
     "asOf": "2025-12-31",
-    "grain": "UNSPECIFIED"
+    "grain": "WEEKLY"
    },
    "events": {
-    "occurrences": null,
-    "completed": null
+    "occurrences": 30,
+    "completed": 28
    },
    "metrics": {
-    "basis": "NONE",
-    "hitRate": null,
-    "maxDrawdown": null,
-    "trades": null,
+    "basis": "PER_EVENT",
+    "hitRate": 0.17857142857142858,
+    "maxDrawdown": -0.23399673889673311,
+    "trades": 28,
     "totalReturn": null,
     "cagr": null
    },
-   "missingInputs": [
-    "MISSING_INPUT:PRIVATE_DATA_UNAVAILABLE:delistedSeries (docs/quant-recovery/v13/delisted/register-1.0.0.json, private hash-bound series)"
-   ],
+   "missingInputs": [],
    "methods": {
     "MONTE_CARLO": {
      "state": "NOT_RUN"
@@ -2070,7 +2137,28 @@
      "state": "NOT_RUN"
     },
     "MARKET_REGIME": {
-     "state": "NOT_RUN"
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 7,
+       "mean": -0.18407944990722536,
+       "median": -0.18024161856298415,
+       "interval95": null
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 21,
+       "mean": -0.103405217322275,
+       "median": -0.14577990435479748,
+       "interval95": null
+      }
+     ],
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
@@ -2079,10 +2167,10 @@
      "state": "NOT_RUN"
     },
     "PORTFOLIO_REBALANCING": {
-     "state": "NOT_RUN"
+     "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "4316bb5d05c4813174ab727661d9b0d1436a06d0578f212ae76d30fcc4bbd286",
+   "resultHash": "7d8b73e50b0217f252d52b5228111d2cfd05e2fc3d27197c9cc733a6a9353d41",
    "group": "DEMO"
   },
   {
@@ -3182,54 +3270,118 @@
    ],
    "purpose": "Rang nach Kursdynamik 2019–2020 auf dem V10-Faktorpanel; alle vier zulässigen Methoden.",
    "privateData": "factorPanel",
-   "state": "PREPARED_DATA_LIMITED",
+   "state": "RESEARCH_EXECUTED",
    "evidenceKind": "TESTED",
    "certificationStatus": "COLLECTING_HISTORY",
    "period": {
-    "from": null,
-    "to": null,
+    "from": "2019-01-25",
+    "to": "2021-04-09",
     "asOf": "2025-12-31",
     "grain": "WEEKLY"
    },
    "events": {
-    "occurrences": null,
-    "completed": null
+    "occurrences": 65128,
+    "completed": 65128
    },
    "metrics": {
-    "basis": "NONE",
-    "hitRate": null,
-    "maxDrawdown": null,
-    "trades": null,
+    "basis": "PER_EVENT",
+    "hitRate": 0.5672061171846211,
+    "maxDrawdown": -0.1403508771929824,
+    "trades": 65128,
     "totalReturn": null,
     "cagr": null
    },
-   "missingInputs": [
-    "MISSING_INPUT:PRIVATE_FACTOR_PANEL panel.jsonl.gz (scripts/quant/v10/factor/panel.cjs from SEC companyfacts PIT documents, scripts/quant/v10/factor/pit_docs.py)"
-   ],
+   "missingInputs": [],
    "methods": {
     "MONTE_CARLO": {
      "state": "NOT_RUN"
     },
     "WALK_FORWARD": {
-     "state": "NOT_RUN"
+     "state": "NOT_RUN",
+     "reason": "PURGE_OPERATION_BUDGET"
     },
     "OUT_OF_SAMPLE": {
-     "state": "NOT_RUN"
+     "state": "NOT_RUN",
+     "reason": "PURGE_OPERATION_BUDGET"
     },
     "MARKET_REGIME": {
-     "state": "NOT_RUN"
+     "state": "EXECUTED",
+     "definition": "SPY_WEEKLY_TREND_26_VOL_13",
+     "mode": "PIT_AVAILABLE",
+     "states": [
+      {
+       "state": "NEGATIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 24,
+       "n": 16175,
+       "mean": 0.12385332158987077,
+       "median": 0.052438470620288946,
+       "interval95": [
+        -0.016041214693445813,
+        0.26374785787318733
+       ]
+      },
+      {
+       "state": "NEGATIVE_TREND/LOW_VOLATILITY",
+       "episodes": 41,
+       "n": 5230,
+       "mean": -0.00043182320193729356,
+       "median": 0.000010082830268598464,
+       "interval95": [
+        -0.007624123763477586,
+        0.006760477359602998
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/HIGH_VOLATILITY",
+       "episodes": 30,
+       "n": 11197,
+       "mean": 0.10743221031838049,
+       "median": 0.06095289326058584,
+       "interval95": [
+        0.03270712356896946,
+        0.18215729706779152
+       ]
+      },
+      {
+       "state": "POSITIVE_TREND/LOW_VOLATILITY",
+       "episodes": 45,
+       "n": 32526,
+       "mean": 0.039468649733057325,
+       "median": 0.011786345200215376,
+       "interval95": [
+        -0.08115730701399801,
+        0.16009460648011267
+       ]
+      }
+     ],
+     "regimeResultHash": "6a78b6c268276acb1243185dcf1f07beb8c890febe0a213ddbd0788983da6c63"
     },
     "PARAMETER_SENSITIVITY": {
      "state": "NOT_RUN"
     },
     "EVENT_DRIVEN": {
-     "state": "NOT_RUN"
+     "state": "EXECUTED",
+     "coverage": {
+      "expected": 35,
+      "observed": 35,
+      "immature": 0,
+      "censored": 0,
+      "ineligible": 0,
+      "maturedDenominator": 35,
+      "observedShareMatured": 1
+     },
+     "meanNet": 0.03214459733002733,
+     "medianNet": 0.0388307478433596,
+     "interval95": [
+      -0.01777574440542208,
+      0.08206493906547674
+     ]
     },
     "PORTFOLIO_REBALANCING": {
-     "state": "NOT_RUN"
+     "state": "NOT_APPLICABLE"
     }
    },
-   "resultHash": "c43a3cf90e77de3799b91fdcd58a77a9b8c2685e01d0f797f7ecdaadc3a79830",
+   "resultHash": "14a1d048fcb99925bef1a0f0ad9dd00ca230291a3f47a6384c65d9e07e03717f",
    "group": "MATRIX"
   }
  ]
