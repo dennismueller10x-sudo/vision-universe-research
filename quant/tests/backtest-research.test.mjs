@@ -128,3 +128,21 @@ test("BR-3 · Erzeugtes Artefakt (falls angegeben) erfuellt den Vertrag", { skip
   assert.ok(existsSync(f), f);
   checkDoc(JSON.parse(readFileSync(f, "utf8")));
 });
+
+test("BR-7 · Quant-Profilwert (Forschung): Mittel der sechs Faktoren, mindestens 4 belegt; Prüffälle registriert", () => {
+  const Run = require("../../scripts/quant/research/backtest-runner.cjs");
+  const X = require("../../scripts/quant/v10/factor/factors.cjs");
+  assert.equal(Run.PROFILE_MEAN_MIN, 4);
+  assert.equal(Run.profileMean({ quality: 80, growth: 60, value: null, profitability: 70, momentum: 50, risk: 40, composite: 99 }, X), 60, "composite zählt nicht mit");
+  assert.equal(Run.profileMean({ quality: null, growth: 60, value: null, profitability: null, momentum: 50, risk: 40 }, X), null, "unter 4 belegten Faktoren kein Wert");
+  const cases = JSON.parse(readFileSync(new URL("../../docs/quant/backtest-research/cases.json", import.meta.url), "utf8")).cases;
+  for (const id of ["matrix-profile-mean", "matrix-profile-mean-sample"]) {
+    const c = cases.find((x) => x.id === id);
+    assert.ok(c && c.kind === "FACTOR_RANKING_BACKTEST" && c.privateData === "factorPanel", id);
+    const spec = JSON.parse(readFileSync(new URL("../../docs/quant/backtest-research/" + c.spec, import.meta.url), "utf8"));
+    Run.validateSpec(spec); assert.equal(spec.engine.factorId, "PROFILE_MEAN");
+  }
+  assert.equal(B.factorRow({ metrics: { perEvent: null } }), null);
+  assert.deepEqual(B.factorRow({ metrics: { perEvent: { factor: { factorId: "PROFILE_MEAN", buckets: 5, rankDates: 24, meanTopMinusBottomCompleteCohort: 0.02, topBeatsBottomShare: 0.6, bucketMeansCompleteCohort: [0.01, 0.02, 0.02, 0.025, 0.03], meanSpearmanObservedOnly: 0.05 } } } }),
+    { factorId: "PROFILE_MEAN", buckets: 5, rankDates: 24, meanTopMinusBottom: 0.02, topBeatsBottomShare: 0.6, bucketMeans: [0.01, 0.02, 0.02, 0.025, 0.03], meanSpearman: 0.05 });
+});
