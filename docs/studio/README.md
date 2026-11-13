@@ -29,6 +29,11 @@ Einstieg für jede neue Sitzung, in der ein Reel entstehen soll. Stand 2026-10-2
 7. Fakten werden an Primärquellen geprüft. Zahlen und Zielkurse sind „Modell, keine Prognose", keine Anlageberatung.
 8. Meta verlangt die Kennzeichnung fotorealistischer KI-Bilder: Hinweis in der Caption („Teile der Bilder sind KI-generiert"), bei TikTok der KI-Schalter.
 9. Sprache: Deutsch.
+10. Vor jedem neuen Reel die bisherigen Reels über die Instagram-Schnittstelle prüfen (Workflow `social-ig-check.yml` mit Backup, dann `instagram-backup.json` lesen): Reichweite, Watch-Time und Optik der besten Reels als Maßstab nehmen, nicht frei neu erfinden.
+11. Eigener Video-Stil, kein Nachbau der App-Oberfläche. Für Chart-Reels gilt die Vorlage „Nvidia Teil 2" (Chart-Karte, Zonen, Volumen/RSI, Schalter). Jede Linie und Zone im Bild wird aus genau den gezeigten Kursen berechnet.
+12. Den Bildschirm ausnutzen: Inhalte groß und mittig in der Safezone (x 100–980, oben ab 150, Untertitel 1395–1555), keine leeren Flächen unter kleinen Karten.
+13. Aussprache konsistent: „GTA sechs", „GTA fünf" (nie alleinstehendes „GTA", nie „G. T. A."). Nach jeder Aufnahme Whisper-Prüfung.
+14. Gewinnspiel-Reels: „GEWINNSPIEL" und die Schritte ab dem ersten Bild sichtbar; Teilnahmebedingungen unter `/instagram/teilnahmebedingungen/` passend zum Video halten.
 
 ## Marke
 
