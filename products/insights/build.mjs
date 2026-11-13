@@ -278,7 +278,7 @@ export function build() {
     'insights/feed.xml': feed(artikel),
     'insights/sitemap.xml': sitemap(artikel, hefte),
     'insights/magazin/index.html': magazinUebersicht(hefte),
-    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, bild }) => ({ slug, datum, rubrik, titel, teaser, ticker, bild: bild.typ === 'app' ? null : bild.src, href: `/insights/${slug}/` })) }, null, 1) + '\n',
+    'insights/artikel.json': JSON.stringify({ schema: 'vu-insights-1', note: 'Erzeugt von products/insights/build.mjs', artikel: artikel.map(({ slug, datum, rubrik, titel, teaser, ticker, bild }) => ({ slug, datum, rubrik, titel, teaser, ticker, bild: bild.typ === 'app' ? null : bild.src, href: `/insights/${slug}/` })), magazin: hefte.map(({ nr, datum, kw, titel, seiten }) => ({ nr, datum, kw, titel, seiten, cover: `/insights/magazin/nr-${nr}/cover.jpg`, href: `/insights/magazin/nr-${nr}/` })), reports: reports.map(({ datum, art, titel, href }) => ({ datum, art, titel, href })) }, null, 1) + '\n',
   };
   for (const a of artikel) files[`insights/${a.slug}/index.html`] = artikelSeite(a);
   for (const h of hefte) files[`insights/magazin/nr-${h.nr}/index.html`] = heftSeite(h);
