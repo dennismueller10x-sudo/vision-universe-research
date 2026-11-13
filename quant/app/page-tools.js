@@ -215,7 +215,7 @@
     /* Kurzname wie im Mockup („AMD“ statt „Advanced Micro Devices“): lange Namen weichen dem Kürzel. */
     var nm = function (t) { var n = cleanName(ctx.names && ctx.names[t]); return n && n.length <= 16 ? n : t; };
     var prof = selected.map(function (t) { return rowBy[t] ? VM.profileValues(rowBy[t]) : null; });
-    var K = U.PROFILE.keys;
+    var K = U.PROFILE.keys.filter(U.PROFILE.open || function () { return true; }); /* ein Faktor ohne Werte ruht (13.11.2026) */
     var title = selected.length === 2 ? U.esc(nm(selected[0])) + "<br>gegen " + U.esc(nm(selected[1])) : selected.map(function (t) { return U.esc(nm(t)); }).join(", ");
     var h = '<header class="qv3-intro"><p class="vu-ltag">Vergleich</p><h1 class="vu-lt">' + title + "</h1></header>" +
       '<div class="vu-chips qk-cmp-chips">' + selected.map(function (t, i) { return '<span class="vu-chip qk-cmp-c' + i + '">' + U.logo(t) + U.esc(t) + (selected.length > 2 ? '<button type="button" class="qk-x" data-drop="' + U.esc(t) + '" aria-label="' + U.esc(t) + ' entfernen">×</button>' : "") + "</span>"; }).join("") +

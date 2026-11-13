@@ -202,7 +202,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view==='home'&&v3){
    /* Konzept Quant „Ein Profil je Aktie“ (QX01, docs/design/quant-2026-11): ein Satz zum Profil, die Suche, „Heute bei Quant“
       mit Weg zu allen Meldungen, Anlagestile, Vertrauen; Stichtag oder ehrlicher Rueckfall; Fusszeile mit Absage. */
-   if(!(await page.locator('.qv3-intro .vu-lead').innerText()).includes('Profil aus sieben Eigenschaften'))befund(view,width,'Home sagt nicht, was Quant misst');
+   if(!/Profil aus (sieben|sechs) Eigenschaften/.test(await page.locator('.qv3-intro .vu-lead').innerText()))befund(view,width,'Home sagt nicht, was Quant misst');
    if(!/früher/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Home verliert den historischen Marktvergleich');
    await page.locator('button.qv3-search').waitFor();
    await page.waitForFunction(()=>/Stand \d{2}\.\d{2}\.\d{4}|Gerade keine Meldungen abrufbar/.test(document.querySelector('#qx-main').innerText),null,{timeout:30000}).catch(()=>befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall'));
@@ -373,7 +373,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const ids=await page.locator('details.qx-factor[data-factor]').evaluateAll(ns=>ns.map(n=>n.dataset.factor));
    const PROFIL=['profitability','growth','quality','momentum','value','risk','revisions'];
    if(PROFIL.slice().sort().join('|')!==factorEvidence.FACTOR_ORDER.slice().sort().join('|'))befund(view,width,'Profil und Engine kennen verschiedene Eigenschaften');
-   if(ids.join('|')!==PROFIL.join('|'))befund(view,width,'factor order drifted: '+ids.join('|'));
+   /* Ein Faktor ohne einen Wert im Produktuniversum (Abdeckung 0, VUFactorCoverage) ruht und steht nicht in der Liste (13.11.2026). */
+   const ruht=await page.evaluate(()=>Object.entries(globalThis.VUFactorCoverage||{}).filter(([,n])=>n===0).map(([k])=>k));
+   const ERWARTET=PROFIL.filter(k=>!ruht.includes(k));
+   if(ids.join('|')!==ERWARTET.join('|'))befund(view,width,'factor order drifted: '+ids.join('|')+' (erwartet '+ERWARTET.join('|')+')');
    await page.getByText(/Eine Gesamtnote gibt es bewusst nicht/).first().waitFor();
    /* Quant Daily Usefulness: Pro/Contra hat einen eigenen Abschnitt (#dafuer). */
    const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
@@ -661,7 +664,7 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
    /* Redesign 2027 (Q01): kurze Frage als H1, Nutzen in einem Satz. */
    await page.locator('#qx-main h1').filter({hasText:'Was hat sich heute verändert?'}).waitFor();
    /* Konzept Quant 2026-11 (QX01): ein Satz zum Profil. */
-   await page.locator('#qx-main .qv3-intro .vu-lead').filter({hasText:'Profil aus sieben Eigenschaften'}).waitFor();
+   await page.locator('#qx-main .qv3-intro .vu-lead').filter({hasText:/Profil aus (sieben|sechs) Eigenschaften/}).waitFor();
   } else {
   await page.locator('#qx-main h1').filter({hasText:'Jeden Tag sehen, was sich verändert.'}).waitFor();
   await page.locator('#qx-main .q-hero-lead').filter({hasText:'wie oft das früher besser lief als der Markt'}).waitFor();

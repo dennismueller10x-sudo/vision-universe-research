@@ -420,6 +420,9 @@
   var PROFILE_LABEL = { profitability: "Verdient gut", growth: "Wächst", quality: "Zahlen solide", momentum: "Kurs läuft", value: "Günstig", risk: "Ruhiger Kurs", revisions: "Analysten" };
   var PROFILE_GLYPH = { profitability: "bars", growth: "pulse", quality: "check", momentum: "line", value: "target", risk: "wave", revisions: "person" };
   var STAGE_MARKS = [25, 45, 75, 90];
+  /* Ein Faktor ohne einen einzigen Wert im Produktuniversum (Abdeckung 0, aus den veroeffentlichten Daten: bandSemantics.universe,
+     von quant/api/product-services.js nach globalThis.VUFactorCoverage geschrieben) wird nicht gezeigt, bis er Werte hat (13.11.2026). */
+  function profileOpen(k) { var c = typeof globalThis !== "undefined" ? globalThis.VUFactorCoverage : null; return !(c && c[k] === 0); }
   /** Stufe einer Eigenschaft: Sehr schwach < 25 ≤ Schwach < 45 ≤ Mittel < 75 ≤ Stark < 90 ≤ Sehr stark. */
   function profileStage(v) { return !isNum(v) ? "Keine Daten" : v >= 90 ? "Sehr stark" : v >= 75 ? "Stark" : v >= 45 ? "Mittel" : v >= 25 ? "Schwach" : "Sehr schwach"; }
   function profileStrong(v) { return isNum(v) && v >= 75; }
@@ -440,7 +443,7 @@
   /** Profil groß: sieben Zeilen mit Symbol, Wort, Balken (Stufen-Marken 25 · 45 · 75 · 90), Zahl und Stufe. o.why: {key: Grund}. */
   function profileFull(values, o) {
     var x = o || {};
-    return '<div class="vu-pf" role="list">' + PROFILE_KEYS.map(function (k) {
+    return '<div class="vu-pf" role="list">' + PROFILE_KEYS.filter(profileOpen).map(function (k) {
       var v = profileValue(values, k), why = x.why && x.why[k];
       return '<div class="vu-pf-r' + (v == null ? " is-na" : "") + '" role="listitem"' + (v == null && why ? ' title="' + esc(why) + '"' : "") + ' data-key="' + k + '"><span class="vu-pf-l">' + glyph(PROFILE_GLYPH[k], 15) + esc(PROFILE_LABEL[k]) + "</span>" +
         '<span class="vu-pf-b" aria-hidden="true"><i class="' + (profileStrong(v) ? "is-hi" : "") + '" style="width:' + (v == null ? 0 : v) + '%"></i>' + STAGE_MARKS.map(function (m) { return '<em style="left:' + m + '%"></em>'; }).join("") + "</span>" +
@@ -449,7 +452,7 @@
   }
 
   return Object.freeze({
-    PROFILE: Object.freeze({ keys: PROFILE_KEYS, label: PROFILE_LABEL, glyph: PROFILE_GLYPH, marks: STAGE_MARKS, stage: profileStage, strong: profileStrong }),
+    PROFILE: Object.freeze({ keys: PROFILE_KEYS, label: PROFILE_LABEL, glyph: PROFILE_GLYPH, marks: STAGE_MARKS, stage: profileStage, strong: profileStrong, open: profileOpen }),
     profileMini: profileMini, profileFull: profileFull, profileLegend: profileLegend,
     VERSION: VERSION, skeleton: skeleton, bindIntent: bindIntent, transition: transition, legal: legal, legalNotice: legalNotice, neutralSourceText: neutralSourceText, neutralSources: neutralSources, PERSPECTIVES: PERSPECTIVES, esc: esc, num: num, pct: pct, money: money,
     glyph: glyph, worldIcon: worldIcon, hud: hud, logo: logo,
