@@ -596,7 +596,7 @@ function create(options){
    try{const s=await load(files[kind]);
     if(kind==='readiness')return s?.schemaVersion==='backtest-readiness-2.0.0'?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
     /* Backtest-Forschung (Zusatzmethoden der Pruefffaelle): nur als interne Forschung, nie oeffentlich, nie zertifiziert. */
-    if(kind==='research')return /^backtest-research-1\.[012]\.0$/.test(s?.schemaVersion||'')&&s.display&&(s.audience==='INTERNAL'?s.display.public===false:s.audience==='PUBLIC'&&s.display.public===true)&&s.productionApproved===false&&Array.isArray(s.cases)?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
+    if(kind==='research')return /^backtest-research-1\.[0-3]\.0$/.test(s?.schemaVersion||'')&&s.display&&(s.audience==='INTERNAL'?s.display.public===false:s.audience==='PUBLIC'&&s.display.public===true)&&s.productionApproved===false&&Array.isArray(s.cases)?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
     if(kind==='outcomes')return s?.schemaVersion==='setup-outcomes-1.0.0'&&s.source&&s.source.reconstructed===false?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
     if(kind==='certification'){const Cx=g.VUBacktestCertification||(typeof module!=='undefined'&&module.exports?require('../engines/backtest-certification.js'):null);
      if(!Cx)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};const e=Cx.certificationViolations(s);return e.length?{state:'UNAVAILABLE',reason:'CERTIFICATION_CONTRACT_VIOLATED',errors:e}:{state:'AVAILABLE',...s};}

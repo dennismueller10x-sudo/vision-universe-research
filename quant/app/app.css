@@ -1879,6 +1879,12 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qk-bt .qk-br-cell.is-not-applicable{color:#b5b5b5}
 .qk-bt .qk-br-cell.is-data-missing,.qk-bt .qk-br-cell.is-not-run,.qk-bt .qk-br-cell.is-no-case{color:#6b6b6b}
 .qk-bt .qk-br-legend{margin:6px 2px 0}
+.qk-bt .qk-br-mxr > a[role=rowheader] small.qk-br-cert{display:block;font-weight:500;font-size:9.5px;color:#3c4a00;background:#c8f531;border-radius:6px;padding:1px 5px;margin-top:3px;width:max-content;max-width:100%}
+.qk-bt .qk-br-mxr > a[role=rowheader] small.qk-br-cert.is-lim{background:#ececec;color:#444}
+.qk-bt .qk-br-cell.is-proven{color:#000;font-weight:700}
+.qk-bt .qk-br-cell.is-regime-dependent{color:#555}
+.qk-bt .qk-br-cell.is-failed{color:#000}
+.qk-bt .vu-legal{margin-top:14px}
 .qk-bt .qk-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .qk-bt .qk-bt-more{margin-top:12px;padding:12px 14px}
 .qk-bt .qk-bt-more summary{cursor:pointer}
@@ -1886,3 +1892,4 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qk-bt{padding-top:8px}
 .qk .qk-seg small,.qk .qk-chips .vu-chip--on small,.qk .qk-chips .vu-chip[aria-pressed=true] small{opacity:1} /* Kontrast (vu3-regression) */
 .qd .qk a.qk-pro,.qd .qk a.qk-pro:visited{color:var(--vu-inv,#fff)} /* Kontrast: Link-Farbe nicht erben */
+.qv3-back + .qk-tag { margin-left: 10px; }

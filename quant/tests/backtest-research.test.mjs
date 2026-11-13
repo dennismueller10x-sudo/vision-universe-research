@@ -100,7 +100,7 @@ test("BR-5 · Matrix aus Fallzeilen: anwendbar/nicht anwendbar, Daten fehlen, ni
   const mk = (id, kind, state, methods, missing = []) => ({ id, kind, state, missingInputs: missing, methods: Object.fromEntries(B.METHODS.map((m) => [m, methods[m] || { state: "NOT_RUN" }])) });
   const mx = B.matrix([mk("a", "SETUP_BACKTEST", "RESEARCH_EXECUTED", { WALK_FORWARD: { state: "EXECUTED" }, OUT_OF_SAMPLE: { state: "NOT_RUN", reason: "R" } }),
     mk("f", "FACTOR_RANKING_BACKTEST", "PREPARED_DATA_LIMITED", {}, ["MISSING_INPUT:PRIVATE_FACTOR_PANEL panel"])]);
-  assert.deepEqual(mx.SETUP_BACKTEST.WALK_FORWARD, { state: "EXECUTED", cases: ["a"] });
+  assert.deepEqual(mx.SETUP_BACKTEST.WALK_FORWARD, { state: "EXECUTED", cases: ["a"], verdict: null, verdictCase: "a" });
   assert.equal(mx.SETUP_BACKTEST.MONTE_CARLO.state, "NOT_APPLICABLE");
   assert.equal(mx.SETUP_BACKTEST.OUT_OF_SAMPLE.reason, "R");
   assert.deepEqual(mx.FACTOR_RANKING_BACKTEST.WALK_FORWARD.missing, ["PRIVATE_FACTOR_PANEL"]);

@@ -372,17 +372,39 @@
     PURGE_OPERATION_BUDGET: "zu viele Ereignisse für die Fensterteilung (Rechenbudget)" };
   function brCellNote(c) { return c.state === "DATA_MISSING" ? "Daten fehlen: " + (c.missing || []).map(function (x) { return BR_MISSING[x] || x; }).join(", ") : c.state === "NOT_RUN" && c.reason ? BR_REASON[c.reason] || c.reason : ""; }
   var BR_SHORT = { MONTE_CARLO: "Monte Carlo", WALK_FORWARD: "Walk-Fwd", OUT_OF_SAMPLE: "Test~fenster", MARKET_REGIME: "Markt~lage", PARAMETER_SENSITIVITY: "Sensi~tivität", EVENT_DRIVEN: "Divi~dende", PORTFOLIO_REBALANCING: "Depot" };
+  /* Methoden-Ampel (Erzeuger build-backtest-research.cjs#verdict): feste Regel je Methode, Forschung, keine Prognose. */
+  var BR_VERDICT = { PROVEN: ["strong", "hat sich bewährt", "✓"], REGIME_DEPENDENT: ["mid", "nur in bestimmten Marktlagen", "◐"], FAILED: ["weak", "hat versagt", "✗"] };
+  function brVerdictOf(x) { var v = x && (typeof x.verdict === "string" ? x.verdict : x.verdict && x.verdict.verdict); return BR_VERDICT[v] ? v : null; }
+  function brCert(res, k) { var c = res.certification && res.certification.kinds && res.certification.kinds[k]; return c || null; }
+  function brCertBadge(res, k) {
+    var c = brCert(res, k), U = global.VUUI; if (!c) return "";
+    return U.verdict(c.status === "CERTIFIED" ? "strong" : c.status === "LIMITED" ? "mid" : "weak", c.label || c.status);
+  }
+  /* Pflichtangaben je Backtest-Ansicht (assets/legal-notices.json, Schluessel backtest, required). */
+  function brFacts(c) {
+    var d = c.disclosure || {}, p = d.period || c.period || {};
+    var bps = function (x) { return typeof x === "number" ? x.toLocaleString("de-DE") + " Bp" : "–"; };
+    return { "Zeitraum": p.from ? String(p.from).split("-").reverse().join(".") + " – " + String(p.to).split("-").reverse().join(".") : "–",
+      "Kosten je Trade": d.costs ? bps(d.costs.feeBpsPerSide) + " Gebühr + " + bps(d.costs.slippageBpsPerSide) + " Schlupf je Seite" : "–",
+      "Vergleichsmaßstab (z. B. S&P 500 Gesamtrendite)": d.benchmark ? (d.benchmark.label || d.benchmark.id) + (d.benchmark.returnBasis === "PRICE_RETURN" ? ", Kursrendite" : d.benchmark.returnBasis ? ", Gesamtrendite" : "") : "–",
+      "Enthält delistete Titel: ja/nein": d.delistedIncluded ? "ja" : "nein",
+      "Anzahl getesteter Varianten": d.variants != null ? String(d.variants) : "–",
+      "größter Verlust (max. Drawdown)": typeof d.maxDrawdown === "number" ? brPct(d.maxDrawdown) : "–" };
+  }
   function brMatrix(res) {
     var U = global.VUUI;
     if (!res.matrix) return "";
     return '<div class="qk-br-mx" role="table" aria-label="Arten und Methoden"><div class="qk-br-mxr qk-br-mxh" role="row"><span role="columnheader">Art</span>' +
       BR_METHOD.map(function (m) { return '<a role="columnheader" href="' + U.esc(X.routes.backtestMethod(m[0])) + '" title="' + U.esc(m[1]) + '">' + U.esc(BR_SHORT[m[0]]).replace(/~/g, "&shy;") + "</a>"; }).join("") + "</div>" +
       res.kinds.map(function (k) {
-        return '<div class="qk-br-mxr" role="row"><a role="rowheader" href="' + U.esc(X.routes.backtestKind(k)) + '">' + U.esc(BR_KIND[k] || k) + "</a>" + BR_METHOD.map(function (m) {
+        var cc = brCert(res, k);
+        return '<div class="qk-br-mxr" role="row"><a role="rowheader" href="' + U.esc(X.routes.backtestKind(k)) + '">' + U.esc(BR_KIND[k] || k) + (cc && cc.status === "CERTIFIED" ? '<small class="qk-br-cert">methodisch geprüft</small>' : cc ? '<small class="qk-br-cert is-lim">' + U.esc(cc.label || "") + "</small>" : "") + "</a>" + BR_METHOD.map(function (m) {
           var c = res.matrix[k][m[0]], st = BR_STATE[c.state] || BR_STATE.NOT_RUN;
-          return '<span role="cell" class="qk-br-cell is-' + c.state.toLowerCase().replace(/_/g, "-") + '" title="' + U.esc(st[1] + (brCellNote(c) ? " – " + brCellNote(c) : "")) + '">' + (c.state === "EXECUTED" ? "●" : c.state === "NOT_APPLICABLE" ? "·" : c.state === "DATA_MISSING" ? "◌" : "○") + '<span class="qk-sr">' + U.esc(st[1]) + "</span></span>";
+          var vd = c.state === "EXECUTED" ? brVerdictOf(c) : null, vw = vd ? BR_VERDICT[vd] : null;
+          return '<span role="cell" class="qk-br-cell is-' + c.state.toLowerCase().replace(/_/g, "-") + (vd ? " is-" + vd.toLowerCase().replace(/_/g, "-") : "") + '" title="' + U.esc((vw ? vw[1] : st[1]) + (brCellNote(c) ? " – " + brCellNote(c) : "")) + '">' + (vw ? vw[2] : c.state === "EXECUTED" ? "●" : c.state === "NOT_APPLICABLE" ? "·" : c.state === "DATA_MISSING" ? "◌" : "○") + '<span class="qk-sr">' + U.esc(vw ? vw[1] : st[1]) + "</span></span>";
         }).join("") + "</div>";
-      }).join("") + '</div><p class="vu-xs vu-mu qk-br-legend">● gerechnet · ◌ Daten fehlen · ○ nicht gerechnet · · passt methodisch nicht</p>';
+      }).join("") + '</div><p class="vu-xs vu-mu qk-br-legend">✓ hat sich bewährt · ◐ nur in bestimmten Marktlagen · ✗ hat versagt · ● gerechnet, noch ohne Einordnung · ◌ Daten fehlen · ○ nicht gerechnet · · passt methodisch nicht</p>' +
+      (res.certification ? '<p class="vu-xs vu-mu qk-br-legend">' + U.esc(res.certification.certifiedKinds.length + " von " + res.kinds.length + " Arten methodisch geprüft: nachvollziehbar gerechnet und alle zulässigen Robustheitsprüfungen bestanden. Das sagt nichts über die Höhe des Ergebnisses.") + "</p>" : "");
   }
   async function brLoad(ctx) { var x = await ctx.api.getBacktest("research").catch(function () { return null; }); return x && x.state === "AVAILABLE" ? x : null; }
   function brHead(title, lead) {
@@ -401,9 +423,14 @@
     var res = await brLoad(ctx), K = String(kind || "").toUpperCase();
     if (!res || !res.matrix || !res.matrix[K]) { page.innerHTML = brHead("Art nicht gefunden") + U.blank(res ? "Diese Backtest-Art gibt es nicht." : "Die Ergebnisse der Zusatzmethoden liegen noch nicht vor."); return; }
     var cases = res.cases.filter(function (c) { return c.kind === K; });
-    page.innerHTML = brHead(BR_KIND[K] || K, BR_KIND_LEAD[K]) + '<div class="vu-box qk-list">' + BR_METHOD.map(function (m) {
+    var cc = brCert(res, K);
+    var certHtml = cc ? '<div class="vu-box qk-br-m"><h2 class="vu-h3">Prüfstand</h2>' + brRow("Stand", brCertBadge(res, K)) +
+      (cc.status !== "CERTIFIED" && cc.reason ? '<p class="vu-xs vu-mu">' + U.esc("Grund: " + (BR_REASON[cc.reason] || cc.reason)) + "</p>" : "") +
+      (cc.disclosures && cc.disclosures.length ? '<p class="vu-xs vu-mu">' + U.esc("Offengelegt: " + cc.disclosures.map(function (d) { return d.label || d.id; }).join(", ")) + "</p>" : "") + "</div>" : "";
+    page.innerHTML = brHead(BR_KIND[K] || K, BR_KIND_LEAD[K]) + certHtml + '<div class="vu-box qk-list">' + BR_METHOD.map(function (m) {
       var c = res.matrix[K][m[0]], st = BR_STATE[c.state] || BR_STATE.NOT_RUN, link = c.state === "EXECUTED" && c.cases && c.cases[0] ? X.routes.backtestCase(c.cases[0]) : X.routes.backtestMethod(m[0]);
-      return '<a class="qk-bt-c" href="' + U.esc(link) + '"><span><b>' + U.esc(m[1]) + "</b><span>" + U.esc(brCellNote(c) || (c.state === "EXECUTED" ? c.cases.length + (c.cases.length === 1 ? " Prüffall" : " Prüffälle") : st[1])) + "</span></span>" + U.verdict(st[0], st[1]) + "</a>";
+      var vd = c.state === "EXECUTED" ? brVerdictOf(c) : null;
+      return '<a class="qk-bt-c" href="' + U.esc(link) + '"><span><b>' + U.esc(m[1]) + "</b><span>" + U.esc(brCellNote(c) || (c.state === "EXECUTED" ? c.cases.length + (c.cases.length === 1 ? " Prüffall" : " Prüffälle") : st[1])) + "</span></span>" + (vd ? U.verdict(BR_VERDICT[vd][0], BR_VERDICT[vd][1]) : U.verdict(st[0], st[1])) + "</a>";
     }).join("") + '</div><div class="qk-rh"><div class="qk-rh-t"><h2>Prüffälle</h2></div></div><div class="vu-box qk-list">' + cases.map(function (c) {
       return '<a class="qk-bt-c" href="' + U.esc(X.routes.backtestCase(c.id)) + '"><span><b>' + U.esc(brTitle(c)) + "</b><span>" + U.esc(brYears(c.period)) + " · " + (c.state === "PREPARED_DATA_LIMITED" ? "Daten begrenzt" : brRan(c).length + " Methoden") + "</span></span></a>";
     }).join("") + "</div>" + '<div class="qk-help">' + U.help("Vergangenheit, keine Prognose und kein Renditeversprechen. Forschung, nicht zertifiziert.") + "</div>";
@@ -453,7 +480,8 @@
         (m.maxDrawdown != null ? brRow("Größter Rückgang", brPct(m.maxDrawdown)) : "") + (m.rebalances != null ? brRow("Umschichtungen", String(m.rebalances)) : "");
       note = m.maxPositions ? "Höchstens " + m.maxPositions + " Positionen, je " + m.holdingWeeks + " Wochen gehalten." : "Rechenmodell, kein echtes Geld.";
     }
-    return '<div class="vu-box qk-br-m"><h2 class="vu-h3">' + U.esc(BR_METHOD.filter(function (x) { return x[0] === id; })[0][1]) + "</h2>" + rows + '<p class="vu-xs vu-mu">' + U.esc(note) + "</p></div>";
+    var vd = brVerdictOf(m);
+    return '<div class="vu-box qk-br-m"><h2 class="vu-h3">' + U.esc(BR_METHOD.filter(function (x) { return x[0] === id; })[0][1]) + "</h2>" + (vd ? brRow("Einordnung", U.verdict(BR_VERDICT[vd][0], BR_VERDICT[vd][1])) : "") + rows + '<p class="vu-xs vu-mu">' + U.esc(note + (m.basis ? " Einordnung nach: " + m.basis + "." : "")) + "</p></div>";
   }
   async function renderCase(main, ctx, fall) {
     var U = global.VUUI, page = el("div", { class: "vu-ui qv3 qk qk-bt" });
@@ -468,7 +496,8 @@
       (c.state === "PREPARED_DATA_LIMITED" ? U.blank("Dieser Fall braucht private Daten (" + U.esc((c.missingInputs || []).join(", ").replace(/MISSING_INPUT:/g, "") || c.privateData || "–") + "). Ohne sie wird nichts geschätzt.") :
         ran.map(function (m) { return brMethod(m[0], c.methods[m[0]]); }).join("") +
         '<p class="vu-xs vu-mu">Nicht gerechnet: ' + U.esc(BR_METHOD.filter(function (m) { return ran.indexOf(m) < 0; }).map(function (m) { return m[1]; }).join(", ") || "–") + ".</p>") +
-      '<div class="qk-help">' + U.help("Vergangenheit, keine Prognose und kein Renditeversprechen. Forschung, nicht zertifiziert; nur intern sichtbar.") + "</div>";
+      (U.legal ? U.legal("backtest", { facts: brFacts(c) }) : "") +
+      '<div class="qk-help">' + U.help("Vergangenheit, keine Prognose und kein Renditeversprechen. Forschung; nur intern sichtbar.") + "</div>";
   }
   async function renderV4(main, ctx, ruleId) {
     var U = global.VUUI, page = el("div", { class: "vu-ui qv3 qk qk-bt" });

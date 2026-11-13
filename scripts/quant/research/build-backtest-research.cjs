@@ -23,7 +23,7 @@ const MATRIX_CASES = path.join(ROOT, 'docs/quant/backtest-research/cases.json');
 const DISPLAY = path.join(ROOT, 'quant/methodology/backtest-research-display.json');
 const KINDS = ['SAME_STOCK_REPLAY', 'PATTERN_EVIDENCE', 'SIGNAL_BACKTEST', 'SETUP_BACKTEST', 'STRATEGY_BACKTEST', 'FACTOR_RANKING_BACKTEST'];
 const DEFAULT_OUT = path.join(ROOT, 'quant/data/product/backtest-research-v1.json');
-const SCHEMA = 'backtest-research-1.2.0';
+const SCHEMA = 'backtest-research-1.3.0';
 const CERT_METHOD = path.join(ROOT, 'quant/methodology/backtest-method-certification-v1.json');
 const FORWARD_CERT = path.join(ROOT, 'quant/data/product/backtest-certification-v1.json');
 const METHODS = ['MONTE_CARLO', 'WALK_FORWARD', 'OUT_OF_SAMPLE', 'MARKET_REGIME', 'PARAMETER_SENSITIVITY', 'EVENT_DRIVEN', 'PORTFOLIO_REBALANCING'];
@@ -63,6 +63,44 @@ function compact(id, m) {
   return out;
 }
 
+// Methoden-Ampel (Forschung, keine Prognose): feste Regel je Methode, nur aus den Werten des Ergebnisvertrags.
+//   PROVEN   „hat sich bewährt“            REGIME_DEPENDENT „nur in bestimmten Marktlagen“   FAILED „hat versagt“
+const MIN_REGIME_N = 5;
+function verdict(id, m) {
+  if (!m || m.state !== 'EXECUTED') return null;
+  const pos = x => typeof x === 'number' && x > 0;
+  const share = (xs, f) => xs.length ? xs.filter(f).length / xs.length : null;
+  let v = null, basis = null;
+  if (id === 'MONTE_CARLO' && m.totalReturn) { v = pos(m.totalReturn.p5) ? 'PROVEN' : pos(m.totalReturn.p50) ? 'REGIME_DEPENDENT' : 'FAILED'; basis = 'Spanne 5 %/Mitte'; }
+  else if (id === 'OUT_OF_SAMPLE' || id === 'WALK_FORWARD') {
+    const folds = (id === 'OUT_OF_SAMPLE' ? m.perFold : null) || [];
+    const sh = share(folds.filter(f => typeof f.mean === 'number'), f => f.mean > 0);
+    if (sh !== null) { v = sh >= 2 / 3 ? 'PROVEN' : sh > 0 ? 'REGIME_DEPENDENT' : 'FAILED'; basis = 'Anteil Testfenster im Plus'; }
+  } else if (id === 'MARKET_REGIME') {
+    const st = (m.states || []).filter(x => (x.n || 0) >= MIN_REGIME_N && typeof x.mean === 'number');
+    const sh = share(st, x => x.mean > 0);
+    if (sh !== null) { v = sh === 1 ? 'PROVEN' : sh > 0 ? 'REGIME_DEPENDENT' : 'FAILED'; basis = 'Marktlagen mit mindestens ' + MIN_REGIME_N + ' Fällen im Plus'; }
+  } else if (id === 'PARAMETER_SENSITIVITY') {
+    const sh = share((m.grid || []).filter(g => typeof g.estimate === 'number'), g => g.estimate > 0);
+    if (sh !== null) { v = sh === 1 ? 'PROVEN' : sh > 0 ? 'REGIME_DEPENDENT' : 'FAILED'; basis = 'Stellschrauben mit positivem Ergebnis'; }
+  } else if (id === 'EVENT_DRIVEN' && typeof m.meanNet === 'number') {
+    v = m.interval95 && pos(m.interval95[0]) ? 'PROVEN' : m.meanNet > 0 ? 'REGIME_DEPENDENT' : 'FAILED'; basis = 'Mittel netto und 95-%-Spanne';
+  } else if (id === 'PORTFOLIO_REBALANCING' && typeof m.totalReturn === 'number' && typeof m.benchmarkTotalReturn === 'number') {
+    v = m.totalReturn > m.benchmarkTotalReturn && (m.maxDrawdown == null || m.maxDrawdown > -0.5) ? 'PROVEN' : m.totalReturn > 0 ? 'REGIME_DEPENDENT' : 'FAILED'; basis = 'Depot gegen S&P 500 im selben Zeitraum';
+  }
+  return v ? { verdict: v, basis } : null;
+}
+function disclosure(c, r) {
+  const e = r.envelope, costs = (e.metrics && e.metrics.costs) || {}, sens = e.methods.find(x => x.method === 'PARAMETER_SENSITIVITY');
+  return { period: e.period ? { from: e.period.from, to: e.period.to } : null,
+    costs: { feeBpsPerSide: num(costs.feeBpsPerSide), slippageBpsPerSide: num(costs.slippageBpsPerSide), model: costs.model || null },
+    benchmark: { id: (r.spec && r.spec.benchmark) || null, label: 'S&P 500 (SPY)', returnBasis: (e.metrics && e.metrics.benchmark && e.metrics.benchmark.returnBasis) || null },
+    delistedIncluded: c.privateData === 'delistedSeries' || /DELISTED/.test(JSON.stringify((r.spec && r.spec.population) || {})),
+    survivorship: (e.dataQuality && e.dataQuality.survivorship && e.dataQuality.survivorship.state) || null,
+    variants: sens && sens.state === 'EXECUTED' && sens.result && Array.isArray(sens.result.grid) ? sens.result.grid.length : 1,
+    maxDrawdown: num(e.metrics && e.metrics.maxDrawdown) };
+}
+
 function caseRow(c, r) {
   const e = r.envelope;
   const byId = Object.fromEntries(e.methods.map(m => [m.method, m]));
@@ -72,7 +110,13 @@ function caseRow(c, r) {
     events: { occurrences: num(e.events.occurrences), completed: num(e.events.completed) },
     metrics: { basis: e.metrics.basis, hitRate: num(e.metrics.hitRate), maxDrawdown: num(e.metrics.maxDrawdown), trades: num(e.metrics.trades), totalReturn: num(e.metrics.totalReturn), cagr: num(e.metrics.cagr) },
     missingInputs: e.limitations.filter(x => x.startsWith('MISSING_INPUT:')),
-    methods: Object.fromEntries(METHODS.map(id => [id, byId[id] ? compact(id, byId[id]) : { state: 'NOT_APPLICABLE' }])),
+    methods: (() => {
+      const ms = Object.fromEntries(METHODS.map(id => { const m = byId[id] ? compact(id, byId[id]) : { state: 'NOT_APPLICABLE' }; const vd = verdict(id, m); return [id, vd ? { ...m, ...vd } : m]; }));
+      // Walk-Forward teilt nur die Zeit; sein Ergebnis steht in den Testfenstern derselben Teilung (OUT_OF_SAMPLE).
+      if (ms.WALK_FORWARD.state === 'EXECUTED' && ms.OUT_OF_SAMPLE.verdict) Object.assign(ms.WALK_FORWARD, { verdict: ms.OUT_OF_SAMPLE.verdict, basis: 'Testfenster der Walk-Forward-Teilung im Plus' });
+      return ms;
+    })(),
+    disclosure: disclosure(c, r),
     resultHash: r.resultHash
   };
 }
@@ -89,7 +133,7 @@ function matrix(cases) {
     for (const m of METHODS) {
       if (!R.METHOD_FIT[m].includes(k)) { out[k][m] = { state: 'NOT_APPLICABLE' }; continue; }
       const hit = ofKind.filter(c => c.methods[m].state === 'EXECUTED');
-      if (hit.length) { out[k][m] = { state: 'EXECUTED', cases: hit.map(c => c.id) }; continue; }
+      if (hit.length) { const lead = hit.find(c => c.group === 'MATRIX') || hit[0]; out[k][m] = { state: 'EXECUTED', cases: hit.map(c => c.id), verdict: lead.methods[m].verdict || null, verdictCase: lead.id }; continue; }
       const ran = ofKind.filter(c => c.state === 'RESEARCH_EXECUTED');
       if (!ran.length && ofKind.length) { out[k][m] = { state: 'DATA_MISSING', cases: ofKind.map(c => c.id), missing: [...new Set(ofKind.flatMap(c => c.missingInputs.map(x => x.replace(/^MISSING_INPUT:/, '').split(/[ :]/)[0])))] }; continue; }
       const why = ran.map(c => c.methods[m].reason).filter(Boolean);
@@ -168,4 +212,4 @@ function main(argv = process.argv.slice(2)) {
   return doc;
 }
 if (require.main === module) { try { main(); } catch (e) { console.error(e.stack); process.exitCode = 1; } }
-module.exports = { build, compact, caseRow, matrix, certify, METHODS, KINDS, SCHEMA };
+module.exports = { build, compact, caseRow, matrix, certify, verdict, disclosure, METHODS, KINDS, SCHEMA };
