@@ -282,7 +282,7 @@ test("DB-16 · Jeder Release-Bau in einem Workflow saet vorher den Datenzweig wi
 });
 
 test("DB-17 · repositoryOnly: nie in der Seite, nur auf ausdrueckliche Nennung im Arbeitsbaum; \"alle\" nimmt sie nicht mit", () => {
-  const KEY = "quant/data/sec/consumer_coverage.json", DIR = "quant/data/sec/consumer/";
+  const KEY = "fx-test/consumer_coverage.json", DIR = "fx-test/consumer/";
   const mk = () => {
     const root = mkdtempSync(join(tmpdir(), "db17-root-")), data = mkdtempSync(join(tmpdir(), "db17-data-")), site = mkdtempSync(join(tmpdir(), "db17-site-"));
     const cov = JSON.stringify({ generated_at_utc: "2026-11-13T07:30:00Z", n: 1 });
@@ -293,7 +293,7 @@ test("DB-17 · repositoryOnly: nie in der Seite, nur auf ausdrueckliche Nennung 
   // Pages-Stufe (kein --only): nichts davon gelangt in die Seite, der Bericht bleibt vollstaendig.
   let w = mk(); let r = overlay(w);
   assert.equal(r.complete, true); assert.equal(r.rows.length, 0); assert.deepEqual(r.repositoryOnlySkipped, ["fundamentalsConsumer"]);
-  assert.ok(!existsSync(join(w.siteDir, "quant/data/sec")), "repositoryOnly-Daten duerfen nicht in die Seite gelangen");
+  assert.ok(!existsSync(join(w.siteDir, "fx-test")), "repositoryOnly-Daten duerfen nicht in die Seite gelangen");
   // Verbraucher nennt die Datenart ausdruecklich (seed-data-branch.sh fundamentalsConsumer): Schluesseldatei und Verzeichnis kommen.
   w = mk(); r = overlay({ ...w, only: ["fundamentalsConsumer"], siteDir: w.root });
   assert.equal(r.complete, true);
