@@ -51,6 +51,8 @@ test("PCK-3 · Routenliste deckt die Menue-Eintraege aus module.json und die For
 
 test("PCK-4 · Workflow: nur lesen ausser dem Alarm-Job, kein Cron, Eingaben ueber env, Zeitplan im Register", () => {
   const wf = readFileSync(join(ROOT, ".github/workflows/quant-produktionscheck.yml"), "utf8");
+  /* 13.11.2026: "name: ...: ..." ist kein gueltiges YAML, GitHub startete die Datei dann bei jedem Push als leeren Fehlerlauf. */
+  assert.match(wf.split("\n")[0], /^name: [^:]+$/);
   assert.match(wf, /^permissions:\n  contents: read$/m);
   assert.doesNotMatch(wf.replace(/^\s*#.*$/gm, ""), /\n\s+schedule:/);
   assert.doesNotMatch(wf, /run:[^\n]*\$\{\{\s*inputs\./);
