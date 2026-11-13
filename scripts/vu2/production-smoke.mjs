@@ -630,16 +630,16 @@ for(const width of [1440,390]){
     console.log('     Zurueckhaltung '+stock+' genannt: '+genannt);
    }
 
-   /* DER EINE CHART: elf Zeitraeume in der Reihenfolge des Chartstandards, genau einer gedrueckt, und er
+   /* DER EINE CHART: Hauptleiste 1T 1W 1M 1J 5J Max, dann Mehr und die weiteren Zeitraeume (3M 6M YTD 3J 10J), genau einer gedrueckt, und er
       wechselt auf Klick. Auf 1T traegt die Flaeche ihren Quellenzustand. */
    if(stock==='NVDA'&&view.startsWith('/quant/#/')){
     const knoepfe=await page.locator('section.qc-chart .qc-range').allInnerTexts();
-    if(knoepfe.join('|')!=='1T|1W|1M|1J|5J|MAX|3M|6M|YTD|3J|10J')bad.push('ZEITRAEUME:'+knoepfe.join('|'));
+    if(knoepfe.join('|')!=='1T|1W|1M|1J|5J|Max|Mehr|3M|6M|YTD|3J|10J')bad.push('ZEITRAEUME:'+knoepfe.join('|'));
     const zustand=async()=>page.evaluate(()=>{const c=document.querySelector('section.qc-chart');return {range:c&&c.dataset.range,pressed:[...document.querySelectorAll('section.qc-chart .qc-range[aria-pressed="true"]')].map(b=>b.dataset.range),src:(c&&c.querySelector('.qc-plot')||{dataset:{}}).dataset.sourceState,live:(c&&c.querySelector('.qc-plot')||{dataset:{}}).dataset.live};});
     const z0=await zustand();
     if(z0.pressed.join('|')!==String(z0.range))bad.push('ZEITRAUM_MARKE:'+z0.pressed.join('|')+'/'+z0.range);
     if(z0.range==='1D'&&(!z0.src||!z0.live))bad.push('TAGESVERLAUF_OHNE_QUELLE');
-    for(const [label,id] of [['MAX','MAX'],['1J','1Y']]){
+    for(const [label,id] of [['Max','MAX'],['1J','1Y']]){
      await page.locator('section.qc-chart .qc-range',{hasText:new RegExp('^'+label+'$')}).click();
      await page.waitForFunction(i=>document.querySelector('section.qc-chart').dataset.range===i,id,{timeout:5000}).catch(()=>{});
      const z=await zustand();
