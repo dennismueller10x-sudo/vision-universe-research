@@ -52,9 +52,9 @@
  <span class="eyebrow">Vision Universe® · Preview</span>
  <h1>Methodik im Detail</h1>
  <p class="lead">Jede Aussage im Produkt hängt an einem Vertrag: er legt fest, was gemessen wird, ab
-  wann es gilt und wann nichts gesagt wird. Hier stehen alle 28 Verträge, die diese
-  Vorschau veröffentlicht — mit ihrer Fassung und dem Weg zur vollständigen Datei. 21 von
-  28 nennen ihren Zweck in Worten; bei den übrigen steht er in den Feldern.</p>
+  wann es gilt und wann nichts gesagt wird. Hier stehen alle 29 Verträge, die diese
+  Vorschau veröffentlicht — mit ihrer Fassung und dem Weg zur vollständigen Datei. 22 von
+  29 nennen ihren Zweck in Worten; bei den übrigen steht er in den Feldern.</p>
 
    <article class="contract">
     <h2>Backtest certification</h2>
@@ -67,6 +67,12 @@
     <p class="meta">Fassung backtest-evidence-v1.0.0 · interner Name: VU Backtest Evidence Provider Requirements V1</p>
     <p>Legt fest, was ein Datenanbieter liefern muss, damit ein Backtest auf seinen Daten als Nachweis gelten darf - und nicht nur als Vorfuehrung der Rechenlogik. Die Frage lautet nicht 'wie viele Endpunkte hat der Anbieter', sondern: 'Kann rekonstruiert werden, was Vision Universe an einem historischen Tag tatsaechlich haette wissen koennen?'</p>
     <p class="meta"><a href="./backtest-evidence-v1.json">backtest-evidence-v1.json ansehen</a></p>
+   </article>
+   <article class="contract">
+    <h2>Backtest research display</h2>
+    <p class="meta">Fassung backtest-research-display-1.0.0</p>
+    <p>Einziger Schalter für die öffentliche Anzeige der Backtest-Forschung (Rendite- und Performancezahlen). Bis der Owner den Satz in approvalPhrase gibt, bleibt public=false und die Ansicht nur hinter der Zugangsmaske. Umschalten: public=true und approval={by, date, text} in einem eigenen PR; der Erzeuger übernimmt den Wert in display.public des Artefakts.</p>
+    <p class="meta"><a href="./backtest-research-display.json">backtest-research-display.json ansehen</a></p>
    </article>
    <article class="contract">
     <h2>Wie belastbar ist die historische Evidenz?</h2>

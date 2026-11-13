@@ -1,0 +1,12 @@
+{
+ "schemaVersion": "backtest-research-cases-1.0.0",
+ "note": "Matrix-Fälle für backtest-research-v1.json: je Backtest-Art ein Fall, der alle für diese Art zulässigen Zusatzmethoden anfordert (METHOD_FIT des Runners). Ergänzt die 16 Prüffälle aus docs/quant/backtest-demos/cases.json.",
+ "cases": [
+  {"id": "matrix-replay", "kind": "SAME_STOCK_REPLAY", "scenarios": ["STRONG_WINNER", "CORPORATE_ACTION_SPLIT"], "privateData": null, "purpose": "NVDA 2010–2024, Wochenschluss höchstens 5 % unter dem 52-Wochen-Hoch; alle sechs zulässigen Methoden.", "spec": "specs/matrix-replay.json"},
+  {"id": "matrix-pattern", "kind": "PATTERN_EVIDENCE", "scenarios": ["RECONSTRUCTION"], "privateData": null, "purpose": "Rückgang von 20 % vom Hoch, 30 Large Caps 2010–2024; alle fünf zulässigen Methoden.", "spec": "specs/matrix-pattern.json"},
+  {"id": "matrix-signal", "kind": "SIGNAL_BACKTEST", "scenarios": ["BEAR_CRASH", "RECOVERY", "DIVIDENDS"], "privateData": null, "purpose": "Alle fünf Meldungsregeln auf 30 Large Caps 2016–2020 (mit Corona-Crash und Dividenden-Register); alle sieben Methoden.", "spec": "specs/matrix-signal.json"},
+  {"id": "matrix-setup", "kind": "SETUP_BACKTEST", "scenarios": ["RECONSTRUCTION"], "privateData": null, "purpose": "Setup-Rekonstruktion 2016–2024; alle vier zulässigen Methoden.", "spec": "specs/matrix-setup.json"},
+  {"id": "matrix-strategy", "kind": "STRATEGY_BACKTEST", "scenarios": ["BULL", "BEAR_CRASH", "RECOVERY"], "privateData": null, "purpose": "Gleichgewichtetes Depot aus 10 Large Caps 2016–2020; Monte Carlo, Marktlage, Sensitivität und Umschichtung (Dividenden-Ereignis aus strategy-dividends-tr).", "spec": "specs/matrix-strategy.json"},
+  {"id": "matrix-factor", "kind": "FACTOR_RANKING_BACKTEST", "scenarios": ["RECONSTRUCTION"], "privateData": "factorPanel", "purpose": "Rang nach Kursdynamik 2019–2020 auf dem V10-Faktorpanel; alle vier zulässigen Methoden.", "spec": "specs/matrix-factor.json"}
+ ]
+}
