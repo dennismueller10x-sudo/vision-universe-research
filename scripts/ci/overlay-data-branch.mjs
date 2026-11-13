@@ -94,9 +94,12 @@ function overlayPrefixes(d, keyRows, { root, dataDir, siteDir, mirror }) {
 }
 
 export function overlay({ root, dataDir, siteDir, manifest, domains, only, mirror = true }) {
-  const rows = [];
+  const rows = [], skipped = [];
   for (const d of manifest.domains) {
     if (only && !only.includes(d.id)) continue;
+    /* repositoryOnly (domains.json): nie Teil der Seite. Die Pages-Stufe (kein --only) ueberspringt sie; eingespielt werden
+       sie nur, wenn ein Verbraucher sie ausdruecklich nennt (seed-data-branch.sh <id>). "alle" nimmt sie nicht mit. */
+    if (d.repositoryOnly && !(only && only.includes(d.id))) { skipped.push(d.id); continue; }
     const keyRows = [];
     for (const p of d.paths) {
       const site = join(siteDir, p), main = join(root, p), branch = join(dataDir, p);
@@ -123,7 +126,7 @@ export function overlay({ root, dataDir, siteDir, manifest, domains, only, mirro
   }
   const complete = rows.every((r) => r.delivered || r.status === "PENDING_FIRST_RUN");
   const count = (s) => rows.filter((r) => r.status === s).length;
-  return { schema: "vu-data-branch-delivery-1", branch: manifest.branch, complete, counts: { IDENTICAL: count("IDENTICAL"), OVERLAID: count("OVERLAID"), KEPT_MAIN: count("KEPT_MAIN"), MISSING: count("MISSING"), PENDING_FIRST_RUN: count("PENDING_FIRST_RUN") }, rows };
+  return { schema: "vu-data-branch-delivery-1", branch: manifest.branch, complete, repositoryOnlySkipped: skipped, counts: { IDENTICAL: count("IDENTICAL"), OVERLAID: count("OVERLAID"), KEPT_MAIN: count("KEPT_MAIN"), MISSING: count("MISSING"), PENDING_FIRST_RUN: count("PENDING_FIRST_RUN") }, rows };
 }
 
 function main(argv) {
