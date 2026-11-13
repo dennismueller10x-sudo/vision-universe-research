@@ -88,13 +88,18 @@ Quelle: `quant/engines/backtest-kinds.cjs`, `scripts/quant/research/backtest-run
 
 **Zertifizierung neu gefasst (Owner-Lesart 13.11.2026):** „Zertifiziert“ heißt methodisch geprüft – nachvollziehbar rückwärts gerechnet und die für die Art zulässigen Robustheitsprüfungen bestanden (`quant/methodology/backtest-method-certification-v1.json`, Status je Art in `backtest-research-v1.json` → `certification`), nicht profitabel; der bisherige Prüfstand `backtest-certification-v1.json` bleibt unverändert als „Vorwärts-Nachweis“ und liefert harte Gates und Offenlegungen. Stand 13.11.: 5 von 6 Arten zertifiziert, Setup eingeschränkt (Rekonstruktion ist kein Beleg auf späteren Testfenstern).
 
+**Lücken der Arten, die noch Daten sammeln (geprüft 13.11.2026):**
+- *Profil-Strategie* (`strategy-profile-prepared`): Historische Faktorstände je Stichtag liegen im privaten V10-PIT-Panel (monatliche Rangtage, R2) und lassen sich als `factorSnapshots` an `buildProfileTargets` geben. Zwei Dinge fehlen trotzdem: (1) `research-portfolio` lässt Profil-Ziele nur mit beobachteter Herkunft zu (Gesamtrendite, Identitäts-, Bestands-, Kapitalmaßnahmen-, Lebenslauf- und Lizenz-Nachweis); das TR-Register deckt 8 Titel ab, 2016–2018 lückenlos nur IBM, JPM, MSFT, WMT. (2) Mit TR-Register bricht monatliches Umschichten an `DECISION_BEFORE_EVENT_INFORMATION` ab (Probe: JPM-Dividende 06.01.2017, Entscheidung 30.12.2016), weil die Ereigniszeitpunkte des Registers nach der Entscheidung liegen. Nächster Schritt ist ein eigener PR zu Fachmodell und Register (Ereignis-Bekanntgabezeitpunkte, breiteres TR-Register), nicht der Runner.
+- *Setup*: späterer Testfenster-Beleg erst messbar ab 2028-01-08 (A1–A6); keine delisteten Titel.
+- *Faktor-Rang*: Panel hält nur `ref_`-Listings (keine delisteten); Revisions-Faktor ohne lizenzierte PIT-Konsensquelle nicht rekonstruierbar; Vollpopulation sprengt das Rechenbudget der Fensterreinigung (Stichprobe 250 Titel).
+
 | Art | Was sie rechnet | Echte historische Ergebnisse heute | Zertifizierung | Einschränkung |
 |---|---|---|---|---|
 | SAME_STOCK_REPLAY | feste Regel auf einer Aktie oder echter Wochen-Ledger | ja (Katalog A) | LIMITED | genau ein Listing; Ledger ohne delistete Titel |
 | PATTERN_EVIDENCE | Musterereignisse gegen Kontrollen vom selben Datum | ja (A) | LIMITED | keine zertifizierte Renditebasis |
 | SIGNAL_BACKTEST | fünf Signalregeln je Ereignis, optional finanziert | ja (A) | LIMITED | finanziert: im Fenster delistete Titel fallen heraus |
 | SETUP_BACKTEST | auf rekonstruierten Setup-Ständen | ja (A, Nachweisart Rekonstruktion) | COLLECTING_HISTORY | Setup-OOS nicht messbar (A1–A6 entschieden 04.11.2026, messbar frühestens um 2028-01-08); keine delisteten Titel |
-| STRATEGY_BACKTEST | Portfolio mit festen Gewichten oder Dividenden-TR | ja (A); Profil-Variante B | COLLECTING_HISTORY | Profil braucht PIT-Faktor-Snapshots |
+| STRATEGY_BACKTEST | Portfolio mit festen Gewichten oder Dividenden-TR | ja (A); Profil-Variante B | COLLECTING_HISTORY | Profil: Faktorstände je Stichtag gibt es (V10-Panel), es fehlen beobachtete Gesamtrendite und Ereigniszeitpunkte (siehe Lücken unten) |
 | FACTOR_RANKING_BACKTEST | Faktorstudie auf dem privaten V10-PIT-Panel | ja (A, nur mit privatem Panel) | COLLECTING_HISTORY | nur `ref_`-Listings; frühestens 2028 zertifizierbar |
 
 **Zusatzmethoden:**
