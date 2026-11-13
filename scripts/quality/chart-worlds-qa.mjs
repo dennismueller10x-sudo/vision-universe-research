@@ -38,6 +38,14 @@ const ROUTE = {
   discover: (t) => "/discover/#/s/US_REAL/" + t
 };
 export const LEISTE = ["1T", "1W", "1M", "1J", "5J", "Max", "Mehr"];
+/* Je Welt die Haken im Dokument: Quant und Technical bringen den Aktienchart samt Leiste (.qc-chart), Discover behält seine Leiste (.dx-tf)
+   und zeichnet die Linie mit demselben Baustein (assets/vu-chart.js). Die Hauptleiste ist überall 1T 1W 1M 1J 5J Max. */
+const SEL = {
+  quant: { line: ".qc-chart svg .vu-chart-line", bar: ".qc-chart .qc-ranges", buttons: ".qc-chart .qc-ranges button", ticks: ".qc-chart svg text.vu-chart-axis", head: ".vu-shead-value", leiste: LEISTE },
+  technical: { line: ".qc-chart svg .vu-chart-line", bar: ".qc-chart .qc-ranges", buttons: ".qc-chart .qc-ranges button", ticks: ".qc-chart svg text.vu-chart-axis", head: ".vu-shead-value", leiste: LEISTE },
+  discover: { line: ".dx-chapter--chart svg .vu-chart-line", bar: ".dx-tf", buttons: ".dx-tf button", ticks: ".dx-chapter--chart svg text.vu-chart-axis", head: ".dx-chart-hero-preis > b", leiste: LEISTE.slice(0, 6) }
+};
+const price = (t) => { const m = /\d[\d.]*,\d{2}/.exec(t || ""); return m ? m[0] : null; };
 const RELEASE_ONLY = [/\/quant\/data\/product\/technical-signals-v1\/by-ticker\//, /\/core\/data\/stock-availability\//, /\/discover\/logos\/files\//];
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json",
@@ -76,30 +84,32 @@ async function main() {
     page.on("response", (r) => { if (r.status() >= 400 && !RELEASE_ONLY.some((re) => re.test(r.url()))) errors.push("HTTP " + r.status() + " " + new URL(r.url()).pathname); });
     try {
       await page.goto(origin + ROUTE[world](t), { waitUntil: "load" });
-      await page.waitForSelector(".qc-chart svg .vu-chart-line", { timeout: 60000 });
+      const sel = SEL[world];
+      await page.waitForSelector(sel.line, { timeout: 60000 });
       await page.waitForTimeout(2500); /* Tagesverlauf (Hub) kommt nach dem ersten Bild */
-      const m = await page.evaluate(() => {
-        const bar = document.querySelector(".qc-chart .qc-ranges");
-        const visible = bar ? [...bar.querySelectorAll("button")].filter((b) => !b.hidden) : [];
-        const day = bar && [...bar.querySelectorAll("button")].find((b) => b.dataset.range === "1D");
-        const ticks = [...document.querySelectorAll(".qc-chart svg text.vu-chart-axis")].map((e) => e.getBBox()).filter((b) => b.y > 100);
+      const m = await page.evaluate((sel) => {
+        const bar = document.querySelector(sel.bar);
+        const all = [...document.querySelectorAll(sel.buttons)];
+        const visible = all.filter((b) => !b.hidden);
+        const day = all.find((b) => b.dataset.range === "1D") || all.find((b) => b.textContent.trim() === "1T");
+        const ticks = [...document.querySelectorAll(sel.ticks)].map((e) => e.getBBox()).filter((b) => b.y > 100);
         const bottom = ticks.filter((b) => b.y === Math.max(...ticks.map((x) => x.y)));
-        const head = document.querySelector(".vu-shead-value");
+        const head = document.querySelector(sel.head);
         return {
           leiste: visible.map((b) => b.textContent.trim()), day: day ? !day.disabled : null,
           barOverflow: bar ? bar.scrollWidth - bar.clientWidth : 0, pageOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           xTicks: bottom.map((b) => ({ x: b.x, w: b.width })), head: head ? head.textContent.trim() : null
         };
-      });
+      }, sel);
       const fails = [];
-      if (m.leiste.join(",") !== LEISTE.join(",")) fails.push("Leiste " + m.leiste.join(","));
+      if (m.leiste.join(",") !== sel.leiste.join(",")) fails.push("Leiste " + m.leiste.join(","));
       if (hasIntraday(t) && m.day !== true) fails.push("1T nicht bedienbar, obwohl ein Tagesverlauf vorliegt");
       if (m.barOverflow > 1) fails.push("Leiste läuft über den Rand (" + m.barOverflow + " px)");
       if (m.pageOverflow > 1) fails.push("horizontales Scrollen (" + m.pageOverflow + " px)");
       const xs = m.xTicks.sort((a, b) => a.x - b.x);
       for (let i = 1; i < xs.length; i++) if (xs[i].x < xs[i - 1].x + xs[i - 1].w + 4) fails.push("x-Marken überlappen");
       if (errors.length) fails.push(errors.slice(0, 3).join(" | "));
-      (heads[t + "@" + width] = heads[t + "@" + width] || {})[world] = m.head;
+      (heads[t + "@" + width] = heads[t + "@" + width] || {})[world] = price(m.head);
       results.push({ name, pass: !fails.length, ms: Date.now() - t0, ...(fails.length ? { error: fails.join("; ") } : {}), head: m.head });
     } catch (e) {
       results.push({ name, pass: false, ms: Date.now() - t0, error: String(e && e.message || e).slice(0, 300) });

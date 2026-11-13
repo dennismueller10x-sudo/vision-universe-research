@@ -18,6 +18,7 @@ const CS = require(join(ROOT, "core", "chart-standard.js"));
 /* Je Welt: die Datei der Aktienseite, die den gemeinsamen Chart erzeugt, und was sie dort NICHT selbst zeichnen darf. */
 const WORLDS = [
   { id: "quant", file: "quant/app/page-stock.js", must: [/VUQuantChart\.create\(/], from: null, to: null, forbid: [/MicroChart\.render(Range|Intraday)\(/, /VUTechnicalChart/] },
+  { id: "discover", file: "discover/ui/detail.js", must: [/function gemeinsamerChart\(/, /global\.VUChart/, /VC\.render\(/, /dollarKopf && gemeinsamerChart\(/, /intraday: true/], from: null, to: null, forbid: [/VUTechnicalChart/] },
   { id: "technical", file: "technical/app.js", must: [/loadChartWidget\(\)/, /Chart\.create\(/], from: "function renderSimple(", to: "function renderStudio(", forbid: [/Chart\.render\(/, /VUChart\.(render|mount)\(/, /MicroChart\./] }
 ];
 
