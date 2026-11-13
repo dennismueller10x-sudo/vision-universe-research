@@ -239,12 +239,11 @@
      quant-v2.1.0 heissen die drei Renditekomponenten priceReturn*, weil
      sie auf splitbereinigten Kursen rechnen. */
   var PRODUCTION_MOMENTUM_WEIGHTS = {
-    priceReturn12m1m: 0.30,
-    priceReturn6m: 0.20,
-    priceReturn3m: 0.10,
-    relativeStrength12m1m: 0.20,
-    distanceTo52wHigh: 0.10,
-    distanceToSma200: 0.10
+    priceReturn12m1m: 0.375,
+    priceReturn6m: 0.25,
+    priceReturn3m: 0.125,
+    distanceTo52wHigh: 0.125,
+    distanceToSma200: 0.125
   };
 
   /* Welche Messgroesse dieser Studie welche Produktionskomponente
