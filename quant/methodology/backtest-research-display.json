@@ -1,0 +1,7 @@
+{
+ "schemaVersion": "backtest-research-display-1.0.0",
+ "public": false,
+ "approvalPhrase": "Freigabe Backtest-Darstellung öffentlich",
+ "approval": null,
+ "note": "Einziger Schalter für die öffentliche Anzeige der Backtest-Forschung (Rendite- und Performancezahlen). Bis der Owner den Satz in approvalPhrase gibt, bleibt public=false und die Ansicht nur hinter der Zugangsmaske. Umschalten: public=true und approval={by, date, text} in einem eigenen PR; der Erzeuger übernimmt den Wert in display.public des Artefakts."
+}

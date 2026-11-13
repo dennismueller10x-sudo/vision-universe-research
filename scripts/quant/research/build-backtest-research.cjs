@@ -18,8 +18,11 @@ const R = require('./backtest-runner.cjs');
 
 const ROOT = path.resolve(__dirname, '..', '..', '..');
 const CASES = path.join(ROOT, 'docs/quant/backtest-demos/cases.json');
+const MATRIX_CASES = path.join(ROOT, 'docs/quant/backtest-research/cases.json');
+const DISPLAY = path.join(ROOT, 'quant/methodology/backtest-research-display.json');
+const KINDS = ['SAME_STOCK_REPLAY', 'PATTERN_EVIDENCE', 'SIGNAL_BACKTEST', 'SETUP_BACKTEST', 'STRATEGY_BACKTEST', 'FACTOR_RANKING_BACKTEST'];
 const DEFAULT_OUT = path.join(ROOT, 'quant/data/product/backtest-research-v1.json');
-const SCHEMA = 'backtest-research-1.0.0';
+const SCHEMA = 'backtest-research-1.1.0';
 const METHODS = ['MONTE_CARLO', 'WALK_FORWARD', 'OUT_OF_SAMPLE', 'MARKET_REGIME', 'PARAMETER_SENSITIVITY', 'EVENT_DRIVEN', 'PORTFOLIO_REBALANCING'];
 
 function parse(argv) {
@@ -39,7 +42,7 @@ const pair = x => (Array.isArray(x) && x.length === 2 ? [num(x[0]), num(x[1])] :
 // Je Methode nur die Felder, die die interne Ansicht braucht; Hashes bleiben als Beleg.
 function compact(id, m) {
   const out = { state: m.state };
-  if (m.state !== 'EXECUTED' || !m.result) { if (m.reason) out.reason = String(m.reason); return out; }
+  if (m.state !== 'EXECUTED' || !m.result) { const why = m.reason || (m.result && m.result.reason); if (why) out.reason = String(why); return out; }
   const x = m.result;
   if (id === 'MONTE_CARLO') Object.assign(out, { model: x.model, simulations: num(x.simulations), horizon: num(x.horizon), sourceObservations: num(x.sourceObservations),
     totalReturn: q3(x.totalReturn), maxDrawdown: q3(x.maxDrawdown), scope: x.scope, inputHash: x.inputHash || null });
@@ -71,23 +74,50 @@ function caseRow(c, r) {
   };
 }
 
+// 6 Arten x 7 Methoden: jede Zelle traegt ein Ergebnis (Fall mit EXECUTED) oder einen benannten Grund.
+//   NOT_APPLICABLE  methodisch nicht anwendbar (METHOD_FIT des Runners)
+//   DATA_MISSING    zulaessig, aber jeder Fall dieser Art wartet auf einen fehlenden Eingang (missing)
+//   NOT_RUN         zulaessig und gerechnet, aber die Methode lieferte kein Ergebnis (reason aus dem Runner)
+function matrix(cases) {
+  const out = {};
+  for (const k of KINDS) {
+    out[k] = {};
+    const ofKind = cases.filter(c => c.kind === k);
+    for (const m of METHODS) {
+      if (!R.METHOD_FIT[m].includes(k)) { out[k][m] = { state: 'NOT_APPLICABLE' }; continue; }
+      const hit = ofKind.filter(c => c.methods[m].state === 'EXECUTED');
+      if (hit.length) { out[k][m] = { state: 'EXECUTED', cases: hit.map(c => c.id) }; continue; }
+      const ran = ofKind.filter(c => c.state === 'RESEARCH_EXECUTED');
+      if (!ran.length && ofKind.length) { out[k][m] = { state: 'DATA_MISSING', cases: ofKind.map(c => c.id), missing: [...new Set(ofKind.flatMap(c => c.missingInputs.map(x => x.replace(/^MISSING_INPUT:/, '').split(/[ :]/)[0])))] }; continue; }
+      const why = ran.map(c => c.methods[m].reason).filter(Boolean);
+      out[k][m] = { state: ofKind.length ? 'NOT_RUN' : 'NO_CASE', cases: ran.map(c => c.id), reason: why[0] || null };
+    }
+  }
+  return out;
+}
+
 function build(opts = {}) {
-  const spec = JSON.parse(fs.readFileSync(CASES, 'utf8'));
-  const cases = spec.cases.filter(c => !opts.only || opts.only.includes(c.id)).map(c => {
-    const s = JSON.parse(fs.readFileSync(path.join(path.dirname(CASES), c.spec), 'utf8'));
-    return caseRow(c, R.runBacktest(s, { cacheDir: null, privateDirs: { delistedSeries: null, factorPanel: null } }));
+  const list = [CASES, MATRIX_CASES].flatMap(f => JSON.parse(fs.readFileSync(f, 'utf8')).cases.map(c => ({ ...c, file: f, group: f === MATRIX_CASES ? 'MATRIX' : 'DEMO' })));
+  const cases = list.filter(c => !opts.only || opts.only.includes(c.id)).map(c => {
+    const s = JSON.parse(fs.readFileSync(path.join(path.dirname(c.file), c.spec), 'utf8'));
+    return { ...caseRow(c, R.runBacktest(s, { cacheDir: null, privateDirs: { delistedSeries: null, factorPanel: null } })), group: c.group };
   });
+  const display = JSON.parse(fs.readFileSync(DISPLAY, 'utf8'));
+  const isPublic = display.public === true && !!(display.approval && display.approval.text === display.approvalPhrase);
   const executed = m => cases.filter(c => c.methods[m].state === 'EXECUTED').length;
   return {
     schemaVersion: SCHEMA,
     asOf: opts.asOf || new Date().toISOString().slice(0, 10),
     runner: R.VERSION,
     label: 'Forschung, nicht zertifiziert',
-    audience: 'INTERNAL',
-    display: { public: false, reason: 'Öffentliche Rendite- oder Performanceaussagen brauchen eine Owner-Freigabe (CLAUDE.md, Freigaben).' },
+    audience: isPublic ? 'PUBLIC' : 'INTERNAL',
+    display: { public: isPublic, switch: 'quant/methodology/backtest-research-display.json', approvalPhrase: display.approvalPhrase,
+      reason: isPublic ? null : 'Öffentliche Rendite- oder Performanceaussagen brauchen eine Owner-Freigabe (CLAUDE.md, Freigaben).' },
     certificationStatus: 'NOT_CERTIFIED',
     productionApproved: false,
-    source: 'docs/quant/backtest-demos/cases.json',
+    source: ['docs/quant/backtest-demos/cases.json', 'docs/quant/backtest-research/cases.json'],
+    kinds: KINDS, methods: METHODS,
+    matrix: matrix(cases),
     summary: { cases: cases.length, executed: cases.filter(c => c.state === 'RESEARCH_EXECUTED').length,
       dataLimited: cases.filter(c => c.state === 'PREPARED_DATA_LIMITED').length,
       methods: Object.fromEntries(METHODS.map(m => [m, executed(m)])) },
@@ -105,4 +135,4 @@ function main(argv = process.argv.slice(2)) {
   return doc;
 }
 if (require.main === module) { try { main(); } catch (e) { console.error(e.stack); process.exitCode = 1; } }
-module.exports = { build, compact, caseRow, METHODS, SCHEMA };
+module.exports = { build, compact, caseRow, matrix, METHODS, KINDS, SCHEMA };
