@@ -1,4 +1,4 @@
-/* Website-Vorschau (/website/): Seiten aktuell, Owner-Regeln vom 12.11.2026 eingehalten. */
+/* Website-Vorschau (/website/): Seiten aktuell, Owner-Regeln vom 12.11. und 13.11.2026 eingehalten. */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync } from "node:fs";
@@ -61,9 +61,28 @@ test("WEB-6 · Wortwahl (docs/legal/WORTWAHL.md) und Pflichtsatz", () => {
   }
 });
 
-test("WEB-7 · alle Module mit eigener Seite, Startseite zeigt die Unterseiten prominent", () => {
+test("WEB-7 · alle Bereiche mit eigener Seite, Startseite führt zu den Unterseiten", () => {
   for (const m of MODULES) assert.ok(SITE.has(m.id === "insights" ? "insights/index.html" : `funktionen/${m.id}/index.html`), m.id);
   const home = SITE.get("index.html");
-  for (const p of ["funktionen/", "insights/", "fuer-wen/", "videos/", "daten/"]) assert.ok(home.includes(`class="xcard`) && home.includes(`href="/website/${p}"`), p);
-  for (const img of hrefs(home).filter((h) => h.startsWith("/website/img/"))) assert.ok(existsSync(join(ROOT, img)), img);
+  for (const p of ["funktionen/", "insights/", "fuer-wen/", "videos/", "daten/"]) assert.ok(home.includes(`href="/website/${p}"`), p);
+  for (const m of MODULES.filter((x) => x.id !== "insights")) assert.ok(home.includes(`href="/website/funktionen/${m.id}/"`), `Startseite ohne ${m.id}`);
+  for (const [p, html] of SITE) for (const img of hrefs(html).filter((h) => h.startsWith("/website/img/"))) assert.ok(existsSync(join(ROOT, img)), `${p}: ${img}`);
+});
+
+test("WEB-8 · Original-Knöpfe von Apple und Google auf jeder Seite, ohne Store-Link (Owner 13.11.2026)", () => {
+  for (const [p, html] of SITE) {
+    assert.ok(html.includes('src="/website/img/badge-apple.svg" alt="Laden im App Store"'), `${p}: App-Store-Knopf fehlt`);
+    assert.ok(html.includes('src="/website/img/badge-google.png" alt="Jetzt bei Google Play"'), `${p}: Google-Play-Knopf fehlt`);
+    assert.ok(!/<a[^>]*>\s*<img src="\/website\/img\/badge-/.test(html), `${p}: Store-Knopf ist verlinkt`);
+  }
+  assert.match(readFileSync(join(ROOT, "website/img/badge-apple.svg"), "utf8"), /Download_on_the_App_Store_Badge_DE/);
+});
+
+test("WEB-9 · Insights aktualisiert sich selbst: Plätze auf der Startseite, Liste mit Heft und Reports", () => {
+  const home = SITE.get("index.html");
+  for (const slot of ["data-live-artikel", "data-live-magazin", "data-live-report", "data-live-davor"]) assert.ok(home.includes(slot), slot);
+  const liste = JSON.parse(readFileSync(join(ROOT, "insights/artikel.json"), "utf8"));
+  assert.ok(Array.isArray(liste.artikel) && Array.isArray(liste.magazin) && Array.isArray(liste.reports));
+  for (const h of liste.magazin) assert.ok(existsSync(join(ROOT, h.cover)) && existsSync(join(ROOT, h.href, "index.html")), `Heft ${h.nr}`);
+  assert.match(readFileSync(join(ROOT, "website/site.js"), "utf8"), /\/insights\/artikel\.json/);
 });
