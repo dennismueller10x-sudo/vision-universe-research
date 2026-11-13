@@ -1,6 +1,6 @@
 {
   "version": "capability-matrix-1.0.0",
-  "generatedAt": "2026-11-12T23:38:07.433Z",
+  "generatedAt": "2026-11-13T15:22:01.861Z",
   "master": {
     "file": "quant/data/market/security-master/eligibility.json",
     "version": "us-security-master-1.3.0",
@@ -12,7 +12,7 @@
     "ingestStatus": "2026-11-12T23:35:05.806Z",
     "factors": "2026-11-12T23:36:15.404Z",
     "intradaySession": "2026-11-12",
-    "discover": "2026-11-12T23:38:03.498Z"
+    "discover": "2026-11-13T15:21:56.754Z"
   },
   "counts": {
     "companyMasterTotal": 7803,
@@ -23,20 +23,21 @@
     "marketDataFetched": 6309,
     "historicalAvailable": 5717,
     "historicalQualityAccepted": 6307,
-    "intradayAvailable": 1406,
-    "liveCapable": 1352,
+    "intradayAvailable": 4792,
+    "liveCapable": 1401,
     "factorEligible": 6170,
-    "fundamentals": 5416,
+    "fundamentals": 5417,
     "fundamentals10y": 2330,
-    "fundamentals5y": 3604,
-    "fundamentalsTtm": 5399,
+    "fundamentals5y": 3605,
+    "fundamentalsTtm": 5400,
     "discoverEligible": 5504,
     "stockPages": 5699,
     "namesMissing": 27,
     "providerMappingsMissing": 1
   },
   "gapReasons": {
-    "NO_INTRADAY_SNAPSHOT": 4856,
+    "NOT_IN_LIVE_SCOPE": 3391,
+    "NO_IEX_BARS": 1515,
     "NO_FUNDAMENTALS:NO_CIK": 769,
     "NO_STOCK_PAGE": 610,
     "INSUFFICIENT_HISTORY": 581,
@@ -45,9 +46,7 @@
     "NOT_TRADING:STALE_SERIES": 188,
     "NO_FACTOR_ROW:FAIL": 134,
     "NO_DISCOVER_CARD": 130,
-    "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 124,
-    "NOT_IN_LIVE_SCOPE": 54,
-    "NO_IEX_BARS": 47,
+    "NO_FUNDAMENTALS:NOT_IN_COMPANYFACTS": 123,
     "NAME_MISSING": 27,
     "NO_COMPACT_SERIES": 9,
     "NOT_CONSUMER_INSTRUMENT:WARRANT": 9,
@@ -55,6 +54,7 @@
     "NOT_CONSUMER_INSTRUMENT:UNIT": 7,
     "NO_FACTOR_ROW:SOURCE_MISSING": 5,
     "NOT_CONSUMER_INSTRUMENT:RIGHT": 4,
+    "NO_INTRADAY_SNAPSHOT": 2,
     "QUALITY_REJECTED:too_few_bars": 2,
     "PROVIDER_MAPPING_MISSING": 1
   },
@@ -266,8 +266,8 @@
         "HAS_PROVIDER_MAPPING": true,
         "HAS_MARKET_DATA": true,
         "HAS_HISTORICAL": true,
-        "HAS_INTRADAY": false,
-        "HAS_LIVE": false,
+        "HAS_INTRADAY": true,
+        "HAS_LIVE": true,
         "HAS_FACTORS": true,
         "HAS_FUNDAMENTALS": true,
         "HAS_FUNDAMENTALS_5Y": true,
@@ -277,9 +277,7 @@
         "DISCOVER_ELIGIBLE": true,
         "HAS_STOCK_PAGE": true
       },
-      "gaps": [
-        "NO_INTRADAY_SNAPSHOT"
-      ]
+      "gaps": []
     },
     {
       "name": "Eli Lilly",
