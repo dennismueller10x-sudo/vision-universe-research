@@ -329,17 +329,52 @@
   function brYears(p) { return p && p.from ? String(p.from).slice(0, 4) + (p.to && String(p.to).slice(0, 4) !== String(p.from).slice(0, 4) ? "–" + String(p.to).slice(0, 4) : "") : ""; }
   function brRan(c) { return BR_METHOD.filter(function (m) { return c.methods[m[0]] && c.methods[m[0]].state === "EXECUTED"; }); }
   var BR_TAG = '<span class="qk-tag qk-tag--ink">Forschung, nicht zertifiziert · intern</span>';
-  async function researchSection(page, ctx) {
+  /* Für Kunden in fünf Sekunden: je Methode eine Frage in Alltagssprache und ein Urteil. Die Fachtabelle steht darunter aufgeklappt. */
+  var BR_PLAIN_Q = { SAME_STOCK_REPLAY: "Was wäre passiert, wenn man eine Aktie nach der Quant-Regel gekauft hätte?",
+    PATTERN_EVIDENCE: "Wie ging es weiter, nachdem eine Aktie deutlich gefallen war?",
+    SIGNAL_BACKTEST: "Lohnten sich die Quant-Meldungen, zum Beispiel ein neues Jahreshoch?",
+    SETUP_BACKTEST: "Lösten sich Setups früher nach oben auf?",
+    STRATEGY_BACKTEST: "Wie hätte ein Depot nach einem Anlagestil abgeschnitten?",
+    FACTOR_RANKING_BACKTEST: "Schnitten Aktien mit starken Eigenschaften besser ab als der Rest?" };
+  function brPlainVerdict(res, k) {
+    var cert = brCert(res, k), n = { PROVEN: 0, REGIME_DEPENDENT: 0, FAILED: 0 };
+    BR_METHOD.forEach(function (m) { var v = brVerdictOf(res.matrix[k][m[0]]); if (v) n[v] += 1; });
+    var total = n.PROVEN + n.REGIME_DEPENDENT + n.FAILED;
+    if (!total || (cert && cert.status !== "CERTIFIED")) return ["none", "noch offen"];
+    if (n.FAILED * 2 > total) return ["weak", "nicht bewährt"];
+    if (!n.REGIME_DEPENDENT && !n.FAILED) return ["strong", "bewährt"];
+    if (n.PROVEN * 2 > total) return ["strong", "meist bewährt"];
+    return ["mid", "nur manchmal"];
+  }
+  function brPlainException(res, k) {
+    var bad = (res.cases || []).filter(function (c) { return c.kind === k && BR_METHOD.some(function (m) { return brVerdictOf(c.methods[m[0]]) === "FAILED"; }); });
+    var crash = bad.find(function (c) { return (c.scenarios || []).indexOf("BEAR_CRASH") >= 0; });
+    if (crash) return "Aber nicht im Crash " + brYears(crash.period) + ".";
+    if (bad.length) return "Aber nicht bei jeder Aktie.";
+    return "";
+  }
+  function brSimple(res) {
+    var U = global.VUUI;
+    if (!res.matrix) return "";
+    return '<div class="vu-box qk-list qk-br-simple">' + res.kinds.map(function (k) {
+      var v = brPlainVerdict(res, k), ex = brPlainException(res, k);
+      return '<a class="qk-bt-c" href="' + U.esc(X.routes.backtestKind(k)) + '"><span><b>' + U.esc(BR_PLAIN_Q[k] || BR_KIND[k] || k) + "</b><span>" + U.esc(BR_KIND[k] || k) + (ex ? " · " + ex : "") + "</span></span>" + U.verdict(v[0], v[1]) + "</a>";
+    }).join("") + "</div>";
+  }
+  async function researchSection(page, ctx, top) {
     var U = global.VUUI, res = await ctx.api.getBacktest("research").catch(function () { return null; });
-    var host = el("section", { class: "qk-bt-research", "aria-label": "Robustheit der Prüffälle" });
+    var host = el("section", { class: "qk-bt-research", "aria-label": "Was können die Quant-Methoden?" });
     page.append(host);
     if (!res || res.state !== "AVAILABLE") {
       host.innerHTML = '<div class="qk-rh"><div class="qk-rh-t"><h2>Robustheit der Prüffälle</h2></div></div>' + U.blank("Die Ergebnisse der Zusatzmethoden liegen noch nicht vor. Sie entstehen im Wochenlauf (sonntags).");
       return;
     }
-    host.innerHTML = '<div class="qk-rh"><div class="qk-rh-t"><h2>Robustheit der Prüffälle</h2><span class="vu-xs vu-mu qk-sort">Stand ' + U.esc(String(res.asOf).split("-").reverse().join(".")) + "</span></div>" +
-      "<p>Sechs Backtest-Arten, sieben Prüfmethoden. Jedes Feld zeigt, ob gerechnet wurde, und wenn nicht, warum. Keine Prognose, kein Renditeversprechen.</p></div>" +
-      BR_TAG + brMatrix(res) + '<details class="vu-box qk-bt-more"><summary><b>Alle ' + res.cases.length + ' Prüffälle</b></summary><div class="qk-list">' + res.cases.map(function (c) {
+    host.innerHTML = (top ? '<p class="vu-xs vu-mu">Stand ' + U.esc(String(res.asOf).split("-").reverse().join(".")) + "</p>" :
+      '<div class="qk-rh"><div class="qk-rh-t"><h2>Was können die Quant-Methoden?</h2><span class="vu-xs vu-mu qk-sort">Stand ' + U.esc(String(res.asOf).split("-").reverse().join(".")) + "</span></div>" +
+      "<p>Wir haben jede Methode rückwärts auf echte Kurse angewendet. Hier steht, ob sie sich bewährt hat. Keine Prognose.</p></div>" + BR_TAG) +
+      brSimple(res) +
+      '<details class="vu-box qk-bt-more"><summary><b>Alle Prüfungen im Detail</b></summary>' + brMatrix(res) + "</details>" +
+      '<details class="vu-box qk-bt-more"><summary><b>Alle ' + res.cases.length + ' Prüffälle</b></summary><div class="qk-list">' + res.cases.map(function (c) {
         var ran = brRan(c);
         return '<a class="qk-bt-c" href="' + U.esc(X.routes.backtestCase(c.id)) + '"><span><b>' + U.esc(brTitle(c)) + "</b><span>" + U.esc(brYears(c.period)) +
           (c.state === "PREPARED_DATA_LIMITED" ? " · Daten begrenzt" : " · " + ran.length + " von 7 Methoden") + "</span></span>" +
@@ -537,8 +572,18 @@
       '<div class="qk-help">' + U.help("+1,4 heißt: Nach der Meldung lagen 1,4 Prozentpunkte mehr Fälle nach 6 Monaten höher als im Markt derselben Wochen. Vergangenheit, keine Prognose.") + "</div>" +
       (collecting.length ? '<div class="qk-rh"><div class="qk-rh-t"><h2>Sammelt noch Historie</h2></div></div><div class="vu-box qk-list">' + collecting.map(function (c) {
         return (c[1] ? '<a class="qk-bt-c" href="' + U.esc(c[1]) + '">' : '<div class="qk-bt-c">') + "<b>" + U.esc(c[0]) + "</b>" + U.verdict("none", "sammelt") + (c[1] ? "</a>" : "</div>"); }).join("") + "</div>" : "");
-    page.innerHTML = h;
-    await researchSection(page, ctx);
+    /* Für Kunden zuerst die einfache Übersicht (eine Frage und ein Urteil je Methode); der Meldungsvergleich in Prozentpunkten steht aufgeklappt darunter. */
+    var simple = await ctx.api.getBacktest("research").catch(function () { return null; });
+    if (simple && simple.state === "AVAILABLE" && simple.matrix) {
+      page.innerHTML = head + '<h1 class="vu-lt qk-bt-t">Was können die Quant-Methoden?</h1><p class="vu-lead">Wir haben jede Methode rückwärts auf echte Kurse angewendet. Hier steht, ob sie sich bewährt hat. Keine Prognose.</p>';
+      await researchSection(page, ctx, true);
+      var byRule = el("details", { class: "vu-box qk-bt-more" }, [el("summary", {}, [el("b", { text: "Meldungen im Einzelnen" })])]);
+      var byRuleBody = el("div", {}); byRuleBody.innerHTML = h.replace(head, "").replace('<h1 class="vu-lt qk-bt-t">Hatte eine Meldung früher einen Vorteil?</h1>', '<h2 class="vu-h3">Hatte eine Meldung früher einen Vorteil?</h2>');
+      byRule.append(byRuleBody); page.append(byRule);
+    } else {
+      page.innerHTML = h;
+      await researchSection(page, ctx);
+    }
     var more = el("details", { class: "vu-box qk-bt-more" }, [el("summary", {}, [el("b", { text: "Was zur Zertifizierung fehlt" })])]);
     var body = el("div", { class: "qk-bt-legacy" }); more.append(body); page.append(more);
     await render(body, ctx, null, true);
@@ -604,27 +649,24 @@
      Marktlage aller Meldungsregeln zusammen, Pflichtangaben. Keine Prognose. */
   function historyCard(res, card) {
     var U = global.VUUI;
-    if (!U || !res || res.state !== "AVAILABLE" || !res.display || res.display.public !== true) return null;
-    var byId = function (id) { return (res.cases || []).find(function (c) { return c.id === id; }); };
-    var all = byId("matrix-signal"), crash = byId("signal-2008-crash");
+    if (!U || !res || res.state !== "AVAILABLE" || !res.display || res.display.public !== true || !res.matrix) return null;
+    var all = (res.cases || []).find(function (c) { return c.id === "matrix-signal"; });
     if (!all) return null;
     var T = global.VUQuantRadar ? global.VUQuantRadar.TYPE : {};
-    var ev = ((card && card.events) || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; })[0];
-    var badge = function (x) { var v = brVerdictOf(x); return v ? U.verdict(BR_VERDICT[v][0], BR_VERDICT[v][1]) : ""; };
-    var rows = "";
-    if (ev) rows += brRow("Trefferquote „" + ((T[ev.eventType] || {}).label || ev.eventType) + "“: nach 6 Monaten höher", brPct(ev.backtest.positiveShare).replace(/^\+/, "") + " (Markt " + brPct(ev.backtest.basePositiveShare).replace(/^\+/, "") + ")");
-    if (all.metrics && typeof all.metrics.hitRate === "number") rows += brRow("Trefferquote aller Meldungsregeln (" + (all.metrics.trades || 0).toLocaleString("de-DE") + " Fälle)", brPct(all.metrics.hitRate).replace(/^\+/, ""));
-    var mr = all.methods && all.methods.MARKET_REGIME, states = (mr && mr.states || []).filter(function (x) { return x.n; });
-    var regime = states.length ? states.slice().sort(function (a, b) { return a.mean - b.mean; }) : [];
-    var worstMc = crash && crash.methods && crash.methods.MONTE_CARLO;
-    var html = '<div class="qk-br-hist"><h3>Was die Geschichte zu diesem Signal sagt</h3>' +
-      '<p class="vu-sm vu-mu">' + U.esc(ev ? "Bei dieser Aktie löst gerade ein marktweit getestetes Signal aus. So schnitten die Meldungsregeln rückwirkend ab." : "Zurzeit löst bei dieser Aktie kein getestetes Signal aus. So schnitten die Meldungsregeln insgesamt rückwirkend ab.") + "</p>" +
-      '<div class="qk-br-tbl">' + rows +
-      (crash ? '<div class="qk-br-row"><span>Schlechtester geprüfter Fall: Finanzkrise ' + U.esc(brYears(crash.period)) + "</span><b>" + badge(worstMc) + "</b></div>" +
-        (worstMc && worstMc.totalReturn ? brRow("… mittleres Ergebnis", brPct(worstMc.totalReturn.p50)) + brRow("… Spanne (5 % bis 95 %)", brPct(worstMc.totalReturn.p5) + " bis " + brPct(worstMc.totalReturn.p95)) : "") : "") +
-      (regime.length ? '<div class="qk-br-row"><span>Marktlage</span><b>' + badge(mr) + "</b></div>" + brRow("… schwächste Lage: " + (BR_REGIME[regime[0].state] || regime[0].state), brPct(regime[0].mean)) + brRow("… stärkste Lage: " + (BR_REGIME[regime[regime.length - 1].state] || regime[regime.length - 1].state), brPct(regime[regime.length - 1].mean)) : "") +
-      "</div>" + (U.legal ? U.legal("backtest", { facts: brFacts(all) }) : "") +
-      '<p class="vu-sm"><a href="' + U.esc(X.routes.backtestKind("SIGNAL_BACKTEST")) + '">Alle Prüffälle der Meldungsregeln</a></p></div>';
+    var ev = ((card && card.events) || []).filter(function (e) { return e.backtest && e.backtest.state === "AVAILABLE" && typeof e.backtest.positiveShare === "number"; })[0];
+    var share = ev ? ev.backtest.positiveShare : all.metrics && all.metrics.hitRate;
+    if (typeof share !== "number") return null;
+    var name = ev ? "„" + ((T[ev.eventType] || {}).label || ev.eventType) + "“" : null;
+    var v = brPlainVerdict(res, "SIGNAL_BACKTEST"), ex = brPlainException(res, "SIGNAL_BACKTEST");
+    var facts = brFacts(all);
+    var html = '<div class="qk-br-hist">' +
+      '<h3>' + U.esc(name ? "Hat das Signal " + name + " früher funktioniert?" : "Haben die Quant-Meldungen früher funktioniert?") + "</h3>" +
+      '<p class="qk-br-big"><b class="vu-num">' + Math.round(share * 100) + " von 100</b> Fällen lagen ein halbes Jahr später höher.</p>" +
+      '<p class="qk-br-verdict">' + U.verdict(v[0], v[1]) + (ex ? '<span class="vu-sm">' + U.esc(ex) + "</span>" : "") + "</p>" +
+      (U.legal ? U.legal("backtest") : "") +
+      '<details class="qk-br-facts"><summary class="vu-sm">Wie wurde gerechnet?</summary><ul class="vu-sm">' + Object.keys(facts).map(function (k) {
+        return "<li><b>" + U.esc(k.replace(/\s*\(z\. B\.[^)]*\)/, "").replace(/:\s*ja\/nein$/, "")) + ":</b> " + U.esc(facts[k]) + "</li>"; }).join("") +
+      "</ul>" + '<p class="vu-sm"><a href="' + U.esc(X.routes.backtestKind("SIGNAL_BACKTEST")) + '">Alle Prüfungen ansehen</a></p></details></div>';
     var box = document.createElement("div"); box.className = "q-ev-history"; box.innerHTML = html;
     return box;
   }
