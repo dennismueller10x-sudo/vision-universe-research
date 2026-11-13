@@ -142,6 +142,10 @@ test("MG-6 · keine Generationen gemischt: jedes committete Demo- und Katalogerg
   for (const d of dirs) for (const f of readdirSync(join(ROOT, d)).filter((x) => x.endsWith(".json"))) {
     const doc = JSON.parse(readFileSync(join(ROOT, d, f), "utf8")), h = doc.inputHashes && doc.inputHashes.population && doc.inputHashes.population.masterHash;
     if (h === undefined || h === null) continue; // Zustand B ohne Population
+    // PRODUCT_DEFAULT liest bewusst den Produktstamm (Generation LIVE, research-weekly-loader#masterGenerationOf) und
+    // folgt dessen woechentlichem Erzeuger; er ist an LIVE gebunden, nicht an eine eingefrorene Generation. Der Abgleich
+    // mit dem aktuellen Stamm steht in check-backtest-demo-freshness.cjs („Stamm geaendert“).
+    if (doc.spec && doc.spec.population && doc.spec.population.profile === "PRODUCT_DEFAULT" && G.generationOfHash(h) === null) { n++; continue; }
     assert.equal(G.generationOfHash(h), ID, d + "/" + f); n++;
   }
   assert.ok(n >= 10);
