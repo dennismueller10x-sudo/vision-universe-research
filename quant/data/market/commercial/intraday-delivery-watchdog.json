@@ -1,37 +1,32 @@
 {
   "schemaVersion": "intraday-delivery-watchdog-1.0.0",
   "auftrag": "Owner 21.09.2026 §15/§16: unabhaengiger Waechter der Intraday-Auslieferung",
-  "checkedAt": "2026-11-13T20:02:43.019Z",
+  "checkedAt": "2026-11-13T20:16:55.007Z",
   "site": "https://research.visionuniverse.de",
   "session": {
     "marketState": "OPEN",
-    "localTime": "15:02:43",
+    "localTime": "15:16:55",
     "localDate": "2026-11-13"
   },
   "delivered": {
     "ok": true,
     "sessionDate": "2026-11-13",
-    "asOfMs": 1794598200000,
-    "generatedAt": "2026-11-13T19:32:52.992Z"
+    "asOfMs": 1794600000000,
+    "generatedAt": "2026-11-13T20:02:35.788Z"
   },
   "verdict": "FAIL",
   "findings": [
     {
       "severity": "FAIL",
       "code": "auslieferungZuWeitHinterher",
-      "text": "Die Auslieferung ist 30 min hinter dem Repository."
-    },
-    {
-      "severity": "FAIL",
-      "code": "seiteStandZuAlt",
-      "text": "Der Intraday-Stand auf der veroeffentlichten Seite ist 33 min alt (Grenze 30 min)."
+      "text": "Die Auslieferung ist 15 min hinter dem Repository."
     }
   ],
   "facts": {
     "marketState": "OPEN",
     "expectedSession": "2026-11-13",
     "snapshotSession": "2026-11-13",
-    "snapshotAgeMinutes": 3,
+    "snapshotAgeMinutes": 2,
     "deliveredSession": "2026-11-13",
     "lastCycleAgeMinutes": 0,
     "intervalMinutes": 5,
