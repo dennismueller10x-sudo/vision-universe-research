@@ -283,3 +283,116 @@ body.hf .vu-sheet-backdrop{z-index:1000001}
 .hf-mvr--inv .hf-av--md{width:32px;height:32px}
 .hf-mvr--inv .hf-inv-v{display:grid;justify-items:end;gap:3px}
 .hf-kt .vu-q{width:18px;height:18px;min-width:0!important;min-height:0!important;font-size:11px;padding:0;margin-left:2px;background:var(--vu-hair);color:var(--vu-ink)}
+
+/* ===================================================================== App-Konzept 2 (Owner-Freigabe 14.11.2026)
+   Der Bildschirm wird genutzt (14 px Rand, Schienen bis an den Rand, keine Leerzeile oben). Meldetermine als Zeitleiste,
+   Star-Investoren als Karten mit Depotverlauf, Käufe gegen Verkäufe als geteilter Balken, Kapitel als Kacheln, deren Inhalt
+   sich im Fenster öffnet. Farben: Schwarz, Weiß, Grau, Neongrün; Neongrün nur als Fläche oder auf dunklen Kacheln. */
+:root{--hf-gutter:14px}
+@media (min-width:761px){:root{--hf-gutter:24px}}
+.hf-wrap{max-width:860px;padding-top:8px}
+.hf-intro{margin-top:2px}
+.hf-intro .vu-lt{font-size:clamp(28px,8vw,44px);line-height:1.02;letter-spacing:-.045em}
+.hf-intro .vu-lead{margin-top:6px;font-size:14px;line-height:1.4}
+.hf-back{min-height:44px}
+.hf a.vu-next{margin-top:24px}
+
+/* Kopfkachel der Startseite: Titel, Zeitleiste, Hinweis, Suche */
+.hf-hero{--vu-card:#262626;--vu-hair:#3a3a3a;padding:14px 16px 16px;border-radius:24px}
+:root:not([data-theme=dark]) .hf-hero{background:#0e1013}
+.hf-hero .hf-intro{margin-top:0}
+.hf-hero .vu-ltag{color:#9b9b9b}
+.hf-hero .vu-lt{margin-top:4px;color:#fff}
+.hf-hero .hf-qb{margin-top:16px;padding:0;background:none}
+.hf-hero .hf-qb-note{margin-top:10px;color:#bdbdbd}
+.hf-hero .hf-spanel{background:#151515;border-color:#3a3a3a}
+
+/* Zeitleiste der Meldungen: gefüllter Punkt = Termin liegt hinter uns, gestrichelt = kommt noch */
+.hf-qb{border-radius:22px}
+html[data-theme=dark] .hf-qb{background:#151515}
+.hf-qb>div{position:relative;padding-top:24px}
+.hf-qb-dot{position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:var(--vu-lime)}
+.hf-qb>div.is-next .hf-qb-dot{background:none;border:2px dashed #9b9b9b}
+.hf-qb>div:before{content:"";position:absolute;left:22px;right:-2px;top:6.5px;height:3px;border-radius:2px;background:#3a3a3a}
+.hf-qb>div:last-child:before{display:none}
+.hf-qb>div.is-on:has(+.is-on):before{background:var(--vu-lime)}
+.hf-qb>div.is-next b{color:#fff}
+
+/* Schienen bis an den Rand, Star-Karte mit Porträt und Depotverlauf */
+.hf-rh .vu-sect h2{font-size:22px;font-weight:900;letter-spacing:-.035em;line-height:1.1}
+.hf-track{margin-inline:calc(-1 * var(--hf-gutter));padding-inline:var(--hf-gutter);scroll-padding-inline:var(--hf-gutter);scroll-snap-type:x proximity}
+.hf-scard{width:176px;padding:14px;border-radius:22px}
+.hf-scard-top{display:flex;align-items:flex-end;justify-content:space-between;gap:8px;margin-bottom:10px}
+.hf-scard .hf-av--md{width:60px;height:60px;margin-bottom:0;font-size:18px}
+.hf-scard .hf-av--md .hf-av-star{width:20px;height:20px}
+.hf-scard .hf-card-val>b{font-size:20px}
+.hf-mini{display:flex;align-items:flex-end;gap:3px;height:44px;flex:none}
+.hf-mini i{display:block;width:6px;border-radius:2px;background:var(--vu-mute);opacity:.5}
+.hf-mini i.is-last{background:var(--vu-lime);opacity:1;box-shadow:inset 0 0 0 1.5px #000}
+html[data-theme=dark] .hf-mini i.is-last{box-shadow:none}
+
+/* Balken: kräftiger, Logos größer */
+.hf-bar{height:9px}
+.hf-inv-n .hf-bar{height:5px;margin:5px 0 0}
+.hf-mvl{border-radius:22px}
+.hf-mvr{grid-template-columns:38px minmax(0,1fr) auto}
+.hf-mvr .vu-logo-tile{width:38px;height:38px}
+.hf-mvr--inv{grid-template-columns:40px minmax(0,1fr) auto}
+.hf-mvr--inv .hf-av--md{width:40px;height:40px}
+.hf-pp{grid-template-columns:36px minmax(0,1fr) auto auto}
+.hf-pp .vu-logo-tile{width:36px;height:36px}
+.hf-row--bar .vu-meter{height:9px}
+.hf-grpbox{margin:0 0 8px;padding:4px 14px 10px}
+.hf-grpbox .hf-flow:first-child{border-top:0}
+
+/* Geteilter Balken: Käufe (neongrün) gegen Verkäufe */
+.hf-split{display:block;margin-top:8px;width:100%}
+.hf-split-b{display:flex;gap:3px;height:12px}
+.hf-split-b i{display:block;min-width:5px;border-radius:99px}
+.hf-split-b .b{background:var(--vu-lime);box-shadow:inset 0 0 0 1.5px #000}
+.hf-split-b .s{background:var(--vu-ink)}
+html[data-theme=dark] .hf-split-b .b,.vu-night .hf-split-b .b{box-shadow:none}
+.hf-split-l{display:flex;justify-content:space-between;gap:8px;margin-top:4px;font-size:11.5px}
+.hf-split-l b{font-weight:800}
+
+/* Drei Sätze: Zahlenreihe oben, dunkle Kachel in beiden Schemata */
+.hf-story{border-radius:22px}
+html[data-theme=dark] .hf-story{background:#151515}
+.hf-story .vu-stats{margin:12px 0 6px}
+.hf-story .vu-stats>div{padding:0 8px;border-color:#3a3a3a}
+.hf-story .vu-stats>div:first-child{padding-left:0}
+.hf-story .vu-stats b{font-size:24px;color:#fff}
+.hf-story .vu-stats .is-lime b{color:var(--vu-lime)}
+.hf-story .vu-stats span{color:#9b9b9b}
+.hf-story-r{align-items:start}
+.hf-story-r>.vu-verdict{margin-top:14px}
+
+/* Kapitel als Kacheln: Antippen öffnet das Fenster */
+.hf-eps{grid-template-columns:1fr 1fr;gap:8px}
+.hf-ep{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0;padding:12px;border:0;border-radius:20px;background:var(--vu-card);color:var(--vu-ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.hf-eps>.hf-ep:last-child:nth-child(odd){grid-column:1/-1}
+.hf-ep-t{min-width:0;max-width:100%}
+.hf-ep-t b{font-size:14.5px;font-weight:800;overflow-wrap:anywhere}
+.hf-ep-body{padding:0}
+.vu-sheet-ui .hf-ep-body>.vu-seg:first-child{margin-top:0}
+
+/* Fonds: Porträt größer, Ring für den Anteil der fünf größten Positionen */
+.hf-fhead{margin-top:4px}
+.hf-av--xl{width:76px;height:76px}
+.hf-kt{border-radius:18px}
+.hf-kt--ring{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hf-kt--ring>div>b{display:block;margin:2px 0 4px;font-size:21px;font-weight:900;letter-spacing:-.03em;white-space:nowrap}
+.hf-kt--ring>div>span{font-size:11.5px;font-weight:600;color:var(--vu-mute)}
+@media (min-width:761px){.hf-eps{grid-template-columns:repeat(3,1fr)}.hf-eps>.hf-ep:last-child:nth-child(odd){grid-column:auto}}
+
+/* Aktienkopf (assets/stock-navigator, Farben unverändert): Kursart und Datum stehen klein unter der Tagesbewegung neben dem
+   Kurs und brauchen keine eigene Zeile mehr. */
+#hf-shead .vu-shead-price{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:2px;align-items:center}
+#hf-shead .vu-shead-value{grid-row:1/span 2}
+#hf-shead .vu-shead-change{justify-self:start}
+#hf-shead .vu-shead-when{grid-column:2;justify-self:start;margin:0;flex-basis:auto;text-align:left;font-size:11px;line-height:1.2}
+@media (max-width:380px){#hf-shead .vu-shead-value{grid-row:auto;grid-column:1/-1}#hf-shead .vu-shead-when{align-self:center}}
+.hf-story-r{grid-template-columns:34px minmax(0,1fr) auto}
+.hf-split-l b{min-width:0}
+@media (min-width:761px){.hf-detail .vu-bars{max-height:220px}}
+.hf .hf-search input:focus-visible{outline:0}
