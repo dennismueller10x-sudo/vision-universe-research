@@ -227,9 +227,9 @@
       "cik": "0001919246",
       "name": "Pelthos Therapeutics Inc.",
       "sic": "2836",
-      "rawFacts": 2604,
-      "mappedFacts": 930,
-      "unmappedFacts": 1738,
+      "rawFacts": 2945,
+      "mappedFacts": 1049,
+      "unmappedFacts": 1993,
       "calendarYears": 4,
       "industry": null,
       "industryMetrics": {},
@@ -239,28 +239,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 16,
+      "quarterlyPeriods": 17,
       "firstPeriodEnd": "2021-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "free_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0,
@@ -280,21 +280,21 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "revenue": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -308,14 +308,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -338,46 +338,46 @@
         }
       },
       "quality": {
-        "HIGH": 98,
-        "MEDIUM": 2
+        "HIGH": 109
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 100,
-        "resolvedValues": 100
+        "datableValues": 109,
+        "resolvedValues": 109
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1814,
+        "rules_version": "1.1.0",
+        "total": 2066,
         "by_severity": {
-          "INFO": 1738,
-          "WARNING": 76
+          "INFO": 1993,
+          "WARNING": 73
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 29,
-          "RESTATEMENT_CONFLICT": 43,
+          "CONCEPT_DISAGREEMENT": 27,
+          "RESTATEMENT_CONFLICT": 42,
           "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 1738
+          "UNKNOWN_CONCEPT": 1993
         }
       },
       "latestFiling": {
-        "accession": "0001919246-26-000113",
-        "filing_date": "2026-08-13",
+        "accession": "0001919246-26-000135",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 12
+        "periodic_filings": 13,
+        "acceptance_datetime": "2026-11-12T12:16:10.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "cfed4cbacfde5a53776a25aa3cd797d82e2860f1e800b45f1cbd664bec9d0e3f",
+      "sourceDigest": "d770549251aa5207064d76d4a8d1febbcdfb87f1e578f69315ffe1aca472d6cf",
       "issuerId": "iss_cik_0001919246"
     }
   ]

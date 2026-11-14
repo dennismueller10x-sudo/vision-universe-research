@@ -243,7 +243,7 @@
       "role": "Zwei KI-Depots als Rechenmodell vorwärts ab 06.11.2026: Bestand, Gewichte, Begründung je Titel, Aufnahmedatum und -kurs, Wertentwicklung ab Start. Kein echtes Geld, keine Empfehlung, keine Backtest-Zahlen.",
       "producer": "scripts/research/edge2/ki-export.cjs",
       "workflow": "pipeline-daily.yml (Teil ki-depots, vormals ki-depots-daily: Kursstand werktags) + Wochenlauf KI-Depots (Entscheidung monatlich)",
-      "schedule": "werktags 23:41 UTC",
+      "schedule": "werktags 01:41 UTC (nach dem Marktdaten-Refresh, der den Schluss des Vortags erst gegen 23:55 UTC veröffentlicht)",
       "freshness": { "kind": "hours", "warnAfter": 96, "staleAfter": 240 },
       "consumers": ["Frontend D3 (KI-Depots)"]
     },
@@ -262,6 +262,23 @@
       "schedule": "samstags 07:23 UTC; Umschichtung im ersten Lauf eines Monats",
       "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 504 },
       "consumers": ["Quant (/quant/musterdepots/)"]
+    },
+    {
+      "id": "backtestResearch",
+      "label": "Backtest-Forschung (Zusatzmethoden)",
+      "layer": "PRODUCT",
+      "group": "Quant",
+      "critical": false,
+      "artifact": "/quant/data/product/backtest-research-v1.json",
+      "timestamp": ["asOf"],
+      "records": "cases",
+      "role": "Feste Prüffälle (docs/quant/backtest-demos/cases.json) mit Monte Carlo, Walk-Forward, Out-of-Sample, Marktregime, Parameter-Sensitivität, Ereignis-Studie und Rebalancing aus dem Research-Runner. Forschung, nicht zertifiziert; nur interne Ansicht, keine öffentliche Rendite-Aussage.",
+      "producer": "scripts/quant/research/build-backtest-research.cjs",
+      "workflow": "pipeline-weekly.yml (Teil backtest-forschung)",
+      "schedule": "sonntags 05:41 UTC",
+      "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 504 },
+      "consumers": ["Quant Forschung (intern)"],
+      "activation": {"state": "ACTIVATING", "decision": "Steuerung 12.11.2026 (Owner-Frage Monte Carlo): interne Forschungsansicht, Etikett „Forschung, nicht zertifiziert“; erster Lauf pipeline-weekly Teil backtest-forschung nach dem Merge, danach Feld entfernen."}
     },
     {
       "id": "technical",

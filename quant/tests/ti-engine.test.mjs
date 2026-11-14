@@ -72,7 +72,14 @@ test("TI-I1 · Szenario-Geometrie: Invalidation < Einstieg < Ziel 1 < Ziel 2 (bu
 });
 
 test("TI-I2 · Keine Wahrscheinlichkeit ohne bestandene Kalibrierung; Confidence-Komponenten getrennt", () => {
-  const r = TI.analyze(NVDA);
+  /* Der letzte Bar ist ein Tag des Datenlaufs: hat NVDA an diesem Tag keine Kurssignatur (kein Setup), ist r.signature null und der
+     Test war vom Datenstand abhaengig (13.11.2026: "Cannot read properties of null (reading 'key')"). Geprueft wird deshalb an einem
+     festen, abgeschlossenen Bar: dem ersten ab Bar 1800 mit Signatur. Die Serie bis dorthin aendert sich mit neuen Tagen nicht. */
+  const P = TI.prepare(NVDA);
+  let t = 1800;
+  while (t < NVDA.length - 1 && !TI.analyzeAt(P, t).signature) t += 1;
+  const r = TI.analyzeAt(P, t);
+  assert.ok(r.signature && r.signature.key, "kein Bar mit Kurssignatur ab Bar 1800 gefunden");
   assert.equal(r.diagnostics.isProbability, false);
   assert.equal(r.confidence.calibrated, null);
   for (const k of ["overall", "structural", "agreement", "empirical", "calibrated"]) assert.ok(k in r.confidence);
@@ -80,10 +87,10 @@ test("TI-I2 · Keine Wahrscheinlichkeit ohne bestandene Kalibrierung; Confidence
   // Mit Evidence-Tabelle, aber ohne bestandene Kalibrierung: weiterhin keine Wahrscheinlichkeit
   const key = r.signature.key;
   const table = { setups: { [key]: { n: 500, t1HitRate: 0.42, lift: 0.03, liftCiLow: 0.01, calibratedProbability: 0.42 } } };
-  const r2 = TI.analyzeAt(TI.prepare(NVDA), NVDA.length - 1, { evidenceTable: table, calibration: { passed: false } });
+  const r2 = TI.analyzeAt(TI.prepare(NVDA), t, { evidenceTable: table, calibration: { passed: false } });
   assert.equal(r2.confidence.calibrated, null);
   assert.equal(r2.confidence.empirical.status, "OK");
-  const r3 = TI.analyzeAt(TI.prepare(NVDA), NVDA.length - 1, { evidenceTable: table, calibration: { passed: true, method: "x", brier: 0.2 } });
+  const r3 = TI.analyzeAt(TI.prepare(NVDA), t, { evidenceTable: table, calibration: { passed: true, method: "x", brier: 0.2 } });
   assert.equal(r3.confidence.calibrated.probability, 0.42);
 });
 

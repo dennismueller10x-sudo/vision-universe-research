@@ -284,27 +284,27 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 
 ## Die sieben Eigenschaften
 
-### Zahlen solide
+### Gewinn gedeckt & stabil
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `quality / qualityScore` |
 | Schlüssel | `quality` |
-| **User Label** | **Zahlen solide** |
+| **User Label** | **Gewinn gedeckt & stabil** |
 | Als Frage | Wie belastbar sind Bilanz und ausgewiesene Gewinne? |
 | Erklärung für Einsteiger | Wie solide das Unternehmen finanziert ist, ob seine Gewinne durch echten Zahlungsfluss gedeckt sind und wie stabil die Marge war. Wie viel es verdient, misst die Profitabilität. |
 | Professional Label | Quality (quantV2.factorEvidence.quality) |
-| Tooltip | Bilanz, Verschuldung, Stabilität der Erträge — im Vergleich zu anderen Unternehmen. |
+| Tooltip | Ob der Gewinn durch echten Geldzufluss gedeckt ist, wie gleichmäßig die Marge war und wie viel Eigenkapital da ist — nicht, wie viel verdient wird. Verglichen vor allem mit der eigenen Branche. |
 | Negativer Zustand | Bilanz oder Gewinnqualität sind schwächer als bei den meisten anderen. |
 | Nicht verfügbar | Zur Bilanz- und Ergebnisqualität liegen nicht genug geprüfte Geschäftszahlen vor. |
 
-### Wächst
+### Ist gewachsen
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `growth / growthScore` |
 | Schlüssel | `growth` |
-| **User Label** | **Wächst** |
+| **User Label** | **Ist gewachsen** |
 | Als Frage | Wächst das Geschäft? |
 | Erklärung für Einsteiger | Ob Umsatz, Gewinn und Cashflow zulegen — und ob das Tempo zunimmt oder nachlässt. |
 | Professional Label | Growth (quantV2.factorEvidence.growth) |
@@ -312,31 +312,31 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Das Geschäft wächst langsamer als bei den meisten anderen. |
 | Nicht verfügbar | Zum Wachstum fehlt die nötige Mehrjahresreihe. |
 
-### Kurs läuft
+### Kurs lief gut
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `momentum / momentumScore (quant-v2.1.0, Kursbasis)` |
 | Schlüssel | `momentum` |
-| **User Label** | **Kurs läuft** |
+| **User Label** | **Kurs lief gut** |
 | Als Frage | Läuft der Kurs besser als der Rest? |
 | Erklärung für Einsteiger | Wie sich der Kurs zuletzt entwickelt hat — auch im Vergleich zum Gesamtmarkt. Dividenden zählen hier nicht mit; die stehen bei der Anlegerrendite. |
 | Professional Label | Momentum (quantV2.factorEvidence.momentum) |
 | Tooltip | Kursentwicklung über mehrere Zeiträume und der Abstand zum Jahreshoch. Gemessen wird die Kursbewegung selbst, ohne Ausschüttungen. |
-| Negativer Zustand | Der Kurs läuft schwächer als bei den meisten anderen. |
+| Negativer Zustand | Der Kurs lief schwächer als bei den meisten anderen. |
 | Nicht verfügbar | Zur Kursstärke reicht die Kurshistorie nicht aus. |
 
-### Günstig
+### Preis im Branchenvergleich
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `value / valueScore` |
 | Schlüssel | `value` |
-| **User Label** | **Günstig** |
+| **User Label** | **Preis im Branchenvergleich** |
 | Als Frage | Ist der Preis im Verhältnis zum Geschäft hoch oder niedrig? |
 | Erklärung für Einsteiger | Was du für das bezahlst, was das Unternehmen tatsächlich verdient und umsetzt. |
 | Professional Label | Value (quantV2.factorEvidence.value) |
-| Tooltip | Gewinn, Cashflow und Umsatz im Verhältnis zum Börsenwert. Günstig heißt nicht gut. |
+| Tooltip | Gewinn, freies Geld und Eigenkapital je Euro Börsenwert, verglichen vor allem mit der eigenen Branche. Ein hoher Wert heißt nicht unterbewertet. |
 | Negativer Zustand | Gemessen am Geschäft ist dieser Titel teurer als die meisten anderen. |
 | Nicht verfügbar | Zur Bewertung fehlen Börsenwert oder Geschäftszahlen. |
 
@@ -368,17 +368,17 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 | Negativer Zustand | Die Erwartungen werden gesenkt. |
 | Nicht verfügbar | Es liegt keine lizenzierte, zeitpunktgenaue Schätzquelle vor. Ein Ersatz wäre erfunden und wird nicht gebildet. |
 
-### Ruhiger Kurs
+### Ruhig für die Branche
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `risk / riskScore` |
 | Schlüssel | `risk` |
-| **User Label** | **Ruhiger Kurs** |
+| **User Label** | **Ruhig für die Branche** |
 | Als Frage | Wie ruhig oder wie wild läuft dieser Titel? |
 | Erklärung für Einsteiger | Wie stark der Kurs schwankt und wie tief er in schlechten Phasen gefallen ist. |
 | Professional Label | Risk (quantV2.factorEvidence.risk) |
-| Tooltip | Ein hoher Wert bedeutet weniger Schwankung als bei anderen, nicht mehr. |
+| Tooltip | Wie stark der Kurs im letzten Jahr schwankte und fiel, verglichen vor allem mit Aktien derselben Branche. Ein Chipwert kann hier hoch stehen und trotzdem stärker schwanken als der Gesamtmarkt. |
 | Negativer Zustand | Dieser Titel schwankt stärker als die meisten anderen. |
 | Nicht verfügbar | Zum Risiko reicht die Kurshistorie nicht aus. |
 

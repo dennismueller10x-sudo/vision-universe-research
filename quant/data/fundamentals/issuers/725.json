@@ -1426,9 +1426,9 @@
       "cik": "0002044725",
       "name": "Evommune, Inc.",
       "sic": "2834",
-      "rawFacts": 1158,
-      "mappedFacts": 326,
-      "unmappedFacts": 821,
+      "rawFacts": 1453,
+      "mappedFacts": 418,
+      "unmappedFacts": 1028,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -1438,28 +1438,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 3,
-      "quarterlyPeriods": 10,
+      "quarterlyPeriods": 11,
       "firstPeriodEnd": "2023-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 2.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 2,
-          "quarterlyPeriods": 7,
-          "firstAvailablePeriod": "2024-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 1.0
-        },
-        "eps_diluted": {
           "annualPeriods": 2,
           "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
+        "eps_diluted": {
+          "annualPeriods": 2,
+          "quarterlyPeriods": 9,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
+        },
         "free_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0,
@@ -1479,21 +1479,21 @@
         },
         "net_income": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "operating_cash_flow": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "revenue": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -1507,14 +1507,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 5,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -1537,47 +1537,48 @@
         }
       },
       "quality": {
-        "HIGH": 65,
+        "HIGH": 72,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 67,
-        "resolvedValues": 67
+        "datableValues": 74,
+        "resolvedValues": 74
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 849,
+        "rules_version": "1.1.0",
+        "total": 1064,
         "by_severity": {
-          "INFO": 821,
+          "INFO": 1028,
           "ERROR": 1,
-          "WARNING": 27
+          "WARNING": 35
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 25,
+          "CONCEPT_DISAGREEMENT": 32,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 2,
-          "UNKNOWN_CONCEPT": 821
+          "RESTATEMENT_CONFLICT": 3,
+          "UNKNOWN_CONCEPT": 1028
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-337984",
-        "filing_date": "2026-08-06",
+        "accession": "0001193125-26-458385",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 4
+        "periodic_filings": 5,
+        "acceptance_datetime": "2026-11-12T21:10:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "95e83fefeb64f4be469862f7003231ff154a4cc54d3c85e110b37c106e2790b0",
+      "sourceDigest": "f21088e6afc1bc94a5c8b373fe4ef243319ad44e6144272dba2251c2413e6a97",
       "issuerId": "iss_cik_0002044725"
     },
     {

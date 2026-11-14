@@ -32,6 +32,11 @@ await mkdir(out,{recursive:true});
 const factorEvidence=require(resolve(root,'quant/engines/factor-evidence.js'));
 if(factorEvidence.FACTOR_ORDER.length!==7)throw Error('der Faktorkanon hat nicht sieben Faktoren');
 const profiles=JSON.parse(await readFile(resolve(root,'quant/methodology/strategy-profiles-v1.json'),'utf8')).profiles;
+/* Ein Faktor ohne einen Wert im Produktuniversum (Abdeckung 0 im Screening, bandSemantics.universe) ruht und mit ihm der Anlagestil, der ihn
+   braucht (Owner-Entscheidung 13.11.2026, heute Analysten). Die Erwartung der QA folgt denselben Daten wie die Oberflaeche. */
+const GESCHLOSSEN=Object.entries(JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/factor-evidence-v1/screening.json.gz'))).toString('utf8')).bandSemantics?.universe||{}).filter(([,n])=>n===0).map(([k])=>k);
+const STYLE_NEEDS={'earnings-revision-leader':['revisions']};
+const sichtbar=profiles.filter(p=>!(STYLE_NEEDS[p.profileId]||[]).some(f=>GESCHLOSSEN.includes(f)));
 const universeIndex=JSON.parse(gunzipSync(await readFile(resolve(root,'quant/data/product/universe-list-v1.json.gz'))).toString('utf8'));
 const nvdaName=(universeIndex.entries||[]).find(e=>e.s==='NVDA')?.n;
 if(!nvdaName)throw Error('das Verzeichnis nennt keinen Namen fuer NVDA');
@@ -82,7 +87,7 @@ const ROUTES=[
  ['screener-setups','#/screener?frage=setups'],
  ['screener-profi','#/screener/profi','screenerPro'],
  ['strategien','#/stile'],
- ...profiles.map(p=>['strategie-'+p.profileId,'#/stile/'+p.profileId]),
+ ...sichtbar.map(p=>['strategie-'+p.profileId,'#/stile/'+p.profileId]),
  ['aktien','#/aktien'],
  ['aktie-nvda','#/aktie/NVDA','stock'],
  ['aktie-jpm','#/aktie/JPM'],
@@ -113,7 +118,10 @@ async function bereit(page,view){
  await page.waitForFunction(()=>{const c=document.querySelector('section.qc-chart');return !c||!!c.dataset.range||!/Chart wird geladen/.test(c.textContent);},null,{timeout:10000}).catch(()=>{});
  await page.waitForTimeout(150);
 }
-async function frisch(page,hash,view){await page.goto('about:blank');await page.goto(hash.startsWith('/')?origin+hash:Q+hash);await bereit(page,view);}
+/* Mauszeiger vor jedem Aufruf in die Ecke: Quant laedt beim Ueberfahren eines Aktienlinks die Aktie vorab (app.js intent, gewollt).
+   Ein Zeiger, der von der vorigen Seite liegen bleibt, erzeugte bei 1440 px im Profi-Screener einen Kurshistorien-Abruf
+   (Befund 11.11. und 13.11., ref_KNSL) - gemessen werden soll das Laden der Seite, nicht eine simulierte Nutzerabsicht. */
+async function frisch(page,hash,view){await page.mouse.move(0,0).catch(()=>{});await page.goto('about:blank');await page.goto(hash.startsWith('/')?origin+hash:Q+hash);await bereit(page,view);}
 /* ALLE AUFKLAPPER OEFFNEN - UND ZWAR WIRKLICH ALLE. Ein geoeffneter
    Aufklapper legt verschachtelte nach; deshalb nach jedem Oeffnen neu
    suchen, mit einer Schranke gegen eine Endlosschleife. */
@@ -199,7 +207,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view==='home'&&v3){
    /* Konzept Quant „Ein Profil je Aktie“ (QX01, docs/design/quant-2026-11): ein Satz zum Profil, die Suche, „Heute bei Quant“
       mit Weg zu allen Meldungen, Anlagestile, Vertrauen; Stichtag oder ehrlicher Rueckfall; Fusszeile mit Absage. */
-   if(!(await page.locator('.qv3-intro .vu-lead').innerText()).includes('Profil aus sieben Eigenschaften'))befund(view,width,'Home sagt nicht, was Quant misst');
+   if(!/Profil aus (sieben|sechs) Eigenschaften/.test(await page.locator('.qv3-intro .vu-lead').innerText()))befund(view,width,'Home sagt nicht, was Quant misst');
    if(!/früher/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Home verliert den historischen Marktvergleich');
    await page.locator('button.qv3-search').waitFor();
    await page.waitForFunction(()=>/Stand \d{2}\.\d{2}\.\d{4}|Gerade keine Meldungen abrufbar/.test(document.querySelector('#qx-main').innerText),null,{timeout:30000}).catch(()=>befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall'));
@@ -256,7 +264,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    await page.locator('#qx-main button.vu-chip[data-question="momentum"]').click();
    await page.waitForFunction(()=>location.hash==='#/screener?frage=momentum'&&!document.querySelector('#qx-main .qx-loading')&&document.querySelector('#qx-main a.qk-pr'),null,{timeout:30000});
    if(await page.locator('#qx-main button.vu-chip[data-question="momentum"]').getAttribute('aria-pressed')!=='true')befund(view,width,'die gewaehlte Frage ist nicht markiert');
-   if(!/Kurs läuft/.test(await page.locator('.qx-sentence').innerText()))befund(view,width,'der Satz liest die Frage nicht vor');
+   if(!/Kurs lief/.test(await page.locator('.qx-sentence').innerText()))befund(view,width,'der Satz liest die Frage nicht vor');
    const zeilen=page.locator('#qx-main a.qk-pr');
    if(!await zeilen.count())befund(view,width,'der einfache Einstieg zeigt keine Treffer');
    const ohneWert=(await page.locator('#qx-main a.qk-pr .qk-sp b').allInnerTexts()).filter(t=>!/\d/.test(t));
@@ -340,14 +348,14 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* Redesign 2027 (Q03): Karten ohne Bild (Mockup), dieselben Zusagen: jeder Ansatz, seine heutigen Treffer, keine Trefferquote. */
    /* Konzept Quant 2026-11 (QX04, Entscheidung 4): ein Stil ohne Daten steht als Fussnote, nicht als Karte. */
    const karten=await page.locator('#qx-main a.qk-stc, #qx-main p[data-profile]').count();
-   if(karten!==profiles.length)befund(view,width,'der Katalog der Anlagestile zeigt '+karten+' von '+profiles.length+' Ansaetzen');
+   if(karten!==sichtbar.length)befund(view,width,'der Katalog der Anlagestile zeigt '+karten+' von '+sichtbar.length+' Ansaetzen');
    const katalog=await page.locator('#qx-main').innerText();
    if(!/Aktien erfüllen heute|erfüllen heute alle|\d[\d.]*\s+Aktien heute/.test(katalog))befund(view,width,'kein Ansatz nennt seine heutigen Treffer');
    if(!/keine (Erfolgs- oder )?Trefferquote/i.test(katalog))befund(view,width,'die Absage an eine Trefferquote fehlt');
   }
   if(view==='strategien'&&!v3){
    const karten=await page.locator('#qx-main a.qx-strat').count();
-   if(karten!==profiles.length)befund(view,width,'der Strategie-Katalog zeigt '+karten+' von '+profiles.length+' Ansaetzen');
+   if(karten!==sichtbar.length)befund(view,width,'der Strategie-Katalog zeigt '+karten+' von '+sichtbar.length+' Ansaetzen');
    /* Bildwelt der Anlagestile: steht seit den Paketen je Ansicht (QUANT_PACKS) in pages.js, nicht mehr auf der Aktienseite. */
    const bilder=await page.locator('#qx-main a.qx-strat img.v2-collection-image').count();
    if(bilder!==karten)befund(view,width,'Strategie-Karten ohne Bild: '+bilder+' von '+karten);
@@ -365,12 +373,15 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view==='aktie-nvda'){
    /* Redesign 2027 (Q07): die bisherigen Inhalte stehen vollstaendig unter den Ausklappern von Schritt 5 und 6. */
    await page.evaluate(()=>document.querySelectorAll('#qx-main details.qv3-more').forEach(d=>{d.open=true;}));
-   /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES PROFILS (Konzept Quant 2026-11: Verdient gut, Wächst, Zahlen solide,
-      Kurs läuft, Günstig, Ruhiger Kurs, Analysten) - dieselben sieben wie in der Engine. Eine Gesamtnote gibt es bewusst nicht. */
+   /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES PROFILS (Konzept Quant 2026-11, Etiketten 13.11.2026: Verdient gut, Ist gewachsen, Gewinn gedeckt & stabil,
+      Kurs lief gut, Preis im Branchenvergleich, Ruhig für die Branche, Analysten) - dieselben sieben wie in der Engine. Eine Gesamtnote gibt es bewusst nicht. */
    const ids=await page.locator('details.qx-factor[data-factor]').evaluateAll(ns=>ns.map(n=>n.dataset.factor));
    const PROFIL=['profitability','growth','quality','momentum','value','risk','revisions'];
    if(PROFIL.slice().sort().join('|')!==factorEvidence.FACTOR_ORDER.slice().sort().join('|'))befund(view,width,'Profil und Engine kennen verschiedene Eigenschaften');
-   if(ids.join('|')!==PROFIL.join('|'))befund(view,width,'factor order drifted: '+ids.join('|'));
+   /* Ein Faktor ohne einen Wert im Produktuniversum (Abdeckung 0, VUFactorCoverage) ruht und steht nicht in der Liste (13.11.2026). */
+   const ruht=await page.evaluate(()=>Object.entries(globalThis.VUFactorCoverage||{}).filter(([,n])=>n===0).map(([k])=>k));
+   const ERWARTET=PROFIL.filter(k=>!ruht.includes(k));
+   if(ids.join('|')!==ERWARTET.join('|'))befund(view,width,'factor order drifted: '+ids.join('|')+' (erwartet '+ERWARTET.join('|')+')');
    await page.getByText(/Eine Gesamtnote gibt es bewusst nicht/).first().waitFor();
    /* Quant Daily Usefulness: Pro/Contra hat einen eigenen Abschnitt (#dafuer). */
    const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
@@ -438,7 +449,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    /* EIN CHART: elf Zeitraeume, Max und zurueck. */
    if(await page.locator('section.qc-chart').count()!==1)befund(view,width,'nicht genau ein Chart');
    if(await page.locator('.qx-quote').count()!==1)befund(view,width,'nicht genau ein Kurs im Kopf');
-   await page.locator('section.qc-chart').getByRole('button',{name:'MAX',exact:true}).click();
+   await page.locator('section.qc-chart').getByRole('button',{name:'Max',exact:true}).click();
    await page.waitForFunction(()=>document.querySelector('section.qc-chart').dataset.range==='MAX');
    if(!await page.locator('section.qc-chart .qc-plot svg').count())befund(view,width,'MAX chart missing');
    await page.locator('section.qc-chart').getByRole('button',{name:'1J',exact:true}).click();
@@ -496,7 +507,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   }
   if(view==='aktie-jpm'){
    /* A bank keeps its industry template instead of inventing factors. */
-   if(await page.locator('details.qx-factor').count()!==7)befund(view,width,'factor DNA incomplete for JPM');
+   if(await page.locator('details.qx-factor').count()!==factorEvidence.FACTOR_ORDER.length-GESCHLOSSEN.filter(k=>factorEvidence.FACTOR_ORDER.includes(k)).length)befund(view,width,'factor DNA incomplete for JPM');
    await alleAufklappen(page);
    if(!/Branchenvorlage/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Branchenvorlage ungenannt');
   }
@@ -658,7 +669,7 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
    /* Redesign 2027 (Q01): kurze Frage als H1, Nutzen in einem Satz. */
    await page.locator('#qx-main h1').filter({hasText:'Was hat sich heute verändert?'}).waitFor();
    /* Konzept Quant 2026-11 (QX01): ein Satz zum Profil. */
-   await page.locator('#qx-main .qv3-intro .vu-lead').filter({hasText:'Profil aus sieben Eigenschaften'}).waitFor();
+   await page.locator('#qx-main .qv3-intro .vu-lead').filter({hasText:/Profil aus (sieben|sechs) Eigenschaften/}).waitFor();
   } else {
   await page.locator('#qx-main h1').filter({hasText:'Jeden Tag sehen, was sich verändert.'}).waitFor();
   await page.locator('#qx-main .q-hero-lead').filter({hasText:'wie oft das früher besser lief als der Markt'}).waitFor();

@@ -165,9 +165,9 @@
       "cik": "0001444192",
       "name": "Grace Therapeutics, Inc.",
       "sic": "2834",
-      "rawFacts": 5834,
-      "mappedFacts": 2179,
-      "unmappedFacts": 3870,
+      "rawFacts": 6005,
+      "mappedFacts": 2260,
+      "unmappedFacts": 3982,
       "calendarYears": 11,
       "industry": null,
       "industryMetrics": {},
@@ -177,9 +177,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 12,
-      "quarterlyPeriods": 35,
+      "quarterlyPeriods": 36,
       "firstPeriodEnd": "2015-02-28",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 11.08,
       "metrics": {
         "capital_expenditures": {
@@ -191,7 +191,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2022-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 4.0
@@ -218,14 +218,14 @@
         },
         "net_income": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2016-02-29",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 10.08
         },
         "operating_cash_flow": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2016-02-29",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 10.08
@@ -246,14 +246,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 35,
+          "quarterlyPeriods": 36,
           "firstAvailablePeriod": "2015-02-28",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 11.08
         },
         "total_assets": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2017-02-28",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 9.08
@@ -276,45 +276,46 @@
         }
       },
       "quality": {
-        "HIGH": 209
+        "HIGH": 214
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 209,
-        "resolvedValues": 209
+        "datableValues": 214,
+        "resolvedValues": 214
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4021,
+        "rules_version": "1.1.0",
+        "total": 4129,
         "by_severity": {
-          "INFO": 3870,
-          "WARNING": 151
+          "INFO": 3982,
+          "WARNING": 147
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 53,
-          "RESTATEMENT_CONFLICT": 64,
+          "CONCEPT_DISAGREEMENT": 50,
+          "RESTATEMENT_CONFLICT": 63,
           "UNEXPECTED_DURATION": 34,
-          "UNKNOWN_CONCEPT": 3870
+          "UNKNOWN_CONCEPT": 3982
         }
       },
       "latestFiling": {
-        "accession": "0001140361-26-032632",
-        "filing_date": "2026-08-13",
+        "accession": "0001140361-26-043299",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 36
+        "periodic_filings": 37,
+        "acceptance_datetime": "2026-11-12T12:32:06.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "3b9ee4b3f10114b80b470f6e05bc8204226fbfce6705e8919d3e4049ac89363f",
+      "sourceDigest": "7181a42adbe98ce74e2b4cef05222148bcf663e5cc5a67042c45bfda27c8128e",
       "issuerId": "iss_cik_0001444192"
     },
     {

@@ -575,9 +575,9 @@
       "cik": "0001841387",
       "name": "Candel Therapeutics, Inc.",
       "sic": "2836",
-      "rawFacts": 5058,
-      "mappedFacts": 1599,
-      "unmappedFacts": 3458,
+      "rawFacts": 5347,
+      "mappedFacts": 1683,
+      "unmappedFacts": 3702,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -587,28 +587,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 27,
+      "quarterlyPeriods": 28,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "free_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0,
@@ -628,14 +628,14 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -656,14 +656,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -686,46 +686,48 @@
         }
       },
       "quality": {
-        "HIGH": 224
+        "HIGH": 229,
+        "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 224,
-        "resolvedValues": 224
+        "datableValues": 230,
+        "resolvedValues": 230
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3517,
+        "rules_version": "1.1.0",
+        "total": 3762,
         "by_severity": {
-          "INFO": 3458,
+          "INFO": 3702,
           "ERROR": 1,
-          "WARNING": 58
+          "WARNING": 59
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 53,
+          "CONCEPT_DISAGREEMENT": 54,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 5,
-          "UNKNOWN_CONCEPT": 3458
+          "UNKNOWN_CONCEPT": 3702
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-347980",
-        "filing_date": "2026-08-13",
+        "accession": "0001193125-26-458380",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 23
+        "periodic_filings": 24,
+        "acceptance_datetime": "2026-11-12T21:10:39.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "705b7e0b7a5d9b2cf581d62a932e8fe3b4fb004a9d3f3d61b893b06f1fcb5468",
+      "sourceDigest": "90fef8b7eb1d2224037d0d3eae38fae6df5c5d361c0d1393ef07068e063b918a",
       "issuerId": "iss_cik_0001841387"
     },
     {

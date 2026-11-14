@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "backtest-method-certification-1.0.0",
+  "status": "ACTIVE",
+  "effectiveFrom": "2026-11-13",
+  "decision": "Owner-Lesart 13.11.2026 (über Steuerung): Zertifiziert heißt methodisch geprüft.",
+  "definition": "Ein Backtest gilt als zertifiziert, wenn er nachvollziehbar rückwärts gerechnet ist (Research-Runner, Ergebnisvertrag v2, Ergebnis-Hash) und die für seine Art zulässigen Robustheitsprüfungen besteht (kinds.*.robustness: Monte Carlo, Walk-Forward, spätere Testfenster, Marktlage, Sensitivität). Kein hartes Gate des Prüfstands (Point-in-Time, Look-ahead) darf verletzt sein. Zertifiziert heißt nicht profitabel: ein zertifizierter Backtest darf schwache oder negative Ergebnisse zeigen. Jahre vorwärts gesammelter Daten sind keine Voraussetzung; Historie, Überlebende, Renditebasis und das Ergebnis der Regel werden offengelegt.",
+  "forwardEvidence": "Der bisherige Prüfstand quant/data/product/backtest-certification-v1.json (Vorwärts-Nachweis mit gesammelter Historie) bleibt unverändert und heißt in der Oberfläche „Vorwärts-Nachweis“. Er liefert hier nur die harten Gates und die Offenlegungen.",
+  "labels": {
+    "CERTIFIED": "Zertifiziert · methodisch geprüft",
+    "LIMITED": "Eingeschränkt geprüft",
+    "WITHHELD": "Zurückgehalten"
+  },
+  "statuses": {
+    "CERTIFIED": "Nachvollziehbar gerechnet, alle für die Art zulässigen Robustheitsprüfungen bestanden, kein hartes Gate verletzt.",
+    "LIMITED": "Gerechnet, aber mindestens eine zulässige Robustheitsprüfung fehlt oder ist methodisch nicht belegbar; der Grund steht am Kriterium.",
+    "WITHHELD": "Ein hartes Gate (Point-in-Time, Look-ahead) ist verletzt."
+  },
+  "kinds": {
+    "SAME_STOCK_REPLAY": { "robustness": ["MONTE_CARLO", "WALK_FORWARD", "OUT_OF_SAMPLE", "MARKET_REGIME", "PARAMETER_SENSITIVITY"] },
+    "PATTERN_EVIDENCE": { "robustness": ["WALK_FORWARD", "OUT_OF_SAMPLE", "MARKET_REGIME", "PARAMETER_SENSITIVITY"] },
+    "SIGNAL_BACKTEST": { "robustness": ["MONTE_CARLO", "WALK_FORWARD", "OUT_OF_SAMPLE", "MARKET_REGIME", "PARAMETER_SENSITIVITY"] },
+    "SETUP_BACKTEST": { "robustness": ["WALK_FORWARD", "OUT_OF_SAMPLE", "MARKET_REGIME"] },
+    "STRATEGY_BACKTEST": { "robustness": ["MONTE_CARLO", "MARKET_REGIME", "PARAMETER_SENSITIVITY"] },
+    "FACTOR_RANKING_BACKTEST": { "robustness": ["WALK_FORWARD", "OUT_OF_SAMPLE", "MARKET_REGIME"] }
+  }
+}

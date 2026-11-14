@@ -1,10 +1,10 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-11-12T00:46:43.000Z",
+ "generatedAt": "2026-11-14T00:46:02.000Z",
  "universe": 6309,
  "sample": 500,
  "sampling": "jeder 12. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
- "evidenceAsOf": "2026-11-11",
+ "evidenceAsOf": "2026-11-13",
  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
  "stations": [
   {
@@ -42,13 +42,13 @@
   {
    "id": "change",
    "label": "Was hat sich veraendert",
-   "answered": 479,
+   "answered": 472,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 21,
-   "share": 0.958,
+   "withheld": 28,
+   "share": 0.944,
    "reasons": {
-    "NO_COMPARABLE_OBSERVATION": 21
+    "NO_COMPARABLE_OBSERVATION": 28
    }
   },
   {
@@ -92,15 +92,15 @@
   {
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
-   "answered": 441,
-   "findings": 182,
+   "answered": 434,
+   "findings": 177,
    "findingReasons": {
-    "NO_PROFILE_FITS_WELL": 182
+    "NO_PROFILE_FITS_WELL": 177
    },
-   "withheld": 59,
-   "share": 0.882,
+   "withheld": 66,
+   "share": 0.868,
    "reasons": {
-    "NO_EVIDENCE": 41,
+    "NO_EVIDENCE": 48,
     "NOT_COVERED_BY_FACTOR_EVIDENCE": 15,
     "NOT_AN_EQUITY_LISTING": 3
    }
@@ -109,9 +109,9 @@
    "id": "assignmentChange",
    "label": "Hat sich die Zuordnung geaendert",
    "answered": 500,
-   "findings": 497,
+   "findings": 495,
    "findingReasons": {
-    "NO_ASSIGNMENT_CHANGE": 497
+    "NO_ASSIGNMENT_CHANGE": 495
    },
    "withheld": 0,
    "share": 1,
@@ -145,34 +145,35 @@
   "5": 3,
   "6": 36,
   "7": 8,
-  "8": 13,
-  "9": 2,
-  "10": 25,
-  "11": 409
+  "8": 17,
+  "9": 5,
+  "10": 21,
+  "11": 406
  },
  "shapes": {
-  "full": 434,
-  "reduced": 66,
+  "full": 427,
+  "reduced": 73,
   "minimal": 0,
-  "noticeBoxesBefore": 404,
-  "noticeBoxesAfter": 167,
+  "noticeBoxesBefore": 423,
+  "noticeBoxesAfter": 174,
   "worstPageNoticeBoxes": 4,
-  "dataPoorPages": 66,
-  "dataPoorNoticeBoxesBefore": 379,
-  "dataPoorNoticeBoxesAfter": 142,
+  "dataPoorPages": 73,
+  "dataPoorNoticeBoxesBefore": 402,
+  "dataPoorNoticeBoxesAfter": 153,
   "substantiveStationsPerTitle": {
    "3": 7,
-   "4": 17,
+   "4": 16,
    "5": 19,
-   "7": 21,
-   "8": 2,
-   "10": 25,
-   "11": 409
+   "6": 1,
+   "7": 25,
+   "8": 5,
+   "10": 21,
+   "11": 406
   },
   "causes": {
    "SHORT_HISTORY": 78,
    "NO_WEEKLY_SERIES": 27,
-   "NO_FIGURES": 59,
+   "NO_FIGURES": 66,
    "NOT_AN_EQUITY_LISTING": 3
   },
   "note": "FULL: hoechstens zwei Absagen, die volle Reise bleibt. REDUCED: verdichtete Auskunft, vorhandene Erkenntnisse zuerst, Absagen zu Ursachen gruppiert. MINIMAL: hoechstens eine gehaltvolle Station - eine eigene Aussage statt einer kurzen Reise."

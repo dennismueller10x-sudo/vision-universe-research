@@ -477,9 +477,9 @@
       "cik": "0002123969",
       "name": "RRE Ventures Acquisition Corp.",
       "sic": "6770",
-      "rawFacts": 76,
-      "mappedFacts": 17,
-      "unmappedFacts": 42,
+      "rawFacts": 128,
+      "mappedFacts": 29,
+      "unmappedFacts": 72,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -491,9 +491,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 2,
+      "quarterlyPeriods": 3,
       "firstPeriodEnd": "2026-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -532,7 +532,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -560,14 +560,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -590,43 +590,44 @@
         }
       },
       "quality": {
-        "HIGH": 5
+        "HIGH": 8
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 5,
-        "resolvedValues": 5
+        "datableValues": 8,
+        "resolvedValues": 8
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 54,
+        "rules_version": "1.1.0",
+        "total": 92,
         "by_severity": {
-          "INFO": 42,
-          "WARNING": 12
+          "INFO": 72,
+          "WARNING": 20
         },
         "by_code": {
-          "UNEXPECTED_DURATION": 12,
-          "UNKNOWN_CONCEPT": 42
+          "UNEXPECTED_DURATION": 20,
+          "UNKNOWN_CONCEPT": 72
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-089064",
-        "filing_date": "2026-08-13",
+        "accession": "0001213900-26-118895",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-12T21:01:29.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b747690602603ad4c6a0a1c4187446327b67f5e9a49bc84cc952caf3af0a6984",
+      "sourceDigest": "b83f4945573e0d3b987c3dd7993f6caed780afa58b4f163d091bb33e6715c95c",
       "issuerId": "iss_cik_0002123969"
     }
   ]

@@ -102,7 +102,7 @@
       case "meldungen": r.view = "radar"; break;
       case "radar": r.view = "renamed"; break;
       case "chartlagen": r.view = "chartlagen"; break;
-      case "forschung": r.view = "backtest"; r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
+      case "forschung": r.view = "backtest"; if (parts[1] === "fall" || parts[1] === "art" || parts[1] === "methode") { r.id = null; r.fall = {}; r.fall[parts[1]] = parts[2] ? String(parts[2]) : ""; if (parts[1] === "fall") r.fall.fall = String(parts[2] || "").toLowerCase(); } else r.id = parts[1] ? String(parts[1]).toUpperCase() : null; break;
       case "backtest": r.view = "renamed"; break;
       case "aktie":
         r.ticker = String(parts[1] || "").toUpperCase();
@@ -152,6 +152,21 @@
 
   var NAMES_VIEW = "/quant/data/product/universe-names-v1.json.gz";
   var api = global.VUProductServices.create({ loadJSON: S.loadJSON, displayPolicy: global.VUDisplayPolicy, queryEngine: global.VUQuery });
+  /* Anlagestile, die einen geschlossenen Faktor brauchen (heute: Analysten), stehen in keiner Liste, bis der Faktor Werte hat
+     (VUQuantViewModel.styleOpen, Abdeckung aus dem Screening). Nur die Anzeige: der Stilabgleich im Dienst rechnet unveraendert
+     mit allen Profilen (Owner-Entscheidung 13.11.2026). */
+  (function () {
+    var raw = api.getStrategyProfiles;
+    if (typeof raw !== "function") return;
+    api.getStrategyProfiles = function () {
+      return Promise.all([raw.apply(api, arguments), api.getFactorEvidenceScreening().catch(function () { return null; })]).then(function (r) {
+        var p = r[0], VM = global.VUQuantViewModel;
+        if (!p || p.state !== "AVAILABLE" || !p.contract || !Array.isArray(p.contract.profiles) || !VM || !VM.styleOpen) return p;
+        var keep = p.contract.profiles.filter(function (x) { return VM.styleOpen(x.profileId); });
+        return keep.length === p.contract.profiles.length ? p : Object.assign({}, p, { contract: Object.assign({}, p.contract, { profiles: keep }) });
+      });
+    };
+  })();
   var namesPromise = null, distPromise = null, wordsPromise = null, langPromise = null, hubPromise = null;
   /* Backtesting nur dort laden, wo es gebraucht wird (Startseite, Radar,
      Aktienseite, Backtesting) - nicht im gemeinsamen Buendel, damit der
@@ -428,7 +443,7 @@
       switch (r.view) {
         case "home": await global.QXPages.home(main, ctx); break;
         case "radar": await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]); await global.QXPages.radar(main, ctx, r.params); break;
-        case "backtest": await ctx.loadBacktest(); await global.QXBacktest.render(main, ctx, r.id); break;
+        case "backtest": await ctx.loadBacktest(); await global.QXBacktest.render(main, ctx, r.id, false, r.fall); break;
         case "screener": await ctx.loadNames(); await global.QXPages.screener(main, ctx, r.params, r.pro); break;
         case "strategien": await ctx.loadNames(); await global.QXPages.strategies(main, ctx, r.id); break;
         case "aktien": await global.QXPages.stocks(main, ctx); break;

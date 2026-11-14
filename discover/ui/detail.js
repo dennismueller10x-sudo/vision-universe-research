@@ -324,11 +324,28 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
    * Prozentzahlen auf einem Bildschirm, die dasselbe zu messen
    * behaupten.
    */
+  /* Letzter veroeffentlichter Tagesschluss vor `heute` - nur wenn er nicht aelter ist als ein langes Wochenende. */
+  function vortagSchlussAusTagesreihe(punkte, heute) {
+    if (!punkte || !punkte.length || !heute) return null;
+    var vor = null, tag = null;
+    for (var i = 0; i < punkte.length && punkte[i][0] < heute; i++) { vor = punkte[i][1]; tag = punkte[i][0]; }
+    if (!isNum(vor) || !(vor > 0) || !tag) return null;
+    return (Date.parse(heute) - Date.parse(tag)) / 86400000 <= 4 ? vor : null;
+  }
+
   function heroKurs(detail, state) {
     var live = state && state.intraday && state.intraday.live;
     var snap = vortagAusReihe(state && state.intraday && state.intraday.snapshot, state && state.dailyPoints);
     if (!live || !live.fresh || !isNum(live.price)) return { hat: false };
     var basis = snap && isNum(snap.previousClose) ? snap.previousClose : null;
+    /* Kein Snapshot der laufenden Sitzung (13.11.2026): dessen Vortagesschluss waere der falsche Bezug - es gilt der letzte
+       veroeffentlichte Tagesschluss vor heute aus der Tagesreihe. */
+    var res = state && state.intraday && state.intraday.resolution;
+    var heute = res && ((res.displaySession && res.displaySession.sessionDate) || res.localDate);
+    if (heute && (!snap || snap.sessionDate !== heute)) {
+      var vor = vortagSchlussAusTagesreihe(state && state.dailyPoints, heute);
+      basis = isNum(vor) ? vor : null;
+    }
     return {
       hat: true,
       preis: live.price,
@@ -1107,6 +1124,30 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     };
   }
 
+  /* DER EINE CHART (Owner 13.11.2026): US-Aktien zeichnen im Ueberblick mit demselben Baustein wie Quant und Technical
+     (assets/vu-chart.js, VUChart.render): gleiche Linie, Flaeche, Startlinie und Achse. Discover behaelt Kopf, Zeitraumleiste,
+     Beruehrung und die Quellenzeile; hier entstehen nur die Haken, die sie am Bild erwarten (__punkte, __basis, Klassen). */
+  function gemeinsamerChart(punkte, o) {
+    var VC = global.VUChart;
+    if (!VC || !VC.render) return null;
+    var svg = VC.render(punkte, { width: o.width, height: o.height, base: o.base, sessionEnd: o.sessionEnd, label: o.label, axis: o.axis });
+    if (!svg) return null;
+    var g = svg.__vuGeometry;
+    svg.__punkte = g.pts.map(function (q) { return { x: q.x, y: q.y, close: q.v, date: String(q.t).slice(0, 10), time: String(q.t).slice(11, 16) }; });
+    svg.__basis = { close: g.first, date: g.pts[0].t.slice(0, 10), time: g.pts[0].t.slice(11, 16), padTop: 14, padBottom: g.padBottom, padL: 2, padR: g.padR,
+                    previousClose: isNum(o.previousClose) ? o.previousClose : null };
+    svg.classList.add(o.intraday ? "dx-micro--intraday" : "dx-range-chart");
+    if (o.intraday && isNum(o.previousClose)) svg.setAttribute("data-v2-previous-close-scale", "true");
+    if (o.range) svg.setAttribute("data-range", o.range);
+    var basis = svg.querySelector(".vu-chart-base"); if (basis) basis.classList.add("dx-art-base");
+    /* Zeitmarken (unten) und Kursmarken (rechts) behalten die Klassen, an denen die QA sie erkennt. */
+    [].forEach.call(svg.querySelectorAll("text.vu-chart-axis"), function (t) {
+      var unten = Number(t.getAttribute("y")) > g.h - 12;
+      t.classList.add(o.intraday ? "dx-micro-axis" : (unten ? "dx-range-date" : "dx-range-axis"));
+    });
+    return svg;
+  }
+
   function zeichneVerbraucher(state, chartBox, paneHost, controls, redraw) {
     var SS = global.VUQuant && global.VUQuant.SeriesSampling, MC = D.MicroChart;
     S.clear(chartBox); S.clear(paneHost); S.clear(controls);
@@ -1194,7 +1235,8 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
     if (dollarKopf) mass.h = mobil ? 184 : 260;   /* Mockup ~170 px; die Browser-QA verlangt auf dem Telefon mindestens 180 px (Chart bleibt die Hauptfläche) */
-    var svgNode = MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol, compact: !!dollarKopf,
+    var svgNode = (dollarKopf && gemeinsamerChart(sel.points.map(function (q) { return [String(q[0]).slice(0, 10), q[1]]; }), { width: mass.w, height: mass.h, label: state.detail.symbol + " " + z.wort, range: z.id }))
+      || MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol, compact: !!dollarKopf,
                                                  range: z.id, label: z.wort, grain: woechentlich ? "weekly" : "daily",
                                                  segments: state.detail.region === 'EUROPE' ? state.europeSegments || undefined : undefined });
     if (svgNode && svgNode.getAttribute("data-scale") === "log") {
@@ -1345,6 +1387,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
           timezoneNote: "Uhrzeiten in New Yorker Zeit" }
       : p.label;
     var quellenText = quelle && quelle.sourceText ? quelle.sourceText : "5-Minuten-Kurse";
+    if (snap.fromStream) quellenText = "Live-Kurse im Minutentakt (Kursreferenz aus einem Teilmarkt)";
     var eingefroren = !!(quelle && quelle.isFrozen);
 
     var kopf = dollarKopf ? el("div", { class: "dx-chart-hero dx-chart-hero--c04", "data-range": "1D" }, [
@@ -1378,10 +1421,20 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        darueber in Euro steht - derselbe Chart mit zwei Waehrungen. Alle
        Punkte gehoeren zu einem Tag, es gilt also ein Kurs; er kommt
        trotzdem aus dem Vertrag und nicht aus einer Rechnung hier. */
-    var svgNode = MC.renderIntraday(snap, { width: mass.w, height: mass.h,
+    var tag = String(snap.sessionDate || "").slice(0, 10), iso = function (hm) { return tag + "T" + String(hm).slice(0, 5) + ":00"; };
+    var svgNode = (dollarKopf && tag && gemeinsamerChart((snap.points || []).filter(function (q) { return q && isNum(q[1]); }).map(function (q) { return [iso(q[0]), q[1]]; }),
+        { width: mass.w, height: mass.h, base: isNum(snap.previousClose) ? snap.previousClose : undefined, previousClose: snap.previousClose, intraday: true,
+          sessionEnd: (snap.sessionCloseLocal || snap.closeLocal) ? iso(snap.sessionCloseLocal || snap.closeLocal) : undefined, label: state.detail.symbol + " heute", range: "1D" }))
+      || MC.renderIntraday(snap, { width: mass.w, height: mass.h,
                                             axis: true, symbol: state.detail.symbol,
                                             label: p.label && p.label.label });
     if (!svgNode) {
+      /* Erster Live-Kurs des Tages (13.11.2026): Kopf, Kurs und Tagesveraenderung stehen schon; die Linie braucht zwei Punkte. */
+      if (snap.fromStream) {
+        chartBox.appendChild(C().emptyState("Der Verlauf beginnt gleich",
+          "Der erste Live-Kurs des Tages ist da (" + snap.fromStreamSince + " New York); die Linie erscheint mit dem nächsten Kurs."));
+        return;
+      }
       chartBox.appendChild(C().emptyState("Kein Tagesverlauf", "Der Snapshot dieses Titels ist unvollständig."));
       return;
     }
@@ -1411,7 +1464,11 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
       FINAL_SESSION: " · die Sitzung ist abgeschlossen; dieser Verlauf bleibt so stehen",
       STALE: ""
     };
-    var text = " · " + quellenText + " · Uhrzeiten New York" +
+    /* Verlauf aus dem Live-Strom (13.11.2026): bis der Tagesverlauf des Datenlaufs da ist, beginnt die Linie mit dem ersten Tick. */
+    var ausStrom = snap.fromStream
+      ? " · Verlauf ab " + snap.fromStreamSince + " aus dem Live-Strom; der frühere Tagesverlauf folgt mit dem nächsten Datenlauf"
+      : "";
+    var text = " · " + quellenText + ausStrom + " · Uhrzeiten New York" +
       (isNum(snap.previousClose) ? " · Startlinie: Vortagesschluss" : " · Startlinie: erster Kurs des Tages") +
       (quelle && quelle.state === "STALE"
         ? staleSatzAusZustand(quelle)
@@ -1712,7 +1769,12 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
      4.941 vergleichbare Snapshots, genau 3 Aenderungen (die Splits). */
   function vortagAusReihe(snap, punkte) {
     if (!snap || !snap.sessionDate || !punkte || !punkte.length) return snap;
-    if (punkte[punkte.length - 1][0] < snap.sessionDate) return snap;
+    var letzterTag = punkte[punkte.length - 1][0];
+    /* Verlauf aus dem Strom (13.11.2026): die Tagesreihe endet am Vortag - genau der Vortagesschluss, den die Startlinie braucht.
+       Nur wenn sie nicht mehr als ein langes Wochenende zurueckliegt. */
+    var vortagGenuegt = snap.fromStream && letzterTag < snap.sessionDate &&
+      (Date.parse(snap.sessionDate) - Date.parse(letzterTag)) / 86400000 <= 4;
+    if (letzterTag < snap.sessionDate && !vortagGenuegt) return snap;
     var vor = null;
     for (var i = 0; i < punkte.length && punkte[i][0] < snap.sessionDate; i++) vor = punkte[i][1];
     if (!isNum(vor) || !(vor > 0) || vor === snap.previousClose) return snap;

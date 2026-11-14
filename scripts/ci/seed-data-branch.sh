@@ -15,7 +15,7 @@
 #                                                          DUAL_WRITE-Datenarten sind in main aktuell und bleiben, wie sie sind)
 set -euo pipefail
 ONLY="${1:?Datenarten fehlen (id, id1,id2 oder alle)}"
-if [ "$ONLY" = "alle" ]; then ONLY="$(node -e 'process.stdout.write(require("./core/registry/data-branch.json").domains.filter((d) => d.phase === "BRANCH_ONLY").map((d) => d.id).join(","))')"; fi
+if [ "$ONLY" = "alle" ]; then ONLY="$(node -e 'process.stdout.write(require("./core/registry/data-branch.json").domains.filter((d) => d.phase === "BRANCH_ONLY" && !d.repositoryOnly).map((d) => d.id).join(","))')"; fi
 BRANCH="$(node -e 'process.stdout.write(require("./core/registry/data-branch.json").branch)')"
 D="$(mktemp -d)"
 trap 'rm -rf "$D"' EXIT

@@ -221,9 +221,11 @@ test("SC5 · Verdrahtung: eigene Stufe nach allen Pruefungen, entkoppelt, Zeitpl
   assert.doesNotMatch(job, /\n    concurrency:/);
   /* Nachtlauf bleibt gruen: jeder Schritt continue-on-error + Limit */
   const schritte = job.split("\n      - ").slice(1);
-  assert.equal(schritte.length, 3);
+  assert.equal(schritte.length, 4);
   for (const s of schritte) { assert.match(s, /continue-on-error: true/); assert.match(s, /timeout-minutes: \d+/); }
   assert.match(job, /node scripts\/ci\/supertrader-chain\.mjs dispatch/);
+  /* SPY liegt seit dem Umzug (marketPulse, BRANCH_ONLY) nur im Datenzweig: vor der Eingabepruefung einspielen (#1765) */
+  assert.ok(job.indexOf("seed-data-branch.sh marketPulse") > 0 && job.indexOf("seed-data-branch.sh marketPulse") < job.indexOf("supertrader-chain.mjs dispatch"));
   assert.doesNotMatch(job, /TIINGO|MARKETSTACK/i);
   assert.doesNotMatch(job, /\$\{\{\s*inputs\./);
   /* der Alarm sieht nur den ANSTOSS */
@@ -232,6 +234,11 @@ test("SC5 · Verdrahtung: eigene Stufe nach allen Pruefungen, entkoppelt, Zeitpl
   /* Supertrader-Workflow unveraendert: Zeitplan-Rueckfall + manueller Start, Concurrency, Integritaetstests vor dem Commit */
   const st = lies(".github/workflows/supertrader-signals.yml");
   assert.ok(takteVon("supertrader-signals.yml").includes("17 6 * * 2-6"), "Zeitplan-Rueckfall (Register)");
+  /* Frist (13.11.2026, Strang AK): ein zweiter, fruehere Termin rechnet nach, wenn der Anstoss des Nachtlaufs abgelehnt hat
+     (#1765). Der Lauf ist idempotent und seedet den Datenzweig selbst (alle Datenarten). Er liegt nach dem Nachtlauf-Ende
+     (~00:30 UTC) und vor der Warnschwelle SUPERTRADER_LATE (4 h). */
+  assert.ok(takteVon("supertrader-signals.yml").includes("47 1 * * 2-6"), "Frist-Termin (Register)");
+  assert.match(st, /seed-data-branch\.sh alle/, "Der Rueckfall-/Fristlauf spielt SPY selbst aus dem Datenzweig ein");
   assert.match(st, /workflow_dispatch:/);
   assert.match(st, /group: supertrader-signals\s*\n\s+cancel-in-progress: false/);
   assert.ok(st.indexOf('node --test "scripts/supertrader/tests/*.test.mjs"') < st.indexOf("commit-and-push.sh"), "Tests vor dem Commit");

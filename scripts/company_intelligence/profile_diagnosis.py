@@ -6,7 +6,7 @@ Katalog-Laufs (Artefakt), je Emittent eine Klasse und zwei kurze Satzanfaenge de
 """
 import re
 
-from company_intelligence.profiles import blocks, business_blocks, sentences, issuer_sentence
+from company_intelligence.profiles import blocks, business_blocks, sentences, issuer_sentence, extract, experiment
 
 ITEM1 = re.compile(r'^(?:part\s+i\s*)?items?\s*1\s*(?:[.:|—–-]|and|&|\s)*(?:and\s*2[.:| –-]*)?business', re.I)
 ITEM1_SPLIT = re.compile(r'^item\s*1[. :–-]*$', re.I)
@@ -18,6 +18,22 @@ SNIPPET = 200
 
 def _snip(text):
     return ' '.join(str(text).split())[:SNIPPET]
+
+
+def _raw_excerpt(body, blocks, first):
+    """Roh-HTML (oeffentliche Filing) um den Beginn des Abschnitts, zur Klaerung des Block-Layouts: erste Fundstelle des dritten
+    Blocks nach der Ueberschrift, deren Folgetext den fuenften Block enthaelt; Tags erhalten, Leerraum gekuerzt, hoechstens 1100 Zeichen."""
+    try:
+        raw = body.decode('utf-8', 'replace')
+        key, nxt = blocks[first + 2], blocks[first + 4]
+        pos = raw.find(key)
+        while pos >= 0:
+            if nxt in raw[pos:pos + 1500]:
+                return ' '.join(raw[max(0, pos - 150):pos + 950].split())[:1100]
+            pos = raw.find(key, pos + 1)
+    except Exception:
+        pass
+    return None
 
 
 def diagnose(company, body, source):
@@ -42,6 +58,7 @@ def diagnose(company, body, source):
         # Blockauszug fuer die Ursachenklaerung (Layout der Ueberschrift, Zellen, Abschnittsende): Block-Nr. und Anfang je Block.
         out['afterHeading'] = [[i, _snip(doc.blocks[i])[:110]] for i in range(first, min(first + 14, len(doc.blocks)))]
         out['headingBlocks'] = sorted(set(heads))[:6]
+        out['rawExcerpt'] = _raw_excerpt(body, doc.blocks, first)
         out['itemOneLike'] = [[i, _snip(doc.blocks[i])[:90]] for i, tx in enumerate(doc.blocks) if re.search(r'\bitem\s*1\b', tx, re.I) and len(tx) < 160][:8]
         return out
     allow_first = len(doc.registrants) <= 1
@@ -71,3 +88,27 @@ def diagnose(company, body, source):
         out['sample'] = [_snip(s) for s in subject_sents[:2]]
     out['subjectSentences'] = len(subject_sents)
     return out
+
+
+def _summary(result):
+    if result.get('state') == 'AVAILABLE':
+        return {'state': 'AVAILABLE', 'description': result.get('description')}
+    return {'state': result.get('state'), 'reason': result.get('reason')}
+
+
+def compare(company, body, source, now):
+    """Vorher (heutiger Parser 1.0.23) / Nachher (plus dritter Durchlauf fuer inline-block-Fetzen) auf demselben 10-K. Aendert nichts am Katalog.
+    verdict: SAME | NEWLY_AVAILABLE | TEXT_CHANGED (verfuegbarer Titel mit anderem Text, nicht erlaubt) | NEWLY_UNAVAILABLE (nicht erlaubt)."""
+    with experiment(True, inline=False):
+        before = _summary(extract(company, body, source, now))
+    with experiment(True, inline=True):
+        after = _summary(extract(company, body, source, now))
+    if before == after:
+        verdict = 'SAME'
+    elif before['state'] != 'AVAILABLE' and after['state'] == 'AVAILABLE':
+        verdict = 'NEWLY_AVAILABLE'
+    elif before['state'] == 'AVAILABLE' and after['state'] == 'AVAILABLE':
+        verdict = 'TEXT_CHANGED'
+    else:
+        verdict = 'NEWLY_UNAVAILABLE'
+    return {'verdict': verdict, 'before': before, 'after': after}

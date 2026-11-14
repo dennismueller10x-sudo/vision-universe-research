@@ -314,9 +314,9 @@
       "cik": "0002088626",
       "name": "Peace Acquisition Corp.",
       "sic": "6770",
-      "rawFacts": 181,
-      "mappedFacts": 66,
-      "unmappedFacts": 117,
+      "rawFacts": 301,
+      "mappedFacts": 108,
+      "unmappedFacts": 201,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -329,9 +329,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 4,
+      "quarterlyPeriods": 6,
       "firstPeriodEnd": "2025-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -370,14 +370,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -398,14 +398,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -428,44 +428,46 @@
         }
       },
       "quality": {
-        "HIGH": 14
+        "HIGH": 20,
+        "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 14,
-        "resolvedValues": 14
+        "datableValues": 21,
+        "resolvedValues": 21
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 123,
+        "rules_version": "1.1.0",
+        "total": 211,
         "by_severity": {
-          "INFO": 117,
-          "WARNING": 6
+          "INFO": 201,
+          "WARNING": 10
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 2,
-          "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 117
+          "CONCEPT_DISAGREEMENT": 5,
+          "UNEXPECTED_DURATION": 5,
+          "UNKNOWN_CONCEPT": 201
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-038287",
-        "filing_date": "2026-08-14",
+        "accession": "0001493152-26-051053",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-10T23:54:30.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "041cbed221a8c780040a1343235d12da33e751970ea4eb52eef44bc1ad5f1fed",
+      "sourceDigest": "129947637499d8b740d97e53b293bc217c7afd483aef22ee5330e8f726434507",
       "issuerId": "iss_cik_0002088626"
     }
   ]

@@ -21,7 +21,7 @@
       aber abgeschaltet. Nie ein aus Tagesschluessen gebauter Tagesverlauf.
 
    3. WAEHRUNG. Anzeige ueber die vorhandene FX-Schicht (quant/engines/fx,
-      VUFx.layer; Praeferenz vu-currency-preference-v1, Vorgabe EUR). Hier
+      VUFx.layer; Praeferenz vu-currency-preference-v1, Vorgabe seit 13.11.2026 USD, siehe DEFAULT_DISPLAY). Hier
       wird NICHT gerechnet, nur dieselbe Regel fuer alle aufgerufen:
         Reihe     jeder Punkt mit dem EZB-Kurs seines Tages (layer.series)
         1T        alle Punkte und der Vortagesschluss mit dem Kurs der Sitzung
@@ -40,7 +40,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
   "use strict";
 
-  var VERSION = "chart-standard-1.2.0";
+  var VERSION = "chart-standard-1.3.0";
 
   /* Kanonische Kennungen und Fenster (Kalendertage). */
   var PRIMARY = ["1T", "1W", "1M", "1J", "5J", "MAX"];
@@ -52,6 +52,10 @@
   /* Ohne Tagesverlauf: der laengste abgedeckte Zeitraum bis 1J. */
   var FALLBACK = ["1J", "6M", "3M", "1M", "1W", "MAX"];
   var RANGE_KEY = "vu-chart-range-v1";
+  /* EINE zentrale Einstellung fuer alle Welten (Achse UND Kopf): die Vorgabe der Anzeigewaehrung. Steuerung 13.11.2026 nach
+     #1758/#1645: Dollar in Kopf und Achse, EUR nur als Zusatz; ersetzt die EUR-Vorgabe vom 23.10.2026. Die Wahl des
+     Nutzers (Umschalter, vu-currency-preference-v1) geht vor. Wer die Vorgabe aendert, aendert sie hier und nur hier. */
+  var DEFAULT_DISPLAY = "USD";
 
   function canonical(id) {
     var s = String(id || "");
@@ -240,7 +244,8 @@
       });
     })).then(function () {
       var B = g.VUFx && g.VUFx.Bootstrap, pack = g.VUFx && g.VUFx.PACK;
-      var opts = pack ? { license: pack.license || undefined, preload: pack.series || [] } : undefined;
+      var opts = pack ? { license: pack.license || undefined, preload: pack.series || [] } : {};
+      opts.defaultCurrency = DEFAULT_DISPLAY;
       return B ? B.boot(opts).catch(function () { return null; }) : null;
     }).then(function () { return layerOf(null); });
     return displayReady;
@@ -286,7 +291,7 @@
   }
 
   return {
-    VERSION: VERSION, PRIMARY: PRIMARY, EXTRA: EXTRA, DEFAULT_RANGE: DEFAULT_RANGE, DAYS: DAYS, RANGE_KEY: RANGE_KEY,
+    VERSION: VERSION, DEFAULT_DISPLAY: DEFAULT_DISPLAY, PRIMARY: PRIMARY, EXTRA: EXTRA, DEFAULT_RANGE: DEFAULT_RANGE, DAYS: DAYS, RANGE_KEY: RANGE_KEY,
     canonical: canonical, order: order, startRange: startRange, rememberedRange: rememberedRange, rememberRange: rememberRange,
     intradayEntry: intradayEntry, covers: covers, slice: slice,
     displayCurrency: displayCurrency, displaySeries: displaySeries, displaySnapshot: displaySnapshot,

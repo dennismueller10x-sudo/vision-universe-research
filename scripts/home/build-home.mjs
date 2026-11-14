@@ -6,7 +6,9 @@
 // und bildet keine eigenen Urteile: sie zeigt die Einstufung, die das jeweilige Produkt veröffentlicht.
 // Der Pro-Preis steht nie im Code (Preisseite /preise/ liest GET /v1/plans).
 //
-// Aufruf: node scripts/home/build-home.mjs [--out=pfad/index.html]
+// Aufruf: node scripts/home/build-home.mjs [--out=pfad/index.html] [--data=verzeichnis]
+//   --data: Wurzel der DATEN (quant/data/..., discover/data/..., discover/logos/index.json); Standard ist das Repository.
+//   Der Test gegen die Generatorlogik nutzt damit eingefrorene Daten (core/tests/fixtures/home-data), nicht den Tagesstand.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { gunzipSync } from 'node:zlib';
 import { runInNewContext } from 'node:vm';
@@ -18,10 +20,13 @@ const VUUI = createRequire(import.meta.url)('../../assets/vu-ui.js');
 
 const root = new URL('../../', import.meta.url);
 const outArg = process.argv.find(a => a.startsWith('--out='))?.slice(6);
+const dataArg = process.argv.find(a => a.startsWith('--data='))?.slice(7);
+const dataRoot = dataArg ? new URL(dataArg.replace(/\/?$/, '/'), 'file://' + process.cwd() + '/') : root;
 const read = p => readFileSync(new URL(p, root), 'utf8');
 const json = p => JSON.parse(read(p));
-const gz = p => JSON.parse(gunzipSync(readFileSync(new URL(p, root))));
-const has = p => existsSync(new URL(p, root));
+const gz = p => JSON.parse(gunzipSync(readFileSync(new URL(p, dataRoot))));
+const has = p => existsSync(new URL(p, dataRoot));
+const dataJson = p => JSON.parse(readFileSync(new URL(p, dataRoot), 'utf8'));
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 const de = (n, d = 1) => Number(n).toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
@@ -43,7 +48,7 @@ const factorShard = t => {
   factorCache[k] ??= has(p) ? gz(p) : { securities: {}, bandSemantics: null };
   return factorCache[k];
 };
-const stock = t => json(`discover/data/stocks/US_REAL/${t}.json`);
+const stock = t => dataJson(`discover/data/stocks/US_REAL/${t}.json`);
 
 /* C07 Kursbewegung und C08 Urteil aus assets/vu-ui.js (Pille mit ▲/▼/◆/○ im Markup, keine eigenen Klassen). */
 const chg = (v, big) => VUUI.chg(v, { big });
@@ -105,7 +110,7 @@ const bn = v => de(v / 1e9) + ' Mrd. $';
 const journeyBars = VUUI.bars(rev.map(r => [String(r.fy), r.v]), { label: `Umsatz je Geschäftsjahr, GJ ${rev[0]?.fy} bis GJ ${rev.at(-1)?.fy}` });
 
 // ---------- Discover: Swipe-Karte und Themenwelten ----------
-const ki = json('discover/data/rows/US_REAL/thema-ki.json');
+const ki = dataJson('discover/data/rows/US_REAL/thema-ki.json');
 const card = ki.cards[0], badge = (card.badges || [])[0];
 const swipeCard = `<a class="vu-box vu-box--ink swipe" href="/discover/#/einzeln/US_REAL"><span class="swipe-top"><span class="vu-logo-tile swipe-logo">${esc(card.symbol)}</span>${badge ? `<span class="tag-lime">${esc(badge.label)}</span>` : ''}</span>`
   + `<b class="swipe-name">${esc(cleanName(card.companyName))}</b><small>${esc(card.was || card.sector || '')}</small>`
@@ -125,7 +130,7 @@ const NINE = [['discover', 'Discover', 'Aktien entdecken', '/discover/'], ['quan
 
 const asOf = s.asOf || t.bundle?.dataCutoff;
 /* Firmenlogo zur Bauzeit aus discover/logos/index.json (die Startseite lädt vu-ui.js nicht). */
-const logoIndex = (() => { try { return JSON.parse(readFileSync(new URL('discover/logos/index.json', root), 'utf8')).files || {}; } catch { return {}; } })();
+const logoIndex = (() => { try { return JSON.parse(readFileSync(new URL('discover/logos/index.json', dataRoot), 'utf8')).files || {}; } catch { return {}; } })();
 const logoOpt = (t) => logoIndex[t] ? { src: '/discover/logos/' + logoIndex[t] } : { logo: false };
 const values = {
   NVDA: MAIN, NVDA_NAME: esc(cleanName(s.companyName) || 'NVIDIA'), NVDA_WHAT: esc(s.was || ''),

@@ -1,0 +1,105 @@
+{
+  "schema": "vu-quant-frontend-budget-1",
+  "gemessenAm": "2026-11-13",
+  "messung": "Quant-Produktionscheck (GitHub-Runner, frischer Browser, ohne Cache; Uebertragungsbytes ohne Datenabrufe nach dem Laden)",
+  "regel": "Grenze = heutiger Wert + 25 % (Bytes) bzw. + 8 Anfragen, damit nichts waechst. Ueberschreitung = Befund im Quant-Produktionscheck (Alarm-Issue), kein roter Code-PR. Ein Budget sinkt per PR auf diese Datei, wenn eine Route schneller wird; es steigt nur mit Begruendung im PR.",
+  "maxBereitMs": 5000,
+  "routen": {
+    "/quant/": {
+      "gemessenKb": 751,
+      "gemessenRequests": 43,
+      "maxKb": 940,
+      "maxRequests": 51
+    },
+    "/quant/#/meldungen": {
+      "gemessenKb": 720,
+      "gemessenRequests": 25,
+      "maxKb": 900,
+      "maxRequests": 33
+    },
+    "/quant/#/screener": {
+      "gemessenKb": 1183,
+      "gemessenRequests": 32,
+      "maxKb": 1480,
+      "maxRequests": 40
+    },
+    "/quant/#/stile": {
+      "gemessenKb": 639,
+      "gemessenRequests": 38,
+      "maxKb": 800,
+      "maxRequests": 46
+    },
+    "/quant/#/aktien": {
+      "gemessenKb": 714,
+      "gemessenRequests": 32,
+      "maxKb": 900,
+      "maxRequests": 40
+    },
+    "/quant/#/aktie/NVDA": {
+      "gemessenKb": 1010,
+      "gemessenRequests": 52,
+      "maxKb": 1270,
+      "maxRequests": 60
+    },
+    "/quant/#/aktie/JPM": {
+      "gemessenKb": 969,
+      "gemessenRequests": 52,
+      "maxKb": 1220,
+      "maxRequests": 60
+    },
+    "/quant/#/aktie/NVDA/zahlen": {
+      "gemessenKb": 559,
+      "gemessenRequests": 27,
+      "maxKb": 700,
+      "maxRequests": 35
+    },
+    "/quant/#/aktie/NVDA/chartbild": {
+      "gemessenKb": 997,
+      "gemessenRequests": 67,
+      "maxKb": 1250,
+      "maxRequests": 75
+    },
+    "/quant/#/chartlagen": {
+      "gemessenKb": 1035,
+      "gemessenRequests": 22,
+      "maxKb": 1300,
+      "maxRequests": 30
+    },
+    "/quant/#/vergleich/NVDA,MSFT": {
+      "gemessenKb": 715,
+      "gemessenRequests": 29,
+      "maxKb": 900,
+      "maxRequests": 37
+    },
+    "/quant/#/methodik": {
+      "gemessenKb": 618,
+      "gemessenRequests": 19,
+      "maxKb": 780,
+      "maxRequests": 27
+    },
+    "/quant/#/forschung": {
+      "gemessenKb": 612,
+      "gemessenRequests": 24,
+      "maxKb": 770,
+      "maxRequests": 32
+    },
+    "/quant/musterdepots/": {
+      "gemessenKb": 180,
+      "gemessenRequests": 14,
+      "maxKb": 230,
+      "maxRequests": 22
+    },
+    "/quant/ai/": {
+      "gemessenKb": 170,
+      "gemessenRequests": 33,
+      "maxKb": 220,
+      "maxRequests": 41
+    },
+    "/quant/backtests/": {
+      "gemessenKb": 638,
+      "gemessenRequests": 30,
+      "maxKb": 800,
+      "maxRequests": 38
+    }
+  }
+}

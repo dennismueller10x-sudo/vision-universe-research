@@ -481,10 +481,10 @@
       "cik": "0001497253",
       "name": "VivoSim Labs, INC.",
       "sic": "2836",
-      "rawFacts": 14627,
-      "mappedFacts": 4481,
-      "unmappedFacts": 10043,
-      "calendarYears": 21,
+      "rawFacts": 14875,
+      "mappedFacts": 4579,
+      "unmappedFacts": 10312,
+      "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "0331",
@@ -493,14 +493,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 65,
+      "quarterlyPeriods": 66,
       "firstPeriodEnd": "2008-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.25,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.25
@@ -514,7 +514,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.25,
@@ -534,21 +534,21 @@
         },
         "net_income": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.25
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.25
         },
         "revenue": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.25
@@ -562,14 +562,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2008-12-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.25
         },
         "total_assets": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 14.25
@@ -592,48 +592,49 @@
         }
       },
       "quality": {
-        "HIGH": 461,
-        "MEDIUM": 10
+        "HIGH": 470,
+        "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 471,
-        "resolvedValues": 471
+        "datableValues": 479,
+        "resolvedValues": 479
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10627,
+        "rules_version": "1.1.0",
+        "total": 10869,
         "by_severity": {
-          "INFO": 10043,
-          "WARNING": 584
+          "INFO": 10312,
+          "WARNING": 557
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 233,
-          "FISCAL_PERIOD_CONFLICT": 8,
+          "CONCEPT_DISAGREEMENT": 220,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 195,
+          "RESTATEMENT_CONFLICT": 187,
           "UNEXPECTED_DURATION": 146,
-          "UNKNOWN_CONCEPT": 10043
+          "UNKNOWN_CONCEPT": 10312,
+          "UNPLACEABLE_PERIOD": 2
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-346820",
-        "filing_date": "2026-08-12",
+        "accession": "0001193125-26-458330",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 66
+        "periodic_filings": 67,
+        "acceptance_datetime": "2026-11-12T21:06:41.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "2cb735dcecdbb7477fc60aaacf4c01dd09f4b8c0065e66dd514a2cbc91a1181a",
+      "sourceDigest": "31925cb3756486bb086c3d42edbf7fa162aa6d3c971106aa8218cac7c2c475bd",
       "issuerId": "iss_cik_0001497253"
     },
     {

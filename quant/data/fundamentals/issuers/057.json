@@ -478,9 +478,9 @@
       "cik": "0001767057",
       "name": "Osprey Bitcoin Trust",
       "sic": "6221",
-      "rawFacts": 1182,
-      "mappedFacts": 221,
-      "unmappedFacts": 988,
+      "rawFacts": 1313,
+      "mappedFacts": 230,
+      "unmappedFacts": 1133,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -490,9 +490,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 16,
+      "quarterlyPeriods": 18,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.0,
       "metrics": {
         "capital_expenditures": {
@@ -531,7 +531,7 @@
         },
         "net_income": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 7,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -566,7 +566,7 @@
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -589,44 +589,45 @@
         }
       },
       "quality": {
-        "HIGH": 28
+        "HIGH": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 28,
-        "resolvedValues": 28
+        "datableValues": 32,
+        "resolvedValues": 32
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1004,
+        "rules_version": "1.1.0",
+        "total": 1150,
         "by_severity": {
-          "INFO": 988,
-          "WARNING": 16
+          "INFO": 1133,
+          "WARNING": 17
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 13,
+          "CONCEPT_DISAGREEMENT": 14,
           "RESTATEMENT_CONFLICT": 3,
-          "UNKNOWN_CONCEPT": 988
+          "UNKNOWN_CONCEPT": 1133
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037040",
-        "filing_date": "2026-08-11",
+        "accession": "0001493152-26-051287",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 12
+        "periodic_filings": 13,
+        "acceptance_datetime": "2026-11-12T16:09:05.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "35ce57974410c1f3477d8855eefd756d35848199dda60387e24400d0154200f6",
+      "sourceDigest": "89f82a4ff5eee2732f5b6bf3abb113df240833c906986d7ebcfaabb50ead69d2",
       "issuerId": "iss_cik_0001767057"
     },
     {

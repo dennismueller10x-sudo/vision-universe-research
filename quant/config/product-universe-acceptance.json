@@ -1,0 +1,17 @@
+{
+  "schema": "vu-product-universe-acceptance-1",
+  "acceptedAt": "2026-11-11",
+  "note": "Abgenommener Stand des Produktuniversums (Titel, darstellbare Charts, technisch bereit). Eine neue Abnahme ist eine Aenderung dieser Datei per PR mit Herleitung je Titel (coverage-delta.mjs, 'GEHT AUF'; Herleitung im Kopf von scripts/quant/tests/test_canonical_market.py). Geprueft wird sie taeglich im Quant-Produktionscheck (VU_DATENSTAND_ABNAHME=1): Abweichung = Alarm-Issue, kein roter Code-PR (Owner-Regel: Daten loesen Alarm aus und blockieren keinen Code-PR; Entscheidung 13.11.2026, Strang AK).",
+  "abgenommen": {
+    "PRODUCT_TITLES": 6309,
+    "R2_SERIES_AVAILABLE": 7802,
+    "HISTORICAL_CHART_AVAILABLE": 6306,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5661
+  },
+  "aktuellerPolicyStand": {
+    "PRODUCT_TITLES": 6309,
+    "HISTORICAL_CHART_AVAILABLE": 6306,
+    "TECHNICAL_HISTORY_ELIGIBLE": 5661
+  },
+  "verzeichnisAusgeschlossen": 434
+}

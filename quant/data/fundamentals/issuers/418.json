@@ -6,9 +6,9 @@
       "cik": "0000066418",
       "name": "MEXCO ENERGY CORP",
       "sic": "1311",
-      "rawFacts": 14826,
-      "mappedFacts": 5179,
-      "unmappedFacts": 10066,
+      "rawFacts": 15092,
+      "mappedFacts": 5259,
+      "unmappedFacts": 10369,
       "calendarYears": 17,
       "industry": null,
       "industryMetrics": {},
@@ -18,9 +18,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 18,
-      "quarterlyPeriods": 67,
+      "quarterlyPeriods": 68,
       "firstPeriodEnd": "2009-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 17.0,
       "metrics": {
         "capital_expenditures": {
@@ -32,7 +32,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
@@ -59,21 +59,21 @@
         },
         "net_income": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 16.0
@@ -87,14 +87,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 18,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 17.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2011-03-31",
           "lastAvailablePeriod": "2026-03-31",
           "historyYears": 15.0
@@ -117,46 +117,47 @@
         }
       },
       "quality": {
-        "HIGH": 574
+        "HIGH": 580
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 574,
-        "resolvedValues": 574
+        "datableValues": 580,
+        "resolvedValues": 580
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10281,
+        "rules_version": "1.1.0",
+        "total": 10402,
         "by_severity": {
-          "INFO": 10066,
-          "WARNING": 215
+          "INFO": 10369,
+          "WARNING": 33
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 193,
+          "CONCEPT_DISAGREEMENT": 7,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
-          "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 19,
-          "UNKNOWN_CONCEPT": 10066
+          "PERIOD_MISMATCH": 4,
+          "RESTATEMENT_CONFLICT": 21,
+          "UNKNOWN_CONCEPT": 10369
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037396",
-        "filing_date": "2026-08-12",
+        "accession": "0001493152-26-051493",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 131
+        "periodic_filings": 132,
+        "acceptance_datetime": "2026-11-12T22:25:21.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "eaaa6d1e27d5fb87647086d333b30abab66a821d28c9009e0c33da9960d7940a",
+      "sourceDigest": "f09c35f293618578f70213cc63227d7067b072f79566272d3d252e4d84fe39af",
       "issuerId": "iss_cik_0000066418"
     },
     {

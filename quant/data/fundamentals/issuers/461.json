@@ -484,9 +484,9 @@
       "cik": "0001518461",
       "name": "AmpliTech Group, Inc.",
       "sic": "3669",
-      "rawFacts": 12397,
-      "mappedFacts": 4888,
-      "unmappedFacts": 7762,
+      "rawFacts": 12677,
+      "mappedFacts": 4991,
+      "unmappedFacts": 8059,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -497,28 +497,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 61,
+      "quarterlyPeriods": 62,
       "firstPeriodEnd": "2010-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "eps_diluted": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "free_cash_flow": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 34,
+          "quarterlyPeriods": 35,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0,
@@ -538,21 +538,21 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 59,
+          "quarterlyPeriods": 60,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "revenue": {
           "annualPeriods": 11,
-          "quarterlyPeriods": 42,
+          "quarterlyPeriods": 43,
           "firstAvailablePeriod": "2015-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 10.0
@@ -566,14 +566,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 57,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -596,48 +596,49 @@
         }
       },
       "quality": {
-        "HIGH": 480,
+        "HIGH": 487,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 482,
-        "resolvedValues": 482
+        "datableValues": 489,
+        "resolvedValues": 489
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8220,
+        "rules_version": "1.1.0",
+        "total": 8522,
         "by_severity": {
-          "INFO": 7762,
-          "WARNING": 458
+          "INFO": 8059,
+          "WARNING": 463
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 321,
+          "CONCEPT_DISAGREEMENT": 325,
           "NEGATIVE_WHERE_IMPOSSIBLE": 4,
           "PERIOD_MISMATCH": 2,
-          "RESTATEMENT_CONFLICT": 126,
+          "RESTATEMENT_CONFLICT": 127,
           "UNEXPECTED_DURATION": 5,
-          "UNKNOWN_CONCEPT": 7762
+          "UNKNOWN_CONCEPT": 8059
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037751",
-        "filing_date": "2026-08-13",
+        "accession": "0001493152-26-051385",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 65
+        "periodic_filings": 66,
+        "acceptance_datetime": "2026-11-12T21:05:58.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "e02f6f620e740acee358beb2de8ccc01ce75140d22302db46956dcf934991aa9",
+      "sourceDigest": "6640d4da9e8b072027517b0cca78ca9342accc5ed9e1de32b77bdc06e2ef89cc",
       "issuerId": "iss_cik_0001518461"
     }
   ]

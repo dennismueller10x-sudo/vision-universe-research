@@ -319,9 +319,9 @@
       "cik": "0001626878",
       "name": "XBiotech Inc.",
       "sic": "2834",
-      "rawFacts": 9577,
-      "mappedFacts": 3607,
-      "unmappedFacts": 6291,
+      "rawFacts": 9754,
+      "mappedFacts": 3682,
+      "unmappedFacts": 6415,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -331,14 +331,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 14,
-      "quarterlyPeriods": 52,
+      "quarterlyPeriods": 53,
       "firstPeriodEnd": "2012-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -352,7 +352,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0,
@@ -372,14 +372,14 @@
         },
         "net_income": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "operating_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -400,14 +400,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 49,
+          "quarterlyPeriods": 50,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 12,
-          "quarterlyPeriods": 47,
+          "quarterlyPeriods": 48,
           "firstAvailablePeriod": "2014-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 11.0
@@ -430,45 +430,46 @@
         }
       },
       "quality": {
-        "HIGH": 350
+        "HIGH": 355
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 350,
-        "resolvedValues": 350
+        "datableValues": 355,
+        "resolvedValues": 355
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6325,
+        "rules_version": "1.1.0",
+        "total": 6449,
         "by_severity": {
-          "INFO": 6291,
+          "INFO": 6415,
           "WARNING": 34
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 17,
           "RESTATEMENT_CONFLICT": 16,
           "UNEXPECTED_DURATION": 1,
-          "UNKNOWN_CONCEPT": 6291
+          "UNKNOWN_CONCEPT": 6415
         }
       },
       "latestFiling": {
-        "accession": "0001171843-26-005492",
-        "filing_date": "2026-08-13",
+        "accession": "0001171843-26-007383",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 58
+        "periodic_filings": 59,
+        "acceptance_datetime": "2026-11-12T15:53:04.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "2d6ed6e5a32913302edb596458591c7a69a17c7c6ced41069315a9442d647fd9",
+      "sourceDigest": "e0d1956eb3d445c0b0b30fe0d6143c4d72503c7e203791d498ae4e29e3f10a3c",
       "issuerId": "iss_cik_0001626878"
     },
     {

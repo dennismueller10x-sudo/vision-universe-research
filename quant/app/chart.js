@@ -1,5 +1,5 @@
 /* =========================================================================
-   VISION UNIVERSE QUANT — app/chart.js                   (quant-chart-1.2.0)
+   VISION UNIVERSE QUANT — app/chart.js                   (quant-chart-1.3.0)
 
    EIN CHART. ALLE ZEITRAEUME. DERSELBE WIE IN DISCOVER.
 
@@ -72,7 +72,7 @@
      ist; die Beschriftung ist die kanonische Kennung, daher keine eigene Uebersetzung. */
   function memo(v) {
     try { var H = global.VUCore.ChartHistory, k = H.rangeKey; if (v) global.localStorage.setItem(k, v); else v = global.localStorage.getItem(k); } catch (e) { return null; }
-    return RANGES.filter(function (r) { return r.label === v; })[0] || null;
+    return RANGES.filter(function (r) { return r.label === v || r.label === String(v).toUpperCase(); })[0] || null;
   }
   /* Anzeigewaehrung (Vorgabe EUR) ueber den Chartstandard und die FX-Schicht. Im Release
      bringt EIN Paket beides (globalThis.VUFxPack, scripts/vu2/build-release.mjs), sonst
@@ -90,7 +90,23 @@
   }
 
   function isNum(v) { return typeof v === "number" && isFinite(v); }
-  function el(tag, attrs, kids) { return global.QuantShell.el(tag, attrs, kids); }
+  /* Eigenes el(): der Chart haengt weder an der Quant-Shell noch an QX, damit jede Welt (Technical, Discover) ihn laden kann. */
+  function el(tag, attrs, kids) {
+    var node = global.document.createElement(tag);
+    Object.keys(attrs || {}).forEach(function (k) {
+      var v = attrs[k];
+      if (v === null || v === undefined || v === false) return;
+      if (k === "class") node.className = v;
+      else if (k === "text") node.textContent = v;
+      else if (k.slice(0, 2) === "on" && typeof v === "function") node.addEventListener(k.slice(2), v);
+      else if (k === "dataset") Object.keys(v).forEach(function (d) { node.dataset[d] = v[d]; });
+      else node.setAttribute(k, v === true ? "" : String(v));
+    });
+    (kids || []).forEach(function (c) { if (c !== null && c !== undefined && c !== false) node.append(c); });
+    return node;
+  }
+  /* Geld: in Quant der zentrale Formatierer (X.money -> VUFx.Format); ohne ihn (Technical, Discover) der des gemeinsamen Charts. */
+  function showPrice(v, cur) { return global.QX && global.QX.money ? global.QX.money(v, cur) : global.VUChart && global.VUChart.money ? global.VUChart.money(v, cur) : v.toFixed(2) + " " + (cur || ""); }
   /* Geld wird an EINER Stelle formatiert: QX.money -> VUFx.Format. */
   function signedPct(v) {
     if (!isNum(v)) return "";
@@ -205,12 +221,19 @@
       el("details", { class: "vu-more qc-about" }, [el("summary", { text: "Über diesen Chart" }), el("div", { class: "vu-more-body qv-more-body" }, [fxHost, note])])
     ]);
 
-    var buttons = {};
-    RANGES.forEach(function (r) {
-      var b = el("button", { type: "button", class: "qc-range", text: r.label, "aria-pressed": "false",
+    /* Hauptleiste fest 1T 1W 1M 1J 5J Max (assets/vu-chart.js, Chartstandard); 3M, 6M, YTD, 3J, 10J hinter "Mehr". */
+    var PRIMARY_IDS = ["1D", "5D", "1M", "1Y", "5Y", "MAX"], buttons = {}, moreBtn = null, extraBtns = [];
+    function showMore(open) { if (moreBtn) moreBtn.setAttribute("aria-expanded", String(open)); extraBtns.forEach(function (b) { b.hidden = !open; }); }
+    function rangeButton(r, primary) {
+      var b = el("button", { type: "button", class: "qc-range" + (primary ? "" : " qc-range-extra"), text: r.id === "MAX" ? "Max" : r.label, "aria-pressed": "false",
         dataset: { range: r.id }, onclick: function () { st.touched = true; memo(r.label); draw(r.id); } });
+      if (!primary) { b.hidden = true; extraBtns.push(b); }
       buttons[r.id] = b; bar.append(b);
-    });
+    }
+    RANGES.forEach(function (r) { if (PRIMARY_IDS.indexOf(r.id) >= 0) rangeButton(r, true); });
+    moreBtn = el("button", { type: "button", class: "qc-range qc-range-more", text: "Mehr", "aria-expanded": "false", onclick: function () { showMore(moreBtn.getAttribute("aria-expanded") !== "true"); } });
+    bar.append(moreBtn);
+    RANGES.forEach(function (r) { if (PRIMARY_IDS.indexOf(r.id) < 0) rangeButton(r, false); });
 
     function available(id) {
       if (id === "1D") return !!(st.intraday && st.intraday.snapshot && Array.isArray(st.intraday.snapshot.points) && st.intraday.snapshot.points.length >= 2);
@@ -227,6 +250,7 @@
        bleibt bedienbar, bis sie da ist oder ihr Laden scheitert. */
     function longPending(r) { return !!(needsLong(r) && !st.long && o.longPath && o.loadJSON && !st.longDone && !st.longFailed); }
     function syncButtons() {
+      if (moreBtn && PRIMARY_IDS.indexOf(st.range) < 0 && st.range && moreBtn.getAttribute("aria-expanded") !== "true") showMore(true);
       RANGES.forEach(function (r) {
         var ok = available(r.id) || longPending(r);
         buttons[r.id].disabled = !ok;
@@ -262,6 +286,8 @@
     }
     function place(svg) {
       plot.replaceChildren(svg, headPrice);
+      /* Ebenen der Welt (Technical: Zonen, Trendlinie; Quant: Marken) zeichnet der Aufrufer auf dasselbe Bild. */
+      if (o.onPaint) { try { o.onPaint(svg, svg.__vuGeometry, st.range, st.cur); } catch (e) { /* eine Ebene stoert den Kurs nicht */ } }
       headPrice.hidden = true;
       var dir = svg.getAttribute && svg.getAttribute("data-direction");
       if (dir) box.dataset.direction = dir; else delete box.dataset.direction;
@@ -286,7 +312,7 @@
         on = true; node.classList.add("is-scrub");
         cross.setAttribute("x1", best.x.toFixed(1)); cross.setAttribute("x2", best.x.toFixed(1)); cross.style.display = "";
         headPrice.hidden = false;
-        headPrice.textContent = global.QX.money(best.v, st.cur) + " · " + fmtWhen(best.t);
+        headPrice.textContent = showPrice(best.v, st.cur) + " · " + fmtWhen(best.t);
         headPrice.style.left = Math.min(rect.width - 70, Math.max(70, best.x * rect.width / g.w)) + "px";
         var b = isNum(g.base) ? g.base : base;
         var d = isNum(b) && b > 0 ? (best.v / b - 1) * 100 : null;

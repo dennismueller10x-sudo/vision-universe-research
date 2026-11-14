@@ -789,9 +789,9 @@
       "cik": "0002087447",
       "name": "Lafayette Digital Acquisition Corp. I",
       "sic": "6770",
-      "rawFacts": 168,
-      "mappedFacts": 67,
-      "unmappedFacts": 104,
+      "rawFacts": 246,
+      "mappedFacts": 98,
+      "unmappedFacts": 149,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -803,9 +803,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 4,
+      "quarterlyPeriods": 5,
       "firstPeriodEnd": "2025-09-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -844,14 +844,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -872,14 +872,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -902,43 +902,44 @@
         }
       },
       "quality": {
-        "HIGH": 14
+        "HIGH": 18
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 14,
-        "resolvedValues": 14
+        "datableValues": 18,
+        "resolvedValues": 18
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 108,
+        "rules_version": "1.1.0",
+        "total": 157,
         "by_severity": {
-          "INFO": 104,
-          "WARNING": 4
+          "INFO": 149,
+          "WARNING": 8
         },
         "by_code": {
-          "UNEXPECTED_DURATION": 4,
-          "UNKNOWN_CONCEPT": 104
+          "UNEXPECTED_DURATION": 8,
+          "UNKNOWN_CONCEPT": 149
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-089156",
-        "filing_date": "2026-08-13",
+        "accession": "0001213900-26-119036",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 4
+        "periodic_filings": 5,
+        "acceptance_datetime": "2026-11-12T22:01:13.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bcd67ffb353e83bde287b7b3087cf46833413cb10c42812a6d63b4f1c092ff99",
+      "sourceDigest": "d9c5b63b25e3c88e40c04105834cab5e5f874e3a84b9638c623ab469aaa7e42c",
       "issuerId": "iss_cik_0002087447"
     }
   ]

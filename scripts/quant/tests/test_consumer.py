@@ -73,6 +73,25 @@ class ConsumerBundleTest(unittest.TestCase):
         self.assertTrue(ttm["free_cash_flow"]["derived"])
         self.assertEqual(ttm["free_cash_flow"]["inputs"], ["operating_cash_flow", "capital_expenditures"])
 
+    def test_ttm_derives_gross_profit_and_total_debt_when_not_reported(self):
+        # b6 (13.11.2026): Der Emittent meldet Umsatzkosten und Schuldenteile, aber keinen Rohertrag und
+        # keine Gesamtschulden. Das TTM-Fenster folgt den Formeln aus derived.py, mit Veroeffentlichungsdatum.
+        ttm, q = self.bundle["ttm"], self.bundle["quarterly"]
+        gp, debt = ttm["gross_profit"], ttm["total_debt"]
+        self.assertTrue(gp["derived"]); self.assertEqual(gp["inputs"], ["revenue", "cost_of_revenue"])
+        self.assertEqual(gp["through"], ttm["revenue"]["through"])
+        self.assertAlmostEqual(gp["v"], sum(R(r)["v"] for r in q["gross_profit"][-4:]), places=2)
+        self.assertTrue(gp["filed"])
+        self.assertEqual(debt["kind"], "INSTANT"); self.assertTrue(debt["filed"])
+        self.assertAlmostEqual(debt["v"], R(q["total_debt"][-1])["v"], places=2)
+        self.assertEqual(ttm["net_debt"]["inputs"], ["total_debt", "cash_and_equivalents"])
+    def test_total_assets_has_a_quarterly_series(self):
+        # b3 (13.11.2026): die Bilanzsumme je Quartal, damit ein Durchschnitt ueber dasselbe TTM-Fenster moeglich ist.
+        rows = [R(r) for r in self.bundle["quarterly"]["total_assets"]]
+        self.assertTrue(rows)
+        self.assertTrue(all(r["fp"] in ("Q1", "Q2", "Q3", "Q4") and r.get("filed") for r in rows))
+        self.assertEqual(self.bundle["ttm"]["total_assets"]["kind"], "INSTANT")
+
     def test_point_in_time_hides_unfiled_periods(self):
         early = consumer.build_consumer_bundle(
             2000000077, self.payload, self.registry, as_of="2020-01-15", tickers=["SYNT"])

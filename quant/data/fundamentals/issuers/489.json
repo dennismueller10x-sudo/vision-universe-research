@@ -263,9 +263,9 @@
       "cik": "0000832489",
       "name": "GeoVax Labs, Inc.",
       "sic": "2834",
-      "rawFacts": 10019,
-      "mappedFacts": 3899,
-      "unmappedFacts": 6272,
+      "rawFacts": 10210,
+      "mappedFacts": 3976,
+      "unmappedFacts": 6514,
       "calendarYears": 24,
       "industry": null,
       "industryMetrics": {},
@@ -275,14 +275,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 25,
-      "quarterlyPeriods": 74,
+      "quarterlyPeriods": 75,
       "firstPeriodEnd": "2001-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 24.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -296,7 +296,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 39,
+          "quarterlyPeriods": 40,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0,
@@ -316,21 +316,21 @@
         },
         "net_income": {
           "annualPeriods": 24,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2002-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 23.0
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 10,
-          "quarterlyPeriods": 38,
+          "quarterlyPeriods": 39,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
@@ -344,14 +344,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 25,
-          "quarterlyPeriods": 71,
+          "quarterlyPeriods": 72,
           "firstAvailablePeriod": "2001-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 24.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -374,48 +374,50 @@
         }
       },
       "quality": {
-        "HIGH": 445
+        "HIGH": 451
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 445,
-        "resolvedValues": 445
+        "datableValues": 451,
+        "resolvedValues": 451
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 6564,
+        "rules_version": "1.1.0",
+        "total": 6814,
         "by_severity": {
           "ERROR": 2,
-          "INFO": 6272,
-          "WARNING": 290
+          "INFO": 6514,
+          "WARNING": 298
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 69,
+          "CONCEPT_DISAGREEMENT": 70,
           "FUTURE_DATA_LEAK": 2,
+          "FUTURE_PERIOD_END": 1,
           "PERIOD_MISMATCH": 1,
-          "RESTATEMENT_CONFLICT": 65,
+          "RESTATEMENT_CONFLICT": 71,
           "UNEXPECTED_DURATION": 155,
-          "UNKNOWN_CONCEPT": 6272
+          "UNKNOWN_CONCEPT": 6514
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-024523",
-        "filing_date": "2026-07-27",
+        "accession": "0001437749-26-036546",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 130
+        "periodic_filings": 131,
+        "acceptance_datetime": "2026-11-12T21:02:25.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "369cb10c357c9bae075f0b1cda2b82ed207b65079234edfb4d0bcf359bedf252",
+      "sourceDigest": "b320611ddd5853fee690770ffbc87b841f4de7ee7252544a45fd9980ae36a6d9",
       "issuerId": "iss_cik_0000832489"
     },
     {

@@ -1012,10 +1012,10 @@
       "cik": "0001843162",
       "name": "Chicago Atlantic BDC, Inc.",
       "sic": null,
-      "rawFacts": 3279,
-      "mappedFacts": 851,
-      "unmappedFacts": 2484,
-      "calendarYears": 10,
+      "rawFacts": 3544,
+      "mappedFacts": 903,
+      "unmappedFacts": 2722,
+      "calendarYears": 9,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -1023,11 +1023,11 @@
         "LIEN"
       ],
       "status": "INGESTED",
-      "annualPeriods": 8,
-      "quarterlyPeriods": 20,
+      "annualPeriods": 6,
+      "quarterlyPeriods": 21,
       "firstPeriodEnd": "2021-03-31",
-      "lastPeriodEnd": "2026-06-30",
-      "historyYears": 5.0,
+      "lastPeriodEnd": "2026-09-30",
+      "historyYears": 4.75,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -1038,7 +1038,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.75
@@ -1065,14 +1065,14 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.75
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 15,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.75
@@ -1092,18 +1092,18 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 6,
-          "quarterlyPeriods": 16,
+          "annualPeriods": 5,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2021-03-31",
-          "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 5.0
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 4.75
         },
         "total_assets": {
-          "annualPeriods": 5,
-          "quarterlyPeriods": 12,
+          "annualPeriods": 4,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2022-12-31",
-          "lastAvailablePeriod": "2026-03-31",
-          "historyYears": 3.25
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 3.0
         },
         "total_debt": {
           "annualPeriods": 0,
@@ -1123,46 +1123,46 @@
         }
       },
       "quality": {
-        "HIGH": 100,
-        "MEDIUM": 2
+        "HIGH": 106
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 102,
-        "resolvedValues": 102
+        "datableValues": 106,
+        "resolvedValues": 106
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2598,
+        "rules_version": "1.1.0",
+        "total": 2835,
         "by_severity": {
-          "INFO": 2484,
-          "WARNING": 114
+          "INFO": 2722,
+          "WARNING": 113
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 41,
           "FISCAL_PERIOD_CONFLICT": 16,
-          "RESTATEMENT_CONFLICT": 57,
-          "UNKNOWN_CONCEPT": 2484
+          "RESTATEMENT_CONFLICT": 56,
+          "UNKNOWN_CONCEPT": 2722
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-347342",
-        "filing_date": "2026-08-13",
+        "accession": "0001193125-26-456876",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 19
+        "periodic_filings": 20,
+        "acceptance_datetime": "2026-11-12T12:00:50.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "194f2e57771f389a557786b45b6ec973a88c99460825f7d2a3ab1f3d6cbc9ee3",
+      "sourceDigest": "1a16da13fad02bc5aa39a28bef6fe284cce004348ae61fdd713053bbef42227f",
       "issuerId": "iss_cik_0001843162"
     },
     {

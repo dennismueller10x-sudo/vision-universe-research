@@ -31,6 +31,7 @@ const SignalBacktest=typeof module!=='undefined'&&module.exports?require('../eng
 const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
 const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
 const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engines/return-series.js'):g.VUReturnSeries;
+const RealtimeCapability=typeof module!=='undefined'&&module.exports?require('./realtime-capability.js'):g.VURealtimeCapability;
 const Freshness=typeof module!=='undefined'&&module.exports?require('../engines/realtime/freshness.js'):(g.VURealtime&&g.VURealtime.Freshness);
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
@@ -287,11 +288,15 @@ function create(options){
  /* Quant-V2-Evidenz als Screening-Zeile. Die Spalten sind kanonische
   * Katalogfelder des Namensraums quantV2.factorEvidence; Quant V1 bleibt
   * davon unberuehrt und wird nie in dieselbe Zeile gemischt. */
+ /* Abdeckung je Faktor (Anzahl Aktien mit Wert im Produktuniversum, bandSemantics.universe) fuer die Oberflaeche: ein Faktor mit 0
+  * wird nicht angezeigt, bis er Werte hat (VUFactorCoverage, gelesen von assets/vu-ui.js und quant/app/view-model.js). */
+ function noteCoverage(p){try{const u=p&&p.bandSemantics&&p.bandSemantics.universe;if(u&&typeof u==='object')globalThis.VUFactorCoverage=Object.assign({},globalThis.VUFactorCoverage||{},u);}catch(e){}}
  let screeningPromise=null;
  async function getFactorEvidenceScreening(){
   if(!screeningPromise)screeningPromise=(async()=>{
    try{
     const payload=await compressedJSON('/quant/data/product/factor-evidence-v1/screening.json.gz');
+    noteCoverage(payload);
     const versionState=FactorEvidence.screeningVersionState(payload);
     /* Ein Artefakt aus der vorigen Methodikversion ist nicht kaputt,
        sondern veraltet - und das sagt es auch. Beides als INVALID zu
@@ -589,11 +594,14 @@ function create(options){
  const backtestCache={};
  async function getBacktest(kind){
   const files={signal:'/quant/data/product/signal-backtest-v1.json',setup:'/quant/data/product/setup-backtest-v1.json',readiness:'/quant/data/product/backtest-readiness-v2.json',
-   certification:'/quant/data/product/backtest-certification-v1.json',outcomes:'/quant/data/product/setup-outcomes-v1.json'};
+   certification:'/quant/data/product/backtest-certification-v1.json',outcomes:'/quant/data/product/setup-outcomes-v1.json',
+   research:'/quant/data/product/backtest-research-v1.json'};
   if(!files[kind])return {state:'UNAVAILABLE',reason:'UNKNOWN_BACKTEST_KIND'};
   if(!backtestCache[kind])backtestCache[kind]=(async()=>{
    try{const s=await load(files[kind]);
     if(kind==='readiness')return s?.schemaVersion==='backtest-readiness-2.0.0'?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
+    /* Backtest-Forschung (Zusatzmethoden der Pruefffaelle): nur als interne Forschung, nie oeffentlich, nie zertifiziert. */
+    if(kind==='research')return /^backtest-research-1\.[0-3]\.0$/.test(s?.schemaVersion||'')&&s.display&&(s.audience==='INTERNAL'?s.display.public===false:s.audience==='PUBLIC'&&s.display.public===true)&&s.productionApproved===false&&Array.isArray(s.cases)?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
     if(kind==='outcomes')return s?.schemaVersion==='setup-outcomes-1.0.0'&&s.source&&s.source.reconstructed===false?{state:'AVAILABLE',...s}:{state:'UNAVAILABLE',reason:'INVALID_BACKTEST_ARTIFACT'};
     if(kind==='certification'){const Cx=g.VUBacktestCertification||(typeof module!=='undefined'&&module.exports?require('../engines/backtest-certification.js'):null);
      if(!Cx)return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};const e=Cx.certificationViolations(s);return e.length?{state:'UNAVAILABLE',reason:'CERTIFICATION_CONTRACT_VIOLATED',errors:e}:{state:'AVAILABLE',...s};}
@@ -737,6 +745,7 @@ function create(options){
   try{
    const key=technicalShard(ticker),shard=await compressedJSON('/quant/data/product/factor-evidence-v1/'+key+'.json.gz');
    if(!FactorEvidence.validShard(shard,key))return {state:'UNAVAILABLE',reason:'INVALID_FACTOR_EVIDENCE_ARTIFACT'};
+   noteCoverage(shard);
    const source=shard.securities?.[ticker];
    if(!source)return {state:'UNAVAILABLE',reason:'NOT_COVERED_BY_FACTOR_EVIDENCE'};
    const violations=FactorEvidence.publicationViolations(source);
@@ -1354,14 +1363,12 @@ function create(options){
    return {state:'INTRADAY_AVAILABLE',identity:identityModel(instrument),snapshot,points:snapshot.points,asOf:snapshot.asOf,sessionDate:session,isLive:false,isDelayed:snapshot.isDelayed,priceSemantics:'UNSPECIFIED',sourcePath:path};
   }catch{return unavailable('SOURCE_MISSING');}
  }
- async function getRealtimeCapability(ticker){
-  ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
-   const c=await config(),stream=c.preview.stream;
-   if(!stream?.enabled||!await publicPermission(ticker,'realtime','realtime'))return unavailable('DISPLAY_NOT_PERMITTED');
-   if(stream.url!=='wss://live.visionuniverse.de/live')return unavailable('UNSUPPORTED_RELAY');
-   return {state:'AVAILABLE',identity:identityModel(instrument),transport:'VISION_UNIVERSE_RELAY',url:stream.url,onDemand:true,connectionState:'NOT_CONNECTED',priceSemantics:'UNSPECIFIED',chartMovement:'TRADE_EVENTS_ONLY'};
-  }catch{return unavailable('SOURCE_MISSING');}
+ /* Die Freigabe des Live-Stroms steht in quant/api/realtime-capability.js (eine Stelle fuer Quant und Technical);
+    hier nur die Verdrahtung mit der eigenen Identitaet, Konfiguration und Freigabe-Politik. */
+ let realtimeCapability=null;
+ function getRealtimeCapability(ticker){
+  if(!realtimeCapability)realtimeCapability=RealtimeCapability.create({loadJSON:load,displayPolicy:policy,master:Master,directory:Directory,identity,config,publicPermission});
+  return realtimeCapability.getRealtimeCapability(ticker);
  }
  function getRecipes(){return [
   {id:'positive-momentum',title:'Kursstärke entdecken',explanation:'Unternehmen mit nicht negativer Kursentwicklung über sechs Monate.',field:'momentum6m',threshold:0,rule:'Kursentwicklung über 6 Monate ≥ 0 %'},

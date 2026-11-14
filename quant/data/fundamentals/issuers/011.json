@@ -640,9 +640,9 @@
       "cik": "0001799011",
       "name": "Lucid Diagnostics Inc.",
       "sic": "3841",
-      "rawFacts": 4301,
-      "mappedFacts": 1590,
-      "unmappedFacts": 2752,
+      "rawFacts": 4533,
+      "mappedFacts": 1686,
+      "unmappedFacts": 2933,
       "calendarYears": 6,
       "industry": null,
       "industryMetrics": {},
@@ -652,14 +652,14 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 26,
+      "quarterlyPeriods": 27,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -673,7 +673,7 @@
         },
         "free_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 13,
+          "quarterlyPeriods": 16,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0,
@@ -693,21 +693,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -721,14 +721,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -751,47 +751,48 @@
         }
       },
       "quality": {
-        "HIGH": 175,
+        "HIGH": 183,
         "MEDIUM": 9
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 184,
-        "resolvedValues": 184
+        "datableValues": 192,
+        "resolvedValues": 192
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2854,
+        "rules_version": "1.1.0",
+        "total": 3038,
         "by_severity": {
-          "INFO": 2752,
+          "INFO": 2933,
           "ERROR": 1,
-          "WARNING": 101
+          "WARNING": 104
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 86,
+          "CONCEPT_DISAGREEMENT": 89,
           "FUTURE_DATA_LEAK": 1,
           "RESTATEMENT_CONFLICT": 15,
-          "UNKNOWN_CONCEPT": 2752
+          "UNKNOWN_CONCEPT": 2933
         }
       },
       "latestFiling": {
-        "accession": "0001437749-26-027335",
-        "filing_date": "2026-08-12",
+        "accession": "0001437749-26-036390",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 20
+        "periodic_filings": 21,
+        "acceptance_datetime": "2026-11-12T13:11:02.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b011d7b34e0374a5b85c70e6d969e459d076e27e583caf4de07632ac0044e5fb",
+      "sourceDigest": "4ad19fa284c0af8d04dcfa5633ca8562681bfb3ac91486a3d887fa5a2ca82439",
       "issuerId": "iss_cik_0001799011"
     },
     {

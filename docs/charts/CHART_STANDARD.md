@@ -96,7 +96,9 @@ Paare: Discover/Quant ↔ Supertrader 5 150/5 152 (2 Datenlücken), Woche ↔ Ta
 | **Aktualität** | „Stand <Datum>“ am Chart; ≥ 2 Sitzungen zurück = Warnung | DQ-PX-2 |
 | **Rundung** | `roundClose`: 2 Nachkommastellen ab 1, darunter 4 gültige Stellen | `published-close.js` |
 
-### 3.1 Währungsschicht (EUR als Standard)
+### 3.1 Währungsschicht ($ als Standard seit 13.11.2026)
+
+**Nachtrag 13.11.2026:** Dollar in Kopf und Achse in allen Welten, EUR nur als kleiner Zusatz; ersetzt die EUR-Vorgabe vom 23.10., Steuerung 13.11. nach #1758/#1645. Die Vorgabe steht an EINER Stelle (`core/chart-standard.js#DEFAULT_DISPLAY`); die Wahl des Nutzers (Umschalter) geht vor. Gezeichnet wird in allen Welten vom selben Baustein (`assets/vu-chart.js` + `quant/app/chart.js`, `VUQuantChart.create`).
 
 - **Historische Punkte:** jeder Tagespunkt mit dem EZB-Referenzkurs **seines** Tages (`DAILY_AT_DATE`), fehlt er, der letzte vorherige innerhalb `maxCarryDays` (`PREVIOUS_AVAILABLE`). Nie der heutige Kurs für die Historie. Wochenpunkte mit dem Kurs ihres Stichtags. Die bestehende Engine leistet das bereits (`currency-contract.js#series`, in Discover über `detail.js#inAnzeigewaehrung`).
 - **1T:** alle Punkte und der Vortagesschluss mit dem Kurs der Sitzung (so rechnet Discover heute, `inAnzeigewaehrungSnapshot`). Die Prozentveränderung bleibt dadurch gleich der in der Börsenwährung.

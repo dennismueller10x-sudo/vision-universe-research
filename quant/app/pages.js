@@ -351,9 +351,18 @@
      Zuerst die Frage „Was hat sich heute verändert?“, dann Suche, „So arbeitet Quant“ (Sheet), Marktlage, sechs
      Tageszahlen, PRO-Vergleich, bestätigte Setups, Strategie-Wechsel als Liste, Wege, Vertrauen. Alle Zahlen aus
      radar-home-v1, market-regime-v1, setup-screen-index und strategy-index; fehlt eine Quelle, entfällt ihr Block. */
-  var STEPS = [["Misst", "sieben Eigenschaften je Aktie", "Jede Aktie hat ein Profil aus sieben Eigenschaften: Verdient gut, Wächst, Zahlen solide, Kurs läuft, Günstig, Ruhiger Kurs und Analysten (heute ohne Daten)."],
+  /* Anzahl und Namen der gezeigten Eigenschaften kommen aus den Daten (VM.isOpen): ein Faktor ohne Werte ruht und steht nirgends,
+     bis er Werte hat (Owner-Entscheidung 13.11.2026, heute: Analysten). refreshProfileWords() zieht die Woerter nach, sobald die
+     Abdeckung aus dem Screening bekannt ist. */
+  function factorSentence() { var n = VM.PROFILE_ORDER.filter(VM.isOpen).map(function (id) { return VM.FACTORS[id].name; }); return n.length > 1 ? n.slice(0, -1).join(", ") + " und " + n[n.length - 1] : n.join(""); }
+  function nWordHtml() { return "<span data-nword>" + VM.nWord() + "</span>"; }
+  function refreshProfileWords() {
+    [].forEach.call(document.querySelectorAll("[data-nword]"), function (n) { n.textContent = VM.nWord(); });
+    [].forEach.call(document.querySelectorAll("[data-factor-list]"), function (n) { n.textContent = factorSentence(); });
+  }
+  function steps() { return [["Misst", nWordHtml() + " Eigenschaften je Aktie", "Jede Aktie hat ein Profil aus " + nWordHtml() + " Eigenschaften: <span data-factor-list>" + factorSentence() + "</span>."],
     ["Meldet", "was sich seit gestern ändert", "Ändert sich etwas, meldet Quant es mit Auslöser und Datum, z. B. „Neu in Strategie“ oder „Risiko steigt“."],
-    ["Vergleicht", "was früher in gleicher Lage geschah", "Quant zeigt, was früher in derselben Lage geschah, und sagt offen, wie belastbar das ist."]];
+    ["Vergleicht", "was früher in gleicher Lage geschah", "Quant zeigt, was früher in derselben Lage geschah, und sagt offen, wie belastbar das ist."]]; }
   /* ------------------------------------------------ Konzept Quant „Ein Profil je Aktie“ (docs/design/quant-2026-11)
      Gemeinsame Bausteine der Seiten Start, Meldungen, Screener und Anlagestile: Schienenkopf, Schiene, Profil-Poster,
      Aktienzeile mit Profil, Stil-Karte mit Regel-Chips. Werte aus denselben Artefakten wie bisher. */
@@ -412,7 +421,7 @@
     page.classList.add("qk");
     if (early) page.replaceChildren(early.intro); else main.append(page);
     /* QX01 (Screen q-home): Frage, ein Satz zum Profil, Suche, „Heute bei Quant“, Markt in einer Zeile, Schienen. */
-    if (!early) page.append(frag('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Was hat sich heute verändert?</h1><p class="vu-lead">Jede Aktie hat ein Profil aus sieben Eigenschaften. Quant meldet, wenn sich etwas ändert.</p></header>'));
+    if (!early) page.append(frag('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Was hat sich heute verändert?</h1><p class="vu-lead">Jede Aktie hat ein Profil aus ' + nWordHtml() + ' Eigenschaften. Quant meldet, wenn sich etwas ändert.</p></header>'));
     var search = el("button", { type: "button", class: "vu-find qv3-search q-searchbar", "aria-label": "Aktie suchen, z. B. NVDA … und analysieren", onclick: ctx.openSearch });
     search.innerHTML = U().glyph("search", 18) + "<span>Aktie suchen, z. B. NVDA …</span><i aria-hidden=\"true\">" + U().glyph("spark", 18) + "</i>";
     page.append(search);
@@ -420,9 +429,10 @@
     todayHost.innerHTML = U().skeleton("card"); todayHost.setAttribute("aria-busy", "true");
     page.append(todayHost, regimeHost, watchHost, tiAlertHost, newHost, setupHost, stilHost);
     /* So arbeitet Quant: drei Kacheln, „Alle“ öffnet das Sheet mit Erklärung und Beleg. */
-    var how = frag(railHead("So arbeitet Quant", null, "#qk-how") + '<div class="qk-grid3">' + STEPS.map(function (st, i) { return '<div class="vu-box qk-step"><i class="qk-stepn">' + (i + 1) + "</i><b>" + st[0] + '</b><span class="vu-xs vu-mu">' + st[1] + "</span></div>"; }).join("") + "</div>");
+    var how = frag(railHead("So arbeitet Quant", null, "#qk-how") + '<div class="qk-grid3">' + steps().map(function (st, i) { return '<div class="vu-box qk-step"><i class="qk-stepn">' + (i + 1) + "</i><b>" + st[0] + '</b><span class="vu-xs vu-mu">' + st[1] + "</span></div>"; }).join("") + "</div>");
     page.append(how);
-    var sheet = frag(U().sheet("qv3-how-sheet", "So arbeitet Quant", '<p class="vu-ltag" style="margin:0">Drei Schritte, jeden Tag gleich</p><div class="vu-stack" style="margin-top:14px">' + STEPS.map(function (st, i) { return '<div class="qv3-sstep"><i>' + (i + 1) + "</i><div><b>" + ["Messen", "Melden", "Vergleichen"][i] + '</b><p class="vu-sm vu-mu">' + st[2] + "</p></div></div>"; }).join("") + "</div>" +
+    if (ctx.api && ctx.api.getFactorEvidenceScreening) ctx.api.getFactorEvidenceScreening().then(refreshProfileWords, function () {});
+    var sheet = frag(U().sheet("qv3-how-sheet", "So arbeitet Quant", '<p class="vu-ltag" style="margin:0">Drei Schritte, jeden Tag gleich</p><div class="vu-stack" style="margin-top:14px">' + steps().map(function (st, i) { return '<div class="qv3-sstep"><i>' + (i + 1) + "</i><div><b>" + ["Messen", "Melden", "Vergleichen"][i] + '</b><p class="vu-sm vu-mu">' + st[2] + "</p></div></div>"; }).join("") + "</div>" +
       '<div class="vu-box" style="margin-top:14px;display:flex;gap:10px;align-items:center">' + U().verdict("none", "Keine Empfehlung") + '<span class="vu-sm">Quant sagt nie „kaufen“ oder „verkaufen“.</span></div><div class="qv3-proof"></div><button type="button" class="vu-btn vu-btn--ink vu-btn--block" data-close style="margin-top:14px">Verstanden</button>')).firstElementChild;
     document.body.append(sheet);
     var proofHost = sheet.querySelector(".qv3-proof");
@@ -635,7 +645,7 @@
   var QUESTIONS = [
     { id: "qualitaet", chip: "Qualität", title: "Ich suche starke Qualitätsunternehmen", hint: "Profitabel und mit belastbarer Bilanz", factors: ["profitability", "quality"],
       sentence: "Du suchst Aktien, die profitabel sind und eine belastbare Bilanz haben." },
-    { id: "momentum", chip: "Momentum", title: "Ich suche Aktien mit Momentum", hint: "Kurs läuft stark, auch gegenüber dem Markt", factors: ["momentum"],
+    { id: "momentum", chip: "Momentum", title: "Ich suche Aktien mit Momentum", hint: "Kurs lief stark, auch gegenüber dem Markt", factors: ["momentum"],
       sentence: "Du suchst Aktien mit starker Kursentwicklung." },
     { id: "wachstum-qualitaet", chip: "Wachstum + Qualität", title: "Ich suche Wachstum + Qualität", hint: "Wächst kräftig und verdient gut", factors: ["growth", "profitability"],
       sentence: "Du suchst wachsende Unternehmen, die dabei gut verdienen." },
@@ -654,11 +664,11 @@
   var SIMPLE_THRESHOLD = 70;
   /* Redesign 2027 (Folie Q02): Schnellwahl als Fragekarten (Alltagsfrage + Fachname), „Deine Frage“ als Satz mit Regel. */
   /* Konzept Quant 2026-11 (QX03, Screen q-screener): Fragen als Chips, „Deine Frage“ als kurzer Satz mit Regel-Chips. */
-  var ASK_Q = { qualitaet: ["Verdient gut, solide Zahlen", "Verdient gut + Zahlen solide"], momentum: ["Kurs läuft besser als der Markt", "Kurs läuft"], "wachstum-qualitaet": ["Wächst und verdient", "Wächst + Verdient gut"],
-    guenstig: ["Eher günstig", "Günstig"], ruhig: ["Ruhiger Kurs", "Ruhiger Kurs"], setups: ["Setup im Chart", "Setups"], hoch: ["Nahe am Jahreshoch", "52-Wochen-Hoch"] };
-  var ASK_SENT = { qualitaet: "Verdient gut und hat solide Zahlen", momentum: "Der Kurs läuft besser als der Markt", "wachstum-qualitaet": "Wächst und verdient dabei gut",
-    guenstig: "Ist im Verhältnis zu Gewinn und Substanz günstig", ruhig: "Hat einen ruhigen Kurs", setups: "Der Chart zeigt ein Setup", hoch: "Steht höchstens 3 % unter dem Jahreshoch" };
-  var FACTOR_SHORT = { profitability: "Verdient gut", quality: "Zahlen solide", growth: "Wächst", momentum: "Kurs läuft", value: "Günstig", risk: "Ruhiger Kurs", revisions: "Analysten" };
+  var ASK_Q = { qualitaet: ["Verdient gut, Gewinn gedeckt", "Verdient gut + Gewinn gedeckt & stabil"], momentum: ["Kurs lief besser als der Markt", "Kurs lief gut"], "wachstum-qualitaet": ["Gewachsen und verdient", "Ist gewachsen + Verdient gut"],
+    guenstig: ["Niedriger Preis im Branchenvergleich", "Preis im Branchenvergleich"], ruhig: ["Ruhig für die Branche", "Ruhig für die Branche"], setups: ["Setup im Chart", "Setups"], hoch: ["Nahe am Jahreshoch", "52-Wochen-Hoch"] };
+  var ASK_SENT = { qualitaet: "Verdient gut, der Gewinn ist gedeckt und stabil", momentum: "Der Kurs lief besser als der Markt", "wachstum-qualitaet": "Ist gewachsen und verdient dabei gut",
+    guenstig: "Niedriger Preis im Verhältnis zu Gewinn und Substanz, verglichen mit der Branche", ruhig: "Hat einen für die Branche ruhigen Kurs", setups: "Der Chart zeigt ein Setup", hoch: "Steht höchstens 3 % unter dem Jahreshoch" };
+  var FACTOR_SHORT = { profitability: "Verdient gut", quality: "Gewinn gedeckt & stabil", growth: "Ist gewachsen", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", risk: "Ruhig für die Branche", revisions: "Analysten" };
   function ruleLine(factors, min, max) { return factors.map(function (id) { return (FACTOR_SHORT[id] || shortName(id)) + " ≥ " + min + (max < 100 ? " und ≤ " + max : ""); }).join(" · "); }
   function shortWhy(row, factorIds) { return factorIds.map(function (id) { var v = row && row[FIELD(id)]; return (FACTOR_SHORT[id] || shortName(id)) + " " + (typeof v === "number" ? Math.round(v) : "–"); }).join(" · "); }
 
@@ -676,9 +686,9 @@
      waehlbar; Erwartungstrend und Sentiment stehen da, sind aber ohne Datenbasis
      und deshalb gesperrt - mit dem Grund am Chip. */
   var FILTER_CHIPS = [
-    { id: "profitability", label: "Verdient gut" }, { id: "growth", label: "Wächst" }, { id: "quality", label: "Zahlen solide" },
-    { id: "momentum", label: "Kurs läuft" }, { id: "value", label: "Günstig" }, { id: "risk", label: "Ruhiger Kurs" },
-    { id: "revisions", label: "Analysten", off: "Für „Analysten“ (Erwartungstrend) gibt es keine lizenzierte, zeitpunktgenaue Datenquelle." },
+    { id: "profitability", label: "Verdient gut" }, { id: "growth", label: "Ist gewachsen" }, { id: "quality", label: "Gewinn gedeckt & stabil" },
+    { id: "momentum", label: "Kurs lief gut" }, { id: "value", label: "Preis im Branchenvergleich" }, { id: "risk", label: "Ruhig für die Branche" },
+    { id: "revisions", label: "Analysten", gated: true },
     { id: "sentiment", label: "Sentiment", off: "Quant verwendet keine Sentiment-Daten." }
   ];
   function shortName(id) { var c = FILTER_CHIPS.filter(function (x) { return x.id === id; })[0]; return c ? c.label : (VM.FACTORS[id] ? VM.FACTORS[id].name : id); }
@@ -718,7 +728,7 @@
     });
     /* Faktor-Filter */
     var chipsHost = el("div", { class: "q-chips", role: "group", "aria-label": "Faktoren" });
-    FILTER_CHIPS.forEach(function (c) {
+    FILTER_CHIPS.filter(function (c) { return !c.gated || VM.isOpen(c.id); }).forEach(function (c) {
       var b = el("button", { type: "button", class: "q-chip" + (c.off ? " is-off" : ""), dataset: { factor: c.id }, "aria-pressed": "false", disabled: c.off ? true : null, title: c.off || null, text: c.label });
       if (!c.off) b.addEventListener("click", function () {
         var i = sel.factors.indexOf(c.id);
@@ -767,7 +777,7 @@
        und der Trefferzahl auf dem Knopf. Dieselbe Auswertung wie der Faktor-Filter (factorHits). */
     var own = null;
     if (global.VUUI) {
-      var U3 = global.VUUI, OWN = [["growth", "Wächst die Firma?"], ["profitability", "Verdient sie gut?"], ["value", "Ist sie günstig?"], ["momentum", "Läuft der Kurs gut?"], ["risk", "Wie ruhig ist der Kurs?"], ["quality", "Sind die Zahlen solide?"]];
+      var U3 = global.VUUI, OWN = [["growth", "Ist die Firma gewachsen?"], ["profitability", "Verdient sie gut?"], ["value", "Wie ist der Preis im Branchenvergleich?"], ["momentum", "Lief der Kurs gut?"], ["risk", "Wie ruhig ist der Kurs für die Branche?"], ["quality", "Ist der Gewinn gedeckt und stabil?"]];
       var tmp = { factors: [], min: 70 };
       var shEl = document.createElement("div"); shEl.innerHTML = U3.sheet("qv3-own-sheet", "Eigene Bedingung", '<p class="vu-sm vu-mu" style="margin:-4px 0 8px">Welche Eigenschaft soll stark sein?</p><div data-q></div><div data-seg></div><button type="button" class="vu-btn vu-btn--block" data-go style="margin-top:14px">Hinzufügen</button>');
       var sheetEl = shEl.firstElementChild; document.body.append(sheetEl);
@@ -784,12 +794,12 @@
         go.textContent = r && !r.error ? "Hinzufügen · " + (r.total || r.rows.length).toLocaleString("de-DE") + " Treffer" : "Hinzufügen";
       }
       function paintOwn() {
-        qHost.replaceChildren.apply(qHost, OWN.map(function (o) {
+        qHost.replaceChildren.apply(qHost, OWN.concat(VM.isOpen("revisions") ? [["revisions", "Heben Analysten Schätzungen an?"]] : []).map(function (o) {
           var on = tmp.factors.indexOf(o[0]) >= 0, b = el("button", { type: "button", class: "qv3-li qv3-li-btn", "aria-pressed": on ? "true" : "false" }, [el("span", {}, [el("b", { class: "vu-sm", text: o[1] }), el("span", { class: "vu-xs vu-mu", text: VM.FACTORS[o[0]] ? VM.FACTORS[o[0]].name : o[0] })])]);
           b.insertAdjacentHTML("beforeend", on ? '<span class="vu-chip vu-chip--lime qv3-own-on">ab ' + tmp.min + "</span>" : U3.glyph("plus", 18));
           b.addEventListener("click", function () { var i = tmp.factors.indexOf(o[0]); if (i >= 0) tmp.factors.splice(i, 1); else tmp.factors.push(o[0]); paintOwn(); countOwn(); });
           return b;
-        }).concat([el("div", { class: "qv3-li is-off" }, [el("span", {}, [el("b", { class: "vu-sm", text: "Heben Analysten Schätzungen an?" }), el("span", { class: "vu-xs vu-mu", text: "Analysten · heute keine Daten" })])])]));
+        }));
         var seg = el("div", { class: "vu-seg", role: "group", "aria-label": "Schwelle", style: "margin-top:10px" });
         [50, 70, 90].forEach(function (v) { seg.append(el("button", { type: "button", "aria-pressed": tmp.min === v ? "true" : "false", text: "ab " + v, onclick: function () { tmp.min = v; paintOwn(); countOwn(); } })); });
         var custom3 = el("input", { type: "number", min: "0", max: "100", step: "1", inputmode: "numeric", "aria-label": "Eigener Wert", placeholder: "eigener Wert", value: [50, 70, 90].indexOf(tmp.min) < 0 ? String(tmp.min) : "" });
@@ -942,9 +952,11 @@
      (VUScreenerWorkspace, Quant V2 Faktorevidenz): ein Bereich ist „mindestens“ plus „höchstens“. Andere Datenbasis
      (Quant V1 & Marktdaten) öffnet den bisherigen Regel-Editor (?daten=v1). */
   /* Ein Wort je Eigenschaft (Konzept Quant 2026-11, Entscheidung 1), in der Reihenfolge des Profils. */
-  var PRO_F = [["profitability", "Verdient gut", "Verdient"], ["growth", "Wächst", "Wächst"], ["quality", "Zahlen solide", "Zahlen"],
-    ["momentum", "Kurs läuft", "Kurs"], ["value", "Günstig", "Günstig"], ["risk", "Ruhiger Kurs", "Ruhiger"]];
-  var PRO_ASK = { growth: "Wächst die Firma?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs?", momentum: "Läuft der Kurs gut?", value: "Ist sie günstig?", quality: "Sind die Zahlen solide?" };
+  var PRO_F_BASE = [["profitability", "Verdient gut", "Verdient"], ["growth", "Ist gewachsen", "Gewachsen"], ["quality", "Gewinn gedeckt & stabil", "Gedeckt"],
+    ["momentum", "Kurs lief gut", "Kurs"], ["value", "Preis im Branchenvergleich", "Preis"], ["risk", "Ruhig für die Branche", "Ruhig"]];
+  /* Analysten erscheinen in der Auswahl erst, wenn der Faktor Werte hat. */
+  function proF() { return VM.isOpen("revisions") ? PRO_F_BASE.concat([["revisions", "Analysten", "Analysten"]]) : PRO_F_BASE; }
+  var PRO_ASK = { revisions: "Heben Analysten Schätzungen an?", growth: "Ist die Firma gewachsen?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs für die Branche?", momentum: "Lief der Kurs gut?", value: "Wie ist der Preis im Branchenvergleich?", quality: "Ist der Gewinn gedeckt und stabil?" };
   var PRO_COLS_KEY = "vu.quant.pro.cols.v1";
   async function screenerProV3(main, ctx, params) {
     var W = global.VUScreenerWorkspace, U = global.VUUI, api = ctx.api;
@@ -967,7 +979,7 @@
     if (!sortF || !PRO_ASK[sortF]) sortF = conds[0].id;
     var cols; try { cols = JSON.parse(localStorage.getItem(PRO_COLS_KEY) || "null"); } catch (e) { cols = null; }
     if (!Array.isArray(cols) || !cols.length) cols = ["profitability", "quality", "growth", "momentum", "risk"];
-    var nameOfF = function (id) { return (PRO_F.filter(function (f) { return f[0] === id; })[0] || [id, id, id]); };
+    var nameOfF = function (id) { return (proF().filter(function (f) { return f[0] === id; })[0] || [id, id, id]); };
     dropHero(); /* die dunkle Profi-Fläche trägt Titel und Umschalter selbst */
     /* Konzept Quant 2026-11 (QX03, Screen q-screener-pro, Entscheidung 8): Profi bleibt hell, Bedingungen als Chips,
        Tabellenkopf mit Symbol und Wort bleibt beim Scrollen stehen, Zellen ab 75 neongrün. */
@@ -1025,27 +1037,26 @@
     }
     function render() {
       condHost.replaceChildren.apply(condHost, conds.map(condChip).concat([addBtn]));
-      addBtn.hidden = conds.length >= PRO_F.length;
+      addBtn.hidden = conds.length >= proF().length;
       var f = nameOfF(sortF); sortChip.textContent = "Sortieren: " + f[1] + (sortDir === "desc" ? " ▼" : " ▲");
     }
     addBtn.addEventListener("click", function () {
       var body = addSheet.querySelector("[data-body]"); body.replaceChildren();
-      PRO_F.filter(function (f) { return !conds.some(function (c) { return c.id === f[0]; }); }).forEach(function (f) {
+      proF().filter(function (f) { return !conds.some(function (c) { return c.id === f[0]; }); }).forEach(function (f) {
         var b = el("button", { type: "button", class: "qv3-li qv3-li-btn" }, [el("span", {}, [el("b", { class: "vu-sm", text: PRO_ASK[f[0]] }), el("span", { class: "vu-xs vu-mu", text: f[1] })])]);
         b.insertAdjacentHTML("beforeend", U.glyph("plus", 18));
         b.addEventListener("click", function () { conds.push({ id: f[0], lo: 70, hi: 100 }); U.closeSheet(addSheet); render(); schedule(); });
         body.append(b);
       });
-      body.append(el("div", { class: "qv3-li is-off" }, [el("span", {}, [el("b", { class: "vu-sm", text: "Heben Analysten Schätzungen an?" }), el("span", { class: "vu-xs vu-mu", text: "Analysten · heute keine Daten" })])]));
       U.openSheet(addSheet);
     });
     colsBtn.addEventListener("click", function () {
       var body = colSheet.querySelector("[data-body]"); body.replaceChildren();
-      PRO_F.forEach(function (f) {
+      proF().forEach(function (f) {
         var box = el("input", { type: "checkbox", checked: cols.indexOf(f[0]) >= 0 ? "checked" : null });
         box.checked = cols.indexOf(f[0]) >= 0;
         box.addEventListener("change", function () {
-          cols = PRO_F.map(function (x) { return x[0]; }).filter(function (id) { return id === f[0] ? box.checked : cols.indexOf(id) >= 0; });
+          cols = proF().map(function (x) { return x[0]; }).filter(function (id) { return id === f[0] ? box.checked : cols.indexOf(id) >= 0; });
           if (!cols.length) { cols = [f[0]]; box.checked = true; }
           try { localStorage.setItem(PRO_COLS_KEY, JSON.stringify(cols)); } catch (e) { /* nur Komfort */ }
           paintTable();
@@ -1094,7 +1105,7 @@
     function paintTable() {
       var res = lastRes;
       if (!res) return;
-      var show = PRO_F.filter(function (f) { return cols.indexOf(f[0]) >= 0; });
+      var show = proF().filter(function (f) { return cols.indexOf(f[0]) >= 0; });
       table.style.setProperty("--cols", show.length);
       var hr = el("div", { class: "qv3-prow qv3-prow--h", role: "row" }, [el("span", { role: "columnheader", text: "Aktie" })].concat(show.map(function (f) {
         var b = el("button", { type: "button", class: "num", role: "columnheader", "aria-label": f[1] + (sortF === f[0] ? (sortDir === "desc" ? ", absteigend sortiert" : ", aufsteigend sortiert") : ", sortieren"), "aria-sort": sortF === f[0] ? (sortDir === "desc" ? "descending" : "ascending") : "none" });
@@ -1275,7 +1286,7 @@
   function strategiesV3(main, list, byId, index, ctx) {
     var byP = {}; list.forEach(function (p) { byP[p.profileId] = p; });
     var trBy = {}; ((index && index.historicalEvidence && index.historicalEvidence.transitions) || []).forEach(function (t) { trBy[t.profileId] = t; });
-    var ids = VM.STYLE_ORDER.filter(function (id) { return byP[id]; }).concat(list.map(function (p) { return p.profileId; }).filter(function (id) { return VM.STYLE_ORDER.indexOf(id) < 0; }));
+    var ids = VM.STYLE_ORDER.filter(function (id) { return byP[id]; }).concat(list.map(function (p) { return p.profileId; }).filter(function (id) { return VM.STYLE_ORDER.indexOf(id) < 0 && VM.styleOpen(id); }));
     var ok = function (id) { var ix = byId[id]; return ix && typeof ix.count === "number" && (!ix.availability || ix.availability.state === "AVAILABLE"); };
     var open = ids.filter(ok), closed = ids.filter(function (id) { return !ok(id); });
     var h = '<header class="qv3-intro"><p class="vu-ltag">Anlagestile</p><h1 class="vu-lt">Welche Art von Firma suchst du?</h1><p class="vu-lead">Jeder Stil ist eine feste Regel aus Eigenschaften. Quant prüft täglich, welche Aktien alle Regeln erfüllen.</p></header>' +

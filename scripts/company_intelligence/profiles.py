@@ -4,6 +4,7 @@ Only explicit issuer business sentences are eligible. Missing facts stay empty;
 SEC identity/industry alone never becomes a business description.
 """
 import hashlib
+from contextlib import contextmanager
 import json
 import re
 from functools import lru_cache
@@ -17,7 +18,7 @@ from .transport import SourceError, BudgetExhausted
 from .q4_events import public_link
 
 VERSION = 'company-profile-1.0.0'
-PARSER_VERSION = 'company-profile-parser-1.0.22'
+PARSER_VERSION = 'company-profile-parser-1.0.24'
 WEB_DAYS = 90
 SEC_STALE_DAYS = 550
 MAX_DOCUMENT = 64 * 1024 * 1024
@@ -27,6 +28,36 @@ BUSINESS = re.compile(r'\b(?:software|platforms?|products?|services?|solutions?|
 RELAXED_BUSINESS = re.compile(r'\b(?:membership warehouses?|warehouse clubs?)\b', re.I)
 EXCLUDED = re.compile(r'\b(?:headcount|forward.looking|may|might|could|will|expects?|intends?|plans?|believes?|aims?|aspires?|best|revolutionary|unrivaled|unparalleled|world.class|award.winning|visionary|transforming the future|market leader)\b', re.I)
 PROMOTION = re.compile(r'\b(?:(?:world[’\']?s?[ -]|nation[’\']s[ -]|global[ -]|industry[ -]|market[ -])?(?:leading|largest|premier|top.ranked)|growth.oriented|high.return|iconic|innovative|cutting.edge|state.of.the.art|intelligent|novel|differentiated|fashionable|comprehensive|most advanced|effectively)\s*,?\s*', re.I)
+
+
+# Parser 1.0.23 (Strang AF, 12.11.2026, Freigabe Steuerung): Kurzname als Subjekt und Subsidiary-Appositive, nur im zweiten
+# (relaxed) Durchlauf, der nur laeuft, wenn der erste nichts findet; kein bisheriger Titel aendert damit seinen Text.
+# experiment(False) liefert den Stand 1.0.22 fuer den Vergleich (profile_diagnosis.compare).
+# 'inline': dritter Durchlauf fuer inline-block-Fetzen (CALM), ab 1.0.24 an (Freigabe Steuerung 12.11.2026 nach Vorher/Nachher: 320 Titel, TEXT_CHANGED 0).
+_EXPERIMENT = {'on': True, 'inline': True, 'third': False}
+LEGAL_SUFFIX = re.compile(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|company|co\.?|group|holdings?|limited|ltd\.?|plc|llc|l\.p\.|lp)\s*$', re.I)
+
+
+@contextmanager
+def experiment(on=False, inline=False):
+    before = dict(_EXPERIMENT)
+    _EXPERIMENT['on'] = on
+    _EXPERIMENT['inline'] = inline
+    try:
+        yield
+    finally:
+        _EXPERIMENT.update(before)
+
+
+def short_name(legal):
+    """Rechtsname ohne angehaengte Rechtsform-/Gruppenwoerter ('Goldman Sachs Group, Inc.' -> 'Goldman Sachs'); sonst None."""
+    value = re.sub(r'^the\s+', '', legal.strip(), flags=re.I)
+    for _ in range(4):
+        shorter = LEGAL_SUFFIX.sub('', value).strip(' ,')
+        if shorter == value:
+            break
+        value = shorter
+    return value if len(value) >= 6 and value.lower() != re.sub(r'^the\s+', '', legal.strip(), flags=re.I).lower() else None
 
 
 def later(now, days):
@@ -42,8 +73,11 @@ def display_name(value):
 
 class TextBlocks(HTMLParser):
     """Visible paragraphs/headings; navigation, scripts and inline XBRL hidden facts excluded."""
-    def __init__(self):
+    def __init__(self, inline_div=False):
         super().__init__(convert_charrefs=True)
+        # inline_div: PDF-artig gesetzte Filings (CALM, CATO: jedes Wort und jeder Leerraum in einem <div style="display:inline-block">)
+        # zerfielen in Wortfetzen. Nur im dritten Durchlauf (extract) gesetzt; dort fuegt ein solches <div> den Text zusammen.
+        self.inline_div = inline_div
         self.blocks, self.parts, self.stack = [], [], []
         self.language = None
         self.registrants = set()
@@ -62,10 +96,11 @@ class TextBlocks(HTMLParser):
         if tag == 'html':
             self.language = (attrs.get('lang') or '').lower().split('-')[0]
         hidden = bool(self.stack and self.stack[-1][1]) or tag in ('script', 'style', 'nav', 'footer', 'header', 'ix:hidden') or 'hidden' in attrs or re.search(r'display\s*:\s*none', attrs.get('style', ''), re.I) is not None
-        if tag in ('p', 'div', 'h1', 'h2', 'h3', 'h4', 'li', 'td', 'br'):
+        inline = self.inline_div and tag == 'div' and re.search(r'display\s*:\s*inline-block', attrs.get('style', ''), re.I) is not None
+        if tag in ('p', 'div', 'h1', 'h2', 'h3', 'h4', 'li', 'td', 'br') and not inline:
             self.flush()
         if tag not in ('meta', 'link', 'img', 'br', 'hr', 'input', 'source', 'wbr'):
-            self.stack.append((tag, hidden))
+            self.stack.append((tag, hidden, inline))
 
     def handle_endtag(self, tag):
         if tag == 'ix:nonnumeric' and self.registrant_parts is not None:
@@ -73,7 +108,8 @@ class TextBlocks(HTMLParser):
             if name:
                 self.registrants.add(name)
             self.registrant_parts = None
-        if tag in ('p', 'div', 'h1', 'h2', 'h3', 'h4', 'li', 'td'):
+        closing_inline = tag == 'div' and any(item[0] == 'div' for item in self.stack) and [item for item in self.stack if item[0] == 'div'][-1][2]
+        if tag in ('p', 'div', 'h1', 'h2', 'h3', 'h4', 'li', 'td') and not closing_inline:
             self.flush()
         for i in range(len(self.stack) - 1, -1, -1):
             if self.stack[i][0] == tag:
@@ -87,10 +123,10 @@ class TextBlocks(HTMLParser):
             self.parts.append(data)
 
 
-def blocks(body):
+def blocks(body, inline_div=False):
     if not isinstance(body, bytes) or len(body) > MAX_DOCUMENT:
         raise SourceError('PROFILE_DOCUMENT_TOO_LARGE_OR_INVALID')
-    doc = TextBlocks()
+    doc = TextBlocks(inline_div)
     doc.feed(body.decode('utf-8', 'replace'))
     doc.flush()
     return doc
@@ -216,6 +252,8 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True, relaxed=Fa
         n = re.sub(r'\s+(?:class\s+[a-z]|ordinary shares|common stock)\b.*', '', n, flags=re.I)
         names.append(n.strip())
         names.append(re.sub(r'[, ]+\b(?:incorporated|inc\.?|corporation|corp\.?|limited|ltd\.?|plc)\s*$', '', n, flags=re.I).strip())
+        if _EXPERIMENT['on'] and relaxed and sec and short_name(n):
+            names.append(short_name(n))
     subject = None
     for n in sorted(set(names), key=len, reverse=True):
         match = re.match(r'^' + re.escape(n) + r'(?!\w)(?:[, ]+(?:incorporated|inc\.?|corporation|corp\.?|limited|ltd\.?|plc)(?!\w))?', text, re.I) if n else None
@@ -265,6 +303,11 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True, relaxed=Fa
     delegation = None
     if sec:
         tail = re.sub(r'^\s*,?\s*(?:and|together with) its (?:consolidated )?subsidiaries\b', '', tail, flags=re.I)
+        if _EXPERIMENT['on'] and relaxed:
+            # Nur im zweiten Durchlauf (relaxed): findet der erste etwas, bleibt der Text jedes bisherigen Titels unveraendert.
+            # "X, together with the subsidiaries through which businesses are conducted (the Company), is a ..." und "X, through our subsidiaries, provides ..."
+            tail = re.sub(r'^\s*,\s*together with (?:the|its|our) (?:consolidated )?subsidiaries(?: through which [^,(]{0,100}?)?\s*(?:\([^)]{0,60}\))?\s*(?=,)', '', tail, flags=re.I)
+            tail = re.sub(r'^\s*,\s*through (?:our|its) (?:consolidated |wholly[- ]owned )?subsidiaries\s*(?=,)', '', tail, flags=re.I)
         for _ in range(3):
             # Nested legal definitions are common in business introductions.
             # Bound the balanced prefix and never consume the predicate.
@@ -313,6 +356,9 @@ def issuer_sentence(raw, company, sec=False, allow_first_person=True, relaxed=Fa
     predicate = re.sub(r'^ is the (?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|\d+(?:st|nd|rd|th)) largest ([a-z -]{0,60})(company|provider|supplier|manufacturer|producer|retailer|operator|distributor|bank)\b', r' is a \1\2', predicate, flags=re.I)
     text = subject + predicate
     text = re.sub(r'\bsecure,\s*trusted,\s*and\s*innovative\s+', '', text, flags=re.I)
+    if _EXPERIMENT['third']:
+        # Dritter Durchlauf: "is the largest egg company" darf nicht zu "is the egg company" (= einzige) werden, sondern "is an egg company".
+        text = subject + re.sub(r'(?<=\s)(is|are) the (?:largest|leading|biggest|premier|top-ranked|first) (?=(\w))', lambda m: m[1] + (' an ' if m[2].lower() in 'aeiou' else ' a '), text[len(subject):], flags=re.I)
     text = subject + PROMOTION.sub('', text[len(subject):])
     text = subject + re.sub(r'\b(?:precise and reliable |trusted and |high.quality |robust |highly engineered |patient.centric |unique |advanced )', '', text[len(subject):], flags=re.I)
     text = re.sub(r'\b(broad|extensive|diverse|full|complete) and (portfolio|range|set|suite|solutions|services|products)\b', r'\1 \2', text, flags=re.I)
@@ -382,6 +428,13 @@ def extract(company, body, source, now, official_website=None):
     # Second, relaxed pass ONLY when the unchanged first pass found nothing: an issuer that already has a
     # profile keeps exactly the same description (and with it its reviewed German copy, reviewed_profiles.py).
     eligible = first if first[0] or not sec else _eligible(company, doc, source, sec, relaxed=True)
+    if _EXPERIMENT['on'] and _EXPERIMENT['inline'] and sec and not eligible[0] and re.search(rb'display\s*:\s*inline-block', body, re.I):
+        # Dritter Durchlauf, nur wenn die beiden ersten nichts fanden und das Dokument inline-block-Fetzen enthaelt (Strang AF).
+        _EXPERIMENT['third'] = True
+        try:
+            eligible = _eligible(company, blocks(body, inline_div=True), source, sec, relaxed=True)
+        finally:
+            _EXPERIMENT['third'] = False
     return _profile(company, body, source, now, official_website, url, sec, eligible)
 
 

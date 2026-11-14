@@ -320,10 +320,10 @@
       "cik": "0001537435",
       "name": "TECOGEN INC.",
       "sic": "3585",
-      "rawFacts": 13710,
-      "mappedFacts": 5205,
-      "unmappedFacts": 8294,
-      "calendarYears": 16,
+      "rawFacts": 14046,
+      "mappedFacts": 5314,
+      "unmappedFacts": 8616,
+      "calendarYears": 15,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -332,28 +332,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 16,
-      "quarterlyPeriods": 60,
+      "quarterlyPeriods": 61,
       "firstPeriodEnd": "2010-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 15.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "eps_diluted": {
           "annualPeriods": 9,
-          "quarterlyPeriods": 37,
+          "quarterlyPeriods": 38,
           "firstAvailablePeriod": "2016-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 9.0
         },
         "free_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0,
@@ -373,21 +373,21 @@
         },
         "net_income": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "operating_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
         },
         "revenue": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 58,
+          "quarterlyPeriods": 59,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -401,14 +401,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 56,
+          "quarterlyPeriods": 58,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "total_assets": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 55,
+          "quarterlyPeriods": 57,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -431,45 +431,46 @@
         }
       },
       "quality": {
-        "HIGH": 367,
+        "HIGH": 376,
         "MEDIUM": 113
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 480,
-        "resolvedValues": 480
+        "datableValues": 489,
+        "resolvedValues": 489
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 8921,
+        "rules_version": "1.1.0",
+        "total": 9243,
         "by_severity": {
-          "INFO": 8294,
+          "INFO": 8616,
           "WARNING": 627
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 584,
-          "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 8294
+          "CONCEPT_DISAGREEMENT": 592,
+          "RESTATEMENT_CONFLICT": 35,
+          "UNKNOWN_CONCEPT": 8616
         }
       },
       "latestFiling": {
-        "accession": "0001537435-26-000066",
-        "filing_date": "2026-08-13",
+        "accession": "0001537435-26-000097",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 56
+        "periodic_filings": 57,
+        "acceptance_datetime": "2026-11-12T17:05:16.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "436baa7c3d479a6b596057fe5be65f218246213a38458c746a5c1ba06d0bca7b",
+      "sourceDigest": "f5daf865cbdb8f8893ff3d96c4c86503106175c2a546af31ecbe8f999c399305",
       "issuerId": "iss_cik_0001537435"
     },
     {

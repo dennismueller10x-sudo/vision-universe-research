@@ -901,9 +901,9 @@
       "cik": "0001541157",
       "name": "Akari Therapeutics Plc",
       "sic": "2834",
-      "rawFacts": 5981,
-      "mappedFacts": 2072,
-      "unmappedFacts": 4013,
+      "rawFacts": 6215,
+      "mappedFacts": 2163,
+      "unmappedFacts": 4210,
       "calendarYears": 20,
       "industry": null,
       "industryMetrics": {},
@@ -913,9 +913,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 21,
-      "quarterlyPeriods": 47,
+      "quarterlyPeriods": 48,
       "firstPeriodEnd": "2004-10-06",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 20.0,
       "metrics": {
         "capital_expenditures": {
@@ -927,7 +927,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 14,
+          "quarterlyPeriods": 15,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -954,14 +954,14 @@
         },
         "net_income": {
           "annualPeriods": 20,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2006-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 19.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -982,14 +982,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 21,
-          "quarterlyPeriods": 44,
+          "quarterlyPeriods": 45,
           "firstAvailablePeriod": "2005-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 20.0
         },
         "total_assets": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 33,
+          "quarterlyPeriods": 34,
           "firstAvailablePeriod": "2011-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 14.0
@@ -1012,47 +1012,48 @@
         }
       },
       "quality": {
-        "HIGH": 246,
+        "HIGH": 251,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 247,
-        "resolvedValues": 247
+        "datableValues": 252,
+        "resolvedValues": 252
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4197,
+        "rules_version": "1.1.0",
+        "total": 4397,
         "by_severity": {
-          "INFO": 4013,
-          "WARNING": 184
+          "INFO": 4210,
+          "WARNING": 187
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 88,
+          "CONCEPT_DISAGREEMENT": 89,
           "NEGATIVE_WHERE_IMPOSSIBLE": 1,
-          "RESTATEMENT_CONFLICT": 62,
+          "RESTATEMENT_CONFLICT": 64,
           "UNEXPECTED_DURATION": 33,
-          "UNKNOWN_CONCEPT": 4013
+          "UNKNOWN_CONCEPT": 4210
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037730",
-        "filing_date": "2026-08-13",
+        "accession": "0001493152-26-051372",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 28
+        "periodic_filings": 29,
+        "acceptance_datetime": "2026-11-12T21:00:53.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "1f1214b81aa6686b051291dadca7859ea139ec571c2d151af4c13d706ce27b74",
+      "sourceDigest": "e5539d8ce716e169b6f03ca9e2d0c7497b350faf14a57b205f0f3ec659659766",
       "issuerId": "iss_cik_0001541157"
     },
     {

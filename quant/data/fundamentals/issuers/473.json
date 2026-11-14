@@ -368,9 +368,9 @@
       "cik": "0001746473",
       "name": "PLIANT THERAPEUTICS, INC.",
       "sic": "2834",
-      "rawFacts": 6225,
-      "mappedFacts": 2333,
-      "unmappedFacts": 4000,
+      "rawFacts": 6489,
+      "mappedFacts": 2434,
+      "unmappedFacts": 4218,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -380,28 +380,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 8,
-      "quarterlyPeriods": 31,
+      "quarterlyPeriods": 32,
       "firstPeriodEnd": "2018-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 7.0,
       "metrics": {
         "capital_expenditures": {
-          "annualPeriods": 7,
-          "quarterlyPeriods": 28,
-          "firstAvailablePeriod": "2019-12-31",
-          "lastAvailablePeriod": "2025-12-31",
-          "historyYears": 6.0
-        },
-        "eps_diluted": {
           "annualPeriods": 7,
           "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
+        "eps_diluted": {
+          "annualPeriods": 7,
+          "quarterlyPeriods": 30,
+          "firstAvailablePeriod": "2019-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 6.0
+        },
         "free_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0,
@@ -414,21 +414,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "net_income": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 30,
+          "quarterlyPeriods": 31,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "operating_cash_flow": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 28,
+          "quarterlyPeriods": 29,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -449,14 +449,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 8,
-          "quarterlyPeriods": 31,
+          "quarterlyPeriods": 32,
           "firstAvailablePeriod": "2018-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 7.0
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 26,
+          "quarterlyPeriods": 27,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
@@ -479,46 +479,47 @@
         }
       },
       "quality": {
-        "HIGH": 262,
+        "HIGH": 269,
         "MEDIUM": 3
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 265,
-        "resolvedValues": 265
+        "datableValues": 272,
+        "resolvedValues": 272
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4064,
+        "rules_version": "1.1.0",
+        "total": 4285,
         "by_severity": {
-          "INFO": 4000,
-          "WARNING": 64
+          "INFO": 4218,
+          "WARNING": 67
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 54,
+          "CONCEPT_DISAGREEMENT": 57,
           "RESTATEMENT_CONFLICT": 3,
           "UNEXPECTED_DURATION": 7,
-          "UNKNOWN_CONCEPT": 4000
+          "UNKNOWN_CONCEPT": 4218
         }
       },
       "latestFiling": {
-        "accession": "0001746473-26-000113",
-        "filing_date": "2026-08-11",
+        "accession": "0001746473-26-000125",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 27
+        "periodic_filings": 28,
+        "acceptance_datetime": "2026-11-12T21:09:37.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "c8efe23c7c8a7fca66bd4bf8ed21aa71ab07924942f0a29eda3f6eba7419002f",
+      "sourceDigest": "0962e28b1e316abd3be578c8e549c807639f7555b65c1a9ff9caabea080e47d3",
       "issuerId": "iss_cik_0001746473"
     },
     {

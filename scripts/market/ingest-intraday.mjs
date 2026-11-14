@@ -232,6 +232,18 @@ if (SCOPE === "universe") {
   if (unbekannt.length) { console.error(`  ABBRUCH: nicht im Umfang: ${unbekannt.join(", ")}`); process.exit(1); }
 }
 symbole = [...new Set(symbole)].sort();
+/* --part=k/N: nur jeder N-te Titel (Rest k-1) dieser Sortierung. Der Taktgeber holt einen Zyklus in N Teilen und
+   veroeffentlicht jeden Teil sofort (Boersenstart-Auswertung 12.11.2026: ein Zyklus dauert ~14 min, der Commit kam erst am
+   Ende). Die Teile sind disjunkt und decken zusammen genau den Umfang ab; gleiche Anfragen, gleiche Kosten. */
+const TEIL = /^(\d+)\/(\d+)$/.exec(arg("--part", "") || "");
+if (arg("--part", null) !== null && !TEIL) { console.error("  ABBRUCH: --part=k/N erwartet."); process.exit(1); }
+if (TEIL) {
+  const k = parseInt(TEIL[1], 10), n = parseInt(TEIL[2], 10);
+  if (k < 1 || n < 1 || k > n) { console.error("  ABBRUCH: --part=" + k + "/" + n + " ausserhalb 1..N."); process.exit(1); }
+  const gesamt = symbole.length;
+  symbole = symbole.filter((_, i) => i % n === k - 1);
+  console.log(`  Teil ${k}/${n}: ${symbole.length} von ${gesamt} Titeln`);
+}
 console.log(`  Umfang: ${scopeLabel} - ${symbole.length} Titel · Intervall ${INTERVAL}${EXTENDED ? " + erweiterte Zeiten" : ""}`);
 console.log(`  Budget: hoechstens ${MAX_REQUESTS} Anfragen, ${CONCURRENCY} gleichzeitig\n`);
 

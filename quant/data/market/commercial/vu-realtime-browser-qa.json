@@ -1,162 +1,135 @@
 {
   "schemaVersion": "vu-realtime-browser-qa-1.1.0",
   "auftrag": "Owner 17.09.2026 §19/§20: Realtime auf der Aktienseite, im echten Browser",
-  "checkedAt": "2026-09-17T19:05:07.485Z",
+  "checkedAt": "2026-11-13T14:51:49.763Z",
   "origin": "https://research.visionuniverse.de",
   "session": {
     "phase": "REGULAR",
-    "localTime": "15:05:07",
+    "localTime": "09:51:49",
     "isOpen": true
   },
+  "mode": "WORKTREE",
   "note": "Die Seite laeuft unter ihrem echten Ursprung; nur der Name ist im Testbrowser auf 127.0.0.1 abgebildet. Die Ursprungspruefung des Workers laeuft dabei unveraendert.",
   "honesty": "Ein Titel ohne Marktereignis liefert keinen Kurs. Das ist kein Systemfehler und wird hier auch nicht als Latenz gezaehlt.",
   "symbols": [
     {
-      "symbol": "AAPL",
-      "prices": {
-        "kopf": 336.94,
-        "chart": 336.94,
-        "kopfText": "336,94 $+1,69 % heute",
-        "deviation": 0
-      },
-      "connected": true,
-      "streamState": "OPEN",
-      "subscribed": [
-        "AAPL"
-      ],
-      "ticks": 34,
-      "firstTickMs": 499,
-      "chartUpdatesAfterLoad": 32,
-      "labels": [
-        "Heute · Stand 13:20 · nicht aktuell",
-        "Markt geöffnet · Live"
-      ],
-      "latencyMs": {
-        "samples": 34,
-        "providerToCloudflare": 26,
-        "cloudflareToClient": 554,
-        "endToEnd": 580,
-        "max": 1159
-      },
-      "consoleErrors": [],
-      "verdict": "TICKS"
-    },
-    {
       "symbol": "NVDA",
       "prices": {
-        "kopf": 219.6,
-        "chart": 219.6,
-        "kopfText": "219,60 $+3,50 % heute",
-        "deviation": 0
+        "kopf": 144.8,
+        "chart": 166.19,
+        "kopfText": "144,80 €−2,72 % heute",
+        "deviation": 0.12870810518081705
       },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "NVDA"
       ],
-      "ticks": 37,
+      "ticks": 209,
       "firstTickMs": 249,
-      "chartUpdatesAfterLoad": 26,
+      "chartUpdatesAfterLoad": 0,
+      "surface": {
+        "intradayChart": false,
+        "aktiverZeitraum": "1J",
+        "eintagVerfuegbar": true,
+        "eintagGrund": null,
+        "sourceState": null,
+        "sourceReason": null,
+        "quellenText": "Kursverlauf in einem Jahr: 11.11.2025 – 12.11.2026 · Tagesschlusskurse · split-bereinigt"
+      },
       "labels": [
-        "Markt geöffnet · Live"
+        "Schluss Donnerstag"
       ],
       "latencyMs": {
-        "samples": 37,
-        "providerToCloudflare": 26,
-        "cloudflareToClient": 629,
-        "endToEnd": 655,
-        "max": 1083
+        "samples": 209,
+        "providerToCloudflare": 2808,
+        "cloudflareToClient": 447,
+        "endToEnd": 3255,
+        "max": 6396
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
       "verdict": "TICKS"
     },
     {
-      "symbol": "MSFT",
+      "symbol": "AAPL",
       "prices": {
-        "kopf": 496.21,
-        "chart": 496.21,
-        "kopfText": "496,21 $−0,18 % heute",
-        "deviation": 0
+        "kopf": 322.56,
+        "chart": 354.88,
+        "kopfText": "322,56 €+1,48 % heute",
+        "deviation": 0.09107303877366996
       },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
-        "MSFT"
+        "AAPL"
       ],
-      "ticks": 17,
+      "ticks": 181,
       "firstTickMs": 249,
-      "chartUpdatesAfterLoad": 15,
+      "chartUpdatesAfterLoad": 0,
+      "surface": {
+        "intradayChart": false,
+        "aktiverZeitraum": "1J",
+        "eintagVerfuegbar": true,
+        "eintagGrund": null,
+        "sourceState": null,
+        "sourceReason": null,
+        "quellenText": "Kursverlauf in einem Jahr: 11.11.2025 – 12.11.2026 · Tagesschlusskurse · split-bereinigt"
+      },
       "labels": [
-        "Markt geöffnet · Live"
+        "Schluss Donnerstag"
       ],
       "latencyMs": {
-        "samples": 17,
-        "providerToCloudflare": 31,
-        "cloudflareToClient": 912,
-        "endToEnd": 943,
-        "max": 1138
+        "samples": 181,
+        "providerToCloudflare": 112,
+        "cloudflareToClient": 564,
+        "endToEnd": 676,
+        "max": 1842
       },
-      "consoleErrors": [],
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      ],
       "verdict": "TICKS"
     },
     {
       "symbol": "VLO",
       "prices": {
-        "kopf": 412.78,
-        "chart": 412.78,
-        "kopfText": "412,78 $+3,96 % heute",
-        "deviation": 0
+        "kopf": 329.97,
+        "chart": 374.95,
+        "kopfText": "329,97 €−1,74 % heute",
+        "deviation": 0.119962661688225
       },
       "connected": true,
       "streamState": "OPEN",
       "subscribed": [
         "VLO"
       ],
-      "ticks": 3,
-      "firstTickMs": 38999,
-      "chartUpdatesAfterLoad": 3,
+      "ticks": 24,
+      "firstTickMs": 24749,
+      "chartUpdatesAfterLoad": 0,
+      "surface": {
+        "intradayChart": false,
+        "aktiverZeitraum": "1J",
+        "eintagVerfuegbar": true,
+        "eintagGrund": null,
+        "sourceState": null,
+        "sourceReason": null,
+        "quellenText": "Kursverlauf in einem Jahr: 11.11.2025 – 12.11.2026 · Tagesschlusskurse · split-bereinigt"
+      },
       "labels": [
-        "Heute · Stand 13:25 · nicht aktuell",
-        "Markt geöffnet · Live"
+        "Schluss Donnerstag"
       ],
       "latencyMs": {
-        "samples": 3,
-        "providerToCloudflare": 24,
-        "cloudflareToClient": 191,
-        "endToEnd": 215,
-        "max": 282
+        "samples": 24,
+        "providerToCloudflare": 5372,
+        "cloudflareToClient": 931,
+        "endToEnd": 6303,
+        "max": 8161
       },
-      "consoleErrors": [],
-      "verdict": "TICKS"
-    },
-    {
-      "symbol": "PANW",
-      "prices": {
-        "kopf": 376.56,
-        "chart": 376.56,
-        "kopfText": "376,56 $+0,39 % heute",
-        "deviation": 0
-      },
-      "connected": true,
-      "streamState": "OPEN",
-      "subscribed": [
-        "PANW"
+      "consoleErrors": [
+        "Failed to load resource: the server responded with a status of 404 (Not Found)"
       ],
-      "ticks": 5,
-      "firstTickMs": 2499,
-      "chartUpdatesAfterLoad": 5,
-      "labels": [
-        "Heute · Stand 13:25 · nicht aktuell",
-        "Markt geöffnet · Live"
-      ],
-      "latencyMs": {
-        "samples": 5,
-        "providerToCloudflare": 22,
-        "cloudflareToClient": 730,
-        "endToEnd": 751,
-        "max": 1071
-      },
-      "consoleErrors": [],
       "verdict": "TICKS"
     }
   ],
@@ -164,31 +137,31 @@
     "vorher": {
       "state": "OPEN",
       "connected": true,
-      "label": "Markt geöffnet · Live"
+      "label": "Schluss Donnerstag"
     },
     "nachAbriss": {
       "state": "RECONNECTING",
       "connected": false,
-      "label": "Markt geöffnet · Live",
-      "chartDa": true
+      "label": "Schluss Donnerstag",
+      "chartDa": false
     },
     "nachWiederanlauf": {
       "state": "OPEN",
       "connected": true,
-      "label": "Markt geöffnet · Live",
+      "label": "Schluss Donnerstag",
       "stats": {
         "opens": 2,
         "closes": 1,
         "errors": 0,
-        "messages": 14,
-        "ticks": 10,
+        "messages": 11,
+        "ticks": 7,
         "denied": 0,
         "retries": 1,
         "subscribes": 1,
         "unsubscribes": 0,
-        "notifications": 15,
-        "lastMessageAt": "2026-09-17T19:11:11.719Z",
-        "lastTickAt": "2026-09-17T19:11:11.719Z",
+        "notifications": 12,
+        "lastMessageAt": "2026-11-13T15:07:48.658Z",
+        "lastTickAt": "2026-11-13T15:07:48.658Z",
         "state": "OPEN",
         "reason": null,
         "symbols": 1,
@@ -199,17 +172,17 @@
   "expiry": {
     "freshSeconds": 90,
     "vorher": {
-      "label": "Markt geöffnet · Live",
+      "label": "Schluss Donnerstag",
       "live": true
     },
     "nachher": {
-      "label": "Heute · Stand 13:20 · nicht aktuell",
+      "label": "Schluss Donnerstag",
       "connected": false,
       "state": "RECONNECTING",
-      "chartDa": true,
-      "chartHatLinie": true,
-      "fussnote": "5-Minuten-Kurse · Uhrzeiten New York · Startlinie: Vortagesschluss · der Verlauf ist vom laufenden Handelstag, aber stehen geblieben (Stand 13:20); neuere Kurse folgen mit dem nächsten Datenlauf",
-      "kopf": "335,46 $"
+      "chartDa": false,
+      "chartHatLinie": false,
+      "fussnote": null,
+      "kopf": "354,88 $"
     }
   },
   "checks": [
@@ -218,8 +191,8 @@
       "question": "jede Aktienseite verbindet sich mit dem Strom",
       "ok": true,
       "detail": {
-        "verbunden": 5,
-        "von": 5
+        "verbunden": 3,
+        "von": 3
       }
     },
     {
@@ -227,52 +200,61 @@
       "question": "AAPL und NVDA liefern Kurse ohne Neuladen",
       "ok": true,
       "detail": [
-        "AAPL:34",
-        "NVDA:37"
+        "NVDA:209",
+        "AAPL:181"
+      ]
+    },
+    {
+      "id": "tagesverlaufDa",
+      "question": "bei offener Boerse liegt fuer jeden Titel ein Tagesverlauf aus",
+      "ok": false,
+      "detail": [
+        "NVDA: Zeitraum 1J, 1T frei",
+        "AAPL: Zeitraum 1J, 1T frei",
+        "VLO: Zeitraum 1J, 1T frei"
       ]
     },
     {
       "id": "chartBewegt",
       "question": "der Chart zeichnet sich neu, ohne Neuladen",
-      "ok": true,
+      "ok": false,
       "detail": {
-        "charts": [
-          "AAPL",
+        "charts": [],
+        "ohneTagesverlauf": [
           "NVDA",
-          "MSFT",
-          "VLO",
-          "PANW"
+          "AAPL",
+          "VLO"
         ]
       }
     },
     {
       "id": "einKurs",
       "question": "Kopf und Chart zeigen denselben Kurs",
-      "ok": true,
+      "ok": false,
       "detail": [
-        "AAPL: {\"kopf\":336.94,\"chart\":336.94,\"kopfText\":\"336,94 $+1,69 % heute\",\"deviation\":0}",
-        "NVDA: {\"kopf\":219.6,\"chart\":219.6,\"kopfText\":\"219,60 $+3,50 % heute\",\"deviation\":0}",
-        "MSFT: {\"kopf\":496.21,\"chart\":496.21,\"kopfText\":\"496,21 $−0,18 % heute\",\"deviation\":0}",
-        "VLO: {\"kopf\":412.78,\"chart\":412.78,\"kopfText\":\"412,78 $+3,96 % heute\",\"deviation\":0}",
-        "PANW: {\"kopf\":376.56,\"chart\":376.56,\"kopfText\":\"376,56 $+0,39 % heute\",\"deviation\":0}"
+        "NVDA: {\"kopf\":144.8,\"chart\":166.19,\"kopfText\":\"144,80 €−2,72 % heute\",\"deviation\":0.12870810518081705}",
+        "AAPL: {\"kopf\":322.56,\"chart\":354.88,\"kopfText\":\"322,56 €+1,48 % heute\",\"deviation\":0.09107303877366996}",
+        "VLO: {\"kopf\":329.97,\"chart\":374.95,\"kopfText\":\"329,97 €−1,74 % heute\",\"deviation\":0.119962661688225}"
       ]
     },
     {
       "id": "keineFehler",
       "question": "keine Konsolenfehler auf den Aktienseiten",
-      "ok": true,
-      "detail": []
+      "ok": false,
+      "detail": [
+        "NVDA",
+        "AAPL",
+        "VLO"
+      ]
     },
     {
       "id": "liveEtikett",
       "question": "ein Titel mit frischen Kursen zeigt 'Markt geoeffnet · Live'",
-      "ok": true,
+      "ok": false,
       "detail": [
-        "AAPL: [\"Heute · Stand 13:20 · nicht aktuell\",\"Markt geöffnet · Live\"]",
-        "NVDA: [\"Markt geöffnet · Live\"]",
-        "MSFT: [\"Markt geöffnet · Live\"]",
-        "VLO: [\"Heute · Stand 13:25 · nicht aktuell\",\"Markt geöffnet · Live\"]",
-        "PANW: [\"Heute · Stand 13:25 · nicht aktuell\",\"Markt geöffnet · Live\"]"
+        "NVDA: [\"Schluss Donnerstag\"]",
+        "AAPL: [\"Schluss Donnerstag\"]",
+        "VLO: [\"Schluss Donnerstag\"]"
       ]
     },
     {
@@ -288,19 +270,19 @@
       "detail": {
         "state": "RECONNECTING",
         "connected": false,
-        "label": "Markt geöffnet · Live",
-        "chartDa": true
+        "label": "Schluss Donnerstag",
+        "chartDa": false
       }
     },
     {
       "id": "chartBleibt",
       "question": "der Chart bleibt nach dem Abriss stehen (kein leerer Chart)",
-      "ok": true,
+      "ok": false,
       "detail": {
         "state": "RECONNECTING",
         "connected": false,
-        "label": "Markt geöffnet · Live",
-        "chartDa": true
+        "label": "Schluss Donnerstag",
+        "chartDa": false
       }
     },
     {
@@ -310,20 +292,20 @@
       "detail": {
         "state": "OPEN",
         "connected": true,
-        "label": "Markt geöffnet · Live",
+        "label": "Schluss Donnerstag",
         "stats": {
           "opens": 2,
           "closes": 1,
           "errors": 0,
-          "messages": 14,
-          "ticks": 10,
+          "messages": 11,
+          "ticks": 7,
           "denied": 0,
           "retries": 1,
           "subscribes": 1,
           "unsubscribes": 0,
-          "notifications": 15,
-          "lastMessageAt": "2026-09-17T19:11:11.719Z",
-          "lastTickAt": "2026-09-17T19:11:11.719Z",
+          "notifications": 12,
+          "lastMessageAt": "2026-11-13T15:07:48.658Z",
+          "lastTickAt": "2026-11-13T15:07:48.658Z",
           "state": "OPEN",
           "reason": null,
           "symbols": 1,
@@ -336,27 +318,27 @@
       "question": "nach 90 s ohne frischen Kurs sagt die Seite nicht mehr 'Live'",
       "ok": true,
       "detail": {
-        "label": "Heute · Stand 13:20 · nicht aktuell",
+        "label": "Schluss Donnerstag",
         "connected": false,
         "state": "RECONNECTING",
-        "chartDa": true,
-        "chartHatLinie": true,
-        "fussnote": "5-Minuten-Kurse · Uhrzeiten New York · Startlinie: Vortagesschluss · der Verlauf ist vom laufenden Handelstag, aber stehen geblieben (Stand 13:20); neuere Kurse folgen mit dem nächsten Datenlauf",
-        "kopf": "335,46 $"
+        "chartDa": false,
+        "chartHatLinie": false,
+        "fussnote": null,
+        "kopf": "354,88 $"
       }
     },
     {
       "id": "snapshotUebernimmt",
       "question": "der Snapshot uebernimmt: ehrlicher Stand mit Uhrzeit, Chart bleibt gezeichnet",
-      "ok": true,
+      "ok": false,
       "detail": {
-        "label": "Heute · Stand 13:20 · nicht aktuell",
+        "label": "Schluss Donnerstag",
         "connected": false,
         "state": "RECONNECTING",
-        "chartDa": true,
-        "chartHatLinie": true,
-        "fussnote": "5-Minuten-Kurse · Uhrzeiten New York · Startlinie: Vortagesschluss · der Verlauf ist vom laufenden Handelstag, aber stehen geblieben (Stand 13:20); neuere Kurse folgen mit dem nächsten Datenlauf",
-        "kopf": "335,46 $"
+        "chartDa": false,
+        "chartHatLinie": false,
+        "fussnote": null,
+        "kopf": "354,88 $"
       }
     },
     {
@@ -364,11 +346,12 @@
       "question": "die Fussnote widerspricht dem Etikett nicht (Stand von heute bleibt von heute)",
       "ok": true,
       "detail": {
-        "label": "Heute · Stand 13:20 · nicht aktuell",
-        "fussnote": "5-Minuten-Kurse · Uhrzeiten New York · Startlinie: Vortagesschluss · der Verlauf ist vom laufenden Handelstag, aber stehen geblieben (Stand 13:20); neuere Kurse folgen mit dem nächsten Datenlauf"
+        "label": "Schluss Donnerstag",
+        "fussnote": null
       }
     }
   ],
-  "result": "PASS",
-  "reason": null
+  "result": "FAIL",
+  "reason": "tagesverlaufDa,chartBewegt,einKurs,keineFehler,liveEtikett,chartBleibt,snapshotUebernimmt",
+  "realtimeVerified": false
 }

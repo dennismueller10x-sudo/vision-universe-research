@@ -800,9 +800,9 @@
       "cik": "0001823584",
       "name": "ALLIANCE ENTERTAINMENT HOLDING CORP",
       "sic": "5099",
-      "rawFacts": 5701,
-      "mappedFacts": 1722,
-      "unmappedFacts": 3963,
+      "rawFacts": 6004,
+      "mappedFacts": 1802,
+      "unmappedFacts": 4212,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -813,28 +813,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 22,
+      "quarterlyPeriods": 23,
       "firstPeriodEnd": "2020-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 5.5,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2022-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 4.0
         },
         "eps_diluted": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2022-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 4.0
         },
         "free_cash_flow": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2022-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 4.0,
@@ -854,42 +854,42 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 4.5
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 20,
+          "quarterlyPeriods": 21,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 4.5
         },
         "revenue": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2022-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 4.0
         },
         "short_term_debt": {
-          "annualPeriods": 3,
-          "quarterlyPeriods": 7,
+          "annualPeriods": 4,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2022-06-30",
-          "lastAvailablePeriod": "2024-06-30",
-          "historyYears": 2.0
+          "lastAvailablePeriod": "2026-06-30",
+          "historyYears": 4.0
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 5.5
         },
         "total_assets": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 21,
+          "quarterlyPeriods": 22,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 5.5
@@ -912,49 +912,51 @@
         }
       },
       "quality": {
-        "HIGH": 164,
-        "MEDIUM": 14
+        "HIGH": 175,
+        "MEDIUM": 13
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 178,
-        "resolvedValues": 178
+        "datableValues": 188,
+        "resolvedValues": 188
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 4207,
+        "rules_version": "1.1.0",
+        "total": 4465,
         "by_severity": {
-          "INFO": 3963,
+          "INFO": 4212,
           "ERROR": 1,
-          "WARNING": 243
+          "WARNING": 252
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 147,
+          "CONCEPT_DISAGREEMENT": 155,
           "FISCAL_PERIOD_CONFLICT": 13,
           "FUTURE_DATA_LEAK": 1,
+          "FUTURE_PERIOD_END": 1,
           "RESTATEMENT_CONFLICT": 67,
           "UNEXPECTED_DURATION": 16,
-          "UNKNOWN_CONCEPT": 3963
+          "UNKNOWN_CONCEPT": 4212
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-042141",
-        "filing_date": "2026-09-10",
-        "form": "10-K",
-        "periodic_filings": 24
+        "accession": "0001493152-26-051226",
+        "filing_date": "2026-11-12",
+        "form": "10-Q",
+        "periodic_filings": 25,
+        "acceptance_datetime": "2026-11-12T13:31:05.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "5bfb99c6e27c7c19978daf3b545b549d6a7ef99fb4c95ada31203c568eb3eb62",
+      "sourceDigest": "a26fb77517e04047d07acb58fce97d4f332943bd618cf7ce00a423cd7b5903c1",
       "issuerId": "iss_cik_0001823584"
     },
     {

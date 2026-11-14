@@ -121,7 +121,7 @@ export function planDispatch({ pipeline, basisAsOf, supertraderAsOf, runs, input
      Der Build kuerzt einen zu alten Benchmark still und zeigt ein altes Regime nur an - deshalb hier pruefen. */
   const eing = inputs || {};
   const alt = [["SPY", eing.spyTo], ["Marktregime", eing.regimeAsOf], ["Boersenstatus", eing.healthSession]].filter(([, d]) => !d || d < ziel);
-  if (alt.length) return { action: "REFUSE", reason: "INPUT_NOT_CURRENT", detail: "Eingaben des Supertrader-Builds noch nicht auf " + ziel + ": " + alt.map(([n, d]) => n + " " + (d || "fehlt")).join(", ") + ". Der Zeitplan-Rueckfall rechnet spaeter." };
+  if (alt.length) return { action: "REFUSE", reason: "INPUT_NOT_CURRENT", detail: "Eingaben des Supertrader-Builds noch nicht auf " + ziel + ": " + alt.map(([n, d]) => n + " " + (d || "fehlt")).join(", ") + ". Die Frist (supertrader-signals-frist, 01:47 UTC) rechnet nach, der Zeitplan 06:17 UTC bleibt Rueckfall." };
   const wartend = (runs || []).filter((r) => CONFIG.waitingStates.includes(r.status));
   const tot = deadRefs || [];
   /* Supertrader steht schon auf dem Datum - aber das Universum hat sich danach geaendert (Signal auf Titel ohne Seite):

@@ -1386,9 +1386,9 @@
       "cik": "0002065948",
       "name": "Solarius Capital Acquisition Corp.",
       "sic": "6770",
-      "rawFacts": 375,
-      "mappedFacts": 144,
-      "unmappedFacts": 233,
+      "rawFacts": 505,
+      "mappedFacts": 194,
+      "unmappedFacts": 316,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1400,9 +1400,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 7,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2025-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1441,14 +1441,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1469,14 +1469,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1499,43 +1499,44 @@
         }
       },
       "quality": {
-        "HIGH": 25
+        "HIGH": 29
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 25,
-        "resolvedValues": 25
+        "datableValues": 29,
+        "resolvedValues": 29
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 236,
+        "rules_version": "1.1.0",
+        "total": 319,
         "by_severity": {
-          "INFO": 233,
+          "INFO": 316,
           "WARNING": 3
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 3,
-          "UNKNOWN_CONCEPT": 233
+          "UNKNOWN_CONCEPT": 316
         }
       },
       "latestFiling": {
-        "accession": "0001185185-26-003498",
-        "filing_date": "2026-08-13",
+        "accession": "0001185185-26-005302",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 5
+        "periodic_filings": 6,
+        "acceptance_datetime": "2026-11-12T11:04:17.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "fdce1c1fdd34775fa3929c2e80b484c29a37dbd1c1fc614ba64525b8736ed597",
+      "sourceDigest": "ed08d7a7b75de7d291361f288fcaf06decc44564b4fdc76fafc60b7f561a5dd2",
       "issuerId": "iss_cik_0002065948"
     }
   ]

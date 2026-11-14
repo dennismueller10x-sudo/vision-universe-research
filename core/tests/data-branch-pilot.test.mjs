@@ -8,6 +8,7 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { overlay, inspect, contractFor } from "../../scripts/ci/overlay-data-branch.mjs";
+import { vergleiche } from "../../scripts/ci/assert-data-branch-equal.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const MANIFEST = JSON.parse(readFileSync(join(ROOT, "core/registry/data-branch.json"), "utf8"));
@@ -27,6 +28,7 @@ test("DB-1 · Steckbrief: jede Datenart ist registriert, ihr Pfad gehoert genau 
   for (const d of MANIFEST.domains) {
     assert.ok(Object.keys(MANIFEST.phases).includes(d.phase), d.id);
     const reg = DOMAINS.domains.find((x) => x.id === d.id); assert.ok(reg, d.id + " fehlt in domains.json");
+    if (d.repositoryOnly) assert.equal(reg.repositoryOnly, true, d.id + ": repositoryOnly im Steckbrief verlangt repositoryOnly in domains.json");
     for (const p of d.paths) {
       // Jede Datei gehoert hoechstens dieser Datenart; mindestens eine Datei der Datenart traegt ihren Vertrag (DB-1b).
       const c = contractFor(DOMAINS, p); assert.ok(!c || c.id === d.id, p + " gehoert " + (c && c.id));
@@ -278,4 +280,46 @@ test("DB-16 · Jeder Release-Bau in einem Workflow saet vorher den Datenzweig wi
   }
   assert.ok(gesehen >= 8, "Erkennung greift (ci.yml baut in acht Jobs, pages-release.yml einmal): " + gesehen);
   assert.deepEqual(fehlt, [], "scripts/ci/seed-data-branch.sh alle vor dem Release-Bau einbauen");
+});
+
+test("DB-17 · repositoryOnly: nie in der Seite, nur auf ausdrueckliche Nennung im Arbeitsbaum; \"alle\" nimmt sie nicht mit", () => {
+  const KEY = "fx-test/consumer_coverage.json", DIR = "fx-test/consumer/";
+  const mk = () => {
+    const root = mkdtempSync(join(tmpdir(), "db17-root-")), data = mkdtempSync(join(tmpdir(), "db17-data-")), site = mkdtempSync(join(tmpdir(), "db17-site-"));
+    const cov = JSON.stringify({ generated_at_utc: "2026-11-13T07:30:00Z", n: 1 });
+    put(data, KEY, cov); put(data, DIR + "index.json", "{\"a\":1}"); put(data, DIR + "CIK0000000001.json", "{\"b\":2}");
+    const manifest = { branch: "data/live", domains: [{ id: "fundamentalsConsumer", phase: "BRANCH_ONLY", repositoryOnly: true, workflow: "sec-consumer-fundamentals.yml", paths: [KEY], prefixes: [DIR] }] };
+    return { root, dataDir: data, siteDir: site, manifest, domains: DOMAINS };
+  };
+  // Pages-Stufe (kein --only): nichts davon gelangt in die Seite, der Bericht bleibt vollstaendig.
+  let w = mk(); let r = overlay(w);
+  assert.equal(r.complete, true); assert.equal(r.rows.length, 0); assert.deepEqual(r.repositoryOnlySkipped, ["fundamentalsConsumer"]);
+  assert.ok(!existsSync(join(w.siteDir, "fx-test")), "repositoryOnly-Daten duerfen nicht in die Seite gelangen");
+  // Verbraucher nennt die Datenart ausdruecklich (seed-data-branch.sh fundamentalsConsumer): Schluesseldatei und Verzeichnis kommen.
+  w = mk(); r = overlay({ ...w, only: ["fundamentalsConsumer"], siteDir: w.root });
+  assert.equal(r.complete, true);
+  assert.ok(existsSync(join(w.root, KEY)) && existsSync(join(w.root, DIR + "CIK0000000001.json")));
+  // "alle" (seed-data-branch.sh) waehlt nur BRANCH_ONLY ohne repositoryOnly.
+  const sh = readFileSync(join(ROOT, "scripts/ci/seed-data-branch.sh"), "utf8");
+  assert.match(sh, /d\.phase === "BRANCH_ONLY" && !d\.repositoryOnly/);
+  // Die Seite prueft weiter, dass das Verzeichnis fehlt (pages-release.yml).
+  assert.match(readFileSync(join(ROOT, ".github/workflows/pages-release.yml"), "utf8"), /test ! -d "\$SITE_ROOT\/quant\/data\/sec\/consumer"/);
+});
+
+test("DB-18 · Gleichheitsnachweis (DUAL_WRITE): gleiche Dateimenge und gleicher Inhalt, sonst rot", () => {
+  const a = mkdtempSync(join(tmpdir(), "db18-a-")), b = mkdtempSync(join(tmpdir(), "db18-b-"));
+  for (const r of [a, b]) { put(r, "x/consumer/index.json", "{\"n\":2}"); put(r, "x/consumer/CIK1.json", "{\"a\":1}"); put(r, "x/coverage.json", "{}"); }
+  let r = vergleiche(a, b, ["x/consumer/", "x/coverage.json"]);
+  assert.equal(r.ok, true); assert.equal(r.files, 3);
+  put(b, "x/consumer/CIK1.json", "{\"a\":2}"); // anderer Inhalt
+  assert.deepEqual(vergleiche(a, b, ["x/consumer/"]).differences.map((d) => d.art), ["INHALT_ANDERS"]);
+  put(b, "x/consumer/CIK1.json", "{\"a\":1}"); put(b, "x/consumer/CIK9.json", "{}"); // Datei nur im Zweig
+  assert.deepEqual(vergleiche(a, b, ["x/consumer/"]).differences.map((d) => d.art), ["NUR_IM_ZWEIG"]);
+  put(a, "x/consumer/CIK5.json", "{}"); // Datei fehlt im Zweig
+  assert.ok(vergleiche(a, b, ["x/consumer/"]).differences.some((d) => d.art === "FEHLT_IM_ZWEIG"));
+  // Ein leerer Arbeitsbaum darf nie als "gleich" durchgehen.
+  assert.equal(vergleiche(mkdtempSync(join(tmpdir(), "db18-e-")), b, ["x/consumer/"]).ok, false);
+  // Der Workflow ruft den Nachweis nach dem Push auf.
+  const wf = readFileSync(join(ROOT, ".github/workflows/sec-consumer-fundamentals.yml"), "utf8");
+  assert.match(wf, /push-data-branch\.sh data\/live \$PFADE[\s\S]*assert-data-branch-equal\.mjs data\/live \$PFADE/);
 });

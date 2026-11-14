@@ -630,9 +630,9 @@
       "cik": "0001826397",
       "name": "AVAX ONE TECHNOLOGY LTD.",
       "sic": "6199",
-      "rawFacts": 5042,
-      "mappedFacts": 1500,
-      "unmappedFacts": 3540,
+      "rawFacts": 5325,
+      "mappedFacts": 1584,
+      "unmappedFacts": 3772,
       "calendarYears": 7,
       "industry": null,
       "industryMetrics": {},
@@ -642,28 +642,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 7,
-      "quarterlyPeriods": 27,
+      "quarterlyPeriods": 28,
       "firstPeriodEnd": "2019-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 6.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -683,21 +683,21 @@
         },
         "net_income": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 25,
+          "quarterlyPeriods": 26,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "operating_cash_flow": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 24,
+          "quarterlyPeriods": 25,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 9,
+          "quarterlyPeriods": 10,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -711,14 +711,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 7,
-          "quarterlyPeriods": 27,
+          "quarterlyPeriods": 28,
           "firstAvailablePeriod": "2019-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 6.0
         },
         "total_assets": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
@@ -741,48 +741,49 @@
         }
       },
       "quality": {
-        "HIGH": 159,
+        "HIGH": 167,
         "MEDIUM": 15
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 174,
-        "resolvedValues": 174
+        "datableValues": 182,
+        "resolvedValues": 182
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 3718,
+        "rules_version": "1.1.0",
+        "total": 3972,
         "by_severity": {
-          "INFO": 3540,
+          "INFO": 3772,
           "ERROR": 1,
-          "WARNING": 177
+          "WARNING": 199
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 100,
+          "CONCEPT_DISAGREEMENT": 112,
           "FUTURE_DATA_LEAK": 1,
           "NEGATIVE_WHERE_IMPOSSIBLE": 2,
-          "RESTATEMENT_CONFLICT": 75,
-          "UNKNOWN_CONCEPT": 3540
+          "RESTATEMENT_CONFLICT": 85,
+          "UNKNOWN_CONCEPT": 3772
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037763",
-        "filing_date": "2026-08-13",
+        "accession": "0001493152-26-051431",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 22
+        "periodic_filings": 23,
+        "acceptance_datetime": "2026-11-12T21:31:20.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "85161effab6d4cd7ef6838a87d022faa5169524e339fd48d8dc5e1a845c9363d",
+      "sourceDigest": "2083b649799b79e513dc7f577063031b2f738a0fc361cb163e503af52d6758f6",
       "issuerId": "iss_cik_0001826397"
     },
     {

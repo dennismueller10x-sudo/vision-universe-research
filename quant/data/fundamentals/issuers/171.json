@@ -678,9 +678,9 @@
       "cik": "0001540171",
       "name": "Avalyn Pharma Inc.",
       "sic": "2834",
-      "rawFacts": 583,
-      "mappedFacts": 162,
-      "unmappedFacts": 415,
+      "rawFacts": 937,
+      "mappedFacts": 260,
+      "unmappedFacts": 673,
       "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
@@ -690,28 +690,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 6,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2024-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "free_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0,
@@ -724,21 +724,21 @@
         },
         "long_term_debt": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -759,14 +759,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 8,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -789,45 +789,47 @@
         }
       },
       "quality": {
-        "HIGH": 32
+        "HIGH": 44
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 32,
-        "resolvedValues": 32
+        "datableValues": 44,
+        "resolvedValues": 44
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 417,
+        "rules_version": "1.1.0",
+        "total": 676,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 415,
-          "WARNING": 1
+          "INFO": 673,
+          "WARNING": 2
         },
         "by_code": {
           "CONCEPT_DISAGREEMENT": 1,
           "FUTURE_DATA_LEAK": 1,
-          "UNKNOWN_CONCEPT": 415
+          "FUTURE_PERIOD_END": 1,
+          "UNKNOWN_CONCEPT": 673
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-345820",
-        "filing_date": "2026-08-12",
+        "accession": "0001193125-26-457071",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-12T13:15:48.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "030132a84933bef7e5b855ede5de86b4793b773df596af7e8a0b7cc2cf6622a5",
+      "sourceDigest": "4900690c263688ec6ccf0e2c86a683e09caded99cc4a9fcfe67221fcc2f9cd6f",
       "issuerId": "iss_cik_0001540171"
     },
     {

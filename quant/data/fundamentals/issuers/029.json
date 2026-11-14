@@ -736,9 +736,9 @@
       "cik": "0001941029",
       "name": "Advanced Biomed Inc.",
       "sic": "8071",
-      "rawFacts": 1468,
-      "mappedFacts": 503,
-      "unmappedFacts": 976,
+      "rawFacts": 1623,
+      "mappedFacts": 551,
+      "unmappedFacts": 1082,
       "calendarYears": 3,
       "industry": null,
       "industryMetrics": {},
@@ -748,9 +748,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 4,
-      "quarterlyPeriods": 12,
+      "quarterlyPeriods": 13,
       "firstPeriodEnd": "2023-06-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 3.0,
       "metrics": {
         "capital_expenditures": {
@@ -762,7 +762,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2024-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 2.0
@@ -789,14 +789,14 @@
         },
         "net_income": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 11,
+          "quarterlyPeriods": 12,
           "firstAvailablePeriod": "2024-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 2.0
         },
         "operating_cash_flow": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2024-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 2.0
@@ -817,14 +817,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 12,
+          "quarterlyPeriods": 13,
           "firstAvailablePeriod": "2023-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 3.0
         },
         "total_assets": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-06-30",
           "lastAvailablePeriod": "2026-06-30",
           "historyYears": 2.0
@@ -847,46 +847,46 @@
         }
       },
       "quality": {
-        "HIGH": 65,
-        "MEDIUM": 15
+        "HIGH": 68,
+        "MEDIUM": 17
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 80,
-        "resolvedValues": 80
+        "datableValues": 85,
+        "resolvedValues": 85
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 1057,
+        "rules_version": "1.1.0",
+        "total": 1174,
         "by_severity": {
-          "INFO": 976,
-          "WARNING": 81
+          "INFO": 1082,
+          "WARNING": 92
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 38,
-          "RESTATEMENT_CONFLICT": 43,
-          "UNKNOWN_CONCEPT": 976
+          "CONCEPT_DISAGREEMENT": 42,
+          "RESTATEMENT_CONFLICT": 50,
+          "UNKNOWN_CONCEPT": 1082
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-109029",
-        "filing_date": "2026-10-13",
-        "form": "10-K",
-        "periodic_filings": 7,
-        "acceptance_datetime": "2026-10-14T00:16:01.000Z"
+        "accession": "0001213900-26-118899",
+        "filing_date": "2026-11-12",
+        "form": "10-Q",
+        "periodic_filings": 8,
+        "acceptance_datetime": "2026-11-12T21:01:52.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.10.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.6.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "bb9e00522173718ca66b1bbffc185c5ffd482001dfb844f653a668141a2566ce",
+      "sourceDigest": "fb2846b2a54c395f5f3f272b3759ab8c15e9199b527ea4d16a2319a5356d6d98",
       "issuerId": "iss_cik_0001941029"
     }
   ]

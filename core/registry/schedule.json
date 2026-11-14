@@ -128,6 +128,12 @@
    "timer": "waker"
   },
   {
+   "id": "quant-produktionscheck",
+   "workflow": "quant-produktionscheck.yml",
+   "cron": "40 5 * * *",
+   "timer": "waker"
+  },
+  {
    "id": "freshness-monitor",
    "workflow": "freshness-monitor.yml",
    "cron": "30 6 * * 2-6",
@@ -276,7 +282,7 @@
   {
    "id": "pipeline-daily-ki-depots",
    "workflow": "pipeline-daily.yml",
-   "cron": "41 23 * * 1-5",
+   "cron": "41 1 * * 2-6",
    "timer": "waker",
    "note": "ki-depots",
    "inputs": {
@@ -404,6 +410,16 @@
    }
   },
   {
+   "id": "pipeline-weekly-backtest-forschung",
+   "workflow": "pipeline-weekly.yml",
+   "cron": "41 5 * * 0",
+   "timer": "waker",
+   "note": "backtest-forschung",
+   "inputs": {
+    "teil": "backtest-forschung"
+   }
+  },
+  {
    "id": "pipeline-weekly-sec-fundamentals",
    "workflow": "pipeline-weekly.yml",
    "cron": "0 6 * * 1",
@@ -520,6 +536,12 @@
    "id": "supertrader-signals",
    "workflow": "supertrader-signals.yml",
    "cron": "17 6 * * 2-6",
+   "timer": "waker"
+  },
+  {
+   "id": "supertrader-signals-frist",
+   "workflow": "supertrader-signals.yml",
+   "cron": "47 1 * * 2-6",
    "timer": "waker"
   }
  ],

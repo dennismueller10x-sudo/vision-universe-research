@@ -46,6 +46,14 @@
   /* Anzeige-Reihenfolge des Profils (Konzept Quant 2026-11, Entscheidung 1/2); ORDER bleibt die Reihenfolge der Methodik. */
   var PROFILE_ORDER = ["profitability", "growth", "quality", "momentum", "value", "risk", "revisions"];
   function byProfile(list, key) { return list.slice().sort(function (a, b) { return PROFILE_ORDER.indexOf(key ? a[key] : a) - PROFILE_ORDER.indexOf(key ? b[key] : b); }); }
+  /* Ein Faktor ohne einen einzigen Wert im Produktuniversum (Abdeckung 0 in den veroeffentlichten Daten, bandSemantics.universe,
+     von product-services nach VUFactorCoverage geschrieben) wird nirgends gezeigt - Profil, Gaps, Methodik, Anlagestile -, bis er
+     Werte hat (Owner-Entscheidung 13.11.2026, heute: Analysten). Die Rechnung bleibt unberuehrt: ORDER und die Engines sind dieselben. */
+  function isOpen(id) { var c = global.VUFactorCoverage; return !(c && c[id] === 0); }
+  function openOrder(list) { return (list || ORDER).filter(isOpen); }
+  var NUMBER_WORD = ["keine", "eine", "zwei", "drei", "vier", "fünf", "sechs", "sieben"];
+  /** Anzahl der gezeigten Eigenschaften als Wort ("sieben", solange alle Werte haben; heute "sechs"). */
+  function nWord() { var n = openOrder().length; return NUMBER_WORD[n] || String(n); }
   var BAND_ORDER = ["VERY_STRONG", "STRONG", "NEUTRAL", "WEAK", "VERY_WEAK"];
   /* Dieselben Grenzen wie quant/engines/factor-evidence.js BANDS - Grenzen
      der POSITION in Prozent (factor-band-2.0.0), nicht des Faktorwerts. Sie
@@ -59,26 +67,26 @@
 
   var FACTORS = {
     quality: {
-      name: "Zahlen solide", longName: "Bilanz- & Ergebnisqualität", method: "Quality",
+      name: "Gewinn gedeckt & stabil", longName: "Bilanz- & Ergebnisqualität", method: "Quality",
       question: "Wie belastbar sind Bilanz und ausgewiesene Gewinne?",
       measures: "Eigenkapitalquote, Verschuldung, ob Gewinne durch echten Zahlungsfluss gedeckt sind, und wie stabil die Marge über die Jahre war.",
       notMeasures: "Nicht gemessen wird hier, wie viel ein Unternehmen verdient – das zeigt „Verdient gut“ (Profitabilität).",
       higher: "Höher heißt: solidere Bilanz, Gewinne besser durch Zahlungsfluss gedeckt, stabilere Marge."
     },
     growth: {
-      name: "Wächst", longName: "Wachstum", method: "Growth",
+      name: "Ist gewachsen", longName: "Wachstum", method: "Growth",
       question: "Wächst das Geschäft – und mit Substanz?",
       measures: "Umsatz-, Gewinn- und Cashflow-Wachstum über drei Jahre, das Wachstum der letzten zwölf Monate und ob sich das Tempo verändert.",
       higher: "Höher heißt: schnelleres und breiter getragenes Wachstum."
     },
     momentum: {
-      name: "Kurs läuft", longName: "Kursstärke", method: "Momentum",
+      name: "Kurs lief gut", longName: "Kursstärke", method: "Momentum",
       question: "Wie hat sich der Kurs entwickelt – auch gegenüber dem Markt?",
       measures: "Kursentwicklung über 3, 6 und 12 Monate, der Vorsprung gegenüber dem Markt und der Abstand zum Jahreshoch und zur 200-Tage-Linie.",
       higher: "Höher heißt: stärkerer und breiter getragener Kursverlauf. Das beschreibt die Vergangenheit, keine Prognose."
     },
     value: {
-      name: "Günstig", longName: "Bewertung", method: "Value",
+      name: "Preis im Branchenvergleich", longName: "Bewertung", method: "Value",
       question: "Was bekommt man für den Preis der Aktie?",
       measures: "Gewinn, freier Zahlungsfluss, Umsatz und Eigenkapital im Verhältnis zum Börsenwert.",
       higher: "Höher heißt: günstiger im Verhältnis zu Gewinn, Zahlungsfluss und Substanz."
@@ -96,7 +104,7 @@
       higher: "Höher heißt: Erwartungen werden angehoben."
     },
     risk: {
-      name: "Ruhiger Kurs", longName: "Risiko", method: "Risk",
+      name: "Ruhig für die Branche", longName: "Risiko", method: "Risk",
       question: "Wie stark schwankt der Kurs?",
       measures: "Schwankungsbreite über ein Jahr, Schwankung an Verlusttagen, größter Rückgang im Jahr und Marktsensitivität (Beta).",
       higher: "Höher heißt: ruhigerer Kurs, also weniger Risiko."
@@ -412,7 +420,7 @@
        Eigenschaften; der Satz darunter sagt dann, wie wenige es sind. */
     var id = u.stufeId;
     var sub = rated.length < 3
-      ? (rated.length ? "Nur " + rated.length + " von " + factors.length + " Eigenschaften lassen sich messen – ein dünnes Bild." : "Keine der sieben Eigenschaften lässt sich für diesen Titel messen.")
+      ? (rated.length ? "Nur " + rated.length + " von " + factors.length + " Eigenschaften lassen sich messen – ein dünnes Bild." : "Keine der " + nWord() + " Eigenschaften lässt sich für diesen Titel messen.")
       : u.stark + " von " + u.bewertet + " gemessenen Eigenschaften stark, " + u.schwach + " schwach, " + u.mittel + " im Mittelfeld.";
     /* VU3-Finalisierung: Nicht bewertbare Eigenschaften stehen nicht mehr als leere Zeile in der Uebersicht, sondern
        als eigene Zeile darunter (unrated / unratedText) mit Grund im Faktor-Kapitel. Der Nenner im Satz bleibt die Zahl
@@ -855,7 +863,7 @@
     var ctx = { record: record, distribution: src.distribution || null };
     var byId = {};
     ((record && record.factors) || []).forEach(function (f) { byId[f.id] = f; });
-    var factors = record ? ORDER.map(function (id) {
+    var factors = record ? openOrder().map(function (id) {
       return factorView(byId[id] || { id: id, state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", components: [] }, ctx);
     }) : [];
     return {
@@ -886,6 +894,9 @@
   var STYLE_NAME = { "quality-momentum": "Solide und im Aufwind", "momentum-leader": "Der Kurs führt den Markt an", garp: "Wachstum zum fairen Preis",
     "quality-compounder": "Verlässlich und wächst lange", "defensive-quality": "Solide mit ruhigem Kurs", "future-leader": "Wächst schnell, Markt zieht mit",
     "value-momentum": "Günstig und dreht nach oben", "earnings-revision-leader": "Analysten heben Schätzungen an" };
+  /* Ein Anlagestil, der einen geschlossenen Faktor braucht, ist ohne ihn leer ("Ohne den Erwartungstrend existiert dieses Profil nicht"). */
+  var STYLE_NEEDS = { "earnings-revision-leader": ["revisions"] };
+  function styleOpen(id) { return (STYLE_NEEDS[id] || []).every(isOpen); }
   var STYLE_ORDER = ["quality-momentum", "momentum-leader", "garp", "quality-compounder", "defensive-quality", "future-leader", "value-momentum", "earnings-revision-leader"];
   function styleName(id, fallback) { return STYLE_NAME[id] || String(fallback || id || "").split(" · ")[0]; }
   /* Profil (VUUI.profileMini/profileFull): Werte 0–100 je Eigenschaft aus einer Screening-Zeile oder den Faktoren einer Aktie; null = keine Daten. */
@@ -898,7 +909,7 @@
   }
   function fromScreeningRow(row, dist) {
     if (!row) return null;
-    var factors = ORDER.map(function (id) {
+    var factors = openOrder().map(function (id) {
       var v = row["quantV2.factorEvidence." + id];
       return factorView(isNum(v) ? { id: id, state: "AVAILABLE", score: v, position: dist ? positionIn(dist[id], v) : null, positionUniverse: dist && dist[id] ? dist[id].length : null, components: [] }
         : { id: id, state: "UNAVAILABLE", reason: "INPUT_NOT_MATERIALIZED", components: [] });
@@ -921,13 +932,13 @@
   }
 
   var api = {
-    VERSION: VERSION, ORDER: ORDER, TEMPLATE_PLAIN: TEMPLATE_PLAIN, BAND_ORDER: BAND_ORDER, BAND_MIN: BAND_MIN, BAND_SEMANTICS_VERSION: BAND_SEMANTICS_VERSION, positionIn: positionIn, bandIn: bandIn, sortedDistribution: sortedDistribution, FACTORS: FACTORS,
+    VERSION: VERSION, ORDER: ORDER, isOpen: isOpen, openOrder: openOrder, nWord: nWord, styleOpen: styleOpen, TEMPLATE_PLAIN: TEMPLATE_PLAIN, BAND_ORDER: BAND_ORDER, BAND_MIN: BAND_MIN, BAND_SEMANTICS_VERSION: BAND_SEMANTICS_VERSION, positionIn: positionIn, bandIn: bandIn, sortedDistribution: sortedDistribution, FACTORS: FACTORS,
     SETUP_STAGES: SETUP_STAGES, CHANGE_TEXT: CHANGE_TEXT, REASON: REASON,
     band: band, bandWord: bandWord, factorLabel: factorLabel, rankIn: rankIn, rankSentence: rankSentence,
     distributionOf: distributionOf, windowText: windowText, componentValue: componentValue, reasonText: reasonText, pct: pct,
     factorView: factorView, overall: overall, proCon: proCon, changeView: changeView, setupView: setupView,
     setupLabel: setupLabel, useLanguage: useLanguage, STRATEGY_REASON: STRATEGY_REASON, assignmentChangeText: assignmentChangeText, strategyView: strategyView, replayView: replayView, gapSentence: gapSentence,
-    stock: stock, fromScreeningRow: fromScreeningRow, profileValues: profileValues, STYLE_NAME: STYLE_NAME, STYLE_ORDER: STYLE_ORDER, styleName: styleName, PROFILE_ORDER: PROFILE_ORDER, byProfile: byProfile, gapGroups: gapGroups, returnKinds: returnKinds,
+    stock: stock, fromScreeningRow: fromScreeningRow, profileValues: profileValues, STYLE_NAME: STYLE_NAME, get STYLE_ORDER() { return STYLE_ORDER.filter(styleOpen); }, styleName: styleName, PROFILE_ORDER: PROFILE_ORDER, byProfile: byProfile, gapGroups: gapGroups, returnKinds: returnKinds,
     TECHNICAL_REASON: TECHNICAL_REASON, PATTERN_REASON: PATTERN_REASON,
     technicalReasonText: technicalReasonText, patternReasonText: patternReasonText, analysisLagText: analysisLagText,
     IDENTITY_REASON: IDENTITY_REASON, identityNote: identityNote

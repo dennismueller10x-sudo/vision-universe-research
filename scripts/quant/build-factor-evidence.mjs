@@ -72,18 +72,15 @@ const PRICE_COMPONENTS = {
        splitbereinigten Kursen, und ein Name, der etwas anderes behauptet
        als der Inhalt, ist genau die stille Umdefinition, die hier
        ausgeschlossen wird. */
-    { id: "priceReturn12m1m", weight: 0.30, direction: "higher", label: "Kursentwicklung 12 Monate ohne letzten Monat", unit: "ratio", read: (v) => v.return12M1M },
-    { id: "priceReturn6m", weight: 0.20, direction: "higher", label: "Kursentwicklung 6 Monate", unit: "ratio", read: (v) => v.returns?.["6M"] },
-    { id: "priceReturn3m", weight: 0.10, direction: "higher", label: "Kursentwicklung 3 Monate", unit: "ratio", read: (v) => v.returns?.["3M"] },
-    /* Liest den ZUSTAND mit. Eine Vergleichsreihe, die hinter dem Titel
-       zurueckliegt, macht aus Marktbewegung einen Vorsprung; der Wert
-       steht in der Faktorzeile weiter (Discovery rechnet damit
-       unveraendert), aber in die Momentumnote geht er dann nicht ein. */
-    { id: "relativeStrength12m1m", weight: 0.20, direction: "higher", label: "Vorsprung gegenüber dem Markt, 12 Monate ohne letzten Monat", unit: "ratio",
-      read: (v, status) => (status?.relativeStrength12M1M === "BENCHMARK_STALE" ? null : v.relativeStrength12M1M),
-      note: "Differenz der Log-Renditen über das 12-1-Fenster gegen den hinterlegten Vergleichsindex. Die volle Zwölfmonatsreihe daneben ist eine andere Größe und steht nicht an ihrer Stelle." },
-    { id: "distanceTo52wHigh", weight: 0.10, direction: "lower", label: "Abstand zum 52-Wochen-Hoch", unit: "ratio", read: (v) => (finite(v.distanceTo52wHigh) ? -v.distanceTo52wHigh : null) },
-    { id: "distanceToSma200", weight: 0.10, direction: "higher", label: "Abstand zur 200-Tage-Linie", unit: "ratio", read: (v) => v.distanceToSMA200 }
+    { id: "priceReturn12m1m", weight: 0.375, direction: "higher", label: "Kursentwicklung 12 Monate ohne letzten Monat", unit: "ratio", read: (v) => v.return12M1M },
+    { id: "priceReturn6m", weight: 0.25, direction: "higher", label: "Kursentwicklung 6 Monate", unit: "ratio", read: (v) => v.returns?.["6M"] },
+    { id: "priceReturn3m", weight: 0.125, direction: "higher", label: "Kursentwicklung 3 Monate", unit: "ratio", read: (v) => v.returns?.["3M"] },
+    /* quant-v2.3.0 (13.11.2026, Befund b5): Der Vorsprung gegenueber dem Markt (12-1 minus Vergleichsindex) hatte bei
+       5.106 von 5.591 Titeln denselben Rang wie priceReturn12m1m, weil der Indexabzug fuer alle gleich ist; 50 % des
+       Gewichts trugen damit ein einziges Signal. Er steht weiter in der Faktorzeile (Discovery), zaehlt aber nicht mehr
+       in die Momentumnote; die uebrigen Gewichte sind anteilig auf 1 skaliert. */
+    { id: "distanceTo52wHigh", weight: 0.125, direction: "lower", label: "Abstand zum 52-Wochen-Hoch", unit: "ratio", read: (v) => (finite(v.distanceTo52wHigh) ? -v.distanceTo52wHigh : null) },
+    { id: "distanceToSma200", weight: 0.125, direction: "higher", label: "Abstand zur 200-Tage-Linie", unit: "ratio", read: (v) => v.distanceToSMA200 }
   ],
   risk: [
     { id: "realizedVolatility252d", weight: 0.35, direction: "lower", label: "Schwankungsbreite 1 Jahr", unit: "ratio", read: (v) => v.volatility252d },
@@ -520,9 +517,17 @@ function main() {
     const quote = closeByTicker.get(ticker) || null;
     /* The certified price factors plus the one value derived here from the
        published bar series. Derived values keep their own basis label. */
-    const price = !finite(security.values?.downsideVolatility252d) && finite(quote?.downsideVolatility252d)
+    const priceRaw = !finite(security.values?.downsideVolatility252d) && finite(quote?.downsideVolatility252d)
       ? { ...(security.values || {}), downsideVolatility252d: quote.downsideVolatility252d }
       : (security.values || {});
+    /* EINGEFRORENER KURS (Plausibilitaetspruefung 13.11.2026, Befund b4; V10-Studie Befund 5):
+     * Ein Jahr ohne jede Tagesbewegung (Schwankungsbreite exakt 0) ist kein ruhiger Kurs, sondern
+     * ein Kurs, der nicht mehr gehandelt oder nicht mehr geliefert wird. Solche Titel bekamen
+     * Risk 97,6 und ein mittleres Momentum. Ihre Kursbausteine fallen weg (Momentum und Risk
+     * dann nicht verfuegbar), statt eine Bestnote aus einer Datenluecke zu machen. */
+    const frozenPrice = finite(priceRaw.volatility252d) && priceRaw.volatility252d === 0;
+    if (frozenPrice) countGap("STALE_PRICE_SERIES_ZERO_VOLATILITY");
+    const price = frozenPrice ? {} : priceRaw;
     const priceStatus = security.fieldStatus || {};
 
     let fundamentals = null;

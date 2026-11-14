@@ -509,25 +509,47 @@ jobs:
         run: |
           set -euo pipefail
           B="$RUNNER_TEMP/basis"; mkdir -p "$B/site"
-          url=$(gh api "repos/$REPO/actions/artifacts?name=github-pages&per_page=10" \
-            --jq '[.artifacts[] | select(.expired==false)] | sort_by(.created_at) | reverse | .[0].archive_download_url')
+          row=$(gh api "repos/$REPO/actions/artifacts?name=github-pages&per_page=10" \
+            --jq '[.artifacts[] | select(.expired==false)] | sort_by(.created_at) | reverse | .[0] | [.archive_download_url, .created_at] | @tsv')
+          url=${row%%$'\t'*}; at=${row##*$'\t'}
           test -n "$url" && [ "$url" != null ]
+          echo "at=$at" >> "$GITHUB_OUTPUT"
           gh api "$url" > "$B/artifact.zip"
           unzip -q "$B/artifact.zip" -d "$B"
           tar -xf "$B/artifact.tar" -C "$B/site"
           test -f "$B/site/release-delivery.json"
           node -e 'process.stdout.write(require(process.argv[1]).sourceCommit)' "$B/site/release-delivery.json" > "$B/base.sha"
           echo "base=$(cat "$B/base.sha")" >> "$GITHUB_OUTPUT"
+      # Company-Intelligence-Veroeffentlichungen liegen NICHT in main (Generation im Cache/R2, vom Voll-Bau gepinnt): ein Diff sieht sie nicht
+      # (12.11.2026: profile-source veroeffentlichte, der Schnellweg lieferte nur Intraday, PROFILE_SOURCE_GENERATION_NOT_SERVED).
+      # Lief seit dem Basis-Paket einer dieser Veroeffentlicher oder laeuft er noch, oder ist die Abfrage unsicher: Voll-Release.
+      - name: Veroeffentlicher seit dem Basis-Paket? (dann Voll-Release)
+        id: pub
+        if: steps.basis.outcome == 'success'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          BASE_AT: ${{ steps.basis.outputs.at }}
+        run: |
+          set -euo pipefail
+          test -n "$BASE_AT"
+          hits=0
+          for wf in company-intelligence-profile-source company-intelligence-profile-catalogue company-intelligence-refreeze-auto company-intelligence-refresh company-intelligence-universe-release pages-release-marker; do
+            n=$(gh api "repos/$REPO/actions/workflows/$wf.yml/runs?per_page=10" --jq "[.workflow_runs[] | select(.status != \"completed\" or .updated_at > \"$BASE_AT\")] | length")
+            echo "$wf: $n"; hits=$((hits + n))
+          done
+          if [ "$hits" -eq 0 ]; then echo "frei=true" >> "$GITHUB_OUTPUT"; else echo "::notice::Veroeffentlicher seit dem Basis-Paket aktiv ($hits Laeufe): Voll-Release."; fi
       - name: Weiche (nur Intraday seit dem Basis-Release?)
         id: weiche
-        if: steps.basis.outcome == 'success'
+        if: steps.basis.outcome == 'success' && steps.pub.outputs.frei == 'true'
         continue-on-error: true
         env:
           BASE: ${{ steps.basis.outputs.base }}
         run: |
           set -euo pipefail
           git fetch --no-tags --depth=1 origin "$BASE"
-          node scripts/ci/intraday-fastpath.mjs klassifiziere --base="$BASE" --head=HEAD
+          node scripts/ci/intraday-fastpath.mjs klassifiziere --base="$BASE" --head=HEAD --list="$RUNNER_TEMP/fast-liste.txt"
       - name: Intraday-Dateien ueber das Paket legen und pruefen
         id: bereit
         if: steps.weiche.outputs.mode == 'FAST'
@@ -535,12 +557,12 @@ jobs:
         run: |
           set -euo pipefail
           S="$RUNNER_TEMP/basis/site"
-          node scripts/ci/intraday-fastpath.mjs overlay --repo=. --site="$S"
-          node scripts/ci/intraday-fastpath.mjs smoke --repo=. --site="$S"
+          node scripts/ci/intraday-fastpath.mjs overlay --repo=. --site="$S" --list="$RUNNER_TEMP/fast-liste.txt"
+          node scripts/ci/intraday-fastpath.mjs smoke --repo=. --site="$S" --list="$RUNNER_TEMP/fast-liste.txt"
           echo "fertig=true" >> "$GITHUB_OUTPUT"
       - name: Voll-Release noetig
         if: steps.bereit.outputs.fertig != 'true'
-        run: echo "::notice::Schnellweg nicht moeglich (Basis ${{ steps.basis.outcome }}, Weiche ${{ steps.weiche.outcome }}/${{ steps.weiche.outputs.mode }}, Smoke ${{ steps.bereit.outcome }}); Voll-Release folgt."
+        run: echo "::notice::Schnellweg nicht moeglich (Basis ${{ steps.basis.outcome }}, Veroeffentlicher-Pruefung ${{ steps.pub.outputs.frei }}, Weiche ${{ steps.weiche.outcome }}/${{ steps.weiche.outputs.mode }}, Smoke ${{ steps.bereit.outcome }}); Voll-Release folgt."
       - uses: actions/configure-pages@v5
         if: steps.bereit.outputs.fertig == 'true'
       - uses: actions/upload-pages-artifact@v3
@@ -555,16 +577,29 @@ jobs:
     timeout-minutes: 10
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment2.outputs.page_url || steps.deployment.outputs.page_url }}
     steps:
+      # 13.11.2026 (Strang AK): Lauf 43296967376 scheiterte mit "Deployment request failed ... due to in progress deployment":
+      # ein anderes Deployment (Company-Intelligence-Veroeffentlicher, voriger Lauf) war bei GitHub Pages noch nicht fertig.
+      # Das Artefakt ist unveraendert, ein zweiter Versuch nach einer Wartezeit ist idempotent.
       - name: Deploy intraday fast path
         id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - name: Warten, dann erneut (ein anderes Deployment lief noch)
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 120
+      - name: Deploy intraday fast path (zweiter Versuch)
+        id: deployment2
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
 
   # IndexNow: neue und geaenderte Insights-Adressen nach dem Ausrollen melden (Bing und alle IndexNow-Suchen).
   # Nur lesend; ein Fehler bei IndexNow ist eine Warnung, kein roter Lauf.
   indexnow:
-    if: github.event_name != 'pull_request' && contains(needs.package.outputs.indexnow, 'https://')
+    # Statusfunktion noetig: package haengt an intraday-schnell, der bei push uebersprungen wird; ohne !cancelled() erbt jeder Folgejob das Skip (12.11.2026).
+    if: >-
+      !cancelled() && needs.package.result == 'success' && needs.deploy.result == 'success' && github.event_name != 'pull_request' && contains(needs.package.outputs.indexnow, 'https://')
     needs: [package, deploy]
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -585,22 +620,33 @@ jobs:
           node products/insights/indexnow.mjs melden --liste "$RUNNER_TEMP/indexnow.json"
 
   deploy:
-    if: github.event_name != 'pull_request'
+    # Statusfunktion noetig (siehe indexnow): package hat intraday-schnell als Vorfahren, der bei push uebersprungen wird.
+    if: >-
+      !cancelled() && needs.package.result == 'success' && github.event_name != 'pull_request'
     needs: package
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ steps.deployment2.outputs.page_url || steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy reviewed release artifact
         id: deployment
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - name: Warten, dann erneut (ein anderes Deployment lief noch, siehe deploy-schnell)
+        if: steps.deployment.outcome == 'failure'
+        run: sleep 120
+      - name: Deploy reviewed release artifact (zweiter Versuch)
+        id: deployment2
+        if: steps.deployment.outcome == 'failure'
         uses: actions/deploy-pages@v4
         # Kein `env: GITHUB_SHA` hier: der Runner reicht es nicht an deploy-pages durch (Lauf 42763174678, 10.11.2026: env zeigte
         # <sha>-<run>-<attempt>, pages_build_version blieb der Commit). Neue Build-Version = neuer Commit, siehe
         # scripts/company_intelligence/pages-release-marker.mjs (Refresh und Universe-Release vor dem eigenen Dispatch).
   company-intelligence-live:
-    if: github.event_name != 'pull_request'
+    if: >-
+      !cancelled() && needs.package.result == 'success' && needs.deploy.result == 'success' && github.event_name != 'pull_request'
     needs: [package, deploy]
     permissions:
       contents: read

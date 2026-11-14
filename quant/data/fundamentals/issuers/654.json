@@ -947,9 +947,9 @@
       "cik": "0002059654",
       "name": "Blue Acquisition Corp/Cayman",
       "sic": "6770",
-      "rawFacts": 507,
-      "mappedFacts": 122,
-      "unmappedFacts": 329,
+      "rawFacts": 652,
+      "mappedFacts": 168,
+      "unmappedFacts": 421,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -961,9 +961,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 7,
+      "quarterlyPeriods": 8,
       "firstPeriodEnd": "2025-02-09",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1002,14 +1002,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 4,
+          "quarterlyPeriods": 5,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1030,14 +1030,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1060,46 +1060,47 @@
         }
       },
       "quality": {
-        "HIGH": 19,
+        "HIGH": 23,
         "MEDIUM": 1
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 20,
-        "resolvedValues": 20
+        "datableValues": 24,
+        "resolvedValues": 24
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 384,
+        "rules_version": "1.1.0",
+        "total": 486,
         "by_severity": {
-          "INFO": 329,
-          "WARNING": 55
+          "INFO": 421,
+          "WARNING": 65
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 7,
+          "CONCEPT_DISAGREEMENT": 8,
           "RESTATEMENT_CONFLICT": 1,
-          "UNEXPECTED_DURATION": 47,
-          "UNKNOWN_CONCEPT": 329
+          "UNEXPECTED_DURATION": 56,
+          "UNKNOWN_CONCEPT": 421
         }
       },
       "latestFiling": {
-        "accession": "0001185185-26-003399",
-        "filing_date": "2026-08-11",
+        "accession": "0001185185-26-005322",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 6
+        "periodic_filings": 7,
+        "acceptance_datetime": "2026-11-12T21:05:54.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "0ec08c89749e384fccc1d736e386d5399053cf75e1d39701fba710a9cb12be00",
+      "sourceDigest": "8dbd1cf6e0b2b7c95b7f5978d849c5a993a28e3d255a786ccf8bfdcd04f4eb99",
       "issuerId": "iss_cik_0002059654"
     }
   ]

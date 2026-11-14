@@ -373,9 +373,14 @@ test("Lokale Listen: nur lesen, Vereinigung ueber instrumentId, Unklares wird ge
 test("Euro-Anzeige nur vorbereitet: EZB-Kurs vom Kursdatum, Listing-Waehrung bleibt massgeblich", () => {
   const v = W.view(ix, { instrumentId: byTicker("NVDA") }, AFTER_RUN);
   assert.equal(v.price.currency, "USD", "Anzeige in Listing-Waehrung");
-  const eur = W.inEuro(real, v.price);
+  /* Datenunabhaengig: Der Kurs des echten Bestands rueckt mit jedem Datenlauf weiter, die EZB-Kopie in main ist
+     eingefroren (fxReference, BRANCH_ONLY). Geprueft wird die Umrechnung am Kursdatum des Referenzkurses,
+     nicht am Tag des juengsten Kurses (sonst blockiert veralteter Datenstand Code-PRs). */
+  const usd = real.sources.fx.rates.USD;
+  const price = { ...v.price, date: usd[0] };
+  const eur = W.inEuro(real, price);
   assert.equal(eur.state, "AVAILABLE");
-  assert.ok(eur.rateDate <= v.price.date && eur.rate > 0 && Math.abs(eur.value - v.price.close / eur.rate) < 0.01);
+  assert.ok(eur.rateDate <= price.date && eur.rate > 0 && Math.abs(eur.value - price.close / eur.rate) < 0.01);
   assert.equal(W.inEuro({ sources: {} }, v.price).reason, "NO_FX_RATE", "ohne Kurs kein Euro-Wert");
   assert.equal(W.inEuro({ sources: { fx: { rates: { USD: ["2026-09-01", 1.1] } } } }, v.price).reason, "FX_RATE_NOT_MATCHING_PRICE_DATE");
   assert.equal(W.inEuro(real, { state: "UNAVAILABLE" }).reason, "NO_PRICE");

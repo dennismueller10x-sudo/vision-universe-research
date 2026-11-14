@@ -388,9 +388,9 @@
       "cik": "0001130166",
       "name": "Bio Green Med Solution, Inc.",
       "sic": "5099",
-      "rawFacts": 13313,
-      "mappedFacts": 4699,
-      "unmappedFacts": 8498,
+      "rawFacts": 13569,
+      "mappedFacts": 4797,
+      "unmappedFacts": 8777,
       "calendarYears": 28,
       "industry": null,
       "industryMetrics": {},
@@ -401,28 +401,28 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 29,
-      "quarterlyPeriods": 79,
+      "quarterlyPeriods": 80,
       "firstPeriodEnd": "1997-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 28.75,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2023-12-31",
           "historyYears": 14.0
         },
         "eps_diluted": {
           "annualPeriods": 6,
-          "quarterlyPeriods": 23,
+          "quarterlyPeriods": 24,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 5.0
         },
         "free_cash_flow": {
           "annualPeriods": 15,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2023-12-31",
           "historyYears": 14.0,
@@ -442,21 +442,21 @@
         },
         "net_income": {
           "annualPeriods": 28,
-          "quarterlyPeriods": 66,
+          "quarterlyPeriods": 67,
           "firstAvailablePeriod": "1998-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 27.75
         },
         "operating_cash_flow": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "revenue": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 60,
+          "quarterlyPeriods": 61,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
@@ -470,14 +470,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 29,
-          "quarterlyPeriods": 76,
+          "quarterlyPeriods": 77,
           "firstAvailablePeriod": "1997-03-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 28.75
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -500,49 +500,50 @@
         }
       },
       "quality": {
-        "HIGH": 485,
+        "HIGH": 492,
         "MEDIUM": 43
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 528,
-        "resolvedValues": 528
+        "datableValues": 535,
+        "resolvedValues": 535
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 9036,
+        "rules_version": "1.1.0",
+        "total": 9324,
         "by_severity": {
-          "INFO": 8498,
+          "INFO": 8777,
           "ERROR": 1,
-          "WARNING": 537
+          "WARNING": 546
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 225,
+          "CONCEPT_DISAGREEMENT": 232,
           "FUTURE_DATA_LEAK": 1,
           "PERIOD_MISMATCH": 10,
-          "RESTATEMENT_CONFLICT": 71,
+          "RESTATEMENT_CONFLICT": 73,
           "UNEXPECTED_DURATION": 231,
-          "UNKNOWN_CONCEPT": 8498
+          "UNKNOWN_CONCEPT": 8777
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-038393",
-        "filing_date": "2026-08-14",
+        "accession": "0001493152-26-051452",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 99
+        "periodic_filings": 100,
+        "acceptance_datetime": "2026-11-12T21:45:38.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "fcb861fffddfa7b9f0dd5ac86b1cd02107853da14f11b8753d97e509e2b2eb84",
+      "sourceDigest": "f2eff09550677243600dca520be2d67bb3c5dcfeba762a8abbde87e439e60844",
       "issuerId": "iss_cik_0001130166"
     },
     {

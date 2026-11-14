@@ -1354,9 +1354,9 @@
       "cik": "0002105838",
       "name": "SUMA Acquisition Corp",
       "sic": "6770",
-      "rawFacts": 121,
-      "mappedFacts": 57,
-      "unmappedFacts": 70,
+      "rawFacts": 188,
+      "mappedFacts": 90,
+      "unmappedFacts": 107,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1368,9 +1368,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 1,
-      "quarterlyPeriods": 3,
+      "quarterlyPeriods": 4,
       "firstPeriodEnd": "2025-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -1409,14 +1409,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1437,14 +1437,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1467,41 +1467,42 @@
         }
       },
       "quality": {
-        "HIGH": 12
+        "HIGH": 16
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 12,
-        "resolvedValues": 12
+        "datableValues": 16,
+        "resolvedValues": 16
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 70,
+        "rules_version": "1.1.0",
+        "total": 107,
         "by_severity": {
-          "INFO": 70
+          "INFO": 107
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 70
+          "UNKNOWN_CONCEPT": 107
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-087886",
-        "filing_date": "2026-08-11",
+        "accession": "0001213900-26-118184",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-10T23:48:32.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "0bda1b04a5cd69c6e42482414d0b12408d8a87265a228b45717d509888a3d84d",
+      "sourceDigest": "189e7f2660668dda39905986f0f45eca9d5e6c3085347989c8da7d4b55e2c3e3",
       "issuerId": "iss_cik_0002105838"
     }
   ]

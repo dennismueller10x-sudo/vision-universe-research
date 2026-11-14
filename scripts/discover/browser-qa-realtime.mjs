@@ -203,6 +203,12 @@ async function zumChart(p) {
 async function aktienseite(p, symbol) {
   await p.goto(BASIS + "/discover/#/s/US_REAL/" + symbol, { waitUntil: "networkidle" });
   await p.waitForTimeout(2500);
+  /* Seit dem Umbau der Aktienseite (Ueberblick, 08.11.2026) ist der Standardzeitraum 1J. Der laufende Tag steht unter 1T - dort
+     misst diese Pruefung (13.11.2026: ohne den Klick las sie den 1J-Chart und meldete "kein Tagesverlauf"). */
+  try {
+    const eintag = p.locator(".dx-tf button", { hasText: /^1T$/ }).first();
+    if (await eintag.count() && await eintag.isEnabled()) { await eintag.click(); await p.waitForTimeout(900); }
+  } catch (e) { /* 1T gesperrt: die Pruefung meldet das selbst (eintagVerfuegbar) */ }
   await p.evaluate((s) => { window.__vuSymbol = s; }, symbol);
   await p.evaluate(BEOBACHTER);
   await p.evaluate((s) => { window.__vuSymbol = s; }, symbol);
@@ -255,7 +261,9 @@ for (const sym of SYMBOLE) {
     return { kopf: zahl(kopf), chart: zahl(chart),
              kopfText: kopf ? kopf.parentElement.textContent.trim().slice(0, 60) : null };
   });
-  const abweichung = (kurse.kopf && kurse.chart)
+  /* Der Kopf nennt den Kurs in der Anzeigewaehrung (Euro), der Chart in Dollar: ein Vergleich waere zwei Waehrungen gegeneinander.
+     Verglichen wird nur, wenn beide dieselbe Waehrung tragen. */
+  const abweichung = (kurse.kopf && kurse.chart && !/€/.test(kurse.kopfText || ""))
     ? Math.abs(kurse.kopf - kurse.chart) / kurse.chart : null;
 
   /* "Der Chart hat sich nicht bewegt" und "es gibt gar keinen

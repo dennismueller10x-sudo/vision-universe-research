@@ -321,9 +321,9 @@
       "cik": "0001895618",
       "name": "GAXOS.AI INC.",
       "sic": "7372",
-      "rawFacts": 3000,
-      "mappedFacts": 1060,
-      "unmappedFacts": 1946,
+      "rawFacts": 3265,
+      "mappedFacts": 1146,
+      "unmappedFacts": 2150,
       "calendarYears": 5,
       "industry": null,
       "industryMetrics": {},
@@ -333,9 +333,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 5,
-      "quarterlyPeriods": 19,
+      "quarterlyPeriods": 20,
       "firstPeriodEnd": "2021-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 4.0,
       "metrics": {
         "capital_expenditures": {
@@ -347,7 +347,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -374,21 +374,21 @@
         },
         "net_income": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "operating_cash_flow": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 18,
+          "quarterlyPeriods": 19,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
         },
         "revenue": {
           "annualPeriods": 3,
-          "quarterlyPeriods": 10,
+          "quarterlyPeriods": 11,
           "firstAvailablePeriod": "2023-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 2.0
@@ -402,14 +402,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 19,
+          "quarterlyPeriods": 20,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
         },
         "total_assets": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2021-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 4.0
@@ -432,48 +432,50 @@
         }
       },
       "quality": {
-        "HIGH": 115,
-        "MEDIUM": 9
+        "HIGH": 123,
+        "MEDIUM": 7
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 124,
-        "resolvedValues": 124
+        "datableValues": 130,
+        "resolvedValues": 130
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 2030,
+        "rules_version": "1.1.0",
+        "total": 2236,
         "by_severity": {
           "ERROR": 1,
-          "INFO": 1946,
-          "WARNING": 83
+          "INFO": 2150,
+          "WARNING": 85
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 40,
+          "CONCEPT_DISAGREEMENT": 43,
           "FUTURE_DATA_LEAK": 1,
-          "RESTATEMENT_CONFLICT": 33,
+          "FUTURE_PERIOD_END": 1,
+          "RESTATEMENT_CONFLICT": 31,
           "UNEXPECTED_DURATION": 10,
-          "UNKNOWN_CONCEPT": 1946
+          "UNKNOWN_CONCEPT": 2150
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-088350",
-        "filing_date": "2026-08-12",
+        "accession": "0001213900-26-118989",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 16
+        "periodic_filings": 17,
+        "acceptance_datetime": "2026-11-12T21:38:06.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "acc6cf685c7c9f3fd366e47ae06421a53c363b59df67ccd30e83f52e0732e3f0",
+      "sourceDigest": "f013243b83f255ffaa728396ba9cb96d95263532cf59ba08fd651775d598c20e",
       "issuerId": "iss_cik_0001895618"
     }
   ]

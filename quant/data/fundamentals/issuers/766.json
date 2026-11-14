@@ -771,10 +771,10 @@
     {
       "cik": "0001530766",
       "name": "Streamex Corp.",
-      "sic": "3845",
-      "rawFacts": 13549,
-      "mappedFacts": 3722,
-      "unmappedFacts": 9669,
+      "sic": "6200",
+      "rawFacts": 13978,
+      "mappedFacts": 3817,
+      "unmappedFacts": 10105,
       "calendarYears": 13,
       "industry": null,
       "industryMetrics": {},
@@ -784,9 +784,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 14,
-      "quarterlyPeriods": 54,
+      "quarterlyPeriods": 55,
       "firstPeriodEnd": "2012-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 13.0,
       "metrics": {
         "capital_expenditures": {
@@ -798,7 +798,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 16,
+          "quarterlyPeriods": 17,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -825,21 +825,21 @@
         },
         "net_income": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 53,
+          "quarterlyPeriods": 54,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "operating_cash_flow": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 52,
+          "quarterlyPeriods": 53,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
         },
         "revenue": {
           "annualPeriods": 5,
-          "quarterlyPeriods": 22,
+          "quarterlyPeriods": 23,
           "firstAvailablePeriod": "2020-12-31",
           "lastAvailablePeriod": "2024-12-31",
           "historyYears": 4.0
@@ -853,14 +853,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 14,
-          "quarterlyPeriods": 51,
+          "quarterlyPeriods": 52,
           "firstAvailablePeriod": "2012-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 13.0
         },
         "total_assets": {
           "annualPeriods": 13,
-          "quarterlyPeriods": 50,
+          "quarterlyPeriods": 51,
           "firstAvailablePeriod": "2013-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 12.0
@@ -883,48 +883,49 @@
         }
       },
       "quality": {
-        "HIGH": 315,
+        "HIGH": 321,
         "MEDIUM": 44
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 359,
-        "resolvedValues": 359
+        "datableValues": 365,
+        "resolvedValues": 365
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 10106,
+        "rules_version": "1.1.0",
+        "total": 10547,
         "by_severity": {
-          "INFO": 9669,
+          "INFO": 10105,
           "ERROR": 1,
-          "WARNING": 436
+          "WARNING": 441
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 365,
+          "CONCEPT_DISAGREEMENT": 368,
           "FUTURE_DATA_LEAK": 1,
-          "PERIOD_MISMATCH": 6,
-          "RESTATEMENT_CONFLICT": 65,
-          "UNKNOWN_CONCEPT": 9669
+          "PERIOD_MISMATCH": 7,
+          "RESTATEMENT_CONFLICT": 66,
+          "UNKNOWN_CONCEPT": 10105
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-038293",
-        "filing_date": "2026-08-14",
+        "accession": "0001493152-26-051398",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 55
+        "periodic_filings": 56,
+        "acceptance_datetime": "2026-11-12T21:11:32.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "d819ea6a3f1735ca33de4674d673efe656a85f193b6ed82fae3860c11ce79392",
+      "sourceDigest": "b32b1fa50202facdcca3fd3b2477bc44fcdd2679526e6670cf26cfd7bc587fce",
       "issuerId": "iss_cik_0001530766"
     },
     {

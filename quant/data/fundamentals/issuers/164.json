@@ -890,9 +890,9 @@
       "cik": "0002108164",
       "name": "Pono Capital Four, Inc.",
       "sic": "6770",
-      "rawFacts": 106,
-      "mappedFacts": 32,
-      "unmappedFacts": 70,
+      "rawFacts": 181,
+      "mappedFacts": 55,
+      "unmappedFacts": 120,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -904,9 +904,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 0,
-      "quarterlyPeriods": 2,
+      "quarterlyPeriods": 3,
       "firstPeriodEnd": "2026-03-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 0.0,
       "metrics": {
         "capital_expenditures": {
@@ -945,14 +945,14 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -973,14 +973,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
         },
         "total_assets": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 2,
+          "quarterlyPeriods": 3,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -1003,41 +1003,44 @@
         }
       },
       "quality": {
-        "HIGH": 8
+        "HIGH": 12
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 8,
-        "resolvedValues": 8
+        "datableValues": 12,
+        "resolvedValues": 12
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 70,
+        "rules_version": "1.1.0",
+        "total": 121,
         "by_severity": {
-          "INFO": 70
+          "INFO": 120,
+          "WARNING": 1
         },
         "by_code": {
-          "UNKNOWN_CONCEPT": 70
+          "RESTATEMENT_CONFLICT": 1,
+          "UNKNOWN_CONCEPT": 120
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-087845",
-        "filing_date": "2026-08-11",
+        "accession": "0001493152-26-051438",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 2
+        "periodic_filings": 3,
+        "acceptance_datetime": "2026-11-12T21:35:29.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "7bd82d46a36fa59fe8905abcdb2019086a4c6462d306190136c741b0ad15e480",
+      "sourceDigest": "75cf3fc13689d8928838d44bd3eb2e32b95cdbf6cb6e4d8835d93893d75ad266",
       "issuerId": "iss_cik_0002108164"
     }
   ]

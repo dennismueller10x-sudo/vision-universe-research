@@ -1852,9 +1852,55 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qk-bt .qk-bt-bar i.is-dn{background:var(--qk-ink)}
 .qk-bt .qk-bt-c{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--qk-line);color:inherit;text-decoration:none}
 .qk-bt .qk-bt-c:first-child{border-top:0}
+/* Backtest-Forschung (intern): Pruefffall-Liste und Methodenkarten */
+.qk-bt .qk-bt-c > span:first-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+.qk-bt .qk-bt-c > span:first-child > span{font-size:12px;color:var(--qk-mute,#5c5c5c)}
+.qk-bt .qk-bt-research{margin-top:18px}
+.qk-bt .qk-br-m{margin-top:12px;padding:14px 16px}
+.qk-bt .qk-br-m h2{margin:0 0 8px}
+.qk-bt .qk-br-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid var(--qk-line)}
+.qk-bt .qk-br-row:first-of-type{border-top:0}
+.qk-bt .qk-br-row span{min-width:0}
+.qk-bt .qk-br-row b{white-space:nowrap}
+.qk-bt .qk-br-fig{margin:10px 0 4px}
+.qk-bt .qk-br-fig svg{display:block;width:100%;max-width:520px;height:auto}
+.qk-bt .qk-br-zero{stroke:#b5b5b5;stroke-width:1;stroke-dasharray:3 3}
+.qk-bt .qk-br-band{fill:#c8f531;stroke:#000;stroke-width:1}
+.qk-bt .qk-br-mid{stroke:#000;stroke-width:3}
+.qk-bt .qk-br-up{fill:#c8f531;stroke:#000;stroke-width:1}
+.qk-bt .qk-br-dn{fill:var(--qk-ink,#111)}
+.qk-bt .qk-br-t{font-size:10px;fill:#444;font-variant-numeric:tabular-nums}
+.qk-bt .qk-br-mx{margin-top:10px;overflow-x:auto;border:1px solid var(--qk-line);border-radius:14px;background:#fff}
+.qk-bt .qk-br-mxr{display:grid;grid-template-columns:minmax(84px,1.5fr) repeat(7,minmax(34px,1fr));align-items:center;border-top:1px solid var(--qk-line);min-width:322px}
+.qk-bt .qk-br-mxr:first-child{border-top:0}
+.qk-bt .qk-br-mxh a{font-size:9.5px;line-height:1.15;padding:8px 2px;hyphens:manual;overflow-wrap:anywhere;text-align:center;color:inherit;text-decoration:none;font-weight:600}
+.qk-bt .qk-br-mxr > a[role=rowheader]{padding:10px 6px 10px 10px;font-size:11.5px;font-weight:600;color:inherit;text-decoration:none}
+.qk-bt .qk-br-cell{position:relative;text-align:center;font-size:16px;padding:8px 0}
+.qk-bt .qk-br-cell.is-not-applicable{color:#b5b5b5}
+.qk-bt .qk-br-cell.is-data-missing,.qk-bt .qk-br-cell.is-not-run,.qk-bt .qk-br-cell.is-no-case{color:#6b6b6b}
+.qk-bt .qk-br-legend{margin:6px 2px 0}
+.qk-bt .qk-br-mxr > a[role=rowheader] small.qk-br-cert{display:block;font-weight:500;font-size:9.5px;color:#3c4a00;background:#c8f531;border-radius:6px;padding:1px 5px;margin-top:3px;width:max-content;max-width:100%}
+.qk-bt .qk-br-mxr > a[role=rowheader] small.qk-br-cert.is-lim{background:#ececec;color:#444}
+.qk-bt .qk-br-cell.is-proven{color:#000;font-weight:700}
+.qk-bt .qk-br-cell.is-regime-dependent{color:#555}
+.qk-bt .qk-br-cell.is-failed{color:#000}
+.qk-bt .vu-legal{margin-top:14px}
+.qk-bt .qk-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .qk-bt .qk-bt-more{margin-top:12px;padding:12px 14px}
 .qk-bt .qk-bt-more summary{cursor:pointer}
 .qk-bt .qv3-back{display:inline-flex;align-items:center;gap:8px;margin-bottom:10px;text-decoration:none}
 .qk-bt{padding-top:8px}
 .qk .qk-seg small,.qk .qk-chips .vu-chip--on small,.qk .qk-chips .vu-chip[aria-pressed=true] small{opacity:1} /* Kontrast (vu3-regression) */
 .qd .qk a.qk-pro,.qd .qk a.qk-pro:visited{color:var(--vu-inv,#fff)} /* Kontrast: Link-Farbe nicht erben */
+.qv3-back + .qk-tag { margin-left: 10px; }
+/* Aktienseite: Ebene 1 der Backtest-Forschung („Hat das Signal früher funktioniert?“) */
+.q-ev-history .qk-br-hist{margin-top:16px;padding:18px;border-radius:16px;background:var(--vu-surface-2,#f2f2f2)}
+.q-ev-history h3{margin:0 0 10px;font-size:1.05rem}
+.q-ev-history .qk-br-big{margin:0 0 10px;font-size:1.15rem;line-height:1.35}
+.q-ev-history .qk-br-big b{font-size:1.6rem}
+.q-ev-history .qk-br-verdict{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 12px}
+.q-ev-history .vu-legal{margin:0 0 8px}
+.q-ev-history .qk-br-facts summary{cursor:pointer}
+.q-ev-history .qk-br-facts ul{margin:8px 0;padding-left:18px}
+/* Forschung: einfache Übersicht je Methode */
+.qk-bt .qk-br-simple{margin:12px 0}

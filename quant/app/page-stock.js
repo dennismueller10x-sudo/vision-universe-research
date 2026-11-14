@@ -67,7 +67,7 @@
   var TONE_GLYPH = { good: "▲", neutral: "◆", bad: "▼", unknown: "–" };
   function glyphPill(pill, tone) { pill.prepend(el("i", { class: "qx-glyph", "aria-hidden": "true", text: TONE_GLYPH[tone] || "–" })); return pill; }
   /* Redesign 2027 (Q07): jede Eigenschaft als Alltagsfrage, Fachname und Rang darunter. */
-  var ASK = { growth: "Wächst die Firma?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs?", momentum: "Läuft der Kurs gut?", value: "Ist sie günstig?", quality: "Sind die Zahlen solide?", revisions: "Heben Analysten Schätzungen an?" };
+  var ASK = { growth: "Ist die Firma gewachsen?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs für die Branche?", momentum: "Lief der Kurs gut?", value: "Wie ist der Preis im Branchenvergleich?", quality: "Ist der Gewinn gedeckt und stabil?", revisions: "Heben Analysten Schätzungen an?" };
   function rankText(f) {
     if (f.state !== "AVAILABLE" || typeof f.position !== "number") return f.name;
     var p = Math.round(f.position);
@@ -194,7 +194,7 @@
     return vm.factors.filter(function (f) { return pick.indexOf(f) >= 0; });
   }
   /* Redesign 2027 (Q07): Kacheln mit Alltagswort statt Fachname. */
-  var KEY_SHORT = { profitability: "Verdient gut", risk: "Kurs ruhig", quality: "Zahlen solide", growth: "Wächst", momentum: "Kurs läuft", value: "Günstig", revisions: "Schätzungen" };
+  var KEY_SHORT = { profitability: "Verdient gut", risk: "Ruhig für die Branche", quality: "Gewinn gedeckt & stabil", growth: "Ist gewachsen", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", revisions: "Schätzungen" };
   function capitalWord(w) { return w ? w.charAt(0).toUpperCase() + w.slice(1) : w; }
   /* Profil groß (VUUI.profileFull): „Das Profil von {Name}“, Rang-Hinweis, Legende der Stufen. */
   function profileCard(vm, ticker, displayName) {
@@ -205,7 +205,7 @@
     var card = el("div", { class: "vu-box qv3-profile" });
     card.innerHTML = '<div class="qv3-profile-h"><h2 class="vu-sm">Das Profil von ' + U.esc(String(name).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "")) + '</h2><span class="vu-xs vu-mu"><b>0–100' + (total ? " · Rang unter " + total.toLocaleString("de-DE") : "") + "</b></span></div>" +
       U.profileFull(VM.profileValues(vm.factors), { why: why }) +
-      '<div class="qv3-profile-help">' + U.help("Jede Zahl ordnet die Aktie unter den bewerteten US-Aktien ein: 0 bis 100, 50 ist die Mitte. Eine Gesamtnote gibt es bewusst nicht.") + "</div>";
+      '<div class="qv3-profile-help">' + U.help("Jede Zahl vergleicht vor allem mit Firmen derselben Branche (70 %) und dem Gesamtmarkt (30 %). 0 bis 100, höher heißt besser als die Vergleichsfirmen. Eine Gesamtnote gibt es bewusst nicht.") + "</div>";
     return card;
   }
   function keyTiles(vm) {
@@ -595,6 +595,23 @@
     c.push(el("p", { class: "qx-small", text: [lv.sample, lv.robust, lv.coverageText, "Historisch beobachtet: eine Häufigkeitsauswertung, kein Test einer Handelsregel."].filter(Boolean).join(" ") }));
     return c;
   }
+  /* Ebene 1 der Backtest-Forschung („Was die Geschichte zu diesem Signal sagt“): erst in Sichtweite, und nur wenn der
+     Schalter quant/methodology/backtest-research-display.json mit Owner-Satz oeffentlich steht. Vorher kein Abruf der Forschung. */
+  function historyWhenVisible(host, card, ctx) {
+    if (typeof global.fetch !== "function" || !ctx || !ctx.api || !ctx.api.getBacktest || !ctx.loadBacktest) return;
+    var go = function () {
+      global.fetch("/quant/methodology/backtest-research-display.json").then(function (r) { return r.ok ? r.json() : null; }).then(function (sw) {
+        if (!sw || sw.public !== true || !sw.approval || sw.approval.text !== sw.approvalPhrase) return null;
+        return Promise.all([ctx.api.getBacktest("research"), ctx.loadBacktest()]).then(function (all) {
+          var node = global.QXBacktest && global.QXBacktest.historyCard ? global.QXBacktest.historyCard(all[0], card) : null;
+          if (node && host.isConnected) host.replaceChildren(node);
+        });
+      }).catch(function () {});
+    };
+    if (!global.IntersectionObserver) return go();
+    var spy = new global.IntersectionObserver(function (entries) { if (entries.some(function (e) { return e.isIntersecting; })) { spy.disconnect(); go(); } }, { rootMargin: "200px" });
+    spy.observe(host);
+  }
   /* B: die marktweit getesteten Signale, die bei dieser Aktie gerade ausloesen. */
   function signalEvidenceFor(card) {
     var E = global.QXEvidence, T = global.VUQuantRadar ? global.VUQuantRadar.TYPE : {};
@@ -821,11 +838,12 @@
   }
 
   /* ------------------------------------------------ Konzept Quant 2026-11 (QX05): drei Sätze, Kapitel, ähnliches Profil */
-  var STRONG_SAY = { profitability: "Verdient besser als {p} % aller US-Aktien", growth: "Wächst stärker als {p} % aller US-Aktien", quality: "Hat solidere Zahlen als {p} % aller US-Aktien",
-    momentum: "Der Kurs läuft besser als bei {p} % aller US-Aktien", value: "Ist günstiger als {p} % aller US-Aktien", risk: "Hat einen ruhigeren Kurs als {p} % aller US-Aktien" };
-  var WEAK_SAY = { profitability: "Verdient weniger als die meisten", growth: "Wächst langsamer als die meisten", quality: "Die Zahlen sind weniger solide", momentum: "Der Kurs läuft schwächer als bei den meisten",
-    value: "Ist eher teuer bewertet", risk: "Der Kurs schwankt stärker als bei den meisten" };
-  var LOWER = { profitability: "verdient gut", growth: "wächst stark", quality: "hat solide Zahlen", momentum: "der Kurs läuft", value: "ist günstig", risk: "hat einen ruhigen Kurs" };
+  /* Plausibilitätsprüfung 13.11.2026: Die Werte mischen Branche (70 %) und Gesamtmarkt (30 %); kein Satz behauptet einen Rang unter allen US-Aktien. */
+  var STRONG_SAY = { profitability: "Verdient besser als die meisten vergleichbaren Firmen", growth: "Ist stärker gewachsen als die meisten vergleichbaren Firmen", quality: "Gewinn ist besser gedeckt und stabiler als bei den meisten vergleichbaren Firmen",
+    momentum: "Der Kurs lief besser als bei den meisten vergleichbaren Firmen", value: "Preis ist niedriger als bei den meisten vergleichbaren Firmen", risk: "Der Kurs ist ruhiger als bei den meisten vergleichbaren Firmen" };
+  var WEAK_SAY = { profitability: "Verdient weniger als die meisten vergleichbaren Firmen", growth: "Ist langsamer gewachsen als die meisten vergleichbaren Firmen", quality: "Gewinn ist weniger gedeckt oder weniger stabil", momentum: "Der Kurs lief schwächer als bei den meisten vergleichbaren Firmen",
+    value: "Preis ist höher als bei den meisten vergleichbaren Firmen", risk: "Der Kurs schwankt stärker als bei den meisten vergleichbaren Firmen" };
+  var LOWER = { profitability: "verdient gut", growth: "ist stark gewachsen", quality: "hat einen gedeckten, stabilen Gewinn", momentum: "der Kurs lief gut", value: "hat einen niedrigen Preis im Branchenvergleich", risk: "hat einen für die Branche ruhigen Kurs" };
   function stageKind(v) { return v >= 75 ? "strong" : v >= 45 ? "mid" : "weak"; }
   /* Quant in drei Sätzen: Stärke, Schwäche, Zuletzt – aus den vorhandenen Faktor- und Veränderungsdaten, keine neue Rechnung. */
   function storyCard(vm) {
@@ -869,7 +887,7 @@
     var name = String(displayName || ticker).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "");
     var plural = function (n, a, b) { return n + " " + (n === 1 ? a : b); };
     var CH = [
-      ["einordnung", "Die sieben Eigenschaften im Detail", "Belege bis zu den Rohdaten", "grid"],
+      ["einordnung", "Die " + VM.nWord() + " Eigenschaften im Detail", "Belege bis zu den Rohdaten", "grid"],
       ["dafuer", "Stärken und Schwächen laut Kennzahlen", plural(pc.pro.length, "Stärke", "Stärken") + " · " + plural(pc.con.length, "Schwäche", "Schwächen") + " · " + pc.middle.length + " im Mittelfeld", "pie"],
       ["veraenderung", "Was hat sich bewegt?", ch.length ? ch.filter(function (i) { return i.tone === "good"; }).length + " besser · " + ch.filter(function (i) { return i.tone === "bad"; }).length + " schlechter" : "Zuletzt keine gemessene Veränderung", "pulse"],
       ["setup", "Anlagestile und Setup", styleN ? fit + " von " + styleN + " Stilen erfüllt" + (near ? " · " + near + " knapp verfehlt" : "") : "Setup und Anlagestile", "target"],
@@ -912,7 +930,7 @@
       if (!near.length) return;
       var nm = function (t) { return String((ctx.names && ctx.names[t]) || t).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, ""); };
       var best = function (v) { var k = K.slice().sort(function (a, b) { return v[b] - v[a]; })[0]; return U.PROFILE.label[k] + " " + Math.round(v[k]); };
-      host.innerHTML = '<div class="qk-rh"><div class="qk-rh-t"><h2>Ähnliches Profil</h2></div><p>Aktien, deren sieben Eigenschaften ' + U.esc(String(displayName || ticker).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "")) + " am nächsten liegen.</p></div>" +
+      host.innerHTML = '<div class="qk-rh"><div class="qk-rh-t"><h2>Ähnliches Profil</h2></div><p>Aktien, deren ' + VM.nWord() + ' Eigenschaften ' + U.esc(String(displayName || ticker).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "")) + " am nächsten liegen.</p></div>" +
         '<div class="qk-rail" role="list" tabindex="0" aria-label="Ähnliches Profil">' + near.map(function (x) {
           return '<div role="listitem"><a class="qk-pc" href="' + U.esc(X.routes.stock(x.t)) + '">' + U.logo(x.t) + '<b class="qk-pc-n">' + U.esc(nm(x.t)) + '</b><span class="qk-pc-t">' + U.esc(x.t) + '</span><span class="qk-pc-p">' + U.profileMini(x.v, { width: 110, height: 34 }) + '</span><span class="qk-pc-c">' + U.esc(best(x.v)) + "</span></a></div>";
         }).join("") + "</div>" + '<p class="vu-xs vu-mu qk-foot">Rang im Vergleich zu allen bewerteten US-Aktien, Stand ' + U.esc(X.dateDe(scr.asOf || "")) + ". Keine Anlageempfehlung.</p>";
@@ -1285,11 +1303,13 @@
     var evidence = await evidenceP;
     var evOverview = evidenceOverview(vm);
     var signalHost = el("div", { class: "q-ev-signal-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Getestete Regelereignisse werden geladen …" })]);
+    /* Ohne VUUI steht die Karte im alten Abschnitt; mit VUUI zieht sie unten in den sichtbaren Abschnitt um. */
+    var historyHost = el("div", { class: "q-ev-history-host" });
     var trackHost = el("div", { class: "q-track-host", "aria-live": "polite" }, [el("p", { class: "qx-small", text: "Radar-Status wird geladen …" })]);
     var alertHost = global.QXEvidence && global.QXEvidence.alertPanel ? global.QXEvidence.alertPanel(ticker) : null;
     var radarMore = el("details", { class: "vu-more qv-more", id: "radar-status" }, [el("summary", { text: "Radar-Status: was Quant für diese Aktie verfolgt" }), el("div", { class: "vu-more-body qv-more-body" }, [trackHost, alertHost].filter(Boolean))]);
-    var histOld = card(X.section("Was geschah früher in ähnlichen Situationen?", null, replaySection(vm, words, evidence, signalHost, evOverview).concat([radarMore]), { href: X.routes.method("historie"), label: "Methodik" }, global.VUUI ? null : "Historischer Vergleich", global.VUUI ? null : "historie"));
-    if (global.VUUI) grid.append(card(X.section("Was geschah früher bei " + (displayName || ticker) + "?", null, historyV3(vm).concat([keepBelow("Alle Belege: diese Aktie, marktweit, Zertifizierung, Radar", histOld)]), { href: X.routes.method("historie"), label: "Methodik" }, "Historie", "historie")));
+    var histOld = card(X.section("Was geschah früher in ähnlichen Situationen?", null, replaySection(vm, words, evidence, signalHost, evOverview).concat([historyHost, radarMore]), { href: X.routes.method("historie"), label: "Methodik" }, global.VUUI ? null : "Historischer Vergleich", global.VUUI ? null : "historie"));
+    if (global.VUUI) grid.append(card(X.section("Was geschah früher bei " + (displayName || ticker) + "?", null, historyV3(vm).concat([historyHost, keepBelow("Alle Belege: diese Aktie, marktweit, Zertifizierung, Radar", histOld)]), { href: X.routes.method("historie"), label: "Methodik" }, "Historie", "historie")));
     else grid.append(histOld);
     cardPromise.then(function (rc) {
       if (!signalHost.isConnected) return;
@@ -1300,6 +1320,7 @@
       var tested = ((card && card.events) || []).some(function (e) { return e.backtest && e.backtest.state === "AVAILABLE"; });
       var certHost = signalHost.closest ? signalHost.closest(".qx-replay") : null, certLine = certHost ? certHost.querySelector(".q-ev-cert") : null;
       if (!tested && certLine && global.QXEvidence) certLine.replaceWith(global.QXEvidence.certifiedLine(null, { subject: "diese Aktie" }));
+      historyWhenVisible(historyHost, card, ctx);
     });
     (api.getSignalTracking ? api.getSignalTracking(ticker).catch(function () { return null; }) : Promise.resolve(null)).then(function (tr) {
       if (!trackHost.isConnected) return;

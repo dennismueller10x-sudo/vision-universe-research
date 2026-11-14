@@ -66,7 +66,9 @@ test("die Momentumnote folgt dem Zustand, nicht dem Wert", () => {
      diese Pruefung waere die Bindung an den Zustand eine Behauptung im
      Kommentar. */
   const build = readFileSync("scripts/quant/build-factor-evidence.mjs", "utf8");
-  assert.match(build, /read: \(v, status\) => \(status\?\.relativeStrength12M1M === "BENCHMARK_STALE" \? null : v\.relativeStrength12M1M\)/);
+  /* Seit quant-v2.3.0 (13.11.2026, Befund b5) zaehlt der Marktvorsprung gar nicht mehr in die Momentumnote; ein
+     veralteter Vergleichsindex kann sie damit nicht mehr verschieben. Die Zustandsregel gilt weiter fuer jeden Leser. */
+  assert.doesNotMatch(build, /id: "relativeStrength12m1m", weight/);
   assert.match(build, /spec\.read\(record\.price, record\.priceStatus\)/);
 
   /* Und die Komponente selbst, gegen echte Werte gefahren. */

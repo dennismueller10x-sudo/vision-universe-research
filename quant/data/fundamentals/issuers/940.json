@@ -170,9 +170,9 @@
       "cik": "0001174940",
       "name": "ORAGENICS INC",
       "sic": "2834",
-      "rawFacts": 11768,
-      "mappedFacts": 4546,
-      "unmappedFacts": 7527,
+      "rawFacts": 11922,
+      "mappedFacts": 4630,
+      "unmappedFacts": 7733,
       "calendarYears": 16,
       "industry": null,
       "industryMetrics": {},
@@ -182,9 +182,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 17,
-      "quarterlyPeriods": 66,
+      "quarterlyPeriods": 67,
       "firstPeriodEnd": "2009-12-31",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 16.0,
       "metrics": {
         "capital_expenditures": {
@@ -196,7 +196,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 4,
-          "quarterlyPeriods": 17,
+          "quarterlyPeriods": 18,
           "firstAvailablePeriod": "2022-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 3.0
@@ -223,14 +223,14 @@
         },
         "net_income": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 65,
+          "quarterlyPeriods": 66,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
         },
         "operating_cash_flow": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 64,
+          "quarterlyPeriods": 65,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -251,14 +251,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 17,
-          "quarterlyPeriods": 63,
+          "quarterlyPeriods": 64,
           "firstAvailablePeriod": "2009-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 16.0
         },
         "total_assets": {
           "annualPeriods": 16,
-          "quarterlyPeriods": 62,
+          "quarterlyPeriods": 63,
           "firstAvailablePeriod": "2010-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 15.0
@@ -281,19 +281,19 @@
         }
       },
       "quality": {
-        "HIGH": 424,
+        "HIGH": 429,
         "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 426,
-        "resolvedValues": 426
+        "datableValues": 431,
+        "resolvedValues": 431
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 7725,
+        "rules_version": "1.1.0",
+        "total": 7931,
         "by_severity": {
-          "INFO": 7527,
+          "INFO": 7733,
           "WARNING": 198
         },
         "by_code": {
@@ -303,27 +303,28 @@
           "PERIOD_MISMATCH": 2,
           "RESTATEMENT_CONFLICT": 110,
           "UNEXPECTED_DURATION": 9,
-          "UNKNOWN_CONCEPT": 7527
+          "UNKNOWN_CONCEPT": 7733
         }
       },
       "latestFiling": {
-        "accession": "0001493152-26-037749",
-        "filing_date": "2026-08-13",
+        "accession": "0001493152-26-051477",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 85
+        "periodic_filings": 86,
+        "acceptance_datetime": "2026-11-12T22:12:01.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "249c90ae630e8ab965555909ad2e6e3a7ccc1d639f7309ee1559724127aa6256",
+      "sourceDigest": "18d572789e24c3cd86470e3a80f58879aac68c108c86888414bbbf03a5f20f5d",
       "issuerId": "iss_cik_0001174940"
     },
     {

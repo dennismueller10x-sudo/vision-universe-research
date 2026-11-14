@@ -842,10 +842,10 @@
       "cik": "0002130606",
       "name": "Obsidian Therapeutics, Inc.",
       "sic": "2834",
-      "rawFacts": 34,
-      "mappedFacts": 13,
-      "unmappedFacts": 18,
-      "calendarYears": 1,
+      "rawFacts": 355,
+      "mappedFacts": 113,
+      "unmappedFacts": 238,
+      "calendarYears": 2,
       "industry": null,
       "industryMetrics": {},
       "fiscalYearEnd": "1231",
@@ -853,11 +853,11 @@
         "OBX"
       ],
       "status": "INGESTED",
-      "annualPeriods": 0,
-      "quarterlyPeriods": 2,
-      "firstPeriodEnd": "2026-04-10",
-      "lastPeriodEnd": "2026-06-30",
-      "historyYears": 0.0,
+      "annualPeriods": 2,
+      "quarterlyPeriods": 8,
+      "firstPeriodEnd": "2024-12-31",
+      "lastPeriodEnd": "2026-09-30",
+      "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
           "annualPeriods": 0,
@@ -868,7 +868,7 @@
         },
         "eps_diluted": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -895,7 +895,7 @@
         },
         "net_income": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 1,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -909,7 +909,7 @@
         },
         "revenue": {
           "annualPeriods": 0,
-          "quarterlyPeriods": 0,
+          "quarterlyPeriods": 2,
           "firstAvailablePeriod": null,
           "lastAvailablePeriod": null,
           "historyYears": 0.0
@@ -922,17 +922,17 @@
           "historyYears": 0.0
         },
         "stockholders_equity": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 2,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
-          "historyYears": 0.0
+          "annualPeriods": 2,
+          "quarterlyPeriods": 8,
+          "firstAvailablePeriod": "2024-12-31",
+          "lastAvailablePeriod": "2025-12-31",
+          "historyYears": 1.0
         },
         "total_assets": {
-          "annualPeriods": 0,
-          "quarterlyPeriods": 1,
-          "firstAvailablePeriod": null,
-          "lastAvailablePeriod": null,
+          "annualPeriods": 1,
+          "quarterlyPeriods": 3,
+          "firstAvailablePeriod": "2025-12-31",
+          "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "total_debt": {
@@ -953,43 +953,47 @@
         }
       },
       "quality": {
-        "HIGH": 5
+        "HIGH": 23,
+        "MEDIUM": 2
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 5,
-        "resolvedValues": 5
+        "datableValues": 25,
+        "resolvedValues": 25
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 19,
+        "rules_version": "1.1.0",
+        "total": 250,
         "by_severity": {
-          "INFO": 18,
-          "WARNING": 1
+          "INFO": 238,
+          "WARNING": 12
         },
         "by_code": {
-          "CONCEPT_DISAGREEMENT": 1,
-          "UNKNOWN_CONCEPT": 18
+          "CONCEPT_DISAGREEMENT": 8,
+          "FISCAL_PERIOD_CONFLICT": 1,
+          "RESTATEMENT_CONFLICT": 3,
+          "UNKNOWN_CONCEPT": 238
         }
       },
       "latestFiling": {
-        "accession": "0001193125-26-352381",
-        "filing_date": "2026-08-14",
+        "accession": "0001193125-26-458414",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 1
+        "periodic_filings": 2,
+        "acceptance_datetime": "2026-11-12T21:13:14.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "19a8759671f621f351cbb43580a4e19e0acbd49a19dc270f107c0b6882caa010",
+      "sourceDigest": "9c97f7ddb26974111272a5447e39d70603b0f775a5cb55ce1754277829f6b554",
       "issuerId": "iss_cik_0002130606"
     }
   ]

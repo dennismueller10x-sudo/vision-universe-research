@@ -3,6 +3,12 @@
 **Stand:** 17.09.2026 · **Zweig:** `claude/vision-universe-discover-h93fmv`
 · **Nicht gemergt, nicht ausgerollt, nicht veröffentlicht.**
 
+> **Nachtrag 13.11.2026:** `stream.enabled` steht seit dem 17.09.2026 auf `true` (Owner), die Aktienseite nutzt den Strom. Neu: ist bis
+> zum ersten Datenlauf des Tages kein Snapshot der laufenden Sitzung da (oder nur der Vortag), baut `discover/ui/live-hub.js` den
+> Tagesverlauf aus den Strom-Ticks selbst (Minutentakt, ab dem zweiten Punkt, `fromStream`), beschriftet ihn als „Verlauf ab hh:mm aus
+> dem Live-Strom“ und lässt den Snapshot, sobald er da ist, wieder die Grundlage sein. Budgetwächter, Titelgrenze (5 je Client) und
+> Kursreferenz-Wortwahl unverändert.
+
 ---
 
 ## 0. Was gebaut wurde, in einem Absatz

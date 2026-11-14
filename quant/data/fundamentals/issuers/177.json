@@ -1623,9 +1623,9 @@
       "cik": "0002047177",
       "name": "Chenghe Acquisition III Co.",
       "sic": "6770",
-      "rawFacts": 243,
-      "mappedFacts": 133,
-      "unmappedFacts": 123,
+      "rawFacts": 336,
+      "mappedFacts": 183,
+      "unmappedFacts": 170,
       "calendarYears": 1,
       "industry": null,
       "industryMetrics": {},
@@ -1637,9 +1637,9 @@
       ],
       "status": "INGESTED",
       "annualPeriods": 2,
-      "quarterlyPeriods": 8,
+      "quarterlyPeriods": 9,
       "firstPeriodEnd": "2024-09-30",
-      "lastPeriodEnd": "2026-06-30",
+      "lastPeriodEnd": "2026-09-30",
       "historyYears": 1.0,
       "metrics": {
         "capital_expenditures": {
@@ -1678,14 +1678,14 @@
         },
         "net_income": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 6,
+          "quarterlyPeriods": 7,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
         },
         "operating_cash_flow": {
           "annualPeriods": 1,
-          "quarterlyPeriods": 3,
+          "quarterlyPeriods": 4,
           "firstAvailablePeriod": "2025-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 0.0
@@ -1706,14 +1706,14 @@
         },
         "stockholders_equity": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 8,
+          "quarterlyPeriods": 9,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
         },
         "total_assets": {
           "annualPeriods": 2,
-          "quarterlyPeriods": 5,
+          "quarterlyPeriods": 6,
           "firstAvailablePeriod": "2024-12-31",
           "lastAvailablePeriod": "2025-12-31",
           "historyYears": 1.0
@@ -1736,44 +1736,45 @@
         }
       },
       "quality": {
-        "HIGH": 28
+        "HIGH": 32
       },
       "pit": {
         "state": "PIT_READY",
-        "datableValues": 28,
-        "resolvedValues": 28
+        "datableValues": 32,
+        "resolvedValues": 32
       },
       "qualitySummary": {
-        "rules_version": "1.0.0",
-        "total": 130,
+        "rules_version": "1.1.0",
+        "total": 177,
         "by_severity": {
-          "INFO": 123,
+          "INFO": 170,
           "WARNING": 7
         },
         "by_code": {
           "PERIOD_MISMATCH": 1,
           "UNEXPECTED_DURATION": 6,
-          "UNKNOWN_CONCEPT": 123
+          "UNKNOWN_CONCEPT": 170
         }
       },
       "latestFiling": {
-        "accession": "0001213900-26-085683",
-        "filing_date": "2026-08-05",
+        "accession": "0001213900-26-118426",
+        "filing_date": "2026-11-12",
         "form": "10-Q",
-        "periodic_filings": 4
+        "periodic_filings": 5,
+        "acceptance_datetime": "2026-11-12T13:00:28.000Z"
       },
       "versions": {
         "normalization_schema": "1.0.0",
-        "normalization_logic": "1.9.0",
+        "normalization_logic": "1.14.0",
         "formula": "1.2.0",
         "provider_adapter": "sec-edgar-1.0.0",
-        "quality_rules": "1.0.0",
+        "quality_rules": "1.1.0",
         "metric_registry": {
           "schema_version": 1,
-          "mapping_version": "1.5.0"
+          "mapping_version": "1.7.0"
         }
       },
-      "sourceDigest": "b8388414ce9f3de944c5682de6f8dcc8ee56b4309b9185fc80d9b95342c95246",
+      "sourceDigest": "4ded9c8b23225db48cbaaaa398780f7924ee29815ca1f4356bb82e4e9d24f8ea",
       "issuerId": "iss_cik_0002047177"
     },
     {
