@@ -75,7 +75,7 @@ for (const vp of VIEWPORTS) {
     // Startseite
     await page.goto(BASE + '/elliott/', { waitUntil: 'networkidle' });
     await page.waitForSelector('#el-main[data-state="ready"]');
-    check(/Wellen/.test(await page.locator('h1.el-title').innerText()) && await page.locator('.el-tag .vu-ltag').innerText().then((t) => /Elliott/i.test(t)), 'Startseite zeigt Elliott (Frage als Titel), keine Aktie');
+    check(/Wellen/.test(await page.locator('h1.el-title').innerText()) && await page.locator('.el-tag .vu-ltag').first().innerText().then((t) => /Elliott/i.test(t)), 'Startseite zeigt Elliott (Frage als Titel), keine Aktie');
     check(!/NVIDIA|NVDA/.test(await page.locator('h1.el-title').innerText()), 'kein Standardtitel');
     check(await page.locator('.el-row').count() >= 1, 'mindestens eine Reihe');
     check(await page.locator('vu-navigation nav.tabs a[aria-current=page]').first().innerText().then((t) => /Elliott/.test(t)), 'Reiter: Elliott aktiv');
@@ -84,6 +84,13 @@ for (const vp of VIEWPORTS) {
     console.log('    Anfragen:', page.__requests.length, ' uebertragen ca.', Math.round(bytes / 1024), 'KB');
     await layout(page, 'Startseite');
     await page.screenshot({ path: `${OUT}/${vp.name}-${scheme}-home.png` });
+    // App-Konzept 2: Kopfkachel, Schiene der zählbaren Aktien, „Weiter“-Karte; „Wellen in 3 Minuten“ lädt beim Antippen (elliott/about.js)
+    check(await page.locator('.el-top .el-today-n').count() === 1 && await page.locator('.el-rail a.el-cr').count() >= 1 && await page.locator('#el-main a.vu-next').count() === 1, 'Kopfkachel, Schiene und „Weiter“-Karte');
+    await page.locator('.el-about').click();
+    await page.waitForSelector('#el-sheet:not([hidden])', { timeout: 15000 });
+    check(/Impuls/.test(await page.locator('#el-sheet').innerText()), 'Fenster „Wellen in 3 Minuten“ öffnet mit Inhalt');
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#el-sheet', { state: 'hidden' });
 
     // Reihen: horizontale Karten, Projektionen nicht abgeschnitten
     const clipped = await page.evaluate(() => [...document.querySelectorAll('.el-proj-v')].filter((n) => n.scrollWidth > n.clientWidth + 1).length);
@@ -152,7 +159,8 @@ for (const vp of VIEWPORTS) {
     await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
     check(page.url().includes('/elliott/#/NVDA'), 'Reload bleibt auf /elliott/#/NVDA');
     // Weg 5: Aktie ohne Lesart: ehrliche Aussage, Aktie bleibt sichtbar
-    const nothesis = await page.locator('.cb-nothesis').count(), hero = await page.locator('.cb-hero').count();
+    // Konzept EHV (PR 2): die Aktie ohne Zählung zeigt die Karte .cb-ew-none unter dem Kopf .cb-head (früher .cb-nothesis unter .cb-hero)
+    const nothesis = await page.locator('.cb-nothesis, .cb-ew-none').count(), hero = await page.locator('.cb-hero, .cb-head').count();
     check(hero === 1 && (nothesis === 1 || await page.locator('.cb-pj-hl, .cb-ewp').count() > 0), 'NVDA: Lesart oder ehrliche "Keine belastbare Elliott-Lesart"');
 
     // Weg 3: Aktienseite -> Elliott

@@ -162,10 +162,14 @@
   var PRIO = ["CONFIRMED", "NEW", "ZONE", "REVISED", "ROLE"];
   var EXP = "<b>Experimentell.</b> Eine Lesart beschreibt eine mögliche Struktur mit klarer Grenze. Keine Vorhersage, kein Kursziel, keine Empfehlung.";
 
+  function sparkOf(t, big) {
+    var n = el("span", { class: "el-spark", "aria-hidden": "true", dataset: big ? { t: t, w: 204, h: 72 } : { t: t } });
+    if (global.VUElliottSpark) global.VUElliottSpark.observe(n);
+    return n;
+  }
   function card(c, n) {
     var up = c.dir === "UP", inv = c.inv && c.inv.p > 0 ? c.inv : null;
-    var spark = el("span", { class: "el-spark", "aria-hidden": "true", dataset: { t: c.t } });
-    if (global.VUElliottSpark) global.VUElliottSpark.observe(spark);
+    var spark = sparkOf(c.t);
     return el("a", { class: "el-card", href: M.detailHref(c.t), "aria-label": M.ariaLabel(c), dataset: { id: c.id, symbol: c.t, role: c.role } }, [
       el("div", { class: "el-c-top" }, [n ? el("span", { class: "el-c-n num", text: String(n) }) : null,
         el("span", { class: "el-c-name" }, [el("b", { class: "el-name", text: c.n }), el("span", { class: "el-sub", text: [c.t, M.price(c), ROLE_SHORT[c.role] || M.roleLabel(c.role)].filter(Boolean).join(" · "), title: M.ROLE_NOTE[c.role] })]), spark]),
@@ -188,6 +192,8 @@
       e.kind === "FILTER" ? el("a", { class: "vu-btn vu-btn--sm", href: "#/", text: "Filter zurücksetzen" }) : null]);
   }
 
+  var QUICK = [["welle", "3", "Welle 3"], ["welle", "C", "Welle C"], ["richtung", "auf", "Aufwärts"], ["richtung", "ab", "Abwärts"]];
+  function one(k, v) { var x = {}; x[k] = v; return x; }
   function chips(s) {
     var rows = [], shown = {}, row = el("div", { class: "vu-chips el-chips", role: "group", "aria-label": "Lesarten filtern" });
     if (s.welle && !s.reihe && !s.neu) {
@@ -195,9 +201,9 @@
       row.append(chip("Alle", count({ welle: s.welle }), M.buildHash({ welle: s.welle }), !s.richtung && !M.isFiltered(Object.assign({}, s, { welle: null }))));
       [["auf", "▲ Aufwärts"], ["ab", "▼ Abwärts"]].forEach(function (o) { row.append(chip(o[1], count({ welle: s.welle, richtung: o[0] }), M.buildHash({ welle: s.welle, richtung: o[0] }), s.richtung === o[0])); });
     } else {
-      var one = function (k, v) { var x = {}; x[k] = v; return x; }, only = function (k, v) { return !s.reihe && !s.neu && s[k] === v && M.buildHash(s) === M.buildHash(one(k, v)); };
+      var only = function (k, v) { return !s.reihe && !s.neu && s[k] === v && M.buildHash(s) === M.buildHash(one(k, v)); };
       row.append(chip("Alle", state.home.cards.length, "#/", !M.isFiltered(s)));
-      [["welle", "3", "Welle 3"], ["welle", "C", "Welle C"], ["richtung", "auf", "Aufwärts"], ["richtung", "ab", "Abwärts"]].forEach(function (o) {
+      QUICK.forEach(function (o) {
         if (only(o[0], o[1])) shown[o[0]] = 1;
         var n = count(one(o[0], o[1])); if (n) row.append(chip(o[2], n, M.buildHash(one(o[0], o[1])), only(o[0], o[1])));
       });
@@ -218,26 +224,12 @@
     return rows;
   }
 
-  var sheetNode = null;
-  function sheetShell(title) {
-    if (!sheetNode) { sheetNode = frag(U.sheet("el-sheet", title, "")).firstChild; document.body.append(sheetNode); }
-    sheetNode.querySelector(".vu-sheet-ui").setAttribute("aria-label", title);
-    return sheetNode.querySelector(".vu-sheet-ui");
-  }
+  /* „Wellen in 3 Minuten“: Inhalt und Fenster liegen in elliott/about.js und kommen erst beim Antippen. */
   function openAbout() {
-    var box = sheetShell("Wellen in 3 Minuten"), P = [[0, 70], [58, 46], [116, 58], [174, 18], [232, 34], [290, 6], [340, 12]];
-    var svg = '<svg class="el-schema" viewBox="-8 0 356 90" role="img" aria-label="Schema: fünf Schritte, drei nach vorn und zwei zurück"><path d="M' + P.map(function (p) { return p.join(" "); }).join(" L") + ' L340 90 L0 90Z" fill="#c8f531" opacity=".35"/><path d="M' + P.map(function (p) { return p.join(" "); }).join(" L") + '" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>' +
-      P.slice(1, 6).map(function (p, i) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="9" fill="currentColor"/><text x="' + p[0] + '" y="' + (p[1] + 4) + '" text-anchor="middle" class="el-schema-n">' + (i + 1) + "</text>"; }).join("") + '<circle cx="340" cy="12" r="5" fill="#c8f531" stroke="currentColor" stroke-width="2"/></svg>';
-    var term = function (k, v) { return el("div", { class: "el-term" }, [el("b", { text: k }), el("span", { text: v })]); };
-    box.replaceChildren(el("p", { class: "vu-ltag", text: "Kurz erklärt" }), el("h2", { class: "vu-mt", text: "Wellen in 3 Minuten" }),
-      el("p", { class: "el-sheet-p", text: "Nach Elliott laufen Kurse in Wellen: ein Impuls in 5 Schritten (3 nach vorn, 2 zurück), danach eine Korrektur in 3 Teilen (A, B, C)." }), frag(svg), el("p", { class: "vu-mu vu-xs", text: "Schema, keine echten Kurse." }),
-      term("Impuls", "Fünf Wellen in Trendrichtung. Welle 3 ist nach der Lehre meist die längste."), term("Korrektur", "Drei Teile gegen den Trend: Zickzack, flache Korrektur, Dreieck oder Kombinationen."),
-      term("Warum Zählungen oft wechseln", "Dieselben Kurse lassen sich oft auf mehrere Arten zählen. Die Engine zählt nur, wenn der Chart sauber verläuft, und nennt die Gefahr einer Neuzählung."),
-      term("Ungültig unter …", "Schließt die Woche jenseits dieser Grenze, stimmt die Zählung nicht mehr."),
-      frag(U.help("Eine Lesart ist keine Wahrscheinlichkeit, keine Prognose und kein Kursziel.")),
-      el("p", { class: "vu-xs" }, [el("a", { href: "/quant/#/methodik", text: "Methodik ansehen" })]),
-      el("button", { class: "vu-btn vu-btn--block", type: "button", text: "Verstanden", onclick: function () { U.closeSheet(sheetNode); } }));
-    U.openSheet(sheetNode);
+    if (global.VUElliottAbout) return global.VUElliottAbout();
+    var sc = document.createElement("script");
+    sc.src = "/elliott/about.js?v=ak2-1"; sc.onload = function () { if (global.VUElliottAbout) global.VUElliottAbout(); };
+    document.head.append(sc);
   }
   var form = null, closeSearch = function () {}, formFocusOut = null;
   document.addEventListener("click", function (ev) { if (form && !form.contains(ev.target)) closeSearch(); });
@@ -330,13 +322,16 @@
   function hero(s) {
     var home = state.home, a = M.applicableOf(home), asOf = asOfOf(home);
     var tag = el("p", { class: "el-tag" }, [el("span", { class: "vu-ltag", text: "Elliott" }), frag(U.pro()), asOf ? el("span", { class: "vu-ltag", text: "Wochencharts " + weekday(asOf) }) : null]);
-    var out = [head("Wo lassen sich Wellen zählen?", "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten.", tag)];
+    var top = head("Wo lassen sich Wellen zählen?", "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten.", tag), out = [top];
+    top.classList.add("vu-night", "el-top");
     if (!s.suche && a) {
-      var share = a.n ? a.count / a.n * 100 : 0;
-      out.push(el("section", { class: "vu-box vu-box--ink el-today", "aria-label": "Heute anwendbar" }, [
+      var share = a.n ? a.count / a.n * 100 : 0, up = a.rows.filter(function (r) { return M.dirOf(r) === "up"; }).length, dn = a.rows.filter(function (r) { return M.dirOf(r) === "down"; }).length, split = a.rows.length === a.count && up + dn;
+      top.append(el("section", { class: "el-today", "aria-label": "Heute anwendbar" }, [
         el("p", { class: "vu-ltag el-today-k", text: "Heute anwendbar" }),
         el("p", { class: "el-today-n" }, [el("b", { class: "num", text: a.count.toLocaleString("de-DE") }), el("span", { text: "von " + a.n.toLocaleString("de-DE") + " Aktien" })]),
         el("div", { class: "el-ebar", role: "img", "aria-label": a.count + " von " + a.n + " Aktien zählbar" }, [el("i", { style: "width:" + Math.max(1.2, share).toFixed(1) + "%" })]),
+        split ? el("div", { class: "el-split", role: "img", "aria-label": up + " nach oben, " + dn + " nach unten" }, [el("i", { style: "flex:" + up }), el("i", { style: "flex:" + dn })]) : null,
+        split ? el("p", { class: "el-split-l" }, [el("b", { text: "▲ " + up + " nach oben" }), el("b", { text: "▼ " + dn + " nach unten" })]) : null,
         el("p", { class: "vu-xs el-today-s", text: "Gut anwendbar: " + a.high + ". Bei allen anderen zeigt die Aktie die Marktstruktur aus Technical." })]));
     }
     out.push(buildSearch(s.q, s.suche));
@@ -347,24 +342,30 @@
     var d = M.dirOf(r), inv = M.invalidLine(r);
     var right = el("span", { class: "el-cr-r" }, [frag(d === "up" ? U.verdict("strong", "nach oben") : d === "down" ? U.verdict("weak", "nach unten") : U.verdict("none", "Richtung offen")), inv ? el("small", { class: "el-cr-inv num", text: inv }) : null]);
     var a = el("a", { class: "el-cr el-hit", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), d === "up" ? "nach oben" : d === "down" ? "nach unten" : "Richtung offen", inv].filter(Boolean).join(", ") }, [
-      frag(U.logo(r.t)), el("span", { class: "el-cr-t" }, [el("b", { text: M.shortName(r.n, r.t), title: r.n }), el("span", { text: M.countLine(r) })]), right]);
+      frag(U.logo(r.t)), el("span", { class: "el-cr-t" }, [el("b", { text: M.shortName(r.n, r.t), title: r.n }), el("span", { text: M.countLine(r) })]), sparkOf(r.t, 1), right]);
     return el("li", {}, [a]);
   }
-  function countList(rows) { return el("ul", { class: "vu-box el-clist", role: "list" }, rows.map(countRow)); }
+  function countList(rows, rail) { return el("ul", { class: "el-clist " + (rail ? "el-rail" : "vu-box"), role: "list" }, rows.map(countRow)); }
   var INV_HELP = "Ungültig: Schließt die Woche jenseits dieser Marke, gilt die Zählung nicht mehr. Eine Lesart ist keine Vorhersage und kein Kursziel.";
   var EXP_LINE = "Experimentell. Eine Projektion ist keine Wahrscheinlichkeit. Keine Anlageempfehlung.";
   function noCountBox(a) {
     return el("p", { class: "el-gap", role: "status", text: a ? "Heute ist bei keiner Aktie eine Wellenzählung anwendbar (Wellen-Index, Stand " + M.dateDe(a.asOf) + "). Das kommt vor: die Engine enthält sich, wenn keine Zählung verlässlich ist." :
       "Die Liste der zählbaren Aktien fehlt im aktuellen Datenstand (Stand " + M.dateDe(state.home && state.home.dataAsOf) + "). Die Suche oben öffnet jede Aktie direkt." });
   }
+  function kindNav(by, kinds, href, cls) {
+    return el("nav", { class: cls, "aria-label": "Arten der Änderung" }, kinds.map(function (k) { var a = el("a", { class: "el-tile", href: href(k) }); a.append(frag(U.tile(KIND[k][0], String(by[k].length), KIND[k][1]))); return a; }));
+  }
+  /* Start (App-Konzept 2): zählbare Aktien als Schiene mit Kursverlauf, darunter „Neu und verändert“ und die Lesarten als Zahlenkacheln. */
   function startBody(host) {
-    var a = M.applicableOf(state.home);
-    host.append(sect("Saubere Zählung heute", a && a.count ? M.ZAEHLBAR_HASH : null, a ? "Alle " + a.count : null));
-    if (!a || !a.rows.length) host.append(noCountBox(a));
-    else host.append(countList(a.rows.slice(0, 6)));
+    var a = M.applicableOf(state.home), neu = M.filterCards(state.home.cards, { neu: true }), by = {};
+    neu.forEach(function (c) { (by[c.chg.k] = by[c.chg.k] || []).push(c); });
+    host.append(el("section", { class: "el-row" }, [sect("Saubere Zählung heute", a && a.count ? M.ZAEHLBAR_HASH : null, a ? "Alle " + a.count : null), !a || !a.rows.length ? noCountBox(a) : countList(a.rows.slice(0, 6), 1)]));
     host.append(el("div", { class: "el-inv-help" }, [frag(U.help(INV_HELP))]));
+    if (neu.length) host.append(el("section", { class: "el-row" }, [sect("Neu und verändert", "#/?neu=1", "Alle " + neu.length), kindNav(by, PRIO.filter(function (k) { return by[k]; }), function (k) { return "#/?neu=1&art=" + KIND[k][2]; }, "el-rail el-tiles")]));
+    if (U.stat) host.append(sect("Lesarten"), el("div", { class: "vu-grid el-quick" }, QUICK.map(function (o) { var x = one(o[0], o[1]); return frag(U.stat(String(count(x)), o[2], { href: M.buildHash(x) })); })));
     host.append(el("button", { class: "vu-navcard el-about", type: "button", onclick: openAbout }, [el("span", { class: "vu-hud", style: "--vu-hud:42px" }, [frag(U.glyph("book", 20))]),
       el("span", { class: "vu-navcard__text" }, [el("b", { text: "Wellen in 3 Minuten" }), el("span", { text: "Impuls, Korrektur, warum Zählungen oft wechseln" })]), frag(U.glyph("next", 18))]));
+    if (U.next) host.append(frag(U.next({ title: "Technical: Was zeigt der Chart?", href: "/technical/#/" })));
   }
   function zaehlbarView(host) {
     var a = M.applicableOf(state.home);
@@ -399,7 +400,7 @@
     host.append(head("Neu und verändert", "Was sich in den letzten " + (Object.keys(dates).length || 2) + " Handelstagen getan hat."));
     var kinds = PRIO.filter(function (k) { return by[k]; }).sort(function (a, b) { return ["NEW", "CONFIRMED", "REVISED", "ZONE", "ROLE"].indexOf(a) - ["NEW", "CONFIRMED", "REVISED", "ZONE", "ROLE"].indexOf(b); });
     var hrefArt = function (k) { return M.buildHash(s) + (k ? "&art=" + KIND[k][2] : ""); };
-    host.append(el("nav", { class: "vu-grid el-tiles el-tiles2", "aria-label": "Arten der Änderung" }, kinds.map(function (k) { var a = el("a", { class: "el-tile", href: hrefArt(k) }); a.append(frag(U.tile(KIND[k][0], String(by[k].length), KIND[k][1]))); return a; })));
+    host.append(kindNav(by, kinds, hrefArt, "vu-grid el-tiles"));
     var row = el("div", { class: "vu-chips el-chips", role: "group", "aria-label": "Art der Änderung" }, [chip("Alle", base.length, hrefArt(null), !art)]);
     kinds.forEach(function (k) { row.append(chip(k === "NEW" ? "Neu" : KIND[k][0], by[k].length, hrefArt(k), art === KIND[k][2])); });
     host.append(row);

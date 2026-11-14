@@ -7,8 +7,9 @@ import {navigate} from '../../quality/browser-navigation.mjs';
 
    Prueft gegen das Repository (statischer Server, keine Auslieferung).
    Struktur nach dem Redesign 2027 (Folien T01–T06); Absicht der Checks unveraendert:
-     Start        Frage, drei Kacheln mit Zahlen, Markt heute mit Urteil, fertige Suchen,
-                  vier Bestenlisten, Dock vorhanden
+     Start        Kopfkachel (Frage, Anteil ueber der 200-Tage-Linie, Urteil mit Ampel), Heute neu, acht Muster,
+                  fertige Suchen, „Weiter“-Karte; Erklaersatz im Fenster,
+                  Dock vorhanden
      Screener     Schnellsuche liefert Treffer mit Befund-Pille, Filter-Sheet: ein Chip
                   aendert Trefferzahl und Adresse, Trichter vorhanden; Profi-Tabelle
      Chart        Einsteiger: Urteil, Linie (keine Kerzen), drei Saetze, Preise, Signal-Sheet
@@ -100,14 +101,20 @@ async function main() {
     }
 
     await check(key + " Start", async () => {
-      /* Konzept „Der Chart in drei Sätzen“ TX01: Markt als Zeile, Heute neu als Karten, fertige Suchen als Schiene, Muster als Raster. */
+      /* App-Konzept 2 (14.11.2026): Markt in der Kopfkachel, Heute neu als Karten, Muster (alle acht der Musterseite) und fertige Suchen als Schiene, „Weiter“-Karte am Ende. */
       await navigate(page,base + "#/");
       await page.waitForSelector(".tc-idc", { timeout: 30000 });
-      assert(/Was zeigt\s*der Chart/.test(await page.locator("h1").innerText()), "Titel als Frage fehlt");
+      /* App-Konzept 2: die Frage steht als Dachzeile der Kopfkachel (Versalien per CSS), deshalb ohne Groß-/Kleinschreibung. */
+      assert(/Was zeigt\s*der Chart/i.test(await page.locator("h1").innerText()), "Titel als Frage fehlt");
       assert(await page.locator(".tc-idc").count() === 5, "fünf fertige Suchen fehlen");
       assert(/über der 200-Tage-Linie/.test(await page.locator(".tc-ms").innerText()), "Markt heute als Zeile fehlt");
       await page.waitForSelector(".tc-mgrid .tc-mg", { timeout: 30000 });
-      assert(await page.locator(".tc-mgrid .tc-mg").count() === 4, "Muster-Raster fehlt");
+      assert(await page.locator(".tc-mgrid .tc-mg").count() === 8, "Muster-Schiene fehlt");
+      assert(await page.locator(".tc-hero .tc-ms .tc-ampel i.is-on").count() === 1, "Kopfkachel ohne Ampel");
+      assert(await page.locator("#tc-main a.vu-next").count() === 1, "„Weiter“-Karte fehlt");
+      await page.locator(".tc-hero .tc-info").click(); await page.waitForSelector("#tc-about-pop:not([hidden])");
+      assert(/Jeden Tag lesen feste Regeln/.test(await page.locator("#tc-about-pop").innerText()), "Erklärsatz im Fenster fehlt");
+      await page.keyboard.press("Escape"); await page.waitForFunction(() => !document.getElementById("tc-about-pop"));
       assert(await page.locator(".tc-tiles3, .tc-ranks, .tc-tcard").count() === 0, "alte Zahlen- oder Bestenlisten-Kacheln");
       await page.waitForSelector(".tc-rail .tc-nc, .tc-rail .tc-note", { timeout: 30000 });
       await page.waitForFunction(() => !!document.getElementById("vu-dock"), null, { timeout: 10000 });
@@ -265,6 +272,10 @@ async function main() {
       assert(await page.locator(".tc-story-r [data-verdict]").count() === 3, "drei Saetze mit Urteil fehlen");
       assert(await page.locator(".tc-zt").count() === 2, "Zonen-Kacheln fehlen");
       assert(await page.locator(".tc-ep").count() === 3, "Kapitel fehlen");
+      assert(await page.locator(".tc-story-r .tc-sg").count() >= 2, "Grafik zu den Sätzen fehlt");
+      await page.locator(".tc-dqbtn").click(); await page.waitForSelector("#tc-dq-pop:not([hidden])");
+      assert(/Kursreihe/.test(await page.locator("#tc-dq-pop").innerText()), "Datenqualität im Fenster fehlt");
+      await page.keyboard.press("Escape"); await page.waitForFunction(() => !document.getElementById("tc-dq-pop"));
       assert(await page.locator(".tc-worlds").count() === 0, "Quant-/Supertrader-Block (Entscheidung 6)");
       if (await page.locator(".tc-bf").count()) {
         await page.locator(".tc-bf").first().click(); await page.waitForSelector("#tc-signal-sheet:not([hidden])");

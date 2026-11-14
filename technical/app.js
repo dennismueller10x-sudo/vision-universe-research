@@ -6,6 +6,8 @@
    #/screener/gespeichert bleiben gueltig), Muster (#/muster, frueher
    #/methodik), Aktienseite Perspektive „Chart“ (#/chart/<T>), Chart Studio
    als PRO-Ansicht (#/chart/<T>/studio). Hash-Routen, keine Bibliothek.
+   App-Konzept 2 (Owner-Freigabe 14.11.2026): Kopfkachel mit Zahl und Balken, Schienen bis an den Rand,
+   Grafik je Aussage, Tiefe im Fenster (VUUI.popup), „Weiter“-Karte am Seitenende. Nur Darstellung.
 
    Datenquellen (nur lesend):
      /technical/data/index-v1.json + meta.json         (Startseite, Chart Studio; Erzeuger build-screener.mjs)
@@ -293,6 +295,23 @@
     return box;
   }
   function closeSheets() { [].forEach.call(doc.querySelectorAll(".tc-sheet"), function (s) { U.closeSheet(s); s.remove(); }); }
+  /** Fenster (App-Konzept 2): Inhalt einen Tipp entfernt. VUUI.popup räumt beim Schließen und beim Seitenwechsel ab. */
+  function pop(id, title, kids) {
+    var box = el("div", { class: "tc-pop" }, kids);
+    if (U.popup) return U.popup({ id: id, title: title, body: box, cls: "tc-popup" });
+    return sheet(id, null, title, [box]);
+  }
+  /** Runder „i“-Knopf neben einer Überschrift: öffnet den Erklärtext im Fenster. */
+  function infoBtn(label, open) { return el("button", { type: "button", class: "tc-info", "aria-label": label, "aria-haspopup": "dialog", onclick: function (ev) { ev.preventDefault(); ev.stopPropagation(); open(); } }, "i"); }
+  /** Anteil als Balken (0–100), optional mit Marke (z. B. 50 %). Nur übergebene Werte. */
+  function bar(pct, o) {
+    var x = o || {}, p = isNum(pct) ? Math.max(0, Math.min(100, pct)) : 0;
+    return el("span", { class: "tc-bar" + (x.cls ? " " + x.cls : ""), "aria-hidden": "true" }, [el("i", { style: "width:" + Math.max(p ? 2 : 0, p).toFixed(1) + "%" }), isNum(x.mark) ? el("em", { style: "left:" + x.mark + "%" }) : null]);
+  }
+  /** „Weiter“-Karte am Seitenende (VUUI.next); ohne den Baustein ein einfacher Link. */
+  function nextCard(title, href, sub) {
+    return U.next ? h(U.next({ title: title, href: href, sub: sub || null })) : el("a", { class: "vu-btn vu-btn--line vu-btn--block", href: href, text: title });
+  }
   /** Seitenkopf der Redesign-Seiten: Titel als Frage/Name, ein Satz Nutzen. */
   function pageHead(kicker, title, lead, back) {
     return el("header", { class: "tc-phead" }, [back ? el("a", { class: "tc-back", href: back[0] }, [glyph("back"), back[1]]) : null, kicker ? el("p", { class: "vu-ltag", text: kicker }) : null,
@@ -343,7 +362,7 @@
     var count = tc ? tc[0] : ix.presets && isNum(ix.presets[id]) ? ix.presets[id] : null, near = tc && tc[1];
     var n = t.criteria ? t.criteria.length : 0;
     return el("a", { class: "tc-row tc-tcard", href: TPL.href(id) }, [ico(PRESET_ICON[id] || t.icon),
-      el("span", { class: "tc-row-text" }, [el("b", { text: plainTitle(t) }), el("span", { text: t.title + (n > 1 ? " · " + n + " Regeln" : "") })]),
+      el("span", { class: "tc-row-text" }, [el("b", { text: plainTitle(t) }), el("span", { text: t.title + (n > 1 ? " · " + n + " Regeln" : "") }), isNum(count) && ix.count ? bar(count / ix.count * 100) : null]),
       el("span", { class: "tc-tcount" }, [el("strong", { class: "tc-row-count num", text: isNum(count) ? count.toLocaleString("de-DE") : "–" }), el("small", { text: near ? "+" + near.toLocaleString("de-DE") + " fast" : "Treffer" })])]);
   }
   /* ------------------------------------------- Konzept „Der Chart in drei Sätzen“: Bausteine */
@@ -381,55 +400,67 @@
   /* Fertige Suchen der Startseite (Vorlage c-home): Alltagstitel, Satz darunter, Trefferzahl; Tipp öffnet den Screener. */
   var HOME_SEARCHES = [["establishedUptrend", "Aufwärtstrend · 8 Regeln", "trend"], ["breakout", "über Widerstand oder Range", "breakout"], ["high52", "höchster Schluss seit 52 Wochen", "trophy"],
     ["contraction", "Schwankung zieht sich zusammen", "contraction"], ["triangleBreakoutUp", "Dreieck mit Ausbruch nach oben", "triangle"]];
-  /* „Muster heute im Markt“ (Raster): dieselben Zahlen wie die Musterseite (meta.json formations, erkannt + bestätigt). */
-  var HOME_PATTERNS = [["Dreieck", ["SYMMETRICAL_TRIANGLE", "ASCENDING_TRIANGLE", "DESCENDING_TRIANGLE"], "dreieck"], ["Ausbruch aus Range", ["RANGE_BREAKOUT"], "range"],
-    ["Doppelboden", ["DOUBLE_BOTTOM"], "doppelboden"], ["Doppeltop", ["DOUBLE_TOP"], "doppeltop"]];
+  /* „Muster heute im Markt“ (Schiene): dieselben acht Muster und Zahlen wie die Musterseite (MUSTER_GRID; meta.json formations, erkannt + bestätigt). */
   function patternCount(meta, types) { var c = meta && meta.formations || {}; return types.reduce(function (a, t) { return a + (c[t + ":DETECTED"] || 0) + (c[t + ":CONFIRMED"] || 0); }, 0); }
   function patternDir(E, types) {
     var by = E ? E.byType : {}, d = types.map(function (t) { return by[t] && by[t].direction; });
     return d.every(function (x) { return x === "BULLISH"; }) ? 1 : d.every(function (x) { return x === "BEARISH"; }) ? -1 : 0;
   }
-  function mgCell(href, name, n, d, shape) {
-    return el("a", { class: "tc-mg", href: href }, [shapeBox(shape, 40, true), el("b", { class: "tc-mg-n", text: name }), el("div", { class: "tc-mg-row" }, [el("b", { class: "num", text: de(n) }),
+  function mgCell(href, name, n, d, shape, size) {
+    return el("a", { class: "tc-mg", href: href, role: size ? "listitem" : null }, [shapeBox(shape, size || 64, true), el("b", { class: "tc-mg-n", text: name }), el("div", { class: "tc-mg-row" }, [el("b", { class: "num", text: de(n) }),
       el("span", { class: "tc-dirdot is-" + (d > 0 ? "up" : d < 0 ? "down" : "open"), role: "img", "aria-label": M.directionWords(d), text: d > 0 ? "▲" : d < 0 ? "▼" : "◆" })])]);
   }
   /** Marktbreite als Urteil: ab 60 % stark, ab 40 % gemischt, darunter schwach (Darstellungsregel, keine Prognose). */
   function breadthVerdict(share) { return share >= 60 ? ["strong", "Starker Markt"] : share >= 40 ? ["mid", "Gemischter Markt"] : ["weak", "Schwacher Markt"]; }
   function viewHome(main) {
-    var tag = el("p", { class: "vu-ltag", text: "Technical" });
-    var head = el("header", { class: "tc-phead" }, [tag, el("h1", { class: "vu-lt", html: "Was zeigt<br>der Chart?" }),
-      el("p", { class: "vu-lead", text: "Jeden Tag lesen feste Regeln die Charts aller US-Aktien und sagen in Worten, was auffällt." })]);
-    var searchSlot = el("div", { class: "tc-search-slot" }), chips = el("div", { class: "vu-chips tc-quick", role: "list" }), market = el("div", { class: "tc-market-slot" });
-    var fresh = el("div", { class: "tc-rail", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:190px;width:240px;flex:none" })]);
+    /* App-Konzept 2: Kopfkachel (Frage, Anteil über der 200-Tage-Linie als Zahl und Balken, Urteil mit Ampel), darunter Suche und
+       Schienen. Der Erklärsatz und der Stand stehen einen Tipp entfernt im Fenster („i“) und in der Fußzeile. */
+    var LEAD = "Jeden Tag lesen feste Regeln die Charts aller US-Aktien und sagen in Worten, was auffällt.";
+    var stand = "", basis = "";
+    var title = el("h1", { class: "tc-hero-q", text: "Was zeigt der Chart?" }), tag = el("span", { class: "tc-hero-n" });
+    var info = infoBtn("Was Technical zeigt", function () {
+      pop("tc-about-pop", "Was zeigt der Chart?", [el("p", { class: "tc-sheet-lead", text: LEAD }), stand ? el("p", { class: "tc-note", text: stand }) : null, basis ? el("p", { class: "tc-note", text: basis }) : null,
+        el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/muster?reiter=regeln", text: "Regeln und Grenzen" })])]);
+    });
+    var market = el("div", { class: "tc-market-slot" }, [el("div", { class: "tc-skel tc-hero-skel" })]);
+    var head = el("header", { class: "tc-hero vu-night" }, [el("div", { class: "tc-hero-h" }, [el("p", { class: "tc-hero-k" }, [title, tag]), info]), market]);
+    var searchSlot = el("div", { class: "tc-search-slot" }), chips = el("div", { class: "vu-chips tc-quick", role: "list" });
+    var fresh = el("div", { class: "tc-rail", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:214px;width:232px;flex:none" })]);
     var freshHead = rh("Heute neu im Chart", null, null, "Muster, die sich zuletzt gebildet oder aufgelöst haben.");
-    var searches = el("div", { class: "tc-rail" }), grid = el("div", { class: "tc-mgrid" }), foot = el("div");
+    var searches = el("div", { class: "tc-rail" }), grid = el("div", { class: "tc-mgrid tc-mrail", role: "list" }), foot = el("div");
     var learn = el("a", { class: "tc-learn", href: "#/lernen" }, [hudGlyph("book", 42), el("span", { class: "tc-learn-t" }, [el("b", { text: "Chart lesen in 4 Lektionen" }), el("span", { class: "tc-learn-s", text: "Kurskerze, Struktur, Unterstützung und Widerstand" })]), h(U.glyph("next", 18))]);
-    put(main, [head, searchSlot, chips, market, freshHead, fresh, rh("Fertige Suchen", "#/screener?reiter=vorlagen", "Alle 13", "Tipp öffnet die Treffer im Screener."), searches,
-      rh("Muster heute im Markt", "#/muster", "Alle", "So viele Aktien zeigen das Muster."), grid, rh("Lernen"), learn, foot]);
+    put(main, [head, searchSlot, chips, freshHead, fresh, rh("Muster heute im Markt", "#/muster", "Alle", "So viele Aktien zeigen das Muster."), grid,
+      rh("Fertige Suchen", "#/screener?reiter=vorlagen", "Alle 13", "Tipp öffnet die Treffer im Screener."), searches, rh("Lernen"), learn,
+      nextCard("Fundamental: wie gut ist das Geschäft?", "/fundamental/"), foot]);
     loadIndex().then(function (X) {
       var ix = X.index, asOf = X.meta && X.meta.asOf || ix.asOf;
-      if (asOf) tag.textContent = "Technical · " + closeLabel(asOf);
+      if (asOf) stand = "Technical · " + closeLabel(asOf);
       put(searchSlot, searchBox(X.entries, "Aktie oder „Dreieck über der 200-Tage-Linie“", true));
       put(chips, ["NVDA", "AAPL", "TSLA", "MSFT"].filter(X.has).map(function (t) { return el("a", { class: "vu-chip", role: "listitem", href: M.chartHref(t) }, [h(U.logo(t)), t]); }));
       /* Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json); ohne sie die eigene Zählung, beide mit Stand und Basis. */
       var above = ix.presets && ix.presets.aboveSma200, own = isNum(above) && ix.count ? { share: above / ix.count * 100, matched: above, base: ix.count, asOf: asOf, source: "technical" } : null;
       fetchJSON(M.MARKET_PULSE_PATH).catch(function () { return null; }).then(function (pulse) {
         var b = M.marketBreadth(pulse) || own;
-        if (!b) return;
+        if (!b) { put(market, el("p", { class: "tc-note", text: LEAD })); return; }
         var v = breadthVerdict(b.share);
-        /* Ampel in Neonfarben (Owner-Wunsch 10.11.2026): stark = Neongrün, gemischt = Neongelb, schwach = Neonrot; dieselben Schwellen wie das Urteil. */
+        basis = M.breadthSentence(b);
+        tag.textContent = " · " + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien";
+        /* Ampel in Neonfarben (Owner-Wunsch 10.11.2026): stark = Neongrün, gemischt = Neongelb, schwach = Neonrot; dieselben Schwellen wie das Urteil.
+           Seit App-Konzept 2 trägt die Ampel die Zustandsfarbe, die Kachel bleibt dunkel. */
         var lamp = el("span", { class: "tc-ampel", "aria-hidden": "true" }, ["weak", "mid", "strong"].map(function (k) { return el("i", { class: "is-" + k + (k === v[0] ? " is-on" : "") }); }));
-        put(market, el("a", { class: "tc-ms tc-ms--" + v[0], href: TPL.href("aboveSma200"), "data-source": b.source, "data-state": v[0], "aria-label": "Markt heute: " + v[1] + ", " + M.breadthSentence(b) }, [el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }),
-          el("b", {}, [v[1], el("small", { text: Math.round(b.share) + " % über der 200-Tage-Linie" })]), el("div", { class: "tc-ms-bar" }, el("i", { style: "width:" + Math.round(b.share) + "%" })),
-          el("span", { class: "tc-ms-basis", text: (isNum(b.matched) ? Math.round(b.matched).toLocaleString("de-DE") + " von " : "Basis ") + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien" + (b.asOf ? " · Stand " + M.dateDe(b.asOf) : "") })]), lamp, h(U.glyph("next", 14))]));
+        put(market, el("a", { class: "tc-ms tc-ms--" + v[0], href: TPL.href("aboveSma200"), "data-source": b.source, "data-state": v[0], "aria-label": "Markt heute: " + v[1] + ", " + M.breadthSentence(b) }, [
+          el("div", { class: "tc-ms-top" }, [el("div", { class: "tc-ms-big" }, [el("b", { class: "num", text: Math.round(b.share) + " %" }), el("small", { text: "über der 200-Tage-Linie" })]),
+            el("div", { class: "tc-ms-v" }, [lamp, el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }), el("b", { text: v[1] })])])]),
+          el("div", { class: "tc-ms-bar" }, el("i", { style: "width:" + Math.round(b.share) + "%" })),
+          el("span", { class: "tc-ms-basis" }, [(isNum(b.matched) ? Math.round(b.matched).toLocaleString("de-DE") + " von " : "Basis ") + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien" + (b.asOf ? " · Stand " + M.dateDe(b.asOf) : ""), h(U.glyph("next", 14))])]));
       });
       put(searches, HOME_SEARCHES.filter(function (x) { return TPL.get(x[0]); }).map(function (x) {
         var t = TPL.get(x[0]), tc = ix.templates && ix.templates[x[0]], count = tc ? tc[0] : ix.presets && ix.presets[x[0]];
         return el("a", { class: "tc-idc", href: "#/screener?vorlage=" + encodeURIComponent(x[0]) }, [hudGlyph(x[2], 34), el("b", { text: plainTitle(t) }), el("span", { text: x[1] }),
-          el("div", { class: "tc-idc-n" }, [el("b", { class: "num", text: de(count) }), el("small", { text: "Treffer" })])]);
+          el("div", { class: "tc-idc-n" }, [el("b", { class: "num", text: de(count) }), el("small", { text: "Treffer" })]), isNum(count) && ix.count ? bar(count / ix.count * 100) : null]);
       }));
       loadEvidence().then(function (E) {
-        put(grid, HOME_PATTERNS.map(function (p) { return mgCell("#/screener?muster=" + ({ dreieck: "dreieck", range: "breakout", doppelboden: "doppelboden", doppeltop: "doppeltop" })[p[2]], p[0], patternCount(X.meta, p[1]), patternDir(E, p[1]), p[2]); }));
+        put(grid, MUSTER_GRID.map(function (p) { return mgCell("#/screener?muster=" + p[3], p[0], patternCount(X.meta, p[1]), patternDir(E, p[1]), p[2], 96); }));
         if (E && E.doc) { var a = grid.previousElementSibling && grid.previousElementSibling.querySelector("a"); if (a) a.firstChild.textContent = "Alle " + E.doc.types.length; }
       });
       put(foot, footNote(asOf));
@@ -438,6 +469,7 @@
       if (navigator.connection && navigator.connection.saveData) { fresh.removeAttribute("aria-busy"); put(fresh, el("button", { type: "button", class: "vu-btn vu-btn--line vu-btn--sm", text: "Neue Muster laden", onclick: go })); }
       else if (global.requestIdleCallback) global.requestIdleCallback(go, { timeout: 1500 }); else setTimeout(go, 200);
     }).catch(function () {
+      put(market, el("p", { class: "tc-note", text: LEAD }));
       put(searchSlot, stateBox("Daten derzeit nicht verfügbar", "Der Screener-Datensatz konnte nicht geladen werden. Der Chart ist über die Adresse #/chart/<Kürzel> weiter erreichbar."));
     });
   }
@@ -450,7 +482,7 @@
     if (f[1] === "CONFIRMED") return name + ", bestätigt";
     return name + ((f[5] || "").indexOf("V") >= 0 ? ", vorläufig" : ", in Bildung");
   }
-  /** Drei Aktien mit dem juengsten Muster-Ereignis (Erkennung oder Ausbruch, hoechstens 5 Kalendertage vor dem Stand) als Karten. */
+  /** Sechs Aktien mit dem juengsten Muster-Ereignis (Erkennung oder Ausbruch, hoechstens 5 Kalendertage vor dem Stand) als Karten. */
   function paintFresh(host, D, asOf, E) {
     var ds = D.ds, C = ds.cols, cut = asOf ? new Date(Date.parse(asOf) - 5 * 864e5).toISOString().slice(0, 10) : "", pick = [];
     for (var i = 0; i < ds.size; i++) {
@@ -462,13 +494,13 @@
     /* Juengstes Ereignis zuerst, bestaetigte Ausbrueche mit Richtung vor Erkennungen, dann hoeheres relatives Volumen. */
     pick.sort(function (a, b) { return a.at < b.at ? 1 : a.at > b.at ? -1 : b.dir - a.dir || b.vol - a.vol; });
     host.removeAttribute("aria-busy");
-    put(host, pick.length ? pick.slice(0, 3).map(function (p) {
+    put(host, pick.length ? pick.slice(0, 6).map(function (p) {
       var row = ds.row(p.i), f = p.f, d = f[1] === "CONFIRMED" && f[4] ? (f[4] === "UP" ? 1 : -1) : patternDir(E, [f[0]]);
       var sp = el("div", { class: "tc-nc-sp", "aria-hidden": "true" }); /* C06 Kleinform wie im Konzept: Linie mit neongrüner Fläche und Endpunkt (assets/vu-chart.js). */
-      sp.innerHTML = sparkMap && sparkMap[row.s] && VC ? VC.sparkline(sparkMap[row.s], { width: 216, height: 40 }) : "";
+      sp.innerHTML = sparkMap && sparkMap[row.s] && VC ? VC.sparkline(sparkMap[row.s], { width: 232, height: 84 }) : "";
       return el("a", { class: "tc-nc", href: M.chartHref(row.s), title: M.hitSentence(row, [f[0]]) }, [
-        el("div", { class: "tc-nc-h" }, [h(U.logo(row.s)), el("div", { class: "tc-nc-n" }, [el("b", { text: shortName(row.n) || row.s }), el("span", { text: row.s })]), h(U.chg(isNum(row.chg1d) ? row.chg1d * 100 : null))]),
-        el("div", { class: "tc-nc-s" }, [shapeBox(f[0], 30), el("span", { text: freshSentence(f) })]), sp, dirVerdict(d)]);
+        el("div", { class: "tc-nc-h" }, [h(U.logo(row.s)), el("div", { class: "tc-nc-n" }, [el("b", { text: shortName(row.n) || row.s }), el("span", { text: row.s })]), shapeBox(f[0], 30)]),
+        el("div", { class: "tc-nc-s" }, [el("span", { text: freshSentence(f) })]), sp, el("div", { class: "tc-nc-f" }, [h(U.chg(isNum(row.chg1d) ? row.chg1d * 100 : null)), dirVerdict(d)])]);
     }) : [el("p", { class: "tc-note", text: "In den letzten Tagen haben die Regeln kein neues Chartmuster gefunden." })]);
   }
   function shortName(n) { return String(n || "").replace(/,? (Inc\.?|Corp(oration)?\.?|Co\.|Ltd\.?|plc|Holdings?|Class [A-C]|N\.V\.|S\.A\.)\b.*$/i, "").slice(0, 18); }
@@ -624,7 +656,7 @@
     /* Konzept „Der Chart in drei Sätzen“, TX06: Kopf „Was suchst du?“, Perspektiven-Chips wie im Hauptscreener (Chart aktiv),
        Suche in Worten als schwarze Satz-Karte, fertige Suchen als Schiene, Hauptknopf mit Trefferzahl. Der Technical-Screener
        bleibt (Owner-Änderung 09.11.2026); die anderen Perspektiven öffnen den Hauptscreener. */
-    var head = el("header", { class: "tc-phead" }, [el("p", { class: "vu-ltag", text: "Screener · Perspektive Chart" }), el("h1", { class: "vu-lt", text: "Was suchst du?" })]);
+    var head = el("header", { class: "tc-phead tc-phead--row tc-phead--tight" }, [el("h1", { class: "vu-lt", text: "Was suchst du?" }), el("p", { class: "vu-ltag", text: "Screener · Perspektive Chart" })]);
     var persp = el("nav", { class: "vu-chips tc-persp", "aria-label": "Perspektive" }, [["basis", "Basis", null], ["zahlen", "Zahlen", "fundamental"], ["faktoren", "Faktoren", "quant"], ["chart", "Chart", "technical"]].map(function (x) {
       var kids = [x[2] ? h(U.worldIcon(x[2], 15)) : h(U.glyph("grid", 15)), x[1]];
       return x[0] === "chart" ? el("span", { class: "vu-chip tc-on", "aria-current": "page" }, kids) : el("a", { class: "vu-chip", href: "/screener/?p=" + x[0] }, kids);
@@ -920,9 +952,9 @@
   /** Regelliste in Worten (T03 b): nummeriert, Alltagssatz fett, Fachformel klein, je Regel die Zahl der erfuellten Titel. */
   function criteriaCard(t, res) {
     return el("ol", { class: "vu-box tc-rules tc-tpl-crit" }, t.criteria.map(function (x, k) {
-      var fz = res && res.funnel[k];
+      var fz = res && res.funnel[k], all = fz ? fz.pass + fz.fail + fz.unknown : 0;
       return el("li", { class: "tc-crit" }, [el("span", { class: "tc-rule-n num", "aria-hidden": "true", text: String(k + 1) }), el("span", {}, [
-        el("b", { text: x.why || x.label }), x.from ? el("span", { class: "tc-mini", text: "Trendfilter" }) : null,
+        el("b", { text: x.why || x.label }), x.from ? el("span", { class: "tc-mini", text: "Trendfilter" }) : null, all ? bar(fz.pass / all * 100) : null,
         el("small", { class: "tc-crit-why", text: x.label + (fz ? " · erfüllt bei " + fz.pass.toLocaleString("de-DE") + (fz.unknown ? ", unbekannt bei " + fz.unknown.toLocaleString("de-DE") : "") : "") })])]);
     }));
   }
@@ -1029,7 +1061,7 @@
     zeitrahmen: "Zeigen Tag, Woche und Monat in dieselbe Richtung?" };
   function viewLearn(main, focusReset) {
     var AM = global.VUAcademyModel, slot = el("div", {}, el("div", { class: "tc-skel", style: "height:220px" }));
-    put(main, [el("header", { class: "tc-phead" }, [el("p", { class: "vu-ltag", text: "Lernen" }), el("h1", { class: "vu-lt", html: "Charts lesen<br>lernen" }),
+    put(main, [el("header", { class: "tc-phead tc-phead--row" }, [el("h1", { class: "vu-lt", html: "Charts lesen<br>lernen" }), el("p", { class: "vu-ltag", text: "Lernen" }),
       el("p", { class: "vu-lead", text: "8 Lernpfade, 32 kurze Lektionen. Fortschritt bleibt auf diesem Gerät." })]), slot]);
     fetchJSON("/technical/academy/content.json").then(function (c) {
       var done = AM ? AM.read(store(), c) : [], resume = null;
@@ -1039,7 +1071,8 @@
       var path = c.paths.filter(function (p) { return p.id === next.pathId; })[0] || c.paths[0], idx = path.lessons.indexOf(next.id);
       var pct = Math.round(done.length / c.lessons.length * 100);
       var today = el("a", { class: "tc-today", href: "#/akademie/" + next.id }, [el("div", { class: "tc-today-h" }, [el("div", {}, [el("span", { class: "vu-ltag tc-ltag", text: "Weiter mit" }),
-        el("b", { text: (PATH_PLAIN[path.id] || [path.title])[0] + " · Lektion " + (idx + 1) }), el("span", { class: "tc-today-s", text: next.title })]), el("span", { class: "tc-go", "aria-hidden": "true" }, h(U.glyph("next", 18)))]),
+        el("b", { text: (PATH_PLAIN[path.id] || [path.title])[0] + " · Lektion " + (idx + 1) }), el("span", { class: "tc-today-s", text: next.title })]),
+        U.ring ? h(U.ring(pct, { size: 58, stroke: 7, text: pct + " %", label: "Lektionen abgeschlossen" })) : el("span", { class: "tc-go", "aria-hidden": "true" }, h(U.glyph("next", 18)))]),
         el("div", { class: "tc-prog" }, el("i", { style: "width:" + pct + "%" })), el("span", { class: "tc-today-s", role: "status", text: done.length + " von " + c.lessons.length + " Lektionen" })]);
       var paths = el("div", { class: "tc-lpg" }, c.paths.map(function (p) {
         var pp = PATH_PLAIN[p.id] || [p.title, "", "book"], first = p.lessons.filter(function (k) { return done.indexOf(k) < 0; })[0] || p.lessons[0];
@@ -1055,7 +1088,7 @@
         goals.length ? el("div", { class: "tc-st", text: "Eine Frage an den Chart" }) : null,
         goals.length ? el("div", { class: "vu-chips tc-asks" }, goals.map(function (g) { return el("a", { class: "vu-chip", href: "#/screener?z=" + encodeURIComponent(g.id), text: GOAL_QUESTION[g.id] }); })) : null,
         goals.length ? h(U.help("Jede Frage öffnet den Screener mit passenden Regeln. Wie die Regeln gewählt sind, steht beim Ziel im Screener. Beispiele in den Lektionen sind konstruiert; keine Anlageempfehlung.")) : null,
-        footNote(null)]);
+        nextCard("Muster: was die Formen im Chart bedeuten", "#/muster"), footNote(null)]);
       if (focusReset) reset.focus({ preventScroll: true });
     }).catch(function () { put(slot, stateBox("Lerninhalte nicht geladen", "Die Lektionen konnten nicht geladen werden.", el("a", { class: "tc-link", href: "#/lernen", text: "Erneut versuchen" }))); });
   }
@@ -1332,18 +1365,22 @@
     var S = X.S, t = S.close.length - 1, c = S.close[t], F = X.F, out = [];
     if (isNum(F.sma200)) {
       var d = c / F.sma200 - 1;
-      out.push(["trend", "Trend", Math.abs(d) < 0.0005 ? "Der Kurs liegt genau auf der 200-Tage-Linie." : "Der Kurs liegt " + M.num(Math.abs(d) * 100, 1) + " % " + (d > 0 ? "über" : "unter") + " der 200-Tage-Linie.", d > 0 ? "strong" : "weak"]);
+      out.push(["trend", "Trend", Math.abs(d) < 0.0005 ? "Der Kurs liegt genau auf der 200-Tage-Linie." : "Der Kurs liegt " + M.num(Math.abs(d) * 100, 1) + " % " + (d > 0 ? "über" : "unter") + " der 200-Tage-Linie.", d > 0 ? "strong" : "weak",
+        { kind: "mid", value: d * 100, text: (d > 0 ? "+" : d < 0 ? "−" : "") + M.num(Math.abs(d) * 100, 1) + " %", scale: 50, label: "Abstand zur 200-Tage-Linie" }]);
     } else out.push(["trend", "Trend", "Für die 200-Tage-Linie ist die Kurshistorie zu kurz.", "none"]);
     if (isNum(F.rsi14)) {
       var r = F.rsi14, zone = r >= 70 ? ", „überkauft“" : r > 65 ? ", fast „überkauft“" : r <= 30 ? ", „überverkauft“" : r < 35 ? ", fast „überverkauft“" : "";
       var w = M.momentumWords(r);
-      out.push(["pulse", "Schwung", (w === "ausgeglichen" ? "Der Schwung ist ausgeglichen" : "Der Kurs ist " + w) + " (RSI " + M.num(r, 1) + zone + ").", r >= 50 ? "strong" : "weak"]);
+      out.push(["pulse", "Schwung", (w === "ausgeglichen" ? "Der Schwung ist ausgeglichen" : "Der Kurs ist " + w) + " (RSI " + M.num(r, 1) + zone + ").", r >= 50 ? "strong" : "weak",
+        { kind: "scale", value: r, text: "RSI " + M.num(r, 1), marks: [30, 70], label: "RSI von 0 bis 100, Marken bei 30 und 70" }]);
     } else out.push(["pulse", "Schwung", "Für den Schwung fehlt ein Wert.", "none"]);
     var day = S.dates[t], f = (X.analysis.formations || []).filter(function (x) { return x.state !== "INVALIDATED" && (x.detectedAt === day || x.confirmedAt === day); })[0];
     var vol = isNum(F.relativeVolume) ? " bei " + M.volumeWords(F.relativeVolume) : "";
     var ch = c / S.close[t - 1] - 1, move = !isNum(ch) ? "Unverändert" : ch > 0 ? "Plus " + M.num(ch * 100, 2) + " %" : ch < 0 ? "Minus " + M.num(-ch * 100, 2) + " %" : "Unverändert";
-    if (f) out.push(["bars", "Letzter Tag", M.plain(f.name) + (f.state === "CONFIRMED" ? " bestätigt" : " erkannt") + "; " + move.replace(/^U/, "u").replace(/^P/, "p").replace(/^M/, "m") + vol + ".", f.direction === "BULLISH" ? "strong" : f.direction === "BEARISH" ? "weak" : "mid"]);
-    else out.push(["bars", "Letzter Tag", move + vol + ".", ch > 0 ? "strong" : ch < 0 ? "weak" : "mid"]);
+    /* Grafik: Handel des letzten Tages im Verhältnis zum üblichen Tag (1,0× = Marke), Skala bis 3×. */
+    var g = isNum(F.relativeVolume) ? { kind: "scale", value: Math.min(100, F.relativeVolume / 3 * 100), text: M.num(F.relativeVolume, 1) + "× Handel", marks: [100 / 3], label: "Handel im Verhältnis zum üblichen Tag" } : null;
+    if (f) out.push(["bars", "Letzter Tag", M.plain(f.name) + (f.state === "CONFIRMED" ? " bestätigt" : " erkannt") + "; " + move.replace(/^U/, "u").replace(/^P/, "p").replace(/^M/, "m") + vol + ".", f.direction === "BULLISH" ? "strong" : f.direction === "BEARISH" ? "weak" : "mid", g]);
+    else out.push(["bars", "Letzter Tag", move + vol + ".", ch > 0 ? "strong" : ch < 0 ? "weak" : "mid", g]);
     return out;
   }
   /** Richtungs-Pille eines Befunds (Chart Studio, Alle Befunde): ▲ neongruen, ▼ schwarz, ◆ grau (keine Rot/Gruen-Pillen). */
@@ -1401,10 +1438,30 @@
     box.querySelector(".tc-sheet-title").remove();
     return box;
   }
-  /** Zwei Zonen-Kacheln (Vorlage .zt): Widerstand über, Unterstützung unter dem Kurs. */
-  function zoneTiles(lv) {
+  /** Grafik zu einem der drei Sätze: Balken um die Mitte (Abstand zur Linie) oder Skala mit Marken (RSI, Handel). Zeichnet nur den Wert des Satzes. */
+  function storyGraphic(g) {
+    if (!g) return null;
+    var kids;
+    if (g.kind === "mid") {
+      var w = Math.min(50, Math.abs(g.value) / g.scale * 50);
+      kids = [el("i", { class: g.value >= 0 ? "is-up" : "is-down", style: (g.value >= 0 ? "left:50%;" : "right:50%;") + "width:" + Math.max(1.5, w).toFixed(1) + "%" }), el("em", { style: "left:50%" })];
+    } else kids = [el("i", { style: "width:" + Math.max(1.5, Math.min(100, g.value)).toFixed(1) + "%" })].concat(g.marks.map(function (m) { return el("em", { style: "left:" + m.toFixed(1) + "%" }); }));
+    return el("div", { class: "tc-sg" }, [el("b", { class: "num", text: g.text }), el("span", { class: "tc-sg-b tc-sg-b--" + g.kind, role: "img", "aria-label": g.label + ": " + g.text }, kids)]);
+  }
+  /** Zonenleiter: wo der Kurs zwischen der Unterstützung (unten) und dem Widerstand (oben) steht. Nur mit beiden Zonen und dem Kurs dazwischen. */
+  function zoneLadder(lv, close) {
     var R = lv && lv.nearestResistance, Su = lv && lv.nearestSupport;
-    return el("div", { class: "tc-zt2" }, [
+    if (!R || !Su || !isNum(close) || !(R.zoneHigh > Su.zoneLow)) return null;
+    var lo = Su.zoneLow, span = R.zoneHigh - lo, at = function (v) { return Math.max(0, Math.min(100, (v - lo) / span * 100)); };
+    return el("div", { class: "tc-zl", role: "img", "aria-label": "Kurs " + money$(close) + " zwischen Unterstützung " + de(Su.zoneLow) + "–" + de(Su.zoneHigh) + " $ und Widerstand " + de(R.zoneLow) + "–" + de(R.zoneHigh) + " $" }, [
+      el("span", { class: "tc-zl-t" }, [el("i", { class: "is-lo", style: "left:0;width:" + Math.max(2, at(Su.zoneHigh)).toFixed(1) + "%" }), el("i", { class: "is-hi", style: "left:" + Math.min(98, at(R.zoneLow)).toFixed(1) + "%;right:0" }),
+        el("em", { style: "left:" + at(close).toFixed(1) + "%" })]),
+      el("span", { class: "tc-zl-l" }, [el("span", { text: "Unterstützung" }), el("b", { class: "num", text: "Kurs " + money$(close) }), el("span", { text: "Widerstand" })])]);
+  }
+  /** Zwei Zonen-Kacheln (Vorlage .zt): Widerstand über, Unterstützung unter dem Kurs. */
+  function zoneTiles(lv, close) {
+    var R = lv && lv.nearestResistance, Su = lv && lv.nearestSupport;
+    return el("div", { class: "tc-zt2" }, [zoneLadder(lv, close),
       el("div", { class: "tc-zt" }, [el("small", { text: "Widerstand ▲" }), el("b", { class: "num", text: R ? money$(R.center) : "–" }), el("span", { text: R ? "Zone " + de(R.zoneLow) + "–" + de(R.zoneHigh) + " $ · " + R.touches + "-mal gestoppt" : "Kein Widerstand über dem Kurs" })]),
       el("div", { class: "tc-zt is-lo" }, [el("small", { text: "Unterstützung ▼" }), el("b", { class: "num", text: Su ? money$(Su.center) : "–" }), el("span", { text: Su ? "Zone " + de(Su.zoneLow) + "–" + de(Su.zoneHigh) + " $ · " + Su.touches + "-mal gehalten" : "Keine Unterstützung unter dem Kurs" })])]);
   }
@@ -1480,12 +1537,14 @@
       put(host, widget.node);
     });
     function tog(key, label) { return el("button", { type: "button", class: "vu-chip", "aria-pressed": String(simple[key]), text: label, onclick: function (ev) { simple[key] = !simple[key]; ev.currentTarget.setAttribute("aria-pressed", String(simple[key])); draw(); } }); }
-    var story = el("div", { class: "tc-story" }, [el("p", { class: "vu-ltag tc-ltag", text: "Der Chart in drei Sätzen" })].concat(threeSentences(X).map(function (s) {
-      return el("div", { class: "tc-story-r" }, [hudGlyph(s[0], 34), el("div", {}, [el("span", { class: "vu-ltag tc-ltag", text: s[1] }), el("p", { text: s[2] })]), h(U.verdict(s[3]))]);
+    var RSI_HELP = "Schwung: wie stark der Kurs zuletzt gestiegen oder gefallen ist. Fachleute messen das mit dem RSI (0 bis 100); über 70 gilt als „überkauft“, unter 30 als „überverkauft“.";
+    var story = el("div", { class: "tc-story" }, [el("div", { class: "tc-story-h" }, [el("p", { class: "vu-ltag tc-ltag", text: "Der Chart in drei Sätzen" }),
+      infoBtn("Schwung erklärt", function () { pop("tc-help-pop", "Schwung", [el("p", { class: "tc-sheet-lead", text: RSI_HELP })]); })])].concat(threeSentences(X).map(function (s) {
+      return el("div", { class: "tc-story-r" }, [hudGlyph(s[0], 34), el("div", {}, [el("span", { class: "vu-ltag tc-ltag", text: s[1] }), storyGraphic(s[4]), el("p", { text: s[2] })]), h(U.verdict(s[3]))]);
     })));
     var bh = befundeHeute(X, 3), nAll = bh[2];
     var from = X.fromDate ? MONTHS[+X.fromDate.slice(5, 7) - 1] + " " + X.fromDate.slice(0, 4) : null;
-    var ep = function (i, href, icon, title, sub) { return el("a", { class: "tc-ep", href: href }, [el("b", { class: "tc-ep-n num", text: String(i) }), hudGlyph(icon, 40), el("span", { class: "tc-ep-t" }, [el("b", {}, title), el("span", { text: sub })]), h(U.glyph("next", 15))]); };
+    var ep = function (i, href, icon, title, sub) { return el("a", { class: "tc-ep", href: href }, [el("span", { class: "tc-ep-h" }, [hudGlyph(icon, 40), el("b", { class: "tc-ep-n num", text: String(i) })]), el("span", { class: "tc-ep-t" }, [el("b", {}, title), el("span", { text: sub })])]); };
     var chapters = el("nav", { class: "tc-eps", "aria-label": "Kapitel" }, [
       ep(1, M.chartHref(X.T, "signals"), "search", "Alle " + nAll + " Befunde mit Regel", "je Befund: was er bedeutet, wann ungültig"),
       ep(2, M.chartHref(X.T, "signals", "teil=verlauf"), "book", "Verlauf der letzten 12 Monate", "jeder Befund" + (from ? " seit " + from : "") + ", mit heutigem Zustand"),
@@ -1493,8 +1552,8 @@
     put(body, [seriesNote(X.st),
       el("div", { class: "tc-sayrow" }, [el("div", {}, [el("p", { class: "vu-ltag", text: "Was der Chart sagt" }), el("h2", { class: "vu-mt", text: sum[0] })]), h(U.verdict(sum[1]))]),
       host, legend, el("div", { class: "vu-chips tc-togs" }, [tog("zones", "Zonen"), tog("trend", "Trendlinie"), tog("avg", "200-Tage-Linie")]),
-      story, h(U.help("Schwung: wie stark der Kurs zuletzt gestiegen oder gefallen ist. Fachleute messen das mit dem RSI (0 bis 100); über 70 gilt als „überkauft“, unter 30 als „überverkauft“.")),
-      X.st.frozenSince ? null : zoneTiles(lv), bh[0], bh[1], chapters,
+      story,
+      X.st.frozenSince ? null : zoneTiles(lv, S.close[t]), bh[0], bh[1], rh("Kapitel"), chapters,
       dataQuality(X.inst, X.D, false), footNote(X.D && (X.D.meta && X.D.meta.asOf), "Quant und Supertrader zur selben Aktie: oben in der Leiste. ")]);
   }
 
@@ -1547,7 +1606,7 @@
     var back = el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: M.chartHref(X.T), text: "Zurück zur Chart-Seite" }), " · Kerzen nur hier, als Profi-Option."]);
     /* Unter dem Studio (Entscheidung 7): Befunde und Zonen wie auf der Chart-Seite statt „Aktive Signale“. */
     var bh = befundeHeute(X, 6);
-    put(body, [studioHead, seriesNote(X.st), focusBar, card, layerBar, signals, X.st.frozenSince ? null : zoneTiles(X.levels), back, dataQuality(X.inst, X.D, weekly), footNote(X.D && X.D.meta && X.D.meta.asOf)]);
+    put(body, [studioHead, seriesNote(X.st), focusBar, card, layerBar, signals, X.st.frozenSince ? null : zoneTiles(X.levels, S.close[last]), back, dataQuality(X.inst, X.D, weekly), footNote(X.D && X.D.meta && X.D.meta.asOf)]);
     put(signals, [bh[0], bh[1]]);
     var chart = null;
 
@@ -1772,12 +1831,15 @@
     renderSignalCards(cards, X.analysis, X.F, X.S.close[X.S.close.length - 1], false, st);
     var histList = el("section", { class: "tc-history", id: "tc-verlauf" }, [rh("Verlauf der letzten 12 Monate", null, null, "Jede Zeile zeigt, was am Tag des Befunds mit den damals verfügbaren Daten erkennbar war, und den heutigen Zustand."),
       hist.length ? timeline(hist.slice().reverse()) : el("p", { class: "tc-note", text: "Im Zeitraum haben die Regeln nichts gefunden." })]);
-    put(body, [el("a", { class: "tc-back", href: M.chartHref(X.T) }, [glyph("back"), "Chart-Seite"]), seriesNote(st), cards, st.frozenSince ? null : zoneTiles(X.levels), histList, dataQuality(X.inst, X.D, false), footNote(X.D && X.D.meta && X.D.meta.asOf)]);
+    put(body, [el("a", { class: "tc-back", href: M.chartHref(X.T) }, [glyph("back"), "Chart-Seite"]), seriesNote(st), cards, st.frozenSince ? null : zoneTiles(X.levels, X.S.close[X.S.close.length - 1]), histList, dataQuality(X.inst, X.D, false), footNote(X.D && X.D.meta && X.D.meta.asOf)]);
     if (X.teil === "verlauf") setTimeout(function () { histList.scrollIntoView({ block: "start" }); }, 0);
   }
   function dataQuality(inst, D, weekly) {
     var b = inst.bars, bundle = inst.bundle || {};
-    return el("details", { class: "tc-dq" }, [el("summary", { text: "Datenqualität und Herkunft" }), el("dl", {}, [
+    var open = function () { pop("tc-dq-pop", "Datenqualität und Herkunft", [el("div", { class: "tc-dq" }, [dl()])]); };
+    return el("button", { type: "button", class: "tc-dqbtn", "aria-haspopup": "dialog", onclick: open }, [hudGlyph("search", 34), el("span", { class: "tc-row-text" }, [el("b", { text: "Datenqualität und Herkunft" }),
+      el("span", { text: b.close.length + " Tagesbars bis " + M.dateDe(b.timestamps[b.timestamps.length - 1]) })]), h(U.glyph("next", 15))]);
+    function dl() { return el("dl", {}, [
       el("dt", { text: "Kursreihe" }), el("dd", { text: "Tagesschlusskurse, split-bereinigt (" + (inst.priceSeriesType || "–") + "), " + b.close.length + " Tagesbars bis " + M.dateDe(b.timestamps[b.timestamps.length - 1]) }),
       el("dt", { text: "Gleitende Durchschnitte" }), el("dd", { text: "SMA 50/200 und RSI auf der Vollhistorie (" + (bundle.analysisLookback ? bundle.analysisLookback.bars + " Bars seit " + M.dateDe(bundle.analysisLookback.from) : "Bundle") + "); " + (bundle.chartSeries && bundle.chartSeries.ema200 ? "EMA 20/50/200 ebenfalls auf der Vollhistorie, erst nach ihrer Aufwärmphase; " : "EMA, ") + "Bollinger, MACD, Stochastik auf dem Anzeigefenster nach der Aufwärmphase" }),
       (function () {
@@ -1796,7 +1858,7 @@
       el("dt", { text: "Formationen" }), el("dd", { text: "Nur bestätigte Swing-Punkte; Erkennung ohne Blick in die Zukunft (Engine " + global.VUTechnical.Formations.ENGINE_VERSION + ")" }),
       weekly ? el("dt", { text: "Wochenchart" }) : null, weekly ? el("dd", { text: "Wochenschlüsse aus der langen Reihe (discover-series-long), nur Schlusskurse" }) : null,
       el("dt", { text: "Screener-Stand" }), el("dd", { text: D && D.meta ? M.dateDe(D.meta.asOf) + " · " + D.meta.counts.rows.toLocaleString("de-DE") + " Titel" : "nicht geladen" })
-    ])]);
+    ]); }
   }
 
   /* ----------------------------------------------------------- Muster (T05, frueher Methodik) */
@@ -1842,7 +1904,7 @@
   function viewMethod(main, route) {
     var tab = (route && route.params && route.params.reiter) || "muster";
     if (["muster", "indikatoren", "regeln"].indexOf(tab) < 0) tab = "muster";
-    var head = el("header", { class: "tc-phead" }, [el("p", { class: "vu-ltag", text: "Muster" }), el("h1", { class: "vu-lt", html: "Was die Formen<br>im Chart bedeuten" })]);
+    var head = el("header", { class: "tc-phead tc-phead--row" }, [el("h1", { class: "vu-lt", html: "Was die Formen<br>im Chart bedeuten" }), el("p", { class: "vu-ltag", text: "Muster" })]);
     var tabsBar = h(U.seg([{ id: "muster", label: "Muster", href: "#/muster" }, { id: "indikatoren", label: "Indikatoren", href: "#/muster?reiter=indikatoren" }, { id: "regeln", label: "Regeln", href: "#/muster?reiter=regeln" }], tab, { label: "Muster-Ansicht" }));
     var slot = el("div", { class: "tc-method" }, [el("div", { class: "tc-skel", style: "height:200px" })]);
     put(main, [head, tabsBar, slot]);
@@ -1870,12 +1932,12 @@
         var rows = pub.slice().sort(function (a, b) { return (b.significant && b.hitRate > 0.5) - (a.significant && a.hitRate > 0.5) || b.n - a.n; }).slice(0, 4);
         kids.push(el("div", { class: "tc-st" }, ["Hilft das Muster?", el("a", { href: "#/muster?reiter=regeln", text: "Forschung" })]),
           el("div", { class: "vu-box tc-hilft" }, rows.map(function (t) {
-            return el("div", { class: "tc-kvrow" }, [el("span", {}, [el("b", { text: name(t) }), el("small", { text: de(t.hitRate * 100, 1) + " % lagen vorn · " + t.n.toLocaleString("de-DE") + " Fälle · " + d.method.horizonBars + " Tage danach" })]), h(verdictOf(t))]);
+            return el("div", { class: "tc-kvrow" }, [el("span", {}, [el("b", { text: name(t) }), bar(t.hitRate * 100, { mark: 50, cls: "tc-bar--hit" }), el("small", { text: de(t.hitRate * 100, 1) + " % lagen vorn · " + t.n.toLocaleString("de-DE") + " Fälle · " + d.method.horizonBars + " Tage danach" })]), h(verdictOf(t))]);
           })),
-          h(U.help("„Lagen vorn“: Anteil der Fälle, in denen die Aktie " + d.method.horizonBars + " Handelstage danach besser lief als der Durchschnitt (bei fallenden Mustern: schlechter). Forschung, nicht zertifiziert.")),
+          h(U.help("„Lagen vorn“: Anteil der Fälle, in denen die Aktie " + d.method.horizonBars + " Handelstage danach besser lief als der Durchschnitt (bei fallenden Mustern: schlechter). Der Strich im Balken steht bei 50 %. Forschung, nicht zertifiziert.")),
           el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/muster?reiter=regeln", text: "Alle " + d.types.length + " Muster mit Belegen und Regeln" })]));
       }
-      kids.push(footNote(meta && meta.asOf));
+      kids.push(nextCard("Chart Studio", "#/chart", "Zonen, Trend und Befunde zu einer Aktie"), footNote(meta && meta.asOf));
       put(slot, kids);
     }).catch(function () { put(slot, stateBox("Muster nicht geladen", "Die Musterzahlen konnten nicht geladen werden.")); });
   }

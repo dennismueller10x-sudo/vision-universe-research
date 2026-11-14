@@ -196,7 +196,7 @@ html.vu-sheet-open{overflow:hidden}
 /* C18 Leerer Zustand, C19 PRO-Marke, Forschungs-Etikett */
 .vu-blank{display:flex;gap:10px;align-items:center;padding:14px;border-radius:var(--vu-r-card);background:var(--vu-card);font-size:13px;color:var(--vu-ink)}
 .vu-pro{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.06em;line-height:1.4;background:var(--vu-ink);color:var(--vu-lime);border-radius:6px;padding:2px 6px;vertical-align:middle}
-:root[data-theme=dark] .vu-pro{background:var(--vu-lime);color:#000}
+:root[data-theme=dark] .vu-pro,.vu-night .vu-pro,.vu-tap--night .vu-pro{background:var(--vu-lime);color:#000}
 .vu-research{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;border:1.5px dashed var(--vu-mute);color:var(--vu-mute);border-radius:999px;padding:3px 10px}
 
 /* C20 Suche */
