@@ -105,7 +105,7 @@ test('product tabs: former dock places first, then the remaining entries of the 
   }
 });
 
-test('the active tab follows the old dock logic; a tab from the menu group is active where the menu marks it', () => {
+test('the active tab is the tab of the current page: a tab from the menu group where the menu marks it, else the old dock logic', () => {
   const active = (id, url, state) => { const p = PRODUCTS.find(x => x.id === id), l = { ...loc(url), href: url }, t = tabActive(p, tabEntries(p), l, state); return t && t.label; };
   // Leistenplaetze: product.active wie bisher
   assert.equal(active('quant', '/quant/'), 'Quant');
@@ -123,27 +123,46 @@ test('the active tab follows the old dock logic; a tab from the menu group is ac
   assert.equal(active('supertrader', '/supertrader/stock/NVDA/', { active: null, activeAt: '/supertrader/stock/NVDA/' }), null);
   assert.equal(active('supertrader', '/supertrader/stock/NVDA/', { active: null, activeAt: '/supertrader/' }), 'Treffer');
   assert.equal(active('screener', '/screener/', { active: 'treffer', activeAt: '/screener/' }), 'Treffer');
-  // Reiter aus der Menuegruppe: aktiv, wo das Menue sie als aktuelle Seite markiert; dann genau dieser eine
+  // Reiter aus der Menuegruppe: aktiv, wo das Menue sie als aktuelle Seite markiert; dann genau dieser eine. In der Leiste mit
+  // vier Plaetzen lagen diese Seiten bei einem Nachbarn (Methodik bei „Quant“, Datenbank bei „Investoren“) oder hatten keinen Platz.
   assert.equal(active('quant', '/quant/#/methodik/faktoren'), 'Methodik');
   assert.equal(active('quant', '/quant/#/meldungen'), 'Meldungen');
   assert.equal(active('quant', '/quant/#/forschung'), 'Forschung');
   assert.equal(active('quant', '/quant/#/chartlagen'), 'Technische Lagen');
-  assert.equal(active('quant', '/quant/#/methodik', { active: 'quant', activeAt: '/quant/#/methodik' }), 'Methodik');
+  assert.equal(active('quant', '/quant/methodology/'), 'Methodik', 'alte Adresse');
   assert.equal(active('technical', '/technical/#/screener/gespeichert'), 'Gespeichert');
   assert.equal(active('technical', '/technical/#/screener?muster=dreieck'), 'Screener');
   assert.equal(active('fundamental', '/fundamental/#/suche'), 'Suchen');
   assert.equal(active('supertrader', '/supertrader/sources/'), 'Quellen');
   assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank'), 'Datenbank');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/fonds/berkshire'), 'Datenbank', 'ein Fonds gehoert zur Datenbank, wie im Menue');
   assert.equal(active('elliott', '/elliott/#/?richtung=ab'), 'Abwärts');
   assert.equal(active('screener', '/screener/?view=watchlist'), 'Watchlist');
   assert.equal(active('vorsorge', '/vorsorge/#/foerderung'), 'Förderung');
+  assert.equal(active('vorsorge', '/vorsorge/#/monitor'), 'Veränderungen');
   assert.equal(active('discover', '/discover/#/maerkte'), 'Märkte');
+  assert.equal(active('discover', '/discover/#/watchlist'), 'Watchlist');
+  // Der eigene Reiter gilt auch, wenn das Produkt fuer diese Adresse einen Nachbarplatz meldet (kein Springen nach dem Laden)
+  assert.equal(active('quant', '/quant/#/methodik', { active: 'quant', activeAt: '/quant/#/methodik' }), 'Methodik');
+  assert.equal(active('vorsorge', '/vorsorge/#/foerderung', { active: 'plan', activeAt: '/vorsorge/#/foerderung' }), 'Förderung');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank', { active: 'investoren', activeAt: '/hedgefonds/#/datenbank' }), 'Datenbank');
+  assert.equal(active('screener', '/screener/?view=watchlist', { active: 'gespeichert', activeAt: '/screener/?view=watchlist' }), 'Watchlist');
+  // Ohne eigenen Reiter bleibt die Zuordnung der Leiste (auch die vom Produkt gemeldete)
+  assert.equal(active('quant', '/quant/#/aktie/JPM/zahlen'), 'Aktien');
+  assert.equal(active('quant', '/quant/#/vergleich/NVDA,MSFT'), 'Aktien');
+  assert.equal(active('vorsorge', '/vorsorge/#/riester', { active: 'etfs', activeAt: '/vorsorge/#/riester' }), 'ETFs');
+  assert.equal(active('vorsorge', '/vorsorge/#/xray'), 'Portfolio');
+  // Der Menueeintrag „Fundamentaldaten“ fuehrt auf die Zahlen einer Aktie (NVDA); dort markiert er sich wie im Menue selbst
+  assert.equal(active('quant', '/quant/#/aktie/NVDA/zahlen', { active: 'aktien', activeAt: '/quant/#/aktie/NVDA/zahlen' }), 'Fundamentaldaten');
+  // Jede Seite eines Reiters markiert genau diesen Reiter
+  for (const p of PRODUCTS) for (const e of tabEntries(p)) { const t = tabActive(p, tabEntries(p), { ...loc(e.href), href: e.href }, {}); assert.equal(t && t.label, e.label, p.id + ' ' + e.href); }
   // Klick: dasselbe abbrechbare Ereignis mit demselben Inhalt wie beim frueheren Leistenplatz; Ziele und Trefferzahl wie bisher
   assert.match(source, /new CustomEvent\('vu-dock-navigate',\{cancelable:true,detail:\{product:product\.id,id:entry\.id,href:a\.getAttribute\('href'\)\}\}\)/);
   assert.match(source, /if\(!document\.dispatchEvent\(intent\)\)event\.preventDefault\(\);/);
   assert.match(source, /if\(id&&state\.hrefs&&state\.hrefs\[id\]\)a\.setAttribute\('href',state\.hrefs\[id\]\);/);
   assert.match(source, /badge\.textContent=value>999\?'999\+':String\(value\)/);
   assert.match(source, /const tabActive = \(product, entries, loc, state\) =>/);
+  assert.match(source, /if \(own\) return own;/, 'der eigene Reiter zuerst');
 });
 
 test('dock targets are existing routes of their products', () => {

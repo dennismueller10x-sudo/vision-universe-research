@@ -26,7 +26,8 @@ if (!['chromium', 'webkit'].includes(engine)) throw new Error('engine: chromium 
 await mkdir(out, { recursive: true });
 
 // [Produkt, Deep Link, erwarteter aktiver Reiter (null = nur Produktkontext)]. Reiter aus der Menueliste „In <Welt>“
-// (Märkte, Methodik, Quellen …) sind auf ihrer Seite selbst aktiv; frueher trug dort ein Leistenplatz oder keiner die Marke.
+// (Märkte, Methodik, Datenbank, Quellen …) sind auf ihrer Seite selbst aktiv; in der Leiste mit vier Plaetzen trug dort ein
+// Nachbarplatz oder keiner die Marke. Sonst gilt die Logik der frueheren Leiste.
 const ROUTES = [
   ['Discover', '/discover/#/', 'Discover'], ['Discover', '/discover/#/welten', 'Welten'], ['Discover', '/discover/#/strategien', 'Strategien'],
   ['Discover', '/discover/#/swipen', 'Swipen'], ['Discover', '/discover/#/einzeln/US_REAL', 'Swipen'], ['Discover', '/discover/#/maerkte', 'Märkte'], ['Discover', '/discover/#/watchlist', 'Watchlist'],
@@ -93,16 +94,17 @@ async function settle(page) { await page.waitForLoadState('networkidle', { timeo
    sind und die Schriften stehen. Vorher gemessene Zielgroessen sind ein Zwischenbild, kein Befund. Oeffnet es nicht bis
    dahin, ist das selbst ein Befund. Danach wird einmal gemessen; was dann kleiner als 44 px ist, bleibt ein Befund. */
 async function menuOpen(page, where) {
-  const ok = await page.waitForFunction(async () => {
+  /* Die Bedingung ist synchron: eine async-Funktion gibt ein Promise zurueck, und das gilt waitForFunction sofort als erfuellt.
+     Mit dem Sheet (faehrt 0,32 s von unten ein) wuerde dann mitten in der Einfahrt gemessen. Die Schriften warten getrennt. */
+  const ok = await page.waitForFunction(() => {
     const nav = document.querySelector('vu-navigation'), root = nav && nav.shadowRoot, panel = root && root.querySelector('.panel');
     if (!panel || !nav.hasAttribute('open')) return false;
     const cs = getComputedStyle(panel);
     if (cs.visibility !== 'visible' || !(cs.transform === 'none' || cs.transform === 'matrix(1, 0, 0, 1, 0, 0)')) return false;
-    if ((root.getAnimations ? root.getAnimations() : []).some((a) => a.playState === 'running' || a.playState === 'pending')) return false;
-    await document.fonts.ready;
-    return true;
+    return !(root.getAnimations ? root.getAnimations() : []).some((a) => a.playState === 'running' || a.playState === 'pending');
   }, null, { timeout: 5000, polling: 'raf' }).then(() => true, () => false);
   if (!ok) fail(where, 'Menü ist nach 5 s nicht vollständig geöffnet');
+  await page.evaluate(() => document.fonts.ready.then(() => true));
 }
 /* Zu kleine sichtbare Ziele im Menue, mit Benennung, damit ein Befund sagt, welches Ziel wie gross war. */
 const SMALL_TARGETS = (root) => [...root.querySelectorAll('a,button')].filter((n) => n.getClientRects().length).map((n) => { const r = n.getBoundingClientRect(); return { n, w: Math.round(r.width), h: Math.round(r.height) }; })
@@ -265,6 +267,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
       await menu.click();
       await page.waitForFunction(() => { const panel = document.querySelector('vu-navigation').shadowRoot.querySelector('.panel'), p=panel.getBoundingClientRect(); return getComputedStyle(panel).visibility==='visible' && p.left >= -1 && p.right <= innerWidth + 1; }, null, { timeout: 3000 });
       await page.waitForFunction(()=>{const root=document.querySelector('vu-navigation').shadowRoot;return root.activeElement===root.querySelector('.close')},null,{timeout:1000}).catch(()=>fail(where,'Öffnen fokussiert den Schließen-Button nicht'));
+      // Das Sheet faehrt von unten ein: erst messen, wenn es steht (vorher liegt seine Unterkante unter dem Bildrand).
+      await menuOpen(page, where);
       const m = await page.evaluate(() => {
         const root = document.querySelector('vu-navigation').shadowRoot, panel = root.querySelector('.panel');
         const dock = document.getElementById('vu-dock'), d = dock.shadowRoot.querySelector('nav').getBoundingClientRect();
@@ -295,7 +299,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
       if(menuSmall.length) fail(where,smallText(menuSmall)+' Menüziele kleiner als 44 px');
       if (!m.locked) fail(where, 'keine Scroll-Sperre');
       if (!m.dockInert || !m.dockCovered) fail(where, 'Dock liegt ueber dem Menue oder bleibt fokussierbar');
-      if (!m.scrollable || m.panelBottom > m.vh + 1) fail(where, 'Menue nicht scrollbar oder abgeschnitten');
+      if (!m.scrollable || m.panelBottom > m.vh + 1) fail(where, 'Menue nicht scrollbar oder abgeschnitten: ' + JSON.stringify({ scrollable: m.scrollable, bottom: m.panelBottom, vh: m.vh }));
       if (path === '/quant/#/') await page.screenshot({ path: `${out}/menu-${vpName}.png` });
       // Weitere Produkte klappt per Tastatur auf.
       const moreToggle=page.locator('vu-navigation .more summary');

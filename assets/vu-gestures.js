@@ -210,12 +210,13 @@
       var origins = w.location.ancestorOrigins, origin = parentOrigin || (origins && origins.length ? origins[0] : null);
       if (PARENTS.indexOf(origin) >= 0) try { w.parent.postMessage({type: 'vu:haptic', style: 'impact'}, origin); } catch (_) { /* optional */ }
     }, true);
-    // K5: zwischen Untertabs wischen. Zuerst ein ARIA-Tabsatz um den Startpunkt, sonst die Produkt-Leiste.
+    // K5: zwischen Untertabs wischen. Zuerst ein ARIA-Tabsatz um den Startpunkt, sonst die Reiter des Produkts unter dem Kopf
+    // (site-navigation.js, nav.tabs). Das Dock (Home, Discover, News, Ich) wechselt Bereiche der App und ist kein Wischziel.
     // Nie auf Karussells, Charts, Eingaben, Sheets oder Elementen mit data-vu-no-swipe; vertikales Scrollen bleibt frei.
     var swipe = null, swipePrev = false;
     function blocked(el) {
       for (var n = el; n && n !== w.document.body; n = n.parentElement) {
-        if (n.matches && n.matches('svg,canvas,input,textarea,select,[contenteditable=true],[data-vu-no-swipe],.vu-sheet-ui,[role=slider]')) return true;
+        if (n.matches && n.matches('svg,canvas,input,textarea,select,[contenteditable=true],[data-vu-no-swipe],.vu-sheet-ui,[role=slider],vu-navigation')) return true;
         if (n.scrollWidth > n.clientWidth + 4) { var ox = w.getComputedStyle(n).overflowX; if (ox === 'auto' || ox === 'scroll') return true; }
       }
       return false;
@@ -228,10 +229,10 @@
         var tabs = Array.from(list.querySelectorAll('[role=tab]'));
         return neighbour(tabs, list.querySelector('[role=tab][aria-selected=true]'), step);
       }
-      var dock = w.document.getElementById('vu-dock'), root = dock && dock.shadowRoot;
-      if (!root) return null;
-      var links = Array.from(root.querySelectorAll('nav a[href]'));
-      return neighbour(links, root.querySelector('nav a[aria-current=page]'), step);
+      var shell = w.document.querySelector('vu-navigation'), root = shell && shell.shadowRoot, strip = root && root.querySelector('nav.tabs');
+      if (!strip || strip.hidden) return null;
+      var links = Array.from(strip.querySelectorAll('a[href]'));
+      return neighbour(links, strip.querySelector('a[aria-current=page]'), step);
     }
     // Touch-Ereignisse statt Pointer: beim Wischen uebernimmt der Browser das Scrollen und meldet pointercancel.
     w.document.addEventListener('touchstart', function (e) {

@@ -21,12 +21,14 @@ html[data-vu-tabs]{--vu-navigation-height:112px}
 body .q-tabs-wrap{top:var(--vu-navigation-height)}
 /* Dock der gemeinsamen Shell (Home, Discover, Universe, News, Ich): Abstand fuer den Inhalt als
    ein Token statt verstreuter Magic Numbers. Hoehe der Leiste + Safe Area +
-   sichtbarer Abstand. Gesetzt nur, wenn die Seite eine Leiste traegt. */
-:root{--vu-dock-height:68px;--vu-dock-gap:12px;--vu-dock-space:calc(var(--vu-dock-height) + var(--vu-dock-gap) + 24px + env(safe-area-inset-bottom));--vu-accent:#c8f531;--vu-on-accent:#101318}
+   sichtbarer Abstand. Gesetzt nur, wenn die Seite eine Leiste traegt.
+   --vu-dock-gap: Abstand der Leiste zum unteren Rand plus der Teil des runden Universe-Knopfs, der ueber die Leiste
+   ragt (samt Ring), damit Klebendes der Produkte (z. B. die Aktionsleiste im Screener) frei darueber steht. */
+:root{--vu-dock-height:68px;--vu-dock-gap:24px;--vu-dock-space:calc(var(--vu-dock-height) + var(--vu-dock-gap) + 24px + env(safe-area-inset-bottom));--vu-accent:#c8f531;--vu-on-accent:#101318}
 html[data-vu-dock]{scroll-padding-bottom:var(--vu-dock-space)}
 html[data-vu-dock] body{padding-bottom:var(--vu-dock-space)!important}
 html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
-@media(min-width:761px){:root{--vu-dock-height:56px;--vu-dock-gap:16px}}
+@media(min-width:761px){:root{--vu-dock-height:56px;--vu-dock-gap:32px}}
 
 /* Premium design 2.0. Namespaced tokens and opt-in components; existing
    product calculations, data colours and shell geometry keep their owners. */

@@ -9,19 +9,26 @@
   function box(id, title, inner) {
     return '<section class="bk-c" id="' + id + '"><div class="bk-h"><b>' + id + "</b><span>" + U.esc(title) + "</span></div>" + inner + "</section>";
   }
-  function dockPreview(world, active) {
+  /* Rahmen nach App-Konzept 2: ein Dock auf jeder Seite, die Bereiche des Produkts als Reiter unter dem Kopf (assets/site-navigation.js). */
+  function dockPreview(active) {
+    var places = window.VUNavigation && window.VUNavigation.places ? window.VUNavigation.places() : [];
+    if (!places.length) return U.blank("Dock nicht geladen.");
+    var cell = function (p) { return '<span class="' + (p.id === active ? "on" : "") + '"><span>' + U.esc(p.label) + "</span></span>"; };
+    return '<div class="bk-dock" role="img" aria-label="Dock">' + places.slice(0, 2).map(cell).join("") + '<span class="uni">' + U.worldIcon("layers", 26) + "</span>" + places.slice(2).map(cell).join("") + "</div>";
+  }
+  function tabsPreview(world, active) {
     var nav = window.VUNavigation && window.VUNavigation.products ? window.VUNavigation.products() : [];
     var p = nav.filter(function (x) { return x.id === world; })[0];
-    if (!p) return U.blank("Produkt-Leiste nicht geladen.");
-    return '<div class="bk-dock" role="img" aria-label="Produkt-Leiste ' + U.esc(p.label) + '">' + p.items.map(function (it, i) {
-      return '<span class="' + (i === active ? "on" : "") + '">' + (i ? "" : U.worldIcon(p.id, 20)) + "<span>" + U.esc(it.label) + "</span></span>";
-    }).join("") + "<span>☰<span>Menü</span></span></div>";
+    if (!p || !p.tabs) return U.blank("Reiter nicht geladen.");
+    return '<div class="vu-chips" role="img" aria-label="Reiter ' + U.esc(p.label) + '">' + p.tabs.map(function (it, i) {
+      return '<span class="vu-chip' + (i === active ? " vu-chip--on" : "") + '">' + U.esc(it.label) + "</span>";
+    }).join("") + "</div>";
   }
 
   kit.innerHTML = [
     box("C01", "Kopfzeile", '<p class="vu-sm vu-mu">Oben auf dieser Seite: links die Welt oder das Logo, rechts Suche, Atlas, Mein Bereich (assets/site-navigation.js).</p>'),
-    box("C02", "Produkt-Leiste", dockPreview("supertrader", 2) + '<p class="vu-xs vu-mu" style="margin-top:8px">Fünf Plätze: Start der Welt, drei Bereiche, Menü. Aktiver Platz neongrün.</p>'),
-    box("C03", "Menü", '<p class="vu-sm vu-mu">Vollbild, Schwarz, 3 × 3 Produkte, Mein Bereich, Darstellung und Währung. Siehe N3.</p><p style="margin-top:10px"><button type="button" class="vu-btn vu-btn--ink vu-btn--sm" id="open-menu">Menü öffnen</button></p>'),
+    box("C02", "Dock und Reiter", tabsPreview("supertrader", 2) + '<p class="vu-xs vu-mu" style="margin:8px 0 12px">Reiter unter dem Kopf: Start der Welt, ihre Bereiche, dann die übrigen Seiten der Welt. Aktiver Reiter in Schriftfarbe.</p>' + dockPreview("discover") + '<p class="vu-xs vu-mu" style="margin-top:8px">Dock, auf jeder Seite gleich: Home, Discover, der Universe-Knopf, News, Ich. Aktiver Platz neongrün.</p>'),
+    box("C03", "Menü „Dein Universe“", '<p class="vu-sm vu-mu">Am Telefon ein Fenster von unten, am Schreibtisch die Leiste rechts. Schwarz, 3 × 3 Produkte, Mein Bereich, Darstellung und Währung. Siehe N3.</p><p style="margin-top:10px"><button type="button" class="vu-btn vu-btn--ink vu-btn--sm" id="open-menu">Menü öffnen</button></p>'),
     box("C04", "Aktienkopf", U.stockHead(NV, { persp: false })),
     box("C05", "Perspektiven-Leiste", U.persp("NVDA", { active: "fundamental" })),
     box("C06", "Der eine Chart", '<div id="chart"></div>'),
@@ -70,8 +77,8 @@
   });
 
   document.getElementById("open-menu").addEventListener("click", function () {
-    var nav = document.querySelector("vu-navigation"), b = nav && nav.shadowRoot && nav.shadowRoot.querySelector("button.toggle");
-    if (b) b.click();
+    var nav = document.querySelector("vu-navigation");
+    if (nav && nav.openMenu) nav.openMenu(this);
   });
   var sh = document.getElementById("demo-sheet");
   document.getElementById("open-sheet").addEventListener("click", function () { U.openSheet(sh); });

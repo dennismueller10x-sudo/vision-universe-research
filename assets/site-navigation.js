@@ -225,16 +225,18 @@
     const home = product && loc.pathname === new URL(product.items[0][2], 'https://x').pathname && !hashPart(loc, 0) && !(product.id === 'elliott' && (loc.hash || '').includes('?')) && (product.id === 'screener' ? screenerView === 'start' : !params.has('view'));
     return {group: group && group.id, href, expanded: group && !home ? group.id : null};
   };
-  /* Aktiver Reiter. Fuer die frueheren Leistenplaetze gilt unveraendert die Logik der Leiste: der vom Produkt gemeldete
-     Bereich (nur fuer die Adresse, zu der er gemeldet wurde), sonst product.active. Ein Reiter aus der Menuegruppe ist aktiv,
-     wenn das Menue ihn als aktuelle Seite markiert (menuState); er ist dann der eine aktive Reiter. */
+  /* Aktiver Reiter: der Reiter der Seite, auf der man ist. Ein Reiter aus der Menuegruppe ist aktiv, wenn das Menue ihn als
+     aktuelle Seite markiert (menuState) - nur aus der Adresse, also schon beim ersten Zeichnen. Sonst gilt unveraendert die
+     Logik der frueheren Leiste: der vom Produkt gemeldete Bereich (nur fuer die Adresse, zu der er gemeldet wurde), sonst
+     product.active. Die Leiste hatte vier Plaetze; Seiten ohne eigenen Platz (Methodik, Förderung, Datenbank) lagen dort bei
+     einem Nachbarn. Mit eigenem Reiter markieren sie sich selbst. Hoechstens ein Reiter ist aktiv. */
   const tabActive = (product, entries, loc, state) => {
     const marked = menuState(loc).href, own = entries.find(e => !e.id && e.href === marked);
     if (own) return own;
     const current = state && state.activeAt === loc.href ? state.active : product.active(loc);
     return entries.find(e => e.id && e.id === current) || null;
   };
-  /* Linien-Icons der Leiste: 24er-Raster, Strich 1,8 (wie die Menue-Icons). */
+  /* Linien-Icons fuer Kopf, Dock und Menue: 24er-Raster, Strich 1,8 (wie die Menue-Icons). */
   const dockIcons = {
     worlds: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-5 5-5 13 0 18m0-18c5 5 5 13 0 18"/>',
     strategies: '<path d="M4 19V5m0 14h16M7 15l4-5 3 2 5-7"/>',
@@ -260,7 +262,6 @@
     wave: '<path d="M3 19 8 11l3 3 5-9 5 5"/>',
     spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
     search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
-    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>',
     home: '<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'
   };
   /* Das Dock ist auf hellen und dunklen Flaechen dasselbe: ein ruhiges,
