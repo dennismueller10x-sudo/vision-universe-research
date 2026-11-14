@@ -113,3 +113,4 @@ Owner-Entscheidung 06.11.2026 (über die Steuerung; `docs/legal/EINORDNUNG.md` �
   - Backtest-Renditen 2012–2026.
   - Veränderung je Position.
   - Die Wertentwicklung ab Live-Start: Sie ist eine öffentliche Renditeaussage und erscheint erst, wenn der Satz „Freigabe Musterdepot-Wertentwicklung“ als Owner-Entscheidung im Plan steht. Bis dahin speichert der Export keine Reihe.
+- **Prüfung (14.11.2026, Befund O):** Der Test `quant/tests/model-depots.test.mjs` rechnet den Erstlauf auf eingefrorenen Eingangsdaten (`quant/tests/fixtures/model-depots/inputs.json.gz`, 80 Titel, gebaut mit `scripts/quant/portfolio/freeze-model-depots-fixture.mjs`). Die Frische und Füllung der Live-Datei meldet der Freshness-Monitor als Alarm (`scripts/quant/portfolio/check-model-depots-live.mjs`); sie blockiert keinen Code-PR.

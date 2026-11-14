@@ -44,7 +44,6 @@ const APPROVAL_MARKER = 'Freigabe Musterdepot-Wertentwicklung';
 const COST_BPS = C.STANDARD.feeBps + C.STANDARD.slippageBps;
 
 const sha = b => crypto.createHash('sha256').update(b).digest('hex');
-const read = p => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
 const r6 = x => Math.round(x * 1e6) / 1e6;
 
 function args(argv) {
@@ -59,15 +58,16 @@ function args(argv) {
 }
 
 // Wochenkalender aus der SPY-Tagesreihe (letzter Handelstag je ISO-Woche, bis heute).
-function weeklySpy(today) {
-  const file = 'quant/data/market/multi-asset/series/SPY.json', bytes = fs.readFileSync(path.join(ROOT, file));
+function weeklySpy(today, dataRoot = ROOT) {
+  const file = 'quant/data/market/multi-asset/series/SPY.json', bytes = fs.readFileSync(path.join(dataRoot, file));
   const pts = JSON.parse(bytes).points.filter(p => p[0] <= today && p[1] > 0);
   const byWeek = new Map();
   for (const p of pts) byWeek.set(MP.isoWeek(p[0]), [p[0], p[1]]);
   return { points: [...byWeek.values()], label: 'SPY_PRICE_RETURN', sourceHash: sha(bytes), file };
 }
 
-function universe() {
+function universe(dataRoot = ROOT) {
+  const read = p => JSON.parse(fs.readFileSync(path.join(dataRoot, p), 'utf8'));
   const u = read('quant/data/market/scale/universe-ELIGIBLE_US_EQUITY.json');
   const q = read('quant/config/ticker-reuse-quarantine.json');
   const quarantined = new Set(q.records.map(r => r.securityId));
@@ -80,8 +80,8 @@ function universe() {
   return { byId, asOf: u.today || u.generatedAt || null };
 }
 
-function closeOf(id, today) {
-  const f = path.join(ROOT, 'quant/data/market/discover-series', id + '.json');
+function closeOf(id, today, dataRoot = ROOT) {
+  const f = path.join(dataRoot, 'quant/data/market/discover-series', id + '.json');
   if (!fs.existsSync(f)) return null;
   return Close.lastPoint(JSON.parse(fs.readFileSync(f, 'utf8')), today);
 }
@@ -92,17 +92,17 @@ function approved() {
 }
 
 // Bewertung eines Depots zu heutigen Kursen (fehlt ein Kurs, bleibt der letzte bekannte und die Position ist markiert).
-function revalue(depot, today) {
+function revalue(depot, today, dataRoot) {
   let value = depot.cash;
   for (const p of depot.positions) {
-    const c = closeOf(p.securityId, today);
+    const c = closeOf(p.securityId, today, dataRoot);
     if (c) { p.lastPrice = c.close; p.lastDate = c.date; p.priceStale = false; } else p.priceStale = true;
     value += p.units * p.lastPrice;
   }
   return value;
 }
 
-function rebalance(depot, built, uni, decisionDate, today, nav) {
+function rebalance(depot, built, uni, decisionDate, today, nav, dataRoot) {
   const targets = Object.entries(built.weights).filter(([, w]) => w > 0);
   const prev = new Map(depot.positions.map(p => [p.securityId, p]));
   const next = [], protocol = [];
@@ -113,7 +113,7 @@ function rebalance(depot, built, uni, decisionDate, today, nav) {
     traded += p.units * p.lastPrice;
   }
   // Kosten zuerst: Umschlag zu Zielgewichten auf dem ganzen Wert, dann wird nur der Wert nach Kosten angelegt.
-  const priced = targets.sort((a, b) => b[1] - a[1]).map(([id, w]) => [id, w, uni.byId.get(id), closeOf(id, today)]).filter(x => x[2] && x[3]);
+  const priced = targets.sort((a, b) => b[1] - a[1]).map(([id, w]) => [id, w, uni.byId.get(id), closeOf(id, today, dataRoot)]).filter(x => x[2] && x[3]);
   for (const [id, w, , c] of priced) { const old = prev.get(id); traded += Math.abs(w * nav / c.close - (old ? old.units : 0)) * c.close; }
   const cost = traded * COST_BPS / 10000, investable = nav - cost;
   for (const [id, w, s, c] of priced) { // ohne veröffentlichten Kurs keine Aufnahme; der Anteil bleibt Bargeld
@@ -132,9 +132,12 @@ function rebalance(depot, built, uni, decisionDate, today, nav) {
 function build(a) {
   const prevDoc = fs.existsSync(path.resolve(ROOT, a.out)) ? JSON.parse(fs.readFileSync(path.resolve(ROOT, a.out), 'utf8')) : null;
   if (prevDoc && prevDoc.schemaVersion !== SCHEMA) throw Error('PREVIOUS_SCHEMA_UNKNOWN');
-  const bench = weeklySpy(a.today), uni = universe();
+  // a.dataRoot: Wurzel der Eingangsdaten (Standard: das Repository). Der Test rechnet damit auf eingefrorenen Daten
+  // (quant/tests/fixtures/model-depots), damit er nicht vom Wochentag der Datenläufe abhängt.
+  const dataRoot = a.dataRoot || ROOT;
+  const bench = weeklySpy(a.today, dataRoot), uni = universe(dataRoot);
   const decisionDate = bench.points.at(-1)[0];
-  const panel = MP.buildPanel({ window: [bench.points[0][0], decisionDate], benchmark: bench, limit: a.limit || 0 });
+  const panel = MP.buildPanel({ window: [bench.points[0][0], decisionDate], benchmark: bench, limit: a.limit || 0, dataRoot });
   panel.securities = panel.securities.filter(s => uni.byId.has(s.id));
   const t = panel.calendar.length - 1;
   const month = decisionDate.slice(0, 7);
@@ -145,13 +148,13 @@ function build(a) {
     const old = prevDoc && prevDoc.depots.find(d => d.profileId === profileId);
     const depot = old ? JSON.parse(JSON.stringify(old)) : { profileId, name: NAMES[profileId], rule: RULES[profileId], startCapital: 1e6, cash: 1e6, costs: 0, positions: [], protocol: [], lastRebalance: null, nav: [] };
     depot.name = NAMES[profileId]; depot.rule = RULES[profileId];
-    const nav = revalue(depot, a.today);
+    const nav = revalue(depot, a.today, dataRoot);
     const due = !depot.lastRebalance || depot.lastRebalance.slice(0, 7) < month;
     depot.decision = { due, state: 'NOT_DUE' };
     if (due) {
       const d = BT.decide(panel, t, { ...BT.DEFAULTS, profileId, weighting: 'RISK_PARITY', standard: C.STANDARD }, std, null);
       depot.decision = { due, state: d.built.state, universe: d.universe, scored: d.scored, liquid: d.liquid };
-      if (d.built.state === 'CONSTRUCTED') depot.decision.changes = rebalance(depot, d.built, uni, decisionDate, a.today, nav);
+      if (d.built.state === 'CONSTRUCTED') depot.decision.changes = rebalance(depot, d.built, uni, decisionDate, a.today, nav, dataRoot);
     }
     const value = depot.positions.reduce((s, p) => s + p.units * p.lastPrice, depot.cash);
     // Wertentwicklung je Lauf (ein Punkt je Datenstand). Ohne Owner-Freigabe wird die Reihe nicht gespeichert (die Datei

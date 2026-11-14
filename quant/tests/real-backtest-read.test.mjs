@@ -1,22 +1,37 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
-import {mkdtempSync,readFileSync,writeFileSync,rmSync,symlinkSync,existsSync} from 'node:fs';
+import {mkdtempSync,readFileSync,writeFileSync,rmSync,symlinkSync,existsSync,mkdirSync,readdirSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {resolve,join} from 'node:path';
 import {gunzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 const require=createRequire(import.meta.url),Service=require('../api/product-services.js'),Policy=require('../engines/display-policy.js'),Query=require('../engines/query.js');
 const A=require('../engines/weekly-real-adapter.cjs'),B=require('../engines/weekly-benchmark.cjs'),C=require('../api/real-backtest-contract.js'),{run}=require('../../scripts/quant/run-real-weekly-backtest.cjs'),{materialize}=require('../../scripts/quant/materialize-real-backtest-read.cjs');
-const root=resolve(import.meta.dirname,'../..'),out=mkdtempSync(join(tmpdir(),'vu-backtest-read-'));
+const repo=resolve(import.meta.dirname,'../..'),out=mkdtempSync(join(tmpdir(),'vu-backtest-read-'));
+/* Datenwurzel = Repository, nur die langen Reihen enden am letzten SPY-Tag. SPY (Datenzweig, multi-asset) und die langen
+   Reihen (samstags) ziehen zu verschiedenen Zeiten nach; sonst fehlt der Marktvergleich am letzten Bewertungstag und der
+   Test haengt am Wochentag statt am Vertrag (Daten loesen Alarm aus). Alles andere ist ein Symlink ins Repository. */
+function rootCutToSpy(cut){
+ const r=mkdtempSync(join(tmpdir(),'vu-backtest-root-')),spyLast=JSON.parse(readFileSync(join(repo,'quant/data/market/multi-asset/series/SPY.json'),'utf8')).points.at(-1)[0];
+ const mirror=(rel,...keep)=>{mkdirSync(join(r,rel),{recursive:true});for(const e of readdirSync(join(repo,rel)))if(!keep.includes(e))symlinkSync(join(repo,rel,e),join(r,rel,e));};
+ mirror('','quant','scripts');mirror('quant','data');mirror('quant/data','market');mirror('quant/data/market','discover-series-long');
+ /* Der Python-Gegenrechner findet die Datenwurzel ueber Path(__file__).resolve(): er liegt als Kopie, nicht als Symlink, im Baum. */
+ mirror('scripts','quant');mirror('scripts/quant','verify-real-weekly-backtest.py');
+ writeFileSync(join(r,'scripts/quant/verify-real-weekly-backtest.py'),readFileSync(join(repo,'scripts/quant/verify-real-weekly-backtest.py')));
+ const long='quant/data/market/discover-series-long';mkdirSync(join(r,long),{recursive:true});
+ for(const f of readdirSync(join(repo,long))){if(!cut.has(f.slice(0,-5))){symlinkSync(join(repo,long,f),join(r,long,f));continue;}
+  const doc=JSON.parse(readFileSync(join(repo,long,f),'utf8'));doc.points=doc.points.filter(p=>p[0]<=spyLast);doc.to=doc.points.at(-1)[0];writeFileSync(join(r,long,f),JSON.stringify(doc));}
+ return r;}
+const ids=['ref_NVDA','ref_AAPL','ref_XOM','ref_ARM','ref_BGC','ref_ANDG','ref_AACT','ref_MSFT'];
+const root=rootCutToSpy(new Set(ids));
 /* Junge Notierung der Klasse C: ANDG (Stammaktie seit 17.12.2025) statt AAAC. AAAC ist ein ETF (Columbia AAA CLO ETF),
    seit der Eignung vom 05.11.2026 belegt aus dem Produktuniversum genommen; seine Reihe wird nicht mehr veroeffentlicht. */
-const ids=['ref_NVDA','ref_AAPL','ref_XOM','ref_ARM','ref_BGC','ref_ANDG','ref_AACT','ref_MSFT'];
 const report=materialize({root,output:out,ids}),reads=[];
 const loadJSON=async p=>JSON.parse(readFileSync(join(root,p.replace(/^\//,'')),'utf8'));
 function create({enabled=true,mutate=x=>x,policy=Policy}={}){const store={loadJSON:async p=>{reads.push(p);return mutate(JSON.parse(readFileSync(join(out,p),'utf8')),p);},loadDetail:async p=>{reads.push(p);return mutate(JSON.parse(gunzipSync(readFileSync(join(out,p))).toString()),p);}};
 return Service.create({loadJSON,displayPolicy:policy,queryEngine:Query,realBacktestPreview:{enabled,audience:'INTERNAL_REVIEW'},realBacktestStore:store});}
-test.after(()=>rmSync(out,{recursive:true,force:true}));
+test.after(()=>{rmSync(out,{recursive:true,force:true});rmSync(root,{recursive:true,force:true});});
 test('A/B/C are quality dimensions; executable simulations remain B and NOT_CERTIFIED',()=>{
  assert.equal(report.state,'COMPLETE');assert.deepEqual(report.counts,{A:0,B:4,C:4});
  const q=gunzipSync(readFileSync(join(out,report.generation,'quality.jsonl.gz'))).toString().trim().split('\n').map(JSON.parse);
@@ -67,7 +82,7 @@ test('materializer resumes exact snapshots; rejects corrupted saved summaries an
 });
 
 test('private filesystem store is bounded, cannot expose repository data or traverse paths',async()=>{
- const Store=require('../../server/quant-backtest-store.cjs');assert.throws(()=>Store.create({directory:root}),/PUBLIC_BACKTEST_STORAGE_FORBIDDEN/);
+ const Store=require('../../server/quant-backtest-store.cjs');assert.throws(()=>Store.create({directory:repo}),/PUBLIC_BACKTEST_STORAGE_FORBIDDEN/);
  const store=Store.create({directory:out});const release=await store.loadJSON('release.json');assert.equal(release.generation,report.generation);
  await assert.rejects(store.loadJSON('../../etc/passwd'),/INVALID_BACKTEST_PATH/);await assert.rejects(store.loadDetail('release.json'),/INVALID_BACKTEST_PATH/);
  const api=Service.create({loadJSON,displayPolicy:Policy,queryEngine:Query,realBacktestPreview:{enabled:true,audience:'INTERNAL_REVIEW'},realBacktestStore:store});assert.equal((await api.getRealBacktest('NVDA',{section:'equity'})).state,'AVAILABLE_LIMITED');

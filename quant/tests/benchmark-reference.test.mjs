@@ -121,14 +121,18 @@ function signalFixture(t, { spyCut = 0, spyGap = false, spyMissingDividend = fal
   const files = readdirSync(src).filter((f) => f.endsWith(".json") && f !== "index.json").sort();
   /* 60 echte Titel mit langer Reihe - und ein eingeschmuggelter SPY in der Titelliste. */
   const picked = files.filter((f) => JSON.parse(readFileSync(join(src, f), "utf8")).points.length > 1500).slice(0, 60);
+  const spySeries = json("quant/data/market/multi-asset/series/SPY.json").points;
+  /* Titelreihen enden am letzten SPY-Tag: SPY (Datenzweig, multi-asset) und die langen Reihen (samstags) ziehen zu
+     verschiedenen Zeiten nach; der Test prueft die Studie, nicht welche Datenart zuletzt lief (Daten loesen Alarm aus). */
+  const spyLast = spySeries.at(-1)[0];
   for (const f of picked) {
     const j = JSON.parse(readFileSync(join(src, f), "utf8"));
-    copyFileSync(join(src, f), join(long, f));
+    j.points = j.points.filter((p) => p[0] <= spyLast);
+    writeFileSync(join(long, f), JSON.stringify(j));
     /* Gesamtrendite = Kurs mal stetig wachsender Ausschuettungsfaktor. */
     writeFileSync(join(work, j.securityId + ".json"), JSON.stringify({ ticker: j.ticker, securityId: j.securityId, provider: "tiingo",
       bars: barsWithDividends(j.points, j.securityId) }));
   }
-  const spySeries = json("quant/data/market/multi-asset/series/SPY.json").points;
   writeFileSync(join(long, "ref_SPY.json"), JSON.stringify({ securityId: "ref_SPY", ticker: "SPY", priceSeriesType: "SPLIT_ADJUSTED", points: spySeries.filter((_, i) => i % 5 === 0) }));
   let spyPts = spySeries.slice(0, spySeries.length - spyCut);
   if (spyFrom) spyPts = spyPts.filter(([d]) => d >= spyFrom); /* der heutige Arbeitsstand: SPY erst ab 2023 */

@@ -96,6 +96,18 @@ jobs:
           set -o pipefail
           node scripts/home/check-home-fresh.mjs 2>&1 | tee -a freshness-live.txt
 
+      # Alarm statt Code-Gate: der Musterdepot-Test prueft nur den Erzeuger auf eingefrorenen Daten (Befund O, 14.11.2026);
+      # ob der Samstagslauf die Live-Datei frisch und gefuellt geschrieben hat, meldet dieser Schritt.
+      - name: Musterdepots live frisch und gefuellt
+        id: model_depots
+        continue-on-error: true
+        env:
+          IN_SITE: ${{ (github.event_name == 'workflow_dispatch' && !inputs.zeitplan) && inputs.site || 'https://research.visionuniverse.de' }}
+        run: |
+          set -o pipefail
+          SITE="$IN_SITE"
+          node scripts/quant/portfolio/check-model-depots-live.mjs --site="$SITE" 2>&1 | tee -a freshness-live.txt
+
       - name: Freshness des Repository-Stands (zur Einordnung)
         run: node scripts/market/check-freshness.mjs | tee freshness-repo.txt
 
@@ -122,15 +134,17 @@ jobs:
           retention-days: 7
 
       - name: Ergebnis
-        if: steps.live.outcome == 'failure' || steps.expect_live.outcome == 'failure' || steps.home_fresh.outcome == 'failure'
+        if: steps.live.outcome == 'failure' || steps.expect_live.outcome == 'failure' || steps.home_fresh.outcome == 'failure' || steps.model_depots.outcome == 'failure'
         env:
           LIVE: ${{ steps.live.outcome }}
           EXPECT_LIVE: ${{ steps.expect_live.outcome }}
           HOME_FRESH: ${{ steps.home_fresh.outcome }}
+          MODEL_DEPOTS: ${{ steps.model_depots.outcome }}
         run: |
           if [ "$LIVE" = failure ]; then echo "::error::Die veroeffentlichte Seite zeigt nicht den letzten Handelstag (siehe Zusammenfassung)."; fi
           if [ "$EXPECT_LIVE" = failure ]; then echo "::error::Eine Datenart ist live aus, obwohl sie an sein soll (expectLive, siehe Zusammenfassung)."; fi
           if [ "$HOME_FRESH" = failure ]; then echo "::error::Die Startseite (index.html) zeigt nicht den Tagesstand: home-refresh.yml hat nach dem Datenlauf nicht neu eingesetzt (siehe Zusammenfassung)."; fi
+          if [ "$MODEL_DEPOTS" = failure ]; then echo "::error::Die Musterdepot-Datei ist live veraltet oder leer (pipeline-weekly, Teil musterdepots; siehe Zusammenfassung)."; fi
           exit 1
 
   # ===================================================================
