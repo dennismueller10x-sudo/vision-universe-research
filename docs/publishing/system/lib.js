@@ -64,7 +64,7 @@
       p.querySelectorAll('[data-foot]').forEach((el) => {
         el.className = 'foot';
         const sd = A.seiten.find((x) => x.nr === n) || {}; const qs = quellNummern(sd);
-        el.innerHTML = `<span><b>${nr2(n)}</b> · Vision Universe ${A.reihe || 'Aktienmagazin'} · ${A.datumText}</span><span>Keine Anlageberatung${qs && impressum ? ` · Quellen ${qs} (S. ${nr2(impressum.nr)})` : ''}</span>`;
+        el.innerHTML = `<span><b>${nr2(n)}</b> · Vision Universe ${A.reihe || 'Aktienmagazin'} · ${A.datumText}</span><span>${A.fussHinweis === false ? '' : `Keine Anlageberatung${qs && impressum ? ` · Quellen ${qs} (S. ${nr2(impressum.nr)})` : ''}`}</span>`;
       });
     });
     K.quellen = quellenListe;

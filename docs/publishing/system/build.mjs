@@ -78,7 +78,7 @@ const teile = seiten.map((s) => {
 const zusatz = fs.existsSync(path.join(dir, 'seiten', '_kennzahlen.html')) ? ersetze(fs.readFileSync(path.join(dir, 'seiten', '_kennzahlen.html'), 'utf8'), 'Kennzahlen') : '';
 const icons = fs.readFileSync(path.join(repo, 'assets/product-icons.svg'), 'utf8').replace(/<svg /, '<svg style="display:none" ');
 const REIHE = A.reihe || 'Aktienmagazin';
-const meta = { reihe: REIHE, nummer: A.nummer, datumText: A.datumText, kw: A.kw, redaktionsschlussText: A.redaktionsschlussText, seiten: seiten.map(({ id, nr, toc, quellen: q }) => ({ id, nr, toc, quellen: q })), quellen };
+const meta = { reihe: REIHE, fussHinweis: A.fussHinweis !== false, nummer: A.nummer, datumText: A.datumText, kw: A.kw, redaktionsschlussText: A.redaktionsschlussText, seiten: seiten.map(({ id, nr, toc, quellen: q }) => ({ id, nr, toc, quellen: q })), quellen };
 const html = `<!doctype html>
 <html lang="de"><head><meta charset="utf-8">
 <title>Vision Universe ${REIHE} · Nr. ${String(A.nummer).padStart(2, '0')} · ${A.datumText}</title>
