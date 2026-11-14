@@ -41,6 +41,10 @@ export const SOCIAL = [
 /* Heft, das die Vorschau ohne JavaScript zeigt (website2/site.js setzt dort das neueste ein). www nimmt das Heft aus dem Auszug. */
 export const HEFT = { nr: "01", datum: "09.11.2026", titel: "Die KI-Bremse", seiten: 30, href: "/insights/magazin/nr-01/", blick: [2, 3, 5, 8, 12, 17, 20, 24] };
 const BLICK = [2, 3, 5, 8, 12, 17, 20, 24];
+/* Aktienreport, den die Vorschau ohne JavaScript zeigt (site.js setzt einen neueren ein). www nimmt ihn aus dem Auszug.
+   Nur was der Report wirklich enthält: Nummer, Datum, Titel, Seitenzahl, Titelbild, Seiten, PDF. */
+export const REPORT = { nr: "01", datum: "12.11.2026", titel: "Take-Two Interactive: Alles auf Vice City", seiten: 20, href: "/insights/reports/take-two-gta-6/", pdf: "aktienreport-01-take-two.pdf", blick: [2, 4, 5, 6, 7, 8] };
+const REPORT_BLICK = [2, 4, 5, 6, 7, 8];
 const LANDING = join(ROOT, "landing");
 const SITE = join(LANDING, "site");
 export const SNAPSHOT = join(SITE, "insights.json");
@@ -155,6 +159,13 @@ function site(c, data) {
     ? { ...data.heft, datum: datum(data.heft.datum), blick: data.heft.blick, cover: `${c.img}${data.heft.cover}`, seite: (n) => `${c.img}heft-${data.heft.nr}-s${nn(n)}.jpg`, pdf: data.heft.pdf }
     : { ...HEFT, cover: `${HEFT.href}cover.jpg`, seite: (n) => `${HEFT.href}seiten/s${nn(n)}.jpg`, pdf: `${HEFT.href}vision-universe-aktienmagazin-${HEFT.nr}.pdf` };
   const live = (attr) => (c.www ? "" : ` ${attr}`);
+  /* Aktienreport für die Bühne auf der News-Seite, die Startseite und den Blick in den Report (auf www kann er fehlen). */
+  const report = c.www
+    ? (data.report && data.report.cover ? { ...data.report, datum: datum(data.report.datum), cover: `${c.img}${data.report.cover}`, seite: (n) => `${c.img}report-${data.report.nr}-s${nn(n)}.jpg`, lesen: data.report.href } : null)
+    : { ...REPORT, cover: `${REPORT.href}cover.jpg`, seite: (n) => `${REPORT.href}seiten/s${nn(n)}.jpg`, lesen: REPORT.href, pdf: `${REPORT.href}${REPORT.pdf}` };
+  /* Kleine WebP-Fassung zuerst, wenn es sie gibt (products/website2/bilder.py), das Original als Rückfall. */
+  const has = (name) => existsSync(join(ROOT, "website2/img", name));
+  const pic = (webp, img) => (webp && has(webp) ? `<picture><source type="image/webp" srcset="${c.img}${webp}">${img}</picture>` : img);
 
   /* Kennzeichen-Grafiken je Modul (SVG und HTML, bewegt; rein schmückend). --ac ist Schwarz, auf dunklen Kacheln Neongrün. */
   const G = {
@@ -169,7 +180,7 @@ function site(c, data) {
     hedgefonds: `<div style="width:100%"><div style="display:flex;height:26px;border-radius:13px;overflow:hidden;gap:3px"><i class="a-growx" style="display:block;width:56%;background:var(--ac)"></i><i style="display:block;flex:1;background:currentColor;opacity:.25"></i></div><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;font-weight:800;margin-top:8px"><span>aufgestockt</span><span style="opacity:.75">verkauft</span></div></div>`,
     portfolios: `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:7px;width:100%">${Array.from({ length: 12 }, (_, i) => `<i${i < 7 ? ' class="a-blink"' : ""} style="display:block;height:26px;border-radius:8px;background:${i < 7 ? "var(--ac)" : "currentColor"};opacity:${i < 7 ? 1 : 0.15};animation-delay:${(i * 0.15).toFixed(2)}s"></i>`).join("")}</div>`,
     vorsorge: `<svg width="190" height="100" viewBox="0 0 190 100" fill="none"><path d="M4 92C60 88 120 70 186 8V96H4z" fill="var(--ac)" opacity=".22"/><path class="a-draw" style="--len:300" d="M4 92C60 88 120 70 186 8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle class="a-blink" cx="186" cy="8" r="7" fill="var(--ac)"/></svg>`,
-    insights: `<div style="position:relative;width:120px;height:120px">${[[-14, heft.seite(2), ""], [-4, heft.seite(5), ""], [7, heft.cover, live("data-mag-img")]].map(([r, src, attr], i) => `<img src="${src}" alt="" width="84" height="119" loading="lazy" decoding="async"${attr} style="position:absolute;left:${18 + i * 4}px;top:0;width:84px;border-radius:6px;transform:rotate(${r}deg);box-shadow:0 8px 20px rgba(0,0,0,.25)">`).join("")}</div>`
+    insights: `<div style="position:relative;width:120px;height:120px">${[-14, -4, 7].map((r, i) => `<img src="${c.img}heft-blatt-${i + 1}.webp" alt="" width="84" height="119" loading="lazy" decoding="async" style="position:absolute;left:${18 + i * 4}px;top:0;width:84px;border-radius:6px;transform:rotate(${r}deg);box-shadow:0 8px 20px rgba(0,0,0,.25)">`).join("")}</div>`
   };
 
   /* ---------- Bausteine ---------- */
@@ -178,12 +189,17 @@ function site(c, data) {
      (Brevo nimmt nur Anfragen von der eigenen Domain an). */
   const cta = (cls = "", t = CTA) => `<a class="cta${cls ? " " + cls : ""}" href="${c.newsletter}">${t} ${I.chev}</a>`;
   const SHOT = (src) => (src.endsWith(".webp") ? [585, 1266] : [780, 1688]);
-  const dev = (src, w, alt, cls = "", lazy = true) => `<div class="dev w${w}${cls ? " " + cls : ""}"><img src="${c.img}${src}" alt="${esc(alt)}" width="${SHOT(src)[0]}" height="${SHOT(src)[1]}"${lazy ? ' loading="lazy"' : ""} decoding="async"></div>`;
+  /* App-Ansicht im Geräterahmen. Oberhalb der Falz (lazy = false) lädt sie sofort und mit Vorrang: Sie ist dort das größte Bild. */
+  const dev = (src, w, alt, cls = "", lazy = true) => `<div class="dev w${w}${cls ? " " + cls : ""}">${pic(src.endsWith(".jpg") ? src.replace(/\.jpg$/, "-600.webp") : null, `<img src="${c.img}${src}" alt="${esc(alt)}" width="${SHOT(src)[0]}" height="${SHOT(src)[1]}"${lazy ? ' loading="lazy"' : ' fetchpriority="high"'} decoding="async">`)}</div>`;
   const tile = (m, big) => `<a class="t ${m.color}${big ? " w2" : ""} rv" href="${modHref(m.id)}"><span class="go">${I.chev}</span><div class="fl g12"><div class="icb">${micon(m)}</div><b class="tn">${m.name}</b></div><div class="gfx" aria-hidden="true">${G[m.id]}</div><div class="q">${m.q}</div></a>`;
   /* Original-Knöpfe von Apple und Google (Dateien von /website/, unverändert, in Farbe). Bis zum Start ohne Link. */
   const badges = `<div class="badges"><img class="badge" src="${c.badge}badge-apple.svg" alt="Laden im App Store" width="120" height="40"><img class="badge" src="${c.badge}badge-google.png" alt="Jetzt bei Google Play" width="646" height="192"><span>Bald verfügbar</span></div>`;
   const rail = (items, label, cls = "") => `<div class="rail${cls}" tabindex="0" role="group" aria-label="${esc(label)}">${items.map(([s, n]) => `<figure>${dev(s, 250, `${n} in der App`)}<figcaption>${n}</figcaption></figure>`).join("")}</div>`;
-  const cover = (alt, lazy = true) => `<img src="${heft.cover}" alt="${esc(alt)}" width="560" height="793"${lazy ? ' loading="lazy"' : ""} decoding="async"${live("data-mag-img")}>`;
+  const cover = (alt, lazy = true) => pic(`heft-${heft.nr}-cover.webp`, `<img src="${heft.cover}" alt="${esc(alt)}" width="560" height="793"${lazy ? ' loading="lazy"' : ' fetchpriority="high"'} decoding="async"${live("data-mag-img")}>`);
+  const reportCover = (alt, lazy = true) => pic(`report-${report.nr}-cover.webp`, `<img src="${report.cover}" alt="${esc(alt)}" width="560" height="793"${lazy ? ' loading="lazy"' : ""} decoding="async"${live("data-rep-img")}>`);
+  /* Seiten aus Heft oder Report als Schiene zum seitlichen Blättern. */
+  const seiten = (o, art, name, label, attr) => `<div class="rail mid" tabindex="0" role="group" aria-label="${esc(label)}">${o.blick.map((n) => pic(`${art}-${o.nr}-s${nn(n)}.webp`, `<img class="pg" src="${o.seite(n)}" alt="${esc(name)} Nr. ${o.nr}, Seite ${n}" width="1100" height="1556" loading="lazy" decoding="async"${live(`${attr}="${n}"`)}>`)).join("")}</div>`;
+  const facts = (items) => `<ul class="fx">${items.map(([a, b]) => `<li><b>${a}</b> ${b}</li>`).join("")}</ul>`;
   const eb = (t) => `<div class="eb acc">${t}</div>`;
   /* Instagram und TikTok: schlichte Links mit Namen, keine Einbettung, keine Anfrage an Dritte. */
   const social = () => `<div class="soc">${SOCIAL.map(([k, n, u]) => `<a class="sc" href="${u}" rel="noopener" target="_blank" aria-label="Vision Universe auf ${n} (@app.visionuniverse), öffnet in neuem Tab" title="${n}">${I[k]}</a>`).join("")}</div>`;
@@ -232,7 +248,7 @@ ${cols.map(([t, l]) => `<div><h2>${t}</h2><ul>${l.map(([n, h]) => `<li><a href="
     return `<nav class="dock" aria-label="Schnellzugriff">${item("start", page_(""), I.home, "Start")}${item("module", `${page_("app/")}#bereiche`, ic("layers", 20), "Module", ' data-mega aria-controls="mega" aria-expanded="false"')}${item("app", page_("app/"), ic("chartbild", 20), "App")}${item("news", page_("news/"), ic("insights", 20), "News")}${item("faq", page_("faq/"), '<b aria-hidden="true">?</b>', "Fragen")}</nav>`;
   }
 
-  function page({ path, title, desc, active, dockActive, body, main = "", close = final, form = false }) {
+  function page({ path, title, desc, active, dockActive, body, main = "", close = final, form = false, preload = "" }) {
     const url = `${c.origin}${path}`;
     /* www: gleiche Kopfangaben wie die bisherige Startseite (robots wie dort; landing/scripts/build.mjs stellt bei
        Produktionsfreigabe auf index um und setzt Content-Security-Policy und Versionsmarken). */
@@ -273,7 +289,7 @@ ${cols.map(([t, l]) => `<div><h2>${t}</h2><ul>${l.map(([n, h]) => `<li><a href="
 <meta property="og:description" content="${esc(desc)}">
 <link rel="icon" type="image/png" href="${c.favicon}">
 <link rel="apple-touch-icon" href="${c.touch}">
-<link rel="preload" href="${c.font}" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="${c.font}" as="font" type="font/woff2" crossorigin>${preload ? "\n" + preload : ""}
 <link rel="stylesheet" href="${c.css}">
 <script src="${c.js}" defer></script>`;
     const html = `<!doctype html>
@@ -309,30 +325,34 @@ ${dock(dockActive || active, active)}
   const hero = (h, sub, extra = "") => `<div class="heroX"><div class="w split"><div><span class="soon"><i></i>App bald verfügbar · zum Start kostenlos</span><h1 class="H1">${h}</h1><p class="ld">${sub}</p><div class="fl g12 wr acts">${cta()}${extra}</div>${badges}</div>${stage}</div></div>`;
 
   /* ---------- Insights: in der Vorschau füllt site.js die Plätze, auf www steht der Auszug fest in der Seite ---------- */
-  const teaser = () => (c.www
-    ? `<a class="lv" href="${data.artikel[0].href}"><span class="eb">Neuester Artikel · ${datum(data.artikel[0].datum)}</span><b>${esc(data.artikel[0].titel)}</b></a>`
-    : `<a class="lv" href="/insights/" data-live-artikel><span class="eb">Neuester Artikel</span><b>Zu den neuesten Artikeln</b></a>`);
+  /* Neuester Artikel als Karte auf der Startseite. */
   const artImg = (a, lazy = true) => (a.bild ? `<img src="${c.img}${a.bild}" alt="" width="${a.w}" height="${a.h}"${lazy ? ' loading="lazy"' : ""} decoding="async">` : "");
+  const teaser = () => (c.www
+    ? `<a class="art rv" href="${data.artikel[0].href}">${artImg(data.artikel[0])}<div><span class="pill l">Neuester Artikel · ${datum(data.artikel[0].datum)}</span><h3 class="H3">${esc(data.artikel[0].titel)}</h3></div></a>`
+    : `<a class="art rv" href="/insights/" data-live-artikel><div><span class="pill l">Neuester Artikel</span><h3 class="H3">Zu den neuesten Artikeln</h3></div></a>`);
   const feed = () => {
-    if (!c.www) return `<a class="art lead rv" href="/insights/" data-feed-lead><div class="cap"><span class="pill l">Insights</span><h2 class="H2">Zu den neuesten Artikeln</h2></div></a>
+    if (!c.www) return `<a class="art lead rv" href="/insights/" data-feed-lead><div class="cap"><span class="pill l">Insights</span><h3 class="H2">Zu den neuesten Artikeln</h3></div></a>
 <div class="bento c3 feed" data-feed="5" data-feed-skip="1"></div>`;
     const [top, ...rest] = data.artikel;
     const cards = rest.slice(0, 5);
-    return `<a class="art lead rv" href="${top.href}">${artImg(top, false)}<div class="cap"><span class="pill l">${esc(top.rubrik)} · ${datum(top.datum)}</span><h2 class="H2">${esc(top.titel)}</h2></div></a>
+    return `<a class="art lead rv" href="${top.href}">${artImg(top)}<div class="cap"><span class="pill l">${esc(top.rubrik)} · ${datum(top.datum)}</span><h3 class="H2">${esc(top.titel)}</h3></div></a>
 <div class="bento c3 feed">${cards.map((a, i) => `<a class="art${i === 3 && cards.length > 4 ? " big" : ""} rv" href="${a.href}">${artImg(a)}<div><span class="pill${a.rubrik === "Tagesthema" ? " l" : ""}">${esc(a.rubrik)}</span><h3 class="H3">${esc(a.titel)}</h3><div class="dt">${datum(a.datum)}</div></div></a>`).join("")}</div>`;
   };
-  const report = () => {
-    if (!c.www) return `<div class="t c-soft rep rv" data-live-report><div><div class="eb" data-live-report-kopf hidden></div><h3 class="H3" data-live-report-titel>Ausführliche Analysen einzelner Firmen.</h3></div><a class="cta s" href="/insights/reports/" data-live-report-link>Zu den Reports ${I.chev}</a></div>`;
-    const r = data.report;
-    return r
-      ? `<div class="t c-soft rep rv"><div><div class="eb">Neuester Aktienreport · ${datum(r.datum)}</div><h3 class="H3">${esc(r.titel)}</h3></div><a class="cta s" href="${r.href}">Report lesen ${I.chev}</a></div>`
-      : `<div class="t c-soft rep rv"><div><h3 class="H3">Der erste Aktienreport ist in Arbeit.</h3></div></div>`;
-  };
+  /* Zwei Bühnen, damit Heft und Report nicht neben den Artikeln untergehen: jede mit großem Titelbild und klarem Knopf. */
+  const magStage = () => `<article class="stage c-ink rv"${live(`data-mag="${heft.nr}"`)}><div class="stx"><span class="pill l">Aktienmagazin · jede Woche</span><h2 class="H2"><span${live("data-mag-nr")}>Nr. ${heft.nr}</span><br><span${live("data-mag-titel")}>${esc(heft.titel)}</span></h2><p class="sub">Das Heft zur Börsenwoche, online lesen oder als PDF.</p>${facts([[`<span${live("data-mag-seiten")}>${heft.seiten}</span>`, "Seiten"], ["0 €", "zum Start"], ["1 ×", "pro Woche"]])}<div class="fl g12 wr"><a class="cta l" href="${page_("magazin/")}">Heft ansehen ${I.chev}</a><a class="cta g" href="${heft.pdf}"${live("data-mag-pdf")}>PDF</a></div></div><div class="cov">${cover(`Titelseite Aktienmagazin Nr. ${heft.nr}`, false)}</div></article>`;
+  const repStage = () => (report
+    ? `<article class="stage c-lime rv" id="reports"${live(`data-live-report="${REPORT.href}"`)}><div class="stx"><span class="pill"${live("data-rep-kopf")}>Aktienreport · Nr. ${report.nr} · ${report.datum}</span><h2 class="H2"${live("data-rep-titel")}>${esc(report.titel)}</h2><p class="sub">Eine Firma, ein Heft. Online lesen oder als PDF.</p>${facts([[`<span${live("data-rep-seiten")}>${report.seiten}</span>`, "Seiten"]])}<div class="fl g12 wr"><a class="cta" href="${report.lesen}"${live("data-rep-link")}>Report lesen ${I.chev}</a><a class="cta o" href="${report.pdf}"${live("data-rep-pdf")}>PDF</a></div></div><div class="cov r">${reportCover(`Titelseite Aktienreport Nr. ${report.nr}: ${report.titel}`, false)}</div></article>`
+    : c.www && data.report
+      ? `<article class="stage c-lime rv" id="reports"><div class="stx"><span class="pill">Aktienreport · ${datum(data.report.datum)}</span><h2 class="H2">${esc(data.report.titel)}</h2><p class="sub">Eine Firma, ein Heft.</p><div class="fl g12 wr"><a class="cta" href="${data.report.href}">Report lesen ${I.chev}</a></div></div></article>`
+      : `<article class="stage c-soft rv" id="reports"><div class="stx"><span class="pill">Aktienreports</span><h2 class="H2">Eine Firma, ein Heft.</h2><p class="sub">Der erste Aktienreport ist in Arbeit.</p></div></article>`);
+  /* Kleine Fassungen für die Startseite. */
+  const miniMag = () => `<a class="t c-ink mini rv"${live(`data-mag="${heft.nr}"`)} href="${page_("magazin/")}"><div class="cov s">${cover(`Titelseite Aktienmagazin Nr. ${heft.nr}`)}</div><div><span class="pill l">Aktienmagazin</span><h3 class="H3"><span${live("data-mag-nr")}>Nr. ${heft.nr}</span> · <span${live("data-mag-titel")}>${esc(heft.titel)}</span></h3><span class="more2">Heft ansehen ${I.chev}</span></div></a>`;
+  const miniRep = () => (report
+    ? `<a class="t c-lime mini rv"${live(`data-live-report="${REPORT.href}"`)} href="${page_("news/")}#reports"><div class="cov s r">${reportCover(`Titelseite Aktienreport Nr. ${report.nr}`)}</div><div><span class="pill">Aktienreport</span><h3 class="H3"${live("data-rep-titel")}>${esc(report.titel)}</h3><span class="more2">Report ansehen ${I.chev}</span></div></a>`
+    : `<a class="t c-soft mini rv" href="${page_("news/")}#reports"><div><span class="pill">Aktienreports</span><h3 class="H3">Eine Firma, ein Heft.</h3></div></a>`);
   const insightsHome = c.www ? `${RESEARCH}/insights/` : "/insights/";
   /* Überschrift des Hefts: erstes Wort schlicht, der Rest auf Neongrün (bei einem Wort alles). */
   const heftTitel = () => { const [a, ...b] = heft.titel.split(" "); return b.length ? `${esc(a)} <span class="hl">${esc(b.join(" "))}</span>` : `<span class="hl">${esc(a)}</span>`; };
-  const heftBlock = () => `<a class="blk split rv" href="${page_("magazin/")}"><div class="cov">${cover(`Aktienmagazin Nr. ${heft.nr}`)}</div><div><span class="pill l">Aktienmagazin · jede Woche</span><h2 class="H2" style="margin:16px 0 12px"><span${live("data-mag-nr")}>Nr. ${heft.nr}</span><br><span${live("data-mag-titel")}>${esc(heft.titel)}</span></h2><p class="ld">Das Heft zur Börsenwoche. <span${live("data-mag-seiten")}>${heft.seiten}</span> Seiten, online lesen oder als PDF.</p><span class="cta l" style="margin-top:24px">Heft ansehen ${I.chev}</span></div></a>`;
-
   /* ---------- Start ---------- */
   function start() {
     const mq = NUMS.map(([n, t]) => `<b>${n}</b> ${t} &nbsp;·&nbsp; `).join("");
@@ -341,7 +361,7 @@ ${dock(dockActive || active, active)}
 <section class="sec"><div class="w">${eb("Elf Bereiche, ein Konto")}<h2 class="H2 head">Was willst du wissen?</h2><div class="bento">${MODULES.map((m, i) => tile(m, [0, 4, 7, 11].includes(i))).join("")}</div></div></section>
 <section class="sec t0"><div class="w"><div class="blk split rv"><div class="duo">${dev("app-aktie.jpg", 240, "NVIDIA in der App")}${dev("app-module.jpg", 240, "NVIDIA: Analyse aus allen Modulen", "hide-m")}</div><div>${eb("Der Beweis · NVIDIA")}<h2 class="H2" style="margin:10px 0 14px">Eine Aktie. Sieben Blickwinkel.</h2><p class="ld">Andere Apps zeigen dir den Kurs. Vision Universe zeigt, was dahinter steckt, und sagt es in einem Satz.</p><div class="chips">${[["Zahlen", "„Wächst stark und verdient sehr gut.“"], ["Faktoren", "Verdient besser als 99 % aller US-Aktien."], ["Chart", "„Abwärtstrend“, mit Zonen laut Methode."]].map(([k, v]) => `<div class="chipq"><div class="eb">${k}</div><b>${v}</b></div>`).join("")}</div><p class="note">Beispiel NVIDIA, Datenstand 12.11.2026. Keine Anlageberatung, keine Empfehlung.</p></div></div></div></section>
 <section style="padding-bottom:70px"><div class="w">${eb("Die App")}<h2 class="H2" style="margin:10px 0 18px">Wisch dich durch.</h2></div>${rail([["app-home.jpg", "Home"], ["app-discover.jpg", "Discover"], ["app-quant.jpg", "Quant"], ["app-supertrader.jpg", "Supertrader"], ["app-technical.jpg", "Technical"], ["app-fundamental.jpg", "Fundamental"], ["app-hedgefonds.jpg", "Hedgefonds"], ["app-news.jpg", "News"]], "Ansichten der App, seitlich blättern")}</section>
-<section class="sec t20"><div class="w split"><div class="rv">${eb("Insights")}<h2 class="H2" style="margin:10px 0 14px">Immer das Neueste vorn.</h2><p class="ld">Jeden Werktag neue Artikel, jede Woche das Aktienmagazin, dazu ausführliche Aktienreports.</p><div class="fl g12 wr" style="margin-top:24px"><a class="cta" href="${page_("news/")}">Zu den News ${I.chev}</a><a class="cta o" href="${page_("magazin/")}">Aktienmagazin</a></div>${teaser()}</div><a class="cov rv" href="${page_("magazin/")}">${cover(`Aktienmagazin Nr. ${heft.nr}`)}</a></div></section>
+<section class="sec t20" id="insights"><div class="w"><div class="hrow"><div>${eb("Insights")}<h2 class="H2" style="margin:10px 0 14px">Immer das Neueste vorn.</h2><p class="ld">Jeden Werktag neue Artikel, jede Woche das Aktienmagazin, dazu ausführliche Aktienreports.</p></div><div class="fl g12 wr"><a class="cta" href="${page_("news/")}">Zu den News ${I.chev}</a><a class="cta o" href="${page_("magazin/")}">Aktienmagazin</a></div></div><div class="trio">${teaser()}${miniMag()}${miniRep()}</div></div></section>
 <section class="sec t0"><div class="w">${eb("Unsere Haltung")}<h2 class="H2 head">Daten statt Meinung.</h2><div class="bento">${[["Jede Zahl mit Quelle", "c-alt"], ["Jede Zahl erklärt", "c-soft"], ["Keine Empfehlung", "c-ink"], ["Keine Provision", "c-lime"]].map(([t, col], i) => `<div class="t ${col} h190 end rv"><div class="num" aria-hidden="true" data-n="0${i + 1}"></div><h3 class="H3 b">${t}</h3></div>`).join("")}</div></div></section>
 <section class="sec t0" id="fuer-wen"><div class="w">${eb("Für wen")}<h2 class="H2 head">Wo stehst du gerade?</h2><div class="bento k1">${[["Sparplan ab 10 €", "„Ich fange gerade an.“", ["vorsorge", "discover", "fundamental"]], ["Privatanleger", "„Ich will meine Aktien verstehen.“", ["discover", "quant", "screener"]], ["Trader", "„Ich arbeite mit Charts und festen Regeln.“", ["technical", "supertrader", "elliott"]], ["Profi-Investoren", "„Ich will Tiefe: SEC-Daten, 13F, Backtests.“", ["fundamental", "hedgefonds", "quant"]]].map(([k, q, a]) => `<div class="t c-wht h230 rv"><div class="eb">${k}</div><h3 class="H3" style="margin-top:10px;font-size:26px;flex:1">${q}</h3><div class="fl g8">${a.map((id) => `<a class="icb" href="${modHref(id)}" aria-label="${MOD[id].name}" title="${MOD[id].name}">${ic(id, 24)}</a>`).join("")}</div></div>`).join("")}</div>
 <div class="bento c3 links"><a class="t c-ink h0 rv" href="${page_("app/")}"><h3 class="H3 b">So sieht die App aus</h3><p class="q" style="margin-top:6px">Alle Bereiche im Überblick.</p></a><a class="t c-alt h0 rv" href="${page_("faq/")}"><h3 class="H3 b">Häufige Fragen</h3><p class="q" style="margin-top:6px">Gut zu wissen.</p></a><a class="t c-soft h0 rv" href="${page_("news/")}"><h3 class="H3 b">News</h3><p class="q" style="margin-top:6px">Jeden Werktag neu.</p></a></div></div></section>`;
@@ -374,18 +394,18 @@ ${film}
   function news() {
     const body = `<div class="w ptop"><div class="fl g12 wr">${soon}<span class="pill l">Insights sind schon online</span></div><h1 class="H1" style="margin-top:20px">Was die Börse <span class="hl">heute</span> bewegt.</h1><p class="ld" style="margin-top:18px">Und was die Daten dazu sagen. Jeden Tag ein bis zwei Themen, recherchiert und mit Zahlen aus Vision Universe unterlegt.</p>
 <div class="fl g8 wr tabs"><a class="pill" href="#artikel">Artikel</a><a class="pill o" href="${page_("magazin/")}">Aktienmagazin</a><a class="pill o" href="#reports">Aktienreports</a></div>
-<div id="artikel">${feed()}
-<p class="more"><a class="cta o s" href="${insightsHome}">Alle Artikel ${I.chev}</a></p></div></div>
-<section class="sec"><div class="w">${heftBlock()}</div></section>
-<section class="sec t0" id="reports"><div class="w">${eb("Aktienreports")}<h2 class="H2" style="margin:10px 0 24px">Eine Firma, ein Heft.</h2>${report()}</div></section>`;
-    return page({ path: "news/", title: "News · Vision Universe", desc: "Neue Artikel an jedem Werktag, das Aktienmagazin und Aktienreports von Vision Universe.", active: "news", body });
+<div class="stages">${magStage()}${repStage()}</div></div>
+<section class="sec" id="artikel"><div class="w">${eb("Artikel")}<h2 class="H2 head">Jeden Werktag neu.</h2>${feed()}
+<p class="more"><a class="cta o s" href="${insightsHome}">Alle Artikel ${I.chev}</a></p></div></section>
+${report ? `<section style="padding:0 0 40px" id="report-blick"><div class="w">${eb("Blick in den Report")}<h2 class="H2" style="margin:10px 0 8px">Eine Firma, ein Heft.</h2></div>${seiten(report, "report", "Aktienreport", "Seiten aus dem Aktienreport, seitlich blättern", "data-rep-seite")}</section>` : ""}`;
+    return page({ path: "news/", title: "News · Vision Universe", desc: "Neue Artikel an jedem Werktag, das Aktienmagazin und Aktienreports von Vision Universe.", active: "news", body, preload: c.www ? "" : '<link rel="preload" href="/insights/artikel.json" as="fetch" crossorigin="anonymous">' });
   }
 
   /* ---------- Aktienmagazin: zeigt das Heft und führt zur echten Ausgabe unter /insights/magazin/ ---------- */
   function magazin() {
     const lesen = c.www ? heft.href : HEFT.href;
     const body = `<div class="w ptop40"><div class="mh c-ink"><div class="split"><div><span class="pill l"${live("data-mag-kopf")}>Aktienmagazin · Nr. ${heft.nr} · ${heft.datum}</span><h1 class="H1 big"${live("data-mag-h1")}>${heftTitel()}</h1><p class="mtext">Das Heft zur Börsenwoche. <span${live("data-mag-seiten")}>${heft.seiten}</span> Seiten, online lesen oder als PDF.</p><div class="fl g12 wr" style="margin-top:28px"><a class="cta l" href="${lesen}"${live("data-mag-link")}>Heft lesen ${I.chev}</a><a class="cta g" href="${heft.pdf}"${live("data-mag-pdf")}>PDF</a></div><div class="stats">${[[`<span${live("data-mag-seiten")}>${heft.seiten}</span>`, "Seiten"], ["1 ×", "pro Woche"], ["0 €", "zum Start"]].map(([a, b]) => `<div><div>${a}</div><b>${b}</b></div>`).join("")}</div></div><div class="cov x">${cover(`Titelseite Aktienmagazin Nr. ${heft.nr}`, false)}</div></div></div></div>
-<section style="padding:70px 0 40px"><div class="w">${eb("Blick ins Heft")}<h2 class="H2" style="margin:10px 0 8px">Blättern.</h2></div><div class="rail mid" tabindex="0" role="group" aria-label="Seiten aus dem Heft, seitlich blättern">${heft.blick.map((n) => `<img class="pg" src="${heft.seite(n)}" alt="Aktienmagazin Nr. ${heft.nr}, Seite ${n}" width="1100" height="1556" loading="lazy" decoding="async"${live(`data-mag-seite="${n}"`)}>`).join("")}</div></section>
+<section style="padding:70px 0 40px"><div class="w">${eb("Blick ins Heft")}<h2 class="H2" style="margin:10px 0 8px">Blättern.</h2></div>${seiten(heft, "heft", "Aktienmagazin", "Seiten aus dem Heft, seitlich blättern", "data-mag-seite")}</section>
 <section class="sec t20"><div class="w"><div class="bento c3"><a class="t c-lime rv" href="${page_("news/")}"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Artikel</h3><p class="q k">Jeden Werktag neu.</p></a><div class="t c-alt rv"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Nächste Ausgabe</h3><p class="q">Erscheint wöchentlich.</p></div><a class="t c-soft rv" href="${page_("news/")}#reports"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Aktienreports</h3><p class="q">Ausführliche Analysen einzelner Firmen.</p></a></div></div></section>`;
     return page({ path: "magazin/", title: "Aktienmagazin · Vision Universe", desc: "Das Aktienmagazin von Vision Universe: das Heft zur Börsenwoche, online lesen oder als PDF.", active: "magazin", dockActive: "news", body, main: c.www ? "" : ` data-mag="${HEFT.nr}"` });
   }
@@ -434,8 +454,12 @@ export function makeSnapshot() {
   if (!h) throw new Error("insights/artikel.json enthält kein Heft.");
   const blick = BLICK.filter((n) => n <= h.seiten && existsSync(join(ROOT, h.href, `seiten/s${nn(n)}.jpg`)));
   const heft = { nr: h.nr, datum: h.datum, titel: h.titel, seiten: h.seiten, href: `${RESEARCH}${h.href}`, pdf: `${RESEARCH}${h.href}vision-universe-aktienmagazin-${h.nr}.pdf`, quelle: h.href, cover: `heft-${h.nr}-cover.jpg`, blick };
+  /* Report: artikel.json nennt Titel, Datum und Adresse; Nummer, Seitenzahl und PDF stehen in products/insights/reports.json. */
   const r = (liste.reports || []).find((x) => publicInsights(x.href));
-  const report = r ? { titel: r.titel, datum: r.datum, href: `${RESEARCH}${r.href}` } : null;
+  const voll = r && JSON.parse(readFileSync(join(ROOT, "products/insights/reports.json"), "utf8")).reports.find((x) => x.href === r.href && x.seiten && x.pdf && /^\d{2,3}$/.test(x.nr || ""));
+  const report = !r ? null : voll && existsSync(join(ROOT, r.href, "cover.jpg"))
+    ? { nr: voll.nr, titel: r.titel, datum: r.datum, seiten: voll.seiten, href: `${RESEARCH}${r.href}`, pdf: `${RESEARCH}${r.href}${voll.pdf}`, quelle: r.href, cover: `report-${voll.nr}-cover.jpg`, blick: REPORT_BLICK.filter((n) => n <= voll.seiten && existsSync(join(ROOT, r.href, `seiten/s${nn(n)}.jpg`))) }
+    : { titel: r.titel, datum: r.datum, href: `${RESEARCH}${r.href}` };
   return { schema: "vu-website-insights-1", note: "Auszug aus insights/artikel.json für www.visionuniverse.de. Erzeugt von products/website2/build.mjs --target www, nicht von Hand ändern.", stand: artikel[0].datum, artikel, heft, report };
 }
 /* Was unter landing/site/ liegen muss: Ziel → Quelle im Repo. */
@@ -449,7 +473,12 @@ export function wwwAssets(snapshot) {
   for (const a of snapshot.artikel) if (a.bild) files.set(`img/${a.bild}`, a.quelle.replace(/^\//, ""));
   const q = snapshot.heft.quelle.replace(/^\//, "");
   files.set(`img/${snapshot.heft.cover}`, `${q}cover.jpg`);
-  for (const n of new Set([2, 5, ...snapshot.heft.blick])) files.set(`img/heft-${snapshot.heft.nr}-s${nn(n)}.jpg`, `${q}seiten/s${nn(n)}.jpg`);
+  for (const n of snapshot.heft.blick) files.set(`img/heft-${snapshot.heft.nr}-s${nn(n)}.jpg`, `${q}seiten/s${nn(n)}.jpg`);
+  if (snapshot.report && snapshot.report.cover) {
+    const rq = snapshot.report.quelle.replace(/^\//, "");
+    files.set(`img/${snapshot.report.cover}`, `${rq}cover.jpg`);
+    for (const n of snapshot.report.blick) files.set(`img/report-${snapshot.report.nr}-s${nn(n)}.jpg`, `${rq}seiten/s${nn(n)}.jpg`);
+  }
   return files;
 }
 /* site.css und site.js für www: dieselben Dateien, nur die Schrift-Adresse relativ und ohne den Laufzeit-Abruf der Insights-Liste. */

@@ -16,7 +16,7 @@ const pages=site.pages.map(p=>p+'index.html');
 const output=resolve(root,'tests/output/site-rules');
 await build({output});
 const html=new Map();for(const p of pages)html.set(p,await readFile(resolve(output,p),'utf8'));
-const refs=page=>[...page.matchAll(/\s(?:href|src|poster)="([^"]+)"/g)].map(m=>m[1]);
+const refs=page=>[...page.matchAll(/\s(?:href|src|srcset|poster)="([^"]+)"/g)].map(m=>m[1]);
 const text=page=>page.replace(/<script[\s\S]*?<\/script>|<[^>]+>/g,' ').replace(/&amp;/g,'&').replace(/\s+/g,' ');
 
 test('Website: 17 Seiten, jede mit Sicherheitskopf, noindex im Vorschaumodus und versionierten eigenen Dateien',()=>{
@@ -137,8 +137,27 @@ test('Website: Artikel, Heft und Report stehen fest im Bau und führen nur zu ö
   assert.match(snapshot.heft.href,/^https:\/\/research\.visionuniverse\.de\/insights\/magazin\/nr-\d{2,3}\/$/);
   assert.ok(magazin.includes(`href="${snapshot.heft.href}"`)&&magazin.includes(`href="${snapshot.heft.pdf}"`)&&magazin.includes(snapshot.heft.titel.split(' ').pop()));
   for(const n of snapshot.heft.blick)assert.ok(existsSync(resolve(output,`site/img/heft-${snapshot.heft.nr}-s${String(n).padStart(2,'0')}.jpg`)),'Heftseite '+n);
-  if(snapshot.report)assert.ok(news.includes(`href="${snapshot.report.href}"`)&&/^https:\/\/research\.visionuniverse\.de\/insights\/reports\//.test(snapshot.report.href));
-  for(const page of html.values())assert.doesNotMatch(page,/data-live-|data-feed|data-mag-/,'keine Plätze für einen Laufzeit-Abruf');
+  /* Aktienreport: eigene Bühne mit Titelbild, Seitenzahl, Weg zum Report und zum PDF; dazu ein Blick auf einzelne Seiten. Alles liegt im eigenen Ordner. */
+  const report=snapshot.report;
+  assert.ok(report&&report.cover,'Der Auszug nennt einen Aktienreport mit Titelbild');
+  assert.match(report.href,/^https:\/\/research\.visionuniverse\.de\/insights\/reports\/[a-z0-9-]+\/$/);
+  assert.ok(report.pdf.startsWith(report.href)&&report.pdf.endsWith('.pdf'),'PDF liegt beim Report');
+  const stage=news.match(/<article class="stage c-lime rv" id="reports">[\s\S]*?<\/article>/)?.[0]||'';
+  assert.ok(stage.includes(`href="${report.href}"`)&&stage.includes(`href="${report.pdf}"`)&&stage.includes(`<b><span>${report.seiten}</span></b> Seiten`)&&stage.includes(`src="../site/img/${report.cover}"`),'Bühne Aktienreport');
+  assert.ok(stage.includes(report.titel.replace(/&/g,'&amp;')),'Titel des Reports');
+  assert.match(news,/<article class="stage c-ink rv">[\s\S]*?Aktienmagazin[\s\S]*?<\/article>/,'Bühne Aktienmagazin');
+  assert.ok(news.indexOf('class="stages"')<news.indexOf('id="artikel"'),'Heft und Report stehen vor den Artikeln');
+  assert.ok(html.get('index.html').includes(`src="./site/img/${report.cover}"`)&&html.get('index.html').includes('href="./news/#reports"'),'Startseite zeigt den Report und führt zu seiner Bühne');
+  for(const f of [report.cover,...report.blick.map(n=>`report-${report.nr}-s${String(n).padStart(2,'0')}.jpg`)]){
+    assert.ok(existsSync(resolve(output,'site/img',f)),f);
+    assert.ok(news.includes(`src="../site/img/${f}"`),'News ohne '+f);
+  }
+  /* Kleine WebP-Fassungen: jede genannte Datei wird ausgeliefert, das JPEG bleibt als Rückfall daneben. */
+  for(const [p,page] of html)for(const m of page.matchAll(/<source type="image\/webp" srcset="([^"]+)">(<img[^>]*>)/g)){
+    assert.ok(existsSync(resolve(output,dirname(p),m[1])),`${p}: ${m[1]}`);
+    assert.match(m[2],/ src="[^"]+\.jpg"/,`${p}: Rückfall für ${m[1]}`);
+  }
+  for(const page of html.values())assert.doesNotMatch(page,/data-live-|data-feed|data-mag-|data-rep-/,'keine Plätze für einen Laufzeit-Abruf');
 });
 
 test('Website: Produktionsfreigabe stellt alle Seiten auf index und nennt sie in der Sitemap; Größen bleiben im Rahmen von Pages',async()=>{

@@ -19,6 +19,17 @@
   }
   if (calm) qa('svg').forEach(function (s) { if (s.pauseAnimations) s.pauseAnimations(); });
 
+  /* Bewegung nur, solange sie zu sehen ist: Grafiken, Bühne und Laufband ruhen außerhalb des Fensters. */
+  if (watch && !calm) {
+    var rest = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        e.target.classList.toggle('idle', !e.isIntersecting);
+        qa('svg', e.target).forEach(function (s) { if (s.pauseAnimations) { if (e.isIntersecting) s.unpauseAnimations(); else s.pauseAnimations(); } });
+      });
+    }, { rootMargin: '120px' });
+    qa('.gfx,.stg,.mq,.fc').forEach(function (el) { rest.observe(el); });
+  }
+
   /* Menü „Module“: oben als Fläche unter der Leiste, auf dem iPhone als Blatt von unten. */
   var mega = d.getElementById('mega'), opener = null;
   var setMega = function (open) {
@@ -45,15 +56,23 @@
     if (e.key === 'Escape' && megaOpen()) { setMega(false); if (opener) opener.focus(); }
   });
 
-  /* Film im Kopf: läuft stumm, solange er sichtbar ist. Bei reduzierter Bewegung bleibt das Standbild stehen. */
+  /* Film im Kopf: Zuerst steht nur das Standbild. Der Film (1,7 MB) lädt erst, wenn die Seite fertig geladen und der
+     Browser frei ist, läuft stumm und nur, solange er sichtbar ist. Kein Film bei reduzierter Bewegung, im
+     Datensparmodus oder auf sehr langsamer Verbindung: dort bleibt das Standbild stehen. */
+  var net = navigator.connection || {};
+  var thrifty = !!net.saveData || /(^|-)2g$/.test(net.effectiveType || '');
   qa('video[data-autoplay]').forEach(function (v) {
     v.muted = true;
-    if (calm || !watch) return;
-    new IntersectionObserver(function (es) {
-      es.forEach(function (e) {
-        if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause();
-      });
-    }, { threshold: 0.25 }).observe(v);
+    if (calm || thrifty || !watch) return;
+    var begin = function () {
+      new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (e.isIntersecting) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else v.pause();
+        });
+      }, { threshold: 0.25 }).observe(v);
+    };
+    var idle = function () { if (window.requestIdleCallback) window.requestIdleCallback(begin, { timeout: 2500 }); else setTimeout(begin, 600); };
+    if (document.readyState === 'complete') idle(); else window.addEventListener('load', idle);
   });
 
   /* Modul-Filme: Klick auf den Knopf startet den Film mit Ton, danach gilt die Bedienleiste des Browsers. */
