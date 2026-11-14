@@ -275,7 +275,7 @@
     var th = (d.themes || [])[0], T = D.Views && D.Views.Themes;
     if (!th) return null;
     var t = T && T.byRow(th.rowId);
-    return { rowId: th.rowId, title: t ? t.title : titleCase(th.title), photo: t && t.photo, href: t ? T.href(t) : null };
+    return { rowId: th.rowId, title: t ? t.title : titleCase(th.title), slug: t ? t.slug : null, href: t ? T.href(t) : null };
   }
   /** Etiketten wie die Metazeile einer Serie: bester Platz, Thema, Index-Gewicht, „+N Reihen“. */
   function etiketten(d, universe) {
@@ -314,7 +314,7 @@
   }
   /* Bildchen der Kapitel (schwarz, 76 × 52) */
   function thumbSpanne(d) { var p = d.jahresspanne && isNum(d.jahresspanne.position) ? Math.round(Math.max(0, Math.min(1, d.jahresspanne.position)) * 100) : 50; return '<span class="dv3-thumb"><span class="dv3-thumb-range"><i style="width:' + p + '%"></i><b style="left:' + p + '%"></b></span></span>'; }
-  function thumbThema(d) { var th = themeOf(d); return th && th.photo ? '<span class="dv3-thumb dv3-thumb--img"><img src="' + esc(th.photo) + '" alt="" loading="lazy" decoding="async"></span>' : '<span class="dv3-thumb">' + U().hud("discover", 30, 8) + "</span>"; }
+  function thumbThema(d) { var th = themeOf(d); return '<span class="dv3-thumb">' + (th && th.slug ? U().themeHud(th.slug, 34, 10) : U().hud("discover", 30, 8)) + "</span>"; }
   function revenue(d) { var j = d.fundamentals && d.fundamentals.journey; return j && j.tracks ? (j.tracks.revenue || []).filter(function (x) { return isNum(x.v); }) : []; }
   function thumbBars(d) { var r = revenue(d).slice(-8), mx = Math.max.apply(null, r.map(function (x) { return x.v; }).concat([1])); return '<span class="dv3-thumb dv3-thumb--bars">' + r.map(function (x, i) { return '<i style="height:' + Math.max(2, Math.round(x.v / mx * 36)) + "px" + (i === r.length - 1 ? ";background:#c8f531" : "") + '"></i>'; }).join("") + "</span>"; }
   function healthCount(d) { var c = (d.fundamentals && d.fundamentals.health && d.fundamentals.health.categories) || []; return [c.filter(function (x) { return /^Sehr/.test(x.grade); }).length, c.length]; }

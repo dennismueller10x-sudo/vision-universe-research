@@ -109,10 +109,10 @@
 .dr-ms__i .vu-chg{font-size:11px;padding:2px 6px}
 .dr-ms>svg{width:14px;height:14px;color:var(--vu-mute)}
 
-/* Themenbilder: Hochformat 150 × 200 in der Schiene */
-.dr-sec--themes .dr-rail .dv3-theme{flex:0 0 150px;aspect-ratio:auto;height:200px;border-radius:20px}
+/* Themenkacheln (Symbol statt Bild): Hochformat 150 × 204 in der Schiene, längere Namen dürfen die Kachel strecken */
+.dr-sec--themes .dr-rail .dv3-theme{flex:0 0 150px;min-height:204px}
 .dr-tgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.dr-tgrid .dv3-theme{aspect-ratio:3/4;flex:none;border-radius:20px}
+.dr-tgrid .dv3-theme{flex:none;min-height:204px}
 
 /* Strategien: breite Karte (.sk) */
 .dr-sk{flex:none;width:228px;display:grid;gap:4px;align-content:start;padding:14px;border-radius:20px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none;scroll-snap-align:start}
@@ -264,7 +264,7 @@
 .dr-all__r>span:last-child{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#9b9b9b}
 .dr-all__r svg{width:13px;height:13px}
 .dr-all__r:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
-.dr-all__themes .dv3-theme{flex:0 0 120px;aspect-ratio:1/1}
+.dr-all__themes .dv3-theme{flex:0 0 140px}
 :root[data-theme=dark] .dr-all{background:#000}
 
 /* ===== PR 3 · Persönliche Reihen: Zuletzt angesehen (.cw) ===== */
