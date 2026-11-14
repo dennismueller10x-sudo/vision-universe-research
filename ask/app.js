@@ -17,7 +17,10 @@
   'use strict';
   var Fields = window.VUScreenerFields, Query = window.VUScreenerQuery, Adapters = window.VUScreenerAdapters, Ask = window.VUAskEngine;
   /* Redesign 2027 (Mockup E10): Bausteine aus assets/vu-ui.js (Aktienzeile, Urteil, Balken, Erklärung, Navigationskarte)
-     und der eine Chart in Kleinform (assets/vu-chart.js). VUUI maskiert jede Eingabe; markup() ist die einzige HTML-Stelle. */
+     und der eine Chart in Kleinform (assets/vu-chart.js). VUUI maskiert jede Eingabe; markup() ist die einzige HTML-Stelle.
+     App-Konzept 2 (Owner 14.11.2026, nur Darstellung): „Was Atlas kann“ als Schiene antippbarer Kacheln (VUUI.rail/tap),
+     „Oft gefragt“ als Kacheln, die Übersetzung als neongrüne Karte mit der großen Zahl, Laden mit Gerüst (VUUI.skeleton),
+     am Ende des Starts die „Weiter“-Karte (VUUI.next). Wie Fragen gestellt und beantwortet werden, bleibt unverändert. */
   var U = window.VUUI, Chart = window.VUChart, Today = window.VUToday, Id = window.VUCore && window.VUCore.Identity;
   function markup(html) { var t = document.createElement('template'); t.innerHTML = html; return t.content; }
   /* „?“ an Kennzahlen öffnet die Erklärung im Sheet (C09 + C16); gebunden nach dem Aufbau. */
@@ -162,22 +165,28 @@
   var startEl = h('div', { class: 'ak-start' }, [
     h('section', { class: 'ak-section', 'aria-labelledby': 'ak-can-h' }, [
       h('h2', { class: 'vu-sect', id: 'ak-can-h', text: 'Was Atlas kann' }),
-      h('div', { class: 'ak-can' }, CAN.map(function (c) {
-        return h('button', { class: 'ak-can-card', type: 'button', onclick: function () { ask(c.q, true); } }, [
-          markup(U.hud(c.icon, 34, 10)), h('b', { text: c.title }), h('span', { class: 'ak-can-q', text: '„' + c.q + '“' }), h('span', { class: 'ak-can-sub', text: c.sub })
-        ]);
-      }))
+      h('div', { class: 'ak-can' }, [markup(U.rail(CAN.map(function (c) {
+        return U.tap(U.hud(c.icon, 44, 14) + '<b>' + U.esc(c.title) + '</b><span class="ak-can-q">' + U.esc('„' + c.q + '“') + '</span><span class="ak-can-sub">' + U.esc(c.sub) + '</span>',
+          { tone: 'night', cls: 'ak-can-card', attrs: { 'data-ak-ask': c.q } });
+      }), { label: 'Was Atlas kann', width: 214 }))])
     ]),
     h('section', { class: 'ak-section', 'aria-labelledby': 'ak-often-h' }, [
       h('div', { class: 'vu-sect' }, [h('h2', { id: 'ak-often-h', text: 'Oft gefragt' }), h('span', { class: 'ak-sect-r', text: 'Archiv · kostenlos' })]),
-      h('div', { class: 'ak-often' }, OFTEN.map(function (q) {
-        return h('button', { class: 'ak-often-q', type: 'button', onclick: function () { ask(q, true); } }, [h('span', { text: q }), markup(U.glyph('next', 14))]);
-      }))
+      h('div', { class: 'ak-often' }, [markup(OFTEN.map(function (q) {
+        return U.tap('<span>' + U.esc(q) + '</span><i aria-hidden="true">' + U.glyph('next', 16) + '</i>', { cls: 'ak-often-q', attrs: { 'data-ak-ask': q } });
+      }).join(''))])
     ]),
     /* Die Grenzen in einem „?“ (L6, Datenschutz, Beta, Spracheingabe) */
     h('div', { class: 'vu-help ak-limits' }, [h('i', { 'aria-hidden': 'true', text: '?' }), h('span', {}, ['Atlas rechnet nicht selbst und gibt keine Anlageberatung. Grenzen und Datenschutz: ',
-      markup(U.q('Atlas sagt nicht, ob du kaufen oder verkaufen sollst, und beantwortet keine Fragen zu deiner persönlichen Lage. Beta: Neue Fragen pro Tag sind begrenzt; bereits gestellte Fragen kommen kostenlos aus dem Archiv. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Die AI übersetzt nur; sie rechnet nicht und gibt keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung deines Browsers (in Chrome über Google-Server).' : ''), 'Grenzen und Datenschutz'))])])
+      markup(U.q('Atlas sagt nicht, ob du kaufen oder verkaufen sollst, und beantwortet keine Fragen zu deiner persönlichen Lage. Beta: Neue Fragen pro Tag sind begrenzt; bereits gestellte Fragen kommen kostenlos aus dem Archiv. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Die AI übersetzt nur; sie rechnet nicht und gibt keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung deines Browsers (in Chrome über Google-Server).' : ''), 'Grenzen und Datenschutz'))])]),
+    /* Seitenende: weiter zum Screener (Name und Satz aus products/screener/module.json); dorthin führt auch „Finden“. */
+    markup(U.next({ title: 'Screener', sub: 'Eigene Filter', href: '/screener/' }))
   ]);
+  /* Kacheln und Zeilen des Starts stellen ihre Frage wie bisher über ask(q, true). */
+  startEl.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-ak-ask]');
+    if (b && startEl.contains(b)) ask(b.getAttribute('data-ak-ask'), true);
+  });
 
   /* Dunkler Kopf: AI ATLAS · BETA, Frage, ein Satz, große Eingabe, ein Status-Satz. */
   var hero = h('header', { class: 'ak-hero' }, [
@@ -375,7 +384,7 @@
     var turn = h('section', { class: 'ak-turn', 'aria-live': 'polite' }, [
       context ? h('p', { class: 'ak-q-ref', text: 'Nachfrage zu ' + followText.textContent }) : null,
       h('p', { class: 'ak-bub', text: question }),
-      h('div', { class: 'ak-state' }, [h('span', { class: 'ak-spin', 'aria-hidden': 'true' }), 'Deine Frage wird übersetzt …'])
+      h('div', { class: 'ak-state' }, [h('div', { class: 'ak-state-row' }, [h('span', { class: 'ak-spin', 'aria-hidden': 'true' }), 'Deine Frage wird übersetzt …']), markup(U.skeleton('rows'))])
     ]);
     conversation.insertBefore(turn, conversation.firstChild);
     try { window.scrollTo(0, 0); } catch (e) {}
@@ -515,14 +524,14 @@
   function translated(r, res, onRemove, tips) {
     var rules = Ask.rules(r);
     var n = res.strategy && res.strategy.mode === 'require' ? rules.length : rules.filter(function (x) { return x.kind === 'filter'; }).length;
-    return h('div', { class: 'ak-ans' }, [
-      h('span', { class: 'vu-ltag', text: 'So hat Atlas übersetzt' }),
+    return h('div', { class: 'ak-ans ak-ans--lime' }, [
+      h('span', { class: 'vu-ltag ak-ans-tag' }, [markup(U.glyph('spark', 13)), 'So hat Atlas übersetzt']),
+      h('div', { class: 'ak-count' }, [h('b', { class: 'vu-num', text: res.matched.toLocaleString('de-DE') }),
+        h('span', { text: 'von ' + res.universe.toLocaleString('de-DE') + ' US-Aktien erfüllen ' + Ask.allOf(n) })]),
       r.understood ? h('p', { class: 'ak-fine', text: r.understood }) : null,
       h('div', { class: 'ak-rcs' }, rules.map(function (x) {
         return h('span', { class: 'ak-rc' }, [x.icon ? markup('<i class="ak-rc-i">' + U.glyph(x.icon, 13) + '</i>') : null, x.text, x.kind !== 'ticker' ? h('button', { class: 'ak-rc-x', type: 'button', 'aria-label': 'Regel entfernen: ' + x.text, title: 'Entfernen (kostenlos neu rechnen)', onclick: function () { onRemove(x.kind, x.id); } }, '×') : null]);
       })),
-      h('div', { class: 'ak-count' }, [h('b', { class: 'vu-num', text: res.matched.toLocaleString('de-DE') }),
-        h('span', { text: 'von ' + res.universe.toLocaleString('de-DE') + ' US-Aktien erfüllen ' + Ask.allOf(n) })]),
       res.note ? h('p', { class: 'ak-fine', text: res.note }) : null,
       tips.length ? h('div', { class: 'ak-tips' }, tips.map(function (t) {
         return h('button', { class: 'ak-tip', type: 'button', onclick: function () { onRemove(t.kind, t.id); } }, [t.label + ': ', h('b', { text: t.count + ' Treffer' })]);
