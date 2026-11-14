@@ -206,3 +206,15 @@ test('Social-Bild: 1200 × 630 aus der neuen Startseite, auf jeder Seite der Web
   }
   assert.match(await readFile(resolve(root,'scripts/social-preview.mjs'),'utf8'),/viewport:\{width:1440,height:756\},deviceScaleFactor:5\/6/);
 });
+
+test('Rechtsseiten unter /policies/: jede eigene Datei (Stil, Logo, Symbol) ist erreichbar, der Text ist der des Originals',async()=>{
+  for(const [alias,target] of [['legal-notice','impressum'],['privacy-policy','datenschutz']]){
+    const file=`policies/${alias}/index.html`;
+    const page=await readFile(resolve(output,file),'utf8'),original=await readFile(resolve(output,target,'index.html'),'utf8');
+    assert.equal(text(page),text(original),alias+': Text wie '+target);
+    for(const r of refs(page).filter(x=>!/^(https?:|mailto:|#)/.test(x))){
+      const path=resolve(output,dirname(file),r.split(/[?#]/)[0]);
+      assert.ok(existsSync(r.endsWith('/')?resolve(path,'index.html'):path),`${file}: ${r} fehlt`);
+    }
+  }
+});

@@ -2,7 +2,7 @@
 
 Die vom Owner am 14.11.2026 freigegebene Gestaltung „Website-Mock-up 3“ als echte Seiten: hell, app-artig, bewegt (Kopfbild mit kreisenden Modul-Symbolen, Kennzeichen-Grafik je Modul, Menü als Fläche, Leiste unten auf dem iPhone). Ein Erzeuger (`build.mjs`), zwei Ziele:
 
-- **www:** die öffentliche Seite **https://www.visionuniverse.de/** (Owner 14.11.2026: „umsetzen, live nehmen“). Cloudflare Pages baut nur aus `landing/`; der Erzeuger schreibt deshalb die Seiten und alle nötigen Dateien als committete Dateien dorthin (`landing/index.html`, `landing/app/`, `landing/module/`, `landing/news/`, `landing/magazin/`, `landing/faq/`, `landing/site/`). `landing/scripts/build.mjs` setzt beim Bau Content-Security-Policy, Versionsmarken und den Zustand des Anmeldeformulars. Impressum, Datenschutz, Newsletter-Seiten, `/instagram/` und `/partner/` bleiben unverändert unter ihren Adressen.
+- **www (vorbereitet, noch nicht ausgeliefert):** Owner 14.11.2026: erst die Vorschau auf research ansehen, danach der Umzug auf **https://www.visionuniverse.de/**. Bis dahin ändert sich unter `landing/` nichts; die www-Dateien und ihre Prüfungen kommen mit dem Umzug dazu. Der Erzeuger kann das Ziel schon: Cloudflare Pages baut nur aus `landing/`; er schreibt deshalb die Seiten und alle nötigen Dateien als committete Dateien dorthin (`landing/index.html`, `landing/app/`, `landing/module/`, `landing/news/`, `landing/magazin/`, `landing/faq/`, `landing/site/`). `landing/scripts/build.mjs` setzt beim Bau Content-Security-Policy, Versionsmarken und den Zustand des Anmeldeformulars. Impressum, Datenschutz, Newsletter-Seiten, `/instagram/` und `/partner/` bleiben unverändert unter ihren Adressen.
 - **research:** die Vorschau **https://research.visionuniverse.de/website2/** (Passwortmaske, `noindex`, nicht im App-Menü). `/website/` (Gestaltung „Bühne und Beweis“) bleibt daneben unverändert bestehen.
 
 ## Seiten
@@ -33,7 +33,7 @@ cd landing && npm test && npm run test:browser && npm run test:design   # Formul
 
 Die HTML-Seiten entstehen nur aus `build.mjs`, nie von Hand ändern. Handarbeit sind `website2/site.css`, `website2/site.js`, `website2/img/` (Ansichten des freigegebenen App-Konzepts, noch nicht die laufende App; Standbilder der Modul-Filme) und `website2/vid/app.mp4` (App-Konzept in Bewegung, ohne Ton). `landing/site/` ist deren Kopie für www und gehört dem Erzeuger (Test W2-14).
 
-**Neue Artikel auf www:** Nach jedem neuen Artikel, Heft oder Report `node products/website2/build.mjs --target www` ausführen und mit committen; der Insights-Tageslauf tut das noch nicht von selbst (offene Entscheidung). Ist der Auszug älter als `/insights/`, meldet Test W2-14 das als Hinweis, ohne zu blockieren.
+**Neue Artikel auf www (kommt mit dem Umzug):** `node products/insights/build.mjs` (der Schritt, mit dem jeder Artikel, jedes Heft und jeder Report veröffentlicht wird) frischt, sobald `landing/site/` eingecheckt ist, im selben Lauf `landing/` auf: Auszug `landing/site/insights.json`, Bilder und die www-Seiten. Die geänderten Dateien unter `landing/` gehören mit in denselben Commit; Cloudflare Pages baut www dann neu. `node products/insights/build.mjs --check` und Test W2-14 schlagen fehl, wenn www einen älteren Stand zeigt als `/insights/`. Es gibt dafür keinen eigenen Zeitplan und keinen eigenen Workflow.
 
 Bewegung: Wer im Gerät „Bewegung reduzieren“ eingestellt hat, sieht alles ohne Animation; der Film im Kopf bleibt dann als Standbild stehen.
 

@@ -115,7 +115,8 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   for(const [alias,target] of [['legal-notice','impressum'],['privacy-policy','datenschutz']]){
     await mkdir(resolve(output,'policies',alias),{recursive:true});
     const legal=await readFile(resolve(output,target,'index.html'),'utf8');
-    await writeFile(resolve(output,'policies',alias,'index.html'),legal.replaceAll('href="../','href="../../'));
+    // Die Kopie liegt eine Ebene tiefer: Links und Bilder (Logo) entsprechend umschreiben.
+    await writeFile(resolve(output,'policies',alias,'index.html'),legal.replaceAll('href="../','href="../../').replaceAll('src="../','src="../../'));
   }
   await writeFile(resolve(output,'.nojekyll'),'');
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
