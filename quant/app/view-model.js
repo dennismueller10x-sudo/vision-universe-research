@@ -67,26 +67,26 @@
 
   var FACTORS = {
     quality: {
-      name: "Zahlen solide", longName: "Bilanz- & Ergebnisqualität", method: "Quality",
+      name: "Gewinn gedeckt & stabil", longName: "Bilanz- & Ergebnisqualität", method: "Quality",
       question: "Wie belastbar sind Bilanz und ausgewiesene Gewinne?",
       measures: "Eigenkapitalquote, Verschuldung, ob Gewinne durch echten Zahlungsfluss gedeckt sind, und wie stabil die Marge über die Jahre war.",
       notMeasures: "Nicht gemessen wird hier, wie viel ein Unternehmen verdient – das zeigt „Verdient gut“ (Profitabilität).",
       higher: "Höher heißt: solidere Bilanz, Gewinne besser durch Zahlungsfluss gedeckt, stabilere Marge."
     },
     growth: {
-      name: "Wächst", longName: "Wachstum", method: "Growth",
+      name: "Ist gewachsen", longName: "Wachstum", method: "Growth",
       question: "Wächst das Geschäft – und mit Substanz?",
       measures: "Umsatz-, Gewinn- und Cashflow-Wachstum über drei Jahre, das Wachstum der letzten zwölf Monate und ob sich das Tempo verändert.",
       higher: "Höher heißt: schnelleres und breiter getragenes Wachstum."
     },
     momentum: {
-      name: "Kurs läuft", longName: "Kursstärke", method: "Momentum",
+      name: "Kurs lief gut", longName: "Kursstärke", method: "Momentum",
       question: "Wie hat sich der Kurs entwickelt – auch gegenüber dem Markt?",
       measures: "Kursentwicklung über 3, 6 und 12 Monate, der Vorsprung gegenüber dem Markt und der Abstand zum Jahreshoch und zur 200-Tage-Linie.",
       higher: "Höher heißt: stärkerer und breiter getragener Kursverlauf. Das beschreibt die Vergangenheit, keine Prognose."
     },
     value: {
-      name: "Günstig", longName: "Bewertung", method: "Value",
+      name: "Preis im Branchenvergleich", longName: "Bewertung", method: "Value",
       question: "Was bekommt man für den Preis der Aktie?",
       measures: "Gewinn, freier Zahlungsfluss, Umsatz und Eigenkapital im Verhältnis zum Börsenwert.",
       higher: "Höher heißt: günstiger im Verhältnis zu Gewinn, Zahlungsfluss und Substanz."
@@ -104,7 +104,7 @@
       higher: "Höher heißt: Erwartungen werden angehoben."
     },
     risk: {
-      name: "Ruhiger Kurs", longName: "Risiko", method: "Risk",
+      name: "Ruhig für die Branche", longName: "Risiko", method: "Risk",
       question: "Wie stark schwankt der Kurs?",
       measures: "Schwankungsbreite über ein Jahr, Schwankung an Verlusttagen, größter Rückgang im Jahr und Marktsensitivität (Beta).",
       higher: "Höher heißt: ruhigerer Kurs, also weniger Risiko."

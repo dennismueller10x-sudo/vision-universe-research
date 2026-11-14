@@ -246,18 +246,18 @@
         {
           "id": "quality",
           "internal": "quality / qualityScore",
-          "userLabel": "Zahlen solide",
+          "userLabel": "Gewinn gedeckt & stabil",
           "question": "Wie belastbar sind Bilanz und ausgewiesene Gewinne?",
           "beginner": "Wie solide das Unternehmen finanziert ist, ob seine Gewinne durch echten Zahlungsfluss gedeckt sind und wie stabil die Marge war. Wie viel es verdient, misst die Profitabilität.",
           "professionalLabel": "Quality (quantV2.factorEvidence.quality)",
-          "tooltip": "Bilanz, Verschuldung, Stabilität der Erträge — im Vergleich zu anderen Unternehmen.",
+          "tooltip": "Ob der Gewinn durch echten Geldzufluss gedeckt ist, wie gleichmäßig die Marge war und wie viel Eigenkapital da ist — nicht, wie viel verdient wird. Verglichen vor allem mit der eigenen Branche.",
           "negative": "Bilanz oder Gewinnqualität sind schwächer als bei den meisten anderen.",
           "unavailable": "Zur Bilanz- und Ergebnisqualität liegen nicht genug geprüfte Geschäftszahlen vor."
         },
         {
           "id": "growth",
           "internal": "growth / growthScore",
-          "userLabel": "Wächst",
+          "userLabel": "Ist gewachsen",
           "question": "Wächst das Geschäft?",
           "beginner": "Ob Umsatz, Gewinn und Cashflow zulegen — und ob das Tempo zunimmt oder nachlässt.",
           "professionalLabel": "Growth (quantV2.factorEvidence.growth)",
@@ -268,22 +268,22 @@
         {
           "id": "momentum",
           "internal": "momentum / momentumScore (quant-v2.1.0, Kursbasis)",
-          "userLabel": "Kurs läuft",
+          "userLabel": "Kurs lief gut",
           "question": "Läuft der Kurs besser als der Rest?",
           "beginner": "Wie sich der Kurs zuletzt entwickelt hat — auch im Vergleich zum Gesamtmarkt. Dividenden zählen hier nicht mit; die stehen bei der Anlegerrendite.",
           "professionalLabel": "Momentum (quantV2.factorEvidence.momentum)",
           "tooltip": "Kursentwicklung über mehrere Zeiträume und der Abstand zum Jahreshoch. Gemessen wird die Kursbewegung selbst, ohne Ausschüttungen.",
-          "negative": "Der Kurs läuft schwächer als bei den meisten anderen.",
+          "negative": "Der Kurs lief schwächer als bei den meisten anderen.",
           "unavailable": "Zur Kursstärke reicht die Kurshistorie nicht aus."
         },
         {
           "id": "value",
           "internal": "value / valueScore",
-          "userLabel": "Günstig",
+          "userLabel": "Preis im Branchenvergleich",
           "question": "Ist der Preis im Verhältnis zum Geschäft hoch oder niedrig?",
           "beginner": "Was du für das bezahlst, was das Unternehmen tatsächlich verdient und umsetzt.",
           "professionalLabel": "Value (quantV2.factorEvidence.value)",
-          "tooltip": "Gewinn, Cashflow und Umsatz im Verhältnis zum Börsenwert. Günstig heißt nicht gut.",
+          "tooltip": "Gewinn, freies Geld und Eigenkapital je Euro Börsenwert, verglichen vor allem mit der eigenen Branche. Ein hoher Wert heißt nicht unterbewertet.",
           "negative": "Gemessen am Geschäft ist dieser Titel teurer als die meisten anderen.",
           "unavailable": "Zur Bewertung fehlen Börsenwert oder Geschäftszahlen."
         },
@@ -312,11 +312,11 @@
         {
           "id": "risk",
           "internal": "risk / riskScore",
-          "userLabel": "Ruhiger Kurs",
+          "userLabel": "Ruhig für die Branche",
           "question": "Wie ruhig oder wie wild läuft dieser Titel?",
           "beginner": "Wie stark der Kurs schwankt und wie tief er in schlechten Phasen gefallen ist.",
           "professionalLabel": "Risk (quantV2.factorEvidence.risk)",
-          "tooltip": "Ein hoher Wert bedeutet weniger Schwankung als bei anderen, nicht mehr.",
+          "tooltip": "Wie stark der Kurs im letzten Jahr schwankte und fiel, verglichen vor allem mit Aktien derselben Branche. Ein Chipwert kann hier hoch stehen und trotzdem stärker schwanken als der Gesamtmarkt.",
           "negative": "Dieser Titel schwankt stärker als die meisten anderen.",
           "unavailable": "Zum Risiko reicht die Kurshistorie nicht aus."
         }

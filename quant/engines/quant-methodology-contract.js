@@ -22,9 +22,10 @@
        SPLIT_ADJUSTED_PRICE (Owner-Entscheidung, Option C); die alte
        Bedeutung laeuft unter quant-v2.0.0 weiter und nicht hier. Seit
        2026-09-26 fuehrt der Vertrag eigene Branchenvorlagen fuer Banken,
-       Versicherungstraeger und REITs - quant-v2.2.0. */
-    if (!config || config.methodologyVersion !== "quant-v2.2.0" ||
-        config.modelProfileId !== "quant-v2.2.0-full-7f") errors.push("VERSION");
+       Versicherungstraeger und REITs - quant-v2.2.0. Seit 2026-11-13 zaehlt der
+       Marktvorsprung nicht mehr doppelt in Momentum - quant-v2.3.0. */
+    if (!config || config.methodologyVersion !== "quant-v2.3.0" ||
+        config.modelProfileId !== "quant-v2.3.0-full-7f") errors.push("VERSION");
     if (JSON.stringify(config && config.factorOrder) !== JSON.stringify(FACTORS)) errors.push("FACTOR_ORDER");
     var sum = 0, componentOwners = Object.create(null);
     FACTORS.forEach(function (id) {

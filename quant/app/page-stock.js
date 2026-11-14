@@ -67,7 +67,7 @@
   var TONE_GLYPH = { good: "▲", neutral: "◆", bad: "▼", unknown: "–" };
   function glyphPill(pill, tone) { pill.prepend(el("i", { class: "qx-glyph", "aria-hidden": "true", text: TONE_GLYPH[tone] || "–" })); return pill; }
   /* Redesign 2027 (Q07): jede Eigenschaft als Alltagsfrage, Fachname und Rang darunter. */
-  var ASK = { growth: "Wächst die Firma?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs?", momentum: "Läuft der Kurs gut?", value: "Ist sie günstig?", quality: "Sind die Zahlen solide?", revisions: "Heben Analysten Schätzungen an?" };
+  var ASK = { growth: "Ist die Firma gewachsen?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs für die Branche?", momentum: "Lief der Kurs gut?", value: "Wie ist der Preis im Branchenvergleich?", quality: "Ist der Gewinn gedeckt und stabil?", revisions: "Heben Analysten Schätzungen an?" };
   function rankText(f) {
     if (f.state !== "AVAILABLE" || typeof f.position !== "number") return f.name;
     var p = Math.round(f.position);
@@ -194,7 +194,7 @@
     return vm.factors.filter(function (f) { return pick.indexOf(f) >= 0; });
   }
   /* Redesign 2027 (Q07): Kacheln mit Alltagswort statt Fachname. */
-  var KEY_SHORT = { profitability: "Verdient gut", risk: "Kurs ruhig", quality: "Zahlen solide", growth: "Wächst", momentum: "Kurs läuft", value: "Günstig", revisions: "Schätzungen" };
+  var KEY_SHORT = { profitability: "Verdient gut", risk: "Ruhig für die Branche", quality: "Gewinn gedeckt & stabil", growth: "Ist gewachsen", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", revisions: "Schätzungen" };
   function capitalWord(w) { return w ? w.charAt(0).toUpperCase() + w.slice(1) : w; }
   /* Profil groß (VUUI.profileFull): „Das Profil von {Name}“, Rang-Hinweis, Legende der Stufen. */
   function profileCard(vm, ticker, displayName) {
@@ -205,7 +205,7 @@
     var card = el("div", { class: "vu-box qv3-profile" });
     card.innerHTML = '<div class="qv3-profile-h"><h2 class="vu-sm">Das Profil von ' + U.esc(String(name).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "")) + '</h2><span class="vu-xs vu-mu"><b>0–100' + (total ? " · Rang unter " + total.toLocaleString("de-DE") : "") + "</b></span></div>" +
       U.profileFull(VM.profileValues(vm.factors), { why: why }) +
-      '<div class="qv3-profile-help">' + U.help("Jede Zahl ordnet die Aktie unter den bewerteten US-Aktien ein: 0 bis 100, 50 ist die Mitte. Eine Gesamtnote gibt es bewusst nicht.") + "</div>";
+      '<div class="qv3-profile-help">' + U.help("Jede Zahl vergleicht vor allem mit Firmen derselben Branche (70 %) und dem Gesamtmarkt (30 %). 0 bis 100, höher heißt besser als die Vergleichsfirmen. Eine Gesamtnote gibt es bewusst nicht.") + "</div>";
     return card;
   }
   function keyTiles(vm) {
@@ -838,11 +838,12 @@
   }
 
   /* ------------------------------------------------ Konzept Quant 2026-11 (QX05): drei Sätze, Kapitel, ähnliches Profil */
-  var STRONG_SAY = { profitability: "Verdient besser als {p} % aller US-Aktien", growth: "Wächst stärker als {p} % aller US-Aktien", quality: "Hat solidere Zahlen als {p} % aller US-Aktien",
-    momentum: "Der Kurs läuft besser als bei {p} % aller US-Aktien", value: "Ist günstiger als {p} % aller US-Aktien", risk: "Hat einen ruhigeren Kurs als {p} % aller US-Aktien" };
-  var WEAK_SAY = { profitability: "Verdient weniger als die meisten", growth: "Wächst langsamer als die meisten", quality: "Die Zahlen sind weniger solide", momentum: "Der Kurs läuft schwächer als bei den meisten",
-    value: "Ist eher teuer bewertet", risk: "Der Kurs schwankt stärker als bei den meisten" };
-  var LOWER = { profitability: "verdient gut", growth: "wächst stark", quality: "hat solide Zahlen", momentum: "der Kurs läuft", value: "ist günstig", risk: "hat einen ruhigen Kurs" };
+  /* Plausibilitätsprüfung 13.11.2026: Die Werte mischen Branche (70 %) und Gesamtmarkt (30 %); kein Satz behauptet einen Rang unter allen US-Aktien. */
+  var STRONG_SAY = { profitability: "Verdient besser als die meisten vergleichbaren Firmen", growth: "Ist stärker gewachsen als die meisten vergleichbaren Firmen", quality: "Gewinn ist besser gedeckt und stabiler als bei den meisten vergleichbaren Firmen",
+    momentum: "Der Kurs lief besser als bei den meisten vergleichbaren Firmen", value: "Preis ist niedriger als bei den meisten vergleichbaren Firmen", risk: "Der Kurs ist ruhiger als bei den meisten vergleichbaren Firmen" };
+  var WEAK_SAY = { profitability: "Verdient weniger als die meisten vergleichbaren Firmen", growth: "Ist langsamer gewachsen als die meisten vergleichbaren Firmen", quality: "Gewinn ist weniger gedeckt oder weniger stabil", momentum: "Der Kurs lief schwächer als bei den meisten vergleichbaren Firmen",
+    value: "Preis ist höher als bei den meisten vergleichbaren Firmen", risk: "Der Kurs schwankt stärker als bei den meisten vergleichbaren Firmen" };
+  var LOWER = { profitability: "verdient gut", growth: "ist stark gewachsen", quality: "hat einen gedeckten, stabilen Gewinn", momentum: "der Kurs lief gut", value: "hat einen niedrigen Preis im Branchenvergleich", risk: "hat einen für die Branche ruhigen Kurs" };
   function stageKind(v) { return v >= 75 ? "strong" : v >= 45 ? "mid" : "weak"; }
   /* Quant in drei Sätzen: Stärke, Schwäche, Zuletzt – aus den vorhandenen Faktor- und Veränderungsdaten, keine neue Rechnung. */
   function storyCard(vm) {

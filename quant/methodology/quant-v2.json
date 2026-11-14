@@ -1,6 +1,6 @@
 {
- "methodologyVersion": "quant-v2.2.0",
- "modelProfileId": "quant-v2.2.0-full-7f",
+ "methodologyVersion": "quant-v2.3.0",
+ "modelProfileId": "quant-v2.3.0-full-7f",
  "modelVersion": "2.0.0",
  "label": "VU Quant Score 2.0 · Full 7F",
  "status": "SPECIFIED_NOT_ACTIVE",
@@ -160,42 +160,35 @@
    "components": [
     {
      "id": "priceReturn12m1m",
-     "weight": 0.3,
+     "weight": 0.375,
      "input": "split-adjusted price return T-252 to T-21",
      "window": "252/21 sessions",
      "direction": "higher"
     },
     {
      "id": "priceReturn6m",
-     "weight": 0.2,
+     "weight": 0.25,
      "input": "split-adjusted price return",
      "window": "126 sessions",
      "direction": "higher"
     },
     {
      "id": "priceReturn3m",
-     "weight": 0.1,
+     "weight": 0.125,
      "input": "split-adjusted price return",
      "window": "63 sessions",
      "direction": "higher"
     },
     {
-     "id": "relativeStrength12m1m",
-     "weight": 0.2,
-     "input": "security 12-1 split-adjusted price return minus certified broad benchmark 12-1 split-adjusted price return",
-     "window": "252/21 sessions",
-     "direction": "higher"
-    },
-    {
      "id": "distanceTo52wHigh",
-     "weight": 0.1,
+     "weight": 0.125,
      "input": "(high252-current split-adjusted close)/high252",
      "window": "252 sessions",
      "direction": "lower"
     },
     {
      "id": "distanceToSma200",
-     "weight": 0.1,
+     "weight": 0.125,
      "input": "(split-adjusted close-SMA200)/SMA200",
      "window": "200 sessions",
      "direction": "higher"
@@ -236,7 +229,7 @@
     {
      "id": "earningsYield",
      "weight": 0.25,
-     "input": "TTM net income/market capitalization",
+     "input": "TTM operating income after tax (operating income x (1 - effective TTM tax rate))/market capitalization; TTM net income/market capitalization where operating income or the tax rate is missing",
      "window": "latest close and PIT-safe TTM",
      "direction": "higher"
     },
@@ -787,6 +780,30 @@
   "broad component coverage and cross-sectional validation"
  ],
  "versionHistory": [
+  {
+   "version": "quant-v2.3.0",
+   "date": "2026-11-13",
+   "change": "Momentum without relativeStrength12m1m; the remaining five component weights are scaled proportionally to 1 (0.375 / 0.25 / 0.125 / 0.125 / 0.125). Value: earningsYield from TTM operating income after tax instead of net income (net income only where operating income or the tax rate is missing).",
+   "why": "Plausibility review 13.11.2026 (finding b5): the market lead (security 12-1 return minus the same benchmark 12-1 return for every title) ranked identically to priceReturn12m1m for 5,106 of 5,591 titles, so 50 % of the momentum weight carried one signal. The value stays in the factor row for Discovery.",
+   "measuredImpact": {
+    "universe": 5597,
+    "spearmanRankCorrelation": 0.991114,
+    "medianAbsoluteChange": 1.51,
+    "p90AbsoluteChange": 4.9,
+    "titlesMoving5Points": 532,
+    "titlesMoving10Points": 12,
+    "basis": "build-factor-evidence.mjs before/after on the same inputs, 2026-11-13"
+   },
+   "measuredImpactValue": {
+    "universe": 2675,
+    "medianAbsoluteChange": 0.11,
+    "p90AbsoluteChange": 2.1,
+    "titlesMoving5Points": 87,
+    "titlesMoving10Points": 23,
+    "examples": "NVDA 62.7 -> 61.5, AMZN 37.7 -> 30.6, KO 55.3 -> 53.4",
+    "basis": "earningsYield change alone, measured on top of the momentum change, same inputs, 2026-11-13"
+   }
+  },
   {
    "version": "quant-v2.2.0",
    "date": "2026-09-26",
