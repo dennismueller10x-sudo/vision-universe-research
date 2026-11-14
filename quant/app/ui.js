@@ -275,8 +275,79 @@
   function add(host) { host.append.apply(host, kids(arguments)); return host; }
   function say(t) { if (t == null) return t; var s = String(t); SAY.forEach(function (r) { s = s.replace(r[0], r[1]); }); return s; }
 
+  /* ----------------------------------------------------------------- App-Konzept 2 (Owner-Freigabe 14.11.2026)
+     Nur Darstellung, fuer jede Quant-Ansicht gleich:
+     1. Seitenkopf: die Ueberschrift bleibt, Dachzeile (mit Stichtag) und Erklaersatz stehen einen Tipp entfernt im Fenster
+        (Knopf rechts neben der Ueberschrift; traegt den Stichtag, wo die Dachzeile einen nennt). Fuer Screenreader und
+        Pruefungen bleiben beide Zeilen im Dokument (app.css blendet sie nur optisch aus).
+     2. „Weiter“-Karte am Seitenende: der naechste sinnvolle Ort, je Ansicht fest hinterlegt (kein Rechenwert).
+     Ausgeloest, sobald app.js die Ansicht als fertig meldet (main[data-ready=true]); app.js bleibt unberuehrt. */
+  var NEXT = {
+    home: function () { return { title: "Supertrader: Methoden der Profis", href: "/supertrader/" }; },
+    radar: function () { return { title: "Forschung: Hatte eine Meldung früher einen Vorteil?", href: routes.backtest() }; },
+    backtest: function () { return { title: "Methodik: Wie kommt Quant zu seinem Urteil?", href: routes.method() }; },
+    methodik: function () { return { title: "Screener: Welche Aktien suchst du?", href: routes.screener() }; },
+    screener: function () { return { title: "Anlagestile: Welche Art von Firma suchst du?", href: routes.strategies() }; },
+    strategien: function (p) { return p[1] ? { title: "Alle Anlagestile", sub: "Welche Art von Firma suchst du?", href: routes.strategies() } : { title: "Aktien: Welche Aktie willst du verstehen?", href: routes.stocks() }; },
+    aktien: function () { return { title: "Meldungen: Was ist heute neu?", href: routes.meldungen() }; },
+    rangliste: function () { return { title: "Screener: Welche Aktien suchst du?", href: routes.screener() }; },
+    aktie: function (p) { return /^[A-Z0-9.-]{1,12}$/.test(p[1] || "") ? { title: "Vergleich: " + p[1] + " neben einer anderen Aktie", href: routes.compare([p[1]]) } : null; },
+    zahlen: function (p) { return /^[A-Z0-9.-]{1,12}$/.test(p[1] || "") ? { title: "Profil von " + p[1], sub: "Die Eigenschaften der Aktie auf einen Blick", href: routes.stock(p[1]) } : null; },
+    vergleich: function () { return { title: "Screener: Welche Aktien suchst du?", href: routes.screener() }; },
+    chartlagen: function () { return { title: "Meldungen: Welche Setups sind neu?", href: routes.meldungen("filter=setups") }; }
+  };
+  function hashParts() {
+    var h = String(global.location.hash || "").replace(/^#\/?/, "").split("?")[0];
+    return h.split("/").filter(Boolean).map(function (x) { try { return decodeURIComponent(x); } catch (e) { return x; } }).map(function (x, i) { return i === 1 ? x.toUpperCase() : x; });
+  }
+  function nextCard(main) {
+    var U = global.VUUI, host = main.parentNode && main.parentNode.querySelector(":scope > .qk2-next");
+    if (host) host.remove();
+    if (!U || !U.next || global.QX_HOST) return;
+    var make = NEXT[main.dataset.view], parts = hashParts();
+    if (main.dataset.view === "strategien") parts[1] = parts[1] ? String(parts[1]).toLowerCase() : parts[1];
+    var o = make ? make(parts) : null;
+    if (!o || main.querySelector(".v2-message")) return;
+    host = el("nav", { class: "qk2-next vu-ui", "aria-label": "Weiter" });
+    host.innerHTML = U.next(o);
+    main.after(host);
+  }
+  function introDate(text) { var m = /(?:Stand|Schluss)\s+(?:[A-Za-zÄÖÜäöü]{2}\.\s*)?(\d{2}\.\d{2}\.)/.exec(text || ""); return m ? m[1] : null; }
+  function compactIntro(main) {
+    var U = global.VUUI, h1 = main.querySelector("header.qv3-intro h1, h1.vu-lt");
+    if (!U || !U.popup || !h1 || main.dataset.view === "home" || main.querySelector(".qk2-info")) return;
+    var head = h1.closest("header.qv3-intro"), next = h1.nextElementSibling;
+    var tagOf = function () { return head ? head.querySelector(".vu-ltag") : null; };
+    var leadOf = function () { return head ? head.querySelector(".vu-lead") : next && next.matches && next.matches("p.vu-lead") ? next : null; };
+    var tag = tagOf(), lead = leadOf(), date = introDate(tag && tag.textContent);
+    if (!(lead && lead.textContent.trim()) && !date) return;
+    var b = el("button", { type: "button", class: "qk2-info" + (date ? " has-date" : ""), "aria-haspopup": "dialog", "aria-label": "Kurz erklärt" + (date ? ", Stand " + date : "") });
+    b.innerHTML = date ? '<i aria-hidden="true"></i><span>' + U.esc(date) + "</span>" : '<span aria-hidden="true">i</span>';
+    b.addEventListener("click", function () {
+      var t = tagOf(), l = leadOf();
+      U.popup({ id: "qk2-info-sheet", title: h1.textContent.trim(), body: (t && t.textContent.trim() ? '<p class="vu-ltag" style="margin:0">' + U.esc(t.textContent.trim()) + "</p>" : "") + (l && l.textContent.trim() ? '<p class="vu-lead" style="margin:8px 0 0">' + U.esc(l.textContent.trim()) + "</p>" : "") });
+    });
+    if (lead && !head) lead.classList.add("qk2-off");
+    h1.before(b);
+  }
+  function finishPage(main) { try { compactIntro(main); nextCard(main); } catch (e) { if (global.console) console.error("Quant Rahmen", e); } }
+  /** Vorher/Nachher aus dem veroeffentlichten Meldungstext („… von „stark“ (79) auf „sehr stark“ (83)“). Ohne beide Zahlen: null. */
+  function deltaOf(text) { var m = /\((\d{1,3})\)[^()]*\((\d{1,3})\)/.exec(String(text || "")); return m && +m[1] <= 100 && +m[2] <= 100 ? { from: +m[1], to: +m[2] } : null; }
+  if (global.MutationObserver && !global.QX_HOST) (function watch() {
+    var root = document.getElementById("qx-app");
+    if (!root) return;
+    new global.MutationObserver(function (list) {
+      list.forEach(function (m) {
+        var t = m.target;
+        if (t.id !== "qx-main" || m.attributeName !== "data-ready") return;
+        if (t.dataset.ready === "true") finishPage(t);
+        else { var old = root.querySelector(":scope > .qk2-next"); if (old) old.remove(); }
+      });
+    }).observe(root, { subtree: true, attributes: true, attributeFilter: ["data-ready"] });
+  })();
+
   global.QX = {
-    say: say, fill: fill, add: add,
+    say: say, fill: fill, add: add, deltaOf: deltaOf, finishPage: finishPage,
     icon: icon, routes: routes, link: link, btn: btn, actions: actions, section: section, world: world, card: card, notice: notice,
     pill: pill, more: more, loading: loading, dateDe: dateDe, money: money, signed: signed, companyName: companyName, logo: logo,
     stockRow: stockRow, poster: poster, rail: rail, tickerChips: tickerChips, stat: stat, stats: stats, toneClass: toneClass,

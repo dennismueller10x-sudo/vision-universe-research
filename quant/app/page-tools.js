@@ -236,7 +236,11 @@
       sentences.push(nm(selected[a]) + " " + lead.map(function (k, i) { var d = prof[a][k] - prof[b][k]; return (i ? "" : "") + CMP_BETTER[k].replace("{d}", d >= 20 && i === 0 ? "deutlich " : "") + " (" + Math.round(prof[a][k]) + " zu " + Math.round(prof[b][k]) + ")"; }).join(" und ") + ".");
     });
     var missing = selected.filter(function (t, i) { return !prof[i]; });
-    h += '<div class="vu-box qk-cmp-box">' + rows + "</div>" +
+    /* App-Konzept 2 (Owner-Freigabe 14.11.2026): bei zwei Aktien beide Profile zusätzlich als Netz, in den Farben der Chips
+       und Balken (erste Aktie Linie, zweite Aktie Fläche); dieselben Profilwerte wie in den Zeilen darunter. */
+    var net = U.radar && selected.length === 2 && prof[0] && prof[1] ? '<div class="qk2-cmp-net">' + U.radar(K.map(function (k) { return prof[1][k]; }), { compare: K.map(function (k) { return prof[0][k]; }), size: 176,
+      names: K.map(function (k) { return U.PROFILE.label[k]; }), label: "Profil von " + selected[1] + " als Fläche, " + selected[0] + " als Linie; Werte von " + selected[1] }) + "</div>" : "";
+    h += '<div class="vu-box qk-cmp-box">' + net + rows + "</div>" +
       (sentences.length ? '<div class="qk-story qk-cmp-s"><span class="vu-ltag">In zwei Sätzen</span>' + sentences.map(function (t) { return "<p>" + U.esc(t) + "</p>"; }).join("") + "</div>" : "") +
       (missing.length ? '<div class="qk-help">' + U.help("Für " + missing.join(", ") + " ist kein Profil veröffentlicht; die Zeilen bleiben leer statt geschätzt.") + "</div>" : "");
     page.innerHTML = h;

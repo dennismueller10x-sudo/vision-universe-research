@@ -329,7 +329,7 @@ html body #fu-main .fu-mc-mode button.fu-seg-b{min-height:38px}
 .vu-heat__r{display:grid;grid-template-columns:var(--vu-heat-l,minmax(64px,96px)) repeat(var(--vu-heat-n,6),minmax(0,1fr));gap:4px;align-items:center}
 .vu-heat__h{display:grid;place-items:center;min-width:0}
 .vu-heat__h .vu-logo-tile{width:100%;max-width:34px;height:auto;aspect-ratio:1;border-radius:10px}
-.vu-heat__l{font-size:11.5px;font-weight:700;line-height:1.15;min-width:0;hyphens:auto;overflow-wrap:break-word}
+.vu-heat__l{font-size:11.5px;font-weight:700;line-height:1.15;min-width:0;-webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word}
 .vu-heat__c{display:grid;place-items:center;height:34px;border-radius:8px;background:var(--vu-hair);background:color-mix(in srgb,var(--vu-lime) calc(var(--a,0) * 1%),var(--vu-hair));color:var(--vu-ink);font-size:12px;font-weight:800;text-decoration:none;min-width:0!important;min-height:0!important}
 .vu-heat__c.is-hi{color:#000}
 .vu-heat__c.is-na{color:var(--vu-mute);background:transparent;box-shadow:inset 0 0 0 1px var(--vu-hair)}
@@ -342,12 +342,12 @@ html body #fu-main .fu-mc-mode button.fu-seg-b{min-height:38px}
 .vu-radar__b{fill:none;stroke:var(--vu-ink);stroke-width:2;stroke-linejoin:round;stroke-dasharray:4 3}
 .vu-radar text{fill:var(--vu-mute);font:700 9.5px/1 var(--vu-font)}
 /* „Weiter“-Karte */
-.vu-next{display:flex;align-items:center;gap:12px;margin-top:28px;padding:18px;border-radius:22px;background:#151515;color:#fff;text-decoration:none;box-shadow:0 0 0 1px rgb(200 245 49/.5),0 0 28px rgb(200 245 49/.18);transition:transform .12s;-webkit-tap-highlight-color:transparent}
+a.vu-next{display:flex;align-items:center;gap:12px;margin-top:28px;padding:18px;border-radius:22px;background:#151515;color:#fff;text-decoration:none;box-shadow:0 0 0 1px rgb(200 245 49/.5),0 0 28px rgb(200 245 49/.18);transition:transform .12s;-webkit-tap-highlight-color:transparent}
 :root:not([data-theme=dark]) .vu-next{background:#0e1013}
 .vu-next:active{transform:scale(.97)}
 .vu-next__t{flex:1;min-width:0}
 .vu-next__t>*{display:block}
 .vu-next .vu-ltag{color:var(--vu-lime)}
-.vu-next b{margin-top:4px;font-size:22px;font-weight:800;letter-spacing:-.025em;line-height:1.1;text-wrap:balance}
+a.vu-next b{margin-top:4px;color:#fff;font-size:22px;font-weight:800;letter-spacing:-.025em;line-height:1.1;text-wrap:balance}
 .vu-next__t>span:last-child:not(.vu-ltag){margin-top:4px;font-size:13px;color:#9b9b9b}
 .vu-next>i{flex:none;width:46px;height:46px;border-radius:50%;background:var(--vu-lime);color:#000;display:grid;place-items:center}

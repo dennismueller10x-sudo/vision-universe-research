@@ -21,7 +21,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-ui-1.3.0";
+  var VERSION = "vu-ui-1.4.0";
   var SPRITE = "/assets/product-icons.svg#";
   var THEME_SPRITE = "/assets/theme-icons.svg#";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
