@@ -132,15 +132,18 @@ function signalFixture(t, gapped) {
   const src = join(ROOT, "quant/data/market/discover-series-long");
   const files = readdirSync(src).filter((f) => f.endsWith(".json") && f !== "index.json").sort();
   const picked = files.filter((f) => JSON.parse(readFileSync(join(src, f), "utf8")).points.length > 1500).slice(0, 60);
+  const spy = JSON.parse(read("quant/data/market/multi-asset/series/SPY.json")).points;
+  /* Titelreihen enden am letzten SPY-Tag (SPY und lange Reihen ziehen zu verschiedenen Zeiten nach; Daten loesen Alarm aus). */
+  const spyLast = spy.at(-1)[0];
   picked.forEach((f, k) => {
     const j = JSON.parse(readFileSync(join(src, f), "utf8"));
-    copyFileSync(join(src, f), join(long, f));
+    j.points = j.points.filter((p) => p[0] <= spyLast);
+    writeFileSync(join(long, f), JSON.stringify(j));
     /* Quartalsausschuettungen; `gapped` Titel: unserem Feld fehlt eine, die
        Anbieterspalte kennt sie (fehlende Dividende -> fail closed). */
     const bars = barsWithDividends(j.points, j.securityId, k < gapped ? { oursMisses: new Set([3]) } : {});
     writeFileSync(join(work, j.securityId + ".json"), JSON.stringify({ ticker: j.ticker, securityId: j.securityId, provider: "tiingo", bars }));
   });
-  const spy = JSON.parse(read("quant/data/market/multi-asset/series/SPY.json")).points;
   writeFileSync(join(work, "ref_SPY.json"), JSON.stringify({ ticker: "SPY", securityId: "ref_SPY", provider: "tiingo",
     bars: barsWithDividends(spy, "ref_SPY", { yield: 0.004 }) }));
   const out = join(dir, "signal.json");
