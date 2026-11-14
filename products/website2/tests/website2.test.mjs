@@ -106,16 +106,50 @@ test("W2-6 · Wortwahl (docs/legal/WORTWAHL.md); Pflichtsatz und Rechtslinks nur
   }
 });
 
-test("W2-7 · echte Links zwischen den Seiten: Menü, Leiste unten und Startseite führen zu jeder Unterseite", () => {
+test("W2-7 · echte Links zwischen den Seiten: Menü oben und Startseite führen zu jeder Unterseite; keine Leiste unten, ein Aufruf am unteren Rand", () => {
+  for (const [name, pages] of TARGETS()) for (const [p, html] of pages) {
+    const where = `${name} ${p}`;
+    const head = html.match(/<header[\s\S]*<\/header>/)[0], panel = head.match(/<nav class="mg" id="site-panel"[\s\S]*<\/nav>/)[0];
+    const to = (t) => (name === "www" ? `href="${"../".repeat(p.split("/").length - 1) || "./"}${t}"` : `href="${BASE}${t}"`);
+    /* Menü oben (Owner 14.11.2026): am Rechner die Einträge in der Leiste, auf dem Telefon der Knopf „Menü“ rechts neben der Wortmarke. */
+    const bar = head.match(/<div class="bar">[\s\S]*?<\/div>\n<div class="mega"/)[0];
+    for (const t of ["", "app/", "news/", "magazin/", "faq/"]) assert.ok(bar.includes(to(t)), `${where}: Leiste oben ohne ${t || "Start"}`);
+    assert.match(bar, /<a class="brand"[^>]*>VISION UNIVERSE®<\/a>[\s\S]*<a class="mbtn" href="#mega" data-mega aria-controls="mega" aria-expanded="false"><svg class="mo"[^>]*aria-hidden="true">[\s\S]*?<svg class="mx"[^>]*aria-hidden="true">[\s\S]*?<span>Menü<\/span><\/a><\/div>/, `${where}: Wortmarke links, Knopf „Menü“ rechts`);
+    assert.ok(head.includes('<div class="mega" id="mega">'), `${where}: Ziel des Knopfes (ohne JavaScript öffnet #mega die Fläche)`);
+    /* Menüfläche: Seiten, Aufruf, alle Module, Rechtliches, Social, Schließen. */
+    const mnav = panel.match(/<div class="mnav">[\s\S]*?<\/div>/)[0];
+    assert.deepEqual([...mnav.matchAll(/<a class="ml[^"]*" href="[^"]*"[^>]*>([^<]+) </g)].map((m) => m[1]), ["Start", "Die App", "News", "Aktienmagazin", "Fragen"], `${where}: Seiten in der Menüfläche`);
+    for (const t of ["", "app/", "news/", "magazin/", "faq/"]) assert.ok(mnav.includes(to(t)), `${where}: Menüfläche ohne ${t || "Start"}`);
+    assert.match(mnav, /<a class="cta l" href="[^"]+">Zum Start benachrichtigen /, `${where}: Aufruf in der Menüfläche`);
+    for (const m of MODULES) assert.ok(panel.includes(to(`module/${m.id}/`)), `${where}: Menü ohne ${m.id}`);
+    assert.ok(panel.includes('<h2 class="mhd">Module</h2>') && panel.includes('<div class="mlegal">') && (panel.match(/class="sc"/g) || []).length === SOCIAL.length, `${where}: Module, Rechtliches und Social in der Menüfläche`);
+    assert.match(panel, /<a class="mclose" href="#inhalt" data-mega-close>Menü schließen<\/a><\/nav>$/, `${where}: „Menü schließen“`);
+    /* Die Leiste unten (Start · Module · App · News · Fragen) ist entfernt. An ihrer Stelle genau ein Aufruf am unteren Rand. */
+    assert.ok(!/class="dock"|Schnellzugriff/.test(html), `${where}: Leiste unten`);
+    const stick = [...html.matchAll(/<div class="stk" data-stick><a class="cta" href="([^"]+)">Zum Start benachrichtigen <svg[^>]*aria-hidden="true">[\s\S]*?<\/svg><\/a><\/div>/g)];
+    assert.equal(stick.length, 1, `${where}: genau ein Aufruf am unteren Rand`);
+    assert.ok(html.indexOf('<div class="stk"') > html.indexOf("</footer>"), `${where}: Aufruf steht nach dem Fuß`);
+    const hero = html.match(/<main[\s\S]*<\/main>/)[0].match(/<a class="cta[^"]*" href="([^"]+)">Zum Start benachrichtigen /);
+    assert.equal(stick[0][1], hero[1], `${where}: Aufruf unten führt zum selben Ziel wie der Knopf der Seite`);
+    assert.ok(!/href="#"|javascript:|data-to=/.test(html), `${where}: Schein-Link`);
+    assert.equal((html.match(/aria-current="page"/g) || []).length <= 2, true, where);
+  }
+  /* Verhalten in site.css und site.js: Knopf, Fläche und Aufruf nur auf dem Telefon; ohne JavaScript bleibt der Aufruf unsichtbar. */
+  assert.match(CSS, /\.mbtn,\.mnav,\.mhd,\.mclose,\.stk\{display:none\}/, "am Rechner weder Menüknopf noch Aufruf am unteren Rand");
+  const phone = CSS.slice(CSS.indexOf("@media(max-width:900px){"));
+  assert.match(phone, /\.mbtn\{display:inline-flex;[^}]*min-width:46px;min-height:46px/, "Menüknopf mindestens 46 × 46 px");
+  assert.match(phone, /\.stk\{display:block;position:fixed;[^}]*bottom:0;[^}]*env\(safe-area-inset-bottom,0px\)[^}]*visibility:hidden;transform:translateY\(100%\)/, "Aufruf unten: fest, mit Sicherheitsabstand, zunächst unsichtbar");
+  assert.match(phone, /\.stk\.on\{visibility:visible;transform:none/);
+  assert.match(phone, /html\.mopen\{overflow:hidden\}/, "Seite hinter dem offenen Menü scrollt nicht");
+  assert.match(CSS, /\.mega\.on,\.mega:target\{display:flex/, "ohne JavaScript öffnet #mega die Fläche");
+  assert.match(CSS, /@media\(max-width:559px\)\{\.bar \.cta\.s\{display:none\}\}/, "schmal: „Benachrichtigen“ weicht dem Menüknopf");
+  assert.match(CSS, /@media\(max-width:900px\) and \(min-width:560px\)\{\.stk\{display:none\}\}/, "wo „Benachrichtigen“ in der Leiste steht, gibt es keinen zweiten Aufruf unten");
+  assert.ok(!/\.dock/.test(CSS) && !/dock/.test(JS), "Reste der Leiste unten");
+  for (const need of [/setAttribute\('aria-expanded', String\(open\)\)/, /e\.key === 'Escape'/, /e\.key === 'Tab' && phone\.matches/, /classList\.toggle\('mopen', open\)/, /stick\.classList\.toggle\('on', passed && !inView\.length && !megaOpen\(\)\)/, /qa\('#newsletter,#dabei,\.foot'\)/]) assert.match(JS, need, `site.js: ${need}`);
   for (const [p, html] of SITE) {
-    const head = html.match(/<header[\s\S]*<\/header>/)[0], dock = html.match(/<nav class="dock"[\s\S]*?<\/nav>/)[0];
-    for (const t of ["", "app/", "news/", "magazin/", "faq/"]) assert.ok(head.includes(`href="${BASE}${t}"`), `${p}: Kopf ohne ${t || "Start"}`);
-    for (const m of MODULES) assert.ok(head.includes(`href="${BASE}module/${m.id}/"`), `${p}: Menü ohne ${m.id}`);
-    for (const t of ["", "app/#bereiche", "app/", "news/", "faq/"]) assert.ok(dock.includes(`href="${BASE}${t}"`), `${p}: Leiste ohne ${t || "Start"}`);
-    assert.ok(!/href="#"|javascript:|data-to=/.test(html), `${p}: Schein-Link`);
+    const head = html.match(/<header[\s\S]*<\/header>/)[0];
     /* „Module“ öffnet mit JavaScript das Menü und führt ohne JavaScript zur Übersicht der Bereiche. */
     assert.match(head, /<a class="nl[^"]*" href="\/website2\/app\/#bereiche" data-mega aria-controls="mega" aria-expanded="false">/, p);
-    assert.equal((html.match(/aria-current="page"/g) || []).length <= 2, true, p);
   }
   const home = SITE.get("index.html"), app = SITE.get("app/index.html");
   for (const m of MODULES) for (const [n, page] of [["Start", home], ["App", app]]) assert.ok(page.match(/<main[\s\S]*<\/main>/)[0].includes(`href="${BASE}module/${m.id}/"`), `${n} ohne Kachel ${m.id}`);
@@ -195,7 +229,7 @@ test("W2-11 · Farben: nur Schwarz, Weiß, Grau und das eine Neongrün, kein Dun
   /* Neongrün ist Fläche hinter schwarzer Schrift; als Schriftfarbe nur auf Schwarz. */
   assert.match(CSS, /\.hl\{background:var\(--lime\);color:var\(--ink\)/);
   assert.match(CSS, /\.eb\{[^}]*color:var\(--ink\)\}/);
-  for (const rule of CSS.matchAll(/([^{}]+)\{[^{}]*[;{]color:var\(--lime\)[^{}]*\}/g)) assert.match(rule[1], /\.c-ink|\.blk|\.mq|\.fc\.b|\.stats|\.dock|\.icb|\.sc:hover/, `Neongrün als Schriftfarbe nur auf Schwarz: ${rule[1]}`);
+  for (const rule of CSS.matchAll(/([^{}]+)\{[^{}]*[;{]color:var\(--lime\)[^{}]*\}/g)) assert.match(rule[1], /\.c-ink|\.blk|\.mq|\.fc\.b|\.stats|\.icb|\.sc:hover/, `Neongrün als Schriftfarbe nur auf Schwarz: ${rule[1]}`);
 });
 
 test("W2-12 · Instagram und TikTok: schlichte Links mit Namen im Fuß und im Menü jeder Seite, keine Einbettung", () => {

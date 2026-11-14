@@ -117,7 +117,8 @@ const stroke = (s, w, body) => `<svg width="${s}" height="${s}" viewBox="0 0 24 
 const I = {
   chev: stroke(14, 2.8, '<path d="M9 5l7 7-7 7"/>'),
   down: stroke(12, 3, '<path d="M5 9l7 7 7-7"/>'),
-  home: stroke(20, 2.2, '<path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/>'),
+  menu: stroke(20, 2.6, '<path d="M4 7h16M4 12h16M4 17h16"/>').replace("<svg ", '<svg class="mo" '),
+  close: stroke(20, 2.6, '<path d="M6 6l12 12M18 6L6 18"/>').replace("<svg ", '<svg class="mx" '),
   spark: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg>',
   play: '<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l14 8-14 8z"/></svg>',
   instagram: stroke(24, 2, '<rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor" stroke="none"/>'),
@@ -221,12 +222,15 @@ ${badges}</div></div></section>`;
   function header(active) {
     const on = (k) => (active === k ? ' aria-current="page"' : "");
     const cls = (k) => (active === k ? " on" : "");
+    /* Menü oben (Owner 14.11.2026): am Rechner die Einträge in der Leiste, auf dem Telefon Wortmarke links und rechts der
+       Knopf „Menü“. Er öffnet die Menüfläche über die ganze Höhe (Seiten, Aufruf, Module, Rechtliches, Social). Ohne
+       JavaScript öffnet der Sprung zu #mega dieselbe Fläche (CSS :target), „Menü schließen“ führt zurück zum Inhalt. */
     return `<a class="skip" href="#inhalt">Zum Inhalt</a>
 <header class="nav" id="nav"><div class="bar"><a class="brand" href="${page_("")}"${on("start")} aria-label="Vision Universe Startseite">VISION UNIVERSE®</a>
 <nav class="nls" aria-label="Hauptmenü"><a class="nl${cls("module")}" href="${page_("app/")}#bereiche" data-mega aria-controls="mega" aria-expanded="false">Module ${I.down}</a>${NAV.map(([k, n, h]) => `<a class="nl${cls(k)}" href="${page_(h)}"${on(k)}>${n}</a>`).join("")}</nav>
-<div class="sp"></div>${soon}${cta("s", "Benachrichtigen")}</div>
-<div class="mega" id="mega"><nav class="mg" id="site-panel" aria-label="Module und Rechtliches"><div>${megaCol(["Entdecken"])}</div><div>${megaCol(["Verstehen"])}</div><div>${megaCol(["Methoden"])}</div><div>${megaCol(["Vorsorgen", "Lesen"])}<a class="mi app" href="${page_("app/")}"><div class="icb">${ic("layers", 26)}</div><div><b>Die App</b><span>Alle Bereiche auf einen Blick</span></div></a></div>
-<div class="mlegal"><h2>Rechtliches &amp; Infos</h2><p>${esc(L.text)}</p><ul>${legalLinks.map(([n, h]) => `<li><a href="${h}">${n}</a></li>`).join("")}</ul>${social()}</div></nav></div></header>`;
+<div class="sp"></div>${soon}${cta("s", "Benachrichtigen")}<a class="mbtn" href="#mega" data-mega aria-controls="mega" aria-expanded="false">${I.menu}${I.close}<span>Menü</span></a></div>
+<div class="mega" id="mega"><nav class="mg" id="site-panel" aria-label="Menü: Seiten, Module und Rechtliches"><div class="mnav">${[["start", "Start", ""], ...NAV].map(([k, n, h]) => `<a class="ml${cls(k)}" href="${page_(h)}"${on(k)}>${n} ${I.chev}</a>`).join("")}${cta("l")}</div><h2 class="mhd">Module</h2><div>${megaCol(["Entdecken"])}</div><div>${megaCol(["Verstehen"])}</div><div>${megaCol(["Methoden"])}</div><div>${megaCol(["Vorsorgen", "Lesen"])}<a class="mi app" href="${page_("app/")}"><div class="icb">${ic("layers", 26)}</div><div><b>Die App</b><span>Alle Bereiche auf einen Blick</span></div></a></div>
+<div class="mlegal"><h2>Rechtliches &amp; Infos</h2><p>${esc(L.text)}</p><ul>${legalLinks.map(([n, h]) => `<li><a href="${h}">${n}</a></li>`).join("")}</ul>${social()}</div><a class="mclose" href="#inhalt" data-mega-close>Menü schließen</a></nav></div></header>`;
   }
 
   /* Fuß wie auf der heutigen Startseite von www: Impressum, Datenschutz, Kontaktformular, E-Mail; dazu Instagram und TikTok. */
@@ -242,13 +246,12 @@ ${cols.map(([t, l]) => `<div><h2>${t}</h2><ul>${l.map(([n, h]) => `<li><a href="
 <div class="legal"><span>© 2026 Vision Universe®</span><nav class="lnav" aria-label="Rechtliches und Kontakt"><a href="${www("impressum/")}">Impressum</a><a href="${www("datenschutz/")}">Datenschutz</a><a href="${KONTAKT}">Kontaktformular</a><a href="${EMAIL}">E-Mail</a></nav></div></div></footer>`;
   }
 
-  /* Leiste unten auf dem iPhone. „Module“ öffnet das Menü (site.js); ohne JavaScript führt der Link zur Übersicht der Bereiche. */
-  function dock(active, current) {
-    const item = (k, href, icon, label, extra = "") => `<a href="${href}"${active === k ? ' class="on"' : ""}${current === k && k !== "module" ? ' aria-current="page"' : ""}${extra}>${icon}${label}</a>`;
-    return `<nav class="dock" aria-label="Schnellzugriff">${item("start", page_(""), I.home, "Start")}${item("module", `${page_("app/")}#bereiche`, ic("layers", 20), "Module", ' data-mega aria-controls="mega" aria-expanded="false"')}${item("app", page_("app/"), ic("chartbild", 20), "App")}${item("news", page_("news/"), ic("insights", 20), "News")}${item("faq", page_("faq/"), '<b aria-hidden="true">?</b>', "Fragen")}</nav>`;
-  }
+  /* Statt der Leiste unten: ein einziger Aufruf am unteren Rand des Telefons. site.js zeigt ihn erst, wenn der Knopf im
+     Kopf der Seite aus dem Fenster gescrollt ist, und nimmt ihn weg, solange derselbe Aufruf, die Anmeldung oder der Fuß
+     zu sehen sind. Ohne JavaScript bleibt er unsichtbar. */
+  const stick = `<div class="stk" data-stick><a class="cta" href="${c.newsletter}">${CTA} ${I.chev}</a></div>`;
 
-  function page({ path, title, desc, active, dockActive, body, main = "", close = final, form = false, preload = "" }) {
+  function page({ path, title, desc, active, body, main = "", close = final, form = false, preload = "" }) {
     const url = `${c.origin}${path}`;
     /* www: gleiche Kopfangaben wie die bisherige Startseite (robots wie dort; landing/scripts/build.mjs stellt bei
        Produktionsfreigabe auf index um und setzt Content-Security-Policy und Versionsmarken). */
@@ -307,7 +310,7 @@ ${body}
 ${close}
 </main>
 ${footer()}
-${dock(dockActive || active, active)}
+${stick}
 </body>
 </html>
 `;
@@ -407,7 +410,7 @@ ${report ? `<section style="padding:0 0 40px" id="report-blick"><div class="w">$
     const body = `<div class="w ptop40"><div class="mh c-ink"><div class="split"><div><span class="pill l"${live("data-mag-kopf")}>Aktienmagazin · Nr. ${heft.nr} · ${heft.datum}</span><h1 class="H1 big"${live("data-mag-h1")}>${heftTitel()}</h1><p class="mtext">Das Heft zur Börsenwoche. <span${live("data-mag-seiten")}>${heft.seiten}</span> Seiten, online lesen oder als PDF.</p><div class="fl g12 wr" style="margin-top:28px"><a class="cta l" href="${lesen}"${live("data-mag-link")}>Heft lesen ${I.chev}</a><a class="cta g" href="${heft.pdf}"${live("data-mag-pdf")}>PDF</a></div><div class="stats">${[[`<span${live("data-mag-seiten")}>${heft.seiten}</span>`, "Seiten"], ["1 ×", "pro Woche"], ["0 €", "zum Start"]].map(([a, b]) => `<div><div>${a}</div><b>${b}</b></div>`).join("")}</div></div><div class="cov x">${cover(`Titelseite Aktienmagazin Nr. ${heft.nr}`, false)}</div></div></div></div>
 <section style="padding:70px 0 40px"><div class="w">${eb("Blick ins Heft")}<h2 class="H2" style="margin:10px 0 8px">Blättern.</h2></div>${seiten(heft, "heft", "Aktienmagazin", "Seiten aus dem Heft, seitlich blättern", "data-mag-seite")}</section>
 <section class="sec t20"><div class="w"><div class="bento c3"><a class="t c-lime rv" href="${page_("news/")}"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Artikel</h3><p class="q k">Jeden Werktag neu.</p></a><div class="t c-alt rv"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Nächste Ausgabe</h3><p class="q">Erscheint wöchentlich.</p></div><a class="t c-soft rv" href="${page_("news/")}#reports"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Aktienreports</h3><p class="q">Ausführliche Analysen einzelner Firmen.</p></a></div></div></section>`;
-    return page({ path: "magazin/", title: "Aktienmagazin · Vision Universe", desc: "Das Aktienmagazin von Vision Universe: das Heft zur Börsenwoche, online lesen oder als PDF.", active: "magazin", dockActive: "news", body, main: c.www ? "" : ` data-mag="${HEFT.nr}"` });
+    return page({ path: "magazin/", title: "Aktienmagazin · Vision Universe", desc: "Das Aktienmagazin von Vision Universe: das Heft zur Börsenwoche, online lesen oder als PDF.", active: "magazin", body, main: c.www ? "" : ` data-mag="${HEFT.nr}"` });
   }
 
   /* ---------- Fragen ---------- */
