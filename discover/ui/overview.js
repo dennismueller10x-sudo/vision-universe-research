@@ -293,24 +293,45 @@
     if (dist >= -0.05) return ["strong", "Nah am Hoch"];
     return ["mid", "Dazwischen"];
   }
-  /** Die Story in drei Sätzen: Geschäft, Kurs, Bewertung – je ein Satz und ein Urteil (ersetzt „In einem Satz“ und „Auf einen Blick“). */
+  /* Grafiken der Story-Kacheln (App-Konzept 2): nur Werte, die die Aktiendatei trägt. */
+  function grafikUmsatz(d) {
+    var r = revenue(d).slice(-10), mx = Math.max.apply(null, r.map(function (x) { return x.v; }).concat([1]));
+    return r.length < 2 ? "" : '<span class="dv3-sg dv3-sg--bars" aria-hidden="true">' + r.map(function (x) { return '<i style="height:' + Math.max(4, Math.round(Math.max(0, x.v) / mx * 100)) + '%"></i>'; }).join("") + "</span>";
+  }
+  function grafikSpanne(d) {
+    var j = d.jahresspanne;
+    if (!j || !isNum(j.position)) return "";
+    var p = Math.round(Math.max(0, Math.min(1, j.position)) * 100);
+    return '<span class="dv3-sg dv3-sg--range" aria-hidden="true"><span class="dv3-sg-bar"><i style="width:' + p + '%"></i><b style="left:' + p + '%"></b></span><span class="dv3-sg-l"><span>Tief</span><span>Hoch</span></span></span>';
+  }
+  function grafikKgv(d) {
+    var v = d.fundamentals && d.fundamentals.valuation, pe = v && v.pe && v.pe.value, med = v && v.relative && v.relative.peMedian;
+    if (!isNum(pe)) return "";
+    var mx = Math.max(pe, isNum(med) ? med : 0) || 1, row = function (l, x, cls) { return '<span class="dv3-sg-row' + cls + '"><span>' + esc(l) + '</span><i><i style="width:' + Math.max(3, Math.round(x / mx * 100)) + '%"></i></i><b>' + num(x, 1) + "</b></span>"; };
+    return '<span class="dv3-sg dv3-sg--pe" aria-hidden="true">' + row(d.symbol, pe, "") + (isNum(med) ? row("Markt", med, " is-markt") : "") + "</span>";
+  }
+  /** Die Story in drei Sätzen: Geschäft, Kurs, Bewertung – je ein Urteil, eine Grafik und ein Satz (ersetzt „In einem Satz“ und
+      „Auf einen Blick“). App-Konzept 2 (Owner 14.11.2026): drei Kacheln in einer Schiene statt einer Textliste; ein Tipp
+      öffnet das passende Kapitel darunter. */
   function story(d) {
     var f = d.fundamentals || {}, rows = [], m = d.metrics || {};
     var st = f.story && f.story.available && (f.story.statements || [])[0];
     var growth = f.health && (f.health.categories || []).filter(function (c) { return c.id === "growth"; })[0];
-    if (st && st.text) rows.push(["fundamental", "Geschäft", st.text, growth ? [gradeKind(growth.grade), growth.grade] : null]);
+    if (st && st.text) rows.push(["fundamental", "Geschäft", st.text, growth ? [gradeKind(growth.grade), growth.grade] : null, "geschaeft", grafikUmsatz(d)]);
     var j = d.jahresspanne, k = hochUrteil(m.distanceTo52wHigh);
-    if (j && j.zumHoch && k) rows.push(["technical", "Kurs", "Der Kurs liegt " + j.zumHoch.replace(/^[−-]/, "") + " unter dem Hoch der letzten 12 Monate.", k]);
-    else if (d.plain && d.plain.story) rows.push(["technical", "Kurs", d.plain.story + ".", kursUrteil(m.return1M)]);
+    if (j && j.zumHoch && k) rows.push(["technical", "Kurs", "Der Kurs liegt " + j.zumHoch.replace(/^[−-]/, "") + " unter dem Hoch der letzten 12 Monate.", k, "kurs", grafikSpanne(d)]);
+    else if (d.plain && d.plain.story) rows.push(["technical", "Kurs", d.plain.story + ".", kursUrteil(m.return1M), "kurs", grafikSpanne(d)]);
     var v = f.valuation, b = bewertungsUrteil(v);
     if (b && v.pe && isNum(v.pe.value)) {
       var med = v.relative.peMedian, txt = b[1] === "Wie der Markt" ? "etwa wie der Markt" : b[0] === "weak" ? "über dem Markt" : "unter dem Markt";
-      rows.push(["quant", "Bewertung", "KGV " + num(v.pe.value, 1) + ", " + txt + (isNum(med) ? " (" + num(med, 1) + ")." : "."), b]);
+      rows.push(["quant", "Bewertung", "KGV " + num(v.pe.value, 1) + ", " + txt + (isNum(med) ? " (" + num(med, 1) + ")." : "."), b, "teuer", grafikKgv(d)]);
     }
     if (!rows.length) return "";
-    return '<section class="dv3-story" aria-label="Die Story in drei Sätzen"><p class="vu-ltag">Die Story in drei Sätzen</p>' + rows.map(function (r) {
-      return '<div class="dv3-story-r">' + U().hud(r[0], 34, 10) + '<div><span class="vu-ltag">' + esc(r[1]) + "</span><p>" + esc(r[2]) + "</p></div>" + (r[3] ? U().verdict(r[3][0], r[3][1]) : "") + "</div>";
-    }).join("") + "</section>";
+    return '<section class="dv3-story" aria-label="Die Story in drei Sätzen">' + U().sect("Die Story in drei Sätzen") + U().rail(rows.map(function (r) {
+      return U().tap('<span class="dv3-st-h">' + U().hud(r[0], 26, 8) + '<span class="vu-ltag">' + esc(r[1]) + "</span></span>" +
+        (r[3] ? '<b class="dv3-st-w" data-verdict="' + esc(r[3][0]) + '">' + esc(r[3][1]) + "</b>" : "") + r[5] + '<span class="dv3-st-p">' + esc(r[2]) + "</span>",
+        { cls: "dv3-story-r", tone: r[3] && r[3][0] === "strong" ? "lime" : "", attrs: { "data-ch": r[4] } });
+    }), { label: "Die Story in drei Sätzen", width: 244 }) + "</section>";
   }
   /* Bildchen der Kapitel (schwarz, 76 × 52) */
   function thumbSpanne(d) { var p = d.jahresspanne && isNum(d.jahresspanne.position) ? Math.round(Math.max(0, Math.min(1, d.jahresspanne.position)) * 100) : 50; return '<span class="dv3-thumb"><span class="dv3-thumb-range"><i style="width:' + p + '%"></i><b style="left:' + p + '%"></b></span></span>'; }
@@ -340,7 +361,8 @@
   function kapitel(d, universe) {
     var ks = kapitelListe(d, universe), open = openSet();
     if (!ks.length) return "";
-    return '<section class="dv3-sec dv3-kapitel" data-sec="kapitel">' + U().sect("Kapitel").replace("</div>", '<button type="button" class="dv3-alle" aria-label="Alle Kapitel aufklappen">Alle</button></div>') + '<p class="dv3-sub">' + ks.length + " Kapitel, je eins aufklappen. Zusammen das, was die Seite bisher untereinander zeigte.</p>" +
+    /* App-Konzept 2: der erklärende Satz steht hinter dem „?“ (ein Tipp), nicht mehr als Zeile unter der Überschrift. */
+    return '<section class="dv3-sec dv3-kapitel" data-sec="kapitel">' + U().sect("Kapitel").replace("</h2>", " <span class=\"dv3-kn\">" + ks.length + "</span></h2>" + U().q(ks.length + " Kapitel, je eins aufklappen. Zusammen das, was die Seite bisher untereinander zeigte.", "Kapitel")).replace("</div>", '<button type="button" class="dv3-alle" aria-label="Alle Kapitel aufklappen">Alle</button></div>') +
       '<div class="dv3-eps">' + ks.map(function (k, i) {
         return '<details class="dv3-ep" data-ch="' + k[0] + '"' + (open.indexOf(k[0]) >= 0 ? " open" : "") + '><summary><b class="dv3-ep-n">' + (i + 1) + "</b>" + k[3] + '<span class="dv3-ep-t"><b>' + esc(k[1]) + "</b>" + (k[2] ? "<span>" + esc(k[2]) + "</span>" : "") + '</span><span class="dv3-ep-c" aria-hidden="true">' + U().glyph("next", 15) + U().glyph("x", 15) + '</span></summary><div class="dv3-ep-body">' + k[4] + "</div></details>";
       }).join("") + "</div></section>";
@@ -350,7 +372,8 @@
     var m = sortedMemberships(d);
     if (!m.length) return "";
     return '<section class="dv3-sec" id="dv3-reihen" data-sec="reihen">' + U().sect((d.companyName || d.symbol) + " steht in " + m.length + (m.length === 1 ? " Reihe" : " Reihen"), { href: "#/reihen" }) + '<p class="dv3-sub">Platz nach der Regel der Reihe. Tipp öffnet die Reihe.</p><div class="dv3-rail" role="list">' + m.map(function (x) {
-      return '<a class="dv3-rk2" role="listitem" href="' + esc(rowLink(universe, x.rowId)) + '"><span class="vu-num">' + x.rank + ".</span><b>" + esc(rowName(x.rowId, x.title)) + '</b><span class="vu-xs vu-mu">von ' + num(x.of, 0) + "</span></a>";
+      /* Balken: Lage des Platzes in der Reihe (Platz 1 = voll), aus rank und of der Aktiendatei. */
+      return '<a class="dv3-rk2" role="listitem" href="' + esc(rowLink(universe, x.rowId)) + '"><span class="vu-num">' + x.rank + ".</span><b>" + esc(rowName(x.rowId, x.title)) + '</b><span class="vu-xs vu-mu">von ' + num(x.of, 0) + '</span><span class="dv3-rk2-bar" aria-hidden="true"><i style="width:' + Math.max(4, Math.round((1 - (x.rank - 1) / Math.max(1, x.of)) * 100)) + '%"></i></span></a>';
     }).join("") + "</div></section>";
   }
   /** Schienen „Mehr wie …“, „Gleiches Thema“, „Niedrigere Bewertung im Sektor“ (aus discoverNext), Poster wie auf der Startseite. */
@@ -447,6 +470,13 @@
       });
     }
     bindKapitel(box);
+    box.addEventListener("click", function (e) {
+      var t = e.target.closest && e.target.closest(".dv3-story-r[data-ch]"), ep = t && box.querySelector('.dv3-ep[data-ch="' + t.getAttribute("data-ch") + '"]');
+      if (!ep) return;
+      ep.open = true;
+      var still = global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (ep.scrollIntoView) ep.scrollIntoView({ block: "start", behavior: still ? "auto" : "smooth" });
+    });
     /* Poster wie auf der Startseite, mit Herz (Merken), wenn die App einen Merkzettel mitgibt (ctx.watch). */
     fillPosters(box, d, universe, Object.assign({}, opts || {}, { universeId: universe }));
     bindAlle(box);

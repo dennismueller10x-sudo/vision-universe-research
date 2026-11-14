@@ -381,3 +381,38 @@ body.dv2 .dx-search .dx-search-hint:empty{display:none}
 .dv3-alerts{padding:4px 14px}
 .dv3-alert{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:44px;border-top:1px solid var(--vu-hair)}
 .dv3-alert:first-child{border-top:0}.dv3-alert>b{font-size:13.5px}
+
+/* =====================================================================
+   App-Konzept 2 (Owner-Freigabe 14.11.2026): Bildschirm nutzen, Grafik vor Text.
+   ===================================================================== */
+/* Die Zeile „Discover · <Bereich>“ wiederholt Kopf und Reiter: sie bleibt für Vorleser, kostet aber keine Zeile mehr. */
+.dv3-welten>.vu-ltag:first-child,.dv3-strategien>.vu-ltag:first-child,.dv3>.vu-ltag:first-child:has(+.vu-lt){position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.dv3-welten>.vu-lt,.dv3-strategien>.vu-lt,.dv3>.vu-ltag:first-child+.vu-lt{margin-top:8px}
+/* Zurück als runder Knopf neben dem Titel statt als eigene Zeile (Thema, Märkte). */
+.dv3-thema>.dv3-back,.dv3-maerkte>.dv3-back{float:left;position:relative;width:36px;height:36px;min-height:0;margin:6px 10px 0 0;border-radius:50%;background:var(--vu-card);color:var(--vu-ink);justify-content:center;gap:0;font-size:0}
+.dv3-thema>.dv3-back::after,.dv3-maerkte>.dv3-back::after{content:"";position:absolute;inset:-4px}
+.dv3-thema>.dv3-themehead{display:flow-root;margin-top:6px}
+/* Märkte: Titel und Stand in einer Zeile. */
+.dv3-maerkte{display:flex;flex-wrap:wrap;align-items:center;column-gap:10px}
+.dv3-maerkte>*{flex:0 0 100%;min-width:0}
+.dv3-maerkte>.dv3-back{flex:none;float:none;margin:6px 0 0}
+.dv3.dv3-maerkte>.vu-lt{flex:none;margin:6px 0 0}
+.dv3.dv3-maerkte>.vu-lead{flex:1 1 0;margin:8px 0 0;text-align:right;font-size:11.5px;line-height:1.3;color:var(--vu-mute)}
+.dv3-maerkte>.dv3-baro{margin-top:12px}
+/* Thema: Anteil im Plus als Ring in der Kachel. */
+.dv3-share{position:relative}
+.dv3-share>.vu-ring{position:absolute;right:8px;top:8px}
+/* Strategien: Anteil der Treffer am Universum als Balken. */
+.dv3-srow__t .dv3-sbar{display:block;height:4px;margin-top:6px;border-radius:9px;background:var(--vu-hair);overflow:hidden}
+.dv3-srow__t .dv3-sbar i{display:block;height:100%;border-radius:9px;background:var(--vu-ink)}
+:root[data-theme=dark] .dv3-srow__t .dv3-sbar i{background:var(--vu-lime)}
+.dv3 a.vu-next{color:#fff}
+/* Daten & Quellen: volle Breite, je Abschnitt eine Karte (Text unverändert). */
+html body.dv2 .v2-main>.dx-daten{max-width:640px;margin-inline:auto;padding:0}
+@media(max-width:760px){html body.dv2 .v2-main:has(>.dx-daten){padding:6px 16px 120px}}
+.dx-daten .dx-back{display:inline-flex;align-items:center;min-height:36px;color:var(--vu-mute);font-weight:700;text-decoration:none}
+.dx-daten h1{margin:4px 0 6px;font:900 28px/1.05 var(--vu-font);letter-spacing:-.04em}
+.dx-daten .dx-daten-lead{margin-bottom:14px;font-size:14px;line-height:1.45}
+.dx-daten .dx-daten-abschnitt{max-width:none;margin-top:10px;padding:16px;border-top:0;border-radius:22px;background:var(--vu-card)}
+.dx-daten .dx-daten-abschnitt h2{font:800 17px/1.2 var(--vu-font);letter-spacing:-.02em}
+.dx-daten .dx-daten-abschnitt p{font-size:13.5px;line-height:1.5}

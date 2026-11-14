@@ -87,6 +87,10 @@ test("OV9 ein Jahreswert: alle 12-Monats-Angaben der Titelseite sind derselbe Do
   assert.match(css, /dx-chart-hero-preis>\.down\{background:#c4281c;color:#fff\}/, "Minus rot (#c4281c, Owner 11.11.2026)");
   assert.match(css, /dx-chart-hero-preis>\.up\{background:#c8f531/, "Plus neongruen");
   assert.match(css, /max-width:480px\)\{[^}]*dx-chart-hero--c04\{flex-wrap:wrap/, "Kopf bricht bei schmaler Breite um");
+  /* App-Konzept 2 (Owner 14.11.2026): mit subgrid kosten Schluss, Stale-Hinweis und Euro keine eigene Zeile mehr – Kurs links,
+     Pille rechts daneben, darunter klein Schluss und Euro (lange Hinweise brechen dort um, kein Überlappen). */
+  assert.match(css, /@supports \(grid-template-columns:subgrid\)\{\s*body\.dv2 \.dv2-stock \.dx-chart-hero\.dx-chart-hero--c04\{display:grid;grid-template-columns:auto auto minmax\(0,1fr\)/, "Kursblock als Raster");
+  assert.match(css, /dx-chart-hero--c04 \.dx-chart-hero-meta\{grid-column:2\/-1;grid-row:2;[^}]*flex-wrap:wrap/, "Schluss und Euro unter der Pille");
 });
 
 test("OV10 „Weiter in …“ nur mit Herkunft aus einer Reihe (Adress-Zusatz ?reihe=)", () => {
@@ -138,4 +142,26 @@ test("OV13 Überblick startet mit 1J wie im Mockup (auch bei offener Börse); 1T
   const intraday = detail.slice(detail.indexOf("function zeichneIntraday"), detail.indexOf("function staleSatzAusZustand") > 0 ? detail.indexOf("function staleSatzAusZustand") : undefined);
   assert.match(intraday, /dx-chart-hero dx-chart-hero--c04", "data-range": "1D"/);
   assert.match(intraday, /umgerechnet = \{ snap: snapNativ, waehrung: "USD" \}/, "1T im Überblick in Dollar");
+});
+
+test("OV14 App-Konzept 2: Story als drei Kacheln mit Grafik aus den Werten der Aktiendatei; ein Tipp öffnet das Kapitel", () => {
+  const html = OV.story(NVDA);
+  assert.match(html, /class="vu-rail" role="list"/, "Schiene aus dem gemeinsamen Baukasten (VUUI.rail)");
+  assert.deepEqual((html.match(/data-ch="[a-z]+"/g) || []), ['data-ch="geschaeft"', 'data-ch="kurs"', 'data-ch="teuer"'], "jede Kachel nennt ihr Kapitel");
+  /* Geschäft: Umsatz je Geschäftsjahr als Säulen, die höchste ist 100 % (keine erfundenen Werte) */
+  const rev = NVDA.fundamentals.journey.tracks.revenue.filter((x) => Number.isFinite(x.v)).slice(-10), mx = Math.max(...rev.map((x) => x.v));
+  const bars = (html.match(/dv3-sg--bars"[^>]*>(.*?)<\/span>/)[1].match(/height:(\d+)%/g) || []).map((x) => Number(x.match(/\d+/)[0]));
+  assert.deepEqual(bars, rev.map((x) => Math.max(4, Math.round(Math.max(0, x.v) / mx * 100))));
+  /* Kurs: Lage in der Jahresspanne (jahresspanne.position) */
+  const p = Math.round(Math.max(0, Math.min(1, NVDA.jahresspanne.position)) * 100);
+  assert.match(html, new RegExp('dv3-sg-bar"><i style="width:' + p + '%"></i><b style="left:' + p + '%"></b>'));
+  /* Bewertung: KGV und Marktmedian wie im Kapitel „Ist … teuer?“ */
+  const v = NVDA.fundamentals.valuation, de = (x) => x.toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  assert.match(html, new RegExp("dv3-sg--pe.*<b>" + de(v.pe.value) + "</b>.*<b>" + de(v.relative.peMedian) + "</b>"));
+  const src = readFileSync(new URL("../ui/overview.js", import.meta.url), "utf8");
+  assert.match(src, /closest\("\.dv3-story-r\[data-ch\]"\)[\s\S]{0,200}ep\.open = true/, "Tipp klappt das Kapitel auf (bleibt ein natives <details>, Entscheidung 6)");
+  assert.match(src, /U\(\)\.q\(ks\.length \+ " Kapitel, je eins aufklappen\. Zusammen das, was die Seite bisher untereinander zeigte\."/, "der Satz zu den Kapiteln bleibt erreichbar (hinter „?“)");
+  const css = readFileSync(new URL("../ui/overview.css", import.meta.url), "utf8");
+  assert.match(css, /\.dx-range-chart\{height:var\(--dv3-chart-h,184px\)\}/, "Charthöhe wächst mit dem Bildschirm, nie unter 184 px");
+  assert.match(css, /max-width:760px\)\{\s*body\.dv2 \.dv2-stock \.dx-chart:has\(\.dx-chart-hero--c04\) \.dx-range-chart-wrap,[^{]*\{margin-inline:-16px\}/, "Chart bis an den Bildschirmrand");
 });

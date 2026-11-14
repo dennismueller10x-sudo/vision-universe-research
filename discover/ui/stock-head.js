@@ -57,7 +57,9 @@
       ctx: ctx, current: "discover", name: detail.companyName || detail.symbol,
       /* Redesign 2027 (C04): Kürzel · was die Firma macht; ohne Beschreibung Börse und Sektor. */
       exchange: detail.was && global.VUDiscover && global.VUDiscover.Overview ? detail.was : [detail.exchange, detail.sector].filter(Boolean).join(" · "),
-      logo: img && img.getAttribute("src") ? img.getAttribute("src") : false,
+      /* App-Konzept 2: in die quadratische Kachel des Kopfs gehört das quadratische Logo, nicht der breite Schriftzug
+         (zu jeder breiten Fassung files/wide/<T>.png gibt es files/<T>.png; discover/ui/logos.js). */
+      logo: img && img.getAttribute("src") ? img.getAttribute("src").replace("/logos/files/wide/", "/logos/files/") : false,
       back: back ? { href: back.getAttribute("href"), label: "Aktien entdecken" } : null,
       actions: node("div", "dv2-head-actions")
     });

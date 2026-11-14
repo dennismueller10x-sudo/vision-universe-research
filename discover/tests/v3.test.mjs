@@ -381,3 +381,15 @@ test("Fallen Angels: Mitglied in Qualität + Wachstum, Profitables Wachstum oder
   assert.equal(cfg.explain.length, 2);
   assert.deepEqual(Reihen.genreOfRow("fallen-angels"), ["kursbewegung", "unternehmen"]);
 });
+
+test("App-Konzept 2: Grafiken zeigen nur gelieferte Werte (Anteil im Plus, Trefferanteil, Marktstufe); „Weiter“ aus dem Baukasten; nichts aus dem Prototyp erfunden", () => {
+  const v3 = readFileSync(join(root, "discover", "ui", "v3.js"), "utf8"), rh = readFileSync(join(root, "discover", "ui", "reihen.js"), "utf8");
+  assert.match(v3, /U\(\)\.ring\(up \/ has \* 100/, "Ring = Firmen im Plus / Firmen mit Wert");
+  assert.match(v3, /shareBar\(r\.matched, ctx\.universeSize\)/, "Balken = Treffer / Aktien des Universums");
+  assert.match(rh, /avail\[r\] \/ ctx\.universeSize \* 100/, "Alle Reihen: derselbe Anteil");
+  assert.match(rh, /i === env\.level \? ' class="on"' : ''/, "Markt heute: die gelieferte Stufe ist das gefüllte Feld der Skala");
+  assert.match(v3, /U\(\)\.next\(\{ title: 'Strategien'/);
+  assert.match(v3, /U\(\)\.next\(\{ title: 'Aktien swipen'/);
+  /* Der Prototyp zeigt Tagesrunde, Serie, Entdecker-Pass, Quiz und Stufen mit Beispielwerten; dafür gibt es keine Daten. */
+  for (const f of ["v3.js", "reihen.js", "overview.js"]) assert.doesNotMatch(readFileSync(join(root, "discover", "ui", f), "utf8"), /Tagesrunde|Entdecker-Pass|Quiz|Abzeichen/, f);
+});
