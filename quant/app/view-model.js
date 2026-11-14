@@ -873,6 +873,7 @@
       factorReason: record ? null : reasonText(src.factors && src.factors.reason),
       factors: factors,
       overall: record ? overall(factors) : null,
+      profileMean: record && record.profileMean && record.profileMean.state === "AVAILABLE" && isNum(record.profileMean.score) ? record.profileMean : null,
       proCon: record ? proCon(factors) : null,
       gaps: record ? gapGroups(factors) : [],
       returns: returnKinds(record),
@@ -882,7 +883,7 @@
       replay: replayView(src.cases, src.brief, src.patterns),
       asOf: record ? { factors: record.asOf, fundamentals: record.fundamentalsAsOf, fundamentalsKnown: record.fundamentalsAvailableAt } : null,
       template: record && record.template ? record.template : null,
-      isNot: "Keine Anlageempfehlung, keine Prognose, kein Kursziel und keine Gesamtnote."
+      isNot: "Keine Anlageempfehlung, keine Prognose, kein Kursziel. Der Gesamtwert ist ein Durchschnitt der Profilwerte und beschreibt nur das Profil."
     };
   }
 

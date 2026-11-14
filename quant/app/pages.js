@@ -1436,7 +1436,8 @@
     var results = el("div", { "aria-live": "polite", class: "qv3-sresults" });
     var field = el("label", { class: "vu-find qv3-search" }); field.innerHTML = U.glyph("search", 18); field.append(input); field.insertAdjacentHTML("beforeend", '<i aria-hidden="true">' + U.glyph("spark", 18) + "</i>");
     page.append(el("header", { class: "qv3-intro" }, [el("p", { class: "vu-ltag", text: "Quant" }), el("h1", { class: "vu-lt", text: "Welche Aktie willst du verstehen?" })]), field,
-      el("div", { class: "vu-chips qv3-known" }, KNOWN_CHIPS.map(function (k) { return el("a", { class: "vu-chip", href: X.routes.stock(k[0]), text: k[1] }); })), results);
+      el("div", { class: "vu-chips qv3-known" }, KNOWN_CHIPS.map(function (k) { return el("a", { class: "vu-chip", href: X.routes.stock(k[0]), text: k[1] }); })),
+      el("p", { class: "qx-small" }, [el("a", { href: "#/aktien/rangliste", text: "Rangliste nach Gesamtwert ansehen →" })]), results);
     var req = 0;
     input.addEventListener("input", async function () {
       var mine = ++req, q = input.value.trim();

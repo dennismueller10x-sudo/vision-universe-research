@@ -393,7 +393,7 @@ test("Die Aktienseite sagt, warum es keine Gesamtnote gibt", () => {
      Frontend-Rebuild: die Stelle, an der die grosse Zahl gesucht wird, ist
      die "Quant-Einordnung" (verdictCard in quant/app/page-stock.js). */
   const karte = abschnitt(stockSrc, "function verdictCard(", "function setupSection(");
-  assert.ok(/Eine Gesamtnote gibt es bewusst nicht|Es gibt bewusst keine Gesamtnote/.test(karte),
+  assert.ok(/Eine (gewichtete )?Gesamtnote gibt es bewusst nicht|Es gibt bewusst keine Gesamtnote/.test(karte),
     "die Absage an die Gesamtnote fehlt auf der Aktienseite");
   assert.ok(/Zielkonflikt/.test(karte), "der Grund muss dabeistehen, nicht nur die Absage");
   /* Das View Model bildet keine Gesamtzahl: die Einordnung ist eine
