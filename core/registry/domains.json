@@ -259,7 +259,7 @@
       "role": "Fünf Quant-Profile als Rechenmodell vorwärts: Bestand mit Aufnahmedatum und -kurs, Protokoll rein/raus ab Live-Start. Kein echtes Geld, keine Empfehlung.",
       "producer": "scripts/quant/portfolio/model-depots.cjs",
       "workflow": "pipeline-weekly.yml (Teil musterdepots)",
-      "schedule": "samstags 07:23 UTC; Umschichtung im ersten Lauf eines Monats",
+      "schedule": "samstags 08:23 UTC, nach dem Vollauf der langen Kursreihen (long-series, samstags 07:40); Umschichtung im ersten Lauf eines Monats",
       "freshness": { "kind": "hours", "warnAfter": 240, "staleAfter": 504 },
       "consumers": ["Quant (/quant/musterdepots/)"]
     },
