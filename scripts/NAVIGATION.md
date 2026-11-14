@@ -22,6 +22,7 @@ Der Rahmen ist auf jeder Seite derselbe und steht vollständig in `assets/site-n
 - **Reiter** (`nav.tabs` im Kopf, unter der Kopfzeile): die Bereiche des Produkts.
   Zuerst die früheren Leistenplätze (`PRODUCTS[].items`), danach die übrigen Einträge der Menügruppe des Produkts (`navigation.entries` im Steckbrief, dieselbe Liste wie „In <Welt>“ im Menü); gleiches Ziel nur einmal (`tabEntries`).
   Ein neuer Reiter entsteht also im Steckbrief `products/<id>/module.json` (danach `node scripts/core/build-modules.mjs`), nicht in `site-navigation.js`.
+  Technical führt so auch „Vorlagen“ und „Lernen“ als Reiter; Lektionen und Fragen (`#/akademie/<id>`, `#/assistent/<id>`) markieren „Lernen“, eine Vorlage (`#/vorlagen/<id>`) „Vorlagen“ (`menuState`), und die frühere Reiterzeile der Assistenten-Seiten in `technical/app.js` entfällt.
 - **Aktiver Reiter** (`tabActive`): die Logik der früheren Leiste (`dock({active})` für genau diese Adresse, sonst `PRODUCTS[].active`). Markiert sie nur den Produktplatz oder nichts, ist der Reiter aktiv, den das Menü als aktuelle Seite markiert.
   `dock({hrefs, badges})` und das abbrechbare Ereignis `vu-dock-navigate {product,id,href}` gelten für die Reiter wie vorher für die Leistenplätze.
 - **Platz im Dokument**: Mit Reitern ist `--vu-navigation-height` um 48 px höher (`html[data-vu-tabs]`). Klebendes und Sprungziele der Produkte rechnen mit `--vu-navigation-height`, nie mit festen 56/64 px.

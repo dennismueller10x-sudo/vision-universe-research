@@ -177,6 +177,10 @@ async function main() {
       await clean("Lernen-Fragen");
       await navigate(page,base + "#/assistent/trendfolge");
       await page.waitForSelector(".tc-hit .tc-ticks", { timeout: 30000 });
+      /* Die frühere Reiterzeile der Seite (Technical · Screener · Vorlagen · Lernen · Muster) steht in der Reiterzeile des Rahmens: dort ist „Lernen“ aktiv, und jedes ihrer Ziele ist ein Reiter. */
+      const strip = await page.evaluate(() => { const links = [...document.querySelector("vu-navigation").shadowRoot.querySelectorAll("nav.tabs a")]; return { old: document.querySelectorAll(".tc-tabs").length, hrefs: links.map((a) => a.getAttribute("href")), current: links.filter((a) => a.getAttribute("aria-current") === "page").map((a) => a.textContent.trim()).join("|") }; });
+      assert(strip.old === 0 && strip.current === "Lernen", "Assistent: Reiterzeile doppelt oder „Lernen“ nicht aktiv: " + JSON.stringify(strip));
+      for (const href of ["/technical/#/", "/technical/#/screener", "/technical/#/screener?reiter=vorlagen", "/technical/#/lernen", "/technical/#/muster"]) assert(strip.hrefs.includes(href), "Ziel der früheren Reiterzeile fehlt im Rahmen: " + href);
       assert(await page.locator(".tc-hit").first().locator(".tc-ticks li").count() === 4, "Checkliste ohne 4 Kriterien");
       assert((await page.locator(".tc-step-n").allTextContents()).join(",") === "1,2,3,4,5,6", "Schritte 1–6 nicht vollstaendig");
       await page.locator(".tc-goal-jumps a", { hasText: "Treffer" }).click();
@@ -390,7 +394,8 @@ async function main() {
       } else {
         assert(m.heads.includes("Technical") && m.heads.includes("Fundamental") && m.tile === "technical", "Technical-Kachel fehlt oder nicht aktiv: " + JSON.stringify(m));
       }
-      assert(m.links.length === 5 && m.links[2] === "/technical/#/chart", "Unterpunkte: " + m.links.join(","));
+      /* App-Konzept 2: „Vorlagen“ und „Lernen“ stehen als Unterpunkte (und damit als Reiter des Rahmens) neben den früheren fünf. */
+      assert(m.links.join(",") === "/technical/#/,/technical/#/screener,/technical/#/chart,/technical/#/screener?reiter=vorlagen,/technical/#/screener/gespeichert,/technical/#/muster,/technical/#/lernen", "Unterpunkte: " + m.links.join(","));
       assert(m.open === "true" && m.current === "Chart Studio", "Chart Studio nicht aktiv: " + JSON.stringify(m));
       await page.keyboard.press("Escape");
       await clean("Menue");

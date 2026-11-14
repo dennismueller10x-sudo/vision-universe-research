@@ -50,7 +50,7 @@
     /* Portfolios (Owner 06.11.2026): alle Musterdepots gesammelt; breite Kachel unter dem 3 x 3-Raster. */
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
     {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Anlagestile','/quant/#/stile','◬'],['Meldungen','/quant/#/meldungen','◉'],['Aktien','/quant/#/aktien','⌁'],['Forschung','/quant/#/forschung','◇'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
-    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤']]},
+    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Vorlagen','/technical/#/screener?reiter=vorlagen','◇'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤'],['Lernen','/technical/#/lernen','✧']]},
     {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus Geschäftsberichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
     {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Treffer','/supertrader/treffer/','◬'],['Forschung','/supertrader/forschung/','▧'],['Quellen','/supertrader/sources/','▤']]},
     {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Gruppen-Käufe','/hedgefonds/#/gruppen-kaeufe','◬']]},
@@ -220,7 +220,11 @@
       if (product.id === 'elliott' && (loc.pathname !== '/elliott/' || hashPart(loc, 0))) href = '/elliott/';
       if (product.id === 'hedgefonds' && hashPart(loc, 0) === 'fonds') href = '/hedgefonds/#/datenbank';
       if (product.id === 'discover' && hashPart(loc, 0) === 's') href = '/discover/#/einzeln/US_REAL';
+      /* Technical: Lektionen und Fragen (#/akademie/<id>, #/assistent/<id>) gehoeren zu „Lernen“, eine Vorlage (#/vorlagen/<id>) zu „Vorlagen“. */
+      if (product.id === 'technical') href = {akademie: '/technical/#/lernen', assistent: '/technical/#/lernen', vorlagen: '/technical/#/screener?reiter=vorlagen'}[hashPart(loc, 0)] || href;
     }
+    /* Technical: der Screener-Reiter „Gespeichert“ hat zwei Adressen (#/screener/gespeichert und ?reiter=gespeichert). */
+    if (product && product.id === 'technical' && hashPart(loc, 0) === 'screener' && new URLSearchParams((loc.hash || '').split('?')[1] || '').get('reiter') === 'gespeichert') href = '/technical/#/screener/gespeichert';
     // Screener omits view=build on its default filtered/pro URLs (app.readURL/buildURL).
     const params = new URLSearchParams(loc.search), explicit = params.get('view');
     const screenerView = ['start','build','results','saved','changes','compare','watchlist'].includes(explicit) ? explicit : (params.getAll('f').some(f=>f.trim()) || params.get('mode') === 'pro' ? 'build' : 'start');

@@ -108,7 +108,7 @@ test('product tabs: former dock places first, then the remaining entries of the 
   const labels = id => Array.from(tabEntries(PRODUCTS.find(p => p.id === id)), e => e.label);
   assert.deepEqual(labels('discover'), ['Discover','Welten','Strategien','Swipen','Suchen','Märkte','Watchlist']);
   assert.deepEqual(labels('quant'), ['Quant','Screener','Anlagestile','Aktien','Meldungen','Forschung','Methodik','Technische Lagen','Fundamentaldaten']);
-  assert.deepEqual(labels('technical'), ['Technical','Screener','Chart','Muster','Gespeichert']);
+  assert.deepEqual(labels('technical'), ['Technical','Screener','Chart','Muster','Vorlagen','Gespeichert','Lernen']);
   assert.deepEqual(labels('fundamental'), ['Fundamental','Ranglisten','Branchen','Methodik','Suchen']);
   assert.deepEqual(labels('supertrader'), ['Supertrader','Methoden','Treffer','Forschung','Quellen']);
   assert.deepEqual(labels('hedgefonds'), ['Hedgefonds','Investoren','Aktien','Gruppen-Käufe','Datenbank']);
@@ -159,6 +159,16 @@ test('the active tab is the tab of the current page: a tab from the menu group w
   assert.equal(active('quant', '/quant/methodology/'), 'Methodik', 'alte Adresse');
   assert.equal(active('technical', '/technical/#/screener/gespeichert'), 'Gespeichert');
   assert.equal(active('technical', '/technical/#/screener?muster=dreieck'), 'Screener');
+  // Technical „Lernen“ und „Vorlagen“ (App-Konzept 2): eigene Reiter; Lektionen, Fragen und einzelne Vorlagen markieren ihren Bereich
+  assert.equal(active('technical', '/technical/#/lernen'), 'Lernen');
+  assert.equal(active('technical', '/technical/#/akademie/kerzen'), 'Lernen');
+  assert.equal(active('technical', '/technical/#/assistent/trend?k=1'), 'Lernen');
+  assert.equal(active('technical', '/technical/#/screener?reiter=vorlagen'), 'Vorlagen');
+  assert.equal(active('technical', '/technical/#/vorlagen/trend-pullback'), 'Vorlagen');
+  assert.equal(active('technical', '/technical/#/screener?reiter=gespeichert'), 'Gespeichert', 'zweite Adresse desselben Reiters');
+  assert.equal(active('technical', '/technical/#/screener'), 'Screener');
+  assert.equal(active('technical', '/technical/#/muster'), 'Muster');
+  assert.equal(active('technical', '/technical/#/chart/NVDA'), 'Chart');
   assert.equal(active('fundamental', '/fundamental/#/suche'), 'Suchen');
   assert.equal(active('supertrader', '/supertrader/sources/'), 'Quellen');
   assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank'), 'Datenbank');
@@ -541,13 +551,21 @@ test('Technical has its own dock, its own menu group and the exact sprite geomet
   const tg = groups.find(g => g.id === 'technical');
   assert.equal(tg.href, '/technical/#/');
   assert.equal(tg.icon, 'technical');
-  assert.deepEqual(Array.from(tg.entries, e => e[1]), ['/technical/#/', '/technical/#/screener', '/technical/#/chart', '/technical/#/screener/gespeichert', '/technical/#/muster']);
+  /* App-Konzept 2: „Vorlagen“ und „Lernen“ sind Eintraege der Gruppe und damit Reiter; die frueheren fuenf Ziele bleiben. */
+  assert.deepEqual(Array.from(tg.entries, e => e[1]), ['/technical/#/', '/technical/#/screener', '/technical/#/chart', '/technical/#/screener?reiter=vorlagen', '/technical/#/screener/gespeichert', '/technical/#/muster', '/technical/#/lernen']);
+  for (const [, href] of tg.entries) assert.notEqual(require(join(root, 'technical/engine/model.js')).parseRoute(new URL(href, 'https://x').hash).view, 'notfound', href);
   assert.ok(!groups.find(g => g.id === 'more').entries.some(([, href]) => href.startsWith('/technical/')));
   const state = url => menuState(loc(url));
   assert.deepEqual(JSON.parse(JSON.stringify(state('/technical/#/'))), { group: 'technical', href: '/technical/#/', expanded: null });
   assert.deepEqual(JSON.parse(JSON.stringify(state('/technical/#/chart/NVDA/signale'))), { group: 'technical', href: '/technical/#/chart', expanded: 'technical' });
   assert.equal(state('/technical/#/screener/gespeichert').href, '/technical/#/screener/gespeichert');
   assert.equal(state('/technical/#/screener?muster=dreieck').href, '/technical/#/screener');
+  assert.equal(state('/technical/#/lernen').href, '/technical/#/lernen');
+  assert.equal(state('/technical/#/assistent/trend').href, '/technical/#/lernen', 'eine Frage des Assistenten gehoert zu Lernen');
+  assert.equal(state('/technical/#/akademie/kerzen').href, '/technical/#/lernen', 'eine Lektion gehoert zu Lernen');
+  assert.equal(state('/technical/#/screener?reiter=vorlagen').href, '/technical/#/screener?reiter=vorlagen');
+  assert.equal(state('/technical/#/vorlagen/x').href, '/technical/#/screener?reiter=vorlagen');
+  assert.equal(state('/technical/#/screener?reiter=gespeichert').href, '/technical/#/screener/gespeichert');
   const sprite = readFileSync(join(root, 'assets/product-icons.svg'), 'utf8');
   assert.equal(DOCK_PRODUCT_ICONS.technical, sprite.match(/<symbol id="technical"[^>]*>([\s\S]*?)<\/symbol>/)[1]);
 });
