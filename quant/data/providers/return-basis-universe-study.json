@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-11-14T00:17:24.000Z",
+ "generatedAt": "2026-11-14T07:51:22.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -1718,7 +1718,7 @@
  "specImplementationFindings": [
   {
    "component": "momentum:priceReturn12m1m",
-   "weightInFactor": 0.3,
+   "weightInFactor": 0.375,
    "declaredInput": "split-adjusted price return T-252 to T-21",
    "computedOn": "adjustedClose",
    "finding": "SPEC_DECLARES_SPLIT_ADJUSTED_BUT_COMPUTED_ON_TOTAL_RETURN_COLUMN",
@@ -1726,7 +1726,7 @@
   },
   {
    "component": "momentum:priceReturn6m",
-   "weightInFactor": 0.2,
+   "weightInFactor": 0.25,
    "declaredInput": "split-adjusted price return",
    "computedOn": "adjustedClose",
    "finding": "SPEC_DECLARES_SPLIT_ADJUSTED_BUT_COMPUTED_ON_TOTAL_RETURN_COLUMN",
@@ -1734,23 +1734,15 @@
   },
   {
    "component": "momentum:priceReturn3m",
-   "weightInFactor": 0.1,
+   "weightInFactor": 0.125,
    "declaredInput": "split-adjusted price return",
    "computedOn": "adjustedClose",
    "finding": "SPEC_DECLARES_SPLIT_ADJUSTED_BUT_COMPUTED_ON_TOTAL_RETURN_COLUMN",
    "note": "Die veroeffentlichte Komponentenbeschreibung nennt den splitbereinigten Kurs, gerechnet wird auf der gesamtrenditebereinigten Spalte. Kein Eingriff durch diese Studie - ein Methodikpunkt fuer die anstehende Entscheidung."
   },
   {
-   "component": "momentum:relativeStrength12m1m",
-   "weightInFactor": 0.2,
-   "declaredInput": "security 12-1 split-adjusted price return minus certified broad benchmark 12-1 split-adjusted price return",
-   "computedOn": "adjustedClose",
-   "finding": "SPEC_DECLARES_SPLIT_ADJUSTED_BUT_COMPUTED_ON_TOTAL_RETURN_COLUMN",
-   "note": "Die veroeffentlichte Komponentenbeschreibung nennt den splitbereinigten Kurs, gerechnet wird auf der gesamtrenditebereinigten Spalte. Kein Eingriff durch diese Studie - ein Methodikpunkt fuer die anstehende Entscheidung."
-  },
-  {
    "component": "momentum:distanceTo52wHigh",
-   "weightInFactor": 0.1,
+   "weightInFactor": 0.125,
    "declaredInput": "(high252-current split-adjusted close)/high252",
    "computedOn": "adjustedClose",
    "finding": "SPEC_DECLARES_SPLIT_ADJUSTED_BUT_COMPUTED_ON_TOTAL_RETURN_COLUMN",
@@ -1758,7 +1750,7 @@
   },
   {
    "component": "momentum:distanceToSma200",
-   "weightInFactor": 0.1,
+   "weightInFactor": 0.125,
    "declaredInput": "(split-adjusted close-SMA200)/SMA200",
    "computedOn": "adjustedClose",
    "finding": "SPEC_DECLARES_SPLIT_ADJUSTED_BUT_COMPUTED_ON_TOTAL_RETURN_COLUMN",
@@ -1768,9 +1760,9 @@
  "dataFreshnessFindings": [],
  "publishedBasis": {
   "artefact": "quant/data/product/factor-evidence-v1",
-  "entries": 6149,
+  "entries": 6148,
   "priceBasisCounts": {
-   "close": 6149
+   "close": 6148
   },
   "measuredQuantV2MomentumBasis": "MIXED_OR_UNCONFIRMED"
  },
@@ -1878,11 +1870,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 1.8900945047252407
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1123,
-       "MOMENTUM_DELTA_MEDIAN": 0.003406703832376512,
+       "N": 1124,
+       "MOMENTUM_DELTA_MEDIAN": 0.003406407983680304,
        "RANK_DELTA_MEDIAN": 9,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.15750787539376887,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.9541477073853586
+       "FACTOR_PERCENTILE_DELTA_P95": 2.9523976198809856
       },
       "G · Retail Trade": {
        "N": 222,
@@ -1899,11 +1891,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.133706685334256
       },
       "B · Mining": {
-       "N": 241,
+       "N": 240,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 14,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.24501225061252896,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.957647882394113
+       "FACTOR_PERCENTILE_DELTA_P95": 2.9628981449072374
       },
       "(unclassified)": {
        "N": 731,
@@ -1950,25 +1942,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 1.97759887994399
       },
       "Financials": {
-       "N": 868,
-       "MOMENTUM_DELTA_MEDIAN": 0.0017003514185274793,
+       "N": 869,
+       "MOMENTUM_DELTA_MEDIAN": 0.0016911889058623952,
        "RANK_DELTA_MEDIAN": 14,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2450122506125325,
        "FACTOR_PERCENTILE_DELTA_P95": 2.117605880294012
       },
       "Health Care": {
-       "N": 930,
+       "N": 929,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 13,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.22751137556877765,
        "FACTOR_PERCENTILE_DELTA_P95": 1.80259012950647
       },
       "Consumer Staples": {
-       "N": 116,
+       "N": 117,
        "MOMENTUM_DELTA_MEDIAN": 0,
-       "RANK_DELTA_MEDIAN": 7.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.13125656282813747,
-       "FACTOR_PERCENTILE_DELTA_P95": 1.9207210360518054
+       "RANK_DELTA_MEDIAN": 7,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.12250612530626448,
+       "FACTOR_PERCENTILE_DELTA_P95": 1.9180959047952422
       },
       "Consumer Discretionary": {
        "N": 432,
@@ -1992,11 +1984,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 1.7115855792789694
       },
       "Energy": {
-       "N": 149,
-       "MOMENTUM_DELTA_MEDIAN": 0.002566814931337369,
+       "N": 148,
+       "MOMENTUM_DELTA_MEDIAN": 0.002778497483937159,
        "RANK_DELTA_MEDIAN": 13,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.22751137556877765,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.6681834091704495
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.22751137556877943,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.6734336716835756
       },
       "Utilities": {
        "N": 144,
@@ -2281,11 +2273,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.502625131256561
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1123,
-       "MOMENTUM_DELTA_MEDIAN": 0.009767046742460761,
+       "N": 1124,
+       "MOMENTUM_DELTA_MEDIAN": 0.009760084875666208,
        "RANK_DELTA_MEDIAN": 6,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.10500525026251317,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.121456072803627
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.10500525026251051,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.117080854042693
       },
       "G · Retail Trade": {
        "N": 222,
@@ -2302,11 +2294,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.704235211760589
       },
       "B · Mining": {
-       "N": 241,
+       "N": 240,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 18,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.31501575078753774,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.940147007350369
+       "FACTOR_PERCENTILE_DELTA_P95": 2.9532726636331788
       },
       "(unclassified)": {
        "N": 731,
@@ -2353,25 +2345,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.49037451872593
       },
       "Financials": {
-       "N": 868,
-       "MOMENTUM_DELTA_MEDIAN": 0.006947523717275028,
+       "N": 869,
+       "MOMENTUM_DELTA_MEDIAN": 0.006884353112836861,
        "RANK_DELTA_MEDIAN": 11,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.19250962548126793,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.8465173258662895
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.19250962548126438,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.8456422821141003
       },
       "Health Care": {
-       "N": 930,
+       "N": 929,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 16,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2800140007000351,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.4549352467623344
+       "FACTOR_PERCENTILE_DELTA_P95": 2.455372768638427
       },
       "Consumer Staples": {
-       "N": 116,
+       "N": 117,
        "MOMENTUM_DELTA_MEDIAN": 0,
-       "RANK_DELTA_MEDIAN": 8.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14875743787189322,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.905145257262868
+       "RANK_DELTA_MEDIAN": 8,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14000700035001756,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.9016450822541167
       },
       "Consumer Discretionary": {
        "N": 432,
@@ -2395,11 +2387,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.4886244312215577
       },
       "Energy": {
-       "N": 149,
-       "MOMENTUM_DELTA_MEDIAN": 0.0076540577394645926,
-       "RANK_DELTA_MEDIAN": 11,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.19250962548127148,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.175708785439272
+       "N": 148,
+       "MOMENTUM_DELTA_MEDIAN": 0.007813961274324988,
+       "RANK_DELTA_MEDIAN": 12.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.218760938046902,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.194084704235216
       },
       "Utilities": {
        "N": 144,
@@ -2684,11 +2676,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.6751837591879664
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1123,
-       "MOMENTUM_DELTA_MEDIAN": 0.022850540507657113,
+       "N": 1124,
+       "MOMENTUM_DELTA_MEDIAN": 0.022847780735112844,
        "RANK_DELTA_MEDIAN": 1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.017500875043752195,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.265313265663288
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.017500875043758857,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.265313265663287
       },
       "G · Retail Trade": {
        "N": 222,
@@ -2705,11 +2697,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.9884494224711293
       },
       "B · Mining": {
-       "N": 241,
+       "N": 240,
        "MOMENTUM_DELTA_MEDIAN": 0,
-       "RANK_DELTA_MEDIAN": 24,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4200210010500456,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.7976898844942255
+       "RANK_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4375218760937969,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.82219110955547
       },
       "(unclassified)": {
        "N": 731,
@@ -2756,25 +2748,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.659432971648589
       },
       "Financials": {
-       "N": 868,
-       "MOMENTUM_DELTA_MEDIAN": 0.01733308086829688,
+       "N": 869,
+       "MOMENTUM_DELTA_MEDIAN": 0.01714999903649228,
        "RANK_DELTA_MEDIAN": 8,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14000700035001756,
        "FACTOR_PERCENTILE_DELTA_P95": 4.427721386069298
       },
       "Health Care": {
-       "N": 930,
+       "N": 929,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 18,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3150157507875395,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3150157507875413,
        "FACTOR_PERCENTILE_DELTA_P95": 3.605180259012954
       },
       "Consumer Staples": {
-       "N": 116,
-       "MOMENTUM_DELTA_MEDIAN": 0.0072081545950229975,
-       "RANK_DELTA_MEDIAN": 3.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.061253062653132684,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.7889394469723516
+       "N": 117,
+       "MOMENTUM_DELTA_MEDIAN": 0.006800149499091246,
+       "RANK_DELTA_MEDIAN": 3,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.052502625131256586,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.7801890094504738
       },
       "Consumer Discretionary": {
        "N": 432,
@@ -2798,11 +2790,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.395169758487924
       },
       "Energy": {
-       "N": 149,
-       "MOMENTUM_DELTA_MEDIAN": 0.026493583371449247,
-       "RANK_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.422821141057055
+       "N": 148,
+       "MOMENTUM_DELTA_MEDIAN": 0.02664298799746545,
+       "RANK_DELTA_MEDIAN": -0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.008750437521875654,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.422821141057056
       },
       "Utilities": {
        "N": 144,
@@ -3087,11 +3079,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.060203010150495
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1123,
-       "MOMENTUM_DELTA_MEDIAN": 0.020491294065908328,
+       "N": 1124,
+       "MOMENTUM_DELTA_MEDIAN": 0.020480203848263823,
        "RANK_DELTA_MEDIAN": 1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.017500875043752195,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.220861043052135
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.01750087504375175,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.217360868043389
       },
       "G · Retail Trade": {
        "N": 222,
@@ -3108,11 +3100,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.3279663983199175
       },
       "B · Mining": {
-       "N": 241,
+       "N": 240,
        "MOMENTUM_DELTA_MEDIAN": 0,
-       "RANK_DELTA_MEDIAN": 25,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.437521876093804,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.3402170108505445
+       "RANK_DELTA_MEDIAN": 26,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4550227511375571,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.346342317115855
       },
       "(unclassified)": {
        "N": 731,
@@ -3159,22 +3151,22 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.780189009450474
       },
       "Financials": {
-       "N": 868,
-       "MOMENTUM_DELTA_MEDIAN": 0.01529083146464949,
-       "RANK_DELTA_MEDIAN": 7.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1312565628281419,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.084004200210016
+       "N": 869,
+       "MOMENTUM_DELTA_MEDIAN": 0.015234985336061158,
+       "RANK_DELTA_MEDIAN": 7,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.12250612530627336,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.075253762688128
       },
       "Health Care": {
-       "N": 930,
+       "N": 929,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 21,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3675183759187952,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.36751837591879877,
        "FACTOR_PERCENTILE_DELTA_P95": 3.7451872593629645
       },
       "Consumer Staples": {
-       "N": 116,
-       "MOMENTUM_DELTA_MEDIAN": 0.006324556033179163,
+       "N": 117,
+       "MOMENTUM_DELTA_MEDIAN": 0.00564724954225837,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_P95": 4.103955197759895
@@ -3201,11 +3193,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.7976898844942255
       },
       "Energy": {
-       "N": 149,
-       "MOMENTUM_DELTA_MEDIAN": 0.022087169730817147,
-       "RANK_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.373818690934544
+       "N": 148,
+       "MOMENTUM_DELTA_MEDIAN": 0.023225734915617524,
+       "RANK_DELTA_MEDIAN": -0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.008750437521875654,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.384319215960798
       },
       "Utilities": {
        "N": 144,
@@ -3490,11 +3482,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.6751837591879664
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1123,
-       "MOMENTUM_DELTA_MEDIAN": 0.010966828130543727,
+       "N": 1124,
+       "MOMENTUM_DELTA_MEDIAN": 0.01095112085000055,
        "RANK_DELTA_MEDIAN": 1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.017500875043752195,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.265313265663288
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.017500875043758857,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.265313265663287
       },
       "G · Retail Trade": {
        "N": 222,
@@ -3511,11 +3503,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.9884494224711293
       },
       "B · Mining": {
-       "N": 241,
+       "N": 240,
        "MOMENTUM_DELTA_MEDIAN": -0.010714061522615226,
-       "RANK_DELTA_MEDIAN": 24,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4200210010500456,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.7976898844942255
+       "RANK_DELTA_MEDIAN": 25,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4375218760937969,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.82219110955547
       },
       "(unclassified)": {
        "N": 731,
@@ -3562,25 +3554,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.659432971648589
       },
       "Financials": {
-       "N": 868,
-       "MOMENTUM_DELTA_MEDIAN": 0.004899500484091532,
+       "N": 869,
+       "MOMENTUM_DELTA_MEDIAN": 0.004883987445855692,
        "RANK_DELTA_MEDIAN": 8,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14000700035001756,
        "FACTOR_PERCENTILE_DELTA_P95": 4.427721386069298
       },
       "Health Care": {
-       "N": 930,
+       "N": 929,
        "MOMENTUM_DELTA_MEDIAN": -0.010714061522615254,
        "RANK_DELTA_MEDIAN": 18,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3150157507875395,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3150157507875413,
        "FACTOR_PERCENTILE_DELTA_P95": 3.605180259012954
       },
       "Consumer Staples": {
-       "N": 116,
-       "MOMENTUM_DELTA_MEDIAN": -0.005004334776110841,
-       "RANK_DELTA_MEDIAN": 3.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.061253062653132684,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.7889394469723516
+       "N": 117,
+       "MOMENTUM_DELTA_MEDIAN": -0.005192215648469223,
+       "RANK_DELTA_MEDIAN": 3,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.052502625131256586,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.7801890094504738
       },
       "Consumer Discretionary": {
        "N": 432,
@@ -3604,11 +3596,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.395169758487924
       },
       "Energy": {
-       "N": 149,
-       "MOMENTUM_DELTA_MEDIAN": 0.009510845669126688,
-       "RANK_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.422821141057055
+       "N": 148,
+       "MOMENTUM_DELTA_MEDIAN": 0.00971159319147799,
+       "RANK_DELTA_MEDIAN": -0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.008750437521875654,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.422821141057056
       },
       "Utilities": {
        "N": 144,
@@ -3834,69 +3826,67 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": true,
     "strategyBasis": "EVIDENCE_AT_OR_BEFORE_CUTOFF",
-    "publishedEvidenceAsOf": "2026-11-12",
-    "publishedEvidenceLagDays": -1,
+    "publishedEvidenceAsOf": "2026-11-13",
+    "publishedEvidenceLagDays": 0,
     "excludedForLateFundamentals": 0,
     "limitation": null,
-    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.935669,
-    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.945617,
-    "publishedScored": 5574,
+    "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": 0.937879,
+    "SIMULATION_FIDELITY_PRICE_VS_PUBLISHED": 0.947181,
+    "publishedScored": 5524,
     "simulatedScoredOnPrice": 5715,
     "simulatedScoredOnTotal": 5715,
     "momentumScoreShift": {
      "UNIVERSE_N": 5715,
-     "SPEARMAN_RANK_CORRELATION": 0.993498,
+     "SPEARMAN_RANK_CORRELATION": 0.993925,
      "MEDIAN_ABSOLUTE_RANK_CHANGE": 54,
-     "P95_RANK_CHANGE": 311.3,
-     "MAX_RANK_CHANGE": 2560,
-     "TITLES_MOVING_5_PERCENTILES": 409,
-     "TITLES_MOVING_10_PERCENTILES": 114
+     "P95_RANK_CHANGE": 292.3,
+     "MAX_RANK_CHANGE": 3176,
+     "TITLES_MOVING_5_PERCENTILES": 296,
+     "TITLES_MOVING_10_PERCENTILES": 99
     }
    },
    "STRATEGY_IMPACT": {
     "momentum-leader": {
      "label": "Momentum Leader",
-     "MEMBERS_ON_PRICE_RETURN": 361,
-     "MEMBERS_ON_TOTAL_RETURN": 357,
-     "LEAVING": 18,
-     "ENTERING": 14,
-     "MEMBERSHIP_CHURN_SHARE": 0.0886,
+     "MEMBERS_ON_PRICE_RETURN": 357,
+     "MEMBERS_ON_TOTAL_RETURN": 358,
+     "LEAVING": 11,
+     "ENTERING": 12,
+     "MEMBERSHIP_CHURN_SHARE": 0.0642,
      "leavingExamples": [
-      "MSFT",
-      "AME",
-      "ATR",
-      "ACGL",
-      "PSMT",
-      "LYV",
+      "CACI",
+      "JOE",
+      "SM",
+      "BHC",
       "FNV",
-      "SPSC",
-      "ARMK",
-      "FRPT"
+      "VVX",
+      "MAX",
+      "RSVR",
+      "WRBY",
+      "EE"
      ],
      "enteringExamples": [
       "USB",
-      "HTO",
-      "WTRG",
-      "KIM",
-      "UTL",
+      "PGR",
+      "CUZ",
       "AKO-A",
       "FMNB",
-      "EXR",
-      "CUBE",
-      "GSL"
+      "HNNA",
+      "CME",
+      "GSL",
+      "DKL",
+      "SND"
      ]
     },
     "quality-momentum": {
      "label": "Quality Momentum",
-     "MEMBERS_ON_PRICE_RETURN": 41,
-     "MEMBERS_ON_TOTAL_RETURN": 38,
-     "LEAVING": 3,
+     "MEMBERS_ON_PRICE_RETURN": 43,
+     "MEMBERS_ON_TOTAL_RETURN": 42,
+     "LEAVING": 1,
      "ENTERING": 0,
-     "MEMBERSHIP_CHURN_SHARE": 0.0732,
+     "MEMBERSHIP_CHURN_SHARE": 0.0233,
      "leavingExamples": [
-      "AGYS",
-      "DGII",
-      "CVCO"
+      "SAM"
      ],
      "enteringExamples": []
     },
@@ -3912,27 +3902,19 @@
     },
     "value-momentum": {
      "label": "Value Momentum",
-     "MEMBERS_ON_PRICE_RETURN": 229,
-     "MEMBERS_ON_TOTAL_RETURN": 224,
-     "LEAVING": 9,
-     "ENTERING": 4,
-     "MEMBERSHIP_CHURN_SHARE": 0.0568,
+     "MEMBERS_ON_PRICE_RETURN": 227,
+     "MEMBERS_ON_TOTAL_RETURN": 226,
+     "LEAVING": 3,
+     "ENTERING": 2,
+     "MEMBERSHIP_CHURN_SHARE": 0.022,
      "leavingExamples": [
-      "IT",
-      "NBIX",
-      "CTSH",
-      "LRN",
-      "ST",
-      "NMIH",
-      "PPIH",
-      "TCMD",
-      "LOVE"
+      "NBR",
+      "IART",
+      "CPHC"
      ],
      "enteringExamples": [
-      "MATV",
-      "PLOW",
-      "CHMI",
-      "DEA"
+      "MIDD",
+      "SPOK"
      ]
     }
    }
@@ -4013,8 +3995,8 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.0333083832335275
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1001,
-       "MOMENTUM_DELTA_MEDIAN": 0.005737412305466205,
+       "N": 1002,
+       "MOMENTUM_DELTA_MEDIAN": 0.005731271036047814,
        "RANK_DELTA_MEDIAN": 3,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.05613772455090782,
        "FACTOR_PERCENTILE_DELTA_P95": 4.060628742514972
@@ -4034,11 +4016,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.2709580838323347
       },
       "B · Mining": {
-       "N": 233,
+       "N": 232,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 4,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.07485029940119681,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.72455089820359
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.07485029940119414,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.728293413173651
       },
       "(unclassified)": {
        "N": 691,
@@ -4085,25 +4067,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.9893338323353245
       },
       "Financials": {
-       "N": 747,
-       "MOMENTUM_DELTA_MEDIAN": 0.003965215874400574,
+       "N": 748,
+       "MOMENTUM_DELTA_MEDIAN": 0.003909883930559466,
        "RANK_DELTA_MEDIAN": 9,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.16841317365269148,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.63023952095809
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.16841317365269237,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.6302395209580895
       },
       "Health Care": {
-       "N": 888,
+       "N": 887,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 11,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.20583832335329433,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.805950598802392
+       "FACTOR_PERCENTILE_DELTA_P95": 2.808757485029934
       },
       "Consumer Staples": {
-       "N": 112,
+       "N": 113,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.09356287425149601,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.544910179640719
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.09356287425149645,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.5449101796407176
       },
       "Consumer Discretionary": {
        "N": 412,
@@ -4127,11 +4109,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.644086826347298
       },
       "Energy": {
-       "N": 146,
-       "MOMENTUM_DELTA_MEDIAN": 0.004456265034840479,
+       "N": 145,
+       "MOMENTUM_DELTA_MEDIAN": 0.004853714518582186,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.887537425149697
+       "FACTOR_PERCENTILE_DELTA_P95": 3.888473053892211
       },
       "Utilities": {
        "N": 140,
@@ -4416,8 +4398,8 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.728667664670656
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1001,
-       "MOMENTUM_DELTA_MEDIAN": 0.01322125943651642,
+       "N": 1002,
+       "MOMENTUM_DELTA_MEDIAN": 0.013212373902287466,
        "RANK_DELTA_MEDIAN": 2,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.03742514970059574,
        "FACTOR_PERCENTILE_DELTA_P95": 5.164670658682638
@@ -4437,11 +4419,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.281437125748502
       },
       "B · Mining": {
-       "N": 233,
+       "N": 232,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 2,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.03742514970060995,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.1279940119760425
+       "FACTOR_PERCENTILE_DELTA_P95": 4.136414670658679
       },
       "(unclassified)": {
        "N": 691,
@@ -4488,25 +4470,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.263192365269459
       },
       "Financials": {
-       "N": 747,
-       "MOMENTUM_DELTA_MEDIAN": 0.009615835613352441,
+       "N": 748,
+       "MOMENTUM_DELTA_MEDIAN": 0.009593082427432065,
        "RANK_DELTA_MEDIAN": 7,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.13098802395209397,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.129865269461077
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.13098802395209308,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.128929640718563
       },
       "Health Care": {
-       "N": 888,
+       "N": 887,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 10,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1871257485030018,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.010572604790413
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.18712574850300712,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.011040419161669
       },
       "Consumer Staples": {
-       "N": 112,
-       "MOMENTUM_DELTA_MEDIAN": 1.6775469902086115e-13,
-       "RANK_DELTA_MEDIAN": 2.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.04678143712574645,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.703967065868259
+       "N": 113,
+       "MOMENTUM_DELTA_MEDIAN": 1.1102230246251565e-16,
+       "RANK_DELTA_MEDIAN": 3,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.05613772455089361,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.694610778443109
       },
       "Consumer Discretionary": {
        "N": 412,
@@ -4530,11 +4512,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.8360778443113857
       },
       "Energy": {
-       "N": 146,
-       "MOMENTUM_DELTA_MEDIAN": 0.01590090698739932,
-       "RANK_DELTA_MEDIAN": -6,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.11227544910179788,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.8138098802395195
+       "N": 145,
+       "MOMENTUM_DELTA_MEDIAN": 0.016354188535690817,
+       "RANK_DELTA_MEDIAN": -7,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.1309880239520922,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.831586826347298
       },
       "Utilities": {
        "N": 140,
@@ -4819,11 +4801,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.340568862275443
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1001,
-       "MOMENTUM_DELTA_MEDIAN": 0.02628550388938311,
+       "N": 1002,
+       "MOMENTUM_DELTA_MEDIAN": 0.026276464386897624,
        "RANK_DELTA_MEDIAN": 2,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.03742514970059574,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.25
+       "FACTOR_PERCENTILE_DELTA_P95": 6.248128742514968
       },
       "G · Retail Trade": {
        "N": 216,
@@ -4840,11 +4822,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.370508982035924
       },
       "B · Mining": {
-       "N": 233,
+       "N": 232,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 7,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1309880239520993,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.445359281437119
+       "FACTOR_PERCENTILE_DELTA_P95": 5.45471556886227
       },
       "(unclassified)": {
        "N": 691,
@@ -4891,25 +4873,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.181511976047906
       },
       "Financials": {
-       "N": 747,
-       "MOMENTUM_DELTA_MEDIAN": 0.022376330028478386,
-       "RANK_DELTA_MEDIAN": 13,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.24326347305388651,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.0224550898203475
+       "N": 748,
+       "MOMENTUM_DELTA_MEDIAN": 0.022372175711562137,
+       "RANK_DELTA_MEDIAN": 12.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.23390718562874468,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.02058383233532
       },
       "Health Care": {
-       "N": 888,
+       "N": 887,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 23,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4303892215568794,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.132859281437124
+       "FACTOR_PERCENTILE_DELTA_P95": 5.1347305389221525
       },
       "Consumer Staples": {
-       "N": 112,
-       "MOMENTUM_DELTA_MEDIAN": 0.0062035562459449856,
-       "RANK_DELTA_MEDIAN": 7,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.13098802395209574,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.875561377245499
+       "N": 113,
+       "MOMENTUM_DELTA_MEDIAN": 0.004185880082334337,
+       "RANK_DELTA_MEDIAN": 8,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14970059880239006,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.857784431137716
       },
       "Consumer Discretionary": {
        "N": 412,
@@ -4933,11 +4915,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.162799401197605
       },
       "Energy": {
-       "N": 146,
-       "MOMENTUM_DELTA_MEDIAN": 0.02336778237738002,
+       "N": 145,
+       "MOMENTUM_DELTA_MEDIAN": 0.024120038012559464,
        "RANK_DELTA_MEDIAN": 1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.018712574850299424,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.699101796407188
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.018712574850298758,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.699101796407189
       },
       "Utilities": {
        "N": 140,
@@ -5211,7 +5193,7 @@
        "N": 1862,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 18,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3368263473053892,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3368263473053901,
        "FACTOR_PERCENTILE_DELTA_P95": 5.14595808383234
       },
       "I · Services": {
@@ -5222,10 +5204,10 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.782185628742509
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1001,
-       "MOMENTUM_DELTA_MEDIAN": 0.023995213591799014,
-       "RANK_DELTA_MEDIAN": 2,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.03742514970059574,
+       "N": 1002,
+       "MOMENTUM_DELTA_MEDIAN": 0.02398591606320838,
+       "RANK_DELTA_MEDIAN": 1.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.028068862275447692,
        "FACTOR_PERCENTILE_DELTA_P95": 7.017215568862284
       },
       "G · Retail Trade": {
@@ -5243,11 +5225,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.883233532934128
       },
       "B · Mining": {
-       "N": 233,
+       "N": 232,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 3,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.05613772455089361,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.834580838323346
+       "FACTOR_PERCENTILE_DELTA_P95": 5.841130239520952
       },
       "(unclassified)": {
        "N": 691,
@@ -5294,25 +5276,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.350860778443123
       },
       "Financials": {
-       "N": 747,
-       "MOMENTUM_DELTA_MEDIAN": 0.02004893886644421,
+       "N": 748,
+       "MOMENTUM_DELTA_MEDIAN": 0.020043925522936767,
        "RANK_DELTA_MEDIAN": 12,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.22455089820358864,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.508982035928143
+       "FACTOR_PERCENTILE_DELTA_P95": 5.507110778443114
       },
       "Health Care": {
-       "N": 888,
+       "N": 887,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 25,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.46781437125747516,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.188997005988022
+       "FACTOR_PERCENTILE_DELTA_P95": 5.19086826347305
       },
       "Consumer Staples": {
-       "N": 112,
-       "MOMENTUM_DELTA_MEDIAN": 0.004852806639330798,
-       "RANK_DELTA_MEDIAN": 4.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.08420658682634352,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.393712574850297
+       "N": 113,
+       "MOMENTUM_DELTA_MEDIAN": 0.003624992924900039,
+       "RANK_DELTA_MEDIAN": 5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.09356287425148935,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.389970059880238
       },
       "Consumer Discretionary": {
        "N": 412,
@@ -5336,11 +5318,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.16654191616767
       },
       "Energy": {
-       "N": 146,
-       "MOMENTUM_DELTA_MEDIAN": 0.02084211269434666,
-       "RANK_DELTA_MEDIAN": -6.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.12163173652694859,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.708458083832339
+       "N": 145,
+       "MOMENTUM_DELTA_MEDIAN": 0.021029272253296982,
+       "RANK_DELTA_MEDIAN": -7,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.13098802395209574,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.714071856287426
       },
       "Utilities": {
        "N": 140,
@@ -5625,11 +5607,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.340568862275443
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 1001,
-       "MOMENTUM_DELTA_MEDIAN": 0.015115939603270623,
+       "N": 1002,
+       "MOMENTUM_DELTA_MEDIAN": 0.015111735025181997,
        "RANK_DELTA_MEDIAN": 2,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.03742514970059574,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.25
+       "FACTOR_PERCENTILE_DELTA_P95": 6.248128742514968
       },
       "G · Retail Trade": {
        "N": 216,
@@ -5646,11 +5628,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.370508982035924
       },
       "B · Mining": {
-       "N": 233,
+       "N": 232,
        "MOMENTUM_DELTA_MEDIAN": -0.012035506433671128,
        "RANK_DELTA_MEDIAN": 7,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1309880239520993,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.445359281437119
+       "FACTOR_PERCENTILE_DELTA_P95": 5.45471556886227
       },
       "(unclassified)": {
        "N": 691,
@@ -5697,25 +5679,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.181511976047906
       },
       "Financials": {
-       "N": 747,
-       "MOMENTUM_DELTA_MEDIAN": 0.009511942985161337,
-       "RANK_DELTA_MEDIAN": 13,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.24326347305388651,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.0224550898203475
+       "N": 748,
+       "MOMENTUM_DELTA_MEDIAN": 0.009473886948045337,
+       "RANK_DELTA_MEDIAN": 12.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.23390718562874468,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.02058383233532
       },
       "Health Care": {
-       "N": 888,
+       "N": 887,
        "MOMENTUM_DELTA_MEDIAN": -0.012035506433671156,
        "RANK_DELTA_MEDIAN": 23,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4303892215568794,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.132859281437124
+       "FACTOR_PERCENTILE_DELTA_P95": 5.1347305389221525
       },
       "Consumer Staples": {
-       "N": 112,
-       "MOMENTUM_DELTA_MEDIAN": -0.006011589158981603,
-       "RANK_DELTA_MEDIAN": 7,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.13098802395209574,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.875561377245499
+       "N": 113,
+       "MOMENTUM_DELTA_MEDIAN": -0.007803822980831376,
+       "RANK_DELTA_MEDIAN": 8,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14970059880239006,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.857784431137716
       },
       "Consumer Discretionary": {
        "N": 412,
@@ -5739,11 +5721,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.162799401197605
       },
       "Energy": {
-       "N": 146,
-       "MOMENTUM_DELTA_MEDIAN": 0.015346309998248014,
+       "N": 145,
+       "MOMENTUM_DELTA_MEDIAN": 0.01543900619133759,
        "RANK_DELTA_MEDIAN": 1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.018712574850299424,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.699101796407188
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.018712574850298758,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.699101796407189
       },
       "Utilities": {
        "N": 140,
@@ -5969,8 +5951,8 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-11-12",
-    "publishedEvidenceLagDays": 365,
+    "publishedEvidenceAsOf": "2026-11-13",
+    "publishedEvidenceLagDays": 366,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -5980,18 +5962,18 @@
     "simulatedScoredOnTotal": 5345,
     "momentumScoreShift": {
      "UNIVERSE_N": 5345,
-     "SPEARMAN_RANK_CORRELATION": 0.991354,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": 58,
-     "P95_RANK_CHANGE": 392,
-     "MAX_RANK_CHANGE": 3602,
-     "TITLES_MOVING_5_PERCENTILES": 641,
-     "TITLES_MOVING_10_PERCENTILES": 99
+     "SPEARMAN_RANK_CORRELATION": 0.991919,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 56,
+     "P95_RANK_CHANGE": 385.2,
+     "MAX_RANK_CHANGE": 3738,
+     "TITLES_MOVING_5_PERCENTILES": 560,
+     "TITLES_MOVING_10_PERCENTILES": 91
     }
    },
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-11-12 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-11-13 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   },
   {
@@ -6067,11 +6049,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.348796241926011
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 965,
-       "MOMENTUM_DELTA_MEDIAN": 0.006940389477358755,
+       "N": 966,
+       "MOMENTUM_DELTA_MEDIAN": 0.006929762551854957,
        "RANK_DELTA_MEDIAN": -4,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.07829320806420981,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.464474456840874
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.07829320806420448,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.4644744568408736
       },
       "G · Retail Trade": {
        "N": 208,
@@ -6088,11 +6070,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.642395772166765
       },
       "B · Mining": {
-       "N": 229,
+       "N": 228,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 10,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1957330201605032,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.28831473869641
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1957330201605023,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.2981013897044313
       },
       "(unclassified)": {
        "N": 662,
@@ -6139,25 +6121,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.309649637893918
       },
       "Financials": {
-       "N": 718,
-       "MOMENTUM_DELTA_MEDIAN": 0.005707909220622587,
+       "N": 719,
+       "MOMENTUM_DELTA_MEDIAN": 0.005700267709915385,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_P95": 2.798982188295163
       },
       "Health Care": {
-       "N": 840,
+       "N": 839,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 18,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3523194362889033,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.3683695439420593
+       "FACTOR_PERCENTILE_DELTA_P95": 2.36836954394206
       },
       "Consumer Staples": {
-       "N": 106,
-       "MOMENTUM_DELTA_MEDIAN": 3.2324143361961433e-12,
+       "N": 107,
+       "MOMENTUM_DELTA_MEDIAN": 4.518607710224387e-13,
        "RANK_DELTA_MEDIAN": 8,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.15658641612840318,
-       "FACTOR_PERCENTILE_DELTA_P95": 1.9475435505969871
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1565864161284054,
+       "FACTOR_PERCENTILE_DELTA_P95": 1.9455862203953813
       },
       "Consumer Discretionary": {
        "N": 396,
@@ -6181,11 +6163,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.34879624192601
       },
       "Energy": {
-       "N": 142,
-       "MOMENTUM_DELTA_MEDIAN": 0.004845190728637705,
+       "N": 141,
+       "MOMENTUM_DELTA_MEDIAN": 0.00500483897651538,
        "RANK_DELTA_MEDIAN": 1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.019573302016045346,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.4037972205911124
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.019573302016041794,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.405754550792718
       },
       "Utilities": {
        "N": 134,
@@ -6470,11 +6452,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.133881385789791
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 965,
-       "MOMENTUM_DELTA_MEDIAN": 0.016865907875736275,
+       "N": 966,
+       "MOMENTUM_DELTA_MEDIAN": 0.016786854181650046,
        "RANK_DELTA_MEDIAN": -8,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.1565864161284054,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.022509297318448
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.15658641612840363,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.010765316108829
       },
       "G · Retail Trade": {
        "N": 208,
@@ -6491,11 +6473,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.443139557643384
       },
       "B · Mining": {
-       "N": 229,
-       "MOMENTUM_DELTA_MEDIAN": 0,
+       "N": 228,
+       "MOMENTUM_DELTA_MEDIAN": 1.1102230246251565e-16,
        "RANK_DELTA_MEDIAN": 19,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3718927383049504,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.4587981992562185
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3718927383049522,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.461734194558626
       },
       "(unclassified)": {
        "N": 662,
@@ -6542,24 +6524,24 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.6876100998238375
       },
       "Financials": {
-       "N": 718,
-       "MOMENTUM_DELTA_MEDIAN": 0.014044557884349329,
+       "N": 719,
+       "MOMENTUM_DELTA_MEDIAN": 0.013968092778947172,
        "RANK_DELTA_MEDIAN": -1,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.019573302016041794,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.956743002544532
+       "FACTOR_PERCENTILE_DELTA_P95": 3.955764337443731
       },
       "Health Care": {
-       "N": 840,
+       "N": 839,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 19,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.37189273830495395,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.781561949500885
+       "FACTOR_PERCENTILE_DELTA_P95": 3.785476609904091
       },
       "Consumer Staples": {
-       "N": 106,
-       "MOMENTUM_DELTA_MEDIAN": 5.3807513999970524e-12,
+       "N": 107,
+       "MOMENTUM_DELTA_MEDIAN": 1.265987314980066e-12,
        "RANK_DELTA_MEDIAN": 12,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.23487962419260633,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.23487962419259745,
        "FACTOR_PERCENTILE_DELTA_P95": 4.4039929536112705
       },
       "Consumer Discretionary": {
@@ -6584,11 +6566,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.542767664905071
       },
       "Energy": {
-       "N": 142,
-       "MOMENTUM_DELTA_MEDIAN": 0.011645017338768326,
-       "RANK_DELTA_MEDIAN": -0.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.00978665100802445,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.538070072421214
+       "N": 141,
+       "MOMENTUM_DELTA_MEDIAN": 0.011659497387841111,
+       "RANK_DELTA_MEDIAN": -1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.0195733020160489,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.541006067723622
       },
       "Utilities": {
        "N": 134,
@@ -6862,8 +6844,8 @@
        "N": 1776,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 23,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.450185946369146,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.609512624779805
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.45018594636914777,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.638872577803875
       },
       "I · Services": {
        "N": 759,
@@ -6873,11 +6855,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.167351732237229
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 965,
-       "MOMENTUM_DELTA_MEDIAN": 0.043051690683739485,
-       "RANK_DELTA_MEDIAN": -15,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.2935995302407477,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.6157760814249285
+       "N": 966,
+       "MOMENTUM_DELTA_MEDIAN": 0.04291785494806477,
+       "RANK_DELTA_MEDIAN": -14.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.28381287923272325,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.605989430416912
       },
       "G · Retail Trade": {
        "N": 208,
@@ -6894,11 +6876,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.695830886670585
       },
       "B · Mining": {
-       "N": 229,
-       "MOMENTUM_DELTA_MEDIAN": 1.212585587495596e-12,
+       "N": 228,
+       "MOMENTUM_DELTA_MEDIAN": 3.1611380180152082e-12,
        "RANK_DELTA_MEDIAN": 27,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5284791544333522,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.179095713446863
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5284791544333505,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.180074378547665
       },
       "(unclassified)": {
        "N": 662,
@@ -6945,25 +6927,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.595811313368569
       },
       "Financials": {
-       "N": 718,
-       "MOMENTUM_DELTA_MEDIAN": 0.03846364717185402,
+       "N": 719,
+       "MOMENTUM_DELTA_MEDIAN": 0.03845937297949842,
        "RANK_DELTA_MEDIAN": -6,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.1174398120963076,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.862986885887653
+       "FACTOR_PERCENTILE_DELTA_P95": 4.860050890585248
       },
       "Health Care": {
-       "N": 840,
+       "N": 839,
        "MOMENTUM_DELTA_MEDIAN": 0,
-       "RANK_DELTA_MEDIAN": 22.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4403992953611251,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.638872577803873
+       "RANK_DELTA_MEDIAN": 23,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.450185946369146,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.638872577803874
       },
       "Consumer Staples": {
-       "N": 106,
-       "MOMENTUM_DELTA_MEDIAN": 0.011843748688686262,
+       "N": 107,
+       "MOMENTUM_DELTA_MEDIAN": 0.011521067680974717,
        "RANK_DELTA_MEDIAN": 6,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.11743981209629872,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.227833235466825
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1174398120963005,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.43335290663535
       },
       "Consumer Discretionary": {
        "N": 396,
@@ -6987,11 +6969,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.501859463691531
       },
       "Energy": {
-       "N": 142,
-       "MOMENTUM_DELTA_MEDIAN": 0.02348085997514887,
-       "RANK_DELTA_MEDIAN": 0.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.00978665100802445,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.803484047758851
+       "N": 141,
+       "MOMENTUM_DELTA_MEDIAN": 0.023962296969460506,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.813270698766878
       },
       "Utilities": {
        "N": 134,
@@ -7264,8 +7246,8 @@
       "D · Manufacturing": {
        "N": 1776,
        "MOMENTUM_DELTA_MEDIAN": 0,
-       "RANK_DELTA_MEDIAN": 22,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4306126443531122,
+       "RANK_DELTA_MEDIAN": 22.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4403992953611322,
        "FACTOR_PERCENTILE_DELTA_P95": 5.186925034253273
       },
       "I · Services": {
@@ -7276,11 +7258,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.249559600704642
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 965,
-       "MOMENTUM_DELTA_MEDIAN": 0.03604615967753455,
-       "RANK_DELTA_MEDIAN": -6,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.1174398120962934,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.249951066744944
+       "N": 966,
+       "MOMENTUM_DELTA_MEDIAN": 0.03598650972721362,
+       "RANK_DELTA_MEDIAN": -5.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.10765316108827161,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.242121745938531
       },
       "G · Retail Trade": {
        "N": 208,
@@ -7297,11 +7279,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.380896457232332
       },
       "B · Mining": {
-       "N": 229,
+       "N": 228,
        "MOMENTUM_DELTA_MEDIAN": 0,
-       "RANK_DELTA_MEDIAN": 26,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5089058524172998,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.4061460168330395
+       "RANK_DELTA_MEDIAN": 25.75,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5040125269132858,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.408103347034644
       },
       "(unclassified)": {
        "N": 662,
@@ -7348,25 +7330,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.206498336269327
       },
       "Financials": {
-       "N": 718,
-       "MOMENTUM_DELTA_MEDIAN": 0.031212952701691,
+       "N": 719,
+       "MOMENTUM_DELTA_MEDIAN": 0.03117664589819169,
        "RANK_DELTA_MEDIAN": 1,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.01957330201605023,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.178606380896455
+       "FACTOR_PERCENTILE_DELTA_P95": 5.178117048346054
       },
       "Health Care": {
-       "N": 840,
+       "N": 839,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 21,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4110393423370482,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.207477001370142
+       "FACTOR_PERCENTILE_DELTA_P95": 5.208455666470943
       },
       "Consumer Staples": {
-       "N": 106,
-       "MOMENTUM_DELTA_MEDIAN": 0.011166845126158176,
+       "N": 107,
+       "MOMENTUM_DELTA_MEDIAN": 0.010574614597521959,
        "RANK_DELTA_MEDIAN": 4,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.07829320806420093,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.394206302603257
+       "FACTOR_PERCENTILE_DELTA_P95": 4.3648463495791745
       },
       "Consumer Discretionary": {
        "N": 396,
@@ -7390,11 +7372,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.167351732237222
       },
       "Energy": {
-       "N": 142,
-       "MOMENTUM_DELTA_MEDIAN": 0.021601366890043883,
-       "RANK_DELTA_MEDIAN": 2.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.048933255040125356,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.868271677431978
+       "N": 141,
+       "MOMENTUM_DELTA_MEDIAN": 0.021930847131521602,
+       "RANK_DELTA_MEDIAN": 1,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.019573302016049787,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.870229007633583
       },
       "Utilities": {
        "N": 134,
@@ -7668,8 +7650,8 @@
        "N": 1776,
        "MOMENTUM_DELTA_MEDIAN": -0.013468848715509907,
        "RANK_DELTA_MEDIAN": 23,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.450185946369146,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.609512624779805
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.45018594636914777,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.638872577803875
       },
       "I · Services": {
        "N": 759,
@@ -7679,11 +7661,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.167351732237229
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 965,
-       "MOMENTUM_DELTA_MEDIAN": 0.016927378752576938,
-       "RANK_DELTA_MEDIAN": -15,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.2935995302407477,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.6157760814249285
+       "N": 966,
+       "MOMENTUM_DELTA_MEDIAN": 0.016909101931128157,
+       "RANK_DELTA_MEDIAN": -14.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.28381287923272325,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.605989430416912
       },
       "G · Retail Trade": {
        "N": 208,
@@ -7700,11 +7682,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.695830886670585
       },
       "B · Mining": {
-       "N": 229,
-       "MOMENTUM_DELTA_MEDIAN": -0.013468848714632276,
+       "N": 228,
+       "MOMENTUM_DELTA_MEDIAN": -0.01346884871417936,
        "RANK_DELTA_MEDIAN": 27,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5284791544333522,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.179095713446863
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5284791544333505,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.180074378547665
       },
       "(unclassified)": {
        "N": 662,
@@ -7751,25 +7733,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.595811313368569
       },
       "Financials": {
-       "N": 718,
-       "MOMENTUM_DELTA_MEDIAN": 0.012927468596571179,
+       "N": 719,
+       "MOMENTUM_DELTA_MEDIAN": 0.012891587194398535,
        "RANK_DELTA_MEDIAN": -6,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.1174398120963076,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.862986885887653
+       "FACTOR_PERCENTILE_DELTA_P95": 4.860050890585248
       },
       "Health Care": {
-       "N": 840,
+       "N": 839,
        "MOMENTUM_DELTA_MEDIAN": -0.013468848715510018,
-       "RANK_DELTA_MEDIAN": 22.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.4403992953611251,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.638872577803873
+       "RANK_DELTA_MEDIAN": 23,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.450185946369146,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.638872577803874
       },
       "Consumer Staples": {
-       "N": 106,
-       "MOMENTUM_DELTA_MEDIAN": -0.0018311766235012683,
+       "N": 107,
+       "MOMENTUM_DELTA_MEDIAN": -0.0019006946903474264,
        "RANK_DELTA_MEDIAN": 6,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.11743981209629872,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.227833235466825
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1174398120963005,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.43335290663535
       },
       "Consumer Discretionary": {
        "N": 396,
@@ -7793,11 +7775,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.501859463691531
       },
       "Energy": {
-       "N": 142,
-       "MOMENTUM_DELTA_MEDIAN": 0.012532745911221124,
-       "RANK_DELTA_MEDIAN": 0.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.00978665100802445,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.803484047758851
+       "N": 141,
+       "MOMENTUM_DELTA_MEDIAN": 0.012812853372337063,
+       "RANK_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.813270698766878
       },
       "Utilities": {
        "N": 134,
@@ -8023,8 +8005,8 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-11-12",
-    "publishedEvidenceLagDays": 734,
+    "publishedEvidenceAsOf": "2026-11-13",
+    "publishedEvidenceLagDays": 735,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -8034,18 +8016,18 @@
     "simulatedScoredOnTotal": 5110,
     "momentumScoreShift": {
      "UNIVERSE_N": 5110,
-     "SPEARMAN_RANK_CORRELATION": 0.992099,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": 56,
-     "P95_RANK_CHANGE": 329,
-     "MAX_RANK_CHANGE": 3273,
-     "TITLES_MOVING_5_PERCENTILES": 504,
-     "TITLES_MOVING_10_PERCENTILES": 93
+     "SPEARMAN_RANK_CORRELATION": 0.992952,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 54,
+     "P95_RANK_CHANGE": 310,
+     "MAX_RANK_CHANGE": 3075,
+     "TITLES_MOVING_5_PERCENTILES": 435,
+     "TITLES_MOVING_10_PERCENTILES": 78
     }
    },
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-11-12 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-11-13 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   },
   {
@@ -8133,11 +8115,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.533048606874101
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 932,
-       "MOMENTUM_DELTA_MEDIAN": 0.006771582007164101,
+       "N": 933,
+       "MOMENTUM_DELTA_MEDIAN": 0.006764784048829964,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.300386414480371
+       "FACTOR_PERCENTILE_DELTA_P95": 4.299369534268862
       },
       "G · Retail Trade": {
        "N": 199,
@@ -8154,11 +8136,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.9225137278828597
       },
       "B · Mining": {
-       "N": 217,
-       "MOMENTUM_DELTA_MEDIAN": 7.971401316808624e-14,
+       "N": 216,
+       "MOMENTUM_DELTA_MEDIAN": 1.0913492332065289e-13,
        "RANK_DELTA_MEDIAN": 12,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.24405125076265222,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.719137685580636
+       "FACTOR_PERCENTILE_DELTA_P95": 2.722696766320926
       },
       "(unclassified)": {
        "N": 637,
@@ -8205,25 +8187,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.5828757372381546
       },
       "Financials": {
-       "N": 696,
-       "MOMENTUM_DELTA_MEDIAN": 0.005302431645518579,
+       "N": 697,
+       "MOMENTUM_DELTA_MEDIAN": 0.005269893648983448,
        "RANK_DELTA_MEDIAN": 2,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.04067520846044381,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.9947122229001444
+       "FACTOR_PERCENTILE_DELTA_P95": 2.993695342688632
       },
       "Health Care": {
-       "N": 811,
+       "N": 810,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 7,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14236322961156134,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.471018913971939
+       "FACTOR_PERCENTILE_DELTA_P95": 2.472035794183449
       },
       "Consumer Staples": {
-       "N": 100,
-       "MOMENTUM_DELTA_MEDIAN": 0.0013715205865423852,
+       "N": 101,
+       "MOMENTUM_DELTA_MEDIAN": 0.0007373911282800849,
        "RANK_DELTA_MEDIAN": 12,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.24405125076265932,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.7720154565792106
+       "FACTOR_PERCENTILE_DELTA_P95": 2.7659141753101437
       },
       "Consumer Discretionary": {
        "N": 378,
@@ -8247,11 +8229,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.6032133414683614
       },
       "Energy": {
-       "N": 136,
-       "MOMENTUM_DELTA_MEDIAN": 0.003537985874938143,
-       "RANK_DELTA_MEDIAN": 7.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1525320317266612,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.286150091519222
+       "N": 135,
+       "MOMENTUM_DELTA_MEDIAN": 0.0036022025774665734,
+       "RANK_DELTA_MEDIAN": 7,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.14236322961155423,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.293268252999798
       },
       "Utilities": {
        "N": 129,
@@ -8536,11 +8518,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.3760423022168107
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 932,
-       "MOMENTUM_DELTA_MEDIAN": 0.01666881366430356,
+       "N": 933,
+       "MOMENTUM_DELTA_MEDIAN": 0.016639582098249783,
        "RANK_DELTA_MEDIAN": -6,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.12202562538132611,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.346756152125275
+       "FACTOR_PERCENTILE_DELTA_P95": 5.3447223917022555
       },
       "G · Retail Trade": {
        "N": 199,
@@ -8557,11 +8539,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.805165751474475
       },
       "B · Mining": {
-       "N": 217,
-       "MOMENTUM_DELTA_MEDIAN": 1.0902723168726425e-11,
+       "N": 216,
+       "MOMENTUM_DELTA_MEDIAN": 1.1063261418087222e-11,
        "RANK_DELTA_MEDIAN": 11,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2237136465324383,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.933292658124872
+       "FACTOR_PERCENTILE_DELTA_P95": 3.935326418547895
       },
       "(unclassified)": {
        "N": 637,
@@ -8608,25 +8590,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.6322961155175824
       },
       "Financials": {
-       "N": 696,
-       "MOMENTUM_DELTA_MEDIAN": 0.014740346416346861,
+       "N": 697,
+       "MOMENTUM_DELTA_MEDIAN": 0.014737207781307826,
        "RANK_DELTA_MEDIAN": 1,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.020337604230221018,
        "FACTOR_PERCENTILE_DELTA_P95": 3.721781574130567
       },
       "Health Care": {
-       "N": 811,
+       "N": 810,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 10,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.20337604230221729,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.243847874720366
+       "FACTOR_PERCENTILE_DELTA_P95": 3.2448647549318763
       },
       "Consumer Staples": {
-       "N": 100,
-       "MOMENTUM_DELTA_MEDIAN": 0.00426560117956859,
+       "N": 101,
+       "MOMENTUM_DELTA_MEDIAN": 0.0040372586723897985,
        "RANK_DELTA_MEDIAN": 13,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.26438885499288034,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.6231441936139945
+       "FACTOR_PERCENTILE_DELTA_P95": 3.620093552979462
       },
       "Consumer Discretionary": {
        "N": 378,
@@ -8650,11 +8632,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.02216798861094
       },
       "Energy": {
-       "N": 136,
-       "MOMENTUM_DELTA_MEDIAN": 0.011892234471821084,
-       "RANK_DELTA_MEDIAN": 8,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1627008338417788,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.9979662395769715
+       "N": 135,
+       "MOMENTUM_DELTA_MEDIAN": 0.012183318013464728,
+       "RANK_DELTA_MEDIAN": 10,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.20337604230221729,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.0010168802115045
       },
       "Utilities": {
        "N": 129,
@@ -8939,11 +8921,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.613178767541175
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 932,
-       "MOMENTUM_DELTA_MEDIAN": 0.02399340345623807,
+       "N": 933,
+       "MOMENTUM_DELTA_MEDIAN": 0.02399120065696525,
        "RANK_DELTA_MEDIAN": 16,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3254016676835474,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.537522879804758
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.32540166768354783,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.536505999593248
       },
       "G · Retail Trade": {
        "N": 199,
@@ -8960,11 +8942,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.033150294895257
       },
       "B · Mining": {
-       "N": 217,
-       "MOMENTUM_DELTA_MEDIAN": 2.3526958159436617e-11,
-       "RANK_DELTA_MEDIAN": 53,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0778930242017495,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.6782591010778845
+       "N": 216,
+       "MOMENTUM_DELTA_MEDIAN": 2.711153523904386e-11,
+       "RANK_DELTA_MEDIAN": 53.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0880618263168635,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.684360382346952
       },
       "(unclassified)": {
        "N": 637,
@@ -9011,25 +8993,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.4016676835468775
       },
       "Financials": {
-       "N": 696,
-       "MOMENTUM_DELTA_MEDIAN": 0.020361628441943502,
+       "N": 697,
+       "MOMENTUM_DELTA_MEDIAN": 0.020282875280286272,
        "RANK_DELTA_MEDIAN": 28,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.569452918446208,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.287777099857636
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5694529184462098,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.291844620703681
       },
       "Health Care": {
-       "N": 811,
+       "N": 810,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 54,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0982306284319776,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.64368517388651
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.098230628431974,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.64470205409802
       },
       "Consumer Staples": {
-       "N": 100,
-       "MOMENTUM_DELTA_MEDIAN": 0.009359561547535145,
+       "N": 101,
+       "MOMENTUM_DELTA_MEDIAN": 0.009175717774789982,
        "RANK_DELTA_MEDIAN": 54,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.098230628431967,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.188122839129545
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0982306284319634,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.186089078706523
       },
       "Consumer Discretionary": {
        "N": 378,
@@ -9053,11 +9035,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.287777099857635
       },
       "Energy": {
-       "N": 136,
-       "MOMENTUM_DELTA_MEDIAN": 0.015756781121062435,
+       "N": 135,
+       "MOMENTUM_DELTA_MEDIAN": 0.016086917276489587,
        "RANK_DELTA_MEDIAN": 30,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6101281269066474,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.397803538743133
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6101281269066501,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.404921700223711
       },
       "Utilities": {
        "N": 129,
@@ -9331,7 +9313,7 @@
        "N": 1711,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 59,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.1999186495830756,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.1999186495830685,
        "FACTOR_PERCENTILE_DELTA_P95": 5.704697986577184
       },
       "I · Services": {
@@ -9342,11 +9324,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.685377262558469
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 932,
-       "MOMENTUM_DELTA_MEDIAN": 0.020889734138899274,
+       "N": 933,
+       "MOMENTUM_DELTA_MEDIAN": 0.0207990276219856,
        "RANK_DELTA_MEDIAN": 19,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3864144803742082,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.405938580435215
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.38641448037421,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.398820418954645
       },
       "G · Retail Trade": {
        "N": 199,
@@ -9363,11 +9345,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.644295302013421
       },
       "B · Mining": {
-       "N": 217,
-       "MOMENTUM_DELTA_MEDIAN": 1.3903656004288223e-11,
+       "N": 216,
+       "MOMENTUM_DELTA_MEDIAN": 1.768213353514625e-11,
        "RANK_DELTA_MEDIAN": 63,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.2812690665039668,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.048403498067928
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.2812690665039685,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.05043725849095
       },
       "(unclassified)": {
        "N": 637,
@@ -9414,25 +9396,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.747406955460646
       },
       "Financials": {
-       "N": 696,
-       "MOMENTUM_DELTA_MEDIAN": 0.017852260873388093,
-       "RANK_DELTA_MEDIAN": 27.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5592841163310958,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.488610941631073
+       "N": 697,
+       "MOMENTUM_DELTA_MEDIAN": 0.017833322473600255,
+       "RANK_DELTA_MEDIAN": 28,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5694529184462027,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.48505186089078
       },
       "Health Care": {
-       "N": 811,
+       "N": 810,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 58,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.1795810453528563,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.684360382346959
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.179581045352852,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.685377262558469
       },
       "Consumer Staples": {
-       "N": 100,
-       "MOMENTUM_DELTA_MEDIAN": 0.007331226352983999,
-       "RANK_DELTA_MEDIAN": 54.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.1083994305470846,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.656904616636161
+       "N": 101,
+       "MOMENTUM_DELTA_MEDIAN": 0.007215191705149393,
+       "RANK_DELTA_MEDIAN": 54,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.098230628431974,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.653853976001628
       },
       "Consumer Discretionary": {
        "N": 378,
@@ -9456,11 +9438,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.670124059385807
       },
       "Energy": {
-       "N": 136,
-       "MOMENTUM_DELTA_MEDIAN": 0.014321819669511515,
-       "RANK_DELTA_MEDIAN": 35,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.7118161480577623,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.848688224527156
+       "N": 135,
+       "MOMENTUM_DELTA_MEDIAN": 0.014386398345185736,
+       "RANK_DELTA_MEDIAN": 37,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.7524913565182025,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.859873906853777
       },
       "Utilities": {
        "N": 129,
@@ -9745,11 +9727,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.613178767541175
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 932,
-       "MOMENTUM_DELTA_MEDIAN": 0.012378765746812764,
+       "N": 933,
+       "MOMENTUM_DELTA_MEDIAN": 0.012348414163554922,
        "RANK_DELTA_MEDIAN": 16,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3254016676835474,
-       "FACTOR_PERCENTILE_DELTA_P95": 6.537522879804758
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.32540166768354783,
+       "FACTOR_PERCENTILE_DELTA_P95": 6.536505999593248
       },
       "G · Retail Trade": {
        "N": 199,
@@ -9766,11 +9748,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 6.033150294895257
       },
       "B · Mining": {
-       "N": 217,
-       "MOMENTUM_DELTA_MEDIAN": -0.015777458837258396,
-       "RANK_DELTA_MEDIAN": 53,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0778930242017495,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.6782591010778845
+       "N": 216,
+       "MOMENTUM_DELTA_MEDIAN": -0.015777458826288643,
+       "RANK_DELTA_MEDIAN": 53.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0880618263168635,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.684360382346952
       },
       "(unclassified)": {
        "N": 637,
@@ -9817,25 +9799,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.4016676835468775
       },
       "Financials": {
-       "N": 696,
-       "MOMENTUM_DELTA_MEDIAN": 0.008203317715500646,
+       "N": 697,
+       "MOMENTUM_DELTA_MEDIAN": 0.008197602363198775,
        "RANK_DELTA_MEDIAN": 28,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.569452918446208,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.287777099857636
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.5694529184462098,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.291844620703681
       },
       "Health Care": {
-       "N": 811,
+       "N": 810,
        "MOMENTUM_DELTA_MEDIAN": -0.015777458853917015,
        "RANK_DELTA_MEDIAN": 54,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0982306284319776,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.64368517388651
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.098230628431974,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.64470205409802
       },
       "Consumer Staples": {
-       "N": 100,
-       "MOMENTUM_DELTA_MEDIAN": -0.005494646381964459,
+       "N": 101,
+       "MOMENTUM_DELTA_MEDIAN": -0.005541046291442281,
        "RANK_DELTA_MEDIAN": 54,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.098230628431967,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.188122839129545
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -1.0982306284319634,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.186089078706523
       },
       "Consumer Discretionary": {
        "N": 378,
@@ -9859,11 +9841,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 5.287777099857635
       },
       "Energy": {
-       "N": 136,
-       "MOMENTUM_DELTA_MEDIAN": 0.0027931332708537315,
+       "N": 135,
+       "MOMENTUM_DELTA_MEDIAN": 0.0036358591793537176,
        "RANK_DELTA_MEDIAN": 30,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6101281269066474,
-       "FACTOR_PERCENTILE_DELTA_P95": 7.397803538743133
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.6101281269066501,
+       "FACTOR_PERCENTILE_DELTA_P95": 7.404921700223711
       },
       "Utilities": {
        "N": 129,
@@ -10089,8 +10071,8 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-11-12",
-    "publishedEvidenceLagDays": 1100,
+    "publishedEvidenceAsOf": "2026-11-13",
+    "publishedEvidenceLagDays": 1101,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -10100,18 +10082,18 @@
     "simulatedScoredOnTotal": 4918,
     "momentumScoreShift": {
      "UNIVERSE_N": 4918,
-     "SPEARMAN_RANK_CORRELATION": 0.984349,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": 69,
-     "P95_RANK_CHANGE": 349,
-     "MAX_RANK_CHANGE": 2879,
-     "TITLES_MOVING_5_PERCENTILES": 580,
-     "TITLES_MOVING_10_PERCENTILES": 113
+     "SPEARMAN_RANK_CORRELATION": 0.989706,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 67,
+     "P95_RANK_CHANGE": 327,
+     "MAX_RANK_CHANGE": 2422,
+     "TITLES_MOVING_5_PERCENTILES": 501,
+     "TITLES_MOVING_10_PERCENTILES": 106
     }
    },
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-11-12 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-11-13 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   },
   {
@@ -10187,11 +10169,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 1.728184339662905
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 903,
-       "MOMENTUM_DELTA_MEDIAN": 0.006373485683755509,
+       "N": 904,
+       "MOMENTUM_DELTA_MEDIAN": 0.006335892936367549,
        "RANK_DELTA_MEDIAN": -1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.0213356091316399,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.193940687006614
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.021335609131632793,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.1907403456368635
       },
       "G · Retail Trade": {
        "N": 189,
@@ -10208,11 +10190,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.1058246212929443
       },
       "B · Mining": {
-       "N": 205,
+       "N": 204,
        "MOMENTUM_DELTA_MEDIAN": 2.220446049250313e-16,
        "RANK_DELTA_MEDIAN": 11,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2346917004480389,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.5331768721996943
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.23469170044804244,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.535310433112859
       },
       "(unclassified)": {
        "N": 580,
@@ -10259,25 +10241,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 1.8124599957328769
       },
       "Financials": {
-       "N": 673,
-       "MOMENTUM_DELTA_MEDIAN": 0.005105743309706812,
+       "N": 674,
+       "MOMENTUM_DELTA_MEDIAN": 0.005089390665244553,
        "RANK_DELTA_MEDIAN": 1,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.021335609131641675,
-       "FACTOR_PERCENTILE_DELTA_P95": 1.8903349690633642
+       "FACTOR_PERCENTILE_DELTA_P95": 1.88606784723704
       },
       "Health Care": {
-       "N": 772,
+       "N": 771,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 15,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.32003413697460914,
-       "FACTOR_PERCENTILE_DELTA_P95": 1.6737785363772133
+       "FACTOR_PERCENTILE_DELTA_P95": 1.674845316833796
       },
       "Consumer Staples": {
-       "N": 98,
-       "MOMENTUM_DELTA_MEDIAN": 0.0020698664293953284,
-       "RANK_DELTA_MEDIAN": 12,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.256027309579693,
-       "FACTOR_PERCENTILE_DELTA_P95": 2.22850437379987
+       "N": 99,
+       "MOMENTUM_DELTA_MEDIAN": 0.001972408664900005,
+       "RANK_DELTA_MEDIAN": 11,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2346917004480531,
+       "FACTOR_PERCENTILE_DELTA_P95": 2.2253040324301248
       },
       "Consumer Discretionary": {
        "N": 358,
@@ -10301,11 +10283,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 2.4322594410070355
       },
       "Energy": {
-       "N": 131,
-       "MOMENTUM_DELTA_MEDIAN": 0.0038825033152167787,
-       "RANK_DELTA_MEDIAN": 1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.021335609131625688,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.5310433112865383
+       "N": 130,
+       "MOMENTUM_DELTA_MEDIAN": 0.004144675166231515,
+       "RANK_DELTA_MEDIAN": 0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.010667804565812844,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.5342436526562846
       },
       "Utilities": {
        "N": 128,
@@ -10590,11 +10572,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.121399615959037
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 903,
-       "MOMENTUM_DELTA_MEDIAN": 0.013275819316599602,
+       "N": 904,
+       "MOMENTUM_DELTA_MEDIAN": 0.013247451824400791,
        "RANK_DELTA_MEDIAN": -5,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0.1066780456582066,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.698101130787282
+       "FACTOR_PERCENTILE_DELTA_P95": 4.689566887134614
       },
       "G · Retail Trade": {
        "N": 189,
@@ -10611,11 +10593,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.649455941967142
       },
       "B · Mining": {
-       "N": 205,
-       "MOMENTUM_DELTA_MEDIAN": 2.516653552220305e-12,
+       "N": 204,
+       "MOMENTUM_DELTA_MEDIAN": 2.6362245719724342e-12,
        "RANK_DELTA_MEDIAN": 13,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2773629187113187,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.608491572434381
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2773629187113231,
+       "FACTOR_PERCENTILE_DELTA_P95": 4.6404949861318485
       },
       "(unclassified)": {
        "N": 580,
@@ -10662,25 +10644,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.157670151482821
       },
       "Financials": {
-       "N": 673,
-       "MOMENTUM_DELTA_MEDIAN": 0.01183522759434208,
+       "N": 674,
+       "MOMENTUM_DELTA_MEDIAN": 0.011793317208325771,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_P95": 3.285683806272665
       },
       "Health Care": {
-       "N": 772,
+       "N": 771,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 18,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3840409643695466,
        "FACTOR_PERCENTILE_DELTA_P95": 3.0083208875613394
       },
       "Consumer Staples": {
-       "N": 98,
-       "MOMENTUM_DELTA_MEDIAN": 0.005623402631679486,
-       "RANK_DELTA_MEDIAN": 17.5,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.373373159803716,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.329421804992534
+       "N": 99,
+       "MOMENTUM_DELTA_MEDIAN": 0.005589219848936233,
+       "RANK_DELTA_MEDIAN": 15,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.3200341369746127,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.32195434179646
       },
       "Consumer Discretionary": {
        "N": 358,
@@ -10704,11 +10686,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.2003413697461056
       },
       "Energy": {
-       "N": 131,
-       "MOMENTUM_DELTA_MEDIAN": 0.008556416468143757,
+       "N": 130,
+       "MOMENTUM_DELTA_MEDIAN": 0.008685395605521062,
        "RANK_DELTA_MEDIAN": 2,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.04267121826326559,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.717943247279713
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.04267121826327269,
+       "FACTOR_PERCENTILE_DELTA_P95": 5.73714529549819
       },
       "Utilities": {
        "N": 128,
@@ -10993,11 +10975,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.072327714956259
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 903,
-       "MOMENTUM_DELTA_MEDIAN": 0.02252754619175934,
+       "N": 904,
+       "MOMENTUM_DELTA_MEDIAN": 0.02251919044984091,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.009601024109233
+       "FACTOR_PERCENTILE_DELTA_P95": 5.0074674631960665
       },
       "G · Retail Trade": {
        "N": 189,
@@ -11014,11 +10996,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.4510347770428824
       },
       "B · Mining": {
-       "N": 205,
-       "MOMENTUM_DELTA_MEDIAN": 8.875011836551039e-12,
-       "RANK_DELTA_MEDIAN": 12,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2560273095796859,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.255813953488373
+       "N": 204,
+       "MOMENTUM_DELTA_MEDIAN": 9.366452058401364e-12,
+       "RANK_DELTA_MEDIAN": 12.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2666951141455094,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.257947514401538
       },
       "(unclassified)": {
        "N": 580,
@@ -11065,25 +11047,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.164070834222324
       },
       "Financials": {
-       "N": 673,
-       "MOMENTUM_DELTA_MEDIAN": 0.021163576363336323,
-       "RANK_DELTA_MEDIAN": 1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0213356091316399,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.430765948367827
+       "N": 674,
+       "MOMENTUM_DELTA_MEDIAN": 0.0211363702542266,
+       "RANK_DELTA_MEDIAN": 0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.01066780456581995,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.428632387454665
       },
       "Health Care": {
-       "N": 772,
+       "N": 771,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 11,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.234691700448046,
        "FACTOR_PERCENTILE_DELTA_P95": 3.093663324087899
       },
       "Consumer Staples": {
-       "N": 98,
-       "MOMENTUM_DELTA_MEDIAN": 0.016079801138084604,
+       "N": 99,
+       "MOMENTUM_DELTA_MEDIAN": 0.015282192480838397,
        "RANK_DELTA_MEDIAN": 8,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1706848730531263,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.315553659056966
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1706848730531192,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.2771495626200147
       },
       "Consumer Discretionary": {
        "N": 358,
@@ -11107,11 +11089,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.26328141668445
       },
       "Energy": {
-       "N": 131,
-       "MOMENTUM_DELTA_MEDIAN": 0.01665099665785874,
+       "N": 130,
+       "MOMENTUM_DELTA_MEDIAN": 0.018368813257887417,
        "RANK_DELTA_MEDIAN": 3,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0640068273949197,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.349690633667599
+       "FACTOR_PERCENTILE_DELTA_P95": 3.3496906336676
       },
       "Utilities": {
        "N": 128,
@@ -11396,11 +11378,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.349690633667592
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 903,
-       "MOMENTUM_DELTA_MEDIAN": 0.019660416242438417,
+       "N": 904,
+       "MOMENTUM_DELTA_MEDIAN": 0.01965942612151511,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 4.796244932792833
+       "FACTOR_PERCENTILE_DELTA_P95": 4.794111371879666
       },
       "G · Retail Trade": {
        "N": 189,
@@ -11417,11 +11399,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 4.317260507787504
       },
       "B · Mining": {
-       "N": 205,
-       "MOMENTUM_DELTA_MEDIAN": 4.792166663492026e-12,
+       "N": 204,
+       "MOMENTUM_DELTA_MEDIAN": 5.3370641239780525e-12,
        "RANK_DELTA_MEDIAN": 12,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2560273095796788,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.2003413697461043
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.25602730957968234,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.2003413697461047
       },
       "(unclassified)": {
        "N": 580,
@@ -11468,25 +11450,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.4136974610625117
       },
       "Financials": {
-       "N": 673,
-       "MOMENTUM_DELTA_MEDIAN": 0.017451098608572968,
+       "N": 674,
+       "MOMENTUM_DELTA_MEDIAN": 0.01742992345229538,
        "RANK_DELTA_MEDIAN": 2,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.042671218263281574,
        "FACTOR_PERCENTILE_DELTA_P95": 3.349690633667592
       },
       "Health Care": {
-       "N": 772,
+       "N": 771,
        "MOMENTUM_DELTA_MEDIAN": 0,
        "RANK_DELTA_MEDIAN": 12,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2560273095796859,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.157670151482829
+       "FACTOR_PERCENTILE_DELTA_P95": 3.1576701514828294
       },
       "Consumer Staples": {
-       "N": 98,
-       "MOMENTUM_DELTA_MEDIAN": 0.010263185485972048,
+       "N": 99,
+       "MOMENTUM_DELTA_MEDIAN": 0.009663048968421517,
        "RANK_DELTA_MEDIAN": 10,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.21335609131640965,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.3742265841689836
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2133560913164061,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.373159803712402
       },
       "Consumer Discretionary": {
        "N": 358,
@@ -11510,11 +11492,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.3710262427992452
       },
       "Energy": {
-       "N": 131,
-       "MOMENTUM_DELTA_MEDIAN": 0.014538812255851297,
+       "N": 130,
+       "MOMENTUM_DELTA_MEDIAN": 0.01483209056521112,
        "RANK_DELTA_MEDIAN": 4,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.08534243652656137,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.221676978877749
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.08534243652656759,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.223810539790913
       },
       "Utilities": {
        "N": 128,
@@ -11799,11 +11781,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.072327714956259
       },
       "H · Finance, Insurance, And Real Estate": {
-       "N": 903,
-       "MOMENTUM_DELTA_MEDIAN": 0.011183078381575867,
+       "N": 904,
+       "MOMENTUM_DELTA_MEDIAN": 0.01114669650599534,
        "RANK_DELTA_MEDIAN": 0,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": 0,
-       "FACTOR_PERCENTILE_DELTA_P95": 5.009601024109233
+       "FACTOR_PERCENTILE_DELTA_P95": 5.0074674631960665
       },
       "G · Retail Trade": {
        "N": 189,
@@ -11820,11 +11802,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.4510347770428824
       },
       "B · Mining": {
-       "N": 205,
-       "MOMENTUM_DELTA_MEDIAN": -0.015053129236499596,
-       "RANK_DELTA_MEDIAN": 12,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2560273095796859,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.255813953488373
+       "N": 204,
+       "MOMENTUM_DELTA_MEDIAN": -0.015053129236311358,
+       "RANK_DELTA_MEDIAN": 12.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.2666951141455094,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.257947514401538
       },
       "(unclassified)": {
        "N": 580,
@@ -11871,25 +11853,25 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.164070834222324
       },
       "Financials": {
-       "N": 673,
-       "MOMENTUM_DELTA_MEDIAN": 0.008593675364599401,
-       "RANK_DELTA_MEDIAN": 1,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0213356091316399,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.430765948367827
+       "N": 674,
+       "MOMENTUM_DELTA_MEDIAN": 0.00859196260875647,
+       "RANK_DELTA_MEDIAN": 0.5,
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.01066780456581995,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.428632387454665
       },
       "Health Care": {
-       "N": 772,
+       "N": 771,
        "MOMENTUM_DELTA_MEDIAN": -0.015053129244515073,
        "RANK_DELTA_MEDIAN": 11,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.234691700448046,
        "FACTOR_PERCENTILE_DELTA_P95": 3.093663324087899
       },
       "Consumer Staples": {
-       "N": 98,
-       "MOMENTUM_DELTA_MEDIAN": -0.0002111789360426941,
+       "N": 99,
+       "MOMENTUM_DELTA_MEDIAN": -0.0003958073871000445,
        "RANK_DELTA_MEDIAN": 8,
-       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1706848730531263,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.315553659056966
+       "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.1706848730531192,
+       "FACTOR_PERCENTILE_DELTA_P95": 3.2771495626200147
       },
       "Consumer Discretionary": {
        "N": 358,
@@ -11913,11 +11895,11 @@
        "FACTOR_PERCENTILE_DELTA_P95": 3.26328141668445
       },
       "Energy": {
-       "N": 131,
-       "MOMENTUM_DELTA_MEDIAN": -0.002417794441520682,
+       "N": 130,
+       "MOMENTUM_DELTA_MEDIAN": -0.001342158425643114,
        "RANK_DELTA_MEDIAN": 3,
        "FACTOR_PERCENTILE_DELTA_MEDIAN": -0.0640068273949197,
-       "FACTOR_PERCENTILE_DELTA_P95": 3.349690633667599
+       "FACTOR_PERCENTILE_DELTA_P95": 3.3496906336676
       },
       "Utilities": {
        "N": 128,
@@ -12143,8 +12125,8 @@
     "note": "Momentumnote aus denselben sechs Komponenten und Gewichten wie die Produktion, aber nur auf Universumsperzentilen. Die Produktion mischt Peergruppen dazu.",
     "contemporaneousWithPublishedEvidence": false,
     "strategyBasis": "NOT_APPLICABLE",
-    "publishedEvidenceAsOf": "2026-11-12",
-    "publishedEvidenceLagDays": 1466,
+    "publishedEvidenceAsOf": "2026-11-13",
+    "publishedEvidenceLagDays": 1467,
     "excludedForLateFundamentals": null,
     "limitation": null,
     "SIMULATION_FIDELITY_TOTAL_VS_PUBLISHED": null,
@@ -12154,18 +12136,18 @@
     "simulatedScoredOnTotal": 4688,
     "momentumScoreShift": {
      "UNIVERSE_N": 4688,
-     "SPEARMAN_RANK_CORRELATION": 0.995806,
-     "MEDIAN_ABSOLUTE_RANK_CHANGE": 42,
-     "P95_RANK_CHANGE": 216.6,
-     "MAX_RANK_CHANGE": 2456,
-     "TITLES_MOVING_5_PERCENTILES": 186,
-     "TITLES_MOVING_10_PERCENTILES": 35
+     "SPEARMAN_RANK_CORRELATION": 0.99575,
+     "MEDIAN_ABSOLUTE_RANK_CHANGE": 42.5,
+     "P95_RANK_CHANGE": 212,
+     "MAX_RANK_CHANGE": 2562,
+     "TITLES_MOVING_5_PERCENTILES": 188,
+     "TITLES_MOVING_10_PERCENTILES": 37
     }
    },
    "STRATEGY_IMPACT": {
     "state": "NOT_APPLICABLE",
     "reason": "PUBLISHED_FACTOR_EVIDENCE_IS_NOT_POINT_IN_TIME",
-    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-11-12 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
+    "note": "Die nicht-momentumbasierten Faktornoten liegen nur zum Stichtag 2026-11-13 vor. Sie auf einen frueheren Stichtag zu legen waere Future Leakage."
    }
   }
  ],
@@ -12188,5 +12170,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 28264
+ "runtimeMs": 35881
 }

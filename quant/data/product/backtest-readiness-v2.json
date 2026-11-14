@@ -1,9 +1,9 @@
 {
  "schemaVersion": "backtest-readiness-2.0.0",
- "generatedAt": "2026-11-14T00:45:00.506Z",
+ "generatedAt": "2026-11-14T08:23:48.975Z",
  "signalStudy": {
   "asOf": "2026-11-13",
-  "generatedAt": "2026-11-14T00:42:58.778Z",
+  "generatedAt": "2026-11-14T08:21:07.548Z",
   "returnType": "TOTAL_RETURN",
   "studySchemaVersion": "signal-backtest-study-2.0.0",
   "studyEngineVersion": "signal-backtest-2.0.0",
@@ -78,11 +78,11 @@
   {
    "id": "membershipSnapshots",
    "label": "Index-Zugehörigkeit (historisch)",
-   "count": 8,
+   "count": 9,
    "byIndex": {
-    "SP500": 8,
-    "NDX": 8,
-    "DJIA": 8
+    "SP500": 9,
+    "NDX": 9,
+    "DJIA": 9
    },
    "from": "2026-09-15"
   },
@@ -112,7 +112,7 @@
     "reason": null,
     "contract": "canonical-total-return-1.0.0",
     "asOf": "2026-11-13",
-    "generatedAt": "2026-11-14T00:42:58.778Z"
+    "generatedAt": "2026-11-14T08:21:07.548Z"
    },
    "daily": {
     "titles": 5,
@@ -193,7 +193,7 @@
    "id": "survivorship",
    "label": "Überlebende-Kontrolle",
    "delistedInUniverse": 0,
-   "membershipSnapshots": 8,
+   "membershipSnapshots": 9,
    "state": "NOT_CONTROLLED",
    "sensitivityDelisted": 3058,
    "sensitivityFrom": "2016-01-08"
@@ -400,7 +400,7 @@
      "id": "membership",
      "label": "historische Index-Zugehörigkeit",
      "state": "FAIL",
-     "value": "8 Stichtage je Index (nötig 24 Monatsstände)",
+     "value": "9 Stichtage je Index (nötig 24 Monatsstände)",
      "reason": "HISTORICAL_UNIVERSE_MEMBERSHIP_MISSING"
     },
     {

@@ -1,22 +1,22 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-11-14T00:45:22.239Z",
+ "generatedAt": "2026-11-14T08:24:13.698Z",
  "asOf": "2026-11-13",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 1004,
+  "RADAR_EVENTS_TOTAL": 1146,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 1,
    "SETUP_NEW": 67,
-   "STRATEGY_MATCH_NEW": 37,
+   "STRATEGY_MATCH_NEW": 79,
    "NEW_52W_HIGH": 125,
    "MOMENTUM_IMPROVED": 130,
    "TREND_UP": 74,
-   "PATTERN_MATCH_NEW": 51,
+   "PATTERN_MATCH_NEW": 114,
    "FACTOR_CHANGED": 296,
    "RISK_RISING": 21,
    "SETUP_WEAKENED": 53,
    "SETUP_INVALIDATED": 0,
-   "STRATEGY_MATCH_LOST": 39,
+   "STRATEGY_MATCH_LOST": 76,
    "MOMENTUM_DETERIORATED": 42,
    "TREND_DOWN": 68,
    "EVIDENCE_CHANGED": 0
@@ -46,13 +46,13 @@
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5385,
-  "ALERT_READY_EVENTS": 1004
+  "ALERT_READY_EVENTS": 1146
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "850 Karten aus 1004 Ereignissen"
+   "measured": "935 Karten aus 1146 Ereignissen"
   },
   {
    "question": "warum",
@@ -377,7 +377,10 @@
   {
    "ticker": "DXPE",
    "kind": "Small Cap",
-   "radarEvents": [],
+   "radarEvents": [
+    "STRATEGY_MATCH_NEW",
+    "STRATEGY_MATCH_LOST"
+   ],
    "setup": {
     "state": "NO_SETUP",
     "since": "2026-10-20",

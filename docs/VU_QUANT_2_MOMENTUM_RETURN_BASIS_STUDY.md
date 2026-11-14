@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-11-14T00:17:24.000Z |
+| Stand der Messung | 2026-11-14T07:51:22.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -95,20 +95,19 @@ Diese Frage stand im Return-Semantics-Vertrag als `UNKNOWN_UNTIL_MEASURED`. Sie 
 | | |
 |---|---|
 | Artefakt | `quant/data/product/factor-evidence-v1` |
-| Einträge | 6.149 |
-| Preisbasis | `close` 6.149 |
+| Einträge | 6.148 |
+| Preisbasis | `close` 6.148 |
 | gemessene Quant-V2-Momentumbasis | **MIXED_OR_UNCONFIRMED** |
 
 **Befund: Methodiktext und Rechnung sagen nicht dasselbe.**
 
 | Komponente | Gewicht | beschrieben als | gerechnet auf |
 |---|---:|---|---|
-| `momentum:priceReturn12m1m` | 0,30 | split-adjusted price return T-252 to T-21 | `adjustedClose` |
-| `momentum:priceReturn6m` | 0,20 | split-adjusted price return | `adjustedClose` |
-| `momentum:priceReturn3m` | 0,10 | split-adjusted price return | `adjustedClose` |
-| `momentum:relativeStrength12m1m` | 0,20 | security 12-1 split-adjusted price return minus certified broad benchmark 12-1 split-adjusted price return | `adjustedClose` |
-| `momentum:distanceTo52wHigh` | 0,10 | (high252-current split-adjusted close)/high252 | `adjustedClose` |
-| `momentum:distanceToSma200` | 0,10 | (split-adjusted close-SMA200)/SMA200 | `adjustedClose` |
+| `momentum:priceReturn12m1m` | 0,38 | split-adjusted price return T-252 to T-21 | `adjustedClose` |
+| `momentum:priceReturn6m` | 0,25 | split-adjusted price return | `adjustedClose` |
+| `momentum:priceReturn3m` | 0,13 | split-adjusted price return | `adjustedClose` |
+| `momentum:distanceTo52wHigh` | 0,13 | (high252-current split-adjusted close)/high252 | `adjustedClose` |
+| `momentum:distanceToSma200` | 0,13 | (split-adjusted close-SMA200)/SMA200 | `adjustedClose` |
 
 Zusammen 1,00 Gewicht der Momentumnote. Solange `adjustedClose` splitbereinigt wäre, fiele das nicht auf; sie ist nachweislich gesamtrenditebereinigt, also ist es ein Unterschied. Diese Studie korrigiert ihn nicht still — er gehört in die Entscheidung.
 
@@ -196,15 +195,15 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 |---|---:|---:|---:|---:|---:|
 | (unclassified) | 731 | 5,46 % | -139 | 2,43 | 9,53 |
 | REITs | 189 | 5,42 % | -128 | 2,24 | 9,75 |
-| Consumer Staples | 116 | 0,63 % | 0 | 0,00 | 4,10 |
-| Energy | 149 | 2,21 % | 0 | 0,00 | 6,37 |
+| Energy | 148 | 2,32 % | -1 | 0,01 | 6,38 |
+| Consumer Staples | 117 | 0,56 % | 0 | 0,00 | 4,10 |
 | Utilities | 144 | 2,67 % | 1 | -0,02 | 4,24 |
 | Real Estate | 66 | 0,00 % | 6 | -0,11 | 10,73 |
-| Financials | 868 | 1,53 % | 8 | -0,13 | 5,08 |
+| Financials | 869 | 1,52 % | 7 | -0,12 | 5,08 |
 | Communication | 129 | 0,00 % | 17 | -0,30 | 4,16 |
 | (other) | 499 | 0,00 % | 19 | -0,33 | 3,78 |
 | Industrials | 442 | 0,00 % | 20 | -0,34 | 3,97 |
-| Health Care | 930 | 0,00 % | 21 | -0,37 | 3,75 |
+| Health Care | 929 | 0,00 % | 21 | -0,37 | 3,75 |
 | Consumer Discretionary | 432 | 0,00 % | 22 | -0,38 | 3,83 |
 | Technology | 723 | 0,00 % | 22 | -0,39 | 3,87 |
 | Materials | 297 | 0,00 % | 24 | -0,42 | 3,80 |
@@ -216,13 +215,13 @@ Klassifikation: **SIC_DIVISION**, aus `quant/data/product/factor-evidence-v1 (pe
 | Sektor | Titel | Δ Rendite (Median) | Δ Rang (Median) | Δ Perzentil (Median) | Δ Perzentil (P95) |
 |---|---:|---:|---:|---:|---:|
 | (unclassified) | 731 | 5,46 % | -139 | 2,43 | 9,53 |
-| H · Finance, Insurance, And Real Estate | 1.123 | 2,05 % | 1 | -0,02 | 7,22 |
+| H · Finance, Insurance, And Real Estate | 1.124 | 2,05 % | 1 | -0,02 | 7,22 |
 | E · Transportation, Communications, Electric, Gas, And Sanitary Services | 395 | 1,46 % | 5 | -0,09 | 4,33 |
 | F · Wholesale Trade | 100 | 0,00 % | 17 | -0,29 | 4,41 |
 | D · Manufacturing | 1.929 | 0,00 % | 19 | -0,33 | 3,73 |
 | G · Retail Trade | 222 | 0,00 % | 23 | -0,40 | 3,77 |
 | I · Services | 892 | 0,00 % | 23 | -0,40 | 4,06 |
-| B · Mining | 241 | 0,00 % | 25 | -0,44 | 4,34 |
+| B · Mining | 240 | 0,00 % | 26 | -0,46 | 4,35 |
 | C · Construction | 62 | 0,00 % | 41 | -0,71 | 3,80 |
 | A · Agriculture, Forestry, And Fishing | 20 | 0,00 % | 45 | -0,79 | 3,37 |
 
@@ -235,20 +234,20 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 | | |
 |---|---:|
 | Grundlage | `EVIDENCE_AT_OR_BEFORE_CUTOFF` |
-| veröffentlichtes Evidence vom | 2026-11-12 (-1 Tage nach dem Stichtag) |
+| veröffentlichtes Evidence vom | 2026-11-13 (0 Tage nach dem Stichtag) |
 | ausgeschlossen, weil Fundamentaldaten erst nach dem Stichtag öffentlich | 0 |
-| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9357 |
-| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9456 |
-| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.574 / 5.715 / 5.715 |
+| ρ Simulation (Gesamtrendite) zur veröffentlichten Note | 0,9379 |
+| ρ Simulation (Kursrendite) zur veröffentlichten Note | 0,9472 |
+| bewertete Titel: veröffentlicht / Kurs / gesamt | 5.524 / 5.715 / 5.715 |
 
-**Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9935 · Median 54 Ränge · P95 311,3 · Maximum 2.560 · 409 Titel bewegen sich um mindestens 5 Perzentilpunkte, 114 um mindestens 10.
+**Die Momentumnote selbst, Kurs gegen gesamt:** ρ 0,9939 · Median 54 Ränge · P95 292,3 · Maximum 3.176 · 296 Titel bewegen sich um mindestens 5 Perzentilpunkte, 99 um mindestens 10.
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 361 | 357 | 18 | 14 | 8,9 % |
-| Quality Momentum (`quality-momentum`) | 41 | 38 | 3 | 0 | 7,3 % |
+| Momentum Leader (`momentum-leader`) | 357 | 358 | 11 | 12 | 6,4 % |
+| Quality Momentum (`quality-momentum`) | 43 | 42 | 1 | 0 | 2,3 % |
 | Future Leader (`future-leader`) | 17 | 17 | 0 | 0 | 0,0 % |
-| Value Momentum (`value-momentum`) | 229 | 224 | 9 | 4 | 5,7 % |
+| Value Momentum (`value-momentum`) | 227 | 226 | 3 | 2 | 2,2 % |
 
 Keine Produktionsstrategie wurde dabei überschrieben. Die Simulation läuft neben der Produktion.
 
