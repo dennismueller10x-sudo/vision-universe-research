@@ -234,6 +234,11 @@ test("SC5 · Verdrahtung: eigene Stufe nach allen Pruefungen, entkoppelt, Zeitpl
   /* Supertrader-Workflow unveraendert: Zeitplan-Rueckfall + manueller Start, Concurrency, Integritaetstests vor dem Commit */
   const st = lies(".github/workflows/supertrader-signals.yml");
   assert.ok(takteVon("supertrader-signals.yml").includes("17 6 * * 2-6"), "Zeitplan-Rueckfall (Register)");
+  /* Frist (13.11.2026, Strang AK): ein zweiter, fruehere Termin rechnet nach, wenn der Anstoss des Nachtlaufs abgelehnt hat
+     (#1765). Der Lauf ist idempotent und seedet den Datenzweig selbst (alle Datenarten). Er liegt nach dem Nachtlauf-Ende
+     (~00:30 UTC) und vor der Warnschwelle SUPERTRADER_LATE (4 h). */
+  assert.ok(takteVon("supertrader-signals.yml").includes("47 1 * * 2-6"), "Frist-Termin (Register)");
+  assert.match(st, /seed-data-branch\.sh alle/, "Der Rueckfall-/Fristlauf spielt SPY selbst aus dem Datenzweig ein");
   assert.match(st, /workflow_dispatch:/);
   assert.match(st, /group: supertrader-signals\s*\n\s+cancel-in-progress: false/);
   assert.ok(st.indexOf('node --test "scripts/supertrader/tests/*.test.mjs"') < st.indexOf("commit-and-push.sh"), "Tests vor dem Commit");
