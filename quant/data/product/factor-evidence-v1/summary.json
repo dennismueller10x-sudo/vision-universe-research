@@ -1,9 +1,9 @@
 {
  "schemaVersion": "factor-evidence-summary-1.0.0",
  "methodologyVersion": "vu-factor-evidence-2.0.0",
- "derivedFrom": "quant-v2.2.0",
+ "derivedFrom": "quant-v2.3.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-14T00:28:27.000Z",
+ "generatedAt": "2026-11-14T01:12:47.000Z",
  "asOf": "2026-11-13",
  "publication": {
   "compositeAllowed": false,
@@ -55,16 +55,16 @@
     "WEAK": 36.82
    },
    "momentum": {
-    "VERY_STRONG": 81.8,
-    "STRONG": 69.71,
-    "NEUTRAL": 49.02,
-    "WEAK": 33.04
+    "VERY_STRONG": 81.76,
+    "STRONG": 69.65,
+    "NEUTRAL": 49.1,
+    "WEAK": 32.94
    },
    "value": {
-    "VERY_STRONG": 77.01,
-    "STRONG": 66.41,
-    "NEUTRAL": 49.89,
-    "WEAK": 38.63
+    "VERY_STRONG": 77.09,
+    "STRONG": 66.38,
+    "NEUTRAL": 49.93,
+    "WEAK": 38.54
    },
    "profitability": {
     "VERY_STRONG": 81.73,
@@ -196,7 +196,7 @@
   },
   "momentum:priceReturn12m1m": {
    "label": "Kursentwicklung 12 Monate ohne letzten Monat",
-   "weight": 0.3,
+   "weight": 0.375,
    "direction": "higher",
    "unit": "ratio",
    "basis": null,
@@ -206,7 +206,7 @@
   },
   "momentum:priceReturn6m": {
    "label": "Kursentwicklung 6 Monate",
-   "weight": 0.2,
+   "weight": 0.25,
    "direction": "higher",
    "unit": "ratio",
    "basis": null,
@@ -216,7 +216,7 @@
   },
   "momentum:priceReturn3m": {
    "label": "Kursentwicklung 3 Monate",
-   "weight": 0.1,
+   "weight": 0.125,
    "direction": "higher",
    "unit": "ratio",
    "basis": null,
@@ -224,19 +224,9 @@
    "window": "63 sessions",
    "input": "split-adjusted price return"
   },
-  "momentum:relativeStrength12m1m": {
-   "label": "Vorsprung gegenüber dem Markt, 12 Monate ohne letzten Monat",
-   "weight": 0.2,
-   "direction": "higher",
-   "unit": "ratio",
-   "basis": null,
-   "note": "Differenz der Log-Renditen über das 12-1-Fenster gegen den hinterlegten Vergleichsindex. Die volle Zwölfmonatsreihe daneben ist eine andere Größe und steht nicht an ihrer Stelle.",
-   "window": "252/21 sessions",
-   "input": "security 12-1 split-adjusted price return minus certified broad benchmark 12-1 split-adjusted price return"
-  },
   "momentum:distanceTo52wHigh": {
    "label": "Abstand zum 52-Wochen-Hoch",
-   "weight": 0.1,
+   "weight": 0.125,
    "direction": "lower",
    "unit": "ratio",
    "basis": null,
@@ -246,7 +236,7 @@
   },
   "momentum:distanceToSma200": {
    "label": "Abstand zur 200-Tage-Linie",
-   "weight": 0.1,
+   "weight": 0.125,
    "direction": "higher",
    "unit": "ratio",
    "basis": null,
@@ -272,7 +262,7 @@
    "basis": null,
    "note": null,
    "window": "latest close and PIT-safe TTM",
-   "input": "TTM net income/market capitalization"
+   "input": "TTM operating income after tax (operating income x (1 - effective TTM tax rate))/market capitalization; TTM net income/market capitalization where operating income or the tax rate is missing"
   },
   "value:ebitdaYield": {
    "label": "Operatives Ergebnis vor Abschreibungen je Unternehmenswert",
@@ -806,7 +796,14 @@
   "velocityWindowDays": 30,
   "velocityToleranceDays": 10,
   "scoreMomentumOpen": true,
-  "recomputationDrift": null
+  "recomputationDrift": {
+   "asOf": "2026-11-13",
+   "publishedHash": "d4e7b32a08c02594",
+   "recomputedHash": "f253d7161be00b23",
+   "rowsDiffering": 5536,
+   "rowsTotal": 6148,
+   "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
+  }
  },
  "scope": "CANONICAL_PRODUCT_UNIVERSE",
  "source": {
@@ -914,13 +911,13 @@
   }
  },
  "reasonCounts": {
-  "INSUFFICIENT_WEIGHTED_COVERAGE": 2282,
+  "INSUFFICIENT_WEIGHTED_COVERAGE": 2279,
   "BLOCKED_EXTERNAL": 6148,
   "INSUFFICIENT_COMPONENTS": 4332,
   "INPUT_NOT_MATERIALIZED": 6641,
   "REPORTING_CURRENCY_NOT_LISTING_CURRENCY": 359,
   "SHARE_COUNT_NOT_ATTRIBUTABLE_TO_LISTING": 252,
-  "MANDATORY_COMPONENT_MISSING": 21,
+  "MANDATORY_COMPONENT_MISSING": 24,
   "SHARE_COUNT_SCALE_SUSPECT": 2
  },
  "componentCoverage": {
@@ -937,7 +934,6 @@
   "momentum:priceReturn12m1m": 5547,
   "momentum:priceReturn6m": 5893,
   "momentum:priceReturn3m": 6074,
-  "momentum:relativeStrength12m1m": 5547,
   "momentum:distanceTo52wHigh": 5550,
   "momentum:distanceToSma200": 5628,
   "value:fcfYield": 2129,
@@ -1046,6 +1042,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 16220,
- "contentHash": "441ff858782487e6"
+ "runtimeMs": 38698,
+ "contentHash": "896c42cd0f4784be"
 }

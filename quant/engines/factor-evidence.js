@@ -31,7 +31,7 @@
      Version - die 1.0.0-Beobachtungen bleiben unveraendert unter ihrer
      eigenen Reihe stehen. */
   var METHODOLOGY_VERSION = "vu-factor-evidence-2.0.0";
-  var DERIVED_FROM = "quant-v2.2.0";
+  var DERIVED_FROM = "quant-v2.3.0";
   var SHARD_SCHEMA = "factor-evidence-product-1.0.0";
   var SUMMARY_SCHEMA = "factor-evidence-summary-1.0.0";
   var SCREENING_SCHEMA = "factor-evidence-screening-1.0.0";

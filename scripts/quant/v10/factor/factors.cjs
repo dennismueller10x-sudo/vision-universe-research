@@ -28,8 +28,12 @@ const COMPONENTS = {
   profitability: [['roicTtm', 0.25, 'higher'], ['roicMedian3y', 0.15, 'higher'], ['grossProfitabilityTtm', 0.20, 'higher'], ['operatingMarginTtm', 0.15, 'higher'], ['fcfMarginTtm', 0.15, 'higher'], ['roaTtm', 0.10, 'higher']]
 };
 const COMPONENT_IDS = Object.values(COMPONENTS).flat().map(c => c[0]);
-// Contract consistency: weights and directions must match quant-v2.json exactly.
-for (const [f, list] of Object.entries(COMPONENTS)) for (const [id, w, dir] of list) {
+// Contract consistency: weights and directions must match quant-v2.json exactly - for the contract version this study is
+// registered on (docs/quant-recovery/v10/factor/registration-1.0.0.json: quant-v2.2.0). A later product version
+// (quant-v2.3.0, 13.11.2026: momentum without relativeStrength12m1m, NOPAT earnings yield) does not redefine the frozen
+// V10 reconstruction; COMPONENTS above stays its registered specification.
+const V10_CONTRACT_VERSION = 'quant-v2.2.0';
+if (CONTRACT.methodologyVersion === V10_CONTRACT_VERSION) for (const [f, list] of Object.entries(COMPONENTS)) for (const [id, w, dir] of list) {
   const c = CONTRACT.factors[f].components.find(x => x.id === id);
   if (!c || Math.abs(c.weight - w) > 1e-12 || c.direction !== dir) throw Error('COMPONENT_CONTRACT_DRIFT:' + f + ':' + id);
 }
