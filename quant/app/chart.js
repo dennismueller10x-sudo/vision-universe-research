@@ -1,5 +1,5 @@
 /* =========================================================================
-   VISION UNIVERSE QUANT — app/chart.js                   (quant-chart-1.3.0)
+   VISION UNIVERSE QUANT — app/chart.js                   (quant-chart-1.4.0)
 
    EIN CHART. ALLE ZEITRAEUME. DERSELBE WIE IN DISCOVER.
 
@@ -49,7 +49,7 @@
 (function (global) {
   "use strict";
 
-  var VERSION = "quant-chart-1.3.0";
+  var VERSION = "quant-chart-1.4.0";
   /* Reihenfolge und Beschriftung nach dem Chartstandard (core/chart-standard.js,
      docs/charts/CHART_STANDARD.md): Hauptleiste 1T 1W 1M 1J 5J MAX, die weiteren
      Zeitraeume dieser Welt dahinter. Die Beschriftung IST die kanonische Kennung;
@@ -259,15 +259,27 @@
         buttons[r.id].classList.toggle("is-active", r.id === st.range);
       });
     }
-    /* Masse des gemeinsamen Kurscharts: volle Inhaltsbreite, mobil 180 px,
-       breit 300 px hoch (UI-Konzept 23.10.2026: Kurs, Chart und Quant-Ergebnis
-       in der ersten Bildschirmhoehe). */
+    /* Masse des gemeinsamen Kurscharts: volle Inhaltsbreite; die Hoehe folgt der Bildschirmhoehe (App-Konzept 2, Owner
+       14.11.2026: grosse Charts, den Platz nutzen). Die Regel steht einmal in assets/vu-chart.js (VUChart.stockHeight):
+       mobil 180 bis 300 px (390x844 -> 300), breit 300 px und auf voller Inhaltsbreite bis 400 px; ohne den Baustein die
+       frueheren 180/300 px. Nur Darstellung: Reihe, Zeitraum und Skala bleiben, wie sie sind. */
     var mobile = function () { return global.innerWidth < 760; };
     function width() { return Math.max(280, Math.round(box.getBoundingClientRect().width || node.getBoundingClientRect().width || (mobile() ? global.innerWidth - 24 : 1100))); }
-    function height() { return mobile() ? 180 : 300; }
+    /* Auf dem Telefon aendert sich innerHeight beim Rollen (Adressleiste faehrt ein und aus) und loest "resize" aus. Die Hoehe
+       gilt deshalb je Bildschirmbreite: sie wird erst mit einer neuen Breite (Drehen, anderes Fenster) neu bestimmt. */
+    var sized = null;
+    /* reserve: die Flaeche vor dem ersten Zeichnen. Der Knoten haengt dann noch nicht im Dokument; auf breiten Schirmen gilt
+       bis zum Zeichnen die Grundhoehe, beim Zeichnen die Breite, mit der auch das Bild gerechnet wird (width()). */
+    function height(reserve) {
+      var VC = global.VUChart, w = global.innerWidth;
+      if (!VC || !VC.stockHeight) return mobile() ? 180 : 300;
+      if (!mobile()) return VC.stockHeight(w, global.innerHeight, reserve ? undefined : width());
+      if (!sized || sized.w !== w) sized = { w: w, h: VC.stockHeight(w, global.innerHeight) };
+      return sized.h;
+    }
     /* Die Flaeche bleibt bis zum ersten Zeichnen leer (Tagesverlauf bis zu 3 s). Ohne
        reservierte Hoehe schob das spaetere SVG alles darunter weg (CLS 0,25 auf NVDA). */
-    plot.style.minHeight = height() + "px";
+    plot.style.minHeight = height(true) + "px";
 
     /* Zeichnen: der gemeinsame Kurschart (VUChart.render). Fehlt er (Tests
        ohne Browser), zeichnet Discovers Komponente dieselben Punkte. */
@@ -494,6 +506,7 @@
        antwortet sofort aus dem Cache oder nach einem Abruf; wer nicht
        antwortet, haelt den Chart nicht auf. */
     function start() {
+      if (!st.disposed) plot.style.minHeight = height() + "px"; /* jetzt mit der Breite, mit der gezeichnet wird: die reservierte Flaeche ist die Endhoehe */
       if (!(global.VUChart && global.VUChart.render) && !(MC && MC.renderRange)) { empty("Chart nicht verfügbar", "Die Chart-Komponente konnte nicht geladen werden."); return; }
       if (eod.length < 2 && !(Hub && Hub.enabled && Hub.enabled())) {
         empty("Keine Kursreihe", "Für diesen Titel liegt keine veröffentlichte Kursreihe vor."); syncButtons(); return;
