@@ -46,7 +46,23 @@
     box("C17", "Balken", U.bars([["2017", 9.7], ["2018", 11.7], ["2019", 10.9], ["2020", 16.7], ["2021", 26.9], ["2022", 27.0], ["2023", 60.9], ["2024", 130.5], ["2025", 216.0], ["2026", 303.0]], { label: "Umsatz je Jahr in Mrd. $ (Beispiel)" }) + '<div style="margin-top:12px">' + U.meter(86, { label: "Wachstum" }) + '</div><div style="margin-top:8px">' + U.meter(64, { lime: true, label: "Kursstärke" }) + "</div>"),
     box("C18", "Leerer Zustand", U.blank("Keine belastbare Zählung. Wir zeigen nichts Erfundenes.")),
     box("C19", "PRO-Marke", '<div class="bk-row">' + U.pro() + '<span class="vu-sm vu-mu">für Profi-Inhalte</span>' + U.research() + "</div>"),
-    box("C20", "Suche", U.search())
+    box("C20", "Suche", U.search()),
+    /* App-Konzept 2 (Owner-Freigabe 14.11.2026): Bausteine des freigegebenen Prototyps. Beispielwerte, keine Daten. */
+    box("K01", "Antippbare Kachel", '<div class="vu-grid">' + U.tap('<b>Link-Kachel</b><span class="vu-xs vu-mu">führt auf eine Seite</span>', { href: "/status/" }) +
+      U.tap('<b>Öffnet ein Fenster</b><span class="vu-xs vu-mu">Tiefe beim Antippen</span>', { pop: "bk-pop", popTitle: "Marktlage", tone: "night" }) + "</div>" +
+      '<template id="bk-pop"><p class="vu-sm vu-mu">Inhalt aus einem &lt;template&gt;. Am Telefon von unten, am Schreibtisch mittig. Schließen: Griff, Hintergrund, Escape.</p><div style="margin-top:12px">' +
+      U.stats([{ value: "37 %", label: "über der 200-Tage-Linie", tone: "lime" }, { value: "52 %", label: "im Abwärtstrend" }]) + '</div><p style="margin-top:14px"><button type="button" class="vu-btn vu-btn--sm" id="bk-pop-more">Zweites Fenster darüber</button></p></template>'),
+    box("K02", "Zahlenkachel und Zahlenreihe", '<div class="vu-grid" style="--vu-cols:3">' + U.stat("39", "neu in einem Anlagestil", { href: "/status/", tone: "night" }) + U.stat("157", "neue Jahreshochs", { href: "/status/", tone: "night" }) + U.stat("4", "Risiko steigt", { href: "/status/", tone: "night" }) + "</div>" +
+      '<div class="vu-box" style="margin-top:10px">' + U.stats([{ value: "648", label: "Muster heute" }, { value: "0 / 12", label: "Plätze im Musterdepot" }, { value: "13", label: "Methoden" }]) + "</div>"),
+    box("K03", "Schiene", U.rail(["Der Kurs führt den Markt an", "Wachstum zum fairen Preis", "Solide und im Aufwind", "Günstig bewertet"].map(function (t, i) {
+      return U.tap('<b class="vu-stat__v vu-num">' + [215, 128, 34, 61][i] + '</b><b style="margin-top:6px">' + U.esc(t) + "</b>", { href: "/status/" });
+    }), { label: "Beispiel einer Schiene", width: 200 })),
+    box("K04", "Ring und Zeiger", '<div class="bk-row" style="gap:18px">' + U.ring(71, { label: "Anteil" }) + U.ring(38, { size: 72, stroke: 8, text: "5/13", label: "Fortschritt" }) + '</div><div class="vu-night" style="margin-top:12px;border-radius:22px;padding:16px;text-align:center">' + U.gauge(37, { label: "Anteil über der 200-Tage-Linie" }) + "</div>"),
+    box("K05", "Vorher und Nachher", '<div class="vu-stack">' + U.delta(71, 53, { label: "Kurs lief gut" }) + U.delta(66, 78, { label: "Gewinn gedeckt" }) + "</div>"),
+    box("K06", "Balken um die Nulllinie", U.diverge([{ label: "Neues 52-Wochen-Hoch", sub: "Beispiel", value: 1.4 }, { label: "Unter der langen Linie", value: -0.1 }, { label: "Momentum stärker", value: -1.3 }], { label: "Beispiel: Vorsprung in Prozentpunkten" })),
+    box("K07", "Raster", U.heat([{ label: "NVDA" }, { label: "AAPL" }, { label: "MSFT" }, { label: "AMD" }], [{ label: "Verdient gut", values: [99, 96, 97, 65] }, { label: "Ist gewachsen", values: [86, 52, 68, 79] }, { label: "Preis", values: [63, 31, null, 35] }], { label: "Beispiel eines Rasters", note: ["Rang 0–100", "hell = stark"] })),
+    box("K08", "Netz", '<div class="bk-row" style="gap:18px">' + U.radar([99, 86, 44, 53, 63, 83], { label: "Profil", labels: ["Verd.", "Wachs.", "Solide", "Kurs", "Preis", "Ruhig"], size: 170 }) + U.radar([99, 86, 44, 53, 63, 83], { compare: [73, 58, 62, 72, 45, 82], label: "Zwei Profile", size: 130 }) + "</div>"),
+    box("K09", "„Weiter“-Karte", U.next({ title: "Supertrader: Methoden bekannter Trader", sub: "Der nächste sinnvolle Ort", href: "/supertrader/" }))
   ].join("");
 
   /* C06 und C10 mit echten Kursreihen (Kurshistorie aus dem Repository). */
@@ -84,4 +100,8 @@
   document.getElementById("open-sheet").addEventListener("click", function () { U.openSheet(sh); });
   document.getElementById("close-sheet").addEventListener("click", function () { U.closeSheet(sh); });
   U.bindHelp(document);
+  U.bindPops(kit);
+  document.addEventListener("click", function (e) {
+    if (e.target && e.target.id === "bk-pop-more") U.popup({ id: "bk-pop-2", title: "Zweites Fenster", body: U.help("Fenster stapeln sich. Escape schließt das oberste, der Fokus kehrt zum Auslöser zurück.") });
+  });
 })();

@@ -78,3 +78,40 @@ test('E5 screenreader labels preserve integer counts, percentages and percentage
  assert.equal(U.movementLabel('▼ −1,2 Pp.'),'Minus 1,2 Prozentpunkte');
  assert.equal(U.movementLabel('–'),'Keine Angabe');
 });
+
+// App-Konzept 2 (Owner-Freigabe 14.11.2026): Kachel, Schiene, Grafiken, „Weiter“-Karte, Fenster.
+test("K1 Bausteine des App-Konzepts 2: Markup, Maskierung und leere Werte", () => {
+  for (const k of ["tap", "stat", "stats", "rail", "ring", "gauge", "delta", "diverge", "heat", "radar", "next", "popup", "bindPops"]) assert.equal(typeof U[k], "function", k);
+  for (const k of ["vu-tap", "vu-stat", "vu-stats", "vu-rail", "vu-ring", "vu-gauge", "vu-delta", "vu-div", "vu-heat", "vu-radar", "vu-next", "vu-sheet-grab", "vu-night"]) assert.ok(css.includes("." + k), k);
+  assert.match(U.tap("<b>x</b>", { href: "/quant/" }), /^<a class="vu-tap" href="\/quant\/"><b>x<\/b><\/a>$/);
+  assert.match(U.tap("", { pop: "t1", popTitle: 'A"B' }), /^<button class="vu-tap" type="button" aria-haspopup="dialog" data-vu-pop="t1" data-vu-pop-title="A&quot;B">/);
+  assert.match(U.stat(null, "<neu>", { href: "#/x" }), /vu-stat__v vu-num">–<\/b><span class="vu-stat__l">&lt;neu&gt;/);
+  assert.match(U.stats([{ value: "37 %", label: "über der Linie", tone: "lime" }]), /role="list"><div role="listitem" class="is-lime"><b class="vu-num">37 %<\/b>/);
+  assert.equal((U.rail(["a", "b"], { label: "Stile" }).match(/role="listitem"/g) || []).length, 2);
+  assert.match(U.next({ title: "Supertrader", href: "/supertrader/" }), /^<a class="vu-next" href="\/supertrader\/">.*>Weiter<\/span><b>Supertrader<\/b>/);
+});
+test("K2 Grafiken zeichnen nur übergebene Werte", () => {
+  assert.match(U.ring(71), /aria-label="Anteil 71 %"/);
+  assert.doesNotMatch(U.ring(null), /is-on/, "ohne Wert kein Bogen");
+  assert.match(U.ring(null), />–<\/b>/);
+  assert.match(U.gauge(36.6, { text: "37 %", label: "Anteil über der 200-Tage-Linie" }), /aria-label="Anteil über der 200-Tage-Linie 37 %".*<b class="vu-num">37 %<\/b>/);
+  assert.doesNotMatch(U.gauge(undefined), /is-on/);
+  assert.match(U.delta(71, 53, { label: "Kurs lief gut" }), /class="vu-delta is-down" role="img" aria-label="Kurs lief gut: von 71 auf 53"/);
+  assert.match(U.delta(66, 78), /is-up.*width:66%.*left:66%;width:12%/);
+  assert.equal(U.delta(null, 5), "", "ohne Vorher-Wert keine Grafik");
+  const d = U.diverge([{ label: "A", value: 1.4 }, { label: "B", value: -0.7 }, { label: "C", value: null }]);
+  assert.equal((d.match(/role="listitem"/g) || []).length, 2, "Zeilen ohne Wert entfallen");
+  assert.match(d, /is-up" style="width:50\.0%".*\+1,4.*is-down" style="width:25\.0%".*−0,7/);
+  assert.equal(U.diverge([]), "");
+  const h = U.heat([{ label: "NVDA" }, { label: "AMD" }], [{ label: "Verdient gut", values: [99, null], hrefs: ["#/aktie/NVDA"] }]);
+  assert.match(h, /<a class="vu-heat__c vu-num is-hi" role="cell" style="--a:100" href="#\/aktie\/NVDA">99<\/a><span class="vu-heat__c vu-num is-na" role="cell" style="--a:0">–<\/span>/);
+  assert.equal(U.radar([1, 2]), "", "ein Netz braucht mindestens drei Achsen");
+  assert.match(U.radar([99, 86, null], { names: ["A", "B", "C"], label: "Profil" }), /aria-label="Profil: A 99, B 86, C –"/);
+});
+test("K3 Fenster: Griff, Dialogrolle, Fokusfalle und Sperre stehen im gemeinsamen Baustein", () => {
+  const js = readFileSync(new URL("../../assets/vu-ui.js", import.meta.url), "utf8");
+  assert.match(U.sheet("s1", "Titel", ""), /class="vu-sheet-ui" role="dialog" aria-modal="true" tabindex="-1" aria-label="Titel"/);
+  for (const k of ["vu-sheet-grab", "vu-sheet-open", 'e.key === "Escape"', 'e.key !== "Tab"', "__vuReturn", "vu-sheet-close"]) assert.ok(js.includes(k), k);
+  assert.match(css, /html\.vu-sheet-open\{overflow:hidden\}/);
+  assert.match(css, /@media\(min-width:761px\)\{\s*\.vu-sheet-backdrop:not\(\.vu-gesture-sheet\)\{align-items:center/);
+});
