@@ -80,8 +80,8 @@ try{
       assert.equal(layout.scrollWidth,width,where+': horizontaler Überlauf');assert.deepEqual(layout.over,[],where+': Element ragt aus dem Fenster');
       // Module names stay complete on one line inside their tile.
       assert.deepEqual(await page.locator('a.t .tn').evaluateAll(es=>es.filter(e=>e.offsetParent!==null&&e.getBoundingClientRect().height>parseFloat(getComputedStyle(e).fontSize)*1.6).map(e=>e.textContent)),[],where+': Modulname umbrochen');
-      // Touch targets of at least 44 px: social links, legal links, bottom bar, menu button, calls to action.
-      const small=await page.locator('.sc,.foot .lnav a,.foot ul a,.dock a,.bar .cta,.nl,main a.cta,main a.icb,.faq summary,[data-vid] .play').evaluateAll(es=>es.filter(e=>e.offsetParent!==null).map(e=>{const r=e.getBoundingClientRect();return {text:(e.getAttribute('aria-label')||e.textContent).trim().slice(0,40),w:Math.round(r.width),h:Math.round(r.height)};}).filter(r=>r.w<44||r.h<44));
+      // Touch targets of at least 44 px: social links, legal links, menu button, call to action at the bottom edge, calls to action.
+      const small=await page.locator('.sc,.foot .lnav a,.foot ul a,.mbtn,.stk a,.bar .cta,.nl,main a.cta,main a.icb,.faq summary,[data-vid] .play').evaluateAll(es=>es.filter(e=>e.offsetParent!==null).map(e=>{const r=e.getBoundingClientRect();return {text:(e.getAttribute('aria-label')||e.textContent).trim().slice(0,40),w:Math.round(r.width),h:Math.round(r.height)};}).filter(r=>r.w<44||r.h<44));
       assert.deepEqual(small,[],where+': Bedienfläche unter 44 px');
       const social=await page.locator('.foot .sc').evaluateAll(es=>es.map(e=>[e.href,e.getAttribute('aria-label'),e.rel,e.querySelector('svg')?.getAttribute('aria-hidden')]));
       assert.deepEqual(social.map(s=>s[0]),site.social,where+': Instagram und TikTok im Fuß');assert.ok(social.every(s=>/Vision Universe auf (Instagram|TikTok)/.test(s[1])&&/noopener/.test(s[2])&&s[3]==='true'),where+': Namen der Social-Links');
@@ -100,12 +100,69 @@ try{
         await page.locator('[data-vid] video').evaluate(e=>e.pause());
       }
       // Menu: opens, lists every module, legal links and social icons, closes with Escape.
-      const opener=page.locator(width>900?'.nl[data-mega]':'.dock a[data-mega]');await opener.click();
+      const opener=page.locator(width>900?'.nl[data-mega]':'.mbtn');await opener.click();
       assert.equal(await page.locator('#mega').isVisible(),true,where+': Menü');assert.equal(await opener.getAttribute('aria-expanded'),'true');
       assert.deepEqual(await page.locator('#mega a.mi').evaluateAll(es=>es.map(e=>e.querySelector('b').textContent)),[...['Discover','Screener','AI Atlas','Fundamental','Quant','Technical','Elliott','Supertrader','Hedgefonds','Portfolios','Vorsorge','Insights'],'Die App'],where+': Menüeinträge');
       assert.deepEqual(await page.locator('#mega .mlegal ul a').evaluateAll(es=>es.map(e=>e.textContent)),['Impressum','Datenschutz','Kontaktformular','E-Mail'],where+': Rechtliches im Menü');
       assert.equal(await page.locator('#mega .sc').count(),2,where+': Social-Links im Menü');
       await page.keyboard.press('Escape');assert.equal(await page.locator('#mega').isVisible(),false,where+': Escape schließt das Menü');
+      // Menu at the top (owner 14.11.2026). Phone: word mark left, menu button right, no bottom bar; the surface holds the pages,
+      // the call to action, every module, legal links and social icons; focus stays inside, the page behind does not scroll.
+      assert.equal(await page.locator('.dock').count(),0,where+': Leiste unten');
+      if(width<=900){
+        await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
+        const bar=await page.locator('.bar').boundingBox(),brand=await page.locator('.bar .brand').boundingBox(),button=await page.locator('.mbtn').boundingBox();
+        assert.ok(bar.height<=64&&brand.x+brand.width<=button.x&&Math.abs(button.x+button.width-(bar.x+bar.width))<14,where+': Wortmarke links, Menüknopf rechts, eine Zeile');
+        assert.equal(await page.locator('.bar .cta').isVisible(),false,where+': „Benachrichtigen“ weicht dem Menüknopf');
+        assert.equal(await page.locator('.nls').isVisible(),false,where+': Einträge stehen auf dem Telefon in der Menüfläche');
+        await opener.click();
+        assert.deepEqual(await page.locator('.mnav a.ml').evaluateAll(es=>es.map(e=>e.textContent.trim())),['Start','Die App','News','Aktienmagazin','Fragen'],where+': Seiten im Menü');
+        assert.equal(await page.locator('.mnav a.cta').isVisible(),true,where+': Aufruf im Menü');
+        assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('ml')),true,where+': Fokus im Menü');
+        assert.equal(await page.evaluate(()=>getComputedStyle(document.documentElement).overflowY),'hidden',where+': Seite hinter dem Menü scrollt nicht');
+        const stops=await page.locator('#nav a[href]').evaluateAll(es=>es.filter(e=>e.getClientRects().length).length);
+        for(let i=0;i<stops+2;i++){await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>!!document.activeElement.closest('#nav')),true,where+': Fokus bleibt im Menü');}
+        assert.deepEqual(await page.locator('#mega a').evaluateAll(es=>es.filter(e=>e.getClientRects().length).map(e=>{const r=e.getBoundingClientRect();return [e.textContent.trim().slice(0,30),Math.round(r.width),Math.round(r.height)];}).filter(r=>r[1]<44||r[2]<44)),[],where+': Bedienfläche im Menü unter 44 px');
+        if(path===''||path==='faq/'){const open=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(open.violations.map(v=>({id:v.id,nodes:v.nodes.slice(0,4).map(n=>n.target.join(' '))})),[],where+': axe bei offenem Menü');}
+        await page.keyboard.press('Escape');
+        assert.equal(await page.locator('#mega').isVisible(),false,where+': Escape');assert.equal(await page.evaluate(()=>document.activeElement.classList.contains('mbtn')),true,where+': Fokus zurück auf dem Menüknopf');
+        assert.notEqual(await page.evaluate(()=>getComputedStyle(document.documentElement).overflowY),'hidden',where+': Scrollsperre gelöst');
+        assert.equal(await opener.getAttribute('aria-expanded'),'false',where);
+      }else{
+        assert.equal(await page.locator('.mbtn').isVisible(),false,where+': am Rechner kein Menüknopf');assert.equal(await page.locator('.nls').isVisible(),true,where+': Einträge in der Leiste');
+      }
+      // One call to action at the bottom edge of the phone instead of the bar: appears after the button at the top of the page
+      // has left the window, gives way to the same call, the signup and the footer; never on wider screens.
+      const stick=page.locator('[data-stick]'),stickOn=()=>stick.evaluate(e=>e.classList.contains('on')&&getComputedStyle(e).visibility==='visible'&&getComputedStyle(e).display!=='none');
+      const settle=state=>page.waitForFunction(on=>document.querySelector('[data-stick]').classList.contains('on')===on,state,{timeout:5000}).then(()=>true,()=>false);
+      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));await page.waitForTimeout(150);
+      assert.equal(await stickOn(),false,where+': Aufruf unten am Seitenanfang');
+      const free=await page.evaluate(()=>{
+        const goal=document.querySelector('[data-stick] a').getAttribute('href'),H=innerHeight;
+        const same=[...document.querySelectorAll('main a.cta')].filter(a=>a.getAttribute('href')===goal&&a.getClientRects().length);
+        const hero=same[0]&&same[0].getBoundingClientRect().top<H?same[0]:null,marker=hero||document.querySelector('main h1');
+        const boxes=same.filter(a=>a!==hero).concat([...document.querySelectorAll('#newsletter,#dabei,.foot')]).map(e=>{const r=e.getBoundingClientRect();return [r.top+scrollY,r.bottom+scrollY];});
+        for(let y=marker.getBoundingClientRect().bottom+scrollY+40;y<document.body.scrollHeight-H;y+=60)if(boxes.every(([t,b])=>b<y-5||t>y+H+5))return y;
+        return -1;
+      });
+      if(width<560){
+        assert.ok(free>0,where+': Stelle ohne denselben Aufruf im Fenster');
+        await page.evaluate(y=>scrollTo({top:y,behavior:'instant'}),free);
+        assert.equal(await settle(true)&&await stickOn(),true,where+': Aufruf unten erscheint nach dem Kopf der Seite');
+        const box=await stick.locator('a').boundingBox();
+        assert.ok(box.height>=44&&box.x>=0&&box.x+box.width<=width&&box.y+box.height<=height,where+': Aufruf unten liegt im Fenster');
+        assert.equal((await stick.locator('a').innerText()).trim(),'Zum Start benachrichtigen',where);
+        assert.equal(await page.evaluate(()=>{const goal=document.querySelector('[data-stick] a').getAttribute('href');return [...document.querySelectorAll('main a.cta,.bar a.cta')].filter(a=>a.getAttribute('href')===goal&&a.getClientRects().length).filter(a=>{const r=a.getBoundingClientRect();return r.bottom>0&&r.top<innerHeight;}).length;}),0,where+': derselbe Aufruf doppelt im Fenster');
+        await page.evaluate(()=>scrollTo({top:document.body.scrollHeight,behavior:'instant'}));
+        assert.equal(await settle(false),true,where+': Aufruf unten weicht am Seitenende');
+        assert.equal(await stick.locator('a').isVisible(),false,where+': Aufruf unten verdeckt den Fuß');
+        const end=await page.evaluate(()=>[Math.round(document.querySelector('.foot .lnav').getBoundingClientRect().bottom),innerHeight]);
+        assert.ok(end[0]<=end[1],where+': Rechtsfuß am Seitenende ganz zu sehen');
+      }else{
+        await page.evaluate(y=>scrollTo({top:y>0?y:1500,behavior:'instant'}),free);
+        await page.waitForTimeout(250);assert.equal(await stick.locator('a').isVisible(),false,where+': kein Aufruf am unteren Rand auf breiten Fenstern');
+      }
+      await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
       if(path==='faq/'){
         const items=page.locator('details.faq');assert.equal(await items.count(),7);
         await items.nth(5).locator('summary').click();assert.equal(await items.nth(5).locator('p').isVisible(),true,where+': Antwort');
@@ -169,9 +226,16 @@ try{
   const plain=await browser.newContext({javaScriptEnabled:false,viewport:{width:390,height:844}}),nojs=await plain.newPage();
   await nojs.goto(base,{waitUntil:'load'});
   assert.equal(await nojs.locator('.rv').evaluateAll(es=>es.filter(e=>getComputedStyle(e).opacity!=='1').length),0,'ohne JavaScript ist nichts versteckt');
-  await Promise.all([nojs.waitForURL('**/app/#bereiche'),nojs.locator('.dock a[data-mega]').click()]);
+  // Menu without JavaScript: the button jumps to #mega, which opens the same surface (CSS :target); no call to action at the bottom edge.
+  assert.equal(await nojs.locator('[data-stick] a').isVisible(),false,'ohne JavaScript kein Aufruf am unteren Rand');
+  // (The surface fades in for 0.22 s; the pause lets it come to rest before the next click.)
+  await nojs.locator('.mbtn').click();assert.equal(await nojs.locator('#mega').isVisible(),true,'ohne JavaScript öffnet der Knopf das Menü');
+  assert.equal(await nojs.locator('#mega a.mi').count(),13);await nojs.waitForTimeout(500);
+  await nojs.locator('.mclose').click();assert.equal(await nojs.locator('#mega').isVisible(),false,'ohne JavaScript schließt „Menü schließen“');
+  await nojs.locator('.mbtn').click();await nojs.waitForTimeout(500);await nojs.locator('.mnav a.ml',{hasText:'News'}).click();await nojs.waitForURL('**/news/');
+  assert.equal(await nojs.locator('#mega').isVisible(),false);await nojs.goto(base,{waitUntil:'load'});
   await nojs.goto(base+'module/quant/');assert.equal(await nojs.locator('[data-vid] video[controls]').count(),1);assert.equal(await nojs.locator('[data-vid] .play').isVisible(),false);
   await nojs.goto(base+'faq/');await nojs.locator('details.faq').nth(6).locator('summary').click();assert.equal(await nojs.locator('details.faq').nth(6).locator('p').isVisible(),true);
   await plain.close();await context.close();
-  console.log(JSON.stringify({pages:site.pages.length,viewports:['1440 × 900','390 × 844','320 × 800'],checks:'no errors, no missing files, no cross-origin request, no horizontal overflow, axe WCAG A/AA, 200 % text, 44 px targets, menu, videos, internal links and anchors, reachability, no JavaScript; six legal and confirmation pages in the light design',links:links.size,heights:metrics.filter(m=>m.path==='/')},null,1));
+  console.log(JSON.stringify({pages:site.pages.length,viewports:['1440 × 900','390 × 844','320 × 800'],checks:'no errors, no missing files, no cross-origin request, no horizontal overflow, axe WCAG A/AA (also with the menu open), 200 % text, 44 px targets, menu at the top (focus stays inside, Escape, scroll lock), one call to action at the bottom edge on phones, videos, internal links and anchors, reachability, no JavaScript; six legal and confirmation pages in the light design',links:links.size,heights:metrics.filter(m=>m.path==='/')},null,1));
 }finally{await browser.close();await new Promise(r=>server.close(r));}

@@ -18,7 +18,7 @@ try{
   await page.goto(`http://127.0.0.1:${server.address().port}/`,{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
   // Presentation only, on the rendered page: keep brand, badge, headline, lead and the stage; drop navigation and buttons.
   await page.evaluate(()=>{
-    for(const e of document.querySelectorAll('.nls,.bar .soon,.bar .cta,.heroX .acts,.heroX .badges,.dock,.skip'))e.style.display='none';
+    for(const e of document.querySelectorAll('.nls,.bar .soon,.bar .cta,.heroX .acts,.heroX .badges,.mbtn,.stk,.skip'))e.style.display='none';
     const bar=document.querySelector('.bar');bar.style.background='none';bar.style.boxShadow='none';bar.style.backdropFilter='none';
     const hero=document.querySelector('.heroX');hero.style.paddingTop='128px';hero.style.minHeight='756px';hero.style.borderRadius='0';
     document.querySelector('.heroX .split').style.alignItems='center';

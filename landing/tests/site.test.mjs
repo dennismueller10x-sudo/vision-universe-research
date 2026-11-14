@@ -69,7 +69,7 @@ test('Website: nur Schwarz, Weiß, Grau und das eine Neongrün (Owner 14.11.2026
   const css=sources[0][1];
   assert.doesNotMatch(css,/--lt\b|#4f6b00|#7da800|#2a3305|prefers-color-scheme/i);
   // Lime never as text colour on a light surface: it is only set as text colour on the dark surfaces.
-  for(const rule of css.matchAll(/([^{}]+)\{[^{}]*[;{]color:var\(--lime\)[^{}]*\}/g))assert.match(rule[1],/\.c-ink|\.blk|\.mq|\.fc\.b|\.stats|\.dock|\.icb|\.sc:hover/,'Neongrün als Schriftfarbe nur auf Schwarz: '+rule[1]);
+  for(const rule of css.matchAll(/([^{}]+)\{[^{}]*[;{]color:var\(--lime\)[^{}]*\}/g))assert.match(rule[1],/\.c-ink|\.blk|\.mq|\.fc\.b|\.stats|\.icb|\.sc:hover/,'Neongrün als Schriftfarbe nur auf Schwarz: '+rule[1]);
 });
 
 test('Website: Instagram und TikTok als schlichte Links im Fuß und im Menü jeder Seite',()=>{
