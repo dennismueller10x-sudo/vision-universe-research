@@ -197,6 +197,14 @@
   var KEY_SHORT = { profitability: "Verdient gut", risk: "Ruhig für die Branche", quality: "Gewinn gedeckt & stabil", growth: "Ist gewachsen", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", revisions: "Schätzungen" };
   function capitalWord(w) { return w ? w.charAt(0).toUpperCase() + w.slice(1) : w; }
   /* Profil groß (VUUI.profileFull): „Das Profil von {Name}“, Rang-Hinweis, Legende der Stufen. */
+  /* Gesamtwert (vu-profile-mean-1.0.0): klein unter den Einzelwerten, kein Hero. Ehrlicher Satz zur Rückwärtsprüfung. */
+  function profileMeanBlock(vm) {
+    var U = global.VUUI, m = vm.profileMean;
+    if (!m) return "";
+    return '<p class="qv3-profile-mean vu-xs" data-profile-mean><span class="vu-mu">Gesamtwert (Durchschnitt)</span> <b class="vu-num">' + U.esc(String(Math.round(m.score))) + "</b>" +
+      (m.place && m.of ? ' · <a href="#/aktien/rangliste">Platz ' + m.place.toLocaleString("de-DE") + " von " + m.of.toLocaleString("de-DE") + "</a>" : "") +
+      '<br><span class="vu-mu">Durchschnitt der Profilwerte. Rückwärts geprüft: Aktien mit hohem Gesamtwert lagen früher nicht besser als der Markt – er beschreibt das Profil, er sagt nichts über künftige Kurse.</span></p>';
+  }
   function profileCard(vm, ticker, displayName) {
     var U = global.VUUI, rated = vm.factors.filter(function (f) { return f.state === "AVAILABLE"; });
     var total = Math.max.apply(null, [0].concat(rated.map(function (f) { return f.rank && f.rank.total; }).filter(function (n) { return typeof n === "number"; }))) || null;
@@ -205,7 +213,7 @@
     var card = el("div", { class: "vu-box qv3-profile" });
     card.innerHTML = '<div class="qv3-profile-h"><h2 class="vu-sm">Das Profil von ' + U.esc(String(name).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "")) + '</h2><span class="vu-xs vu-mu"><b>0–100' + (total ? " · Rang unter " + total.toLocaleString("de-DE") : "") + "</b></span></div>" +
       U.profileFull(VM.profileValues(vm.factors), { why: why }) +
-      '<div class="qv3-profile-help">' + U.help("Jede Zahl vergleicht vor allem mit Firmen derselben Branche (70 %) und dem Gesamtmarkt (30 %). 0 bis 100, höher heißt besser als die Vergleichsfirmen. Eine Gesamtnote gibt es bewusst nicht.") + "</div>";
+      '<div class="qv3-profile-help">' + U.help("Jede Zahl vergleicht vor allem mit Firmen derselben Branche (70 %) und dem Gesamtmarkt (30 %). 0 bis 100, höher heißt besser als die Vergleichsfirmen.") + "</div>" + profileMeanBlock(vm);
     return card;
   }
   function keyTiles(vm) {
@@ -225,7 +233,7 @@
        ohne Faktorzeile traegt keine. */
     var node = el("section", { class: "qx-glance qv-glance qv2-glance" + (vm.factorState === "AVAILABLE" ? " qx-verdict-card" : " qx-verdict-none"), id: "einordnung-kurz" });
     if (vm.factorState === "AVAILABLE" && o.rated >= 3) {
-      /* Konzept Quant 2026-11 (Entscheidung 2): das große Profil statt Zählkarte und Kacheln – sieben Zeilen, keine Gesamtnote. */
+      /* Konzept Quant 2026-11 (Entscheidung 2): das große Profil statt Zählkarte und Kacheln – sieben Zeilen; der Gesamtwert steht klein darunter. */
       node.append(profileCard(vm, ticker, displayName));
     } else if (vm.factorState === "AVAILABLE") {
       node.append(el("div", { class: "qx-verdict-top qv2-result", dataset: { tone: o.tone } }, [
@@ -294,7 +302,7 @@
       el("h3", { text: "Im Mittelfeld" })]), el("ul", {}, pc.middle.map(function (m) { return punkt({ factorId: m.factorId, title: m.title.replace(/: [^:]+$/, ""), score: m.score, text: String(m.label || "durchschnittlich").replace(/\s*\(\d+\)$/, "") + " – weder Stärke noch Schwäche" }, "middle"); }))]));
     if (pc.open.length) kids.push(el("details", { class: "dx-weitere qx-more" }, [el("summary", { text: "Noch nicht bewertbar (" + pc.open.length + ")" }),
       el("ul", { class: "dx-kann" }, pc.open.map(function (i) { return el("li", { class: "nein" }, [el("b", { text: i.title }), el("span", { text: " – " + i.text })]); }))]));
-    kids.push(foot("Eine Gesamtnote gibt es bewusst nicht: Sie würde Zielkonflikte verbergen, etwa hohe Qualität bei hoher Bewertung. Keine Empfehlung."));
+    kids.push(foot("Eine gewichtete Gesamtnote gibt es bewusst nicht: Sie würde Zielkonflikte verbergen, etwa hohe Qualität bei hoher Bewertung. Der Gesamtwert ist nur der einfache Durchschnitt der Profilwerte. Keine Empfehlung."));
     return kids;
   }
 

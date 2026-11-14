@@ -142,12 +142,12 @@
     main.append(X.more("Unsere Prinzipien", function () { return [el("div", { class: "q-principles qx-principles" }, [
       el("span", { class: "q-shield", "aria-hidden": "true" }, [X.icon("shield")]),
       el("div", {}, [el("b", { text: "Datenbasiert. Nachvollziehbar. Unabhängig." })].concat(
-        ["Belegte Daten mit Stichtag", "Gleiche Regeln für jede Aktie", "Lieber keine Aussage als eine falsche", "Keine Gesamtnote, keine Prognose"].map(function (x) { return el("span", { text: x }); })))]),
+        ["Belegte Daten mit Stichtag", "Gleiche Regeln für jede Aktie", "Lieber keine Aussage als eine falsche", "Keine gewichtete Gesamtnote, keine Prognose"].map(function (x) { return el("span", { text: x }); })))]),
       el("ol", { class: "q-rows q-principle-list" }, [
         ["Belegte Daten, mit Stichtag", "Geschäftszahlen aus Pflichtmeldungen, Kurse vom Marktdatenanbieter. Jede Zahl trägt ihren Stand. Eine Kennzahl zählt erst ab dem Tag, an dem sie öffentlich bekannt war."],
         ["Gleiche Regeln für jede Aktie", "Faktoren, Setups und Strategien folgen versionierten Regeln. Schwellen werden nicht an Ergebnissen optimiert und nicht für einzelne Titel angepasst."],
         ["Lieber keine Aussage als eine falsche", "Fehlt eine Kennzahl, wird sie nicht geschätzt. Reicht die Datenlage nicht, sagt Quant das – mit der Zahl, die fehlt."],
-        ["Keine Gesamtnote, keine Prognose", "Eine einzelne Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird."]
+        ["Keine gewichtete Gesamtnote, keine Prognose", "Eine einzelne verrechnete Zahl würde Zielkonflikte verbergen – etwa hohe Qualität bei hohem Preis. Quant zeigt die Eigenschaften einzeln und sagt nie, was passieren wird."]
       ].map(function (p, i) { return el("li", { class: "q-rowlink is-static" }, [el("span", { class: "q-num", text: "0" + (i + 1) }), el("span", {}, [el("strong", { text: p[0] }), el("small", { text: p[1] })])]); }))]; }));
     main.append(X.section("Wie ein Faktorwert zu lesen ist", "Jeder Faktor ist ein Wert von 0 bis 100, gebildet aus Rangplätzen im Vergleich zu anderen US-Aktien. Die Stufe sagt, wo dieser Wert unter allen bewerteten Aktien liegt.", [bandScale(),
       el("p", { class: "qx-small", text: "„Sehr stark“ heißt: höher als mindestens 90 % der bewerteten Aktien – gezählt am selben Stichtag, je Eigenschaft. Die Stufe ist damit eine relative Einordnung, kein absolutes Gütesiegel: Sie sagt, wie eine Aktie im Vergleich dasteht, nicht, ob sie für sich genommen gut ist." })],
@@ -164,7 +164,7 @@
         "Datenquellen und Stichtag jeder Zahl (Unternehmensmeldungen, Kursdatenanbieter; Quellen: /infos/#quellen)", "Kennzahlen, Gewichte und Rohwerte jedes Faktors", "Bedingungen jedes Setups und jeder Strategie",
         "Alle Vergleichsfälle im Rückblick – nie ein herausgegriffener", "Versionen jeder Regel"].map(function (x) { return el("li", { text: x }); }))]),
       el("div", { class: "is-no" }, [el("h3", { text: "Gibt es bewusst nicht – oder noch nicht" }), el("ul", {}, [
-        "Gesamtnote oder Rangliste", "Kursziele und Prognosen", "Trefferquoten (Backtesting noch nicht freigegeben)", "Sentiment- und News-Auswertung", "Erwartungstrend (keine zeitpunktgenaue Quelle)"].map(function (x) { return el("li", { text: x }); }))])])]; }));
+        "Gewichtete Gesamtnote und „beste Aktien“-Listen", "Kursziele und Prognosen", "Trefferquoten (Backtesting noch nicht freigegeben)", "Sentiment- und News-Auswertung", "Erwartungstrend (keine zeitpunktgenaue Quelle)"].map(function (x) { return el("li", { text: x }); }))])])]; }));
     main.append(X.actions([X.btn("Methodik im Detail (technische Dokumentation)", "/quant/methodology/", "secondary"), X.btn("Dateninspektor", "/quant/data-inspector/", "secondary")]));
   }
 
@@ -193,7 +193,7 @@
   }
   async function faktoren(main, ctx, t, params) {
     var gap = await emptyFactors(ctx); /* lädt auch die Abdeckung je Faktor (VM.isOpen) */
-    topicHead(main, t, VM.nWord().charAt(0).toUpperCase() + VM.nWord().slice(1) + " Eigenschaften, jede für sich eingeordnet. Keine Gesamtnote.");
+    topicHead(main, t, VM.nWord().charAt(0).toUpperCase() + VM.nWord().slice(1) + " Eigenschaften, jede für sich eingeordnet. Der Gesamtwert steht klein darunter.");
     var shard = await specs(ctx).catch(function () { return null; });
     var cs = (shard && shard.componentSpecs) || {};
     var focus = params && params.get("faktor");
@@ -282,7 +282,7 @@
       el("li", { text: "Jede Kennzahl bekommt einen Rangplatz von 0 bis 100 – in der eigenen Branche (mindestens 20 vergleichbare Unternehmen), sonst im Wirtschaftszweig (40), sonst im Gesamtmarkt (200)." }),
       el("li", { text: "Branchen- und Gesamtmarkt-Rang werden 70 : 30 gemischt." }),
       el("li", { text: "Der Faktorwert ist das gewichtete Mittel der vorhandenen Kennzahlen. Fehlt eine, fällt ihr Gewicht heraus – es wird nichts geschätzt. Unter 80 % Abdeckung gibt es keinen Faktorwert." }),
-      el("li", { text: "Eine Gesamtnote aus allen sieben Faktoren wird bewusst nicht veröffentlicht." })
+      el("li", { text: "Eine gewichtete Gesamtnote aus allen sieben Faktoren wird bewusst nicht veröffentlicht; der Gesamtwert ist nur der einfache Durchschnitt der Profilwerte." })
     ]), el("div", { class: "qx-actions" }, [X.btn("Gewichte je Kennzahl", X.routes.method("faktoren"), "secondary")]));
   }
 
@@ -361,7 +361,8 @@
       return X.card([el("h3", { class: "qx-h3", text: e.name + ": derzeit ohne Werte, ruht" }), para(e.text),
         el("p", { class: "qx-small", text: "Deshalb werden für jede Aktie höchstens " + (VM.ORDER.length - gap.empty.length) + " Eigenschaften bewertet – für alle gleich." })]);
     }), [
-      X.card([el("h3", { class: "qx-h3", text: "Keine Gesamtnote" }), para("Ein Gesamtwert ist spezifiziert, aber nicht freigegeben, solange Erwartungstrend, Branchenvergleich und zeitpunktgenaue Historie nicht produktionsreif sind.")]),
+      X.card([el("h3", { class: "qx-h3", text: "Gesamtwert: ein Durchschnitt, kein Urteil" }), para("Der Gesamtwert ist der einfache Durchschnitt der vorhandenen Profilwerte (mindestens vier von sechs, keine Gewichtung). Rückwärts geprüft zeigt er keinen Vorteil gegenüber dem Markt: Aktien mit hohem Gesamtwert lagen früher nicht besser. Er beschreibt das Profil und sagt nichts über künftige Kurse."),
+        el("p", { class: "qx-small" }, [el("a", { href: "#/aktien/rangliste", text: "Rangliste nach Gesamtwert" }), " · Der frühere, gewichtete Gesamtscore bleibt geschlossen, solange Erwartungstrend, Branchenvergleich und zeitpunktgenaue Historie nicht produktionsreif sind."])]),
       X.card([el("h3", { class: "qx-h3", text: "Fehlende Kennzahlen" }), para("Fehlt eine Kennzahl, fällt ihr Gewicht aus dem Faktor. Unter 80 % Abdeckung entsteht kein Faktorwert. Auf jeder Aktienseite steht, welche Kennzahl fehlt."),
         el("p", { class: "qx-small", text: "Bekannte Lücke: Die Nettoverschuldung liegt derzeit nur für einen kleinen Teil der Aktien vor, weil Schulden- und Cashflow-Zeiträume noch nicht sicher zusammenpassen. Sie wird erst eingerechnet, wenn das belegt ist." })]),
       X.card([el("h3", { class: "qx-h3", text: "Datenarme Aktien" }), para("Junge Aktien, Börsengänge oder selten gehandelte Titel haben oft zu wenig Historie. Quant nennt dann die Zahl: „Für diese Analyse werden 252 Handelstage benötigt; vorhanden sind 116.“")]),

@@ -94,7 +94,7 @@
       case "screener": r.view = "screener"; r.pro = parts[1] === "profi"; break;
       case "stile": r.view = "strategien"; r.id = parts[1] || null; break;
       case "strategien": r.view = "renamed"; break;
-      case "aktien": r.view = "aktien"; break;
+      case "aktien": r.view = parts[1] === "rangliste" ? "rangliste" : "aktien"; break;
       case "elliott":
         r.ticker = String(parts[1] || "").toUpperCase();
         r.view = !parts[1] ? "elliottHome" : /^[A-Z0-9.-]{1,12}$/.test(r.ticker) ? "elliott" : "notfound";
@@ -114,8 +114,8 @@
     }
     return r;
   }
-  var SECTION = { home: "home", radar: "home", renamed: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", aktie: "aktien", technik: "aktien", chartbild: "aktien", chart: "aktien", elliott: "elliott", chartlagen: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
-  var TITLE = { home: "Quant – Aktien verstehen", radar: "Meldungen", backtest: "Forschung", screener: "Quant Screener", strategien: "Anlagestile", aktien: "Aktien", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", chart: "Chartbild", elliott: "Elliott", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
+  var SECTION = { home: "home", radar: "home", renamed: "home", backtest: "methodik", screener: "screener", strategien: "strategien", aktien: "aktien", rangliste: "aktien", aktie: "aktien", technik: "aktien", chartbild: "aktien", chart: "aktien", elliott: "elliott", chartlagen: "aktien", zahlen: "aktien", vergleich: "aktien", methodik: "methodik" };
+  var TITLE = { home: "Quant – Aktien verstehen", radar: "Meldungen", backtest: "Forschung", screener: "Quant Screener", strategien: "Anlagestile", aktien: "Aktien", rangliste: "Rangliste nach Gesamtwert", aktie: "Aktienanalyse", technik: "Kursstruktur", chartbild: "Chartbild", chart: "Chartbild", elliott: "Elliott", chartlagen: "Technische Lagen", zahlen: "Unternehmenszahlen", vergleich: "Vergleich", methodik: "Methodik", notfound: "Nicht gefunden" };
 
   /* -------------------------------------------------------- Kontext */
   /* CHARTBILD (Technical Intelligence v3) LAEDT NUR, WO ES GEBRAUCHT WIRD.
@@ -309,7 +309,7 @@
   }
   /* Bereich -> Eintrag der Produkt-Leiste. Methodik und Backtesting sind
      sekundaere Bereiche (Hero, Fuss, Menue) und markieren nur das Produkt. */
-  var DOCK = { home: "quant", screener: "screener", strategien: "strategien", aktien: "aktien", methodik: "quant", elliott: null }; /* Q00: Methodik und Backtest gehören zum Start „Quant“ */
+  var DOCK = { home: "quant", screener: "screener", strategien: "strategien", aktien: "aktien", rangliste: "aktien", methodik: "quant", elliott: null }; /* Q00: Methodik und Backtest gehören zum Start „Quant“ */
   function markNav(section) {
     if (global.VUNavigation) global.VUNavigation.dock({ active: Object.prototype.hasOwnProperty.call(DOCK, section) ? DOCK[section] : null });
   }
@@ -447,6 +447,7 @@
         case "screener": await ctx.loadNames(); await global.QXPages.screener(main, ctx, r.params, r.pro); break;
         case "strategien": await ctx.loadNames(); await global.QXPages.strategies(main, ctx, r.id); break;
         case "aktien": await global.QXPages.stocks(main, ctx); break;
+        case "rangliste": await ctx.loadNames(); if (!global.QXRanking) await loadScript("/quant/app/page-ranking.js"); await global.QXRanking.render(main, ctx); break;
         case "aktie": await Promise.all([ctx.loadBacktestView(), viewPack]); dispose = await global.QXStock.render(main, r.ticker, ctx); break;
         /* Mission IV §55: die V1-Technikseite ist abgeloest — die Route bleibt (Links, Lesezeichen), zeigt aber das Chartbild;
            der alte Elliott-Link oeffnet die Profi-Ansicht. Keine zweite, widerspruechliche Szenario-Darstellung mehr. */

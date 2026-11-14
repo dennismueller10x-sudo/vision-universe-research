@@ -314,6 +314,19 @@ function create(options){
  /* Strategy Match liest ausschliesslich Quant-V2-Evidenz. Der Vertrag
   * nennt den erlaubten Namensraum, und die Engine weist ein Profil ab,
   * das darueber hinausgreift - deshalb steht hier keine zweite Pruefung. */
+ /* Rangliste des Gesamtwerts (vu-profile-mean-1.0.0, Erzeuger build-factor-evidence.mjs). */
+ let profileRankingPromise=null;
+ async function getProfileRanking(){
+  if(!profileRankingPromise)profileRankingPromise=(async()=>{
+   try{
+    const p=await compressedJSON('/quant/data/product/factor-evidence-v1/profile-mean/ranking.json.gz');
+    if(!p||p.schemaVersion!=='profile-ranking-1.0.0'||!Array.isArray(p.fields)||!p.rows)return {state:'UNAVAILABLE',reason:'INVALID_PROFILE_RANKING_ARTIFACT',rows:[]};
+    const rows=Object.entries(p.rows).map(([ticker,v])=>{const r={ticker};p.fields.forEach((f,i)=>{r[f]=typeof v[i]==='number'||typeof v[i]==='string'?v[i]:null;});return r;});
+    return {state:'AVAILABLE',methodologyVersion:p.methodologyVersion,asOf:p.asOf,total:p.total,minimumFactors:p.minimumFactors,factorOrder:p.factorOrder,rows};
+   }catch{return {state:'UNAVAILABLE',reason:'SOURCE_MISSING',rows:[]};}
+  })();
+  return profileRankingPromise;
+ }
  let profilesPromise=null;
  /* HISTORISCHE VERGLEICHSFAELLE JE TITEL.
   * Die Frage ist "wann galt diese Kurslage hier schon einmal und was kam
@@ -782,6 +795,8 @@ function create(options){
     issuerListings:record.issuerListings||null,
     marketCap:record.marketCap,peer:record.peer,dataQuality:record.dataQuality,
     publication:shard.publication,composite:record.composite,
+    /* Gesamtwert (vu-profile-mean-1.0.0): Durchschnitt der Profilwerte, eigenes Feld; composite bleibt WITHHELD. */
+    profileMean:record.profileMean||null,
     factors:FactorEvidence.ordered(record),
     summary:FactorEvidence.summarySentence(record),
     change:ChangeEngine.hydrate(record.change),
@@ -1461,7 +1476,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence:sharedStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
+ return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence:sharedStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getProfileRanking,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);

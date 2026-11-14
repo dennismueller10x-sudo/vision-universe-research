@@ -32,6 +32,7 @@ const FundamentalInputs = require(join(ROOT, "quant/engines/fundamental-inputs.j
 const PublishedClose = require(join(ROOT, "quant/engines/published-close.js"));
 const Catalog = require(join(ROOT, "quant/engines/catalog.js"));
 const Radar = require(join(ROOT, "quant/engines/quant-radar.js"));
+const ProfileMean = require(join(ROOT, "quant/engines/profile-mean.js"));
 const SecurityMaster = require(join(ROOT, "quant/engines/us-security-master.js"));
 const Survivorship = require(join(ROOT, "quant/engines/survivorship-control.js"));
 const MarketCap = require(join(ROOT, "quant/engines/market-cap.js"));
@@ -973,6 +974,19 @@ function main() {
       }
     }
   }
+  /* 4c. Gesamtwert (vu-profile-mean-1.0.0): einfacher Durchschnitt der vorhandenen
+     Faktorwerte, mindestens 4; eigenes Feld, beruehrt weder Faktorwerte noch
+     composite (bleibt WITHHELD). Platz 1 = hoechster Wert. */
+  const meanByTicker = {};
+  for (const securities of out.values()) for (const [ticker, rec] of Object.entries(securities)) {
+    const m = ProfileMean.mean(FactorEvidence.FACTOR_ORDER.map((id) => (rec.factors[id].state === "AVAILABLE" ? rec.factors[id].score : null)));
+    rec.profileMean = { version: ProfileMean.VERSION, state: m.state, reason: m.reason, score: m.score, count: m.count };
+    if (m.state === "AVAILABLE") meanByTicker[ticker] = m.score;
+  }
+  const meanPlaces = ProfileMean.places(meanByTicker);
+  for (const securities of out.values()) for (const [ticker, rec] of Object.entries(securities)) {
+    if (rec.profileMean.state === "AVAILABLE") { rec.profileMean.place = meanPlaces.places[ticker]; rec.profileMean.of = meanPlaces.total; }
+  }
   const bandSemantics = { version: FactorEvidence.BAND_SEMANTICS_VERSION, basis: "RELATIVE_POSITION", universe: bandUniverse, scoreCuts: bandCuts,
     minimumUniverse: FactorEvidence.MIN_POSITION_UNIVERSE, methodology: "quant/methodology/factor-bands-v2.json" };
 
@@ -1001,6 +1015,28 @@ function main() {
     writeFileSync(join(OUT_DIR, shard + ".json.gz"), gzipSync(Buffer.from(JSON.stringify(payload)), { level: 9 }));
     written += Object.keys(securities).length;
   }
+
+  /* Rangliste Gesamtwert: eigenes Artefakt in einem Unterordner (die Shard-Leser
+     ueberspringen Ordner). Spalten: Gesamtwert, Anzahl, Platz, Wirtschaftszweig (SIC-Abteilung), sechs Profilwerte. */
+  mkdirSync(join(OUT_DIR, "profile-mean"), { recursive: true });
+  const rankingRows = {};
+  for (const securities of out.values()) for (const [ticker, rec] of Object.entries(securities)) {
+    if (rec.profileMean.state !== "AVAILABLE") continue;
+    rankingRows[ticker] = [rec.profileMean.score, rec.profileMean.count, rec.profileMean.place, rec.peer ? rec.peer.division || null : null]
+      .concat(FactorEvidence.FACTOR_ORDER.map((id) => (rec.factors[id].state === "AVAILABLE" ? rec.factors[id].score : null)));
+  }
+  writeFileSync(join(OUT_DIR, "profile-mean", "ranking.json.gz"), gzipSync(Buffer.from(JSON.stringify({
+    schemaVersion: ProfileMean.SCHEMA,
+    methodologyVersion: ProfileMean.VERSION,
+    factorMethodology: FactorEvidence.METHODOLOGY_VERSION,
+    generatedAt,
+    asOf: cutoff,
+    minimumFactors: ProfileMean.MIN_FACTORS,
+    factorOrder: contract.factorOrder,
+    fields: ["mean", "count", "place", "division"].concat(contract.factorOrder),
+    total: meanPlaces.total,
+    rows: rankingRows
+  })), { level: 9 }));
 
   /* One compact universe-wide table so the Screener and Strategy Match can
      select on Quant V2 evidence without loading 637 shards. The column

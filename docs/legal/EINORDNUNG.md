@@ -230,6 +230,8 @@ Pflichten: Art. 20 MAR, Art. 2 bis 5 DelVO, Methodik je Aktie verlinkt, § 86 Wp
 Gilt nicht mehr, wenn: Ein „Gesamtscore“ und eine Rangliste „beste Aktien“ dazukommen (heute bewusst gesperrt). Das
 wäre stärker empfehlungsnah.
 
+**Stand 14.11.2026 (Owner-Entscheidung, interne Phase):** Der Owner hat bewusst entschieden, einen Gesamtwert (einfacher Durchschnitt der Profilwerte, `vu-profile-mean-1.0.0`) und eine Rangliste nach diesem Wert unter Quant → Aktien zu zeigen, ohne „beste Aktien“ und ohne Empfehlungswortwahl; die Seite liegt hinter dem Research-Passwort, und der Anwalt prüft das im Termin am 16.11.2026.
+
 ### Quant-Setup-Karte („Interessant ab“, „Stop / Ungültig unter“, „Ziel 1/2“, „Chance/Risiko“) – kritisch (hoch)
 
 Was es ist:
