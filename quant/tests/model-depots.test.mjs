@@ -1,7 +1,8 @@
 // Quant-Musterdepots (scripts/quant/portfolio/model-depots.cjs): Rechenmodell vorwärts, öffentlicher Export.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, writeFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, readFileSync, writeFileSync, existsSync, rmSync, mkdirSync } from 'node:fs';
+import { gunzipSync } from 'node:zlib';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,6 +13,14 @@ const D = require('../../scripts/quant/portfolio/model-depots.cjs');
 const Identity = require('../../core/identity.js');
 const Close = require('../engines/published-close.js');
 const COMMITTED = join(ROOT, 'quant/data/product/model-depots-v1.json');
+/* Eingefrorene Eingangsdaten (scripts/quant/portfolio/freeze-model-depots-fixture.mjs): der Erstlauf-Test prüft den Erzeuger,
+   nicht den Tagesstand. Mit Live-Daten war er nur samstags nach dem Vollauf der langen Kursreihen grün (Befund O, 14.11.2026). */
+const FIXTURE = join(ROOT, 'quant/tests/fixtures/model-depots/inputs.json.gz');
+function frozenInputs(dir) {
+  const fx = JSON.parse(gunzipSync(readFileSync(FIXTURE)));
+  for (const [p, c] of Object.entries(fx.files)) { mkdirSync(dirname(join(dir, p)), { recursive: true }); writeFileSync(join(dir, p), c); }
+  return fx;
+}
 const approved = () => readFileSync(join(ROOT, 'docs/PLAN_NEUSTART_2026-11.md'), 'utf8').includes(D.APPROVAL_MARKER);
 
 function contract(doc) {
@@ -52,21 +61,19 @@ function contract(doc) {
 test('Musterdepots: Erstlauf baut fünf Depots nach Regel, Aufnahmekurs = veröffentlichter Schluss, keine Wertentwicklung ohne Freigabe', () => {
   const dir = mkdtempSync(join(tmpdir(), 'depots-'));
   try {
-    const out = join(dir, 'model-depots.json');
-    /* Lauftag statt festem Datum: published-close#lastPoint liefert nur Reihen mit asOf <= today (ADR-002).
-       Mit dem festen 2026-11-06 fielen nach dem Marktlauf vom 09.11. alle Aufnahmekurse weg und Depot 0
-       blieb leer - am Modell lag es nicht. Der Lauftag ist der Tag, an dem der Erzeuger in Produktion rechnet. */
-    const today = new Date().toISOString().slice(0, 10);
-    const doc = D.build({ out, today });
+    const data = join(dir, 'data'), out = join(dir, 'model-depots.json');
+    /* Lauftag = jüngster Tagesstand im Fixture (published-close#lastPoint liefert nur Reihen mit asOf <= today, ADR-002). */
+    const { today } = frozenInputs(data);
+    const doc = D.build({ out, today, dataRoot: data });
     contract(doc);
     assert.ok(doc.depots.every(d => d.decision.state === 'CONSTRUCTED' && d.protocol.every(e => e.action === 'REIN')));
     const p = doc.depots[0].positions[0];
-    const series = JSON.parse(readFileSync(join(ROOT, 'quant/data/market/discover-series', p.securityId + '.json'), 'utf8'));
+    const series = JSON.parse(readFileSync(join(data, 'quant/data/market/discover-series', p.securityId + '.json'), 'utf8'));
     assert.equal(p.entryPrice, Close.lastPoint(series, today).close);
 
     /* Zweiter Lauf im selben Monat: nichts wird umgeschichtet, das Protokoll bleibt byte-gleich. */
     writeFileSync(out, JSON.stringify(doc));
-    const same = D.build({ out, today });
+    const same = D.build({ out, today, dataRoot: data });
     assert.ok(same.depots.every(d => !d.decision.due));
     assert.deepEqual(same.depots.map(d => d.protocol), doc.depots.map(d => d.protocol));
 
@@ -79,7 +86,7 @@ test('Musterdepots: Erstlauf baut fünf Depots nach Regel, Aufnahmekurs = veröf
     }
     prev.liveStart = '2026-10-02';
     writeFileSync(out, JSON.stringify(prev));
-    const next = D.build({ out, today });
+    const next = D.build({ out, today, dataRoot: data });
     for (const d of next.depots) {
       const old = prev.depots.find(x => x.profileId === d.profileId);
       assert.deepEqual(d.protocol.slice(0, old.protocol.length), old.protocol, d.profileId + ': Protokoll umgeschrieben');

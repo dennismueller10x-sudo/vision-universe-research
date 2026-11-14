@@ -82,9 +82,9 @@ function loadBenchmark(basis) {
   return { points: Codec.decode(part.weekly), label: basis === 'TOTAL_RETURN' ? 'SPY_TOTAL_RETURN_DIVIDENDS_REINVESTED' : 'SPY_PRICE_RETURN', sourceHash: sha(bytes), file: 'vorsorge/data/series/SPY.json' };
 }
 
-function sicIndex(fundIndex) {
+function sicIndex(fundIndex, dataRoot = ROOT) {
   const bySecurity = new Map();
-  const tax = JSON.parse(fs.readFileSync(path.join(ROOT, 'quant/data/product/sic-peer-taxonomy-v1.json'), 'utf8'));
+  const tax = JSON.parse(fs.readFileSync(path.join(dataRoot, 'quant/data/product/sic-peer-taxonomy-v1.json'), 'utf8'));
   const c = Object.fromEntries(tax.rowColumns.map((k, i) => [k, i]));
   for (const r of tax.rows) if (r[c.sic4]) bySecurity.set(r[c.securityId], r[c.sic4]);
   if (fundIndex) for (const e of Object.values(fundIndex.issuers)) if (e.sic) for (const id of e.securityIds) if (!bySecurity.has(id)) bySecurity.set(id, e.sic);
@@ -218,12 +218,13 @@ function buildPanel(a) {
   const calendar = bench.points.map(p => p[0]), T = calendar.length;
   const weekIdx = new Map(calendar.map((d, i) => [isoWeek(d), i]));
   const levels = bench.points.map(p => p[1]);
-  const fundDir = a.fundamentals || path.join(ROOT, 'quant/data/sec/consumer');
+  const dataRoot = a.dataRoot || ROOT; // Wurzel der Eingangsdaten (Musterdepot-Test: eingefrorenes Fixture)
+  const fundDir = a.fundamentals || path.join(dataRoot, 'quant/data/sec/consumer');
   const fundIndex = a.fundamentals && fs.existsSync(path.join(a.fundamentals, 'index.json')) ? JSON.parse(fs.readFileSync(path.join(a.fundamentals, 'index.json'), 'utf8')) : null;
-  const bundles = loadBundles(fundDir), sics = sicIndex(fundIndex);
+  const bundles = loadBundles(fundDir), sics = sicIndex(fundIndex, dataRoot);
   const securities = [], counts = { candidates: 0, noSector: 0, notReal: 0, noBars: 0, notInFinalWeek: 0, delisted: 0, delistedNoSector: 0, delistedExcludedNoTotalReturn: 0, delistedExcludedRawMissing: 0, delistedExcludedRawMismatch: 0 }, sourceHashes = [];
   const lastIdx = calendar.findLastIndex(d => d <= a.window[1]);
-  const seriesDir = path.join(ROOT, 'quant/data/market/discover-series-long');
+  const seriesDir = path.join(dataRoot, 'quant/data/market/discover-series-long');
   let files = fs.readdirSync(seriesDir).filter(f => /^ref_.+\.json$/.test(f)).sort();
   if (a.limit) files = files.slice(0, a.limit);
   for (const f of files) {
