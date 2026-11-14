@@ -223,7 +223,47 @@
   /* Seitenende jeder Ansicht (VU3): der Pflichthinweis bleibt als eine kurze Zeile sichtbar; Quellen,
      Datenstaende, Methodik und die Rolle von Vision Universe stehen gebuendelt in EINEM „Daten & Methodik“.
      opts.dm: [[Begriff, HTML]] (bereits escaped), opts.asOf: Datenstand (ISO) fuer die Zusammenfassung. */
-  VS.render = function (html, opts) { var r = VS.root(); r.innerHTML = html + footer(opts); return r; };
+  VS.render = function (html, opts) { var r = VS.root(); closeChapters(); r.innerHTML = html + footer(opts); return r; };
+  /* ------------------------------------------------- App-Konzept 2: Kapitel im Fenster
+     Kapitel (details.vu-more, details.vs-ep) klappen nicht mehr an Ort und Stelle auf: ein Tipp auf die Kachel öffnet den
+     Inhalt im Fenster (C16, VUUI.openSheet). Der Inhalt bleibt dabei im <details> (nur optisch als Fenster), damit
+     nachgeladene Inhalte, „toggle“-Füllungen und Formulare ihn weiter finden. Aufklapper mit Eingabefeldern (z. B.
+     „Mehr Angaben“ im Förderrechner) und per Adresse geöffnete Kapitel (#/plan/luecke) bleiben an Ort und Stelle. */
+  var CHAPTER = "details.vu-more,details.vs-ep";
+  function chapterInPlace(d) { return !U || !U.openSheet || d.hasAttribute("data-vs-inplace") || !!d.closest("form") || !!d.querySelector("input,select,textarea") || (d.open && !d.__vsSheet); }
+  function openChapter(d) {
+    var sum = d.querySelector(":scope > summary"), el = d.__vsSheet;
+    if (!el) {
+      var t = sum.querySelector(".vs-ep-t b") || sum, wrap = document.createElement("div");
+      wrap.innerHTML = U.sheet("", t.textContent.trim(), "");
+      el = wrap.firstChild; el.removeAttribute("id"); el.classList.add("vs-chapsheet");
+      var body = el.querySelector(".vu-sheet-body");
+      [].slice.call(d.childNodes).forEach(function (n) { if (n !== sum) body.appendChild(n); });
+      d.appendChild(el); d.__vsSheet = el;
+      el.addEventListener("vu-sheet-close", function () { d.open = false; if (el.__vsWatch) { el.__vsWatch.disconnect(); el.__vsWatch = null; } });
+    }
+    d.open = true;
+    sum.setAttribute("aria-haspopup", "dialog");
+    U.openSheet(el);
+    /* Wird die Ansicht neu gezeichnet, während das Fenster offen ist, löst sich die Rollsperre trotzdem. */
+    if (global.MutationObserver && !el.__vsWatch) {
+      el.__vsWatch = new global.MutationObserver(function () { if (!el.isConnected) { U.closeSheet(el); el.__vsWatch.disconnect(); el.__vsWatch = null; } });
+      el.__vsWatch.observe(VS.root(), { childList: true, subtree: true });
+    }
+  }
+  function closeChapters() {
+    if (!U || !U.closeSheet) return;
+    [].forEach.call(document.querySelectorAll(".vs-chapsheet:not([hidden])"), function (x) { U.closeSheet(x); });
+  }
+  VS.closeChapters = closeChapters;
+  function bindChapters() {
+    document.addEventListener("click", function (ev) {
+      var sum = ev.target.closest && ev.target.closest("summary"), d = sum && sum.parentNode;
+      if (!d || !d.matches || !d.matches(CHAPTER) || !d.closest(".vs") || chapterInPlace(d)) return;
+      ev.preventDefault();
+      openChapter(d);
+    });
+  }
   function dmRows(rows) { return (rows || []).map(function (x) { return '<dt>' + VS.esc(x[0]) + '</dt><dd>' + x[1] + '</dd>'; }).join(""); }
   function footer(opts) {
     opts = opts || {};
@@ -281,9 +321,9 @@
      ETF-Zeile, Regler, Ablauf-Kopf. Nur Weiss, Schwarz, Neongruen, Grau. */
   var U = global.VUUI || null;
   VS.U = U;
-  /** Seitenkopf: Etikett, Titel als Frage, ein Satz. */
-  VS.intro = function (title, lead, tag) {
-    return '<header class="vs-intro"><p class="vu-ltag">' + VS.esc(tag || "Vorsorge") + '</p><h1 class="vu-lt">' + VS.esc(title) + '</h1>' + (lead ? '<p class="vu-lead">' + VS.esc(lead) + '</p>' : "") + '</header>';
+  /** Seitenkopf (App-Konzept 2): dunkle Kopfkachel mit Etikett, der Frage der Seite und einem Satz; extra = fertiges HTML in der Kachel. */
+  VS.intro = function (title, lead, tag, extra) {
+    return '<header class="vs-intro vs-head vu-night"><p class="vu-ltag">' + VS.esc(tag || "Vorsorge") + '</p><h1 class="vu-lt">' + VS.esc(title) + '</h1>' + (lead ? '<p class="vu-lead">' + VS.esc(lead) + '</p>' : "") + (extra || "") + '</header>';
   };
   /** Vorsorge-Muster Beispiel-Marke: jede Rechnung mit Annahmen ist so markiert. */
   VS.bsp = function (text) { return '<span class="vs-bsp">' + VS.esc(text || "Beispielrechnung") + '</span>'; };
@@ -455,15 +495,26 @@
     vergleich: "vergleichen", vergleichen: "vergleichen", index: "etfs", portfolio: "portfolio", xray: "portfolio", foerderung: "foerderung", riester: "vergleichen",
     fruehstart: "foerderung", anbieter: "vergleichen", monitor: "monitor", watchlist: "etfs", wissen: "wissen", daten: "wissen", start: "home" };
 
+  /* Reihenfolge der Bereiche entlang des Wegs: die „Weiter“-Karte am Seitenende führt zum nächsten Bereich. */
+  function nextArea(active) {
+    var flat = [];
+    VS.WAY.forEach(function (w, i) { w[3].forEach(function (n) { flat.push({ id: n[0], href: n[1], title: n[2], sub: "Schritt " + (i + 1) + " · " + w[0] }); }); });
+    var at = flat.map(function (x) { return x.id; }).indexOf(active);
+    if (active === "home") { var cur = VS.state.planDone ? 1 : 0; return { href: VS.WAY[cur][1], title: VS.WAY[cur][0], sub: VS.WAY[cur][2] }; }
+    return at >= 0 && at < flat.length - 1 ? flat[at + 1] : { href: "#/", title: "Vorsorge", sub: "Dein Weg in drei Schritten" };
+  }
+  VS.nextArea = nextArea;
   function sections(active) {
     if (global.VUNavigation) global.VUNavigation.dock({ active: DOCK[active] || null });
     var el = document.getElementById("vs-more"); if (!el) return;
     el.className = "vs-more vs-wrap vu-ui";
-    /* Start zeigt den Weg oben; alle anderen Ansichten enden mit dem Weg und den Bereichen je Schritt. */
-    if (active === "home") { el.innerHTML = ""; return; }
-    el.innerHTML = '<h2 class="vs-more-t">Dein Weg in drei Schritten</h2><div class="vs-way-mini">' + VS.WAY.map(function (w, i) {
-      return '<div><b><span class="num">' + (i + 1) + '</span> ' + w[0] + '</b>' + w[3].map(function (n) { return '<a href="' + n[1] + '"' + (n[0] === active ? ' aria-current="page"' : "") + '>' + n[2] + '</a>'; }).join("") + '</div>';
-    }).join("") + '</div>';
+    var nx = nextArea(active), next = U && U.next ? U.next({ href: nx.href, title: nx.title, sub: nx.sub }) : "";
+    /* Start zeigt den Weg oben; alle anderen Ansichten enden mit der „Weiter“-Karte, dem Weg und den Bereichen je Schritt. */
+    if (active === "home") { el.innerHTML = next; return; }
+    var steps = VS.WAY.map(function (w, i) {
+      return '<div class="vs-way-step"><b><span class="num">' + (i + 1) + '</span> ' + w[0] + '</b>' + w[3].map(function (n) { return '<a href="' + n[1] + '"' + (n[0] === active ? ' aria-current="page"' : "") + '>' + n[2] + '</a>'; }).join("") + '</div>';
+    });
+    el.innerHTML = next + '<h2 class="vs-more-t">Dein Weg in drei Schritten</h2>' + (U && U.rail ? '<div class="vs-way-rail">' + U.rail(steps, { label: "Dein Weg in drei Schritten", width: 168 }) + '</div>' : '<div class="vs-way-mini">' + steps.join("") + '</div>');
   }
 
   VS.parseHash = function () {
@@ -481,6 +532,7 @@
     /* V10: Vollbild-Ablauf ohne Kopf und Produkt-Leiste. */
     document.documentElement.classList.toggle("vs-flow", r.name === "start");
     [].forEach.call(document.querySelectorAll(".vs-vsheet"), function (x) { if (VS.U) VS.U.closeSheet(x); x.remove(); });
+    closeChapters();
     sections(VS.SECTION_OF[r.name] || "home");
     if (first) { VS.analytics.track("vorsorge_open", {}); VS.analytics.track("retirement_open", {}); first = false; }
     try { view(r); }
@@ -511,6 +563,7 @@
      dieselbe gemerkte Wahl vu-discover-theme-v1 wie alle Produkte). */
   VS.start = function () {
     VS.bindHelp();
+    bindChapters();
     global.addEventListener("hashchange", route);
     route();
   };

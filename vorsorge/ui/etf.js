@@ -464,9 +464,9 @@
     var ix = indexById(decodeURIComponent(r.args[0] || ""));
     if (!ix) { VS.render('<section class="vs-section"><h1 class="vu-mt">Diesen Index gibt es hier nicht.</h1><p class="vu-sm vu-mu" style="margin-top:6px"><a href="#/etfs">Alle ETFs ansehen</a></p></section>'); return; }
     var U = VS.U, sym = ix.us, watched = VS.state.watchlist.indexOf(sym) >= 0;
-    var root = VS.render('<div class="vs-ixhead"><a class="vu-round" href="#/etfs" aria-label="Zurück">' + U.glyph("back", 18) + '</a><span class="vu-sm vu-mu"><b>ETF · ' + esc(ix.title) + '</b></span>' +
+    var root = VS.render('<header class="vs-intro vs-head vs-ixtop vu-night"><div class="vs-ixhead"><a class="vu-round" href="#/etfs" aria-label="Zurück">' + U.glyph("back", 18) + '</a><span class="vu-sm vu-mu"><b>ETF · ' + esc(ix.title) + '</b></span>' +
       '<button type="button" class="vu-round vs-ixwatch" data-vu-watch aria-pressed="' + watched + '" aria-label="Merken">' + U.glyph("heart", 17) + '</button></div>' +
-      '<h1 class="vu-lt" style="margin-top:10px">' + esc(ix.name) + '</h1><p class="vu-sm vu-mu" id="vs-ix-what" style="margin-top:2px">' + esc(ix.what) + '</p>' +
+      '<h1 class="vu-lt">' + esc(ix.name) + '</h1><p class="vu-lead" id="vs-ix-what">' + esc(ix.what) + '</p></header>' +
       '<div class="vu-box vu-box--lime vs-oneline" style="margin-top:12px"><span class="vu-ltag">In einem Satz</span><p id="vs-ix-sum">…</p></div>' +
       '<section class="vu-box vs-ixeu" id="vs-ix-eu" aria-label="In der EU kaufbar"><div class="vs-row-sb"><span class="vu-ltag">In der EU kaufbar</span>' + VS.verdict("strong", "UCITS") + '</div><p class="vu-sm" style="margin-top:6px">EU-Fondsregister wird geladen …</p></section>' +
       VS.sect("Marktabbild", "#/etf/" + encodeURIComponent(sym) + "?fonds=1", "US-Fonds " + sym) + '<div class="vu-box"><div id="vs-ix-chart"></div><p class="vu-xs vu-mu" id="vs-ix-chartnote" style="margin-top:6px"></p></div>' +
