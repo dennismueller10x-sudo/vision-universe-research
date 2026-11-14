@@ -72,9 +72,9 @@ async function audit(page, label) {
   }, scope);
   check(!r.overflow, `${label}: kein waagrechter Ueberlauf`);
   check(!r.small.length, `${label}: Eingaben >= 16px ${r.small.join(',')}`);
-  // Einstiege von „Mein Bereich“ wie vorher .wk-mine-main/.wk-mine-account mindestens 44px: Ziel-Karte und die Leiste.
+  // Einstiege von „Mein Bereich“ wie vorher .wk-mine-main/.wk-mine-account mindestens 44px: Ziel-Karte, die Reiter unter dem Kopf und das Dock.
   if (scope !== 'main') {
-    for (const box of await Promise.all((await page.locator('#wk-goal, #vu-dock a[data-id]').all()).map(l => l.boundingBox()))) {
+    for (const box of await Promise.all((await page.locator('#wk-goal, #vu-dock a[data-id], vu-navigation a.tab').all()).map(l => l.boundingBox()))) {
       if (box && box.height < 44) r.tiny.push(`Einstieg (${Math.round(box.height)}px)`);
     }
   }
@@ -150,9 +150,11 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await page.click('#fs-skip');
   await page.waitForURL(/\/willkommen\/$/);
   check((await page.evaluate(() => JSON.parse(localStorage.getItem('vu-start-v1') || '{}').done)) === true, 'erster Start: uebersprungen gilt als erledigt');
-  // E02: Mein Dashboard (Watchlist) und Konto liegen getrennt in der Leiste „Mein Bereich“ statt als eigene Knoepfe.
-  await page.waitForSelector('#vu-dock a[data-id=watchlist][href="/mein-dashboard/"]');
-  check(await page.isVisible('#vu-dock a[data-id=watchlist][href="/mein-dashboard/"]') && await page.isVisible('#vu-dock a[data-id=konto][href="/konto/"]'),
+  // E02: Mein Dashboard (Watchlist) und Konto liegen getrennt in den Reitern „Mein Bereich“ unter dem Kopf statt als eigene Knoepfe
+  // (Rahmen nach App-Konzept 2: das Dock traegt Home · Discover · Universe · News · Ich).
+  await page.waitForSelector('vu-navigation a.tab[data-id=watchlist][href="/mein-dashboard/"]');
+  check(await page.isVisible('vu-navigation a.tab[data-id=watchlist][href="/mein-dashboard/"]') && await page.isVisible('vu-navigation a.tab[data-id=konto][href="/konto/"]')
+    && await page.isVisible('#vu-dock a[data-id=home][aria-current=page]') && await page.isVisible('#vu-dock a[data-id=ich][href="/mein-dashboard/"]'),
     'Willkommensseite: Mein Dashboard und Konto sichtbar, getrennt');
   check(await page.isVisible('#wk-hero-play') && await page.isVisible('#wk-products'), 'Willkommensseite: Video und Produktwelten da');
   // E08: die persoenliche Begruessung steht jetzt auf Mein Bereich (/willkommen/), das Dashboard heisst „Watchlist“.
@@ -160,7 +162,7 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   check(true, 'Mein Bereich: persoenliche Begruessung');
   await audit(page, 'Mein Bereich');
   await shot(page, 'free-01-willkommen');
-  await page.click('#vu-dock a[data-id=watchlist]');
+  await page.click('vu-navigation a.tab[data-id=watchlist]');
   await page.waitForURL(/\/mein-dashboard\/$/);
   await page.waitForSelector('#md-app:not([hidden])');
   // Tarif-Marke „Free · 0 von 500“ neben dem Datum (Konzept mein-bereich-2026-11, Screen m-home).
@@ -212,9 +214,9 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   // Kontoseite: Einstellungen statt Investment-Inhalten
   await page.goto(`${base}/konto/`);
   await page.waitForSelector('#ka-account:not([hidden])');
-  // E07: keine Konto-Reiter mehr; Watchlist und Konto sind getrennte Plaetze der Leiste „Mein Bereich“.
-  check(!(await page.$('main a[href="/konto/watchlist/"]')) && await page.isVisible('#vu-dock a[data-id=watchlist][href="/mein-dashboard/"]')
-    && await page.isVisible('#vu-dock a[data-id=konto][aria-current=page]'),
+  // E07: keine Konto-Reiter im Inhalt mehr; Watchlist und Konto sind getrennte Reiter von „Mein Bereich“ unter dem Kopf.
+  check(!(await page.$('main a[href="/konto/watchlist/"]')) && await page.isVisible('vu-navigation a.tab[data-id=watchlist][href="/mein-dashboard/"]')
+    && await page.isVisible('vu-navigation a.tab[data-id=konto][aria-current=page]') && await page.isVisible('#vu-dock a[data-id=ich][aria-current=page]'),
     'Konto: Watchlist ueber Mein Dashboard, Kontonavigation nur Konto');
   check(await page.isHidden('#ka-pro-pending'), 'Konto Free: kein Pro-Hinweis');
   await audit(page, 'Konto');
