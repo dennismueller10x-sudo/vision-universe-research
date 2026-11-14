@@ -1645,7 +1645,7 @@
   }
   /* Redesign 2027: gemeinsame Bausteine (assets/vu-ui.*, assets/vu-chart.js) und das Seitenmodul st-redesign.js.
      Laedt parallel zu den Daten; ein Fehler laesst die bisherige Oberflaeche stehen. */
-  var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadCss('/assets/vu-ui.css?v=vu-ui-1.3.0'), loadCss(BASE + 'assets/st-redesign.css'), loadScript('/assets/vu-ui.js?v=vu-ui-1.3.0'), loadScript('/assets/vu-chart.js')]).then(function () {
+  var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadCss('/assets/vu-ui.css?v=vu-ui-1.4.0'), loadCss(BASE + 'assets/st-redesign.css'), loadScript('/assets/vu-ui.js?v=vu-ui-1.4.0'), loadScript('/assets/vu-chart.js')]).then(function () {
     if (window.VUUI && window.VUUI.bindIntent) window.VUUI.bindIntent(function (url) { if (url.origin !== location.origin) return null; var m = /^\/supertrader\/stock\/([A-Z0-9.-]{1,12})\/$/.exec(url.pathname); return m && m[1]; }, function (ticker) { return build().then(function (b) { return b && b.slices && (b.slices.stock || []).indexOf(ticker) >= 0 ? getJSON('stock/' + ticker + '.json') : null; }); });
     /* Ein Name je Methode und die eine Ablauf-Leiste (Konzept „Das Rezept eines Profis“, Folien K1/K3) vor dem Seitenmodul. */
     return Promise.all([loadScript(BASE + 'assets/st-names.js'), loadScript(BASE + 'assets/st-flow.js')]).catch(function () {}).then(function () { return loadScript(BASE + 'assets/st-redesign.js'); });
