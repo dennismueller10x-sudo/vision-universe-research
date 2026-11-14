@@ -14,8 +14,12 @@ body.vu-magazine-two .reader{height:calc(100dvh - var(--vu-navigation-height))}
 body.vu-magazine-two .page{height:100%}
 body.vu-magazine-two .progress{top:var(--vu-navigation-height)}
 @media(max-width:760px){:root{--vu-navigation-height:56px}}
+/* Reiterzeile eines Produkts unter dem Kopf (site-navigation.js, mountTabs): 48px mehr feste Hoehe. Alles, was unter dem
+   Kopf klebt oder Platz fuer ihn laesst, rechnet weiter mit --vu-navigation-height und liegt damit unter der Reiterzeile. */
+html[data-vu-tabs]{--vu-navigation-height:112px}
+@media(max-width:760px){html[data-vu-tabs]{--vu-navigation-height:104px}}
 body .q-tabs-wrap{top:var(--vu-navigation-height)}
-/* Produkt-Leiste (Dock) der gemeinsamen Shell: Abstand fuer den Inhalt als
+/* Dock der gemeinsamen Shell (Home, Discover, Universe, News, Ich): Abstand fuer den Inhalt als
    ein Token statt verstreuter Magic Numbers. Hoehe der Leiste + Safe Area +
    sichtbarer Abstand. Gesetzt nur, wenn die Seite eine Leiste traegt. */
 :root{--vu-dock-height:68px;--vu-dock-gap:12px;--vu-dock-space:calc(var(--vu-dock-height) + var(--vu-dock-gap) + 24px + env(safe-area-inset-bottom));--vu-accent:#c8f531;--vu-on-accent:#101318}

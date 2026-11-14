@@ -1,11 +1,13 @@
-// Browser-QA der gemeinsamen Vision-Universe-Shell (assets/site-navigation.js):
-// Kopf, Produkt-Leiste und globales Menue auf allen Produkten.
+// Browser-QA der gemeinsamen Vision-Universe-Shell (assets/site-navigation.js), Rahmen nach App-Konzept 2:
+// Kopf, Reiterzeile des Produkts, das eine Dock (Home · Discover · [Universe] · News · Ich) und das Menue
+// „Dein Universe“ auf allen Produkten.
 //
-// Prueft je Produkt und Breite: Deep Link -> richtiger aktiver Eintrag (auch
-// nach Reload), erster Eintrag = Produktname, ☰ oeffnet das globale Menue
-// (Scroll-Sperre, Leiste aus der Fokusreihenfolge, Escape schliesst, Fokus
-// zurueck), kein Menue-Knopf doppelt im Kopf, kein horizontaler Ueberlauf,
-// das Seitenende liegt ueber der Leiste, Browser-Zurueck/Vor haelt den Zustand.
+// Prueft je Produkt und Breite: Deep Link -> richtiger aktiver Reiter (auch
+// nach Reload), erster Reiter = Produktname, das Dock ist ueberall dasselbe, der Universe-Knopf oeffnet das
+// globale Menue (bis 760 px als Sheet von unten, darueber als Seitenleiste; Scroll-Sperre, Dock aus der
+// Fokusreihenfolge, Escape schliesst, Fokus zurueck), kein Menue-Knopf doppelt im Kopf, kein horizontaler
+// Ueberlauf, der Inhalt beginnt unter Kopf und Reitern, das Seitenende liegt ueber dem Dock,
+// Browser-Zurueck/Vor haelt den Zustand.
 //
 // Aufruf:  node scripts/quality/shell-browser-qa.mjs --url=http://127.0.0.1:8765 [--out=/tmp/shell-qa] [--viewports=390x844,1440x900] [--engine=chromium|webkit] [--playwright=<pfad>]
 // --engine=webkit nutzt Playwrights WebKit mit dem Geraeteprofil iPhone 14 fuer schmale Breiten. Das ist die
@@ -23,54 +25,65 @@ const engine = arg('engine', 'chromium');
 if (!['chromium', 'webkit'].includes(engine)) throw new Error('engine: chromium oder webkit');
 await mkdir(out, { recursive: true });
 
-// [Produkt, Deep Link, erwarteter aktiver Eintrag (null = nur Produktkontext)]
+// [Produkt, Deep Link, erwarteter aktiver Reiter (null = nur Produktkontext)]. Reiter aus der Menueliste „In <Welt>“
+// (Märkte, Methodik, Quellen …) sind auf ihrer Seite selbst aktiv; frueher trug dort ein Leistenplatz oder keiner die Marke.
 const ROUTES = [
   ['Discover', '/discover/#/', 'Discover'], ['Discover', '/discover/#/welten', 'Welten'], ['Discover', '/discover/#/strategien', 'Strategien'],
-  ['Discover', '/discover/#/swipen', 'Swipen'], ['Discover', '/discover/#/einzeln/US_REAL', 'Swipen'], ['Discover', '/discover/#/maerkte', null], ['Discover', '/discover/#/watchlist', null],
+  ['Discover', '/discover/#/swipen', 'Swipen'], ['Discover', '/discover/#/einzeln/US_REAL', 'Swipen'], ['Discover', '/discover/#/maerkte', 'Märkte'], ['Discover', '/discover/#/watchlist', 'Watchlist'],
   ['Quant', '/quant/#/', 'Quant'], ['Quant', '/quant/#/screener', 'Screener'], ['Quant', '/quant/#/stile', 'Anlagestile'],
-  ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', 'Quant'],
+  ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', 'Methodik'],
   // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext)
   ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?zaehlbar=1', 'Zählbar'], ['Elliott', '/elliott/#/?welle=3', 'Zählbar'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
-  ['Elliott', '/elliott/#/?richtung=ab', null], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
+  ['Elliott', '/elliott/#/?richtung=ab', 'Abwärts'], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
   // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext
   ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/ranglisten', 'Ranglisten'], ['Fundamental', '/fundamental/#/branchen', 'Branchen'],
   ['Fundamental', '/fundamental/#/methodik', 'Methodik'], ['Fundamental', '/fundamental/#/NVDA', null],
   ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
-  ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', [null, 'Planer']], ['Vorsorge', '/vorsorge/#/monitor', [null, 'Portfolio']], // V03/V05: Förderung gehört zum Planer, Veränderungen zum Portfolio
-  ['Screener', '/screener/', 'Screener'], ['Screener','/screener/?f=roic:gt:0.1','Filter'], ['Screener','/screener/?mode=pro','Filter'], ['Screener', '/screener/?view=build', 'Filter'], ['Screener', '/screener/?view=saved', 'Gespeichert'], ['Screener', '/screener/?view=watchlist', 'Gespeichert'],
+  ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', 'Förderung'], ['Vorsorge', '/vorsorge/#/monitor', 'Veränderungen'],
+  ['Screener', '/screener/', 'Screener'], ['Screener','/screener/?f=roic:gt:0.1','Filter'], ['Screener','/screener/?mode=pro','Filter'], ['Screener', '/screener/?view=build', 'Filter'], ['Screener', '/screener/?view=saved', 'Gespeichert'], ['Screener', '/screener/?view=watchlist', 'Watchlist'],
   ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/treffer/', 'Treffer'],
-  ['Supertrader', '/supertrader/forschung/', 'Forschung'], ['Supertrader', '/supertrader/sources/', null],
-  ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/gruppen-kaeufe', 'Gruppen-Käufe'],
+  ['Supertrader', '/supertrader/forschung/', 'Forschung'], ['Supertrader', '/supertrader/sources/', 'Quellen'],
+  ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Datenbank'], ['Hedgefonds', '/hedgefonds/#/gruppen-kaeufe', 'Gruppen-Käufe'],
   ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'],
-  // Alte Quant-Unterseiten: Weiterleitungen auf die App unter /quant/ (quant/ui/legacy-redirect.js). Erwartet ist die Leiste
+  // Alte Quant-Unterseiten: Weiterleitungen auf die App unter /quant/ (quant/ui/legacy-redirect.js). Erwartet ist der Reiter
   // am Ziel: Ranking -> #/screener (Screener), Watchlist -> #/aktien (Aktien), Strategien -> #/stile (Anlagestile).
   ['Quant', '/quant/screener/', 'Screener'], ['Quant', '/quant/strategies/', 'Anlagestile'], ['Quant', '/quant/ranking/', 'Screener'],
-  ['Quant', '/quant/technical/', 'Aktien'], ['Quant', '/quant/watchlist/', 'Aktien'], ['Quant', '/quant/methodology/', 'Quant']
+  ['Quant', '/quant/technical/', 'Aktien'], ['Quant', '/quant/watchlist/', 'Aktien'], ['Quant', '/quant/methodology/', 'Methodik']
 ];
 const VIEWPORTS = (arg('viewports', '390x844,430x932,768x1024,1024x768,1440x900')).split(',').map((v) => { const [w, h] = v.split('x').map(Number); return [String(w), w, h]; });
 const findings = [], checks = [];
 const fail = (where, msg) => { findings.push({ where, msg }); console.log('FAIL ' + where + ': ' + msg); };
 
 const browser = await pw[engine].launch(engine === 'chromium' ? { ...(process.env.CHROMIUM_PATH ? { executablePath: process.env.CHROMIUM_PATH } : {}), args: ['--disable-dev-shm-usage'] } : {});
+const DOCK = ['Home', 'Discover', 'News', 'Ich'];
+const DOCK_ACTIVE = (path) => path.startsWith('/discover/') ? 'Discover' : path.startsWith('/willkommen/') ? 'Home' : path.startsWith('/insights/') ? 'News' : /^\/(mein-dashboard|konto)\//.test(path) ? 'Ich' : null;
 async function state(page) {
   return page.evaluate(() => {
     const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav');
     const head = document.querySelector('vu-navigation')?.shadowRoot;
-    if (!nav || !head) return null;
-    const r = nav.getBoundingClientRect();
-    const links = [...nav.querySelectorAll('a')];
+    const strip = head?.querySelector('nav.tabs');
+    if (!nav || !head || !strip || strip.hidden) return null;
+    const r = nav.getBoundingClientRect(), t = strip.getBoundingClientRect(), row = head.querySelector('.row').getBoundingClientRect(), bar = head.querySelector('header').getBoundingClientRect();
+    const places = [...nav.querySelectorAll('a')], uni = nav.querySelector('button.menu'), links = [...strip.querySelectorAll('a')];
     return {
       labels: links.map((a) => a.textContent.trim()),
       current: links.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
-      menu: !!nav.querySelector('button.menu'),
+      places: places.map((a) => a.textContent.trim()),
+      place: places.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
+      order: [...nav.children].map((n) => n.tagName).join(''),
+      menu: !!uni, uni: uni && { label: uni.getAttribute('aria-label'), w: uni.getBoundingClientRect().width, h: uni.getBoundingClientRect().height, top: uni.getBoundingClientRect().top, icon: !!uni.querySelector('svg g') && !uni.querySelector('svg use') },
       menuIconsDeferred: [...head.querySelectorAll('.menu-product-icon use')].every(n=>!n.hasAttribute('href')&&n.hasAttribute('data-href')),
-      dockOriginalInline: !!nav.querySelector('.product svg g')&&!nav.querySelector('.product svg use'),
+      dockOriginalInline: !!nav.querySelector('a[data-id=discover] svg g')&&!nav.querySelector('svg use'),
       spriteRequested: performance.getEntriesByType('resource').some(r=>new URL(r.name).pathname==='/assets/product-icons.svg'),
       dock: { top: r.top, bottom: r.bottom, left: r.left, right: r.right, width: r.width },
+      // Reiterzeile: direkt unter der Kopfzeile, innerhalb der Breite, der Inhalt beginnt darunter (kein Ueberdecken)
+      strip: { top: t.top, bottom: t.bottom, left: t.left, right: t.right, rowBottom: row.bottom, barBottom: bar.bottom, scrolls: getComputedStyle(strip).overflowX === 'auto',
+        reserved: parseFloat(getComputedStyle(document.body).paddingTop), token: getComputedStyle(document.documentElement).getPropertyValue('--vu-navigation-height').trim(), product: document.documentElement.getAttribute('data-vu-tabs'), name: strip.getAttribute('aria-label') },
+      activeVisible: links.filter((a) => a.getAttribute('aria-current') === 'page').every((a) => { const b = a.getBoundingClientRect(); return b.left >= t.left - 1 && b.right <= t.right + 1; }),
       toggle: getComputedStyle(head.querySelector('.toggle')).display,
       overflow: document.documentElement.scrollWidth - innerWidth,
-      small: [...nav.querySelectorAll('a,button')].filter((n) => { const b = n.getBoundingClientRect(); return b.width < 44 || b.height < 44; }).length,
-      clipped: links.filter((a) => { const l = a.querySelector('.label'); return l && l.scrollWidth > l.clientWidth + 1; }).map((a) => a.textContent.trim()),
+      small: [...nav.querySelectorAll('a,button'), ...links].filter((n) => { const b = n.getBoundingClientRect(); return b.width < 44 || b.height < 44; }).length,
+      clipped: places.filter((a) => { const l = a.querySelector('.label'); return l && l.scrollWidth > l.clientWidth + 1; }).map((a) => a.textContent.trim()),
       vw: innerWidth, vh: innerHeight
     };
   });
@@ -112,9 +125,16 @@ for (const [vpName, width, height] of VIEWPORTS) {
       for (const pass of ['first', 'reload']) {
         if (pass === 'reload') { await page.reload({ waitUntil: 'load' }); await settle(page); }
         const s = await state(page);
-        if (!s) { fail(where, 'keine Produkt-Leiste'); break; }
-        if (s.labels[0] !== product) fail(where, 'erster Eintrag ist nicht der Produktname: ' + s.labels[0]);
-        if (s.labels.length !== 4 || !s.menu) fail(where, 'Leiste ist nicht [Produkt] + 3 Funktionen + ☰: ' + s.labels.join('|'));
+        if (!s) { fail(where, 'kein Dock oder keine Reiterzeile'); break; }
+        if (s.labels[0] !== product || s.strip.name !== product) fail(where, 'erster Reiter ist nicht der Produktname: ' + s.labels[0]);
+        if (s.labels.length < 4 || new Set(s.labels).size !== s.labels.length) fail(where, 'Reiterzeile ist nicht [Produkt] + mindestens 3 Bereiche ohne Doppel: ' + s.labels.join('|'));
+        if (s.places.join('|') !== DOCK.join('|') || s.order !== 'AABUTTONAA' || !s.menu) fail(where, 'Dock ist nicht Home · Discover · [Universe] · News · Ich: ' + s.places.join('|') + ' ' + s.order);
+        const place = DOCK_ACTIVE(new URL(page.url()).pathname);
+        if ((s.place[0] || null) !== place || s.place.length > 1) fail(where, `Dock: aktiv ${s.place.join('|') || '-'} statt ${place || '-'}`);
+        if (!s.uni || s.uni.label !== 'Alle Module' || !s.uni.icon || s.uni.w < 56 || s.uni.h < 56 || s.uni.top >= s.dock.top) fail(where, 'Universe-Knopf falsch (Name, Symbol, Größe oder nicht über der Leiste): ' + JSON.stringify(s.uni));
+        if (Math.abs(s.strip.top - s.strip.rowBottom) > 1 || s.strip.left < 0 || s.strip.right > s.vw + 1 || !s.strip.scrolls) fail(where, 'Reiterzeile nicht direkt unter der Kopfzeile oder nicht in der Breite: ' + JSON.stringify(s.strip));
+        if (s.strip.reserved < s.strip.barBottom - 1 || s.strip.token !== Math.round(s.strip.barBottom) + 'px') fail(where, 'Inhalt beginnt nicht unter Kopf und Reitern: ' + JSON.stringify(s.strip));
+        if (!s.activeVisible) fail(where, 'aktiver Reiter liegt ausserhalb der Zeile');
         if (!(Array.isArray(expected) ? expected : [expected]).includes(s.current[0] || null) || s.current.length > 1) fail(where, `${pass}: aktiv ${s.current.join('|') || '-'} statt ${[].concat(expected).map((x) => x || '-').join(' oder ')}`);
         if(!s.menuIconsDeferred||!s.dockOriginalInline) fail(where,'Icon-Laden ist nicht menu-lazy bzw Dock inline');
         if(path==='/quant/#/screener'&&s.spriteRequested) fail(where,'Quant Screener lädt ungeöffneten Menü-Sprite');
@@ -124,6 +144,17 @@ for (const [vpName, width, height] of VIEWPORTS) {
         if (s.small) fail(where, s.small + ' Ziele kleiner als 44 px');
         if (s.clipped.length) fail(where, 'abgeschnittene Beschriftung: ' + s.clipped.join(', '));
       }
+      // Klebendes der Produkte liegt unter Kopf und Reitern, nie dahinter.
+      const hidden = await page.evaluate(() => {
+        const bar = document.querySelector('vu-navigation').shadowRoot.querySelector('header').getBoundingClientRect().bottom;
+        scrollTo({ top: 600, behavior: 'instant' });
+        const out = [...document.querySelectorAll('main *, body > :not(vu-navigation):not(#vu-dock) *')].filter((n) => getComputedStyle(n).position === 'sticky' && n.getClientRects().length)
+          .map((n) => ({ n, r: n.getBoundingClientRect(), top: parseFloat(getComputedStyle(n).top) })).filter((x) => x.r.height > 0 && Math.abs(x.r.top - x.top) <= 1 && x.top < bar - 1)
+          .map((x) => (x.n.className || x.n.tagName) + ' klebt bei ' + Math.round(x.r.top) + ', Kopf bis ' + Math.round(bar));
+        scrollTo({ top: 0, behavior: 'instant' });
+        return out;
+      });
+      if (hidden.length) fail(where, 'klebt hinter Kopf oder Reitern: ' + hidden.slice(0, 3).join('; '));
       // Direkt geladene Unterseiten öffnen genau ihren Produktbereich; Home bleibt kompakt.
       await page.locator('#vu-dock button.menu').click();
       await menuOpen(page, where);
@@ -182,7 +213,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, end, sidebarEnd, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
-  // Seiten ohne Produkt-Leiste: der Kopf traegt den Menue-Knopf selbst und passt in jede Breite.
+  // Seiten ohne Dock: der Kopf traegt den Menue-Knopf selbst und passt in jede Breite.
   for (const path of ['/news/', '/willkommen/', '/konto/']) {
     const where = `kopf ohne Leiste ${path} @${vpName}`;
     await fresh();
@@ -190,12 +221,14 @@ for (const [vpName, width, height] of VIEWPORTS) {
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       const h = await page.evaluate(() => { const root = document.querySelector('vu-navigation').shadowRoot, t = root.querySelector('.toggle').getBoundingClientRect();
         return { overflow: document.documentElement.scrollWidth - innerWidth, left: t.left, right: t.right, w: t.width, h: t.height, vw: innerWidth, dock: !!document.getElementById('vu-dock') }; });
-      // Redesign 2027 (E02): die Willkommensseite traegt die Leiste „Mein Bereich“; dann sitzt der Menue-Knopf in der Leiste.
+      // Redesign 2027 (E02): die Willkommensseite traegt das Dock (Home aktiv) und die Reiter „Mein Bereich“; dann oeffnet der Universe-Knopf das Menue.
       if (h.dock && path === '/willkommen/') {
         const m = await page.locator('#vu-dock button.menu').boundingBox();
-        if (h.overflow > 1 || !m || m.width < 44 || m.height < 44 || m.x < 0 || m.x + m.width > h.vw + 1) fail(where, 'Menü-Knopf in der Leiste abgeschnitten oder zu klein: ' + JSON.stringify({ overflow: h.overflow, m, vw: h.vw }));
+        if (h.overflow > 1 || !m || m.width < 44 || m.height < 44 || m.x < 0 || m.x + m.width > h.vw + 1) fail(where, 'Universe-Knopf im Dock abgeschnitten oder zu klein: ' + JSON.stringify({ overflow: h.overflow, m, vw: h.vw }));
+        const w = await state(page);
+        if (!w || w.place.join('|') !== 'Home' || w.labels.join('|') !== 'Mein Bereich|Watchlist|Gespeichert|Konto' || w.current.join('|') !== 'Mein Bereich') fail(where, 'Willkommen: Dock oder Reiter falsch: ' + JSON.stringify(w && { place: w.place, labels: w.labels, current: w.current }));
       } else {
-        if (h.dock) fail(where, 'unerwartete Produkt-Leiste');
+        if (h.dock) fail(where, 'unerwartetes Dock');
         if (h.overflow > 1 || h.right > h.vw + 1 || h.left < 0 || h.w < 44 || h.h < 44) fail(where, 'Menü-Knopf im Kopf abgeschnitten oder zu klein: ' + JSON.stringify(h));
       }
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
@@ -221,7 +254,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
-  // Globales Menue ueber ☰: dasselbe Menue auf jedem Produkt.
+  // Globales Menue „Dein Universe“ ueber den Universe-Knopf: dasselbe Menue auf jedem Produkt.
   let firstMenu = null;
   for (const path of ['/discover/#/', '/quant/#/', '/vorsorge/#/', '/screener/', '/supertrader/', '/hedgefonds/#/']) {
     const where = `menu ${path} @${vpName}`;
@@ -241,6 +274,9 @@ for (const [vpName, width, height] of VIEWPORTS) {
           dockInert: dock.inert, dockCovered: top !== dock, scrollable: panel.scrollHeight <= panel.clientHeight || getComputedStyle(panel).overflowY === 'auto',
           panelBottom: panel.getBoundingClientRect().bottom, vh: innerHeight, panelBg: getComputedStyle(panel).backgroundColor,
           moreOpen: root.querySelector('.more').open, hereLinks: root.querySelectorAll('.here-links a').length,
+          title: root.querySelector('.uni-title')?.textContent + ' | ' + root.querySelector('.uni-sub')?.textContent, titleVisible: !!root.querySelector('.uni-title')?.getClientRects().length,
+          panelTop: panel.getBoundingClientRect().top, panelLeft: panel.getBoundingClientRect().left, panelRight: panel.getBoundingClientRect().right, radius: getComputedStyle(panel).borderTopLeftRadius, grab: !!root.querySelector('.grab').getClientRects().length, vw: innerWidth,
+          legal: root.querySelectorAll('.legal-links a').length, note: !!root.querySelector('.legal-note')?.textContent.trim(), settings: root.querySelectorAll('.appearance > *').length + root.querySelectorAll('.currency > *').length,
           icons: [...root.querySelectorAll('.menu-product-icon use')].map(n=>n.getAttribute('href')),
           search: !!root.querySelector('.find input[type=search]') };
       });
@@ -248,13 +284,17 @@ for (const [vpName, width, height] of VIEWPORTS) {
       else if (m.groups.join('|') + '#' + m.links !== firstMenu) fail(where, 'anderes Menue als auf Discover');
       if(m.groups.join('|')!=='Discover|Quant|Technical|Fundamental|Supertrader|Hedgefonds|Elliott|Screener|Vorsorge|Portfolios|Insights') fail(where,'Produktraster falsch: '+m.groups.join('|'));
       if(m.moreOpen||!m.hereLinks||!m.search) fail(where,'Menüaufbau falsch: '+JSON.stringify({moreOpen:m.moreOpen,here:m.hereLinks,search:m.search}));
+      if(m.title!=='Dein Universe | Alle Module, von jeder Seite aus.'||!m.titleVisible) fail(where,'Überschrift „Dein Universe“ fehlt: '+m.title);
+      if(m.legal<5||!m.note||m.settings!==4) fail(where,'Rechtliches oder Einstellungen fehlen im Menü: '+JSON.stringify({legal:m.legal,note:m.note,settings:m.settings}));
+      // Bis 760 px ein Sheet von unten (Griff, runde Ecken, hoechstens 90 % hoch, volle Breite), darueber die Seitenleiste rechts.
+      if(m.vw<=760?(m.panelTop<m.vh*0.1-1||m.radius!=='30px'||!m.grab||m.panelLeft>1||m.panelRight<m.vw-1):(m.panelTop>1||m.radius!=='0px'||m.grab||m.panelRight<m.vw-1||m.panelLeft<m.vw-441)) fail(where,'Menü hat nicht die Form für diese Breite: '+JSON.stringify({top:m.panelTop,left:m.panelLeft,right:m.panelRight,radius:m.radius,grab:m.grab,vw:m.vw,vh:m.vh}));
       if(m.panelBg!=='rgb(0, 0, 0)') fail(where,'Menü ist nicht schwarz: '+m.panelBg);
       if(m.icons.length!==11||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
       await menuOpen(page, where);
       const menuSmall = await smallTargets(page);
       if(menuSmall.length) fail(where,smallText(menuSmall)+' Menüziele kleiner als 44 px');
       if (!m.locked) fail(where, 'keine Scroll-Sperre');
-      if (!m.dockInert || !m.dockCovered) fail(where, 'Leiste liegt ueber dem Menue oder bleibt fokussierbar');
+      if (!m.dockInert || !m.dockCovered) fail(where, 'Dock liegt ueber dem Menue oder bleibt fokussierbar');
       if (!m.scrollable || m.panelBottom > m.vh + 1) fail(where, 'Menue nicht scrollbar oder abgeschnitten');
       if (path === '/quant/#/') await page.screenshot({ path: `${out}/menu-${vpName}.png` });
       // Weitere Produkte klappt per Tastatur auf.
@@ -281,19 +321,23 @@ for (const [vpName, width, height] of VIEWPORTS) {
       if(path==='/quant/#/') await page.screenshot({path:`${out}/menu-expanded-${vpName}.png`});
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => !document.querySelector('vu-navigation').hasAttribute('open'), null, { timeout: 3000 });
-      if (!await menu.evaluate((n) => n.getRootNode().activeElement === n)) fail(where, 'Fokus kehrt nicht zu ☰ zurueck');
+      if (!await menu.evaluate((n) => n.getRootNode().activeElement === n)) fail(where, 'Fokus kehrt nicht zum Universe-Knopf zurueck');
       if (await page.evaluate(() => document.documentElement.classList.contains('vu-menu-open'))) fail(where, 'Scroll-Sperre bleibt');
+      // Ein Tipp auf den Hintergrund schliesst ebenfalls.
+      await menu.click(); await menuOpen(page, where);
+      await page.mouse.click(8, 8);
+      if (!await page.waitForFunction(() => !document.querySelector('vu-navigation').hasAttribute('open'), null, { timeout: 3000 }).then(() => true, () => false)) fail(where, 'Tipp auf den Hintergrund schliesst das Menü nicht');
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
-  // Zurueck/Vor ueber die Leiste (Hash-Produkte und Seiten-Produkte).
+  // Zurueck/Vor ueber die Reiter (Hash-Produkte und Seiten-Produkte).
   for (const [start, clicks] of [['/quant/#/', ['Screener', 'Aktien']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Treffer', 'Forschung']], ['/discover/#/', ['Welten', 'Strategien']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {
       await page.goto(base + start, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       const first = (await state(page)).current[0];
-      for (const label of clicks) { await page.locator('#vu-dock nav a', { hasText: label }).first().click(); await settle(page); if ((await state(page)).current[0] !== label) fail(where, 'Klick ' + label + ' markiert nicht'); }
+      for (const label of clicks) { await page.locator('vu-navigation nav.tabs a', { hasText: label }).first().click(); await settle(page); if ((await state(page)).current[0] !== label) fail(where, 'Klick ' + label + ' markiert nicht'); }
       await page.goBack(); await settle(page);
       if ((await state(page)).current[0] !== clicks[0]) fail(where, 'Zurueck: ' + (await state(page)).current[0]);
       await page.goBack(); await settle(page);
