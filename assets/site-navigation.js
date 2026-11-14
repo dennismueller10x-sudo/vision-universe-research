@@ -684,7 +684,8 @@
         });
         // Der aktive Reiter bleibt sichtbar, auch wenn er rechts ausserhalb der Zeile liegt.
         const current=on?links[entries.indexOf(on)]:null;
-        if(current&&current!==shown)requestAnimationFrame(()=>{if(!current.isConnected)return;const left=current.offsetLeft,right=left+current.offsetWidth;if(left<nav.scrollLeft+16||right>nav.scrollLeft+nav.clientWidth-16)nav.scrollLeft=Math.max(0,left-(nav.clientWidth-current.offsetWidth)/2);});
+        /* Aktiven Reiter in die Zeile holen. Ein einzelner Versuch reicht nicht: Solange die Zeile noch keine Breite hat oder die Schrift nachlaedt, verschiebt sich der Reiter danach wieder aus dem Bild. */
+        if(current&&current!==shown){const show=()=>{if(!current.isConnected||shown!==current||!nav.clientWidth)return;const left=current.offsetLeft,right=left+current.offsetWidth;if(left<nav.scrollLeft+16||right>nav.scrollLeft+nav.clientWidth-16)nav.scrollLeft=Math.max(0,left-(nav.clientWidth-current.offsetWidth)/2);};requestAnimationFrame(show);setTimeout(show,300);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(show).catch(()=>{});}
         shown=current;
       };
       /* Eine SPA kann das Produkt unter demselben Pfad wechseln (Quant -> Elliott-Detail): dann Reiterzeile neu aufbauen. */
