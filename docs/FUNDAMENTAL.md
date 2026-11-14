@@ -22,6 +22,8 @@ Produktwelt `/fundamental/` (Hash-Routen, ohne Abhängigkeiten). Zahlen und Abde
 
 Unteransichten stehen im Query-Teil, damit `core/stock-context.js#parse` die Adresse weiter als Aktie erkennt.
 
+**Darstellung nach App-Konzept 2 (Owner-Freigabe 14.11.2026):** Startseite mit dunkler Kopfkachel, Ranglisten und Branchen als Balkenrennen, Checklisten als Ringe, Kapitel als Kacheln; Tiefe öffnet sich im Fenster (`VUUI.popup`), jede Seite endet mit einer „Weiter“-Karte. Inhalte, Regeln und Adressen sind unverändert; aus dem Prototyp nicht gebaut sind Termine der Quartalszahlen und das Schätz-Spiel (dafür gibt es keine Daten).
+
 ## Daten
 
 | Quelle | Pfad (ausgeliefert) | Erzeuger | Inhalt |

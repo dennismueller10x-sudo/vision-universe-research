@@ -590,57 +590,87 @@
   var RANK_ICON = { bewertung: 'valuation', profitabel: 'margin', wachstum: 'growth', cashflow: 'cash', margen: 'income', bilanz: 'balance' };
   var HOME_LABELS = { 'profitables-wachstum': 'Profitables Wachstum', 'langfristige-compounder': 'Compounder', 'cashflow-maschinen': 'Cashflow-Maschinen',
     'qualitaet-zum-preis': 'Qualität zum Preis', 'starke-bilanz-wachstum': 'Starke Bilanz + Wachstum', 'margen-werden-staerker': 'Margen werden stärker' };
-  function rankNav(def, withSize) { return navEl('#/rangliste/' + def.id, hudGlyph(RANK_ICON[def.id]), def.title, def.sub + (withSize ? ' · ' + C.SIZES[1].label : ''), 'fu-rnav'); }
   /* Fehlerzustand der Ranglisten (Vergleichsdaten aller US-Aktien fehlen). */
   function rankDown(retry) {
     return emptyState({ id: 'ranking', verdict: 'Gerade keine Daten', title: 'Ranglisten laden gerade nicht.', text: 'Die Vergleichsdaten aller US-Aktien fehlen. Wir zeigen nichts Halbes.',
       next: [['#/suche', 'Jede Firma einzeln (Suche)'], ['#/methodik', 'Methodik und Erklärungen'], ['#/ranglisten/auswahlen', 'Auswahlen aus Discover']],
       actions: [reloadBtn(retry), el('a', { class: 'vu-btn vu-btn--sm vu-btn--line', href: '/status/' }, 'Status')] });
   }
-  /* Startseite (Konzept „Verstehen. Finden.“, Folie FX01): Frage, Suche mit Firmen-Chips, Ranglisten als Schiene mit den
-   * ersten drei Plaetzen, „Zahlen lesen in 30 Sekunden“ als Karten mit echtem Beispielwert, Branchen, „Selbst filtern“. */
+  /* Startseite (App-Konzept 2, Owner-Freigabe 14.11.2026; Inhalte wie Konzept „Verstehen. Finden.“, Folie FX01): dunkle Kopfkachel
+   * mit Frage, Suche und Firmen-Chips, Checklisten und Ranglisten als Schienen (Ranglisten als Balkenrennen der ersten drei
+   * Plaetze), „Zahlen lesen in 30 Sekunden“ als Balken mit echtem Beispielwert, Branchen als Balken, „Selbst filtern“, „Weiter“. */
   function railHead(title, to, link, sub, tag) {
     return el('div', { class: 'fu-rh' }, [el('div', { class: 'fu-rh-t' }, [el('h2', { text: title }), tag ? el('span', { class: 'fu-rh-tag', text: tag }) : null,
       to ? el('a', { href: to }, [link || 'Alle', glyph('chevron', 'fu-glyph-sm')]) : null]), sub ? el('p', { text: sub }) : null]);
   }
+  /* Balkenrennen: Balken mit Name, Breite = Betrag relativ zum groessten Betrag der gezeigten Zeilen (nur Darstellung). */
+  function raceBar(name, v, max) {
+    var w = isNum(v) && max > 0 ? Math.max(3, Math.min(100, Math.abs(v) / max * 100)) : 0;
+    return el('span', { class: 'fu-race-b' + (isNum(v) && v < 0 ? ' is-neg' : ''), style: '--w:' + w.toFixed(1) + '%' }, [el('i', { 'aria-hidden': 'true' }), el('span', { class: 'fu-race-n', text: name })]);
+  }
+  function raceMax(rows, col) { return Math.max.apply(null, rows.map(function (x) { return isNum(x[col]) ? Math.abs(x[col]) : 0; }).concat([0])) || 1; }
+  function nextEl(o) { return frag(UI.next(o)); }
+  /* Fenster (VUUI.popup): Tiefe oeffnet sich durch Antippen. body: Knoten oder Liste von Knoten. */
+  function pop(title, body, id) {
+    var box = el('div', { class: 'fu-pop' }, body);
+    var sh = UI.popup({ title: title, body: box, id: id || 'fu-pop' });
+    if (sh) sh.classList.add('vu-ui', 'fu-popup');
+    return sh;
+  }
   var RANK_SIZE = '10', HOME_RANKS = ['wachstum', 'profitabel', 'cashflow', 'margen', 'bilanz', 'bewertung'];
   function homeRanks() { return HOME_RANKS.map(function (id) { return C.RANKINGS.filter(function (d) { return d.id === id; })[0]; }).filter(Boolean); }
   function rankCard(def, U) {
-    var r = U ? C.ranking(U, def.id, RANK_SIZE, 3) : null;
-    return el('a', { class: 'fu-rlc', href: '#/rangliste/' + def.id }, [el('b', { text: def.title }), el('span', { class: 'fu-rlc-s', text: def.sub }),
+    var r = U ? C.ranking(U, def.id, RANK_SIZE, 3) : null, max = r ? raceMax(r.rows, def.col) : 1;
+    return el('a', { class: 'fu-rlc', href: '#/rangliste/' + def.id }, [el('span', { class: 'fu-rlc-h' }, [hudGlyph(RANK_ICON[def.id]), el('span', {}, [el('b', { text: def.title }), el('span', { class: 'fu-rlc-s', text: def.sub })])]),
       r && r.rows.length ? el('ol', {}, r.rows.map(function (x, i) {
-        var v = x[def.col], pill = def.kind === 'growth' || def.kind === 'ratio' ? signPill(C.fmt({ kind: def.kind }, v).replace(/^[+−]/, ''), v) : el('b', { class: 'fu-num', text: rankValue(def, v) });
-        return el('li', {}, [el('b', { class: 'fu-rlc-n fu-num', text: String(i + 1) }), frag(UI.logo(x.s)), el('span', { class: 'fu-rlc-name', text: shortName(x.n || x.s) }), pill]);
+        var v = x[def.col];
+        return el('li', {}, [el('b', { class: 'fu-rlc-n fu-num', text: String(i + 1) }), frag(UI.logo(x.s)), raceBar(shortName(x.n || x.s), v, max), el('b', { class: 'fu-race-v fu-num', text: rankValue(def, v) })]);
       })) : el('div', { class: 'fu-rlph', 'aria-hidden': 'true' }, [el('i'), el('i'), el('i')])]);
   }
   function shortName(n) { return String(n || '').replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Holdings?|Ltd\.?|Co\.?|Class [A-Z]|plc|N\.V\.|S\.A\.)$/i, '').replace(/,?\s+(Inc\.?|Corporation)$/i, ''); }
   var LEARN = [['revenue', 'Umsatz', 'Was die Firma verkauft.'], ['net_income', 'Nettogewinn', 'Was nach allen Kosten und Steuern bleibt.'], ['free_cash_flow', 'Free Cashflow', 'Echtes Geld nach Investitionen.'], ['pe', 'KGV', 'Wie viele Jahresgewinne der Börsenwert kostet.']];
+  /* „Zahlen lesen in 30 Sekunden“: vier Zeilen mit echtem Beispielwert; die drei Betraege als Balken im Verhaeltnis zum Umsatz. */
   function learnCards(co) {
-    return LEARN.map(function (x, i) {
-      var v = null, when = '';
-      if (co && co.book) {
-        if (x[0] === 'pe') { var sn = C.snapshot(co.raw, null); v = isNum(sn.pe) ? C.fmt({ kind: 'multiple' }, sn.pe) : null; when = co.name + ', heute'; }
-        else { var h = C.seriesOf(co.book, C.BY_ID[x[0]], 'annual').filter(function (y) { return isNum(y.v); }), l = h[h.length - 1]; if (l) { v = usd(l.v); when = co.name + ', GJ ' + l.fy; } }
-      }
-      return el('a', { class: 'fu-lern', href: co ? href(co.t, 'kennzahl', '&k=' + x[0]) : '#/NVDA' }, [el('span', { class: 'fu-lern-n', text: String(i + 1) }), el('b', { text: x[1] }), el('p', { text: x[2] }),
-        el('div', { class: 'fu-lern-v' }, v ? [el('b', { class: 'fu-num', text: v }), el('small', { text: when })] : [skel(22, '70%')])]);
+    var vals = LEARN.map(function (x) {
+      if (!co || !co.book) return null;
+      if (x[0] === 'pe') { var sn = C.snapshot(co.raw, null); return isNum(sn.pe) ? { text: C.fmt({ kind: 'multiple' }, sn.pe), when: co.name + ', heute' } : null; }
+      var h = C.seriesOf(co.book, C.BY_ID[x[0]], 'annual').filter(function (y) { return isNum(y.v); }), l = h[h.length - 1];
+      return l ? { v: l.v, text: usd(l.v), when: co.name + ', GJ ' + l.fy } : null;
     });
+    var max = vals[0] && isNum(vals[0].v) && vals[0].v > 0 ? vals[0].v : 0;
+    return LEARN.map(function (x, i) {
+      var v = vals[i], bar = v && isNum(v.v) && max ? Math.max(0, Math.min(100, v.v / max * 100)) : null;
+      return el('a', { class: 'fu-lern', href: co ? href(co.t, 'kennzahl', '&k=' + x[0]) : '#/NVDA' }, [el('span', { class: 'fu-lern-n', text: String(i + 1) }),
+        el('span', { class: 'fu-lern-t' }, [el('b', { text: x[1] }), el('span', { text: x[2] })]),
+        el('span', { class: 'fu-lern-v' }, v ? [el('b', { class: 'fu-num', text: v.text }), el('small', { text: v.when })] : co === false ? [] : [skel(22, '70%')]),
+        bar != null ? el('span', { class: 'fu-lern-b', 'aria-hidden': 'true' }, el('i', { style: 'width:' + bar.toFixed(1) + '%' })) : null]);
+    });
+  }
+  /* Branchen auf der Startseite: die ersten fuenf Zeilen der Branchen-Seite (gleiche Reihenfolge, gleicher Wert). */
+  function homeIndustries(U) {
+    var list = C.industries(U, 5).slice(0, 5); if (!list.length) return null;
+    var max = Math.max.apply(null, list.map(function (i) { return Math.abs(i.netMargin || 0); }).concat([0.01]));
+    return el('div', { class: 'fu-tilebox2 fu-indmini' }, list.map(function (i) {
+      return el('a', { class: 'fu-race-r', href: '#/branche/' + i.id }, [raceBar(i.label, i.netMargin, max), el('b', { class: 'fu-race-v fu-num', text: isNum(i.netMargin) ? C.fmt({ kind: 'ratio' }, i.netMargin) : '–' })]);
+    }).concat([el('p', { class: 'fu-tile-note', text: 'Median der Nettomarge je Branche, größte Branchen zuerst' })]));
   }
   function homeView() {
     setTitle(null); main.setAttribute('data-view', 'home');
-    var lead = el('p', { class: 'vu-lead', text: 'Umsatz, Gewinn und Cashflow von US-Firmen, aus den Pflichtmeldungen an die US-Börsenaufsicht.' });
+    var lead = el('p', { class: 'fu-hero-lead', text: 'Umsatz, Gewinn und Cashflow von US-Firmen, aus den Pflichtmeldungen an die US-Börsenaufsicht.' });
     var eyebrow = el('p', { class: 'vu-ltag', text: 'Fundamental' }), footer = el('div');
     var ranks = el('div', { class: 'fu-rail' }, homeRanks().slice(0, 3).map(function (d) { return rankCard(d, null); })), rankState = el('div', { class: 'fu-rank-state' });
-    var learn = el('div', { class: 'fu-rail' }, learnCards(null));
+    var learn = el('div', { class: 'fu-tilebox2 fu-learn' }, learnCards(null));
     var ckRail = CK ? el('div', { class: 'fu-rail' }, CK.CHECKLISTS.map(function (l) { return ckCard(l, null); })) : null;
-    put(main, el('header', { class: 'fu-intro' }, [eyebrow, el('h1', { class: 'vu-lt', text: 'Wie gut ist das Geschäft?' }), lead]),
-      el('div', { class: 'fu-searchwrap' }, searchBox({ placeholder: 'Firma oder Kürzel, z. B. NVIDIA' })),
-      el('div', { class: 'fu-qchips', role: 'list', 'aria-label': 'Schnellwahl' }, QUICK.map(function (t) { return el('a', { class: 'fu-qchip', role: 'listitem', href: '#/' + t }, [frag(UI.logo(t)), t]); })),
+    var indBox = el('div', {}, skel(170));
+    put(main, el('header', { class: 'fu-intro fu-hero2 vu-night' }, [eyebrow, el('h1', { class: 'vu-lt', text: 'Wie gut ist das Geschäft?' }), lead,
+        el('div', { class: 'fu-searchwrap' }, searchBox({ placeholder: 'Firma oder Kürzel, z. B. NVIDIA' })),
+        el('div', { class: 'fu-qchips', role: 'list', 'aria-label': 'Schnellwahl' }, QUICK.map(function (t) { return el('a', { class: 'fu-qchip', role: 'listitem', href: '#/' + t }, [frag(UI.logo(t)), t]); }))]),
       CK ? railHead('Checklisten', '/screener/', 'Alle ' + CK.CHECKLISTS.length, 'Mehrere Bedingungen auf einmal, jede mit Haken. Wie eine Prüfliste.', 'Neu') : null, ckRail,
       railHead('Ranglisten', '#/ranglisten', 'Alle ' + C.RANKINGS.length, 'Eine Kennzahl, sortiert. Größe wählbar.'), ranks, rankState,
       railHead('Zahlen lesen in 30 Sekunden'), learn,
-      el('div', { class: 'vu-stack fu-gap' }, [navEl('#/branchen', hudGlyph('company'), 'Branchen im Vergleich', 'Nettomarge, Wachstum und Bewertung je Branche'),
-        navEl('/screener/', el('span', { class: 'vu-hud', style: '--vu-hud:42px' }, productIcon('screener', 'fu-hud-g')), 'Selbst filtern', 'Im Screener nach eigenen Bedingungen')]),
+      railHead('Branchen im Vergleich', '#/branchen', 'Alle', 'Nettomarge, Wachstum und Bewertung je Branche'), indBox,
+      el('div', { class: 'vu-stack fu-gap' }, [navEl('/screener/', el('span', { class: 'vu-hud', style: '--vu-hud:42px' }, productIcon('screener', 'fu-hud-g')), 'Selbst filtern', 'Im Screener nach eigenen Bedingungen')]),
+      el('div', { class: 'fu-next' }, nextEl({ title: 'Hedgefonds: was Investoren halten', sub: 'Depots großer Fonds aus Pflichtmeldungen', href: '/hedgefonds/#/' })),
       footer);
     done();
     put(footer, foot(null));
@@ -650,7 +680,7 @@
       var asOf = co.raw && co.raw.fundamentals && co.raw.fundamentals.asOf;
       if (asOf) put(eyebrow, 'Fundamental · Zahlen bis ' + M.dateDe(String(asOf).slice(0, 10)).slice(0, 6));
       put(footer, foot(asOf));
-    }).catch(function () { put(learn, learnCards(null).map(function (n) { n.querySelector('.fu-lern-v').remove(); return n; })); });
+    }).catch(function () { put(learn, learnCards(false)); });
     function probe() {
       put(rankState);
       loadUniverse().then(function (U) {
@@ -658,7 +688,8 @@
         put(ranks, homeRanks().map(function (d) { return rankCard(d, U); }));
         if (ckRail) put(ckRail, CK.CHECKLISTS.map(function (l) { return ckCard(l, U); }));
         put(lead, 'Umsatz, Gewinn und Cashflow von ' + U.n.toLocaleString('de-DE') + ' US-Firmen, aus den Pflichtmeldungen an die US-Börsenaufsicht.');
-      }).catch(function () { if (main.getAttribute('data-view') === 'home') put(rankState, rankDown(probe)); });
+        put(indBox, homeIndustries(U) || navEl('#/branchen', hudGlyph('company'), 'Branchen im Vergleich', 'Nettomarge, Wachstum und Bewertung je Branche'));
+      }).catch(function () { if (main.getAttribute('data-view') === 'home') { put(rankState, rankDown(probe)); put(indBox, navEl('#/branchen', hudGlyph('company'), 'Branchen im Vergleich', 'Nettomarge, Wachstum und Bewertung je Branche')); } });
     }
     probe();
   }
@@ -668,12 +699,16 @@
     setTitle(tab === 'auswahlen' ? 'Auswahlen' : 'Ranglisten'); main.setAttribute('data-view', 'lists');
     var segs = frag(UI.seg([{ id: 'ranglisten', label: 'Ranglisten', href: '#/ranglisten' }, { id: 'auswahlen', label: 'Auswahlen', href: '#/ranglisten/auswahlen' }], tab, { label: 'Ansicht' }));
     if (tab === 'ranglisten') {
-      var st = el('div', { class: 'fu-rank-state' });
-      put(main, intro('Ranglisten', 'Ranglisten sortieren eine Kennzahl. Die Regel steht dabei.', false), segs,
-        el('div', { class: 'vu-stack fu-gap' }, C.RANKINGS.map(function (d) { return rankNav(d, false); })),
-        el('p', { class: 'vu-xs vu-mu fu-gap', text: 'Größe wählbar: ' + C.SIZES.map(function (s) { return s.label; }).join(' · ') + ' Börsenwert. Keine Empfehlung.' }), st, foot(null));
+      var st = el('div', { class: 'fu-rank-state' }), grid = el('div', { class: 'fu-rgrid fu-gap' }, C.RANKINGS.map(function (d) { return rankCard(d, null); }));
+      put(main, intro('Ranglisten', 'Ranglisten sortieren eine Kennzahl. Die Regel steht dabei.', false), segs, grid,
+        el('p', { class: 'vu-xs vu-mu fu-gap', text: 'Gezeigt: die ersten drei Plätze ' + C.SIZES[1].label + ' Börsenwert. Größe wählbar: ' + C.SIZES.map(function (s) { return s.label; }).join(' · ') + ' Börsenwert. Keine Empfehlung.' }), st,
+        el('div', { class: 'fu-next' }, nextEl({ title: 'Branchen im Vergleich', sub: 'Nettomarge je Branche', href: '#/branchen' })), foot(null));
       done();
-      var probe = function () { put(st); loadUniverse().catch(function () { if (main.getAttribute('data-view') === 'lists') put(st, rankDown(probe)); }); };
+      var probe = function () {
+        put(st);
+        loadUniverse().then(function (U) { if (main.getAttribute('data-view') === 'lists') put(grid, C.RANKINGS.map(function (d) { return rankCard(d, U); })); })
+          .catch(function () { if (main.getAttribute('data-view') === 'lists') put(st, rankDown(probe)); });
+      };
       probe();
       return;
     }
@@ -730,9 +765,8 @@
     var maxM = Math.max.apply(null, list.map(function (i) { return Math.abs(i.netMargin || 0); }).concat([0.01]));
     return el('ul', { class: 'fu-ind' }, list.map(function (i) {
       return el('li', {}, el('a', { href: '#/branche/' + i.id }, [
-        el('span', { class: 'fu-ind-name' }, [el('b', { text: i.label }), el('small', { text: i.count + ' Firmen · ' + i.top.join(', ') })]),
-        el('span', { class: 'fu-ind-m' }, [el('span', { class: 'fu-minibar', 'aria-hidden': 'true' }, el('i', { class: i.netMargin < 0 ? 'is-neg' : '', style: 'width:' + Math.max(3, Math.abs(i.netMargin || 0) / maxM * 100).toFixed(0) + '%' })),
-          el('em', { class: 'fu-num', text: isNum(i.netMargin) ? C.fmt({ kind: 'ratio' }, i.netMargin) : '–' })]),
+        el('span', { class: 'fu-ind-name' }, [raceBar(i.label, i.netMargin, maxM), el('small', { text: i.count + ' Firmen · ' + i.top.join(', ') })]),
+        el('em', { class: 'fu-num fu-race-v', text: isNum(i.netMargin) ? C.fmt({ kind: 'ratio' }, i.netMargin) : '–' }),
         glyph('chevron', 'fu-glyph-sm')
       ]));
     }));
@@ -797,20 +831,24 @@
     }));
     var others = el('div', { class: 'vu-chips fu-gap', role: 'list', 'aria-label': 'Weitere Ranglisten' }, C.RANKINGS.map(function (r) { return el('a', { class: 'vu-chip', role: 'listitem', href: '#/rangliste/' + r.id, 'aria-current': r.id === id ? 'page' : null }, RANK_SHORT[r.id] || r.title); }));
     var rule = el('div', { class: 'vu-box vu-box--line fu-rule fu-gap' }, [el('p', { class: 'vu-ltag', text: 'Regel dieser Liste' }), el('p', { class: 'vu-sm', text: def.sub + ', ' + (def.dir === 'asc' ? 'aufsteigend' : 'absteigend') + '. ' + def.rule + '. Nur Aktien mit geprüftem Börsenwert; Werte wie im Screener (letzte zwölf Monate bzw. letztes Geschäftsjahr).' })]);
-    put(main, backLink('#/ranglisten', 'Ranglisten'), intro(def.title, RANK_Q[def.id] || def.sub, false), others, sizes, rule, body,
-      el('div', { class: 'fu-gap' }, helpEl('Eine Rangliste sortiert nur eine Zahl. Sie sagt nicht, ob die Aktie gut oder günstig ist.')), foot(null));
+    var nextDef = C.RANKINGS[(C.RANKINGS.indexOf(def) + 1) % C.RANKINGS.length];
+    put(main, pageHead(['#/ranglisten', 'Ranglisten'], def.title, RANK_Q[def.id] || def.sub), others, sizes, body, rule,
+      el('div', { class: 'fu-gap' }, helpEl('Eine Rangliste sortiert nur eine Zahl. Sie sagt nicht, ob die Aktie gut oder günstig ist.')),
+      el('div', { class: 'fu-next' }, nextEl({ title: nextDef.title, sub: nextDef.sub, href: '#/rangliste/' + nextDef.id, eyebrow: 'Nächste Rangliste' })), foot(null));
     done();
     var on = others.querySelector('[aria-current=page]'); if (on && others.scrollWidth > others.clientWidth) others.scrollLeft = Math.max(0, on.offsetLeft - 16);
+    var max = 1;
     function row(x, i) {
       return el('li', {}, el('a', { href: '#/' + encodeURIComponent(x.s) }, [el('span', { class: 'fu-rk-n vu-num', text: String(i + 1) }), frag(UI.logo(x.s)),
-        el('span', { class: 'fu-rk-name' }, [el('b', { text: x.n || x.s }), el('small', { text: x.s + (isNum(x.revenue) ? ' · Umsatz ' + usd(x.revenue) : '') })]),
-        el('span', { class: 'vu-verdict vu-verdict--strong vu-num fu-rk-v', text: rankValue(def, x[def.col]) })]));
+        el('span', { class: 'fu-rk-name' }, [raceBar(x.n || x.s, x[def.col], max), el('small', { text: x.s + (isNum(x.revenue) ? ' · Umsatz ' + usd(x.revenue) : '') })]),
+        el('span', { class: 'vu-num fu-rk-v fu-race-v', text: rankValue(def, x[def.col]) })]));
     }
     function paint() {
       put(body, skel(400));
       loadUniverse().then(function (U) {
         var r = C.ranking(U, id, chosen, 25);
         if (!r || !r.rows.length) { put(body, emptyState({ id: 'ranking', title: 'Keine Firma erfüllt die Regel.', text: 'Bei dieser Größe gibt es gerade keinen Wert. Probier eine andere Größe.' })); return; }
+        max = raceMax(r.rows, def.col);
         var rest = el('ol', { class: 'fu-rk', start: '11', hidden: true }, r.rows.slice(10).map(function (x, i) { return row(x, i + 10); }));
         put(body, el('div', { class: 'fu-rk-head' }, [el('h2', { class: 'fu-rk-t', text: 'Platz 1–' + Math.min(10, r.rows.length) }), el('span', { class: 'vu-xs vu-mu', text: r.total.toLocaleString('de-DE') + ' Firmen erfüllen die Regel' })]),
           el('div', { class: 'vu-box fu-rk-box' }, [el('ol', { class: 'fu-rk' }, r.rows.slice(0, 10).map(row)), rest]),
@@ -842,31 +880,30 @@
   var IND_METRICS = [['mcap', 'Börsenwert'], ['revenue', 'Umsatz'], ['revCagr3', 'Wachstum 3 J'], ['netMargin', 'Nettomarge'], ['roic', 'ROIC'], ['pe', 'KGV']];
   function industryView(id) {
     setTitle('Branche'); main.setAttribute('data-view', 'industry');
-    var body = el('div', {}, skel(400)), head = el('section', { class: 'fu-subhero' }, [backLink('#/branchen', 'Branchen'), skel(36, '60%')]);
+    var body = el('div', {}, skel(400)), head = el('section', { class: 'fu-subhero' }, [pageHead(['#/branchen', 'Branchen'], 'Branche')]);
     put(main, head, body); done();
     loadUniverse().then(function (U) {
       var label = U.industryLabel(id); setTitle(label);
       var members = U.rows(function (c, i) { return c.sic2[i] === id && (isNum(c.mcap[i]) || isNum(c.revenue[i])); });
       if (!members.length) { put(body, notice('Für diese Branche liegen keine Unternehmen vor.')); return; }
-      put(head, backLink('#/branchen', 'Branchen'), el('p', { class: 'vu-eyebrow', text: 'Branche · SIC ' + id }), el('h1', { class: 'fu-h1', text: label }),
-        el('p', { class: 'fu-sub', text: members.length + ' US-Unternehmen mit Geschäftszahlen' }));
+      put(head, pageHead(['#/branchen', 'Branchen'], label, members.length + ' US-Unternehmen mit Geschäftszahlen', 'Branche · SIC ' + id));
       var col = 'mcap';
-      var stat = el('ul', { class: 'fu-kgrid' }), list = el('div');
+      var stat = el('div', { class: 'fu-tilebox2 fu-indstats' }), list = el('div');
       var seg = el('div', { class: 'fu-seg fu-seg-scroll', role: 'group', 'aria-label': 'Kennzahl' }, IND_METRICS.map(function (m) {
         return el('button', { type: 'button', class: 'fu-seg-b', 'aria-pressed': String(m[0] === col), onclick: function () { col = m[0]; [].forEach.call(seg.children, function (b, k) { b.setAttribute('aria-pressed', String(IND_METRICS[k][0] === col)); }); paint(); } }, m[1]);
       }));
-      put(stat, IND_METRICS.slice(2).map(function (m) {
+      put(stat, frag(UI.stats(IND_METRICS.slice(2).map(function (m) {
         var d = uDef(m[0]), med = C.median(members.map(function (r) { return r[m[0]]; }).filter(function (v) { return m[0] !== 'netMargin' || Math.abs(v) <= 1; }));
-        return el('li', { class: 'fu-k' }, [el('span', { class: 'fu-k-l', text: 'Median ' + m[1] }), el('b', { class: 'fu-k-v fu-num', text: C.fmt(d, med, 'USD') })]);
-      }));
+        return { value: C.fmt(d, med, 'USD'), label: 'Median ' + m[1] };
+      }), { label: 'Mediane der Branche' })));
       function paint() {
         var d = uDef(col), rows = members.filter(function (r) { return isNum(r[col]); }).sort(function (a, b) { return col === 'pe' ? a[col] - b[col] : b[col] - a[col]; }).slice(0, 40);
         var max = Math.max.apply(null, rows.map(function (r) { return Math.abs(r[col]); })) || 1;
-        put(list, el('ol', { class: 'fu-rank' }, rows.map(function (x, i) {
+        put(list, el('ol', { class: 'fu-rk fu-rk-box' }, rows.map(function (x, i) {
           return el('li', {}, el('a', { href: '#/' + encodeURIComponent(x.s) }, [
-            el('span', { class: 'fu-rank-n fu-num', text: String(i + 1) }),
-            el('span', { class: 'fu-rank-name' }, [el('b', { text: x.s }), el('span', { text: x.n })]),
-            el('span', { class: 'fu-rank-v' }, [el('em', { class: 'fu-num', text: C.fmt(d, x[col], 'USD') }), el('span', { class: 'fu-minibar', 'aria-hidden': 'true' }, el('i', { class: x[col] < 0 ? 'is-neg' : '', style: 'width:' + Math.max(4, Math.abs(x[col]) / max * 100).toFixed(0) + '%' }))])
+            el('span', { class: 'fu-rk-n fu-num', text: String(i + 1) }), frag(UI.logo(x.s)),
+            el('span', { class: 'fu-rk-name' }, [raceBar(x.n || x.s, x[col], max), el('small', { text: x.s })]),
+            el('span', { class: 'fu-num fu-rk-v fu-race-v', text: C.fmt(d, x[col], 'USD') })
           ]));
         })), el('p', { class: 'fu-note', text: (col === 'pe' ? 'Aufsteigend sortiert (niedrigstes KGV zuerst), nur Unternehmen mit Gewinn. ' : 'Absteigend sortiert. ') + 'Bis 40 Unternehmen mit Wert.' }));
       }
@@ -878,6 +915,10 @@
   var VIEWS = [['', 'Überblick'], ['kennzahlen', 'Alle Kennzahlen'], ['vergleich', 'Branchenvergleich'], ['finanzen', 'Finanzen']];
   var AREAS = { mehr: 'Weitere Bereiche', dividende: 'Dividende', analysten: 'Analysten', bewertung: 'Bewertung', aktie: 'Aktie & Kapital', unternehmen: 'Unternehmensdaten', quellen: 'Meldungen & Downloads' };
   function href(t, sub, extra) { return '#/' + encodeURIComponent(t) + (sub ? '?ansicht=' + sub + (extra || '') : ''); }
+  function pageHead(back, title, lead, eyebrow) {
+    return el('header', { class: 'fu-phead' }, [back ? el('a', { class: 'fu-round', href: back[0], 'aria-label': 'Zurück: ' + back[1] }, glyph('back', 'fu-glyph-sm')) : null,
+      el('div', { class: 'fu-phead-t' }, [eyebrow ? el('p', { class: 'vu-eyebrow', text: eyebrow }) : null, el('h1', { class: 'fu-h1', text: title }), lead ? el('p', { class: 'fu-sub', text: lead }) : null])]);
+  }
   function backLink(h, label) { return el('a', { class: 'fu-back', href: h }, [glyph('back', 'fu-glyph-sm'), label]); }
   function stockHead(t, co) {
     var host = el('div', { class: 'fu-shead' });
@@ -888,8 +929,8 @@
     return host;
   }
   function compactHead(t, co, title, sub, back) {
-    return el('header', { class: 'fu-chead' }, [backLink(back ? back[0] : href(t), back ? back[1] : co.name + ' · Zahlen'),
-      el('p', { class: 'vu-eyebrow', text: t + ' · ' + co.name }), el('h1', { class: 'fu-h1', text: title }), sub ? el('p', { class: 'fu-sub', text: sub }) : null]);
+    var h = pageHead(back || [href(t), co.name + ' · Zahlen'], title, sub, t + ' · ' + co.name);
+    h.classList.add('fu-chead'); return h;
   }
   function company(r) {
     var t = r.ticker, sub = r.sub || '';
@@ -1045,7 +1086,7 @@
       show(lastP, def, rows);
     }
     paint();
-    return el('section', { class: 'fu-fin', 'aria-label': 'Finanzen' }, [el('div', { class: 'fu-fin-h' }, [el('h2', { text: 'Finanzen' }), range]), seg, big, plot, xs, per]);
+    return el('section', { class: 'fu-fin fu-night', 'aria-label': 'Finanzen' }, [el('div', { class: 'fu-fin-h' }, [el('h2', { text: 'Finanzen' }), range]), seg, big, plot, xs, per]);
   }
   /* Kapitel: zugeklappt als Zeilen; jede oeffnet ihren Bereich (die bisherigen Adressen bleiben die Ziele). */
   var CHAPTERS = [
@@ -1067,9 +1108,9 @@
   }
   function chapters(co, ctx) {
     var subs = {};
-    var list = el('ol', { class: 'fu-chap' }, CHAPTERS.map(function (c, i) {
+    var list = el('ol', { class: 'fu-chap' }, CHAPTERS.map(function (c) {
       var sub = el('span', { text: chapterSub(co, c[0], ctx) }); subs[c[0]] = sub;
-      return el('li', {}, el('a', { href: chapterHref(co.t, c[0]) }, [el('b', { class: 'fu-chap-n', text: String(i + 1) }), el('span', { class: 'fu-chap-i' }, glyph(c[2])),
+      return el('li', {}, el('a', { href: chapterHref(co.t, c[0]) }, [el('span', { class: 'fu-chap-i' }, glyph(c[2])),
         el('span', { class: 'fu-chap-t' }, [el('b', { text: c[1] }), sub]), glyph('chevron', 'fu-glyph-sm')]));
     }));
     /* Nachgeladen: Branchenmedian des KGV, Lage in der Branche, Analysten (Angabe Dritter). */
@@ -1096,31 +1137,47 @@
     out.sort(function (a, b) { return (c.mcap[b] || 0) - (c.mcap[a] || 0); });
     return out.map(function (i) { return c.s[i]; });
   }
-  function ckBadge(r, big) { return el('span', { class: 'fu-ckr-r' + (r.all ? ' on' : '') + (big ? ' is-big' : '') }, [el('b', { class: 'fu-num', text: String(r.met) }), '/' + r.of]); }
+  function ckItems(rows) {
+    return el('ul', { class: 'fu-ck-list' }, rows.map(function (x, n) {
+      return el('li', { class: x.pass === true ? 'is-ok' : '' }, [x.pass === undefined ? el('span', { class: 'fu-ck-i is-n fu-num', 'aria-hidden': 'true', text: String(n + 1) })
+        : el('span', { class: 'fu-ck-i', 'aria-label': x.pass === true ? 'erfüllt' : x.pass === false ? 'nicht erfüllt' : 'ohne Angabe' }, glyph(x.pass === true ? 'check' : 'close', 'fu-glyph-sm')),
+        el('span', { class: 'fu-ck-l', text: x.item.label }), x.pass === undefined ? null : el('b', { class: 'fu-num', text: CK.formatValue(x.item, x.value) })]);
+    }));
+  }
+  var CK_HELP = 'Eine Checkliste beschreibt, welche Bedingungen erfüllt sind. Sie sagt nichts über den künftigen Kurs. Schwellen: Methodik.';
+  function ckUni(hits, U, of, list) {
+    return el('div', { class: 'fu-ck-uni' }, [el('div', {}, [el('b', { text: hits.length.toLocaleString('de-DE') + ' von ' + U.n.toLocaleString('de-DE') + ' Aktien' }), el('small', { text: 'erfüllen heute alle ' + of + ' Punkte' })]),
+      el('a', { class: 'vu-btn vu-btn--ink vu-btn--sm', href: CK.screenerHref(list) }, 'Im Screener')]);
+  }
   function ckSheet(co, U, list) {
     var row = U.get(co.t), r = CK.evaluate(list, function (col) { return row ? row[col] : null; }), hits = ckHits(U, list);
-    var body = el('div', { class: 'fu-ck' }, [
-      el('div', { class: 'fu-ck-h' }, [el('div', {}, [el('p', { class: 'vu-ltag', text: 'Checkliste · ' + co.name }), el('h3', { text: list.name })]), ckBadge(r, true)]),
-      el('ul', { class: 'fu-ck-list' }, r.rows.map(function (x) {
-        return el('li', { class: x.pass === true ? 'is-ok' : '' }, [el('span', { class: 'fu-ck-i', 'aria-label': x.pass === true ? 'erfüllt' : x.pass === false ? 'nicht erfüllt' : 'ohne Angabe' }, glyph(x.pass === true ? 'check' : 'close', 'fu-glyph-sm')),
-          el('span', { class: 'fu-ck-l', text: x.item.label }), el('b', { class: 'fu-num', text: CK.formatValue(x.item, x.value) })]);
-      })),
-      el('div', { class: 'fu-ck-uni' }, [el('div', {}, [el('b', { text: hits.length.toLocaleString('de-DE') + ' von ' + U.n.toLocaleString('de-DE') + ' Aktien' }), el('small', { text: 'erfüllen heute alle ' + r.of + ' Punkte' })]),
-        el('a', { class: 'vu-btn vu-btn--ink vu-btn--sm', href: CK.screenerHref(list) }, 'Im Screener')]),
-      el('div', { class: 'fu-gap-s' }, helpEl('Eine Checkliste beschreibt, welche Bedingungen erfüllt sind. Sie sagt nichts über den künftigen Kurs. Schwellen: Methodik.'))]);
-    sheet('Checkliste ' + list.name, body, 'fu-sheet-ck');
+    pop('Checkliste ' + list.name, el('div', { class: 'fu-ck' }, [
+      el('div', { class: 'fu-ck-h' }, [el('div', {}, [el('p', { class: 'vu-ltag', text: co.name }), el('h3', { text: r.all ? 'Alle Punkte erfüllt' : r.met + ' von ' + r.of + ' Punkten erfüllt' })]),
+        frag(UI.ring(r.of ? r.met / r.of * 100 : null, { size: 64, stroke: 7, text: r.met + '/' + r.of, label: r.met + ' von ' + r.of + ' Punkten erfüllt, Anteil' }))]),
+      ckItems(r.rows), ckUni(hits, U, r.of, list),
+      el('div', { class: 'fu-gap-s' }, helpEl(CK_HELP))]), 'fu-ck-sheet');
+  }
+  /* Karte der Startseite: alle Bedingungen der Liste und die Firmen, die heute alle erfuellen (wie die Karte sie zaehlt). */
+  function ckListSheet(list, U, hits) {
+    pop('Checkliste ' + list.name, el('div', { class: 'fu-ck' }, [
+      el('p', { class: 'vu-ltag', text: list.items.length + ' Punkte · jede Bedingung mit Haken' }),
+      ckItems(list.items.map(function (i) { return { item: i }; })),
+      U && hits ? ckUni(hits, U, list.items.length, list) : el('a', { class: 'vu-btn vu-btn--ink vu-btn--block fu-gap', href: CK.screenerHref(list) }, 'Im Screener'),
+      U && hits && hits.length ? el('div', { class: 'fu-ck-firms' }, hits.slice(0, 12).map(function (t) { var x = U.get(t); return el('a', { class: 'fu-ck-firm', href: '#/' + encodeURIComponent(t) }, [frag(UI.logo(t)), el('b', { text: shortName((x && x.n) || t) })]); })) : null,
+      U && hits && hits.length > 12 ? el('p', { class: 'fu-note', text: 'Die 12 größten nach Börsenwert. Alle ' + hits.length.toLocaleString('de-DE') + ' stehen im Screener.' }) : null,
+      el('div', { class: 'fu-gap-s' }, helpEl(CK_HELP))]), 'fu-ck-sheet');
   }
   function checklistRows(co) {
-    var box = el('div', { class: 'fu-ckbox' }, CK ? CK.CHECKLISTS.map(function () { return el('div', { class: 'fu-ckr is-wait' }, skel(40)); }) : []);
+    var box = el('div', { class: 'fu-ckbox' }, CK ? CK.CHECKLISTS.map(function () { return el('div', { class: 'fu-ckr is-wait' }, skel(96)); }) : []);
     if (!CK) return null;
     function paint(U) {
       var row = U && U.get(co.t);
       if (!row) { put(box, el('p', { class: 'fu-note', text: 'Für ' + co.name + ' liegen die Vergleichsdaten gerade nicht vor.' })); return; }
       put(box, CK.CHECKLISTS.map(function (list) {
         var r = CK.evaluate(list, function (col) { return row[col]; });
-        return el('button', { type: 'button', class: 'fu-ckr', 'data-ck': list.id, onclick: function () { ckSheet(co, U, list); } }, [ckBadge(r),
-          el('span', { class: 'fu-ckr-t' }, [el('b', { text: list.name }), el('small', { text: r.all ? 'Alle Punkte erfüllt' : r.met + ' von ' + r.of + ' Punkten erfüllt' })]),
-          el('span', { class: 'fu-ckr-d', 'aria-hidden': 'true' }, r.rows.map(function (x) { return el('i', { class: x.pass === true ? 'on' : '' }); })), glyph('chevron', 'fu-glyph-sm')]);
+        return el('button', { type: 'button', class: 'fu-ckr' + (r.all ? ' is-all' : ''), 'data-ck': list.id, 'aria-haspopup': 'dialog', onclick: function () { ckSheet(co, U, list); } }, [
+          frag(UI.ring(r.of ? r.met / r.of * 100 : null, { size: 60, stroke: 7, text: r.met + '/' + r.of, label: list.name + ', Anteil erfüllter Punkte' })),
+          el('span', { class: 'fu-ckr-t' }, [el('b', { text: list.name }), el('small', { text: r.all ? 'Alle Punkte erfüllt' : r.met + ' von ' + r.of + ' Punkten erfüllt' })])]);
       }));
     }
     if (co.U) paint(co.U); else main.addEventListener('fu-universe', function h(e) { main.removeEventListener('fu-universe', h); paint(e.detail); });
@@ -1128,10 +1185,10 @@
   }
   function ckCard(list, U) {
     var hits = U ? ckHits(U, list) : null;
-    return el('a', { class: 'fu-ckc', href: CK.screenerHref(list) }, [
-      el('div', { class: 'fu-ckc-h' }, [el('div', {}, [el('span', { class: 'vu-ltag', text: 'Checkliste' }), el('b', { text: list.name })]), el('span', { class: 'fu-ckn' }, [el('b', { class: 'fu-num', text: String(list.items.length) }), el('small', { text: 'Punkte' })])]),
-      el('p', { class: 'fu-ckc-p', text: list.items.slice(0, 3).map(function (i) { return i.label; }).join(' · ') + ' …' }),
-      el('div', { class: 'fu-ckc-f' }, hits ? hits.slice(0, 5).map(function (t) { return frag(UI.logo(t)); }).concat([el('span', { class: 'fu-ckc-n', text: hits.length.toLocaleString('de-DE') + ' erfüllen alle' })]) : [skel(24, '60%')])]);
+    return el('button', { type: 'button', class: 'fu-ckc', 'aria-haspopup': 'dialog', onclick: function () { ckListSheet(list, U, hits); } }, [
+      el('span', { class: 'fu-ckc-h' }, [el('span', {}, [el('span', { class: 'vu-ltag', text: 'Checkliste' }), el('b', { text: list.name })]), el('span', { class: 'fu-ckn' }, [el('b', { class: 'fu-num', text: String(list.items.length) }), el('small', { text: 'Punkte' })])]),
+      el('span', { class: 'fu-ckc-p', text: list.items.slice(0, 3).map(function (i) { return i.label; }).join(' · ') + ' …' }),
+      el('span', { class: 'fu-ckc-f' }, hits ? hits.slice(0, 5).map(function (t) { return frag(UI.logo(t)); }).concat([el('span', { class: 'fu-ckc-n', text: hits.length.toLocaleString('de-DE') + ' erfüllen alle' })]) : [skel(24, '60%')])]);
   }
   function overview(co, r, ctx) {
     var f = co.f, t = co.t;
@@ -1141,17 +1198,17 @@
       storyCard(co, ctx),
       f.stale && f.stale.stale ? el('p', { class: 'fu-note', role: 'note', text: 'Die Geschäftszahlen sind veraltet: letztes gemeldetes Geschäftsjahr ' + f.latestFiscalYear + '.' }) : null,
       stripHost, finCard(co),
-      CK ? el('div', { class: 'fu-rh' }, [el('div', { class: 'fu-rh-t' }, [el('h2', { text: 'Checklisten' }), el('span', { class: 'fu-rh-tag', text: 'Neu' })]), el('p', { text: 'Tipp zeigt jede Bedingung mit Wert.' })]) : null,
+      CK ? railHead('Checklisten', null, null, 'Tipp zeigt jede Bedingung mit Wert.', 'Neu') : null,
       checklistRows(co),
-      sectEl('Kapitel', href(t, 'mehr'), 'Alle'), chapters(co, ctx),
-      el('a', { class: 'fu-sec-link fu-quant-link', href: '/quant/#/aktie/' + encodeURIComponent(t) + '/zahlen' }, ['Zahlen in Quant', glyph('chevron', 'fu-glyph-sm')]),
+      railHead('Kapitel', href(t, 'mehr'), 'Alle'), chapters(co, ctx),
+      el('div', { class: 'fu-next' }, nextEl({ title: 'Zahlen in Quant', sub: co.name + ': dieselben Geschäftszahlen im Quant-Profil', href: '/quant/#/aktie/' + encodeURIComponent(t) + '/zahlen' })),
       foot(co.raw && co.raw.fundamentals && co.raw.fundamentals.asOf), dataMethod(co)];
   }
   function fyNote(b) { var e = C.fiscalYearEnd(b); return e ? (e.calendar ? 'Geschäftsjahr = Kalenderjahr' : 'Geschäftsjahr endet im ' + e.month) : 'Geschäftsjahre laut Jahresbericht'; }
   /* ------------------------------------------------------------ F06 Reiter Kennzahlen */
   function catalogView(co, r, ctx) {
     var t = co.t, all = C.catalogFor(co.book, ctx), cat = r.tab && C.CATS.some(function (c) { return c.id === r.tab; }) ? r.tab : '';
-    var list = el('div', { class: 'fu-cat' }), q = '', cards = el('div', { class: 'vu-stack fu-catcards' }), tiles = el('div', { class: 'vu-grid fu-gap', style: '--vu-cols:3' });
+    var list = el('div', { class: 'fu-cat' }), q = '', cards = el('div', { class: 'fu-catcards' }), tiles = el('div', { class: 'vu-grid fu-gap', style: '--vu-cols:3' });
     var input = el('input', { class: 'fu-input fu-input-sm', type: 'search', placeholder: 'Kennzahl suchen, z. B. Marge', 'aria-label': 'Kennzahl suchen', autocomplete: 'off',
       oninput: function () { q = input.value.trim().toLowerCase(); paint(); } });
     function row(x) {
@@ -1168,7 +1225,7 @@
       put(cards, C.CATS.map(function (c) {
         var items = all.filter(function (x) { return x.def.cat === c.id; }), ex = items.filter(function (x) { return x.available && isNum(x.cur.v); })[0];
         return el('button', { type: 'button', class: 'vu-box fu-catcard', 'aria-pressed': String(cat === c.id), onclick: function () { cat = cat === c.id ? '' : c.id; paint(); paintCards(); list.scrollIntoView({ block: 'start', behavior: 'smooth' }); } }, [
-          el('span', {}, [el('b', {}, [c.label, el('span', { class: 'vu-mu', text: ' · ' + items.length })]), el('small', { text: ex ? ex.def.label.replace(/ \(.*\)$/, '') + ' ' + moneyOr(ex.def, ex.cur.v, cur(co)) + (basisText(ex.cur) ? ' (' + basisText(ex.cur) + ')' : '') : 'gerade kein Wert' })]), glyph('chevron', 'fu-glyph-sm')]);
+          el('span', { class: 'fu-chap-i', 'aria-hidden': 'true' }, glyph(c.icon)), el('span', {}, [el('b', {}, [c.label, el('span', { class: 'vu-mu', text: ' · ' + items.length })]), el('small', { text: ex ? ex.def.label.replace(/ \(.*\)$/, '') + ' ' + moneyOr(ex.def, ex.cur.v, cur(co)) + (basisText(ex.cur) ? ' (' + basisText(ex.cur) + ')' : '') : 'gerade kein Wert' })]), glyph('chevron', 'fu-glyph-sm')]);
       }));
     }
     function paintTiles() {
@@ -1700,7 +1757,7 @@
       more('Wie wird bewertet?', [el('p', { text: 'Alle Kennzahlen zum Schlusskurs' + (ctx.snap.priceDate ? ' vom ' + M.dateDe(ctx.snap.priceDate) : '') + ' und den zuletzt gemeldeten Zahlen (letzte zwölf Monate, Bilanz zum letzten Geschäftsjahresende). Ist die Aktienbasis nicht plausibel, wird kein Börsenwert und damit keine Bewertung gezeigt.' })])];
     if (a === 'analysten') return [head, analystBlock(co)];
     if (a === 'unternehmen') return [head, withUniverse(co, function (U) { return companyData(co, U); })];
-    if (a === 'quellen') return [head, sourcesBlock(co), dataMethod(co, true)];
+    if (a === 'quellen') return [head].concat(sourcesBlock(co), [dataMethod(co, true)]);
     return overview(co, r, ctx);
   }
   function metricBlock(co, ctx, ids) {
@@ -1851,6 +1908,22 @@
       }));
     }
     paintList();
+    var TOPICS = [
+      ['valuation', 'Bewertung', 'Aktuell und je Jahresbericht', function () {
+        return [el('p', { class: 'vu-sm fu-p', text: 'Aktuell: KGV, KUV, Börsenwert zum letzten Schlusskurs. Verlauf: je Jahresbericht mit dem Kurs nach der Veröffentlichung, splitbereinigt und gegengeprüft.' }),
+          el('div', { class: 'fu-gap-s' }, helpEl('Splitbereinigt: Teilt eine Firma ihre Aktien (z. B. 1 wird 10), rechnen wir alte Kurse um, damit nichts springt.'))];
+      }],
+      ['company', 'Vergleich mit der Branche', 'Lage in der Gruppe, keine Wertung', function () {
+        return [el('p', { class: 'vu-sm fu-p', text: 'Wettbewerber = Firmen derselben SIC-Branche (mindestens 5). Wir zeigen die Lage („höher als 80 % der Gruppe“), keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel.' })];
+      }],
+      ['check', 'Checklisten', 'N von M Punkten erfüllt, keine Gesamtnote', function () {
+        return [el('p', { class: 'vu-sm fu-p', text: 'Eine Checkliste prüft mehrere Bedingungen auf einmal und zeigt, wie viele erfüllt sind („N von M Punkten erfüllt“). Es gibt keine Gesamtnote und kein Urteil über den künftigen Kurs. Fehlt ein Wert, gilt der Punkt als nicht erfüllt; Vielfache (KGV, Börsenwert/Free Cashflow, PEG, EV/EBITDA) zählen nur bei positivem Wert. Dieselben Regeln stehen im Screener als fertige Ideen.' }),
+          CK ? el('div', { class: 'vu-stack fu-ckm fu-gap' }, CK.CHECKLISTS.map(function (l) { return el('div', { class: 'vu-box' }, [el('b', { text: l.name + ' · ' + l.items.length + ' Punkte' }), el('ul', {}, l.items.map(function (i) { return el('li', { text: i.label }); }))]); })) : null];
+      }],
+      ['info', 'Lücken und Grenzen', 'Nichts wird geschätzt', function () {
+        return [el('div', { class: 'vu-stack' }, ['Fehlt ein Wert, bleibt das Jahr leer. Nichts wird geschätzt.', 'Margen über 150 % gelten als nicht plausibel und werden nicht gezeigt.', 'Korrigiert eine Firma später, zeigen wir den korrigierten Wert.'].map(function (t) { return el('div', { class: 'vu-box fu-limit' }, [glyph('check', 'fu-glyph'), el('span', { class: 'vu-sm', text: t })]); }))];
+      }]
+    ];
     var full = el('details', { class: 'fu-allformulas' }, [el('summary', { class: 'vu-btn vu-btn--line vu-btn--block' }, ['Alle Formeln ', frag(UI.pro())]), methodFull()]);
     put(main, intro('Methodik', 'Woher die Zahlen kommen und was sie bedeuten.', false),
       el('div', { class: 'vu-box vu-box--ink fu-gap' }, [el('p', { class: 'vu-ltag', text: 'Quelle' }), el('p', { class: 'fu-src-t', text: 'Pflichtmeldungen der Unternehmen' }), el('p', { class: 'vu-xs fu-src-s', text: 'Companyfacts aus Unternehmensmeldungen. Dieselben Zahlen nutzen Discover, Quant und Screener.' })]),
@@ -1858,16 +1931,10 @@
       el('div', { class: 'vu-grid', style: '--vu-cols:3' }, [frag(UI.tile('GJ', 'Jahr', 'aus dem Jahresbericht')), frag(UI.tile('Quartal', '3 Mon.', 'einzeln, ggf. berechnet')), frag(UI.tile('LTM', '12 Mon.', 'letzte 4 Quartale'))]),
       el('div', { class: 'vu-sect' }, [el('h2', { text: 'Kennzahlen in Worten' }), el('span', { class: 'vu-mu vu-sm', text: String(C.METRICS.length) })]),
       chips, list,
-      sectEl('Bewertung'),
-      el('p', { class: 'vu-sm fu-p', text: 'Aktuell: KGV, KUV, Börsenwert zum letzten Schlusskurs. Verlauf: je Jahresbericht mit dem Kurs nach der Veröffentlichung, splitbereinigt und gegengeprüft.' }),
-      el('div', { class: 'fu-gap-s' }, helpEl('Splitbereinigt: Teilt eine Firma ihre Aktien (z. B. 1 wird 10), rechnen wir alte Kurse um, damit nichts springt.')),
-      sectEl('Vergleich mit der Branche'),
-      el('p', { class: 'vu-sm fu-p', text: 'Wettbewerber = Firmen derselben SIC-Branche (mindestens 5). Wir zeigen die Lage („höher als 80 % der Gruppe“), keine Wertung. Ranglisten sortieren eine Kennzahl mit sichtbarer Regel.' }),
-      sectEl('Checklisten'),
-      el('p', { class: 'vu-sm fu-p', text: 'Eine Checkliste prüft mehrere Bedingungen auf einmal und zeigt, wie viele erfüllt sind („N von M Punkten erfüllt“). Es gibt keine Gesamtnote und kein Urteil über den künftigen Kurs. Fehlt ein Wert, gilt der Punkt als nicht erfüllt; Vielfache (KGV, Börsenwert/Free Cashflow, PEG, EV/EBITDA) zählen nur bei positivem Wert. Dieselben Regeln stehen im Screener als fertige Ideen.' }),
-      CK ? el('div', { class: 'vu-stack fu-ckm' }, CK.CHECKLISTS.map(function (l) { return el('div', { class: 'vu-box' }, [el('b', { text: l.name + ' · ' + l.items.length + ' Punkte' }), el('ul', {}, l.items.map(function (i) { return el('li', { text: i.label }); }))]); })) : null,
-      sectEl('Lücken und Grenzen'),
-      el('div', { class: 'vu-stack' }, ['Fehlt ein Wert, bleibt das Jahr leer. Nichts wird geschätzt.', 'Margen über 150 % gelten als nicht plausibel und werden nicht gezeigt.', 'Korrigiert eine Firma später, zeigen wir den korrigierten Wert.'].map(function (t) { return el('div', { class: 'vu-box fu-limit' }, [glyph('check', 'fu-glyph'), el('span', { class: 'vu-sm', text: t })]); })),
+      sectEl('So wird gerechnet'),
+      el('div', { class: 'fu-topics' }, TOPICS.map(function (x) {
+        return el('button', { type: 'button', class: 'fu-topic', 'aria-haspopup': 'dialog', onclick: function () { pop(x[1], x[3](), 'fu-topic-sheet'); } }, [hudGlyph(x[0]), el('b', { text: x[1] }), el('span', { text: x[2] })]);
+      })),
       el('div', { class: 'fu-gap' }, full), foot(null));
     done();
     var k = /[?&]k=([a-z0-9_]{2,40})/.exec(location.hash), m = k && C.BY_ID[k[1]];

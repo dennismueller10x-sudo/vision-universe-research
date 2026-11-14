@@ -97,9 +97,6 @@ html body .vu-hero-fidelity[data-product=fundamental]{--vu-hero-art:url('/assets
 .fu-ind a{display:grid;grid-template-columns:1fr minmax(84px,32%) 16px;align-items:center;gap:12px;min-height:60px;padding:8px 0;border-bottom:1px solid var(--vu-line);text-decoration:none}
 .fu-ind-name{display:flex;flex-direction:column;min-width:0}.fu-ind-name b{font-size:14.5px;line-height:1.3}
 .fu-ind-name small{font-size:12px;color:var(--vu-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fu-ind-m{display:flex;flex-direction:column;align-items:flex-end;gap:4px}.fu-ind-m em{font-style:normal;font-weight:800;font-size:13.5px}
-.fu-minibar{display:block;width:100%;height:6px;border-radius:3px;background:var(--fu-soft);overflow:hidden}
-.fu-minibar i{display:block;height:100%;border-radius:3px;background:var(--fu-acc)}.fu-minibar i.is-neg{background:var(--vu-down)}
 .fu-seg{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 0}
 .fu-seg-scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:calc(-1 * var(--fu-gutter));padding-right:var(--fu-gutter)}
 .fu-seg-scroll::-webkit-scrollbar{display:none}
@@ -108,13 +105,6 @@ html body .vu-hero-fidelity[data-product=fundamental]{--vu-hero-art:url('/assets
 .fu-seg-b:disabled{opacity:.4;cursor:default}
 
 /* Ranglisten */
-.fu-rank{margin:8px 0 0;padding:0;list-style:none;border-top:1px solid var(--vu-line)}
-.fu-rank a{display:grid;grid-template-columns:26px 1fr minmax(78px,30%);align-items:center;gap:10px;min-height:62px;padding:8px 0;border-bottom:1px solid var(--vu-line);text-decoration:none}
-.fu-rank-n{font-size:13px;font-weight:800;color:var(--vu-muted)}
-.fu-rank-name{display:flex;flex-direction:column;min-width:0}
-.fu-rank-name span{font-size:13px;color:var(--vu-text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fu-rank-name small{font-size:11.5px;color:var(--vu-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.fu-rank-v{display:flex;flex-direction:column;align-items:flex-end;gap:5px}.fu-rank-v em{font-style:normal;font-weight:850;font-size:15px}
 
 /* ---------- Unternehmen: Kopf und Ansichten */
 .fu-chead{padding:12px 0 2px}
@@ -681,7 +671,6 @@ html body #fu-main .fu-story-h .vu-q{width:44px;height:44px;margin:-12px -10px -
 .fu-fin-cmp{margin-left:auto}
 .fu-chap{display:grid;gap:8px;margin:0;padding:0;list-style:none}
 .fu-chap a{display:grid;grid-template-columns:18px 40px 1fr 18px;gap:10px;align-items:center;padding:8px 10px 8px 12px;border-radius:18px;background:var(--fu-card);text-decoration:none;min-height:56px}
-.fu-chap-n{font-size:15px;color:var(--vu-muted)}
 .fu-chap-i{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#0e1013;color:var(--fu-lime)}
 .fu-chap-i svg{width:20px;height:20px}
 .fu-chap-t b{display:block;font-size:14px;letter-spacing:-.01em;line-height:1.2}
@@ -689,7 +678,6 @@ html body #fu-main .fu-story-h .vu-q{width:44px;height:44px;margin:-12px -10px -
 .fu-chap a>svg{color:var(--vu-muted)}
 @media (min-width:720px){.fu-strip{flex-wrap:wrap;overflow:visible;margin-right:0}.fu-chap{grid-template-columns:1fr 1fr}}
 html[data-theme=dark] .fu-story{background:#151515;box-shadow:inset 0 0 0 1px #262626}
-.fu-quant-link{margin-top:6px}
 
 /* ---------- Kennzahl-Detail (Folie FX03) */
 .fu-mtop{padding-top:12px}
@@ -785,11 +773,6 @@ html[data-theme=dark] .fu-story{background:#151515;box-shadow:inset 0 0 0 1px #2
 .fu-ckr.is-wait{display:block}
 .fu-ckr-t b{display:block;font-size:14.5px}
 .fu-ckr-t small{font-size:12px;color:var(--vu-muted)}
-.fu-ckr-r{display:inline-grid;grid-auto-flow:column;place-items:center;align-content:center;width:52px;height:52px;border-radius:16px;background:var(--vu-text);color:var(--vu-bg);font-weight:800;font-size:12px}
-.fu-ckr-r b{font-size:19px;letter-spacing:-.03em}
-.fu-ckr-r.on{background:var(--fu-lime);color:#000;box-shadow:inset 0 0 0 1.5px var(--vu-text)}
-.fu-ckr-r.is-big{width:58px;height:58px;font-size:15px}.fu-ckr-r.is-big b{font-size:24px}
-.fu-ckr-d{display:flex;gap:3px}.fu-ckr-d i{width:7px;height:18px;border-radius:3px;background:var(--vu-line)}.fu-ckr-d i.on{background:var(--vu-text)}
 .fu-ck-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .fu-ck-h h3{margin:2px 0 0;font-size:24px;font-weight:900;letter-spacing:-.03em}
 .fu-ck-list{margin:10px 0 0;padding:0;list-style:none}
@@ -815,3 +798,231 @@ html[data-theme=dark] .fu-story{background:#151515;box-shadow:inset 0 0 0 1px #2
 /* Punkte-Badge der Checklisten-Karte: immer schwarz mit neongruener Zahl (Kontrast hell und dunkel, vu3-regression). */
 .fu-ckn{background:#000;color:var(--fu-lime)}
 html[data-theme=dark] .fu-ckn{box-shadow:inset 0 0 0 1px #3a3a3a}
+
+/* ===================================================================== App-Konzept 2 (Owner-Freigabe 14.11.2026)
+   Der Bildschirm wird genutzt: Kacheln mit 22 px Radius bis nah an den Rand, Schienen bis an den Rand, keine Leerzeile oben.
+   Mehr Balken, weniger Text: Ranglisten und Branchen als Balkenrennen, Checklisten als Ringe, Kapitel als Kacheln.
+   Tiefe öffnet sich im Fenster (VUUI.popup). Farben: Schwarz, Weiß, Grau und Neongrün #c8f531; Neongrün nur als Fläche
+   hinter schwarzer Schrift oder auf schwarzen Flächen (.fu-night hält eine Kachel in beiden Schemata dunkel). */
+.fu{--fu-gutter:14px;--vu-gutter:14px;--fu-radius:22px}
+@media (min-width:761px){.fu{--fu-gutter:24px;--vu-gutter:24px}}
+.fu-night,.fu .vu-night{--vu-ink:#fff;--vu-inv:#000;--vu-card:#262626;--vu-hair:#3a3a3a;--vu-mute:#9b9b9b;--vu-focus-ring:#c8f531;--vu-focus:#c8f531;
+  --vu-text:#fff;--vu-text-secondary:#bdbdbd;--vu-muted:#9b9b9b;--vu-line:rgb(255 255 255/.14);--vu-line-strong:rgb(255 255 255/.22);--vu-bg:#000;--vu-elevated:#262626;
+  --fu-card:#262626;--fu-soft:#262626;--fu-bar:#fff;--fu-acc:#c8f531;--fu-acc-ink:#c8f531;--fu-s1:#3a3a3a;background:#151515;color:#fff}
+:root:not([data-theme=dark]) .fu-night,:root:not([data-theme=dark]) .fu .vu-night{background:#0e1013}
+.fu-boot{padding-top:10px}
+.fu-foot{margin:18px 0 0}
+.fu-next{margin:0}
+.fu a.vu-next{margin-top:24px;color:#fff}
+
+/* Kopf: Startseite als dunkle Kachel, Unterseiten mit „Zurück“ neben dem Titel */
+.fu-intro{padding-top:10px}
+.fu-intro .vu-lt{margin:0;font-size:clamp(28px,8vw,44px);line-height:1.02;letter-spacing:-.045em}
+.fu-intro .vu-lead{margin:6px 0 0;font-size:14px;line-height:1.4}
+.fu-hero2{margin:8px 0 0;padding:16px 16px 14px;border-radius:24px}
+.fu-hero2 .vu-ltag{margin:0;color:#9b9b9b}
+.fu-hero2 .vu-lt{margin:6px 0 0;font-size:clamp(32px,9.4vw,48px);color:#fff}
+.fu-hero-lead{margin:8px 0 0;max-width:60ch;font-size:13.5px;line-height:1.4;color:#bdbdbd}
+.fu-hero2 .fu-searchwrap{margin-top:12px}
+.fu-hero2 .fu-searchwrap .fu-input{background:#262626;color:#fff}
+.fu-hero2 .fu-qchips{margin-right:-16px;padding-right:16px}
+.fu-hero2 .fu-qchip{background:#262626;color:#fff}
+.fu-phead{display:flex;align-items:flex-start;gap:10px;padding:10px 0 0}
+.fu-phead>.fu-round{margin-top:2px}
+.fu-phead-t{flex:1;min-width:0}
+.fu-phead .vu-eyebrow{margin:0 0 2px}
+.fu-phead .fu-h1{margin:0;font-size:clamp(26px,7.2vw,40px);line-height:1.04;font-weight:900;letter-spacing:-.04em}
+.fu-phead .fu-sub{margin:4px 0 0;font-size:13.5px}
+.fu-chead{padding:10px 0 0}
+.fu-subhero{padding:0}
+
+/* Abschnittstitel und Schienen */
+.fu-rh{margin:22px 0 10px}
+.fu-rh-t h2{font-size:22px;font-weight:900;letter-spacing:-.035em;line-height:1.1}
+.fu-rh p{margin:3px 0 0}
+.fu .vu-sect{margin-top:22px}
+.fu-rail{gap:10px;margin-inline:calc(-1 * var(--fu-gutter));padding-inline:var(--fu-gutter);scroll-padding-inline:var(--fu-gutter)}
+.fu-tilebox2{padding:10px 14px;border-radius:22px;background:var(--fu-card)}
+.fu-tile-note{margin:6px 0 2px;font-size:11.5px;font-weight:700;color:var(--vu-mute)}
+
+/* Balkenrennen: Balken mit Name, Wert rechts. --w = Breite des Balkens (Betrag relativ zum größten gezeigten Betrag). */
+.fu-race-b{position:relative;display:block;min-width:0;height:34px;border-radius:10px;background:var(--vu-hair);overflow:hidden}
+.fu-race-b>i{position:absolute;inset:0 auto 0 0;width:var(--w,0%);border-radius:10px;background:var(--vu-lime);box-shadow:inset 0 0 0 1.5px #000}
+.fu-race-b.is-neg>i,:root[data-theme=dark] .fu-race-b.is-neg>i,.fu-night .fu-race-b.is-neg>i{background:none;box-shadow:inset 0 0 0 2px var(--vu-mute)} /* Minus: nur Umriss, die Schrift bleibt auf der Spur lesbar */
+.fu-race-n{position:absolute;inset:0;padding:0 10px;font-size:13px;font-weight:800;line-height:34px;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;color:var(--vu-ink)}
+:root[data-theme=dark] .fu-race-b>i,.fu-night .fu-race-b>i{box-shadow:none}
+@supports ((-webkit-background-clip:text) or (background-clip:text)){
+  :root[data-theme=dark] .fu-race-b:not(.is-neg) .fu-race-n,.fu-night .fu-race-b:not(.is-neg) .fu-race-n{background:linear-gradient(90deg,#000 0 var(--w,0%),#fff var(--w,0%) 100%);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent}
+}
+.fu-race-v{min-width:56px;font-size:13.5px;font-style:normal;font-weight:900;letter-spacing:-.02em;text-align:right;white-space:nowrap}
+.fu-race-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;min-height:44px;padding:5px 0;text-decoration:none}
+
+/* Ranglisten-Karte: Balkenrennen der ersten drei Plätze */
+.fu-rlc{display:block;width:300px;max-width:86vw;padding:14px;border-radius:22px}
+.fu-rlc-h{display:flex;align-items:center;gap:10px}
+.fu-rlc-h>span:last-child{min-width:0}
+.fu-rlc-h b{display:block;font-size:17px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.fu-rlc ol{margin:12px 0 0}
+.fu-rlc li{grid-template-columns:12px 34px minmax(0,1fr) auto;gap:8px;margin-top:8px}
+.fu-qchip .vu-logo-tile{width:26px;height:26px;min-width:26px;border-radius:8px;font-size:7px}
+.fu-rlc .vu-logo-tile{width:34px;height:34px;min-width:34px;border-radius:10px;font-size:8px}
+.fu-rlph i{height:34px;border-radius:10px;background:var(--vu-hair)}
+.fu-rgrid{display:grid;gap:10px}
+.fu-rgrid .fu-rlc{width:auto;max-width:none}
+@media (min-width:720px){.fu-rgrid{grid-template-columns:1fr 1fr}}
+@media (min-width:1040px){.fu-rgrid{grid-template-columns:1fr 1fr 1fr}}
+
+/* Zahlen lesen in 30 Sekunden: vier Zeilen, Beträge als Balken im Verhältnis zum Umsatz */
+.fu-learn{padding:4px 14px}
+.fu-lern{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:6px 10px;align-items:center;width:auto;padding:11px 0;border-radius:0;background:none}
+.fu-lern+.fu-lern{border-top:1px solid var(--vu-hair)}
+.fu-lern-n{width:26px;height:26px;background:var(--vu-ink);color:var(--vu-inv)}
+.fu-lern-t b{display:block;font-size:15px;font-weight:800;letter-spacing:-.01em}
+.fu-lern-t span{display:block;font-size:12px;line-height:1.3;color:var(--vu-mute)}
+.fu-lern-v{margin:0;padding:0;text-align:right}
+.fu-lern-v b{font-size:20px}
+.fu-lern-v small{display:block}
+.fu-lern-b{grid-column:2/4;display:block;height:10px;border-radius:99px;background:var(--vu-hair);overflow:hidden}
+.fu-lern-b i{display:block;height:100%;border-radius:99px;background:var(--vu-lime);box-shadow:inset 0 0 0 1.5px #000}
+:root[data-theme=dark] .fu-lern-b i{box-shadow:none}
+
+/* Checklisten: Karte der Startseite (öffnet das Fenster), Ringe auf der Aktie */
+.fu-ckc{display:block;width:260px;max-width:86vw;padding:14px;border:0;border-radius:22px;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.fu-ckc>span{display:block}
+.fu-ckc .fu-ckc-h{display:flex}
+.fu-ckc .fu-ckc-h>span:first-child{flex:1;min-width:0}
+.fu-ckc-h .vu-ltag{display:block;margin:0}
+.fu-ckc .fu-ckc-f{display:flex}
+.fu-ckc-f .vu-logo-tile{width:30px;height:30px;min-width:30px;border-radius:9px;font-size:7px}
+.fu-ckn{display:grid}
+.fu-ckbox{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding:0;background:none}
+.fu-ckbox>.fu-note{grid-column:1/-1;margin:0}
+.fu-ckr,.fu-ckr.is-wait{display:flex;flex-direction:column;align-items:flex-start;gap:8px;min-width:0;padding:12px;border:0;border-radius:20px;background:var(--fu-card)}
+.fu-ckr-t{min-width:0}
+.fu-ckr-t b{font-size:14px;font-weight:800;letter-spacing:-.01em}
+.fu-ckr-t small{display:block;font-size:11.5px;line-height:1.25}
+.fu-ck-h{align-items:center}
+.fu-ck-h h3{margin:2px 0 0;font-size:20px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.fu-ck-i.is-n{font-size:11px;font-weight:800}
+.fu-ck-firms{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+.fu-ck-firm{display:flex;align-items:center;gap:8px;min-height:44px;padding:5px 8px 5px 5px;border-radius:14px;background:var(--vu-card);text-decoration:none;min-width:0}
+.fu-ck-firm b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fu-ck-firm .vu-logo-tile{width:32px;height:32px;min-width:32px;border-radius:9px;font-size:7px}
+
+/* Fenster: Inhalt außerhalb von #fu-main (VUUI.popup hängt es an die Seite) */
+.fu-popup a{color:inherit}
+.fu-popup .fu-pop{font-size:14px}
+.fu-popup .fu-ck-uni{background:var(--vu-card)}
+.fu-popup .fu-ck-i{background:var(--vu-hair);color:var(--vu-ink)}
+.fu-popup .fu-ck-list li.is-ok .fu-ck-i{background:var(--vu-lime);color:#000}
+.fu-popup .fu-ck-uni .vu-btn{background:var(--vu-ink);color:var(--vu-inv)!important}
+.fu-popup .fu-ck-uni small,.fu-popup .fu-note{color:var(--vu-mute)}
+.fu-popup .fu-p{margin:0;line-height:1.45}
+.fu-popup .fu-limit{display:flex;gap:10px;align-items:center;padding:12px}
+.fu-popup .fu-glyph{width:20px;height:20px;flex:none}.fu-popup .fu-glyph-sm{width:16px;height:16px;flex:none}
+.fu-popup .fu-gap{margin-top:12px}.fu-popup .fu-gap-s{margin-top:8px}
+/* Auswahlblatt (Dialog) im selben Bild wie das Fenster: Griff oben, 30 px Radius */
+.fu-sheet{border-radius:30px 30px 0 0;background:var(--vu-white,#fff);box-shadow:none}
+html[data-theme=dark] .fu-sheet{background:#151515;--fu-card:#262626;--fu-soft:#262626}
+.fu-sheet::backdrop{background:rgb(0 0 0/.6)}
+.fu-sheet-in{padding-top:10px}
+.fu-sheet-in:before{content:"";flex:none;width:44px;height:5px;margin:0 auto 4px;border-radius:9px;background:var(--vu-mute);opacity:.55}
+.fu-sheet-t{font-size:20px;font-weight:900;letter-spacing:-.03em}
+.fu-sheet-x{border-radius:50%;background:var(--fu-card)}
+@media (min-width:720px){.fu-sheet{border-radius:30px}.fu-sheet-in:before{display:none}}
+
+/* Ranglisten, Branchen: Zeilen als Balkenrennen */
+.fu-rk-box{margin:0;padding:6px 14px;border-radius:22px;background:var(--fu-card);list-style:none}
+.fu-rk a{display:grid;grid-template-columns:20px 36px minmax(0,1fr) auto;gap:8px;align-items:center;padding:7px 0}
+.fu-rk li+li a,.fu-rk+.fu-rk li:first-child a{border-top:0}
+.fu-rk-n{width:auto;font-size:14px;text-align:center;color:var(--vu-mute)}
+.fu-rk .vu-logo-tile{width:36px;height:36px;min-width:36px;border-radius:11px;font-size:8px}
+.fu-rk-name small{margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fu-rk-head{margin:14px 0 8px}
+.fu-rule{padding:12px 14px}
+.fu-ind{margin:0;padding:6px 14px;border:0;border-radius:22px;background:var(--fu-card)}
+.fu-ind a{grid-template-columns:minmax(0,1fr) auto 16px;gap:8px;min-height:0;padding:7px 0;border-bottom:0}
+.fu-ind-name small{margin-top:3px;color:var(--vu-mute)}
+.fu-ind a>svg{color:var(--vu-mute)}
+.fu-indstats{margin-top:12px;padding:14px}
+.fu-indstats .vu-stats>div{padding:0 8px}
+.fu-indstats .vu-stats b{font-size:18px;white-space:nowrap}
+
+/* Aktie: Kennzahlen als Raster (alle sechs ohne Wischen), Finanzen als dunkle Kachel, Kapitel als Kacheln */
+.fu-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0 0;padding:0;overflow:visible}
+.fu-k.fu-kt{width:auto;min-width:0;padding:10px 11px;border-radius:18px}
+.fu-kt .fu-k-v{font-size:clamp(15px,4.6vw,20px);overflow:hidden;text-overflow:ellipsis}
+@media (max-width:350px){.fu-strip{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:720px){.fu-strip{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.fu-story{margin:10px 0 0;border-radius:22px}
+.fu-fin{margin:10px 0 0;padding:14px;border-radius:22px}
+.fu-fin-h h2{font-size:20px;font-weight:900;letter-spacing:-.03em}
+.fu-fin-big>b{font-size:32px}
+.fu-fin-plot{height:150px}
+.fu-fin-c.is-last i{box-shadow:none}
+.fu-fin-seg{background:#000}
+.fu-fin-seg button[aria-pressed=true],.fu-fin .fu-pill[aria-pressed=true]{background:#fff;color:#000}
+.fu-fin .fu-pill{background:#262626;color:#fff}
+.fu-chap{grid-template-columns:1fr 1fr;gap:8px}
+.fu-chap a{display:flex;flex-direction:column;align-items:flex-start;gap:8px;height:100%;min-height:0;padding:12px;border-radius:20px}
+.fu-chap li{display:flex;min-width:0}.fu-chap li>a{flex:1;min-width:0}
+.fu-chap a>svg{display:none}
+.fu-chap-i{width:38px;height:38px;border-radius:12px}
+.fu-chap-t{min-width:0}
+.fu-chap-t b{font-size:14.5px;font-weight:800}
+@media (min-width:900px){.fu-chap{grid-template-columns:repeat(4,1fr)}}
+
+/* Aktienkopf (assets/stock-navigator, Farben unverändert): Kursart und Datum stehen klein unter der Tagesbewegung neben dem
+   Kurs und brauchen keine eigene Zeile mehr. */
+.fu-shead .vu-shead-price{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:2px;align-items:center}
+.fu-shead .vu-shead-value{grid-row:1/span 2}
+.fu-shead .vu-shead-change{justify-self:start}
+.fu-shead .vu-shead-when{grid-column:2;justify-self:start;margin:0;flex-basis:auto;text-align:left;font-size:11px;line-height:1.2}
+.fu-shead .vu-shead-when:has(.vu-shead-alt){justify-content:flex-start}
+@media (max-width:380px){.fu-shead .vu-shead-price{grid-template-columns:auto minmax(0,1fr)}.fu-shead .vu-shead-value{grid-row:auto;grid-column:1/-1}.fu-shead .vu-shead-when{grid-column:2;align-self:center}}
+
+/* Methodik: Themen als Kacheln */
+.fu-topics{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fu-topic{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-width:0;padding:12px;border:0;border-radius:20px;background:var(--fu-card);color:var(--vu-ink);font:inherit;text-align:left;cursor:pointer}
+.fu-topic b{font-size:14.5px;font-weight:800;line-height:1.2}
+.fu-topic span:last-child{font-size:12px;line-height:1.3;color:var(--vu-mute)}
+@media (min-width:900px){.fu-topics{grid-template-columns:repeat(4,1fr)}}
+
+/* Farben: nur Schwarz, Weiß, Grau, Neongrün. Linien mehrerer Reihen unterscheiden sich durch Ton und Strich, nicht durch Farbe. */
+:root{--fu-m0:#000;--fu-m1:#6e6e6e;--fu-m2:#6e6e6e;--fu-m3:#000}
+html[data-theme=dark]{--fu-m0:#c8f531;--fu-m1:#fff;--fu-m2:#9b9b9b;--fu-m3:#fff}
+.fu-l-m.m2{stroke-dasharray:2 4;stroke-linecap:round}.fu-l-m.m3{stroke-dasharray:7 4}
+.fu .sw.m2{background:repeating-linear-gradient(90deg,var(--fu-mt) 0 2px,transparent 2px 4px)}
+.fu .sw.m3{background:repeating-linear-gradient(90deg,var(--fu-mt) 0 4px,transparent 4px 6px)}
+:root:not([data-theme=dark]) .fu-l-self{stroke:var(--vu-ink)}
+:root:not([data-theme=dark]) .sw.sw-self{background:var(--vu-ink)}
+.d1{background:repeating-linear-gradient(135deg,var(--vu-lime) 0 3px,transparent 3px 6px)}
+.d3{background:repeating-linear-gradient(135deg,var(--vu-ink) 0 3px,transparent 3px 6px)}
+
+/* Unteransichten der Aktie: Kategorien und Bereiche als Kacheln, Logos im Branchenvergleich größer */
+.fu-catcards{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fu-catcard{flex-direction:column;align-items:flex-start;gap:8px;padding:12px;border-radius:20px}
+.fu-catcard>span:nth-child(2){flex:none;width:100%}
+.fu-catcard>svg{display:none}
+.fu-catcard b{font-size:14.5px;font-weight:800}
+@media (min-width:900px){.fu-catcards{grid-template-columns:repeat(4,1fr)}}
+.fu-areas{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fu-areas li{display:flex;min-width:0}
+.fu-areas a{flex:1;flex-direction:column;align-items:flex-start;gap:8px;min-width:0;min-height:0;margin:0;padding:12px;border:0;border-radius:20px}
+.fu-areas a>svg{display:none}
+.fu-areas a>span:nth-child(2){flex:none}
+.fu-areas b{font-size:14.5px;font-weight:800}.fu-areas small{font-size:12px;line-height:1.3;color:var(--vu-mute)}
+.fu-entry-ico{background:#0e1013;color:var(--vu-lime)}
+@media (min-width:900px){.fu-areas{grid-template-columns:repeat(3,1fr)}}
+.fu-hb-t .vu-logo-tile{width:28px;height:28px;min-width:28px;border-radius:8px}
+.fu-hb li>a,.fu-hb li:not(:has(>a)){min-height:40px}
+.fu-hb-bar{height:12px;border-radius:6px}.fu-hb-bar i{border-radius:6px}
+.fu-card{border-radius:22px}
+.fu-k{border-radius:18px}
+
+.fu-areas a>span:nth-child(2),.fu-catcard>span:nth-child(2){min-width:0;max-width:100%}
+.fu-areas b,.fu-chap-t b,.fu-topic b,.fu-catcard b,.fu-ckr-t b{overflow-wrap:anywhere;hyphens:auto}
+@media (max-width:350px){.fu-ckr{padding:10px}.fu-ckr-t b{font-size:12.5px}}
+@media (min-width:1040px){.fu-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;margin-inline:0;padding-inline:0}.fu-rail>*{width:auto;max-width:none}}
+
+.fu .vu-box--ink .vu-ltag{color:inherit;opacity:.78}
