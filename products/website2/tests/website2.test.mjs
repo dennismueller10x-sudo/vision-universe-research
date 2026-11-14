@@ -1,10 +1,12 @@
-/* Website 2 (/website2/, Owner-Freigabe „Website-Mock-up 3“ vom 14.11.2026): Seiten aktuell, Regeln von /website/ eingehalten. */
+/* Website (Owner-Freigaben „Website-Mock-up 3“ vom 14.11.2026): Vorschau /website2/ auf research und die Seiten für
+   www.visionuniverse.de unter landing/. Seiten aktuell, Regeln eingehalten. Die Browser- und Formularprüfungen von www
+   liegen in landing/tests/ (dort checkt die CI nur landing/ aus). */
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildSite, MODULES, NEWSLETTER, HEFT, BASE } from "../build.mjs";
+import { buildSite, buildWww, loadSnapshot, makeSnapshot, wwwAssets, wwwCss, wwwJs, MODULES, NEWSLETTER, HEFT, BASE, SOCIAL, PAGES as SITE_PAGES } from "../build.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const SITE = buildSite();
@@ -59,8 +61,9 @@ test("W2-4 · der eine Aufruf führt zur Anmeldung auf www, wie auf /website/; k
     assert.ok(html.includes("Anmeldung auf www.visionuniverse.de"), `${p}: Hinweis, wo die Anmeldung liegt`);
     for (const c of calls) assert.equal(c[1], NEWSLETTER, `${p}: ${c[2]} → ${c[1]}`);
     assert.equal(tags(html, "form").length + tags(html, "input").length, 0, `${p}: Formular oder Eingabefeld`);
-    const ext = refs(html).filter((h) => /^https?:/.test(h));
-    for (const h of ext) assert.match(h, /^https:\/\/(www|konto|research)\.visionuniverse\.de\//, `${p}: fremdes Ziel ${h}`);
+    const ext = refs(html).filter((h) => /^(https?:|mailto:)/.test(h));
+    const social = SOCIAL.map((x) => x[2]);
+    for (const h of ext) assert.ok(/^https:\/\/(www|konto|research)\.visionuniverse\.de\//.test(h) || h === "mailto:info@visionuniverse.de" || social.includes(h), `${p}: fremdes Ziel ${h}`);
   }
 });
 
@@ -92,8 +95,10 @@ test("W2-6 · Wortwahl (docs/legal/WORTWAHL.md); Pflichtsatz und Rechtslinks nur
     for (const k of ["impressum", "kontakt", "datenschutz", "bedingungen", "risikohinweise"]) assert.ok(menu.includes(`href="${LEGAL.links[k]}"`), `${p}: ${k} fehlt im Menü`);
     assert.ok(menu.includes('href="/infos/#quellen"'), `${p}: Datenquellen fehlen im Menü`);
     assert.ok(!html.replace(menu, "").includes(notice.slice(0, 60)), `${p}: Pflichtsatz außerhalb des Menüs`);
+    /* Der Fuß zeigt wie auf www Impressum, Datenschutz, Kontaktformular und E-Mail (in der Vorschau mit den Adressen von www). */
     const foot = html.match(/<footer[\s\S]*<\/footer>/)[0];
-    assert.ok(foot.includes('href="/infos/"') && !/rechtliches\//.test(foot), `${p}: Fuß verlinkt /infos/, keine eigenen Rechtslinks`);
+    assert.ok(foot.includes('href="/infos/"') && !/rechtliches\//.test(foot), `${p}: Fuß verlinkt /infos/, keine Rechtslinks von research`);
+    for (const t of ["https://www.visionuniverse.de/impressum/", "https://www.visionuniverse.de/datenschutz/", "https://konto.visionuniverse.de/kontakt", "mailto:info@visionuniverse.de"]) assert.ok(foot.includes(`href="${t}"`), `${p}: ${t} fehlt im Fuß`);
   }
 });
 
@@ -172,4 +177,77 @@ test("W2-10 · Zugänglichkeit: eine Hauptüberschrift, Alternativtexte, Sprungl
   assert.match(JS, /prefers-reduced-motion: reduce/);
   /* Einblenden: ohne JavaScript ist nichts versteckt; site.js versteckt nur, was unter dem Fenster liegt. */
   assert.ok(!/\.rv\{[^}]*opacity:0/.test(CSS) && /\.rv\.wait\{opacity:0/.test(CSS));
+});
+
+const greenish = (hex) => { const n = hex.length === 4 ? [...hex.slice(1)].map((c) => parseInt(c + c, 16)) : [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)); return n[1] > n[0] + 12 && n[1] > n[2] + 12; };
+test("W2-11 · Farben: nur Schwarz, Weiß, Grau und das eine Neongrün, kein Dunkelgrün (Owner 14.11.2026)", () => {
+  const sources = [["site.css", CSS], ["site.js", JS], ["build.mjs", readFileSync(join(ROOT, "products/website2/build.mjs"), "utf8")], ...SITE];
+  for (const [name, source] of sources) {
+    const found = [...new Set([...source.matchAll(/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/g)].map((m) => m[0].toLowerCase()))].filter(greenish);
+    assert.deepEqual(found.filter((c) => !["#c8f531", "#eef9cc"].includes(c)), [], `${name}: Grünton außer Neongrün und seinem blassen Ton`);
+  }
+  assert.ok(!/--lt\b/.test(CSS), "die frühere dunkelgrüne Schriftfarbe ist entfernt");
+  /* Neongrün ist Fläche hinter schwarzer Schrift; als Schriftfarbe nur auf Schwarz. */
+  assert.match(CSS, /\.hl\{background:var\(--lime\);color:var\(--ink\)/);
+  assert.match(CSS, /\.eb\{[^}]*color:var\(--ink\)\}/);
+  for (const rule of CSS.matchAll(/([^{}]+)\{[^{}]*[;{]color:var\(--lime\)[^{}]*\}/g)) assert.match(rule[1], /\.c-ink|\.blk|\.mq|\.fc\.b|\.stats|\.dock|\.icb|\.sc:hover/, `Neongrün als Schriftfarbe nur auf Schwarz: ${rule[1]}`);
+});
+
+test("W2-12 · Instagram und TikTok: schlichte Links mit Namen im Fuß und im Menü jeder Seite, keine Einbettung", () => {
+  assert.deepEqual(SOCIAL.map((x) => x[2]), ["https://www.instagram.com/app.visionuniverse/", "https://www.tiktok.com/@app.visionuniverse"]);
+  for (const [name, pages] of [["research", SITE], ["www", buildWww()]]) for (const [p, html] of pages) {
+    const foot = html.match(/<footer[\s\S]*<\/footer>/)[0], menu = html.match(/<nav class="mg" id="site-panel"[\s\S]*?<\/nav>/)[0];
+    for (const part of [foot, menu]) for (const [, label, url] of SOCIAL) {
+      const link = part.match(new RegExp(`<a class="sc" href="${url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*>`))?.[0];
+      assert.ok(link, `${name} ${p}: ${label} fehlt`);
+      assert.ok(link.includes('rel="noopener"') && link.includes(`aria-label="Vision Universe auf ${label}`), `${name} ${p}: ${label} ohne Namen oder noopener`);
+    }
+    assert.ok(!/<iframe|platform\.instagram|tiktok\.com\/embed/.test(html), `${name} ${p}: Einbettung`);
+  }
+  assert.match(CSS, /\.sc\{width:46px;height:46px/, "Bedienfläche mindestens 44 px");
+});
+
+test("W2-13 · Startseite führt zu jeder Unterseite, jede Unterseite zurück und weiter (beide Ziele)", () => {
+  for (const [name, pages, root] of [["research", SITE, BASE], ["www", buildWww(), ""]]) {
+    const main = (html) => html.match(/<main[\s\S]*<\/main>/)[0];
+    const start = main(pages.get("index.html"));
+    for (const p of SITE_PAGES.slice(1)) assert.ok(start.includes(`href="${root || "./"}${p}"`), `${name}: Startseite ohne Link im Inhalt zu ${p}`);
+    for (const [p, html] of pages) {
+      const up = root || "../".repeat(p.split("/").length - 1) || "./";
+      assert.ok(html.includes(`href="${up}"`), `${name} ${p}: kein Link zur Startseite`);
+      for (const t of ["app/", "news/", "magazin/", "faq/"]) assert.ok(html.includes(`href="${up}${t}"`), `${name} ${p}: kein Link zu ${t}`);
+      if (p.startsWith("module/")) assert.ok((main(html).match(/href="[^"]*module\/[a-z]+\/"/g) || []).length >= 4, `${name} ${p}: „Passt dazu“`);
+    }
+  }
+});
+
+test("W2-14 · www: die committeten Seiten und Dateien unter landing/ entsprechen dem Erzeuger (node products/website2/build.mjs --target www)", (t) => {
+  const snapshot = loadSnapshot(), www = buildWww(snapshot);
+  assert.deepEqual([...www.keys()], PAGES);
+  for (const [p, html] of www) assert.equal(readFileSync(join(ROOT, "landing", p), "utf8"), html, `landing/${p} veraltet`);
+  assert.equal(readFileSync(join(ROOT, "landing/site/site.css"), "utf8"), wwwCss(), "landing/site/site.css veraltet");
+  assert.equal(readFileSync(join(ROOT, "landing/site/site.js"), "utf8"), wwwJs(), "landing/site/site.js veraltet");
+  assert.ok(!/fetch\(|artikel\.json/.test(wwwJs()), "www ohne Laufzeit-Abruf");
+  const files = wwwAssets(snapshot);
+  for (const [to, from] of files) {
+    assert.ok(existsSync(join(ROOT, "landing/site", to)), `landing/site/${to} fehlt`);
+    /* Dateien aus /insights/ gehören dem Auszug: sie werden erst beim nächsten Auffrischen ersetzt. */
+    if (!from.startsWith("insights/") || existsSync(join(ROOT, from))) assert.ok(readFileSync(join(ROOT, "landing/site", to)).equals(readFileSync(join(ROOT, from))), `landing/site/${to} weicht von ${from} ab`);
+  }
+  for (const dir of ["img", "vid"]) for (const f of readdirSync(join(ROOT, "landing/site", dir))) assert.ok(files.has(`${dir}/${f}`), `landing/site/${dir}/${f} gehört zu keiner Seite`);
+  const list = JSON.parse(readFileSync(join(ROOT, "landing/site/pages.json"), "utf8"));
+  assert.deepEqual(list.pages, SITE_PAGES);
+  assert.deepEqual(list.modules.map((m) => m.id), MODULES.map((m) => m.id));
+  assert.deepEqual(list.social, SOCIAL.map((x) => x[2]));
+  assert.equal(list.notice, LEGAL.notices.footer.text, "Pflichtsatz in landing/site/pages.json veraltet");
+  /* Das Formular von www ist wörtlich das freigegebene (Einwilligung vu-newsletter-v1); der Erzeuger ändert es nie. */
+  const form = readFileSync(join(ROOT, "landing/newsletter-form.html"), "utf8").trim();
+  assert.ok(www.get("index.html").includes(form) && form.includes('name="CONSENT_VERSION" value="vu-newsletter-v1"') && form.includes('name="EMAIL"') && form.includes('name="OPT_IN"'));
+  for (const [p, html] of www) {
+    assert.ok(!/data-live-|data-feed|data-mag-|"\/website2\/|research\.visionuniverse\.de\/(?!insights\/)/.test(html), `landing/${p}: Rest der Vorschau`);
+    for (const h of refs(html).filter((x) => /^https:\/\/research\./.test(x))) assert.match(h, /^https:\/\/research\.visionuniverse\.de\/insights\//, `landing/${p}: nur öffentlich lesbare Insights-Seiten`);
+  }
+  /* Veraltete Inhalte blockieren nicht (CLAUDE.md): Hinweis, wenn /insights/ neuer ist als der Auszug von www. */
+  const now = makeSnapshot();
+  if (JSON.stringify(now) !== JSON.stringify(snapshot)) t.diagnostic(`www zeigt den Insights-Stand ${snapshot.stand}; /insights/ ist neuer (${now.stand}). Auffrischen: node products/website2/build.mjs --target www`);
 });

@@ -27,11 +27,18 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   // Only owned build directories may be replaced; never touch Research sources.
   await rm(output,{recursive:true,force:true});
   await mkdir(output,{recursive:true});
-  for (const path of ['index.html','styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','partner/index.html','partner/partner.css','partner/partner.js','instagram/index.html','instagram/instagram.css','instagram/robotaxi/index.html','instagram/energie/index.html','instagram/zonen/index.html','instagram/teilnahmebedingungen/index.html']) {
+  // Die Website (Start, App, Module, News, Aktienmagazin, Fragen) schreibt products/website2/build.mjs --target www
+  // als committete Dateien nach landing/; site/pages.json nennt ihre Seiten. Dieser Bau liest nichts außerhalb von landing/.
+  const site = JSON.parse(await readFile(resolve(root,'site/pages.json'),'utf8'));
+  const sitePages = site.pages.map(p => p+'index.html');
+  if (sitePages[0] !== 'index.html' || sitePages.some(p => !/^(?:[a-z0-9-]+\/)*index\.html$/.test(p))) throw new Error('Ungültige Seitenliste der Website.');
+  for (const path of [...sitePages,'styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','partner/index.html','partner/partner.css','partner/partner.js','instagram/index.html','instagram/instagram.css','instagram/robotaxi/index.html','instagram/energie/index.html','instagram/zonen/index.html','instagram/teilnahmebedingungen/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
   await cp(resolve(root,'assets'),resolve(output,'assets'),{recursive:true});
+  await cp(resolve(root,'site'),resolve(output,'site'),{recursive:true});
+  for (const internal of ['pages.json','insights.json']) await rm(resolve(output,'site',internal),{force:true});
   await cp(resolve(root,'partner/media'),resolve(output,'partner/media'),{recursive:true});
   if (config.privacyHtmlPath) {
     const privacy = await readFile(resolve(root,config.privacyHtmlPath),'utf8');
@@ -71,7 +78,19 @@ export async function build({output = resolve(root,'dist'), config = {}, product
     const version=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
     html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
   }
+  // Website: same CSP, referrer policy, robots switch and cache-busting on every page.
+  const siteVersion = {};
+  for (const asset of ['site.css','site.js']) siteVersion[asset] = createHash('sha256').update(await readFile(resolve(output,'site',asset))).digest('hex').slice(0,16);
+  const stamp = page => page.replace(/((?:href|src)="(?:\.\.?\/)+site\/(site\.(?:css|js)))"/g,(match,url,asset) => `${url}?v=${siteVersion[asset]}"`);
+  html = stamp(html);
   await writeFile(resolve(output,'index.html'),html);
+  for (const path of sitePages.slice(1)) {
+    let page = await readFile(resolve(output,path),'utf8');
+    if (!page.includes('<head>') || !page.includes('content="noindex, nofollow"')) throw new Error('Unerwarteter Seitenkopf: '+path);
+    if (production) page = page.replace('content="noindex, nofollow"','content="index, follow"');
+    page = stamp(page.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">'));
+    await writeFile(resolve(output,path),page);
+  }
   // The partner presentation is shared by direct link only and stays out of search.
   let partner=await readFile(resolve(output,'partner/index.html'),'utf8');
   partner=partner.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
@@ -102,7 +121,7 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   }
   await writeFile(resolve(output,'.nojekyll'),'');
   await writeFile(resolve(output,'robots.txt'),production?'User-agent: *\nAllow: /\nSitemap: https://www.visionuniverse.de/sitemap.xml\n':'User-agent: *\nDisallow: /\n');
-  if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>https://www.visionuniverse.de/</loc></url></urlset>');
+  if (production) await writeFile(resolve(output,'sitemap.xml'),'<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+site.pages.map(p => `<url><loc>https://www.visionuniverse.de/${p}</loc></url>`).join('')+'</urlset>');
   // Advanced-mode source contains binding names, never credential values.
   await cp(resolve(root,'server/newsletter.mjs'),resolve(output,'_worker.js'));
   await writeFile(resolve(output,'_routes.json'),JSON.stringify({version:1,include:['/api/*','/.newsletter-internal/*','/_worker*','/server/*'],exclude:[]}));

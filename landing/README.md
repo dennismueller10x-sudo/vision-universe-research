@@ -1,4 +1,10 @@
-# Vision Universe · Coming soon
+# Vision Universe · Website und Anmeldung auf www
+
+**Stand 14.11.2026 (Owner: „umsetzen, live nehmen“):** Unter **https://www.visionuniverse.de/** steht statt der Coming-soon-Seite die freigegebene Website („Website-Mock-up 3“: Start, App, zwölf Module, News, Aktienmagazin, Fragen). Ihre Seiten und `site/` schreibt `node products/website2/build.mjs --target www` als committete Dateien hierher, nie von Hand ändern; Regeln und Farben stehen in [products/website2/README.md](../products/website2/README.md). Unverändert bleiben das Anmeldeformular ([newsletter-form.html](newsletter-form.html), wörtlich in der Startseite unter `#newsletter`), seine Freigabestufen, `newsletter.js`, der Endpunkt, alle Rechts- und Bestätigungsseiten, `/instagram/`, `/partner/` und der Veröffentlichungsmodus (ohne `LANDING_PUBLICATION_MODE=production` weiter `noindex`). Die Website stellt keine Anfrage an eine andere Adresse; Artikel, Heft und Report stehen fest im Bau (`site/insights.json`) und verlinken nur die öffentlich lesbaren Insights-Seiten auf research.
+
+Prüfungen: `npm test` (dazu `tests/site.test.mjs`), `npm run test:browser` (dazu `tests/site.browser.mjs`: jede Seite bei 1440, 390 und 320 px auf Fehler, fremde Anfragen, Überlauf, axe, 200 % Text, 44-px-Flächen, Links), `npm run test:design`. Die Prüfungen der früheren Bildvorlage (ein iPhone mit zehn Modulnamen, Höhenbudgets) sind durch die gleichwertigen Anforderungen der neuen Startseite ersetzt (`tests/start-page-checks.mjs`); alle Sicherheits-, Einwilligungs-, Formular-, Rechtstext- und WCAG-Prüfungen gelten unverändert. Die folgenden Abschnitte beschreiben die Coming-soon-Fassung bis 14.11.2026 und bleiben für Newsletter, Hosting und Rechtstexte maßgeblich.
+
+## Coming-soon-Fassung bis 14.11.2026
 
 Newsletter öffentlich seit 16.10.2026: konkrete Datenschutzfassung freigegeben, DOI und deutsche Abmeldung tatsächlich abgenommen. [Erfolgreiche öffentliche Freischaltung](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38903721680), anschließend Hauptdomain ohne Testlink geprüft. Tracking **Ja / unbekannte Zustimmung Nein**; Aufbewahrung und Vorschauenspeicherung ohne erfundene Zusagen dokumentiert. Kein Newsletter an den Bestand.
 

@@ -1,4 +1,4 @@
-/* Vision Universe · Website 2: Menü, Einblenden, Videos, neueste Insights. Ohne Abhängigkeiten.
+/* Vision Universe · Website: Menü, Einblenden, Videos, in der Vorschau die neuesten Insights. Ohne Abhängigkeiten.
    Alle Seiten sind ohne JavaScript bedienbar; dieses Skript ergänzt nur. */
 (function () {
   'use strict';
@@ -71,6 +71,7 @@
     v.addEventListener('click', function () { if (!v.controls) start(); });
   });
 
+  /* LIVE:START Nur in der Vorschau auf research. Für www entfernt der Erzeuger diesen Block (dort steht der Auszug fest in der Seite). */
   /* Insights live aus /insights/artikel.json (jeden Werktag neu), wie auf /website/: neueste Artikel, neuestes Heft,
      neuester Report. Was neu erscheint, steht dort an erster Stelle und rückt hier von selbst nach vorn.
      Lässt sich die Liste nicht laden, bleibt der feste Text stehen und führt zur Insights-Übersicht. */
@@ -139,4 +140,5 @@
       }
     }).catch(function () { /* Der feste Text bleibt stehen. */ });
   }
+  /* LIVE:END */
 })();

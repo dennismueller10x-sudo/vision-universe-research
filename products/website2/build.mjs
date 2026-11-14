@@ -1,57 +1,55 @@
-/* Vision Universe · Website 2 („Website-Mock-up 3“, Owner-Freigabe 14.11.2026): hell, app-artig, bewegt.
-   Baut die Vorschau mit allen Unterseiten als statisches HTML nach /website2/: Start, App, zwölf Modulseiten,
-   News, Aktienmagazin, Fragen. Vorschau im geschützten Bereich research.visionuniverse.de/website2/
-   (Passwortmaske beim Ausrollen, noindex); der Umzug auf www.visionuniverse.de ist ein eigener Schritt.
+/* Vision Universe · Website („Website-Mock-up 3“, Owner-Freigaben 14.11.2026): hell, app-artig, bewegt.
+   Ein Erzeuger, zwei Ziele:
 
-   Regeln wie bei /website/ (products/website/README.md): App noch nicht verfügbar, daher kein Link in die App oder
-   in einen Store. Der eine Aufruf ist „Zum Start benachrichtigen“ und führt zur Anmeldung auf www. Preise
-   ausgeblendet. Wortwahl nach docs/legal/WORTWAHL.md, Pflichtsatz und Rechtslinks aus assets/legal-notices.json im
-   Menü unter „Rechtliches & Infos“.
+     research  Vorschau im geschützten Bereich research.visionuniverse.de/website2/ (Passwortmaske, noindex).
+     www       die öffentliche Seite www.visionuniverse.de. Der Erzeuger schreibt die Seiten und alle nötigen Dateien als
+               committete Dateien nach landing/ (Cloudflare Pages baut nur aus landing/, landing/scripts/build.mjs).
 
-     node products/website2/build.mjs              schreibt website2/<seite>/index.html
-     node products/website2/build.mjs --out DIR    schreibt nach DIR (Tests)
+   17 Seiten je Ziel: Start, App, zwölf Modulseiten, News, Aktienmagazin, Fragen.
 
-   website2/site.css, website2/site.js, website2/img/ und website2/vid/ sind Handarbeit und werden hier nicht erzeugt. */
-import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+   Regeln (products/website2/README.md): App noch nicht verfügbar, daher kein Link in die App oder in einen Store; Store-
+   Knöpfe in Farbe, ohne Link, mit „Bald verfügbar“. Keine Preise. Wortwahl nach docs/legal/WORTWAHL.md. Farben nur
+   Schwarz, Weiß, Grau und Neongrün (kein Dunkelgrün). Auf www: keine Anfrage an eine andere Adresse (keine Schriften,
+   Einbettungen oder Laufzeit-Abrufe von research); Artikel, Heft und Report kommen deshalb beim Bauen aus dem
+   committeten Auszug landing/site/insights.json. Rechtstexte und das Anmeldeformular (landing/newsletter-form.html)
+   werden wörtlich übernommen, nie hier geändert.
+
+     node products/website2/build.mjs                  schreibt website2/<seite>/index.html (research)
+     node products/website2/build.mjs --out DIR        dasselbe nach DIR (Tests)
+     node products/website2/build.mjs --target www     frischt den Insights-Auszug und die Dateien unter landing/site/
+                                                       auf und schreibt die www-Seiten nach landing/
+     node products/website2/build.mjs --target www --out DIR   schreibt nur die www-Seiten nach DIR (Tests, ohne Auffrischen)
+
+   website2/site.css, website2/site.js, website2/img/ und website2/vid/ sind Handarbeit. landing/site/ ist deren Kopie
+   für www und gehört diesem Erzeuger. */
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, readdirSync, rmSync, existsSync } from "node:fs";
+import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const BASE = "/website2/";
-export const NEWSLETTER = "https://www.visionuniverse.de/#newsletter";
-const IMG = `${BASE}img/`;
-const STORIES = "/assets/stories/";
-/* Heft, das die Seiten ohne JavaScript zeigen. site.js setzt das neueste Heft aus /insights/artikel.json ein. */
+export const WWW = "https://www.visionuniverse.de/";
+export const RESEARCH = "https://research.visionuniverse.de";
+export const NEWSLETTER = `${WWW}#newsletter`;
+export const KONTAKT = "https://konto.visionuniverse.de/kontakt";
+export const EMAIL = "mailto:info@visionuniverse.de";
+/* Social Media nur Instagram und TikTok (docs/publishing/HANDBUCH.md). */
+export const SOCIAL = [
+  ["instagram", "Instagram", "https://www.instagram.com/app.visionuniverse/"],
+  ["tiktok", "TikTok", "https://www.tiktok.com/@app.visionuniverse"]
+];
+/* Heft, das die Vorschau ohne JavaScript zeigt (website2/site.js setzt dort das neueste ein). www nimmt das Heft aus dem Auszug. */
 export const HEFT = { nr: "01", datum: "09.11.2026", titel: "Die KI-Bremse", seiten: 30, href: "/insights/magazin/nr-01/", blick: [2, 3, 5, 8, 12, 17, 20, 24] };
+const BLICK = [2, 3, 5, 8, 12, 17, 20, 24];
+const LANDING = join(ROOT, "landing");
+const SITE = join(LANDING, "site");
+export const SNAPSHOT = join(SITE, "insights.json");
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
 const nn = (n) => String(n).padStart(2, "0");
-
-/* ---------- Symbole ---------- */
-/* Modul-Symbole aus dem zentralen Sprite der App (assets/product-icons.svg). */
-const ic = (id, s = 20) => `<svg width="${s}" height="${s}" aria-hidden="true"><use href="/assets/product-icons.svg#${id}"/></svg>`;
-const I = {
-  chev: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>',
-  down: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg>',
-  spark: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg>',
-  home: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/></svg>',
-  play: '<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l14 8-14 8z"/></svg>'
-};
-
-/* ---------- Kennzeichen-Grafiken je Modul (SVG und HTML, bewegt; rein schmückend) ---------- */
-const G = {
-  discover: `<svg width="130" height="130" viewBox="0 0 130 130" fill="none" stroke="currentColor" stroke-width="2"><circle cx="65" cy="65" r="60" opacity=".25"/><circle cx="65" cy="65" r="40" opacity=".25"/><circle cx="65" cy="65" r="20" opacity=".25"/><g class="a-spin"><path d="M65 65L65 5A60 60 0 0 1 117 35z" fill="var(--ac)" stroke="none" opacity=".35"/><path d="M65 65V5" stroke="var(--ac)" stroke-width="3"/><circle cx="65" cy="65" r="60" stroke="none"/></g><circle class="a-blink" cx="92" cy="44" r="5" fill="var(--ac)" stroke="none"/><circle class="a-blink" cx="40" cy="86" r="4" fill="var(--ac)" stroke="none" style="animation-delay:.6s"/></svg>`,
-  screener: `<div style="font-weight:900;font-size:17px;line-height:1.9;letter-spacing:-.02em">Aktien, die<br><span class="a-blink" style="background:var(--ac);color:#fff;border-radius:8px;padding:3px 9px;white-space:nowrap">gut verdienen</span><br>und <span class="a-blink" style="background:var(--ac);color:#fff;border-radius:8px;padding:3px 9px;white-space:nowrap;animation-delay:.7s">günstig</span> sind</div>`,
-  atlas: `<div style="width:100%;background:rgba(255,255,255,.1);border-radius:99px;padding:13px 18px;font-weight:700;display:flex;align-items:center;gap:10px"><span style="color:var(--ac)">${I.spark}</span><span class="a-type">günstige KI-Aktien mit Gewinn</span></div>`,
-  fundamental: `<svg width="170" height="110" viewBox="0 0 170 110">${[14, 18, 26, 32, 38, 46, 70, 104].map((h, i) => `<rect class="a-grow" x="${i * 21 + 2}" y="${110 - h}" width="15" height="${h}" rx="5" fill="${i === 7 ? "var(--ac)" : "currentColor"}" opacity="${i === 7 ? 1 : 0.28}" style="animation-delay:${(i * 0.09).toFixed(2)}s"/>`).join("")}</svg>`,
-  quant: `<svg width="130" height="130" viewBox="0 0 130 130" fill="none"><polygon points="65,6 116,35 116,95 65,124 14,95 14,35" stroke="currentColor" opacity=".3" stroke-width="2"/><polygon points="65,36 91,50 91,80 65,94 39,80 39,50" stroke="currentColor" opacity=".2" stroke-width="2"/><polygon fill="var(--ac)" fill-opacity=".4" stroke="var(--ac)" stroke-width="3" stroke-linejoin="round" points="65,8 108,40 88,78 65,96 34,84 22,40"><animate attributeName="points" dur="4s" repeatCount="indefinite" values="65,8 108,40 88,78 65,96 34,84 22,40;65,30 112,36 110,92 65,112 24,90 40,50;65,8 108,40 88,78 65,96 34,84 22,40"/></polygon></svg>`,
-  technical: `<svg width="190" height="100" viewBox="0 0 190 100" fill="none"><rect x="0" y="62" width="190" height="20" rx="4" fill="var(--ac)" opacity=".28"/><path class="a-draw" style="--len:420" d="M4 86 26 60 44 74 70 40 92 58 118 22 140 44 162 14 186 30" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/><circle class="a-blink" cx="186" cy="30" r="6" fill="var(--ac)"/></svg>`,
-  elliott: `<svg width="190" height="100" viewBox="0 0 190 100" fill="none"><path class="a-draw" style="--len:420" d="M6 90 40 50 62 70 108 14 132 44 182 6" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>${[[40, 50, 1], [62, 70, 2], [108, 14, 3], [132, 44, 4], [182, 6, 5]].map(([x, y, n]) => `<circle cx="${x}" cy="${y}" r="9" fill="var(--ac)"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="900" fill="#fff" font-family="Inter,sans-serif">${n}</text>`).join("")}</svg>`,
-  supertrader: `<div style="width:100%;display:flex;flex-direction:column;gap:7px;align-items:flex-start">${[[100, "rgba(255,255,255,.18)"], [62, "#fff"], [34, "var(--ac)"]].map(([w, c], i) => `<i class="a-growx" style="display:block;height:24px;border-radius:9px;width:${w}%;background:${c};animation-delay:${(i * 0.2).toFixed(1)}s"></i>`).join("")}</div>`,
-  hedgefonds: `<div style="width:100%"><div style="display:flex;height:26px;border-radius:13px;overflow:hidden;gap:3px"><i class="a-growx" style="display:block;width:56%;background:var(--ac)"></i><i style="display:block;flex:1;background:currentColor;opacity:.25"></i></div><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;font-weight:800;margin-top:8px"><span>aufgestockt</span><span style="opacity:.55">verkauft</span></div></div>`,
-  portfolios: `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:7px;width:100%">${Array.from({ length: 12 }, (_, i) => `<i${i < 7 ? ' class="a-blink"' : ""} style="display:block;height:26px;border-radius:8px;background:${i < 7 ? "var(--ac)" : "currentColor"};opacity:${i < 7 ? 1 : 0.15};animation-delay:${(i * 0.15).toFixed(2)}s"></i>`).join("")}</div>`,
-  vorsorge: `<svg width="190" height="100" viewBox="0 0 190 100" fill="none"><path d="M4 92C60 88 120 70 186 8V96H4z" fill="var(--ac)" opacity=".22"/><path class="a-draw" style="--len:300" d="M4 92C60 88 120 70 186 8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle class="a-blink" cx="186" cy="8" r="7" fill="var(--ac)"/></svg>`,
-  insights: `<div style="position:relative;width:120px;height:120px">${[[-14, `${HEFT.href}seiten/s02.jpg`, 119, ""], [-4, `${HEFT.href}seiten/s05.jpg`, 119, ""], [7, `${HEFT.href}cover.jpg`, 119, " data-mag-img"]].map(([r, src, h, live], i) => `<img src="${src}" alt="" width="84" height="${h}" loading="lazy" decoding="async"${live} style="position:absolute;left:${18 + i * 4}px;top:0;width:84px;border-radius:6px;transform:rotate(${r}deg);box-shadow:0 8px 20px rgba(0,0,0,.25)">`).join("")}</div>`
-};
+const datum = (iso) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ""); return m ? `${m[3]}.${m[2]}.${m[1]}` : ""; };
+/* Platzhalter für den Weg zur Wurzel der www-Seite; je Seite durch ./, ../ oder ../../ ersetzt (relative Adressen,
+   damit der Bau auch unter einem Unterpfad und in den Prüfungen von landing/ funktioniert). */
+const R = "@@R@@";
 
 /* ---------- Inhalte ---------- */
 /* Texte aus der Website-Vorschau /website/ (products/website/build.mjs), Fakten aus dem Datenbestand (Mock-up 3).
@@ -96,9 +94,6 @@ export const MODULES = [
     facts: [["werktags", "neue Artikel"], ["wöchentlich", "Aktienmagazin"], ["Reports", "ausführlich"]] }
 ];
 const MOD = Object.fromEntries(MODULES.map((m) => [m.id, m]));
-const GROUPS = ["Entdecken", "Verstehen", "Methoden", "Vorsorgen", "Lesen"];
-const modHref = (id) => `${BASE}module/${id}/`;
-const micon = (m, s = 26) => ic(m.icon || m.id, s);
 const NUMS = [["6.000+", "US-Aktien"], ["7.000+", "ETFs"], ["12 Jahre", "Geschäftszahlen"], ["13", "Methoden bekannter Trader"], ["54", "Themenwelten"]];
 const FAQ = [
   ["Was ist Vision Universe?", "Eine Analyse-App für Aktien, ETFs und Vorsorge. Elf Bereiche arbeiten mit denselben Daten und erklären jede Zahl in klaren Worten, vom ersten Sparplan bis zur Profi-Analyse."],
@@ -110,68 +105,162 @@ const FAQ = [
   ["Auf welchen Geräten läuft Vision Universe?", "Auf iPhone und Android, dazu im Browser auf Tablet und Desktop. Merkliste, Filter und Sparplan sind in deinem Konto auf allen Geräten gleich."]
 ];
 const NAV = [["app", "Die App", "app/"], ["news", "News", "news/"], ["magazin", "Aktienmagazin", "magazin/"], ["faq", "Fragen", "faq/"]];
+export const PAGES = ["", "app/", ...MODULES.map((m) => `module/${m.id}/`), "news/", "magazin/", "faq/"];
+const CTA = "Zum Start benachrichtigen";
+
+/* ---------- Symbole (eigene Zeichnungen, einfarbig, im Strich der Seite) ---------- */
+const stroke = (s, w, body) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+const I = {
+  chev: stroke(14, 2.8, '<path d="M9 5l7 7-7 7"/>'),
+  down: stroke(12, 3, '<path d="M5 9l7 7 7-7"/>'),
+  home: stroke(20, 2.2, '<path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/>'),
+  spark: '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1l2.6 8.4L23 12l-8.4 2.6L12 23l-2.6-8.4L1 12l8.4-2.6z"/></svg>',
+  play: '<svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l14 8-14 8z"/></svg>',
+  instagram: stroke(24, 2, '<rect x="3" y="3" width="18" height="18" rx="5.5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.2" fill="currentColor" stroke="none"/>'),
+  tiktok: stroke(24, 2.2, '<path d="M14 3v11.6a3.6 3.6 0 1 1-3.6-3.6"/><path d="M14 3c.3 2.7 2 4.5 4.8 4.8"/>')
+};
 
 function legal() {
   const j = JSON.parse(readFileSync(join(ROOT, "assets/legal-notices.json"), "utf8"));
   return { text: j.notices.footer.text, links: j.links };
 }
+/* Anmeldeformular von www, wörtlich (Felder, Einwilligung vu-newsletter-v1, Zustände). landing/scripts/build.mjs schaltet es je nach Freigabe. */
+const FORM = () => readFileSync(join(LANDING, "newsletter-form.html"), "utf8").trim();
+export function loadSnapshot() { return JSON.parse(readFileSync(SNAPSHOT, "utf8")); }
 
-/* ---------- Bausteine ---------- */
-const CTA = "Zum Start benachrichtigen";
-const soon = `<span class="soon"><i></i>App bald verfügbar</span>`;
-/* Der eine Aufruf: Anmeldung auf www (Brevo nimmt nur Anfragen von der eigenen Domain an), wie auf /website/. */
-const cta = (cls = "", t = CTA) => `<a class="cta${cls ? " " + cls : ""}" href="${NEWSLETTER}">${t} ${I.chev}</a>`;
-const SHOT = (src) => (src.endsWith(".webp") ? [585, 1266] : [780, 1688]);
-const dev = (src, w, alt, cls = "") => `<div class="dev w${w}${cls ? " " + cls : ""}"><img src="${IMG}${src}" alt="${esc(alt)}" width="${SHOT(src)[0]}" height="${SHOT(src)[1]}" loading="lazy" decoding="async"></div>`;
-const tile = (m, big) => `<a class="t ${m.color}${big ? " w2" : ""} rv" href="${modHref(m.id)}"><span class="go">${I.chev}</span><div class="fl g12"><div class="icb">${micon(m)}</div><b class="tn">${m.name}</b></div><div class="gfx" aria-hidden="true">${G[m.id]}</div><div class="q">${m.q}</div></a>`;
-/* Original-Knöpfe von Apple und Google (Dateien von /website/, unverändert, in Farbe). Bis zum Start ohne Link. */
-const badges = `<div class="badges"><img class="badge" src="/website/img/badge-apple.svg" alt="Laden im App Store" width="120" height="40"><img class="badge" src="/website/img/badge-google.png" alt="Jetzt bei Google Play" width="646" height="192"><span>Bald verfügbar</span></div>`;
-const rail = (items, label, cls = "") => `<div class="rail${cls}" tabindex="0" role="group" aria-label="${esc(label)}">${items.map(([s, n]) => `<figure>${dev(s, 250, `${n} in der App`)}<figcaption>${n}</figcaption></figure>`).join("")}</div>`;
-const cover = (alt) => `<img src="${HEFT.href}cover.jpg" alt="${esc(alt)}" width="560" height="793" loading="lazy" decoding="async" data-mag-img>`;
+/* ---------- Ziele ---------- */
+const TARGETS = {
+  research: {
+    www: false, root: BASE, css: `${BASE}site.css`, js: `${BASE}site.js`, img: `${BASE}img/`, vid: `${BASE}vid/app.mp4`,
+    icons: "/assets/product-icons.svg", font: "/assets/fonts/inter-latin.woff2", badge: "/website/img/",
+    film: (id) => `/assets/stories/${id}-v1.mp4`, favicon: "/assets/icons/icon-192.png", touch: "/assets/icons/apple-touch-icon.png",
+    newsletter: NEWSLETTER, origin: `${RESEARCH}${BASE}`, robots: "noindex,nofollow", producer: "products/website2/build.mjs"
+  },
+  www: {
+    www: true, root: R, css: `${R}site/site.css`, js: `${R}site/site.js`, img: `${R}site/img/`, vid: `${R}site/vid/app.mp4`,
+    icons: `${R}site/product-icons.svg`, font: `${R}assets/fonts/inter-latin.woff2`, badge: `${R}site/img/`,
+    film: (id) => `${R}partner/media/${id}.mp4`, favicon: `${R}assets/icon-192.png`, touch: `${R}assets/apple-touch-icon.png`,
+    newsletter: `${R}#newsletter`, origin: WWW, robots: "noindex, nofollow", producer: "products/website2/build.mjs --target www"
+  }
+};
 
-/* Abschluss jeder Seite. Statt des E-Mail-Felds aus dem Mock-up der Knopf zur Anmeldung auf www, wie auf /website/. */
-const final = `<section class="sec" id="dabei"><div class="w"><div class="fin rv"><span class="pill">App bald verfügbar · zum Start kostenlos</span><h2 class="H1">Sei beim Start dabei.</h2><p class="p">Eine E-Mail, sobald Vision Universe im App Store und bei Google Play steht.</p>${cta()}<p class="s">Anmeldung auf www.visionuniverse.de · Bestätigung per E-Mail, Abmeldung jederzeit.</p>${badges}</div></div></section>`;
-
-const megaCol = (groups) => groups.map((g) => `<div class="eb">${g}</div>${MODULES.filter((m) => m.group === g).map((m) => `<a class="mi" href="${modHref(m.id)}"><div class="icb">${micon(m)}</div><div><b>${m.name}</b><span>${m.q}</span></div></a>`).join("")}`).join("");
-function header(active) {
+function site(c, data) {
   const L = legal();
-  const on = (k) => (active === k ? ' aria-current="page"' : "");
-  const cls = (k) => (active === k ? " on" : "");
-  const links = [["Impressum", "impressum"], ["Kontakt", "kontakt"], ["Datenschutz", "datenschutz"], ["Nutzungsbedingungen", "bedingungen"], ["Risikohinweise", "risikohinweise"]];
-  return `<a class="skip" href="#inhalt">Zum Inhalt</a>
-<header class="nav" id="nav"><div class="bar"><a class="brand" href="${BASE}"${on("start")} aria-label="Vision Universe Startseite">VISION UNIVERSE®</a>
-<nav class="nls" aria-label="Hauptmenü"><a class="nl${cls("module")}" href="${BASE}app/#bereiche" data-mega aria-controls="mega" aria-expanded="false">Module ${I.down}</a>${NAV.map(([k, n, h]) => `<a class="nl${cls(k)}" href="${BASE}${h}"${on(k)}>${n}</a>`).join("")}</nav>
+  const page_ = (p) => `${c.root}${p}`;
+  const modHref = (id) => page_(`module/${id}/`);
+  const ic = (id, s = 20) => `<svg width="${s}" height="${s}" aria-hidden="true"><use href="${c.icons}#${id}"/></svg>`;
+  const micon = (m, s = 26) => ic(m.icon || m.id, s);
+  /* Heft für Titelbild, Kennzeichen-Grafik, Heftblock und Magazin-Seite. */
+  const heft = c.www
+    ? { ...data.heft, datum: datum(data.heft.datum), blick: data.heft.blick, cover: `${c.img}${data.heft.cover}`, seite: (n) => `${c.img}heft-${data.heft.nr}-s${nn(n)}.jpg`, pdf: data.heft.pdf }
+    : { ...HEFT, cover: `${HEFT.href}cover.jpg`, seite: (n) => `${HEFT.href}seiten/s${nn(n)}.jpg`, pdf: `${HEFT.href}vision-universe-aktienmagazin-${HEFT.nr}.pdf` };
+  const live = (attr) => (c.www ? "" : ` ${attr}`);
+
+  /* Kennzeichen-Grafiken je Modul (SVG und HTML, bewegt; rein schmückend). --ac ist Schwarz, auf dunklen Kacheln Neongrün. */
+  const G = {
+    discover: `<svg width="130" height="130" viewBox="0 0 130 130" fill="none" stroke="currentColor" stroke-width="2"><circle cx="65" cy="65" r="60" opacity=".25"/><circle cx="65" cy="65" r="40" opacity=".25"/><circle cx="65" cy="65" r="20" opacity=".25"/><g class="a-spin"><path d="M65 65L65 5A60 60 0 0 1 117 35z" fill="var(--ac)" stroke="none" opacity=".35"/><path d="M65 65V5" stroke="var(--ac)" stroke-width="3"/><circle cx="65" cy="65" r="60" stroke="none"/></g><circle class="a-blink" cx="92" cy="44" r="5" fill="var(--ac)" stroke="none"/><circle class="a-blink" cx="40" cy="86" r="4" fill="var(--ac)" stroke="none" style="animation-delay:.6s"/></svg>`,
+    screener: `<div style="font-weight:900;font-size:17px;line-height:1.9;letter-spacing:-.02em">Aktien, die<br><span class="a-blink" style="background:var(--ac);color:#fff;border-radius:8px;padding:3px 9px;white-space:nowrap">gut verdienen</span><br>und <span class="a-blink" style="background:var(--ac);color:#fff;border-radius:8px;padding:3px 9px;white-space:nowrap;animation-delay:.7s">günstig</span> sind</div>`,
+    atlas: `<div style="width:100%;background:rgba(255,255,255,.1);border-radius:99px;padding:13px 18px;font-weight:700;display:flex;align-items:center;gap:10px"><span style="color:var(--ac)">${I.spark}</span><span class="a-type">günstige KI-Aktien mit Gewinn</span></div>`,
+    fundamental: `<svg width="170" height="110" viewBox="0 0 170 110">${[14, 18, 26, 32, 38, 46, 70, 104].map((h, i) => `<rect class="a-grow" x="${i * 21 + 2}" y="${110 - h}" width="15" height="${h}" rx="5" fill="${i === 7 ? "var(--ac)" : "currentColor"}" opacity="${i === 7 ? 1 : 0.28}" style="animation-delay:${(i * 0.09).toFixed(2)}s"/>`).join("")}</svg>`,
+    quant: `<svg width="130" height="130" viewBox="0 0 130 130" fill="none"><polygon points="65,6 116,35 116,95 65,124 14,95 14,35" stroke="currentColor" opacity=".3" stroke-width="2"/><polygon points="65,36 91,50 91,80 65,94 39,80 39,50" stroke="currentColor" opacity=".2" stroke-width="2"/><polygon fill="var(--ac)" fill-opacity=".4" stroke="var(--ac)" stroke-width="3" stroke-linejoin="round" points="65,8 108,40 88,78 65,96 34,84 22,40"><animate attributeName="points" dur="4s" repeatCount="indefinite" values="65,8 108,40 88,78 65,96 34,84 22,40;65,30 112,36 110,92 65,112 24,90 40,50;65,8 108,40 88,78 65,96 34,84 22,40"/></polygon></svg>`,
+    technical: `<svg width="190" height="100" viewBox="0 0 190 100" fill="none"><rect x="0" y="62" width="190" height="20" rx="4" fill="var(--ac)" opacity=".28"/><path class="a-draw" style="--len:420" d="M4 86 26 60 44 74 70 40 92 58 118 22 140 44 162 14 186 30" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/><circle class="a-blink" cx="186" cy="30" r="6" fill="var(--ac)"/></svg>`,
+    elliott: `<svg width="190" height="100" viewBox="0 0 190 100" fill="none"><path class="a-draw" style="--len:420" d="M6 90 40 50 62 70 108 14 132 44 182 6" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round" stroke-linecap="round"/>${[[40, 50, 1], [62, 70, 2], [108, 14, 3], [132, 44, 4], [182, 6, 5]].map(([x, y, n]) => `<circle cx="${x}" cy="${y}" r="9" fill="var(--ac)"/><text x="${x}" y="${y + 4}" text-anchor="middle" font-size="11" font-weight="900" fill="#fff" font-family="Inter,sans-serif">${n}</text>`).join("")}</svg>`,
+    supertrader: `<div style="width:100%;display:flex;flex-direction:column;gap:7px;align-items:flex-start">${[[100, "rgba(255,255,255,.18)"], [62, "#fff"], [34, "var(--ac)"]].map(([w, col], i) => `<i class="a-growx" style="display:block;height:24px;border-radius:9px;width:${w}%;background:${col};animation-delay:${(i * 0.2).toFixed(1)}s"></i>`).join("")}</div>`,
+    hedgefonds: `<div style="width:100%"><div style="display:flex;height:26px;border-radius:13px;overflow:hidden;gap:3px"><i class="a-growx" style="display:block;width:56%;background:var(--ac)"></i><i style="display:block;flex:1;background:currentColor;opacity:.25"></i></div><div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:13px;font-weight:800;margin-top:8px"><span>aufgestockt</span><span style="opacity:.75">verkauft</span></div></div>`,
+    portfolios: `<div style="display:grid;grid-template-columns:repeat(6,1fr);gap:7px;width:100%">${Array.from({ length: 12 }, (_, i) => `<i${i < 7 ? ' class="a-blink"' : ""} style="display:block;height:26px;border-radius:8px;background:${i < 7 ? "var(--ac)" : "currentColor"};opacity:${i < 7 ? 1 : 0.15};animation-delay:${(i * 0.15).toFixed(2)}s"></i>`).join("")}</div>`,
+    vorsorge: `<svg width="190" height="100" viewBox="0 0 190 100" fill="none"><path d="M4 92C60 88 120 70 186 8V96H4z" fill="var(--ac)" opacity=".22"/><path class="a-draw" style="--len:300" d="M4 92C60 88 120 70 186 8" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><circle class="a-blink" cx="186" cy="8" r="7" fill="var(--ac)"/></svg>`,
+    insights: `<div style="position:relative;width:120px;height:120px">${[[-14, heft.seite(2), ""], [-4, heft.seite(5), ""], [7, heft.cover, live("data-mag-img")]].map(([r, src, attr], i) => `<img src="${src}" alt="" width="84" height="119" loading="lazy" decoding="async"${attr} style="position:absolute;left:${18 + i * 4}px;top:0;width:84px;border-radius:6px;transform:rotate(${r}deg);box-shadow:0 8px 20px rgba(0,0,0,.25)">`).join("")}</div>`
+  };
+
+  /* ---------- Bausteine ---------- */
+  const soon = `<span class="soon"><i></i>App bald verfügbar</span>`;
+  /* Der eine Aufruf führt zur Anmeldung: auf www zum Formular der Startseite, in der Vorschau zur Anmeldung auf www
+     (Brevo nimmt nur Anfragen von der eigenen Domain an). */
+  const cta = (cls = "", t = CTA) => `<a class="cta${cls ? " " + cls : ""}" href="${c.newsletter}">${t} ${I.chev}</a>`;
+  const SHOT = (src) => (src.endsWith(".webp") ? [585, 1266] : [780, 1688]);
+  const dev = (src, w, alt, cls = "", lazy = true) => `<div class="dev w${w}${cls ? " " + cls : ""}"><img src="${c.img}${src}" alt="${esc(alt)}" width="${SHOT(src)[0]}" height="${SHOT(src)[1]}"${lazy ? ' loading="lazy"' : ""} decoding="async"></div>`;
+  const tile = (m, big) => `<a class="t ${m.color}${big ? " w2" : ""} rv" href="${modHref(m.id)}"><span class="go">${I.chev}</span><div class="fl g12"><div class="icb">${micon(m)}</div><b class="tn">${m.name}</b></div><div class="gfx" aria-hidden="true">${G[m.id]}</div><div class="q">${m.q}</div></a>`;
+  /* Original-Knöpfe von Apple und Google (Dateien von /website/, unverändert, in Farbe). Bis zum Start ohne Link. */
+  const badges = `<div class="badges"><img class="badge" src="${c.badge}badge-apple.svg" alt="Laden im App Store" width="120" height="40"><img class="badge" src="${c.badge}badge-google.png" alt="Jetzt bei Google Play" width="646" height="192"><span>Bald verfügbar</span></div>`;
+  const rail = (items, label, cls = "") => `<div class="rail${cls}" tabindex="0" role="group" aria-label="${esc(label)}">${items.map(([s, n]) => `<figure>${dev(s, 250, `${n} in der App`)}<figcaption>${n}</figcaption></figure>`).join("")}</div>`;
+  const cover = (alt, lazy = true) => `<img src="${heft.cover}" alt="${esc(alt)}" width="560" height="793"${lazy ? ' loading="lazy"' : ""} decoding="async"${live("data-mag-img")}>`;
+  const eb = (t) => `<div class="eb acc">${t}</div>`;
+  /* Instagram und TikTok: schlichte Links mit Namen, keine Einbettung, keine Anfrage an Dritte. */
+  const social = () => `<div class="soc">${SOCIAL.map(([k, n, u]) => `<a class="sc" href="${u}" rel="noopener" target="_blank" aria-label="Vision Universe auf ${n} (@app.visionuniverse), öffnet in neuem Tab" title="${n}">${I[k]}</a>`).join("")}</div>`;
+
+  /* Abschluss jeder Seite. Auf der Startseite von www steht hier das Anmeldeformular, sonst der Knopf dorthin. */
+  const finalText = "Eine E-Mail, sobald Vision Universe im App Store und bei Google Play steht.";
+  const final = `<section class="sec" id="dabei"><div class="w"><div class="fin rv"><span class="pill">App bald verfügbar · zum Start kostenlos</span><h2 class="H1">Sei beim Start dabei.</h2><p class="p">${finalText}</p>${cta()}<p class="s">${c.www ? "Anmeldung mit E-Mail-Bestätigung, Abmeldung jederzeit." : "Anmeldung auf www.visionuniverse.de · Bestätigung per E-Mail, Abmeldung jederzeit."}</p>${badges}</div></div></section>`;
+  const arrow = '<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol></svg>';
+  const signup = () => `${arrow}<section class="sec" id="newsletter" aria-labelledby="newsletter-title" tabindex="-1"><div class="w"><div class="fin"><span class="pill">App bald verfügbar · zum Start kostenlos</span><h2 class="H1" id="newsletter-title">Sei beim Start dabei.</h2><p class="p">${finalText} Dazu News zur App und neue Research-Inhalte per E-Mail.</p>
+${FORM()}
+${badges}</div></div></section>`;
+
+  const megaCol = (groups) => groups.map((g) => `<div class="eb">${g}</div>${MODULES.filter((m) => m.group === g).map((m) => `<a class="mi" href="${modHref(m.id)}"><div class="icb">${micon(m)}</div><div><b>${m.name}</b><span>${m.q}</span></div></a>`).join("")}`).join("");
+  /* Rechtliches im Menü: der Pflichtsatz aus assets/legal-notices.json steht repo-weit nur im Menü (nav#site-panel,
+     core/tests/legal-notices-frontend.test.mjs). Links: in der Vorschau die von research, auf www die eigenen Seiten. */
+  const legalLinks = c.www
+    ? [["Impressum", page_("impressum/")], ["Datenschutz", page_("datenschutz/")], ["Kontaktformular", KONTAKT], ["E-Mail", EMAIL]]
+    : [["Impressum", L.links.impressum], ["Kontakt", L.links.kontakt], ["Datenschutz", L.links.datenschutz], ["Nutzungsbedingungen", L.links.bedingungen], ["Risikohinweise", L.links.risikohinweise], ["Datenquellen und Methodik", "/infos/#quellen"]];
+  function header(active) {
+    const on = (k) => (active === k ? ' aria-current="page"' : "");
+    const cls = (k) => (active === k ? " on" : "");
+    return `<a class="skip" href="#inhalt">Zum Inhalt</a>
+<header class="nav" id="nav"><div class="bar"><a class="brand" href="${page_("")}"${on("start")} aria-label="Vision Universe Startseite">VISION UNIVERSE®</a>
+<nav class="nls" aria-label="Hauptmenü"><a class="nl${cls("module")}" href="${page_("app/")}#bereiche" data-mega aria-controls="mega" aria-expanded="false">Module ${I.down}</a>${NAV.map(([k, n, h]) => `<a class="nl${cls(k)}" href="${page_(h)}"${on(k)}>${n}</a>`).join("")}</nav>
 <div class="sp"></div>${soon}${cta("s", "Benachrichtigen")}</div>
-<div class="mega" id="mega"><nav class="mg" id="site-panel" aria-label="Module und Rechtliches"><div>${megaCol(["Entdecken"])}</div><div>${megaCol(["Verstehen"])}</div><div>${megaCol(["Methoden"])}</div><div>${megaCol(["Vorsorgen", "Lesen"])}<a class="mi app" href="${BASE}app/"><div class="icb">${ic("layers", 26)}</div><div><b>Die App</b><span>Alle Bereiche auf einen Blick</span></div></a></div>
-<div class="mlegal"><h2>Rechtliches &amp; Infos</h2><p>${esc(L.text)}</p><ul>${links.map(([n, k]) => `<li><a href="${L.links[k]}">${n}</a></li>`).join("")}<li><a href="/infos/#quellen">Datenquellen und Methodik</a></li></ul></div></nav></div></header>`;
-}
+<div class="mega" id="mega"><nav class="mg" id="site-panel" aria-label="Module und Rechtliches"><div>${megaCol(["Entdecken"])}</div><div>${megaCol(["Verstehen"])}</div><div>${megaCol(["Methoden"])}</div><div>${megaCol(["Vorsorgen", "Lesen"])}<a class="mi app" href="${page_("app/")}"><div class="icb">${ic("layers", 26)}</div><div><b>Die App</b><span>Alle Bereiche auf einen Blick</span></div></a></div>
+<div class="mlegal"><h2>Rechtliches &amp; Infos</h2><p>${esc(L.text)}</p><ul>${legalLinks.map(([n, h]) => `<li><a href="${h}">${n}</a></li>`).join("")}</ul>${social()}</div></nav></div></header>`;
+  }
 
-function footer() {
-  const L = legal();
-  const cols = [
-    ["Produkt", [["Alle elf Bereiche", `${BASE}app/#bereiche`], ["Für wen", `${BASE}#fuer-wen`], ["App", `${BASE}app/`]]],
-    ["Insights", [["Artikel", `${BASE}news/`], ["Aktienmagazin", `${BASE}magazin/`], ["Aktienreports", `${BASE}news/#reports`]]],
-    ["Vertrauen", [["Daten und Methodik", "/infos/#quellen"], ["Häufige Fragen", `${BASE}faq/`], ["Kontakt", L.links.kontakt], ["Rechtliches &amp; Infos", "/infos/"]]]
-  ];
-  return `<footer class="foot"><div class="w"><div class="cols"><div class="about"><a class="brand" href="${BASE}">VISION UNIVERSE®</a><p>Die Analyse-App für Aktien, ETFs und Vorsorge. Klarheit statt Lärm.</p></div>
+  /* Fuß wie auf der heutigen Startseite von www: Impressum, Datenschutz, Kontaktformular, E-Mail; dazu Instagram und TikTok. */
+  function footer() {
+    const cols = [
+      ["Produkt", [["Alle elf Bereiche", `${page_("app/")}#bereiche`], ["Für wen", `${page_("")}#fuer-wen`], ["App", page_("app/")]]],
+      ["Insights", [["Artikel", page_("news/")], ["Aktienmagazin", page_("magazin/")], ["Aktienreports", `${page_("news/")}#reports`]]],
+      ["Vertrauen", [...(c.www ? [] : [["Daten und Methodik", "/infos/#quellen"]]), ["Häufige Fragen", page_("faq/")], ["Kontakt", KONTAKT], ...(c.www ? [] : [["Rechtliches &amp; Infos", "/infos/"]])]]
+    ];
+    const www = (p) => (c.www ? page_(p) : `${WWW}${p}`);
+    return `<footer class="foot"><div class="w"><div class="cols"><div class="about"><a class="brand" href="${page_("")}">VISION UNIVERSE®</a><p>Die Analyse-App für Aktien, ETFs und Vorsorge. Klarheit statt Lärm.</p>${social()}</div>
 ${cols.map(([t, l]) => `<div><h2>${t}</h2><ul>${l.map(([n, h]) => `<li><a href="${h}">${n}</a></li>`).join("")}</ul></div>`).join("\n")}</div>
-<p class="legal">© 2026 Vision Universe® · Pflichthinweise und Rechtstexte im Menü unter „Rechtliches &amp; Infos“.</p></div></footer>`;
-}
+<div class="legal"><span>© 2026 Vision Universe®</span><nav class="lnav" aria-label="Rechtliches und Kontakt"><a href="${www("impressum/")}">Impressum</a><a href="${www("datenschutz/")}">Datenschutz</a><a href="${KONTAKT}">Kontaktformular</a><a href="${EMAIL}">E-Mail</a></nav></div></div></footer>`;
+  }
 
-/* Leiste unten auf dem iPhone. „Module“ öffnet das Menü (site.js); ohne JavaScript führt der Link zur Übersicht der Bereiche. */
-function dock(active, page) {
-  const item = (k, href, icon, label, extra = "") => `<a href="${href}"${active === k ? ' class="on"' : ""}${page === k && k !== "module" ? ' aria-current="page"' : ""}${extra}>${icon}${label}</a>`;
-  return `<nav class="dock" aria-label="Schnellzugriff">${item("start", BASE, I.home, "Start")}${item("module", `${BASE}app/#bereiche`, ic("layers", 20), "Module", ' data-mega aria-controls="mega" aria-expanded="false"')}${item("app", `${BASE}app/`, ic("chartbild", 20), "App")}${item("news", `${BASE}news/`, ic("insights", 20), "News")}${item("faq", `${BASE}faq/`, '<b aria-hidden="true">?</b>', "Fragen")}</nav>`;
-}
+  /* Leiste unten auf dem iPhone. „Module“ öffnet das Menü (site.js); ohne JavaScript führt der Link zur Übersicht der Bereiche. */
+  function dock(active, current) {
+    const item = (k, href, icon, label, extra = "") => `<a href="${href}"${active === k ? ' class="on"' : ""}${current === k && k !== "module" ? ' aria-current="page"' : ""}${extra}>${icon}${label}</a>`;
+    return `<nav class="dock" aria-label="Schnellzugriff">${item("start", page_(""), I.home, "Start")}${item("module", `${page_("app/")}#bereiche`, ic("layers", 20), "Module", ' data-mega aria-controls="mega" aria-expanded="false"')}${item("app", page_("app/"), ic("chartbild", 20), "App")}${item("news", page_("news/"), ic("insights", 20), "News")}${item("faq", page_("faq/"), '<b aria-hidden="true">?</b>', "Fragen")}</nav>`;
+  }
 
-function page({ path, title, desc, active, dockActive, body, main = "" }) {
-  const url = `https://research.visionuniverse.de${BASE}${path}`;
-  return `<!doctype html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
+  function page({ path, title, desc, active, dockActive, body, main = "", close = final, form = false }) {
+    const url = `${c.origin}${path}`;
+    /* www: gleiche Kopfangaben wie die bisherige Startseite (robots wie dort; landing/scripts/build.mjs stellt bei
+       Produktionsfreigabe auf index um und setzt Content-Security-Policy und Versionsmarken). */
+    const head = c.www
+      ? `<meta name="theme-color" content="#ffffff">
+  <meta name="vu-navigation" content="none">
+  <title>${esc(title)}</title>
+  <meta name="description" content="${esc(desc)}">
+  <meta name="robots" content="${c.robots}">
+  <link rel="canonical" href="${url}">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:site_name" content="Vision Universe">
+  <meta property="og:url" content="${url}">
+  <meta property="og:title" content="${esc(title)}">
+  <meta property="og:description" content="${esc(desc)}">
+  <meta property="og:image" content="${WWW}assets/social-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Vision Universe – App bald verfügbar. Investieren mit Weitblick.">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="${WWW}assets/social-preview.png">
+  <link rel="icon" href="${c.favicon}" type="image/png">
+  <link rel="apple-touch-icon" href="${c.touch}">
+  <link rel="preload" href="${c.font}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="${c.css}">
+  <script src="${c.js}" defer></script>${form ? `\n  <script src="${R}newsletter.js" defer></script>` : ""}`
+      : `<meta name="robots" content="${c.robots}">
 <meta name="theme-color" content="#ffffff">
 <meta name="vu-navigation" content="none">
 <title>${esc(title)}</title>
@@ -182,100 +271,131 @@ function page({ path, title, desc, active, dockActive, body, main = "" }) {
 <meta property="og:url" content="${url}">
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(desc)}">
-<link rel="icon" type="image/png" href="/assets/icons/icon-192.png">
-<link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
-<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="${BASE}site.css">
-<script src="${BASE}site.js" defer></script>
+<link rel="icon" type="image/png" href="${c.favicon}">
+<link rel="apple-touch-icon" href="${c.touch}">
+<link rel="preload" href="${c.font}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="${c.css}">
+<script src="${c.js}" defer></script>`;
+    const html = `<!doctype html>
+<html lang="de">
+<head>
+${c.www ? "  " : ""}<meta charset="utf-8">
+${c.www ? "  " : ""}<meta name="viewport" content="width=device-width,initial-scale=1">
+${c.www ? "  " : ""}${head}
 </head>
 <body>
-<!-- Erzeugt von products/website2/build.mjs. Nicht von Hand ändern. -->
+<!-- Erzeugt von ${c.producer}. Nicht von Hand ändern. -->
 ${header(active)}
 <main id="inhalt"${main}>
 ${body}
-${final}
+${close}
 </main>
 ${footer()}
 ${dock(dockActive || active, active)}
 </body>
 </html>
 `;
-}
+    const depth = path.split("/").filter(Boolean).length;
+    return html.replaceAll(R, depth ? "../".repeat(depth) : "./");
+  }
 
-/* ---------- Kopfbild: Text links, Bühne mit kreisenden Modul-Symbolen und App-Film rechts ---------- */
-const orbit = (r, ids, dur, rev) => `<div class="orb2" style="width:${2 * r}px;height:${2 * r}px;margin:${-r}px 0 0 ${-r}px;animation-duration:${dur}s${rev ? ";animation-direction:reverse" : ""}">${ids.map((id, i) => { const a = Math.round((360 / ids.length) * i * 100) / 100; return `<div class="pl" style="transform:rotate(${a}deg) translate(${r}px) rotate(${-a}deg)"><div class="icb pc" style="animation-duration:${dur}s${rev ? "" : ";animation-direction:reverse"}">${ic(id, 26)}</div></div>`; }).join("")}</div>`;
-/* Der Film zeigt das freigegebene App-Konzept. Er läuft ohne Ton; site.js startet ihn, wenn er sichtbar ist und
-   der Nutzer Bewegung nicht reduziert hat. Ohne JavaScript bleibt das Standbild stehen. */
-const stage = `<div class="stg"><div aria-hidden="true"><div class="orb"></div>${orbit(296, ["discover", "fundamental", "supertrader", "elliott", "vorsorge", "insights", "screener"], 70)}${orbit(214, ["quant", "technical", "hedgefonds", "portfolios", "layers"], 50, 1)}</div><div class="dev"><video poster="${IMG}app-poster.jpg" width="520" height="1126" muted loop playsinline preload="none" data-autoplay aria-label="Die App von Vision Universe in Bewegung"><source src="${BASE}vid/app.mp4" type="video/mp4"></video></div>
+  /* ---------- Kopfbild: Text links, Bühne mit kreisenden Modul-Symbolen und App-Film rechts ---------- */
+  const orbit = (r, ids, dur, rev) => `<div class="orb2" style="width:${2 * r}px;height:${2 * r}px;margin:${-r}px 0 0 ${-r}px;animation-duration:${dur}s${rev ? ";animation-direction:reverse" : ""}">${ids.map((id, i) => { const a = Math.round((360 / ids.length) * i * 100) / 100; return `<div class="pl" style="transform:rotate(${a}deg) translate(${r}px) rotate(${-a}deg)"><div class="icb pc" style="animation-duration:${dur}s${rev ? "" : ";animation-direction:reverse"}">${ic(id, 26)}</div></div>`; }).join("")}</div>`;
+  /* Der Film zeigt das freigegebene App-Konzept. Er läuft ohne Ton; site.js startet ihn, wenn er sichtbar ist und
+     der Nutzer Bewegung nicht reduziert hat. Ohne JavaScript bleibt das Standbild stehen. */
+  const stage = `<div class="stg"><div aria-hidden="true"><div class="orb"></div>${orbit(296, ["discover", "fundamental", "supertrader", "elliott", "vorsorge", "insights", "screener"], 70)}${orbit(214, ["quant", "technical", "hedgefonds", "portfolios", "layers"], 50, 1)}</div><div class="dev"><video poster="${c.img}app-poster.jpg" width="520" height="1126" muted loop playsinline preload="none" data-autoplay aria-label="Die App von Vision Universe in Bewegung"><source src="${c.vid}" type="video/mp4"></video></div>
 <div class="fc a"><div class="eb">Quant · Beispiel NVIDIA</div><div class="fl g12"><b class="n">99</b><div><b>Verdient gut</b><div class="track"><i class="a-growx"></i></div></div></div></div>
 <div class="fc b"><div class="eb">Supertrader</div><div class="n">13 Methoden</div><div class="s">täglich auf alle US-Aktien</div></div></div>`;
-const hero = (h, sub, extra = "") => `<div class="heroX"><div class="w split"><div><span class="soon"><i></i>App bald verfügbar · zum Start kostenlos</span><h1 class="H1">${h}</h1><p class="ld">${sub}</p><div class="fl g12 wr acts">${cta()}${extra}</div>${badges}</div>${stage}</div></div>`;
+  const hero = (h, sub, extra = "") => `<div class="heroX"><div class="w split"><div><span class="soon"><i></i>App bald verfügbar · zum Start kostenlos</span><h1 class="H1">${h}</h1><p class="ld">${sub}</p><div class="fl g12 wr acts">${cta()}${extra}</div>${badges}</div>${stage}</div></div>`;
 
-/* ---------- Start ---------- */
-function start() {
-  const mq = NUMS.map(([n, t]) => `<b>${n}</b> ${t} &nbsp;·&nbsp; `).join("");
-  const body = `${hero('Die Börse ist laut. Wir bringen <span class="hl">Ordnung</span> hinein.', "Die Analyse-App für Aktien, ETFs und Vorsorge. Jede Zahl mit Quelle und einem Satz, der sie erklärt.", `<a class="cta o" href="${BASE}app/">App ansehen</a>`)}
+  /* ---------- Insights: in der Vorschau füllt site.js die Plätze, auf www steht der Auszug fest in der Seite ---------- */
+  const teaser = () => (c.www
+    ? `<a class="lv" href="${data.artikel[0].href}"><span class="eb">Neuester Artikel · ${datum(data.artikel[0].datum)}</span><b>${esc(data.artikel[0].titel)}</b></a>`
+    : `<a class="lv" href="/insights/" data-live-artikel><span class="eb">Neuester Artikel</span><b>Zu den neuesten Artikeln</b></a>`);
+  const artImg = (a, lazy = true) => (a.bild ? `<img src="${c.img}${a.bild}" alt="" width="${a.w}" height="${a.h}"${lazy ? ' loading="lazy"' : ""} decoding="async">` : "");
+  const feed = () => {
+    if (!c.www) return `<a class="art lead rv" href="/insights/" data-feed-lead><div class="cap"><span class="pill l">Insights</span><h2 class="H2">Zu den neuesten Artikeln</h2></div></a>
+<div class="bento c3 feed" data-feed="5" data-feed-skip="1"></div>`;
+    const [top, ...rest] = data.artikel;
+    const cards = rest.slice(0, 5);
+    return `<a class="art lead rv" href="${top.href}">${artImg(top, false)}<div class="cap"><span class="pill l">${esc(top.rubrik)} · ${datum(top.datum)}</span><h2 class="H2">${esc(top.titel)}</h2></div></a>
+<div class="bento c3 feed">${cards.map((a, i) => `<a class="art${i === 3 && cards.length > 4 ? " big" : ""} rv" href="${a.href}">${artImg(a)}<div><span class="pill${a.rubrik === "Tagesthema" ? " l" : ""}">${esc(a.rubrik)}</span><h3 class="H3">${esc(a.titel)}</h3><div class="dt">${datum(a.datum)}</div></div></a>`).join("")}</div>`;
+  };
+  const report = () => {
+    if (!c.www) return `<div class="t c-soft rep rv" data-live-report><div><div class="eb" data-live-report-kopf hidden></div><h3 class="H3" data-live-report-titel>Ausführliche Analysen einzelner Firmen.</h3></div><a class="cta s" href="/insights/reports/" data-live-report-link>Zu den Reports ${I.chev}</a></div>`;
+    const r = data.report;
+    return r
+      ? `<div class="t c-soft rep rv"><div><div class="eb">Neuester Aktienreport · ${datum(r.datum)}</div><h3 class="H3">${esc(r.titel)}</h3></div><a class="cta s" href="${r.href}">Report lesen ${I.chev}</a></div>`
+      : `<div class="t c-soft rep rv"><div><h3 class="H3">Der erste Aktienreport ist in Arbeit.</h3></div></div>`;
+  };
+  const insightsHome = c.www ? `${RESEARCH}/insights/` : "/insights/";
+  /* Überschrift des Hefts: erstes Wort schlicht, der Rest auf Neongrün (bei einem Wort alles). */
+  const heftTitel = () => { const [a, ...b] = heft.titel.split(" "); return b.length ? `${esc(a)} <span class="hl">${esc(b.join(" "))}</span>` : `<span class="hl">${esc(a)}</span>`; };
+  const heftBlock = () => `<a class="blk split rv" href="${page_("magazin/")}"><div class="cov">${cover(`Aktienmagazin Nr. ${heft.nr}`)}</div><div><span class="pill l">Aktienmagazin · jede Woche</span><h2 class="H2" style="margin:16px 0 12px"><span${live("data-mag-nr")}>Nr. ${heft.nr}</span><br><span${live("data-mag-titel")}>${esc(heft.titel)}</span></h2><p class="ld">Das Heft zur Börsenwoche. <span${live("data-mag-seiten")}>${heft.seiten}</span> Seiten, online lesen oder als PDF.</p><span class="cta l" style="margin-top:24px">Heft ansehen ${I.chev}</span></div></a>`;
+
+  /* ---------- Start ---------- */
+  function start() {
+    const mq = NUMS.map(([n, t]) => `<b>${n}</b> ${t} &nbsp;·&nbsp; `).join("");
+    const body = `${hero('Die Börse ist laut. Wir bringen <span class="hl">Ordnung</span> hinein.', "Die Analyse-App für Aktien, ETFs und Vorsorge. Jede Zahl mit Quelle und einem Satz, der sie erklärt.", `<a class="cta o" href="${page_("app/")}">App ansehen</a>`)}
 <div class="mq"><div><span>${mq}</span>${`<span aria-hidden="true">${mq}</span>`.repeat(3)}</div></div>
-<section class="sec"><div class="w"><div class="eb">Elf Bereiche, ein Konto</div><h2 class="H2 head">Was willst du wissen?</h2><div class="bento">${MODULES.map((m, i) => tile(m, [0, 4, 7, 11].includes(i))).join("")}</div></div></section>
-<section class="sec t0"><div class="w"><div class="blk split rv"><div class="duo">${dev("app-aktie.jpg", 240, "NVIDIA in der App")}${dev("app-module.jpg", 240, "NVIDIA: Analyse aus allen Modulen", "hide-m")}</div><div><div class="eb">Der Beweis · NVIDIA</div><h2 class="H2" style="margin:10px 0 14px">Eine Aktie. Sieben Blickwinkel.</h2><p class="ld">Andere Apps zeigen dir den Kurs. Vision Universe zeigt, was dahinter steckt, und sagt es in einem Satz.</p><div class="chips">${[["Zahlen", "„Wächst stark und verdient sehr gut.“"], ["Faktoren", "Verdient besser als 99 % aller US-Aktien."], ["Chart", "„Abwärtstrend“, mit Zonen laut Methode."]].map(([k, v]) => `<div class="chipq"><div class="eb">${k}</div><b>${v}</b></div>`).join("")}</div><p class="note">Beispiel NVIDIA, Datenstand 12.11.2026. Keine Anlageberatung, keine Empfehlung.</p></div></div></div></section>
-<section style="padding-bottom:70px"><div class="w"><div class="eb">Die App</div><h2 class="H2" style="margin:10px 0 18px">Wisch dich durch.</h2></div>${rail([["app-home.jpg", "Home"], ["app-discover.jpg", "Discover"], ["app-quant.jpg", "Quant"], ["app-supertrader.jpg", "Supertrader"], ["app-technical.jpg", "Technical"], ["app-fundamental.jpg", "Fundamental"], ["app-hedgefonds.jpg", "Hedgefonds"], ["app-news.jpg", "News"]], "Ansichten der App, seitlich blättern")}</section>
-<section class="sec t20"><div class="w split"><div class="rv"><div class="eb">Insights</div><h2 class="H2" style="margin:10px 0 14px">Immer das Neueste vorn.</h2><p class="ld">Jeden Werktag neue Artikel, jede Woche das Aktienmagazin, dazu ausführliche Aktienreports.</p><div class="fl g12 wr" style="margin-top:24px"><a class="cta" href="${BASE}news/">Zu den News ${I.chev}</a><a class="cta o" href="${BASE}magazin/">Aktienmagazin</a></div><a class="lv" href="/insights/" data-live-artikel><span class="eb">Neuester Artikel</span><b>Zu den neuesten Artikeln</b></a></div><a class="cov rv" href="${BASE}magazin/">${cover(`Aktienmagazin Nr. ${HEFT.nr}`)}</a></div></section>
-<section class="sec t0"><div class="w"><div class="eb">Unsere Haltung</div><h2 class="H2 head">Daten statt Meinung.</h2><div class="bento">${[["Jede Zahl mit Quelle", "c-alt"], ["Jede Zahl erklärt", "c-soft"], ["Keine Empfehlung", "c-ink"], ["Keine Provision", "c-lime"]].map(([t, c], i) => `<div class="t ${c} h190 end rv"><div class="num" aria-hidden="true">0${i + 1}</div><h3 class="H3 b">${t}</h3></div>`).join("")}</div></div></section>
-<section class="sec t0" id="fuer-wen"><div class="w"><div class="eb">Für wen</div><h2 class="H2 head">Wo stehst du gerade?</h2><div class="bento k1">${[["Sparplan ab 10 €", "„Ich fange gerade an.“", ["vorsorge", "discover", "fundamental"]], ["Privatanleger", "„Ich will meine Aktien verstehen.“", ["discover", "quant", "screener"]], ["Trader", "„Ich arbeite mit Charts und festen Regeln.“", ["technical", "supertrader", "elliott"]], ["Profi-Investoren", "„Ich will Tiefe: SEC-Daten, 13F, Backtests.“", ["fundamental", "hedgefonds", "quant"]]].map(([k, q, a]) => `<div class="t c-wht h230 rv"><div class="eb">${k}</div><h3 class="H3" style="margin-top:10px;font-size:26px;flex:1">${q}</h3><div class="fl g8">${a.map((id) => `<a class="icb" href="${modHref(id)}" aria-label="${MOD[id].name}" title="${MOD[id].name}">${ic(id, 24)}</a>`).join("")}</div></div>`).join("")}</div></div></section>`;
-  return page({ path: "", title: "Vision Universe · Die Börse ist laut. Wir bringen Ordnung hinein.", desc: "Die Analyse-App für Aktien, ETFs und Vorsorge: jede Aktie aus sieben Blickwinkeln, jede Zahl mit Quelle und einem Satz, der sie erklärt. Bald für iPhone und Android.", active: "start", body });
-}
+<section class="sec"><div class="w">${eb("Elf Bereiche, ein Konto")}<h2 class="H2 head">Was willst du wissen?</h2><div class="bento">${MODULES.map((m, i) => tile(m, [0, 4, 7, 11].includes(i))).join("")}</div></div></section>
+<section class="sec t0"><div class="w"><div class="blk split rv"><div class="duo">${dev("app-aktie.jpg", 240, "NVIDIA in der App")}${dev("app-module.jpg", 240, "NVIDIA: Analyse aus allen Modulen", "hide-m")}</div><div>${eb("Der Beweis · NVIDIA")}<h2 class="H2" style="margin:10px 0 14px">Eine Aktie. Sieben Blickwinkel.</h2><p class="ld">Andere Apps zeigen dir den Kurs. Vision Universe zeigt, was dahinter steckt, und sagt es in einem Satz.</p><div class="chips">${[["Zahlen", "„Wächst stark und verdient sehr gut.“"], ["Faktoren", "Verdient besser als 99 % aller US-Aktien."], ["Chart", "„Abwärtstrend“, mit Zonen laut Methode."]].map(([k, v]) => `<div class="chipq"><div class="eb">${k}</div><b>${v}</b></div>`).join("")}</div><p class="note">Beispiel NVIDIA, Datenstand 12.11.2026. Keine Anlageberatung, keine Empfehlung.</p></div></div></div></section>
+<section style="padding-bottom:70px"><div class="w">${eb("Die App")}<h2 class="H2" style="margin:10px 0 18px">Wisch dich durch.</h2></div>${rail([["app-home.jpg", "Home"], ["app-discover.jpg", "Discover"], ["app-quant.jpg", "Quant"], ["app-supertrader.jpg", "Supertrader"], ["app-technical.jpg", "Technical"], ["app-fundamental.jpg", "Fundamental"], ["app-hedgefonds.jpg", "Hedgefonds"], ["app-news.jpg", "News"]], "Ansichten der App, seitlich blättern")}</section>
+<section class="sec t20"><div class="w split"><div class="rv">${eb("Insights")}<h2 class="H2" style="margin:10px 0 14px">Immer das Neueste vorn.</h2><p class="ld">Jeden Werktag neue Artikel, jede Woche das Aktienmagazin, dazu ausführliche Aktienreports.</p><div class="fl g12 wr" style="margin-top:24px"><a class="cta" href="${page_("news/")}">Zu den News ${I.chev}</a><a class="cta o" href="${page_("magazin/")}">Aktienmagazin</a></div>${teaser()}</div><a class="cov rv" href="${page_("magazin/")}">${cover(`Aktienmagazin Nr. ${heft.nr}`)}</a></div></section>
+<section class="sec t0"><div class="w">${eb("Unsere Haltung")}<h2 class="H2 head">Daten statt Meinung.</h2><div class="bento">${[["Jede Zahl mit Quelle", "c-alt"], ["Jede Zahl erklärt", "c-soft"], ["Keine Empfehlung", "c-ink"], ["Keine Provision", "c-lime"]].map(([t, col], i) => `<div class="t ${col} h190 end rv"><div class="num" aria-hidden="true" data-n="0${i + 1}"></div><h3 class="H3 b">${t}</h3></div>`).join("")}</div></div></section>
+<section class="sec t0" id="fuer-wen"><div class="w">${eb("Für wen")}<h2 class="H2 head">Wo stehst du gerade?</h2><div class="bento k1">${[["Sparplan ab 10 €", "„Ich fange gerade an.“", ["vorsorge", "discover", "fundamental"]], ["Privatanleger", "„Ich will meine Aktien verstehen.“", ["discover", "quant", "screener"]], ["Trader", "„Ich arbeite mit Charts und festen Regeln.“", ["technical", "supertrader", "elliott"]], ["Profi-Investoren", "„Ich will Tiefe: SEC-Daten, 13F, Backtests.“", ["fundamental", "hedgefonds", "quant"]]].map(([k, q, a]) => `<div class="t c-wht h230 rv"><div class="eb">${k}</div><h3 class="H3" style="margin-top:10px;font-size:26px;flex:1">${q}</h3><div class="fl g8">${a.map((id) => `<a class="icb" href="${modHref(id)}" aria-label="${MOD[id].name}" title="${MOD[id].name}">${ic(id, 24)}</a>`).join("")}</div></div>`).join("")}</div>
+<div class="bento c3 links"><a class="t c-ink h0 rv" href="${page_("app/")}"><h3 class="H3 b">So sieht die App aus</h3><p class="q" style="margin-top:6px">Alle Bereiche im Überblick.</p></a><a class="t c-alt h0 rv" href="${page_("faq/")}"><h3 class="H3 b">Häufige Fragen</h3><p class="q" style="margin-top:6px">Gut zu wissen.</p></a><a class="t c-soft h0 rv" href="${page_("news/")}"><h3 class="H3 b">News</h3><p class="q" style="margin-top:6px">Jeden Werktag neu.</p></a></div></div></section>`;
+    return page({ path: "", title: "Vision Universe · Die Börse ist laut. Wir bringen Ordnung hinein.", desc: "Die Analyse-App für Aktien, ETFs und Vorsorge: jede Aktie aus sieben Blickwinkeln, jede Zahl mit Quelle und einem Satz, der sie erklärt. Bald für iPhone und Android.", active: "start", body, close: c.www ? signup() : final, form: c.www });
+  }
 
-/* ---------- App ---------- */
-function app() {
-  const body = `${hero('Eine App. <span class="hl">Jedes Gerät.</span>', "Vision Universe kommt für iPhone und Android und läuft im Browser auf Tablet und Desktop. Ein Konto, dieselbe Merkliste.")}
-<section class="sec"><div class="w"><div class="eb">Bis zum Start</div><h2 class="H2 head">Drei Schritte, dann bist du dabei.</h2><div class="bento c3">${[["1", "E-Mail eintragen", "Auf www.visionuniverse.de. Mehr brauchen wir nicht.", "c-lime"], ["2", "Bestätigen", "Ein Klick auf den Link in der Bestätigungsmail.", "c-alt"], ["3", "Bescheid bekommen", "Zum Start kommt eine E-Mail mit dem Link zur App.", "c-ink"]].map(([n, t, s, c]) => `<div class="t ${c} rv"><div class="step" aria-hidden="true">${n}</div><h3 class="H3 b">${t}</h3><p class="q${c === "c-lime" ? " k" : ""}" style="margin-top:6px">${s}</p></div>`).join("")}</div></div></section>
+  /* ---------- App ---------- */
+  function app() {
+    const body = `${hero('Eine App. <span class="hl">Jedes Gerät.</span>', "Vision Universe kommt für iPhone und Android und läuft im Browser auf Tablet und Desktop. Ein Konto, dieselbe Merkliste.")}
+<section class="sec"><div class="w">${eb("Bis zum Start")}<h2 class="H2 head">Drei Schritte, dann bist du dabei.</h2><div class="bento c3">${[["1", "E-Mail eintragen", "Auf www.visionuniverse.de. Mehr brauchen wir nicht.", "c-lime"], ["2", "Bestätigen", "Ein Klick auf den Link in der Bestätigungsmail.", "c-alt"], ["3", "Bescheid bekommen", "Zum Start kommt eine E-Mail mit dem Link zur App.", "c-ink"]].map(([n, t, s, col]) => `<div class="t ${col} rv"><div class="step" aria-hidden="true">${n}</div><h3 class="H3 b">${t}</h3><p class="q${col === "c-lime" ? " k" : ""}" style="margin-top:6px">${s}</p></div>`).join("")}</div></div></section>
 <section style="padding-bottom:80px"><div class="w"><h2 class="H2" style="margin-bottom:18px">Klein fürs Sofa. Groß fürs Durchleuchten.</h2><p class="ld">Auf dem iPhone eine Spalte mit Leiste unten. Auf Tablet und Desktop die volle Breite für Charts, Listen und Filter.</p></div>${rail([["app-home.jpg", "Home"], ["app-universe.jpg", "Alle Module"], ["app-discover.jpg", "Discover"], ["app-aktie.jpg", "Die Aktie"], ["app-module.jpg", "Alle Module an der Aktie"], ["app-quant.jpg", "Quant"], ["app-supertrader.jpg", "Supertrader"], ["app-ich.jpg", "Ich"]], "Ansichten der App, seitlich blättern", " mt20")}</section>
-<section class="sec t0" id="bereiche"><div class="w"><div class="eb">Alle Bereiche</div><h2 class="H2 head">Elf Bereiche, ein Konto.</h2><div class="bento">${MODULES.map((m) => tile(m)).join("")}</div></div></section>`;
-  return page({ path: "app/", title: "App · Vision Universe", desc: "Vision Universe kommt als App für iPhone und Android. App bald verfügbar.", active: "app", body });
-}
+<section class="sec t0" id="bereiche"><div class="w">${eb("Alle Bereiche")}<h2 class="H2 head">Elf Bereiche, ein Konto.</h2><div class="bento">${MODULES.map((m) => tile(m)).join("")}</div></div></section>`;
+    return page({ path: "app/", title: "App · Vision Universe", desc: "Vision Universe kommt als App für iPhone und Android. App bald verfügbar.", active: "app", body });
+  }
 
-/* ---------- Modulseite ---------- */
-function modulPage(m) {
-  const others = MODULES.filter((x) => x.group === m.group && x.id !== m.id).concat(MODULES.filter((x) => x.group !== m.group)).slice(0, 4);
-  const film = m.video
-    ? `<section class="sec"><div class="w split"><div class="rv"><div class="eb">In 30 Sekunden erklärt</div><h2 class="H2" style="margin:10px 0 14px">${m.name} im Video.</h2><p class="ld">Jeder Bereich hat einen kurzen Film. Ton an, zurücklehnen.</p></div><div class="vidw"><div class="vid rv" data-vid><video poster="${IMG}p-${m.video}.jpg" width="720" height="1280" controls playsinline preload="none" aria-label="${esc(m.name)} in 30 Sekunden erklärt"><source src="${STORIES}${m.video}-v1.mp4" type="video/mp4"></video><button type="button" class="play" hidden aria-label="${esc(m.name)} im Video abspielen">${I.play}</button></div></div></div></section>`
-    : '<div class="gap60"></div>';
-  const body = `<div class="w ptop40"><div class="mh ${m.color}"><div class="split"><div><div class="fl g12"><div class="icb xl">${micon(m, 36)}</div><div><div class="grp">${m.group}</div><b class="mname">${m.name}</b></div></div><h1 class="H1">${m.q}</h1><p class="mlead">${m.lead}</p><div class="fl g12 wr acts">${cta(m.color === "c-ink" ? "l" : "")}</div><div class="msoon">App bald verfügbar</div></div><div class="mvis"><div class="gfx hide-m" aria-hidden="true">${G[m.id]}</div>${dev(m.shot, 270, `${m.name} in der App`).replace(' loading="lazy"', "")}</div></div></div>
-<div class="bento c3 facts">${m.facts.map(([a, b], i) => `<div class="t ${["c-alt", "c-wht", "c-soft"][i]} h170 end rv"><div class="fact">${a}</div><b>${b}</b></div>`).join("")}</div></div>
+  /* ---------- Modulseite ---------- */
+  function modulPage(m) {
+    const others = MODULES.filter((x) => x.group === m.group && x.id !== m.id).concat(MODULES.filter((x) => x.group !== m.group)).slice(0, 4);
+    const film = m.video
+      ? `<section class="sec"><div class="w split"><div class="rv">${eb("In 30 Sekunden erklärt")}<h2 class="H2" style="margin:10px 0 14px">${m.name} im Video.</h2><p class="ld">Jeder Bereich hat einen kurzen Film. Ton an, zurücklehnen.</p></div><div class="vidw"><div class="vid rv" data-vid><video poster="${c.img}p-${m.video}.jpg" width="720" height="1280" controls playsinline preload="none" aria-label="${esc(m.name)} in 30 Sekunden erklärt"><source src="${c.film(m.video)}" type="video/mp4"></video><button type="button" class="play" hidden aria-label="${esc(m.name)} im Video abspielen">${I.play}</button></div></div></div></section>`
+      : '<div class="gap60"></div>';
+    const body = `<div class="w ptop40"><div class="mh ${m.color}"><div class="split"><div><div class="fl g12"><div class="icb xl">${micon(m, 36)}</div><div><div class="grp">${m.group}</div><b class="mname">${m.name}</b></div></div><h1 class="H1${Math.max(...m.q.split(/\s+/).map((w) => w.length)) >= 12 ? " lw" : ""}">${m.q}</h1><p class="mlead">${m.lead}</p><div class="fl g12 wr acts">${cta(m.color === "c-ink" ? "l" : "")}</div><div class="msoon">App bald verfügbar</div></div><div class="mvis"><div class="gfx hide-m" aria-hidden="true">${G[m.id]}</div>${dev(m.shot, 270, `${m.name} in der App`, "", false)}</div></div></div>
+<div class="bento c3 facts">${m.facts.map(([a, b], i) => `<div class="t ${["c-alt", "c-wht", "c-soft"][i]} h170 end rv"><div class="fact${a.length >= 10 ? " sm" : ""}">${a}</div><b>${b}</b></div>`).join("")}</div></div>
 ${film}
 <section class="sec t0"><div class="w"><h2 class="H2" style="margin-bottom:28px">Passt dazu.</h2><div class="bento">${others.map((x) => tile(x)).join("")}</div></div></section>`;
-  return page({ path: `module/${m.id}/`, title: `${m.name} · Vision Universe`, desc: `${m.q} ${m.lead}`, active: "module", body });
-}
+    return page({ path: `module/${m.id}/`, title: `${m.name} · Vision Universe`, desc: `${m.q} ${m.lead}`, active: "module", body });
+  }
 
-/* ---------- News: die Artikel kommen bei jedem Aufruf aus /insights/artikel.json (site.js) ---------- */
-const heftBlock = () => `<a class="blk split rv" href="${BASE}magazin/"><div class="cov">${cover(`Aktienmagazin Nr. ${HEFT.nr}`)}</div><div><span class="pill l">Aktienmagazin · jede Woche</span><h2 class="H2" style="margin:16px 0 12px"><span data-mag-nr>Nr. ${HEFT.nr}</span><br><span data-mag-titel>${HEFT.titel}</span></h2><p class="ld">Das Heft zur Börsenwoche. <span data-mag-seiten>${HEFT.seiten}</span> Seiten, online lesen oder als PDF.</p><span class="cta l" style="margin-top:24px">Heft ansehen ${I.chev}</span></div></a>`;
-function news() {
-  const body = `<div class="w ptop"><div class="fl g12 wr">${soon}<span class="pill l">Insights sind schon online</span></div><h1 class="H1" style="margin-top:20px">Was die Börse <span class="hl">heute</span> bewegt.</h1><p class="ld" style="margin-top:18px">Und was die Daten dazu sagen. Jeden Tag ein bis zwei Themen, recherchiert und mit Zahlen aus Vision Universe unterlegt.</p>
-<div class="fl g8 wr tabs"><a class="pill" href="#artikel">Artikel</a><a class="pill o" href="${BASE}magazin/">Aktienmagazin</a><a class="pill o" href="#reports">Aktienreports</a></div>
-<div id="artikel"><a class="art lead rv" href="/insights/" data-feed-lead><div class="cap"><span class="pill l">Insights</span><h2 class="H2">Zu den neuesten Artikeln</h2></div></a>
-<div class="bento c3 feed" data-feed="5" data-feed-skip="1"></div>
-<p class="more"><a class="cta o s" href="/insights/">Alle Artikel ${I.chev}</a></p></div></div>
+  /* ---------- News ---------- */
+  function news() {
+    const body = `<div class="w ptop"><div class="fl g12 wr">${soon}<span class="pill l">Insights sind schon online</span></div><h1 class="H1" style="margin-top:20px">Was die Börse <span class="hl">heute</span> bewegt.</h1><p class="ld" style="margin-top:18px">Und was die Daten dazu sagen. Jeden Tag ein bis zwei Themen, recherchiert und mit Zahlen aus Vision Universe unterlegt.</p>
+<div class="fl g8 wr tabs"><a class="pill" href="#artikel">Artikel</a><a class="pill o" href="${page_("magazin/")}">Aktienmagazin</a><a class="pill o" href="#reports">Aktienreports</a></div>
+<div id="artikel">${feed()}
+<p class="more"><a class="cta o s" href="${insightsHome}">Alle Artikel ${I.chev}</a></p></div></div>
 <section class="sec"><div class="w">${heftBlock()}</div></section>
-<section class="sec t0" id="reports"><div class="w"><div class="eb">Aktienreports</div><h2 class="H2" style="margin:10px 0 24px">Eine Firma, ein Heft.</h2><div class="t c-soft rep rv" data-live-report><div><div class="eb" data-live-report-kopf hidden></div><h3 class="H3" data-live-report-titel>Ausführliche Analysen einzelner Firmen.</h3></div><a class="cta s" href="/insights/reports/" data-live-report-link>Zu den Reports ${I.chev}</a></div></div></section>`;
-  return page({ path: "news/", title: "News · Vision Universe", desc: "Neue Artikel an jedem Werktag, das Aktienmagazin und Aktienreports von Vision Universe.", active: "news", body });
-}
+<section class="sec t0" id="reports"><div class="w">${eb("Aktienreports")}<h2 class="H2" style="margin:10px 0 24px">Eine Firma, ein Heft.</h2>${report()}</div></section>`;
+    return page({ path: "news/", title: "News · Vision Universe", desc: "Neue Artikel an jedem Werktag, das Aktienmagazin und Aktienreports von Vision Universe.", active: "news", body });
+  }
 
-/* ---------- Aktienmagazin: zeigt Heft Nr. 01 und führt zur echten Ausgabe unter /insights/magazin/ ---------- */
-function magazin() {
-  const body = `<div class="w ptop40"><div class="mh c-ink"><div class="split"><div><span class="pill l" data-mag-kopf>Aktienmagazin · Nr. ${HEFT.nr} · ${HEFT.datum}</span><h1 class="H1" style="margin-top:22px;font-size:clamp(46px,7.6vw,108px)" data-mag-h1>Die <span class="hl" style="color:var(--ink)">KI-Bremse</span></h1><p style="font-size:22px;color:#b9bec5;margin-top:18px;max-width:480px">Das Heft zur Börsenwoche. <span data-mag-seiten>${HEFT.seiten}</span> Seiten, online lesen oder als PDF.</p><div class="fl g12 wr" style="margin-top:28px"><a class="cta l" href="${HEFT.href}" data-mag-link>Heft lesen ${I.chev}</a><a class="cta g" href="${HEFT.href}vision-universe-aktienmagazin-${HEFT.nr}.pdf" data-mag-pdf>PDF</a></div><div class="stats">${[[`<span data-mag-seiten>${HEFT.seiten}</span>`, "Seiten"], ["1 ×", "pro Woche"], ["0 €", "zum Start"]].map(([a, b]) => `<div><div>${a}</div><b>${b}</b></div>`).join("")}</div></div><div class="cov x">${cover(`Titelseite Aktienmagazin Nr. ${HEFT.nr}`).replace(' loading="lazy"', "")}</div></div></div></div>
-<section style="padding:70px 0 40px"><div class="w"><div class="eb">Blick ins Heft</div><h2 class="H2" style="margin:10px 0 8px">Blättern.</h2></div><div class="rail mid" tabindex="0" role="group" aria-label="Seiten aus dem Heft, seitlich blättern">${HEFT.blick.map((n) => `<img class="pg" src="${HEFT.href}seiten/s${nn(n)}.jpg" alt="Aktienmagazin Nr. ${HEFT.nr}, Seite ${n}" width="1100" height="1556" loading="lazy" decoding="async" data-mag-seite="${n}">`).join("")}</div></section>
-<section class="sec t20"><div class="w"><div class="bento c3"><a class="t c-lime rv" href="${BASE}news/"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Artikel</h3><p class="q k">Jeden Werktag neu.</p></a><div class="t c-alt rv"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Nächste Ausgabe</h3><p class="q">Erscheint wöchentlich.</p></div><a class="t c-soft rv" href="${BASE}news/#reports"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Aktienreports</h3><p class="q">Ausführliche Analysen einzelner Firmen.</p></a></div></div></section>`;
-  return page({ path: "magazin/", title: "Aktienmagazin · Vision Universe", desc: "Das Aktienmagazin von Vision Universe: das Heft zur Börsenwoche, online lesen oder als PDF.", active: "magazin", dockActive: "news", body, main: ` data-mag="${HEFT.nr}"` });
-}
+  /* ---------- Aktienmagazin: zeigt das Heft und führt zur echten Ausgabe unter /insights/magazin/ ---------- */
+  function magazin() {
+    const lesen = c.www ? heft.href : HEFT.href;
+    const body = `<div class="w ptop40"><div class="mh c-ink"><div class="split"><div><span class="pill l"${live("data-mag-kopf")}>Aktienmagazin · Nr. ${heft.nr} · ${heft.datum}</span><h1 class="H1 big"${live("data-mag-h1")}>${heftTitel()}</h1><p class="mtext">Das Heft zur Börsenwoche. <span${live("data-mag-seiten")}>${heft.seiten}</span> Seiten, online lesen oder als PDF.</p><div class="fl g12 wr" style="margin-top:28px"><a class="cta l" href="${lesen}"${live("data-mag-link")}>Heft lesen ${I.chev}</a><a class="cta g" href="${heft.pdf}"${live("data-mag-pdf")}>PDF</a></div><div class="stats">${[[`<span${live("data-mag-seiten")}>${heft.seiten}</span>`, "Seiten"], ["1 ×", "pro Woche"], ["0 €", "zum Start"]].map(([a, b]) => `<div><div>${a}</div><b>${b}</b></div>`).join("")}</div></div><div class="cov x">${cover(`Titelseite Aktienmagazin Nr. ${heft.nr}`, false)}</div></div></div></div>
+<section style="padding:70px 0 40px"><div class="w">${eb("Blick ins Heft")}<h2 class="H2" style="margin:10px 0 8px">Blättern.</h2></div><div class="rail mid" tabindex="0" role="group" aria-label="Seiten aus dem Heft, seitlich blättern">${heft.blick.map((n) => `<img class="pg" src="${heft.seite(n)}" alt="Aktienmagazin Nr. ${heft.nr}, Seite ${n}" width="1100" height="1556" loading="lazy" decoding="async"${live(`data-mag-seite="${n}"`)}>`).join("")}</div></section>
+<section class="sec t20"><div class="w"><div class="bento c3"><a class="t c-lime rv" href="${page_("news/")}"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Artikel</h3><p class="q k">Jeden Werktag neu.</p></a><div class="t c-alt rv"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Nächste Ausgabe</h3><p class="q">Erscheint wöchentlich.</p></div><a class="t c-soft rv" href="${page_("news/")}#reports"><div class="icb">${ic("insights", 26)}</div><div class="sp"></div><h3 class="H3 b">Aktienreports</h3><p class="q">Ausführliche Analysen einzelner Firmen.</p></a></div></div></section>`;
+    return page({ path: "magazin/", title: "Aktienmagazin · Vision Universe", desc: "Das Aktienmagazin von Vision Universe: das Heft zur Börsenwoche, online lesen oder als PDF.", active: "magazin", dockActive: "news", body, main: c.www ? "" : ` data-mag="${HEFT.nr}"` });
+  }
 
-/* ---------- Fragen ---------- */
-function faq() {
-  const L = legal();
-  const body = `<div class="w ptop">${soon}<h1 class="H1" style="margin-top:20px">Gut zu <span class="hl">wissen.</span></h1><div class="split faqs"><div>${FAQ.map(([q, a], i) => `<details class="faq"${i < 4 ? " open" : ""}><summary><span>${q}</span><span class="pm" aria-hidden="true">+</span></summary><p>${a}</p></details>`).join("")}</div><div class="col g16 side"><div class="t c-lime h0"><h2 class="H3 b">Frage nicht dabei?</h2><p class="q k">Schreib uns über das Kontaktformular.</p><a class="cta s" href="${L.links.kontakt}">Schreib uns ${I.chev}</a></div><a class="t c-ink h0" href="${BASE}app/"><h2 class="H3 b">So sieht die App aus</h2><p class="q">Alle Bereiche im Überblick.</p></a></div></div></div>`;
-  return page({ path: "faq/", title: "Häufige Fragen · Vision Universe", desc: "Antworten auf die häufigsten Fragen zu Vision Universe.", active: "faq", body });
-}
+  /* ---------- Fragen ---------- */
+  function faq() {
+    const body = `<div class="w ptop">${soon}<h1 class="H1" style="margin-top:20px">Gut zu <span class="hl">wissen.</span></h1><div class="split faqs"><div>${FAQ.map(([q, a], i) => `<details class="faq"${i < 4 ? " open" : ""}><summary><span>${q}</span><span class="pm" aria-hidden="true">+</span></summary><p>${a}</p></details>`).join("")}</div><div class="col g16 side"><div class="t c-lime h0"><h2 class="H3 b">Frage nicht dabei?</h2><p class="q k">Schreib uns über das Kontaktformular.</p><a class="cta s" href="${KONTAKT}">Schreib uns ${I.chev}</a></div><a class="t c-ink h0" href="${page_("app/")}"><h2 class="H3 b">So sieht die App aus</h2><p class="q">Alle Bereiche im Überblick.</p></a></div></div></div>`;
+    return page({ path: "faq/", title: "Häufige Fragen · Vision Universe", desc: "Antworten auf die häufigsten Fragen zu Vision Universe.", active: "faq", body });
+  }
 
-export function buildSite() {
   return new Map([
     ["index.html", start()], ["app/index.html", app()],
     ...MODULES.map((m) => [`module/${m.id}/index.html`, modulPage(m)]),
@@ -283,10 +403,80 @@ export function buildSite() {
   ]);
 }
 
+/* Vorschau auf research (Standard). */
+export function buildSite() { return site(TARGETS.research, null); }
+/* www aus dem committeten Auszug (landing/site/insights.json) oder aus einem übergebenen. */
+export function buildWww(data = loadSnapshot()) { return site(TARGETS.www, data); }
+
+/* ---------- www: Auszug und Dateien unter landing/site/ auffrischen ---------- */
+/* Maße eines JPEG (für width/height im HTML). */
+function jpegSize(file) {
+  const b = readFileSync(file);
+  for (let i = 2; i < b.length - 9;) {
+    if (b[i] !== 0xff) { i++; continue; }
+    const m = b[i + 1];
+    if (m >= 0xc0 && m <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(m)) return [b.readUInt16BE(i + 7), b.readUInt16BE(i + 5)];
+    i += 2 + b.readUInt16BE(i + 2);
+  }
+  throw new Error(`Kein JPEG mit Maßen: ${file}`);
+}
+/* Nur öffentlich lesbare Insights-Adressen (research liefert /insights/ ohne Passwortmaske aus, scripts/access-gate/build.mjs PUBLIC_PREFIXES). */
+const publicInsights = (href) => /^\/insights\/[a-z0-9\-/._]+$/i.test(href || "");
+export function makeSnapshot() {
+  const liste = JSON.parse(readFileSync(join(ROOT, "insights/artikel.json"), "utf8"));
+  const artikel = liste.artikel.filter((a) => publicInsights(a.href)).slice(0, 6).map((a) => {
+    const bild = publicInsights(a.bild) && /\.jpe?g$/i.test(a.bild) && existsSync(join(ROOT, a.bild)) ? a.bild : null;
+    const [w, h] = bild ? jpegSize(join(ROOT, bild)) : [0, 0];
+    return { titel: a.titel, rubrik: a.rubrik, datum: a.datum, href: `${RESEARCH}${a.href}`, quelle: bild, bild: bild ? `news-${basename(bild)}` : null, w, h };
+  });
+  if (!artikel.length) throw new Error("insights/artikel.json enthält keinen Artikel.");
+  const h = liste.magazin.find((x) => publicInsights(x.href) && /^\d{2,3}$/.test(x.nr));
+  if (!h) throw new Error("insights/artikel.json enthält kein Heft.");
+  const blick = BLICK.filter((n) => n <= h.seiten && existsSync(join(ROOT, h.href, `seiten/s${nn(n)}.jpg`)));
+  const heft = { nr: h.nr, datum: h.datum, titel: h.titel, seiten: h.seiten, href: `${RESEARCH}${h.href}`, pdf: `${RESEARCH}${h.href}vision-universe-aktienmagazin-${h.nr}.pdf`, quelle: h.href, cover: `heft-${h.nr}-cover.jpg`, blick };
+  const r = (liste.reports || []).find((x) => publicInsights(x.href));
+  const report = r ? { titel: r.titel, datum: r.datum, href: `${RESEARCH}${r.href}` } : null;
+  return { schema: "vu-website-insights-1", note: "Auszug aus insights/artikel.json für www.visionuniverse.de. Erzeugt von products/website2/build.mjs --target www, nicht von Hand ändern.", stand: artikel[0].datum, artikel, heft, report };
+}
+/* Was unter landing/site/ liegen muss: Ziel → Quelle im Repo. */
+export function wwwAssets(snapshot) {
+  const files = new Map();
+  for (const f of readdirSync(join(ROOT, "website2/img"))) files.set(`img/${f}`, `website2/img/${f}`);
+  files.set("vid/app.mp4", "website2/vid/app.mp4");
+  files.set("img/badge-apple.svg", "website/img/badge-apple.svg");
+  files.set("img/badge-google.png", "website/img/badge-google.png");
+  files.set("product-icons.svg", "assets/product-icons.svg");
+  for (const a of snapshot.artikel) if (a.bild) files.set(`img/${a.bild}`, a.quelle.replace(/^\//, ""));
+  const q = snapshot.heft.quelle.replace(/^\//, "");
+  files.set(`img/${snapshot.heft.cover}`, `${q}cover.jpg`);
+  for (const n of new Set([2, 5, ...snapshot.heft.blick])) files.set(`img/heft-${snapshot.heft.nr}-s${nn(n)}.jpg`, `${q}seiten/s${nn(n)}.jpg`);
+  return files;
+}
+/* site.css und site.js für www: dieselben Dateien, nur die Schrift-Adresse relativ und ohne den Laufzeit-Abruf der Insights-Liste. */
+export function wwwCss() { return readFileSync(join(ROOT, "website2/site.css"), "utf8").replace("url(/assets/fonts/inter-latin.woff2)", "url(../assets/fonts/inter-latin.woff2)"); }
+export function wwwJs() { return readFileSync(join(ROOT, "website2/site.js"), "utf8").replace(/\n {2}\/\* LIVE:START[\s\S]*?LIVE:END \*\/\n/, "\n"); }
+export function syncWww() {
+  const snapshot = makeSnapshot();
+  const files = wwwAssets(snapshot);
+  for (const dir of ["img", "vid"]) {
+    mkdirSync(join(SITE, dir), { recursive: true });
+    for (const f of readdirSync(join(SITE, dir))) if (!files.has(`${dir}/${f}`)) rmSync(join(SITE, dir, f));
+  }
+  for (const [to, from] of files) copyFileSync(join(ROOT, from), join(SITE, to));
+  writeFileSync(join(SITE, "site.css"), wwwCss());
+  writeFileSync(join(SITE, "site.js"), wwwJs());
+  writeFileSync(SNAPSHOT, JSON.stringify(snapshot, null, 1) + "\n");
+  /* Liste für landing/scripts/build.mjs und die Prüfungen in landing/ (dort ist nur landing/ ausgecheckt). */
+  writeFileSync(join(SITE, "pages.json"), JSON.stringify({ schema: "vu-website-pages-1", note: "Erzeugt von products/website2/build.mjs --target www, nicht von Hand ändern.", pages: PAGES, modules: MODULES.map((m) => ({ id: m.id, name: m.name, video: m.video })), social: SOCIAL.map(([, , u]) => u), notice: legal().text, files: [...files.keys(), "site.css", "site.js", "product-icons.svg", "insights.json", "pages.json"].filter((v, i, a) => a.indexOf(v) === i).sort() }, null, 1) + "\n");
+  return snapshot;
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
-  const i = process.argv.indexOf("--out");
-  const dir = i > 0 ? process.argv[i + 1] : join(ROOT, "website2");
-  const site = buildSite();
-  for (const [p, html] of site) { mkdirSync(dirname(join(dir, p)), { recursive: true }); writeFileSync(join(dir, p), html); }
-  console.log(`website2: ${site.size} Seiten nach ${dir}`);
+  const arg = (n) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : null; };
+  const target = arg("--target") || "research", out = arg("--out");
+  if (!["research", "www"].includes(target)) throw new Error("Ziel: research oder www.");
+  const pages = target === "www" ? buildWww(out ? loadSnapshot() : syncWww()) : buildSite();
+  const dir = out || (target === "www" ? LANDING : join(ROOT, "website2"));
+  for (const [p, html] of pages) { mkdirSync(dirname(join(dir, p)), { recursive: true }); writeFileSync(join(dir, p), html); }
+  console.log(`website2 (${target}): ${pages.size} Seiten nach ${dir}`);
 }
