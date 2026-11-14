@@ -32,7 +32,7 @@
   }
 
   var PAGE = 25; /* Treffer in 25er-Schritten (Konzept FX05) */
-  var state = { query: Q.empty(), view: 'start', tab: 'screens', critTab: 'zahlen', screenId: null, stock: null, cmp: [], select: false, selected: [], shown: PAGE, error: null, loaded: false, preview: null, invalidLink: null, targetGroup: null };
+  var state = { query: Q.empty(), view: 'start', tab: 'screens', screenId: null, stock: null, cmp: [], select: false, selected: [], shown: PAGE, error: null, loaded: false, preview: null, invalidLink: null, targetGroup: null };
   var cache = { key: null, result: null };
   var mqDesk = window.matchMedia('(min-width:1024px)');
   var root = document.getElementById('sc-root');
@@ -126,9 +126,25 @@
     var t = F.format('perf1d', Math.abs(v)).replace(/^[+−-]/, '');
     return h('span', { class: 'vu-chg' + (v < 0 ? ' vu-chg--down' : v === 0 ? ' vu-chg--flat' : '') + (big ? ' vu-chg--big' : '') }, [h('span', { 'aria-hidden': 'true', text: v > 0 ? '▲' : v < 0 ? '▼' : '◆' }), ' ' + t]);
   }
-  function proMark() { return h('span', { class: 'vu-pro', text: 'PRO' }); }
-  function sectEl(title, link, onLink) {
-    return h('div', { class: 'vu-sect' }, [h('h2', { text: title }), link ? h('button', { class: 'sc-sect-link', type: 'button', onclick: onLink }, link) : null]);
+  function sectEl(title, link, onLink, help) {
+    return h('div', { class: 'vu-sect' }, [h('h2', {}, [title, help ? helpBtn(title, help) : null]), link ? h('button', { class: 'sc-sect-link', type: 'button', onclick: onLink }, link) : null]);
+  }
+  /* App-Konzept 2 (Owner-Freigabe 14.11.2026): keine Modi. Tiefe öffnet sich per Tipp im Fenster; Gruppen, ODER und
+     Ranking stehen auf der Seite, sobald ein Screen sie benutzt. „flach“ = eine UND-Liste, also der Satz. */
+  function isFlat(q) { return q.groups.length === 1 && q.groups[0].op !== 'OR' && q.logic !== 'OR'; }
+  /** „?“ (Baustein vu-q): Erklärsätze stehen einen Tipp entfernt im Fenster statt als Zeilen auf der Seite. */
+  function helpBtn(title, lines) {
+    return h('button', { class: 'vu-q sc-q', type: 'button', 'aria-label': 'Erklärung: ' + title, onclick: function (e) {
+      e.stopPropagation(); e.preventDefault();
+      var s = openSheet({ title: title }); s.body.append(h('div', { class: 'sc-helps' }, lines.map(helpLine)));
+    } }, '?');
+  }
+  /** „Weiter“-Karte am Seitenende (Baustein vu-next), hier mit h() gebaut, damit der Klick am Knoten hängt. */
+  function nextCard(o) {
+    var a = h('a', Object.assign({ class: 'vu-next', href: o.href, onclick: o.onclick || null }, o.attrs || {}), [
+      h('span', { class: 'vu-next__t' }, [h('span', { class: 'vu-ltag', text: o.eyebrow || 'Weiter' }), h('b', { text: o.title }), o.sub ? h('span', { text: o.sub }) : null]),
+      h('i', { 'aria-hidden': 'true' }, icon('next'))]);
+    return a;
   }
   function vuLogo(sym) { return h('span', { class: 'vu-logo-tile', 'aria-hidden': 'true', text: sym.replace(/[^A-Z0-9.]/g, '').slice(0, 5) }); }
   /** Live-Zahl, die erst mit dem vollen Universum feststeht (Vorschau: „…“). */
@@ -167,8 +183,24 @@
     opts = opts || {};
     var n = perspFields(p).length;
     return h('button', { class: 'sc-prow', type: 'button', onclick: function () { if (opts.onPick) opts.onPick(p); else openLibrary({ persp: p.id }); } }, [perspIcon(p, 40),
-      h('span', { class: 'sc-prow-main' }, [h('b', {}, [p.label, opts.pro !== false && p.pro ? ' ' : null, opts.pro !== false && p.pro ? proMark() : null]), h('span', { text: p.sub })]),
+      h('span', { class: 'sc-prow-main' }, [h('b', { text: p.label }), h('span', { text: p.sub })]),
       h('span', { class: 'sc-prow-n sc-num', text: String(n) }), icon('next')]);
+  }
+  /** Perspektiven als Leiste bis an den Rand: Symbol, Name, Zahl der Kriterien; hell markiert, wenn Regeln daraus aktiv sind.
+      Davor die Suche über alle Kriterien, in „Screen bauen“ zusätzlich „+ Filter“. Jeder Tipp öffnet das Kriterien-Fenster. */
+  function perspRail(opts) {
+    opts = opts || {};
+    var on = {};
+    Q.filters(state.query).forEach(function (f) { var p = perspOf(F.field(f.field)); on[p.id] = (on[p.id] || 0) + 1; });
+    var kids = [];
+    if (opts.add) kids.push(h('button', { class: 'sc-ppill sc-addfilter', type: 'button', 'aria-label': 'Filter hinzufügen', onclick: function () { openLibrary(); } }, [icon('plus'), h('span', { text: 'Filter' })]));
+    kids.push(h('button', { class: 'sc-ppill sc-pfind', type: 'button', 'aria-label': 'Kriterium suchen, z. B. ROIC, RSI, KGV …', title: 'Kriterium suchen', onclick: function () { openLibrary({ focus: true }); } }, icon('search')));
+    PERSP.forEach(function (p) {
+      var n = perspFields(p).length;
+      kids.push(h('button', { class: 'sc-prow sc-ppill' + (on[p.id] ? ' is-on' : ''), type: 'button', 'data-persp': p.id, title: p.label + ': ' + n + ' Kriterien' + (on[p.id] ? ', ' + on[p.id] + ' aktiv' : ''),
+        onclick: function () { openLibrary({ persp: p.id }); } }, [perspIcon(p, 26), h('b', { text: p.label }), h('small', { class: 'sc-num', text: on[p.id] ? on[p.id] + '/' + n : String(n) })]));
+    });
+    return h('div', { class: 'sc-plist sc-prail', role: 'group', 'aria-label': 'Kriterien nach Perspektive' }, kids);
   }
 
   /* Eigenschaften (Satz-Bauer) und fertige Ideen: eine Quelle, ein Wort = eine Regel (screener/engine/vocab.js). */
@@ -182,12 +214,10 @@
       if (k) kids.push(k === fs.length - 1 ? ' und ' : ', ');
       kids.push(h('button', { class: 'sc-gap', type: 'button', 'aria-label': ruleText(f) + ' bearbeiten', onclick: needsData(function () { openDetail(f.field, { filter: f }); }) }, ruleText(f)));
     });
-    if (!fs.length) kids.push(h('button', { class: 'sc-gap is-empty', type: 'button', onclick: function () { go({ view: 'build' }); window.scrollTo(0, 0); } }, '…'));
-    kids.push(' ', h('button', { class: 'sc-gap is-add', type: 'button', 'aria-label': 'Eigenschaft hinzufügen', onclick: function () {
-      if (state.view === 'build' && state.query.mode === 'simple') { var t = document.querySelector('.sc-props'); if (t && t.scrollIntoView) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
-      else if (state.view === 'build') openLibrary();
-      else { go({ view: 'build' }); window.scrollTo(0, 0); } } }, '+'));
-    return h('div', { class: 'sc-sentence' + (opts.small ? ' is-small' : '') }, kids);
+    if (!fs.length) kids.push(h('button', { class: 'sc-gap is-empty', type: 'button', 'aria-label': 'Erste Eigenschaft wählen', onclick: function () { if (state.view === 'build') openLibrary(); else { go({ view: 'build' }); window.scrollTo(0, 0); } } }, '…'));
+    /* „+“ öffnet überall das Kriterien-Fenster (App-Konzept 2: Tiefe per Tipp). */
+    kids.push(' ', h('button', { class: 'sc-gap is-add', type: 'button', 'aria-label': 'Eigenschaft hinzufügen', onclick: function () { openLibrary(); } }, '+'));
+    return h('div', { class: 'sc-sentence' + (opts.small ? ' is-small' : '') + (fs.length > 3 ? ' is-long' : '') }, kids);
   }
 
   // ------------------------------------------------------------ URL-Zustand
@@ -225,7 +255,9 @@
   function go(over, opts) {
     opts = opts || {};
     closeAllSheets().then(function () {
-      if (over.query) state.query = over.query;
+      /* Kein Modus-Schalter mehr: „mode=pro“ in der Adresse beschreibt nur noch, dass der Screen Gruppen, ODER, Ranking oder
+         ein Profi-Kriterium benutzt (Q.hasProOnly). Alte Links mit mode=pro öffnen weiter „Screen bauen“. */
+      if (over.query) { state.query = over.query; state.query.mode = Q.hasProOnly(state.query) ? 'pro' : 'simple'; }
       if (over.view) state.view = over.view;
       if (over.screenId !== undefined) state.screenId = over.screenId;
       if (over.cmp) state.cmp = over.cmp;
@@ -290,7 +322,7 @@
     var y0 = null;
     [head, sheet.firstChild].forEach(function (n) {
       n.addEventListener('touchstart', function (e) { y0 = e.touches[0].clientY; }, { passive: true });
-      n.addEventListener('touchmove', function (e) { if (y0 === null) return; var dy = e.touches[0].clientY - y0; if (dy > 0) sheet.style.transform = (mqDesk.matches ? '' : window.innerWidth >= 640 ? 'translate(-50%,' + dy + 'px)' : 'translateY(' + dy + 'px)'); }, { passive: true });
+      n.addEventListener('touchmove', function (e) { if (y0 === null) return; var dy = e.touches[0].clientY - y0; if (dy > 0) sheet.style.transform = (window.innerWidth >= 761 ? '' : 'translateY(' + dy + 'px)'); }, { passive: true });
       n.addEventListener('touchend', function (e) { var dy = (e.changedTouches[0].clientY - (y0 || 0)); sheet.style.transform = ''; y0 = null; if (dy > 90) closeTop(); });
     });
     setTimeout(function () { (opts.focus ? sheet.querySelector(opts.focus) : sheet).focus({ preventScroll: true }); }, 60);
@@ -342,32 +374,8 @@
     if (!e.detail || e.detail.product !== 'screener' || !DOCK_VIEW[e.detail.id]) return;
     e.preventDefault(); go({ view: dockView(e.detail.id) }); window.scrollTo(0, 0);
   });
-  function modeSeg(wide) {
-    var q = state.query;
-    function set(mode) {
-      if (mode === q.mode) return;
-      if (mode === 'simple' && Q.hasProOnly(q)) { confirmSimple(); return; }
-      var next = Q.clone(q); next.mode = mode; go({ query: next }, { replace: true, keepScroll: true });
-    }
-    return h('div', { class: 'vu-seg sc-modeseg' + (wide ? ' is-wide' : ''), role: 'group', 'aria-label': 'Modus' }, [
-      h('button', { type: 'button', 'aria-pressed': String(q.mode === 'simple'), onclick: function () { set('simple'); } }, 'Einfach'),
-      h('button', { type: 'button', 'aria-pressed': String(q.mode === 'pro'), onclick: function () { set('pro'); } }, 'Profi')]);
-  }
-  function confirmSimple() {
-    var s = openSheet({ title: 'Zum einfachen Modus wechseln?', foot: true });
-    s.body.append(h('p', { class: 'sc-field-desc', text: 'Gruppen, ODER-Verknüpfungen, das Ranking und Pro-Kriterien werden dabei entfernt. Alle übrigen Filter bleiben als eine UND-Liste erhalten.' }));
-    s.foot.append(h('button', { class: 'sc-btn sc-btn-secondary', type: 'button', onclick: closeTop }, 'Abbrechen'),
-      h('button', { class: 'sc-btn sc-btn-primary', type: 'button', onclick: function () { go({ query: Q.toSimple(state.query) }); } }, 'Wechseln'));
-  }
-  function bar(title, opts) {
-    opts = opts || {};
-    var row = h('div', { class: 'sc-bar-row' });
-    if (opts.back) row.append(iconBtn('back', 'Zurück', opts.back));
-    if (mqDesk.matches) row.append(h('div', { class: 'sc-brand', style: { flex: '1' } }, [h('h1', { text: 'Screener', style: { flex: 'none' } }), h('small', { text: 'Vision Universe' })]));
-    else row.append(h('h1', { text: title }));
-    (opts.right || []).forEach(function (n) { if (n) row.append(n); });
-    var b = h('div', { class: 'sc-bar' }, row);
-    return b;
+  function subHead(title, back) {
+    return h('div', { class: 'sc-subhead' }, [h('button', { class: 'vu-round', type: 'button', 'aria-label': 'Zurück', title: 'Zurück', onclick: back }, icon('back')), h('h1', { text: title })]);
   }
 
   // ------------------------------------------------------------ Render
@@ -387,8 +395,6 @@
     if (state.select && state.selected.length) frag.push(compareBar());
     root.replaceChildren.apply(root, frag);
     syncDock();
-    var b = main.querySelector('.sc-bar');
-    if (b) { var onS = function () { b.classList.toggle('is-stuck', window.scrollY > 4); }; onS(); window.onscroll = onS; }
     if (opts.keepScroll) window.scrollTo(0, y);
     if (state.stock && !sheets.some(function (s) { return s.stock; })) setTimeout(function () { openQuick(state.stock, { fromUrl: true }); }, 0);
   }
@@ -396,10 +402,10 @@
   document.addEventListener('vu-theme-change', function () { /* Farben haengen an CSS-Tokens */ });
 
   function loadingView() {
-    return h('div', {}, [bar('Screener'), h('div', { class: 'sc-hero' }, [h('div', { class: 'sc-skel', style: { height: '14px', width: '140px' } }), h('div', { class: 'sc-skel', style: { height: '48px', width: '80%', margin: '16px 0' } }), h('div', { class: 'sc-skel', style: { height: '96px' } })]), h('p', { class: 'sc-sr', role: 'status', text: 'Aktienuniversum wird geladen …' })]);
+    return h('div', {}, [h('h1', { class: 'sc-sr', text: 'Screener' }), h('div', { class: 'sc-hero2 sc-hero2--skel' }, [h('div', { class: 'sc-skel', style: { height: '12px', width: '140px' } }), h('div', { class: 'sc-skel', style: { height: '64px', width: '86%', margin: '14px 0' } }), h('div', { class: 'sc-skel', style: { height: '84px' } })]), h('p', { class: 'sc-sr', role: 'status', text: 'Aktienuniversum wird geladen …' })]);
   }
   function errorView() {
-    return h('div', {}, [bar('Screener'), h('div', { class: 'sc-state sc-card', style: { marginTop: '24px' } }, [h('h3', { text: 'Screener-Daten nicht verfügbar' }),
+    return h('div', {}, [h('h1', { class: 'sc-sr', text: 'Screener' }), h('div', { class: 'sc-state sc-card', style: { marginTop: '14px' } }, [h('h3', { text: 'Screener-Daten nicht verfügbar' }),
       h('p', { text: 'Das Aktienuniversum konnte nicht geladen werden. Es werden keine Ersatzdaten gezeigt. ' + (state.error === 'HTTP_404' ? 'Der aktuelle Datenstand wurde noch nicht veröffentlicht.' : 'Bitte prüfe deine Verbindung.') }),
       h('button', { class: 'sc-btn sc-btn-primary', type: 'button', onclick: boot }, 'Erneut versuchen')])]);
   }
@@ -416,88 +422,66 @@
 
   // ------------------------------------------------------------ START
   function viewStart(main) {
-    var i = info(), q = state.query, pro = q.mode === 'pro';
+    var i = info(), q = state.query, fs = Q.filters(q);
     if (state.invalidLink) main.append(invalidNotice());
-    /* Konzept „Verstehen. Finden.“ (FX04): Stand und Universum im Kopf, die Frage „Was suchst du?“, ein Satz. */
-    main.append(h('header', { class: 'sc-head' }, [
-      h('div', { class: 'sc-head-row' }, [h('p', { class: 'vu-ltag sc-universe' }, ['Screener · ', h('strong', { class: 'sc-num', text: nf(i.count) }), ' US-Aktien · Stand ' + dayDe(i.asOf)]), iconBtn('gear', 'Einstellungen', openSettings)]),
-      h('h1', { class: 'vu-lt', id: 'sc-product-title', text: pro ? 'Profi-Screener' : 'Was suchst du?' }),
-      pro ? null : h('p', { class: 'vu-lead', text: 'Sag in einem Satz, was dir wichtig ist. Die Trefferzahl siehst du sofort.' })]));
-    if (pro) main.append(modeSeg(true));
-    if (!pro) {
-      main.append(sentenceCard());
-      main.append(railHead('Fertige Ideen', IDEAS.length, 'Bewährte Muster als feste Regeln, jederzeit anpassbar.'), ideasRail(IDEAS));
-      main.append(railHead('Nach Perspektive', null, 'Dieselben Blickwinkel wie auf jeder Aktienseite.'), h('div', { class: 'sc-plist sc-pgrid' }, PERSP.map(function (p) { return perspTile(p); })));
+    /* App-Konzept 2: eine dunkle Kachel trägt Frage, Satz und Trefferzahl. Universum und Zahl der Kriterien stehen klein
+       darin, der Datenstand unter „Daten & Methodik“ am Seitenende (keine eigene Zeile am Seitenanfang). */
+    var hero = h('section', { class: 'vu-night sc-hero2', 'aria-label': 'Dein Satz' }, [
+      h('div', { class: 'sc-hero2-top' }, [h('h1', { class: 'vu-ltag', id: 'sc-product-title', text: 'Was suchst du?' }),
+        helpBtn('Was suchst du?', ['Sag in einem Satz, was dir wichtig ist. Die Trefferzahl siehst du sofort.']), iconBtn('gear', 'Einstellungen', openSettings)]),
+      sentence(q)]);
+    if (fs.length) {
+      hero.append(h('button', { class: 'vu-btn vu-btn--block sc-sent-cta', type: 'button', onclick: needsData(function () { go({ view: 'results' }); window.scrollTo(0, 0); }) }, [icon('list'), liveN(function () { return result().total; }), ' Treffer zeigen']),
+        h('p', { class: 'sc-sent-desc', text: fs.map(function (f) { return F.describeFilter(f); }).join(' · ') }));
     } else {
-      main.append(h('button', { class: 'vu-find sc-searchfake', type: 'button', onclick: function () { openLibrary({ focus: true }); } }, [icon('search'), h('span', { text: 'Kriterium suchen, z. B. ROIC, RSI, KGV …' }), h('i', { 'aria-hidden': 'true' }, icon('quality'))]));
-      var fs = Q.filters(q);
-      if (fs.length) main.append(ruleChips(fs, { remove: false }));
-      main.append(h('div', { class: 'vu-box sc-procount' }, [liveN(function () { return result().total; }), h('b', { text: 'von ' + nf(i.count) }), h('span', { class: 'sc-procount-r', text: fs.length === 1 ? '1 Regel' : fs.length + ' Regeln' }),
-        fs.length ? h('button', { class: 'sc-sect-link', type: 'button', onclick: function () { go({ view: 'build' }); window.scrollTo(0, 0); } }, 'Regeln bearbeiten') : null]));
-      main.append(sectEl('Alle ' + F.FIELDS.length + ' Kriterien'), h('div', { class: 'sc-plist' }, PERSP.map(function (p) { return perspRow(p, { pro: false }); })));
-      main.append(lockedCard(), h('div', { class: 'sc-gap-s' }, helpLine('Kriterien ohne echte Datenquelle bleiben sichtbar, aber gesperrt. Wir simulieren nichts.')));
+      /* Die fuenf haeufigsten Ergaenzungen direkt im Satz, je mit Trefferzahl (FX04). Tipp oeffnet das Filter-Sheet. */
+      hero.append(h('div', { class: 'sc-satz-c', role: 'list', 'aria-label': 'Ergänzungen' }, PROPS.slice(0, 5).map(function (p) {
+        return h('button', { class: 'sc-satz-o', type: 'button', role: 'listitem', 'data-prop': p.id, onclick: needsData(function () { openDetail(p.f.field, { draft: p.f, toResults: true }); }) }, [p.word, ' ', liveN(function () { return countOf(queryOf([p.f])); })]);
+      })));
     }
-    main.append(railHead('Deine Screens', store.screens().length || null, null, function () { go({ view: 'saved' }); window.scrollTo(0, 0); }));
+    hero.append(h('p', { class: 'sc-universe sc-num' }, [h('strong', { text: nf(i.count) }), ' US-Aktien · ' + F.FIELDS.length + ' Kriterien']));
+    main.append(hero, perspRail());
+    main.append(ideasSection(IDEAS));
     var list = store.screens().slice(0, 3);
+    main.append(railHead('Deine Screens', { n: store.screens().length || null, onAll: function () { go({ view: 'saved' }); window.scrollTo(0, 0); } }));
     if (!list.length) main.append(h('div', { class: 'vu-box sc-noscreens' }, [h('span', { class: 'sc-noscreens-i' }, icon('bookmark')), h('span', {}, [h('b', { text: 'Noch kein gespeicherter Screen' }), h('span', { text: 'Gespeichert sieht man beim nächsten Besuch, was neu dazukam.' })])]));
-    else main.append(h('div', { class: 'sc-list' }, list.map(savedRow)));
+    else main.append(h('div', { class: 'sc-list sc-srail' }, list.map(savedRow)));
     if (store.history().length) main.append(recentSection(3));
-    /* Profi-Modus und Europa bleiben erreichbar, leise unter den eigenen Screens. */
-    main.append(h('div', { class: 'sc-quietlinks' }, [pro ? null : h('button', { class: 'sc-link', type: 'button', onclick: function () { var next = Q.clone(state.query); next.mode = 'pro'; go({ query: next }, { replace: true }); } }, 'Profi-Screener: Gruppen, Gewichte, alle Kriterien →'),
-      h('a', { class: 'sc-link', href: '/screener/europa/', 'data-europe-link': '' }, 'Europäische Aktien: Kursveränderung, 52-Wochen-Hoch, 50-Tage-Linie →')]));
+    /* Gruppen, Gewichte und alle Kriterien stehen in „Screen bauen“ (kein eigener Modus); Europa als „Weiter“-Karte. */
+    main.append(h('div', { class: 'sc-gap-m' }, navLink(buildURL({ view: 'build' }), glyphHud('filter', 42), 'Eigenen Screen bauen', 'Gruppen, Gewichte, alle Kriterien', function (e) { e.preventDefault(); go({ view: 'build' }); window.scrollTo(0, 0); })),
+      nextCard({ href: '/screener/europa/', attrs: { 'data-europe-link': '' }, title: 'Europäische Aktien', sub: 'Kursveränderung, 52-Wochen-Hoch, 50-Tage-Linie' }));
   }
-  function dayDe(iso) { if (!iso) return '–'; var d = new Date(iso.length === 10 ? iso + 'T12:00:00Z' : iso); return ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'][d.getUTCDay()] + ' ' + d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' }); }
-  /** Schienen-Kopf (wie Discover): Titel, „Alle N“, ein Satz. */
-  function railHead(title, n, sub, onAll) {
-    return h('div', { class: 'sc-rh' }, [h('div', { class: 'sc-rh-t' }, [h('h2', { text: title }), onAll || n ? h('button', { class: 'sc-rh-all', type: 'button', onclick: onAll || function () { var r = document.querySelector('.sc-rail'); if (r) r.classList.toggle('is-all'); } }, [n ? 'Alle ' + n : 'Alle', icon('next')]) : null]),
-      sub ? h('p', { text: sub }) : null]);
+  /** Schienen-Kopf: Titel, „?“ für den Erklärsatz, „Alle N“. */
+  function railHead(title, o) {
+    o = o || {};
+    return h('div', { class: 'sc-rh' }, h('div', { class: 'sc-rh-t' }, [h('h2', {}, [title, o.help ? helpBtn(title, o.help) : null]),
+      o.onAll ? h('button', { class: 'sc-rh-all', type: 'button', onclick: o.onAll }, [o.n ? 'Alle ' + o.n : 'Alle', icon('next')]) : null]));
   }
-  /** Fertige Ideen als Schiene: Titel, Regel, Logos der ersten Treffer, Trefferzahl (live). */
-  function ideasRail(list) {
-    return h('div', { class: 'sc-rail' }, list.map(function (it) {
-      var q = queryOf(it.fs);
-      /* Logos der ersten Treffer: Kacheln ohne Text (das Bild setzt assets/vu-ui.js ein), damit die Vorschau aus der Kopfdatei
-         und die Ansicht mit dem vollen Universum denselben Text tragen (screener/tests/first-paint.test.mjs). */
-      var logos = h('span', { class: 'sc-idea-logos', 'aria-hidden': 'true' });
-      if (ds()) { try { adapter.screenSync(q, { limit: 4 }).order.slice(0, 4).forEach(function (i) { var t = ds().symbol(i); if (window.VUUI && window.VUUI.logo) window.VUUI.logo(t); logos.append(h('span', { class: 'vu-logo-tile', 'data-t': t })); }); } catch (e) { /* ohne Logos */ } }
-      return h('button', { class: 'sc-idea sc-idc' + (it.lime ? ' is-lime' : ''), type: 'button', 'data-idea': it.id, onclick: needsData(function () { go({ query: queryOf(it.fs, state.query.mode), view: 'results', screenId: null }); window.scrollTo(0, 0); }) }, [
-        h('b', { text: it.title }), h('small', { text: it.sub }), logos,
-        h('span', { class: 'sc-idea-n' }, [liveN(function () { return countOf(q); }), h('small', { text: ' Treffer' })])]);
-    }));
+  /** Eine fertige Idee als Kachel: Symbol, Trefferzahl gross (live), Titel, Regel, Logos der ersten Treffer. */
+  function ideaTile(it) {
+    var q = queryOf(it.fs);
+    /* Logos der ersten Treffer: Kacheln ohne Text (das Bild setzt assets/vu-ui.js ein), damit die Vorschau aus der Kopfdatei
+       und die Ansicht mit dem vollen Universum denselben Text tragen (screener/tests/first-paint.test.mjs). */
+    var logos = h('span', { class: 'sc-idea-logos', 'aria-hidden': 'true' });
+    if (ds()) { try { adapter.screenSync(q, { limit: 4 }).order.slice(0, 4).forEach(function (i) { var t = ds().symbol(i); if (window.VUUI && window.VUUI.logo) window.VUUI.logo(t); logos.append(h('span', { class: 'vu-logo-tile', 'data-t': t })); }); } catch (e) { /* ohne Logos */ } }
+    return h('button', { class: 'sc-idea sc-idc' + (it.lime ? ' is-lime' : ''), type: 'button', 'data-idea': it.id, onclick: needsData(function () { go({ query: queryOf(it.fs), view: 'results', screenId: null }); window.scrollTo(0, 0); }) }, [
+      it.world ? worldHud(it.world, 36) : glyphHud(it.glyph, 36),
+      h('span', { class: 'sc-idea-n' }, [liveN(function () { return countOf(q); }), h('small', { text: ' Treffer' })]),
+      h('b', { text: it.title }), h('small', { text: it.sub }), logos]);
   }
-  /** Perspektive als Kachel (3 × 2-Raster): Symbol, Name, Anzahl Kriterien. */
-  function perspTile(p) {
-    return h('button', { class: 'sc-prow sc-ptile', type: 'button', 'data-persp': p.id, onclick: function () { openLibrary({ persp: p.id }); } }, [perspIcon(p, 36), h('b', { text: p.label }), h('small', { text: perspFields(p).length + ' Kriterien' })]);
+  /** Fertige Ideen als Schiene bis an den Rand; „Alle N“ klappt sie zum Raster auf. */
+  function ideasSection(list) {
+    var rail = h('div', { class: 'sc-rail' }, list.map(ideaTile));
+    var sec = h('section', { class: 'sc-ideasec', 'aria-label': 'Fertige Ideen' }, [railHead('Fertige Ideen', { n: list.length, help: ['Bewährte Muster als feste Regeln, jederzeit anpassbar.'], onAll: function () { rail.classList.toggle('is-all'); } }), rail]);
+    return sec;
   }
-  function navLink(href, lead, title, sub) {
-    var a = h('a', { class: 'vu-navcard', href: href }, [lead, h('span', { class: 'vu-navcard__text' }, [h('b', { text: title }), sub ? h('span', { text: sub }) : null])]);
+  function navLink(href, lead, title, sub, onclick) {
+    var a = h('a', { class: 'vu-navcard', href: href, onclick: onclick || null }, [lead, h('span', { class: 'vu-navcard__text' }, [h('b', { text: title }), sub ? h('span', { text: sub }) : null])]);
     var go_ = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); go_.setAttribute('class', 'vu-navcard__go'); go_.setAttribute('viewBox', '0 0 24 24'); go_.setAttribute('aria-hidden', 'true'); go_.innerHTML = '<path d="M9 5l7 7-7 7"/>';
     a.append(go_);
     return a;
   }
-  /** Schwarze Karte mit dem Satz; S01 mit Knopf „N Treffer zeigen“. */
-  function sentenceCard() {
-    var q = state.query, fs = Q.filters(q);
-    var card = h('section', { class: 'vu-box vu-box--ink sc-sentcard', 'aria-label': 'Dein Satz' }, [h('p', { class: 'vu-ltag', text: 'Dein Satz' }), sentence(q)]);
-    if (fs.length) {
-      card.append(h('button', { class: 'vu-btn vu-btn--block sc-sent-cta', type: 'button', onclick: needsData(function () { go({ view: 'results' }); window.scrollTo(0, 0); }) }, [icon('list'), liveN(function () { return result().total; }), ' Treffer zeigen']),
-        h('p', { class: 'sc-sent-desc', text: fs.map(function (f) { return F.describeFilter(f); }).join(' · ') }));
-    } else {
-      /* Die fuenf haeufigsten Ergaenzungen direkt im Satz, je mit Trefferzahl (FX04). Tipp oeffnet das Filter-Sheet. */
-      card.append(h('div', { class: 'sc-satz-c', role: 'list', 'aria-label': 'Ergänzungen' }, PROPS.slice(0, 5).map(function (p) {
-        return h('button', { class: 'sc-satz-o', type: 'button', role: 'listitem', 'data-prop': p.id, onclick: needsData(function () { openDetail(p.f.field, { draft: p.f, toResults: true }); }) }, [p.word, ' ', liveN(function () { return countOf(queryOf([p.f])); })]);
-      })));
-    }
-    return card;
-  }
-  function ideasGrid(list) {
-    return h('div', { class: 'vu-grid sc-ideas' }, list.map(function (it) {
-      return h('button', { class: 'vu-box sc-idea' + (it.lime ? ' vu-box--lime' : ''), type: 'button', onclick: needsData(function () { go({ query: queryOf(it.fs, state.query.mode), view: 'results', screenId: null }); window.scrollTo(0, 0); }) }, [
-        it.world ? worldHud(it.world, 34) : glyphHud(it.glyph, 34),
-        h('span', { class: 'sc-idea-t' }, [h('b', { text: it.title }), h('small', { text: it.sub })]),
-        h('span', { class: 'sc-idea-n' }, [liveN(function () { return countOf(queryOf(it.fs)); }), h('small', { text: ' Treffer' })])]);
-    }));
-  }
+  function ideasGrid(list) { return h('div', { class: 'sc-rail is-all sc-ideas' }, list.map(ideaTile)); }
   /** Aktive Regeln als neongruene Chips (Tippen bearbeitet, × entfernt). */
   function ruleChips(fs, opts) {
     opts = opts || {};
@@ -531,17 +515,15 @@
       h('p', { class: 'sc-note', text: 'Fehlt ein Wert, erfüllt die Aktie das Kriterium nicht. Der Filter-Impact zeigt, wie viele Aktien dadurch herausfallen.' }));
   });
   function openSettings() {
-    var s = openSheet({ title: 'Einstellungen' }), q = state.query;
+    var s = openSheet({ title: 'Einstellungen' });
     function row(title, sub, control) { return h('div', { class: 'sc-toggle' }, [h('span', {}, [title, sub ? h('small', { text: sub }) : null]), control]); }
     var theme = VD.theme;
     var themeSeg = theme ? h('div', { class: 'sc-seg', role: 'group', 'aria-label': 'Darstellung' }) : h('a', { class: 'sc-link', href: '/discover/#/settings' }, 'Öffnen');
     var paintTheme = function () { if (!theme) return; themeSeg.replaceChildren.apply(themeSeg, [['light', 'Hell'], ['dark', 'Dunkel']].map(function (m) { return h('button', { type: 'button', 'aria-pressed': String(theme.mode() === m[0]), onclick: function () { theme.set(m[0]); paintTheme(); } }, m[1]); })); };
     paintTheme();
-    s.body.append(row('Modus', 'Einfach: wichtigste Kriterien · Pro: Gruppen, Ranking, alle Kriterien', modeSeg()),
-      row('Darstellung', 'Vision-Universe-Einstellung – gilt auch für Discover', themeSeg),
+    s.body.append(row('Darstellung', 'Vision-Universe-Einstellung – gilt auch für Discover', themeSeg),
       h('button', { class: 'sc-row', type: 'button', style: { marginTop: '14px' }, onclick: function () { closeTop().then(openUniverseInfo); } }, [icon('vu'), h('div', { class: 'sc-row-main' }, [h('b', { text: 'Daten & Methodik' }), h('span', { text: 'Universum, Quellen, Plausibilitätsprüfung' })]), icon('next')]),
       h('button', { class: 'sc-row', type: 'button', style: { marginTop: '8px' }, onclick: function () { store.clearHistory(); toast('Verlauf gelöscht'); } }, [icon('trash'), h('div', { class: 'sc-row-main' }, [h('b', { text: 'Verlauf löschen' }), h('span', { text: 'Zuletzt verwendete Screens auf diesem Gerät' })])]));
-    void q;
   }
   function invalidNotice() {
     return h('div', { class: 'sc-card', role: 'alert', style: { padding: '14px 16px', margin: '12px 0', borderColor: 'var(--sc-warn)' } }, [h('b', { text: 'Dieser Link enthält ungültige Kriterien.' }),
@@ -568,9 +550,9 @@
   }
   function savedRow(s) {
     var runs = s.runs || [], last = runs[runs.length - 1], d = runs.length === 2 ? E.diff(runs[0].symbols, runs[1].symbols) : null;
-    return h('a', { class: 'sc-row', href: location.pathname + '?' + Q.toParams(s.query).toString() + '&view=results&screen=' + s.id, onclick: function (e) { e.preventDefault(); openParams(Q.toParams(s.query).toString(), s.id); } }, [
-      h('div', { class: 'sc-row-main' }, [h('b', { text: s.name }), h('span', { text: s.description || screenLabel(s.query) })]),
-      h('div', { class: 'sc-row-side' }, [last ? h('div', { class: 'sc-num', text: nf(last.count) + ' Treffer' }) : null, d ? h('div', { class: 'sc-num', text: '+' + d.added.length + ' / −' + d.removed.length }) : null])]);
+    return h('a', { class: 'sc-row sc-stile', href: location.pathname + '?' + Q.toParams(s.query).toString() + '&view=results&screen=' + s.id, onclick: function (e) { e.preventDefault(); openParams(Q.toParams(s.query).toString(), s.id); } }, [
+      h('div', { class: 'sc-row-side' }, [last ? h('div', { class: 'sc-num sc-stile-n', text: nf(last.count) + ' Treffer' }) : null, d ? h('div', { class: 'sc-num sc-stile-d', text: '+' + d.added.length + ' / −' + d.removed.length }) : null]),
+      h('div', { class: 'sc-row-main' }, [h('b', { text: s.name }), h('span', { text: s.description || screenLabel(s.query) })])]);
   }
 
   // ------------------------------------------------------------ BUILD
@@ -596,10 +578,10 @@
   }
   function stack(r, only) {
     var q = state.query, wrap = h('div', { class: 'sc-stack' });
-    if (q.mode === 'simple') {
+    if (isFlat(q)) {
       var fs = only || Q.filters(q);
       fs.forEach(function (f) { wrap.append(chip(f, r)); });
-      wrap.append(h('button', { class: 'sc-btn sc-btn-secondary sc-btn-block', type: 'button', onclick: function () { openLibrary(); } }, [icon('plus'), 'Filter hinzufügen']));
+      wrap.append(h('button', { class: 'sc-btn sc-btn-secondary sc-btn-block sc-addfilter', type: 'button', onclick: function () { openLibrary(); } }, [icon('plus'), 'Filter hinzufügen']));
       return wrap;
     }
     q.groups.forEach(function (g, gi) {
@@ -633,17 +615,18 @@
       var label = st.kind === 'start' ? 'Alle US-Aktien' : st.label;
       var sub = def ? perspOf(def).label + ' · ' + F.group(def.group).label : st.kind === 'group' ? (st.standalone ? 'unabhängig von den anderen Gruppen' : 'Gruppe') : null;
       var meta = st.kind !== 'start' && st.lost ? '−' + nf(st.lost) + (st.missing ? ' · davon ' + nf(st.missing) + ' ohne Angabe' : '') : null;
+      var pf = f ? r.perFilter[f.id] : null;
       var row = h('li', { class: 'sc-tl' + (last ? ' is-final' : '') + (st.kind === 'start' ? ' is-start' : '') }, [
         h('div', { class: 'sc-tl-top' }, [h('div', { class: 'sc-tl-main' }, [h('span', { class: 'sc-tl-label' }, [st.kind === 'start' ? null : h('span', { class: 'sc-muted', text: st.kind === 'union' ? '' : 'und ' }), label]),
-          sub ? h('small', { text: sub + (meta ? ' · ' + meta : '') }) : meta ? h('small', { text: meta }) : null]), h('b', { class: 'sc-num', text: nf(st.count) })]),
+          sub ? h('small', { text: sub + (meta ? ' · ' + meta : '') }) : meta ? h('small', { text: meta }) : null,
+          pf ? h('small', { class: 'sc-tl-alone sc-num', text: nf(pf.pass) + ' Aktien erfüllen allein' + (pf.missing ? ' · ' + nf(pf.missing) + ' ohne Daten' : '') }) : null]), h('b', { class: 'sc-num', text: nf(st.count) })]),
         h('div', { class: 'vu-meter sc-tl-bar' + (last ? ' vu-meter--lime' : '') }, h('i', { style: { '--v': String(Math.max(1.5, share)) } }))]);
       if (f) { row.setAttribute('tabindex', '0'); row.setAttribute('role', 'button'); row.setAttribute('aria-label', label + ' bearbeiten'); row.addEventListener('click', function () { openDetail(f.field, { filter: f }); }); row.addEventListener('keydown', function (e) { if (e.key === 'Enter') openDetail(f.field, { filter: f }); }); }
       card.append(row);
     });
-    return h('section', { class: 'sc-section' }, [sectEl('Deine Regeln', '+ Regel', function () { openLibrary(); }), h('div', { class: 'vu-box sc-funnelbox' }, card),
-      h('div', { class: 'sc-gap-s' }, helpLine('Der Trichter zeigt, welche Regel am meisten aussortiert. So siehst du sofort, wo du lockern kannst.'))]);
+    return h('section', { class: 'sc-section' }, [sectEl('Deine Regeln', '+ Regel', function () { openLibrary(); }, ['Der Trichter zeigt, welche Regel am meisten aussortiert. So siehst du sofort, wo du lockern kannst.']), h('div', { class: 'vu-box sc-funnelbox' }, card)]);
   }
-  /** S02 Einfach: sechs Eigenschaften in Alltagssprache mit Zielzahl („→ N“ = Treffer, wenn hinzugefuegt). */
+  /** Sechs Eigenschaften in Alltagssprache als Kacheln: Zielzahl groß („→ N“ = Treffer, wenn hinzugefügt), Balken = Anteil der heutigen Treffer. */
   function propsList(r) {
     var q = state.query, fs = Q.filters(q);
     var box = h('div', { class: 'sc-props' });
@@ -654,39 +637,22 @@
       else { try { n = countOf(Q.addFilter(q, p.f, q.groups[q.groups.length - 1].id).query); } catch (e) { n = null; } }
       box.append(h('button', { class: 'sc-prop' + (on ? ' is-on' : ''), type: 'button', 'aria-pressed': String(!!on),
         onclick: function () { if (on) go({ query: Q.removeFilter(state.query, on.id) }, { keepScroll: true }); else go({ query: Q.addFilter(state.query, p.f, state.query.groups[state.query.groups.length - 1].id).query }, { keepScroll: true }); } }, [
-        h('span', { class: 'sc-prop-check', 'aria-hidden': 'true' }, on ? icon('check') : null),
+        h('span', { class: 'sc-prop-top' }, [h('span', { class: 'sc-prop-n sc-num', title: on ? 'erfüllen diese Eigenschaft allein' : 'Treffer, wenn hinzugefügt', text: n === null ? '–' : (on ? '' : '→ ') + nf(n) }),
+          h('span', { class: 'sc-prop-check', 'aria-hidden': 'true' }, on ? icon('check') : null)]),
         h('span', { class: 'sc-prop-main' }, [h('b', { text: p.word }), h('small', { text: p.sub })]),
-        h('span', { class: 'sc-prop-n sc-num', title: on ? 'erfüllen diese Eigenschaft allein' : 'Treffer, wenn hinzugefügt', text: n === null ? '–' : (on ? '' : '→ ') + nf(n) })]));
+        !on && n !== null && r.total ? h('span', { class: 'vu-meter sc-prop-bar', 'aria-hidden': 'true' }, h('i', { style: { '--v': String(Math.max(n ? 2 : 0, n / r.total * 100)) } })) : null]));
     });
     return box;
   }
-  /** S02 Profi: Kriterien nach Perspektive (Reiter) mit „aktiv“ / „+“. */
-  function criteriaTabs() {
-    var q = state.query, active = {};
-    Q.filters(q).forEach(function (f) { active[f.field] = f; });
-    var p = perspById(state.critTab) || PERSP[1];
-    var tabs = h('div', { class: 'vu-chips sc-ptabs', role: 'tablist', 'aria-label': 'Perspektiven' }, PERSP.map(function (x) {
-      return h('button', { class: 'vu-chip', type: 'button', role: 'tab', 'aria-selected': String(x === p), 'aria-pressed': String(x === p), onclick: function () { state.critTab = x.id; render({ keepScroll: true }); } }, [x.world ? worldHud(x.world, 18) : icon(x.glyph), x.label]);
-    }));
-    var list = h('div', { class: 'sc-critlist' });
-    var lastGroup = null;
-    perspFields(p).forEach(function (f) {
-      if (f.group !== lastGroup && p.groups && p.groups.length > 1) { list.append(h('p', { class: 'sc-when', text: F.group(f.group).label })); lastGroup = f.group; }
-      var usable = f.available && E.isAvailable(ds(), f.id);
-      list.append(h('button', { class: 'sc-crit' + (active[f.id] ? ' is-active' : ''), type: 'button', onclick: function () { openDetail(f.id, { filter: active[f.id] || null }); } }, [
-        h('b', { text: f.label }),
-        !usable ? verdictEl('none', lockShort(f)) : active[f.id] ? h('span', { class: 'sc-on-pill', text: 'aktiv' }) : h('span', { class: 'sc-crit-add', 'aria-hidden': 'true' }, icon('plus'))]));
-    });
-    (p.soon || []).forEach(function (x) { list.append(h('div', { class: 'sc-crit is-soon' }, [h('span', {}, [h('b', { text: x[0] }), h('small', { text: x[1] })]), verdictEl('none', 'bald')])); });
-    return h('section', { class: 'sc-section' }, [sectEl('Kriterien'), tabs, list]);
-  }
+  var PROPS_HELP = ['Nettomarge: wie viel von 100 $ Umsatz am Ende als Gewinn bleibt. 15 % heißt 15 $.', 'KGV: wie viele Jahresgewinne du für die Aktie zahlst. Kleiner heißt günstiger.', '„→ 80“ heißt: Mit dieser Eigenschaft blieben 80 Treffer übrig.'];
+  function propsSection(r) { return h('section', { class: 'sc-section' }, [sectEl('Was ist dir noch wichtig?', null, null, PROPS_HELP), propsList(r)]); }
   function stackHead() {
     var n = Q.count(state.query);
     if (!n) return null;
     return h('div', { class: 'sc-section-head', style: { margin: '18px 0 10px' } }, [h('h2', {}, ['Aktive Filter ', h('span', { class: 'sc-count-badge sc-num', text: String(n) })]),
-      h('button', { class: 'sc-link', type: 'button', onclick: function () { go({ query: Q.empty({ mode: state.query.mode }), screenId: null }); toast('Alle Filter entfernt'); } }, 'Alle löschen')]);
+      h('button', { class: 'sc-link', type: 'button', onclick: function () { go({ query: Q.empty(), screenId: null }); toast('Alle Filter entfernt'); } }, 'Alle löschen')]);
   }
-  function ranking() {
+  function ranking(bare) {
     var q = state.query, card = h('div', { class: 'sc-card sc-weights' });
     var sw = h('input', { type: 'checkbox', class: 'sc-switch', role: 'switch', checked: q.ranking.enabled ? true : null, 'aria-label': 'Gewichtetes Ranking aktivieren',
       onchange: function () { var n = Q.clone(state.query); n.ranking.enabled = this.checked; n.sort = this.checked ? { field: 'match', dir: 'desc' } : { field: 'marketCap', dir: 'desc' }; go({ query: n }, { replace: true, keepScroll: true }); } });
@@ -707,7 +673,7 @@
       card.append(h('p', { class: 'sc-note', text: 'Match = gewichteter Durchschnitt der Perzentile (0–100) im Gesamtuniversum. Fehlt ein Bereich, zählt er nicht mit; die Karte weist das aus.' }));
       paint();
     }
-    return h('section', { class: 'sc-section' }, [h('div', { class: 'sc-section-head' }, h('h2', { text: 'Ranking' })), card]);
+    return bare ? card : h('section', { class: 'sc-section' }, [h('div', { class: 'sc-section-head' }, h('h2', { text: 'Ranking' })), card]);
   }
   /** Ein Regler aendert sich, die anderen tragen den Rest anteilig: Summe bleibt 100. */
   function rebalance(W, key, v) {
@@ -723,34 +689,42 @@
     return h('section', { class: 'sc-section sc-buildact' }, [
       h('button', { class: 'vu-btn vu-btn--line vu-btn--block', type: 'button', onclick: openSave }, [icon('saved'), saved ? 'Änderungen speichern' : 'Screen speichern']),
       saved ? h('p', { class: 'sc-sub', text: 'Gespeichert als „' + saved.name + '“ auf diesem Gerät' }) : null,
-      Q.count(q) ? h('button', { class: 'sc-sect-link sc-reset', type: 'button', onclick: function () { go({ query: Q.empty({ mode: q.mode }), screenId: null }); toast('Alle Regeln entfernt'); } }, [icon('reset'), 'Alle Regeln löschen']) : null]);
+      Q.count(q) ? h('button', { class: 'sc-sect-link sc-reset', type: 'button', onclick: function () { go({ query: Q.empty(), screenId: null }); toast('Alle Regeln entfernt'); } }, [icon('reset'), 'Alle Regeln löschen']) : null]);
+  }
+  /** Verknüpfung einer einzelnen Gruppe und „+ Gruppe“ (bisher nur im Profi-Modus sichtbar). */
+  function linkRow() {
+    return h('div', { class: 'sc-onegroup' }, [h('span', { text: 'Regeln verknüpft mit' }), opToggle(state.query.groups[0].op, 'Verknüpfung der Regeln', function (op) { var n = Q.clone(state.query); n.groups[0].op = op; go({ query: n }, { replace: true, keepScroll: true }); }),
+      h('button', { class: 'vu-btn vu-btn--line vu-btn--sm', type: 'button', onclick: function () { go({ query: Q.addGroup(state.query) }, { keepScroll: true }); } }, [icon('plus'), 'Gruppe'])]);
+  }
+  /** Werkzeuge, die der Screen noch nicht benutzt, als Kacheln: ein Tipp öffnet das Fenster. Benutzte stehen auf der Seite. */
+  function tools() {
+    var q = state.query, kids = [];
+    function tile(label, value, open) { return h('button', { class: 'vu-tap sc-tooltile', type: 'button', 'aria-haspopup': 'dialog', onclick: open }, [h('span', { class: 'vu-ltag', text: label }), h('b', { text: value }), icon('next')]); }
+    if (isFlat(q)) kids.push(tile('Gruppen und Verknüpfung', 'UND', function () { var s = openSheet({ title: 'Gruppen und Verknüpfung' }); s.body.append(linkRow()); }));
+    if (!q.ranking.enabled) kids.push(tile('Ranking', 'Aus', function () { var s = openSheet({ title: 'Ranking' }); s.body.append(ranking(true)); }));
+    return kids.length ? h('section', { class: 'sc-section sc-tools', 'aria-label': 'Gruppen, Verknüpfung und Ranking' }, kids) : null;
+  }
+  function groupsSection(r) {
+    var q = state.query;
+    return h('section', { class: 'sc-section' }, [h('div', { class: 'vu-sect' }, [h('h2', { text: 'Gruppen und Verknüpfung' }),
+      h('span', { class: 'sc-sect-note', text: q.groups.length > 1 ? (q.logic === 'OR' ? 'ODER' : 'UND') + ' zwischen Gruppen' : (q.groups[0].op === 'OR' ? 'ODER' : 'UND') + '-Verknüpfung' })]),
+      q.groups.length > 1 ? stack(r) : linkRow()]);
   }
   function viewBuild(main) {
-    var r = result(), q = state.query, pro = q.mode === 'pro', saved = state.screenId && store.get(state.screenId);
-    main.append(h('div', { class: 'sc-head-row sc-buildhead' }, [h('p', { class: 'vu-ltag', text: 'Screen bauen · ' + (pro ? 'Profi' : 'Einfach') + (saved ? ' · ' + saved.name : '') }), modeSeg()]));
+    var r = result(), q = state.query, saved = state.screenId && store.get(state.screenId), fs = Q.filters(q), flat = isFlat(q);
     if (state.invalidLink) main.append(invalidNotice());
-    if (!pro) {
-      main.append(h('div', { class: 'vu-box vu-box--ink sc-sentcard is-sticky' }, sentence(q, { small: true })));
-      main.append(counter(r));
-      main.append(sectEl('Was ist dir noch wichtig?'), propsList(r));
-      main.append(h('div', { class: 'sc-helps' }, [helpLine('Nettomarge: wie viel von 100 $ Umsatz am Ende als Gewinn bleibt. 15 % heißt 15 $.'),
-        helpLine('KGV: wie viele Jahresgewinne du für die Aktie zahlst. Kleiner heißt günstiger.'),
-        helpLine('„→ 80“ heißt: Mit dieser Eigenschaft blieben 80 Treffer übrig.')]));
-      var other = Q.filters(q).filter(function (f) { return !propOf(f); });
-      main.append(sectEl(other.length ? 'Weitere Regeln' : 'Weitere Kriterien'));
-      main.append(stack(r, other));
-      main.append(sectEl('Oder nach Perspektive wählen'), h('div', { class: 'sc-plist' }, PERSP.filter(function (p) { return !p.pro; }).map(function (p) { return perspRow(p); })));
-    } else {
-      main.append(counter(r, { short: true, right: q.groups.length > 1 ? (q.logic === 'OR' ? 'ODER' : 'UND') + ' zwischen Gruppen' : (q.groups[0].op === 'OR' ? 'ODER' : 'UND') + '-Verknüpfung' }));
-      if (Q.count(q)) main.append(impact(r));
-      else main.append(sectEl('Deine Regeln', '+ Regel', function () { openLibrary(); }), h('div', { class: 'vu-blank' }, [verdictEl('none', 'Keine Regel'), h('span', { text: 'Wähle unten ein Kriterium. Jede Regel zeigt sofort, wie viele Aktien übrig bleiben.' })]));
-      main.append(sectEl('Gruppen und Verknüpfung'));
-      if (q.groups.length > 1) main.append(stack(r));
-      else main.append(h('div', { class: 'sc-onegroup' }, [h('span', { text: 'Regeln verknüpft mit' }), opToggle(q.groups[0].op, 'Verknüpfung der Regeln', function (op) { var n = Q.clone(state.query); n.groups[0].op = op; go({ query: n }, { replace: true, keepScroll: true }); }),
-        h('button', { class: 'vu-btn vu-btn--line vu-btn--sm', type: 'button', onclick: function () { go({ query: Q.addGroup(state.query) }, { keepScroll: true }); } }, [icon('plus'), 'Gruppe'])]));
-      main.append(criteriaTabs());
-      main.append(ranking());
-    }
+    /* Eine dunkle Kachel: der Satz (eine UND-Liste) oder die Regeln als Chips (Gruppen/ODER), darunter die Trefferzahl mit Anteilsbalken. */
+    main.append(h('section', { class: 'vu-night sc-hero2 sc-buildhero', 'aria-label': 'Dein Screen' }, [
+      h('div', { class: 'sc-hero2-top' }, h('h1', { class: 'vu-ltag', text: 'Screen bauen' + (saved ? ' · ' + saved.name : '') })),
+      flat ? sentence(q, { small: true }) : ruleChips(fs, { remove: false }),
+      counter(r)]));
+    main.append(perspRail({ add: true }));
+    if (!fs.length) main.append(h('div', { class: 'vu-blank sc-gap-m' }, [verdictEl('none', 'Keine Regel'), h('span', { text: 'Wähle unten ein Kriterium. Jede Regel zeigt sofort, wie viele Aktien übrig bleiben.' })]));
+    main.append(propsSection(r));
+    if (fs.length) main.append(impact(r));
+    if (!flat) main.append(groupsSection(r));
+    if (q.ranking.enabled) main.append(ranking());
+    var t = tools(); if (t) main.append(t);
     main.append(buildActions());
     rememberRun(r);
   }
@@ -763,14 +737,15 @@
 
   // ------------------------------------------------------------ DESKTOP
   function viewDesktopWorkspace(main) {
-    var r = result();
-    main.append(bar('Screener', { right: [modeSeg()] }));
+    var r = result(), q = state.query;
+    main.append(h('h1', { class: 'sc-sr', text: 'Screener' }));
     if (state.invalidLink) main.append(invalidNotice());
     var building = state.view === 'build';
     var side = h('aside', { class: 'sc-side' + (building ? ' is-active' : ''), 'aria-label': 'Filter' }, [counter(r), stackHead() || h('div', { style: { height: '12px' } }), stack(r)]);
-    if (building && state.query.mode === 'simple') side.append(h('section', { class: 'sc-section' }, [sectEl('Was ist dir noch wichtig?'), propsList(r)]));
-    if (Q.count(state.query)) side.append(impact(r));
-    if (state.query.mode === 'pro') side.append(ranking());
+    if (building) side.append(propsSection(r));
+    if (Q.count(q)) side.append(impact(r));
+    if (q.ranking.enabled) side.append(ranking());
+    var t = tools(); if (t) side.append(t);
     side.append(buildActions());
     var mainCol = h('div', { class: 'sc-maincol' });
     if (building) mainCol.append(criteriaSection('Filter auswählen', { focus: true, side: h('button', { class: 'sc-link', type: 'button', onclick: function () { go({ view: 'results' }); window.scrollTo(0, 0); } }, 'Nur Treffer zeigen →') }),
@@ -792,28 +767,33 @@
   function sortLabel() { var s = SORTS.filter(function (x) { return x[0] === state.query.sort.field; })[0]; return (s ? s[1] : fieldName(state.query.sort.field)) + (state.query.sort.dir === 'asc' ? ' ↑' : ' ↓'); }
   function resultsBody(main, r) {
     var q = state.query, d = ds(), fs = Q.filters(q);
-    var desk = mqDesk.matches;
+    var desk = mqDesk.matches, saved = state.screenId && store.get(state.screenId);
+    var head = desk ? null : h('div', { class: 'sc-hero2-top' }, h('h1', { class: 'vu-ltag', text: 'Treffer' + (saved ? ' · ' + saved.name : '') }));
     if (!fs.length && !desk) {
       /* Ohne Regel keine ungefilterte Liste aller Aktien: „Treffer“ fuehrt zum Satz-Bauer. */
-      main.append(h('section', { class: 'vu-box vu-box--ink sc-reshead' }, [sentence(q, { small: true }), h('p', { class: 'sc-reshead-n' }, [h('span', { class: 'sc-count sc-num', text: '0 Regeln' })])]),
+      main.append(h('section', { class: 'vu-night sc-hero2 sc-reshead' }, [head, sentence(q, { small: true }), h('p', { class: 'sc-reshead-n' }, [h('span', { class: 'sc-count sc-num', text: '0 Regeln' })])]),
         h('div', { class: 'vu-blank sc-gap-m' }, [verdictEl('none', 'Noch keine Regel'), h('span', { text: 'Sag zuerst, was dir wichtig ist. Dann zeigen wir die passenden Aktien.' })]),
         h('button', { class: 'vu-btn vu-btn--block sc-gap-m', type: 'button', onclick: function () { go({ view: 'build' }); window.scrollTo(0, 0); } }, [icon('plus'), 'Satz bauen']),
         sectEl('Oder eine fertige Idee'), ideasGrid(IDEAS));
       return;
     }
-    main.append(h('section', { class: 'vu-box vu-box--ink sc-reshead' }, [desk ? null : sentence(q, { small: true }),
-      h('p', { class: 'sc-reshead-n' }, [h('strong', { class: 'sc-count sc-num' }, [nf(r.total), h('small', { text: ' von ' + nf(r.universe) + ' Aktien' })])])]));
-    if (fs.length) {
-      var chipsRow = ruleChips(fs, { add: true });
-      /* Ansicht Liste/Karten als kleiner Umschalter am Ende der Filterzeile (FX05). */
-      if (!desk) chipsRow.append(h('div', { class: 'sc-viewtog', role: 'group', 'aria-label': 'Ansicht' }, [['cards', 'list', 'Liste'], ['grid', 'hits', 'Karten']].map(function (v) {
+    /* Dunkle Kachel wie in „Screen bauen“: Satz, Trefferzahl groß mit Anteilsbalken, darunter Speichern · Teilen · Benachrichtigen. */
+    var share = r.universe ? r.total / r.universe * 100 : 0;
+    main.append(h('section', { class: 'vu-night sc-hero2 sc-reshead' }, [head, desk ? null : sentence(q, { small: true }),
+      h('p', { class: 'sc-reshead-n' }, [h('strong', { class: 'sc-count sc-num' }, [nf(r.total), h('small', { text: ' von ' + nf(r.universe) + ' Aktien' })])]),
+      h('div', { class: 'vu-meter vu-meter--lime sc-counter-bar', role: 'img', 'aria-label': 'Anteil am Universum ' + share.toLocaleString('de-DE', { maximumFractionDigits: 1 }) + ' %' }, h('i', { style: { '--v': String(Math.max(share, r.total ? 1 : 0)) } })),
+      !desk && state.view === 'results' ? h('div', { class: 'sc-heroact' }, [
+        h('button', { class: 'sc-heropill sc-save', type: 'button', onclick: openSave }, [icon(saved ? 'bookmarked' : 'bookmark'), 'Speichern']),
+        h('button', { class: 'sc-heropill', type: 'button', 'aria-label': 'Link zu diesem Screen teilen', onclick: share_ }, [icon('share'), 'Teilen']),
+        saved ? h('button', { class: 'sc-heropill', type: 'button', 'aria-haspopup': 'dialog', onclick: function () { var sh = openSheet({ title: saved.name }); sh.body.append(notifyCard(store.get(saved.id) || saved)); } }, [icon('bell'), 'Benachrichtigen']) : null]) : null]));
+    if (fs.length) main.append(ruleChips(fs, { add: true }));
+    /* Ansicht (Liste/Karten), Vergleich und Sortierung in einer Zeile; die Sortierung steht im Knopf. */
+    main.append(h('div', { class: 'sc-toolbar' }, [
+      desk ? null : h('div', { class: 'sc-viewtog', role: 'group', 'aria-label': 'Ansicht' }, [['cards', 'list', 'Liste'], ['grid', 'hits', 'Karten']].map(function (v) {
         return h('button', { type: 'button', 'aria-pressed': String(q.view === v[0] || (v[0] === 'cards' && q.view !== 'grid')), 'aria-label': v[2], onclick: function () { var nq = Q.clone(state.query); nq.view = v[0]; go({ query: nq }, { replace: true, keepScroll: true }); } }, icon(v[1]));
-      })));
-      main.append(chipsRow);
-    }
-    main.append(h('div', { class: 'sc-toolbar' }, [h('h2', { class: 'sc-sortlabel', text: 'Nach ' + sortLabel().replace(/ [↑↓]$/, '') + (q.sort.dir === 'asc' ? ' (aufsteigend)' : '') }),
+      })),
       h('button', { class: 'vu-chip sc-tool', type: 'button', 'aria-pressed': String(state.select), 'aria-label': state.select ? 'Vergleich beenden' : 'Aktien vergleichen', onclick: function () { state.select = !state.select; if (!state.select) state.selected = []; render({ keepScroll: true }); } }, [icon('compare'), state.select ? 'Fertig' : null]),
-      h('button', { class: 'vu-chip sc-tool sc-sortbtn', type: 'button', onclick: openSort, 'aria-label': 'Sortieren und Ansicht: ' + sortLabel() }, [icon('sort'), 'Sortieren'])]));
+      h('button', { class: 'vu-chip sc-tool sc-sortbtn', type: 'button', onclick: openSort, 'aria-label': 'Sortieren und Ansicht: ' + sortLabel() }, [icon('sort'), h('span', { class: 'sc-sortlabel', text: 'Nach ' + sortLabel().replace(/ [↑↓]$/, '') + (q.sort.dir === 'asc' ? ' (aufsteigend)' : '') })])]));
     if (!r.total) { main.append(emptyResults(r)); return; }
     var grid = q.view === 'grid';
     var metrics = grid ? rowMetrics(q) : E.cardMetrics(q, q.view === 'table' ? 7 : 4);
@@ -828,10 +808,10 @@
     /* 25 je Schritt, auf Knopfdruck – nichts springt (Regel K3). */
     if (r.order.length > state.shown) main.append(h('div', { class: 'sc-more' }, h('button', { class: 'vu-btn vu-btn--line vu-btn--block', type: 'button', onclick: loadMore }, 'Weitere ' + nf(Math.min(PAGE, r.order.length - state.shown)) + ' laden')));
     if (!desk && state.view === 'results') {
-      main.append(h('div', { class: 'sc-resact' }, [h('button', { class: 'vu-btn vu-btn--ink sc-save', type: 'button', onclick: openSave }, [icon('bookmark'), 'Speichern']),
-        h('button', { class: 'vu-btn sc-swipe', type: 'button', onclick: function () { openPeek(d.symbol(r.order[0]), { swipe: true }); } }, [icon('cards'), 'Treffer swipen'])]),
-        h('button', { class: 'sc-link', type: 'button', onclick: share }, 'Link zu diesem Screen teilen'),
-        navLink('/vu2/?view=strategies', worldHud('quant', 42), 'Diesen Screen in Quant testen', 'Wie hätte er sich früher geschlagen?'));
+      var table = q.view === 'table';
+      main.append(h('div', { class: 'sc-resact' }, [h('button', { class: 'vu-btn sc-swipe', type: 'button', onclick: function () { openPeek(d.symbol(r.order[0]), { swipe: true }); } }, [icon('cards'), 'Treffer swipen']),
+        h('button', { class: 'vu-btn vu-btn--line sc-astable', type: 'button', onclick: function () { var nq = Q.clone(state.query); nq.view = table ? 'cards' : 'table'; go({ query: nq }, { replace: true, keepScroll: true }); } }, [icon(table ? 'list' : 'table'), table ? 'Als Liste' : 'Als Tabelle'])]),
+        nextCard({ href: '/vu2/?view=strategies', title: 'Diesen Screen in Quant testen', sub: 'Wie hätte er sich früher geschlagen?' }));
     }
     lazySparks(main);
   }
@@ -1068,7 +1048,7 @@
       var cov = x[0] === 'match' || x[0] === 'name' ? null : ds().coverage(x[0]);
       list.append(h('label', {}, [h('input', { type: 'radio', name: 'sc-sort', value: x[0], checked: field === x[0] ? true : null, onchange: function () { field = x[0]; } }), h('span', { text: x[1] }), cov !== null ? h('small', { text: nf(cov) + ' Werte' }) : null]));
     });
-    s.body.append(list, h('p', { class: 'sc-label', text: 'Reihenfolge' }), dirSeg, h('p', { class: 'sc-note', text: 'Aktien ohne Wert stehen immer am Ende. Der Quant-Gesamtscore ist noch nicht freigegeben und daher nicht sortierbar – „Übereinstimmung“ erscheint, sobald du im Pro-Modus ein Ranking aktivierst.' }));
+    s.body.append(list, h('p', { class: 'sc-label', text: 'Reihenfolge' }), dirSeg, h('p', { class: 'sc-note', text: 'Aktien ohne Wert stehen immer am Ende. Der Quant-Gesamtscore ist noch nicht freigegeben und daher nicht sortierbar – „Übereinstimmung“ erscheint, sobald du in „Screen bauen“ ein Ranking aktivierst.' }));
     s.foot.append(h('button', { class: 'sc-btn sc-btn-primary', type: 'button', onclick: function () { var n = Q.clone(state.query); n.sort = { field: field, dir: dir }; n.view = view; go({ query: n }, { replace: true }); } }, 'Übernehmen'));
   }
 
@@ -1076,7 +1056,6 @@
   var openLibrary = needsData(function (opts) {
     opts = opts || {};
     state.targetGroup = opts.target || null;
-    var mode = state.query.mode;
     var s = openSheet({ title: 'Filter hinzufügen', full: true, focus: opts.focus ? 'input[type=search]' : null });
     var input = h('input', { type: 'search', placeholder: 'Filter suchen – z. B. ROIC, 200, Umsatz', 'aria-label': 'Kriterien durchsuchen', autocomplete: 'off', enterkeyhint: 'search' });
     var results = h('div', {});
@@ -1093,21 +1072,16 @@
         usable ? null : verdictEl('none', f.available ? 'keine Werte' : lockShort(f)),
         h('span', { class: 'sc-libadd', 'aria-hidden': 'true' }, icon(active[f.id] ? 'edit' : 'plus'))]);
     }
-    function proHint(text) {
-      return h('div', { class: 'sc-card', style: { padding: '14px 16px', marginTop: '14px', display: 'flex', alignItems: 'center', gap: '12px' } }, [h('div', { style: { flex: '1' } }, [h('b', { text: 'Profi-Modus' }), h('p', { class: 'sc-note', style: { margin: '2px 0 0' }, text: text })]),
-        h('button', { class: 'sc-btn sc-btn-secondary sc-btn-sm', type: 'button', onclick: function () { var n = Q.clone(state.query); n.mode = 'pro'; mode = 'pro'; state.query = n; paint(); refreshBehind(); } }, 'Profi aktivieren')]);
-    }
     function paint() {
       var term = input.value.trim();
       results.replaceChildren();
-      var all = F.list({ mode: mode });
+      var all = F.list({});
       if (term) {
         titleEl.textContent = 'Filter hinzufügen';
-        var found = F.search(term, { mode: mode });
+        var found = F.search(term, {});
         results.append(h('p', { class: 'sc-when', style: { marginTop: '0' }, text: found.length + (found.length === 1 ? ' Ergebnis' : ' Ergebnisse') }));
-        if (!found.length) results.append(h('div', { class: 'sc-state' }, [h('h3', { text: 'Kein Kriterium gefunden' }), h('p', { text: mode === 'simple' ? 'Im Pro-Modus gibt es weitere Kriterien.' : 'Versuche einen anderen Begriff.' })]));
+        if (!found.length) results.append(h('div', { class: 'sc-state' }, [h('h3', { text: 'Kein Kriterium gefunden' }), h('p', { text: 'Versuche einen anderen Begriff.' })]));
         else results.append(h('div', { class: 'sc-libitems' }, found.map(item)));
-        if (mode === 'simple') { var more = F.search(term, { mode: 'pro' }).length - found.length; if (more > 0) results.append(proHint(more + ' weitere Treffer im Pro-Modus')); }
         return;
       }
       if (!group) {
@@ -1120,7 +1094,8 @@
         cats.append(h('button', { class: 'sc-prow', type: 'button', onclick: function () { group = 'all'; paint(); s.body.scrollTo(0, 0); } },
           [glyphHud('hits', 40), h('span', { class: 'sc-prow-main' }, [h('b', { text: 'Alle Filter' }), h('span', { text: 'Alphabetisch nach Bereich' })]), h('span', { class: 'sc-prow-n sc-num', text: String(availN(all)) }), icon('next')]));
         results.append(cats);
-        if (mode === 'simple') results.append(proHint('Bilanz, Quant-Faktoren, Analysten und Gruppen mit UND/ODER'));
+        /* Bisher auf der Startseite: der Satz zu den Perspektiven und die gesperrten Kriterien mit ihrem Grund. */
+        results.append(h('div', { class: 'sc-gap-m' }, helpLine('Dieselben Blickwinkel wie auf jeder Aktienseite.')), lockedCard(), h('div', { class: 'sc-gap-s' }, helpLine('Kriterien ohne echte Datenquelle bleiben sichtbar, aber gesperrt. Wir simulieren nichts.')));
         return;
       }
       var pdef = group.indexOf('p:') === 0 ? perspById(group.slice(2)) : null;
@@ -1137,17 +1112,10 @@
         });
       } else results.append(h('div', { class: 'sc-libitems' }, fields.map(item)));
       if (pdef) (pdef.soon || []).forEach(function (x) { results.append(h('div', { class: 'sc-libitem is-off is-soon' }, [h('span', { class: 'sc-libicon', 'aria-hidden': 'true' }, icon('plus')), h('div', {}, [h('b', { text: x[0] }), h('span', { text: x[1] })]), verdictEl('none', 'bald')])); });
-      if (pdef && mode === 'simple' && perspFields(pdef).length > fields.length) results.append(proHint((perspFields(pdef).length - fields.length) + ' weitere Kriterien im Profi-Modus'));
     }
     input.addEventListener('input', debounce(paint, 80));
     paint();
   });
-  /** Zeichnet die Seite hinter einem Sheet neu und aktualisiert die URL (ohne Sheets zu schliessen). */
-  function refreshBehind() {
-    var url = buildURL();
-    try { history.replaceState(history.state, '', url); } catch (e) { /* */ }
-    var y = window.scrollY; render(); window.scrollTo(0, y);
-  }
 
   // ------------------------------------------------------------ DETAIL
   /** Runde Skalenwerte fuer den Slider: 1-2-2,5-5-Raster bzw. Zehnerpotenzen. */
@@ -1168,8 +1136,7 @@
     var editing = opts.filter || null;
     var s = openSheet({ title: 'Kriterium', full: f.kind === 'enum', back: !!opts.fromLibrary, foot: true });
     var meta = h('div', { class: 'sc-meta' }, [h('span', { class: 'sc-pill', text: F.group(f.group).label }), f.timeframe ? h('span', { class: 'sc-pill', text: f.timeframe }) : null,
-      h('span', { class: 'sc-pill', text: { fundamentals: 'Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen', technicalIntelligence: 'Chartbild (Wochenchart, Szenario)', supertrader: 'Supertrader-Kandidaten', technicalWorld: 'Technical (Tages-OHLCV)' }[f.source] || f.source }),
-      f.pro ? h('span', { class: 'sc-pill is-accent', text: 'Pro' }) : null]);
+      h('span', { class: 'sc-pill', text: { fundamentals: 'Fundamentaldaten', price: 'Kursdaten', technical: 'Tagesschlusskurse', master: 'Wertpapierstamm', classification: 'SIC', factor: 'Quant V2 Faktorevidenz', estimates: 'Schätzungen', technicalIntelligence: 'Chartbild (Wochenchart, Szenario)', supertrader: 'Supertrader-Kandidaten', technicalWorld: 'Technical (Tages-OHLCV)' }[f.source] || f.source })]);
     var pp = perspOf(f);
     var TF = { TTM: '12 Monate', FY: 'Geschäftsjahr', '1D': '1 Tag', '1W': '1 Woche', '1M': '1 Monat', '3M': '3 Monate', '6M': '6 Monate', '1Y': '1 Jahr', YTD: 'seit Jahresbeginn', '3Y': '3 Jahre', '10Y': '10 Jahre' };
     s.body.append(h('div', { class: 'sc-dhead' }, [h('div', {}, [h('p', { class: 'vu-ltag', text: pp.label + ' · ' + F.group(f.group).label }), h('h3', { text: f.timeframe ? f.label.replace(/ \((TTM|FY|1J|YTD)\)$/, '') : f.label })]), f.timeframe ? h('span', { class: 'sc-dhead-tf', text: TF[f.timeframe] || f.timeframe }) : null]));
@@ -1350,7 +1317,7 @@
     }
     s.body.append(live);
     if (opts.toResults) live.style.display = 'none'; /* Die Trefferzahl steht im Hauptknopf (FX05). */
-    if (state.query.mode === 'pro' && state.query.groups.length > 1) {
+    if (state.query.groups.length > 1) {
       var gsel = h('select', { 'aria-label': 'Gruppe' }, state.query.groups.map(function (g, gi) { return h('option', { value: g.id, selected: (editing ? groupOf(editing.id) : state.targetGroup || state.query.groups[state.query.groups.length - 1].id) === g.id ? true : null }, g.name || 'Gruppe ' + (gi + 1)); }));
       gsel.addEventListener('change', function () { state.targetGroup = gsel.value; });
       s.body.append(h('label', { class: 'sc-field', style: { marginTop: '14px' } }, [h('span', { text: 'Gruppe' }), gsel]));
@@ -1368,7 +1335,7 @@
       } catch (e) { toast('Bitte einen gültigen Wert eingeben'); return; }
       /* Aus der einfachen Startansicht fuehrt eine neue Regel zum Satz-Bauer (S02). */
       if (opts.toResults) go({ query: dq, view: 'results' });
-      else if (state.view === 'start' && dq.mode !== 'pro') go({ query: dq, view: 'build' });
+      else if (state.view === 'start') go({ query: dq, view: 'build' });
       else go({ query: dq }, { keepScroll: true });
       toast(editing ? 'Regel geändert' : 'Regel hinzugefügt');
     });
@@ -1581,7 +1548,7 @@
     s.foot.append(h('button', { class: 'sc-btn sc-btn-primary', type: 'button', onclick: function () { save(false); } }, 'Speichern'));
     name.addEventListener('keydown', function (e) { if (e.key === 'Enter') save(false); });
   }
-  function share() {
+  function share_() {
     var url = location.origin + buildURL({ screenId: null });
     if (navigator.share && !mqDesk.matches) { navigator.share({ title: 'Vision Universe Screener', text: screenLabel(state.query), url: url }).catch(function () {}); return; }
     if (navigator.clipboard) navigator.clipboard.writeText(url).then(function () { toast('Link kopiert'); }, function () { toast('Link: ' + url); });
@@ -1591,7 +1558,7 @@
   // ------------------------------------------------------------ SAVED
   function viewSaved(main) {
     var wl = state.tab === 'watchlist';
-    main.append(h('header', { class: 'sc-head' }, [h('h1', { class: 'vu-lt', text: 'Gespeichert' })]));
+    main.append(h('h1', { class: 'sc-sr', text: 'Gespeichert' }));
     main.append(h('div', { class: 'vu-seg sc-modeseg is-wide', role: 'tablist', 'aria-label': 'Gespeichert' }, [['screens', 'Screens'], ['watchlist', 'Watchlist']].map(function (t) {
       return h('button', { type: 'button', role: 'tab', 'aria-selected': String(state.tab === t[0]), onclick: function () { if (state.tab !== t[0]) go({ view: 'saved', tab: t[0] }, { replace: true }); } }, t[1]);
     })));
@@ -1616,7 +1583,7 @@
           onclick: function (e) { e.stopPropagation(); }, onchange: function () { store.setNotify(s.id, { newMatches: this.checked }); toast(this.checked ? 'Vorgemerkt' : 'Benachrichtigung aus'); } });
         return h('div', { class: 'vu-box sc-card sc-scard' }, [
           h('div', { class: 'sc-scard-top' }, [h('button', { class: 'sc-scard-open', type: 'button', onclick: function () { openParams(Q.toParams(s.query).toString(), s.id); } }, [
-            h('b', {}, [s.name, s.query.mode === 'pro' ? ' ' : null, s.query.mode === 'pro' ? h('span', { class: 'sc-tag', text: 'Profi' }) : null]),
+            h('b', { text: s.name }),
             h('span', { class: 'sc-scard-rules', text: Q.filters(s.query).map(function (f) { return F.describeFilter(f); }).join(' · ') || 'Gesamtes Universum' })]), sw]),
           h('div', { class: 'sc-scard-bottom' }, [h('span', { class: 'sc-scard-n' }, [h('strong', { class: 'sc-num', text: n === null ? '–' : nf(n) }), h('small', { text: ' Treffer' })]),
             dd ? h('span', { class: 'vu-chg' + (dd.added.length ? '' : ' vu-chg--flat') + ' sc-num', text: '+' + dd.added.length + ' neu · −' + dd.removed.length + ' raus' }) : verdictEl('none', 'noch kein Vergleich')]),
@@ -1675,22 +1642,25 @@
   // ------------------------------------------------------------ CHANGES
   function viewChanges(main) {
     var s = state.screenId && store.get(state.screenId);
-    main.append(bar('Veränderungen', { back: function () { go({ view: 'saved' }); } }));
+    main.append(subHead('Veränderungen', function () { go({ view: 'saved' }); }));
     if (!s) { main.append(h('div', { class: 'sc-card sc-state' }, [h('h3', { text: 'Screen nicht gefunden' }), h('p', { text: 'Dieser Screen ist auf diesem Gerät nicht gespeichert.' })])); return; }
     // aktuellen Lauf sicherstellen
     var d = ds(), cur = adapter.screenSync(s.query);
     store.recordRun(s.id, { asOf: info().asOf, count: cur.total, symbols: cur.order.map(function (i) { return d.symbol(i); }) });
     s = store.get(s.id);
     var runs = s.runs, a = runs[0], b = runs[runs.length - 1];
-    main.append(h('div', { style: { padding: '14px 0 6px' } }, [h('p', { class: 'sc-eyebrow', text: 'Gespeicherter Screen' }), h('h2', { style: { fontSize: '26px', letterSpacing: '-.02em', margin: '4px 0 2px' }, text: s.name }), h('p', { class: 'sc-note', style: { margin: 0 }, text: screenLabel(s.query) })]));
-    main.append(h('div', { class: 'sc-card', style: { padding: '16px', margin: '12px 0' } }, [h('div', { style: { display: 'flex', alignItems: 'baseline', gap: '8px' } }, [h('strong', { class: 'sc-num', style: { fontSize: '36px', letterSpacing: '-.03em' }, text: nf(b.count) }), h('span', { class: 'sc-muted', text: 'Aktien · Datenstand ' + dateDe(b.asOf) })]),
-      h('button', { class: 'sc-btn sc-btn-secondary sc-btn-sm', type: 'button', style: { marginTop: '10px' }, onclick: function () { openParams(Q.toParams(s.query).toString(), s.id); } }, 'Treffer öffnen')]));
+    main.append(h('section', { class: 'vu-night sc-hero2 sc-chghero', 'aria-label': s.name }, [h('p', { class: 'vu-ltag', text: 'Gespeicherter Screen' }), h('h2', { class: 'sc-chg-name', text: s.name }), h('p', { class: 'sc-sent-desc', text: screenLabel(s.query) }),
+      h('p', { class: 'sc-reshead-n' }, h('strong', { class: 'sc-count sc-num' }, [nf(b.count), h('small', { text: ' Aktien · Datenstand ' + dateDe(b.asOf) })])),
+      h('button', { class: 'vu-btn vu-btn--sm sc-chg-open', type: 'button', onclick: function () { openParams(Q.toParams(s.query).toString(), s.id); } }, 'Treffer öffnen')]));
     if (runs.length < 2) {
       main.append(h('div', { class: 'sc-card sc-state' }, [h('h3', { text: 'Noch kein Vergleich möglich' }), h('p', { text: 'Erster Lauf am ' + dateDe(a.asOf) + ' mit ' + nf(a.count) + ' Aktien. Sobald ein neuer Datenstand vorliegt, siehst du hier neue, entfernte und unveränderte Aktien.' })]));
     } else {
       var dd = E.diff(a.symbols, b.symbols);
       main.append(h('p', { class: 'sc-note', text: 'Seit dem letzten Lauf: Datenstand ' + dateDe(a.asOf) + ' → ' + dateDe(b.asOf) + (a.truncated || b.truncated ? ' (Vergleich auf die ersten 2.000 Treffer begrenzt)' : '') }));
-      main.append(h('div', { class: 'sc-kpirow' }, [h('div', {}, [h('b', { class: 'sc-up sc-num', text: '+' + dd.added.length }), h('span', { text: 'neu' })]), h('div', {}, [h('b', { class: 'sc-down sc-num', text: '−' + dd.removed.length }), h('span', { text: 'entfernt' })]), h('div', {}, [h('b', { class: 'sc-num', text: nf(dd.unchanged.length) }), h('span', { text: 'unverändert' })])]));
+      /* Drei Zahlen und derselbe Anteil als geteilter Balken: neu neongrün, entfernt schwarz, unverändert grau. */
+      var tot = dd.added.length + dd.removed.length + dd.unchanged.length;
+      main.append(h('div', { class: 'vu-box sc-chgbox' }, [h('div', { class: 'sc-kpirow' }, [h('div', { class: 'is-new' }, [h('b', { class: 'sc-up sc-num', text: '+' + dd.added.length }), h('span', { text: 'neu' })]), h('div', { class: 'is-gone' }, [h('b', { class: 'sc-down sc-num', text: '−' + dd.removed.length }), h('span', { text: 'entfernt' })]), h('div', { class: 'is-same' }, [h('b', { class: 'sc-num', text: nf(dd.unchanged.length) }), h('span', { text: 'unverändert' })])]),
+        tot ? h('div', { class: 'sc-split', 'aria-hidden': 'true' }, [['is-new', dd.added.length], ['is-gone', dd.removed.length], ['is-same', dd.unchanged.length]].map(function (x) { return x[1] ? h('i', { class: x[0], style: { flexGrow: String(x[1]) } }) : null; })) : null]));
       changeList(main, 'Neue Aktien', dd.added, false, s);
       changeList(main, 'Entfernte Aktien', dd.removed, true, s);
       var det = h('details', { class: 'sc-section' }, [h('summary', { style: { cursor: 'pointer', minHeight: '44px', fontWeight: 650 } }, 'Unveränderte Aktien (' + nf(dd.unchanged.length) + ')')]);
@@ -1737,7 +1707,7 @@
     ['eps', 'EPS (verw.)'], ['roic', 'ROIC'], ['distance52wHigh', '52W-Hoch Abstand'], ['perf6m', 'Performance 6M'], ['qualityFactor', 'Faktor Qualität'], ['momentumFactor', 'Faktor Momentum'], ['quantScore', 'Quant Score']];
   function viewCompare(main) {
     var d = ds();
-    main.append(bar('Vergleich', { back: function () { history.length > 1 ? history.back() : go({ view: 'results' }); } }));
+    main.append(subHead('Vergleich', function () { history.length > 1 ? history.back() : go({ view: 'results' }); }));
     var syms = state.cmp.filter(function (s) { return d.indexOf(s) >= 0; });
     var max = mqDesk.matches ? 4 : 3;
     if (!syms.length) {

@@ -145,7 +145,11 @@ test('Startansicht: sofort aus der Kopfdatei, volles Universum laedt parallel, T
   await tick();
   assert.equal(skeleton(ref.root), false);
   const expected = text(ref.root);
-  assert.match(expected, /Screener · 3 US-Aktien · Stand Fr\. 09\.10\./, 'Universum und Stand im Kopf (Konzept „Verstehen. Finden.“, FX04)');
+  /* App-Konzept 2 (Owner 14.11.2026): keine eigene Zeile mit Datum am Seitenanfang. Universum und Zahl der Kriterien stehen
+     in der Startkachel, der Datenstand unter „Daten & Methodik“ am Seitenende. */
+  assert.match(expected, /3 US-Aktien · \d+ Kriterien/, 'Universum und Zahl der Kriterien in der Startkachel');
+  assert.match(expected, /Daten & Methodik Stand 09\.10\.2026/, 'Datenstand am Seitenende');
+  assert.doesNotMatch(expected, /\bEinfach\b|\bProfi\b/, 'kein Modus-Schalter');
   assert.match(expected, /Universum: 3 US-Aktien · Kurse Stand 09\.10\.2026 · Fundamentaldaten Unternehmensmeldungen bis 30\.09\.2026/);
 
   const full = deferred();

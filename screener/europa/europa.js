@@ -40,26 +40,29 @@
     var order = Object.keys(countries).sort(function (a, b) { return a === 'DE' ? -1 : b === 'DE' ? 1 : countries[b] - countries[a]; });
     main.replaceChildren();
     doc.title = 'Europa · Screener — Vision Universe®';
-    main.append(
-      h('p', { class: 'vu-ltag', text: 'Screener · Europa' }),
-      h('h1', { class: 'vu-lt', text: 'Europäische Aktien' }),
-      h('p', { class: 'vu-lead', text: rows.length + ' Aktien an zehn Börsen · Schluss ' + dateDe(data.asOf) + ' · Kurse in Landeswährung, unbereinigt.' }),
-      h('p', {}, [h('a', { href: '/screener/', text: '← Zum Screener (USA)' })])
-    );
-    var chips = h('div', { class: 'vu-chips', role: 'group', 'aria-label': 'Land' });
+    /* App-Konzept 2 (Owner 14.11.2026): dunkle Kopfkachel mit „Zurück“, Titel und Zahl der Aktien; Schlussdatum, Währung
+       und die Hinweise zu leeren Feldern stehen unter „Daten & Methodik“ am Seitenende statt als Zeile am Seitenanfang. */
+    var svg = function (d) { var x = doc.createElementNS('http://www.w3.org/2000/svg', 'svg'); x.setAttribute('viewBox', '0 0 24 24'); x.setAttribute('class', 'sc-i'); x.setAttribute('aria-hidden', 'true'); x.innerHTML = d; return x; };
+    main.append(h('section', { class: 'vu-night sc-hero2 sc-euhero', 'aria-labelledby': 'sc-eu-title' }, [
+      h('div', { class: 'sc-hero2-top' }, [h('a', { class: 'vu-round', href: '/screener/', 'aria-label': 'Zum Screener (USA)', title: 'Zum Screener (USA)' }, [svg('<path d="m15 5-7 7 7 7"/>')]), h('p', { class: 'vu-ltag', text: 'Screener · Europa' })]),
+      h('h1', { class: 'sc-chg-name', id: 'sc-eu-title', text: 'Europäische Aktien' }),
+      h('p', { class: 'sc-reshead-n' }, [h('strong', { class: 'sc-count sc-num' }, [String(rows.length), h('small', { text: ' Aktien an zehn Börsen' })])])
+    ]));
+    var chips = h('div', { class: 'vu-chips sc-euchips', role: 'group', 'aria-label': 'Land' });
     [['ALL', 'Alle']].concat(order.map(function (c) { return [c, (COUNTRY[c] || c) + ' ' + countries[c]]; })).forEach(function (c) {
       chips.append(h('button', { type: 'button', class: 'vu-chip', 'data-country': c[0], 'aria-pressed': String(c[0] === state.country), text: c[1], onclick: function () { state.country = c[0];
         Array.prototype.forEach.call(chips.children, function (b) { b.setAttribute('aria-pressed', String(b.dataset.country === state.country)); }); draw(); } }));
     });
     var find = h('input', { type: 'search', placeholder: 'Name, Kürzel oder ISIN', 'aria-label': 'Aktie suchen', autocomplete: 'off', class: 'sc-europe-find',
-      style: 'width:100%;min-height:44px;margin:12px 0;padding:10px 12px;border-radius:12px;border:1px solid var(--sc-line);background:var(--sc-surface);color:inherit;font:inherit',
       oninput: function () { state.q = find.value.trim().toUpperCase(); draw(); } });
-    var count = h('p', { class: 'sc-note', role: 'status' }), slot = h('div');
-    main.append(chips, find, count, slot,
-      h('p', { class: 'sc-note', text: 'Leere Felder (–) sind Absicht: Ein Wert steht nur, wenn mindestens 90 % der Börsentage im Fenster einen Schlusskurs haben ' +
-        '(Kursveränderung: zusätzlich am ersten und letzten Tag; 52-Wochen-Hoch: 252 Börsentage; 50-Tage-Linie: 45 von 50 Tagen). Ein Sprung über 40 % zwischen zwei Schlüssen macht den Wert leer, weil die Kurse unbereinigt sind (möglicher Split). Lücken werden nie aufgefüllt.' }),
-      stale ? h('p', { class: 'sc-note', text: stale + ' Aktien sind nicht aufgeführt, weil ihr letzter Schluss mehr als drei Börsentage zurückliegt.' }) : null,
-      h('p', { class: 'sc-note', text: 'Für Europa gibt es noch keine Quant-, Technical- oder Supertrader-Auswertung. Keine Anlageempfehlung.' }));
+    var count = h('p', { class: 'sc-note sc-eucount', role: 'status' }), slot = h('div');
+    main.append(h('label', { class: 'sc-eufind' }, [svg('<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>'), find]), chips, count, slot,
+      h('footer', { class: 'sc-foot' }, [h('details', { class: 'vu-dm sc-dm' }, [h('summary', {}, ['Daten & Methodik ', h('small', { text: 'Schluss ' + dateDe(data.asOf) })]),
+        h('p', { text: rows.length + ' Aktien an zehn Börsen · Schluss ' + dateDe(data.asOf) + ' · Kurse in Landeswährung, unbereinigt.' }),
+        h('p', { text: 'Leere Felder (–) sind Absicht: Ein Wert steht nur, wenn mindestens 90 % der Börsentage im Fenster einen Schlusskurs haben ' +
+          '(Kursveränderung: zusätzlich am ersten und letzten Tag; 52-Wochen-Hoch: 252 Börsentage; 50-Tage-Linie: 45 von 50 Tagen). Ein Sprung über 40 % zwischen zwei Schlüssen macht den Wert leer, weil die Kurse unbereinigt sind (möglicher Split). Lücken werden nie aufgefüllt.' }),
+        stale ? h('p', { text: stale + ' Aktien sind nicht aufgeführt, weil ihr letzter Schluss mehr als drei Börsentage zurückliegt.' }) : null]),
+        h('p', { class: 'sc-legal', text: 'Für Europa gibt es noch keine Quant-, Technical- oder Supertrader-Auswertung. Keine Anlageempfehlung.' })]));
     function draw() {
       var list = rows.filter(function (r) { return (state.country === 'ALL' || r.country === state.country) &&
         (!state.q || (r.name + ' ' + r.ticker + ' ' + r.isin).toUpperCase().indexOf(state.q) >= 0); });

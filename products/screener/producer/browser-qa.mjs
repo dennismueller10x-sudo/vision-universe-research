@@ -41,7 +41,7 @@ async function checkLayout(page, vp, label) {
     const offenders = [];
     for (const el of document.querySelectorAll('body *')) {
       const rc = el.getBoundingClientRect();
-      if (rc.width && rc.right > doc.clientWidth + 1 && !el.closest('.sc-tablewrap,.sc-cmp,.sc-toolbar,.sc-filterline,.sc-tabs,.sc-sheet,.sc-ptabs,.vu-persp,vu-navigation,.sc-skip,.sc-toast,.sc-sr')) offenders.push((el.className || el.tagName) + ' ' + Math.round(rc.right));
+      if (rc.width && rc.right > doc.clientWidth + 1 && !el.closest('.sc-tablewrap,.sc-cmp,.sc-toolbar,.sc-filterline,.sc-tabs,.sc-sheet,.sc-prail,.sc-rail,.sc-srail,.vu-persp,vu-navigation,.sc-skip,.sc-toast,.sc-sr')) offenders.push((el.className || el.tagName) + ' ' + Math.round(rc.right));
       if (offenders.length > 4) break;
     }
     /* Das globale Menue oeffnet der Universe-Knopf in der Mitte des Docks (der Kopf traegt dann keinen eigenen Knopf). */
@@ -94,7 +94,9 @@ for (const theme of ['light', 'dark']) {
       await checkLayout(page, vp, 'Start');
       await shot(page, vp, '01-start');
 
-      // Redesign 2027 (S01): Satz-Bauer, fertige Ideen mit echter Trefferzahl, sechs Perspektiven
+      // App-Konzept 2 (Owner 14.11.2026): kein Modus-Schalter, Tiefe öffnet sich per Tipp im Fenster
+      if (await page.$('.sc-modeseg')) fail(vp, 'Start zeigt einen Modus-Schalter'); else ok('Kein Einfach/Profi-Schalter');
+      // Satz-Bauer, fertige Ideen mit echter Trefferzahl, sechs Perspektiven
       const ideas = await page.$$eval('.sc-idea .sc-n', (n) => n.map((x) => x.textContent));
       if (ideas.length < 5 || ideas.some((t) => !/^\d/.test(t))) fail(vp, 'Fertige Ideen ohne echte Trefferzahl: ' + ideas.join(', ')); else ok('Fertige Ideen: ' + ideas.join(' · '));
       /* Konzept „Verstehen. Finden.“ (FX04): fünf Ergänzungen im Satz, je mit Trefferzahl */
@@ -123,7 +125,8 @@ for (const theme of ['light', 'dark']) {
 
       // 3 Weitere Filter: Sektor Technologie, Market Cap < 1 Mrd, 52W-Hoch
       async function addViaSearch(term, itemText, setup) {
-        await page.click(desk ? '.sc-side .sc-btn-secondary:has-text("Filter hinzufügen")' : '.sc-stack .sc-btn-secondary:has-text("Filter hinzufügen")');
+        /* Mobil: „+ Filter“ vorn in der Perspektiven-Leiste; Desktop: Knopf unter dem Filterstapel links. */
+        await page.click(desk ? '.sc-side .sc-btn-secondary:has-text("Filter hinzufügen")' : '.sc-prail .sc-addfilter');
         await page.waitForSelector('.sc-sheet.is-open input[type=search]');
         await page.fill('.sc-sheet.is-open input[type=search]', term);
         await settle(page, 250);
@@ -138,17 +141,17 @@ for (const theme of ['light', 'dark']) {
       await addViaSearch('sektor', 'Sektor', async () => { await page.click('.sc-sheet.is-open .sc-enum label:has-text("Technologie")'); });
       await addViaSearch('market cap', 'Marktkapitalisierung', async () => { await page.click('.sc-sheet.is-open .sc-preset:has-text("Small")'); });
       await addViaSearch('52w', 'Abstand zum 52W-Hoch', async () => { await page.click('.sc-sheet.is-open .sc-preset:has-text("Näher als 10")'); });
-      /* Mobil (Einfach): Regeln stehen als Lücken im Satz; Desktop: Filterstapel links und Trichter. */
+      /* Mobil: Regeln stehen als Lücken im Satz und im Trichter; Desktop: Filterstapel links und Trichter. */
       const ruleSel = desk ? '.sc-chip-body b' : '.sc-sentence .sc-gap:not(.is-add):not(.is-empty)';
       const chips = await page.$$eval(ruleSel, (b) => b.map((x) => x.textContent));
       if (chips.length !== 4) fail(vp, 'Erwartet 4 Filter, gefunden ' + chips.length + ': ' + chips.join(' | ')); else ok('Regeln: ' + chips.join(' | '));
-      if (desk) {
-        const funnel = await page.$$eval('.sc-funnel .sc-tl-top > b', (s) => s.map((x) => Number(x.textContent.replace(/\./g, ''))));
-        if (funnel.length !== 5 || funnel.some((v, i) => i && v > funnel[i - 1])) fail(vp, 'Trichter nicht monoton: ' + funnel.join(' → ')); else ok('Trichter: ' + funnel.join(' → '));
-      } else {
-        const props = await page.$$eval('.sc-prop', (b) => b.length);
-        if (props !== 6) fail(vp, 'Erwartet 6 Eigenschaften, gefunden ' + props); else ok('Sechs Eigenschaften mit Zielzahl');
-      }
+      /* Trichter und Eigenschaften stehen jetzt in jeder Breite (vorher: Trichter nur Desktop/Profi, Eigenschaften nur Einfach). */
+      const funnel = await page.$$eval('.sc-funnel .sc-tl-top > b', (s) => s.map((x) => Number(x.textContent.replace(/\./g, ''))));
+      if (funnel.length !== 5 || funnel.some((v, i) => i && v > funnel[i - 1])) fail(vp, 'Trichter nicht monoton: ' + funnel.join(' → ')); else ok('Trichter: ' + funnel.join(' → '));
+      const props = await page.$$eval('.sc-prop', (b) => b.length);
+      if (props !== 6) fail(vp, 'Erwartet 6 Eigenschaften, gefunden ' + props); else ok('Sechs Eigenschaften mit Zielzahl');
+      const toolTiles = await page.$$eval('.sc-tools .sc-tooltile', (b) => b.map((x) => x.textContent));
+      if (toolTiles.length !== 2) fail(vp, 'Werkzeug-Kacheln (Gruppen und Verknüpfung, Ranking) fehlen: ' + toolTiles.join(' | ')); else ok('Gruppen und Ranking als Kacheln: ' + toolTiles.join(' | '));
       await checkLayout(page, vp, 'Build');
       await shot(page, vp, '04-build', true);
       if (!desk) {
@@ -164,11 +167,11 @@ for (const theme of ['light', 'dark']) {
       // den Tagesdaten zufaellig gleich bleiben (16.10.2026: Small 83 -> Mid 73 Titel, nach dem 52W-Filter beide Male 17).
       const filterState = async () => ({
         count: await page.textContent('.sc-counter strong'),
-        chips: (await page.$$eval('.sc-chip-body', (b) => b.map((x) => x.textContent))).join(' | '),
-        funnel: desk ? (await page.$$eval('.sc-funnel .sc-tl-top > b', (s) => s.map((x) => x.textContent))).join(' → ') : (await page.$$eval('.sc-chip-body span', (s) => s.map((x) => x.textContent))).join(' | ')
+        chips: (await page.$$eval(desk ? '.sc-chip-body' : '.sc-funnel .sc-tl-label', (b) => b.map((x) => x.textContent))).join(' | '),
+        funnel: (await page.$$eval('.sc-funnel .sc-tl-top > b', (s) => s.map((x) => x.textContent))).join(' → ')
       });
       const before = await filterState();
-      await page.click('.sc-chip-body:has-text("Market Cap")');
+      await page.click(desk ? '.sc-chip-body:has-text("Market Cap")' : '.sc-funnel .sc-tl:has-text("Market Cap")');
       await page.waitForSelector('.sc-sheet.is-open .sc-preset');
       await page.click('.sc-sheet.is-open .sc-preset:has-text("Mid")');
       await settle(page, 300);
@@ -262,7 +265,7 @@ for (const theme of ['light', 'dark']) {
       // 8 Speichern + erneut oeffnen + Veraenderungen
       await page.goto(BASE + '/screener/' + (await page.url()).split('/screener/')[1].replace(/&?cmp=[^&]*/, '').replace('view=compare', 'view=results'), { waitUntil: 'networkidle' });
       await page.waitForSelector('.sc-hr, .sc-rc, .sc-state, .sc-cr, .sc-table');
-      await page.click(desk ? '.sc-buildact button:has-text("Screen speichern")' : '.sc-resact .sc-save');
+      await page.click(desk ? '.sc-buildact button:has-text("Screen speichern")' : '.sc-heroact .sc-save');
       await page.waitForSelector('.sc-sheet.is-open input');
       await page.fill('.sc-sheet.is-open input', 'Tech Small Caps');
       await page.click('.sc-sheet.is-open .sc-sheet-foot .sc-btn-primary');
@@ -275,7 +278,7 @@ for (const theme of ['light', 'dark']) {
       await page.click('.sc-card:has-text("Tech Small Caps") .sc-btn:has-text("Veränderungen")');
       await page.waitForSelector('.sc-toggle');
       await shot(page, vp, '14-changes', true);
-      await page.click('.sc-card:has-text("Treffer öffnen") .sc-btn');
+      await page.click('.sc-chghero .sc-chg-open');
       await settle(page, 700);
       const chipsAgain = await page.$$eval('.sc-mini-chip', (b) => b.length);
       if (chipsAgain < 4) fail(vp, 'Wiedereröffneter Screen hat ' + chipsAgain + ' Filter'); else ok('Gespeicherter Screen wieder geöffnet');
@@ -300,7 +303,7 @@ for (const theme of ['light', 'dark']) {
       if ((await page.getAttribute('.sc-modeseg [aria-selected=true]', 'role')) !== 'tab' || !/Watchlist/.test(await page.textContent('.sc-modeseg [aria-selected=true]'))) fail(vp, 'Reiter Watchlist nicht aktiv'); else ok('Watchlist als Reiter unter Gespeichert');
       await checkLayout(page, vp, 'Watchlist');
 
-      // 11 Pro-Modus: Gruppen + Ranking + 15 Filter
+      // 11 Gruppen + Ranking (alte Links mit mode=pro) + 15 Filter
       const pro = '/screener/?mode=pro&f=revenueGrowth:gt:0.2&f=epsGrowth:gt:0.15&f=g2~priceVsSma200:gt:0&f=g2~rsi:lt:70&go=g2:OR&gn=g2:Technik&rank=momentum:40,growth:30,quality:20,value:10';
       await page.goto(BASE + pro, { waitUntil: 'networkidle' });
       await page.waitForSelector('.sc-group');
