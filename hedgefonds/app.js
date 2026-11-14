@@ -285,9 +285,9 @@
   function qband(period) {
     var p = period || S.data.latestPeriod, dl = nextDeadline(), due = p ? periodDeadline(p) : null;
     var dd = function (d) { return ("0" + d.getDate()).slice(-2) + "." + ("0" + (d.getMonth() + 1)).slice(-2) + "."; };
-    var col = function (k, v, sub) { return '<div><span class="vu-ltag">' + k + "</span><b>" + v + "</b><span>" + sub + "</span></div>"; };
-    return '<div class="hf-qb" role="group" aria-label="Quartal der Meldungen">' + col("Gezeigt", p ? quarter(p) : "–", p ? "Depots am " + dateDE(p) : "") +
-      col("Gemeldet bis", due ? dd(due) : "–", "45 Tage später") + col("Nächste Meldungen", dd(dl), "für " + deadlineQuarter(dl)) + "</div>";
+    var col = function (k, v, sub, on) { return '<div class="' + (on ? "is-on" : "is-next") + '"><i class="hf-qb-dot" aria-hidden="true"></i><span class="vu-ltag">' + k + "</span><b>" + v + "</b><span>" + sub + "</span></div>"; };
+    return '<div class="hf-qb" role="group" aria-label="Quartal der Meldungen">' + col("Gezeigt", p ? quarter(p) : "–", p ? "Depots am " + dateDE(p) : "", !!p) +
+      col("Gemeldet bis", due ? dd(due) : "–", "45 Tage später", !!due && due <= new Date()) + col("Nächste Meldungen", dd(dl), "für " + deadlineQuarter(dl), false) + "</div>";
   }
   /* Eine Karte, die ein anderes Quartal zeigt als das Band, sagt es. */
   function otherQ(f) { return S.data.latestPeriod && f.reportDate && f.reportDate !== S.data.latestPeriod ? "Stand " + quarter(f.reportDate) : ""; }
@@ -570,7 +570,8 @@
     o = o || {};
     var sub = o.sub != null ? o.sub : [f.manager ? fundName(f.name) : [f.city, regionLabel(f)].filter(Boolean).join(" · ") || f.style, f.manager && o.style !== false ? f.style : "",
       behind(f) ? "Stand " + quarter(f.reportDate) : "", f.stale ? "meldet nicht mehr" : ""].filter(Boolean).join(" · ");
-    return '<a class="hf-inv" href="#/fonds/' + esc(f.slug) + '">' + avatar(f) + '<span class="hf-inv-n"><b>' + esc(f.manager || fundName(f.name)) + "</b><small>" + esc(sub) + "</small></span>" +
+    return '<a class="hf-inv" href="#/fonds/' + esc(f.slug) + '">' + avatar(f) + '<span class="hf-inv-n"><b>' + esc(f.manager || fundName(f.name)) + "</b><small>" + esc(sub) + "</small>" +
+      (o.bar != null ? '<span class="hf-bar" aria-hidden="true"><i style="width:' + Math.max(1.5, Math.min(100, o.bar)).toFixed(1) + '%"></i></span>' : "") + "</span>" +
       '<span class="hf-inv-v"><b class="vu-num">' + (o.val != null ? o.val : usd(f.totalValueUSD)) + "</b>" + (o.chg != null ? o.chg : aumChg(f)) + "</span></a>";
   }
   // Anteils-Zeile: Kürzel, Name, Anteil, Veränderung, Balken
@@ -583,6 +584,22 @@
   }
   function explore(href, ico, title) {
     return '<a class="hf-explore" href="' + href + '"><span class="vu-hud hf-hud">' + icon(ico) + "</span><b>" + title + "</b></a>";
+  }
+  function next(title, sub, href, eyebrow) { return U.next({ title: title, sub: sub, href: href, eyebrow: eyebrow }); }
+  /* Geteilter Balken: links neongrün (Käufe, aufgestockt), rechts hell (Verkäufe). Nur gemeldete Anzahlen, keine Wertung. */
+  function split(a, b, la, lb) {
+    if (!(a + b)) return "";
+    return '<span class="hf-split" role="img" aria-label="' + esc(a + " " + la + ", " + b + " " + lb) + '"><span class="hf-split-b"><i class="b" style="flex:' + a + '"></i><i class="s" style="flex:' + b + '"></i></span>' +
+      '<span class="hf-split-l"><b>' + nf0.format(a) + " " + la + "</b><b>" + nf0.format(b) + " " + lb + "</b></span></span>";
+  }
+  /* Depotwert je Quartal als Mini-Säulen (bis zu acht gemeldete Quartale, letzte Säule neongrün). */
+  function miniBars(f) {
+    var h = (f.history || []).filter(function (x) { return x.valueUSD > 0; }).slice(-8);
+    if (h.length < 2) return "";
+    var max = Math.max.apply(null, h.map(function (x) { return x.valueUSD; }));
+    return '<span class="hf-mini" role="img" aria-label="Depotwert je Quartal, ' + h.length + ' Quartale bis ' + quarter(h[h.length - 1].period) + '">' + h.map(function (x, i) {
+      return "<i" + (i === h.length - 1 ? ' class="is-last"' : "") + ' style="height:' + Math.max(8, x.valueUSD / max * 100).toFixed(0) + '%"></i>';
+    }).join("") + "</span>";
   }
   function closeLine(text) { return '<p class="hf-close">' + text + "</p>"; }
   /* Daten & Methodik: einmal je Seite, am Ende (VU3). */
@@ -624,7 +641,7 @@
   /* ---------------------------------------------------------------- H01 Start */
   function starCard(f) {
     var q = otherQ(f);
-    return '<a class="vu-box hf-scard" href="#/fonds/' + esc(f.slug) + '">' + avatar(f, "md") + '<b class="hf-scard-n">' + esc(f.manager || fundName(f.name)) + "</b><small>" + esc(f.manager ? fundName(f.name) : f.style) + "</small>" +
+    return '<a class="vu-box hf-scard" href="#/fonds/' + esc(f.slug) + '">' + '<span class="hf-scard-top">' + avatar(f, "md") + miniBars(f) + "</span>" + '<b class="hf-scard-n">' + esc(f.manager || fundName(f.name)) + "</b><small>" + esc(f.manager ? fundName(f.name) : f.style) + "</small>" +
       '<span class="hf-card-val"><b class="vu-num">' + usd(f.totalValueUSD) + "</b>" + aumChg(f) + "</span>" + (q ? '<small class="hf-scard-q">' + q + "</small>" : "") + "</a>";
   }
   function railHead(title, href, link, sub) { return '<div class="hf-rh">' + sect(title, href, link) + (sub ? '<p class="hf-rh-s">' + sub + "</p>" : "") + "</div>"; }
@@ -632,18 +649,28 @@
     var d = S.data, inv = investors();
     var featured = FEATURED.map(function (s) { return S.bySlug[s]; }).filter(Boolean);
     document.title = "Hedgefonds — Vision Universe®";
-    root.innerHTML = '<header class="hf-intro"><div class="vu-ltag">Hedgefonds · 13F</div><h1 class="vu-lt">Was große Fonds gemeldet haben</h1></header>' +
+    root.innerHTML = '<section class="hf-hero vu-night"><header class="hf-intro"><div class="vu-ltag">Hedgefonds · 13F</div><h1 class="vu-lt">Was große Fonds gemeldet haben</h1></header>' +
       qband() + '<p class="hf-qb-note">Meldungen zeigen, was Fonds vor Monaten hielten, nicht heute.</p>' +
-      searchBox("hf-q", "hf-qres", "Investor, Fonds oder Aktie …") +
+      searchBox("hf-q", "hf-qres", "Investor, Fonds oder Aktie …") + "</section>" +
       railHead("Star-Investoren", "#/investoren", "Alle " + inv.length, "Bekannte Namen, Depotwert zum " + dateDE(d.latestPeriod).slice(0, 6)) +
       '<div class="hf-track">' + featured.map(starCard).join("") + "</div>" +
       railHead("Was die Stars bewegt haben", "#/aktien", "Alle", "Geschätzter Wert der Käufe im Quartal.").replace('<p class="hf-rh-s">', '<p class="hf-rh-s" id="hf-aggs">') +
       seg([{ id: "buys", label: "Gekauft" }, { id: "sells", label: "Verkauft" }, { id: "held", label: "Meistgehalten" }], S.homeMode || "buys", 'id="hf-hmode" role="group" aria-label="Käufe, Verkäufe oder meistgehalten"') +
       '<div id="hf-agg" class="vu-box hf-mvl"></div>' +
       railHead("Viele Fonds, gleiche Aktie", "#/gruppen-kaeufe", "Alle", "Aktien, die viele Fonds im Quartal neu gekauft haben, und Käufe mehrerer Insider.") +
+      '<div id="hf-grp"></div>' +
       U.navcard({ href: "#/gruppen-kaeufe", glyph: "grid", title: "Gruppen-Käufe", sub: "Viele Fonds, gleiche Aktie" }) +
+      next("Screener: Aktien nach eigenen Regeln", "Filtern nach Kennzahlen und Bedingungen", "/screener/") +
       footer();
     renderAgg();
+    /* Die ersten drei Zeilen der Seite Gruppen-Käufe (meiste neue Fonds-Positionen), wenn die Eigentümer-Daten vorliegen. */
+    Promise.all([loadOwnHighlights(), loadStockIndex()]).then(function (res) {
+      var h = res[0], host = document.getElementById("hf-grp"), ni = h && h.mostNewInstitutions || [];
+      if (!host || !ni.length) return;
+      host.innerHTML = '<div class="vu-box hf-mvl hf-grpbox">' + smFlows(ni, function (r) { return "+" + nf0.format(r.newPositions) + " Fonds"; },
+        function (r) { return nf0.format(r.exits) + " ausgestiegen · " + nf0.format(r.holders) + " halten"; }, function (r) { return r.newPositions; }, 3) +
+        '<p class="hf-note-s">Meiste neue Fonds-Positionen' + (ni[0].period ? " · " + quarter(ni[0].period) : "") + ", alle 13F-Melder.</p></div>";
+    }).catch(function () {});
     attachSearch(document.getElementById("hf-q"), document.getElementById("hf-qres"), { inline: true });
     bindSeg(document.getElementById("hf-hmode"), function (v) { S.homeMode = v; renderAgg(); });
   }
@@ -664,11 +691,11 @@
     if (!host) return;
     if (sub) sub.textContent = mode === "held" ? "Bei wie vielen Star-Investoren die Aktie im Depot liegt." : "Geschätzter Wert der " + (mode === "buys" ? "Käufe" : "Verkäufe") + " im Quartal.";
     if (mode === "held") {
-      var c = (stars.consensus || []).slice(0, 3), mx = c.length ? c[0].fundCount : 1;
+      var c = (stars.consensus || []).slice(0, 5), mx = c.length ? c[0].fundCount : 1;
       host.innerHTML = c.map(function (a) { return mvRow(a, a.fundCount + " Fonds", "Ø " + pct(a.avgWeightPct) + " Anteil im Depot", a.fundCount / mx * 100, true); }).join("") || '<p class="hf-none">Keine Daten für dieses Quartal.</p>';
       return;
     }
-    var list = (mode === "buys" ? stars.buys : stars.sells || []).slice(0, 3), max = list.length ? Math.abs(list[0].estValueUSD) || 1 : 1;
+    var list = (mode === "buys" ? stars.buys : stars.sells || []).slice(0, 5), max = list.length ? Math.abs(list[0].estValueUSD) || 1 : 1;
     host.innerHTML = list.map(function (a) {
       var s2 = a.fundCount + " Fonds" + (mode === "buys" ? (a.newCount ? " · " + a.newCount + " neu" : "") : (a.soldCount ? " · " + a.soldCount + " ganz raus" : ""));
       return mvRow(a, (mode === "buys" ? "+" : "−") + usd(Math.abs(a.estValueUSD)), s2, Math.abs(a.estValueUSD) / max * 100, mode === "buys");
@@ -726,7 +753,7 @@
       }).join("") + '<button type="button" class="vu-chip hf-chip-q" id="hf-stylehelp" aria-label="Was heißt welcher Stil?">?</button></div>' +
       '<div class="hf-listhead"><span id="hf-invcount"></span><button type="button" class="hf-link" id="hf-sortbtn">' + U.glyph("filter", 14) + '<span id="hf-sortl"></span></button></div>' +
       '<div id="hf-invlist"></div><div class="hf-gap">' + U.help("Die Prozentzahl ist die Veränderung des gemeldeten Depotwerts zum Vorquartal. Sie enthält Kursgewinne und Zukäufe und ist keine Rendite.") + "</div>" +
-      moreBtn("hf-invmore") + closeLine("Meldungen " + esc(S.data.latestPeriodLabel || "") + ".");
+      moreBtn("hf-invmore") + closeLine("Meldungen " + esc(S.data.latestPeriodLabel || "") + ".") + next("Wer hält welche Aktie?", "Meistgehalten, Käufe und Verkäufe im Quartal", "#/aktien");
     function draw() {
       var tokens = words(S.invQ);
       var list = inv.filter(function (f) {
@@ -734,7 +761,8 @@
         return !tokens.length || matchScore(tokens, fundFields(f)) > 0;
       }).sort(sorter(S.sort));
       var shown = list.slice(0, S.invShown || INV_PAGE), more = document.getElementById("hf-invmore");
-      document.getElementById("hf-invlist").innerHTML = shown.length ? shown.map(function (f) { return invRow(f); }).join("") : '<p class="hf-none">Kein Investor passt dazu.</p>';
+      var vmax = Math.max.apply(null, list.map(function (f) { return f.totalValueUSD || 0; }).concat([1]));
+      document.getElementById("hf-invlist").innerHTML = shown.length ? shown.map(function (f) { return invRow(f, { bar: f.totalValueUSD / vmax * 100 }); }).join("") : '<p class="hf-none">Kein Investor passt dazu.</p>';
       document.getElementById("hf-invcount").textContent = list.length + (list.length === 1 ? " Investor" : " Investoren");
       document.getElementById("hf-sortl").textContent = sortLabel(INV_SORT, S.sort);
       more.hidden = list.length <= shown.length;
@@ -791,7 +819,8 @@
     }
     function draw() {
       var list = filtered(), shown = list.slice(0, S.dbShown), showChg = S.dbSort === "change" || S.dbSort === "drop";
-      document.getElementById("hf-dblist").innerHTML = shown.length ? shown.map(function (f) { return invRow(f, { chg: showChg ? aumChg(f) : "", style: false }); }).join("") : '<p class="hf-none">Kein Fonds passt zur Suche.</p>';
+      var vmax = Math.max.apply(null, list.map(function (f) { return f.totalValueUSD || 0; }).concat([1]));
+      document.getElementById("hf-dblist").innerHTML = shown.length ? shown.map(function (f) { return invRow(f, { chg: showChg ? aumChg(f) : "", style: false, bar: f.totalValueUSD / vmax * 100 }); }).join("") : '<p class="hf-none">Kein Fonds passt zur Suche.</p>';
       document.getElementById("hf-dbcount").textContent = nf0.format(list.length) + " Fonds · " + sortLabel(DB_SORT, S.dbSort);
       var more = document.getElementById("hf-dbmore");
       more.hidden = list.length <= shown.length;
@@ -852,6 +881,7 @@
       sect("Mehr") + '<div class="vu-stack">' +
         U.navcard({ href: "#/gruppen-kaeufe", glyph: "plus", title: "Gruppen-Käufe", sub: "Viele Fonds, gleiche Aktie" }) +
         U.navcard({ href: "#/gruppen-kaeufe/insider", glyph: "line", title: "Insider-Käufe", sub: "Chefs kaufen eigene Aktien" }) + "</div>" +
+      next("Star-Investoren", "Depots der bekanntesten Manager", "#/investoren") +
       footer();
     attachSearch(document.getElementById("hf-sq"), document.getElementById("hf-sqres"), { inline: true, stocksOnly: true, stockLimit: 10 });
     function draw() {
@@ -954,8 +984,9 @@
       root.innerHTML = '<div class="hf-detail"><div id="hf-shead">' + stockHeadFallback(a, name, "#/aktien", "Alle Aktien") + "</div>" + qband() +
         story("Investoren in drei Sätzen · " + (d.latestPeriodLabel || ""), [
           ["users", "Fonds", nf0.format(holders.length) + " Hedgefonds halten " + esc(name) + ", darunter " + stars.length + " Star-Investoren.", U.verdict(many[0], many[1])],
-          ["pulse", "Bewegung", buyers.length + " haben aufgestockt, " + nSell + " verkauft: " + vd.text.toLowerCase() + ".", U.verdict(vd.kind, vd.text)],
-          ["key", "Insider", a.ticker ? "Insider-Daten werden geladen …" : "Ohne Kürzel keine Insider-Daten.", U.verdict("none", "Offen"), "hf-insrow"]]) +
+          ["pulse", "Bewegung", buyers.length + " haben aufgestockt, " + nSell + " verkauft: " + vd.text.toLowerCase() + ".", U.verdict(vd.kind, vd.text), null, split(buyers.length, nSell, "aufgestockt", "verkauft")],
+          ["key", "Insider", a.ticker ? "Insider-Daten werden geladen …" : "Ohne Kürzel keine Insider-Daten.", U.verdict("none", "Offen"), "hf-insrow"]],
+          U.stats([{ value: nf0.format(holders.length), label: "Hedgefonds", tone: "lime" }, { value: nf0.format(stars.length), label: "Star-Investoren" }, { value: nf0.format(nNew), label: "neu" }, { value: nf0.format(sellers.length), label: "ganz raus" }], { label: "Halter von " + name })) +
         '<div class="hf-gap">' + U.help(vd.help) + "</div>" +
         sectBtn("Star-Investoren mit " + esc(name), "hf-hall", "Alle " + stars.length) +
         '<div class="vu-box hf-mvl" id="hf-starrows">' + (starsByValue.slice(0, 4).map(starHolderRow).join("") || '<p class="hf-none">Kein Star-Investor hält ' + esc(name) + ".</p>") + "</div>" +
@@ -984,17 +1015,14 @@
         more.textContent = "Alle " + list.length + " Fonds zeigen";
       }
       document.getElementById("hf-hall").addEventListener("click", function () {
-        var acc = document.getElementById("hf-allacc");
         hMode = "star"; hShown = 1e9;
-        acc.open = true;
-        [].forEach.call(acc.querySelectorAll("[data-v]"), function (x) { x.setAttribute("aria-pressed", x.getAttribute("data-v") === "star"); });
-        draw();
-        acc.scrollIntoView({ block: "start" });
+        document.getElementById("hf-allacc").click();
       });
       if (a.ticker) loadOwnIssuer(a.ticker).then(function (r) {
         var row = document.getElementById("hf-insrow");
         if (!row) return;
         var x = r && r.data, ins = x && x.insider, inst = x && x.institutions, p = row.querySelector("p"), v = row.lastElementChild;
+        if (ins && (ins.ib90 || ins.is90)) p.insertAdjacentHTML("afterend", split(ins.ib90 || 0, ins.is90 || 0, "Käufer", "Verkäufer"));
         if (!ins) { p.textContent = "Zu den Insidern von " + name + " liegen noch keine Daten vor."; }
         else {
           var b = ins.ib90 || 0, se = ins.is90 || 0, w = function (n) { return n === 0 ? "keiner" : n === 1 ? "1 Insider" : n + " Insider"; };
@@ -1181,19 +1209,22 @@
     });
   }
   /* Konzept EHV: drei Sätze (Story-Karte) und Kapitel (zugeklappt, Inhalt beim Öffnen). */
-  function story(title, rows) {
-    return '<section class="hf-story" aria-label="' + esc(title) + '"><div class="vu-ltag">' + esc(title) + "</div>" + rows.map(function (r) {
-      return '<div class="hf-story-r"' + (r[4] ? ' id="' + r[4] + '"' : "") + '><span class="vu-hud hf-hud">' + icon(r[0]) + '</span><div><span class="vu-ltag">' + esc(r[1]) + "</span><p>" + r[2] + "</p></div>" + r[3] + "</div>";
+  function story(title, rows, top) {
+    return '<section class="hf-story vu-night" aria-label="' + esc(title) + '"><div class="vu-ltag">' + esc(title) + "</div>" + (top || "") + rows.map(function (r) {
+      return '<div class="hf-story-r"' + (r[4] ? ' id="' + r[4] + '"' : "") + '><span class="vu-hud hf-hud">' + icon(r[0]) + '</span><div><span class="vu-ltag">' + esc(r[1]) + "</span><p>" + r[2] + "</p>" + (r[5] || "") + "</div>" + r[3] + "</div>";
     }).join("") + "</section>";
   }
-  function chapter(n, ico, title, sub, id) {
-    return '<details class="hf-ep" id="' + id + '"><summary><b class="hf-ep-n vu-num">' + n + '</b><span class="vu-hud hf-hud">' + icon(ico) + '</span><span class="hf-ep-t"><b>' + title + "</b><span>" + sub +
-      '</span></span><span class="hf-ep-go" aria-hidden="true">' + U.glyph("next", 15) + '</span></summary><div class="hf-ep-body"></div></details>';
+  function chapter(n, ico, title, sub, id, graphic) {
+    return '<button type="button" class="hf-ep" id="' + id + '" aria-haspopup="dialog"><span class="vu-hud hf-hud">' + icon(ico) + '</span><span class="hf-ep-t"><b>' + title + "</b><span>" + sub +
+      "</span></span>" + (graphic || "") + "</button>";
   }
   function onChapter(id, fill) {
-    var d = document.getElementById(id), done = false;
+    var d = document.getElementById(id);
     if (!d) return;
-    d.addEventListener("toggle", function () { if (d.open && !done) { done = true; fill(d.querySelector(".hf-ep-body")); } });
+    d.addEventListener("click", function () {
+      var el = openSheetHtml(id + "-sheet", d.querySelector(".hf-ep-t b").textContent, '<div class="hf-ep-body"></div>');
+      fill(el.querySelector(".hf-ep-body"));
+    });
   }
   // Aktie ohne Fondsdaten (z. B. aus der Insider-Liste): nur Insider und 13F-Melder
   function renderTickerStock(ticker) {
@@ -1290,7 +1321,8 @@
         '<div class="hf-kt2">' +
           '<div class="hf-kt"><small>Depotwert ' + dateDE(d.reportDate).slice(0, 6) + U.q("Summe der gemeldeten US-Positionen zum Stichtag " + dateDE(d.reportDate) + ". Darunter die Veränderung zum Vorquartal (" + (d.prevTotalValueUSD ? usd(d.prevTotalValueUSD) : "kein Vorquartal") + "); sie ist keine Rendite.", "Depotwert") +
             '</small><b class="vu-num">' + usd(d.totalValueUSD) + "</b>" + (d.aumChangePct != null && !d.jump ? U.chg(d.aumChangePct, { digits: 1 }) : "") + "</div>" +
-          '<div class="hf-kt"><small>Positionen</small><b class="vu-num">' + nf0.format(d.positionCount) + "</b><span>" + (top5 != null ? "Top 5 = " + pct(top5) : "") + "</span></div></div>" +
+          '<div class="hf-kt hf-kt--ring"><div><small>Positionen</small><b class="vu-num">' + nf0.format(d.positionCount) + "</b><span>" + (top5 != null ? "Top 5 = " + pct(top5) : "") + "</span></div>" +
+            (top5 != null ? U.ring(top5, { size: 54, stroke: 7, text: "", label: "Anteil der fünf größten Positionen" }) : "") + "</div></div>" +
         story("Das Quartal in drei Sätzen", [
           ["pie", "Größte Position", biggest ? esc(stockName(biggest)) + " ist mit " + pct(biggest.weightPct) + " die größte Position." : "Keine Positionen gemeldet.", U.verdict("mid", "Größte")],
           ["up", "Gekauft", buyList.length ? "Mehr " + two(buyList) + "." : "Keine Käufe in diesem Quartal.", buyList.length ? U.verdict("strong", buyList[0].status === "new" ? "Neu" : "Aufgestockt") : U.verdict("none", "Keine")],
@@ -1301,9 +1333,9 @@
           return "<" + tag + ' class="hf-mvr hf-pp"' + (href ? ' href="' + href + '"' : "") + ">" + logo(h) + '<span class="hf-mvr-b"><b>' + stockName(h) + '</b><span class="hf-bar is-buy"><i style="width:' + Math.max(1.5, h.weightPct / (plain[0].weightPct || 1) * 100).toFixed(1) + '%"></i></span></span>' +
             '<b class="vu-num">' + pct(h.weightPct) + "</b>" + (h.status === "unchanged" ? '<span class="hf-flat">gleich</span>' : move(h)) + "</" + tag + ">";
         }).join("") + "</div>" +
-        '<div class="hf-eps">' + chapter(1, "chart", "Depotwert im Verlauf", ((d.history || []).length || 0) + " Quartale", "hf-ch-hist") +
-          chapter(2, "table", "Käufe (" + nBuys + ") und Verkäufe (" + nSells + ")", "mit Stückzahl und Wert", "hf-ch-trades") +
-          chapter(3, "calendar", "Werte je Quartal", "Tabelle", "hf-ch-q") + "</div>" +
+        sect("Depotwert im Verlauf") + historyBars(d, true) +
+        '<div class="hf-eps">' + chapter(1, "table", "Käufe (" + nBuys + ") und Verkäufe (" + nSells + ")", "mit Stückzahl und Wert", "hf-ch-trades", split(nBuys, nSells, "Käufe", "Verkäufe")) +
+          chapter(2, "calendar", "Werte je Quartal", "Tabelle", "hf-ch-q") + "</div>" +
         (f.bio ? '<p class="hf-bio">' + esc(f.bio) + "</p>" : "") +
         '<details class="hf-acc"><summary>13F-Meldung bei der SEC</summary><div class="hf-kvrow"><span><b>Gemeldet am</b></span><b>' + dateDE(d.filedDate) + '</b></div><div class="hf-kvrow"><span><b>Stichtag</b></span><b>' + dateDE(d.reportDate) +
           '</b></div><div class="hf-kvrow"><span><b>Formular</b></span><b>' + esc(d.form || "13F-HR") + "</b></div>" + (d.secName ? '<div class="hf-kvrow"><span><b>SEC-Melder</b></span><b>' + esc(d.secName) + "</b></div>" : "") +
@@ -1311,8 +1343,8 @@
         (photo ? '<details class="hf-acc"><summary>Foto und Lizenz</summary><p class="vu-sm hf-gap-s">Foto: ' + esc(photo.artist) + ", " + (photo.licenseUrl ? '<a href="' + esc(photo.licenseUrl) + '" target="_blank" rel="noopener">' + esc(photo.license) + "</a>" : esc(photo.license)) +
           (photo.sourceUrl ? ' · <a href="' + esc(photo.sourceUrl) + '" target="_blank" rel="noopener">Wikimedia Commons</a>' : "") + "</p></details>" : "") +
         closeLine("Vergleich " + quarter(d.prevReportDate) + " → " + quarter(d.reportDate) + (q ? " · " + q : "") + ".") +
+        next(f.category === "Investoren" ? "Alle Star-Investoren" : "Alle Fonds", "Depotwert, Veränderung und größte Positionen", f.category === "Investoren" ? "#/investoren" : "#/investoren/alle") +
         footer() + "</div>";
-      onChapter("hf-ch-hist", function (body) { body.innerHTML = historyBars(d, true); });
       onChapter("hf-ch-trades", function (body) {
         body.innerHTML = seg([{ id: "buys", label: "Käufe " + nBuys }, { id: "sells", label: "Verkäufe " + nSells }], "buys", 'id="hf-ftabs" role="group" aria-label="Käufe oder Verkäufe"') + '<div id="hf-tabbody">' + fundTab(d, "buys") + "</div>" +
           (d.optionCount ? '<p class="hf-note-s">Optionen (Calls/Puts) sind nicht mitgezählt; sie stehen mit dem Wert des Basiswerts in der Liste.</p>' : "");
