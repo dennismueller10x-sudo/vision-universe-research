@@ -144,8 +144,9 @@ async function main() {
     if (args['access-login']) {
       // Sichtbares Produkt: die neu gestaltete Startseite (.st-r-intro, ST01) oder ein
       // klassischer Kopf (.st-hero). Seit dem Redesign (#1361) hat die Startseite kein .st-hero
-      // mehr; das Warten darauf liess den Login scheitern und die Schutzproben leer laufen.
-      const PRODUCT = '.st-r-intro, .st-hero';
+      // mehr; das Warten darauf liess den Login scheitern und die Schutzproben leer laufen. Die Startseite
+      // zeigt heute ihre Ueberschrift als h1.st-x-lt (Tagesbild, st-redesign.js); sie gilt ebenfalls als Produkt.
+      const PRODUCT = '.st-r-intro, .st-x-lt, .st-hero';
       const pass = process.env.RESEARCH_ACCESS_PASSWORD || '';
       const p = await ctx.newPage();
       await p.goto(base + '/supertrader/', { waitUntil: 'domcontentloaded' });
