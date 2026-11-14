@@ -184,7 +184,10 @@
      Waehrungsregel wie in Quant und Discover. Er kommt erst, wenn die Chartseite ihn braucht. */
   var CHART_WIDGET_SCRIPTS = ["/assets/vu-chart.js", "/quant/engines/realtime/market-hours.js", "/quant/engines/realtime/trading-session.js",
     "/quant/engines/realtime/freshness.js", "/quant/engines/realtime/source-state.js", "/quant/engines/realtime/intraday-snapshot.js",
-    "/discover/ui/live-hub.js", "/quant/engines/series-sampling.js", "/core/chart-history.js", "/quant/app/chart.js"];
+    "/discover/ui/live-hub.js", "/quant/engines/series-sampling.js", "/core/chart-history.js", "/quant/app/chart.js",
+    /* Live-Strom: dieselbe Freigabe wie in Quant (quant/api/realtime-capability.js: Identitaet, Konfiguration, Anzeige-Freigabe je Ticker). */
+    "/quant/engines/hash.js", "/quant/engines/instrument-classification.js", "/quant/engines/company-master.js", "/quant/engines/instrument-directory.js",
+    "/quant/engines/display-policy.js", "/quant/engines/realtime/transport.js", "/quant/api/live-relay-client.js", "/quant/api/realtime-capability.js"];
   var chartWidgetReady = null;
   function loadChartWidget() {
     if (chartWidgetReady) return chartWidgetReady;
@@ -1466,7 +1469,10 @@
     loadChartWidget().then(function (Chart) {
       if (!Chart || !Chart.create) { put(host, stateBox("Chart nicht verfügbar", "Die Chart-Komponente konnte nicht geladen werden.")); return; }
       var eod = S.dates.map(function (d, i) { return [d, S.close[i]]; });
+      /* Der Strom kommt nur, wenn die gemeinsame Freigabe ihn fuer diesen Ticker erlaubt (sonst bleibt es beim Snapshot). */
+      var RT = global.VURealtimeCapability && global.VUDisplayPolicy ? global.VURealtimeCapability.create({ loadJSON: fetchJSON, displayPolicy: global.VUDisplayPolicy }) : null;
       widget = Chart.create({ ticker: X.T, eod: eod, currency: "USD", adjusted: true, onPaint: paintLayers,
+        realtime: RT ? function () { return RT.getRealtimeCapability(X.T); } : undefined,
         longPath: M.LONG_DIR + global.VUCore.Identity.securityIdForTicker(X.T) + ".json", loadJSON: fetchJSON,
         /* Der Kopf zeigt denselben Kurs wie Quant und Discover: laufender oder letzter Tageskurs aus dem Tagesverlauf. */
         onPrice: function (p) { if (X.head && X.head.setPrice && typeof p.price === "number") X.head.setPrice({ value: p.price, currency: "USD", changePct: typeof p.delta === "number" ? p.delta : null, changeLabel: "heute", kind: p.kind || "delayed", at: p.at || p.when }); } });

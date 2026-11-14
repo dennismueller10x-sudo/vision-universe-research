@@ -31,6 +31,7 @@ const SignalBacktest=typeof module!=='undefined'&&module.exports?require('../eng
 const StrategyMatch=typeof module!=='undefined'&&module.exports?require('../engines/strategy-match.js'):g.VUStrategyMatch;
 const MarketRegime=typeof module!=='undefined'&&module.exports?require('../engines/market-regime.js'):g.VUMarketRegime;
 const ReturnSeries=typeof module!=='undefined'&&module.exports?require('../engines/return-series.js'):g.VUReturnSeries;
+const RealtimeCapability=typeof module!=='undefined'&&module.exports?require('./realtime-capability.js'):g.VURealtimeCapability;
 const Freshness=typeof module!=='undefined'&&module.exports?require('../engines/realtime/freshness.js'):(g.VURealtime&&g.VURealtime.Freshness);
 function create(options){
  const load=options.loadJSON, policy=options.displayPolicy, queryEngine=options.queryEngine; let ready,configReady;
@@ -1362,14 +1363,12 @@ function create(options){
    return {state:'INTRADAY_AVAILABLE',identity:identityModel(instrument),snapshot,points:snapshot.points,asOf:snapshot.asOf,sessionDate:session,isLive:false,isDelayed:snapshot.isDelayed,priceSemantics:'UNSPECIFIED',sourcePath:path};
   }catch{return unavailable('SOURCE_MISSING');}
  }
- async function getRealtimeCapability(ticker){
-  ticker=String(ticker||'').toUpperCase();if(!/^[A-Z0-9.-]{1,12}$/.test(ticker))return unavailable('INVALID_IDENTITY');
-  try{const instrument=await identity(ticker);if(!instrument)return unavailable('INVALID_IDENTITY');
-   const c=await config(),stream=c.preview.stream;
-   if(!stream?.enabled||!await publicPermission(ticker,'realtime','realtime'))return unavailable('DISPLAY_NOT_PERMITTED');
-   if(stream.url!=='wss://live.visionuniverse.de/live')return unavailable('UNSUPPORTED_RELAY');
-   return {state:'AVAILABLE',identity:identityModel(instrument),transport:'VISION_UNIVERSE_RELAY',url:stream.url,onDemand:true,connectionState:'NOT_CONNECTED',priceSemantics:'UNSPECIFIED',chartMovement:'TRADE_EVENTS_ONLY'};
-  }catch{return unavailable('SOURCE_MISSING');}
+ /* Die Freigabe des Live-Stroms steht in quant/api/realtime-capability.js (eine Stelle fuer Quant und Technical);
+    hier nur die Verdrahtung mit der eigenen Identitaet, Konfiguration und Freigabe-Politik. */
+ let realtimeCapability=null;
+ function getRealtimeCapability(ticker){
+  if(!realtimeCapability)realtimeCapability=RealtimeCapability.create({loadJSON:load,displayPolicy:policy,master:Master,directory:Directory,identity,config,publicPermission});
+  return realtimeCapability.getRealtimeCapability(ticker);
  }
  function getRecipes(){return [
   {id:'positive-momentum',title:'Kursstärke entdecken',explanation:'Unternehmen mit nicht negativer Kursentwicklung über sechs Monate.',field:'momentum6m',threshold:0,rule:'Kursentwicklung über 6 Monate ≥ 0 %'},
