@@ -207,7 +207,7 @@ App-Seite heißt „Eigenwerbung“; Geschäftsmodell und finanzielle Kernaussag
 Themen-Buttons; Seite 2 ein Inhaltsverzeichnis mit Bildern in verschiedenen Größen; Seite 3 nur Zahlen („auf einen Blick“),
 Zahlen und Fließtext sonst nicht mischen; Platz ausnutzen; nie helle Schrift auf Neongrün; letzte Seite ein großes
 Vision-Universe-Werbebild mit nur www.visionuniverse.de. Das Prüftor meldet helle Schrift auf Grün als Fehler und
-Weißraum über 20 mm vor der Fußzeile als Hinweis (`"weissraum": false` je Seite schaltet ab). Offen für die Anwaltsprüfung der Vorlage:
+Weißraum über 20 mm vor der Fußzeile als Hinweis (`"weissraum": false` je Seite schaltet ab). Interessenkonflikte stehen allgemein im Impressum (Owner 14.11.2026: Herausgeber und Beteiligte können Aktien der besprochenen Unternehmen halten), nicht je Report einzeln. Bilder: offizielles Pressematerial auch ohne ausdrückliche Lizenz (Owner-Entscheidung 14.11.2026). Offen für die Anwaltsprüfung der Vorlage:
 Einordnung nach MAR/DelVO 2016/958, konkrete Angaben zu Interessenkonflikten, Bildrechte (Pressematerial), Weitergabe von Kursdaten.
 
 Regeln wie im Heft (Abschnitt 6). Zusätzlich: Privatpersonen, gegen die nur Vorwürfe bestehen, werden nicht namentlich
