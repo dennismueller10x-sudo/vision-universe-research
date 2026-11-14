@@ -1,0 +1,34 @@
+<section class="page">
+  <div data-run="Die Marke"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Die Marke</span>
+    <div class="hx" style="margin-top:3mm">29 Jahre GTA</div>
+    <div class="sub" style="margin-top:3mm;max-width:172mm">Aus einem kleinen Spiel mit Draufsicht wurde eine der erfolgreichsten Unterhaltungsmarken der Welt. Die wichtigsten Stationen, und was sie für Take-Two bedeuteten.</div>
+    <div style="margin-top:6mm" data-k="zeitleiste"></div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:4mm;margin-top:5mm">
+      <div class="card ink"><div class="num-xl" style="color:var(--lime);font-size:34pt">3&nbsp;Tage</div><div class="sm" style="margin-top:2mm;font-weight:700">brauchte GTA V im September 2013 für 1&nbsp;Mrd.&nbsp;$ Umsatz. Kein Unterhaltungsprodukt war vorher schneller.</div><div class="xs" style="color:#9a9a9a;margin-top:1mm">Guinness World Records</div></div>
+      <div class="card lime"><div class="num-xl" style="font-size:34pt">&gt;&nbsp;230&nbsp;Mio.</div><div class="sm" style="margin-top:2mm;font-weight:700">verkaufte Exemplare von GTA V. Die ganze Reihe kommt auf fast 475 Millionen.</div><div class="xs" style="margin-top:1mm">Take-Two, laut Game Developer (08/2026)</div></div>
+      <div class="card"><div class="num-xl" style="font-size:34pt">78&nbsp;%</div><div class="sm" style="margin-top:2mm;font-weight:700">der Buchungen im GJ 2026 kamen aus laufenden Ausgaben in Spielen: Spielwährung, Zusatzinhalte, Werbung.</div><div class="xs mu" style="margin-top:1mm">Take-Two, Geschäftsjahr bis 31.03.2026</div></div>
+    </div>
+    <div class="body" style="margin-top:5mm">
+      <p>Die wichtigste Lehre aus GTA V steht in der rechten Kachel. Ein GTA wird heute nicht nur einmal verkauft. GTA Online, der Mehrspieler-Modus, läuft seit 2013 und bringt bis heute Geld durch virtuelle Währung und Erweiterungen. Take-Two weist diesen Umsatz nicht einzeln aus, nennt GTA Online und GTA V aber in jedem Quartal unter den größten Umsatzbringern. Für GTA VI ist die entscheidende Frage deshalb nicht nur, wie viele Exemplare im ersten Monat verkauft werden, sondern wie lange die Welt danach lebt.</p>
+    </div>
+    <div class="ph" style="height:104mm;margin-top:5mm;background-image:url(img/vice-city-01.jpg);background-position:50% 40%"><div class="cap">Zurück in Vice City: Die Stadt aus GTA Vice City (2002) ist der Schauplatz von GTA VI. Bild: Rockstar Games</div></div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('zeitleiste',()=>{const r=[
+ ['1997','GTA','Erstes Spiel von DMA Design, Stadt von oben gesehen.',0],
+ ['1998','Take-Two','übernimmt die Rechte, Rockstar Games entsteht.',0],
+ ['2001','GTA III','Der Sprung in die 3D-Welt.',1],
+ ['2002','Vice City','Erstes Vice City, im Stil der 80er.',0],
+ ['2004','San Andreas','Drei Städte, ein Staat.',0],
+ ['2008','GTA IV','Liberty City, ernster Ton.',1],
+ ['2013','GTA V','1 Mrd. $ in drei Tagen, dazu GTA Online.',1],
+ ['2018','Red Dead 2','Rockstars Western, über 85 Mio. verkauft.',0],
+ ['2023','Trailer 1','Rekord auf YouTube.',0],
+ ['2025','Zwei Verschiebungen','Erst auf Mai, dann auf November 2026.',0],
+ ['2026','GTA VI','Start am 19. November.',1],
+];return `<div style="position:relative;display:grid;grid-template-columns:repeat(${r.length},1fr);gap:2mm"><div style="position:absolute;left:0;right:0;top:4.2mm;height:2px;background:#000"></div>${r.map(x=>`<div style="position:relative"><div style="width:${x[3]?4.5:3}mm;height:${x[3]?4.5:3}mm;border-radius:50%;background:${x[3]?'var(--lime)':'#000'};border:1.5px solid #000;margin:${x[3]?2:2.8}mm 0 0"></div><div style="font-size:${x[3]?13:10}pt;font-weight:900;margin-top:2mm;letter-spacing:-.02em">${x[0]}</div><div style="font-size:8pt;font-weight:800;margin-top:.5mm;line-height:1.15">${x[1]}</div><div class="xs mu" style="margin-top:.8mm;font-size:6.9pt">${x[2]}</div></div>`).join('')}</div>`;});
+</script>

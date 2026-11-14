@@ -1,0 +1,32 @@
+<section class="page imgtop">
+  <div class="img" style="left:0;right:0;top:0;height:125mm;background-image:linear-gradient(0deg,rgba(0,0,0,.85),rgba(0,0,0,.05) 60%),url(img/vice-city-15.jpg);background-position:50% 50%"></div>
+  <span class="imgnote" style="right:14mm;top:15mm">Bild: Rockstar Games</span>
+  <div data-run="Szenarien"></div>
+  <div style="position:absolute;left:14mm;right:14mm;top:88mm;color:#fff">
+    <span class="ressort" style="background:var(--lime);color:#000">Der Bullenfall</span>
+    <div class="hx" style="margin-top:2.5mm">Was für die Aktie spricht</div>
+  </div>
+  <div class="pad" style="top:131mm">
+    <div class="sub">Sechs Argumente, die Optimisten anführen. Jedes hat eine Bedingung, und jede Bedingung lässt sich in den nächsten Monaten prüfen.</div>
+    <div class="grid list-n" style="grid-template-columns:1fr 1fr;gap:4.5mm 7mm;margin-top:5mm" data-k="bullpunkte"></div>
+    <div class="card ink" style="margin-top:6mm;padding:5mm">
+      <div class="kick" style="color:var(--lime)">Woran man erkennen würde, dass der Bullenfall eintritt</div>
+      <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:5mm;margin-top:3mm">
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Erste Verkaufszahlen</b><br>Take-Two meldet nach dem Start Rekorde, etwa Umsatz in den ersten Tagen über dem von GTA V.</div>
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Weihnachtsquartal</b><br>Buchungen am oberen Ende von 3,35–3,50&nbsp;Mrd.&nbsp;$ und ein bestätigter oder angehobener Jahresausblick im Februar 2027.</div>
+        <div class="sm" style="color:#e6e6e6"><b style="color:#fff">Online-Welt</b><br>Ein Online-Modus, der früh startet und Spieler hält. Laufende Ausgaben, die nach dem Start weiter steigen.</div>
+      </div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('bullpunkte',()=>[
+ ['Der größte Start der Geschichte ist möglich','GTA V brauchte 2013 drei Tage für 1 Mrd. $. Für GTA VI sollen laut einer Schätzung von Sensor Tower schon vor dem Start rund 10 Millionen Vorbestellungen im Wert von etwa 1 Mrd. $ eingegangen sein. Take-Two selbst nennt keine Zahl, spricht aber von „beispiellosen“ Vorbestellungen.'],
+ ['Ein Spiel für ein Jahrzehnt','GTA V erschien auf drei Konsolengenerationen und 2015 für den PC und verkauft sich bis heute. Eine PC-Fassung von GTA VI ist noch nicht angekündigt; sie wäre ein zweiter Start.'],
+ ['Laufende Einnahmen statt Einmalverkauf','81 % der Buchungen kommen schon heute aus laufenden Ausgaben in Spielen. Ein neuer Online-Modus auf Basis von GTA VI könnte diese Quelle über Jahre erneuern.'],
+ ['Hebel bei hohen Stückzahlen','Die Entwicklungskosten fallen weitgehend vorab an. Je mehr Exemplare verkauft werden, desto stärker verteilen sie sich. Plattformgebühren, Marketing, Lizenzen und der laufende Betrieb bleiben. Dass auch die Ladenversion nur einen Download-Code enthält, spart Herstellung und Logistik von Datenträgern.'],
+ ['Ein großer, wachsender Markt','Laut Newzoo wächst der Spielemarkt 2026 auf rund 214 Mrd. $; das Konsolenwachstum hänge davon ab, dass GTA VI pünktlich erscheint. In den USA spielen laut ESA über 212 Millionen Menschen.'],
+ ['Ein klarer Plan des Managements','Take-Two nennt für das GJ 2027 Buchungen von 8,0 bis 8,2 Mrd. $ und will dieses Niveau halten. Kommt es so, würde aus einem Verlustjahr ein Jahr mit Gewinn und über 1 Mrd. $ operativem Cashflow.'],
+].map(r=>`<div><div style="font-size:11.5pt;font-weight:900;letter-spacing:-.01em;line-height:1.15">${r[0]}</div><div class="sm" style="margin-top:1.2mm">${r[1]}</div></div>`).join(''));
+</script>

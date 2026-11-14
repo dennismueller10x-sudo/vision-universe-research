@@ -1,4 +1,110 @@
 {
- "_comment": "Reports unter /reports/ und in der Insights-Übersicht. Neueste zuerst. Felder: id, datum (JJJJ-MM-TT), art, titel, text (ein bis zwei Sätze), href (interne Adresse).",
- "reports": []
+ "_comment": "Reports unter /insights/reports/ und in der Insights-Übersicht. Neueste zuerst. Felder: id, datum (JJJJ-MM-TT), art, titel, text (ein bis zwei Sätze), href (interne Adresse). Reports aus dem Heft-System zusätzlich: nr, unterzeile, seiten, pdf, pdfMB, inhalt [[Seite, Rubrik, Titel]], kurzfassung (Absätze als Text für Leser und Suchmaschinen); Online-Fassung mit products/insights/report_veroeffentlichen.py.",
+ "reports": [
+  {
+   "id": "take-two-gta-6",
+   "nr": "01",
+   "datum": "2026-11-12",
+   "art": "Aktienreport",
+   "titel": "Take-Two Interactive: Alles auf Vice City",
+   "text": "20 Seiten zu Take-Two und GTA VI: die Geschichte des Spiels, Zahlen, Bewertung, Chart, Bullen- und Bärenfall und die Frage, was KI und mehr freie Zeit für die Zukunft des Spielens bedeuten.",
+   "unterzeile": "13 Jahre nach GTA V bringt Take-Two am 19. November 2026 Grand Theft Auto VI. Was im Spiel steckt, was in den Zahlen steht, was für und gegen die Aktie spricht und was passiert, wenn KI uns mehr freie Zeit schenkt.",
+   "href": "/insights/reports/take-two-gta-6/",
+   "pdf": "aktienreport-01-take-two.pdf",
+   "pdfMB": 7,
+   "seiten": 20,
+   "ticker": [
+    "TTWO"
+   ],
+   "inhalt": [
+    [
+     3,
+     "Auf einen Blick",
+     "Take-Two in zwölf Zahlen"
+    ],
+    [
+     4,
+     "Das Spiel",
+     "Jason, Lucia und ein Coup, der schiefgeht"
+    ],
+    [
+     5,
+     "Das Spiel",
+     "Willkommen in Leonida"
+    ],
+    [
+     6,
+     "Die Marke",
+     "29 Jahre GTA in einer Zeitleiste"
+    ],
+    [
+     7,
+     "Das Unternehmen",
+     "Mehr als GTA: Rockstar, 2K und Zynga"
+    ],
+    [
+     8,
+     "Die Zahlen",
+     "Zehn Jahre Umsatz, drei Jahre Abschreibungen"
+    ],
+    [
+     9,
+     "Die Zahlen",
+     "Bilanz, Cashflow und Bewertung"
+    ],
+    [
+     10,
+     "Die Aktie",
+     "Was die Aktie bei früheren Starts tat"
+    ],
+    [
+     11,
+     "Die Aktie",
+     "Chart und Technik"
+    ],
+    [
+     12,
+     "Die Aktie",
+     "Fonds, Insider und Vorbestellungen"
+    ],
+    [
+     13,
+     "Szenarien",
+     "Was für die Aktie spricht"
+    ],
+    [
+     14,
+     "Szenarien",
+     "Was gegen die Aktie spricht"
+    ],
+    [
+     15,
+     "Um die Ecke gedacht",
+     "Wenn KI uns Zeit schenkt"
+    ],
+    [
+     16,
+     "Langfristig",
+     "Leonida 2035: drei Wege"
+    ],
+    [
+     17,
+     "Ausblick",
+     "Termine und Checkliste"
+    ],
+    [
+     18,
+     "Vision Universe",
+     "Take-Two in der App"
+    ]
+   ],
+   "kurzfassung": [
+    "Grand Theft Auto VI erscheint am 19. November 2026 für PlayStation 5 und Xbox Series X|S. Die Hauptfiguren Jason Duval und Lucia Caminos geraten im Staat Leonida, dem Florida der Spielwelt, nach einem missglückten Coup in eine kriminelle Verschwörung. Schauplätze sind unter anderem Vice City, die Leonida Keys, die Sümpfe von Grassrivers und Port Gellhorn. Die Standardfassung kostet 79,99 Dollar.",
+    "Für Take-Two Interactive ist es der wichtigste Start der Firmengeschichte. Das Unternehmen erwartet für das Geschäftsjahr bis März 2027 Buchungen von 8,0 bis 8,2 Milliarden Dollar, nach 6,72 Milliarden im Vorjahr, und erstmals seit dem Geschäftsjahr 2022 wieder einen Gewinn. Im letzten Quartal bis September 2026 sanken die Buchungen um 18 Prozent auf 1,60 Milliarden Dollar; die Aktie stieg nach den Zahlen trotzdem um gut 8 Prozent.",
+    "Die Aktie ist hoch bewertet: Take-Two kostet laut Vision Universe das 6,7-Fache seines Jahresumsatzes, der Median aller US-Aktien liegt bei 1,9. Der Report zeigt, wie sich die Aktie rund um frühere Rockstar-Starts entwickelt hat, von GTA III bis Red Dead Redemption 2, und dass ein Rekordspiel keinen steigenden Kurs garantiert.",
+    "Bullen- und Bärenfall stehen nebeneinander, jeweils mit den Beobachtungspunkten, an denen man erkennen würde, welcher eintritt. Ein Kapitel denkt um die Ecke: Wenn künstliche Intelligenz Arbeit abnimmt und Menschen mehr freie Zeit haben, wohin geht diese Zeit, und was bedeutet das für Spielekonzerne wie Take-Two?",
+    "Der Report ist eine redaktionelle Einordnung mit Daten von Vision Universe und Angaben aus den SEC-Meldungen von Take-Two. Er nennt keine Kursziele und gibt keine Anlageempfehlung."
+   ]
+  }
+ ]
 }

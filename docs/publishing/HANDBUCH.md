@@ -189,7 +189,26 @@ Pausieren oder ändern: in der App unter den geplanten Aufgaben („Insights-Tag
 (PDF, verkleinerte Seitenbilder, Cover nach `insights/magazin/nr-<NN>/`), dann Eintrag mit Titel, Unterzeile und Inhalt in
 `products/insights/magazin.json` (neueste zuerst) und bauen.
 
-**Report veröffentlichen:** Report unter `reports/<id>/`, Eintrag in `products/insights/reports.json`, bauen.
+**Aktienreport** (ab 12.11.2026, Nr. 01 Take-Two): gebaut mit dem Heft-System wie das Magazin, ein Ordner je Report unter
+`docs/publishing/reports/<ordner>/` (`ausgabe.json` mit `"reihe": "Aktienreport"` und `"pdf"`, `seiten/`, `fakten.json`,
+`img/`, Datenschnappschuss `data.js` aus dem eigenen `daten.mjs`). Bilder: offizielles Pressematerial (bei GTA VI die
+Downloads unter rockstargames.com/VI, „Media & Artwork“) mit Bildnachweis, App-Ansichten über `products/insights/screens.mjs`.
+Bauen mit `node docs/publishing/system/build.mjs <ordner> --scale 2 --vorschau --out <tmp>`, PDF nach `<ordner>/pdf/`, dann
+`python3 products/insights/report_veroeffentlichen.py <ordner> <id>` (PDF, Seitenbilder und Cover nach
+`insights/reports/<id>/`, öffentlich wie alles unter `/insights/`), Eintrag mit Kurzfassung in `products/insights/reports.json`,
+`node products/insights/build.mjs`. `pdf/` und `vorschau/` im Report-Ordner werden nicht eingecheckt (die Online-Fassung
+enthält das PDF). Ein Report nennt kein Kursziel; Bullen- und Bärenfall stehen immer nebeneinander, mit Beobachtungspunkten.
+Serienregeln nach der Prüfung von Nr. 01 (12.11.2026): jede Kennzahl mit Zeitraum, Stichtag, Einheit, Definition und Quelle
+(GAAP, bereinigt, TTM, Prognose sichtbar); Bewertung neben dem Marktmedian auch gegen die eigene Geschichte und andere Werte
+der Branche; Kursvergleiche um Ereignisse als „beschreibend, keine Ereignisstudie“ kennzeichnen; Kursverläufe als Index statt
+in Dollar (Tiingo-Kursniveaus nicht weitergeben); wörtliche Zitate nur mit geprüftem Wortlaut, sonst Paraphrase; eigene
+Quellenseite mit Titeln und Links (Fußzeilen verweisen darauf), Inhaltsverzeichnis im PDF verlinkt (`#seite-<id>`); die
+App-Seite heißt „Eigenwerbung“; Geschäftsmodell und finanzielle Kernaussage früh. Gestaltung (Owner 12.11.2026): Titel ohne Börsenkürzel, mit großem Aufhänger (z. B. „GTA VI“-Button) und
+Themen-Buttons; Seite 2 ein Inhaltsverzeichnis mit Bildern in verschiedenen Größen; Seite 3 nur Zahlen („auf einen Blick“),
+Zahlen und Fließtext sonst nicht mischen; Platz ausnutzen; nie helle Schrift auf Neongrün; letzte Seite ein großes
+Vision-Universe-Werbebild mit nur www.visionuniverse.de. Das Prüftor meldet helle Schrift auf Grün als Fehler und
+Weißraum über 20 mm vor der Fußzeile als Hinweis (`"weissraum": false` je Seite schaltet ab). Interessenkonflikte stehen allgemein im Impressum (Owner 14.11.2026: Herausgeber und Beteiligte können Aktien der besprochenen Unternehmen halten), nicht je Report einzeln. Bilder: offizielles Pressematerial auch ohne ausdrückliche Lizenz (Owner-Entscheidung 14.11.2026). Offen für die Anwaltsprüfung der Vorlage:
+Einordnung nach MAR/DelVO 2016/958, konkrete Angaben zu Interessenkonflikten, Bildrechte (Pressematerial), Weitergabe von Kursdaten.
 
 Regeln wie im Heft (Abschnitt 6). Zusätzlich: Privatpersonen, gegen die nur Vorwürfe bestehen, werden nicht namentlich
 genannt; Vorwürfe stehen im Konjunktiv mit Quelle, die Gegenseite kommt zu Wort.

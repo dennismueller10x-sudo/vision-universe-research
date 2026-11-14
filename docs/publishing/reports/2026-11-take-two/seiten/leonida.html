@@ -1,0 +1,30 @@
+<section class="page dark">
+  <div data-run="Das Spiel"></div>
+  <div class="pad" style="top:16mm">
+    <span class="ressort">Das Spiel · Die Welt</span>
+    <div class="hx" style="margin-top:3mm">Willkommen in Leonida</div>
+    <div class="sub" style="margin-top:3mm;color:#e6e6e6;max-width:170mm">Rockstar baut Florida nach, verdichtet und überzeichnet: eine Metropole, Inseln, Sümpfe, Wälder und Kleinstädte. Sechs Regionen hat Rockstar bisher gezeigt.</div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:3.5mm;margin-top:5mm" data-k="orte"></div>
+    <div class="grid" style="grid-template-columns:1.1fr 1fr 1fr;gap:4mm;margin-top:6mm">
+      <div>
+        <div class="kick" style="color:var(--lime)">Der Rekord vor dem Start</div>
+        <div class="body" style="margin-top:2mm;font-size:9pt">
+          <p>Schon die Trailer haben gezeigt, wie groß die Neugier ist. Der erste Trailer vom Dezember 2023 kam auf YouTube in 24 Stunden auf mehr als 90 Millionen Aufrufe, ein Rekord für die Vorstellung eines Spiels. Der zweite Trailer im Mai 2025 erreichte laut Rockstar über alle Plattformen hinweg mehr als 475 Millionen Aufrufe an einem Tag.</p>
+        </div>
+      </div>
+      <div class="card ink" style="background:#111;border:1px solid #262626"><div class="num-xl" style="color:var(--lime);font-size:36pt">90,4&nbsp;Mio.</div><div class="sm" style="margin-top:2mm;font-weight:700">YouTube-Aufrufe in 24 Stunden, Trailer 1 (Dez. 2023)</div><div class="xs" style="color:#9a9a9a;margin-top:1mm">Guinness World Records</div></div>
+      <div class="card lime" style="color:#000"><div class="num-xl" style="font-size:36pt;color:#000">475&nbsp;Mio.</div><div class="sm" style="margin-top:2mm;font-weight:700;color:#000">Aufrufe in 24 Stunden auf allen Plattformen, Trailer 2 (Mai 2025)</div><div class="xs" style="margin-top:1mm;color:#000">Angabe von Rockstar, The Hollywood Reporter</div></div>
+    </div>
+  </div>
+  <div data-foot></div>
+</section>
+<script>
+VUM.k('orte',()=>[
+ ['vice-city-10','Vice City','Die Metropole nach dem Vorbild Miamis: Hochhäuser, Strände, Art-déco und Nachtleben.'],
+ ['keys-gross','Leonida Keys','Inselkette mit Brücken, Booten und Wasserflugzeugen. Jasons Revier zu Beginn der Geschichte.'],
+ ['grassrivers-05','Grassrivers','Die Sümpfe nach dem Vorbild der Everglades, mit Alligatoren und Sumpfbooten.'],
+ ['port-gellhorn-06','Port Gellhorn','Eine Küstenstadt mit Motels, Bars und Neonlicht, die bessere Zeiten gesehen hat.'],
+ ['ambrosia-01','Ambrosia','Ländliches Leonida mit Industrie, Highways und Motorradclubs.'],
+ ['kalaga-04','Mount Kalaga','Nationalpark mit Wäldern, Flüssen und Schluchten.'],
+].map(r=>`<div><div class="ph" style="height:52mm;background-image:url(img/${r[0]}.jpg)"></div><div style="font-size:11pt;font-weight:900;margin-top:2mm">${r[1]}</div><div class="xs" style="color:#bdbdbd;margin-top:.6mm;font-size:7.6pt">${r[2]}</div></div>`).join('')+'<div class="xs" style="grid-column:1/-1;color:#777">Bilder: Rockstar Games (offizielle Screenshots)</div>');
+</script>
