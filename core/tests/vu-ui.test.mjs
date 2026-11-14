@@ -1,7 +1,7 @@
 // Bausteine C04–C20 (assets/vu-ui.js, assets/vu-ui.css) und C06 im Kleinformat (assets/vu-chart.js#sparkline).
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
@@ -58,6 +58,34 @@ test("UI6 Regel 1: nur Weiß, Schwarz, Neongrün und Graustufen in den Bausteine
   const colors = new Set((css.match(/#[0-9a-f]{3,8}\b/gi) || []).map(c => c.toLowerCase()));
   const allowed = new Set(["#fff", "#ffffff", "#000", "#000000", "#c8f531", "#f4f4f4", "#e9e9e9", "#6e6e6e", "#151515", "#262626", "#9b9b9b", "#0e1013", "#4f6b00"]);
   for (const c of colors) assert.ok(allowed.has(c), `Farbe ${c} ist nicht erlaubt`);
+});
+
+test("UI6b Etikett auf der Tintenfläche: mindestens 4,5:1 in hell und dunkel, ohne neue Farbe", () => {
+  const rule = css.match(/\n:where\(\.vu-box--ink\) \.vu-ltag\{([^}]*)\}/);
+  assert.ok(rule, "Regel :where(.vu-box--ink) .vu-ltag fehlt");
+  assert.ok(css.indexOf(":where(.vu-box--ink) .vu-ltag{") > css.indexOf("\n.vu-ltag{"), "steht nach der Grundregel .vu-ltag und gewinnt bei gleichem Gewicht");
+  assert.doesNotMatch(css, /(^|[\n},])\.vu-box--ink \.vu-ltag\{/, "nie mit dem Gewicht zweier Klassen: sonst dämpft sie zusammen mit den Regeln der Produkte");
+  assert.doesNotMatch(rule[1], /var\(--vu-mute\)|#[0-9a-f]{3,8}/i, "kein fester Grauton: das Etikett folgt der Schriftfarbe der Fläche");
+  const mix = rule[1].match(/color-mix\(in srgb,currentColor (\d+)%,transparent\)/);
+  assert.ok(mix, "gedämpft über color-mix aus currentColor");
+  assert.match(rule[1], /color:inherit;color:color-mix/, "Rückfall ohne color-mix: volle Schriftfarbe der Fläche");
+  const a = Number(mix[1]) / 100, lin = (v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4);
+  const ratio = (fg, bg) => { const m = a * fg + (1 - a) * bg, l1 = lin(m), l2 = lin(bg); return (Math.max(l1, l2) + 0.05) / (Math.min(l1, l2) + 0.05); };
+  // hell: weiße Schrift auf schwarzer Fläche; dunkel: schwarze Schrift auf weißer Fläche (--vu-ink/--vu-inv)
+  assert.ok(ratio(1, 0) >= 4.5, "hell " + ratio(1, 0).toFixed(2));
+  assert.ok(ratio(0, 1) >= 4.5, "dunkel " + ratio(0, 1).toFixed(2));
+  console.log("UI6b Kontrast hell " + ratio(1, 0).toFixed(2) + ":1, dunkel " + ratio(0, 1).toFixed(2) + ":1");
+  /* Keine doppelte Dämpfung: jede Regel eines Produkts, die ein Etikett über opacity dämpft, setzt auch die Farbe und wiegt
+     mindestens zwei Klassen - sie ersetzt die Regel oben also ganz (Quant lädt app.css vor vu-ui.css). */
+  const walk = (dir, out = []) => { for (const e of readdirSync(dir, { withFileTypes: true })) { if (e.name.startsWith(".") || ["node_modules", "docs", "data"].includes(e.name)) continue; const f = dir + "/" + e.name; if (e.isDirectory()) walk(f, out); else if (e.name.endsWith(".css")) out.push(f); } return out; };
+  const root = new URL("../../", import.meta.url).pathname.replace(/\/$/, "");
+  let geprueft = 0;
+  for (const f of walk(root)) for (const m of readFileSync(f, "utf8").matchAll(/([^{}]*\.vu-ltag[^{}]*)\{([^}]*opacity[^}]*)\}/g)) {
+    geprueft++;
+    assert.match(m[2], /(^|;)\s*color:/, f + ": " + m[1].trim() + " dämpft über opacity, ohne die Farbe zu setzen");
+    for (const sel of m[1].split(",").filter((x) => x.includes(".vu-ltag"))) assert.ok((sel.replace(/:where\([^)]*\)/g, "").match(/\.[a-zA-Z_-]/g) || []).length >= 2, f + ": " + sel.trim() + " wiegt weniger als zwei Klassen");
+  }
+  assert.ok(geprueft >= 5, "Regeln der Produkte gefunden: " + geprueft);
 });
 
 test("UI7 Regel 1: keine Kursfarben Rot/Grün in den gemeinsamen Tokens", () => {
