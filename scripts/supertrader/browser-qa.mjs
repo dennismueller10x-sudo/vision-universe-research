@@ -200,8 +200,9 @@ async function main() {
       const m = await page.evaluate(() => ({
         overflow: document.documentElement.scrollWidth - window.innerWidth,
         failedLoad: /konnte nicht geladen werden/.test(document.body.innerText),
-        // Gemeinsame Produkt-Leiste der Vision-Universe-Shell (#vu-dock, Shadow DOM): bei jeder Breite unten, mit ☰ fuer das globale Menue.
-        bottomNav: (() => { const n = document.querySelector('#vu-dock')?.shadowRoot?.querySelector('nav'); if (!n) return false; const r = n.getBoundingClientRect(); return r.height > 0 && r.bottom <= innerHeight + 1 && r.bottom >= innerHeight - 40 && n.querySelectorAll('a').length === 4 && !!n.querySelector('button.menu') && n.querySelector('a').textContent.trim() === 'Supertrader'; })(),
+        // Gemeinsames Dock der Vision-Universe-Shell (#vu-dock, Shadow DOM): bei jeder Breite unten, Home · Discover · [Universe] · News · Ich; der Universe-Knopf oeffnet das globale Menue.
+        // Die Bereiche von Supertrader stehen als Reiter unter dem Kopf (vu-navigation, nav.tabs); der erste traegt den Produktnamen.
+        bottomNav: (() => { const n = document.querySelector('#vu-dock')?.shadowRoot?.querySelector('nav'), t = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs'); if (!n || !t || t.hidden) return false; const r = n.getBoundingClientRect(); return r.height > 0 && r.bottom <= innerHeight + 1 && r.bottom >= innerHeight - 40 && [...n.querySelectorAll('a')].map((a) => a.textContent.trim()).join('|') === 'Home|Discover|News|Ich' && !!n.querySelector('button.menu') && [...t.querySelectorAll('a')].map((a) => a.textContent.trim()).join('|') === 'Supertrader|Methoden|Treffer|Forschung|Quellen' && t.getBoundingClientRect().bottom <= parseFloat(getComputedStyle(document.body).paddingTop) + 1; })(),
         homeB: location.pathname === '/supertrader/' ? [...document.querySelectorAll('.st-q[data-q="B"]')].filter((e) => e.textContent.trim() === 'B-Setup').length : 0,
         researchSection: !!document.querySelector('.st-research, .vu-research') || /Forschung, nicht zertifiziert/i.test(document.body.innerText),
         researchInNear: [...document.querySelectorAll('.st-sec')].filter((x) => /Am nächsten an der Zone/.test(x.querySelector('h2')?.textContent || '')).some((x) => x.querySelector('.st-note-tag.research')),
@@ -243,7 +244,7 @@ async function main() {
       }));
       if (m.overflow > 1) errors.push(`horizontaler Ueberlauf ${m.overflow}px`);
       if (m.failedLoad) errors.push('Ladefehler-Zustand sichtbar');
-      if (!m.bottomNav) errors.push('Produkt-Leiste fehlt oder steht nicht unten');
+      if (!m.bottomNav) errors.push('Dock fehlt oder steht nicht unten, oder die Reiter von Supertrader fehlen');
       if (m.buyTone) errors.push('Kaufaufforderungs-Ton gefunden');
       if (name === 'home' && m.homeB) errors.push(`${m.homeB} Darvas-B-Setups prominent auf der Startseite`);
       if (m.cardsWithoutPhase) errors.push(`${m.cardsWithoutPhase} Aktienkarten ohne Phasenabzeichen`);

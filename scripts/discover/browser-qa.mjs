@@ -47,19 +47,20 @@ async function premiumMobileAudit(page,key){
  const material=await page.evaluate(()=>{
   const css=n=>getComputedStyle(n),rgb=value=>(value.match(/[\d.]+/g)||[]).slice(0,4).map(Number);
   const luminance=value=>{const c=rgb(value);return c.length<3?null:(c[0]+c[1]+c[2])/3;};
-  /* UI-Vereinheitlichung 10/2026: Kopf und Produkt-Leiste sind die gemeinsame
-     Vision-Universe-Shell (vu-navigation, #vu-dock - beide im Shadow DOM). */
+  /* UI-Vereinheitlichung 10/2026: Kopf und Dock sind die gemeinsame
+     Vision-Universe-Shell (vu-navigation, #vu-dock - beide im Shadow DOM). Rahmen nach App-Konzept 2 (11/2026):
+     das Dock ist Home · Discover · [Universe] · News · Ich; der aktive Platz traegt Lime als Schriftfarbe. */
   const body=css(document.body),main=css(document.querySelector('.v2-main')),bar=css(document.querySelector('vu-navigation').shadowRoot.querySelector('header'));
   const host=document.getElementById('vu-dock'),dock=host.shadowRoot.querySelector('nav'),ds=css(dock),db=dock.getBoundingClientRect();
   const active=dock.querySelector('[aria-current=page]'),as=active&&css(active);
   return {bodyBackground:body.backgroundColor,mainBackground:main.backgroundColor,barBackground:bar.backgroundColor,
    pureWhite:[body.backgroundColor].every(v=>{const c=rgb(v);return c[0]===255&&c[1]===255&&c[2]===255;})&&luminance(bar.backgroundColor)>=250,
    dock:{box:db.toJSON(),position:css(host).position,bottom:innerHeight-db.bottom,left:db.left,right:innerWidth-db.right,borderRadius:parseFloat(ds.borderRadius),background:ds.backgroundColor,luminance:luminance(ds.backgroundColor),boxShadow:ds.boxShadow},
-   active:{background:as&&as.backgroundColor,color:as&&as.color,luminance:as&&luminance(as.backgroundColor)}};
+   active:{label:active&&active.textContent.trim(),background:as&&as.backgroundColor,color:as&&as.color,luminance:as&&luminance(as.color)}};
  });
  designEvidence.push({key,type:'premium-material',...material});
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
- assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');assert(!/^none$/.test(material.dock.boxShadow),'Dock needs depth');assert(material.active.luminance!==null&&material.active.luminance>80,'Active state must use the Discover signal lime');
+ assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');assert(!/^none$/.test(material.dock.boxShadow),'Dock needs depth');assert(material.active.label==='Discover'&&material.active.luminance!==null&&material.active.luminance>80&&/^rgb\(200, 245, 49\)$/.test(material.active.color),'Active dock place must be Discover in the signal lime: '+JSON.stringify(material.active));
 
  /* Konzept „Reihe für Reihe“ (n-home): Billboard, Markt-Zeile, Top 10, dann die Schienen in fester Reihenfolge; nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
  await page.waitForFunction(()=>document.querySelector('.dr-sec--top10 .dr-poster'),null,{timeout:15000}).catch(()=>{});
@@ -142,7 +143,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.equal(await nav.locator('.tile[data-group="discover"]').getAttribute('href'),'/discover/#/');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
   /* Gemeinsame Shell (Redesign C01): links die Welt (Discover), rechts Suche, AI Atlas und Mein Bereich; das
-     globale Menue oeffnet ☰ rechts in der Produkt-Leiste (#vu-dock). */
+     globale Menue „Dein Universe“ oeffnet der runde Universe-Knopf in der Mitte des Docks (#vu-dock). */
   const header=await nav.evaluate(n=>{const root=n.shadowRoot,world=root.querySelector('.world'),w=world.getBoundingClientRect(),atlas=root.querySelector('.atlas').getBoundingClientRect();return {viewport:innerWidth,world:w.toJSON(),worldName:world.textContent.trim(),worldHidden:world.hidden,atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display};});
   assert(!header.worldHidden&&header.worldName==='Discover','Header does not show the Discover world: '+JSON.stringify(header));
   assert(header.world.left>=0&&header.atlas.right<=header.viewport&&header.atlas.left>=header.world.right,'Header overflows: '+JSON.stringify(header));
@@ -194,8 +195,12 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  });
  await page.evaluate(()=>scrollTo(0,innerHeight));await screenshot(page,key+'-discovery');
  await check(key+' responsive navigation remains reachable',async()=>{
-  const nav=page.locator('#vu-dock nav');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n.getRootNode().host).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
-  assert.deepEqual(state.labels.map(i=>i.label),['Discover','Welten','Strategien','Swipen','Menü']);assert(state.labels.some(i=>i.current==='page'),'Current route not identified');
+  const nav=page.locator('#vu-dock nav');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n.getRootNode().host).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim()||a.getAttribute('aria-label'),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
+  assert.deepEqual(state.labels.map(i=>i.label),['Home','Discover','Alle Module','News','Ich']);assert.deepEqual(state.labels.filter(i=>i.current==='page').map(i=>i.label),['Discover'],'Dock must mark Discover inside Discover');
+  /* Die Bereiche von Discover stehen als Reiter unter dem Kopf: die frueheren Leistenplaetze, dann die uebrigen Eintraege „In Discover“. */
+  const tabs=await page.locator('vu-navigation nav.tabs').evaluate(n=>({top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom,rowBottom:n.getRootNode().querySelector('.row').getBoundingClientRect().bottom,reserved:parseFloat(getComputedStyle(document.body).paddingTop),labels:Array.from(n.querySelectorAll('a')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
+  assert.deepEqual(tabs.labels.map(i=>i.label),['Discover','Welten','Strategien','Swipen','Suchen','Märkte','Watchlist']);assert.equal(tabs.labels.filter(i=>i.current==='page').length,1,'Current route not identified');
+  assert(Math.abs(tabs.top-tabs.rowBottom)<=1&&tabs.reserved>=tabs.bottom-1,'Tab strip must sit under the header and never cover content: '+JSON.stringify({top:tabs.top,rowBottom:tabs.rowBottom,bottom:tabs.bottom,reserved:tabs.reserved}));assert(tabs.labels.every(i=>i.width>=44&&i.height>=44),'Tabs smaller than 44px');
   assert.equal(state.position,'fixed');const gap=state.height-state.box.bottom;assert(gap>=6&&gap<=24,'Product dock must float just above the viewport edge: '+gap);assert(state.labels.every(i=>i.width>=44&&i.height>=44),'Dock targets smaller than 44px');assert(state.paddingBottom>=0);
   if(width>=500)assert(state.box.width<=760,'Desktop dock must not stretch across the viewport: '+state.box.width);interactionEvidence.push({key,type:'responsive-navigation',...state});
  });
@@ -220,7 +225,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
     for(const rowId of ['sp500-staerkste','djia-staerkste','ndx-staerkste','qualitaet-zum-preis','qualitaet-wachstum'])assert.equal(await page.locator('.dv3-srow[data-row="'+rowId+'"]').count(),1,'Strategy missing: '+rowId);
     assert(/Treffer/.test(await strategies.first().innerText()),'Strategy row needs its match count');
     assert.equal(await page.locator('.dv3-welten').count(),0,'Themes must not appear in Strategien');
-    assert.equal(await page.locator('#vu-dock a[aria-current=page]').innerText(),'Strategien');
+    assert.equal(await page.locator('vu-navigation nav.tabs a[aria-current=page]').innerText(),'Strategien');
     const first=await strategies.first().boundingBox();assert(first&&first.width<=page.viewportSize().width,'Strategy row overflows mobile viewport');
     await screenshot(page,key+'-strategies');
     const href=await strategies.first().getAttribute('href');
@@ -272,8 +277,8 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   const v3=await page.locator('.dv3-overview').count();
   /* Konzept „Reihe für Reihe“ (a-full): die nächsten Aktien stehen als Poster in „Mehr wie …“. */const next=page.locator(v3?'.dv3-overview .dv3-next a.dr-poster__a[href^="#/s/"]':'.dv2-stock-neighbors .dx-rail a[href^="#/s/"]').first();await next.scrollIntoViewIfNeeded();
   const href=await next.getAttribute('href');assert(href&&!href.endsWith('/AAPL'),'Next stock must differ from current stock');await screenshot(page,key+'-stock-onward');await next.click();await page.waitForURL(url=>url.hash===href);await page.locator('.dx-chart-hero').first().waitFor();
-  /* Redesign 2027: zurück zum Entdecken über die Produkt-Leiste (Swipen), nicht über Knöpfe am Seitenende. */
-  if(v3)assert(await page.waitForFunction(()=>!!document.getElementById('vu-dock')?.shadowRoot?.querySelector('a[href*="#/einzeln/"]'),null,{timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery (dock)');
+  /* Redesign 2027: zurück zum Entdecken über den Reiter „Swipen“ unter dem Kopf, nicht über Knöpfe am Seitenende. */
+  if(v3)assert(await page.waitForFunction(()=>!!document.getElementById('vu-dock')&&!!document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs a[href*="#/einzeln/"]'),null,{timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery (tab)');
   else assert(await page.locator('.dv2-stock-next a[href^="#/einzeln/"]').first().waitFor({state:'attached',timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery');interactionEvidence.push({key,type:'stock-onward',from:'AAPL',to:href});
  });
  if(width===390)await check(key+' stock title page: story, closed chapters, rows, onward only from a row',async()=>{
