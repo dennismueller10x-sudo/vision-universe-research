@@ -52,14 +52,16 @@ async function context(kind, theme = 'light') {
      checks“). Die Reise wechselt die Seite oft direkt nach einer Pruefung; /willkommen/ und /mein-dashboard/ haben dann noch
      Abrufe an die Konto-API offen (nach /v1/session folgen /v1/watchlist und /v1/me). Der Abbruch kaeme aus dem Test, nicht aus
      der Seite – ein Zufallsrennen (WebKit, 14.11.2026: „nach Abbruch: Anmeldung zur Willkommensseite“, dann sofort page.goto).
-     Vor jedem page.goto wartet die Reise deshalb, bis die Abrufe an /v1/ beantwortet sind. Fehler der Seite zaehlen weiter:
-     ein Abruf, der scheitert, bleibt ein Konsolen- oder Seitenfehler. */
+     Gemessen (WebKit, main wie Rahmen): load endet nach rund 50 ms, /v1/watchlist und /v1/me beginnen erst danach und sind nach
+     200 bis 350 ms beantwortet; zwischen /v1/session und den beiden liegen bis zu 70 ms ohne offenen Abruf.
+     Vor jedem page.goto wartet die Reise deshalb, bis 300 ms lang kein Abruf an /v1/ offen ist. Fehler der Seite zaehlen
+     weiter: ein Abruf, der scheitert, bleibt ein Konsolen- oder Seitenfehler. */
   const offen = new Set();
   page.on('request', r => { if (new URL(r.url()).pathname.startsWith('/v1/')) offen.add(r); });
   for (const ende of ['requestfinished', 'requestfailed']) page.on(ende, r => offen.delete(r));
   const goto = page.goto.bind(page);
   page.goto = async (...args) => {
-    for (let ruhig = 0, frist = Date.now() + 10000; ruhig < 150 && Date.now() < frist;) { await page.waitForTimeout(50); ruhig = offen.size ? 0 : ruhig + 50; }
+    for (let ruhig = 0, frist = Date.now() + 10000; ruhig < 300 && Date.now() < frist;) { await page.waitForTimeout(50); ruhig = offen.size ? 0 : ruhig + 50; }
     return goto(...args);
   };
   return {ctx, page};
