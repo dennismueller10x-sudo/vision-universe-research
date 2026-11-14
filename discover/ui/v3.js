@@ -506,7 +506,8 @@
       get(o).then(function (c) {
         if (token !== seq || !page.isConnected) return;
         current = { o: o, c: c };
-        stage.replaceChildren(swipeCard(c, o, state.i, list.length, ctx));
+        var card = swipeCard(c, o, state.i, list.length, ctx);
+        stage.replaceChildren(card); card.drawChart();
         list.slice(state.i + 1, state.i + 3).forEach(function (n) { get(n).catch(function () {}); });
       }).catch(function () {
         if (token !== seq) return;
@@ -589,9 +590,16 @@
       (badges.length ? '<div class="dv3-reasons">' + badges.map(function (b, k) { return '<span class="vu-chip' + (k ? '' : ' vu-chip--lime') + '">' + esc(k === 0 ? b.label : (b.detail || b.label)) + '</span>'; }).join('') + '</div>' : '') +
       (c.hook && c.hook.text ? '<p class="dv3-hook">' + U().hud('fundamental', 26) + '<span>' + esc(c.hook.text) + '</span></p>' : '') +
       '<a class="dv3-sr" href="' + esc(stockHref(ctx, c.symbol)) + '">' + esc(name(c)) + ' öffnen</a>';
-    var dates = art.querySelectorAll('.dv3-dates span');
-    art.querySelector('.dv3-chart').appendChild(spark(c, { big: true, eager: true, width: 320, height: 110, onDates: function (a, b) { dates[0].textContent = dayYear(a); dates[1].textContent = dayYear(b); } }));
+    var dates = art.querySelectorAll('.dv3-dates span'), box = art.querySelector('.dv3-chart');
+    /* Gezeichnet wird, wenn die Karte im Dokument steht: am Telefon passt sie zwischen Kopf und Dock, und der Chart nimmt den Platz, der bleibt (fitSize). */
+    art.drawChart = function () { box.appendChild(spark(c, Object.assign({ big: true, eager: true, onDates: function (a, b) { dates[0].textContent = dayYear(a); dates[1].textContent = dayYear(b); } }, fitSize(box, 320, 110)))); };
     return art;
+  }
+  /* Zeichenflaeche eines Charts: gibt das Layout seinem Rahmen die Hoehe vor (flex-grow, v3.css/reihen.css: Swipen am Telefon), ist es dessen
+     Groesse; sonst die feste Flaeche, die mit der Breite waechst. */
+  function fitSize(box, width, height) {
+    var r = box.isConnected && global.getComputedStyle(box).flexGrow === '1' ? box.getBoundingClientRect() : null;
+    return r && r.width >= 80 && r.height >= 24 ? { width: Math.round(r.width), height: Math.round(r.height) } : { width: width, height: height };
   }
 
   /* ============================================================ D08 Watchlist */
@@ -806,7 +814,7 @@
   var api = { home: home, welten: welten, thema: thema, strategien: strategien, strategie: strategie, swipen: swipen, watchlist: watchlist, maerkte: maerkte,
     rowTitle: rowTitle, closeLabel: closeLabel, stockRow: stockRow, rankRow: rankRow, spark: spark, GROUPS: GROUPS,
     /* Bausteine fuer discover/ui/reihen.js (Startseite, Reihen-Seite, Vorschau) */
-    kit: { load: load, esc: esc, h: h, uid: uid, stockHref: stockHref, name: name, story: story, what: what, zahlPill: zahlPill,
+    kit: { load: load, esc: esc, h: h, uid: uid, stockHref: stockHref, name: name, story: story, what: what, zahlPill: zahlPill, fitSize: fitSize,
       dayYear: dayYear, closeLabel: closeLabel, spark: spark, thin: thin, sheet: sheet, heart: heart, store: store, whySheet: whySheet,
       themeCard: themeCard, metaRow: metaRow, metaRows: metaRows, scale5: scale5, isNum: isNum, val: val, bindHelp: bindHelp } };
   D.V3 = api;

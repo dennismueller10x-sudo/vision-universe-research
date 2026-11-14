@@ -228,6 +228,26 @@
 .dr-rsw__b:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
 .dr-rsw__end{margin-top:14px;text-align:center;font-weight:700}
 .dr-rsw__end a{color:var(--vu-ink)}
+/* Reihe swipen am Telefon: Kopf, Karte und Knoepfe passen ohne Scrollen zwischen den Kopf (mit Reitern) und das Dock, wie beim
+   Swipen (v3.css). Der Chart nimmt den Platz, der bleibt; auf sehr kleinen Anzeigen rollt die Karte in sich. */
+@media(max-width:760px){
+  html body #v2-main.dv3-main:has(>.dr-rsw){min-height:0;padding-bottom:0}
+  .dr-rsw{display:flex;flex-direction:column;height:calc(100vh - var(--vu-navigation-height) - var(--vu-dock-space));height:calc(100dvh - var(--vu-navigation-height) - var(--vu-dock-space))}
+  .dr-rsw>*{flex:none}
+  .dr-rsw>.dr-rsw__stage{flex:1 1 0;min-height:0;display:flex;flex-direction:column;margin-top:10px}
+  .dr-rsw__stage>*{flex:none}
+  .dr-rsw__stage>.dr-rsw__card{flex:1 1 0;min-height:0;display:flex;flex-direction:column;overflow-y:auto;scrollbar-width:none}
+  .dr-rsw__stage>.dr-rsw__card::-webkit-scrollbar{display:none}
+  .dr-rsw__card>*{flex:none}
+  .dr-rsw__card>.dr-rsw__chart{flex:1 1 0;min-height:56px}
+  .dr-rsw>.dr-rsw__btns{margin-top:10px}
+  .dr-rsw>.dr-rsw__end{margin:8px 0 0}
+}
+@media(max-width:760px) and (max-height:780px){
+  .dr-rsw__card .dr-rsw__v,.dr-rsw__card .dr-rsw__hook,.dr-rsw__card .dr-rsw__chart,.dr-rsw__card .dr-rsw__chips{margin-top:8px}
+  .dr-rsw__card .dr-rsw__hook{font-size:19px}
+  .dr-rsw__card>.dr-rsw__chart{min-height:48px}
+}
 
 /* Alle Reihen: schwarzes Vollbild */
 .dr-all{margin:-6px -16px 0;padding:10px 16px 40px;min-height:100vh;background:#000;color:#fff;--vu-ink:#fff;--vu-inv:#000;--vu-card:#151515;--vu-hair:#262626;--vu-mute:#9b9b9b;--vu-bg:#000;--vu-focus-ring:#c8f531}
