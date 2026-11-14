@@ -384,7 +384,11 @@ test("EH-19 · release ships the home view built from the committed shards, neve
 
 test("EH-20 · the product page is a delivered, tracked entry", async () => {
   const { permitted } = await import(new URL("../../scripts/vu2/build-release.mjs", import.meta.url));
-  for (const p of ["elliott/index.html", "elliott/app.js", "elliott/elliott.css", "elliott/engine/home-model.js"]) assert.ok(permitted(p), p + " wird ausgeliefert");
+  for (const p of ["elliott/index.html", "elliott/app.js", "elliott/elliott.css", "elliott/engine/home-model.js", "elliott/about.js"]) assert.ok(permitted(p), p + " wird ausgeliefert");
+  /* „Wellen in 3 Minuten“ lädt erst beim Antippen (App-Konzept 2): die Karte ruft elliott/about.js, das Fenster steht dort. */
+  assert.match(read("elliott/app.js"), /sc\.src = "\/elliott\/about\.js\?v=[^"]+"/);
+  assert.match(read("elliott/about.js"), /global\.VUElliottAbout = function/);
+  assert.match(read("elliott/about.js"), /Eine Lesart ist keine Wahrscheinlichkeit, keine Prognose und kein Kursziel\./);
   assert.ok(!permitted("elliott/tests/x.test.mjs"));
 });
 

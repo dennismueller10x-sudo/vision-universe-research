@@ -84,6 +84,13 @@ for (const vp of VIEWPORTS) {
     console.log('    Anfragen:', page.__requests.length, ' uebertragen ca.', Math.round(bytes / 1024), 'KB');
     await layout(page, 'Startseite');
     await page.screenshot({ path: `${OUT}/${vp.name}-${scheme}-home.png` });
+    // App-Konzept 2: Kopfkachel, Schiene der zählbaren Aktien, „Weiter“-Karte; „Wellen in 3 Minuten“ lädt beim Antippen (elliott/about.js)
+    check(await page.locator('.el-top .el-today-n').count() === 1 && await page.locator('.el-rail a.el-cr').count() >= 1 && await page.locator('#el-main a.vu-next').count() === 1, 'Kopfkachel, Schiene und „Weiter“-Karte');
+    await page.locator('.el-about').click();
+    await page.waitForSelector('#el-sheet:not([hidden])', { timeout: 15000 });
+    check(/Impuls/.test(await page.locator('#el-sheet').innerText()), 'Fenster „Wellen in 3 Minuten“ öffnet mit Inhalt');
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#el-sheet', { state: 'hidden' });
 
     // Reihen: horizontale Karten, Projektionen nicht abgeschnitten
     const clipped = await page.evaluate(() => [...document.querySelectorAll('.el-proj-v')].filter((n) => n.scrollWidth > n.clientWidth + 1).length);
