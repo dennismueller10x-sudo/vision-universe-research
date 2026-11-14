@@ -1474,8 +1474,9 @@
       widget = Chart.create({ ticker: X.T, eod: eod, currency: "USD", adjusted: true, onPaint: paintLayers,
         realtime: RT ? function () { return RT.getRealtimeCapability(X.T); } : undefined,
         longPath: M.LONG_DIR + global.VUCore.Identity.securityIdForTicker(X.T) + ".json", loadJSON: fetchJSON,
-        /* Der Kopf zeigt denselben Kurs wie Quant und Discover: laufender oder letzter Tageskurs aus dem Tagesverlauf. */
-        onPrice: function (p) { if (X.head && X.head.setPrice && typeof p.price === "number") X.head.setPrice({ value: p.price, currency: "USD", changePct: typeof p.delta === "number" ? p.delta : null, changeLabel: "heute", kind: p.kind || "delayed", at: p.at || p.when }); } });
+        /* Der Kopf zeigt denselben Kurs wie Quant und Discover: nur ein LAUFENDER Tag (p.live) ersetzt den veroeffentlichten Schluss; nach Schluss gilt der
+           Schlusskurs der Tagesreihe, der letzte 5-Minuten-Kurs ist kein Schlusskurs (Regel aus quant/app/chart.js#reportPrice, ADR-002). */
+        onPrice: function (p) { if (X.head && X.head.setPrice && typeof p.price === "number" && p.live) X.head.setPrice({ value: p.price, currency: "USD", changePct: typeof p.delta === "number" ? p.delta : null, changeLabel: "heute", kind: p.kind || "delayed", at: p.at || p.when }); } });
       put(host, widget.node);
     });
     function tog(key, label) { return el("button", { type: "button", class: "vu-chip", "aria-pressed": String(simple[key]), text: label, onclick: function (ev) { simple[key] = !simple[key]; ev.currentTarget.setAttribute("aria-pressed", String(simple[key])); draw(); } }); }
