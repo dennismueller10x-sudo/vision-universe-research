@@ -14,8 +14,11 @@
    ueber VUUI (maskiert jede Eingabe); innerHTML nur in markup() mit VUUI-Ausgabe.
 
    Aufbau nach dem Konzept docs/design/mein-bereich-2026-11/HANDOVER.md (Screen m-home, Präsentation
-   docs/design/mein-bereich-2026-11/README.md): Begrüßung, Heute bei deinen Aktien, Watchlist-Streifen,
+   docs/design/mein-bereich-2026-11/README.md): Begrüßung, Heute bei deinen Aktien, Watchlist,
    Was sich getan hat (mein-dashboard/events.js), Weiter lernen, Deine Welten.
+   Darstellung nach App-Konzept 2 (Owner 14.11.2026): „Heute“ mit Ring (wie viele im Plus, dieselbe Zusammenfassung wie
+   auf /willkommen/, today.js#summary), die Watchlist als Liste mit Logo, Name, Jahresverlauf und Bewegung; ein Tipp auf
+   eine Aktie öffnet sie im Fenster (VUUI.popup) mit Kurs, Verlauf, ihren Ereignissen, den Perspektiven und „Entfernen“.
 
    Erweiterung: Jeder Bereich ist ein Modul in MODULES ({id, render(ctx)}). Spaetere
    Bereiche (persoenliche Marktveraenderungen, Watchlist-Benachrichtigungen) kommen als
@@ -210,13 +213,25 @@
     var all = views(), last = lastClose(all), ev = ctx.events;
     $('md-today-sec').hidden = !all.length;
     $('md-today-title').textContent = 'Heute bei deinen Aktien' + (last ? ' · Schluss ' + closeLabel(last) : '');
+    // Ring: wie viele der gezeigten Aktien im Plus schlossen, daneben die größte Bewegung (today.js#summary, wie auf /willkommen/).
+    var sum = T.summary(all.slice(0, SHOWN)), ring = $('md-today-ring');
+    $('md-today-top').hidden = !sum.measured;
+    ring.textContent = '';
+    if (sum.measured) {
+      ring.appendChild(markup(el('span', {className: 'vu-night md-today-r'}), U.ring(sum.up / sum.measured * 100, {size: 84, stroke: 10, text: sum.up + '/' + sum.measured, label: sum.up + ' von ' + sum.measured + ' im Plus, Anteil'})));
+      $('md-today-up').textContent = 'im Plus' + (last ? ' am ' + weekday(last) : '');
+      $('md-today-big').textContent = sum.biggest ? 'Größte Bewegung: ' + sum.biggest.ticker + ' ' + U.pct(sum.biggest.pct) : '';
+    }
     $('md-n-watch').textContent = String(all.length);
     $('md-n-events').textContent = ev ? String(ev.events) : '–';
     $('md-n-stocks').textContent = ev ? String(ev.stocks) : '–';
     $('md-watch-fine').textContent = 'Keine Anlageberatung.' + (last ? ' Kurse: veröffentlichter Schluss ' + closeLabel(last) : '');
   }});
 
-  /* Watchlist als waagerechter Streifen: Logo, Kürzel, Schluss, Bewegung, Mini-Chart; am Ende „+ Aktie“. */
+  /* Watchlist als Liste: Logo, Name und Kürzel, Jahresverlauf, Schluss und Bewegung; am Ende „Aktie hinzufügen“.
+     Mehr als FOLD + 1 Zeilen klappen hinter „N weitere“ zusammen (ein Tipp zeigt sie hier), mehr als SHOWN stehen unter „Alle“. */
+  var FOLD = 6, unfolded = false;
+  function plainClick(e) { return !(e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey); }
   MODULES.push({id: 'watchlist', render: function () {
     var strip = $('md-strip'), all = views();
     strip.textContent = '';
@@ -226,28 +241,39 @@
     $('md-watch-all').appendChild(chev(13));
     strip.hidden = !all.length;
     if (!all.length) { $('md-find').hidden = false; return; }
-    all.slice(0, SHOWN).forEach(function (v) {
-      var href = stockHref(v), priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number';
-      var card = el(href ? 'a' : 'div', {className: 'md-wl', href: href || null, 'aria-label': (cleanName(v.name) || v.ticker) + (priced ? ', ' + fmtPrice(v.price) : ', kein Kurs')}, [
-        markup(el('span', {}), U.logo(v.ticker)), el('b', {text: v.ticker || '–'})]);
+    var editing = !$('md-find').hidden, shown = all.slice(0, SHOWN), fold = !editing && !unfolded && shown.length > FOLD + 1;
+    strip.classList.toggle('is-editing', editing);
+    shown.slice(0, fold ? FOLD : SHOWN).forEach(function (v) {
+      var href = stockHref(v), priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number', name = cleanName(v.name) || v.ticker || '–';
+      var card = el(href ? 'a' : 'div', {className: 'md-wl', href: href || null, 'aria-label': name + (priced ? ', ' + fmtPrice(v.price) : ', kein Kurs')}, [
+        markup(el('span', {className: 'md-wl-logo'}), U.logo(v.ticker)), el('b', {text: name}), el('small', {className: 'md-wl-k', text: v.ticker || '–'})]);
       if (priced) {
-        card.appendChild(el('div', {className: 'md-wl-p', text: fmtPrice(v.price)}));
-        card.appendChild(markup(el('div', {}), U.chg(v.pct)));
-        var html = Chart && v.spark.length > 1 ? Chart.sparkline(thin(v.spark, 52), {width: 90, height: 24}) : '';
+        var html = Chart && v.spark.length > 1 ? Chart.sparkline(thin(v.spark, 52), {width: 64, height: 28}) : '';
         card.appendChild(markup(el('div', {className: 'md-wl-c'}), html));
+        card.appendChild(el('div', {className: 'md-wl-p', text: fmtPrice(v.price)}));
+        card.appendChild(markup(el('div', {className: 'md-wl-m'}), U.chg(v.pct)));
       } else {
         card.appendChild(el('span', {className: 'md-wl-x', text: v.identity && v.identity.reasonText ? v.identity.reasonText : 'kein Kurs'}));
       }
+      // Tippen öffnet die Aktie im Fenster; der Verweis selbst bleibt (neuer Tab, Tastatur mit Umschalt/Strg, ohne Skript).
+      if (href) card.addEventListener('click', function (e) { if (!plainClick(e) || !U.popup) return; e.preventDefault(); openStock(v, card); });
       var li = el('li', {}, [card]);
       // Bearbeiten (Suche offen): „×“ entfernt eine Aktie, mit „Rückgängig“ wie bisher.
-      if (!$('md-find').hidden) {
+      if (editing) {
         var remove = el('button', {className: 'md-remove', type: 'button', 'aria-label': (v.ticker || 'Aktie') + ' aus der Watchlist entfernen', text: '×'});
         remove.addEventListener('click', function () { removeItem(v, remove); });
         li.appendChild(remove);
       }
       strip.appendChild(li);
     });
-    var editing = !$('md-find').hidden;
+    if (fold) {
+      var more = el('button', {className: 'md-fold', type: 'button', id: 'md-fold', 'aria-expanded': 'false'}, [el('b', {text: (shown.length - FOLD) + ' weitere'}), chev(16)]);
+      more.addEventListener('click', function () {
+        unfolded = true; render(['watchlist']);
+        var next = strip.children[FOLD] && strip.children[FOLD].querySelector('.md-wl'); if (next) next.focus();
+      });
+      strip.appendChild(el('li', {}, [more]));
+    }
     var add = el('button', {className: 'md-wl md-wl--add', type: 'button', id: 'md-edit', 'aria-controls': 'md-find', 'aria-expanded': String(editing)},
       [el('i', {text: editing ? '✓' : '+', 'aria-hidden': 'true'}), editing ? 'Fertig' : 'Aktie hinzufügen', el('small', {text: editing ? '' : 'oder entfernen'})]);
     add.addEventListener('click', function () {
@@ -257,6 +283,45 @@
     });
     strip.appendChild(el('li', {}, [add]));
   }});
+
+  /* Eine Zeile „Was sich getan hat“ (Welt, Text, Urteil) mit Verweis in die Welt; Karte und Fenster nutzen dieselbe. */
+  function eventRow(c, r) {
+    return el('a', {className: 'md-fd-r', href: U.perspectiveHref(r.world, c.ticker) + (r.world === 'supertrader' ? '#sf' : '')}, [
+      markup(el('span', {}), U.hud(r.world, 28, 9)), el('span', {}, [el('small', {text: r.label}), r.text]), markup(el('span', {}), U.verdict(r.verdict, r.pill))]);
+  }
+  /* Aktie im Fenster (Tiefe per Tipp): Kurs und Bewegung, Jahresverlauf, ihre Ereignisse von heute, die Perspektiven der Welten
+     (Adressen aus view.links, core/stock-context.js), „Ganz öffnen“ und „Entfernen“. Nichts davon ist neu geladen. */
+  function openStock(v, opener) {
+    var href = stockHref(v), priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number', name = cleanName(v.name) || v.ticker || '–';
+    var body = el('div', {className: 'md-st'}, [el('div', {className: 'md-st-h'}, [markup(el('span', {}), U.logo(v.ticker, {xl: true})),
+      el('div', {}, [el('b', {text: name}), el('small', {text: [v.ticker, v.exchange].filter(Boolean).join(' · ')})])])]);
+    if (priced) {
+      body.appendChild(el('div', {className: 'md-st-p'}, [el('b', {className: 'vu-num', text: fmtPrice(v.price)}), markup(el('span', {}), U.chg(v.pct, {big: true})),
+        el('small', {text: v.price.date ? 'Schluss ' + closeLabel(v.price.date) : ''})]));
+      var html = Chart && v.spark.length > 1 ? Chart.sparkline(thin(v.spark, 120), {width: 340, height: 110}) : '';
+      if (html) body.appendChild(markup(el('div', {className: 'md-st-c', 'aria-hidden': 'true'}), html));
+    }
+    var card = ctx.events ? ctx.events.cards.filter(function (c) { return c.ticker === v.ticker; })[0] : null;
+    if (card) {
+      body.appendChild(el('h3', {className: 'vu-ltag', text: 'Was sich getan hat'}));
+      body.appendChild(el('div', {className: 'md-st-ev'}, card.rows.map(function (r) { return eventRow(card, r); })));
+    }
+    var links = (U.PERSPECTIVES || []).map(function (p) {
+      var hit = (v.links || []).filter(function (l) { return l.product === p.id; })[0];
+      return hit ? el('a', {className: 'vu-chip', href: hit.href, 'data-world': p.id}, [markup(el('span', {className: 'md-st-i'}), U.worldIcon(p.icon, 17)), p.label]) : null;
+    }).filter(Boolean);
+    if (links.length) {
+      body.appendChild(el('h3', {className: 'vu-ltag', text: 'Perspektiven'}));
+      body.appendChild(el('nav', {className: 'md-st-l', 'aria-label': 'Perspektiven für ' + (v.ticker || name)}, links));
+    }
+    var remove = el('button', {className: 'vu-btn vu-btn--line', type: 'button', text: 'Entfernen', 'aria-label': (v.ticker || 'Aktie') + ' aus der Watchlist entfernen'});
+    body.appendChild(el('div', {className: 'md-st-a'}, [href ? el('a', {className: 'vu-btn', href: href, text: 'Ganz öffnen'}) : null, remove]));
+    body.appendChild(el('p', {className: 'vu-mu vu-xs md-st-f', text: 'Keine Anlageberatung.' + (priced && v.price.date ? ' Kurs: veröffentlichter Schluss ' + closeLabel(v.price.date) : '')}));
+    var pop = U.popup({id: 'md-stock', title: '', body: body, cls: 'md-stock'});
+    if (!pop) return;
+    var panel = pop.querySelector('.vu-sheet-ui'); if (panel) panel.setAttribute('aria-label', name);
+    remove.addEventListener('click', function () { U.closeSheet(pop); removeItem(v, remove); if (opener && !opener.isConnected && $('md-edit')) $('md-edit').focus(); });
+  }
 
   /* Was sich getan hat: eine Karte je Aktie mit Ereignissen (mein-dashboard/events.js). */
   MODULES.push({id: 'events', render: function () {
@@ -272,11 +337,7 @@
         el('span', {className: 'md-fd-t'}, [el('b', {text: c.name}), el('small', {text: c.priceText})])]);
       if (c.href) head.appendChild(chev(15));
       var li = el('li', {className: 'md-fd'}, [head]);
-      c.rows.forEach(function (r) {
-        var row = el('a', {className: 'md-fd-r', href: U.perspectiveHref(r.world, c.ticker) + (r.world === 'supertrader' ? '#sf' : '')}, [
-          markup(el('span', {}), U.hud(r.world, 28, 9)), el('span', {}, [el('small', {text: r.label}), r.text]), markup(el('span', {}), U.verdict(r.verdict, r.pill))]);
-        li.appendChild(row);
-      });
+      c.rows.forEach(function (r) { li.appendChild(eventRow(c, r)); });
       ul.appendChild(li);
     });
     $('md-feed-help').lastChild.textContent = 'Ereignisse aus den veröffentlichten Daten der Welten, ohne neue Speicherung. Keine Empfehlung.' +
@@ -426,6 +487,13 @@
       ul.appendChild(el('li', {}, [el('a', {className: 'md-tile', href: p.href, 'data-product': p.id, title: p.text},
         [markup(el('span', {}), U.hud(p.id, 34, 10)), el('b', {text: p.name})])]));
     });
+  }});
+
+  /* „Weiter“-Karte am Seitenende (VUUI.next): führt in die erste Welt der Liste. */
+  MODULES.push({id: 'next', once: true, render: function () {
+    var host = $('md-next'), p = SHORTCUTS[0];
+    host.textContent = '';
+    if (U.next) host.appendChild(markup(el('div', {}), U.next({title: p.name, sub: p.text, href: p.href})));
   }});
 
   var rendered = {};

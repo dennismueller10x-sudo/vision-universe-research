@@ -191,9 +191,9 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   await page.fill('#md-add', 'AAPL');
   await page.waitForSelector('#md-results:not([hidden]) .wl-result');
   await page.click('#md-results .wl-result >> nth=0');
-  // Screen m-home: Watchlist als Streifen (.md-wl), das Kuerzel steht fett auf der Karte.
+  // App-Konzept 2: Watchlist als Liste (.md-wl), der Name steht fett in der Zeile, das Kuerzel darunter (.md-wl-k).
   await page.waitForSelector('#md-strip .md-wl:not(.md-wl--add)');
-  const first = await page.textContent('#md-strip .md-wl:not(.md-wl--add) > b');
+  const first = await page.textContent('#md-strip .md-wl:not(.md-wl--add) > .md-wl-k');
   check(/AAPL/.test(first), `Watchlist: hinzugefuegt (${first})`);
   check(/\/s\/US_REAL\/AAPL|#\/AAPL|aktie\/AAPL/.test(await page.getAttribute('#md-strip a.md-wl', 'href') || ''), 'Watchlist: Link zur Aktie');
   await page.fill('#md-add', 'MSFT');
