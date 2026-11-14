@@ -40,11 +40,17 @@ test('die Seite nutzt die gemeinsamen Bausteine und definiert sie nicht neu', ()
   }
 });
 
-test('index.html ist genau die Ausgabe des Generators', () => {
+/* Die Generatorlogik wird gegen EINGEFRORENE Daten geprueft (core/tests/fixtures/home-data, Ausgabe expected-index.html),
+   nicht gegen den Tagesstand: index.html entsteht erst nach den Datenlaeufen durch home-refresh.yml, und ein Test, der
+   beide vergleicht, ist nach jedem Datentag bis zu diesem Lauf rot (13.11.2026, Strang AM). Dass die ausgelieferte Startseite
+   zum Tagesstand passt, meldet der Alarm scripts/home/check-home-fresh.mjs im Freshness-Monitor (blockiert keinen Code-PR). */
+test('der Generator liefert aus eingefrorenen Daten genau die erwartete Startseite', () => {
+  const fx = join(root, 'core/tests/fixtures/home-data');
   const out = join(mkdtempSync(join(tmpdir(), 'home-')), 'index.html');
-  execFileSync(process.execPath, [join(root, 'scripts/home/build-home.mjs'), '--out=' + out], { cwd: root });
-  assert.equal(readFileSync(out, 'utf8'), html, 'node scripts/home/build-home.mjs ausführen');
-  assert.doesNotMatch(html, /%%[A-Z0-9_]+%%/);
+  execFileSync(process.execPath, [join(root, 'scripts/home/build-home.mjs'), '--data=' + fx, '--out=' + out], { cwd: root });
+  assert.equal(readFileSync(out, 'utf8'), readFileSync(join(fx, 'expected-index.html'), 'utf8'),
+    'Generator oder Template geaendert: node scripts/home/build-home.mjs --data=core/tests/fixtures/home-data --out=core/tests/fixtures/home-data/expected-index.html');
+  assert.doesNotMatch(html, /%%[A-Z0-9_]+%%/, 'index.html enthaelt einen offenen Platzhalter');
 });
 
 test('Urteile sind die drei Formen aus C08, ein Chart, Preis nie fest im Code', () => {

@@ -52,6 +52,17 @@ test("L2: Abfragefelder und Wortsuche", () => {
   assert.equal(p("über der SMA 200").field, "aboveSma200");
 });
 
+/* Die Bars bis (einschliesslich) dem Stichtag der Datensatz-Zeile: Datensatz (technical/data/screener-v1.json) und Materialisierung
+   (technical-signals-v1) entstehen zu verschiedenen Zeiten und liegen oft einen Tag auseinander. Verglichen wird deshalb auf den
+   Bars bis zum Stichtag der Zeile, nicht auf den neuesten - der Test haengt nicht mehr vom Zeitpunkt des Datenlaufs ab. */
+const upTo = (b, d) => {
+  const k = b.timestamps.findIndex((ts) => String(ts).slice(0, 10) === d);
+  if (k < 0) return null;
+  const o = {};
+  for (const key of Object.keys(b)) o[key] = Array.isArray(b[key]) ? b[key].slice(0, k + 1) : b[key];
+  return o;
+};
+
 test("L2: Datensatz - Spalte = Rechnung auf den veroeffentlichten Bars, eingefroren leer", () => {
   const c = JSON.parse(readFileSync(join(root, "technical/data/screener-v1.json"), "utf8")).cols;
   if (!c.sma200Rising) return;
@@ -61,9 +72,8 @@ test("L2: Datensatz - Spalte = Rechnung auf den veroeffentlichten Bars, eingefro
     const inst = JSON.parse(gunzipSync(readFileSync(join(dir, file)))).instruments || {};
     for (const [tk, x] of Object.entries(inst)) {
       const i = pos.get(tk); if (i === undefined || c.frozenSince[i]) continue;
-      /* nur Titel, deren Zeile auf denselben Bars beruht (Datensatz und Materialisierung koennen einen Tag auseinander liegen) */
-      if (c.asOf[i] !== String(x.bars.timestamps[x.bars.timestamps.length - 1]).slice(0, 10)) continue;
-      const b = x.bars, t = b.close.length - 1, s = I.compute(b, "sma", { period: 200 }).values;
+      const b = upTo(x.bars, c.asOf[i]); if (!b) continue;
+      const t = b.close.length - 1, s = I.compute(b, "sma", { period: 200 }).values;
       assert.equal(c.sma200Rising[i], t >= 220 ? s[t] > s[t - 21] : null, tk);
       checked++;
     }

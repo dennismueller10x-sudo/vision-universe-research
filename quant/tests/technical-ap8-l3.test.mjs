@@ -37,6 +37,17 @@ test("L3: Abfragefeld und Wortsuche (auch die Kriterien-Formulierungen der Trend
   assert.deepEqual([p("neues 52-Wochen-Tief")[0].field, p("52-Wochen-Hoch")[0].field], ["newLow52w", "newHigh52w"]);
 });
 
+/* Die Bars bis (einschliesslich) dem Stichtag der Datensatz-Zeile: Datensatz (technical/data/screener-v1.json) und Materialisierung
+   (technical-signals-v1) entstehen zu verschiedenen Zeiten und liegen oft einen Tag auseinander. Verglichen wird deshalb auf den
+   Bars bis zum Stichtag der Zeile, nicht auf den neuesten - der Test haengt nicht mehr vom Zeitpunkt des Datenlaufs ab. */
+const upTo = (b, d) => {
+  const k = b.timestamps.findIndex((ts) => String(ts).slice(0, 10) === d);
+  if (k < 0) return null;
+  const o = {};
+  for (const key of Object.keys(b)) o[key] = Array.isArray(b[key]) ? b[key].slice(0, k + 1) : b[key];
+  return o;
+};
+
 test("L3: Datensatz - Spalte = Schluss / tiefstes Tagestief (252) - 1 auf den Bars, nie negativ, eingefroren leer", () => {
   const c = JSON.parse(readFileSync(join(root, "technical/data/screener-v1.json"), "utf8")).cols;
   if (!c.distLow52w) return;
@@ -46,9 +57,8 @@ test("L3: Datensatz - Spalte = Schluss / tiefstes Tagestief (252) - 1 auf den Ba
     const inst = JSON.parse(gunzipSync(readFileSync(join(dir, file)))).instruments || {};
     for (const [tk, x] of Object.entries(inst)) {
       const i = pos.get(tk); if (i === undefined || c.frozenSince[i]) continue;
-      /* nur Titel, deren Zeile auf denselben Bars beruht (Datensatz und Materialisierung koennen einen Tag auseinander liegen) */
-      if (c.asOf[i] !== String(x.bars.timestamps[x.bars.timestamps.length - 1]).slice(0, 10)) continue;
-      const b = x.bars, n = b.low.length, lo = Math.min(...b.low.slice(Math.max(0, n - 252))), want = b.close[n - 1] / lo - 1;
+      const b = upTo(x.bars, c.asOf[i]); if (!b) continue;
+      const n = b.low.length, lo = Math.min(...b.low.slice(Math.max(0, n - 252))), want = b.close[n - 1] / lo - 1;
       assert.ok(Math.abs(c.distLow52w[i] - want) <= 5e-5 + 1e-4 * Math.abs(want), tk + " " + c.distLow52w[i] + " vs " + want);
       checked++;
     }
