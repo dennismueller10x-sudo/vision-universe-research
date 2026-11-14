@@ -53,6 +53,9 @@ const real = (reason, detail) => ({class: CLASSES.REAL, reason, ...(detail ? {de
 /** Beurteilung eines QA-Fehlers anhand der Gegenprobe. Rein, ohne Prozess-/Netzzugriff. */
 export function decide({baseline, reproof, qaReport}) {
  if (!reproof || typeof reproof !== 'object') return real('PROOF_UNAVAILABLE'); // im Zweifel REAL
+ /* Mischstand delivery.json <-> refresh.json direkt nach der Auslieferung (CDN-Rand): Ausbreitungsfall, begrenzt wiederholen (LIMITS).
+    Bleibt er nach den Wiederholungen bestehen, endet verifyLive mit RETRIES_EXHAUSTED (fail-closed wie bisher). */
+ if (qaReport && typeof qaReport === 'object' && qaReport.code === 'DELIVERY_PROOF_GENERATION_MIXED') return {class: CLASSES.PROPAGATION, reason: 'MIXED_DELIVERY_AFTER_DEPLOY'};
  /* Browserphase erreicht: alle Bytes stimmten, ein Fehler ist nur als Playwright-Timeout bei gleichzeitig belegter Auslieferungsstoerung transient. */
  const browserPhase = qaReport && typeof qaReport === 'object' && qaReport.status === 'FAIL'; // Bericht nur aus der Browserphase (vorher: runtimeCandidate/Hash-Pruefung ohne Bericht)
  if (browserPhase && qaReport.error?.name !== 'TimeoutError') return real('BROWSER_ASSERTION');

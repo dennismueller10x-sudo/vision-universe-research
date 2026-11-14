@@ -242,3 +242,33 @@ test('Obergrenzen sind fest und die Reserve fuer den Rollback ist Teil des Vertr
  assert.equal(LIMITS.jobTimeoutMs, wf.jobs.refresh['timeout-minutes'] * 60000);
  assert.ok(LIMITS.reserveMs >= 10 * 60000);
 });
+
+// Fall Lauf 43555876511 (14.11.2026 05:50Z): Beweis propagiert, aber delivery.json (6f0b...) und refresh.json (1606...) kurz uneins.
+const MIXED = {status: 'FAIL', phase: 'RUNTIME_CANDIDATE', code: 'DELIVERY_PROOF_GENERATION_MIXED', delivery: '6f0b7a871a85ff00b846152b', proof: '1606745396fcd55f6c5659e6'};
+
+test('Mischstand delivery<->refresh bei gleichem Beweis: kein sofortiges REAL, Wiederholung besteht', async () => {
+ const h = harness({qa: [{ok: false, report: MIXED}, {ok: true}], proofs: [OK('same'), OK('same'), OK('same')]});
+ const r = await h.run();
+ assert.equal(r.result, 'PASS');assert.equal(r.reason, 'PASSED_ON_RETRY_2');
+ assert.equal(r.attempts[0].class, CLASSES.PROPAGATION);assert.equal(r.attempts[0].reason, 'MIXED_DELIVERY_AFTER_DEPLOY');
+ assert.equal(h.log.qa.length, 2);assert.deepEqual(h.log.sleeps, [LIMITS.backoffMs[0]]);
+});
+
+test('Mischstand bleibt nach allen Wiederholungen: fail-closed RETRIES_EXHAUSTED (Rollback wie bisher)', async () => {
+ const h = harness({qa: [{ok: false, report: MIXED}], proofs: [OK('same')]});
+ const r = await h.run();
+ assert.equal(r.result, 'FAIL');assert.equal(r.reason, 'RETRIES_EXHAUSTED');
+ assert.equal(h.log.qa.length, 1 + LIMITS.maxRetries);assert.deepEqual(h.log.sleeps, [...LIMITS.backoffMs]);
+});
+
+test('Mischstand-Code gilt nur mit Bericht: ohne Bericht und gleicher Stand bleibt REAL, andere FAIL-Berichte bleiben REAL', () => {
+ assert.equal(decide({baseline: OK('a'), reproof: OK('a'), qaReport: null}).class, CLASSES.REAL);
+ assert.equal(decide({baseline: OK('a'), reproof: OK('a'), qaReport: {status: 'FAIL', code: 'ANDERER_FEHLER'}}).class, CLASSES.REAL);
+ assert.equal(decide({baseline: OK('a'), reproof: OK('a'), qaReport: MIXED}).class, CLASSES.PROPAGATION);
+});
+
+test('mixedCheck wirft typisierten Fehler mit beiden Generationen, gleiche Generation passiert', async () => {
+ const {mixedCheck, MIXED_CODE} = await import('../runtime-candidate.mjs');
+ assert.doesNotThrow(() => mixedCheck({generation: 'a'}, {generation: 'a'}));
+ assert.throws(() => mixedCheck({generation: '1606'}, {generation: '6f0b'}), e => e.code === MIXED_CODE && e.delivery === '6f0b' && e.proof === '1606');
+});

@@ -3,6 +3,14 @@ import {readFileSync} from 'node:fs';
 import {reviewed} from './production-approval.mjs';
 import {frozenInventory,frozenTickers,refreshConfig} from './refresh-approval.mjs';
 import {eligibilityValid,universeConfig} from './universe-approval.mjs';
+export const MIXED_CODE='DELIVERY_PROOF_GENERATION_MIXED';
+/* delivery.json und refresh.json stammen aus demselben Pages-Deploy; direkt nach der Auslieferung kann ein CDN-Rand noch die alte
+   Datei liefern (Lauf 43555876511, 14.11.2026 05:50Z: delivery 6f0b7a87..., refresh 1606745396...). Typisierter Fehler, damit die
+   Live-Verifikation das als Ausbreitungsfall wiederholt (refresh-live-verify.mjs decide) statt sofort zurueckzurollen. */
+export function mixedCheck(proof,delivery){
+ if(proof.generation===delivery.generation)return;
+ throw Object.assign(new Error(MIXED_CODE+': delivery '+delivery.generation+' != refresh '+proof.generation),{code:MIXED_CODE,delivery:delivery.generation,proof:proof.generation});
+}
 export async function runtimeCandidate(origin='https://research.visionuniverse.de'){
  const candidate=JSON.parse(readFileSync(new URL('../../docs/company-intelligence/full-data-release-candidate.json',import.meta.url)));
  const get=async p=>{const r=await fetch(origin+p+'?refresh-proof='+Date.now(),{signal:AbortSignal.timeout(30000)});assert(r.ok,p);return r.json();};
@@ -10,12 +18,12 @@ export async function runtimeCandidate(origin='https://research.visionuniverse.d
  if(delivery.generation===reviewed.generation)return {candidate,manifest:reviewed,delivery};
  const proof=await get('/company-intelligence-refresh.json');
  if(proof.manifest?.scope==='PER_ISSUER_ELIGIBILITY'){
-  assert(eligibilityValid(proof.manifest));assert.equal(delivery.approvalId,universeConfig.approvalId);assert.equal(proof.status,'PASS');assert.equal(proof.generation,delivery.generation);
+  assert(eligibilityValid(proof.manifest));assert.equal(delivery.approvalId,universeConfig.approvalId);assert.equal(proof.status,'PASS');mixedCheck(proof,delivery);
   assert.equal(delivery.cohortStocks,proof.manifest.tickers.length);assert.equal(delivery.issuers,Object.keys(proof.manifest.eligibility).length);
   return {candidate:{...candidate,generation:proof.generation,dataTime:proof.manifest.generatedAt,inventory:proof.inventory},manifest:proof.manifest,delivery,proof};
  }
  assert.equal(delivery.cohortStocks,46);assert.equal(delivery.issuers,45);
- assert.equal(proof.schema,1);assert.equal(proof.status,'PASS');assert.equal(proof.generation,delivery.generation);
+ assert.equal(proof.schema,1);assert.equal(proof.status,'PASS');mixedCheck(proof,delivery);
  assert.equal(proof.manifest.generation,proof.generation);
  assert.equal(proof.manifest.generatedAt,proof.generatedAt);
  assert.equal(proof.sourceUsagePolicy,refreshConfig.sourceUsagePolicy);assert.deepEqual(proof.manifest.tickers,frozenTickers);

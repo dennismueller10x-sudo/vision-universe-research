@@ -10,13 +10,18 @@ import {createHash} from 'node:crypto';
 import {accessStateFor,STORAGE_KEY} from '../access-gate/build.mjs';
 import {frozenInventory,refreshConfig} from './refresh-approval.mjs';
 import {waitForHydratedConsumer} from './hydrated-consumer-review.mjs';
-import {runtimeCandidate} from './runtime-candidate.mjs';
+import {runtimeCandidate,MIXED_CODE} from './runtime-candidate.mjs';
 import {candidateRollout} from './candidate-rollout.mjs';
 import {routeDeliveryBundles} from './bundle-routes.mjs';
 const require=createRequire(import.meta.url),{chromium}=require('playwright');
 const args=process.argv.slice(2),arg=k=>args[args.indexOf(k)+1],live=args.includes('--live');
 const origin='https://research.visionuniverse.de',out=arg('--out'),directory=arg('--consumer');mkdirSync(dirname(out),{recursive:true});
-const runtime=live?await runtimeCandidate(origin):null;
+let runtime=null;
+if(live)try{runtime=await runtimeCandidate(origin);}catch(error){
+ // Mischstand delivery<->refresh: Bericht mit Code statt nackter Assertion, damit refresh-live-verify wiederholen kann.
+ if(error?.code===MIXED_CODE){writeFileSync(out,JSON.stringify({status:'FAIL',phase:'RUNTIME_CANDIDATE',code:MIXED_CODE,delivery:error.delivery,proof:error.proof})+'\n');console.error(error.message);process.exit(1);}
+ throw error;
+}
 const manifest=live?runtime.manifest:JSON.parse(readFileSync(join(directory,'manifest.json')));
 if(manifest.scope==='PER_ISSUER_ELIGIBILITY'){
  const permanent=['TSLA','AAPL','NVDA','PLTR','XPEV','MSFT','GOOG','GOOGL','APD','PYPL','NTLA'];
