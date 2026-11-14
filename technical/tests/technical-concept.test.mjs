@@ -29,9 +29,9 @@ test("Entscheidung 4: jedes Muster hat ein Bild (oder das neutrale), gleich auf 
   assert.ok(html.indexOf("/technical/ui/shapes.js") > 0 && html.indexOf("/technical/ui/shapes.js") < html.indexOf("/technical/app.js"));
 });
 
-test("TX01 Start: Markt als Zeile, Heute neu als Karten, fertige Suchen öffnen den Screener, Muster als Raster; keine Zahlenkacheln und Bestenlisten", () => {
+test("TX01 Start (App-Konzept 2, 14.11.2026): Markt in der Kopfkachel, Heute neu als Karten, Muster als Schiene, fertige Suchen öffnen den Screener, „Weiter“-Karte; keine Zahlenkacheln und Bestenlisten", () => {
   const home = app.slice(app.indexOf("  function viewHome(main) {"), app.indexOf("  /* Ausgeschlossen: Linien"));
-  for (const s of ["Was zeigt<br>der Chart?", "Heute neu im Chart", "Fertige Suchen", "Tipp öffnet die Treffer im Screener.", "Muster heute im Markt", "Chart lesen in 4 Lektionen", "tc-ms", "#/screener?vorlage="])
+  for (const s of ["Was zeigt der Chart?", "Jeden Tag lesen feste Regeln die Charts aller US-Aktien und sagen in Worten, was auffällt.", "Heute neu im Chart", "Fertige Suchen", "Tipp öffnet die Treffer im Screener.", "Muster heute im Markt", "Chart lesen in 4 Lektionen", "tc-ms", "#/screener?vorlage=", "MUSTER_GRID.map", "nextCard("])
     assert.ok(home.includes(s), s);
   assert.doesNotMatch(home, /Bestenlisten|U\.tile\(|tc-tiles3|setupSheet/);
 });
@@ -45,7 +45,7 @@ test("TX02 Chart-Seite: Urteil, Zonen, drei Sätze, Zonen-Kacheln, Befunde heute
 test("TX03 Studio: darunter Befunde und Zonen wie auf der Chart-Seite", () => {
   const studio = app.slice(app.indexOf("  function renderStudio(body, X) {"), app.indexOf("  /** Hinweis zum Zeitbezug der Reihe"));
   assert.match(studio, /befundeHeute\(X, 6\)/);
-  assert.match(studio, /zoneTiles\(X\.levels\)/);
+  assert.match(studio, /zoneTiles\(X\.levels, S\.close\[last\]\)/, "Zonen-Kacheln, seit App-Konzept 2 mit dem Kurs für die Zonenleiter");
   assert.doesNotMatch(studio, /renderSignalCards|renderLevels/);
 });
 
@@ -96,13 +96,14 @@ test("Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json
 
 test("Kleinform im Konzept-Stil: Mini-Charts nutzen VUChart.sparkline (neongrüne Fläche, Endpunkt), keine schwarze Einzellinie", () => {
   assert.doesNotMatch(app, /Chart\.sparkline\(/, "kein technical/ui/chart.js#sparkline in der Oberfläche");
-  assert.match(app, /VC\.sparkline\(sparkMap\[row\.s\], \{ width: 216, height: 40 \}\)/, "Karte „Heute neu im Chart“");
+  assert.match(app, /VC\.sparkline\(sparkMap\[row\.s\], \{ width: 232, height: 84 \}\)/, "Karte „Heute neu im Chart“ (App-Konzept 2: Verlauf über die ganze Kartenbreite)");
 });
 
-test("Markt heute als Ampel in Neonfarben (Owner 10.11.2026): Zustand aus dem Urteil, drei Lichter, Karte in der Zustandsfarbe", () => {
+test("Markt heute als Ampel in Neonfarben (Owner 10.11.2026): Zustand aus dem Urteil, drei Lichter in der Zustandsfarbe; seit App-Konzept 2 (14.11.2026) in der dunklen Kopfkachel", () => {
   const home = app.slice(app.indexOf("  function viewHome(main) {"), app.indexOf("  /* Ausgeschlossen: Linien"));
   assert.match(home, /\["weak", "mid", "strong"\]\.map/);
   assert.match(home, /"tc-ms tc-ms--" \+ v\[0\]/);
   const css = readFileSync("technical/technical.css", "utf8");
-  for (const s of ["--tc-neon-green", "--tc-neon-yellow", "--tc-neon-red", ".tc-ms--strong{", ".tc-ms--mid{", ".tc-ms--weak{", ".tc-ampel"]) assert.ok(css.includes(s), s);
+  for (const s of ["--tc-neon-green", "--tc-neon-yellow", "--tc-neon-red", ".tc-ms--strong{", ".tc-ms--mid{", ".tc-ms--weak{", ".tc-ampel", ".tc-ampel i.is-weak.is-on{background:var(--tc-neon-red)", ".tc-ampel i.is-mid.is-on{background:var(--tc-neon-yellow)", ".tc-ampel i.is-strong.is-on{background:var(--tc-neon-green)"]) assert.ok(css.includes(s), s);
+  assert.match(home, /"tc-hero vu-night"/, "Kopfkachel bleibt in beiden Schemata dunkel");
 });

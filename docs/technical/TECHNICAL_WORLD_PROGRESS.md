@@ -5,6 +5,7 @@
 
 **Stand:** 27.10.2026 · Bibliothek L1–L8 auf `main` (160 Funktionen: 78 Indikatoren, 58 Kerzenmuster, 24 Formationen; Stand je Funktion in [TECHNICAL_LIBRARY.md](TECHNICAL_LIBRARY.md)) · Versionen `indicators` 1.5.0, `candlesticks` 1.1.0, `formations` 1.2.3, `screen-row` 1.8.0, `technical-mtf` 1.1.0 · Auftrag seit 26.10.2026: Bibliothek mit mathematischer und historischer Validierung und Screener-Anbindung.
 Ältere Stände: V1 (PR #919), V2 (PR #923), Menügruppe (PR #925), V3 (PR #929).
+**App-Konzept 2 (Owner-Freigabe 14.11.2026, nur Darstellung):** Start mit dunkler Kopfkachel (Anteil über der 200-Tage-Linie als Zahl und Balken, Urteil mit Ampel), Schienen bis an den Rand (Heute neu, acht Muster, fertige Suchen), auf der Chart-Seite je Satz eine Grafik, Zonenleiter, Kapitel als Kacheln; Erklärtexte und „Datenqualität und Herkunft“ öffnen sich im Fenster (`VUUI.popup`), am Seitenende steht die „Weiter“-Karte. Modelle, Daten und Adressen sind unverändert.
 Dieses Dokument ist der Wiedereinstieg. Wer die Arbeit fortsetzt, liest zuerst Abschnitt 6 (offene Aufgaben) und Abschnitt 5 (Teststatus).
 
 ## 1. Ergebnis in einem Satz

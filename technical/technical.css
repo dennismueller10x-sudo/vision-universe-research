@@ -803,12 +803,6 @@ html body .vu-hero-fidelity[data-product=technical]{--vu-hero-art:url('/assets/h
 .tc-rail::-webkit-scrollbar{display:none}
 .tc-rail>*{scroll-snap-align:start}
 /* Markt als Zeile (ms) */
-.tc-ms{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;background:var(--vu-card);border-radius:18px;padding:10px 12px;margin-top:14px;color:var(--vu-ink);text-decoration:none}
-.tc-ms b{display:block;font-size:15px;font-weight:900;letter-spacing:-.02em;margin-top:1px}
-.tc-ms b small{font-size:11.5px;font-weight:700;color:var(--vu-mute);letter-spacing:0;margin-left:4px}
-.tc-ms-bar{height:6px;border-radius:9px;background:var(--vu-hair);margin-top:6px}
-.tc-ms-bar i{display:block;height:100%;background:var(--vu-ink);border-radius:9px}
-.tc-ms>svg{width:14px;height:14px;color:var(--vu-mute)}
 /* Firmen-Chips mit Logo */
 .tc .tc-quick .vu-chip{gap:8px}
 .tc .tc-quick .vu-logo-tile{width:20px;height:20px;border-radius:6px;font-size:7px}
@@ -976,21 +970,175 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .tc-cta-lime b{margin-right:5px;font-weight:900}.tc-cta-lime.is-empty b{display:none}
 .tc-cta.tc-cta-lime b{color:#000;font-size:inherit;line-height:inherit;letter-spacing:0}
 .tc-cta.tc-cta-lime{flex-direction:row;gap:0}.tc-cta.tc-cta-lime b{display:inline}
-.tc-ms-basis{display:block;margin-top:6px;font-size:11px;font-weight:600;color:var(--vu-mute)}
-/* Markt heute als Ampel (Owner-Wunsch 10.11.2026, Ausnahme von „nur Neongrün“ für diese eine Karte):
-   Karte in der Neonfarbe des Zustands, daneben eine Ampel mit drei Lichtern. Schrift immer schwarz. */
+/* Markt heute als Ampel (Owner-Wunsch 10.11.2026): drei Lichter in der Neonfarbe des Zustands. Seit App-Konzept 2 (14.11.2026)
+   steht „Markt heute“ in der dunklen Kopfkachel; die Zustandsfarbe tragen die Ampel und ihr Rand, die Schrift bleibt weiß. */
 :root{--tc-neon-green:#c8f531;--tc-neon-yellow:#ffe94d;--tc-neon-red:#ff4d6d}
-.tc-ms.tc-ms--strong,.tc-ms.tc-ms--mid,.tc-ms.tc-ms--weak{grid-template-columns:1fr auto auto;gap:10px;color:#000;box-shadow:0 10px 24px -14px rgb(0 0 0/.45)}
-.tc-ms--strong{background:var(--tc-neon-green)}
-.tc-ms--mid{background:var(--tc-neon-yellow)}
-.tc-ms--weak{background:var(--tc-neon-red)}
-.tc-ms--strong .vu-ltag,.tc-ms--mid .vu-ltag,.tc-ms--weak .vu-ltag,.tc-ms--strong b small,.tc-ms--mid b small,.tc-ms--weak b small,.tc-ms--strong .tc-ms-basis,.tc-ms--mid .tc-ms-basis,.tc-ms--weak .tc-ms-basis{color:#000;opacity:.72}
-.tc-ms--strong .tc-ms-bar,.tc-ms--mid .tc-ms-bar,.tc-ms--weak .tc-ms-bar{background:rgb(0 0 0/.14)}
-.tc-ms--strong .tc-ms-bar i,.tc-ms--mid .tc-ms-bar i,.tc-ms--weak .tc-ms-bar i{background:#000}
-.tc-ms--strong>svg,.tc-ms--mid>svg,.tc-ms--weak>svg{color:#000}
-.tc-ampel{display:flex;flex-direction:column;gap:4px;background:#000;border-radius:999px;padding:5px}
+.tc-ms--strong{--tc-state:var(--tc-neon-green)}
+.tc-ms--mid{--tc-state:var(--tc-neon-yellow)}
+.tc-ms--weak{--tc-state:var(--tc-neon-red)}
+.tc-ampel{display:flex;flex-direction:column;gap:4px;background:#000;border-radius:999px;padding:5px;box-shadow:0 0 0 1.5px var(--tc-state,#2a2a2a)}
 .tc-ampel i{width:11px;height:11px;border-radius:50%;background:#2a2a2a}
 .tc-ampel i.is-weak.is-on{background:var(--tc-neon-red);box-shadow:0 0 8px var(--tc-neon-red)}
 .tc-ampel i.is-mid.is-on{background:var(--tc-neon-yellow);box-shadow:0 0 8px var(--tc-neon-yellow)}
 .tc-ampel i.is-strong.is-on{background:var(--tc-neon-green);box-shadow:0 0 8px var(--tc-neon-green)}
-.tc-ms b small{white-space:nowrap;display:inline-block}
+
+/* ===================================================================== App-Konzept 2 (Owner-Freigabe 14.11.2026)
+   Der Bildschirm wird genutzt: 14 px Rand, Schienen bis an den Rand, keine Dachzeile, die oben eine Zeile kostet.
+   Kopfkachel mit Zahl und Balken, Grafik je Aussage, Kapitel als Kacheln, Tiefe im Fenster (VUUI.popup).
+   Farben: Schwarz, Weiß, Grau, Neongrün; Neongrün nur als Fläche hinter schwarzer Schrift oder auf dunklen Kacheln. */
+:root{--tc-gutter:14px}
+@media(min-width:761px){:root{--tc-gutter:24px}}
+.tc{--vu-gutter:var(--tc-gutter);padding-top:2px}
+.tc-rail,.tc-mrail{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin-inline:calc(-1 * var(--tc-gutter));padding:2px var(--tc-gutter);scroll-padding-inline:var(--tc-gutter);scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.tc-mrail::-webkit-scrollbar{display:none}
+.tc-mrail>*{scroll-snap-align:start}
+.tc .tc-quick,.tc .tc-persp{margin-inline:calc(-1 * var(--tc-gutter));padding-inline:var(--tc-gutter);flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.tc .tc-quick::-webkit-scrollbar,.tc .tc-persp::-webkit-scrollbar{display:none}
+.tc-rh{margin:26px 0 10px}
+.tc-rh-t h2{font-size:22px;font-weight:900;letter-spacing:-.035em;line-height:1.1}
+.tc .vu-sect{font-size:20px;font-weight:900;letter-spacing:-.03em}
+.tc a.vu-next{margin-top:26px}
+.tc-foot{margin-top:18px}
+
+/* Seitenkopf: Titel zuerst, die Dachzeile klein daneben */
+.tc-phead{padding:10px 0 10px}
+.tc-phead .vu-lt{font-size:clamp(26px,7.6vw,34px)}
+.tc-phead--row .vu-lt{display:inline}
+.tc-phead--row .vu-ltag{display:inline-block;margin:0 0 0 8px;vertical-align:middle;white-space:nowrap}
+.tc-phead--row .vu-lead{margin-top:6px;font-size:14px;line-height:1.4}
+
+/* Kopfkachel der Startseite */
+.tc-hero{margin-top:10px;border-radius:24px;padding:14px 16px 14px}
+:root:not([data-theme=dark]) .tc-hero{background:#0e1013}
+.tc-hero-h{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:30px}
+.tc-hero-k{margin:0;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#9b9b9b;line-height:1.3}
+.tc-hero-q{display:inline;margin:0;font:inherit;letter-spacing:inherit;color:#fff}
+.tc-hero-skel{height:146px;border-radius:16px;margin-top:8px;background:#1f1f1f}
+.tc-hero .tc-note{color:#bdbdbd;margin:10px 0 0}
+.tc-info{flex:none;width:30px;height:30px;border:0;border-radius:50%;background:#fff;color:#000;font:900 14px/1 var(--vu-font,Inter,sans-serif);cursor:pointer;position:relative}
+.tc-info:after{content:"";position:absolute;inset:-7px}
+:root:not([data-theme=dark]) :not(.vu-night):not(.tc-story)>*>.tc-info{background:#000;color:#fff}
+.tc-ms{display:block;background:none;border-radius:0;padding:0;margin-top:6px;color:#fff;text-decoration:none}
+.tc-ms-top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.tc-ms-big b{display:block;margin:0;font-size:clamp(46px,15vw,62px);font-weight:900;letter-spacing:-.05em;line-height:.95;color:var(--vu-lime)}
+.tc-ms-big small{display:block;margin:4px 0 0;font-size:14px;font-weight:800;color:#fff;letter-spacing:-.01em}
+.tc-ms-v{display:flex;align-items:center;gap:10px;min-width:0}
+.tc-ms-v .vu-ltag{display:block;color:#9b9b9b}
+.tc-ms-v b{display:block;margin-top:1px;font-size:16px;font-weight:900;letter-spacing:-.02em;line-height:1.15}
+.tc-ms-bar{height:16px;border-radius:99px;background:#2a2a2d;margin-top:14px;overflow:hidden}
+.tc-ms-bar i{display:block;height:100%;background:var(--vu-lime);border-radius:99px}
+.tc-ms-basis{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:8px;font-size:11.5px;font-weight:600;color:#9b9b9b}
+.tc-ms-basis svg{width:14px;height:14px;flex:none}
+.tc-search-slot{margin-top:10px}
+.tc-quick{margin:10px 0 0}
+
+/* Heute neu im Chart: Karte mit großem Kursverlauf bis an den Kartenrand */
+.tc-nc{width:232px;border-radius:22px;padding:14px 14px 12px;overflow:hidden}
+.tc-nc-h{gap:10px}
+.tc-nc-h .vu-logo-tile{width:42px;height:42px;border-radius:12px;font-size:10px}
+.tc-nc-n b{font-size:15px;font-weight:800}
+.tc-nc-h .tc-shapebox{margin-left:auto}
+.tc-nc-s{margin-top:8px;font-size:13px;min-height:33px;align-items:flex-start}
+.tc-nc-sp{margin:6px -14px 0;height:84px}
+.tc-nc-sp svg{width:100%;height:84px}
+.tc-nc-f{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:10px}
+.tc-nc .tc-nc-f .vu-verdict{margin:0;align-self:auto}
+.tc-nc .tc-nc-f .vu-chg{font-size:12px;padding:4px 9px}
+
+/* Muster: dunkle Kachel mit großem Bild, Zahl und Richtung; auf dem Start als Schiene, auf der Musterseite als Raster */
+.tc-mgrid>a.tc-mg{background:#151515;color:#fff;border-radius:22px;padding:14px;display:flex;flex-direction:column;min-width:0}
+:root:not([data-theme=dark]) .tc-mgrid>a.tc-mg{background:#0e1013}
+.tc-mg .tc-mg-ic{width:auto;height:auto;background:none;border-radius:0;justify-items:start;color:var(--vu-lime)}
+.tc-mg .tc-mg-ic svg{width:100%;max-width:112px;height:auto}
+.tc-mgrid b.tc-mg-n{margin-top:10px;font-size:14px;font-weight:800;line-height:1.2}
+.tc-mg-row{margin-top:auto;padding-top:4px}
+.tc-mg-row b{font-size:26px;letter-spacing:-.04em}
+.tc-mg .tc-dirdot{background:#2a2a2d;color:#fff}
+.tc-mg .tc-dirdot.is-up{background:var(--vu-lime);color:#000}
+.tc-mg .tc-dirdot.is-down{background:#fff;color:#000}
+.tc-mrail.tc-mgrid{grid-template-columns:none}
+.tc-mrail>a.tc-mg{flex:none;width:150px}
+.tc-mgrid{gap:10px}
+
+/* Fertige Suchen, Balken */
+.tc-idc{width:172px;border-radius:22px}
+.tc-idc-n b{font-size:28px}
+.tc-bar{display:block;position:relative;height:6px;border-radius:9px;background:var(--vu-hair);margin-top:8px}
+.tc-bar i{display:block;height:100%;border-radius:9px;background:var(--vu-ink)}
+:root[data-theme=dark] .tc-bar i{background:var(--vu-lime)}
+.tc-bar em{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;border-radius:2px;background:var(--vu-mute)}
+.tc-row-text .tc-bar{max-width:220px}
+.tc-kvrow>span:first-child{flex:1;min-width:0}
+.tc-kvrow .tc-bar{margin:6px 0 5px;height:8px}
+.tc-crit .tc-bar{margin:6px 0 2px;max-width:260px}
+.tc-learn{border-radius:22px}
+
+/* Chart-Seite: Aktienkopf ohne eigene Datumszeile (assets/stock-navigator, Farben unverändert) */
+.tc-shead .vu-shead-price{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:2px;align-items:center}
+.tc-shead .vu-shead-value{grid-row:1/span 2}
+.tc-shead .vu-shead-change{justify-self:start}
+.tc-shead .vu-shead-when{grid-column:2;justify-self:start;margin:0;flex-basis:auto;text-align:left;font-size:11px;line-height:1.2}
+@media(max-width:380px){.tc-shead .vu-shead-value{grid-row:auto;grid-column:1/-1}.tc-shead .vu-shead-when{align-self:center}}
+.tc-sayrow{margin-top:10px}
+.tc-sayrow .vu-mt{font-size:24px;font-weight:900;letter-spacing:-.035em}
+/* Drei Sätze: je Satz eine Grafik */
+.tc-story{background:#151515;padding:14px 14px 6px}
+:root:not([data-theme=dark]) .tc-story{background:#0e1013}
+.tc-story-h{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tc-story-h .tc-ltag{margin:0}
+.tc-story-r{align-items:start;padding:12px 0}
+.tc-story-r>.vu-hud{margin-top:2px}
+.tc-story-r p{font-size:13px;font-weight:600;color:#d7d7d7;margin-top:6px}
+.tc-sg{display:block;margin-top:2px}
+.tc-sg>b{display:block;font-size:24px;font-weight:900;letter-spacing:-.04em;line-height:1.05;color:#fff}
+.tc-sg-b{display:block;position:relative;height:10px;border-radius:9px;background:#2a2a2d;margin-top:7px}
+.tc-sg-b i{position:absolute;top:0;bottom:0;left:0;border-radius:9px;background:var(--vu-lime)}
+.tc-sg-b--mid i.is-down{background:#fff}
+.tc-sg-b em{position:absolute;top:-3px;bottom:-3px;width:2px;margin-left:-1px;border-radius:2px;background:#9b9b9b}
+/* Zonen: Leiter über den beiden Kacheln */
+.tc-zt{border-radius:20px;padding:14px}
+.tc-zl{grid-column:1/-1;background:var(--vu-card);border-radius:20px;padding:16px 14px 12px}
+.tc-zl-t{display:block;position:relative;height:14px;border-radius:9px;background:var(--vu-hair)}
+.tc-zl-t i{position:absolute;top:0;bottom:0;border-radius:9px}
+.tc-zl-t i.is-lo{background:var(--vu-lime);box-shadow:inset 0 0 0 1.5px #000}
+:root[data-theme=dark] .tc-zl-t i.is-lo{box-shadow:none}
+.tc-zl-t i.is-hi{background:var(--vu-ink)}
+.tc-zl-t em{position:absolute;top:-6px;width:14px;height:26px;margin-left:-7px;border-radius:7px;background:var(--vu-ink);border:3px solid var(--vu-card);box-sizing:border-box}
+.tc-zl-l{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-top:10px;font-size:11px;font-weight:700;color:var(--vu-mute)}
+.tc-zl-l b{font-size:13px;font-weight:900;color:var(--vu-ink);white-space:nowrap}
+/* Kapitel als Kacheln */
+.tc-eps{grid-template-columns:1fr 1fr;gap:10px;margin-top:0}
+.tc-ep{display:flex;flex-direction:column;align-items:stretch;gap:10px;padding:14px;border-radius:22px;min-width:0}
+.tc-eps>.tc-ep:last-child:nth-child(odd){grid-column:1/-1}
+.tc-ep-h{display:flex;justify-content:space-between;align-items:flex-start}
+.tc-ep-n{font-size:22px;font-weight:900;letter-spacing:-.04em;line-height:1;color:var(--vu-mute)}
+.tc-ep-t b{font-size:15px;font-weight:800;overflow-wrap:anywhere}
+@media(min-width:761px){.tc-eps{grid-template-columns:repeat(3,1fr)}.tc-eps>.tc-ep:last-child:nth-child(odd){grid-column:auto}}
+/* Datenqualität: Kachel, Inhalt im Fenster */
+.tc-dqbtn{display:flex;align-items:center;gap:12px;width:100%;margin-top:14px;padding:12px 14px;border:0;border-radius:20px;background:var(--vu-card);color:var(--vu-ink);font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.tc-dqbtn .tc-row-text{flex:1;min-width:0}
+.tc-dqbtn>svg{width:15px;height:15px;flex:none;color:var(--vu-mute)}
+.tc-pop .tc-dq{margin:0;padding:0;border:0;background:none}
+.tc-pop .tc-dq dl{padding-bottom:0}
+.tc-pop .tc-sheet-lead{margin-top:0}
+.tc-bfl{border-radius:22px}
+.tc-today .vu-ring b{color:#fff}
+.tc-today .vu-ring circle{stroke:#2a2a2d}
+.tc-today .vu-ring circle.is-on{stroke:var(--vu-lime)}
+.tc-lpg>a{border-radius:20px}
+.tc-textsearch.tc-satz{background:#151515}
+:root:not([data-theme=dark]) .tc-textsearch.tc-satz{background:#0e1013}
+.tc-ms-big{flex:none}
+.tc-ms-v{flex:0 1 auto}
+.tc-mg .tc-shape path{vector-effect:non-scaling-stroke;stroke-width:2.6px}
+.tc-mg .tc-mg-ic svg{max-width:96px}
+.tc-today{background:#151515;border-radius:22px}
+:root:not([data-theme=dark]) .tc-today{background:#0e1013}
+.tc-today-h{align-items:flex-start}
+.tc .tc-st{font-size:20px;font-weight:900;letter-spacing:-.03em}
+/* Screener: am Telefon steht die Dachzeile nur für Vorleseprogramme da (die Reiter und der aktive Chip „Chart“ sagen dasselbe) */
+@media(max-width:760px){.tc-phead--tight .vu-ltag{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}}
+.tc .tc-persp{margin-top:6px}
+.tc-screener .tc-tools{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:calc(-1 * var(--tc-gutter));padding-inline:var(--tc-gutter)}
+.tc-screener .tc-tools::-webkit-scrollbar{display:none}
+@media(max-width:359px){.tc-ms-top{flex-wrap:wrap}}
