@@ -1904,3 +1904,13 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .q-ev-history .qk-br-facts ul{margin:8px 0;padding-left:18px}
 /* Forschung: einfache Übersicht je Methode */
 .qk-bt .qk-br-simple{margin:12px 0}
+/* Ruhiger Start (Owner 14.11.): Die Blöcke der Startseite werden nach den Daten gefüllt. Bis dahin halten sie ihre
+   spätere Höhe, damit nichts nachrutscht. Leer bleibende Blöcke geben den Platz nach 9 s wieder frei. */
+.q-home.qk > .qk-today-host{min-height:153px}
+.q-home.qk > .qv3-regime-host:empty{min-height:75px;animation:qk-hold-release 1ms 9s forwards}
+.q-home.qk > :nth-child(7):empty{min-height:279px;animation:qk-hold-release 1ms 9s forwards}
+.q-home.qk > :nth-child(8):empty{min-height:210px;animation:qk-hold-release 1ms 9s forwards}
+.q-home.qk > :nth-child(9):empty{min-height:323px;animation:qk-hold-release 1ms 9s forwards}
+@media (max-width:560px){.q-home.qk > .qk-today-host{min-height:168px}}
+@keyframes qk-hold-release{to{min-height:0}}
+@media (prefers-reduced-motion:reduce){.q-home.qk > :empty{animation-duration:1ms}}
