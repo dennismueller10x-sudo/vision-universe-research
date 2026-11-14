@@ -119,7 +119,10 @@
    * nach einem Same-Origin-Fetch; private History wird nie angefordert. */
   function loadCompressedJSON(path) {
     if (cache[path]) return cache[path];
-    var pending = fetch(path, { cache: "no-cache" }).then(function (res) {
+    /* Frueh gestarteter Abruf aus dem Seitenkopf (quant/index.html), wie bei loadJSON: gleiche Anfrage, kein zweiter Abruf. */
+    var early = global.__vuEarly && global.__vuEarly[path] || null;
+    if (early) delete global.__vuEarly[path];
+    var pending = (early || fetch(path, { cache: "no-cache" })).then(function (res) {
       if (!res.ok) {
         var err = new Error("Konnte " + path + " nicht laden (HTTP " + res.status + ")");
         err.status = res.status; throw err;

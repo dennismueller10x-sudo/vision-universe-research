@@ -14,7 +14,10 @@
 <script>(function(){try{
  function early(p,priority){var map=window.__vuEarly=window.__vuEarly||{};if(map[p])return;var f=fetch(p,{cache:"no-cache",priority:priority||"low"});f.catch(function(){});map[p]=f;setTimeout(function(){if(map[p]===f)delete map[p]},30000)}
  early("/quant/methodology/product-language-v1.json");
- if((!location.hash||/^#\/?$/.test(location.hash))&&!/[?&]view=/.test(location.search))early("/quant/data/product/market-regime-v1.json");
+ if((!location.hash||/^#\/?$/.test(location.hash))&&!/[?&]view=/.test(location.search)){early("/quant/data/product/market-regime-v1.json");
+  /* Startseite: die Daten der Bloecke parallel zu den Skripten holen statt erst nach deren Start (zweite Welle). */
+  ["/quant/data/product/radar-home-v1.json.gz","/quant/data/product/strategy-index-v1.json.gz","/quant/data/product/setup-observations-v1/screen-index.json.gz",
+   "/quant/data/product/factor-evidence-v1/screening.json.gz","/quant/data/product/universe-names-v1.json.gz","/quant/methodology/strategy-profiles-v1.json"].forEach(function(p){early(p)});}
  if(/^#\/aktie\/[A-Z0-9.-]{1,12}(?:$|\?)/i.test(location.hash))[
   "/quant/config/development-preview.json","/quant/config/feature-gates.json",
   "/quant/data/sec/quant-factor-inputs.json","/quant/config/market-calendar.json"
