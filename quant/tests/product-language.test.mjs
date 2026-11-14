@@ -685,7 +685,7 @@ test("a no-fit verdict names the nearest style and what is open on it", () => {
       { label: "Quant V2 · Bewertung", state: "NOT_MET", value: 10, threshold: 70, operator: "gte" }] }] });
   /* Der naechste Stil ist genannt, und die offene Bedingung dazu. */
   assert.match(view.sentence, /Stil A/);
-  assert.deepEqual(view.best.notMet.map((c) => c.label), ["Wächst"]); /* ein Wort je Eigenschaft (Konzept Quant 2026-11) */
+  assert.deepEqual(view.best.notMet.map((c) => c.label), ["Ist gewachsen"]); /* Alltagsetikett nach Plausibilitätsprüfung 13.11.2026 */
   /* Die offenen Bedingungen sind die NICHT ERFUELLTEN, nicht die nicht
      messbaren - die zaehlen getrennt, wie im Vertrag. */
   assert.equal(view.best.open.length, 0);

@@ -283,7 +283,7 @@ for(const width of [1440,390]){
      Tagesstand. */
   /* Konzept Quant 2026-11 (QX06, #1819): der Vergleich ist bewusst knapp - sieben Eigenschaften je Aktie und zwei Saetze,
      die Kennzahlen-Tabelle zugeklappt. Er gilt als gerendert, wenn alle sieben Eigenschaften und die zwei Saetze stehen. */
-  const vergleichVoll=route==='vergleich'&&/in zwei s(ä|ae)tzen/i.test(text)&&['Verdient gut','Wächst','Zahlen solide','Kurs läuft','Günstig','Ruhiger Kurs'].every(w=>text.includes(w)); /* Analysten ruhen, solange der Faktor keine Werte hat (13.11.2026) */
+  const vergleichVoll=route==='vergleich'&&/in zwei s(ä|ae)tzen/i.test(text)&&['Verdient gut','Ist gewachsen','Gewinn gedeckt & stabil','Kurs lief gut','Preis im Branchenvergleich','Ruhig für die Branche'].every(w=>text.includes(w)); /* Analysten ruhen, solange der Faktor keine Werte hat (13.11.2026) */
   /* Backtest-Forschung (backtest-research-v1.json, Datenzweig): bis zum ersten Wochenlauf sagt die Prueffall-Seite ehrlich,
      dass die Ergebnisse noch nicht vorliegen - das ist kein leeres Rendering. */
   const forschungWartet=/#\/forschung\/(fall|art|methode)\//.test(view)&&/liegen noch nicht vor/.test(text);

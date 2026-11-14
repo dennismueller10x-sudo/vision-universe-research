@@ -65,7 +65,7 @@ test("VM2 · NVDA_QUALITY_EXPLAINED: Faktorname, tragende Komponenten und Luecke
   const { vm } = await stockVM("NVDA", true);
   const q = vm.factors.find((f) => f.id === "quality");
   /* Konzept Quant 2026-11, Entscheidung 1: ein Wort je Eigenschaft, überall gleich; der Fachname bleibt als longName. */
-  assert.equal(q.name, "Zahlen solide", "ein Wort je Eigenschaft (Konzept Quant 2026-11)");
+  assert.equal(q.name, "Gewinn gedeckt & stabil", "Alltagsetikett nach Plausibilitätsprüfung 13.11.2026");
   assert.equal(q.longName, "Bilanz- & Ergebnisqualität", "der Fachname sagt, was er misst");
   assert.notEqual(q.name, "Unternehmensqualität");
   assert.match(q.notMeasures, /Profitabilität/, "es muss gesagt werden, was der Faktor NICHT misst");

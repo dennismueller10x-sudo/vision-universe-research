@@ -74,7 +74,7 @@ const VMq = requireC("../app/view-model.js");
 test("Profil: sieben Eigenschaften, ein Wort je Eigenschaft, gleich in VUUI und View-Model", () => {
   const P = UI.PROFILE;
   assert.deepEqual(P.keys, ["profitability", "growth", "quality", "momentum", "value", "risk", "revisions"]);
-  assert.deepEqual(P.keys.map((k) => P.label[k]), ["Verdient gut", "Wächst", "Zahlen solide", "Kurs läuft", "Günstig", "Ruhiger Kurs", "Analysten"]);
+  assert.deepEqual(P.keys.map((k) => P.label[k]), ["Verdient gut", "Ist gewachsen", "Gewinn gedeckt & stabil", "Kurs lief gut", "Preis im Branchenvergleich", "Ruhig für die Branche", "Analysten"]);
   assert.deepEqual(VMq.PROFILE_ORDER, P.keys, "Anzeige-Reihenfolge im View-Model = Profil");
   for (const k of P.keys) assert.equal(VMq.FACTORS[k].name, P.label[k], "VM-Name " + k);
 });
@@ -92,8 +92,8 @@ test("Profil klein: sechs Säulen ohne Analysten, stark neongrün, fehlend gestr
   const svg = UI.profileMini({ profitability: 99, growth: 86, quality: 43, momentum: 62, value: null, risk: 84, revisions: null });
   assert.equal((svg.match(/<rect/g) || []).length, 6);
   assert.equal((svg.match(/class="is-hi"/g) || []).length, 3, "99, 86, 84 sind stark");
-  assert.equal((svg.match(/class="is-na"/g) || []).length, 1, "Günstig fehlt");
-  assert.match(svg, /aria-label="Profil: Verdient gut 99, Wächst 86, Zahlen solide 43, Kurs läuft 62, Günstig keine Daten, Ruhiger Kurs 84"/);
+  assert.equal((svg.match(/class="is-na"/g) || []).length, 1, "Preis im Branchenvergleich fehlt");
+  assert.match(svg, /aria-label="Profil: Verdient gut 99, Ist gewachsen 86, Gewinn gedeckt &amp; stabil 43, Kurs lief gut 62, Preis im Branchenvergleich keine Daten, Ruhig für die Branche 84"/);
   assert.doesNotMatch(svg, /Analysten/);
 });
 
@@ -105,7 +105,7 @@ test("Profil groß: sieben Zeilen mit Zahl und Stufe, fehlend „–“ mit „K
   assert.match(html, /<b class="vu-num">–<\/b><span class="vu-pf-s">Keine Daten/);
   assert.equal((html.match(/<em style="left:(25|45|75|90)%"><\/em>/g) || []).length, 28, "vier Stufen-Marken je Zeile");
   assert.doesNotMatch(html, /Gesamt|null|undefined|NaN/);
-  assert.match(UI.profileLegend(), /Verdient gut.*Wächst.*Zahlen solide.*Kurs läuft.*Günstig.*Ruhiger Kurs/);
+  assert.match(UI.profileLegend(), /Verdient gut.*Ist gewachsen.*Gewinn gedeckt &amp; stabil.*Kurs lief gut.*Preis im Branchenvergleich.*Ruhig für die Branche/);
 });
 
 test("Profil: Werte aus Screening-Zeile und Faktoren; kein „N von M Faktoren“ mehr", () => {

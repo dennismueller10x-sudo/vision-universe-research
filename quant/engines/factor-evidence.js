@@ -119,25 +119,25 @@
       /* NVDA-Audit 30.09.2026 (docs/VU_QUANT_FRONTEND_REBUILD.md): der
          Faktor misst Bilanz, Ergebnisqualitaet und Stabilitaet - keine
          Ertragskraft. "Unternehmensqualitaet" versprach mehr. */
-      label: "Zahlen solide",
+      label: "Gewinn gedeckt & stabil",
       question: "Wie belastbar sind Bilanz und ausgewiesene Gewinne?",
       plain: "Qualität fragt, ob ein Unternehmen stabil finanziert ist und ob die ausgewiesenen Gewinne durch echten Zahlungsfluss gedeckt sind.",
       higherMeans: "Höher bedeutet solidere Bilanz und belastbarere Rechnungslegung. Es ist keine Empfehlung."
     },
     growth: {
-      label: "Wächst",
+      label: "Ist gewachsen",
       question: "Wächst das Geschäft — und wird es schneller oder langsamer?",
       plain: "Wachstum misst, wie stark Umsatz, Gewinn und Zahlungsfluss über mehrere Jahre zugenommen haben und ob sich das Tempo verändert.",
       higherMeans: "Höher bedeutet stärkeres bereits realisiertes Wachstum. Es ist keine Prognose."
     },
     momentum: {
-      label: "Kurs läuft",
+      label: "Kurs lief gut",
       question: "Wie hat sich der Kurs im Vergleich zum Markt entwickelt?",
       plain: "Kursstärke misst die Kursentwicklung über mehrere Zeiträume und den Abstand zu wichtigen Trendbereichen.",
       higherMeans: "Höher bedeutet stärkere bisherige Marktbestätigung. Es ist keine Vorhersage."
     },
     value: {
-      label: "Günstig",
+      label: "Preis im Branchenvergleich",
       question: "Was bezahle ich für das, was das Unternehmen verdient?",
       plain: "Bewertung setzt den Börsenwert ins Verhältnis zu Gewinn, Zahlungsfluss, Umsatz und Eigenkapital.",
       higherMeans: "Höher bedeutet günstiger bewertet im Vergleich zum Universum. Es ist keine Aussage über einen fairen Preis."
@@ -155,7 +155,7 @@
       higherMeans: "Höher bedeutet steigende Erwartungen. Dieser Faktor benötigt eine lizenzierte Datenquelle."
     },
     risk: {
-      label: "Ruhiger Kurs",
+      label: "Ruhig für die Branche",
       question: "Wie stark hat der Kurs bisher geschwankt?",
       plain: "Risiko misst Schwankungsbreite und die größten zwischenzeitlichen Verluste der Vergangenheit.",
       higherMeans: "Höher bedeutet geringeres beobachtetes Schwankungsrisiko. Vergangene Schwankungen sind keine Verlustprognose."
