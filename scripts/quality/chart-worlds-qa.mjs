@@ -46,7 +46,9 @@ const SEL = {
   discover: { line: ".dx-chapter--chart svg .vu-chart-line", bar: ".dx-tf", buttons: ".dx-tf button", ticks: ".dx-chapter--chart svg text.vu-chart-axis", head: ".dx-chart-hero-preis > b", leiste: LEISTE.slice(0, 6) }
 };
 const price = (t) => { const m = /\d[\d.]*,\d{2}/.exec(t || ""); return m ? m[0] : null; };
-const RELEASE_ONLY = [/\/quant\/data\/product\/technical-signals-v1\/by-ticker\//, /\/core\/data\/stock-availability\//, /\/discover\/logos\/files\//];
+/* Nur der Release-Bau schreibt diese Ausschnitte (wie in der Technical-QA); im Repository greift der Rueckfall der Seite. */
+const RELEASE_ONLY = [/\/quant\/data\/product\/technical-signals-v1\/by-ticker\//, /\/core\/data\/stock-availability\//, /\/discover\/logos\/files\//,
+  /\/quant\/data\/market\/factors\/product-shards\//, /\/quant\/data\/product\/universe-list-shards\//, /\/quant\/data\/market\/factors\/factors-FULL_UNIVERSE-product\.json$/];
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json",
   ".svg": "image/svg+xml", ".gz": "application/gzip", ".png": "image/png", ".webp": "image/webp", ".woff2": "font/woff2" };
@@ -81,7 +83,9 @@ async function main() {
     const page = await ctx.newPage(), errors = [];
     page.on("pageerror", (e) => errors.push("PAGEERROR " + e.message));
     page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push("CONSOLE " + m.text()); });
-    page.on("response", (r) => { if (r.status() >= 400 && !RELEASE_ONLY.some((re) => re.test(r.url()))) errors.push("HTTP " + r.status() + " " + new URL(r.url()).pathname); });
+    /* Fehlende Skripte und Stile sind ein Befund; fehlende DATEN nicht: viele Datenausschnitte schreibt nur der Release-Bau
+       (Quant liest sie mit Rueckfall), und diese Pruefung gilt dem Chart, nicht der Datenlage. */
+    page.on("response", (r) => { const u = new URL(r.url()); if (r.status() >= 400 && /\.(js|css|mjs)$/.test(u.pathname) && !RELEASE_ONLY.some((re) => re.test(r.url()))) errors.push("HTTP " + r.status() + " " + u.pathname); });
     try {
       await page.goto(origin + ROUTE[world](t), { waitUntil: "load" });
       const sel = SEL[world];
