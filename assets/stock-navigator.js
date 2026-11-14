@@ -28,7 +28,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (SC, root) {
   "use strict";
 
-  var VERSION = "stock-navigator-4.0.0";
+  var VERSION = "stock-navigator-4.1.0";
   var SPRITE = "/assets/product-icons.svg#";
   /* Reihenfolge = StockContext.PRODUCTS. icon: Symbol im Sprite. "technik" ist das Chartbild (/elliott/#/<T>), "technical" die Produktwelt Technical. */
   var MODULES = {
@@ -181,7 +181,7 @@
   function logoHtml(o) {
     var t = esc(o.ctx.displaySymbol), mono = esc((o.name || o.ctx.displaySymbol || "?").replace(/[^A-Za-z0-9ÄÖÜäöü]/g, "").slice(0, 1).toUpperCase());
     var src = o.logo === false ? null : o.logo || (o.ctx.region === "US" ? "/discover/logos/files/" + encodeURIComponent(o.ctx.ticker) + ".png" : null);
-    return '<span class="vu-shead-logo" data-mono="' + mono + '">' + (src ? '<img src="' + esc(src) + '" alt="" width="42" height="42" loading="lazy" decoding="async">' : "") + "</span>";
+    return '<span class="vu-shead-logo" data-mono="' + mono + '">' + (src ? '<img src="' + esc(src) + '" alt="" width="48" height="48" loading="lazy" decoding="async">' : "") + "</span>";
   }
   /** Anzeigename aus dem Manifest-Ausschnitt. Der Ausschnitt fuehrt US-Namen unter dem Kuerzel (wie seine Modullisten),
    *  nicht unter dem Kontext-Schluessel (US:ref_<T>); Europa traegt noch keine Namen. */
@@ -205,6 +205,9 @@
       '<div class="vu-shead-pricebox"' + (o.pendingPrice ? ' data-price-pending="true" aria-busy="true"' : '') + '>' + priceHtml(o.price) + "</div>" + '<div class="vu-shead-nav"></div>';
     var img = wrap.querySelector(".vu-shead-logo img");
     if (img) img.addEventListener("error", function () { img.remove(); });
+    /* App-Konzept 2 (Owner 14.11.2026, „Logos nicht gequetscht“): Wortmarken (deutlich breiter als hoch) bekommen weniger Rand. */
+    function wide() { if (img.naturalWidth > img.naturalHeight * 1.6) img.parentNode.setAttribute("data-wide", ""); }
+    if (img) { if (img.complete && img.naturalWidth) wide(); else img.addEventListener("load", wide); }
     if (o.actions) wrap.querySelector(".vu-shead-actions").appendChild(o.actions);
     host.replaceChildren(wrap);
     var dispose = mount(wrap.querySelector(".vu-shead-nav"), o.ctx, o.current, o), alive = true;

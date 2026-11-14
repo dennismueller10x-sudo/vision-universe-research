@@ -21,6 +21,8 @@
 
 > **Owner-Entscheidung 11.11.2026 (Aktienkopf):** Die Tagesbewegung im Aktienkopf ist bei Plus neongrün und bei Minus rot (`#c4281c`); das ersetzt „Minus schwarz“ (Entscheidung 7 vom 08.11.2026). Geprüft von `scripts/discover/browser-qa-stockhead.mjs`.
 
+> **App-Konzept 2 (Owner-Freigabe 14.11.2026), gemeinsamer Aktienkopf:** „Schlusskurs · Datum“ (und der Euro-Wert) steht klein unter der Tagesbewegung neben dem Kurs und kostet keine eigene Zeile mehr; die Logo-Kachel ist 48 px groß mit schmalem Rand (`assets/stock-navigator.css`, gilt für alle Welten). Die Farbe der Minus-Pille bleibt rot nach der Entscheidung vom 06./11.11.2026; der Prototyp zeigt sie weiß, das ist eine offene Owner-Frage.
+
 Stand: 2026-09-11 · Modul `discover-1.0.0` · Methodik `discover-v1.0.0` ·
 Contract `discover-contract-1.0.0`
 
