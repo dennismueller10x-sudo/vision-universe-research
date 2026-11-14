@@ -71,7 +71,11 @@ QUARTERLY_METRICS = ("revenue", "gross_profit", "operating_income", "net_income"
                      "operating_cash_flow", "capital_expenditures", "free_cash_flow",
                      "cash_and_equivalents", "total_debt", "shares_outstanding",
                      "depreciation_and_amortization", "pretax_income", "income_tax_expense",
-                     "ebitda")
+                     "ebitda",
+                     # b3 (13.11.2026): Bilanzsumme je Quartal, damit Renditen auf das Vermoegen (ROA, Rohertrag je
+                     # Bilanzsumme, Periodenabgrenzung) den Durchschnitt ueber dasselbe TTM-Fenster bilden koennen statt
+                     # ueber zwei Geschaeftsjahresenden. Rein additiv; der Faktorbau liest sie erst in einem eigenen PR.
+                     "total_assets")
 
 DEFAULT_ANNUAL_YEARS = 13     # ten comparisons need eleven COMPLETE fiscal years;
                               # the factbook's last one or two are usually partial
