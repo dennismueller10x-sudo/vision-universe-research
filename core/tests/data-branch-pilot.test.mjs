@@ -201,6 +201,26 @@ test("DB-12 · eingespielte Datenzweig-Dateien sind fuer Git unsichtbar: git add
   assert.deepEqual(git("diff", "--cached", "--name-only").trim().split("\n"), ["code.js"], "nur die eigene Aenderung wird committet");
 });
 
+test("DB-12b · seed-hide in einem Git-Worktree: die Ausschluesse landen im gemeinsamen .git, nichts bleibt unversioniert sichtbar", async () => {
+  const { hide } = await import("../../scripts/ci/seed-hide.mjs");
+  const base = mkdtempSync(join(tmpdir(), "db-hide-wt-")), main = join(base, "main"), work = join(base, "baum"), data = mkdtempSync(join(tmpdir(), "db-hide-wt-data-"));
+  const env = { ...process.env, GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@t", GIT_COMMITTER_NAME: "t", GIT_COMMITTER_EMAIL: "t@t", GIT_CONFIG_NOSYSTEM: "1", HOME: base };
+  for (const k of Object.keys(env)) if (/^GIT_(DIR|WORK_TREE|INDEX_FILE)$/.test(k)) delete env[k];
+  const git = (cwd, ...a) => execFileSync("git", a, { cwd, env, encoding: "utf8" });
+  put(main, NEWS, feed("2026-11-04T10:00:00Z")); put(main, SH + "A.json", "1"); put(main, "code.js", "x");
+  git(main, "init", "-q", "-b", "main"); git(main, "add", "."); git(main, "commit", "-qm", "c");
+  git(main, "worktree", "add", "-q", "-b", "arbeit", work);
+  put(data, NEWS, feed("2026-11-04T16:00:00Z")); put(data, SH + "A.json", "2"); put(data, SH + "NEU.json", "3");
+  const manifest = { branch: "data/live", domains: [{ id: "news", phase: "BRANCH_ONLY", paths: [NEWS], prefixes: [SH] }] };
+  const rep = overlay({ root: work, dataDir: data, siteDir: work, manifest, domains: DOMAINS, mirror: false });
+  assert.deepEqual(hide(rep.rows, work, env), { hidden: 2, excluded: 1 });
+  assert.equal(git(work, "status", "--porcelain").trim(), "", "weder die neue Datei noch ein angelegter Pfad im Arbeitsbaum ist sichtbar");
+  assert.ok(!existsSync(join(work, base.replace(/^\/+/, "").split("/")[0])), "kein <worktree>/<absoluter Pfad>/.git/info/exclude");
+  put(work, "code.js", "y");
+  git(work, "add", "-A");
+  assert.deepEqual(git(work, "diff", "--cached", "--name-only").trim().split("\n"), ["code.js"], "nur die eigene Aenderung wird committet");
+});
+
 test("DB-13 · Begleitdateien ohne Vertrag entscheiden nicht ueber das Verzeichnis", () => {
   const w = dirWorld({ main: feed("2026-11-04T10:00:00Z"), branch: feed("2026-11-04T16:00:00Z"), site: feed("2026-11-04T10:00:00Z"),
     mainShards: { "A.json": "1" }, branchShards: { "A.json": "2" } });
