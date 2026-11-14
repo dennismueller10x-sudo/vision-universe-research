@@ -1906,11 +1906,97 @@ html body .vu-product-hero.vu-hero-fidelity[data-product] .vu-product-action{min
 .qk-bt .qk-br-simple{margin:12px 0}
 /* Ruhiger Start (Owner 14.11.): Die Blöcke der Startseite werden nach den Daten gefüllt. Bis dahin halten sie ihre
    spätere Höhe, damit nichts nachrutscht. Leer bleibende Blöcke geben den Platz nach 9 s wieder frei. */
-.q-home.qk > .qk-today-host{min-height:153px}
-.q-home.qk > .qv3-regime-host:empty{min-height:75px;animation:qk-hold-release 1ms 9s forwards}
-.q-home.qk > :nth-child(7):empty{min-height:279px;animation:qk-hold-release 1ms 9s forwards}
-.q-home.qk > :nth-child(8):empty{min-height:210px;animation:qk-hold-release 1ms 9s forwards}
-.q-home.qk > :nth-child(9):empty{min-height:323px;animation:qk-hold-release 1ms 9s forwards}
-@media (max-width:560px){.q-home.qk > .qk-today-host{min-height:168px}}
+.q-home.qk > .qk-today-host{min-height:148px}
+.q-home.qk > .qv3-regime-host{min-height:274px}
+.q-home.qk > .qv3-regime-host:empty{animation:qk-hold-release 1ms 9s forwards}
+.q-home.qk > :nth-child(8):empty{min-height:279px;animation:qk-hold-release 1ms 9s forwards}
+.q-home.qk > :nth-child(9):empty{min-height:210px;animation:qk-hold-release 1ms 9s forwards}
+.q-home.qk > :nth-child(10):empty{min-height:323px;animation:qk-hold-release 1ms 9s forwards}
 @keyframes qk-hold-release{to{min-height:0}}
 @media (prefers-reduced-motion:reduce){.q-home.qk > :empty{animation-duration:1ms}}
+
+/* =========================================================================
+   App-Konzept 2 (Owner-Freigabe 14.11.2026): Rahmen der Quant-Seiten und Startseite
+   Bausteine aus assets/vu-ui.css (vu-tap, vu-stat, vu-rail, vu-gauge, vu-delta, vu-div, vu-heat, vu-next, Fenster).
+   Hier steht nur, was Quant daraus baut. Nur Darstellung.
+   ========================================================================= */
+/* Seitenkopf: die Überschrift bleibt, Dachzeile und Erklärsatz stehen im Fenster (Knopf rechts, quant/app/ui.js#compactIntro).
+   Beide Zeilen bleiben im Dokument, nur optisch ausgeblendet. */
+.qv3-intro .vu-ltag,.qv3-intro .vu-lead,.qk-bt h1.vu-lt+p.vu-lead,p.vu-lead.qk2-off{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.qv3-intro .vu-lt,.qk-bt h1.vu-lt{margin-top:0;font-size:28px;line-height:1.05}
+.qv3-intro::after{content:"";display:block;clear:both}
+.qv3 .qk2-info{float:right;position:relative;display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:36px;min-height:36px;height:36px;margin:-3px 0 6px 12px;padding:0 12px;border:0;border-radius:999px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);font:800 12px/1 var(--vu-font);cursor:pointer}
+.qv3 .qk2-info:not(.has-date){width:36px;padding:0;font-size:15px}
+.qk2-info>i{width:7px;height:7px;border-radius:50%;background:#c8f531;box-shadow:0 0 0 1.5px #000}
+:root[data-theme=dark] .qk2-info>i{box-shadow:0 0 8px #c8f531}
+.qk2-info::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:44px;transform:translate(-50%,-50%)}
+.qk2-info:focus-visible{outline:2px solid var(--vu-focus-ring,#4f6b00);outline-offset:2px}
+/* Startseite: am Telefon beginnt sie mit Suche und Marktlage; Frage und Profil-Satz bleiben für Screenreader (und im Fenster „So arbeitet Quant“). */
+@media (max-width:760px){.q-home>.qv3-intro{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}.q-home .vu-find.qv3-search{margin-top:2px}}
+@media (min-width:761px){.q-home>.qv3-intro .vu-lead{position:static;width:auto;height:auto;margin:8px 0 0;overflow:visible;clip-path:none;white-space:normal}.q-home>.qv3-intro .vu-lt{font-size:34px}}
+.qk2 .vu-find.qv3-search{min-height:48px}
+/* Markt heute: Zeiger */
+.qk2 .qk2-regime{margin-top:12px;padding:16px 16px 18px;text-align:center}
+.qk2-regime>.vu-ltag{color:#9b9b9b}
+.qk2-regime>.vu-gauge{margin-top:10px}
+.qk2-regime-t{margin-top:12px;font-size:32px;font-weight:900;letter-spacing:-.045em;line-height:1.02;text-wrap:balance}
+.qk2-regime-s{margin-top:4px;font-size:13px;font-weight:700;color:#9b9b9b}
+.qv3-regime-host>.vu-skeleton{min-height:262px;margin-top:12px}
+.qk2-measures{display:grid;gap:12px;margin-top:14px}
+.qk2-measure{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 10px;align-items:baseline;font-size:13px;font-weight:700;line-height:1.25}
+.qk2-measure>b{font-size:15px;font-weight:900}
+.qk2-measure>.vu-meter{grid-column:1/-1}
+/* Heute bei Quant: drei Zahlenkacheln */
+.qk2-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.qk2-stats .vu-stat{min-height:96px}
+.qk2 .qk-rh-t .qk-tag{background:var(--qk-card);color:var(--qk-ink);letter-spacing:.03em}
+/* Deine Aktien: Kachel mit Vorher/Nachher */
+.qk2-wt{display:flex;flex-direction:column;gap:10px}
+.qk2-wt-h{display:flex!important;gap:10px;align-items:center;min-width:0}
+.qk2-wt-h .vu-logo-tile{width:40px;height:40px}
+.qk2-wt-h>span{min-width:0}
+.qk2-wt-h b,.qk2-wt-h .vu-xs{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qk2-wt-h b{font-weight:800}
+.qk2-wt-v{margin-top:auto}
+/* Faktor-Landkarte */
+.qk2-map{padding:12px}
+.qk2-map .vu-heat__h a{display:block;width:100%;max-width:34px}
+/* Screener-Einstieg und Forschung */
+.qk2-ask>b{display:block;font-size:21px;font-weight:900;letter-spacing:-.03em;line-height:1.1}
+.qk2-ask-c{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.qk2-ask-c .vu-chip{background:var(--vu-white,#fff);box-shadow:inset 0 0 0 1.5px var(--qk-line)}
+:root[data-theme=dark] .qk2-ask-c .vu-chip{background:#000}
+.qk2-research{color:inherit;text-decoration:none}
+.qk2-research-f{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+/* „Weiter“-Karte zwischen Inhalt und Fuß */
+.qk2-next{max-width:720px;margin:0 auto;padding:0 var(--vu-gutter,16px) 8px}
+.qk2-next .vu-next{margin-top:8px}
+@media (min-width:980px){.qk2-next{padding-left:0;padding-right:0}}
+/* Anlagestil-Karte: die Trefferzahl groß vorn, darunter der Name (Start und #/stile) */
+.qk .qk-stc{border-radius:22px}
+.qk .qk-stc-h{flex-direction:column-reverse;gap:6px}
+.qk .qk-stc-n{text-align:left;display:flex;align-items:baseline;gap:8px}
+.qk .qk-stc-n b{font-size:46px;letter-spacing:-.05em}
+:root[data-theme=dark] .qk .qk-stc-n b{color:#c8f531}
+.qk .qk-rail>div>.qk-stc{width:256px}
+/* Meldungszeile mit Vorher/Nachher */
+.qk .qk-mr span.vu-delta{display:flex;margin-top:6px;max-width:230px;overflow:visible}
+.qk .qk-mr .vu-delta>b{display:inline;overflow:visible;font-size:13px}
+.qk .qk-mr .vu-delta>b:last-child{font-size:17px}
+.qk .qk-mr span.vu-delta__bar{display:block;height:8px;overflow:hidden}
+/* Vergleich: beide Profile als Netz über den Balken */
+.qk2-cmp-net{display:grid;place-items:center;padding:6px 0 14px}
+.qk-cmp .qv3-intro .vu-lt{font-size:28px}
+:root:not([data-theme=dark]) .qk .qk-mr .vu-delta>b:last-child{color:var(--qk-ink)}
+/* „Deine Frage“ (Screener): die Regel-Chips bleiben auf der neongrünen Karte auch im dunklen Schema weiß mit schwarzer Schrift */
+:root[data-theme=dark] .qk .qv3-ask .qk-rc{background:#fff;border-color:#fff;color:#000}
+.qk2 .qk-rh-t{flex-wrap:wrap;row-gap:2px}
+.qk2 .qk-rh-t h2{white-space:nowrap}
+.qk2-ask-c .vu-chip{white-space:normal;height:auto;min-height:36px;padding-block:8px;line-height:1.2;max-width:100%}
+/* Sehr schmale Telefone: fünf Aktien in der Landkarte, damit die Logos nicht gequetscht stehen */
+@media (max-width:359px){.qk2-map .vu-heat{--vu-heat-n:5;--vu-heat-l:minmax(60px,84px)}.qk2-map .vu-heat__r>:nth-child(n+7){display:none}}
+.qv3-sstep>i{flex:none}
+/* Schmale Telefone (unter 380 px): „Beobachten“ zeigt nur den Stern, damit der Name im Aktienkopf nicht zerfällt (Beschriftung bleibt für Screenreader). */
+@media (max-width:379px){.qd .qv-head .qx-watch{width:46px;min-width:46px;padding:0 0 0 15px;justify-content:flex-start;overflow:hidden;text-overflow:clip;letter-spacing:6px}}
+.qk .qk-stc-f{flex-wrap:wrap}.qk .qk-stc-f>.vu-xs{white-space:nowrap}
+@media (min-width:380px){.qk2-map .vu-heat{--vu-heat-l:minmax(64px,108px)}}

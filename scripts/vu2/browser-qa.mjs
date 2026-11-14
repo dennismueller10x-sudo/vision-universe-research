@@ -185,6 +185,11 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   const norm=t=>t.toLowerCase().replace(/[.!?–-]+/g,' ').replace(/\s+/g,' ').trim();
   if(anspruch&&ueberschrift&&norm(anspruch)===norm(ueberschrift))befund(view,width,'"'+ueberschrift+'" steht zweimal: als Anspruch in der Kopfzeile und als Ueberschrift');
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))befund(view,width,'page overflow');
+  /* App-Konzept 2 (Owner-Freigabe 14.11.2026): am Seitenende fuehrt die „Weiter“-Karte zum naechsten Ort (quant/app/ui.js, NEXT).
+     Sie steht zwischen Inhalt und Fuss, genau einmal, und nennt das hinterlegte Ziel. */
+  {const soll={home:'/supertrader/',radar:'#/forschung',strategien:'#/aktien',aktien:'#/meldungen',methodik:'#/screener',screener:'#/stile',vergleich:'#/screener','aktie-nvda':'#/vergleich/NVDA',chartlagen:'#/meldungen?filter=setups'}[view];
+   if(soll){const karten=page.locator('#qx-app > nav.qk2-next a.vu-next');const ziel=await karten.count()===1?await karten.getAttribute('href'):null;if(ziel!==soll)befund(view,width,'Weiter-Karte fehlt oder fuehrt nach '+ziel);}
+   else if(view==='nicht-gefunden'&&await page.locator('nav.qk2-next').count())befund(view,width,'Weiter-Karte auf der Fehlerseite');}
   /* DIE BEREICHE, UND KEIN FREMDES PRODUKT - in genau einer Reiterzeile unter dem Kopf,
      die bei jeder Breite sichtbar ist; dazu genau ein Dock, das unten steht. */
   if(await page.locator('nav.qx-nav, nav.qx-tabbar, nav.v2-dock').count()!==0||await page.locator(leiste).count()!==1||await page.locator(dock).count()!==1)befund(view,width,'zwei Navigationen');
@@ -219,6 +224,22 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!/Profil aus (sieben|sechs) Eigenschaften/.test(await page.locator('.qv3-intro .vu-lead').innerText()))befund(view,width,'Home sagt nicht, was Quant misst');
    if(!/früher/.test(await page.locator('#qx-main').innerText()))befund(view,width,'Home verliert den historischen Marktvergleich');
    await page.locator('button.qv3-search').waitFor();
+   /* App-Konzept 2: „Markt heute“ als Zeiger; antippen oeffnet alle Masse im Fenster (Dialog, Fokus hinein, Escape schliesst,
+      Fokus zurueck). Fehlt die Marktlage, entfaellt der Block wie bisher. „Heute bei Quant“ steht als drei Zahlenkacheln. */
+   const zeiger=page.locator('#qx-main button.qk2-regime');
+   if(await zeiger.count()){
+    if(!await zeiger.locator('.vu-gauge').count())befund(view,width,'Markt heute ohne Zeiger');
+    await zeiger.click();
+    const fenster=page.locator('#vu-pop-qk2-regime-tpl .vu-sheet-ui');
+    await fenster.waitFor({timeout:5000}).catch(()=>befund(view,width,'Markt heute oeffnet kein Fenster'));
+    if(await fenster.count()){
+     if(await fenster.getAttribute('aria-modal')!=='true'||await fenster.getAttribute('role')!=='dialog'||!await fenster.evaluate(p=>p.contains(document.activeElement)))befund(view,width,'Fenster ohne Dialogrolle oder ohne Fokus');
+     if(await fenster.locator('.qk2-measure').count()<4||!await fenster.locator('a[href="/quant/markt/"]').count()||!/Stand \d{2}\.\d{2}\.\d{4}/.test(await fenster.innerText()))befund(view,width,'Fenster Markt heute ohne Masse, Stichtag oder Weg zu den Marktdaten');
+     await page.keyboard.press('Escape');
+     if(await page.locator('.vu-sheet-backdrop:not([hidden])').count()||!await page.evaluate(()=>!!document.activeElement&&document.activeElement.classList.contains('qk2-regime')&&!document.documentElement.classList.contains('vu-sheet-open')))befund(view,width,'Escape schliesst das Fenster nicht, die Sperre bleibt oder der Fokus kehrt nicht zurueck');
+    }
+   }
+   if(await page.locator('#qx-main .qk-today-host a.vu-stat').count()!==3&&!/Gerade keine Meldungen abrufbar/.test(await page.locator('#qx-main .qk-today-host').innerText()))befund(view,width,'Heute bei Quant ohne drei Zahlenkacheln');
    await page.waitForFunction(()=>/Stand \d{2}\.\d{2}\.\d{4}|Gerade keine Meldungen abrufbar/.test(document.querySelector('#qx-main').innerText),null,{timeout:30000}).catch(()=>befund(view,width,'Heute zeigt weder Zustaende mit Stichtag noch den ehrlichen Rueckfall'));
    const wege=await page.locator('#qx-main a').evaluateAll(ns=>ns.map(n=>n.getAttribute('href')||''));
    for(const ziel of ['#/meldungen','#/stile','#/methodik'])if(!wege.includes(ziel))befund(view,width,'Weg nach '+ziel+' fehlt auf Home');
@@ -501,6 +522,12 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    if(!await zeilen.count())befund(view,width,'Meldungen ohne Zeilen');
    const hoehe=await page.evaluate(()=>document.querySelector('#qx-main').getBoundingClientRect().height);
    if(hoehe>1600)befund(view,width,'Meldungen am Anfang zu lang: '+Math.round(hoehe)+' px');
+   /* App-Konzept 2: Stichtag und Erklaersatz stehen einen Tipp entfernt im Fenster (Knopf neben der Ueberschrift traegt den Stichtag). */
+   const info=page.locator('#qx-main .qv3-intro button.qk2-info.has-date');
+   if(await info.count()!==1)befund(view,width,'Seitenkopf ohne Knopf mit Stichtag');
+   else{await info.click();const erkl=await page.locator('#qk2-info-sheet .vu-sheet-ui').innerText({timeout:5000}).catch(()=>'');
+    if(!/Stand \S+ \d{2}\.\d{2}\./i.test(erkl)||!/Eine Zeile je Aktie/.test(erkl))befund(view,width,'Erklaerfenster ohne Stichtag oder Erklaersatz');
+    await page.keyboard.press('Escape');if(await page.locator('#qk2-info-sheet').count())befund(view,width,'Erklaerfenster bleibt offen');}
    await zeilen.first().click();
    const sheet=page.locator('#qk-meld-sheet');
    await sheet.locator('a.q-rc-head[href*="/aktie/"]').waitFor({timeout:5000}).catch(()=>befund(view,width,'Meldung ohne Link zur Aktie'));

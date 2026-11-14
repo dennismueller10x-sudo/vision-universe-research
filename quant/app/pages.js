@@ -262,7 +262,9 @@
   function meldungRow(ctx, c, f) {
     var e = c.events[0];
     if (f && f.types) e = c.events.filter(function (x) { return f.types.indexOf(x.eventType) >= 0; })[0] || e;
-    return '<button type="button" class="qk-mr" data-ticker="' + U().esc(c.ticker) + '" aria-haspopup="dialog">' + U().logo(c.ticker) + '<span><b>' + U().esc(qName(ctx, c.ticker)) + "</b><span>" + U().esc(meldungText(e)) + "</span></span>" + meldungVerdict(e) + "</button>";
+    /* App-Konzept 2: nennt die Meldung zwei Werte („von … (79) auf … (83)“), stehen sie als Vorher/Nachher-Balken in der Zeile. */
+    var d = X.deltaOf ? X.deltaOf(e.explanation) : null;
+    return '<button type="button" class="qk-mr" data-ticker="' + U().esc(c.ticker) + '" aria-haspopup="dialog">' + U().logo(c.ticker) + '<span><b>' + U().esc(qName(ctx, c.ticker)) + "</b><span>" + U().esc(meldungText(e)) + "</span>" + (d && U().delta ? U().delta(d.from, d.to, { label: meldungText(e) }) : "") + "</span>" + meldungVerdict(e) + "</button>";
   }
   function dayLong(iso) {
     var d = iso ? new Date(iso + "T12:00:00Z") : null;
@@ -371,9 +373,9 @@
   function cleanName(n) { return String(n || "").replace(/\s*\/[A-Za-z]{2,}\/?$|\/$/g, "").replace(/,?\s+(Holdings?,?\s+Inc\.?|Inc\.?|Corp(oration)?\.?|Co\.?|Ltd\.?|plc|N\.?V\.?|S\.?A\.?|Companies,?\s+Inc\.?|Group,?\s+Inc\.?)$/i, "").replace(/,?\s+(Inc\.?|Corp\.?)$/i, "").trim(); }
   /* Kürzt die Rechtsform weg; bliebe dadurch nur das Kürzel stehen (FIGS Inc., YETI Holdings, CTS Corp), gilt der volle Name. */
   function qName(ctx, t) { var full = nameOf(ctx, t), c = cleanName(full); return (c && c.toUpperCase() !== String(t).toUpperCase() ? c : String(full || "").trim()) || t; }
-  function railHead(title, count, href, sub, tag) {
+  function railHead(title, count, href, sub, tag, link) {
     return '<div class="qk-rh"><div class="qk-rh-t"><h2>' + U().esc(title) + "</h2>" + (tag ? '<span class="qk-tag">' + U().esc(tag) + "</span>" : "") +
-      (href ? '<a href="' + U().esc(href) + '">' + (count != null ? "Alle " + U().esc(typeof count === "number" ? count.toLocaleString("de-DE") : count) : "Alle") + U().glyph("next", 13) + "</a>" : "") + "</div>" + (sub ? "<p>" + U().esc(sub) + "</p>" : "") + "</div>";
+      (href ? '<a href="' + U().esc(href) + '">' + (link ? U().esc(link) : count != null ? "Alle " + U().esc(typeof count === "number" ? count.toLocaleString("de-DE") : count) : "Alle") + U().glyph("next", 13) + "</a>" : "") + "</div>" + (sub ? "<p>" + U().esc(sub) + "</p>" : "") + "</div>";
   }
   function rail(items, label) { return '<div class="qk-rail" role="list" tabindex="0" aria-label="' + U().esc(label || "") + '">' + items.map(function (x) { return '<div role="listitem">' + x + "</div>"; }).join("") + "</div>"; }
   function profileOf(rowBy, t) { var r = rowBy && rowBy[t]; return r ? VM.profileValues(r) : null; }
@@ -418,16 +420,24 @@
     if (!U()) return homeLegacy(main, ctx);
     var early = global.VUQuantBoot && global.VUQuantBoot.get("home", main);
     var page = early ? early.page : el("div", { class: "q-home vu-ui qv3 qk" });
-    page.classList.add("qk");
+    page.classList.add("qk", "qk2");
     if (early) page.replaceChildren(early.intro); else main.append(page);
-    /* QX01 (Screen q-home): Frage, ein Satz zum Profil, Suche, „Heute bei Quant“, Markt in einer Zeile, Schienen. */
+    /* App-Konzept 2 (Owner-Freigabe 14.11.2026, Screen „Quant“): Suche, Marktlage als Zeiger (Details im Fenster), „Heute bei
+       Quant“ als drei Zahlenkacheln, eigene Aktien als Schiene mit Vorher/Nachher und Faktor-Landkarte, Schienen, Screener.
+       Frage und Profil-Satz bleiben im Dokument (Kopf, optisch ausgeblendet) und stehen im
+       Fenster „So arbeitet Quant“. Werte aus denselben Artefakten wie bisher (QX01), nichts wird neu gerechnet. */
     if (!early) page.append(frag('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Was hat sich heute verändert?</h1><p class="vu-lead">Jede Aktie hat ein Profil aus ' + nWordHtml() + ' Eigenschaften. Quant meldet, wenn sich etwas ändert.</p></header>'));
     var search = el("button", { type: "button", class: "vu-find qv3-search q-searchbar", "aria-label": "Aktie suchen, z. B. NVDA … und analysieren", onclick: ctx.openSearch });
     search.innerHTML = U().glyph("search", 18) + "<span>Aktie suchen, z. B. NVDA …</span><i aria-hidden=\"true\">" + U().glyph("spark", 18) + "</i>";
     page.append(search);
     var todayHost = el("div", { class: "qk-today-host" }), regimeHost = el("div", { class: "qv3-regime-host" }), newHost = el("div"), setupHost = el("div"), stilHost = el("div"), watchHost = el("div"), tiAlertHost = el("div");
-    todayHost.innerHTML = U().skeleton("card"); todayHost.setAttribute("aria-busy", "true");
-    page.append(todayHost, regimeHost, watchHost, tiAlertHost, newHost, setupHost, stilHost);
+    var mapHost = el("div"), askHost = el("div");
+    regimeHost.innerHTML = U().skeleton("card"); todayHost.innerHTML = U().skeleton("card"); todayHost.setAttribute("aria-busy", "true");
+    page.append(regimeHost, todayHost, watchHost, mapHost, tiAlertHost, newHost, setupHost, stilHost, askHost);
+    U().bindPops(page);
+    /* Screener: die Fragen des einfachen Screeners als Einstieg (dieselben Chips wie dort, ohne Trefferzahl). */
+    askHost.append(frag(railHead("Screener", null, X.routes.screener(), null, null, "Öffnen") + '<div class="vu-box qk2-ask"><b>Welche Aktien suchst du?</b><span class="qk2-ask-c">' +
+      ["qualitaet", "momentum", "wachstum-qualitaet", "guenstig", "ruhig"].map(function (id) { return '<a class="vu-chip" href="' + U().esc(X.routes.screener("frage=" + id)) + '">' + U().esc(ASK_Q[id][0]) + "</a>"; }).join("") + "</span></div>"));
     /* So arbeitet Quant: drei Kacheln, „Alle“ öffnet das Sheet mit Erklärung und Beleg. */
     var how = frag(railHead("So arbeitet Quant", null, "#qk-how") + '<div class="qk-grid3">' + steps().map(function (st, i) { return '<div class="vu-box qk-step"><i class="qk-stepn">' + (i + 1) + "</i><b>" + st[0] + '</b><span class="vu-xs vu-mu">' + st[1] + "</span></div>"; }).join("") + "</div>");
     page.append(how);
@@ -462,24 +472,31 @@
     var ltag = page.querySelector(".qv3-intro .vu-ltag"); if (ltag && asOf) ltag.textContent = "Quant · Schluss " + deDay(asOf);
     var asOfHost = page.querySelector(".qk-asof"); if (asOfHost && asOf) asOfHost.textContent = "Stand " + X.dateDe(asOf) + ".";
 
-    /* Heute bei Quant: schwarze Karte mit drei Zahlen und dem Weg zu allen Meldungen. */
+    /* Heute bei Quant: drei Zahlenkacheln (je mit dem Weg zu den Meldungen dieser Art), Stichtag als Marke am Titel. */
     todayHost.setAttribute("aria-busy", "false");
     if (radar && radar.state === "AVAILABLE") {
       var sm = radar.summary, total = radar.cardCount;
-      todayHost.replaceChildren(frag('<a class="qk-today" href="' + U().esc(X.routes.radar()) + '"><span class="vu-ltag">Heute bei Quant · Stand ' + U().esc(deDay(radar.asOf)) + '</span><span class="qk-tg">' +
-        [[sm.newStrategyMatches, "neu in einem Anlagestil"], [sm.confirmedSetups, "Setups bestätigt"], [sm.riskRisingTickers, "Risiko steigt"]].map(function (x) { return '<span><b class="vu-num">' + U().esc(typeof x[0] === "number" ? x[0].toLocaleString("de-DE") : "–") + "</b><span>" + x[1] + "</span></span>"; }).join("") +
-        '</span><span class="qk-today-l"><span>' + (typeof total === "number" ? "Alle " + total.toLocaleString("de-DE") + " Meldungen" : "Alle Meldungen") + "</span>" + U().glyph("next", 16) + "</span></a>"));
+      todayHost.replaceChildren(frag('<div class="qk-rh"><div class="qk-rh-t"><h2>Heute bei Quant</h2><span class="qk-tag" title="Heute bei Quant · Stand ' + U().esc(deDay(radar.asOf)) + '">' + U().esc(deDay(radar.asOf)) + '</span><a href="' + U().esc(X.routes.radar()) + '">' + (typeof total === "number" ? total.toLocaleString("de-DE") + " Meldungen" : "Alle Meldungen") + U().glyph("next", 13) + "</a></div></div>" +
+        '<div class="qk2-stats">' + [[sm.newStrategyMatches, "neu in einem Anlagestil", "filter=stile"], [sm.confirmedSetups, "Setups bestätigt", "filter=setups"], [sm.riskRisingTickers, "Risiko steigt", "filter=faktoren"]].map(function (x) {
+          return U().stat(typeof x[0] === "number" ? x[0].toLocaleString("de-DE") : "–", x[1], { href: X.routes.radar(x[2]), tone: "night" }); }).join("") + "</div>"));
       var proof = proofCard(radar);
       if (proof) proofHost.append(proof);
     } else todayHost.replaceChildren(frag(U().blank("Gerade keine Meldungen abrufbar. Die Tageszahlen erscheinen, sobald der Lauf veröffentlicht ist.")));
 
-    /* Markt als eine Zeile: Lage, Anteil über der 200-Tage-Linie, Balken. */
+    /* Markt heute: der Anteil über der 200-Tage-Linie als Zeiger mit der Lage; antippen öffnet alle Maße im Fenster. */
     if (regime && regime.state === "AVAILABLE") {
       var mm = {}; (regime.measures || []).forEach(function (x) { mm[x.id] = x; });
       var above = mm.above200 && typeof mm.above200.share === "number" ? mm.above200.share : null;
-      regimeHost.replaceChildren(frag('<a class="vu-box qk-ms" href="' + "/quant/markt/" + '"><span><span class="vu-ltag">Markt heute</span><b>' + U().esc(REGIME[regime.regime] || "Marktlage") +
-        (above != null ? ' <span class="vu-xs vu-mu">' + Math.round(above * 100) + " % über der 200-Tage-Linie</span>" : "") + "</b>" + (above != null ? '<span class="qk-bar" aria-hidden="true"><i style="width:' + Math.round(above * 100) + '%"></i></span>' : "") + "</span>" + U().glyph("next", 14) + "</a>"));
-    }
+      var seen = mm.above200 && typeof mm.above200.observed === "number" ? mm.above200.observed : null, lage = REGIME[regime.regime] || "Marktlage";
+      regimeHost.replaceChildren(frag(U().tap('<span class="vu-ltag">Markt heute' + (seen != null ? " · " + seen.toLocaleString("de-DE") + " Aktien" : "") + "</span>" +
+        (above != null ? U().gauge(above * 100, { text: Math.round(above * 100) + " %" }) : "") + '<b class="qk2-regime-t">' + U().esc(lage) + "</b>" +
+        (above != null ? '<span class="qk2-regime-s">über der 200-Tage-Linie</span>' : ""),
+        { tone: "night", cls: "qk2-regime", pop: "qk2-regime-tpl", popTitle: "Markt heute: " + lage, label: "Markt heute: " + lage + (above != null ? ", " + Math.round(above * 100) + " % über der 200-Tage-Linie" : "") + ". Alle Maße öffnen" }) +
+        '<template id="qk2-regime-tpl">' + (regime.matchedRule && regime.matchedRule.plain ? '<p class="vu-sm" style="margin:0">' + U().esc(regime.matchedRule.plain) + "</p>" : "") +
+        '<div class="qk2-measures">' + (regime.measures || []).filter(function (x) { return typeof x.share === "number"; }).map(function (x) {
+          return '<div class="qk2-measure"><span>' + U().esc(x.label) + '</span><b class="vu-num">' + Math.round(x.share * 100) + " %</b>" + U().meter(x.share * 100, { label: x.label, lime: x.id === "above200" }) + "</div>"; }).join("") + "</div>" +
+        '<p class="vu-xs vu-mu" style="margin:12px 0 0">Zustand heute, keine Prognose.' + (regime.asOf ? " Stand " + U().esc(X.dateDe(regime.asOf)) + "." : "") + '</p><a class="vu-btn vu-btn--line vu-btn--block" style="margin-top:14px" href="/quant/markt/">Marktdaten: Herkunft und Stand</a></template>'));
+    } else regimeHost.replaceChildren();
 
     var labels = {}, conds = {};
     ((profiles && profiles.contract && profiles.contract.profiles) || []).forEach(function (p) { labels[p.profileId] = p.label; conds[p.profileId] = p; });
@@ -505,9 +522,22 @@
       if (cards.length) stilHost.replaceChildren(frag(railHead("Anlagestile", cards.length, X.routes.strategies(), "Jeder Stil ist eine feste Regel. Quant prüft sie täglich.") +
         rail(cards.map(function (id) { return stilCard(ctx, conds[id], ixBy[id], trBy[id]); }), "Anlagestile")));
     }
-    /* Beobachtete Aktien mit Meldung: eine Zeile je Aktie. */
+    /* Beobachtete Aktien mit Meldung: eine Kachel je Aktie; nennt die Meldung zwei Werte, stehen sie als Vorher/Nachher-Balken. */
     if (hits.length) watchHost.replaceChildren(frag(railHead("Deine Aktien", hits.length, X.routes.radar("filter=beobachtet"), hits.length + " von " + watched.length + " beobachteten Aktien melden eine Veränderung.") +
-      '<div class="vu-box qk-list">' + hits.slice(0, 5).map(function (c) { return meldungRow(ctx, c, null); }).join("") + "</div>"));
+      U().rail(hits.slice(0, 8).map(function (c) {
+        var e = c.events[0], d = X.deltaOf(e.explanation);
+        return U().tap('<span class="qk2-wt-h">' + U().logo(c.ticker) + "<span><b>" + U().esc(qName(ctx, c.ticker)) + '</b><span class="vu-xs vu-mu">' + U().esc(meldungText(e)) + "</span></span></span>" +
+          (d ? U().delta(d.from, d.to, { label: meldungText(e) }) : "") + '<span class="qk2-wt-v">' + meldungVerdict(e) + "</span>", { href: X.routes.stock(c.ticker), cls: "qk2-wt" });
+      }), { label: "Deine Aktien mit Meldung", width: 236 })));
+    /* Faktor-Landkarte: das Profil der beobachteten Aktien als Raster (dieselben Werte wie im Profil der Aktienseite). */
+    var mapT = watched.filter(function (t) { return profileOf(rowBy, t); }).slice(0, 7);
+    if (mapT.length) {
+      var openF = VM.PROFILE_ORDER.filter(VM.isOpen);
+      mapHost.replaceChildren(frag(railHead("Deine Faktor-Landkarte", null, X.routes.method("faktoren"), null, null, "Erklärung") + '<div class="vu-box qk2-map">' +
+        U().heat(mapT.map(function (t) { return { html: '<a href="' + U().esc(X.routes.stock(t)) + '" aria-label="' + U().esc(qName(ctx, t)) + '">' + U().logo(t) + "</a>" }; }),
+          openF.map(function (id) { return { label: VM.FACTORS[id].name, values: mapT.map(function (t) { return profileOf(rowBy, t)[id]; }) }; }),
+          { label: "Profil deiner beobachteten Aktien", note: ["0 bis 100, höher heißt besser", "grün = stark"] }) + "</div>"));
+    }
   }
 
   /* Bisherige Startseite (ohne Bausteine VUUI). */
