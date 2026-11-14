@@ -382,7 +382,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const ruht=await page.evaluate(()=>Object.entries(globalThis.VUFactorCoverage||{}).filter(([,n])=>n===0).map(([k])=>k));
    const ERWARTET=PROFIL.filter(k=>!ruht.includes(k));
    if(ids.join('|')!==ERWARTET.join('|'))befund(view,width,'factor order drifted: '+ids.join('|')+' (erwartet '+ERWARTET.join('|')+')');
-   await page.getByText(/Eine Gesamtnote gibt es bewusst nicht/).first().waitFor();
+   await page.getByText(/Eine gewichtete Gesamtnote gibt es bewusst nicht/).first().waitFor();
    /* Quant Daily Usefulness: Pro/Contra hat einen eigenen Abschnitt (#dafuer). */
    const gruppen=(await page.locator('#dafuer .qx-pc-col h3').allTextContents()).map(t=>t.trim());
    if(gruppen.join('|')!=='Stärken laut Kennzahlen|Schwächen laut Kennzahlen')befund(view,width,'Pro/Contra ohne Stärken/Schwächen laut Kennzahlen: '+gruppen.join('|'));
