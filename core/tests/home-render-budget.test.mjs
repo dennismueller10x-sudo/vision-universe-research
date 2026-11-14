@@ -53,6 +53,18 @@ test('der Generator liefert aus eingefrorenen Daten genau die erwartete Startsei
   assert.doesNotMatch(html, /%%[A-Z0-9_]+%%/, 'index.html enthaelt einen offenen Platzhalter');
 });
 
+/* Themenwelten auf der Startseite: Symbol statt Bild (Owner 14.11.2026, „Bilder zurueckstellen“). Geprueft an der
+   Generatorausgabe aus eingefrorenen Daten; index.html zieht mit dem naechsten home-refresh-Lauf nach. */
+test('die drei Themenkacheln zeigen Symbole aus dem Themen-Sprite, der Generator fordert kein Themenbild an', () => {
+  const expected = read('core/tests/fixtures/home-data/expected-index.html');
+  const tiles = [...expected.matchAll(/<a class="vu-theme" href="\/discover\/#\/welten"><span class="vu-hud vu-hud--lime"[^>]*><svg[^>]*><use href="\/assets\/theme-icons\.svg#([a-z0-9-]+)"\/><\/svg><\/span><span class="vu-theme__copy"><b>[^<]+<\/b><\/span><\/a>/g)].map(m => m[1]);
+  assert.deepEqual(tiles, ['kuenstliche-intelligenz', 'halbleiter-chips', 'raumfahrt']);
+  const sprite = read('assets/theme-icons.svg');
+  for (const id of tiles) assert.ok(sprite.includes(`<symbol id="${id}" `), id + ' steht im Sprite');
+  assert.doesNotMatch(expected, /assets\/(home\/worlds|themen)\//);
+  assert.doesNotMatch(read('scripts/home/build-home.mjs'), /assets\/(home\/worlds|themen)\/|\.photo\b/);
+});
+
 test('Urteile sind die drei Formen aus C08, ein Chart, Preis nie fest im Code', () => {
   assert.equal((html.match(/class="vu-verdict vu-verdict--(strong|mid|weak|none)"/g) || []).length, 3);
   assert.equal((html.match(/class="vu-onechart"/g) || []).length, 1);

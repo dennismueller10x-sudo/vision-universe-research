@@ -220,7 +220,7 @@
     var T = D.Views.Themes, list = all ? T.all : HOME_THEMES.map(function (s) { return T.bySlug(s); }).filter(Boolean);
     if (!list.length) return null;
     var sec = h('section', 'dr-sec dr-sec--themes' + (all ? ' dr-sec--themegrid' : ''));
-    sec.innerHTML = railHead({ title: 'Themenwelten', more: 'Alle ' + T.all.length, href: '#/welten', label: 'Alle ' + T.all.length + ' Themenwelten', sub: 'Von KI bis Kernenergie, je ein Bild und die Firmen dahinter.' });
+    sec.innerHTML = railHead({ title: 'Themenwelten', more: 'Alle ' + T.all.length, href: '#/welten', label: 'Alle ' + T.all.length + ' Themenwelten', sub: 'Von KI bis Kernenergie, je ein Symbol und die Firmen dahinter.' });
     var track = all ? h('div', 'dr-tgrid') : rail('Themenwelten'); if (all) track.setAttribute('role', 'list');
     list.forEach(function (t) { var c = K().themeCard(t, ctx, { grid: all }); c.setAttribute('role', 'listitem'); track.appendChild(c); });
     sec.appendChild(track);

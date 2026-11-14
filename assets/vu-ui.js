@@ -23,6 +23,7 @@
 
   var VERSION = "vu-ui-1.3.0";
   var SPRITE = "/assets/product-icons.svg#";
+  var THEME_SPRITE = "/assets/theme-icons.svg#";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
 
   function esc(s) {
@@ -86,6 +87,16 @@
   function hud(id, size, radius) {
     var s = size || 44;
     return '<span class="vu-hud" style="--vu-hud:' + s + "px;border-radius:" + (radius || 12) + 'px">' + worldIcon(id, s) + "</span>";
+  }
+  /** Themen-Symbol einer Discover-Themenwelt aus dem Themen-Sprite; die id ist der Slug aus discover/themes.js. */
+  function themeIcon(slug, size) {
+    var s = size || 40;
+    return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="' + THEME_SPRITE + esc(slug) + '"/></svg>';
+  }
+  /** Themen-Kachel (neongrünes Quadrat, Symbol schwarz). Steht seit 14.11.2026 anstelle der Themenbilder. */
+  function themeHud(slug, size, radius) {
+    var s = size || 74;
+    return '<span class="vu-hud vu-hud--lime" style="--vu-hud:' + s + "px;border-radius:" + (radius || Math.round(s * 0.3)) + 'px">' + themeIcon(slug, Math.round(s * 0.54)) + "</span>";
   }
 
   /* ------------------------------------------------------------- C07, C08, C09 */
@@ -455,7 +466,7 @@
     PROFILE: Object.freeze({ keys: PROFILE_KEYS, label: PROFILE_LABEL, glyph: PROFILE_GLYPH, marks: STAGE_MARKS, stage: profileStage, strong: profileStrong, open: profileOpen }),
     profileMini: profileMini, profileFull: profileFull, profileLegend: profileLegend,
     VERSION: VERSION, skeleton: skeleton, bindIntent: bindIntent, transition: transition, legal: legal, legalNotice: legalNotice, neutralSourceText: neutralSourceText, neutralSources: neutralSources, PERSPECTIVES: PERSPECTIVES, esc: esc, num: num, pct: pct, money: money,
-    glyph: glyph, worldIcon: worldIcon, hud: hud, logo: logo,
+    glyph: glyph, worldIcon: worldIcon, hud: hud, themeIcon: themeIcon, themeHud: themeHud, logo: logo,
     chg: chg, movementLabel: movementLabel, verdict: verdict, help: help, q: q,
     stockHead: stockHead, persp: persp, perspectiveHref: perspectiveHref,
     stockRow: stockRow, tile: tile, navcard: navcard, sect: sect, seg: seg, ranges: ranges,

@@ -51,7 +51,7 @@
       rows: ["umsatz-waechst-stark", "fallen-angels", "gewinne-beschleunigen", "fundamentale-turnarounds", "starke-bilanz-wachstum",
         "margen-werden-staerker", "cashflow-maschinen", "qualitaet-wachstum", "profitables-wachstum", "langfristige-compounder", "qualitaet-zum-preis"] },
     { id: "themen", label: "Themen", kicker: "Themen", title: "Themen und\nMegatrends",
-      lead: "Von KI bis Kernenergie, je ein Bild und die Firmen dahinter.", rows: [] },
+      lead: "Von KI bis Kernenergie, je ein Symbol und die Firmen dahinter.", rows: [] },
     { id: "indizes", label: "Indizes", kicker: "Indizes", title: "Die großen\nIndizes",
       lead: "Die stärksten Aktien im S&P 500, Nasdaq-100 und Dow Jones.",
       rows: ["sp500-staerkste", "ndx-staerkste", "djia-staerkste"] }
