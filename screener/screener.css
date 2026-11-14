@@ -1044,3 +1044,222 @@ body.sc .sc-sheet .sc-preset{flex:none;min-height:40px;padding:0 14px;border:0;b
 body.sc .sc-sheet .sc-presets{margin-top:26px}
 body.sc .sc-sheet .sc-preset{display:inline-flex;align-items:center;gap:8px}
 .sc-hr-r small{max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* =========================================================================
+   APP-KONZEPT 2 (Owner-Freigabe 14.11.2026, anklickbarer Prototyp „App-Konzept 2“)
+   Dunkle Kopfkachel mit Satz und Trefferzahl, Kacheln mit 22 px Radius, Leisten bis an den Rand,
+   Fenster wie der gemeinsame Baustein C16 (assets/vu-ui.css). Kein Modus-Schalter. Farben: Schwarz, Weiß,
+   Grau und Neongrün – Neongrün nur als Fläche hinter schwarzer Schrift oder auf schwarzer Fläche.
+   ========================================================================= */
+:root{--sc-gutter:14px;--sc-r:22px}
+@media (min-width:640px){:root{--sc-gutter:24px}}
+@media (min-width:1024px){:root{--sc-gutter:32px}}
+body.sc .sc-app{padding-top:8px}
+body.sc .vu-sect{margin:22px 0 10px}
+body.sc .vu-sect>h2,.sc-rh-t h2{display:inline-flex;align-items:center;gap:2px}
+.sc-sect-note{font-size:13px;font-weight:600;color:var(--vu-mute);letter-spacing:0}
+body.sc .sc-section{margin-top:0}
+/* „?“: sichtbarer Kreis 20 px, Trefferfläche 36 px */
+body.sc .sc-q{width:36px;height:36px;margin:-8px -4px -8px 0;background:radial-gradient(circle at 50% 50%,var(--vu-ink) 0 10px,transparent 10.6px);color:var(--vu-inv);flex:none;vertical-align:middle}
+body.sc .sc-q:after{display:none}
+
+/* Kopfkachel */
+.sc-hero2{display:block;border-radius:var(--sc-r);padding:14px 16px 16px;margin:0}
+:root:not([data-theme=dark]) .sc-hero2.vu-night{background:#0e1013;--vu-card:#1d2024;--vu-hair:#2b2f34}
+.sc-hero2--skel{background:var(--vu-card)}
+.sc-hero2-top{display:flex;align-items:center;gap:6px;min-height:28px}
+.sc-hero2-top h1{flex:1;min-width:0;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-hero2 .vu-ltag{color:#9b9b9b}
+body.sc .sc-hero2 .sc-icon-btn{width:36px;height:36px;margin:-4px -8px -4px 0;border-radius:50%;color:#9b9b9b}
+body.sc .sc-hero2 .sc-icon-btn:hover{background:#262626;color:#fff}
+.sc-hero2 .sc-sentence{margin-top:4px;font-size:25px;line-height:1.5}
+.sc-hero2 .sc-sentence.is-small{font-size:22px}
+.sc-hero2 .sc-satz-o{background:#26292e}
+.sc-hero2 .sc-sent-desc{text-align:left;margin:10px 0 0}
+.sc-hero2 .sc-universe{margin:14px 0 0;font-size:12px;font-weight:700;letter-spacing:0;text-transform:none;color:#9b9b9b;text-align:left}
+.sc-hero2 .sc-universe strong{color:#fff;font-weight:800}
+body.sc .sc-hero2 .sc-counter{margin:14px 0 0}
+body.sc .sc-hero2 .sc-counter strong,body.sc .sc-hero2 .sc-count{font-size:56px;font-weight:900;letter-spacing:-.05em;line-height:1;color:var(--vu-lime)}
+body.sc .sc-hero2 .sc-counter-row>span,body.sc .sc-hero2 .sc-count small{font-size:15px;font-weight:800;color:#fff;letter-spacing:0}
+body.sc .sc-hero2 .sc-counter-bar{margin-top:10px;height:8px}
+body.sc .sc-hero2.sc-reshead{margin-top:0;padding:14px 16px 16px}
+.sc-hero2 .sc-reshead-n{margin:12px 0 0}
+body.sc .sc-hero2 .sc-filterline{flex-wrap:wrap;overflow:visible;margin:8px 0 0;padding:0}
+.sc-heroact{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.sc-heropill{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border:0;border-radius:999px;background:#26292e;color:#fff;font:800 13.5px/1 var(--vu-font);cursor:pointer}
+.sc-heropill svg.sc-i{width:16px;height:16px}
+.sc-chg-name{margin:4px 0 0;font-size:25px;font-weight:900;letter-spacing:-.035em;line-height:1.1}
+body.sc .sc-chg-open{margin-top:14px}
+
+/* Perspektiven-Leiste bis an den Rand */
+.sc-prail{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:10px calc(-1 * var(--sc-gutter)) 0;padding:2px var(--sc-gutter);scroll-padding-inline:var(--sc-gutter);-webkit-overflow-scrolling:touch}
+.sc-prail::-webkit-scrollbar{display:none}
+body.sc .sc-prail .sc-ppill{display:inline-flex;align-items:center;gap:7px;flex:none;width:auto;min-width:44px;min-height:44px;padding:0 14px 0 8px;border:0;border-radius:999px;background:var(--vu-card);color:var(--vu-ink);font:700 14px/1 var(--vu-font);cursor:pointer;white-space:nowrap}
+.sc-ppill b{font-weight:800}
+.sc-ppill small{font-size:12px;font-weight:700;color:var(--vu-mute)}
+body.sc .sc-ppill .vu-hud{--vu-hud:28px!important;border-radius:9px}
+body.sc .sc-prail .sc-ppill.is-on{background:var(--vu-lime);color:#000}
+.sc-ppill.is-on small{color:#000}
+body.sc .sc-prail .sc-pfind{justify-content:center;padding:0;width:44px}
+body.sc .sc-prail .sc-addfilter{padding:0 16px 0 12px;background:var(--vu-ink);color:var(--vu-inv);font-weight:800}
+.sc-ppill>svg.sc-i{width:18px;height:18px}
+
+/* Schienen: fertige Ideen, eigene Screens */
+.sc-rh{margin:22px 0 10px}
+.sc-rail,body.sc .sc-srail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;margin-inline:calc(-1 * var(--sc-gutter));padding:2px var(--sc-gutter);scroll-padding-inline:var(--sc-gutter);align-items:stretch}
+body.sc .sc-srail::-webkit-scrollbar{display:none}
+.sc-rail.is-all{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-inline:0;padding:0;overflow:visible}
+.sc-idc{width:166px;min-height:0;padding:14px;border-radius:var(--sc-r);background:var(--vu-card);color:var(--vu-ink)}
+.sc-rail.is-all .sc-idc{width:auto;min-width:0}
+.sc-idc-top{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%}
+.sc-idc .sc-idea-logos{margin-top:0}
+.sc-idc .sc-idea-n{margin-top:12px;padding-top:0;gap:5px}
+.sc-idc .sc-idea-n .sc-n{font-size:36px;line-height:1;letter-spacing:-.045em;color:var(--vu-ink)}
+html[data-theme=dark] .sc-idc .sc-idea-n .sc-n{color:var(--vu-lime)}
+.sc-idc>b{margin-top:6px;font-size:15.5px;font-weight:800;line-height:1.15}
+.sc-idc>small{margin-top:4px}
+body.sc .sc-stile{flex:none;width:214px;min-height:0;display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:14px;border-radius:var(--sc-r);scroll-snap-align:start}
+.sc-stile .sc-row-side{display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;color:var(--vu-ink)}
+.sc-stile-n{font-size:22px;font-weight:900;letter-spacing:-.04em;line-height:1}
+html[data-theme=dark] .sc-stile-n{color:var(--vu-lime)}
+.sc-stile-d{border-radius:999px;padding:3px 9px;background:var(--vu-hair);font-size:12px;font-weight:800}
+.sc-noscreens{border-radius:var(--sc-r)!important}
+body.sc .sc-row{border-radius:18px}
+.sc-app>.vu-next{margin-top:12px}
+.sc-app>.vu-next svg.sc-i{width:20px;height:20px}
+
+/* Fuß: „Daten & Methodik“ als ruhige Zeile, Einordnung darunter */
+body.sc .sc-foot{margin-top:28px}
+
+/* Screen bauen: Eigenschaften als Kacheln, Werkzeuge, Trichter */
+body.sc .sc-props{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+body.sc .sc-prop{flex-direction:column;align-items:stretch;gap:8px;min-height:0;padding:12px 14px 14px;border-radius:var(--sc-r)}
+.sc-prop-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+body.sc .sc-prop-n{font-size:26px;font-weight:900;letter-spacing:-.04em;line-height:1}
+body.sc .sc-prop-main b{font-size:14.5px;line-height:1.15}
+body.sc .sc-prop-main small{margin-top:2px;font-size:11.5px;line-height:1.25}
+.sc-prop-bar{height:6px}
+body.sc .sc-prop.is-on,html[data-theme=dark] body.sc .sc-prop.is-on{background:var(--vu-lime);color:#000}
+body.sc .sc-prop.is-on .sc-prop-check{background:#000;color:var(--vu-lime)}
+.sc-tools{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:18px!important}
+.sc-tools>:only-child{grid-column:1/-1}
+body.sc .sc-tooltile{position:relative;padding:14px;min-height:76px}
+.sc-tooltile .vu-ltag{padding-right:18px}
+.sc-tooltile b{margin-top:6px;font-size:26px;font-weight:900;letter-spacing:-.04em;line-height:1}
+.sc-tooltile>svg.sc-i{position:absolute;right:12px;top:13px;width:15px;height:15px;color:var(--vu-mute)}
+.sc-funnelbox{border-radius:var(--sc-r);padding:6px 14px}
+body.sc .sc-funnel .sc-tl-main small.sc-tl-alone{margin-top:1px}
+body.sc .sc-funnel .sc-tl-bar{height:9px}
+body.sc .sc-chip,body.sc .sc-group{border-radius:var(--sc-r)}
+.sc-buildact{margin-top:18px!important}
+
+/* Treffer */
+body.sc .sc-toolbar{margin:12px 0 8px}
+.sc-toolbar .sc-viewtog{margin-left:0}
+body.sc .sc-toolbar .sc-sortbtn{margin-left:auto;min-width:0;max-width:62%}
+body.sc .sc-toolbar .sc-sortlabel{flex:initial;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px;font-weight:700}
+.sc-hits,body.sc .sc-compact,body.sc .sc-cards{background:var(--vu-card);border-radius:var(--sc-r);padding:4px 14px}
+.sc-hits>:first-child,body.sc .sc-compact>:first-child,body.sc .sc-cards>:first-child{border-top:0}
+.sc-hr{grid-template-columns:44px minmax(0,1fr) auto;gap:12px;padding:11px 0;border-top-color:var(--vu-hair)}
+.sc-hr .vu-logo-tile{width:44px;height:44px;min-width:44px;border-radius:13px;font-size:10px}
+.sc-hr-id b{font-size:15px;font-weight:800}
+.sc-hits .sc-vpill{background:var(--vu-hair)}
+body.sc .sc-loose{border-radius:var(--sc-r)}
+.sc-resact .vu-btn{padding:0 12px}
+.sc-resact .vu-btn svg.sc-i{width:18px;height:18px}
+@media (max-width:1023.98px){
+  body.sc .sc-filterline{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:10px calc(-1 * var(--sc-gutter)) 0;padding:0 var(--sc-gutter)}
+  body.sc .sc-filterline::-webkit-scrollbar{display:none}
+  body.sc .sc-filterline .sc-rchip,body.sc .sc-filterline .sc-mini-chip.is-add{flex:none}
+  body.sc .sc-filterline .sc-rchip .sc-mini-chip{white-space:nowrap}
+}
+
+/* Gespeichert, Veränderungen, Vergleich */
+body.sc .sc-modeseg.is-wide{margin-top:4px}
+body.sc .sc-scard{border-radius:var(--sc-r)}
+.sc-scard-n strong{font-size:34px}
+html[data-theme=dark] .sc-scard-n strong{color:var(--vu-lime)}
+.sc-emptycard{border-radius:var(--sc-r)}
+.sc-subhead{display:flex;align-items:center;gap:10px;margin:2px 0 10px}
+.sc-subhead h1{margin:0;font-size:22px;font-weight:900;letter-spacing:-.035em}
+.sc-chgbox{margin-top:10px;border-radius:var(--sc-r);padding:14px}
+body.sc .sc-chgbox .sc-kpirow div{padding:0;background:none;text-align:left;border-radius:0}
+body.sc .sc-chgbox .sc-kpirow b{font-size:30px;font-weight:900;letter-spacing:-.04em;line-height:1}
+body.sc .sc-chgbox .sc-kpirow span{display:flex;align-items:center;gap:5px;margin-top:4px;font-weight:700}
+.sc-chgbox .sc-kpirow span:before{content:"";width:9px;height:9px;border-radius:3px;background:var(--vu-mute);flex:none}
+.sc-chgbox .sc-kpirow .is-new span:before{background:var(--vu-lime);box-shadow:inset 0 0 0 1px #000}
+.sc-chgbox .sc-kpirow .is-gone span:before{background:var(--vu-ink)}
+.sc-split{display:flex;gap:2px;height:12px;margin-top:12px;border-radius:999px;overflow:hidden}
+.sc-split i{display:block;min-width:4px;background:var(--vu-mute)}
+.sc-split i.is-new{background:var(--vu-lime);box-shadow:inset 0 0 0 1.5px #000}
+.sc-split i.is-gone{background:var(--vu-ink)}
+html[data-theme=dark] .sc-split i.is-new,html[data-theme=dark] .sc-chgbox .sc-kpirow .is-new span:before{box-shadow:none}
+
+/* Fenster wie Baustein C16: am Telefon von unten, ab 761 px mittig */
+.sc-scrim{background:rgb(0 0 0/.6)}
+body.sc .sc-sheet{border-radius:var(--vu-r-sheet,30px) var(--vu-r-sheet,30px) 0 0;background:var(--vu-white,#fff);max-height:90dvh;box-shadow:none}
+body.sc .sc-sheet.is-full{height:90dvh}
+html[data-theme=dark] body.sc .sc-sheet{background:#151515;--vu-card:#262626;--vu-hair:rgb(255 255 255/.14);--sc-surface:#151515;--sc-surface-2:#262626;--sc-surface-3:#34343a;--sc-line:rgb(255 255 255/.14)}
+body.sc .sc-sheet-grab{width:44px;height:5px;border-radius:9px;margin:10px auto 0;background:var(--vu-mute);opacity:.55}
+body.sc .sc-sheet-head{padding:8px 10px 8px 18px}
+body.sc .sc-sheet-head h2{font-size:22px;font-weight:900;letter-spacing:-.035em}
+body.sc .sc-sheet-head .sc-icon-btn{width:36px;height:36px;border-radius:50%;background:var(--vu-card);margin:4px}
+body.sc .sc-sheet-body{padding:0 18px 22px}
+body.sc .sc-sheet-foot{padding:12px 18px calc(14px + var(--sc-safe-b));border-top:0;background:transparent}
+@media (min-width:640px) and (max-width:760.98px){
+  body.sc .sc-sheet{left:0;right:0;width:auto;transform:translateY(102%)}
+  body.sc .sc-sheet.is-open{transform:none}
+}
+@media (min-width:761px){
+  body.sc .sc-sheet{left:50%;right:auto;top:50%;bottom:auto;width:min(560px,calc(100vw - 48px));height:auto;max-height:min(88dvh,760px);border-radius:var(--vu-r-sheet,30px);box-shadow:0 30px 90px rgb(0 0 0/.35);transform:translate(-50%,-48%) scale(.98);opacity:0;pointer-events:none;transition:transform .22s var(--sc-ease),opacity .18s}
+  body.sc .sc-sheet.is-open{transform:translate(-50%,-50%);opacity:1;pointer-events:auto}
+  body.sc .sc-sheet.is-full{width:min(640px,calc(100vw - 48px));height:min(88dvh,760px)}
+  body.sc .sc-sheet-grab{display:none}
+  body.sc .sc-sheet-head{padding-top:14px}
+  body.sc .sc-sheet-foot{padding-bottom:18px}
+}
+@media (min-width:1024px){
+  .sc-layout>.sc-side{top:calc(var(--vu-navigation-height) + 12px);max-height:calc(100vh - var(--vu-navigation-height) - 12px - var(--sc-tabbar) - var(--sc-safe-b) - 16px);max-height:calc(100dvh - var(--vu-navigation-height) - 12px - var(--sc-tabbar) - var(--sc-safe-b) - 16px)}
+  body.sc .sc-layout{margin-top:6px}
+  body.sc .sc-hero2 .sc-counter strong,body.sc .sc-hero2 .sc-count{font-size:48px}
+}
+@media (prefers-reduced-motion:reduce){body.sc .sc-sheet{transition:none}}
+body.sc .sc-hero2 .sc-universe strong{display:inline;font-size:inherit;letter-spacing:inherit;line-height:inherit}
+body.sc .sc-hero2 .sc-universe{padding:0}
+body.sc .vu-sect{flex-wrap:wrap}
+.sc-sect-note{white-space:nowrap;font-size:12.5px}
+.sc-sheet input[type=search]::-webkit-search-cancel-button{filter:grayscale(1)}
+.sc-idc .sc-idea-logos{margin-top:auto;padding-top:12px;gap:5px}
+.sc-idc .sc-idea-logos .vu-logo-tile{width:30px;height:30px;min-width:30px;border-radius:9px}
+
+/* Europa (/screener/europa/): Kopfkachel, Suche als Pille, Länder als Leiste bis an den Rand */
+.sc-euhero .sc-hero2-top{gap:10px}
+.sc-euhero .vu-round{background:#26292e;color:#fff}
+.sc-euhero .vu-round svg.sc-i{width:18px;height:18px}
+.sc-euhero .vu-ltag{margin:0}
+.sc-euhero .sc-chg-name{margin-top:10px;font-size:28px}
+.sc-eufind{display:flex;align-items:center;gap:10px;min-height:48px;margin:10px 0 0;padding:0 16px;border-radius:999px;background:var(--vu-card);color:var(--vu-mute)}
+.sc-eufind svg.sc-i{width:18px;height:18px}
+.sc-eufind input{flex:1;min-width:0;min-height:44px;border:0;background:transparent;color:var(--vu-ink);font:600 15px/1.2 var(--vu-font);outline:0}
+.sc-eufind:focus-within{box-shadow:0 0 0 2px var(--vu-focus-ring)}
+.sc-eufind input::-webkit-search-cancel-button{filter:grayscale(1)}
+body.sc .sc-euchips{margin:10px calc(-1 * var(--sc-gutter)) 0;padding:2px var(--sc-gutter)}
+body.sc .sc-euchips .vu-chip{min-height:40px}
+.sc-eucount{margin:12px 0 8px;font-weight:700}
+body.sc .sc-tablewrap{border:0;border-radius:var(--sc-r);background:var(--vu-card)}
+body.sc .sc-table th,body.sc .sc-table th:first-child,body.sc .sc-table td:first-child{background:var(--vu-card)}
+body.sc .sc-table th,body.sc .sc-table td{border-bottom-color:var(--vu-hair)}
+body.sc .sc-table tbody tr:last-child td{border-bottom:0}
+body.sc .sc-table tbody tr:hover td{background:var(--vu-hair)}
+/* Lange Sätze (ab vier Regeln, z. B. Checklisten) kleiner, damit die Kachel nicht den Bildschirm füllt */
+.sc-hero2 .sc-sentence.is-long{font-size:18px;line-height:1.6}
+/* Fenster-Fuß: Knöpfe teilen sich die Breite und brechen um statt abzuschneiden */
+body.sc .sc-sheet-foot .sc-btn{min-width:0;flex:0 1 auto}
+body.sc .sc-sheet-foot .sc-btn-primary{flex:1 1 0;white-space:normal;line-height:1.15;padding-inline:12px}
+body.sc .sc-sheet-foot .sc-btn-primary{text-align:center}
+body.sc .sc-chghero .sc-count small{font-size:12.5px}
+/* Aktie (Fenster): die Bewegungs-Pille behält ihre Schriftfarbe (vorher erbte die Minus-Pille das Grau der Datumszeile, Kontrast 2,8:1) */
+body.sc .sc-qr-head .vu-stockhead__price .vu-chg{color:#000}
+body.sc .sc-qr-head .vu-stockhead__price .vu-chg--down{color:var(--vu-inv)}
+body.sc .sc-qr-head .vu-stockhead__price .vu-chg--flat{color:var(--vu-ink)}
+body.sc .sc-sheet:focus-visible{outline:0}

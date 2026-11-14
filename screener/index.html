@@ -11,8 +11,8 @@
 <!-- Farbschema vor dem ersten Bild: dieselbe Vision-Universe-Einstellung wie
      Discover (discover/engines/theme.js). Hell ist Standard. -->
 <script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
-<link rel="stylesheet" href="/assets/vu-ui.css">
-<link rel="stylesheet" href="/screener/screener.css">
+<link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.4.0">
+<link rel="stylesheet" href="/screener/screener.css?v=ak2-1">
 <!-- Vorladen: Startansicht ohne Link-Zustand braucht zuerst nur die Kopfdatei
      (wenige KB, app.js laedt das volle Universum sofort danach); jeder Link mit
      Zustand (?view=, ?f=, ?stock=) braucht sofort das volle Universum. -->
@@ -20,7 +20,7 @@
 </head>
 <body class="sc"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="sc-skip" href="#sc-main">Zum Inhalt</a>
-<div id="sc-root"><main id="sc-main" class="sc-app" tabindex="-1"><div class="sc-state"><div class="sc-skel" style="height:22px;width:40%;margin:0 auto 12px"></div><div class="sc-skel" style="height:14px;width:60%;margin:0 auto"></div></div></main></div>
+<div id="sc-root"><main id="sc-main" class="sc-app" tabindex="-1"><div class="sc-hero2 sc-hero2--skel"><div class="sc-skel" style="height:12px;width:140px"></div><div class="sc-skel" style="height:64px;width:86%;margin:14px 0"></div><div class="sc-skel" style="height:84px"></div></div></main></div>
 <noscript><p style="padding:24px">Der Screener benötigt JavaScript.</p></noscript>
 <script src="/discover/engines/theme.js"></script>
 <script src="/core/query-engine.js"></script>
@@ -33,9 +33,9 @@
 <script src="/screener/engine/checklists.js"></script>
 <script src="/screener/engine/vocab.js"></script>
 <script src="/konto/saved-searches.js"></script>
-<script src="/assets/vu-ui.js"></script>
+<script src="/assets/vu-ui.js?v=vu-ui-1.4.0"></script>
 <script src="/assets/vu-chart.js"></script>
 <script src="/screener/ui/charts.js"></script>
-<script src="/screener/app.js"></script>
+<script src="/screener/app.js?v=ak2-1"></script>
 </body>
 </html>
