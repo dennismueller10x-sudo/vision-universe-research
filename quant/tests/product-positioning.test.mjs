@@ -44,15 +44,20 @@ test("Vier Kernversprechen, jedes mit einem Weg zu der Funktion, die es einloest
 });
 
 /* Konzept Quant „Ein Profil je Aktie“ (QX01, docs/design/quant-2026-11): Frage, ein Satz zum Profil, Suche, „Heute bei Quant“
-   als schwarze Karte, Markt als eine Zeile, Schienen (neu in einem Anlagestil, Setup bestätigt, Anlagestile), „So arbeitet
+   als Zahlenkacheln, Markt als Zeiger (App-Konzept 2), Schienen (neu in einem Anlagestil, Setup bestätigt, Anlagestile), „So arbeitet
    Quant“, Vertrauen, Hinweis. Entfallen: sechs Zahlenkacheln, Pro-Kachel, fünf Navigationskarten.
    Die bisherige Startseite bleibt als homeLegacy (ohne VUUI) und behaelt ihre Pruefung unten. */
 test("QX01 · Home: Frage, Profil-Satz, Suche, Heute bei Quant, Markt, Schienen, So arbeitet Quant, Vertrauen", () => {
   const home = slice(pages, "async function home(", "async function homeLegacy(");
   const at = (s) => { const i = home.indexOf(s); assert.ok(i >= 0, "fehlt auf Home: " + s); return i; };
   const order = [at("Was hat sich heute verändert?"), at("Jede Aktie hat ein Profil aus"), at("page.append(search)"),
-    at("page.append(todayHost, regimeHost"), at('railHead("So arbeitet Quant"'), at("Warum kann ich dem vertrauen?")];
+    at("page.append(regimeHost, todayHost"), at('railHead("So arbeitet Quant"'), at("Warum kann ich dem vertrauen?")];
   assert.deepEqual(order.slice().sort((a, b) => a - b), order, "Reihenfolge der Startseite weicht vom Mockup QX01 ab");
+  /* App-Konzept 2 (Owner-Freigabe 14.11.2026): Markt zuerst, als Zeiger mit allen Maßen im Fenster; „Heute bei Quant“ als drei
+     Zahlenkacheln mit Weg zu den Meldungen; eigene Aktien als Schiene mit Vorher/Nachher und als Faktor-Landkarte; Screener-Einstieg.
+     Gleiche Inhalte und Quellen wie QX01, nur anders gezeichnet. */
+  for (const s of ["U().gauge(", "qk2-regime-tpl", "U().bindPops(page)", "U().stat(", 'X.routes.radar(x[2])', "U().rail(hits", "X.deltaOf(e.explanation)", '"Deine Faktor-Landkarte"', "U().heat(", 'railHead("Screener"', "/quant/markt/"]) at(s);
+  assert.ok(!/Empfehlung|Signal|Kursziel(?!\.)/.test(home.replace(/Keine Anlageempfehlung, keine Prognose, kein Kursziel|Keine Empfehlung/g, "")), "Wortwahl auf der Startseite");
   for (const s of ["Heute bei Quant · Stand", "neu in einem Anlagestil", "Setups bestätigt", "Risiko steigt", "Meldungen", "Markt heute",
     '"Neu in einem Anlagestil"', '"Setup bestätigt"', '"Anlagestile"']) at(s);
   for (const alt of ["homeStat(", "navcard(", "qv3-edge", 'sect("Selbst suchen")']) assert.ok(!home.includes(alt), "alter Inhalt: " + alt);
