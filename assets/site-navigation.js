@@ -70,6 +70,7 @@
      immer den Produktnamen, nie "Home"/"Start", und fuehrt zur Startseite des Produkts), danach die uebrigen
      Eintraege der Menueliste „In <Welt>“ (tabEntries). Ziele sind die bestehenden Routen der Produkte.
      active(loc) liefert die id des aktiven Platzes oder null; dann zeigt nur der Kopf, in welchem Produkt man ist.
+     dockPage(loc): Seiten ohne Produkt-Reiter, die das Dock ebenfalls anfordern duerfen (Insights).
      late(pfad): Seiten, die die Leiste nicht oder erst nach dem Laden anfordern; ueberall sonst steht die
      Reiterzeile vom ersten Zeichnen an (kein Sprung des Inhalts, wenn das Produkt die Leiste meldet). */
   const hashPart = (loc, i) => (loc.hash.replace(/^#\/?/, '').split('?')[0].split('/')[i] || '');
@@ -144,7 +145,7 @@
       items: [['hedgefonds','Hedgefonds','/hedgefonds/#/','hedgefonds'],['investoren','Investoren','/hedgefonds/#/investoren','users'],['aktien','Aktien','/hedgefonds/#/aktien','stocks'],['gruppen','Gruppen-Käufe','/hedgefonds/#/gruppen-kaeufe','signals']],
       active: loc => ({'': 'hedgefonds', investoren: 'investoren', datenbank: 'investoren', aktien: 'aktien', aktie: 'aktien', 'gruppen-kaeufe': 'gruppen', 'smart-money': 'gruppen'}[hashPart(loc, 0)] || null)},
     /* Portfolios: #/<gruppe> filtert die Uebersicht, #/<gruppe>/<id> ist ein Depot (gehoert zur Gruppe). */
-    {id: 'portfolios', label: 'Portfolios', match: p => p.startsWith('/portfolios/'), late: () => true,
+    {id: 'portfolios', label: 'Portfolios', match: p => p.startsWith('/portfolios/'),
       items: [['portfolios','Portfolios','/portfolios/#/','portfolios'],['supertrader','Supertrader','/portfolios/#/supertrader','signals'],['quant','Quant','/portfolios/#/quant','grid'],['ki','KI','/portfolios/#/ki','spark']],
       active: loc => loc.pathname === '/portfolios/' ? ({'': 'portfolios', supertrader: 'supertrader', quant: 'quant', ki: 'ki'}[hashPart(loc, 0)] || null) : null},
     /* Mein Bereich (Mockups E02, E07, E08): Start /willkommen/, Watchlist /mein-dashboard/, lokal Gemerktes
@@ -159,6 +160,8 @@
       }}
   ];
   const DOCK = [['home','Home','/willkommen/','home'],['discover','Discover','/discover/#/','discover'],['news','News','/insights/','insights'],['ich','Ich','/mein-dashboard/','person']];
+  /* Seiten ausserhalb der Produkte, die das Dock tragen, wenn sie es anfordern (ohne Reiterzeile): Insights, das Ziel des Platzes „News“. */
+  const dockPage = loc => loc.pathname.startsWith('/insights/');
   const dockActive = loc => { const p = loc.pathname; return p.startsWith('/willkommen/') ? 'home' : p.startsWith('/discover/') ? 'discover' : p.startsWith('/insights/') ? 'news' : p.startsWith('/mein-dashboard/') || p.startsWith('/konto/') ? 'ich' : null; };
   /* Reiter eines Produkts: Leistenplaetze in ihrer Reihenfolge, dann die uebrigen Eintraege der Menuegruppe; gleiches Ziel nur
      einmal (/quant/ und /quant/#/ sind dieselbe Seite). Reiter aus der Menuegruppe tragen keine id. */
@@ -705,10 +708,10 @@
        Kopfes) unter Produkt-Overlays liegen kann. Auf jeder Seite dasselbe:
        Home · Discover · [Universe] · News · Ich; aktiv ist der Platz, in dessen Bereich die Seite liegt (dockActive). */
     mountDock(){
-      const product=PRODUCTS.find(p=>p.match(location.pathname,location));
-      if(!product||this.hasAttribute('no-dock')||document.getElementById('vu-dock'))return;
-      this.setAttribute('dock',product.id);
-      document.documentElement.setAttribute('data-vu-dock',product.id);
+      const product=PRODUCTS.find(p=>p.match(location.pathname,location)),id=product?product.id:dockPage(location)?'page':null;
+      if(!id||this.hasAttribute('no-dock')||document.getElementById('vu-dock'))return;
+      this.setAttribute('dock',id);
+      document.documentElement.setAttribute('data-vu-dock',id);
       this.mountTabs();
       const host=document.createElement('div');host.id='vu-dock';host.className='vu-dock';this.dockHost=host;
       const root=host.attachShadow({mode:'open'});

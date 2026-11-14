@@ -16,8 +16,8 @@ const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const source = readFileSync(join(root, 'assets/site-navigation.js'), 'utf8');
 const sandbox = { HTMLElement: class {}, URL, URLSearchParams, customElements: { define() {} } };
-vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.__nav = { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, tabEntries, tabActive, dockIcons };})();'), sandbox);
-const { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, tabEntries, tabActive, dockIcons } = sandbox.__nav;
+vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.__nav = { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, dockPage, tabEntries, tabActive, dockIcons };})();'), sandbox);
+const { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, dockPage, tabEntries, tabActive, dockIcons } = sandbox.__nav;
 
 const loc = (url) => { const u = new URL(url, 'https://research.visionuniverse.de'); return { pathname: u.pathname, hash: u.hash, search: u.search }; };
 
@@ -71,10 +71,37 @@ test('one global dock on every page with a dock: Home, Discover, Universe button
   assert.equal(on('/konto/'), 'ich');
   assert.equal(on('/konto/watchlist/'), 'ich');
   for (const url of ['/quant/', '/quant/#/screener', '/technical/#/', '/fundamental/#/', '/supertrader/treffer/', '/hedgefonds/', '/elliott/', '/screener/', '/vorsorge/#/', '/portfolios/']) assert.equal(on(url), null, url);
-  // Das Dock haengt wie bisher an der Anforderung des Produkts und an no-dock
-  assert.match(source, /if\(!product\|\|this\.hasAttribute\('no-dock'\)\|\|document\.getElementById\('vu-dock'\)\)return;/);
+  // Das Dock haengt wie bisher an der Anforderung der Seite und an no-dock; ausserhalb der Produkte traegt es nur Insights (dockPage)
+  assert.match(source, /const product=PRODUCTS\.find\(p=>p\.match\(location\.pathname,location\)\),id=product\?product\.id:dockPage\(location\)\?'page':null;\n      if\(!id\|\|this\.hasAttribute\('no-dock'\)\|\|document\.getElementById\('vu-dock'\)\)return;/);
   assert.match(source, /host\.id='vu-dock'/);
-  assert.match(source, /document\.documentElement\.setAttribute\('data-vu-dock',product\.id\)/);
+  assert.match(source, /document\.documentElement\.setAttribute\('data-vu-dock',id\)/);
+});
+
+/* Der Platz „News“ fuehrt nach /insights/. Dort (Artikel, Aktienmagazin, Reports und jede Unterseite) steht das Dock mit
+   aktivem „News“; die Seiten fordern es im erzeugten Seitenkopf an (products/insights/build.mjs). Insights ist kein Produkt
+   mit Reiterzeile: die Seiten tragen ihre eigenen Reiter im Inhalt. Portfolios fordert Dock und Reiter wie jedes Produkt an. */
+test('Insights and Portfolios carry the dock: News leads to a page with the global navigation', () => {
+  for (const url of ['/insights/', '/insights/magazin/', '/insights/magazin/nr-01/', '/insights/reports/', '/insights/nvidia-huang-untersuchung/']) {
+    assert.equal(dockPage(loc(url)), true, url);
+    assert.equal(dockActive(loc(url)), 'news', url);
+    assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 0, url + ': kein Produkt, keine Reiterzeile der Shell');
+  }
+  for (const url of ['/news/', '/', '/konto/anmelden/', '/konto/abo/', '/preise/', '/infos/', '/dashboard/']) assert.equal(dockPage(loc(url)), false, url);
+  // Jede erzeugte Insights-Seite laedt die Shell und fordert danach das Dock an; der Erzeuger schreibt die Zeile
+  const request = '<script src="/assets/site-navigation.js"></script><script>if(window.VUNavigation)window.VUNavigation.dock({});</script>';
+  assert.ok(readFileSync(join(root, 'products/insights/build.mjs'), 'utf8').includes(request), 'products/insights/build.mjs');
+  const pages = [];
+  const walk = dir => { for (const e of readdirSync(join(root, dir), { withFileTypes: true })) { if (e.isDirectory()) walk(dir + '/' + e.name); else if (e.name === 'index.html') pages.push(dir + '/index.html'); } };
+  walk('insights');
+  assert.ok(pages.length >= 10, pages.length + ' Insights-Seiten');
+  for (const page of pages) { const html = readFileSync(join(root, page), 'utf8'); assert.ok(html.includes(request), page + ' fordert das Dock an'); assert.doesNotMatch(html, /<vu-navigation[^>]*no-dock/, page); }
+  // Der Fuss der Seiten laesst dem Dock den Platz ueber body (--vu-dock-space), nicht doppelt
+  assert.match(readFileSync(join(root, 'insights/insights.css'), 'utf8'), /html\[data-vu-dock\] \.in-fuss\{padding-bottom:24px\}/);
+  // Portfolios: Produkt mit Reitern, fordert die Leiste beim Start an (frueh, kein late)
+  const portfolios = PRODUCTS.find(p => p.id === 'portfolios');
+  assert.equal(portfolios.late, undefined);
+  assert.match(readFileSync(join(root, 'portfolios/portfolios.js'), 'utf8'), /if \(root\.VUNavigation\) root\.VUNavigation\.dock\(\{\}\);/);
+  assert.match(readFileSync(join(root, 'portfolios/portfolios.css'), 'utf8'), /html\[data-vu-dock\] \.pf\{padding-bottom:24px\}/);
 });
 
 test('product tabs: former dock places first, then the remaining entries of the menu group, each destination once', () => {
@@ -276,7 +303,7 @@ test('the dock is opt-in: pages that never call VUNavigation.dock keep their hea
   assert.match(source, /dockBus\.requested = true;/);
   assert.doesNotMatch(source, /connectedCallback\(\)\{[^}]*\n[^]*?\n      this\.mountDock\(\);/);
   // Die Reiterzeile kommt mit dem Dock; no-dock und menu-only tragen beides nie
-  assert.match(source, /this\.setAttribute\('dock',product\.id\);\n      document\.documentElement\.setAttribute\('data-vu-dock',product\.id\);\n      this\.mountTabs\(\);/);
+  assert.match(source, /this\.setAttribute\('dock',id\);\n      document\.documentElement\.setAttribute\('data-vu-dock',id\);\n      this\.mountTabs\(\);/);
   assert.match(source, /if\(!product\|\|!nav\|\|this\.tabsFor===product\.id\|\|this\.hasAttribute\('no-dock'\)\|\|this\.hasAttribute\('menu-only'\)\)return;/);
 });
 

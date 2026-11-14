@@ -580,8 +580,7 @@
         '<span class="dr-rsw__hook">' + esc((c.hook && c.hook.text) || K().story(c)) + '</span><span class="dr-rsw__chart"></span><span class="dr-bb__dates"><span></span><span></span></span>' +
         (chips.length ? '<span class="dr-rsw__chips">' + chips.map(function (m) { return '<span class="vu-chip">' + esc(R().title(m.id)) + '</span>'; }).join('') + '</span>' : '') + '</a>';
       var d = stage.querySelectorAll('.dr-bb__dates span');
-      var box = stage.querySelector('.dr-rsw__chart');
-      box.appendChild(K().spark(c, Object.assign({ big: true, eager: true, onDates: function (a, b) { d[0].textContent = K().dayYear(a); d[1].textContent = K().dayYear(b); } }, K().fitSize(box, 320, 150))));
+      K().fitChart(stage.querySelector('.dr-rsw__chart'), 320, 150, function (w, ht) { return K().spark(c, { big: true, eager: true, width: w, height: ht, onDates: function (a, b) { d[0].textContent = K().dayYear(a); d[1].textContent = K().dayYear(b); } }); });
       var keepBtn = page.querySelector('[data-a="keep"]'); if (st) keepBtn.setAttribute('aria-pressed', String(st.has(c.symbol)));
       page.querySelector('[data-a="back"]').disabled = i === 0;
       if (mem) mem.setPosition(key, i);

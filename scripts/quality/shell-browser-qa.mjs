@@ -46,6 +46,8 @@ const ROUTES = [
   ['Supertrader', '/supertrader/forschung/', 'Forschung'], ['Supertrader', '/supertrader/sources/', 'Quellen'],
   ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Datenbank'], ['Hedgefonds', '/hedgefonds/#/gruppen-kaeufe', 'Gruppen-Käufe'],
   ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'],
+  // Portfolios: fordert Dock und Reiter wie jedes Produkt an (seit dem Rahmen nach App-Konzept 2)
+  ['Portfolios', '/portfolios/', 'Portfolios'], ['Portfolios', '/portfolios/#/quant', 'Quant'], ['Portfolios', '/portfolios/#/ki', 'KI'],
   // Alte Quant-Unterseiten: Weiterleitungen auf die App unter /quant/ (quant/ui/legacy-redirect.js). Erwartet ist der Reiter
   // am Ziel: Ranking -> #/screener (Screener), Watchlist -> #/aktien (Aktien), Strategien -> #/stile (Anlagestile).
   ['Quant', '/quant/screener/', 'Screener'], ['Quant', '/quant/strategies/', 'Anlagestile'], ['Quant', '/quant/ranking/', 'Screener'],
@@ -167,7 +169,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
         return {current:tile?.querySelector('b')?.textContent.trim(),here:!root.querySelector('.here').hidden&&root.querySelector('.here-title').textContent,
           marked:[...root.querySelectorAll('.links a[aria-current=page]')].map(a=>({href:a.getAttribute('href'),visible:!!a.getClientRects().length}))};
       });
-      const home=['/discover/#/','/elliott/','/fundamental/#/','/quant/#/','/vorsorge/#/','/screener/','/supertrader/','/hedgefonds/#/'].includes(path);
+      const home=['/discover/#/','/elliott/','/fundamental/#/','/quant/#/','/vorsorge/#/','/screener/','/supertrader/','/hedgefonds/#/','/portfolios/'].includes(path);
       // Das Menue markiert die aktuelle Welt im Raster und zeigt ihre Unterseiten (Mockup N3).
       if(routeMenu.current!==product||routeMenu.here!=='In '+product) fail(where,'Menu-Produktkontext falsch: '+JSON.stringify(routeMenu));
       if(routeMenu.marked.length>1||(!home&&routeMenu.marked.some(a=>!a.visible))) fail(where,'aktive Unterroute nicht eindeutig sichtbar: '+JSON.stringify(routeMenu));
@@ -234,6 +236,44 @@ for (const [vpName, width, height] of VIEWPORTS) {
         if (h.overflow > 1 || h.right > h.vw + 1 || h.left < 0 || h.w < 44 || h.h < 44) fail(where, 'Menü-Knopf im Kopf abgeschnitten oder zu klein: ' + JSON.stringify(h));
       }
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Insights (Ziel des Platzes „News“): das Dock steht auf jeder Seite, „News“ ist aktiv, keine Reiterzeile der Shell (die Seiten
+  // tragen ihre eigenen Reiter), der Universe-Knopf oeffnet das Menue, und das Seitenende liegt ueber dem Dock.
+  for (const path of ['/insights/', '/insights/magazin/', '/insights/reports/']) {
+    const where = `insights ${path} @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      // Erst die Uebersicht selbst, dann ihre erste Unterseite (Artikel, Heft, Report)
+      const sub = await page.evaluate((p) => { const a = [...document.querySelectorAll('main a[href^="/insights/"]')].map((n) => n.getAttribute('href')).find((h) => h !== p && h.startsWith(p) && h.endsWith('/') && !/^\/insights\/(magazin|reports)\/$/.test(h)); return a || null; }, path);
+      for (const target of [path, sub].filter(Boolean)) {
+        if (target !== path) { await page.goto(base + target, { waitUntil: 'load', timeout: 90000 }); await settle(page); }
+        const s = await page.evaluate(async () => {
+          const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav'), head = document.querySelector('vu-navigation').shadowRoot;
+          if (!nav) return null;
+          for (let i = 0, h = -1; i < 8 && h !== document.documentElement.scrollHeight; i++) { h = document.documentElement.scrollHeight; scrollTo(0, h); await new Promise((r) => setTimeout(r, 400)); }
+          scrollTo({ top: document.scrollingElement.scrollHeight, behavior: 'instant' });
+          const d = nav.getBoundingClientRect(), u = nav.querySelector('button.menu').getBoundingClientRect();
+          const text = [...document.querySelectorAll('main *, footer *')].filter((n) => !n.children.length && n.textContent.trim() && n.getClientRects().length).reduce((m, n) => Math.max(m, n.getBoundingClientRect().bottom), 0);
+          return { places: [...nav.querySelectorAll('a')].map((a) => a.textContent.trim()).join('|'), place: [...nav.querySelectorAll('a[aria-current=page]')].map((a) => a.textContent.trim()).join('|'),
+            tabs: !head.querySelector('nav.tabs').hidden, own: [...document.querySelectorAll('.in-tabs a')].map((a) => a.textContent.trim()).join('|'), toggle: getComputedStyle(head.querySelector('.toggle')).display,
+            overflow: document.documentElement.scrollWidth - innerWidth, dockTop: Math.min(d.top, u.top), dockBottom: d.bottom, text, vh: innerHeight, reserved: parseFloat(getComputedStyle(document.body).paddingBottom) };
+        });
+        const at = where + (target !== path ? ' → ' + target : '');
+        if (!s) { fail(at, 'kein Dock'); continue; }
+        if (s.places !== DOCK.join('|') || s.place !== 'News') fail(at, 'Dock falsch oder „News“ nicht aktiv: ' + s.places + ' / ' + s.place);
+        if (s.tabs || s.own !== 'Artikel|Aktienmagazin|Reports') fail(at, 'Reiter: Shell ' + s.tabs + ', Seite ' + s.own);
+        if (s.toggle !== 'none') fail(at, 'Menue-Knopf im Kopf doppelt');
+        if (s.overflow > 1) fail(at, 'horizontaler Ueberlauf ' + s.overflow + ' px');
+        if (s.text > s.dockTop + 1 || s.dockBottom > s.vh || s.reserved < s.vh - s.dockTop) fail(at, `Seitenende verdeckt (Text bis ${Math.round(s.text)}, Dock ab ${Math.round(s.dockTop)}, frei ${s.reserved})`);
+        // Der Universe-Knopf oeffnet das Menue; auf den drei Uebersichten ist Insights dort die aktuelle Welt.
+        await page.locator('#vu-dock button.menu').click(); await menuOpen(page, at);
+        if (target === path && !await page.evaluate(() => { const r = document.querySelector('vu-navigation').shadowRoot; return r.querySelector('.tile.is-current b')?.textContent === 'Insights' && r.querySelector('.here-title').textContent === 'In Insights'; })) fail(at, 'Menü zeigt Insights nicht als aktuelle Welt');
+        await page.keyboard.press('Escape');
+        if (!await page.waitForFunction(() => !document.querySelector('vu-navigation').hasAttribute('open'), null, { timeout: 3000 }).then(() => true, () => false)) fail(at, 'Escape schliesst das Menü nicht');
+      }
+      checks.push({ where, pass: !findings.some((f) => f.where.startsWith(where)) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Farbschema: der Schalter im gemeinsamen Kopf wechselt Hell/Dunkel auf jedem Produkt; Leiste und Menue bleiben lesbar.

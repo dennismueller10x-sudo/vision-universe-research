@@ -327,7 +327,9 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert((await card.innerText()).length>=80,'Card text too short');
  });
  if(width<500)await check(key+' swipe buttons remain reachable above the dock',async()=>{
-  const bounds=await page.evaluate(()=>{const b=document.querySelector('.dv3-swipe__btns').getBoundingClientRect(),dock=document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect();return {buttons:b.toJSON(),dock:dock.toJSON()};});
+  const bounds=await page.evaluate(()=>{const b=document.querySelector('.dv3-swipe__btns').getBoundingClientRect(),root=document.getElementById('vu-dock').shadowRoot,dock=root.querySelector('nav').getBoundingClientRect(),uni=root.querySelector('button.menu').getBoundingClientRect(),card=document.querySelector('.dv3-swipe .dv3-card').getBoundingClientRect(),bar=document.querySelector('vu-navigation').shadowRoot.querySelector('header').getBoundingClientRect();return {buttons:b.toJSON(),dock:dock.toJSON(),uniTop:uni.top,cardTop:card.top,barBottom:bar.bottom,scrollY};});
+  /* Rahmen nach App-Konzept 2: Karte und Knoepfe passen OHNE Scrollen zwischen den Kopf (mit Reitern) und das Dock samt Universe-Knopf. */
+  assert(bounds.scrollY<=8&&bounds.cardTop>=bounds.barBottom-1&&bounds.buttons.bottom<=Math.min(bounds.dock.top,bounds.uniTop)+1,'Swipe card and buttons must fit between header and dock without scrolling: '+JSON.stringify({scrollY:bounds.scrollY,cardTop:bounds.cardTop,barBottom:bounds.barBottom,buttonsBottom:bounds.buttons.bottom,dockTop:bounds.dock.top,uniTop:bounds.uniTop}));
   await page.locator('.dv3-swipe__btns').scrollIntoViewIfNeeded();
   const after=await page.evaluate(()=>{const b=document.querySelector('.dv3-swipe__btns').getBoundingClientRect(),dock=document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect();return b.bottom<=dock.top+1;});
   assert(after,'Swipe buttons hidden behind the dock: '+JSON.stringify(bounds));interactionEvidence.push({key,type:'swipe-button-clearance',...bounds});
