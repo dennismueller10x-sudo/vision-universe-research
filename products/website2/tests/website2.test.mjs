@@ -6,19 +6,23 @@ import assert from "node:assert/strict";
 import { readFileSync, existsSync, readdirSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildSite, buildWww, loadSnapshot, makeSnapshot, wwwAssets, wwwCss, wwwJs, MODULES, NEWSLETTER, HEFT, BASE, SOCIAL, PAGES as SITE_PAGES } from "../build.mjs";
+import { buildSite, buildWww, loadSnapshot, makeSnapshot, wwwAssets, wwwCss, wwwJs, MODULES, NEWSLETTER, HEFT, REPORT, BASE, SOCIAL, PAGES as SITE_PAGES } from "../build.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const SITE = buildSite();
 const CSS = readFileSync(join(ROOT, "website2/site.css"), "utf8");
 const JS = readFileSync(join(ROOT, "website2/site.js"), "utf8");
 const LEGAL = JSON.parse(readFileSync(join(ROOT, "assets/legal-notices.json"), "utf8"));
-const refs = (html) => [...html.matchAll(/\s(?:href|src|poster)="([^"]+)"/g)].map((m) => m[1]);
+const refs = (html) => [...html.matchAll(/\s(?:href|src|srcset|poster)="([^"]+)"/g)].map((m) => m[1]);
 const tags = (html, name) => [...html.matchAll(new RegExp(`<${name}\\b[^>]*>`, "g"))].map((m) => m[0]);
 const local = (h) => join(ROOT, h.split(/[?#]/)[0]);
 /* Routen der App: dürfen nicht verlinkt sein, solange die App nicht verfügbar ist. */
 const APP_ROUTES = /^\/(discover|quant|fundamental|technical|screener|supertrader|hedgefonds|elliott|portfolios|vorsorge|ask|konto|mein-dashboard|willkommen|aktie|preise|dashboard|app)(\/|$)/;
 const PAGES = ["index.html", "app/index.html", ...MODULES.map((m) => `module/${m.id}/index.html`), "news/index.html", "magazin/index.html", "faq/index.html"];
+/* Das Ziel www ist erst mit dem Umzug eingecheckt (landing/site/). Solange es fehlt, prüft diese Datei nur die Vorschau;
+   dieselbe Datei gilt damit vor und nach dem Umzug. */
+const HAS_WWW = existsSync(join(ROOT, "landing/site/pages.json"));
+const TARGETS = () => [["research", SITE, BASE], ...(HAS_WWW ? [["www", buildWww(), ""]] : [])];
 
 test("W2-1 · 17 Seiten; die committeten Seiten entsprechen dem Bau (node products/website2/build.mjs)", () => {
   assert.deepEqual([...SITE.keys()], PAGES);
@@ -131,7 +135,8 @@ test("W2-8 · Original-Knöpfe von Apple und Google in Farbe, auf jeder Seite, o
 test("W2-9 · Insights aktualisiert sich selbst: Plätze für Artikel, Heft und Report; festes Heft als Rückfall", () => {
   const home = SITE.get("index.html"), news = SITE.get("news/index.html"), mag = SITE.get("magazin/index.html");
   for (const slot of ["data-live-artikel", "data-mag-img"]) assert.ok(home.includes(slot), `Start: ${slot}`);
-  for (const slot of ["data-feed-lead", 'data-feed="5"', "data-live-report-titel", "data-live-report-link", "data-mag-nr", "data-mag-titel", "data-mag-seiten"]) assert.ok(news.includes(slot), `News: ${slot}`);
+  for (const slot of ["data-feed-lead", 'data-feed="5"', `data-live-report="${REPORT.href}"`, "data-rep-kopf", "data-rep-titel", "data-rep-link", "data-rep-pdf", "data-rep-img", "data-rep-seite=", "data-mag-nr", "data-mag-titel", "data-mag-seiten"]) assert.ok(news.includes(slot), `News: ${slot}`);
+  for (const slot of ["data-mag-nr", "data-rep-titel", "data-rep-img"]) assert.ok(home.includes(slot), `Start: ${slot}`);
   for (const slot of ["data-mag-kopf", "data-mag-h1", "data-mag-link", "data-mag-pdf", "data-mag-seite=", `data-mag="${HEFT.nr}"`]) assert.ok(mag.includes(slot), `Magazin: ${slot}`);
   assert.match(JS, /fetch\('\/insights\/artikel\.json'/);
   assert.match(JS, /\.catch\(function \(\) \{/, "ohne Liste bleibt der feste Text stehen");
@@ -195,7 +200,7 @@ test("W2-11 · Farben: nur Schwarz, Weiß, Grau und das eine Neongrün, kein Dun
 
 test("W2-12 · Instagram und TikTok: schlichte Links mit Namen im Fuß und im Menü jeder Seite, keine Einbettung", () => {
   assert.deepEqual(SOCIAL.map((x) => x[2]), ["https://www.instagram.com/app.visionuniverse/", "https://www.tiktok.com/@app.visionuniverse"]);
-  for (const [name, pages] of [["research", SITE]]) for (const [p, html] of pages) {
+  for (const [name, pages] of TARGETS()) for (const [p, html] of pages) {
     const foot = html.match(/<footer[\s\S]*<\/footer>/)[0], menu = html.match(/<nav class="mg" id="site-panel"[\s\S]*?<\/nav>/)[0];
     for (const part of [foot, menu]) for (const [, label, url] of SOCIAL) {
       const link = part.match(new RegExp(`<a class="sc" href="${url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*>`))?.[0];
@@ -207,8 +212,8 @@ test("W2-12 · Instagram und TikTok: schlichte Links mit Namen im Fuß und im Me
   assert.match(CSS, /\.sc\{width:46px;height:46px/, "Bedienfläche mindestens 44 px");
 });
 
-test("W2-13 · Startseite führt zu jeder Unterseite, jede Unterseite zurück und weiter", () => {
-  for (const [name, pages, root] of [["research", SITE, BASE]]) {
+test("W2-13 · Startseite führt zu jeder Unterseite, jede Unterseite zurück und weiter (beide Ziele)", () => {
+  for (const [name, pages, root] of TARGETS()) {
     const main = (html) => html.match(/<main[\s\S]*<\/main>/)[0];
     const start = main(pages.get("index.html"));
     for (const p of SITE_PAGES.slice(1)) assert.ok(start.includes(`href="${root || "./"}${p}"`), `${name}: Startseite ohne Link im Inhalt zu ${p}`);
@@ -221,6 +226,96 @@ test("W2-13 · Startseite führt zu jeder Unterseite, jede Unterseite zurück un
   }
 });
 
-/* Die Prüfungen für das Ziel www (Seiten unter landing/, W2-14 und die www-Hälften von W2-12/W2-13) kommen mit dem
-   Umzug auf www.visionuniverse.de dazu. Bis dahin (Owner 14.11.2026: erst die Vorschau auf research ansehen) liefert
-   dieser Stand nur die Vorschau /website2/ aus; unter landing/ ändert sich nichts. */
+test("W2-14 · www: die committeten Seiten und Dateien unter landing/ entsprechen dem Erzeuger und dem Insights-Stand (node products/website2/build.mjs --target www)", { skip: !HAS_WWW && "www ist noch nicht eingecheckt (kommt mit dem Umzug)" }, () => {
+  const snapshot = loadSnapshot(), www = buildWww(snapshot);
+  assert.deepEqual([...www.keys()], PAGES);
+  for (const [p, html] of www) assert.equal(readFileSync(join(ROOT, "landing", p), "utf8"), html, `landing/${p} veraltet`);
+  assert.equal(readFileSync(join(ROOT, "landing/site/site.css"), "utf8"), wwwCss(), "landing/site/site.css veraltet");
+  assert.equal(readFileSync(join(ROOT, "landing/site/site.js"), "utf8"), wwwJs(), "landing/site/site.js veraltet");
+  assert.ok(!/fetch\(|artikel\.json/.test(wwwJs()), "www ohne Laufzeit-Abruf");
+  const files = wwwAssets(snapshot);
+  for (const [to, from] of files) {
+    assert.ok(existsSync(join(ROOT, "landing/site", to)), `landing/site/${to} fehlt`);
+    /* Dateien aus /insights/ gehören dem Auszug: sie werden erst beim nächsten Auffrischen ersetzt. */
+    if (!from.startsWith("insights/") || existsSync(join(ROOT, from))) assert.ok(readFileSync(join(ROOT, "landing/site", to)).equals(readFileSync(join(ROOT, from))), `landing/site/${to} weicht von ${from} ab`);
+  }
+  for (const dir of ["img", "vid"]) for (const f of readdirSync(join(ROOT, "landing/site", dir))) assert.ok(files.has(`${dir}/${f}`), `landing/site/${dir}/${f} gehört zu keiner Seite`);
+  const list = JSON.parse(readFileSync(join(ROOT, "landing/site/pages.json"), "utf8"));
+  assert.deepEqual(list.pages, SITE_PAGES);
+  assert.deepEqual(list.modules.map((m) => m.id), MODULES.map((m) => m.id));
+  assert.deepEqual(list.social, SOCIAL.map((x) => x[2]));
+  assert.equal(list.notice, LEGAL.notices.footer.text, "Pflichtsatz in landing/site/pages.json veraltet");
+  /* Das Formular von www ist wörtlich das freigegebene (Einwilligung vu-newsletter-v1); der Erzeuger ändert es nie. */
+  const form = readFileSync(join(ROOT, "landing/newsletter-form.html"), "utf8").trim();
+  assert.ok(www.get("index.html").includes(form) && form.includes('name="CONSENT_VERSION" value="vu-newsletter-v1"') && form.includes('name="EMAIL"') && form.includes('name="OPT_IN"'));
+  for (const [p, html] of www) {
+    assert.ok(!/data-live-|data-feed|data-mag-|data-rep-|"\/website2\/|research\.visionuniverse\.de\/(?!insights\/)/.test(html), `landing/${p}: Rest der Vorschau`);
+    for (const h of refs(html).filter((x) => /^https:\/\/research\./.test(x))) assert.match(h, /^https:\/\/research\.visionuniverse\.de\/insights\//, `landing/${p}: nur öffentlich lesbare Insights-Seiten`);
+  }
+  /* Der Auszug ist ein erzeugtes Artefakt von /insights/: products/insights/build.mjs frischt ihn im selben Schritt auf.
+     Wer Artikel, Heft oder Report ändert, bringt deshalb die www-Seiten im selben Commit mit. */
+  assert.deepEqual(snapshot, makeSnapshot(), "www zeigt einen älteren Insights-Stand: node products/insights/build.mjs (oder node products/website2/build.mjs --target www) ausführen und landing/ mit committen");
+  assert.match(readFileSync(join(ROOT, "products/insights/build.mjs"), "utf8"), /www\.writeWww\(\)/, "der Insights-Bau frischt www im selben Schritt auf");
+});
+
+test("W2-15 · Aktienreport und Aktienmagazin haben je eine eigene Bühne; der GTA-Report ist fest eingebaut", () => {
+  /* Der fest gezeigte Report gibt es wirklich: Angaben wie in products/insights/reports.json, Dateien öffentlich unter /insights/. */
+  const voll = JSON.parse(readFileSync(join(ROOT, "products/insights/reports.json"), "utf8")).reports.find((r) => r.href === REPORT.href);
+  assert.ok(voll, "Report steht in products/insights/reports.json");
+  assert.deepEqual([voll.nr, voll.titel, voll.seiten, voll.pdf, voll.datum.split("-").reverse().join(".")], [REPORT.nr, REPORT.titel, REPORT.seiten, REPORT.pdf, REPORT.datum]);
+  const liste = JSON.parse(readFileSync(join(ROOT, "insights/artikel.json"), "utf8"));
+  assert.ok(liste.reports.some((r) => r.href === REPORT.href && r.titel === REPORT.titel), "Report steht in /insights/artikel.json");
+  for (const f of ["index.html", "cover.jpg", REPORT.pdf, ...REPORT.blick.map((n) => `seiten/s${String(n).padStart(2, "0")}.jpg`)]) assert.ok(existsSync(join(ROOT, REPORT.href, f)), `${REPORT.href}${f}`);
+  /* Muster der Dateinamen, auf das site.js bei einem neueren Report baut (Titelbild, Seiten). */
+  for (const r of JSON.parse(readFileSync(join(ROOT, "products/insights/reports.json"), "utf8")).reports.filter((x) => x.seiten)) assert.ok(existsSync(join(ROOT, r.href, "cover.jpg")) && existsSync(join(ROOT, r.href, "seiten/s02.jpg")), r.href);
+  for (const [name, pages] of TARGETS()) {
+    const news = pages.get("news/index.html"), home = pages.get("index.html");
+    const stages = news.match(/<div class="stages">[\s\S]*?<\/article><\/div>/)?.[0] || "";
+    assert.equal((stages.match(/<article class="stage /g) || []).length, 2, `${name}: zwei Bühnen`);
+    assert.ok(news.indexOf('class="stages"') < news.indexOf('id="artikel"'), `${name}: Bühnen stehen vor den Artikeln`);
+    assert.match(stages, /<article class="stage c-ink rv"[^>]*>[\s\S]*Aktienmagazin · jede Woche[\s\S]*Heft ansehen[\s\S]*>PDF<\/a>[\s\S]*<div class="cov">/, `${name}: Bühne Aktienmagazin`);
+    assert.match(stages, /<article class="stage c-lime rv" id="reports"[\s\S]*Aktienreport · Nr\. \d+ · \d\d\.\d\d\.\d{4}[\s\S]*Report lesen[\s\S]*>PDF<\/a>[\s\S]*<div class="cov r">/, `${name}: Bühne Aktienreport`);
+    assert.ok(stages.includes("Seiten</li>") && stages.includes("<b>0 €</b> zum Start"), `${name}: Seitenzahl und „0 € zum Start“`);
+    assert.match(news, /id="report-blick"[\s\S]*Blick in den Report[\s\S]*class="rail mid"/, `${name}: Blick in den Report`);
+    assert.match(home, /<div class="trio">[\s\S]*class="t c-ink mini rv"[\s\S]*Heft ansehen[\s\S]*class="t c-lime mini rv"[\s\S]*Report ansehen/, `${name}: Startseite zeigt Artikel, Heft und Report nebeneinander`);
+    /* Eigene Texte ohne Aussagen über Kurs oder Rendite; Titel und Seitenzahl kommen aus dem Report selbst. */
+    assert.ok(!/Rendite|Performance|Kursziel|spricht (da)?für|Bullen|Bären/.test(stages.replace(/<[^>]+>/g, " ")), `${name}: Wortwahl der Bühnen`);
+  }
+  const news = SITE.get("news/index.html");
+  assert.ok(news.includes(`href="${REPORT.href}" data-rep-link`) && news.includes(`href="${REPORT.href}${REPORT.pdf}" data-rep-pdf`) && news.includes(`src="${REPORT.href}cover.jpg"`), "Vorschau: Report, PDF und Titelbild");
+  assert.match(JS, /rep\.href !== fixed/, "ein neuerer Report ersetzt den fest eingebauten");
+  /* Wo Heft oder Report fest in der Seite stehen, nennt die Seite deren Kennung: Nur ein neueres Heft oder ein neuerer Report tauscht Bilder (sonst lüde jede Seite die großen Vorlagen nach). */
+  for (const p of PAGES) {
+    const html = SITE.get(p);
+    if (/data-mag-(img|nr|seite)/.test(html)) assert.ok(html.includes(`data-mag="${HEFT.nr}"`), `${p}: data-mag fehlt`);
+    if (/data-rep-(img|titel|seite)/.test(html)) assert.ok(html.includes(`data-live-report="${REPORT.href}"`), `${p}: data-live-report fehlt`);
+  }
+  assert.match(JS, /var main = q\('\[data-mag\]'\)/);
+});
+
+test("W2-16 · Ladezeit: Standbild vor Film, passende Bildgrößen, nichts Unnötiges vor dem ersten Bild", () => {
+  for (const [name, pages] of TARGETS()) for (const [p, html] of pages) {
+    /* Film im Kopf: nur Standbild im HTML, kein Vorladen, kein autoplay; site.js startet ihn nach dem Laden. */
+    for (const v of tags(html, "video")) assert.ok(/preload="none"/.test(v) && !/\sautoplay\b/.test(v), `${name} ${p}: Film lädt nicht vorab`);
+    /* App-Ansichten: kleine WebP-Fassung mit JPEG als Rückfall; außerhalb des ersten Fensters lazy, höchstens ein Bild mit Vorrang. */
+    for (const pic of html.matchAll(/<div class="dev [^"]*">(<picture>.*?<\/picture>|<img[^>]*>)<\/div>/g)) {
+      const jpg = /src="[^"]*\/(app-[a-z]+)\.jpg"/.exec(pic[1]);
+      if (jpg) assert.ok(pic[1].includes(`<source type="image/webp" srcset="`) && pic[1].includes(`${jpg[1]}-600.webp"`), `${name} ${p}: ${jpg[1]} ohne WebP-Fassung`);
+    }
+    assert.ok((html.match(/fetchpriority="high"/g) || []).length <= 1, `${name} ${p}: höchstens ein Bild mit Vorrang`);
+    for (const img of tags(html, "img")) if (!/fetchpriority="high"|class="badge"|data-mag-img|data-rep-img|heft-\d+-cover|report-\d+-cover|cover\.jpg/.test(img)) assert.match(img, /loading="lazy"/, `${name} ${p}: ${img.slice(0, 80)}`);
+    assert.ok(!/seiten\/s0[25]\.jpg" alt="" width="84"/.test(html), `${name} ${p}: Kennzeichen-Grafik lädt keine ganzen Heftseiten`);
+    assert.match(html, /<link rel="preload" href="[^"]*inter-latin\.woff2" as="font" type="font\/woff2" crossorigin>/, `${name} ${p}: Schrift vorab`);
+    assert.match(html, /<script src="[^"]*site\.js" defer><\/script>/, `${name} ${p}: Skript blockiert nicht`);
+  }
+  for (const m of MODULES) assert.match(SITE.get(`module/${m.id}/index.html`), /<div class="dev w270">(<picture>.*?)?<img[^>]*fetchpriority="high"/, `${m.id}: größtes Bild der Modulseite mit Vorrang`);
+  assert.match(SITE.get("magazin/index.html"), /<div class="cov x"><picture>.*?<img[^>]*fetchpriority="high"/, "Magazin: Titelbild mit Vorrang");
+  assert.match(SITE.get("news/index.html"), /<link rel="preload" href="\/insights\/artikel\.json" as="fetch" crossorigin="anonymous">/, "News fordert die Liste vorab an");
+  for (const p of ["index.html", "magazin/index.html", "module/quant/index.html"]) assert.ok(!SITE.get(p).includes('as="fetch"'), `${p}: Liste erst nach dem Laden`);
+  /* site.js: Film erst nach dem Laden und nicht im Datensparmodus; Bewegung ruht außerhalb des Fensters; Liste wartet, wo sie nichts oberhalb der Falz steuert. */
+  assert.match(JS, /net\.saveData/);assert.match(JS, /window\.addEventListener\('load', idle\)/);
+  assert.match(JS, /classList\.toggle\('idle', !e\.isIntersecting\)/);assert.match(CSS, /\.idle,\.idle \*\{animation-play-state:paused!important\}/);
+  assert.match(JS, /if \(q\('\[data-feed\]'\)\) load\(\);/);
+  assert.match(CSS, /font-display:swap/);
+  for (const f of readdirSync(join(ROOT, "website2/img")).filter((x) => /^app-.*\.jpg$/.test(x) && x !== "app-poster.jpg")) assert.ok(existsSync(join(ROOT, "website2/img", f.replace(/\.jpg$/, "-600.webp"))), `${f}: WebP-Fassung fehlt (python3 products/website2/bilder.py)`);
+});
