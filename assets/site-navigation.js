@@ -63,14 +63,16 @@
   ];
   /* Mein Bereich im Menue (Mockup N3). */
   const MINE = [['Mein Dashboard','/mein-dashboard/','person'],['Watchlist','/konto/watchlist/','heart'],['Konto und Tarif','/konto/','gear']];
-  /* Produkt-Dock: die schwebende Leiste am unteren Rand jedes Produkts.
-     Regel fuer alle Produkte: [PRODUKT] [Funktion] [Funktion] [Funktion] [☰].
-     Der erste Eintrag traegt immer den Produktnamen (nie "Home"/"Start"); die Spalten sind gleich breit, aber nie
-     schmaler als ihre Beschriftung (minmax(min-content,1fr)), damit lange Namen wie "Fundamental" nicht abgeschnitten werden.
-     und fuehrt zur Startseite des Produkts; ☰ oeffnet das GLOBALE Menue
-     dieser Komponente. Ziele sind die bestehenden Routen der Produkte.
-     active(loc) liefert die id des aktiven Eintrags oder null; dann zeigt
-     der Produkteintrag nur, in welchem Produkt man ist. */
+  /* Rahmen (Owner 14.11.2026, App-Konzept 2): EIN Dock auf jeder Seite, die eine Leiste anfordert:
+     Home · Discover · [Universe] · News · Ich (DOCK). Der runde Knopf in der Mitte oeffnet „Dein Universe“,
+     das GLOBALE Menue dieser Komponente. Die Bereiche eines Produkts stehen als Reiter unter dem Kopf:
+     zuerst die frueheren Leistenplaetze (items: [PRODUKT] [Funktion] [Funktion] [Funktion]; der erste traegt
+     immer den Produktnamen, nie "Home"/"Start", und fuehrt zur Startseite des Produkts), danach die uebrigen
+     Eintraege der Menueliste „In <Welt>“ (tabEntries). Ziele sind die bestehenden Routen der Produkte.
+     active(loc) liefert die id des aktiven Platzes oder null; dann zeigt nur der Kopf, in welchem Produkt man ist.
+     dockPage(loc): Seiten ohne Produkt-Reiter, die das Dock ebenfalls anfordern duerfen (Insights).
+     late(pfad): Seiten, die die Leiste nicht oder erst nach dem Laden anfordern; ueberall sonst steht die
+     Reiterzeile vom ersten Zeichnen an (kein Sprung des Inhalts, wenn das Produkt die Leiste meldet). */
   const hashPart = (loc, i) => (loc.hash.replace(/^#\/?/, '').split('?')[0].split('/')[i] || '');
   /* Elliott ist ein eigenes Produkt. Seine Startseite liegt unter /elliott/; die Detailansicht einer Aktie (Chartbild) rendert die Quant-SPA
      unter #/elliott/<TICKER> und gehoert fuer die Shell trotzdem zu Elliott (nur noch ein Altlink: die SPA leitet auf /elliott/#/<T>
@@ -120,13 +122,13 @@
       items: [['technical','Technical','/technical/#/','technical'],['screener','Screener','/technical/#/screener','screener'],['chart','Chart','/technical/#/chart','signals','Chart Studio'],['muster','Muster','/technical/#/muster','table']],
       /* Redesign 2027 (T05): „Muster“ ersetzt „Methodik“; #/methodik zeigt dieselbe Seite. */
       active: loc => loc.pathname === '/technical/' ? ({'': 'technical', screener: 'screener', chart: 'chart', muster: 'muster', methodik: 'muster'}[hashPart(loc, 0)] || null) : null},
-    {id: 'vorsorge', label: 'Vorsorge', match: p => p.startsWith('/vorsorge/'),
+    {id: 'vorsorge', label: 'Vorsorge', match: p => p.startsWith('/vorsorge/'), late: p => p.startsWith('/vorsorge/etf/'),
       items: [['vorsorge','Vorsorge','/vorsorge/#/','vorsorge'],['plan','Planer','/vorsorge/#/plan','plan'],['etfs','ETFs','/vorsorge/#/etfs','etf'],['portfolio','Portfolio','/vorsorge/#/portfolio','portfolio']],
       active: loc => {
         if (loc.pathname.startsWith('/vorsorge/etf/')) return 'etfs';
         return {'': 'vorsorge', home: 'vorsorge', plan: 'plan', luecke: 'plan', etfs: 'etfs', etf: 'etfs', watchlist: 'etfs', europa: 'etfs', portfolio: 'portfolio', xray: 'portfolio', szenarien: 'portfolio'}[hashPart(loc, 0)] || null;
       }},
-    {id: 'screener', label: 'Screener', match: p => p.startsWith('/screener/'),
+    {id: 'screener', label: 'Screener', match: p => p.startsWith('/screener/'), late: p => p !== '/screener/',
       items: [['screener','Screener','/screener/','screener'],['filter','Filter','/screener/?view=build','plus'],['treffer','Treffer','/screener/?view=results','hits'],['gespeichert','Gespeichert','/screener/?view=saved','saved']],
       active: loc => {
         const q = new URLSearchParams(loc.search);
@@ -148,7 +150,7 @@
       active: loc => loc.pathname === '/portfolios/' ? ({'': 'portfolios', supertrader: 'supertrader', quant: 'quant', ki: 'ki'}[hashPart(loc, 0)] || null) : null},
     /* Mein Bereich (Mockups E02, E07, E08): Start /willkommen/, Watchlist /mein-dashboard/, lokal Gemerktes
        /mein-dashboard/#/gespeichert, Konto /konto/. Bestellweg und Anmeldung tragen keine Leiste (sie fordern sie nicht an). */
-    {id: 'mein', label: 'Mein Bereich', icon: 'person', match: p => p.startsWith('/willkommen/') || p.startsWith('/mein-dashboard/') || p === '/konto/' || p.startsWith('/konto/watchlist/'),
+    {id: 'mein', label: 'Mein Bereich', icon: 'person', match: p => p.startsWith('/willkommen/') || p.startsWith('/mein-dashboard/') || p === '/konto/' || p.startsWith('/konto/watchlist/'), late: p => p.startsWith('/konto/'),
       items: [['mein','Mein Bereich','/willkommen/','person'],['watchlist','Watchlist','/mein-dashboard/','heart'],['gespeichert','Gespeichert','/mein-dashboard/#/gespeichert','saved'],['konto','Konto','/konto/','gear']],
       active: loc => {
         if (loc.pathname.startsWith('/willkommen/')) return 'mein';
@@ -157,8 +159,20 @@
         return hashPart(loc, 0) === 'gespeichert' ? 'gespeichert' : 'watchlist';
       }}
   ];
+  const DOCK = [['home','Home','/willkommen/','home'],['discover','Discover','/discover/#/','discover'],['news','News','/insights/','insights'],['ich','Ich','/mein-dashboard/','person']];
+  /* Seiten ausserhalb der Produkte, die das Dock tragen, wenn sie es anfordern (ohne Reiterzeile): Insights, das Ziel des Platzes „News“. */
+  const dockPage = loc => loc.pathname.startsWith('/insights/');
+  const dockActive = loc => { const p = loc.pathname; return p.startsWith('/willkommen/') ? 'home' : p.startsWith('/discover/') ? 'discover' : p.startsWith('/insights/') ? 'news' : p.startsWith('/mein-dashboard/') || p.startsWith('/konto/') ? 'ich' : null; };
+  /* Reiter eines Produkts: Leistenplaetze in ihrer Reihenfolge, dann die uebrigen Eintraege der Menuegruppe; gleiches Ziel nur
+     einmal (/quant/ und /quant/#/ sind dieselbe Seite). Reiter aus der Menuegruppe tragen keine id. */
+  const routeKey = href => { const u = new URL(href, 'https://x'); return u.pathname + u.search + (/^#\/?$/.test(u.hash) ? '' : u.hash); };
+  const tabEntries = product => {
+    const group = groups.find(g => g.id === product.id), seen = new Set(product.items.map(i => routeKey(i[2])));
+    const rest = (group ? group.entries : []).filter(([, href]) => { const k = routeKey(href); return !seen.has(k) && !!seen.add(k); });
+    return product.items.map(([id, label, href, , name]) => ({id, label, href, name})).concat(rest.map(([label, href]) => ({id: null, label, href})));
+  };
   // Original sprite geometry is inlined only for the always-visible dock: no extra request
-  // on resource-budgeted workspaces. The provenance test keeps these six symbols exact.
+  // on resource-budgeted workspaces. The provenance test keeps these symbols exact.
   const DOCK_PRODUCT_ICONS = {
   "discover": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"9.5\"/><circle class=\"dim\" opacity=\".45\" cx=\"12\" cy=\"12\" r=\"6\"/><circle class=\"dim\" opacity=\".45\" cx=\"12\" cy=\"12\" r=\"2.5\"/><path class=\"fill\" fill=\"currentColor\" stroke=\"none\" d=\"M12 12 18.7 5.3A9.5 9.5 0 0 1 21.5 12z\" opacity=\".28\"/><path d=\"M12 12 18.7 5.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"16.2\" cy=\"9.6\" r=\"1.3\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"7.6\" cy=\"15.4\" r=\"1\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"15.8\" cy=\"16.2\" r=\".9\"/></g>",
   "quant": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"5.5\" y=\"5.5\" width=\"13\" height=\"13\" rx=\"2.2\"/><path class=\"dim\" opacity=\".45\" d=\"M9 2v3.5M12 2v3.5M15 2v3.5M9 18.5V22M12 18.5V22M15 18.5V22M2 9h3.5M2 12h3.5M2 15h3.5M18.5 9H22M18.5 12H22M18.5 15H22\"/><path d=\"M14.6 9H9.6l2.6 3-2.6 3h5\"/></g>",
@@ -169,7 +183,9 @@
   "fundamental": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2 21h20\"/><path d=\"M4.5 21v-6M8.5 21V10M12.5 21v-5\"/><circle cx=\"16\" cy=\"9\" r=\"4.5\"/><path d=\"m19.3 12.3 2.7 2.7\"/><path class=\"dim\" opacity=\".45\" d=\"M14.2 9.6 15.5 8l1.2 1.2 1.6-2\"/></g>",
   "technical": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M2.5 4.5 20.5 12.5M2.5 20.5l18-8\"/><path class=\"dim\" opacity=\".45\" d=\"M7 8v9M11.5 10v5.5M15.5 11.3v3\"/><rect x=\"6\" y=\"10\" width=\"2\" height=\"5\" rx=\".4\"/><rect x=\"10.5\" y=\"11\" width=\"2\" height=\"3.5\" rx=\".4\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"20.5\" cy=\"12.5\" r=\"1.7\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"2.5\" cy=\"4.5\" r=\"1.1\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"2.5\" cy=\"20.5\" r=\"1.1\"/></g>",
   "hedgefonds": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"6\" r=\"2.4\"/><circle class=\"dim\" opacity=\".45\" cx=\"5\" cy=\"8\" r=\"1.8\"/><circle class=\"dim\" opacity=\".45\" cx=\"19\" cy=\"8\" r=\"1.8\"/><path d=\"M8 19v-5a4 4 0 0 1 8 0v5\"/><path class=\"dim\" opacity=\".45\" d=\"M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18\"/><path d=\"M12 13v6\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"12\" cy=\"22\" r=\"1\"/></g>",
-  "portfolios": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M11 3.5a8.5 8.5 0 1 0 9.5 9.5H11z\"/><path class=\"fill\" fill=\"currentColor\" stroke=\"none\" opacity=\".28\" d=\"M14 2.5a8 8 0 0 1 7.5 7.5H14z\"/><path d=\"M14 2.5a8 8 0 0 1 7.5 7.5H14z\"/><path class=\"dim\" opacity=\".45\" d=\"M5.5 13h3M5.5 16h5\"/></g>"
+  "portfolios": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M11 3.5a8.5 8.5 0 1 0 9.5 9.5H11z\"/><path class=\"fill\" fill=\"currentColor\" stroke=\"none\" opacity=\".28\" d=\"M14 2.5a8 8 0 0 1 7.5 7.5H14z\"/><path d=\"M14 2.5a8 8 0 0 1 7.5 7.5H14z\"/><path class=\"dim\" opacity=\".45\" d=\"M5.5 13h3M5.5 16h5\"/></g>",
+  "insights": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.5\" y=\"4\" width=\"13\" height=\"16\" rx=\"2.2\"/><path d=\"M16.5 8h3a1 1 0 0 1 1 1v9a2 2 0 0 1-4 0\"/><path class=\"fill\" fill=\"currentColor\" stroke=\"none\" opacity=\".28\" d=\"M6.5 7.5h7v4h-7z\"/><path d=\"M6.5 7.5h7v4h-7z\"/><path class=\"dim\" opacity=\".45\" d=\"M6.5 14.5h7M6.5 17h4.5\"/></g>",
+  "layers": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 2.5 9.5 5-9.5 5-9.5-5z\"/><path class=\"dim\" opacity=\".45\" d=\"m2.5 12 9.5 5 9.5-5\"/><path d=\"m2.5 16.5 9.5 5 9.5-5\"/></g>"
 };
   const dockProductIcon = id => DOCK_PRODUCT_ICONS[id] ? `<svg viewBox="0 0 24 24" aria-hidden="true">${DOCK_PRODUCT_ICONS[id]}</svg>` : `<svg class="line" viewBox="0 0 24 24" aria-hidden="true">${dockIcons[id] || ''}</svg>`;
   // Hidden menu symbols acquire href only when the menu opens.
@@ -212,7 +228,18 @@
     const home = product && loc.pathname === new URL(product.items[0][2], 'https://x').pathname && !hashPart(loc, 0) && !(product.id === 'elliott' && (loc.hash || '').includes('?')) && (product.id === 'screener' ? screenerView === 'start' : !params.has('view'));
     return {group: group && group.id, href, expanded: group && !home ? group.id : null};
   };
-  /* Linien-Icons der Leiste: 24er-Raster, Strich 1,8 (wie die Menue-Icons). */
+  /* Aktiver Reiter: der Reiter der Seite, auf der man ist. Ein Reiter aus der Menuegruppe ist aktiv, wenn das Menue ihn als
+     aktuelle Seite markiert (menuState) - nur aus der Adresse, also schon beim ersten Zeichnen. Sonst gilt unveraendert die
+     Logik der frueheren Leiste: der vom Produkt gemeldete Bereich (nur fuer die Adresse, zu der er gemeldet wurde), sonst
+     product.active. Die Leiste hatte vier Plaetze; Seiten ohne eigenen Platz (Methodik, Förderung, Datenbank) lagen dort bei
+     einem Nachbarn. Mit eigenem Reiter markieren sie sich selbst. Hoechstens ein Reiter ist aktiv. */
+  const tabActive = (product, entries, loc, state) => {
+    const marked = menuState(loc).href, own = entries.find(e => !e.id && e.href === marked);
+    if (own) return own;
+    const current = state && state.activeAt === loc.href ? state.active : product.active(loc);
+    return entries.find(e => e.id && e.id === current) || null;
+  };
+  /* Linien-Icons fuer Kopf, Dock und Menue: 24er-Raster, Strich 1,8 (wie die Menue-Icons). */
   const dockIcons = {
     worlds: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c-5 5-5 13 0 18m0-18c5 5 5 13 0 18"/>',
     strategies: '<path d="M4 19V5m0 14h16M7 15l4-5 3 2 5-7"/>',
@@ -238,50 +265,50 @@
     wave: '<path d="M3 19 8 11l3 3 5-9 5 5"/>',
     spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
     search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
-    menu: '<path d="M4 7h16M4 12h16M4 17h16"/>'
+    home: '<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'
   };
-  /* Die Leiste ist auf hellen und dunklen Flaechen dieselbe: ein ruhiges,
-     fast schwarzes Element mit dem Vision-Universe-Lime als aktiver Flaeche
-     (Design-DNA der Startseite). Sie liegt ueber dem Inhalt (z-index 900),
-     aber unter Produkt-Overlays (Suche, Sheets, Dialoge) und unter dem
-     globalen Menue. Abstand fuer den Inhalt: --vu-dock-space
-     (site-navigation.css), damit nichts Letztes dauerhaft verdeckt ist. */
+  /* Das Dock ist auf hellen und dunklen Flaechen dasselbe: ein ruhiges,
+     schwarzes Element; der aktive Platz traegt das Vision-Universe-Lime, der
+     runde Universe-Knopf in der Mitte ist lime und steht ueber der Leiste
+     (App-Konzept 2). Es liegt ueber dem Inhalt (z-index 900), aber unter
+     Produkt-Overlays (Suche, Sheets, Dialoge) und unter dem globalen Menue.
+     Abstand fuer den Inhalt: --vu-dock-space (site-navigation.css), damit
+     nichts Letztes dauerhaft verdeckt ist. */
   const dockStyles = `
-        :host{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 12px calc(12px + env(safe-area-inset-bottom));pointer-events:none;font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+        :host{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none;font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
         *{box-sizing:border-box}
-        nav{pointer-events:auto;display:grid;grid-template-columns:minmax(min-content,1.35fr) repeat(4,minmax(min-content,1fr));gap:2px;width:100%;max-width:520px;min-height:68px;align-items:center;padding:6px;border-radius:26px;background:#000;color:#fff;box-shadow:0 0 0 1px #222,0 10px 30px -10px rgba(0,0,0,.5)}
-        a,button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:56px;padding:6px 3px;border:0;border-radius:20px;background:transparent;color:#9a9a9a;font-family:inherit;font-size:10.5px;font-weight:700;line-height:1.1;letter-spacing:0;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,transform .1s}
-        a:hover,button:hover{color:#fff;background:rgba(255,255,255,.08)}
+        nav{pointer-events:auto;display:flex;align-items:center;width:100%;max-width:520px;height:68px;padding:0 6px;border-radius:28px;background:#000;color:#fff;box-shadow:0 0 0 1px #222,0 10px 30px -10px rgba(0,0,0,.5)}
+        a,button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;font-family:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,transform .1s}
+        a{flex:1 1 0;gap:3px;min-width:0;min-height:56px;padding:6px 3px;border-radius:20px;background:transparent;color:#9a9a9a;font-size:10.5px;font-weight:700;line-height:1.1;letter-spacing:0}
+        a:hover{color:#fff;background:rgba(255,255,255,.08)}
         a:active,button:active{transform:scale(.96)}
         a:focus-visible,button:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
         .label{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
-        .product{color:#fff}.product .label{font-weight:800}
-        .product.is-context{color:#c8f531}
-        a[aria-current=page],a[aria-current=page]:hover{background:#c8f531;color:#000}
+        a[aria-current=page],a[aria-current=page]:hover{color:#c8f531}
         svg{width:21px;height:21px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-        .product svg{width:20px;height:20px}
-        .badge{position:absolute;top:4px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:#fff;color:#000;font-size:10px;font-weight:800;line-height:17px;text-align:center}
-        a[aria-current=page] .badge{background:#000;color:#c8f531}
-        button[aria-expanded=true]{color:#c8f531}
+        .uni{flex:none;width:62px;height:62px;margin:-22px 6px 0;padding:0;border-radius:50%;background:#c8f531;color:#101318;box-shadow:0 0 0 6px #000,0 8px 30px rgba(200,245,49,.35)}
+        .uni svg{width:26px;height:26px}
+        .uni:focus-visible{outline-color:#fff;outline-offset:8px}
         @media(min-width:761px){
           :host{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
-          nav{display:flex;width:auto;max-width:100%;min-height:0;gap:2px;padding:5px;border-radius:999px}
-          a,button{flex-direction:row;gap:8px;min-height:46px;padding:0 16px;border-radius:999px;font-size:13px}
+          nav{width:auto;max-width:100%;height:56px;gap:2px;padding:0 5px;border-radius:999px}
+          a{flex:none;flex-direction:row;gap:8px;min-height:46px;padding:0 16px;border-radius:999px;font-size:13px}
           .label{overflow:visible}
-          svg,.product svg{width:19px;height:19px}
-          .badge{position:static;margin-left:-2px}
+          svg{width:19px;height:19px}
+          .uni{width:58px;height:58px;margin:-18px 8px 0}
+          .uni svg{width:24px;height:24px}
         }
-        @media(max-width:350px){:host{padding-inline:6px}a,button{font-size:9.5px}}
+        @media(max-width:350px){:host{padding-inline:6px}a{font-size:9.5px}}
         @media(prefers-reduced-motion:reduce){a,button{transition:none}a:active,button:active{transform:none}}
 `;
-  /* OPT-IN: Ein Produkt fordert die Leiste mit window.VUNavigation.dock({})
+  /* OPT-IN: Ein Produkt fordert Dock und Reiterzeile mit window.VUNavigation.dock({})
      an (spaetestens nach seinem ersten Rendern); Seiten ohne diesen Aufruf
      behalten ihren Kopf samt Menue-Knopf unveraendert. Produkte koennen
-     zudem den Zustand der Leiste setzen (SPA mit Zustand in der
+     zudem den Zustand der Reiter setzen (SPA mit Zustand in der
      URL, z. B. Screener-Filter): window.VUNavigation.dock({active, hrefs,
-     badges}). Klicks auf die Leiste melden sich vorher als abbrechbares
-     Ereignis vu-dock-navigate {product,id,href}; wer preventDefault ruft,
-     navigiert selbst. */
+     badges}) - die ids sind die der frueheren Leistenplaetze. Klicks auf einen
+     Reiter melden sich vorher als abbrechbares Ereignis vu-dock-navigate
+     {product,id,href}; wer preventDefault ruft, navigiert selbst. */
   /* Rechtliches & Infos (Strang F): Texte aus assets/legal-notices.json.
      Owner-Entscheidung 10.11.2026: Satz und Links im Menü, kein Seitenfuß in Browser und App. */
   /* VU-LEGAL:BEGIN – erzeugt aus assets/legal-notices.json (scripts/legal/sync-legal-notices.mjs), nicht von Hand ändern */
@@ -341,8 +368,10 @@
   const dockBus = {state: {}, listeners: []};
   if (typeof window !== 'undefined') {
     window.VUNavigation = {
-      /* Nur lesend: Plätze der Produkt-Leiste je Welt (Musterseite /status/bausteine/, Tests). */
-      products: () => PRODUCTS.map(p => ({id: p.id, label: p.label, items: p.items.map(([id, label, href, icon]) => ({id, label, href, icon}))})),
+      /* Nur lesend: Reiter je Welt (items = die früheren Leistenplätze, tabs = alle Reiter) und die Plätze des Docks
+         (Musterseite /status/bausteine/, Tests). */
+      products: () => PRODUCTS.map(p => ({id: p.id, label: p.label, items: p.items.map(([id, label, href, icon]) => ({id, label, href, icon})), tabs: tabEntries(p).map(({id, label, href}) => ({id, label, href}))})),
+      places: () => DOCK.map(([id, label, href, icon]) => ({id, label, href, icon})),
       dock: state => {
         state = state || {};
         Object.assign(dockBus.state, state);
@@ -359,8 +388,8 @@
   /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
      Discover synchronisiert ihr Farbschema mit seiner eigenen Theme-Wahl. */
   const THEMES = {
-    light: {bg: 'rgba(255,255,255,.96)', border: '#e9e9e9', ink: '#000', card: '#f4f4f4', mute: '#6e6e6e', atlasBg: '#000', atlasInk: '#fff', atlasIcon: '#c8f531', outline: '#4f6b00'},
-    dark: {bg: 'rgba(0,0,0,.94)', border: '#262626', ink: '#fff', card: '#151515', mute: '#9b9b9b', atlasBg: '#c8f531', atlasInk: '#000', atlasIcon: '#000', outline: '#c8f531'}
+    light: {bg: 'rgba(255,255,255,.96)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f4f4f4', mute: '#6e6e6e', atlasBg: '#000', atlasInk: '#fff', atlasIcon: '#c8f531', outline: '#4f6b00'},
+    dark: {bg: 'rgba(0,0,0,.94)', border: '#262626', ink: '#fff', inv: '#000', card: '#151515', mute: '#9b9b9b', atlasBg: '#c8f531', atlasInk: '#000', atlasIcon: '#000', outline: '#c8f531'}
   };
 
   /* Farbschema plattformweit: dieselbe Wahl (localStorage, Schluessel von
@@ -435,10 +464,23 @@
         .atlas:hover span.pill{filter:brightness(1.15)}
         .atlas[aria-current=page] span.pill{box-shadow:0 0 0 2px #c8f531}
         .toggle{flex-shrink:0;border:1px solid ${t.border};background:transparent;color:${t.ink};min-height:44px;padding:0 16px;border-radius:999px;font-weight:800}
+        .tabs{position:relative;display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:0 max(24px,calc((100% - 1240px)/2)) 4px}
+        .tabs[hidden]{display:none}.tabs::-webkit-scrollbar{display:none}
+        .tab{flex:none;display:flex;align-items:center;min-height:44px;color:${t.ink};font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+        .tab .pill{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 15px;border-radius:999px;background:${t.card}}
+        .tab:hover .pill{filter:brightness(.95)}
+        .tab[aria-current=page] .pill{background:${t.ink};color:${t.inv};filter:none}
+        .tab .badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:${t.ink};color:${t.inv};font-size:10.5px;font-weight:800;line-height:18px;text-align:center}
+        .tab[aria-current=page] .badge{background:#c8f531;color:#000}
+        .tab:focus-visible{outline:0}.tab:focus-visible .pill{outline:2px solid ${t.outline};outline-offset:2px}
         .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);visibility:hidden;opacity:0;transition:opacity .2s}
         .panel{position:fixed;right:0;top:0;bottom:0;width:min(440px,100vw);padding:calc(14px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;background:#000;color:#fff;box-shadow:-1px 0 0 #222;visibility:hidden;transform:translateX(24px);opacity:0;transition:transform .2s,opacity .2s,visibility .2s}
         :host([open]) .backdrop,:host([open]) .panel{visibility:visible;opacity:1;transform:none}
+        .grab{display:none;position:sticky;top:0;z-index:1;height:22px;margin:0 -18px;background:#000;touch-action:none;cursor:grab}
+        .grab::before{content:"";position:absolute;left:calc(50% - 22px);top:10px;width:44px;height:5px;border-radius:9px;background:#9b9b9b;opacity:.5}
         .panel-head{display:flex;align-items:center;justify-content:space-between;min-height:48px}
+        .panel h2.uni-title{margin:10px 0 0;font-size:30px;line-height:1.1;font-weight:850;letter-spacing:-.03em;text-transform:none;color:#fff}
+        .uni-sub{margin:6px 0 0;color:#a3a3a3;font-size:14px;line-height:1.4}
         .panel-head a{display:flex;align-items:center;min-height:44px}.panel-head img{display:block;width:150px;height:auto;filter:invert(1)}
         .close{width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:#fff;display:grid;place-items:center;padding:0}
         .close i{width:36px;height:36px;border-radius:50%;background:#1a1a1a;display:grid;place-items:center}
@@ -476,10 +518,12 @@
         .panel a:focus-visible,.panel button:focus-visible,.panel input:focus-visible,.panel summary:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
         @media(max-width:1024px){.quick{display:none}}
         @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:56px;gap:8px}.brand img{width:min(150px,40vw)}.tools{gap:2px}.hb{width:40px;position:relative}.hb::after{content:"";position:absolute;inset:0 -2px}.atlas{padding:0 2px}
-          .panel{width:100vw;box-shadow:none;transform:none}}
+          .tabs{padding-inline:16px}
+          .panel{left:0;top:auto;width:auto;max-height:90vh;max-height:90dvh;padding-top:0;border-radius:30px 30px 0 0;box-shadow:0 0 0 1px #222;transform:translateY(102%);opacity:1;transition:transform .32s cubic-bezier(.2,.9,.25,1),visibility .32s}
+          .grab{display:block}}
         @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
         @media(max-width:430px){:host(:not([dock])) .atlas .atlas-label{display:none}:host(:not([dock])) .atlas span.pill{width:36px;padding:0;justify-content:center}:host(:not([dock])) .brand img{width:min(132px,34vw)}}
-        @media(max-width:360px){.shell{width:calc(100% - 20px)}.world{font-size:15px}.atlas .atlas-label{display:none}.atlas span.pill{width:36px;padding:0;justify-content:center}.panel{padding-inline:14px}.tile{padding:10px 8px}}
+        @media(max-width:360px){.shell{width:calc(100% - 20px)}.world{font-size:15px}.atlas .atlas-label{display:none}.atlas span.pill{width:36px;padding:0;justify-content:center}.tabs{padding-inline:10px}.panel{padding-inline:14px}.grab{margin-inline:-14px}.tile{padding:10px 8px}}
         :host([menu-only]) header{display:none}
         :host([theme="dark"]) header .brand img{filter:invert(1) brightness(1.08)}
         :host([dock]) .quick,:host([dock]) .toggle{display:none}
@@ -510,8 +554,10 @@
       const SPARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg>';
       /* Kopfzeile (C01): links die Welt (HUD-Icon + Name) oder das Logo, rechts Suche, Atlas, Mein Bereich.
          Das Farbschema wechselt im Menue (Hell/Dunkel), nicht mehr im Kopf. */
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="190" height="63"></a><a class="world" hidden><span class="hud"></span><span class="world-name"></span></a><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/quant/">Quant</a><a href="/technical/">Technical</a><a href="/elliott/">Elliott</a><a href="/screener/">Screener</a><a class="q-extra" href="/vorsorge/">Vorsorge</a><a class="q-extra" href="/portfolios/">Portfolios</a></nav><div class="tools"><a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen"><i>${ico(dockIcons.search)}</i></a><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="pill">${SPARK}<span class="atlas-label">Atlas</span></span></a><a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich"><i>${ico(dockIcons.person)}</i></a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></div></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><div class="panel-head"><a href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="150" height="50"></a><button class="close" type="button" aria-label="Menü schließen"><i>${ico(dockIcons.close)}</i></button></div><form class="find" role="search">${ico(dockIcons.search)}<input type="search" name="q" placeholder="Aktie, Produkt oder Frage …" aria-label="Aktie, Produkt oder Frage" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Im AI Atlas fragen">${SPARK}</button></form><h2>Produkte</h2><div class="tiles"></div><section class="here" hidden><h2 class="here-title"></h2><div class="links here-links"></div></section><h2>Mein Bereich</h2><div class="mine">${MINE.map(([label,href,icon])=>`<a href="${href}"><i>${ico(dockIcons[icon])}</i><b>${label}</b>${ico(dockIcons.next)}</a>`).join('')}</div><details class="more"><summary><span>Weitere Produkte</span></summary><div class="links more-links"></div></details><div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>${legalMenu()}</nav>`;
-      /* Menue (C03): 3 x 3 Produkte, darunter die Unterseiten der aktuellen Welt, Mein Bereich, Weitere Produkte, Darstellung. */
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="190" height="63"></a><a class="world" hidden><span class="hud"></span><span class="world-name"></span></a><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/quant/">Quant</a><a href="/technical/">Technical</a><a href="/elliott/">Elliott</a><a href="/screener/">Screener</a><a class="q-extra" href="/vorsorge/">Vorsorge</a><a class="q-extra" href="/portfolios/">Portfolios</a></nav><div class="tools"><a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen"><i>${ico(dockIcons.search)}</i></a><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="pill">${SPARK}<span class="atlas-label">Atlas</span></span></a><a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich"><i>${ico(dockIcons.person)}</i></a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></div><nav class="tabs" hidden></nav></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><span class="grab" aria-hidden="true"></span><div class="panel-head"><a href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="150" height="50"></a><button class="close" type="button" aria-label="Menü schließen"><i>${ico(dockIcons.close)}</i></button></div><h2 class="uni-title">Dein Universe</h2><p class="uni-sub">Alle Module, von jeder Seite aus.</p><form class="find" role="search">${ico(dockIcons.search)}<input type="search" name="q" placeholder="Aktie, Produkt oder Frage …" aria-label="Aktie, Produkt oder Frage" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Im AI Atlas fragen">${SPARK}</button></form><h2>Produkte</h2><div class="tiles"></div><section class="here" hidden><h2 class="here-title"></h2><div class="links here-links"></div></section><h2>Mein Bereich</h2><div class="mine">${MINE.map(([label,href,icon])=>`<a href="${href}"><i>${ico(dockIcons[icon])}</i><b>${label}</b>${ico(dockIcons.next)}</a>`).join('')}</div><details class="more"><summary><span>Weitere Produkte</span></summary><div class="links more-links"></div></details><div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>${legalMenu()}</nav>`;
+      /* Menue „Dein Universe“ (C03, App-Konzept 2): 3 x 3 Produkte, darunter die Unterseiten der aktuellen Welt, Mein Bereich,
+         Weitere Produkte, Darstellung. Bis 760 px ein Sheet von unten (Griff, runde Ecken, hoechstens 90 % hoch, Inhalt scrollt
+         darin), darueber die Seitenleiste rechts. */
       const tiles=root.querySelector('.tiles'),here=root.querySelector('.here'),hereLinks=root.querySelector('.here-links');
       groups.filter(g=>g.href).forEach(({id,label,href,icon,claim})=>{
         const a=document.createElement('a');a.className='tile';a.href=href;a.dataset.group=id;
@@ -570,15 +616,18 @@
       syncQuick();
       if(this.hasAttribute('theme-switch')&&this.getAttribute('theme')!==currentTheme())this.setAttribute('theme',currentTheme());
       const panel=root.querySelector('.panel'),button=root.querySelector('.toggle');panel.inert=true;
-      /* Ein Menue fuer zwei Oeffner: den Knopf im Kopf (Seiten ohne Leiste)
-         und ☰ in der Produkt-Leiste. Der Fokus kehrt zum Oeffner zurueck. */
+      /* Ein Menue fuer zwei Oeffner: den Knopf im Kopf (Seiten ohne Dock)
+         und den Universe-Knopf im Dock („Alle Module“). Der Fokus kehrt zum Oeffner zurueck. */
       let opener=null;
-      const setExpanded=open=>{[button,this.dockMenuButton,opener].forEach(b=>{if(!b)return;b.setAttribute('aria-expanded',String(open));b.setAttribute('aria-label',open?'Menü schließen':(b===button?'Menü öffnen':'Vision Universe Menü öffnen'));});};
+      const setExpanded=open=>{[button,this.dockMenuButton,opener].forEach(b=>{if(!b)return;b.setAttribute('aria-expanded',String(open));if(b!==this.dockMenuButton)b.setAttribute('aria-label',open?'Menü schließen':(b===button?'Menü öffnen':'Vision Universe Menü öffnen'));});};
       const close=()=>{if(!this.hasAttribute('open'))return;this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');setExpanded(false);document.documentElement.classList.remove('vu-menu-open');if(this.dockHost)this.dockHost.inert=false;};
       const restore=()=>{const target=opener&&opener.isConnected&&opener.getClientRects().length?opener:button;if(target&&target.focus)target.focus();};
       this.openMenu=from=>{if(this.hasAttribute('open')){close();restore();return;}opener=from||button;syncActive();root.querySelectorAll('.menu-product-icon use[data-href]').forEach(icon=>{icon.setAttribute('href',icon.getAttribute('data-href'));icon.removeAttribute('data-href');});this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');setExpanded(true);document.documentElement.classList.add('vu-menu-open');if(this.dockHost)this.dockHost.inert=true;const focusClose=()=>{if(!this.hasAttribute('open'))return;if(getComputedStyle(panel).visibility!=='visible'){requestAnimationFrame(focusClose);return;}root.querySelector('.close').focus();};requestAnimationFrame(focusClose);};
       button.onclick=()=>this.openMenu(button);
       root.querySelector('.close').onclick=()=>{close();restore();};root.querySelector('.backdrop').onclick=()=>{close();restore();};
+      // Sheet: am Griff nach unten ziehen schliesst (wie Hintergrund und Escape).
+      let grabY=null;root.querySelector('.grab').addEventListener('pointerdown',event=>{grabY=event.clientY;});
+      window.addEventListener('pointerup',event=>{if(grabY!==null&&event.clientY-grabY>30&&this.hasAttribute('open')){close();restore();}grabY=null;});window.addEventListener('pointercancel',()=>{grabY=null;});
       panel.addEventListener('click',event=>{if(event.target.closest('a'))close();});
       root.addEventListener('keydown',event=>{
         if(!this.hasAttribute('open'))return;
@@ -592,63 +641,97 @@
       // Escape auch dann, wenn der Fokus (noch) ausserhalb des Menues liegt
       document.addEventListener('keydown',event=>{if(event.key==='Escape'&&this.hasAttribute('open')){close();restore();}});
       window.addEventListener('hashchange',()=>{close();syncWorld();syncActive();syncQuick();});window.addEventListener('popstate',()=>{close();syncWorld();syncActive();syncQuick();});
+      /* Reiterzeile vom ersten Zeichnen an, wo das Produkt die Leiste ohnehin anfordert (late: siehe PRODUCTS). */
+      const early=PRODUCTS.find(p=>p.match(location.pathname,location));
+      if(early&&!(early.late&&early.late(location.pathname)))this.mountTabs();
       if(dockBus.requested)this.mountDock();
       this.renderSettings();
       document.addEventListener('vu-currency-change',()=>this.renderSettings());
       document.addEventListener('vu-fx-ready',()=>this.renderSettings());
       document.addEventListener('vu-theme-change',()=>this.renderSettings());
     }
-    /* Die Produkt-Leiste: ein eigener Knoten am Ende von <body> mit
-       eigenem Shadow Root, damit sie unabhaengig vom Kopf (z-index des
-       Kopfes) unter Produkt-Overlays liegen kann. */
-    mountDock(){
-      const product=PRODUCTS.find(p=>p.match(location.pathname,location));
-      if(!product||this.hasAttribute('no-dock')||document.getElementById('vu-dock'))return;
-      this.setAttribute('dock',product.id);
-      document.documentElement.setAttribute('data-vu-dock',product.id);
-      const host=document.createElement('div');host.id='vu-dock';host.className='vu-dock';this.dockHost=host;
-      const root=host.attachShadow({mode:'open'});
-      root.innerHTML=`<style>${dockStyles}</style><nav aria-label="${product.label}"></nav>`;
-      const nav=root.querySelector('nav');
-      const links=product.items.map(([id,label,href,icon,name],i)=>{
-        const a=document.createElement('a');a.href=href;a.dataset.id=id;if(!i)a.className='product';if(name)a.setAttribute('aria-label',name);
-        a.innerHTML=`${i?'<svg viewBox="0 0 24 24" aria-hidden="true">'+(dockIcons[icon]||'')+'</svg>':dockProductIcon((groups.find(g=>g.id===product.id)||{icon:product.icon||product.id}).icon)}<span class="label">${label}</span>`;
+    /* Reiterzeile unter dem Kopf: die Bereiche des Produkts (tabEntries). Aktiver Reiter (tabActive), Ziele (hrefs),
+       Trefferzahl (badges) und das abbrechbare Ereignis vu-dock-navigate {product,id,href} gelten wie bei den frueheren
+       Leistenplaetzen. Der Inhalt rueckt um die Zeile nach unten: html[data-vu-tabs] in site-navigation.css. */
+    mountTabs(){
+      const product=PRODUCTS.find(p=>p.match(location.pathname,location)),nav=this.shadowRoot&&this.shadowRoot.querySelector('.tabs');
+      if(!product||!nav||this.tabsFor===product.id||this.hasAttribute('no-dock')||this.hasAttribute('menu-only'))return;
+      if(this.dropTabs)this.dropTabs();
+      this.tabsFor=product.id;document.documentElement.setAttribute('data-vu-tabs',product.id);
+      nav.setAttribute('aria-label',product.label);nav.hidden=false;
+      const entries=tabEntries(product);
+      const links=entries.map(entry=>{
+        const a=document.createElement('a');a.className='tab';a.href=entry.href;if(entry.id)a.dataset.id=entry.id;if(entry.name)a.setAttribute('aria-label',entry.name);
+        a.innerHTML='<span class="pill"><span class="label"></span></span>';a.querySelector('.label').textContent=entry.label;
         a.addEventListener('click',event=>{
           if(event.defaultPrevented||event.button!==0||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
-          const intent=new CustomEvent('vu-dock-navigate',{cancelable:true,detail:{product:product.id,id,href:a.getAttribute('href')}});
+          const intent=new CustomEvent('vu-dock-navigate',{cancelable:true,detail:{product:product.id,id:entry.id,href:a.getAttribute('href')}});
           if(!document.dispatchEvent(intent))event.preventDefault();
         });
         nav.append(a);return a;
       });
-      const menu=document.createElement('button');menu.type='button';menu.className='menu';
-      menu.setAttribute('aria-haspopup','true');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Vision Universe Menü öffnen');
-      menu.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${dockIcons.menu}</svg><span class="label">Menü</span>`;
-      menu.onclick=()=>this.openMenu(menu);nav.append(menu);this.dockMenuButton=menu;
       // Ein vom Produkt gemeldeter Bereich gilt nur fuer die URL, zu der er gemeldet wurde.
+      let shown=null;
       const paint=()=>{
-        const state=dockBus.state,current=state.activeAt===location.href?state.active:product.active(location);
+        const state=dockBus.state,on=tabActive(product,entries,location,state);
         links.forEach((a,i)=>{
-          const id=a.dataset.id;
-          if(state.hrefs&&state.hrefs[id])a.setAttribute('href',state.hrefs[id]);
-          if(id===current)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
-          if(!i)a.classList.toggle('is-context',current!==id&&!links.some(x=>x.dataset.id===current));
-          let badge=a.querySelector('.badge');const value=state.badges&&state.badges[id];
+          const id=entries[i].id,pill=a.firstChild;
+          if(id&&state.hrefs&&state.hrefs[id])a.setAttribute('href',state.hrefs[id]);
+          if(entries[i]===on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');
+          let badge=pill.querySelector('.badge');const value=id&&state.badges?state.badges[id]:null;
           if(value===undefined||value===null||value===''){if(badge)badge.remove();}
-          else{if(!badge){badge=document.createElement('span');badge.className='badge';a.append(badge);}badge.textContent=value>999?'999+':String(value);badge.setAttribute('aria-label',value+' Treffer');}
+          else{if(!badge){badge=document.createElement('span');badge.className='badge';pill.append(badge);}badge.textContent=value>999?'999+':String(value);badge.setAttribute('aria-label',value+' Treffer');}
         });
+        // Der aktive Reiter bleibt sichtbar, auch wenn er rechts ausserhalb der Zeile liegt.
+        const current=on?links[entries.indexOf(on)]:null;
+        /* Aktiven Reiter in die Zeile holen. Ein einzelner Versuch reicht nicht: Solange die Zeile noch keine Breite hat oder die Schrift nachlaedt, verschiebt sich der Reiter danach wieder aus dem Bild. */
+        if(current&&current!==shown){const show=()=>{if(!current.isConnected||shown!==current||!nav.clientWidth)return;const left=current.offsetLeft,right=left+current.offsetWidth;if(left<nav.scrollLeft+16||right>nav.scrollLeft+nav.clientWidth-16)nav.scrollLeft=Math.max(0,left-(nav.clientWidth-current.offsetWidth)/2);};requestAnimationFrame(show);setTimeout(show,300);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(show).catch(()=>{});}
+        shown=current;
+      };
+      /* Eine SPA kann das Produkt unter demselben Pfad wechseln (Quant -> Elliott-Detail): dann Reiterzeile neu aufbauen. */
+      const route=()=>{
+        const next=PRODUCTS.find(p=>p.match(location.pathname,location));
+        if(!next||next.id===product.id){paint();return;}
+        if(this.hasAttribute('dock')){this.setAttribute('dock',next.id);document.documentElement.setAttribute('data-vu-dock',next.id);}
+        this.mountTabs();
       };
       dockBus.listeners.push(paint);
-      window.addEventListener('hashchange',paint);window.addEventListener('popstate',paint);
-      paint();
-      /* Eine SPA kann das Produkt unter demselben Pfad wechseln (Quant -> Elliott-Detail): dann Leiste neu aufbauen. */
-      const reshape=()=>{
-        const next=PRODUCTS.find(p=>p.match(location.pathname,location));
-        if(!next||next.id===product.id)return;
-        [['hashchange',paint],['popstate',paint],['hashchange',reshape],['popstate',reshape]].forEach(([t,f])=>window.removeEventListener(t,f));
+      window.addEventListener('hashchange',route);window.addEventListener('popstate',route);
+      this.dropTabs=()=>{
+        window.removeEventListener('hashchange',route);window.removeEventListener('popstate',route);
         const at=dockBus.listeners.indexOf(paint);if(at>=0)dockBus.listeners.splice(at,1);
-        host.remove();this.removeAttribute('dock');this.dockHost=null;this.dockMenuButton=null;this.mountDock();
+        nav.replaceChildren();this.tabsFor=null;this.dropTabs=null;
       };
-      window.addEventListener('hashchange',reshape);window.addEventListener('popstate',reshape);
+      paint();
+    }
+    /* Das Dock: ein eigener Knoten am Ende von <body> mit
+       eigenem Shadow Root, damit es unabhaengig vom Kopf (z-index des
+       Kopfes) unter Produkt-Overlays liegen kann. Auf jeder Seite dasselbe:
+       Home · Discover · [Universe] · News · Ich; aktiv ist der Platz, in dessen Bereich die Seite liegt (dockActive). */
+    mountDock(){
+      const product=PRODUCTS.find(p=>p.match(location.pathname,location)),id=product?product.id:dockPage(location)?'page':null;
+      if(!id||this.hasAttribute('no-dock')||document.getElementById('vu-dock'))return;
+      this.setAttribute('dock',id);
+      document.documentElement.setAttribute('data-vu-dock',id);
+      this.mountTabs();
+      const host=document.createElement('div');host.id='vu-dock';host.className='vu-dock';this.dockHost=host;
+      const root=host.attachShadow({mode:'open'});
+      root.innerHTML=`<style>${dockStyles}</style><nav aria-label="Hauptnavigation"></nav>`;
+      const nav=root.querySelector('nav');
+      const place=([id,label,href,icon])=>{
+        const a=document.createElement('a');a.href=href;a.dataset.id=id;
+        a.innerHTML=`${dockProductIcon(icon)}<span class="label">${label}</span>`;
+        nav.append(a);return a;
+      };
+      const links=DOCK.slice(0,2).map(place);
+      const menu=document.createElement('button');menu.type='button';menu.className='menu uni';
+      menu.setAttribute('aria-haspopup','true');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Alle Module');
+      menu.innerHTML=dockProductIcon('layers');
+      menu.onclick=()=>this.openMenu(menu);nav.append(menu);this.dockMenuButton=menu;
+      links.push(...DOCK.slice(2).map(place));
+      const paint=()=>{const current=dockActive(location);links.forEach(a=>{if(a.dataset.id===current)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});};
+      window.addEventListener('popstate',paint);
+      paint();
       const attach=()=>document.body.append(host);
       if(document.body)attach();else document.addEventListener('DOMContentLoaded',attach);
     }

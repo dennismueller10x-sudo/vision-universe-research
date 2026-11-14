@@ -112,7 +112,10 @@ const ROUTES=[
 /* UI-Vereinheitlichung 10/2026: die gemeinsame Produkt-Leiste der Shell.
    Der erste Eintrag ist der Produktname; "Screener" heisst fuer
    Screenreader "Quant Screener". Methodik ist sekundaer (Hero, Fuss). */
-const SOLL_BEREICHE=['Quant','Screener','Anlagestile','Aktien']; /* Konzept Quant 2026-11, Entscheidung 3 */
+/* Konzept Quant 2026-11, Entscheidung 3: Quant · Screener · Anlagestile · Aktien. Rahmen nach App-Konzept 2 (11/2026): die Bereiche
+   stehen als Reiter unter dem Kopf, danach die uebrigen Eintraege der Menueliste „In Quant“; das Dock ist auf jeder Seite dasselbe. */
+const SOLL_BEREICHE=['Quant','Screener','Anlagestile','Aktien','Meldungen','Forschung','Methodik','Technische Lagen','Fundamentaldaten'];
+const SOLL_DOCK=['Home','Discover','News','Ich'];
 async function bereit(page,view){
  await page.waitForFunction(v=>{const m=document.querySelector('main#qx-main');return !!m&&m.dataset.ready==='true'&&m.getAttribute('aria-busy')==='false'&&(!v||m.dataset.view===v)&&!m.querySelector('.qx-loading');},view||null,{timeout:45000});
  await page.waitForFunction(()=>{const c=document.querySelector('section.qc-chart');return !c||!!c.dataset.range||!/Chart wird geladen/.test(c.textContent);},null,{timeout:10000}).catch(()=>{});
@@ -156,10 +159,10 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
  page.on('pageerror',e=>errors.push(e.message));
  page.on('requestfailed',r=>{if(!r.url().startsWith(origin))fremd=true;});
  page.on('console',m=>{const t=m.text();if(m.type()!=='error'||t.includes('404')||t.includes('favicon'))return;if(absichtlich>0&&/^Failed to load resource: net::ERR_FAILED/.test(t)){absichtlich--;return;}if(fremd&&/^Failed to load resource: net::ERR_/.test(t))return;errors.push('console: '+t.split('\n')[0]);});
- /* Eine Leiste fuer alle Produkte: die schwebende Produkt-Leiste der
+ /* Ein Rahmen fuer alle Produkte: das schwebende Dock der
     gemeinsamen Shell (#vu-dock, Shadow DOM; Playwright-Locator durchdringen
-    ihn), bei jeder Breite unten. */
- const leiste='#vu-dock nav';
+    ihn), bei jeder Breite unten, und die Reiterzeile des Produkts unter dem Kopf (vu-navigation, nav.tabs). */
+ const dock='#vu-dock nav',leiste='vu-navigation nav.tabs';
  for(const [view,hash,budgetKey] of ROUTES){await versuch(view,width,async()=>{
   const started=performance.now();await frisch(page,hash);
   const resources=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({path:new URL(r.name).pathname,bytes:r.decodedBodySize,durationMs:Math.round(r.duration)})));performanceSamples.push({view,width,renderMs:Math.round(performance.now()-started),decodedBytes:resources.reduce((sum,r)=>sum+r.bytes,0),requests:resources.length});
@@ -182,20 +185,26 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   const norm=t=>t.toLowerCase().replace(/[.!?–-]+/g,' ').replace(/\s+/g,' ').trim();
   if(anspruch&&ueberschrift&&norm(anspruch)===norm(ueberschrift))befund(view,width,'"'+ueberschrift+'" steht zweimal: als Anspruch in der Kopfzeile und als Ueberschrift');
   if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))befund(view,width,'page overflow');
-  /* DIE FUENF BEREICHE, UND KEIN FREMDES PRODUKT - in genau einer Leiste,
-     die bei jeder Breite sichtbar ist und dort steht, wo man sie erwartet. */
-  if(await page.locator('nav.qx-nav, nav.qx-tabbar, nav.v2-dock').count()!==0||await page.locator(leiste).count()!==1)befund(view,width,'zwei Navigationen');
+  /* DIE BEREICHE, UND KEIN FREMDES PRODUKT - in genau einer Reiterzeile unter dem Kopf,
+     die bei jeder Breite sichtbar ist; dazu genau ein Dock, das unten steht. */
+  if(await page.locator('nav.qx-nav, nav.qx-tabbar, nav.v2-dock').count()!==0||await page.locator(leiste).count()!==1||await page.locator(dock).count()!==1)befund(view,width,'zwei Navigationen');
   {
    const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
-   /* Elliott ist ein eigenes Produkt: die alten Technik-/Chartbild-Adressen enden auf #/elliott/<T> und tragen die Elliott-Leiste. */
-   const soll=['technik','elliott','elliott-nativ','chartbild'].includes(view)?['Elliott','Zählbar','Neu','Suche']:SOLL_BEREICHE;
+   /* Elliott ist ein eigenes Produkt: die alten Technik-/Chartbild-Adressen enden auf #/elliott/<T> und tragen die Elliott-Reiter. */
+   const soll=['technik','elliott','elliott-nativ','chartbild'].includes(view)?['Elliott','Zählbar','Neu','Suche','Aufwärts','Abwärts']:SOLL_BEREICHE;
    if(bereiche.join('|')!==soll.join('|'))befund(view,width,'Quant-Navigation ist nicht die erwartete: '+leiste+' '+bereiche.join('|'));
    for(const fremdes of ['Discover','Research','Markets','Portfolio','Screener'])
     if(await page.locator(leiste).getByRole('link',{name:fremdes,exact:true}).count())befund(view,width,fremdes+' steht in der Quant-Navigation');
+   const plaetze=(await page.locator(dock+' a').allTextContents()).map(t=>t.trim());
+   if(plaetze.join('|')!==SOLL_DOCK.join('|')||await page.locator(dock+' button.menu[aria-label="Alle Module"]').count()!==1)befund(view,width,'das Dock ist nicht Home · Discover · [Universe] · News · Ich: '+plaetze.join('|'));
   }
   if(!await page.locator(leiste).isVisible())befund(view,width,'die Navigation dieser Breite ist nicht sichtbar: '+leiste);
+  if(!await page.locator(dock).isVisible())befund(view,width,'das Dock dieser Breite ist nicht sichtbar: '+dock);
   {
-   const box=await page.locator(leiste).boundingBox();
+   /* Die Reiter stehen im festen Kopf; der Inhalt beginnt darunter (body-Abstand = Kopf samt Reitern). */
+   const reiter=await page.locator(leiste).evaluate(n=>({unten:n.getBoundingClientRect().bottom,frei:parseFloat(getComputedStyle(document.body).paddingTop)}));
+   if(reiter.frei<reiter.unten-1)befund(view,width,'die Reiterzeile liegt ueber dem Inhalt: '+JSON.stringify(reiter));
+   const box=await page.locator(dock).boundingBox();
    const oben=await page.evaluate(()=>window.scrollY);
    void oben;
    if(box&&box.y+box.height<page.viewportSize().height-40)befund(view,width,'die Leiste steht nicht unten');
@@ -727,7 +736,7 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
  await versuch('platform-header',width,async()=>{
   await frisch(page,'#/','home');
   const quantLinks=await page.locator(leiste+' a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
-  if(quantLinks.length!==4)befund('platform-header',width,'die Quant-Leiste hat nicht vier Bereiche: '+quantLinks.length);
+  if(quantLinks.length!==SOLL_BEREICHE.length)befund('platform-header',width,'die Quant-Reiter haben nicht '+SOLL_BEREICHE.length+' Bereiche: '+quantLinks.length);
   if(quantLinks.some(h=>!h||!h.startsWith('/quant/#/')))befund('platform-header',width,'die Quant-Navigation fuehrt aus Quant heraus: '+quantLinks.join(', '));
   const kopf=await page.locator('vu-navigation a').evaluateAll(a=>a.map(x=>x.getAttribute('href')));
   for(const path of ['/discover/','/news/','/etf/','/macro/','/hedgefonds/','/analysten/','/insights/','/academy/','/screener/'])

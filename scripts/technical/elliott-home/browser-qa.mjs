@@ -78,7 +78,7 @@ for (const vp of VIEWPORTS) {
     check(/Wellen/.test(await page.locator('h1.el-title').innerText()) && await page.locator('.el-tag .vu-ltag').innerText().then((t) => /Elliott/i.test(t)), 'Startseite zeigt Elliott (Frage als Titel), keine Aktie');
     check(!/NVIDIA|NVDA/.test(await page.locator('h1.el-title').innerText()), 'kein Standardtitel');
     check(await page.locator('.el-row').count() >= 1, 'mindestens eine Reihe');
-    check(await page.locator('#vu-dock a[aria-current=page]').first().innerText().then((t) => /Elliott/.test(t)), 'Leiste: Elliott aktiv');
+    check(await page.locator('vu-navigation nav.tabs a[aria-current=page]').first().innerText().then((t) => /Elliott/.test(t)), 'Reiter: Elliott aktiv');
     check(!page.__requests.some((u) => /technical-intelligence\/v3\/shards|index\.json\.gz/.test(u)), 'kein Shard-/Voll-Index-Abruf auf der Startseite');
     const bytes = await page.evaluate(() => performance.getEntriesByType('resource').reduce((n, e) => n + (e.transferSize || 0), 0));
     console.log('    Anfragen:', page.__requests.length, ' uebertragen ca.', Math.round(bytes / 1024), 'KB');
@@ -100,7 +100,7 @@ for (const vp of VIEWPORTS) {
       await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
       check(new URL(page.url()).pathname === '/elliott/' && page.url().includes('#/' + symbol), 'Karte oeffnet ' + symbol + ' unter /elliott/#/' + symbol + ' (nativ, kein /quant/)');
       check(await page.locator('.cb-crumbs').count() === 1, 'Elliott-Kopfzeile statt Quant-Rueckweg');
-      check(await page.locator('#vu-dock a[aria-current], #vu-dock a.is-context').first().innerText().then((t) => /Elliott/.test(t)).catch(() => false), 'Leiste im Detail: Elliott');
+      check(await page.locator('vu-navigation nav.tabs').evaluate((n) => n.getAttribute('aria-label') === 'Elliott' && n.querySelector('a').textContent.trim() === 'Elliott' && !n.querySelector('a[aria-current]')).catch(() => false), 'Reiter im Detail: Elliott, kein Bereich aktiv');
       check(await page.locator('vu-navigation').evaluate((n) => n.getAttribute('dock')) === 'elliott', 'Shell-Produkt im Detail: elliott');
       await layout(page, 'Detail');
       await page.screenshot({ path: `${OUT}/${vp.name}-${scheme}-detail.png` });

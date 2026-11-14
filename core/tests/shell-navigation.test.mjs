@@ -1,25 +1,27 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 
-/* Gemeinsame Vision-Universe-Shell (assets/site-navigation.js): Produkt-Leiste
-   [PRODUKT] [Funktion] [Funktion] [Funktion] [☰] fuer alle Produkte.
-   Die Leiste ist Opt-in; diese Tests sichern Konfiguration, Routen, aktive
+/* Gemeinsame Vision-Universe-Shell (assets/site-navigation.js), Rahmen nach App-Konzept 2 (Owner 14.11.2026):
+   EIN Dock auf jeder Seite mit Leiste – Home · Discover · [Universe] · News · Ich –, die Bereiche eines Produkts als
+   Reiterzeile unter dem Kopf ([PRODUKT] [Funktion] [Funktion] [Funktion] der frueheren Produkt-Leiste, danach die
+   uebrigen Eintraege der Menueliste „In <Welt>“) und das Menue als Sheet „Dein Universe“.
+   Dock und Reiter sind Opt-in; diese Tests sichern Konfiguration, Routen, aktive
    Zustaende und Gestaltung unabhaengig von den einzelnen Produkten. */
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const source = readFileSync(join(root, 'assets/site-navigation.js'), 'utf8');
 const sandbox = { HTMLElement: class {}, URL, URLSearchParams, customElements: { define() {} } };
-vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.__nav = { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon };})();'), sandbox);
-const { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon } = sandbox.__nav;
+vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.__nav = { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, dockPage, tabEntries, tabActive, dockIcons };})();'), sandbox);
+const { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, dockPage, tabEntries, tabActive, dockIcons } = sandbox.__nav;
 
 const loc = (url) => { const u = new URL(url, 'https://research.visionuniverse.de'); return { pathname: u.pathname, hash: u.hash, search: u.search }; };
 
-test('every product dock starts with the product name, never Home or Start, and has four entries plus the global menu', () => {
+test('the former dock places of every product start with the product name, never Home or Start, and stay four entries', () => {
   assert.deepEqual(JSON.parse(JSON.stringify(PRODUCTS.map(p => [p.id, p.items.map(([, label]) => label)]))), [
     ['discover', ['Discover','Welten','Strategien','Swipen']],
     ['elliott', ['Elliott','Zählbar','Neu','Suche']],
@@ -40,8 +42,154 @@ test('every product dock starts with the product name, never Home or Start, and 
     assert.equal(p.active(loc(p.items[0][2])), p.items[0][0], `${p.id}: Startseite aktiviert den Produkteintrag`);
     for (const [id, , href] of p.items) assert.equal(p.active(loc(href)), id, `${p.id}: ${href} aktiviert ${id}`);
   }
-  // ☰ oeffnet das globale Menue derselben Komponente, kein Produktmenue
+  // Der Universe-Knopf im Dock oeffnet das globale Menue derselben Komponente, kein Produktmenue
   assert.match(source, /menu\.onclick=\(\)=>this\.openMenu\(menu\)/);
+});
+
+test('one global dock on every page with a dock: Home, Discover, Universe button, News, Ich', () => {
+  assert.deepEqual(JSON.parse(JSON.stringify(DOCK)), [['home','Home','/willkommen/','home'],['discover','Discover','/discover/#/','discover'],['news','News','/insights/','insights'],['ich','Ich','/mein-dashboard/','person']]);
+  const files = { '/willkommen/': 'willkommen/index.html', '/discover/': 'discover/index.html', '/insights/': 'insights/index.html', '/mein-dashboard/': 'mein-dashboard/index.html' };
+  for (const [, , href, icon] of DOCK) {
+    assert.match(readFileSync(join(root, files[new URL(href, 'https://x').pathname]), 'utf8'), /\/assets\/site-navigation\.js/, href + ' laedt die Shell');
+    assert.ok(DOCK_PRODUCT_ICONS[icon] || dockIcons[icon], icon + ': Symbol ohne Sprite-Abruf');
+    assert.doesNotMatch(dockProductIcon(icon), /use|href/);
+  }
+  // Zwei Plaetze links, der runde Knopf in der Mitte, zwei rechts; der Knopf traegt das Ebenen-Symbol und heisst „Alle Module“
+  assert.match(source, /const links=DOCK\.slice\(0,2\)\.map\(place\);/);
+  assert.match(source, /links\.push\(\.\.\.DOCK\.slice\(2\)\.map\(place\)\);/);
+  assert.match(source, /menu\.className='menu uni'/);
+  assert.match(source, /menu\.setAttribute\('aria-label','Alle Module'\)/);
+  assert.match(source, /menu\.innerHTML=dockProductIcon\('layers'\)/);
+  assert.match(source, /if\(b!==this\.dockMenuButton\)b\.setAttribute\('aria-label'/, 'der Name des Universe-Knopfs bleibt „Alle Module“');
+  // Aktiv nach Ort; in den uebrigen Produkten ist kein Platz aktiv
+  const on = url => dockActive(loc(url));
+  assert.equal(on('/willkommen/'), 'home');
+  assert.equal(on('/discover/#/welten'), 'discover');
+  assert.equal(on('/insights/'), 'news');
+  assert.equal(on('/insights/reports/'), 'news');
+  assert.equal(on('/mein-dashboard/#/gespeichert'), 'ich');
+  assert.equal(on('/konto/'), 'ich');
+  assert.equal(on('/konto/watchlist/'), 'ich');
+  for (const url of ['/quant/', '/quant/#/screener', '/technical/#/', '/fundamental/#/', '/supertrader/treffer/', '/hedgefonds/', '/elliott/', '/screener/', '/vorsorge/#/', '/portfolios/']) assert.equal(on(url), null, url);
+  // Das Dock haengt wie bisher an der Anforderung der Seite und an no-dock; ausserhalb der Produkte traegt es nur Insights (dockPage)
+  assert.match(source, /const product=PRODUCTS\.find\(p=>p\.match\(location\.pathname,location\)\),id=product\?product\.id:dockPage\(location\)\?'page':null;\n      if\(!id\|\|this\.hasAttribute\('no-dock'\)\|\|document\.getElementById\('vu-dock'\)\)return;/);
+  assert.match(source, /host\.id='vu-dock'/);
+  assert.match(source, /document\.documentElement\.setAttribute\('data-vu-dock',id\)/);
+});
+
+/* Der Platz „News“ fuehrt nach /insights/. Dort (Artikel, Aktienmagazin, Reports und jede Unterseite) steht das Dock mit
+   aktivem „News“; die Seiten fordern es im erzeugten Seitenkopf an (products/insights/build.mjs). Insights ist kein Produkt
+   mit Reiterzeile: die Seiten tragen ihre eigenen Reiter im Inhalt. Portfolios fordert Dock und Reiter wie jedes Produkt an. */
+test('Insights and Portfolios carry the dock: News leads to a page with the global navigation', () => {
+  for (const url of ['/insights/', '/insights/magazin/', '/insights/magazin/nr-01/', '/insights/reports/', '/insights/nvidia-huang-untersuchung/']) {
+    assert.equal(dockPage(loc(url)), true, url);
+    assert.equal(dockActive(loc(url)), 'news', url);
+    assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 0, url + ': kein Produkt, keine Reiterzeile der Shell');
+  }
+  for (const url of ['/news/', '/', '/konto/anmelden/', '/konto/abo/', '/preise/', '/infos/', '/dashboard/']) assert.equal(dockPage(loc(url)), false, url);
+  // Jede erzeugte Insights-Seite laedt die Shell und fordert danach das Dock an; der Erzeuger schreibt die Zeile
+  const request = '<script src="/assets/site-navigation.js"></script><script>if(window.VUNavigation)window.VUNavigation.dock({});</script>';
+  assert.ok(readFileSync(join(root, 'products/insights/build.mjs'), 'utf8').includes(request), 'products/insights/build.mjs');
+  const pages = [];
+  const walk = dir => { for (const e of readdirSync(join(root, dir), { withFileTypes: true })) { if (e.isDirectory()) walk(dir + '/' + e.name); else if (e.name === 'index.html') pages.push(dir + '/index.html'); } };
+  walk('insights');
+  assert.ok(pages.length >= 10, pages.length + ' Insights-Seiten');
+  for (const page of pages) { const html = readFileSync(join(root, page), 'utf8'); assert.ok(html.includes(request), page + ' fordert das Dock an'); assert.doesNotMatch(html, /<vu-navigation[^>]*no-dock/, page); }
+  // Der Fuss der Seiten laesst dem Dock den Platz ueber body (--vu-dock-space), nicht doppelt
+  assert.match(readFileSync(join(root, 'insights/insights.css'), 'utf8'), /html\[data-vu-dock\] \.in-fuss\{padding-bottom:24px\}/);
+  // Portfolios: Produkt mit Reitern, fordert die Leiste beim Start an (frueh, kein late)
+  const portfolios = PRODUCTS.find(p => p.id === 'portfolios');
+  assert.equal(portfolios.late, undefined);
+  assert.match(readFileSync(join(root, 'portfolios/portfolios.js'), 'utf8'), /if \(root\.VUNavigation\) root\.VUNavigation\.dock\(\{\}\);/);
+  assert.match(readFileSync(join(root, 'portfolios/portfolios.css'), 'utf8'), /html\[data-vu-dock\] \.pf\{padding-bottom:24px\}/);
+});
+
+test('product tabs: former dock places first, then the remaining entries of the menu group, each destination once', () => {
+  const labels = id => Array.from(tabEntries(PRODUCTS.find(p => p.id === id)), e => e.label);
+  assert.deepEqual(labels('discover'), ['Discover','Welten','Strategien','Swipen','Suchen','Märkte','Watchlist']);
+  assert.deepEqual(labels('quant'), ['Quant','Screener','Anlagestile','Aktien','Meldungen','Forschung','Methodik','Technische Lagen','Fundamentaldaten']);
+  assert.deepEqual(labels('technical'), ['Technical','Screener','Chart','Muster','Gespeichert']);
+  assert.deepEqual(labels('fundamental'), ['Fundamental','Ranglisten','Branchen','Methodik','Suchen']);
+  assert.deepEqual(labels('supertrader'), ['Supertrader','Methoden','Treffer','Forschung','Quellen']);
+  assert.deepEqual(labels('hedgefonds'), ['Hedgefonds','Investoren','Aktien','Gruppen-Käufe','Datenbank']);
+  assert.deepEqual(labels('elliott'), ['Elliott','Zählbar','Neu','Suche','Aufwärts','Abwärts']);
+  assert.deepEqual(labels('screener'), ['Screener','Filter','Treffer','Gespeichert','Watchlist']);
+  assert.deepEqual(labels('vorsorge'), ['Vorsorge','Planer','ETFs','Portfolio','Vergleichen','Förderung','Veränderungen','Wissen']);
+  assert.deepEqual(labels('portfolios'), ['Portfolios','Supertrader','Quant','KI']);
+  assert.deepEqual(labels('mein'), ['Mein Bereich','Watchlist','Gespeichert','Konto']);
+  const key = href => { const u = new URL(href, 'https://x'); return u.pathname + u.search + (/^#\/?$/.test(u.hash) ? '' : u.hash); };
+  for (const p of PRODUCTS) {
+    const tabs = tabEntries(p), group = groups.find(g => g.id === p.id);
+    // Die frueheren Leistenplaetze stehen vorn, in ihrer Reihenfolge, mit ihrer id, ihrem Ziel und ihrem Namen
+    assert.deepEqual(JSON.parse(JSON.stringify(tabs.slice(0, p.items.length).map(e => [e.id, e.label, e.href, e.name]))), JSON.parse(JSON.stringify(p.items.map(([id, label, href, , name]) => [id, label, href, name]))));
+    // Nichts geht verloren: jedes Ziel der alten Leiste und der Liste „In <Welt>“ ist ein Reiter
+    const reachable = new Set(tabs.map(e => key(e.href)));
+    for (const [, , href] of p.items) assert.ok(reachable.has(key(href)), p.id + ': ' + href);
+    for (const [, href] of group ? group.entries : []) assert.ok(reachable.has(key(href)), p.id + ': ' + href);
+    // Jedes Ziel genau einmal (/quant/ und /quant/#/ sind dieselbe Seite); Reiter aus der Menuegruppe tragen keine id
+    assert.equal(reachable.size, tabs.length, p.id + ': kein doppeltes Ziel');
+    for (const e of tabs.slice(p.items.length)) { assert.equal(e.id, null); assert.ok(group.entries.some(([label, href]) => label === e.label && href === e.href)); }
+  }
+});
+
+test('the active tab is the tab of the current page: a tab from the menu group where the menu marks it, else the old dock logic', () => {
+  const active = (id, url, state) => { const p = PRODUCTS.find(x => x.id === id), l = { ...loc(url), href: url }, t = tabActive(p, tabEntries(p), l, state); return t && t.label; };
+  // Leistenplaetze: product.active wie bisher
+  assert.equal(active('quant', '/quant/'), 'Quant');
+  assert.equal(active('quant', '/quant/#/screener/profi'), 'Screener');
+  assert.equal(active('quant', '/quant/#/aktie/AAPL/technik'), 'Aktien');
+  assert.equal(active('discover', '/discover/#/thema/ki'), 'Welten');
+  assert.equal(active('discover', '/discover/#/s/US_REAL/NVDA'), null, 'Aktienseite: kein Reiter aktiv, wie bisher kein Leistenplatz');
+  assert.equal(active('vorsorge', '/vorsorge/etf/IWR/'), 'ETFs');
+  assert.equal(active('screener', '/screener/?f=pe'), 'Filter');
+  assert.equal(active('supertrader', '/supertrader/stock/NVDA/'), 'Treffer');
+  assert.equal(active('elliott', '/elliott/#/NVDA'), null);
+  assert.equal(active('mein', '/mein-dashboard/#/gespeichert'), 'Gespeichert');
+  assert.equal(active('mein', '/konto/'), 'Konto');
+  // Vom Produkt gemeldeter Bereich: nur fuer die Adresse, zu der er gemeldet wurde
+  assert.equal(active('supertrader', '/supertrader/stock/NVDA/', { active: null, activeAt: '/supertrader/stock/NVDA/' }), null);
+  assert.equal(active('supertrader', '/supertrader/stock/NVDA/', { active: null, activeAt: '/supertrader/' }), 'Treffer');
+  assert.equal(active('screener', '/screener/', { active: 'treffer', activeAt: '/screener/' }), 'Treffer');
+  // Reiter aus der Menuegruppe: aktiv, wo das Menue sie als aktuelle Seite markiert; dann genau dieser eine. In der Leiste mit
+  // vier Plaetzen lagen diese Seiten bei einem Nachbarn (Methodik bei „Quant“, Datenbank bei „Investoren“) oder hatten keinen Platz.
+  assert.equal(active('quant', '/quant/#/methodik/faktoren'), 'Methodik');
+  assert.equal(active('quant', '/quant/#/meldungen'), 'Meldungen');
+  assert.equal(active('quant', '/quant/#/forschung'), 'Forschung');
+  assert.equal(active('quant', '/quant/#/chartlagen'), 'Technische Lagen');
+  assert.equal(active('quant', '/quant/methodology/'), 'Methodik', 'alte Adresse');
+  assert.equal(active('technical', '/technical/#/screener/gespeichert'), 'Gespeichert');
+  assert.equal(active('technical', '/technical/#/screener?muster=dreieck'), 'Screener');
+  assert.equal(active('fundamental', '/fundamental/#/suche'), 'Suchen');
+  assert.equal(active('supertrader', '/supertrader/sources/'), 'Quellen');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank'), 'Datenbank');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/fonds/berkshire'), 'Datenbank', 'ein Fonds gehoert zur Datenbank, wie im Menue');
+  assert.equal(active('elliott', '/elliott/#/?richtung=ab'), 'Abwärts');
+  assert.equal(active('screener', '/screener/?view=watchlist'), 'Watchlist');
+  assert.equal(active('vorsorge', '/vorsorge/#/foerderung'), 'Förderung');
+  assert.equal(active('vorsorge', '/vorsorge/#/monitor'), 'Veränderungen');
+  assert.equal(active('discover', '/discover/#/maerkte'), 'Märkte');
+  assert.equal(active('discover', '/discover/#/watchlist'), 'Watchlist');
+  // Der eigene Reiter gilt auch, wenn das Produkt fuer diese Adresse einen Nachbarplatz meldet (kein Springen nach dem Laden)
+  assert.equal(active('quant', '/quant/#/methodik', { active: 'quant', activeAt: '/quant/#/methodik' }), 'Methodik');
+  assert.equal(active('vorsorge', '/vorsorge/#/foerderung', { active: 'plan', activeAt: '/vorsorge/#/foerderung' }), 'Förderung');
+  assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank', { active: 'investoren', activeAt: '/hedgefonds/#/datenbank' }), 'Datenbank');
+  assert.equal(active('screener', '/screener/?view=watchlist', { active: 'gespeichert', activeAt: '/screener/?view=watchlist' }), 'Watchlist');
+  // Ohne eigenen Reiter bleibt die Zuordnung der Leiste (auch die vom Produkt gemeldete)
+  assert.equal(active('quant', '/quant/#/aktie/JPM/zahlen'), 'Aktien');
+  assert.equal(active('quant', '/quant/#/vergleich/NVDA,MSFT'), 'Aktien');
+  assert.equal(active('vorsorge', '/vorsorge/#/riester', { active: 'etfs', activeAt: '/vorsorge/#/riester' }), 'ETFs');
+  assert.equal(active('vorsorge', '/vorsorge/#/xray'), 'Portfolio');
+  // Der Menueeintrag „Fundamentaldaten“ fuehrt auf die Zahlen einer Aktie (NVDA); dort markiert er sich wie im Menue selbst
+  assert.equal(active('quant', '/quant/#/aktie/NVDA/zahlen', { active: 'aktien', activeAt: '/quant/#/aktie/NVDA/zahlen' }), 'Fundamentaldaten');
+  // Jede Seite eines Reiters markiert genau diesen Reiter
+  for (const p of PRODUCTS) for (const e of tabEntries(p)) { const t = tabActive(p, tabEntries(p), { ...loc(e.href), href: e.href }, {}); assert.equal(t && t.label, e.label, p.id + ' ' + e.href); }
+  // Klick: dasselbe abbrechbare Ereignis mit demselben Inhalt wie beim frueheren Leistenplatz; Ziele und Trefferzahl wie bisher
+  assert.match(source, /new CustomEvent\('vu-dock-navigate',\{cancelable:true,detail:\{product:product\.id,id:entry\.id,href:a\.getAttribute\('href'\)\}\}\)/);
+  assert.match(source, /if\(!document\.dispatchEvent\(intent\)\)event\.preventDefault\(\);/);
+  assert.match(source, /if\(id&&state\.hrefs&&state\.hrefs\[id\]\)a\.setAttribute\('href',state\.hrefs\[id\]\);/);
+  assert.match(source, /badge\.textContent=value>999\?'999\+':String\(value\)/);
+  assert.match(source, /const tabActive = \(product, entries, loc, state\) =>/);
+  assert.match(source, /if \(own\) return own;/, 'der eigene Reiter zuerst');
 });
 
 test('dock targets are existing routes of their products', () => {
@@ -113,9 +261,12 @@ test('active dock state follows deep links after reload', () => {
 
 test('the dock respects safe areas, keeps touch targets and sits below overlays and the menu', () => {
   assert.match(dockStyles, /env\(safe-area-inset-bottom\)/);
-  assert.match(dockStyles, /grid-template-columns:minmax\(min-content,1\.35fr\) repeat\(4,minmax\(min-content,1fr\)\)/);
+  assert.match(dockStyles, /nav\{[^}]*display:flex;align-items:center;[^}]*height:68px/, 'vier gleich breite Plaetze um den Knopf in der Mitte');
+  assert.match(dockStyles, /a\{flex:1 1 0;/);
   assert.match(dockStyles, /background:#000/, 'Leiste schwarz (Mockup C02)');
-  assert.match(dockStyles, /a\[aria-current=page\],a\[aria-current=page\]:hover\{background:#c8f531;color:#000\}/);
+  assert.match(dockStyles, /a\[aria-current=page\],a\[aria-current=page\]:hover\{color:#c8f531\}/, 'aktiver Platz in Lime (App-Konzept 2)');
+  // Universe-Knopf: rund, 62px, lime, ueber der Leiste
+  assert.match(dockStyles, /\.uni\{flex:none;width:62px;height:62px;margin:-22px 6px 0;[^}]*border-radius:50%;background:#c8f531;color:#101318;box-shadow:0 0 0 6px #000,/);
   assert.match(dockStyles, /min-height:56px/);
   assert.match(dockStyles, /z-index:900/);
   assert.match(dockStyles, /:focus-visible/);
@@ -125,6 +276,21 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   assert.match(css, /html\[data-vu-dock\] body\{padding-bottom:var\(--vu-dock-space\)/);
   assert.match(css, /--vu-dock-space:calc\([^;]*env\(safe-area-inset-bottom\)\)/);
   assert.match(css, /html\.vu-menu-open/);
+  // Reiterzeile: Platz im Dokument (nichts liegt unter Kopf und Reitern), 44px-Ziele, sichtbarer Fokus
+  assert.match(css, /:root\{--vu-navigation-height:64px\}/);
+  assert.match(css, /html\[data-vu-tabs\]\{--vu-navigation-height:112px\}/);
+  assert.match(css, /@media\(max-width:760px\)\{html\[data-vu-tabs\]\{--vu-navigation-height:104px\}\}/);
+  assert.match(css, /body\{padding-top:var\(--vu-navigation-height\)!important\}/);
+  for (const t of [THEMES.light, THEMES.dark]) {
+    const st = styles(t);
+    assert.match(st, /\.tabs\{[^}]*overflow-x:auto;[^}]*padding:0 max\(24px,calc\(\(100% - 1240px\)\/2\)\) 4px\}/, 'waagerecht rollbar, am Inhaltsrand ausgerichtet');
+    assert.match(st, /\.tab\{flex:none;display:flex;align-items:center;min-height:44px;/);
+    assert.match(st, /\.tab \.pill\{[^}]*height:36px;/);
+    assert.ok(st.includes(`.tab[aria-current=page] .pill{background:${t.ink};color:${t.inv};`), 'aktiver Reiter in Schriftfarbe, hell wie dunkel');
+    assert.match(st, /\.tab:focus-visible \.pill\{outline:2px solid /);
+  }
+  assert.match(source, /<nav class="tabs" hidden><\/nav><\/header>/, 'Reiterzeile im festen Kopf, direkt unter der Kopfzeile');
+  assert.match(source, /document\.documentElement\.setAttribute\('data-vu-tabs',product\.id\)/);
   // Mit Leiste ist der Kopf ruhig: Welt links, Suche, Atlas, Mein Bereich rechts (Mockup C01)
   assert.match(styles(THEMES.light), /:host\(\[dock\]\) \.quick,:host\(\[dock\]\) \.toggle\{display:none\}/);
   assert.match(source, /class="world" hidden/);
@@ -136,6 +302,69 @@ test('the dock is opt-in: pages that never call VUNavigation.dock keep their hea
   assert.match(source, /if\(dockBus\.requested\)this\.mountDock\(\)/);
   assert.match(source, /dockBus\.requested = true;/);
   assert.doesNotMatch(source, /connectedCallback\(\)\{[^}]*\n[^]*?\n      this\.mountDock\(\);/);
+  // Die Reiterzeile kommt mit dem Dock; no-dock und menu-only tragen beides nie
+  assert.match(source, /this\.setAttribute\('dock',id\);\n      document\.documentElement\.setAttribute\('data-vu-dock',id\);\n      this\.mountTabs\(\);/);
+  assert.match(source, /if\(!product\|\|!nav\|\|this\.tabsFor===product\.id\|\|this\.hasAttribute\('no-dock'\)\|\|this\.hasAttribute\('menu-only'\)\)return;/);
+});
+
+/* Damit der Inhalt nicht springt, wenn ein Produkt die Leiste nach dem ersten Zeichnen meldet, steht die Reiterzeile dort
+   schon beim Aufbau des Kopfes, wo die Seite die Leiste ohnehin anfordert. late(pfad) nennt die Ausnahmen. Dieser Test
+   haelt beides am Bestand der Seiten fest: frueh nur, wo ein Skript der Seite VUNavigation.dock ruft. */
+test('the tab strip is reserved at first paint exactly on pages that request the dock', () => {
+  assert.match(source, /const early=PRODUCTS\.find\(p=>p\.match\(location\.pathname,location\)\);\n      if\(early&&!\(early\.late&&early\.late\(location\.pathname\)\)\)this\.mountTabs\(\);/);
+  const calls = new Map(), requests = src => { if (!calls.has(src)) { const f = join(root, src); calls.set(src, existsSync(f) && /VUNavigation\.dock\(/.test(readFileSync(f, 'utf8'))); } return calls.get(src); };
+  const pages = [];
+  const walk = (dir, depth) => {
+    if (existsSync(join(root, dir, 'index.html'))) pages.push(dir);
+    if (depth > 3) return;
+    let seen = 0;
+    for (const e of readdirSync(join(root, dir), { withFileTypes: true })) {
+      if (!e.isDirectory() || ['data', 'tests', 'node_modules', 'config', 'engine', 'engines', 'ui', 'assets', 'img'].includes(e.name)) continue;
+      // Erzeugte Geschwisterseiten (ETF- und Aktienseiten) sind gleich gebaut: eine Stichprobe genuegt
+      if (/^(vorsorge\/etf|supertrader\/stock)$/.test(dir) && ++seen > 5) break;
+      walk(dir + '/' + e.name, depth + 1);
+    }
+  };
+  for (const dir of ['discover', 'quant', 'technical', 'fundamental', 'supertrader', 'hedgefonds', 'elliott', 'screener', 'vorsorge', 'portfolios', 'willkommen', 'mein-dashboard', 'konto']) walk(dir, 0);
+  let early = 0, late = 0;
+  for (const dir of pages) {
+    const html = readFileSync(join(root, dir, 'index.html'), 'utf8'), path = '/' + dir + '/', tag = (html.match(/<vu-navigation[^>]*>/) || [])[0];
+    const product = PRODUCTS.find(p => p.match(path, loc(path)));
+    if (!tag || !product || /no-dock|menu-only/.test(tag) || /http-equiv="refresh"|legacy-redirect\.js/.test(html)) continue;
+    const asks = /VUNavigation\.dock\(/.test(html) || Array.from(html.matchAll(/<script[^>]*\ssrc="\/([^"?#]+)/g), m => m[1]).filter(src => src !== 'assets/site-navigation.js').some(requests);
+    const isLate = !!(product.late && product.late(path));
+    if (isLate) { late++; assert.ok(!asks || path.startsWith('/konto/'), path + ': fordert die Leiste beim Laden an, late() nimmt sie aus'); }
+    else { early++; assert.ok(asks, path + ': Reiterzeile vom ersten Zeichnen an, aber kein Skript der Seite fordert die Leiste an'); }
+  }
+  assert.ok(early >= 15 && late >= 5, `Seiten geprueft: ${early} frueh, ${late} spaet`);
+  // Konto meldet die Leiste erst mit dem geladenen Konto; der erste Start traegt no-dock
+  assert.match(readFileSync(join(root, 'willkommen/start/index.html'), 'utf8'), /<vu-navigation[^>]*no-dock/);
+});
+
+test('the menu is the sheet „Dein Universe“ on phones, the side panel on desktop, and keeps every part', () => {
+  // Reihenfolge im Menue: Griff, Logo und Schliessen, Ueberschrift, Suche, Produkte, „In <Welt>“, Mein Bereich, Weitere Produkte, Einstellungen, Rechtliches
+  const order = ['<span class="grab" aria-hidden="true"></span>', '<div class="panel-head">', '<h2 class="uni-title">Dein Universe</h2><p class="uni-sub">Alle Module, von jeder Seite aus.</p>', '<form class="find" role="search">',
+    '<h2>Produkte</h2><div class="tiles"></div>', '<section class="here" hidden>', '<h2>Mein Bereich</h2><div class="mine">', '<details class="more"><summary><span>Weitere Produkte</span></summary>',
+    '<div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>', '${legalMenu()}</nav>'];
+  let at = source.indexOf('<nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true">');
+  assert.ok(at > 0);
+  for (const part of order) { const next = source.indexOf(part, at); assert.ok(next > at, part); at = next; }
+  for (const t of [THEMES.light, THEMES.dark]) {
+    const st = styles(t), phone = st.slice(st.indexOf('@media(max-width:760px)'), st.indexOf('@media(max-width:520px)'));
+    // Desktop: Seitenleiste rechts
+    assert.match(st, /\.panel\{position:fixed;right:0;top:0;bottom:0;width:min\(440px,100vw\);/);
+    // Telefon: Sheet von unten, runde Ecken, hoechstens 90 % hoch, Inhalt rollt im Sheet, Griff
+    assert.match(phone, /\.panel\{left:0;top:auto;width:auto;max-height:90vh;max-height:90dvh;padding-top:0;border-radius:30px 30px 0 0;[^}]*transform:translateY\(102%\);/);
+    assert.match(phone, /\.grab\{display:block\}/);
+    assert.match(st, /\.panel\{[^}]*overflow-y:auto;overscroll-behavior:contain;/);
+    assert.match(st, /:host\(\[open\]\) \.backdrop,:host\(\[open\]\) \.panel\{visibility:visible;opacity:1;transform:none\}/);
+    assert.match(st, /@media\(prefers-reduced-motion:reduce\)\{\.backdrop,\.panel\{transition:none\}\}/);
+  }
+  // Schliessen: Knopf, Hintergrund, Escape, Griff nach unten ziehen; Fokus zurueck zum Oeffner
+  assert.match(source, /root\.querySelector\('\.backdrop'\)\.onclick=\(\)=>\{close\(\);restore\(\);\};/);
+  assert.match(source, /if\(event\.key==='Escape'\)\{close\(\);restore\(\);return;\}/);
+  assert.match(source, /root\.querySelector\('\.grab'\)\.addEventListener\('pointerdown'/);
+  assert.match(source, /if\(this\.dockHost\)this\.dockHost\.inert=true;/);
 });
 
 
@@ -200,7 +429,7 @@ test('menu tiles keep original product symbols, load the sprite lazily and stay 
     assert.match(icon,new RegExp('data-href="/assets/product-icons\\.svg#'+group.icon+'"'));
     assert.doesNotMatch(icon,/<use href=/,'hidden menu must not request its sprite');
   }
-  for(const group of groups.filter(g=>['discover','quant','elliott','fundamental','technical','screener','vorsorge','supertrader'].includes(g.id))) {
+  for(const group of groups.filter(g=>['discover','quant','elliott','fundamental','technical','screener','vorsorge','supertrader','insights','more'].includes(g.id))) {
     const original=sprite.match(new RegExp('<symbol id="'+group.icon+'"[^>]*>([\\s\\S]*?)</symbol>'))[1];
     assert.equal(DOCK_PRODUCT_ICONS[group.icon],original,group.icon+': exact original geometry and presentation');
     assert.doesNotMatch(dockProductIcon(group.icon),/use|href/,'dock requires no sprite request');
@@ -213,7 +442,7 @@ test('menu tiles keep original product symbols, load the sprite lazily and stay 
   assert.match(source,/<details class="more">/);
   assert.match(source,/'In '\+group\.label/);
   assert.match(source,/filter\(n=>n\.getClientRects\(\)\.length&&!n\.closest\('\[hidden\]'\)\)/);
-  assert.match(source,/dockProductIcon\(\(groups\.find\(g=>g\.id===product\.id\)\|\|\{icon:product\.icon\|\|product\.id\}\)\.icon\)/);
+  assert.match(source,/dockProductIcon\(\(group\|\|\{icon:product\.icon\|\|product\.id\}\)\.icon\)/,'Produktsymbol im Kopf');
   const light=styles(THEMES.light);
   assert.match(light,/\.hb\{width:44px;height:44px/);
   assert.match(light,/\.links a,\.mine a,\.more summary\{[^}]*min-height:48px/);
@@ -265,8 +494,9 @@ test('Elliott is a first-class product with its own menu group, dock and state',
   assert.equal(dock.active(loc('/elliott/#/NVDA')), null, 'natives Aktienbild markiert nur das Produkt (nicht Quant)');
   assert.equal(dock.active(loc('/elliott/#/NVDA?ansicht=profi')), null);
   assert.equal(dock.active(loc('/quant/#/elliott/NVDA')), null, 'Aktienbild markiert nur das Produkt');
-  // Die Leiste baut sich neu auf, wenn eine SPA das Produkt unter demselben Pfad wechselt
-  assert.match(source, /const reshape=\(\)=>/);
+  // Die Reiterzeile baut sich neu auf, wenn eine SPA das Produkt unter demselben Pfad wechselt
+  assert.match(source, /if\(!next\|\|next\.id===product\.id\)\{paint\(\);return;\}/);
+  assert.match(source, /if\(this\.dropTabs\)this\.dropTabs\(\);/);
   // Eigenes Symbol: das Originalsymbol der Startseite, ohne Sprite-Abruf in der Leiste
   assert.ok(DOCK_PRODUCT_ICONS.elliott && !/use/.test(dockProductIcon('elliott')));
   assert.match(source, /<a href="\/elliott\/">Elliott<\/a>/, 'Direktzugriff im Kopf (Desktop ohne Leiste)');
@@ -322,8 +552,8 @@ test('Technical has its own dock, its own menu group and the exact sprite geomet
   assert.equal(DOCK_PRODUCT_ICONS.technical, sprite.match(/<symbol id="technical"[^>]*>([\s\S]*?)<\/symbol>/)[1]);
 });
 
-test('a dock product without its own menu group still gets its sprite icon', () => {
-  assert.match(source, /\(groups\.find\(g=>g\.id===product\.id\)\|\|\{icon:product\.icon\|\|product\.id\}\)\.icon/);
+test('a product without its own menu group still gets its icon in the header', () => {
+  assert.match(source, /\(group\|\|\{icon:product\.icon\|\|product\.id\}\)\.icon/);
   for (const p of PRODUCTS) {
     const icon = (groups.find(g => g.id === p.id) || { icon: p.icon || p.id }).icon;
     // Mein Bereich ist keine Produktwelt mit Sprite-Symbol: es traegt das Linien-Symbol der Person.

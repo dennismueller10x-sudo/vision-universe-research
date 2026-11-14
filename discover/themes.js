@@ -57,6 +57,7 @@
     [53, 'unternehmen', 'Dienstleistungen', 'Bildung', 'Dienste statt Produkte', '#8a6ac0', 'i', 'thema-dienstleistungen-bildung-personal', true],
     [54, 'gesundheit', 'Gesundheitsdienstleister', 'Kliniken', 'Die Versorgung selbst', '#4a9a8a', 'h', 'thema-gesundheitsdienstleister', true]
   ];
+  /* photo: zurückgestellt (Owner 14.11.2026). Die App zeigt das Symbol assets/theme-icons.svg#<slug>, kein Foto. */
   var themes = list.map(function (t) {
     var file = String(t[0]).padStart(2, '0') + '-' + t[1];
     return { n: t[0], slug: t[1], title: t[2], short: t[3], line: t[4], tone: t[5], group: t[6],

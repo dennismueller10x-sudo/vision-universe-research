@@ -2,6 +2,8 @@
    Nur Weiß, Schwarz, Neongrün und drei Graustufen: Veränderung als Pille (Plus neongrün, Minus schwarz), kein Rot und Grün. */
 body{background:var(--vu-bg,#fff);margin:0}
 .pf{max-width:1040px;margin:0 auto;padding:18px var(--vu-gutter,16px) 120px}
+/* Mit dem Dock der Shell haelt body den Platz unten frei (--vu-dock-space). */
+html[data-vu-dock] .pf{padding-bottom:24px}
 .pf:focus{outline:none}
 .pf-skip{position:absolute;left:-9999px}
 .pf-skip:focus{left:12px;top:12px;z-index:99;padding:8px 12px;border-radius:999px;background:var(--vu-lime);color:#000;font-weight:800}

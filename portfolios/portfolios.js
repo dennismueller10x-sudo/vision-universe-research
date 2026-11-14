@@ -471,6 +471,8 @@
   var CURRENT = [];
   function start(doc) {
     U = root.VUUI;
+    /* Rahmen der Shell: Dock und Reiter „Portfolios“ (assets/site-navigation.js). */
+    if (root.VUNavigation) root.VUNavigation.dock({});
     var main = doc.getElementById("pf-main"), all = null;
     function show(focus) {
       if (!all) return;

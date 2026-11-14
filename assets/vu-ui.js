@@ -23,6 +23,7 @@
 
   var VERSION = "vu-ui-1.3.0";
   var SPRITE = "/assets/product-icons.svg#";
+  var THEME_SPRITE = "/assets/theme-icons.svg#";
   var CUR = { USD: "$", EUR: "€", GBP: "£", CHF: "CHF" };
 
   function esc(s) {
@@ -86,6 +87,16 @@
   function hud(id, size, radius) {
     var s = size || 44;
     return '<span class="vu-hud" style="--vu-hud:' + s + "px;border-radius:" + (radius || 12) + 'px">' + worldIcon(id, s) + "</span>";
+  }
+  /** Themen-Symbol einer Discover-Themenwelt aus dem Themen-Sprite; die id ist der Slug aus discover/themes.js. */
+  function themeIcon(slug, size) {
+    var s = size || 40;
+    return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="' + THEME_SPRITE + esc(slug) + '"/></svg>';
+  }
+  /** Themen-Kachel (neongrünes Quadrat, Symbol schwarz). Steht seit 14.11.2026 anstelle der Themenbilder. */
+  function themeHud(slug, size, radius) {
+    var s = size || 74;
+    return '<span class="vu-hud vu-hud--lime" style="--vu-hud:' + s + "px;border-radius:" + (radius || Math.round(s * 0.3)) + 'px">' + themeIcon(slug, Math.round(s * 0.54)) + "</span>";
   }
 
   /* ------------------------------------------------------------- C07, C08, C09 */
@@ -260,7 +271,7 @@
   }
   /** C16 Sheet: Hülle mit Griff. Öffnen/Schließen über openSheet/closeSheet. */
   function sheet(id, title, body) {
-    return '<div class="vu-sheet-backdrop" id="' + esc(id) + '" hidden><div class="vu-sheet-ui" role="dialog" aria-modal="true" aria-label="' + esc(title) + '"><h2 class="vu-mt">' + esc(title) + '</h2><div class="vu-sheet-body" style="margin-top:12px">' + (body || "") + "</div></div></div>";
+    return '<div class="vu-sheet-backdrop" id="' + esc(id) + '" hidden><div class="vu-sheet-ui" role="dialog" aria-modal="true" tabindex="-1" aria-label="' + esc(title) + '"><h2 class="vu-mt">' + esc(title) + '</h2><div class="vu-sheet-body" style="margin-top:12px">' + (body || "") + "</div></div></div>";
   }
   /** C17 Balken: Anteil 0–100. */
   function meter(v, o) {
@@ -293,23 +304,232 @@
     return '<a class="vu-find" href="' + esc(x.href || "/discover/#/suche") + '">' + glyph("search", 18) + "<span>" + esc(x.placeholder || "Aktie, Thema oder Frage …") + '</span><i aria-hidden="true">' + glyph("spark", 18) + "</i></a>";
   }
 
+  /* ------------------------------------------------------------- App-Konzept 2 (Owner-Freigabe 14.11.2026)
+     Bausteine des freigegebenen Prototyps: antippbare Kachel, Schiene, Zahlenreihe, Grafiken (Ring, Zeiger, Vorher/Nachher,
+     Balken um die Nulllinie, Raster, Netz) und die „Weiter“-Karte am Seitenende. Tiefe öffnet sich im Fenster (popup, data-vu-pop).
+     Alle Grafiken zeichnen nur übergebene Werte; fehlt ein Wert, steht „–“ oder die Stelle bleibt leer (Regel 7). */
+  function extra(a) {
+    var out = "";
+    if (a) Object.keys(a).forEach(function (k) { if (a[k] != null && a[k] !== false) out += " " + k + '="' + esc(a[k] === true ? "" : a[k]) + '"'; });
+    return out;
+  }
+  function clamp(v) { return isNum(v) ? Math.max(0, Math.min(100, v)) : null; }
+  /** Antippbare Kachel. body: fertiges HTML (nur span/b/svg, die Kachel ist Link oder Knopf).
+      o: href (Link) | pop (Kennung eines <template>, öffnet es im Fenster; popTitle = Titel) | sonst Knopf für eigenen Klick;
+      tone: "night" (immer dunkel) | "lime" | "line" | "glow"; label (aria-label); attrs {name: wert}; cls. */
+  function tap(body, o) {
+    var x = o || {}, tag = x.href ? "a" : "button";
+    return "<" + tag + ' class="vu-tap' + (x.tone ? " vu-tap--" + esc(x.tone) : "") + (x.cls ? " " + esc(x.cls) : "") + '"' +
+      (x.href ? ' href="' + esc(x.href) + '"' : ' type="button"') +
+      (x.pop ? ' aria-haspopup="dialog" data-vu-pop="' + esc(x.pop) + '"' + (x.popTitle ? ' data-vu-pop-title="' + esc(x.popTitle) + '"' : "") : "") +
+      (x.label ? ' aria-label="' + esc(x.label) + '"' : "") + extra(x.attrs) + ">" + (body || "") + "</" + tag + ">";
+  }
+  /** Zahlenkachel: große Zahl, eine Zeile darunter, optional eine Grafik (fertiges HTML). o wie tap(). */
+  function stat(value, label, o) {
+    var x = o || {};
+    return tap('<b class="vu-stat__v vu-num">' + esc(value == null || value === "" ? "–" : value) + '</b><span class="vu-stat__l">' + esc(label) + "</span>" +
+      (x.graphic ? '<span class="vu-stat__g" aria-hidden="true">' + x.graphic + "</span>" : ""), Object.assign({}, x, { cls: "vu-stat" + (x.cls ? " " + x.cls : "") }));
+  }
+  /** Kompakte Zahlenreihe: [{value, label, tone?: "lime"}], zwei bis vier Werte in einer Zeile. */
+  function stats(list, o) {
+    var x = o || {};
+    return '<div class="vu-stats" role="list"' + (x.label ? ' aria-label="' + esc(x.label) + '"' : "") + ">" + (list || []).map(function (it) {
+      return '<div role="listitem"' + (it.tone ? ' class="is-' + esc(it.tone) + '"' : "") + '><b class="vu-num">' + esc(it.value == null || it.value === "" ? "–" : it.value) + "</b><span>" + esc(it.label) + "</span></div>";
+    }).join("") + "</div>";
+  }
+  /** Schiene: waagerecht wischbar, rastet ein, läuft bis an den Bildschirmrand. items: fertiges HTML je Platz. o: label, width (px je Platz). */
+  function rail(items, o) {
+    var x = o || {};
+    return '<div class="vu-rail" role="list" tabindex="0"' + (x.label ? ' aria-label="' + esc(x.label) + '"' : "") + (x.width ? ' style="--vu-rail-w:' + Number(x.width) + 'px"' : "") + ">" +
+      (items || []).map(function (it) { return '<div role="listitem">' + it + "</div>"; }).join("") + "</div>";
+  }
+  /** Ring: Anteil 0–100 als Kreis, in der Mitte der Wert. o: size, stroke, text (Mitte), label (aria). */
+  function ring(v, o) {
+    var x = o || {}, size = x.size || 56, sw = x.stroke || 6, r = (size - sw) / 2, c = 2 * Math.PI * r, p = clamp(v);
+    return '<span class="vu-ring" role="img" aria-label="' + esc((x.label || "Anteil") + " " + (p == null ? "–" : num(p, 0) + " %")) + '" style="width:' + size + "px;height:" + size + 'px"><svg viewBox="0 0 ' + size + " " + size + '" aria-hidden="true"><circle cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" stroke-width="' + sw + '"/>' +
+      (p == null ? "" : '<circle class="is-on" cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" stroke-width="' + sw + '" stroke-dasharray="' + (c * p / 100).toFixed(2) + " " + c.toFixed(2) + '"/>') +
+      '</svg><b class="vu-num" style="font-size:' + Math.round(size * 0.27) + 'px">' + esc(x.text != null ? x.text : p == null ? "–" : num(p, 0)) + "</b></span>";
+  }
+  /** Zeiger: Anteil 0–100 als Halbkreis, darunter der Wert groß. o: text (z. B. „37 %“), label (aria), width. */
+  function gauge(v, o) {
+    var x = o || {}, w = 200, sw = 16, r = (w - sw) / 2, c = Math.PI * r, p = clamp(v), d = "M" + sw / 2 + " " + w / 2 + "A" + r + " " + r + " 0 0 1 " + (w - sw / 2) + " " + w / 2;
+    return '<span class="vu-gauge" role="img" aria-label="' + esc((x.label || "Anteil") + " " + (p == null ? "–" : num(p, 0) + " %")) + '"' + (x.width ? ' style="--vu-gauge-w:' + Number(x.width) + 'px"' : "") + '><svg viewBox="0 0 ' + w + " " + (w / 2 + sw / 2) + '" aria-hidden="true"><path d="' + d + '" stroke-width="' + sw + '"/>' +
+      (p == null ? "" : '<path class="is-on" d="' + d + '" stroke-width="' + sw + '" stroke-dasharray="' + (c * p / 100).toFixed(2) + " " + (c + sw).toFixed(2) + '"/>') +
+      '</svg><b class="vu-num">' + esc(x.text != null ? x.text : p == null ? "–" : num(p, 0) + " %") + "</b></span>";
+  }
+  /** Vorher/Nachher auf einer Skala 0–100: Zahl vorher, Balken, Zahl nachher. Zuwachs neongrün, Verlust als heller Rest. */
+  function delta(from, to, o) {
+    var x = o || {}, a = clamp(from), b = clamp(to);
+    if (a == null || b == null) return "";
+    var lo = Math.min(a, b), hi = Math.max(a, b), up = b > a;
+    return '<span class="vu-delta' + (up ? " is-up" : b < a ? " is-down" : "") + '" role="img" aria-label="' + esc((x.label ? x.label + ": " : "") + "von " + num(a, 0) + " auf " + num(b, 0)) + '"><b class="vu-num">' + num(a, 0) + '</b><span class="vu-delta__bar"><i style="width:' + lo + '%"></i><i class="is-diff" style="left:' + lo + "%;width:" + (hi - lo) + '%"></i></span><b class="vu-num">' + num(b, 0) + "</b></span>";
+  }
+  /** Balken um die Nulllinie: rows [{label, sub?, value, text?}], plus rechts neongrün, minus links. o: max (Skala), label, digits. */
+  function diverge(rows, o) {
+    var x = o || {}, list = (rows || []).filter(function (r) { return r && isNum(r.value); });
+    if (!list.length) return "";
+    var mx = x.max || Math.max.apply(null, list.map(function (r) { return Math.abs(r.value); })) || 1;
+    return '<div class="vu-div" role="list"' + (x.label ? ' aria-label="' + esc(x.label) + '"' : "") + ">" + list.map(function (r) {
+      var w = (Math.min(100, Math.abs(r.value) / mx * 100) / 2).toFixed(1), txt = r.text != null ? r.text : (r.value > 0 ? "+" : r.value < 0 ? "−" : "") + num(Math.abs(r.value), x.digits == null ? 1 : x.digits);
+      return '<div class="vu-div__r" role="listitem"><span class="vu-div__l"><b>' + esc(r.label) + "</b>" + (r.sub ? "<span>" + esc(r.sub) + "</span>" : "") + '</span><span class="vu-div__b" aria-hidden="true"><i class="' + (r.value > 0 ? "is-up" : r.value < 0 ? "is-down" : "") + '" style="width:' + w + '%"></i></span><b class="vu-num' + (r.value > 0 ? " is-up" : "") + '">' + esc(txt) + "</b></div>";
+    }).join("") + "</div>";
+  }
+  /** Raster: Zeilen × Spalten mit Werten 0–100, stark (ab 75) neongrün. cols [{html, label}], rows [{label, values[], hrefs?[]}]. o: label, note [links, rechts]. */
+  function heat(cols, rows, o) {
+    var x = o || {}, n = (cols || []).length;
+    if (!n || !(rows || []).length) return "";
+    return '<div class="vu-heat" role="table"' + (x.label ? ' aria-label="' + esc(x.label) + '"' : "") + ' style="--vu-heat-n:' + n + '"><div class="vu-heat__r" role="row"><span role="columnheader"><span class="vu-visually-hidden">' + esc(x.corner || "Eigenschaft") + "</span></span>" +
+      cols.map(function (c) { return '<span class="vu-heat__h" role="columnheader"' + (c.label ? ' title="' + esc(c.label) + '"' : "") + ">" + (c.html || esc(c.label)) + (c.html && c.label ? '<span class="vu-visually-hidden">' + esc(c.label) + "</span>" : "") + "</span>"; }).join("") + "</div>" +
+      rows.map(function (r) {
+        return '<div class="vu-heat__r" role="row"><span class="vu-heat__l" role="rowheader">' + esc(r.label) + "</span>" + cols.map(function (c, i) {
+          var v = clamp(r.values && r.values[i]), cls = "vu-heat__c vu-num" + (v == null ? " is-na" : v >= 75 ? " is-hi" : ""), a = v == null ? 0 : v >= 75 ? 100 : Math.round(v * 0.4), href = r.hrefs && r.hrefs[i];
+          var inner = v == null ? "–" : String(Math.round(v));
+          return href ? '<a class="' + cls + '" role="cell" style="--a:' + a + '" href="' + esc(href) + '">' + inner + "</a>" : '<span class="' + cls + '" role="cell" style="--a:' + a + '">' + inner + "</span>";
+        }).join("") + "</div>";
+      }).join("") + (x.note ? '<div class="vu-heat__n"><span>' + esc(x.note[0] || "") + "</span><span>" + esc(x.note[1] || "") + "</span></div>" : "") + "</div>";
+  }
+  /** Netz: Werte 0–100 je Achse als Fläche. values [n|null], o: size, labels [kurz], compare (zweite Reihe, als Linie), label (aria). */
+  function radar(values, o) {
+    var x = o || {}, vals = values || [], n = vals.length;
+    if (n < 3) return "";
+    var size = x.size || 150, pad = x.labels ? 22 : 4, cx = size / 2, cy = size / 2, R = size / 2 - pad;
+    var pt = function (i, v) { var a = -Math.PI / 2 + i * 2 * Math.PI / n, r = R * (v / 100); return (cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1); };
+    var poly = function (list, cls) { return '<polygon class="' + cls + '" points="' + list.map(function (v, i) { return pt(i, clamp(v) == null ? 0 : clamp(v)); }).join(" ") + '"/>'; };
+    var grid = [25, 50, 75, 100].map(function (g) { return '<polygon class="vu-radar__g" points="' + vals.map(function (_, i) { return pt(i, g); }).join(" ") + '"/>'; }).join("") +
+      vals.map(function (_, i) { return '<line class="vu-radar__g" x1="' + cx + '" y1="' + cy + '" x2="' + pt(i, 100).split(",")[0] + '" y2="' + pt(i, 100).split(",")[1] + '"/>'; }).join("");
+    var labels = x.labels ? x.labels.map(function (l, i) { var a = -Math.PI / 2 + i * 2 * Math.PI / n, lx = cx + (R + 11) * Math.cos(a), ly = cy + (R + 11) * Math.sin(a); return '<text x="' + lx.toFixed(1) + '" y="' + (ly + 3.5).toFixed(1) + '" text-anchor="' + (Math.abs(Math.cos(a)) < 0.2 ? "middle" : Math.cos(a) > 0 ? "start" : "end") + '">' + esc(l) + "</text>"; }).join("") : "";
+    var aria = (x.label ? x.label + ": " : "") + vals.map(function (v, i) { return (x.names && x.names[i] ? x.names[i] + " " : "") + (clamp(v) == null ? "–" : Math.round(v)); }).join(", ");
+    return '<svg class="vu-radar" viewBox="0 0 ' + size + " " + size + '" width="' + size + '" height="' + size + '" role="img" aria-label="' + esc(aria) + '">' + grid + poly(vals, "vu-radar__a") + (x.compare ? poly(x.compare, "vu-radar__b") : "") + labels + "</svg>";
+  }
+  /** „Weiter“-Karte am Seitenende: führt zum nächsten sinnvollen Ort. o: title, sub, href, eyebrow (Standard „Weiter“). */
+  function next(o) {
+    var x = o || {};
+    return '<a class="vu-next" href="' + esc(x.href || "#") + '"><span class="vu-next__t"><span class="vu-ltag">' + esc(x.eyebrow || "Weiter") + "</span><b>" + esc(x.title) + "</b>" + (x.sub ? "<span>" + esc(x.sub) + "</span>" : "") + '</span><i aria-hidden="true">' + glyph("next", 20) + "</i></a>";
+  }
+
   /* ------------------------------------------------------------- Verhalten */
-  /** Sheets öffnen/schließen (Escape, Tippen auf den Hintergrund). */
+  /** Fenster (C16) öffnen/schließen: am Telefon von unten, am Schreibtisch mittig. Escape, Tippen auf den Hintergrund,
+      Griff (tippen oder nach unten ziehen) schließen; Tab bleibt im Fenster, die Seite dahinter rollt nicht, der Fokus
+      kehrt zum Auslöser zurück. Mehrere Fenster stapeln sich, Escape schließt das oberste. Ereignis „vu-sheet-close“ am Element. */
+  var openSheets = [];
+  function focusable(panel) {
+    return Array.prototype.filter.call(panel.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])'), function (n) { return n.offsetParent !== null || n === panel.ownerDocument.activeElement; });
+  }
+  function sheetKey(e) {
+    var el = openSheets[openSheets.length - 1];
+    if (!el) return;
+    if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closeSheet(el); return; }
+    if (e.key !== "Tab") return;
+    var panel = el.querySelector(".vu-sheet-ui") || el, list = focusable(panel), doc = el.ownerDocument, at = doc.activeElement;
+    if (!list.length) { e.preventDefault(); if (panel.focus) panel.focus(); return; }
+    var first = list[0], last = list[list.length - 1];
+    if (!panel.contains(at) || (e.shiftKey && (at === first || at === panel)) || (!e.shiftKey && at === last)) { e.preventDefault(); (e.shiftKey ? last : first).focus(); }
+  }
+  function sheetGrab(el, panel) {
+    var doc = el.ownerDocument, grab = panel.querySelector(":scope > .vu-sheet-grab");
+    if (!grab) {
+      grab = doc.createElement("button"); grab.type = "button"; grab.className = "vu-sheet-grab"; grab.setAttribute("aria-label", "Schließen");
+      panel.insertBefore(grab, panel.firstChild);
+    }
+    panel.classList.add("vu-sheet-ui--grab");
+    if (grab.__vuBound) return;
+    grab.__vuBound = true;
+    var y0 = null, dy = 0, moved = false;
+    grab.addEventListener("pointerdown", function (e) { y0 = e.clientY; dy = 0; moved = false; if (grab.setPointerCapture) try { grab.setPointerCapture(e.pointerId); } catch (err) { /* ohne Zeiger */ } panel.style.transition = "none"; });
+    grab.addEventListener("pointermove", function (e) { if (y0 == null) return; dy = Math.max(0, e.clientY - y0); if (dy > 4) moved = true; panel.style.transform = dy ? "translateY(" + dy + "px)" : ""; });
+    var end = function (e) {
+      if (y0 == null) return;
+      y0 = null; panel.style.transition = ""; panel.style.transform = "";
+      if (e.type === "pointerup" && dy > 90) closeSheet(el);
+    };
+    grab.addEventListener("pointerup", end); grab.addEventListener("pointercancel", end);
+    grab.addEventListener("click", function () { if (!moved) closeSheet(el); moved = false; });
+  }
   function openSheet(el) {
     if (!el) return;
     if (root.VUGestures && root.document.documentElement.hasAttribute("data-vu-gestures")) return root.VUGestures.openSheet(el);
+    var doc = el.ownerDocument, panel = el.querySelector(".vu-sheet-ui") || el, at = openSheets.indexOf(el);
+    if (at >= 0) openSheets.splice(at, 1); else el.__vuReturn = doc.activeElement;
+    if (panel !== el) {
+      if (!panel.hasAttribute("role")) panel.setAttribute("role", "dialog");
+      panel.setAttribute("aria-modal", "true");
+      if (!panel.hasAttribute("tabindex")) panel.setAttribute("tabindex", "-1");
+      sheetGrab(el, panel);
+    }
     el.hidden = false;
-    var close = function (e) { if (!e || e.target === el || e.key === "Escape") closeSheet(el); };
-    el.__vuClose = close;
-    el.addEventListener("click", close);
-    el.ownerDocument.addEventListener("keydown", close);
-    var f = el.querySelector("button,a,[tabindex]"); if (f && f.focus) f.focus();
+    if (!el.__vuClose) {
+      el.__vuClose = function (e) { if (e.target === el) closeSheet(el); };
+      el.addEventListener("click", el.__vuClose);
+    }
+    if (!openSheets.length) {
+      doc.addEventListener("keydown", sheetKey, true);
+      var gap = root.innerWidth && doc.documentElement.clientWidth ? root.innerWidth - doc.documentElement.clientWidth : 0;
+      doc.documentElement.classList.add("vu-sheet-open");
+      if (gap > 0 && doc.body) { doc.body.__vuPad = doc.body.style.paddingRight; doc.body.style.paddingRight = gap + "px"; }
+    }
+    openSheets.push(el);
+    /* Wird das Fenster von außen versteckt oder entfernt (el.hidden = true, el.remove()), löst sich die Sperre trotzdem. */
+    if (root.MutationObserver && !el.__vuWatch) {
+      el.__vuWatch = new root.MutationObserver(function () { if (el.hidden || !el.isConnected) closeSheet(el); });
+      el.__vuWatch.observe(el, { attributes: true, attributeFilter: ["hidden"] });
+      if (el.parentNode) el.__vuWatch.observe(el.parentNode, { childList: true });
+    }
+    panel.scrollTop = 0;
+    if (panel.focus) try { panel.focus({ preventScroll: true }); } catch (err) { panel.focus(); }
   }
   function closeSheet(el) {
     if (!el) return;
     if (root.VUGestures && root.document.documentElement.hasAttribute("data-vu-gestures")) root.VUGestures.closeSheet(el);
+    var doc = el.ownerDocument, at = openSheets.indexOf(el), was = !el.hidden;
+    if (el.__vuWatch) { el.__vuWatch.disconnect(); el.__vuWatch = null; }
     el.hidden = true;
-    if (el.__vuClose) { el.removeEventListener("click", el.__vuClose); el.ownerDocument.removeEventListener("keydown", el.__vuClose); el.__vuClose = null; }
+    if (el.__vuClose) { el.removeEventListener("click", el.__vuClose); el.__vuClose = null; }
+    if (at < 0) return;
+    openSheets.splice(at, 1);
+    if (!openSheets.length) {
+      doc.removeEventListener("keydown", sheetKey, true);
+      doc.documentElement.classList.remove("vu-sheet-open");
+      if (doc.body && doc.body.__vuPad != null) { doc.body.style.paddingRight = doc.body.__vuPad; doc.body.__vuPad = null; }
+    }
+    var back = el.__vuReturn; el.__vuReturn = null;
+    if (back && back.focus && doc.contains(back)) try { back.focus({ preventScroll: true }); } catch (err) { back.focus(); }
+    if (was && typeof root.CustomEvent === "function") el.dispatchEvent(new root.CustomEvent("vu-sheet-close"));
+  }
+  /** Fenster in einem Zug: baut das Sheet, hängt es an die Seite, öffnet es und räumt es beim Schließen wieder ab.
+      o: title, body (HTML-Text oder Knoten), id, cls, onClose. Liefert das Element (Inhalt: .vu-sheet-body); schließen mit closeSheet(el). */
+  function popup(o) {
+    var x = o || {}, doc = root.document;
+    if (!doc) return null;
+    var id = x.id || "vu-pop", old = doc.getElementById(id);
+    if (old) { closeSheet(old); old.remove(); }
+    var wrap = doc.createElement("div"); wrap.innerHTML = sheet(id, x.title || "", "");
+    var el = wrap.firstChild, body = el.querySelector(".vu-sheet-body");
+    if (x.cls) el.classList.add(x.cls);
+    if (!x.title) { var h = el.querySelector("h2"); if (h) h.hidden = true; }
+    if (typeof x.body === "string") body.innerHTML = x.body; else if (x.body) body.appendChild(x.body);
+    doc.body.appendChild(el);
+    var gone = function () { root.removeEventListener("hashchange", away); if (el.parentNode) el.remove(); if (x.onClose) x.onClose(el); };
+    var away = function () { closeSheet(el); if (el.parentNode) gone(); };
+    el.addEventListener("vu-sheet-close", gone);
+    root.addEventListener("hashchange", away);
+    openSheet(el);
+    return el;
+  }
+  /** Kacheln mit data-vu-pop="<id>" öffnen den Inhalt von <template id="<id>"> im Fenster (Titel: data-vu-pop-title). Einmal je Bereich binden. */
+  function bindPops(scope) {
+    var doc = (scope && scope.ownerDocument) || root.document, host = scope || doc;
+    if (!doc || !host || host.__vuPops) return;
+    host.__vuPops = true;
+    host.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("[data-vu-pop]");
+      if (!b || !host.contains(b)) return;
+      var tpl = doc.getElementById(b.getAttribute("data-vu-pop"));
+      if (!tpl) return;
+      e.preventDefault();
+      var frag = tpl.content ? tpl.content.cloneNode(true) : null, box = doc.createElement("div");
+      if (frag) box.appendChild(frag); else box.innerHTML = tpl.innerHTML;
+      popup({ id: "vu-pop-" + b.getAttribute("data-vu-pop"), title: b.getAttribute("data-vu-pop-title") || "", body: box });
+    });
   }
   /** „?“-Knöpfe einer Seite an ein gemeinsames Sheet binden (C09 + C16). */
   function bindHelp(scope) {
@@ -455,11 +675,13 @@
     PROFILE: Object.freeze({ keys: PROFILE_KEYS, label: PROFILE_LABEL, glyph: PROFILE_GLYPH, marks: STAGE_MARKS, stage: profileStage, strong: profileStrong, open: profileOpen }),
     profileMini: profileMini, profileFull: profileFull, profileLegend: profileLegend,
     VERSION: VERSION, skeleton: skeleton, bindIntent: bindIntent, transition: transition, legal: legal, legalNotice: legalNotice, neutralSourceText: neutralSourceText, neutralSources: neutralSources, PERSPECTIVES: PERSPECTIVES, esc: esc, num: num, pct: pct, money: money,
-    glyph: glyph, worldIcon: worldIcon, hud: hud, logo: logo,
+    glyph: glyph, worldIcon: worldIcon, hud: hud, themeIcon: themeIcon, themeHud: themeHud, logo: logo,
     chg: chg, movementLabel: movementLabel, verdict: verdict, help: help, q: q,
     stockHead: stockHead, persp: persp, perspectiveHref: perspectiveHref,
     stockRow: stockRow, tile: tile, navcard: navcard, sect: sect, seg: seg, ranges: ranges,
     toggle: toggle, sheet: sheet, meter: meter, bars: bars, blank: blank, pro: pro, research: research, search: search,
-    openSheet: openSheet, closeSheet: closeSheet, bindHelp: bindHelp
+    openSheet: openSheet, closeSheet: closeSheet, bindHelp: bindHelp,
+    tap: tap, stat: stat, stats: stats, rail: rail, ring: ring, gauge: gauge, delta: delta, diverge: diverge, heat: heat, radar: radar, next: next,
+    popup: popup, bindPops: bindPops
   });
 });

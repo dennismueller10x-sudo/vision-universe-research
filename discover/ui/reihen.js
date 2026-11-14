@@ -220,7 +220,7 @@
     var T = D.Views.Themes, list = all ? T.all : HOME_THEMES.map(function (s) { return T.bySlug(s); }).filter(Boolean);
     if (!list.length) return null;
     var sec = h('section', 'dr-sec dr-sec--themes' + (all ? ' dr-sec--themegrid' : ''));
-    sec.innerHTML = railHead({ title: 'Themenwelten', more: 'Alle ' + T.all.length, href: '#/welten', label: 'Alle ' + T.all.length + ' Themenwelten', sub: 'Von KI bis Kernenergie, je ein Bild und die Firmen dahinter.' });
+    sec.innerHTML = railHead({ title: 'Themenwelten', more: 'Alle ' + T.all.length, href: '#/welten', label: 'Alle ' + T.all.length + ' Themenwelten', sub: 'Von KI bis Kernenergie, je ein Symbol und die Firmen dahinter.' });
     var track = all ? h('div', 'dr-tgrid') : rail('Themenwelten'); if (all) track.setAttribute('role', 'list');
     list.forEach(function (t) { var c = K().themeCard(t, ctx, { grid: all }); c.setAttribute('role', 'listitem'); track.appendChild(c); });
     sec.appendChild(track);
@@ -580,7 +580,7 @@
         '<span class="dr-rsw__hook">' + esc((c.hook && c.hook.text) || K().story(c)) + '</span><span class="dr-rsw__chart"></span><span class="dr-bb__dates"><span></span><span></span></span>' +
         (chips.length ? '<span class="dr-rsw__chips">' + chips.map(function (m) { return '<span class="vu-chip">' + esc(R().title(m.id)) + '</span>'; }).join('') + '</span>' : '') + '</a>';
       var d = stage.querySelectorAll('.dr-bb__dates span');
-      stage.querySelector('.dr-rsw__chart').appendChild(K().spark(c, { big: true, eager: true, width: 320, height: 150, onDates: function (a, b) { d[0].textContent = K().dayYear(a); d[1].textContent = K().dayYear(b); } }));
+      K().fitChart(stage.querySelector('.dr-rsw__chart'), 320, 150, function (w, ht) { return K().spark(c, { big: true, eager: true, width: w, height: ht, onDates: function (a, b) { d[0].textContent = K().dayYear(a); d[1].textContent = K().dayYear(b); } }); });
       var keepBtn = page.querySelector('[data-a="keep"]'); if (st) keepBtn.setAttribute('aria-pressed', String(st.has(c.symbol)));
       page.querySelector('[data-a="back"]').disabled = i === 0;
       if (mem) mem.setPosition(key, i);

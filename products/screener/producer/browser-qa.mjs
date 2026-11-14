@@ -36,7 +36,7 @@ async function checkLayout(page, vp, label) {
   const r = await page.evaluate(() => {
     const doc = document.documentElement;
     const overflow = doc.scrollWidth - doc.clientWidth;
-    const bar = document.querySelector('#vu-dock'); // gemeinsame Produkt-Leiste der Shell
+    const bar = document.querySelector('#vu-dock'); // gemeinsames Dock der Shell (Home · Discover · Universe · News · Ich)
     const barTop = bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect().top : Infinity;
     const offenders = [];
     for (const el of document.querySelectorAll('body *')) {
@@ -44,7 +44,7 @@ async function checkLayout(page, vp, label) {
       if (rc.width && rc.right > doc.clientWidth + 1 && !el.closest('.sc-tablewrap,.sc-cmp,.sc-toolbar,.sc-filterline,.sc-tabs,.sc-sheet,.sc-ptabs,.vu-persp,vu-navigation,.sc-skip,.sc-toast,.sc-sr')) offenders.push((el.className || el.tagName) + ' ' + Math.round(rc.right));
       if (offenders.length > 4) break;
     }
-    /* Das globale Menue oeffnet ☰ in der Produkt-Leiste (der Kopf traegt dann keinen eigenen Knopf). */
+    /* Das globale Menue oeffnet der Universe-Knopf in der Mitte des Docks (der Kopf traegt dann keinen eigenen Knopf). */
     const nav = document.querySelector('#vu-dock')?.shadowRoot?.querySelector('button.menu')?.getBoundingClientRect();
     if (!nav || !nav.width) offenders.push('vu-navigation Menü fehlt');
     else if (nav.right > doc.clientWidth + 1 || nav.bottom > innerHeight + 1) offenders.push('vu-navigation Menü abgeschnitten');
@@ -154,8 +154,9 @@ for (const theme of ['light', 'dark']) {
       if (!desk) {
         const cta = await page.$('.sc-cta button');
         const box = cta && await cta.boundingBox();
-        const tbb = await page.locator('#vu-dock nav').boundingBox();
-        if (!box || !tbb || box.y + box.height > tbb.y + 1) fail(vp, 'Sticky CTA überlappt Produkt-Leiste'); else ok('Sticky CTA über Produkt-Leiste');
+        // Ueber dem Dock UND ueber dem runden Universe-Knopf, der in der Mitte ueber die Leiste ragt.
+        const tbb = await page.locator('#vu-dock nav').boundingBox(), uni = await page.locator('#vu-dock button.menu').boundingBox();
+        if (!box || !tbb || !uni || box.y + box.height > Math.min(tbb.y, uni.y) + 1) fail(vp, 'Sticky CTA überlappt das Dock'); else ok('Sticky CTA über dem Dock');
       }
 
       // 4 Filter bearbeiten (Market Cap -> < 2 Mrd per Operator "kleiner als" bleibt) und Browser-Zurueck

@@ -117,10 +117,11 @@ const swipeCard = `<a class="vu-box vu-box--ink swipe" href="/discover/#/einzeln
   + `<span class="swipe-px"><b>${usd(card.price.value)}</b>${Number.isFinite(card.changePercent?.value) ? chg(card.changePercent.value) : ''}</span></a>`;
 const themeCtx = { VUDiscover: {} }; themeCtx.globalThis = themeCtx; themeCtx.window = themeCtx;
 runInNewContext(read('discover/themes.js'), themeCtx);
-const themes = (themeCtx.VUDiscover.Views?.Themes?.all || []).filter(x => x.photo);
+// Themenkacheln mit Symbol statt Bild (Owner 14.11.2026): Baustein .vu-theme, Symbol aus assets/theme-icons.svg (id = Slug).
+const themes = themeCtx.VUDiscover.Views?.Themes?.all || [];
 const pick = ['kuenstliche-intelligenz', 'halbleiter-chips', 'raumfahrt'];
-const shown = pick.map(k => themes.find(x => x.photo.includes(k))).filter(Boolean);
-const worldTiles = (shown.length === 3 ? shown : themes.slice(0, 3)).map(x => `<a class="world" href="/discover/#/welten"><img src="${x.photo.replace('/assets/themen/', '/assets/home/worlds/')}" alt="" loading="lazy" decoding="async" width="240" height="300"><span>${esc(x.short || x.title)}</span></a>`).join('');
+const shown = pick.map(k => themes.find(x => x.slug === k)).filter(Boolean);
+const worldTiles = (shown.length === 3 ? shown : themes.slice(0, 3)).map(x => `<a class="vu-theme" href="/discover/#/welten">${VUUI.themeHud(x.slug, 64, 19)}<span class="vu-theme__copy"><b>${esc(x.short || x.title)}</b></span></a>`).join('');
 
 // ---------- Neun Welten ----------
 const NINE = [['discover', 'Discover', 'Aktien entdecken', '/discover/'], ['quant', 'Quant', 'Faktoren je Aktie', '/quant/'], ['technical', 'Technical', 'Charts und Muster', '/technical/'],
