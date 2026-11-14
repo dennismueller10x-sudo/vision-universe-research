@@ -90,3 +90,44 @@ test('IN-7 · automatisch veröffentlichte Artikel: mindestens drei Quellen, App
     if (a.bild.typ !== 'app') assert.ok(a.bild.quelle, `${a.slug}: Pressebild ohne Bildnachweis`);
   }
 });
+
+// App-Konzept 2 (Owner 14.11.2026): der neueste Artikel füllt den ersten Bildschirm, Aktienmagazin und Aktienreport haben
+// je eine Bühne mit Titelseite, Nummer, Seitenzahl und beiden Knöpfen, die Seiten bleiben ohne JavaScript lesbar.
+test('IN-8 · Darstellung: Aufmacher, Bühnen für Aktienmagazin und Aktienreport, Karten mit Aktien, statisch ohne eigenes Skript', async () => {
+  const { createRequire } = await import('node:module');
+  const VUUI = createRequire(import.meta.url)('../../../assets/vu-ui.js');
+  const pages = build(), hub = pages['insights/index.html'], heft = loadMagazin()[0], report = loadReports().find((r) => r.seiten);
+  const stage = (html, ton) => html.match(new RegExp(`<(section|header) class="in-buehne in-buehne--${ton}[^"]*">[\\s\\S]*?</\\1>`))?.[0] || '';
+  // Übersicht: Aufmacher = neuester Artikel, danach beide Bühnen, erst dann die übrigen Artikel
+  assert.ok(hub.includes(`<a class="in-top" href="/insights/${artikel[0].slug}/">`), 'neuester Artikel als Aufmacher');
+  assert.ok(hub.indexOf('class="in-top"') < hub.indexOf('class="in-buehne ') && hub.indexOf('class="in-buehne ') < hub.indexOf('class="in-raster"'), 'Reihenfolge: Aufmacher, Bühnen, Artikel');
+  const buehnen = [[stage(hub, 'nacht'), `/insights/magazin/nr-${heft.nr}/cover.jpg`, heft.nr, heft.seiten, `/insights/magazin/nr-${heft.nr}/`, `vision-universe-aktienmagazin-${heft.nr}.pdf`]];
+  if (report) buehnen.push([stage(hub, 'lime'), `${report.href}cover.jpg`, report.nr, report.seiten, report.href, report.pdf]);
+  for (const [s, cover, nr, seiten, href, pdf] of buehnen) {
+    assert.ok(s.includes(`<img src="${cover}"`), 'Titelseite auf der Bühne');
+    assert.ok(s.includes(`Nr. ${nr}`) && s.includes(`<b class="vu-num">${seiten}</b><span>Seiten</span>`), 'Nummer und Seitenzahl');
+    assert.match(s, new RegExp(`<a class="vu-btn[^"]*" href="${href}">Online lesen`), 'Knopf „Online lesen“');
+    assert.match(s, new RegExp(`href="[^"]*${pdf}" download>PDF laden \\(\\d+ MB\\)`), 'Knopf „PDF laden“');
+  }
+  // Jede Karte: Bild, Titel, Datum, Aktien
+  for (const a of artikel.slice(1)) {
+    const k = hub.match(new RegExp(`<a class="in-karte" href="/insights/${a.slug}/">[\\s\\S]*?</a>`))?.[0] || '';
+    assert.ok(k.includes('<img ') && k.includes(`<time datetime="${a.datum}">`) && a.ticker.every((t) => k.includes(`>${t}</span>`)), `${a.slug}: Karte mit Bild, Datum und Aktien`);
+  }
+  // Farben: nur Schwarz, Weiß, Graustufen, Neongrün und das Nachtschwarz der Bausteine
+  for (const hex of read('insights/insights.css').match(/#[0-9a-f]{3,8}\b/gi) || []) {
+    const h = hex.slice(1).toLowerCase(), full = h.length === 3 ? [...h].map((c) => c + c).join('') : h;
+    assert.ok(full === 'c8f531' || full === '0e1013' || (full.slice(0, 2) === full.slice(2, 4) && full.slice(2, 4) === full.slice(4, 6)), `insights.css: Farbe außerhalb der Palette: ${hex}`);
+  }
+  // Leseseiten: Bühne als Seitenkopf mit h1, Inhalt führt auf vorhandene Seiten
+  const heftSeite = pages[`insights/magazin/nr-${heft.nr}/index.html`];
+  assert.match(stage(heftSeite, 'nacht'), /<h1>/);
+  for (const [s] of heft.inhalt) assert.ok(heftSeite.includes(`<a class="in-seite" href="#s${String(s).padStart(2, '0')}">`) && heftSeite.includes(`<img id="s${String(s).padStart(2, '0')}"`));
+  for (const [rel, html] of Object.entries(pages).filter(([rel]) => rel.endsWith('.html'))) {
+    // ohne JavaScript lesbar: außer der gemeinsamen Navigation lädt keine Seite ein Skript; Bausteine stehen fertig im HTML
+    assert.deepEqual([...html.matchAll(/<script[^>]*\bsrc="([^"]+)"/g)].map((m) => m[1]), ['/assets/site-navigation.js'], rel);
+    assert.ok(html.includes(`<link rel="stylesheet" href="/assets/vu-ui.css?v=${VUUI.VERSION}">`), `${rel}: Marke der Bausteine`);
+    assert.equal((html.match(/<a class="vu-next" /g) || []).length, 1, `${rel}: eine „Weiter“-Karte am Seitenende`);
+    assert.deepEqual([...html.matchAll(/<nav class="in-tabs"[^>]*>(.*?)<\/nav>/g)].map((m) => m[1].replace(/<[^>]+>/g, '|')), ['|Artikel||Aktienmagazin||Reports|'], rel);
+  }
+});

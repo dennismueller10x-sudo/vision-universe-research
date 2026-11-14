@@ -3,12 +3,13 @@
 //   node products/insights/build.mjs --check   prüft nur, ob alles aktuell ist (Exit 1 sonst)
 //   node products/insights/build.mjs --out <ordner>   schreibt in einen anderen Ordner (Tests)
 //
-// Erzeugt: /insights/ (Übersicht), /insights/<slug>/ (Artikel mit JSON-LD), /insights/magazin/ und /insights/magazin/nr-<NN>/
+// Erzeugt: /insights/ (Übersicht: Aufmacher, Bühnen für Aktienmagazin und Aktienreport, Artikel), /insights/<slug>/ (Artikel mit JSON-LD), /insights/magazin/ und /insights/magazin/nr-<NN>/
 // (Aktienmagazin, Inhalt aus products/insights/magazin.json), /insights/reports/, /insights/artikel.json, /insights/feed.xml, /insights/sitemap.xml.
 // Daten je Artikel sind eingefroren (products/insights/snapshot.mjs); dieser Build liest keine Produktdaten.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, '../..');
@@ -18,6 +19,10 @@ const outArg = argv.indexOf('--out');
 const out = outArg >= 0 ? path.resolve(argv[outArg + 1]) : root;
 const SITE = 'https://research.visionuniverse.de';
 const LEGAL = JSON.parse(fs.readFileSync(path.join(root, 'assets/legal-notices.json'), 'utf8'));
+// App-Konzept 2 (Owner 14.11.2026): gemeinsame Bausteine aus assets/vu-ui.js (Zahlenreihe, Schiene, „Weiter“-Karte).
+// Der Erzeuger schreibt ihr HTML fest in die Seiten; die Seiten bleiben ohne JavaScript lesbar.
+const VUUI = createRequire(import.meta.url)('../../assets/vu-ui.js');
+const DISCOVER = JSON.parse(fs.readFileSync(path.join(root, 'products/discover/module.json'), 'utf8')).navigation;
 
 export function loadArtikel(dir = path.join(here, 'artikel')) {
   return fs.readdirSync(dir).filter((f) => f.endsWith('.json')).map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8')))
@@ -74,7 +79,7 @@ function datenBox(t, a) {
     <div class="in-vu-health"><b class="in-vu-label">Gesundheitscheck</b><div>${d.gesundheit.map(([k, v]) => `<span class="${TON(v)}"><i>${k}</i>${esc(v)}</span>`).join('')}</div></div>
     ${fondsHtml}
   </div>
-  <div class="in-vu-fuss"><a class="in-btn in-btn--lime" href="/aktie/${t}">${kurz} live in Vision Universe${ICON.next}</a><p class="in-klein">Kurse bis ${datumDE(d.kursStand)}, Geschäftszahlen aus SEC-Meldungen bis ${ttm(d.ttmBis)}. Fondsdaten: Pflichtmeldungen an die SEC (Angabe Dritter). Die App zeigt den aktuellen Stand.</p></div>
+  <div class="in-vu-fuss"><a class="vu-btn vu-btn--sm" href="/aktie/${t}">${kurz} live in Vision Universe${ICON.next}</a><p class="in-klein">Kurse bis ${datumDE(d.kursStand)}, Geschäftszahlen aus SEC-Meldungen bis ${ttm(d.ttmBis)}. Fondsdaten: Pflichtmeldungen an die SEC (Angabe Dritter). Die App zeigt den aktuellen Stand.</p></div>
 </section>`;
 }
 
@@ -99,13 +104,14 @@ const appBox = (a) => `<section class="in-app vu-box vu-box--lime" aria-label="�
   <span class="in-kicker">Vision Universe</span>
   <h2>Jede Aktie. Jeden Tag. In Klartext.</h2>
   <p>Vision Universe ist eine Analyse-Software für Aktien. Jeden Abend rechnen wir über 5.600 US-Aktien nach festen Regeln durch: Kurse, Geschäftszahlen aus SEC-Meldungen, Charttechnik und was große Fonds gemeldet haben. Keine Meinungen, keine Empfehlungen, nur nachvollziehbare Daten.</p>
-  <div class="in-links"><a class="in-btn in-btn--ink" href="/aktie/${a.ticker[0]}">Alle Daten zu ${esc(a.daten.aktien[a.ticker[0]].name.split(' ')[0])}${ICON.next}</a><a class="in-btn" href="/">Was Vision Universe kann</a></div>
+  <div class="in-links"><a class="vu-btn vu-btn--sm vu-btn--ink" href="/aktie/${a.ticker[0]}">Alle Daten zu ${esc(a.daten.aktien[a.ticker[0]].name.split(' ')[0])}${ICON.next}</a><a class="vu-btn vu-btn--sm vu-btn--line" href="/">Was Vision Universe kann</a></div>
   <p class="in-klein">App bald im App Store und bei Google Play · Instagram und TikTok: @app.visionuniverse</p>
 </section>`;
 
 // Teilen-Bild der Übersicht (Owner 12.11.2026): fest statt des Bilds des neuesten Artikels.
 const TEILBILD = '/insights/img/insights-teilen.jpg';
-function head({ title, description, canonical, image, type = 'website', extra = '', css = '/insights/insights.css' }) {
+const CSS_MARKE = 'app-konzept-2';
+function head({ title, description, canonical, image, type = 'website', extra = '', css = `/insights/insights.css?v=${CSS_MARKE}` }) {
   return `<!DOCTYPE html>
 <html lang="de">
 <head>
@@ -128,7 +134,7 @@ ${image ? `<meta property="og:image" content="${SITE}${image}">\n<meta name="twi
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<link rel="stylesheet" href="/assets/vu-ui.css">
+<link rel="stylesheet" href="/assets/vu-ui.css?v=${VUUI.VERSION}">
 <script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="light"||v==="dark")w=v;else if(matchMedia("(prefers-color-scheme: dark)").matches)w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="${css}">
 ${extra}</head>
@@ -136,7 +142,7 @@ ${extra}</head>
 `;
 }
 const TABS = [['artikel', 'Artikel', '/insights/'], ['magazin', 'Aktienmagazin', '/insights/magazin/'], ['reports', 'Reports', '/insights/reports/']];
-const tabs = (aktiv) => `<nav class="in-tabs" aria-label="Insights">${TABS.map(([id, label, href]) => `<a href="${href}"${aktiv === id ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>`;
+const tabs = (aktiv) => `<nav class="in-tabs" aria-label="Insights">${TABS.map(([id, label, href]) => `<a class="vu-chip" href="${href}"${aktiv === id ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>`;
 const fuss = `<footer class="in-fuss"><p>${esc(LEGAL.notices.editorial.text)}</p><p><a href="${LEGAL.links.methodik}">Methodik, Quellen und Interessen</a> · <a href="/insights/feed.xml">RSS</a></p></footer>
 </body>
 </html>
@@ -169,11 +175,11 @@ function artikelSeite(a) {
 ${tabs('artikel')}
 <article>
 <header class="in-kopf">
+  ${aufmacher(a)}
   <p class="in-meta"><span class="in-pill">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumLang(a.datum)}</time><span>·</span><span>${lesezeit(a)} Min. Lesezeit</span></p>
   <h1>${esc(a.titel)}</h1>
   <p class="in-lead">${esc(a.unterzeile)}</p>
-  ${aufmacher(a)}
-  <p class="in-autor">Redaktion Vision Universe · Stand ${esc(a.stand)}</p>
+  <div class="in-kopf-fuss">${aktien(a, true)}<p class="in-autor">Redaktion Vision Universe · Stand ${esc(a.stand)}</p></div>
 </header>
 <div class="in-text">
 ${body}
@@ -184,82 +190,115 @@ ${appBox(a)}
 </div>
 </article>
 ${weitere(a)}
+${weiterHeft()}
 </main>
 ` + fuss;
 }
 
 let ALLE = [];
-const karte = (a, gross = false) => `<a class="in-karte${gross ? ' in-karte--gross' : ''}" href="/insights/${a.slug}/"><span class="in-karte-bild${a.bild.typ === 'app' ? ' in-karte-bild--app' : ''}"><img src="${bildSrc(a)}" alt="" loading="${gross ? 'eager' : 'lazy'}" width="1600" height="900"></span><span class="in-karte-text"><span class="in-meta"><span class="in-pill">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumDE(a.datum)}</time></span><b>${esc(a.titel)}</b><span class="in-karte-teaser">${esc(a.teaser)}</span></span></a>`;
-const weitere = (a) => { const w = ALLE.filter((x) => x.slug !== a.slug).slice(0, 3); return w.length ? `<section class="in-weitere"><h2>Weitere Insights</h2><div class="in-raster">${w.map((x) => karte(x)).join('')}</div></section>` : ''; };
-const reportKarte = (r) => `<a class="in-report" href="${esc(r.href)}"><span class="in-report-kopf"><span class="in-pill">${esc(r.art)}</span><time datetime="${r.datum}">${datumDE(r.datum)}</time></span><b>${esc(r.titel)}</b><span>${esc(r.text)}</span><em>Report öffnen${ICON.next}</em></a>`;
+// Aktien eines Artikels: Logo (eingefroren im Artikel) und Kürzel; auf der Artikelseite führen sie zur Aktie
+const aktien = (a, link = false) => `<span class="in-tk">${a.ticker.map((t) => { const logo = a.daten?.aktien?.[t]?.logo, innen = `${logo ? `<img src="${logo}" alt="" width="20" height="20" loading="lazy">` : ''}${esc(t)}`; return link ? `<a class="in-tk-i" href="/aktie/${t}">${innen}</a>` : `<span class="in-tk-i">${innen}</span>`; }).join('')}</span>`;
+const kartenBild = (a, gross = false) => `<span class="in-karte-bild${a.bild.typ === 'app' ? ' in-karte-bild--app' : ''}"><img src="${bildSrc(a)}" alt="" loading="${gross ? 'eager' : 'lazy'}"${gross ? ' fetchpriority="high"' : ''} width="1600" height="900"></span>`;
+// Karte: Bild, Rubrik, Datum, Titel, Teaser, Aktien. In der Übersicht am Telefon eine Zeile mit Bild links, sonst Bild oben.
+const karte = (a) => `<a class="in-karte" href="/insights/${a.slug}/">${kartenBild(a)}<span class="in-karte-text"><span class="in-meta"><span class="in-pill in-pill--still">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumDE(a.datum)}</time></span><b>${esc(a.titel)}</b><span class="in-karte-teaser">${esc(a.teaser)}</span>${aktien(a)}</span></a>`;
+// Der neueste Artikel füllt den ersten Bildschirm: Bild randlos, Titel darauf, Teaser darunter
+const aufmacherKarte = (a) => `<a class="in-top" href="/insights/${a.slug}/">${kartenBild(a, true)}<span class="in-top-text"><span class="in-meta"><span class="in-pill">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumDE(a.datum)}</time></span><b>${esc(a.titel)}</b>${aktien(a)}</span><span class="in-karte-teaser">${esc(a.teaser)}</span></a>`;
+const weitere = (a) => { const w = ALLE.filter((x) => x.slug !== a.slug).slice(0, 3); return w.length ? `<section class="in-weitere"><h2 class="in-h2">Weitere Insights</h2>${VUUI.rail(w.map((x) => karte(x)), { label: 'Weitere Insights', width: 264 })}</section>` : ''; };
+const reportKarte = (r) => `<a class="in-report vu-night" href="${esc(r.href)}"><span class="in-report-kopf"><span class="in-pill">${esc(r.art)}</span><time datetime="${r.datum}">${datumDE(r.datum)}</time></span><b>${esc(r.titel)}</b><span>${esc(r.text)}</span><em>Report öffnen${ICON.next}</em></a>`;
+
+// Bühne für Aktienmagazin und Aktienreport (Owner 14.11.2026: beide gingen unter): Titelseite groß, Nummer, Titel,
+// Zahlenreihe (Seiten, Woche oder Nummer, PDF-Größe) und die zwei Knöpfe. „gross“ = Kopf einer eigenen Seite (h1),
+// „breit“ = allein in der Zeile (Übersicht Aktienmagazin und Reports); sonst stehen zwei Bühnen nebeneinander.
+function buehne({ ton, gross = false, breit = false, href, lesen, cover, alt, kicker, titel, text, fakten, pdf, pdfMB }) {
+  const tag = gross ? 'header' : 'section', h = gross ? 'h1' : 'h2';
+  return `<${tag} class="in-buehne in-buehne--${ton}${ton === 'nacht' ? ' vu-night' : ''}${gross ? ' in-buehne--gross' : breit ? ' in-buehne--breit' : ''}">
+<a class="in-buehne-cover" href="${esc(href)}"><img src="${esc(cover)}" alt="${esc(alt)}" width="560" height="792" loading="${gross ? 'eager' : 'lazy'}"></a>
+<span class="in-kicker">${kicker}</span>
+<${h}>${esc(titel)}</${h}>
+<p class="in-buehne-sub">${esc(text)}</p>
+${VUUI.stats(fakten)}
+<div class="in-links"><a class="vu-btn vu-btn--sm${ton === 'lime' ? ' vu-btn--ink' : ''}" href="${esc(href)}">${lesen}${ICON.next}</a><a class="vu-btn vu-btn--sm vu-btn--line" href="${esc(pdf)}" download>PDF laden (${pdfMB} MB)</a></div>
+</${tag}>`;
+}
+// „Weiter“-Karte am Seitenende (VUUI.next): vom Artikel zum Heft, vom Heft zum Report und zurück
+const weiterHeft = () => { const h = LOADED.magazin[0]; return h ? VUUI.next({ title: `Aktienmagazin Nr. ${h.nr}: ${h.titel}`, sub: `${h.seiten} Seiten · KW ${h.kw}`, href: heftUrl(h) }) : ''; };
+const weiterReport = () => { const r = LOADED.reports.find((x) => x.seiten); return r ? VUUI.next({ title: `${r.art} Nr. ${r.nr}: ${r.titel}`, sub: `${r.seiten} Seiten · ${datumLang(r.datum)}`, href: r.href }) : weiterHeft(); };
 
 function uebersicht(artikel, reports) {
-  const [erst, ...rest] = artikel;
+  const [erst, ...rest] = artikel, ohneSeiten = reports.filter((r) => !r.seiten);
+  const buehnen = [magazinTeaser(LOADED.magazin[0]), ...reports.filter((r) => r.seiten).slice(0, 1).map((r) => reportTeaser(r))].filter(Boolean);
   return head({ title: 'Insights · Tagesthemen, Aktienmagazin und Reports · Vision Universe', description: 'Tagesthemen von der Börse, recherchiert und mit den Daten von Vision Universe eingeordnet: Kurse, Geschäftszahlen, Charttechnik und große Fonds. Dazu jede Woche das Aktienmagazin.', canonical: '/insights/', image: TEILBILD }) + `<main id="in-main" class="in-wrap">
 ${tabs('artikel')}
-<header class="in-hub"><span class="in-kicker">Insights</span><h1>Was die Börse heute bewegt. Und was die Daten dazu sagen.</h1><p class="in-lead">Jeden Tag ein bis zwei Themen: recherchiert, eingeordnet und mit Kursen, Geschäftszahlen und Fondsdaten aus Vision Universe unterlegt.</p></header>
-${erst ? karte(erst, true) : '<p>Noch keine Artikel.</p>'}
+${erst ? aufmacherKarte(erst) : '<p>Noch keine Artikel.</p>'}
+<header class="in-hub in-hub--zeile"><span class="in-kicker">Insights</span><h1>Was die Börse heute bewegt. Und was die Daten dazu sagen.</h1><p class="in-lead">Jeden Tag ein bis zwei Themen: recherchiert, eingeordnet und mit Kursen, Geschäftszahlen und Fondsdaten aus Vision Universe unterlegt.</p></header>
+${buehnen.length ? `<div class="in-buehnen">${buehnen.join('\n')}</div>` : ''}
 ${rest.length ? `<section><h2 class="in-h2">Neueste Artikel</h2><div class="in-raster">${rest.map((a) => karte(a)).join('')}</div></section>` : ''}
-${magazinTeaser(LOADED.magazin[0])}
-${reports.filter((r) => r.seiten).slice(0, 1).map(reportTeaser).join('')}
-${reports.filter((r) => !r.seiten).length ? `<section id="reports"><div class="in-h2-zeile"><h2 class="in-h2">Reports</h2><a href="/insights/reports/">Alle Reports${ICON.next}</a></div><div class="in-raster">${reports.filter((r) => !r.seiten).slice(0, 3).map(reportKarte).join('')}</div></section>` : ''}
+${ohneSeiten.length ? `<section id="reports"><div class="in-h2-zeile"><h2 class="in-h2">Reports</h2><a href="/insights/reports/">Alle Reports${ICON.next}</a></div><div class="in-raster in-raster--karten">${ohneSeiten.slice(0, 3).map(reportKarte).join('')}</div></section>` : ''}
+${VUUI.next({ title: DISCOVER.label, sub: DISCOVER.claim, href: DISCOVER.href })}
 </main>
 ` + fuss;
 }
 
+// Seiten eines Hefts oder Reports: Inhalt als Schiene mit den Seitenbildern, darunter alle Seiten zum Lesen
+const nn = (n) => String(n).padStart(2, '0');
+const heftInhalt = (basis, inhalt) => `<nav class="in-heft-inhalt" aria-label="Inhalt"><b class="in-vu-label">Inhalt</b>${VUUI.rail(inhalt.map(([s, rubrik, titel]) => `<a class="in-seite" href="#s${nn(s)}"><span class="in-seite-bild"><img src="${basis}seiten/s${nn(s)}.jpg" alt="" width="1100" height="1556" loading="lazy"><span>${nn(s)}</span></span><em>${esc(rubrik)}</em><b>${esc(titel)}</b></a>`), { label: 'Inhalt', width: 132 })}</nav>`;
+const heftSeiten = (basis, anzahl) => `<div class="in-heft-seiten">
+${Array.from({ length: anzahl }, (_, i) => `<img id="s${nn(i + 1)}" src="${basis}seiten/s${nn(i + 1)}.jpg" alt="Seite ${i + 1}" width="1100" height="1556" loading="${i < 2 ? 'eager' : 'lazy'}">`).join('\n')}
+</div>`;
+
 // Aktienreports mit Seiten (aus dem Heft-System): Leseseite wie beim Magazin plus Kurzfassung als Text
 const reportPdf = (r) => `${r.href}${r.pdf}`;
-const reportTeaser = (r) => `<section class="in-heft-teaser"><a href="${esc(r.href)}"><img src="${esc(r.href)}cover.jpg" alt="Titelseite ${esc(r.titel)}" width="560" height="792" loading="lazy"></a><div><span class="in-kicker">${esc(r.art)} · Nr. ${r.nr}</span><h2>${esc(r.titel)}</h2><p>${esc(r.text)}</p><p class="in-klein">${datumLang(r.datum)} · ${r.seiten} Seiten</p><div class="in-links"><a class="in-btn in-btn--ink" href="${esc(r.href)}">Online lesen${ICON.next}</a><a class="in-btn" href="${esc(reportPdf(r))}" download>PDF laden (${r.pdfMB} MB)</a></div></div></section>`;
+const reportFakten = (r) => [{ value: r.seiten, label: 'Seiten' }, { value: `Nr. ${r.nr}`, label: datumLang(r.datum) }, { value: `${r.pdfMB} MB`, label: 'PDF' }];
+const reportTeaser = (r, breit = false) => buehne({ ton: 'lime', breit, href: r.href, lesen: 'Online lesen', cover: `${r.href}cover.jpg`, alt: `Titelseite ${r.titel}`, kicker: `${esc(r.art)} · Nr. ${r.nr}`, titel: r.titel, text: r.text, fakten: reportFakten(r), pdf: reportPdf(r), pdfMB: r.pdfMB });
 function reportSeite(r) {
-  const nr = (n) => String(n).padStart(2, '0');
-  const seiten = Array.from({ length: r.seiten }, (_, i) => `<img id="s${nr(i + 1)}" src="${r.href}seiten/s${nr(i + 1)}.jpg" alt="Seite ${i + 1}" width="1100" height="1556" loading="${i < 2 ? 'eager' : 'lazy'}">`).join('\n');
-  return head({ title: `${r.art}: ${r.titel} · Vision Universe`, description: r.text, canonical: r.href, image: r.href + 'cover.jpg' }) + `<main id="in-main" class="in-wrap">
+  return head({ title: `${r.art}: ${r.titel} · Vision Universe`, description: r.text, canonical: r.href, image: r.href + 'cover.jpg' }) + `<main id="in-main" class="in-wrap in-heftseite">
 ${tabs('reports')}
-<header class="in-heft-kopf"><span class="in-kicker">${esc(r.art)} · Nr. ${r.nr} · ${datumLang(r.datum)}</span><h1>${esc(r.titel)}</h1><p class="in-lead">${esc(r.unterzeile)}</p><div class="in-links"><a class="in-btn in-btn--ink" href="#s01">Lesen${ICON.next}</a><a class="in-btn" href="${esc(reportPdf(r))}" download>PDF laden (${r.pdfMB} MB)</a></div></header>
-<nav class="in-heft-inhalt" aria-label="Inhalt"><b class="in-vu-label">Inhalt</b><ol>${r.inhalt.map(([s, rubrik, titel]) => `<li><a href="#s${nr(s)}"><span>${nr(s)}</span><em>${esc(rubrik)}</em>${esc(titel)}</a></li>`).join('')}</ol></nav>
-<div class="in-heft-seiten">
-${seiten}
-</div>
+${buehne({ ton: 'lime', gross: true, href: '#s01', lesen: 'Lesen', cover: `${r.href}cover.jpg`, alt: `Titelseite ${r.titel}`, kicker: `${esc(r.art)} · Nr. ${r.nr} · ${datumLang(r.datum)}`, titel: r.titel, text: r.unterzeile, fakten: reportFakten(r), pdf: reportPdf(r), pdfMB: r.pdfMB })}
+${heftInhalt(r.href, r.inhalt)}
+${heftSeiten(r.href, r.seiten)}
 <section class="in-heft-kurz"><h2 class="in-h2">Kurzfassung</h2>${r.kurzfassung.map((p) => `<p>${esc(p)}</p>`).join('')}</section>
 <p class="in-klein">Keine Anlageberatung. Der Report nennt keine Kursziele und gibt keine Empfehlung. Bilder aus Grand Theft Auto VI: Rockstar Games.</p>
+${weiterHeft()}
 </main>
 ` + fuss;
 }
 
 function reportsSeite(reports) {
+  const ohneSeiten = reports.filter((r) => !r.seiten);
   return head({ title: 'Reports · Aktienreports von Vision Universe', description: 'Aktienreports von Vision Universe: einzelne Unternehmen ausführlich, mit Geschäftsmodell, Zahlen und Daten.', canonical: '/insights/reports/', image: TEILBILD }) + `<main id="in-main" class="in-wrap">
 ${tabs('reports')}
 <header class="in-hub"><span class="in-kicker">Reports</span><h1>Aktienreports</h1><p class="in-lead">Ein Unternehmen ausführlich: Geschäftsmodell, Zahlen, Bewertung im Vergleich und was die Daten von Vision Universe zeigen. Neue Reports erscheinen hier.</p></header>
-${reports.length ? `${reports.filter((r) => r.seiten).map(reportTeaser).join('')}<div class="in-raster">${reports.filter((r) => !r.seiten).map(reportKarte).join('')}</div>` : `<div class="in-leer vu-box"><b>Der erste Aktienreport ist in Arbeit.</b><p>Bis dahin: jeden Tag neue Artikel unter Insights und jede Woche das Aktienmagazin.</p><div class="in-links"><a class="in-btn in-btn--ink" href="/insights/magazin/">Zum Aktienmagazin${ICON.next}</a><a class="in-btn" href="/insights/">Zu den Artikeln</a></div></div>`}
+${reports.length ? `${reports.filter((r) => r.seiten).map((r) => reportTeaser(r, true)).join('\n')}${ohneSeiten.length ? `<div class="in-raster in-raster--karten">${ohneSeiten.map(reportKarte).join('')}</div>` : ''}` : `<div class="in-leer vu-box"><b>Der erste Aktienreport ist in Arbeit.</b><p>Bis dahin: jeden Tag neue Artikel unter Insights und jede Woche das Aktienmagazin.</p><div class="in-links"><a class="vu-btn vu-btn--sm vu-btn--ink" href="/insights/magazin/">Zum Aktienmagazin${ICON.next}</a><a class="vu-btn vu-btn--sm vu-btn--line" href="/insights/">Zu den Artikeln</a></div></div>`}
+${weiterHeft()}
 </main>
 ` + fuss;
 }
 
 // Aktienmagazin: Übersicht aller Ausgaben und je Ausgabe eine Leseseite (Seitenbilder untereinander, PDF zum Laden)
-let LOADED = { magazin: [] };
+let LOADED = { magazin: [], reports: [] };
 const heftUrl = (h) => `/insights/magazin/nr-${h.nr}/`;
-const magazinTeaser = (h) => (h ? `<section class="in-heft-teaser"><a href="${heftUrl(h)}"><img src="${heftUrl(h)}cover.jpg" alt="Titelseite Aktienmagazin Nr. ${h.nr}" width="560" height="792" loading="lazy"></a><div><span class="in-kicker">Aktienmagazin · Nr. ${h.nr}</span><h2>${esc(h.titel)}</h2><p>${esc(h.unterzeile)}</p><p class="in-klein">${datumLang(h.datum)} · ${h.seiten} Seiten · KW ${h.kw}</p><div class="in-links"><a class="in-btn in-btn--ink" href="${heftUrl(h)}">Online lesen${ICON.next}</a><a class="in-btn" href="${heftUrl(h)}vision-universe-aktienmagazin-${h.nr}.pdf" download>PDF laden (${h.pdfMB} MB)</a></div></div></section>` : '');
+const heftPdf = (h) => `${heftUrl(h)}vision-universe-aktienmagazin-${h.nr}.pdf`;
+const heftFakten = (h) => [{ value: h.seiten, label: 'Seiten', tone: 'lime' }, { value: `KW ${h.kw}`, label: datumLang(h.datum) }, { value: `${h.pdfMB} MB`, label: 'PDF' }];
+const magazinTeaser = (h, breit = false) => (h ? buehne({ ton: 'nacht', breit, href: heftUrl(h), lesen: 'Online lesen', cover: `${heftUrl(h)}cover.jpg`, alt: `Titelseite Aktienmagazin Nr. ${h.nr}`, kicker: `Aktienmagazin · Nr. ${h.nr}`, titel: h.titel, text: h.unterzeile, fakten: heftFakten(h), pdf: heftPdf(h), pdfMB: h.pdfMB }) : '');
 
 function magazinUebersicht(hefte) {
   return head({ title: 'Aktienmagazin · Vision Universe', description: 'Das Vision Universe Aktienmagazin: jede Woche die wichtigsten Börsenthemen, eingeordnet mit Kursen, Geschäftszahlen und Fondsdaten. Online lesen oder als PDF laden.', canonical: '/insights/magazin/', image: hefte[0] ? heftUrl(hefte[0]) + 'cover.jpg' : null }) + `<main id="in-main" class="in-wrap">
 ${tabs('magazin')}
 <header class="in-hub"><span class="in-kicker">Aktienmagazin</span><h1>Jede Woche das Heft zur Börse.</h1><p class="in-lead">Titelthema, Einzelanalysen, Berichtssaison, Hedgefonds, Charts und Termine: recherchiert und mit den Daten von Vision Universe unterlegt. Online lesen oder als PDF laden.</p></header>
-${magazinTeaser(hefte[0])}
+${magazinTeaser(hefte[0], true)}
 ${hefte.length > 1 ? `<section><h2 class="in-h2">Frühere Ausgaben</h2><div class="in-hefte">${hefte.slice(1).map((h) => `<a href="${heftUrl(h)}"><img src="${heftUrl(h)}cover.jpg" alt="" loading="lazy" width="560" height="792"><b>Nr. ${h.nr} · ${esc(h.titel)}</b><span>${datumDE(h.datum)}</span></a>`).join('')}</div></section>` : ''}
+${weiterReport()}
 </main>
 ` + fuss;
 }
 
 function heftSeite(h) {
-  const nr = (n) => String(n).padStart(2, '0');
-  const seiten = Array.from({ length: h.seiten }, (_, i) => `<img id="s${nr(i + 1)}" src="${heftUrl(h)}seiten/s${nr(i + 1)}.jpg" alt="Seite ${i + 1}" width="1100" height="1556" loading="${i < 2 ? 'eager' : 'lazy'}">`).join('\n');
-  return head({ title: `Aktienmagazin Nr. ${h.nr}: ${h.titel} · Vision Universe`, description: h.unterzeile, canonical: heftUrl(h), image: heftUrl(h) + 'cover.jpg' }) + `<main id="in-main" class="in-wrap">
+  return head({ title: `Aktienmagazin Nr. ${h.nr}: ${h.titel} · Vision Universe`, description: h.unterzeile, canonical: heftUrl(h), image: heftUrl(h) + 'cover.jpg' }) + `<main id="in-main" class="in-wrap in-heftseite">
 ${tabs('magazin')}
-<header class="in-heft-kopf"><span class="in-kicker">Aktienmagazin · Nr. ${h.nr} · ${datumLang(h.datum)}</span><h1>${esc(h.titel)}</h1><p class="in-lead">${esc(h.unterzeile)}</p><div class="in-links"><a class="in-btn in-btn--ink" href="#s01">Lesen${ICON.next}</a><a class="in-btn" href="${heftUrl(h)}vision-universe-aktienmagazin-${h.nr}.pdf" download>PDF laden (${h.pdfMB} MB)</a></div></header>
-<nav class="in-heft-inhalt" aria-label="Inhalt"><b class="in-vu-label">Inhalt</b><ol>${h.inhalt.map(([s, rubrik, titel]) => `<li><a href="#s${nr(s)}"><span>${nr(s)}</span><em>${esc(rubrik)}</em>${esc(titel)}</a></li>`).join('')}</ol></nav>
-<div class="in-heft-seiten">
-${seiten}
-</div>
+${buehne({ ton: 'nacht', gross: true, href: '#s01', lesen: 'Lesen', cover: `${heftUrl(h)}cover.jpg`, alt: `Titelseite Aktienmagazin Nr. ${h.nr}`, kicker: `Aktienmagazin · Nr. ${h.nr} · ${datumLang(h.datum)}`, titel: h.titel, text: h.unterzeile, fakten: heftFakten(h), pdf: heftPdf(h), pdfMB: h.pdfMB })}
+${heftInhalt(heftUrl(h), h.inhalt)}
+${heftSeiten(heftUrl(h), h.seiten)}
+${weiterReport()}
 </main>
 ` + fuss;
 }
@@ -291,7 +330,7 @@ ${urls.map(([u, d]) => `<url><loc>${SITE}${u}</loc>${d ? `<lastmod>${d}</lastmod
 
 export function build() {
   const artikel = loadArtikel(), reports = loadReports(), hefte = loadMagazin();
-  ALLE = artikel; LOADED = { magazin: hefte };
+  ALLE = artikel; LOADED = { magazin: hefte, reports };
   const files = {
     'insights/index.html': uebersicht(artikel, reports),
     'insights/reports/index.html': reportsSeite(reports),
