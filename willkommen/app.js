@@ -1,11 +1,13 @@
-/* Willkommensseite (/willkommen/): erste Seite nach der Anmeldung, vor allen Produktwelten.
-   Oben Highlights mit Erklaervideos (config/stories.json), darunter alle Produkte, dann Neuigkeiten
-   aus dem Team (config/news.json). Beide Dateien werden von Hand gepflegt; die Pruefregeln liegen
-   in validateStories() und validateNews() und laufen in willkommen/tests.
-   "Gesehen" merkt sich der Browser je Story und Fassung (rev). */
+/* Home (/willkommen/): erste Seite nach der Anmeldung und Ziel des Dock-Platzes „Home“ (App-Konzept 2, Owner 14.11.2026).
+   Von oben: Gruss, Ziel-Karte, „Deine Aktien“ (Watchlist als Schiene, nur mit Konto und Eintraegen), „Dein Universe“
+   (alle Module als Kacheln), „Heute zu lesen“ (oeffentliche Liste /insights/artikel.json, nur gelesen), „Kurz erklaert“
+   (Start-Video und Erklaervideos, config/stories.json), Neuigkeiten aus dem Team (config/news.json), „Weiter“.
+   stories.json und news.json werden von Hand gepflegt; die Pruefregeln liegen in validateStories() und validateNews()
+   und laufen in willkommen/tests. "Gesehen" merkt sich der Browser je Story und Fassung (rev).
+   Bausteine aus assets/vu-ui.js (VUUI): tap, rail, ring, chg, logo, hud, next, popup. */
 (function (global) {
   'use strict';
-  var STORIES = '/willkommen/config/stories.json', NEWS = '/willkommen/config/news.json';
+  var STORIES = '/willkommen/config/stories.json', NEWS = '/willkommen/config/news.json', INSIGHTS = '/insights/artikel.json';
   var SEEN_KEY = 'vu-welcome-seen-v1', ICONS = '/assets/product-icons.svg#';
   var MIN_S = 15, MAX_S = 45;
 
@@ -172,17 +174,18 @@
     if (allBtn) allBtn.onclick = function () { openStory(firstNew || all[0].id, allBtn); };
     paintSeen();
   }
+  /* „Dein Universe“: jedes Modul als antippbare Kachel (VUUI .vu-tap) mit Symbol, Name und seiner Zeile. */
   function renderProducts(host) {
     var list = h('ul', 'wk-products');
     PRODUCTS.forEach(function (p) {
-      var li = h('li', p.id === 'atlas' ? 'wk-product-row' : ''), a = h('a', 'wk-product'), ic = h('span', 'wk-product-icon'), go = h('span', 'wk-product-go');
+      var li = h('li'), a = h('a', 'vu-tap wk-product'), ic = h('span', 'vu-hud wk-product-icon'), go = h('span', 'wk-product-go');
       a.href = p.href; a.dataset.product = p.id;
       ic.appendChild(icon(p.id)); go.innerHTML = CHEVRON;
       a.append(ic, go, h('strong', 'wk-product-name', p.name), h('span', 'wk-product-text', p.text));
       li.appendChild(a); list.appendChild(li);
     });
     host.replaceChildren(list);
-    // "Alle Produkte" oeffnet das globale Menue mit allen Welten (auch Elliott, Hedgefonds, Dashboard, Macro, ETF ...).
+    // „Alle Module“ oeffnet das globale Menue „Dein Universe“ mit allen Welten (auch Portfolios, Dashboard, Macro, ETF ...).
     var all = doc.getElementById('wk-products-all');
     if (all) all.onclick = function () { var nav = doc.querySelector('vu-navigation'); if (nav && nav.openMenu) nav.openMenu(all); else global.location.href = '/discover/'; };
   }
@@ -205,7 +208,7 @@
     fitNews(); if (doc.fonts && doc.fonts.ready) doc.fonts.ready.then(fitNews);
     if (global.ResizeObserver) new ResizeObserver(function () { requestAnimationFrame(fitNews); }).observe(host); else global.addEventListener('resize', fitNews);
     var all = doc.getElementById('wk-news-all');
-    if (all) all.onclick = function () { openNewsSheet(items, all); };
+    if (all) all.onclick = function () { openNewsSheet(items); };
   }
   // Der Text der Meldung bekommt so viele Zeilen, wie auf den Bildschirm passen (Rest mit "…"), statt mitten in der Zeile abzureissen.
   function fitNews() {
@@ -225,18 +228,11 @@
     '<circle cx="60" cy="90" r="2.4" fill="#fff" opacity=".4"/><circle cx="68" cy="90" r="2.4" fill="#fff" opacity=".4"/><circle cx="76" cy="90" r="2.4" fill="#fff" opacity=".4"/></g>' +
     '<path d="M58 86 78 70l12 8 22-26 14 6 18-30" fill="none" stroke="#c8f531" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" style="filter:drop-shadow(0 0 6px rgba(200,245,49,.7))"/>' +
     '<path d="m138 22 9-3-1 10" fill="none" stroke="#c8f531" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-  function openNewsSheet(items, opener) {
-    var back = h('div', 'wk-sheet'), panel = h('div', 'wk-sheet-panel'), head = h('div', 'wk-sheet-head'), close = h('button', 'wk-sheet-close', '×'), list = h('ol', 'wk-sheet-list');
-    back.setAttribute('role', 'dialog'); back.setAttribute('aria-modal', 'true'); back.setAttribute('aria-label', 'Alle Neuigkeiten');
-    close.type = 'button'; close.setAttribute('aria-label', 'Schließen');
-    head.append(h('h2', '', 'Alle Neuigkeiten'), close);
+  /* „Alle Neuigkeiten“ im gemeinsamen Fenster (VUUI.popup: Griff, Fokusfalle, Escape, Fokus zurueck zum Ausloeser). */
+  function openNewsSheet(items) {
+    var list = h('ol', 'wk-sheet-list');
     items.forEach(function (item) { list.appendChild(newsItem(item)); });
-    panel.append(head, list); back.appendChild(panel); doc.body.appendChild(back);
-    doc.documentElement.classList.add('wk-story-open');
-    function done() { back.remove(); doc.documentElement.classList.remove('wk-story-open'); doc.removeEventListener('keydown', key, true); if (opener) opener.focus({ preventScroll: true }); }
-    function key(e) { if (e.key === 'Escape') { e.preventDefault(); done(); } }
-    close.onclick = done; back.onclick = function (e) { if (e.target === back) done(); };
-    doc.addEventListener('keydown', key, true); close.focus();
+    if (global.VUUI && global.VUUI.popup) global.VUUI.popup({ id: 'wk-news-pop', title: 'Alle Neuigkeiten', body: list });
   }
 
   /* ---------- Vollbild-Ansicht der Highlights ---------- */
@@ -390,11 +386,6 @@
   }
 
   /* ---------- Start ---------- */
-  // Sichtbare Hoehe unter der Kopfleiste: die Seite passt auf dem Handy in einen Bildschirm.
-  function measureTop() {
-    var main = doc.getElementById('wk-main');
-    if (main) doc.documentElement.style.setProperty('--wk-top', Math.max(0, Math.round(main.getBoundingClientRect().top + global.scrollY)) + 'px');
-  }
   // Rueckmeldung nach Konto-Schritten (/konto/ leitet nach E-Mail-Bestaetigung bzw. bestaetigter Zahlung hierher).
   // Nur feste Texte; der Parameter wird danach aus der Adresse entfernt.
   var FLASH = {
@@ -414,9 +405,19 @@
     timer = setTimeout(hide, reduced() ? 12000 : 8000);
     try { global.history.replaceState(null, '', global.location.pathname + global.location.hash); } catch (e) { /* nur Komfort */ }
   }
-  /* „Deine Watchlist heute“ (E02): Zähler im Plus, größte Bewegung, die ersten drei Aktien (C10). Nur mit Konto und Einträgen. */
+  /* „Deine Aktien“: zuerst die Zusammenfassung als Ring (wie viele im Plus, groesste Bewegung), dann je Aktie eine Karte mit Logo,
+     Bewegung, Name, Schluss und Jahresverlauf. Dieselben Daten wie bisher (core/watchlist-view.js, mein-dashboard/today.js);
+     nur mit Konto und Eintraegen. Alles Markup aus VUUI (maskiert jede Eingabe) bzw. VUChart.sparkline (nur Zahlen). */
   function fetchJson(path) { return fetch(path, { cache: 'default', credentials: 'omit' }).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status); return r.json(); }); }
   function cleanName(n) { return String(n || '').replace(/,? (Inc|Corp|Corporation|Ltd|Limited|plc|N\.V\.|S\.A\.|AG|SE|Holdings?|Co)\.?$/i, '').replace(/ Class [A-Z]$/, '').trim(); }
+  function thin(values, n) {
+    if (values.length <= n) return values;
+    var out = [], step = (values.length - 1) / (n - 1);
+    for (var i = 0; i < n - 1; i++) out.push(values[Math.round(i * step)]);
+    out.push(values[values.length - 1]);
+    return out;
+  }
+  var WATCH_SHOWN = 12;
   function renderWatch(A) {
     var C = global.VUCore || {}, W = C.WatchlistView, Id = C.Identity, U = global.VUUI, T = global.VUToday, box = doc.getElementById('wk-watch');
     if (!box || !W || !Id || !U || !T) return;
@@ -426,26 +427,59 @@
       var keys = items.map(function (i) { return i.ticker && Id.normalizeTicker(i.ticker) ? Id.shardKey(i.ticker) : null; }).filter(Boolean);
       return W.load(fetchJson, keys, null).then(function (res) {
         var ix = W.index(res.doc), views = items.map(function (i) { return W.view(ix, i, new Date()); });
-        return T.load(fetchJson, Id, views, 12).then(function (moves) {
+        return T.load(fetchJson, Id, views, WATCH_SHOWN).then(function (moves) {
           views.forEach(function (v, k) { var m = moves[k] || {}; v.pct = typeof m.pct === 'number' ? m.pct : null; v.spark = m.values || []; });
-          var sum = T.summary(views.slice(0, 12)), last = views.map(function (v) { return v.price && v.price.date; }).filter(Boolean).sort().pop();
+          var sum = T.summary(views.slice(0, WATCH_SHOWN)), last = views.map(function (v) { return v.price && v.price.date; }).filter(Boolean).sort().pop();
           doc.getElementById('wk-watch-all').textContent = 'Alle ' + items.length;
-          doc.getElementById('wk-watch-n').textContent = sum.measured ? sum.up + '/' + sum.measured : String(items.length);
-          doc.getElementById('wk-watch-up').textContent = sum.measured ? 'im Plus' + (last ? ' am ' + DAYS[new Date(last + 'T12:00:00Z').getUTCDay()] : '') : (items.length === 1 ? 'Aktie' : 'Aktien') + ' auf deiner Watchlist';
-          doc.getElementById('wk-watch-big').textContent = sum.biggest ? 'Größte Bewegung: ' + sum.biggest.ticker + ' ' + U.pct(sum.biggest.pct) : 'Die Tagesbewegung ist gerade nicht verfügbar.';
-          var rows = doc.getElementById('wk-watch-rows'), html = '';
-          views.slice(0, 3).forEach(function (v) {
+          var up = sum.measured ? 'im Plus' + (last ? ' am ' + DAYS[new Date(last + 'T12:00:00Z').getUTCDay()] : '') : (items.length === 1 ? 'Aktie' : 'Aktien') + ' auf deiner Watchlist';
+          var big = sum.biggest ? 'Größte Bewegung: ' + sum.biggest.ticker + ' ' + U.pct(sum.biggest.pct) : 'Die Tagesbewegung ist gerade nicht verfügbar.';
+          var count = sum.measured ? sum.up + '/' + sum.measured : String(items.length);
+          var cards = [U.tap((sum.measured ? U.ring(sum.up / sum.measured * 100, { size: 76, stroke: 9, text: count, label: sum.up + ' von ' + sum.measured + ' im Plus, Anteil' })
+            : '<b class="wk-sum-n vu-num">' + U.esc(count) + '</b>') + '<span class="wk-sum-t"><strong>' + U.esc(up) + '</strong><small>' + U.esc(big) + '</small></span>',
+            { href: '/mein-dashboard/', tone: 'night', cls: 'wk-sum' })];
+          views.slice(0, WATCH_SHOWN).forEach(function (v) {
             var priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number';
             var href = (v.links || []).filter(function (l) { return l.product === 'discover'; }).map(function (l) { return l.href; })[0] || null;
-            html += U.stockRow({ ticker: v.ticker || '–', name: cleanName(v.name) || v.ticker, sub: [v.ticker, v.exchange].filter(Boolean).join(' · '), href: href,
-              chart: global.VUChart && v.spark.length > 1 ? global.VUChart.sparkline(v.spark) : '', price: priced ? v.price.close : null,
-              currency: priced ? v.price.currency : null, changePct: v.pct, noPrice: !priced });
+            var name = cleanName(v.name) || v.ticker || '–', spark = global.VUChart && priced && v.spark.length > 1 ? global.VUChart.sparkline(thin(v.spark, 60), { width: 164, height: 52 }) : '';
+            cards.push(U.tap('<span class="wk-st-top">' + U.logo(v.ticker || '–') + (priced ? U.chg(v.pct) : '') + '</span>' +
+              '<b class="wk-st-name">' + U.esc(name) + '</b><span class="wk-st-sub">' + U.esc([v.ticker, v.exchange].filter(Boolean).join(' · ')) + '</span>' +
+              '<span class="wk-st-price vu-num">' + (priced ? U.esc(U.money(v.price.close, v.price.currency)) : 'kein Kurs') + '</span>' +
+              '<span class="wk-st-chart" aria-hidden="true">' + spark + '</span>',
+              { href: href || '/mein-dashboard/', cls: 'wk-st', label: name + (priced ? ', ' + U.money(v.price.close, v.price.currency) + ', ' + U.movementLabel(U.pct(v.pct)) : ', kein Kurs') }));
           });
-          rows.innerHTML = html; /* nur VUUI-Markup: VUUI maskiert jede Eingabe */
+          doc.getElementById('wk-watch-rail').innerHTML = U.rail(cards, { label: 'Aktien auf deiner Watchlist', width: 164 }); /* nur VUUI-Markup */
           box.hidden = false;
         });
       });
-    }).catch(function () { /* ohne Kurse bleibt der Abschnitt verborgen; die Watchlist steht unter Platz 1 */ });
+    }).catch(function () { /* ohne Kurse bleibt der Abschnitt verborgen; die Watchlist steht unter „Ich“ */ });
+  }
+  /* „Heute zu lesen“: die oeffentliche Artikelliste der Insights (products/insights/build.mjs schreibt /insights/artikel.json).
+     Der neueste Artikel als grosses Bild, die naechsten drei als Schiene. Nur gelesen; fehlt die Liste, bleibt der Abschnitt weg. */
+  function insightCard(a, big) {
+    var card = h('a', 'wk-art' + (big ? ' wk-art--big' : '')), img = h('span', 'wk-art-img'), copy = h('span', 'wk-art-copy'), meta = h('span', 'wk-art-meta');
+    card.href = a.href;
+    if (internal(a.bild)) img.style.backgroundImage = 'url("' + encodeURI(a.bild) + '")';
+    img.setAttribute('aria-hidden', 'true');
+    var time = h('time', '', formatDate(a.datum)); time.dateTime = a.datum;
+    if (global.VUUI && a.ticker && a.ticker[0]) { var lg = h('span', 'wk-art-logo'); lg.innerHTML = global.VUUI.logo(a.ticker[0]); meta.appendChild(lg); /* nur VUUI-Markup */ }
+    meta.appendChild(time);
+    copy.append(h('span', 'wk-art-tag', a.rubrik || 'Insights'), h('strong', 'wk-art-title', a.titel), meta);
+    card.append(img, copy);
+    return card;
+  }
+  function validInsight(a) { return a && typeof a.titel === 'string' && a.titel && /^\d{4}-\d{2}-\d{2}$/.test(a.datum || '') && /^\/insights\/[a-z0-9-]+\/$/.test(a.href || ''); }
+  function isoDay(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
+  function renderRead(config) {
+    var box = doc.getElementById('wk-read'), host = doc.getElementById('wk-read-list');
+    var list = (config && Array.isArray(config.artikel) ? config.artikel : []).filter(validInsight).slice(0, 4);
+    if (!box || !host || !list.length) return;
+    doc.getElementById('wk-read-title').textContent = list[0].datum === isoDay(new Date()) ? 'Heute zu lesen' : 'Zuletzt in den Insights';
+    var rest = h('div', 'vu-rail wk-art-rail');
+    rest.setAttribute('role', 'list'); rest.setAttribute('aria-label', 'Weitere Artikel');
+    list.slice(1).forEach(function (a) { var li = h('div'); li.setAttribute('role', 'listitem'); li.appendChild(insightCard(a, false)); rest.appendChild(li); });
+    host.replaceChildren(insightCard(list[0], true));
+    if (list.length > 1) host.appendChild(rest);
+    box.hidden = false;
   }
   function init() {
     // Erster Start (E11) erscheint einmal nach der E-Mail-Bestätigung, vor Mein Bereich; nicht im Pro-Bestellweg (?konto=pro).
@@ -454,8 +488,6 @@
         global.location.replace('/willkommen/start/?konto=verified'); return;
       }
     } catch (e) { /* ohne Speicher: kein erster Start */ }
-    measureTop(); global.addEventListener('resize', measureTop);
-    if (global.customElements && customElements.whenDefined) customElements.whenDefined('vu-navigation').then(function () { requestAnimationFrame(measureTop); });
     var now = new Date(), title = doc.getElementById('wk-title'), date = doc.getElementById('wk-date');
     if (date) date.textContent = dayLine(now);
     if (title) title.textContent = greeting(now.getHours());
@@ -475,13 +507,19 @@
         });
       });
     }).catch(function () {});
-    // Produkt-Leiste „Mein Bereich“ (Platz 0).
+    // Dock (Home aktiv) und Reiter „Mein Bereich“.
     if (global.VUNavigation) global.VUNavigation.dock({});
     renderProducts(doc.getElementById('wk-products'));
     flash();
+    // Wer noch kein Erklärvideo gesehen hat, findet „Kurz erklärt“ direkt unter der Ziel-Karte; danach steht es weiter unten.
+    var learn = doc.getElementById('wk-learn'), main = doc.getElementById('wk-main'), goalCardEl = doc.getElementById('wk-goal');
+    if (learn && main && goalCardEl && !Object.keys(seen()).length) { main.insertBefore(learn, goalCardEl.nextSibling); main.setAttribute('data-wk-new', ''); }
+    var nextBox = doc.getElementById('wk-next'), first = PRODUCTS[0];
+    if (nextBox && global.VUUI && global.VUUI.next) nextBox.innerHTML = global.VUUI.next({ title: first.name, sub: first.text, href: first.href }); /* nur VUUI-Markup */
     var hl = doc.getElementById('wk-highlights'), news = doc.getElementById('wk-news');
     getJSON(STORIES).then(function (c) { stories = c; renderHighlights(hl); })
       .catch(function () { hl.closest('section').hidden = true; });
+    getJSON(INSIGHTS).then(renderRead).catch(function () { /* ohne Liste bleibt „Heute zu lesen“ verborgen */ });
     getJSON(NEWS).then(function (c) { renderNews(news, c); })
       .catch(function () { news.replaceChildren(h('p', 'wk-empty', 'Neuigkeiten sind gerade nicht erreichbar.')); news.removeAttribute('aria-busy'); });
   }

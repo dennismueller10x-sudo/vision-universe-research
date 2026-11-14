@@ -62,3 +62,21 @@ test('Leerstaat, Detailansicht und Erweiterbarkeit', () => {
   assert.ok(!/localStorage\.setItem\(SEEN_KEY/.test(code), 'Gesehen-Merker der Willkommensseite nur gelesen');
   for (const p of ['discover', 'quant', 'fundamental', 'technical']) assert.match(code, new RegExp(`id: '${p}'`), `Schnellzugriff ${p}`);
 });
+
+test('Ich nach App-Konzept 2: Liste, Ring und Aktie im Fenster aus Vorhandenem; nichts Erfundenes', () => {
+  // gemeinsame Bausteine: Ring (wie viele im Plus, today.js#summary), Fenster (VUUI.popup), Weiter-Karte
+  for (const part of ['T.summary(', 'U.ring(', 'U.popup(', 'U.closeSheet(', 'U.next(', 'U.PERSPECTIVES']) assert.ok(code.includes(part), part);
+  assert.match(html, /\/assets\/vu-ui\.css\?v=vu-ui-1\.4\.0/); assert.match(html, /\/assets\/vu-ui\.js\?v=vu-ui-1\.4\.0/);
+  // die Zeile bleibt ein Verweis zur Aktie; nur der einfache Tipp oeffnet das Fenster, „Ganz öffnen“ traegt dasselbe Ziel
+  assert.match(code, /if \(href\) card\.addEventListener\('click', function \(e\) \{ if \(!plainClick\(e\) \|\| !U\.popup\) return; e\.preventDefault\(\); openStock\(v, card\); \}\);/);
+  assert.match(code, /el\('a', \{className: 'vu-btn', href: href, text: 'Ganz öffnen'\}\)/);
+  assert.match(code, /removeItem\(v, remove\)/, 'Entfernen im Fenster nutzt denselben Weg wie „×“ (mit Rückgängig)');
+  // Perspektiven nur aus den Adressen der Ansicht (core/stock-context.js), keine eigene Adressbildung
+  assert.match(code, /\(v\.links \|\| \[\]\)\.filter\(function \(l\) \{ return l\.product === p\.id; \}\)/);
+  // Wege, die es vorher gab, bleiben; neue Zeilen fuehren nur zu bestehenden Seiten
+  for (const href of ['/konto/', '/konto/einstellungen/', '/konto/watchlist/', '#/gespeichert', '/willkommen/', '/ask/']) assert.ok(html.includes(`href="${href}"`), href);
+  const text = [html.replace(/<script[\s\S]*?<\/script>|<!--[\s\S]*?-->|<[^>]+>/g, ' '), ...(code.match(/'[^'\n]*'/g) || [])].join(' ').toLowerCase();
+  for (const word of ['tagesrunde', 'punkte', 'stufe ', 'abzeichen', 'aufgaben', 'sammlung', 'quiz', 'community', 'deine woche', 'in folge', 'kennengelernt']) assert.ok(!text.includes(word), 'nicht vorhanden: ' + word);
+  for (const word of ['für dich', 'signal', 'kursziel', 'top-pick', 'geheimtipp']) assert.ok(!text.includes(word), 'vermeiden: ' + word);
+  assert.ok(!/empfehlung/.test(text.replace(/keine empfehlung/g, '')), '„Empfehlung“ nur verneint');
+});

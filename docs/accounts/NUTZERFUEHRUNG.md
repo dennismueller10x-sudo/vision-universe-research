@@ -15,6 +15,8 @@ Datenbank, keine neue Datenhaltung, Passwortmaske und Registrierung unverändert
 `/dashboard/` ist das bestehende Research-Dashboard (V6.3) und bleibt unverändert; deshalb liegt der persönliche Bereich unter
 `/mein-dashboard/`. Die globale Hauptnavigation ist unverändert.
 
+**Darstellung nach App-Konzept 2 (Owner 14.11.2026, nur Darstellung, keine neue Funktion):** `/willkommen/` ist „Home“ des Docks: Gruß, Ziel-Karte, „Deine Aktien“ (Watchlist als Schiene mit Ring „im Plus“), „Dein Universe“ (alle Module als Kacheln), „Heute zu lesen“ (öffentliche Liste `/insights/artikel.json`, nur gelesen), „Kurz erklärt“ (steht direkt unter der Ziel-Karte, solange noch kein Video gesehen wurde), Neuigkeiten, „Weiter“. `/mein-dashboard/` ist „Ich“: „Heute“ mit Ring und drei Zahlen, die Watchlist als Liste (ein Tipp öffnet die Aktie im Fenster mit Kurs, Jahresverlauf, ihren Ereignissen, den Perspektiven, „Ganz öffnen“ und „Entfernen“; ab acht Aktien klappen die Zeilen hinter „N weitere“ zusammen), darunter Zeilen zu Konto, Einstellungen, allen Kennzahlen und „Gemerkt“; `/konto/` trägt das Profil als Kopfkarte. Tagesrunde, Serie, Punkte, Quiz, Stufen, Abzeichen und Community aus dem Prototyp sind nicht gebaut (späterer, eigener Schritt).
+
 **Watchlist:** primär über „Mein Dashboard“. `/konto/watchlist/` bleibt unter derselben Adresse als **Detailansicht** (alle Kennzahlen,
 Filter, Notizen, Benachrichtigungswünsche) und führt zurück zum Dashboard. Die Kontonavigation enthält keinen Watchlist-Eintrag mehr,
 sondern abgesetzt „Mein Dashboard →“.
