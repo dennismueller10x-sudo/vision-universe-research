@@ -386,8 +386,8 @@ body.dv2 .dx-search .dx-search-hint:empty{display:none}
    App-Konzept 2 (Owner-Freigabe 14.11.2026): Bildschirm nutzen, Grafik vor Text.
    ===================================================================== */
 /* Die Zeile „Discover · <Bereich>“ wiederholt Kopf und Reiter: sie bleibt für Vorleser, kostet aber keine Zeile mehr. */
-.dv3-welten>.vu-ltag:first-child,.dv3-strategien>.vu-ltag:first-child,.dv3>.vu-ltag:first-child:has(+.vu-lt){position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.dv3-welten>.vu-lt,.dv3-strategien>.vu-lt,.dv3>.vu-ltag:first-child+.vu-lt{margin-top:8px}
+.dv3-welten>.vu-ltag:first-child,.dv3-strategien>.vu-ltag:first-child,.dv3:not([class*="dv3-"])>.vu-ltag:first-child:has(+.vu-lt){position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.dv3-welten>.vu-lt,.dv3-strategien>.vu-lt,.dv3:not([class*="dv3-"])>.vu-ltag:first-child+.vu-lt{margin-top:8px}
 /* Zurück als runder Knopf neben dem Titel statt als eigene Zeile (Thema, Märkte). */
 .dv3-thema>.dv3-back,.dv3-maerkte>.dv3-back{float:left;position:relative;width:36px;height:36px;min-height:0;margin:6px 10px 0 0;border-radius:50%;background:var(--vu-card);color:var(--vu-ink);justify-content:center;gap:0;font-size:0}
 .dv3-thema>.dv3-back::after,.dv3-maerkte>.dv3-back::after{content:"";position:absolute;inset:-4px}
