@@ -57,14 +57,16 @@ async function main() {
   let lensSymbol = null;
   for (const st of Object.values(signals.strategies)) { if (st.open[0]) { lensSymbol = st.open[0].symbol; break; } }
   const routes = [
-    ['home', '/supertrader/', 'h1.st-x-lt'],
+    // App-Konzept 2 (14.11.2026): die Startseite beginnt mit dem Trichter „Muster erkannt · Regel erfüllt · Plan fertig“ (vorher Überschrift h1.st-x-lt).
+    ['home', '/supertrader/', '.st-k-funnel'],
     ['signals', '/supertrader/treffer/', '.st-r-chips button'],
     ['signals-redirect', '/supertrader/signals/?method=DONCHIAN_TURTLE', '.st-r-chips button[aria-pressed="true"][data-v="DONCHIAN_TURTLE"]'],
     ['signals-canslim', '/supertrader/treffer/?method=CANSLIM', '.st-r-row[data-partial], .st-r .vu-blank'],
     ['strategies', '/supertrader/strategies/', 'h1.st-x-lt'],
     ['backtests', '/supertrader/forschung/', '.st-btrow'],
     ['backtests-redirect', '/supertrader/backtests/', '.st-btrow'],
-    ['sources', '/supertrader/sources/', '.st-r-acc'],
+    // App-Konzept 2: je Methode eine Kachel, die ihre Quellen im Fenster öffnet (vorher Aufklappzeile .st-r-acc).
+    ['sources', '/supertrader/sources/', '.st-k-srcm'],
     ...registry.strategies.map((s) => [`strategy-${s.slug}`, `/supertrader/strategies/${s.slug}/`, '.st-r h1.vu-lt, .st-r .st-x-hero h1']),
   ];
   if (lensSymbol) routes.push(['lens', `/supertrader/stock/${lensSymbol}/`, '.st-r-sig']);
@@ -85,7 +87,8 @@ async function main() {
   routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-r, #sf .sf-empty' : '#sf .sf-empty']);
   routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, '.st-r-answer']);
   routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', '.st-r-answer']);
-  const SF_ROUTE_SELECTOR = SF ? { home: '.st-x-today .st-flow', strategies: '.st-x-mr2' } : { home: '.st-r .vu-blank', strategies: '.st-r .vu-blank' };
+  // App-Konzept 2: die drei Stufen stehen als Trichter mit den Zahlen des Kandidatenstands (vorher Ablauf-Leiste .st-flow in derselben Karte).
+  const SF_ROUTE_SELECTOR = SF ? { home: '.st-x-today .st-k-fn[data-stage]', strategies: '.st-x-mr2' } : { home: '.st-r .vu-blank', strategies: '.st-r .vu-blank' };
   // Runde 12: Modelldepot VU Trendfolge 52W - Methode mit Marktampel/Rangliste, Einzelwert mit Status
   const t52file = path.join(SITE, 'supertrader/data/trend52.json');
   if (fs.existsSync(t52file)) {
@@ -146,7 +149,7 @@ async function main() {
       // klassischer Kopf (.st-hero). Seit dem Redesign (#1361) hat die Startseite kein .st-hero
       // mehr; das Warten darauf liess den Login scheitern und die Schutzproben leer laufen. Die Startseite
       // zeigt heute ihre Ueberschrift als h1.st-x-lt (Tagesbild, st-redesign.js); sie gilt ebenfalls als Produkt.
-      const PRODUCT = '.st-r-intro, .st-x-lt, .st-hero';
+      const PRODUCT = '.st-r-intro, .st-x-lt, .st-k-funnel, .st-hero';
       const pass = process.env.RESEARCH_ACCESS_PASSWORD || '';
       const p = await ctx.newPage();
       await p.goto(base + '/supertrader/', { waitUntil: 'domcontentloaded' });
@@ -288,6 +291,24 @@ async function main() {
         }
         if (!TW_PUBLISHED && techRequests.length) errors.push('Technical-Scherbe ohne Veroeffentlichung angefragt: ' + techRequests[0]);
         if (TW_PUBLISHED && techRequests.length > 1) errors.push(`${techRequests.length} Technical-Scherben angefragt (erwartet hoechstens 1)`);
+      }
+      // App-Konzept 2: Tiefe öffnet sich im Fenster. Eine Kachel antippen muss ein Fenster mit Inhalt öffnen, Escape schließt es und gibt die Seite wieder frei.
+      const SHEET_PROBE = { home: ['.st-k-funnel', /Muster erkannt/], signals: ['.st-x-trr', /Aktie öffnen/], strategies: ['.st-x-mr2', /heute erkannt/], backtests: ['.st-btrow', /Pflichtprüfungen/], sources: ['.st-k-srcm', /Quelle/] }[name];
+      if (SHEET_PROBE && await page.locator(SHEET_PROBE[0]).count()) {
+        try {
+          await page.locator(SHEET_PROBE[0]).first().click();
+          const sheet = page.locator('.vu-sheet-backdrop:not([hidden]) .vu-sheet-ui').last();
+          await sheet.waitFor({ timeout: 8000 });
+          await page.waitForTimeout(500);   // Einblenden abwarten, erst dann messen
+          const s = await sheet.evaluate((n) => ({ text: n.innerText, right: n.getBoundingClientRect().right, bottom: n.getBoundingClientRect().bottom, over: n.scrollWidth - n.clientWidth, locked: document.documentElement.classList.contains('vu-sheet-open') }));
+          if (!SHEET_PROBE[1].test(s.text)) errors.push('Fenster ohne erwarteten Inhalt ' + SHEET_PROBE[1]);
+          if (s.over > 1 || s.right > vp.viewport.width + 1 || s.bottom > vp.viewport.height + 1) errors.push('Fenster ragt aus dem Bildschirm');
+          if (!s.locked) errors.push('Seite hinter dem Fenster rollt weiter');
+          const word = (s.text.match(/\bSignal\w*|Luft bis zum Stop|Einstiegschance\w*|schlägt den Markt|Risiko je Kauf/) || [])[0];
+          if (word) errors.push('Wortwahl (Folie SX08) im Fenster: „' + word + '“');
+          await page.keyboard.press('Escape');
+          await page.waitForFunction(() => !document.querySelector('.vu-sheet-backdrop:not([hidden])') && !document.documentElement.classList.contains('vu-sheet-open'), null, { timeout: 5000 });
+        } catch (e) { errors.push('Fenster öffnet oder schließt nicht: ' + String(e.message).split('\n')[0]); }
       }
       const shot = path.join(OUT, `${vpName}-${name}.png`);
       if (/^tech-/.test(name)) { const n = page.locator('#st-technical'); if (await n.count()) await n.scrollIntoViewIfNeeded(); }
