@@ -19,6 +19,10 @@ const local = (h) => join(ROOT, h.split(/[?#]/)[0]);
 /* Routen der App: dürfen nicht verlinkt sein, solange die App nicht verfügbar ist. */
 const APP_ROUTES = /^\/(discover|quant|fundamental|technical|screener|supertrader|hedgefonds|elliott|portfolios|vorsorge|ask|konto|mein-dashboard|willkommen|aktie|preise|dashboard|app)(\/|$)/;
 const PAGES = ["index.html", "app/index.html", ...MODULES.map((m) => `module/${m.id}/index.html`), "news/index.html", "magazin/index.html", "faq/index.html"];
+/* Das Ziel www ist erst mit dem Umzug eingecheckt (landing/site/). Solange es fehlt, prüft diese Datei nur die Vorschau;
+   dieselbe Datei gilt damit vor und nach dem Umzug. */
+const HAS_WWW = existsSync(join(ROOT, "landing/site/pages.json"));
+const TARGETS = () => [["research", SITE, BASE], ...(HAS_WWW ? [["www", buildWww(), ""]] : [])];
 
 test("W2-1 · 17 Seiten; die committeten Seiten entsprechen dem Bau (node products/website2/build.mjs)", () => {
   assert.deepEqual([...SITE.keys()], PAGES);
@@ -195,7 +199,7 @@ test("W2-11 · Farben: nur Schwarz, Weiß, Grau und das eine Neongrün, kein Dun
 
 test("W2-12 · Instagram und TikTok: schlichte Links mit Namen im Fuß und im Menü jeder Seite, keine Einbettung", () => {
   assert.deepEqual(SOCIAL.map((x) => x[2]), ["https://www.instagram.com/app.visionuniverse/", "https://www.tiktok.com/@app.visionuniverse"]);
-  for (const [name, pages] of [["research", SITE], ["www", buildWww()]]) for (const [p, html] of pages) {
+  for (const [name, pages] of TARGETS()) for (const [p, html] of pages) {
     const foot = html.match(/<footer[\s\S]*<\/footer>/)[0], menu = html.match(/<nav class="mg" id="site-panel"[\s\S]*?<\/nav>/)[0];
     for (const part of [foot, menu]) for (const [, label, url] of SOCIAL) {
       const link = part.match(new RegExp(`<a class="sc" href="${url.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*>`))?.[0];
@@ -208,7 +212,7 @@ test("W2-12 · Instagram und TikTok: schlichte Links mit Namen im Fuß und im Me
 });
 
 test("W2-13 · Startseite führt zu jeder Unterseite, jede Unterseite zurück und weiter (beide Ziele)", () => {
-  for (const [name, pages, root] of [["research", SITE, BASE], ["www", buildWww(), ""]]) {
+  for (const [name, pages, root] of TARGETS()) {
     const main = (html) => html.match(/<main[\s\S]*<\/main>/)[0];
     const start = main(pages.get("index.html"));
     for (const p of SITE_PAGES.slice(1)) assert.ok(start.includes(`href="${root || "./"}${p}"`), `${name}: Startseite ohne Link im Inhalt zu ${p}`);
@@ -221,7 +225,7 @@ test("W2-13 · Startseite führt zu jeder Unterseite, jede Unterseite zurück un
   }
 });
 
-test("W2-14 · www: die committeten Seiten und Dateien unter landing/ entsprechen dem Erzeuger (node products/website2/build.mjs --target www)", (t) => {
+test("W2-14 · www: die committeten Seiten und Dateien unter landing/ entsprechen dem Erzeuger und dem Insights-Stand (node products/website2/build.mjs --target www)", { skip: !HAS_WWW && "www ist noch nicht eingecheckt (kommt mit dem Umzug)" }, () => {
   const snapshot = loadSnapshot(), www = buildWww(snapshot);
   assert.deepEqual([...www.keys()], PAGES);
   for (const [p, html] of www) assert.equal(readFileSync(join(ROOT, "landing", p), "utf8"), html, `landing/${p} veraltet`);
@@ -247,7 +251,8 @@ test("W2-14 · www: die committeten Seiten und Dateien unter landing/ entspreche
     assert.ok(!/data-live-|data-feed|data-mag-|"\/website2\/|research\.visionuniverse\.de\/(?!insights\/)/.test(html), `landing/${p}: Rest der Vorschau`);
     for (const h of refs(html).filter((x) => /^https:\/\/research\./.test(x))) assert.match(h, /^https:\/\/research\.visionuniverse\.de\/insights\//, `landing/${p}: nur öffentlich lesbare Insights-Seiten`);
   }
-  /* Veraltete Inhalte blockieren nicht (CLAUDE.md): Hinweis, wenn /insights/ neuer ist als der Auszug von www. */
-  const now = makeSnapshot();
-  if (JSON.stringify(now) !== JSON.stringify(snapshot)) t.diagnostic(`www zeigt den Insights-Stand ${snapshot.stand}; /insights/ ist neuer (${now.stand}). Auffrischen: node products/website2/build.mjs --target www`);
+  /* Der Auszug ist ein erzeugtes Artefakt von /insights/: products/insights/build.mjs frischt ihn im selben Schritt auf.
+     Wer Artikel, Heft oder Report ändert, bringt deshalb die www-Seiten im selben Commit mit. */
+  assert.deepEqual(snapshot, makeSnapshot(), "www zeigt einen älteren Insights-Stand: node products/insights/build.mjs (oder node products/website2/build.mjs --target www) ausführen und landing/ mit committen");
+  assert.match(readFileSync(join(ROOT, "products/insights/build.mjs"), "utf8"), /www\.writeWww\(\)/, "der Insights-Bau frischt www im selben Schritt auf");
 });

@@ -120,7 +120,9 @@ try{
       await page.goto(base+'/after/'+path,{waitUntil:'networkidle'});
       const afterText=await page.locator('body').innerText(),afterLinks=await page.locator('a').evaluateAll(es=>es.map(e=>e.getAttribute('href')));
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name}: legal overflow`);
-      assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(8, 10, 12)');
+      // Legal and confirmation pages wear the light design of the website (owner 14.11.2026); only legal.css changed.
+      assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 255, 255)');
+      assert.match(await page.locator('.brand').evaluate(e=>getComputedStyle(e,'::before').content),/^"VISION UNIVERSE®"/);
       const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(axe.violations.map(v=>({id:v.id,target:v.nodes.map(n=>n.target)})),[],`${name}: ${path} accessibility`);
       assert.match(await page.locator('link[rel=stylesheet]').getAttribute('href'),/legal\.css\?v=[a-f0-9]{16}$/,'Legal styles bypass stale browser caches');
       if(['desktop','iphone'].includes(name)&&['impressum/','datenschutz/','newsletter/bestaetigen/'].includes(path))await page.screenshot({path:resolve(review,'after-'+path.split('/')[0]+'-'+name+'.png'),fullPage:path==='impressum/'});

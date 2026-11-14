@@ -252,7 +252,7 @@ ${cols.map(([t, l]) => `<div><h2>${t}</h2><ul>${l.map(([n, h]) => `<li><a href="
   <meta property="og:image" content="${WWW}assets/social-preview.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="Vision Universe – App bald verfügbar. Investieren mit Weitblick.">
+  <meta property="og:image:alt" content="Vision Universe: Die Börse ist laut. Wir bringen Ordnung hinein. App bald verfügbar.">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="${WWW}assets/social-preview.png">
   <link rel="icon" href="${c.favicon}" type="image/png">
@@ -471,12 +471,30 @@ export function syncWww() {
   return snapshot;
 }
 
+/* www vollständig auffrischen: Auszug, Dateien unter landing/site/ und die 17 Seiten. Gibt die geänderten Seiten zurück.
+   Auch products/insights/build.mjs ruft das nach jedem Bau auf, damit ein neuer Artikel, ein neues Heft oder ein neuer
+   Report im selben Commit auf www erscheint (Wächter: Test W2-14). */
+export function writeWww() {
+  const pages = buildWww(syncWww()), changed = [];
+  for (const [p, html] of pages) {
+    const file = join(LANDING, p);
+    if (existsSync(file) && readFileSync(file, "utf8") === html) continue;
+    mkdirSync(dirname(file), { recursive: true }); writeFileSync(file, html); changed.push(`landing/${p}`);
+  }
+  return { pages: pages.size, changed };
+}
+
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const arg = (n) => { const i = process.argv.indexOf(n); return i > 0 ? process.argv[i + 1] : null; };
   const target = arg("--target") || "research", out = arg("--out");
   if (!["research", "www"].includes(target)) throw new Error("Ziel: research oder www.");
-  const pages = target === "www" ? buildWww(out ? loadSnapshot() : syncWww()) : buildSite();
-  const dir = out || (target === "www" ? LANDING : join(ROOT, "website2"));
-  for (const [p, html] of pages) { mkdirSync(dirname(join(dir, p)), { recursive: true }); writeFileSync(join(dir, p), html); }
-  console.log(`website2 (${target}): ${pages.size} Seiten nach ${dir}`);
+  if (target === "www" && !out) {
+    const r = writeWww();
+    console.log(`website2 (www): ${r.pages} Seiten nach ${LANDING}, geändert: ${r.changed.length}`);
+  } else {
+    const pages = target === "www" ? buildWww(loadSnapshot()) : buildSite();
+    const dir = out || join(ROOT, "website2");
+    for (const [p, html] of pages) { mkdirSync(dirname(join(dir, p)), { recursive: true }); writeFileSync(join(dir, p), html); }
+    console.log(`website2 (${target}): ${pages.size} Seiten nach ${dir}`);
+  }
 }

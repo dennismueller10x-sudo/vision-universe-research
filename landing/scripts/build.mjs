@@ -32,11 +32,14 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   const site = JSON.parse(await readFile(resolve(root,'site/pages.json'),'utf8'));
   const sitePages = site.pages.map(p => p+'index.html');
   if (sitePages[0] !== 'index.html' || sitePages.some(p => !/^(?:[a-z0-9-]+\/)*index\.html$/.test(p))) throw new Error('Ungültige Seitenliste der Website.');
-  for (const path of [...sitePages,'styles.css','legal.css','presentation.js','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','partner/index.html','partner/partner.css','partner/partner.js','instagram/index.html','instagram/instagram.css','instagram/robotaxi/index.html','instagram/energie/index.html','instagram/zonen/index.html','instagram/teilnahmebedingungen/index.html']) {
+  // styles.css, presentation.js und assets/home/ gehörten zur früheren Coming-soon-Startseite. Sie bleiben als Quelle
+  // liegen (scripts/newsletter_release.py vergleicht sie mit dem abgenommenen Stand), werden aber nicht mehr ausgeliefert.
+  for (const path of [...sitePages,'legal.css','newsletter.js','impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','partner/index.html','partner/partner.css','partner/partner.js','instagram/index.html','instagram/instagram.css','instagram/robotaxi/index.html','instagram/energie/index.html','instagram/zonen/index.html','instagram/teilnahmebedingungen/index.html']) {
     await mkdir(dirname(resolve(output,path)),{recursive:true});
     await cp(resolve(root,path),resolve(output,path));
   }
   await cp(resolve(root,'assets'),resolve(output,'assets'),{recursive:true});
+  await rm(resolve(output,'assets/home'),{recursive:true,force:true});
   await cp(resolve(root,'site'),resolve(output,'site'),{recursive:true});
   for (const internal of ['pages.json','insights.json']) await rm(resolve(output,'site',internal),{force:true});
   await cp(resolve(root,'partner/media'),resolve(output,'partner/media'),{recursive:true});
@@ -72,13 +75,8 @@ export async function build({output = resolve(root,'dist'), config = {}, product
   const csp = `default-src 'none'; script-src 'self'; style-src 'self'; style-src-attr 'unsafe-inline'; img-src 'self'; media-src 'self'; font-src 'self'; connect-src 'self'; form-action ${formPolicy}; frame-src 'none'; base-uri 'none'; object-src 'none'`;
   // GitHub Pages does not apply _headers. Enforce supported CSP in HTML too.
   html=html.replace('<head>','<head>\n  <meta http-equiv="Content-Security-Policy" content="'+esc(csp)+'">\n  <meta name="referrer" content="no-referrer">');
-  // Returning browsers must not combine new preview markup with old cached
-  // controls/styles. Each changed file gets a new, deterministic asset URL.
-  for(const [asset,attribute] of [['styles.css','href'],['presentation.js','src'],['assets/home/discover-swipe.js','src']]){
-    const version=createHash('sha256').update(await readFile(resolve(output,asset))).digest('hex').slice(0,16);
-    html=html.replace(`${attribute}="./${asset}"`,`${attribute}="./${asset}?v=${version}"`);
-  }
-  // Website: same CSP, referrer policy, robots switch and cache-busting on every page.
+  // Website: same CSP, referrer policy, robots switch and cache-busting on every page. Returning browsers must not
+  // combine new markup with old cached styles or scripts: each changed file gets a new, deterministic asset URL.
   const siteVersion = {};
   for (const asset of ['site.css','site.js']) siteVersion[asset] = createHash('sha256').update(await readFile(resolve(output,'site',asset))).digest('hex').slice(0,16);
   const stamp = page => page.replace(/((?:href|src)="(?:\.\.?\/)+site\/(site\.(?:css|js)))"/g,(match,url,asset) => `${url}?v=${siteVersion[asset]}"`);

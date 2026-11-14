@@ -316,4 +316,16 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   }
   if (check && stale.length) { console.error('Veraltet (node products/insights/build.mjs): ' + stale.join(', ')); process.exit(1); }
   console.log(`${Object.keys(files).length} Dateien · ${check ? 'geprüft' : stale.length ? 'geschrieben: ' + stale.length : 'unverändert'}`);
+  // www.visionuniverse.de zeigt Artikel, Heft und Report fest in der Seite (dort gibt es keine Abrufe zur Laufzeit).
+  // Derselbe Bau frischt deshalb den Auszug und die www-Seiten unter landing/ auf; sie gehören mit in den Commit
+  // des Artikels (Wächter: products/website2/tests, W2-14). Nur beim Bau ins Repository, nie mit --out.
+  if (out === root && fs.existsSync(path.join(root, 'landing/site/pages.json'))) {
+    const www = await import('../website2/build.mjs');
+    if (check) {
+      if (JSON.stringify(www.makeSnapshot()) !== JSON.stringify(www.loadSnapshot())) { console.error('Veraltet: www zeigt einen älteren Insights-Stand (node products/insights/build.mjs)'); process.exit(1); }
+    } else {
+      const r = www.writeWww();
+      console.log(`www aufgefrischt (landing/): ${r.changed.length ? 'geändert ' + r.changed.join(', ') + ' – bitte mit committen' : 'unverändert'}`);
+    }
+  }
 }

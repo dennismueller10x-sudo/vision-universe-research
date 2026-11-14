@@ -5,6 +5,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir,stat,mkdir,writeFile} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
+import {createHash} from 'node:crypto';
 import {resolve,dirname} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
 import {CONSENT_TEXT} from '../server/newsletter.mjs';
@@ -55,11 +56,12 @@ test('Website: keine Anfrage an eine andere Adresse; alle eigenen Dateien liegen
   assert.deepEqual([...css.matchAll(/url\(([^)]+)\)/g)].map(m=>m[1]),['../assets/fonts/inter-latin.woff2']);
   assert.doesNotMatch(css,/@import|https?:\/\//);
   assert.ok(!existsSync(resolve(output,'site/pages.json'))&&!existsSync(resolve(output,'site/insights.json')),'Arbeitsdateien werden nicht ausgeliefert');
+  for(const old of ['styles.css','presentation.js','assets/home'])assert.ok(!existsSync(resolve(output,old)),old+' gehörte zur früheren Startseite und wird nicht mehr ausgeliefert');
 });
 
 test('Website: nur Schwarz, Weiß, Grau und das eine Neongrün (Owner 14.11.2026: kein Dunkelgrün)',async()=>{
   const greenish=hex=>{const n=hex.length===4?[...hex.slice(1)].map(c=>parseInt(c+c,16)):[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));return n[1]>n[0]+12&&n[1]>n[2]+12;};
-  const sources=[['site.css',await readFile(resolve(output,'site/site.css'),'utf8')],...html];
+  const sources=[['site.css',await readFile(resolve(output,'site/site.css'),'utf8')],['legal.css',await readFile(resolve(output,'legal.css'),'utf8')],...html];
   for(const [name,source] of sources){
     const found=[...new Set([...source.matchAll(/#[0-9a-fA-F]{6}\b|#[0-9a-fA-F]{3}\b/g)].map(m=>m[0].toLowerCase()))].filter(greenish);
     assert.deepEqual(found.filter(c=>!['#c8f531','#eef9cc'].includes(c)),[],name+': Grünton außer Neongrün und seinem blassen Ton');
@@ -157,4 +159,31 @@ test('Website: Produktionsfreigabe stellt alle Seiten auf index und nennt sie in
   for(const name of await readdir(output,{recursive:true})){const s=await stat(resolve(output,name));if(!s.isFile())continue;count++;total+=s.size;if(s.size>largest[1])largest=[name,s.size];}
   assert.ok(largest[1]<8*1024*1024,`größte Datei ${largest[0]} (${largest[1]} Byte)`);
   assert.ok(total<40*1024*1024,`Bau insgesamt ${total} Byte`);assert.ok(count<1000);
+});
+
+test('Rechts- und Bestätigungsseiten: helles Kleid nur über legal.css, die Dokumente selbst bleiben unverändert',async()=>{
+  // The approved texts are pinned byte for byte; the light design must not touch them.
+  for(const revision of JSON.parse(await readFile(resolve(root,'review/legal-revisions.json'),'utf8')).revisions)for(const {file,sha256} of revision.files)
+    assert.equal(createHash('sha256').update(await readFile(resolve(root,file))).digest('hex'),sha256,`${revision.id}: ${file} weicht von der freigegebenen Fassung ab`);
+  const css=await readFile(resolve(root,'legal.css'),'utf8');
+  assert.match(css,/color-scheme:light;background:#fff/);assert.match(css,/\.brand::before\{content:"VISION UNIVERSE®";/);
+  assert.doesNotMatch(css,/color-scheme:dark|#080a0c|@import|https?:\/\/|prefers-color-scheme/);
+  assert.deepEqual([...css.matchAll(/url\(([^)]+)\)/g)].map(m=>m[1]),["'./assets/fonts/inter-latin.woff2'"]);
+  for(const page of ['impressum/index.html','datenschutz/index.html','newsletter/bestaetigen/index.html','newsletter/bestaetigt/index.html','newsletter/fehler/index.html','instagram/teilnahmebedingungen/index.html']){
+    const built=await readFile(resolve(output,page),'utf8');
+    assert.deepEqual([...built.matchAll(/<link rel="stylesheet" href="([^"]+)"/g)].map(m=>m[1].replace(/\?v=[0-9a-f]{16}$/,'').replace(/^(\.\.\/)+/,'')),['legal.css'],page+': einzige Gestaltung ist legal.css');
+    assert.doesNotMatch(built,/<script|<style|style="/,page);
+    assert.match(built,/class="header shell"[\s\S]*class="legal shell"[\s\S]*class="footer shell"/,page+': Aufbau, auf den legal.css baut');
+  }
+});
+
+test('Social-Bild: 1200 × 630 aus der neuen Startseite, auf jeder Seite der Website genannt',async()=>{
+  const png=await readFile(resolve(output,'assets/social-preview.png'));
+  assert.equal(png.subarray(1,4).toString(),'PNG');assert.deepEqual([png.readUInt32BE(16),png.readUInt32BE(20)],[1200,630]);
+  assert.ok(png.length<600*1024,'Social-Bild bleibt klein');
+  for(const [p,page] of html){
+    assert.ok(page.includes('<meta property="og:image" content="https://www.visionuniverse.de/assets/social-preview.png">')&&page.includes('<meta name="twitter:card" content="summary_large_image">'),p);
+    assert.match(page,/<meta property="og:image:alt" content="Vision Universe: Die Börse ist laut\. Wir bringen Ordnung hinein\. App bald verfügbar\.">/,p);
+  }
+  assert.match(await readFile(resolve(root,'scripts/social-preview.mjs'),'utf8'),/viewport:\{width:1440,height:756\},deviceScaleFactor:5\/6/);
 });
