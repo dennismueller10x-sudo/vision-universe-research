@@ -464,6 +464,8 @@ Budget je Route in `quant/config/frontend-budget.json` (Messwert vom 13.11. + 25
 
 Nur Darstellung, keine Zahl wird neu gerechnet. Start: Suche, „Markt heute“ als Zeiger (alle Maße im Fenster), „Heute bei Quant“ als drei Zahlenkacheln, eigene Aktien als Schiene mit Vorher/Nachher und als Faktor-Landkarte, Schienen, Screener-Einstieg. Auf allen Seiten stehen Dachzeile und Erklärsatz einen Tipp entfernt im Fenster (Knopf neben der Überschrift, trägt den Stichtag), am Seitenende führt die „Weiter“-Karte zum nächsten Ort (`quant/app/ui.js`, `NEXT`); Meldungen zeigen Vorher/Nachher als Balken, der Vergleich zweier Aktien zusätzlich als Netz. Bausteine: `assets/vu-ui.js` (K01–K09 auf `/status/bausteine/`). Nicht umgesetzt, weil es dafür keine Daten gibt: Verlauf der Marktbreite auf dem Start, Zahlenverlauf in den Tageskacheln, Forschungsbalken auf dem Start, Spiel und Punkte.
 
+Die eigenständigen Seiten folgen demselben Aussehen (nur Darstellung): `/quant/musterdepots/` mit dunkler Kopfkachel, den fünf Depots als Schiene, „Alle N“ im Fenster und der „Weiter“-Karte zu den Portfolios, der Abschnitt „Wertentwicklung ab Live-Start“ unverändert; `/quant/markt/` und `/quant/data-inspector/` mit Kopfkachel und Zuständen in Grau und Neongrün (`quant/ui/pages-k2.css`, `quant/ui/pages-k2.js`); `/quant/methodology/` als Kacheln je Vertrag, Zweck und Datei im Fenster. Die Methodik-Seite bleibt erzeugt: Die Vorlage steht in `scripts/quant/build-methodology-index.mjs`, sie lädt jetzt `vu-ui` und läuft bei 320 px nicht mehr über.
+
 ## Fachbelege und weiterführende Dokumentation
 
 Die folgenden Quellen werden verlinkt, nicht zusammenkopiert. Bei datierten Berichten bezeichnet „gültig“ ihren Referenzwert; daraus folgt keine neue Freigabe.

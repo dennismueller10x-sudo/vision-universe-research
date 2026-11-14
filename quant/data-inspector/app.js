@@ -251,13 +251,15 @@
 
   function render(root) {
     S.clear(root);
-    root.appendChild(el("header", {}, [
-      el("p", { class: "q-kicker", text: "Internes Validierungswerkzeug" }),
-      el("h1", { class: "q-h1", text: "Fundamentaldaten-Inspektor" }),
-      el("p", { class: "q-lead", text:
+    /* Kopfkachel (App-Konzept 2): Zurück, Dachzeile, Titel; der Erklärsatz einen Tipp entfernt (ui/pages-k2.js). */
+    var K = window.QuantPageK2, kopf = { kicker: "Internes Validierungswerkzeug", title: "Fundamentaldaten-Inspektor", lead:
         "Jede normalisierte Fundamentalzahl mit ihrer Herkunft: Meldekonzept, Accession "
         + "Number, Formular, Einreichungsdatum und der Zeitpunkt, ab dem der Wert im "
-        + "Backtest sichtbar sein darf." })
+        + "Backtest sichtbar sein darf." };
+    root.appendChild(K ? K.head(kopf) : el("header", {}, [
+      el("p", { class: "q-kicker", text: kopf.kicker }),
+      el("h1", { class: "q-h1", text: kopf.title }),
+      el("p", { class: "q-lead", text: kopf.lead })
     ]));
 
     if (!state.index || !(state.index.companies || []).length) {
@@ -277,6 +279,7 @@
     root.appendChild(el("div", { id: "vu-coverage" }, [S.loading()]));
     root.appendChild(el("h2", { class: "q-h2", text: "Qualifikations-Gates" }));
     root.appendChild(el("div", { id: "vu-gates" }, [S.loading()]));
+    if (K) root.appendChild(K.next({ title: "Marktdaten", sub: "Datenherkunft", href: S.BASE + "markt/" }));
 
     loadPanel("coverage_matrix.json", "#vu-coverage", coveragePanel);
     loadPanel("pit_gates.json", "#vu-gates", gatesPanel);
