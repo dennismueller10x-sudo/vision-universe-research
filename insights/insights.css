@@ -70,6 +70,8 @@
 .in-weitere h2{font-size:22px;font-weight:900;letter-spacing:-.03em}
 .in-fuss{max-width:1080px;margin:0 auto;padding:0 18px calc(120px + env(safe-area-inset-bottom));font-size:12.5px;line-height:1.5;color:var(--vu-mute)}
 .in-fuss a{color:inherit}
+/* Mit dem Dock der Shell haelt body den Platz unten frei (--vu-dock-space); der eigene Abstand des Fusses entfaellt bis auf einen Rest. */
+html[data-vu-dock] .in-fuss{padding-bottom:24px}
 
 /* Knöpfe */
 .in-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}

@@ -506,7 +506,8 @@
       get(o).then(function (c) {
         if (token !== seq || !page.isConnected) return;
         current = { o: o, c: c };
-        stage.replaceChildren(swipeCard(c, o, state.i, list.length, ctx));
+        var card = swipeCard(c, o, state.i, list.length, ctx);
+        stage.replaceChildren(card); card.drawChart();
         list.slice(state.i + 1, state.i + 3).forEach(function (n) { get(n).catch(function () {}); });
       }).catch(function () {
         if (token !== seq) return;
@@ -589,9 +590,20 @@
       (badges.length ? '<div class="dv3-reasons">' + badges.map(function (b, k) { return '<span class="vu-chip' + (k ? '' : ' vu-chip--lime') + '">' + esc(k === 0 ? b.label : (b.detail || b.label)) + '</span>'; }).join('') + '</div>' : '') +
       (c.hook && c.hook.text ? '<p class="dv3-hook">' + U().hud('fundamental', 26) + '<span>' + esc(c.hook.text) + '</span></p>' : '') +
       '<a class="dv3-sr" href="' + esc(stockHref(ctx, c.symbol)) + '">' + esc(name(c)) + ' öffnen</a>';
-    var dates = art.querySelectorAll('.dv3-dates span');
-    art.querySelector('.dv3-chart').appendChild(spark(c, { big: true, eager: true, width: 320, height: 110, onDates: function (a, b) { dates[0].textContent = dayYear(a); dates[1].textContent = dayYear(b); } }));
+    var dates = art.querySelectorAll('.dv3-dates span'), box = art.querySelector('.dv3-chart');
+    /* Gezeichnet wird, wenn die Karte im Dokument steht: am Telefon passt sie zwischen Kopf und Dock, und der Chart nimmt den Platz, der bleibt (fitChart). */
+    art.drawChart = function () { fitChart(box, 320, 110, function (w, ht) { return spark(c, { big: true, eager: true, width: w, height: ht, onDates: function (a, b) { dates[0].textContent = dayYear(a); dates[1].textContent = dayYear(b); } }); }); };
     return art;
+  }
+  /* Zeichnet einen Chart in seinen Rahmen. Gibt das Layout dem Rahmen die Hoehe vor (flex-grow; Swipen am Telefon, v3.css und reihen.css),
+     wird in dessen Groesse gezeichnet und bei einer Groessenaenderung neu (Schrift geladen, Geraet gedreht). Sonst gilt die feste
+     Flaeche, die mit der Breite waechst. */
+  function fitChart(box, width, height, make) {
+    var fit = box.isConnected && global.getComputedStyle(box).flexGrow === '1', last = '';
+    function size() { var r = fit ? box.getBoundingClientRect() : null; return r && r.width >= 80 && r.height >= 24 ? [Math.round(r.width), Math.round(r.height)] : [width, height]; }
+    function draw() { var z = size(); last = z.join('x'); box.replaceChildren(make(z[0], z[1])); }
+    draw();
+    if (fit && global.ResizeObserver) new global.ResizeObserver(function () { if (size().join('x') !== last) draw(); }).observe(box);
   }
 
   /* ============================================================ D08 Watchlist */
@@ -806,7 +818,7 @@
   var api = { home: home, welten: welten, thema: thema, strategien: strategien, strategie: strategie, swipen: swipen, watchlist: watchlist, maerkte: maerkte,
     rowTitle: rowTitle, closeLabel: closeLabel, stockRow: stockRow, rankRow: rankRow, spark: spark, GROUPS: GROUPS,
     /* Bausteine fuer discover/ui/reihen.js (Startseite, Reihen-Seite, Vorschau) */
-    kit: { load: load, esc: esc, h: h, uid: uid, stockHref: stockHref, name: name, story: story, what: what, zahlPill: zahlPill,
+    kit: { load: load, esc: esc, h: h, uid: uid, stockHref: stockHref, name: name, story: story, what: what, zahlPill: zahlPill, fitChart: fitChart,
       dayYear: dayYear, closeLabel: closeLabel, spark: spark, thin: thin, sheet: sheet, heart: heart, store: store, whySheet: whySheet,
       themeCard: themeCard, metaRow: metaRow, metaRows: metaRows, scale5: scale5, isNum: isNum, val: val, bindHelp: bindHelp } };
   D.V3 = api;

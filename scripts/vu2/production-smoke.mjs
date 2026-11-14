@@ -182,7 +182,7 @@ for(const t of ['AAAC']){
 }
 /* Markierter Eintrag der gemeinsamen Produkt-Leiste je Ansicht; Methodik
    ist sekundaer und markiert keinen der vier Eintraege (leer). */
-const SECTION={home:'Quant',screener:'Screener',strategien:'Anlagestile',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Quant'}; /* Q00 (#1412): Methodik gehoert zum Start „Quant“ */
+const SECTION={home:'Quant',screener:'Screener',strategien:'Anlagestile',aktien:'Aktien',aktie:'Aktien',technik:'Aktien',zahlen:'Aktien',vergleich:'Aktien',methodik:'Methodik'}; /* Rahmen nach App-Konzept 2 (11/2026): Methodik ist ein eigener Reiter (vorher Q00, #1412: beim Start „Quant“) */
 
 /* Bereit ist eine Route, wenn die App sie fertig gemeldet hat, kein
    Ladeplatzhalter mehr steht und der Chart (falls es einen gibt) einen
@@ -340,15 +340,17 @@ for(const width of [1440,390]){
       bleibt so pruefbar). Methodik ist sekundaer (Hero, Fuss). */
    /* Elliott ist ein eigenes Produkt: sein Aktienbild (/elliott/#/<T>, auch ueber die alten Technik-/Chartbild-Adressen) traegt die Elliott-Leiste, nicht die Quant-Leiste. */
    const elliottBild=/^\/elliott\/#\/|#\/elliott\/|#\/aktie\/[^/?]+\/(technik|chartbild)/.test(view);
-   const sollBereiche=elliottBild?['Elliott','Zählbar','Neu','Suche']:['Quant','Screener','Anlagestile','Aktien']; /* Konzept Quant 2026-11 (#1819): Strategien heißen Anlagestile */
+   /* Konzept Quant 2026-11 (#1819): Strategien heißen Anlagestile. Rahmen nach App-Konzept 2 (11/2026): die Bereiche stehen als Reiter unter
+      dem Kopf (frühere Leistenplätze, dann die übrigen Einträge „In <Welt>“); das Dock unten ist Home · Discover · [Universe] · News · Ich. */
+   const sollBereiche=elliottBild?['Elliott','Zählbar','Neu','Suche','Aufwärts','Abwärts']:['Quant','Screener','Anlagestile','Aktien','Meldungen','Forschung','Methodik','Technische Lagen','Fundamentaldaten'];
    /* DISCOVER-ANGLEICHUNG (30.09.2026): Kopf- und Tab-Leiste sind EINE
       Leiste wie Discovers v2-dock - am Desktop oben mittig im Rahmen, am
       Handy unten am Bildschirmrand. Geprueft wird dieselbe Absicht wie
       vorher: genau die fuenf Bereiche, der richtige markiert, kein fremdes
       Produkt, und die Leiste steht dort, wo man sie bei dieser Breite
       erwartet. */
-   const leiste='#vu-dock nav';
-   if(await page.locator(leiste).count()!==1||await page.locator('nav.v2-dock, nav.qx-tabbar').count()!==0)bad.push('NAV_ANZAHL:'+await page.locator(leiste).count());
+   const leiste='vu-navigation nav.tabs',dock='#vu-dock nav';
+   if(await page.locator(leiste).count()!==1||await page.locator(dock).count()!==1||await page.locator('nav.v2-dock, nav.qx-tabbar').count()!==0)bad.push('NAV_ANZAHL:'+await page.locator(leiste).count()+'/'+await page.locator(dock).count());
    {
     const bereiche=(await page.locator(leiste+' a').allTextContents()).map(t=>t.trim());
     if(bereiche.join('|')!==sollBereiche.join('|'))bad.push('NAV:'+leiste+':'+bereiche.join('|'));
@@ -357,12 +359,16 @@ for(const width of [1440,390]){
      if(bereiche.some(t=>t===fremd))bad.push('FREMDES_PRODUKT_IN_NAV:'+fremd);
     if(await page.locator(leiste).getByRole('link',{name:'Screener',exact:true}).count())bad.push('FREMDES_PRODUKT_IN_NAV:Screener ohne Quant');
     const markiert=await page.locator(leiste+' a[aria-current="page"]').allTextContents();
-    const soll=elliottBild?'':SECTION[route];
+    /* Der Reiter „Fundamentaldaten“ fuehrt auf die Zahlen von NVDA und markiert sich dort selbst (wie im Menue); die Zahlen jeder anderen Aktie liegen bei „Aktien“. */
+    const soll=elliottBild?'':/#\/aktie\/NVDA\/zahlen/.test(page.url())?'Fundamentaldaten':SECTION[route];
     if(soll!==undefined&&markiert.map(t=>t.trim()).join('|')!==soll)bad.push('NAV_MARKE:'+leiste+':'+markiert.join('|'));
+    const plaetze=(await page.locator(dock+' a').allTextContents()).map(t=>t.trim());
+    if(plaetze.join('|')!=='Home|Discover|News|Ich'||await page.locator(dock+' button.menu').count()!==1)bad.push('DOCK:'+plaetze.join('|'));
+    if(!await page.locator(leiste).isVisible())bad.push('REITER_SICHTBAR:false');
    }
-   const box=await page.locator(leiste).boundingBox();
+   const box=await page.locator(dock).boundingBox();
    const hoehe=page.viewportSize().height;
-   const sichtbar=await page.locator(leiste).isVisible();
+   const sichtbar=await page.locator(dock).isVisible();
    if(!sichtbar||!box)bad.push('NAV_SICHTBAR:'+sichtbar);
    else if(box.y+box.height<hoehe-40||box.y+box.height>hoehe)bad.push('NAV_ORT:nicht_unten:y='+Math.round(box.y));
   }
@@ -674,7 +680,7 @@ for(const width of [1440,390]){
     Ansicht mit dem richtigen markierten Bereich. */
  {
   const bad=[];
-  const leiste='#vu-dock nav';
+  const leiste='vu-navigation nav.tabs';
   const ansicht=async(v)=>page.waitForFunction(x=>{const m=document.querySelector('main#qx-main');return m&&m.dataset.view===x&&m.getAttribute('aria-busy')==='false'&&!m.querySelector('.qx-loading');},v,{timeout:45000}).then(()=>true,()=>false);
   const marke=async()=>(await page.locator(leiste+' a[aria-current="page"]').allTextContents()).map(t=>t.trim()).join('|');
   await page.goto('about:blank');await page.goto(origin+'/quant/#/');await bereit(page).catch(()=>bad.push('NICHT_BEREIT'));
