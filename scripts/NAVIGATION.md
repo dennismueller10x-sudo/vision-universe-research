@@ -28,6 +28,7 @@ Der Rahmen ist auf jeder Seite derselbe und steht vollständig in `assets/site-n
 - **Platz im Dokument**: Mit Reitern ist `--vu-navigation-height` um 48 px höher (`html[data-vu-tabs]`). Klebendes und Sprungziele der Produkte rechnen mit `--vu-navigation-height`, nie mit festen 56/64 px.
   `--vu-dock-gap` enthält den Teil des Universe-Knopfs, der über die Leiste ragt.
 - **`late`** in `PRODUCTS`: Seiten, die das Dock nicht oder erst nach dem Laden anfordern (ETF-Seiten, Europa-Screener, Konto). Überall sonst steht die Reiterzeile vom ersten Zeichnen an, damit der Inhalt nicht springt. `core/tests/shell-navigation.test.mjs` hält das am Bestand der Seiten fest.
+- **Konto**: `/konto/einstellungen/` und `/konto/abo/` tragen Dock („Ich“) und die Reiter von „Mein Bereich“ („Konto“ aktiv); dort fordert der Rahmen beides selbst an (`self` in `PRODUCTS`), die Seite muss nichts rufen. Bestellweg (`/konto/tarife/`, `/konto/kuendigen/`), Anmeldung, Registrierung und Passwort bleiben ohne Leiste. Der Reiter für `/mein-dashboard/` heißt wie der Platz im Dock „Ich“ (vorher „Watchlist“); seine Kennung `watchlist` bleibt.
 - **Menü „Dein Universe“**: bis 760 px ein Sheet von unten (Griff, höchstens 90 % hoch, Inhalt rollt darin), darüber die Seitenleiste rechts. Inhalt unverändert: Suche, Produkte, „In <Welt>“, Mein Bereich, Weitere Produkte, Darstellung und Währung, Rechtliches & Infos.
 
 Prüfungen: `core/tests/shell-navigation.test.mjs` (Vertrag), `scripts/quality/shell-browser-qa.mjs` (Browser, alle Produkte).

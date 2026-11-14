@@ -233,10 +233,65 @@ for (const [vpName, width, height] of VIEWPORTS) {
         const m = await page.locator('#vu-dock button.menu').boundingBox();
         if (h.overflow > 1 || !m || m.width < 44 || m.height < 44 || m.x < 0 || m.x + m.width > h.vw + 1) fail(where, 'Universe-Knopf im Dock abgeschnitten oder zu klein: ' + JSON.stringify({ overflow: h.overflow, m, vw: h.vw }));
         const w = await state(page);
-        if (!w || w.place.join('|') !== 'Home' || w.labels.join('|') !== 'Mein Bereich|Watchlist|Gespeichert|Konto' || w.current.join('|') !== 'Mein Bereich') fail(where, 'Willkommen: Dock oder Reiter falsch: ' + JSON.stringify(w && { place: w.place, labels: w.labels, current: w.current }));
+        if (!w || w.place.join('|') !== 'Home' || w.labels.join('|') !== 'Mein Bereich|Ich|Gespeichert|Konto' || w.current.join('|') !== 'Mein Bereich') fail(where, 'Willkommen: Dock oder Reiter falsch: ' + JSON.stringify(w && { place: w.place, labels: w.labels, current: w.current }));
       } else {
         if (h.dock) fail(where, 'unerwartetes Dock');
         if (h.overflow > 1 || h.right > h.vw + 1 || h.left < 0 || h.w < 44 || h.h < 44) fail(where, 'Menü-Knopf im Kopf abgeschnitten oder zu klein: ' + JSON.stringify(h));
+      }
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Konto: Einstellungen und Abonnement tragen Dock („Ich“ aktiv) und die Reiter von „Mein Bereich“ („Konto“ aktiv), vom ersten
+  // Zeichnen an und ohne dass die Seite sie anfordert; Bestellweg (Tarife, Kündigen), Anmeldung, Registrierung und Passwort
+  // bleiben ohne Leiste. Die Konto-API gibt es im statischen Bau nicht: die Prüfung stellt sie unter derselben Herkunft nach
+  // (angemeldet auf den Seiten mit Leiste, abgemeldet auf den übrigen), damit die Seite nicht weiterleitet und ihr echter Inhalt
+  // steht. Adresse und Antworten der API werden vor den Skripten der Seite im Fenster festgelegt, nicht über abgefangene
+  // Netzabrufe: WebKit nimmt /konto/config.js aus seinem Zwischenspeicher und reicht Abrufe über den Service Worker
+  // (assets/pwa.js) an der Prüfung vorbei. Geprüft wird der Rahmen: kein Bedienelement liegt am Seitenende unter dem Dock.
+  for (const [path, bar] of [['/konto/einstellungen/', true], ['/konto/abo/', true], ['/konto/tarife/', false], ['/konto/kuendigen/', false], ['/konto/anmelden/', false], ['/konto/registrieren/', false], ['/konto/passwort/', false]]) {
+    const where = `konto ${path} @${vpName}`;
+    await fresh();
+    try {
+      await page.addInitScript((signedIn) => {
+        Object.defineProperty(globalThis, 'VU_ACCOUNT_CONFIG', { configurable: true, get: () => ({ endpoint: location.origin + '/__qa-konto' }), set() {} });
+        const real = globalThis.fetch;
+        globalThis.fetch = (input, init) => {
+          const url = String((input && input.url) || input), at = url.indexOf('/__qa-konto/v1/');
+          if (at < 0) return real(input, init);
+          const api = url.slice(at + '/__qa-konto'.length).split('?')[0];
+          const data = api === '/v1/session' ? { authenticated: signedIn, user: signedIn ? { id: 'qa', email: 'qa@example.test' } : null }
+            : api === '/v1/me' ? { profile: { displayName: 'QA' }, settings: { appearance: 'system', displayCurrency: 'EUR', experienceLevel: 'beginner', notifications: {} }, newsletter: { available: true, status: 'none' }, entitlements: { plan_id: 'free' } }
+            : api === '/v1/me/billing' ? { entitlements: { plan_id: 'free' }, billingAvailable: true, subscriptions: [], invoices: [] }
+            : api === '/v1/plans' ? { plans: [], prices: [] } : {};
+          return Promise.resolve(new Response(JSON.stringify(data), { status: signedIn || api !== '/v1/me' ? 200 : 401, headers: { 'content-type': 'application/json' } }));
+        };
+      }, bar);
+      await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const at = new URL(page.url()).pathname;
+      if (at !== path) fail(where, 'Seite hat weitergeleitet nach ' + at);
+      const bare = await page.evaluate(() => ({ dock: !!document.getElementById('vu-dock'), tabs: document.documentElement.hasAttribute('data-vu-tabs'), overflow: document.documentElement.scrollWidth - innerWidth }));
+      if (bare.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + bare.overflow + ' px');
+      if (!bar) { if (bare.dock || bare.tabs) fail(where, 'Leiste auf einer Seite, die ohne Ablenkung bleiben soll: ' + JSON.stringify(bare)); }
+      else {
+        const s = await state(page);
+        if (!s) fail(where, 'kein Dock oder keine Reiterzeile');
+        else {
+          if (s.labels.join('|') !== 'Mein Bereich|Ich|Gespeichert|Konto' || s.current.join('|') !== 'Konto' || s.strip.name !== 'Mein Bereich') fail(where, 'Reiter falsch: ' + s.labels.join('|') + ' aktiv ' + s.current.join('|'));
+          if (s.places.join('|') !== DOCK.join('|') || s.place.join('|') !== 'Ich' || !s.menu) fail(where, 'Dock falsch: ' + s.places.join('|') + ' aktiv ' + s.place.join('|'));
+          if (Math.abs(s.strip.top - s.strip.rowBottom) > 1 || s.strip.reserved < s.strip.barBottom - 1) fail(where, 'Inhalt beginnt nicht unter Kopf und Reitern: ' + JSON.stringify(s.strip));
+          if (s.toggle !== 'none') fail(where, 'Menue-Knopf im Kopf doppelt');
+          if (s.small) fail(where, s.small + ' Ziele kleiner als 44 px');
+          if (s.dock.left < 0 || s.dock.right > s.vw || s.dock.bottom > s.vh) fail(where, 'Leiste ausserhalb ihres Platzes ' + JSON.stringify(s.dock));
+          const end = await page.evaluate(() => {
+            scrollTo({ top: document.scrollingElement.scrollHeight, behavior: 'instant' });
+            const dockTop = document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect().top;
+            const controls = [...document.querySelectorAll('main a, main button, main input, main select')].filter((n) => n.getClientRects().length);
+            const last = controls.at(-1), r = last && last.getBoundingClientRect(), hit = r && document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+            return { dockTop, controls: controls.length, forms: document.querySelectorAll('main form, main .ka-kv').length, bottom: r && r.bottom, reachable: !!hit && (hit === last || last.contains(hit) || hit.contains(last)), label: last && (last.textContent || last.id).trim().slice(0, 30) };
+          });
+          if (!end.forms) fail(where, 'Inhalt der Seite steht nicht (nachgestellte Konto-API): ' + JSON.stringify(end));
+          if (!end.controls || end.bottom > end.dockTop + 1 || !end.reachable) fail(where, 'letztes Bedienelement am Seitenende verdeckt: ' + JSON.stringify(end));
+        }
       }
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }

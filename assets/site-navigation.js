@@ -148,14 +148,17 @@
     {id: 'portfolios', label: 'Portfolios', match: p => p.startsWith('/portfolios/'),
       items: [['portfolios','Portfolios','/portfolios/#/','portfolios'],['supertrader','Supertrader','/portfolios/#/supertrader','signals'],['quant','Quant','/portfolios/#/quant','grid'],['ki','KI','/portfolios/#/ki','spark']],
       active: loc => loc.pathname === '/portfolios/' ? ({'': 'portfolios', supertrader: 'supertrader', quant: 'quant', ki: 'ki'}[hashPart(loc, 0)] || null) : null},
-    /* Mein Bereich (Mockups E02, E07, E08): Start /willkommen/, Watchlist /mein-dashboard/, lokal Gemerktes
-       /mein-dashboard/#/gespeichert, Konto /konto/. Bestellweg und Anmeldung tragen keine Leiste (sie fordern sie nicht an). */
-    {id: 'mein', label: 'Mein Bereich', icon: 'person', match: p => p.startsWith('/willkommen/') || p.startsWith('/mein-dashboard/') || p === '/konto/' || p.startsWith('/konto/watchlist/'), late: p => p.startsWith('/konto/'),
-      items: [['mein','Mein Bereich','/willkommen/','person'],['watchlist','Watchlist','/mein-dashboard/','heart'],['gespeichert','Gespeichert','/mein-dashboard/#/gespeichert','saved'],['konto','Konto','/konto/','gear']],
+    /* Mein Bereich (Mockups E02, E07, E08): Start /willkommen/, Ich /mein-dashboard/ (im Dock „Ich“), lokal Gemerktes
+       /mein-dashboard/#/gespeichert, Konto /konto/ mit Einstellungen und Abonnement. Bestellweg (Tarife, Kuendigen), Anmeldung,
+       Registrierung und Passwort tragen keine Leiste (kein Treffer in match): dort lenkt nichts ab.
+       self: Seiten, auf denen der Rahmen Dock und Reiter selbst traegt, ohne dass die Seite sie anfordert (Einstellungen, Abonnement). */
+    {id: 'mein', label: 'Mein Bereich', icon: 'person', match: p => p.startsWith('/willkommen/') || p.startsWith('/mein-dashboard/') || p === '/konto/' || /^\/konto\/(watchlist|einstellungen|abo)\//.test(p),
+      late: p => p === '/konto/' || p.startsWith('/konto/watchlist/'), self: p => /^\/konto\/(einstellungen|abo)\//.test(p),
+      items: [['mein','Mein Bereich','/willkommen/','person'],['watchlist','Ich','/mein-dashboard/','heart'],['gespeichert','Gespeichert','/mein-dashboard/#/gespeichert','saved'],['konto','Konto','/konto/','gear']],
       active: loc => {
         if (loc.pathname.startsWith('/willkommen/')) return 'mein';
         if (loc.pathname.startsWith('/konto/watchlist/')) return 'watchlist';
-        if (loc.pathname === '/konto/') return 'konto';
+        if (loc.pathname.startsWith('/konto/')) return 'konto';
         return hashPart(loc, 0) === 'gespeichert' ? 'gespeichert' : 'watchlist';
       }}
   ];
@@ -648,6 +651,8 @@
       /* Reiterzeile vom ersten Zeichnen an, wo das Produkt die Leiste ohnehin anfordert (late: siehe PRODUCTS). */
       const early=PRODUCTS.find(p=>p.match(location.pathname,location));
       if(early&&!(early.late&&early.late(location.pathname)))this.mountTabs();
+      /* Konto-Unterseiten (self): der Rahmen fordert das Dock selbst an. */
+      if(early&&early.self&&early.self(location.pathname))dockBus.requested=true;
       if(dockBus.requested)this.mountDock();
       this.renderSettings();
       document.addEventListener('vu-currency-change',()=>this.renderSettings());
