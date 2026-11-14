@@ -83,7 +83,9 @@ async function main() {
     const page = await ctx.newPage(), errors = [];
     page.on("pageerror", (e) => errors.push("PAGEERROR " + e.message));
     page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push("CONSOLE " + m.text()); });
-    page.on("response", (r) => { if (r.status() >= 400 && !RELEASE_ONLY.some((re) => re.test(r.url()))) errors.push("HTTP " + r.status() + " " + new URL(r.url()).pathname); });
+    /* Fehlende Skripte und Stile sind ein Befund; fehlende DATEN nicht: viele Datenausschnitte schreibt nur der Release-Bau
+       (Quant liest sie mit Rueckfall), und diese Pruefung gilt dem Chart, nicht der Datenlage. */
+    page.on("response", (r) => { const u = new URL(r.url()); if (r.status() >= 400 && /\.(js|css|mjs)$/.test(u.pathname) && !RELEASE_ONLY.some((re) => re.test(r.url()))) errors.push("HTTP " + r.status() + " " + u.pathname); });
     try {
       await page.goto(origin + ROUTE[world](t), { waitUntil: "load" });
       const sel = SEL[world];
