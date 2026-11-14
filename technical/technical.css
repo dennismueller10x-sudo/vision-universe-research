@@ -854,7 +854,8 @@ html body .vu-hero-fidelity[data-product=technical]{--vu-hero-art:url('/assets/h
 /* Chart-Seite: Urteil-Zeile */
 .tc-sayrow{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:14px}
 .tc-sayrow .vu-mt{margin-top:2px}
-.tc-chart-host.tc-simple-chart{min-height:190px}
+.tc-chart-host.tc-simple-chart{min-height:322px}
+@media(min-width:768px){.tc-chart-host.tc-simple-chart{min-height:442px}} /* Endhöhe des Charts (Ruhiger Start 14.11.): nichts darunter rutscht beim Einsetzen des Charts */
 /* Der Chart in drei Sätzen (story) */
 .tc-story{background:#000;color:#fff;border-radius:22px;padding:14px 14px 6px;margin-top:14px}
 .tc-story>.tc-ltag{color:#9b9b9b}
