@@ -30,8 +30,8 @@
   function getJSON(name) {
     if (JSON_P[name] && (JSON_AT[name] === undefined || Date.now() - JSON_AT[name] < 30000)) return JSON_P[name];
     delete JSON_AT[name];
-    var early = window.__stEarly && window.__stEarly[name] || null;
-    if (early) delete window.__stEarly[name];
+    var E = typeof window !== 'undefined' ? window.__stEarly : null, early = E && E[name] || null;
+    if (early) delete E[name];
     var pending = (early || fetch(DATA + name, { cache: 'no-cache' })).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status); return r.json(); }).then(function (value) {
       if (JSON_P[name] === pending) JSON_AT[name] = Date.now();
       return value;
