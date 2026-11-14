@@ -6,7 +6,9 @@
 @font-face{font-family:Inter;src:url(/assets/fonts/inter-latin.woff2) format("woff2");font-weight:100 900;font-display:swap}
 :root{--ink:#0b0c0e;--mut:#5d636b;--alt:#f3f3ef;--line:#e2e2dc;--lime:#c8f531;--soft:#eef9cc;color-scheme:light}
 *{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:96px}
+html{scroll-padding-top:96px}
+/* Weiches Scrollen zu Sprungzielen nur mit JavaScript (site.js setzt .js): Ohne JavaScript springt die Seite sofort. */
+html.js{scroll-behavior:smooth}
 body{margin:0;background:#fff;color:var(--ink);font:500 17px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;overflow-wrap:anywhere}
 img,video{max-width:100%}
 [hidden]{display:none!important}
@@ -17,7 +19,8 @@ h1,h2,h3,h4,p,ul{margin:0;padding:0}ul{list-style:none}
 .skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:#fff;padding:10px 16px;border-radius:99px;z-index:99;font-weight:800}
 .skip:focus{left:8px}
 :focus-visible{outline:3px solid var(--ink);outline-offset:3px;border-radius:8px}
-.c-ink :focus-visible,.c-ink:focus-visible,.blk :focus-visible,.blk:focus-visible,.dock :focus-visible,.cta:not(.l):not(.o):focus-visible,.icb:focus-visible{outline-color:var(--lime)}
+.c-ink :focus-visible,.c-ink:focus-visible,.blk :focus-visible,.blk:focus-visible,.cta:not(.l):not(.o):focus-visible,.icb:focus-visible{outline-color:var(--lime)}
+.stk .cta:focus-visible,.mbtn:focus-visible{outline-color:var(--ink);box-shadow:0 0 0 6px var(--lime)}
 .cta:focus-visible,.pill:focus-visible,.nl:focus-visible{border-radius:29px}
 .cta:not(.l):not(.o):focus-visible,a.icb:focus-visible{box-shadow:0 0 0 3px var(--ink)}
 
@@ -58,7 +61,7 @@ span.cta:hover{transform:none;box-shadow:none}
 .nl:hover,.nl.on{background:var(--alt)}.nl.on{font-weight:800}
 .nl[aria-expanded=true]{background:var(--alt)}.nl[aria-expanded=true] svg{transform:rotate(180deg)}
 .mega{position:absolute;left:14px;right:14px;top:78px;display:none;justify-content:center}
-.mega.on{display:flex;animation:pop .22s both}
+.mega.on,.mega:target{display:flex;animation:pop .22s both}
 .mg{width:100%;max-width:1220px;background:#fff;border-radius:34px;box-shadow:0 30px 90px rgba(0,0,0,.18),0 0 0 1px rgba(0,0,0,.06);padding:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;max-height:calc(100vh - 110px);overflow-y:auto}
 .mg .eb{padding:6px 10px}
 .mi{display:flex;gap:12px;align-items:center;padding:10px;border-radius:18px}
@@ -76,7 +79,8 @@ span.cta:hover{transform:none;box-shadow:none}
 .sc{width:46px;height:46px;border-radius:14px;background:var(--ink);color:#fff;display:grid;place-items:center;flex:none;transition:transform .15s}
 .sc:hover{transform:translateY(-2px);background:var(--lime);color:var(--ink)}
 .sc:focus-visible{outline-color:var(--ink);box-shadow:0 0 0 6px var(--lime)}
-.dock{display:none}
+/* Nur auf dem Telefon: Knopf „Menü“, Seiten in der Menüfläche, Aufruf am unteren Rand. */
+.mbtn,.mnav,.mhd,.mclose,.stk{display:none}
 
 /* Abschnitte, Kacheln */
 .sec{padding:96px 0}
@@ -229,7 +233,7 @@ a.t:hover{transform:translateY(-5px);box-shadow:0 24px 50px rgba(0,0,0,.16)}
 .fin .p{font-size:20px;max-width:600px;font-weight:600;margin-top:14px}
 .fin>.cta{margin-top:26px}
 .fin .s{font-size:14px;margin-top:12px;font-weight:600}
-.foot{border-top:1.5px solid var(--line);padding:40px 0 110px;color:var(--mut);font-size:14px}
+.foot{border-top:1.5px solid var(--line);padding:40px 0 calc(44px + env(safe-area-inset-bottom,0px));color:var(--mut);font-size:14px}
 .foot .cols{display:grid;grid-template-columns:1.5fr 1fr 1fr 1.3fr;gap:24px 48px;align-items:start}
 .foot .brand{color:var(--ink);display:inline-block}.foot .about{max-width:300px}.foot .about p{margin-top:8px}
 .foot h2{font-size:14px;font-weight:800;color:var(--ink)}
@@ -283,7 +287,7 @@ a.t:hover{transform:translateY(-5px);box-shadow:0 24px 50px rgba(0,0,0,.16)}
 
 @media(prefers-reduced-motion:reduce){
 *,*::before,*::after{animation:none!important;transition:none!important}
-html{scroll-behavior:auto}
+html,html.js{scroll-behavior:auto}
 .rv.wait{opacity:1;transform:none}
 .mq{white-space:normal;text-align:center;padding:22px 24px}.mq div{display:block}.mq span[aria-hidden]{display:none}
 .cta:hover,a.t:hover,.art:hover,.lv:hover,.sc:hover{transform:none}
@@ -292,17 +296,32 @@ html{scroll-behavior:auto}
 @media(max-width:1180px) and (min-width:901px){.stg{transform:scale(.7);margin:-96px -90px}.nl{padding:4px 11px}.bar .soon{display:none}}
 @media(max-width:1100px) and (min-width:901px){.stages{grid-template-columns:1fr}.stage{min-height:0}.trio{grid-template-columns:1fr 1fr}.trio .art{grid-column:1/-1}.go{display:none}.t>.fl{padding-right:0}.tn{font-size:17px}.t div.icb{width:40px;height:40px;border-radius:12px}}
 @media(max-width:1000px) and (min-width:901px){.stg{transform:scale(.58);margin:-134px -126px}}
+/* Knapp über der Telefonbreite: Einträge enger, damit die Leiste einzeilig bleibt. */
+@media(max-width:960px) and (min-width:901px){.nl{padding:4px 7px;font-size:14px}.brand{margin-right:6px}.bar{padding-left:18px}}
 @media(max-width:900px){
 .cta{padding:8px 22px}
-.nls,.bar .soon{display:none}.bar{min-height:58px;border-radius:29px;padding:7px 8px 7px 16px}.brand{font-size:15px;margin-right:auto}.bar .cta.s{padding:6px 14px}
-.mega{top:auto;bottom:0;left:0;right:0;position:fixed;z-index:70}
-.mg{grid-template-columns:1fr;gap:6px;border-radius:30px 30px 0 0;max-height:78vh;overflow-y:auto;padding:14px 14px 96px}
+.nls,.bar .soon{display:none}.bar{position:relative;z-index:2;min-height:58px;border-radius:29px;padding:6px 6px 6px 16px}.brand{font-size:15px;margin-right:auto}.bar .cta.s{padding:6px 14px}
+/* Menü oben: Wortmarke links, Knopf rechts; die Fläche liegt unter der Leiste und füllt das Fenster. */
+.mbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-width:46px;min-height:46px;padding:6px 16px 6px 14px;border-radius:23px;background:var(--ink);color:#fff;font-weight:800;font-size:14.5px;line-height:1;flex:none}
+.mbtn svg{flex:none}.mbtn .mx,.mbtn[aria-expanded=true] .mo{display:none}.mbtn[aria-expanded=true] .mx{display:block}
+.mega{top:0;bottom:0;left:0;right:0;position:fixed;z-index:1;background:#fff}
+.mg{display:block;max-width:none;border-radius:0;box-shadow:none;max-height:none;height:100%;overflow-y:auto;overscroll-behavior:contain;padding:92px 14px calc(28px + env(safe-area-inset-bottom,0px))}
+.mg>div{margin-bottom:6px}
+.mnav{display:grid;gap:2px;padding-bottom:14px}
+.ml{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:54px;padding:8px 14px;border-radius:18px;font-size:24px;line-height:1.1;font-weight:900;letter-spacing:-.035em}
+.ml.on{background:var(--alt)}.ml svg{flex:none;color:var(--mut)}
+.mnav .cta{margin-top:12px;width:100%}
+.mhd{display:block;font-size:12.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;border-top:1.5px solid var(--line);padding:18px 10px 4px}
+.mclose{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:8px 22px;border-radius:24px;border:1.5px solid var(--ink);font-weight:800;font-size:15px;margin:18px 10px 0}
+html.mopen{overflow:hidden}
+/* Ein Aufruf am unteren Rand statt fünf Reiter: erscheint nach dem Kopf, weicht vor Anmeldung und Fuß (site.js). */
+.stk{display:block;position:fixed;left:0;right:0;bottom:0;z-index:30;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px));pointer-events:none;visibility:hidden;transform:translateY(100%);transition:transform .28s ease,visibility 0s linear .28s}
+.stk.on{visibility:visible;transform:none;transition:transform .28s ease,visibility 0s}
+.stk .cta{display:flex;width:100%;max-width:520px;margin:0 auto;min-height:54px;pointer-events:auto;box-shadow:0 0 0 3px #fff,0 14px 34px rgba(0,0,0,.3)}
+.stk .cta:hover{transform:none}
 .bento{grid-template-columns:1fr 1fr}.bento.c3,.bento.k1{grid-template-columns:1fr}
 .t{min-height:210px;padding:16px;border-radius:26px}.t.h0{min-height:0}.t.h170{min-height:150px}
 .split,.faqs,.heroX .split{grid-template-columns:1fr;gap:32px}.sec{padding:60px 0}.hide-m{display:none!important}
-.dock{display:flex;position:fixed;left:10px;right:10px;bottom:10px;height:66px;border-radius:26px;background:rgba(11,12,14,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);z-index:80;padding:0 6px;align-items:center}
-.dock a{flex:1;height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;font-weight:700;color:#a1a7af;border-radius:20px}
-.dock a.on{color:var(--lime)}.dock a[aria-expanded=true]{color:#fff}.dock b{font-size:17px;line-height:20px}
 .go{display:none}.t>.fl{padding-right:0;gap:8px}.tn{font-size:14px;letter-spacing:-.03em}.t .H3.b{font-size:20px}.t .icb{width:36px;height:36px;border-radius:11px}.t .icb svg{width:22px;height:22px}.t a.icb{width:44px;height:44px;border-radius:14px}.t a.icb svg{width:24px;height:24px}
 .heroX{padding:118px 0 30px;border-radius:0 0 40px 40px}
 .stg{transform:scale(.6);margin:-120px 0 -130px;left:50%;margin-left:-300px}
@@ -323,9 +342,13 @@ html{scroll-behavior:auto}
 .w{padding:0 18px}.rail{padding-inline:18px}
 .bento,.bento.c3,.bento.k1{grid-template-columns:1fr}.t.w2{grid-column:auto}.t{min-height:170px}.t.h0{min-height:0}.tn{font-size:16px}.t .H3.b{font-size:24px}
 .brand{font-size:14px}.bar .cta.s svg{display:none}
+.stk .cta,.mnav .cta{font-size:15.5px;padding:8px 16px}
 .stage .H2{font-size:28px}.t.mini{flex-direction:column;align-items:flex-start}.t.mini .cov{flex:none;width:150px;padding-left:10px}
 .mh .H1{font-size:30px}.mh .H1.lw{font-size:28px}.mh .H1.big{font-size:40px}.H1{font-size:40px}.H2{font-size:32px}.heroX .H1{font-size:40px}.fin .H1{font-size:38px}
 .consent-details{margin-left:0}
 }
 /* Tablet hochkant: Bühnen untereinander, Titelbild bleibt rechts neben dem Text. */
 @media(max-width:900px) and (min-width:621px){.stage{grid-template-columns:minmax(0,1fr) 220px;padding:32px;gap:24px}.stage .cov,.stage .cov.r{order:0;justify-content:center;padding:0}.stage .cov img{max-width:100%}}
+/* Breites Telefon und Tablet hochkant: Der Aufruf passt neben den Menüknopf in die Leiste; der Aufruf am unteren Rand entfällt. */
+@media(max-width:900px) and (min-width:560px){.stk{display:none}}
+@media(max-width:559px){.bar .cta.s{display:none}}
