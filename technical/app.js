@@ -434,7 +434,7 @@
       nextCard("Fundamental: wie gut ist das Geschäft?", "/fundamental/"), foot]);
     loadIndex().then(function (X) {
       var ix = X.index, asOf = X.meta && X.meta.asOf || ix.asOf;
-      if (asOf) stand = "Technical · " + closeLabel(asOf) + ".";
+      if (asOf) stand = "Technical · " + closeLabel(asOf);
       put(searchSlot, searchBox(X.entries, "Aktie oder „Dreieck über der 200-Tage-Linie“", true));
       put(chips, ["NVDA", "AAPL", "TSLA", "MSFT"].filter(X.has).map(function (t) { return el("a", { class: "vu-chip", role: "listitem", href: M.chartHref(t) }, [h(U.logo(t)), t]); }));
       /* Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json); ohne sie die eigene Zählung, beide mit Stand und Basis. */
@@ -443,7 +443,7 @@
         var b = M.marketBreadth(pulse) || own;
         if (!b) { put(market, el("p", { class: "tc-note", text: LEAD })); return; }
         var v = breadthVerdict(b.share);
-        basis = M.breadthSentence(b) + ".";
+        basis = M.breadthSentence(b);
         tag.textContent = " · " + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien";
         /* Ampel in Neonfarben (Owner-Wunsch 10.11.2026): stark = Neongrün, gemischt = Neongelb, schwach = Neonrot; dieselben Schwellen wie das Urteil.
            Seit App-Konzept 2 trägt die Ampel die Zustandsfarbe, die Kachel bleibt dunkel. */
