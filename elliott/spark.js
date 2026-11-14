@@ -14,7 +14,7 @@
   }
   function paint(node) {
     series(node.dataset.t).then(function (v) {
-      var C = global.VUChart, svg = C && v.length > 1 ? C.sparkline(v, { width: 64, height: 30 }) : "";
+      var C = global.VUChart, svg = C && v.length > 1 ? C.sparkline(v, { width: +node.dataset.w || 64, height: +node.dataset.h || 30 }) : "";
       if (svg) { var t = document.createElement("template"); t.innerHTML = svg; node.replaceChildren(t.content); }
     });
   }
