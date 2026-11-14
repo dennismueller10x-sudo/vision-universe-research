@@ -30,7 +30,9 @@
   function getJSON(name) {
     if (JSON_P[name] && (JSON_AT[name] === undefined || Date.now() - JSON_AT[name] < 30000)) return JSON_P[name];
     delete JSON_AT[name];
-    var pending = fetch(DATA + name, { cache: 'no-cache' }).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status); return r.json(); }).then(function (value) {
+    var early = window.__stEarly && window.__stEarly[name] || null;
+    if (early) delete window.__stEarly[name];
+    var pending = (early || fetch(DATA + name, { cache: 'no-cache' })).then(function (r) { if (!r.ok) throw new Error(name + ' HTTP ' + r.status); return r.json(); }).then(function (value) {
       if (JSON_P[name] === pending) JSON_AT[name] = Date.now();
       return value;
     }).catch(function (e) { if (JSON_P[name] === pending) { delete JSON_P[name]; delete JSON_AT[name]; } throw e; });

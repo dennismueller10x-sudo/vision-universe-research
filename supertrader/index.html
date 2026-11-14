@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="/supertrader/assets/supertrader.css">
 <link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.3.0">
 <link rel="stylesheet" href="/supertrader/assets/st-redesign.css">
+<script>/* Startseite: die Daten parallel zu den Skripten holen statt erst nach deren Start (supertrader.js#getJSON übernimmt den Abruf; gleiche Anfrage). */(function(){try{if(!/^\/supertrader\/?$/.test(location.pathname)||location.search)return;var m=window.__stEarly={};["build.json","market.json","pilot-backtest.json","replay.json","trend52.json","registry-core.json","signals-core.json"].forEach(function(n){var f=fetch("/supertrader/data/"+n,{cache:"no-cache"});f.catch(function(){});m[n]=f;setTimeout(function(){if(m[n]===f)delete m[n]},30000)})}catch(e){}})();</script>
 <link rel="preload" href="/assets/vu-ui.js?v=vu-ui-1.3.0" as="script">
 <link rel="preload" href="/assets/vu-chart.js" as="script">
 <link rel="preload" href="/supertrader/assets/st-redesign.js" as="script">
@@ -20,7 +21,7 @@
 <vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script>
 <script src="/assets/site-navigation.js"></script>
 <a class="st-skip" href="#st-main">Zum Inhalt</a>
-<main id="st-main" class="st-main" tabindex="-1"><div class="st-boot" aria-live="polite">Supertrader lädt …</div></main>
+<main id="st-main" class="st-main" tabindex="-1"><div class="st-boot" aria-live="polite">Supertrader lädt …<div class="st-boot-sk" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div></main>
 <noscript><p class="st-noscript">Supertrader benötigt JavaScript.</p></noscript>
 <script src="/supertrader/assets/st-chart.js"></script>
 <script src="/supertrader/assets/supertrader.js"></script>

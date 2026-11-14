@@ -825,3 +825,14 @@ html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] { margin-b
 .st-tech-limits { margin: 14px 0 0; font-size: 12px; line-height: 1.5; color: var(--st-muted); }
 .st-tech-empty { margin-top: 0; }
 .st-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+/* Ruhiger Start (Owner 14.11.): Gerüst mit den Höhen des fertigen Kopfs; die Blöcke darunter halten ihre Höhe, bis ihre Daten da sind.
+   Leer bleibende Blöcke geben den Platz nach 9 s wieder frei. */
+.st-boot-sk{margin-top:24px}
+.st-boot-sk i{display:block;border-radius:14px;background:var(--st-line,rgba(127,127,127,.14));margin-bottom:12px}
+.st-boot-sk i:nth-child(1){height:16px;width:40%}.st-boot-sk i:nth-child(2){height:69px;width:70%}.st-boot-sk i:nth-child(3){height:42px}.st-boot-sk i:nth-child(4){height:218px;border-radius:22px}
+.st-r .st-x-gap12{min-height:218px}
+.st-r > :nth-child(6):empty{min-height:284px;animation:st-hold-release 1ms 9s forwards}
+.st-r > :nth-child(7):empty{min-height:301px;animation:st-hold-release 1ms 9s forwards}
+.st-r > :nth-child(8):empty{min-height:285px;animation:st-hold-release 1ms 9s forwards}
+@media (max-width:560px){.st-boot-sk i:nth-child(3){height:84px}.st-r .st-x-gap12{min-height:233px}.st-r > :nth-child(7):empty{min-height:318px}}
+@keyframes st-hold-release{to{min-height:0}}
