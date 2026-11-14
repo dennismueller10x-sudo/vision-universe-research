@@ -85,6 +85,8 @@ V1 sind C01, C02, C03, C08 und C12; die übrigen acht Methoden stehen im Produkt
 
 - **Aktienseite, Trade-Entwicklung (Owner-Wunsch 07.11.2026):** Offene Modellpositionen zeigen weiter die Karte mit Balken Stop – Einstieg – Schluss, „Luft bis zum Stop“ und %-Pille; abgeschlossene Einträge im Protokoll und der Ausstieg im Chart tragen jetzt die realisierte Entwicklung Einstieg → Ausstieg (Plus neongrün, Minus rot). Hält das Musterdepot die Aktie nicht, sagt die Seite das ausdrücklich. Eine Rückkehr nach einem Warnzeichen heißt im Protokoll „Warnzeichen vorbei“ statt fälschlich „Modell steigt ein“. Anlass: Der Owner-Screenshot ohne Balken zeigte ABBV (Donchian 07.10. 269,66 $ → 06.11. 280,94 $, keine offene Position), nicht ADP; ADP (Donchian offen seit 15.10. zu 288,29 $, Stop 282,73 $) zeigte die Karte durchgehend, die Daten sind konsistent.
 
+- **Oberfläche nach „App-Konzept 2“ (Owner-Freigabe 14.11.2026):** Alle Supertrader-Seiten zeigen dieselben Angaben als Kacheln, Schienen und Grafiken (Trichter der drei Stufen, belegte Plätze je Musterdepot, Zonenleisten, Ringe); Erklärungen und Details öffnen sich beim Antippen im Fenster (`supertrader/assets/st-redesign.js`, Bausteine aus `assets/vu-ui.js`). Nur Darstellung: Methoden, Regeln, Stufen, Zustände und Zahlen kommen unverändert aus den Artefakten; neu sichtbar sind allein bereits veröffentlichte Werte (Marktlage aus `market.json`, „Neu heute“ aus `summary.json#changes`, Plätze aus `portfolio.json`).
+
 Der Tagesstand des Strangs steht in `docs/archiv/neustart/B-supertrader.md`.
 
 ---

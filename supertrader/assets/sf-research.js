@@ -271,7 +271,8 @@
         /* ST02 (Redesign 2027): Kopf wie die Methodenseiten (ST03) – Zurück, Kicker, Titel, ein Satz, höchste Stufe als Urteil, drei Kacheln. */
         var U0 = window.VUUI, cap = VERDICT_OF[s.ceiling] || ['none', s.ceiling];
         var hd = h('header', { class: 'sf-r-head' });
-        hd.innerHTML = '<a class="sf-r-back" href="/supertrader/strategies/">‹ Methoden</a><p class="vu-ltag">' + U0.esc(s.author + ' · Stand ' + dateDe(data.asOf)) + '</p><h1 class="vu-lt">' + U0.esc(mName(s)) + '</h1><p class="vu-lead">' + U0.esc(s.short) + '</p>' +
+        /* App-Konzept 2 (14.11.2026): Zurück, Urheber · Stand und Titel in einer Zeile statt in drei. */
+        hd.innerHTML = '<div class="st-k-top"><a class="st-k-back sf-r-back" href="/supertrader/strategies/" aria-label="Zurück zu den Methoden">' + U0.glyph('back', 18) + '</a><div class="st-k-top-t"><p class="vu-ltag">' + U0.esc(s.author + ' · Stand ' + dateDe(data.asOf)) + '</p><h1 class="vu-lt st-k-h1">' + U0.esc(mName(s)) + '</h1></div></div><p class="vu-lead">' + U0.esc(s.short) + '</p>' +
           '<p class="sf-r-cap"><span class="vu-xs vu-mu"><b>Höchstens</b></span> ' + U0.verdict(cap[0], cap[1]) + '</p>';
         hd.querySelector('.sf-r-cap').prepend(v1Tag(s));
         hd.appendChild(limitsLine(s, true));
@@ -312,6 +313,7 @@
         moreBox('Stufen', [stagesLegend()]),
         provenance(sum),
       ], { kicker: 'Aufklappbar' }));
+      if (window.VUUI && window.VUUI.next) host.insertAdjacentHTML('beforeend', window.VUUI.next({ title: 'Treffer', sub: 'Wo steht welche Aktie im Ablauf?', href: '/supertrader/treffer/' }));
       host.appendChild(footnote(sum));
     }).catch(function () { host.appendChild(empty('Methode nicht verfügbar', 'Für diese Methode liegen keine Research-Kandidaten vor.')); host.appendChild(unavailable()); });
   }

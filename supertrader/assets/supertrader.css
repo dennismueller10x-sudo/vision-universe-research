@@ -836,3 +836,25 @@ html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] { margin-b
 .st-r > :nth-child(8):empty{min-height:285px;animation:st-hold-release 1ms 9s forwards}
 @media (max-width:560px){.st-boot-sk i:nth-child(3){height:84px}.st-r .st-x-gap12{min-height:233px}.st-r > :nth-child(7):empty{min-height:318px}}
 @keyframes st-hold-release{to{min-height:0}}
+
+/* App-Konzept 2 (Owner-Freigabe 14.11.2026) für die Ansichten der bisherigen Oberfläche: historisches Beispiel
+   (/supertrader/beispiel/), Kandidatenliste einer Methode (?sf=) und „Weitere Angaben dieser Methode“.
+   Die Produktzeile entfällt: Name und „Quellen“ stehen im Kopf und in den Reitern. Farben nur Schwarz, Weiß, Grau und
+   Neongrün #c8f531 (als Fläche hinter schwarzer Schrift oder auf dunkler Fläche); Bedeutung tragen Wort und Symbol. */
+.st-productline { display: none; }
+body.st[data-page="replay"], .sf-host, .st-r-legacy {
+  --st-good: var(--st-text); --st-warn: var(--st-text); --st-info: var(--st-text); --st-teal: var(--st-text); --st-trigger: var(--st-text);
+  --p-cand: var(--st-muted); --p-prep: var(--st-text); --p-conf: var(--st-text); --p-pos: var(--st-text); --p-warn: var(--st-text); --p-exit: var(--st-text);
+  --p-closed: var(--st-text); --p-inv: var(--st-muted); --p-partial: var(--st-text); --p-watch: var(--st-muted); --p-obs: var(--st-muted);
+}
+html:has(> body.st[data-page="replay"]) { --world: #c8f531 !important; --world-2: #c8f531 !important; --chart-trigger: #c8f531; --chart-entry: #c8f531; --chart-exit: #ffffff; --candle-up: #c8f531; --candle-down: #9b9b9b; }
+html[data-theme=light]:has(> body.st[data-page="replay"]) { --chart-trigger: #000000; --chart-entry: #000000; --chart-exit: #000000; --candle-up: #000000; --candle-down: #9b9b9b; }
+body.st[data-page="replay"] .st-lensblock { --w: #c8f531 !important; --w2: #c8f531 !important; }
+body.st[data-page="replay"] .st-chips.lens button[aria-selected="true"] { background: #c8f531; border-color: #c8f531; color: #000; }
+body.st[data-page="replay"] .st-hero.sm { padding-top: 10px; }
+body.st[data-page="replay"] .st-hero.sm h1 { font-size: 24px; letter-spacing: -.035em; line-height: 1.08; }
+body.st[data-page="replay"] .st-demo-banner, body.st[data-page="replay"] .st-lensblock, body.st[data-page="replay"] .st-chartbox { border-radius: 22px; }
+.sf-host .st-tag[data-t="info"] { background: #000; color: #c8f531; box-shadow: inset 0 0 0 1px #3a3a3a; text-transform: uppercase; font-size: 10px; font-weight: 900; letter-spacing: .06em; }
+.sf-view { padding-top: 10px; }
+.sf-view .st-k-top { margin-bottom: 8px; }
+.sf-view .vu-next { color: #fff; }

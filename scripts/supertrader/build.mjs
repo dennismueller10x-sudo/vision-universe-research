@@ -959,8 +959,8 @@ export function stockPreloads(sym) {
 /* Startseite: Schrift und die Bausteine der Oberfläche früh ankündigen (vorher von Hand in supertrader/index.html gepflegt;
    jetzt im Erzeuger, damit ein Lauf sie nicht wieder entfernt). */
 export const HOME_FONT = '<link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>';
-export const HOME_HEAD = ['<link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.3.0">', '<link rel="stylesheet" href="/supertrader/assets/st-redesign.css">',
-  '<link rel="preload" href="/assets/vu-ui.js?v=vu-ui-1.3.0" as="script">', '<link rel="preload" href="/assets/vu-chart.js" as="script">',
+export const HOME_HEAD = ['<link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.4.0">', '<link rel="stylesheet" href="/supertrader/assets/st-redesign.css">',
+  '<link rel="preload" href="/assets/vu-ui.js?v=vu-ui-1.4.0" as="script">', '<link rel="preload" href="/assets/vu-chart.js" as="script">',
   '<link rel="preload" href="/supertrader/assets/st-redesign.js" as="script">'].join('\n');
 
 function pageShell({ title, description, page, depth, attrs = '', head = '', font = false }) {
