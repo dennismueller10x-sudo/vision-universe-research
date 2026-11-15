@@ -1,5 +1,6 @@
-/* Discover-Startseite (Konzept „Reihe für Reihe“, Screen n-home): der Kopf (Datum, Frage, Suche, Genre-Chips) steht vorgerendert in
-   index.html und hier gleich; alle Abschnitte darunter zeichnet discover/ui/v3.js (ausserhalb des Budgets). */
+/* Discover-Startseite (App-Konzept 2, Prototyp „v-discover“): index.html rendert den Platzhalter der Aktie des Tages vor; der Kopf
+   (Datum, Frage, Suche, Genre-Chips) entsteht hier und steht über einer Genre-Ansicht. Alle Abschnitte zeichnet discover/ui/reihen.js
+   (über discover/ui/v3.js, ausserhalb des Budgets). */
 (function (global) {
   'use strict';
   var V = (global.VUDiscover = global.VUDiscover || {}).Views = global.VUDiscover.Views || {};
@@ -71,13 +72,16 @@
     intro.append(el('p', { class: 'vu-ltag dv3-asof', text: 'Discover' }), h1, lead, search, chips);
     return intro;
   }
+  /* App-Konzept 2: index.html rendert den Platzhalter der Aktie des Tages vor (data-static); er bleibt stehen, bis reihen.js sie zeichnet.
+     Der Kopf (Frage, Suche, Genres) steht nur über einer Genre-Ansicht; ohne Genre ist er verborgen (discover/ui/reihen.js#paintGenres). */
   async function render(root, ctx) {
-    var intro = ctx.intro, page = intro ? intro.parentNode : el('div', { class: 'v2-home vu-ui' }); // Kopf aus index.html (gleiches Markup) bzw. vom vorigen Zeichnen: bleibt stehen
-    if (intro) { if (intro.hasAttribute('data-static')) { intro.removeAttribute('data-static'); intro.querySelector('.v2-search-prompt').addEventListener('click', ctx.openSearch); if (global.__vuSearchTap) { global.__vuSearchTap = 0; ctx.openSearch(); } } ctx.intro = null; }
-    else intro = header(ctx);
-    if (page.parentNode !== root) root.appendChild(page); if (intro.parentNode !== page) page.appendChild(intro);
-    Array.prototype.slice.call(page.children).forEach(function (n) { if (n !== intro) n.remove(); });
-    return D.V3.home(page, ctx);
+    var keep = ctx.intro, page = keep ? keep.parentNode : el('div', { class: 'v2-home vu-ui' });
+    ctx.intro = null;
+    if (page.parentNode !== root) root.appendChild(page);
+    var intro = header(ctx); intro.hidden = true; page.insertBefore(intro, page.firstChild);
+    if (global.__vuSearchTap) { global.__vuSearchTap = 0; ctx.openSearch(); }
+    Array.prototype.slice.call(page.children).forEach(function (n) { if (n !== intro && n !== keep) n.remove(); });
+    return D.V3.home(page, Object.assign({}, ctx, { heroWait: keep && keep.classList.contains('dp-hero') ? keep : null }));
   }
   V.Home = { render: render, title: title };
 })(window);

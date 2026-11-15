@@ -112,7 +112,7 @@
     if(parts[0]==='c'&&parts[1]==='US_REAL'&&parts[2]){const t=V.Themes.byRow(parts[2]);if(t){location.replace(V.Themes.href(t));return;}}
     if(parts[0]==='strategien'&&parts[1]){location.replace('#/c/'+ctx.universeId+'/'+parts[1]);return;}// Seite einer Reihe (Konzept „Reihe für Reihe“, n-row)
     if(D.EuropeView.bindRoute(parts,ctx))return;
-    const home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)$/.test(parts[0]||''),intro=keepIntro=home?document.querySelector('#v2-shell .v2-home>.dv3-intro'):null,root=shell();root.setAttribute('aria-busy','true');root.classList.toggle('dv3-main',home||/^(welten|strategien|thema|swipen|watchlist|suche|reihen|c)$/.test(parts[0])||(parts[0]==='maerkte'&&!parts[1]));
+    const home=!/^(s|settings|suche|aktien|watchlist|welten|strategien|thema|c|einzeln|swipen|maerkte|daten|reihen)$/.test(parts[0]||''),intro=keepIntro=home?document.querySelector('#v2-shell .v2-home>[data-static]'):null,root=shell();const H=document.documentElement;if(!home){H.removeAttribute('data-vu-bleed');H.removeAttribute('data-vu-tabs');}else H.setAttribute('data-vu-tabs','inhalt');root.setAttribute('aria-busy','true');root.classList.toggle('dv3-main',home||/^(welten|strategien|thema|swipen|watchlist|suche|reihen|c)$/.test(parts[0])||(parts[0]==='maerkte'&&!parts[1]));
     document.title='Discover — Vision Universe®';if(!y)global.scrollTo(0,0);
     try {
       // Startseite: Kopf, Maerkte und Themen zeichnen sofort; home.js wartet vor den Karten auf das Intraday-Verzeichnis.

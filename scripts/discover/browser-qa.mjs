@@ -62,23 +62,27 @@ async function premiumMobileAudit(page,key){
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
  assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');/* Prototyp App-Konzept 2: das Dock hebt sich mit einer feinen hellen Kante (1 px) ab, nicht mit einem Schatten. */assert(!/^none$/.test(material.dock.boxShadow)||material.dock.border>=1,'Dock needs depth (shadow or hairline edge)');assert(material.active.label==='Discover'&&material.active.luminance!==null&&material.active.luminance>80&&/^rgb\(200, 245, 49\)$/.test(material.active.color),'Active dock place must be Discover in the signal lime: '+JSON.stringify(material.active));
 
- /* Konzept „Reihe für Reihe“ (n-home): Billboard, Markt-Zeile, Top 10, dann die Schienen in fester Reihenfolge; nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
+ /* App-Konzept 2 (Prototyp „v-discover“, Owner 15.11.2026 „1:1 wie im Prototyp“): oben die Aktie des Tages (Billboard), direkt danach die Reiter
+    im Inhalt, dann in der Reihenfolge des Prototyps Top 10 heute, Themen, Neue Jahreshochs, Was sich heute bewegt, Langfristige Compounder
+    („Weiter ansehen“ nur mit angesehenen Aktien, davor). Die uebrigen Reihen der Startseite folgen danach in der Reihenfolge von Reihen.homePlan;
+    dann „Wie steht die Börse?“. Nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
  await page.waitForFunction(()=>document.querySelector('.dr-sec--top10 .dr-poster'),null,{timeout:15000}).catch(()=>{});
- const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > section')).slice(0,3).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dr-sec--markt')?'markt':n.classList.contains('dr-sec--top10')?'top10':n.className));
- assert.deepEqual(top,['billboard','markt','top10'],'n-home: oben fest Billboard, Markt, Top 10: '+top.join(' | '));
+ const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > :not(h1)')).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dp-tabs')?'tabs':n.classList.contains('dr-sec--recent')?'recent':n.classList.contains('dr-sec--top10')?'top10':n.classList.contains('dr-sec--themes')?'themes':n.classList.contains('dp-moves')?'moves':n.dataset.row||n.className).filter(x=>x!=='recent').slice(0,7));
+ assert.deepEqual(top,['billboard','tabs','top10','themes','new-52-week-highs','moves','langfristige-compounder'],'n-home: oben die Aktie des Tages, Reiter, dann die Bloecke des Prototyps: '+top.join(' | '));
  const order=await page.locator('.v2-journey > section .dr-head h2').allTextContents();
- /* Grundreihenfolge (keine Reihe mit neuen Treffern) bleibt Vertrag; die erwartete Reihenfolge der ausgelieferten Seite
-    rechnet dieselbe Regel wie die Seite (Reihen.homePlan, Regel 3 „Reihen mit neuen Treffern ruecken nach oben“) aus der
-    ausgelieferten meta.json. Vorher stand hier nur die feste Liste; seit Karten firstSeen tragen (Marktlauf 666625e416),
-    rueckten Reihen regelgerecht nach oben und die Pruefung wurde rot, ohne dass sich die Seite geaendert hatte. */
- const basis=['Top 10 heute','Neue Jahreshochs','Themenwelten','Comeback?','Langfristige Compounder','Kennt kaum jemand','Bekannte Namen in Bewegung','Strategien','Gerade in Bewegung'];
+ const proto=order.filter(t=>t!=='Weiter ansehen').slice(0,5);
+ assert.deepEqual(proto.map(t=>t.replace(/^\d+ Themen$/,'N Themen')),['Top 10 heute','N Themen','Neue Jahreshochs','Was sich heute bewegt','Langfristige Compounder'],'Bloecke des Prototyps in seiner Reihenfolge: '+order.join(' | '));
+ /* Die uebrigen Reihen: Grundreihenfolge (keine Reihe mit neuen Treffern) bleibt Vertrag; die erwartete Reihenfolge der ausgelieferten Seite
+    rechnet dieselbe Regel wie die Seite (Reihen.homePlan, Regel 3 „Reihen mit neuen Treffern ruecken nach oben“) aus der ausgelieferten meta.json. */
+ const basis=['Comeback?','Kennt kaum jemand','Bekannte Namen in Bewegung','Strategien','Gerade in Bewegung'];
  const homeMeta=await page.evaluate(async()=>(await fetch('/discover/data/meta.json',{cache:'no-store'})).json());
  const planTitel=fresh=>Reihen.homePlan(Reihen.available(homeMeta),{fresh}).map(s=>NHOME_TITEL[s.row||s.kind]).filter(t=>basis.includes(t));
  assert.deepEqual(planTitel([]),basis,'n-home Grundreihenfolge (Reihen.homePlan ohne neue Treffer)');
- const expected=planTitel(Reihen.freshRows(homeMeta));
- assert.deepEqual(order.filter(t=>expected.includes(t)),expected.filter(t=>order.includes(t)),'n-home section order: '+order.join(' | ')+' (erwartet: '+expected.join(' | ')+')');
- for(const must of ['Top 10 heute','Themenwelten','Strategien'])assert(order.includes(must),'n-home without '+must+': '+order.join(' | '));
- assert(order.length<=14,'At most 14 rows on the home page: '+order.length);
+ const expected=planTitel(Reihen.freshRows(homeMeta)),rest=order.slice(order.indexOf('Langfristige Compounder')+1);
+ assert.deepEqual(rest.filter(t=>expected.includes(t)),expected.filter(t=>rest.includes(t)),'n-home section order: '+order.join(' | ')+' (erwartet: '+expected.join(' | ')+')');
+ for(const must of ['Top 10 heute','Strategien','Wie steht die Börse?'])assert(order.includes(must),'n-home without '+must+': '+order.join(' | '));
+ assert(order.indexOf('Wie steht die Börse?')>order.indexOf('Strategien'),'Wie steht die Börse? nach den Reihen: '+order.join(' | '));
+ assert(order.length<=18,'At most 18 sections on the home page: '+order.length);
  const palette=await page.evaluate(()=>{const rgb=v=>(v.match(/[\d.]+/g)||[]).slice(0,3).map(Number),hue=c=>{const [r,g,b]=c,mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn;};
   const lime=c=>c[0]===200&&c[1]===245&&c[2]===49,grey=c=>hue(c)<=8;
   return Array.from(document.querySelectorAll('.v2-journey .vu-chg')).map(n=>rgb(getComputedStyle(n).backgroundColor)).filter(c=>!(lime(c)||grey(c)));});
@@ -102,7 +106,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  const bad=[];page.on('response',r=>{if(r.url().startsWith(base)&&r.status()>=400)bad.push({status:r.status(),url:r.url()});});
  const entryStarted=Date.now();await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor({state:'visible'});
  // Measure the cold Home entry before unrelated settings, theme and reload checks.
- await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/Was bewegt\s+die Börse heute\?/.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['genre chips',page.locator('.dr-genres button').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
+ await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/Nr\. 1 heute/i.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();/* App-Konzept 2: der erste Bildschirm ist die Aktie des Tages mit „Ansehen“ und den Reitern im Inhalt (die Suche steht im Kopf des Rahmens). */const targets=[['purpose',page.locator('.v2-hero-track .dp-hero__id h2').first()],['open',page.locator('.v2-hero-track .dp-btn').first()],['tabs',page.locator('.dp-tabs .dp-tab').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
  /* App-Konzept 2 (Owner 15.11.2026): Standard ist dunkel, unabhaengig vom Geraeteschema; Hell bleibt waehlbar (naechste Pruefung). */
  await check(key+' fresh visit starts dark regardless of device scheme',async()=>{
   assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
@@ -388,15 +392,17 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert(await page.locator('.v2-hero-track [data-symbol]').count()>=2,'Heute im Blick needs several stocks');
   assert.equal(await page.locator('.dr-bb').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(0, 0, 0)','Billboard is black in both modes');
   assert.equal(await page.locator('.dr-ms[href="#/maerkte"]').count(),1,'Market strip leads to Märkte');
-  /* App-Konzept 2 (Owner 14.11.2026): das Billboard läuft bis an den Bildschirmrand, sein Chart steht oben, und Titel, Urteil und die
-     Knöpfe „Aktie ansehen · Merken · ?“ stehen bei 390 × 844 im ersten Bildschirm über dem Dock; „Markt heute“ zeigt die Stufe als Skala. */
+  /* App-Konzept 2 (Prototyp „v-discover“, Owner 15.11.2026): die Aktie des Tages fuellt den ersten Bildschirm (520 px) bis an beide Raender; ihre
+     Kurslinie laeuft gross hinter Kopf und Namen, unten stehen Etiketten, Name, Pille und die Knoepfe „Ansehen · Herz · ?“ ueber dem Dock;
+     direkt darunter die Reiter im Inhalt. „Wie steht die Börse?“ zeigt die Stufe als Skala. */
   {await page.evaluate(()=>scrollTo(0,0));await page.locator('.dr-bb__chart svg').first().waitFor();await page.locator('.dr-ms__scale i.on').waitFor();
-   const bb=await page.evaluate(()=>{const b=document.querySelector('.dr-bb'),r=b.getBoundingClientRect(),s=b.querySelector('.dr-bb__slide'),box=n=>s.querySelector(n).getBoundingClientRect(),dock=document.getElementById('vu-dock').getBoundingClientRect();
-    return {left:r.left,right:innerWidth-r.right,chart:box('.dr-bb__chart').toJSON(),id:box('.dr-bb__id').toJSON(),act:box('.dr-bb__act').toJSON(),dockTop:dock.top,asof:document.querySelector('.dv3-asof').getBoundingClientRect().toJSON(),h1:document.querySelector('.dv3-intro h1').getBoundingClientRect().toJSON(),scale:document.querySelectorAll('.dr-ms__scale i').length};});
-   assert(bb.left<=0.5&&bb.right<=0.5,'Billboard reaches both screen edges: '+JSON.stringify(bb));
-   assert(bb.chart.width>=389&&bb.chart.height>=110&&bb.chart.bottom<=bb.id.top+1,'Billboard chart is full width, at least 110 px high and above the name: '+JSON.stringify(bb.chart));
+   const bb=await page.evaluate(()=>{const b=document.querySelector('.dr-bb'),r=b.getBoundingClientRect(),s=b.querySelector('.dr-bb__slide'),box=n=>s.querySelector(n).getBoundingClientRect(),dock=document.getElementById('vu-dock').getBoundingClientRect(),tabs=document.querySelector('.dp-tabs').getBoundingClientRect();
+    return {left:r.left,right:innerWidth-r.right,height:r.height,chart:box('.dr-bb__chart').toJSON(),id:box('.dr-bb__id').toJSON(),act:box('.dr-bb__act').toJSON(),dockTop:dock.top,tabsTop:tabs.top,bottom:r.bottom,scale:document.querySelectorAll('.dr-ms__scale i').length};});
+   if(width<500)assert(bb.left<=0.5&&bb.right<=0.5,'Billboard reaches both screen edges: '+JSON.stringify(bb));
+   assert(bb.height>=500,'Billboard fills the first screen (520 px): '+bb.height);
+   assert(bb.chart.width>=Math.min(width,640)-1&&bb.chart.height>=200&&bb.chart.top<bb.id.top,'Billboard chart is full width, large and runs behind the name: '+JSON.stringify(bb.chart));
    assert(bb.act.bottom<=bb.dockTop,'Billboard actions sit above the dock in the first screen: '+bb.act.bottom+' > '+bb.dockTop);
-   assert(bb.asof.top<bb.h1.bottom&&bb.asof.left>=bb.h1.left,'Date line shares the headline rows instead of taking its own: '+JSON.stringify([bb.asof,bb.h1]));
+   assert(bb.tabsTop>=bb.bottom-1&&bb.tabsTop<=bb.bottom+12,'Tabs follow the billboard: '+JSON.stringify(bb));
    assert(bb.scale>=4,'Market level is drawn as a scale');}
   await page.locator('.dr-sec--top10 .dr-t10').first().waitFor();assert(await page.locator('.dr-sec--top10 .dr-t10').count()>=5,'Top 10 heute');
   await page.locator('.dr-bb__q').first().click();await page.locator('#dv3-sheet:not([hidden])').waitFor();await screenshot(page,key+'-why-sheet');await page.keyboard.press('Escape');
@@ -417,12 +423,12 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.equal(await recent.locator('.dr-cw[data-symbol="'+seen+'"]').count(),1,'Recently viewed stock on the home page: '+seen);
   await screenshot(page,key+'-recent');
   for(const sel of ['.dr-bb','.dr-sec--themes','.dr-sec[data-row="new-52-week-highs"]','.dr-sec[data-row="bekannte-namen"]']){await page.locator(sel).first().scrollIntoViewIfNeeded();await screenshot(page,key+'-world'+sel.replace(/[^a-z0-9]+/g,'-'));}
-  const before=page.url();await page.evaluate(()=>scrollTo(0,0));await page.locator('.dr-genres button[data-genre="unternehmen"]').click();
+  const before=page.url();/* App-Konzept 2: die Genres stehen ohne Genre im Block „Alle N Reihen“, ueber einer Genre-Ansicht im Kopf. */await page.locator('.dp-rows .dr-genres button[data-genre="unternehmen"]').click();
   await page.locator('.dr-sec[data-row="umsatz-waechst-stark"]').waitFor();assert.equal(await page.locator('.dr-bb').count(),0,'Genre view without billboard');
-  assert.equal(await page.locator('.dr-genres button[data-genre="unternehmen"]').getAttribute('aria-pressed'),'true');
+  assert.equal(await page.locator('.dv3-intro .dr-genres button[data-genre="unternehmen"]').getAttribute('aria-pressed'),'true');
   assert(/genre=unternehmen/.test(page.url())&&page.url().split('#')[0]===before.split('#')[0],'Genre filter keeps the page: '+page.url());
   await screenshot(page,key+'-genre-unternehmen');
-  await page.locator('.dr-genres button[data-genre="alle"]').click();await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
+  await page.locator('.dv3-intro .dr-genres button[data-genre="alle"]').click();await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
  });
  await check(key+' no local HTTP errors',async()=>assert.deepEqual(bad,[]));
  await ctx.close();

@@ -59,55 +59,10 @@
 .dr-t10__n{position:relative;z-index:0;margin-right:-8px;padding-bottom:4px;font-size:108px;font-weight:900;letter-spacing:-.08em;line-height:.78;color:var(--vu-bg,#fff);-webkit-text-stroke:2.5px var(--vu-ink);font-variant-numeric:tabular-nums;user-select:none}
 .dr-t10 .dr-poster{width:116px;z-index:1}
 
-/* Billboard „Heute im Blick“ (.bb-card): auch im hellen Modus schwarz (Entscheidung 2) */
-.dr-bb{margin-top:16px;padding:16px 0 14px;border-radius:24px;background:#000;color:#fff;
-  --vu-ink:#fff;--vu-inv:#000;--vu-card:#151515;--vu-hair:#262626;--vu-mute:#9b9b9b;--vu-bg:#000;--vu-focus-ring:#c8f531}
-:root[data-theme=dark] .dr-bb{box-shadow:0 0 0 1px #262626}
-.dr-bb--wait{min-height:520px;padding:16px}
-.dr-bb .v2-load-state{color:#9b9b9b}
+/* Wischbare Spur der Aktie des Tages; Stile der Aktie des Tages unten (App-Konzept 2, .dp-hero) */
 .dr-bb__track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
 .dr-bb__track::-webkit-scrollbar{display:none}
-.dr-bb__slide{flex:0 0 100%;min-width:0;padding:0 16px;scroll-snap-align:start}
-.dr-bb__tag{display:flex;align-items:center;gap:8px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#9b9b9b}
-.dr-bb__id{display:flex;align-items:center;gap:12px;margin-top:12px}
-.dr-bb__id .vu-logo-tile{width:52px;height:52px;border-radius:15px}
-.dr-bb__id>div{min-width:0}
-.dr-bb__id b{display:block;font-size:21px;font-weight:800;letter-spacing:-.03em;line-height:1.1;overflow:hidden;text-overflow:ellipsis}
-.dr-bb__id>div>span{display:block;margin-top:2px;font-size:11.5px;font-weight:700;color:#9b9b9b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dr-bb__big{display:flex;align-items:center;gap:10px;margin-top:14px}
-.dr-bb__big .vu-chg{gap:6px;padding:6px 16px 6px 12px;font-size:30px;font-weight:900;letter-spacing:-.045em;line-height:1}
-.dr-bb__big>span:last-child{font-size:13px;font-weight:700;color:#9b9b9b}
-.dr-bb__story{margin:10px 0 0;font-size:21px;font-weight:800;letter-spacing:-.03em;line-height:1.1;color:#fff}
-.dr-bb__chart{margin-top:10px;min-height:96px;color:#fff}
-.dr-bb__chart .dv3-spark svg{width:100%;height:auto}
-.dr-bb__chart .dv3-spark svg path:not([fill^=url]){stroke:#fff}
 .dr-bb__dates{display:flex;justify-content:space-between;margin-top:6px;font-size:11.5px;font-weight:600;color:#9b9b9b;min-height:16px}
-.dr-bb__chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.dr-bb .dr-bb__chips .vu-chip{min-height:30px;height:30px;padding:0 14px;font-size:12.5px;cursor:default;background:#1d1d1d;color:#fff}
-.dr-bb .dr-bb__chips .vu-chip--lime{background:var(--vu-lime);color:#000}
-.dr-bb__act{display:grid;grid-template-columns:1fr 1fr 46px;gap:8px;margin-top:14px}
-.dr-bb__act .vu-btn{min-height:46px;padding:0 10px;font-size:14.5px}
-.dr-bb .dr-bb__act a.vu-btn{background:var(--vu-lime);color:#000}
-.dr-bb__act .vu-btn--line{border-color:#333;color:#fff}
-.dr-bb__act .vu-btn--line[aria-pressed=true]{background:var(--vu-lime);border-color:var(--vu-lime);color:#000}
-.dr-bb__act .vu-btn svg{width:18px;height:18px}
-.dr-bb__q{width:46px;height:46px;min-width:46px;border-radius:50%;border:1.5px solid #333;background:none;color:#fff;font:900 15px/1 var(--vu-font);display:grid;place-items:center;padding:0;cursor:pointer}
-.dr-bb__q:focus-visible,.dr-bb__act .vu-btn:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
-.dr-bb__dots{display:flex;justify-content:center;gap:6px;margin-top:12px}
-.dr-bb__dots i{width:6px;height:6px;border-radius:9px;background:#333}
-.dr-bb__dots i.on{width:18px;background:var(--vu-lime)}
-
-/* Markt-Zeile (.ms) */
-.dr-sec--markt{margin-top:12px}
-.dr-ms{display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr auto;gap:6px;align-items:center;padding:10px 12px;border-radius:18px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none}
-.dr-ms:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
-.dr-ms__lvl{min-width:0}
-.dr-ms__lvl b{display:block;margin-top:1px;font-size:15px;font-weight:900;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dr-ms__lvl small{display:block;font-size:11px;font-weight:700;color:var(--vu-mute);white-space:nowrap}
-.dr-ms__i{display:grid;gap:3px;justify-items:start;min-width:0}
-.dr-ms__i>span:first-child{font-size:10.5px;font-weight:700;color:var(--vu-mute)}
-.dr-ms__i .vu-chg{font-size:11px;padding:2px 6px}
-.dr-ms>svg{width:14px;height:14px;color:var(--vu-mute)}
 
 /* Themenkacheln (Symbol statt Bild): Hochformat 150 × 204 in der Schiene, längere Namen dürfen die Kachel strecken */
 .dr-sec--themes .dr-rail .dv3-theme{flex:0 0 150px;min-height:204px}
@@ -267,14 +222,6 @@
 .dr-all__themes .dv3-theme{flex:0 0 140px}
 :root[data-theme=dark] .dr-all{background:#000}
 
-/* ===== PR 3 · Persönliche Reihen: Zuletzt angesehen (.cw) ===== */
-.dr-cw{flex:none;width:200px;display:grid;grid-template-columns:30px minmax(0,1fr) auto;gap:8px;align-items:center;padding:10px;border-radius:16px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none;scroll-snap-align:start}
-.dr-cw:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
-.dr-cw .vu-logo-tile{width:30px;height:30px;border-radius:9px;font-size:7.5px}
-.dr-cw__t{min-width:0}
-.dr-cw__t b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dr-cw__t span{display:block;font-size:11px;font-weight:600;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.dr-cw__p .vu-chg{font-size:11px;padding:2px 6px}
 body.dv2 .dr-pv__rows .vu-chip,.dr-pv__rows .vu-chip{height:30px;min-height:30px;padding:0 12px}
 
 /* =====================================================================
@@ -287,9 +234,6 @@ body.dv2 .dr-pv__rows .vu-chip,.dr-pv__rows .vu-chip{height:30px;min-height:30px
   .dv3-intro .vu-lt{margin-top:0;font-size:28px;line-height:1.05}
   html body.dv2 .dv3-intro .v2-search-prompt{min-height:46px;margin-top:10px}
   .dr-genres{margin-top:2px}
-  .dr-bb{margin-inline:-16px;margin-top:2px;padding-top:10px;border-radius:0}
-  :root[data-theme=dark] .dr-bb{box-shadow:none}
-  .dr-bb--wait{min-height:440px}
 }
 /* „Discover · Schluss Fr. 13.11.“ steht klein rechts neben der ersten Zeile der Überschrift statt in einer eigenen Zeile
    (in der Genre-Ansicht mit langem Titel und unter 341 px bleibt es die Zeile darüber). */
@@ -297,34 +241,7 @@ body.dv2 .dr-pv__rows .vu-chip,.dr-pv__rows .vu-chip{height:30px;min-height:30px
   .dv3-intro .dv3-asof{position:absolute;right:0;top:11px;max-width:136px;margin:0;text-align:right;font-size:10px;line-height:1.3}
   .dv3-intro:has(.dr-genre-lead:not([hidden])) .dv3-asof{position:static;max-width:none;text-align:left}
 }
-.dr-bb__slide{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-content:start}
-.dr-bb__slide>*{grid-column:1/-1;min-width:0}
-.dr-bb__tag{order:-3}
-.dr-bb__chart{order:-2;margin:6px -16px 0;min-height:0;aspect-ratio:358/118}
 .dr-bb__dates{order:-1;margin-top:2px;font-size:10.5px;min-height:14px}
-.dr-bb__slide>.dr-bb__big{grid-column:1;flex-direction:column;align-items:flex-start;gap:4px;margin-top:10px}
-.dr-bb__id{margin-top:8px}
-.dr-bb__big .vu-chg{font-size:24px;padding:6px 14px 6px 10px}
-.dr-bb__big>span:last-child{font-size:11.5px}
-.dr-bb__slide>.dr-bb__story{grid-column:2;align-self:center;margin-top:10px;font-size:17px;line-height:1.15;text-wrap:balance}
-.dr-bb .dr-bb__chips .vu-chip{min-height:26px;height:26px;padding:0 9px;font-size:11px;letter-spacing:-.01em}
-.dr-bb__chips{gap:5px;margin-top:8px}
-.dr-bb__act{margin-top:10px}
-.dr-bb__dots{margin-top:10px}
-/* Markt heute: Stufe groß mit Skala, darunter die drei Indizes. */
-.dr-ms{grid-template-columns:1fr 1fr 1fr auto;gap:10px 8px;padding:14px 14px 12px;border-radius:22px}
-.dr-ms__lvl{grid-column:1/4;display:grid;grid-template-columns:auto 1fr;align-items:baseline;column-gap:10px}
-.dr-ms__lvl .vu-ltag{grid-column:1/-1}
-.dr-ms__lvl b{margin-top:2px;font-size:26px;letter-spacing:-.04em;line-height:1.05}
-:root[data-theme=dark] .dr-ms__lvl b{color:var(--vu-lime)}
-.dr-ms__lvl small{font-size:12px}
-.dr-ms__scale{grid-column:1/-1;display:flex;gap:4px;margin-top:8px}
-.dr-ms__scale i{flex:1;height:8px;border-radius:9px;background:var(--vu-hair)}
-.dr-ms__scale i.on{background:var(--vu-ink)}
-:root[data-theme=dark] .dr-ms__scale i.on{background:var(--vu-lime)}
-.dr-ms>svg{grid-column:4;grid-row:1;align-self:start;margin-top:4px}
-.dr-ms__i{grid-row:2}
-.dr-ms__i .vu-chg{font-size:12px;padding:3px 8px}
 /* Alle Reihen: Trefferzahl zusätzlich als Balken. */
 .dr-all__r{flex-wrap:wrap}
 .dr-all__r>span:nth-child(2){display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#9b9b9b}
@@ -336,3 +253,175 @@ body.dv2 .dr-pv__rows .vu-chip,.dr-pv__rows .vu-chip{height:30px;min-height:30px
 .dr-rowhero>.dr-rowhero__nav{grid-column:1}
 .dr-rowhero>.dr-rowhero__tags{grid-column:2;margin-top:0}
 .dr-rowhero>.dr-rowhero__logos{grid-column:1/-1;float:none}
+
+/* =====================================================================
+   App-Konzept 2 · Startseite 1:1 nach Prototyp „v-discover“ (Owner 15.11.2026: „Prototyp muss 1:1 umgesetzt werden“).
+   Masse aus dem Prototyp (proto/p1.js V.discover, shell.js, mock/kit.js K.css): Seitenrand 14 px, Kachel #151516 / 22 px,
+   Abschnittskopf 22 px, Poster 128 px, Top-10-Ziffer 104 px, Themen-Poster 150 × 204, Aktie des Tages 520 px bis an den Rand.
+   Hell bleibt wählbar: Flächen und Schrift über die Variablen aus assets/vu-ui.css; die Aktie des Tages ist in beiden Modi schwarz.
+   ===================================================================== */
+html[data-vu-bleed] body.dv2{padding-top:0!important}
+html[data-vu-bleed] body.dv2 #v2-main.dv3-main{padding-top:0}
+.dv3-intro[hidden]{display:none!important}
+.dp-home{--dp-track:var(--vu-hair);margin:0 -16px;font-size:15px;line-height:1.35;color:var(--vu-ink)}
+:root[data-theme=dark] .dp-home{--dp-track:#2a2a2d;--vu-card:#151516;--vu-mute:#a1a7af;color:#f4f5f1}
+.dp-home>.dr-sec:not(.dp-hero)>:not(.dr-rail):not(.dp-sh){margin-left:14px;margin-right:14px}
+.dp-home .vu-chg{height:26px;padding:0 10px;gap:5px;font-size:12.5px;font-weight:800;line-height:1}
+.dp-tile{display:block;background:var(--vu-card);border-radius:22px;padding:14px;color:var(--vu-ink);text-decoration:none}
+a.dp-tile:focus-visible,.dp-tab:focus-visible,.dp-chip:focus-visible,.dp-btn:focus-visible,.dp-rnd:focus-visible,.dp-dv__r:focus-visible,.dp-find:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+
+/* Aktie des Tages (Prototyp: 520 px, Kurslinie hinter dem durchsichtigen Kopf, unten Etiketten, Name, Pille, Knöpfe, Punkte) */
+.dp-hero{position:relative;height:520px;margin:0;padding:0;border-radius:0;overflow:hidden;background:radial-gradient(120% 70% at 70% 8%,#27340a,#000 62%) #000;color:#f4f5f1;
+  --vu-ink:#fff;--vu-inv:#000;--vu-card:#151516;--vu-hair:#262626;--vu-mute:#a1a7af;--vu-bg:#000;--vu-focus-ring:#c8f531}
+.dp-hero .dr-bb__track{height:100%}
+.dp-hero__slide{position:relative;flex:0 0 100%;min-width:0;height:520px;scroll-snap-align:start;overflow:hidden}
+.dp-hero__chart{position:absolute;left:0;right:0;top:64px;height:260px}
+.dp-hero__chart .dv3-spark{display:block;color:#000}
+.dp-hero__chart svg{display:block;width:100%;height:260px}
+.dp-hero__chart svg path:not([fill^=url]){stroke:#c8f531;stroke-width:3}
+.dp-hero__chart svg path[fill^=url]{opacity:.7}
+.dp-hero__chart svg circle{r:4px;stroke:#000;stroke-width:1.5}
+.dp-hero__shade{position:absolute;inset:0;background:linear-gradient(transparent 42%,rgba(0,0,0,.92) 80%);pointer-events:none}
+.dp-hero__body{position:absolute;left:14px;right:14px;bottom:36px}
+.dp-hero__tags{display:flex;gap:6px;min-width:0}
+.dp-pill{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:#c8f531;color:#101318;font-size:12.5px;font-weight:800;white-space:nowrap;flex:none}
+.dp-pill--sm{height:21px;padding:0 8px;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase}
+.dp-pill--bk{background:#000;color:#fff;flex:0 1 auto;overflow:hidden;text-overflow:ellipsis}
+.dp-hero__id{display:flex;align-items:center;gap:12px;margin-top:12px}
+.dp-hero__id .vu-logo-tile{width:60px;height:60px;border-radius:18px;font-size:13px}
+.dp-hero__id .vu-logo-tile:has(img:not(.vu-logo-wait)) img{padding:9px}
+.dp-hero__id>div{min-width:0}
+.dp-hero__id h2{margin:0;font-size:38px;font-weight:900;letter-spacing:-.045em;line-height:1;color:#f4f5f1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Lange Namen (mehr als 11 Zeichen): zwei Zeilen in 30 px statt abgeschnitten. */
+.dp-hero__id h2.dp-long{font-size:30px;line-height:1.02;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;text-wrap:balance}
+.dp-hero__id p{margin:0;font-size:12.5px;line-height:1.35;color:#c3c7cc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-hero__big{display:flex;align-items:center;gap:10px;margin-top:12px}
+.dp-hero .dp-hero__big .vu-chg{height:40px;padding:0 14px;font-size:20px}
+.dp-hero__big>div{flex:1;min-width:0}
+.dp-hero__big b{display:block;font-size:15px;font-weight:800;line-height:1.1;color:#f4f5f1}
+.dp-hero__big>div>span{display:block;font-size:11px;font-weight:700;color:#a1a7af}
+.dp-hero__big .vu-chg{flex:none}
+.dp-hero__act{display:flex;gap:8px;margin-top:12px}
+html body #v2-main .dp-btn{flex:1;display:flex;align-items:center;justify-content:center;height:52px;border-radius:999px;background:#c8f531;color:#101318;font-size:16px;font-weight:800;text-decoration:none}
+html body #v2-main .dp-rnd{flex:none;display:grid;place-items:center;width:52px;height:52px;padding:0;border:0;border-radius:99px;background:rgba(255,255,255,.16);color:#fff;font:800 18px/1 var(--vu-font);cursor:pointer}
+.dp-rnd svg{width:16px;height:16px;stroke-width:2.4}
+html body #v2-main .dp-rnd[aria-pressed=true]{background:#c8f531;color:#101318}
+.dp-rnd[aria-pressed=true] svg{fill:currentColor}
+.dp-hero__dots{position:absolute;left:0;right:0;bottom:16px;display:flex;justify-content:center;gap:4px;pointer-events:none}
+.dp-hero__dots i{width:8px;height:8px;border-radius:9px;background:#55595f}
+.dp-hero__dots i.on{background:#c8f531}
+.dp-hero--wait .v2-load-state,.dp-hero--wait .dp-hero__body{position:absolute;left:14px;right:14px;bottom:36px;margin:0;color:#a1a7af}
+
+/* Reiter im Inhalt (Prototyp „tabs2“) */
+.dp-tabs{display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none}
+.dp-tabs::-webkit-scrollbar{display:none}
+/* Bedienprüfung: Reiter und Chips sind 36 bzw. 34 px hoch wie im Prototyp; die Trefferfläche bleibt 44 px über ::after. */
+.dp-tab::after,.dp-chip::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+html body #v2-main .dp-home .dp-tabs .dp-tab{min-width:0;min-height:0;position:relative;flex:none;display:inline-flex;align-items:center;height:36px;padding:0 15px;border:0;border-radius:99px;background:var(--vu-card);color:var(--vu-ink);font:700 14px/1 var(--vu-font);white-space:nowrap;cursor:pointer}
+html body #v2-main .dp-home .dp-tabs .dp-tab.on{background:var(--vu-ink);color:var(--vu-inv)}
+
+/* Abschnittskopf (Prototyp „sh“) und Schiene */
+.dp-home .dp-sh{margin:26px 14px 10px}
+.dp-home .dp-sh .dr-head__t{align-items:baseline;justify-content:space-between}
+.dp-home .dp-sh h2{font-size:22px;font-weight:800;letter-spacing:-.025em;line-height:1.1}
+.dp-home .dp-sh .dr-head__t a{min-height:0;font-size:13px;font-weight:700;color:var(--vu-mute)}
+.dp-home .dp-moves .dp-sh h2{white-space:nowrap}
+.dp-home .dp-sh .dp-asof{margin-left:auto;font-size:11px;font-weight:700;color:var(--vu-mute);white-space:nowrap}
+.dp-home .dp-sh p{margin:4px 0 0;font-size:12.5px}
+.dp-home .dr-rail{gap:10px;margin:-8px 0 0;padding:8px 14px 0;scroll-padding:0 14px}
+.dp-home .dr-skel{width:128px;height:170px;border-radius:22px}
+
+/* Poster (Prototyp „poster“): 128 px, Logo 44, Name, Kurslinie 104 × 38, Pille */
+.dp-poster{width:128px;border-radius:22px;background:var(--vu-card)}
+.dp-poster .dr-poster__a{display:block;height:auto;padding:12px;border-radius:22px}
+.dp-poster .vu-logo-tile{width:44px;height:44px;border-radius:13px;font-size:10px}
+.dp-poster .vu-logo-tile:has(img:not(.vu-logo-wait)) img{padding:7px}
+.dp-poster .dr-poster__n{display:block;height:auto;margin-top:8px;font-size:15px;font-weight:800;letter-spacing:0;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-poster .dr-poster__ch{height:38px;margin:8px 0 0;color:var(--vu-ink)}
+.dp-poster .vu-spark circle{display:none}
+.dp-poster.dp-down .vu-spark path[fill^=url]{display:none}
+.dp-poster .vu-spark path:not([fill^=url]){stroke-width:2}
+.dp-poster .dr-poster__v{display:flex;margin-top:8px}
+.dp-poster .dr-poster__v{flex-wrap:wrap;gap:4px}
+.dp-poster .dr-poster__v small{flex-basis:100%;font-size:11px}
+.dp-seen{display:block;margin-top:8px;font-size:11px;font-weight:700;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Top 10 heute (Prototyp „top10“): Ziffer 104 px als Umriss, Poster davor */
+.dp-home .dr-sec--top10 .dr-rail{gap:2px}
+.dp-home .dr-t10__n{margin-right:-10px;padding:0 0 0 4px;font-size:104px;font-weight:900;letter-spacing:-.045em;line-height:.82;color:var(--vu-inv);-webkit-text-stroke:2.5px var(--vu-ink)}
+:root[data-theme=dark] .dp-home .dr-t10__n{color:#000;-webkit-text-stroke-color:#c8f531}
+.dp-home .dr-t10 .dr-poster{width:128px}
+
+/* Themen (Prototyp „tposter“): 150 × 204, Symbol 74, Name, Balken, „x von y im Plus“ */
+.dp-theme{flex:none;width:150px;height:204px;display:flex;flex-direction:column;justify-content:space-between;scroll-snap-align:start}
+.dp-theme__c b{display:block;font-size:16px;font-weight:800;line-height:1.08;letter-spacing:-.015em}
+.dp-bar{display:block;height:5px;margin-top:8px;border-radius:9px;background:var(--dp-track);overflow:hidden}
+.dp-bar i{display:block;height:100%;border-radius:9px;background:#c8f531;transition:width .6s}
+.dp-theme small{display:block;margin-top:4px;font-size:11px;font-weight:700;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* Was sich heute bewegt (Prototyp „dv“): Logo, Name, Balken nach links (weiss) und rechts (neongrün), Wert */
+.dp-dv{padding:10px 14px}
+.dp-dv__r{display:flex;align-items:center;gap:8px;width:100%;padding:7px 0;color:inherit;text-decoration:none}
+.dp-dv__r .vu-logo-tile{width:34px;height:34px;border-radius:10px;font-size:8px}
+.dp-dv__r .vu-logo-tile:has(img:not(.vu-logo-wait)) img{padding:5px}
+.dp-dv__r>b{width:86px;flex:none;font-size:12.5px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-dv__b{flex:1;min-width:0;display:flex;height:22px}
+.dp-dv__b>span{width:50%;display:flex;align-items:center}
+.dp-dv__b>span:first-child{justify-content:flex-end}
+.dp-dv__b em{flex:none;width:2px;height:22px;background:#3a3a3d}
+:root:not([data-theme=dark]) .dp-dv__b em{background:var(--vu-mute)}
+.dp-dv__b i{display:block;height:18px;border-radius:0 6px 6px 0;background:#c8f531}
+:root:not([data-theme=dark]) .dp-dv__b i{box-shadow:inset 0 0 0 1.5px #000}
+.dp-dv__b i.dn{border-radius:6px 0 0 6px;background:var(--vu-ink);box-shadow:none}
+.dp-dv__v{width:56px;flex:none;text-align:right;font-size:12.5px;font-weight:800;white-space:nowrap}
+:root[data-theme=dark] .dp-dv__v.up{color:#c8f531}
+.dp-dv__sk{display:block;width:100%;height:300px;background:none}
+
+/* Wie steht die Börse? (Prototyp: Wort 40 px, rechts „x von 100 Fällen“, Skala aus fünf Feldern) */
+.dp-mk__top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dp-mk .dr-ms__lvl{min-width:0}
+.dp-mk .dr-ms__lvl b{display:block;font-size:40px;font-weight:900;letter-spacing:-.045em;line-height:1}
+:root[data-theme=dark] .dp-mk .dr-ms__lvl b{color:#c8f531}
+.dp-mk .dr-ms__lvl small{display:block;font-size:12.5px;font-weight:700;color:var(--vu-mute)}
+.dp-mk__hist{flex:none;text-align:right}
+.dp-mk__hist b{display:block;font-size:34px;font-weight:900;letter-spacing:-.045em;line-height:1}
+.dp-mk__hist small{display:block;font-size:11px;font-weight:700;color:var(--vu-mute)}
+.dp-mk__scale{display:flex;gap:4px;margin-top:12px}
+.dp-mk__scale i{flex:1;height:8px;border-radius:9px;background:var(--dp-track)}
+.dp-mk__scale i.on{background:var(--vu-ink)}
+:root[data-theme=dark] .dp-mk__scale i.on{background:#c8f531}
+.dp-mk__ends{display:flex;justify-content:space-between;margin-top:4px;font-size:11px;font-weight:700;color:var(--vu-mute)}
+.dp-idx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.dp-idx .dr-ms__i{display:grid;gap:5px;justify-items:start;min-width:0}
+.dp-idx .dr-ms__i>span:first-child{font-size:11px;font-weight:700;color:var(--vu-mute)}
+
+/* Alle N Reihen (Prototyp: Etikett und Chips), Genres, Suche */
+.dp-home .dp-rows{margin-top:22px}
+.dp-eb{margin:0;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--vu-mute)}
+.dp-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.dp-chips+.dp-eb{margin-top:16px}
+.dp-rows .dr-genres{position:static;margin:8px 0 0;padding:0;background:none}
+html body #v2-main .dp-home .dp-chips .dp-chip{min-width:0;min-height:0;position:relative;display:inline-flex;align-items:center;height:34px;padding:0 14px;border:0;border-radius:999px;background:var(--vu-card);color:var(--vu-ink);font:700 13px/1 var(--vu-font);white-space:nowrap;text-decoration:none;cursor:pointer}
+html body #v2-main .dp-home .dp-chips .dp-chip[aria-pressed=true]{background:var(--vu-ink);color:var(--vu-inv)}
+html body #v2-main .dp-rows .dp-find{min-width:0;display:flex;align-items:center;gap:10px;width:100%;max-width:none;height:52px;min-height:0;margin-top:14px;padding:0 16px;border:0;border-radius:99px;background:var(--vu-card);color:var(--vu-mute);font:500 15.5px/1 var(--vu-font);text-align:left;cursor:pointer}
+html body #v2-main .dp-rows .dp-find svg{width:20px;height:20px}
+
+/* Weitere Blöcke der bisherigen Startseite im Design des Prototyps: Strategien, Europa, Swipen, Ende */
+.dp-home a.dr-sk{display:grid;padding:14px;border-radius:22px;background:var(--vu-card)}
+.dp-stack{display:grid;gap:10px}
+.dp-row{display:flex;align-items:center;gap:12px;padding:12px 14px}
+.dp-row>span:nth-child(2){flex:1;min-width:0}
+.dp-row b{display:block;font-weight:800}
+.dp-row small{display:block;font-size:11px;color:var(--vu-mute)}
+.dp-chev{flex:none;color:var(--vu-mute)}
+.dp-chev svg{width:14px;height:14px;display:block}
+.dp-home .dr-sec--end{margin-top:28px}
+/* Swipen: neongrüne Kachel wie die grüne Karte des Prototyps (Fläche, Ring/Symbol, Titel 18 px, Pfeil im dunklen Kreis). */
+.dp-home .dr-sec--end a.dv3-swipecard{display:flex;margin-top:0;padding:12px 14px;background:#c8f531;color:#101318}
+.dp-home a.dv3-swipecard b{font-size:18px;font-weight:800;line-height:1.15}
+.dp-home a.dv3-swipecard small{font-size:12.5px;font-weight:700;color:#101318}
+.dp-home a.dv3-swipecard .dp-chev{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:99px;background:#101318;color:#c8f531}
+.dp-home .vu-next{margin-top:28px}
+.dp-end{margin:28px 0 0;text-align:center}
+.dp-end a{color:var(--vu-mute);font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.dp-home .dr-sec--end .vu-help{margin-top:16px;font-size:11.5px}
