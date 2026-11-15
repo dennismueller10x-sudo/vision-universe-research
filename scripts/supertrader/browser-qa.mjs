@@ -83,7 +83,8 @@ async function main() {
   // Regulär (Owner-Freigabe 29.10.2026): die Ansichten sind ohne Schalter da; ohne veroeffentlichten Datenlauf zeigt jede
   // den gekennzeichneten Leerzustand (geprueft auf denselben Routen), nie erfundene Kandidaten
   // ST02 (#1446): in der Kandidatenliste steht je Kandidat eine kompakte Zeile .sf-r (Stufe als Urteil, gleiche Daten wie die Karte).
-  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-card, #sf .sf-r' : '#sf .sf-empty']);
+  // App-Konzept 2 (14.11.2026): die Zeile ist eine Kachel (.sf-r.sf-t), die ihre Angaben im Fenster öffnet (SHEET_PROBE unten).
+  routes.push(['sf-strategy', `/supertrader/strategies/?sf=${sfCid}`, SF ? '#sf .sf-r.sf-t' : '#sf .sf-empty']);
   routes.push(['sf-strategy-empty', '/supertrader/strategies/?sf=C10', SF ? '#sf .sf-card, #sf .sf-r, #sf .sf-empty' : '#sf .sf-empty']);
   routes.push(['sf-stock', `/supertrader/stock/?s=${encodeURIComponent(sfModel ? sfModel.t : 'AAPL')}#sf`, '.st-r-answer']);
   routes.push(['sf-stock-none', '/supertrader/stock/?s=ZZZZ', '.st-r-answer']);
@@ -230,6 +231,11 @@ async function main() {
         // interne Regel-/Gate-Codes nicht im sichtbaren Text
         codes: (document.body.innerText.match(/\b(?:DON|KK|DAR|MIN|WEI|LC|PILOT)-[A-Z0-9-]+\b/g) || []).slice(0, 3),
         replayBanner: /kein aktueller Treffer/.test(document.body.innerText),
+        // App-Konzept 2: das Beispiel lädt die gemeinsamen Bausteine (vu-ui) und endet mit der „Weiter“-Karte; Ergebnis und Einzelfall-Hinweis stehen in derselben Kachel.
+        replayNext: !!document.querySelector('main .vu-next'),
+        replayCaveat: [...document.querySelectorAll('.st-k-rout, .st-next')].some((b) => /vor Kosten nach \d+ Handelstag/.test(b.textContent) && /Ein Einzelfall – keine Aussage über die Methode\./.test(b.textContent)),
+        // Kandidatenliste: die Research-Zeile mit Datenstand steht in der Kopfkachel über den Stufen-Kacheln.
+        sfPreviewAbove: (() => { const p = document.querySelector('#sf.sf-view .sf-preview'), t = document.querySelector('#sf.sf-view .sf-k-steps, #sf.sf-view .sf-r-tiles, #sf.sf-view .sf-kpis'); return !document.querySelector('#sf.sf-view') || !t || !!(p && /Research, keine Empfehlung/.test(p.textContent) && (p.compareDocumentPosition(t) & Node.DOCUMENT_POSITION_FOLLOWING)); })(),
         partialAsSignal: /CAN-SLIM-(?:Signal|Treffer)(?! )/.test(document.body.innerText.replace(/kein(?:em|en)? CAN-SLIM-(?:Signal|Treffer)/gi, '')),
         /* Konzept „Das Rezept eines Profis“, Folie SX08: diese Wörter stehen in keiner Supertrader-Oberfläche mehr */
         recipeWording: (document.querySelector('main')?.innerText || '').match(/\bSignal\w*|Luft bis zum Stop|Einstiegschance\w*|schlägt den Markt|Kurz vor der Marke|Modell ist dabei|Modell steigt ein|Risiko je Kauf/)?.[0] ?? null,
@@ -268,6 +274,9 @@ async function main() {
       if (hasPortfolio && /^strategy-(momentum|weinstein|darvas|minervini|donchian)/.test(name) && !m.portfolioSec) errors.push('Modellportfolio fehlt auf der Methodenseite');
       if (m.tlDuplicates) errors.push(`${m.tlDuplicates} doppelte Einträge im Protokoll`);
       if (name === 'replay' && !m.replayBanner) errors.push('Replay ohne Kennzeichnung „kein aktuelles Signal“');
+      if (name === 'replay' && !m.replayNext) errors.push('Beispiel ohne „Weiter“-Karte (gemeinsame Bausteine nicht geladen)');
+      if (name === 'replay' && !m.replayCaveat) errors.push('Beispiel: Ergebnis ohne „vor Kosten“ und Einzelfall-Hinweis in derselben Kachel');
+      if (/^sf-strategy/.test(name) && !m.sfPreviewAbove) errors.push('Kandidatenliste: Research-Zeile mit Datenstand fehlt über den Stufen');
       if (['home', 'signals', 'lens'].includes(name) && !m.freshness) errors.push('Datenstand nicht sichtbar');
       if (m.preparedWithEntry) errors.push(`${m.preparedWithEntry} vorbereitete Setups zeigen einen Modelleinstieg`);
       if (m.plannedUnlabeled) errors.push(`${m.plannedUnlabeled} Schwellen ohne „geplant“/Datenstand`);
@@ -293,7 +302,9 @@ async function main() {
         if (TW_PUBLISHED && techRequests.length > 1) errors.push(`${techRequests.length} Technical-Scherben angefragt (erwartet hoechstens 1)`);
       }
       // App-Konzept 2: Tiefe öffnet sich im Fenster. Eine Kachel antippen muss ein Fenster mit Inhalt öffnen, Escape schließt es und gibt die Seite wieder frei.
-      const SHEET_PROBE = { home: ['.st-k-funnel', /Muster erkannt/], signals: ['.st-x-trr', /Aktie öffnen/], strategies: ['.st-x-mr2', /heute erkannt/], backtests: ['.st-btrow', /Pflichtprüfungen/], sources: ['.st-k-srcm', /Quelle/] }[name];
+      const SHEET_PROBE = { home: ['.st-k-funnel', /Muster erkannt/], signals: ['.st-x-trr', /Aktie öffnen/], strategies: ['.st-x-mr2', /heute erkannt/], backtests: ['.st-btrow', /Pflichtprüfungen/], sources: ['.st-k-srcm', /Quelle/],
+        // Kandidatenliste einer Methode: die Kachel eines Kandidaten öffnet „Warum erkannt“ und den Weg zur Aktie; ein modellierter Ablauf steht nur dort.
+        'sf-strategy': ['#sf .sf-r.sf-t', /Warum erkannt[\s\S]*Aktie öffnen/] }[name];
       if (SHEET_PROBE && await page.locator(SHEET_PROBE[0]).count()) {
         try {
           await page.locator(SHEET_PROBE[0]).first().click();
@@ -304,6 +315,15 @@ async function main() {
           if (!SHEET_PROBE[1].test(s.text)) errors.push('Fenster ohne erwarteten Inhalt ' + SHEET_PROBE[1]);
           if (s.over > 1 || s.right > vp.viewport.width + 1 || s.bottom > vp.viewport.height + 1) errors.push('Fenster ragt aus dem Bildschirm');
           if (!s.locked) errors.push('Seite hinter dem Fenster rollt weiter');
+          if (name === 'sf-strategy') {
+            // Marken des modellierten Ablaufs nur bei Stufe „Plan fertig“, mit Kennzeichnung und Hinweissatz im selben Block
+            const plan = await sheet.evaluate((n) => { const p = n.querySelector('.sf-plan'), st = n.querySelector('[data-stage]')?.dataset.stage; return { has: !!p, stage: st, labelled: !p || (/Modellierter Ablauf \(hypothetisch\)/.test(p.textContent) && /Ungültig-Marke laut Methode/.test(p.textContent) && /Werte eines Forschungsmodells mit benannten Modellannahmen\. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit\./.test(p.textContent)) }; });
+            if (plan.has !== (plan.stage === 'MODELED_TRADE_PLAN')) errors.push('Fenster: Plan-Marken passen nicht zur Stufe ' + plan.stage);
+            if (!plan.labelled) errors.push('Fenster: modellierter Ablauf ohne Kennzeichnung oder Hinweissatz');
+            const codes = (s.text.match(/\b(?:DON|KK|DAR|MIN|WEI|WEIN|LC|PILOT|TUR|MOKA|RAS)-[A-Z0-9-]+\b|DATA_BLOCKED|[A-Z]{3,}_[A-Z_]{3,}/g) || []).slice(0, 3);
+            if (codes.length) errors.push('interne Codes im Fenster: ' + codes.join(', '));
+            if (/\bsignal\w*|validiert\w*|jetzt kaufen|kaufsignal/i.test(s.text.replace(/keine kauf- oder verkaufsempfehlung/ig, ''))) errors.push('Fenster der Kandidatenliste mit unzulaessiger Sprache');
+          }
           const word = (s.text.match(/\bSignal\w*|Luft bis zum Stop|Einstiegschance\w*|schlägt den Markt|Risiko je Kauf/) || [])[0];
           if (word) errors.push('Wortwahl (Folie SX08) im Fenster: „' + word + '“');
           await page.keyboard.press('Escape');
