@@ -2037,6 +2037,7 @@ main.qx-main:has(>.qp){padding-bottom:20px}
 .qp .qp-tab.is-on{background:var(--qp-ink);color:var(--qp-bg)}
 /* Pille 36 px wie im Prototyp, Tippfläche 44 px (wie die Reiter des Rahmens). */
 .qp .qp-tab{position:relative}.qp .qp-tab::after{content:"";position:absolute;inset:-4px 0}
+.qp .qp-tabs-sep{flex:none;width:1px;align-self:center;height:20px;background:rgb(127 127 127/.35);margin:0 4px}
 /* Abschnittskopf (Prototyp .sh) */
 .qp .qp-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 14px;margin:26px 0 10px}
 .qp .qp-sh h2{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:0;color:var(--qp-ink)}
@@ -2072,7 +2073,8 @@ main.qx-main:has(>.qp){padding-bottom:20px}
 .qp .qp-stat{flex:1;min-width:0;padding:12px;display:flex;flex-direction:column}
 .qp .qp-stat .qp-xs{display:block;min-height:28px;margin-top:2px;line-height:1.25}
 .qp .qp-stat-b{display:block;line-height:0}
-.qp .qp-stat-b:not(:empty){margin-top:8px}
+.qp .qp-stat-b:not(:empty),.qp .qp-stat-b.is-wait{margin-top:8px}
+.qp .qp-stat-b.is-wait{min-height:34px}
 .qp .qp-bars{display:block;max-width:100%}
 .qp .qp-bars rect{fill:var(--qp-ink)}.qp .qp-bars rect.is-now{fill:var(--qp-lime)}
 :root:not([data-theme=dark]) .qp .qp-bars rect{fill:#c9c9c9}:root:not([data-theme=dark]) .qp .qp-bars rect.is-now{fill:#000}

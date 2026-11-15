@@ -448,10 +448,17 @@
       return '<rect class="' + (i === vals.length - 1 ? "is-now" : "") + '" x="' + (i * bw + bw * 0.14).toFixed(1) + '" y="' + (h - (v / mx) * h).toFixed(1) + '" width="' + (bw * 0.72).toFixed(1) + '" height="' + ((v / mx) * h).toFixed(1) + '" rx="3"/>';
     }).join("") + "</svg>";
   }
+  /* Zusatz, der nicht zum ersten Bild gehört (Verlauf unter den Tageszahlen): erst nach der ersten Bewegung der Person
+     (Scrollen, Tippen, Taste) und sobald der Block in Sicht ist – der Start bleibt im Ladebudget (scripts/vu2/resource-budget.mjs). */
   function qpWhenSeen(node, fn) {
-    if (!global.IntersectionObserver) return fn();
-    var io = new global.IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) { io.disconnect(); fn(); } }, { rootMargin: "120px 0px" });
-    io.observe(node);
+    /* scroll nur am Fenster (ohne capture): Schienen und Einrasten scrollen beim Aufbau selbst, das ist keine Bewegung der Person. */
+    var evs = ["scroll", "wheel", "touchstart", "pointerdown", "keydown"], opt = function (n) { return n === "scroll" ? { passive: true } : { capture: true, passive: true }; }, go = function () {
+      evs.forEach(function (n) { global.removeEventListener(n, go, opt(n)); });
+      if (!global.IntersectionObserver) return fn();
+      var io = new global.IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) { io.disconnect(); fn(); } }, { rootMargin: "200px 0px" });
+      io.observe(node);
+    };
+    evs.forEach(function (n) { global.addEventListener(n, go, opt(n)); });
   }
   function qpDays(a, b) { var x = Date.parse(a + "T12:00:00Z"), y = Date.parse(b + "T12:00:00Z"); return isFinite(x) && isFinite(y) ? Math.round((y - x) / 864e5) : null; }
   function qpPct(share) { return Math.round(share * 100) + " %"; }
@@ -495,7 +502,15 @@
     if (!early) page.append(frag('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Was hat sich heute verändert?</h1><p class="vu-lead">Jede Aktie hat ein Profil aus ' + nWordHtml() + ' Eigenschaften. Quant meldet, wenn sich etwas ändert.</p></header>'));
     var intro = page.querySelector(".qv3-intro"); if (intro) intro.classList.add("qp-intro");
     var tabs = el("nav", { class: "qp-tabs", "aria-label": "Quant-Bereiche" });
-    tabs.innerHTML = QP_TABS.map(function (t, i) { return '<a class="qp-tab' + (i ? "" : " is-on") + '" href="#' + t[1] + '" data-qp-tab="' + t[1] + '"' + (i ? "" : ' aria-current="true"') + ">" + t[0] + "</a>"; }).join("");
+    /* Hinter den fünf Reitern des Prototyps (Sprungmarken) bleiben die übrigen Quant-Bereiche erreichbar, die sonst die Reiterzeile
+       des Rahmens zeigt (dieselbe Quelle: VUNavigation.products(), Welt „quant“); ohne Rahmen entfallen sie. */
+    var qpGo = [];
+    try {
+      var qpWorld = global.VUNavigation && global.VUNavigation.products ? global.VUNavigation.products().filter(function (p) { return p.id === "quant"; })[0] : null;
+      if (qpWorld) qpGo = qpWorld.tabs.filter(function (t) { return t.href && t.label !== qpWorld.label && !QP_TABS.some(function (x) { return x[0] === t.label; }); });
+    } catch (e) { qpGo = []; }
+    tabs.innerHTML = QP_TABS.map(function (t, i) { return '<a class="qp-tab' + (i ? "" : " is-on") + '" href="#' + t[1] + '" data-qp-tab="' + t[1] + '"' + (i ? "" : ' aria-current="true"') + ">" + t[0] + "</a>"; }).join("") +
+      (qpGo.length ? '<span class="qp-tabs-sep" aria-hidden="true"></span>' + qpGo.map(function (t) { return '<a class="qp-tab qp-tab--go" href="' + qpEsc(t.href) + '">' + qpEsc(t.label) + "</a>"; }).join("") : "");
     tabs.addEventListener("click", function (e) {
       var a = e.target.closest("[data-qp-tab]"); if (!a) return;
       e.preventDefault();
@@ -523,7 +538,15 @@
     document.body.append(sheet);
     var proofHost = sheet.querySelector(".qv3-proof");
     proofHost.append(promiseList());
-    howHost.querySelector('a[href="#qk-how"]').addEventListener("click", function (e) { e.preventDefault(); U().openSheet(sheet); });
+    /* Der Beleg im Fenster (proofCard, braucht QXEvidence aus page-evidence.js) entsteht erst beim Öffnen: der Start lädt das
+       Evidenz-Paket nicht mit (Ladebudget home, scripts/vu2/resource-budget.mjs). */
+    var proofRadar = null, proofDone = false;
+    howHost.querySelector('a[href="#qk-how"]').addEventListener("click", function (e) {
+      e.preventDefault(); U().openSheet(sheet);
+      if (proofDone || !proofRadar) return;
+      proofDone = true;
+      ctx.loadBacktestView().then(function () { var proof = proofCard(proofRadar); if (proof) proofHost.append(proof); }, function () {});
+    });
     sheet.querySelector("[data-close]").addEventListener("click", function () { U().closeSheet(sheet); });
     var off = function () { if (sheet.parentNode) sheet.remove(); global.removeEventListener("hashchange", off); };
     global.addEventListener("hashchange", off);
@@ -541,7 +564,7 @@
     var dataP = Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
       ctx.api.getMarketRegime().catch(function () { return null; }), ctx.api.getStrategyProfiles().catch(function () { return null; }),
       ctx.api.getQuantRadarHome().catch(function () { return null; }), watched.length ? ctx.api.getRadarCards(watched).catch(function () { return []; }) : Promise.resolve([]), screeningRows(ctx)]);
-    await Promise.all([ctx.loadNames(), ctx.loadBacktestView()]);
+    await ctx.loadNames();
     var r = await dataP;
     var setupIdx = r[0], stratIdx = r[1], regime = r[2], profiles = r[3], radar = r[4], hits = r[5] || [], rowBy = r[6];
     var asOf = (radar && radar.asOf) || (stratIdx && stratIdx.asOf) || (regime && regime.asOf);
@@ -586,19 +609,19 @@
       /* Balken unter der Zahl (Prototyp bars(…, 86, 34)): dieselbe Zahl an den vorigen veröffentlichten Stichtagen, aus den
          Tagessnapshots des Radars; erst geladen, wenn die Kacheln in Sicht kommen. Unter drei Stichtagen kein Verlauf. */
       var prevDays = radar.sources && radar.sources.setup && Array.isArray(radar.sources.setup.snapshots) ? radar.sources.setup.snapshots.filter(function (d) { return typeof d === "string" && d < radar.asOf; }).slice(-4) : [];
+      if (prevDays.length >= 2 && ctx.api.getRadarDayCounts) todayHost.querySelectorAll(".qp-stat-b").forEach(function (b) { b.classList.add("is-wait"); });
       if (prevDays.length >= 2 && ctx.api.getRadarDayCounts) qpWhenSeen(todayHost, function () {
         ctx.api.getRadarDayCounts(prevDays).then(function (days) {
           var series = (days || []).filter(function (d) { return d && d.asOf < radar.asOf; }).concat([{ asOf: radar.asOf, newStrategyMatches: sm.newStrategyMatches, newHighs: sm.newHighs, riskRisingTickers: sm.riskRisingTickers }]);
-          if (series.length < 3) return;
           todayHost.querySelectorAll(".qp-stat-b[data-k]").forEach(function (b) {
             var k = b.dataset.k, vals = series.map(function (d) { return d[k]; });
-            if (vals.some(function (v) { return typeof v !== "number"; })) return;
+            b.classList.remove("is-wait");
+            if (series.length < 3 || vals.some(function (v) { return typeof v !== "number"; })) return;
             b.innerHTML = qpBars(vals, 86, 34) + '<span class="vu-visually-hidden">Verlauf der letzten ' + vals.length + " Stichtage: " + vals.map(function (v) { return v.toLocaleString("de-DE"); }).join(", ") + "</span>";
           });
-        }, function () {});
+        }, function () { todayHost.querySelectorAll(".qp-stat-b.is-wait").forEach(function (b) { b.classList.remove("is-wait"); }); });
       });
-      var proof = proofCard(radar);
-      if (proof) proofHost.append(proof);
+      proofRadar = radar;
     } else todayHost.replaceChildren(frag(qpSh("Heute im Markt") + '<div class="qp-px">' + U().blank("Gerade keine Meldungen abrufbar. Die Tageszahlen erscheinen, sobald der Lauf veröffentlicht ist.") + "</div>"));
 
     /* Faktor-Landkarte: das Profil der beobachteten Aktien (dieselben Werte wie im Profil der Aktienseite). Antippen erklärt den Wert. */

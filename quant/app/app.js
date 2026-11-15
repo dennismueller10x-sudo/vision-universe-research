@@ -427,7 +427,8 @@
       /* Die Voraussetzungen der Ansicht starten ZUSAMMEN (vorher nacheinander: Sprache, dann Namen, dann Skript - je ein
          Umlauf mit 150 ms und ihrer eigenen Wartezeit). Dieselben Dateien, dieselben Versprechen, nur ohne Warteschlange.
          Das Woerterbuch gilt weiter vor jeder Seite. */
-      if (r.view === "home") { ctx.loadNames(); ctx.loadBacktestView(); }
+      /* Quant-Start (App-Konzept 2): das Evidenz-Paket lädt erst das Fenster „So arbeitet Quant“ bzw. die Forschung (Ladebudget home). */
+      if (r.view === "home") { ctx.loadNames(); }
       else {
         if (/^(radar|screener|strategien|aktien)$/.test(r.view)) ctx.loadNames(r.view === "screener");
         if (r.view === "radar" || r.view === "aktie") ctx.loadBacktestView();
