@@ -2,6 +2,30 @@
 
 > **Erzeugt, nicht von Hand ändern.** Erzeuger `scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs` (`st-mc3-evidence-matrix-1.3.0`). Neu erzeugen: `node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out docs/SUPERTRADER_13_METHODS_EVIDENCE.md`. Prüfen: `--check docs/SUPERTRADER_13_METHODS_EVIDENCE.md` (Test `sf-mc3-evidence-matrix.test.mjs`).
 
+## Aktueller Nachweisstand (historische Läufe und Paper-Schalter)
+
+Historische Tests: 13/13. Die Kennzahlen liegen versiegelt; die folgenden Laufbelege sind keine neue Erfolgs- oder Zertifizierungsbehauptung.
+
+| Methode | Historisch getestet | Umfang | Lauf | Vergleich |
+|---|---|---|---|---|
+| C01 | TESTED | FULL_UNIVERSE | 41984749745 | SPY_TOTAL_RETURN |
+| C02 | TESTED | FULL_UNIVERSE | 41984749745 | SPY_TOTAL_RETURN |
+| C03 | TESTED | FULL_UNIVERSE | 41984749745 | SPY_TOTAL_RETURN |
+| C08 | TESTED | FULL_UNIVERSE | 41984749745 | SPY_TOTAL_RETURN |
+| C12 | TESTED | FULL_UNIVERSE | 41984749745 | SPY_TOTAL_RETURN |
+| C04 | TESTED | FULL_UNIVERSE | 42170095105 | SPY_TOTAL_RETURN |
+| C05 | TESTED | FULL_UNIVERSE | 42170095105 | SPY_TOTAL_RETURN |
+| C06 | TESTED | FULL_UNIVERSE | 42170095105 | SPY_TOTAL_RETURN |
+| C07 | TESTED | FULL_UNIVERSE | 42170095105 | SPY_TOTAL_RETURN |
+| C11 | TESTED | FULL_UNIVERSE | 42170095105 | SPY_TOTAL_RETURN |
+| C13 | TESTED | FULL_UNIVERSE | 42170095105 | SPY_TOTAL_RETURN |
+| C09 | TESTED | IEX_SAMPLE_FROM_2017 | 42170095105 | SPY_TOTAL_RETURN |
+| C10 | TESTED | TRADE_STUDY_SHORT_WITHOUT_BORROW_DATA | 42170095105 | NOT_COMPARABLE |
+
+Paper-Schalter: **bereits eingeschaltet**, Freigabe 2026-11-04, PR #1354; erste Sitzung 2027-01-04. Das ist noch kein Forward-Ergebnis.
+Die älteren CC-/Planabschnitte unten dokumentieren eingefrorene Nachweise. Ihre Angaben NOT_ACTIVATED und erneute Aktivierungsfragen sind durch den aktuellen Code-Schalter überholt. CC-8 bleibt bis zur tatsächlich abgeschlossenen Beobachtung offen.
+Bereits entschiedene Lesarten: C01 SKIP/10D, C03 AFTER_TOP_DAY, C08 CONSOLIDATION_10, C12 50 Sitzungen/LATER_DAYS (READING-DECISIONS-2026-11-04.json). Keine erneute Auswahl nach Ergebnis. Noch vorzubereiten: Forward-Datenpfad F1–F3 und lesende Core-Erfassung; keine Änderung des Schalters.
+
 Teil von Master Completion 3.0 (Supertrader S2/S4). Grundlage sind nur committete Quellen des Repositorys (Abschnitt 8). Es werden keine Handelsregeln, Parameter, Engines, Registrierungen, gepinnten Pläne, Zertifizierungskriterien (CC-1–CC-8) oder Veröffentlichungsgates geändert. Eine Methode ist nicht deshalb zertifiziert, weil sie implementiert und getestet ist.
 
 **Heute ist keine Methode zertifiziert** (`certification: DIAGNOSTIC_NOT_CERTIFIED`, `certificationCandidates: []`, `liveReadiness: LIVE_NOT_APPROVED`). `VALIDATED_TRADE_SIGNAL` ist für alle 13 gesperrt.
@@ -16,19 +40,19 @@ Getrennt geführt: Eine implementierte und getestete Methode ist weder fachlich 
 
 | | Methode | IMPLEMENTIERT | GETESTET | FACHLICH VALIDIERT | ZERTIFIZIERT | PRODUKTREIF | DEAKTIVIERT | BLOCKIERT | ZURÜCKGESTELLT |
 |---|---|---|---|---|---|---|---|---|---|
-| C01 | Turtle System 1 | JA (sf-turtle-1.3.0) | JA (Golden Cases 30/30, Regeltreue 14) | NEIN (offen: CC-1, CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-4, CC-5, CC-8 | NEIN |
-| C02 | Turtle System 2 | JA (sf-turtle-1.3.0) | JA (Golden Cases 23/23, Regeltreue 17) | NEIN (offen: CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-4, CC-5, CC-8 | NEIN |
-| C03 | Darvas-Box | JA (sf5-darvas-lifecycle-1.0.0) | JA (Golden Cases 18/18, Regeltreue 16, MC3-Kausalität) | NEIN (offen: CC-1, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-3, CC-5, CC-8 | NEIN |
-| C04 | Weinstein Investor | JA (sf5-weinstein-lifecycle-1.0.0) | JA (Golden Cases 14/14, MC3-Kausalität) | NEIN (offen: CC-3, CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-3, CC-4, CC-5, CC-8 | NEIN |
-| C05 | Weinstein Trader | JA (sf5-weinstein-lifecycle-1.0.0) | JA (Golden Cases 14/14, MC3-Kausalität) | NEIN (offen: CC-3, CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-3, CC-4, CC-5, CC-8 | NEIN |
-| C06 | Minervini SEPA / VCP | JA (sf-minervini-1.0.1) | JA (Golden Cases 14/14, MC3-Kausalität) | NEIN (offen: CC-1, CC-3, CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-3, CC-4, CC-5, CC-8 | NEIN |
-| C07 | Minervini Power Play | JA (sf4-minervini-lifecycle-1.0.0) | JA (Golden Cases 9/9, MC3-Kausalität) | NEIN (offen: CC-1, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-3, CC-5, CC-8 | NEIN |
-| C08 | Kullamägi Breakout | JA (sf5-kk-breakout-lifecycle-1.1.0) | JA (Golden Cases 8/8, Regeltreue 15, MC3-Kausalität) | NEIN (offen: CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-3, CC-5, CC-8 | NEIN |
-| C09 | Kullamägi Episodic Pivot (Chart-Modell) | JA (kk-ep-chart-lifecycle-1.2.0) | JA (Golden Cases 6/6, MC3-Kausalität) | NEIN (offen: CC-1, CC-2, CC-3, CC-4, CC-5, CC-6, CC-7; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | JA (VALIDATION_BLOCKED) | JA (nicht in SF6-PAPER-2027, E5) |
-| C10 | Kullamägi Parabolic (Chart-Modell, Short) | JA (kk-ps-chart-short-study-1.2.0) | JA (Golden Cases 4/4, MC3-Kausalität) | NEIN (offen: CC-2, CC-3, CC-4, CC-5, CC-6, CC-7; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | JA (VALIDATION_BLOCKED) | JA (nicht in SF6-PAPER-2027, E5) |
-| C11 | Pocket Pivot | JA (sf5-moka-lifecycle-1.0.0) | JA (Golden Cases 9/9, MC3-Kausalität) | NEIN (offen: CC-1, CC-2, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CONFIRMED_RESEARCH_SETUP, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | JA (SOURCE_BLOCKED) | NEIN |
-| C12 | Buyable Gap-Up | JA (sf5-moka-lifecycle-1.0.0) | JA (Golden Cases 9/9, Regeltreue 14, MC3-Kausalität) | NEIN (offen: CC-1, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-3, CC-5, CC-8 | NEIN |
-| C13 | Holy Grail | JA (sf5-holy-grail-research-variant-1.0.0) | JA (Golden Cases 7/7, MC3-Kausalität) | NEIN (offen: CC-1, CC-2, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CONFIRMED_RESEARCH_SETUP, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | JA (SOURCE_BLOCKED) | NEIN |
+| C01 | Turtle System 1 | JA (sf-turtle-1.3.0) | JA (historisch getestet; Golden Cases 30/30, Regeltreue 14) | NEIN (offen: CC-1, CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-4, CC-5, CC-8 | NEIN |
+| C02 | Turtle System 2 | JA (sf-turtle-1.3.0) | JA (historisch getestet; Golden Cases 23/23, Regeltreue 17) | NEIN (offen: CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-4, CC-5, CC-8 | NEIN |
+| C03 | Darvas-Box | JA (sf5-darvas-lifecycle-1.0.0) | JA (historisch getestet; Golden Cases 18/18, Regeltreue 16, MC3-Kausalität) | NEIN (offen: CC-1, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-3, CC-5, CC-8 | NEIN |
+| C04 | Weinstein Investor | JA (sf5-weinstein-lifecycle-1.0.0) | JA (historisch getestet; Golden Cases 14/14, MC3-Kausalität) | NEIN (offen: CC-3, CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-3, CC-4, CC-5, CC-8 | NEIN |
+| C05 | Weinstein Trader | JA (sf5-weinstein-lifecycle-1.0.0) | JA (historisch getestet; Golden Cases 14/14, MC3-Kausalität) | NEIN (offen: CC-3, CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-3, CC-4, CC-5, CC-8 | NEIN |
+| C06 | Minervini SEPA / VCP | JA (sf-minervini-1.0.1) | JA (historisch getestet; Golden Cases 14/14, MC3-Kausalität) | NEIN (offen: CC-1, CC-3, CC-4, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-3, CC-4, CC-5, CC-8 | NEIN |
+| C07 | Minervini Power Play | JA (sf4-minervini-lifecycle-1.0.0) | JA (historisch getestet; Golden Cases 9/9, MC3-Kausalität) | NEIN (offen: CC-1, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-3, CC-5, CC-8 | NEIN |
+| C08 | Kullamägi Breakout | JA (sf5-kk-breakout-lifecycle-1.1.0) | JA (historisch getestet; Golden Cases 8/8, Regeltreue 15, MC3-Kausalität) | NEIN (offen: CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-3, CC-5, CC-8 | NEIN |
+| C09 | Kullamägi Episodic Pivot (Chart-Modell) | JA (kk-ep-chart-lifecycle-1.2.0) | JA (historisch getestet; Golden Cases 6/6, MC3-Kausalität) | NEIN (offen: CC-1, CC-2, CC-3, CC-4, CC-5, CC-6, CC-7; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | JA (VALIDATION_BLOCKED) | JA (nicht in SF6-PAPER-2027, E5) |
+| C10 | Kullamägi Parabolic (Chart-Modell, Short) | JA (kk-ps-chart-short-study-1.2.0) | JA (historisch getestet; Golden Cases 4/4, MC3-Kausalität) | NEIN (offen: CC-2, CC-3, CC-4, CC-5, CC-6, CC-7; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CHART_CANDIDATE, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | JA (VALIDATION_BLOCKED) | JA (nicht in SF6-PAPER-2027, E5) |
+| C11 | Pocket Pivot | JA (sf5-moka-lifecycle-1.0.0) | JA (historisch getestet; Golden Cases 9/9, MC3-Kausalität) | NEIN (offen: CC-1, CC-2, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CONFIRMED_RESEARCH_SETUP, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | JA (SOURCE_BLOCKED) | NEIN |
+| C12 | Buyable Gap-Up | JA (sf5-moka-lifecycle-1.0.0) | JA (historisch getestet; Golden Cases 9/9, Regeltreue 14, MC3-Kausalität) | NEIN (offen: CC-1, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens MODELED_TRADE_PLAN, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | NEIN (RESEARCH_COMPLETE_WITH_EXCEPTIONS); Zertifizierung blockiert: CC-1, CC-3, CC-5, CC-8 | NEIN |
+| C13 | Holy Grail | JA (sf5-holy-grail-research-variant-1.0.0) | JA (historisch getestet; Golden Cases 7/7, MC3-Kausalität) | NEIN (offen: CC-1, CC-2, CC-3, CC-5; Robustheit nicht belegt) | NEIN (DIAGNOSTIC_NOT_CERTIFIED) | NEIN (LIVE_NOT_APPROVED; Kandidatenstufe höchstens CONFIRMED_RESEARCH_SETUP, Stufe 4 gesperrt) | NEIN (im Kandidatenprodukt; keine Orders) | JA (SOURCE_BLOCKED) | NEIN |
 
 ## 2. Prüfdimensionen im Überblick
 
@@ -357,31 +381,31 @@ Unverändert aus `docs/SUPERTRADER_9_HANDOVER.md` §4 übernommen (Definitionen:
 
 ### 6.3 Datenstand, Frische und Fristen
 
-<!-- st-mc3:datenstand:begin {"asOf":"2026-10-30","master":"2026-09-11T14:43:20.305Z","names":"2026-10-11T05:41:17.821Z"} -->
+<!-- st-mc3:datenstand:begin {"asOf":"2026-11-13","master":"2026-11-11T00:00:00Z","names":"2026-11-11T07:43:43.041Z"} -->
 
 Dieser Abschnitt folgt dem täglich erzeugten Kandidatenstand (`supertrader/data/sf-candidates/summary.json`) und den Stammdaten. Weicht nur er ab und sind die Quellen neuer, meldet `--check` `DATA_STATE_NEWER`.
 
-- **Kandidatenstand:** Stichtag `asOf` 30.10.2026, nächste Sitzung laut Stand 02.11.2026. 3.368 Kandidaten (CHART 2.103, CONFIRMED 1.188, MODELED 77), `validatedTradeSignal` 0, verworfene Datensätze 0. Titel 5.102: PASS 2.943, CAP 2.037, FAIL 122. `inputsSha256` `d1b078f20bb3…`.
+- **Kandidatenstand:** Stichtag `asOf` 13.11.2026, nächste Sitzung laut Stand 16.11.2026. 2.343 Kandidaten (CHART 1.840, CONFIRMED 482, MODELED 21), `validatedTradeSignal` 0, verworfene Datensätze 0. Titel 5.083: PASS 2.923, CAP 1.957, FAIL 203. `inputsSha256` `050fbbde0591…`.
 - **Status im Stand:** `liveReadiness: LIVE_NOT_APPROVED`, `certification: DIAGNOSTIC_NOT_CERTIFIED`, `validatedTradeSignal: LOCKED_FOR_ALL_13`, `orders: NONE`.
-- **Frische:** Der Stand ist für Laufdaten bis 02.11.2026 aktuell (letzte abgeschlossene Sitzung = Stichtag). Ab Laufdatum 03.11.2026 liegt er eine Sitzung zurück (erwartet 02.11.2026); ab Laufdatum 05.11.2026 mehr als zwei Sitzungen (3 gegen 04.11.2026), dann ist DQ-SF8-1 rot (`core/data-quality.js#sf8Freshness`, `maxLag` 2). Grund: `SF8_AUTO_PUBLISH` ist nicht gesetzt (Übergabe §3.3).
-- **Security Master** (`quant/data/market/security-master/us-security-master.json`, `us-security-master-1.1.0`, erzeugt 2026-09-11T14:43:20.305Z): Altersgrenze der Eingangsprüfung 60 Tage (`scripts/supertrader/source-faithful/product/input-gate.mjs`, `AUX_MAX_AGE_DAYS.master`). **Letztes zulässiges Laufdatum 10.11.2026; ab 11.11.2026 meldet die Eingangsprüfung STALE und jeder Kandidatenlauf endet mit Exit 3.** Zuständig: Quant (H1, Security Master 1.3.0, Freigabevorlage #1240, Owner-Datum).
-- **Firmennamen** (`quant/data/market/security-master/company-names.json`, erzeugt 2026-10-11T05:41:17.821Z): Grenze 45 Tage, letztes zulässiges Laufdatum 25.11.2026, STALE ab 26.11.2026.
+- **Frische:** Der Stand ist für Laufdaten bis 16.11.2026 aktuell (letzte abgeschlossene Sitzung = Stichtag). Ab Laufdatum 17.11.2026 liegt er eine Sitzung zurück (erwartet 16.11.2026); ab Laufdatum 19.11.2026 mehr als zwei Sitzungen (3 gegen 18.11.2026), dann ist DQ-SF8-1 rot (`core/data-quality.js#sf8Freshness`, `maxLag` 2). Ein fehlender Nachlauf ist zu untersuchen; aus dem Artefaktstand lässt sich kein Repository-Schalter ableiten.
+- **Security Master** (`quant/data/market/security-master/us-security-master.json`, `us-security-master-1.3.0`, erzeugt 2026-11-11T00:00:00Z): Altersgrenze der Eingangsprüfung 60 Tage (`scripts/supertrader/source-faithful/product/input-gate.mjs`, `AUX_MAX_AGE_DAYS.master`). **Letztes zulässiges Laufdatum 10.01.2027; ab 11.01.2027 meldet die Eingangsprüfung STALE und jeder Kandidatenlauf endet mit Exit 3.** Zuständig: Quant (H1, Security Master 1.3.0, Freigabevorlage #1240, Owner-Datum).
+- **Firmennamen** (`quant/data/market/security-master/company-names.json`, erzeugt 2026-11-11T07:43:43.041Z): Grenze 45 Tage, letztes zulässiges Laufdatum 26.12.2026, STALE ab 27.12.2026.
 
 | | Methode | Obergrenze | CHART | CONFIRMED | MODELED | erkannt |
 |---|---|---|---|---|---|---|
-| C01 | Turtle System 1 | MODELED_TRADE_PLAN | 36 | 294 | 0 | 330 |
-| C02 | Turtle System 2 | MODELED_TRADE_PLAN | 25 | 274 | 0 | 299 |
-| C03 | Darvas-Box | MODELED_TRADE_PLAN | 217 | 0 | 0 | 217 |
-| C04 | Weinstein Investor | CHART_CANDIDATE | 456 | 0 | 0 | 456 |
-| C05 | Weinstein Trader | CHART_CANDIDATE | 392 | 0 | 0 | 392 |
-| C06 | Minervini SEPA / VCP | CHART_CANDIDATE | 659 | 0 | 0 | 659 |
-| C07 | Minervini Power Play | MODELED_TRADE_PLAN | 21 | 1 | 9 | 31 |
-| C08 | Kullamägi Breakout | MODELED_TRADE_PLAN | 12 | 0 | 7 | 19 |
-| C09 | Kullamägi Episodic Pivot (Chart-Modell) | CHART_CANDIDATE | 20 | 0 | 0 | 20 |
-| C10 | Kullamägi Parabolic (Chart-Modell, Short) | CHART_CANDIDATE | 7 | 0 | 0 | 7 |
-| C11 | Pocket Pivot | CONFIRMED_RESEARCH_SETUP | 8 | 431 | 0 | 439 |
-| C12 | Buyable Gap-Up | MODELED_TRADE_PLAN | 210 | 36 | 61 | 307 |
-| C13 | Holy Grail | CONFIRMED_RESEARCH_SETUP | 40 | 152 | 0 | 192 |
+| C01 | Turtle System 1 | MODELED_TRADE_PLAN | 40 | 69 | 0 | 109 |
+| C02 | Turtle System 2 | MODELED_TRADE_PLAN | 29 | 67 | 0 | 96 |
+| C03 | Darvas-Box | MODELED_TRADE_PLAN | 397 | 0 | 0 | 397 |
+| C04 | Weinstein Investor | CHART_CANDIDATE | 304 | 0 | 0 | 304 |
+| C05 | Weinstein Trader | CHART_CANDIDATE | 193 | 0 | 0 | 193 |
+| C06 | Minervini SEPA / VCP | CHART_CANDIDATE | 649 | 0 | 0 | 649 |
+| C07 | Minervini Power Play | MODELED_TRADE_PLAN | 32 | 0 | 9 | 41 |
+| C08 | Kullamägi Breakout | MODELED_TRADE_PLAN | 5 | 0 | 7 | 12 |
+| C09 | Kullamägi Episodic Pivot (Chart-Modell) | CHART_CANDIDATE | 44 | 0 | 0 | 44 |
+| C10 | Kullamägi Parabolic (Chart-Modell, Short) | CHART_CANDIDATE | 0 | 0 | 0 | 0 |
+| C11 | Pocket Pivot | CONFIRMED_RESEARCH_SETUP | 20 | 175 | 0 | 195 |
+| C12 | Buyable Gap-Up | MODELED_TRADE_PLAN | 99 | 32 | 5 | 136 |
+| C13 | Holy Grail | CONFIRMED_RESEARCH_SETUP | 28 | 139 | 0 | 167 |
 
 <!-- st-mc3:datenstand:end -->
 

@@ -184,3 +184,19 @@ test('fail closed on the ledger shape: missing unit field, unknown unit, row wit
   assert.deepEqual(e.violations, { TURTLE_N_UNAVAILABLE: 1 });
   assert.equal(e.checks.positionsNotJudged, 1);
 });
+
+test('independent BUY diagnostic checks prior channels, split tick and half-N adds; catches in-bar optimistic fills', () => {
+  const { d, run } = fixture();
+  const good = X.checkTurtleEntries(d, run, { slippageBps: SLIP_BPS });
+  assert.equal(good.violationCount, 0, JSON.stringify(good));
+  assert.ok(good.checks.entries >= 3 && good.checks.adds > 0);
+  const first = run.ledger.find(r => r.side === 'BUY');
+  const fakeEntry = { ...run, ledger: run.ledger.map(r => r === first ? { ...r, price: r.price - .005 } : r) };
+  assert.ok(X.checkTurtleEntries(d, fakeEntry, { slippageBps: SLIP_BPS }).violations.ENTRY_FILL_MISMATCH);
+  const add = run.ledger.find(r => r.side === 'BUY' && r.unit > 1);
+  const fakeAdd = { ...run, ledger: run.ledger.map(r => r === add ? { ...r, price: r.price - .005 } : r) };
+  assert.ok(X.checkTurtleEntries(d, fakeAdd, { slippageBps: SLIP_BPS }).violations.ADD_FILL_MISMATCH);
+  const scaled = { ...d, securities: d.securities.map(s => ({ ...s, bars: s.bars.map(b => ({ ...b, open: b.open / 4, high: b.high / 4, low: b.low / 4, close: b.close / 4, splitAdj: 4 })) })) };
+  const scaledRun = runTurtle(scaled, { system: 'S2', from: d.calendar[0], ...COSTS });
+  assert.equal(X.checkTurtleEntries(scaled, scaledRun, { slippageBps: SLIP_BPS }).violationCount, 0);
+});

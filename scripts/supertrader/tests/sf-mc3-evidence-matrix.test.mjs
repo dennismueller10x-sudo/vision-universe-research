@@ -11,7 +11,7 @@ import {
   ROOT, DOC_PATH, PATHS, STATUS, DIMENSIONS, STATUS_DIMENSIONS, BLOCK_BEGIN, BLOCK_END, BLOCK_CLASSES, TECH_KINDS, HIST_COVERAGE,
   buildDocument, buildModel, checkDocument, splitDocument, testIdsOf, fileSha256, parseMatrixBlockers, matrixRowDimensions,
   classifyBlocker, countModel, FREIGABEPAKETE, assignPackages, mergeForecast, MERGE_CASES, partialOnly, PARTIAL_WHY, MERGED_PR_FALLBACK,
-  minuteCoverage, MC3M_FINDING_TEXT,
+  minuteCoverage, MC3M_FINDING_TEXT, currentEvidence,
 } from '../source-faithful/evidence/build-evidence-matrix.mjs';
 import { loadPlan, runPlanTests } from '../source-faithful/certification/cert-prep-top5.mjs';
 
@@ -327,4 +327,16 @@ test('MC3-EV-MINUTE-CAUSALITY: C09/C10 tragen die Minuten-KausalitÃ¤tstests in â
   const ctx = { merged: {}, prs: {}, refCode: {}, notMeasurable: false, sourceBlocked: false, inPaper: false };
   assert.equal(classifyBlocker('C09', 'D3', { id: 'C09-F-MC3M-09', closes: '' }, ctx).klass, 1);
   assert.throws(() => classifyBlocker('C09', 'D3', { id: 'C09-F-MC3M-X', closes: '' }, ctx), /BLOCKER_CLASS_UNKNOWN/);
+});
+
+
+test('MC3 current evidence separates completed historical research, owner activation and CC8', () => {
+  const h = { C10: { status: 'TESTED', scope: 'TRADE_STUDY_SHORT_WITHOUT_BORROW_DATA', runs: ['42170095105'], spyComparison: 'NOT_COMPARABLE' } };
+  const a = { activated: true, approval: { on: '2026-11-04', pr: 1354 }, decisions: { sampleCount: 'COUNT_ONLY' }, recording: { firstSession: '2027-01-04' } };
+  const r = currentEvidence(h, a);
+  assert.equal(r.paper.enabled, true);
+  assert.equal(r.historical.C10.comparison, 'NOT_COMPARABLE');
+  assert.equal(r.paper.interpretation, 'OWNER_SWITCH_NOT_FORWARD_RESULTS');
+  assert.equal('certified' in r, false);
+  assert.equal(currentEvidence(h, { ...a, activated: false }).paper.enabled, false);
 });

@@ -213,6 +213,20 @@ function certify(cases, mx, method, forward) {
   return out;
 }
 
+// Compatibility fields describe the old forward/product dimension. Never reinterpret them
+// as the methodological certification added on 13 November.
+function certificationScopes(certification) {
+  return {
+    certificationStatus: 'PRODUCT_APPROVAL_LEGACY',
+    label: 'PRODUCT_APPROVAL_LEGACY',
+    caseCertificationStatus: 'FORWARD_EVIDENCE',
+    methodological: Object.fromEntries(KINDS.map(k => [k, certification.kinds[k].status])),
+    forward: Object.fromEntries(KINDS.map(k => [k, certification.kinds[k].forwardStatus])),
+    productionApproved: false,
+    meaning: 'Methodisch geprueft ist weder Ueberrendite noch unabhaengiger Forward-Nachweis oder Produktfreigabe.'
+  };
+}
+
 function build(opts = {}) {
   const list = [CASES, MATRIX_CASES].flatMap(f => JSON.parse(fs.readFileSync(f, 'utf8')).cases.map(c => ({ ...c, file: f, group: f === MATRIX_CASES ? 'MATRIX' : 'DEMO' })));
   const cases = list.filter(c => !opts.only || opts.only.includes(c.id)).map(c => {
@@ -223,6 +237,12 @@ function build(opts = {}) {
   const isPublic = display.public === true && !!(display.approval && display.approval.text === display.approvalPhrase);
   const executed = m => cases.filter(c => c.methods[m].state === 'EXECUTED').length;
   const mx = matrix(cases);
+  const method = JSON.parse(fs.readFileSync(CERT_METHOD, 'utf8'));
+  const forward = fs.existsSync(FORWARD_CERT) ? JSON.parse(fs.readFileSync(FORWARD_CERT, 'utf8')) : null;
+  const certified = certify(cases, mx, method, forward);
+  const certification = { methodology: method.schemaVersion, definition: method.definition,
+    forward: forward ? { file: 'quant/data/product/backtest-certification-v1.json', asOf: forward.asOf, methodology: forward.methodology } : null,
+    kinds: certified, certifiedKinds: KINDS.filter(k => certified[k].status === 'CERTIFIED') };
   return {
     schemaVersion: SCHEMA,
     asOf: opts.asOf || new Date().toISOString().slice(0, 10),
@@ -238,10 +258,8 @@ function build(opts = {}) {
     source: ['docs/quant/backtest-demos/cases.json', 'docs/quant/backtest-research/cases.json'],
     kinds: KINDS, methods: METHODS,
     matrix: mx,
-    certification: (() => { const method = JSON.parse(fs.readFileSync(CERT_METHOD, 'utf8')); const forward = fs.existsSync(FORWARD_CERT) ? JSON.parse(fs.readFileSync(FORWARD_CERT, 'utf8')) : null;
-      const kinds = certify(cases, mx, method, forward);
-      return { methodology: method.schemaVersion, definition: method.definition, forward: forward ? { file: 'quant/data/product/backtest-certification-v1.json', asOf: forward.asOf, methodology: forward.methodology } : null,
-        kinds, certifiedKinds: KINDS.filter(k => kinds[k].status === 'CERTIFIED') }; })(),
+    certification,
+    certificationScopes: certificationScopes(certification),
     summary: { cases: cases.length, executed: cases.filter(c => c.state === 'RESEARCH_EXECUTED').length,
       dataLimited: cases.filter(c => c.state === 'PREPARED_DATA_LIMITED').length,
       methods: Object.fromEntries(METHODS.map(m => [m, executed(m)])) },
@@ -259,4 +277,4 @@ function main(argv = process.argv.slice(2)) {
   return doc;
 }
 if (require.main === module) { try { main(); } catch (e) { console.error(e.stack); process.exitCode = 1; } }
-module.exports = { build, compact, caseRow, factorRow, comparison, combine, matrix, certify, verdict, disclosure, METHODS, KINDS, SCHEMA };
+module.exports = { build, certificationScopes, compact, caseRow, factorRow, comparison, combine, matrix, certify, verdict, disclosure, METHODS, KINDS, SCHEMA };

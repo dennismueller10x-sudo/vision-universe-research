@@ -168,3 +168,14 @@ test("BR-9 · Überlebenden-Auswahl: besser als der Vergleich heißt dann nur �
   assert.equal(B.combine(pr, { state: "LOSES", basis: "S&P" }, true).verdict, "FAILED", "verloren bleibt verloren");
   assert.equal(B.combine(pr, { state: "BEATS", basis: "S&P" }, false).verdict, "PROVEN", "mit delisteten Titeln bleibt bewährt möglich");
 });
+
+
+test("BR scopes · negative economic result never changes methodological/forward dimensions", () => {
+  const kinds = Object.fromEntries(B.KINDS.map(k => [k, { status: k === 'SETUP_BACKTEST' ? 'LIMITED' : 'CERTIFIED', forwardStatus: 'COLLECTING_HISTORY' }]));
+  const scopes = B.certificationScopes({ kinds });
+  assert.equal(scopes.methodological.SIGNAL_BACKTEST, 'CERTIFIED');
+  assert.equal(scopes.forward.SIGNAL_BACKTEST, 'COLLECTING_HISTORY');
+  assert.equal(scopes.caseCertificationStatus, 'FORWARD_EVIDENCE');
+  assert.equal(scopes.certificationStatus, 'PRODUCT_APPROVAL_LEGACY');
+  assert.equal(scopes.productionApproved, false);
+});

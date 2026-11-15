@@ -292,6 +292,8 @@ export async function loadSources(root = ROOT) {
   const domains = readJson(PATHS.domains), registration = readJson(PATHS.registration);
   const matrixText = readText(PATHS.matrixDoc), handoverText = readText(PATHS.handover), opsText = readText(PATHS.dailyOps);
   const { protocol: SF6_PAPER_PROTOCOL, sha256: sf6PaperProtocolSha256 } = (await import(path.join(ROOT, PATHS.paper))).currentPaperProtocol();
+  const { SF6_PAPER_ACTIVATION } = await import(path.join(ROOT, 'scripts/supertrader/source-faithful/paper/activation-2027.mjs'));
+  const { HISTORICAL_TEST } = await import(path.join(ROOT, 'scripts/supertrader/source-faithful/product/catalog.mjs'));
   const { AUX_MAX_AGE_DAYS, lastCompletedSession } = await import(path.join(ROOT, PATHS.inputGate));
   const { createCalendar, SOURCES } = await import(path.join(ROOT, 'scripts/supertrader/source-faithful/product/eod-adapter.mjs'));
   const { PUBLICATION_CONTRACT } = await import(path.join(ROOT, PATHS.publication));
@@ -302,13 +304,23 @@ export async function loadSources(root = ROOT) {
   const refCode = await referenceCodeFingerprints();
   const merged = { all13: fs.existsSync(rel(BRANCH_PATHS.all13Plan)), turtleStops: HIST_COVERAGE.V1_1.test(histExecSrc), v13Workflow: fs.existsSync(rel(BRANCH_PATHS.v13Workflow)) };
   return {
-    refCode, merged,
+    refCode, merged, currentEvidence: currentEvidence(HISTORICAL_TEST, SF6_PAPER_ACTIVATION),
     readiness, golden, plan, summary, domains, registration, matrixText, handoverText, opsText,
     paper: { protocol: SF6_PAPER_PROTOCOL, sha256: sf6PaperProtocolSha256() },
     inputGate: { AUX_MAX_AGE_DAYS, lastCompletedSession }, calendar: createCalendar(), SOURCES,
     publicationContract: PUBLICATION_CONTRACT, requirementsOf, histExecSrc,
     master: { generatedAt: master.generatedAt, version: master.version, file: SOURCES.master },
     names: { generatedAt: names.generatedAt, version: names.version, file: SOURCES.names },
+  };
+}
+
+// Current completed historical runs and the owner switch are separate from frozen CC evidence.
+// Do not reopen an old approval merely because the frozen snapshot predates the decision.
+export function currentEvidence(historical, activation) {
+  return {
+    historical: Object.fromEntries(Object.entries(historical).map(([id, h]) => [id, { status: h.status, scope: h.scope, runs: h.runs, comparison: h.spyComparison }])),
+    paper: { enabled: activation.activated === true, approval: activation.approval, decisions: activation.decisions,
+      firstSession: activation.recording.firstSession, interpretation: 'OWNER_SWITCH_NOT_FORWARD_RESULTS' }
   };
 }
 
@@ -621,7 +633,7 @@ export function buildModel(src) {
     const isCertified = c.certification !== 'DIAGNOSTIC_NOT_CERTIFIED' && certified.has(cid) && allCc;
     const st = {
       IMPLEMENTIERT: c.technicallyComplete && prod ? `JA (${prod.engine.engineVersion})` : 'NEIN',
-      GETESTET: gc.n && gc.pass === gc.n ? `JA (Golden Cases ${gc.pass}/${gc.n}${p ? `, Regeltreue ${p.conformanceTests.length}` : ''}${causal.length ? ', MC3-Kausalität' : ''})` : 'NEIN',
+      GETESTET: gc.n && gc.pass === gc.n ? `JA (${src.currentEvidence?.historical[cid]?.status === 'TESTED' ? 'historisch getestet; ' : ''}Golden Cases ${gc.pass}/${gc.n}${p ? `, Regeltreue ${p.conformanceTests.length}` : ''}${causal.length ? ', MC3-Kausalität' : ''})` : 'NEIN',
       'FACHLICH VALIDIERT': allCc17 && robust ? 'JA' : `NEIN (offen: CC-${ccList(c, false).filter((n) => n !== '8').join(', CC-') || '–'}${robust ? '' : '; Robustheit nicht belegt'})`,
       ZERTIFIZIERT: isCertified ? 'JA' : `NEIN (${c.certification})`,
       PRODUKTREIF: c.liveReadiness !== 'LIVE_NOT_APPROVED' ? 'JA' : `NEIN (${c.liveReadiness}; Kandidatenstufe höchstens ${prod?.ceiling ?? '–'}, Stufe 4 gesperrt)`,
@@ -940,11 +952,21 @@ export function render(model, state, src) {
   const fmtCounts = (c) => Object.values(STATUS).map((s) => `${s} ${c[s]}`).join(', ');
   const fmtClasses = (c) => Object.entries(c).map(([k, v]) => `Klasse ${k} ${v}`).join(', ');
   const packages = assignPackages(model, src), forecast = mergeForecast(src);
+  const current = src.currentEvidence;
   push(
     '# Supertrader – Evidenznachweis der 13 Methoden (C01–C13)',
     '',
     `> **Erzeugt, nicht von Hand ändern.** Erzeuger \`scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs\` (\`${GENERATOR_VERSION}\`). Neu erzeugen: \`node scripts/supertrader/source-faithful/evidence/build-evidence-matrix.mjs --out ${DOC_PATH}\`. Prüfen: \`--check ${DOC_PATH}\` (Test \`sf-mc3-evidence-matrix.test.mjs\`).`,
     '',
+    ...(current ? [
+      '## Aktueller Nachweisstand (historische Läufe und Paper-Schalter)', '',
+      `Historische Tests: ${Object.values(current.historical).filter(h => h.status === 'TESTED').length}/13. Die Kennzahlen liegen versiegelt; die folgenden Laufbelege sind keine neue Erfolgs- oder Zertifizierungsbehauptung.`, '',
+      '| Methode | Historisch getestet | Umfang | Lauf | Vergleich |', '|---|---|---|---|---|',
+      ...Object.entries(current.historical).map(([id, h]) => `| ${id} | ${h.status} | ${h.scope} | ${h.runs.join(', ')} | ${h.comparison} |`), '',
+      `Paper-Schalter: **${current.paper.enabled ? 'bereits eingeschaltet' : 'ausgeschaltet'}**, Freigabe ${current.paper.approval?.on || 'keine'}, PR #${current.paper.approval?.pr || '–'}; erste Sitzung ${current.paper.firstSession}. Das ist noch kein Forward-Ergebnis.`,
+      'Die älteren CC-/Planabschnitte unten dokumentieren eingefrorene Nachweise. Ihre Angaben NOT_ACTIVATED und erneute Aktivierungsfragen sind durch den aktuellen Code-Schalter überholt. CC-8 bleibt bis zur tatsächlich abgeschlossenen Beobachtung offen.',
+      'Bereits entschiedene Lesarten: C01 SKIP/10D, C03 AFTER_TOP_DAY, C08 CONSOLIDATION_10, C12 50 Sitzungen/LATER_DAYS (READING-DECISIONS-2026-11-04.json). Keine erneute Auswahl nach Ergebnis. Noch vorzubereiten: Forward-Datenpfad F1–F3 und lesende Core-Erfassung; keine Änderung des Schalters.', '',
+    ] : []),
     'Teil von Master Completion 3.0 (Supertrader S2/S4). Grundlage sind nur committete Quellen des Repositorys (Abschnitt 8). Es werden keine Handelsregeln, Parameter, Engines, Registrierungen, gepinnten Pläne, Zertifizierungskriterien (CC-1–CC-8) oder Veröffentlichungsgates geändert. Eine Methode ist nicht deshalb zertifiziert, weil sie implementiert und getestet ist.',
     '',
     `**Heute ist keine Methode zertifiziert** (\`certification: ${src.readiness.certification}\`, \`certificationCandidates: [${(src.readiness.summary.certificationCandidates ?? []).join(', ')}]\`, \`liveReadiness: ${src.readiness.liveReadiness}\`). \`VALIDATED_TRADE_SIGNAL\` ist für alle 13 gesperrt.`,
@@ -1051,7 +1073,7 @@ export function render(model, state, src) {
     '',
     `- **Kandidatenstand:** Stichtag \`asOf\` ${fmtDate(st.asOf)}, nächste Sitzung laut Stand ${fmtDate(st.nextSession)}. ${fmtInt(st.counts.candidates)} Kandidaten (CHART ${fmtInt(st.counts.byStage.CHART_CANDIDATE)}, CONFIRMED ${fmtInt(st.counts.byStage.CONFIRMED_RESEARCH_SETUP)}, MODELED ${fmtInt(st.counts.byStage.MODELED_TRADE_PLAN)}), \`validatedTradeSignal\` ${st.counts.validatedTradeSignal}, verworfene Datensätze ${st.counts.rejectedRecords}. Titel ${fmtInt(st.dq.securities)}: PASS ${fmtInt(st.dq.PASS)}, CAP ${fmtInt(st.dq.CAP)}, FAIL ${fmtInt(st.dq.FAIL)}. \`inputsSha256\` \`${String(st.inputsSha256).slice(0, 12)}…\`.`,
     `- **Status im Stand:** ${Object.entries(st.status).map(([k, v]) => `\`${k}: ${v}\``).join(', ')}.`,
-    `- **Frische:** Der Stand ist für Laufdaten bis ${fmtDate(addDaysIso(st.behind1.runDate, -1))} aktuell (letzte abgeschlossene Sitzung = Stichtag). Ab Laufdatum ${fmtDate(st.behind1.runDate)} liegt er eine Sitzung zurück (erwartet ${fmtDate(st.behind1.expectedSession)}); ab Laufdatum ${fmtDate(st.dqRed.runDate)} mehr als zwei Sitzungen (${st.dqRed.behind} gegen ${fmtDate(st.dqRed.expectedSession)}), dann ist DQ-SF8-1 rot (\`${PATHS.dataQuality}#sf8Freshness\`, \`maxLag\` 2). Grund: \`SF8_AUTO_PUBLISH\` ist nicht gesetzt (Übergabe §3.3).`,
+    `- **Frische:** Der Stand ist für Laufdaten bis ${fmtDate(addDaysIso(st.behind1.runDate, -1))} aktuell (letzte abgeschlossene Sitzung = Stichtag). Ab Laufdatum ${fmtDate(st.behind1.runDate)} liegt er eine Sitzung zurück (erwartet ${fmtDate(st.behind1.expectedSession)}); ab Laufdatum ${fmtDate(st.dqRed.runDate)} mehr als zwei Sitzungen (${st.dqRed.behind} gegen ${fmtDate(st.dqRed.expectedSession)}), dann ist DQ-SF8-1 rot (\`${PATHS.dataQuality}#sf8Freshness\`, \`maxLag\` 2). Ein fehlender Nachlauf ist zu untersuchen; aus dem Artefaktstand lässt sich kein Repository-Schalter ableiten.`,
     `- **Security Master** (\`${st.master.file}\`, \`${st.master.version}\`, erzeugt ${st.master.generatedAt}): Altersgrenze der Eingangsprüfung ${st.master.maxDays} Tage (\`${PATHS.inputGate}\`, \`AUX_MAX_AGE_DAYS.master\`). **Letztes zulässiges Laufdatum ${fmtDate(st.master.lastOk)}; ab ${fmtDate(st.master.firstStale)} meldet die Eingangsprüfung STALE und jeder Kandidatenlauf endet mit Exit 3.** Zuständig: Quant (H1, Security Master 1.3.0, Freigabevorlage #1240, Owner-Datum).`,
     `- **Firmennamen** (\`${st.names.file}\`, erzeugt ${st.names.generatedAt}): Grenze ${st.names.maxDays} Tage, letztes zulässiges Laufdatum ${fmtDate(st.names.lastOk)}, STALE ab ${fmtDate(st.names.firstStale)}.`,
     '',
