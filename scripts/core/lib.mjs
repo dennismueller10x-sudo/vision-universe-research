@@ -33,7 +33,9 @@ export function jsonLinesArtifact(text) {
   const records = lines.map(line => JSON.parse(line));
   if (records.some(r => !r || typeof r !== "object" || Array.isArray(r))) throw new Error("INVALID_JSONL_RECORD");
   const head = records.at(-1);
-  return { schemaVersion: "jsonl-artifact-head-1.0.0", asOf: head.session || null,
+  // A later correction may refer to an older session; freshness follows the latest session present.
+  const sessions = records.map(r => r.session).filter(s => typeof s === "string").sort();
+  return { schemaVersion: "jsonl-artifact-head-1.0.0", asOf: sessions.at(-1) || null,
     generatedAt: head.recordedAt || null, records: records.length, head,
     integrity: "NOT_ASSESSED_USE_EXISTING_PRODUCER_VERIFY" };
 }

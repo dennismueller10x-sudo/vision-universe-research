@@ -17,6 +17,8 @@ test('JSONL loader projects the last correction without rewriting or claiming in
     assert.equal(result.head.type, 'CORRECTION');
     assert.match(result.integrity, /NOT_ASSESSED/);
     assert.deepEqual(result, jsonLinesArtifact(text));
+    const olderCorrection = text + JSON.stringify({ type: 'CORRECTION', session: '2027-01-01', recordedAt: '2027-01-06T03:00:00Z' }) + '\n';
+    assert.equal(jsonLinesArtifact(olderCorrection).asOf, '2027-01-04', 'a late correction of an old session must not move coverage backwards');
     assert.throws(() => jsonLinesArtifact(''), /EMPTY_JSONL/);
     assert.throws(() => jsonLinesArtifact('{}\n{broken'), SyntaxError);
     assert.throws(() => jsonLinesArtifact('null'), /INVALID_JSONL/);
