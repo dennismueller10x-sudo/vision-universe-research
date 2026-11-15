@@ -540,3 +540,50 @@ test("EHV-3 · Aktie, zwei Fälle: zählbar mit drei Sätzen und Kapiteln, nicht
   assert.doesNotMatch(cb, /Rücklauf abwarten/);
   assert.match(cb, /var io = inElliott && !replayStep && !pjOnChart && a\.overlays \? \{ zones: \[\], invalidations:/, "Chart im Elliott-Produkt: nur die Ungültig-Marke");
 });
+
+/* App-Konzept 2 (Owner 14.11.2026): das Aktienbild /elliott/#/<T>. Das Markup baut weiter quant/app/page-chartbild.js;
+   elliott/aktie.js ordnet es nur um (Fenster, Kacheln, „Weiter“-Karte) und elliott/wellen.css trägt die Stile.
+   Das Verhalten im Browser prüft scripts/technical/elliott-home/browser-qa.mjs (Weg 1). */
+test("EHV-6 · Aktie nach App-Konzept 2: aktie.js lädt nur mit dem Aktienbild, ordnet fertiges Markup um und rechnet nicht", async () => {
+  const app = read("elliott/app.js"), html = read("elliott/index.html"), js = read("elliott/aktie.js"), css = read("elliott/wellen.css"), cb = read("quant/app/page-chartbild.js");
+  const { permitted } = await import(new URL("../../scripts/vu2/build-release.mjs", import.meta.url));
+  assert.ok(permitted("elliott/aktie.js"), "aktie.js wird ausgeliefert");
+  assert.match(app, /function loadStack\(\) \{[^]*?document\.head\.append\(el\("script", \{ src: "\/elliott\/aktie\.js\?v=[^"]+" \}\)\)[^]*?fetchRes\("\/quant\/index\.html"\)/, "aktie.js kommt mit dem Quant-Stack des Aktienbilds");
+  assert.doesNotMatch(html, /aktie\.js/, "nicht im Startbündel der Elliott-Startseite");
+  const code = js.replace(/\/\*[\s\S]*?\*\//g, "");
+  /* Nur Darstellung: keine Datenanfrage, keine Engine, kein Speicher. */
+  assert.doesNotMatch(code, /fetch\(|XMLHttpRequest|VUTechnicalIntelligence|getAnalysis|VUTechnical\b|localStorage|sessionStorage/, "liest keine Analyse und speichert nichts");
+  assert.doesNotMatch(code, /Signal|Empfehlung|Kursziel|Zielbereich|Ziel\s*[12]|für dich|Wahrscheinlich|Prognose/i, "Wortwahl");
+  /* Ohne VUUI bleibt das bisherige Aussehen: nichts wird angefasst, bevor die Bausteine da sind. */
+  assert.match(code, /if \(!cb \|\| !U \|\| !U\.sheet \|\| !U\.openSheet \|\| !U\.closeSheet\) return;\s*main\.dataset\.ak2 = "1"; cb\.classList\.add\("is-ak2"\);/);
+  /* Jeder Selektor, den aktie.js anfasst, stammt aus page-chartbild.js. */
+  for (const c of ["cb-eps", "cb-ep", "cb-ep-body", "cb-ep-t", "cb-foot", "cb-chart-card", "cb-controls", "cb-crumbs", "cb-ew-say", "cb-ew-waves", "cb-stats", "cb-stat-label", "cb-small cb-dim", "cb-pj-btn", '"Lesart im Chart"', '"zeitreise"']) {
+    assert.ok(cb.includes(c), "page-chartbild.js kennt " + c);
+    assert.ok(js.includes(c.replace(/"/g, "").replace("cb-small cb-dim", "cb-small.cb-dim")), "aktie.js nutzt " + c);
+  }
+  /* Kapitelinhalt wird verschoben und kehrt zurück (heim.appendChild), nie kopiert: Schalter und Aufklapper bleiben die echten. */
+  assert.match(code, /heim\.appendChild\(inhalt\)/);
+  assert.doesNotMatch(code, /cloneNode|outerHTML|insertAdjacentHTML/, "kein Kopieren von Inhalt");
+  /* HTML entsteht nur aus den gemeinsamen Bausteinen (VUUI.sheet, .meter, .q, .next), nie aus Seiteninhalt. */
+  assert.deepEqual(code.match(/innerHTML = [^;]+;/g), ["innerHTML = html;", 'innerHTML = U.sheet("ew-pop", titel, "");']);
+  assert.deepEqual([...code.matchAll(/[^.\w]node\((\w+\.\w+)/g)].map((m) => m[1]).sort(), ["U.meter", "U.next", "U.q"]);
+  /* Die Zeile unter dem Kapiteltitel („Forschung, nicht zertifiziert“) steht im Fenster über dem Inhalt. */
+  assert.match(code, /if \(dach\) body\.appendChild\(make\("p", "vu-ltag ew-pop-k", dach\)\);\s*body\.appendChild\(inhalt\);/);
+  /* Einzige neue Karte: „Weiter“ mit Wortlaut und Ziel der bestehenden Karte der Aktie ohne Zählung. */
+  for (const t of ["Chart-Lage in Technical ansehen", "Trend, Zonen, Befunde", "/technical/#/chart/"]) { assert.ok(js.includes(t), t); assert.ok(cb.includes(t), "bestehender Wortlaut: " + t); }
+  /* Balken nur aus Zahlen, die auf der Seite stehen: Anteil „35 %“ und Wellenkurs „53,36 $“. */
+  assert.match(code, /\/\^\(\\d\{1,3\}\) %\$\/\.exec\(v\.textContent\.trim\(\)\)/);
+  assert.match(code, /\/·\\s\(-\?\[\\d\.\]\+,\\d\{2\}\)\\s\\\$\/\.exec\(li\.textContent\)/);
+  /* Stile: Kacheln und Fenster nur mit .is-ak2; Farben des neuen Blocks nur Schwarz, Weiß, Grau, Neongrün. */
+  const block = css.slice(css.indexOf("App-Konzept 2 (Owner 14.11.2026)"));
+  assert.ok(block.length > 2000, "Block in wellen.css");
+  assert.match(block, /#el-detail \.is-ak2 \.cb-eps\{grid-template-columns:repeat\(2,/);
+  assert.match(block, /@media\(max-width:760px\)\{\s*#el-detail \.cb-chart-card\{margin-inline:calc\(-1\*var\(--vu-gutter,16px\)\)\}/, "Chart am Telefon bis an den Rand");
+  for (const hex of block.match(/#[0-9a-fA-F]{3,8}\b(?![-\w])/g) || []) {
+    const h = hex.slice(1).toLowerCase(), full = h.length === 3 ? h.replace(/./g, "$&$&") : h;
+    if (!/^[0-9a-f]{6}$/.test(full)) continue;   // #el-detail und andere Kennungen
+    const [r, g, b] = [0, 2, 4].map((i) => parseInt(full.slice(i, i + 2), 16));
+    assert.ok(full === "c8f531" || (r === g && g === b), "nur Grau oder Neongrün: " + hex);
+  }
+  for (const rgb of block.match(/rgba?\([^)]*\)/g) || []) { const v = rgb.match(/\d+/g).slice(0, 3); assert.ok(v[0] === v[1] && v[1] === v[2], "nur Grau: " + rgb); }
+});

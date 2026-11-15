@@ -58,12 +58,13 @@
   function loadStack() {
     if (!stackPromise) {
       global.QX_HOST = "elliott";     // vor dem Buendel: app.js startet dann keinen eigenen Router
+      document.head.append(el("script", { src: "/elliott/aktie.js?v=ak2-2" }));   // Aktienbild, App-Konzept 2
       stackPromise = fetchRes("/quant/index.html").then(function (r) { return r.text(); }).then(function (html) {
         var gate = new DOMParser().parseFromString(html, "text/html").querySelector("script[data-content]");
         return gate ? fetchRes(gate.getAttribute("data-content")).then(function (r) { return r.text(); }) : html;
       }).then(function (html) {
         var doc = new DOMParser().parseFromString(html, "text/html"), loads = [];
-        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css"; } }]).forEach(function (l) {
+        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ak2-2"; } }]).forEach(function (l) {
           var href = l.getAttribute("href");
           if (!href || /site-navigation\.css/.test(href)) return;
           var link = el("link", { rel: "stylesheet", href: href, media: "not all", dataset: { qxHost: "1" } });
@@ -224,7 +225,7 @@
     return rows;
   }
 
-  /* „Wellen in 3 Minuten“: Inhalt und Fenster liegen in elliott/about.js und kommen erst beim Antippen. */
+  /* „Wellen in 3 Minuten“ (elliott/about.js) lädt erst beim Antippen. */
   function openAbout() {
     if (global.VUElliottAbout) return global.VUElliottAbout();
     var sc = document.createElement("script");
@@ -312,7 +313,7 @@
   function head(title, lead, kids) {
     return el("header", { class: "el-hero" }, [kids || null, el("h1", { class: "vu-lt el-title", text: title }), lead ? el("p", { class: "vu-lead el-lead", text: lead }) : null]);
   }
-  /* Start (Konzept EHV, EX02): Frage, ein Satz, wie selten Wellen zaehlbar sind, und genau diese Aktien als ruhige Liste. */
+  /* Start (Konzept EHV, EX02): Frage, ein Satz, wie selten Wellen zaehlbar sind, die zaehlbaren Aktien. */
   function weekday(iso) {
     var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso || ""); if (!m) return "";
     var d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3]));
@@ -355,7 +356,7 @@
   function kindNav(by, kinds, href, cls) {
     return el("nav", { class: cls, "aria-label": "Arten der Änderung" }, kinds.map(function (k) { var a = el("a", { class: "el-tile", href: href(k) }); a.append(frag(U.tile(KIND[k][0], String(by[k].length), KIND[k][1]))); return a; }));
   }
-  /* Start (App-Konzept 2): zählbare Aktien als Schiene mit Kursverlauf, darunter „Neu und verändert“ und die Lesarten als Zahlenkacheln. */
+  /* Start (App-Konzept 2): zählbare Aktien als Schiene, „Neu und verändert“ und die Lesarten als Zahlenkacheln. */
   function startBody(host) {
     var a = M.applicableOf(state.home), neu = M.filterCards(state.home.cards, { neu: true }), by = {};
     neu.forEach(function (c) { (by[c.chg.k] = by[c.chg.k] || []).push(c); });
