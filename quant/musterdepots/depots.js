@@ -4,7 +4,9 @@
    Liest genau ein Artefakt: /quant/data/product/model-depots-v1.json
    (Erzeuger scripts/quant/portfolio/model-depots.cjs, Workflow quant-model-depots.yml).
    Keine Backtest-Renditen. Die Wertentwicklung ab Live-Start (je Depot aus nav, je Position Schluss heute gegen
-   Aufnahmekurs) erscheint nur, wenn der Export performance.state = PUBLISHED führt (Owner-Freigabe 06.11.2026, Plan §11). Bausteine aus assets/vu-ui.js (Redesign 2027).
+   Aufnahmekurs) erscheint nur, wenn der Export performance.state = PUBLISHED führt (Owner-Freigabe 06.11.2026, Plan §11). Bausteine aus assets/vu-ui.js.
+   Aussehen nach App-Konzept 2 (Owner 14.11.2026, nur Darstellung): dunkle Kopfkachel mit Frage und Eckdaten, die fünf Depots als
+   Schiene, „Alle N“ öffnet den ganzen Bestand im Fenster, „Weiter“-Karte am Seitenende. Der Abschnitt zur Wertentwicklung ist unverändert.
 
      /quant/musterdepots/                 Übersicht der fünf Depots
      /quant/musterdepots/#/<profil>       ein Depot: Regel, Bestand, Umschichtungen, Datenstand
@@ -49,10 +51,18 @@
   function sinceEntry(p) { return typeof p.lastPrice === "number" && typeof p.entryPrice === "number" && p.entryPrice > 0 ? (p.lastPrice / p.entryPrice - 1) * 100 : null; }
   function navChange(depot) { var n = depot && depot.nav; return Array.isArray(n) && n.length ? { pct: (n[n.length - 1][1] - 1) * 100, date: n[n.length - 1][0] } : null; }
   function label() { return '<p class="md-label">' + U.glyph("check", 14) + "<span>" + LABEL + "</span></p>"; }
+  /* Bausteine aus App-Konzept 2 (vu-ui-1.4.0); liegt noch eine ältere vu-ui.js im Cache, gilt die schlichte Form. */
+  function tap(body, o) { return U.tap ? U.tap(body, o) : '<a class="vu-tap ' + esc(o.cls || "") + '" href="' + esc(o.href) + '">' + body + "</a>"; }
+  function rail(items, o) { return U.rail ? U.rail(items, o) : '<div class="vu-stack">' + items.join("") + "</div>"; }
+  function next(o) { return U.next ? U.next(o) : '<div class="vu-stack">' + U.navcard({ glyph: "grid", title: o.title, sub: o.sub, href: o.href }) + "</div>"; }
+  function tiles(list) { return '<div class="vu-grid md-tiles">' + list.map(function (t) { return U.tile(t[0], t[1], t[2]); }).join("") + "</div>"; }
+  /* „Alle N“: der vollständige Inhalt steht in einem <template> und öffnet sich im Fenster (start bindet den Klick). */
+  function popButton(text, tpl, title) { return '<button type="button" class="md-all" aria-haspopup="dialog" data-md-pop="' + tpl + '" data-md-pop-title="' + esc(title) + '">' + esc(text) + "</button>"; }
+  function sectAll(title, button) { return '<div class="vu-sect"><h2>' + esc(title) + "</h2>" + (button || "") + "</div>"; }
   function head(doc) {
-    return '<header class="md-intro"><p class="vu-ltag">Quant · Musterdepots</p><h1 class="vu-lt">Was die Regeln heute halten</h1>' +
-      '<p class="vu-lead">Fünf Quant-Profile als Musterdepot: Jedes nimmt Aktien streng nach seiner Regel auf und schichtet einmal im Monat um. So sieht man, was eine Methode tut, nicht, was du tun solltest.</p>' + label() + "</header>" +
-      '<div class="vu-grid md-tiles">' + U.tile("Live seit", dDe(doc.liveStart)) + U.tile("Datenstand", dDe(doc.asOf)) + U.tile("Umschichtung", "monatlich") + U.tile("Depots", String(doc.depots.length)) + "</div>";
+    return '<header class="md-head vu-night"><p class="vu-ltag">Quant · Musterdepots</p><h1 class="md-head__q">Was die Regeln heute halten</h1>' +
+      '<p class="md-head__lead">Fünf Quant-Profile als Musterdepot: Jedes nimmt Aktien streng nach seiner Regel auf und schichtet einmal im Monat um. So sieht man, was eine Methode tut, nicht, was du tun solltest.</p>' + label() +
+      tiles([["Live seit", dDe(doc.liveStart)], ["Datenstand", dDe(doc.asOf)], ["Umschichtung", "monatlich"], ["Depots", String(doc.depots.length)]]) + "</header>";
   }
   function performance(doc, depot) {
     if (published(doc)) {
@@ -65,15 +75,16 @@
     }
     return U.sect("Wertentwicklung", { level: 2 }) + U.blank("Die Wertentwicklung ab Live-Start wird gerechnet und erscheint hier nach der Freigabe. Ergebnisse aus Rückrechnungen (Backtests) zeigen wir an dieser Stelle nicht.", { verdict: false });
   }
+  var ROWS_SHOWN = 8;
   function overview(doc) {
     var pub = published(doc);
     var cards = doc.depots.map(function (d) {
       var c = lastChanges(d), nc = pub ? navChange(d) : null;
-      return U.navcard({ glyph: "grid", title: d.name, sub: d.positions.length + " Positionen · umgeschichtet " + dDe(d.lastRebalance) + (c.date ? " · " + c.rein.length + " rein, " + c.raus.length + " raus" : ""), href: "#/" + encodeURIComponent(d.profileId) }) +
-        (nc ? '<p class="md-cardperf vu-xs">' + U.chg(nc.pct, { digits: 1 }) + " seit Live-Start</p>" : "");
-    }).join("");
-    return head(doc) + '<section class="md-sec">' + U.sect("Die fünf Depots", { level: 2 }) + '<div class="vu-stack">' + cards + "</div></section>" + portfolios() +
-      '<section class="md-sec">' + performance(doc, null) + "</section>" + foot(doc);
+      return tap('<span class="md-dp__h"><span class="vu-hud md-dp__i">' + U.glyph("grid", 19) + "</span>" + U.glyph("next", 16) + "</span><b>" + esc(d.name) + '</b><span class="md-dp__s">' + esc(d.positions.length + " Positionen · umgeschichtet " + dDe(d.lastRebalance) + (c.date ? " · " + c.rein.length + " rein, " + c.raus.length + " raus" : "")) + "</span>" +
+        (nc ? '<span class="md-cardperf vu-xs">' + U.chg(nc.pct, { digits: 1 }) + " seit Live-Start</span>" : ""), { href: "#/" + encodeURIComponent(d.profileId), cls: "md-dp" });
+    });
+    return head(doc) + '<section class="md-sec">' + U.sect("Die fünf Depots", { level: 2 }) + rail(cards, { label: "Die fünf Depots", width: 236 }) + "</section>" +
+      '<section class="md-sec">' + performance(doc, null) + "</section>" + foot(doc) + portfolios();
   }
   function detail(doc, depot) {
     var c = lastChanges(depot), pub = published(doc);
@@ -81,23 +92,28 @@
       return U.stockRow({ ticker: p.ticker, name: nameOf(p.ticker), href: stockHref(p.ticker),
         sub: p.ticker + " · " + pctW(p.weight) + " · aufgenommen " + dDe(p.since) + " zu " + U.money(p.entryPrice, "USD"),
         noPrice: !pub, price: p.lastPrice, currency: "USD", changePct: pub ? sinceEntry(p) : null });
-    }).join("");
-    var log = groupedLog(depot).map(function (g) {
+    });
+    var logs = groupedLog(depot).map(function (g) {
       return '<div class="vu-box md-logbox"><h3 class="vu-sm">Umschichtung ' + dDe(g.date) + '</h3><p class="vu-xs vu-mu">' + g.rein.length + " rein · " + g.raus.length + " raus</p>" +
         (g.rein.length ? '<div class="vu-chips md-chips" aria-label="Rein">' + g.rein.map(function (e) { return '<a class="vu-chip md-chip--in" href="' + esc(stockHref(e.ticker)) + '">+ ' + esc(nameOf(e.ticker)) + " <small>" + pctW(e.weight) + "</small></a>"; }).join("") + "</div>" : "") +
         (g.raus.length ? '<div class="vu-chips md-chips" aria-label="Raus">' + g.raus.map(function (e) { return '<a class="vu-chip md-chip--out" href="' + esc(stockHref(e.ticker)) + '">− ' + esc(e.ticker) + " <small>seit " + dDe(e.since) + "</small></a>"; }).join("") + "</div>" : "") + "</div>";
-    }).join("");
-    return '<a class="md-back" href="#/">' + U.glyph("back", 16) + " Alle Musterdepots</a>" +
-      '<header class="md-intro"><p class="vu-ltag">Quant · Musterdepot</p><h1 class="vu-lt">' + esc(depot.name) + '</h1><p class="vu-lead">' + esc(depot.rule) + "</p>" + label() + "</header>" +
-      '<div class="vu-grid md-tiles">' + U.tile("Positionen", String(depot.positions.length)) + U.tile("Investiert", U.num((depot.invested || 0) * 100, 0) + " %") + U.tile("Zuletzt", dDe(depot.lastRebalance), c.rein.length + " rein, " + c.raus.length + " raus") + U.tile("Nächste", dDe(depot.nextRebalance), "erster Lauf im Monat") + "</div>" +
+    });
+    var cap = '<p class="vu-xs vu-mu md-cap">Gewicht im Modell, Aufnahme mit Datum und veröffentlichtem Schlusskurs' + (pub ? "; rechts der Schluss heute und die Veränderung seit Aufnahme" : "") + ".</p>";
+    var more = rows.length > ROWS_SHOWN, moreLog = logs.length > 1;
+    return '<header class="md-head vu-night"><div class="md-head__top"><a class="vu-round md-head__back" href="#/" aria-label="Alle Musterdepots">' + U.glyph("back", 18) + '</a><span class="vu-ltag">Quant · Musterdepot</span></div>' +
+      '<h1 class="md-head__q">' + esc(depot.name) + '</h1><p class="md-head__lead">' + esc(depot.rule) + "</p>" + label() +
+      tiles([["Positionen", String(depot.positions.length)], ["Investiert", U.num((depot.invested || 0) * 100, 0) + " %"], ["Zuletzt", dDe(depot.lastRebalance), c.rein.length + " rein, " + c.raus.length + " raus"], ["Nächste", dDe(depot.nextRebalance), "erster Lauf im Monat"]]) + "</header>" +
       '<section class="md-sec">' + performance(doc, depot) + "</section>" +
-      '<section class="md-sec">' + U.sect("Bestand", { level: 2 }) + '<p class="vu-xs vu-mu md-cap">Gewicht im Modell, Aufnahme mit Datum und veröffentlichtem Schlusskurs' + (pub ? "; rechts der Schluss heute und die Veränderung seit Aufnahme" : "") + ".</p>" +
-      '<div class="md-rows">' + rows + "</div>" +
+      '<section class="md-sec">' + sectAll("Bestand", more ? popButton("Alle " + rows.length, "md-t-pos", "Bestand · " + depot.name) : "") + cap +
+      '<div class="md-rows">' + rows.slice(0, ROWS_SHOWN).join("") + "</div>" +
+      (more ? '<template id="md-t-pos">' + cap + '<div class="md-rows">' + rows.join("") + "</div></template>" : "") +
       U.help("Die Gewichte folgen der Regel: höchstens 8 % je Aktie und 25 % je Branche, Risiko gleich verteilt. Ein Musterdepot ist ein Rechenmodell, keine echten Orders.") + "</section>" +
-      '<section class="md-sec">' + U.sect("Umschichtungen", { level: 2 }) + '<div class="vu-stack">' + (log || U.blank("Noch keine Umschichtung.", { verdict: false })) + "</div></section>" + portfolios(depot.profileId) + foot(doc);
+      '<section class="md-sec">' + sectAll("Umschichtungen", moreLog ? popButton("Alle " + logs.length, "md-t-log", "Umschichtungen · " + depot.name) : "") + '<div class="vu-stack">' + (logs[0] || U.blank("Noch keine Umschichtung.", { verdict: false })) + "</div>" +
+      (moreLog ? '<template id="md-t-log"><div class="vu-stack">' + logs.join("") + "</div></template>" : "") + "</section>" + foot(doc) + portfolios(depot.profileId);
   }
-  /* Alle Musterdepots (Supertrader, Quant, KI) gesammelt unter /portfolios/ (Owner 06.11.2026). */
-  function portfolios(id) { return '<section class="md-sec"><div class="vu-stack">' + U.navcard({ glyph: "grid", title: "Alle Portfolios", sub: id ? "Dieses Depot im Bereich Portfolios, neben Supertrader- und KI-Depots" : "Supertrader-, Quant- und KI-Depots an einer Stelle", href: "/portfolios/" + (id ? "#/quant/" + encodeURIComponent(id) : "#/") }) + "</div></section>"; }
+  /* Alle Musterdepots (Supertrader, Quant, KI) gesammelt unter /portfolios/ (Owner 06.11.2026): die „Weiter“-Karte ganz am Seitenende,
+     nach Pflicht-Hinweis und Fußzeile (der Hinweis bleibt so nah an den Zahlen wie bisher). */
+  function portfolios(id) { return next({ title: "Alle Portfolios", sub: id ? "Dieses Depot im Bereich Portfolios, neben Supertrader- und KI-Depots" : "Supertrader-, Quant- und KI-Depots an einer Stelle", href: "/portfolios/" + (id ? "#/quant/" + encodeURIComponent(id) : "#/") }); }
   function foot(doc) {
     return (U.legal("modelPortfolio") || "") +
       '<p class="md-foot">Datenstand ' + dDe(doc.asOf) + ". Regel und Engine: VU-Portfolio-Standard (" + esc(doc.rules && doc.rules.engine) + "), Kurse: veröffentlichte Schlusskurse (split-bereinigt), Kosten " + esc(doc.rules && doc.rules.costsBpsPerSide) + " Basispunkte je Seite. Keine Anlageberatung, keine Empfehlung.</p>";
@@ -105,7 +121,7 @@
   function render(doc, hash) {
     var id = String(hash || "").replace(/^#\/?/, "").split("?")[0];
     var depot = id ? doc.depots.filter(function (d) { return d.profileId === id; })[0] : null;
-    if (id && !depot) return '<a class="md-back" href="#/">← Alle Musterdepots</a>' + U.blank("Dieses Musterdepot gibt es nicht.");
+    if (id && !depot) return '<a class="md-back" href="#/">' + U.glyph("back", 16) + " Alle Musterdepots</a>" + U.blank("Dieses Musterdepot gibt es nicht.");
     return depot ? detail(doc, depot) : overview(doc);
   }
 
@@ -128,6 +144,16 @@
       main.innerHTML = '<p class="vu-ltag">Quant · Musterdepots</p><h1 class="vu-lt">Musterdepots</h1>' + U.blank("Die Musterdepots sind gerade nicht verfügbar. Der erste Lauf steht aus oder die Daten konnten nicht geladen werden.");
     });
     if (U && U.bindHelp) U.bindHelp(main);
+    /* Fenster (C16) mit dem Inhalt eines <template>: ganzer Bestand, alle Umschichtungen. */
+    main.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("[data-md-pop]"), tpl = b && doc.getElementById(b.getAttribute("data-md-pop"));
+      if (!tpl) return;
+      e.preventDefault();
+      var title = b.getAttribute("data-md-pop-title") || "", el;
+      if (U.popup) el = U.popup({ id: "md-pop", title: title, body: tpl.innerHTML, cls: "md-sheet" });
+      else { var w = doc.createElement("div"); w.innerHTML = U.sheet("md-pop", title, tpl.innerHTML); el = w.firstChild; doc.body.appendChild(el); U.openSheet(el); el.addEventListener("vu-sheet-close", function () { el.remove(); }); }
+      if (el) el.classList.add("vu-ui");
+    });
   }
 
   return { DATA: DATA, LABEL: LABEL, NAMES: NAMES, render: render, validate: validate, lastChanges: lastChanges, groupedLog: groupedLog, start: start };

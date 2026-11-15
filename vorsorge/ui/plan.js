@@ -79,9 +79,10 @@
   VS.views.home = function (r) {
     var U = VS.U, pl = VS.state.plan, done = VS.state.planDone;
     var p = VS.currentPlan(), base = p.scenarios[1], cur = done ? 2 : 1;
-    var way = '<section class="vs-way" aria-label="Dein Weg in drei Schritten"><p class="vu-ltag">Dein Weg in drei Schritten</p>' + VS.WAY.map(function (w, i) {
-      return '<a class="vs-way-r' + (i + 1 === cur ? " is-on" : "") + '" href="' + w[1] + '"><span class="vs-way-n num">' + (i + 1) + '</span><span><b>' + VS.esc(w[0]) + '</b><small>' + VS.esc(w[2]) + '</small></span>' + VS.glyph("next", 16) + '</a>';
-    }).join("") + '</section>';
+    /* App-Konzept 2: der Weg steht als drei Kacheln in der Kopfkachel (Schritt, Titel, Frage; aktueller Schritt neongrün). */
+    var way = '<nav class="vs-way" aria-label="Dein Weg in drei Schritten"><p class="vu-ltag">Dein Weg in drei Schritten</p><div class="vs-way-g">' + VS.WAY.map(function (w, i) {
+      return '<a class="vu-tap vs-way-r' + (i + 1 === cur ? " is-on" : "") + '" href="' + w[1] + '"><span class="vs-way-h"><span class="vs-way-n num">' + (i + 1) + '</span>' + VS.glyph("next", 15) + '</span><b>' + VS.esc(w[0]) + '</b><small>' + VS.esc(w[2]) + '</small></a>';
+    }).join("") + '</div></nav>';
     var hero = '<a class="vu-box vu-box--lime vs-start-card" href="#/start"><span class="vu-ltag">Neu hier?</span><span class="vs-start-t">Mit 10&nbsp;€ im Monat anfangen</span><span class="vu-sm">6 Fragen, 3 Minuten.</span><span class="vu-btn vu-btn--ink vu-btn--block">Los geht’s</span></a>';
     var calc = VS.sect(done ? "Dein Plan" : "Beispielrechnung", "#/plan", "Selbst rechnen") + '<div class="vu-box vs-calc">' +
       '<p class="vu-xs vu-mu"><b>' + F.eur(pl.monthly) + ' im Monat · ' + p.input.age + ' → ' + p.input.targetAge + ' Jahre · heutige Kaufkraft</b></p>' +
@@ -90,7 +91,7 @@
       (done ? '<div style="margin-top:8px">' + VS.trackVerdict(V.Monitor.onTrack(base.goalAttainment)) + '</div>' : "") + '</div>';
     var funding = '<section id="vs-home-fd">' + VS.sect("Was der Staat ab 2027 dazulegt", "#/foerderung", "Förderung") + '<div class="vs-kt3"><div class="vs-kt"><b>…</b></div><div class="vs-kt"><b>…</b></div><div class="vs-kt"><b>…</b></div></div></section>';
     var etfs = '<section id="vs-home-world">' + VS.sect("Die großen Indizes", "#/etfs", "Alle ETFs") + '<div class="vs-loading">ETF-Verzeichnis wird geladen …</div></section>';
-    var root = VS.render(VS.intro("Was wird aus deiner Rente?", "Rechnen, verstehen, anfangen. Ohne Produktverkauf, mit amtlichen Regeln.") + way + hero + calc + funding + etfs,
+    var root = VS.render(VS.intro("Was wird aus deiner Rente?", "Rechnen, verstehen, anfangen. Ohne Produktverkauf, mit amtlichen Regeln.", null, way) + hero + calc + funding + etfs,
       { dm: [["Beispielrechnung", "Planer-Formel mit " + (done ? "deinen gespeicherten Angaben" : "Standardannahmen") + ": " + F.eur(pl.monthly) + " im Monat, " + F.eur(pl.start) + " Startvermögen, Kosten " + F.pct(pl.cost, 2) + ", Inflation " + F.pct(pl.inflation, 1) + ", Szenarien 3 / 5 / 7 % pro Jahr vor Kosten. Heutige Kaufkraft: was das Geld nach Inflation heute wert wäre. Keine Prognose."]] });
 
     VS.rules().then(function (rules) {

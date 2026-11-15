@@ -63,17 +63,27 @@
 
   /* ------------------------------------------------------------ Bausteine */
 
-  function head() {
+  /* Kopfkachel (App-Konzept 2): Zurück, Dachzeile, Titel; der Erklärsatz einen Tipp entfernt, die Herkunftsleiste in der Kachel. */
+  var HEAD = {
+    kicker: "Datenherkunft",
+    title: "Marktdaten",
+    lead: "Diese Seite zeigt den Stand des Referenz-Kurszugangs: was der angebundene Anbieter " +
+          "liefert, was davon oeffentlich gezeigt werden darf und was nicht. Quant zeigt " +
+          "ausschliesslich echte, veroeffentlichte Daten; fehlende Werte werden nicht erfunden."
+  };
+  function head(extra) {
+    var K = global.QuantPageK2;
+    if (K) return K.head({ kicker: HEAD.kicker, title: HEAD.title, lead: HEAD.lead, extra: extra });
     return el("header", { class: "q-section-head", style: "display:block" }, [
-      el("p", { class: "q-kicker", text: "Datenherkunft" }),
-      el("h1", { class: "q-h1", text: "Marktdaten" }),
-      el("p", {
-        class: "q-lead",
-        text: "Diese Seite zeigt den Stand des Referenz-Kurszugangs: was der angebundene Anbieter " +
-              "liefert, was davon oeffentlich gezeigt werden darf und was nicht. Quant zeigt " +
-              "ausschliesslich echte, veroeffentlichte Daten; fehlende Werte werden nicht erfunden."
-      })
-    ]);
+      el("p", { class: "q-kicker", text: HEAD.kicker }),
+      el("h1", { class: "q-h1", text: HEAD.title }),
+      el("p", { class: "q-lead", text: HEAD.lead })
+    ].concat(extra || []));
+  }
+  /** „Weiter“-Karte am Seitenende: zur Methodik im Detail (alle Verträge). */
+  function weiter() {
+    var K = global.QuantPageK2;
+    return K ? K.next({ title: "Methodik im Detail", href: Q.BASE + "methodology/" }) : el("div", {});
   }
 
   /** Der Zustand ohne Zugang — die haeufigste Lage, kein Fehler. */
@@ -521,8 +531,7 @@
       .then(function () { return Q.loadMarketStatus(); })
       .then(function (status) {
         Q.clear(root);
-        root.appendChild(head());
-        root.appendChild(Q.dataOriginBar(status));
+        root.appendChild(head([Q.dataOriginBar(status)]));
 
         var publicMarketAllowed = status.publicDataState && status.publicDataState.displayAllowed === true &&
           status.policy && status.policy.marketData && status.policy.marketData.public &&
@@ -530,6 +539,7 @@
         if (!status.configured || !publicMarketAllowed) {
           root.appendChild(notConfigured(status));
           root.appendChild(status.capabilities ? capabilityTable(status) : el("div", {}));
+          root.appendChild(weiter());
           root.appendChild(Q.disclaimer());
           return;
         }
@@ -551,11 +561,13 @@
               .catch(function () { return payload; });
           }).then(function (payload) {
             root.appendChild(seriesSection(payload));
+            root.appendChild(weiter());
             root.appendChild(Q.disclaimer());
           }).catch(function () {
             root.appendChild(Q.stateBox("Reihe nicht verfuegbar",
               "Fuer " + symbol + " liegt kein abgerufener Datenstand vor.", "empty"));
             root.appendChild(universeTable(status) || el("div", {}));
+            root.appendChild(weiter());
             root.appendChild(Q.disclaimer());
           });
         }
@@ -566,6 +578,7 @@
         root.appendChild(capabilityTable(status));
         var freigaben = permissionSection(status);
         if (freigaben) root.appendChild(freigaben);
+        root.appendChild(weiter());
         root.appendChild(Q.disclaimer());
       }).catch(function (err) {
         Q.mount(root, [Q.errorBox(err), Q.disclaimer()]);

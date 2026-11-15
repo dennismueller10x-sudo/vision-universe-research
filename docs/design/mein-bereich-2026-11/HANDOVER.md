@@ -151,6 +151,7 @@ Entscheidung 11.
 - Quant-Karten tragen einen Titel in Alltagssprache („Verlässlich und wächst lange“) und den Profilnamen als Fachnamen; die vorhandene Wertentwicklung seit Start (Export `PUBLISHED`) bleibt als Pille, wie bisher auf der Karte.
 - Jede Karte mit eigenem Methodenbild zeigt es (auch Darvas und Turtle); hervorgehobene Beschriftungen stehen im hellen Modus in Schwarz statt Neongrün, damit sie lesbar bleiben.
 - Der Satz unter dem Namen ist der Methodensatz der Detailseite (nicht gekürzt), damit es je Depot genau einen Satz gibt.
+- App-Konzept 2 (Owner 14.11.2026) · Portfolios, nur Darstellung: Die Übersicht beginnt mit einer dunklen Kopfkachel (Frage, Stand, die drei Gruppen als Zahlenkacheln); die eigene Pillenzeile entfällt, weil die Reiter der Shell dieselben Ziele tragen. Depots stehen je Gruppe als Schiene (am Schreibtisch und in der Gruppe als Raster), „Alle N“ bei „Seit Aufnahme“ und „Alles“ beim Protokoll öffnen ein Fenster statt aufzuklappen, die Kapitel sind Kacheln, am Ende führt eine „Weiter“-Karte zum nächsten Depot. Zahlen, Beschriftungen und die Zeile zur Wertentwicklung bleiben, wo und wie sie waren.
 
 **PR 4 · Atlas Start und Antworten**
 - Atlas behält seine eigene Kopfzeile (Zurück, Atlas, BETA, Schließen) aus dem Redesign E10; der dunkle Kopf des Konzepts beginnt darunter.

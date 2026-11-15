@@ -19,7 +19,9 @@
      quant/data/product/model-depots-v1.json (Modell aus quant/musterdepots/depots.js)
      quant/data/product/ki-depots-v1.json (Strang Edge 2, Schema docs/research/edge2/ki/EXPORT_SCHEMA.md;
        fehlt er oder fehlt der erste Aufnahmekurs, zeigt die Kachel den Start)
-   Bausteine aus assets/vu-ui.js (VUUI, Redesign 2027).
+   Bausteine aus assets/vu-ui.js (VUUI). Aussehen nach App-Konzept 2 (Owner 14.11.2026, nur Darstellung): dunkle
+   Kopfkachel mit der Frage der Seite, die drei Gruppen als Zahlenkacheln (statt einer zweiten Reiterzeile unter den
+   Reitern der Shell), Depots je Gruppe als Schiene, „Alle N“ und „Alles“ öffnen ein Fenster, „Weiter“-Karte am Ende.
    ========================================================================= */
 (function (root, factory) {
   "use strict";
@@ -191,6 +193,11 @@
   function nameOf(p) { return cleanName(p.name || NAMES[p.ticker]) || p.ticker; }
   function pctW(w) { return isNum(w) ? U.num(w * 100, 1) + " %" : "–"; }
   function stockHref(t) { return "/aktie/" + encodeURIComponent(t); }
+  /* Bausteine aus App-Konzept 2 (vu-ui-1.4.0); liegt noch eine ältere vu-ui.js im Cache, gilt die schlichte Form. */
+  function tap(body, o) { return U.tap ? U.tap(body, o) : '<a class="vu-tap ' + esc(o.cls || "") + '" href="' + esc(o.href) + '"' + (o.attrs && o.attrs["aria-current"] ? ' aria-current="page"' : "") + ">" + body + "</a>"; }
+  function stat(value, label, o) { return U.stat ? U.stat(value, label, o) : tap('<b class="vu-stat__v vu-num">' + esc(value) + '</b><span class="vu-stat__l">' + esc(label) + "</span>", Object.assign({}, o, { cls: "vu-stat " + (o.cls || "") })); }
+  function rail(items, o) { return U.rail ? U.rail(items, o) : '<div class="pf-grid">' + items.join("") + "</div>"; }
+  function next(o) { return U.next ? U.next(o) : '<a class="pf-back" href="' + esc(o.href) + '"><span>' + esc(o.title) + "</span>" + U.glyph("next", 16) + "</a>"; }
   /* ---------------------------------------------------------------- Methodenbild (rein, festes Bild, kein Fachmodell)
      Konzept mein-bereich-2026-11, Entscheidung 5: Weinstein vier Phasen (Phase 2 hervorgehoben), Darvas Kisten,
      Turtle Kanal, Quant Profil; andere Methoden die schlichte Variante mit Name und Satz (artKind „plain“). */
@@ -290,12 +297,12 @@
 
   /* ---------------------------------------------------------------- Musterdepot-Seite (Screen p-depot) */
   var KICKER = { supertrader: "Supertrader-Musterdepot", quant: "Quant-Musterdepot", ki: "KI-Depot" };
-  var ROWS_SHOWN = 6;
+  var ROWS_SHOWN = 6, LOG_SHOWN = 4;
   function dmy(d) { var s = dDe(d); return s.length > 6 ? s.slice(0, 6) : s; }
   function methodHtml(text) { return esc(text).replace(/Phase 2/, '<b class="pf-hl">Phase 2</b>'); }
-  function posRow(d, p, i) {
+  function posRow(d, p) {
     var sub = "aufgenommen " + (p.since ? dmy(p.since) : "–") + " · " + pctW(p.weight);
-    return '<li class="pf-pz' + (i >= ROWS_SHOWN ? " pf-more" : "") + '"' + (i >= ROWS_SHOWN ? " hidden" : "") + '><a class="pf-pz__a" href="' + esc(stockHref(p.ticker)) + '">' + U.logo(p.ticker) +
+    return '<li class="pf-pz"><a class="pf-pz__a" href="' + esc(stockHref(p.ticker)) + '">' + U.logo(p.ticker) +
       '<span class="pf-pz__name"><b>' + esc(nameOf(p)) + "</b><span>" + esc(sub) + "</span></span>" +
       '<span class="pf-pz__chart" data-pf-chart="' + esc(p.ticker) + '"></span>' +
       '<span class="pf-pz__chg">' + U.chg(p.changePct) + "</span></a>" + reasonHtml(d, p) + "</li>";
@@ -340,35 +347,44 @@
       list.push(["Zum Profil in Quant", d.name, "quant", "/quant/"]);
     }
     if (!list.length) return "";
-    return '<ol class="pf-eps">' + list.map(function (c, i) {
+    return '<nav class="pf-eps" aria-label="Mehr zur Methode">' + list.map(function (c) {
       var icon = c[2] === "book" ? '<span class="vu-hud pf-eps__hud">' + U.glyph("book", 19) + "</span>" : U.hud(c[2], 40);
-      return '<li><a class="pf-ep" href="' + esc(c[3]) + '"><b class="pf-ep__n">' + (i + 1) + "</b>" + icon + '<span class="pf-ep__t"><b>' + esc(c[0]) + "</b><span>" + esc(c[1]) + "</span></span>" + U.glyph("next", 15) + "</a></li>";
-    }).join("") + "</ol>";
+      return tap('<span class="pf-ep__i">' + icon + U.glyph("next", 15) + '</span><b>' + esc(c[0]) + "</b><span>" + esc(c[1]) + "</span>", { href: c[3], cls: "pf-ep" });
+    }).join("") + "</nav>";
   }
-  function detail(d) {
+  /* Kopfzahlen der Depotseite als eine Zeile (Baustein stats); ohne den Baustein die bisherigen drei Felder. */
+  function minisHtml(minis) {
+    if (U.stats) return '<div class="pf-hero__minis">' + U.stats(minis.map(function (m) { return { value: m[1], label: m[0] }; }), { label: "Eckdaten" }) + "</div>";
+    return '<div class="pf-hero__minis pf-hero__minis--tiles">' + minis.map(function (m) { return '<div class="pf-mini-tile"><small>' + esc(m[0]) + '</small><b class="vu-num">' + esc(m[1]) + "</b></div>"; }).join("") + "</div>";
+  }
+  /* „Alle N“ und „Alles“: der vollständige Inhalt steht in einem <template> und öffnet sich im Fenster (start bindet den Klick). */
+  function popButton(label, tpl, title) { return '<button type="button" class="pf-sect__r pf-all" aria-haspopup="dialog" data-pf-pop="' + tpl + '" data-pf-pop-title="' + esc(title) + '">' + esc(label) + "</button>"; }
+  function detail(d, all) {
     var g = GROUPS.filter(function (x) { return x.id === d.group; })[0];
     var kind = artKind(d), art = kind === "plain" ? "" : methodArt(kind, { dark: true, profile: d.id });
     var minis = [["Aktien", d.pending ? "–" : String(d.positions.length)], ["live seit", dmy(d.liveSince)], ["Stand", dmy(d.asOf)]];
     var rows = d.positions.slice().sort(function (a, b) { return (b.weight || 0) - (a.weight || 0) || a.ticker.localeCompare(b.ticker); });
     var tl = timeline(d);
-    var hero = '<header class="pf-hero"><div class="pf-hero__top"><a class="vu-round pf-hero__back" href="#/' + esc(d.group) + '" aria-label="Zurück zu ' + esc(g.title) + '">' + U.glyph("back", 18) + '</a><span class="vu-xs">' + esc(KICKER[d.group]) + " · Rechenmodell</span></div>" +
+    var cap = '<p class="vu-xs vu-mu pf-cap">Neongrüne Fläche: seit Aufnahme.' + (d.stops ? " Gestrichelt: Ungültig-Marke laut Methode." : "") + " Rechts die Veränderung seit Aufnahme.</p>";
+    var hero = '<header class="pf-hero vu-night"><div class="pf-hero__top"><a class="vu-round pf-hero__back" href="#/' + esc(d.group) + '" aria-label="Zurück zu ' + esc(g.title) + '">' + U.glyph("back", 18) + '</a><span class="vu-xs">' + esc(KICKER[d.group]) + " · Rechenmodell</span></div>" +
       '<h1 class="pf-hero__name">' + esc(d.name) + "</h1>" + '<p class="pf-hero__lead">' + methodHtml(neutralText(d.method)) + "</p>" +
-      (art ? '<div class="pf-hero__art">' + art + "</div>" : "") +
-      '<div class="pf-hero__minis">' + minis.map(function (m) { return '<div class="pf-mini-tile"><small>' + esc(m[0]) + '</small><b class="vu-num">' + esc(m[1]) + "</b></div>"; }).join("") + "</div>" +
+      (art ? '<div class="pf-hero__art">' + art + "</div>" : "") + minisHtml(minis) +
       (d.perf ? '<p class="pf-hero__perf">Seit Start ' + U.chg(d.perf.pct, { digits: 1 }) + ' <span>nach Kosten, Stand ' + esc(dmy(d.perf.asOf)) + "</span></p>" : "") + "</header>";
     var body;
     if (d.pending) body = U.blank("Das Depot startet am " + dDe(d.liveSince) + ". Die ersten Positionen und Werte folgen mit dem ersten Aufnahmekurs.", { verdict: false }) + (d.decision && d.decision.positions.length ? decisionHtml(d) : "");
     else if (!rows.length) body = U.blank("Das Depot hält heute keine Aktie" + (isNum(d.cashPct) ? " (" + U.num(d.cashPct * 100, 0) + " % Bargeld im Modell)" : "") + ". Die Methode wartet auf ihr nächstes Muster.", { verdict: false });
     else body = '<section class="pf-sec">' + '<div class="vu-sect"><h2>So ist das Depot heute verteilt</h2><span class="pf-sect__r">Gewicht im Modell</span></div>' + allocHtml(d) + "</section>" +
-      '<section class="pf-sec"><div class="vu-sect"><h2>Seit Aufnahme</h2>' + (rows.length > ROWS_SHOWN ? '<button type="button" class="pf-sect__r pf-all" data-pf-all>Alle ' + rows.length + "</button>" : "") + "</div>" +
-      '<ul class="pf-pzl">' + rows.map(function (p, i) { return posRow(d, p, i); }).join("") + "</ul>" +
-      '<p class="vu-xs vu-mu pf-cap">Neongrüne Fläche: seit Aufnahme.' + (d.stops ? " Gestrichelt: Ungültig-Marke laut Methode." : "") + " Rechts die Veränderung seit Aufnahme.</p></section>";
+      '<section class="pf-sec"><div class="vu-sect"><h2>Seit Aufnahme</h2>' + (rows.length > ROWS_SHOWN ? popButton("Alle " + rows.length, "pf-t-pos", "Seit Aufnahme · alle " + rows.length) : "") + "</div>" +
+      '<ul class="pf-pzl">' + rows.slice(0, ROWS_SHOWN).map(function (p) { return posRow(d, p); }).join("") + "</ul>" + cap +
+      (rows.length > ROWS_SHOWN ? '<template id="pf-t-pos"><ul class="pf-pzl">' + rows.map(function (p) { return posRow(d, p); }).join("") + "</ul>" + cap + "</template>" : "") + "</section>";
+    var list = (all || []).filter(function (x) { return x.group === d.group; }), at = list.indexOf(d), nx = list.length > 1 && at >= 0 ? list[(at + 1) % list.length] : null;
     return hero + '<div class="pf-body">' + body +
       (d.rule && d.rule !== d.method ? '<section class="pf-sec">' + U.sect("Regel", { level: 2 }) + '<p class="vu-sm">' + esc(neutralText(d.rule)) + "</p></section>" : "") +
-      '<section class="pf-sec"><div class="vu-sect"><h2>Zuletzt im Protokoll</h2>' + (tl.length > 4 ? '<button type="button" class="pf-sect__r pf-all" data-pf-log>Alles</button>' : "") + "</div>" +
-      (tl.length ? '<ol class="pf-tl">' + tl.map(function (r, i) { return i >= 4 ? r.replace('<li class="pf-tl__r', '<li hidden class="pf-more-log pf-tl__r') : r; }).join("") + "</ol>" : U.blank(d.pending ? "Noch kein Eintrag." : "Noch keine Bewegung.", { verdict: false })) + "</section>" +
+      '<section class="pf-sec"><div class="vu-sect"><h2>Zuletzt im Protokoll</h2>' + (tl.length > LOG_SHOWN ? popButton("Alles", "pf-t-log", "Protokoll · " + d.name) : "") + "</div>" +
+      (tl.length ? '<ol class="pf-tl">' + tl.slice(0, LOG_SHOWN).join("") + "</ol>" + (tl.length > LOG_SHOWN ? '<template id="pf-t-log"><ol class="pf-tl">' + tl.join("") + "</ol></template>" : "") : U.blank(d.pending ? "Noch kein Eintrag." : "Noch keine Bewegung.", { verdict: false })) + "</section>" +
       chapters(d) +
-      U.help(d.stops ? "Ungültig-Marke laut Methode: Schließt der Kurs darunter, gibt das Musterdepot die Aktie nach Regel ab. Ein Rechenpunkt, kein Kursziel und keine Order." : "Ein Musterdepot ist ein Rechenmodell. Es zeigt, was die Regel tut, keine echten Orders.") + foot(d) + "</div>";
+      U.help(d.stops ? "Ungültig-Marke laut Methode: Schließt der Kurs darunter, gibt das Musterdepot die Aktie nach Regel ab. Ein Rechenpunkt, kein Kursziel und keine Order." : "Ein Musterdepot ist ein Rechenmodell. Es zeigt, was die Regel tut, keine echten Orders.") +
+      foot(d) + (nx ? next({ eyebrow: "Weiter", title: cardTitle(nx).name, sub: KICKER[nx.group], href: href(nx) }) : next({ eyebrow: "Weiter", title: "Alle Musterdepots", sub: "Supertrader, Quant und KI", href: "#/" })) + "</div>";
   }
   /* ---------------------------------------------------------------- Übersicht (Screen p-home) */
   /* Quant-Profil in Alltagssprache (Titel der Karte); der Profilname steht als Fachname darüber. */
@@ -403,28 +419,36 @@
       : (logos ? '<span class="pf-dpc__logos">' + logos + "</span>" : "") + '<span class="vu-xs pf-dpc__n"><b>' + d.positions.length + (d.positions.length === 1 ? " Aktie" : " Aktien") + "</b></span>" +
         (d.perf ? '<span class="pf-dpc__perf">' + U.chg(d.perf.pct, { digits: 1 }) + '<span class="vu-xs vu-mu">seit ' + esc(dmy(d.perf.since)) + "</span></span>" : "") +
         (n ? '<span class="pf-new">' + n + " neu</span>" : !d.positions.length ? '<span class="vu-xs vu-mu">Stand ' + esc(dmy(d.asOf)) + "</span>" : "");
-    return '<a class="pf-dpc" href="' + esc(href(d)) + '"><span class="pf-dpc__h"><span><span class="vu-ltag">' + esc(t.fach) + "</span><b>" + esc(t.name) + '</b><span class="vu-xs vu-mu">' + esc(neutralText(d.method)) + "</span></span>" + U.glyph("next", 16) + "</span>" +
+    return tap('<span class="pf-dpc__h"><span><span class="vu-ltag">' + esc(t.fach) + "</span><b>" + esc(t.name) + '</b><span class="vu-xs vu-mu">' + esc(neutralText(d.method)) + "</span></span>" + U.glyph("next", 16) + "</span>" +
       (kind !== "plain" ? '<span class="pf-dpc__art">' + methodArt(kind, { dark: false, width: 300, profile: d.id }) + "</span>" : "") +
-      '<span class="pf-dpc__f">' + foot + "</span></a>";
+      '<span class="pf-dpc__f">' + foot + "</span>", { href: href(d), cls: "pf-dpc" });
   }
+  /* Wohin es nach der Übersicht weitergeht: zum Ort, an dem die Regeln der Gruppe stehen. Die Karte steht ganz am Seitenende,
+     nach Pflicht-Hinweis und Fußzeile, damit der Hinweis so nah an den Zahlen bleibt wie bisher. */
+  var NEXT_OF = {
+    "": { title: "Methoden", sub: "Was sucht welche Methode?", href: "/supertrader/strategies/" },
+    supertrader: { title: "Methoden", sub: "Was sucht welche Methode?", href: "/supertrader/strategies/" },
+    quant: { title: "Quant-Musterdepots", sub: "Regel, Bestand und Protokoll je Profil", href: "/quant/musterdepots/" },
+    ki: { title: "Alle Musterdepots", sub: "Supertrader, Quant und KI", href: "#/" }
+  };
   function overview(all, groupId) {
     var groups = GROUPS.filter(function (g) { return !groupId || g.id === groupId; });
     var count = function (id) { return all.filter(function (d) { return d.group === id; }).length; };
     var asOf = maxDate(all.map(function (d) { return d.asOf; }));
-    var tabs = '<nav class="vu-chips pf-tabs" aria-label="Depotgruppe">' + [{ id: "", label: "Alle " + all.length }].concat(GROUPS.map(function (g) { return { id: g.id, label: g.label + " " + count(g.id) }; })).map(function (t) {
-      var on = (groupId || "") === t.id;
-      return '<a class="vu-chip" href="#/' + t.id + '"' + (on ? ' aria-current="page"' : "") + ">" + esc(t.label) + "</a>";
-    }).join("") + "</nav>";
-    var today = '<div class="pf-today"><p class="vu-ltag">Musterdepots' + (asOf ? " · Stand " + esc(dmy(asOf)) : "") + '</p><ul class="pf-today__n">' +
-      GROUPS.map(function (g) { return '<li><b class="vu-num">' + count(g.id) + "</b><span>" + esc(g.label) + "</span></li>"; }).join("") +
-      '</ul><p class="vu-xs pf-today__note">Wertentwicklung seit Start: erscheint, sobald belastbar.</p></div>';
-    return '<header class="pf-intro"><p class="vu-ltag">Portfolios</p><h1 class="vu-lt">Was die Regeln<br>gerade halten</h1>' +
-      '<p class="vu-lead">' + all.length + " Musterdepots. Jedes nimmt Aktien streng nach seiner Methode auf und gibt sie ab, ohne echtes Geld.</p></header>" + tabs + today +
-      groups.map(function (g) {
+    /* Kopfkachel: Frage der Seite, Stand, die drei Gruppen als Zahlenkacheln (führen in die Gruppe; die Reiter der Shell
+       tragen dieselben Ziele, eine zweite Reiterzeile gibt es nicht). */
+    var head = '<header class="pf-head vu-night"><p class="vu-ltag">Musterdepots' + (asOf ? " · Stand " + esc(dmy(asOf)) : "") + '</p><h1 class="pf-head__q">Was die Regeln<br>gerade halten</h1>' +
+      '<p class="pf-head__lead">' + all.length + " Musterdepots. Jedes nimmt Aktien streng nach seiner Methode auf und gibt sie ab, ohne echtes Geld.</p>" +
+      '<nav class="pf-head__n" aria-label="Depotgruppe">' + GROUPS.map(function (g) {
+        return stat(String(count(g.id)), g.label, { href: "#/" + g.id, cls: "pf-count", label: count(g.id) + " " + g.title, attrs: groupId === g.id ? { "aria-current": "page" } : null });
+      }).join("") + "</nav>" +
+      '<p class="vu-xs pf-today__note">Wertentwicklung seit Start: erscheint, sobald belastbar.</p></header>';
+    return head + groups.map(function (g) {
         var list = all.filter(function (d) { return d.group === g.id; });
-        return '<section class="pf-sec" aria-labelledby="pf-g-' + g.id + '">' + '<div class="vu-sect"><h2 id="pf-g-' + g.id + '">' + esc(g.label) + "</h2>" + (groupId ? "" : '<a href="#/' + g.id + '">Alle ' + list.length + "</a>") + "</div>" +
-          '<div class="pf-grid">' + (list.length ? list.map(card).join("") : U.blank("Diese Depots sind gerade nicht verfügbar.", { verdict: false })) + "</div></section>";
-      }).join("") + foot(null);
+        var body = !list.length ? U.blank("Diese Depots sind gerade nicht verfügbar.", { verdict: false })
+          : groupId ? '<div class="pf-grid">' + list.map(card).join("") + "</div>" : rail(list.map(card), { label: g.title, width: 296 });
+        return '<section class="pf-sec" aria-labelledby="pf-g-' + g.id + '">' + '<div class="vu-sect"><h2 id="pf-g-' + g.id + '">' + esc(groupId ? g.title : g.label) + "</h2>" + (groupId ? "" : '<a href="#/' + g.id + '">Alle ' + list.length + "</a>") + "</div>" + body + "</section>";
+      }).join("") + foot(null) + next(NEXT_OF[groupId || ""]);
   }
   function foot(d) {
     return (U.legal("modelPortfolio") || "") +
@@ -436,7 +460,7 @@
     if (r.id) {
       var d = all.filter(function (x) { return x.group === r.group && x.id === r.id; })[0];
       if (!d) return '<a class="pf-back" href="#/">' + U.glyph("back", 16) + "<span>Alle Musterdepots</span></a>" + U.blank("Dieses Musterdepot gibt es nicht.");
-      return detail(d);
+      return detail(d, all);
     }
     return overview(all, r.group);
   }
@@ -456,17 +480,36 @@
     if (!seriesCache[sid]) seriesCache[sid] = getJSON(SERIES + sid + ".json").then(function (s) { return (s && s.points || []).slice(-30); }, function () { return null; });
     return seriesCache[sid];
   }
-  function enhance(main) {
-    var r = parseRoute(root.location.hash), d = r.id && CURRENT.filter(function (x) { return x.group === r.group && x.id === r.id; })[0];
+  function currentDepot() {
+    var r = parseRoute(root.location.hash);
+    return r.id ? CURRENT.filter(function (x) { return x.group === r.group && x.id === r.id; })[0] : null;
+  }
+  /* Mini-Charts in einem Bereich füllen (Seite oder Fenster). */
+  function enhance(scope) {
+    var d = currentDepot();
     if (!d) return;
     var byT = {}; d.positions.forEach(function (p) { byT[p.ticker] = p; });
-    Array.prototype.forEach.call(main.querySelectorAll("[data-pf-chart]"), function (host) {
+    Array.prototype.forEach.call(scope.querySelectorAll("[data-pf-chart]"), function (host) {
       var p = byT[host.getAttribute("data-pf-chart")];
       if (p) seriesOf(p.ticker).then(function (pts) { if (pts && host.isConnected) host.innerHTML = posChart(pts, p.since, d.stops ? p.stop : null); });
     });
-    var all = main.querySelector("[data-pf-all]"), log = main.querySelector("[data-pf-log]");
-    if (all) all.addEventListener("click", function () { Array.prototype.forEach.call(main.querySelectorAll(".pf-more"), function (x) { x.hidden = false; }); all.hidden = true; });
-    if (log) log.addEventListener("click", function () { Array.prototype.forEach.call(main.querySelectorAll(".pf-more-log"), function (x) { x.hidden = false; }); log.hidden = true; });
+  }
+  /* Fenster (C16) mit dem Inhalt eines <template>: „Alle N“ Positionen, das ganze Protokoll. */
+  function openPop(doc, b) {
+    var tpl = doc.getElementById(b.getAttribute("data-pf-pop"));
+    if (!tpl) return;
+    var title = b.getAttribute("data-pf-pop-title") || "", el;
+    if (U.popup) el = U.popup({ id: "pf-pop", title: title, body: tpl.innerHTML, cls: "pf-sheet" });
+    else {
+      var old = doc.getElementById("pf-pop"); if (old) old.remove();
+      var wrap = doc.createElement("div"); wrap.innerHTML = U.sheet("pf-pop", title, tpl.innerHTML);
+      el = wrap.firstChild; doc.body.appendChild(el); U.openSheet(el);
+      root.addEventListener("hashchange", function away() { root.removeEventListener("hashchange", away); U.closeSheet(el); el.remove(); });
+    }
+    if (!el) return;
+    el.classList.add("vu-ui");
+    if (U.logoScan) U.logoScan(el);
+    enhance(el);
   }
   var CURRENT = [];
   function start(doc) {
@@ -494,6 +537,10 @@
       main.innerHTML = '<p class="vu-ltag">Portfolios</p><h1 class="vu-lt">Alle Musterdepots</h1>' + U.blank("Die Musterdepots sind gerade nicht verfügbar. Bitte später erneut versuchen.");
     });
     if (U.bindHelp) U.bindHelp(main);
+    main.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest("[data-pf-pop]");
+      if (b && main.contains(b)) { e.preventDefault(); openPop(doc, b); }
+    });
   }
 
   return { LABEL: LABEL, SRC: SRC, GROUPS: GROUPS, KI_START: KI_START, collect: collect, fromSupertrader: fromSupertrader, fromTrend52: fromTrend52, fromHouse: fromHouse,

@@ -1,0 +1,65 @@
+/* Eigenständige Quant-Seiten (Marktdaten, Fundamentaldaten-Inspektor) nach App-Konzept 2 (Owner-Freigabe 14.11.2026).
+   Ergänzt /quant/ui/quant.css nur für diese Seiten (.qp): dunkle Kopfkachel, Schritte als Kacheln, „Weiter“-Karte.
+   Farben: Weiß, Schwarz, Grau und das eine Neongrün; Zustände unterscheiden sich über Fläche, Rand und Wort, nicht über
+   Rot, Gelb oder Violett. Neongrün trägt immer schwarze Schrift. */
+.qp.q-shell{padding-top:10px}
+.qp-head{margin:0 0 14px;padding:16px;border-radius:22px;background:#151515;color:#fff;
+  --ink:#fff;--muted:#bdbdbd;--muted-2:#9b9b9b;--lead:#bdbdbd;--line:#333;--line-strong:#4a4a4a;--surface:#262626;--surface-2:#262626;--bg:#151515}
+html[data-theme=light] .qp-head{background:#0e1013;--bg:#0e1013}
+.qp-head-top{display:flex;align-items:center;gap:10px}
+.qp-head .q-kicker{flex:1;min-width:0;margin:0;color:#9b9b9b}
+.qp-round{flex:none;display:grid;place-items:center;width:44px;height:44px;min-width:44px;min-height:44px;padding:0;border:0;border-radius:50%;background:#262626;color:#fff;font:900 16px/1 Inter,system-ui,sans-serif;text-decoration:none;cursor:pointer}
+.qp-round:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
+.qp-head .q-h1{margin:12px 0 0;font-size:34px;font-weight:900;letter-spacing:-.045em;line-height:1.02;color:#fff;text-wrap:balance;overflow-wrap:anywhere}
+.qp-head .q-lead{margin:8px 0 0;max-width:62ch;font-size:14px;line-height:1.45;color:#bdbdbd}
+@media (min-width:760px){.qp-head{padding:22px}.qp-head .q-h1{font-size:44px}}
+@media (max-width:359px){.qp-head .q-h1{font-size:28px}}
+/* Herkunftsleiste in der Kopfkachel */
+.qp-head .q-origin-bar{margin:14px 0 0;padding:0;border:0;border-radius:0;background:none}
+.qp-head .q-provenance-tags{margin:0 0 8px}
+.qp .q-chip,.qp .q-chip.tone-neutral,.qp .q-chip.tone-poor{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line-strong)}
+.qp .q-chip.tone-strong{background:#c8f531;color:#000;box-shadow:none}
+.qp .q-origin,.qp .q-origin-warn,.qp .q-origin-poor{border-color:var(--line-strong);background:transparent}
+.qp .q-origin-value,.qp .q-origin-good .q-origin-value,.qp .q-origin-warn .q-origin-value,.qp .q-origin-poor .q-origin-value{color:var(--ink)}
+.qp .q-origin-good .q-origin-dot{background:#c8f531}
+.qp .q-origin-warn .q-origin-dot{background:transparent;box-shadow:inset 0 0 0 2px var(--muted)}
+.qp .q-origin-poor .q-origin-dot{background:var(--ink)}
+/* Zustände ohne Rot, Gelb und Violett */
+.qp .q-cap-yes{background:#c8f531;color:#000}
+.qp .q-cap-no{background:var(--ink);color:var(--bg)}
+.qp .q-cap-unknown{background:transparent;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line-strong)}
+.qp .q-state,.qp .q-metric{border-radius:22px}
+.qp .q-state{padding:18px 16px}
+.qp .q-state--error,.qp .q-state--warn{background:var(--surface);color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line-strong)}
+.qp .q-section{margin-top:28px}
+.qp .q-table-wrap{border-radius:18px}
+.qp .q-note{overflow-wrap:anywhere}
+/* Schritte als nummerierte Kacheln */
+.qp ol.q-steps{list-style:none;margin:0;padding:0;display:grid;gap:8px;counter-reset:qp-step;color:var(--ink)}
+.qp ol.q-steps li{position:relative;margin:0;padding:14px 14px 14px 54px;border-radius:18px;background:var(--surface);counter-increment:qp-step;font-size:13.5px;line-height:1.45}
+.qp ol.q-steps li::before{content:counter(qp-step);position:absolute;left:14px;top:12px;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#c8f531;color:#000;font-weight:900;font-size:13px}
+.qp ol.q-steps+.q-note{margin-top:12px}
+/* „Weiter“-Karte */
+.qp-next{margin-top:8px}
+.qp .q-disclaimer{margin-top:28px}
+/* Fundamentaldaten-Inspektor: Marken, Gates und Coverage in Grau und Neongrün */
+.qp .tag{border:0;padding:2px 8px;font-weight:700;box-shadow:inset 0 0 0 1.5px var(--line-strong);color:var(--muted)}
+.qp .tag--sec,.qp .tag--HIGH{background:#c8f531;color:#000;box-shadow:none}
+.qp .tag--derived{color:var(--ink);box-shadow:none;outline:1.5px dashed var(--line-strong);outline-offset:-1.5px}
+.qp .tag--MEDIUM{color:var(--ink)}
+.qp .tag--LOW,.qp .tag--UNKNOWN{background:var(--ink);color:var(--bg);box-shadow:none}
+.qp .gate{padding:10px 0;border-top:1px solid var(--line)}
+.qp .gate:first-child{border-top:0}
+.qp .gate__status{align-self:flex-start;flex:0 0 auto;min-width:96px;padding:3px 8px;border-radius:999px;text-align:center;font-size:11px;font-weight:800;color:var(--muted);box-shadow:inset 0 0 0 1.5px var(--line-strong);opacity:1}
+.qp .gate__status--PASS,.qp .gate__status--PASSED{background:#c8f531;color:#000;box-shadow:none}
+.qp .gate__status--FAIL,.qp .gate__status--FAILED{background:var(--ink);color:var(--bg);box-shadow:none}
+.qp .cov--STRUCTURED{background:rgb(200 245 49/.38)}
+.qp .cov--DERIVABLE{background:var(--surface-2)}
+.qp .cov--FILING_ONLY{background:transparent;box-shadow:inset 0 0 0 1px var(--line-strong)}
+.qp .cov--MISSING{opacity:.72}
+.qp .vu-scroll{border-radius:18px;background:var(--surface);padding:4px 6px}
+.qp .vu-controls{padding:14px;border-radius:22px;background:var(--surface);margin:14px 0}
+.qp .vu-controls label{min-width:0;flex:1 1 140px}
+.qp .vu-controls select{width:100%;min-height:44px;border-radius:12px}
+.qp .vu-controls .vu-check{flex-basis:100%;min-height:44px}
+.qp h2.q-h2{margin:28px 0 12px}

@@ -123,48 +123,41 @@ async function main() {
   const mitZweck = eintraege.filter((e) => e.zweck).length;
   const heute = new Date().toISOString().slice(0, 10);
 
-  const karten = eintraege.map((e) => `
-   <article class="contract">
-    <h2>${escape(e.name)}</h2>
-    <p class="meta">${e.intern ? "Fassung " + escape(e.intern) : "Fassung nicht angegeben"}${
+  /* DARSTELLUNG NACH APP-KONZEPT 2 (Owner-Freigabe 14.11.2026, nur Darstellung)
+
+     Dunkle Kopfkachel mit Zurück-Knopf und den zwei gemessenen Zahlen; der Erklärsatz steht einen Tipp entfernt im Fenster
+     (Knopf „i“). Jeder Vertrag ist eine Kachel mit Nutzerbegriff, Fassung und Status; Zweck, interner Name und der Weg zur
+     Datei öffnen sich im Fenster (VUUI.bindPops, Inhalt im <template> der Kachel). Ohne vu-ui.js klappt das Skript am
+     Seitenende alle Inhalte an Ort und Stelle aus - es geht nichts verloren. Bausteine und Farben aus assets/vu-ui.css;
+     lange Dateinamen und Fassungen brechen um (320 px ohne waagerechten Überlauf). */
+  const U = require(join(ROOT, "assets/vu-ui.js"));
+  const metaZeile = (e) => `${e.intern ? "Fassung " + escape(e.intern) : "Fassung nicht angegeben"}${
       e.status ? " · Status " + escape(e.status) : ""}${
-      e.label && e.label !== e.name ? " · interner Name: " + escape(e.label) : ""}</p>
-    <p>${e.zweck ? escape(e.zweck)
+      e.label && e.label !== e.name ? " · interner Name: " + escape(e.label) : ""}`;
+  const karten = eintraege.map((e, i) => `
+   <article class="contract vu-tap">
+    <h2>${escape(e.name)}</h2>
+    <p class="meta">${e.intern ? escape(e.intern) : "Fassung nicht angegeben"}</p>
+    <p class="chips">${e.status ? `<span class="chip">${escape(e.status)}</span>` : ""}<span class="chip${e.zweck ? " chip--on" : ""}">${e.zweck ? "Zweck in Worten" : "nur Felder"}</span></p>
+    <button type="button" class="open" aria-haspopup="dialog" data-vu-pop="mc-${i}" data-vu-pop-title="${escape(e.name)}"><span class="vu-visually-hidden">${escape(e.name)}: Zweck und Datei</span>${U.glyph("next", 16)}</button>
+    <template id="mc-${i}">
+     <p class="meta">${metaZeile(e)}</p>
+     <p>${e.zweck ? escape(e.zweck)
       : "Dieser Vertrag nennt keinen Zweck in Worten. Was er festlegt, steht in seinen Feldern."}</p>
-    <p class="meta"><a href="./${escape(e.datei)}">${escape(e.datei)} ansehen</a></p>
+     <p><a class="vu-btn vu-btn--line file" href="./${escape(e.datei)}">${escape(e.datei)} ansehen</a></p>
+    </template>
    </article>`).join("");
 
   const html = `<!doctype html>
 <html lang="de">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#ffffff">
 <!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie die Plattform-Navigation, Quant startet dunkel -->
-<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<script>(function(){var w="light";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
 <title>Methodik im Detail · Vision Universe®</title>
-<style>
- /* Hell und Dunkel folgen dem Schalter der Plattform-Navigation
-    (html[data-theme]), nicht der Systemeinstellung - sonst zeigte die
-    Seite ein anderes Schema als der Rest von Quant. Grundeinstellung: dunkel. */
- :root,html[data-theme=dark]{color-scheme:dark;--bg:#000000;--fg:#f4f5f1;--muted:#a6abb3;--line:#252a31;--card:#121519;--accent:#c8f531}
- html[data-theme=light]{color-scheme:light;--bg:#ffffff;--fg:#101216;--muted:#4a5058;--line:#e3e3e3;--card:#fff;--accent:#4a6a00}
- *{box-sizing:border-box}
- body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
- main{max-width:920px;margin:0 auto;padding:32px 16px 72px}
- .eyebrow{font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
- h1{font-size:1.9rem;margin:.2em 0 .4em;line-height:1.25}
- .lead{color:var(--muted);margin:0 0 28px}
- .contract{border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:14px 0;background:var(--card)}
- .contract h2{font-size:1.1rem;margin:0 0 6px}
- .contract p{margin:0 0 8px}
- .meta{color:var(--muted);font-size:.9rem}
- a{color:inherit}
- .contract a{color:var(--accent)}
- .back{display:inline-block;margin-top:28px;padding:10px 16px;border:1px solid var(--line);border-radius:10px;text-decoration:none}
- @media (max-width:640px){main{padding:24px 16px 56px}h1{font-size:1.55rem}}
-</style>
 <!-- DIE GEMEINSAME NAVIGATION GEHOERT IN DIE VORLAGE, NICHT IN EINEN
      NACHTRAG.
 
@@ -176,6 +169,40 @@ async function main() {
      ein Flattern, das niemandem auffaellt ausser dem Leser, der die
      Navigation mal hat und mal nicht. Deshalb steht sie jetzt hier. -->
 <link rel="stylesheet" href="/assets/site-navigation.css">
+<link rel="stylesheet" href="/assets/vu-ui.css?v=${U.VERSION}">
+<style>
+ /* Hell und Dunkel folgen dem Schalter der Plattform-Navigation (html[data-theme]); Farben nur aus assets/vu-ui.css:
+    Weiß, Schwarz, Neongrün und drei Graustufen. */
+ body{margin:0;background:var(--vu-bg,#fff)}
+ main{max-width:1040px;margin:0 auto;padding:10px var(--vu-gutter,16px) 120px}
+ html[data-vu-dock] main{padding-bottom:24px}
+ .mh{border-radius:22px;padding:16px}
+ :root:not([data-theme=dark]) .mh{background:#0e1013}
+ .mh-top{display:flex;align-items:center;gap:10px}
+ .mh-top .vu-ltag{flex:1;min-width:0}
+ .mh .vu-round{width:40px;height:40px;background:#262626;color:#fff;font:900 16px/1 var(--vu-font)}
+ .mh h1{margin:12px 0 0;font-size:34px;font-weight:900;letter-spacing:-.045em;line-height:1.02;text-wrap:balance}
+ .mh .vu-stats{margin-top:14px;max-width:420px}
+ .grid{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:14px}
+ @media (min-width:640px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mh{padding:22px}.mh h1{font-size:44px}}
+ @media (min-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+ @media (max-width:359px){.mh h1{font-size:29px}}
+ .contract{position:relative;display:flex;flex-direction:column;min-width:0;padding:14px 44px 14px 14px;cursor:default}
+ .contract h2{margin:0;font-size:16.5px;font-weight:900;letter-spacing:-.02em;line-height:1.2;overflow-wrap:anywhere}
+ .meta{margin:4px 0 0;font-size:12px;line-height:1.4;color:var(--vu-mute);overflow-wrap:anywhere}
+ .chips{display:flex;flex-wrap:wrap;gap:6px;margin:auto 0 0;padding-top:10px}
+ .chip{display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:999px;box-shadow:inset 0 0 0 1.5px var(--vu-hair);font-size:10.5px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--vu-mute);overflow-wrap:anywhere}
+ .chip--on{box-shadow:none;background:var(--vu-lime);color:#000}
+ .contract .open{position:absolute;inset:0;width:100%;min-height:0;padding:14px;border:0;border-radius:22px;background:none;color:var(--vu-mute);display:flex;justify-content:flex-end;align-items:flex-start;cursor:pointer}
+ .contract .open:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+ .contract--open{padding-right:14px}
+ .contract--open .open{display:none}
+ .vu-sheet-body .meta{margin:0 0 10px;font-size:13px}
+ .vu-sheet-body p{margin:0 0 12px;overflow-wrap:anywhere}
+ .file{max-width:100%;height:auto;min-height:44px;padding-block:10px;white-space:normal;overflow-wrap:anywhere;text-align:center}
+ .note{margin:22px 0 0;font-size:12.5px;line-height:1.5;color:var(--vu-mute)}
+ .note code{font-size:12px;overflow-wrap:anywhere}
+</style>
 </head>
 <body><vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
 <!-- §94: Jede Seite unter /quant/ bindet die gemeinsame Shell ein. Sie
@@ -184,18 +211,29 @@ async function main() {
      kategorisch: wer hier spaeter eine Zahl hinzufuegt, soll sie nicht
      unbeschriftet ausliefern koennen. -->
 <script src="/quant/ui/shell.js"></script>
-<main>
- <span class="eyebrow">Vision Universe® · Preview</span>
- <h1>Methodik im Detail</h1>
- <p class="lead">Jede Aussage im Produkt hängt an einem Vertrag: er legt fest, was gemessen wird, ab
+<main class="vu-ui" id="m-main">
+ <header class="mh vu-night">
+  <div class="mh-top"><a class="vu-round" href="/quant/#/methodik" aria-label="Zurück zur Methodik">${U.glyph("back", 18)}</a><span class="vu-ltag">Vision Universe® · Preview</span>
+   <button type="button" class="vu-round" aria-haspopup="dialog" aria-label="Was hier steht" data-vu-pop="m-lead" data-vu-pop-title="Methodik im Detail">i</button></div>
+  <h1>Methodik im Detail</h1>
+  ${U.stats([{ value: String(eintraege.length), label: "Verträge", tone: "lime" }, { value: String(mitZweck), label: "nennen ihren Zweck in Worten" }], { label: "Verträge dieser Vorschau" })}
+  <template id="m-lead"><p class="lead">Jede Aussage im Produkt hängt an einem Vertrag: er legt fest, was gemessen wird, ab
   wann es gilt und wann nichts gesagt wird. Hier stehen alle ${eintraege.length} Verträge, die diese
   Vorschau veröffentlicht — mit ihrer Fassung und dem Weg zur vollständigen Datei. ${mitZweck} von
-  ${eintraege.length} nennen ihren Zweck in Worten; bei den übrigen steht er in den Feldern.</p>
-${karten}
- <p class="meta">Erzeugt aus dem Verzeichnis <code>quant/methodology/</code> am ${heute}. Diese Seite
+  ${eintraege.length} nennen ihren Zweck in Worten; bei den übrigen steht er in den Feldern.</p></template>
+ </header>
+ <div class="grid">${karten}
+ </div>
+ ${U.next({ eyebrow: "Quant", title: "Zurück zur Methodik", href: "/quant/#/methodik" })}
+ <p class="note">Erzeugt aus dem Verzeichnis <code>quant/methodology/</code> am ${heute}. Diese Seite
   beschreibt nichts, was nicht in den Verträgen steht, und ist keine Anlageempfehlung.</p>
- <a class="back" href="/quant/#/methodik">Zurück zur Methodik</a>
 </main>
+<script src="/assets/vu-ui.js?v=${U.VERSION}"></script>
+<script>(function(){var m=document.getElementById("m-main"),U=window.VUUI;
+ if(U&&U.bindPops&&U.popup){U.bindPops(m);return;}
+ /* Ohne die Fenster-Bausteine (ältere vu-ui.js im Cache): alle Inhalte an Ort und Stelle zeigen. */
+ Array.prototype.forEach.call(m.querySelectorAll("template"),function(t){var d=document.createElement("div");d.innerHTML=t.innerHTML;t.parentNode.insertBefore(d,t);if(t.parentNode.classList)t.parentNode.classList.add("contract--open");});
+})();</script>
 </body>
 </html>
 `;
