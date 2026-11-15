@@ -2,7 +2,7 @@
  "schemaVersion": "vu-market-pulse-1.1.0",
  "methodVersion": "market-pulse-1.0.0",
  "configVersion": "vu-market-pulse-config-1.0.0",
- "generatedAt": "2026-11-14T21:22:54.908Z",
+ "generatedAt": "2026-11-15T00:22:57.635Z",
  "kind": "DESCRIPTIVE_MARKET_PULSE",
  "notes": {
   "quantMarketRegime": "FAIL_CLOSED - nicht verwendet, nicht imitiert",
@@ -105,7 +105,7 @@
   "disclaimer": "Einordnung des Marktumfelds aus festen Regeln – keine Anlageberatung, keine Kauf- oder Verkaufsempfehlung, keine Prognose."
  },
  "evaluation": {
-  "generatedAt": "2026-11-14T21:22:54.908Z",
+  "generatedAt": "2026-11-15T00:22:57.635Z",
   "dataAsOf": "2026-11-13",
   "previousDataAsOf": "2026-11-12",
   "schedule": {
@@ -705,11 +705,11 @@
     {
      "key": "BTC",
      "label": "Bitcoin",
-     "text": "−16,3 % · 0,7-fach typisch",
-     "change": -16.343,
-     "ratio": -0.67,
+     "text": "−21,9 % · 0,9-fach typisch",
+     "change": -21.934,
+     "ratio": -0.9,
      "notable": false,
-     "asOf": "2026-11-13",
+     "asOf": "2026-11-14",
      "kind": "PERCENT"
     },
     {
@@ -855,7 +855,7 @@
    "kind": "PRICE",
    "asOf": "2026-11-13",
    "last": 3877.34,
-   "observations": 1530,
+   "observations": 1529,
    "changes": {
     "1M": -5.7,
     "3M": -11.39,
@@ -879,7 +879,7 @@
     "median": 13.8,
     "p25": 10.5,
     "p75": 18.6,
-    "samples": 1509,
+    "samples": 1508,
     "from": "2021-11-14",
     "state": "HIGHER"
    },
@@ -896,7 +896,7 @@
    "kind": "PRICE",
    "asOf": "2026-11-13",
    "last": 48.6375,
-   "observations": 1530,
+   "observations": 1529,
    "changes": {
     "1M": -12.74,
     "3M": -24.85,
@@ -920,7 +920,7 @@
     "median": 25.7,
     "p25": 20.5,
     "p75": 34.2,
-    "samples": 1509,
+    "samples": 1508,
     "from": "2021-11-14",
     "state": "HIGHER"
    },
@@ -1105,13 +1105,13 @@
   },
   "BTCUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-13",
-   "last": 68241.391974,
-   "observations": 5532,
+   "asOf": "2026-11-14",
+   "last": 64121.079191,
+   "observations": 5533,
    "changes": {
-    "1M": -16.34,
-    "3M": 8.35,
-    "1Y": -31.45
+    "1M": -21.93,
+    "3M": 1.74,
+    "1Y": -32.18
    },
    "high52w": {
     "date": "2026-01-14",
@@ -1121,18 +1121,18 @@
     "date": "2026-06-30",
     "value": 58532.412697
    },
-   "rangePosition": 25.3,
-   "dist50": -15.27,
-   "dist200": -6.57,
+   "rangePosition": 14.6,
+   "dist50": -19.99,
+   "dist200": -12.14,
    "trend": "NEGATIVE",
-   "drawdown52w": -29.6,
-   "vol20": 43.94,
+   "drawdown52w": -33.85,
+   "vol20": 49.6,
    "volContext": {
     "median": 44.7,
     "p25": 33.8,
     "p75": 57.2,
     "samples": 1825,
-    "from": "2021-11-14",
+    "from": "2021-11-15",
     "state": "USUAL"
    },
    "roles": [
@@ -1140,19 +1140,19 @@
      "dimension": "CROSS_ASSET",
      "state": "OBSERVED",
      "stateLabel": "Auffällige Bewegungen",
-     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −16,3 % – das 0,7-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
+     "text": "Teil des Cross-Asset-Kontexts. Über einen Monat: −21,9 % – das 0,9-Fache einer typischen Monatsbewegung, also im üblichen Rahmen."
     }
    ]
   },
   "ETHUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-13",
-   "last": 1928.150356,
-   "observations": 4096,
+   "asOf": "2026-11-14",
+   "last": 1768.385923,
+   "observations": 4097,
    "changes": {
-    "1M": -20.3,
-    "3M": 2.53,
-    "1Y": -40.3
+    "1M": -27.53,
+    "3M": -5.99,
+    "1Y": -43.13
    },
    "high52w": {
     "date": "2026-01-14",
@@ -1162,31 +1162,31 @@
     "date": "2026-06-25",
     "value": 1565.338975
    },
-   "rangePosition": 20.3,
-   "dist50": -20.13,
-   "dist200": -10.21,
+   "rangePosition": 11.3,
+   "dist50": -26.18,
+   "dist200": -17.55,
    "trend": "NEGATIVE",
-   "drawdown52w": -42.52,
-   "vol20": 58.74,
+   "drawdown52w": -47.28,
+   "vol20": 67.23,
    "volContext": {
     "median": 60.2,
     "p25": 46.2,
     "p75": 77.8,
     "samples": 1825,
-    "from": "2021-11-14",
+    "from": "2021-11-15",
     "state": "USUAL"
    },
    "roles": []
   },
   "SOLUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-13",
-   "last": 78.115331,
-   "observations": 2235,
+   "asOf": "2026-11-14",
+   "last": 70.243475,
+   "observations": 2236,
    "changes": {
-    "1M": -25.02,
-    "3M": 3.66,
-    "1Y": -46.02
+    "1M": -33.33,
+    "3M": -6.73,
+    "1Y": -49.39
    },
    "high52w": {
     "date": "2026-01-14",
@@ -1196,52 +1196,52 @@
     "date": "2026-06-06",
     "value": 62.169687
    },
-   "rangePosition": 18.9,
-   "dist50": -24.78,
-   "dist200": -12.14,
+   "rangePosition": 9.6,
+   "dist50": -31.68,
+   "dist200": -20.93,
    "trend": "NEGATIVE",
-   "drawdown52w": -46.75,
-   "vol20": 50.76,
+   "drawdown52w": -52.11,
+   "vol20": 64.32,
    "volContext": {
-    "median": 78.4,
+    "median": 78.2,
     "p25": 61.7,
     "p75": 102.1,
     "samples": 1825,
-    "from": "2021-11-14",
-    "state": "LOWER"
+    "from": "2021-11-15",
+    "state": "USUAL"
    },
    "roles": []
   },
   "XRPUSD": {
    "kind": "PRICE",
-   "asOf": "2026-11-13",
-   "last": 1.009939,
-   "observations": 4091,
+   "asOf": "2026-11-14",
+   "last": 0.913988,
+   "observations": 4092,
    "changes": {
-    "1M": -24.07,
-    "3M": 1.13,
-    "1Y": -56.48
+    "1M": -31.46,
+    "3M": -8.75,
+    "1Y": -59.24
    },
    "high52w": {
     "date": "2026-01-05",
     "value": 2.347907
    },
    "low52w": {
-    "date": "2026-08-16",
-    "value": 0.992569
+    "date": "2026-11-14",
+    "value": 0.913988
    },
-   "rangePosition": 1.3,
-   "dist50": -23.77,
-   "dist200": -19.77,
+   "rangePosition": 0,
+   "dist50": -30.32,
+   "dist200": -27.26,
    "trend": "NEGATIVE",
-   "drawdown52w": -56.99,
-   "vol20": 53.52,
+   "drawdown52w": -61.07,
+   "vol20": 64.94,
    "volContext": {
     "median": 59.3,
     "p25": 45.1,
     "p75": 83.2,
     "samples": 1825,
-    "from": "2021-11-14",
+    "from": "2021-11-15",
     "state": "USUAL"
    },
    "roles": []
@@ -1797,7 +1797,7 @@
     "symbol": "XAUUSD",
     "asOf": "2026-11-13",
     "horizon": 26,
-    "samples": 1504
+    "samples": 1503
    },
    "OIL": {
     "symbol": "WTI",
@@ -1807,7 +1807,7 @@
    },
    "BTC": {
     "symbol": "BTCUSD",
-    "asOf": "2026-11-13",
+    "asOf": "2026-11-14",
     "horizon": 30,
     "samples": 3650
    },
