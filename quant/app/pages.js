@@ -416,50 +416,126 @@
       (back ? '<span class="vu-xs vu-mu qk-setup-b">' + U().esc(back) + "</span>" : "") + "</a>";
   }
 
+  /* ------------------------------------------------ App-Konzept 2, Quant „Heute“ (Owner 14./15.11.2026: „Prototyp muss 1:1
+     umgesetzt werden … immer basierend auf unseren Originaldaten“). Aufbau, Reihenfolge und Maße wie im Prototyp (#v-quant):
+     Reiter im Inhalt · Marktlage mit Bogen und Verlauf · Bei deinen Aktien · Heute im Markt · Faktor-Landkarte · Anlagestile ·
+     Screener · Forschung; danach die Blöcke der bisherigen Startseite im selben Design. Jede Zahl aus den vorhandenen Artefakten,
+     nichts wird neu gerechnet; Blöcke ohne Daten entfallen. */
+  var QP_TABS = [["Heute", "qp-heute"], ["Landkarte", "qp-karte"], ["Anlagestile", "qp-stile"], ["Screener", "qp-scr"], ["Forschung", "qp-for"]];
+  function qpEsc(s) { return U().esc(s); }
+  function qpSh(title, more, href, attrs) {
+    return '<div class="qp-sh"><h2>' + qpEsc(title) + "</h2>" + (more ? (href ? '<a class="qp-more" href="' + qpEsc(href) + '"' + (attrs || "") + ">" : '<button type="button" class="qp-more"' + (attrs || "") + ">") + "<span>" + qpEsc(more) + " ›</span>" + (href ? "</a>" : "</button>") : "") + "</div>";
+  }
+  function qpStock(ctx, t) { return ' data-vu-stock="' + qpEsc(t) + '" data-vu-stock-name="' + qpEsc(qName(ctx, t)) + '"'; }
+  /* Bogen wie im Prototyp (gauge(pct, 260)): Halbkreis, Spur dunkel, Anteil neongrün. */
+  function qpGauge(pct, w) {
+    var r = w / 2 - 12, c = Math.PI * r, p = Math.max(0, Math.min(100, pct)), d = "M12 " + w / 2 + "A" + r + " " + r + " 0 0 1 " + (w - 12) + " " + w / 2;
+    return '<svg class="qp-gauge" width="' + w + '" height="' + (w / 2 + 8) + '" viewBox="0 0 ' + w + " " + (w / 2 + 8) + '" aria-hidden="true"><path class="qp-gauge-t" d="' + d + '" fill="none" stroke-width="14" stroke-linecap="round"/>' +
+      '<path class="qp-gauge-v" d="' + d + '" fill="none" stroke-width="14" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + (c * (1 - p / 100)).toFixed(1) + '"/></svg>';
+  }
+  /* Verlaufsfläche wie im Prototyp (line(..., {fill:true, dot:false})): nur aus veröffentlichten Beobachtungen. */
+  function qpLine(vals, w, h) {
+    var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals), n = vals.length;
+    var xy = vals.map(function (v, i) { return [(i / (n - 1)) * w, h - 4 - ((v - mn) / (mx - mn || 1)) * (h - 8)]; });
+    var d = xy.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join("");
+    return '<svg class="qp-line" viewBox="0 0 ' + w + " " + h + '" preserveAspectRatio="none" width="100%" height="' + h + '" aria-hidden="true"><defs><linearGradient id="qp-lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".38"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>' +
+      '<path d="' + d + "L" + w + " " + h + "L0 " + h + 'Z" fill="url(#qp-lg)"/><path class="qp-line-s" d="' + d + '" fill="none" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
+  }
+  /* Säulen wie im Prototyp (kit.js bars(vals.map(x => x / max * 30 + 4), 86, 34)): jüngster Stichtag neongrün, die früheren hell. */
+  function qpBars(raw, w, h) {
+    var mx0 = Math.max.apply(null, raw) || 1, vals = raw.map(function (x) { return x / mx0 * 30 + 4; }), mx = Math.max.apply(null, vals), bw = w / vals.length;
+    return '<svg class="qp-bars" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true">' + vals.map(function (v, i) {
+      return '<rect class="' + (i === vals.length - 1 ? "is-now" : "") + '" x="' + (i * bw + bw * 0.14).toFixed(1) + '" y="' + (h - (v / mx) * h).toFixed(1) + '" width="' + (bw * 0.72).toFixed(1) + '" height="' + ((v / mx) * h).toFixed(1) + '" rx="3"/>';
+    }).join("") + "</svg>";
+  }
+  function qpWhenSeen(node, fn) {
+    if (!global.IntersectionObserver) return fn();
+    var io = new global.IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) { io.disconnect(); fn(); } }, { rootMargin: "120px 0px" });
+    io.observe(node);
+  }
+  function qpDays(a, b) { var x = Date.parse(a + "T12:00:00Z"), y = Date.parse(b + "T12:00:00Z"); return isFinite(x) && isFinite(y) ? Math.round((y - x) / 864e5) : null; }
+  function qpPct(share) { return Math.round(share * 100) + " %"; }
+  /* Karte „Bei deinen Aktien“ (Prototyp msg()): Eigenschaft, Wert vorher, Balken, Wert nachher. Ohne zwei Werte steht das Urteil. */
+  function qpWatchCard(ctx, c) {
+    var e = c.events.filter(function (x) { return X.deltaOf(x.explanation); })[0] || c.events[0], d = X.deltaOf(e.explanation), name = qName(ctx, c.ticker);
+    var body = '<span class="qp-wc-h">' + U().logo(c.ticker) + '<span><b class="qp-b8">' + qpEsc(name) + '</b><span class="qp-xs qp-mut">' + qpEsc(meldungText(e)) + "</span></span></span>";
+    if (d) {
+      var a = d.from, b = d.to, up = b > a;
+      body += '<span class="qp-wc-v"><span class="qp-num qp-mut" style="font-size:26px">' + a + '</span><span class="qp-wc-bar" aria-hidden="true"><span class="qp-bar"><i style="width:' + Math.max(a, b) + '%;background:#55595f"></i></span><span class="qp-bar qp-bar--o' + (up ? " is-up" : "") + '"><i style="width:' + Math.min(a, b) + '%"></i></span></span><span class="qp-num' + (up ? " qp-lc" : "") + '" style="font-size:34px">' + b + "</span></span>";
+    } else body += '<span class="qp-wc-v qp-wc-v--t">' + meldungVerdict(e) + "</span>";
+    return '<a class="qp-tile qp-tap qp-wc" href="' + qpEsc(X.routes.stock(c.ticker)) + '"' + qpStock(ctx, c.ticker) + ' aria-label="' + qpEsc(name + ": " + meldungText(e) + (d ? ", von " + d.from + " auf " + d.to : "")) + '">' + body + "</a>";
+  }
+  /* Faktor-Landkarte (Prototyp heat()): Helligkeit nach Wert, ab 63 dunkle Schrift. */
+  function qpHeatStyle(v) { return "background:rgba(200,245,49," + Math.max(0.06, Math.pow(v / 100, 1.6)).toFixed(2) + ")" + (v > 62 ? ";color:#101318" : ""); }
+  function qpStil(ctx, p, ix, tr) {
+    var count = ix && typeof ix.count === "number" ? ix.count : null, inN = tr ? (tr.entered || []).length : null, outN = tr ? (tr.exited || []).length : null;
+    var logos = ctx.commonFirst((ix && ix.tickers) || []).slice(0, 3);
+    return '<a class="qp-tile qp-tap qp-stil" href="' + qpEsc(X.routes.strategy(p.profileId)) + '" data-profile="' + qpEsc(p.profileId) + '"><span class="qp-num qp-lc" style="font-size:46px">' + (count == null ? "–" : count.toLocaleString("de-DE")) + '</span>' +
+      '<b class="qp-b8 qp-stil-t">' + qpEsc(VM.styleName(p.profileId, p.label)) + '</b><span class="qp-xs qp-mut qp-stil-s" title="' + qpEsc(p.plain || "") + '">' + qpEsc(p.plain || String(p.label || "").split(" · ")[0]) + "</span>" +
+      '<span class="qp-stil-f">' + logos.map(function (t) { return '<span class="qp-lg-s"' + qpStock(ctx, t) + ">" + U().logo(t) + "</span>"; }).join("") + '<span class="qp-f1"></span>' +
+      (inN != null ? '<span class="qp-pill qp-pill--dk" title="seit gestern neu · nicht mehr erfüllt">+' + inN + " · −" + outN + "</span>" : "") + "</span></a>";
+  }
+  function qpFb(label, v, href) {
+    var pp = v * 100, w = Math.min(100, Math.abs(pp) * 60), txt = (pp > 0 ? "+" : pp < 0 ? "−" : "") + Math.abs(pp).toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    return '<a class="qp-fb" href="' + qpEsc(href) + '"><span class="qp-fb-l">' + qpEsc(label) + '</span><span class="qp-fb-b" aria-hidden="true"><span>' + (pp < 0 ? '<i class="is-dn" style="width:' + w.toFixed(1) + '%"></i>' : "") + "</span><em></em><span>" + (pp > 0 ? '<i class="is-up" style="width:' + w.toFixed(1) + '%"></i>' : "") + '</span></span><b class="' + (pp > 0 ? "qp-lc" : "") + '">' + txt + "</b></a>";
+  }
+  function qpTabsMode(on) { var h = document.documentElement; if (on) h.setAttribute("data-vu-tabs", "inhalt"); else if (h.getAttribute("data-vu-tabs") === "inhalt") h.removeAttribute("data-vu-tabs"); }
+
   async function home(main, ctx) {
     if (!U()) return homeLegacy(main, ctx);
     var early = global.VUQuantBoot && global.VUQuantBoot.get("home", main);
     var page = early ? early.page : el("div", { class: "q-home vu-ui qv3 qk" });
-    page.classList.add("qk", "qk2");
+    page.classList.add("qk", "qk2", "qp");
     if (early) page.replaceChildren(early.intro); else main.append(page);
-    /* App-Konzept 2 (Owner-Freigabe 14.11.2026, Screen „Quant“): Suche, Marktlage als Zeiger (Details im Fenster), „Heute bei
-       Quant“ als drei Zahlenkacheln, eigene Aktien als Schiene mit Vorher/Nachher und Faktor-Landkarte, Schienen, Screener.
-       Frage und Profil-Satz bleiben im Dokument (Kopf, optisch ausgeblendet) und stehen im
-       Fenster „So arbeitet Quant“. Werte aus denselben Artefakten wie bisher (QX01), nichts wird neu gerechnet. */
+    /* Der Rahmen zeigt auf dem Quant-Start keine eigenen Reiter; die Seite trägt sie im Inhalt (Prototyp tabs2). */
+    qpTabsMode(true);
+    var offTabs = function () { if (location.hash && !/^#\/?$/.test(location.hash)) { qpTabsMode(false); global.removeEventListener("hashchange", offTabs); } };
+    global.addEventListener("hashchange", offTabs);
+    /* Frage und Profil-Satz bleiben im Dokument (Kopf, optisch ausgeblendet) und stehen im Fenster „So arbeitet Quant“. */
     if (!early) page.append(frag('<header class="qv3-intro"><p class="vu-ltag">Quant</p><h1 class="vu-lt">Was hat sich heute verändert?</h1><p class="vu-lead">Jede Aktie hat ein Profil aus ' + nWordHtml() + ' Eigenschaften. Quant meldet, wenn sich etwas ändert.</p></header>'));
+    var intro = page.querySelector(".qv3-intro"); if (intro) intro.classList.add("qp-intro");
+    var tabs = el("nav", { class: "qp-tabs", "aria-label": "Quant-Bereiche" });
+    tabs.innerHTML = QP_TABS.map(function (t, i) { return '<a class="qp-tab' + (i ? "" : " is-on") + '" href="#' + t[1] + '" data-qp-tab="' + t[1] + '"' + (i ? "" : ' aria-current="true"') + ">" + t[0] + "</a>"; }).join("");
+    tabs.addEventListener("click", function (e) {
+      var a = e.target.closest("[data-qp-tab]"); if (!a) return;
+      e.preventDefault();
+      tabs.querySelectorAll(".qp-tab").forEach(function (x) { var on = x === a; x.classList.toggle("is-on", on); if (on) x.setAttribute("aria-current", "true"); else x.removeAttribute("aria-current"); });
+      var target = document.getElementById(a.dataset.qpTab);
+      if (target) { var y = target.getBoundingClientRect().top + global.scrollY - tabs.getBoundingClientRect().height - (parseFloat(getComputedStyle(tabs).top) || 0) - 4; global.scrollTo({ top: a.dataset.qpTab === "qp-heute" ? 0 : Math.max(0, y), behavior: "smooth" }); }
+    });
+    page.append(tabs);
+    U().bindPops(page);
+    var regimeHost = el("div", { class: "qp-px", id: "qp-heute" }), watchHost = el("div"), todayHost = el("div", { class: "qk-today-host" }), mapHost = el("div", { id: "qp-karte" }),
+      stilHost = el("div", { id: "qp-stile" }), askHost = el("div", { id: "qp-scr" }), forHost = el("div", { id: "qp-for" }),
+      tiAlertHost = el("div"), newHost = el("div"), setupHost = el("div"), howHost = el("div"), findHost = el("div", { class: "qp-px qp-find" });
+    regimeHost.innerHTML = '<div class="qp-tile qp-skel">' + U().skeleton("card") + "</div>"; todayHost.setAttribute("aria-busy", "true");
+    page.append(regimeHost, watchHost, todayHost, mapHost, stilHost, askHost, forHost, findHost, tiAlertHost, newHost, setupHost, howHost);
+    /* Suche der bisherigen Startseite (Quant-eigene Aktiensuche): bleibt als Block unter den Prototyp-Bereichen. */
     var search = el("button", { type: "button", class: "vu-find qv3-search q-searchbar", "aria-label": "Aktie suchen, z. B. NVDA … und analysieren", onclick: ctx.openSearch });
     search.innerHTML = U().glyph("search", 18) + "<span>Aktie suchen, z. B. NVDA …</span><i aria-hidden=\"true\">" + U().glyph("spark", 18) + "</i>";
-    page.append(search);
-    var todayHost = el("div", { class: "qk-today-host" }), regimeHost = el("div", { class: "qv3-regime-host" }), newHost = el("div"), setupHost = el("div"), stilHost = el("div"), watchHost = el("div"), tiAlertHost = el("div");
-    var mapHost = el("div"), askHost = el("div");
-    regimeHost.innerHTML = U().skeleton("card"); todayHost.innerHTML = U().skeleton("card"); todayHost.setAttribute("aria-busy", "true");
-    page.append(regimeHost, todayHost, watchHost, mapHost, tiAlertHost, newHost, setupHost, stilHost, askHost);
-    U().bindPops(page);
-    /* Screener: die Fragen des einfachen Screeners als Einstieg (dieselben Chips wie dort, ohne Trefferzahl). */
-    askHost.append(frag(railHead("Screener", null, X.routes.screener(), null, null, "Öffnen") + '<div class="vu-box qk2-ask"><b>Welche Aktien suchst du?</b><span class="qk2-ask-c">' +
-      ["qualitaet", "momentum", "wachstum-qualitaet", "guenstig", "ruhig"].map(function (id) { return '<a class="vu-chip" href="' + U().esc(X.routes.screener("frage=" + id)) + '">' + U().esc(ASK_Q[id][0]) + "</a>"; }).join("") + "</span></div>"));
-    /* So arbeitet Quant: drei Kacheln, „Alle“ öffnet das Sheet mit Erklärung und Beleg. */
-    var how = frag(railHead("So arbeitet Quant", null, "#qk-how") + '<div class="qk-grid3">' + steps().map(function (st, i) { return '<div class="vu-box qk-step"><i class="qk-stepn">' + (i + 1) + "</i><b>" + st[0] + '</b><span class="vu-xs vu-mu">' + st[1] + "</span></div>"; }).join("") + "</div>");
-    page.append(how);
+    findHost.append(search);
+
+    /* So arbeitet Quant (bisheriger Start): drei Kacheln, „Alle“ öffnet das Fenster mit Erklärung und Beleg. */
+    howHost.append(frag(qpSh("So arbeitet Quant", "Alle", "#qk-how") + '<div class="qp-px qp-grid3">' + steps().map(function (st, i) { return '<div class="qp-tile qp-step"><i class="qp-stepn">' + (i + 1) + '</i><b class="qp-b8">' + st[0] + '</b><span class="qp-xs qp-mut">' + st[1] + "</span></div>"; }).join("") + "</div>"));
     if (ctx.api && ctx.api.getFactorEvidenceScreening) ctx.api.getFactorEvidenceScreening().then(refreshProfileWords, function () {});
     var sheet = frag(U().sheet("qv3-how-sheet", "So arbeitet Quant", '<p class="vu-ltag" style="margin:0">Drei Schritte, jeden Tag gleich</p><div class="vu-stack" style="margin-top:14px">' + steps().map(function (st, i) { return '<div class="qv3-sstep"><i>' + (i + 1) + "</i><div><b>" + ["Messen", "Melden", "Vergleichen"][i] + '</b><p class="vu-sm vu-mu">' + st[2] + "</p></div></div>"; }).join("") + "</div>" +
       '<div class="vu-box" style="margin-top:14px;display:flex;gap:10px;align-items:center">' + U().verdict("none", "Keine Empfehlung") + '<span class="vu-sm">Quant sagt nie „kaufen“ oder „verkaufen“.</span></div><div class="qv3-proof"></div><button type="button" class="vu-btn vu-btn--ink vu-btn--block" data-close style="margin-top:14px">Verstanden</button>')).firstElementChild;
     document.body.append(sheet);
     var proofHost = sheet.querySelector(".qv3-proof");
     proofHost.append(promiseList());
-    page.querySelector('a[href="#qk-how"]').addEventListener("click", function (e) { e.preventDefault(); U().openSheet(sheet); });
+    howHost.querySelector('a[href="#qk-how"]').addEventListener("click", function (e) { e.preventDefault(); U().openSheet(sheet); });
     sheet.querySelector("[data-close]").addEventListener("click", function () { U().closeSheet(sheet); });
     var off = function () { if (sheet.parentNode) sheet.remove(); global.removeEventListener("hashchange", off); };
     global.addEventListener("hashchange", off);
-    page.append(frag('<a class="vu-box vu-box--lime qv3-trust" href="' + U().esc(X.routes.method()) + '"><span class="qv3-trust-i">' + U().glyph("book", 18) + '</span><span><b>Warum kann ich dem vertrauen?</b><span class="vu-xs">Methodik, Daten, Grenzen offen erklärt</span></span>' + U().glyph("next", 18) + "</a>" +
-      '<p class="vu-xs vu-mu qk-foot">Quant ordnet ein und vergleicht. Keine Anlageempfehlung, keine Prognose, kein Kursziel. <span class="qk-asof"></span></p>'));
+    page.append(frag('<div class="qp-px"><a class="qp-tile qp-tap qp-trust qv3-trust" href="' + qpEsc(X.routes.method()) + '"><span class="qp-trust-i">' + U().glyph("book", 18) + '</span><span class="qp-f1"><b class="qp-b8">Warum kann ich dem vertrauen?</b><span class="qp-xs qp-mut">Methodik, Daten, Grenzen offen erklärt</span></span>' + U().glyph("next", 18) + "</a></div>" +
+      '<p class="qp-px qp-xs qp-mut qp-foot">Quant ordnet ein und vergleicht. Keine Anlageempfehlung, keine Prognose, kein Kursziel. <span class="qk-asof"></span></p>'));
 
     var watched = X.watch.list();
     var TI = global.VUTechnicalIntelligence;
     if (watched.length && TI && TI.getWatchlistAlerts) TI.getWatchlistAlerts(watched).then(function (a) {
       if (a.state !== "AVAILABLE" || !a.events.length) return;
-      tiAlertHost.replaceChildren(frag(railHead("Chartbild bei deinen Aktien", null, null, "Was der Kurs seit dem letzten Lauf im Chart getan hat. Szenarien sind Bedingungen, keine Prognose.") +
-        '<div class="vu-box qk-list">' + a.events.slice(0, 8).map(function (e) { return '<a class="qk-mr" href="' + U().esc(X.routes.chart(e.symbol)) + '">' + U().logo(e.symbol) + '<span><b>' + U().esc(qName(ctx, e.symbol)) + "</b><span>" + U().esc(e.text) + "</span></span></a>"; }).join("") + "</div>"));
+      tiAlertHost.replaceChildren(frag(qpSh("Chartbild bei deinen Aktien") + '<p class="qp-px qp-sub qp-sm qp-mut">Was der Kurs seit dem letzten Lauf im Chart getan hat. Szenarien sind Bedingungen, keine Prognose.</p><div class="qp-px"><div class="qp-tile qp-list">' +
+        a.events.slice(0, 8).map(function (e) { return '<a class="qp-row" href="' + qpEsc(X.routes.chart(e.symbol)) + '"' + qpStock(ctx, e.symbol) + ">" + U().logo(e.symbol) + '<span class="qp-f1"><b class="qp-b8">' + qpEsc(qName(ctx, e.symbol)) + '</b><span class="qp-xs qp-mut">' + qpEsc(e.text) + "</span></span></a>"; }).join("") + "</div></div>"));
     });
 
     var dataP = Promise.all([ctx.api.getSetupScreenIndex().catch(function () { return null; }), ctx.api.getStrategyIndex().catch(function () { return null; }),
@@ -472,71 +548,134 @@
     var ltag = page.querySelector(".qv3-intro .vu-ltag"); if (ltag && asOf) ltag.textContent = "Quant · Schluss " + deDay(asOf);
     var asOfHost = page.querySelector(".qk-asof"); if (asOfHost && asOf) asOfHost.textContent = "Stand " + X.dateDe(asOf) + ".";
 
-    /* Heute bei Quant: drei Zahlenkacheln (je mit dem Weg zu den Meldungen dieser Art), Stichtag als Marke am Titel. */
-    todayHost.setAttribute("aria-busy", "false");
-    if (radar && radar.state === "AVAILABLE") {
-      var sm = radar.summary, total = radar.cardCount;
-      todayHost.replaceChildren(frag('<div class="qk-rh"><div class="qk-rh-t"><h2>Heute bei Quant</h2><span class="qk-tag" title="Heute bei Quant · Stand ' + U().esc(deDay(radar.asOf)) + '">' + U().esc(deDay(radar.asOf)) + '</span><a href="' + U().esc(X.routes.radar()) + '">' + (typeof total === "number" ? total.toLocaleString("de-DE") + " Meldungen" : "Alle Meldungen") + U().glyph("next", 13) + "</a></div></div>" +
-        '<div class="qk2-stats">' + [[sm.newStrategyMatches, "neu in einem Anlagestil", "filter=stile"], [sm.confirmedSetups, "Setups bestätigt", "filter=setups"], [sm.riskRisingTickers, "Risiko steigt", "filter=faktoren"]].map(function (x) {
-          return U().stat(typeof x[0] === "number" ? x[0].toLocaleString("de-DE") : "–", x[1], { href: X.routes.radar(x[2]), tone: "night" }); }).join("") + "</div>"));
-      var proof = proofCard(radar);
-      if (proof) proofHost.append(proof);
-    } else todayHost.replaceChildren(frag(U().blank("Gerade keine Meldungen abrufbar. Die Tageszahlen erscheinen, sobald der Lauf veröffentlicht ist.")));
-
-    /* Markt heute: der Anteil über der 200-Tage-Linie als Zeiger mit der Lage; antippen öffnet alle Maße im Fenster. */
+    /* Marktlage: Anteil über der 200-Tage-Linie als Bogen, Lagewort, Verlauf aus den veröffentlichten Beobachtungen
+       (market-regime-v1.json → history); antippen öffnet alle Maße im Fenster (Prototyp-Fenster „markt“). */
     if (regime && regime.state === "AVAILABLE") {
       var mm = {}; (regime.measures || []).forEach(function (x) { mm[x.id] = x; });
       var above = mm.above200 && typeof mm.above200.share === "number" ? mm.above200.share : null;
       var seen = mm.above200 && typeof mm.above200.observed === "number" ? mm.above200.observed : null, lage = REGIME[regime.regime] || "Marktlage";
-      regimeHost.replaceChildren(frag(U().tap('<span class="vu-ltag">Markt heute' + (seen != null ? " · " + seen.toLocaleString("de-DE") + " Aktien" : "") + "</span>" +
-        (above != null ? U().gauge(above * 100, { text: Math.round(above * 100) + " %" }) : "") + '<b class="qk2-regime-t">' + U().esc(lage) + "</b>" +
-        (above != null ? '<span class="qk2-regime-s">über der 200-Tage-Linie</span>' : ""),
-        { tone: "night", cls: "qk2-regime", pop: "qk2-regime-tpl", popTitle: "Markt heute: " + lage, label: "Markt heute: " + lage + (above != null ? ", " + Math.round(above * 100) + " % über der 200-Tage-Linie" : "") + ". Alle Maße öffnen" }) +
-        '<template id="qk2-regime-tpl">' + (regime.matchedRule && regime.matchedRule.plain ? '<p class="vu-sm" style="margin:0">' + U().esc(regime.matchedRule.plain) + "</p>" : "") +
-        '<div class="qk2-measures">' + (regime.measures || []).filter(function (x) { return typeof x.share === "number"; }).map(function (x) {
-          return '<div class="qk2-measure"><span>' + U().esc(x.label) + '</span><b class="vu-num">' + Math.round(x.share * 100) + " %</b>" + U().meter(x.share * 100, { label: x.label, lime: x.id === "above200" }) + "</div>"; }).join("") + "</div>" +
-        '<p class="vu-xs vu-mu" style="margin:12px 0 0">Zustand heute, keine Prognose.' + (regime.asOf ? " Stand " + U().esc(X.dateDe(regime.asOf)) + "." : "") + '</p><a class="vu-btn vu-btn--line vu-btn--block" style="margin-top:14px" href="/quant/markt/">Marktdaten: Herkunft und Stand</a></template>'));
+      var pts = regime.history && regime.history.measure === "above200" && Array.isArray(regime.history.points) ? regime.history.points.filter(function (p) { return p && typeof p.share === "number" && /^\d{4}-\d{2}-\d{2}$/.test(p.asOf || "") && p.asOf <= regime.asOf; }) : [];
+      if (above != null && pts.length && pts[pts.length - 1].asOf !== regime.asOf) pts = pts.concat([{ asOf: regime.asOf, share: above }]);
+      var first = pts.length >= 2 ? pts[0] : null, ago = first ? qpDays(first.asOf, regime.asOf) : null;
+      var since = first && ago > 0 ? " · vor " + ago + " Tagen " + (Math.round(first.share * 100) === Math.round(above * 100) ? "ebenfalls " : "noch ") + qpPct(first.share) : "";
+      var sheetBody = '<b class="qp-sh-lage">' + qpEsc(lage) + '</b><p class="qp-sm qp-mut" style="margin:2px 0 0">' + (regime.asOf ? "Stand " + qpEsc(X.dateDe(regime.asOf)) : "") + (seen != null ? " · " + seen.toLocaleString("de-DE") + " Aktien" : "") + "</p>" +
+        (above != null ? '<div class="qp-gwrap qp-gwrap--sheet">' + qpGauge(above * 100, 280) + '<span class="qp-num qp-gnum" style="font-size:50px">' + qpPct(above) + '</span></div><p class="qp-sm qp-sec" style="text-align:center;margin:4px 0 0">der US-Aktien liegen über ihrer 200-Tage-Linie</p>' : "") +
+        (regime.measures || []).filter(function (x) { return typeof x.share === "number" && x.id !== "above200"; }).map(function (x) {
+          return '<div class="qp-ms qk2-measure"><div class="qp-ms-h"><b>' + qpEsc(x.label) + "</b><b>" + qpPct(x.share) + '</b></div><div class="qp-bar" style="height:10px"><i style="width:' + Math.round(x.share * 100) + '%"></i></div></div>'; }).join("") +
+        (regime.matchedRule && regime.matchedRule.plain ? '<div class="qp-tile qp-ms-rule"><span class="qp-eb">Warum „' + qpEsc(lage) + "“</span><p class=\"qp-sm\" style=\"margin:8px 0 0\">" + qpEsc(regime.matchedRule.plain) + "</p></div>" : "") +
+        '<p class="qp-xs qp-mut" style="margin:12px 0 0">Zustand heute, keine Prognose.' + (pts.length >= 2 ? " Der Verlauf zeigt den Anteil, wie er an " + pts.length + " Stichtagen veröffentlicht wurde." : "") + '</p><a class="qp-btn" href="/quant/markt/">Marktdaten: Herkunft und Stand</a>';
+      regimeHost.innerHTML = '<button type="button" class="qp-tile qp-tap qp-markt qk2-regime" aria-haspopup="dialog" data-vu-pop="qk2-regime-tpl" aria-label="' + qpEsc("Marktlage: " + lage + (above != null ? ", " + qpPct(above) + " über der 200-Tage-Linie" : "") + since + ". Alle Maße öffnen") + '">' +
+        '<span class="qp-eb">Marktlage' + (seen != null ? " · " + seen.toLocaleString("de-DE") + " Aktien" : "") + "</span>" +
+        (above != null ? '<span class="qp-gwrap vu-gauge">' + qpGauge(above * 100, 260) + '<span class="qp-num qp-gnum">' + qpPct(above) + "</span></span>" : "") +
+        '<b class="qp-lage">' + qpEsc(lage) + "</b>" + (above != null ? '<span class="qp-sm qp-mut qp-b7">über der 200-Tage-Linie' + qpEsc(since) + "</span>" : "") +
+        (pts.length >= 2 ? '<span class="qp-mline">' + qpLine(pts.map(function (p) { return p.share; }), 402, 56) + "</span>" : "") + "</button>" +
+        '<template id="qk2-regime-tpl"><div class="qp-sheet">' + sheetBody + "</div></template>";
     } else regimeHost.replaceChildren();
+
+    /* Bei deinen Aktien: je beobachteter Aktie mit Meldung eine Karte; nennt die Meldung zwei Werte, stehen sie mit Balken. */
+    if (hits.length) watchHost.replaceChildren(frag(qpSh("Bei deinen Aktien", hits.length.toLocaleString("de-DE") + " neu", X.routes.radar("filter=beobachtet")) +
+      '<div class="qp-rail" role="list" aria-label="Deine Aktien mit Meldung">' + hits.slice(0, 8).map(function (c) { return '<div role="listitem">' + qpWatchCard(ctx, c) + "</div>"; }).join("") + "</div>"));
+
+    /* Heute im Markt: drei Zahlen aus der Meldungs-Projektion (radar-home-v1), je mit dem Weg zu den Meldungen dieser Art. */
+    todayHost.setAttribute("aria-busy", "false");
+    if (radar && radar.state === "AVAILABLE") {
+      var sm = radar.summary || {}, total = radar.cardCount;
+      todayHost.replaceChildren(frag(qpSh("Heute im Markt", typeof total === "number" ? total.toLocaleString("de-DE") + " Meldungen" : "Alle Meldungen", X.routes.radar()) +
+        '<div class="qp-px qp-today">' + [[sm.newStrategyMatches, "neu in einem Anlagestil", "filter=stile", "newStrategyMatches"], [sm.newHighs, "neue Jahreshochs", "filter=hoch", "newHighs"], [sm.riskRisingTickers, "Risiko steigt", "filter=faktoren", "riskRisingTickers"]].map(function (x) {
+          return '<a class="qp-tile qp-tap qp-stat vu-stat" href="' + qpEsc(X.routes.radar(x[2])) + '"><span class="qp-num qp-lc" style="font-size:34px">' + (typeof x[0] === "number" ? x[0].toLocaleString("de-DE") : "–") + '</span><span class="qp-xs qp-mut qp-b7">' + qpEsc(x[1]) + '</span><span class="qp-stat-b" data-k="' + x[3] + '"></span></a>'; }).join("") + "</div>"));
+      /* Balken unter der Zahl (Prototyp bars(…, 86, 34)): dieselbe Zahl an den vorigen veröffentlichten Stichtagen, aus den
+         Tagessnapshots des Radars; erst geladen, wenn die Kacheln in Sicht kommen. Unter drei Stichtagen kein Verlauf. */
+      var prevDays = radar.sources && radar.sources.setup && Array.isArray(radar.sources.setup.snapshots) ? radar.sources.setup.snapshots.filter(function (d) { return typeof d === "string" && d < radar.asOf; }).slice(-4) : [];
+      if (prevDays.length >= 2 && ctx.api.getRadarDayCounts) qpWhenSeen(todayHost, function () {
+        ctx.api.getRadarDayCounts(prevDays).then(function (days) {
+          var series = (days || []).filter(function (d) { return d && d.asOf < radar.asOf; }).concat([{ asOf: radar.asOf, newStrategyMatches: sm.newStrategyMatches, newHighs: sm.newHighs, riskRisingTickers: sm.riskRisingTickers }]);
+          if (series.length < 3) return;
+          todayHost.querySelectorAll(".qp-stat-b[data-k]").forEach(function (b) {
+            var k = b.dataset.k, vals = series.map(function (d) { return d[k]; });
+            if (vals.some(function (v) { return typeof v !== "number"; })) return;
+            b.innerHTML = qpBars(vals, 86, 34) + '<span class="vu-visually-hidden">Verlauf der letzten ' + vals.length + " Stichtage: " + vals.map(function (v) { return v.toLocaleString("de-DE"); }).join(", ") + "</span>";
+          });
+        }, function () {});
+      });
+      var proof = proofCard(radar);
+      if (proof) proofHost.append(proof);
+    } else todayHost.replaceChildren(frag(qpSh("Heute im Markt") + '<div class="qp-px">' + U().blank("Gerade keine Meldungen abrufbar. Die Tageszahlen erscheinen, sobald der Lauf veröffentlicht ist.") + "</div>"));
+
+    /* Faktor-Landkarte: das Profil der beobachteten Aktien (dieselben Werte wie im Profil der Aktienseite). Antippen erklärt den Wert. */
+    var mapT = watched.filter(function (t) { return profileOf(rowBy, t); }).slice(0, 7), openF = VM.PROFILE_ORDER.filter(VM.isOpen);
+    if (mapT.length) {
+      mapHost.replaceChildren(frag(qpSh("Deine Faktor-Landkarte", "Erklärung", X.routes.method("faktoren")) + '<div class="qp-px"><div class="qp-tile qp-map" role="table" aria-label="Profil deiner beobachteten Aktien" style="--qp-n:' + mapT.length + '">' +
+        '<div class="qp-map-r" role="row"><span role="columnheader"><span class="vu-visually-hidden">Eigenschaft</span></span>' + mapT.map(function (t) { return '<a class="qp-map-h" role="columnheader" href="' + qpEsc(X.routes.stock(t)) + '"' + qpStock(ctx, t) + ' aria-label="' + qpEsc(qName(ctx, t)) + '">' + U().logo(t) + "</a>"; }).join("") + "</div>" +
+        openF.map(function (id) {
+          return '<div class="qp-map-r" role="row"><span class="qp-map-l" role="rowheader">' + qpEsc(VM.FACTORS[id].name) + "</span>" + mapT.map(function (t) {
+            var v = profileOf(rowBy, t)[id];
+            return typeof v === "number" ? '<a class="qp-map-c" role="cell" href="' + qpEsc(X.routes.stock(t)) + '"' + qpStock(ctx, t) + ' data-t="' + qpEsc(t) + '" data-f="' + qpEsc(id) + '" data-v="' + Math.round(v) + '" style="' + qpHeatStyle(v) + '" aria-label="' + qpEsc(qName(ctx, t) + ", " + VM.FACTORS[id].name + " " + Math.round(v) + ": erklären") + '">' + Math.round(v) + "</a>"
+              : '<span class="qp-map-c is-na" role="cell" aria-label="' + qpEsc(qName(ctx, t) + ", " + VM.FACTORS[id].name + ": kein Wert veröffentlicht") + '">–</span>';
+          }).join("") + "</div>";
+        }).join("") + '<div class="qp-map-n qp-xs qp-mut qp-b7"><span>Wert 0–100 unter US-Aktien</span><span>hell = stark</span></div></div></div>'));
+      mapHost.addEventListener("click", function (e) {
+        var b = e.target.closest(".qp-map-c[data-f]"); if (!b || e.metaKey || e.ctrlKey || e.shiftKey) return;
+        e.preventDefault();
+        var f = VM.FACTORS[b.dataset.f], v = +b.dataset.v, t = b.dataset.t;
+        U().popup({ id: "qp-faktor-sheet", title: "", cls: "qp-sheet", body: '<h2 class="qp-sh-t">Was heißt „' + qpEsc(f.name) + " " + v + "“?</h2>" +
+          '<p class="qp-sm qp-sec" style="margin:8px 0 0">' + qpEsc(qName(ctx, t)) + ": " + qpEsc(f.name) + " " + v + " von 100 · Stufe „" + qpEsc(U().PROFILE.stage(v)) + "“. 50 ist die Mitte, höher heißt stärker.</p>" +
+          '<div class="qp-bar qp-bar--l" style="height:10px;margin-top:14px"><i style="width:' + v + '%"></i></div><div class="qp-map-n qp-xs qp-mut qp-b7"><span>0</span><span>50 = Mitte</span><span class="qp-lc">' + v + "</span></div>" +
+          '<span class="qp-eb" style="display:block;margin-top:16px">Daraus berechnet</span><p class="qp-sm" style="margin:6px 0 0">' + qpEsc(f.measures || "") + "</p>" + (f.higher ? '<p class="qp-sm qp-mut" style="margin:6px 0 0">' + qpEsc(f.higher) + "</p>" : "") +
+          '<a class="qp-btn" href="' + qpEsc(X.routes.stock(t)) + '">In Quant öffnen</a>' });
+      });
+    } else mapHost.replaceChildren(frag(qpSh("Deine Faktor-Landkarte", "Erklärung", X.routes.method("faktoren")) + '<div class="qp-px"><a class="qp-tile qp-tap qp-empty" href="' + qpEsc(X.routes.stocks()) + '"><b class="qp-b8">Noch keine Aktien gemerkt</b><span class="qp-sm qp-mut">Merke dir Aktien auf ihrer Seite mit „Beobachten“, dann steht hier ihr Profil nebeneinander.</span></a></div>'));
 
     var labels = {}, conds = {};
     ((profiles && profiles.contract && profiles.contract.profiles) || []).forEach(function (p) { labels[p.profileId] = p.label; conds[p.profileId] = p; });
     var trBy = {}; ((stratIdx && stratIdx.historicalEvidence && stratIdx.historicalEvidence.transitions) || []).forEach(function (t) { trBy[t.profileId] = t; });
-    /* Neu in einem Anlagestil: je Stil die bekanntesten neuen Treffer als Profil-Poster. */
-    if (stratIdx && stratIdx.state === "AVAILABLE") {
-      var fresh = [];
-      VM.STYLE_ORDER.forEach(function (id) { var t = trBy[id]; if (t) ctx.commonFirst(t.entered || []).slice(0, 2).forEach(function (tk) { fresh.push([tk, id]); }); });
-      var newCount = radar && radar.summary ? radar.summary.newStrategyMatches : fresh.length;
-      if (fresh.length) newHost.replaceChildren(frag(railHead("Neu in einem Anlagestil", newCount, X.routes.radar("filter=stile"), "Seit gestern erfüllt die Aktie alle Regeln eines Stils.") +
-        rail(fresh.slice(0, 10).map(function (x) { return qPoster(ctx, rowBy, x[0], VM.styleName(x[1], labels[x[1]])); }), "Neu in einem Anlagestil") + U().profileLegend()));
-    }
-    /* Setup bestätigt: zwei Karten, Zone und Ungültig-Marke laut Methode, Rückblick mit Etikett. */
-    /* Die Startseite liest nur die Projektion (radar-home-v1), nicht den ganzen Radar. */
-    var confirmed = radar && radar.state === "AVAILABLE" ? (radar.cards || []).filter(function (c) { return c.events && c.events.some(function (e) { return e.eventType === "SETUP_CONFIRMED"; }); }) : [];
-    var conf = setupIdx && setupIdx.state === "AVAILABLE" ? (setupIdx.states || []).filter(function (st) { return st.state === "CONFIRMED" && typeof st.count === "number"; })[0] : null;
-    if (confirmed.length) setupHost.replaceChildren(frag(railHead("Setup bestätigt", conf ? conf.count : null, X.routes.screener("frage=setups"), "Der Chart zeigt eine Lage mit klaren Regeln.") +
-      '<div class="vu-stack">' + confirmed.slice(0, 2).map(function (c) { return qSetupCard(ctx, c); }).join("") + "</div>"));
-    /* Anlagestile als Schiene. */
+    /* Anlagestile als Schiene: Trefferzahl heute, Stil, Satz, Logos, „seit gestern +N · −N“. */
     if (stratIdx && stratIdx.state === "AVAILABLE") {
       var ixBy = {}; (stratIdx.profiles || []).forEach(function (p) { ixBy[p.profileId] = p; });
       var cards = VM.STYLE_ORDER.filter(function (id) { return conds[id] && ixBy[id] && ixBy[id].availability && ixBy[id].availability.state === "AVAILABLE"; });
-      if (cards.length) stilHost.replaceChildren(frag(railHead("Anlagestile", cards.length, X.routes.strategies(), "Jeder Stil ist eine feste Regel. Quant prüft sie täglich.") +
-        rail(cards.map(function (id) { return stilCard(ctx, conds[id], ixBy[id], trBy[id]); }), "Anlagestile")));
+      if (cards.length) stilHost.replaceChildren(frag(qpSh("Anlagestile", "Alle " + cards.length, X.routes.strategies()) +
+        '<div class="qp-rail" role="list" aria-label="Anlagestile">' + cards.map(function (id) { return '<div role="listitem">' + qpStil(ctx, conds[id], ixBy[id], trBy[id]) + "</div>"; }).join("") + "</div>"));
+      /* Neu in einem Anlagestil (bisheriger Start): je Stil die bekanntesten neuen Treffer als Profil-Poster. */
+      var fresh = [];
+      VM.STYLE_ORDER.forEach(function (id) { var t = trBy[id]; if (t) ctx.commonFirst(t.entered || []).slice(0, 2).forEach(function (tk) { fresh.push([tk, id]); }); });
+      var newCount = radar && radar.summary ? radar.summary.newStrategyMatches : fresh.length;
+      if (fresh.length) newHost.replaceChildren(frag(qpSh("Neu in einem Anlagestil", "Alle " + (typeof newCount === "number" ? newCount.toLocaleString("de-DE") : ""), X.routes.radar("filter=stile")) + '<p class="qp-px qp-sub qp-sm qp-mut">Seit gestern erfüllt die Aktie alle Regeln eines Stils.</p>' +
+        '<div class="qp-rail qp-posters" role="list" aria-label="Neu in einem Anlagestil">' + fresh.slice(0, 10).map(function (x) { return '<div role="listitem">' + qPoster(ctx, rowBy, x[0], VM.styleName(x[1], labels[x[1]])).replace('<a class="qk-pc"', '<a class="qk-pc qp-tile"' + qpStock(ctx, x[0])) + "</div>"; }).join("") + "</div>" + '<div class="qp-px">' + U().profileLegend() + "</div>"));
     }
-    /* Beobachtete Aktien mit Meldung: eine Kachel je Aktie; nennt die Meldung zwei Werte, stehen sie als Vorher/Nachher-Balken. */
-    if (hits.length) watchHost.replaceChildren(frag(railHead("Deine Aktien", hits.length, X.routes.radar("filter=beobachtet"), hits.length + " von " + watched.length + " beobachteten Aktien melden eine Veränderung.") +
-      U().rail(hits.slice(0, 8).map(function (c) {
-        var e = c.events[0], d = X.deltaOf(e.explanation);
-        return U().tap('<span class="qk2-wt-h">' + U().logo(c.ticker) + "<span><b>" + U().esc(qName(ctx, c.ticker)) + '</b><span class="vu-xs vu-mu">' + U().esc(meldungText(e)) + "</span></span></span>" +
-          (d ? U().delta(d.from, d.to, { label: meldungText(e) }) : "") + '<span class="qk2-wt-v">' + meldungVerdict(e) + "</span>", { href: X.routes.stock(c.ticker), cls: "qk2-wt" });
-      }), { label: "Deine Aktien mit Meldung", width: 236 })));
-    /* Faktor-Landkarte: das Profil der beobachteten Aktien als Raster (dieselben Werte wie im Profil der Aktienseite). */
-    var mapT = watched.filter(function (t) { return profileOf(rowBy, t); }).slice(0, 7);
-    if (mapT.length) {
-      var openF = VM.PROFILE_ORDER.filter(VM.isOpen);
-      mapHost.replaceChildren(frag(railHead("Deine Faktor-Landkarte", null, X.routes.method("faktoren"), null, null, "Erklärung") + '<div class="vu-box qk2-map">' +
-        U().heat(mapT.map(function (t) { return { html: '<a href="' + U().esc(X.routes.stock(t)) + '" aria-label="' + U().esc(qName(ctx, t)) + '">' + U().logo(t) + "</a>" }; }),
-          openF.map(function (id) { return { label: VM.FACTORS[id].name, values: mapT.map(function (t) { return profileOf(rowBy, t)[id]; }) }; }),
-          { label: "Profil deiner beobachteten Aktien", note: ["0 bis 100, höher heißt besser", "grün = stark"] }) + "</div>"));
+    /* Setup bestätigt (bisheriger Start): zwei Karten, Zone und Ungültig-Marke laut Methode, Rückblick mit Etikett. */
+    var confirmed = radar && radar.state === "AVAILABLE" ? (radar.cards || []).filter(function (c) { return c.events && c.events.some(function (e) { return e.eventType === "SETUP_CONFIRMED"; }); }) : [];
+    var conf = setupIdx && setupIdx.state === "AVAILABLE" ? (setupIdx.states || []).filter(function (st) { return st.state === "CONFIRMED" && typeof st.count === "number"; })[0] : null;
+    if (confirmed.length) setupHost.replaceChildren(frag(qpSh("Setup bestätigt", conf ? "Alle " + conf.count.toLocaleString("de-DE") : "Alle", X.routes.screener("frage=setups")) + '<p class="qp-px qp-sub qp-sm qp-mut">Der Chart zeigt eine Lage mit klaren Regeln.</p>' +
+      '<div class="qp-px vu-stack">' + confirmed.slice(0, 2).map(function (c) { return qSetupCard(ctx, c).replace('<a class="vu-box qk-setup"', '<a class="vu-box qk-setup qp-tile"' + qpStock(ctx, c.ticker)); }).join("") + "</div>"));
+
+    /* Screener: eine Frage als Satz mit zwei Eigenschaften (Prototyp), Treffer gezählt wie im Screener (factorHits zählt bei großen
+       Treffermengen genauso: veröffentlichte Faktorwerte der Screening-Datei, Wert ab 70) – aus den schon geladenen Zeilen, ohne
+       die Screener-Abfrage (Ladebudget des Starts); darunter die Fragen des einfachen Screeners als Einstieg. */
+    var askF = ["profitability", "value"], askHref = X.routes.screener("faktoren=" + askF.join(",") + "&min=" + SIMPLE_THRESHOLD + "&max=100");
+    var hl = function (t) { return '<mark class="qp-hl">' + qpEsc(t) + "</mark>"; };
+    askHost.replaceChildren(frag(qpSh("Screener", "Öffnen", X.routes.screener()) + '<div class="qp-px"><a class="qp-tile qp-tap qp-ask" href="' + qpEsc(askHref) + '"><p class="qp-ask-q">Zeig mir Aktien, die ' + hl("gut verdienen") + " und " + hl("günstig") + ' sind.</p><span class="qp-ask-f"><span class="qp-num qp-ask-n">–</span><span class="qp-ask-l"></span></span></a>' +
+      '<div class="qp-chips" role="list" aria-label="Weitere Fragen">' + ["qualitaet", "momentum", "wachstum-qualitaet", "guenstig", "ruhig"].map(function (id) { return '<a role="listitem" class="qp-tab" href="' + qpEsc(X.routes.screener("frage=" + id)) + '">' + qpEsc(ASK_Q[id][0]) + "</a>"; }).join("") + "</div></div>"));
+    var askRows = Object.keys(rowBy || {}).map(function (t) { return rowBy[t]; }).filter(function (row) { return askF.every(function (id) { var v = row[FIELD(id)]; return typeof v === "number" && v >= SIMPLE_THRESHOLD && v <= 100; }); });
+    if (rowBy && Object.keys(rowBy).length) {
+      askRows.sort(function (x, y) { return (y[FIELD(askF[0])] || 0) - (x[FIELD(askF[0])] || 0); });
+      askHost.querySelector(".qp-ask-n").innerHTML = askRows.length.toLocaleString("de-DE") + ' <span class="qp-sm qp-mut">Treffer</span>';
+      askHost.querySelector(".qp-ask").setAttribute("title", "Verdient gut ab " + SIMPLE_THRESHOLD + " und Preis im Branchenvergleich ab " + SIMPLE_THRESHOLD + " (von 100)");
+      askHost.querySelector(".qp-ask-l").innerHTML = ctx.commonFirst(askRows.map(function (x) { return x.ticker; }).filter(Boolean)).slice(0, 3).map(function (t) { return '<span class="qp-lg-s"' + qpStock(ctx, t) + ">" + U().logo(t) + "</span>"; }).join("");
+    } else askHost.querySelector(".qp-ask-f").remove();
+
+    /* Forschung: dieselben Zahlen wie #/forschung („Marktweit geprüft“, signal-backtest-v1), immer mit Etikett. */
+    /* Erst laden, wenn der Bereich in Sichtweite kommt (Rechenwerk der Studie und Studie, ~180 KB): der Start bleibt im Ladebudget. */
+    function loadFor() { return ctx.loadBacktest().then(function () { return ctx.api.getBacktest("signal"); }).then(drawFor, function () {}); }
+    if (global.IntersectionObserver) { var io = new global.IntersectionObserver(function (en) { if (en.some(function (x) { return x.isIntersecting; })) { io.disconnect(); loadFor(); } }, { rootMargin: "120px 0px" }); io.observe(forHost); } else loadFor();
+    function drawFor(signal) {
+      if (!signal || signal.state !== "AVAILABLE" || !global.QXEvidence) return;
+      var rules = (signal.rules || []).filter(function (x) { return x.horizons && x.horizons.m6 && x.horizons.m6.baseRate && typeof x.horizons.m6.baseRate.deltaPositiveShare === "number"; })
+        .sort(function (a, b) { return b.horizons.m6.baseRate.deltaPositiveShare - a.horizons.m6.baseRate.deltaPositiveShare; });
+      if (!rules.length) return;
+      var edge = rules.filter(function (x) { var br = x.horizons.m6.baseRate; return ["CLEAR", "MODERATE", "SMALL"].indexOf(global.QXEvidence.edgeOf({ deltaPositiveShare: br.deltaPositiveShare, deltaCi: br.ci }).id) >= 0; }).length;
+      var since = signal.source && /^\d{4}/.test(signal.source.from || "") ? String(signal.source.from).slice(0, 4) : null;
+      forHost.replaceChildren(frag(qpSh("Forschung" + (since ? ": getestet seit " + since : "")) + '<div class="qp-px"><div class="qp-tile qp-for"><div class="qp-xs qp-mut qp-b7">Anteil im Plus nach 6 Monaten, Prozentpunkte zum Markt derselben Wochen</div><div class="qp-fbs">' +
+        rules.map(function (x) { return qpFb(global.QXEvidence.RULE_LABEL[x.id] || x.id, x.horizons.m6.baseRate.deltaPositiveShare, X.routes.backtest(x.id)); }).join("") +
+        '</div><div class="qp-for-f"><span class="qp-pill qp-pill--ol">Forschung, nicht zertifiziert</span><span class="qp-pill qp-pill--dk">' + edge + " von " + rules.length + " mit Vorteil</span></div></div></div>"));
     }
   }
 

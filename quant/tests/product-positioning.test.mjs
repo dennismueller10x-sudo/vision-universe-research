@@ -43,26 +43,35 @@ test("Vier Kernversprechen, jedes mit einem Weg zu der Funktion, die es einloest
   for (const t of titles) assert.ok(doc.includes(t), "Versprechen fehlt im Dokument: " + t);
 });
 
-/* Konzept Quant „Ein Profil je Aktie“ (QX01, docs/design/quant-2026-11): Frage, ein Satz zum Profil, Suche, „Heute bei Quant“
-   als Zahlenkacheln, Markt als Zeiger (App-Konzept 2), Schienen (neu in einem Anlagestil, Setup bestätigt, Anlagestile), „So arbeitet
-   Quant“, Vertrauen, Hinweis. Entfallen: sechs Zahlenkacheln, Pro-Kachel, fünf Navigationskarten.
+/* App-Konzept 2, Quant „Heute“ (Owner 14./15.11.2026: „Prototyp muss 1:1 umgesetzt werden … immer basierend auf unseren
+   Originaldaten“): Reiter im Inhalt, dann die Blöcke des Prototyps #v-quant in seiner Reihenfolge – Marktlage (Bogen, Verlauf aus den
+   veröffentlichten Beobachtungen, alle Maße im Fenster), Bei deinen Aktien, Heute im Markt, Faktor-Landkarte, Anlagestile, Screener,
+   Forschung –, danach die Blöcke der bisherigen Startseite (Suche, Chartbild, Neu in einem Anlagestil, Setup bestätigt, So arbeitet
+   Quant, Vertrauen, Hinweis). Frage und Profil-Satz bleiben im Kopf (optisch ausgeblendet).
    Die bisherige Startseite bleibt als homeLegacy (ohne VUUI) und behaelt ihre Pruefung unten. */
-test("QX01 · Home: Frage, Profil-Satz, Suche, Heute bei Quant, Markt, Schienen, So arbeitet Quant, Vertrauen", () => {
+test("App-Konzept 2 · Quant Heute: Reiter, Prototyp-Blöcke in Reihenfolge, dann die bisherigen Blöcke", () => {
   const home = slice(pages, "async function home(", "async function homeLegacy(");
   const at = (s) => { const i = home.indexOf(s); assert.ok(i >= 0, "fehlt auf Home: " + s); return i; };
-  const order = [at("Was hat sich heute verändert?"), at("Jede Aktie hat ein Profil aus"), at("page.append(search)"),
-    at("page.append(regimeHost, todayHost"), at('railHead("So arbeitet Quant"'), at("Warum kann ich dem vertrauen?")];
-  assert.deepEqual(order.slice().sort((a, b) => a - b), order, "Reihenfolge der Startseite weicht vom Mockup QX01 ab");
-  /* App-Konzept 2 (Owner-Freigabe 14.11.2026): Markt zuerst, als Zeiger mit allen Maßen im Fenster; „Heute bei Quant“ als drei
-     Zahlenkacheln mit Weg zu den Meldungen; eigene Aktien als Schiene mit Vorher/Nachher und als Faktor-Landkarte; Screener-Einstieg.
-     Gleiche Inhalte und Quellen wie QX01, nur anders gezeichnet. */
-  for (const s of ["U().gauge(", "qk2-regime-tpl", "U().bindPops(page)", "U().stat(", 'X.routes.radar(x[2])', "U().rail(hits", "X.deltaOf(e.explanation)", '"Deine Faktor-Landkarte"', "U().heat(", 'railHead("Screener"', "/quant/markt/"]) at(s);
+  at("Was hat sich heute verändert?"); at("Jede Aktie hat ein Profil aus");
+  const order = [at("page.append(tabs)"), at("page.append(regimeHost, watchHost, todayHost, mapHost, stilHost, askHost, forHost, findHost, tiAlertHost, newHost, setupHost, howHost)"),
+    at('qpSh("So arbeitet Quant"'), at("Warum kann ich dem vertrauen?")];
+  assert.deepEqual(order.slice().sort((a, b) => a - b), order, "Reihenfolge der Startseite weicht vom Prototyp ab");
+  const tabs = pages.match(/var QP_TABS = (\[[^;]+\]);/);
+  assert.ok(tabs, "Reiter im Inhalt fehlen");
+  assert.deepEqual(JSON.parse(tabs[1]).map((t) => t[0]), ["Heute", "Landkarte", "Anlagestile", "Screener", "Forschung"]);
+  assert.match(home, /qpTabsMode\(true\)/, "die Seite schaltet die Rahmen-Reiter nicht aus (data-vu-tabs=\"inhalt\")");
+  /* Marktlage: Bogen und Lagewort aus market-regime-v1, Verlauf nur aus regime.history (veröffentlichte Beobachtungen), Fenster mit allen Maßen. */
+  for (const s of ["qpGauge(above * 100, 260)", "regime.history", "pts.length >= 2", "qk2-regime-tpl", "U().bindPops(page)", "qk2-measure", "/quant/markt/",
+    '"Bei deinen Aktien"', "qpWatchCard(ctx, c)", '"Heute im Markt"', "sm.newStrategyMatches", "sm.newHighs", "sm.riskRisingTickers", 'X.routes.radar(x[2])',
+    '"Deine Faktor-Landkarte"', '"Anlagestile"', 'qpSh("Screener"', "askF.every(", 'ctx.api.getBacktest("signal")', "Forschung, nicht zertifiziert",
+    "button\", { type: \"button\", class: \"vu-find qv3-search", '"Chartbild bei deinen Aktien"', '"Neu in einem Anlagestil"', '"Setup bestätigt"']) at(s);
   assert.ok(!/Empfehlung|Signal|Kursziel(?!\.)/.test(home.replace(/Keine Anlageempfehlung, keine Prognose, kein Kursziel|Keine Empfehlung/g, "")), "Wortwahl auf der Startseite");
-  for (const s of ["Heute bei Quant · Stand", "neu in einem Anlagestil", "Setups bestätigt", "Risiko steigt", "Meldungen", "Markt heute",
-    '"Neu in einem Anlagestil"', '"Setup bestätigt"', '"Anlagestile"']) at(s);
-  for (const alt of ["homeStat(", "navcard(", "qv3-edge", 'sect("Selbst suchen")']) assert.ok(!home.includes(alt), "alter Inhalt: " + alt);
+  /* Zurückgestellt (Owner): Spiel/Quiz („Quant-Duell“) entfällt; keine Gesamtnote. */
+  for (const alt of ["Quant-Duell", "data-quiz", "Punkte", "homeStat(", "navcard(", "qv3-edge", 'sect("Selbst suchen")', "overall"]) assert.ok(!home.includes(alt), "nicht gewollt auf Home: " + alt);
   assert.ok(!/KNOWN\b/.test(home), "Home zeigt feste Demo-Aktien");
   assert.match(home, /promiseList\(\)/, "das Versprechen (Beleg) fehlt");
+  /* Aktien-Elemente tragen ihre Kennung für den Rahmen (Aktien-Fenster). */
+  assert.match(pages, /data-vu-stock="' \+ qpEsc\(t\) \+ '" data-vu-stock-name="/);
 });
 
 test("Home (ohne VUUI): erst Claim und Suche, dann was heute neu ist, dann eigene Aktien, dann Werkzeuge", () => {

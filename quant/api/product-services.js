@@ -45,6 +45,7 @@ function create(options){
      !/^\/quant\/data\/product\/setup-observations-v1\/(?:[A-Z0-9._-]{2}|screen-index)\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/pattern-match-v1\/[A-Z0-9._-]{2}\.json\.gz$/.test(path)&&
      path!=='/quant/data/product/strategy-index-v1.json.gz'&&
+     !/^\/quant\/data\/product\/radar-history\/events\/\d{4}-\d{2}-\d{2}\.json\.gz$/.test(path)&&
      !/^\/quant\/data\/product\/technical-signals-v1\/(?:[A-Z0-9._-]{2}|by-ticker\/[A-Z0-9.-]{1,12}|signals-(?:5|20|60))\.json\.gz$/.test(path))throw Error('INVALID_ARTIFACT_PATH');
   const response=await fetch(path,{credentials:'omit'});if(!response.ok)throw Error('SOURCE_MISSING');
   const input=new Uint8Array(await response.arrayBuffer());if(input.length>131072)throw Error('ARTIFACT_TOO_LARGE');
@@ -555,6 +556,20 @@ function create(options){
    }catch{radarHomePromise=null;return {state:'UNAVAILABLE',reason:'SOURCE_MISSING'};}
   })();
   return radarHomePromise;
+ }
+ /* Tageszahlen frueherer Stichtage fuer die Kacheln „Heute im Markt“ des Quant-Starts (App-Konzept 2: Balken
+  * unter der Zahl). Gezaehlt wie summary im Radar-Lauf (scripts/quant/build-quant-radar.mjs): STRATEGY_MATCH_NEW
+  * und NEW_52W_HIGH je Ereignis, RISK_RISING je Titel - aus den veroeffentlichten Tagessnapshots
+  * radar-history/events/<Stichtag>.json.gz, nichts wird neu gemessen. Ein fehlender Tag entfaellt. */
+ async function getRadarDayCounts(dates){
+  const list=[...new Set((dates||[]).filter(validDate))].sort().slice(-6);
+  const rows=await Promise.all(list.map(d=>compressedJSON('/quant/data/product/radar-history/events/'+d+'.json.gz').then(s=>{
+   if(s?.schemaVersion!=='radar-events-snapshot-1.0.0'||s.asOf!==d||!Array.isArray(s.rows))return null;
+   let newStrategyMatches=0,newHighs=0;const risk=new Set();
+   for(const r of s.rows){if(r[1]==='STRATEGY_MATCH_NEW')newStrategyMatches++;else if(r[1]==='NEW_52W_HIGH')newHighs++;else if(r[1]==='RISK_RISING')risk.add(r[0]);}
+   return {asOf:d,newStrategyMatches,newHighs,riskRisingTickers:risk.size};
+  }).catch(()=>null)));
+  return rows.filter(Boolean);
  }
  /* Radar-Karten beobachteter Titel - je Titel aus seiner Scherbe, nicht aus
   * dem ganzen Radar. Ohne Karte (heute nichts Neues) faellt der Titel weg. */
@@ -1476,7 +1491,7 @@ function create(options){
   return {state:'AVAILABLE',ticker,...IntelligenceBrief.build({stock,factors,setup,patterns,match,technical}),
    sources:{stock,factors,setup,patterns,match,technical}};
  }
- return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence:sharedStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getProfileRanking,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
+ return {getRealBacktest,searchInstruments,getUniverseEntry:universeEntryOrNull,getIntelligenceBrief,getMarketDataHealth,getComparison,getHomeIntelligence,getMarketSession,getWatchlistIntelligence,getSignals,getRadarIntelligence,getPortfolioIntelligence,getStrategyContext,getQuantWorkspace,getTechnicalWorkspace,getHistoricalFundamentals,getHistoricalPriceHistory,getIntraday,getRealtimeCapability,getUniverse,getMarketIntelligence,getTechnicalIntelligence,getStockIntelligence:sharedStockIntelligence,getFactorEvidence,getFactorEvidenceScreening,getProfileRanking,getSetupObservation,getSetupScreenIndex,getStrategyIndex,getMarketRegime,getPatternMatch,getStrategyProfiles,getStrategyMatch,getHistoricalCases,getAssignmentChange,getQuantRadar,getQuantRadarHome,getRadarDayCounts,getRadarCards,getSetupLifecycle,getRadarCard,getSignalTracking,getBacktest,getEvidenceStatus,getRecipes,getDiscover,screen,workspaces};
 }
 const api={create};if(typeof module!=='undefined'&&module.exports)module.exports=api;else g.VUProductServices=api;
 })(typeof window!=='undefined'?window:globalThis);
