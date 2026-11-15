@@ -299,6 +299,14 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert(await page.locator('#dv3-reihen .dv3-rk2').count()>=1,'Rows of the stock');
   assert.equal(await page.locator('.dv3-rowctx, .dv3-endcard').count(),0,'No onward bar without origin');
   assert(/\$/.test(await page.locator('.dx-chart-hero-preis > b').first().innerText()),'Head price in dollars');
+  /* App-Konzept 2 (Owner 14.11.2026): „Schluss …“ und der Euro-Wert stehen neben dem Kurs unter der Pille (keine eigene Zeile); der Chart
+     reicht auf dem Telefon bis an den Bildschirmrand; die Story sind drei Kacheln mit Grafik, ein Tipp öffnet das Kapitel. */
+  {const k=await page.evaluate(()=>{const q=s=>{const n=document.querySelector(s);return n?n.getBoundingClientRect().toJSON():null;};return {preis:q('.dx-chart-hero-preis > b'),pille:q('.dx-chart-hero-preis > span.num'),meta:q('.dx-chart-hero-meta'),chart:q('.dx-chapter--chart svg.dx-range-chart'),w:innerWidth,sub:CSS.supports('grid-template-columns','subgrid')};});
+   if(k.sub)assert(k.meta.top<k.preis.bottom&&k.meta.left>=k.preis.right&&k.meta.top>=k.pille.bottom-1,'Close label and euro value sit beside the price under the pill: '+JSON.stringify(k));
+   if(k.w<=760)assert(k.chart.left<=0.5&&k.chart.right>=k.w-0.5,'Stock chart reaches both screen edges: '+JSON.stringify(k.chart));
+   assert.equal(await page.locator('.dv3-story .dv3-story-r :is(.dv3-sg--bars,.dv3-sg--range,.dv3-sg--pe)').count(),3,'Each story tile carries its graphic');
+   await page.locator('.dv3-story .dv3-story-r[data-ch="geschaeft"]').click();await page.waitForFunction(()=>document.querySelector('.dv3-ep[data-ch="geschaeft"]')?.open===true);
+   await page.evaluate(()=>{document.querySelector('.dv3-ep[data-ch="geschaeft"]').open=false;});await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>setTimeout(r,50))));await page.evaluate(()=>{try{localStorage.removeItem('vu-discover-chapters-v1');}catch(e){}});}
   await eps.nth(2).locator('summary').click();assert.equal(await eps.nth(2).getAttribute('open'),'');await screenshot(page,key+'-stock-chapter');
   await navigate(page,base+'/discover/#/s/US_REAL/NVDA?reihe=langfristige-compounder',{waitUntil:'networkidle'});await page.locator('.dv3-titel').first().waitFor();await quiet();await page.reload({waitUntil:'networkidle'});
   await page.locator('.dv3-rowctx').waitFor();assert(/\d+ von \d/.test(await page.locator('.dv3-rowctx').innerText()),'Row position');
@@ -375,6 +383,16 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert(await page.locator('.v2-hero-track [data-symbol]').count()>=2,'Heute im Blick needs several stocks');
   assert.equal(await page.locator('.dr-bb').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(0, 0, 0)','Billboard is black in both modes');
   assert.equal(await page.locator('.dr-ms[href="#/maerkte"]').count(),1,'Market strip leads to Märkte');
+  /* App-Konzept 2 (Owner 14.11.2026): das Billboard läuft bis an den Bildschirmrand, sein Chart steht oben, und Titel, Urteil und die
+     Knöpfe „Aktie ansehen · Merken · ?“ stehen bei 390 × 844 im ersten Bildschirm über dem Dock; „Markt heute“ zeigt die Stufe als Skala. */
+  {await page.evaluate(()=>scrollTo(0,0));await page.locator('.dr-bb__chart svg').first().waitFor();await page.locator('.dr-ms__scale i.on').waitFor();
+   const bb=await page.evaluate(()=>{const b=document.querySelector('.dr-bb'),r=b.getBoundingClientRect(),s=b.querySelector('.dr-bb__slide'),box=n=>s.querySelector(n).getBoundingClientRect(),dock=document.getElementById('vu-dock').getBoundingClientRect();
+    return {left:r.left,right:innerWidth-r.right,chart:box('.dr-bb__chart').toJSON(),id:box('.dr-bb__id').toJSON(),act:box('.dr-bb__act').toJSON(),dockTop:dock.top,asof:document.querySelector('.dv3-asof').getBoundingClientRect().toJSON(),h1:document.querySelector('.dv3-intro h1').getBoundingClientRect().toJSON(),scale:document.querySelectorAll('.dr-ms__scale i').length};});
+   assert(bb.left<=0.5&&bb.right<=0.5,'Billboard reaches both screen edges: '+JSON.stringify(bb));
+   assert(bb.chart.width>=389&&bb.chart.height>=110&&bb.chart.bottom<=bb.id.top+1,'Billboard chart is full width, at least 110 px high and above the name: '+JSON.stringify(bb.chart));
+   assert(bb.act.bottom<=bb.dockTop,'Billboard actions sit above the dock in the first screen: '+bb.act.bottom+' > '+bb.dockTop);
+   assert(bb.asof.top<bb.h1.bottom&&bb.asof.left>=bb.h1.left,'Date line shares the headline rows instead of taking its own: '+JSON.stringify([bb.asof,bb.h1]));
+   assert(bb.scale>=4,'Market level is drawn as a scale');}
   await page.locator('.dr-sec--top10 .dr-t10').first().waitFor();assert(await page.locator('.dr-sec--top10 .dr-t10').count()>=5,'Top 10 heute');
   await page.locator('.dr-bb__q').first().click();await page.locator('#dv3-sheet:not([hidden])').waitFor();await screenshot(page,key+'-why-sheet');await page.keyboard.press('Escape');
   await page.locator('.dr-sec--strat').scrollIntoViewIfNeeded();assert(await page.locator('.dr-sec--strat .dr-sk').count()>=3,'Strategy cards');

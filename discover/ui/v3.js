@@ -162,6 +162,14 @@
   function sect(title, right, href) {
     return '<div class="vu-sect"><h2>' + esc(title) + '</h2>' + (href ? '<a href="' + esc(href) + '">' + esc(right || 'Alle') + '</a>' : right ? '<span class="dv3-sect-note">' + esc(right) + '</span>' : '') + '</div>';
   }
+  /** App-Konzept 2: Kachel „x / y im Plus“ mit dem Anteil als Ring (VUUI.ring); Text wie bisher. */
+  function shareTile(label, up, has) {
+    return U().tile(label, has ? up + ' / ' + has : '–', 'im Plus').replace('<div class="vu-tile">', '<div class="vu-tile dv3-share">' + (has ? U().ring(up / has * 100, { size: 26, stroke: 5, text: '', label: label + ': Anteil im Plus' }) : ''));
+  }
+  /** App-Konzept 2: Anteil der Treffer an allen Aktien des Universums als schmaler Balken (nur Darstellung der Trefferzahl). */
+  function shareBar(matched, total) {
+    return isNum(matched) && isNum(total) && total > 0 ? '<span class="dv3-sbar" aria-hidden="true"><i style="width:' + Math.max(2, Math.min(100, matched / total * 100)).toFixed(1) + '%"></i></span>' : '';
+  }
   function helpBtn(text, label) {
     return '<button type="button" class="vu-help dv3-helpbtn" data-vu-help="' + esc(text) + '"><i aria-hidden="true">?</i><span>' + esc(label || text) + '</span></button>';
   }
@@ -257,7 +265,8 @@
       '<label class="vu-find dv3-find">' + U().glyph('search', 18) + '<input type="search" placeholder="Thema suchen, z. B. Uran …" aria-label="Thema suchen" autocomplete="off"></label>' +
       '<div class="vu-chips dv3-chips" role="group" aria-label="Bereiche"><button type="button" class="vu-chip" data-g="" aria-pressed="true">Alle</button>' +
       BEREICHE.map(function (b) { return '<button type="button" class="vu-chip" data-g="' + b[0] + '" aria-pressed="false">' + esc(b[1]) + '</button>'; }).join('') + '</div><div class="dv3-welten__body"></div>' +
-      U().help('Themenwelten sind eine redaktionelle Zuordnung: Wer zum Thema gehört, entscheidet die Redaktion. Die Reihenfolge folgt der Discover-Methodik.');
+      U().help('Themenwelten sind eine redaktionelle Zuordnung: Wer zum Thema gehört, entscheidet die Redaktion. Die Reihenfolge folgt der Discover-Methodik.') +
+      U().next({ title: 'Strategien', sub: 'Auswahlen mit festen Regeln und ihren Treffern von heute.', href: '#/strategien' });
     root.appendChild(page);
     var out = page.querySelector('.dv3-welten__body'), input = page.querySelector('input'), group = '';
     function row(t, thumb) {
@@ -323,7 +332,7 @@
     var up12 = cards.filter(function (c) { return metric(c, 'return12M') > 0; }).length, has12 = cards.filter(function (c) { return metric(c, 'return12M') != null; }).length;
     var upToday = cards.filter(function (c) { return val(c.changePercent) > 0; }).length, hasToday = cards.filter(function (c) { return isNum(val(c.changePercent)); }).length;
     page.insertAdjacentHTML('beforeend', '<div class="vu-grid dv3-tiles" style="--vu-cols:3">' + U().tile('Aktien', String(n), 'im Thema') +
-      U().tile('12 Monate', has12 ? up12 + ' / ' + has12 : '–', 'im Plus') + U().tile('Heute', hasToday ? upToday + ' / ' + hasToday : '–', 'im Plus') + '</div>' +
+      shareTile('12 Monate', up12, has12) + shareTile('Heute', upToday, hasToday) + '</div>' +
       U().help('„' + up12 + ' / ' + has12 + ' im Plus“: ' + up12 + ' der ' + has12 + ' Firmen stehen heute höher als vor einem Jahr.') +
       '<div class="vu-sect"><h2>Die Firmen</h2><button type="button" class="vu-chip dv3-sortbtn">' + U().glyph('filter', 16) + '<span>Stärke</span></button></div><div class="dv3-list dv3-firms"></div>');
     var list = page.querySelector('.dv3-firms'), state = { sort: 'staerke', plus: false, profit: false, watch: false, all: false };
@@ -383,7 +392,8 @@
       GROUPS.map(function (g) { return '<button type="button" class="vu-chip" data-g="' + g.id + '" aria-pressed="false">' + esc(g.chip) + '</button>'; }).join('') + '</div>' +
       (blick ? '<a class="vu-box vu-box--ink dv3-feature" href="#/strategien/im-blick">' + U().hud('discover', 46) + '<span><span class="vu-ltag">Täglich neu</span><b>Heute im Blick</b><span>' +
         (blick.matched ? esc(num(blick.matched, 0)) + ' Aktien haben sich' + (ctx.asOf ? ' am ' + esc(day(ctx.asOf)) : '') + ' auffällig bewegt.' : esc(shortLine(blick.subtitle))) + '</span></span>' + U().glyph('next', 20) + '</a>' : '') +
-      '<div class="dv3-groups"></div>' + U().help('Treffer: so viele der ' + (ctx.universeSize ? num(ctx.universeSize, 0) + ' ' : '') + 'US-Aktien erfüllen die Regel heute. Gezeigt werden je Auswahl die stärksten.');
+      '<div class="dv3-groups"></div>' + U().help('Treffer: so viele der ' + (ctx.universeSize ? num(ctx.universeSize, 0) + ' ' : '') + 'US-Aktien erfüllen die Regel heute. Gezeigt werden je Auswahl die stärksten.') +
+      U().next({ title: 'Aktien swipen', sub: 'Eine nach der anderen, nach rechts zum Merken.', href: '#/swipen' });
     root.appendChild(page);
     var host = page.querySelector('.dv3-groups'), placed = {};
     GROUPS.forEach(function (g) {
@@ -394,7 +404,7 @@
       var box = h('div', 'dv3-slist');
       list.forEach(function (r) {
         var a = h('a', 'dv3-srow'); a.href = '#/strategien/' + r.rowId; a.dataset.row = r.rowId;
-        a.innerHTML = '<span class="dv3-srow__t"><b>' + esc(rowTitle(r)) + '</b><span>' + esc(shortLine(r.subtitle)) + '</span></span><span class="dv3-srow__n"><b>' + (r.matched ? esc(num(r.matched, 0)) + ' Treffer' : '–') + '</b><span class="dv3-nr1"></span></span>' + U().glyph('next', 16);
+        a.innerHTML = '<span class="dv3-srow__t"><b>' + esc(rowTitle(r)) + '</b><span>' + esc(shortLine(r.subtitle)) + '</span>' + shareBar(r.matched, ctx.universeSize) + '</span><span class="dv3-srow__n"><b>' + (r.matched ? esc(num(r.matched, 0)) + ' Treffer' : '–') + '</b><span class="dv3-nr1"></span></span>' + U().glyph('next', 16);
         placed[r.rowId] = a; box.appendChild(a);
       });
       sec.appendChild(box); host.appendChild(sec);

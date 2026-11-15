@@ -276,3 +276,63 @@
 .dr-cw__t span{display:block;font-size:11px;font-weight:600;color:var(--vu-mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dr-cw__p .vu-chg{font-size:11px;padding:2px 6px}
 body.dv2 .dr-pv__rows .vu-chip,.dr-pv__rows .vu-chip{height:30px;min-height:30px;padding:0 12px}
+
+/* =====================================================================
+   App-Konzept 2 (Owner-Freigabe 14.11.2026): Bildschirm nutzen, Grafik vor Text.
+   Startseite: der Kopf kostet keine eigene Datumszeile mehr, das Billboard läuft bis an den Bildschirmrand, der Chart
+   steht oben und ist größer, Urteil und Satz stehen nebeneinander; „Markt heute“ zeigt die Stufe als Skala.
+   ===================================================================== */
+@media(max-width:760px){
+  .dv3-intro{position:relative;padding:8px 0 0}
+  .dv3-intro .vu-lt{margin-top:0;font-size:28px;line-height:1.05}
+  html body.dv2 .dv3-intro .v2-search-prompt{min-height:46px;margin-top:10px}
+  .dr-genres{margin-top:2px}
+  .dr-bb{margin-inline:-16px;margin-top:2px;padding-top:10px;border-radius:0}
+  :root[data-theme=dark] .dr-bb{box-shadow:none}
+  .dr-bb--wait{min-height:440px}
+}
+/* „Discover · Schluss Fr. 13.11.“ steht klein rechts neben der ersten Zeile der Überschrift statt in einer eigenen Zeile
+   (in der Genre-Ansicht mit langem Titel und unter 341 px bleibt es die Zeile darüber). */
+@media(min-width:341px) and (max-width:760px){
+  .dv3-intro .dv3-asof{position:absolute;right:0;top:11px;max-width:136px;margin:0;text-align:right;font-size:10px;line-height:1.3}
+  .dv3-intro:has(.dr-genre-lead:not([hidden])) .dv3-asof{position:static;max-width:none;text-align:left}
+}
+.dr-bb__slide{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-content:start}
+.dr-bb__slide>*{grid-column:1/-1;min-width:0}
+.dr-bb__tag{order:-3}
+.dr-bb__chart{order:-2;margin:6px -16px 0;min-height:0;aspect-ratio:358/118}
+.dr-bb__dates{order:-1;margin-top:2px;font-size:10.5px;min-height:14px}
+.dr-bb__slide>.dr-bb__big{grid-column:1;flex-direction:column;align-items:flex-start;gap:4px;margin-top:10px}
+.dr-bb__id{margin-top:8px}
+.dr-bb__big .vu-chg{font-size:24px;padding:6px 14px 6px 10px}
+.dr-bb__big>span:last-child{font-size:11.5px}
+.dr-bb__slide>.dr-bb__story{grid-column:2;align-self:center;margin-top:10px;font-size:17px;line-height:1.15;text-wrap:balance}
+.dr-bb .dr-bb__chips .vu-chip{min-height:26px;height:26px;padding:0 9px;font-size:11px;letter-spacing:-.01em}
+.dr-bb__chips{gap:5px;margin-top:8px}
+.dr-bb__act{margin-top:10px}
+.dr-bb__dots{margin-top:10px}
+/* Markt heute: Stufe groß mit Skala, darunter die drei Indizes. */
+.dr-ms{grid-template-columns:1fr 1fr 1fr auto;gap:10px 8px;padding:14px 14px 12px;border-radius:22px}
+.dr-ms__lvl{grid-column:1/4;display:grid;grid-template-columns:auto 1fr;align-items:baseline;column-gap:10px}
+.dr-ms__lvl .vu-ltag{grid-column:1/-1}
+.dr-ms__lvl b{margin-top:2px;font-size:26px;letter-spacing:-.04em;line-height:1.05}
+:root[data-theme=dark] .dr-ms__lvl b{color:var(--vu-lime)}
+.dr-ms__lvl small{font-size:12px}
+.dr-ms__scale{grid-column:1/-1;display:flex;gap:4px;margin-top:8px}
+.dr-ms__scale i{flex:1;height:8px;border-radius:9px;background:var(--vu-hair)}
+.dr-ms__scale i.on{background:var(--vu-ink)}
+:root[data-theme=dark] .dr-ms__scale i.on{background:var(--vu-lime)}
+.dr-ms>svg{grid-column:4;grid-row:1;align-self:start;margin-top:4px}
+.dr-ms__i{grid-row:2}
+.dr-ms__i .vu-chg{font-size:12px;padding:3px 8px}
+/* Alle Reihen: Trefferzahl zusätzlich als Balken. */
+.dr-all__r{flex-wrap:wrap}
+.dr-all__r>span:nth-child(2){display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:#9b9b9b}
+.dr-all__r>.dr-all__bar{flex:0 0 100%;display:block;height:4px;margin:2px 0 4px;border-radius:9px;background:#262626;overflow:hidden}
+.dr-all__bar i{display:block;height:100%;border-radius:9px;background:#c8f531}
+/* Seite einer Reihe: Zurück-Knopf und Etiketten in einer Zeile; Logos und Trefferzahl nebeneinander. */
+.dr-rowhero{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:12px;align-items:center;padding-top:10px}
+.dr-rowhero>*{grid-column:1/-1;min-width:0}
+.dr-rowhero>.dr-rowhero__nav{grid-column:1}
+.dr-rowhero>.dr-rowhero__tags{grid-column:2;margin-top:0}
+.dr-rowhero>.dr-rowhero__logos{grid-column:1/-1;float:none}

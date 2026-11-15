@@ -133,7 +133,8 @@
       '<button type="button" class="vu-btn vu-btn--line dr-bb__keep">' + U().glyph('plus', 18) + '<span>Merken</span></button>' +
       '<button type="button" class="dr-bb__q" aria-label="Warum steht ' + esc(shortName(c)) + ' hier?">?</button></div>';
     var dates = art.querySelectorAll('.dr-bb__dates span');
-    art.querySelector('.dr-bb__chart').appendChild(K().spark(c, { big: true, width: 322, height: 96, onDates: function (a, b) { dates[0].textContent = K().dayYear(a); dates[1].textContent = K().dayYear(b); } }));
+    /* App-Konzept 2: der Chart steht oben im Billboard, so breit wie der Bildschirm (reihen.css), und ist höher als bisher. */
+    art.querySelector('.dr-bb__chart').appendChild(K().spark(c, { big: true, width: 358, height: 118, onDates: function (a, b) { dates[0].textContent = K().dayYear(a); dates[1].textContent = K().dayYear(b); } }));
     var keep = art.querySelector('.dr-bb__keep'), st = K().store(ctx);
     if (!st) keep.hidden = true;
     else {
@@ -173,7 +174,10 @@
       var env = p && p.environment; if (!a.isConnected) return;
       if (!env || !isNum(env.level)) { lvl.querySelector('b').textContent = 'Keine Einordnung'; return; }
       lvl.querySelector('b').textContent = env.label;
-      lvl.querySelector('small').textContent = 'Stufe ' + (env.level + 1) + ' von ' + ((env.scale || []).length || 5);
+      var steps = (env.scale || []).length || 5;
+      lvl.querySelector('small').textContent = 'Stufe ' + (env.level + 1) + ' von ' + steps;
+      /* App-Konzept 2: die Stufe als Skala (ein Feld je Stufe, die aktuelle gefüllt), wie auf der Seite Märkte. */
+      lvl.insertAdjacentHTML('beforeend', '<span class="dr-ms__scale" aria-hidden="true">' + Array.from({ length: steps }, function (_, i) { return '<i' + (i === env.level ? ' class="on"' : '') + '></i>'; }).join('') + '</span>');
     }).catch(function () { if (a.isConnected) lvl.querySelector('b').textContent = 'Nicht verfügbar'; });
     Promise.all([K().load('/quant/data/market/multi-asset/snapshot.json'), K().load('/quant/config/multi-asset.json').catch(function () { return null; })]).then(function (r) {
       if (!a.isConnected) return;
@@ -612,7 +616,9 @@
       '<p class="vu-lead">' + total + ' Reihen nach festen Regeln und ' + T.all.length + ' Themenwelten.</p>' +
       groups.map(function (x) {
         return '<div class="dr-all__g"><h2>' + esc(x.g.label) + '</h2><span>' + x.ids.length + '</span></div><div class="vu-box dr-all__list">' + x.ids.map(function (r) {
-          return '<a class="dr-all__r" href="' + esc(rowHref(r)) + '"><span><b>' + esc(R().title(r)) + '</b>' + (r === 'fallen-angels' ? '<span class="dr-tag">Neu</span>' : '') + '</span><span>' + fmtInt(avail[r]) + U().glyph('next', 13) + '</span></a>';
+          /* App-Konzept 2: Trefferzahl zusätzlich als Balken (Anteil an allen Aktien des Universums). */
+          var share = isNum(avail[r]) && ctx.universeSize ? '<span class="dr-all__bar" aria-hidden="true"><i style="width:' + Math.max(2, Math.min(100, avail[r] / ctx.universeSize * 100)).toFixed(1) + '%"></i></span>' : '';
+          return '<a class="dr-all__r" href="' + esc(rowHref(r)) + '"><span><b>' + esc(R().title(r)) + '</b>' + (r === 'fallen-angels' ? '<span class="dr-tag">Neu</span>' : '') + '</span><span>' + fmtInt(avail[r]) + U().glyph('next', 13) + '</span>' + share + '</a>';
         }).join('') + '</div>';
       }).join('') +
       '<div class="dr-all__g"><h2>Themenwelten</h2><a href="#/welten">Alle ' + T.all.length + '</a></div>';

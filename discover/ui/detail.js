@@ -1234,7 +1234,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
        Schrift nicht mitskaliert und die Linie auf dem Telefon so hoch ist
        wie ein halber Bildschirm. */
     var mass = chartMass(chartBox, mobil);
-    if (dollarKopf) mass.h = mobil ? 184 : 260;   /* Mockup ~170 px; die Browser-QA verlangt auf dem Telefon mindestens 180 px (Chart bleibt die Hauptfläche) */
+    if (dollarKopf) kopfMass(mass, chartBox, mobil);   /* die Browser-QA verlangt auf dem Telefon mindestens 180 px (Chart bleibt die Hauptfläche) */
     var svgNode = (dollarKopf && gemeinsamerChart(sel.points.map(function (q) { return [String(q[0]).slice(0, 10), q[1]]; }), { width: mass.w, height: mass.h, label: state.detail.symbol + " " + z.wort, range: z.id }))
       || MC.renderRange(sel.points, { width: mass.w, height: mass.h, symbol: state.detail.symbol, compact: !!dollarKopf,
                                                  range: z.id, label: z.wort, grain: woechentlich ? "weekly" : "daily",
@@ -1414,7 +1414,7 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
     ]);
     chartBox.appendChild(kopf);
     var mass = chartMass(chartBox, mobil);
-    if (dollarKopf) mass.h = mobil ? 184 : 260;
+    if (dollarKopf) kopfMass(mass, chartBox, mobil);
     /* Auch der Tagesverlauf wird in der Anzeigewaehrung gezeichnet.
 
        Die Zahlen an der Achse standen sonst in Dollar, waehrend der Kurs
@@ -1516,6 +1516,15 @@ var series = detail.series || {}; if (detail.region === "EUROPE" && series.sourc
   /* Die Masse des grossen Charts: so breit wie der Kasten, auf dem Telefon
      rund die Haelfte des Bildschirms hoch (V4.1 §5: 50-70 % eines
      Viewports als Hauptflaeche), am Schreibtisch 440 px. */
+  /* App-Konzept 2 (Owner 14.11.2026, „Charts groß, bis an den Rand“): im Überblick ist der Chart auf dem Telefon so breit wie
+     der Bildschirm (overview.css zieht den Rahmen über den Seitenrand) und wächst mit der Bildschirmhöhe: 184 px (kleine
+     Telefone) bis 236 px. Die Höhe steht als --dv3-chart-h am Kasten, damit Stil und viewBox dieselbe Zahl tragen. */
+  function kopfMass(mass, chartBox, mobil) {
+    mass.h = mobil ? Math.max(184, Math.min(236, Math.round(global.innerHeight * 0.27))) : 260;
+    if (global.innerWidth <= 760 && global.document && global.document.documentElement.clientWidth) mass.w = global.document.documentElement.clientWidth;
+    if (chartBox && chartBox.style) chartBox.style.setProperty("--dv3-chart-h", mass.h + "px");
+    return mass;
+  }
   function chartMass(chartBox, mobil) {
     var w = Math.round(chartBox.getBoundingClientRect().width || chartBox.clientWidth || 0);
     if (!w) w = mobil ? Math.max(320, global.innerWidth - 32) : 1120;

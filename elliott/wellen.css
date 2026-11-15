@@ -97,8 +97,3 @@
 .cb-ew-link .vu-hud{color:var(--vu-lime)}
 /* App-Konzept 2 (14.11.2026): Kursart und Datum stehen klein unter der Tagesbewegung neben dem Kurs und brauchen keine eigene Zeile
    (gemeinsamer Aktienkopf assets/stock-navigator, Farben unverändert). */
-#el-detail .vu-shead-price{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:2px;align-items:center}
-#el-detail .vu-shead-value{grid-row:1/span 2}
-#el-detail .vu-shead-change{justify-self:start}
-#el-detail .vu-shead-when{grid-column:2;justify-self:start;margin:0;flex-basis:auto;text-align:left;font-size:11px;line-height:1.2}
-@media(max-width:380px){#el-detail .vu-shead-value{grid-row:auto;grid-column:1/-1}#el-detail .vu-shead-when{align-self:center}}

@@ -976,12 +976,6 @@ html[data-theme=dark] .fu-sheet{background:#151515;--fu-card:#262626;--fu-soft:#
 
 /* Aktienkopf (assets/stock-navigator, Farben unverändert): Kursart und Datum stehen klein unter der Tagesbewegung neben dem
    Kurs und brauchen keine eigene Zeile mehr. */
-.fu-shead .vu-shead-price{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:2px;align-items:center}
-.fu-shead .vu-shead-value{grid-row:1/span 2}
-.fu-shead .vu-shead-change{justify-self:start}
-.fu-shead .vu-shead-when{grid-column:2;justify-self:start;margin:0;flex-basis:auto;text-align:left;font-size:11px;line-height:1.2}
-.fu-shead .vu-shead-when:has(.vu-shead-alt){justify-content:flex-start}
-@media (max-width:380px){.fu-shead .vu-shead-price{grid-template-columns:auto minmax(0,1fr)}.fu-shead .vu-shead-value{grid-row:auto;grid-column:1/-1}.fu-shead .vu-shead-when{grid-column:2;align-self:center}}
 
 /* Methodik: Themen als Kacheln */
 .fu-topics{display:grid;grid-template-columns:1fr 1fr;gap:8px}

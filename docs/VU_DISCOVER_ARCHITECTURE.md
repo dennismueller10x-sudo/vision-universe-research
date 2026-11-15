@@ -21,6 +21,10 @@
 
 > **Owner-Entscheidung 11.11.2026 (Aktienkopf):** Die Tagesbewegung im Aktienkopf ist bei Plus neongrün und bei Minus rot (`#c4281c`); das ersetzt „Minus schwarz“ (Entscheidung 7 vom 08.11.2026). Geprüft von `scripts/discover/browser-qa-stockhead.mjs`.
 
+> **App-Konzept 2 (Owner-Freigabe 14.11.2026), gemeinsamer Aktienkopf:** „Schlusskurs · Datum“ (und der Euro-Wert) steht klein unter der Tagesbewegung neben dem Kurs und kostet keine eigene Zeile mehr; die Logo-Kachel ist 48 px groß mit schmalem Rand (`assets/stock-navigator.css`, gilt für alle Welten). Die Farbe der Minus-Pille bleibt rot nach der Entscheidung vom 06./11.11.2026; der Prototyp zeigt sie weiß, das ist eine offene Owner-Frage.
+
+> **App-Konzept 2 (Owner-Freigabe 14.11.2026), Discover, nur Darstellung:** Startseite: Datumszeile neben der Überschrift, Billboard bis an den Bildschirmrand mit dem Chart oben, „Markt heute“ mit Stufen-Skala. Aktienseite: Kurs, Tagesbewegung und „Schluss … ≈ €“ in einem Block, Chart bis an den Rand und 184–236 px hoch, die Story als drei Kacheln mit Grafik (Tipp öffnet das Kapitel), Platz je Reihe als Balken. Thema, Strategien und „Alle Reihen“ zeigen Anteile als Ring bzw. Balken; Welten und Strategien enden mit der „Weiter“-Karte (`VUUI.next`). Die Kapitel bleiben native `<details>`, zugeklappt und mit Gerätegedächtnis (Entscheidung 6 vom 08.11.2026); Kopf mit Frage, Suche und Genre-Chips bleibt (PR 1). Nicht gebaut, weil es dafür keine Daten gibt: Tagesrunde, Serie, Punkte, Quiz, Entdecker-Pass, „von 7 Modulen“ je Aktie.
+
 Stand: 2026-09-11 · Modul `discover-1.0.0` · Methodik `discover-v1.0.0` ·
 Contract `discover-contract-1.0.0`
 
