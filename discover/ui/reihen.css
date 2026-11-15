@@ -260,8 +260,9 @@ body.dv2 .dr-pv__rows .vu-chip,.dr-pv__rows .vu-chip{height:30px;min-height:30px
    Abschnittskopf 22 px, Poster 128 px, Top-10-Ziffer 104 px, Themen-Poster 150 × 204, Aktie des Tages 520 px bis an den Rand.
    Hell bleibt wählbar: Flächen und Schrift über die Variablen aus assets/vu-ui.css; die Aktie des Tages ist in beiden Modi schwarz.
    ===================================================================== */
-html[data-vu-bleed] body.dv2{padding-top:0!important}
-html[data-vu-bleed] body.dv2 #v2-main.dv3-main{padding-top:0}
+/* Nur wenn der Rahmen beide Schalter trägt (Kopf durchsichtig, Reiter im Inhalt): solange er eigene Reiter zeigt (data-vu-tabs=discover), bleibt Platz für Kopf und Reiter. */
+html[data-vu-bleed][data-vu-tabs=inhalt] body.dv2{padding-top:0!important}
+html[data-vu-bleed][data-vu-tabs=inhalt] body.dv2 #v2-main.dv3-main{padding-top:0}
 .dv3-intro[hidden]{display:none!important}
 .dp-home{--dp-track:var(--vu-hair);margin:0 -16px;font-size:15px;line-height:1.35;color:var(--vu-ink)}
 :root[data-theme=dark] .dp-home{--dp-track:#2a2a2d;--vu-card:#151516;--vu-mute:#a1a7af;color:#f4f5f1}

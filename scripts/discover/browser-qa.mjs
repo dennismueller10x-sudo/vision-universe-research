@@ -202,6 +202,11 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' responsive navigation remains reachable',async()=>{
   const nav=page.locator('#vu-dock nav');const state=await nav.evaluate(n=>({box:n.getBoundingClientRect().toJSON(),position:getComputedStyle(n.getRootNode().host).position,paddingBottom:parseFloat(getComputedStyle(n).paddingBottom),height:innerHeight,labels:Array.from(n.querySelectorAll('a,button')).map(a=>({label:a.textContent.trim()||a.getAttribute('aria-label'),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
   assert.deepEqual(state.labels.map(i=>i.label),['Home','Discover','Alle Module','News','Ich']);assert.deepEqual(state.labels.filter(i=>i.current==='page').map(i=>i.label),['Discover'],'Dock must mark Discover inside Discover');
+  /* App-Konzept 2: auf der Startseite zeigt die Seite ihre Reiter im Inhalt (html[data-vu-tabs=inhalt], Prototyp „tabs2“: Start · Themen · Reihen · Märkte);
+     die Reiter des Rahmens blendet assets/site-navigation.js dann aus. Sonst stehen die Bereiche als Reiter unter dem Kopf. */
+  if(await page.locator('html[data-vu-tabs="inhalt"]').count()){
+   const own=await page.locator('.dp-tabs .dp-tab').evaluateAll(ns=>ns.map(n=>n.textContent.trim()));
+   assert.deepEqual(own,['Start','Themen','Reihen','Märkte'],'Reiter im Inhalt: '+own.join(' | '));return;}
   /* Die Bereiche von Discover stehen als Reiter unter dem Kopf: die frueheren Leistenplaetze, dann die uebrigen Eintraege „In Discover“. */
   const tabs=await page.locator('vu-navigation nav.tabs').evaluate(n=>({top:n.getBoundingClientRect().top,bottom:n.getBoundingClientRect().bottom,rowBottom:n.getRootNode().querySelector('.row').getBoundingClientRect().bottom,reserved:parseFloat(getComputedStyle(document.body).paddingTop),labels:Array.from(n.querySelectorAll('a')).map(a=>({label:a.textContent.trim(),width:a.getBoundingClientRect().width,height:a.getBoundingClientRect().height,current:a.getAttribute('aria-current')}))}));
   assert.deepEqual(tabs.labels.map(i=>i.label),['Discover','Welten','Strategien','Swipen','Suchen','Märkte','Watchlist']);assert.equal(tabs.labels.filter(i=>i.current==='page').length,1,'Current route not identified');
