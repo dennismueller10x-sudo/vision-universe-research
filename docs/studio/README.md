@@ -21,7 +21,7 @@ Einstieg für jede neue Sitzung, in der ein Reel entstehen soll. Stand 2026-10-2
 ## Regeln des Owners (gelten immer)
 
 1. Nichts wird ohne Freigabe des Owners im Approval Center veröffentlicht. Es gibt keinen Weg daran vorbei.
-2. Jedes Reel führt zur Vision-Universe-App („bald verfügbar", Endkarte „App", nicht „Studio").
+2. Jedes Reel führt zur Vision-Universe-App, solange sie nicht veröffentlicht ist immer mit „bald verfügbar": gesprochen „… findest du bald in der Vision Universe App", Endkarte „App · bald verfügbar" (nicht „Link in der Bio", nicht „Studio"), Caption „bald in der Vision Universe App".
 3. Kein Kleingedrucktes im Video. Quellen, Stand und Hinweise stehen in der Caption.
 4. Keine fremden oder ungeklärten Videos, Bilder, Stimmen oder Musik. Fremde Reels nur intern analysieren, nie wiederverwenden.
 5. Kein neues Abo, keine Änderung an der Produktivinfrastruktur, keine Anzeigen ohne Auftrag.
