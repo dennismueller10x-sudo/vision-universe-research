@@ -291,7 +291,15 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' stock offers onward company exploration',async()=>{
   const v3=await page.locator('.dv3-overview').count();
   /* Konzept „Reihe für Reihe“ (a-full): die nächsten Aktien stehen als Poster in „Mehr wie …“. */const next=page.locator(v3?'.dv3-overview .dv3-next a.dr-poster__a[href^="#/s/"]':'.dv2-stock-neighbors .dx-rail a[href^="#/s/"]').first();await next.scrollIntoViewIfNeeded();
-  const href=await next.getAttribute('href');assert(href&&!href.endsWith('/AAPL'),'Next stock must differ from current stock');await screenshot(page,key+'-stock-onward');await next.click();await page.waitForURL(url=>url.hash===href);await page.locator('.dx-chart-hero').first().waitFor();
+  const href=await next.getAttribute('href');assert(href&&!href.endsWith('/AAPL'),'Next stock must differ from current stock');await screenshot(page,key+'-stock-onward');
+  /* App-Konzept 2 (Prototyp: Poster öffnen das Fenster „stock“): ein Tipp auf ein Aktien-Element mit data-vu-stock öffnet erst die Vorschau
+     (assets/vu-stock-sheet.js); der Link selbst bleibt das Ziel (Strg/Cmd-Klick, ohne Vorschau). Danach dem Link folgen. */
+  const sym=await next.getAttribute('data-vu-stock');
+  if(sym){await next.click();await page.locator('[data-vsk-ticker="'+sym+'"] .vu-sheet-ui').first().waitFor({timeout:15000});
+   await page.evaluate(()=>{const s=document.querySelector('[data-vsk-ticker]');if(s&&window.VUUI)VUUI.closeSheet(s);});
+   await page.evaluate(h=>{location.hash=h;},href);}
+  else await next.click();
+  await page.waitForURL(url=>url.hash===href);await page.locator('.dx-chart-hero').first().waitFor();
   /* Redesign 2027: zurück zum Entdecken über den Reiter „Swipen“ unter dem Kopf, nicht über Knöpfe am Seitenende. */
   if(v3)assert(await page.waitForFunction(()=>!!document.getElementById('vu-dock')&&!!document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs a[href*="#/einzeln/"]'),null,{timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery (tab)');
   else assert(await page.locator('.dv2-stock-next a[href^="#/einzeln/"]').first().waitFor({state:'attached',timeout:10000}).then(()=>true,()=>false),'Next stock has no return to discovery');interactionEvidence.push({key,type:'stock-onward',from:'AAPL',to:href});
