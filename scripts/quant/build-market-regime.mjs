@@ -79,6 +79,26 @@ export function observationVerdict(previous, snapshot, universe) {
   };
 }
 
+/**
+ * Verlauf eines Masses aus den veroeffentlichten Beobachtungen (je Stichtag
+ * eine Datei in HISTORY_DIR), aelteste zuerst. Nichts wird neu gemessen: es
+ * sind die Anteile, wie sie am jeweiligen Stichtag veroeffentlicht wurden.
+ * Der Quant-Start zeichnet daraus die Linie unter der Marktlage
+ * (App-Konzept 2, Owner 15.11.2026), ohne 30 Einzeldateien zu laden.
+ */
+export function breadthHistory(dir, measure = "above200", methodologyVersion = null) {
+  if (!existsSync(dir)) return { measure, points: [] };
+  const points = [];
+  for (const f of readdirSync(dir).filter((x) => /^\d{4}-\d{2}-\d{2}\.json$/.test(x)).sort()) {
+    const o = JSON.parse(readFileSync(join(dir, f), "utf8"));
+    if (methodologyVersion && o.methodologyVersion !== methodologyVersion) continue;
+    const m = (o.shares || []).find((s) => s.id === measure);
+    if (!m || !finite(m.share)) continue;
+    points.push({ asOf: o.asOf, share: m.share, observed: finite(m.observed) ? m.observed : null });
+  }
+  return { measure, points };
+}
+
 function main() {
   const counts = {};
   for (const id of Object.keys(MEASURES)) counts[id] = { hits: 0, observed: 0 };
@@ -169,6 +189,7 @@ function main() {
     }
   }
   payload.publishedObservation = publishedObservation;
+  payload.history = breadthHistory(HISTORY_DIR, "above200", methodology.methodologyVersion);
   writeFileSync(OUT, JSON.stringify(payload, null, 1) + "\n");
   if (publishedObservation && publishedObservation.publishedUniverse !== undefined &&
       publishedObservation.publishedUniverse !== null) {
