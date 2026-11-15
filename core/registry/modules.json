@@ -23,6 +23,30 @@
   },
   {
    "schema": "vu-module-2",
+   "id": "aktie",
+   "label": "Aktie",
+   "status": "LIVE",
+   "route": "/aktie/",
+   "access": "free",
+   "navigation": null,
+   "data": [],
+   "reads": [
+    "discover",
+    "eodPrices",
+    "longSeries",
+    "quant",
+    "technicalWorld",
+    "technicalIntelligenceV3",
+    "supertrader",
+    "fundamentalsConsumer"
+   ],
+   "producers": [],
+   "tests": [
+    "products/aktie/tests/*.test.mjs"
+   ]
+  },
+  {
+   "schema": "vu-module-2",
    "id": "analysten",
    "label": "Analysten",
    "status": "LIVE",
@@ -1013,10 +1037,6 @@
   }
  ],
  "pages": [
-  {
-   "dir": "aktie",
-   "reason": "Weiterleitung auf die Aktienansicht (Discover/Quant), kein eigenes Produkt"
-  },
   {
    "dir": "discover-v2",
    "reason": "Altadresse, leitet auf /discover/ um"

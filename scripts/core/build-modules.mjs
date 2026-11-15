@@ -16,7 +16,6 @@ const read = (p) => readFileSync(join(ROOT, p), "utf8");
 
 /* Seiten mit eigener Route, die kein Produkt sind (kein Steckbrief). Jede oberste Seite ist entweder Produkt oder hier begruendet. */
 export const PAGES = [
-  { dir: "aktie", reason: "Weiterleitung auf die Aktienansicht (Discover/Quant), kein eigenes Produkt" },
   { dir: "discover-v2", reason: "Altadresse, leitet auf /discover/ um" },
   { dir: "vu2", reason: "Altadresse des Neubaus, leitet um" },
   { dir: "infos", reason: "Info- und Rechtsseiten" },
