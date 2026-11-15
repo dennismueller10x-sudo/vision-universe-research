@@ -299,8 +299,7 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   for (const t of [THEMES.light, THEMES.dark]) {
     const st = styles(t);
     assert.match(st, /\.tabs\{[^}]*overflow-x:auto;[^}]*padding:8px max\(24px,calc\(\(100% - 1240px\)\/2\)\)\}/, 'waagerecht rollbar, am Inhaltsrand ausgerichtet');
-    assert.match(st, /\.tab\{position:relative;flex:none;display:inline-flex;align-items:center;height:36px;/);
-    assert.match(st, /\.tab::after\{content:"";position:absolute;inset:-4px 0\}/, 'Pille 36 px wie im Prototyp, Tippfläche 44 px');
+    assert.match(st, /\.tab\{position:relative;flex:none;display:inline-flex;align-items:center;height:44px;margin-block:-4px;/, 'Pille 36 px wie im Prototyp, Tippfläche 44 px ohne Versatz');
     assert.match(st, /\.tab \.pill\{[^}]*height:36px;/);
     assert.ok(st.includes(`.tab[aria-current=page] .pill{background:${t.on};color:${t.onInk};`), 'aktiver Reiter: weiß auf dunkel (Prototyp .tab.on), schwarz auf hell');
     assert.match(st, /\.tab:focus-visible \.pill\{outline:2px solid /);

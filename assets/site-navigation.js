@@ -611,13 +611,12 @@
         .live b{font-weight:inherit}
         :host([tight]) .live b{display:none}
         .mod:active,.hb:active,.live:active{transform:scale(.97)}
-        .toggle{flex-shrink:0;border:0;background:${t.glass};color:${t.ink};height:38px;padding:0 15px;border-radius:99px;font-weight:800;font-size:14px}
+        .toggle{flex-shrink:0;border:3px solid transparent;margin:-3px;background:${t.glass};background-clip:padding-box;color:${t.ink};height:44px;padding:0 15px;border-radius:99px;font-weight:800;font-size:14px}
         :host([world]) .toggle{display:none}
-        @media(max-width:520px){.toggle{width:38px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
+        @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
         .tabs{position:relative;display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:8px max(24px,calc((100% - 1240px)/2))}
         .tabs[hidden]{display:none}.tabs::-webkit-scrollbar{display:none}
-        .tab{position:relative;flex:none;display:inline-flex;align-items:center;height:36px;color:${t.ink};font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-        .tab::after{content:"";position:absolute;inset:-4px 0}
+        .tab{position:relative;flex:none;display:inline-flex;align-items:center;height:44px;margin-block:-4px;color:${t.ink};font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
         .tab .pill{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 15px;border-radius:99px;background:${t.card}}
         .tab:hover .pill{filter:brightness(.95)}
         .tab[aria-current=page] .pill{background:${t.on};color:${t.onInk};filter:none}
@@ -640,7 +639,7 @@
         .find{display:flex;align-items:center;gap:10px;height:52px;margin-top:22px;padding:0 6px 0 16px;border-radius:99px;background:#202022;color:#a1a7af}
         .find input{flex:1;min-width:0;height:44px;border:0;background:transparent;color:#fff;font:600 15.5px/1 inherit;font-family:inherit;outline-offset:0}
         .find input::placeholder{color:#a1a7af}
-        .find button{width:40px;height:40px;border:0;border-radius:50%;background:#c8f531;color:#101318;display:grid;place-items:center;padding:0;flex:none}
+        .find button{width:44px;height:44px;margin:-2px;border:2px solid transparent;border-radius:50%;background:#c8f531;background-clip:padding-box;color:#101318;display:grid;place-items:center;padding:0;flex:none}
         .find button svg{fill:currentColor;stroke:none}
         .panel h2{margin:16px 0 0;font-size:10.5px;line-height:1.35;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a1a7af}
         .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
