@@ -359,7 +359,7 @@ test('the tab strip is reserved at first paint exactly on pages that request the
 
 test('the menu is the sheet „Dein Universe“ on phones, the side panel on desktop, and keeps every part', () => {
   // Reihenfolge im Menue (Prototyp T.universe): Griff, Ueberschrift und Schliessen, Gruppen mit Kacheln, Suche, „In <Welt>“, Mein Bereich, Weitere Produkte, Einstellungen, Rechtliches
-  const order = ['<span class="grab" aria-hidden="true"></span>', '<div class="panel-head"><h1 class="uni-title">Dein Universe</h1>', '<p class="uni-sub">Alle Module, von jeder Seite aus.</p>', '<div class="groups"></div>', '<form class="find" role="search">', '<section class="here" hidden>', '<h2>Mein Bereich</h2><div class="mine">', '<details class="more"><summary><span>Weitere Produkte</span></summary>',
+  const order = ['<span class="grab" aria-hidden="true"></span>', '<div class="panel-head"><h2 class="uni-title">Dein Universe</h2>', '<p class="uni-sub">Alle Module, von jeder Seite aus.</p>', '<div class="groups"></div>', '<form class="find" role="search">', '<section class="here" hidden>', '<h2>Mein Bereich</h2><div class="mine">', '<details class="more"><summary><span>Weitere Produkte</span></summary>',
     '<div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>', '${legalMenu()}</nav>'];
   let at = source.indexOf('<nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true">');
   assert.ok(at > 0);
@@ -693,7 +693,7 @@ test('Menue „Dein Universe“ nach Prototyp: vier Gruppen, zwei Kacheln nebene
   assert.match(st, /\.tile\{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border-radius:22px;background:#202022;/);
   assert.match(st, /\.tile \.menu-product-icon\{width:40px;height:40px;border-radius:12px;background:#0e1013;border:1px solid rgba\(200,245,49,\.25\);/);
   assert.match(st, /\.panel\{[^}]*background:#151516;color:#f4f5f1;/);
-  assert.match(st, /\.panel h1\.uni-title\{margin:0;font-size:30px;line-height:1;font-weight:900;letter-spacing:-\.045em;/);
+  assert.match(st, /\.panel h2\.uni-title\{margin:0;font-size:30px;line-height:1;font-weight:900;letter-spacing:-\.045em;/);
   assert.match(st, /\.panel h2\{margin:16px 0 0;font-size:10\.5px;[^}]*font-weight:800;letter-spacing:\.12em;text-transform:uppercase;color:#a1a7af\}/);
 });
 
