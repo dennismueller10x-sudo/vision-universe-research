@@ -159,7 +159,7 @@
       esc(surface && surface.live ? 'Heute im Blick · laufende Sitzung' : 'Heute im Blick') + '</span></div>' +
       '<div class="dr-bb__id dp-hero__id"' + stockAttrs(c) + '>' + U().logo(c.symbol, { xl: true }) + '<div><h2' + (shortName(c).length > 11 ? ' class="dp-long"' : '') + '>' + esc(shortName(c)) + '</h2><p>' + esc(sub || c.symbol) + '</p></div></div>' +
       '<div class="dr-bb__big dp-hero__big">' + U().chg(isNum(r12) ? r12 * 100 : null, { digits: 0, big: true }) + '<div><b class="dr-bb__story">' + esc(K().story(c)) + '</b><span>' + esc(heroWhy(c)) + '</span></div></div>' +
-      '<div class="dr-bb__act dp-hero__act"><a class="dp-btn" href="' + esc(K().stockHref(ctx, c.symbol)) + '" aria-label="' + esc(shortName(c) + ' ansehen') + '">Ansehen</a>' +
+      '<div class="dr-bb__act dp-hero__act"><a class="dp-btn" href="' + esc(K().stockHref(ctx, c.symbol)) + '"' + stockAttrs(c) + ' aria-label="' + esc(shortName(c) + ' ansehen') + '">Ansehen</a>' +
       '<button type="button" class="dp-rnd dr-bb__keep" aria-pressed="false">' + U().glyph('heart', 18) + '</button>' +
       '<button type="button" class="dp-rnd dr-bb__q" aria-label="Warum steht ' + esc(shortName(c)) + ' hier?">?</button></div></div>';
     art.querySelector('.dr-bb__chart').appendChild(K().spark(c, { big: true, width: heroWidth(), height: 260 }));
