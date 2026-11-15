@@ -6,7 +6,7 @@ import {readFile,mkdir,writeFile,stat} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
-import {checkStartPage} from './start-page-checks.mjs';
+import {checkIphonePreview} from './iphone-preview-checks.mjs';
 import {checkConsentDisclosure} from './consent-disclosure-checks.mjs';
 
 const output=resolve(root,'tests/output/browser');
@@ -16,7 +16,7 @@ await writeFile(privacyPath,'<!doctype html><html lang="de"><head><title>Testfix
 await build({output:resolve(output,'blocked')});
 await build({output:resolve(output,'ready'),config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
 await build({output:resolve(output,'controlled'),config:{mode:'controlled',privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
-const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.svg':'image/svg+xml','.woff2':'font/woff2','.mp4':'video/mp4'};
+const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.png':'image/png','.svg':'image/svg+xml','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{
   try{const pathname=new URL(req.url,'http://localhost').pathname;let path=resolve(output,((pathname.startsWith('/ready/')||pathname.startsWith('/blocked/')||pathname.startsWith('/controlled/'))?'':'ready/')+'.'+pathname);if(!path.startsWith(output+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.writeHead(404);res.end('404');}
 });
@@ -26,40 +26,36 @@ const screenshots=resolve(root,'review');await mkdir(screenshots,{recursive:true
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});
 const metrics=[];
 try{
-  // The former height budgets (1800/1688 px) belonged to the compact coming-soon page. The website is a full page;
-  // instead the signup must be reachable through its anchor on every viewport (checked below).
-  for(const [name,width,height] of [['desktop',1440,900],['iphone',390,844],['narrow',320,800]]){
+  for(const [name,width,height,limit] of [['desktop',1440,900,1800],['iphone',390,844,1688],['narrow',320,800,Infinity]]){
     const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:name==='iphone'?2:1,reducedMotion:'reduce',isMobile:name==='iphone',hasTouch:name==='iphone'});
     const page=await context.newPage();
     const errors=[],external=[];page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url())});
     await page.goto(base+'/blocked/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
     const m=await page.evaluate(()=>({width:innerWidth,scrollWidth:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
-    assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
+    const totalLimit=limit;
+    assert.ok(m.height<=totalLimit,`${name}: compact coming-soon page (${m.height})`);assert.equal(m.scrollWidth,width,`${name} horizontal overflow`);
     assert.equal(await page.locator('#email').isDisabled(),true);assert.equal(await page.locator('button[type=submit]').isDisabled(),true);
     assert.equal(await page.locator('#consent').isChecked(),false);
     await page.keyboard.press('Tab');assert.equal(await page.locator(':focus').innerText(),'Zum Inhalt');
     assert.notEqual(await page.locator(':focus').evaluate(e=>getComputedStyle(e).outlineStyle),'none');
-    await checkStartPage(page);
+    await checkIphonePreview(page);
     await checkConsentDisclosure(page);
-    await page.goto(base+'/blocked/#newsletter',{waitUntil:'networkidle'});
-    assert.ok(await page.locator('#newsletter-form').evaluate(e=>{const r=e.getBoundingClientRect();return r.top<innerHeight&&r.bottom>0;}),`${name}: signup reachable through #newsletter`);
-    await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     assert.equal(await page.locator('input[type=password],script[src*="access"],script[src*="pwa"]').count(),0);
     assert.equal(await page.locator('a[href^="/discover"],a[href^="/quant"],a[href^="/ask"]').count(),0);
     assert.equal(await page.locator('#email').getAttribute('type'),'email');
     assert.equal(await page.locator('label[for=email]').innerText(),'Deine E-Mail-Adresse');
     const accessibility=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(accessibility.violations.map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})),[],`${name} axe`);
     assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
-    if(name!=='narrow')await page.screenshot({path:resolve(screenshots,name+'.png')});
+    if(name!=='narrow')await page.screenshot({path:resolve(screenshots,name+'.png'),fullPage:true});
     metrics.push({name,viewport:`${width} × ${height}`,...m,axeViolations:accessibility.violations.length});
     // 200% text reflow: content may grow vertically, never horizontally or clip.
-    // The page uses px/clamp fonts: changing only root font-size would not test
+    // Research uses px/clamp fonts: changing only root font-size would not test
     // its actual text. Double every content font from a simultaneous snapshot;
-    // keep the aria-hidden illustrations and the device frames at their original image scale.
+    // keep the aria-hidden device illustration at its original image scale.
     await page.evaluate(()=>{
-      const rows=[...document.querySelectorAll('body *')].filter(e=>!e.closest('[aria-hidden="true"],.dev')&&e.namespaceURI==='http://www.w3.org/1999/xhtml'&&([...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())||e.matches('input,button'))).map(e=>[e,parseFloat(getComputedStyle(e).fontSize),parseFloat(getComputedStyle(e).lineHeight)]);
+      const rows=[...document.querySelectorAll('body *')].filter(e=>!e.closest('[aria-hidden="true"],.phone')&&e.namespaceURI==='http://www.w3.org/1999/xhtml'&&([...e.childNodes].some(n=>n.nodeType===3&&n.textContent.trim())||e.matches('input,button'))).map(e=>[e,parseFloat(getComputedStyle(e).fontSize),parseFloat(getComputedStyle(e).lineHeight)]);
       for(const[e,size,line]of rows){e.style.fontSize=size*2+'px';if(Number.isFinite(line))e.style.lineHeight=line*2+'px';}
-    });assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name} text zoom overflow`);assert.ok(await page.locator('footer.foot').isVisible());
+    });assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name} text zoom overflow`);assert.ok(await page.locator('.footer').isVisible());
     await context.close();
   }
   // All network responses below are synthetic; no real contacts or messages.

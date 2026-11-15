@@ -1,18 +1,4 @@
-# Vision Universe · Website und Anmeldung auf www
-
-**Stand 14.11.2026 (Owner: „umsetzen, live nehmen“):** Unter **https://www.visionuniverse.de/** steht statt der Coming-soon-Seite die freigegebene Website („Website-Mock-up 3“: Start, App, zwölf Module, News, Aktienmagazin, Fragen). Ihre Seiten und `site/` schreibt `node products/website2/build.mjs --target www` als committete Dateien hierher, nie von Hand ändern; Regeln und Farben stehen in [products/website2/README.md](../products/website2/README.md). Unverändert bleiben das Anmeldeformular ([newsletter-form.html](newsletter-form.html), wörtlich in der Startseite unter `#newsletter`), seine Freigabestufen, `newsletter.js`, der Endpunkt, alle Rechts- und Bestätigungsseiten, `/instagram/`, `/partner/` und der Veröffentlichungsmodus (ohne `LANDING_PUBLICATION_MODE=production` weiter `noindex`). Die Website stellt keine Anfrage an eine andere Adresse; Artikel, Heft und Report stehen fest im Bau (`site/insights.json`) und verlinken nur die öffentlich lesbaren Insights-Seiten auf research.
-
-Prüfungen: `npm test` (dazu `tests/site.test.mjs`), `npm run test:browser` (dazu `tests/site.browser.mjs`: jede Seite bei 1440, 390 und 320 px auf Fehler, fremde Anfragen, Überlauf, axe, 200 % Text, 44-px-Flächen, Links), `npm run test:design`. Die Prüfungen der früheren Bildvorlage (ein iPhone mit zehn Modulnamen, Höhenbudgets) sind durch die gleichwertigen Anforderungen der neuen Startseite ersetzt (`tests/start-page-checks.mjs`); alle Sicherheits-, Einwilligungs-, Formular-, Rechtstext- und WCAG-Prüfungen gelten unverändert. Die folgenden Abschnitte beschreiben die Coming-soon-Fassung bis 14.11.2026 und bleiben für Newsletter, Hosting und Rechtstexte maßgeblich.
-
-Dazu seit 14.11.2026:
-
-- **Rechts- und Bestätigungsseiten hell:** Impressum, Datenschutz und die drei Newsletter-Seiten tragen das Kleid der Website (weiß, schwarze Schrift, Kopf als Pille). Geändert ist nur `legal.css`; die HTML-Dateien sind Byte für Byte unverändert, die in `review/legal-revisions.json` festgehaltenen SHA-256 stimmen weiter, Text und Linkziele prüft `scripts/compare-research.mjs` wie bisher gegen die Basis.
-- **Social-Bild:** `node scripts/social-preview.mjs` nimmt `assets/social-preview.png` (1200 × 630) aus der gebauten Startseite auf.
-- **Artikel, Heft, Report:** `node products/insights/build.mjs` frischt `site/insights.json`, die Bilder und die Seiten hier mit auf; die Dateien gehören in denselben Commit wie der Artikel. Kein eigener Zeitplan.
-- **Entfernt** (von nichts mehr genannt): `scripts/check-live.mjs`, `scripts/discover-preview.mjs`, `tests/discover-swipe-checks.mjs`, `tests/iphone-preview-checks.mjs`, `assets/home/discover-swipe.js`. **Geblieben, aber nicht mehr ausgeliefert:** `styles.css`, `presentation.js`, `assets/home/`, `scripts/sync-research.mjs`, `scripts/module-preview.mjs`, `reference/` (Tests und der Betreiberablauf nennen sie).
-- **Betreiberablauf Newsletter:** `scripts/newsletter_release.py` vergleicht vor der Operation „public“ die geprüften Dateien (`TESTED_FILES`, darunter `index.html`, `scripts/build.mjs`, `legal.css`) mit dem abgenommenen Stand. Sie haben sich mit der neuen Website geändert: Eine frühere DOI-Abnahme lässt sich für einen erneuten Lauf dieser Operation nicht wiederverwenden. Formular, Einwilligungstext, Feldnamen, Endpunkt und die Freigabestufen im Bau sind unverändert.
-
-## Coming-soon-Fassung bis 14.11.2026
+# Vision Universe · Coming soon
 
 Newsletter öffentlich seit 16.10.2026: konkrete Datenschutzfassung freigegeben, DOI und deutsche Abmeldung tatsächlich abgenommen. [Erfolgreiche öffentliche Freischaltung](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38903721680), anschließend Hauptdomain ohne Testlink geprüft. Tracking **Ja / unbekannte Zustimmung Nein**; Aufbewahrung und Vorschauenspeicherung ohne erfundene Zusagen dokumentiert. Kein Newsletter an den Bestand.
 
@@ -34,7 +20,7 @@ Tatsächlich eingerichtet und am 10.10.2026 geprüft: Projekt **vision-universe*
 
 - Neue Landingpage: [Desktop vorher](review/redesign/before-desktop.png) / [nachher](review/redesign/after-desktop.png), [iPhone vorher](review/redesign/before-iphone.png) / [nachher](review/redesign/after-iphone.png).
 - Schmaler iPhone-SE-Viewport (375 × 667): [ganze Seite](review/redesign/after-iphone-se.png).
-- Rechtsseiten (seit 14.11.2026 hell): [Impressum Desktop](review/redesign/after-impressum-desktop.png), [Impressum iPhone](review/redesign/after-impressum-iphone.png), [Datenschutz iPhone](review/redesign/after-datenschutz-iphone.png).
+- Dunkle Rechtsseiten: [Impressum Desktop](review/redesign/after-impressum-desktop.png), [Impressum iPhone](review/redesign/after-impressum-iphone.png), [Datenschutz iPhone](review/redesign/after-datenschutz-iphone.png).
 - Formularfolge: [Bestätigungshinweis iPhone](review/redesign/after-newsletter-iphone.png).
 - [Reproduzierbare Nachweise und genaue Grenzen](review/redesign/README.md), [Messwerte](review/redesign/checks.json). Die Bilder sind lokale Builds mit unveränderter freigegebener Datenschutzdatei und ohne Backend-Schlüssel. Sie belegen keine neue Live-Veröffentlichung.
 
