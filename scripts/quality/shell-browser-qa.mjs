@@ -348,7 +348,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
         dock: getComputedStyle(document.getElementById('vu-dock').shadowRoot.querySelector('nav')).backgroundColor, stored: localStorage.getItem('vu-discover-theme-v1'),
         head: document.querySelector('vu-navigation').getAttribute('theme') }));
       if (after.t === before || after.stored !== after.t || after.head !== after.t) fail(where, 'Theme-Wechsel greift nicht: ' + JSON.stringify({ before, after }));
-      if (after.dock !== 'rgb(0, 0, 0)') fail(where, 'Leiste verliert ihre Flaeche: ' + after.dock);
+      if (after.dock !== 'rgba(12, 12, 13, 0.92)') fail(where, 'Leiste verliert ihre Flaeche (Prototyp .dock): ' + after.dock);
       await pick(before === 'dark' ? 'Dunkel' : 'Hell');
       if (await page.evaluate(() => document.documentElement.getAttribute('data-theme')) !== before) fail(where, 'Theme springt nicht zurueck');
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
@@ -390,7 +390,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
       if(m.legal<5||!m.note||m.settings!==4) fail(where,'Rechtliches oder Einstellungen fehlen im Menü: '+JSON.stringify({legal:m.legal,note:m.note,settings:m.settings}));
       // Bis 760 px ein Sheet von unten (Griff, runde Ecken, hoechstens 90 % hoch, volle Breite), darueber die Seitenleiste rechts.
       if(m.vw<=760?(m.panelTop<m.vh*0.1-1||m.radius!=='30px'||!m.grab||m.panelLeft>1||m.panelRight<m.vw-1):(m.panelTop>1||m.radius!=='0px'||m.grab||m.panelRight<m.vw-1||m.panelLeft<m.vw-441)) fail(where,'Menü hat nicht die Form für diese Breite: '+JSON.stringify({top:m.panelTop,left:m.panelLeft,right:m.panelRight,radius:m.radius,grab:m.grab,vw:m.vw,vh:m.vh}));
-      if(m.panelBg!=='rgb(0, 0, 0)') fail(where,'Menü ist nicht schwarz: '+m.panelBg);
+      if(m.panelBg!=='rgb(21, 21, 22)') fail(where,'Menü trägt nicht den Bogen des Prototyps (#151516): '+m.panelBg);
       if(m.icons.length!==11||m.icons.some(href=>!href.startsWith('/assets/product-icons.svg#'))) fail(where,'Original Produkticons fehlen');
       await menuOpen(page, where);
       const menuSmall = await smallTargets(page);
@@ -419,7 +419,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
       });
       if(!trappedLast) fail(where,'Shift+Tab verlässt die Fokusfalle');
       await page.keyboard.press('Tab');
-      if(!await page.evaluate(()=>{const root=document.querySelector('vu-navigation').shadowRoot;return root.activeElement===root.querySelector('.panel-head a')})) fail(where,'Tab kehrt nicht zum ersten Menülink zurück');
+      if(!await page.evaluate(()=>{const root=document.querySelector('vu-navigation').shadowRoot;return root.activeElement===root.querySelector('.panel-head .close')})) fail(where,'Tab kehrt nicht zum ersten Menülink zurück');
       if(path==='/quant/#/') await page.screenshot({path:`${out}/menu-expanded-${vpName}.png`});
       await page.keyboard.press('Escape');
       await page.waitForFunction(() => !document.querySelector('vu-navigation').hasAttribute('open'), null, { timeout: 3000 });

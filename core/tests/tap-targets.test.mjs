@@ -24,6 +24,10 @@ test('44-px-Trefferflächen: Abschnittslinks, Discover-„Alle“, Screener-Satz
   assert.match(read('fundamental/app.css'), /\.fu-qchips\{padding-top:2px;padding-bottom:2px;margin-top:8px;margin-bottom:-2px\}/);
 });
 
-test('Kopf mobil: Suche und Profil (40 px breit) treffen auf 44 px Breite', () => {
-  assert.match(read('assets/site-navigation.js'), /\.tools\{gap:2px\}\.hb\{width:40px;position:relative\}\.hb::after\{content:"";position:absolute;inset:0 -2px\}/);
+test('Kopf nach Prototyp: Welten-Wechsler, „i“, Datenstand, Suche und Profil (38 px hoch) treffen auf 44 px', () => {
+  const nav = read('assets/site-navigation.js');
+  assert.match(nav, /\.hb\{position:relative;width:38px;height:38px;/);
+  assert.match(nav, /\.mod::after,\.hb::after,\.live::after\{content:"";position:absolute;inset:-3px\}/);
+  assert.match(nav, /\.tools\{display:flex;align-items:center;gap:8px;/, '8 px Abstand: die 44-px-Flächen überlappen nicht');
+  assert.match(nav, /\.tab::after\{content:"";position:absolute;inset:-4px 0\}/, 'Reiter-Pille 36 px, Fläche 44 px');
 });

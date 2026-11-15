@@ -49,7 +49,7 @@ d.addEventListener("keydown",function(v){if(v.key==="/"&&!/^(INPUT|TEXTAREA|SELE
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <!-- Farbschema vor dem ersten Bild: Hell oder die ausdruecklich gemerkte dunkle Wahl.
      Dieselbe Logik lebt in /discover/engines/theme.js. -->
-<script>(function(){var w="light";try{if(localStorage.getItem("vu-discover-theme-v1")==="dark")w="dark";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<script>(function(){var w="dark";try{if(localStorage.getItem("vu-discover-theme-v1")==="light")w="light";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/discover/app.css">
 <link rel="stylesheet" href="/discover/home.css">
 <link rel="stylesheet" href="/discover/ui/featured.css">

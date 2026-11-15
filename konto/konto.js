@@ -290,16 +290,16 @@
       });
       if (eff.goal) $('ka-goal').textContent = S.GOALS[eff.goal].title;
     } else $('ka-mode').hidden = true;
-    var theme = (me.settings && me.settings.appearance) || 'system';
+    /* Ohne gespeicherte Angabe zeigt die Auswahl, was auf diesem Gerät gilt (Standard dunkel). */
+    var theme = (me.settings && me.settings.appearance) || (window.VUTheme && window.VUTheme.choice ? window.VUTheme.choice() : 'dark');
     var paintTheme = function (t) { Array.prototype.forEach.call($('ka-theme').children, function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-theme') === t)); }); };
     paintTheme(theme);
     $('ka-theme').addEventListener('click', function (e) {
       var b = e.target.closest('[data-theme]'); if (!b) return;
       var t = b.getAttribute('data-theme');
       paintTheme(t);
-      if (t === 'system') { try { localStorage.removeItem('vu-discover-theme-v1'); } catch (err) { /* leer */ } }
-      if (window.VUTheme && window.VUTheme.set) window.VUTheme.set(t === 'system' ? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') : t);
-      if (t === 'system') { try { localStorage.removeItem('vu-discover-theme-v1'); } catch (err) { /* leer */ } }
+      /* „Wie Gerät“: der Rahmen merkt sich die Wahl und folgt dem Gerät (assets/site-navigation.js, VUTheme.set('system')). */
+      if (window.VUTheme && window.VUTheme.set) window.VUTheme.set(t);
       A.patch('/v1/me', {settings: {appearance: t}}).then(function (r) { if (!r.ok) fail(r); });
     });
   }
