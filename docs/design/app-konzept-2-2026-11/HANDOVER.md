@@ -24,11 +24,11 @@ Das war falsch. Maßstab ist jetzt je Bildschirm das Vergleichsbild Prototyp | U
 ## Stand je Bildschirm
 | Bildschirm | Stand |
 |---|---|
-| Rahmen (Kopf, Menü „Dein Universe“, Dock, Dunkel als Standard, Lader `data-vu-stock`) | PR #2015 |
-| Home `/willkommen/` | PR #2015 |
-| Aktie `/aktie/#/<T>` + Vorschau `assets/vu-stock-sheet.js` | PR #2015 |
-| Discover-Start `/discover/` | Zwischenstand, ungeprüft: `zwischenstand/discover.patch` |
-| Quant-Start `/quant/` | Zwischenstand, ungeprüft: `zwischenstand/quant.patch` |
+| Rahmen (Kopf, Menü „Dein Universe“, Dock, Dunkel als Standard, Lader `data-vu-stock`) | live (#2015) |
+| Home `/willkommen/` | live (#2015) |
+| Aktie `/aktie/#/<T>` + Vorschau `assets/vu-stock-sheet.js` | live (#2015) |
+| Discover-Start `/discover/` | gebaut und geprüft, Vergleichsbilder dem Owner gezeigt (15.11.); Merge nach Owner-Freigabe der Bilder |
+| Quant-Start `/quant/` | gebaut und geprüft, Vergleichsbilder dem Owner gezeigt (15.11.); Merge nach Owner-Freigabe der Bilder. Linie der Marktlage erscheint nach dem nächsten Marktlage-Lauf (neues Feld `history`) |
 | Supertrader, News, Ich, Technical, Fundamental, Hedgefonds, Screener | offen, je nach AUFTRAG.md |
 | Module ohne Prototyp-Bildschirm (Elliott, Vorsorge/Portfolios, Konto, Atlas) | offen: im Design des Prototyps |
 
@@ -48,20 +48,11 @@ Wartet auf: Owner-Wahl der Hero-Variante (A–E, Empfehlung A) und Owner-Freigab
 Newsletter-Formular öffnet sofort, Datenschutztext nennt „Coming-soon-Seite“, Store-Badges prüfen.
 
 ## Wiederaufnahme: genau diese Schritte (Stand 15.11.2026, 09:15 UTC)
-1. **PR #2015** (Rahmen, Home, Aktie, diese Übergabe) prüfen: ist `ci-gate` grün, squash-mergen (`scripts/ci/wait-gate.sh 2015`).
-   Ist er rot: Ursache aus den Job-Logs beheben, pushen, warten, mergen. Danach auf research live im Browser ansehen.
-   **Stand 09:17 UTC (Head b5e0ff8604):** rot waren `core` (behoben in 05d07c85c3: Rechtsfuß-Test zählte docs/ mit), `package`,
-   `technical`, „Browser (Chromium und WebKit/iPhone)“, `vu2-browser-qa`, `discover-frontend`, `shell-shell` (webkit-390/430/1024,
-   chromium-768). Die Browser-QAs liefen lokal nie vollständig; sehr wahrscheinlich erwarten sie noch den alten Kopf (Atlas-Knopf,
-   Logo-Link, Reiterzeile) bzw. ein helles Schema (Dunkel ist jetzt Standard; der Rahmen nimmt `navigator.webdriver` aus, aber
-   Skripte ohne gesetztes Schema sehen dunkel). Je Job die Logs lesen (`get_job_logs`, `failed_only`), Ursache beheben – QA an den
-   neuen, vom Owner gewollten Kopf anpassen, nie Prüfungen löschen oder überspringen.
-2. **Discover- und Quant-Start** aus den Zwischenständen holen. Beide Patches sind auf `main` von `c02583e6d8` erstellt
-   (`git format-patch`), also: neuen Zweig von `main`, dann `git am docs/design/app-konzept-2-2026-11/zwischenstand/discover.patch`
-   (bei Konflikten `git am -3`). Die Arbeit war **nicht fertig geprüft** (die Agenten liefen noch Tests): Tests laufen lassen
-   (`node --test "discover/tests/*.test.mjs"`, `node --test "quant/tests/*.test.mjs"`, Core), Vergleichsbilder Prototyp | Umsetzung
-   aufnehmen (390 × 844, dunkel), nachbessern, Owner die Bilder zeigen, dann ein PR. Danach den Ordner `zwischenstand/` löschen.
-   Discover setzt `data-vu-bleed` und `data-vu-tabs="inhalt"` am `<html>`; Discover-Budget ≤ 180.000 Byte beachten.
+1. **Erledigt 15.11.:** PR #2015 gemergt (Rahmen, Home, Aktie). Gelernt für weitere Bildschirme: die Browser-QAs prüfen genau eine
+   `h1` je Seite (Menütitel ist `h2`), Tippflächen ≥ 44 px (Prototyp-Maße bleiben sichtbar, die Fläche wächst über transparenten Rand
+   bzw. `margin-block:-4px`), dunklen Standard (`theme-color` `#08080a`) und das Anfrage-Budget je Ansicht (`scripts/vu2/resource-budget.mjs`).
+2. **Discover- und Quant-Start** liegen fertig auf einem Zweig (Zwischenstände übernommen, geprüft, Ordner `zwischenstand/` gelöscht);
+   Vergleichsbilder hat der Owner gesehen. Nach seiner Freigabe: PR bei Grün mergen.
 3. **Weitere Bildschirme** je nach [AUFTRAG.md](AUFTRAG.md): Supertrader, News, Ich, Technical, Fundamental, Hedgefonds, Screener,
    dann Module ohne Prototyp-Bildschirm (Elliott, Vorsorge/Portfolios, Konto, Atlas) im Design des Prototyps.
    Je Bildschirm: bauen, Vergleichsbild, Owner zeigen, PR, bei Grün mergen.
