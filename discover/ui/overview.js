@@ -252,17 +252,16 @@
   /* =====================================================================
      Konzept „Reihe für Reihe“, PR 5 (Folien AX01–AX05, Screens a-top, a-full,
      a-chapter, a-next): die Aktie als Titelseite. Unter Kopf und Chart:
-     Etiketten · Story in drei Sätzen · 7 Kapitel (zugeklappt, Inhalt der
+     Etiketten · Story in drei Sätzen · 7 Kapitel (je ein Fenster, Inhalt der
      bisherigen Abschnitte unverändert) · Reihen der Aktie · Mehr wie … ·
      Gleiches Thema · Niedrigere Bewertung im Sektor. Kommt man aus einer Reihe
      (#/s/U/T?reihe=…), oben die Reihen-Leiste und am Ende die nächste Aktie.
      Nur für US-Aktien; Europa behält den bisherigen Überblick.
      ===================================================================== */
-  var OPEN_KEY = "vu-discover-chapters-v1";
-  function openSet() { try { var a = JSON.parse(localStorage.getItem(OPEN_KEY) || "[]"); return Array.isArray(a) ? a : []; } catch (e) { return []; } }
-  function saveOpen(id, on) {
-    try { var a = openSet().filter(function (x) { return x !== id; }); if (on) a.push(id); localStorage.setItem(OPEN_KEY, JSON.stringify(a)); } catch (e) { /* kein Speicher */ }
-  }
+  /* Owner 15.11.2026: Kapitel öffnen als Fenster von unten (wie Fundamental, Hedgefonds, Elliott) statt an Ort und Stelle
+     aufzuklappen. Es ist immer nur ein Kapitel offen; das Gedächtnis „offene Kapitel“ des Geräts entfällt. */
+  var OPEN_KEY = "vu-discover-chapters-v1", SHEET_ID = "dv3-kapitel-fenster";
+  try { global.localStorage && global.localStorage.removeItem(OPEN_KEY); } catch (e) { /* kein Speicher */ }
   function reiheAusAdresse() { var m = /[?&]reihe=([a-z0-9-]+)/.exec(String(global.location && global.location.hash || "")); return m ? m[1] : null; }
   function R() { return D.Reihen; }
   function rowName(id, fallback) { return R() ? R().title(id, fallback) : titleCase(fallback || id); }
@@ -358,13 +357,12 @@
       ["indizes", "In welchen Indizes?", ix.map(function (x) { return (x.shortLabel || x.indexName).replace("NASDAQ-100", "Nasdaq-100").replace("Dow Jones Industrial Average", "Dow") + (isNum(x.weight) ? " " + num(x.weight, 1) + " %" : ""); }).join(" · "), thumbIndex(d), indizes(d)]
     ].filter(function (k) { return k[4]; });
   }
-  function kapitel(d, universe) {
-    var ks = kapitelListe(d, universe), open = openSet();
+  function kapitel(ks) {
     if (!ks.length) return "";
     /* App-Konzept 2: der erklärende Satz steht hinter dem „?“ (ein Tipp), nicht mehr als Zeile unter der Überschrift. */
-    return '<section class="dv3-sec dv3-kapitel" data-sec="kapitel">' + U().sect("Kapitel").replace("</h2>", " <span class=\"dv3-kn\">" + ks.length + "</span></h2>" + U().q(ks.length + " Kapitel, je eins aufklappen. Zusammen das, was die Seite bisher untereinander zeigte.", "Kapitel")).replace("</div>", '<button type="button" class="dv3-alle" aria-label="Alle Kapitel aufklappen">Alle</button></div>') +
+    return '<section class="dv3-sec dv3-kapitel" data-sec="kapitel">' + U().sect("Kapitel").replace("</h2>", " <span class=\"dv3-kn\">" + ks.length + "</span></h2>" + U().q(ks.length + " Kapitel, ein Tipp öffnet eines als Fenster. Zusammen das, was die Seite bisher untereinander zeigte.", "Kapitel")) +
       '<div class="dv3-eps">' + ks.map(function (k, i) {
-        return '<details class="dv3-ep" data-ch="' + k[0] + '"' + (open.indexOf(k[0]) >= 0 ? " open" : "") + '><summary><b class="dv3-ep-n">' + (i + 1) + "</b>" + k[3] + '<span class="dv3-ep-t"><b>' + esc(k[1]) + "</b>" + (k[2] ? "<span>" + esc(k[2]) + "</span>" : "") + '</span><span class="dv3-ep-c" aria-hidden="true">' + U().glyph("next", 15) + U().glyph("x", 15) + '</span></summary><div class="dv3-ep-body">' + k[4] + "</div></details>";
+        return '<button type="button" class="dv3-ep" data-ch="' + k[0] + '" aria-haspopup="dialog"><b class="dv3-ep-n">' + (i + 1) + "</b>" + k[3] + '<span class="dv3-ep-t"><b>' + esc(k[1]) + "</b>" + (k[2] ? "<span>" + esc(k[2]) + "</span>" : "") + '</span><span class="dv3-ep-c" aria-hidden="true">' + U().glyph("next", 15) + "</span></button>";
       }).join("") + "</div></section>";
   }
   /** „{Name} steht in N Reihen“: Platz groß, Tipp öffnet die Reihe. */
@@ -392,16 +390,6 @@
   function alleN(rowId) {
     var R = D.Reihen, n = R && R.available ? R.available(global.VUDiscoverMeta, "US_REAL")[rowId] : null;
     return isNum(n) ? "Alle " + num(n, 0) : "Alle";
-  }
-  /** „Alle“ an den Kapiteln: klappt alle auf, beim zweiten Tipp wieder zu. */
-  function bindAlle(box) {
-    var b = box.querySelector(".dv3-alle"); if (!b) return;
-    b.addEventListener("click", function () {
-      var eps = box.querySelectorAll(".dv3-ep"), zu = Array.prototype.some.call(eps, function (x) { return !x.open; });
-      eps.forEach(function (x) { x.open = zu; });
-      b.textContent = zu ? "Alle zu" : "Alle";
-      b.setAttribute("aria-label", zu ? "Alle Kapitel zuklappen" : "Alle Kapitel aufklappen");
-    });
   }
   function seriesFor(c) {
     var I = global.VUCore && global.VUCore.Identity;
@@ -449,37 +437,55 @@
       }, { passive: true });
     }).catch(function () {});
   }
-  function bindKapitel(box) {
-    box.querySelectorAll(".dv3-ep").forEach(function (det) {
-      det.addEventListener("toggle", function () { saveOpen(det.getAttribute("data-ch"), det.open); });
+  function geschaeftBinden(scope, d) {
+    var g = scope.querySelector(".dv3-gesch");
+    if (!g) return;
+    geschaeftZeichnen(g, d, g.getAttribute("data-track"));
+    g.addEventListener("click", function (e) {
+      var b = e.target.closest && e.target.closest(".vu-seg button");
+      if (!b) return;
+      g.querySelectorAll(".vu-seg button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      geschaeftZeichnen(g, d, b.getAttribute("data-id"));
     });
   }
+  function fensterZu() {
+    var old = document.getElementById(SHEET_ID);
+    if (!old) return;
+    if (U() && U().closeSheet) U().closeSheet(old);
+    old.remove();
+  }
+  /** Ein Kapitel als Fenster von unten: Titel des Kapitels, darunter der unveränderte Abschnitt. */
+  function kapitelFenster(k, d) {
+    fensterZu();
+    var wrap = document.createElement("div");
+    wrap.innerHTML = U().sheet(SHEET_ID, k[1], '<div class="vu-ui dv3-overview dv3-titel dv3-ep-body" data-ch="' + k[0] + '">' + k[4] + "</div>");
+    var el = wrap.firstChild, body = el.querySelector(".dv3-ep-body");
+    document.body.appendChild(el);
+    geschaeftBinden(body, d);
+    U().bindHelp(body);
+    /* Ein Link im Kapitel (Thema, Index, Kennzahlen) führt weiter: das Fenster geht zu. */
+    el.addEventListener("click", function (e) { if (e.target.closest && e.target.closest("a[href]")) fensterZu(); });
+    el.addEventListener("vu-sheet-close", function () { el.remove(); });
+    U().openSheet(el);
+    el.querySelector(".vu-sheet-ui").scrollTop = 0;
+    return el;
+  }
+  if (global.addEventListener) global.addEventListener("hashchange", fensterZu);
   function renderTitel(d, universe, opts) {
-    var html = [etiketten(d, universe), story(d), kapitel(d, universe), reihen(d, universe), schienen(d, universe)].join("");
+    var ks = kapitelListe(d, universe);
+    var html = [etiketten(d, universe), story(d), kapitel(ks), reihen(d, universe), schienen(d, universe)].join("");
     var box = document.createElement("div");
     box.className = "vu-ui dv3-overview dv3-titel";
     box.appendChild(frag(html));
-    var g = box.querySelector(".dv3-gesch");
-    if (g) {
-      geschaeftZeichnen(g, d, g.getAttribute("data-track"));
-      g.addEventListener("click", function (e) {
-        var b = e.target.closest && e.target.closest(".vu-seg button");
-        if (!b) return;
-        g.querySelectorAll(".vu-seg button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        geschaeftZeichnen(g, d, b.getAttribute("data-id"));
-      });
-    }
-    bindKapitel(box);
+    fensterZu();
+    /* Tipp auf ein Kapitel oder auf eine Story-Kachel öffnet das Kapitel als Fenster. */
     box.addEventListener("click", function (e) {
-      var t = e.target.closest && e.target.closest(".dv3-story-r[data-ch]"), ep = t && box.querySelector('.dv3-ep[data-ch="' + t.getAttribute("data-ch") + '"]');
-      if (!ep) return;
-      ep.open = true;
-      var still = global.matchMedia && global.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (ep.scrollIntoView) ep.scrollIntoView({ block: "start", behavior: still ? "auto" : "smooth" });
+      var t = e.target.closest && e.target.closest(".dv3-ep[data-ch], .dv3-story-r[data-ch]");
+      var k = t && ks.filter(function (x) { return x[0] === t.getAttribute("data-ch"); })[0];
+      if (k) kapitelFenster(k, d);
     });
     /* Poster wie auf der Startseite, mit Herz (Merken), wenn die App einen Merkzettel mitgibt (ctx.watch). */
     fillPosters(box, d, universe, Object.assign({}, opts || {}, { universeId: universe }));
-    bindAlle(box);
     herkunft(box, d, universe);
     U().bindHelp(box);
     return box;
@@ -497,16 +503,7 @@
     var box = document.createElement("div");
     box.className = "vu-ui dv3-overview";
     box.appendChild(frag(html));
-    var g = box.querySelector(".dv3-gesch");
-    if (g) {
-      geschaeftZeichnen(g, d, g.getAttribute("data-track"));
-      g.addEventListener("click", function (e) {
-        var b = e.target.closest && e.target.closest(".vu-seg button");
-        if (!b) return;
-        g.querySelectorAll(".vu-seg button").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
-        geschaeftZeichnen(g, d, b.getAttribute("data-id"));
-      });
-    }
+    geschaeftBinden(box, d);
     U().bindHelp(box);
     return box;
   }

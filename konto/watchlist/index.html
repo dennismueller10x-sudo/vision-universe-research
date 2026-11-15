@@ -17,7 +17,7 @@
 <!-- Watchlist-Detail (Mockup E09): Profi-Ansicht von Platz 1 der Leiste „Mein Bereich“; Zurück statt Brotkrumen. -->
 <nav class="ka-back" aria-label="Zurück"><a class="ka-back-link" href="/mein-dashboard/"><span class="vu-round" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></span><b>Watchlist</b></a></nav>
 <h1 class="ka-title">Alle Kennzahlen <span class="vu-pro">PRO</span></h1>
-<p class="ka-lead ka-lead--tight">Tiefe je Aktie: Faktoren, Signale, Chart, deine Notiz. Kurzansicht in <a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a>.</p>
+<p class="ka-lead ka-lead--tight">Tiefe je Aktie: Faktoren, Ereignisse, Chart, deine Notiz. Kurzansicht in <a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a>.</p>
 
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <div class="ka-skeleton" id="wl-loading" aria-hidden="true"></div>
@@ -31,12 +31,12 @@
 <option value="nearHigh">52W-Hoch oder nahe</option><option value="volume">Volumen auffällig</option><option value="attention">Prüfung offen</option>
 </select>
 <select class="ka-select" id="wl-sort" aria-label="Sortierung">
-<option value="relevance">Relevanz</option><option value="signal">Signal</option><option value="company">Unternehmen</option><option value="ticker">Kürzel</option>
+<option value="relevance">Relevanz</option><option value="signal">Ereignis</option><option value="company">Unternehmen</option><option value="ticker">Kürzel</option>
 <option value="added">Zuletzt hinzugefügt</option><option value="freshness">Aktualität</option>
 <option value="factor:momentum">Faktor Momentum</option><option value="factor:quality">Faktor Qualität</option><option value="factor:growth">Faktor Wachstum</option>
 <option value="factor:value">Faktor Bewertung</option><option value="factor:profitability">Faktor Profitabilität</option><option value="factor:risk">Faktor Risiko</option>
 </select>
-<label class="ka-check wl-group-toggle" for="wl-group"><input type="checkbox" id="wl-group">Nach Signal gruppieren</label>
+<label class="ka-check wl-group-toggle" for="wl-group"><input type="checkbox" id="wl-group">Nach Ereignis gruppieren</label>
 </div>
 <p class="wl-count ka-muted" id="wl-count"></p>
 <div id="wl-list"></div>
@@ -55,7 +55,7 @@
 <dl class="ka-kv wl-defs">
 <dt>Neues 52W-Hoch</dt><dd>Tageshoch erreicht das Hoch der letzten 252 Handelstage (split-bereinigt), nur bei aktuellem Datenstand.</dd>
 <dt>Nahe 52W-Hoch</dt><dd>Höchstens 5 % unter dem 52-Wochen-Hoch.</dd>
-<dt>52W-Hoch auf Wochen-/Monatsschluss</dt><dd>Historisches Signal aus Wochen- bzw. Monatskerzen, kein heutiges Hoch.</dd>
+<dt>52W-Hoch auf Wochen-/Monatsschluss</dt><dd>Historischer Befund aus Wochen- bzw. Monatskerzen, kein heutiges Hoch.</dd>
 <dt>Supertrader gültig</dt><dd>Nur Setups von Strategien mit erfüllten, vorab festgelegten Kriterien. Strategien in Prüfung erscheinen als „Forschung“.</dd>
 <dt>Quant</dt><dd>Sieben Faktoren mit Stufe aus der Position im Universum. Ein Gesamtscore ist nicht freigegeben.</dd>
 <dt>Veraltet</dt><dd>Der Datenstand ist älter als die Frist der Datenart; der Wert zählt dann in keiner Kennzahl mit.</dd>

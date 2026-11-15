@@ -36,7 +36,7 @@
   var UI_KEY = 'vu-watchlist-ui-v1';
   var FACTORS = ['quality', 'growth', 'momentum', 'value', 'profitability', 'revisions', 'risk'];
   var PRODUCT = {discover: 'Discover', quant: 'Quant', technical: 'Technical', technik: 'Chartbild', supertrader: 'Supertrader', fundamental: 'Fundamental'};
-  var ALERTS = [['PRICE_EVENT', 'Neues 52W-Hoch und Volumen'], ['SUPERTRADER_SIGNAL', 'Gültiges Supertrader-Signal'], ['QUANT_CHANGE', 'Deutliche Faktoränderung']];
+  var ALERTS = [['PRICE_EVENT', 'Neues 52W-Hoch und Volumen'], ['SUPERTRADER_SIGNAL', 'Supertrader: erfüllt die Regel einer Methode'], ['QUANT_CHANGE', 'Deutliche Faktoränderung']];
   var ICON = {
     bookmark: 'M6 3h12v18l-6-4-6 4z', high: 'M3 17l6-6 4 4 8-8M15 7h6v6', volume: 'M4 20V10M10 20V4M16 20v-8M22 20H2',
     trader: 'M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z', quant: 'M4 19h16M7 16V9M12 16V5M17 16v-4', alert: 'M12 8v5M12 17h.01M10.3 3.9L2 18a2 2 0 0 0 1.7 3h16.6A2 2 0 0 0 22 18L13.7 3.9a2 2 0 0 0-3.4 0z',
@@ -124,7 +124,7 @@
     var box = $('wl-kpis'), agg = W.aggregate(all), lim = state.limits;
     box.textContent = '';
     [[String(agg.total) + (lim && lim.items ? ' / ' + lim.items : ''), 'Beobachtet', 'bookmark', null],
-      [String(agg.validSupertrader), 'Gültiges Supertrader-Signal', 'trader', agg.validSupertrader ? 'up' : null],
+      [String(agg.validSupertrader), 'Supertrader: erfüllt die Regel einer Methode', 'trader', agg.validSupertrader ? 'up' : null],
       [String(agg.newHighs), 'Neues 52W-Hoch', 'high', agg.newHighs ? 'up' : null],
       [String(agg.nearHighs), 'Nahe 52W-Hoch', 'high', null],
       [String(agg.volumeSpikes), 'Volumen ≥ 2×', 'volume', null],
@@ -184,7 +184,7 @@
     if (s.state === 'STALE') return chip('Supertrader: veraltet', 'warn', 'clock');
     if (s.state !== 'AVAILABLE') return chip('Supertrader: ' + (s.reason === 'NOT_COVERED' ? 'keine Abdeckung' : 'nicht verfügbar'), 'muted');
     if (s.status === 'VALID_SIGNAL') return chip('Supertrader gültig', 'up', 'trader');
-    if (s.status === 'RESEARCH_ONLY') return chip('Supertrader: Forschung', 'muted', 'trader', 'Strategie in Prüfung – kein freigegebenes Signal');
+    if (s.status === 'RESEARCH_ONLY') return chip('Supertrader: Forschung', 'muted', 'trader', 'Strategie in Prüfung – kein freigegebenes Regel-Ergebnis');
     return chip('Supertrader: kein Setup', 'muted');
   }
   var TREND = {BULLISH: 'Aufwärtstrend', BEARISH: 'Abwärtstrend', MIXED: 'Gemischt', RANGE: 'Seitwärts', UNDETERMINED: 'Unklar'};
@@ -217,7 +217,7 @@
     }
     var remove = el('button', {type: 'button', className: 'wl-remove', 'aria-label': (v.ticker || 'Titel') + ' aus der Watchlist entfernen', 'aria-pressed': 'true', title: 'Aus der Watchlist entfernen'}, [icon('bookmark')]);
     remove.addEventListener('click', function () { removeItem(v, remove); });
-    /* Redesign 2027 (E09): Kopf wie die Aktienzeile (C10) – Logo, Name, Kurs mit Tagesbewegung; darunter Signale und Faktorbalken. */
+    /* Redesign 2027 (E09): Kopf wie die Aktienzeile (C10) – Logo, Name, Kurs mit Tagesbewegung; darunter Ereignisse und Faktorbalken. */
     var logo = el('span', {className: 'wl-logo', 'aria-hidden': 'true'});
     logo.appendChild(logoEl(v.ticker));
     price.appendChild(el('span', {className: 'wl-chg', 'data-chg': v.instrumentId}));
@@ -252,7 +252,7 @@
     body.appendChild(pair);
     // Supertrader
     var s = v.supertrader, ss = el('section', {className: 'wl-mini'}, [el('h3', {text: 'Supertrader'})]);
-    ss.appendChild(el('div', {}, [verdictEl(s.status === 'VALID_SIGNAL' ? 'strong' : 'none', s.status === 'VALID_SIGNAL' ? 'Gültiges Signal' : s.state === 'AVAILABLE' && s.entries && s.entries.length ? 'Forschung' : 'Kein Setup')]));
+    ss.appendChild(el('div', {}, [verdictEl(s.status === 'VALID_SIGNAL' ? 'strong' : 'none', s.status === 'VALID_SIGNAL' ? 'Regel erfüllt' : s.state === 'AVAILABLE' && s.entries && s.entries.length ? 'Forschung' : 'Kein Setup')]));
     if (s.state === 'AVAILABLE' && s.entries.length) {
       var ul = el('ul', {className: 'wl-list'});
       s.entries.forEach(function (e) { ul.appendChild(el('li', {}, [el('b', {text: e.name}), ' · ' + e.stateLabel + ' · ', el('span', {className: e.released ? null : 'ka-muted', text: e.released ? 'freigegeben' : (e.levelLabel || 'nicht freigegeben')})])); });
