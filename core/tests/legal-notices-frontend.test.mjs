@@ -89,6 +89,9 @@ test("keine ausgelieferte HTML-Seite enthält den Fuß-Satz außerhalb des Menü
   const files = execFileSync("git", ["ls-files", "-z", "--", "*.html"], { encoding: "utf8", maxBuffer: 16 * 1024 * 1024 }).split("\0").filter(Boolean);
   assert.ok(files.includes("index.html") && files.includes("infos/index.html") && files.includes("morning/index.html"));
   for (const file of files) {
+    // Ausgeliefert wird, was scripts/vu2/build-release.mjs übernimmt: scripts/, docs/ und providers/ nicht
+    // (z. B. der Prototyp unter docs/design/app-konzept-2-2026-11/prototyp/ mit Beispieltexten).
+    if (/^(scripts|docs|providers)\//.test(file)) continue;
     const html = readFileSync(file, "utf8");
     // Das globale Menü wird aus site-navigation.js erzeugt; ein statisches Menü darf den Satz ebenfalls tragen.
     const outsideMenu = html.replace(/<nav\b[^>]*id=["']site-panel["'][^>]*>[\s\S]*?<\/nav>/gi, "");
