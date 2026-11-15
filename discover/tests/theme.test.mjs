@@ -24,28 +24,37 @@ function fakeDocument() {
   };
 }
 
-test("TH-1 Standard ist Hell auch auf einem dunklen Geraet", () => {
+/* Owner 15.11.2026 (App-Konzept 2): Dunkel ist der Standard, Hell bleibt waehlbar. */
+test("TH-1 Standard ist Dunkel auch auf einem hellen Geraet", () => {
   const doc = fakeDocument();
-  const t = T.create({ storage: fakeStorage(), matchMedia: fakeMedia(false).mm, document: doc });
-  assert.equal(t.mode(), "light");
-  assert.equal(t.resolved(), "light");
-  assert.equal(doc.attrs["data-theme"], "light");
-  assert.equal(doc.attrs["data-theme-mode"], "light");
-  assert.equal(doc.nav.theme, "light");
+  const t = T.create({ storage: fakeStorage(), matchMedia: fakeMedia(true).mm, document: doc });
+  assert.equal(t.mode(), "dark");
+  assert.equal(t.resolved(), "dark");
+  assert.equal(doc.attrs["data-theme"], "dark");
+  assert.equal(doc.attrs["data-theme-mode"], "dark");
+  assert.equal(doc.nav.theme, "dark");
 });
 
-test("TH-2 ein Wechsel des Geraetes schaltet Discover nicht dunkel", () => {
+test("TH-2 ein Wechsel des Geraetes schaltet Discover nicht um", () => {
   const doc = fakeDocument();
-  const m = fakeMedia(true);
+  const m = fakeMedia(false);
   const t = T.create({ storage: fakeStorage(), matchMedia: m.mm, document: doc });
-  assert.equal(t.resolved(), "light");
+  assert.equal(t.resolved(), "dark");
+  assert.equal(t.mode(), "dark");
+  assert.equal(doc.attrs["data-theme"], "dark");
+  assert.equal(doc.meta.content, T.BAR.dark);
+  m.q.matches = true;
+  m.q.listeners.forEach((fn) => fn());
+  assert.equal(doc.attrs["data-theme"], "dark");
+  assert.equal(doc.meta.content, T.BAR.dark);
+});
+
+test("TH-2b eine gespeicherte helle Wahl bleibt hell", () => {
+  const store = fakeStorage(); store.setItem(T.KEY, "light");
+  const doc = fakeDocument();
+  const t = T.create({ storage: store, matchMedia: fakeMedia(false).mm, document: doc });
   assert.equal(t.mode(), "light");
   assert.equal(doc.attrs["data-theme"], "light");
-  assert.equal(doc.meta.content, T.BAR.light);
-  m.q.matches = false;
-  m.q.listeners.forEach((fn) => fn());
-  assert.equal(doc.attrs["data-theme"], "light");
-  assert.equal(doc.meta.content, T.BAR.light);
 });
 
 test("TH-3 eine Wahl bleibt gespeichert und ueberlebt den Neustart", () => {
@@ -82,27 +91,27 @@ test("TH-5 zurueck zu Hell speichert die ausdrueckliche Wahl", () => {
 
 test("TH-6 cycle wechselt Hell und Dunkel; System und Unbekanntes werden abgelehnt", () => {
   const t = T.create({ storage: fakeStorage(), matchMedia: fakeMedia(false).mm, document: fakeDocument() });
-  assert.equal(t.cycle(), "dark");
   assert.equal(t.cycle(), "light");
+  assert.equal(t.cycle(), "dark");
   assert.equal(t.set("system"), false);
   assert.equal(t.set("sepia"), false);
-  assert.equal(t.mode(), "light");
+  assert.equal(t.mode(), "dark");
 });
 
-test("TH-7 ohne Speicher und ohne Medienabfrage: hell, ohne Fehler", () => {
+test("TH-7 ohne Speicher und ohne Medienabfrage: dunkel, ohne Fehler", () => {
   const t = T.create({});
-  assert.equal(t.mode(), "light");
-  assert.equal(t.resolved(), "light");
-  assert.equal(t.set("dark"), true);
+  assert.equal(t.mode(), "dark");
   assert.equal(t.resolved(), "dark");
+  assert.equal(t.set("light"), true);
+  assert.equal(t.resolved(), "light");
 });
 
 test("TH-8 ein kaputter Speicher kippt nichts", () => {
   const store = { getItem() { throw new Error("gesperrt"); }, setItem() { throw new Error("gesperrt"); }, removeItem() { throw new Error("gesperrt"); } };
   const t = T.create({ storage: store, matchMedia: fakeMedia(true).mm, document: fakeDocument() });
-  assert.equal(t.mode(), "light");
-  assert.equal(t.set("dark"), true);
-  assert.equal(t.resolved(), "dark");
+  assert.equal(t.mode(), "dark");
+  assert.equal(t.set("light"), true);
+  assert.equal(t.resolved(), "light");
 });
 
 test("TH-9 Zuhoerer bekommen Modus und Ergebnis", () => {

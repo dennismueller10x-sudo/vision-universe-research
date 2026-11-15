@@ -14,10 +14,18 @@ body.vu-magazine-two .reader{height:calc(100dvh - var(--vu-navigation-height))}
 body.vu-magazine-two .page{height:100%}
 body.vu-magazine-two .progress{top:var(--vu-navigation-height)}
 @media(max-width:760px){:root{--vu-navigation-height:56px}}
-/* Reiterzeile eines Produkts unter dem Kopf (site-navigation.js, mountTabs): 48px mehr feste Hoehe. Alles, was unter dem
-   Kopf klebt oder Platz fuer ihn laesst, rechnet weiter mit --vu-navigation-height und liegt damit unter der Reiterzeile. */
-html[data-vu-tabs]{--vu-navigation-height:112px}
-@media(max-width:760px){html[data-vu-tabs]{--vu-navigation-height:104px}}
+/* Reiterzeile eines Produkts unter dem Kopf (site-navigation.js, mountTabs): 52px mehr feste Hoehe (Prototyp .tabs2:
+   Pillen 36px, je 8px Luft). Alles, was unter dem Kopf klebt oder Platz fuer ihn laesst, rechnet weiter mit
+   --vu-navigation-height und liegt damit unter der Reiterzeile. */
+html[data-vu-tabs]{--vu-navigation-height:116px}
+@media(max-width:760px){html[data-vu-tabs]{--vu-navigation-height:108px}}
+/* Schalter des Rahmens (site-navigation.js, VUNavigation.rahmen):
+   <html data-vu-tabs="inhalt">  Die Seite zeigt ihre Reiter selbst im Inhalt; die Zeile des Rahmens und ihr Platz entfallen.
+   <html data-vu-bleed>          Der Bildschirm beginnt unter dem Kopf (Titelbild bis oben); der Kopf ist durchsichtig, bis
+                                 24px gescrollt sind. --vu-navigation-height bleibt fuer Klebendes die Hoehe des Kopfes. */
+html[data-vu-tabs=inhalt]{--vu-navigation-height:64px}
+@media(max-width:760px){html[data-vu-tabs=inhalt]{--vu-navigation-height:56px}}
+html[data-vu-bleed] body{padding-top:0!important}
 body .q-tabs-wrap{top:var(--vu-navigation-height)}
 /* Dock der gemeinsamen Shell (Home, Discover, Universe, News, Ich): Abstand fuer den Inhalt als
    ein Token statt verstreuter Magic Numbers. Hoehe der Leiste + Safe Area +
@@ -206,6 +214,27 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 [data-vu-href] a[data-vu-card-main]{color:inherit;text-decoration:none}
 [data-vu-href] a[data-vu-card-main]:focus-visible{outline:3px solid var(--vu-focus);outline-offset:3px;border-radius:6px}
 @media(hover:hover){[data-vu-href]:hover a[data-vu-card-main]{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}}
+
+/* Fenster des Kopfes („Daten & Hinweise“, „Datenstand“) nach Prototyp (shell.js .sheet/.shc, kit.js .row/.dot/.btn.ol):
+   VUUI.popup mit cls vu-frame-sheet; immer auf dunklem Bogen, in beiden Schemata. */
+.vu-frame-sheet .vu-sheet-ui{background:#151516;color:#f4f5f1;border-radius:30px 30px 0 0;padding:10px 16px calc(26px + env(safe-area-inset-bottom));font:500 15px/1.35 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.vu-frame-sheet:not(.vu-gesture-sheet){align-items:flex-end;padding:0}
+.vu-frame-sheet:not(.vu-gesture-sheet)>.vu-sheet-ui{border-radius:30px 30px 0 0;max-height:90dvh;padding-bottom:calc(26px + env(safe-area-inset-bottom))}
+@media(min-width:761px){.vu-frame-sheet:not(.vu-gesture-sheet){align-items:center;padding:24px}.vu-frame-sheet:not(.vu-gesture-sheet)>.vu-sheet-ui{border-radius:30px}}
+.vu-frame-sheet .vu-sheet-ui>h2{margin:0;font-size:24px;line-height:1.1;font-weight:800;letter-spacing:-.025em;color:#f4f5f1}
+.vu-frame-sheet .vu-sheet-body{margin-top:0!important}
+.vu-frame-sheet .vu-sheet-ui:focus{outline:0}
+.vu-fs-text{margin:8px 0 0;font-size:12.5px;line-height:1.35;color:#c3c7cc}
+.vu-fs-sub{margin:0;font-size:12.5px;line-height:1.35;color:#a1a7af}
+.vu-fs-rows{margin-top:4px}
+.vu-fs-row{display:flex;align-items:center;gap:12px;min-height:44px;padding:11px 0;border-bottom:1px solid rgba(255,255,255,.09);color:#f4f5f1;text-decoration:none}
+.vu-fs-row b{flex:1;min-width:0;font-weight:700}
+.vu-fs-row span{font-size:12.5px;color:#a1a7af;text-align:right}
+.vu-fs-row svg{width:14px;height:14px;flex:none;fill:none;stroke:#a1a7af;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.vu-fs-dot{width:8px;height:8px;border-radius:9px;background:#c8f531;flex:none}
+.vu-fs-dot[data-off]{background:#55595f}
+.vu-fs-btn{display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:16px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:none;color:#fff;font:800 16px/1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
+.vu-fs-row:focus-visible,.vu-fs-btn:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
 
 /* Bausteine C04–C20 des Redesigns: assets/vu-ui.css (eigene Datei, nicht Teil der Navigation). */
 /* Einheitlicher Seitenfuß (Strang F): erscheint erst mit legalApproved */

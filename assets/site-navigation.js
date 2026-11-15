@@ -188,6 +188,7 @@
   "hedgefonds": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"6\" r=\"2.4\"/><circle class=\"dim\" opacity=\".45\" cx=\"5\" cy=\"8\" r=\"1.8\"/><circle class=\"dim\" opacity=\".45\" cx=\"19\" cy=\"8\" r=\"1.8\"/><path d=\"M8 19v-5a4 4 0 0 1 8 0v5\"/><path class=\"dim\" opacity=\".45\" d=\"M2 19v-4a3 3 0 0 1 5-2.2M22 19v-4a3 3 0 0 0-5-2.2M3 22h18\"/><path d=\"M12 13v6\"/><circle class=\"fill\" fill=\"currentColor\" stroke=\"none\" cx=\"12\" cy=\"22\" r=\"1\"/></g>",
   "portfolios": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M11 3.5a8.5 8.5 0 1 0 9.5 9.5H11z\"/><path class=\"fill\" fill=\"currentColor\" stroke=\"none\" opacity=\".28\" d=\"M14 2.5a8 8 0 0 1 7.5 7.5H14z\"/><path d=\"M14 2.5a8 8 0 0 1 7.5 7.5H14z\"/><path class=\"dim\" opacity=\".45\" d=\"M5.5 13h3M5.5 16h5\"/></g>",
   "insights": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"3.5\" y=\"4\" width=\"13\" height=\"16\" rx=\"2.2\"/><path d=\"M16.5 8h3a1 1 0 0 1 1 1v9a2 2 0 0 1-4 0\"/><path class=\"fill\" fill=\"currentColor\" stroke=\"none\" opacity=\".28\" d=\"M6.5 7.5h7v4h-7z\"/><path d=\"M6.5 7.5h7v4h-7z\"/><path class=\"dim\" opacity=\".45\" d=\"M6.5 14.5h7M6.5 17h4.5\"/></g>",
+  "chartbild": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5.5 8v2M5.5 16v3M12 4v3M12 14v3M18.5 2.5v2M18.5 10v3\"/><rect x=\"4\" y=\"10\" width=\"3\" height=\"6\" rx=\".5\"/><rect x=\"10.5\" y=\"7\" width=\"3\" height=\"7\" rx=\".5\"/><rect x=\"17\" y=\"4.5\" width=\"3\" height=\"5.5\" rx=\".5\"/><path class=\"dim\" opacity=\".45\" d=\"M2 20c5-1.5 9-5 20-11\"/></g>",
   "layers": "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m12 2.5 9.5 5-9.5 5-9.5-5z\"/><path class=\"dim\" opacity=\".45\" d=\"m2.5 12 9.5 5 9.5-5\"/><path d=\"m2.5 16.5 9.5 5 9.5-5\"/></g>"
 };
   const dockProductIcon = id => DOCK_PRODUCT_ICONS[id] ? `<svg viewBox="0 0 24 24" aria-hidden="true">${DOCK_PRODUCT_ICONS[id]}</svg>` : `<svg class="line" viewBox="0 0 24 24" aria-hidden="true">${dockIcons[id] || ''}</svg>`;
@@ -257,9 +258,9 @@
     etf: '<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M12 3.5v17M3.5 10.5h17"/>',
     portfolio: '<path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15 3.5A9 9 0 0 1 20.5 9H15z"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
-    person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+    person: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-5 15-5 16 0"/>',
     gear: '<circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.6M12 18.6v2.6M2.8 12h2.6M18.6 12h2.6M5.5 5.5l1.8 1.8M16.7 16.7l1.8 1.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8"/>',
-    close: '<path d="M6 6l12 12M18 6 6 18"/>',
+    close: '<path d="M5 5l14 14M19 5L5 19"/>',
     next: '<path d="M9 5l7 7-7 7"/>',
     hits: '<path d="M4 5h16l-6 8v5l-4 2v-7z"/>',
     saved: '<path d="M6 3.5h12v17l-6-4-6 4z"/>',
@@ -271,8 +272,8 @@
     table: '<rect x="3.5" y="4" width="17" height="16" rx="2.5"/><path d="M3.5 9.5h17M3.5 15h17M9.5 9.5V20"/>',
     wave: '<path d="M3 19 8 11l3 3 5-9 5 5"/>',
     spark: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M18 6l-2.5 2.5M8.5 15.5 6 18"/>',
-    search: '<circle cx="11" cy="11" r="6.5"/><path d="m16 16 4.5 4.5"/>',
-    home: '<path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'
+    search: '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>',
+    home: '<path d="M3 11l9-8 9 8v9a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1z"/>'
   };
   /* Das Dock ist auf hellen und dunklen Flaechen dasselbe: ein ruhiges,
      schwarzes Element; der aktive Platz traegt das Vision-Universe-Lime, der
@@ -282,24 +283,26 @@
      Abstand fuer den Inhalt: --vu-dock-space (site-navigation.css), damit
      nichts Letztes dauerhaft verdeckt ist. */
   const dockStyles = `
-        :host{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none;font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+        :host{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none;font:500 15px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
         *{box-sizing:border-box}
-        nav{pointer-events:auto;display:flex;align-items:center;width:100%;max-width:520px;height:68px;padding:0 6px;border-radius:28px;background:#000;color:#fff;box-shadow:0 0 0 1px #222,0 10px 30px -10px rgba(0,0,0,.5)}
+        nav{pointer-events:auto;display:flex;align-items:center;width:100%;max-width:520px;height:68px;padding:0 6px;border-radius:28px;background:rgba(12,12,13,.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);color:#fff}
         a,button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;font-family:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,transform .1s}
-        a{flex:1 1 0;gap:3px;min-width:0;min-height:56px;padding:6px 3px;border-radius:20px;background:transparent;color:#9a9a9a;font-size:10.5px;font-weight:700;line-height:1.1;letter-spacing:0}
-        a:hover{color:#fff;background:rgba(255,255,255,.08)}
+        a{flex:1 1 0;gap:3px;min-width:0;height:56px;padding:0 3px;border-radius:20px;background:transparent;color:#a1a7af;font-size:10.5px;font-weight:700;line-height:1.35;letter-spacing:0}
+        a:hover{color:#fff}
         a:active,button:active{transform:scale(.96)}
         a:focus-visible,button:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
         .label{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
         a[aria-current=page],a[aria-current=page]:hover{color:#c8f531}
-        svg{width:21px;height:21px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
-        .uni{flex:none;width:62px;height:62px;margin:-22px 6px 0;padding:0;border-radius:50%;background:#c8f531;color:#101318;box-shadow:0 0 0 6px #000,0 8px 30px rgba(200,245,49,.35)}
+        svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+        svg.line{stroke-width:2.2}
+        a[data-id=ich] svg{width:17px;height:17px;margin:1.5px 0;stroke-width:2.4}
+        .uni{flex:none;width:62px;height:62px;margin:-22px 6px 0;padding:0;border-radius:99px;background:#c8f531;color:#101318;box-shadow:0 0 0 6px #000,0 8px 30px rgba(200,245,49,.35)}
         .uni svg{width:26px;height:26px}
         .uni:focus-visible{outline-color:#fff;outline-offset:8px}
         @media(min-width:761px){
           :host{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
           nav{width:auto;max-width:100%;height:56px;gap:2px;padding:0 5px;border-radius:999px}
-          a{flex:none;flex-direction:row;gap:8px;min-height:46px;padding:0 16px;border-radius:999px;font-size:13px}
+          a{flex:none;flex-direction:row;gap:8px;height:46px;padding:0 16px;border-radius:999px;font-size:13px}
           .label{overflow:visible}
           svg{width:19px;height:19px}
           .uni{width:58px;height:58px;margin:-18px 8px 0}
@@ -373,12 +376,96 @@
     }, true);
   }
   const dockBus = {state: {}, listeners: []};
+  /* Kopf nach Prototyp (Owner 15.11.2026): links der Welten-Wechsler (Icon, Name, Pfeil; oeffnet „Dein Universe“),
+     rechts „i“ (Fenster „Daten & Hinweise“), die Datums-Pille (Fenster „Datenstand“; nur mit echtem Datum), Suche, Profil.
+     Home, Ich, Konto und News tragen wie im Prototyp ihren eigenen Namen statt des Produktnamens. */
+  const worldOf = loc => {
+    const p = loc.pathname;
+    if (p.startsWith('/willkommen/')) return {label: 'Home', icon: 'layers'};
+    if (p.startsWith('/mein-dashboard/')) return {label: 'Ich', icon: 'layers'};
+    if (p.startsWith('/insights/')) return {label: 'News', icon: 'insights'};
+    /* Aktienseite (Quant-SPA #/aktie/<T>): im Prototyp die eigene Welt „Aktie“. */
+    if (p === '/quant/' && /^#\/aktie\/[^/?]+/.test(loc.hash || '')) return {label: 'Aktie', icon: 'chartbild'};
+    /* Gemeinsame Aktienseite /aktie/#/<T> (Prototyp #v-aktie). */
+    if (p === '/aktie/' || p === '/aktie/index.html') return {label: 'Aktie', icon: 'chartbild'};
+    const product = PRODUCTS.find(x => x.match(p, loc));
+    if (!product) return null;
+    if (product.id === 'mein') return {label: 'Konto', icon: 'layers'};
+    const group = groups.find(g => g.id === product.id);
+    return {label: product.label, icon: (group||{icon:product.icon||product.id}).icon};
+  };
+  /* Menue „Dein Universe“ nach Prototyp (build.js T.universe): vier Gruppen, je zwei Kacheln nebeneinander. Die Kacheln
+     sind die Produkte aus groups (Steckbriefe); Atlas steht wie im Prototyp in der letzten Gruppe (der Knopf im Kopf
+     entfaellt). Ein Produkt ohne Gruppe landet in der letzten, damit keines fehlt. */
+  const ATLAS = {id: 'atlas', label: 'Atlas', href: '/ask/', icon: 'layers', claim: 'Frag in deinen Worten'};
+  const MENU_GROUPS = [['Entdecken', ['discover', 'insights']], ['Analysieren', ['quant', 'fundamental', 'technical', 'hedgefonds', 'elliott']], ['Nach Regeln', ['supertrader', 'portfolios']], ['Finden und vorsorgen', ['screener', 'vorsorge', 'atlas']]];
+  const menuGroups = () => {
+    const all = groups.filter(g => g.href).concat([ATLAS]), used = new Set(MENU_GROUPS.flatMap(([, ids]) => ids));
+    const out = MENU_GROUPS.map(([title, ids]) => ({title, tiles: ids.map(id => all.find(g => g.id === id)).filter(Boolean)}));
+    out[out.length - 1].tiles.push(...all.filter(g => !used.has(g.id)));
+    return out;
+  };
+  /* Datenstand im Kopf: datum (JJJJ-MM-TT) und Zeilen [Bereich, Text, vorhanden?] fuer das Fenster. Die Seite meldet ihren
+     Stand mit VUNavigation.datenstand({datum, zeilen}); ohne Meldung liest der Rahmen den Kursstand aus dem kleinen
+     Marktlage-Artefakt (asOf = letzter Handelsschluss der Kursdaten). Ohne echtes Datum bleibt die Pille weg. */
+  const dataBus = {datum: null, zeilen: [], own: false, notes: [], listeners: []};
+  const DAYS = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
+  const isoDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v || '')); return m ? {y: +m[1], m: +m[2], d: +m[3], short: m[3] + '.' + m[2] + '.', long: m[3] + '.' + m[2] + '.' + m[1], day: DAYS[new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])).getUTCDay()]} : null; };
+  const escHtml = x => String(x == null ? '' : x).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+  /* Fenster ueber VUUI.popup (assets/vu-ui.js); auf Seiten ohne Bausteine werden Stil und Skript beim ersten Tipp geladen.
+     Schlaegt das fehl, oeffnet fallback (die Seite mit denselben Angaben). */
+  const frameSheet = (o, fallback) => {
+    const open = () => { if (window.VUUI && window.VUUI.popup) { window.VUUI.popup({id: o.id, title: o.title, body: o.body, cls: 'vu-frame-sheet'}); return true; } return false; };
+    if (open()) return;
+    if (!document.querySelector('link[href*="/assets/vu-ui.css"]')) { const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = '/assets/vu-ui.css'; document.head.append(css); }
+    const sc = document.createElement('script'); sc.src = '/assets/vu-ui.js';
+    sc.onload = () => { if (!open() && fallback) location.assign(fallback); }; sc.onerror = () => { if (fallback) location.assign(fallback); };
+    document.head.append(sc);
+  };
+  const CHEV = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+  const openHinweise = () => {
+    const foot = LEGAL.approved && LEGAL.notices && LEGAL.notices.footer, links = LEGAL.appLinks || [];
+    const extra = dataBus.notes.map(n => typeof n === 'string' ? (LEGAL.approved && LEGAL.notices && LEGAL.notices[n] && LEGAL.notices[n].text) || '' : (n && n.text) || '').filter(Boolean);
+    frameSheet({id: 'vu-sh-hinweise', title: 'Daten & Hinweise', body:
+      (foot ? '<p class="vu-fs-text">' + escHtml(foot.text) + '</p>' : '') + extra.map(t => '<p class="vu-fs-text">' + escHtml(t) + '</p>').join('') +
+      '<div class="vu-fs-rows">' + links.map(l => '<a class="vu-fs-row" href="' + escHtml(l[1]) + '"><b>' + escHtml(l[0]) + '</b>' + CHEV + '</a>').join('') + '</div>'}, '/infos/');
+  };
+  const openDaten = () => {
+    const d = isoDate(dataBus.datum);
+    frameSheet({id: 'vu-sh-daten', title: 'Datenstand', body:
+      '<p class="vu-fs-sub">Einmal hier statt auf jeder Seite.</p><div class="vu-fs-rows">' +
+      dataBus.zeilen.map(z => '<div class="vu-fs-row"><i class="vu-fs-dot"' + (z[2] === false ? ' data-off' : '') + '></i><b>' + escHtml(z[0]) + '</b><span>' + escHtml(z[1]) + '</span></div>').join('') +
+      (!dataBus.zeilen.length && d ? '<div class="vu-fs-row"><i class="vu-fs-dot"></i><b>Daten</b><span>Stand ' + d.day + ' ' + d.long + '</span></div>' : '') +
+      '</div><button type="button" class="vu-fs-btn" data-vu-frame-hinweise>Hinweise und Quellen</button>'}, '/status/');
+  };
+  if (typeof document !== 'undefined') document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-vu-frame-hinweise]')) openHinweise(); });
   if (typeof window !== 'undefined') {
     window.VUNavigation = {
       /* Nur lesend: Reiter je Welt (items = die früheren Leistenplätze, tabs = alle Reiter) und die Plätze des Docks
          (Musterseite /status/bausteine/, Tests). */
       products: () => PRODUCTS.map(p => ({id: p.id, label: p.label, items: p.items.map(([id, label, href, icon]) => ({id, label, href, icon})), tabs: tabEntries(p).map(({id, label, href}) => ({id, label, href}))})),
       places: () => DOCK.map(([id, label, href, icon]) => ({id, label, href, icon})),
+      /* Datenstand der Seite fuer die Pille im Kopf: {datum: 'JJJJ-MM-TT', zeilen: [[Bereich, Text, vorhanden?], ...]}.
+         Ersetzt den Kursstand, den der Rahmen sonst selbst liest. */
+      datenstand: o => { o = o || {}; dataBus.own = true; dataBus.datum = isoDate(o.datum) ? o.datum : null; dataBus.zeilen = Array.isArray(o.zeilen) ? o.zeilen.filter(z => z && z[0] && z[1]) : []; dataBus.listeners.forEach(fn => fn()); },
+      /* Pflicht-Hinweis der Seite fuer das Fenster „Daten & Hinweise“: Schluessel aus assets/legal-notices.json
+         (stock, ranking, setup, backtest, modelPortfolio, thirdParty, ai, editorial) oder {text}. */
+      hinweis: n => { if (n && !dataBus.notes.includes(n)) dataBus.notes.push(n); },
+      /* Fenster des Kopfes von der Seite aus oeffnen (z. B. „Daten & Hinweise“ am Seitenende). */
+      openHinweise: () => openHinweise(), openDatenstand: () => openDaten(),
+      /* Schalter des Rahmens (auch statisch im Markup, damit nichts springt):
+           <html data-vu-bleed>          Der Bildschirm beginnt unter dem Kopf (Titelbild bis an den oberen Rand): der Kopf ist
+                                         durchsichtig und wird nach 24 px Scrollen deckend; der Platz fuer den Kopf entfaellt.
+                                         Ohne das Attribut ist der Kopf immer deckend (Standard).
+           <html data-vu-tabs="inhalt">  Die Seite zeigt ihre Reiter selbst im Inhalt: die Reiterzeile des Rahmens bleibt weg
+                                         (und ihr Platz unter dem Kopf). Ohne das Attribut setzt der Rahmen data-vu-tabs auf
+                                         die Kennung des Produkts und zeigt seine Reiter.
+         rahmen({bleed, tabs}) setzt dieselben Attribute zur Laufzeit (SPA: je Ansicht), tabs: 'inhalt' | 'rahmen'. */
+      rahmen: o => {
+        const html = document.documentElement; o = o || {};
+        if ('bleed' in o) html.toggleAttribute('data-vu-bleed', !!o.bleed);
+        if ('tabs' in o) { if (o.tabs === 'inhalt') html.setAttribute('data-vu-tabs', 'inhalt'); else if (html.getAttribute('data-vu-tabs') === 'inhalt') html.removeAttribute('data-vu-tabs'); }
+      },
       dock: state => {
         state = state || {};
         Object.assign(dockBus.state, state);
@@ -395,23 +482,54 @@
   /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
      Discover synchronisiert ihr Farbschema mit seiner eigenen Theme-Wahl. */
   const THEMES = {
-    light: {bg: 'rgba(255,255,255,.96)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f4f4f4', mute: '#6e6e6e', atlasBg: '#000', atlasInk: '#fff', atlasIcon: '#c8f531', outline: '#4f6b00'},
-    dark: {bg: 'rgba(0,0,0,.94)', border: '#262626', ink: '#fff', inv: '#000', card: '#151515', mute: '#9b9b9b', atlasBg: '#c8f531', atlasInk: '#000', atlasIcon: '#000', outline: '#c8f531'}
+    light: {bg: 'rgba(255,255,255,.86)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f1f1f1', glass: 'rgba(238,238,238,.82)', mute: '#5d636b', live: '#3d424a', dot: '#5f8000', ring: '#c8f531', me: '#000', meInk: '#fff', on: '#000', onInk: '#fff', outline: '#4f6b00'},
+    dark: {bg: 'rgba(0,0,0,.82)', border: '#262626', ink: '#f4f5f1', inv: '#000', card: '#151516', glass: 'rgba(20,20,22,.7)', mute: '#a1a7af', live: '#c3c7cc', dot: '#c8f531', ring: '#c8f531', me: 'rgba(20,20,22,.7)', meInk: '#f4f5f1', on: '#fff', onInk: '#000', outline: '#c8f531'}
   };
 
   /* Farbschema plattformweit: dieselbe Wahl (localStorage, Schluessel von
      Discover) gilt auf jeder Seite. Seiten mit Hell- und Dunkel-Styles
      tragen das Attribut theme-switch an <vu-navigation>; nur dort zeigt
-     der Kopf den Schalter. Gibt es die Discover-Engine (VUDiscover.theme),
+     das Menue den Schalter. Gibt es die Discover-Engine (VUDiscover.theme),
      schaltet sie; sonst setzt der Kopf <html data-theme> selbst und meldet
-     den Wechsel mit dem Ereignis vu-theme-change. */
+     den Wechsel mit dem Ereignis vu-theme-change.
+
+     DUNKEL IST DER STANDARD (Owner 15.11.2026, App-Konzept 2). Die Regel steht an EINER Stelle, themeWanted():
+       - gespeicherte Wahl "light" oder "dark": gilt.
+       - nichts gespeichert (erster Besuch, kein Speicher): dunkel; die Wahl wird gespeichert, damit das Inline-Skript
+         jeder weiteren Seite sie vor dem ersten Zeichnen liest.
+       - „Wie Gerät“ (Konto → Einstellungen, VUTheme.set('system')): Merker THEME_SYSTEM; das Schema folgt dem Geraet,
+         der Schluessel traegt weiter "light"/"dark" (so lesen ihn alle Inline-Skripte und die Discover-Engine).
+       - Einmalige Umstellung (Merker THEME_DEFAULT): Bis 15.11.2026 hielt die erste besuchte Welt ihr Schema fest (VU3),
+         auch ohne Wahl; ein gespeichertes "light" belegt deshalb keine Wahl. Beim ersten Laden nach der Umstellung gilt
+         einmal dunkel; wer danach Hell waehlt, behaelt Hell. Automatisierte Pruefungen (navigator.webdriver) setzen das
+         Schema vor dem Laden selbst und bleiben davon ausgenommen.
+     Kein heller Blitz: dieses Skript steht auf jeder Seite synchron am Anfang von <body> und stellt um, bevor Inhalt
+     gezeichnet ist; die Inline-Skripte der Seiten starten ebenfalls dunkel. */
   const THEME_KEY = 'vu-discover-theme-v1';
+  const THEME_SYSTEM = 'vu-theme-system-v1', THEME_DEFAULT = 'vu-theme-default-v2';
   const BAR = {light: '#ffffff', dark: '#000000'};
+  /* Reine Regel (Tests): store = {get(k), set(k, v|null)}, device = "light"|"dark", automated = navigator.webdriver. */
+  const themeWanted = (store, device, automated) => {
+    if (store.get(THEME_DEFAULT) !== '1') {
+      store.set(THEME_DEFAULT, '1');
+      if (!automated && store.get(THEME_SYSTEM) !== '1') store.set(THEME_KEY, 'dark');
+    }
+    if (store.get(THEME_SYSTEM) === '1') { if (store.get(THEME_KEY) !== device) store.set(THEME_KEY, device); return device; }
+    const v = store.get(THEME_KEY);
+    if (v === 'light' || v === 'dark') return v;
+    store.set(THEME_KEY, 'dark');
+    return 'dark';
+  };
+  const themeStore = {get: k => { try { return localStorage.getItem(k); } catch (_) { return null; } },
+    set: (k, v) => { try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (_) { /* ohne Speicher: je Seite */ } }};
+  const deviceTheme = () => { try { return matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; } catch (_) { return 'dark'; } };
   const currentTheme = () => document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  let themeFollows = false;   // true, solange applyTheme dem Geraet folgt (kein Nutzerwechsel)
   const applyTheme = (mode, persist) => {
     const engine = window.VUDiscover && window.VUDiscover.theme;
+    if (persist) themeStore.set(THEME_SYSTEM, null);
     if (engine && persist) { engine.set(mode); return; }  // Discover/Screener melden den Wechsel selbst
-    if (persist) { try { localStorage.setItem(THEME_KEY, mode); } catch (_) { /* nur fuer diese Sitzung */ } }
+    if (persist) themeStore.set(THEME_KEY, mode);
     const html = document.documentElement;
     html.setAttribute('data-theme', mode);
     html.setAttribute('data-theme-mode', mode);
@@ -420,19 +538,38 @@
     document.querySelectorAll('vu-navigation').forEach(n => n.setAttribute('theme', mode));
     document.dispatchEvent(new Event('vu-theme-change'));
   };
-  /* VU3: Ohne eigene Wahl startete jede Welt mit ihrem eigenen Schema (Discover hell, Quant dunkel) und die
-     Seite sprang beim Wechsel zwischen hell und dunkel. Jetzt haelt die erste besuchte Welt ihr Schema fest;
-     jede weitere Welt liest es vor dem ersten Zeichnen (ihr Inline-Skript liest denselben Schluessel). */
-  if (typeof window !== 'undefined' && document.querySelector('vu-navigation[theme-switch]')) {
-    try { if (!localStorage.getItem(THEME_KEY)) localStorage.setItem(THEME_KEY, currentTheme()); } catch (_) { /* ohne Speicher: je Seite */ }
+  const followDevice = () => {
+    const d = deviceTheme();
+    themeStore.set(THEME_KEY, d);
+    themeFollows = true;
+    try { const engine = window.VUDiscover && window.VUDiscover.theme; if (engine) engine.set(d); else if (d !== currentTheme()) applyTheme(d, false); } finally { themeFollows = false; }
+  };
+  const themed = () => typeof document !== 'undefined' && !!document.querySelector('vu-navigation[theme-switch]');
+  /* Die oeffentliche Startseite (/, /website2/) gehoert nicht zur App: sie behaelt ihren eigenen Standard und liest nur eine
+     vorhandene Wahl (ihr Inline-Skript). */
+  const publicPage = () => { const p = location.pathname; return p === '/' || p === '/index.html' || p.startsWith('/website2/'); };
+  if (typeof window !== 'undefined' && themed() && !publicPage()) {
+    const want = themeWanted(themeStore, deviceTheme(), !!navigator.webdriver);
+    const html = document.documentElement;
+    if (html.getAttribute('data-theme') !== want) {
+      html.setAttribute('data-theme', want); html.setAttribute('data-theme-mode', want);
+      const meta = document.querySelector('meta[name="theme-color"]'); if (meta) meta.setAttribute('content', BAR[want]);
+      document.querySelectorAll('vu-navigation').forEach(n => n.setAttribute('theme', want));
+    }
   }
   if (typeof window !== 'undefined') {
-    window.VUTheme = {key: THEME_KEY, mode: currentTheme, set: m => applyTheme(m === 'dark' ? 'dark' : 'light', true),
+    window.VUTheme = {key: THEME_KEY, mode: currentTheme,
+      /* choice(): "system", solange „Wie Gerät“ gilt, sonst das gezeichnete Schema. */
+      choice: () => themeStore.get(THEME_SYSTEM) === '1' ? 'system' : currentTheme(),
+      set: m => { if (m === 'system') { themeStore.set(THEME_SYSTEM, '1'); followDevice(); } else applyTheme(m === 'light' ? 'light' : 'dark', true); },
       toggle: () => applyTheme(currentTheme() === 'dark' ? 'light' : 'dark', true)};
+    /* Eine Wahl in Discover (eigene Einstellungen, VUDiscover.theme.set) beendet „Wie Gerät“. */
+    document.addEventListener('vu-theme-change', () => { if (!themeFollows && themeStore.get(THEME_SYSTEM) === '1' && currentTheme() !== deviceTheme()) themeStore.set(THEME_SYSTEM, null); });
+    try { matchMedia('(prefers-color-scheme: light)').addEventListener('change', () => { if (themed() && themeStore.get(THEME_SYSTEM) === '1') followDevice(); }); } catch (_) { /* alter Browser */ }
     // Wahl aus einem anderen Tab uebernehmen
     window.addEventListener('storage', e => {
-      if (e.key !== THEME_KEY || !document.querySelector('vu-navigation[theme-switch]')) return;
-      const mode = e.newValue === 'dark' ? 'dark' : 'light';
+      if (e.key !== THEME_KEY || !themed()) return;
+      const mode = e.newValue === 'light' ? 'light' : 'dark';
       if (mode !== currentTheme()) applyTheme(mode, false);
     });
   }
@@ -440,101 +577,109 @@
   /* Die Farbwerte des Kopfes als Funktion des Schemas: so kann Discover
      das Attribut theme spaeter umschalten (Hell/Dunkel/System, V4.1), und
      der Kopf zieht mit, ohne neu aufgebaut zu werden. */
+  /* Kopf nach Prototyp „App-Konzept 2“ (shell.js: .hdr, .mod, .hb, .live, .tab, .sheet; kit.js: .hud, .eb, .rnd, .row).
+     Die Masse sind die des Prototyps; die Farben haengen am Schema (THEMES), dunkel = Prototyp. */
   const styles = (t) => `
-        :host{display:block;position:fixed;inset:0 0 auto;z-index:1000000;color:${t.ink};font:400 14px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;text-align:left}
+        :host{display:block;position:fixed;inset:0 0 auto;z-index:1000000;color:${t.ink};font:500 15px/1.35 Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;text-align:left;-webkit-font-smoothing:antialiased}
         *{box-sizing:border-box}
-        header{background:${t.bg};-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);box-shadow:0 1px 0 ${t.border}}
-        .shell{width:min(1240px,calc(100% - 48px));margin:auto}.row{height:64px;display:flex;align-items:center;gap:16px}
-        .brand,.world{flex-shrink:0;display:flex;align-items:center;min-width:0;color:${t.ink};text-decoration:none}
+        header{transition:background .25s}
+        :host([solid]) header{background:${t.bg};-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+        .shell{width:min(1240px,calc(100% - 48px));margin:auto}.row{height:64px;display:flex;align-items:center;gap:8px}
+        .brand{flex-shrink:0;display:flex;align-items:center;min-width:0;color:${t.ink};text-decoration:none}
         .brand img{display:block;width:clamp(150px,14vw,190px);max-width:40vw;height:auto}
-        .world{gap:9px;font-size:17px;font-weight:900;letter-spacing:-.02em;min-height:44px}
-        .world[hidden],.brand[hidden]{display:none}
-        .hud{width:30px;height:30px;border-radius:9px;background:#0e1013;color:#c8f531;display:grid;place-items:center;flex:none}
-        .hud svg{width:62%;height:62%}.hud svg.line{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
-        :host([theme="dark"]) .hud{box-shadow:0 0 0 1px #262a2f inset}
-        .world-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .world[hidden],.brand[hidden],.live[hidden]{display:none}
+        .mod{position:relative;display:flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0;height:38px;padding:0 12px 0 6px;border:0;border-radius:99px;background:${t.glass};-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:${t.ink};font-weight:800;font-size:16px;letter-spacing:-.02em;white-space:nowrap}
+        .mi{width:28px;height:28px;border-radius:9px;background:#0e1013;border:1px solid rgba(200,245,49,.35);display:grid;place-items:center;color:#c8f531;flex:none}
+        .mi svg{width:18px;height:18px}.mi svg.line{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+        .world-name{min-width:0;overflow:hidden;text-overflow:ellipsis}
+        .mod .chev{width:12px;height:12px;flex:none;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
         .quick{display:flex;align-items:center;gap:22px;margin-left:auto}.quick a{color:${t.ink};font-size:13px;font-weight:700;text-decoration:none}
         .quick a[aria-current=page]{text-decoration:underline;text-underline-offset:8px}
         .quick a:hover{text-decoration:underline;text-underline-offset:5px}
-        .tools{display:flex;align-items:center;gap:7px;margin-left:auto;flex-shrink:0}
+        .tools{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0}
         @media(min-width:1025px){:host(:not([dock])) .quick+.tools{margin-left:12px}}
         a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid ${t.outline};outline-offset:3px}
         button{font:inherit;cursor:pointer}
-        .hb{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:50%;border:0;padding:0;background:transparent;color:${t.ink};text-decoration:none}
-        .hb i{width:36px;height:36px;border-radius:50%;background:${t.card};display:grid;place-items:center}
-        .hb svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-        .profile i{background:${t.ink};color:#c8f531}
-        .hb:hover i{filter:brightness(.95)}
-        .atlas{flex-shrink:0;display:inline-flex;align-items:center;gap:5px;height:44px;padding:0 4px;border-radius:999px;color:${t.atlasInk};font-size:13px;font-weight:800;text-decoration:none;white-space:nowrap}
-        .atlas span.pill{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 12px;border-radius:999px;background:${t.atlasBg}}
-        .atlas svg{width:16px;height:16px;fill:${t.atlasIcon}}
-        .atlas:hover span.pill{filter:brightness(1.15)}
-        .atlas[aria-current=page] span.pill{box-shadow:0 0 0 2px #c8f531}
-        .toggle{flex-shrink:0;border:1px solid ${t.border};background:transparent;color:${t.ink};min-height:44px;padding:0 16px;border-radius:999px;font-weight:800}
-        .tabs{position:relative;display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:0 max(24px,calc((100% - 1240px)/2)) 4px}
+        .hb{position:relative;width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:99px;border:0;padding:0;background:${t.glass};-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:${t.ink};text-decoration:none}
+        .hb svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+        .mod::after,.hb::after,.live::after{content:"";position:absolute;inset:-3px}
+        .info{background:${t.on};color:${t.onInk};font-weight:900;font-size:15px;-webkit-backdrop-filter:none;backdrop-filter:none}
+        .profile{border:2px solid ${t.ring};background:${t.me};color:${t.meInk}}
+        .profile svg{stroke-width:2.4}
+        .live{position:relative;display:flex;align-items:center;gap:6px;flex:none;height:38px;padding:0 11px;border:0;border-radius:99px;background:${t.glass};font-size:12px;font-weight:800;color:${t.live};white-space:nowrap}
+        .live i{width:7px;height:7px;border-radius:9px;background:${t.dot};box-shadow:0 0 8px ${t.dot}}
+        .live b{font-weight:inherit}
+        :host([tight]) .live b{display:none}
+        .mod:active,.hb:active,.live:active{transform:scale(.97)}
+        .toggle{flex-shrink:0;border:3px solid transparent;margin:-3px;background:${t.glass};background-clip:padding-box;color:${t.ink};height:44px;padding:0 15px;border-radius:99px;font-weight:800;font-size:14px}
+        :host([world]) .toggle{display:none}
+        @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
+        .tabs{position:relative;display:flex;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:8px max(24px,calc((100% - 1240px)/2))}
         .tabs[hidden]{display:none}.tabs::-webkit-scrollbar{display:none}
-        .tab{flex:none;display:flex;align-items:center;min-height:44px;color:${t.ink};font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-        .tab .pill{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 15px;border-radius:999px;background:${t.card}}
+        .tab{position:relative;flex:none;display:inline-flex;align-items:center;height:44px;margin-block:-4px;color:${t.ink};font-size:14px;font-weight:700;text-decoration:none;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+        .tab .pill{display:inline-flex;align-items:center;gap:7px;height:36px;padding:0 15px;border-radius:99px;background:${t.card}}
         .tab:hover .pill{filter:brightness(.95)}
-        .tab[aria-current=page] .pill{background:${t.ink};color:${t.inv};filter:none}
-        .tab .badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:${t.ink};color:${t.inv};font-size:10.5px;font-weight:800;line-height:18px;text-align:center}
+        .tab[aria-current=page] .pill{background:${t.on};color:${t.onInk};filter:none}
+        .tab .badge{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:${t.on};color:${t.onInk};font-size:10.5px;font-weight:800;line-height:18px;text-align:center}
         .tab[aria-current=page] .badge{background:#c8f531;color:#000}
         .tab:focus-visible{outline:0}.tab:focus-visible .pill{outline:2px solid ${t.outline};outline-offset:2px}
-        .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);visibility:hidden;opacity:0;transition:opacity .2s}
-        .panel{position:fixed;right:0;top:0;bottom:0;width:min(440px,100vw);padding:calc(14px + env(safe-area-inset-top)) 18px calc(28px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;background:#000;color:#fff;box-shadow:-1px 0 0 #222;visibility:hidden;transform:translateX(24px);opacity:0;transition:transform .2s,opacity .2s,visibility .2s}
+        .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);visibility:hidden;opacity:0;transition:opacity .25s}
+        .panel{position:fixed;right:0;top:0;bottom:0;width:min(440px,100vw);padding:calc(14px + env(safe-area-inset-top)) 16px calc(26px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;background:#151516;color:#f4f5f1;visibility:hidden;transform:translateX(24px);opacity:0;transition:transform .2s,opacity .2s,visibility .2s}
+        .panel::-webkit-scrollbar{display:none}
         :host([open]) .backdrop,:host([open]) .panel{visibility:visible;opacity:1;transform:none}
-        .grab{display:none;position:sticky;top:0;z-index:1;height:22px;margin:0 -18px;background:#000;touch-action:none;cursor:grab}
-        .grab::before{content:"";position:absolute;left:calc(50% - 22px);top:10px;width:44px;height:5px;border-radius:9px;background:#9b9b9b;opacity:.5}
-        .panel-head{display:flex;align-items:center;justify-content:space-between;min-height:48px}
-        .panel h2.uni-title{margin:10px 0 0;font-size:30px;line-height:1.1;font-weight:850;letter-spacing:-.03em;text-transform:none;color:#fff}
-        .uni-sub{margin:6px 0 0;color:#a3a3a3;font-size:14px;line-height:1.4}
-        .panel-head a{display:flex;align-items:center;min-height:44px}.panel-head img{display:block;width:150px;height:auto;filter:invert(1)}
-        .close{width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:#fff;display:grid;place-items:center;padding:0}
-        .close i{width:36px;height:36px;border-radius:50%;background:#1a1a1a;display:grid;place-items:center}
-        .close svg,.find svg,.mine svg,.here svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-        .find{display:flex;align-items:center;gap:10px;height:52px;margin-top:12px;padding:0 4px 0 16px;border-radius:999px;background:#151515;color:#9b9b9b}
-        .find input{flex:1;min-width:0;height:44px;border:0;background:transparent;color:#fff;font:600 15px/1 inherit;font-family:inherit;outline-offset:0}
-        .find input::placeholder{color:#9b9b9b}
-        .find button{width:44px;height:44px;border:0;border-radius:50%;background:#c8f531;color:#000;display:grid;place-items:center;padding:0;flex:none}
+        .grab{display:none;position:sticky;top:0;z-index:1;height:21px;margin:0 -16px;background:#151516;touch-action:none;cursor:grab}
+        .grab::before{content:"";position:absolute;left:calc(50% - 22px);top:10px;width:44px;height:5px;border-radius:9px;background:#3a3a3d}
+        .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;margin-top:6px}
+        .panel h2.uni-title{margin:0;font-size:30px;line-height:1;font-weight:900;letter-spacing:-.045em;color:#f4f5f1}
+        .uni-sub{margin:0;color:#a1a7af;font-size:12.5px;line-height:1.35}
+        .close{width:44px;height:44px;margin-right:-4px;border:0;border-radius:50%;background:transparent;color:#fff;display:grid;place-items:center;padding:0;flex:none}
+        .close i{width:36px;height:36px;border-radius:99px;background:#151516;display:grid;place-items:center}
+        .close svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
+        .find svg,.mine svg,.here svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+        .find{display:flex;align-items:center;gap:10px;height:52px;margin-top:22px;padding:0 6px 0 16px;border-radius:99px;background:#202022;color:#a1a7af}
+        .find input{flex:1;min-width:0;height:44px;border:0;background:transparent;color:#fff;font:600 15.5px/1 inherit;font-family:inherit;outline-offset:0}
+        .find input::placeholder{color:#a1a7af}
+        .find button{width:44px;height:44px;margin:-2px;border:2px solid transparent;border-radius:50%;background:#c8f531;background-clip:padding-box;color:#101318;display:grid;place-items:center;padding:0;flex:none}
         .find button svg{fill:currentColor;stroke:none}
-        .panel h2{margin:22px 0 10px;font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:#8a8a8a}
-        .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
-        .tile{display:grid;gap:8px;align-content:start;min-height:96px;padding:12px 10px;border-radius:18px;background:#141414;color:#fff;text-decoration:none}
-        .tile:hover{background:#1d1d1d}
-        .tile .menu-product-icon{width:38px;height:38px;border-radius:11px;background:#0e1013;color:#c8f531;display:grid;place-items:center;box-shadow:0 0 0 1px #262a2f inset}
-        .tile .menu-product-icon svg{width:62%;height:62%}
-        .tile b{display:block;font-size:13.5px;font-weight:800;line-height:1.2}
-        .tile small{display:block;margin-top:2px;font-size:10.5px;line-height:1.3;opacity:.7}
-        .tile[data-group=portfolios]{grid-column:1/-1;grid-template-columns:38px minmax(0,1fr);align-items:center;min-height:64px}
-        .tile[data-group=insights]{grid-column:1/-1;grid-template-columns:38px minmax(0,1fr);align-items:center;min-height:64px}
-        .tile[aria-current=page],.tile.is-current{background:#c8f531;color:#000}
-        .links{display:grid;gap:2px}
-        .links a,.mine a,.more summary{display:flex;align-items:center;gap:12px;min-height:48px;padding:0 4px;border-bottom:1px solid #222;color:#fff;font-size:15px;font-weight:700;text-decoration:none}
+        .panel h2{margin:16px 0 0;font-size:10.5px;line-height:1.35;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a1a7af}
+        .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+        .tile{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border-radius:22px;background:#202022;color:#f4f5f1;text-decoration:none;transition:transform .12s}
+        .tile:active{transform:scale(.97)}
+        .tile:hover{background:#262628}
+        .tile>span:last-child{flex:1;min-width:0}
+        .tile .menu-product-icon{width:40px;height:40px;border-radius:12px;background:#0e1013;border:1px solid rgba(200,245,49,.25);color:#c8f531;display:grid;place-items:center;flex:none}
+        .tile .menu-product-icon svg{width:22px;height:22px}
+        .tile b{display:block;font-size:16px;font-weight:800;line-height:1.35}
+        .tile small{display:block;font-size:11px;line-height:1.35;color:#a1a7af}
+        .tile[aria-current=page],.tile.is-current{box-shadow:0 0 0 1px rgba(200,245,49,.5),0 0 28px rgba(200,245,49,.18)}
+        .links{display:grid;margin-top:8px}
+        .links a,.mine a,.more summary{display:flex;align-items:center;gap:12px;min-height:46px;padding:0;border-bottom:1px solid rgba(255,255,255,.09);color:#f4f5f1;font-size:15px;font-weight:800;text-decoration:none}
+        .mine{margin-top:8px}
         .links a[aria-current=page]{color:#c8f531}
-        .legal-note{margin:12px 4px 4px;color:#a3a3a3;font-size:12px;line-height:1.5}
+        .legal-note{margin:12px 0 4px;color:#a1a7af;font-size:11px;line-height:1.5}
         .links a span,.mine a b{flex:1}
+        .links a>svg,.mine a>svg{color:#a1a7af}
         .mine a i,.links a i{color:#c8f531;display:grid;place-items:center;font-style:normal;width:20px}
         .more{margin-top:8px}.more summary{list-style:none;cursor:pointer}.more summary::-webkit-details-marker{display:none}
-        .more summary:after{content:"";width:8px;height:8px;margin-right:6px;border-right:2px solid #9b9b9b;border-bottom:2px solid #9b9b9b;transform:rotate(45deg) translateY(-3px)}
+        .more summary:after{content:"";width:8px;height:8px;margin-right:6px;border-right:2px solid #a1a7af;border-bottom:2px solid #a1a7af;transform:rotate(45deg) translateY(-3px)}
         .more[open] summary:after{transform:rotate(225deg)}
         .more summary span{flex:1}
         .settings{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
         .choices{display:flex;gap:6px}
-        .choices button,.choices a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:#151515;color:#fff;font:700 14px/1 inherit;font-family:inherit;text-decoration:none}
-        .choices [aria-pressed=true]{background:#c8f531;color:#000}
+        .choices button,.choices a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:#202022;color:#f4f5f1;font:700 14px/1 inherit;font-family:inherit;text-decoration:none}
+        .choices [aria-pressed=true]{background:#fff;color:#000}
         .panel a:focus-visible,.panel button:focus-visible,.panel input:focus-visible,.panel summary:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
         @media(max-width:1024px){.quick{display:none}}
-        @media(max-width:760px){.shell{width:calc(100% - 32px)}.row{height:56px;gap:8px}.brand img{width:min(150px,40vw)}.tools{gap:2px}.hb{width:40px;position:relative}.hb::after{content:"";position:absolute;inset:0 -2px}.atlas{padding:0 2px}
-          .tabs{padding-inline:16px}
-          .panel{left:0;top:auto;width:auto;max-height:90vh;max-height:90dvh;padding-top:0;border-radius:30px 30px 0 0;box-shadow:0 0 0 1px #222;transform:translateY(102%);opacity:1;transition:transform .32s cubic-bezier(.2,.9,.25,1),visibility .32s}
-          .grab{display:block}}
-        @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
-        @media(max-width:430px){:host(:not([dock])) .atlas .atlas-label{display:none}:host(:not([dock])) .atlas span.pill{width:36px;padding:0;justify-content:center}:host(:not([dock])) .brand img{width:min(132px,34vw)}}
-        @media(max-width:360px){.shell{width:calc(100% - 20px)}.world{font-size:15px}.atlas .atlas-label{display:none}.atlas span.pill{width:36px;padding:0;justify-content:center}.tabs{padding-inline:10px}.panel{padding-inline:14px}.grab{margin-inline:-14px}.tile{padding:10px 8px}}
+        @media(max-width:760px){.shell{width:auto}.row{height:56px;padding:0 12px}.brand img{width:min(150px,40vw)}
+          .tabs{padding-inline:14px}
+          .panel{left:0;top:auto;width:auto;max-height:90vh;max-height:90dvh;padding-top:0;border-radius:30px 30px 0 0;transform:translateY(102%);opacity:1;transition:transform .32s cubic-bezier(.2,.9,.25,1),visibility .32s}
+          .grab{display:block}.panel-head{margin-top:0}}
+        @media(max-width:430px){:host(:not([world])) .brand img{width:min(132px,34vw)}}
+        @media(max-width:360px){.row{padding:0 10px;gap:6px}.tools{gap:6px}.mod{font-size:15px}.tabs{padding-inline:10px}.panel{padding-inline:12px}.grab{margin-inline:-12px}.tile{padding:10px}}
         :host([menu-only]) header{display:none}
         :host([theme="dark"]) header .brand img{filter:invert(1) brightness(1.08)}
         :host([dock]) .quick,:host([dock]) .toggle{display:none}
-        @media(prefers-reduced-motion:reduce){.backdrop,.panel{transition:none}}
+        @media(prefers-reduced-motion:reduce){header,.backdrop,.panel,.tile{transition:none}.mod:active,.hb:active,.live:active,.tile:active{transform:none}}
 `;
 
   class VisionNavigation extends HTMLElement {
@@ -559,36 +704,69 @@
       const root = this.attachShadow({mode: 'open'});
       const ico = d => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
       const SPARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg>';
-      /* Kopfzeile (C01): links die Welt (HUD-Icon + Name) oder das Logo, rechts Suche, Atlas, Mein Bereich.
-         Das Farbschema wechselt im Menue (Hell/Dunkel), nicht mehr im Kopf. */
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="190" height="63"></a><a class="world" hidden><span class="hud"></span><span class="world-name"></span></a><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/quant/">Quant</a><a href="/technical/">Technical</a><a href="/elliott/">Elliott</a><a href="/screener/">Screener</a><a class="q-extra" href="/vorsorge/">Vorsorge</a><a class="q-extra" href="/portfolios/">Portfolios</a></nav><div class="tools"><a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen"><i>${ico(dockIcons.search)}</i></a><a class="atlas" href="/ask/" aria-label="AI Atlas – KI-Suche"><span class="pill">${SPARK}<span class="atlas-label">Atlas</span></span></a><a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich"><i>${ico(dockIcons.person)}</i></a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></div><nav class="tabs" hidden></nav></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><span class="grab" aria-hidden="true"></span><div class="panel-head"><a href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="150" height="50"></a><button class="close" type="button" aria-label="Menü schließen"><i>${ico(dockIcons.close)}</i></button></div><h2 class="uni-title">Dein Universe</h2><p class="uni-sub">Alle Module, von jeder Seite aus.</p><form class="find" role="search">${ico(dockIcons.search)}<input type="search" name="q" placeholder="Aktie, Produkt oder Frage …" aria-label="Aktie, Produkt oder Frage" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Im AI Atlas fragen">${SPARK}</button></form><h2>Produkte</h2><div class="tiles"></div><section class="here" hidden><h2 class="here-title"></h2><div class="links here-links"></div></section><h2>Mein Bereich</h2><div class="mine">${MINE.map(([label,href,icon])=>`<a href="${href}"><i>${ico(dockIcons[icon])}</i><b>${label}</b>${ico(dockIcons.next)}</a>`).join('')}</div><details class="more"><summary><span>Weitere Produkte</span></summary><div class="links more-links"></div></details><div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>${legalMenu()}</nav>`;
-      /* Menue „Dein Universe“ (C03, App-Konzept 2): 3 x 3 Produkte, darunter die Unterseiten der aktuellen Welt, Mein Bereich,
-         Weitere Produkte, Darstellung. Bis 760 px ein Sheet von unten (Griff, runde Ecken, hoechstens 90 % hoch, Inhalt scrollt
-         darin), darueber die Seitenleiste rechts. */
-      const tiles=root.querySelector('.tiles'),here=root.querySelector('.here'),hereLinks=root.querySelector('.here-links');
-      groups.filter(g=>g.href).forEach(({id,label,href,icon,claim})=>{
-        const a=document.createElement('a');a.className='tile';a.href=href;a.dataset.group=id;
-        a.innerHTML=`<span class="menu-product-icon" aria-hidden="true">${productIcon(icon)}</span><span><b>${label}</b><small>${claim}</small></span>`;
-        tiles.append(a);
+      /* Kopfzeile nach Prototyp (shell.js .hdr): links der Welten-Wechsler (oeffnet das Menue) oder auf Seiten ausserhalb
+         der Welten das Logo, rechts „i“, Datenstand, Suche, Profil. Das Farbschema wechselt im Menue (Hell/Dunkel). */
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="190" height="63"></a><button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-name"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/quant/">Quant</a><a href="/technical/">Technical</a><a href="/elliott/">Elliott</a><a href="/screener/">Screener</a><a class="q-extra" href="/vorsorge/">Vorsorge</a><a class="q-extra" href="/portfolios/">Portfolios</a></nav><div class="tools"><button class="hb info" type="button" aria-haspopup="dialog" aria-label="Daten und Hinweise">i</button><button class="live" type="button" hidden aria-haspopup="dialog"><i></i><b></b></button><a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">${ico(dockIcons.search)}</a><a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">${ico(dockIcons.person)}</a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></div><nav class="tabs" hidden></nav></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><span class="grab" aria-hidden="true"></span><div class="panel-head"><h2 class="uni-title">Dein Universe</h2><button class="close" type="button" aria-label="Menü schließen"><i>${ico(dockIcons.close)}</i></button></div><p class="uni-sub">Alle Module, von jeder Seite aus.</p><div class="groups"></div><form class="find" role="search">${ico(dockIcons.search)}<input type="search" name="q" placeholder="Aktie, Produkt oder Frage …" aria-label="Aktie, Produkt oder Frage" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Im AI Atlas fragen">${SPARK}</button></form><section class="here" hidden><h2 class="here-title"></h2><div class="links here-links"></div></section><h2>Mein Bereich</h2><div class="mine">${MINE.map(([label,href,icon])=>`<a href="${href}"><i>${ico(dockIcons[icon])}</i><b>${label}</b>${ico(dockIcons.next)}</a>`).join('')}</div><details class="more"><summary><span>Weitere Produkte</span></summary><div class="links more-links"></div></details><div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>${legalMenu()}</nav>`;
+      /* Menue „Dein Universe“ (Prototyp build.js T.universe): Titel und Schliessen, vier Gruppen mit je zwei Kacheln
+         nebeneinander, darunter - was der Prototyp nicht zeigt, aber bleiben muss - Suche/Atlas, die Unterseiten der aktuellen
+         Welt, Mein Bereich, Weitere Produkte, Darstellung, Rechtliches. Bis 760 px ein Sheet von unten (Griff, runde Ecken,
+         hoechstens 90 % hoch, Inhalt scrollt darin), darueber die Seitenleiste rechts. */
+      const tiles=root.querySelector('.groups'),here=root.querySelector('.here'),hereLinks=root.querySelector('.here-links');
+      menuGroups().forEach(({title,tiles:list})=>{
+        const h=document.createElement('h2');h.textContent=title;const grid=document.createElement('div');grid.className='tiles';
+        list.forEach(({id,label,href,icon,claim})=>{
+          const a=document.createElement('a');a.className='tile';a.href=href;a.dataset.group=id;
+          a.innerHTML=`<span class="menu-product-icon" aria-hidden="true">${productIcon(icon)}</span><span><b>${label}</b><small>${claim}</small></span>`;
+          grid.append(a);
+        });
+        tiles.append(h,grid);
       });
       const more=groups.find(g=>g.id==='more');
-      more.entries.forEach(([label,href])=>{const a=document.createElement('a');a.href=href;a.innerHTML=`<span></span>`;a.firstChild.textContent=label;root.querySelector('.more-links').append(a);});
+      /* Die Startseite der Website stand als Logo im Kopf des Menues; sie bleibt als Eintrag erreichbar. */
+      more.entries.concat([['Vision Universe Startseite','/']]).forEach(([label,href])=>{const a=document.createElement('a');a.href=href;a.innerHTML=`<span></span>`;a.firstChild.textContent=label;root.querySelector('.more-links').append(a);});
       root.querySelector('.find').addEventListener('submit',event=>{
         event.preventDefault();
         const q=root.querySelector('.find input').value.trim();
         const product=q&&groups.find(g=>g.href&&g.label.toLowerCase()===q.toLowerCase());
         location.assign(product?product.href:'/ask/'+(q?'?q='+encodeURIComponent(q):''));
       });
-      const world=root.querySelector('.world'),brand=root.querySelector('.brand');
+      const world=root.querySelector('.world'),brand=root.querySelector('.brand'),live=root.querySelector('.live');
+      /* Passt der Name der Welt nicht neben die vier Knoepfe (schmale Handys, lange Namen), zeigt die Datums-Pille nur den Punkt. */
+      const fit=()=>{this.removeAttribute('tight');const name=world.querySelector('.world-name'),row=root.querySelector('.row');if(world.hidden?row.scrollWidth>row.clientWidth+1:name.scrollWidth>name.clientWidth+1)this.setAttribute('tight','');};
       const syncWorld=()=>{
-        const product=PRODUCTS.find(p=>p.match(location.pathname,location)),group=product&&groups.find(g=>g.id===product.id);
-        world.hidden=!product;brand.hidden=!!product;
-        if(!product)return;
-        world.href=product.items[0][2];world.setAttribute('aria-label',product.label+' Startseite');
-        world.querySelector('.hud').innerHTML=dockProductIcon((group||{icon:product.icon||product.id}).icon);
-        world.querySelector('.world-name').textContent=product.label;
+        const w=worldOf(location);
+        world.hidden=!w;brand.hidden=!!w;this.toggleAttribute('world',!!w);
+        if(!w)return;
+        world.setAttribute('aria-label','Modul wechseln, aktuell '+w.label);
+        world.querySelector('.hud').innerHTML=dockProductIcon(w.icon);
+        world.querySelector('.world-name').textContent=w.label;
+        fit();
       };
       syncWorld();
+      world.onclick=()=>this.openMenu(world);
+      /* Datums-Pille: nur mit echtem Datum (Meldung der Seite oder Kursstand aus dem Marktlage-Artefakt). */
+      const syncLive=()=>{
+        const d=isoDate(dataBus.datum);live.hidden=!d;
+        if(d){live.querySelector('b').textContent=d.short;live.setAttribute('aria-label','Datenstand '+d.long);}
+        fit();
+      };
+      dataBus.listeners.push(syncLive);syncLive();
+      live.onclick=()=>openDaten();
+      root.querySelector('.info').onclick=()=>openHinweise();
+      if(!this.hasAttribute('menu-only')&&!dataBus.asked&&typeof fetch==='function'){
+        dataBus.asked=true;
+        const ask=()=>fetch('/quant/data/product/market-regime-v1.json').then(r=>r.ok?r.json():null).then(j=>{
+          const d=j&&isoDate(j.asOf);if(!d||dataBus.own)return;
+          dataBus.datum=j.asOf;dataBus.zeilen=[['Kurse','Schluss '+d.day+' '+d.long,true]];dataBus.listeners.forEach(fn=>fn());
+        }).catch(()=>{});
+        if(document.readyState==='complete')ask();else addEventListener('load',ask,{once:true});
+      }
+      window.addEventListener('resize',fit);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit).catch(()=>{});
+      /* Kopf deckend oder durchsichtig (Prototyp hdr()): deckend, sobald 24 px gescrollt sind oder die Seite kein
+         <html data-vu-bleed> traegt. Die Reiterzeile folgt <html data-vu-tabs="inhalt"> (VUNavigation.rahmen). */
+      const solid=()=>this.toggleAttribute('solid',!document.documentElement.hasAttribute('data-vu-bleed')||(window.scrollY||0)>24);
+      solid();window.addEventListener('scroll',solid,{passive:true});
+      if(typeof MutationObserver==='function')new MutationObserver(()=>{solid();this.syncTabs();}).observe(document.documentElement,{attributes:true,attributeFilter:['data-vu-bleed','data-vu-tabs']});
       let menuLocation=null;
       const syncActive=()=>{
         const state=menuState(location),group=groups.find(g=>g.id===state.group&&g.href);
@@ -607,14 +785,14 @@
         root.querySelector('.more').open=state.group==='more';
       };
       syncActive();
-      if(location.pathname.startsWith('/ask/'))root.querySelector('.atlas').setAttribute('aria-current','page');
       /* Atlas auf jeder Aktie (Konzept mein-bereich-2026-11, Screen a-sheet): Zeigt die Seite einen Aktienkopf (data-vu-stock),
-         öffnet „Atlas“ ein Sheet mit Fragen zur Aktie (assets/atlas-sheet.js, beim ersten Tipp geladen); sonst gilt der Link. */
-      root.querySelector('.atlas').addEventListener('click',e=>{
+         öffnet die Kachel „Atlas“ im Menü ein Sheet mit Fragen zur Aktie (assets/atlas-sheet.js, beim ersten Tipp geladen);
+         sonst gilt der Link. Der Knopf „Atlas“ im Kopf ist mit dem Prototyp entfallen. */
+      tiles.querySelector('.tile[data-group=atlas]').addEventListener('click',e=>{
         if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
-        if(!document.querySelector('[data-vu-stock]'))return;
+        if(!document.querySelector('[data-vu-stock]:not([href]):not([data-vu-href])'))return;
         e.preventDefault();
-        const a=e.currentTarget,go=()=>{if(!(window.VUAtlasSheet&&window.VUAtlasSheet.open(document,a)))location.assign('/ask/');};
+        const a=world.hidden?button:world,go=()=>{if(!(window.VUAtlasSheet&&window.VUAtlasSheet.open(document,a)))location.assign('/ask/');};
         if(window.VUAtlasSheet)return go();
         const sc=document.createElement('script');sc.src='/assets/atlas-sheet.js';sc.onload=go;sc.onerror=()=>location.assign('/ask/');document.head.appendChild(sc);
       });
@@ -626,9 +804,9 @@
       /* Ein Menue fuer zwei Oeffner: den Knopf im Kopf (Seiten ohne Dock)
          und den Universe-Knopf im Dock („Alle Module“). Der Fokus kehrt zum Oeffner zurueck. */
       let opener=null;
-      const setExpanded=open=>{[button,this.dockMenuButton,opener].forEach(b=>{if(!b)return;b.setAttribute('aria-expanded',String(open));if(b!==this.dockMenuButton)b.setAttribute('aria-label',open?'Menü schließen':(b===button?'Menü öffnen':'Vision Universe Menü öffnen'));});};
+      const setExpanded=open=>{[button,this.dockMenuButton,opener].forEach(b=>{if(!b)return;b.setAttribute('aria-expanded',String(open));if(b!==this.dockMenuButton&&b!==world)b.setAttribute('aria-label',open?'Menü schließen':(b===button?'Menü öffnen':'Vision Universe Menü öffnen'));});};
       const close=()=>{if(!this.hasAttribute('open'))return;this.removeAttribute('open');panel.inert=true;panel.setAttribute('aria-hidden','true');setExpanded(false);document.documentElement.classList.remove('vu-menu-open');if(this.dockHost)this.dockHost.inert=false;};
-      const restore=()=>{const target=opener&&opener.isConnected&&opener.getClientRects().length?opener:button;if(target&&target.focus)target.focus();};
+      const restore=()=>{const target=opener&&opener.isConnected&&opener.getClientRects().length?opener:(world.hidden?button:world);if(target&&target.focus)target.focus();};
       this.openMenu=from=>{if(this.hasAttribute('open')){close();restore();return;}opener=from||button;syncActive();root.querySelectorAll('.menu-product-icon use[data-href]').forEach(icon=>{icon.setAttribute('href',icon.getAttribute('data-href'));icon.removeAttribute('data-href');});this.setAttribute('open','');panel.inert=false;panel.removeAttribute('aria-hidden');setExpanded(true);document.documentElement.classList.add('vu-menu-open');if(this.dockHost)this.dockHost.inert=true;const focusClose=()=>{if(!this.hasAttribute('open'))return;if(getComputedStyle(panel).visibility!=='visible'){requestAnimationFrame(focusClose);return;}root.querySelector('.close').focus();};requestAnimationFrame(focusClose);};
       button.onclick=()=>this.openMenu(button);
       root.querySelector('.close').onclick=()=>{close();restore();};root.querySelector('.backdrop').onclick=()=>{close();restore();};
@@ -662,12 +840,21 @@
     /* Reiterzeile unter dem Kopf: die Bereiche des Produkts (tabEntries). Aktiver Reiter (tabActive), Ziele (hrefs),
        Trefferzahl (badges) und das abbrechbare Ereignis vu-dock-navigate {product,id,href} gelten wie bei den frueheren
        Leistenplaetzen. Der Inhalt rueckt um die Zeile nach unten: html[data-vu-tabs] in site-navigation.css. */
+    /* <html data-vu-tabs="inhalt">: die Seite zeigt ihre Reiter selbst, die Zeile des Rahmens bleibt weg. Sonst traegt
+       das Attribut die Kennung des Produkts (Platz unter dem Kopf: site-navigation.css). */
+    syncTabs(){
+      const nav=this.shadowRoot&&this.shadowRoot.querySelector('.tabs'),html=document.documentElement;
+      if(!nav||!this.tabsFor)return;
+      const own=html.getAttribute('data-vu-tabs')==='inhalt';
+      nav.hidden=own;
+      if(!own&&html.getAttribute('data-vu-tabs')!==this.tabsFor)html.setAttribute('data-vu-tabs',this.tabsFor);
+    }
     mountTabs(){
       const product=PRODUCTS.find(p=>p.match(location.pathname,location)),nav=this.shadowRoot&&this.shadowRoot.querySelector('.tabs');
       if(!product||!nav||this.tabsFor===product.id||this.hasAttribute('no-dock')||this.hasAttribute('menu-only'))return;
       if(this.dropTabs)this.dropTabs();
-      this.tabsFor=product.id;document.documentElement.setAttribute('data-vu-tabs',product.id);
-      nav.setAttribute('aria-label',product.label);nav.hidden=false;
+      this.tabsFor=product.id;
+      nav.setAttribute('aria-label',product.label);this.syncTabs();
       const entries=tabEntries(product);
       const links=entries.map(entry=>{
         const a=document.createElement('a');a.className='tab';a.href=entry.href;if(entry.id)a.dataset.id=entry.id;if(entry.name)a.setAttribute('aria-label',entry.name);
@@ -770,6 +957,39 @@
     const nav = opener && document.querySelector('vu-navigation[menu-only]');
     if (nav && nav.openMenu) nav.openMenu(opener);
   });
+
+  /* Aktien-Vorschau (Prototyp: Fenster „stock“): Ein Tipp auf ein Ziel mit data-vu-stock="<TICKER>" - ein Link (href) oder
+     eine Karte (data-vu-href) - laedt einmalig /assets/vu-stock-sheet.js und ruft
+     VUStockSheet.open(ticker, {name: data-vu-stock-name, trigger: element}). Strg/Cmd/Umschalt/Mittelklick oeffnen wie
+     gewohnt das Ziel. Fehlt die Datei, schlaegt das Laden fehl oder meldet open() false, folgt der Tipp dem Ziel; danach
+     gilt fuer diese Seite wieder der normale Link. Der Aktienkopf traegt data-vu-stock ohne Ziel und oeffnet nichts.
+     Eigene Bedienelemente im Ziel (Knoepfe, Felder, data-vu-card-ignore) behalten ihre Funktion.
+     stockSheet(env) ist ohne Seite pruefbar (Tests): env = {has(), load(), go(href)}. */
+  const stockSheet = env => {
+    let loading = null, failed = false;
+    return e => {
+      if (failed || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return false;
+      const el = e.target && e.target.closest && e.target.closest('[data-vu-stock]');
+      if (!el) return false;
+      const ticker = el.getAttribute('data-vu-stock'), href = el.getAttribute('href') || el.getAttribute('data-vu-href');
+      if (!ticker || !href) return false;
+      const own = e.target.closest('button,input,select,textarea,summary,label,[role=tab],[role=button],[data-vu-card-ignore]');
+      if (own && own !== el && el.contains(own)) return false;
+      e.preventDefault();
+      const follow = () => { failed = true; env.go(href); };
+      const open = () => { let ok = false; try { ok = env.has() && env.has().open(ticker, {name: el.getAttribute('data-vu-stock-name') || null, trigger: el}) !== false; } catch (_) { ok = false; } if (!ok) follow(); };
+      if (env.has()) open(); else (loading || (loading = env.load())).then(open, follow);
+      return true;
+    };
+  };
+  if (typeof document !== 'undefined' && !window.__vuStockSheet) {
+    window.__vuStockSheet = true;
+    document.addEventListener('click', stockSheet({
+      has: () => window.VUStockSheet && typeof window.VUStockSheet.open === 'function' ? window.VUStockSheet : null,
+      load: () => new Promise((ok, no) => { const sc = document.createElement('script'); sc.src = '/assets/vu-stock-sheet.js'; sc.onload = ok; sc.onerror = no; document.head.appendChild(sc); }),
+      go: href => location.assign(href)
+    }));
+  }
 
   /* VU3: Die ganze Aktienkarte ist der Einstieg in die Aktie. Eine Karte traegt ihr Ziel in data-vu-href;
      ein Tippen oder Klick auf jede Flaeche, die kein eigenes Bedienelement ist (Logo, Name, Kennzahlen,

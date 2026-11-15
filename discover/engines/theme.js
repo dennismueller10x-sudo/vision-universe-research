@@ -3,8 +3,10 @@
 
    FARBSCHEMA: HELL · DUNKEL
 
-   Discover startet hell. Eine ausdrueckliche Wahl bleibt auf diesem
-   Geraet gespeichert; ohne Speicher gilt ebenfalls Hell.
+   Discover startet dunkel (Owner 15.11.2026, App-Konzept 2; die Regel fuer
+   alle Seiten steht in assets/site-navigation.js, themeWanted). Eine
+   ausdrueckliche Wahl bleibt auf diesem Geraet gespeichert; ohne Speicher
+   gilt ebenfalls Dunkel.
 
    Der Zustand hat zwei Seiten:
      mode      light | dark               (was gewaehlt wurde)
@@ -42,8 +44,8 @@
     function lesen() {
       try {
         var v = store ? store.getItem(KEY) : null;
-        return v === "dark" ? "dark" : "light";
-      } catch (err) { return "light"; }
+        return v === "light" ? "light" : "dark";
+      } catch (err) { return "dark"; }
     }
     function resolved() {
       return mode;

@@ -8,7 +8,9 @@ const require = createRequire(import.meta.url);
 const S = require("../../assets/atlas-sheet.js");
 const UI = require("../../assets/vu-ui.js");
 
-const fakeDoc = (attrs) => ({ querySelector: (sel) => sel === "[data-vu-stock]" && attrs ? { getAttribute: (k) => attrs[k] ?? null } : null });
+/* Der Aktienkopf trägt data-vu-stock ohne Ziel; Links und Karten mit data-vu-stock (Aktien-Vorschau des Rahmens) zählen nicht. */
+const HEAD = "[data-vu-stock]:not([href]):not([data-vu-href])";
+const fakeDoc = (attrs) => ({ querySelector: (sel) => sel === HEAD && attrs ? { getAttribute: (k) => attrs[k] ?? null } : null });
 
 test("AS-1 · Aktie der Seite aus dem Aktienkopf (data-vu-stock), sonst kein Sheet", () => {
   assert.deepEqual(S.stockOf(fakeDoc({ "data-vu-stock": "nvda", "data-vu-stock-name": "NVIDIA Corporation" })), { ticker: "NVDA", name: "NVIDIA Corporation".replace(" Corporation", "") });
@@ -36,11 +38,13 @@ test("AS-3 · Sheet: Titel, Eingabe, drei Fragen, Schließen; Text maskiert", ()
   assert.doesNotMatch(S.html({ ticker: "X", name: '<img src=x onerror=1>' }), /<img src=x/);
 });
 
-test("AS-4 · Aktienköpfe tragen die Aktie; die Kopfzeile öffnet das Sheet nur auf Aktienseiten", () => {
+test("AS-4 · Aktienköpfe tragen die Aktie; die Kachel „Atlas“ im Menü öffnet das Sheet nur auf Aktienseiten", () => {
   assert.match(UI.stockHead({ ticker: "NVDA", name: "NVIDIA" }), /<header class="vu-stockhead" data-vu-stock="NVDA" data-vu-stock-name="NVIDIA">/);
   assert.match(readFileSync("assets/stock-navigator.js", "utf8"), /setAttribute\("data-vu-stock", o\.ctx\.displaySymbol/);
   const nav = readFileSync("assets/site-navigation.js", "utf8");
-  assert.match(nav, /querySelector\('\[data-vu-stock\]'\)/);
+  assert.match(nav, /tiles\.querySelector\('\.tile\[data-group=atlas\]'\)\.addEventListener\('click'/, "Atlas steht im Menü „Dein Universe“ (Prototyp), nicht mehr im Kopf");
+  assert.match(nav, /querySelector\('\[data-vu-stock\]:not\(\[href\]\):not\(\[data-vu-href\]\)'\)/);
+  assert.doesNotMatch(nav, /class="atlas"/);
   assert.match(nav, /\/assets\/atlas-sheet\.js/);
   assert.match(readFileSync("ask/app.js", "utf8"), /params\.get\('go'\) === '1'/, "/ask/ stellt die Frage aus dem Sheet sofort");
 });

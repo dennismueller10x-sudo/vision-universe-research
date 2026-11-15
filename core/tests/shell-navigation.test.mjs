@@ -16,8 +16,8 @@ const require = createRequire(import.meta.url);
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const source = readFileSync(join(root, 'assets/site-navigation.js'), 'utf8');
 const sandbox = { HTMLElement: class {}, URL, URLSearchParams, customElements: { define() {} } };
-vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.__nav = { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, dockPage, tabEntries, tabActive, dockIcons };})();'), sandbox);
-const { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, dockPage, tabEntries, tabActive, dockIcons } = sandbox.__nav;
+vm.runInNewContext(source.replace(/\}\)\(\);\s*$/, 'globalThis.__nav = { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, dockPage, tabEntries, tabActive, dockIcons, worldOf, menuGroups, themeWanted, stockSheet, isoDate };})();'), sandbox);
+const { styles, THEMES, PRODUCTS, dockStyles, groups, routeScore, menuState, productIcon, DOCK_PRODUCT_ICONS, dockProductIcon, DOCK, dockActive, dockPage, tabEntries, tabActive, dockIcons, worldOf, menuGroups, themeWanted, stockSheet, isoDate } = sandbox.__nav;
 
 const loc = (url) => { const u = new URL(url, 'https://research.visionuniverse.de'); return { pathname: u.pathname, hash: u.hash, search: u.search }; };
 
@@ -60,7 +60,7 @@ test('one global dock on every page with a dock: Home, Discover, Universe button
   assert.match(source, /menu\.className='menu uni'/);
   assert.match(source, /menu\.setAttribute\('aria-label','Alle Module'\)/);
   assert.match(source, /menu\.innerHTML=dockProductIcon\('layers'\)/);
-  assert.match(source, /if\(b!==this\.dockMenuButton\)b\.setAttribute\('aria-label'/, 'der Name des Universe-Knopfs bleibt „Alle Module“');
+  assert.match(source, /if\(b!==this\.dockMenuButton&&b!==world\)b\.setAttribute\('aria-label'/, 'der Name des Universe-Knopfs bleibt „Alle Module“, der des Welten-Wechslers auch');
   // Aktiv nach Ort; in den uebrigen Produkten ist kein Platz aktiv
   const on = url => dockActive(loc(url));
   assert.equal(on('/willkommen/'), 'home');
@@ -278,11 +278,11 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   assert.match(dockStyles, /env\(safe-area-inset-bottom\)/);
   assert.match(dockStyles, /nav\{[^}]*display:flex;align-items:center;[^}]*height:68px/, 'vier gleich breite Plaetze um den Knopf in der Mitte');
   assert.match(dockStyles, /a\{flex:1 1 0;/);
-  assert.match(dockStyles, /background:#000/, 'Leiste schwarz (Mockup C02)');
+  assert.match(dockStyles, /nav\{[^}]*border-radius:28px;background:rgba\(12,12,13,\.92\);[^}]*backdrop-filter:blur\(16px\);border:1px solid rgba\(255,255,255,\.14\)/, 'Leiste wie im Prototyp (shell.js .dock)');
   assert.match(dockStyles, /a\[aria-current=page\],a\[aria-current=page\]:hover\{color:#c8f531\}/, 'aktiver Platz in Lime (App-Konzept 2)');
   // Universe-Knopf: rund, 62px, lime, ueber der Leiste
-  assert.match(dockStyles, /\.uni\{flex:none;width:62px;height:62px;margin:-22px 6px 0;[^}]*border-radius:50%;background:#c8f531;color:#101318;box-shadow:0 0 0 6px #000,/);
-  assert.match(dockStyles, /min-height:56px/);
+  assert.match(dockStyles, /\.uni\{flex:none;width:62px;height:62px;margin:-22px 6px 0;[^}]*border-radius:99px;background:#c8f531;color:#101318;box-shadow:0 0 0 6px #000,0 8px 30px rgba\(200,245,49,\.35\)\}/);
+  assert.match(dockStyles, /a\{flex:1 1 0;gap:3px;min-width:0;height:56px;[^}]*color:#a1a7af;font-size:10\.5px;font-weight:700/);
   assert.match(dockStyles, /z-index:900/);
   assert.match(dockStyles, /:focus-visible/);
   assert.match(dockStyles, /prefers-reduced-motion/);
@@ -293,22 +293,22 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   assert.match(css, /html\.vu-menu-open/);
   // Reiterzeile: Platz im Dokument (nichts liegt unter Kopf und Reitern), 44px-Ziele, sichtbarer Fokus
   assert.match(css, /:root\{--vu-navigation-height:64px\}/);
-  assert.match(css, /html\[data-vu-tabs\]\{--vu-navigation-height:112px\}/);
-  assert.match(css, /@media\(max-width:760px\)\{html\[data-vu-tabs\]\{--vu-navigation-height:104px\}\}/);
+  assert.match(css, /html\[data-vu-tabs\]\{--vu-navigation-height:116px\}/);
+  assert.match(css, /@media\(max-width:760px\)\{html\[data-vu-tabs\]\{--vu-navigation-height:108px\}\}/);
   assert.match(css, /body\{padding-top:var\(--vu-navigation-height\)!important\}/);
   for (const t of [THEMES.light, THEMES.dark]) {
     const st = styles(t);
-    assert.match(st, /\.tabs\{[^}]*overflow-x:auto;[^}]*padding:0 max\(24px,calc\(\(100% - 1240px\)\/2\)\) 4px\}/, 'waagerecht rollbar, am Inhaltsrand ausgerichtet');
-    assert.match(st, /\.tab\{flex:none;display:flex;align-items:center;min-height:44px;/);
+    assert.match(st, /\.tabs\{[^}]*overflow-x:auto;[^}]*padding:8px max\(24px,calc\(\(100% - 1240px\)\/2\)\)\}/, 'waagerecht rollbar, am Inhaltsrand ausgerichtet');
+    assert.match(st, /\.tab\{position:relative;flex:none;display:inline-flex;align-items:center;height:44px;margin-block:-4px;/, 'Pille 36 px wie im Prototyp, Tippfläche 44 px ohne Versatz');
     assert.match(st, /\.tab \.pill\{[^}]*height:36px;/);
-    assert.ok(st.includes(`.tab[aria-current=page] .pill{background:${t.ink};color:${t.inv};`), 'aktiver Reiter in Schriftfarbe, hell wie dunkel');
+    assert.ok(st.includes(`.tab[aria-current=page] .pill{background:${t.on};color:${t.onInk};`), 'aktiver Reiter: weiß auf dunkel (Prototyp .tab.on), schwarz auf hell');
     assert.match(st, /\.tab:focus-visible \.pill\{outline:2px solid /);
   }
   assert.match(source, /<nav class="tabs" hidden><\/nav><\/header>/, 'Reiterzeile im festen Kopf, direkt unter der Kopfzeile');
-  assert.match(source, /document\.documentElement\.setAttribute\('data-vu-tabs',product\.id\)/);
-  // Mit Leiste ist der Kopf ruhig: Welt links, Suche, Atlas, Mein Bereich rechts (Mockup C01)
+  assert.match(source, /html\.setAttribute\('data-vu-tabs',this\.tabsFor\)/);
+  // Kopf nach Prototyp: Welten-Wechsler links, „i“, Datenstand, Suche, Profil rechts
   assert.match(styles(THEMES.light), /:host\(\[dock\]\) \.quick,:host\(\[dock\]\) \.toggle\{display:none\}/);
-  assert.match(source, /class="world" hidden/);
+  assert.match(source, /class="world mod" type="button" hidden/);
   assert.match(source, /class="hb search" href="\/discover\/#\/suche"/);
   assert.match(source, /class="hb profile" href="\/mein-dashboard\/"/);
 });
@@ -357,15 +357,14 @@ test('the tab strip is reserved at first paint exactly on pages that request the
 });
 
 test('the menu is the sheet „Dein Universe“ on phones, the side panel on desktop, and keeps every part', () => {
-  // Reihenfolge im Menue: Griff, Logo und Schliessen, Ueberschrift, Suche, Produkte, „In <Welt>“, Mein Bereich, Weitere Produkte, Einstellungen, Rechtliches
-  const order = ['<span class="grab" aria-hidden="true"></span>', '<div class="panel-head">', '<h2 class="uni-title">Dein Universe</h2><p class="uni-sub">Alle Module, von jeder Seite aus.</p>', '<form class="find" role="search">',
-    '<h2>Produkte</h2><div class="tiles"></div>', '<section class="here" hidden>', '<h2>Mein Bereich</h2><div class="mine">', '<details class="more"><summary><span>Weitere Produkte</span></summary>',
+  // Reihenfolge im Menue (Prototyp T.universe): Griff, Ueberschrift und Schliessen, Gruppen mit Kacheln, Suche, „In <Welt>“, Mein Bereich, Weitere Produkte, Einstellungen, Rechtliches
+  const order = ['<span class="grab" aria-hidden="true"></span>', '<div class="panel-head"><h2 class="uni-title">Dein Universe</h2>', '<p class="uni-sub">Alle Module, von jeder Seite aus.</p>', '<div class="groups"></div>', '<form class="find" role="search">', '<section class="here" hidden>', '<h2>Mein Bereich</h2><div class="mine">', '<details class="more"><summary><span>Weitere Produkte</span></summary>',
     '<div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>', '${legalMenu()}</nav>'];
   let at = source.indexOf('<nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true">');
   assert.ok(at > 0);
   for (const part of order) { const next = source.indexOf(part, at); assert.ok(next > at, part); at = next; }
   for (const t of [THEMES.light, THEMES.dark]) {
-    const st = styles(t), phone = st.slice(st.indexOf('@media(max-width:760px)'), st.indexOf('@media(max-width:520px)'));
+    const st = styles(t), phone = st.slice(st.indexOf('@media(max-width:760px)'), st.indexOf('@media(max-width:430px)'));
     // Desktop: Seitenleiste rechts
     assert.match(st, /\.panel\{position:fixed;right:0;top:0;bottom:0;width:min\(440px,100vw\);/);
     // Telefon: Sheet von unten, runde Ecken, hoechstens 90 % hoch, Inhalt rollt im Sheet, Griff
@@ -373,7 +372,7 @@ test('the menu is the sheet „Dein Universe“ on phones, the side panel on des
     assert.match(phone, /\.grab\{display:block\}/);
     assert.match(st, /\.panel\{[^}]*overflow-y:auto;overscroll-behavior:contain;/);
     assert.match(st, /:host\(\[open\]\) \.backdrop,:host\(\[open\]\) \.panel\{visibility:visible;opacity:1;transform:none\}/);
-    assert.match(st, /@media\(prefers-reduced-motion:reduce\)\{\.backdrop,\.panel\{transition:none\}\}/);
+    assert.match(st, /@media\(prefers-reduced-motion:reduce\)\{header,\.backdrop,\.panel,\.tile\{transition:none\}/);
   }
   // Schliessen: Knopf, Hintergrund, Escape, Griff nach unten ziehen; Fokus zurueck zum Oeffner
   assert.match(source, /root\.querySelector\('\.backdrop'\)\.onclick=\(\)=>\{close\(\);restore\(\);\};/);
@@ -457,12 +456,12 @@ test('menu tiles keep original product symbols, load the sprite lazily and stay 
   assert.match(source,/<details class="more">/);
   assert.match(source,/'In '\+group\.label/);
   assert.match(source,/filter\(n=>n\.getClientRects\(\)\.length&&!n\.closest\('\[hidden\]'\)\)/);
-  assert.match(source,/dockProductIcon\(\(group\|\|\{icon:product\.icon\|\|product\.id\}\)\.icon\)/,'Produktsymbol im Kopf');
+  assert.match(source,/world\.querySelector\('\.hud'\)\.innerHTML=dockProductIcon\(w\.icon\)/,'Produktsymbol im Kopf');
   const light=styles(THEMES.light);
-  assert.match(light,/\.hb\{width:44px;height:44px/);
-  assert.match(light,/\.links a,\.mine a,\.more summary\{[^}]*min-height:48px/);
+  assert.match(light,/\.hb\{position:relative;width:38px;height:38px/);
+  assert.match(light,/\.links a,\.mine a,\.more summary\{[^}]*min-height:46px/);
   assert.match(light,/\.choices button,\.choices a\{[^}]*min-width:44px;min-height:44px/);
-  assert.match(light,/\.tile\[aria-current=page\],\.tile\.is-current\{background:#c8f531;color:#000\}/);
+  assert.match(light,/\.tile\[aria-current=page\],\.tile\.is-current\{box-shadow:0 0 0 1px rgba\(200,245,49,\.5\),0 0 28px rgba\(200,245,49,\.18\)\}/,'aktuelle Welt: Lichtrand des Prototyps (.gl)');
 });
 
 test('Elliott is a first-class product with its own menu group, dock and state', () => {
@@ -616,7 +615,7 @@ test('Portfolios: eigener Menueeintrag, Direktzugriff, Leiste mit Gruppen und De
   assert.equal(g.href, '/portfolios/');
   assert.deepEqual(JSON.parse(JSON.stringify(g.entries.map(e => e[1]))), ['/portfolios/', '/portfolios/#/supertrader', '/portfolios/#/quant', '/portfolios/#/ki']);
   assert.match(source, /<a class="q-extra" href="\/portfolios\/">Portfolios<\/a>/);
-  assert.match(styles(THEMES.light), /\.tile\[data-group=portfolios\]\{grid-column:1\/-1/);
+  assert.ok(menuGroups().find(g => g.title === 'Nach Regeln').tiles.some(t => t.id === 'portfolios'), 'Kachel in der Gruppe „Nach Regeln“ (Prototyp)');
   const sprite = readFileSync(join(root, 'assets/product-icons.svg'), 'utf8');
   assert.equal(DOCK_PRODUCT_ICONS.portfolios, sprite.match(/<symbol id="portfolios"[^>]*>([\s\S]*?)<\/symbol>/)[1]);
   const p = PRODUCTS.find(x => x.id === 'portfolios');
@@ -625,4 +624,182 @@ test('Portfolios: eigener Menueeintrag, Direktzugriff, Leiste mit Gruppen und De
   assert.equal(p.active(loc('/portfolios/#/supertrader/minervini-vcp')), 'supertrader');
   assert.equal(p.active(loc('/portfolios/#/ki/a')), 'ki');
   assert.equal(menuState(loc('/portfolios/#/quant/momentum-leader')).group, 'portfolios');
+});
+
+/* ───────── Rahmen genau nach Prototyp „App-Konzept 2“ (Owner 15.11.2026): Kopf, Menue, dunkler Standard, Schalter, Aktien-Vorschau ───────── */
+
+test('Kopf nach Prototyp: Welten-Wechsler als Pille, „i“, Datums-Pille, Suche, Profil mit Lime-Ring; kein Atlas-Knopf', () => {
+  const head = source.slice(source.indexOf('<header><div class="shell">'), source.indexOf('</header>'));
+  const order = ['<button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-name"></span><svg class="chev"',
+    '<button class="hb info" type="button" aria-haspopup="dialog" aria-label="Daten und Hinweise">i</button>', '<button class="live" type="button" hidden aria-haspopup="dialog"><i></i><b></b></button>',
+    '<a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">', '<a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">'];
+  let at = 0;
+  for (const part of order) { const next = head.indexOf(part, at); assert.ok(next >= at && next >= 0, part); at = next + 1; }
+  assert.doesNotMatch(head, /atlas/i, 'der Atlas-Knopf im Kopf ist entfallen');
+  // Der Wechsler oeffnet das Menue „Dein Universe“; die Pille nur mit echtem Datum
+  assert.match(source, /world\.onclick=\(\)=>this\.openMenu\(world\)/);
+  assert.match(source, /const d=isoDate\(dataBus\.datum\);live\.hidden=!d;/);
+  assert.match(source, /live\.onclick=\(\)=>openDaten\(\)/);
+  assert.match(source, /root\.querySelector\('\.info'\)\.onclick=\(\)=>openHinweise\(\)/);
+  // Masse des Prototyps (shell.js .hdr/.mod/.mi/.hb/.live), in beiden Schemata dieselben
+  for (const t of [THEMES.light, THEMES.dark]) {
+    const st = styles(t), phone = st.slice(st.indexOf('@media(max-width:760px)'));
+    assert.match(phone, /\.row\{height:56px;padding:0 12px\}/);
+    assert.match(st, /\.row\{height:64px;display:flex;align-items:center;gap:8px\}/);
+    assert.match(st, /\.mod\{[^}]*gap:8px;[^}]*height:38px;padding:0 12px 0 6px;border:0;border-radius:99px;[^}]*font-weight:800;font-size:16px;letter-spacing:-\.02em;white-space:nowrap\}/);
+    assert.match(st, /\.mi\{width:28px;height:28px;border-radius:9px;background:#0e1013;border:1px solid rgba\(200,245,49,\.35\);[^}]*color:#c8f531/);
+    assert.match(st, /\.live\{[^}]*gap:6px;[^}]*height:38px;padding:0 11px;[^}]*font-size:12px;font-weight:800;/);
+    assert.match(st, /\.live i\{width:7px;height:7px;border-radius:9px;/);
+    assert.ok(st.includes(`.profile{border:2px solid #c8f531;`), 'Profil mit Ring in Neongrün');
+    assert.ok(st.includes(`:host([solid]) header{background:${t.bg};-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}`));
+  }
+  assert.equal(THEMES.dark.bg, 'rgba(0,0,0,.82)');
+  assert.equal(THEMES.dark.glass, 'rgba(20,20,22,.7)');
+  assert.equal(THEMES.dark.live, '#c3c7cc');
+});
+
+test('Welten-Wechsler: Name und Symbol je Ort; Home, Ich, Konto und News heissen wie im Prototyp', () => {
+  const w = url => { const x = worldOf(loc(url)); return x && [x.label, x.icon]; };
+  const same = (a, b) => assert.deepEqual(JSON.parse(JSON.stringify(a)), b);
+  same(w('/willkommen/'), ['Home', 'layers']);
+  same(w('/mein-dashboard/#/gespeichert'), ['Ich', 'layers']);
+  same(w('/konto/einstellungen/'), ['Konto', 'layers']);
+  same(w('/insights/reports/'), ['News', 'insights']);
+  same(w('/discover/#/welten'), ['Discover', 'discover']);
+  same(w('/quant/#/aktie/NVDA'), ['Aktie', 'chartbild']);
+  same(w('/quant/#/aktie/NVDA/zahlen'), ['Aktie', 'chartbild']);
+  same(w('/quant/#/aktien'), ['Quant', 'quant']);
+  assert.equal(DOCK_PRODUCT_ICONS.chartbild, readFileSync(join(root, 'assets/product-icons.svg'), 'utf8').match(/<symbol id="chartbild"[^>]*>([\s\S]*?)<\/symbol>/)[1], 'Symbol der Aktie: Originalgeometrie');
+  same(w('/quant/#/elliott/NVDA'), ['Elliott', 'elliott']);
+  same(w('/supertrader/treffer/'), ['Supertrader', 'supertrader']);
+  assert.equal(worldOf(loc('/konto/anmelden/')), null, 'ohne Welt bleibt das Logo');
+  assert.equal(worldOf(loc('/infos/')), null);
+  for (const p of PRODUCTS) assert.ok(DOCK_PRODUCT_ICONS[worldOf(loc(p.items[0][2])).icon], p.id + ': Symbol ohne Sprite-Abruf');
+});
+
+test('Menue „Dein Universe“ nach Prototyp: vier Gruppen, zwei Kacheln nebeneinander, Atlas als Kachel, kein Produkt fehlt', () => {
+  const g = JSON.parse(JSON.stringify(menuGroups().map(x => [x.title, x.tiles.map(t => t.id)])));
+  assert.deepEqual(g, [['Entdecken', ['discover', 'insights']], ['Analysieren', ['quant', 'fundamental', 'technical', 'hedgefonds', 'elliott']],
+    ['Nach Regeln', ['supertrader', 'portfolios']], ['Finden und vorsorgen', ['screener', 'vorsorge', 'atlas']]]);
+  const ids = g.flatMap(x => x[1]);
+  for (const group of groups.filter(x => x.href)) assert.ok(ids.includes(group.id), group.id + ' steht im Menue');
+  const atlas = menuGroups()[3].tiles.find(t => t.id === 'atlas');
+  assert.equal(atlas.href, '/ask/');
+  // Der Eintrag zur Startseite der Website (frueher Logo im Menuekopf) bleibt
+  assert.match(source, /more\.entries\.concat\(\[\['Vision Universe Startseite','\/'\]\]\)/);
+  const st = styles(THEMES.dark);
+  assert.match(st, /\.tiles\{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px\}/);
+  assert.match(st, /\.tile\{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border-radius:22px;background:#202022;/);
+  assert.match(st, /\.tile \.menu-product-icon\{width:40px;height:40px;border-radius:12px;background:#0e1013;border:1px solid rgba\(200,245,49,\.25\);/);
+  assert.match(st, /\.panel\{[^}]*background:#151516;color:#f4f5f1;/);
+  assert.match(st, /\.panel h2\.uni-title\{margin:0;font-size:30px;line-height:1;font-weight:900;letter-spacing:-\.045em;/);
+  assert.match(st, /\.panel h2\{margin:16px 0 0;font-size:10\.5px;[^}]*font-weight:800;letter-spacing:\.12em;text-transform:uppercase;color:#a1a7af\}/);
+});
+
+test('Dunkel ist der Standard: eine Regel (themeWanted), einmalige Umstellung, Hell bleibt, „Wie Gerät“ folgt dem Geraet', () => {
+  const store = init => { const m = new Map(Object.entries(init || {})); return { m, get: k => m.has(k) ? m.get(k) : null, set: (k, v) => { if (v === null) m.delete(k); else m.set(k, v); } }; };
+  const KEY = 'vu-discover-theme-v1', SYS = 'vu-theme-system-v1', DEF = 'vu-theme-default-v2';
+  // Erster Besuch: dunkel, auch auf einem hellen Geraet; gespeichert fuer die Inline-Skripte der naechsten Seiten
+  let s = store();
+  assert.equal(themeWanted(s, 'light', false), 'dark');
+  assert.equal(s.get(KEY), 'dark'); assert.equal(s.get(DEF), '1');
+  // Vor der Umstellung automatisch gespeichertes „light“ ist keine Wahl: einmal dunkel
+  s = store({ [KEY]: 'light' });
+  assert.equal(themeWanted(s, 'light', false), 'dark');
+  // Wer danach Hell waehlt, behaelt Hell
+  s.set(KEY, 'light');
+  assert.equal(themeWanted(s, 'dark', false), 'light');
+  assert.equal(themeWanted(s, 'dark', false), 'light');
+  // Dunkel gewaehlt bleibt dunkel
+  s = store({ [KEY]: 'dark', [DEF]: '1' });
+  assert.equal(themeWanted(s, 'light', false), 'dark');
+  // „Wie Gerät“: folgt dem Geraet und haelt den Schluessel fuer die Inline-Skripte aktuell; die Umstellung laesst es stehen
+  s = store({ [KEY]: 'dark', [SYS]: '1' });
+  assert.equal(themeWanted(s, 'light', false), 'light'); assert.equal(s.get(KEY), 'light');
+  assert.equal(themeWanted(s, 'dark', false), 'dark'); assert.equal(s.get(KEY), 'dark');
+  // Automatisierte Pruefungen setzen das Schema vor dem Laden selbst
+  s = store({ [KEY]: 'light' });
+  assert.equal(themeWanted(s, 'dark', true), 'light');
+  // Ohne Speicher: dunkel
+  assert.equal(themeWanted({ get: () => null, set() {} }, 'light', false), 'dark');
+  // Zentral, vor dem ersten Zeichnen: synchron am Anfang von <body>; die oeffentliche Startseite bleibt aussen vor
+  assert.match(source, /if \(typeof window !== 'undefined' && themed\(\) && !publicPage\(\)\) \{\n    const want = themeWanted\(themeStore, deviceTheme\(\), !!navigator\.webdriver\);/);
+  assert.match(source, /const publicPage = \(\) => \{ const p = location\.pathname; return p === '\/' \|\| p === '\/index\.html' \|\| p\.startsWith\('\/website2\/'\); \};/);
+  const inline = /<script>\(function\(\)\{var w="dark";try\{var v=localStorage\.getItem\("vu-discover-theme-v1"\);if\(v==="dark"\|\|v==="light"\)w=v;\}catch\(e\)\{\}/;
+  const other = /var w="dark";try\{if\(localStorage\.getItem\("vu-discover-theme-v1"\)==="light"\)w="light";\}/;
+  for (const page of ['willkommen', 'discover', 'quant', 'fundamental', 'technical', 'elliott', 'hedgefonds', 'supertrader', 'screener', 'insights', 'mein-dashboard', 'konto', 'konto/einstellungen', 'konto/watchlist', 'ask', 'portfolios', 'vorsorge']) {
+    const html = readFileSync(join(root, page, 'index.html'), 'utf8');
+    assert.ok(inline.test(html) || other.test(html), page + ': Inline-Skript startet dunkel (kein heller Blitz)');
+    /* /ask/ traegt einen eigenen Kopf und bindet den Rahmen nur als Menue ein; dort stellt das Inline-Skript um. */
+    if (page !== 'ask') assert.match(html, /<body[^>]*>\s*(?:<a class="[^"]*skip[^"]*"[^>]*>[^<]*<\/a>\s*)?<vu-navigation[^>]*\btheme-switch\b[^>]*><\/vu-navigation>\s*(?:<script>[^<]*<\/script>)?\s*<script src="\/assets\/site-navigation\.js"><\/script>/, page + ': Rahmen synchron am Anfang von <body>');
+  }
+  // Die oeffentliche Startseite ist nicht angefasst: sie startet hell
+  assert.match(readFileSync(join(root, 'index.html'), 'utf8'), /var w="light"/);
+  for (const gen of ['scripts/supertrader/build.mjs', 'products/insights/build.mjs', 'scripts/quant/build-methodology-index.mjs']) assert.match(readFileSync(join(root, gen), 'utf8'), /var w="dark";try\{var v=localStorage\.getItem\("vu-discover-theme-v1"\)/, gen);
+  assert.match(readFileSync(join(root, 'discover/engines/theme.js'), 'utf8'), /return v === "light" \? "light" : "dark";/);
+  assert.match(readFileSync(join(root, 'konto/konto.js'), 'utf8'), /window\.VUTheme\.set\(t\)/, '„Wie Gerät“ merkt sich der Rahmen');
+});
+
+test('Schalter des Rahmens: data-vu-bleed (Kopf durchsichtig bis 24 px) und data-vu-tabs="inhalt" (Reiter im Inhalt)', () => {
+  assert.match(source, /const solid=\(\)=>this\.toggleAttribute\('solid',!document\.documentElement\.hasAttribute\('data-vu-bleed'\)\|\|\(window\.scrollY\|\|0\)>24\);/);
+  assert.match(source, /window\.addEventListener\('scroll',solid,\{passive:true\}\)/);
+  assert.match(source, /attributeFilter:\['data-vu-bleed','data-vu-tabs'\]/);
+  assert.match(source, /const own=html\.getAttribute\('data-vu-tabs'\)==='inhalt';\n      nav\.hidden=own;/);
+  assert.match(source, /rahmen: o => \{/);
+  const css = readFileSync(join(root, 'assets/site-navigation.css'), 'utf8');
+  assert.match(css, /html\[data-vu-tabs=inhalt\]\{--vu-navigation-height:64px\}/);
+  assert.match(css, /@media\(max-width:760px\)\{html\[data-vu-tabs=inhalt\]\{--vu-navigation-height:56px\}\}/);
+  assert.match(css, /html\[data-vu-bleed\] body\{padding-top:0!important\}/);
+  // Standard deckend: ohne Attribut liefert die Regel immer „solid“
+  assert.match(styles(THEMES.dark), /\n\s*header\{transition:background \.25s\}\n/, 'der Grund kommt nur mit [solid]');
+});
+
+test('Fenster des Kopfes: „Daten & Hinweise“ aus den Pflicht-Hinweisen, „Datenstand“ nur mit Datum', () => {
+  assert.match(source, /frameSheet\(\{id: 'vu-sh-hinweise', title: 'Daten & Hinweise'/);
+  assert.match(source, /frameSheet\(\{id: 'vu-sh-daten', title: 'Datenstand'/);
+  assert.match(source, /window\.VUUI\.popup\(\{id: o\.id, title: o\.title, body: o\.body, cls: 'vu-frame-sheet'\}\)/);
+  assert.match(source, /LEGAL\.notices\.footer/);
+  assert.match(source, /fetch\('\/quant\/data\/product\/market-regime-v1\.json'\)/, 'Kursstand aus dem Marktlage-Artefakt (asOf)');
+  const d = isoDate('2026-11-13');
+  assert.deepEqual(JSON.parse(JSON.stringify([d.short, d.long, d.day])), ['13.11.', '13.11.2026', 'Fr.']);
+  assert.equal(isoDate(''), null); assert.equal(isoDate(null), null); assert.equal(isoDate('heute'), null);
+  assert.match(source, /const d=j&&isoDate\(j\.asOf\);if\(!d\|\|dataBus\.own\)return;/, 'ohne gueltiges Datum bleibt die Pille weg; die Meldung der Seite geht vor');
+});
+
+test('Aktien-Vorschau: Tipp auf data-vu-stock laedt vu-stock-sheet.js einmal und oeffnet VUStockSheet; sonst gilt der Link', async () => {
+  const el = (attrs, inner) => ({ attrs, getAttribute: k => attrs[k] ?? null, contains: x => x === inner });
+  const click = (target, extra) => { const e = { button: 0, defaultPrevented: false, preventDefault() { this.defaultPrevented = true; }, target, ...extra }; return e; };
+  const hit = node => ({ closest: sel => sel === '[data-vu-stock]' ? node : null });
+  const link = el({ 'data-vu-stock': 'NVDA', 'data-vu-stock-name': 'NVIDIA', href: '/quant/#/aktie/NVDA' });
+  // 1. Datei vorhanden: einmal laden, dann oeffnen
+  let api = null, loads = 0; const opened = [], went = [];
+  let handler = stockSheet({ has: () => api, load: () => { loads++; api = { open: (t, o) => { opened.push([t, o.name, o.trigger === link]); } }; return Promise.resolve(); }, go: h => went.push(h) });
+  let e = click(hit(link)); assert.equal(handler(e), true); assert.equal(e.defaultPrevented, true);
+  await new Promise(r => setTimeout(r, 0));
+  e = click(hit(link)); handler(e);
+  assert.equal(loads, 1); assert.deepEqual(opened, [['NVDA', 'NVIDIA', true], ['NVDA', 'NVIDIA', true]]); assert.deepEqual(went, []);
+  // 2. Strg/Cmd/Umschalt/Mittelklick und bereits behandelte Klicks: der Browser entscheidet
+  for (const extra of [{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { button: 1 }, { defaultPrevented: true }]) { e = click(hit(link), extra); assert.equal(handler(e), false); }
+  // 3. Aktienkopf (kein Ziel) und Tipps daneben oeffnen nichts
+  e = click(hit(el({ 'data-vu-stock': 'NVDA' }))); assert.equal(handler(e), false); assert.equal(e.defaultPrevented, false);
+  assert.equal(handler(click(hit(null))), false);
+  // 4. Eigenes Bedienelement in einer Karte (Herz) behaelt seine Funktion
+  const heart = {}; const card = el({ 'data-vu-stock': 'AAPL', 'data-vu-href': '/quant/#/aktie/AAPL' }, heart);
+  e = click({ closest: sel => sel === '[data-vu-stock]' ? card : heart }); assert.equal(handler(e), false);
+  // 5. Datei fehlt: dem Ziel folgen, danach gilt der normale Link
+  api = null; went.length = 0;
+  handler = stockSheet({ has: () => api, load: () => Promise.reject(new Error('404')), go: h => went.push(h) });
+  e = click(hit(link)); assert.equal(handler(e), true);
+  await new Promise(r => setTimeout(r, 0));
+  assert.deepEqual(went, ['/quant/#/aktie/NVDA']);
+  e = click(hit(link)); assert.equal(handler(e), false); assert.equal(e.defaultPrevented, false, 'zweiter Tipp: normaler Link');
+  // 6. open() meldet false oder wirft: dem Ziel folgen
+  for (const open of [() => false, () => { throw new Error('x'); }]) {
+    went.length = 0; handler = stockSheet({ has: () => ({ open }), load: () => Promise.resolve(), go: h => went.push(h) });
+    handler(click(hit(link))); assert.deepEqual(went, ['/quant/#/aktie/NVDA']);
+  }
+  // Verdrahtung: ein Lader je Seite, vor dem Karten-Einstieg (der behandelte Klicks ueberspringt)
+  assert.match(source, /sc\.src = '\/assets\/vu-stock-sheet\.js'/);
+  assert.match(source, /window\.VUStockSheet && typeof window\.VUStockSheet\.open === 'function'/);
+  assert.ok(source.indexOf('window.__vuStockSheet = true') < source.indexOf('window.__vuCardLink = true'));
 });

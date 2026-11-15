@@ -30,7 +30,7 @@
 
   /** Die Aktie der Seite aus dem Aktienkopf; null, wenn die Seite keine Aktie zeigt. */
   function stockOf(doc) {
-    var el = doc && doc.querySelector && doc.querySelector("[data-vu-stock]");
+    var el = doc && doc.querySelector && doc.querySelector("[data-vu-stock]:not([href]):not([data-vu-href])");
     var t = el && String(el.getAttribute("data-vu-stock") || "").trim().toUpperCase();
     if (!t || !/^[A-Z0-9][A-Z0-9.\-]{0,11}$/.test(t)) return null;
     return { ticker: t, name: clean(el.getAttribute("data-vu-stock-name")) || t };

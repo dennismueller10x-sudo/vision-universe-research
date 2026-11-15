@@ -55,12 +55,12 @@ async function premiumMobileAudit(page,key){
   const active=dock.querySelector('[aria-current=page]'),as=active&&css(active);
   return {bodyBackground:body.backgroundColor,mainBackground:main.backgroundColor,barBackground:bar.backgroundColor,
    pureWhite:[body.backgroundColor].every(v=>{const c=rgb(v);return c[0]===255&&c[1]===255&&c[2]===255;})&&luminance(bar.backgroundColor)>=250,
-   dock:{box:db.toJSON(),position:css(host).position,bottom:innerHeight-db.bottom,left:db.left,right:innerWidth-db.right,borderRadius:parseFloat(ds.borderRadius),background:ds.backgroundColor,luminance:luminance(ds.backgroundColor),boxShadow:ds.boxShadow},
+   dock:{box:db.toJSON(),position:css(host).position,bottom:innerHeight-db.bottom,left:db.left,right:innerWidth-db.right,borderRadius:parseFloat(ds.borderRadius),border:parseFloat(ds.borderTopWidth)||0,background:ds.backgroundColor,luminance:luminance(ds.backgroundColor),boxShadow:ds.boxShadow},
    active:{label:active&&active.textContent.trim(),background:as&&as.backgroundColor,color:as&&as.color,luminance:as&&luminance(as.color)}};
  });
  designEvidence.push({key,type:'premium-material',...material});
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
- assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');assert(!/^none$/.test(material.dock.boxShadow),'Dock needs depth');assert(material.active.label==='Discover'&&material.active.luminance!==null&&material.active.luminance>80&&/^rgb\(200, 245, 49\)$/.test(material.active.color),'Active dock place must be Discover in the signal lime: '+JSON.stringify(material.active));
+ assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');/* Prototyp App-Konzept 2: das Dock hebt sich mit einer feinen hellen Kante (1 px) ab, nicht mit einem Schatten. */assert(!/^none$/.test(material.dock.boxShadow)||material.dock.border>=1,'Dock needs depth (shadow or hairline edge)');assert(material.active.label==='Discover'&&material.active.luminance!==null&&material.active.luminance>80&&/^rgb\(200, 245, 49\)$/.test(material.active.color),'Active dock place must be Discover in the signal lime: '+JSON.stringify(material.active));
 
  /* Konzept „Reihe für Reihe“ (n-home): Billboard, Markt-Zeile, Top 10, dann die Schienen in fester Reihenfolge; nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
  await page.waitForFunction(()=>document.querySelector('.dr-sec--top10 .dr-poster'),null,{timeout:15000}).catch(()=>{});
@@ -103,11 +103,12 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  const entryStarted=Date.now();await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor({state:'visible'});
  // Measure the cold Home entry before unrelated settings, theme and reload checks.
  await check(key+' five-second entry heuristic',async()=>{const text=await page.locator('body').innerText();assert(/Aktien/.test(text)&&/Was bewegt\s+die Börse heute\?/.test(text),'Entry does not explain the purpose');const viewport=page.viewportSize();const targets=[['purpose',page.locator('h1')],['search',page.locator('.v2-search-prompt')],['genre chips',page.locator('.dr-genres button').first()]];const bounds=[];for(const [label,target] of targets){const box=await target.boundingBox();assert(box&&box.width>0&&box.height>0,label+' missing');assert(box.x>=0&&box.y>=70&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height-75,label+' outside unobstructed first viewport');bounds.push({label,...box});}const milliseconds=Date.now()-entryStarted;firstScreenEvidence.push({key,milliseconds,bounds});assert(milliseconds<=5000,'First-screen content took '+milliseconds+' ms locally');});
- await check(key+' fresh visit starts light regardless of device scheme',async()=>{
-  assert.equal(await page.locator('html').getAttribute('data-theme'),'light');
-  assert.equal(await page.locator('html').getAttribute('data-theme-mode'),'light');
-  assert.equal(await page.locator('vu-navigation').getAttribute('theme'),'light');
-  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#ffffff');
+ /* App-Konzept 2 (Owner 15.11.2026): Standard ist dunkel, unabhaengig vom Geraeteschema; Hell bleibt waehlbar (naechste Pruefung). */
+ await check(key+' fresh visit starts dark regardless of device scheme',async()=>{
+  assert.equal(await page.locator('html').getAttribute('data-theme'),'dark');
+  assert.equal(await page.locator('html').getAttribute('data-theme-mode'),'dark');
+  assert.equal(await page.locator('vu-navigation').getAttribute('theme'),'dark');
+  assert.equal(await page.locator('meta[name="theme-color"]').getAttribute('content'),'#08080a');
  });
  if(width===390)await check(key+' dark setting is explicit and persists',async()=>{
   await navigate(page,base+'/discover/#/settings',{waitUntil:'domcontentloaded'});
@@ -142,9 +143,9 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   assert.deepEqual(destinations.map(x=>x.href),['/discover/#/','/discover/#/welten','/discover/#/strategien','/discover/#/einzeln/US_REAL','/discover/#/suche','/discover/#/maerkte','/discover/#/watchlist']);
   assert.equal(await nav.locator('.tile[data-group="discover"]').getAttribute('href'),'/discover/#/');
   assert.equal(await nav.locator('a[href="/discover-v2/"]').count(),0);
-  /* Gemeinsame Shell (Redesign C01): links die Welt (Discover), rechts Suche, AI Atlas und Mein Bereich; das
+  /* Gemeinsame Shell (Redesign C01): links die Welt (Discover), rechts „i“, Datenstand, Suche und Mein Bereich (atlas = rechtester Knopf); das
      globale Menue „Dein Universe“ oeffnet der runde Universe-Knopf in der Mitte des Docks (#vu-dock). */
-  const header=await nav.evaluate(n=>{const root=n.shadowRoot,world=root.querySelector('.world'),w=world.getBoundingClientRect(),atlas=root.querySelector('.atlas').getBoundingClientRect();return {viewport:innerWidth,world:w.toJSON(),worldName:world.textContent.trim(),worldHidden:world.hidden,atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display};});
+  const header=await nav.evaluate(n=>{const root=n.shadowRoot,world=root.querySelector('.world'),w=world.getBoundingClientRect(),atlas=root.querySelector('.profile').getBoundingClientRect();return {viewport:innerWidth,world:w.toJSON(),worldName:world.textContent.trim(),worldHidden:world.hidden,atlas:atlas.toJSON(),toggle:getComputedStyle(root.querySelector('.toggle')).display};});
   assert(!header.worldHidden&&header.worldName==='Discover','Header does not show the Discover world: '+JSON.stringify(header));
   assert(header.world.left>=0&&header.atlas.right<=header.viewport&&header.atlas.left>=header.world.right,'Header overflows: '+JSON.stringify(header));
   assert.equal(header.toggle,'none','Redundant header menu button on a page with product dock');

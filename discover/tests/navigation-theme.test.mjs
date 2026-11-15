@@ -60,19 +60,20 @@ test('Discover has separate worlds and strategies routes and uses the shared pro
 test('the shared header remains themeable and offers light and dark contrast', () => {
   assert.ok(Navigation.observedAttributes.includes('theme'));
   const light = styles(THEMES.light), dark = styles(THEMES.dark);
-  assert.match(light, /rgba\(255,255,255,\.96\)/);
-  assert.match(dark, /rgba\(0,0,0,\.94\)/);
+  // Deckender Kopf: dunkel wie der Prototyp (.hdr.solid), hell das Gegenstueck
+  assert.match(light, /:host\(\[solid\]\) header\{background:rgba\(255,255,255,\.86\)/);
+  assert.match(dark, /:host\(\[solid\]\) header\{background:rgba\(0,0,0,\.82\)/);
   assert.match(light, /:host\(\[open\]\) \.panel/);
   assert.match(dark, /:host\(\[open\]\) \.panel/);
-  // Menue: Vollbild in Schwarz (Mockup N3), auf beiden Schemata gleich
-  assert.match(light, /\.panel\{[^}]*background:#000/);
-  assert.match(dark, /\.panel\{[^}]*background:#000/);
+  // Menue: dunkler Bogen des Prototyps (#151516), auf beiden Schemata gleich
+  assert.match(light, /\.panel\{[^}]*background:#151516/);
+  assert.match(dark, /\.panel\{[^}]*background:#151516/);
   assert.doesNotMatch(source, /Development Preview[^\n]*<[^>]*class="preview"/);
 });
 
 test('pages with dark styles switch the scheme in the menu (Hell/Dunkel), not in the header', () => {
   assert.match(source, /theme-switch/);
-  assert.doesNotMatch(source, /<button class="mode"/, 'der Kopf traegt Suche, Atlas, Mein Bereich (Mockup C01)');
+  assert.doesNotMatch(source, /<button class="mode"/, 'der Kopf traegt Welten-Wechsler, „i“, Datenstand, Suche, Profil (Prototyp)');
   assert.match(source, /for\(const \[mode,label\] of \[\['light','Hell'\],\['dark','Dunkel'\]\]\)/);
   assert.match(source, /const THEME_KEY = 'vu-discover-theme-v1'/);
   for (const page of ['discover/index.html', 'screener/index.html', 'hedgefonds/index.html']) {
