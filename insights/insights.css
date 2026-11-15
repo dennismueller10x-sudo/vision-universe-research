@@ -8,9 +8,6 @@
 .in-artikel{max-width:720px}
 .in-wrap *,.in-wrap *::before,.in-wrap *::after{box-sizing:border-box}
 
-/* Reiter der Seite (Artikel, Aktienmagazin, Reports) */
-.in-tabs{display:flex;gap:6px;margin:0 calc(-1 * var(--in-g)) 12px;padding:2px var(--in-g);overflow-x:auto;scrollbar-width:none}
-.in-tabs::-webkit-scrollbar{display:none}
 
 /* Marken */
 .in-kicker{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.09em;line-height:1.3;text-transform:uppercase;background:var(--vu-lime);color:#000;padding:5px 10px;border-radius:999px}
@@ -130,7 +127,7 @@ a.in-tk-i:focus-visible,.in-karte:focus-visible,.in-top:focus-visible,.in-seite:
 .in-kopf h1{margin:12px 0 10px;font-size:clamp(31px,6vw,50px);font-weight:900;letter-spacing:-.05em;line-height:1;text-wrap:balance}
 .in-bild{margin:0 0 16px;position:relative;border-radius:26px;overflow:hidden;aspect-ratio:16/9;background:var(--vu-hair)}
 .in-bild img{width:100%;height:100%;object-fit:cover;display:block}
-@media(max-width:760px){.in-kopf>.in-bild{margin-inline:calc(-1 * var(--in-g));border-radius:0;aspect-ratio:3/2}.in-artikel .in-tabs{margin-bottom:8px}}
+@media(max-width:760px){.in-kopf>.in-bild{margin-inline:calc(-1 * var(--in-g));border-radius:0;aspect-ratio:3/2}}
 .in-kopf-fuss{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:16px 0 20px;padding-bottom:18px;border-bottom:1px solid var(--vu-hair)}
 .in-autor{margin:0;font-size:13px;color:var(--vu-mute)}
 .in-text{font-size:17.5px;line-height:1.65}
@@ -253,3 +250,148 @@ html[data-vu-dock] .in-fuss{padding-bottom:24px}
 .in-top>.in-karte-bild--app{background:#0e1013;padding-top:12%;align-items:flex-start}
 .in-top>.in-karte-bild--app img{width:min(46%,230px)}
 @media(prefers-reduced-motion:reduce){.in-karte,.in-seite,.in-report,.in-buehne-cover,.in-phone-rahmen{transition:none}.in-karte:active,.in-seite:active,.in-report:active,.in-buehne-cover:active{transform:none}.in-karte-bild img{transition:none}}
+
+/* =====================================================================
+   App-Konzept 2 · News 1:1 nach Prototyp „v-news“ (Owner 14./15.11.2026: „1:1 wie im Prototyp“).
+   Maße aus docs/design/app-konzept-2-2026-11/prototyp/quelle (p2.js V.news, shell.js, kit.js K.css): Seitenrand 14 px,
+   Titelbild 470 px mit Verlauf, Titel 34 px, Reiter 36 px (tabs2), Abschnittskopf 22 px, Artikelzeile mit Bild 104 px / 16 px,
+   Pille 21 px (sm) und 26 px (Bewegung), Logo 34 px / 10 px, Kachel 22 px, Titelseite 136 × 192, Video 150 × 240.
+   Farben über die Variablen aus assets/vu-ui.css, damit Hell lesbar bleibt; das Titelbild ist in beiden Modi dunkel.
+   ===================================================================== */
+html[data-vu-bleed] .in-body{padding-top:0!important}
+.in-news{max-width:760px;margin:0 auto;padding:0 0 8px;font-size:15px;line-height:1.35}
+.in-news *,.in-news *::before,.in-news *::after{box-sizing:border-box}
+.in-px{padding-left:14px;padding-right:14px}
+
+/* Pillen (Prototyp .pill, .pill.sm, .pill.dk) */
+.in-p{display:inline-flex;align-items:center;gap:5px;height:26px;margin:0;padding:0 10px;border-radius:999px;background:var(--vu-lime);color:#000;font-size:12.5px;font-weight:800;white-space:nowrap;flex:none}
+.in-p--sm{height:21px;padding:0 8px;font-size:10.5px;letter-spacing:.04em;text-transform:uppercase}
+.in-p--dk{background:#232323;color:#fff}
+:root:not([data-theme=dark]) .in-p--dk{background:#e9e9e9;color:#000}
+.in-p time{font:inherit}
+
+/* Tagesbewegung als Pille (Prototyp chg; Owner 15.11.2026: Plus neongrün, Minus rot) */
+.in-chg:empty{display:none}
+.in-chg .vu-chg{height:26px;padding:0 10px;gap:5px;font-size:12.5px;font-weight:800;line-height:1}
+.in-chg .vu-chg--down{background:#c4281c;color:#fff}
+.in-chg .vu-chg--flat{background:#e9e9e9;color:#000}
+
+/* Logo-Kachel und Aktie (Prototyp .lg.s 34 px); die Trefferfläche wächst über einen transparenten Rand auf 44 px */
+.in-tkl{position:relative;z-index:1;display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-block:-5px;color:inherit;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.in-tkl:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px;border-radius:12px}
+.in-lg{display:grid;place-items:center;width:34px;height:34px;padding:5px;border-radius:10px;background:#fff;color:#000;flex:none;overflow:hidden}
+.in-lg img{display:block;width:100%;height:100%;object-fit:contain}
+.in-lg b{font-size:8.5px;font-weight:900;letter-spacing:-.02em}
+.in-min,.in-zeit{font-size:11px;font-weight:700;color:var(--vu-mute);white-space:nowrap}
+.in-held .in-min{color:#9b9b9b}
+
+/* Titelbild (Prototyp: 470 px, Bild randlos unter dem Kopf, Verlauf, Pille, Titel 34 px, Aktien, Lesezeit) */
+.in-held{position:relative;display:flex;flex-direction:column;justify-content:flex-end;height:470px;overflow:hidden;background:#000;color:#fff}
+.in-held-bild{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.in-held-bild--app{display:flex;justify-content:center;align-items:flex-start;padding-top:72px;background:#0e1013}
+.in-held-bild--app img{width:min(46%,230px);height:auto;aspect-ratio:390/700;object-fit:cover;object-position:top;border:4px solid #111;border-bottom:0;border-radius:22px 22px 0 0}
+.in-held-schatten{position:absolute;inset:0;background:linear-gradient(rgb(0 0 0/.4),rgb(0 0 0/0) 25%,rgb(0 0 0/.95) 80%);pointer-events:none}
+.in-held-text{position:relative;padding:0 14px 16px}
+.in-held h1{margin:8px 0;font-size:34px;font-weight:900;letter-spacing:-.045em;line-height:1;color:#fff;text-wrap:balance}
+.in-held h1 a{color:inherit;text-decoration:none}
+.in-dehn::after{content:"";position:absolute;inset:0;z-index:0}
+.in-dehn:focus-visible{outline:none}
+.in-dehn:focus-visible::after{outline:2px solid var(--vu-lime);outline-offset:-4px}
+.in-held-tk{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+@media(min-width:761px){.in-news .in-held{margin-top:calc(var(--vu-navigation-height,64px) + 8px);border-radius:26px}}
+
+/* Reiter im Inhalt (Prototyp „tabs2“): klebt unter dem Kopf */
+.in-tabs{position:sticky;top:var(--vu-navigation-height,56px);z-index:4;display:flex;gap:6px;margin:0;padding:8px 14px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--vu-inv) 70%,transparent)}
+.in-tabs::-webkit-scrollbar{display:none}
+.in-tab{position:relative;display:inline-flex;align-items:center;flex:none;height:36px;padding:0 15px;border-radius:99px;background:var(--vu-card);color:var(--vu-ink);font-size:14px;font-weight:700;white-space:nowrap;text-decoration:none}
+.in-tab::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:max(100%,44px);transform:translate(-50%,-50%)}
+.in-tab.on{background:var(--vu-ink);color:var(--vu-inv)}
+.in-tab:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+.in-news section[id],.in-sh[id]{scroll-margin-top:calc(var(--vu-navigation-height,56px) + 52px)}
+
+/* Abschnittskopf (Prototyp „sh“) */
+.in-sh{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:0 14px;margin:26px 0 10px}
+.in-sh h2{margin:0;font-size:22px;font-weight:800;letter-spacing:-.025em;line-height:1.1}
+.in-sh a{position:relative;font-size:13px;font-weight:700;color:var(--vu-mute);text-decoration:none;white-space:nowrap}
+.in-sh a::after{content:"";position:absolute;left:50%;top:50%;width:max(100%,44px);height:44px;transform:translate(-50%,-50%)}
+
+/* Artikelzeile (Prototyp „art“): ganze Zeile tippbar (Titel-Link), Aktien darüber eigene Ziele */
+.in-art{position:relative;display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--vu-hair)}
+:root[data-theme=dark] .in-art{border-bottom-color:rgb(255 255 255/.08)}
+.in-art-bild{display:block;width:104px;height:104px;border-radius:16px;overflow:hidden;flex:none;background:var(--vu-card)}
+.in-art-bild img{display:block;width:100%;height:100%;object-fit:cover}
+.in-art-bild--app{display:flex;justify-content:center;align-items:flex-end;padding-top:12px;background:var(--vu-lime)}
+.in-art-bild--app img{width:52%;height:auto;aspect-ratio:390/600;object-position:top;border:3px solid #111;border-bottom:0;border-radius:12px 12px 0 0}
+.in-art-text{flex:1;min-width:0}
+.in-art-a{display:block;margin-top:4px;font-size:16px;font-weight:800;line-height:1.15;color:var(--vu-ink);text-decoration:none}
+.in-art-a::after{content:"";position:absolute;inset:0}
+.in-art-a:focus-visible{outline:none}
+.in-art-a:focus-visible::after{outline:2px solid var(--vu-focus-ring);outline-offset:2px;border-radius:12px}
+.in-art-tk{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:8px}
+.in-art:active,.in-heft:active,.in-vid:active{transform:scale(.97)}
+.in-art,.in-heft,.in-vid{transition:transform .12s}
+
+/* Aktienmagazin und Aktienreport (Prototyp: Kachel mit Titelseite, Pille, Titel 26 px, Zeile, Fortschritt, Knopf) */
+.in-heft{display:flex;gap:16px;width:100%;padding:14px;border-radius:22px;background:var(--vu-card);color:var(--vu-ink);text-decoration:none}
+.in-heft+.in-heft{margin-top:10px}
+.in-heft>img{display:block;width:136px;height:192px;object-fit:cover;border-radius:12px;box-shadow:0 12px 40px rgb(0 0 0/.6);flex:none}
+.in-heft-text{display:flex;flex-direction:column;align-items:flex-start;flex:1;min-width:0}
+.in-heft-titel{margin-top:8px;font-size:26px;font-weight:800;letter-spacing:-.025em;line-height:1.1;overflow-wrap:break-word}
+.in-heft-zeile{margin-top:4px;font-size:12.5px;color:var(--vu-mute)}
+.in-bar{display:block;align-self:stretch;height:6px;margin-top:12px;border-radius:9px;background:#2a2a2a;overflow:hidden}
+:root:not([data-theme=dark]) .in-bar{background:#e9e9e9}
+.in-bar i{display:block;height:100%;border-radius:9px;background:var(--vu-lime)}
+.in-heft-seite{margin-top:4px;font-size:11px;font-weight:700;color:var(--vu-mute)}
+.in-bar[hidden],.in-heft-seite[hidden]{display:none}
+.in-btn{display:flex;align-items:center;justify-content:center;align-self:stretch;height:44px;margin-top:auto;border-radius:999px;background:var(--vu-lime);color:#000;font-size:14.5px;font-weight:800}
+.in-heft-text>.in-btn{margin-top:12px}
+.in-leerkachel{display:flex;align-items:center;gap:12px;padding:14px;border:1.5px dashed #3a3a3a;border-radius:22px;color:var(--vu-ink);text-decoration:none}
+.in-leerkachel+.in-leerkachel,.in-heft+.in-leerkachel{margin-top:10px}
+.in-leerkachel b{display:block;font-weight:800}
+.in-leerkachel span span{display:block;font-size:11px;color:var(--vu-mute)}
+.in-hud{display:grid;place-items:center;width:40px;height:40px;border-radius:12px;background:#0e1013;border:1px solid rgb(200 245 49/.25);color:var(--vu-lime);flex:none}
+
+/* Kurz erklärt (Prototyp „vid“ in einer Schiene) */
+.in-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 14px;margin:0;scrollbar-width:none}
+.in-rail::-webkit-scrollbar{display:none}
+.in-rail>*{flex:none;scroll-snap-align:start}
+.in-vid{position:relative;display:block;width:150px;height:240px;border-radius:22px;overflow:hidden;background:#0e1013;color:#fff;text-decoration:none}
+.in-vid>img{display:block;width:100%;height:100%;object-fit:cover}
+.in-vid-schatten{position:absolute;inset:0;background:linear-gradient(rgb(0 0 0/0) 30%,rgb(0 0 0/.92))}
+.in-vid-start{position:absolute;left:50%;top:42%;display:grid;place-items:center;width:48px;height:48px;border-radius:99px;background:var(--vu-lime);color:#000;transform:translate(-50%,-50%)}
+.in-vid-text{position:absolute;left:12px;right:12px;bottom:11px}
+.in-vid-text b{display:block;font-weight:800;line-height:1.1}
+.in-vid-text span{display:block;margin-top:4px;font-size:11px;font-weight:700;color:#c3c3c3}
+.in-vid:focus-visible,.in-heft:focus-visible,.in-leerkachel:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px}
+
+/* Video im Fenster (news.js) */
+.in-player{width:min(420px,100vw);max-width:100vw;max-height:100dvh;margin:auto;padding:0;border:0;border-radius:22px;background:#000;color:#fff;overflow:hidden}
+.in-player::backdrop{background:rgb(0 0 0/.82)}
+.in-player video{display:block;width:100%;max-height:calc(100dvh - 60px);aspect-ratio:9/16;background:#000}
+.in-player-kopf{display:flex;align-items:center;gap:10px;padding:8px 8px 8px 16px;font-size:13px;font-weight:800}
+.in-player-kopf span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.in-player-kopf button{display:grid;place-items:center;width:44px;height:44px;border:0;border-radius:99px;background:#262626;color:#fff;font:800 18px/1 var(--vu-font);cursor:pointer}
+
+/* Seitenende (Prototyp „end“) */
+.in-ueber{margin:28px 0 0;font-size:12.5px;line-height:1.5;color:var(--vu-mute)}
+.in-news .vu-next{margin-top:28px}
+.in-end{margin:28px 14px 0;text-align:center}
+.in-lk{display:inline-flex;align-items:center;min-height:44px;color:var(--vu-mute);font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+/* Artikel im Rahmen des Prototyps: Titelbild wie auf der Startseite, darunter Reiter, Unterzeile, Text */
+.in-artikel{padding-top:0}
+.in-held--artikel{margin:0 calc(-1 * var(--in-g));height:auto;min-height:470px}
+.in-held--artikel>.in-bild{position:absolute;inset:0;margin:0;border-radius:0;aspect-ratio:auto}
+.in-held--artikel>.in-bild--app{padding:72px 0 0;align-items:flex-start;background:#0e1013}
+.in-held--artikel>.in-bild--app img{width:24%}
+.in-held--artikel>.in-bild figcaption{top:calc(var(--vu-navigation-height,56px) + 8px);bottom:auto;z-index:2}
+.in-held--artikel .in-held-text{padding-top:120px}
+.in-held--artikel .in-held-text>.in-p{margin:0}
+.in-wrap>.in-tabs{margin:0 calc(-1 * var(--in-g)) 12px}
+.in-artikel .in-tabs{position:static;margin:0 calc(-1 * var(--in-g))}
+.in-kopf>.in-lead{margin:14px 0 0;font-size:17px;line-height:1.45}
+.in-kopf .in-kopf-fuss{margin-top:12px}
+.in-text h2{font-weight:800;letter-spacing:-.025em}
+.in-weitere>.in-sh{padding:0;margin-top:34px}
+@media(min-width:761px){.in-held--artikel{margin:calc(var(--vu-navigation-height,64px) + 8px) 0 0;border-radius:26px}.in-artikel .in-tabs{margin:0}}
+@media(prefers-reduced-motion:reduce){.in-art,.in-heft,.in-vid{transition:none}.in-art:active,.in-heft:active,.in-vid:active{transform:none}}

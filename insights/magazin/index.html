@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-vu-tabs="inhalt">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#08080a">
 <title>Aktienmagazin · Vision Universe</title>
 <meta name="description" content="Das Vision Universe Aktienmagazin: jede Woche die wichtigsten Börsenthemen, eingeordnet mit Kursen, Geschäftszahlen und Fondsdaten. Online lesen oder als PDF laden.">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
@@ -25,9 +25,10 @@
 <script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/insights/insights.css?v=app-konzept-2">
 </head>
-<body class="in-body vu-ui"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script><script>if(window.VUNavigation)window.VUNavigation.dock({});</script>
+<body class="in-body vu-ui"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script><script>if(window.VUNavigation){window.VUNavigation.dock({});window.VUNavigation.hinweis("editorial");}</script>
+<script src="/insights/news.js?v=app-konzept-2" defer></script>
 <main id="in-main" class="in-wrap">
-<nav class="in-tabs" aria-label="Insights"><a class="vu-chip" href="/insights/">Artikel</a><a class="vu-chip" href="/insights/magazin/" aria-current="page">Aktienmagazin</a><a class="vu-chip" href="/insights/reports/">Reports</a></nav>
+<nav class="in-tabs" aria-label="News"><a class="in-tab" href="/insights/">Heute</a><a class="in-tab on" href="/insights/magazin/" aria-current="page">Magazin</a><a class="in-tab" href="/insights/#kurz">Kurz erklärt</a><a class="in-tab" href="/insights/reports/">Reports</a></nav>
 <header class="in-hub"><span class="in-kicker">Aktienmagazin</span><h1>Jede Woche das Heft zur Börse.</h1><p class="in-lead">Titelthema, Einzelanalysen, Berichtssaison, Hedgefonds, Charts und Termine: recherchiert und mit den Daten von Vision Universe unterlegt. Online lesen oder als PDF laden.</p></header>
 <section class="in-buehne in-buehne--nacht vu-night in-buehne--breit">
 <a class="in-buehne-cover" href="/insights/magazin/nr-01/"><img src="/insights/magazin/nr-01/cover.jpg" alt="Titelseite Aktienmagazin Nr. 01" width="560" height="792" loading="lazy"></a>
@@ -39,6 +40,7 @@
 </section>
 
 <a class="vu-next" href="/insights/reports/take-two-gta-6/"><span class="vu-next__t"><span class="vu-ltag">Weiter</span><b>Aktienreport Nr. 01: Take-Two Interactive: Alles auf Vice City</b><span>20 Seiten · 12. November 2026</span></span><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></i></a>
+<div class="in-end"><a class="in-lk" href="https://konto.visionuniverse.de/rechtliches/methodik" data-in-hinweise>Daten &amp; Hinweise</a></div>
 </main>
 <footer class="in-fuss"><p>Redaktionelle Einordnung, keine Anlageberatung und keine Kauf- oder Verkaufsempfehlung. Methodik und Interessen: siehe Seite „Methodik, Quellen und Interessen“.</p><p><a href="https://konto.visionuniverse.de/rechtliches/methodik">Methodik, Quellen und Interessen</a> · <a href="/insights/feed.xml">RSS</a></p></footer>
 </body>
