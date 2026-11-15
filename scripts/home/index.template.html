@@ -32,9 +32,11 @@
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="apple-touch-icon" href="/assets/icons/apple-touch-icon.png">
 <script src="/assets/pwa.js" defer></script>
+<noscript><style>.hm-pop{display:block}.hm-js{display:none}</style></noscript>
 </head>
 <body class="vu-ui">
-<!-- Startseite (Mockup E01): eigener Kopf ohne Produkt-Leiste - Logo, Suche, Anmelden. -->
+<!-- Startseite nach App-Konzept 2 (Owner 14.11.2026): eigener Kopf ohne Produkt-Leiste - Logo, Suche, Anmelden, Menü.
+     Dunkle Kopfkachel, Kacheln, Leisten und Grafiken; Tiefe im Fenster (data-vu-pop), ohne JavaScript steht sie auf der Seite. -->
 <header class="hd">
   <div class="shell hd-row">
     <a class="hd-logo" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" width="150" height="50" alt="Vision Universe"></a>
@@ -45,8 +47,9 @@
 </header>
 <vu-navigation menu-only no-dock theme="light" theme-switch></vu-navigation><script src="/assets/site-navigation.js"></script>
 
-<main id="main">
-<section class="shell hero" aria-labelledby="hero-title">
+<main id="main" class="hm">
+<div class="hm-top">
+<section class="hm-hero vu-night" aria-labelledby="hero-title">
   <p class="eyebrow">Aktien · ETFs · Vorsorge</p>
   <h1 id="hero-title">Aktien verstehen. <mark>In klaren Worten.</mark></h1>
   <p class="lead">Vom ersten 10-€-Sparplan bis zur Profi-Analyse. Echte Daten aus Pflichtberichten, für jede Zahl eine Erklärung.</p>
@@ -55,83 +58,80 @@
     <a class="vu-btn vu-btn--line" href="/discover/">Erst umsehen, ohne Konto</a>
   </div>
   <p class="note">Free kostet 0 €, ohne Zahlungsdaten.</p>
+  %%BAND%%
+</section>
 
+<section class="hm-blick" aria-labelledby="persp-title">
+  <p class="vu-ltag">Eine Aktie, jede Perspektive</p>
+  <div class="hm-head"><h2 class="vu-mt" id="persp-title">Sieben Blickwinkel. Eine Seite.</h2><button type="button" class="hm-more hm-js" aria-haspopup="dialog" aria-label="Alle %%PERSP_COUNT%% Blickwinkel mit Erklärung" data-vu-pop="hm-blick" data-vu-pop-title="Sieben Blickwinkel">Alle %%PERSP_COUNT%%<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+  <p class="sub">Oben wählst du, wie du auf die Aktie schaust. Jede Welt liefert ihr Urteil in derselben Form.</p>
   <article class="live" aria-label="Beispiel mit echten Daten: %%NVDA_NAME%%">
-    <div class="live-top"><span class="tag-lime">Echte Daten</span><span class="mute">Schluss %%NVDA_DATE%%</span></div>
     <div class="vu-stockhead__top">
       %%NVDA_LOGO%%
       <div class="vu-stockhead__name"><b><a href="/discover/#/s/US_REAL/%%NVDA%%">%%NVDA_NAME%%</a></b><span>%%NVDA%% · %%NVDA_WHAT%%</span></div>
     </div>
     <div class="vu-stockhead__price"><b>%%NVDA_PRICE%%</b>%%NVDA_CHG%%<span class="vu-stockhead__meta">Schluss<br>%%NVDA_DATE_SHORT%%</span></div>
-    <figure class="chart" aria-label="Kursverlauf ein Jahr">%%NVDA_CHART%%<figcaption><span>%%CHART_FROM%%</span><span>%%CHART_TO%%</span></figcaption></figure>
+    %%PERSP_BAR%%
+    <figure class="chart" aria-label="Kursverlauf ein Jahr"><span class="tag-lime">Echte Daten · Schluss %%NVDA_DATE%%</span>%%NVDA_CHART%%<figcaption><span>%%CHART_FROM%%</span><span>%%CHART_TO%%</span></figcaption></figure>
     <ul class="verdicts">%%NVDA_VERDICTS%%</ul>
   </article>
+  <div class="hm-pop" id="hm-blick"><div class="vu-stack">%%PERSPECTIVES%%</div></div>
 </section>
 
-<section class="shell band" aria-label="Vision Universe in Zahlen">
-  <div><b>6.000+</b><span>US-Aktien</span></div>
-  <div><b>9</b><span>Welten in einer App</span></div>
-  <div><b>12 J.</b><span>Zahlen je Aktie aus Unternehmensberichten</span></div>
-  <div><b>7.000+</b><span>ETFs für deine Vorsorge</span></div>
-</section>
-
-<section class="shell sec" aria-labelledby="where-title">
+<section class="hm-sec hm-where" aria-labelledby="where-title">
   <p class="vu-ltag">Für jeden ein Einstieg</p>
   <h2 class="vu-mt" id="where-title">Wo stehst du gerade?</h2>
   <div class="paths">
-    <a class="path path--lime" href="/vorsorge/#/" data-start-path="anfaenger"><span class="vu-hud"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#vorsorge"/></svg></span><span><b>Ich fange gerade an</b><small>Mit 10 € im Monat: Sparplan, ETF und Rente einfach erklärt.</small><em>→ Vorsorge</em></span></a>
-    <a class="path" href="/discover/" data-start-path="verstehen"><span class="vu-hud"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#discover"/></svg></span><span><b>Ich will Aktien verstehen</b><small>Eine Aktie, sieben Blickwinkel, ein klares Urteil.</small><em>→ Discover</em></span></a>
-    <a class="path" href="/supertrader/" data-start-path="profi"><span class="vu-hud"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#supertrader"/></svg></span><span><b>Ich analysiere wie ein Profi</b><small>Methoden, Signale, Backtests, 13F-Daten der Fonds.</small><em>→ Supertrader · Hedgefonds · Screener</em></span></a>
+    <a class="vu-tap vu-tap--lime path" href="/vorsorge/#/" data-start-path="anfaenger"><span class="vu-hud"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#vorsorge"/></svg></span><span class="path-t"><b>Ich fange gerade an</b><small>Mit 10 € im Monat: Sparplan, ETF und Rente einfach erklärt.</small><em>→ Vorsorge</em></span></a>
+    <a class="vu-tap path" href="/discover/" data-start-path="verstehen"><span class="vu-hud"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#discover"/></svg></span><span class="path-t"><b>Ich will Aktien verstehen</b><small>Eine Aktie, sieben Blickwinkel, ein klares Urteil.</small><em>→ Discover</em></span></a>
+    <a class="vu-tap path" href="/supertrader/" data-start-path="profi"><span class="vu-hud"><svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#supertrader"/></svg></span><span class="path-t"><b>Ich analysiere wie ein Profi</b><small>Methoden der Profis, Backtests, 13F-Daten der Fonds.</small><em>→ Supertrader · Hedgefonds · Screener</em></span></a>
   </div>
 </section>
+</div>
 
-<section class="shell sec" aria-labelledby="persp-title">
-  <p class="vu-ltag">Eine Aktie, jede Perspektive</p>
-  <h2 class="vu-mt" id="persp-title">Sieben Blickwinkel. Eine Seite.</h2>
-  <p class="sub">Oben wählst du, wie du auf die Aktie schaust. Jede Welt liefert ihr Urteil in derselben Form.</p>
-  %%PERSP_BAR%%
-  <ul class="persp-list">%%PERSPECTIVES%%</ul>
-</section>
-
-<section class="shell sec" aria-labelledby="fund-title">
+<div class="hm-duo">
+<section class="hm-sec" aria-labelledby="fund-title">
   <p class="vu-ltag">Fundamental</p>
   <h2 class="vu-mt" id="fund-title">Wachstum, das man sieht.</h2>
   <p class="sub">%%JOURNEY_SPAN%% Geschäftsjahre aus den Pflichtberichten an die US-Börsenaufsicht.</p>
-  <div class="vu-box fund">
+  <div class="fund vu-night">
     <div class="fund-top"><b>%%NVDA_NAME%% · Umsatz</b><span class="mute">%%JOURNEY_RANGE%%</span></div>
-    <div class="fund-kpis"><div><b>%%JOURNEY_FROM%%</b><span>%%JOURNEY_FROM_YEAR%%</span></div><div><b>%%JOURNEY_TO%%</b><span>%%JOURNEY_TO_YEAR%%</span></div></div>
+    <div class="fund-kpis"><div><b>%%JOURNEY_FROM%%</b><span>%%JOURNEY_FROM_YEAR%%</span></div><i aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4 12h15M13 6l6 6-6 6"/></svg></i><div><b>%%JOURNEY_TO%%</b><span>%%JOURNEY_TO_YEAR%%</span></div></div>
     <div class="fund-bars">%%JOURNEY_BARS%%</div>
     %%REVENUE_HELP%%
   </div>
 </section>
 
-<section class="shell sec" aria-labelledby="swipe-title">
+<section class="hm-sec" aria-labelledby="swipe-title">
   <p class="vu-ltag">Discover</p>
   <h2 class="vu-mt" id="swipe-title">Swipen statt suchen.</h2>
   <p class="sub">Nach rechts merken, nach links weiter. Dazu %%WORLD_COUNT%% Themenwelten, von KI bis Raumfahrt.</p>
   %%SWIPE_CARD%%
-  <div class="swipe-actions" aria-hidden="true"><span>✕</span><span class="lime">♡</span></div>
   <div class="worlds">%%WORLD_TILES%%</div>
 </section>
+</div>
 
-<section class="shell sec" aria-labelledby="worlds-title">
+<section class="hm-sec" aria-labelledby="worlds-title">
   <p class="vu-ltag">Alle Welten</p>
-  <h2 class="vu-mt" id="worlds-title">Neun Welten. Ein Konto.</h2>
-  <div class="nine">%%NINE_WORLDS%%</div>
-  <a class="vu-box vu-box--ink atlas" href="/ask/"><span class="atlas-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/></svg><b>AI Atlas</b><span class="vu-pro">BETA</span></span><span class="atlas-q">„Wie stark ist der Free Cashflow bei Nvidia gewachsen?“</span><span class="atlas-sub">Frag in deinen Worten. Atlas rechnet nur mit den Daten von Vision Universe.</span></a>
+  <div class="hm-head"><h2 class="vu-mt" id="worlds-title">Neun Welten. Ein Konto.</h2><button type="button" class="hm-more hm-js" data-vu-menu-toggle aria-haspopup="dialog">Alle Module<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button></div>
+  <div class="hm-worlds">
+    <div class="nine">%%NINE_WORLDS%%</div>
+    <a class="vu-tap vu-tap--night atlas" href="/ask/"><span class="atlas-top"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/></svg><b>AI Atlas</b><span class="vu-pro">BETA</span></span><span class="atlas-q">„Wie stark ist der Free Cashflow bei Nvidia gewachsen?“</span><span class="atlas-sub">Frag in deinen Worten. Atlas rechnet nur mit den Daten von Vision Universe.</span></a>
+  </div>
 </section>
 
-<section class="shell sec" aria-labelledby="price-title">
+<div class="hm-duo">
+<section class="hm-sec" aria-labelledby="price-title">
   <p class="vu-ltag">Preise</p>
   <h2 class="vu-mt" id="price-title">Einfach. Ohne Haken.</h2>
   <div class="vu-grid prices">
     <div class="vu-box"><b>Free</b><strong>0 €</strong><span>ohne Zahlungsdaten</span></div>
-    <a class="vu-box vu-box--ink" href="/preise/"><b>Pro</b><strong>Preis ansehen</strong><span>monatlich kündbar</span></a>
+    <a class="vu-tap vu-tap--night" href="/preise/"><b>Pro</b><strong>Preis ansehen</strong><span>monatlich kündbar</span></a>
   </div>
   <p class="sub small">Beide Tarife schalten heute dieselben Funktionen frei. Mit Pro unterstützt du Vision Universe.</p>
 </section>
 
-<section class="shell sec" aria-labelledby="trust-title">
+<section class="hm-sec" aria-labelledby="trust-title">
   <p class="vu-ltag" id="trust-title">Darauf kannst du dich verlassen</p>
   <ul class="trust">
     <li>Echte Daten aus Unternehmensberichten und Börsenkursen, jede Zahl mit Datum.</li>
@@ -140,14 +140,9 @@
     <li>Hell oder dunkel, Handy oder Desktop, ein Konto.</li>
   </ul>
 </section>
+</div>
 
-<section class="shell sec">
-  <div class="vu-box vu-box--lime final">
-    <b>Bereit für deinen Start?</b>
-    <span>In zwei Minuten eingerichtet.</span>
-    <a class="vu-btn vu-btn--ink" href="/konto/registrieren/?plan=free">Kostenlos starten</a>
-  </div>
-</section>
+<div class="hm-next">%%NEXT%%</div>
 </main>
 
 <footer class="shell ft">
@@ -162,6 +157,15 @@
 document.querySelector("[data-year]").textContent=new Date().getFullYear();
 /* "Wo stehst du?": die Wahl merken, damit der erste Start (E11) sie vorschlägt. */
 document.querySelectorAll("[data-start-path]").forEach(function(a){a.addEventListener("click",function(){try{localStorage.setItem("vu-start-path",a.getAttribute("data-start-path"));}catch(e){}});});
+/* Tiefe im Fenster (data-vu-pop): der gemeinsame Baustein assets/vu-ui.js lädt erst beim ersten Tipp auf einen Auslöser,
+   nicht beim Seitenaufbau. Lädt er nicht, steht der Inhalt wie ohne JavaScript auf der Seite (.hm-plain). */
+(function(){var main=document.getElementById("main"),state=0,want=null;
+function load(){if(state)return;state=1;var s=document.createElement("script");s.src="/assets/vu-ui.js";
+s.onload=function(){state=2;VUUI.bindPops(main);if(want){var b=want;want=null;b.click();}};
+s.onerror=function(){state=3;document.documentElement.classList.add("hm-plain");var t=want&&document.getElementById(want.getAttribute("data-vu-pop"));if(t)t.scrollIntoView();};
+document.head.appendChild(s);}
+main.addEventListener("pointerdown",function(e){if(e.target.closest("[data-vu-pop]"))load();});
+main.addEventListener("click",function(e){var b=e.target.closest("[data-vu-pop]");if(!b||state>1)return;want=b;load();});})();
 </script>
 </body>
 </html>

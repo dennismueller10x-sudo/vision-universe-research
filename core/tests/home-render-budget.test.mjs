@@ -6,9 +6,11 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-/* Startseite (/) nach dem Redesign (Mockup E01): ruhig statt Werbeseite.
-   Diese Tests halten fest, was die neue Seite leicht macht und was sie verspricht:
-   - keine Dauer-Animation, kein Hero-JavaScript, nur pwa.js, das zentrale Menü und ein kleines Inline-Skript;
+/* Startseite (/) im Aussehen von App-Konzept 2 (Owner 14.11.2026; davor Mockup E01): ruhig statt Werbeseite.
+   Diese Tests halten fest, was die Seite leicht macht und was sie verspricht:
+   - keine Dauer-Animation, kein Hero-JavaScript, nur pwa.js, das zentrale Menü und ein kleines Inline-Skript; der gemeinsame
+     Baustein vu-ui.js (er öffnet die Fenster) lädt erst beim ersten Tipp auf einen Auslöser, nicht beim Seitenaufbau;
+   - ohne JavaScript bleibt alles lesbar: der Inhalt der Fenster steht dann auf der Seite;
    - alle Bausteine kommen aus der gemeinsamen Grundlage (assets/vu-ui.css, Markup über assets/vu-ui.js);
    - jede Zahl stammt aus dem Generator (index.html = Ausgabe von build-home.mjs);
    - der Pro-Preis steht nie im Code, Free kostet 0 €. */
@@ -33,7 +35,8 @@ test('die Seite nutzt die gemeinsamen Bausteine und definiert sie nicht neu', ()
   assert.match(html, /<link rel="stylesheet" href="\/assets\/site-navigation\.css">\s*<link rel="stylesheet" href="\/assets\/vu-ui\.css">\s*<link rel="stylesheet" href="\/assets\/home\/home\.css">/);
   assert.match(html, /<body class="vu-ui">/);
   assert.match(read('scripts/home/build-home.mjs'), /createRequire\(import\.meta\.url\)\('\.\.\/\.\.\/assets\/vu-ui\.js'\)/, 'Markup kommt aus VUUI');
-  for (const cls of ['vu-btn', 'vu-box', 'vu-chg', 'vu-verdict', 'vu-hud', 'vu-stockhead__price', 'vu-help', 'vu-logo-tile', 'vu-pro']) {
+  for (const cls of ['vu-btn', 'vu-box', 'vu-chg', 'vu-verdict', 'vu-hud', 'vu-stockhead__price', 'vu-help', 'vu-logo-tile', 'vu-pro',
+    'vu-tap', 'vu-night', 'vu-stats', 'vu-persp', 'vu-navcard', 'vu-bars', 'vu-theme', 'vu-next']) {
     assert.ok(html.includes(cls), cls + ' wird genutzt');
     assert.match(base, new RegExp('\\.' + cls.replace(/[-_]/g, m => '\\' + m) + '[{.,:\\[ ]'), cls + ' kommt aus vu-ui.css');
     assert.doesNotMatch(css, new RegExp('^\\.' + cls + '\\{', 'm'), cls + ' wird auf der Startseite nicht neu definiert');
@@ -63,6 +66,34 @@ test('die drei Themenkacheln zeigen Symbole aus dem Themen-Sprite, der Generator
   for (const id of tiles) assert.ok(sprite.includes(`<symbol id="${id}" `), id + ' steht im Sprite');
   assert.doesNotMatch(expected, /assets\/(home\/worlds|themen)\//);
   assert.doesNotMatch(read('scripts/home/build-home.mjs'), /assets\/(home\/worlds|themen)\/|\.photo\b/);
+});
+
+/* App-Konzept 2: Tiefe öffnet sich im Fenster (data-vu-pop, assets/vu-ui.js). Die Startseite ist statisches HTML und muss ohne
+   JavaScript vollständig lesbar bleiben: der Fensterinhalt steht in der Seite (kein <template>), ist mit Skript ausgeblendet
+   und ohne Skript (noscript) oder ohne geladenen Baustein (.hm-plain) sichtbar. */
+test('Fenster „Sieben Blickwinkel“: Inhalt steht in der Seite und bleibt ohne JavaScript lesbar', () => {
+  const opener = html.match(/<button type="button" class="hm-more hm-js" aria-haspopup="dialog" aria-label="Alle \d+ Blickwinkel mit Erklärung" data-vu-pop="([a-z-]+)" data-vu-pop-title="Sieben Blickwinkel">Alle (\d+)</);
+  assert.ok(opener, 'Auslöser mit data-vu-pop');
+  const pop = html.match(new RegExp('<div class="hm-pop" id="' + opener[1] + '">([\\s\\S]*?)</div></div>'));
+  assert.ok(pop, 'Fensterinhalt als Element der Seite');
+  const cards = [...pop[1].matchAll(/<a class="vu-navcard" href="([^"]+)">/g)].map(m => m[1]);
+  assert.equal(cards.length, Number(opener[2]), 'so viele Blickwinkel, wie der Auslöser nennt');
+  assert.deepEqual(cards, ['/discover/#/s/US_REAL/NVDA', '/technical/#/chart/NVDA', '/fundamental/#/NVDA', '/quant/#/aktie/NVDA', '/supertrader/stock/NVDA/', '/elliott/#/NVDA', '/hedgefonds/#/aktien']);
+  assert.doesNotMatch(html, /<template\b/, 'kein <template>: dessen Inhalt wäre ohne JavaScript unsichtbar');
+  assert.match(html, /<noscript><style>\.hm-pop\{display:block\}\.hm-js\{display:none\}<\/style><\/noscript>/);
+  assert.match(css, /^\.hm-pop\{display:none/m);
+  assert.match(css, /^\.hm-plain \.hm-pop\{display:block\}\.hm-plain \.hm-js\{display:none\}/m);
+  // Der Baustein lädt erst auf einen Tipp (kein <script src> beim Seitenaufbau); scheitert das Laden, zeigt .hm-plain den Inhalt.
+  assert.match(html, /function load\(\)\{if\(state\)return;state=1;var s=document\.createElement\("script"\);s\.src="\/assets\/vu-ui\.js";/);
+  assert.match(html, /s\.onload=function\(\)\{state=2;VUUI\.bindPops\(main\);/);
+  assert.match(html, /s\.onerror=function\(\)\{state=3;document\.documentElement\.classList\.add\("hm-plain"\);/);
+});
+
+test('Seitenende: „Weiter“-Karte (K09) führt zur Registrierung, Kopfkachel trägt die vier Zahlen', () => {
+  assert.match(html, /<a class="vu-next" href="\/konto\/registrieren\/\?plan=free"><span class="vu-next__t"><span class="vu-ltag">Bereit für deinen Start\?<\/span><b>Kostenlos starten<\/b><span>In zwei Minuten eingerichtet\.<\/span>/);
+  const band = html.match(/<div class="vu-stats" role="list" aria-label="Vision Universe in Zahlen">([\s\S]*?)<\/div><\/div>/);
+  assert.deepEqual([...band[1].matchAll(/<b class="vu-num">([^<]+)<\/b><span>([^<]+)<\/span>/g)].map(m => (m[1] + ' ' + m[2]).replace(/\u00ad/g, '')), // ohne weiche Trennzeichen
+    ['6.000+ US-Aktien', '9 Welten in einer App', '12 J. Zahlen je Aktie aus Unternehmensberichten', '7.000+ ETFs für deine Vorsorge']);
 });
 
 test('Urteile sind die drei Formen aus C08, ein Chart, Preis nie fest im Code', () => {
