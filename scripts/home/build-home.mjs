@@ -1,4 +1,5 @@
-// Erzeugt /index.html aus scripts/home/index.template.html (Startseite, Mockup E01 „Vision Universe Redesign“).
+// Erzeugt /index.html aus scripts/home/index.template.html (Startseite im Aussehen von App-Konzept 2, Owner 14.11.2026:
+// dunkle Kopfkachel, Kacheln, Leisten, Grafiken, Tiefe im Fenster, „Weiter“-Karte; nur Darstellung).
 //
 // Alle Werte kommen aus den committeten Produktdaten: Kurs und Kursverlauf (Discover-Aktie, Technical-Bündel),
 // Urteile aus vorhandenen Einstufungen (Fundamental-Gesundheit, Quant-Faktorstufen, Technical-Trend),
@@ -53,7 +54,6 @@ const stock = t => dataJson(`discover/data/stocks/US_REAL/${t}.json`);
 /* C07 Kursbewegung und C08 Urteil aus assets/vu-ui.js (Pille mit ▲/▼/◆/○ im Markup, keine eigenen Klassen). */
 const chg = (v, big) => VUUI.chg(v, { big });
 const verdict = (k, t) => VUUI.verdict(k, t);
-const icon = id => `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#${id}"/></svg>`;
 
 // ---------- Live-Karte NVIDIA ----------
 const MAIN = 'NVDA';
@@ -90,10 +90,10 @@ const verdictRows = [
   ['fundamental', 'Geschäft', revG, gradeKind(health?.grade), health?.grade || 'Keine Aussage'],
   ['quant', 'Eigenschaften', rated.length ? `${strongN} von ${rated.length} stark` : 'nicht bewertet', factorVerdict[0], factorVerdict[1]],
   ['technical', 'Chart', tr[2], tr[0], tr[1]]
-].map(([i, n, sub, k, label]) => `<li><span class="vu-hud" style="--vu-hud:34px;border-radius:10px">${icon(i)}</span><span class="v-name"><b>${n}</b><small>${esc(sub)}</small></span>${verdict(k, label)}</li>`).join('');
+].map(([i, n, sub, k, label]) => `<li>${VUUI.hud(i, 38, 12)}<span class="v-name"><b>${n}</b><small>${esc(sub)}</small></span>${verdict(k, label)}</li>`).join('');
 
-// ---------- Sieben Blickwinkel (Perspektiven-Leiste N5) ----------
-const PERSPECTIVES = [
+// ---------- Sieben Blickwinkel (Perspektiven-Leiste N5 in der Aktienkarte; die Liste mit Erklärung öffnet sich im Fenster) ----------
+const PERSPECTIVE_LIST = [
   ['discover', 'Überblick', 'Alles auf einen Blick', `/discover/#/s/US_REAL/${MAIN}`],
   ['technical', 'Chart', 'Trend, Unterstützung, Widerstand', `/technical/#/chart/${MAIN}`],
   ['fundamental', 'Zahlen', 'Umsatz, Gewinn, Cashflow seit 2015', `/fundamental/#/${MAIN}`],
@@ -101,7 +101,9 @@ const PERSPECTIVES = [
   ['supertrader', 'Methoden', 'Regeln berühmter Trader', `/supertrader/stock/${MAIN}/`],
   ['elliott', 'Wellen', 'Wellenstruktur im Kurs, experimentell', `/elliott/#/${MAIN}`],
   ['hedgefonds', 'Investoren', 'Wer die Aktie hält', '/hedgefonds/#/aktien']
-].map(([i, n, d, h]) => `<li><a href="${h}"><span class="vu-hud" style="--vu-hud:28px;border-radius:8px">${icon(i)}</span><b>${n}</b><span>${d}</span></a></li>`).join('');
+];
+/* C12 Navigationskarte je Blickwinkel: Symbol, Name, ein Satz, Pfeil. */
+const PERSPECTIVES = PERSPECTIVE_LIST.map(([i, n, d, h]) => VUUI.navcard({ icon: i, title: n, sub: d, href: h })).join('');
 
 // ---------- Fundamental: Umsatz je Geschäftsjahr (SEC) ----------
 const rev = (s.fundamentals?.journey?.tracks?.revenue || []).filter(r => Number.isFinite(r.v));
@@ -112,9 +114,14 @@ const journeyBars = VUUI.bars(rev.map(r => [String(r.fy), r.v]), { label: `Umsat
 // ---------- Discover: Swipe-Karte und Themenwelten ----------
 const ki = dataJson('discover/data/rows/US_REAL/thema-ki.json');
 const card = ki.cards[0], badge = (card.badges || [])[0];
-const swipeCard = `<a class="vu-box vu-box--ink swipe" href="/discover/#/einzeln/US_REAL"><span class="swipe-top"><span class="vu-logo-tile swipe-logo">${esc(card.symbol)}</span>${badge ? `<span class="tag-lime">${esc(badge.label)}</span>` : ''}</span>`
-  + `<b class="swipe-name">${esc(cleanName(card.companyName))}</b><small>${esc(card.was || card.sector || '')}</small>`
-  + `<span class="swipe-px"><b>${usd(card.price.value)}</b>${Number.isFinite(card.changePercent?.value) ? chg(card.changePercent.value) : ''}</span></a>`;
+/* Firmenlogo zur Bauzeit aus discover/logos/index.json (kein Nachladen im Browser nötig; ohne Eintrag bleibt das Kürzel). */
+const logoIndex = (() => { try { return JSON.parse(readFileSync(new URL('discover/logos/index.json', dataRoot), 'utf8')).files || {}; } catch { return {}; } })();
+const logoOpt = (t) => logoIndex[t] ? { src: '/discover/logos/' + logoIndex[t] } : { logo: false };
+/* Antippbare Kachel (immer dunkel): Logo, Etikett, Name, Kurs, Bewegung; die Kreise ✕ ♡ zeigen die Wischrichtung (nur Bild). */
+const swipeCard = VUUI.tap(`<span class="swipe-top">${VUUI.logo(card.symbol, { ...logoOpt(card.symbol), xl: true })}<span class="swipe-actions" aria-hidden="true"><i>✕</i><i class="lime">♡</i></span></span>`
+  + `${badge ? `<span class="swipe-tag"><span class="tag-lime">${esc(badge.label)}</span></span>` : ''}<b class="swipe-name">${esc(cleanName(card.companyName))}</b><small>${esc([card.symbol, card.was || card.sector].filter(Boolean).join(' · '))}</small>`
+  + `<span class="swipe-px"><b>${usd(card.price.value)}</b>${Number.isFinite(card.changePercent?.value) ? chg(card.changePercent.value) : ''}</span>`,
+  { href: '/discover/#/einzeln/US_REAL', tone: 'night', cls: 'swipe' });
 const themeCtx = { VUDiscover: {} }; themeCtx.globalThis = themeCtx; themeCtx.window = themeCtx;
 runInNewContext(read('discover/themes.js'), themeCtx);
 // Themenkacheln mit Symbol statt Bild (Owner 14.11.2026): Baustein .vu-theme, Symbol aus assets/theme-icons.svg (id = Slug).
@@ -124,27 +131,30 @@ const shown = pick.map(k => themes.find(x => x.slug === k)).filter(Boolean);
 const worldTiles = (shown.length === 3 ? shown : themes.slice(0, 3)).map(x => `<a class="vu-theme" href="/discover/#/welten">${VUUI.themeHud(x.slug, 64, 19)}<span class="vu-theme__copy"><b>${esc(x.short || x.title)}</b></span></a>`).join('');
 
 // ---------- Neun Welten ----------
+/* \u00ad ist ein weiches Trennzeichen: das lange Wort bricht in der schmalen Kachel an der richtigen Stelle, der Text bleibt derselbe. */
 const NINE = [['discover', 'Discover', 'Aktien entdecken', '/discover/'], ['quant', 'Quant', 'Faktoren je Aktie', '/quant/'], ['technical', 'Technical', 'Charts und Muster', '/technical/'],
-  ['fundamental', 'Fundamental', 'Zahlen aus Unternehmensberichten', '/fundamental/'], ['supertrader', 'Supertrader', 'Methoden der Profis', '/supertrader/'], ['hedgefonds', 'Hedgefonds', 'Was Investoren halten', '/hedgefonds/'],
+  ['fundamental', 'Fundamental', 'Zahlen aus Unternehmens\u00adberichten', '/fundamental/'], ['supertrader', 'Supertrader', 'Methoden der Profis', '/supertrader/'], ['hedgefonds', 'Hedgefonds', 'Was Investoren halten', '/hedgefonds/'],
   ['elliott', 'Elliott', 'Wellenstruktur', '/elliott/'], ['screener', 'Screener', 'Eigene Filter', '/screener/'], ['vorsorge', 'Vorsorge', 'Sparplan und Rente', '/vorsorge/']]
-  .map(([i, n, c, h]) => `<a class="vu-box" href="${h}"><span class="vu-hud" style="--vu-hud:38px">${icon(i)}</span><b>${n}</b><small>${c}</small></a>`).join('');
+  .map(([i, n, c, h]) => VUUI.tap(`${VUUI.hud(i, 40, 13)}<b>${n}</b><small>${c}</small>`, { href: h })).join('');
+
+// ---------- Zahlenreihe der Kopfkachel und „Weiter“-Karte am Seitenende (Texte wie bisher, nur die Form ist neu) ----------
+const BAND = VUUI.stats([['6.000+', 'US-Aktien'], ['9', 'Welten in einer App'], ['12 J.', 'Zahlen je Aktie aus Unternehmens\u00adberichten'], ['7.000+', 'ETFs für deine Vorsorge']]
+  .map(([value, label]) => ({ value, label, tone: 'lime' })), { label: 'Vision Universe in Zahlen' });
+const NEXT = VUUI.next({ eyebrow: 'Bereit für deinen Start?', title: 'Kostenlos starten', sub: 'In zwei Minuten eingerichtet.', href: '/konto/registrieren/?plan=free' });
 
 const asOf = s.asOf || t.bundle?.dataCutoff;
-/* Firmenlogo zur Bauzeit aus discover/logos/index.json (die Startseite lädt vu-ui.js nicht). */
-const logoIndex = (() => { try { return JSON.parse(readFileSync(new URL('discover/logos/index.json', dataRoot), 'utf8')).files || {}; } catch { return {}; } })();
-const logoOpt = (t) => logoIndex[t] ? { src: '/discover/logos/' + logoIndex[t] } : { logo: false };
 const values = {
   NVDA: MAIN, NVDA_NAME: esc(cleanName(s.companyName) || 'NVIDIA'), NVDA_WHAT: esc(s.was || ''),
   NVDA_PRICE: usd(s.price.value), NVDA_CHG: chg(s.changePercent.value, true),
   NVDA_DATE: dateDe(asOf), NVDA_DATE_SHORT: shortDe(asOf),
   NVDA_CHART: chartSvg(close), CHART_FROM: shortDe(ts[0]), CHART_TO: shortDe(ts.at(-1)),
-  NVDA_LOGO: VUUI.logo(MAIN, logoOpt(MAIN)), NVDA_VERDICTS: verdictRows, PERSPECTIVES, PERSP_BAR: VUUI.persp(MAIN, { active: 'discover' }),
+  NVDA_LOGO: VUUI.logo(MAIN, { ...logoOpt(MAIN), xl: true }), NVDA_VERDICTS: verdictRows, PERSPECTIVES, PERSP_COUNT: String(PERSPECTIVE_LIST.length), PERSP_BAR: VUUI.persp(MAIN, { active: 'discover' }),
   REVENUE_HELP: VUUI.help('Umsatz ist alles Geld, das die Firma mit ihren Produkten einnimmt, bevor Kosten abgezogen sind.'),
   JOURNEY_SPAN: String(rev.length), JOURNEY_RANGE: `GJ ${rev[0].fy}–${rev.at(-1).fy}`,
   JOURNEY_FROM: bn(rev[0].v), JOURNEY_FROM_YEAR: 'GJ ' + rev[0].fy, JOURNEY_TO: bn(rev.at(-1).v), JOURNEY_TO_YEAR: 'GJ ' + rev.at(-1).fy,
   JOURNEY_BARS: journeyBars,
   SWIPE_CARD: swipeCard, WORLD_TILES: worldTiles, WORLD_COUNT: String(themes.length),
-  NINE_WORLDS: NINE,
+  NINE_WORLDS: NINE, BAND, NEXT,
   CANCEL_LINK: cancelLinkItem(read('konto/config.js')),
 };
 
