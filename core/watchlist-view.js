@@ -273,7 +273,7 @@
       var st = sf.state === "STALE" ? "STALE" : "AVAILABLE";
       base.supertrader = { state: st, freshness: sf, entries: entries, asOf: ss.asOf,
         status: st === "STALE" ? "STALE" : valid.length ? "VALID_SIGNAL" : entries.length ? "RESEARCH_ONLY" : "NO_SIGNAL",
-        label: st === "STALE" ? "Datenstand veraltet" : valid.length ? "Gültiges Supertrader-Signal" : entries.length ? "Forschung · nicht freigegeben" : "Kein offenes Setup" };
+        label: st === "STALE" ? "Datenstand veraltet" : valid.length ? "Supertrader: erfüllt die Regel einer Methode" : entries.length ? "Forschung · nicht freigegeben" : "Kein offenes Setup" };
     }
 
     // Produktwelten (eine Adressregel: core/stock-context.js)
@@ -358,13 +358,13 @@
     });
   }
   var GROUPS = [
-    { id: "validSupertrader", label: "Gültiges Supertrader-Signal", test: FILTERS.validSupertrader },
+    { id: "validSupertrader", label: "Supertrader: erfüllt die Regel einer Methode", test: FILTERS.validSupertrader },
     { id: "newHigh", label: "Neues 52-Wochen-Hoch", test: FILTERS.newHigh },
     { id: "volume", label: "Volumen auffällig", test: function (v) { return v.volume.signal === "SPIKE"; } },
     { id: "nearHigh", label: "Nahe 52-Wochen-Hoch", test: function (v) { return v.high52.signal === "NEAR_HIGH"; } },
     { id: "research", label: "Supertrader-Forschung", test: function (v) { return v.supertrader.status === "RESEARCH_ONLY"; } },
     { id: "attention", label: "Prüfung offen oder nicht verfügbar", test: function (v) { return v.identity.state !== "AVAILABLE" || v.price.state !== "AVAILABLE"; } },
-    { id: "rest", label: "Ohne aktuelles Signal", test: function () { return true; } }
+    { id: "rest", label: "Ohne aktuelles Ereignis", test: function () { return true; } }
   ];
   /* Jede Zeile genau einmal: in der ersten zutreffenden Gruppe. */
   function group(views) {

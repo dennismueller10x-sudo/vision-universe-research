@@ -69,11 +69,14 @@ test("OV7 sieben Kapitel in der Reihenfolge der Präsentation, „Stärken und S
   assert.doesNotMatch(alles, /Was dafür spricht|was dagegen|aria-label="dafür"|Günstiger bewertet/);
 });
 
-test("OV8 Kapitel standardmäßig zugeklappt; offene merkt sich das Gerät", () => {
+test("OV8 Kapitel öffnen als Fenster von unten (Owner 15.11.2026); kein Aufklappen, kein Gerätegedächtnis mehr", () => {
   const src = readFileSync(new URL("../ui/overview.js", import.meta.url), "utf8");
-  assert.match(src, /<details class="dv3-ep" data-ch="' \+ k\[0\] \+ '"' \+ \(open\.indexOf\(k\[0\]\) >= 0 \? " open" : ""\)/, "zu, außer das Gerät hat es offen gemerkt");
-  assert.match(src, /vu-discover-chapters-v1/);
-  assert.match(src, /addEventListener\("toggle"/);
+  assert.match(src, /<button type="button" class="dv3-ep" data-ch="' \+ k\[0\] \+ '" aria-haspopup="dialog">/, "Kapitel ist ein Knopf, der ein Fenster öffnet");
+  assert.match(src, /U\(\)\.sheet\(SHEET_ID, k\[1\]/, "Fenstertitel ist der Kapiteltitel, Inhalt der unveränderte Abschnitt");
+  assert.match(src, /U\(\)\.openSheet\(el\)/);
+  assert.doesNotMatch(src, /<details class="dv3-ep"|localStorage\.setItem\(OPEN_KEY|addEventListener\("toggle"/, "kein Aufklappen an Ort und Stelle, nichts wird gemerkt");
+  assert.match(src, /removeItem\(OPEN_KEY\)/, "das alte Gedächtnis wird vom Gerät entfernt");
+  assert.match(src, /addEventListener\("hashchange", fensterZu\)/, "ein Seitenwechsel schließt das Fenster");
 });
 
 test("OV9 ein Jahreswert: alle 12-Monats-Angaben der Titelseite sind derselbe Dollar-Wert, Kopf in Dollar mit Euro daneben", () => {
@@ -159,8 +162,8 @@ test("OV14 App-Konzept 2: Story als drei Kacheln mit Grafik aus den Werten der A
   const v = NVDA.fundamentals.valuation, de = (x) => x.toLocaleString("de-DE", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
   assert.match(html, new RegExp("dv3-sg--pe.*<b>" + de(v.pe.value) + "</b>.*<b>" + de(v.relative.peMedian) + "</b>"));
   const src = readFileSync(new URL("../ui/overview.js", import.meta.url), "utf8");
-  assert.match(src, /closest\("\.dv3-story-r\[data-ch\]"\)[\s\S]{0,200}ep\.open = true/, "Tipp klappt das Kapitel auf (bleibt ein natives <details>, Entscheidung 6)");
-  assert.match(src, /U\(\)\.q\(ks\.length \+ " Kapitel, je eins aufklappen\. Zusammen das, was die Seite bisher untereinander zeigte\."/, "der Satz zu den Kapiteln bleibt erreichbar (hinter „?“)");
+  assert.match(src, /closest\("\.dv3-ep\[data-ch\], \.dv3-story-r\[data-ch\]"\)[\s\S]{0,260}kapitelFenster\(k, d\)/, "Tipp öffnet das Kapitel als Fenster (Owner 15.11.2026)");
+  assert.match(src, /U\(\)\.q\(ks\.length \+ " Kapitel, ein Tipp öffnet eines als Fenster\. Zusammen das, was die Seite bisher untereinander zeigte\."/, "der Satz zu den Kapiteln bleibt erreichbar (hinter „?“)");
   const css = readFileSync(new URL("../ui/overview.css", import.meta.url), "utf8");
   assert.match(css, /\.dx-range-chart\{height:var\(--dv3-chart-h,184px\)\}/, "Charthöhe wächst mit dem Bildschirm, nie unter 184 px");
   assert.match(css, /max-width:760px\)\{\s*body\.dv2 \.dv2-stock \.dx-chart:has\(\.dx-chart-hero--c04\) \.dx-range-chart-wrap,[^{]*\{margin-inline:-16px\}/, "Chart bis an den Bildschirmrand");

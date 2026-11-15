@@ -133,11 +133,11 @@ Zustände abgebildet; nichts sonst aus der Datenbank erreicht den Browser.
 ## 5. Oberfläche
 
 - **`/konto/watchlist/`**
-  - Kennzahlen: beobachtet / Grenze, gültige Supertrader-Signale, neue 52W-Hochs, nahe Hoch, Volumen ≥ 2×, Prüfung offen.
+  - Kennzahlen: beobachtet / Grenze, „Supertrader: erfüllt die Regel einer Methode“, neue 52W-Hochs, nahe Hoch, Volumen ≥ 2×, Prüfung offen.
   - Datenstand je Quelle.
   - Suche zum Hinzufügen (Tastatur).
   - Übernahme der alten Browser-Watchlists von Discover und Quant (nur auf Wunsch).
-  - Suche, Filter, Sortierung (Relevanz, Signal, Unternehmen, Kürzel, hinzugefügt, Aktualität, je Faktor; **kein** Gesamtscore), Gruppierung nach Signal.
+  - Suche, Filter, Sortierung (Relevanz, Ereignis, Unternehmen, Kürzel, hinzugefügt, Aktualität, je Faktor; **kein** Gesamtscore), Gruppierung nach Ereignis. Sichtbare Texte sagen seit 15.11.2026 (Owner) „Ereignis“, „Befund“ bzw. „Regel-Ergebnis“ statt „Signal“ (docs/legal/WORTWAHL.md); interne Schlüssel (`signal`, `VALID_SIGNAL`, `SUPERTRADER_SIGNAL`) bleiben.
   - Je Zeile: Kurs mit Datum, Statuschips, sieben Faktorbalken, Entfernen.
   - Aufklappbare Details: Faktoren mit Stufe, Supertrader je Strategie mit Freigabestufe, Technik, Notiz, Benachrichtigungen (gespeichert, noch nicht versendet), Links in die Produktwelten.
   - Faktorverteilung und Begriffe stehen in einem aufklappbaren Erklärteil.
