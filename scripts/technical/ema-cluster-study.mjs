@@ -148,7 +148,9 @@ export function run(input, { mode = 'EMA_CLUSTER', timeframe = '1D', config = {}
     });
     for (const type of types) {
       const rows = result.events.filter(e => typesById.get(e.eventId) === type).map(e => ({ ...e,
-        directionAdjustedExcess: Number.isFinite(e.benchmarkExcess) ? e.benchmarkExcess * (directions.get(e.eventId) === 'DOWN' ? -1 : 1) : null }));
+        // Reverse only the gross relative move; costs remain a deduction for bearish events.
+        directionAdjustedExcess: Number.isFinite(e.benchmarkExcess) && Number.isFinite(e.grossReturn)
+          ? (e.grossReturn - e.benchmarkReturn) * (directions.get(e.eventId) === 'DOWN' ? -1 : 1) + e.netReturn - e.grossReturn : null }));
       const excess = summary(rows, 'benchmarkExcess');
       const regimeNames = [...new Set(rows.map(r => regimeByDate.get(r.signalDate) || 'UNKNOWN'))].sort();
       cells.push({ eventType: type, horizonTradingDays: h, events: rows.length,

@@ -98,7 +98,7 @@
           if (p && (i - p.index > c.pullbackMaxBars || (p.direction === 'UP' ? arrangement === 'BEARISH' : arrangement === 'BULLISH'))) pending[name] = p = null;
           const g = row[name], touches = (b.low ?? b.close) <= g.max && (b.high ?? b.close) >= g.min;
           const direction = prev?.trend;
-          if (!p && ['UP', 'DOWN'].includes(direction) && touches && (direction === 'UP' ? prev.metrics['distance' + (name === 'fast' ? 'Fast' : 'Slow')] > 0 : prev.metrics['distance' + (name === 'fast' ? 'Fast' : 'Slow')] < 0)) {
+          if (!p && ['UP', 'DOWN'].includes(direction) && (direction === 'UP' ? arrangement !== 'BEARISH' : arrangement !== 'BULLISH') && touches && (direction === 'UP' ? prev.metrics['distance' + (name === 'fast' ? 'Fast' : 'Slow')] > 0 : prev.metrics['distance' + (name === 'fast' ? 'Fast' : 'Slow')] < 0)) {
             pending[name] = { index: i, direction, date: b.date };
             emit('PULLBACK_' + name.toUpperCase(), direction);
           } else if (p && i > p.index && (p.direction === 'UP' ? b.close > fast.max && fastSlope > 0 : b.close < fast.min && fastSlope < 0)) {

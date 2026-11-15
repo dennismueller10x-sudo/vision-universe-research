@@ -53,6 +53,11 @@ test('pullback and resumption require distinct bars and preserve original touch 
   assert.equal(touch.date, date(100));
   assert.ok(resume.date > touch.date);
   assert.equal(resume.pullbackDate, touch.date);
+  const reversal = bars([...v, 10]);
+  reversal.at(-1).high = 205; reversal.at(-1).low = 10;
+  const reversed = calc(reversal, config);
+  assert.equal(reversed.rows.at(-1).arrangement, 'BEARISH');
+  assert.ok(!reversed.events.some(e => e.date === reversal.at(-1).date && e.type.startsWith('PULLBACK_')), 'an opposite arrangement cannot start a pullback in the old direction');
 });
 test('custom groups validate and incomplete/invalid data are rejected', () => {
   assert.throws(() => E.configuration({ fast: [3, 3] }), /INVALID_EMA_GROUP/);

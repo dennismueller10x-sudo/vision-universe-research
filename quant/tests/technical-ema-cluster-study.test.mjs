@@ -24,7 +24,10 @@ test('study uses daily horizons, real Quant execution, costs, censoring and purg
   assert.equal(out.productionApproved, false);
   assert.equal(out.resultHash, run(input, { config }).resultHash);
   const expensive = run(input, { config, costs: { basis: 'PER_SIDE_NOTIONAL', feeBps: 50, slippageBps: 50 } });
-  for (let i = 0; i < out.cells.length; i++) if (out.cells[i].net.n) assert.ok(expensive.cells[i].net.mean < out.cells[i].net.mean);
+  for (let i = 0; i < out.cells.length; i++) if (out.cells[i].net.n) {
+    assert.ok(expensive.cells[i].net.mean < out.cells[i].net.mean);
+    assert.ok(expensive.cells[i].directionAdjustedExcess.mean < out.cells[i].directionAdjustedExcess.mean, 'costs must also reduce bearish direction-adjusted outcomes');
+  }
 });
 test('study refuses benchmark/basis drift and never substitutes weekly returns for trading days', () => {
   const input = fixture(250);
@@ -63,4 +66,16 @@ test('exact template predicates use timestamped fields; unknown or nonconsecutiv
   assert.ok(!templateEvents([snap(calendar[0], {}), snap(calendar[1], { aboveSma200: true })], calendar, calendar.at(-1)).some(e => e.type === 'aboveSma200'));
   assert.ok(!templateEvents([snap(calendar[0], { aboveSma200: false }), snap(calendar[2], { aboveSma200: true })], calendar, calendar.at(-1)).some(e => e.type === 'aboveSma200'));
   assert.throws(() => templateEvents([{ ...snap(calendar[0], {}), availableAt: calendar[1] + 'T00:00:00Z' }], calendar, calendar.at(-1)), /INVALID_TEMPLATE/);
+});
+
+test('a missing immediate next trading session is censored; EMA features restart after the gap', () => {
+  const input = fixture(250), listing = input.listings[0];
+  const event = detect(listing, { asOf: input.asOf, config }).find(e => input.calendar.indexOf(e.date) < 180);
+  assert.ok(event);
+  const nextDate = input.calendar[input.calendar.indexOf(event.date) + 1];
+  input.listings[0] = { ...listing, bars: listing.bars.filter(b => b.date !== nextDate) };
+  const out = run(input, { config });
+  const cell = out.cells.find(c => c.eventType === event.type && c.horizonTradingDays === 5);
+  assert.ok(cell.states.CENSORED > 0, 'must not fill at the first observation after a missing session');
+  assert.equal(out.productionApproved, false);
 });
