@@ -6,7 +6,7 @@ import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {existsSync} from 'node:fs';
 import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
-import {checkStartPage} from './start-page-checks.mjs';
+import {checkIphonePreview} from './iphone-preview-checks.mjs';
 import {checkConsentDisclosure} from './consent-disclosure-checks.mjs';
 
 const output=resolve(root,'tests/output/public-browser');
@@ -44,7 +44,7 @@ const server=createServer(async(req,res)=>{
   }
   const path=resolve(output,'.'+(pathname.endsWith('/')?pathname+'index.html':pathname));
   if(!path.startsWith(output+sep)){res.writeHead(404);res.end();return;}
-  try{const content=await readFile(path);res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'application/javascript','.css':'text/css','.woff2':'font/woff2','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.mp4':'video/mp4','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream'});res.end(content);}
+  try{const content=await readFile(path);res.writeHead(200,{'Content-Type':({'.html':'text/html','.js':'application/javascript','.css':'text/css','.woff2':'font/woff2','.png':'image/png','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream'});res.end(content);}
   catch{res.writeHead(404);res.end();}
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));origin='http://127.0.0.1:'+server.address().port;
@@ -67,7 +67,7 @@ try{
       assert.equal(await returning.locator('html').getAttribute('data-previous-landing-motion'),null,'New composition must not run cached old intro');
       assert.equal(await returning.locator('html').evaluate(e=>e.classList.contains('intro')),false);
       assert.equal(await returning.evaluate(()=>getComputedStyle(document.body).getPropertyValue('--previous-landing-styles').trim()),'','New markup must not reuse cached old styles');
-      await checkStartPage(returning);
+      await checkIphonePreview(returning);
       assert.equal(posts,beforePosts);assert.equal(await returning.locator('#email').isDisabled(),false);
       await cached.close();
       for(const javaScriptEnabled of [true,false]){
@@ -75,9 +75,9 @@ try{
         await context.route('**/*',route=>new URL(route.request().url()).origin===origin?route.continue():route.abort());
         const page=await context.newPage(),before=posts;
         await page.goto(origin+'/');
-        await checkStartPage(page);
+        await checkIphonePreview(page);
         await checkConsentDisclosure(page);
-        assert.equal(posts,before); // Looking at the page never submits the newsletter form.
+        assert.equal(posts,before); // The static iPhone never submits the newsletter form.
         assert.equal(await page.locator('#email').isDisabled(),false);
         assert.equal(await page.locator('#newsletter-form').getAttribute('data-controlled'),null);
         await page.locator('#email').fill('synthetic-public@example.test');
@@ -91,7 +91,7 @@ try{
         if(javaScriptEnabled)assert.deepEqual(await page.evaluate(()=>[localStorage.length,sessionStorage.length]),[0,0]);
         await context.close();
       }
-      console.log(name+': returning mobile visitor with cached old styles verified; start page with one device and twelve complete module names verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
+      console.log(name+': returning mobile visitor with cached old styles verified; single static iPhone and ten complete product names verified; public signup without private access, native and JS submission, one synthetic request and mobile confirmation verified; zero emails.');
     }finally{await browser.close();}
   }
 }finally{await new Promise(r=>server.close(r));}
