@@ -95,5 +95,114 @@
 .cb-ew-none-p{margin:6px 0 0;font-size:14px;color:var(--vu-mute)}
 .cb-ew-link{margin-top:10px}
 .cb-ew-link .vu-hud{color:var(--vu-lime)}
-/* App-Konzept 2 (14.11.2026): Kursart und Datum stehen klein unter der Tagesbewegung neben dem Kurs und brauchen keine eigene Zeile
-   (gemeinsamer Aktienkopf assets/stock-navigator, Farben unverändert). */
+/* ================================================================ App-Konzept 2 (Owner 14.11.2026): Aktienbild /elliott/#/<T>
+   Nur Darstellung. Das Markup baut quant/app/page-chartbild.js (unberührt); elliott/aktie.js ordnet es um und setzt .is-ak2.
+   Ohne aktie.js gelten nur die Regeln ohne .is-ak2 (Kopfkachel, Chart bis an den Rand, Farben) – Kapitel klappen dann wie bisher auf.
+   Farben: Schwarz, Weiß, Grau, Neongrün. Der gemeinsame Aktienkopf (assets/stock-navigator) bleibt, wie er ist. */
+#el-detail .cb{--q-muted:var(--vu-mute,#6e6e6e);--q-dim:var(--vu-mute,#6e6e6e);--vu-muted:var(--vu-mute,#6e6e6e);--q-unknown:var(--vu-mute,#6e6e6e);--q-line2:var(--vu-hair,#e9e9e9);--vu-text-secondary:#3d3d3d;--vu-chart-base:#9b9b9b;--vu-chart-axis:var(--vu-mute,#6e6e6e);--cb-flat:#9b9b9b}
+#el-detail .cb .ti-last-tag text{fill:var(--vu-inv,#fff)}
+#el-detail .q-foot{--q-muted:var(--vu-mute,#6e6e6e);--q-dim:var(--vu-mute,#6e6e6e);--q-line2:var(--vu-hair,#e9e9e9)}
+#el-detail .cb-pj-st-explore{background:var(--vu-card,#f4f4f4)}
+#el-detail .cb-pj-explore{border-color:var(--vu-hair,#e9e9e9)}
+#el-detail .cb-unclear{background:var(--vu-card,#f4f4f4);border-color:var(--vu-hair,#e9e9e9);color:var(--vu-ink,#000)}
+#el-detail .cb-unclear *{color:inherit}
+#el-detail .cb-pj-alt-k,#el-detail .cb-pj-st-explore,#el-detail .cb-pj-clad li{color:var(--vu-mute,#6e6e6e)}
+:root[data-theme=dark] #el-detail .cb{--vu-text-secondary:#c6c6c6;--vu-chart-base:#6e6e6e}
+/* Warnung zum Datenstand: eine schmale Zeile statt eines Kastens */
+#el-detail main[data-ak2]>.cb-head{margin-top:8px}
+#el-detail .vu-alert.cb-delayed{margin:8px 0 0;padding:6px 12px;gap:8px;align-items:center;border-radius:14px;background:var(--vu-card,#f4f4f4);font-size:12px;line-height:1.25;font-weight:700}
+#el-detail .vu-alert.cb-delayed:before{width:16px;height:16px;font-size:10px;background:var(--vu-ink,#000);color:var(--vu-inv,#fff)}
+/* Kopfkachel: die Lesart mit ihrem Urteil, immer dunkel */
+#el-detail .cb-ew-say{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:6px 10px;margin:10px 0 0;padding:12px 16px 14px;border-radius:22px;background:#000;color:#fff}
+#el-detail .cb-ew-say>div{display:contents}
+#el-detail .cb-ew-say .vu-verdict{grid-column:2;grid-row:1}
+:root[data-theme=dark] #el-detail .cb-ew-say,:root[data-theme=dark] #el-detail .cb-story{background:#151515}
+#el-detail .cb-ew-say .vu-ltag{color:#9b9b9b}
+#el-detail .cb-ew-say .vu-ltag{margin:0}
+#el-detail .cb-ew-say .vu-mt{grid-column:1/-1;margin:0;color:#fff;font-size:24px;text-wrap:balance}
+#el-detail .cb-ew-say .vu-verdict--mid{background:#262626;color:#fff}
+#el-detail .cb-ew-say .vu-verdict--weak{background:#fff;color:#000}
+#el-detail .cb-ew-none{margin-top:10px;border-radius:22px;background:#000;color:#fff}
+:root[data-theme=dark] #el-detail .cb-ew-none{background:#151515}
+#el-detail .cb-ew-none .vu-mt{color:#fff;font-size:22px;text-wrap:balance}
+#el-detail .cb-ew-none .vu-ltag,#el-detail .cb-ew-none .cb-ew-none-p,#el-detail .cb-ew-none .vu-verdict--none{color:#9b9b9b;border-color:#9b9b9b;opacity:1}
+#el-detail .cb-ew-link{border-radius:22px}
+/* Chart: am Telefon bis an den Bildschirmrand (die Breite bestimmt die Zeichenfläche, page-chartbild.js#draw) */
+#el-detail .cb-chart-card{margin-top:6px}
+#el-detail .cb-controls{align-items:center;flex-wrap:wrap;overflow:visible;gap:6px;margin:6px 0 0}
+#el-detail .cb-seg-btn{min-height:40px;min-width:38px;padding:5px 9px;font-size:12.5px}
+@media(max-width:760px){
+#el-detail .cb-chart-card{margin-inline:calc(-1*var(--vu-gutter,16px))}
+#el-detail .cb-controls,#el-detail .cb .cb-chart-card>.cb-legend,#el-detail .cb .cb-chart-card>.cb-small{padding-inline:var(--vu-gutter,16px)}
+}
+#el-detail .cb:not(.is-pro) .cb-controls>.cb-seg.ew-lesart{display:inline-flex}
+#el-detail .ew-lesart{background:var(--vu-card,#f4f4f4);border-radius:999px}
+#el-detail .ew-lesart .cb-seg-btn{padding-inline:7px}
+#el-detail .ew-q{order:1;flex:none;width:30px;height:30px;margin:0 0 0 auto;font-size:14px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000)}
+#el-detail .cb-controls>.cb-seg:not(:first-child){order:2}
+#el-detail .ew-q:after{content:"";position:absolute;inset:-6px}
+#el-detail .cb-replay-flag{background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000)}
+#el-detail .cb-scrub{accent-color:var(--vu-ink,#000)}
+#el-detail .ew-zeit{margin:10px 0 0;padding:14px 16px;border:0;border-radius:22px;background:var(--vu-card,#f4f4f4)}
+#el-detail .cb-story{margin-top:10px}
+@media(max-width:360px){#el-detail .cb-story-r{grid-template-columns:34px minmax(0,1fr)}#el-detail .cb-story-r>.vu-verdict{grid-column:2;justify-self:start}}
+/* Kapitel als Kacheln, die ein Fenster öffnen */
+#el-detail .is-ak2 .cb-eps{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px}
+#el-detail .is-ak2 .cb-ep{border-radius:22px}
+#el-detail .is-ak2 .cb-ep>summary{grid-template-columns:40px 1fr auto;grid-template-areas:"ic . n" "t t go";align-content:space-between;gap:16px 8px;height:100%;min-height:132px;padding:14px;border-radius:22px}
+#el-detail .is-ak2 .cb-ep-ic{grid-area:ic}
+#el-detail .is-ak2 .cb-ep-n{grid-area:n;justify-self:end;align-self:start;font-size:22px;font-weight:900;line-height:1}
+#el-detail .is-ak2 .cb-ep-t{grid-area:t}
+#el-detail .is-ak2 .cb-ep-t b{font-size:16px;font-weight:800;letter-spacing:-.02em;text-wrap:balance}
+#el-detail .is-ak2 .cb-ep .cb-ep-go{grid-area:go;align-self:end;transform:none;line-height:1}
+#el-detail .is-ak2 .cb-ep:last-child:nth-child(odd){grid-column:1/-1}
+#el-detail .is-ak2 .cb-ep:last-child:nth-child(odd)>summary{grid-template-columns:40px 1fr auto auto;grid-template-areas:"ic t n go";align-items:center;min-height:68px}
+#el-detail .is-ak2 .cb-ep:last-child:nth-child(odd) .cb-ep-n,#el-detail .is-ak2 .cb-ep:last-child:nth-child(odd) .cb-ep-go{align-self:center}
+#el-detail .is-ak2 .cb-ep[open]{grid-column:1/-1}
+#el-detail .is-ak2 .cb-ep[open]>summary{height:auto;min-height:68px}
+#el-detail .is-ak2 .cb-ep>summary:focus-visible,#el-detail .is-ak2 .cb-foot>summary:focus-visible{outline:2px solid var(--vu-focus-ring,#000);outline-offset:2px}
+#el-detail .cb-pro-open{margin-top:10px}
+/* Elliott-Profi: jeder Block eine Kachel (Inhalt und Reihenfolge unverändert) */
+#el-detail .cb-pro-title{margin:22px 0 2px;font-size:22px;font-weight:900;letter-spacing:-.03em}
+#el-detail .cb-pro>.cb-ewp,#el-detail .cb-pro-grid>.cb-pc{margin:10px 0 0;padding:16px;border:0;border-radius:22px;background:#f4f4f4;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;min-width:0}
+:root[data-theme=dark] #el-detail .cb-pro>.cb-ewp,:root[data-theme=dark] #el-detail .cb-pro-grid>.cb-pc{background:#151515;--vu-card:#262626;--vu-hair:#333}
+#el-detail .cb-pro-grid{gap:0 10px}
+#el-detail .cb-pro-sub{margin:22px 0 2px}
+/* Daten & Methodik als Kachel */
+#el-detail .is-ak2 .cb-foot.vu-dm{margin:10px 0 0;border:0;border-radius:22px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000)}
+#el-detail .is-ak2 .cb-foot.vu-dm>summary{min-height:56px;padding:8px 14px;color:var(--vu-ink,#000);font-size:14px;font-weight:800;border-radius:22px}
+#el-detail .is-ak2 .cb-foot.vu-dm>summary small{font-size:12px;color:var(--vu-mute,#6e6e6e)}
+#el-detail .is-ak2 .cb-foot.vu-dm>dl{margin:0;padding:0 14px 14px}
+#el-detail .is-ak2 .cb-foot.vu-dm>summary:after{content:"›";font-size:22px;font-weight:700;color:var(--vu-mute,#6e6e6e)}
+/* Seitenende: „Weiter“-Karte, dann Rückweg und Frag VU */
+#el-detail .ew-end .vu-next{margin-top:14px}
+#el-detail .ew-end .cb-crumbs{justify-content:space-between;gap:8px;margin:12px 0 0}
+#el-detail .ew-end .cb-crumbs a{padding:0 14px;border-radius:999px;background:var(--vu-card,#f4f4f4);color:var(--vu-ink,#000);font-size:13px;opacity:1}
+/* Fenster (C16) mit dem Inhalt eines Kapitels */
+#el-detail .ew-pop .vu-mt{font-size:21px;color:var(--vu-ink,#000)}
+#el-detail .ew-pop .ew-pop-k{margin:0 0 10px}
+#el-detail .ew-pop .cb-ep-body{padding:0}
+#el-detail .ew-pop .cb-ep-body .vu-sec,#el-detail .ew-pop .cb-ep-body section{margin:0;padding:0;border:0}
+#el-detail .ew-pop .cb-ep-body .q-sec-head{margin:0 0 6px;padding:0;border:0}
+#el-detail .ew-pop .cb-ep-body>*+*{margin-top:12px}
+#el-detail .ew-pop .cb-ew-waves{display:grid;gap:0}
+#el-detail .ew-pop .cb-ew-waves li{padding:10px 0;border-top:1px solid var(--vu-hair,#e9e9e9);font-size:15px}
+#el-detail .ew-pop .cb-ew-waves li:first-child{border-top:0}
+#el-detail .ew-lad{display:block;position:relative;height:8px;margin:8px 0 0;border-radius:999px;background:var(--vu-hair,#e9e9e9)}
+#el-detail .ew-lad>i{position:absolute;top:-3px;left:calc(var(--p,0)*1% - var(--p,0)*.14px);width:14px;height:14px;border-radius:50%;background:var(--vu-ink,#000);box-shadow:0 0 0 3px var(--vu-white,#fff)}
+:root[data-theme=dark] #el-detail .ew-lad>i{background:#c8f531;box-shadow:0 0 0 3px #151515}
+#el-detail .ew-pop .cb-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:12px 0}
+#el-detail .ew-pop .cb-stat{padding:12px;border-radius:18px;background:var(--vu-card,#f4f4f4)}
+#el-detail .ew-bar{margin:6px 0 2px;height:8px}
+#el-detail .ew-bar>i{background:var(--vu-mute,#6e6e6e)}
+#el-detail .ew-bar.vu-meter--lime>i{background:var(--vu-ink,#000)}
+:root[data-theme=dark] #el-detail .ew-bar.vu-meter--lime>i{background:#c8f531}
+#el-detail .ew-pop .vu-sheet-body>dl{display:grid;grid-template-columns:minmax(96px,max-content) 1fr;gap:10px 14px;margin:0;font-size:13.5px;line-height:1.45}
+#el-detail .ew-pop .vu-sheet-body>dl dt{font-weight:800;color:var(--vu-ink,#000)}
+#el-detail .ew-pop .vu-sheet-body>dl dd{margin:0;color:var(--vu-mute,#6e6e6e)}
+#el-detail .ew-pop .vu-sheet-body>dl a{color:var(--vu-ink,#000)}
+/* Wellen-Inspektor (eigenes Fenster des Chartbilds, hängt an body): neutrale Grautöne wie C16 */
+.cb-veil{background:rgb(0 0 0/.6);backdrop-filter:none}
+.cb-veil .cb-sheet{background:#151515;color:#fff;border-color:#262626;border-radius:22px 22px 0 0}
+.cb-veil .cb-sheet h4{color:#9b9b9b}
+@media(min-width:640px){.cb-veil .cb-sheet{border-radius:22px}}

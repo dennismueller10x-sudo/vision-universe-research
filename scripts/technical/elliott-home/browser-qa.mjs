@@ -111,6 +111,31 @@ for (const vp of VIEWPORTS) {
       check(await page.locator('vu-navigation').evaluate((n) => n.getAttribute('dock')) === 'elliott', 'Shell-Produkt im Detail: elliott');
       await layout(page, 'Detail');
       await page.screenshot({ path: `${OUT}/${vp.name}-${scheme}-detail.png` });
+      // App-Konzept 2 (elliott/aktie.js): Kopfkachel, Chart bis an den Rand, Kapitel und Daten & Methodik als Fenster, „Weiter“-Karte.
+      check(await page.locator('#el-detail main[data-ak2] .cb.is-ak2 .cb-ew-say h2').count() === 1, 'Aktie: Kopfkachel mit der Lesart (aktie.js hat das Aktienbild umgeordnet)');
+      const box = await page.locator('#el-detail .cb-chart svg').first().boundingBox();
+      if (vp.width <= 430) check(!!box && box.x <= 1 && box.x + box.width >= vp.width - 1, 'Aktie: Chart reicht am Telefon von Rand zu Rand (' + (box ? Math.round(box.x) + '…' + Math.round(box.x + box.width) : 'fehlt') + ')');
+      else check(!!box && box.width >= 600, 'Aktie: Chart nutzt die Breite (' + (box ? Math.round(box.width) : 0) + ' px)');
+      check(await page.locator('#el-detail .cb-eps > details.cb-ep').count() === 3 && await page.locator('#el-detail .cb-eps > details.cb-ep[open]').count() === 0, 'Aktie: drei Kapitel-Kacheln, keine klappt auf der Seite auf');
+      const sheet = page.locator('#el-detail .cb > .vu-sheet-backdrop.ew-pop:not([hidden])');
+      const chapters = [[1, 'Welle ', '.cb-ew-waves li'], [2, 'Hauptlesart = derzeit bevorzugte Interpretation', '.cb-list, .cb-small'], [3, 'Forschung, nicht zertifiziert', '#evidenz']];
+      for (const [n, text, inside] of chapters) {
+        await page.locator('#el-detail .cb-eps > details.cb-ep:nth-child(' + n + ') > summary').click();
+        await sheet.waitFor({ timeout: 5000 }).catch(() => {});
+        const body = await sheet.count() ? await sheet.innerText() : '';
+        check(body.toLowerCase().includes(text.toLowerCase()) && await sheet.locator(inside).count() > 0, 'Aktie: Kapitel ' + n + ' öffnet als Fenster mit seinem Inhalt');
+        if (n === 3) check(/keine Wahrscheinlichkeit|kein verlässlicher|Zufall|Fälle/.test(body), 'Aktie: Forschungs-Fenster nennt den Vergleich mit dem Zufall oder die Datenlage');
+        await page.keyboard.press('Escape');
+        await sheet.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+      }
+      check(await page.locator('#el-detail .cb-eps > details.cb-ep > .cb-ep-body').count() === 3 && !(await page.evaluate(() => document.documentElement.classList.contains('vu-sheet-open'))), 'Aktie: nach dem Schließen liegt jeder Kapitelinhalt wieder im Kapitel, die Seite rollt wieder');
+      await page.locator('#el-detail .cb > details.cb-foot > summary').click();
+      await sheet.waitFor({ timeout: 5000 }).catch(() => {});
+      check(/keine Vorhersage, keine Empfehlung, keine Order/.test(await sheet.count() ? await sheet.innerText() : '') && await sheet.locator('a[href="/quant/#/methodik/chartbild"]').count() === 1, 'Aktie: Daten & Methodik als Fenster, Hinweis und Methodik-Link (nach /quant/) erhalten');
+      await page.keyboard.press('Escape');
+      await sheet.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
+      check(await page.locator('#el-detail .ew-end a.vu-next[href="/technical/#/chart/' + encodeURIComponent(symbol) + '"]').count() === 1 && await page.locator('#el-detail .ew-end .cb-crumbs a').count() === 2, 'Aktie: „Weiter“-Karte zur Chart-Lage in Technical, Rückweg und Frag VU am Seitenende');
+      check(/Ungültig/.test(await page.locator('#el-detail .cb').innerText()), 'Aktie: Ungültig-Marke steht auf der Seite');
       // Weg 7: Zurueck zur Elliott-Startseite
       await page.goBack({ waitUntil: 'networkidle' });
       await page.waitForSelector('#el-main[data-state="ready"]');
