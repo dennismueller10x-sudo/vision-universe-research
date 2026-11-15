@@ -977,9 +977,23 @@
   /* VU3: einheitlicher Aktienkopf (assets/stock-navigator.js) und Kurschart (assets/vu-chart.js).
      Die Aktienseiten sind generiert (scripts/supertrader/build.mjs#writeStockPages); Kopf, Navigator
      und Chart werden deshalb hier zur Laufzeit nachgeladen statt in jede Seite geschrieben. */
+  /* Eine Kennung für die eigenen Module und Stylesheets (supertrader/assets/*): loadScript und loadCss hängen sie als ?v= an.
+     So gehören Skript und Stylesheet, die diese Datei nachlädt, immer zum selben Stand – nach einer Veröffentlichung trifft
+     kein neues Modul auf ein altes Stylesheet aus dem Zwischenspeicher (bis zu zehn Minuten). Bei jeder Änderung an
+     st-redesign.*, sf-research.*, st-names.js oder st-flow.js erhöhen (Test asset-marker.test.mjs prüft die Form).
+     Seiten, die st-redesign.js im <head> ohne Kennung ankündigen (Start und Aktienseiten, erzeugt von
+     scripts/supertrader/build.mjs), laden das Paar st-redesign.js/.css weiter ohne Kennung: der Preload bleibt genutzt,
+     beide Dateien stammen aus derselben Anfrage, und keine erzeugte Seite ändert sich. */
+  var ASSET_V = 'st-2026.11.14-2';
+  var PAIR_BARE = !!document.querySelector('link[rel="preload"][as="script"][href="' + BASE + 'assets/st-redesign.js"]');
+  function stamped(src) {
+    if (src.indexOf(BASE + 'assets/') !== 0 || src.indexOf('?') >= 0) return src;
+    if (PAIR_BARE && /\/st-redesign\.(?:js|css)$/.test(src)) return src;
+    return src + '?v=' + ASSET_V;
+  }
   var SCRIPT_P = {};
   function loadScript(src) {
-    if (!SCRIPT_P[src]) SCRIPT_P[src] = new Promise(function (ok, no) { var s = document.createElement('script'), pre = document.querySelector('link[rel="preload"][as="script"][href="' + src + '"]') || document.querySelector('link[rel="preload"][as="script"][href^="' + src.split('?')[0] + '?"]'); s.src = pre ? pre.href : src; s.onload = ok; s.onerror = function () { no(new Error(src)); }; document.head.appendChild(s); });
+    if (!SCRIPT_P[src]) SCRIPT_P[src] = new Promise(function (ok, no) { var s = document.createElement('script'), pre = document.querySelector('link[rel="preload"][as="script"][href="' + src + '"]') || document.querySelector('link[rel="preload"][as="script"][href^="' + src.split('?')[0] + '?"]'); s.src = pre ? pre.href : stamped(src); s.onload = ok; s.onerror = function () { no(new Error(src)); }; document.head.appendChild(s); });
     return SCRIPT_P[src];
   }
   var CSS_P = {};
@@ -987,7 +1001,7 @@
     return CSS_P[href] || (CSS_P[href] = new Promise(function (ok, no) {
       var link = document.querySelector('link[href="' + href + '"]') || document.querySelector('link[rel="stylesheet"][href^="' + href.split('?')[0] + '?"]');
       if (link && link.sheet) { ok(); return; }
-      var fresh = !link; if (fresh) link = h('link', { rel: 'stylesheet', href: href });
+      var fresh = !link; if (fresh) link = h('link', { rel: 'stylesheet', href: stamped(href) });
       link.addEventListener('load', ok, { once: true });
       link.addEventListener('error', function () { delete CSS_P[href]; no(new Error(href)); }, { once: true });
       if (fresh) document.head.appendChild(link);
@@ -1645,7 +1659,7 @@
   }
   /* Redesign 2027: gemeinsame Bausteine (assets/vu-ui.*, assets/vu-chart.js) und das Seitenmodul st-redesign.js.
      Laedt parallel zu den Daten; ein Fehler laesst die bisherige Oberflaeche stehen. */
-  var UI = page === 'replay' ? Promise.resolve() : Promise.all([loadCss('/assets/vu-ui.css?v=vu-ui-1.4.0'), loadCss(BASE + 'assets/st-redesign.css'), loadScript('/assets/vu-ui.js?v=vu-ui-1.4.0'), loadScript('/assets/vu-chart.js')]).then(function () {
+  var UI = Promise.all([loadCss('/assets/vu-ui.css?v=vu-ui-1.4.0'), loadCss(BASE + 'assets/st-redesign.css'), loadScript('/assets/vu-ui.js?v=vu-ui-1.4.0'), loadScript('/assets/vu-chart.js')]).then(function () {
     if (window.VUUI && window.VUUI.bindIntent) window.VUUI.bindIntent(function (url) { if (url.origin !== location.origin) return null; var m = /^\/supertrader\/stock\/([A-Z0-9.-]{1,12})\/$/.exec(url.pathname); return m && m[1]; }, function (ticker) { return build().then(function (b) { return b && b.slices && (b.slices.stock || []).indexOf(ticker) >= 0 ? getJSON('stock/' + ticker + '.json') : null; }); });
     /* Ein Name je Methode und die eine Ablauf-Leiste (Konzept „Das Rezept eines Profis“, Folien K1/K3) vor dem Seitenmodul. */
     return Promise.all([loadScript(BASE + 'assets/st-names.js'), loadScript(BASE + 'assets/st-flow.js')]).catch(function () {}).then(function () { return loadScript(BASE + 'assets/st-redesign.js'); });
@@ -1689,8 +1703,9 @@
       ['replay', 'backtests'].forEach(function (k) { if (D[k]) D[k] = wordingDeep(D[k]); });
       if (D.registry) D.registry.strategies.forEach(function (x) { if (x.evidence) x.evidence = wordingDeep(x.evidence); if (x.tagline) x.tagline = wording(x.tagline); if (x.fidelity && x.fidelity.statusPlain) x.fidelity.statusPlain = wording(x.fidelity.statusPlain); });
       main.innerHTML = '';
-      /* Redesign 2027 (ST01–ST08): neue Oberflaeche, sofern ihr Modul geladen ist. Die Methodenansicht der quellentreuen
-         Kandidaten (?sf=) und das historische Beispiel bleiben bei der bisherigen Oberflaeche. */
+      /* Redesign 2027 (ST01–ST08) und App-Konzept 2: neue Oberflaeche, sofern ihr Modul geladen ist (auch das historische
+         Beispiel, render.replay). Die Kandidatenliste einer Methode (?sf=) zeichnet sf-research.js mit denselben Bausteinen
+         (STRedesign.kit); fehlt das Modul, bleibt jeweils die bisherige Oberflaeche. */
       var R = window.STRedesign && window.STRedesign.render[page];
       if (R && !(page === 'strategies' && new URLSearchParams(location.search).get('sf'))) {
         if (window.VUNavigation) window.VUNavigation.dock(page === 'stock' ? { active: null } : {});

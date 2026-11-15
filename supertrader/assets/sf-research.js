@@ -3,7 +3,10 @@
    /supertrader/data/sf-candidates/ (summary.json, strategy/<Cxx>.json, ticker/<shard>.json) und für den Chart die
    kanonischen Kursartefakte über STChart. Der Browser rechnet keine Stufe und keinen Plan nach: er zeigt, was im
    Datensatz steht. Stufen: Chart-Kandidat, bestätigtes Research-Setup, modellierter Handelsablauf. Die höchste Stufe
-   ist für alle 13 Methoden gesperrt. Keine Empfehlungen, keine Orders. */
+   ist für alle 13 Methoden gesperrt. Keine Empfehlungen, keine Orders.
+   Die Kandidatenliste einer Methode (?sf=Cxx, mountStrategy) folgt dem „App-Konzept 2“ (Owner-Freigabe 14.11.2026):
+   Kacheln und Fenster aus assets/vu-ui.js und st-redesign.js (STRedesign.kit); Start, Methodenliste und Aktienseite
+   dieses Moduls sind nur noch der Rückfall, wenn st-redesign.js nicht lädt. */
 (function () {
   'use strict';
   var DATA = '/supertrader/data/sf-candidates/';
@@ -144,7 +147,8 @@
     return h('ul', { class: 'sf-limits', 'data-strong': strong ? 'true' : null, 'aria-label': 'Grenzen der Methode' }, s.limits.map(function (t) { return h('li', null, [icon(IC.alert), h('span', { text: t })]); }));
   }
   /* Datenherkunft und Aktualität: woher die Kandidaten stammen, welcher Stand, welche Prüfsumme */
-  function provenance(sum) {
+  function provenance(sum) { return moreBox('Datenherkunft und Aktualität', [provRows(sum)]); }
+  function provRows(sum) {
     var v = sum.versions || {}, dq = sum.dataQuality || {}, inp = sum.inputs || {};
     var rows = [
       ['Datenstand', dateDe(sum.asOf) + ' (Tagesschluss US) · nächste Sitzung ' + dateDe(sum.nextSession)],
@@ -153,7 +157,7 @@
       ['Regeln', 'Bestehende quellentreue Research-Engines, Referenzkonfiguration; Stufen nach dem Produktvertrag 7.0'],
       ['Prüfsumme der Eingaben', String(inp.inputsSha256 || '').slice(0, 12)],
     ];
-    return moreBox('Datenherkunft und Aktualität', [h('dl', { class: 'sf-prov' }, [].concat.apply([], rows.map(function (r) { return [h('dt', { text: r[0] }), h('dd', { text: r[1] })]; })))]);
+    return h('dl', { class: 'sf-prov' }, [].concat.apply([], rows.map(function (r) { return [h('dt', { text: r[0] }), h('dd', { text: r[1] })]; })));
   }
   /* Research-Kennzeichnung mit Datenstand (reguläres Produkt seit der Owner-Freigabe vom 29.10.2026, ohne Beta). Ein älterer Stand darf nie als heutiger Hinweis erscheinen: liegt die auf den
      Stand folgende Sitzung bereits zurück (UTC-Datum nach nextSession), sagt die Zeile ausdrücklich „nicht aktuell“. */
@@ -266,8 +270,22 @@
       adoptStageLabels(sum);
       document.title = mName(s) + ' – Supertrader';
       var L = sum.ruleLabels, views = data.views, state = { stage: null, q: '', sort: 'default', limit: 30 };
-      var byS = s.counts.byStage;
-      if (window.VUUI) {
+      var byS = s.counts.byStage, kit = KIT = kitOk(), into = host, banner = previewBanner(sum);
+      if (kit) {
+        /* App-Konzept 2 (14.11.2026): Kopfzeile, dunkle Kopfkachel (Urheber, ein Satz, höchste Stufe, Grenzen, Research-Zeile), Stufen als Zahlenkacheln. */
+        var U1 = window.VUUI, capK = VERDICT_OF[s.ceiling] || ['none', s.ceiling];
+        var parts = STAGES.map(function (k, i) { return [byS[k] || 0, VERDICT_OF[k][1], ['k', 'm', 'l'][i]]; });
+        into = kit.page(host); into.classList.add('sf-k');
+        into.insertAdjacentHTML('beforeend', '<header class="st-k-top"><a class="st-k-back sf-r-back" href="/supertrader/strategies/" aria-label="Zurück zu den Methoden">' + U1.glyph('back', 18) + '</a><div class="st-k-top-t"><p class="vu-ltag">' + U1.esc(s.author + ' · Stand ' + dateDe(data.asOf)) + '</p><h1 class="vu-lt st-k-h1">' + U1.esc(mName(s)) + '</h1></div>' +
+          '<button type="button" class="st-k-i" aria-haspopup="dialog" data-sheet="sf-s-stufen" aria-label="Erklärung: Stufen">i</button></header>' +
+          '<section class="st-k-hero sf-r-head sf-k-hero"><div class="sf-k-id">' + kit.monoHtml(kit.methodMeta(s).trader) + '<p class="st-k-hero-p">' + U1.esc(s.short) + '</p></div>' +
+          '<p class="sf-r-cap"><span class="vu-xs vu-mu"><b>Höchstens</b></span> ' + U1.verdict(capK[0], capK[1]) + '</p></section>');
+        var hero = into.querySelector('.sf-k-hero'), lim = limitsLine(s, true);
+        hero.querySelector('.sf-r-cap').prepend(v1Tag(s));
+        if (lim) hero.appendChild(lim);
+        hero.insertAdjacentHTML('beforeend', kit.segs(parts, 'Stufen'));
+        hero.appendChild(banner);
+      } else if (window.VUUI) {
         /* ST02 (Redesign 2027): Kopf wie die Methodenseiten (ST03) – Zurück, Kicker, Titel, ein Satz, höchste Stufe als Urteil, drei Kacheln. */
         var U0 = window.VUUI, cap = VERDICT_OF[s.ceiling] || ['none', s.ceiling];
         var hd = h('header', { class: 'sf-r-head' });
@@ -284,41 +302,108 @@
         host.appendChild(h('header', { class: 'st-hero sm sf-hero' }, [h('div', { class: 'st-kick', text: s.author + ' · quellentreu · Stand ' + dateDe(data.asOf) }), h('h1', { text: mName(s) }), h('p', { class: 'st-lead', text: s.short }), h('div', { class: 'sf-strat-st' }, [v1Tag(s), h('span', { class: 'sf-cap', text: 'höchstens' }), stageBadge(s.ceiling)]), limitsLine(s, true)]));
         host.appendChild(kpis([[num(views.length, 0), 'Kandidaten', s.recognises], [num(byS.MODELED_TRADE_PLAN || 0, 0), 'Modelliert'], [num(byS.CONFIRMED_RESEARCH_SETUP || 0, 0), 'Bestätigt']]));
       }
-      host.insertBefore(previewBanner(sum), host.querySelector('.sf-r-tiles, .sf-kpis'));
-      var list = h('div', { class: 'sf-cards' });
+      if (!kit) host.insertBefore(banner, host.querySelector('.sf-r-tiles, .sf-kpis'));
+      var list = h('div', { class: kit ? 'sf-cards st-k-list' : 'sf-cards' });
       var sorts = [['default', 'Methodenreihenfolge']].concat(Object.keys(sum.sortKeys).filter(function (k) { return k !== 'stage' && (k !== 'momentum' || cid === 'C08') && (k !== 'streak' || cid === 'C10') && (k !== 'setupState' || cid === 'C06') && (k !== 'pivot' || views.some(function (v) { return v.sortKeys && v.sortKeys.pivot !== null && v.sortKeys.pivot !== undefined; })); }).map(function (k) { return [k, sum.sortKeys[k].label]; }));
       var sel = h('select', { class: 'sf-select', 'aria-label': 'Sortierung', onchange: function () { state.sort = sel.value; state.limit = 30; draw(); } }, sorts.map(function (o) { return h('option', { value: o[0], text: o[1] }); }));
       var search = h('input', { class: 'sf-search', type: 'search', placeholder: 'Ticker oder Name', 'aria-label': 'Kandidaten durchsuchen', oninput: function () { state.q = search.value.trim().toLowerCase(); state.limit = 30; draw(); } });
       var counts = {}; views.forEach(function (v) { counts[v.stage] = (counts[v.stage] || 0) + 1; });
-      var chips = chipRow([[null, 'Alle', views.length]].concat(STAGES.slice().reverse().filter(function (x) { return counts[x]; }).map(function (x) { return [x, window.VUUI && VERDICT_OF[x] ? VERDICT_OF[x][1] : STAGE_TXT[x][0], counts[x]]; })), function (v) { state.stage = v; state.limit = 30; draw(); });
+      function pickStage(v) { state.stage = v; state.limit = 30; draw(); }
+      var chips = kit ? stageTiles([[null, 'Treffer', views.length]].concat(STAGES.slice().reverse().map(function (x) { return [x, VERDICT_OF[x][1], counts[x] || 0]; })), pickStage)
+        : chipRow([[null, 'Alle', views.length]].concat(STAGES.slice().reverse().filter(function (x) { return counts[x]; }).map(function (x) { return [x, window.VUUI && VERDICT_OF[x] ? VERDICT_OF[x][1] : STAGE_TXT[x][0], counts[x]]; })), pickStage);
       function keyOf(v, k) { var x = v.sortKeys ? v.sortKeys[k] : null; return x === undefined ? null : x; }
       function draw() {
         var vs = views.filter(function (v) { return (!state.stage || v.stage === state.stage) && (!state.q || v.ticker.toLowerCase().indexOf(state.q) >= 0 || String(v.companyName || '').toLowerCase().indexOf(state.q) >= 0); });
         if (state.sort !== 'default') { var dir = sum.sortKeys[state.sort].dir === 'asc' ? 1 : -1; vs = vs.slice().sort(function (a, b) { var x = keyOf(a, state.sort), y = keyOf(b, state.sort); if (x === y) return a.rank - b.rank; if (x === null) return 1; if (y === null) return -1; return (x < y ? -1 : 1) * dir; }); }
         var shown = vs.slice(0, state.limit);
-        var kids = shown.length ? shown.map(function (v) { return card(v, s, L, { compact: true }); }) : [empty('Keine Kandidaten', views.length ? 'Kein Kandidat passt zur Auswahl.' : 'Am Stichtag erkennt die Methode keine Aktie. Das ist ein gültiges Ergebnis, kein Fehler.')];
-        if (vs.length > shown.length) kids.push(h('button', { type: 'button', class: 'sf-moreBtn', onclick: function () { state.limit += 30; draw(); }, text: 'Weitere ' + Math.min(30, vs.length - shown.length) + ' von ' + (vs.length - shown.length) + ' anzeigen' }));
+        var kids = shown.length ? shown.map(function (v) { return kit ? tileRow(v, views.indexOf(v)) : card(v, s, L, { compact: true }); }) : [empty('Keine Kandidaten', views.length ? 'Kein Kandidat passt zur Auswahl.' : 'Am Stichtag erkennt die Methode keine Aktie. Das ist ein gültiges Ergebnis, kein Fehler.')];
+        if (vs.length > shown.length) kids.push(h('button', { type: 'button', class: kit ? 'sf-moreBtn vu-btn vu-btn--line vu-btn--block' : 'sf-moreBtn', onclick: function () { state.limit += 30; draw(); }, text: 'Weitere ' + Math.min(30, vs.length - shown.length) + ' von ' + (vs.length - shown.length) + ' anzeigen' }));
         list.replaceChildren.apply(list, kids);
       }
       var ownKey = s.sortOrder.some(function (k) { return k !== 'stage' && k !== 'dataQuality' && k !== 'ticker'; });
       sorts[0][1] = 'Methodenreihenfolge (' + s.sortOrder.filter(function (k) { return k !== 'ticker' || !ownKey; }).map(function (k) { return (sum.sortKeys[k] || {}).label || k; }).join(', ') + ')';
       sel.options[0].textContent = sorts[0][1];
-      host.appendChild(sec('Kandidaten', [h('div', { class: 'sf-tools' }, [search, sel]), chips, list], { kicker: 'Rangliste' }));
+      if (kit) {
+        into.appendChild(chips);
+        into.insertAdjacentHTML('beforeend', kit.sh('Kandidaten', { right: 'Rangliste' }));
+        into.appendChild(h('div', { class: 'sf-tools' }, [search, sel]));
+        into.appendChild(list);
+        /* Antippen öffnet die Angaben des Kandidaten im Fenster; mit Zusatztaste bleibt die Kachel ein Link zur Aktie. */
+        kit.onTap(list, 'data-sf-cand', function (ix) { var v = views[+ix]; if (v) candSheet(v, s, L); });
+      } else host.appendChild(sec('Kandidaten', [h('div', { class: 'sf-tools' }, [search, sel]), chips, list], { kicker: 'Rangliste' }));
       draw();
-      host.appendChild(sec('Methode und Grenzen', [
-        moreBox('Was die Erkennung prüft', [ruleList(s.rules.mechanicalSetupRules, L, 'check'), h('p', { class: 'st-hint', text: 'Datenbedarf: ' + s.dataNeeds.why + '.' })]),
-        s.rules.discretionaryRules.length ? moreBox('Offen für die eigene Prüfung (' + s.rules.discretionaryRules.length + ')', [ruleList(s.rules.discretionaryRules, L, 'open'), h('p', { class: 'st-hint', text: 'Diese Regeln verlangen nach der Quelle ein Urteil. Die Erkennung entscheidet sie nicht.' })]) : null,
-        s.rules.dataBlockedRules.length ? moreBox('Ohne Daten nicht prüfbar (' + s.rules.dataBlockedRules.length + ')', [ruleList(s.rules.dataBlockedRules, L, 'lock'), h('p', { class: 'st-hint', text: 'Ein Ersatzwert hebt diese Sperre nicht auf.' })]) : null,
-        s.readings.length ? moreBox('Gewählte Lesarten mehrdeutiger Regeln', [ruleList(s.readings.map(function (r) { return r.ruleId; }), L, 'open')]) : null,
-        moreBox('Stufen', [stagesLegend()]),
-        provenance(sum),
-      ], { kicker: 'Aufklappbar' }));
-      if (window.VUUI && window.VUUI.next) host.insertAdjacentHTML('beforeend', window.VUUI.next({ title: 'Treffer', sub: 'Wo steht welche Aktie im Ablauf?', href: '/supertrader/treffer/' }));
-      host.appendChild(footnote(sum));
+      /* Methode und Grenzen: [Kennung, Titel, Inhalt, Unterzeile, Symbol]; bisher Aufklappzeilen, im App-Konzept 2 je eine Kachel mit Fenster. */
+      var about = [
+        ['pruef', 'Was die Erkennung prüft', [ruleList(s.rules.mechanicalSetupRules, L, 'check'), h('p', { class: 'st-hint', text: 'Datenbedarf: ' + s.dataNeeds.why + '.' })], 'Mechanische Regeln und Datenbedarf', 'check'],
+        s.rules.discretionaryRules.length ? ['offen', 'Offen für die eigene Prüfung (' + s.rules.discretionaryRules.length + ')', [ruleList(s.rules.discretionaryRules, L, 'open'), h('p', { class: 'st-hint', text: 'Diese Regeln verlangen nach der Quelle ein Urteil. Die Erkennung entscheidet sie nicht.' })], 'Regeln, die ein Urteil verlangen', 'person'] : null,
+        s.rules.dataBlockedRules.length ? ['daten', 'Ohne Daten nicht prüfbar (' + s.rules.dataBlockedRules.length + ')', [ruleList(s.rules.dataBlockedRules, L, 'lock'), h('p', { class: 'st-hint', text: 'Ein Ersatzwert hebt diese Sperre nicht auf.' })], 'Regeln ohne Datengrundlage', 'filter'] : null,
+        s.readings.length ? ['lesart', 'Gewählte Lesarten mehrdeutiger Regeln', [ruleList(s.readings.map(function (r) { return r.ruleId; }), L, 'open')], null, 'book'] : null,
+        ['stufen', 'Stufen', (kit ? [h('p', { class: 'st-k-fine sf-k-caps', text: 'Treffer: am ' + dateDe(data.asOf) + ' · Plan fertig: Zone und Ungültig-Marke stehen · Regel erfüllt: alle prüfbaren Regeln' })] : []).concat([stagesLegend()], kit ? [h('p', { class: 'st-hint', text: 'Balken der Kacheln: Trend von −100 % bis +100 %, Volumen von 0 bis zum Doppelten des 50-Tage-Schnitts (die Marke ist der Schnitt), Abstand zur Chartstruktur von −10 % bis +10 %. Größere Werte füllen den Balken ganz.' })] : []), 'Muster erkannt · Regel erfüllt · Plan fertig', 'bars'],
+        ['herkunft', 'Datenherkunft und Aktualität', [provRows(sum)], 'Datenstand ' + dateDe(sum.asOf), 'list'],
+      ].filter(Boolean);
+      if (kit) {
+        into.insertAdjacentHTML('beforeend', kit.sh('Methode und Grenzen'));
+        kit.chapters(into, about.map(function (x) { return { id: 'sf-s-' + x[0], title: x[1], sub: x[3], glyph: x[4], node: h('div', { class: 'sf-s' }, x[2]) }; }));
+        about.forEach(function (x) { var el = document.getElementById('sf-s-' + x[0]); if (el) el.classList.add('sf-sheet'); });
+      } else host.appendChild(sec('Methode und Grenzen', about.map(function (x) { return moreBox(x[1], x[2]); }), { kicker: 'Aufklappbar' }));
+      if (window.VUUI && window.VUUI.next) into.insertAdjacentHTML('beforeend', window.VUUI.next({ title: 'Treffer', sub: 'Wo steht welche Aktie im Ablauf?', href: '/supertrader/treffer/' }));
+      into.appendChild(footnote(sum));
     }).catch(function () { host.appendChild(empty('Methode nicht verfügbar', 'Für diese Methode liegen keine Research-Kandidaten vor.')); host.appendChild(unavailable()); });
   }
   function ruleList(ids, L, kind) {
     return h('ul', { class: 'sf-rules' }, ids.map(function (id) { return h('li', { 'data-k': kind }, [icon(IC[kind] || IC.check), h('span', { text: ruleText(L, id) })]); }));
+  }
+
+  /* ------------------------- App-Konzept 2 (Owner-Freigabe 14.11.2026): Kandidatenliste als Kacheln
+     Gleiche Daten wie die Karte (card): je Kandidat eine Kachel mit Logo, Stufe als Urteil und Balken zu denselben Zahlen;
+     Antippen öffnet die Angaben im Fenster. Bausteine aus assets/vu-ui.js (VUUI) und st-redesign.js (STRedesign.kit).
+     Fehlt einer davon (älterer Stand im Zwischenspeicher), bleibt die vorige Oberfläche. Der Browser rechnet nichts nach. */
+  var KIT = null;
+  function kitOk() {
+    var U = window.VUUI, R = window.STRedesign, K = R && R.kit;
+    return U && K && U.popup && U.tap && U.next && U.logo && U.verdict && U.glyph && K.page && K.sh && K.segs && K.zoneBar && K.chapters && K.onTap && K.monoHtml && K.methodMeta ? K : null;
+  }
+  /* Balken um die Nulllinie auf fester Skala (± cap): Zeichnung des Werts, der daneben steht. */
+  function zeroBar(v, cap) { return '<span class="st-k-zero" aria-hidden="true"><i class="' + (v >= 0 ? 'is-up' : 'is-down') + '" style="width:' + Math.max(2, Math.min(50, Math.abs(v) / cap * 50)).toFixed(1) + '%"></i></span>'; }
+  /* Volumen als Vielfaches des 50-Tage-Schnitts: Skala 0 bis 2, die Marke in der Mitte ist der Schnitt (1,0×). */
+  function volBar(x) { return '<span class="sf-t-vol" aria-hidden="true"><i style="width:' + Math.max(2, Math.min(100, x / 2 * 100)).toFixed(1) + '%"></i></span>'; }
+  function cell(value, bar, label) { var e = window.VUUI.esc; return '<span class="sf-t-c"><b class="vu-num">' + e(value) + '</b>' + bar + '<small>' + e(label) + '</small></span>'; }
+  /* Die Zahlen eines Kandidaten mit je einem Balken: Trend (Skala ± 100 %), Volumen, Abstand zur Chartstruktur (Skala ± 10 %). */
+  function cells(v) {
+    var p = structOf(v.pivot), t = v.trend || {};
+    return '<span class="sf-t-g">' + cell(pct(t.ret63, 0, true), fin(t.ret63) ? zeroBar(t.ret63, 1) : '', 'Trend · 63 Tage') +
+      (fin(t.volumeVs50d) ? cell(times(t.volumeVs50d), volBar(t.volumeVs50d), 'Volumen · 50-Tage-Schnitt') : '') +
+      (p ? cell(pct(p.distance, 1, true), fin(p.distance) ? zeroBar(p.distance, 0.1) : '', STRUCT_TXT[p.kind]) : '') + '</span>';
+  }
+  function tileRow(v, ix) {
+    var U = window.VUUI, e = U.esc, sv = VERDICT_OF[v.stage] || ['none', (STAGE_TXT[v.stage] || [v.stage])[0]];
+    var tmp = document.createElement('template');
+    tmp.innerHTML = '<a class="vu-tap sf-r sf-t" href="' + e(stockUrl(v.ticker)) + '" aria-haspopup="dialog" data-stage="' + e(v.stage) + '" data-sf-cand="' + ix + '"><span class="sf-t-h">' + U.logo(v.ticker) +
+      '<span class="st-k-nm st-k-nm--wrap"><b>' + e(v.companyName || v.ticker) + '</b><span>' + e(v.ticker + ' · Schluss ' + usd(v.close)) + '</span></span>' + U.verdict(sv[0], sv[1]) + '</span>' + cells(v) + '</a>';
+    return tmp.content.firstChild;
+  }
+  /* Stufen als Zahlenkacheln: filtern die Liste wie zuvor die Chips. items [[Stufe | null, Wort, Anzahl]] */
+  function stageTiles(items, onPick) {
+    var wrap = h('div', { class: 'st-k-steps sf-k-steps', role: 'group', 'aria-label': 'Stufe' });
+    items.forEach(function (it, i) {
+      var b = h('button', { type: 'button', class: 'st-k-step', 'aria-pressed': i === 0 ? 'true' : 'false', onclick: function () { Array.prototype.forEach.call(wrap.children, function (x) { x.setAttribute('aria-pressed', 'false'); }); b.setAttribute('aria-pressed', 'true'); onPick(it[0]); } }, [h('b', { class: 'vu-num st-x-cn', text: num(it[2], 0) }), h('span', { text: it[1] })]);
+      wrap.appendChild(b);
+    });
+    return wrap;
+  }
+  /* Ein Kandidat im Fenster: Stufe auf der Leiste „Erkennen“, die Zahlen der Kachel, warum erkannt und warum diese Stufe,
+     der modellierte Ablauf (nur Stufe „Plan fertig“), offene Prüfung, Datenhinweis; Wege zur Aktie und zur Methode. */
+  function candSheet(v, s, L) {
+    var U = window.VUUI, e = U.esc, F = window.STFlow, N = window.STNames, x = card(v, s, L, { parts: true });
+    var sv = VERDICT_OF[v.stage] || ['none', (STAGE_TXT[v.stage] || [v.stage])[0]], step = STAGES.indexOf(v.stage), own = N && s ? N.href(s.candidateId) : null;
+    var box = h('div', { class: 'sf-s', 'data-stage': v.stage });
+    box.innerHTML = '<div class="st-k-mh">' + U.logo(v.ticker, { xl: true }) + '<div><b>' + e(s ? mName(s) : 'Methode') + '</b><span>' + e(v.ticker + ' · Schluss ' + usd(v.close)) + '</span></div>' + U.verdict(sv[0], sv[1]) + '</div>' +
+      '<div class="st-k-box st-k-gap">' + (F && step >= 0 ? F.erk(step) : '') + cells(v) + '</div>';
+    x.body.slice(1).forEach(function (n) { if (n) box.appendChild(n); });
+    box.insertAdjacentHTML('beforeend', '<div class="st-k-btns"><a class="vu-btn vu-btn--block" href="' + e(stockUrl(v.ticker)) + '">Aktie öffnen</a>' +
+      (s && own && own !== stratUrl(s.candidateId) ? '<a class="vu-btn vu-btn--line vu-btn--block" href="' + e(own) + '">Methode öffnen</a>' : '') + '</div><p class="st-k-fine">' + e(DISCLAIMER) + '</p>');
+    var el = U.popup({ id: 'sf-k-cand', title: v.companyName || v.ticker, body: box, cls: 'st-k-sheet' });
+    if (el) el.classList.add('sf-sheet');
   }
 
   /* ----------------------------------------------- Kandidatenkarte */
@@ -362,6 +447,8 @@
       ].filter(Boolean)) : null,
       dq.length ? h('p', { class: 'sf-dq' }, [icon(IC.alert), 'Datenhinweis: ' + dq.join(' · ')]) : null,
     ];
+    /* App-Konzept 2: das Fenster eines Kandidaten (candSheet) setzt dieselben Teile zusammen */
+    if (opts.parts) return { body: body, p: p, t: t };
     // in der Kandidatenliste stehen die Grenzen der Methode schon im Kopf der Seite; die Karte wiederholt sie nicht (V5)
     var lim = !opts.compact && s && STRONG_LIMITS[s.candidateId] ? limitsLine(s) : null;
     /* ST02 (Redesign 2027): in der Kandidatenliste eine kompakte Zeile – Logo, Kürzel, Name, Stufe als Urteil (Namen nach ST-Z),
@@ -379,10 +466,16 @@
   }
   function pair(k, v, sub) { return h('div', null, [h('dt', { text: k }), h('dd', null, [h('strong', { text: v }), sub ? h('small', { text: sub }) : null])]); }
   function planBlock(v, L) {
-    var p = v.plan, onOpen = /OPEN/.test(p.entryType);
+    var p = v.plan, onOpen = /OPEN/.test(p.entryType), zb = null;
+    /* App-Konzept 2: die Marken als Leiste mit denselben Werten und Bezeichnungen wie die Zahlenreihe der vorigen Karte */
+    var bar = KIT ? KIT.zoneBar([{ v: p.stop, label: 'Ungültig-Marke laut Methode' }, { v: v.close, label: 'Schluss', cls: 'me' }, { v: p.trigger, label: onOpen ? 'Referenz (Schluss)' : 'Zone laut Methode', cls: 'z' }]) : '';
+    if (bar) {
+      zb = h('div', { class: 'sf-plan-zb' }); zb.innerHTML = bar;
+      zb.appendChild(h('p', { class: 'st-k-fine', text: (onOpen ? 'Zone zur Eröffnung ' : 'Zone laut Methode ab ') + dateDe(p.earliestSession) + ' · ' + pct(p.plannedRiskPct, p.plannedRiskPct < 0.01 ? 2 : 1) + ' Abstand zur Ungültig-Marke' + (fin(p.limit) ? ' · Limit ' + usd(p.limit) : '') }));
+    }
     return h('div', { class: 'sf-plan' }, [
       h('h4', null, [icon(IC.open), 'Modellierter Ablauf (hypothetisch)']),
-      h('dl', { class: 'sf-nums' }, [onOpen ? pair('Referenz (Schluss)', usd(p.trigger), 'Zone zur Eröffnung ' + dateDe(p.earliestSession)) : pair('Zone laut Methode', usd(p.trigger), 'ab ' + dateDe(p.earliestSession)), pair('Ungültig-Marke laut Methode', usd(p.stop), pct(p.plannedRiskPct, p.plannedRiskPct < 0.01 ? 2 : 1) + ' Abstand'), fin(p.limit) ? pair('Limit', usd(p.limit)) : null]),
+      zb || h('dl', { class: 'sf-nums' }, [onOpen ? pair('Referenz (Schluss)', usd(p.trigger), 'Zone zur Eröffnung ' + dateDe(p.earliestSession)) : pair('Zone laut Methode', usd(p.trigger), 'ab ' + dateDe(p.earliestSession)), pair('Ungültig-Marke laut Methode', usd(p.stop), pct(p.plannedRiskPct, p.plannedRiskPct < 0.01 ? 2 : 1) + ' Abstand'), fin(p.limit) ? pair('Limit', usd(p.limit)) : null]),
       // Ausführungsfenster der Referenzregel (höchster geplanter Verlust): nur sichtbar machen, nie verändern
       p.fillWindow ? h('p', { class: 'sf-dq', 'data-fill': p.referenceInFillWindow ? 'in' : 'out' }, [icon(p.referenceInFillWindow ? IC.check : IC.alert), p.referenceInFillWindow
         ? 'Laut Modell nur bei einer Eröffnung über der Ungültig-Marke und höchstens ' + usd(p.fillWindow.upTo) + '.'

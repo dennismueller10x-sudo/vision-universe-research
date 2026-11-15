@@ -667,3 +667,31 @@ html[data-theme="dark"] .st-x-today,html[data-theme="dark"] .st-x-hero{backgroun
 /* Kandidatenliste einer Methode (?sf=, sf-research.js): Kopfzeile wie die übrigen Seiten */
 .sf-view .st-k-back{margin-bottom:0}
 .sf-view .sf-r-head .st-k-h1{margin-top:2px}
+/* Historisches Beispiel (/supertrader/beispiel/, render.replay): Kopfkachel, Kennzeichnung, ein Zyklus als Kachel mit
+   Ablauf-Leiste und Marken, Ablauf als Schiene, Kerzenchart, Protokoll. Gleiche Farbregel wie oben. */
+.st-k-replay{--st-text:var(--vu-ink);--st-text-2:var(--vu-ink);--st-muted:var(--vu-mute);--st-line:var(--vu-hair);--st-line-2:var(--vu-hair)}
+.st-k-rhero{display:grid;gap:10px}
+.st-k-rhero .st-k-h1{font-size:30px;color:#fff}
+.st-k-rhero .st-k-hero-p{margin:0}
+.st-k-replay .st-demo-banner{display:flex;gap:12px;align-items:flex-start;border:0;border-radius:18px;padding:12px 14px;background:var(--vu-card);font-size:12.5px;line-height:1.4;color:var(--vu-mute)}
+.st-k-replay .st-demo-banner strong{display:block;margin-bottom:2px;font-size:14px;font-weight:800;color:var(--vu-ink)}
+.st-k-rinfo{flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--vu-ink);color:var(--vu-inv);font:900 14px/1 var(--vu-font)}
+.st-k-rres .st-flow{margin-top:14px}
+.st-k-rres .st-x-zb{margin-top:18px}
+.st-k-rres .st-x-zbl .st-x-dot{margin-right:3px}
+.st-k-rres .st-x-zbl small{display:block;margin-top:2px;font-size:10.5px;font-weight:600;line-height:1.25;color:var(--vu-mute)}
+.st-k-rout{display:block;margin-top:14px;padding-top:12px;border-top:1px solid var(--vu-hair)}
+.st-k-rout p{margin:4px 0 2px;font-size:15px;font-weight:700;line-height:1.3}
+.st-k-rout p b{font-weight:900}
+.st-k-rout .st-k-fine{display:block;margin:0}
+.st-k-rstep{box-sizing:border-box;height:100%}
+.st-k-rstep .st-k-row{gap:8px}
+.st-k-rstep .st-x-stepn{flex:none;background:var(--vu-lime);color:#000;font-size:12px}
+.st-k-rstep .vu-ltag{font-size:10.5px;color:var(--vu-mute)}
+.st-k-rstep>span:last-child{display:block;margin-top:3px;line-height:1.4}
+.st-k-rchart .st-chartbox{margin-top:0}
+.st-k-replay .st-chart{--chart-bg:var(--vu-card);--candle-hollow:var(--vu-card);border:0;border-radius:22px;padding:12px 8px 8px;background:var(--vu-card)}
+.st-k-replay .st-chart-tools button{color:var(--vu-ink)}
+.st-k-rprot{padding:6px 14px}
+.st-k-rprot.st-x-tl li:not(:last-child)::before{left:5px}
+@media(min-width:900px){.st-k-replay .vu-rail{margin-inline:0;padding-inline:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}.st-k-replay .vu-rail>*{width:auto;max-width:none}}

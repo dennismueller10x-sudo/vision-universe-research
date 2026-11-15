@@ -842,13 +842,13 @@ html body .vu-product-hero.vu-hero-fidelity[data-product=supertrader] { margin-b
    Die Produktzeile entfällt: Name und „Quellen“ stehen im Kopf und in den Reitern. Farben nur Schwarz, Weiß, Grau und
    Neongrün #c8f531 (als Fläche hinter schwarzer Schrift oder auf dunkler Fläche); Bedeutung tragen Wort und Symbol. */
 .st-productline { display: none; }
-body.st[data-page="replay"], .sf-host, .st-r-legacy {
+body.st[data-page="replay"], .sf-host, .sf-sheet, .st-r-legacy {
   --st-good: var(--st-text); --st-warn: var(--st-text); --st-info: var(--st-text); --st-teal: var(--st-text); --st-trigger: var(--st-text);
   --p-cand: var(--st-muted); --p-prep: var(--st-text); --p-conf: var(--st-text); --p-pos: var(--st-text); --p-warn: var(--st-text); --p-exit: var(--st-text);
   --p-closed: var(--st-text); --p-inv: var(--st-muted); --p-partial: var(--st-text); --p-watch: var(--st-muted); --p-obs: var(--st-muted);
 }
-html:has(> body.st[data-page="replay"]) { --world: #c8f531 !important; --world-2: #c8f531 !important; --chart-trigger: #c8f531; --chart-entry: #c8f531; --chart-exit: #ffffff; --candle-up: #c8f531; --candle-down: #9b9b9b; }
-html[data-theme=light]:has(> body.st[data-page="replay"]) { --chart-trigger: #000000; --chart-entry: #000000; --chart-exit: #000000; --candle-up: #000000; --candle-down: #9b9b9b; }
+html:has(> body.st[data-page="replay"]) { --world: #c8f531 !important; --world-2: #c8f531 !important; --chart-trigger: #c8f531; --chart-entry: #c8f531; --chart-exit: #ffffff; --candle-up: #c8f531; --candle-down: #9b9b9b; --chart-axis: #9b9b9b; --chart-price: #ffffff; --chart-vol: rgba(255,255,255,.22); }
+html[data-theme=light]:has(> body.st[data-page="replay"]) { --chart-trigger: #000000; --chart-entry: #000000; --chart-exit: #000000; --candle-up: #000000; --candle-down: #9b9b9b; --chart-axis: #6e6e6e; --chart-price: #000000; --chart-tag-ink: #ffffff; --chart-vol: rgba(0,0,0,.18); --chart-marker-legend: #000000; }
 body.st[data-page="replay"] .st-lensblock { --w: #c8f531 !important; --w2: #c8f531 !important; }
 body.st[data-page="replay"] .st-chips.lens button[aria-selected="true"] { background: #c8f531; border-color: #c8f531; color: #000; }
 body.st[data-page="replay"] .st-hero.sm { padding-top: 10px; }
