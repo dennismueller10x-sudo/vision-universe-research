@@ -386,6 +386,8 @@
     if (p.startsWith('/insights/')) return {label: 'News', icon: 'insights'};
     /* Aktienseite (Quant-SPA #/aktie/<T>): im Prototyp die eigene Welt „Aktie“. */
     if (p === '/quant/' && /^#\/aktie\/[^/?]+/.test(loc.hash || '')) return {label: 'Aktie', icon: 'chartbild'};
+    /* Gemeinsame Aktienseite /aktie/#/<T> (Prototyp #v-aktie). */
+    if (p === '/aktie/' || p === '/aktie/index.html') return {label: 'Aktie', icon: 'chartbild'};
     const product = PRODUCTS.find(x => x.match(p, loc));
     if (!product) return null;
     if (product.id === 'mein') return {label: 'Konto', icon: 'layers'};
