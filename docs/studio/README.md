@@ -32,7 +32,7 @@ Einstieg für jede neue Sitzung, in der ein Reel entstehen soll. Stand 2026-10-2
 10. Vor jedem neuen Reel die bisherigen Reels über die Instagram-Schnittstelle prüfen (Workflow `social-ig-check.yml` mit Backup, dann `instagram-backup.json` lesen): Reichweite, Watch-Time und Optik der besten Reels als Maßstab nehmen, nicht frei neu erfinden.
 11. Eigener Video-Stil, kein Nachbau der App-Oberfläche. Für Chart-Reels gilt die Vorlage „Nvidia Teil 2" (Chart-Karte, Zonen, Volumen/RSI, Schalter). Jede Linie und Zone im Bild wird aus genau den gezeigten Kursen berechnet.
 12. Den Bildschirm ausnutzen: Inhalte groß und mittig in der Safezone (x 100–980, oben ab 150, Untertitel 1395–1555), keine leeren Flächen unter kleinen Karten.
-13. Aussprache konsistent: „GTA sechs", „GTA fünf" (nie alleinstehendes „GTA", nie „G. T. A."). Nach jeder Aufnahme Whisper-Prüfung.
+13. Aussprache konsistent und deutsch: „GTA sechs", „GTA fünf" (nie „G. T. A."). Die Stimme legt die Aussprache beim ersten Vorkommen fest: Text immer mit dem Vorsatz „Wir verschenken GTA sechs." aufnehmen und diesen Satz danach anhand der Wortzeiten herausschneiden (Vorlage: `.studio-work/reel_tt_history`, `tts.res.cut.json`). Whisper erkennt Deutsch/Englisch nicht sicher, im Zweifel Hörprobe an den Owner. Gleicher Text liefert bei HeyGen dieselbe Aufnahme, für einen neuen Versuch den Text ändern.
 14. Gewinnspiel-Reels: „GEWINNSPIEL" und die Schritte ab dem ersten Bild sichtbar; Teilnahmebedingungen unter `/instagram/teilnahmebedingungen/` passend zum Video halten.
 
 ## Marke
