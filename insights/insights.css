@@ -281,6 +281,7 @@ html[data-vu-bleed] .in-body{padding-top:0!important}
 .in-tkl:focus-visible{outline:2px solid var(--vu-focus-ring);outline-offset:2px;border-radius:12px}
 .in-lg{display:grid;place-items:center;width:34px;height:34px;padding:5px;border-radius:10px;background:#fff;color:#000;flex:none;overflow:hidden}
 .in-lg img{display:block;width:100%;height:100%;object-fit:contain}
+:root:not([data-theme=dark]) .in-lg{box-shadow:0 0 0 1px #e9e9e9}
 .in-lg b{font-size:8.5px;font-weight:900;letter-spacing:-.02em}
 .in-min,.in-zeit{font-size:11px;font-weight:700;color:var(--vu-mute);white-space:nowrap}
 .in-held .in-min{color:#9b9b9b}
