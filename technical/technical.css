@@ -1074,11 +1074,6 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .tc-learn{border-radius:22px}
 
 /* Chart-Seite: Aktienkopf ohne eigene Datumszeile (assets/stock-navigator, Farben unverändert) */
-.tc-shead .vu-shead-price{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:2px;align-items:center}
-.tc-shead .vu-shead-value{grid-row:1/span 2}
-.tc-shead .vu-shead-change{justify-self:start}
-.tc-shead .vu-shead-when{grid-column:2;justify-self:start;margin:0;flex-basis:auto;text-align:left;font-size:11px;line-height:1.2}
-@media(max-width:380px){.tc-shead .vu-shead-value{grid-row:auto;grid-column:1/-1}.tc-shead .vu-shead-when{align-self:center}}
 .tc-sayrow{margin-top:10px}
 .tc-sayrow .vu-mt{font-size:24px;font-weight:900;letter-spacing:-.035em}
 /* Drei Sätze: je Satz eine Grafik */

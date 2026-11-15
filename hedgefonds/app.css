@@ -387,11 +387,6 @@ html[data-theme=dark] .hf-story{background:#151515}
 
 /* Aktienkopf (assets/stock-navigator, Farben unverändert): Kursart und Datum stehen klein unter der Tagesbewegung neben dem
    Kurs und brauchen keine eigene Zeile mehr. */
-#hf-shead .vu-shead-price{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:10px;row-gap:2px;align-items:center}
-#hf-shead .vu-shead-value{grid-row:1/span 2}
-#hf-shead .vu-shead-change{justify-self:start}
-#hf-shead .vu-shead-when{grid-column:2;justify-self:start;margin:0;flex-basis:auto;text-align:left;font-size:11px;line-height:1.2}
-@media (max-width:380px){#hf-shead .vu-shead-value{grid-row:auto;grid-column:1/-1}#hf-shead .vu-shead-when{align-self:center}}
 .hf-story-r{grid-template-columns:34px minmax(0,1fr) auto}
 .hf-split-l b{min-width:0}
 @media (min-width:761px){.hf-detail .vu-bars{max-height:220px}}
