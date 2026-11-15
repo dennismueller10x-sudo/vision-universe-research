@@ -507,6 +507,10 @@
         body.appendChild(railSection(Object.assign({}, s, { kind: 'rail', anchor: first ? 'reihen' : null }), ctx, avail)); first = false;
         if (id === 'new-52-week-highs') { var mv = movesSection(ctx, avail); if (mv) body.appendChild(mv); }
       });
+      /* Prototyp: nach den Compoundern „Wie steht die Börse?“ und „Alle N Reihen“; die übrigen Reihen der heutigen Startseite folgen
+         danach (im Design des Prototyps), vor „Weiter“. */
+      body.appendChild(marketSection(ctx));
+      body.appendChild(rowsSection(ctx, avail));
       plan.forEach(function (slot) {
         var node = null;
         if (slot.kind === 'top10' || slot.kind === 'recent' || slot.kind === 'themes' || (slot.kind === 'rail' && PROTO_ROWS.indexOf(slot.row) >= 0)) return;
@@ -519,8 +523,6 @@
         else if (slot.kind === 'europe') node = europeSection();
         if (node) { if (slot.kind === 'rail') first = false; body.appendChild(node); }
       });
-      body.appendChild(marketSection(ctx));
-      body.appendChild(rowsSection(ctx, avail));
       body.appendChild(endSection(ctx));
       paintGenres(page, null);
       ready.then(function () {

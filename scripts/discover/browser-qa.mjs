@@ -64,8 +64,8 @@ async function premiumMobileAudit(page,key){
 
  /* App-Konzept 2 (Prototyp „v-discover“, Owner 15.11.2026 „1:1 wie im Prototyp“): oben die Aktie des Tages (Billboard), direkt danach die Reiter
     im Inhalt, dann in der Reihenfolge des Prototyps Top 10 heute, Themen, Neue Jahreshochs, Was sich heute bewegt, Langfristige Compounder
-    („Weiter ansehen“ nur mit angesehenen Aktien, davor). Die uebrigen Reihen der Startseite folgen danach in der Reihenfolge von Reihen.homePlan;
-    dann „Wie steht die Börse?“. Nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
+    („Weiter ansehen“ nur mit angesehenen Aktien, davor), dann wie im Prototyp „Wie steht die Börse?“ und „Alle N Reihen“. Die uebrigen Reihen
+    der Startseite folgen danach in der Reihenfolge von Reihen.homePlan. Nur Weiss, Schwarz, Neongruen und Graustufen (kein Rot, kein Gruen). */
  await page.waitForFunction(()=>document.querySelector('.dr-sec--top10 .dr-poster'),null,{timeout:15000}).catch(()=>{});
  const top=await page.evaluate(()=>Array.from(document.querySelectorAll('.v2-journey > :not(h1)')).map(n=>n.classList.contains('dr-bb')?'billboard':n.classList.contains('dp-tabs')?'tabs':n.classList.contains('dr-sec--recent')?'recent':n.classList.contains('dr-sec--top10')?'top10':n.classList.contains('dr-sec--themes')?'themes':n.classList.contains('dp-moves')?'moves':n.dataset.row||n.className).filter(x=>x!=='recent').slice(0,7));
  assert.deepEqual(top,['billboard','tabs','top10','themes','new-52-week-highs','moves','langfristige-compounder'],'n-home: oben die Aktie des Tages, Reiter, dann die Bloecke des Prototyps: '+top.join(' | '));
@@ -81,12 +81,17 @@ async function premiumMobileAudit(page,key){
  const expected=planTitel(Reihen.freshRows(homeMeta)),rest=order.slice(order.indexOf('Langfristige Compounder')+1);
  assert.deepEqual(rest.filter(t=>expected.includes(t)),expected.filter(t=>rest.includes(t)),'n-home section order: '+order.join(' | ')+' (erwartet: '+expected.join(' | ')+')');
  for(const must of ['Top 10 heute','Strategien','Wie steht die Börse?'])assert(order.includes(must),'n-home without '+must+': '+order.join(' | '));
- assert(order.indexOf('Wie steht die Börse?')>order.indexOf('Strategien'),'Wie steht die Börse? nach den Reihen: '+order.join(' | '));
+ assert.equal(order[order.indexOf('Langfristige Compounder')+1],'Wie steht die Börse?','Prototyp: Wie steht die Börse? direkt nach den Compoundern: '+order.join(' | '));
+ assert(order.indexOf('Strategien')>order.indexOf('Wie steht die Börse?'),'Die uebrigen Reihen folgen nach Wie steht die Börse? und Alle Reihen: '+order.join(' | '));
+ assert(await page.evaluate(()=>{const m=document.querySelector('.dr-sec--markt'),r=document.querySelector('.v2-journey > .dp-rows');return !!(m&&r&&m.nextElementSibling===r);}),'Alle N Reihen direkt nach Wie steht die Börse?');
  assert(order.length<=18,'At most 18 sections on the home page: '+order.length);
  const palette=await page.evaluate(()=>{const rgb=v=>(v.match(/[\d.]+/g)||[]).slice(0,3).map(Number),hue=c=>{const [r,g,b]=c,mx=Math.max(r,g,b),mn=Math.min(r,g,b);return mx-mn;};
   const lime=c=>c[0]===200&&c[1]===245&&c[2]===49,grey=c=>hue(c)<=8;
-  return Array.from(document.querySelectorAll('.v2-journey .vu-chg')).map(n=>rgb(getComputedStyle(n).backgroundColor)).filter(c=>!(lime(c)||grey(c)));});
- assert.deepEqual(palette,[],'Price pills must be lime or ink, never red/green: '+JSON.stringify(palette));
+  return {pills:Array.from(document.querySelectorAll('.v2-journey .vu-chg')).filter(n=>!n.closest('.dp-idx')).map(n=>rgb(getComputedStyle(n).backgroundColor)).filter(c=>!(lime(c)||grey(c))),
+   day:Array.from(document.querySelectorAll('.v2-journey .dp-idx .vu-chg:not(.vu-chg--flat)')).map(n=>({down:n.classList.contains('vu-chg--down'),c:rgb(getComputedStyle(n).backgroundColor)}))};});
+ assert.deepEqual(palette.pills,[],'Price pills must be lime or ink, never red/green: '+JSON.stringify(palette.pills));
+ /* Ausnahme Tagesbewegung (Owner 15.11.2026): rot (#c4281c) bei Minus, neongruen bei Plus. */
+ for(const d of palette.day)assert.deepEqual(d.c,d.down?[196,40,28]:[200,245,49],'Tagesbewegung als Pille: rot bei Minus, neongruen bei Plus: '+JSON.stringify(palette.day));
  for(const sel of ['.dr-sec--markt','.dr-sec--top10','.dr-sec--strat','.dv3-swipecard']){const n=page.locator(sel).first();if(await n.count()){await n.scrollIntoViewIfNeeded();await screenshot(page,key+'-home'+sel.replace(/[^a-z]+/g,'-'));}}
  designEvidence.push({key,type:'d01-order',order});
 }

@@ -395,6 +395,8 @@ html body #v2-main .dp-home .dp-tabs .dp-tab.on{background:var(--vu-ink);color:v
 .dp-idx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
 .dp-idx .dr-ms__i{display:grid;gap:5px;justify-items:start;min-width:0}
 .dp-idx .dr-ms__i>span:first-child{font-size:11px;font-weight:700;color:var(--vu-mute)}
+/* Tagesbewegung als Pille (Owner 15.11.2026): rot bei Minus, neongrün bei Plus – wie assets/vu-stock-sheet.css (.k-move). */
+.dp-idx .vu-chg{background:#c8f531;color:#101318}.dp-idx .vu-chg--down{background:#c4281c;color:#fff}.dp-idx .vu-chg--flat{background:var(--dp-track,#2a2a2d);color:inherit}
 
 /* Alle N Reihen (Prototyp: Etikett und Chips), Genres, Suche */
 .dp-home .dp-rows{margin-top:22px}
