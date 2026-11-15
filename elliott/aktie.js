@@ -43,7 +43,7 @@
     U.openSheet(el);
     /* Schließt etwas anderes das Fenster (Gesten der App setzen nur hidden), kehrt der Inhalt trotzdem zurück. */
     if (global.MutationObserver) { watch = new global.MutationObserver(function () { if (el && el.hidden) { U.closeSheet(el); gone(); } }); watch.observe(el, { attributes: true, attributeFilter: ["hidden"] }); }
-    /* „Im Chart zeigen“ und Schalter, die den Chart ändern, schließen das Fenster: der Chart liegt dahinter. */
+    /* Ein Knopf „Im Chart zeigen“ schließt das Fenster: der Chart liegt dahinter. */
     body.addEventListener("click", function (ev) { if (ev.target.closest && ev.target.closest(".cb-pj-btn")) away(); });
     return el;
   }

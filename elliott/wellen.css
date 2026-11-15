@@ -164,8 +164,9 @@
 #el-detail .cb-pro-open{margin-top:10px}
 /* Elliott-Profi: jeder Block eine Kachel (Inhalt und Reihenfolge unverändert) */
 #el-detail .cb-pro-title{margin:22px 0 2px;font-size:22px;font-weight:900;letter-spacing:-.03em}
-#el-detail .cb-pro>.cb-ewp,#el-detail .cb-pro-grid>.cb-pc{margin:10px 0 0;padding:16px;border:0;border-radius:22px;background:#f4f4f4;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;min-width:0}
-:root[data-theme=dark] #el-detail .cb-pro>.cb-ewp,:root[data-theme=dark] #el-detail .cb-pro-grid>.cb-pc{background:#151515;--vu-card:#262626;--vu-hair:#333}
+/* Grauer Text steht hier auf Grau: eine Stufe dunkler (hell) bzw. heller (dunkel), damit der Kontrast 4,5 : 1 hält. */
+#el-detail .cb-pro>.cb-ewp,#el-detail .cb-pro-grid>.cb-pc{margin:10px 0 0;padding:16px;border:0;border-radius:22px;background:#f4f4f4;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#555;--q-muted:#555;--q-dim:#555;--vu-muted:#555;--q-unknown:#555;min-width:0}
+:root[data-theme=dark] #el-detail .cb-pro>.cb-ewp,:root[data-theme=dark] #el-detail .cb-pro-grid>.cb-pc{background:#151515;--vu-card:#262626;--vu-hair:#333;--vu-mute:#a8a8a8;--q-muted:#a8a8a8;--q-dim:#a8a8a8;--vu-muted:#a8a8a8;--q-unknown:#a8a8a8}
 #el-detail .cb-pro-grid{gap:0 10px}
 #el-detail .cb-pro-sub{margin:22px 0 2px}
 /* Daten & Methodik als Kachel */
