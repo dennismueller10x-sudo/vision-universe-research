@@ -50,6 +50,12 @@ Newsletter-Formular öffnet sofort, Datenschutztext nennt „Coming-soon-Seite�
 ## Wiederaufnahme: genau diese Schritte (Stand 15.11.2026, 09:15 UTC)
 1. **PR #2015** (Rahmen, Home, Aktie, diese Übergabe) prüfen: ist `ci-gate` grün, squash-mergen (`scripts/ci/wait-gate.sh 2015`).
    Ist er rot: Ursache aus den Job-Logs beheben, pushen, warten, mergen. Danach auf research live im Browser ansehen.
+   **Stand 09:17 UTC (Head b5e0ff8604):** rot waren `core` (behoben in 05d07c85c3: Rechtsfuß-Test zählte docs/ mit), `package`,
+   `technical`, „Browser (Chromium und WebKit/iPhone)“, `vu2-browser-qa`, `discover-frontend`, `shell-shell` (webkit-390/430/1024,
+   chromium-768). Die Browser-QAs liefen lokal nie vollständig; sehr wahrscheinlich erwarten sie noch den alten Kopf (Atlas-Knopf,
+   Logo-Link, Reiterzeile) bzw. ein helles Schema (Dunkel ist jetzt Standard; der Rahmen nimmt `navigator.webdriver` aus, aber
+   Skripte ohne gesetztes Schema sehen dunkel). Je Job die Logs lesen (`get_job_logs`, `failed_only`), Ursache beheben – QA an den
+   neuen, vom Owner gewollten Kopf anpassen, nie Prüfungen löschen oder überspringen.
 2. **Discover- und Quant-Start** aus den Zwischenständen holen. Beide Patches sind auf `main` von `c02583e6d8` erstellt
    (`git format-patch`), also: neuen Zweig von `main`, dann `git am docs/design/app-konzept-2-2026-11/zwischenstand/discover.patch`
    (bei Konflikten `git am -3`). Die Arbeit war **nicht fertig geprüft** (die Agenten liefen noch Tests): Tests laufen lassen
