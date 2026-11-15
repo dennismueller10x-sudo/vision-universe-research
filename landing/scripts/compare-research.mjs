@@ -1,5 +1,7 @@
-// Design contracts and reproducible before/after captures. Research source assets
-// stay byte-identical; landing geometry deliberately follows the approved brief.
+// Design contracts and reproducible before/after captures. Since the owner approval of 14.11.2026 the start page
+// is the website ("Website-Mock-up 3"); the checks of the former coming-soon picture are replaced by the equivalent
+// requirements of the new page. Unchanged and still compared with the immutable baseline: the signup form (fields,
+// consent, flags, action), every legal and confirmation page (wording and link targets) and the brand assets.
 import {chromium} from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 import {createServer} from 'node:http';
@@ -11,7 +13,7 @@ import {existsSync} from 'node:fs';
 import assert from 'node:assert/strict';
 import {createHash} from 'node:crypto';
 import {root,build} from './build.mjs';
-import {checkIphonePreview} from '../tests/iphone-preview-checks.mjs';
+import {checkStartPage} from '../tests/start-page-checks.mjs';
 import {checkConsentDisclosure} from '../tests/consent-disclosure-checks.mjs';
 
 const baseline='11bda0c1a2a0d8add32ea0338a1ec32dfd8e3f49';
@@ -42,7 +44,7 @@ const server=createServer(async(req,res)=>{
     const pathname=new URL(req.url,'http://localhost').pathname,version=pathname.split('/')[1],directory=directories[version];
     if(!directory)throw Error();let path=resolve(directory,'.'+pathname.slice(version.length+1));
     if(path!==directory&&!path.startsWith(directory+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');
-    const content=await readFile(path);res.setHeader('Content-Type',({'.html':'text/html','.css':'text/css','.js':'application/javascript','.png':'image/png','.woff2':'font/woff2','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream');res.end(content);
+    const content=await readFile(path);res.setHeader('Content-Type',({'.html':'text/html','.css':'text/css','.js':'application/javascript','.png':'image/png','.jpg':'image/jpeg','.webp':'image/webp','.mp4':'video/mp4','.woff2':'font/woff2','.svg':'image/svg+xml'})[extname(path)]||'application/octet-stream');res.end(content);
   }catch{res.writeHead(404);res.end();}
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
@@ -50,21 +52,32 @@ const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(
 const review=resolve(root,'review/redesign');await mkdir(review,{recursive:true});
 const results=[];
 try{
-  for(const[name,width,height,budget]of[['desktop',1440,900,1800],['iphone',390,844,1688],['iphone-se',375,667,1688],['tablet',768,1024,2200],['narrow',320,800,2000]]){
+  // No height budgets any more: they belonged to the compact coming-soon page, the website is a full page.
+  for(const[name,width,height]of[['desktop',1440,900],['iphone',390,844],['iphone-se',375,667],['tablet',768,1024],['narrow',320,800]]){
     const context=await browser.newContext({viewport:{width,height},deviceScaleFactor:1,reducedMotion:'reduce',isMobile:width<=390,hasTouch:width<=390});
     const page=await context.newPage(),errors=[],external=[];let posts=0;
     page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url());if(r.method()==='POST')posts++});
     await page.goto(base+'/after/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
-    assert.equal((await page.locator('h1').textContent()).replace(/\s+/g,' ').trim(),'Investieren mit Weitblick. Alles in einer App.');
-    assert.equal(await page.locator('h1 em').innerText(),'Weitblick.');
-    assert.equal(await page.locator('.hero-badge').innerText(),'App bald verfügbar');
-    assert.equal(await page.locator('h1 em').evaluate(e=>getComputedStyle(e).color),'rgb(200, 245, 49)');
+    assert.equal((await page.locator('h1').textContent()).replace(/\s+/g,' ').trim(),'Die Börse ist laut. Wir bringen Ordnung hinein.');
+    assert.equal(await page.locator('h1 .hl').innerText(),'Ordnung');
+    assert.equal(await page.locator('.heroX .soon').innerText(),'App bald verfügbar · zum Start kostenlos');
+    // Lime is a fill behind black text, never a text colour on white (owner 14.11.2026).
+    assert.deepEqual(await page.locator('h1 .hl').evaluate(e=>[getComputedStyle(e).backgroundColor,getComputedStyle(e).color]),['rgb(200, 245, 49)','rgb(11, 12, 14)']);
     assert.match(await page.locator('h1').evaluate(e=>getComputedStyle(e).fontFamily),/Inter/);
-    assert.equal(await page.locator('.footer').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(7, 10, 9)');
-    assert.doesNotMatch(await page.locator('body').innerText(),/Konzeptansicht/);
+    assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 255, 255)');
+    // Palette: black, white, greys and the one neon lime. No green hue other than the lime and its pale tint.
+    assert.deepEqual(await page.evaluate(()=>{
+      const allowed=new Set(['200,245,49','238,249,204']),found=new Set();
+      for(const e of document.querySelectorAll('body *'))for(const p of ['color','backgroundColor','borderTopColor','fill','stroke']){
+        const m=/^rgba?\((\d+), (\d+), (\d+)(?:, ([\d.]+))?\)$/.exec(getComputedStyle(e)[p]);if(!m||m[4]==='0')continue;
+        const [r,g,b]=m.slice(1,4).map(Number);if(g>r+12&&g>b+12&&!allowed.has(`${r},${g},${b}`))found.add(`${p} ${m[0]} ${e.tagName}.${e.className}`);
+      }
+      return [...found];
+    }),[],`${name}: only the neon lime and its pale tint`);
+    assert.doesNotMatch(await page.locator('body').innerText(),/Konzeptansicht|Mock-up/);
     const metrics=await page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
-    assert.equal(metrics.width,width,`${name}: no horizontal overflow`);assert.ok(metrics.height<=budget,`${name}: compact coming-soon page (${metrics.height})`);
-    await checkIphonePreview(page);
+    assert.equal(metrics.width,width,`${name}: no horizontal overflow`);
+    await checkStartPage(page);
     await checkConsentDisclosure(page);
     // Only the authorized compact presentation differs: the full canonical
     // consent stays accessible, all fields/flags/action and dynamic states stay.
@@ -92,22 +105,24 @@ try{
     assert.equal(comparison.hint,'Anmeldung mit E-Mail-Bestätigung.');
     assert.equal(comparison.allOtherMarkupMatches,true,'All form markup other than approved compact presentation unchanged');
     await page.goto(base+'/after/',{waitUntil:'networkidle'});
-    const headerHeight=await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height);
-    await page.evaluate(()=>scrollTo(0,150));await page.waitForFunction(()=>document.querySelector('.lp-head').classList.contains('scrolled'));
-    assert.equal(await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height),headerHeight,'Sticky header must not shift the signup during scroll');
-    await page.evaluate(()=>scrollTo(0,0));await page.waitForFunction(()=>!document.querySelector('.lp-head').classList.contains('scrolled'));
+    const headerHeight=await page.locator('.nav .bar').evaluate(e=>e.getBoundingClientRect().height);
+    await page.evaluate(()=>scrollTo({top:150,behavior:'instant'}));
+    assert.deepEqual(await page.locator('.nav .bar').evaluate(e=>[e.getBoundingClientRect().height,Math.round(e.getBoundingClientRect().top)<=20]),[headerHeight,true],'Sticky header keeps its height and stays at the top during scroll');
+    await page.evaluate(()=>scrollTo({top:0,behavior:'instant'}));
     assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(await page.locator('#consent').isChecked(),false);
     assert.ok(await page.locator('#email').evaluate(e=>parseFloat(getComputedStyle(e).fontSize)>=16),'Email input avoids automatic Safari focus zoom');
     assert.equal(await page.locator('[name=CONSENT_VERSION]').getAttribute('value'),'vu-newsletter-v1');
     for(const selector of ['#email','button[type=submit]','.consent']){
       const box=await page.locator(selector).boundingBox();assert.ok(box.width>=44&&box.height>=44,'Signup retains 44px touch targets');
     }
-    if(['desktop','iphone','iphone-se'].includes(name))await page.screenshot({path:resolve(review,'after-'+name+'.png'),fullPage:true});
+    if(['desktop','iphone','iphone-se'].includes(name))await page.screenshot({path:resolve(review,'after-'+name+'.png')});
     for(const path of ['impressum/','datenschutz/','newsletter/bestaetigen/','newsletter/bestaetigt/','newsletter/fehler/']){
       await page.goto(base+'/after/'+path,{waitUntil:'networkidle'});
       const afterText=await page.locator('body').innerText(),afterLinks=await page.locator('a').evaluateAll(es=>es.map(e=>e.getAttribute('href')));
       assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,`${name}: legal overflow`);
-      assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(8, 10, 12)');
+      // Legal and confirmation pages wear the light design of the website (owner 14.11.2026); only legal.css changed.
+      assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 255, 255)');
+      assert.match(await page.locator('.brand').evaluate(e=>getComputedStyle(e,'::before').content),/^"VISION UNIVERSE®"/);
       const axe=await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze();assert.deepEqual(axe.violations.map(v=>({id:v.id,target:v.nodes.map(n=>n.target)})),[],`${name}: ${path} accessibility`);
       assert.match(await page.locator('link[rel=stylesheet]').getAttribute('href'),/legal\.css\?v=[a-f0-9]{16}$/,'Legal styles bypass stale browser caches');
       if(['desktop','iphone'].includes(name)&&['impressum/','datenschutz/','newsletter/bestaetigen/'].includes(path))await page.screenshot({path:resolve(review,'after-'+path.split('/')[0]+'-'+name+'.png'),fullPage:path==='impressum/'});
@@ -118,7 +133,7 @@ try{
     }
     if(['desktop','iphone'].includes(name)){await page.goto(base+'/before/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:resolve(review,'before-'+name+'.png'),fullPage:true});}
     assert.deepEqual(errors,[]);assert.deepEqual(external,[]);assert.equal(posts,0);
-    results.push({name,viewport:{width,height},pageHeight:metrics.height,horizontalOverflow:false,singleIphone:true,tenOriginalProducts:true,twoColumns:true,completeProductNames:true,formControlsAndConsentUnchanged:true,compactConsentDisclosure:true,signupDirectlyBelow:true,legalTextAndLinksUnchanged:true,legalAxeViolations:0,externalRequests:0,posts:0});await context.close();
+    results.push({name,viewport:{width,height},pageHeight:metrics.height,horizontalOverflow:false,oneStageDevice:true,twelveModules:true,completeModuleNames:true,onlyNeonLime:true,formControlsAndConsentUnchanged:true,compactConsentDisclosure:true,signupClosesThePage:true,legalTextAndLinksUnchanged:true,legalAxeViolations:0,externalRequests:0,posts:0});await context.close();
   }
   await writeFile(resolve(review,'checks.json'),JSON.stringify({baseline,reference:provenance.commit,scope:'Local public-mode rendering, approved unchanged privacy document, no credentials or live endpoints; legal copy/links compared with immutable baseline.',results},null,2)+'\n');
   console.log(JSON.stringify(results,null,2));
