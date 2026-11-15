@@ -41,7 +41,7 @@ check('B1/B2 home and worlds read canonical cards, series and the intraday selec
   // D01-D08 (discover/ui/v3.js, Startseite discover/ui/reihen.js): Karten aus den Startseiten-/Sammlungsdateien, Kurslinie aus der kanonischen Reihe (SeriesLoader),
   // „Heute im Blick“ ueber dieselbe Intraday-Auswahl (Featured.live). Discover rechnet nichts neu.
   assert.match(app,/V\.Home\.render/);
-  assert.match(home,/D\.V3\.home\(page,\s*ctx\)/);
+  assert.match(home,/D\.V3\.home\(page,\s*(ctx|Object\.assign\(\{\},\s*ctx\b)/); // App-Konzept 2: ctx um heroWait ergaenzt
   assert.match(views,/D\.Featured\.live\(surface,\s*ctx,\s*billboard\)/);
   assert.match(views,/D\.SeriesLoader\.get\(ps\.path\)/);
   assert.match(views,/rows\/' \+ uid\(ctx\) \+ '\/'/);

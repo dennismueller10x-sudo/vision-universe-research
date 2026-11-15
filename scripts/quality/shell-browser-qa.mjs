@@ -131,6 +131,26 @@ for (const [vpName, width, height] of VIEWPORTS) {
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       for (const pass of ['first', 'reload']) {
         if (pass === 'reload') { await page.reload({ waitUntil: 'load' }); await settle(page); }
+        /* App-Konzept 2 (Prototyp #discover/#quant, Owner 15.11.2026): der Start traegt seine Reiter im Inhalt
+           (<html data-vu-tabs="inhalt">); die Reiterzeile des Rahmens bleibt dort verborgen. Geprueft werden dann Dock,
+           Universe-Knopf, die Reiter im Inhalt und der Ueberlauf. */
+        const inhalt = await page.evaluate(() => {
+          if (document.documentElement.getAttribute('data-vu-tabs') !== 'inhalt') return null;
+          const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav'), strip = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs');
+          const places = nav ? [...nav.querySelectorAll('a')] : [], uni = nav && nav.querySelector('button.menu'), ub = uni && uni.getBoundingClientRect();
+          const tabs = [...document.querySelectorAll('main [role=tablist] a, main [role=tablist] button, main .dp-tabs .dp-tab, main [class*=tabs] a, main [class*=tabs] button')].filter((n) => n.getClientRects().length);
+          return { dock: !!nav, places: places.map((a) => a.textContent.trim()), place: places.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
+            uni: !!uni && ub.width >= 56 && ub.height >= 56, stripHidden: !strip || strip.hidden, tabs: tabs.length, overflow: document.documentElement.scrollWidth - innerWidth };
+        });
+        if (inhalt) {
+          if (!inhalt.dock || inhalt.places.join('|') !== DOCK.join('|') || !inhalt.uni) fail(where, 'Dock ist nicht Home · Discover · [Universe] · News · Ich: ' + JSON.stringify(inhalt));
+          const place = DOCK_ACTIVE(new URL(page.url()).pathname);
+          if ((inhalt.place[0] || null) !== place || inhalt.place.length > 1) fail(where, `Dock: aktiv ${inhalt.place.join('|') || '-'} statt ${place || '-'}`);
+          if (!inhalt.stripHidden) fail(where, 'Reiterzeile des Rahmens doppelt zu den Reitern im Inhalt');
+          if (inhalt.tabs < 3) fail(where, 'Reiter im Inhalt fehlen: ' + inhalt.tabs);
+          if (inhalt.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + inhalt.overflow + ' px');
+          continue;
+        }
         const s = await state(page);
         if (!s) { fail(where, 'kein Dock oder keine Reiterzeile'); break; }
         if (s.labels[0] !== product || s.strip.name !== product) fail(where, 'erster Reiter ist nicht der Produktname: ' + s.labels[0]);
@@ -436,7 +456,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Zurueck/Vor ueber die Reiter (Hash-Produkte und Seiten-Produkte).
-  for (const [start, clicks] of [['/quant/#/', ['Screener', 'Aktien']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Treffer', 'Forschung']], ['/discover/#/', ['Welten', 'Strategien']]]) {
+    // Discover- und Quant-Start tragen ihre Reiter im Inhalt (App-Konzept 2); der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
+  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {
