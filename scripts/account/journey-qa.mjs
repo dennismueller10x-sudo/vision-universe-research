@@ -168,17 +168,19 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   check((await page.evaluate(() => JSON.parse(localStorage.getItem('vu-start-v1') || '{}').done)) === true, 'erster Start: uebersprungen gilt als erledigt');
   // E02: Mein Dashboard (Watchlist) und Konto liegen getrennt in den Reitern „Mein Bereich“ unter dem Kopf statt als eigene Knoepfe
   // (Rahmen nach App-Konzept 2: das Dock traegt Home · Discover · Universe · News · Ich).
-  await page.waitForSelector('vu-navigation a.tab[data-id=watchlist][href="/mein-dashboard/"]');
-  check(await page.isVisible('vu-navigation a.tab[data-id=watchlist][href="/mein-dashboard/"]') && await page.isVisible('vu-navigation a.tab[data-id=konto][href="/konto/"]')
-    && await page.isVisible('#vu-dock a[data-id=home][aria-current=page]') && await page.isVisible('#vu-dock a[data-id=ich][href="/mein-dashboard/"]'),
-    'Willkommensseite: Mein Dashboard und Konto sichtbar, getrennt');
+  // App-Konzept 2 (Prototyp #home, Owner 14./15.11.2026): Home zeigt keine Reiterzeile; „Mein Bereich“ erreicht man ueber „Ich“
+  // im Dock und das Profil im Kopf, Watchlist und Konto stehen dort als getrennte Reiter (siehe Kontoseite weiter unten).
+  await page.waitForSelector('#vu-dock a[data-id=ich][href="/mein-dashboard/"]');
+  check(await page.isVisible('#vu-dock a[data-id=home][aria-current=page]') && await page.isVisible('#vu-dock a[data-id=ich][href="/mein-dashboard/"]')
+    && await page.isVisible('vu-navigation a.hb.profile[href="/mein-dashboard/"]') && !(await page.isVisible('vu-navigation nav.tabs')),
+    'Willkommensseite: Mein Bereich ueber Dock und Profil, keine Reiterzeile');
   check(await page.isVisible('#wk-hero-play') && await page.isVisible('#wk-products'), 'Willkommensseite: Video und Produktwelten da');
   // E08: die persoenliche Begruessung steht jetzt auf Mein Bereich (/willkommen/), das Dashboard heisst „Watchlist“.
   await page.waitForFunction(() => document.getElementById('wk-title').textContent.includes('QA free'));
   check(true, 'Mein Bereich: persoenliche Begruessung');
   await audit(page, 'Mein Bereich');
   await shot(page, 'free-01-willkommen');
-  await page.click('vu-navigation a.tab[data-id=watchlist]');
+  await page.click('#vu-dock a[data-id=ich]');
   await page.waitForURL(/\/mein-dashboard\/$/);
   await page.waitForSelector('#md-app:not([hidden])');
   // Tarif-Marke „Free · 0 von 500“ neben dem Datum (Konzept mein-bereich-2026-11, Screen m-home).

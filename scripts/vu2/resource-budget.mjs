@@ -136,7 +136,10 @@ export const budgets=Object.freeze({
  // scripts/vu2/build-release.mjs: Chartstandard, FX-Schicht, Lizenz, EZB-Reihe EUR/USD -
  // einzeln elf Abrufe, ins Buendel gelegt ueber dem Byte-Budget der Startseite). Mit dem
  // Seitenumbau #873 (stock.css) stand die Seite bei 45. Nur diese eine Grenze, Bytes unveraendert.
- stock:{decodedBytes:3300000,requests:46,history:true},
+ // stock 46 -> 47 Anfragen (App-Konzept 2, PR #2015, Owner 14./15.11.2026 „1:1 wie im Prototyp“): die Datums-Pille im
+ // Kopf des Rahmens liest einmal je Seite den Kursstand (asOf) aus quant/data/product/market-regime-v1.json (rund 5 kB),
+ // solange die Seite ihren Stand nicht selbst meldet (VUNavigation.datenstand). Bytes unveraendert.
+ stock:{decodedBytes:3300000,requests:47,history:true},
  // These two workspaces intentionally evaluate the canonical full-universe
  // factor artifact. Other pages must not pay this cost eagerly.
  screener:{decodedBytes:30500000,requests:30,history:false},

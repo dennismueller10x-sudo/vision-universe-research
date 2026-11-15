@@ -29,5 +29,8 @@ test('Kopf nach Prototyp: Welten-Wechsler, „i“, Datenstand, Suche und Profil
   assert.match(nav, /\.hb\{position:relative;width:38px;height:38px;/);
   assert.match(nav, /\.mod::after,\.hb::after,\.live::after\{content:"";position:absolute;inset:-3px\}/);
   assert.match(nav, /\.tools\{display:flex;align-items:center;gap:8px;/, '8 px Abstand: die 44-px-Flächen überlappen nicht');
-  assert.match(nav, /\.tab::after\{content:"";position:absolute;inset:-4px 0\}/, 'Reiter-Pille 36 px, Fläche 44 px');
+  assert.match(nav, /\.tab\{[^}]*height:44px;margin-block:-4px;/, 'Reiter-Pille 36 px, Fläche 44 px');
+  assert.match(nav, /\.tab \.pill\{[^}]*height:36px;/, 'Reiter-Pille 36 px wie im Prototyp');
+  assert.match(nav, /\.toggle\{[^}]*border:3px solid transparent;margin:-3px;background:\$\{t\.glass\};background-clip:padding-box;color:\$\{t\.ink\};height:44px;/, 'Menü-Knopf 38 px sichtbar, Fläche 44 px');
+  assert.match(nav, /\.find button\{width:44px;height:44px;margin:-2px;border:2px solid transparent;[^}]*background-clip:padding-box;/, 'Atlas-Knopf 40 px sichtbar, Fläche 44 px');
 });
