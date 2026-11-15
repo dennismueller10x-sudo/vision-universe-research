@@ -35,6 +35,11 @@
 /* Fläche (Karte) */
 .vu-box{display:block;background:var(--vu-card);border-radius:var(--vu-r-card);padding:14px;color:var(--vu-ink)}
 .vu-box--ink{background:var(--vu-ink);color:var(--vu-inv)}
+/* Etikett auf der Tintenfläche: --vu-mute ist für den Seitengrund gerechnet und stand hier mit 4,1:1 (hell) und 2,8:1 (dunkel).
+   Das Etikett folgt deshalb der Schriftfarbe der Fläche, gedämpft auf 62 %: 7,8:1 auf Schwarz, 6,2:1 auf Weiß.
+   :where hält das Gewicht bei einer Klasse: jede eigene Regel eines Produkts (.x .vu-ltag{color:inherit;opacity:.7}) gilt weiter
+   allein, unabhängig von der Ladereihenfolge - sonst dämpften beide zusammen (Quant: 0,62 × 0,7 = 4,2:1). */
+:where(.vu-box--ink) .vu-ltag{color:inherit;color:color-mix(in srgb,currentColor 62%,transparent)}
 .vu-box--lime{background:var(--vu-lime);color:#000}
 .vu-box--line{background:transparent;border:1.5px solid var(--vu-hair)}
 .vu-grid{display:grid;grid-template-columns:repeat(var(--vu-cols,2),minmax(0,1fr));gap:10px}

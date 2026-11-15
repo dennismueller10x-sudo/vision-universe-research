@@ -73,3 +73,36 @@ test("Chart-Baustein: feste Hauptleiste und x-Marken ohne Überlappung (Owner 13
   const g = C.geometry(pts, { width: 360, height: 180, sessionEnd: "2026-11-13T16:00:00" });
   for (let i = 1; i < g.xTicks.length; i++) assert.ok(g.xTicks[i].x - g.xTicks[i - 1].x >= 44);
 });
+
+/* App-Konzept 2 (Owner 14.11.2026: große Charts, den Platz nutzen): eine Höhenregel für den Aktienchart aller Welten.
+   Bis dahin stand die Fläche fest bei 180 px (Telefon) und 300 px (breit) in quant/app/chart.js. */
+test("Aktienchart · Höhe folgt der Bildschirmhöhe, nie kleiner als bisher (180/300), eine Regel für alle Welten", () => {
+  assert.equal(C.stockHeight(390, 844), 300, "Telefon 390×844: deutlich höher als die früheren 180 px");
+  assert.equal(C.stockHeight(390, 664), 236);
+  assert.equal(C.stockHeight(320, 568), 202);
+  assert.equal(C.stockHeight(430, 932), 300, "Obergrenze Telefon");
+  assert.equal(C.stockHeight(1440, 900, 1200), 360);
+  assert.equal(C.stockHeight(1920, 1080, 1200), 400, "Obergrenze breit");
+  assert.equal(C.stockHeight(1440, 900, 423), 300, "in einer Spalte (Technical breit) bleibt es bei 300");
+  assert.equal(C.stockHeight(1440, 900), 300, "Breite der Fläche unbekannt (vor dem Einhängen): Grundhöhe");
+  assert.equal(C.stockHeight(768, 1024, 720), 300);
+  /* Ohne Bildschirmhöhe (Tests ohne Browser) die bisherigen Werte. */
+  assert.equal(C.stockHeight(390), 180); assert.equal(C.stockHeight(1440), 300); assert.equal(C.stockHeight(), 300);
+  /* Chart, Zeile darüber (~40 px) und Zeitraumleiste (~60 px) passen auf dem Telefon zwischen Kopf mit Reitern (104 px) und Dock (~80 px). */
+  for (let vh = 480; vh <= 1000; vh += 4) for (const vw of [320, 360, 390, 430]) {
+    const h = C.stockHeight(vw, vh);
+    assert.ok(h >= 180 && h <= 300, vw + "×" + vh + ": " + h);
+    if (vh >= 560) assert.ok(h + 100 <= vh - 104 - 80, vw + "×" + vh + ": Chart mit Leiste (" + (h + 100) + ") passt nicht in " + (vh - 184));
+    assert.ok(C.stockHeight(vw, vh + 4) >= h, "wächst mit der Bildschirmhöhe");
+  }
+  for (let vh = 400; vh <= 1600; vh += 50) for (const pw of [undefined, 300, 423, 720, 899, 900, 1200]) { const h = C.stockHeight(1280, vh, pw); assert.ok(h >= 300 && h <= 400 && (pw >= 900 || h === 300), vh + "/" + pw + ": " + h); }
+  /* quant/app/chart.js nimmt die Regel und behält die früheren Werte nur als Rückfall ohne den Baustein. */
+  const chart = require("node:fs").readFileSync(join(ROOT, "quant/app/chart.js"), "utf8");
+  assert.match(chart, /if \(!mobile\(\)\) return VC\.stockHeight\(w, global\.innerHeight, reserve \? undefined : width\(\)\);/);
+  assert.match(chart, /sized = \{ w: w, h: VC\.stockHeight\(w, global\.innerHeight\) \}/, "Telefon: je Bildschirmbreite einmal, die Adressleiste ändert die Höhe nicht");
+  /* Technical reserviert die Endhöhe des Charts, bevor er eingesetzt wird: dieselbe Regel, damit darunter nichts rutscht. */
+  const tcss = require("node:fs").readFileSync(join(ROOT, "technical/technical.css"), "utf8");
+  assert.match(tcss, /\.tc-chart-host\.tc-simple-chart\{min-height:calc\(142px \+ clamp\(180px,35\.5vh,300px\)\);min-height:calc\(142px \+ clamp\(180px,35\.5svh,300px\)\)\}/);
+  assert.match(tcss, /@media\(min-width:768px\)\{\.tc-chart-host\.tc-simple-chart\{min-height:442px\}\}/);
+  assert.match(chart, /if \(!VC \|\| !VC\.stockHeight\) return mobile\(\) \? 180 : 300;/);
+});

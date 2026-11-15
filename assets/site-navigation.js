@@ -50,7 +50,7 @@
     /* Portfolios (Owner 06.11.2026): alle Musterdepots gesammelt; breite Kachel unter dem 3 x 3-Raster. */
     {id:'discover', label:'Discover', href:'/discover/#/', icon:'discover', claim:'Aktien entdecken', entries:[['Übersicht','/discover/#/','⌂'],['Welten','/discover/#/welten','◎'],['Strategien','/discover/#/strategien','◬'],['Entdecken','/discover/#/einzeln/US_REAL','◇'],['Suchen','/discover/#/suche','⌕'],['Märkte','/discover/#/maerkte','≋'],['Watchlist','/discover/#/watchlist','♡']]},
     {id:'quant', label:'Quant', href:'/quant/', icon:'quant', claim:'Faktoren je Aktie', entries:[['Übersicht','/quant/','⌂'],['Quant Screener','/quant/#/screener','⧩'],['Anlagestile','/quant/#/stile','◬'],['Meldungen','/quant/#/meldungen','◉'],['Aktien','/quant/#/aktien','⌁'],['Forschung','/quant/#/forschung','◇'],['Methodik','/quant/#/methodik','▤'],['Technische Lagen','/quant/#/chartlagen','⌁'],['Fundamentaldaten','/quant/#/aktie/NVDA/zahlen','▧']]},
-    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤']]},
+    {id:'technical', label:'Technical', href:'/technical/#/', icon:'technical', claim:'Charts und Muster', entries:[['Übersicht','/technical/#/','⌂'],['Screener','/technical/#/screener','⧩'],['Chart Studio','/technical/#/chart','⌁'],['Vorlagen','/technical/#/screener?reiter=vorlagen','◇'],['Gespeichert','/technical/#/screener/gespeichert','▤'],['Muster','/technical/#/muster','▤'],['Lernen','/technical/#/lernen','✧']]},
     {id:'fundamental', label:'Fundamental', href:'/fundamental/#/', icon:'fundamental', claim:'Zahlen aus Geschäftsberichten', entries:[['Übersicht','/fundamental/#/','⌂'],['Ranglisten','/fundamental/#/ranglisten','◇'],['Branchen','/fundamental/#/branchen','◇'],['Suchen','/fundamental/#/suche','⌕'],['Methodik','/fundamental/#/methodik','▤']]},
     {id:'supertrader', label:'Supertrader', href:'/supertrader/', icon:'supertrader', claim:'Methoden der Profis', entries:[['Übersicht','/supertrader/','⌂'],['Methoden','/supertrader/strategies/','⚑'],['Treffer','/supertrader/treffer/','◬'],['Forschung','/supertrader/forschung/','▧'],['Quellen','/supertrader/sources/','▤']]},
     {id:'hedgefonds', label:'Hedgefonds', href:'/hedgefonds/', icon:'hedgefonds', claim:'Was Investoren halten', entries:[['Übersicht','/hedgefonds/','⌂'],['Investoren','/hedgefonds/#/investoren','♙'],['Datenbank','/hedgefonds/#/datenbank','▧'],['Aktien','/hedgefonds/#/aktien','⌁'],['Gruppen-Käufe','/hedgefonds/#/gruppen-kaeufe','◬']]},
@@ -148,14 +148,17 @@
     {id: 'portfolios', label: 'Portfolios', match: p => p.startsWith('/portfolios/'),
       items: [['portfolios','Portfolios','/portfolios/#/','portfolios'],['supertrader','Supertrader','/portfolios/#/supertrader','signals'],['quant','Quant','/portfolios/#/quant','grid'],['ki','KI','/portfolios/#/ki','spark']],
       active: loc => loc.pathname === '/portfolios/' ? ({'': 'portfolios', supertrader: 'supertrader', quant: 'quant', ki: 'ki'}[hashPart(loc, 0)] || null) : null},
-    /* Mein Bereich (Mockups E02, E07, E08): Start /willkommen/, Watchlist /mein-dashboard/, lokal Gemerktes
-       /mein-dashboard/#/gespeichert, Konto /konto/. Bestellweg und Anmeldung tragen keine Leiste (sie fordern sie nicht an). */
-    {id: 'mein', label: 'Mein Bereich', icon: 'person', match: p => p.startsWith('/willkommen/') || p.startsWith('/mein-dashboard/') || p === '/konto/' || p.startsWith('/konto/watchlist/'), late: p => p.startsWith('/konto/'),
-      items: [['mein','Mein Bereich','/willkommen/','person'],['watchlist','Watchlist','/mein-dashboard/','heart'],['gespeichert','Gespeichert','/mein-dashboard/#/gespeichert','saved'],['konto','Konto','/konto/','gear']],
+    /* Mein Bereich (Mockups E02, E07, E08): Start /willkommen/, Ich /mein-dashboard/ (im Dock „Ich“), lokal Gemerktes
+       /mein-dashboard/#/gespeichert, Konto /konto/ mit Einstellungen und Abonnement. Bestellweg (Tarife, Kuendigen), Anmeldung,
+       Registrierung und Passwort tragen keine Leiste (kein Treffer in match): dort lenkt nichts ab.
+       self: Seiten, auf denen der Rahmen Dock und Reiter selbst traegt, ohne dass die Seite sie anfordert (Einstellungen, Abonnement). */
+    {id: 'mein', label: 'Mein Bereich', icon: 'person', match: p => p.startsWith('/willkommen/') || p.startsWith('/mein-dashboard/') || p === '/konto/' || /^\/konto\/(watchlist|einstellungen|abo)\//.test(p),
+      late: p => p === '/konto/' || p.startsWith('/konto/watchlist/'), self: p => /^\/konto\/(einstellungen|abo)\//.test(p),
+      items: [['mein','Mein Bereich','/willkommen/','person'],['watchlist','Ich','/mein-dashboard/','heart'],['gespeichert','Gespeichert','/mein-dashboard/#/gespeichert','saved'],['konto','Konto','/konto/','gear']],
       active: loc => {
         if (loc.pathname.startsWith('/willkommen/')) return 'mein';
         if (loc.pathname.startsWith('/konto/watchlist/')) return 'watchlist';
-        if (loc.pathname === '/konto/') return 'konto';
+        if (loc.pathname.startsWith('/konto/')) return 'konto';
         return hashPart(loc, 0) === 'gespeichert' ? 'gespeichert' : 'watchlist';
       }}
   ];
@@ -220,7 +223,11 @@
       if (product.id === 'elliott' && (loc.pathname !== '/elliott/' || hashPart(loc, 0))) href = '/elliott/';
       if (product.id === 'hedgefonds' && hashPart(loc, 0) === 'fonds') href = '/hedgefonds/#/datenbank';
       if (product.id === 'discover' && hashPart(loc, 0) === 's') href = '/discover/#/einzeln/US_REAL';
+      /* Technical: Lektionen und Fragen (#/akademie/<id>, #/assistent/<id>) gehoeren zu „Lernen“, eine Vorlage (#/vorlagen/<id>) zu „Vorlagen“. */
+      if (product.id === 'technical') href = {akademie: '/technical/#/lernen', assistent: '/technical/#/lernen', vorlagen: '/technical/#/screener?reiter=vorlagen'}[hashPart(loc, 0)] || href;
     }
+    /* Technical: der Screener-Reiter „Gespeichert“ hat zwei Adressen (#/screener/gespeichert und ?reiter=gespeichert). */
+    if (product && product.id === 'technical' && hashPart(loc, 0) === 'screener' && new URLSearchParams((loc.hash || '').split('?')[1] || '').get('reiter') === 'gespeichert') href = '/technical/#/screener/gespeichert';
     // Screener omits view=build on its default filtered/pro URLs (app.readURL/buildURL).
     const params = new URLSearchParams(loc.search), explicit = params.get('view');
     const screenerView = ['start','build','results','saved','changes','compare','watchlist'].includes(explicit) ? explicit : (params.getAll('f').some(f=>f.trim()) || params.get('mode') === 'pro' ? 'build' : 'start');
@@ -644,6 +651,8 @@
       /* Reiterzeile vom ersten Zeichnen an, wo das Produkt die Leiste ohnehin anfordert (late: siehe PRODUCTS). */
       const early=PRODUCTS.find(p=>p.match(location.pathname,location));
       if(early&&!(early.late&&early.late(location.pathname)))this.mountTabs();
+      /* Konto-Unterseiten (self): der Rahmen fordert das Dock selbst an. */
+      if(early&&early.self&&early.self(location.pathname))dockBus.requested=true;
       if(dockBus.requested)this.mountDock();
       this.renderSettings();
       document.addEventListener('vu-currency-change',()=>this.renderSettings());

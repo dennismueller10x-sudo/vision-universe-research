@@ -4,7 +4,7 @@
    So committet `git add -A` in einem Lauf nie Daten aus dem Datenzweig nach main.
    Aufruf: node scripts/ci/seed-hide.mjs <bericht.json aus overlay-data-branch.mjs> */
 import { readFileSync, appendFileSync, existsSync, statSync, readdirSync, mkdirSync } from "node:fs";
-import { join, relative, dirname } from "node:path";
+import { join, resolve, dirname } from "node:path";
 import { execFileSync } from "node:child_process";
 
 export function hide(rows, cwd = process.cwd(), env = process.env) {
@@ -22,7 +22,10 @@ export function hide(rows, cwd = process.cwd(), env = process.env) {
   const known = files.filter((f) => tracked.has(f)), fresh = files.filter((f) => !tracked.has(f));
   for (let i = 0; i < known.length; i += 500) git("update-index", "--skip-worktree", "--", ...known.slice(i, i + 500));
   if (fresh.length) {
-    const ex = join(cwd, git("rev-parse", "--git-path", "info/exclude").trim());
+    /* `git rev-parse --git-path` antwortet im normalen Checkout relativ (.git/info/exclude), in einem
+       Git-Worktree absolut (gemeinsames .git des Haupt-Checkouts). resolve() nimmt beides; join() haengte
+       den absoluten Pfad an den Arbeitsbaum und schrieb die Ausschluesse in eine Datei, die Git nie liest. */
+    const ex = resolve(cwd, git("rev-parse", "--git-path", "info/exclude").trim());
     mkdirSync(dirname(ex), { recursive: true });
     appendFileSync(ex, "\n# Datenzweig (seed-data-branch.sh)\n" + fresh.map((f) => "/" + f).join("\n") + "\n");
   }

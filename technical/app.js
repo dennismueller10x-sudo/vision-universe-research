@@ -258,15 +258,11 @@
       glyph("chevron", "tc-chev")
     ]);
   }
-  var MAIN_TABS = [["home", "#/", "Technical"], ["build", "#/screener", "Screener"], ["templates", "#/screener?reiter=vorlagen", "Vorlagen"], ["learn", "#/lernen", "Lernen"], ["method", "#/muster", "Muster"]];
   function sectionHead(title, href, linkText) {
     return el("div", { class: "tc-sec-head" }, [el("h2", { text: title }), href ? el("a", { href: href, class: "tc-more" }, [linkText || "Alle", glyph("chevron", "tc-chev-s")]) : null]);
   }
-  function tabs(items, active) {
-    return el("nav", { class: "tc-tabs", "aria-label": "Ansicht" }, items.map(function (t) {
-      return el("a", { href: t[1], class: "tc-tab" + (t[0] === active ? " is-on" : ""), "aria-current": t[0] === active ? "page" : null, text: t[2] });
-    }));
-  }
+  /* Die frühere Reiterzeile der Assistenten-Seiten (Technical · Screener · Vorlagen · Lernen · Muster) steht seit App-Konzept 2
+     in der Reiterzeile des Rahmens (products/technical/module.json); dort ist auf #/assistent/<id> „Lernen“ aktiv. */
   function disclaimer(meta) {
     return el("p", { class: "tc-disclaimer" }, ["Befunde nach festen Regeln. Keine Handlungsempfehlung. ",
       meta && meta.asOf ? "Kursstand " + M.dateDe(meta.asOf) + ". " : "", el("a", { href: "#/muster?reiter=regeln", text: "Regeln und Grenzen" })]);
@@ -1093,7 +1089,7 @@
     }).catch(function () { put(slot, stateBox("Lerninhalte nicht geladen", "Die Lektionen konnten nicht geladen werden.", el("a", { class: "tc-link", href: "#/lernen", text: "Erneut versuchen" }))); });
   }
   function viewAssistant(main, route) {
-    if (!AS) { put(main, [templateHead("#/", "Technical", null, "Analyse-Assistent", "Der Assistent ist derzeit nicht verfügbar."), tabs(MAIN_TABS, "learn")]); return; }
+    if (!AS) { put(main, [templateHead("#/", "Technical", null, "Analyse-Assistent", "Der Assistent ist derzeit nicht verfügbar.")]); return; }
     return route.id ? viewGoal(main, route) : viewGoalList(main);
   }
   function stepHead(n, title) { return el("h2", { class: "tc-step" }, [el("span", { class: "tc-step-n num", "aria-hidden": "true", text: String(n) }), el("span", { class: "tc-sr", text: "Schritt " + n + ": " }), title]); }
@@ -1105,7 +1101,7 @@
         el("span", { class: "tc-row-text" }, [el("b", { text: g.title }), el("span", { text: g.question })]),
         glyph("chevron", "tc-chev")]);
     }));
-    put(main, [head, tabs(MAIN_TABS, "learn"), stepHead(1, "Analyseziel wählen"), list,
+    put(main, [head, stepHead(1, "Analyseziel wählen"), list,
       el("p", { class: "tc-note", text: "Kein Ziel ist eine Handlungsempfehlung. Jede Ansicht nennt, was historisch untersucht ist und was nicht." })]);
   }
   function termDetails(id) {
@@ -1114,7 +1110,7 @@
   }
   function viewGoal(main, route) {
     var g = AS.get(route.id);
-    if (!g) { put(main, [templateHead("#/lernen", "Lernen", null, "Analyseziel nicht gefunden", "Dieses Ziel gibt es nicht (mehr)."), tabs(MAIN_TABS, "learn")]); return; }
+    if (!g) { put(main, [templateHead("#/lernen", "Lernen", null, "Analyseziel nicht gefunden", "Dieses Ziel gibt es nicht (mehr).")]); return; }
     var p = route.params || {}, sel = AS.selectionFromParam(g, p.k), showKey = SHOW[p.zeige] ? p.zeige : "voll", t = AS.build(g.id, sel);
     var head = templateHead("#/lernen", "Lernen", "ANALYSEZIEL", g.title, g.question);
     /* Schritt 2: Zweck und allgemein erklaerte Methodik */
@@ -1152,7 +1148,7 @@
     function jump(id, text) { return el("a", { class: "tc-pill", href: "#", onclick: function (ev) { ev.preventDefault(); var n = doc.getElementById(id); if (n) n.scrollIntoView({ behavior: "smooth", block: "start" }); }, text: text }); }
     var chosen = el("div", { class: "tc-goal-chosen" }, [stepHead(1, "Ziel gewählt"), el("p", { class: "tc-note" }, [g.title + " · ", el("a", { class: "tc-link", href: "#/assistent", text: "anderes Ziel wählen" })]),
       el("nav", { class: "tc-pills tc-goal-jumps", "aria-label": "Abschnitte" }, [jump("tc-g-crit", "Kriterien"), jump("tc-g-query", "Abfrage"), jump("tc-treffer", "Treffer"), jump("tc-g-limits", "Grenzen")])]);
-    put(main, [head, tabs(MAIN_TABS, "learn"), chosen, purpose, crit, query, results, limits]);
+    put(main, [head, chosen, purpose, crit, query, results, limits]);
     if (!t) {
       put(query, [el("div", { id: "tc-g-query" }, stepHead(4, "Abfrage")), stateBox("Kein Kriterium gewählt", "Bitte mindestens ein Kriterium auswählen.", el("a", { class: "tc-link", href: AS.href(g.id), text: "Vorschlag wiederherstellen" }))]);
       return;

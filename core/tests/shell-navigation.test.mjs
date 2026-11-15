@@ -33,7 +33,7 @@ test('the former dock places of every product start with the product name, never
     ['supertrader', ['Supertrader','Methoden','Treffer','Forschung']],
     ['hedgefonds', ['Hedgefonds','Investoren','Aktien','Gruppen-Käufe']],
     ['portfolios', ['Portfolios','Supertrader','Quant','KI']],
-    ['mein', ['Mein Bereich','Watchlist','Gespeichert','Konto']]
+    ['mein', ['Mein Bereich','Ich','Gespeichert','Konto']] /* Reiter „Ich“ = Platz „Ich“ im Dock (vorher „Watchlist“) */
   ]);
   for (const p of PRODUCTS) {
     assert.equal(p.items[0][1], p.label);
@@ -108,7 +108,7 @@ test('product tabs: former dock places first, then the remaining entries of the 
   const labels = id => Array.from(tabEntries(PRODUCTS.find(p => p.id === id)), e => e.label);
   assert.deepEqual(labels('discover'), ['Discover','Welten','Strategien','Swipen','Suchen','Märkte','Watchlist']);
   assert.deepEqual(labels('quant'), ['Quant','Screener','Anlagestile','Aktien','Meldungen','Forschung','Methodik','Technische Lagen','Fundamentaldaten']);
-  assert.deepEqual(labels('technical'), ['Technical','Screener','Chart','Muster','Gespeichert']);
+  assert.deepEqual(labels('technical'), ['Technical','Screener','Chart','Muster','Vorlagen','Gespeichert','Lernen']);
   assert.deepEqual(labels('fundamental'), ['Fundamental','Ranglisten','Branchen','Methodik','Suchen']);
   assert.deepEqual(labels('supertrader'), ['Supertrader','Methoden','Treffer','Forschung','Quellen']);
   assert.deepEqual(labels('hedgefonds'), ['Hedgefonds','Investoren','Aktien','Gruppen-Käufe','Datenbank']);
@@ -116,7 +116,7 @@ test('product tabs: former dock places first, then the remaining entries of the 
   assert.deepEqual(labels('screener'), ['Screener','Filter','Treffer','Gespeichert','Watchlist']);
   assert.deepEqual(labels('vorsorge'), ['Vorsorge','Planer','ETFs','Portfolio','Vergleichen','Förderung','Veränderungen','Wissen']);
   assert.deepEqual(labels('portfolios'), ['Portfolios','Supertrader','Quant','KI']);
-  assert.deepEqual(labels('mein'), ['Mein Bereich','Watchlist','Gespeichert','Konto']);
+  assert.deepEqual(labels('mein'), ['Mein Bereich','Ich','Gespeichert','Konto']);
   const key = href => { const u = new URL(href, 'https://x'); return u.pathname + u.search + (/^#\/?$/.test(u.hash) ? '' : u.hash); };
   for (const p of PRODUCTS) {
     const tabs = tabEntries(p), group = groups.find(g => g.id === p.id);
@@ -146,6 +146,11 @@ test('the active tab is the tab of the current page: a tab from the menu group w
   assert.equal(active('elliott', '/elliott/#/NVDA'), null);
   assert.equal(active('mein', '/mein-dashboard/#/gespeichert'), 'Gespeichert');
   assert.equal(active('mein', '/konto/'), 'Konto');
+  // Konto-Unterseiten gehoeren zum Reiter „Konto“; /mein-dashboard/ heisst im Reiter wie im Dock „Ich“
+  assert.equal(active('mein', '/konto/einstellungen/'), 'Konto');
+  assert.equal(active('mein', '/konto/abo/'), 'Konto');
+  assert.equal(active('mein', '/mein-dashboard/'), 'Ich');
+  assert.equal(active('mein', '/konto/watchlist/'), 'Ich');
   // Vom Produkt gemeldeter Bereich: nur fuer die Adresse, zu der er gemeldet wurde
   assert.equal(active('supertrader', '/supertrader/stock/NVDA/', { active: null, activeAt: '/supertrader/stock/NVDA/' }), null);
   assert.equal(active('supertrader', '/supertrader/stock/NVDA/', { active: null, activeAt: '/supertrader/' }), 'Treffer');
@@ -159,6 +164,16 @@ test('the active tab is the tab of the current page: a tab from the menu group w
   assert.equal(active('quant', '/quant/methodology/'), 'Methodik', 'alte Adresse');
   assert.equal(active('technical', '/technical/#/screener/gespeichert'), 'Gespeichert');
   assert.equal(active('technical', '/technical/#/screener?muster=dreieck'), 'Screener');
+  // Technical „Lernen“ und „Vorlagen“ (App-Konzept 2): eigene Reiter; Lektionen, Fragen und einzelne Vorlagen markieren ihren Bereich
+  assert.equal(active('technical', '/technical/#/lernen'), 'Lernen');
+  assert.equal(active('technical', '/technical/#/akademie/kerzen'), 'Lernen');
+  assert.equal(active('technical', '/technical/#/assistent/trend?k=1'), 'Lernen');
+  assert.equal(active('technical', '/technical/#/screener?reiter=vorlagen'), 'Vorlagen');
+  assert.equal(active('technical', '/technical/#/vorlagen/trend-pullback'), 'Vorlagen');
+  assert.equal(active('technical', '/technical/#/screener?reiter=gespeichert'), 'Gespeichert', 'zweite Adresse desselben Reiters');
+  assert.equal(active('technical', '/technical/#/screener'), 'Screener');
+  assert.equal(active('technical', '/technical/#/muster'), 'Muster');
+  assert.equal(active('technical', '/technical/#/chart/NVDA'), 'Chart');
   assert.equal(active('fundamental', '/fundamental/#/suche'), 'Suchen');
   assert.equal(active('supertrader', '/supertrader/sources/'), 'Quellen');
   assert.equal(active('hedgefonds', '/hedgefonds/#/datenbank'), 'Datenbank');
@@ -334,7 +349,7 @@ test('the tab strip is reserved at first paint exactly on pages that request the
     const asks = /VUNavigation\.dock\(/.test(html) || Array.from(html.matchAll(/<script[^>]*\ssrc="\/([^"?#]+)/g), m => m[1]).filter(src => src !== 'assets/site-navigation.js').some(requests);
     const isLate = !!(product.late && product.late(path));
     if (isLate) { late++; assert.ok(!asks || path.startsWith('/konto/'), path + ': fordert die Leiste beim Laden an, late() nimmt sie aus'); }
-    else { early++; assert.ok(asks, path + ': Reiterzeile vom ersten Zeichnen an, aber kein Skript der Seite fordert die Leiste an'); }
+    else { early++; assert.ok(asks || (product.self && product.self(path)), path + ': Reiterzeile vom ersten Zeichnen an, aber weder die Seite noch der Rahmen (self) fordert die Leiste an'); }
   }
   assert.ok(early >= 15 && late >= 5, `Seiten geprueft: ${early} frueh, ${late} spaet`);
   // Konto meldet die Leiste erst mit dem geladenen Konto; der erste Start traegt no-dock
@@ -541,13 +556,21 @@ test('Technical has its own dock, its own menu group and the exact sprite geomet
   const tg = groups.find(g => g.id === 'technical');
   assert.equal(tg.href, '/technical/#/');
   assert.equal(tg.icon, 'technical');
-  assert.deepEqual(Array.from(tg.entries, e => e[1]), ['/technical/#/', '/technical/#/screener', '/technical/#/chart', '/technical/#/screener/gespeichert', '/technical/#/muster']);
+  /* App-Konzept 2: „Vorlagen“ und „Lernen“ sind Eintraege der Gruppe und damit Reiter; die frueheren fuenf Ziele bleiben. */
+  assert.deepEqual(Array.from(tg.entries, e => e[1]), ['/technical/#/', '/technical/#/screener', '/technical/#/chart', '/technical/#/screener?reiter=vorlagen', '/technical/#/screener/gespeichert', '/technical/#/muster', '/technical/#/lernen']);
+  for (const [, href] of tg.entries) assert.notEqual(require(join(root, 'technical/engine/model.js')).parseRoute(new URL(href, 'https://x').hash).view, 'notfound', href);
   assert.ok(!groups.find(g => g.id === 'more').entries.some(([, href]) => href.startsWith('/technical/')));
   const state = url => menuState(loc(url));
   assert.deepEqual(JSON.parse(JSON.stringify(state('/technical/#/'))), { group: 'technical', href: '/technical/#/', expanded: null });
   assert.deepEqual(JSON.parse(JSON.stringify(state('/technical/#/chart/NVDA/signale'))), { group: 'technical', href: '/technical/#/chart', expanded: 'technical' });
   assert.equal(state('/technical/#/screener/gespeichert').href, '/technical/#/screener/gespeichert');
   assert.equal(state('/technical/#/screener?muster=dreieck').href, '/technical/#/screener');
+  assert.equal(state('/technical/#/lernen').href, '/technical/#/lernen');
+  assert.equal(state('/technical/#/assistent/trend').href, '/technical/#/lernen', 'eine Frage des Assistenten gehoert zu Lernen');
+  assert.equal(state('/technical/#/akademie/kerzen').href, '/technical/#/lernen', 'eine Lektion gehoert zu Lernen');
+  assert.equal(state('/technical/#/screener?reiter=vorlagen').href, '/technical/#/screener?reiter=vorlagen');
+  assert.equal(state('/technical/#/vorlagen/x').href, '/technical/#/screener?reiter=vorlagen');
+  assert.equal(state('/technical/#/screener?reiter=gespeichert').href, '/technical/#/screener/gespeichert');
   const sprite = readFileSync(join(root, 'assets/product-icons.svg'), 'utf8');
   assert.equal(DOCK_PRODUCT_ICONS.technical, sprite.match(/<symbol id="technical"[^>]*>([\s\S]*?)<\/symbol>/)[1]);
 });
@@ -566,6 +589,24 @@ test('a product without its own menu group still gets its icon in the header', (
   assert.equal(mein.active(loc('/mein-dashboard/#/gespeichert')), 'gespeichert');
   assert.equal(mein.active(loc('/konto/watchlist/')), 'watchlist');
   for (const url of ['/konto/anmelden/', '/konto/tarife/', '/konto/registrieren/']) assert.equal(PRODUCTS.filter(p => p.match(loc(url).pathname, loc(url))).length, 0, url);
+  // Einstellungen und Abonnement tragen Dock und Reiter (der Rahmen fordert sie selbst an: self); der Bestellweg, Anmeldung,
+  // Registrierung, Passwort und die Verwaltung bleiben ohne Leiste. Jede Konto-Seite ist hier eingeordnet.
+  const mitLeiste = ['/konto/einstellungen/', '/konto/abo/'], ohneLeiste = ['/konto/tarife/', '/konto/kuendigen/', '/konto/anmelden/', '/konto/registrieren/', '/konto/passwort/', '/konto/passwort-neu/'];
+  // Verwaltungsseiten (interne Seiten unter /konto/admin/, hier nicht beim Namen genannt): ebenfalls ohne Leiste
+  for (const e of readdirSync(join(root, 'konto/admin'), { withFileTypes: true })) if (e.isDirectory()) ohneLeiste.push('/konto/admin/' + e.name + '/');
+  for (const url of mitLeiste) {
+    assert.equal(PRODUCTS.find(p => p.match(url, loc(url))), mein, url);
+    assert.equal(mein.self(url), true, url + ': Rahmen traegt Dock und Reiter selbst');
+    assert.equal(mein.late(url), false, url + ': Reiterzeile vom ersten Zeichnen an');
+    assert.equal(mein.active(loc(url)), 'konto', url);
+    assert.equal(dockActive(loc(url)), 'ich', url);
+  }
+  for (const url of ohneLeiste) { assert.equal(PRODUCTS.filter(p => p.match(url, loc(url))).length, 0, url + ': keine Leiste (Fokus)'); assert.equal(mein.self(url), false, url); }
+  for (const url of ['/willkommen/', '/mein-dashboard/', '/konto/', '/konto/watchlist/']) assert.equal(mein.self(url), false, url + ': fordert die Leiste selbst an');
+  assert.equal(mein.late('/konto/'), true); assert.equal(mein.late('/konto/watchlist/'), true);
+  const kontoSeiten = readdirSync(join(root, 'konto'), { withFileTypes: true }).filter(e => e.isDirectory() && existsSync(join(root, 'konto', e.name, 'index.html'))).map(e => '/konto/' + e.name + '/');
+  for (const url of kontoSeiten) assert.ok(mitLeiste.includes(url) || ohneLeiste.includes(url) || url === '/konto/watchlist/', url + ': neue Konto-Seite ohne Einordnung (mit oder ohne Leiste)');
+  assert.match(source, /if\(early&&early\.self&&early\.self\(location\.pathname\)\)dockBus\.requested=true;\n      if\(dockBus\.requested\)this\.mountDock\(\);/);
   assert.match(readFileSync(join(root, 'willkommen/app.js'), 'utf8'), /VUNavigation\.dock\(\{\}\)/);
   assert.match(readFileSync(join(root, 'mein-dashboard/dashboard.js'), 'utf8'), /VUNavigation\.dock\(\{\}\)/);
 });

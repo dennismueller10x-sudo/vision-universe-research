@@ -23,7 +23,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
 
-  var VERSION = "vu-chart-2.2.0";
+  var VERSION = "vu-chart-2.3.0";
   /* C06: gleiche Zeitleiste in allen Welten (Folie A3, Regel 2). */
   var RANGES = Object.freeze(["1T", "1W", "1M", "1J", "5J", "Max"]);
   /* Hauptleiste fest in dieser Reihenfolge und mit diesen Beschriftungen (Chartstandard, core/chart-standard.js#PRIMARY);
@@ -98,6 +98,19 @@
       intraday: isIntraday(p), y: Y,
       levels: levels.map(function (l) { return { value: l.value, label: l.label || "", tone: l.tone || "", y: Y(l.value) }; })
     };
+  }
+
+  /** Hoehe des Aktiencharts in px: EINE Regel fuer alle Welten (quant/app/chart.js fuer Quant und Technical; Discover kann sie
+   *  uebernehmen). Nur Darstellung - Reihe, Skala und Marken rechnet geometry() unveraendert auf diese Hoehe.
+   *  Telefon (unter 760 px Breite): 35,5 % der Bildschirmhoehe, mindestens 180 px (Wert bis 14.11.2026), hoechstens 300 px
+   *  (390x844 -> 300, 390x664 -> 236, 320x568 -> 202): Chart und Zeitraumleiste passen zwischen Kopf und Dock.
+   *  Breit: 300 px (Wert bis 14.11.2026); ist die Chartflaeche selbst mindestens 900 px breit (plotWidth, volle Inhaltsbreite),
+   *  40 % der Bildschirmhoehe, mindestens 300 px, hoechstens 400 px. In einer Spalte bleibt es bei 300 px.
+   *  Ohne bekannte Bildschirmhoehe (Tests ohne Browser) gelten die bisherigen 180/300 px. */
+  function stockHeight(vw, vh, plotWidth) {
+    var phone = isNum(vw) && vw < 760, min = phone ? 180 : 300;
+    if (!isNum(vh) || vh <= 0 || (!phone && !(isNum(plotWidth) && plotWidth >= 900))) return min;
+    return Math.max(min, Math.min(phone ? 300 : 400, Math.round(vh * (phone ? 0.355 : 0.4))));
   }
 
   function el(name, attrs) { var n = root.document.createElementNS(NS, name); for (var k in attrs) n.setAttribute(k, attrs[k]); return n; }
@@ -252,5 +265,5 @@
       '<circle cx="' + lx + '" cy="' + ly + '" r="3.5" fill="#c8f531" stroke="currentColor" stroke-width="2"/></svg>';
   }
 
-  return Object.freeze({ VERSION: VERSION, RANGES: RANGES, canonRange: canonRange, rangeRank: rangeRank, geometry: geometry, render: render, mount: mount, money: money, sparkline: sparkline });
+  return Object.freeze({ VERSION: VERSION, RANGES: RANGES, canonRange: canonRange, rangeRank: rangeRank, geometry: geometry, render: render, mount: mount, money: money, sparkline: sparkline, stockHeight: stockHeight });
 });
