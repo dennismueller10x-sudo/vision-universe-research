@@ -27,8 +27,8 @@ Das war falsch. Maßstab ist jetzt je Bildschirm das Vergleichsbild Prototyp | U
 | Rahmen (Kopf, Menü „Dein Universe“, Dock, Dunkel als Standard, Lader `data-vu-stock`) | PR #2015 |
 | Home `/willkommen/` | PR #2015 |
 | Aktie `/aktie/#/<T>` + Vorschau `assets/vu-stock-sheet.js` | PR #2015 |
-| Discover-Start `/discover/` | in Arbeit (15.11.) |
-| Quant-Start `/quant/` | in Arbeit (15.11.) |
+| Discover-Start `/discover/` | Zwischenstand, ungeprüft: `zwischenstand/discover.patch` |
+| Quant-Start `/quant/` | Zwischenstand, ungeprüft: `zwischenstand/quant.patch` |
 | Supertrader, News, Ich, Technical, Fundamental, Hedgefonds, Screener | offen, je nach AUFTRAG.md |
 | Module ohne Prototyp-Bildschirm (Elliott, Vorsorge/Portfolios, Konto, Atlas) | offen: im Design des Prototyps |
 
@@ -46,3 +46,23 @@ Vorschau `/website2/` ist auf research live. Der www-Umzug ist vorbereitet, aber
 (lokaler Zweig `website2-work`, im Verlauf des Arbeitszweigs enthalten; Merge-Commit `e89951f53f`, Revert `3b755a93fb`).
 Wartet auf: Owner-Wahl der Hero-Variante (A–E, Empfehlung A) und Owner-Freigabe für www. Vor dem Umzug klären:
 Newsletter-Formular öffnet sofort, Datenschutztext nennt „Coming-soon-Seite“, Store-Badges prüfen.
+
+## Wiederaufnahme: genau diese Schritte (Stand 15.11.2026, 09:15 UTC)
+1. **PR #2015** (Rahmen, Home, Aktie, diese Übergabe) prüfen: ist `ci-gate` grün, squash-mergen (`scripts/ci/wait-gate.sh 2015`).
+   Ist er rot: Ursache aus den Job-Logs beheben, pushen, warten, mergen. Danach auf research live im Browser ansehen.
+2. **Discover- und Quant-Start** aus den Zwischenständen holen. Beide Patches sind auf `main` von `c02583e6d8` erstellt
+   (`git format-patch`), also: neuen Zweig von `main`, dann `git am docs/design/app-konzept-2-2026-11/zwischenstand/discover.patch`
+   (bei Konflikten `git am -3`). Die Arbeit war **nicht fertig geprüft** (die Agenten liefen noch Tests): Tests laufen lassen
+   (`node --test "discover/tests/*.test.mjs"`, `node --test "quant/tests/*.test.mjs"`, Core), Vergleichsbilder Prototyp | Umsetzung
+   aufnehmen (390 × 844, dunkel), nachbessern, Owner die Bilder zeigen, dann ein PR. Danach den Ordner `zwischenstand/` löschen.
+   Discover setzt `data-vu-bleed` und `data-vu-tabs="inhalt"` am `<html>`; Discover-Budget ≤ 180.000 Byte beachten.
+3. **Weitere Bildschirme** je nach [AUFTRAG.md](AUFTRAG.md): Supertrader, News, Ich, Technical, Fundamental, Hedgefonds, Screener,
+   dann Module ohne Prototyp-Bildschirm (Elliott, Vorsorge/Portfolios, Konto, Atlas) im Design des Prototyps.
+   Je Bildschirm: bauen, Vergleichsbild, Owner zeigen, PR, bei Grün mergen.
+4. **Vorschau-Links**: Aktien-Elemente auf allen Seiten bekommen `data-vu-stock` + `href` (öffnet `assets/vu-stock-sheet.js`);
+   „Ansehen“/„Ganz öffnen“ führt auf `/aktie/#/<T>`.
+5. **Website www** bleibt unverändert, bis der Owner Hero-Variante und Umzug freigibt (siehe Abschnitt Website).
+
+Arbeitsweise, die sich bewährt hat: je Bildschirm ein Agent im eigenen Worktree (Auftrag = AUFTRAG.md + Bildschirm-Teil),
+nie `git fetch` ohne `origin main`, Release-Bauten unter `/dev/shm`, eigene Ports, kein breites `pkill`; nur auf den
+vorgegebenen Arbeitszweig pushen; kein Force-Push (nach einem Merge den Zweig lokal auf `origin/main` setzen und normal pushen).
