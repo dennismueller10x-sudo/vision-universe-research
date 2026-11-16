@@ -203,7 +203,17 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
    const plaetze=(await page.locator(dock+' a').allTextContents()).map(t=>t.trim());
    if(plaetze.join('|')!==SOLL_DOCK.join('|')||await page.locator(dock+' button.menu[aria-label="Alle Module"]').count()!==1)befund(view,width,'das Dock ist nicht Home · Discover · [Universe] · News · Ich: '+plaetze.join('|'));
   }
-  if(!await page.locator(leiste).isVisible())befund(view,width,'die Navigation dieser Breite ist nicht sichtbar: '+leiste);
+  /* App-Konzept 2 (Prototyp #quant, Owner 14./15.11.2026): der Quant-Start traegt seine Reiter im Inhalt (<html data-vu-tabs="inhalt">,
+     nav.qp-tabs: Heute · Landkarte · Anlagestile · Screener · Forschung, dahinter die uebrigen Quant-Bereiche der Rahmen-Reiterzeile);
+     die Reiterzeile des Rahmens ist dort ausgeblendet. Dann muessen diese Reiter sichtbar sein und genau so heissen - sonst gilt die
+     Pruefung der Rahmen-Reiterzeile wie bisher. */
+  const imInhalt=await page.evaluate(()=>document.documentElement.getAttribute('data-vu-tabs')==='inhalt');
+  if(imInhalt){
+   const inhalt=page.locator('main nav.qp-tabs');
+   if(await inhalt.count()!==1||!await inhalt.isVisible())befund(view,width,'die Reiter im Inhalt fehlen: main nav.qp-tabs');
+   else{const r=(await inhalt.locator('a').allTextContents()).map(t=>t.trim()).join('|');if(r!=='Heute|Landkarte|Anlagestile|Screener|Forschung|Aktien|Meldungen|Methodik|Technische Lagen|Fundamentaldaten')befund(view,width,'Reiter im Inhalt falsch: '+r);}
+  }
+  else if(!await page.locator(leiste).isVisible())befund(view,width,'die Navigation dieser Breite ist nicht sichtbar: '+leiste);
   if(!await page.locator(dock).isVisible())befund(view,width,'das Dock dieser Breite ist nicht sichtbar: '+dock);
   {
    /* Die Reiter stehen im festen Kopf; der Inhalt beginnt darunter (body-Abstand = Kopf samt Reitern). */

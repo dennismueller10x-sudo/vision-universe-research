@@ -193,25 +193,31 @@ test('Lazy.image setzt die Adresse erst nach settled', async () => {
   assert.equal(img.src, '/a.webp');
 });
 
-test('vorgerenderter Kopf stimmt mit home.js ueberein (Texte, Ziele, Klassen)', () => {
+test('App-Konzept 2: index.html rendert den Platzhalter der Aktie des Tages vor; der Kopf (Frage, Suche, Genres) entsteht in home.js', () => {
   const home = read('discover/home.js');
-  const header = html.match(/<header class="dv3-intro[\s\S]*?<\/header>/)[0];
-  // Konzept „Reihe für Reihe“ (Screen n-home): Datum, Frage-Ueberschrift, Suche mit Atlas, Genre-Chips statt Schnellzugriffe (Entscheidung 5).
+  const css = read('discover/ui/reihen.css');
+  const reihen = read('discover/ui/reihen.js');
+  // Prototyp „v-discover“: der erste Bildschirm ist die Aktie des Tages (520 px), kein Kopf mit Frage und Suche.
+  const shell = html.match(/<div class="v2-home vu-ui">[\s\S]*?<\/main>/)[0];
+  assert.match(shell, /<section class="dr-sec dr-bb dp-hero dp-hero--wait" data-static aria-label="Heute im Blick">/);
+  assert.doesNotMatch(shell, /dv3-intro|<h1\b/, 'kein vorgerenderter Kopf mehr');
+  assert.match(css, /\.dp-hero\{position:relative;height:520px;/, 'Platzhalter und Aktie des Tages sind gleich hoch');
+  assert.match(reihen, /var bb = wait0 \|\| h\('section', 'dr-sec dr-bb dp-hero dp-hero--wait'/, 'reihen.js uebernimmt den Platzhalter');
+  assert.match(read('discover/app.js'), /querySelector\('#v2-shell \.v2-home>\[data-static\]'\)/, 'app.js behaelt den vorgerenderten Platzhalter');
+  // Der Kopf der Genre-Ansicht (Konzept „Reihe für Reihe“): Frage, Suche mit Atlas, Genre-Chips.
   for (const text of ['Was bewegt ', 'die Börse heute?', 'Alle', 'Kursbewegung', 'Unternehmen', 'Themen', 'Indizes', 'Aktie, Thema oder Frage …']) {
-    assert.ok(header.includes(text), 'statischer Kopf ohne: ' + text);
     assert.ok(home.includes(text), 'home.js ohne: ' + text);
   }
-  for (const genre of ['alle', 'kursbewegung', 'unternehmen', 'themen', 'indizes']) {
-    assert.ok(header.includes('data-genre="' + genre + '"') && home.includes("'" + genre + "'"), genre);
-  }
-  assert.ok(header.includes('href="#/reihen"') && home.includes("'#/reihen'"), 'Chip ▦ fuehrt zu Alle Reihen');
-  assert.ok(!/Welten<\/a>|#\/welten|Schnellzugriffe/.test(header), 'Schnellzugriffe sind ersetzt');
+  for (const genre of ['alle', 'kursbewegung', 'unternehmen', 'themen', 'indizes']) assert.ok(home.includes("'" + genre + "'"), genre);
+  assert.ok(home.includes("'#/reihen'"), 'Chip ▦ fuehrt zu Alle Reihen');
   for (const cls of ['dv3-intro', 'vu-ltag dv3-asof', 'vu-lt', 'vu-lead dr-genre-lead', 'v2-search-prompt', 'v2-search-arrow', 'dr-genres vu-chips', 'vu-chip', 'vu-chip dr-genres__all']) {
-    assert.ok(header.includes('class="' + cls + '"') && home.includes("'" + cls + "'"), cls);
+    assert.ok(home.includes("'" + cls + "'"), cls);
   }
-  assert.match(header, /data-product="discover"/);
-  assert.match(header, /aria-label="Aktie, Thema oder Frage suchen"/);
-  assert.equal((header.match(/<h1\b/g) || []).length, 1);
+  // Ohne Genre stehen Suche und Genres im Block „Alle N Reihen“ der Startseite.
+  for (const g of ['kursbewegung', 'unternehmen', 'themen', 'indizes']) assert.ok(reihen.includes("['" + g + "'"), 'Genre im Block Alle Reihen: ' + g);
+  assert.match(reihen, /class="v2-search-prompt dp-find"/);
+  // Kopf durchsichtig ueber der Aktie des Tages und Reiter im Inhalt (assets/site-navigation.js liest die Schalter).
+  assert.match(html, /h\.setAttribute\("data-vu-bleed",""\);h\.setAttribute\("data-vu-tabs","inhalt"\)/);
 });
 
 test('Redesign D01: kein Kopfbild mehr - nichts wird vorgeladen, die Skripte warten auf kein Bild', () => {

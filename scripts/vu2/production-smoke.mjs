@@ -364,7 +364,14 @@ for(const width of [1440,390]){
     if(soll!==undefined&&markiert.map(t=>t.trim()).join('|')!==soll)bad.push('NAV_MARKE:'+leiste+':'+markiert.join('|'));
     const plaetze=(await page.locator(dock+' a').allTextContents()).map(t=>t.trim());
     if(plaetze.join('|')!=='Home|Discover|News|Ich'||await page.locator(dock+' button.menu').count()!==1)bad.push('DOCK:'+plaetze.join('|'));
-    if(!await page.locator(leiste).isVisible())bad.push('REITER_SICHTBAR:false');
+    /* App-Konzept 2 (Prototyp #quant): der Quant-Start traegt seine Reiter im Inhalt (<html data-vu-tabs="inhalt">, nav.qp-tabs) -
+       die fuenf Sprungmarken des Prototyps, dahinter die uebrigen Bereiche; die Reiterzeile des Rahmens ist dort ausgeblendet. */
+    if(await page.evaluate(()=>document.documentElement.getAttribute('data-vu-tabs')==='inhalt')){
+     const inhalt=page.locator('main nav.qp-tabs');
+     if(await inhalt.count()!==1||!await inhalt.isVisible())bad.push('REITER_IM_INHALT:false');
+     else{const r=(await inhalt.locator('a').allTextContents()).map(t=>t.trim()).join('|');if(r!=='Heute|Landkarte|Anlagestile|Screener|Forschung|Aktien|Meldungen|Methodik|Technische Lagen|Fundamentaldaten')bad.push('REITER_IM_INHALT:'+r);}
+    }
+    else if(!await page.locator(leiste).isVisible())bad.push('REITER_SICHTBAR:false');
    }
    const box=await page.locator(dock).boundingBox();
    const hoehe=page.viewportSize().height;
@@ -684,7 +691,9 @@ for(const width of [1440,390]){
   const ansicht=async(v)=>page.waitForFunction(x=>{const m=document.querySelector('main#qx-main');return m&&m.dataset.view===x&&m.getAttribute('aria-busy')==='false'&&!m.querySelector('.qx-loading');},v,{timeout:45000}).then(()=>true,()=>false);
   const marke=async()=>(await page.locator(leiste+' a[aria-current="page"]').allTextContents()).map(t=>t.trim()).join('|');
   await page.goto('about:blank');await page.goto(origin+'/quant/#/');await bereit(page).catch(()=>bad.push('NICHT_BEREIT'));
-  await page.locator(leiste).getByRole('link',{name:'Quant Screener',exact:true}).click();
+  /* Quant-Start nach Prototyp: die Rahmen-Reiter sind dort ausgeblendet; zum Screener fuehrt „Öffnen“ am Block Screener. */
+  if(await page.evaluate(()=>document.documentElement.getAttribute('data-vu-tabs')==='inhalt'))await page.locator('main #qp-scr a.qp-more').click();
+  else await page.locator(leiste).getByRole('link',{name:'Quant Screener',exact:true}).click();
   if(!await ansicht('screener'))bad.push('SCREENER_NICHT_ERREICHT');
   /* Konzept Quant 2026-11 (QX03, #1819): Trefferzeile mit Profil (a.qk-pr); a.qx-row bleibt fuer die Ansicht ohne VUUI. */
   const treffer='main#qx-main a.qk-pr, main#qx-main a.qx-row';
