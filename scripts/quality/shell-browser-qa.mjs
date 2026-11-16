@@ -33,7 +33,9 @@ const ROUTES = [
   ['Discover', '/discover/#/swipen', 'Swipen'], ['Discover', '/discover/#/einzeln/US_REAL', 'Swipen'], ['Discover', '/discover/#/maerkte', 'Märkte'], ['Discover', '/discover/#/watchlist', 'Watchlist'],
   ['Quant', '/quant/#/', 'Quant'], ['Quant', '/quant/#/screener', 'Screener'], ['Quant', '/quant/#/stile', 'Anlagestile'],
   ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', 'Methodik'],
-  // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext)
+  // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext).
+  // Der Start traegt seine Reiter im Inhalt (App-Konzept 2: Heute · Wellenlagen · Zählbar · Neu · Suche · Aufwärts · Abwärts, data-vu-tabs="inhalt");
+  // dort gelten Dock, Universe-Knopf, Reiter im Inhalt und Ueberlauf. Die uebrigen Ansichten zeigen die Reiterzeile des Rahmens.
   ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?zaehlbar=1', 'Zählbar'], ['Elliott', '/elliott/#/?welle=3', 'Zählbar'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
   ['Elliott', '/elliott/#/?richtung=ab', 'Abwärts'], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
   // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext. Der Start (#/) traegt
@@ -604,6 +606,32 @@ for (const [vpName, width, height] of VIEWPORTS) {
       await page.goForward(); await settle(page);
       const s2 = await state(page);
       if (!s2 || s2.current[0] !== 'Gespeichert') fail(where, 'Vor: ' + JSON.stringify(s2 && s2.current));
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Elliott-Start (Reiter im Inhalt, App-Konzept 2): „Zählbar“ im Inhalt fuehrt in die Liste mit der Reiterzeile des Rahmens,
+  // Zurueck bringt die Reiter im Inhalt ohne doppelte Zeile, Vor wieder die Liste; ebenso zurueck aus dem Aktienbild.
+  {
+    const where = `history /elliott/ Reiter im Inhalt @${vpName}`;
+    await fresh();
+    try {
+      const inhalt = () => page.evaluate(() => ({ own: document.documentElement.getAttribute('data-vu-tabs') === 'inhalt', strip: !document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs') || document.querySelector('vu-navigation').shadowRoot.querySelector('nav.tabs').hidden,
+        tabs: [...document.querySelectorAll('#el-main .ek-tabs a, #el-main .ek-tabs button')].filter((n) => n.getClientRects().length).length, h1: document.querySelectorAll('h1').length }));
+      const ok = (s) => s.own && s.strip && s.tabs >= 3 && s.h1 === 1;
+      await page.goto(base + '/elliott/', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      let s = await inhalt();
+      if (!ok(s)) fail(where, 'Start ohne Reiter im Inhalt: ' + JSON.stringify(s));
+      await page.locator('#el-main .ek-tabs a', { hasText: 'Zählbar' }).first().click(); await settle(page);
+      if ((await state(page))?.current[0] !== 'Zählbar') fail(where, 'Klick Zählbar zeigt nicht die Reiterzeile des Rahmens mit Zählbar: ' + JSON.stringify((await state(page))?.current));
+      await page.goBack(); await settle(page);
+      if (!ok(s = await inhalt())) fail(where, 'Zurueck: Reiter im Inhalt fehlen oder doppelt: ' + JSON.stringify(s));
+      await page.goForward(); await settle(page);
+      if ((await state(page))?.current[0] !== 'Zählbar') fail(where, 'Vor: ' + JSON.stringify((await state(page))?.current));
+      await page.goBack(); await settle(page);
+      await page.locator('#el-main a.el-cr').first().click(); await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 60000 });
+      if ((await inhalt()).own) fail(where, 'Aktienbild behaelt die Reiter im Inhalt');
+      await page.goBack(); await settle(page);
+      if (!ok(s = await inhalt())) fail(where, 'Zurueck aus dem Aktienbild: ' + JSON.stringify(s));
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
