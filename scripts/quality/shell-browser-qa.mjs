@@ -318,6 +318,71 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
+  // Ich (/mein-dashboard/, Prototyp „App-Konzept 2“ #v-ich): die Seite traegt die Reiter von „Mein Bereich“ selbst im Inhalt
+  // (Ich · Gespeichert · Konto, <html data-vu-tabs="inhalt">), die Reiterzeile des Rahmens bleibt verborgen; Dock mit „Ich“ aktiv.
+  // Angemeldet ueber dieselbe nachgestellte Konto-API wie oben, mit einer Watchlist aus zwei echten Kuerzeln (Kennung aus names.json).
+  // Danach Zurueck/Vor ueber die Reiter im Inhalt (Hash #/gespeichert).
+  for (const [path, expected] of [['/mein-dashboard/', 'Ich'], ['/mein-dashboard/#/gespeichert', 'Gespeichert']]) {
+    const where = `ich ${path} @${vpName}`;
+    await fresh();
+    try {
+      await page.addInitScript(() => {
+        Object.defineProperty(globalThis, 'VU_ACCOUNT_CONFIG', { configurable: true, get: () => ({ endpoint: location.origin + '/__qa-konto' }), set() {} });
+        const real = globalThis.fetch;
+        globalThis.fetch = (input, init) => {
+          const url = String((input && input.url) || input), at = url.indexOf('/__qa-konto/v1/');
+          if (at < 0) return real(input, init);
+          const api = url.slice(at + '/__qa-konto'.length).split('?')[0], json = (data) => new Response(JSON.stringify(data), { status: 200, headers: { 'content-type': 'application/json' } });
+          if (api === '/v1/watchlist') {
+            const W = globalThis.VUCore.WatchlistView;
+            return real(W.PATHS.names).then((r) => r.json()).then((d) => { const ix = W.index(d);
+              return json({ items: ['NVDA', 'AAPL'].map((t) => ({ ticker: t, instrumentId: ix.resolveTicker(t), addedAt: '2026-11-01T00:00:00Z' })).filter((x) => x.instrumentId), limits: { items: 500 } }); });
+          }
+          return Promise.resolve(json(api === '/v1/session' ? { authenticated: true, user: { id: 'qa', email: 'qa@example.test' } }
+            : api === '/v1/me' ? { profile: { displayName: 'QA' }, settings: {}, entitlements: { plan_id: 'free' } } : {}));
+        };
+      });
+      await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const at = new URL(page.url()).pathname;
+      if (at !== '/mein-dashboard/') fail(where, 'Seite hat weitergeleitet nach ' + at);
+      const ich = () => page.evaluate(() => {
+        const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav'), strip = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs');
+        const tabs = [...document.querySelectorAll('main .md-tabs a')];
+        const reach = (n) => { const b = n.getBoundingClientRect(), a = getComputedStyle(n, '::after'), big = a.content !== 'none' && a.position === 'absolute';
+          return { w: Math.max(b.width, big ? parseFloat(a.width) || 0 : 0), h: Math.max(b.height, big ? parseFloat(a.height) || 0 : 0) }; };
+        const small = [...document.querySelectorAll('main a, main button')].filter((n) => n.getClientRects().length).map((n) => ({ n, s: reach(n) })).filter((x) => x.s.w < 44 || x.s.h < 44)
+          .map((x) => (x.n.className || x.n.tagName) + ' „' + x.n.textContent.trim().slice(0, 20) + '“ ' + Math.round(x.s.w) + '×' + Math.round(x.s.h));
+        return { own: document.documentElement.getAttribute('data-vu-tabs'), labels: tabs.map((a) => a.textContent.trim()), current: tabs.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
+          places: nav ? [...nav.querySelectorAll('a')].map((a) => a.textContent.trim()) : [], place: nav ? [...nav.querySelectorAll('a[aria-current=page]')].map((a) => a.textContent.trim()) : [],
+          strip: !!strip && !strip.hidden, h1: document.querySelectorAll('h1').length, app: !document.getElementById('md-app').hidden, overflow: document.documentElement.scrollWidth - innerWidth, small };
+      });
+      const s = await ich();
+      if (s.own !== 'inhalt' || s.strip) fail(where, 'Reiterzeile des Rahmens statt Reiter im Inhalt: ' + JSON.stringify({ own: s.own, strip: s.strip }));
+      if (s.labels.join('|') !== 'Ich|Gespeichert|Konto' || s.current.join('|') !== expected) fail(where, 'Reiter falsch: ' + s.labels.join('|') + ' aktiv ' + s.current.join('|'));
+      if (s.places.join('|') !== DOCK.join('|') || s.place.join('|') !== 'Ich') fail(where, 'Dock falsch: ' + s.places.join('|') + ' aktiv ' + s.place.join('|'));
+      if (s.h1 !== 1) fail(where, s.h1 + ' h1 statt genau einer');
+      if (!s.app) fail(where, 'Inhalt der Seite steht nicht (nachgestellte Konto-API)');
+      if (s.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + s.overflow + ' px');
+      if (s.small.length) fail(where, s.small.length + ' Ziele kleiner als 44 px: ' + s.small.slice(0, 4).join('; '));
+      const end = await page.evaluate(() => {
+        scrollTo({ top: document.scrollingElement.scrollHeight, behavior: 'instant' });
+        const dockTop = document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect().top;
+        const last = [...document.querySelectorAll('main a, main button')].filter((n) => n.getClientRects().length).at(-1), r = last && last.getBoundingClientRect(), hit = r && document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return { dockTop, bottom: r && r.bottom, reachable: !!hit && (hit === last || last.contains(hit) || hit.contains(last)), label: last && last.textContent.trim().slice(0, 30) };
+      });
+      if (end.bottom > end.dockTop + 1 || !end.reachable) fail(where, 'letztes Bedienelement am Seitenende verdeckt: ' + JSON.stringify(end));
+      if (path === '/mein-dashboard/') {
+        await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+        await page.locator('main .md-tabs a', { hasText: 'Gespeichert' }).click(); await settle(page);
+        if ((await ich()).current.join('|') !== 'Gespeichert') fail(where, 'Klick Gespeichert markiert nicht');
+        await page.goBack(); await settle(page);
+        if ((await ich()).current.join('|') !== 'Ich') fail(where, 'Zurueck: ' + (await ich()).current.join('|'));
+        await page.goForward(); await settle(page);
+        if ((await ich()).current.join('|') !== 'Gespeichert') fail(where, 'Vor: ' + (await ich()).current.join('|'));
+      }
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
   // Insights (Ziel des Platzes „News“): das Dock steht auf jeder Seite, „News“ ist aktiv, keine Reiterzeile der Shell (die Seiten
   // tragen ihre eigenen Reiter), der Universe-Knopf oeffnet das Menue, und das Seitenende liegt ueber dem Dock.
   // App-Konzept 2 (Prototyp #news, Owner 15.11.2026): jede Seite zeigt die Reiter des Prototyps im Inhalt (<html data-vu-tabs="inhalt">,

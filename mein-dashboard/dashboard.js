@@ -238,7 +238,7 @@
       var card = el(a.href ? 'a' : 'div', a, [markup(el('span', {className: 'md-wl-logo'}), U.logo(v.ticker)), el('b', {className: 'md-wl-n', text: name}),
         el('small', {className: 'md-wl-k', text: v.ticker ? v.ticker + (what ? ' · ' + what : '') : '–'})]);
       if (priced) {
-        var html = Chart && v.spark.length > 1 ? Chart.sparkline(thin(v.spark, 60), {width: 64, height: 30}) : '';
+        var html = Chart && v.spark.length > 1 ? Chart.sparkline(thin(v.spark, 40), {width: 64, height: 30}) : '';
         card.appendChild(markup(el('div', {className: 'md-wl-c', 'aria-hidden': 'true'}), html));
         card.appendChild(markup(el('div', {className: 'md-wl-m'}), U.chg(v.pct, {digits: 2})));
       } else {

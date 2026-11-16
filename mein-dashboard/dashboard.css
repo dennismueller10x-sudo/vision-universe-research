@@ -118,7 +118,7 @@ html[data-md-view=gespeichert] .md-only-watch,html[data-md-view=watchlist] .md-o
 .md-fd-t{flex:1;min-width:0}
 .md-fd-h b{display:block;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .md-fd-h small{display:block;font-size:11px;color:var(--md-mut);font-variant-numeric:tabular-nums}
-.md .md-fd-r{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;padding:6px 0;font-size:12.5px;font-weight:700;line-height:1.3}
+.md .md-fd-r{display:grid;grid-template-columns:28px minmax(0,1fr) auto;gap:10px;align-items:center;min-height:44px;padding:6px 0;font-size:12.5px;font-weight:700;line-height:1.3}
 .md-fd-r .vu-hud{--vu-hud:28px;border-radius:9px!important}
 .md-fd-r small{display:block;font-size:11px;font-weight:700;color:var(--md-mut)}
 .md-fd-r .vu-verdict{font-size:10.5px;padding:3px 8px}
@@ -155,7 +155,7 @@ html[data-md-view=gespeichert] .md-only-watch,html[data-md-view=watchlist] .md-o
 .md-source{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--md-hair)}
 .md-source:last-child{border-bottom:0}
 .md-source .vu-hud{--vu-hud:40px;border-radius:12px}
-.md-source-text{flex:1;min-width:0}
+.md-source-text{flex:1;min-width:0;min-height:44px;display:flex;flex-direction:column;justify-content:center}
 .md-source-text b{display:block;font-weight:800}
 .md-source-text span{display:block;font-size:11px;color:var(--md-mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .md .md-take{flex:none;position:relative;height:36px;padding:0 14px;border-radius:99px;background:#c8f531;color:#101318;font-weight:800;font-size:13.5px}
