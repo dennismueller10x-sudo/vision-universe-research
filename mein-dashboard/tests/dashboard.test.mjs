@@ -63,16 +63,25 @@ test('Leerstaat, Detailansicht und Erweiterbarkeit', () => {
   for (const p of ['discover', 'quant', 'fundamental', 'technical']) assert.match(code, new RegExp(`id: '${p}'`), `Schnellzugriff ${p}`);
 });
 
-test('Ich nach App-Konzept 2: Liste, Ring und Aktie im Fenster aus Vorhandenem; nichts Erfundenes', () => {
-  // gemeinsame Bausteine: Ring (wie viele im Plus, today.js#summary), Fenster (VUUI.popup), Weiter-Karte
-  for (const part of ['T.summary(', 'U.ring(', 'U.popup(', 'U.closeSheet(', 'U.next(', 'U.PERSPECTIVES']) assert.ok(code.includes(part), part);
+test('Ich nach Prototyp App-Konzept 2 (#v-ich): Reiter, Ring, Liste, Einstellungen aus Vorhandenem; nichts Erfundenes', () => {
+  // Reiter im Inhalt wie im Prototyp (der Rahmen zeigt dann keine eigene Reiterzeile); dunkler Standard des Rahmens
+  assert.match(html, /<html lang="de" data-vu-tabs="inhalt">/);
+  assert.match(html, /<meta name="theme-color" content="#08080a">/);
+  assert.match(html, /<nav class="md-tabs" aria-label="Mein Bereich">\s*<a class="md-tab" href="#\/" data-md-tab="watchlist">Ich<\/a><a class="md-tab" href="#\/gespeichert" data-md-tab="gespeichert">Gespeichert<\/a><a class="md-tab" href="\/konto\/">Konto<\/a>/);
+  assert.equal((html.match(/<h1[\s>]/g) || []).length, 1, 'genau eine h1');
+  // Reihenfolge des Prototyps: Ring-Kachel, Watchlist, (Zusatz: Was sich getan hat, Weiter lernen, Deine Welten), Konto und Einstellungen, Daten & Hinweise
+  const order = ['id="md-today"', 'id="md-strip"', 'id="md-feed"', 'id="md-learn"', 'id="md-tiles"', 'href="/konto/einstellungen/"', 'data-vu-frame-hinweise'].map(s => html.indexOf(s));
+  assert.ok(order.every((v, i) => v > 0 && (!i || v > order[i - 1])), 'Reihenfolge wie im Prototyp');
+  // gemeinsame Bausteine: Ring 150 px (wie viele im Plus, today.js#summary), Pille, Logo, Verlauf
+  for (const part of ['T.summary(', "U.ring(", 'size: 150, stroke: 14', 'U.chg(v.pct', 'U.logo(v.ticker)', 'Chart.sparkline(']) assert.ok(code.includes(part), part);
   assert.match(html, /\/assets\/vu-ui\.css\?v=vu-ui-1\.4\.0/); assert.match(html, /\/assets\/vu-ui\.js\?v=vu-ui-1\.4\.0/);
-  // die Zeile bleibt ein Verweis zur Aktie; nur der einfache Tipp oeffnet das Fenster, „Ganz öffnen“ traegt dasselbe Ziel
-  assert.match(code, /if \(href\) card\.addEventListener\('click', function \(e\) \{ if \(!plainClick\(e\) \|\| !U\.popup\) return; e\.preventDefault\(\); openStock\(v, card\); \}\);/);
-  assert.match(code, /el\('a', \{className: 'vu-btn', href: href, text: 'Ganz öffnen'\}\)/);
-  assert.match(code, /removeItem\(v, remove\)/, 'Entfernen im Fenster nutzt denselben Weg wie „×“ (mit Rückgängig)');
-  // Perspektiven nur aus den Adressen der Ansicht (core/stock-context.js), keine eigene Adressbildung
-  assert.match(code, /\(v\.links \|\| \[\]\)\.filter\(function \(l\) \{ return l\.product === p\.id; \}\)/);
+  // Aktien-Zeilen sind Verweise auf die Aktienseite und tragen data-vu-stock: ein Tipp oeffnet ueber den Rahmen die Vorschau (Fenster „stock“)
+  assert.match(code, /return t \? '\/aktie\/#\/' \+ encodeURIComponent\(t\) : null;/);
+  assert.match(code, /'data-vu-stock': href \? v\.ticker : null, 'data-vu-stock-name': href \? name : null/);
+  assert.ok(!/U\.popup\(|openStock/.test(code), 'kein eigenes Aktienfenster neben der Vorschau des Rahmens');
+  assert.match(code, /removeItem\(v, remove\)/, 'Entfernen ueber „×“ mit Rückgängig');
+  // Pille: rot bei Minus, neongruen bei Plus (Owner)
+  assert.match(readFileSync(join(ROOT, 'dashboard.css'), 'utf8'), /\.md \.vu-chg--down\{background:#c4281c;color:#fff\}/);
   // Wege, die es vorher gab, bleiben; neue Zeilen fuehren nur zu bestehenden Seiten
   for (const href of ['/konto/', '/konto/einstellungen/', '/konto/watchlist/', '#/gespeichert', '/willkommen/', '/ask/']) assert.ok(html.includes(`href="${href}"`), href);
   const text = [html.replace(/<script[\s\S]*?<\/script>|<!--[\s\S]*?-->|<[^>]+>/g, ' '), ...(code.match(/'[^'\n]*'/g) || [])].join(' ').toLowerCase();

@@ -1,47 +1,51 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" data-vu-tabs="inhalt">
 <head>
 <meta charset="utf-8">
 <link rel="preload" href="/assets/fonts/inter-latin.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#ffffff">
-<title>Mein Dashboard · Vision Universe</title>
+<meta name="theme-color" content="#08080a">
+<title>Ich · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.4.0">
-<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
+<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);h.setAttribute("data-md-view",/^#\/gespeichert/.test(location.hash)?"gespeichert":"watchlist");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/konto/konto.css">
 <link rel="stylesheet" href="/mein-dashboard/dashboard.css">
 </head>
 <body class="ka-body md-body vu-ui"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
-<!-- Ich (App-Konzept 2, Owner 14.11.2026; Aufbau weiter nach docs/design/mein-bereich-2026-11, Screen m-home): Heute bei deinen Aktien
-     (Ring und drei Zahlen), Watchlist als Liste (Tippen öffnet die Aktie im Fenster), Was sich getan hat, Weiter lernen, Mein Bereich,
-     Deine Welten. Reiter „Gespeichert“ unter #/gespeichert. Nur Vorhandenes, nur Darstellung. -->
-<main class="ka md" id="main">
-<header class="md-head">
-<div class="md-eyerow"><p class="vu-ltag" id="md-eyebrow">Mein Dashboard</p><span class="md-plan" id="md-plan" hidden></span></div>
-<h1 class="vu-lt" id="md-hello">Mein Dashboard</h1>
-<p class="vu-lead md-only-saved">Was du in den Welten gemerkt hast. Übernimm es in deine Watchlist, dann ist es auf jedem Gerät da.</p>
-</header>
-<div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
-<div class="ka-skeleton" id="md-loading" aria-hidden="true"></div>
+<!-- Ich genau nach Prototyp „App-Konzept 2“, Bildschirm #v-ich (Owner 14./15.11.2026: „1:1 wie im Prototyp“), mit echten Daten:
+     Kachel mit Ring (wie viele deiner Aktien im Plus, drei Zahlen), Watchlist als Liste (Logo, Name, Zeile, Verlauf, Bewegung),
+     Kachel mit Konto und Einstellungen, „Daten & Hinweise“. Reiter im Inhalt (Ich · Gespeichert · Konto, <html data-vu-tabs="inhalt">).
+     Was die Seite vorher zeigte und der Prototyp nicht (Was sich getan hat, Weiter lernen, Deine Welten), steht im Design des
+     Prototyps zwischen Watchlist und Einstellungen. Zurückgestellt (Owner): Stufen, Punkte, Aufgaben, Abzeichen, Sammlungen,
+     Wochenkarte, Serie. Nur Vorhandenes, nur Darstellung. -->
+<main class="md" id="main">
+<h1 class="md-visually-hidden" id="md-hello">Ich</h1>
+<nav class="md-tabs" aria-label="Mein Bereich">
+<a class="md-tab" href="#/" data-md-tab="watchlist">Ich</a><a class="md-tab" href="#/gespeichert" data-md-tab="gespeichert">Gespeichert</a><a class="md-tab" href="/konto/">Konto</a>
+</nav>
+<div class="md-px"><div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div></div>
+<div class="md-px"><div class="ka-skeleton md-skel" id="md-loading" aria-hidden="true"></div></div>
 <div class="md-grid" id="md-app" hidden>
 
-<section class="md-only-watch" id="md-today-sec" aria-labelledby="md-today-title">
-<div class="md-today vu-night" id="md-today">
-<h2 class="vu-ltag" id="md-today-title">Heute bei deinen Aktien</h2>
-<div class="md-today-top" id="md-today-top" hidden><span class="md-today-ring" id="md-today-ring"></span><p class="md-today-sum"><strong id="md-today-up"></strong><small id="md-today-big"></small></p></div>
+<section class="md-only-watch md-px" id="md-today-sec" aria-labelledby="md-today-title">
+<div class="md-card md-today" id="md-today">
+<h2 class="md-visually-hidden" id="md-today-title">Heute bei deinen Aktien</h2>
+<div class="md-today-ring"><span id="md-today-ring"></span><span class="md-today-in"><span class="md-eb md-eb--l" id="md-today-eb">Im Plus</span><b class="md-num" id="md-today-up">–</b></span></div>
+<p class="md-today-sum" id="md-today-big"></p>
 <ul class="md-today-n">
-<li><b id="md-n-watch">–</b><span>auf der Watchlist</span></li>
-<li><b id="md-n-events">–</b><span>neue Ereignisse</span></li>
-<li><b id="md-n-stocks">–</b><span>Aktien betroffen</span></li>
+<li><b class="md-num md-lc" id="md-n-watch">–</b><span>auf der Watchlist</span></li>
+<li><b class="md-num" id="md-n-events">–</b><span>neue Ereignisse</span></li>
+<li><b class="md-num" id="md-n-stocks">–</b><span>Aktien betroffen</span></li>
 </ul>
 </div>
 </section>
 
 <section class="md-only-watch" id="md-watchlist" aria-labelledby="md-watch-title">
-<div class="md-rh"><div class="md-rh-t"><h2 id="md-watch-title">Watchlist</h2><a id="md-watch-all" href="/konto/watchlist/">Alle</a></div></div>
+<div class="md-sh"><h2 id="md-watch-title">Watchlist</h2><a class="md-more" id="md-watch-all" href="/konto/watchlist/">Alle</a></div>
+<div class="md-px"><div class="md-card md-list">
 <div class="md-find" id="md-find" hidden>
 <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
 <label class="md-visually-hidden" for="md-add">Aktie hinzufügen</label>
@@ -51,49 +55,54 @@
 </div>
 <ul class="md-strip" id="md-strip" aria-label="Aktien auf deiner Watchlist"></ul>
 <div class="md-empty" id="md-watch-empty" hidden>
-<div class="vu-box md-empty-box"><span class="vu-verdict vu-verdict--none" data-verdict="none"><span aria-hidden="true">○</span> Noch leer</span><p class="md-empty-title">Noch keine Aktien gespeichert</p><p class="vu-mu vu-sm">Merke dir Aktien, die dich interessieren: Tippe auf das Herz bei einer Aktie oder such sie oben. Hier siehst du dann jeden Tag, was sich bei ihnen tut.</p></div>
-<h2 class="vu-sect">Beliebt zum Start</h2>
-<p class="vu-mu vu-xs md-popular-note">Häufig gesuchte Kürzel, keine Empfehlung.</p>
+<p class="md-empty-title">Noch keine Aktien gespeichert</p>
+<p class="md-sub">Merke dir Aktien, die dich interessieren: Tippe auf das Herz bei einer Aktie oder such sie oben. Hier siehst du dann jeden Tag, was sich bei ihnen tut.</p>
+<p class="md-eb md-empty-eb">Beliebt zum Start</p>
 <div class="md-popular" id="md-popular"></div>
+<p class="md-sub md-popular-note">Häufig gesuchte Kürzel, keine Empfehlung.</p>
 </div>
+</div></div>
 </section>
 
 <section class="md-only-watch" id="md-events" aria-labelledby="md-events-title">
-<div class="md-rh"><div class="md-rh-t"><h2 id="md-events-title">Was sich getan hat</h2><span class="vu-xs vu-mu" id="md-events-count"></span></div><p>Aus allen Welten, nur für deine Aktien.</p></div>
-<ul class="md-feed" id="md-feed"></ul>
-<p class="vu-blank md-feed-none" id="md-feed-none" hidden></p>
-<div class="vu-help md-feed-help" id="md-feed-help"><i aria-hidden="true">?</i><span>Ereignisse aus den veröffentlichten Daten der Welten, ohne neue Speicherung. Keine Empfehlung.</span></div>
+<div class="md-sh"><h2 id="md-events-title">Was sich getan hat</h2><span class="md-sh-n" id="md-events-count"></span></div>
+<div class="md-px">
+<ul class="md-card md-feed" id="md-feed"></ul>
+<p class="md-card md-none" id="md-feed-none" hidden></p>
+<p class="md-fine" id="md-feed-help">Ereignisse aus den veröffentlichten Daten der Welten, ohne neue Speicherung. Keine Empfehlung.</p>
+</div>
 </section>
 
 <section class="md-only-watch" id="md-learn-sec" aria-labelledby="md-learn-title" hidden>
-<div class="md-rh"><div class="md-rh-t"><h2 id="md-learn-title">Weiter lernen</h2><a id="md-learn-all" href="/willkommen/">Alle</a></div><p id="md-learn-sub"></p></div>
-<a class="md-learn" id="md-learn" href="/willkommen/"></a>
-</section>
-
-<section class="md-only-watch" aria-labelledby="md-more-title">
-<div class="md-rh"><div class="md-rh-t"><h2 id="md-more-title">Mein Bereich</h2></div></div>
-<nav class="md-more" aria-labelledby="md-more-title">
-<a class="md-more-r" href="/konto/"><span class="vu-hud" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></span><b>Konto und Tarif</b><svg class="md-more-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
-<a class="md-more-r" href="/konto/einstellungen/"><span class="vu-hud" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></span><b>Einstellungen</b><svg class="md-more-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
-<a class="md-more-r" href="/konto/watchlist/"><span class="vu-hud" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 20V13M11 20V7M17 20V4"/></svg></span><b>Alle Kennzahlen</b><svg class="md-more-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
-<a class="md-more-r" href="#/gespeichert"><span class="vu-hud" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 4h10v16l-5-3.6L7 20z"/></svg></span><b>Gemerkt</b><svg class="md-more-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
-</nav>
+<div class="md-sh"><h2 id="md-learn-title">Weiter lernen</h2><a class="md-more" id="md-learn-all" href="/willkommen/">Alle</a></div>
+<div class="md-px"><a class="md-card md-learn" id="md-learn" href="/willkommen/"></a></div>
 </section>
 
 <section class="md-only-watch" aria-labelledby="md-short-title">
-<div class="md-rh"><div class="md-rh-t"><h2 id="md-short-title">Deine Welten</h2></div></div>
-<ul class="md-tiles" id="md-tiles"></ul>
-<p class="md-fine vu-mu vu-xs" id="md-watch-fine">Keine Anlageberatung.</p>
-<div class="md-next" id="md-next"></div>
+<div class="md-sh"><h2 id="md-short-title">Deine Welten</h2></div>
+<ul class="md-rail md-tiles" id="md-tiles"></ul>
 </section>
+
+<nav class="md-only-watch md-px md-set-wrap" aria-label="Konto und Einstellungen">
+<div class="md-card md-set">
+<a class="md-row" href="/konto/"><span class="md-row-t">Konto und Tarif</span><span class="md-plan" id="md-plan" hidden></span><svg class="md-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+<a class="md-row" href="/konto/einstellungen/"><span class="md-row-t">Hell · Dunkel · EUR · USD</span><svg class="md-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+<a class="md-row" href="/konto/watchlist/"><span class="md-row-t">Alle Kennzahlen der Watchlist</span><svg class="md-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+<a class="md-row" href="#/gespeichert"><span class="md-row-t">Auf diesem Gerät gemerkt</span><svg class="md-go" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></a>
+</div>
+</nav>
 
 <section class="md-local md-only-saved" id="md-local" aria-labelledby="md-local-title">
-<h2 class="vu-sect" id="md-local-title">Auf diesem Gerät gemerkt</h2>
-<p class="vu-mu vu-sm" id="md-local-text"></p>
-<ul class="md-sources" id="md-local-sources"></ul>
+<div class="md-sh"><h2 id="md-local-title">Auf diesem Gerät gemerkt</h2></div>
+<div class="md-px">
+<p class="md-lead" id="md-local-text"></p>
+<ul class="md-card md-sources" id="md-local-sources"></ul>
+</div>
 </section>
 
+<p class="md-fine md-px" id="md-watch-fine">Keine Anlageberatung.</p>
 </div>
+<div class="md-end"><button class="md-lk" type="button" data-vu-frame-hinweise>Daten &amp; Hinweise</button></div>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>
