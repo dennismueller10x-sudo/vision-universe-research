@@ -93,41 +93,68 @@ test('IN-7 · automatisch veröffentlichte Artikel: mindestens drei Quellen, App
 
 // App-Konzept 2 (Owner 14.11.2026): der neueste Artikel füllt den ersten Bildschirm, Aktienmagazin und Aktienreport haben
 // je eine Bühne mit Titelseite, Nummer, Seitenzahl und beiden Knöpfen, die Seiten bleiben ohne JavaScript lesbar.
-test('IN-8 · Darstellung: Aufmacher, Bühnen für Aktienmagazin und Aktienreport, Karten mit Aktien, statisch ohne eigenes Skript', async () => {
+test('IN-8 · News-Start nach Prototyp „App-Konzept 2“ (#news): Titelbild, Reiter, Artikelzeilen, Magazin, Kurz erklärt, Reports', async () => {
   const { createRequire } = await import('node:module');
   const VUUI = createRequire(import.meta.url)('../../../assets/vu-ui.js');
-  const pages = build(), hub = pages['insights/index.html'], heft = loadMagazin()[0], report = loadReports().find((r) => r.seiten);
-  const stage = (html, ton) => html.match(new RegExp(`<(section|header) class="in-buehne in-buehne--${ton}[^"]*">[\\s\\S]*?</\\1>`))?.[0] || '';
-  // Übersicht: Aufmacher = neuester Artikel, danach beide Bühnen, erst dann die übrigen Artikel
-  assert.ok(hub.includes(`<a class="in-top" href="/insights/${artikel[0].slug}/">`), 'neuester Artikel als Aufmacher');
-  assert.ok(hub.indexOf('class="in-top"') < hub.indexOf('class="in-buehne ') && hub.indexOf('class="in-buehne ') < hub.indexOf('class="in-raster"'), 'Reihenfolge: Aufmacher, Bühnen, Artikel');
-  const buehnen = [[stage(hub, 'nacht'), `/insights/magazin/nr-${heft.nr}/cover.jpg`, heft.nr, heft.seiten, `/insights/magazin/nr-${heft.nr}/`, `vision-universe-aktienmagazin-${heft.nr}.pdf`]];
-  if (report) buehnen.push([stage(hub, 'lime'), `${report.href}cover.jpg`, report.nr, report.seiten, report.href, report.pdf]);
-  for (const [s, cover, nr, seiten, href, pdf] of buehnen) {
-    assert.ok(s.includes(`<img src="${cover}"`), 'Titelseite auf der Bühne');
-    assert.ok(s.includes(`Nr. ${nr}`) && s.includes(`<b class="vu-num">${seiten}</b><span>Seiten</span>`), 'Nummer und Seitenzahl');
-    assert.match(s, new RegExp(`<a class="vu-btn[^"]*" href="${href}">Online lesen`), 'Knopf „Online lesen“');
-    assert.match(s, new RegExp(`href="[^"]*${pdf}" download>PDF laden \\(\\d+ MB\\)`), 'Knopf „PDF laden“');
-  }
-  // Jede Karte: Bild, Titel, Datum, Aktien
+  const pages = build(), hub = pages['insights/index.html'], heft = loadMagazin()[0], reports = loadReports();
+  const stories = JSON.parse(read('willkommen/config/stories.json')).stories;
+  // Reihenfolge wie im Prototyp: Titelbild (neuester Artikel, einzige h1), Reiter, Heute, Aktienmagazin, Kurz erklärt, Zu deinen Aktien, Aktienreports
+  const order = ['class="in-held"', 'class="in-tabs"', 'id="heute"', 'id="magazin"', 'id="kurz"', 'id="deine"', 'id="reports"'].map((k) => hub.indexOf(k));
+  assert.ok(order.every((x, i) => x > 0 && (i === 0 || x > order[i - 1])), 'Reihenfolge der Blöcke: ' + order.join(','));
+  assert.match(hub, /^<!DOCTYPE html>\n<html lang="de" data-vu-tabs="inhalt" data-vu-bleed>/, 'Reiter im Inhalt, Kopf durchsichtig über dem Titelbild');
+  assert.equal((hub.match(/<h1[ >]/g) || []).length, 1, 'genau eine h1');
+  assert.ok(hub.includes(`<h1><a class="in-dehn" href="/insights/${artikel[0].slug}/">`), 'neuester Artikel im Titelbild');
+  const heute = hub.slice(hub.indexOf('id="heute"'), hub.indexOf('id="magazin"'));
+  assert.equal((heute.match(/class="in-art"/g) || []).length, Math.min(3, artikel.length - 1), 'drei Artikelzeilen unter „Heute“');
+  // Jede Zeile: Bild, Rubrik, Titel-Link, jede Aktie als Vorschau-Ziel mit Platz für die Tagesbewegung, Datum
   for (const a of artikel.slice(1)) {
-    const k = hub.match(new RegExp(`<a class="in-karte" href="/insights/${a.slug}/">[\\s\\S]*?</a>`))?.[0] || '';
-    assert.ok(k.includes('<img ') && k.includes(`<time datetime="${a.datum}">`) && a.ticker.every((t) => k.includes(`>${t}</span>`)), `${a.slug}: Karte mit Bild, Datum und Aktien`);
+    const z = hub.match(new RegExp(`<div class="in-art" data-in-tk="${a.ticker.join(' ')}">[\\s\\S]*?href="/insights/${a.slug}/"[\\s\\S]*?</time></div></div></div>`))?.[0] || '';
+    assert.ok(z.includes('<img ') && z.includes(`<time class="in-zeit" datetime="${a.datum}">`), `${a.slug}: Zeile mit Bild und Datum`);
+    for (const t of a.ticker) assert.ok(z.includes(`href="/aktie/#/${t}" data-vu-stock="${t}" data-vu-stock-name="`) && z.includes(`data-in-chg="${t}"`), `${a.slug}: Aktie ${t}`);
   }
-  // Farben: nur Schwarz, Weiß, Graustufen, Neongrün und das Nachtschwarz der Bausteine
-  for (const hex of read('insights/insights.css').match(/#[0-9a-f]{3,8}\b/gi) || []) {
-    const h = hex.slice(1).toLowerCase(), full = h.length === 3 ? [...h].map((c) => c + c).join('') : h;
-    assert.ok(full === 'c8f531' || full === '0e1013' || (full.slice(0, 2) === full.slice(2, 4) && full.slice(2, 4) === full.slice(4, 6)), `insights.css: Farbe außerhalb der Palette: ${hex}`);
+  // Aktienmagazin: Kachel mit Titelseite, Nummer, Seitenzahl, Lesefortschritt (news.js) und Knopf; „Alle Ausgaben“
+  if (heft) {
+    const k = hub.match(/<a class="in-heft" href="\/insights\/magazin\/[^"]*"[\s\S]*?<\/a>/)?.[0] || '';
+    assert.ok(k.includes(`<img src="/insights/magazin/nr-${heft.nr}/cover.jpg"`) && k.includes(`Nr. ${heft.nr}`) && k.includes(`${heft.seiten} Seiten`) && k.includes(`data-in-seiten="${heft.seiten}"`) && k.includes('class="in-btn">Lesen<'), 'Magazin-Kachel');
+    assert.ok(hub.includes('<a href="/insights/magazin/">Alle Ausgaben ›</a>'));
   }
+  // Kurz erklärt: jedes Erklärvideo aus willkommen/config/stories.json
+  for (const s of stories) { const v = s.slides.find((x) => x.type === 'video'); if (v) assert.ok(hub.includes(`data-in-vid="${v.src}"`), `Video ${s.id}`); }
+  // Reports: jeder Report mit Seiten als Kachel
+  for (const r of reports.filter((x) => x.seiten)) assert.ok(hub.includes(`<a class="in-heft" href="${r.href}"`), r.href);
   // Leseseiten: Bühne als Seitenkopf mit h1, Inhalt führt auf vorhandene Seiten
+  const stage = (html, ton) => html.match(new RegExp(`<(section|header) class="in-buehne in-buehne--${ton}[^"]*">[\\s\\S]*?</\\1>`))?.[0] || '';
   const heftSeite = pages[`insights/magazin/nr-${heft.nr}/index.html`];
   assert.match(stage(heftSeite, 'nacht'), /<h1>/);
   for (const [s] of heft.inhalt) assert.ok(heftSeite.includes(`<a class="in-seite" href="#s${String(s).padStart(2, '0')}">`) && heftSeite.includes(`<img id="s${String(s).padStart(2, '0')}"`));
-  for (const [rel, html] of Object.entries(pages).filter(([rel]) => rel.endsWith('.html'))) {
-    // ohne JavaScript lesbar: außer der gemeinsamen Navigation lädt keine Seite ein Skript; Bausteine stehen fertig im HTML
-    assert.deepEqual([...html.matchAll(/<script[^>]*\bsrc="([^"]+)"/g)].map((m) => m[1]), ['/assets/site-navigation.js'], rel);
-    assert.ok(html.includes(`<link rel="stylesheet" href="/assets/vu-ui.css?v=${VUUI.VERSION}">`), `${rel}: Marke der Bausteine`);
-    assert.equal((html.match(/<a class="vu-next" /g) || []).length, 1, `${rel}: eine „Weiter“-Karte am Seitenende`);
-    assert.deepEqual([...html.matchAll(/<nav class="in-tabs"[^>]*>(.*?)<\/nav>/g)].map((m) => m[1].replace(/<[^>]+>/g, '|')), ['|Artikel||Aktienmagazin||Reports|'], rel);
+  // Artikel: Titelbild im Rahmen des Prototyps mit der einzigen h1, Aktien als Vorschau-Ziele
+  for (const a of artikel) {
+    const html = pages[`insights/${a.slug}/index.html`];
+    assert.equal((html.match(/<h1[ >]/g) || []).length, 1, `${a.slug}: genau eine h1`);
+    assert.ok(html.includes('<div class="in-held in-held--artikel">') && html.includes(`<h1>${a.titel.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}</h1>`), `${a.slug}: Titelbild`);
+    for (const t of a.ticker) assert.ok(html.includes(`data-vu-stock="${t}"`), `${a.slug}: ${t} als Vorschau-Ziel`);
   }
+  // Farben: Schwarz, Weiß, Graustufen, Neongrün, das Nachtschwarz der Bausteine und das Rot der Tagesbewegung (Owner 15.11.2026)
+  for (const hex of read('insights/insights.css').match(/#[0-9a-f]{3,8}\b/gi) || []) {
+    const h = hex.slice(1).toLowerCase(), full = h.length === 3 ? [...h].map((c) => c + c).join('') : h;
+    assert.ok(['c8f531', '0e1013', 'c4281c'].includes(full) || (full.slice(0, 2) === full.slice(2, 4) && full.slice(2, 4) === full.slice(4, 6)), `insights.css: Farbe außerhalb der Palette: ${hex}`);
+  }
+  for (const [rel, html] of Object.entries(pages).filter(([rel]) => rel.endsWith('.html'))) {
+    // ohne JavaScript lesbar: außer der gemeinsamen Navigation lädt jede Seite nur insights/news.js (verzögert, nur Ergänzungen)
+    assert.deepEqual([...html.matchAll(/<script[^>]*\bsrc="([^"]+)"/g)].map((m) => m[1].replace(/\?.*$/, '')), ['/assets/site-navigation.js', '/insights/news.js'], rel);
+    assert.match(html, /<script src="\/insights\/news\.js\?v=[^"]+" defer><\/script>/, rel);
+    assert.ok(html.includes(`<link rel="stylesheet" href="/assets/vu-ui.css?v=${VUUI.VERSION}">`), `${rel}: Marke der Bausteine`);
+    assert.ok(html.includes('<meta name="theme-color" content="#08080a">') && html.includes('data-vu-tabs="inhalt"'), `${rel}: dunkler Standard, Reiter im Inhalt`);
+    assert.equal((html.match(/<a class="vu-next" /g) || []).length, 1, `${rel}: eine „Weiter“-Karte am Seitenende`);
+    assert.ok(html.includes('data-in-hinweise>Daten &amp; Hinweise</a>'), `${rel}: „Daten & Hinweise“ am Seitenende`);
+    assert.deepEqual([...html.matchAll(/<nav class="in-tabs"[^>]*>(.*?)<\/nav>/g)].map((m) => m[1].replace(/<[^>]+>/g, '|')), ['|Heute||Magazin||Kurz erklärt||Reports|'], rel);
+  }
+});
+
+test('IN-9 · news.js: keine Wortwahl-Verstöße, Tagesbewegung nur über published-close.js und core/identity.js', () => {
+  const js = read('insights/news.js');
+  assert.doesNotMatch(js.replace(/\/\*[\s\S]*?\*\//g, ''), /Signal|Empfehlung|Kursziel|für dich/i);
+  assert.match(js, /PC\.dayChange\(series, today\)/);
+  assert.match(js, /Id\.securityIdForTicker\(t\)/);
+  assert.doesNotMatch(js, /["']ref_["']\s*\+/, 'keine eigene Identitätsbildung (ADR-001)');
 });

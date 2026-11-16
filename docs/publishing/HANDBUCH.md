@@ -213,11 +213,15 @@ Einordnung nach MAR/DelVO 2016/958, konkrete Angaben zu Interessenkonflikten, Bi
 Regeln wie im Heft (Abschnitt 6). Zusätzlich: Privatpersonen, gegen die nur Vorwürfe bestehen, werden nicht namentlich
 genannt; Vorwürfe stehen im Konjunktiv mit Quelle, die Gegenseite kommt zu Wort.
 
-**Darstellung (App-Konzept 2, Owner 14.11.2026):** Die Übersicht zeigt den neuesten Artikel randlos als Aufmacher, danach je
-eine Bühne für Aktienmagazin (dunkel) und Aktienreport (Neongrün) mit Titelseite, Nummer, Seitenzahl und beiden Knöpfen, dann
-die übrigen Artikel mit Bild, Titel, Datum und Aktie; Heft und Report zeigen ihren Inhalt als Schiene der Seitenbilder.
-Alles schreibt `products/insights/build.mjs` als fertiges HTML (Bausteine aus `assets/vu-ui.js`, ohne JavaScript lesbar);
-Adressen, Kopfangaben, Feed, Sitemap und `artikel.json` bleiben unverändert, der Tageslauf baut mit demselben Befehl.
+**Darstellung (App-Konzept 2, Prototyp `#news`, Owner 15.11.2026: „1:1 wie im Prototyp“):** `/insights/` ist der Bildschirm „News“
+im Dock. Oben der neueste Artikel randlos als Titelbild (470 px, Rubrik, Titel, Aktien mit Tagesbewegung, Lesezeit), darunter die
+Reiter im Inhalt (Heute · Magazin · Kurz erklärt · Reports), drei Artikelzeilen, die Kachel des Aktienmagazins mit Lesefortschritt,
+„Kurz erklärt in 30 Sekunden“ (Erklärvideos aus `willkommen/config/stories.json`), „Zu deinen Aktien“ (nur mit Watchlist),
+Aktienreports, danach alle weiteren Artikel. Artikel, Heft und Report tragen dieselben Reiter; der Artikel beginnt mit demselben
+Titelbild. Alles schreibt `products/insights/build.mjs` als fertiges HTML (ohne JavaScript lesbar); `insights/news.js` ergänzt nur
+Tagesbewegung (`quant/engines/published-close.js#dayChange`), „heute“, Watchlist-Artikel, Lesefortschritt und das Video-Fenster.
+Adressen, Kopfangaben, Feed, Sitemap und `artikel.json` bleiben unverändert, der Tageslauf baut mit demselben Befehl
+(neue Erklärvideos in `stories.json` brauchen einen Neubau). `/news/` (Nachrichten-Feed unter „Weitere Produkte“) ist eine andere Seite.
 
 ## 9. Suche: Plan für die Freischaltung der ganzen Website
 
