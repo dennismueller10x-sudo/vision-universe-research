@@ -32,7 +32,7 @@ müssen diese Funktionen umgebaut werden, bevor das Produkt öffentlich startet:
 | L3 | Musterdepots und Hausstrategie: heutige Bestände und das Protokoll „Rein/Raus“ live | Als Forschung mit Abstand zeigen, z. B. Bestände mit Verzögerung oder nur als Verlauf im Backtest, nicht als heutige Kaufliste. | D2 + Quant |
 | L4 | Analysten-Seite und der Analysten-Bereich in Fundamental: Konsens „Kaufen/Verkaufen“, Kursziele Dritter | Auch die Weitergabe fremder Empfehlungen fällt unter Art. 20 MAR und § 86 WpHG. Empfehlung: Labels „Kaufen/Halten/Verkaufen“ und „Kursziel-Potenzial“ entfernen oder die Seite abschalten, bis ein Anwalt das geprüft hat. | Owner-Entscheidung, dann D2 |
 | L5 | Reels zu Einzelaktien („🐂 oder 🐻“) | **Entfällt. Owner-Entscheidung 06.11.: Reels bleiben unverändert** (Social Media, nicht Teil der App). | – |
-| L6 | AI Atlas | Fragen „soll ich kaufen?“ oder Fragen mit persönlichen Angaben neutral ablehnen; nur Filter und Daten liefern. | vu-ask |
+| L6 | Vision Universe KI | Fragen „soll ich kaufen?“ oder Fragen mit persönlichen Angaben neutral ablehnen; nur Filter und Daten liefern. | vu-ask |
 | L7 | Gesamturteil je Aktie („Überwiegend stark“) | Neutral zählen („4 von 7 Faktoren im oberen Drittel“). Kein Gesamturteil als Wort. | D2 |
 
 **Owner-Entscheidung 06.11.:** Supertrader-Kursmarken (Einstieg, Ausstieg, Stopp) und Setup-Ziele werden als Analyse
@@ -183,7 +183,7 @@ sich darauf zu verlassen, „nur Software“ zu sein.
   stillschweigend entstehen, wenn jemand erkennbar auf eine Auskunft vertraut. Bei einer Software für alle mit klarer
   Leistungsbeschreibung ist das Risiko gering. Es wird durch die neue AGB-Ziffer 3 weiter gesenkt.
 - **KI-Verordnung (EU) 2024/1689, Art. 50:** Transparenzpflichten für KI-Systeme, die mit Menschen interagieren, und für
-  KI-erzeugte Texte, gültig ab 02.08.2026. Der AI Atlas muss erkennbar als KI arbeiten; das ist heute schon so.
+  KI-erzeugte Texte, gültig ab 02.08.2026. Die Vision Universe KI muss erkennbar als KI arbeiten; das ist heute schon so.
 
 ## 3. Bewertung je Produktfunktion
 
@@ -326,7 +326,7 @@ Zu vermeiden:
 - Positionsgröße je Nutzer,
 - automatische Ausführung.
 
-### AI Atlas (`/ask/`, KI übersetzt Fragen in Filter) – kritisch
+### Vision Universe KI (`/ask/`, KI übersetzt Fragen in Filter) – kritisch
 
 Was es ist:
 - Ein Chat lädt zu persönlichen Fragen ein („Ich bin 30 und habe 5.000 €, was soll ich kaufen?“).
@@ -339,8 +339,8 @@ Pflichten:
 - Der Hinweis „ai“ steht sichtbar.
 - KI-VO Art. 50.
 
-Zu vermeiden: jede Antwort im Stil „für dich geeignet“ und jede Abfrage von Alter, Vermögen oder Risikoneigung im
-Atlas.
+Zu vermeiden: jede Antwort im Stil „für dich geeignet“ und jede Abfrage von Alter, Vermögen oder Risikoneigung in der
+Vision Universe KI.
 
 ### Analysten (`/analysten/`, Fundamental-Bereich): Kaufen/Halten/Verkaufen, Kursziele Dritter – kritisch
 
@@ -450,7 +450,7 @@ Pflichten: Nur nach Anwaltsprüfung.
 3. **Ein Disclaimer heilt nichts.** „Keine Anlageempfehlung“ unter einem Text mit „Interessant ab 41,20 $, Ziel 48 $“
    ändert die Einordnung nicht. Die Aufsicht schaut auf den Inhalt. Disclaimer helfen bei Haftung und Irreführung, nicht
    bei der MAR-Einordnung.
-4. **Personalisierung kippt alles.** Sobald irgendein Teil, vor allem AI Atlas, Vorsorge oder künftige Benachrichtigungen,
+4. **Personalisierung kippt alles.** Sobald irgendein Teil, vor allem die Vision Universe KI, Vorsorge oder künftige Benachrichtigungen,
    Ergebnisse an persönliche Umstände knüpft, droht die erlaubnispflichtige Anlageberatung.
 5. **Die Passwortmaske ändert nichts.** Wer sie hat, kann die Seite nutzen; die Daten sind faktisch öffentlich. Für die
    MAR ist ein zahlender Abonnentenkreis ebenfalls ein Verbreitungskanal.
@@ -460,7 +460,7 @@ Pflichten: Nur nach Anwaltsprüfung.
 1. **Anlageberatung vermeiden:**
    - keine Fragen zu persönlichen Umständen,
    - keine „passt zu dir“-Texte,
-   - AI Atlas und Vorsorge entsprechend absichern.
+   - Vision Universe KI und Vorsorge entsprechend absichern.
 
    Das ist in den Bedingungen festgeschrieben und in [WORTWAHL.md](WORTWAHL.md) geregelt.
 2. **Keine Empfehlungen:** die Umbauten L1–L7 aus §0 vor dem öffentlichen Start. Erst dann ist die Linie „keine Anzeige

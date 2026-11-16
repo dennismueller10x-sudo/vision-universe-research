@@ -1,7 +1,9 @@
 # Rechtliche Abnahme – Free/Pro, Newsletter, Kündigen, Widerrufen
 
 Stand 06.11.2026. **Keine Rechtsberatung.** Die Texte sind seit 06.11.2026 **online freigeschaltet** (Owner-Entscheidung,
-Fassung `vu-recht-2026-11-06-1`, `LEGAL_STATUS = 'freigegeben'`, `VU_LEGAL_APPROVED` gesetzt, kein Entwurfsbanner). Inhalt
+Fassung `vu-recht-2026-11-06-1`, `LEGAL_STATUS = 'freigegeben'`, `VU_LEGAL_APPROVED` gesetzt, kein Entwurfsbanner; seit
+16.11.2026 Fassung `vu-recht-2026-11-16-1`: nur der Produktname „AI Atlas“ → „Vision Universe KI“ in den Risikohinweisen,
+Owner-Freigabe des Namens, Pflicht-Hinweise `vu-hinweise-2026-11-16-1`). Inhalt
 ist Fassung 4 aus #1449, ergänzt um die Owner-Angaben vom 06.11. (USt-IdNr., Kontaktformular statt Telefon, kein
 Datenschutzbeauftragter). Die früheren **[[PRÜFEN: …]]**-Marken stehen nicht mehr im Text; jede Frage steht unverändert in
 [../legal/ANWALTSMAPPE.md](../legal/ANWALTSMAPPE.md), Abschnitt „Offen nach Freischaltung 06.11.“. **Die Anwaltsprüfung ist

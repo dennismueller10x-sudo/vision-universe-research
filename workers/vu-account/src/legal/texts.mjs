@@ -15,13 +15,15 @@
 // Grundlage: docs/legal/EINORDNUNG.md (keine Rechtsberatung; Pruefung durch Fachanwalt offen, docs/legal/ANWALTSMAPPE.md).
 //
 // Fassung vu-recht-2026-11-06-1: Fassung 4 freigeschaltet, offene Angaben ergaenzt, Pruefmarken entfernt.
+// Fassung vu-recht-2026-11-16-1: Produktname „AI Atlas“ → „Vision Universe KI“ in den Risikohinweisen (Abschnitt 3), sonst
+// unveraendert (Owner-Freigabe 16.11.2026: Name „Vision Universe KI“ fuer das ganze Produkt).
 //
 // Aenderungen an den Texten: LEGAL_VERSION hochzaehlen (eigener PR mit Owner-Freigabe, Kategorie Recht). Der oeffentliche Checkout setzt zusaetzlich VU_LEGAL_APPROVED =
 // LEGAL_VERSION voraus (config.mjs) – ohne freigegebene Texte bleibt er geschlossen.
 //
 // Mini-Auszeichnung: Bloecke {h}, {p}, {ul}, {note}; im Text **fett** und [Text](/pfad|https://…).
 
-export const LEGAL_VERSION = 'vu-recht-2026-11-06-1';
+export const LEGAL_VERSION = 'vu-recht-2026-11-16-1';
 export const LEGAL_STATUS = 'freigegeben'; // 'entwurf' | 'freigegeben'
 export const LEGAL_BASE = 'https://konto.visionuniverse.de';
 
@@ -231,7 +233,7 @@ export const DOCS = {
         'Alle Methoden beruhen auf Daten der Vergangenheit. Märkte ändern sich; eine Regel, die früher funktioniert hat, kann künftig versagen.',
         'Einstufungen wie „Stark“, „Mittel“ oder „Schwach“ und Ranglisten beschreiben die rechnerische Lage einer Aktie im Vergleich zu anderen nach einer bestimmten Regel. Sie sind keine Prognose.',
         'Zonen laut Methode (z. B. Unterstützung, Widerstand, Ungültig-Marke) sind Rechenpunkte einer Methode, keine Kursprognose und kein Kursziel. Eine Marke, unter der eine Methode ungültig wird, begrenzt Verluste nicht: Bei Kurslücken kann der Kurs weit darunter liegen.',
-        'Texte, die mit künstlicher Intelligenz erzeugt, übersetzt oder zusammengefasst werden (z. B. im AI Atlas), können Fehler enthalten. Prüfe wichtige Angaben an der Quelle.',
+        'Texte, die mit künstlicher Intelligenz erzeugt, übersetzt oder zusammengefasst werden (z. B. in der Vision Universe KI), können Fehler enthalten. Prüfe wichtige Angaben an der Quelle.',
       ]},
       {h: '4. Backtests und Musterdepots'},
       {p: 'Backtests sind als **„Forschung, nicht zertifiziert“** gekennzeichnet. Sie rechnen eine Regel rückwirkend und hängen von Annahmen ab: Zeitraum, Kosten, Ausführungskurse und welche Aktien in den Daten enthalten sind. Fehlen Unternehmen, die inzwischen nicht mehr gehandelt werden, können Ergebnisse zu gut aussehen; die Angaben dazu stehen beim jeweiligen Backtest. Musterdepots laufen ohne echtes Geld. Frühere und simulierte Wertentwicklungen sind kein verlässlicher Indikator für künftige Ergebnisse.'},
