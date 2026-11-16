@@ -123,7 +123,11 @@ VERZEICHNIS_ETF_0611, VERZEICHNIS_WARRANT_0611 = 269, {"BNCWW"}
 # neu im Produkt, aber noch zu kurz (SHORT, kein Zugewinn); sechs Titel (ABTC, ELVR, NMP, PLT, PMI, TONX) sind ueber 300 Bars
 # gealtert (AGED_PAST_THRESHOLD, Deckungsabweichung je Titel, deckung-Lauf 42987197248).
 # Die 200 Wechsel ELIGIBLE -> REVIEW desselben Laufs aendern den Umfang nicht (REVIEW gehoert zum Produkt).
+# 16.11.2026 (Deckungslauf 43683449015, 15.11.): Technisch bereit 5661 + 5 = 5666. AGNCZ, FCHL, SOCA, SSM, UMBFP sind ueber
+# 300 Bars gealtert (AGED_PAST_THRESHOLD: am 11.09. 255/256 Bars, am 11.11. noch in tooShortSymbols, am 15.11. nicht mehr);
+# kein Titel neu zu kurz, Produkt (6309) und Charts (6306) unveraendert, Abgleich reconciliation.json Delta 0.
 VERZEICHNIS_WIEDER_STAMMAKTIE_1111 = {"WTIB"}
+GEALTERT_1611 = {"AGNCZ", "FCHL", "SOCA", "SSM", "UMBFP"}
 VERZEICHNIS_AUSGESCHLOSSEN_0611 = ABNAHME["verzeichnisAusgeschlossen"]
 WTIB_1111, GEALTERT_1111 = 1, 6
 ENTFERNTE_DEBT_TITEL = {
@@ -261,6 +265,7 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         self.assertFalse(raus & set(m["CHART_AVAILABILITY"]["notRenderableSymbols"]))
         self.assertFalse(raus & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
         self.assertNotIn("TBHC", m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"])
+        self.assertFalse(GEALTERT_1611 & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
         technisch_bereit_raus, gealtert = 137, 1
         self.assertEqual(VERZEICHNIS_AUSGESCHLOSSEN - technisch_bereit_raus, 30)  # schon am Bezug zu kurz
         # Uebergang 04.10. -> 10.10. (167 Verzeichnisbelege), unveraendert als Rechnung festgehalten
@@ -273,8 +278,8 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111, AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
         self.assertEqual(POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111,
                          AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
-        self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611 + GEALTERT_1111,
-                         AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611 + GEALTERT_1111
+                         + len(GEALTERT_1611), AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
         eignung = lade(ROOT / "quant/data/market/security-master/eligibility.json")
         etf_raus = [d for d in eignung["decisions"] if d["product_eligibility"] == "EXCLUDED"
                     and d.get("product_eligibility_reason") == "CONFIRMED_NON_EQUITY:ETF"]
