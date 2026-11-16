@@ -87,6 +87,37 @@
     });
   }
 
+  /* Kurs gegen Ungültig-Marke (Prototyp „App-Konzept 2“, Fenster „ablauf“: Balken mit Ungültig-Marke und Schluss; Owner 16.11.2026:
+     gemessen gegen den Wochenschluss). Die Zahlen rechnet VUElliottHome.gapOfAnalysis aus der Analyse, die das Aktienbild schon
+     geladen hat (VUTechnicalIntelligence.getAnalysis liefert sie aus seinem Speicher, keine zweite Anfrage): Marke der Zeile „Grenze“
+     (Hauptlesart) und Schluss der letzten Wochenkerze. Nur mit Zählung (Kachel „Die Lesart in drei Sätzen“); fehlt eine Zahl, kein Balken. */
+  function gapCard(g) {
+    var sec = make("section", "ew-gap is-" + g.side), bar = make("div", "ew-gap-bar"), fill = make("i", "ew-gap-fill");
+    sec.setAttribute("aria-label", "Kurs gegen Ungültig-Marke");
+    sec.appendChild(make("p", "vu-ltag ew-gap-k", "Kurs gegen Ungültig-Marke"));
+    var h = sec.appendChild(make("p", "ew-gap-h"));
+    if (g.beyond) h.appendChild(make("span", "ew-gap-t", g.line));
+    else { h.appendChild(make("b", "ew-gap-n num", g.pctText)); h.appendChild(make("span", "ew-gap-t", "Abstand zur Ungültig-Marke (Wochenschluss " + g.dateText + ")")); }
+    bar.setAttribute("role", "img"); bar.setAttribute("aria-label", g.aria);
+    bar.style.setProperty("--p", (g.pos * 100).toFixed(1));
+    bar.appendChild(make("span", "ew-gap-tr")).appendChild(fill);
+    bar.appendChild(make("i", "ew-gap-mk")); bar.appendChild(make("i", "ew-gap-dot"));
+    sec.appendChild(bar);
+    var cols = sec.appendChild(make("div", "ew-gap-cols")), mk = make("div", "ew-gap-c ew-gap-c--mk"), cl = make("div", "ew-gap-c ew-gap-c--cl");
+    mk.appendChild(make("span", "", g.markLabel)); mk.appendChild(make("b", "num", g.markText));
+    cl.appendChild(make("span", "", g.closeLabel)); cl.appendChild(make("b", "num", g.closeText));
+    cols.appendChild(mk); cols.appendChild(cl);
+    return sec;
+  }
+  function abstand(cb, t) {
+    var M = global.VUElliottHome, TI = global.VUTechnicalIntelligence, story = cb.querySelector(":scope > .cb-story");
+    if (!story || !t || !M || !M.gapOfAnalysis || !TI || !TI.getAnalysis) return;
+    TI.getAnalysis(t).then(function (r) {
+      var g = r && r.state === "AVAILABLE" ? M.gapOfAnalysis(r.analysis) : null;
+      if (g && story.isConnected && !cb.querySelector(".ew-gap")) story.after(gapCard(g));
+    }).catch(function () { /* ohne Analyse kein Balken */ });
+  }
+
   function ticker() {
     var M = global.VUElliottHome, t = M && M.parseHash ? M.parseHash(global.location.hash).ticker : null;
     return t || (/^#\/([A-Za-z0-9.-]{1,12})(\?|$)/.exec(global.location.hash) || [])[1] || null;
@@ -110,7 +141,7 @@
     if (lesart && ctr) { lesart.classList.add("ew-lesart"); ctr.appendChild(lesart); }
     var zeit = cb.querySelector(".cb-ep-body #zeitreise");
     if (zeit && card) { zeit.classList.add("ew-zeit"); card.after(zeit); }
-    balken(cb); leiter(cb);
+    balken(cb); leiter(cb); abstand(cb, ticker());
 
     /* Tipp zum Chart: ein Tipp entfernt hinter „?“ (C09), derselbe Satz. */
     var tip = card && card.querySelector(":scope > p.cb-small.cb-dim");

@@ -553,8 +553,13 @@ test("EHV-6 · Aktie nach App-Konzept 2: aktie.js lädt nur mit dem Aktienbild, 
   assert.match(app, /function loadStack\(\) \{[^]*?document\.head\.append\(el\("script", \{ src: "\/elliott\/aktie\.js\?v=[^"]+" \}\)\)[^]*?fetchRes\("\/quant\/index\.html"\)/, "aktie.js kommt mit dem Quant-Stack des Aktienbilds");
   assert.doesNotMatch(html, /aktie\.js/, "nicht im Startbündel der Elliott-Startseite");
   const code = js.replace(/\/\*[\s\S]*?\*\//g, "");
-  /* Nur Darstellung: keine Datenanfrage, keine Engine, kein Speicher. */
-  assert.doesNotMatch(code, /fetch\(|XMLHttpRequest|VUTechnicalIntelligence|getAnalysis|VUTechnical\b|localStorage|sessionStorage/, "liest keine Analyse und speichert nichts");
+  /* Nur Darstellung: keine Datenanfrage, keine Engine, kein Speicher. Einzige Ausnahme (Owner 16.11.2026, Balken „Kurs gegen
+     Ungültig-Marke“): die Analyse, die das Aktienbild schon geladen hat, aus dem Speicher von VUTechnicalIntelligence.getAnalysis –
+     gerechnet wird in VUElliottHome.gapOfAnalysis, nicht hier (EHV-7). */
+  const noGap = code.replace(/function abstand\(cb, t\) \{[^]*?\n  \}\n/, "");
+  assert.notEqual(noGap, code, "abstand() vorhanden");
+  assert.doesNotMatch(noGap, /fetch\(|XMLHttpRequest|VUTechnicalIntelligence|getAnalysis|VUTechnical\b|localStorage|sessionStorage/, "liest außerhalb von abstand() keine Analyse und speichert nichts");
+  assert.doesNotMatch(code, /fetch\(|XMLHttpRequest|VUTechnical\b|localStorage|sessionStorage/, "keine Anfrage, kein Speicher");
   assert.doesNotMatch(code, /Signal|Empfehlung|Kursziel|Zielbereich|Ziel\s*[12]|für dich|Wahrscheinlich|Prognose/i, "Wortwahl");
   /* Ohne VUUI bleibt das bisherige Aussehen: nichts wird angefasst, bevor die Bausteine da sind. */
   assert.match(code, /if \(!cb \|\| !U \|\| !U\.sheet \|\| !U\.openSheet \|\| !U\.closeSheet\) return;\s*main\.dataset\.ak2 = "1"; cb\.classList\.add\("is-ak2"\);/);
@@ -588,4 +593,97 @@ test("EHV-6 · Aktie nach App-Konzept 2: aktie.js lädt nur mit dem Aktienbild, 
     assert.ok(full === "c8f531" || (r === g && g === b), "nur Grau oder Neongrün: " + hex);
   }
   for (const rgb of block.match(/rgba?\([^)]*\)/g) || []) { const v = rgb.match(/\d+/g).slice(0, 3); assert.ok(v[0] === v[1] && v[1] === v[2], "nur Grau: " + rgb); }
+});
+
+/* ---------------------------------------------------------------- Kurs gegen Ungültig-Marke (Owner 16.11.2026: gegen den Wochenschluss) */
+const BAD_WORDS = /Signal|Empfehlung|Kursziel|Zielbereich|Prognose|Wahrscheinlich|für dich|kaufen|verkaufen/i;
+const gapTexts = (g) => [g.pctText, g.closeText, g.markText, g.markLabel, g.closeLabel, g.short, g.line, g.aria].join(" | ");
+
+test("EHV-7 · Abstand zur Ungültig-Marke: Formel, Richtung, Datum; ohne eine der Zahlen kein Balken", () => {
+  /* Aufwärtszählung: ungültig unter der Marke; Abstand = (Wochenschluss − Marke) / Wochenschluss */
+  const up = M.gapOfRow({ close: 206.63, inv: 178.47, dir: "BULLISH", asOf: "2026-11-13", tf: "1W", cur: "USD" });
+  assert.equal(up.side, "below");
+  assert.ok(Math.abs(up.pct - (206.63 - 178.47) / 206.63) < 1e-12);
+  assert.equal(up.pctText, "14 %");
+  assert.equal(up.markLabel, "Ungültig unter"); assert.equal(up.markText, "178,47 $");
+  assert.equal(up.closeLabel, "Wochenschluss 13.11."); assert.equal(up.closeText, "206,63 $");
+  assert.equal(up.line, "Abstand zur Ungültig-Marke: 14 % (Wochenschluss 13.11.)");
+  assert.equal(up.short, "Abstand 14 % · Wochenschluss 13.11.");
+  assert.ok(Math.abs(up.pos - up.pct / M.GAP_SCALE) < 1e-12);
+  /* Abwärtszählung: ungültig über der Marke; Abstand = (Marke − Wochenschluss) / Wochenschluss, unter 10 % mit einer Nachkommastelle */
+  const down = M.gapOfRow({ close: 3.32, inv: 3.5, dir: "BEARISH", asOf: "2026-11-13", tf: "1W" });
+  assert.equal(down.side, "above"); assert.equal(down.pctText, "5,4 %"); assert.equal(down.markLabel, "Ungültig über");
+  assert.equal(down.line, "Abstand zur Ungültig-Marke: 5,4 % (Wochenschluss 13.11.)");
+  /* Großer Abstand: der Punkt steht am Ende der Skala, die Zahl bleibt genau */
+  const far = M.gapOfRow({ close: 1.06, inv: 1.6, dir: "BEARISH", asOf: "2026-11-13", tf: "1W" });
+  assert.equal(far.pos, 1); assert.equal(far.pctText, "51 %");
+  /* Wochenschluss jenseits der Marke: kein Abstand, sondern der Satz, dass er jenseits liegt */
+  const beyond = M.gapOfRow({ close: 3, inv: 3.5, dir: "BULLISH", asOf: "2026-11-13", tf: "1W" });
+  assert.equal(beyond.beyond, true); assert.equal(beyond.pos, 0);
+  assert.equal(beyond.line, "Der Wochenschluss vom 13.11. liegt unter der Ungültig-Marke.");
+  /* Fehlt etwas, gibt es keinen Balken (keine Attrappe) */
+  const ok = { close: 10, inv: 9, dir: "BULLISH", asOf: "2026-11-13", tf: "1W" };
+  for (const patch of [{ inv: null }, { inv: 0 }, { inv: NaN }, { close: null }, { close: 0 }, { dir: "NEUTRAL" }, { dir: null }, { asOf: null }, { asOf: "13.11." }, { tf: "1D" }, { tf: null }])
+    assert.equal(M.gapOfRow({ ...ok, ...patch }), null, JSON.stringify(patch));
+  assert.equal(M.gapOfRow(null), null);
+  assert.equal(M.invalidGap({ close: 10, mark: 9, side: "sideways", asOf: "2026-11-13", tf: "1W" }), null);
+  for (const g of [up, down, far, beyond]) assert.doesNotMatch(gapTexts(g), BAD_WORDS, "Wortwahl: Beschreibung, keine Prognose");
+});
+
+test("EHV-7 · Aktienbild: dieselbe Marke wie die Zeile „Grenze“ (Hauptlesart), derselbe Wochenschluss wie die letzte Wochenkerze", () => {
+  const a = { timeframe: "1W", asOf: "2026-11-13", price: { close: 39.74 }, chart: { timestamps: ["2026-11-06", "2026-11-13"], close: [39.54, 39.74] },
+    scenarios: [{ kind: "ALTERNATIVE", invalidation: { price: 32.9, direction: "below" } }, { kind: "PRIMARY", invalidation: { price: 52, direction: "above" } }],
+    pro: { elliott: { primary: { invalidation: { price: 91.96, direction: "above" } } } } };
+  const g = M.gapOfAnalysis(a);
+  assert.equal(g.markText, "52,00 $", "Szenario PRIMARY, nicht die Musterregel der Zählung");
+  assert.equal(g.side, "above"); assert.equal(g.closeText, "39,74 $"); assert.equal(g.dateText, "13.11.");
+  assert.equal(M.gapOfAnalysis({ ...a, scenarios: [a.scenarios[0]] }), null, "ohne Hauptlesart kein Balken");
+  assert.equal(M.gapOfAnalysis({ ...a, scenarios: [{ kind: "PRIMARY", invalidation: null }] }), null, "ohne Marke kein Balken");
+  assert.equal(M.gapOfAnalysis({ ...a, timeframe: "1D" }), null, "nur gegen den Wochenschluss");
+  assert.equal(M.gapOfAnalysis({ ...a, price: {} }), null, "ohne Wochenschluss kein Balken");
+  assert.equal(M.gapOfAnalysis(null), null);
+});
+
+test("EHV-7 · echte Daten: Karte „Zählbar heute“ und Elliott-Bild nennen denselben Abstand", { skip: !HAVE_DATA && "v3-Daten fehlen" }, () => {
+  const I = require(join(ROOT, "core/identity.js"));
+  const index = gz(join(V3, "index.json.gz")), a = H.applicableOf(index.rows, H.loadNames(ROOT));
+  const shards = new Map();
+  let n = 0;
+  for (const r of a.rows) {
+    const g = M.gapOfRow(r);
+    if (typeof r.inv !== "number" || !M.dirOf(r)) { assert.equal(g, null, r.t + ": ohne Marke oder Richtung kein Balken"); continue; }
+    assert.ok(g, r.t + ": Abstand vorhanden");
+    const key = I.shardKey(r.t);
+    if (!shards.has(key)) shards.set(key, gz(join(V3, "shards", key + ".json.gz")).instruments || {});
+    const doc = shards.get(key)[r.t];
+    if (!doc) continue;
+    const d = M.gapOfAnalysis(doc);
+    assert.ok(d, r.t + ": Elliott-Bild hat denselben Balken");
+    assert.deepEqual([d.side, d.markText, d.closeText, d.pctText, d.dateText], [g.side, g.markText, g.closeText, g.pctText, g.dateText], r.t);
+    assert.doesNotMatch(gapTexts(g), BAD_WORDS);
+    n++;
+  }
+  assert.ok(n > 0 || a.rows.every((r) => typeof r.inv !== "number"), "mindestens ein Abgleich");
+});
+
+test("EHV-8 · Anzeige: Balken im Elliott-Bild nach den drei Sätzen, auf den Karten „Zählbar heute“ ohne Mehrladen", () => {
+  const js = read("elliott/aktie.js").replace(/\/\*[\s\S]*?\*\//g, ""), app = read("elliott/app.js"), wellen = read("elliott/wellen.css"), css = read("elliott/elliott.css");
+  /* Elliott-Bild: nur mit Zählung (.cb-story), Rechnung im Modell, Zahlen nur als Text (make/textContent), Balken mit Beschreibung */
+  assert.match(js, /story = cb\.querySelector\(":scope > \.cb-story"\)/);
+  assert.match(js, /if \(!story \|\| !t \|\| !M \|\| !M\.gapOfAnalysis \|\| !TI \|\| !TI\.getAnalysis\) return;/);
+  assert.match(js, /var g = r && r\.state === "AVAILABLE" \? M\.gapOfAnalysis\(r\.analysis\) : null;\s*if \(g && story\.isConnected && !cb\.querySelector\("\.ew-gap"\)\) story\.after\(gapCard\(g\)\);/, "ohne Abstand kein Balken");
+  assert.match(js, /bar\.setAttribute\("role", "img"\); bar\.setAttribute\("aria-label", g\.aria\);/);
+  assert.doesNotMatch(js, /\.price\.close|invalidation/, "keine eigene Rechnung in aktie.js");
+  assert.match(read("quant/app/page-chartbild.js"), /el\("section", \{ class: "cb-story", "aria-label": "Die Lesart in drei Sätzen" \}/, "Anker stammt aus page-chartbild.js");
+  /* Karten „Zählbar heute“: aus der Zeile des Wellen-Index, kein Abruf */
+  assert.match(app, /g = inv \? M\.gapOfRow\(r\) : null;/);
+  assert.match(app, /g \? gapBar\(g\) : null, g \? el\("span", \{ class: "ek-xs ek-mut ek-nc-i ek-gap-t", text: g\.short \}\) : null\]/);
+  assert.match(app, /el\("span", \{ class: "ek-gap is-" \+ g\.side, style: "--p:" \+ \(g\.pos \* 100\)\.toFixed\(1\), "aria-hidden": "true" \}/);
+  /* Maße des Prototyps (Fenster „ablauf“): Spur 8px, Ungültig-Marke 20px, Schluss 24px; hell und dunkel */
+  assert.match(wellen, /#el-detail \.ew-gap-tr\{[^}]*height:8px/);
+  assert.match(wellen, /#el-detail \.ew-gap-mk\{[^}]*width:20px;height:20px/);
+  assert.match(wellen, /#el-detail \.ew-gap-dot\{[^}]*width:24px;height:24px/);
+  assert.match(wellen, /:root\[data-theme=dark\] #el-detail \.ew-gap\{/);
+  assert.match(css, /:root\[data-theme=dark\] \.ek \.ek-gap\{/);
+  assert.match(wellen, /#el-detail \.ew-gap\.is-above \.ew-gap-mk\{left:auto;right:0\}/, "Abwärtszählung: Marke rechts");
 });

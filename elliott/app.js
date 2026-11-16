@@ -58,13 +58,13 @@
   function loadStack() {
     if (!stackPromise) {
       global.QX_HOST = "elliott";     // vor dem Buendel: app.js startet dann keinen eigenen Router
-      document.head.append(el("script", { src: "/elliott/aktie.js?v=ak2-3" }));   // Aktienbild, App-Konzept 2
+      document.head.append(el("script", { src: "/elliott/aktie.js?v=ak2-4" }));   // Aktienbild, App-Konzept 2
       stackPromise = fetchRes("/quant/index.html").then(function (r) { return r.text(); }).then(function (html) {
         var gate = new DOMParser().parseFromString(html, "text/html").querySelector("script[data-content]");
         return gate ? fetchRes(gate.getAttribute("data-content")).then(function (r) { return r.text(); }) : html;
       }).then(function (html) {
         var doc = new DOMParser().parseFromString(html, "text/html"), loads = [];
-        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ak2-3"; } }]).forEach(function (l) {
+        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ak2-4"; } }]).forEach(function (l) {
           var href = l.getAttribute("href");
           if (!href || /site-navigation\.css/.test(href)) return;
           var link = el("link", { rel: "stylesheet", href: href, media: "not all", dataset: { qxHost: "1" } });
@@ -412,10 +412,16 @@
   }
   /* Karte „Zählbar heute“: wie „Heute neu“, führt in das Elliott-Bild der Aktie (/elliott/#/<T>). */
   function countTile(r) {
-    var d = M.dirOf(r), inv = M.invalidLine(r), name = M.shortName(r.n, r.t);
-    return el("a", { class: "el-cr ek-tile ek-tap ek-nc", role: "listitem", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv].filter(Boolean).join(", ") }, [
+    var d = M.dirOf(r), inv = M.invalidLine(r), name = M.shortName(r.n, r.t), g = inv ? M.gapOfRow(r) : null;
+    return el("a", { class: "el-cr ek-tile ek-tap ek-nc", role: "listitem", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv, g ? g.short : null].filter(Boolean).join(", ") }, [
       el("span", { class: "ek-nc-h" }, [frag(U.logo(r.t)), el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: name, title: r.n }), el("span", { class: "ek-xs ek-mut", text: M.countLine(r) })])]),
-      sparkOf(r.t, 1), el("span", { class: "ek-nc-f" }, [moveOf(r.t), el("span", { class: "ek-xs ek-b7", text: (d === "up" ? "▲ " : d === "down" ? "▼ " : "◆ ") + (DIRW[d] || "Richtung offen") })]), inv ? el("span", { class: "ek-xs ek-mut ek-nc-i", text: inv }) : null]);
+      sparkOf(r.t, 1), el("span", { class: "ek-nc-f" }, [moveOf(r.t), el("span", { class: "ek-xs ek-b7", text: (d === "up" ? "▲ " : d === "down" ? "▼ " : "◆ ") + (DIRW[d] || "Richtung offen") })]), inv ? el("span", { class: "ek-xs ek-mut ek-nc-i", text: inv }) : null,
+      g ? gapBar(g) : null, g ? el("span", { class: "ek-xs ek-mut ek-nc-i ek-gap-t", text: g.short }) : null]);
+  }
+  /* Kurs gegen Ungültig-Marke (wie im Elliott-Bild, klein): Wochenschluss und Marke aus der Zeile des Wellen-Index, nichts nachgeladen.
+     Fehlt eine Zahl, entsteht kein Balken (M.gapOfRow liefert null). */
+  function gapBar(g) {
+    return el("span", { class: "ek-gap is-" + g.side, style: "--p:" + (g.pos * 100).toFixed(1), "aria-hidden": "true" }, [el("span", { class: "ek-gap-tr" }, [el("i", { class: "ek-gap-fill" })]), el("i", { class: "ek-gap-mk" }), el("i", { class: "ek-gap-dot" })]);
   }
   /* Wellenlagen (Prototyp #technical „Muster im Markt“): je Lage ein Schema (keine echten Kurse), Zahl der Lesarten, Richtung als Pille.
      Punkte im Feld 122 × 56 für „aufwärts“; „abwärts“ ist dasselbe Bild gespiegelt. Der zuletzt laufende Abschnitt ist hervorgehoben. */

@@ -109,8 +109,13 @@ for (const vp of VIEWPORTS) {
 
     // Weg 1: Zaehlbar-Liste -> Aktie -> Detail
     const w3 = page.locator('#el-main a.el-cr').first();
+    // Kurs gegen Ungültig-Marke (Owner 16.11.2026, gegen den Wochenschluss): jede Karte „Zählbar heute“ mit Ungültig-Marke trägt
+    // den Balken und den Abstand; ohne Marke kein Balken. Kein zusätzlicher Abruf (Shards bleiben unangetastet, siehe oben).
+    const tileGap = await page.evaluate(() => [...document.querySelectorAll('.ek-rail a.el-cr.ek-nc')].map((a) => ({ inv: !!a.querySelector('.ek-nc-i:not(.ek-gap-t)'), bar: a.querySelectorAll('.ek-gap').length, t: (a.querySelector('.ek-gap-t') || {}).textContent || '' })));
+    check(tileGap.length > 0 && tileGap.every((g) => g.inv ? g.bar === 1 && /^Abstand \d+(,\d)? % · Wochenschluss \d\d\.\d\d\.$|^Wochenschluss \d\d\.\d\d\. (unter|über) der Marke$/.test(g.t) : g.bar === 0), 'Zählbar heute: Balken „Kurs gegen Ungültig-Marke“ genau bei Karten mit Marke (' + tileGap.filter((g) => g.bar).length + '/' + tileGap.length + ')');
     if (await w3.count()) {
       const symbol = await w3.getAttribute('data-symbol');
+      const gapOnTile = await w3.evaluate((a) => ((a.querySelector('.ek-gap-t') || {}).textContent || '').replace(/^Abstand (\S+ %).*$/, '$1'));
       await w3.click();
       await page.waitForURL(/\/elliott\/#\/[A-Z]/);
       await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 30000 });
@@ -145,6 +150,24 @@ for (const vp of VIEWPORTS) {
       await sheet.waitFor({ state: 'detached', timeout: 5000 }).catch(() => {});
       check(await page.locator('#el-detail .ew-end a.vu-next[href="/technical/#/chart/' + encodeURIComponent(symbol) + '"]').count() === 1 && await page.locator('#el-detail .ew-end .cb-crumbs a').count() === 2, 'Aktie: „Weiter“-Karte zur Chart-Lage in Technical, Rückweg und Frag VU am Seitenende');
       check(/Ungültig/.test(await page.locator('#el-detail .cb').innerText()), 'Aktie: Ungültig-Marke steht auf der Seite');
+      // Balken „Kurs gegen Ungültig-Marke“ nach „Die Lesart in drei Sätzen“: derselbe Abstand wie auf der Karte, genau eine h1, Kontrast ≥ 4,5 : 1
+      if (gapOnTile) {
+        await page.waitForSelector('#el-detail .cb > .cb-story + section.ew-gap', { timeout: 5000 }).catch(() => {});
+        const gap = await page.evaluate(() => {
+          const s = document.querySelector('#el-detail .cb > .cb-story + section.ew-gap');
+          if (!s) return null;
+          const rgb = (c) => (c.match(/[\d.]+/g) || []).slice(0, 3).map(Number), lum = (c) => { const v = rgb(c).map((x) => { x /= 255; return x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4; }); return 0.2126 * v[0] + 0.7152 * v[1] + 0.0722 * v[2]; };
+          const bg = getComputedStyle(s).backgroundColor, ratio = (n) => { const a = lum(getComputedStyle(n).color), b = lum(bg); return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05); };
+          const texts = [...s.querySelectorAll('.ew-gap-k, .ew-gap-n, .ew-gap-t, .ew-gap-c span, .ew-gap-c b')];
+          const bar = s.querySelector('.ew-gap-bar'), tr = s.querySelector('.ew-gap-tr').getBoundingClientRect(), mk = s.querySelector('.ew-gap-mk').getBoundingClientRect(), dot = s.querySelector('.ew-gap-dot').getBoundingClientRect();
+          return { n: (s.querySelector('.ew-gap-n') || {}).textContent || '', text: s.innerText, aria: bar.getAttribute('aria-label') || '', minContrast: Math.min(...texts.map(ratio)), h1: [...document.querySelectorAll('h1')].filter((h) => h.getClientRects().length).length,
+            sizes: [Math.round(tr.height), Math.round(mk.width), Math.round(dot.width)], inside: dot.left >= tr.left - 1 && dot.right <= tr.right + 1 && mk.left >= tr.left - 1 && mk.right <= tr.right + 1 };
+        });
+        check(!!gap && gap.n === gapOnTile && /Abstand zur Ungültig-Marke \(Wochenschluss \d\d\.\d\d\.\)/.test(gap.text) && /Ungültig (unter|über)/.test(gap.text) && /Abstand zur Ungültig-Marke/.test(gap.aria), 'Aktie: Balken „Kurs gegen Ungültig-Marke“ mit Abstand ' + (gap && gap.n) + ' wie auf der Karte (' + gapOnTile + ')');
+        check(!!gap && gap.sizes.join() === '8,20,24' && gap.inside, 'Aktie: Balken in den Maßen des Prototyps (Spur 8, Marke 20, Schluss 24) und innerhalb der Spur (' + (gap && gap.sizes.join()) + ')');
+        check(!!gap && gap.minContrast >= 4.5 && gap.h1 === 1, 'Aktie: Balken-Texte Kontrast ≥ 4,5 : 1 (' + (gap ? gap.minContrast.toFixed(2) : '–') + '), genau eine h1');
+        check(!(await page.locator('#el-detail .ew-gap').textContent()).match(/Signal|Kursziel|Empfehlung|Prognose/i), 'Aktie: Balken beschreibt nur den Abstand (Wortwahl)');
+      }
       // Weg 7: Zurueck zur Elliott-Startseite
       await page.goBack({ waitUntil: 'networkidle' });
       await page.waitForSelector('#el-main[data-state="ready"]');
