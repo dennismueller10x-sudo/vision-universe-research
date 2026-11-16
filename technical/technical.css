@@ -1183,3 +1183,47 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .tk .tk-lk{color:var(--tk-mut);font:700 12.5px/1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-decoration:underline;text-underline-offset:3px;background:none;border:0;cursor:pointer;min-height:44px;padding:0 10px}
 @media(min-width:761px){.tk .tk-markt-n{max-width:640px}}
 .tc.tk{padding-top:0}
+/* Chart erklären (engine/chart-explain.js): Knopf, Schrittkarte, Ebenen 150-Tage-Linie und Fibonacci */
+.tc-explain-btn{display:flex;align-items:center;gap:12px;width:100%;margin-top:12px;padding:12px 14px;border:0;border-radius:18px;background:var(--vu-lime,#c8f531);color:#000;font:inherit;text-align:left;cursor:pointer;min-height:56px}
+.tc-explain-btn>span:first-child{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#000;color:var(--vu-lime,#c8f531);font-size:13px;flex:none}
+.tc-explain-btn b{display:block;font-size:16px;font-weight:900;letter-spacing:-.02em}
+.tc-explain-btn small{display:block;font-size:12px;font-weight:600;opacity:.75}
+.tc-explain-btn[aria-busy=true]{opacity:.6}
+.tc-guide:empty{display:none}
+.tc-guide{background:#000;color:#fff;border-radius:22px;padding:14px;margin-top:12px}
+.tc-guide .tc-ltag{color:#9b9b9b}
+.tc-guide-h{display:flex;justify-content:space-between;align-items:center}
+.tc-guide-x{border:0;background:#1a1a1a;color:#fff;width:32px;height:32px;border-radius:50%;font-size:18px;line-height:1;cursor:pointer}
+.tc-guide-dots{display:flex;gap:4px;list-style:none;margin:8px 0 0;padding:0}
+.tc-guide-dots li{flex:1;height:4px;border-radius:2px;background:#333}
+.tc-guide-dots li.is-done{background:#9b9b9b}
+.tc-guide-dots li.is-on{background:var(--vu-lime,#c8f531)}
+.tc-guide-t{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:12px}
+.tc-guide-t h3,.tc-guide-head{margin:0;font-size:19px;font-weight:900;letter-spacing:-.025em;line-height:1.2}
+.tc-guide-head{margin-top:8px}
+.tc-guide-p{margin:8px 0 0;font-size:15.5px;font-weight:600;line-height:1.4}
+.tc-guide-m{margin-top:10px;background:#1a1a1a;border-radius:14px;padding:10px 12px}
+.tc-guide-m summary{cursor:pointer;font-weight:800;font-size:13.5px;color:var(--vu-lime,#c8f531)}
+.tc-guide-m p{margin:6px 0 0;font-size:13.5px;line-height:1.45;color:#ddd}
+.tc-guide-nav{display:flex;justify-content:space-between;gap:10px;margin-top:12px}
+.tc-guide-nav .vu-btn{min-height:44px;min-width:110px}
+.tc-guide .vu-btn--line{color:#fff;border-color:#4a4a4a}
+.tc-guide .vu-btn--ink{background:var(--vu-lime,#c8f531);color:#000}
+.tc-guide .vu-verdict--mid{background:#262626;color:#fff}
+.tc-guide .vu-verdict--weak{background:#fff;color:#000}
+.tc-guide-sum{list-style:none;margin:10px 0 0;padding:0}
+.tc-guide-sum li{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;border-top:1px solid #262626;padding:8px 0}
+.tc-guide-sum button{border:0;background:none;color:inherit;font:inherit;text-align:left;padding:0;cursor:pointer}
+.tc-guide-sum b{display:block;font-size:12px;color:#9b9b9b;font-weight:800}
+.tc-guide-sum span{display:block;font-size:13.5px;font-weight:600;line-height:1.35;margin-top:2px}
+.tc-guide .tc-note{color:#9b9b9b}
+.tc-guide .vu-verdict{font-size:11px;padding:4px 8px;white-space:nowrap}
+.tc-layers .tc-avg--stage{stroke:var(--vu-text,#000);stroke-width:1.75;opacity:.55}
+.tc-layers .tc-fib{stroke:#b58a00;stroke-width:1.25}
+.tc-layers .tc-fib-label{font-size:10.5px;font-weight:800;fill:#8a6a00}
+.tc-layers .tc-fib-pt{fill:#b58a00}
+:root[data-theme=dark] .tc-layers .tc-fib{stroke:var(--vu-lime,#c8f531)}
+:root[data-theme=dark] .tc-layers .tc-fib-label{fill:var(--vu-lime,#c8f531)}
+:root[data-theme=dark] .tc-layers .tc-fib-pt{fill:var(--vu-lime,#c8f531)}
+.tc-layers .tc-fib-label{paint-order:stroke;stroke:var(--vu-inv,#fff);stroke-width:3px;stroke-linejoin:round}
+.tc-guide-sum .vu-verdict{flex-direction:row}

@@ -13,7 +13,8 @@ import {navigate} from '../../quality/browser-navigation.mjs';
                   Dock vorhanden
      Screener     Schnellsuche liefert Treffer mit Befund-Pille, Filter-Sheet: ein Chip
                   aendert Trefferzahl und Adresse, Trichter vorhanden; Profi-Tabelle
-     Chart        Einsteiger: Urteil, Linie (keine Kerzen), drei Saetze, Preise, Signal-Sheet
+     Chart        Einsteiger: Urteil, Linie (keine Kerzen), drei Saetze, Preise, Signal-Sheet,
+                  „Chart erklären“ (sieben Schritte, Fibonacci-Ebene, Kurz gesagt)
      Chart Studio (PRO, #/chart/<T>/studio) Kerzen gezeichnet, Zeitraum 3M zeichnet weniger Kerzen,
                   Abschnitt "Diese Aktie in Quant und Supertrader" (Stufen ohne
                   Zahl, Links, Research-Status),
@@ -297,6 +298,19 @@ async function main() {
         assert(/Erkannt/.test(await page.locator("#tc-signal-sheet").innerText()), "Befund-Sheet ohne Erkannt");
         await page.keyboard.press("Escape");
       }
+      /* „Chart erklären“ (engine/chart-explain.js): sieben Schritte, je Schritt die passende Ebene, am Ende „Kurz gesagt“.
+         Die Karte bleibt offen, damit die Farbpruefung unten auch sie erfasst. */
+      await page.locator(".tc-explain-btn").click();
+      await page.waitForSelector(".tc-guide .tc-guide-t");
+      assert(/Schritt 1 von 7/i.test(await page.locator(".tc-guide").innerText()), "Chart erklären: Schritt 1 fehlt");
+      await page.waitForSelector(".tc-simple-chart .tc-layers .tc-avg");
+      for (let i = 1; i < 5; i++) await page.locator(".tc-guide-nav .vu-btn--ink").click();
+      assert(/Fibonacci/i.test(await page.locator(".tc-guide h3").innerText()), "Chart erklären: Schritt 5 ist nicht Fibonacci");
+      assert(await page.locator('.tc-togs [data-layer="fib"][aria-pressed="true"]').count() === 1, "Fibonacci-Ebene nicht eingeschaltet");
+      for (let i = 5; i < 8; i++) await page.locator(".tc-guide-nav .vu-btn--ink").click();
+      await page.waitForSelector(".tc-guide-sum");
+      assert(await page.locator(".tc-guide-sum li").count() === 7, "Kurz gesagt: nicht sieben Zeilen");
+      assert(/keine Vorhersage und keine Handlungsempfehlung/i.test(await page.locator(".tc-guide").innerText()), "Kurz gesagt: Einordnung fehlt");
       /* Kein Rot und kein Gruen auf der Seite (Regel 1): alle sichtbaren Hintergruende und Schriften.
          Einzige Ausnahme: die Tagesveraenderung im gemeinsamen Aktienkopf (Owner 06.11.2026, #1493/#1520, alle Aktien:
          Minus rot, Plus gruen). Sie ist kein Teil von Chart oder Urteil und traegt Pfeil und Vorzeichen, Farbe ist
