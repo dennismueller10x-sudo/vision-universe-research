@@ -223,19 +223,29 @@
   /* Seitenende jeder Ansicht (VU3): der Pflichthinweis bleibt als eine kurze Zeile sichtbar; Quellen,
      Datenstaende, Methodik und die Rolle von Vision Universe stehen gebuendelt in EINEM „Daten & Methodik“.
      opts.dm: [[Begriff, HTML]] (bereits escaped), opts.asOf: Datenstand (ISO) fuer die Zusammenfassung. */
-  VS.render = function (html, opts) { var r = VS.root(); closeChapters(); r.innerHTML = html + footer(opts); return r; };
+  VS.render = function (html, opts) { var r = VS.root(); closeChapters(); r.classList.add("vsp"); r.innerHTML = VS.tabs(VS.section) + html + footer(opts); return r; };
+  /* App-Konzept 2 (Prototyp .tabs2/.tab, Owner 16.11.2026: Vorsorge im Design der übrigen Module): die Bereiche stehen als
+     Reiter im Inhalt (<html data-vu-tabs="inhalt">), Pille 36 px, Tippfläche 44 px; der aktive Bereich ist hell. */
+  VS.TABS = [["home", "#/", "Start"], ["plan", "#/plan", "Planer"], ["etfs", "#/etfs", "ETFs"], ["portfolio", "#/portfolio", "Portfolio"],
+    ["vergleichen", "#/vergleichen", "Vergleichen"], ["foerderung", "#/foerderung", "Förderung"], ["monitor", "#/monitor", "Veränderungen"], ["wissen", "#/wissen", "Wissen"]];
+  VS.tabs = function (active) {
+    return '<nav class="vsp-tabs" aria-label="Vorsorge-Bereiche">' + VS.TABS.map(function (t) {
+      var on = t[0] === active;
+      return '<a class="vsp-tab' + (on ? " is-on" : "") + '" href="' + t[1] + '"' + (on ? ' aria-current="page"' : "") + '>' + t[2] + '</a>';
+    }).join("") + '</nav>';
+  };
   /* ------------------------------------------------- App-Konzept 2: Kapitel im Fenster
      Kapitel (details.vu-more, details.vs-ep) klappen nicht mehr an Ort und Stelle auf: ein Tipp auf die Kachel öffnet den
      Inhalt im Fenster (C16, VUUI.openSheet). Der Inhalt bleibt dabei im <details> (nur optisch als Fenster), damit
      nachgeladene Inhalte, „toggle“-Füllungen und Formulare ihn weiter finden. Aufklapper mit Eingabefeldern (z. B.
      „Mehr Angaben“ im Förderrechner) und per Adresse geöffnete Kapitel (#/plan/luecke) bleiben an Ort und Stelle. */
-  var CHAPTER = "details.vu-more,details.vs-ep";
+  var CHAPTER = "details.vu-more,details.vs-ep,details.vs-dm";
   function chapterInPlace(d) { return !U || !U.openSheet || d.hasAttribute("data-vs-inplace") || !!d.closest("form") || !!d.querySelector("input,select,textarea") || (d.open && !d.__vsSheet); }
   function openChapter(d) {
     var sum = d.querySelector(":scope > summary"), el = d.__vsSheet;
     if (!el) {
       var t = sum.querySelector(".vs-ep-t b") || sum, wrap = document.createElement("div");
-      wrap.innerHTML = U.sheet("", t.textContent.trim(), "");
+      wrap.innerHTML = U.sheet("", d.classList.contains("vs-dm") ? "Daten & Hinweise" : t.textContent.trim(), "");
       el = wrap.firstChild; el.removeAttribute("id"); el.classList.add("vs-chapsheet");
       var body = el.querySelector(".vu-sheet-body");
       [].slice.call(d.childNodes).forEach(function (n) { if (n !== sum) body.appendChild(n); });
@@ -265,9 +275,13 @@
     });
   }
   function dmRows(rows) { return (rows || []).map(function (x) { return '<dt>' + VS.esc(x[0]) + '</dt><dd>' + x[1] + '</dd>'; }).join(""); }
+  /* Seitenende wie im Prototyp (shell.js end()): „Weiter“-Karte zum nächsten Bereich, darunter „Daten & Hinweise“ als Verweis,
+     der das Fenster öffnet (Quellen, Datenstand, Methodik, Rolle). Der Pflichthinweis bleibt darunter sichtbar. */
   function footer(opts) {
     opts = opts || {};
-    return '<details class="vu-dm vs-dm" id="vs-dm"><summary>Daten & Methodik' + (opts.asOf ? ' <small>Stand ' + VS.fmt.date(opts.asOf) + '</small>' : '<small hidden></small>') + '</summary><dl>' +
+    var nx = nextArea(VS.section || "home");
+    return (U && U.next ? '<div class="vsp-next">' + U.next({ href: nx.href, title: nx.title, sub: nx.sub }) + '</div>' : "") +
+      '<details class="vu-dm vs-dm" id="vs-dm"><summary>Daten &amp; Hinweise' + (opts.asOf ? ' <small>Stand ' + VS.fmt.date(opts.asOf) + '</small>' : '<small hidden></small>') + '</summary><dl>' +
       dmRows(opts.dm) + '<dt class="vs-dm-fixed">Rolle</dt><dd>Vision Universe ist kein Broker, kein Depotanbieter und kein Vermittler: Wir verwahren kein Kapital und eröffnen keine Depots. Die Umsetzung erfolgt bei einem Anbieter deiner Wahl.</dd>' +
       '<dt>Datenquellen</dt><dd><a href="#/daten">Datenquellen & Datenqualität</a></dd></dl></details>' +
       '<p class="vs-disclaimer vs-legal">' + VS.esc(DISCLAIMER) + '</p>';
@@ -324,6 +338,36 @@
   /** Seitenkopf (App-Konzept 2): dunkle Kopfkachel mit Etikett, der Frage der Seite und einem Satz; extra = fertiges HTML in der Kachel. */
   VS.intro = function (title, lead, tag, extra) {
     return '<header class="vs-intro vs-head vu-night"><p class="vu-ltag">' + VS.esc(tag || "Vorsorge") + '</p><h1 class="vu-lt">' + VS.esc(title) + '</h1>' + (lead ? '<p class="vu-lead">' + VS.esc(lead) + '</p>' : "") + (extra || "") + '</header>';
+  };
+  /* ---------------------------------------- App-Konzept 2: Bausteine des Prototyps (kit.js / shell.js / p1.js)
+     Bogen (gauge, 14 px Strich), Verlaufsfläche (line … fill), Säulen (bars), Abschnittskopf (.sh). Nur Darstellung:
+     die Werte kommen aus den Engines bzw. Daten der jeweiligen Ansicht. */
+  VS.gauge = function (pct, w) {
+    var r = w / 2 - 12, c = Math.PI * r, p = Math.max(0, Math.min(100, Number(pct) || 0)), d = "M12 " + w / 2 + "A" + r + " " + r + " 0 0 1 " + (w - 12) + " " + w / 2;
+    return '<svg class="vsp-gauge" width="' + w + '" height="' + (w / 2 + 8) + '" viewBox="0 0 ' + w + " " + (w / 2 + 8) + '" aria-hidden="true"><path class="vsp-gauge-t" d="' + d + '" fill="none" stroke-width="14" stroke-linecap="round"/>' +
+      '<path class="vsp-gauge-v" d="' + d + '" fill="none" stroke-width="14" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + (c * (1 - p / 100)).toFixed(1) + '"/></svg>';
+  };
+  var areaN = 0;
+  VS.area = function (vals, w, h) {
+    vals = (vals || []).filter(function (v) { return isFinite(v); });
+    if (vals.length < 2) return "";
+    var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals), n = vals.length, id = "vsp-lg" + (++areaN);
+    var xy = vals.map(function (v, i) { return [(i / (n - 1)) * w, h - 4 - ((v - mn) / (mx - mn || 1)) * (h - 8)]; });
+    var d = xy.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join("");
+    return '<svg class="vsp-line" viewBox="0 0 ' + w + " " + h + '" preserveAspectRatio="none" width="100%" height="' + h + '" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".38"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>' +
+      '<path d="' + d + "L" + w + " " + h + "L0 " + h + 'Z" fill="url(#' + id + ')"/><path class="vsp-line-s" d="' + d + '" fill="none" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
+  };
+  /** Säulen (kit.js bars): hi = Index der hervorgehobenen Säule (neongrün), Rest hell. */
+  VS.colBars = function (raw, w, h, hi) {
+    var mx0 = Math.max.apply(null, raw.map(function (x) { return Math.max(0, x); })) || 1, vals = raw.map(function (x) { return Math.max(0, x) / mx0 * (h - 4) + 4; }), mx = Math.max.apply(null, vals), bw = w / vals.length;
+    if (hi === undefined) hi = vals.length - 1;
+    return '<svg class="vsp-bars" width="' + w + '" height="' + h + '" viewBox="0 0 ' + w + " " + h + '" aria-hidden="true">' + vals.map(function (v, i) {
+      return '<rect class="' + (i === hi ? "is-now" : "") + '" x="' + (i * bw + bw * 0.14).toFixed(1) + '" y="' + (h - (v / mx) * h).toFixed(1) + '" width="' + (bw * 0.72).toFixed(1) + '" height="' + ((v / mx) * h).toFixed(1) + '" rx="3"/>';
+    }).join("") + "</svg>";
+  };
+  /** Abschnittskopf (Prototyp .sh): Titel 22 px, rechts ein Verweis „… ›“. */
+  VS.sh = function (title, href, link, id) {
+    return '<div class="vsp-sh"' + (id ? ' id="' + id + '"' : "") + '><h2>' + VS.esc(title) + '</h2>' + (href ? '<a class="vsp-more" href="' + VS.esc(href) + '">' + VS.esc(link || "Alle") + ' ›</a>' : "") + '</div>';
   };
   /** Vorsorge-Muster Beispiel-Marke: jede Rechnung mit Annahmen ist so markiert. */
   VS.bsp = function (text) { return '<span class="vs-bsp">' + VS.esc(text || "Beispielrechnung") + '</span>'; };
@@ -506,15 +550,8 @@
   VS.nextArea = nextArea;
   function sections(active) {
     if (global.VUNavigation) global.VUNavigation.dock({ active: DOCK[active] || null });
-    var el = document.getElementById("vs-more"); if (!el) return;
-    el.className = "vs-more vs-wrap vu-ui";
-    var nx = nextArea(active), next = U && U.next ? U.next({ href: nx.href, title: nx.title, sub: nx.sub }) : "";
-    /* Start zeigt den Weg oben; alle anderen Ansichten enden mit der „Weiter“-Karte, dem Weg und den Bereichen je Schritt. */
-    if (active === "home") { el.innerHTML = next; return; }
-    var steps = VS.WAY.map(function (w, i) {
-      return '<div class="vs-way-step"><b><span class="num">' + (i + 1) + '</span> ' + w[0] + '</b>' + w[3].map(function (n) { return '<a href="' + n[1] + '"' + (n[0] === active ? ' aria-current="page"' : "") + '>' + n[2] + '</a>'; }).join("") + '</div>';
-    });
-    el.innerHTML = next + '<h2 class="vs-more-t">Dein Weg in drei Schritten</h2>' + (U && U.rail ? '<div class="vs-way-rail">' + U.rail(steps, { label: "Dein Weg in drei Schritten", width: 168 }) + '</div>' : '<div class="vs-way-mini">' + steps.join("") + '</div>');
+    /* App-Konzept 2: Bereiche als Reiter im Inhalt (VS.tabs), „Weiter“ im Seitenende (footer). #vs-more bleibt leer. */
+    var el = document.getElementById("vs-more"); if (el) el.innerHTML = "";
   }
 
   VS.parseHash = function () {
@@ -533,7 +570,8 @@
     document.documentElement.classList.toggle("vs-flow", r.name === "start");
     [].forEach.call(document.querySelectorAll(".vs-vsheet"), function (x) { if (VS.U) VS.U.closeSheet(x); x.remove(); });
     closeChapters();
-    sections(VS.SECTION_OF[r.name] || "home");
+    VS.section = VS.SECTION_OF[r.name] || "home";
+    sections(VS.section);
     if (first) { VS.analytics.track("vorsorge_open", {}); VS.analytics.track("retirement_open", {}); first = false; }
     try { view(r); }
     catch (e) { VS.render('<section class="vs-section"><h2>Diese Ansicht konnte nicht geladen werden.</h2><p class="vs-sub">' + VS.esc(e.message) + '</p></section>'); if (global.console) console.error(e); }
