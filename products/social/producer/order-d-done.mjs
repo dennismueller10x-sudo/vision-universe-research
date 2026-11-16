@@ -271,7 +271,10 @@ function ausBeleg(feld, satzBauer) {
    ------------------------------------------------------------------- */
 function inMain() {
   const kopf = git("rev-parse", "HEAD");
-  git("fetch", "origin", "main");
+  /* Verglichen wird nur der Baum (diff main HEAD), keine gemeinsame Basis: im flachen CI-Checkout
+     genuegt der Kopf von main. Ohne --depth holte der Abruf die ganze Geschichte von main nach
+     (Datenlaeufe, viele Minuten je Aufruf) und liess die Social-Suite ins Zeitlimit laufen. */
+  git("fetch", ...(git("rev-parse", "--is-shallow-repository") === "true" ? ["--depth=1"] : []), "origin", "main");
   const main = git("rev-parse", "origin/main");
   if (!kopf || !main) {
     return { zustand: ZUSTAND.UNGEPRUEFT,
