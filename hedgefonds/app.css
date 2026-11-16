@@ -503,3 +503,8 @@ main.hf-main:has(>.hp){padding-bottom:20px}
 :root:not([data-theme=dark]) .hf-hero .vu-lt{color:#000}
 :root:not([data-theme=dark]) .hf-hero .hf-qb-note{color:#3a3d42}
 :root:not([data-theme=dark]) .hf-hero .hf-spanel{background:#fff;border-color:#dcdcdc}
+/* Kennzahlen in der Geschichte der Aktie (#/aktie/<T>) im Hellen: dunkle Zahl, Unterzeile grau (axe color-contrast ≥ 4,5:1) */
+:root:not([data-theme=dark]) .hf-story .vu-stats>div{border-color:#dcdcdc}
+:root:not([data-theme=dark]) .hf-story .vu-stats b{color:#000}
+:root:not([data-theme=dark]) .hf-story .vu-stats .is-lime b{color:#4f6b00}
+:root:not([data-theme=dark]) .hf-story .vu-stats span{color:#5d636b}
