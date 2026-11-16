@@ -16,9 +16,13 @@
   var PER = [['Zahlen', 'fundamental'], ['Chart', 'technical'], ['Faktoren', 'quant'], ['Setups', 'supertrader']];
   var per = PER.map(function (p, i) { return '<div id="sp' + i + '" class="card" style="padding:24px 10px;opacity:0;display:flex;flex-direction:column;align-items:center;gap:14px;border-color:rgba(200,245,49,.5)"><span class="tile" style="width:96px;height:96px">' + I(p[1]) + '</span><span style="font-weight:900;font-size:32px">' + p[0] + '</span></div>'; }).join('');
   function ok(id, txt) { return '<div id="' + id + '" class="row" style="gap:22px;padding:18px 0;opacity:0"><svg width="58" height="58" viewBox="0 0 64 64" style="color:#c8f531;flex:none"><circle cx="32" cy="32" r="28" fill="rgba(200,245,49,.14)"/><path class="ic" stroke-width="6" d="M20 33 L29 42 L45 23"/></svg><span style="font-weight:800;font-size:44px">' + txt + '</span></div>'; }
-  var COV = [['layers', ''], ['', '/assets/hero-visuals/discover.webp'], ['quant', ''], ['', '/assets/hero-visuals/supertrader.svg'], ['', '/assets/hero-visuals/vorsorge.webp']];
-  var NAMES = ['Start', 'Entdecken', 'Quant', 'Zahlen', 'Strategie'];
-  var circ = COV.map(function (c, i) { return '<div id="sc' + i + '" style="display:flex;flex-direction:column;align-items:center;gap:14px;opacity:0"><div style="position:relative;width:164px;height:164px;border-radius:50%;padding:7px;background:' + (i === 1 ? '#c8f531' : (i === 0 ? '#5a616b' : '#c8f531')) + '"><div style="width:100%;height:100%;border-radius:50%;box-shadow:0 0 0 5px #08080a;display:grid;place-items:center;color:#c8f531;background:#0b0c0e ' + (c[1] ? 'url(' + c[1] + ') center/cover' : '') + '">' + (c[0] ? '<svg viewBox="0 0 24 24" style="width:46%;height:46%"><use href="#' + c[0] + '"/></svg>' : '') + '</div><span style="position:absolute;right:-2px;bottom:-2px;width:52px;height:52px;border-radius:50%;background:' + (i === 1 ? '#c8f531' : '#fff') + ';display:grid;place-items:center;box-shadow:0 0 0 5px #08080a"><i style="margin-left:5px;border-style:solid;border-width:11px 0 11px 17px;border-color:transparent transparent transparent #08080a"></i></span></div><span style="font-weight:800;font-size:30px">' + NAMES[i] + '</span></div>'; }).join('');
+  // Schiene "Kurz erklärt" wie auf /willkommen/ (seit App-Konzept 2 keine Kreise mehr): Hochkant-Karten, Wischgeste nach links.
+  var RAIL = [['layers', '', 'Start'], ['', '/assets/hero-visuals/discover.webp', 'Entdecken'], ['quant', '', 'Quant'], ['', '/assets/hero-visuals/supertrader.svg', 'Strategie'], ['', '/assets/hero-visuals/vorsorge.webp', 'Vorsorge']];
+  var rail = RAIL.map(function (c, i) { return '<div id="sc' + i + '" style="flex:none;width:300px;height:470px;border-radius:40px;overflow:hidden;position:relative;opacity:0;background:#151516 ' + (c[1] ? 'url(' + c[1] + ') center/cover' : '') + ';border:3px solid ' + (i === 1 ? '#c8f531' : 'rgba(255,255,255,.08)') + '">' +
+    (c[0] ? '<div style="position:absolute;left:0;right:0;top:110px;display:grid;place-items:center;color:#c8f531"><svg viewBox="0 0 24 24" style="width:130px;height:130px"><use href="#' + c[0] + '"/></svg></div>' : '') +
+    '<div style="position:absolute;left:0;right:0;bottom:0;height:200px;background:linear-gradient(transparent,rgba(0,0,0,.85))"></div>' +
+    '<span style="position:absolute;left:26px;top:26px;width:64px;height:64px;border-radius:50%;background:' + (i === 1 ? '#c8f531' : '#fff') + ';display:grid;place-items:center"><i style="margin-left:6px;border-style:solid;border-width:13px 0 13px 20px;border-color:transparent transparent transparent #08080a"></i></span>' +
+    '<span style="position:absolute;left:28px;bottom:30px;font-weight:900;font-size:38px">' + c[2] + '</span></div>'; }).join('');
 
   Story.define({
     kicker: 'Willkommen', finKick: 'Willkommen', finSub: 'Jedes Modul in 30 Sekunden', filmUntil: 20,
@@ -40,10 +44,17 @@
         html: '<div class="abs" style="left:0;top:0"><svg width="230" height="250" viewBox="0 0 64 70"><path class="dr" id="ssh" pathLength="1" stroke="#c8f531" stroke-width="3.4" d="M32 4 L58 14 V34 C58 52 46 62 32 66 C18 62 6 52 6 34 V14 Z"/><path class="dr" id="ssc" pathLength="1" stroke="#c8f531" stroke-width="4" d="M21 35 L29 43 L44 26"/></svg></div>' +
           '<div class="abs" style="left:290px;right:0;top:0">' + ok('so1', 'Echte Daten') + ok('so2', 'Feste Regeln') + ok('so3', 'Nachvollziehbar') + '</div>',
         anim: function (t, k, a) { k.draw('ssh', t, a + .1, 1); k.draw('ssc', t, a + .9, .5); var s = k.ev('shield', a + 2.4); k.pop('so1', t, s, 20); k.pop('so2', t, s + .5, 20); k.pop('so3', t, s + 1, 20); } },
-      { hl: 'Tippe auf den<br><span class="lime">nächsten Kreis.</span>',
-        html: '<div class="abs" style="left:-30px;right:-30px;top:40px;display:flex;justify-content:space-between">' + circ + '</div><div id="sring" class="abs" style="left:236px;top:72px;width:150px;height:150px;border-radius:50%;border:5px solid #c8f531;opacity:0"></div>' +
-          '<div id="s30" class="abs" style="left:0;right:0;top:400px;text-align:center;opacity:0"><span class="chip" style="font-size:40px"><svg viewBox="0 0 24 24"><circle class="ic" cx="12" cy="12" r="9"/><path class="ic" d="M12 7 V12 L15 14"/></svg>Jedes Modul in 30 Sekunden</span></div>',
-        anim: function (t, k, a) { for (var i = 0; i < 5; i++) k.pop('sc' + i, t, a + .2 + i * .12, 30); var n = k.ev('next', a + 2), r = ((t - a - .8) % 1.2) / 1.2; k.$('sring').style.opacity = t > a + .8 ? (1 - r) * .9 : 0; k.$('sring').style.transform = 'scale(' + (1 + r * .6) + ')'; k.$('sc1').style.transform = 'scale(' + (1 + .06 * Math.sin(t * 6)) + ')'; k.pop('s30', t, n, 24); } }
+      { hl: 'Wische zum<br><span class="lime">nächsten Video.</span>',
+        html: '<div class="abs" style="left:0;top:0;font-weight:800;font-size:26px;letter-spacing:.14em;text-transform:uppercase;color:#a1a7af">Kurz erklärt</div>' +
+          '<div class="abs" style="left:0;right:-200px;top:60px;overflow:visible"><div id="srail" style="display:flex;gap:28px">' + rail + '</div></div>' +
+          '<div id="sfing" class="abs" style="left:600px;top:300px;width:96px;height:96px;border-radius:50%;background:rgba(200,245,49,.28);border:4px solid #c8f531;opacity:0"></div>' +
+          '<div id="s30" class="abs" style="left:0;right:0;top:600px;text-align:center;opacity:0"><span class="chip" style="font-size:40px"><svg viewBox="0 0 24 24"><circle class="ic" cx="12" cy="12" r="9"/><path class="ic" d="M12 7 V12 L15 14"/></svg>Jedes Modul in 30 Sekunden</span></div>',
+        anim: function (t, k, a) { for (var i = 0; i < 5; i++) k.pop('sc' + i, t, a + .2 + i * .12, 30);
+          var n = k.ev('next', a + 2), w = k.eo(k.seg(t, a + .9, a + 1.7)), w2 = k.eo(k.seg(t, n + .6, n + 1.4));
+          k.$('srail').style.transform = 'translateX(' + (-328 * w - 328 * w2) + 'px)';
+          var f1 = k.seg(t, a + .7, a + 1.9), f2 = k.seg(t, n + .4, n + 1.6), f = f1 > 0 && f1 < 1 ? f1 : (f2 > 0 && f2 < 1 ? f2 : 0);
+          k.$('sfing').style.opacity = f > 0 ? Math.sin(f * Math.PI) : 0; k.$('sfing').style.transform = 'translateX(' + (-360 * k.eo(f)) + 'px)';
+          k.pop('s30', t, n, 24); } }
     ]
   });
 })();

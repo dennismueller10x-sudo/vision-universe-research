@@ -1,7 +1,7 @@
 /* Erklaervideo "Vision Universe KI" (bis 16.11.2026 "AI Atlas"): Frage in eigenen Worten, wird zu Filtern, rechnet auf Daten
    aus Screener, Supertrader und Quant. Fassung 2 (16.11.2026): neuer Name und Bausteine im Design "App-Konzept 2" wie die Seite
    /ask/ (weisse Suchpille mit neongruenem Knopf, Kacheln #151516 mit Radius 22 px bei 390 px Breite = 60 px bei 1080 px,
-   Symbolkachel mit gruenem Rand, Zeilen mit Trennlinie). Gesprochener Text, Zeiten und Untertitel unveraendert. */
+   Symbolkachel mit gruenem Rand, Zeilen mit Trennlinie). Fassung 3 (16.11.2026): neue Aufnahme, gesprochen "Die Vision Universe KI". */
 (function () {
   var I = Story.icon;
   var SPARK = '<svg viewBox="0 0 24 24"><path class="ic" d="M12 2.5c.6 4.6 2.7 7.2 7.5 8-4.8.7-6.9 3.4-7.5 8-.6-4.6-2.7-7.3-7.5-8 4.8-.8 6.9-3.4 7.5-8z"/><circle cx="19.5" cy="19" r="1.4" fill="currentColor"/></svg>';
