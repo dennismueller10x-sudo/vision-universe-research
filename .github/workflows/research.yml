@@ -51,12 +51,12 @@ on:
           - europa-esef
           - edge2-paper
       mode:
-        description: 'portfolio: portfolios, holdout-quant (nur versiegelt) oder ema-cluster-dev (bestehender DEV-Snapshot, nur versiegelt)'
+        description: 'portfolio: Musterportfolios, versiegelter Holdout oder EMA DEV/Archiv/Walk-Forward auf vorhandenem Bestand'
         required: false
         default: portfolios
         type: choice
-        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive]
-      ema_archive_metadata: {description: 'EMA-Archiv: Phase und bestehende Paket-Pruefsummen, keine privaten Daten', required: false, default: '', type: string}
+        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive, ema-cluster-complete]
+      ema_archive_metadata: {description: 'EMA-Archiv/Vervollstaendigung: Pruefsummen und verschluesselte Dateischluessel, keine Klartextschluessel', required: false, default: '', type: string}
       reviewer_public_key_b64: {description: 'portfolio: Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung', required: false, default: '', type: string}
       phase: {description: 'labor: dev, test oder holdout', required: false, default: dev}
       max_weeks: {description: 'elliott-register: Hoechstens so viele fehlende Wochen nachholen (1-4)', default: '2'}
@@ -256,7 +256,7 @@ jobs:
             printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/holdout/reviewer.pem"
             openssl pkey -pubin -in "$RUNNER_TEMP/holdout/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
           fi
-          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive) m="$IN_MODE";; esac
+          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive|ema-cluster-complete) m="$IN_MODE";; esac
           echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
           echo "Modus: ${m:-portfolios}"
 
@@ -366,8 +366,11 @@ jobs:
           find "$H/out" -type f -exec shred -u {} +
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
       - name: EMA Cluster DEV (vorhandener Snapshot, sequenziell, nur versiegelte Ausgabe)
-        if: steps.m.outputs.mode == 'ema-cluster-dev'
+        if: steps.m.outputs.mode == 'ema-cluster-dev' || steps.m.outputs.mode == 'ema-cluster-complete'
         env:
+          EMA_MODE: ${{ steps.m.outputs.mode }}
+          EMA_ARCHIVE_METADATA: ${{ inputs.ema_archive_metadata }}
+          V13_ARCHIVE_PRIVATE_KEY: ${{ secrets.V13_ARCHIVE_PRIVATE_KEY }}
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
           VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
@@ -381,7 +384,9 @@ jobs:
           mkdir -p "$X"
           printf '%s' "$REVIEWER_B64" | base64 -d > "$X/reviewer.pem"
           openssl pkey -pubin -in "$X/reviewer.pem" -noout
-          node --max-old-space-size=12000 scripts/technical/ema-cluster-dev-study.mjs --out "$X" --reviewer-key "$X/reviewer.pem"
+          args=()
+          if [ "$EMA_MODE" = "ema-cluster-complete" ]; then args+=(--complete); fi
+          node --max-old-space-size=12000 scripts/technical/ema-cluster-dev-study.mjs --out "$X" --reviewer-key "$X/reviewer.pem" "${args[@]}"
           find "$X" -maxdepth 1 -type f -delete
 
       - name: Bestehendes EMA-Paket privat archivieren und wiederherstellen

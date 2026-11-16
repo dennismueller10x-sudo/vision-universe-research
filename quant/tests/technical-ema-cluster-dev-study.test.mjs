@@ -5,7 +5,21 @@ import { run } from '../../scripts/technical/ema-cluster-study.mjs';
 import { createRequire } from 'node:module';
 import { archiveBytes, objectRequests } from '../../scripts/technical/ema-cluster-archive.mjs';
 import { createSnapshotStore } from '../../scripts/supertrader/snapshot/store.mjs';
+import { verifyCompletion } from '../../scripts/technical/ema-cluster-completion.mjs';
 const require = createRequire(import.meta.url), S = require('../engines/research-studies.cjs');
+test('completion keeps scope, inputs, primary statistics and already completed partitions unchanged', () => {
+  const base = { resultHash: 'original', configHash: 'fixed-config', events: 20, selection: { selected: ['A', 'B'] },
+    cells: [{ eventType: 'A', horizonTradingDays: 5, mean: -.1, walkForward: { state: 'EXECUTED', resultHash: 'fixed-partition' } },
+      { eventType: 'B', horizonTradingDays: 20, mean: .2, walkForward: { state: 'NOT_RUN' } }],
+    receipts: [{ inputHash: 'fixed-input', engineResults: ['unchanged'] }] };
+  const r = structuredClone(base); r.cells[1].walkForward = { state: 'EXECUTED', resultHash: 'newly-completed' };
+  assert.equal(verifyCompletion(base, r).newlyCompletedCells, 1);
+  assert.equal(verifyCompletion(base, r).primaryResultsUnchanged, true);
+  const changed = structuredClone(r); changed.cells[0].mean = -.05; assert.throws(() => verifyCompletion(base, changed), /PRIMARY_RESULTS_CHANGED/);
+  const scope = structuredClone(r); scope.selection.selected.push('C'); assert.throws(() => verifyCompletion(base, scope), /SCOPE_CHANGED/);
+  const previous = structuredClone(r); previous.cells[0].walkForward.resultHash = 'different'; assert.throws(() => verifyCompletion(base, previous), /PREVIOUS_WALK_FORWARD_CHANGED/);
+  const inputs = structuredClone(r); inputs.receipts[0].inputHash = 'different'; assert.throws(() => verifyCompletion(base, inputs), /INPUT_CHANGED/);
+});
 test('archive reuses immutable content-addressed storage and verifies every restored byte', async () => {
   const objects = new Map(), driver = { async head(k) { return objects.has(k) ? {} : null; }, async get(k) { return objects.get(k) || null; }, async put(k, b) { objects.set(k, b); } };
   const store = createSnapshotStore({ driver }), b = Buffer.from('existing sealed research package');

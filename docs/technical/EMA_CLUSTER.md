@@ -47,6 +47,17 @@ Ausführung im bestehenden `research.yml`-Portfoliojob, manueller Modus `ema-clu
 
 Für die gemeinsame Statistik werden die unveränderten Quant-Ereigniszeilen zusammengeführt, keine Batch-Mittelwerte gemittelt. Primärfamilie: 36 Tests auf rohe SPY-Exzessrendite mit globaler Holm-Korrektur; Status-, Regime-, Branchen-, Jahres- und richtungsbereinigte Ergebnisse sind deskriptiv. Gemeinsames sowie Batch-Walk-Forward verwenden bestehende Grenzen; `NOT_RUN` ist kein bestandener Nachweis. Kein unabhängiger Holdout und keine finanzierte/shortbare Strategie. Temporäre Kurse und Ereigniszeilen bleiben außerhalb des Repositorys. Rückgabe nur als vorhandenes RSA/AES-GCM-Format an den Sitzungsschlüssel, sieben Tage Artifact-Retention; öffentliche Quittung enthält nur Hashes und Anzahlen.
 
+## Dauerhaftes privates Archiv der 200-Aktien-Studie
+
+Forschungsdatum 16.11.2026, Quellcommit `46ca41d0b007c31a1a0a4f9179cc772f40a04b4e`, DEV-Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`. Vorhandene private R2-Forschungsablage, bestehender Snapshot-Store unter `research-snapshots/supertrader/sts1/objects/<sha256>.bin`:
+
+- Vollständiges ZIP-Paket, an den bestehenden Owner-Schlüssel verschlüsselt: Objekt-SHA `b78c03b2b3732405dc2ae111c657ee7c8963955e32015eb8ff6eebb0c7b5a3ba` (16.191.254 Bytes); entschlüsseltes Original-ZIP `c2777776a2bbcd7a81cc6dd434548d0cc09089e3e2ed2a91948060b11b6b8bc8`.
+- Ursprüngliches GitHub-Artifact unverändert zusätzlich archiviert: Objekt-/ZIP-SHA `a5924195ef4387c6d14e5dc873b219d761baa793d1850f342ca2c04c9d4cf407` (11.771.058 Bytes). Damit entfällt die Abhängigkeit von dessen siebentägiger Aufbewahrung.
+- Auswahlhash `1ebfb1d6277e1cb349195d0470c1ad333098d2a68611e4f585e2a137232c4669`, Ergebnishash `1b7b7444eac249719928c05f7c65ba5db0326d4c46e3ae8ef751e6daa1fb2a27` bleiben unverändert.
+- Rücklesen und Bytevergleich lokal sowie unabhängig auf dem vorhandenen Runner erfolgreich; dauerhafter `EMA_ARCHIVE`-Beleg im bestehenden Receipt-Namensraum dieses Snapshots, Lauf `43813644259`, Beleg-SHA `26bcc563fa9bab07f7d2cbb0744af3e68e5551607e4f1063c8d954433a80ce60`.
+
+Wiederherstellung: mit vorhandenen privaten R2-Zugangsdaten `createSnapshotStore().getObject(Objekt-SHA)` laden (prüft SHA-256), das vollständige Paket mit `validation/lib.mjs#decryptSealed` und dem Owner-Privatschlüssel öffnen und die Original-ZIP-SHA prüfen. Darin liegen Bericht, alle Ergebnistabellen, Grafik, Auswahlmanifest einschließlich Ausschlüssen, Original-Ergebnis und Owner-versiegelte Belege. Auswahl-/Ergebnishashes mit `research-studies.cjs#hash` jeweils ohne eigenes Hashfeld prüfen. Rohkurse bleiben im fixierten privaten DEV-Snapshot; keine privaten Ergebnisdateien werden ins Repository aufgenommen.
+
 ## Spätere Integration
 
 Chart: `fast`/`slow` und Zeitraum aus `rows`; Screener: letzte READY-Zeile mit Konfigurationsversion; Ereignisse: Datum und `availableAt`, niemals rückdatieren. Academy: Regeln, Schwellenkonventionen und Grenzen dieses Dokuments. Historische Evidenz bleibt eigener Studiennachweis mit Population und Horizont, niemals ein Erfolgslabel am Trendzustand. Keine Änderung bestehender Spalten oder UI-Dateien erforderlich.

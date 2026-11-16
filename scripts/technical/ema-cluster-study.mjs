@@ -98,7 +98,7 @@ export function walkForward(rows, calendar, asOf) {
     return { state: 'NOT_RUN', reason: e.message };
   }
 }
-export function run(input, { mode = 'EMA_CLUSTER', timeframe = '1D', config = {}, costs = { basis: 'PER_SIDE_NOTIONAL', feeBps: 5, slippageBps: 5 }, eventFrom = null, onCell = null } = {}) {
+export function run(input, { mode = 'EMA_CLUSTER', timeframe = '1D', config = {}, costs = { basis: 'PER_SIDE_NOTIONAL', feeBps: 5, slippageBps: 5 }, eventFrom = null, onCell = null, deferWalkForward = false } = {}) {
   if (eventFrom !== null && (!/^\d{4}-\d{2}-\d{2}$/.test(eventFrom) || eventFrom > input.asOf)) throw new Error('INVALID_EVENT_FROM');
   if (onCell !== null && typeof onCell !== 'function') throw new Error('INVALID_CELL_OBSERVER');
   if (input.schemaVersion !== 'technical-event-study-input-1.0.0' || input.priceBasis !== 'SPLIT_ADJUSTED_PRICE') throw new Error('CANONICAL_STUDY_INPUT_REQUIRED');
@@ -161,7 +161,7 @@ export function run(input, { mode = 'EMA_CLUSTER', timeframe = '1D', config = {}
         states: rows.reduce((o, r) => (o[r.state] = (o[r.state] || 0) + 1, o), {}), net: summary(rows, 'netReturn'),
         excessSpy: excess, directionAdjustedExcess: summary(rows, 'directionAdjustedExcess'), p: pValue(excess),
         regimes: regimeNames.map(name => ({ name, excessSpy: summary(rows.filter(r => (regimeByDate.get(r.signalDate) || 'UNKNOWN') === name), 'benchmarkExcess') })),
-        walkForward: walkForward(rows, calendar, asOf) });
+        walkForward: deferWalkForward ? { state: 'NOT_RUN', reason: 'DEFERRED_TO_POOLED_COMPLETION' } : walkForward(rows, calendar, asOf) });
     }
   }
   const adjusted = V.holm(cells.map(c => c.p ?? 1));
