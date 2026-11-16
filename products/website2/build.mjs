@@ -133,12 +133,17 @@ function legal() {
 const FORM = () => readFileSync(join(LANDING, "newsletter-form.html"), "utf8").trim();
 export function loadSnapshot() { return JSON.parse(readFileSync(SNAPSHOT, "utf8")); }
 
+/* Erklärvideo eines Moduls: aktuelle Fassung aus willkommen/config/stories.json (eine Quelle; neue Fassung = neuer Dateiname). */
+const STORY_FILMS = new Map(JSON.parse(readFileSync(join(ROOT, "willkommen/config/stories.json"), "utf8")).stories
+  .map((s) => [s.id, (s.slides.find((x) => x.type === "video") || {}).src]).filter(([, src]) => src));
+export const storyFilm = (id) => STORY_FILMS.get(id) || `/assets/stories/${id}-v1.mp4`;
+
 /* ---------- Ziele ---------- */
 const TARGETS = {
   research: {
     www: false, root: BASE, css: `${BASE}site.css`, js: `${BASE}site.js`, img: `${BASE}img/`, vid: `${BASE}vid/app.mp4`,
     icons: "/assets/product-icons.svg", font: "/assets/fonts/inter-latin.woff2", badge: "/website/img/",
-    film: (id) => `/assets/stories/${id}-v1.mp4`, favicon: "/assets/icons/icon-192.png", touch: "/assets/icons/apple-touch-icon.png",
+    film: (id) => storyFilm(id), favicon: "/assets/icons/icon-192.png", touch: "/assets/icons/apple-touch-icon.png",
     newsletter: NEWSLETTER, origin: `${RESEARCH}${BASE}`, robots: "noindex,nofollow", producer: "products/website2/build.mjs"
   },
   www: {
