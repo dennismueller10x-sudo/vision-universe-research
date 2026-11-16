@@ -20,7 +20,7 @@
   var SEEN_KEY = 'vu-welcome-seen-v1', ICONS = '/assets/product-icons.svg#';
   var MIN_S = 15, MAX_S = 45;
 
-  // Neun Welten in der Reihenfolge des Menue-Rasters (assets/site-navigation.js), danach AI Atlas als eigene Zeile (Mockup E02).
+  // Neun Welten in der Reihenfolge des Menue-Rasters (assets/site-navigation.js), danach Vision Universe KI (frueher AI Atlas) als eigene Zeile (Mockup E02).
   var PRODUCTS = [
     { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Aktien entdecken' },
     { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren je Aktie' },
@@ -31,7 +31,7 @@
     { id: 'elliott', name: 'Elliott', href: '/elliott/', text: 'Wellenstruktur' },
     { id: 'screener', name: 'Screener', href: '/screener/', text: 'Eigene Filter' },
     { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'Sparplan und Rente' },
-    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag in deinen Worten' }
+    { id: 'atlas', name: 'Vision Universe KI', href: '/ask/', text: 'Frag in deinen Worten' }
   ];
   // Ziel aus der Startseite („Wo stehst du?“, Schluessel vu-start-path) mit dem naechsten Schritt.
   var GOALS = {

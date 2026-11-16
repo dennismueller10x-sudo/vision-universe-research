@@ -133,7 +133,7 @@
       } else if(parts[0]==='settings'){
         settings(root);
       } else if(parts[0]==='suche'){
-        root.append(el('div',{class:'dv3 vu-ui'},[el('p',{class:'vu-ltag',text:'Discover · Suchen'}),el('h1',{class:'vu-lt',text:'Suchen'}),el('p',{class:'vu-lead',text:'Aktie, Thema oder Strategie – oder eine Frage an Atlas.'})]));
+        root.append(el('div',{class:'dv3 vu-ui'},[el('p',{class:'vu-ltag',text:'Discover · Suchen'}),el('h1',{class:'vu-lt',text:'Suchen'}),el('p',{class:'vu-lead',text:'Aktie, Thema oder Strategie – oder eine Frage an die KI.'})]));
         const open=el('button',{class:'vu-btn vu-btn--ink',type:'button',text:'Suche öffnen'});open.onclick=()=>search.open();root.firstChild.append(open);
         setTimeout(()=>{if(active())search.open();},0);
       } else if(parts[0]==='aktien'){await D.GlobalView.browse(root,active);

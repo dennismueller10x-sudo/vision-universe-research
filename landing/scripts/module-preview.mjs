@@ -2,7 +2,7 @@
 export const modules=[
   ['discover','Discover'],['quant','Quant'],['screener','Screener'],
   ['supertrader','Supertrader'],['elliott','Elliott Wave'],['technical','Technische Analyse'],
-  ['fundamental','Fundamentaldaten'],['vorsorge','Vorsorge'],['hedgefonds','Hedgefonds'],['atlas','AI Atlas'],
+  ['fundamental','Fundamentaldaten'],['vorsorge','Vorsorge'],['hedgefonds','Hedgefonds'],['atlas','Vision Universe KI'],
 ];
 export function presentationSymbols(source){
   const icons=[...source.matchAll(/<symbol id="(?:i|h)-[^\"]+"[\s\S]*?<\/symbol>/g)].map(m=>m[0]);
@@ -16,7 +16,7 @@ export function timelessHero(){
     <span class="hero-badge">App bald verfügbar</span>
     <h1 id="hero-title">Investieren mit <em>Weitblick.</em> <span class="claim-second">Alles in einer App.</span></h1>
   </div>
-  <div class="device-frame" role="img" aria-label="Ausblick auf die kommende iPhone-App: Discover, Quant, Screener, Supertrader, Elliott Wave, Technische Analyse, Fundamentaldaten, Vorsorge, Hedgefonds und AI Atlas.">
+  <div class="device-frame" role="img" aria-label="Ausblick auf die kommende iPhone-App: Discover, Quant, Screener, Supertrader, Elliott Wave, Technische Analyse, Fundamentaldaten, Vorsorge, Hedgefonds und Vision Universe KI.">
     <div class="phone" aria-hidden="true"><div class="screen">
       <div class="app-top"><img src="./assets/vision-universe-logo.png" alt=""><span class="app-menu"></span></div>
       ${grid()}
