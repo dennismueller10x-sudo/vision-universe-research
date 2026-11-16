@@ -1874,7 +1874,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/v10"
+          # fetch_companyfacts.py legt bulk/companyfacts.zip an (SECHttpClient.download_to)
           python3 -I scripts/quant/v10/factor/fetch_companyfacts.py "$RUNNER_TEMP/v10"
+          test -s "$RUNNER_TEMP/v10/bulk/companyfacts.zip"
       - name: PIT-Dokumente je Emittent (V10-Weg)
         run: |
           set -euo pipefail
