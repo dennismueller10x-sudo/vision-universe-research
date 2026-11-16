@@ -563,6 +563,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
       const f = await cur();
       if (f.mode === 'inhalt' || f.n) fail(where, 'Fondsseite behält die Reiter im Inhalt: ' + JSON.stringify(f));
       checks.push({ where, pass: !findings.some((x) => x.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
   // Start mit Reitern im Inhalt (Prototyp #technical): ein Reiter im Inhalt fuehrt in einen Bereich mit der Reiterzeile des
   // Rahmens, Zurueck bringt die Reiter im Inhalt wieder (ohne doppelte Zeile), Vor wieder den Bereich.
   for (const [start, label] of [['/technical/#/', 'Screener']]) {
