@@ -3,7 +3,7 @@
  "methodologyVersion": "vu-factor-evidence-2.0.0",
  "derivedFrom": "quant-v2.4.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-16T10:46:38.000Z",
+ "generatedAt": "2026-11-16T11:12:54.000Z",
  "asOf": "2026-11-13",
  "publication": {
   "compositeAllowed": false,
@@ -130,7 +130,7 @@
    "direction": "lower",
    "unit": "ratio",
    "basis": null,
-   "note": "Größter Rückgang der jährlichen operativen Marge von einem früheren Hoch auf ein späteres Tief, über bis zu fünf Geschäftsjahre und erst ab vier; steigende Margen zählen nicht (quant-v2.4.0).",
+   "note": "Größter Rückgang der jährlichen operativen Marge vom früheren Hoch, bis zu fünf Geschäftsjahre (ab vier); steigende Margen zählen nicht.",
    "window": "last 5 fiscal years; minimum 4",
    "input": "max(peak-to-trough decline of annualOperatingMargin, -min(0, median annualOperatingMargin)), margins capped to [-1, 1]; rising margins count 0"
   },
@@ -1039,6 +1039,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 25764,
- "contentHash": "b869908cdf692b20"
+ "runtimeMs": 26375,
+ "contentHash": "89eff8c687cf82fa"
 }
