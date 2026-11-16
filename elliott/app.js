@@ -58,13 +58,13 @@
   function loadStack() {
     if (!stackPromise) {
       global.QX_HOST = "elliott";     // vor dem Buendel: app.js startet dann keinen eigenen Router
-      document.head.append(el("script", { src: "/elliott/aktie.js?v=ak2-2" }));   // Aktienbild, App-Konzept 2
+      document.head.append(el("script", { src: "/elliott/aktie.js?v=ak2-3" }));   // Aktienbild, App-Konzept 2
       stackPromise = fetchRes("/quant/index.html").then(function (r) { return r.text(); }).then(function (html) {
         var gate = new DOMParser().parseFromString(html, "text/html").querySelector("script[data-content]");
         return gate ? fetchRes(gate.getAttribute("data-content")).then(function (r) { return r.text(); }) : html;
       }).then(function (html) {
         var doc = new DOMParser().parseFromString(html, "text/html"), loads = [];
-        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ak2-2"; } }]).forEach(function (l) {
+        Array.prototype.slice.call(doc.querySelectorAll('link[rel="stylesheet"]')).concat([{ getAttribute: function () { return "/elliott/wellen.css?v=ak2-3"; } }]).forEach(function (l) {
           var href = l.getAttribute("href");
           if (!href || /site-navigation\.css/.test(href)) return;
           var link = el("link", { rel: "stylesheet", href: href, media: "not all", dataset: { qxHost: "1" } });
@@ -106,9 +106,9 @@
     if (mode === "detail") { c.remove("el-body"); c.add("dx", "qd", "qx"); } else { c.remove("dx", "qd", "qx"); c.add("el-body"); }
   }
   function warm() { loadStack().catch(function () { /* beim Oeffnen erneut */ }); }
-  document.addEventListener("pointerover", function (ev) { if (ev.target.closest && ev.target.closest(".el-card, .el-hit")) warm(); }, { passive: true });
-  document.addEventListener("focusin", function (ev) { if (ev.target.closest && ev.target.closest(".el-card, .el-hit")) warm(); });
-  document.addEventListener("pointerdown", function (ev) { if (ev.pointerType !== "touch" && ev.target.closest && ev.target.closest(".el-card, .el-hit")) warm(); }, { passive: true });
+  document.addEventListener("pointerover", function (ev) { if (ev.target.closest && ev.target.closest(".el-card, .el-hit, .el-cr")) warm(); }, { passive: true });
+  document.addEventListener("focusin", function (ev) { if (ev.target.closest && ev.target.closest(".el-card, .el-hit, .el-cr")) warm(); });
+  document.addEventListener("pointerdown", function (ev) { if (ev.pointerType !== "touch" && ev.target.closest && ev.target.closest(".el-card, .el-hit, .el-cr")) warm(); }, { passive: true });
 
   function showDetail(s) {
     ensureDetailHost();
@@ -413,7 +413,7 @@
   /* Karte „Zählbar heute“: wie „Heute neu“, führt in das Elliott-Bild der Aktie (/elliott/#/<T>). */
   function countTile(r) {
     var d = M.dirOf(r), inv = M.invalidLine(r), name = M.shortName(r.n, r.t);
-    return el("a", { class: "el-cr el-hit ek-tile ek-tap ek-nc", role: "listitem", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv].filter(Boolean).join(", ") }, [
+    return el("a", { class: "el-cr ek-tile ek-tap ek-nc", role: "listitem", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv].filter(Boolean).join(", ") }, [
       el("span", { class: "ek-nc-h" }, [frag(U.logo(r.t)), el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: name, title: r.n }), el("span", { class: "ek-xs ek-mut", text: M.countLine(r) })])]),
       sparkOf(r.t, 1), el("span", { class: "ek-nc-f" }, [moveOf(r.t), el("span", { class: "ek-xs ek-b7", text: (d === "up" ? "▲ " : d === "down" ? "▼ " : "◆ ") + (DIRW[d] || "Richtung offen") })]), inv ? el("span", { class: "ek-xs ek-mut ek-nc-i", text: inv }) : null]);
   }
@@ -571,6 +571,9 @@
     ensureHome();
     var key = M.buildHash(Object.assign({}, s, { suche: false, q: "" })) + "|" + artOf();
     var same = key === state.homeKey && state.rendered && state.status === state.renderedStatus;
+    /* Start: Reiter im Inhalt und Kopfkachel (App-Konzept 2); jede andere Ansicht zeigt die Reiterzeile des Rahmens. */
+    var start = !M.isFiltered(s) && !s.zaehlbar && !s.suche;
+    tabsMode(start);
     if (returning && same) {
       document.title = (M.isFiltered(s) ? M.filterTitle(s, state.home && state.home.rows) + " · " : "") + "Elliott · Vision Universe®";
       var y = state.homeScroll; global.requestAnimationFrame(function () { global.scrollTo(0, y); });
@@ -581,9 +584,7 @@
     var searchHadFocus = document.activeElement && document.activeElement.id === "el-q", q = searchHadFocus ? document.activeElement.value : s.q;
     root.setAttribute("aria-busy", "true");
     root.classList.toggle("is-suche", !!s.suche);
-    /* Start: Reiter im Inhalt und Kopfkachel (App-Konzept 2); jede andere Ansicht zeigt die Reiterzeile des Rahmens. */
-    var start = !M.isFiltered(s) && !s.zaehlbar && !s.suche;
-    tabsMode(start); root.classList.toggle("ek", start);
+    root.classList.toggle("ek", start);
     root.replaceChildren.apply(root, start ? [tabs(), kopf(), content(s)] : ((M.isFiltered(s) || s.zaehlbar) && !s.suche ? [] : hero(Object.assign({}, s, { q: q }))).concat(s.suche ? [] : [content(s)]));
     if (s.suche) global.scrollTo(0, 0);
     if (searchHadFocus) { var i = document.getElementById("el-q"); if (i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) { /* type=search */ } } }
