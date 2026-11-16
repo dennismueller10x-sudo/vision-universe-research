@@ -123,7 +123,11 @@ VERZEICHNIS_ETF_0611, VERZEICHNIS_WARRANT_0611 = 269, {"BNCWW"}
 # neu im Produkt, aber noch zu kurz (SHORT, kein Zugewinn); sechs Titel (ABTC, ELVR, NMP, PLT, PMI, TONX) sind ueber 300 Bars
 # gealtert (AGED_PAST_THRESHOLD, Deckungsabweichung je Titel, deckung-Lauf 42987197248).
 # Die 200 Wechsel ELIGIBLE -> REVIEW desselben Laufs aendern den Umfang nicht (REVIEW gehoert zum Produkt).
+# 16.11.2026 (Deckungslauf 43683449015, 15.11.): Technisch bereit 5661 + 5 = 5666. AGNCZ, FCHL, SOCA, SSM, UMBFP sind ueber
+# 300 Bars gealtert (AGED_PAST_THRESHOLD: am 11.09. 255/256 Bars, am 11.11. noch in tooShortSymbols, am 15.11. nicht mehr);
+# kein Titel neu zu kurz, Produkt (6309) und Charts (6306) unveraendert, Abgleich reconciliation.json Delta 0.
 VERZEICHNIS_WIEDER_STAMMAKTIE_1111 = {"WTIB"}
+GEALTERT_1611 = {"AGNCZ", "FCHL", "SOCA", "SSM", "UMBFP"}
 VERZEICHNIS_AUSGESCHLOSSEN_0611 = ABNAHME["verzeichnisAusgeschlossen"]
 WTIB_1111, GEALTERT_1111 = 1, 6
 ENTFERNTE_DEBT_TITEL = {
@@ -139,6 +143,52 @@ CHART_AUSNAHMEN_0920 = CHART_AUSNAHMEN | {"BRTM"}
 
 def lade(path):
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def erklaerte_alterung(abnahme, metriken, produkt_tickers):
+    """Erklaerte Klasse AGED_PAST_THRESHOLD (Steuerung 16.11.2026): junge Titel wachsen ueber die 300-Bar-Schwelle.
+
+    Gibt (gealtert, befund) zurueck. gealtert ist die Menge, die die taegliche Abnahme automatisch annimmt; befund ist None
+    oder der Grund, warum NICHT angenommen wird (dann vergleicht die Abnahme streng und wird rot). Angenommen nur, wenn
+      (1) jeder Titel am Abnahmetag in technischZuKurz stand, jetzt nicht mehr in tooShortSymbols steht und weiter im
+          Produktuniversum ist (die Ausnahmeliste ist vollstaendig, also hat er laut Messung >= technicalMinBars Bars),
+      (2) keine Gegenbewegung: kein Titel neu zu kurz, Produkt- und Chart-Zahl gleich der Abnahme,
+      (3) die Summe genau aufgeht: technisch bereit = abgenommen + Zahl der gealterten Titel.
+    """
+    abg = abnahme["abgenommen"]
+    bezug = set(abnahme.get("technischZuKurz") or [])
+    t, c = metriken["TECHNICAL_HISTORY_ELIGIBILITY"], metriken["CHART_AVAILABILITY"]
+    jetzt = set(t["tooShortSymbols"])
+    gealtert = bezug - jetzt
+    if not gealtert:
+        return set(), None
+    if metriken.get("thresholds", {}).get("technicalMinBars") != 300:
+        return set(), "Schwelle technicalMinBars ist nicht 300"
+    if len(bezug) != abg["PRODUCT_TITLES"] - abg["TECHNICAL_HISTORY_ELIGIBLE"]:
+        return set(), "technischZuKurz passt nicht zum abgenommenen Stand"
+    if gealtert - produkt_tickers:
+        return set(), "nicht mehr im Produkt: " + ", ".join(sorted(gealtert - produkt_tickers))
+    if jetzt - bezug:
+        return set(), "neu zu kurz: " + ", ".join(sorted(jetzt - bezug))
+    if (c["denominator"], t["denominator"], c["renderable"]) != (abg["PRODUCT_TITLES"], abg["PRODUCT_TITLES"],
+                                                                 abg["HISTORICAL_CHART_AVAILABLE"]):
+        return set(), "Produkt- oder Chart-Zahl weicht ab"
+    if t["eligible"] != abg["TECHNICAL_HISTORY_ELIGIBLE"] + len(gealtert):
+        return set(), "Summe geht nicht auf"
+    return gealtert, None
+
+
+def technisch_bereit_erwartet(metriken=None):
+    """Abgenommener Stand plus erklaerte Alterung; meldet die gealterten Titel als Hinweis im Abnahme-Bericht."""
+    m = metriken or lade(METRIKEN)
+    produkt = {x["ticker"] for x in lade(KANON_UNIVERSUM)["securities"]}
+    gealtert, befund = erklaerte_alterung(ABNAHME, m, produkt)
+    if gealtert:
+        print(f"HINWEIS AGED_PAST_THRESHOLD: {len(gealtert)} Titel seit der Abnahme ueber 300 Bars gealtert, automatisch "
+              f"angenommen: {', '.join(sorted(gealtert))}", file=sys.stderr)
+    elif befund:
+        print(f"KEINE AUTOMATISCHE ANNAHME: {befund}", file=sys.stderr)
+    return ABGENOMMEN["TECHNICAL_HISTORY_ELIGIBLE"] + len(gealtert)
 
 
 class QuelleVorhandenTests(unittest.TestCase):
@@ -167,8 +217,7 @@ class QuelleVorhandenTests(unittest.TestCase):
                          ABGENOMMEN["R2_SERIES_AVAILABLE"])
         self.assertEqual(m["CHART_AVAILABILITY"]["renderable"],
                          ABGENOMMEN["HISTORICAL_CHART_AVAILABLE"])
-        self.assertEqual(m["TECHNICAL_HISTORY_ELIGIBILITY"]["eligible"],
-                         ABGENOMMEN["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertEqual(m["TECHNICAL_HISTORY_ELIGIBILITY"]["eligible"], technisch_bereit_erwartet(m))
         self.assertEqual(m["CHART_AVAILABILITY"]["denominator"],
                          ABGENOMMEN["PRODUCT_TITLES"])
         # Die technischen Ausnahmen stehen vollstaendig und namentlich da.
@@ -261,6 +310,7 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         self.assertFalse(raus & set(m["CHART_AVAILABILITY"]["notRenderableSymbols"]))
         self.assertFalse(raus & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
         self.assertNotIn("TBHC", m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"])
+        self.assertFalse(GEALTERT_1611 & set(m["TECHNICAL_HISTORY_ELIGIBILITY"]["tooShortSymbols"]))
         technisch_bereit_raus, gealtert = 137, 1
         self.assertEqual(VERZEICHNIS_AUSGESCHLOSSEN - technisch_bereit_raus, 30)  # schon am Bezug zu kurz
         # Uebergang 04.10. -> 10.10. (167 Verzeichnisbelege), unveraendert als Rechnung festgehalten
@@ -273,8 +323,8 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         self.assertEqual(POLICY_STAND_1010["PRODUCT_TITLES"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111, AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
         self.assertEqual(POLICY_STAND_1010["HISTORICAL_CHART_AVAILABLE"] - ETF_RAUS_0611 + NEU_0611 + WTIB_1111,
                          AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
-        self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611 + GEALTERT_1111,
-                         AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertEqual(POLICY_STAND_1010["TECHNICAL_HISTORY_ELIGIBLE"] - ETF_TECHNISCH_BEREIT_0611 + GEALTERT_0611 + GEALTERT_1111
+                         + len(GEALTERT_1611), AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
         eignung = lade(ROOT / "quant/data/market/security-master/eligibility.json")
         etf_raus = [d for d in eignung["decisions"] if d["product_eligibility"] == "EXCLUDED"
                     and d.get("product_eligibility_reason") == "CONFIRMED_NON_EQUITY:ETF"]
@@ -285,6 +335,48 @@ class AusnahmelistenSindVollstaendigTests(unittest.TestCase):
         t = lade(TECHNIK)
         self.assertIn("alles ausser TECHNICAL_READY",
                       t["perSymbolDetail"]["reason"])
+
+
+class ErklaerteAlterungTests(unittest.TestCase):
+    """Die automatische Annahme AGED_PAST_THRESHOLD (16.11.2026) auf erfundenen Zahlen: laeuft in jedem Code-PR."""
+
+    def setUp(self):
+        self.abn = {"abgenommen": {"PRODUCT_TITLES": 10, "HISTORICAL_CHART_AVAILABLE": 9, "TECHNICAL_HISTORY_ELIGIBLE": 7},
+                    "technischZuKurz": ["A", "B", "C"]}
+        self.produkt = set("ABCDEFGHIJ")
+
+    def messung(self, zu_kurz, eligible, titel=10, charts=9):
+        return {"thresholds": {"technicalMinBars": 300},
+                "CHART_AVAILABILITY": {"denominator": titel, "renderable": charts},
+                "TECHNICAL_HISTORY_ELIGIBILITY": {"denominator": titel, "eligible": eligible, "tooShortSymbols": zu_kurz}}
+
+    def test_gealterte_titel_werden_angenommen(self):
+        self.assertEqual(erklaerte_alterung(self.abn, self.messung(["C"], 9), self.produkt), ({"A", "B"}, None))
+
+    def test_unveraendert_ist_nichts_anzunehmen(self):
+        self.assertEqual(erklaerte_alterung(self.abn, self.messung(["A", "B", "C"], 7), self.produkt), (set(), None))
+
+    def test_gegenbewegung_bleibt_rot(self):
+        g, befund = erklaerte_alterung(self.abn, self.messung(["C", "D"], 8), self.produkt)
+        self.assertEqual(g, set()); self.assertIn("neu zu kurz: D", befund)
+
+    def test_geaenderte_produkt_oder_chartzahl_bleibt_rot(self):
+        for m in (self.messung(["C"], 9, titel=11), self.messung(["C"], 9, charts=8)):
+            g, befund = erklaerte_alterung(self.abn, m, self.produkt)
+            self.assertEqual(g, set()); self.assertIn("Produkt- oder Chart-Zahl", befund)
+
+    def test_titel_der_das_produkt_verlaesst_ist_keine_alterung(self):
+        g, befund = erklaerte_alterung(self.abn, self.messung(["C"], 9), self.produkt - {"A"})
+        self.assertEqual(g, set()); self.assertIn("nicht mehr im Produkt: A", befund)
+
+    def test_summe_muss_aufgehen(self):
+        g, befund = erklaerte_alterung(self.abn, self.messung(["C"], 8), self.produkt)
+        self.assertEqual(g, set()); self.assertIn("Summe", befund)
+
+    def test_der_bezug_passt_zur_abnahme(self):
+        abg = ABNAHME["abgenommen"]
+        self.assertEqual(len(ABNAHME["technischZuKurz"]), abg["PRODUCT_TITLES"] - abg["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertEqual(ABNAHME["technischZuKurz"], sorted(set(ABNAHME["technischZuKurz"])))
 
 
 class IdentitaetsjoinTests(unittest.TestCase):
@@ -330,7 +422,7 @@ class DieRechnungTrifftDenStandTests(unittest.TestCase):
         t = self.mc["totals"]
         self.assertEqual(t["MEMBERS"], AKTUELLER_POLICY_STAND["PRODUCT_TITLES"])
         self.assertEqual(t["WITH_PRICE_HISTORY"], AKTUELLER_POLICY_STAND["HISTORICAL_CHART_AVAILABLE"])
-        self.assertEqual(t["TECHNICAL_READY"], AKTUELLER_POLICY_STAND["TECHNICAL_HISTORY_ELIGIBLE"])
+        self.assertEqual(t["TECHNICAL_READY"], technisch_bereit_erwartet())
 
     @nur_datenstand
     def test_der_abgleich_trifft_den_neu_abgenommenen_stand(self):
@@ -340,9 +432,10 @@ class DieRechnungTrifftDenStandTests(unittest.TestCase):
         a = lade(path)["overlap"]["acceptedMarketDataState"]
         self.assertTrue(a["reconciled"], a.get("explanation"))
         self.assertEqual(a["status"], "CANONICAL_PER_INSTRUMENT")
-        for key, value in ABGENOMMEN.items():
+        erwartet = {**AKTUELLER_POLICY_STAND, "TECHNICAL_HISTORY_ELIGIBLE": technisch_bereit_erwartet()}
+        for key, value in {**ABGENOMMEN, "TECHNICAL_HISTORY_ELIGIBLE": erwartet["TECHNICAL_HISTORY_ELIGIBLE"]}.items():
             self.assertEqual(a["accepted"][key], value)
-        self.assertEqual(a["computed"], AKTUELLER_POLICY_STAND)
+        self.assertEqual(a["computed"], erwartet)
         self.assertEqual(a["delta"], {
             "HISTORICAL_CHART_AVAILABLE": 0,
             "TECHNICAL_HISTORY_ELIGIBLE": 0,
