@@ -575,7 +575,10 @@ for (const [vpName, width, height] of VIEWPORTS) {
         dock: getComputedStyle(document.getElementById('vu-dock').shadowRoot.querySelector('nav')).backgroundColor, stored: localStorage.getItem('vu-discover-theme-v1'),
         head: document.querySelector('vu-navigation').getAttribute('theme') }));
       if (after.t === before || after.stored !== after.t || after.head !== after.t) fail(where, 'Theme-Wechsel greift nicht: ' + JSON.stringify({ before, after }));
-      if (after.dock !== 'rgba(12, 12, 13, 0.92)') fail(where, 'Leiste verliert ihre Flaeche (Prototyp .dock): ' + after.dock);
+      // Dunkel: Flaeche des Prototyps (.dock); hell: helle Leiste (Owner 16.11.2026: im Hellen ist alles hell). theme-color folgt.
+      const dockWant = after.t === 'dark' ? 'rgba(12, 12, 13, 0.92)' : 'rgba(255, 255, 255, 0.92)', barWant = after.t === 'dark' ? '#08080a' : '#ffffff';
+      if (after.dock !== dockWant) fail(where, 'Leiste nicht in der Flaeche des Schemas (' + after.t + '): ' + after.dock);
+      if (after.bar && after.bar.toLowerCase() !== barWant) fail(where, 'theme-color nicht ' + barWant + ': ' + after.bar);
       await pick(before === 'dark' ? 'Dunkel' : 'Hell');
       if (await page.evaluate(() => document.documentElement.getAttribute('data-theme')) !== before) fail(where, 'Theme springt nicht zurueck');
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
