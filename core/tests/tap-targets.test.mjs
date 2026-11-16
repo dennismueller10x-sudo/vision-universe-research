@@ -35,7 +35,8 @@ test('Kopf nach Prototyp: Welten-Wechsler, KI, Suche und Profil (38 px hoch) tre
   const nav = read('assets/site-navigation.js');
   assert.match(nav, /\.hb\{position:relative;width:38px;height:38px;/);
   assert.match(nav, /\.mod::after,\.hb::after\{content:"";position:absolute;inset:-3px\}/);
-  assert.match(nav, /<a class="hb ki" href="\/ask\/\?fokus=1" aria-label="Vision Universe KI fragen">/, 'KI-Knopf ist ein .hb: 38 px sichtbar, 44 px Fläche');
+  assert.match(nav, /<a class="hb ki" href="\/ask\/\?fokus=1" aria-label="Vision Universe KI fragen">/, 'KI-Pille ist ein .hb: 38 px hoch, 44 px Fläche');
+  assert.doesNotMatch(nav.match(/\.ki\{[^}]*\}/)[0], /height|inset/, 'KI-Pille behält Höhe 38 px und Tipp-Rand 3 px von .hb (Breite wächst mit dem Text)');
   assert.match(nav, /\.tools\{display:flex;align-items:center;gap:8px;/, '8 px Abstand: die 44-px-Flächen überlappen nicht');
   assert.match(nav, /\.tab\{[^}]*height:44px;margin-block:-4px;/, 'Reiter-Pille 36 px, Fläche 44 px');
   assert.match(nav, /\.tab \.pill\{[^}]*height:36px;/, 'Reiter-Pille 36 px wie im Prototyp');

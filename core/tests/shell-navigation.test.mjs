@@ -644,7 +644,7 @@ test('Kopf nach Prototyp: Welten-Wechsler als Pille, KI (neongrüner Funke), Suc
   const head = source.slice(source.indexOf('<header><div class="shell">'), source.indexOf('</header>'));
   // Owner 16.11.2026: „das i würde ich rausmachen …“, „das Datum … auch ausblenden“; neuer Knopf KI vor Suche und Profil
   const order = ['<button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-name"></span><svg class="chev"',
-    '<a class="hb ki" href="/ask/?fokus=1" aria-label="Vision Universe KI fragen">${SPARK}</a>',
+    '<a class="hb ki" href="/ask/?fokus=1" aria-label="Vision Universe KI fragen">${SPARK}<span class="ki-t" aria-hidden="true"><small>Vision Universe</small><b>KI</b></span></a>',
     '<a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">', '<a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">'];
   let at = 0;
   for (const part of order) { const next = head.indexOf(part, at); assert.ok(next >= at && next >= 0, part); at = next + 1; }
@@ -660,12 +660,19 @@ test('Kopf nach Prototyp: Welten-Wechsler als Pille, KI (neongrüner Funke), Suc
     assert.match(st, /\.row\{height:64px;display:flex;align-items:center;gap:8px\}/);
     assert.match(st, /\.mod\{[^}]*gap:8px;[^}]*height:38px;padding:0 12px 0 6px;border:0;border-radius:99px;[^}]*font-weight:800;font-size:16px;letter-spacing:-\.02em;white-space:nowrap\}/);
     assert.match(st, /\.mi\{width:28px;height:28px;border-radius:9px;background:[^;]+;border:1px solid [^;]+;[^}]*color:#/);
-    // KI-Knopf wie der Senden-Knopf der Suche im Prototyp (.find button: #c8f531, Funke gefuellt), sichtbar 38 px wie .hb
-    assert.match(st, /\.ki\{background:#c8f531;color:#101318;/);
-    assert.match(st, /\.ki svg\{width:18px;height:18px;fill:currentColor;stroke:none\}/);
-    // Verdichtung bei langen Namen: zuerst ohne Pfeil (tight), dann engere Abstaende (tighter)
+    // KI-Pille (Owner 16.11.2026: „da muss man auf jeden Fall noch KI hinschreiben. Vision Universe KI“): neongruen wie der
+    // Senden-Knopf der Suche im Prototyp, Funke links, rechts zweizeilig „VISION UNIVERSE“ klein und „KI“ gross, Schrift
+    // #101318, in beiden Schemata gleich; sichtbar 38 px wie .hb (Tippflaeche 44 px ueber .hb::after)
+    assert.match(st, /\.ki\{background:#c8f531;color:#101318;[^}]*width:auto;display:flex;align-items:center;gap:6px;padding:0 13px 0 10px\}/);
+    assert.match(st, /\.ki svg\{width:18px;height:18px;fill:currentColor;stroke:none;flex:none\}/);
+    assert.match(st, /\.ki \.ki-t\{display:flex;flex-direction:column;[^}]*white-space:nowrap\}/);
+    assert.match(st, /\.ki \.ki-t small\{font-size:8px;line-height:1;font-weight:800;letter-spacing:\.09em;text-transform:uppercase\}/);
+    assert.match(st, /\.ki \.ki-t b\{[^}]*font-size:15\.5px;line-height:1;font-weight:900;/);
+    // Verdichtung bei langen Namen: zuerst ohne Pfeil (tight), dann engere Abstaende (tighter, auch in der Pille), erst als
+    // letzte Stufe ohne „VISION UNIVERSE“ (tightest); „KI“ bleibt immer
     assert.match(st, /:host\(\[tight\]\) \.mod \.chev\{display:none\}:host\(\[tighter\]\) \.row\{gap:6px\}/);
-    assert.doesNotMatch(st, /\.live|tightest/);
+    assert.match(st, /:host\(\[tighter\]\) \.ki\{padding:0 11px 0 9px;gap:5px\}:host\(\[tighter\]\) \.ki \.ki-t small\{font-size:7\.5px;letter-spacing:\.06em\}:host\(\[tightest\]\) \.ki \.ki-t small\{display:none\}/);
+    assert.doesNotMatch(st, /\.live|\.ki-t b\{display:none|tightest\][^{]*\.ki \.ki-t b/);
     assert.ok(st.includes(`.profile{border:2px solid #c8f531;`), 'Profil mit Ring in Neongrün');
     assert.ok(st.includes(`:host([solid]) header{background:${t.bg};-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}`));
   }
@@ -674,7 +681,11 @@ test('Kopf nach Prototyp: Welten-Wechsler als Pille, KI (neongrüner Funke), Suc
   assert.match(styles(THEMES.light), /\.mi\{width:28px;height:28px;border-radius:9px;background:#c8f531;border:1px solid rgba\(0,0,0,\.08\);[^}]*color:#101318/);
   assert.equal(THEMES.dark.bg, 'rgba(0,0,0,.82)');
   assert.equal(THEMES.dark.glass, 'rgba(20,20,22,.7)');
-  assert.equal(THEMES.dark.live, '#c3c7cc');
+  // „i“ und Datums-Pille sind entfallen, mit ihnen die Farbmarken live/dot
+  for (const t of [THEMES.light, THEMES.dark]) assert.ok(!('live' in t) && !('dot' in t));
+  // fit(): die Stufen kommen nacheinander, jede nur, wenn die vorige nicht reicht
+  assert.match(source, /if\(over\(\)\)\{this\.setAttribute\('tight',''\);if\(over\(\)\)\{this\.setAttribute\('tighter',''\);if\(over\(\)\)this\.setAttribute\('tightest',''\);\}\}/);
+  assert.match(source, /this\.removeAttribute\('tight'\);this\.removeAttribute\('tighter'\);this\.removeAttribute\('tightest'\);/);
 });
 
 test('Welten-Wechsler: Name und Symbol je Ort; Home, Ich, Konto und News heissen wie im Prototyp', () => {

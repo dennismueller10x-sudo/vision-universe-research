@@ -259,24 +259,38 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, end, sidebarEnd, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
-  // Kopf mit Welten-Wechsler (Owner 16.11.2026): rechts KI · Suche · Profil, ohne „i“ und Datums-Pille; KI-Knopf neongruen,
-  // sichtbar 38 px, Tippflaeche 44 px; auch mit langem Modulnamen (Supertrader, Fundamental) liegt alles im Bild.
-  for (const path of ['/discover/', '/supertrader/', '/fundamental/']) {
-    const where = `kopf ${path} @${vpName}`;
+  // Kopf mit Welten-Wechsler (Owner 16.11.2026): rechts KI · Suche · Profil, ohne „i“ und Datums-Pille. Die KI ist eine
+  // neongruene Pille (Owner 16.11.2026: „da muss man auf jeden Fall noch KI hinschreiben. Vision Universe KI“): Funke, darueber
+  // klein „VISION UNIVERSE“, darunter gross „KI“, Schrift #101318, sichtbar 38 px, Tippflaeche 44 px. Auch mit langem
+  // Modulnamen (Supertrader, Fundamental, Hedgefonds, Portfolios) liegt alles im Bild und nichts ist abgeschnitten; die
+  // Dachzeile entfaellt nur als letzte Stufe (tightest), „KI“ bleibt immer. In beiden Schemata.
+  for (const [path, scheme] of [['/discover/', 'dark'], ['/supertrader/', 'dark'], ['/fundamental/', 'dark'], ['/hedgefonds/', 'dark'], ['/portfolios/', 'dark'], ['/fundamental/', 'light'], ['/hedgefonds/', 'light']]) {
+    const where = `kopf ${path} ${scheme} @${vpName}`;
     await fresh();
     try {
+      await page.addInitScript((t) => { try { localStorage.setItem('vu-discover-theme-v1', t); } catch {} }, scheme);
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       const k = await page.evaluate(() => {
-        const root = document.querySelector('vu-navigation').shadowRoot, row = root.querySelector('.row'), box = (sel) => { const n = root.querySelector(sel); if (!n || !n.getClientRects().length) return null; const r = n.getBoundingClientRect(), a = getComputedStyle(n, '::after'); return { x: Math.round(r.left), r: Math.round(r.right), w: Math.round(r.width), h: Math.round(r.height), tap: Math.round(r.width - 2 * parseFloat(a.left || 0)), bg: getComputedStyle(n).backgroundColor, label: n.getAttribute('aria-label'), href: n.getAttribute('href') }; };
-        const name = root.querySelector('.world-name');
-        return { ki: box('.hb.ki'), search: box('.hb.search'), profile: box('.hb.profile'), world: box('.world'), info: !!root.querySelector('.info, .live'), rowOver: row.scrollWidth - row.clientWidth, vw: innerWidth, name: name && name.textContent, cut: name ? name.scrollWidth > name.clientWidth + 1 : null };
+        const host = document.querySelector('vu-navigation'), root = host.shadowRoot, row = root.querySelector('.row'), box = (sel) => { const n = root.querySelector(sel); if (!n || !n.getClientRects().length) return null; const r = n.getBoundingClientRect(), a = getComputedStyle(n, '::after'); return { x: Math.round(r.left), r: Math.round(r.right), w: Math.round(r.width), h: Math.round(r.height), tap: Math.round(r.width - 2 * parseFloat(a.left || 0)), tapH: Math.round(r.height - 2 * parseFloat(a.top || 0)), bg: getComputedStyle(n).backgroundColor, ink: getComputedStyle(n).color, label: n.getAttribute('aria-label'), href: n.getAttribute('href') }; };
+        const name = root.querySelector('.world-name'), ki = root.querySelector('.hb.ki'), small = ki && ki.querySelector('.ki-t small'), big = ki && ki.querySelector('.ki-t b'), tools = root.querySelector('.tools').getBoundingClientRect(), rb = row.getBoundingClientRect();
+        const txt = (n) => n && n.getClientRects().length ? { t: n.textContent.trim(), up: getComputedStyle(n).textTransform, fs: parseFloat(getComputedStyle(n).fontSize), fw: +getComputedStyle(n).fontWeight, cut: n.scrollWidth > n.clientWidth + 1 || n.getBoundingClientRect().right > ki.getBoundingClientRect().right } : null;
+        return { theme: document.documentElement.getAttribute('data-theme'), ki: box('.hb.ki'), small: txt(small), big: txt(big), search: box('.hb.search'), profile: box('.hb.profile'), world: box('.world'), info: !!root.querySelector('.info, .live'),
+          stage: ['tight', 'tighter', 'tightest'].filter((x) => host.hasAttribute(x)), toolsOver: Math.round(tools.right - (rb.right - parseFloat(getComputedStyle(row).paddingRight))), vw: innerWidth, name: name && name.textContent, cut: name ? name.scrollWidth > name.clientWidth + 1 : null };
       });
+      if (k.theme !== scheme) fail(where, 'Schema ' + k.theme + ' statt ' + scheme);
       if (k.info) fail(where, '„i“ oder Datums-Pille noch im Kopf');
-      if (!k.ki || k.ki.w !== 38 || k.ki.h !== 38 || k.ki.tap < 44 || k.ki.bg !== 'rgb(200, 245, 49)' || k.ki.label !== 'Vision Universe KI fragen' || k.ki.href !== '/ask/?fokus=1') fail(where, 'KI-Knopf falsch: ' + JSON.stringify(k.ki));
+      if (!k.ki || k.ki.h !== 38 || k.ki.w < 56 || k.ki.tapH < 44 || k.ki.tap < 44 || k.ki.bg !== 'rgb(200, 245, 49)' || k.ki.ink !== 'rgb(16, 19, 24)' || k.ki.label !== 'Vision Universe KI fragen' || k.ki.href !== '/ask/?fokus=1') fail(where, 'KI-Pille falsch: ' + JSON.stringify(k.ki));
+      if (!k.big || k.big.t !== 'KI' || k.big.fs < 15 || k.big.fs > 16 || k.big.fw < 800 || k.big.cut) fail(where, '„KI“ in der Pille fehlt, zu klein oder abgeschnitten: ' + JSON.stringify(k.big));
+      const tightest = k.stage.includes('tightest');
+      if (!tightest && (!k.small || k.small.t !== 'Vision Universe' || k.small.up !== 'uppercase' || k.small.fs < 7.5 || k.small.fs > 8.5 || k.small.fw < 700 || k.small.cut)) fail(where, '„VISION UNIVERSE“ in der Pille fehlt oder ist abgeschnitten: ' + JSON.stringify(k.small));
+      if (tightest && (k.small || !k.stage.includes('tighter'))) fail(where, 'Dachzeile entfaellt nur als letzte Stufe: ' + JSON.stringify(k.stage));
+      if (tightest && k.vw >= 390) fail(where, 'ab 390 px bleibt „VISION UNIVERSE“ stehen (Stufe ' + k.stage.join('+') + ')');
       if (!k.search || !k.profile || !(k.ki && k.ki.x < k.search.x && k.search.x < k.profile.x)) fail(where, 'Reihenfolge KI · Suche · Profil falsch');
-      if (k.rowOver > 1 || (k.profile && k.profile.r > k.vw) || (k.world && k.world.x < 0)) fail(where, 'Kopf läuft über: ' + JSON.stringify(k));
+      if (k.cut || k.toolsOver > 1 || (k.profile && k.profile.r > k.vw) || (k.world && k.world.x < 0)) fail(where, 'Kopf läuft über oder Name abgeschnitten: ' + JSON.stringify(k));
       checks.push({ where, kopf: k, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+    // Die Wahl des Schemas gilt im ganzen Kontext: danach wieder ohne gespeicherte Wahl (Standard dunkel) fuer die folgenden Pruefungen.
+    await page.evaluate(() => { try { localStorage.removeItem('vu-discover-theme-v1'); } catch {} }).catch(() => {});
   }
   // KI-Knopf: /ask/?fokus=1 setzt den Fokus auf die Eingabe.
   {
