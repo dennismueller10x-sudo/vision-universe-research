@@ -24,6 +24,22 @@ export function args(argv = process.argv.slice(2)) {
   return out;
 }
 
+/** Read-only JSONL projection for the existing health contract. This parses records;
+ * integrity remains the responsibility of run-paper-2027.mjs verify, not this loader.
+ * No activation or registry state is changed. */
+export function jsonLinesArtifact(text) {
+  const lines = text.split(/\r?\n/).filter(s => s.trim());
+  if (!lines.length) throw new Error("EMPTY_JSONL_ARTIFACT");
+  const records = lines.map(line => JSON.parse(line));
+  if (records.some(r => !r || typeof r !== "object" || Array.isArray(r))) throw new Error("INVALID_JSONL_RECORD");
+  const head = records.at(-1);
+  // A later correction may refer to an older session; freshness follows the latest session present.
+  const sessions = records.map(r => r.session).filter(s => typeof s === "string").sort();
+  return { schemaVersion: "jsonl-artifact-head-1.0.0", asOf: sessions.at(-1) || null,
+    generatedAt: head.recordedAt || null, records: records.length, head,
+    integrity: "NOT_ASSESSED_USE_EXISTING_PRODUCER_VERIFY" };
+}
+
 /** Loader fuer Auslieferungspfade ("/quant/data/..."). */
 export function makeLoader({ root = REPO_ROOT, site = null } = {}) {
   return async function load(path) {
@@ -31,12 +47,12 @@ export function makeLoader({ root = REPO_ROOT, site = null } = {}) {
       const url = site.replace(/\/$/, "") + path;
       const r = await fetch(url, { headers: { "cache-control": "no-cache" } });
       if (!r.ok) throw new Error("HTTP " + r.status + " " + path);
-      return path.endsWith(".json.gz") ? compressedJson(Buffer.from(await r.arrayBuffer())) : r.json();
+      return path.endsWith(".jsonl") ? jsonLinesArtifact(await r.text()) : path.endsWith(".json.gz") ? compressedJson(Buffer.from(await r.arrayBuffer())) : r.json();
     }
     const file = resolve(root, path.replace(/^\//, ""));
     if (!file.startsWith(resolve(root) + sep)) throw new Error("ausserhalb des Repositorys: " + path);
     if (!existsSync(file)) throw new Error("fehlt: " + path);
-    return path.endsWith(".json.gz") ? compressedJson(readFileSync(file)) : JSON.parse(readFileSync(file, "utf8"));
+    return path.endsWith(".jsonl") ? jsonLinesArtifact(readFileSync(file, "utf8")) : path.endsWith(".json.gz") ? compressedJson(readFileSync(file)) : JSON.parse(readFileSync(file, "utf8"));
   };
 }
 

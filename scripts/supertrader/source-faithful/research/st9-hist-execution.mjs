@@ -370,3 +370,59 @@ export function assertSameResult(a, b) { const ha = resultSha256(a), hb = result
 
 /** Public form of an audit: counts only (examples and per-trade classes carry ids). */
 export const publicAudit = ({ _examples, _perTrade, ...rest }) => rest; // eslint-disable-line no-unused-vars
+
+/** Optional read-only diagnostic for the previously unchecked Turtle BUY levels.
+ * No engine import, no change to auditRun, registered results or certification gates.
+ * Reconstructs prior 20/55-bar highs + split-adjusted one-cent tick, prior Wilder N,
+ * and half-N adds from the last actual raw fill. S1's hypothetical-win filter,
+ * portfolio selection and position size are explicitly outside this check. */
+export function checkTurtleEntries(ds, run, { slippageBps }) {
+  if (!fin(slippageBps) || slippageBps < 0) throw new Error('INVALID_SLIPPAGE');
+  const idx = index(ds), positions = new Map(), violations = {}, examples = [];
+  const checks = { entries: 0, adds: 0, entryGaps: 0, addGaps: 0 };
+  const bad = (code, r) => { inc(violations, code); if (examples.length < 20) examples.push({ code, id: r.id, date: r.date }); };
+  const ns = new Map(ds.securities.map(s => [s.id, wilderN(s.bars)]));
+  let lastDate = '';
+  for (const r of run.ledger) {
+    if (r.date < lastDate) bad('LEDGER_NOT_ORDERED', r);
+    lastDate = r.date;
+    let p = positions.get(r.id);
+    if (r.side === 'SELL') {
+      if (p) { p.units.delete(r.unit); if (String(r.reason).startsWith('STOP_')) p.stopped = true; if (!p.units.size) positions.delete(r.id); }
+      continue;
+    }
+    if (r.side !== 'BUY') continue;
+    const x = idx.get(r.id), i = x?.at.get(r.date), b = i === undefined ? null : x.s.bars[i];
+    if (!b || !fin(b.open) || !fin(b.high)) { bad('ENTRY_BAR_MISSING', r); continue; }
+    const raw = r.price / (1 + slippageBps / 1e4);
+    if (!p) {
+      checks.entries++;
+      const window = r.reason === 'S1' ? 20 : ['S2', 'FAILSAFE_55'].includes(r.reason) ? 55 : null;
+      if (!window) { bad('ENTRY_PATH_UNKNOWN', r); continue; }
+      const prior = x.s.bars.slice(Math.max(0, i - window), i);
+      if (prior.length !== window || prior.some(b => !fin(b.high))) { bad('ENTRY_CHANNEL_UNAVAILABLE', r); continue; }
+      const trigger = Math.max(...prior.map(b => b.high)) + 0.01 / (fin(b.splitAdj) && b.splitAdj > 0 ? b.splitAdj : 1);
+      const want = Math.max(b.open, trigger), n = ns.get(r.id)[i - 1];
+      if (!(b.high >= trigger)) bad('ENTRY_TRIGGER_NOT_REACHED', r);
+      if (!near(raw, want)) bad('ENTRY_FILL_MISMATCH', r);
+      if (!(n > 0)) bad('ENTRY_N_UNAVAILABLE', r);
+      if (b.open > trigger) checks.entryGaps++;
+      p = { n, lastFill: raw, units: new Set(), stopped: false, lastAddDate: null };
+      positions.set(r.id, p);
+    } else {
+      checks.adds++;
+      const trigger = p.lastFill + 0.5 * p.n;
+      const want = p.lastAddDate === r.date ? trigger : Math.max(b.open, trigger);
+      if (p.stopped) bad('ADD_AFTER_UNIT_STOP', r);
+      if (!(p.n > 0) || b.high < trigger) bad('ADD_TRIGGER_NOT_REACHED', r);
+      if (!near(raw, want)) bad('ADD_FILL_MISMATCH', r);
+      if (want > trigger) checks.addGaps++;
+      p.lastFill = raw; p.lastAddDate = r.date;
+    }
+    if (p.units.has(r.unit)) bad('ENTRY_UNIT_ALREADY_OPEN', r);
+    p.units.add(r.unit);
+  }
+  return { version: 'turtle-entry-diagnostic-1.0.0', checks, violations, examples,
+    violationCount: Object.values(violations).reduce((a, b) => a + b, 0),
+    limitations: ['S1_FILTER_NOT_INDEPENDENTLY_RECONSTRUCTED', 'NO_SELECTION_OR_POSITION_SIZE_PROOF', 'DAILY_INTRABAR_ORDER_REMAINS_ASSUMED'] };
+}

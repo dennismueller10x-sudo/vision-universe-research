@@ -591,3 +591,9 @@ Abgelöste Übergaben und Statusberichte; zur Nachvollziehbarkeit erhalten. Maß
 - [SUPERTRADER_7_INTEGRATION_ABSCHLUSS.md](archiv/2026/SUPERTRADER_7_INTEGRATION_ABSCHLUSS.md)
 - [SUPERTRADER_8_ACTIVATION_READINESS.md](SUPERTRADER_8_ACTIVATION_READINESS.md)
 - [SUPERTRADER_8_INTEGRATION_STATUS.md](archiv/2026/SUPERTRADER_8_INTEGRATION_STATUS.md)
+
+### Backend-Ergänzungen 15.11.2026 (Master-Auftrag, Pakete 1/2/4)
+
+Der Evidenzerzeuger berücksichtigt jetzt die bereits gerechneten historischen Läufe des bestehenden Methodenkatalogs sowie den tatsächlich eingeschalteten Paper-Schalter (#1354). Die eingefrorenen CC-Belege werden dadurch nicht nachträglich aufgewertet. Alte Aktivierungsfragen sind als historische Planstände zu lesen. Ein lesender JSONL-Adapter in `scripts/core/lib.mjs` bereitet die Core-Erfassung vor; Registry-Aktivierung, Paper-Schalter und Zeitpläne bleiben unverändert. F1–F3 benötigen weiterhin den privaten Forward-Namensraum; sie werden durch lokale Tests nicht behauptet. Am 15.11. ergibt der vorhandene Guard `BEFORE_WINDOW_START`, alle vier Engine-/Varianten-Pins sind gleich.
+
+`st9-hist-execution.mjs#checkTurtleEntries` ergänzt die bislang fehlende unabhängige Nachrechnung von BUY-Preisen: vergangene 20/55-Bar-Hochs, splitbereinigter Tick, Gap-Ausführung und 0,5-N-Aufstockungen aus eigenem vorherigem Wilder-N. Nur optionales lesendes Diagnosewerkzeug, kein neues Gate und keine Änderung registrierter Audit-Ausgaben. Gegenproben mit verschobenen Entry-/Add-Preisen und Split-Skalierung bestehen. S1-Hypothesenfilter, Portfolioauswahl, Positionsgröße und Intrabar-Reihenfolge sind dadurch nicht unabhängig bewiesen. Die versiegelten historischen Renditen wurden nicht erneut gerechnet oder geöffnet.

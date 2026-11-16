@@ -75,3 +75,7 @@ Neu abgeleitet werden nur Pfadkennzahlen aus vorhandenen Pfaden/Ereignissen (Jah
 - Kein neuer Endpunkt, kein Artefakt unter `quant/data`, kein Workflow.
 - Zertifizierungsvertrag, Gates, Setup-Freigabe und OOS-Norm unverändert; keine Regel, kein Score, kein Ranking geändert.
 - Eine Anzeige von Research-Zahlen im Produkt wäre eine eigene Owner-Entscheidung mit eigenem PR.
+
+### Forschungsartefakt: getrennte Statusdimensionen
+
+Der bestehende Erzeuger `scripts/quant/research/build-backtest-research.cjs` ergänzt `certificationScopes` additiv: `methodological[kind]` folgt unverändert der Definition vom 13.11., `forward[kind]` dem bisherigen Prüfstand. Das alte oberste `certificationStatus`/`label` bezeichnet den Produktfreigabe-Kontext; `cases[].certificationStatus` ist der übernommene Vorwärtsstatus. Diese Kompatibilitätsfelder bleiben erhalten, damit bestehende Consumer nicht brechen. `productionApproved` bleibt false. Keine Aussage über Überrendite, unabhängigen Nachweis oder Produktreife wird aus einem methodisch geprüften Fall abgeleitet.
