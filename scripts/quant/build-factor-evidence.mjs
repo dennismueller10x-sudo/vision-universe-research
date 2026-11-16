@@ -99,8 +99,8 @@ const FUNDAMENTAL_COMPONENTS = {
     { id: "netDebtToAssets", weight: 0.20, direction: "lower", label: "Nettoverschuldung zu Bilanzsumme", unit: "ratio" },
     { id: "equityToAssets", weight: 0.15, direction: "higher", label: "Eigenkapitalquote", unit: "ratio" },
     { id: "positiveFcfYears", weight: 0.20, direction: "higher", label: "Jahre mit positivem freien Zahlungsfluss", unit: "count", noWinsor: true },
-    { id: "operatingMarginStability", weight: 0.20, direction: "lower", label: "Schwankung der operativen Marge", unit: "ratio",
-      note: "Median der absoluten Abweichungen der jährlichen operativen Marge vom eigenen Median, über bis zu fünf Geschäftsjahre und erst ab vier." }
+    { id: "operatingMarginDrawdown", weight: 0.20, direction: "lower", label: "Größter Einbruch der operativen Marge", unit: "ratio",
+      note: "Größter Rückgang der jährlichen operativen Marge vom früheren Hoch, bis zu fünf Geschäftsjahre (ab vier); steigende Margen zählen nicht." }
   ],
   growth: [
     { id: "revenueCagr3y", weight: 0.30, direction: "higher", label: "Umsatzwachstum pro Jahr, 3 Jahre", unit: "ratio" },

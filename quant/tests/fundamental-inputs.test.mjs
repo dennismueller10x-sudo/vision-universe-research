@@ -379,3 +379,24 @@ test("without an instant at the start of the window the end alone counts; withou
   assert.equal(c.averageAssetsBasis, "FISCAL_YEARS");
   assert.ok(Math.abs(c.raws.roaTtm - 230 / 2150) < 1e-12);
 });
+
+/* quant-v2.4.0 (16.11.2026): Die Margenstabilitaet misst nur Einbrueche. */
+function marginDoc(margins) {
+  const base = doc();
+  const years = margins.map((m, i) => [2021 + i, (2021 + i) + "-12-31", (2022 + i) + "-02-15"]);
+  const rows = (values) => years.map(([fy, end, filed], i) => row(fy, end, values[i], filed));
+  return { ...base, annual: { ...base.annual, revenue: rows(margins.map(() => 1000)), operating_income: rows(margins.map((m) => m * 1000)) } };
+}
+test("a rising operating margin has no drawdown; a fall from an earlier high counts in full", () => {
+  const cutoff = "2026-09-18";
+  assert.equal(Inputs.compute(marginDoc([0.1, 0.2, 0.3, 0.4, 0.5]), cutoff, 1000).raws.operatingMarginDrawdown, 0);
+  const nvdaLike = Inputs.compute(marginDoc([0.37, 0.16, 0.54, 0.62, 0.60]), cutoff, 1000).raws.operatingMarginDrawdown;
+  assert.ok(Math.abs(nvdaLike - 0.21) < 1e-12);
+});
+test("a business without an operating margin is not stable because its losses shrink", () => {
+  const cutoff = "2026-09-18";
+  // Verlust vom Hundertfachen des Umsatzes, schrumpfend: gekappt auf -100 %, Abstand der Median-Marge zur Null zaehlt.
+  assert.equal(Inputs.compute(marginDoc([-290, -61, -36, -21, -15]), cutoff, 1000).raws.operatingMarginDrawdown, 1);
+  const small = Inputs.compute(marginDoc([-0.12, -0.12, -0.12, 0.18, 0.2]), cutoff, 1000).raws.operatingMarginDrawdown;
+  assert.ok(Math.abs(small - 0.12) < 1e-12);
+});

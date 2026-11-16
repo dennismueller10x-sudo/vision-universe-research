@@ -139,7 +139,11 @@ export const budgets=Object.freeze({
  // stock 46 -> 47 Anfragen (App-Konzept 2, PR #2015, Owner 14./15.11.2026 „1:1 wie im Prototyp“): die Datums-Pille im
  // Kopf des Rahmens liest einmal je Seite den Kursstand (asOf) aus quant/data/product/market-regime-v1.json (rund 5 kB),
  // solange die Seite ihren Stand nicht selbst meldet (VUNavigation.datenstand). Bytes unveraendert.
- stock:{decodedBytes:3300000,requests:47,history:true},
+ // stock 3.300.000 -> 3.350.000 Bytes (16.11.2026): die Grenze lag aus dem Datenwachstum heraus ueberschritten,
+ // nicht aus Code. Gemessen in vu2-browser-qa, NVDA 1440 px: 3.296.352 (06:38) -> 3.303.345 (12:07, PR #2019,
+ // der die Aktienseite nicht beruehrt). Groesster Zuwachs: market-regime-v1.json (Datum im Kopf) 4.911 -> 8.080 Bytes,
+ // weil sein Verlauf (history) mit jedem Lauf waechst. Der Ausschnitt je Titel ist unveraendert aktiv.
+ stock:{decodedBytes:3350000,requests:47,history:true},
  // These two workspaces intentionally evaluate the canonical full-universe
  // factor artifact. Other pages must not pay this cost eagerly.
  screener:{decodedBytes:30500000,requests:30,history:false},
