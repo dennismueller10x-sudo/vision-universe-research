@@ -90,10 +90,11 @@ body.ak{margin:0;background:#000;color:#f4f5f1;-webkit-font-smoothing:antialiase
 .ak-often-ic{flex:none;width:30px;height:30px;border-radius:9px;background:#0e1013;border:1px solid rgba(200,245,49,.25);color:#c8f531;display:grid;place-items:center}
 .ak-often-go{flex:none;color:var(--ak-mut);display:grid}
 .ak-limits{margin-top:14px}
-/* „?“ wie im Prototyp (.q): weißer Kreis 20 px; die Tippfläche (44 px) kommt aus .vu-q:after */
+/* „?“ wie im Prototyp (.q): weißer Kreis 20 px sichtbar, Tippfläche 44 px über den transparenten Rand */
 .ak-app .vu-help{color:var(--ak-mut);font-size:12.5px}
 .ak-app .vu-help>i{width:20px;height:20px;background:var(--ak-ink);color:var(--ak-bg)}
-.ak-app .vu-q{min-width:20px!important;min-height:20px!important;width:20px;height:20px;background:var(--ak-ink);color:var(--ak-bg)}
+.ak-app .vu-q{width:44px;height:44px;min-width:44px!important;min-height:44px!important;margin:-12px -12px -12px -8px;border:12px solid transparent;background-clip:padding-box;background-color:var(--ak-ink);color:var(--ak-bg);vertical-align:middle}
+.ak-app .vu-q:after{content:none}
 .ak-app>.vu-legal{margin-top:22px;padding:14px;border-radius:22px;background:var(--ak-tile);color:var(--ak-sec);font-size:12.5px}
 .ak-app>.vu-legal .vu-legal-links{margin-top:0}
 .ak-app>.vu-legal .vu-legal-links a{display:inline-flex;align-items:center;min-height:44px;color:var(--ak-ink)}
@@ -159,9 +160,8 @@ body.ak-answering.ak-asking .ak-hero{margin-bottom:16px}
 .ak-ans--lime .ak-rc{background:#000;color:#fff}
 .ak-rc:has(.ak-rc-x){padding-right:2px}
 .ak-rc-i{display:inline-flex;color:inherit;opacity:.85}
-/* × 22 px in der Pille, Tippfläche 44 px */
-.ak-rc-x{width:22px;height:22px;min-width:22px!important;min-height:22px!important;padding:0;border:0;border-radius:50%;background:transparent;color:inherit;font-size:15px;line-height:1;cursor:pointer;position:relative}
-.ak-rc-x::after{content:"";position:absolute;inset:-11px}
+/* × 22 px in der Pille, Tippfläche 44 px über den transparenten Rand */
+.ak-rc-x{width:44px;height:44px;min-width:44px!important;min-height:44px!important;margin:-11px;padding:0;border:11px solid transparent;border-radius:50%;background:transparent;color:inherit;font-size:15px;line-height:1;cursor:pointer}
 .ak-ans--lime .ak-rc-x:focus-visible{outline:2px solid #fff;outline-offset:-2px}
 .ak-tips{display:flex;flex-wrap:wrap;gap:0 4px;margin-top:6px}
 .ak-tip{min-height:44px;padding:0 12px;border:6px solid transparent;background-clip:padding-box;border-radius:999px;background-color:#fff;color:#000;font:700 12.5px/1.2 var(--vu-font,Inter,sans-serif);cursor:pointer;margin:0 -6px}

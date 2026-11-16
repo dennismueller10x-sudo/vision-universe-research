@@ -262,7 +262,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Seiten ohne Dock: der Kopf traegt den Menue-Knopf selbst und passt in jede Breite.
-  for (const path of ['/news/', '/willkommen/', '/konto/']) {
+  for (const path of ['/news/', '/willkommen/', '/konto/', '/ask/']) {
     const where = `kopf ohne Leiste ${path} @${vpName}`;
     await fresh();
     try {
@@ -281,6 +281,37 @@ for (const [vpName, width, height] of VIEWPORTS) {
         if (h.dock) fail(where, 'unerwartetes Dock');
         if (h.overflow > 1 || h.right > h.vw + 1 || h.left < 0 || h.w < 44 || h.h < 44) fail(where, 'Menü-Knopf im Kopf abgeschnitten oder zu klein: ' + JSON.stringify(h));
       }
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Atlas (/ask/) nach App-Konzept 2 (Owner 16.11.2026; Vorlage Fenster „suche“ des Prototyps): Rahmen wie jede Seite (Kopf des
+  // Rahmens, kein eigener Kopf), dunkel als Standard (theme-color #08080a), genau eine h1, Eingabe mit mindestens 16 px Schrift
+  // (kein Zoom beim Antippen), jede Tippfläche im Inhalt mindestens 44 px, „Daten & Hinweise“ öffnet das Fenster des Rahmens.
+  {
+    const where = `atlas /ask/ @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + '/ask/', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const a = await page.evaluate(() => {
+        const vis = (n) => n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden';
+        const ta = document.querySelector('#ak-q'), head = document.querySelector('vu-navigation');
+        return { h1: document.querySelectorAll('h1').length, theme: document.querySelector('meta[name=theme-color]')?.content, own: !!document.querySelector('.ak-hd, vu-navigation[menu-only]'),
+          head: !!head && !!head.shadowRoot && getComputedStyle(head.shadowRoot.querySelector('header')).display !== 'none', font: ta ? parseFloat(getComputedStyle(ta).fontSize) : 0,
+          bar: !!document.querySelector('main form.ak-bar'), can: document.querySelectorAll('main .ak-can-card').length, often: document.querySelectorAll('main .ak-often-q').length,
+          small: [...document.querySelectorAll('main a, main button, main textarea, main input')].filter(vis).map((n) => { const r = n.getBoundingClientRect(); return { n, w: Math.round(r.width), h: Math.round(r.height) }; })
+            .filter((x) => x.w < 44 || x.h < 44).map((x) => (x.n.getAttribute('class') || x.n.tagName.toLowerCase()) + ' ' + x.w + '×' + x.h),
+          overflow: document.documentElement.scrollWidth - innerWidth };
+      });
+      if (a.h1 !== 1) fail(where, 'genau eine h1 erwartet, gefunden ' + a.h1);
+      if (a.theme !== '#08080a') fail(where, 'theme-color nicht dunkel: ' + a.theme);
+      if (a.own || !a.head) fail(where, 'Atlas trägt nicht den Kopf des Rahmens');
+      if (!a.bar || a.font < 16) fail(where, 'Eingabe fehlt oder Schrift unter 16 px: ' + a.font);
+      if (a.can !== 3 || a.often !== 3) fail(where, 'Start unvollständig („Was Atlas kann“ ' + a.can + ', „Oft gefragt“ ' + a.often + ')');
+      if (a.small.length) fail(where, a.small.length + ' Ziele kleiner als 44 px (' + a.small.slice(0, 4).join('; ') + ')');
+      if (a.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + a.overflow + ' px');
+      await page.locator('main .ak-lk').click();
+      const sheet = await page.waitForSelector('#vu-sh-hinweise', { state: 'visible', timeout: 5000 }).then(() => true, () => false);
+      if (!sheet) fail(where, '„Daten & Hinweise“ öffnet das Fenster des Rahmens nicht');
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
