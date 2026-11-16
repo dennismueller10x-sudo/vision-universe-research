@@ -264,3 +264,12 @@ body.dv2 .dv2-stock .dx-chart:has(.dx-chart-hero--c04) .dx-range-chart-wrap,body
 .dv3-rk2-bar{display:block;height:5px;margin-top:4px;border-radius:9px;background:color-mix(in srgb,var(--vu-ink) 16%,transparent);overflow:hidden}
 .dv3-rk2-bar i{display:block;height:100%;border-radius:9px;background:var(--vu-ink)}
 :root[data-theme=dark] .dv3-rk2-bar i{background:var(--vu-lime)}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .dv3-thumb{background:#fff;color:#000;box-shadow:inset 0 0 0 1px rgb(0 0 0/.08)}
+:root:not([data-theme=dark]) .dv3-thumb-range,:root:not([data-theme=dark]) .dv3-thumb--dots i{background:rgb(0 0 0/.16)}
+:root:not([data-theme=dark]) .dv3-thumb-range i,:root:not([data-theme=dark]) .dv3-thumb--dots i.on{box-shadow:inset 0 0 0 1.5px #000}
+:root:not([data-theme=dark]) .dv3-thumb-range b,:root:not([data-theme=dark]) .dv3-thumb--bars i,:root:not([data-theme=dark]) .dv3-thumb--pe i,:root:not([data-theme=dark]) .dv3-thumb--idx i{background:#000}
+:root:not([data-theme=dark]) .dv3-thumb--pe i+i{background:rgb(0 0 0/.4)}
+:root:not([data-theme=dark]) .dv3-thumb--marks b:first-child{color:#000}

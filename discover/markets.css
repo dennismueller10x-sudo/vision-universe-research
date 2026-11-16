@@ -1695,3 +1695,18 @@ html:not([data-theme=light]) .dv2 .dx-m3-dim,html:not([data-theme=light]) .dv2 .
 .dv2 .dx-md .dx-md-chart .dx-range-grid,.dv2 .dx-md .dx-md-chart .dx-art-base{stroke:var(--vu-hair,#e9e9e9)}
 .dv2 .dx-md .dx-md-eo-rolle{border-color:var(--vu-lime,#c8f531);background:var(--vu-card,#f4f4f4)}
 .dv2 .dx-md .dx-md-kopf::before{background:var(--vu-ink,#000)}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+html[data-theme=light] .dv2 .dx-m3-hero{background:#f4f4f4;color:#000}
+html[data-theme=light] .dv2 .dx-m3-hero .dx-m3-eyebrow,html[data-theme=light] .dv2 .dx-m3-anleger span,html[data-theme=light] .dv2 .dx-m3-blick-titel,html[data-theme=light] .dv2 .dx-m3-blick li small{color:#5d636b}
+html[data-theme=light] .dv2 .dx-m3-zustand,html[data-theme=light] .dv2 .dx-m3-stufe.is-aktiv b,html[data-theme=light] .dv2 .dx-m3-aussage,html[data-theme=light] .dv2 .dx-m3-seit b,html[data-theme=light] .dv2 .dx-m3-blick li b{color:#000}
+html[data-theme=light] .dv2 .dx-m3-stufe i{background:#dcdcdc}
+html[data-theme=light] .dv2 .dx-m3-stufe b,html[data-theme=light] .dv2 .dx-m3-seit span,html[data-theme=light] .dv2 .dx-m3-zaehlung,html[data-theme=light] .dv2 .dx-m3-zyklus-hinweis,html[data-theme=light] .dv2 .dx-m3-rechtlich{color:#5d636b}
+html[data-theme=light] .dv2 .dx-m3-anleger p,html[data-theme=light] .dv2 .dx-m3-seit,html[data-theme=light] .dv2 .dx-m3-zyklus{color:#3a3d42}
+html[data-theme=light] .dv2 .dx-m3-seit.is-better b{color:#1e6b3c}
+html[data-theme=light] .dv2 .dx-m3-blick{background:#fff;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+html[data-theme=light] .dv2 .dx-m3-cta{background:#000;color:#fff}
+html[data-theme=light] .dv2 .dx-m3-cta.is-leise{background:transparent;color:#000;box-shadow:inset 0 0 0 1px #b4b8bd}
+html[data-theme=light] .dv2 .dx-m3-zyklus{border-top-color:#dcdcdc}
+html[data-theme=light] .dv2 .dx-m3-zyklus.is-verspaetet .dx-m3-zyklus-hinweis{color:#8a4b00}
