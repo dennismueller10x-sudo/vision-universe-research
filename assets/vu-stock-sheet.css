@@ -90,6 +90,10 @@
 .vsk-sheet .vsk{--k-card:var(--k-card2)}
 .vsk-sheet .vsk .k-bleed{margin-left:-16px;margin-right:-16px}
 .vsk-sheet .vsk .k-line-dot{stroke:#151516}
+/* Hell ist vollständig hell (Owner 16.11.2026): Symbolkachel neongrün mit dunklem Zeichen, Griff und Punktrand hell; dunkel unverändert */
+:root:not([data-theme=dark]) .vsk .k-hud{background:var(--k-lime);border-color:transparent;color:#101318}
+:root:not([data-theme=dark]) .vu-sheet-backdrop.vsk-sheet .vu-sheet-grab:before{background:#c9c9cc}
+:root:not([data-theme=dark]) .vsk-sheet .vsk .k-line-dot{stroke:#fff}
 @media(min-width:761px){.vu-sheet-backdrop.vsk-sheet .vu-sheet-ui{border-radius:30px}}
 /* Meldung nach dem Herz */
 .vsk-toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translate(-50%,20px);background:#fff;color:#000;font:800 13px/1.2 Inter,system-ui,sans-serif;padding:10px 16px;border-radius:99px;opacity:0;transition:all .25s;z-index:1000002;white-space:nowrap;pointer-events:none;box-shadow:0 6px 24px rgba(0,0,0,.4)}
