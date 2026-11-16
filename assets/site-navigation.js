@@ -609,7 +609,7 @@
         .live{position:relative;display:flex;align-items:center;gap:6px;flex:none;height:38px;padding:0 11px;border:0;border-radius:99px;background:${t.glass};font-size:12px;font-weight:800;color:${t.live};white-space:nowrap}
         .live i{width:7px;height:7px;border-radius:9px;background:${t.dot};box-shadow:0 0 8px ${t.dot}}
         .live b{font-weight:inherit}
-        :host([tight]) .live b{display:none}
+        :host([tight]) .row{gap:6px}:host([tight]) .tools{gap:6px}:host([tight]) .live{padding:0 8px}:host([tight]) .mod{padding-right:10px}:host([tighter]) .mod .chev{display:none}:host([tightest]) .live b{display:none}
         .mod:active,.hb:active,.live:active{transform:scale(.97)}
         .toggle{flex-shrink:0;border:3px solid transparent;margin:-3px;background:${t.glass};background-clip:padding-box;color:${t.ink};height:44px;padding:0 15px;border-radius:99px;font-weight:800;font-size:14px}
         :host([world]) .toggle{display:none}
@@ -732,7 +732,7 @@
       });
       const world=root.querySelector('.world'),brand=root.querySelector('.brand'),live=root.querySelector('.live');
       /* Passt der Name der Welt nicht neben die vier Knoepfe (schmale Handys, lange Namen), zeigt die Datums-Pille nur den Punkt. */
-      const fit=()=>{this.removeAttribute('tight');const name=world.querySelector('.world-name'),row=root.querySelector('.row');if(world.hidden?row.scrollWidth>row.clientWidth+1:name.scrollWidth>name.clientWidth+1)this.setAttribute('tight','');};
+      const fit=()=>{this.removeAttribute('tight');this.removeAttribute('tighter');this.removeAttribute('tightest');const name=world.querySelector('.world-name'),row=root.querySelector('.row'),over=()=>world.hidden?row.scrollWidth>row.clientWidth+1:name.scrollWidth>name.clientWidth+1;/* Erst Abstaende enger, dann ohne Pfeil am Modulnamen; das Datum (Prototyp) faellt erst ganz zuletzt weg. */if(over()){this.setAttribute('tight','');if(over()){this.setAttribute('tighter','');if(over())this.setAttribute('tightest','');}}};
       const syncWorld=()=>{
         const w=worldOf(location);
         world.hidden=!w;brand.hidden=!!w;this.toggleAttribute('world',!!w);
