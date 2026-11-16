@@ -5,7 +5,7 @@
 //
 // Legt je Lauf eine frische Datenbank an (vu_account_test_<zufall>), spielt
 // supabase/local/platform-stub.sql (Supabase-Rollen, auth.uid(), Standardrechte),
-// alle Migrationen, supabase/seed.sql und die Testhelfer ein und fuehrt jede Datei
+// alle Migrationen, die vorbereiteten aus supabase/prepared/, supabase/seed.sql und die Testhelfer ein und fuehrt jede Datei
 // supabase/tests/NN_*.sql aus. Danach wird die Datenbank wieder geloescht.
 // Ohne PG_TEST_URL endet das Skript mit Exit 2 (nicht still gruen).
 import {execFileSync} from 'node:child_process';
@@ -31,7 +31,11 @@ const db = withDatabase(name);
 let failed = 0;
 try {
   const migrations = readdirSync(join(root, 'supabase/migrations')).filter(f => f.endsWith('.sql')).sort();
-  for (const file of ['supabase/local/platform-stub.sql', ...migrations.map(f => 'supabase/migrations/' + f), 'supabase/seed.sql',
+  // supabase/prepared/: eingebaute, noch nicht ausgerollte Migrationen (z. B. Supertrader Folgen/Melden, aus bis zur
+  // Anwaltspruefung). Nur in dieser Testdatenbank, nach allen Migrationen; die Produktion liest nur supabase/migrations/.
+  const prepared = readdirSync(join(root, 'supabase/prepared')).filter(f => f.endsWith('.sql')).sort();
+  for (const file of ['supabase/local/platform-stub.sql', ...migrations.map(f => 'supabase/migrations/' + f),
+    ...prepared.map(f => 'supabase/prepared/' + f), 'supabase/seed.sql',
     'supabase/tests/_helpers.sql']) {
     psql(db, ['-f', join(root, file)]);
     console.log('eingespielt  ' + file);

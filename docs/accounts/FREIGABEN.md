@@ -18,6 +18,7 @@ ist nötig – Begründung unten.
 | Einschränken oder geprüften Schutz hinzufügen: Checkout zurück (`public`→`testers`→`off`), Live-Abrechnung aus, Kündigungsautomatik aus, **Stripe Tax ein**, Rechtsfassung bestätigen (allein ohne Zahlungswirkung) | `account-production-auto.yml` → `worker` | Merge nach `main` | **keine** |
 | **Preis ändern** (neue Abschlüsse; bestehende Abos behalten ihren Preis) | keiner – Tarifverwaltung `/konto/admin/tarife/` ([TARIFVERWALTUNG.md](TARIFVERWALTUNG.md)) | Betreiber mit Rolle `pricing_admin` | **ausdrückliche Bestätigung in der Oberfläche** (Vorschau, Passwort, Haken), keine GitHub-Freigabe |
 | **Interne Backtest-Vorschau einschalten** (`VU_BACKTEST_REVIEW_ENABLED` → `"true"`) | `account-production-auto.yml` → `worker` (nach Merge) | nur per eigenem PR | **Owner** (ausdrückliche Zustimmung im PR; standardmäßig `"false"`) |
+| **Supertrader „Folgen“/„Melden“ einschalten** (`VU_SUPERTRADER_ALERTS_ENABLED` → `"true"`, `ST_ALERTS_UI`, Migration aus `supabase/prepared/`) | `account-production-auto.yml` → `migrationen`, `worker` (nach Merge) | nur per eigenem PR nach der Anwaltsprüfung | **Owner** (Anwaltsergebnis zu ANWALTSMAPPE N8; standardmäßig aus) |
 | **Rolle `backtest_reviewer` vergeben** | keiner – SQL über den Datenbankzugang des Betriebs | von Hand | **Owner** (ausdrückliche Zustimmung, wie `pricing_admin`) |
 | **Stripe-Produkte, Portal, Webhook, Zahlungsmethoden** (Ersteinrichtung) | `account.yml` (Teil `stripe`) | von Hand | **Owner** (`account-production`, `account-dev`) |
 | **Secrets** setzen/erneuern (Supabase, Stripe, Brevo, Firebase-Push `FCM_SERVICE_ACCOUNT`) | `account.yml` (Teil `ausrollen`) | von Hand | **Owner** (`account-dev`, `account-production`) |
@@ -124,4 +125,26 @@ Abschnitt 9). Sichtbar wird sie erst, wenn beides zutrifft – zwei getrennte Ow
 
 Die Migration `20261031000100_backtest_reviewer.sql` fügt nur den Rollenwert hinzu und vergibt nichts; sie läuft als nicht
 destruktive Migration automatisch. Eine öffentliche Anzeige, Navigation oder Zertifizierung ist damit **nicht** freigegeben.
+
+## Supertrader Folgen/Melden (Stand 16.11.2026)
+
+„Folgen“ (Fenster „Methode“) und „Melden“ (Fenster „Ablauf“, Stufen-Meldungen per App-Push) sind eingebaut, aber **aus bis zur
+Prüfung durch einen Anwalt** (Owner 16.11.2026; Frage nach Anlageempfehlung/MAR: [ANWALTSMAPPE.md](../legal/ANWALTSMAPPE.md) N8,
+[EINORDNUNG.md](../legal/EINORDNUNG.md)). Drei Teile schalten nur gemeinsam; der Vertragstest
+`workers/vu-account/tests/st-alerts-switch.test.mjs` (ST-ALERTS-5) lässt keinen allein umschalten:
+
+1. **Worker:** `VU_SUPERTRADER_ALERTS_ENABLED` in `workers/vu-account/wrangler.toml` (Entwicklung und Produktion `"false"`). Aus:
+   `GET/POST /v1/supertrader/follows` und `POST /v1/supertrader/follows/remove` antworten 404 `SUPERTRADER_ALERTS_NOT_ACTIVATED`
+   (ohne Sitzungs- oder Datenbankabfrage), der Cron liest den Kandidatenstand nicht und verschickt keine Stufen-Meldung (die
+   Watchlist-Tagesübersicht bleibt wie bisher), der Datenexport liest `supertrader_follows` nicht.
+2. **Frontend:** `var ST_ALERTS_UI = false;` in `supertrader/assets/st-redesign.js`. Aus: keine Knöpfe „Folgen“/„Melden“, kein
+   Hinweis, `st-follow.js` wird nicht geladen; die Fenster sehen aus wie vorher. Die Meldungsliste im Konto
+   (`/konto/einstellungen/#supertrader-meldungen`) bleibt verborgen, solange der Worker 404 antwortet.
+3. **Migration:** vorbereitet als `supabase/prepared/supertrader_follows.sql`, **nicht ausgerollt** (die Automatik liest nur
+   `supabase/migrations/`; in der Produktion entsteht nichts). Die SQL-Tests spielen sie nur in die Testdatenbank ein.
+
+**Einschalten** (eigener PR nach der Anwaltsprüfung, Owner-Zustimmung im PR): Datei nach
+`supabase/migrations/<Zeitstempel nach der letzten Migration>_supertrader_follows.sql` verschieben (nicht destruktiv, läuft über
+`migrationen` automatisch), beide Werte von `VU_SUPERTRADER_ALERTS_ENABLED` auf `"true"` und `ST_ALERTS_UI = true` setzen,
+`ASSET_V` in `supertrader/assets/supertrader.js` erhöhen. Zurückschalten: beide Schalter auf aus; die Tabellen dürfen bleiben.
 

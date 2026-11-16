@@ -66,6 +66,9 @@ Das Ergebnis der Anwaltsklärung entscheidet, ob angezeigt oder umgebaut wird.
   (Art. 3 Abs. 1 Nr. 34 Ziff. i MAR).
 - Neutrale Wortwahl, keine Ziele oder Stopps und eine offene Methodik senken das Risiko deutlich, schließen es aber
   nicht aus.
+- **Supertrader „Folgen“ und „Melden“ (Owner 16.11.2026):** Push-Meldungen „Regel erfüllt laut Methode …“ zu einer
+  Aktie, die ein Nutzer ausgewählt hat, sind eingebaut, aber ausgeschaltet, bis der Anwalt sie geprüft hat
+  ([ANWALTSMAPPE.md](ANWALTSMAPPE.md), Prüfpunkt N8; Schalter in [FREIGABEN.md](../accounts/FREIGABEN.md)).
 - Ob die Linie hält, ist die erste Frage an den Anwalt ([ANWALTSMAPPE.md](ANWALTSMAPPE.md), Frage 4).
 - Bußgeldrisiko bei Fehleinschätzung: § 120 WpHG.
 

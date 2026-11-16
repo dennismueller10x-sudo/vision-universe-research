@@ -107,6 +107,7 @@
     });
   }
   function page(main, X) {
+    if (X && X.loadScript) LOADER = X.loadScript;
     var wrap = document.createElement('div');
     wrap.className = 'vu-ui st-r st-k';
     main.appendChild(wrap);
@@ -114,6 +115,27 @@
     return wrap;
   }
   function append(host, html) { host.appendChild(frag(html)); }
+  /* „Folgen“/„Melden“ (st-follow.js, Konto-API): Knopf mit Glocke wie im Prototyp (.btn.ol), Zustand nach dem Laden.
+     FRONTEND-SCHALTER ST_ALERTS_UI: eingebaut, AUS bis zur Prüfung durch einen Anwalt (Owner 16.11.2026,
+     docs/accounts/FREIGABEN.md „Supertrader Folgen/Melden“). Aus: kein Knopf, kein Hinweis, st-follow.js wird nicht geladen,
+     die Fenster „Methode“ und „Ablauf“ sehen aus wie vorher. Einschalten nur zusammen mit dem Worker-Schalter
+     VU_SUPERTRADER_ALERTS_ENABLED und der vorbereiteten Migration (supabase/prepared/supertrader_follows.sql);
+     Vertragstest scripts/supertrader/tests/st-follow.test.mjs (ST-FOLLOW-SWITCH). */
+  var ST_ALERTS_UI = false;
+  var LOADER = null;
+  function bellHtml(kind, key, name, cls) {
+    if (!ST_ALERTS_UI) return '';
+    var t = kind === 'method' ? 'Folgen' : 'Melden';
+    return '<button type="button" class="stp-btn stp-btn--ol stp-bell' + (cls ? ' ' + cls : '') + '" data-st-follow="' + kind + '" data-key="' + esc(key) + '" data-name="' + esc(name) + '" aria-pressed="false">' +
+      U.glyph('bell', 18) + '<span class="stp-bell-t">' + t + '</span></button>';
+  }
+  function bindBells(el) {
+    if (!ST_ALERTS_UI || !el || !el.querySelector('[data-st-follow]')) return;
+    var ready = window.VUSTFollow ? Promise.resolve() : LOADER ? LOADER('/supertrader/assets/st-follow.js') : Promise.reject(new Error('st-follow'));
+    ready.then(function () { if (window.VUSTFollow) window.VUSTFollow.bind(el); }).catch(function () {
+      Array.prototype.forEach.call(el.querySelectorAll('[data-st-follow]'), function (b) { b.disabled = true; });
+    });
+  }
   function foot(host, X, sig) { var f = X.disclaimer(sig); if (f) host.appendChild(f); }
 
   /* Erklärung der einen Ablauf-Leiste (Folie K1): beide Fragen mit ihren Wörtern */
@@ -380,8 +402,11 @@
       (s.counts.published ? '<div class="stp-card stp-mt8 stp-stages">' + segs(parts, 'Stufen') + segLegend(parts) + '</div>' : '') +
       (s.direction === 'SHORT_RESEARCH_ONLY' ? '<div class="stp-mt8">' + U.verdict('none', 'Nur Forschung') + '</div>' : '') +
       '<div class="stp-fl stp-g8 stp-mt16"><a class="stp-btn stp-f1" href="' + esc(sfHref) + '">' + esc(n0(s.counts.published) + (s.counts.published === 1 ? ' Aktie zeigen' : ' Aktien zeigen')) + '</a>' +
-      (own !== sfHref ? '<a class="stp-btn stp-btn--ol" href="' + esc(own) + '">Methode öffnen</a>' : '') + '</div>' +
-      '<p class="stp-xs stp-mut stp-mt8 stp-c">Forschung, nicht zertifiziert. Ein Vorteil ist nicht belegt.</p></div>', 'st-k-method');
+      (ST_ALERTS_UI ? bellHtml('method', s.strategyId, cn(s), 'stp-bell--w') + '</div><p class="stp-xs stp-mut stp-c stp-bell-note" role="status" aria-live="polite" hidden></p>' +
+        '<p class="stp-xs stp-mut stp-mt8 stp-c">Forschung, nicht zertifiziert. Ein Vorteil ist nicht belegt.' + (own !== sfHref ? ' <a class="stp-lk" href="' + esc(own) + '">Methode öffnen</a>' : '') + '</p></div>'
+        : (own !== sfHref ? '<a class="stp-btn stp-btn--ol" href="' + esc(own) + '">Methode öffnen</a>' : '') + '</div>' +
+        '<p class="stp-xs stp-mut stp-mt8 stp-c">Forschung, nicht zertifiziert. Ein Vorteil ist nicht belegt.</p></div>'), 'st-k-method');
+    bindBells(document.getElementById('st-k-method'));
   }
   /* Trader-Kachel (Prototyp trader(): 164 px, Monogramm 64 px, Zahl 38 px). */
   function traderTile(s) {
@@ -408,8 +433,13 @@
   function planSheet(r, S, X) {
     var el = pop('', '<div class="stp-sheet"><div class="stp-fl stp-g12">' + U.logo(r.t, { xl: true }) + '<div class="stp-f1"><h2 class="stp-sh-t">' + esc(r.n || r.t) + '</h2><div class="stp-sm stp-mut">' + esc(cnId(S, r.c)) + '</div></div><span class="stp-pill">Plan fertig</span></div>' +
       '<div data-plan>' + U.skeleton('rows') + '</div>' +
-      '<div class="stp-fl stp-g8 stp-mt16"><a class="stp-btn stp-f1" href="/aktie/#/' + esc(encodeURIComponent(r.t)) + '" data-vu-stock="' + esc(r.t) + '" data-vu-stock-name="' + esc(r.n || r.t) + '">Aktie öffnen</a><a class="stp-btn stp-btn--ol stp-f1" href="' + esc(N ? N.href(r.c) : '/supertrader/strategies/?sf=' + r.c) + '">Methode öffnen</a></div>' +
-      '<p class="stp-xs stp-mut stp-mt8 stp-c">Werte eines Forschungsmodells mit benannten Modellannahmen. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit. <a class="stp-lk" href="' + esc(stockHref(r.t)) + '">Alle Methoden dieser Aktie</a></p></div>', 'st-k-plan');
+      '<div class="stp-fl stp-g8 stp-mt16"><a class="stp-btn stp-f1" href="/aktie/#/' + esc(encodeURIComponent(r.t)) + '" data-vu-stock="' + esc(r.t) + '" data-vu-stock-name="' + esc(r.n || r.t) + '">Aktie öffnen</a>' +
+      (ST_ALERTS_UI ? bellHtml('stock', r.t, r.n || r.t, 'stp-f1') + '</div>' +
+        '<p class="stp-xs stp-mut stp-c stp-bell-note" role="status" aria-live="polite" hidden></p>' +
+        '<p class="stp-xs stp-mut stp-mt8 stp-c">Werte eines Forschungsmodells mit benannten Modellannahmen. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit. <a class="stp-lk" href="' + esc(N ? N.href(r.c) : '/supertrader/strategies/?sf=' + r.c) + '">Methode öffnen</a> <a class="stp-lk" href="' + esc(stockHref(r.t)) + '">Alle Methoden dieser Aktie</a></p></div>'
+        : '<a class="stp-btn stp-btn--ol stp-f1" href="' + esc(N ? N.href(r.c) : '/supertrader/strategies/?sf=' + r.c) + '">Methode öffnen</a></div>' +
+        '<p class="stp-xs stp-mut stp-mt8 stp-c">Werte eines Forschungsmodells mit benannten Modellannahmen. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit. <a class="stp-lk" href="' + esc(stockHref(r.t)) + '">Alle Methoden dieser Aktie</a></p></div>'), 'st-k-plan');
+    bindBells(el);
     var host = el && el.querySelector('[data-plan]'); if (!host) return;
     X.getJSON('sf-candidates/ticker/' + r.sh + '.json').then(function (t) {
       var v = (t.views || []).filter(function (x) { return x.ticker === r.t && x.candidateId === r.c && x.stage === 'MODELED_TRADE_PLAN' && x.plan; })[0];

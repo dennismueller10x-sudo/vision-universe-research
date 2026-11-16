@@ -85,6 +85,13 @@ export function searchId(value) {
   return value;
 }
 
+// Supertrader: Methode, der ein Konto folgt (strategyId der quellentreuen Methoden, z. B. SF_MINERVINI_SEPA_VCP).
+// Dieselbe Form prueft die Datenbank (supabase/prepared/supertrader_follows.sql).
+export function strategyId(value) {
+  if (typeof value !== 'string' || !/^SF_[A-Z0-9_]{2,48}$/.test(value)) throw new HttpError(400, 'STRATEGY_INVALID');
+  return value;
+}
+
 export function profilePatch(body) {
   const out = {};
   for (const [key, value] of Object.entries(body || {})) {

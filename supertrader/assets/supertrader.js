@@ -980,11 +980,11 @@
   /* Eine Kennung für die eigenen Module und Stylesheets (supertrader/assets/*): loadScript und loadCss hängen sie als ?v= an.
      So gehören Skript und Stylesheet, die diese Datei nachlädt, immer zum selben Stand – nach einer Veröffentlichung trifft
      kein neues Modul auf ein altes Stylesheet aus dem Zwischenspeicher (bis zu zehn Minuten). Bei jeder Änderung an
-     st-redesign.*, sf-research.*, st-names.js oder st-flow.js erhöhen (Test asset-marker.test.mjs prüft die Form).
+     st-redesign.*, sf-research.*, st-names.js, st-flow.js oder st-follow.js erhöhen (Test asset-marker.test.mjs prüft die Form).
      Seiten, die st-redesign.js im <head> ohne Kennung ankündigen (Start und Aktienseiten, erzeugt von
      scripts/supertrader/build.mjs), laden das Paar st-redesign.js/.css weiter ohne Kennung: der Preload bleibt genutzt,
      beide Dateien stammen aus derselben Anfrage, und keine erzeugte Seite ändert sich. */
-  var ASSET_V = 'st-2026.11.14-2';
+  var ASSET_V = 'st-2026.11.16-1';
   var PAIR_BARE = !!document.querySelector('link[rel="preload"][as="script"][href="' + BASE + 'assets/st-redesign.js"]');
   function stamped(src) {
     if (src.indexOf(BASE + 'assets/') !== 0 || src.indexOf('?') >= 0) return src;

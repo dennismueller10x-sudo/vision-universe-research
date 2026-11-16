@@ -90,6 +90,10 @@ export function loadConfig(env = {}) {
     // Interne Backtest-Vorschau (/v1/admin/backtests*): standardmaessig AUS. Einschalten nur per eigenem PR mit
     // Owner-Freigabe (docs/accounts/FREIGABEN.md); zusaetzlich braucht jedes Konto die Rolle backtest_reviewer.
     backtestReview: {enabled: flag(env.VU_BACKTEST_REVIEW_ENABLED)},
+    // Supertrader „Folgen“/„Melden“ (Stufen-Meldungen per App-Push): eingebaut, AUS bis zur Pruefung durch einen Anwalt
+    // (Owner 16.11.2026, docs/accounts/FREIGABEN.md). Aus: /v1/supertrader/follows* antworten 404, der Cron verschickt
+    // keine Stufen-Meldungen, der Export liest die Tabelle nicht.
+    supertraderAlerts: {enabled: flag(env.VU_SUPERTRADER_ALERTS_ENABLED)},
     cookies: {
       secure: cookieSecure,
       prefix: cookieSecure ? '__Host-' : '',

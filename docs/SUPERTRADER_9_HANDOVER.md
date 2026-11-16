@@ -28,6 +28,7 @@ Grundregeln des Repositorys: [CLAUDE.md](../CLAUDE.md). Architektur und Datenflu
 - **Historische Backtest-Infrastruktur:** Datenseite (#1189), Ausführungsseite (#1190).
 - **Zertifizierungsvorbereitung TOP5:** C02, C01, C08, C12, C03 (#1196).
 - **Gemeinsame CI-Blocker beseitigt:** #1219 (Quant-Wochenreihen-Tests), #1239 (Discover NL5). L1–L3 hat Technical behoben (#1188).
+- **„Folgen“ (Fenster Methode) und „Melden“ (Fenster Ablauf), Owner 16.11.2026:** eingebaut, aber **aus bis zur Anwaltsprüfung** (MAR-Frage, [ANWALTSMAPPE.md](legal/ANWALTSMAPPE.md) N8); eingeschaltet wird in einem PR gemeinsam mit `ST_ALERTS_UI = true` (`supertrader/assets/st-redesign.js`), `VU_SUPERTRADER_ALERTS_ENABLED = "true"` (Worker) und der vorbereiteten Migration `supabase/prepared/supertrader_follows.sql`, siehe [FREIGABEN.md](accounts/FREIGABEN.md) „Supertrader Folgen/Melden“.
 
 **Aufgaben der Quant-Sitzung** (laut [QUANT_FINAL_HANDOVER.md](quant/QUANT_FINAL_HANDOVER.md) §E und §H; Supertrader ändert dort nichts):
 - **H1 Security Master 1.3.0 produktiv:** Freigabevorlage #1240, Owner-Datum. **Frist: Laufdatum 10.11.2026.** Ab dem 11.11. meldet die SF8-Eingangsprüfung den Stamm als STALE (`AUX_MAX_AGE_DAYS.master = 60`, `scripts/supertrader/source-faithful/product/input-gate.mjs`). Dann bricht jeder Kandidatenlauf mit Exit 3 ab.

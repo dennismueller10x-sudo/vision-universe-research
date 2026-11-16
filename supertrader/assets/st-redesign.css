@@ -858,3 +858,15 @@ html[data-theme="dark"] .st-x-today,html[data-theme="dark"] .st-x-hero{backgroun
 :root:not([data-theme=dark]) .st-x-story-r{border-top-color:#dcdcdc}
 :root:not([data-theme=dark]) .st-x-story .vu-verdict--none{color:#5d636b;border-color:#5d636b}
 :root:not([data-theme=dark]) .st-x-story .vu-verdict--weak,:root:not([data-theme=dark]) .st-x-story .vu-chg--down{background:#000;color:#fff}
+/* „Folgen“ (Fenster „Methode“) und „Melden“ (Fenster „Ablauf“): Umriss-Knopf mit Glocke wie im Prototyp (.btn.ol, 52 px; Folgen 120 px breit).
+   Gefolgt/Gemeldet: kräftiger Rand und gefüllte Glocke in der Akzentfarbe (dunkel neongrün, hell schwarz), Text wechselt mit. */
+.stp-sheet .stp-bell{cursor:pointer;font-family:inherit}
+.stp-sheet .stp-bell svg{flex:none}
+.stp-sheet .stp-bell.stp-bell--w{flex:none;width:120px;padding:0 10px}
+.stp-sheet .stp-bell[aria-pressed=true]{border:2px solid var(--stp-lc);color:var(--stp-lc)}
+.stp-sheet .stp-bell[aria-pressed=true] svg path:first-child{fill:currentColor}
+.stp-sheet .stp-bell[disabled]{opacity:.6;cursor:wait}
+.stp-sheet .stp-bell:focus-visible{outline:2px solid var(--vu-focus-ring,#c8f531);outline-offset:2px}
+.stp-sheet .stp-bell-note{margin:8px 0 0;line-height:1.4}
+.stp-sheet .stp-bell-note .stp-lk{display:flex;justify-content:center;width:max-content;margin:0 auto;min-height:44px;align-items:center;padding:0 4px;font-weight:700}
+.stp-sheet .stp-c:not(.stp-bell-note)>.stp-lk{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;font-weight:700}

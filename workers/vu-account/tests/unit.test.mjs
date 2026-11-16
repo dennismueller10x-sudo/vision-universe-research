@@ -246,6 +246,21 @@ test('Gespeicherte Suchen: Routen ohne Konfiguration 503, Ratenstufe vorhanden',
   assert.ok(LIMITS.searches && LIMITS.searches.limit > 0);
 });
 
+test('Supertrader folgen: Methoden-Kennung, Routen ohne Konfiguration 503, Ratenstufe vorhanden', async () => {
+  for (const id of ['SF_MINERVINI_SEPA_VCP', 'SF_TURTLE_S1', 'SF_KK_PARABOLIC_SHORT']) assert.equal(v.strategyId(id), id);
+  for (const id of ['MINERVINI_VCP', 'sf_turtle_s1', 'SF_', 'SF_A', 'SF_' + 'X'.repeat(49), 'SF_TURTLE S1', '', null, 7, ['SF_TURTLE_S1']])
+    assert.throws(() => v.strategyId(id), /STRATEGY_INVALID/, String(id));
+  const app = createApp({env: {}, fetchImpl: () => { throw new Error('kein Netz'); }, log: () => {}});
+  const call = (method, path) => app.handle(new Request('https://account.example' + path, {method}));
+  for (const [m, p] of [['GET', '/v1/supertrader/follows'], ['POST', '/v1/supertrader/follows'], ['POST', '/v1/supertrader/follows/remove']]) {
+    assert.equal((await call(m, p)).status, 503, `${m} ${p}`);
+  }
+  assert.equal((await call('DELETE', '/v1/supertrader/follows')).status, 405);
+  assert.equal((await call('GET', '/v1/supertrader/follows/remove')).status, 405);
+  const {LIMITS} = await import('../src/limits.mjs');
+  assert.ok(LIMITS.follows && LIMITS.follows.limit > 0);
+});
+
 test('Kuendigungsbestaetigung: Pflichtangaben nach § 312k Abs. 4, keine fremden Links, HTML maskiert', async () => {
   const {cancellationConfirmation, neutralize, createMailer} = await import('../src/mail.mjs');
   const m = cancellationConfirmation({confirmationId: '0b5c7e1a-0000-4000-8000-000000000001', receivedAt: '2026-10-25T14:03:00Z',
