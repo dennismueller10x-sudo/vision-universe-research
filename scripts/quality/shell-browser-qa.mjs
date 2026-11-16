@@ -814,7 +814,13 @@ for (const [vpName, width, height] of VIEWPORTS) {
       await page.goForward(); await settle(page);
       if ((await state(page))?.current[0] !== 'Zählbar') fail(where, 'Vor: ' + JSON.stringify((await state(page))?.current));
       await page.goBack(); await settle(page);
-      await page.locator('#el-main a.el-cr').first().click(); await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 60000 });
+      /* App-Konzept 2 (Owner 16.11.2026): ein Tipp auf eine Aktie öffnet erst die Vorschau (data-vu-stock) und bleibt auf der Seite;
+         das Ziel des Links bleibt das Aktienbild (Strg/Cmd-Klick). Danach wie bisher ins Aktienbild und zurück. */
+      const cr = page.locator('#el-main a.el-cr').first(), crHref = await cr.getAttribute('href');
+      await cr.click(); await page.waitForSelector('[data-vsk-ticker]', { timeout: 20000 });
+      if (!(await inhalt()).own) fail(where, 'Vorschau verlässt die Elliott-Liste');
+      await page.keyboard.press('Escape'); await page.evaluate(() => { const s = document.querySelector('[data-vsk-ticker]'); if (s && window.VUUI) window.VUUI.closeSheet(s); });
+      await page.evaluate((h) => { location.href = h; }, crHref); await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 60000 });
       if ((await inhalt()).own) fail(where, 'Aktienbild behaelt die Reiter im Inhalt');
       await page.goBack(); await settle(page);
       if (!ok(s = await inhalt())) fail(where, 'Zurueck aus dem Aktienbild: ' + JSON.stringify(s));
