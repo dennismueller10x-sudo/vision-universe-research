@@ -113,7 +113,7 @@
   function showDetail(s) {
     ensureDetailHost();
     if (state.view !== "detail") { state.homeScroll = global.scrollY; }
-    state.view = "detail";
+    state.view = "detail"; tabsMode(false);
     root.hidden = true; detail.hidden = false;
     var q = new URLSearchParams(s.detailQuery || "");
     document.title = s.ticker + " · Elliott · Vision Universe®";
@@ -143,7 +143,7 @@
     stackStyles(false); setBodyMode("home");
     if (detail) { detail.hidden = true; detailRoot.replaceChildren(); }
     root.hidden = false;
-    var back = lastTicker && root.querySelector('a.el-card[data-symbol="' + lastTicker.replace(/[^A-Za-z0-9.-]/g, "") + '"]');
+    var back = lastTicker && root.querySelector('a[data-symbol="' + lastTicker.replace(/[^A-Za-z0-9.-]/g, "") + '"]');
     if (back) { try { back.focus({ preventScroll: true }); } catch (e) { /* ohne Fokus */ } }
   }
   document.addEventListener("click", function (ev) {
@@ -164,7 +164,7 @@
   var EXP = "<b>Experimentell.</b> Eine Lesart beschreibt eine mögliche Struktur mit klarer Grenze. Keine Vorhersage, kein Kursziel, keine Empfehlung.";
 
   function sparkOf(t, big) {
-    var n = el("span", { class: "el-spark", "aria-hidden": "true", dataset: big ? { t: t, w: 204, h: 72 } : { t: t } });
+    var n = el("span", { class: "el-spark", "aria-hidden": "true", dataset: big ? { t: t, w: 220, h: 80 } : { t: t } });
     if (global.VUElliottSpark) global.VUElliottSpark.observe(n);
     return n;
   }
@@ -320,35 +320,21 @@
     return ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."][d.getUTCDay()] + " " + m[3] + "." + m[2] + ".";
   }
   function asOfOf(home) { var a = M.applicableOf(home); return (a && a.asOf) || (home && home.dataAsOf) || null; }
+  /* Suche (#/?suche=1): Frage als Titel, das Suchfeld. */
   function hero(s) {
-    var home = state.home, a = M.applicableOf(home), asOf = asOfOf(home);
-    var tag = el("p", { class: "el-tag" }, [el("span", { class: "vu-ltag", text: "Elliott" }), frag(U.pro()), asOf ? el("span", { class: "vu-ltag", text: "Wochencharts " + weekday(asOf) }) : null]);
-    var top = head("Wo lassen sich Wellen zählen?", "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten.", tag), out = [top];
-    top.classList.add("vu-night", "el-top");
-    if (!s.suche && a) {
-      var share = a.n ? a.count / a.n * 100 : 0, up = a.rows.filter(function (r) { return M.dirOf(r) === "up"; }).length, dn = a.rows.filter(function (r) { return M.dirOf(r) === "down"; }).length, split = a.rows.length === a.count && up + dn;
-      top.append(el("section", { class: "el-today", "aria-label": "Heute anwendbar" }, [
-        el("p", { class: "vu-ltag el-today-k", text: "Heute anwendbar" }),
-        el("p", { class: "el-today-n" }, [el("b", { class: "num", text: a.count.toLocaleString("de-DE") }), el("span", { text: "von " + a.n.toLocaleString("de-DE") + " Aktien" })]),
-        el("div", { class: "el-ebar", role: "img", "aria-label": a.count + " von " + a.n + " Aktien zählbar" }, [el("i", { style: "width:" + Math.max(1.2, share).toFixed(1) + "%" })]),
-        split ? el("div", { class: "el-split", role: "img", "aria-label": up + " nach oben, " + dn + " nach unten" }, [el("i", { style: "flex:" + up }), el("i", { style: "flex:" + dn })]) : null,
-        split ? el("p", { class: "el-split-l" }, [el("b", { text: "▲ " + up + " nach oben" }), el("b", { text: "▼ " + dn + " nach unten" })]) : null,
-        el("p", { class: "vu-xs el-today-s", text: "Gut anwendbar: " + a.high + ". Bei allen anderen zeigt die Aktie die Marktstruktur aus Technical." })]));
-    }
-    out.push(buildSearch(s.q, s.suche));
-    if (s.suche) out.push(el("p", { class: "el-suche-hint" }, ["Name oder Kürzel eingeben – jede abgedeckte US-Aktie öffnet ihr Elliott-Bild. ", el("a", { href: "#/", text: "Zur Übersicht" })]));
+    var out = [head("Wo lassen sich Wellen zählen?", "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten.", el("p", { class: "el-tag" }, [el("span", { class: "vu-ltag", text: "Elliott" })])), buildSearch(s.q, s.suche)];
+    out.push(el("p", { class: "el-suche-hint" }, ["Name oder Kürzel eingeben – jede abgedeckte US-Aktie öffnet ihr Elliott-Bild. ", el("a", { href: "#/", text: "Zur Übersicht" })]));
     return out;
   }
-  function countRow(r) {
+  function countList(rows) { return el("ul", { class: "el-clist vu-box", role: "list" }, rows.map(function (r) {
     var d = M.dirOf(r), inv = M.invalidLine(r);
-    var right = el("span", { class: "el-cr-r" }, [frag(d === "up" ? U.verdict("strong", "nach oben") : d === "down" ? U.verdict("weak", "nach unten") : U.verdict("none", "Richtung offen")), inv ? el("small", { class: "el-cr-inv num", text: inv }) : null]);
-    var a = el("a", { class: "el-cr el-hit", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), d === "up" ? "nach oben" : d === "down" ? "nach unten" : "Richtung offen", inv].filter(Boolean).join(", ") }, [
-      frag(U.logo(r.t)), el("span", { class: "el-cr-t" }, [el("b", { text: M.shortName(r.n, r.t), title: r.n }), el("span", { text: M.countLine(r) })]), sparkOf(r.t, 1), right]);
-    return el("li", {}, [a]);
-  }
-  function countList(rows, rail) { return el("ul", { class: "el-clist " + (rail ? "el-rail" : "vu-box"), role: "list" }, rows.map(countRow)); }
+    return el("li", {}, [el("a", { class: "el-cr el-hit", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv].filter(Boolean).join(", ") }, [
+      frag(U.logo(r.t)), el("span", { class: "el-cr-t" }, [el("b", { text: M.shortName(r.n, r.t), title: r.n }), el("span", { text: M.countLine(r) })]),
+      el("span", { class: "el-cr-r" }, [frag(d === "up" ? U.verdict("strong", "nach oben") : d === "down" ? U.verdict("weak", "nach unten") : U.verdict("none", "Richtung offen")), inv ? el("small", { class: "el-cr-inv num", text: inv }) : null])])]);
+  })); }
   var INV_HELP = "Ungültig: Schließt die Woche jenseits dieser Marke, gilt die Zählung nicht mehr. Eine Lesart ist keine Vorhersage und kein Kursziel.";
   var EXP_LINE = "Experimentell. Eine Projektion ist keine Wahrscheinlichkeit. Keine Anlageempfehlung.";
+  var DIRW = { up: "nach oben", down: "nach unten" }, DIR = { UP: "aufwärts", DOWN: "abwärts" }, NOTE = { text: "" };
   function noCountBox(a) {
     return el("p", { class: "el-gap", role: "status", text: a ? "Heute ist bei keiner Aktie eine Wellenzählung anwendbar (Wellen-Index, Stand " + M.dateDe(a.asOf) + "). Das kommt vor: die Engine enthält sich, wenn keine Zählung verlässlich ist." :
       "Die Liste der zählbaren Aktien fehlt im aktuellen Datenstand (Stand " + M.dateDe(state.home && state.home.dataAsOf) + "). Die Suche oben öffnet jede Aktie direkt." });
@@ -356,17 +342,129 @@
   function kindNav(by, kinds, href, cls) {
     return el("nav", { class: cls, "aria-label": "Arten der Änderung" }, kinds.map(function (k) { var a = el("a", { class: "el-tile", href: href(k) }); a.append(frag(U.tile(KIND[k][0], String(by[k].length), KIND[k][1]))); return a; }));
   }
-  /* Start (App-Konzept 2): zählbare Aktien als Schiene, „Neu und verändert“ und die Lesarten als Zahlenkacheln. */
+
+  /* ------------------------------------------------ App-Konzept 2, Elliott-Start (Owner 16.11.2026: „genau in diesem gleichen Design
+     des Prototyps“). Der Prototyp hat keinen Elliott-Bildschirm; der Start besteht aus seinen Bausteinen (#technical, #quant, #supertrader):
+     Reiter im Inhalt · Kopfkachel · Schiene „Heute neu“ · Kacheln „Was sich geändert hat“ · Wellenlagen mit Schema · Schiene „Zählbar heute“
+     · Suche · Lernen · „Weiter“-Karte · „Daten & Hinweise“. Jede Zahl aus elliott-home.json, Tagesbewegung aus published-close.js. */
+  var TABS = [["Heute", ""], ["Wellenlagen", "ek-lagen"], ["Zählbar", M.ZAEHLBAR_HASH], ["Neu", "#/?neu=1"], ["Suche", "#/?suche=1"], 0, ["Aufwärts", "#/?richtung=auf"], ["Abwärts", "#/?richtung=ab"]];
+  function tabsMode(on) { var h = document.documentElement; if (on) h.setAttribute("data-vu-tabs", "inhalt"); else if (h.getAttribute("data-vu-tabs") === "inhalt") h.removeAttribute("data-vu-tabs"); }
+  function tabs() {
+    var nav = el("nav", { class: "ek-tabs", "aria-label": "Elliott-Bereiche" });
+    TABS.forEach(function (t, i) {
+      if (!t) return nav.append(el("span", { class: "ek-tabs-sep", "aria-hidden": "true" }));
+      if (t[1].charAt(0) === "#") return nav.append(el("a", { class: "ek-tab", href: t[1], text: t[0] }));
+      /* Heute und Wellenlagen springen auf dieser Seite (Prototyp data-tabg); die Adresse bleibt. */
+      var b = el("button", { type: "button", class: "ek-tab" + (i ? "" : " is-on"), "aria-current": i ? null : "true", text: t[0], onclick: function () {
+        [].forEach.call(nav.querySelectorAll("button.ek-tab"), function (x) { x.classList.toggle("is-on", x === b); if (x === b) x.setAttribute("aria-current", "true"); else x.removeAttribute("aria-current"); });
+        var g = t[1] && document.getElementById(t[1]);
+        global.scrollTo({ top: g ? Math.max(0, g.getBoundingClientRect().top + global.scrollY - nav.getBoundingClientRect().bottom + 4) : 0, behavior: "smooth" });
+      } });
+      nav.append(b);
+    });
+    return nav;
+  }
+  function sh(title, href, more, id) { return el("div", { class: "ek-sh", id: id || null }, [el("h2", { text: title }), href ? el("a", { class: "ek-more", href: href }, [more, " ›"]) : null]); }
+  function pct1(x) { return x.toLocaleString("de-DE", { maximumFractionDigits: x < 10 ? 1 : 0 }) + " %"; }
+  /* Fenster (Prototyp .sheet) aus Knoten; ein offenes desselben Namens wird ersetzt. */
+  function pop(id, title, kids) {
+    var old = document.getElementById(id); if (old) old.remove();
+    var n = frag(U.sheet(id, title, "")).firstChild; n.classList.add("ek-pop");
+    var body = n.querySelector(".vu-sheet-body"); kids.forEach(function (k) { if (k) body.append(k); });
+    body.append(el("button", { class: "vu-btn vu-btn--block ek-ok", type: "button", text: "Verstanden", onclick: function () { U.closeSheet(n); } }));
+    document.body.append(n); U.openSheet(n);
+    return n;
+  }
+  /* Kopfkachel (Prototyp #technical): Frage als Dachzeile (h1), zählbare Aktien als große Zahl, Anteil daneben, Richtung als geteilter Balken. */
+  function kopf() {
+    var home = state.home, a = M.applicableOf(home), asOf = asOfOf(home);
+    var tile = el("section", { class: "ek-tile ek-kopf", "aria-label": "Heute anwendbar" }, [el("div", { class: "ek-kopf-h" }, [el("h1", { class: "el-title ek-eb" }, ["Wo lassen sich Wellen zählen?", a ? " · " + a.n.toLocaleString("de-DE") + " Aktien" : ""]), el("span", { class: "ek-pill ek-pill--ol", text: "Experimentell" })])]);
+    if (!a) tile.append(el("p", { class: "ek-sm ek-sec ek-lead", text: "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten." }), state.status === "ready" ? noCountBox(a) : null);
+    var up = 0, dn = 0;
+    if (a) {
+      up = a.rows.filter(function (r) { return M.dirOf(r) === "up"; }).length; dn = a.rows.filter(function (r) { return M.dirOf(r) === "down"; }).length;
+      var open = a.rows.length === a.count ? a.count - up - dn : null, w = function (x) { return (x / a.count * 100).toFixed(1) + "%"; };
+      tile.append(el("div", { class: "ek-kopf-n" }, [el("div", { class: "ek-f1" }, [el("span", { class: "ek-num ek-lc ek-big", text: a.count.toLocaleString("de-DE") }), el("b", { text: "zählbar heute" })]),
+        el("div", { class: "ek-f1" }, [el("span", { class: "ek-num ek-big", text: a.n ? pct1(a.count / a.n * 100) : "–" }), el("b", { class: "ek-mut", text: "aller Aktien" })])]));
+      if (open !== null && a.count) tile.append(el("div", { class: "ek-seg2", "aria-hidden": "true" }, [el("i", { class: "is-up", style: "width:" + w(up) }), open ? el("i", { class: "is-mid", style: "width:" + w(open) }) : null, el("i", { class: "is-dn", style: "width:" + w(dn) })]),
+        el("p", { class: "ek-kopf-l ek-xs ek-b7" }, [el("span", { text: "▲ " + up + " nach oben" }), open ? el("span", { class: "ek-mut", text: "◆ " + open + " offen" }) : null, el("span", { text: "▼ " + dn + " nach unten" })]));
+    }
+    tile.append(el("button", { type: "button", class: "ek-cover", "aria-haspopup": "dialog", "aria-label": (a ? a.count + " von " + a.n + " Aktien zählbar, " + up + " nach oben, " + dn + " nach unten. " : "") + "Erklärung öffnen", onclick: function () {
+      pop("ek-kopf-pop", "Wo lassen sich Wellen zählen?", [el("p", { class: "el-tag" }, [el("span", { class: "vu-ltag", text: "Elliott" }), frag(U.pro()), asOf ? el("span", { class: "vu-ltag", text: "Wochencharts " + weekday(asOf) }) : null]),
+        el("p", { class: "el-sheet-p", text: "Elliott ist ein experimentelles Strukturmodell. Es passt nur, wenn der Chart sauber in Wellen verläuft. Das ist selten." }),
+        a ? el("p", { class: "el-sheet-p", text: "Heute anwendbar: " + a.count.toLocaleString("de-DE") + " von " + a.n.toLocaleString("de-DE") + " Aktien. Gut anwendbar: " + a.high + ". Bei allen anderen zeigt die Aktie die Marktstruktur aus Technical." }) : null,
+        frag(U.help(INV_HELP)), el("p", { class: "vu-mu vu-xs el-exp", text: EXP_LINE }),
+        el("button", { class: "vu-btn vu-btn--line vu-btn--block ek-ok", type: "button", text: "Wellen in 3 Minuten", onclick: function () { var p = document.getElementById("ek-kopf-pop"); if (p) U.closeSheet(p); openAbout(); } })]);
+    } }));
+    return tile;
+  }
+  /* Tagesbewegung (Pille) und Kursverlauf einer Aktie, beide erst geladen, wenn die Kachel sichtbar wird (spark.js). */
+  function moveOf(t) { var n = el("span", { class: "ek-chg", dataset: { t: t } }); if (global.VUElliottSpark && global.VUElliottSpark.move) global.VUElliottSpark.move(n); return n; }
+  function invOf(c) { return c.inv && c.inv.p > 0 ? "ungültig " + (c.inv.dir === "above" ? "über " : "unter ") + U.money(c.inv.p, c.cur) : null; }
+  function lageOf(c) { return (c.wave ? "Welle " + c.wave : TYPE_SHORT[c.type] || "Lesart") + " " + (c.dir === "UP" ? "aufwärts" : "abwärts"); }
+  /* Karte „Heute neu“ (Prototyp #technical „Heute neu im Chart“): Logo, Name, Art der Änderung, Kursverlauf, Tagesbewegung. Ein Tipp
+     öffnet die Aktien-Vorschau des Rahmens (data-vu-stock); sie führt mit „Elliott“ auf die Lesart. */
+  function newTile(c) {
+    var name = M.shortName(c.n, c.t), inv = invOf(c);
+    return el("a", { class: "ek-tile ek-tap ek-nc", role: "listitem", href: "/aktie/#/" + encodeURIComponent(c.t), "data-vu-stock": c.t, "data-vu-stock-name": name, "aria-label": name + " (" + c.t + "): " + KIND[c.chg.k][0] + ", " + lageOf(c) + (inv ? ", " + inv : "") }, [
+      el("span", { class: "ek-nc-h" }, [frag(U.logo(c.t)), el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: name }), el("span", { class: "ek-xs ek-mut", text: KIND[c.chg.k][0] + " · " + (c.wave ? "Welle " + c.wave : TYPE_SHORT[c.type] || "Lesart") })])]),
+      sparkOf(c.t, 1), el("span", { class: "ek-nc-f" }, [moveOf(c.t), el("span", { class: "ek-xs ek-b7", text: (c.dir === "UP" ? "▲ " : "▼ ") + DIR[c.dir] })]), inv ? el("span", { class: "ek-xs ek-mut ek-nc-i", text: inv }) : null]);
+  }
+  /* Karte „Zählbar heute“: wie „Heute neu“, führt in das Elliott-Bild der Aktie (/elliott/#/<T>). */
+  function countTile(r) {
+    var d = M.dirOf(r), inv = M.invalidLine(r), name = M.shortName(r.n, r.t);
+    return el("a", { class: "el-cr el-hit ek-tile ek-tap ek-nc", role: "listitem", href: M.detailHref(r.t), dataset: { symbol: r.t }, "aria-label": [r.n + " (" + r.t + ")", M.countLine(r), DIRW[d] || "Richtung offen", inv].filter(Boolean).join(", ") }, [
+      el("span", { class: "ek-nc-h" }, [frag(U.logo(r.t)), el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: name, title: r.n }), el("span", { class: "ek-xs ek-mut", text: M.countLine(r) })])]),
+      sparkOf(r.t, 1), el("span", { class: "ek-nc-f" }, [moveOf(r.t), el("span", { class: "ek-xs ek-b7", text: (d === "up" ? "▲ " : d === "down" ? "▼ " : "◆ ") + (DIRW[d] || "Richtung offen") })]), inv ? el("span", { class: "ek-xs ek-mut ek-nc-i", text: inv }) : null]);
+  }
+  /* Wellenlagen (Prototyp #technical „Muster im Markt“): je Lage ein Schema (keine echten Kurse), Zahl der Lesarten, Richtung als Pille.
+     Punkte im Feld 122 × 56 für „aufwärts“; „abwärts“ ist dasselbe Bild gespiegelt. Der zuletzt laufende Abschnitt ist hervorgehoben. */
+  var LAGE = { "3": [[4, 48, ""], [30, 26, "1"], [46, 38, "2"], [96, 6, "3"]], "5": [[4, 50, ""], [22, 36, "1"], [30, 42, "2"], [62, 14, "3"], [74, 24, "4"], [108, 4, "5"]],
+    C: [[4, 6, ""], [34, 50, ""], [58, 28, "A"], [74, 40, "B"], [112, 10, "C"]], all: [[4, 50, ""], [28, 32, ""], [42, 40, ""], [72, 18, ""], [84, 26, ""], [116, 6, ""]] };
+  function schema(key, up) {
+    var p = LAGE[key].map(function (q) { return [q[0], up ? q[1] : 56 - q[1], q[2]]; }), n = p.length, line = function (a) { return "M" + a.map(function (q) { return q[0] + " " + q[1]; }).join(" L"); };
+    var lab = p.map(function (q, i) {
+      if (!q[2]) return "";
+      var x = q[0], y = q[1] < p[i - 1][1] ? q[1] - 4 : q[1] + 11;
+      if (y < 8 || y > 55) { x += x > 100 ? -9 : 9; y = q[1] + 4; }
+      return '<text x="' + x + '" y="' + y + '" text-anchor="middle">' + q[2] + "</text>";
+    }).join("");
+    return '<svg class="ek-form-ic" width="122" height="56" viewBox="0 0 122 56" aria-hidden="true" focusable="false">' + (key === "all" ? '<path class="is-on" d="' + line(p) + '"/>' :
+      '<path d="' + line(p.slice(0, n - 1)) + '"/><path class="is-on" d="' + line(p.slice(n - 2)) + '"/>' + lab) + "</svg>";
+  }
+  function lagen() {
+    var out = [];
+    ["3", "5", "C", "all"].forEach(function (w) {
+      [["auf", 1], ["ab", 0]].forEach(function (d) {
+        var f = w === "all" ? { richtung: d[0] } : { welle: w, richtung: d[0] }, n = count(f), name = w === "all" ? "Alle Lesarten" : "Welle " + w;
+        if (n) out.push(el("a", { class: "ek-tile ek-tap ek-form" + (d[1] ? " is-up" : ""), role: "listitem", href: M.buildHash(f), "aria-label": name + " " + (d[1] ? "aufwärts" : "abwärts") + ": " + n + (n === 1 ? " Lesart" : " Lesarten") + ". Bild: Schema, keine echten Kurse" }, [
+          frag(schema(w, d[1])), el("b", { class: "ek-b8 ek-form-n", text: name }), el("span", { class: "ek-form-f", "aria-hidden": "true" }, [el("span", { class: "ek-num", text: n.toLocaleString("de-DE") }), el("span", { class: "ek-pill ek-pill--sm" + (d[1] ? "" : " ek-pill--wh"), text: d[1] ? "▲ auf" : "▼ ab" })])]));
+      });
+    });
+    return out;
+  }
   function startBody(host) {
-    var a = M.applicableOf(state.home), neu = M.filterCards(state.home.cards, { neu: true }), by = {};
+    var a = M.applicableOf(state.home), neu = M.filterCards(state.home.cards, { neu: true }), by = {}, seen = {};
     neu.forEach(function (c) { (by[c.chg.k] = by[c.chg.k] || []).push(c); });
-    host.append(el("section", { class: "el-row" }, [sect("Saubere Zählung heute", a && a.count ? M.ZAEHLBAR_HASH : null, a ? "Alle " + a.count : null), !a || !a.rows.length ? noCountBox(a) : countList(a.rows.slice(0, 6), 1)]));
-    host.append(el("div", { class: "el-inv-help" }, [frag(U.help(INV_HELP))]));
-    if (neu.length) host.append(el("section", { class: "el-row" }, [sect("Neu und verändert", "#/?neu=1", "Alle " + neu.length), kindNav(by, PRIO.filter(function (k) { return by[k]; }), function (k) { return "#/?neu=1&art=" + KIND[k][2]; }, "el-rail el-tiles")]));
-    if (U.stat) host.append(sect("Lesarten"), el("div", { class: "vu-grid el-quick" }, QUICK.map(function (o) { var x = one(o[0], o[1]); return frag(U.stat(String(count(x)), o[2], { href: M.buildHash(x) })); })));
-    host.append(el("button", { class: "vu-navcard el-about", type: "button", onclick: openAbout }, [el("span", { class: "vu-hud", style: "--vu-hud:42px" }, [frag(U.glyph("book", 20))]),
-      el("span", { class: "vu-navcard__text" }, [el("b", { text: "Wellen in 3 Minuten" }), el("span", { text: "Impuls, Korrektur, warum Zählungen oft wechseln" })]), frag(U.glyph("next", 18))]));
-    if (U.next) host.append(frag(U.next({ title: "Technical: Was zeigt der Chart?", href: "/technical/#/" })));
+    var fresh = [];
+    PRIO.forEach(function (k) { (by[k] || []).forEach(function (c) { if (!seen[c.t] && fresh.length < 8) { seen[c.t] = 1; fresh.push(c); } }); });
+    if (fresh.length) host.append(sh("Heute neu", "#/?neu=1", "Alle " + neu.length), el("div", { class: "ek-rail", role: "list", "aria-label": "Heute neu" }, fresh.map(newTile)),
+      sh("Was sich geändert hat"), el("div", { class: "ek-rail", role: "list", "aria-label": "Arten der Änderung" }, PRIO.filter(function (k) { return by[k]; }).map(function (k) {
+        return el("a", { class: "ek-tile ek-tap ek-stat", role: "listitem", href: "#/?neu=1&art=" + KIND[k][2] }, [el("span", { class: "ek-num ek-lc", text: String(by[k].length) }), el("b", { class: "ek-xs", text: KIND[k][0] }), el("span", { class: "ek-xs ek-mut", text: KIND[k][1] })]); })));
+    var lg = lagen();
+    if (lg.length) host.append(sh("Wellenlagen", null, null, "ek-lagen"), el("p", { class: "ek-sub ek-sm ek-mut", text: "Bilder: Schema je Lage, keine echten Kurse." }), el("div", { class: "ek-rail", role: "list", "aria-label": "Wellenlagen" }, lg));
+    host.append(sh("Zählbar heute", a && a.count ? M.ZAEHLBAR_HASH : null, a ? "Alle " + a.count : null), el("p", { class: "ek-sub ek-sm ek-mut", text: "Ungültig: Schließt die Woche jenseits der Marke, gilt die Zählung nicht mehr." }),
+      !a || !a.rows.length ? noCountBox(a) : el("div", { class: "ek-rail", role: "list", "aria-label": "Zählbar heute" }, a.rows.slice(0, 8).map(countTile)));
+    host.append(el("div", { class: "ek-find" }, [buildSearch("", false)]), sh("Lernen"),
+      el("button", { class: "ek-tile ek-tap ek-row1 el-about", type: "button", "aria-haspopup": "dialog", onclick: openAbout }, [el("span", { class: "vu-hud", style: "--vu-hud:40px" }, [frag(U.glyph("book", 20))]),
+        el("span", { class: "ek-f1" }, [el("b", { class: "ek-b8", text: "Wellen in 3 Minuten" }), el("span", { class: "ek-xs ek-mut", text: "Impuls, Korrektur, warum Zählungen oft wechseln" })]), frag(U.glyph("next", 18))]),
+      el("a", { class: "ek-tile ek-tap ek-gl ek-next", href: "/technical/#/" }, [el("span", { class: "ek-f1" }, [el("span", { class: "ek-eb ek-eb--l", text: "Weiter" }), el("b", { class: "ek-next-t", text: "Technical: Was zeigt der Chart?" })]), el("span", { class: "ek-rnd", "aria-hidden": "true" }, [frag(U.glyph("next", 18))])]),
+      /* Prototyp end(): „Daten & Hinweise“ öffnet das Fenster des Rahmens mit dem Listen-Hinweis und dem Elliott-Satz samt Stand. */
+      el("div", { class: "ek-end" }, [el("button", { type: "button", class: "ek-lk", "aria-haspopup": "dialog", text: "Daten & Hinweise", onclick: function () {
+        var N = global.VUNavigation, asOf = asOfOf(state.home);
+        NOTE.text = EXP_LINE + " " + INV_HELP + (asOf ? " Wochencharts, Stand " + M.dateDe(asOf) + "." : "");
+        if (N && N.openHinweise && N.hinweis) { N.hinweis("ranking"); N.hinweis(NOTE); N.openHinweise(); } else pop("ek-hinweise-pop", "Daten & Hinweise", [el("p", { class: "el-sheet-p", text: NOTE.text })]);
+      } })]));
   }
   function zaehlbarView(host) {
     var a = M.applicableOf(state.home);
@@ -437,7 +535,7 @@
     }
     if (s.zaehlbar && !s.suche) { zaehlbarView(host); host.append(el("p", { class: "vu-mu vu-xs el-exp", text: EXP_LINE })); return host; }
     if (s.neu && !s.reihe) { newsView(host, s); host.append(note(EXP)); return host; }
-    if (!M.isFiltered(s)) { startBody(host); host.append(el("p", { class: "vu-mu vu-xs el-exp", text: EXP_LINE })); return host; }
+    if (!M.isFiltered(s)) { startBody(host); return host; }
     var list0 = ordered(s, M.filterCards(home.cards, s, home.rows));
     host.append(head(M.filterTitle(s, home.rows), leadFor(s, list0.length, home.rows)));
     if (!s.reihe) chips(s).forEach(function (r) { host.append(r); });
@@ -483,7 +581,10 @@
     var searchHadFocus = document.activeElement && document.activeElement.id === "el-q", q = searchHadFocus ? document.activeElement.value : s.q;
     root.setAttribute("aria-busy", "true");
     root.classList.toggle("is-suche", !!s.suche);
-    root.replaceChildren.apply(root, ((M.isFiltered(s) || s.zaehlbar) && !s.suche ? [] : hero(Object.assign({}, s, { q: q }))).concat(s.suche ? [] : [content(s)]));
+    /* Start: Reiter im Inhalt und Kopfkachel (App-Konzept 2); jede andere Ansicht zeigt die Reiterzeile des Rahmens. */
+    var start = !M.isFiltered(s) && !s.zaehlbar && !s.suche;
+    tabsMode(start); root.classList.toggle("ek", start);
+    root.replaceChildren.apply(root, start ? [tabs(), kopf(), content(s)] : ((M.isFiltered(s) || s.zaehlbar) && !s.suche ? [] : hero(Object.assign({}, s, { q: q }))).concat(s.suche ? [] : [content(s)]));
     if (s.suche) global.scrollTo(0, 0);
     if (searchHadFocus) { var i = document.getElementById("el-q"); if (i) { i.focus(); try { i.setSelectionRange(i.value.length, i.value.length); } catch (e) { /* type=search */ } } }
     restoreFocus();
