@@ -67,7 +67,7 @@
   var TONE_GLYPH = { good: "▲", neutral: "◆", bad: "▼", unknown: "–" };
   function glyphPill(pill, tone) { pill.prepend(el("i", { class: "qx-glyph", "aria-hidden": "true", text: TONE_GLYPH[tone] || "–" })); return pill; }
   /* Redesign 2027 (Q07): jede Eigenschaft als Alltagsfrage, Fachname und Rang darunter. */
-  var ASK = { growth: "Ist die Firma gewachsen?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs für die Branche?", momentum: "Lief der Kurs gut?", value: "Wie ist der Preis im Branchenvergleich?", quality: "Ist der Gewinn gedeckt und stabil?", revisions: "Heben Analysten Schätzungen an?" };
+  var ASK = { growth: "Ist die Firma gewachsen?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs für die Branche?", momentum: "Lief der Kurs gut?", value: "Wie ist der Preis im Branchenvergleich?", quality: "Sind Bilanz und Gewinn solide?", revisions: "Heben Analysten Schätzungen an?" };
   function rankText(f) {
     if (f.state !== "AVAILABLE" || typeof f.position !== "number") return f.name;
     var p = Math.round(f.position);
@@ -194,7 +194,7 @@
     return vm.factors.filter(function (f) { return pick.indexOf(f) >= 0; });
   }
   /* Redesign 2027 (Q07): Kacheln mit Alltagswort statt Fachname. */
-  var KEY_SHORT = { profitability: "Verdient gut", risk: "Ruhig für die Branche", quality: "Gewinn gedeckt & stabil", growth: "Ist gewachsen", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", revisions: "Schätzungen" };
+  var KEY_SHORT = { profitability: "Verdient gut", risk: "Ruhig für die Branche", quality: "Solide Bilanz & Gewinne", growth: "Ist gewachsen", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", revisions: "Schätzungen" };
   function capitalWord(w) { return w ? w.charAt(0).toUpperCase() + w.slice(1) : w; }
   /* Profil groß (VUUI.profileFull): „Das Profil von {Name}“, Rang-Hinweis, Legende der Stufen. */
   /* Gesamtwert (vu-profile-mean-1.0.0): klein unter den Einzelwerten, kein Hero. Ehrlicher Satz zur Rückwärtsprüfung. */
@@ -847,9 +847,9 @@
 
   /* ------------------------------------------------ Konzept Quant 2026-11 (QX05): drei Sätze, Kapitel, ähnliches Profil */
   /* Plausibilitätsprüfung 13.11.2026: Die Werte mischen Branche (70 %) und Gesamtmarkt (30 %); kein Satz behauptet einen Rang unter allen US-Aktien. */
-  var STRONG_SAY = { profitability: "Verdient besser als die meisten vergleichbaren Firmen", growth: "Ist stärker gewachsen als die meisten vergleichbaren Firmen", quality: "Gewinn ist besser gedeckt und stabiler als bei den meisten vergleichbaren Firmen",
+  var STRONG_SAY = { profitability: "Verdient besser als die meisten vergleichbaren Firmen", growth: "Ist stärker gewachsen als die meisten vergleichbaren Firmen", quality: "Bilanz und Gewinn sind solider als bei den meisten vergleichbaren Firmen",
     momentum: "Der Kurs lief besser als bei den meisten vergleichbaren Firmen", value: "Preis ist niedriger als bei den meisten vergleichbaren Firmen", risk: "Der Kurs ist ruhiger als bei den meisten vergleichbaren Firmen" };
-  var WEAK_SAY = { profitability: "Verdient weniger als die meisten vergleichbaren Firmen", growth: "Ist langsamer gewachsen als die meisten vergleichbaren Firmen", quality: "Gewinn ist weniger gedeckt oder weniger stabil", momentum: "Der Kurs lief schwächer als bei den meisten vergleichbaren Firmen",
+  var WEAK_SAY = { profitability: "Verdient weniger als die meisten vergleichbaren Firmen", growth: "Ist langsamer gewachsen als die meisten vergleichbaren Firmen", quality: "Bilanz oder Gewinn sind weniger solide", momentum: "Der Kurs lief schwächer als bei den meisten vergleichbaren Firmen",
     value: "Preis ist höher als bei den meisten vergleichbaren Firmen", risk: "Der Kurs schwankt stärker als bei den meisten vergleichbaren Firmen" };
   var LOWER = { profitability: "verdient gut", growth: "ist stark gewachsen", quality: "hat einen gedeckten, stabilen Gewinn", momentum: "der Kurs lief gut", value: "hat einen niedrigen Preis im Branchenvergleich", risk: "hat einen für die Branche ruhigen Kurs" };
   function stageKind(v) { return v >= 75 ? "strong" : v >= 45 ? "mid" : "weak"; }

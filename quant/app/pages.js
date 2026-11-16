@@ -856,11 +856,11 @@
   var SIMPLE_THRESHOLD = 70;
   /* Redesign 2027 (Folie Q02): Schnellwahl als Fragekarten (Alltagsfrage + Fachname), „Deine Frage“ als Satz mit Regel. */
   /* Konzept Quant 2026-11 (QX03, Screen q-screener): Fragen als Chips, „Deine Frage“ als kurzer Satz mit Regel-Chips. */
-  var ASK_Q = { qualitaet: ["Verdient gut, Gewinn gedeckt", "Verdient gut + Gewinn gedeckt & stabil"], momentum: ["Kurs lief besser als der Markt", "Kurs lief gut"], "wachstum-qualitaet": ["Gewachsen und verdient", "Ist gewachsen + Verdient gut"],
+  var ASK_Q = { qualitaet: ["Verdient gut, solide Bilanz", "Verdient gut + Solide Bilanz & Gewinne"], momentum: ["Kurs lief besser als der Markt", "Kurs lief gut"], "wachstum-qualitaet": ["Gewachsen und verdient", "Ist gewachsen + Verdient gut"],
     guenstig: ["Niedriger Preis im Branchenvergleich", "Preis im Branchenvergleich"], ruhig: ["Ruhig für die Branche", "Ruhig für die Branche"], setups: ["Setup im Chart", "Setups"], hoch: ["Nahe am Jahreshoch", "52-Wochen-Hoch"] };
-  var ASK_SENT = { qualitaet: "Verdient gut, der Gewinn ist gedeckt und stabil", momentum: "Der Kurs lief besser als der Markt", "wachstum-qualitaet": "Ist gewachsen und verdient dabei gut",
+  var ASK_SENT = { qualitaet: "Verdient gut, Bilanz und Gewinn sind solide", momentum: "Der Kurs lief besser als der Markt", "wachstum-qualitaet": "Ist gewachsen und verdient dabei gut",
     guenstig: "Niedriger Preis im Verhältnis zu Gewinn und Substanz, verglichen mit der Branche", ruhig: "Hat einen für die Branche ruhigen Kurs", setups: "Der Chart zeigt ein Setup", hoch: "Steht höchstens 3 % unter dem Jahreshoch" };
-  var FACTOR_SHORT = { profitability: "Verdient gut", quality: "Gewinn gedeckt & stabil", growth: "Ist gewachsen", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", risk: "Ruhig für die Branche", revisions: "Analysten" };
+  var FACTOR_SHORT = { profitability: "Verdient gut", quality: "Solide Bilanz & Gewinne", growth: "Ist gewachsen", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", risk: "Ruhig für die Branche", revisions: "Analysten" };
   function ruleLine(factors, min, max) { return factors.map(function (id) { return (FACTOR_SHORT[id] || shortName(id)) + " ≥ " + min + (max < 100 ? " und ≤ " + max : ""); }).join(" · "); }
   function shortWhy(row, factorIds) { return factorIds.map(function (id) { var v = row && row[FIELD(id)]; return (FACTOR_SHORT[id] || shortName(id)) + " " + (typeof v === "number" ? Math.round(v) : "–"); }).join(" · "); }
 
@@ -878,7 +878,7 @@
      waehlbar; Erwartungstrend und Sentiment stehen da, sind aber ohne Datenbasis
      und deshalb gesperrt - mit dem Grund am Chip. */
   var FILTER_CHIPS = [
-    { id: "profitability", label: "Verdient gut" }, { id: "growth", label: "Ist gewachsen" }, { id: "quality", label: "Gewinn gedeckt & stabil" },
+    { id: "profitability", label: "Verdient gut" }, { id: "growth", label: "Ist gewachsen" }, { id: "quality", label: "Solide Bilanz & Gewinne" },
     { id: "momentum", label: "Kurs lief gut" }, { id: "value", label: "Preis im Branchenvergleich" }, { id: "risk", label: "Ruhig für die Branche" },
     { id: "revisions", label: "Analysten", gated: true },
     { id: "sentiment", label: "Sentiment", off: "Quant verwendet keine Sentiment-Daten." }
@@ -969,7 +969,7 @@
        und der Trefferzahl auf dem Knopf. Dieselbe Auswertung wie der Faktor-Filter (factorHits). */
     var own = null;
     if (global.VUUI) {
-      var U3 = global.VUUI, OWN = [["growth", "Ist die Firma gewachsen?"], ["profitability", "Verdient sie gut?"], ["value", "Wie ist der Preis im Branchenvergleich?"], ["momentum", "Lief der Kurs gut?"], ["risk", "Wie ruhig ist der Kurs für die Branche?"], ["quality", "Ist der Gewinn gedeckt und stabil?"]];
+      var U3 = global.VUUI, OWN = [["growth", "Ist die Firma gewachsen?"], ["profitability", "Verdient sie gut?"], ["value", "Wie ist der Preis im Branchenvergleich?"], ["momentum", "Lief der Kurs gut?"], ["risk", "Wie ruhig ist der Kurs für die Branche?"], ["quality", "Sind Bilanz und Gewinn solide?"]];
       var tmp = { factors: [], min: 70 };
       var shEl = document.createElement("div"); shEl.innerHTML = U3.sheet("qv3-own-sheet", "Eigene Bedingung", '<p class="vu-sm vu-mu" style="margin:-4px 0 8px">Welche Eigenschaft soll stark sein?</p><div data-q></div><div data-seg></div><button type="button" class="vu-btn vu-btn--block" data-go style="margin-top:14px">Hinzufügen</button>');
       var sheetEl = shEl.firstElementChild; document.body.append(sheetEl);
@@ -1144,11 +1144,11 @@
      (VUScreenerWorkspace, Quant V2 Faktorevidenz): ein Bereich ist „mindestens“ plus „höchstens“. Andere Datenbasis
      (Quant V1 & Marktdaten) öffnet den bisherigen Regel-Editor (?daten=v1). */
   /* Ein Wort je Eigenschaft (Konzept Quant 2026-11, Entscheidung 1), in der Reihenfolge des Profils. */
-  var PRO_F_BASE = [["profitability", "Verdient gut", "Verdient"], ["growth", "Ist gewachsen", "Gewachsen"], ["quality", "Gewinn gedeckt & stabil", "Gedeckt"],
+  var PRO_F_BASE = [["profitability", "Verdient gut", "Verdient"], ["growth", "Ist gewachsen", "Gewachsen"], ["quality", "Solide Bilanz & Gewinne", "Solide"],
     ["momentum", "Kurs lief gut", "Kurs"], ["value", "Preis im Branchenvergleich", "Preis"], ["risk", "Ruhig für die Branche", "Ruhig"]];
   /* Analysten erscheinen in der Auswahl erst, wenn der Faktor Werte hat. */
   function proF() { return VM.isOpen("revisions") ? PRO_F_BASE.concat([["revisions", "Analysten", "Analysten"]]) : PRO_F_BASE; }
-  var PRO_ASK = { revisions: "Heben Analysten Schätzungen an?", growth: "Ist die Firma gewachsen?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs für die Branche?", momentum: "Lief der Kurs gut?", value: "Wie ist der Preis im Branchenvergleich?", quality: "Ist der Gewinn gedeckt und stabil?" };
+  var PRO_ASK = { revisions: "Heben Analysten Schätzungen an?", growth: "Ist die Firma gewachsen?", profitability: "Verdient sie gut?", risk: "Wie ruhig ist der Kurs für die Branche?", momentum: "Lief der Kurs gut?", value: "Wie ist der Preis im Branchenvergleich?", quality: "Sind Bilanz und Gewinn solide?" };
   var PRO_COLS_KEY = "vu.quant.pro.cols.v1";
   async function screenerProV3(main, ctx, params) {
     var W = global.VUScreenerWorkspace, U = global.VUUI, api = ctx.api;

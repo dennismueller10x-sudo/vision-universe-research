@@ -284,15 +284,15 @@ Diese Datei ist die Quelle. quant/engines/product-language.js liest sie, die Obe
 
 ## Die sieben Eigenschaften
 
-### Gewinn gedeckt & stabil
+### Solide Bilanz & Gewinne
 
 | Feld | Inhalt |
 |---|---|
 | Interner Begriff | `quality / qualityScore` |
 | Schlüssel | `quality` |
-| **User Label** | **Gewinn gedeckt & stabil** |
+| **User Label** | **Solide Bilanz & Gewinne** |
 | Als Frage | Wie belastbar sind Bilanz und ausgewiesene Gewinne? |
-| Erklärung für Einsteiger | Wie solide das Unternehmen finanziert ist, ob seine Gewinne durch echten Zahlungsfluss gedeckt sind und wie stabil die Marge war. Wie viel es verdient, misst die Profitabilität. |
+| Erklärung für Einsteiger | Wie solide das Unternehmen finanziert ist, ob seine Gewinne durch echten Geldzufluss gedeckt sind und ob die Marge eingebrochen ist. Wie viel es verdient, misst die Profitabilität. |
 | Professional Label | Quality (quantV2.factorEvidence.quality) |
 | Tooltip | Ob der Gewinn durch echten Geldzufluss gedeckt ist, wie gleichmäßig die Marge war und wie viel Eigenkapital da ist — nicht, wie viel verdient wird. Verglichen vor allem mit der eigenen Branche. |
 | Negativer Zustand | Bilanz oder Gewinnqualität sind schwächer als bei den meisten anderen. |
