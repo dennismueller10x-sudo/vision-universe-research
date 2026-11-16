@@ -23,6 +23,14 @@ const checks=[],errors=[],shots=[],performance=[],accessibility=[],firstScreenEv
 let axePath;try{axePath=require.resolve('axe-core/axe.min.js');}catch{}
 async function a11y(page,key){if(!axePath)throw Error('axe-core required for accessibility gate');await page.addScriptTag({path:axePath});const result=await page.evaluate(()=>axe.run(document,{runOnly:{type:'tag',values:['wcag2a','wcag2aa','wcag21a','wcag21aa']}}));accessibility.push({key,violations:result.violations,incomplete:result.incomplete});assert.deepEqual(result.violations.filter(v=>['critical','serious'].includes(v.impact)).map(v=>({id:v.id,nodes:v.nodes.map(n=>n.target)})),[]);}
 async function check(name,fn){const started=Date.now();try{await fn();checks.push({name,pass:true,milliseconds:Date.now()-started});}catch(e){checks.push({name,pass:false,milliseconds:Date.now()-started,error:e.message});}}
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“):
+   Flächen, die im Dunkeln fast schwarz sind, sind im Hellen hell. Geprüft wird dann WCAG-Kontrast (≥ 4,5:1) der Schrift auf der Fläche;
+   halbtransparente Flächen werden über den Seitengrund gelegt. */
+function rgba(value){const c=(String(value).match(/[\d.]+/g)||[]).map(Number);return c.length<3?null:{r:c[0],g:c[1],b:c[2],a:c.length>3?c[3]:1};}
+function over(top,under){const t=rgba(top),u=rgba(under)||{r:255,g:255,b:255,a:1};if(!t)return u;return {r:t.r*t.a+u.r*(1-t.a),g:t.g*t.a+u.g*(1-t.a),b:t.b*t.a+u.b*(1-t.a),a:1};}
+function relLum(c){const f=v=>{v/=255;return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4);};return 0.2126*f(c.r)+0.7152*f(c.g)+0.0722*f(c.b);}
+function contrast(fg,bg,under){const b=over(bg,under),f=over(fg,`rgb(${b.r}, ${b.g}, ${b.b})`);const l1=relLum(f),l2=relLum(b);return (Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);}
+function meanLum(value,under){const c=over(value,under);return (c.r+c.g+c.b)/3;}
 async function screenshot(page,name){
  // Use the same actual clipping semantics as the canonical lazy loader.
  // Bounding boxes alone count cards hidden above a scroll container as visible.
@@ -53,14 +61,19 @@ async function premiumMobileAudit(page,key){
   const body=css(document.body),main=css(document.querySelector('.v2-main')),bar=css(document.querySelector('vu-navigation').shadowRoot.querySelector('header'));
   const host=document.getElementById('vu-dock'),dock=host.shadowRoot.querySelector('nav'),ds=css(dock),db=dock.getBoundingClientRect();
   const active=dock.querySelector('[aria-current=page]'),as=active&&css(active);
-  return {bodyBackground:body.backgroundColor,mainBackground:main.backgroundColor,barBackground:bar.backgroundColor,
+  const idle=dock.querySelector('a:not([aria-current])');
+  return {theme:document.documentElement.getAttribute('data-theme'),bodyBackground:body.backgroundColor,mainBackground:main.backgroundColor,barBackground:bar.backgroundColor,
    pureWhite:[body.backgroundColor].every(v=>{const c=rgb(v);return c[0]===255&&c[1]===255&&c[2]===255;})&&luminance(bar.backgroundColor)>=250,
-   dock:{box:db.toJSON(),position:css(host).position,bottom:innerHeight-db.bottom,left:db.left,right:innerWidth-db.right,borderRadius:parseFloat(ds.borderRadius),border:parseFloat(ds.borderTopWidth)||0,background:ds.backgroundColor,luminance:luminance(ds.backgroundColor),boxShadow:ds.boxShadow},
+   dock:{box:db.toJSON(),position:css(host).position,bottom:innerHeight-db.bottom,left:db.left,right:innerWidth-db.right,borderRadius:parseFloat(ds.borderRadius),border:parseFloat(ds.borderTopWidth)||0,background:ds.backgroundColor,luminance:luminance(ds.backgroundColor),boxShadow:ds.boxShadow,ink:idle&&css(idle).color},
    active:{label:active&&active.textContent.trim(),background:as&&as.backgroundColor,color:as&&as.color,luminance:as&&luminance(as.color)}};
  });
  designEvidence.push({key,type:'premium-material',...material});
  assert(material.pureWhite,'Light neutral canvas/header must be pure white: '+JSON.stringify(material));
- assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');/* Prototyp App-Konzept 2: das Dock hebt sich mit einer feinen hellen Kante (1 px) ab, nicht mit einem Schatten. */assert(!/^none$/.test(material.dock.boxShadow)||material.dock.border>=1,'Dock needs depth (shadow or hairline edge)');assert(material.active.label==='Discover'&&material.active.luminance!==null&&material.active.luminance>80&&/^rgb\(200, 245, 49\)$/.test(material.active.color),'Active dock place must be Discover in the signal lime: '+JSON.stringify(material.active));
+ assert.equal(material.dock.position,'fixed');assert(material.dock.left>=6&&material.dock.right>=6,'Dock must float inside viewport');assert(material.dock.bottom>=6&&material.dock.bottom<=16,'Dock must float just above the visible viewport edge: '+material.dock.bottom);assert(material.dock.borderRadius>=20,'Dock lacks capsule geometry');if(material.theme==='dark')assert(material.dock.luminance!==null&&material.dock.luminance<40,'Dock must be the solid near-black Vision Universe surface');
+ else{/* Hell (Owner 16.11.2026): helle Leiste, Schrift mit Kontrast ≥ 4,5:1. */const lum=meanLum(material.dock.background,material.bodyBackground),ratio=contrast(material.dock.ink,material.dock.background,material.bodyBackground);
+  assert(lum>=230&&ratio>=4.5,'Light dock must be a light surface with readable labels: '+JSON.stringify({lum,ratio,dock:material.dock}));}/* Prototyp App-Konzept 2: das Dock hebt sich mit einer feinen hellen Kante (1 px) ab, nicht mit einem Schatten. */assert(!/^none$/.test(material.dock.boxShadow)||material.dock.border>=1,'Dock needs depth (shadow or hairline edge)');if(material.theme==='dark')assert(material.active.label==='Discover'&&material.active.luminance!==null&&material.active.luminance>80&&/^rgb\(200, 245, 49\)$/.test(material.active.color),'Active dock place must be Discover in the signal lime: '+JSON.stringify(material.active));
+ /* Hell: aktiver Platz in dunklem Gruen #4f6b00 (Lime hat auf Weiss keinen lesbaren Kontrast). */
+ else assert(material.active.label==='Discover'&&/^rgb\(79, 107, 0\)$/.test(material.active.color)&&contrast(material.active.color,material.dock.background,material.bodyBackground)>=4.5,'Active dock place must be Discover in dark green on the light dock: '+JSON.stringify(material.active));
 
  /* App-Konzept 2 (Prototyp „v-discover“, Owner 15.11.2026 „1:1 wie im Prototyp“): oben die Aktie des Tages (Billboard), direkt danach die Reiter
     im Inhalt, dann in der Reihenfolge des Prototyps Top 10 heute, Themen, Neue Jahreshochs, Was sich heute bewegt, Langfristige Compounder
@@ -248,7 +261,10 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
     await navigate(page,base+'/discover/'+href,{waitUntil:'networkidle'});
     await page.waitForURL(url=>/^#\/c\/US_REAL\/[a-z0-9-]+$/.test(new URL(url).hash));
     await page.locator('.dr-rowhero h1').waitFor({state:'visible'});
-    assert.equal(await page.locator('.dr-rowhero').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(0, 0, 0)','Row head is dark');
+    {/* Im Dunkeln schwarz; im Hellen hell mit lesbarer Schrift (Owner 16.11.2026). Diese Pruefung laeuft nach „dark setting is explicit and persists“, also im Hellen. */
+     const head=await page.locator('.dr-rowhero').evaluate(n=>({theme:document.documentElement.getAttribute('data-theme'),bg:getComputedStyle(n).backgroundColor,ink:getComputedStyle(n.querySelector('h1')).color,page:getComputedStyle(document.body).backgroundColor}));
+     if(head.theme==='dark')assert.equal(head.bg,'rgb(0, 0, 0)','Row head is dark');
+     else assert(meanLum(head.bg,head.page)>=230&&contrast(head.ink,head.bg,head.page)>=4.5,'Row head is light with readable title in light mode: '+JSON.stringify(head));}
     assert(await page.locator('.dr-rule .dr-rule__i').count()>=1,'Row page explains its rule');
     assert.equal(await page.locator('.dr-rowhero a[href^="#/swipen?reihe="]').count(),1,'Row swipe entry');
     const stock=page.locator('.dr-rks a[href*="/s/"]').first();await stock.waitFor({state:'visible'});
@@ -408,7 +424,19 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
   /* Konzept „Reihe für Reihe“ (n-home, n-genre): Billboard mit Sheet „Warum?“, Markt-Zeile, Top 10, Schienen, Strategien, Genre-Chips ohne Seitenwechsel, Swipen. */
   await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
   assert(await page.locator('.v2-hero-track [data-symbol]').count()>=2,'Heute im Blick needs several stocks');
-  assert.equal(await page.locator('.dr-bb').evaluate(n=>getComputedStyle(n).backgroundColor),'rgb(0, 0, 0)','Billboard is black in both modes');
+  {/* Die Aktie des Tages ist im Dunkeln schwarz und im Hellen weiss (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich
+      auch alles hell sein“). Bei 390 px hat „dark setting is explicit and persists“ zuvor Hell gewaehlt; die Pruefung misst deshalb beide Modi
+      ausdruecklich und stellt danach die vorherige Wahl wieder her. */
+   const billboard=()=>page.locator('.dr-bb').first().evaluate(n=>{const id=n.querySelector('.dp-hero__id h2')||n;return {theme:document.documentElement.getAttribute('data-theme'),bg:getComputedStyle(n).backgroundColor,image:getComputedStyle(n).backgroundImage,ink:getComputedStyle(id).color};});
+   const before=await page.evaluate(()=>document.documentElement.getAttribute('data-theme'));
+   try{
+    for(const mode of ['dark','light']){
+     await page.evaluate(m=>window.VUDiscover.theme.set(m),mode);await page.waitForFunction(m=>document.documentElement.getAttribute('data-theme')===m,mode);
+     const bb=await billboard();
+     if(mode==='dark'){assert.equal(bb.bg,'rgb(0, 0, 0)','Billboard is black in dark mode');assert(contrast(bb.ink,bb.bg)>=4.5,'Billboard name readable in dark mode: '+JSON.stringify(bb));}
+     else{assert(meanLum(bb.bg)>=230&&contrast(bb.ink,bb.bg)>=4.5,'Billboard is light with readable name in light mode: '+JSON.stringify(bb));}
+    }
+   }finally{await page.evaluate(m=>window.VUDiscover.theme.set(m),before==='light'?'light':'dark');await page.waitForFunction(m=>document.documentElement.getAttribute('data-theme')===m,before==='light'?'light':'dark');}}
   assert.equal(await page.locator('.dr-ms[href="#/maerkte"]').count(),1,'Market strip leads to Märkte');
   /* App-Konzept 2 (Prototyp „v-discover“, Owner 15.11.2026): die Aktie des Tages fuellt den ersten Bildschirm (520 px) bis an beide Raender; ihre
      Kurslinie laeuft gross hinter Kopf und Namen, unten stehen Etiketten, Name, Pille und die Knoepfe „Ansehen · Herz · ?“ ueber dem Dock;
