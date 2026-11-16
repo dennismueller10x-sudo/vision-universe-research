@@ -47,10 +47,17 @@ function main(argv = process.argv.slice(2)) {
   const cp = require('node:child_process');
   const codeRef = '6ed7899d35ca89e4cf2e414839f2c708820d738b';
   const dataRef = 'e4628154de8c11294820108cc30b9b0592b46ba8';
+  console.log('Restore original input trees');
   for (const ref of [codeRef, dataRef]) cp.execFileSync('git', ['fetch', '--quiet', '--depth=1', '--filter=blob:none', '--no-tags', 'origin', ref], { cwd: ROOT, stdio: 'inherit' });
+  const groups = [[codeRef, ['quant/data/market/discover-series-long', 'quant/data/market/discover-series/ref_SPY.json', 'quant/data/product/backtest-certification-v1.json']], [dataRef, ['quant/data/market/multi-asset/series/SPY.json', 'quant/data/market/multi-asset/instruments.json']]];
+  const objectIds = [...new Set(groups.flatMap(([ref, paths]) => cp.execFileSync('git', ['ls-tree', '-r', '--format=%(objectname)', ref, '--', ...paths], { cwd: ROOT, encoding: 'utf8' }).trim().split('\n').filter(Boolean)))];
+  console.log('Batch-fetch original input objects: ' + objectIds.length);
+  cp.execFileSync('git', ['-c', 'fetch.negotiationAlgorithm=noop', 'fetch', 'origin', '--quiet', '--no-tags', '--no-write-fetch-head', '--recurse-submodules=no', '--filter=blob:none', '--stdin'], { cwd: ROOT, input: objectIds.join('\n') + '\n', stdio: ['pipe', 'inherit', 'inherit'] });
+  console.log('Restore original input files');
   cp.execFileSync('git', ['restore', '--source=' + codeRef, '--worktree', '--', 'quant/data/market/discover-series-long', 'quant/data/market/discover-series/ref_SPY.json', 'quant/data/product/backtest-certification-v1.json'], { cwd: ROOT, stdio: 'inherit' });
   cp.execFileSync('git', ['restore', '--source=' + dataRef, '--worktree', '--', 'quant/data/market/multi-asset/series/SPY.json', 'quant/data/market/multi-asset/instruments.json'], { cwd: ROOT, stdio: 'inherit' });
   const o = parse(argv);
+  console.log('Original input restore complete; execute unchanged demo cases');
   const cases = JSON.parse(fs.readFileSync(CASES, 'utf8')).cases.filter(c => !o.only || c.id === o.only);
   fs.mkdirSync(path.join(o.out, 'results'), { recursive: true });
   if (o.qaDir) fs.mkdirSync(o.qaDir, { recursive: true });
