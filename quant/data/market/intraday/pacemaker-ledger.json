@@ -10,7 +10,7 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-16T17:25:21.686Z",
+  "updatedAt": "2026-11-16T17:29:32.452Z",
   "cycles": [
     {
       "cycle": 1,
@@ -883,10 +883,10 @@
       "written": 1284,
       "requests": 1443,
       "notPublishable": 74,
-      "addAt": "2026-11-16T17:21:16.173Z",
-      "commitAt": "2026-11-16T17:21:16.496Z",
-      "pushAt": "2026-11-16T17:21:18.985Z",
-      "sha": "794caa3090",
+      "addAt": "2026-11-16T17:25:21.686Z",
+      "commitAt": "2026-11-16T17:25:22.005Z",
+      "pushAt": "2026-11-16T17:25:29.285Z",
+      "sha": "fcb49d3d4f",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -922,11 +922,50 @@
           "fetchEndAt": "2026-11-16T17:25:21.685Z",
           "ok": true,
           "written": 434,
-          "requests": 481
+          "requests": 481,
+          "sha": "fcb49d3d4f",
+          "pushAt": "2026-11-16T17:25:29.285Z",
+          "changed": true
         }
       ],
       "snapshotAt": "2026-11-16T17:25:21.674Z",
-      "pushed": true
+      "pushed": true,
+      "watchdog": {
+        "verdict": "PASS",
+        "codes": []
+      }
+    },
+    {
+      "cycle": 15,
+      "runId": "43871660357",
+      "triggerAt": "2026-11-16T17:25:29.655Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "12:25:29",
+      "fetchStartAt": "2026-11-16T17:25:29.656Z",
+      "fetchEndAt": "2026-11-16T17:29:32.451Z",
+      "session": "2026-11-16",
+      "written": 418,
+      "requests": 481,
+      "notPublishable": 32,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-16T17:25:29.656Z",
+          "fetchEndAt": "2026-11-16T17:29:32.451Z",
+          "ok": true,
+          "written": 418,
+          "requests": 481
+        }
+      ],
+      "snapshotAt": "2026-11-16T17:29:32.432Z"
     }
   ]
 }
