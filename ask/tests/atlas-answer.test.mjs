@@ -70,11 +70,30 @@ test("Darstellung App-Konzept 2: Schiene und Kacheln am Start, neongrüne Übers
   assert.equal((src.match(/fetch\(ENDPOINT \+ '\/v1\/ask'/g) || []).length, 1);
   assert.equal((src.match(/fetch\(ENDPOINT \+ '\/v1\/quota/g) || []).length, 1);
   for (const q of ["Kleine Firmen, günstig, ohne Schulden", "NVIDIA gegen AMD und Broadcom", "Wie stark ist der Free Cashflow bei NVIDIA gewachsen?", "Welche Aktien stehen auf einem neuen Jahreshoch?", "Welche Aktien stehen im Weinstein-Stage-2?", "Wie hoch ist die Marge bei Apple?"]) assert.ok(src.includes(`'${q}'`), q);
-  /* Farben: nur Schwarz, Weiß, Graustufen, Neongrün und das Nachtschwarz der Bausteine */
+  /* Farben: nur Schwarz, Weiß, Graustufen, Neongrün, das Nachtschwarz der Bausteine und die Töne des Prototyps
+     (prototyp/quelle/kit.js, shell.js); Rot nur für die Tagesbewegung im Minus (Owner 15.11.2026). */
+  const PROTOTYP = ["c8f531", "0e1013", "f4f5f1", "a1a7af", "c3c7cc", "2a2a2d", "151516", "202022", "232325", "101318", "55595f", "08080a", "c4281c"];
   for (const hex of css.match(/#[0-9a-f]{3,8}\b/gi) || []) {
     const h = hex.slice(1).toLowerCase(), full = h.length === 3 ? [...h].map((c) => c + c).join("") : h;
-    assert.ok(full === "c8f531" || full === "0e1013" || (full.slice(0, 2) === full.slice(2, 4) && full.slice(2, 4) === full.slice(4, 6)), "Farbe außerhalb der Palette: " + hex);
+    assert.ok(PROTOTYP.includes(full) || (full.slice(0, 2) === full.slice(2, 4) && full.slice(2, 4) === full.slice(4, 6)), "Farbe außerhalb der Palette: " + hex);
   }
+  assert.match(css, /\.ak-app \.vu-chg--down\{background:#c4281c;color:#fff\}/, "Minus als rote Pille (Owner 15.11.2026)");
   assert.ok(html.includes(`/assets/vu-ui.css?v=${UI.VERSION}`) && html.includes(`/assets/vu-ui.js?v=${UI.VERSION}`), "Marke der Bausteine");
-  assert.match(html, /<vu-navigation menu-only no-dock/, "Vollbild-Werkzeug ohne Dock, wie zuvor");
+  /* App-Konzept 2 nach Prototyp (Owner 16.11.2026): der Rahmen wie jede Seite statt eines eigenen Kopfs, dunkel als Standard */
+  assert.match(html, /<body class="ak vu-ui">\n<vu-navigation theme="dark" theme-switch><\/vu-navigation>/, "Rahmen wie jede Seite");
+  assert.doesNotMatch(html, /menu-only|class="ak-hd"/, "kein eigener Kopf mehr");
+  assert.match(html, /<meta name="theme-color" content="#08080a">/);
+  /* Vorlage Fenster „suche“: Suchpille mit Lupe, Satz in der neongrünen Karte, schwarzer Knopf darin, „Aktien“ als Zeilen */
+  assert.match(src, /h\('span', \{ class: 'ak-find-ic' \}, \[icon\('search'\)\]\), input/, "Lupe in der Suchpille");
+  assert.match(src, /h\('h2', \{ class: 'ak-count' \}/, "Satz als h2 wie im Prototyp");
+  assert.match(src, /translated\(r, res, drop, tips, h\('a', \{ class: 'vu-btn vu-btn--ink ak-btn2 ak-btn-all', href: Ask\.screenerUrl\(r\)/, "Knopf „Alle N im Screener“ in der Karte");
+  assert.match(src, /'<div class="ak-eb">Aktien<\/div><div class="ak-list">'/);
+  /* Aktien führen auf die gemeinsame Aktienseite; Kurse nur über published-close.js (ADR-002) */
+  assert.match(src, /href="\/aktie\/#\/' \+ encodeURIComponent\(sym\) \+ '" data-vu-stock="/);
+  assert.doesNotMatch(src, /\/discover\/#\/s\/US_REAL\/' \+ encodeURIComponent\((row|s)\.symbol\) \+ '"/, "Trefferzeilen nicht mehr nach Discover");
+  assert.match(src, /Close\.lastPoint\(series, today\)/);
+  assert.ok(html.indexOf('/quant/engines/published-close.js') > 0 && html.indexOf('/quant/engines/published-close.js') < html.indexOf('/ask/app.js'));
+  /* Pflicht-Hinweis bleibt sichtbar und steht zusätzlich im Fenster „Daten & Hinweise“ */
+  assert.match(src, /if \(U\.legal && U\.legal\('ai'\)\) main\.appendChild\(markup\(U\.legal\('ai'\)\)\);/);
+  assert.match(src, /Nav\.hinweis\('ai'\)/);
 });
