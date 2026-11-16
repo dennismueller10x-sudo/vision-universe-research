@@ -131,7 +131,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       for (const pass of ['first', 'reload']) {
         if (pass === 'reload') { await page.reload({ waitUntil: 'load' }); await settle(page); }
-        /* App-Konzept 2 (Prototyp #discover/#quant, Owner 15.11.2026): der Start traegt seine Reiter im Inhalt
+        /* App-Konzept 2 (Prototyp #discover/#quant/#supertrader, Owner 15.11.2026): der Start traegt seine Reiter im Inhalt
            (<html data-vu-tabs="inhalt">); die Reiterzeile des Rahmens bleibt dort verborgen. Geprueft werden dann Dock,
            Universe-Knopf, die Reiter im Inhalt und der Ueberlauf. */
         const inhalt = await page.evaluate(() => {
@@ -459,8 +459,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Zurueck/Vor ueber die Reiter (Hash-Produkte und Seiten-Produkte).
-    // Discover- und Quant-Start tragen ihre Reiter im Inhalt (App-Konzept 2); der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
-  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']]]) {
+    // Discover-, Quant- und Supertrader-Start tragen ihre Reiter im Inhalt (App-Konzept 2); der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
+  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {

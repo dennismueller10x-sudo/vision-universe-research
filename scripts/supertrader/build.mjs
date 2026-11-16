@@ -965,13 +965,15 @@ export const HOME_HEAD = ['<link rel="stylesheet" href="/assets/vu-ui.css?v=vu-u
 
 function pageShell({ title, description, page, depth, attrs = '', head = '', font = false }) {
   const up = '../'.repeat(depth);
+  /* App-Konzept 2 (Owner 15.11.2026): die Startseite trägt ihre Reiter im Inhalt (Prototyp #supertrader) und ist dunkel wie der Rahmen (#08080a). */
+  const home = page === 'home', bar = home ? '#08080a' : '#000000';
   return `<!DOCTYPE html>
-<html lang="de">
+<html lang="de"${home ? ' data-vu-tabs="inhalt"' : ''}>
 <head>
 <meta charset="utf-8">${font ? '\n' + HOME_FONT : ''}
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
-<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#000000":"#ffffff");})();</script>
+<meta name="theme-color" content="${home ? bar : '#ffffff'}">
+<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"${bar}":"#ffffff");})();</script>
 <title>${title}</title>
 <meta name="description" content="${description}">
 <link rel="stylesheet" href="/assets/site-navigation.css">
