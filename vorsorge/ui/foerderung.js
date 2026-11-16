@@ -25,7 +25,8 @@
      Modellrechnung mit Marke, „Gut zu wissen“, eine Quellenzeile; Beispielfälle als zweiter Screen (#/foerderung/faelle). */
   VS.views.foerderung = function (r) {
     var U = VS.U;
-    var root = VS.render(VS.intro("Was legt der Staat dazu?", "Ab 1. Januar 2027 gibt es das geförderte Altersvorsorgedepot.") + '<section id="vs-fd"><div class="vs-loading">Regelwerk wird geladen …</div></section>');
+    /* App-Konzept 2: das Ergebnis (Zulage im Jahr, Förderquote als Ring) steht in der Kopfkachel (Prototyp #ich: Ring 150 px). */
+    var root = VS.render(VS.intro("Was legt der Staat dazu?", "Ab 1. Januar 2027 gibt es das geförderte Altersvorsorgedepot.", "Förderung", r.args[0] === "faelle" ? "" : '<div class="vsp-fdhead" id="vs-fd-head" aria-live="polite"></div>') + '<section id="vs-fd"><div class="vs-loading">Regelwerk wird geladen …</div></section>');
     VS.rules().then(function (rules) {
       var today = new Date().toISOString().slice(0, 10);
       var avd = Fd.selectRule(rules, "DE-ALTERSVORSORGEDEPOT", today < "2027-01-01" ? "2027-01-01" : today);
@@ -63,9 +64,10 @@
         var t1 = Math.min(own, tiers[0].to) * tiers[0].rate, t2 = Math.max(0, Math.min(own, tiers[1].to) - tiers[0].to) * tiers[1].rate;
         var per = [cr.minimumAnnualOwnContribution, 360, 600, 1200, cr.maximumSubsidizedOwnContribution].map(function (b) { return [b, calc(b, 0, false, false).basicAllowance]; });
         var mx = per[per.length - 1][1] || 1;
+        var head = root.querySelector("#vs-fd-head");
+        if (head) head.innerHTML = VS.ring(z.eligible ? z.fundingRate * 100 : 0, 150, 14, '<span class="vsp-eb vsp-lc">Zulage pro Jahr</span><span class="vsp-num" style="font-size:30px">' + F.eur(yearly) + '</span>') +
+          '<p class="vsp-sm vsp-mut vsp-b7 vsp-mt8">' + (z.eligible ? "Das sind " + F.pct(z.fundingRate, 0) + " auf deinen Beitrag." : esc(z.reason)) + (z.careerStarterBonus ? " Dazu einmalig " + F.eur(z.careerStarterBonus) + " Bonus." : "") + '</p>';
         host.querySelector("#vs-fd-out").innerHTML =
-          '<div class="vu-box vu-box--ink vs-result"><span class="vu-ltag" style="color:#8a8a8a">Zulage pro Jahr</span><p class="vs-big num" style="font-size:44px">' + F.eur(yearly) + '</p>' +
-          '<p class="vu-sm">' + (z.eligible ? "Das sind " + F.pct(z.fundingRate, 0) + " auf deinen Beitrag." : esc(z.reason)) + (z.careerStarterBonus ? " Dazu einmalig " + F.eur(z.careerStarterBonus) + " Bonus." : "") + '</p></div>' +
           VS.sect("So wird gerechnet") + '<div class="vu-box vs-kvbox">' +
           [["Auf die ersten " + F.eur(tiers[0].to), F.pct(tiers[0].rate, 0), z.eligible ? F.eur(spouse ? Math.min(t1, yearly) : t1) : "0 €"], ["Auf weitere bis " + F.eur(tiers[1].to), F.pct(tiers[1].rate, 0), z.eligible && !spouse ? F.eur(t2) : "–"],
             ["Je Kind (auf bis " + F.eur(kid.contributionBase) + ")", F.pct(kid.rate, 0), kids ? F.eur(z.childAllowance) : "bis " + F.eur(kid.maximum)], ["Unter " + bonus.maxAgeExclusive + ", einmalig", "", F.eur(bonus.amount)]].map(function (x) {

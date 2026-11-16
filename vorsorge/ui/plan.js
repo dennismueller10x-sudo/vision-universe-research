@@ -341,8 +341,10 @@
     var U = VS.U, p = VS.currentPlan(), base = p.scenarios[1], snap = VS.state.snapshot, sp = VS.state.sparplan, done = VS.state.planDone;
     var track = V.Monitor.onTrack(done ? base.goalAttainment : null);
     var lever = M.leverAnalysis(VS.state.plan, VS.state.plan.returns.basis).levers[0];
-    var top = done ? '<div class="vu-box vu-box--ink vs-result"><div class="vs-row-sb"><span class="vu-ltag" style="color:#8a8a8a">Dein Plan · gespeichert ' + F.date(snap && snap.at) + '</span>' + VS.trackVerdict(track) + '</div>' +
-        '<p class="vs-big num">' + F.pct(base.goalAttainment, 0) + '</p><p class="vu-sm">deines Ziels bei ' + F.pct(base.annualReturn, 0) + ' pro Jahr (Beispielrechnung)</p></div>' +
+    /* App-Konzept 2: gespeicherter Plan als Kachel mit Bogen (wie Start und Planer). */
+    var top = done ? '<div class="vsp-tile vsp-markt vs-result"><span class="vsp-eb">Dein Plan · gespeichert ' + F.date(snap && snap.at) + '</span>' +
+        '<span class="vsp-gwrap">' + VS.gauge(Math.min(100, base.goalAttainment * 100), 260) + '<span class="vsp-gnum vsp-num">' + F.pct(base.goalAttainment, 0) + '</span></span>' +
+        '<span class="vsp-sm vsp-mut vsp-b7 vsp-mt8">deines Ziels bei ' + F.pct(base.annualReturn, 0) + ' pro Jahr (Beispielrechnung)</span><span class="vsp-mt8">' + VS.trackVerdict(track) + '</span></div>' +
         VS.sect("Stärkste Stellschraube") + '<a class="vu-box vu-box--lime vs-row-sb" href="#/plan" style="text-decoration:none;flex-wrap:nowrap"><span><b>' + esc(lever.label) + '</b><span class="vu-sm" style="display:block">bringt dich ' + Math.round(lever.delta * 100) + ' %-Punkte näher ans Ziel</span></span>' + U.glyph("next", 18) + '</a>'
       : '<div class="vu-box vs-noplan"><div>' + VS.verdict("none", "Noch kein Plan") + '</div><h2 class="vu-mt" style="margin-top:12px">Ohne Plan kein Kurs.</h2><p class="vu-sm vu-mu" style="margin-top:8px">Speichere einen Plan im Planer. Dann zeigen wir hier, ob du auf Kurs bist und was sich ändert.</p>' +
         '<a class="vu-btn vu-btn--block" href="#/start" style="margin-top:14px">10-Euro-Sparplan starten</a><a class="vu-btn vu-btn--line vu-btn--block" href="#/plan" style="margin-top:8px">Zum Planer</a></div>';

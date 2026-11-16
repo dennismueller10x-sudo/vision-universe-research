@@ -1240,3 +1240,8 @@ body.vs .vsp .vs-slider input[type=range]{accent-color:#c8f531}
 :root:not([data-theme=dark]) body.vs .vsp .vs-slider input[type=range]{accent-color:#000}
 body.vs .vsp .vs-result{margin:0;padding:0}
 body.vs .vsp .vs-result .vsp-cap span{color:var(--vsp-mut)}
+/* Förderung: Ring in der Kopfkachel (Prototyp #ich ring(64, 150, 14), Inhalt mittig) */
+.vsp-fdhead{display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:14px}
+.vsp-ring{position:relative;display:inline-block;flex:none}
+.vsp-ring svg{transform:rotate(-90deg);display:block}
+.vsp-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}

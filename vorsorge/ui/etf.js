@@ -84,16 +84,21 @@
   }
   function simpleEtfs(tab) {
     var U = VS.U;
-    var root = VS.render(VS.intro("Die ETF-Welt", "") +
+    /* App-Konzept 2: Zählung als große Zahl in der Kopfkachel (Prototyp #technical: zwei Zahlen 54 px, Balken 18 px). */
+    var root = VS.render(VS.intro("Die ETF-Welt", "", "ETF-Verzeichnis", '<div class="vsp-hnum-w" id="vs-es-count"></div>') +
       '<form class="vs-termsearch" id="vs-es-form" role="search">' + U.glyph("search", 18) + '<input id="vs-es-q" type="search" placeholder="ETF, ISIN, Index oder Thema" aria-label="ETFs durchsuchen" autocomplete="off"><button type="button" class="vu-round" id="vs-es-filter" aria-label="Filter">' + U.glyph("filter", 17) + '</button></form>' +
-      '<div class="vs-count" id="vs-es-count"></div>' + etfTabs(tab) + '<div id="vs-es-body"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></div>',
+      etfTabs(tab) + '<div id="vs-es-body"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></div>',
       { dm: [["Was gezeigt wird", "US-gelistete ETFs als Marktabbild: echte Kurshistorie, Schwankung, größter Rückgang; Kosten und Bestände aus den Fondsmeldungen, wo vorhanden. „Einfach“ und „Themen“ sind Ausschnitte, keine Empfehlung."]] });
     root.querySelector("#vs-es-form").addEventListener("submit", function (ev) {
       ev.preventDefault(); var v = root.querySelector("#vs-es-q").value.trim(); if (!v) return;
       VS.go(/^[A-Za-z]{2}[A-Za-z0-9]{9}\d$/.test(v) ? "#/europa/" + v.toUpperCase() : "#/etfs?tab=alle&q=" + encodeURIComponent(v));
     });
     root.querySelector("#vs-es-filter").onclick = filterSheet;
-    var counts = function (m) { root.querySelector("#vs-es-count").innerHTML = '<span class="num">' + m.counts.publicAnalysis.toLocaleString("de-DE") + '</span><b>ETFs</b><small>' + m.counts.complex.toLocaleString("de-DE") + ' komplexe ausgeblendet</small>'; };
+    var counts = function (m) {
+      var a = m.counts.publicAnalysis, c = m.counts.complex, t = (a + c) || 1;
+      root.querySelector("#vs-es-count").innerHTML = '<div class="vsp-hnum"><div><span class="vsp-num vsp-lc">' + a.toLocaleString("de-DE") + '</span><b>ETFs mit Analyse</b></div><div><span class="vsp-num">' + c.toLocaleString("de-DE") + '</span><b class="vsp-mut">komplexe ausgeblendet</b></div></div>' +
+        '<div class="vsp-seg" aria-hidden="true"><i class="l" style="width:' + (a / t * 100).toFixed(1) + '%"></i><i class="g" style="width:' + (c / t * 100).toFixed(1) + '%"></i></div>';
+    };
     var body = root.querySelector("#vs-es-body");
     if (tab === "themen") {
       VS.master().then(function (m) {

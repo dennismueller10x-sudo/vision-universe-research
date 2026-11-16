@@ -357,6 +357,12 @@
     return '<svg class="vsp-line" viewBox="0 0 ' + w + " " + h + '" preserveAspectRatio="none" width="100%" height="' + h + '" aria-hidden="true"><defs><linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c8f531" stop-opacity=".38"/><stop offset="1" stop-color="#c8f531" stop-opacity="0"/></linearGradient></defs>' +
       '<path d="' + d + "L" + w + " " + h + "L0 " + h + 'Z" fill="url(#' + id + ')"/><path class="vsp-line-s" d="' + d + '" fill="none" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>';
   };
+  /** Ring (kit.js ring): Anteil 0–100, Strich neongrün auf #2a2a2d, Inhalt in der Mitte (fertiges HTML). */
+  VS.ring = function (pct, size, sw, inner) {
+    var r = (size - sw) / 2, c = 2 * Math.PI * r, p = Math.max(0, Math.min(100, Number(pct) || 0));
+    return '<span class="vsp-ring" style="width:' + size + 'px;height:' + size + 'px"><svg width="' + size + '" height="' + size + '" aria-hidden="true"><circle class="vsp-gauge-t" cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke-width="' + sw + '"/>' +
+      '<circle class="vsp-gauge-v" cx="' + size / 2 + '" cy="' + size / 2 + '" r="' + r + '" fill="none" stroke-width="' + sw + '" stroke-linecap="round" stroke-dasharray="' + c.toFixed(1) + '" stroke-dashoffset="' + (c * (1 - p / 100)).toFixed(1) + '"/></svg><span class="vsp-ring-c">' + (inner || "") + '</span></span>';
+  };
   /** Säulen (kit.js bars): hi = Index der hervorgehobenen Säule (neongrün), Rest hell. */
   VS.colBars = function (raw, w, h, hi) {
     var mx0 = Math.max.apply(null, raw.map(function (x) { return Math.max(0, x); })) || 1, vals = raw.map(function (x) { return Math.max(0, x) / mx0 * (h - 4) + 4; }), mx = Math.max.apply(null, vals), bw = w / vals.length;
