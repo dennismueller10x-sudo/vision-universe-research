@@ -99,7 +99,7 @@
   var Speech = window.SpeechRecognition || window.webkitSpeechRecognition;
   var canSpeak = 'speechSynthesis' in window && typeof window.SpeechSynthesisUtterance === 'function';
   var PLACEHOLDER = 'z. B. „Kleine Firmen, günstig, ohne Schulden“';
-  var input = h('textarea', { id: 'ak-q', rows: '2', 'aria-label': 'Deine Frage an Atlas', maxlength: '400', placeholder: PLACEHOLDER });
+  var input = h('textarea', { id: 'ak-q', rows: '2', 'aria-label': 'Deine Frage an die Vision Universe KI', maxlength: '400', placeholder: PLACEHOLDER });
   var followText = h('span', { class: 'ak-follow-q' });
   var followBar = h('div', { class: 'ak-follow', hidden: true }, [
     h('span', { class: 'ak-follow-label', text: 'Nachfrage zu' }), followText,
@@ -153,14 +153,14 @@
 
   /* Ein Status-Satz unter der Eingabe (Konzept mein-bereich-2026-11, Screen a-home): gesperrt, Kontingent oder keine Verbindung. */
   var ARCHIVE = 'Antworten aus dem Archiv kostenlos';
-  var statusEl = h('p', { class: 'ak-statusline', 'aria-live': 'polite', text: ENDPOINT ? 'Atlas wird verbunden …' : 'Neue Fragen noch gesperrt · ' + ARCHIVE });
+  var statusEl = h('p', { class: 'ak-statusline', 'aria-live': 'polite', text: ENDPOINT ? 'KI wird verbunden …' : 'Neue Fragen noch gesperrt · ' + ARCHIVE });
   var toolsRow = h('div', { class: 'ak-status' }, [quotaEl]);
   function ask(q, send) {
     input.value = q; input.dispatchEvent(new Event('input'));
     if (send && !sendBtn.disabled && ENDPOINT) { submit(); return; }
     input.focus(); try { form.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
   }
-  /* Was Atlas kann: Finden, Vergleichen, Erklären – je eine Beispielfrage ohne Fachwort. */
+  /* Was die KI kann: Finden, Vergleichen, Erklären – je eine Beispielfrage ohne Fachwort. */
   var CAN = [
     { icon: 'screener', title: 'Finden', q: 'Kleine Firmen, günstig, ohne Schulden', sub: 'öffnet den Screener' },
     { icon: 'quant', title: 'Vergleichen', q: 'NVIDIA gegen AMD und Broadcom', sub: 'Profile und Zahlen' },
@@ -168,14 +168,14 @@
   ];
   /* Oft gefragt: feste Fragen, die heute vollständig beantwortet werden (Antwort kommt aus dem Archiv, sobald sie einmal gestellt wurde). */
   var OFTEN = ['Welche Aktien stehen auf einem neuen Jahreshoch?', 'Welche Aktien stehen im Weinstein-Stage-2?', 'Wie hoch ist die Marge bei Apple?'];
-  /* Abschnitte wie die gebauten Bildschirme (shell.js .sh, .tile, .rail, .row): Schiene „Was Atlas kann“, Zeilen „Oft gefragt“. */
+  /* Abschnitte wie die gebauten Bildschirme (shell.js .sh, .tile, .rail, .row): Schiene „Was die KI kann“, Zeilen „Oft gefragt“. */
   var startEl = h('div', { class: 'ak-start' }, [
     h('section', { class: 'ak-section', 'aria-labelledby': 'ak-can-h' }, [
-      h('div', { class: 'ak-sh' }, [h('h2', { id: 'ak-can-h', text: 'Was Atlas kann' })]),
+      h('div', { class: 'ak-sh' }, [h('h2', { id: 'ak-can-h', text: 'Was die KI kann' })]),
       h('div', { class: 'ak-can' }, [markup(U.rail(CAN.map(function (c) {
         return U.tap(U.hud(c.icon, 36, 11) + '<b>' + U.esc(c.title) + '</b><span class="ak-can-q">' + U.esc('„' + c.q + '“') + '</span><span class="ak-can-sub">' + U.esc(c.sub) + '</span>',
           { cls: 'ak-can-card', attrs: { 'data-ak-ask': c.q } });
-      }), { label: 'Was Atlas kann', width: 200 }))])
+      }), { label: 'Was die KI kann', width: 200 }))])
     ]),
     h('section', { class: 'ak-section', 'aria-labelledby': 'ak-often-h' }, [
       h('div', { class: 'ak-sh' }, [h('h2', { id: 'ak-often-h', text: 'Oft gefragt' }), h('span', { class: 'ak-sect-r', text: 'Archiv · kostenlos' })]),
@@ -184,8 +184,8 @@
       }).join(''))])
     ]),
     /* Die Grenzen in einem „?“ (L6, Datenschutz, Beta, Spracheingabe) */
-    h('div', { class: 'vu-help ak-limits' }, [h('i', { 'aria-hidden': 'true', text: '?' }), h('span', {}, ['Atlas rechnet nicht selbst und gibt keine Anlageberatung. Grenzen und Datenschutz: ',
-      markup(U.q('Atlas sagt nicht, ob du kaufen oder verkaufen sollst, und beantwortet keine Fragen zu deiner persönlichen Lage. Beta: Neue Fragen pro Tag sind begrenzt; bereits gestellte Fragen kommen kostenlos aus dem Archiv. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Die AI übersetzt nur; sie rechnet nicht und gibt keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung deines Browsers (in Chrome über Google-Server).' : ''), 'Grenzen und Datenschutz'))])]),
+    h('div', { class: 'vu-help ak-limits' }, [h('i', { 'aria-hidden': 'true', text: '?' }), h('span', {}, ['Die KI rechnet nicht selbst und gibt keine Anlageberatung. Grenzen und Datenschutz: ',
+      markup(U.q('Die KI sagt nicht, ob du kaufen oder verkaufen sollst, und beantwortet keine Fragen zu deiner persönlichen Lage. Beta: Neue Fragen pro Tag sind begrenzt; bereits gestellte Fragen kommen kostenlos aus dem Archiv. Fragen werden ohne Personenbezug gespeichert, damit wir fehlende Daten nachbauen können – bitte keine persönlichen Angaben eingeben. Die AI übersetzt nur; sie rechnet nicht und gibt keine Anlageberatung.' + (Speech ? ' Die Spracheingabe nutzt die Spracherkennung deines Browsers (in Chrome über Google-Server).' : ''), 'Grenzen und Datenschutz'))])]),
     /* Seitenende: weiter zum Screener (Name und Satz aus products/screener/module.json); dorthin führt auch „Finden“. */
     markup(U.next({ title: 'Screener', sub: 'Eigene Filter', href: '/screener/' }))
   ]);
@@ -195,21 +195,22 @@
     if (b && startEl.contains(b)) ask(b.getAttribute('data-ak-ask'), true);
   });
 
-  /* Dunkler Kopf: AI ATLAS · BETA, Frage, ein Satz, große Eingabe, ein Status-Satz. */
+  /* Dunkler Kopf (Owner 16.11.2026: „Vision Universe KI … Vision Universe etwas kleiner geschrieben“): Dachzeile
+     „Vision Universe“ mit Funke und Beta-Pille, darunter „KI“ groß, ein Satz, große Eingabe, ein Status-Satz. */
   var hero = h('header', { class: 'ak-hero' }, [
-    h('p', { class: 'ak-kicker' }, [h('span', { class: 'ak-kicker-ic' }, [markup(U.glyph('spark', 13))]), h('span', { class: 'vu-ltag', text: 'AI Atlas' }), h('span', { class: 'ak-beta', text: 'Beta' })]),
-    h('h1', { class: 'ak-h1', text: 'Frag Vision Universe.' }),
-    h('p', { class: 'ak-lead', text: 'In deinen Worten. Atlas übersetzt in Regeln, Vision Universe rechnet. Jede Zahl mit Quelle.' }),
+    h('p', { class: 'ak-kicker' }, [h('span', { class: 'ak-kicker-ic' }, [markup(U.glyph('spark', 13))]), h('span', { class: 'vu-ltag', text: 'Vision Universe' }), h('span', { class: 'ak-beta', text: 'Beta' })]),
+    h('h1', { class: 'ak-h1' }, [h('span', { class: 'vu-visually-hidden', text: 'Vision Universe ' }), 'KI']),
+    h('p', { class: 'ak-lead', text: 'Frag in deinen Worten. Die KI übersetzt in Regeln, Vision Universe rechnet. Jede Zahl mit Quelle.' }),
     h('div', { class: 'ak-askwrap' }, [accessBox, form, hintEl, voiceEl, statusEl, toolsRow])
   ]);
-  /* Antwortansicht (Screens a-screen/a-answer): Zurück, AI ATLAS, Herkunft der Antwort. */
+  /* Antwortansicht (Screens a-screen/a-answer): Zurück, VISION UNIVERSE KI, Herkunft der Antwort. */
   /* Eine Kopfzeile (Owner 10.11.2026): Die Herkunft der Antwort steht als Pille in der Seitenkopfzeile;
-     deren Zurück-Pfeil führt in der Antwortansicht zum Start von Atlas. Ohne Seitenkopf (eingebettet) bleibt die eigene Zeile. */
+     deren Zurück-Pfeil führt in der Antwortansicht zum Start der KI. Ohne Seitenkopf (eingebettet) bleibt die eigene Zeile. */
   var answerPill = h('span', { class: 'ak-anstop-pill' });
   var pageHead = document.querySelector('.ak-hd');
   var answerTop = h('div', { class: 'ak-anstop', hidden: true }, pageHead ? [] : [
-    h('button', { class: 'vu-round ak-anstop-back', type: 'button', 'aria-label': 'Zurück zum Start von Atlas', onclick: function () { home(); } }, [markup(U.glyph('back', 18))]),
-    h('span', { class: 'vu-ltag', text: 'AI Atlas' }), answerPill
+    h('button', { class: 'vu-round ak-anstop-back', type: 'button', 'aria-label': 'Zurück zum Start der KI', onclick: function () { home(); } }, [markup(U.glyph('back', 18))]),
+    h('span', { class: 'vu-ltag', text: 'Vision Universe KI' }), answerPill
   ]);
   if (pageHead) {
     answerPill.hidden = true;
@@ -241,7 +242,7 @@
   if (Nav && Nav.hinweis) Nav.hinweis('ai');
   if (Nav && Nav.openHinweise) main.appendChild(h('div', { class: 'ak-end' }, [h('button', { class: 'ak-lk', type: 'button', onclick: function () { Nav.openHinweise(); } }, 'Daten & Hinweise')]));
   if (U.bindHelp) U.bindHelp(main);
-  /* Zurück und Schließen: zur Seite, von der Atlas geöffnet wurde (nur eigene Seiten), sonst zur Startseite. */
+  /* Zurück und Schließen: zur Seite, von der die KI geöffnet wurde (nur eigene Seiten), sonst zur Startseite. */
   (function () {
     var back = '/';
     try { var r = new URL(document.referrer); if (r.origin === location.origin && r.pathname !== location.pathname) back = r.pathname + r.search + r.hash; } catch (e) {}
@@ -256,7 +257,9 @@
   }
   var params = new URLSearchParams(location.search), initial = params.get('q');
   if (initial) input.value = initial.slice(0, 400);
-  /* go=1: die Frage kommt aus dem Atlas-Sheet einer Aktie (assets/atlas-sheet.js) und wird sofort gestellt, sobald die Fragefunktion bereit ist. */
+  /* fokus=1: geöffnet über den KI-Knopf im Kopf (assets/site-navigation.js) – Fokus gleich auf der Eingabe. */
+  if (params.get('fokus') === '1') { try { input.focus({ preventScroll: true }); } catch (e) { input.focus(); } }
+  /* go=1: die Frage kommt aus dem KI-Fenster einer Aktie (assets/atlas-sheet.js) und wird sofort gestellt, sobald die Fragefunktion bereit ist. */
   if (initial && params.get('go') === '1' && ENDPOINT) {
     var tries = 0, wait = setInterval(function () {
       if (++tries > 40) return clearInterval(wait);
@@ -283,7 +286,7 @@
         unlock(); return r.json();
       }).then(setQuota)
       /* Nicht erreichbar ist nicht „gesperrt“: Hinweis zeigen, Senden bleibt moeglich und liefert dann eine klare Meldung. */
-      .catch(function (e) { if (e.message === 'LOCKED') return; unlock(); statusEl.textContent = 'Atlas antwortet gerade nicht (' + e.message + ') · bitte später noch einmal'; });
+      .catch(function (e) { if (e.message === 'LOCKED') return; unlock(); statusEl.textContent = 'Die KI antwortet gerade nicht (' + e.message + ') · bitte später noch einmal'; });
   }
 
   function loadTurnstile() {
@@ -454,7 +457,7 @@
   }
 
   /** Rendert die Antwort; liefert eine kurze Zusammenfassung zum Vorlesen.
-      Aufbau (Konzept mein-bereich-2026-11, Screens a-screen/a-answer): Frage als Blase (submit), „So hat Atlas übersetzt“
+      Aufbau (Konzept mein-bereich-2026-11, Screens a-screen/a-answer): Frage als Blase (submit), „So hat die KI übersetzt“
       mit Regel-Chips, Ergebnis, Knöpfe (Alle N im Screener, Regel ändern, weiter fragen), Quellen-Chips, ein Satz „keine Empfehlung“. */
   function render(turn, answer, question) {
     var r = answer.result;
@@ -531,12 +534,12 @@
     return out.sort(function (a, b) { return a.count - b.count; }).slice(0, 3);
   }
 
-  /* „So hat Atlas übersetzt“: Regel-Chips (× entfernt eine Regel, kostenlos neu gerechnet) und die große Zahl. */
+  /* „So hat die KI übersetzt“: Regel-Chips (× entfernt eine Regel, kostenlos neu gerechnet) und die große Zahl. */
   function translated(r, res, onRemove, tips, allBtn) {
     var rules = Ask.rules(r);
     var n = res.strategy && res.strategy.mode === 'require' ? rules.length : rules.filter(function (x) { return x.kind === 'filter'; }).length;
     return h('div', { class: 'ak-ans ak-ans--lime' }, [
-      h('span', { class: 'vu-ltag ak-ans-tag' }, [markup(U.glyph('spark', 13)), 'So hat Atlas übersetzt']),
+      h('span', { class: 'vu-ltag ak-ans-tag' }, [markup(U.glyph('spark', 13)), 'So hat die KI übersetzt']),
       h('h2', { class: 'ak-count' }, [h('b', { class: 'vu-num', text: res.matched.toLocaleString('de-DE') }), ' ',
         h('span', { text: 'von ' + res.universe.toLocaleString('de-DE') + ' US-Aktien erfüllen ' + Ask.allOf(n) })]),
       r.understood ? h('p', { class: 'ak-fine', text: r.understood }) : null,
@@ -593,7 +596,7 @@
   /* Frage zu einer oder mehreren Aktien (Erklären, Vergleichen). */
   function stockAnswer(mount, r, ds, sig, ti, info, question, gapText) {
     var st = Ask.runStock(ds, r, sig), found = st.stocks.filter(function (x) { return x.found; });
-    var calc = h('div', { class: 'ak-ans ak-calc' }, [h('span', { class: 'vu-ltag', text: 'So hat Atlas gerechnet' }),
+    var calc = h('div', { class: 'ak-ans ak-calc' }, [h('span', { class: 'vu-ltag', text: 'So hat Vision Universe gerechnet' }),
       h('div', { class: 'ak-rcs' }, [].concat(found.map(function (x) { return h('span', { class: 'ak-rc', text: 'Firma: ' + (cleanName(x.name) || x.symbol) }); }),
         st.columns.slice(0, 3).map(function (c) { return h('span', { class: 'ak-rc', text: 'Kennzahl: ' + header(c) }); })))]);
     var nextQ = found.length ? [

@@ -1,4 +1,4 @@
-// Atlas auf jeder Aktie (Konzept mein-bereich-2026-11, Screen a-sheet): Sheet „Atlas zu <Name>“ mit Eingabe und drei Fragen;
+// Atlas auf jeder Aktie (Konzept mein-bereich-2026-11, Screen a-sheet): Sheet „KI zu <Name>“ (Dachzeile „Vision Universe“) mit Eingabe und drei Fragen;
 // die Aktie geht als Kontext in die Frage, beantwortet wird auf /ask/. Schreibt keine Datei.
 import test from "node:test";
 import assert from "node:assert/strict";
@@ -29,7 +29,8 @@ test("AS-2 · Frage mit der Aktie als Kontext und Adresse der Antwort", () => {
 
 test("AS-3 · Sheet: Titel, Eingabe, drei Fragen, Schließen; Text maskiert", () => {
   const h = S.html({ ticker: "NVDA", name: "NVIDIA" });
-  assert.match(h, /Atlas zu NVIDIA/);
+  assert.match(h, /<em class="vu-as-kick">Vision Universe<\/em><b id="vu-as-t"><span class="vu-as-vh">Vision Universe <\/span>KI zu NVIDIA<\/b>/);
+  assert.doesNotMatch(h, /Atlas/, "sichtbarer Name ist Vision Universe KI");
   assert.match(h, /placeholder="Frag etwas zu NVIDIA …"/);
   assert.match(h, /bezieht sich auf diese Aktie/);
   assert.equal((h.match(/class="vu-as-chip"/g) || []).length, 3);
