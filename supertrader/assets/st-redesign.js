@@ -483,7 +483,7 @@
       var S = {}; sum.strategies.forEach(function (s) { S[s.candidateId] = s; });
       hero(by, sum.dataQuality && sum.dataQuality.securities, false);
       if (window.VUNavigation && window.VUNavigation.datenstand && sum.asOf) window.VUNavigation.datenstand({ datum: sum.asOf, zeilen: [['Supertrader', 'Erkennung auf Tagesschlusskursen vom ' + dDe(sum.asOf)], ['Marktlage', rg && rg.asOf ? 'Stand ' + dDe(rg.asOf) : 'nicht verfügbar', !!(rg && rg.asOf)]] });
-      railHost.innerHTML = stpSh('Die Trader', { id: 'stp-tr', href: '/supertrader/strategies/', link: 'Alle ' + list.length }) + '<div class="stp-rail" role="list" aria-label="Die ' + list.length + ' Methoden">' + list.map(traderTile).join('') + '</div>';
+      railHost.innerHTML = stpSh('Die Trader', { id: 'stp-tr', href: '/supertrader/strategies/', link: 'Alle ' + list.length }) + '<div class="stp-rail" role="group" aria-label="Die ' + list.length + ' Methoden">' + list.map(traderTile).join('') + '</div>';
       onTap(railHost, 'data-k-method', function (cid) { if (S[cid]) methodSheet(S[cid]); });
       /* Plan fertig: Zone und Ungültig-Marke stehen; sortiert nach Abstand zur Zone heute, eine Zeile je Aktie. */
       var rows = []; Object.keys(sum.top || {}).forEach(function (k) { (sum.top[k] || []).forEach(function (r) { if (r.s === 'MODELED_TRADE_PLAN') rows.push(r); }); });

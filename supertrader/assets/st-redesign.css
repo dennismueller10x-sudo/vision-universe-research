@@ -732,7 +732,7 @@ html[data-theme="dark"] .st-x-today,html[data-theme="dark"] .st-x-hero{backgroun
 .stp-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 14px;margin:26px 0 10px;scroll-margin-top:110px}
 .stp-sh h2{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:0;color:var(--stp-ink)}
 .stp .stp-more{position:relative;font-size:13px;font-weight:700;color:var(--stp-mut);white-space:nowrap}
-.stp a.stp-more::after{content:"";position:absolute;inset:-14px -6px}
+.stp a.stp-more{display:inline-block;padding:13px 0;margin:-13px 0}
 .stp-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 14px;scrollbar-width:none;overscroll-behavior-x:contain}
 .stp-rail>*{scroll-snap-align:start;flex:none}
 /* Heute (Prototyp: Kachel p16, Trichter 100/62/38 %, Zahl 34 px) */
