@@ -4,7 +4,7 @@
 
 | | |
 |---|---|
-| Stand der Messung | 2026-11-16T09:29:57.000Z |
+| Stand der Messung | 2026-11-16T15:40:14.000Z |
 | Bestand | `CANONICAL_HISTORY` |
 | Studienlogik | `1.0.0` · Reihen `vu-return-series-1.0.0` · Vergleich `vu-return-basis-comparison-1.0.0` |
 | Entscheidung | **PENDING_METHOD_DECISION** |
@@ -244,10 +244,10 @@ Die Momentumnote wird auf beiden Basen aus denselben sechs Komponenten und dense
 
 | Strategie | Treffer auf Kursrendite | auf Gesamtrendite | fallen heraus | kommen hinzu | Wechselanteil |
 |---|---:|---:|---:|---:|---:|
-| Momentum Leader (`momentum-leader`) | 357 | 358 | 11 | 12 | 6,4 % |
-| Quality Momentum (`quality-momentum`) | 43 | 42 | 1 | 0 | 2,3 % |
-| Future Leader (`future-leader`) | 17 | 17 | 0 | 0 | 0,0 % |
-| Value Momentum (`value-momentum`) | 227 | 226 | 3 | 2 | 2,2 % |
+| Momentum Leader (`momentum-leader`) | 358 | 359 | 11 | 12 | 6,4 % |
+| Quality Momentum (`quality-momentum`) | 60 | 59 | 1 | 0 | 1,7 % |
+| Future Leader (`future-leader`) | 22 | 22 | 0 | 0 | 0,0 % |
+| Value Momentum (`value-momentum`) | 229 | 227 | 5 | 3 | 3,5 % |
 
 Keine Produktionsstrategie wurde dabei überschrieben. Die Simulation läuft neben der Produktion.
 

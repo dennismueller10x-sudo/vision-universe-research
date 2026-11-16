@@ -1,6 +1,6 @@
 {
  "schemaVersion": "return-basis-universe-study-1.0.0",
- "generatedAt": "2026-11-16T09:29:57.000Z",
+ "generatedAt": "2026-11-16T15:40:14.000Z",
  "versions": {
   "study_logic": "1.0.0",
   "return_series": "vu-return-series-1.0.0",
@@ -3848,11 +3848,11 @@
    "STRATEGY_IMPACT": {
     "momentum-leader": {
      "label": "Momentum Leader",
-     "MEMBERS_ON_PRICE_RETURN": 357,
-     "MEMBERS_ON_TOTAL_RETURN": 358,
+     "MEMBERS_ON_PRICE_RETURN": 358,
+     "MEMBERS_ON_TOTAL_RETURN": 359,
      "LEAVING": 11,
      "ENTERING": 12,
-     "MEMBERSHIP_CHURN_SHARE": 0.0642,
+     "MEMBERSHIP_CHURN_SHARE": 0.0641,
      "leavingExamples": [
       "CACI",
       "JOE",
@@ -3880,11 +3880,11 @@
     },
     "quality-momentum": {
      "label": "Quality Momentum",
-     "MEMBERS_ON_PRICE_RETURN": 43,
-     "MEMBERS_ON_TOTAL_RETURN": 42,
+     "MEMBERS_ON_PRICE_RETURN": 60,
+     "MEMBERS_ON_TOTAL_RETURN": 59,
      "LEAVING": 1,
      "ENTERING": 0,
-     "MEMBERSHIP_CHURN_SHARE": 0.0233,
+     "MEMBERSHIP_CHURN_SHARE": 0.0167,
      "leavingExamples": [
       "SAM"
      ],
@@ -3892,8 +3892,8 @@
     },
     "future-leader": {
      "label": "Future Leader",
-     "MEMBERS_ON_PRICE_RETURN": 17,
-     "MEMBERS_ON_TOTAL_RETURN": 17,
+     "MEMBERS_ON_PRICE_RETURN": 22,
+     "MEMBERS_ON_TOTAL_RETURN": 22,
      "LEAVING": 0,
      "ENTERING": 0,
      "MEMBERSHIP_CHURN_SHARE": 0,
@@ -3902,19 +3902,22 @@
     },
     "value-momentum": {
      "label": "Value Momentum",
-     "MEMBERS_ON_PRICE_RETURN": 227,
-     "MEMBERS_ON_TOTAL_RETURN": 226,
-     "LEAVING": 3,
-     "ENTERING": 2,
-     "MEMBERSHIP_CHURN_SHARE": 0.022,
+     "MEMBERS_ON_PRICE_RETURN": 229,
+     "MEMBERS_ON_TOTAL_RETURN": 227,
+     "LEAVING": 5,
+     "ENTERING": 3,
+     "MEMBERSHIP_CHURN_SHARE": 0.0349,
      "leavingExamples": [
       "NBR",
+      "MCRI",
       "IART",
+      "UAL",
       "CPHC"
      ],
      "enteringExamples": [
       "MIDD",
-      "SPOK"
+      "SPOK",
+      "IIPR"
      ]
     }
    }
@@ -12170,5 +12173,5 @@
   "METHODOLOGY_DECISION_READY": "FAIL",
   "QUANT_V2_MOMENTUM_RETURN_BASIS": "PENDING_METHOD_DECISION"
  },
- "runtimeMs": 29360
+ "runtimeMs": 27956
 }
