@@ -98,6 +98,36 @@
     return gap > STALE_INSTANT_DAYS ? null : entry;
   }
 
+  /* Durchschnittliche Bilanzsumme passend zum TTM-Fenster (Befund b3, 16.11.2026).
+   *
+   * Eine TTM-Stromgroesse (Rohertrag, Ergebnis, Cashflow der letzten vier
+   * Quartale) wird durch den Durchschnitt der Bilanzsumme AM ANFANG und AM
+   * ENDE DESSELBEN Fensters geteilt. Bisher waren es die zwei juengsten
+   * Geschaeftsjahresstichtage: endet das TTM-Fenster im dritten Quartal,
+   * lag der Nenner bis zu drei Quartale daneben. Stichtage aus Jahres- und
+   * Quartalsreihe zusammen; Ende hoechstens 10 Tage, Anfang hoechstens 20
+   * Tage vom Soll (52/53-Wochen-Jahre). Fehlt der Anfang, zaehlt das Ende
+   * allein; fehlt das Ende oder gibt es kein TTM-Fenster, null - der
+   * Aufrufer faellt dann auf die Geschaeftsjahre zurueck. */
+  var ASSET_END_TOLERANCE_DAYS = 10, ASSET_START_TOLERANCE_DAYS = 20;
+  function instantNear(series, target, tolerance) {
+    var best = null, bestGap = Infinity, t = Date.parse(target);
+    series.forEach(function (entry) {
+      var gap = Math.abs(Date.parse(entry.end) - t) / 86400000;
+      if (Number.isFinite(gap) && gap <= tolerance && gap < bestGap) { best = entry; bestGap = gap; }
+    });
+    return best;
+  }
+  function ttmAverageAssets(series, referenceEnd, ttmWindow) {
+    if (!ttmWindow || typeof referenceEnd !== "string") return null;
+    var end = instantNear(series, referenceEnd, ASSET_END_TOLERANCE_DAYS);
+    if (!end || !finite(end.value)) return null;
+    var startDate = new Date(Date.parse(referenceEnd) - 365 * 86400000).toISOString().slice(0, 10);
+    var start = instantNear(series, startDate, ASSET_START_TOLERANCE_DAYS);
+    if (start && finite(start.value)) return { value: (start.value + end.value) / 2, basis: "TTM_WINDOW" };
+    return { value: end.value, basis: "TTM_END_ONLY" };
+  }
+
   /* A compound growth rate across a sign change has no meaning, so it is
      null rather than a number that happens to compute. */
   function cagr(series, years) {
@@ -243,6 +273,7 @@
     [revenueT, netIncomeT, ocfT, pretaxT, operatingIncomeT, grossT, ebitdaT, fcfT].forEach(function (entry) {
       if (entry) neueste(entry.end);
     });
+    var ttmWindow = referenceEnd !== null;
     if (!referenceEnd) {
       [revenueA, netIncomeA, ocfA, pretaxA, epsA, fcfA, assetsA, equityA].forEach(function (series) {
         if (series.length) neueste(series[series.length - 1].end);
@@ -255,7 +286,10 @@
     var latestAssetsEntry = periodAligned(assetsA[assetsA.length - 1], referenceEnd),
       latestAssets = latestAssetsEntry ? latestAssetsEntry.value : null,
       priorAssets = assetsA.length > 1 ? assetsA[assetsA.length - 2].value : null,
-      averageAssets = finite(latestAssets) && finite(priorAssets) ? (latestAssets + priorAssets) / 2 : latestAssets,
+      windowAssets = ttmAverageAssets(assetsA.concat(quarterSeries(doc, "total_assets", cutoff)), referenceEnd, ttmWindow),
+      averageAssets = windowAssets ? windowAssets.value
+        : finite(latestAssets) && finite(priorAssets) ? (latestAssets + priorAssets) / 2 : latestAssets,
+      averageAssetsBasis = windowAssets ? windowAssets.basis : finite(averageAssets) ? "FISCAL_YEARS" : null,
       latestEquityEntry = periodAligned(equityA[equityA.length - 1], referenceEnd),
       latestEquity = latestEquityEntry ? latestEquityEntry.value : null;
 
@@ -448,6 +482,8 @@
          darf nicht "Stand 2017" sagen, waehrend sie gegen 2025 rechnet. */
       fundamentalsAsOf: referenceEnd,
       referenceEnd: referenceEnd,
+      /* Nenner der Rendite auf die Bilanzsumme (Befund b3): TTM_WINDOW, TTM_END_ONLY oder FISCAL_YEARS. */
+      averageAssetsBasis: averageAssetsBasis,
       /* Ebenso die Historientiefe: sie speist `historyDepth` in der
          Konfidenz. Ohne Umsatzreihe zaehlt sie die Geschaeftsjahre, fuer
          die das Dokument ueberhaupt eine Kernzahl fuehrt - vorher war das

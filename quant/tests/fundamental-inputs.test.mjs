@@ -339,3 +339,43 @@ test("welche Rohwerte am Boersenwert haengen, sagt das Verhalten", () => {
       id + " steht in der Liste, entsteht aber auch ohne Boersenwert");
   }
 });
+
+/* Befund b3 (16.11.2026): Die TTM-Renditen auf die Bilanzsumme teilen durch den Durchschnitt der Bilanzsumme am
+   Anfang und am Ende DESSELBEN TTM-Fensters, nicht durch die zwei juengsten Geschaeftsjahresstichtage. */
+test("return on assets divides by the average of the assets at the start and end of the TTM window", () => {
+  const base = doc();
+  const q3 = "2026-09-30", filed = "2026-11-05";
+  const d = {
+    ...base,
+    quarterly: {
+      ...base.quarterly,
+      total_assets: [["2025-09-30", 2150], ["2025-12-31", 2200], ["2026-03-31", 2300], ["2026-06-30", 2400], [q3, 2500]]
+        .map(([end, value]) => quarter(end, value, filed))
+    },
+    ttm: { ...base.ttm, revenue: ttm(q3, 1600, filed), net_income: ttm(q3, 240, filed), pretax_income: ttm(q3, 300, filed) }
+  };
+  const out = Inputs.compute(d, "2026-11-10", 1000);
+  assert.equal(out.averageAssetsBasis, "TTM_WINDOW");
+  // (2150 + 2500) / 2 = 2325, nicht (2100 + 2200) / 2 = 2150 aus den Geschaeftsjahren 2024 und 2025.
+  assert.ok(Math.abs(out.raws.roaTtm - 240 / 2325) < 1e-12);
+  assert.ok(Math.abs(out.raws.pretaxRoaTtm - 300 / 2325) < 1e-12);
+});
+
+test("without an instant at the start of the window the end alone counts; without one at the end the fiscal years do", () => {
+  const base = doc();
+  const filed = "2026-11-05";
+  const endOnly = { ...base, quarterly: { ...base.quarterly, total_assets: [quarter("2026-09-30", 2500, filed)] },
+    ttm: { ...base.ttm, net_income: ttm("2026-09-30", 240, filed), revenue: ttm("2026-09-30", 1600, filed) } };
+  const a = Inputs.compute(endOnly, "2026-11-10", 1000);
+  assert.equal(a.averageAssetsBasis, "TTM_END_ONLY");
+  assert.ok(Math.abs(a.raws.roaTtm - 240 / 2500) < 1e-12);
+  // Das Basisdokument: TTM endet am Geschaeftsjahresende 2025, Anfang 2024 - beides Jahresstichtage, also das Fenster.
+  const b = Inputs.compute(base, CUTOFF, 1000);
+  assert.equal(b.averageAssetsBasis, "TTM_WINDOW");
+  assert.ok(Math.abs(b.raws.roaTtm - 220 / 2150) < 1e-12);
+  // Kein Stichtag am Fensterende (Quartalsbilanz fehlt): Rueckfall auf die zwei juengsten Geschaeftsjahre.
+  const noEnd = { ...base, ttm: { ...base.ttm, net_income: ttm("2026-03-31", 230, "2026-05-01"), revenue: ttm("2026-03-31", 1550, "2026-05-01") } };
+  const c = Inputs.compute(noEnd, CUTOFF, 1000);
+  assert.equal(c.averageAssetsBasis, "FISCAL_YEARS");
+  assert.ok(Math.abs(c.raws.roaTtm - 230 / 2150) < 1e-12);
+});
