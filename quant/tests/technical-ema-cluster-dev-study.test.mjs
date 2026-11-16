@@ -3,7 +3,27 @@ import assert from 'node:assert/strict';
 import { PLAN, division, selectSample, aggregateCell } from '../../scripts/technical/ema-cluster-dev-study.mjs';
 import { run } from '../../scripts/technical/ema-cluster-study.mjs';
 import { createRequire } from 'node:module';
+import { archiveBytes, objectRequests } from '../../scripts/technical/ema-cluster-archive.mjs';
+import { createSnapshotStore } from '../../scripts/supertrader/snapshot/store.mjs';
 const require = createRequire(import.meta.url), S = require('../engines/research-studies.cjs');
+test('archive reuses immutable content-addressed storage and verifies every restored byte', async () => {
+  const objects = new Map(), driver = { async head(k) { return objects.has(k) ? {} : null; }, async get(k) { return objects.get(k) || null; }, async put(k, b) { objects.set(k, b); } };
+  const store = createSnapshotStore({ driver }), b = Buffer.from('existing sealed research package');
+  const { createHash } = await import('node:crypto'), hash = createHash('sha256').update(b).digest('hex');
+  const r = await archiveBytes(store, b, hash); assert.equal(r.restored, true); assert.equal(objects.size, 1);
+  assert.deepEqual(await archiveBytes(store, b, hash), r); assert.equal(objects.size, 1);
+  await assert.rejects(archiveBytes(store, b, '0'.repeat(64)), /INPUT_HASH/);
+  driver.get = async () => Buffer.from('corrupt'); await assert.rejects(archiveBytes(store, b, hash), /HASH_MISMATCH|OBJECT_CONFLICT/);
+});
+test('archive transfer signatures bind only the chosen research object and exact ciphertext', () => {
+  const env = { VU_HISTORY_S3_ENDPOINT: 'https://storage.example.test', VU_HISTORY_S3_BUCKET: 'research', VU_HISTORY_S3_ACCESS_KEY_ID: 'test-id', VU_HISTORY_S3_SECRET_ACCESS_KEY: 'never-export-this' };
+  const store = createSnapshotStore({ driver: {} }), hash = 'a'.repeat(64);
+  const r = objectRequests(env, store, hash, 123, new Date('2026-11-16T12:00:00Z'));
+  assert.equal(r.requests.PUT.headers['x-amz-content-sha256'], hash); assert.equal(r.requests.PUT.headers['content-length'], '123');
+  assert.ok(r.requests.PUT.url.endsWith('/research-snapshots/supertrader/sts1/objects/' + hash + '.bin'));
+  assert.equal(r.requests.GET.url, r.requests.PUT.url); assert.ok(!JSON.stringify(r).includes(env.VU_HISTORY_S3_SECRET_ACCESS_KEY));
+  assert.notEqual(r.requests.PUT.headers.authorization, r.requests.GET.headers.authorization);
+});
 function candidates() {
   return ['ACTIVE', 'DELISTED'].flatMap(cohort => Array.from({ length: 220 }, (_, i) => ({ listingId: cohort + '-' + i,
     cik: null, instrumentClass: 'EQUITY_COMMON', reusedLater: false, bars: 900, hasStudyBars: true, cohort,

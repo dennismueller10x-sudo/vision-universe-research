@@ -55,7 +55,8 @@ on:
         required: false
         default: portfolios
         type: choice
-        options: [portfolios, holdout-quant, ema-cluster-dev]
+        options: [portfolios, holdout-quant, ema-cluster-dev, ema-cluster-archive]
+      ema_archive_metadata: {description: 'EMA-Archiv: Phase und bestehende Paket-Pruefsummen, keine privaten Daten', required: false, default: '', type: string}
       reviewer_public_key_b64: {description: 'portfolio: Nur holdout-quant: oeffentlicher RSA-Schluessel (PEM, base64 in einer Zeile) der Steuerung', required: false, default: '', type: string}
       phase: {description: 'labor: dev, test oder holdout', required: false, default: dev}
       max_weeks: {description: 'elliott-register: Hoechstens so viele fehlende Wochen nachholen (1-4)', default: '2'}
@@ -255,7 +256,7 @@ jobs:
             printf '%s' "$REVIEWER_B64" | base64 -d > "$RUNNER_TEMP/holdout/reviewer.pem"
             openssl pkey -pubin -in "$RUNNER_TEMP/holdout/reviewer.pem" -noout || { echo "REVIEWER_KEY_NOT_A_PUBLIC_KEY"; exit 2; }
           fi
-          if [ "${IN_MODE:-}" = "ema-cluster-dev" ]; then m=ema-cluster-dev; fi
+          case "${IN_MODE:-}" in ema-cluster-dev|ema-cluster-archive) m="$IN_MODE";; esac
           echo "mode=${m:-portfolios}" >> "$GITHUB_OUTPUT"
           echo "Modus: ${m:-portfolios}"
 
@@ -270,13 +271,13 @@ jobs:
         run: |
           set -euo pipefail
           required="VU_HISTORY_S3_ENDPOINT VU_HISTORY_S3_BUCKET VU_HISTORY_S3_ACCESS_KEY_ID VU_HISTORY_S3_SECRET_ACCESS_KEY"
-          if [ "$MODE" != "ema-cluster-dev" ]; then required="$required V13_ARCHIVE_PRIVATE_KEY"; fi
+          if [[ "$MODE" != ema-cluster-* ]]; then required="$required V13_ARCHIVE_PRIVATE_KEY"; fi
           for v in $required; do
             if [ -z "${!v}" ]; then echo "::error::$v fehlt"; exit 1; fi
           done
 
       - name: Lesender Vorabcheck (Nullkostengrenze)
-        if: steps.m.outputs.mode != 'ema-cluster-dev'
+        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') }}
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -288,7 +289,7 @@ jobs:
           --out "$RUNNER_TEMP/portfolio-preflight.json"
 
       - name: Tagesbalken aus der Historienablage (nur Runner)
-        if: steps.m.outputs.mode != 'ema-cluster-dev'
+        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') }}
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -302,7 +303,7 @@ jobs:
           --report "$RUNNER_TEMP/portfolio-sync.json"
 
       - name: Delistete Titel aus dem V13-Archiv (privater Schluessel nur in diesem Schritt)
-        if: steps.m.outputs.mode != 'ema-cluster-dev'
+        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') }}
         env:
           VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
           VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
@@ -323,7 +324,7 @@ jobs:
           echo "Reihen: $(find "$(dirname "$hit")" -maxdepth 1 -name '*.json' | wc -l)"
 
       - name: SEC-Fundamentaldaten wie erstmals eingereicht (oeffentlich, companyfacts.zip)
-        if: steps.m.outputs.mode != 'ema-cluster-dev'
+        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') }}
         run: |
           set -euo pipefail
           python3 scripts/quant/portfolio/build_pit_fundamentals.py --out "$RUNNER_TEMP/pit-fundamentals" --bulk --workers 4
@@ -383,11 +384,30 @@ jobs:
           node --max-old-space-size=12000 scripts/technical/ema-cluster-dev-study.mjs --out "$X" --reviewer-key "$X/reviewer.pem"
           find "$X" -maxdepth 1 -type f -delete
 
+      - name: Bestehendes EMA-Paket privat archivieren und wiederherstellen
+        if: steps.m.outputs.mode == 'ema-cluster-archive'
+        env:
+          VU_HISTORY_S3_ENDPOINT: ${{ secrets.VU_HISTORY_S3_ENDPOINT }}
+          VU_HISTORY_S3_BUCKET: ${{ secrets.VU_HISTORY_S3_BUCKET }}
+          VU_HISTORY_S3_REGION: ${{ secrets.VU_HISTORY_S3_REGION }}
+          VU_HISTORY_S3_ACCESS_KEY_ID: ${{ secrets.VU_HISTORY_S3_ACCESS_KEY_ID }}
+          VU_HISTORY_S3_SECRET_ACCESS_KEY: ${{ secrets.VU_HISTORY_S3_SECRET_ACCESS_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          REVIEWER_B64: ${{ inputs.reviewer_public_key_b64 }}
+          EMA_ARCHIVE_METADATA: ${{ inputs.ema_archive_metadata }}
+        run: |
+          set -euo pipefail
+          umask 077
+          X="$RUNNER_TEMP/ema-cluster"
+          mkdir -p "$X/upload"
+          printf '%s' "$REVIEWER_B64" | base64 -d > "$X/reviewer.pem"
+          node scripts/technical/ema-cluster-archive.mjs --out "$X/upload" --reviewer-key "$X/reviewer.pem"
+
       - uses: actions/upload-artifact@v4
-        if: steps.m.outputs.mode == 'holdout-quant' || steps.m.outputs.mode == 'ema-cluster-dev'
+        if: steps.m.outputs.mode == 'holdout-quant' || startsWith(steps.m.outputs.mode, 'ema-cluster-')
         with:
-          name: ${{ steps.m.outputs.mode == 'ema-cluster-dev' && 'ema-cluster-dev' || 'holdout-quant' }}-${{ github.run_id }}
-          path: ${{ runner.temp }}/${{ steps.m.outputs.mode == 'ema-cluster-dev' && 'ema-cluster/upload' || 'holdout/upload' }}
+          name: ${{ startsWith(steps.m.outputs.mode, 'ema-cluster-') && steps.m.outputs.mode || 'holdout-quant' }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/${{ startsWith(steps.m.outputs.mode, 'ema-cluster-') && 'ema-cluster/upload' || 'holdout/upload' }}
           retention-days: 7
           if-no-files-found: error
 
@@ -456,7 +476,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: E3-Phase rechnen (Protokoll eingefroren, Hash geprueft)
-        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && steps.m.outputs.mode != 'ema-cluster-dev' && !startsWith(steps.m.outputs.mode, 'edge2')
+        if: steps.m.outputs.mode != 'portfolios' && steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-') && !startsWith(steps.m.outputs.mode, 'edge2')
         env:
           PHASE: ${{ steps.m.outputs.mode }}
         run: |
@@ -469,7 +489,7 @@ jobs:
           rm -rf "$RUNNER_TEMP/priv" "$RUNNER_TEMP/canonical-history"
 
       - name: Tests und Datenhygiene
-        if: steps.m.outputs.mode != 'ema-cluster-dev'
+        if: ${{ !startsWith(steps.m.outputs.mode, 'ema-cluster-') }}
         run: |
           node --test quant/tests/portfolio-standard.test.mjs quant/tests/model-portfolios-result.test.mjs workers/vu-account/tests/backtests.test.mjs
           # Der Hygiene-Check scannt das ganze Repository. Fundstellen ausserhalb der eigenen Ausgabepfade bestehen schon auf main
@@ -482,7 +502,7 @@ jobs:
           fi
 
       - name: Ergebnis auf den aktuellen Zweig committen
-        if: steps.m.outputs.mode != 'holdout-quant' && steps.m.outputs.mode != 'ema-cluster-dev'
+        if: steps.m.outputs.mode != 'holdout-quant' && !startsWith(steps.m.outputs.mode, 'ema-cluster-')
         env:
           MODE: ${{ steps.m.outputs.mode }}
         run: |
