@@ -57,16 +57,21 @@ const prozent = (v) => (v == null ? '–' : (v < 0 ? '−' : '') + de(Math.abs(v
 // "So zeigt Vision Universe <Aktie>": Kennzahlen-Kacheln, echte App-Screens vom Erscheinungstag, Gesundheitscheck, 13F.
 function datenBox(t, a) {
   const d = a.daten.aktien[t], f = d.fonds, kurz = esc(d.name.split(' ')[0].replace(/,$/, ''));
+  // Junge Notierungen (z. B. Börsengang im laufenden Jahr): Abstand zum Hoch aus der eingefrorenen Kursreihe seit dem
+  // ersten Handelstag; Kacheln ohne Wert entfallen, statt Striche zu zeigen.
+  const jung = d.abstandHoch == null && d.serie?.length >= 20;
+  const hoch = jung ? d.kurs / Math.max(...d.serie.map((x) => x[1])) - 1 : d.abstandHoch;
   const kacheln = [
     [`Schlusskurs ${datumDE(d.kursStand).slice(0, 6)}`, de(d.kurs, 2) + '&nbsp;$', d.r12m == null ? '' : pill(d.r12m, pct(d.r12m) + ' in 12&nbsp;Monaten'), 'gross'],
-    ['Abstand zum 52-Wochen-Hoch', pct(d.abstandHoch), ''],
-    ['Marktwert', usd(d.marktwert), ''],
-    ['Umsatz, letzte 4 Quartale', usd(d.umsatzTTM), d.wachstum == null ? '' : pill(d.wachstum, pct(d.wachstum))],
-    ['Nettomarge', prozent(d.nettomarge), ''],
-    d.kgv == null && d.kuv == null ? ['KGV', '–', '<em>noch keine Jahreszahlen</em>']
+    [jung ? `Abstand zum Hoch seit ${datumDE(d.serie[0][0]).slice(0, 6)}` : 'Abstand zum 52-Wochen-Hoch', hoch == null ? null : pct(hoch), ''],
+    ['Marktwert', d.marktwert == null ? null : usd(d.marktwert), ''],
+    ['Umsatz, letzte 4 Quartale', d.umsatzTTM == null ? null : usd(d.umsatzTTM), d.wachstum == null ? '' : pill(d.wachstum, pct(d.wachstum))],
+    ['Nettomarge', d.nettomarge == null ? null : prozent(d.nettomarge), ''],
+    d.kgv == null && d.kuv == null ? ['KGV', null, '']
       : [d.kgv == null ? 'KUV (Kurs-Umsatz)' : 'KGV', d.kgv == null ? de(d.kuv, 1) : de(d.kgv, 1), d.kgv == null ? '<em>KGV entfällt: Verlust</em>' : ''],
-    ['Trend laut Technik-Engine', TREND[d.trend] || '–', ''],
-  ];
+    ['Trend laut Technik-Engine', TREND[d.trend] || null, ''],
+  ].filter(([, v]) => v != null);
+  const ohneZahlen = d.umsatzTTM == null && d.kgv == null && d.kuv == null;
   const screens = (a.appScreens?.[t] || []).map((s) => `<a class="in-phone" href="${s.href}"><span class="in-phone-rahmen"><img src="${s.src}" alt="${esc(s.label)}-Ansicht von ${esc(d.name)} in der Vision-Universe-App" loading="eager" decoding="async" width="390" height="844"></span><b>${esc(s.label)}</b><span>${esc(s.text)}</span></a>`).join('');
   const anteil = f ? Math.round((f.kaeufer / Math.max(1, f.kaeufer + f.verkaeufer)) * 100) : 0;
   const fondsHtml = f ? `<div class="in-vu-fonds"><b class="in-vu-label">Große Fonds · 13F zum ${datumDE(f.stichtag)}</b>
@@ -76,13 +81,13 @@ function datenBox(t, a) {
     <ul>${f.genannt.slice(0, 4).map((g) => `<li><span>${esc(g.name)}</span><em class="${g.art === 'verkauft' || g.art === 'reduced' ? 'minus' : 'plus'}">${ART[g.art] || esc(g.art)}</em></li>`).join('')}</ul></div>` : '';
   return `<section class="in-vu" aria-label="So zeigt Vision Universe ${esc(d.name)}">
   <header class="in-vu-kopf">${d.logo ? `<img src="${d.logo}" alt="" width="48" height="48">` : ''}<div><span class="in-kicker">Aus der App</span><b>So zeigt Vision Universe ${kurz}</b><span>${t} · Stand ${datumDE(d.kursStand)} · eingefroren am Erscheinungstag</span></div></header>
-  <div class="in-vu-kacheln">${kacheln.map(([k, v, z, g]) => `<div class="in-kachel${g ? ' in-kachel--gross' : ''}"><span>${k}</span><b>${v}</b>${z}</div>`).join('')}</div>
+  <div class="in-vu-kacheln${kacheln.length <= 4 ? ' in-vu-kacheln--wenig' : ''}"${kacheln.length <= 4 ? ` style="--in-n:${kacheln.length - 1}"` : ''}>${kacheln.map(([k, v, z, g]) => `<div class="in-kachel${g ? ' in-kachel--gross' : ''}"><span>${k}</span><b>${v}</b>${z}</div>`).join('')}</div>
   ${screens ? `<div class="in-phones">${screens}</div>` : ''}
   <div class="in-vu-zeile">
-    <div class="in-vu-health"><b class="in-vu-label">Gesundheitscheck</b><div>${d.gesundheit.map(([k, v]) => `<span class="${TON(v)}"><i>${k}</i>${esc(v)}</span>`).join('')}</div></div>
+    ${d.gesundheit.length ? `<div class="in-vu-health"><b class="in-vu-label">Gesundheitscheck</b><div>${d.gesundheit.map(([k, v]) => `<span class="${TON(v)}"><i>${k}</i>${esc(v)}</span>`).join('')}</div></div>` : ''}
     ${fondsHtml}
   </div>
-  <div class="in-vu-fuss"><a class="vu-btn vu-btn--sm" href="/aktie/#/${t}">${kurz} live in Vision Universe${ICON.next}</a><p class="in-klein">Kurse bis ${datumDE(d.kursStand)}, Geschäftszahlen aus SEC-Meldungen bis ${ttm(d.ttmBis)}. Fondsdaten: Pflichtmeldungen an die SEC (Angabe Dritter). Die App zeigt den aktuellen Stand.</p></div>
+  <div class="in-vu-fuss"><a class="vu-btn vu-btn--sm" href="/aktie/#/${t}">${kurz} live in Vision Universe${ICON.next}</a><p class="in-klein">Kurse bis ${datumDE(d.kursStand)}${d.ttmBis ? `, Geschäftszahlen aus SEC-Meldungen bis ${ttm(d.ttmBis)}` : ''}.${ohneZahlen ? ' Für Umsatz, Marge und Bewertung über vier Quartale liegen noch nicht genug SEC-Meldungen vor.' : ''} Fondsdaten: Pflichtmeldungen an die SEC (Angabe Dritter). Die App zeigt den aktuellen Stand.</p></div>
 </section>`;
 }
 
