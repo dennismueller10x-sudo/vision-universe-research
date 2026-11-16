@@ -156,7 +156,10 @@ Alles frei lesbar und für Google und KI-Suchen gebaut (statisches HTML, `NewsAr
 2. `products/insights/artikel/<datum>-<slug>.json` anlegen (Vorlage: ein bestehender Artikel). Abschnitte als HTML-Absätze;
    der Abschnitt mit `"daten": "<TICKER>"` bekommt danach den App-Teil (Kennzahlen-Kacheln, drei iPhones, Gesundheitscheck, 13F).
 3. Daten einfrieren: `node products/insights/snapshot.mjs <artikel.json>`, App-Screens aufnehmen:
-   `node products/insights/screens.mjs <artikel.json>` (Discover, Fundamental, Hedgefonds je Ticker, nach `insights/img/app/`).
+   `node products/insights/screens.mjs <artikel.json>` (neue Aktienseite `/aktie/#/<T>` im dunklen Design an drei Stellen: Kurs,
+   Analyse aus den Modulen, Das Geschäft; fehlt ein Abschnitt, entfällt die Ansicht, mindestens zwei je Ticker; nach `insights/img/app/`).
+   Die Datenbox im Artikel zeigt nur Kacheln mit Wert; bei jungen Notierungen ohne vier Quartale SEC-Zahlen den Abstand zum
+   Hoch seit dem ersten Handelstag und einen Satz, dass Umsatz, Marge und Bewertung noch fehlen (Owner 16.11.2026).
 4. **Bilder mit Bezug statt Symbolbild** (Owner 09.11.2026): offizielles Pressematerial des Unternehmens oder Produkts
    (Pressefotos, Artwork, Screenshots aus Presseseiten) mit Bildnachweis `quelle` („Bild: Rockstar Games“), sonst eigene
    App-Screens; KI-Bilder nur, wenn es nichts Echtes gibt (`ki: true`, Hinweis „KI-Bild“). Keine Fotos von Privatpersonen.
