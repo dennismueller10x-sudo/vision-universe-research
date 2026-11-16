@@ -67,11 +67,11 @@
 
   var FACTORS = {
     quality: {
-      name: "Gewinn gedeckt & stabil", longName: "Bilanz- & Ergebnisqualität", method: "Quality",
+      name: "Solide Bilanz & Gewinne", longName: "Bilanz- & Ergebnisqualität", method: "Quality",
       question: "Wie belastbar sind Bilanz und ausgewiesene Gewinne?",
-      measures: "Eigenkapitalquote, Verschuldung, ob Gewinne durch echten Zahlungsfluss gedeckt sind, und wie stabil die Marge über die Jahre war.",
+      measures: "Wie solide die Bilanz ist (Schulden, Eigenkapital), wie gut der Gewinn durch Geldzufluss gedeckt ist und ob die Marge in den letzten Jahren eingebrochen ist.",
       notMeasures: "Nicht gemessen wird hier, wie viel ein Unternehmen verdient – das zeigt „Verdient gut“ (Profitabilität).",
-      higher: "Höher heißt: solidere Bilanz, Gewinne besser durch Zahlungsfluss gedeckt, stabilere Marge."
+      higher: "Höher heißt: solidere Bilanz, Gewinn besser durch Geldzufluss gedeckt, kleinere Margeneinbrüche. Steigende Margen zählen hier nicht als Schwäche."
     },
     growth: {
       name: "Ist gewachsen", longName: "Wachstum", method: "Growth",

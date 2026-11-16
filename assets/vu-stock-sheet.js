@@ -119,7 +119,7 @@
   var TREND = { BULLISH: ["Aufwärtstrend", "strong"], BEARISH: ["Abwärtstrend", "weak"], MIXED: ["Gemischt", "mid"], RANGE: ["Seitwärts", "mid"] };
   var PROFILE_KEYS = ["profitability", "growth", "quality", "momentum", "value", "risk"];
   /* Wörter der sechs Eigenschaften: assets/vu-ui.js#PROFILE_LABEL (Test hält sie gleich). */
-  var PROFILE_LABEL = { profitability: "Verdient gut", growth: "Ist gewachsen", quality: "Gewinn gedeckt & stabil", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", risk: "Ruhig für die Branche" };
+  var PROFILE_LABEL = { profitability: "Verdient gut", growth: "Ist gewachsen", quality: "Solide Bilanz & Gewinne", momentum: "Kurs lief gut", value: "Preis im Branchenvergleich", risk: "Ruhig für die Branche" };
   var STRONG = 75; /* assets/vu-ui.js#profileStrong */
   var TRACKS = [["revenue", "Umsatz"], ["net_income", "Gewinn"], ["free_cash_flow", "Cashflow"]];
 

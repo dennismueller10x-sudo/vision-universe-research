@@ -413,7 +413,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   if(view==='aktie-nvda'){
    /* Redesign 2027 (Q07): die bisherigen Inhalte stehen vollstaendig unter den Ausklappern von Schritt 5 und 6. */
    await page.evaluate(()=>document.querySelectorAll('#qx-main details.qv3-more').forEach(d=>{d.open=true;}));
-   /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES PROFILS (Konzept Quant 2026-11, Etiketten 13.11.2026: Verdient gut, Ist gewachsen, Gewinn gedeckt & stabil,
+   /* DIE SIEBEN EIGENSCHAFTEN, IN DER REIHENFOLGE DES PROFILS (Konzept Quant 2026-11, Etiketten 13.11.2026: Verdient gut, Ist gewachsen, Solide Bilanz & Gewinne (16.11.2026),
       Kurs lief gut, Preis im Branchenvergleich, Ruhig für die Branche, Analysten) - dieselben sieben wie in der Engine. Eine Gesamtnote gibt es bewusst nicht. */
    const ids=await page.locator('details.qx-factor[data-factor]').evaluateAll(ns=>ns.map(n=>n.dataset.factor));
    const PROFIL=['profitability','growth','quality','momentum','value','risk','revisions'];

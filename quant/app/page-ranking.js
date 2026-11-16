@@ -13,7 +13,7 @@
   /* SIC-Abteilungen (Standard Industrial Classification), nicht GICS. */
   var DIVISION = { A: "Land- und Forstwirtschaft, Fischerei", B: "Bergbau", C: "Baugewerbe", D: "Verarbeitendes Gewerbe", E: "Transport, Kommunikation, Versorger",
     F: "Großhandel", G: "Einzelhandel", H: "Finanzen, Versicherung, Immobilien", I: "Dienstleistungen", J: "Öffentliche Verwaltung" };
-  var COLS = [["mean", "Gesamtwert"], ["profitability", "Verdient gut"], ["growth", "Ist gewachsen"], ["quality", "Gewinn gedeckt & stabil"],
+  var COLS = [["mean", "Gesamtwert"], ["profitability", "Verdient gut"], ["growth", "Ist gewachsen"], ["quality", "Solide Bilanz & Gewinne"],
     ["momentum", "Kurs lief gut"], ["value", "Preis im Branchenvergleich"], ["risk", "Ruhig für die Branche"]];
   var PAGE = 100;
   var SENTENCE = "Durchschnitt der Profilwerte. Rückwärts geprüft: Aktien mit hohem Gesamtwert lagen früher nicht besser als der Markt – er beschreibt das Profil, er sagt nichts über künftige Kurse.";

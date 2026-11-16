@@ -205,7 +205,7 @@
   }
   /* Konzept Quant 2026-11 (QX06, Screen q-compare): Profil gegen Profil. Chips je Aktie (bis 4), je Eigenschaft ein Balken
      und eine Zahl je Aktie, zwei Sätze, die Kennzahlen-Tabelle aufklappbar, jedes „–“ mit Grund (Entscheidung 9). */
-  var CMP_BETTER = { profitability: "verdient {d}besser", growth: "wächst {d}schneller", quality: "hat die {d}solideren Zahlen", momentum: "läuft am Kurs {d}besser", value: "ist {d}günstiger", risk: "hat den {d}ruhigeren Kurs" };
+  var CMP_BETTER = { profitability: "verdient {d}besser", growth: "wächst {d}schneller", quality: "steht bei Bilanz und Gewinn {d}solider da", momentum: "läuft am Kurs {d}besser", value: "ist {d}günstiger", risk: "hat den {d}ruhigeren Kurs" };
   function cleanName(n) { return String(n || "").replace(/\s*\/[A-Za-z]{2,}\/?$|\/$/g, "").replace(/,?\s+(Holdings?,?\s+Inc\.?|Inc\.?|Corp(oration)?\.?|Co\.?|Ltd\.?|plc|Companies,?\s+Inc\.?)$/i, "").trim(); }
   async function compareV4(main, ctx, selected) {
     var U = global.VUUI, page = el("div", { class: "vu-ui qv3 qk qk-cmp" });
