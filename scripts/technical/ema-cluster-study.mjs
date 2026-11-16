@@ -76,13 +76,13 @@ function summary(rows, field) {
   return { ...stats, positive: obs.filter(r => r[field] > 0).length, negative: obs.filter(r => r[field] < 0).length,
     zero: obs.filter(r => r[field] === 0).length };
 }
-function pValue(s) {
+export function pValue(s) {
   if (s.n < 100 || s.timeClusters < 30 || s.issuerClusters < 2 || !(s.standardError > 0)) return null;
   const z = Math.abs(s.mean / s.standardError), t = 1 / (1 + 0.2316419 * z);
   const tail = 0.3989422804014327 * Math.exp(-z * z / 2) * t * (0.31938153 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
   return Math.min(1, 2 * tail);
 }
-function walkForward(rows, calendar, asOf) {
+export function walkForward(rows, calendar, asOf) {
   const obs = rows.filter(r => r.state === 'OBSERVED' && Number.isFinite(r.benchmarkExcess));
   try {
     const partition = V.buildWalkForward({ calendar: calendar.map(end), trainSize: 252, validationSize: 63, testSize: 126,
@@ -98,7 +98,9 @@ function walkForward(rows, calendar, asOf) {
     return { state: 'NOT_RUN', reason: e.message };
   }
 }
-export function run(input, { mode = 'EMA_CLUSTER', timeframe = '1D', config = {}, costs = { basis: 'PER_SIDE_NOTIONAL', feeBps: 5, slippageBps: 5 } } = {}) {
+export function run(input, { mode = 'EMA_CLUSTER', timeframe = '1D', config = {}, costs = { basis: 'PER_SIDE_NOTIONAL', feeBps: 5, slippageBps: 5 }, eventFrom = null, onCell = null } = {}) {
+  if (eventFrom !== null && (!/^\d{4}-\d{2}-\d{2}$/.test(eventFrom) || eventFrom > input.asOf)) throw new Error('INVALID_EVENT_FROM');
+  if (onCell !== null && typeof onCell !== 'function') throw new Error('INVALID_CELL_OBSERVER');
   if (input.schemaVersion !== 'technical-event-study-input-1.0.0' || input.priceBasis !== 'SPLIT_ADJUSTED_PRICE') throw new Error('CANONICAL_STUDY_INPUT_REQUIRED');
   if (input.currency !== 'USD' || !['PRICE_RETURN', 'TOTAL_RETURN'].includes(input.returnBasis) || input.benchmark?.id !== 'SPY') throw new Error('SPY_SAME_BASIS_REQUIRED');
   if (!Array.isArray(input.calendar) || !input.calendar.length || !Array.isArray(input.listings) || !input.listings.length) throw new Error('STUDY_POPULATION_REQUIRED');
@@ -119,7 +121,7 @@ export function run(input, { mode = 'EMA_CLUSTER', timeframe = '1D', config = {}
     if (mode === 'TEMPLATES' && timeframe !== '1D') throw new Error('TEMPLATES_REQUIRE_DAILY_SNAPSHOTS');
     const detections = mode === 'TEMPLATES' ? templateEvents(l.templateSnapshots, calendar, asOf)
       : segments.flatMap(bars => detect({ ...l, bars }, { asOf, config: cfg, timeframe, mode }));
-    return detections.map((e, k) => ({ ...e,
+    return detections.filter(e => !eventFrom || e.date >= eventFrom).map((e, k) => ({ ...e,
     eventId: [l.listingId, e.type, e.date, k].join('|'), eventType: e.type, listingId: l.listingId,
     occurredAt: e.availableAt, publishedAt: e.availableAt, sourceHash: S.hash({ version: VERSION, config: cfg, event: e, sourceHash: l.sourceHash }) }));
   });
@@ -152,6 +154,8 @@ export function run(input, { mode = 'EMA_CLUSTER', timeframe = '1D', config = {}
         directionAdjustedExcess: Number.isFinite(e.benchmarkExcess) && Number.isFinite(e.grossReturn)
           ? (e.grossReturn - e.benchmarkReturn) * (directions.get(e.eventId) === 'DOWN' ? -1 : 1) + e.netReturn - e.grossReturn : null }));
       const excess = summary(rows, 'benchmarkExcess');
+      // Offline batch studies can persist the exact engine outcomes, never averages of batch statistics.
+      if (onCell) onCell({ eventType: type, horizonTradingDays: h, rows, regimeByDate });
       const regimeNames = [...new Set(rows.map(r => regimeByDate.get(r.signalDate) || 'UNKNOWN'))].sort();
       cells.push({ eventType: type, horizonTradingDays: h, events: rows.length,
         states: rows.reduce((o, r) => (o[r.state] = (o[r.state] || 0) + 1, o), {}), net: summary(rows, 'netReturn'),
@@ -162,7 +166,7 @@ export function run(input, { mode = 'EMA_CLUSTER', timeframe = '1D', config = {}
   }
   const adjusted = V.holm(cells.map(c => c.p ?? 1));
   cells.forEach((c, i) => { c.holmP = c.p === null ? null : adjusted[i]; });
-  const body = { schemaVersion: VERSION, asOf, mode, timeframe, config: cfg, configHash: S.hash(cfg),
+  const body = { schemaVersion: VERSION, asOf, mode, timeframe, ...(eventFrom ? { eventFrom } : {}), config: cfg, configHash: S.hash(cfg),
     codeHashes: Object.fromEntries([['adapter', fileURLToPath(import.meta.url)], ['cluster', require.resolve('../../quant/engines/technical/ema-cluster.js')],
       ['features', require.resolve('../../quant/engines/technical/feature-store.js')], ['formations', require.resolve('../../quant/engines/technical/formations.js')],
       ['templates', require.resolve('../../technical/engine/templates.js')]].map(([key, file]) => [key, S.hash(readFileSync(file, 'utf8'))])),
