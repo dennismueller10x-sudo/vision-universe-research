@@ -1195,7 +1195,7 @@ body.vs .vsp .vs-disclaimer{margin:4px auto 0;max-width:62ch;text-align:center;f
 body.vs .vsp .vu-box:not(.vu-box--lime):not(.vu-box--line):not(.vu-box--ink):not(.vs-mod){background:var(--vsp-tile);border-radius:22px;border:0;color:var(--vsp-ink)}
 body.vs .vsp .vu-box--line{border-radius:22px}
 body.vs .vsp .vu-tile{background:var(--vsp-tile);border-radius:22px}
-body.vs .vsp .vs-intro.vs-head,body.vs .vsp .vs-hero,body.vs .vsp .vs-etfhead{background:var(--vsp-tile);color:var(--vsp-ink);border-radius:22px;padding:16px;
+body.vs .vsp .vs-intro.vs-head,body.vs .vsp .vs-hero{background:var(--vsp-tile);color:var(--vsp-ink);border-radius:22px;padding:16px;
   --ink:var(--vsp-ink);--ink-2:var(--vsp-sec);--muted:var(--vsp-mut);--vu-ink:var(--vsp-ink);--vu-inv:var(--vsp-bg);--vu-card:var(--vsp-card);--vu-mute:var(--vsp-mut);--vu-hair:var(--vsp-track)}
 body.vs .vsp .vs-head .vu-ltag,body.vs .vsp .vs-hero .vs-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.12em;color:var(--vsp-mut)}
 body.vs .vsp .vs-head .vu-lt,body.vs .vsp .vs-hero h1{margin:8px 0 0;font-size:30px;line-height:1;font-weight:900;letter-spacing:-.045em;color:var(--vsp-ink)}
@@ -1239,9 +1239,15 @@ body.vs .vsp .vs-sliders{padding:6px 14px}
 body.vs .vsp .vs-slider input[type=range]{accent-color:#c8f531}
 :root:not([data-theme=dark]) body.vs .vsp .vs-slider input[type=range]{accent-color:#000}
 body.vs .vsp .vs-result{margin:0;padding:0}
-body.vs .vsp .vs-result .vsp-cap span{color:var(--vsp-mut)}
 /* Förderung: Ring in der Kopfkachel (Prototyp #ich ring(64, 150, 14), Inhalt mittig) */
 .vsp-fdhead{display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:14px}
 .vsp-ring{position:relative;display:inline-block;flex:none}
 .vsp-ring svg{transform:rotate(-90deg);display:block}
 .vsp-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+/* Fondsseite: Kopfkachel bleibt dunkel (Kurs, Name weiß) in beiden Schemata, Name als h1 in der Größe des Kopfes */
+body.vs .vsp .vs-etfhead{background:#151516;border-radius:22px}
+.vu-stockhead__name h1.vs-etf-h1{display:block;margin:0;font-size:18px;font-weight:900;letter-spacing:-.02em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+/* Knöpfe: Schrift im Knopf schwarz auf Neongrün (die allgemeine Regel .vs button erbt sonst die Seitenfarbe) */
+body.vs .vsp-btn{color:#101318}body.vs .vsp-btn--bk{color:#fff}body.vs .vsp-btn--ol{color:var(--vsp-ink)}
+/* Urteil im Ergebnis steht auf der Seite (nicht mehr in der dunklen Kachel): Flächen wie die Pillen des Prototyps */
+body.vs .vsp-more{padding:14px 0;margin:-14px 0}
