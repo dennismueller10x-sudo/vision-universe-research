@@ -57,6 +57,10 @@ const ROUTES = [
   ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'], ['Hedgefonds', '/hedgefonds/#/gruppen-kaeufe/insider', 'Gruppen-Käufe'],
   // Portfolios: fordert Dock und Reiter wie jedes Produkt an (seit dem Rahmen nach App-Konzept 2)
   ['Portfolios', '/portfolios/', 'Portfolios'], ['Portfolios', '/portfolios/#/quant', 'Quant'], ['Portfolios', '/portfolios/#/ki', 'KI'],
+  ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'],
+  // Portfolios: fordert das Dock an und traegt seine Reiter im Inhalt (App-Konzept 2, <html data-vu-tabs="inhalt">); die Reiter
+  // sind Adressen (#/, #/quant, #/ki). Das vierte Feld ist der dort aktive Reiter im Inhalt (aria-current="page").
+  ['Portfolios', '/portfolios/', 'Portfolios', 'Übersicht'], ['Portfolios', '/portfolios/#/quant', 'Quant', 'Quant'], ['Portfolios', '/portfolios/#/ki', 'KI', 'KI'],
   // Alte Quant-Unterseiten: Weiterleitungen auf die App unter /quant/ (quant/ui/legacy-redirect.js). Erwartet ist der Reiter
   // am Ziel: Ranking -> #/screener (Screener), Watchlist -> #/aktien (Aktien), Strategien -> #/stile (Anlagestile).
   ['Quant', '/quant/screener/', 'Screener'], ['Quant', '/quant/strategies/', 'Anlagestile'], ['Quant', '/quant/ranking/', 'Screener'],
@@ -130,7 +134,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
      /dev/shm) darf nicht alle folgenden Navigationen derselben Seite mitreissen. */
   let page = null;
   const fresh = async () => { if (page) await page.close().catch(() => {}); page = await ctx.newPage(); };
-  for (const [product, path, expected] of ROUTES) {
+  for (const [product, path, expected, inhaltExpected] of ROUTES) {
     const where = `${product} ${path} @${vpName}`;
     await fresh();
     try {
@@ -146,7 +150,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
           const places = nav ? [...nav.querySelectorAll('a')] : [], uni = nav && nav.querySelector('button.menu'), ub = uni && uni.getBoundingClientRect();
           const tabs = [...document.querySelectorAll('main [role=tablist] a, main [role=tablist] button, main .dp-tabs .dp-tab, main [class*=tabs] a, main [class*=tabs] button')].filter((n) => n.getClientRects().length);
           return { dock: !!nav, places: places.map((a) => a.textContent.trim()), place: places.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
-            uni: !!uni && ub.width >= 56 && ub.height >= 56, stripHidden: !strip || strip.hidden, tabs: tabs.length, overflow: document.documentElement.scrollWidth - innerWidth };
+            uni: !!uni && ub.width >= 56 && ub.height >= 56, stripHidden: !strip || strip.hidden, tabs: tabs.length, overflow: document.documentElement.scrollWidth - innerWidth,
+            current: tabs.filter((n) => n.getAttribute('aria-current') === 'page').map((n) => n.textContent.trim()) };
         });
         if (inhalt) {
           if (!inhalt.dock || inhalt.places.join('|') !== DOCK.join('|') || !inhalt.uni) fail(where, 'Dock ist nicht Home · Discover · [Universe] · News · Ich: ' + JSON.stringify(inhalt));
@@ -155,6 +160,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
           if (!inhalt.stripHidden) fail(where, 'Reiterzeile des Rahmens doppelt zu den Reitern im Inhalt');
           if (inhalt.tabs < 3) fail(where, 'Reiter im Inhalt fehlen: ' + inhalt.tabs);
           if (inhalt.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + inhalt.overflow + ' px');
+          if (inhaltExpected && (inhalt.current[0] !== inhaltExpected || inhalt.current.length > 1)) fail(where, `${pass}: Reiter im Inhalt aktiv ${inhalt.current.join('|') || '-'} statt ${inhaltExpected}`);
           continue;
         }
         const s = await state(page);
@@ -632,6 +638,24 @@ for (const [vpName, width, height] of VIEWPORTS) {
       if ((await inhalt()).own) fail(where, 'Aktienbild behaelt die Reiter im Inhalt');
       await page.goBack(); await settle(page);
       if (!ok(s = await inhalt())) fail(where, 'Zurueck aus dem Aktienbild: ' + JSON.stringify(s));
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Zurueck/Vor ueber Reiter im Inhalt, die Adressen sind (Portfolios, App-Konzept 2): der aktive Reiter folgt der Adresse.
+  const inhaltTab = (pg) => pg.evaluate(() => { const a = [...document.querySelectorAll('main [class*=tabs] a[aria-current=page]')].filter((n) => n.getClientRects().length); return a.length === 1 ? a[0].textContent.trim() : a.length + ' aktiv'; });
+  for (const [start, clicks] of [['/portfolios/', ['Quant', 'KI']]]) {
+    const where = `history ${start} @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + start, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const first = await inhaltTab(page);
+      for (const label of clicks) { await page.locator('main [class*=tabs] a', { hasText: label }).first().click(); await settle(page); if (await inhaltTab(page) !== label) fail(where, 'Klick ' + label + ' markiert nicht'); }
+      await page.goBack(); await settle(page);
+      if (await inhaltTab(page) !== clicks[0]) fail(where, 'Zurueck: ' + await inhaltTab(page));
+      await page.goBack(); await settle(page);
+      if (await inhaltTab(page) !== first) fail(where, 'Zurueck zum Start: ' + await inhaltTab(page));
+      await page.goForward(); await settle(page);
+      if (await inhaltTab(page) !== clicks[0]) fail(where, 'Vor: ' + await inhaltTab(page));
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
