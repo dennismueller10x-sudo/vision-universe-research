@@ -377,7 +377,10 @@
   }
   const dockBus = {state: {}, listeners: []};
   /* Kopf nach Prototyp (Owner 15.11.2026): links der Welten-Wechsler (Icon, Name, Pfeil; oeffnet „Dein Universe“),
-     rechts „i“ (Fenster „Daten & Hinweise“), die Datums-Pille (Fenster „Datenstand“; nur mit echtem Datum), Suche, Profil.
+     rechts KI (neongruener Funke, oeffnet /ask/ mit Fokus auf der Eingabe), Suche, Profil. „i“ und Datums-Pille sind
+     entfallen (Owner 16.11.2026: „das i würde ich rausmachen, weil das sehen wir ja im Menü, ist ja rechtliches und so
+     verknüpft … Und das Datum, das würde ich tatsächlich auch ausblenden, weil jeder erwartet, dass das immer tagesaktuell
+     ist.“); die Fenster „Daten & Hinweise“ und „Datenstand“ bleiben ueber das Seitenende und das Menue erreichbar.
      Home, Ich, Konto und News tragen wie im Prototyp ihren eigenen Namen statt des Produktnamens. */
   const worldOf = loc => {
     const p = loc.pathname;
@@ -395,9 +398,10 @@
     return {label: product.label, icon: (group||{icon:product.icon||product.id}).icon};
   };
   /* Menue „Dein Universe“ nach Prototyp (build.js T.universe): vier Gruppen, je zwei Kacheln nebeneinander. Die Kacheln
-     sind die Produkte aus groups (Steckbriefe); Atlas steht wie im Prototyp in der letzten Gruppe (der Knopf im Kopf
-     entfaellt). Ein Produkt ohne Gruppe landet in der letzten, damit keines fehlt. */
-  const ATLAS = {id: 'atlas', label: 'Atlas', href: '/ask/', icon: 'layers', claim: 'Frag in deinen Worten'};
+     sind die Produkte aus groups (Steckbriefe); die KI (/ask/, interne id atlas) steht wie im Prototyp in der letzten Gruppe.
+     Ihre Kachel traegt „Vision Universe“ als kleine Dachzeile ueber „KI“ (Owner 16.11.2026: „Vision Universe dann klein
+     schreiben, damit das KI sofort ersichtlich ist“). Ein Produkt ohne Gruppe landet in der letzten, damit keines fehlt. */
+  const ATLAS = {id: 'atlas', label: 'KI', kicker: 'Vision Universe', badge: 'Beta', href: '/ask/', icon: 'layers', claim: 'Frag in deinen Worten'};
   const MENU_GROUPS = [['Entdecken', ['discover', 'insights']], ['Analysieren', ['quant', 'fundamental', 'technical', 'hedgefonds', 'elliott']], ['Nach Regeln', ['supertrader', 'portfolios']], ['Finden und vorsorgen', ['screener', 'vorsorge', 'atlas']]];
   const menuGroups = () => {
     const all = groups.filter(g => g.href).concat([ATLAS]), used = new Set(MENU_GROUPS.flatMap(([, ids]) => ids));
@@ -405,9 +409,10 @@
     out[out.length - 1].tiles.push(...all.filter(g => !used.has(g.id)));
     return out;
   };
-  /* Datenstand im Kopf: datum (JJJJ-MM-TT) und Zeilen [Bereich, Text, vorhanden?] fuer das Fenster. Die Seite meldet ihren
-     Stand mit VUNavigation.datenstand({datum, zeilen}); ohne Meldung liest der Rahmen den Kursstand aus dem kleinen
-     Marktlage-Artefakt (asOf = letzter Handelsschluss der Kursdaten). Ohne echtes Datum bleibt die Pille weg. */
+  /* Datenstand fuer das Fenster „Datenstand“: datum (JJJJ-MM-TT) und Zeilen [Bereich, Text, vorhanden?]. Die Seite meldet
+     ihren Stand mit VUNavigation.datenstand({datum, zeilen}); ohne Meldung liest der Rahmen erst beim Oeffnen des Fensters
+     den Kursstand aus dem kleinen Marktlage-Artefakt (asOf = letzter Handelsschluss der Kursdaten). Seit 16.11.2026 ohne
+     Pille im Kopf, daher keine Abfrage beim Laden der Seite. */
   const dataBus = {datum: null, zeilen: [], own: false, notes: [], listeners: []};
   const DAYS = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
   const isoDate = v => { const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v || '')); return m ? {y: +m[1], m: +m[2], d: +m[3], short: m[3] + '.' + m[2] + '.', long: m[3] + '.' + m[2] + '.' + m[1], day: DAYS[new Date(Date.UTC(+m[1], +m[2] - 1, +m[3])).getUTCDay()]} : null; };
@@ -430,7 +435,14 @@
       (foot ? '<p class="vu-fs-text">' + escHtml(foot.text) + '</p>' : '') + extra.map(t => '<p class="vu-fs-text">' + escHtml(t) + '</p>').join('') +
       '<div class="vu-fs-rows">' + links.map(l => '<a class="vu-fs-row" href="' + escHtml(l[1]) + '"><b>' + escHtml(l[0]) + '</b>' + CHEV + '</a>').join('') + '</div>'}, '/infos/');
   };
+  const REGIME = '/quant/data/product/market-regime-v1.json';
   const openDaten = () => {
+    if (!dataBus.own && !dataBus.asked && typeof fetch === 'function') {
+      dataBus.asked = true;
+      return fetch(REGIME).then(r => r.ok ? r.json() : null).then(j => {
+        const k = j && isoDate(j.asOf); if (k && !dataBus.own) { dataBus.datum = j.asOf; dataBus.zeilen = [['Kurse', 'Schluss ' + k.day + ' ' + k.long, true]]; }
+      }).catch(() => {}).then(openDaten);
+    }
     const d = isoDate(dataBus.datum);
     frameSheet({id: 'vu-sh-daten', title: 'Datenstand', body:
       '<p class="vu-fs-sub">Einmal hier statt auf jeder Seite.</p><div class="vu-fs-rows">' +
@@ -445,13 +457,13 @@
          (Musterseite /status/bausteine/, Tests). */
       products: () => PRODUCTS.map(p => ({id: p.id, label: p.label, items: p.items.map(([id, label, href, icon]) => ({id, label, href, icon})), tabs: tabEntries(p).map(({id, label, href}) => ({id, label, href}))})),
       places: () => DOCK.map(([id, label, href, icon]) => ({id, label, href, icon})),
-      /* Datenstand der Seite fuer die Pille im Kopf: {datum: 'JJJJ-MM-TT', zeilen: [[Bereich, Text, vorhanden?], ...]}.
-         Ersetzt den Kursstand, den der Rahmen sonst selbst liest. */
+      /* Datenstand der Seite fuer das Fenster „Datenstand“: {datum: 'JJJJ-MM-TT', zeilen: [[Bereich, Text, vorhanden?], ...]}.
+         Ersetzt den Kursstand, den der Rahmen sonst beim Oeffnen selbst liest. */
       datenstand: o => { o = o || {}; dataBus.own = true; dataBus.datum = isoDate(o.datum) ? o.datum : null; dataBus.zeilen = Array.isArray(o.zeilen) ? o.zeilen.filter(z => z && z[0] && z[1]) : []; dataBus.listeners.forEach(fn => fn()); },
       /* Pflicht-Hinweis der Seite fuer das Fenster „Daten & Hinweise“: Schluessel aus assets/legal-notices.json
          (stock, ranking, setup, backtest, modelPortfolio, thirdParty, ai, editorial) oder {text}. */
       hinweis: n => { if (n && !dataBus.notes.includes(n)) dataBus.notes.push(n); },
-      /* Fenster des Kopfes von der Seite aus oeffnen (z. B. „Daten & Hinweise“ am Seitenende). */
+      /* Fenster des Rahmens von der Seite aus oeffnen (z. B. „Daten & Hinweise“ am Seitenende). */
       openHinweise: () => openHinweise(), openDatenstand: () => openDaten(),
       /* Schalter des Rahmens (auch statisch im Markup, damit nichts springt):
            <html data-vu-bleed>          Der Bildschirm beginnt unter dem Kopf (Titelbild bis an den oberen Rand): der Kopf ist
@@ -482,15 +494,15 @@
   /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
      Discover synchronisiert ihr Farbschema mit seiner eigenen Theme-Wahl. */
   const THEMES = {
-    light: {bg: 'rgba(255,255,255,.86)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f1f1f1', glass: 'rgba(238,238,238,.82)', mute: '#5d636b', live: '#3d424a', dot: '#5f8000', ring: '#c8f531', me: 'rgba(238,238,238,.82)', meInk: '#000', on: '#000', onInk: '#fff', outline: '#4f6b00',
+    light: {bg: 'rgba(255,255,255,.86)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f1f1f1', glass: 'rgba(238,238,238,.82)', mute: '#5d636b', ring: '#c8f531', me: 'rgba(238,238,238,.82)', meInk: '#000', on: '#000', onInk: '#fff', outline: '#4f6b00',
       /* Hell vollstaendig hell (Owner 16.11.2026): Dock, Menue „Dein Universe“ und Modul-Symbol hell; dunkel = Prototyp, unveraendert */
       page: '#fff', accent: '#4f6b00', dockBg: 'rgba(255,255,255,.92)', dockLine: 'rgba(0,0,0,.1)', dockInk: '#000', dockMute: '#5d636b', dockOn: '#4f6b00',
       panel: '#fff', panelInk: '#000', panelMute: '#5d636b', field: '#f1f1f1', fieldHover: '#e9e9e9', grabBar: '#c9c9cc', hair: 'rgba(0,0,0,.1)', closeInk: '#000', fieldInk: '#000',
-      icoBg: '#c8f531', icoLine: 'rgba(0,0,0,.08)', icoLineHead: 'rgba(0,0,0,.08)', icoInk: '#101318', current: '0 0 0 1.5px #000', pressed: '#000', pressedInk: '#fff'},
-    dark: {bg: 'rgba(0,0,0,.82)', border: '#262626', ink: '#f4f5f1', inv: '#000', card: '#151516', glass: 'rgba(20,20,22,.7)', mute: '#a1a7af', live: '#c3c7cc', dot: '#c8f531', ring: '#c8f531', me: 'rgba(20,20,22,.7)', meInk: '#f4f5f1', on: '#fff', onInk: '#000', outline: '#c8f531',
+      icoBg: '#c8f531', icoLine: 'rgba(0,0,0,.08)', icoLineHead: 'rgba(0,0,0,.08)', icoInk: '#101318', current: '0 0 0 1.5px #000', accentLine: 'rgba(79,107,0,.5)', pressed: '#000', pressedInk: '#fff'},
+    dark: {bg: 'rgba(0,0,0,.82)', border: '#262626', ink: '#f4f5f1', inv: '#000', card: '#151516', glass: 'rgba(20,20,22,.7)', mute: '#a1a7af', ring: '#c8f531', me: 'rgba(20,20,22,.7)', meInk: '#f4f5f1', on: '#fff', onInk: '#000', outline: '#c8f531',
       page: '#000', accent: '#c8f531', dockBg: 'rgba(12,12,13,.92)', dockLine: 'rgba(255,255,255,.14)', dockInk: '#fff', dockMute: '#a1a7af', dockOn: '#c8f531',
       panel: '#151516', panelInk: '#f4f5f1', panelMute: '#a1a7af', field: '#202022', fieldHover: '#262628', grabBar: '#3a3a3d', hair: 'rgba(255,255,255,.09)', closeInk: '#fff', fieldInk: '#fff',
-      icoBg: '#0e1013', icoLine: 'rgba(200,245,49,.25)', icoLineHead: 'rgba(200,245,49,.35)', icoInk: '#c8f531', current: '0 0 0 1px rgba(200,245,49,.5),0 0 28px rgba(200,245,49,.18)', pressed: '#fff', pressedInk: '#000'}
+      icoBg: '#0e1013', icoLine: 'rgba(200,245,49,.25)', icoLineHead: 'rgba(200,245,49,.35)', icoInk: '#c8f531', current: '0 0 0 1px rgba(200,245,49,.5),0 0 28px rgba(200,245,49,.18)', accentLine: 'rgba(200,245,49,.5)', pressed: '#fff', pressedInk: '#000'}
   };
 
   /* Farbschema plattformweit: dieselbe Wahl (localStorage, Schluessel von
@@ -594,7 +606,7 @@
         .shell{width:min(1240px,calc(100% - 48px));margin:auto}.row{height:64px;display:flex;align-items:center;gap:8px}
         .brand{flex-shrink:0;display:flex;align-items:center;min-width:0;color:${t.ink};text-decoration:none}
         .brand img{display:block;width:clamp(150px,14vw,190px);max-width:40vw;height:auto}
-        .world[hidden],.brand[hidden],.live[hidden]{display:none}
+        .world[hidden],.brand[hidden]{display:none}
         .mod{position:relative;display:flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0;height:38px;padding:0 12px 0 6px;border:0;border-radius:99px;background:${t.glass};-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:${t.ink};font-weight:800;font-size:16px;letter-spacing:-.02em;white-space:nowrap}
         .mi{width:28px;height:28px;border-radius:9px;background:${t.icoBg};border:1px solid ${t.icoLineHead};display:grid;place-items:center;color:${t.icoInk};flex:none}
         .mi svg{width:18px;height:18px}.mi svg.line{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
@@ -609,15 +621,13 @@
         button{font:inherit;cursor:pointer}
         .hb{position:relative;width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:99px;border:0;padding:0;background:${t.glass};-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:${t.ink};text-decoration:none}
         .hb svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
-        .mod::after,.hb::after,.live::after{content:"";position:absolute;inset:-3px}
-        .info{background:${t.on};color:${t.onInk};font-weight:900;font-size:15px;-webkit-backdrop-filter:none;backdrop-filter:none}
+        .mod::after,.hb::after{content:"";position:absolute;inset:-3px}
+        .ki{background:#c8f531;color:#101318;-webkit-backdrop-filter:none;backdrop-filter:none}
+        .ki svg{width:18px;height:18px;fill:currentColor;stroke:none}
         .profile{border:2px solid ${t.ring};background:${t.me};color:${t.meInk}}
         .profile svg{stroke-width:2.4}
-        .live{position:relative;display:flex;align-items:center;gap:6px;flex:none;height:38px;padding:0 11px;border:0;border-radius:99px;background:${t.glass};font-size:12px;font-weight:800;color:${t.live};white-space:nowrap}
-        .live i{width:7px;height:7px;border-radius:9px;background:${t.dot};box-shadow:0 0 8px ${t.dot}}
-        .live b{font-weight:inherit}
-        :host([tight]) .row{gap:6px}:host([tight]) .tools{gap:6px}:host([tight]) .live{padding:0 8px}:host([tight]) .mod{padding-right:10px}:host([tighter]) .mod .chev{display:none}:host([tightest]) .live b{display:none}
-        .mod:active,.hb:active,.live:active{transform:scale(.97)}
+        :host([tight]) .mod .chev{display:none}:host([tighter]) .row{gap:6px}:host([tighter]) .tools{gap:6px}:host([tighter]) .mod{padding-right:10px}
+        .mod:active,.hb:active{transform:scale(.97)}
         .toggle{flex-shrink:0;border:3px solid transparent;margin:-3px;background:${t.glass};background-clip:padding-box;color:${t.ink};height:44px;padding:0 15px;border-radius:99px;font-weight:800;font-size:14px}
         :host([world]) .toggle{display:none}
         @media(max-width:520px){.toggle{width:44px;padding:0;display:grid;place-items:center;font-size:17px}.menu-label{display:none}}
@@ -658,6 +668,9 @@
         .tile .menu-product-icon svg{width:22px;height:22px}
         .tile b{display:block;font-size:16px;font-weight:800;line-height:1.35}
         .tile small{display:block;font-size:11px;line-height:1.35;color:${t.panelMute}}
+        .tile .kicker{display:block;font-style:normal;font-size:9.5px;line-height:1;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:${t.panelMute};white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .tile .ki-name b{display:flex;align-items:center;gap:6px;margin-top:1px;line-height:1}.tile .ki-name small{line-height:1.12}
+        .tile .beta{height:16px;padding:0 6px;border-radius:99px;border:1px solid ${t.accentLine};color:${t.accent};font-size:9.5px;line-height:14px;font-weight:800;letter-spacing:.04em}
         .tile[aria-current=page],.tile.is-current{box-shadow:${t.current}}
         .links{display:grid;margin-top:8px}
         .links a,.mine a,.more summary{display:flex;align-items:center;gap:12px;min-height:46px;padding:0;border-bottom:1px solid ${t.hair};color:${t.panelInk};font-size:15px;font-weight:800;text-decoration:none}
@@ -686,7 +699,7 @@
         :host([menu-only]) header{display:none}
         :host([theme="dark"]) header .brand img{filter:invert(1) brightness(1.08)}
         :host([dock]) .quick,:host([dock]) .toggle{display:none}
-        @media(prefers-reduced-motion:reduce){header,.backdrop,.panel,.tile{transition:none}.mod:active,.hb:active,.live:active,.tile:active{transform:none}}
+        @media(prefers-reduced-motion:reduce){header,.backdrop,.panel,.tile{transition:none}.mod:active,.hb:active,.tile:active{transform:none}}
 `;
 
   class VisionNavigation extends HTMLElement {
@@ -714,18 +727,19 @@
       const ico = d => `<svg viewBox="0 0 24 24" aria-hidden="true">${d}</svg>`;
       const SPARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.2c.5 3.9 2.3 6.2 6.4 6.8-4.1.6-5.9 2.9-6.4 6.8-.5-3.9-2.3-6.2-6.4-6.8 4.1-.6 5.9-2.9 6.4-6.8z"/><path d="M18.6 14.6c.2 1.6.9 2.5 2.6 2.8-1.7.3-2.4 1.2-2.6 2.8-.2-1.6-.9-2.5-2.6-2.8 1.7-.3 2.4-1.2 2.6-2.8z"/></svg>';
       /* Kopfzeile nach Prototyp (shell.js .hdr): links der Welten-Wechsler (oeffnet das Menue) oder auf Seiten ausserhalb
-         der Welten das Logo, rechts „i“, Datenstand, Suche, Profil. Das Farbschema wechselt im Menue (Hell/Dunkel). */
-      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="190" height="63"></a><button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-name"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/quant/">Quant</a><a href="/technical/">Technical</a><a href="/elliott/">Elliott</a><a href="/screener/">Screener</a><a class="q-extra" href="/vorsorge/">Vorsorge</a><a class="q-extra" href="/portfolios/">Portfolios</a></nav><div class="tools"><button class="hb info" type="button" aria-haspopup="dialog" aria-label="Daten und Hinweise">i</button><button class="live" type="button" hidden aria-haspopup="dialog"><i></i><b></b></button><a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">${ico(dockIcons.search)}</a><a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">${ico(dockIcons.person)}</a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></div><nav class="tabs" hidden></nav></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><span class="grab" aria-hidden="true"></span><div class="panel-head"><h2 class="uni-title">Dein Universe</h2><button class="close" type="button" aria-label="Menü schließen"><i>${ico(dockIcons.close)}</i></button></div><p class="uni-sub">Alle Module, von jeder Seite aus.</p><div class="groups"></div><form class="find" role="search">${ico(dockIcons.search)}<input type="search" name="q" placeholder="Aktie, Produkt oder Frage …" aria-label="Aktie, Produkt oder Frage" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Im AI Atlas fragen">${SPARK}</button></form><section class="here" hidden><h2 class="here-title"></h2><div class="links here-links"></div></section><h2>Mein Bereich</h2><div class="mine">${MINE.map(([label,href,icon])=>`<a href="${href}"><i>${ico(dockIcons[icon])}</i><b>${label}</b>${ico(dockIcons.next)}</a>`).join('')}</div><details class="more"><summary><span>Weitere Produkte</span></summary><div class="links more-links"></div></details><div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>${legalMenu()}</nav>`;
+         der Welten das Logo, rechts KI, Suche, Profil. Das Farbschema wechselt im Menue (Hell/Dunkel). */
+      root.innerHTML = `<style>${styles(t)}</style><header><div class="shell"><div class="row"><a class="brand" href="/" aria-label="Vision Universe Startseite"><img src="/assets/vision-universe-logo-web.png" alt="Vision Universe" width="190" height="63"></a><button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-name"></span><svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button><nav class="quick" aria-label="Direktzugriff"><a href="/discover/">Discover</a><a href="/quant/">Quant</a><a href="/technical/">Technical</a><a href="/elliott/">Elliott</a><a href="/screener/">Screener</a><a class="q-extra" href="/vorsorge/">Vorsorge</a><a class="q-extra" href="/portfolios/">Portfolios</a></nav><div class="tools"><a class="hb ki" href="/ask/?fokus=1" aria-label="Vision Universe KI fragen">${SPARK}</a><a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">${ico(dockIcons.search)}</a><a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">${ico(dockIcons.person)}</a><button class="toggle" type="button" aria-label="Menü öffnen" aria-controls="site-panel" aria-expanded="false">☰<span class="menu-label"> Menü</span></button></div></div></div><nav class="tabs" hidden></nav></header><div class="backdrop"></div><nav class="panel" id="site-panel" aria-label="Vision Universe Menü" aria-hidden="true"><span class="grab" aria-hidden="true"></span><div class="panel-head"><h2 class="uni-title">Dein Universe</h2><button class="close" type="button" aria-label="Menü schließen"><i>${ico(dockIcons.close)}</i></button></div><p class="uni-sub">Alle Module, von jeder Seite aus.</p><div class="groups"></div><form class="find" role="search">${ico(dockIcons.search)}<input type="search" name="q" placeholder="Aktie, Produkt oder Frage …" aria-label="Aktie, Produkt oder Frage" autocomplete="off" enterkeyhint="search"><button type="submit" aria-label="Vision Universe KI fragen">${SPARK}</button></form><section class="here" hidden><h2 class="here-title"></h2><div class="links here-links"></div></section><h2>Mein Bereich</h2><div class="mine">${MINE.map(([label,href,icon])=>`<a href="${href}"><i>${ico(dockIcons[icon])}</i><b>${label}</b>${ico(dockIcons.next)}</a>`).join('')}</div><details class="more"><summary><span>Weitere Produkte</span></summary><div class="links more-links"></div></details><div class="settings" role="group" aria-label="Einstellungen"><div class="choices appearance" role="group" aria-label="Darstellung"></div><div class="choices currency" role="group" aria-label="Anzeigewährung"></div></div>${legalMenu()}</nav>`;
       /* Menue „Dein Universe“ (Prototyp build.js T.universe): Titel und Schliessen, vier Gruppen mit je zwei Kacheln
-         nebeneinander, darunter - was der Prototyp nicht zeigt, aber bleiben muss - Suche/Atlas, die Unterseiten der aktuellen
+         nebeneinander, darunter - was der Prototyp nicht zeigt, aber bleiben muss - Suche/KI, die Unterseiten der aktuellen
          Welt, Mein Bereich, Weitere Produkte, Darstellung, Rechtliches. Bis 760 px ein Sheet von unten (Griff, runde Ecken,
          hoechstens 90 % hoch, Inhalt scrollt darin), darueber die Seitenleiste rechts. */
       const tiles=root.querySelector('.groups'),here=root.querySelector('.here'),hereLinks=root.querySelector('.here-links');
       menuGroups().forEach(({title,tiles:list})=>{
         const h=document.createElement('h2');h.textContent=title;const grid=document.createElement('div');grid.className='tiles';
-        list.forEach(({id,label,href,icon,claim})=>{
+        list.forEach(({id,label,href,icon,claim,kicker,badge})=>{
           const a=document.createElement('a');a.className='tile';a.href=href;a.dataset.group=id;
-          a.innerHTML=`<span class="menu-product-icon" aria-hidden="true">${productIcon(icon)}</span><span><b>${label}</b><small>${claim}</small></span>`;
+          a.innerHTML=`<span class="menu-product-icon" aria-hidden="true">${productIcon(icon)}</span><span${kicker?' class="ki-name"':''}>${kicker?`<em class="kicker">${kicker}</em>`:''}<b>${label}${badge?` <span class="beta">${badge}</span>`:''}</b><small>${claim}</small></span>`;
+          if(kicker)a.setAttribute('aria-label',`${kicker} ${label}, ${claim}${badge?', '+badge:''}`);
           grid.append(a);
         });
         tiles.append(h,grid);
@@ -739,9 +753,10 @@
         const product=q&&groups.find(g=>g.href&&g.label.toLowerCase()===q.toLowerCase());
         location.assign(product?product.href:'/ask/'+(q?'?q='+encodeURIComponent(q):''));
       });
-      const world=root.querySelector('.world'),brand=root.querySelector('.brand'),live=root.querySelector('.live');
-      /* Passt der Name der Welt nicht neben die vier Knoepfe (schmale Handys, lange Namen), zeigt die Datums-Pille nur den Punkt. */
-      const fit=()=>{this.removeAttribute('tight');this.removeAttribute('tighter');this.removeAttribute('tightest');const name=world.querySelector('.world-name'),row=root.querySelector('.row'),over=()=>world.hidden?row.scrollWidth>row.clientWidth+1:name.scrollWidth>name.clientWidth+1;/* Erst Abstaende enger, dann ohne Pfeil am Modulnamen; das Datum (Prototyp) faellt erst ganz zuletzt weg. */if(over()){this.setAttribute('tight','');if(over()){this.setAttribute('tighter','');if(over())this.setAttribute('tightest','');}}};
+      const world=root.querySelector('.world'),brand=root.querySelector('.brand');
+      /* Passt der Name der Welt nicht neben die Knoepfe (schmale Handys, lange Namen): zuerst entfaellt der Pfeil an der
+         Modul-Pille (tight), dann werden Abstaende und Innenrand enger (tighter); danach kuerzt der Name mit „…“. */
+      const fit=()=>{this.removeAttribute('tight');this.removeAttribute('tighter');const name=world.querySelector('.world-name'),row=root.querySelector('.row'),over=()=>world.hidden?row.scrollWidth>row.clientWidth+1:name.scrollWidth>name.clientWidth+1;if(over()){this.setAttribute('tight','');if(over())this.setAttribute('tighter','');}};
       const syncWorld=()=>{
         const w=worldOf(location);
         world.hidden=!w;brand.hidden=!!w;this.toggleAttribute('world',!!w);
@@ -753,23 +768,6 @@
       };
       syncWorld();
       world.onclick=()=>this.openMenu(world);
-      /* Datums-Pille: nur mit echtem Datum (Meldung der Seite oder Kursstand aus dem Marktlage-Artefakt). */
-      const syncLive=()=>{
-        const d=isoDate(dataBus.datum);live.hidden=!d;
-        if(d){live.querySelector('b').textContent=d.short;live.setAttribute('aria-label','Datenstand '+d.long);}
-        fit();
-      };
-      dataBus.listeners.push(syncLive);syncLive();
-      live.onclick=()=>openDaten();
-      root.querySelector('.info').onclick=()=>openHinweise();
-      if(!this.hasAttribute('menu-only')&&!dataBus.asked&&typeof fetch==='function'){
-        dataBus.asked=true;
-        const ask=()=>fetch('/quant/data/product/market-regime-v1.json').then(r=>r.ok?r.json():null).then(j=>{
-          const d=j&&isoDate(j.asOf);if(!d||dataBus.own)return;
-          dataBus.datum=j.asOf;dataBus.zeilen=[['Kurse','Schluss '+d.day+' '+d.long,true]];dataBus.listeners.forEach(fn=>fn());
-        }).catch(()=>{});
-        if(document.readyState==='complete')ask();else addEventListener('load',ask,{once:true});
-      }
       window.addEventListener('resize',fit);if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fit).catch(()=>{});
       /* Kopf deckend oder durchsichtig (Prototyp hdr()): deckend, sobald 24 px gescrollt sind oder die Seite kein
          <html data-vu-bleed> traegt. Die Reiterzeile folgt <html data-vu-tabs="inhalt"> (VUNavigation.rahmen). */
@@ -794,9 +792,9 @@
         root.querySelector('.more').open=state.group==='more';
       };
       syncActive();
-      /* Atlas auf jeder Aktie (Konzept mein-bereich-2026-11, Screen a-sheet): Zeigt die Seite einen Aktienkopf (data-vu-stock),
-         öffnet die Kachel „Atlas“ im Menü ein Sheet mit Fragen zur Aktie (assets/atlas-sheet.js, beim ersten Tipp geladen);
-         sonst gilt der Link. Der Knopf „Atlas“ im Kopf ist mit dem Prototyp entfallen. */
+      /* KI auf jeder Aktie (Konzept mein-bereich-2026-11, Screen a-sheet): Zeigt die Seite einen Aktienkopf (data-vu-stock),
+         öffnet die Kachel „Vision Universe KI“ im Menü ein Sheet mit Fragen zur Aktie (assets/atlas-sheet.js, beim ersten Tipp
+         geladen); sonst gilt der Link. Der KI-Knopf im Kopf fuehrt immer auf /ask/ (Fokus auf der Eingabe). */
       tiles.querySelector('.tile[data-group=atlas]').addEventListener('click',e=>{
         if(e.defaultPrevented||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;
         if(!document.querySelector('[data-vu-stock]:not([href]):not([data-vu-href])'))return;

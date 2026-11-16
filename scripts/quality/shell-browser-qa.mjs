@@ -259,6 +259,36 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, end, sidebarEnd, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
+  // Kopf mit Welten-Wechsler (Owner 16.11.2026): rechts KI · Suche · Profil, ohne „i“ und Datums-Pille; KI-Knopf neongruen,
+  // sichtbar 38 px, Tippflaeche 44 px; auch mit langem Modulnamen (Supertrader, Fundamental) liegt alles im Bild.
+  for (const path of ['/discover/', '/supertrader/', '/fundamental/']) {
+    const where = `kopf ${path} @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const k = await page.evaluate(() => {
+        const root = document.querySelector('vu-navigation').shadowRoot, row = root.querySelector('.row'), box = (sel) => { const n = root.querySelector(sel); if (!n || !n.getClientRects().length) return null; const r = n.getBoundingClientRect(), a = getComputedStyle(n, '::after'); return { x: Math.round(r.left), r: Math.round(r.right), w: Math.round(r.width), h: Math.round(r.height), tap: Math.round(r.width - 2 * parseFloat(a.left || 0)), bg: getComputedStyle(n).backgroundColor, label: n.getAttribute('aria-label'), href: n.getAttribute('href') }; };
+        const name = root.querySelector('.world-name');
+        return { ki: box('.hb.ki'), search: box('.hb.search'), profile: box('.hb.profile'), world: box('.world'), info: !!root.querySelector('.info, .live'), rowOver: row.scrollWidth - row.clientWidth, vw: innerWidth, name: name && name.textContent, cut: name ? name.scrollWidth > name.clientWidth + 1 : null };
+      });
+      if (k.info) fail(where, '„i“ oder Datums-Pille noch im Kopf');
+      if (!k.ki || k.ki.w !== 38 || k.ki.h !== 38 || k.ki.tap < 44 || k.ki.bg !== 'rgb(200, 245, 49)' || k.ki.label !== 'Vision Universe KI fragen' || k.ki.href !== '/ask/?fokus=1') fail(where, 'KI-Knopf falsch: ' + JSON.stringify(k.ki));
+      if (!k.search || !k.profile || !(k.ki && k.ki.x < k.search.x && k.search.x < k.profile.x)) fail(where, 'Reihenfolge KI · Suche · Profil falsch');
+      if (k.rowOver > 1 || (k.profile && k.profile.r > k.vw) || (k.world && k.world.x < 0)) fail(where, 'Kopf läuft über: ' + JSON.stringify(k));
+      checks.push({ where, kopf: k, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // KI-Knopf: /ask/?fokus=1 setzt den Fokus auf die Eingabe.
+  {
+    const where = `ki fokus @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + '/ask/?fokus=1', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const f = await page.evaluate(() => ({ focus: document.activeElement && document.activeElement.id, title: document.title, h1: document.querySelector('h1')?.textContent }));
+      if (f.focus !== 'ak-q' || f.title !== 'Vision Universe KI' || f.h1 !== 'Vision Universe KI') fail(where, 'Fokus, Titel oder Überschrift falsch: ' + JSON.stringify(f));
+      checks.push({ where, pass: !findings.some((x) => x.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
   // Seiten ohne Dock: der Kopf traegt den Menue-Knopf selbst und passt in jede Breite.
   for (const path of ['/news/', '/willkommen/', '/konto/', '/ask/']) {
     const where = `kopf ohne Leiste ${path} @${vpName}`;
@@ -290,7 +320,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
-  // Atlas (/ask/) nach App-Konzept 2 (Owner 16.11.2026; Vorlage Fenster „suche“ des Prototyps): Rahmen wie jede Seite (Kopf des
+  // Vision Universe KI (/ask/, frueher Atlas) nach App-Konzept 2 (Owner 16.11.2026; Vorlage Fenster „suche“ des Prototyps): Rahmen wie jede Seite (Kopf des
   // Rahmens, kein eigener Kopf), dunkel als Standard (theme-color #08080a), genau eine h1, Eingabe mit mindestens 16 px Schrift
   // (kein Zoom beim Antippen), jede Tippfläche im Inhalt mindestens 44 px, „Daten & Hinweise“ öffnet das Fenster des Rahmens.
   {
@@ -310,9 +340,9 @@ for (const [vpName, width, height] of VIEWPORTS) {
       });
       if (a.h1 !== 1) fail(where, 'genau eine h1 erwartet, gefunden ' + a.h1);
       if (a.theme !== '#08080a') fail(where, 'theme-color nicht dunkel: ' + a.theme);
-      if (a.own || !a.head) fail(where, 'Atlas trägt nicht den Kopf des Rahmens');
+      if (a.own || !a.head) fail(where, 'Die KI-Seite trägt nicht den Kopf des Rahmens');
       if (!a.bar || a.font < 16) fail(where, 'Eingabe fehlt oder Schrift unter 16 px: ' + a.font);
-      if (a.can !== 3 || a.often !== 3) fail(where, 'Start unvollständig („Was Atlas kann“ ' + a.can + ', „Oft gefragt“ ' + a.often + ')');
+      if (a.can !== 3 || a.often !== 3) fail(where, 'Start unvollständig („Was die KI kann“ ' + a.can + ', „Oft gefragt“ ' + a.often + ')');
       if (a.small.length) fail(where, a.small.length + ' Ziele kleiner als 44 px (' + a.small.slice(0, 4).join('; ') + ')');
       if (a.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + a.overflow + ' px');
       await page.locator('main .ak-lk').click();
@@ -601,7 +631,9 @@ for (const [vpName, width, height] of VIEWPORTS) {
         const root = document.querySelector('vu-navigation').shadowRoot, panel = root.querySelector('.panel');
         const dock = document.getElementById('vu-dock'), d = dock.shadowRoot.querySelector('nav').getBoundingClientRect();
         const top = document.elementFromPoint(innerWidth - 20, d.top + d.height / 2);
-        return { groups: [...root.querySelectorAll('.tile b')].map((h) => h.textContent), links: root.querySelectorAll('.more-links a').length + root.querySelectorAll('.mine a').length,
+        const kiTile = root.querySelector('.tile[data-group=atlas]'), kiRow = kiTile && [...kiTile.parentElement.children], kiH = kiTile && kiTile.getBoundingClientRect().height;
+        return { groups: [...root.querySelectorAll('.tile b')].map((h) => h.textContent),
+          kiTile: kiTile && { kicker: kiTile.querySelector('.kicker')?.textContent, h: Math.round(kiH), others: kiRow.filter((n) => n !== kiTile).map((n) => Math.round(n.getBoundingClientRect().height)), cut: [...kiTile.querySelectorAll('b, small, .kicker')].some((n) => n.scrollWidth > n.clientWidth + 1 || n.getBoundingClientRect().right > kiTile.getBoundingClientRect().right + 1) }, links: root.querySelectorAll('.more-links a').length + root.querySelectorAll('.mine a').length,
           locked: document.documentElement.classList.contains('vu-menu-open') && getComputedStyle(document.documentElement).overflow === 'hidden',
           dockInert: dock.inert, dockCovered: top !== dock, scrollable: panel.scrollHeight <= panel.clientHeight || getComputedStyle(panel).overflowY === 'auto',
           panelBottom: panel.getBoundingClientRect().bottom, vh: innerHeight, panelBg: getComputedStyle(panel).backgroundColor,
@@ -614,8 +646,10 @@ for (const [vpName, width, height] of VIEWPORTS) {
       });
       if (!firstMenu) firstMenu = m.groups.join('|') + '#' + m.links;
       else if (m.groups.join('|') + '#' + m.links !== firstMenu) fail(where, 'anderes Menue als auf Discover');
-      /* Reihenfolge und Atlas-Kachel wie das Fenster „Dein Universe“ im Prototyp (App-Konzept 2, build.js T.universe). */
-      if(m.groups.join('|')!=='Discover|Insights|Quant|Fundamental|Technical|Hedgefonds|Elliott|Supertrader|Portfolios|Screener|Vorsorge|Atlas') fail(where,'Produktraster falsch: '+m.groups.join('|'));
+      /* Reihenfolge und KI-Kachel wie das Fenster „Dein Universe“ im Prototyp (App-Konzept 2, build.js T.universe); die KI-Kachel
+         heisst seit 16.11.2026 „Vision Universe KI“: Dachzeile „Vision Universe“, Titel „KI“ mit Beta, gleich hoch wie die Nachbarn. */
+      if(m.groups.join('|')!=='Discover|Insights|Quant|Fundamental|Technical|Hedgefonds|Elliott|Supertrader|Portfolios|Screener|Vorsorge|KI Beta') fail(where,'Produktraster falsch: '+m.groups.join('|'));
+      if(!m.kiTile||m.kiTile.kicker!=='Vision Universe'||m.kiTile.cut||m.kiTile.others.some(h=>Math.abs(h-m.kiTile.h)>1)) fail(where,'Kachel „Vision Universe KI“ falsch: '+JSON.stringify(m.kiTile));
       if(m.moreOpen||!m.hereLinks||!m.search) fail(where,'Menüaufbau falsch: '+JSON.stringify({moreOpen:m.moreOpen,here:m.hereLinks,search:m.search}));
       if(m.title!=='Dein Universe | Alle Module, von jeder Seite aus.'||!m.titleVisible) fail(where,'Überschrift „Dein Universe“ fehlt: '+m.title);
       if(m.legal<5||!m.note||m.settings!==4) fail(where,'Rechtliches oder Einstellungen fehlen im Menü: '+JSON.stringify({legal:m.legal,note:m.note,settings:m.settings}));

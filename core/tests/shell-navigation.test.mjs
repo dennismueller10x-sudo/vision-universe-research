@@ -313,7 +313,7 @@ test('the dock respects safe areas, keeps touch targets and sits below overlays 
   }
   assert.match(source, /<nav class="tabs" hidden><\/nav><\/header>/, 'Reiterzeile im festen Kopf, direkt unter der Kopfzeile');
   assert.match(source, /html\.setAttribute\('data-vu-tabs',this\.tabsFor\)/);
-  // Kopf nach Prototyp: Welten-Wechsler links, „i“, Datenstand, Suche, Profil rechts
+  // Kopf nach Prototyp: Welten-Wechsler links, KI, Suche, Profil rechts (Owner 16.11.2026: ohne „i“ und Datum)
   assert.match(styles(THEMES.light), /:host\(\[dock\]\) \.quick,:host\(\[dock\]\) \.toggle\{display:none\}/);
   assert.match(source, /class="world mod" type="button" hidden/);
   assert.match(source, /class="hb search" href="\/discover\/#\/suche"/);
@@ -640,19 +640,19 @@ test('Portfolios: eigener Menueeintrag, Direktzugriff, Leiste mit Gruppen und De
 
 /* ───────── Rahmen genau nach Prototyp „App-Konzept 2“ (Owner 15.11.2026): Kopf, Menue, dunkler Standard, Schalter, Aktien-Vorschau ───────── */
 
-test('Kopf nach Prototyp: Welten-Wechsler als Pille, „i“, Datums-Pille, Suche, Profil mit Lime-Ring; kein Atlas-Knopf', () => {
+test('Kopf nach Prototyp: Welten-Wechsler als Pille, KI (neongrüner Funke), Suche, Profil mit Lime-Ring; ohne „i“ und Datums-Pille', () => {
   const head = source.slice(source.indexOf('<header><div class="shell">'), source.indexOf('</header>'));
+  // Owner 16.11.2026: „das i würde ich rausmachen …“, „das Datum … auch ausblenden“; neuer Knopf KI vor Suche und Profil
   const order = ['<button class="world mod" type="button" hidden aria-haspopup="true" aria-expanded="false" aria-controls="site-panel"><span class="hud mi"></span><span class="world-name"></span><svg class="chev"',
-    '<button class="hb info" type="button" aria-haspopup="dialog" aria-label="Daten und Hinweise">i</button>', '<button class="live" type="button" hidden aria-haspopup="dialog"><i></i><b></b></button>',
+    '<a class="hb ki" href="/ask/?fokus=1" aria-label="Vision Universe KI fragen">${SPARK}</a>',
     '<a class="hb search" href="/discover/#/suche" aria-label="Aktie suchen">', '<a class="hb profile" href="/mein-dashboard/" aria-label="Mein Bereich">'];
   let at = 0;
   for (const part of order) { const next = head.indexOf(part, at); assert.ok(next >= at && next >= 0, part); at = next + 1; }
-  assert.doesNotMatch(head, /atlas/i, 'der Atlas-Knopf im Kopf ist entfallen');
-  // Der Wechsler oeffnet das Menue „Dein Universe“; die Pille nur mit echtem Datum
+  assert.doesNotMatch(head, /class="hb info"|class="live"|aria-label="Daten und Hinweise"/, '„i“ und Datums-Pille sind entfallen');
+  assert.doesNotMatch(head, /Atlas/, 'sichtbarer Name ist Vision Universe KI');
+  assert.doesNotMatch(source, /live\.onclick|root\.querySelector\('\.info'\)/);
+  // Der Wechsler oeffnet das Menue „Dein Universe“
   assert.match(source, /world\.onclick=\(\)=>this\.openMenu\(world\)/);
-  assert.match(source, /const d=isoDate\(dataBus\.datum\);live\.hidden=!d;/);
-  assert.match(source, /live\.onclick=\(\)=>openDaten\(\)/);
-  assert.match(source, /root\.querySelector\('\.info'\)\.onclick=\(\)=>openHinweise\(\)/);
   // Masse des Prototyps (shell.js .hdr/.mod/.mi/.hb/.live), in beiden Schemata dieselben
   for (const t of [THEMES.light, THEMES.dark]) {
     const st = styles(t), phone = st.slice(st.indexOf('@media(max-width:760px)'));
@@ -660,8 +660,12 @@ test('Kopf nach Prototyp: Welten-Wechsler als Pille, „i“, Datums-Pille, Such
     assert.match(st, /\.row\{height:64px;display:flex;align-items:center;gap:8px\}/);
     assert.match(st, /\.mod\{[^}]*gap:8px;[^}]*height:38px;padding:0 12px 0 6px;border:0;border-radius:99px;[^}]*font-weight:800;font-size:16px;letter-spacing:-\.02em;white-space:nowrap\}/);
     assert.match(st, /\.mi\{width:28px;height:28px;border-radius:9px;background:[^;]+;border:1px solid [^;]+;[^}]*color:#/);
-    assert.match(st, /\.live\{[^}]*gap:6px;[^}]*height:38px;padding:0 11px;[^}]*font-size:12px;font-weight:800;/);
-    assert.match(st, /\.live i\{width:7px;height:7px;border-radius:9px;/);
+    // KI-Knopf wie der Senden-Knopf der Suche im Prototyp (.find button: #c8f531, Funke gefuellt), sichtbar 38 px wie .hb
+    assert.match(st, /\.ki\{background:#c8f531;color:#101318;/);
+    assert.match(st, /\.ki svg\{width:18px;height:18px;fill:currentColor;stroke:none\}/);
+    // Verdichtung bei langen Namen: zuerst ohne Pfeil (tight), dann engere Abstaende (tighter)
+    assert.match(st, /:host\(\[tight\]\) \.mod \.chev\{display:none\}:host\(\[tighter\]\) \.row\{gap:6px\}/);
+    assert.doesNotMatch(st, /\.live|tightest/);
     assert.ok(st.includes(`.profile{border:2px solid #c8f531;`), 'Profil mit Ring in Neongrün');
     assert.ok(st.includes(`:host([solid]) header{background:${t.bg};-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}`));
   }
@@ -692,7 +696,7 @@ test('Welten-Wechsler: Name und Symbol je Ort; Home, Ich, Konto und News heissen
   for (const p of PRODUCTS) assert.ok(DOCK_PRODUCT_ICONS[worldOf(loc(p.items[0][2])).icon], p.id + ': Symbol ohne Sprite-Abruf');
 });
 
-test('Menue „Dein Universe“ nach Prototyp: vier Gruppen, zwei Kacheln nebeneinander, Atlas als Kachel, kein Produkt fehlt', () => {
+test('Menue „Dein Universe“ nach Prototyp: vier Gruppen, zwei Kacheln nebeneinander, Vision Universe KI als Kachel, kein Produkt fehlt', () => {
   const g = JSON.parse(JSON.stringify(menuGroups().map(x => [x.title, x.tiles.map(t => t.id)])));
   assert.deepEqual(g, [['Entdecken', ['discover', 'insights']], ['Analysieren', ['quant', 'fundamental', 'technical', 'hedgefonds', 'elliott']],
     ['Nach Regeln', ['supertrader', 'portfolios']], ['Finden und vorsorgen', ['screener', 'vorsorge', 'atlas']]]);
@@ -700,6 +704,10 @@ test('Menue „Dein Universe“ nach Prototyp: vier Gruppen, zwei Kacheln nebene
   for (const group of groups.filter(x => x.href)) assert.ok(ids.includes(group.id), group.id + ' steht im Menue');
   const atlas = menuGroups()[3].tiles.find(t => t.id === 'atlas');
   assert.equal(atlas.href, '/ask/');
+  // Owner 16.11.2026: „Vision Universe KI“, „Vision Universe“ klein als Dachzeile, „KI“ gross, Beta bleibt
+  assert.deepEqual([atlas.kicker, atlas.label, atlas.claim, atlas.badge], ['Vision Universe', 'KI', 'Frag in deinen Worten', 'Beta']);
+  assert.match(source, /\$\{kicker\?`<em class="kicker">\$\{kicker\}<\/em>`:''\}<b>\$\{label\}\$\{badge\?` <span class="beta">\$\{badge\}<\/span>`:''\}<\/b>/);
+  assert.match(styles(THEMES.dark), /\.tile \.kicker\{display:block;font-style:normal;font-size:9\.5px;line-height:1;font-weight:800;letter-spacing:\.1em;text-transform:uppercase;/);
   // Der Eintrag zur Startseite der Website (frueher Logo im Menuekopf) bleibt
   assert.match(source, /more\.entries\.concat\(\[\['Vision Universe Startseite','\/'\]\]\)/);
   const st = styles(THEMES.dark);
@@ -769,16 +777,21 @@ test('Schalter des Rahmens: data-vu-bleed (Kopf durchsichtig bis 24 px) und data
   assert.match(styles(THEMES.dark), /\n\s*header\{transition:background \.25s\}\n/, 'der Grund kommt nur mit [solid]');
 });
 
-test('Fenster des Kopfes: „Daten & Hinweise“ aus den Pflicht-Hinweisen, „Datenstand“ nur mit Datum', () => {
+test('Fenster des Rahmens: „Daten & Hinweise“ aus den Pflicht-Hinweisen, „Datenstand“ liest den Kursstand erst beim Öffnen', () => {
   assert.match(source, /frameSheet\(\{id: 'vu-sh-hinweise', title: 'Daten & Hinweise'/);
   assert.match(source, /frameSheet\(\{id: 'vu-sh-daten', title: 'Datenstand'/);
   assert.match(source, /window\.VUUI\.popup\(\{id: o\.id, title: o\.title, body: o\.body, cls: 'vu-frame-sheet'\}\)/);
   assert.match(source, /LEGAL\.notices\.footer/);
-  assert.match(source, /fetch\('\/quant\/data\/product\/market-regime-v1\.json'\)/, 'Kursstand aus dem Marktlage-Artefakt (asOf)');
+  // Ohne Pille im Kopf (Owner 16.11.2026) keine Abfrage beim Laden: das Marktlage-Artefakt wird erst beim Oeffnen gelesen
+  assert.match(source, /const REGIME = '\/quant\/data\/product\/market-regime-v1\.json';/);
+  assert.equal((source.match(/market-regime-v1|REGIME/g) || []).length, 3, 'das Artefakt steht nur in der Konstante und in openDaten');
+  assert.match(source, /return fetch\(REGIME\)\.then/);
+  assert.match(source, /const openDaten = \(\) => \{\n    if \(!dataBus\.own && !dataBus\.asked && typeof fetch === 'function'\) \{/);
+  assert.match(source, /openHinweise: \(\) => openHinweise\(\), openDatenstand: \(\) => openDaten\(\)/, 'Fenster bleiben von der Seite aus erreichbar');
   const d = isoDate('2026-11-13');
   assert.deepEqual(JSON.parse(JSON.stringify([d.short, d.long, d.day])), ['13.11.', '13.11.2026', 'Fr.']);
   assert.equal(isoDate(''), null); assert.equal(isoDate(null), null); assert.equal(isoDate('heute'), null);
-  assert.match(source, /const d=j&&isoDate\(j\.asOf\);if\(!d\|\|dataBus\.own\)return;/, 'ohne gueltiges Datum bleibt die Pille weg; die Meldung der Seite geht vor');
+  assert.match(source, /const k = j && isoDate\(j\.asOf\); if \(k && !dataBus\.own\)/, 'nur mit gueltigem Datum; die Meldung der Seite geht vor');
 });
 
 test('Aktien-Vorschau: Tipp auf data-vu-stock laedt vu-stock-sheet.js einmal und oeffnet VUStockSheet; sonst gilt der Link', async () => {
