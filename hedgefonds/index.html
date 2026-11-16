@@ -7,12 +7,13 @@
 <title>Hedgefonds — Vision Universe®</title>
 <meta name="description" content="Was große Fonds gemeldet haben: 13F-Portfolios von Bill Ackman, Warren Buffett, Michael Burry, David Tepper, Stanley Druckenmiller und über 40 weiteren Hedgefonds – mit allen Käufen und Verkäufen, aus Pflichtmeldungen.">
 <link rel="icon" href="data:,">
-<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie Discover -->
-<script>(function(){var w="dark";try{if(localStorage.getItem("vu-discover-theme-v1")==="light")w="light";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#0b0d10":"#ffffff");})();</script>
+<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie Discover (dunkel als Standard). Die Übersichten tragen ihre
+     Reiter im Inhalt wie der Prototyp „App-Konzept 2“ (data-vu-tabs="inhalt"); Fonds- und Aktienseiten behalten die Reiter des Rahmens. -->
+<script>(function(){var w="dark";try{if(localStorage.getItem("vu-discover-theme-v1")==="light")w="light";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);if(!/^#\/(fonds|aktie|smart-money)\//.test(location.hash))h.setAttribute("data-vu-tabs","inhalt");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/assets/stock-navigator.css">
 <link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.4.0">
-<link rel="stylesheet" href="/hedgefonds/app.css?v=ak2-1">
+<link rel="stylesheet" href="/hedgefonds/app.css?v=ak2-2">
 </head>
 <body class="hf"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
 <a class="hf-skip" href="#hf-root">Zum Inhalt</a>
@@ -38,6 +39,6 @@
 <script src="/assets/stock-navigator.js"></script>
 <script src="/assets/watchlist-button.js" defer></script>
 <script src="/assets/vu-ui.js?v=vu-ui-1.4.0"></script>
-<script src="/hedgefonds/app.js?v=ak2-1"></script>
+<script src="/hedgefonds/app.js?v=ak2-2"></script>
 </body>
 </html>
