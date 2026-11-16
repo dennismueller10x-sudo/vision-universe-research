@@ -2,7 +2,6 @@
 // Existing immutable research store + existing encryption/S3 signatures. No production paths.
 import fs from 'node:fs';
 import path from 'node:path';
-import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { createSnapshotStore } from '../supertrader/snapshot/store.mjs';
 import { sha256, canonicalJson } from '../supertrader/snapshot/contract.mjs';

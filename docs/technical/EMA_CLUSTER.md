@@ -49,6 +49,7 @@ Für die gemeinsame Statistik werden die unveränderten Quant-Ereigniszeilen zus
 
 ## Dauerhaftes privates Archiv der 200-Aktien-Studie
 
+
 Forschungsdatum 16.11.2026, Quellcommit `46ca41d0b007c31a1a0a4f9179cc772f40a04b4e`, DEV-Snapshot `sts1-134d4d62eb88b6ff8d98fe6e56b12a6d`. Vorhandene private R2-Forschungsablage, bestehender Snapshot-Store unter `research-snapshots/supertrader/sts1/objects/<sha256>.bin`:
 
 - Vollständiges ZIP-Paket, an den bestehenden Owner-Schlüssel verschlüsselt: Objekt-SHA `b78c03b2b3732405dc2ae111c657ee7c8963955e32015eb8ff6eebb0c7b5a3ba` (16.191.254 Bytes); entschlüsseltes Original-ZIP `c2777776a2bbcd7a81cc6dd434548d0cc09089e3e2ed2a91948060b11b6b8bc8`.
@@ -60,7 +61,20 @@ Wiederherstellung: mit vorhandenen privaten R2-Zugangsdaten `createSnapshotStore
 
 ## Spätere Integration
 
+Backend-Darstellungsadapter: `quant/api/ema-cluster-contract.cjs`, Schema `ema-cluster-view-1.0.0`. `build({ticker, cluster, evidence, requestedAsOf, currency})` übernimmt das bereits berechnete Engine-Ergebnis: aktueller Trend/Anordnung/Dynamik, Gruppenbänder und Metriken mit expliziten Einheiten, datierte Ereignisse, letzter schneller/langsamer Pullback und dessen aufgezeichnete Rückkehr sowie kompakte Screener-Felder. Kein aktiver Pullback oder Trade wird aus Ereignissen erfunden. `WARMUP` bleibt unbekannt, keine Seitwärts-Ersatzklassifikation. Keine EMA-, Rendite- oder Signalberechnung im Adapter; Identität über `core/identity.js`, Zuordnung des Engine-Ergebnisses zum Instrument durch den bestehenden Aufrufervertrag.
+
+`projectEvidence(privateStudy, {availableAt})` prüft den gespeicherten Ergebnishash und erstellt einmalig die gemeinsame aggregierte Evidenz. Private Auswahlkennungen, Archivpfade und einzelne OOS-Zeilen werden nicht übernommen. Die Zuordnung prüft Konfiguration, Zeitrahmen, Kurs-/Währungsbasis und zeitliche Verfügbarkeit. Engine-Konfiguration: vorhandener FNV-Hash; Forschungskonfiguration: vorhandener SHA-256-Hash, getrennt benannt. Standardmäßig liefert `build` nur eine Studienreferenz statt 36 Zellen pro Screener-Aktie. Detailabruf mit `includeEvidence: true`; optionale Chart-Historie mit `includeHistory: true`, Transportfenster `rowLimit`/`eventLimit` ohne Einfluss auf die Berechnung. Unpassende/noch nicht verfügbare Studien bleiben ausdrücklich unverfügbar. Aussagen gelten für die Forschungsstichprobe, nicht als aktienspezifische Prognose. Kein Consumer, keine Route, kein Erzeuger und keine UI-Datei automatisch angebunden.
+
 Chart: `fast`/`slow` und Zeitraum aus `rows`; Screener: letzte READY-Zeile mit Konfigurationsversion; Ereignisse: Datum und `availableAt`, niemals rückdatieren. Academy: Regeln, Schwellenkonventionen und Grenzen dieses Dokuments. Historische Evidenz bleibt eigener Studiennachweis mit Population und Horizont, niemals ein Erfolgslabel am Trendzustand. Keine Änderung bestehender Spalten oder UI-Dateien erforderlich.
+
+## Nachträgliche Walk-Forward-Vervollständigung derselben Studie
+
+Die Überlappungssuche in `research-validation.cjs#buildWalkForward` verwendet nun sortierte Intervallanfänge mit Präfix-Maximum der Enden statt Paarvergleichen. Inklusive Grenzen, Kandidatenmenge (auch unreife/noch nicht verfügbare Schutzereignisse), Ausschlusspriorität und Ergebnisreihenfolge bleiben gleich. Das Limit bleibt 20 Mio. Operationen; gezählt werden der indexierte Aufwand und die vorhandenen Datumsscans statt einer hypothetischen quadratischen Paarzahl. 202 Äquivalenzfälle gegen den bisherigen Test-Orakel-Code liefern bytegleiche Partitionen. Synthetischer Node-22-Benchmark: 4.400 Ereignisse/ein Fenster, Median 153,47 → 52,87 ms (2,90×); 80.141 Ereignisse/20 Fenster im unveränderten Budget in 1,38 s statt vorher `PURGE_OPERATION_BUDGET`. Dies sind Rechenwegmessungen, keine neuen Strategievarianten oder Renditebefunde.
+
+Lauf `43814814269`, Quellcommit `fecf8538d48ec3f47daa0e7862ab95678ceb5d8d`: alle 36 Kombinationen berechnet, davon 32 zuvor fehlende ergänzt. Originale Auswahl, alle 40 Batch-Eingaben, 120 Quant-Engine-Quittungen einschließlich Laufzeitumgebung, sämtliche Primärstatistiken und die vier bereits ausgeführten Walk-Forward-Ergebnisse sind unverändert. Keine neue Auswahl oder Hypothese und kein unabhängiger Holdout. Die ursprünglichen Ergebnisdateien werden nicht ersetzt.
+
+Ergänzungs-Ergebnishash `3ffc6e47429baf938fbdaeb9cc570491ab52cd73794ffe98529cbba97f89d724`; Owner-versiegeltes Archivobjekt `0f6ef8ffec4e956fbade877ed682747bd9aecaa558601bf1ae582ba98d9c92af` (16.347.830 Bytes) in derselben privaten Objektablage. Dauerhafter Beleg: Rolle `EMA_WALK_FORWARD_COMPLETION` beim ursprünglichen Snapshot; verweist auf die Ergänzung und alle 36 Owner-versiegelten Ereignis-Ledger (je Klartext-/Chiffre-Prüfsumme und geprüftes Rücklesen). Damit ist keine erneute Kursrekonstruktion für dieselben Partitionen erforderlich. Wiederherstellung über denselben Store und `decryptSealed`; primäre Ergebnisdatei bleibt über den ursprünglichen Archivbeleg erreichbar. Ausführungszeitstempel und Messzeiten gehören zum jeweiligen Lauf; deterministische Ergebnisvergleiche erfolgen über Eingabe-, Ledger- und Partitionsprüfsummen. Fachliche Forschungsgrenzen bleiben bestehen.
+
 
 ## Durchgeführte Referenzstudien (keine Parameteroptimierung)
 
