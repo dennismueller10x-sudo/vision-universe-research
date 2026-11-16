@@ -4,9 +4,9 @@
    Die Suche als Flaeche (Redesign 2027, Folie D06).
 
    Leer: zuletzt gesucht (nur auf diesem Geraet), bekannte Namen, Themen
-   und drei Fragen an Atlas. Beim Tippen: Treffer nach Gruppen (Aktien,
+   und drei Fragen an die Vision Universe KI. Beim Tippen: Treffer nach Gruppen (Aktien,
    Themen, Strategien), der erste Treffer hervorgehoben, die getippten
-   Buchstaben neongruen markiert, und die Eingabe als Frage an Atlas.
+   Buchstaben neongruen markiert, und die Eingabe als Frage an die KI.
    Pfeiltasten waehlen, Enter oeffnet den ersten oder gewaehlten Treffer,
    Escape schliesst.
 
@@ -70,7 +70,7 @@
     var input = el("input", { type: "search", placeholder: "Aktie, Thema, Frage",
                               "aria-label": "Aktien suchen", autocomplete: "off",
                               spellcheck: "false", enterkeyhint: "search" });
-    var atlas = el("a", { class: "dx-search-atlas", href: atlasHref(""), "aria-label": "Als Frage an Atlas senden" }, [svgIcon("spark", 18)]);
+    var atlas = el("a", { class: "dx-search-atlas", href: atlasHref(""), "aria-label": "Als Frage an die Vision Universe KI senden" }, [svgIcon("spark", 18)]);
     var results = el("div", { class: "dx-results", role: "listbox", "aria-label": "Suchergebnisse" });
     var extra = el("div", { class: "dx-search-extra" });
     var empty = el("div", { class: "dx-search-empty" });
@@ -130,7 +130,7 @@
         a.onclick = function () { schliessen(); };
         return a;
       })));
-      empty.append(section("Frag Atlas"), el("div", { class: "dx-ask" }, QUESTIONS.map(function (q) {
+      empty.append(section("Frag die KI"), el("div", { class: "dx-ask" }, QUESTIONS.map(function (q) {
         return el("a", { class: "vu-navcard dx-ask-q", href: atlasHref(q) }, [el("span", { class: "dx-ask-ic", "aria-hidden": "true" }, [svgIcon("spark", 16)]), el("span", { class: "vu-navcard__text" }, [el("b", { text: q })]), svgIcon("next", 16)]);
       })));
     }
@@ -188,8 +188,8 @@
       }
       links("Themen", themes, function (t) { return T.href(t); }, function (t) { return t.title; }, function (t) { return t.short + " · " + t.line; });
       links("Strategien", strategies, function (r) { return "#/strategien/" + r.rowId; }, function (r) { return D.V3 ? D.V3.rowTitle(r) : r.title; }, function (r) { return (r.matched ? r.matched + " Treffer · " : "") + String(r.subtitle || "").split(" — ")[0]; });
-      extra.append(el("p", { class: "vu-ltag dx-search-group", text: "Frag Atlas" }),
-        el("a", { class: "vu-navcard dx-ask-q", href: atlasHref(q) }, [el("span", { class: "dx-ask-ic", "aria-hidden": "true" }, [svgIcon("spark", 16)]), el("span", { class: "vu-navcard__text" }, [el("b", { text: "„" + q + "“ als Frage an Atlas senden" })]), svgIcon("next", 16)]));
+      extra.append(el("p", { class: "vu-ltag dx-search-group", text: "Frag die KI" }),
+        el("a", { class: "vu-navcard dx-ask-q", href: atlasHref(q) }, [el("span", { class: "dx-ask-ic", "aria-hidden": "true" }, [svgIcon("spark", 16)]), el("span", { class: "vu-navcard__text" }, [el("b", { text: "„" + q + "“ als Frage an die KI senden" })]), svgIcon("next", 16)]));
     }
 
     function markieren(i) {

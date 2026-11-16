@@ -20,7 +20,7 @@
   var SEEN_KEY = 'vu-welcome-seen-v1', ICONS = '/assets/product-icons.svg#';
   var MIN_S = 15, MAX_S = 45;
 
-  // Neun Welten in der Reihenfolge des Menue-Rasters (assets/site-navigation.js), danach AI Atlas als eigene Zeile (Mockup E02).
+  // Neun Welten in der Reihenfolge des Menue-Rasters (assets/site-navigation.js), danach Vision Universe KI (frueher AI Atlas) als eigene Zeile (Mockup E02).
   var PRODUCTS = [
     { id: 'discover', name: 'Discover', href: '/discover/#/', text: 'Aktien entdecken' },
     { id: 'quant', name: 'Quant', href: '/quant/', text: 'Faktoren je Aktie' },
@@ -31,7 +31,7 @@
     { id: 'elliott', name: 'Elliott', href: '/elliott/', text: 'Wellenstruktur' },
     { id: 'screener', name: 'Screener', href: '/screener/', text: 'Eigene Filter' },
     { id: 'vorsorge', name: 'Vorsorge', href: '/vorsorge/#/', text: 'Sparplan und Rente' },
-    { id: 'atlas', name: 'AI Atlas', href: '/ask/', text: 'Frag in deinen Worten' }
+    { id: 'atlas', name: 'Vision Universe KI', href: '/ask/', text: 'Frag in deinen Worten' }
   ];
   // Ziel aus der Startseite („Wo stehst du?“, Schluessel vu-start-path) mit dem naechsten Schritt.
   var GOALS = {
@@ -355,7 +355,7 @@
     fetchJson(SNAPSHOT).then(function (snap) {
       var chips = indexChips(snap), ix = doc.getElementById('wk-mk-ix');
       if (!ix || chips.length < 2) return;
-      ix.innerHTML = chips.map(function (c) { return '<span' + (c.pct > 0 ? ' class="is-up"' : '') + ' title="' + esc(c.title) + '"><small>' + esc(c.name) + '</small><b>' + esc(signed(c.pct, 1)) + '</b></span>'; }).join('');
+      ix.innerHTML = chips.map(function (c) { return '<span' + (c.pct > 0 ? ' class="is-up"' : c.pct < 0 ? ' class="is-down"' : '') + ' title="' + esc(c.title) + '"><small>' + esc(c.name) + '</small><b>' + esc(signed(c.pct, 1)) + '</b></span>'; }).join('');
       ix.hidden = false;
     }).catch(function () { /* ohne Snapshot bleibt die Zeile der Märkte weg */ });
   }
@@ -633,7 +633,7 @@
     arc.setAttribute('stroke-dasharray', (226.2 * sum.up / sum.measured).toFixed(1) + ' 226.2');
     num.textContent = sum.up + '/' + sum.measured;
     doc.getElementById('wk-day-ring').setAttribute('title', sum.up + ' von ' + sum.measured + ' deiner Aktien im Plus');
-    if (move && sum.biggest) { move.textContent = sum.biggest.ticker + ' ' + U().pct(sum.biggest.pct); move.hidden = false; }
+    if (move && sum.biggest) { move.textContent = sum.biggest.ticker + ' ' + U().pct(sum.biggest.pct); move.classList.toggle('wk-pill--down', sum.biggest.pct < 0); move.hidden = false; }
   }
   function renderWatch(A) {
     var C = global.VUCore || {}, W = C.WatchlistView, Id = C.Identity, T = global.VUToday, E = global.VUDashboardEvents, box = doc.getElementById('wk-watch');

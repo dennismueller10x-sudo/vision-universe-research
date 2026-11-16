@@ -33,6 +33,7 @@
 .wk-pill{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:#c8f531;color:#101318;font-size:12.5px;font-weight:800;white-space:nowrap;flex:none;max-width:100%;overflow:hidden}
 .wk-pill--wh{background:var(--wk-on);color:var(--wk-hole)}
 .wk-pill--bk{background:#000;color:#fff}
+.wk-pill.wk-pill--down{background:#c4281c;color:#fff}
 .wk-pill--sm{height:21px;font-size:10.5px;padding:0 8px;letter-spacing:.04em;text-transform:uppercase}
 .wk-btn{height:52px;border-radius:999px;background:#c8f531;color:#101318;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px}
 .wk-btn svg{width:14px;height:14px}
@@ -85,6 +86,7 @@
 .wk-mk-ix{display:flex;gap:6px;margin-top:12px}
 .wk-mk-ix>span{flex:1;min-width:0;background:var(--wk-chip);border-radius:12px;padding:8px 9px}
 .wk-mk-ix>span.is-up{background:var(--wk-up)}
+.wk-mk-ix>span.is-down{background:#c4281c}.wk-mk-ix .is-down small,.wk-mk-ix .is-down b{color:#fff}
 .wk-mk-ix small{display:block;font-size:11px;font-weight:700;color:var(--wk-mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wk-mk-ix b{display:block;font-size:12.5px;font-weight:800;white-space:nowrap}
 :root:not([data-theme=dark]) .wk-mk-ix .is-up small{color:#101318}
@@ -96,7 +98,9 @@
 .wk-st .vu-logo-tile{width:60px;height:60px;border-radius:18px;font-size:13px}
 .wk-st .vu-logo-tile:has(img:not(.vu-logo-wait)) img{padding:9px}
 .wk-st .vu-chg{height:26px;padding:0 9px;font-size:12.5px;gap:2px;font-variant-numeric:normal}
-:root[data-theme=dark] .wk .vu-chg--down{background:#fff;color:#000}
+/* Tagesbewegung wie auf Discover, Ich, Quant und News: Minus rot mit weisser Schrift (5,9:1), Plus neongruen; hell und dunkel
+   (Owner 16.11.2026: „die Bewegung immer -rot plus grün“) */
+.wk .vu-chg--down{background:#c4281c;color:#fff}
 .wk-st-name{display:block;margin-top:8px;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wk-st-sub{display:block;height:30px;font-size:11px;color:var(--wk-mut);overflow:hidden}
 .wk-st-chart{display:block;margin:6px -14px -14px;height:60px}
@@ -175,7 +179,7 @@
 .wk-end{margin:28px 14px 0;text-align:center}
 .wk .wk-lk{color:var(--wk-mut);font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px;min-height:44px}
 
-/* Fenster: Markt (sh-markt) und Story (sh-story). Fenster sind wie im Prototyp immer dunkel. */
+/* Fenster: Markt (sh-markt) und Story (sh-story). Im Dunkeln wie im Prototyp; im Hellen hell (Regeln am Ende der Datei). */
 .wk-pop .vu-sheet-ui{background:#151516;color:#f4f5f1;--vu-ink:#f4f5f1;--vu-inv:#000;--vu-card:#202022;--vu-hair:rgb(255 255 255/.14);--vu-mute:#a1a7af;border-radius:30px 30px 0 0;padding:10px 16px 26px}
 .wk-pop .vu-sheet-body{margin-top:0!important}
 .wk-pop h3,.wk-pop p{margin:0}
@@ -279,3 +283,20 @@ html.wk-story-open,html.wk-story-open body{overflow:hidden}
 .wk-story-card.is-animated>:nth-child(5){animation-delay:.3s}
 @keyframes wk-story-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.wk-story-ring{transition:none}}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Dunkel bleibt wie oben. Ausnahme bleibt dunkel: Fotos, Video-Standbilder und der Video-Spieler (.wk-story-stage). */
+:root:not([data-theme=dark]) .wk-story-i,:root:not([data-theme=dark]) .wk-story-i .vu-logo-tile{background:var(--wk-tile);color:#101318}
+:root:not([data-theme=dark]) .wk-pop .vu-sheet-ui{background:#fff;color:#000;--vu-ink:#000;--vu-inv:#fff;--vu-card:#f1f1f1;--vu-hair:rgb(0 0 0/.1);--vu-mute:#5d636b}
+:root:not([data-theme=dark]) .wk-pop .wk-btn--ol{border-color:rgba(0,0,0,.28);color:#000}
+:root:not([data-theme=dark]) .wk-pop p.wk-m-sub,:root:not([data-theme=dark]) .wk-m-card .wk-eb,:root:not([data-theme=dark]) .wk-m-card small{color:#5d636b}
+:root:not([data-theme=dark]) .wk-m-g .wk-gauge path{stroke:#d9d9d9}
+:root:not([data-theme=dark]) .wk-m-g .wk-gauge path.is-on{stroke:#0d0f12}
+:root:not([data-theme=dark]) .wk-m-c{color:#3a3d42}
+:root:not([data-theme=dark]) .wk-bar{background:#d9d9d9}
+:root:not([data-theme=dark]) .wk-bar i{background:#0d0f12}
+:root:not([data-theme=dark]) .wk-m-card{background:#f1f1f1}
+:root:not([data-theme=dark]) .wk-s{background:radial-gradient(120% 70% at 50% 20%,#eef7d2,#fff 65%)}
+:root:not([data-theme=dark]) .wk-s-bars i{background:rgba(0,0,0,.14)}
+:root:not([data-theme=dark]) .wk-s-bars i.is-on{background:#000}
+:root:not([data-theme=dark]) .wk-s-p{color:#3a3d42}

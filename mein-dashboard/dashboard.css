@@ -28,12 +28,7 @@ html[data-md-view=gespeichert] .md-only-watch,html[data-md-view=watchlist] .md-o
 .md-skel{min-height:300px;border-radius:22px;margin-top:8px}
 .md .ka-notice:not(:empty){margin:8px 0 0;border-radius:18px}
 
-/* Reiter im Inhalt (Prototyp .tabs2/.tab): Ich · Gespeichert · Konto */
-.md-tabs{position:sticky;top:var(--vu-navigation-height,56px);z-index:4;display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--md-bg) 70%,transparent)}
-.md-tabs::-webkit-scrollbar{display:none}
-.md .md-tab{position:relative;height:36px;padding:0 15px;border-radius:99px;background:var(--md-tile);font-weight:700;font-size:14px;display:inline-flex;align-items:center;white-space:nowrap;flex:none}
-.md .md-tab[aria-current]{background:var(--md-on);color:var(--md-onink)}
-.md-tab::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
+/* Reiter im Inhalt (Prototyp .tabs2/.tab): Ich · Gespeichert · Konto – gemeinsam mit den Kontoseiten in /konto/konto.css */
 
 /* Abschnittstitel (.sh) */
 .md-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 14px;margin:26px 0 10px}

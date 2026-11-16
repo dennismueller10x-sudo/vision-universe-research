@@ -232,10 +232,13 @@ const me = page => page.evaluate(async b => (await fetch(b + '/v1/me', {credenti
   // Kontoseite: Einstellungen statt Investment-Inhalten
   await page.goto(`${base}/konto/`);
   await page.waitForSelector('#ka-account:not([hidden])');
-  // E07: keine Konto-Reiter im Inhalt mehr; Watchlist und Konto sind getrennte Reiter von „Mein Bereich“ unter dem Kopf.
-  check(!(await page.$('main a[href="/konto/watchlist/"]')) && await page.isVisible('vu-navigation a.tab[data-id=watchlist][href="/mein-dashboard/"]')
-    && await page.isVisible('vu-navigation a.tab[data-id=konto][aria-current=page]') && await page.isVisible('#vu-dock a[data-id=ich][aria-current=page]'),
-    'Konto: Watchlist ueber Mein Dashboard, Kontonavigation nur Konto');
+  // App-Konzept 2 (Vorlage Prototyp #v-ich, Owner 16.11.2026): Watchlist und Konto sind getrennte Reiter von „Mein Bereich“, jetzt
+  // im Inhalt wie auf /mein-dashboard/ (Ich · Gespeichert · Konto); die Reiterzeile des Rahmens bleibt verborgen.
+  await page.waitForSelector('#vu-dock a[data-id=ich][aria-current=page]');
+  check(!(await page.$('main a[href="/konto/watchlist/"]')) && await page.isVisible('main .md-tabs a.md-tab[href="/mein-dashboard/"]')
+    && await page.isVisible('main .md-tabs a.md-tab[href="/konto/"][aria-current=page]') && !(await page.isVisible('vu-navigation nav.tabs'))
+    && await page.isVisible('#vu-dock a[data-id=ich][aria-current=page]'),
+    'Konto: Watchlist ueber Ich (Reiter im Inhalt), Konto aktiv');
   check(await page.isHidden('#ka-pro-pending'), 'Konto Free: kein Pro-Hinweis');
   await audit(page, 'Konto');
   await shot(page, 'free-04-konto');

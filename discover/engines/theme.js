@@ -25,7 +25,7 @@
   var VERSION = "discover-theme-1.0.0";
   var KEY = "vu-discover-theme-v1";
   var MODES = ["light", "dark"];
-  var BAR = { light: "#f7f7f4", dark: "#08080a" };
+  var BAR = { light: "#ffffff", dark: "#08080a" };
 
   function label(mode) {
     return mode === "dark" ? "Dunkel" : "Hell";

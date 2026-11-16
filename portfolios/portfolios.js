@@ -487,6 +487,24 @@
     return '<span class="pfp-seg pfp-mt12" role="img" aria-label="' + esc(GROUPS.map(function (g, i) { return n[i] + " " + g.label; }).join(", ")) + '">' + n.map(function (x, i) { return x ? '<i class="' + cls[i] + '" style="width:' + (x / tot * 100).toFixed(1) + '%"></i>' : ""; }).join("") + "</span>" +
       '<span class="pfp-fl pfp-sb pfp-xs pfp-b7 pfp-mt8">' + GROUPS.map(function (g, i) { return '<span class="pfp-fl pfp-g6"><i class="pfp-key ' + cls[i] + '" aria-hidden="true"></i>' + n[i] + " " + esc(g.label) + "</span>"; }).join("") + "</span>";
   }
+  /* Wertentwicklung seit dem Start in der Kopfkachel (Owner 16.11.2026: „Wertentwicklung seit … an dem Tag, wo es dann
+     existiert“). Keine neue Rechnung: nur d.perf, das der Export selbst führt (Quant: performance.state = PUBLISHED; KI: nav),
+     dieselbe Zahl wie auf Karte und Depotseite. Ohne belastbare Zahl steht der Starttag mit dem ehrlichen Satz. In der Gruppe
+     je Depot, auf der Übersicht je Gruppe (die Zahlen je Depot stehen auf den Karten darunter). */
+  function heroPerf(mine, g) {
+    var startOf = function (list) { return list.map(function (d) { return d.perf ? d.perf.since : d.liveSince; }).filter(Boolean).sort()[0] || null; };
+    var open = function (since) { return since ? "Wertentwicklung ab " + dDe(since) + ", erscheint mit dem ersten belastbaren Stand" : "Wertentwicklung erscheint mit dem ersten belastbaren Stand"; };
+    var line = function (head, text) { return '<li><b class="pfp-b7">' + esc(head) + ":</b> " + text + "</li>"; };
+    var rows = g ? mine.map(function (d) {
+      return line(cardTitle(d).name, d.perf ? "Wertentwicklung seit " + esc(dDe(d.perf.since)) + " " + esc(U.pct(d.perf.pct, 1)) + " (nach Kosten, Stand " + esc(dDe(d.perf.asOf)) + ")" : esc(open(d.liveSince)));
+    }) : GROUPS.map(function (x) {
+      var list = mine.filter(function (d) { return d.group === x.id; }), withPerf = list.filter(function (d) { return d.perf; });
+      if (!list.length) return "";
+      return line(x.label, withPerf.length ? "Wertentwicklung seit " + esc(dDe(startOf(withPerf))) + " je Depot auf den Karten" + (withPerf.length < list.length ? " (" + withPerf.length + " von " + list.length + ")" : "")
+        : esc(open(startOf(list))));
+    });
+    return '<ul class="pfp-xs pfp-mut pfp-mt12 pfp-perf">' + rows.join("") + "</ul>";
+  }
   function overview(all, groupId) {
     var g = groupId ? GROUPS.filter(function (x) { return x.id === groupId; })[0] : null;
     var mine = g ? all.filter(function (d) { return d.group === g.id; }) : all;
@@ -496,7 +514,7 @@
       '<div class="pfp-fl pfp-g12 pfp-mt12 pfp-big"><b class="pfp-num">' + mine.length + '</b><span class="pfp-sm pfp-mut pfp-b7">' + (mine.length === 1 ? "Musterdepot" : "Musterdepots") + ",<br>ohne echtes Geld</span></div>" +
       '<h1 class="pfp-h1">' + (g ? esc(g.title) : "Was die Regeln gerade halten") + '</h1><p class="pfp-sm pfp-sec">' + (g ? esc(g.lead) : "Jedes Musterdepot nimmt Aktien streng nach seiner Methode auf und gibt sie ab, ohne echtes Geld.") + "</p>" +
       (g ? "" : heroCounts(all)) +
-      '<p class="pfp-xs pfp-mut pfp-mt12">Wertentwicklung seit Start: erscheint, sobald belastbar.</p></div></section>';
+      heroPerf(mine, g) + "</div></section>";
     var groups = g ? [g] : GROUPS;
     var body = groups.map(function (x) {
       var list = all.filter(function (d) { return d.group === x.id; });

@@ -147,7 +147,7 @@
     { href: BASE + "#/forschung", label: "Forschung" },
     { href: BASE + "#/aktien", label: "Aktien" },
     { href: BASE + "#/methodik", label: "Methodik" },
-    { href: "/ask/", label: "AI Atlas" },
+    { href: "/ask/", label: "Vision Universe KI" },
     { href: BASE + "markt/", label: "Marktdaten" },
     { href: BASE + "data-inspector/", label: "Data Inspector" }
   ];

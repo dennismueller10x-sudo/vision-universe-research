@@ -80,6 +80,9 @@ async function main() {
   for (const width of WIDTHS) for (const t of TICKERS) for (const world of WORLDS) {
     const name = `${world} ${t} ${width}px`, t0 = Date.now();
     const ctx = await browser.newContext({ viewport: { width, height: 1000 } });
+    /* Live-Relay wie in scripts/technical/world/browser-qa.mjs: der echte Server lehnt den lokalen Prueforigin mit 403 ab; Playwright
+       beantwortet die Verbindung selbst und sendet keine Kurse. Verglichen wird der Kopfkurs aus den Daten, nicht aus dem Strom. */
+    await ctx.routeWebSocket(/^wss?:\/\/live\.visionuniverse\.de\//, (ws) => { ws.onMessage(() => { /* Stub: keine Kurse */ }); });
     const page = await ctx.newPage(), errors = [];
     page.on("pageerror", (e) => errors.push("PAGEERROR " + e.message));
     page.on("console", (m) => { if (m.type() === "error" && !/Failed to load resource/.test(m.text())) errors.push("CONSOLE " + m.text()); });

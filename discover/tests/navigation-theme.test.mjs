@@ -65,8 +65,8 @@ test('the shared header remains themeable and offers light and dark contrast', (
   assert.match(dark, /:host\(\[solid\]\) header\{background:rgba\(0,0,0,\.82\)/);
   assert.match(light, /:host\(\[open\]\) \.panel/);
   assert.match(dark, /:host\(\[open\]\) \.panel/);
-  // Menue: dunkler Bogen des Prototyps (#151516), auf beiden Schemata gleich
-  assert.match(light, /\.panel\{[^}]*background:#151516/);
+  // Menue: dunkel der Bogen des Prototyps (#151516); hell ein weisser Bogen (Owner 16.11.2026: im Hellen ist alles hell)
+  assert.match(light, /\.panel\{[^}]*background:#fff/);
   assert.match(dark, /\.panel\{[^}]*background:#151516/);
   assert.doesNotMatch(source, /Development Preview[^\n]*<[^>]*class="preview"/);
 });

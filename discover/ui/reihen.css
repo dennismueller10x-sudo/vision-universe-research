@@ -78,6 +78,7 @@
 .dr-sk__l{display:flex;gap:4px;margin-top:8px;min-height:26px}
 .dr-sk__l .vu-logo-tile{width:26px;height:26px;border-radius:8px;font-size:7px}
 .dr-hud{display:grid;place-items:center;border-radius:12px;background:#0e1013;color:var(--vu-lime);flex:none}
+:root:not([data-theme=dark]) .dr-hud{background:var(--vu-lime);color:#101318}
 
 /* Ende: Swipen-Karte und Hinweis */
 .dr-sec--end{margin-top:26px}
@@ -258,7 +259,8 @@ body.dv2 .dr-pv__rows .vu-chip,.dr-pv__rows .vu-chip{height:30px;min-height:30px
    App-Konzept 2 · Startseite 1:1 nach Prototyp „v-discover“ (Owner 15.11.2026: „Prototyp muss 1:1 umgesetzt werden“).
    Masse aus dem Prototyp (proto/p1.js V.discover, shell.js, mock/kit.js K.css): Seitenrand 14 px, Kachel #151516 / 22 px,
    Abschnittskopf 22 px, Poster 128 px, Top-10-Ziffer 104 px, Themen-Poster 150 × 204, Aktie des Tages 520 px bis an den Rand.
-   Hell bleibt wählbar: Flächen und Schrift über die Variablen aus assets/vu-ui.css; die Aktie des Tages ist in beiden Modi schwarz.
+   Hell bleibt wählbar: Flächen und Schrift über die Variablen aus assets/vu-ui.css; die Aktie des Tages ist im Dunkeln schwarz und
+   im Hellen weiß (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
    ===================================================================== */
 /* Nur wenn der Rahmen beide Schalter trägt (Kopf durchsichtig, Reiter im Inhalt): solange er eigene Reiter zeigt (data-vu-tabs=discover), bleibt Platz für Kopf und Reiter. */
 html[data-vu-bleed][data-vu-tabs=inhalt] body.dv2{padding-top:0!important}
@@ -312,6 +314,21 @@ html body #v2-main .dp-rnd[aria-pressed=true]{background:#c8f531;color:#101318}
 .dp-hero__dots i{width:8px;height:8px;border-radius:9px;background:#55595f}
 .dp-hero__dots i.on{background:#c8f531}
 .dp-hero--wait .v2-load-state,.dp-hero--wait .dp-hero__body{position:absolute;left:14px;right:14px;bottom:36px;margin:0;color:#a1a7af}
+/* Aktie des Tages im Hellen: weiße Bühne, dunkle Schrift, Kurslinie in dunklem Grün (Kontrast ≥ 3:1 auf Weiß); dunkel unverändert */
+:root:not([data-theme=dark]) .dp-hero{background:radial-gradient(120% 70% at 70% 8%,#eef7d2,#fff 62%) #fff;color:#000;
+  --vu-ink:#000;--vu-inv:#fff;--vu-card:#f4f4f4;--vu-hair:#e9e9e9;--vu-mute:#5d636b;--vu-bg:#fff;--vu-focus-ring:#4f6b00}
+:root:not([data-theme=dark]) .dp-hero__chart svg path:not([fill^=url]){stroke:#4f6b00}
+:root:not([data-theme=dark]) .dp-hero__chart svg path[fill^=url]{opacity:.55}
+:root:not([data-theme=dark]) .dp-hero__chart svg circle{stroke:#fff}
+:root:not([data-theme=dark]) .dp-hero__shade{background:linear-gradient(rgba(255,255,255,0) 42%,rgba(255,255,255,.94) 80%)}
+:root:not([data-theme=dark]) .dp-hero .dp-pill--bk{background:#e9e9e9;color:#000}
+:root:not([data-theme=dark]) .dp-hero__id h2,:root:not([data-theme=dark]) .dp-hero__big b{color:#000}
+:root:not([data-theme=dark]) .dp-hero__id p{color:#3a3d42}
+:root:not([data-theme=dark]) .dp-hero__big>div>span,:root:not([data-theme=dark]) .dp-hero--wait .v2-load-state,:root:not([data-theme=dark]) .dp-hero--wait .dp-hero__body{color:#5d636b}
+:root:not([data-theme=dark]) body #v2-main .dp-hero .dp-rnd{background:rgba(0,0,0,.07);color:#000}
+:root:not([data-theme=dark]) body #v2-main .dp-hero .dp-rnd[aria-pressed=true]{background:#c8f531;color:#101318}
+:root:not([data-theme=dark]) .dp-hero__dots i{background:#c9c9cc}
+:root:not([data-theme=dark]) .dp-hero__dots i.on{background:#000}
 
 /* Reiter im Inhalt (Prototyp „tabs2“) */
 .dp-tabs{display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none}
@@ -424,7 +441,25 @@ html body #v2-main .dp-rows .dp-find svg{width:20px;height:20px}
 .dp-home a.dv3-swipecard b{font-size:18px;font-weight:800;line-height:1.15}
 .dp-home a.dv3-swipecard small{font-size:12.5px;font-weight:700;color:#101318}
 .dp-home a.dv3-swipecard .dp-chev{flex:none;display:grid;place-items:center;width:36px;height:36px;border-radius:99px;background:#101318;color:#c8f531}
+:root:not([data-theme=dark]) .dp-home a.dv3-swipecard .dp-chev{background:var(--vu-lime);color:#101318}
 .dp-home .vu-next{margin-top:28px}
 .dp-end{margin:28px 0 0;text-align:center}
 .dp-end a{color:var(--vu-mute);font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .dp-home .dr-sec--end .vu-help{margin-top:16px;font-size:11.5px}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .dr-rowhero{background:#f4f4f4;color:#000;--vu-ink:#000;--vu-inv:#fff;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-card:#e9e9e9;--vu-focus-ring:#4f6b00}
+:root:not([data-theme=dark]) .dr-rowhero__b{background:#e4e4e4;color:#000}
+:root:not([data-theme=dark]) .dr-tag--ink{background:#e4e4e4;color:#3a3d42}
+:root:not([data-theme=dark]) .dr-rowhero h1 span{color:#4f6b00}
+:root:not([data-theme=dark]) .dr-rowhero__sub{color:#3a3d42}
+:root:not([data-theme=dark]) .dr-rowhero__n{color:#5d636b}
+:root:not([data-theme=dark]) .dr-all{background:#fff;color:#000;--vu-ink:#000;--vu-inv:#fff;--vu-card:#f4f4f4;--vu-hair:#e9e9e9;--vu-mute:#5d636b;--vu-bg:#fff;--vu-focus-ring:#4f6b00}
+:root:not([data-theme=dark]) .dr-all__head .vu-round{background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .dr-all .vu-lead,:root:not([data-theme=dark]) .dr-all__g>span,:root:not([data-theme=dark]) .dr-all__g>a,:root:not([data-theme=dark]) .dr-all__r>span:last-child{color:#5d636b}
+:root:not([data-theme=dark]) .dr-all__list{background:#f4f4f4}
+:root:not([data-theme=dark]) .dr-all__r{border-top-color:#e4e4e4;color:#000}
+:root:not([data-theme=dark]) .dr-all__r:focus-visible{outline-color:#4f6b00}
+:root:not([data-theme=dark]) .dr-rowhero__act .vu-btn--line:not([aria-pressed=true]){border-color:#b4b8bd;color:#000}
+:root:not([data-theme=dark]) .dr-all__r>span:not(:first-child){color:#5d636b}

@@ -489,3 +489,22 @@ main.hf-main:has(>.hp){padding-bottom:20px}
 .vu-sheet-ui .hf-dl dt{font-weight:800}
 .vu-sheet-ui .hf-dl dd{margin:0 0 6px;color:var(--vu-mute)}
 .vu-sheet-ui .hf-legal{margin-top:0}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .hf-story{background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .hf-story>.vu-ltag,:root:not([data-theme=dark]) .hf-story-r .vu-ltag{color:#5d636b}
+:root:not([data-theme=dark]) .hf-story-r{border-top-color:#dcdcdc}
+:root:not([data-theme=dark]) .hf-story-r .hf-hud{background:var(--vu-lime);color:#101318}
+:root:not([data-theme=dark]) .hf-story .vu-verdict--mid{background:#dcdcdc;color:#000}
+:root:not([data-theme=dark]) .hf-story .vu-verdict--weak{background:#000;color:#fff}
+:root:not([data-theme=dark]) .hf-hero{background:#f4f4f4;color:#000;--vu-card:#e9e9e9;--vu-hair:#dcdcdc}
+:root:not([data-theme=dark]) .hf-hero .vu-ltag{color:#5d636b}
+:root:not([data-theme=dark]) .hf-hero .vu-lt{color:#000}
+:root:not([data-theme=dark]) .hf-hero .hf-qb-note{color:#3a3d42}
+:root:not([data-theme=dark]) .hf-hero .hf-spanel{background:#fff;border-color:#dcdcdc}
+/* Kennzahlen in der Geschichte der Aktie (#/aktie/<T>) im Hellen: dunkle Zahl, Unterzeile grau (axe color-contrast ≥ 4,5:1) */
+:root:not([data-theme=dark]) .hf-story .vu-stats>div{border-color:#dcdcdc}
+:root:not([data-theme=dark]) .hf-story .vu-stats b{color:#000}
+:root:not([data-theme=dark]) .hf-story .vu-stats .is-lime b{color:#4f6b00}
+:root:not([data-theme=dark]) .hf-story .vu-stats span{color:#5d636b}

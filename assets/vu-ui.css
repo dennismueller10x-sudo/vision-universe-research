@@ -356,3 +356,26 @@ a.vu-next{display:flex;align-items:center;gap:12px;margin-top:28px;padding:18px;
 a.vu-next b{margin-top:4px;color:#fff;font-size:22px;font-weight:800;letter-spacing:-.025em;line-height:1.1;text-wrap:balance}
 .vu-next__t>span:last-child:not(.vu-ltag){margin-top:4px;font-size:13px;color:#9b9b9b}
 .vu-next>i{flex:none;width:46px;height:46px;border-radius:50%;background:var(--vu-lime);color:#000;display:grid;place-items:center}
+
+/* ------------------------------------------------------------- Hell ist vollständig hell (Owner 16.11.2026)
+   „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“. Im Hellen gibt es keine dunklen Flächen
+   mehr: .vu-night, .vu-tap--night, „Weiter“-Karte (.vu-next) und Symbolkachel (.vu-hud) folgen den Hell-Marken. Dunkel bleibt
+   genau wie oben (Prototyp-Abnahme): alle Regeln hier gelten nur unter :root:not([data-theme=dark]).
+   Ausgenommen ist die öffentliche Startseite (<html data-vu-public>): sie hat ihren eigenen Standard. */
+:root:not([data-theme=dark]):not([data-vu-public]) :is(.vu-night,.vu-tap--night){--vu-ink:#000;--vu-inv:#fff;--vu-card:#fff;--vu-hair:#e9e9e9;--vu-mute:#6e6e6e;--vu-focus-ring:#4f6b00;background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]):not([data-vu-public]) :is(.vu-night,.vu-tap--night) .vu-stat__v,
+:root:not([data-theme=dark]):not([data-vu-public]) :is(.vu-night,.vu-tap--night) .vu-stats .is-lime b,
+:root:not([data-theme=dark]):not([data-vu-public]) .vu-night .vu-delta.is-up>b:last-child,
+:root:not([data-theme=dark]):not([data-vu-public]) .vu-night .vu-div__r>b.is-up{color:var(--vu-ink)}
+:root:not([data-theme=dark]):not([data-vu-public]) .vu-night .vu-delta.is-up .vu-delta__bar i.is-diff,
+:root:not([data-theme=dark]):not([data-vu-public]) .vu-night .vu-div__b i.is-up{box-shadow:inset 0 0 0 1.5px #000}
+:root:not([data-theme=dark]):not([data-vu-public]) :is(.vu-night,.vu-tap--night)>.vu-ring circle.is-on{stroke:var(--vu-ink)}
+:root:not([data-theme=dark]):not([data-vu-public]) :is(.vu-night,.vu-tap--night)>.vu-radar .vu-radar__a{fill:rgb(200 245 49/.55);stroke:#000}
+:root:not([data-theme=dark]):not([data-vu-public]) .vu-tap--glow.vu-tap--night{box-shadow:0 0 0 1.5px #000}
+:root:not([data-theme=dark]):not([data-vu-public]) body a.vu-next,:root:not([data-theme=dark]):not([data-vu-public]) body a.vu-next:hover{background:#f4f4f4;color:#000;box-shadow:0 0 0 1.5px #000}
+:root:not([data-theme=dark]):not([data-vu-public]) body a.vu-next b{color:#000}
+:root:not([data-theme=dark]):not([data-vu-public]) .vu-next .vu-ltag{color:#4f6b00}
+:root:not([data-theme=dark]):not([data-vu-public]) .vu-next__t>span:last-child:not(.vu-ltag){color:#6e6e6e}
+:root:not([data-theme=dark]):not([data-vu-public]) body .vu-hud:not(.vu-hud--lime){background:var(--vu-lime);border-color:transparent;color:#000}
+/* Auf neongrünen Flächen bleibt die Symbolkachel schwarz (sonst verschwindet sie) */
+:root:not([data-theme=dark]):not([data-vu-public]) body :is(.vu-box--lime,.vu-tap--lime) .vu-hud:not(.vu-hud--lime){background:#000;color:var(--vu-lime)}

@@ -250,6 +250,11 @@ html body.dv2 .dv3-intro .v2-search-arrow{margin:0;width:38px;height:38px;border
 .dv3-gesture .dv3-b--skip{background:#2a2a2a;color:#fff}
 .dv3-gesture .dv3-b--open{background:#fff;color:#000}
 .dv3-gesture .vu-btn{margin-top:12px}
+:root:not([data-theme=dark]) .dv3-gesture{background:rgb(255 255 255/.95);color:#000}
+:root:not([data-theme=dark]) .dv3-gesture h2{color:#000}
+:root:not([data-theme=dark]) .dv3-gesture p{color:#3a3d42}
+:root:not([data-theme=dark]) .dv3-gesture .dv3-b--skip{background:#e9e9e9;color:#000}
+:root:not([data-theme=dark]) .dv3-gesture .dv3-b--open{background:#000;color:#fff}
 
 /* D08 Watchlist */
 .dv3-sum{display:flex;align-items:center;gap:14px;margin-top:16px;padding:16px 18px;border-radius:22px}
@@ -416,3 +421,17 @@ html body.dv2 .v2-main>.dx-daten{max-width:640px;margin-inline:auto;padding:0}
 .dx-daten .dx-daten-abschnitt{max-width:none;margin-top:10px;padding:16px;border-top:0;border-radius:22px;background:var(--vu-card)}
 .dx-daten .dx-daten-abschnitt h2{font:800 17px/1.2 var(--vu-font);letter-spacing:-.02em}
 .dx-daten .dx-daten-abschnitt p{font-size:13.5px;line-height:1.5}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .dv3-baro{background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .dv3-baro .vu-ltag{color:#5d636b}
+:root:not([data-theme=dark]) .dv3-baro__word{color:#000}
+:root:not([data-theme=dark]) .dv3-baro__head span{color:#3a3d42}
+:root:not([data-theme=dark]) .dv3-baro__text{color:#1d2024}
+:root:not([data-theme=dark]) .dv3-baro__chips span{background:#e4e4e4;color:#000}
+:root:not([data-theme=dark]) .dv3-baro .dv3-baro__word{color:#000!important}
+:root:not([data-theme=dark]) .dv3-scale--ink li{color:#5d636b}
+:root:not([data-theme=dark]) .dv3-scale--ink i{background:#dcdcdc}
+:root:not([data-theme=dark]) .dv3-scale--ink li.on{color:#000}
+:root:not([data-theme=dark]) .dv3-scale--ink li.on i{box-shadow:0 0 0 1.5px #000}

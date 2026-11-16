@@ -209,3 +209,20 @@
 .cb-veil .cb-sheet{background:#151515;color:#fff;border-color:#262626;border-radius:22px 22px 0 0}
 .cb-veil .cb-sheet h4{color:#9b9b9b}
 @media(min-width:640px){.cb-veil .cb-sheet{border-radius:22px}}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Die Karten „Ausblick“, „Lesart“, „keine Zählung“ und die Kapitel-Geschichte sind im Hellen hellgrau mit dunkler Schrift;
+   die Urteils-Pillen kehren sich um. Dunkel bleibt unverändert. */
+:root:not([data-theme=dark]) .cb-story,:root:not([data-theme=dark]) #el-detail .cb-story,:root:not([data-theme=dark]) #el-detail .cb-ew-say,
+:root:not([data-theme=dark]) #el-detail .cb-ew-none,:root:not([data-theme=dark]) #el-detail .cb-outlook-sec .cb-hero{background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .cb-story>.vu-ltag,:root:not([data-theme=dark]) .cb-story-r .vu-ltag,:root:not([data-theme=dark]) #el-detail .cb-ew-say .vu-ltag,
+:root:not([data-theme=dark]) #el-detail .cb-outlook-sec .cb-hero .cb-kicker{color:#6e6e6e}
+:root:not([data-theme=dark]) .cb-story-r{border-top-color:#dcdcdc}
+:root:not([data-theme=dark]) .cb-story-r p,:root:not([data-theme=dark]) #el-detail .cb-ew-say .vu-mt,:root:not([data-theme=dark]) #el-detail .cb-ew-none .vu-mt{color:#000}
+:root:not([data-theme=dark]) #el-detail .cb-outlook-sec .cb-structure{color:#3a3a3a}
+:root:not([data-theme=dark]) .cb-story .vu-verdict--mid,:root:not([data-theme=dark]) #el-detail .cb-ew-say .vu-verdict--mid{background:#dcdcdc;color:#000}
+:root:not([data-theme=dark]) .cb-story .vu-verdict--weak,:root:not([data-theme=dark]) #el-detail .cb-ew-say .vu-verdict--weak,
+:root:not([data-theme=dark]) #el-detail .cb-hero-verdict{background:#000;color:#fff;border-color:#000}
+:root:not([data-theme=dark]) .cb-story .vu-verdict--none{border-color:#6e6e6e;color:#6e6e6e}
+:root:not([data-theme=dark]) #el-detail .cb-ew-none .vu-ltag,:root:not([data-theme=dark]) #el-detail .cb-ew-none .cb-ew-none-p,
+:root:not([data-theme=dark]) #el-detail .cb-ew-none .vu-verdict--none{color:#6e6e6e;border-color:#6e6e6e}

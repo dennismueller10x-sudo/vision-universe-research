@@ -173,3 +173,8 @@
 .sf-sheet .sf-stage[data-s="locked"] { color: var(--vu-mute); background: transparent; box-shadow: inset 0 0 0 1.5px var(--vu-mute); }
 .sf-sheet .sf-step { border: 0; background: var(--vu-ink); color: var(--vu-inv); }
 .sf-sheet .sf-step[data-s="locked"] { background: transparent; color: var(--vu-mute); box-shadow: inset 0 0 0 1.5px var(--vu-mute); }
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .sf-k-hero .sf-preview{color:#5d636b}
+:root:not([data-theme=dark]) .sf-k-hero .sf-preview[data-stale="true"]{color:#000}

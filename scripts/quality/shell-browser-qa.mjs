@@ -259,6 +259,50 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, end, sidebarEnd, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
+  // Kopf mit Welten-Wechsler (Owner 16.11.2026): rechts KI · Suche · Profil, ohne „i“ und Datums-Pille. Die KI ist eine
+  // neongruene Pille (Owner 16.11.2026: „da muss man auf jeden Fall noch KI hinschreiben. Vision Universe KI“): Funke, darueber
+  // klein „VISION UNIVERSE“, darunter gross „KI“, Schrift #101318, sichtbar 38 px, Tippflaeche 44 px. Auch mit langem
+  // Modulnamen (Supertrader, Fundamental, Hedgefonds, Portfolios) liegt alles im Bild und nichts ist abgeschnitten; die
+  // Dachzeile entfaellt nur als letzte Stufe (tightest), „KI“ bleibt immer. In beiden Schemata.
+  for (const [path, scheme] of [['/discover/', 'dark'], ['/supertrader/', 'dark'], ['/fundamental/', 'dark'], ['/hedgefonds/', 'dark'], ['/portfolios/', 'dark'], ['/fundamental/', 'light'], ['/hedgefonds/', 'light']]) {
+    const where = `kopf ${path} ${scheme} @${vpName}`;
+    await fresh();
+    try {
+      await page.addInitScript((t) => { try { localStorage.setItem('vu-discover-theme-v1', t); } catch {} }, scheme);
+      await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const k = await page.evaluate(() => {
+        const host = document.querySelector('vu-navigation'), root = host.shadowRoot, row = root.querySelector('.row'), box = (sel) => { const n = root.querySelector(sel); if (!n || !n.getClientRects().length) return null; const r = n.getBoundingClientRect(), a = getComputedStyle(n, '::after'); return { x: Math.round(r.left), r: Math.round(r.right), w: Math.round(r.width), h: Math.round(r.height), tap: Math.round(r.width - 2 * parseFloat(a.left || 0)), tapH: Math.round(r.height - 2 * parseFloat(a.top || 0)), bg: getComputedStyle(n).backgroundColor, ink: getComputedStyle(n).color, label: n.getAttribute('aria-label'), href: n.getAttribute('href') }; };
+        const name = root.querySelector('.world-name'), ki = root.querySelector('.hb.ki'), small = ki && ki.querySelector('.ki-t small'), big = ki && ki.querySelector('.ki-t b'), tools = root.querySelector('.tools').getBoundingClientRect(), rb = row.getBoundingClientRect();
+        const txt = (n) => n && n.getClientRects().length ? { t: n.textContent.trim(), up: getComputedStyle(n).textTransform, fs: parseFloat(getComputedStyle(n).fontSize), fw: +getComputedStyle(n).fontWeight, cut: n.scrollWidth > n.clientWidth + 1 || n.getBoundingClientRect().right > ki.getBoundingClientRect().right } : null;
+        return { theme: document.documentElement.getAttribute('data-theme'), ki: box('.hb.ki'), small: txt(small), big: txt(big), search: box('.hb.search'), profile: box('.hb.profile'), world: box('.world'), info: !!root.querySelector('.info, .live'),
+          stage: ['tight', 'tighter', 'tightest'].filter((x) => host.hasAttribute(x)), toolsOver: Math.round(tools.right - (rb.right - parseFloat(getComputedStyle(row).paddingRight))), vw: innerWidth, name: name && name.textContent, cut: name ? name.scrollWidth > name.clientWidth + 1 : null };
+      });
+      if (k.theme !== scheme) fail(where, 'Schema ' + k.theme + ' statt ' + scheme);
+      if (k.info) fail(where, '„i“ oder Datums-Pille noch im Kopf');
+      if (!k.ki || k.ki.h !== 38 || k.ki.w < 56 || k.ki.tapH < 44 || k.ki.tap < 44 || k.ki.bg !== 'rgb(200, 245, 49)' || k.ki.ink !== 'rgb(16, 19, 24)' || k.ki.label !== 'Vision Universe KI fragen' || k.ki.href !== '/ask/?fokus=1') fail(where, 'KI-Pille falsch: ' + JSON.stringify(k.ki));
+      if (!k.big || k.big.t !== 'KI' || k.big.fs < 15 || k.big.fs > 16 || k.big.fw < 800 || k.big.cut) fail(where, '„KI“ in der Pille fehlt, zu klein oder abgeschnitten: ' + JSON.stringify(k.big));
+      const tightest = k.stage.includes('tightest');
+      if (!tightest && (!k.small || k.small.t !== 'Vision Universe' || k.small.up !== 'uppercase' || k.small.fs < 7.5 || k.small.fs > 8.5 || k.small.fw < 700 || k.small.cut)) fail(where, '„VISION UNIVERSE“ in der Pille fehlt oder ist abgeschnitten: ' + JSON.stringify(k.small));
+      if (tightest && (k.small || !k.stage.includes('tighter'))) fail(where, 'Dachzeile entfaellt nur als letzte Stufe: ' + JSON.stringify(k.stage));
+      if (tightest && k.vw >= 390) fail(where, 'ab 390 px bleibt „VISION UNIVERSE“ stehen (Stufe ' + k.stage.join('+') + ')');
+      if (!k.search || !k.profile || !(k.ki && k.ki.x < k.search.x && k.search.x < k.profile.x)) fail(where, 'Reihenfolge KI · Suche · Profil falsch');
+      if (k.cut || k.toolsOver > 1 || (k.profile && k.profile.r > k.vw) || (k.world && k.world.x < 0)) fail(where, 'Kopf läuft über oder Name abgeschnitten: ' + JSON.stringify(k));
+      checks.push({ where, kopf: k, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+    // Die Wahl des Schemas gilt im ganzen Kontext: danach wieder ohne gespeicherte Wahl (Standard dunkel) fuer die folgenden Pruefungen.
+    await page.evaluate(() => { try { localStorage.removeItem('vu-discover-theme-v1'); } catch {} }).catch(() => {});
+  }
+  // KI-Knopf: /ask/?fokus=1 setzt den Fokus auf die Eingabe.
+  {
+    const where = `ki fokus @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + '/ask/?fokus=1', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const f = await page.evaluate(() => ({ focus: document.activeElement && document.activeElement.id, title: document.title, h1: document.querySelector('h1')?.textContent }));
+      if (f.focus !== 'ak-q' || f.title !== 'Vision Universe KI' || f.h1 !== 'Vision Universe KI') fail(where, 'Fokus, Titel oder Überschrift falsch: ' + JSON.stringify(f));
+      checks.push({ where, pass: !findings.some((x) => x.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
   // Seiten ohne Dock: der Kopf traegt den Menue-Knopf selbst und passt in jede Breite.
   for (const path of ['/news/', '/willkommen/', '/konto/', '/ask/']) {
     const where = `kopf ohne Leiste ${path} @${vpName}`;
@@ -279,10 +323,18 @@ for (const [vpName, width, height] of VIEWPORTS) {
         if (h.dock) fail(where, 'unerwartetes Dock');
         if (h.overflow > 1 || h.right > h.vw + 1 || h.left < 0 || h.w < 44 || h.h < 44) fail(where, 'Menü-Knopf im Kopf abgeschnitten oder zu klein: ' + JSON.stringify(h));
       }
+      // App-Konzept 2 (Vorlage Prototyp #v-ich, Owner 16.11.2026): /konto/ traegt die Reiter von „Mein Bereich“ im Inhalt wie
+      // /mein-dashboard/ (Ich · Gespeichert · Konto), auch bevor das Konto geladen ist; die Reiterzeile des Rahmens bleibt weg
+      // (ohne erreichbare Konto-API leitet die Seite zur Anmeldung weiter, dann gilt nur die Pruefung des Kopfes).
+      if (path === '/konto/' && new URL(page.url()).pathname === '/konto/') {
+        const k = await page.evaluate(() => { const strip = document.querySelector('vu-navigation').shadowRoot.querySelector('nav.tabs'), tabs = [...document.querySelectorAll('main .md-tabs a')];
+          return { own: document.documentElement.getAttribute('data-vu-tabs'), strip: !!strip && !strip.hidden, labels: tabs.map((a) => a.textContent.trim()).join('|'), current: tabs.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()).join('|') }; });
+        if (k.own !== 'inhalt' || k.strip || k.labels !== 'Ich|Gespeichert|Konto' || k.current !== 'Konto') fail(where, 'Konto: Reiter im Inhalt falsch: ' + JSON.stringify(k));
+      }
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
-  // Atlas (/ask/) nach App-Konzept 2 (Owner 16.11.2026; Vorlage Fenster „suche“ des Prototyps): Rahmen wie jede Seite (Kopf des
+  // Vision Universe KI (/ask/, frueher Atlas) nach App-Konzept 2 (Owner 16.11.2026; Vorlage Fenster „suche“ des Prototyps): Rahmen wie jede Seite (Kopf des
   // Rahmens, kein eigener Kopf), dunkel als Standard (theme-color #08080a), genau eine h1, Eingabe mit mindestens 16 px Schrift
   // (kein Zoom beim Antippen), jede Tippfläche im Inhalt mindestens 44 px, „Daten & Hinweise“ öffnet das Fenster des Rahmens.
   {
@@ -302,9 +354,9 @@ for (const [vpName, width, height] of VIEWPORTS) {
       });
       if (a.h1 !== 1) fail(where, 'genau eine h1 erwartet, gefunden ' + a.h1);
       if (a.theme !== '#08080a') fail(where, 'theme-color nicht dunkel: ' + a.theme);
-      if (a.own || !a.head) fail(where, 'Atlas trägt nicht den Kopf des Rahmens');
+      if (a.own || !a.head) fail(where, 'Die KI-Seite trägt nicht den Kopf des Rahmens');
       if (!a.bar || a.font < 16) fail(where, 'Eingabe fehlt oder Schrift unter 16 px: ' + a.font);
-      if (a.can !== 3 || a.often !== 3) fail(where, 'Start unvollständig („Was Atlas kann“ ' + a.can + ', „Oft gefragt“ ' + a.often + ')');
+      if (a.can !== 3 || a.often !== 3) fail(where, 'Start unvollständig („Was die KI kann“ ' + a.can + ', „Oft gefragt“ ' + a.often + ')');
       if (a.small.length) fail(where, a.small.length + ' Ziele kleiner als 44 px (' + a.small.slice(0, 4).join('; ') + ')');
       if (a.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + a.overflow + ' px');
       await page.locator('main .ak-lk').click();
@@ -313,14 +365,16 @@ for (const [vpName, width, height] of VIEWPORTS) {
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
-  // Konto: Einstellungen und Abonnement tragen Dock („Ich“ aktiv) und die Reiter von „Mein Bereich“ („Konto“ aktiv), vom ersten
-  // Zeichnen an und ohne dass die Seite sie anfordert; Bestellweg (Tarife, Kündigen), Anmeldung, Registrierung und Passwort
-  // bleiben ohne Leiste. Die Konto-API gibt es im statischen Bau nicht: die Prüfung stellt sie unter derselben Herkunft nach
-  // (angemeldet auf den Seiten mit Leiste, abgemeldet auf den übrigen), damit die Seite nicht weiterleitet und ihr echter Inhalt
-  // steht. Adresse und Antworten der API werden vor den Skripten der Seite im Fenster festgelegt, nicht über abgefangene
-  // Netzabrufe: WebKit nimmt /konto/config.js aus seinem Zwischenspeicher und reicht Abrufe über den Service Worker
-  // (assets/pwa.js) an der Prüfung vorbei. Geprüft wird der Rahmen: kein Bedienelement liegt am Seitenende unter dem Dock.
-  for (const [path, bar] of [['/konto/einstellungen/', true], ['/konto/abo/', true], ['/konto/tarife/', false], ['/konto/kuendigen/', false], ['/konto/anmelden/', false], ['/konto/registrieren/', false], ['/konto/passwort/', false]]) {
+  // Konto (App-Konzept 2, Vorlage Prototyp #v-ich, Owner 16.11.2026): Konto, Einstellungen, Abonnement und Watchlist-Detail tragen
+  // Dock („Ich“ aktiv) und dieselben Reiter im Inhalt wie /mein-dashboard/ (Ich · Gespeichert · Konto, <html data-vu-tabs="inhalt">;
+  // „Konto“ aktiv, im Watchlist-Detail „Ich“); die Reiterzeile des Rahmens bleibt verborgen. Bestellweg (Tarife, Kündigen),
+  // Anmeldung, Registrierung und Passwort bleiben ohne Leiste. Die Konto-API gibt es im statischen Bau nicht: die Prüfung stellt sie
+  // unter derselben Herkunft nach (angemeldet auf den Seiten mit Leiste, abgemeldet auf den übrigen), damit die Seite nicht
+  // weiterleitet und ihr echter Inhalt steht. Adresse und Antworten der API werden vor den Skripten der Seite im Fenster festgelegt,
+  // nicht über abgefangene Netzabrufe: WebKit nimmt /konto/config.js aus seinem Zwischenspeicher und reicht Abrufe über den Service
+  // Worker (assets/pwa.js) an der Prüfung vorbei. Geprüft werden Reiter, Dock, genau eine h1, Tippflächen (≥ 44 px, auch über einen
+  // transparenten Rand), Überlauf und dass kein Bedienelement am Seitenende unter dem Dock liegt.
+  for (const [path, bar] of [['/konto/', 'Konto'], ['/konto/einstellungen/', 'Konto'], ['/konto/abo/', 'Konto'], ['/konto/watchlist/', 'Ich'], ['/konto/tarife/', false], ['/konto/kuendigen/', false], ['/konto/anmelden/', false], ['/konto/registrieren/', false], ['/konto/passwort/', false]]) {
     const where = `konto ${path} @${vpName}`;
     await fresh();
     try {
@@ -332,12 +386,13 @@ for (const [vpName, width, height] of VIEWPORTS) {
           if (at < 0) return real(input, init);
           const api = url.slice(at + '/__qa-konto'.length).split('?')[0];
           const data = api === '/v1/session' ? { authenticated: signedIn, user: signedIn ? { id: 'qa', email: 'qa@example.test' } : null }
-            : api === '/v1/me' ? { profile: { displayName: 'QA' }, settings: { appearance: 'system', displayCurrency: 'EUR', experienceLevel: 'beginner', notifications: {} }, newsletter: { available: true, status: 'none' }, entitlements: { plan_id: 'free' } }
+            : api === '/v1/me' ? { user: { id: 'qa', email: 'qa@example.test' }, profile: { displayName: 'QA', createdAt: '2026-10-01T00:00:00Z' }, settings: { appearance: 'system', displayCurrency: 'EUR', experienceLevel: 'beginner', notifications: {} }, newsletter: { available: true, status: 'none' }, entitlements: { plan_id: 'free' } }
             : api === '/v1/me/billing' ? { entitlements: { plan_id: 'free' }, billingAvailable: true, subscriptions: [], invoices: [] }
+            : api === '/v1/watchlist' ? { items: [], limits: { items: 500 } }
             : api === '/v1/plans' ? { plans: [], prices: [] } : {};
           return Promise.resolve(new Response(JSON.stringify(data), { status: signedIn || api !== '/v1/me' ? 200 : 401, headers: { 'content-type': 'application/json' } }));
         };
-      }, bar);
+      }, !!bar);
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       const at = new URL(page.url()).pathname;
       if (at !== path) fail(where, 'Seite hat weitergeleitet nach ' + at);
@@ -345,25 +400,101 @@ for (const [vpName, width, height] of VIEWPORTS) {
       if (bare.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + bare.overflow + ' px');
       if (!bar) { if (bare.dock || bare.tabs) fail(where, 'Leiste auf einer Seite, die ohne Ablenkung bleiben soll: ' + JSON.stringify(bare)); }
       else {
-        const s = await state(page);
-        if (!s) fail(where, 'kein Dock oder keine Reiterzeile');
-        else {
-          if (s.labels.join('|') !== 'Mein Bereich|Ich|Gespeichert|Konto' || s.current.join('|') !== 'Konto' || s.strip.name !== 'Mein Bereich') fail(where, 'Reiter falsch: ' + s.labels.join('|') + ' aktiv ' + s.current.join('|'));
-          if (s.places.join('|') !== DOCK.join('|') || s.place.join('|') !== 'Ich' || !s.menu) fail(where, 'Dock falsch: ' + s.places.join('|') + ' aktiv ' + s.place.join('|'));
-          if (Math.abs(s.strip.top - s.strip.rowBottom) > 1 || s.strip.reserved < s.strip.barBottom - 1) fail(where, 'Inhalt beginnt nicht unter Kopf und Reitern: ' + JSON.stringify(s.strip));
-          if (s.toggle !== 'none') fail(where, 'Menue-Knopf im Kopf doppelt');
-          if (s.small) fail(where, s.small + ' Ziele kleiner als 44 px');
-          if (s.dock.left < 0 || s.dock.right > s.vw || s.dock.bottom > s.vh) fail(where, 'Leiste ausserhalb ihres Platzes ' + JSON.stringify(s.dock));
-          const end = await page.evaluate(() => {
-            scrollTo({ top: document.scrollingElement.scrollHeight, behavior: 'instant' });
-            const dockTop = document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect().top;
-            const controls = [...document.querySelectorAll('main a, main button, main input, main select')].filter((n) => n.getClientRects().length);
-            const last = controls.at(-1), r = last && last.getBoundingClientRect(), hit = r && document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
-            return { dockTop, controls: controls.length, forms: document.querySelectorAll('main form, main .ka-kv').length, bottom: r && r.bottom, reachable: !!hit && (hit === last || last.contains(hit) || hit.contains(last)), label: last && (last.textContent || last.id).trim().slice(0, 30) };
-          });
-          if (!end.forms) fail(where, 'Inhalt der Seite steht nicht (nachgestellte Konto-API): ' + JSON.stringify(end));
-          if (!end.controls || end.bottom > end.dockTop + 1 || !end.reachable) fail(where, 'letztes Bedienelement am Seitenende verdeckt: ' + JSON.stringify(end));
-        }
+        await page.waitForFunction(() => !!document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav'), null, { timeout: 10000 }).catch(() => {});
+        const s = await page.evaluate(() => {
+          const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav'), strip = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs');
+          const tabs = [...document.querySelectorAll('main .md-tabs a')];
+          const reach = (n) => { const b = n.getBoundingClientRect(), a = getComputedStyle(n, '::after'), big = a.content !== 'none' && a.position === 'absolute';
+            return { w: Math.max(b.width, big ? parseFloat(a.width) || 0 : 0), h: Math.max(b.height, big ? parseFloat(a.height) || 0 : 0) }; };
+          // Links im Fliesstext (inline in einem Absatz oder Hinweis) sind nach WCAG 2.5.8 ausgenommen; alle anderen Ziele zaehlen.
+          const inline = (n) => n.tagName === 'A' && getComputedStyle(n).display === 'inline' && !!n.closest('p, li, .ka-hint, .ka-lead');
+          const small = [...document.querySelectorAll('main a, main button, main input:not([type=checkbox]), main select')].filter((n) => n.getClientRects().length && !inline(n)).map((n) => ({ n, s: reach(n) })).filter((x) => x.s.w < 44 || x.s.h < 44)
+            .map((x) => (x.n.className || x.n.tagName) + ' „' + (x.n.textContent || x.n.id).trim().slice(0, 20) + '“ ' + Math.round(x.s.w) + '×' + Math.round(x.s.h));
+          const fields = [...document.querySelectorAll('main input:not([type=checkbox]):not([hidden]), main select')].filter((n) => n.getClientRects().length && parseFloat(getComputedStyle(n).fontSize) < 16).map((n) => n.id);
+          return { own: document.documentElement.getAttribute('data-vu-tabs'), strip: !!strip && !strip.hidden, labels: tabs.map((a) => a.textContent.trim()), current: tabs.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
+            places: nav ? [...nav.querySelectorAll('a')].map((a) => a.textContent.trim()) : [], place: nav ? [...nav.querySelectorAll('a[aria-current=page]')].map((a) => a.textContent.trim()) : [],
+            menu: !!(nav && nav.querySelector('button.menu')), h1: document.querySelectorAll('h1').length, small, fields };
+        });
+        if (s.own !== 'inhalt' || s.strip) fail(where, 'Reiterzeile des Rahmens statt Reiter im Inhalt: ' + JSON.stringify({ own: s.own, strip: s.strip }));
+        if (s.labels.join('|') !== 'Ich|Gespeichert|Konto' || s.current.join('|') !== bar) fail(where, 'Reiter falsch: ' + s.labels.join('|') + ' aktiv ' + s.current.join('|'));
+        if (s.places.join('|') !== DOCK.join('|') || s.place.join('|') !== 'Ich' || !s.menu) fail(where, 'Dock falsch: ' + s.places.join('|') + ' aktiv ' + s.place.join('|'));
+        if (s.h1 !== 1) fail(where, s.h1 + ' h1 statt genau einer');
+        if (s.small.length) fail(where, s.small.length + ' Ziele kleiner als 44 px: ' + s.small.slice(0, 4).join('; '));
+        if (s.fields.length) fail(where, 'Eingaben unter 16 px: ' + s.fields.join(','));
+        const end = await page.evaluate(() => {
+          scrollTo({ top: document.scrollingElement.scrollHeight, behavior: 'instant' });
+          const dock = document.getElementById('vu-dock'), dockTop = dock ? dock.shadowRoot.querySelector('nav').getBoundingClientRect().top : innerHeight;
+          const controls = [...document.querySelectorAll('main a, main button, main input, main select')].filter((n) => n.getClientRects().length);
+          const last = controls.at(-1), r = last && last.getBoundingClientRect(), hit = r && document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+          return { dockTop, controls: controls.length, forms: document.querySelectorAll('main form, main .ka-kv, main .ka-list:not([hidden]), #wl-app:not([hidden])').length, bottom: r && r.bottom, reachable: !!hit && (hit === last || last.contains(hit) || hit.contains(last)), label: last && (last.textContent || last.id).trim().slice(0, 30) };
+        });
+        if (!end.forms) fail(where, 'Inhalt der Seite steht nicht (nachgestellte Konto-API): ' + JSON.stringify(end));
+        if (!end.controls || end.bottom > end.dockTop + 1 || !end.reachable) fail(where, 'letztes Bedienelement am Seitenende verdeckt: ' + JSON.stringify(end));
+      }
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Ich (/mein-dashboard/, Prototyp „App-Konzept 2“ #v-ich): die Seite traegt die Reiter von „Mein Bereich“ selbst im Inhalt
+  // (Ich · Gespeichert · Konto, <html data-vu-tabs="inhalt">), die Reiterzeile des Rahmens bleibt verborgen; Dock mit „Ich“ aktiv.
+  // Angemeldet ueber dieselbe nachgestellte Konto-API wie oben, mit einer Watchlist aus zwei echten Kuerzeln (Kennung aus names.json).
+  // Danach Zurueck/Vor ueber die Reiter im Inhalt (Hash #/gespeichert).
+  for (const [path, expected] of [['/mein-dashboard/', 'Ich'], ['/mein-dashboard/#/gespeichert', 'Gespeichert']]) {
+    const where = `ich ${path} @${vpName}`;
+    await fresh();
+    try {
+      await page.addInitScript(() => {
+        Object.defineProperty(globalThis, 'VU_ACCOUNT_CONFIG', { configurable: true, get: () => ({ endpoint: location.origin + '/__qa-konto' }), set() {} });
+        const real = globalThis.fetch;
+        globalThis.fetch = (input, init) => {
+          const url = String((input && input.url) || input), at = url.indexOf('/__qa-konto/v1/');
+          if (at < 0) return real(input, init);
+          const api = url.slice(at + '/__qa-konto'.length).split('?')[0], json = (data) => new Response(JSON.stringify(data), { status: 200, headers: { 'content-type': 'application/json' } });
+          if (api === '/v1/watchlist') {
+            const W = globalThis.VUCore.WatchlistView;
+            return real(W.PATHS.names).then((r) => r.json()).then((d) => { const ix = W.index(d);
+              return json({ items: ['NVDA', 'AAPL'].map((t) => ({ ticker: t, instrumentId: ix.resolveTicker(t), addedAt: '2026-11-01T00:00:00Z' })).filter((x) => x.instrumentId), limits: { items: 500 } }); });
+          }
+          return Promise.resolve(json(api === '/v1/session' ? { authenticated: true, user: { id: 'qa', email: 'qa@example.test' } }
+            : api === '/v1/me' ? { profile: { displayName: 'QA' }, settings: {}, entitlements: { plan_id: 'free' } } : {}));
+        };
+      });
+      await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const at = new URL(page.url()).pathname;
+      if (at !== '/mein-dashboard/') fail(where, 'Seite hat weitergeleitet nach ' + at);
+      const ich = () => page.evaluate(() => {
+        const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav'), strip = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs');
+        const tabs = [...document.querySelectorAll('main .md-tabs a')];
+        const reach = (n) => { const b = n.getBoundingClientRect(), a = getComputedStyle(n, '::after'), big = a.content !== 'none' && a.position === 'absolute';
+          return { w: Math.max(b.width, big ? parseFloat(a.width) || 0 : 0), h: Math.max(b.height, big ? parseFloat(a.height) || 0 : 0) }; };
+        const small = [...document.querySelectorAll('main a, main button')].filter((n) => n.getClientRects().length).map((n) => ({ n, s: reach(n) })).filter((x) => x.s.w < 44 || x.s.h < 44)
+          .map((x) => (x.n.className || x.n.tagName) + ' „' + x.n.textContent.trim().slice(0, 20) + '“ ' + Math.round(x.s.w) + '×' + Math.round(x.s.h));
+        return { own: document.documentElement.getAttribute('data-vu-tabs'), labels: tabs.map((a) => a.textContent.trim()), current: tabs.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
+          places: nav ? [...nav.querySelectorAll('a')].map((a) => a.textContent.trim()) : [], place: nav ? [...nav.querySelectorAll('a[aria-current=page]')].map((a) => a.textContent.trim()) : [],
+          strip: !!strip && !strip.hidden, h1: document.querySelectorAll('h1').length, app: !document.getElementById('md-app').hidden, overflow: document.documentElement.scrollWidth - innerWidth, small };
+      });
+      const s = await ich();
+      if (s.own !== 'inhalt' || s.strip) fail(where, 'Reiterzeile des Rahmens statt Reiter im Inhalt: ' + JSON.stringify({ own: s.own, strip: s.strip }));
+      if (s.labels.join('|') !== 'Ich|Gespeichert|Konto' || s.current.join('|') !== expected) fail(where, 'Reiter falsch: ' + s.labels.join('|') + ' aktiv ' + s.current.join('|'));
+      if (s.places.join('|') !== DOCK.join('|') || s.place.join('|') !== 'Ich') fail(where, 'Dock falsch: ' + s.places.join('|') + ' aktiv ' + s.place.join('|'));
+      if (s.h1 !== 1) fail(where, s.h1 + ' h1 statt genau einer');
+      if (!s.app) fail(where, 'Inhalt der Seite steht nicht (nachgestellte Konto-API)');
+      if (s.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + s.overflow + ' px');
+      if (s.small.length) fail(where, s.small.length + ' Ziele kleiner als 44 px: ' + s.small.slice(0, 4).join('; '));
+      const end = await page.evaluate(() => {
+        scrollTo({ top: document.scrollingElement.scrollHeight, behavior: 'instant' });
+        const dockTop = document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect().top;
+        const last = [...document.querySelectorAll('main a, main button')].filter((n) => n.getClientRects().length).at(-1), r = last && last.getBoundingClientRect(), hit = r && document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return { dockTop, bottom: r && r.bottom, reachable: !!hit && (hit === last || last.contains(hit) || hit.contains(last)), label: last && last.textContent.trim().slice(0, 30) };
+      });
+      if (end.bottom > end.dockTop + 1 || !end.reachable) fail(where, 'letztes Bedienelement am Seitenende verdeckt: ' + JSON.stringify(end));
+      if (path === '/mein-dashboard/') {
+        await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+        await page.locator('main .md-tabs a', { hasText: 'Gespeichert' }).click(); await settle(page);
+        if ((await ich()).current.join('|') !== 'Gespeichert') fail(where, 'Klick Gespeichert markiert nicht');
+        await page.goBack(); await settle(page);
+        if ((await ich()).current.join('|') !== 'Ich') fail(where, 'Zurueck: ' + (await ich()).current.join('|'));
+        await page.goForward(); await settle(page);
+        if ((await ich()).current.join('|') !== 'Gespeichert') fail(where, 'Vor: ' + (await ich()).current.join('|'));
       }
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
@@ -488,7 +619,10 @@ for (const [vpName, width, height] of VIEWPORTS) {
         dock: getComputedStyle(document.getElementById('vu-dock').shadowRoot.querySelector('nav')).backgroundColor, stored: localStorage.getItem('vu-discover-theme-v1'),
         head: document.querySelector('vu-navigation').getAttribute('theme') }));
       if (after.t === before || after.stored !== after.t || after.head !== after.t) fail(where, 'Theme-Wechsel greift nicht: ' + JSON.stringify({ before, after }));
-      if (after.dock !== 'rgba(12, 12, 13, 0.92)') fail(where, 'Leiste verliert ihre Flaeche (Prototyp .dock): ' + after.dock);
+      // Dunkel: Flaeche des Prototyps (.dock); hell: helle Leiste (Owner 16.11.2026: im Hellen ist alles hell). theme-color folgt.
+      const dockWant = after.t === 'dark' ? 'rgba(12, 12, 13, 0.92)' : 'rgba(255, 255, 255, 0.92)', barWant = after.t === 'dark' ? '#08080a' : '#ffffff';
+      if (after.dock !== dockWant) fail(where, 'Leiste nicht in der Flaeche des Schemas (' + after.t + '): ' + after.dock);
+      if (after.bar && after.bar.toLowerCase() !== barWant) fail(where, 'theme-color nicht ' + barWant + ': ' + after.bar);
       await pick(before === 'dark' ? 'Dunkel' : 'Hell');
       if (await page.evaluate(() => document.documentElement.getAttribute('data-theme')) !== before) fail(where, 'Theme springt nicht zurueck');
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
@@ -511,7 +645,9 @@ for (const [vpName, width, height] of VIEWPORTS) {
         const root = document.querySelector('vu-navigation').shadowRoot, panel = root.querySelector('.panel');
         const dock = document.getElementById('vu-dock'), d = dock.shadowRoot.querySelector('nav').getBoundingClientRect();
         const top = document.elementFromPoint(innerWidth - 20, d.top + d.height / 2);
-        return { groups: [...root.querySelectorAll('.tile b')].map((h) => h.textContent), links: root.querySelectorAll('.more-links a').length + root.querySelectorAll('.mine a').length,
+        const kiTile = root.querySelector('.tile[data-group=atlas]'), kiRow = kiTile && [...kiTile.parentElement.children], kiH = kiTile && kiTile.getBoundingClientRect().height;
+        return { groups: [...root.querySelectorAll('.tile b')].map((h) => h.textContent),
+          kiTile: kiTile && { kicker: kiTile.querySelector('.kicker')?.textContent, h: Math.round(kiH), others: kiRow.filter((n) => n !== kiTile).map((n) => Math.round(n.getBoundingClientRect().height)), cut: [...kiTile.querySelectorAll('b, small, .kicker')].some((n) => n.scrollWidth > n.clientWidth + 1 || n.getBoundingClientRect().right > kiTile.getBoundingClientRect().right + 1) }, links: root.querySelectorAll('.more-links a').length + root.querySelectorAll('.mine a').length,
           locked: document.documentElement.classList.contains('vu-menu-open') && getComputedStyle(document.documentElement).overflow === 'hidden',
           dockInert: dock.inert, dockCovered: top !== dock, scrollable: panel.scrollHeight <= panel.clientHeight || getComputedStyle(panel).overflowY === 'auto',
           panelBottom: panel.getBoundingClientRect().bottom, vh: innerHeight, panelBg: getComputedStyle(panel).backgroundColor,
@@ -524,8 +660,10 @@ for (const [vpName, width, height] of VIEWPORTS) {
       });
       if (!firstMenu) firstMenu = m.groups.join('|') + '#' + m.links;
       else if (m.groups.join('|') + '#' + m.links !== firstMenu) fail(where, 'anderes Menue als auf Discover');
-      /* Reihenfolge und Atlas-Kachel wie das Fenster „Dein Universe“ im Prototyp (App-Konzept 2, build.js T.universe). */
-      if(m.groups.join('|')!=='Discover|Insights|Quant|Fundamental|Technical|Hedgefonds|Elliott|Supertrader|Portfolios|Screener|Vorsorge|Atlas') fail(where,'Produktraster falsch: '+m.groups.join('|'));
+      /* Reihenfolge und KI-Kachel wie das Fenster „Dein Universe“ im Prototyp (App-Konzept 2, build.js T.universe); die KI-Kachel
+         heisst seit 16.11.2026 „Vision Universe KI“: Dachzeile „Vision Universe“, Titel „KI“ mit Beta, gleich hoch wie die Nachbarn. */
+      if(m.groups.join('|')!=='Discover|Insights|Quant|Fundamental|Technical|Hedgefonds|Elliott|Supertrader|Portfolios|Screener|Vorsorge|KI Beta') fail(where,'Produktraster falsch: '+m.groups.join('|'));
+      if(!m.kiTile||m.kiTile.kicker!=='Vision Universe'||m.kiTile.cut||m.kiTile.others.some(h=>Math.abs(h-m.kiTile.h)>1)) fail(where,'Kachel „Vision Universe KI“ falsch: '+JSON.stringify(m.kiTile));
       if(m.moreOpen||!m.hereLinks||!m.search) fail(where,'Menüaufbau falsch: '+JSON.stringify({moreOpen:m.moreOpen,here:m.hereLinks,search:m.search}));
       if(m.title!=='Dein Universe | Alle Module, von jeder Seite aus.'||!m.titleVisible) fail(where,'Überschrift „Dein Universe“ fehlt: '+m.title);
       if(m.legal<5||!m.note||m.settings!==4) fail(where,'Rechtliches oder Einstellungen fehlen im Menü: '+JSON.stringify({legal:m.legal,note:m.note,settings:m.settings}));
