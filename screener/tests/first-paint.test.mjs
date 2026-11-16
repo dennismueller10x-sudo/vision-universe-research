@@ -131,9 +131,11 @@ function startApp({ search = '', respond }) {
   return { win, document, root, body, requests };
 }
 /* Live-Trefferzahlen (.sc-n) stehen erst mit dem vollen Universum fest: in der Vorschau „…“,
-   danach die Zahl aus der Engine. Der Textvergleich setzt sie gleich; alle anderen Werte muessen identisch sein. */
+   danach die Zahl aus der Engine. Dasselbe gilt fuer die Kurzliste der ersten Treffer (.sc-ak-live, App-Konzept 2):
+   in der Vorschau leer, danach die Zeilen aus der Engine. Der Textvergleich setzt beide gleich; alle anderen Werte
+   muessen identisch sein. */
 const text = (n) => n.nodeType === 3 ? n.data
-  : String(n.className || '').split(/\s+/).includes('sc-n') ? '#'
+  : String(n.className || '').split(/\s+/).some((c) => c === 'sc-n' || c === 'sc-ak-live') ? '#'
   : n._html !== null ? n._html.replace(/<[^>]*>/g, '') : n.children.map(text).join('');
 const liveCounts = (root) => root.querySelectorAll('.sc-n').map((n) => n.textContent);
 const skeleton = (root) => root.querySelectorAll('.sc-skel').length > 0;
@@ -145,9 +147,11 @@ test('Startansicht: sofort aus der Kopfdatei, volles Universum laedt parallel, T
   await tick();
   assert.equal(skeleton(ref.root), false);
   const expected = text(ref.root);
-  /* App-Konzept 2 (Owner 14.11.2026): keine eigene Zeile mit Datum am Seitenanfang. Universum und Zahl der Kriterien stehen
-     in der Startkachel, der Datenstand unter „Daten & Methodik“ am Seitenende. */
-  assert.match(expected, /3 US-Aktien · \d+ Kriterien/, 'Universum und Zahl der Kriterien in der Startkachel');
+  /* App-Konzept 2 (Prototyp #screener, Owner 14./15.11.2026): keine eigene Zeile mit Datum am Seitenanfang. Die Satz-Kachel
+     nennt die Zahl der Kriterien, ohne Bedingung steht das Universum groß darunter, der Datenstand unter „Daten & Methodik“. */
+  assert.match(expected, /In einem Satz · \d+ Kriterien/, 'Zahl der Kriterien in der Satz-Kachel');
+  assert.match(expected, /Basis3 US-Aktien/, 'Universum groß unter den Modul-Reitern');
+  assert.match(expected, /Suchen.*Fertige Suchen.*Gespeichert.*Vergleichen/, 'Reiter im Inhalt wie im Prototyp');
   assert.match(expected, /Daten & Methodik Stand 09\.10\.2026/, 'Datenstand am Seitenende');
   assert.doesNotMatch(expected, /\bEinfach\b|\bProfi\b/, 'kein Modus-Schalter');
   assert.match(expected, /Universum: 3 US-Aktien · Kurse Stand 09\.10\.2026 · Fundamentaldaten Unternehmensmeldungen bis 30\.09\.2026/);
@@ -159,6 +163,7 @@ test('Startansicht: sofort aus der Kopfdatei, volles Universum laedt parallel, T
   await tick();
   assert.equal(skeleton(app.root), false, 'Startansicht steht ohne Spalten');
   assert.equal(text(app.root), expected, 'Vorschau = spaetere Startansicht');
+  assert.equal(app.root.querySelectorAll('.sc-ak-hit').length, 0, 'Vorschau: keine Trefferzeilen ohne Spalten');
   assert.ok(liveCounts(app.root).length > 0 && liveCounts(app.root).every((t) => t === '…'), 'Vorschau: Trefferzahlen offen, nicht erfunden');
   assert.equal(app.requests.length, 2, "keine weiteren Abrufe fuer die Startansicht");
 
@@ -169,6 +174,7 @@ test('Startansicht: sofort aus der Kopfdatei, volles Universum laedt parallel, T
   full.resolve({ status: 200, body: artifact });
   await tick();
   assert.equal(text(app.root), expected, 'nach dem Laden unveraendert');
+  assert.ok(app.root.querySelectorAll('.sc-ak-hit').length > 0, 'nach dem Laden: Trefferzeilen aus der Engine');
   assert.ok(liveCounts(app.root).every((t) => /^\d/.test(t)), 'nach dem Laden: echte Trefferzahlen ' + liveCounts(app.root).join(','));
   assert.equal(app.body.querySelectorAll('.sc-sheet').length, 1, 'wartende Aktion laeuft nach dem Laden genau einmal');
 });

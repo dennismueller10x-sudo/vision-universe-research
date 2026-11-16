@@ -1263,3 +1263,97 @@ body.sc .sc-qr-head .vu-stockhead__price .vu-chg{color:#000}
 body.sc .sc-qr-head .vu-stockhead__price .vu-chg--down{color:var(--vu-inv)}
 body.sc .sc-qr-head .vu-stockhead__price .vu-chg--flat{color:var(--vu-ink)}
 body.sc .sc-sheet:focus-visible{outline:0}
+
+/* =========================================================================
+   App-Konzept 2 nach Prototyp: Bildschirm „Suchen“ (#screener), Owner 14./15.11.2026.
+   Werte aus docs/design/app-konzept-2-2026-11/prototyp/quelle (shell.js, kit.js, p2.js V.screener):
+   tabs2/tab, tile (#202022, Radius 22), eb, Satz 25 px/800 mit Lücken (#c8f531, Radius 9), Trefferzahl 64 px,
+   pill.dk, row, btn/btn.ol 52 px, sh 22 px, rail mit Kacheln 180 px, hud 36 px, end/lk.
+   Dunkel ist Standard; Hell nimmt dieselben Maße mit hellen Flächen.
+   ========================================================================= */
+body.sc .sc-app.sc-ak{--ak-tile:#202022;--ak-tab:#151516;--ak-dk:#232325;--ak-ink:#f4f5f1;--ak-mut:#a1a7af;--ak-line:rgba(255,255,255,.09);--ak-ol:rgba(255,255,255,.28);--ak-lc:#c8f531;--ak-bg:var(--sc-bg);
+  max-width:none;padding:0 0 120px;color:var(--ak-ink);font-weight:500}
+html:not([data-theme=dark]) body.sc .sc-app.sc-ak{--ak-tile:#f2f2f2;--ak-tab:#ececec;--ak-dk:#e4e4e4;--ak-ink:#0b0b0d;--ak-mut:#5c5c66;--ak-line:rgba(0,0,0,.09);--ak-ol:rgba(0,0,0,.3);--ak-lc:#0b0b0d}
+body.sc .sc-ak .sc-ak-px{padding:0 14px}
+/* Reiter im Inhalt (Prototyp .tabs2/.tab): klebt unter dem Kopf. */
+body.sc .sc-ak .sc-ak-tabs{position:sticky;top:var(--vu-navigation-height,56px);z-index:4;display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--ak-bg) 70%,transparent)}
+body.sc .sc-ak .sc-ak-tabs::-webkit-scrollbar,body.sc .sc-ak .sc-ak-mods::-webkit-scrollbar,body.sc .sc-ak .sc-ak-rail::-webkit-scrollbar{display:none}
+body.sc .sc-ak .sc-ak-tab,body.sc .sc-ak .sc-ak-mod{position:relative;height:36px;padding:0 15px;border:0;border-radius:99px;background:var(--ak-tab);color:var(--ak-ink);font-weight:700;font-size:14px;display:inline-flex;align-items:center;white-space:nowrap;flex:none;text-decoration:none;cursor:pointer;width:auto;min-height:0;margin:0;font-family:inherit;line-height:1}
+body.sc .sc-ak .sc-ak-tab.is-on,body.sc .sc-ak .sc-ak-mod.is-on{background:var(--ak-ink);color:var(--ak-bg)}
+/* Pille 36 px wie im Prototyp, Tippfläche 44 px */
+body.sc .sc-ak .sc-ak-tab::after,body.sc .sc-ak .sc-ak-mod::after{content:"";position:absolute;inset:-4px 0}
+/* Satz-Kachel */
+body.sc .sc-ak .sc-ak-tile{background:var(--ak-tile);border-radius:22px;padding:14px;display:block;width:100%;color:var(--ak-ink)}
+body.sc .sc-ak .sc-ak-senttile{padding:18px;margin-top:0}
+body.sc .sc-ak .sc-ak-eb{margin:0;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ak-mut)}
+body.sc .sc-ak .sc-ak-sent{margin:8px 0 0;font-size:25px;line-height:1.5;font-weight:800;letter-spacing:-.025em;color:var(--ak-ink)}
+body.sc .sc-ak .sc-ak-sent .sc-gap{position:relative;display:inline-block;border:0;margin:0;background:#c8f531;color:#101318;border-radius:9px;padding:1px 9px;white-space:nowrap;font:inherit;line-height:1.25;letter-spacing:inherit;cursor:pointer;vertical-align:baseline;box-shadow:none;min-height:0;min-width:0}
+body.sc .sc-ak .sc-ak-sent .sc-gap.is-empty{background:var(--ak-dk);color:var(--ak-mut)}
+body.sc .sc-ak .sc-ak-sent .sc-gap.is-add{background:none;color:var(--ak-mut);padding:1px 0}
+body.sc .sc-ak .sc-ak-sent .sc-gap::after{content:"";position:absolute;left:-2px;right:-2px;top:-6px;bottom:-6px;width:auto;height:auto;transform:none}
+/* Ergänzungen ohne Bedingung (Prototyp .chip im Fenster „Bedingung wählen“) */
+body.sc .sc-ak .sc-satz-c{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+body.sc .sc-ak .sc-satz-o{height:38px;padding:0 14px;border:0;border-radius:999px;background:var(--ak-dk);color:var(--ak-ink);font-weight:700;font-size:14px;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;flex:none;cursor:pointer;position:relative}
+body.sc .sc-ak .sc-satz-o::after{content:"";position:absolute;left:0;right:0;top:-3px;bottom:-3px;width:auto;height:auto;transform:none}
+body.sc .sc-ak .sc-satz-o .sc-n{color:var(--ak-lc);font-weight:800}
+/* Modul-Reiter */
+body.sc .sc-ak .sc-ak-mods{display:flex;gap:6px;margin-top:8px;padding:4px 14px;overflow-x:auto;scrollbar-width:none}
+body.sc .sc-ak .sc-ak-mod{gap:6px}
+body.sc .sc-ak .sc-ak-mod b{font-weight:700}
+body.sc .sc-ak .sc-ak-mod svg.sc-i,body.sc .sc-ak .sc-ak-mod .sc-ak-ic svg{width:16px;height:16px}
+body.sc .sc-ak .sc-ak-ic{display:inline-grid;place-items:center;flex:none}
+body.sc .sc-ak .sc-ak-ic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+/* Trefferzahl */
+body.sc .sc-ak .sc-ak-counthead{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;margin-top:16px}
+body.sc .sc-ak .sc-ak-n{margin:0;padding:0;display:flex;flex-direction:row;align-items:baseline;gap:6px;color:var(--ak-ink);font-size:inherit;letter-spacing:0;text-transform:none;text-align:left}
+body.sc .sc-ak .sc-ak-n .sc-n,body.sc .sc-ak .sc-ak-n strong{font-size:64px;font-weight:900;letter-spacing:-.045em;line-height:1;color:var(--ak-lc)}
+body.sc .sc-ak .sc-ak-n b{font-size:20px;font-weight:800;color:var(--ak-ink)}
+body.sc .sc-ak .sc-ak-pills{display:flex;gap:6px;margin-bottom:6px}
+/* pill.dk 26 px; die Schaltfläche ist 44 px hoch (Tippfläche), die Pille liegt als Fläche darin */
+body.sc .sc-ak .sc-ak-pill{position:relative;isolation:isolate;height:44px;margin:-9px 0;padding:0 10px;border:0;background:none;color:var(--ak-ink);font-size:12.5px;font-weight:800;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;cursor:pointer}
+body.sc .sc-ak .sc-ak-pill::before{content:"";position:absolute;inset:9px 0;border-radius:999px;background:var(--ak-dk);z-index:-1}
+body.sc .sc-ak .sc-ak-pill svg.sc-i{width:15px;height:15px}
+/* Trefferliste (Prototyp tile 6/14 + row) */
+body.sc .sc-ak .sc-ak-list{padding:6px 14px;margin-top:8px}
+body.sc .sc-ak .sc-ak-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--ak-line);color:var(--ak-ink);text-decoration:none;width:100%;cursor:pointer}
+body.sc .sc-ak .sc-ak-more .sc-ak-row:last-child{border-bottom:0}
+body.sc .sc-ak .sc-ak-row .vu-logo-tile{width:44px;height:44px;border-radius:13px}
+body.sc .sc-ak .sc-ak-rowt{flex:1;min-width:0;display:block}
+body.sc .sc-ak .sc-ak-rowt b{display:block;font-weight:800;font-size:15px;line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.sc .sc-ak .sc-ak-rowt span{display:block;font-size:11px;line-height:1.35;color:var(--ak-mut)}
+body.sc .sc-ak .sc-ak-row .vu-chg{height:26px;padding:0 10px;font-size:12.5px;gap:5px;line-height:1;flex:none}
+body.sc .sc-ak .sc-ak-row .vu-chg--down{background:#c4281c;color:#fff}
+body.sc .sc-ak .sc-ak-row>svg.sc-i{color:var(--ak-mut)}
+body.sc .sc-ak .sc-ak-none{margin-top:8px;padding:16px}
+body.sc .sc-ak .sc-ak-none b{display:block;font-weight:800}
+body.sc .sc-ak .sc-ak-none span{display:block;font-size:12.5px;color:var(--ak-mut);margin-top:4px}
+/* Knöpfe (Prototyp .btn / .btn.ol) */
+body.sc .sc-ak .sc-ak-acts{display:flex;gap:8px;margin-top:12px}
+body.sc .sc-ak .sc-ak-btn{flex:1;min-width:0;height:52px;border-radius:999px;background:#c8f531;color:#101318;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;border:0;text-decoration:none;cursor:pointer}
+body.sc .sc-ak .sc-ak-btn.is-ol{background:none;border:1px solid var(--ak-ol);color:var(--ak-ink)}
+/* Abschnittskopf (Prototyp .sh) und Schiene */
+body.sc .sc-ak .sc-ak-sh{display:flex;align-items:baseline;justify-content:space-between;padding:0 14px;margin:26px 0 10px;scroll-margin-top:calc(var(--vu-navigation-height,56px) + 56px)}
+body.sc .sc-ak .sc-ak-sh h2{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:0;color:var(--ak-ink)}
+body.sc .sc-ak .sc-ak-sh span{font-size:13px;font-weight:700;color:var(--ak-mut)}
+body.sc .sc-ak .sc-ak-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 14px;margin:0;scrollbar-width:none;overscroll-behavior-x:contain}
+body.sc .sc-ak .sc-ak-rail>*{scroll-snap-align:start;flex:none}
+body.sc .sc-ak .sc-ak-fs{width:180px;background:var(--ak-tile);border:0;border-radius:22px;padding:14px;display:block;text-align:left;color:var(--ak-ink);cursor:pointer}
+body.sc .sc-ak .sc-ak-hud{width:36px;height:36px;border-radius:11px;background:#0e1013;border:1px solid rgba(200,245,49,.25);display:grid;place-items:center;color:#c8f531;flex:none}
+body.sc .sc-ak .sc-ak-row .sc-ak-hud{width:44px;height:44px;border-radius:13px}
+body.sc .sc-ak .sc-ak-fsn{display:block;margin-top:12px}
+body.sc .sc-ak .sc-ak-fsn .sc-n{font-size:36px;font-weight:900;letter-spacing:-.045em;line-height:1;color:var(--ak-lc)}
+body.sc .sc-ak .sc-ak-fs b{display:block;font-weight:800;font-size:15px;line-height:1.1}
+body.sc .sc-ak .sc-ak-fs small{display:block;font-size:11px;color:var(--ak-mut);margin-top:4px;line-height:1.35}
+/* Seitenende (Prototyp .end / .lk) */
+.sc-ak-end{margin:28px 14px 0;text-align:center}
+.sc-ak-lk{display:inline-flex;align-items:center;min-height:44px;border:0;background:none;padding:0 6px;color:var(--sc-muted);font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+body.sc .sc-ak .sc-foot{margin:0 14px}
+@media(hover:hover){.sc-ak .sc-ak-row:hover b{text-decoration:underline;text-underline-offset:3px}}
+body.sc .sc-ak .sc-ak-fs:active,body.sc .sc-ak .sc-ak-btn:active{transform:scale(.97)}
+body.sc .sc-ak .sc-ak-fs,body.sc .sc-ak .sc-ak-btn{transition:transform .12s}
+@media(min-width:1024px){body.sc .sc-app.sc-ak{max-width:820px;margin:0 auto}}
+/* Satz in „Screen bauen“ und „Treffer“: dieselben Lücken und „+ Bedingung“ wie auf „Suchen“ (Prototyp #screener). */
+body.sc .sc-hero2 .sc-sentence .sc-gap{position:relative;display:inline-block;border:0;margin:0;background:#c8f531;color:#101318;border-radius:9px;padding:2px 9px;white-space:nowrap;font:inherit;line-height:28px;letter-spacing:inherit;vertical-align:baseline;box-shadow:none;min-height:32px;min-width:0}
+body.sc .sc-hero2 .sc-sentence .sc-gap.is-empty{background:#232325;color:#a1a7af}
+body.sc .sc-hero2 .sc-sentence .sc-gap.is-add{background:none;color:#a1a7af;padding:1px 0}
+body.sc .sc-hero2 .sc-sentence .sc-gap::after{content:"";position:absolute;left:-2px;right:-2px;top:-6px;bottom:-6px;width:auto;height:auto;transform:none}
