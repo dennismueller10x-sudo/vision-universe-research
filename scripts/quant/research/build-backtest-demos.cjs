@@ -49,13 +49,14 @@ function main(argv = process.argv.slice(2)) {
   const dataRef = 'e4628154de8c11294820108cc30b9b0592b46ba8';
   console.log('Restore original input trees');
   for (const ref of [codeRef, dataRef]) cp.execFileSync('git', ['fetch', '--quiet', '--depth=1', '--filter=blob:none', '--no-tags', 'origin', ref], { cwd: ROOT, stdio: 'inherit' });
-  const groups = [[codeRef, ['quant/data/market/discover-series-long', 'quant/data/market/discover-series/ref_SPY.json', 'quant/data/product/backtest-certification-v1.json']], [dataRef, ['quant/data/market/multi-asset/series/SPY.json', 'quant/data/market/multi-asset/instruments.json']]];
+  const replayPaths = Object.keys(JSON.parse(fs.readFileSync(path.join(ROOT, 'docs/quant/backtest-demos/results/setup-reconstruction-2016-2024.json'), 'utf8')).inputHashes.private.setupReplay).map(id => 'quant/data/product/setup-replay-v1/' + id + '.json.gz');
+  const groups = [[codeRef, ['quant/data/market/discover-series-long', 'quant/data/market/discover-series/ref_SPY.json', 'quant/data/product/backtest-certification-v1.json', ...replayPaths]], [dataRef, ['quant/data/market/multi-asset/series/SPY.json', 'quant/data/market/multi-asset/instruments.json']]];
   const objectIds = [...new Set(groups.flatMap(([ref, paths]) => cp.execFileSync('git', ['ls-tree', '-r', '--format=%(objectname)', ref, '--', ...paths], { cwd: ROOT, encoding: 'utf8' }).trim().split('\n').filter(Boolean)))];
   console.log('Batch-fetch original input objects: ' + objectIds.length);
   cp.execFileSync('git', ['-c', 'fetch.negotiationAlgorithm=noop', 'fetch', 'origin', '--quiet', '--no-tags', '--no-write-fetch-head', '--recurse-submodules=no', '--filter=blob:none', '--stdin'], { cwd: ROOT, input: objectIds.join('\n') + '\n', stdio: ['pipe', 'inherit', 'inherit'] });
   console.log('Restore original input files');
-  cp.execFileSync('git', ['restore', '--source=' + codeRef, '--worktree', '--', 'quant/data/market/discover-series-long', 'quant/data/market/discover-series/ref_SPY.json', 'quant/data/product/backtest-certification-v1.json'], { cwd: ROOT, stdio: 'inherit' });
-  cp.execFileSync('git', ['restore', '--source=' + dataRef, '--worktree', '--', 'quant/data/market/multi-asset/series/SPY.json', 'quant/data/market/multi-asset/instruments.json'], { cwd: ROOT, stdio: 'inherit' });
+  for (const [ref, paths] of groups) cp.execFileSync('git', ['restore', '--source=' + ref, '--worktree', '--', ...paths], { cwd: ROOT, stdio: 'inherit' });
+  argv = [...argv, '--only', 'setup-reconstruction-2016-2024'];
   const o = parse(argv);
   console.log('Original input restore complete; execute unchanged demo cases');
   const cases = JSON.parse(fs.readFileSync(CASES, 'utf8')).cases.filter(c => !o.only || c.id === o.only);
@@ -76,6 +77,7 @@ function main(argv = process.argv.slice(2)) {
     write('summary.json', { schemaVersion: 'backtest-demo-summary-1.0.0', runner: R.VERSION, certificationStatus: 'NOT_CERTIFIED', productionApproved: false, cases: summary });
     write('performance.json', { schemaVersion: 'backtest-demo-performance-1.0.0', note: 'Measured on one machine; cache states as listed (population cache warm unless MISS). Not part of any result hash.', node: process.version, cases: performance });
   }
+  if (o.only) write('summary.partial.json', { cases: summary });
   return { summary, performance };
 }
 if (require.main === module) { try { main(); } catch (e) { console.error(e.stack); process.exitCode = 1; } }
