@@ -10,7 +10,7 @@
     "blockMaxMs": 20700000,
     "branch": "main"
   },
-  "updatedAt": "2026-11-16T20:58:19.310Z",
+  "updatedAt": "2026-11-16T21:02:25.408Z",
   "cycles": [
     {
       "cycle": 1,
@@ -1986,10 +1986,10 @@
       "written": 1345,
       "requests": 1443,
       "notPublishable": 57,
-      "addAt": "2026-11-16T20:54:13.019Z",
-      "commitAt": "2026-11-16T20:54:13.332Z",
-      "pushAt": "2026-11-16T20:54:15.604Z",
-      "sha": "0f1c2fd137",
+      "addAt": "2026-11-16T20:58:19.310Z",
+      "commitAt": "2026-11-16T20:58:19.622Z",
+      "pushAt": "2026-11-16T20:58:21.646Z",
+      "sha": "fc764bdb41",
       "changed": true,
       "ok": true,
       "reason": null,
@@ -2025,11 +2025,52 @@
           "fetchEndAt": "2026-11-16T20:58:19.309Z",
           "ok": true,
           "written": 456,
-          "requests": 481
+          "requests": 481,
+          "sha": "fc764bdb41",
+          "pushAt": "2026-11-16T20:58:21.646Z",
+          "changed": true
         }
       ],
       "snapshotAt": "2026-11-16T20:58:19.297Z",
-      "pushed": true
+      "pushed": true,
+      "watchdog": {
+        "verdict": "FAIL",
+        "codes": [
+          "auslieferungZuWeitHinterher"
+        ]
+      }
+    },
+    {
+      "cycle": 10,
+      "runId": "43935599915",
+      "triggerAt": "2026-11-16T20:58:21.919Z",
+      "marketStateAtTrigger": "OPEN",
+      "localTimeAtTrigger": "15:58:21",
+      "fetchStartAt": "2026-11-16T20:58:21.920Z",
+      "fetchEndAt": "2026-11-16T21:02:25.407Z",
+      "session": "2026-11-16",
+      "written": 455,
+      "requests": 481,
+      "notPublishable": 18,
+      "addAt": null,
+      "commitAt": null,
+      "pushAt": null,
+      "sha": null,
+      "changed": false,
+      "ok": true,
+      "reason": null,
+      "parts": [
+        {
+          "part": 1,
+          "of": 3,
+          "fetchStartAt": "2026-11-16T20:58:21.920Z",
+          "fetchEndAt": "2026-11-16T21:02:25.407Z",
+          "ok": true,
+          "written": 455,
+          "requests": 481
+        }
+      ],
+      "snapshotAt": "2026-11-16T21:02:25.395Z"
     }
   ]
 }
