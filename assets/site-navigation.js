@@ -282,23 +282,23 @@
      Produkt-Overlays (Suche, Sheets, Dialoge) und unter dem globalen Menue.
      Abstand fuer den Inhalt: --vu-dock-space (site-navigation.css), damit
      nichts Letztes dauerhaft verdeckt ist. */
-  const dockStyles = `
+  const dockStyles = (t) => `
         :host{position:fixed;left:0;right:0;bottom:0;z-index:900;display:flex;justify-content:center;padding:0 10px calc(10px + env(safe-area-inset-bottom));pointer-events:none;font:500 15px Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
         *{box-sizing:border-box}
-        nav{pointer-events:auto;display:flex;align-items:center;width:100%;max-width:520px;height:68px;padding:0 6px;border-radius:28px;background:rgba(12,12,13,.92);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.14);color:#fff}
+        nav{pointer-events:auto;display:flex;align-items:center;width:100%;max-width:520px;height:68px;padding:0 6px;border-radius:28px;background:${t.dockBg};-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border:1px solid ${t.dockLine};color:${t.dockInk}}
         a,button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;border:0;font-family:inherit;text-decoration:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background-color .15s,color .15s,transform .1s}
-        a{flex:1 1 0;gap:3px;min-width:0;height:56px;padding:0 3px;border-radius:20px;background:transparent;color:#a1a7af;font-size:10.5px;font-weight:700;line-height:1.35;letter-spacing:0}
-        a:hover{color:#fff}
+        a{flex:1 1 0;gap:3px;min-width:0;height:56px;padding:0 3px;border-radius:20px;background:transparent;color:${t.dockMute};font-size:10.5px;font-weight:700;line-height:1.35;letter-spacing:0}
+        a:hover{color:${t.dockInk}}
         a:active,button:active{transform:scale(.96)}
-        a:focus-visible,button:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
+        a:focus-visible,button:focus-visible{outline:2px solid ${t.accent};outline-offset:2px}
         .label{display:block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px}
-        a[aria-current=page],a[aria-current=page]:hover{color:#c8f531}
+        a[aria-current=page],a[aria-current=page]:hover{color:${t.dockOn}}
         svg{width:20px;height:20px;flex:none;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
         svg.line{stroke-width:2.2}
         a[data-id=ich] svg{width:17px;height:17px;margin:1.5px 0;stroke-width:2.4}
-        .uni{flex:none;width:62px;height:62px;margin:-22px 6px 0;padding:0;border-radius:99px;background:#c8f531;color:#101318;box-shadow:0 0 0 6px #000,0 8px 30px rgba(200,245,49,.35)}
+        .uni{flex:none;width:62px;height:62px;margin:-22px 6px 0;padding:0;border-radius:99px;background:#c8f531;color:#101318;box-shadow:0 0 0 6px ${t.page},0 8px 30px rgba(200,245,49,.35)}
         .uni svg{width:26px;height:26px}
-        .uni:focus-visible{outline-color:#fff;outline-offset:8px}
+        .uni:focus-visible{outline-color:${t.dockInk};outline-offset:8px}
         @media(min-width:761px){
           :host{padding-bottom:calc(16px + env(safe-area-inset-bottom))}
           nav{width:auto;max-width:100%;height:56px;gap:2px;padding:0 5px;border-radius:999px}
@@ -482,8 +482,15 @@
   /* Die Plattformnavigation ist auf allen Produkten dieselbe Komponente.
      Discover synchronisiert ihr Farbschema mit seiner eigenen Theme-Wahl. */
   const THEMES = {
-    light: {bg: 'rgba(255,255,255,.86)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f1f1f1', glass: 'rgba(238,238,238,.82)', mute: '#5d636b', live: '#3d424a', dot: '#5f8000', ring: '#c8f531', me: '#000', meInk: '#fff', on: '#000', onInk: '#fff', outline: '#4f6b00'},
-    dark: {bg: 'rgba(0,0,0,.82)', border: '#262626', ink: '#f4f5f1', inv: '#000', card: '#151516', glass: 'rgba(20,20,22,.7)', mute: '#a1a7af', live: '#c3c7cc', dot: '#c8f531', ring: '#c8f531', me: 'rgba(20,20,22,.7)', meInk: '#f4f5f1', on: '#fff', onInk: '#000', outline: '#c8f531'}
+    light: {bg: 'rgba(255,255,255,.86)', border: '#e9e9e9', ink: '#000', inv: '#fff', card: '#f1f1f1', glass: 'rgba(238,238,238,.82)', mute: '#5d636b', live: '#3d424a', dot: '#5f8000', ring: '#c8f531', me: 'rgba(238,238,238,.82)', meInk: '#000', on: '#000', onInk: '#fff', outline: '#4f6b00',
+      /* Hell vollstaendig hell (Owner 16.11.2026): Dock, Menue „Dein Universe“ und Modul-Symbol hell; dunkel = Prototyp, unveraendert */
+      page: '#fff', accent: '#4f6b00', dockBg: 'rgba(255,255,255,.92)', dockLine: 'rgba(0,0,0,.1)', dockInk: '#000', dockMute: '#5d636b', dockOn: '#4f6b00',
+      panel: '#fff', panelInk: '#000', panelMute: '#5d636b', field: '#f1f1f1', fieldHover: '#e9e9e9', grabBar: '#c9c9cc', hair: 'rgba(0,0,0,.1)', closeInk: '#000', fieldInk: '#000',
+      icoBg: '#c8f531', icoLine: 'rgba(0,0,0,.08)', icoLineHead: 'rgba(0,0,0,.08)', icoInk: '#101318', current: '0 0 0 1.5px #000', pressed: '#000', pressedInk: '#fff'},
+    dark: {bg: 'rgba(0,0,0,.82)', border: '#262626', ink: '#f4f5f1', inv: '#000', card: '#151516', glass: 'rgba(20,20,22,.7)', mute: '#a1a7af', live: '#c3c7cc', dot: '#c8f531', ring: '#c8f531', me: 'rgba(20,20,22,.7)', meInk: '#f4f5f1', on: '#fff', onInk: '#000', outline: '#c8f531',
+      page: '#000', accent: '#c8f531', dockBg: 'rgba(12,12,13,.92)', dockLine: 'rgba(255,255,255,.14)', dockInk: '#fff', dockMute: '#a1a7af', dockOn: '#c8f531',
+      panel: '#151516', panelInk: '#f4f5f1', panelMute: '#a1a7af', field: '#202022', fieldHover: '#262628', grabBar: '#3a3a3d', hair: 'rgba(255,255,255,.09)', closeInk: '#fff', fieldInk: '#fff',
+      icoBg: '#0e1013', icoLine: 'rgba(200,245,49,.25)', icoLineHead: 'rgba(200,245,49,.35)', icoInk: '#c8f531', current: '0 0 0 1px rgba(200,245,49,.5),0 0 28px rgba(200,245,49,.18)', pressed: '#fff', pressedInk: '#000'}
   };
 
   /* Farbschema plattformweit: dieselbe Wahl (localStorage, Schluessel von
@@ -507,7 +514,7 @@
      gezeichnet ist; die Inline-Skripte der Seiten starten ebenfalls dunkel. */
   const THEME_KEY = 'vu-discover-theme-v1';
   const THEME_SYSTEM = 'vu-theme-system-v1', THEME_DEFAULT = 'vu-theme-default-v2';
-  const BAR = {light: '#ffffff', dark: '#000000'};
+  const BAR = {light: '#ffffff', dark: '#08080a'};
   /* Reine Regel (Tests): store = {get(k), set(k, v|null)}, device = "light"|"dark", automated = navigator.webdriver. */
   const themeWanted = (store, device, automated) => {
     if (store.get(THEME_DEFAULT) !== '1') {
@@ -589,7 +596,7 @@
         .brand img{display:block;width:clamp(150px,14vw,190px);max-width:40vw;height:auto}
         .world[hidden],.brand[hidden],.live[hidden]{display:none}
         .mod{position:relative;display:flex;align-items:center;gap:8px;flex:0 1 auto;min-width:0;height:38px;padding:0 12px 0 6px;border:0;border-radius:99px;background:${t.glass};-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:${t.ink};font-weight:800;font-size:16px;letter-spacing:-.02em;white-space:nowrap}
-        .mi{width:28px;height:28px;border-radius:9px;background:#0e1013;border:1px solid rgba(200,245,49,.35);display:grid;place-items:center;color:#c8f531;flex:none}
+        .mi{width:28px;height:28px;border-radius:9px;background:${t.icoBg};border:1px solid ${t.icoLineHead};display:grid;place-items:center;color:${t.icoInk};flex:none}
         .mi svg{width:18px;height:18px}.mi svg.line{fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
         .world-name{min-width:0;overflow:hidden;text-overflow:ellipsis}
         .mod .chev{width:12px;height:12px;flex:none;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
@@ -624,51 +631,51 @@
         .tab[aria-current=page] .badge{background:#c8f531;color:#000}
         .tab:focus-visible{outline:0}.tab:focus-visible .pill{outline:2px solid ${t.outline};outline-offset:2px}
         .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);visibility:hidden;opacity:0;transition:opacity .25s}
-        .panel{position:fixed;right:0;top:0;bottom:0;width:min(440px,100vw);padding:calc(14px + env(safe-area-inset-top)) 16px calc(26px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;background:#151516;color:#f4f5f1;visibility:hidden;transform:translateX(24px);opacity:0;transition:transform .2s,opacity .2s,visibility .2s}
+        .panel{position:fixed;right:0;top:0;bottom:0;width:min(440px,100vw);padding:calc(14px + env(safe-area-inset-top)) 16px calc(26px + env(safe-area-inset-bottom));overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;background:${t.panel};color:${t.panelInk};visibility:hidden;transform:translateX(24px);opacity:0;transition:transform .2s,opacity .2s,visibility .2s}
         .panel::-webkit-scrollbar{display:none}
         :host([open]) .backdrop,:host([open]) .panel{visibility:visible;opacity:1;transform:none}
-        .grab{display:none;position:sticky;top:0;z-index:1;height:21px;margin:0 -16px;background:#151516;touch-action:none;cursor:grab}
-        .grab::before{content:"";position:absolute;left:calc(50% - 22px);top:10px;width:44px;height:5px;border-radius:9px;background:#3a3a3d}
+        .grab{display:none;position:sticky;top:0;z-index:1;height:21px;margin:0 -16px;background:${t.panel};touch-action:none;cursor:grab}
+        .grab::before{content:"";position:absolute;left:calc(50% - 22px);top:10px;width:44px;height:5px;border-radius:9px;background:${t.grabBar}}
         .panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:44px;margin-top:6px}
-        .panel h2.uni-title{margin:0;font-size:30px;line-height:1;font-weight:900;letter-spacing:-.045em;color:#f4f5f1}
-        .uni-sub{margin:0;color:#a1a7af;font-size:12.5px;line-height:1.35}
-        .close{width:44px;height:44px;margin-right:-4px;border:0;border-radius:50%;background:transparent;color:#fff;display:grid;place-items:center;padding:0;flex:none}
-        .close i{width:36px;height:36px;border-radius:99px;background:#151516;display:grid;place-items:center}
+        .panel h2.uni-title{margin:0;font-size:30px;line-height:1;font-weight:900;letter-spacing:-.045em;color:${t.panelInk}}
+        .uni-sub{margin:0;color:${t.panelMute};font-size:12.5px;line-height:1.35}
+        .close{width:44px;height:44px;margin-right:-4px;border:0;border-radius:50%;background:transparent;color:${t.closeInk};display:grid;place-items:center;padding:0;flex:none}
+        .close i{width:36px;height:36px;border-radius:99px;background:${t.panel};display:grid;place-items:center}
         .close svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round}
         .find svg,.mine svg,.here svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-        .find{display:flex;align-items:center;gap:10px;height:52px;margin-top:22px;padding:0 6px 0 16px;border-radius:99px;background:#202022;color:#a1a7af}
-        .find input{flex:1;min-width:0;height:44px;border:0;background:transparent;color:#fff;font:600 15.5px/1 inherit;font-family:inherit;outline-offset:0}
-        .find input::placeholder{color:#a1a7af}
+        .find{display:flex;align-items:center;gap:10px;height:52px;margin-top:22px;padding:0 6px 0 16px;border-radius:99px;background:${t.field};color:${t.panelMute}}
+        .find input{flex:1;min-width:0;height:44px;border:0;background:transparent;color:${t.fieldInk};font:600 15.5px/1 inherit;font-family:inherit;outline-offset:0}
+        .find input::placeholder{color:${t.panelMute}}
         .find button{width:44px;height:44px;margin:-2px;border:2px solid transparent;border-radius:50%;background:#c8f531;background-clip:padding-box;color:#101318;display:grid;place-items:center;padding:0;flex:none}
         .find button svg{fill:currentColor;stroke:none}
-        .panel h2{margin:16px 0 0;font-size:10.5px;line-height:1.35;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#a1a7af}
+        .panel h2{margin:16px 0 0;font-size:10.5px;line-height:1.35;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:${t.panelMute}}
         .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-        .tile{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border-radius:22px;background:#202022;color:#f4f5f1;text-decoration:none;transition:transform .12s}
+        .tile{display:flex;align-items:center;gap:10px;min-width:0;padding:12px;border-radius:22px;background:${t.field};color:${t.panelInk};text-decoration:none;transition:transform .12s}
         .tile:active{transform:scale(.97)}
-        .tile:hover{background:#262628}
+        .tile:hover{background:${t.fieldHover}}
         .tile>span:last-child{flex:1;min-width:0}
-        .tile .menu-product-icon{width:40px;height:40px;border-radius:12px;background:#0e1013;border:1px solid rgba(200,245,49,.25);color:#c8f531;display:grid;place-items:center;flex:none}
+        .tile .menu-product-icon{width:40px;height:40px;border-radius:12px;background:${t.icoBg};border:1px solid ${t.icoLine};color:${t.icoInk};display:grid;place-items:center;flex:none}
         .tile .menu-product-icon svg{width:22px;height:22px}
         .tile b{display:block;font-size:16px;font-weight:800;line-height:1.35}
-        .tile small{display:block;font-size:11px;line-height:1.35;color:#a1a7af}
-        .tile[aria-current=page],.tile.is-current{box-shadow:0 0 0 1px rgba(200,245,49,.5),0 0 28px rgba(200,245,49,.18)}
+        .tile small{display:block;font-size:11px;line-height:1.35;color:${t.panelMute}}
+        .tile[aria-current=page],.tile.is-current{box-shadow:${t.current}}
         .links{display:grid;margin-top:8px}
-        .links a,.mine a,.more summary{display:flex;align-items:center;gap:12px;min-height:46px;padding:0;border-bottom:1px solid rgba(255,255,255,.09);color:#f4f5f1;font-size:15px;font-weight:800;text-decoration:none}
+        .links a,.mine a,.more summary{display:flex;align-items:center;gap:12px;min-height:46px;padding:0;border-bottom:1px solid ${t.hair};color:${t.panelInk};font-size:15px;font-weight:800;text-decoration:none}
         .mine{margin-top:8px}
-        .links a[aria-current=page]{color:#c8f531}
-        .legal-note{margin:12px 0 4px;color:#a1a7af;font-size:11px;line-height:1.5}
+        .links a[aria-current=page]{color:${t.accent}}
+        .legal-note{margin:12px 0 4px;color:${t.panelMute};font-size:11px;line-height:1.5}
         .links a span,.mine a b{flex:1}
-        .links a>svg,.mine a>svg{color:#a1a7af}
-        .mine a i,.links a i{color:#c8f531;display:grid;place-items:center;font-style:normal;width:20px}
+        .links a>svg,.mine a>svg{color:${t.panelMute}}
+        .mine a i,.links a i{color:${t.accent};display:grid;place-items:center;font-style:normal;width:20px}
         .more{margin-top:8px}.more summary{list-style:none;cursor:pointer}.more summary::-webkit-details-marker{display:none}
-        .more summary:after{content:"";width:8px;height:8px;margin-right:6px;border-right:2px solid #a1a7af;border-bottom:2px solid #a1a7af;transform:rotate(45deg) translateY(-3px)}
+        .more summary:after{content:"";width:8px;height:8px;margin-right:6px;border-right:2px solid ${t.panelMute};border-bottom:2px solid ${t.panelMute};transform:rotate(45deg) translateY(-3px)}
         .more[open] summary:after{transform:rotate(225deg)}
         .more summary span{flex:1}
         .settings{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
         .choices{display:flex;gap:6px}
-        .choices button,.choices a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:#202022;color:#f4f5f1;font:700 14px/1 inherit;font-family:inherit;text-decoration:none}
-        .choices [aria-pressed=true]{background:#fff;color:#000}
-        .panel a:focus-visible,.panel button:focus-visible,.panel input:focus-visible,.panel summary:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
+        .choices button,.choices a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;padding:0 16px;border:0;border-radius:999px;background:${t.field};color:${t.panelInk};font:700 14px/1 inherit;font-family:inherit;text-decoration:none}
+        .choices [aria-pressed=true]{background:${t.pressed};color:${t.pressedInk}}
+        .panel a:focus-visible,.panel button:focus-visible,.panel input:focus-visible,.panel summary:focus-visible{outline:2px solid ${t.accent};outline-offset:2px}
         @media(max-width:1024px){.quick{display:none}}
         @media(max-width:760px){.shell{width:auto}.row{height:56px;padding:0 12px}.brand img{width:min(150px,40vw)}
           .tabs{padding-inline:14px}
@@ -688,6 +695,8 @@
       if (name !== 'theme' || !this.shadowRoot) return;
       const style = this.shadowRoot.querySelector('style');
       if (style) style.textContent = styles(THEMES[this.getAttribute('theme') === 'dark' ? 'dark' : 'light']);
+      const dock = this.dockHost && this.dockHost.shadowRoot && this.dockHost.shadowRoot.querySelector('style');
+      if (dock) dock.textContent = dockStyles(THEMES[this.getAttribute('theme') === 'dark' ? 'dark' : 'light']);
     }
     connectedCallback() {
       if (this.shadowRoot) return;
@@ -912,7 +921,7 @@
       this.mountTabs();
       const host=document.createElement('div');host.id='vu-dock';host.className='vu-dock';this.dockHost=host;
       const root=host.attachShadow({mode:'open'});
-      root.innerHTML=`<style>${dockStyles}</style><nav aria-label="Hauptnavigation"></nav>`;
+      root.innerHTML=`<style>${dockStyles(THEMES[this.getAttribute('theme')==='dark'?'dark':'light'])}</style><nav aria-label="Hauptnavigation"></nav>`;
       const nav=root.querySelector('nav');
       const place=([id,label,href,icon])=>{
         const a=document.createElement('a');a.href=href;a.dataset.id=id;

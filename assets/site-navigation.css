@@ -235,6 +235,17 @@ html.vu-menu-open,html.vu-menu-open body{overflow:hidden}
 .vu-fs-dot[data-off]{background:#55595f}
 .vu-fs-btn{display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:16px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:none;color:#fff;font:800 16px/1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;cursor:pointer}
 .vu-fs-row:focus-visible,.vu-fs-btn:focus-visible{outline:2px solid #c8f531;outline-offset:2px}
+/* Hell vollständig hell (Owner 16.11.2026): die Fenster des Kopfes stehen im Hellen auf weißem Bogen; dunkel unverändert. */
+:root:not([data-theme=dark]) .vu-frame-sheet .vu-sheet-ui{background:#fff;color:#000}
+:root:not([data-theme=dark]) .vu-frame-sheet .vu-sheet-ui>h2{color:#000}
+:root:not([data-theme=dark]) .vu-fs-text{color:#3a3d42}
+:root:not([data-theme=dark]) .vu-fs-sub,:root:not([data-theme=dark]) .vu-fs-row span{color:#5d636b}
+:root:not([data-theme=dark]) .vu-fs-row{border-bottom-color:rgba(0,0,0,.1);color:#000}
+:root:not([data-theme=dark]) .vu-fs-row svg{stroke:#5d636b}
+:root:not([data-theme=dark]) .vu-fs-dot{background:#5f8000}
+:root:not([data-theme=dark]) .vu-fs-dot[data-off]{background:#b4b8bd}
+:root:not([data-theme=dark]) .vu-fs-btn{border-color:rgba(0,0,0,.28);color:#000}
+:root:not([data-theme=dark]) .vu-fs-row:focus-visible,:root:not([data-theme=dark]) .vu-fs-btn:focus-visible{outline-color:#4f6b00}
 
 /* Bausteine C04–C20 des Redesigns: assets/vu-ui.css (eigene Datei, nicht Teil der Navigation). */
 /* Einheitlicher Seitenfuß (Strang F): erscheint erst mit legalApproved */

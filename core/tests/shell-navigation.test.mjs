@@ -275,17 +275,24 @@ test('active dock state follows deep links after reload', () => {
 });
 
 test('the dock respects safe areas, keeps touch targets and sits below overlays and the menu', () => {
-  assert.match(dockStyles, /env\(safe-area-inset-bottom\)/);
-  assert.match(dockStyles, /nav\{[^}]*display:flex;align-items:center;[^}]*height:68px/, 'vier gleich breite Plaetze um den Knopf in der Mitte');
-  assert.match(dockStyles, /a\{flex:1 1 0;/);
-  assert.match(dockStyles, /nav\{[^}]*border-radius:28px;background:rgba\(12,12,13,\.92\);[^}]*backdrop-filter:blur\(16px\);border:1px solid rgba\(255,255,255,\.14\)/, 'Leiste wie im Prototyp (shell.js .dock)');
-  assert.match(dockStyles, /a\[aria-current=page\],a\[aria-current=page\]:hover\{color:#c8f531\}/, 'aktiver Platz in Lime (App-Konzept 2)');
+  // Dunkel = Prototyp (unveraendert); Hell vollstaendig hell (Owner 16.11.2026): helle Leiste, aktiver Platz dunkles Gruen, Ring in Seitenweiss
+  const dockDark = dockStyles(THEMES.dark), dockLight = dockStyles(THEMES.light);
+  assert.match(dockDark, /env\(safe-area-inset-bottom\)/);
+  assert.match(dockDark, /nav\{[^}]*display:flex;align-items:center;[^}]*height:68px/, 'vier gleich breite Plaetze um den Knopf in der Mitte');
+  assert.match(dockDark, /a\{flex:1 1 0;/);
+  assert.match(dockDark, /nav\{[^}]*border-radius:28px;background:rgba\(12,12,13,\.92\);[^}]*backdrop-filter:blur\(16px\);border:1px solid rgba\(255,255,255,\.14\)/, 'Leiste wie im Prototyp (shell.js .dock)');
+  assert.match(dockDark, /a\[aria-current=page\],a\[aria-current=page\]:hover\{color:#c8f531\}/, 'aktiver Platz in Lime (App-Konzept 2)');
   // Universe-Knopf: rund, 62px, lime, ueber der Leiste
-  assert.match(dockStyles, /\.uni\{flex:none;width:62px;height:62px;margin:-22px 6px 0;[^}]*border-radius:99px;background:#c8f531;color:#101318;box-shadow:0 0 0 6px #000,0 8px 30px rgba\(200,245,49,\.35\)\}/);
-  assert.match(dockStyles, /a\{flex:1 1 0;gap:3px;min-width:0;height:56px;[^}]*color:#a1a7af;font-size:10\.5px;font-weight:700/);
-  assert.match(dockStyles, /z-index:900/);
-  assert.match(dockStyles, /:focus-visible/);
-  assert.match(dockStyles, /prefers-reduced-motion/);
+  assert.match(dockDark, /\.uni\{flex:none;width:62px;height:62px;margin:-22px 6px 0;[^}]*border-radius:99px;background:#c8f531;color:#101318;box-shadow:0 0 0 6px #000,0 8px 30px rgba\(200,245,49,\.35\)\}/);
+  assert.match(dockDark, /a\{flex:1 1 0;gap:3px;min-width:0;height:56px;[^}]*color:#a1a7af;font-size:10\.5px;font-weight:700/);
+  assert.match(dockDark, /z-index:900/);
+  assert.match(dockLight, /nav\{[^}]*border-radius:28px;background:rgba\(255,255,255,\.92\);[^}]*border:1px solid rgba\(0,0,0,\.1\);color:#000\}/, 'Hell: helle Leiste');
+  assert.match(dockLight, /a\[aria-current=page\],a\[aria-current=page\]:hover\{color:#4f6b00\}/, 'Hell: aktiver Platz in dunklem Gruen (Kontrast auf Weiss)');
+  assert.match(dockLight, /box-shadow:0 0 0 6px #fff,0 8px 30px/, 'Hell: Ring um den Universe-Knopf in Seitenweiss');
+  assert.match(dockLight, /color:#5d636b;font-size:10\.5px/);
+  assert.doesNotMatch(dockLight, /rgba\(12,12,13|#a1a7af/, 'Hell: keine dunklen Werte in der Leiste');
+  assert.match(dockDark, /:focus-visible/);
+  assert.match(dockDark, /prefers-reduced-motion/);
   assert.match(styles(THEMES.light), /z-index:1000000/);
   const css = readFileSync(join(root, 'assets/site-navigation.css'), 'utf8');
   assert.match(css, /html\[data-vu-dock\] body\{padding-bottom:var\(--vu-dock-space\)/);
@@ -461,7 +468,12 @@ test('menu tiles keep original product symbols, load the sprite lazily and stay 
   assert.match(light,/\.hb\{position:relative;width:38px;height:38px/);
   assert.match(light,/\.links a,\.mine a,\.more summary\{[^}]*min-height:46px/);
   assert.match(light,/\.choices button,\.choices a\{[^}]*min-width:44px;min-height:44px/);
-  assert.match(light,/\.tile\[aria-current=page\],\.tile\.is-current\{box-shadow:0 0 0 1px rgba\(200,245,49,\.5\),0 0 28px rgba\(200,245,49,\.18\)\}/,'aktuelle Welt: Lichtrand des Prototyps (.gl)');
+  assert.match(styles(THEMES.dark),/\.tile\[aria-current=page\],\.tile\.is-current\{box-shadow:0 0 0 1px rgba\(200,245,49,\.5\),0 0 28px rgba\(200,245,49,\.18\)\}/,'aktuelle Welt: Lichtrand des Prototyps (.gl)');
+  // Hell vollstaendig hell (Owner 16.11.2026): Menue auf weissem Bogen, Kacheln hellgrau, aktuelle Welt mit dunklem Rand
+  assert.match(light,/\.tile\[aria-current=page\],\.tile\.is-current\{box-shadow:0 0 0 1\.5px #000\}/,'Hell: aktuelle Welt mit dunklem Rand');
+  assert.match(light,/\.panel\{[^}]*background:#fff;color:#000;/,'Hell: Menue auf weissem Bogen');
+  assert.match(light,/\.tile\{[^}]*background:#f1f1f1;color:#000;/,'Hell: Kacheln hellgrau');
+  assert.doesNotMatch(light,/#151516|#202022|#0e1013/,'Hell: keine dunklen Flaechen im Kopf und Menue');
 });
 
 test('Elliott is a first-class product with its own menu group, dock and state', () => {
@@ -647,12 +659,15 @@ test('Kopf nach Prototyp: Welten-Wechsler als Pille, „i“, Datums-Pille, Such
     assert.match(phone, /\.row\{height:56px;padding:0 12px\}/);
     assert.match(st, /\.row\{height:64px;display:flex;align-items:center;gap:8px\}/);
     assert.match(st, /\.mod\{[^}]*gap:8px;[^}]*height:38px;padding:0 12px 0 6px;border:0;border-radius:99px;[^}]*font-weight:800;font-size:16px;letter-spacing:-\.02em;white-space:nowrap\}/);
-    assert.match(st, /\.mi\{width:28px;height:28px;border-radius:9px;background:#0e1013;border:1px solid rgba\(200,245,49,\.35\);[^}]*color:#c8f531/);
+    assert.match(st, /\.mi\{width:28px;height:28px;border-radius:9px;background:[^;]+;border:1px solid [^;]+;[^}]*color:#/);
     assert.match(st, /\.live\{[^}]*gap:6px;[^}]*height:38px;padding:0 11px;[^}]*font-size:12px;font-weight:800;/);
     assert.match(st, /\.live i\{width:7px;height:7px;border-radius:9px;/);
     assert.ok(st.includes(`.profile{border:2px solid #c8f531;`), 'Profil mit Ring in Neongrün');
     assert.ok(st.includes(`:host([solid]) header{background:${t.bg};-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}`));
   }
+  // Modul-Symbol: dunkel wie im Prototyp, hell neongruen mit dunklem Zeichen (Owner 16.11.2026)
+  assert.match(styles(THEMES.dark), /\.mi\{width:28px;height:28px;border-radius:9px;background:#0e1013;border:1px solid rgba\(200,245,49,\.35\);[^}]*color:#c8f531/);
+  assert.match(styles(THEMES.light), /\.mi\{width:28px;height:28px;border-radius:9px;background:#c8f531;border:1px solid rgba\(0,0,0,\.08\);[^}]*color:#101318/);
   assert.equal(THEMES.dark.bg, 'rgba(0,0,0,.82)');
   assert.equal(THEMES.dark.glass, 'rgba(20,20,22,.7)');
   assert.equal(THEMES.dark.live, '#c3c7cc');
