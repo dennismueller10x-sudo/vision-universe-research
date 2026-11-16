@@ -60,6 +60,9 @@ REPORTED_METRICS = (
     # one. Publishing them costs three series per issuer and closes two
     # factor components that were otherwise stuck behind a one-line export.
     "depreciation_and_amortization", "pretax_income", "income_tax_expense",
+    # Befund c (16.11.2026): kurzfristige Wertpapiere, damit die Nettoverschuldung sichtbar aus Schulden, Bargeld und
+    # Wertpapieren desselben Stichtags entsteht.
+    "short_term_investments",
 )
 # Derived by derived.reconstruct (deterministic, with the inputs' provenance).
 DERIVED_METRICS = ("free_cash_flow", "net_debt", "ebitda")
@@ -69,7 +72,7 @@ CONSUMER_METRICS = REPORTED_METRICS + DERIVED_METRICS
 # a balance-sheet instant has no TTM, and the product reads it annually).
 QUARTERLY_METRICS = ("revenue", "gross_profit", "operating_income", "net_income", "eps_diluted",
                      "operating_cash_flow", "capital_expenditures", "free_cash_flow",
-                     "cash_and_equivalents", "total_debt", "shares_outstanding",
+                     "cash_and_equivalents", "short_term_investments", "total_debt", "shares_outstanding",
                      "depreciation_and_amortization", "pretax_income", "income_tax_expense",
                      "ebitda",
                      # b3 (13.11.2026): Bilanzsumme je Quartal, damit Renditen auf das Vermoegen (ROA, Rohertrag je
@@ -211,7 +214,13 @@ def _ttm(resolver, registry, as_of, policy):
                 out["gross_profit"] = {"fp": "TTM", "end": rev["end"], "v": rev["v"] - cor.value, "unit": rev["unit"], "filed": filed,
                                        "through": rev.get("through"), "kind": "TTM", "derived": True,
                                        "inputs": ["revenue", "cost_of_revenue"]}
-    if "total_debt" not in out:
+    # Befund c (16.11.2026): Auch ein GEMELDETER Gesamtschulden-Stand wird durch die Summe der Teile ersetzt, wenn
+    # diese einen juengeren Stichtag hat - MSFT meldet die Gesamtzeile zuletzt 2015, die Teile laufen bis heute.
+    parts = [resolver.ttm(m, as_of, policy=policy) for m in ("long_term_debt", "short_term_debt")]
+    part_rows = [rowdict(_row(f)) for f in parts if f.available]
+    newer_parts = bool(part_rows) and len({r["end"] for r in part_rows}) == 1 and \
+        "total_debt" in out and part_rows[0]["end"] > out["total_debt"]["end"]
+    if "total_debt" not in out or newer_parts:
         parts = [resolver.ttm(m, as_of, policy=policy) for m in ("long_term_debt", "short_term_debt")]
         rows = [rowdict(_row(f)) for f in parts if f.available]
         if rows and len({r["end"] for r in rows}) == 1:
@@ -219,10 +228,17 @@ def _ttm(resolver, registry, as_of, policy):
                                  "filed": max([r["filed"] for r in rows if r.get("filed")] or [None]),
                                  "kind": "INSTANT", "derived": True,
                                  "inputs": [m for m, f in zip(("long_term_debt", "short_term_debt"), parts) if f.available]}
-    if "total_debt" in out and "cash_and_equivalents" in out:
+    # Nettoverschuldung nur aus Bestaenden DESSELBEN Stichtags (Befund c): vorher stand bei ORCL Schulden vom Mai neben
+    # Bargeld vom August, bei MSFT Schulden von 2015 neben Bargeld von 2026.
+    if "total_debt" in out and "cash_and_equivalents" in out \
+            and out["total_debt"]["end"] == out["cash_and_equivalents"].get("end"):
         debt, cash = out["total_debt"], out["cash_and_equivalents"]
-        out["net_debt"] = {"fp": "LATEST", "end": debt["end"], "v": debt["v"] - cash["v"], "unit": debt["unit"],
-                           "kind": "INSTANT", "derived": True, "inputs": ["total_debt", "cash_and_equivalents"]}
+        # Befund c: Wertpapiere nur vom selben Stichtag wie Schulden und Bargeld, sonst ohne sie (wie bisher).
+        sti = out.get("short_term_investments")
+        same = sti is not None and sti.get("end") == debt["end"] == cash.get("end") and sti.get("unit") == debt["unit"]
+        out["net_debt"] = {"fp": "LATEST", "end": debt["end"], "v": debt["v"] - cash["v"] - (sti["v"] if same else 0),
+                           "unit": debt["unit"], "kind": "INSTANT", "derived": True,
+                           "inputs": ["total_debt", "cash_and_equivalents"] + (["short_term_investments"] if same else [])}
     return out, through
 
 

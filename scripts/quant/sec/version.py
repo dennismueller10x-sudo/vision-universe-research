@@ -153,7 +153,9 @@ NORMALIZATION_SCHEMA_VERSION = "1.0.0"
 #              erklaerte Dividende, Deckblattdatum nach Annahme). Er wird als
 #              FUTURE_PERIOD_END quarantaeniert, nicht umdatiert. Nachbau mit
 #              companyfacts 27.10.2026: 1.084 (Fakt, Kennzahl) bei 398 Emittenten.
-NORMALIZATION_LOGIC_VERSION = "1.14.0"
+# 1.15.0 — derived.py: die Nettoverschuldung zieht kurzfristige Wertpapiere desselben
+#          Stichtags ab, wo der Emittent sie meldet (Befund c, 16.11.2026; Formel 1.3.0).
+NORMALIZATION_LOGIC_VERSION = "1.15.0"
 
 # Bumped by quant/config/sec-metric-registry.json itself; this is the minimum the
 # code understands.
@@ -162,7 +164,9 @@ METRIC_REGISTRY_MIN_VERSION = 1
 # Derived-metric formulas. Bump on any change to derived.py's arithmetic.
 # 1.2.0 — abgeleitete Groessen vermischen keine Waehrungen mehr und
 #         tragen die Waehrung ihrer Eingangsgroessen statt pauschal USD.
-FORMULA_VERSION = "1.2.0"
+# 1.3.0 — Nettoverschuldung zieht kurzfristige Wertpapiere desselben Stichtags ab
+#         (Befund c, 16.11.2026), wo der Emittent sie meldet.
+FORMULA_VERSION = "1.3.0"
 
 # The SEC access adapter (endpoints, fair-access behaviour).
 PROVIDER_ADAPTER_VERSION = "sec-edgar-1.0.0"
@@ -186,7 +190,7 @@ NORMALIZATION_SOURCES = (
 # sha256 over NORMALIZATION_SOURCES, recorded when the version above was last
 # bumped. Update BOTH together.
 NORMALIZATION_SOURCE_DIGEST = (
-    "366ea08025fbf9f377c5a1fa2343f89ea2e03f94a12ac5e9d6dc5680c563c7b2"
+    "c7960e27f6db03c063cdafc20c8be3a81db6cccc89418820544db6c54734a2b7"
 )
 
 

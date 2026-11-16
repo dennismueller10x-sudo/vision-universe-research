@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "mapping_version": "1.7.0",
-  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen.",
+  "mapping_version": "1.8.0",
+  "description": "Canonical Metric Registry. Maps Vision Universe metrics onto accepted SEC XBRL concepts. Central, config-driven, extensible. No company-specific rules are permitted here or anywhere downstream: a mapping is either generic or it does not exist. Stand 1.1.0: 13 Kennzahlen ergaenzt, damit die Fundamentalhistorie die Positionen aus dem Auftrag (§5) tragen kann - Abschreibungen (und damit EBITDA), kurzfristige Aktiva und Passiva, Vorraete, Forderungen, Gewinnruecklagen, Goodwill, immaterielle Vermoegenswerte, Investitions- und Finanzierungscashflow, Aktienrueckkaeufe, Schuldenaufnahme und -tilgung. Neue Kennzahlen sind optional: ein Emittent, der eine Position nicht ausweist, ist kein Fehlerfall. Version 1.2.0 ergaenzt die IFRS-Taxonomie (ifrs-full) fuer 20-F- und 40-F-Einreicher sowie die Bilanzidentitaet LiabilitiesAndStockholdersEquity. Jedes ergaenzte Konzept wurde im Bestand GEMESSEN (quant/data/fundamentals/unmapped-concepts.json, Lauf 34743708708), keines aus dem Gedaechtnis uebernommen. Version 1.8.0 (16.11.2026, Befund c): us-gaap:DebtSecuritiesCurrent als vierter Rueckfall fuer short_term_investments - gemessen in den SEC-Frames CY2025Q4I/CY2026Q2I melden 16 bzw. 12 Emittenten das Konzept, 10 davon ohne eines der drei bisherigen (u. a. NVIDIA ab dem 10-Q vom 26.07.2026 statt MarketableSecuritiesCurrent, Archer-Daniels-Midland, IDT, Xencor).",
   "sector_rules": [
     {
       "id": "FINANCIALS",
@@ -1010,6 +1010,11 @@
           "taxonomy": "us-gaap",
           "concept": "AvailableForSaleSecuritiesDebtSecuritiesCurrent",
           "priority": 30
+        },
+        {
+          "taxonomy": "us-gaap",
+          "concept": "DebtSecuritiesCurrent",
+          "priority": 40
         }
       ]
     },

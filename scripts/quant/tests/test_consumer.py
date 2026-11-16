@@ -85,6 +85,20 @@ class ConsumerBundleTest(unittest.TestCase):
         self.assertEqual(debt["kind"], "INSTANT"); self.assertTrue(debt["filed"])
         self.assertAlmostEqual(debt["v"], R(q["total_debt"][-1])["v"], places=2)
         self.assertEqual(ttm["net_debt"]["inputs"], ["total_debt", "cash_and_equivalents"])
+    def test_ttm_net_debt_subtracts_short_term_investments_of_the_same_instant(self):
+        # Befund c (16.11.2026): Wertpapiere desselben Stichtags wie Schulden und Bargeld zaehlen wie Bargeld.
+        from quant.tests.fixtures import INSTANT_CONCEPTS
+        builder, _ = standard_company(2000000078, self.fy_ends, lambda year: 1000.0 * (year - 2010),
+                                      instant_concepts=INSTANT_CONCEPTS + (("MarketableSecuritiesCurrent", "USD", 0.3),))
+        bundle = consumer.build_consumer_bundle(2000000078, builder.company_facts("SYNTHETIC STI"), self.registry,
+                                                as_of="2026-09-14", tickers=["SYTI"], security_ids=["ref_SYTI"], name="Syn")
+        ttm = bundle["ttm"]
+        self.assertEqual(ttm["short_term_investments"]["end"], ttm["total_debt"]["end"])
+        self.assertEqual(ttm["net_debt"]["inputs"], ["total_debt", "cash_and_equivalents", "short_term_investments"])
+        self.assertAlmostEqual(ttm["net_debt"]["v"], ttm["total_debt"]["v"] - ttm["cash_and_equivalents"]["v"]
+                               - ttm["short_term_investments"]["v"], places=2)
+        self.assertTrue(bundle["quarterly"]["short_term_investments"])
+
     def test_total_assets_has_a_quarterly_series(self):
         # b3 (13.11.2026): die Bilanzsumme je Quartal, damit ein Durchschnitt ueber dasselbe TTM-Fenster moeglich ist.
         rows = [R(r) for r in self.bundle["quarterly"]["total_assets"]]

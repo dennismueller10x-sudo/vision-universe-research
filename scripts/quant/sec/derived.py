@@ -40,7 +40,10 @@ FORMULAS = {
     "ebitda": "operating_income + depreciation_and_amortization",
     "free_cash_flow": "operating_cash_flow - capital_expenditures",
     "total_debt": "long_term_debt + short_term_debt",
-    "net_debt": "total_debt - cash_and_equivalents",
+    # Befund c (16.11.2026): kurzfristige Wertpapiere zaehlen wie Bargeld, wenn der Emittent sie fuer DENSELBEN Stichtag
+    # meldet (quant-v2.json netDebtToAssets: totalDebt - cash - shortTermInvestments). Ohne gemeldete Wertpapiere
+    # bleibt es bei Schulden minus Bargeld.
+    "net_debt": "total_debt - cash_and_equivalents - short_term_investments (falls gemeldet)",
     "invested_capital": "total_debt + stockholders_equity - cash_and_equivalents",
     "accruals": "(net_income - operating_cash_flow) / total_assets",
 }
@@ -247,7 +250,11 @@ def reconstruct(resolver, fiscal_year, fiscal_period, as_of,
         emit("total_debt", ("long_term_debt", "short_term_debt"),
              lambda lt, st: lt + st)
 
-    emit("net_debt", ("total_debt", "cash_and_equivalents"), lambda debt, cash: debt - cash)
+    if read("short_term_investments").available:
+        emit("net_debt", ("total_debt", "cash_and_equivalents", "short_term_investments"),
+             lambda debt, cash, sti: debt - cash - sti)
+    else:
+        emit("net_debt", ("total_debt", "cash_and_equivalents"), lambda debt, cash: debt - cash)
     emit("invested_capital", ("total_debt", "stockholders_equity", "cash_and_equivalents"),
          lambda debt, equity, cash: debt + equity - cash)
 
