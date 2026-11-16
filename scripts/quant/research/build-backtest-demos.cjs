@@ -42,6 +42,14 @@ function keyNumbers(c, r) {
   return row;
 }
 function main(argv = process.argv.slice(2)) {
+  // One-off execution only: restore the original demo run's data, never publish these input files.
+  // Original run 43477028726, code checkout 6ed7899..., data overlay e4628154... .
+  const cp = require('node:child_process');
+  const codeRef = '6ed7899d35ca89e4cf2e414839f2c708820d738b';
+  const dataRef = 'e4628154de8c11294820108cc30b9b0592b46ba8';
+  for (const ref of [codeRef, dataRef]) cp.execFileSync('git', ['fetch', '--quiet', '--depth=1', '--filter=blob:none', '--no-tags', 'origin', ref], { cwd: ROOT, stdio: 'inherit' });
+  cp.execFileSync('git', ['restore', '--source=' + codeRef, '--worktree', '--', 'quant/data/market/discover-series-long', 'quant/data/market/discover-series/ref_SPY.json', 'quant/data/product/backtest-certification-v1.json'], { cwd: ROOT, stdio: 'inherit' });
+  cp.execFileSync('git', ['restore', '--source=' + dataRef, '--worktree', '--', 'quant/data/market/multi-asset/series/SPY.json', 'quant/data/market/multi-asset/instruments.json'], { cwd: ROOT, stdio: 'inherit' });
   const o = parse(argv);
   const cases = JSON.parse(fs.readFileSync(CASES, 'utf8')).cases.filter(c => !o.only || c.id === o.only);
   fs.mkdirSync(path.join(o.out, 'results'), { recursive: true });
