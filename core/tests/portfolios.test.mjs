@@ -191,3 +191,26 @@ test("PF-10 · Wortwahl: kein „Einstieg“, kein „Stopp“, kein „kauft/ve
     for (const a of avoid) assert.ok(!text.toLowerCase().includes(a), r + ": " + a);
   }
 });
+
+test("PF-12 · Kopfkachel: „Wertentwicklung seit <Start>“ aus d.perf des Exports, sonst Starttag mit ehrlichem Satz (Owner 16.11.2026)", () => {
+  const all = P.collect(src());
+  const text = (h) => h.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  const heroOf = (t) => t.slice(0, t.indexOf("Plätze je Depot") >= 0 ? t.indexOf("Plätze je Depot") : undefined);
+  for (const r of ["#/", "#/supertrader", "#/quant", "#/ki"]) assert.doesNotMatch(P.render(all, r), /erscheint, sobald belastbar/, r);
+  // Gruppe: je Depot. Mit Zahl des Exports dieselbe Zahl wie auf der Karte (keine neue Rechnung), sonst ab dem Starttag.
+  for (const g of ["supertrader", "quant", "ki"]) {
+    const hero = heroOf(text(P.render(all, "#/" + g)));
+    for (const d of all.filter((x) => x.group === g)) {
+      if (d.perf) assert.match(hero, new RegExp("Wertentwicklung seit [0-9.]+ " + VUUI.pct(d.perf.pct, 1).replace(/[+.]/g, "\\$&") + " \\(nach Kosten"), d.id);
+      else assert.match(hero, /Wertentwicklung (ab [0-9.]+, )?erscheint mit dem ersten belastbaren Stand/, d.id);
+    }
+  }
+  // Supertrader führt keine Wertentwicklung im Export: keine Zahl, nur der Starttag
+  assert.doesNotMatch(heroOf(text(P.render(all, "#/supertrader"))), /Wertentwicklung seit/);
+  // Übersicht: je Gruppe eine Zeile
+  const o = heroOf(text(P.render(all, "#/")));
+  for (const label of ["Supertrader:", "Quant:", "KI:"]) assert.ok(o.includes(label), label);
+  // Quant ohne PUBLISHED: keine Zahl, nur der Starttag
+  const s = src(); s.quant.performance.state = "PENDING";
+  assert.doesNotMatch(heroOf(text(P.render(P.collect(s), "#/quant"))), /Wertentwicklung seit/);
+});
