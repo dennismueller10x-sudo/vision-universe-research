@@ -282,7 +282,8 @@
   function discoverLink(sym, sig, label) {
     var av = sig && sig.discoverAvailability;
     if (av && (av.unavailable || []).indexOf(sym) >= 0) return h('p', { class: 'st-hint', 'data-discover': 'unavailable', text: DISCOVER_UNAVAILABLE_TEXT });
-    return h('p', null, [h('a', { class: 'st-more', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, [label, icon(IC.arrow)])]);
+    /* App-Konzept 2 (Owner 16.11.2026): öffnet die Aktien-Vorschau des Rahmens (data-vu-stock), „Ganz öffnen“ /aktie/#/<T>. */
+    return h('p', null, [h('a', { class: 'st-more', href: '/aktie/#/' + encodeURIComponent(sym), 'data-vu-stock': sym, 'data-vu-stock-name': sym }, [label, icon(IC.arrow)])]);
   }
   function emptyBox(title, text) { return h('div', { class: 'st-emptybox' }, [h('strong', { text: title }), h('p', { text: text })]); }
   function details(summary, kids, open) { var d = h('details', { class: 'st-det' }, [h('summary', { text: summary })].concat(kids)); if (open) d.open = true; return d; }
@@ -1178,7 +1179,7 @@
     var t52Node = t52 && t52s ? h('a', { class: 'st-research', href: stratUrl(t52s), style: worldVars(t52s) }, [h('div', { class: 'r1' }, [h('strong', { text: stName(t52s) }), h('span', { class: 'st-tag', 'data-t': t52[1], text: t52[0] })]), h('p', { text: t52[2] })]) : null;
     if (!sym || (!entries.length && !history.length && !t52)) {
       main.appendChild(emptyBox('Kein Supertrader-Modell erkennt ' + (sym || 'diesen Titel'), 'Heute sieht keine Methode ein Setup, einen Kandidaten oder einen Teiltreffer.'));
-      if (sym) main.appendChild(discoverLink(sym, sig, 'In Discover öffnen'));
+      if (sym) main.appendChild(discoverLink(sym, sig, 'Aktie öffnen'));
       if (sym) mountTechnical(main, sym, kit, sig);
       main.appendChild(disclaimer(sig)); return;
     }
@@ -1590,7 +1591,7 @@
         h('div', { class: 'c' }, [h('span', { class: 'k', text: 'Nächste Entscheidung' }), h('strong', { text: dateDe(L.nextDecision) })]),
       ])];
       kids.push(h('ul', { class: 'st-mplist st-grid3' }, (cur.holdings || []).map(function (x) {
-        return h('li', null, [h('a', { href: '/quant/#/aktie/' + encodeURIComponent(x.ticker) }, [
+        return h('li', null, [h('a', { href: '/aktie/#/' + encodeURIComponent(x.ticker), 'data-vu-stock': x.ticker, 'data-vu-stock-name': x.ticker }, [
           h('div', { class: 'r1' }, [h('strong', { text: x.ticker }), h('span', { class: 'w', text: pct(x.weight, 1) })]),
           h('div', { class: 'r2', text: (last.buys || []).indexOf(x.ticker) >= 0 ? 'neu aufgenommen am ' + dateDe(last.date) : 'gehalten' }),
         ])]);

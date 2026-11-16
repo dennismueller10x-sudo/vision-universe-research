@@ -940,7 +940,7 @@
       var best = function (v) { var k = K.slice().sort(function (a, b) { return v[b] - v[a]; })[0]; return U.PROFILE.label[k] + " " + Math.round(v[k]); };
       host.innerHTML = '<div class="qk-rh"><div class="qk-rh-t"><h2>Ähnliches Profil</h2></div><p>Aktien, deren ' + VM.nWord() + ' Eigenschaften ' + U.esc(String(displayName || ticker).replace(/,?\s+(Inc\.?|Corp(oration)?\.?|Ltd\.?|plc|Co\.?)$/i, "")) + " am nächsten liegen.</p></div>" +
         '<div class="qk-rail" role="list" tabindex="0" aria-label="Ähnliches Profil">' + near.map(function (x) {
-          return '<div role="listitem"><a class="qk-pc" href="' + U.esc(X.routes.stock(x.t)) + '">' + U.logo(x.t) + '<b class="qk-pc-n">' + U.esc(nm(x.t)) + '</b><span class="qk-pc-t">' + U.esc(x.t) + '</span><span class="qk-pc-p">' + U.profileMini(x.v, { width: 110, height: 34 }) + '</span><span class="qk-pc-c">' + U.esc(best(x.v)) + "</span></a></div>";
+          return '<div role="listitem"><a class="qk-pc" href="' + U.esc(X.routes.aktie(x.t)) + '"' + X.stockAttrs(x.t, nm(x.t)) + '>' + U.logo(x.t) + '<b class="qk-pc-n">' + U.esc(nm(x.t)) + '</b><span class="qk-pc-t">' + U.esc(x.t) + '</span><span class="qk-pc-p">' + U.profileMini(x.v, { width: 110, height: 34 }) + '</span><span class="qk-pc-c">' + U.esc(best(x.v)) + "</span></a></div>";
         }).join("") + "</div>" + '<p class="vu-xs vu-mu qk-foot">Rang im Vergleich zu allen bewerteten US-Aktien, Stand ' + U.esc(X.dateDe(scr.asOf || "")) + ". Keine Anlageempfehlung.</p>";
     });
   }

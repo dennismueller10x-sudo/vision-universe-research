@@ -139,9 +139,12 @@
     return "https://www.sec.gov/Archives/edgar/data/" + (+f.cik) + "/" + f.accession.replace(/-/g, "") + "/";
   }
   function stockHref(item) {
-    // Aktienseite per Kürzel (H07); ohne Kürzel bleibt die CUSIP
-    return item.ticker ? "#/aktie/" + encodeURIComponent(item.ticker) : item.cusip ? "#/aktie/" + encodeURIComponent(item.cusip) : null;
+    // App-Konzept 2 (Owner 16.11.2026): Aktien mit Kürzel führen auf die gemeinsame Aktienseite /aktie/#/<T>; ein Tipp öffnet vorher
+    // die Vorschau des Rahmens (data-vu-stock, siehe Auffangnetz unten). Ohne Kürzel bleibt die CUSIP-Seite in Hedgefonds (#/aktie/<CUSIP>).
+    return item.ticker ? "/aktie/#/" + encodeURIComponent(item.ticker) : item.cusip ? "#/aktie/" + encodeURIComponent(item.cusip) : null;
   }
+  /* Suchtreffer per Enter: eine Aktie wie ein Tipp (Vorschau über das Auffangnetz), sonst die Adresse des Treffers. */
+  function hfGo(t) { var g = t.getAttribute("data-go") || ""; if (/^\/aktie\/#\//.test(g)) t.click(); else location.hash = g; }
   function stockShard(cusip) {
     var s = 0;
     for (var i = 0; i < cusip.length; i++) s += cusip.charCodeAt(i);
@@ -426,10 +429,10 @@
         if (!target && !S.uniReady && !opts.stocksOnly && input.value.trim()) {
           // Enter, bevor universe.json da ist: wie bisher zum ersten Treffer, sobald es geladen ist
           e.preventDefault();
-          ensureUniverse().then(function () { render(); var t = items[0]; if (t) { location.hash = t.getAttribute("data-go"); if (opts.onGo) opts.onGo(); } });
+          ensureUniverse().then(function () { render(); var t = items[0]; if (t) { hfGo(t); if (opts.onGo) opts.onGo(); } });
           return;
         }
-        if (target) { e.preventDefault(); location.hash = target.getAttribute("data-go"); if (opts.onGo) opts.onGo(); }
+        if (target) { e.preventDefault(); hfGo(target); if (opts.onGo) opts.onGo(); }
       } else if (e.key === "Escape") { panel.hidden = true; input.blur(); if (opts.onGo) opts.onGo(); }
     });
     panel.addEventListener("click", function (e) {
@@ -1167,7 +1170,7 @@
     return hit || { ticker: t, name: name || t };
   }
   function tickerName(it) { return it.name === it.ticker ? it.ticker : issuerName(it); }
-  function tickerHref(t) { return "#/aktie/" + encodeURIComponent(t); }
+  function tickerHref(t) { return "/aktie/#/" + encodeURIComponent(t); }
   function smFlows(rows, val, sub, metric, n) {
     if (!rows || !rows.length) return U.blank("Aktuell keine Fälle.");
     var max = Math.max.apply(null, rows.map(function (r) { return Math.abs(metric(r)) || 0; })) || 1;
@@ -1500,6 +1503,19 @@
     window.scrollTo(0, scrollMemo[path] || 0);
   }
   window.addEventListener("hashchange", route);
+  /* App-Konzept 2 (Owner 16.11.2026): Jeder Tipp auf eine Aktie (Liste, Suche, Rangliste, Kachel) öffnet die Vorschau des Rahmens
+     (assets/site-navigation.js, data-vu-stock); „Ganz öffnen“ führt auf /aktie/#/<T>. Auffangnetz vor dem Rahmen (Capture): Links auf
+     /aktie/#/<T> ohne Merkmal bekommen es. Die Hedgefonds-Aktienseite (#/aktie/<T>) bleibt für Lesezeichen und CUSIP-Titel erreichbar. */
+  document.addEventListener("click", function (e) {
+    var a = e.target && e.target.closest && e.target.closest('a[href^="/aktie/#/"]');
+    /* nur Hedgefonds-Inhalt und Suche; die Vorschau selbst („Ganz öffnen“) und fremde Fenster bleiben unberührt */
+    if (!a || a.hasAttribute("data-vu-stock") || !(root.contains(a) || (overlay && overlay.contains(a)))) return;
+    var m = /^\/aktie\/#\/([A-Za-z0-9-]{1,12})$/.exec(a.getAttribute("href"));
+    if (!m) return;
+    var b = a.querySelector("b");
+    a.setAttribute("data-vu-stock", m[1].toUpperCase());
+    a.setAttribute("data-vu-stock-name", (b && b.textContent.trim()) || m[1].toUpperCase());
+  }, true);
   document.addEventListener("keydown", function (e) {
     if (e.key === "/" && !/input|textarea|select/i.test(document.activeElement.tagName) && overlay && overlay.hidden) { e.preventDefault(); openSearch(); }
   });

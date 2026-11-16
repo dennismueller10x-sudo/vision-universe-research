@@ -1388,7 +1388,7 @@
     s.body.append(h('div', { class: 'sc-qr-head' }, [logo(sym), h('div', {}, [h('b', { text: d.name(i) }), h('span', { text: sym + ' · ' + (d.value('sector', i) ? F.enumLabel('sector', d.value('sector', i), d.meta.dict) : 'ohne Sektor') })])]));
     whyList(s.body, sym, true);
     s.foot.append(h('button', { class: 'sc-btn sc-btn-secondary', type: 'button', onclick: function () { closeTop().then(function () { openQuick(sym); }); } }, 'Quick Research'),
-      h('a', { class: 'sc-btn sc-btn-primary', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, 'Aktie öffnen'));
+      h('a', { class: 'sc-btn sc-btn-primary', href: '/aktie/#/' + encodeURIComponent(sym) }, 'Aktie öffnen'));
   }
   function whyList(container, sym, withCharts) {
     var d = ds(), i = d.indexOf(sym), q = state.query;
@@ -1433,7 +1433,7 @@
     var d = ds(), i = d.indexOf(sym);
     var s = openSheet({ title: 'Aktie', full: true, foot: true, onClose: function () { if (state.stock) { state.stock = null; } } });
     s.stock = true;
-    if (i < 0) { s.body.append(h('div', { class: 'sc-state' }, [h('h3', { text: 'Nicht im Screener-Universum' }), h('p', { text: sym + ' gehört nicht zum aktuellen Universum (z. B. ETF oder separate Aktiengattung).' })])); s.foot.append(h('a', { class: 'sc-btn sc-btn-primary', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, 'In Discover öffnen')); return; }
+    if (i < 0) { s.body.append(h('div', { class: 'sc-state' }, [h('h3', { text: 'Nicht im Screener-Universum' }), h('p', { text: sym + ' gehört nicht zum aktuellen Universum (z. B. ETF oder separate Aktiengattung).' })])); s.foot.append(h('a', { class: 'sc-btn sc-btn-primary', href: '/aktie/#/' + encodeURIComponent(sym) }, 'Aktie öffnen')); return; }
     var chg = d.value('perf1d', i), r0 = Q.count(state.query) ? result() : null, pos = r0 ? r0.order.indexOf(i) : -1, navEl = null;
     s.body.append(h('div', { class: 'sc-qr-head vu-stockhead' }, [h('div', { class: 'vu-stockhead__top' }, [vuLogo(sym),
       h('div', { class: 'vu-stockhead__name' }, [h('b', { text: d.name(i) }), h('span', { text: sym + ' · ' + subLine(i) })]), watchBtn(sym)]),
@@ -1477,7 +1477,7 @@
     adapter.research(sym).then(function (r) { research = r; paintPanel(); }).catch(function () { failed = true; paintPanel(); });
     adapter.series(sym).then(function (p) { series = p || []; if (cur === 'chart') paintPanel(); });
     s.foot.append(state.select ? null : h('button', { class: 'sc-btn sc-btn-secondary', type: 'button', onclick: function () { var c = state.cmp.indexOf(sym) >= 0 ? state.cmp : state.cmp.concat([sym]).slice(-3); go({ view: 'compare', cmp: c }); } }, [icon('compare'), 'Vergleich']),
-      h('a', { class: 'sc-btn sc-btn-primary', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, 'Aktie vollständig öffnen'));
+      h('a', { class: 'sc-btn sc-btn-primary', href: '/aktie/#/' + encodeURIComponent(sym) }, 'Aktie vollständig öffnen'));
   }
   /** Welt der meistgenutzten Filter-Perspektive (fuer die Perspektiven-Leiste C05). */
   function topWorld() {
@@ -1516,7 +1516,7 @@
         ['Börse', d.value('exchange', i) || '–'], ['Erster Handelstag', d.cols.ipo[i] ? dateDe(d.cols.ipo[i]) : '–'], ['Index', (d.cols.idx[i] || []).map(function (x) { return F.enumLabel('index', x); }).join(', ') || '–'], ['Umsatz (TTM)', F.format('revenue', d.value('revenue', i))]]));
     panel.append(h('div', { class: 'sc-actions' }, [
       h('a', { class: 'sc-row', href: '/vu2/?view=stock&ticker=' + encodeURIComponent(sym) }, [icon('vu'), h('div', { class: 'sc-row-main' }, [h('b', { text: 'Quant-Analyse' }), h('span', { text: 'Faktoren, Technik und Fundamentaldaten in Vision Universe Quant' })]), icon('next')]),
-      h('a', { class: 'sc-row', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, [icon('open'), h('div', { class: 'sc-row-main' }, [h('b', { text: 'Aktienanalyse' }), h('span', { text: 'Vollständige Aktienseite mit Chart und Einordnung' })]), icon('next')])]));
+      h('a', { class: 'sc-row', href: '/aktie/#/' + encodeURIComponent(sym) }, [icon('open'), h('div', { class: 'sc-row-main' }, [h('b', { text: 'Aktienanalyse' }), h('span', { text: 'Vollständige Aktienseite mit Chart und Einordnung' })]), icon('next')])]));
     if (failed) panel.append(h('p', { class: 'sc-note', text: 'Detaildaten konnten nicht geladen werden.' }));
   }
   function numbers(panel, r, failed) {

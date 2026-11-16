@@ -148,7 +148,8 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' canonical page is indexable',async()=>{const robots=page.locator('meta[name=robots]');assert(!(await robots.count())||!(await robots.getAttribute('content')).includes('noindex'),'canonical /discover/ must not be noindex');});
  await check(key+' main visible',async()=>assert(await page.locator('main').isVisible()));
  await check(key+' no horizontal page overflow',async()=>assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1)));
- await check(key+' stock discovery links',async()=>assert(await page.locator('main a[href*="/s/"]').count()>=4));
+ /* App-Konzept 2 (Owner 16.11.2026): Aktien-Elemente öffnen die Vorschau (data-vu-stock) und zielen auf /aktie/#/<T>; Wege innerhalb der alten Seite (#/s/…) zählen weiter. */
+ await check(key+' stock discovery links',async()=>assert(await page.locator('main a[href*="/s/"], main a[data-vu-stock][href^="/aktie/#/"]').count()>=4));
  await check(key+' visible controls named',async()=>{const missing=await page.locator('main button').evaluateAll(nodes=>nodes.filter(n=>n.getClientRects().length&&!((n.getAttribute('aria-label')||n.textContent||'').trim())).map(n=>n.outerHTML));assert.deepEqual(missing,[]);});
  await check(key+' document structure',async()=>{assert.equal(await page.locator('main').count(),1);assert.equal(await page.locator('h1').count(),1);assert.equal(await page.locator('html').getAttribute('lang'),'de');});
  await page.waitForLoadState('networkidle');
@@ -267,7 +268,9 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
      else assert(meanLum(head.bg,head.page)>=230&&contrast(head.ink,head.bg,head.page)>=4.5,'Row head is light with readable title in light mode: '+JSON.stringify(head));}
     assert(await page.locator('.dr-rule .dr-rule__i').count()>=1,'Row page explains its rule');
     assert.equal(await page.locator('.dr-rowhero a[href^="#/swipen?reihe="]').count(),1,'Row swipe entry');
-    const stock=page.locator('.dr-rks a[href*="/s/"]').first();await stock.waitFor({state:'visible'});
+    /* App-Konzept 2 (Owner 16.11.2026): Ranglistenzeilen öffnen die Vorschau (data-vu-stock) und zielen auf /aktie/#/<T>. */
+    const stock=page.locator('.dr-rks a.dr-rk[data-vu-stock]').first();await stock.waitFor({state:'visible'});
+    assert.equal(await stock.getAttribute('href'),'/aktie/#/'+await stock.getAttribute('data-vu-stock'),'Row ranking targets the shared stock page');
     assert(await page.locator('.dr-rks .dr-rk').count()>=5,'Row ranking');
     await screenshot(page,key+'-strategy-stocks');
     /* n-row-swipe: Swipen nur mit den Aktien dieser Reihe, Fortschritt „1 von N“. */
@@ -285,7 +288,7 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
     /* Alte Sammlungsadresse leitet weiter (Thema bzw. Strategie). */
     await navigate(page,base+'/discover/#/c/US_REAL/thema-ki',{waitUntil:'networkidle'});
     await page.waitForURL(url=>new URL(url).hash==='#/thema/kuenstliche-intelligenz');
-    await page.locator('.dv3-firms a[href*="/s/"]').first().waitFor({state:'visible'});
+    await page.locator('.dv3-firms a[data-vu-stock][href^="/aktie/#/"]').first().waitFor({state:'visible'});
     await screenshot(page,key+'-theme');
     await navigate(page,base+'/discover/',{waitUntil:'domcontentloaded'});
     await page.locator('.v2-hero-track [data-symbol]').first().waitFor();
@@ -306,14 +309,16 @@ for(const width of (engine==='webkit'?[390]:[320,390,1440]))for(const colorSchem
  await check(key+' valuation is a distinct canonical metric module',async()=>{if(await page.locator('.dv3-overview').count()){/* a-chapter: „Ist … teuer?“ ist Kapitel 5; es öffnet als Fenster (Owner 15.11.2026), der Inhalt steht unverändert darin. */await page.locator('.dv3-titel .dv3-ep[data-ch="teuer"]').click();await page.locator('#dv3-kapitel-fenster .vu-sheet-ui').waitFor();/* Redesign 2027 (D09): „Ist <Firma> teuer?“ mit KGV gegen den Markt und vier Kacheln; die vollständige Bewertung steht unter „Alle Kennzahlen“. */const v3=page.locator('.dv3-overview .dv2-stock-valuation');assert.equal(await v3.count(),1,'D09 valuation section missing');assert(/teuer\?$/.test((await v3.locator('h2').first().innerText()).trim()),'D09 valuation title');const tiles=await v3.locator('.dv2-valuation-components .vu-tile__label').allTextContents();for(const t of ['Börsenwert','Kurs-Umsatz (KUV)','Gewinnrendite','Free-Cashflow-Rendite'])assert(tiles.includes(t),'D09 tile missing: '+t+' in '+tiles.join(', '));await v3.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-valuation');await page.keyboard.press('Escape');await page.locator('#dv3-kapitel-fenster').waitFor({state:'detached',timeout:5000}).catch(()=>page.evaluate(()=>{const f=document.getElementById('dv3-kapitel-fenster');if(f&&window.VUUI)window.VUUI.closeSheet(f);}));return;}const section=page.locator('.dv2-stock-valuation');assert.equal((await section.locator('h2').first().innerText()).toLocaleLowerCase('de-DE'),'bewertung');const block=section.locator('.dv2-valuation-components');assert(await block.count()===1,'Valuation building-block module missing');const labels=await block.locator('.dv2-valuation-card span').allTextContents();assert(labels.length>=7&&labels.includes('KGV')&&labels.includes('KUV')&&labels.includes('Gewinnrendite')&&labels.includes('KGV / Markt')&&labels.includes('Free-Cashflow-Rendite'),'Expected AAPL valuation components missing: '+labels.join(', '));await section.evaluate(n=>n.scrollIntoView({block:'start',behavior:'instant'}));await screenshot(page,key+'-valuation');});
  await check(key+' stock offers onward company exploration',async()=>{
   const v3=await page.locator('.dv3-overview').count();
-  /* Konzept „Reihe für Reihe“ (a-full): die nächsten Aktien stehen als Poster in „Mehr wie …“. */const next=page.locator(v3?'.dv3-overview .dv3-next a.dr-poster__a[href^="#/s/"]':'.dv2-stock-neighbors .dx-rail a[href^="#/s/"]').first();await next.scrollIntoViewIfNeeded();
+  /* Konzept „Reihe für Reihe“ (a-full): die nächsten Aktien stehen als Poster in „Mehr wie …“. */const next=page.locator(v3?'.dv3-overview .dv3-next a.dr-poster__a[data-vu-stock]':'.dv2-stock-neighbors .dx-rail a[href^="#/s/"]').first();await next.scrollIntoViewIfNeeded();
   const href=await next.getAttribute('href');assert(href&&!href.endsWith('/AAPL'),'Next stock must differ from current stock');await screenshot(page,key+'-stock-onward');
-  /* App-Konzept 2 (Prototyp: Poster öffnen das Fenster „stock“): ein Tipp auf ein Aktien-Element mit data-vu-stock öffnet erst die Vorschau
-     (assets/vu-stock-sheet.js); der Link selbst bleibt das Ziel (Strg/Cmd-Klick, ohne Vorschau). Danach dem Link folgen. */
+  /* App-Konzept 2 (Prototyp: Poster öffnen das Fenster „stock“, „Ganz öffnen“ führt auf #v-aktie; Owner 16.11.2026: jeder Tipp auf eine Aktie):
+     ein Tipp auf ein Aktien-Element mit data-vu-stock öffnet die Vorschau (assets/vu-stock-sheet.js), „Ganz öffnen“ die gemeinsame
+     Aktienseite /aktie/#/<T>. Der Link selbst ist dieses Ziel (Strg/Cmd-Klick, ohne Vorschau). */
   const sym=await next.getAttribute('data-vu-stock');
-  if(sym){await next.click();await page.locator('[data-vsk-ticker="'+sym+'"] .vu-sheet-ui').first().waitFor({timeout:15000});
-   await page.evaluate(()=>{const s=document.querySelector('[data-vsk-ticker]');if(s&&window.VUUI)VUUI.closeSheet(s);});
-   await page.evaluate(h=>{location.hash=h;},href);}
+  if(sym){assert.equal(href,'/aktie/#/'+sym,'Poster targets the shared stock page');await next.click();await page.locator('[data-vsk-ticker="'+sym+'"] .vu-sheet-ui').first().waitFor({timeout:15000});
+   await page.locator('[data-vsk-ticker="'+sym+'"] [data-vsk-open]').first().click();
+   await page.waitForURL(url=>url.pathname==='/aktie/'&&url.hash==='#/'+sym);await page.locator('h1').first().waitFor();
+   interactionEvidence.push({key,type:'stock-onward',from:'AAPL',to:href});return;}
   else await next.click();
   await page.waitForURL(url=>url.hash===href);await page.locator('.dx-chart-hero').first().waitFor();
   /* Redesign 2027: zurück zum Entdecken über den Reiter „Swipen“ unter dem Kopf, nicht über Knöpfe am Seitenende. */

@@ -224,11 +224,13 @@
   }
 
   /* ------------------------------------------------------------- C10–C14 */
-  /** C10 Aktienzeile: Logo, Name + Zusatz, Mini-Chart (C06 klein, als fertiges SVG in r.chart), Kurs + Bewegung. */
+  /** C10 Aktienzeile: Logo, Name + Zusatz, Mini-Chart (C06 klein, als fertiges SVG in r.chart), Kurs + Bewegung.
+      r.preview: ein Tipp öffnet die Aktien-Vorschau des Rahmens (data-vu-stock, App-Konzept 2); das Ziel bleibt r.href. */
   function stockRow(r) {
     var x = r || {}, spark = x.chart || "";
     var tag = x.href ? "a" : "div";
-    return "<" + tag + ' class="vu-lrow' + (spark ? "" : " vu-lrow--nochart") + (x.noPrice ? " vu-lrow--noprice" : "") + '"' + (x.href ? ' href="' + esc(x.href) + '"' : "") + ">" + logo(x.ticker, { src: x.logo }) +
+    return "<" + tag + ' class="vu-lrow' + (spark ? "" : " vu-lrow--nochart") + (x.noPrice ? " vu-lrow--noprice" : "") + '"' + (x.href ? ' href="' + esc(x.href) + '"' : "") +
+      (x.href && x.preview && x.ticker ? ' data-vu-stock="' + esc(x.ticker) + '" data-vu-stock-name="' + esc(x.name || x.ticker) + '"' : "") + ">" + logo(x.ticker, { src: x.logo }) +
       '<div class="vu-lrow__name"><b>' + esc(x.name || x.ticker) + "</b><span>" + esc(x.sub || x.ticker) + "</span></div>" +
       (spark ? '<div class="vu-lrow__mini">' + spark + "</div>" : "") +
       (x.noPrice ? "" : '<div class="vu-lrow__price"><span>' + esc(money(x.price, x.currency)) + "</span>" + chg(x.changePct) + "</div>") + "</" + tag + ">";

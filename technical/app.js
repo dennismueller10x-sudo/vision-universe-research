@@ -223,7 +223,8 @@
       role: "combobox", "aria-expanded": "false", "aria-controls": "tc-results", "aria-autocomplete": "list", "aria-label": "Aktie suchen" });
     var list = el("ul", { id: "tc-results", class: "tc-results", role: "listbox", hidden: true });
     var hits = [], active = -1;
-    function go(t) { location.hash = M.chartHref(t); }
+    /* Startseite (words): ein Treffer öffnet die Aktien-Vorschau (App-Konzept 2, tkPreview); im Chart Studio (ohne words) führt er in den Chart. */
+    function go(t) { if (words) tkPreview(t, ""); else location.hash = M.chartHref(t); }
     function close() { list.hidden = true; input.setAttribute("aria-expanded", "false"); active = -1; }
     function paint() {
       hits = M.search(entries, input.value, 8);
@@ -343,7 +344,7 @@
     else if (!row.fresh) flags.push(el("span", { class: "tc-flag", text: "Kurs vom " + M.dateDe(row.asOf) }));
     if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
     if (row.suspectJumpAt) flags.push(jumpFlag(row));
-    return el("a", { class: "tc-hit", href: href || M.chartHref(row.s) }, [h(rowHtml(row)), el("div", { class: "tc-hit-foot" }, [befund(row, wanted)].concat(flags))]);
+    return el("a", { class: "tc-hit", href: href || M.chartHref(row.s), "data-vu-stock": row.s, "data-vu-stock-name": shortName(row.n) || row.s }, [h(rowHtml(row)), el("div", { class: "tc-hit-foot" }, [befund(row, wanted)].concat(flags))]);
   }
 
   /* ------------------------------------------------------------- Start (T01) */
@@ -471,6 +472,11 @@
     });
     return sheetLibP;
   }
+  /** Vorschau aus Code (Suche der Startseite); ohne Vorschau-Daten der Chart dieser Aktie. */
+  function tkPreview(t, name) {
+    stockSheetLib().then(function (S) { return S ? S.open(t, { name: name || "" }) : false; })
+      .catch(function () { return false; }).then(function (ok) { if (!ok) location.hash = M.chartHref(t); });
+  }
   function tkStockTap(host) {
     host.addEventListener("click", function (e) {
       var a = e.target.closest && e.target.closest("a[data-vu-stock]");
@@ -528,7 +534,7 @@
       asOfAll = asOf;
       if (asOf) stand = "Technical · " + closeLabel(asOf);
       put(searchSlot, searchBox(X.entries, "Aktie oder „Dreieck über der 200-Tage-Linie“", true));
-      put(chips, ["NVDA", "AAPL", "TSLA", "MSFT"].filter(X.has).map(function (t) { return el("a", { class: "vu-chip", role: "listitem", href: M.chartHref(t) }, [h(U.logo(t)), t]); }));
+      put(chips, ["NVDA", "AAPL", "TSLA", "MSFT"].filter(X.has).map(function (t) { return el("a", { class: "vu-chip", role: "listitem", href: M.chartHref(t), "data-vu-stock": t, "data-vu-stock-name": t }, [h(U.logo(t)), t]); }));
       /* Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json); ohne sie die eigene Zählung, beide mit Stand und Basis.
          Prototyp: zwei Anteile (über / unter) und ein geteilter Balken. Unter der Linie = Basis minus darüber (dieselbe Basis). */
       var above = ix.presets && ix.presets.aboveSma200, own = isNum(above) && ix.count ? { share: above / ix.count * 100, matched: above, base: ix.count, asOf: asOf, source: "technical" } : null;
@@ -1295,7 +1301,7 @@
     var flags = [];
     if (!row.hasVolume) flags.push(el("span", { class: "tc-flag", text: "ohne Volumen" }));
     if (row.suspectJumpAt) flags.push(jumpFlag(row));
-    return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ) }, [
+    return el("a", { class: "tc-hit", href: M.chartHref(row.s, null, chartQ), "data-vu-stock": row.s, "data-vu-stock-name": shortName(row.n) || row.s }, [
       h(rowHtml(row)),
       el("div", { class: "tc-hit-foot" }, [el("span", { class: "tc-hit-score" }, [el("b", { class: "num", text: pass + "/" + e.states.length }), el("span", { text: " Regeln" })]), ticks(t, e.states)]),
       miss.length ? el("p", { class: "tc-hit-text tc-miss" }, [el("b", { text: "Nicht erfüllt: " }), miss.join(", ")]) : null,

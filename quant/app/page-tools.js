@@ -278,7 +278,7 @@
     compareTable(target, data);
   }
   function compareTable(target, data) {
-    var head = [el("th", { text: "Kennzahl" })].concat(data.companies.map(function (c) { return el("th", {}, [el("a", { href: X.routes.stock(c.ticker), text: c.ticker })]); }));
+    var head = [el("th", { text: "Kennzahl" })].concat(data.companies.map(function (c) { return el("th", {}, [el("a", { href: X.routes.aktie(c.ticker), dataset: X.stockData(c.ticker, c.name), text: c.ticker })]); }));
     var rows = [], gaps = {}, byTicker = {};
     data.companies.forEach(function (c) { byTicker[c.ticker] = c; });
     data.families.forEach(function (f) {

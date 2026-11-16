@@ -815,7 +815,8 @@
     found.slice(0, 2).forEach(function (s) {
       var sym = encodeURIComponent(s.symbol);
       var quant = { href: '/quant/#/aktie/' + sym, icon: 'quant', title: s.symbol + ' in Quant öffnen', sub: 'Faktoren der Aktie' };
-      var disc = { href: '/discover/#/s/US_REAL/' + sym, icon: 'discover', title: s.symbol + ' im Überblick', sub: 'Aktienseite in Discover' };
+      /* App-Konzept 2 (Owner 16.11.2026): der Überblick ist die gemeinsame Aktienseite /aktie/#/<T> (Prototyp #v-aktie). */
+      var disc = { href: '/aktie/#/' + sym, icon: 'discover', title: s.symbol + ' im Überblick', sub: 'Aktienseite' };
       links = links.concat(quantFirst ? [quant, disc] : [disc, quant]);
     });
     if (res.strategy) links.push({ href: '/supertrader/', icon: 'supertrader', title: 'Zum Supertrader', sub: res.strategy.label });

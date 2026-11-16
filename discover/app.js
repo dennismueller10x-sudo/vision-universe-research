@@ -187,6 +187,13 @@
       theme.onChange(state=>{syncThemeChrome(state);document.dispatchEvent(new Event('vu-theme-change'));});syncThemeChrome({resolved:theme.resolved()});
       document.querySelector('vu-navigation')?.renderSettings();
       setupSearch();global.addEventListener('hashchange',function(){return global.VUUI.transition(route);});
+      // App-Konzept 2 (Owner 16.11.2026): Jeder Tipp auf eine US-Aktie öffnet die Vorschau des Rahmens (data-vu-stock, assets/vu-stock-sheet.js),
+      // „Ganz öffnen“ die gemeinsame Aktienseite /aktie/#/<T>. Auffangnetz für Discover-Links, die noch auf die alte Aktienseite zeigen
+      // (#/s/US_REAL/<T>): vor dem Rahmen (Capture) bekommen sie Ziel und Merkmal. Direktaufrufe von #/s/US_REAL/<T> bleiben unverändert,
+      // ebenso Vor/Zurück und „Nächste Aktie“ der Reihen-Leiste auf dieser alten Seite (Wege innerhalb der Seite).
+      document.addEventListener('click',e=>{const a=e.target&&e.target.closest&&e.target.closest('a[href^="#/s/US_REAL/"]');if(!a||a.hasAttribute('data-vu-stock')||a.closest('.dv3-rowctx,.dv3-endcard'))return;const m=/^#\/s\/US_REAL\/([A-Za-z0-9-]{1,12})(?:$|\?)/.exec(a.getAttribute('href'));if(!m)return;const t=m[1].toUpperCase(),b=a.querySelector('b');a.setAttribute('href','/aktie/#/'+t);a.setAttribute('data-vu-stock',t);a.setAttribute('data-vu-stock-name',(b&&b.textContent.trim())||t);},true);
+      // „Zuletzt angesehen“ (Weiterschauen): ein Tipp auf eine Aktie zählt wie bisher der Besuch der Discover-Aktienseite.
+      document.addEventListener('click',e=>{if(e.button||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;const a=e.target&&e.target.closest&&e.target.closest('[data-vu-stock][href],[data-vu-stock][data-vu-href]');const t=a&&a.getAttribute('data-vu-stock');if(t&&D.memory&&/^[A-Z0-9][A-Z0-9-]{0,11}$/.test(t))D.memory.recordView(t,{universeId:'US_REAL',companyName:a.getAttribute('data-vu-stock-name')||null});},true);
       global.VUUI.bindIntent(function(url){if(url.origin!==location.origin||url.pathname!=='/discover/')return null;const p=url.hash.replace(/^#\/?/,'').split('/');return p[0]==='s'&&p[1]===ctx.universeId&&/^[A-Z0-9.-]{1,24}$/.test(p[2]||'')?p[2]:null;},function(t){return S.loadJSON(BASE+'stocks/'+ctx.universeId+'/'+t+'.json');});
       if('scrollRestoration' in history)history.scrollRestoration='manual';
       document.addEventListener('vu-currency-change',()=>route(1));
