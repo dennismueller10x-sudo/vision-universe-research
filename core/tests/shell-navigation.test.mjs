@@ -730,8 +730,8 @@ test('Dunkel ist der Standard: eine Regel (themeWanted), einmalige Umstellung, H
   for (const page of ['willkommen', 'discover', 'quant', 'fundamental', 'technical', 'elliott', 'hedgefonds', 'supertrader', 'screener', 'insights', 'mein-dashboard', 'konto', 'konto/einstellungen', 'konto/watchlist', 'ask', 'portfolios', 'vorsorge']) {
     const html = readFileSync(join(root, page, 'index.html'), 'utf8');
     assert.ok(inline.test(html) || other.test(html), page + ': Inline-Skript startet dunkel (kein heller Blitz)');
-    /* /ask/ traegt einen eigenen Kopf und bindet den Rahmen nur als Menue ein; dort stellt das Inline-Skript um. */
-    if (page !== 'ask') assert.match(html, /<body[^>]*>\s*(?:<a class="[^"]*skip[^"]*"[^>]*>[^<]*<\/a>\s*)?<vu-navigation[^>]*\btheme-switch\b[^>]*><\/vu-navigation>\s*(?:<script>[^<]*<\/script>)?\s*<script src="\/assets\/site-navigation\.js"><\/script>/, page + ': Rahmen synchron am Anfang von <body>');
+    /* /ask/ (Atlas) traegt seit App-Konzept 2 (16.11.2026) den Rahmen wie jede Seite, ohne eigenen Kopf. */
+    assert.match(html, /<body[^>]*>\s*(?:<a class="[^"]*skip[^"]*"[^>]*>[^<]*<\/a>\s*)?<vu-navigation[^>]*\btheme-switch\b[^>]*><\/vu-navigation>\s*(?:<script>[^<]*<\/script>)?\s*<script src="\/assets\/site-navigation\.js"><\/script>/, page + ': Rahmen synchron am Anfang von <body>');
   }
   // Die oeffentliche Startseite ist nicht angefasst: sie startet hell
   assert.match(readFileSync(join(root, 'index.html'), 'utf8'), /var w="light"/);

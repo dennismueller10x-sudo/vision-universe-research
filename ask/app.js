@@ -20,7 +20,12 @@
      und der eine Chart in Kleinform (assets/vu-chart.js). VUUI maskiert jede Eingabe; markup() ist die einzige HTML-Stelle.
      App-Konzept 2 (Owner 14.11.2026, nur Darstellung): „Was Atlas kann“ als Schiene antippbarer Kacheln (VUUI.rail/tap),
      „Oft gefragt“ als Kacheln, die Übersetzung als neongrüne Karte mit der großen Zahl, Laden mit Gerüst (VUUI.skeleton),
-     am Ende des Starts die „Weiter“-Karte (VUUI.next). Wie Fragen gestellt und beantwortet werden, bleibt unverändert. */
+     am Ende des Starts die „Weiter“-Karte (VUUI.next). Wie Fragen gestellt und beantwortet werden, bleibt unverändert.
+     App-Konzept 2 nach Prototyp (Owner 16.11.2026: „für … Atlas … genau in diesem gleichen Design des Prototyps“): Atlas hat im
+     Prototyp keinen eigenen Bildschirm; Vorlage ist das Fenster „suche“ (build.js T.suche): weiße Suchpille mit Lupe und Mikrofon,
+     neongrüne Karte „Atlas macht daraus eine Regel“ mit Satz, schwarzen Pillen und schwarzem Knopf, darunter „Aktien“ als
+     Zeilen und Pillen. Rahmen (Kopf, Menü) wie jede Seite; Abschnitte, Kacheln, Schiene, Weiter-Karte und „Daten & Hinweise“
+     wie die gebauten Bildschirme. Aktien führen auf /aktie/#/<T> (data-vu-stock), Kurse über quant/engines/published-close.js. */
   var U = window.VUUI, Chart = window.VUChart, Today = window.VUToday, Id = window.VUCore && window.VUCore.Identity;
   function markup(html) { var t = document.createElement('template'); t.innerHTML = html; return t.content; }
   /* „?“ an Kennzahlen öffnet die Erklärung im Sheet (C09 + C16); gebunden nach dem Aufbau. */
@@ -64,6 +69,7 @@
     scale: 'M12 4v16m-6 0h12M5 8h14M5 8l-2.5 6a2.5 2.5 0 0 0 5 0L5 8Zm14 0-2.5 6a2.5 2.5 0 0 0 5 0L19 8Z',
     shield: 'M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Zm-3 9 2 2 4-4',
     arrow: 'M9 6l6 6-6 6',
+    search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14Zm9 2-4-4',
     check: 'M5 12.5 9.5 17 19 7'
   };
   function icon(name) {
@@ -110,12 +116,13 @@
   var conversation = h('div', { class: 'ak-conversation' });
   var spokenQuestion = false;
 
+  /* Suchpille wie im Fenster „suche“ des Prototyps: Lupe, Frage, Mikrofon, Senden. Der Bezug einer Nachfrage steht darüber. */
   var form = h('form', { class: 'ak-bar', onsubmit: function (e) { e.preventDefault(); submit(); } }, [
     followBar,
-    input,
-    h('div', { class: 'ak-bar-row' }, [h('span', { class: 'ak-bar-hint', text: Speech ? 'Tippen oder sprechen' : 'Tippen' }), h('div', { class: 'ak-bar-buttons' }, [micBtn, sendBtn])]),
+    h('div', { class: 'ak-bar-row' }, [h('span', { class: 'ak-find-ic' }, [icon('search')]), input, h('div', { class: 'ak-bar-buttons' }, [micBtn, sendBtn])]),
     turnstileMount
   ]);
+  var hintEl = h('p', { class: 'ak-bar-hint', text: Speech ? 'Tippen oder sprechen' : 'Tippen' });
   input.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); } });
   input.addEventListener('input', function () { input.style.height = 'auto'; input.style.height = Math.min(input.scrollHeight, 220) + 'px'; });
 
@@ -123,27 +130,26 @@
      Geprueft wird im Worker - hier wird es nur mitgeschickt. */
   var accessInput = h('input', { type: 'password', autocomplete: 'current-password', 'aria-label': 'Zugangspasswort', placeholder: 'Zugangspasswort' });
   var accessMsg = h('p', { class: 'ak-access-msg', 'aria-live': 'polite' });
-  var accessForm = h('form', { class: 'ak-bar ak-access', hidden: true, onsubmit: function (e) {
+  var accessForm = h('form', { class: 'ak-bar', onsubmit: function (e) {
     e.preventDefault();
     var v = accessInput.value.trim();
     if (!v) return;
     try { localStorage.setItem('vu-ask-access', v); } catch (err) {}
     access = v; accessInput.value = ''; refreshQuota();
   } }, [
-    h('p', { class: 'ak-access-title' }, [icon('lock'), 'Beta-Zugang: bitte Passwort eingeben']),
-    h('div', { class: 'ak-bar-row' }, [accessInput, h('button', { class: 'ak-send', type: 'submit', 'aria-label': 'Freischalten' }, [icon('send')])]),
-    accessMsg
+    h('div', { class: 'ak-bar-row' }, [h('span', { class: 'ak-find-ic' }, [icon('lock')]), accessInput, h('div', { class: 'ak-bar-buttons' }, [h('button', { class: 'ak-send', type: 'submit', 'aria-label': 'Freischalten' }, [icon('send')])])])
   ]);
+  var accessBox = h('div', { class: 'ak-access', hidden: true }, [h('p', { class: 'ak-access-title' }, [icon('lock'), 'Beta-Zugang: bitte Passwort eingeben']), accessForm, accessMsg]);
   var access = '';
   try { access = localStorage.getItem('vu-ask-access') || ''; } catch (e) {}
   function authHeaders(extra) { var hd = Object.assign({}, extra || {}); if (access) hd['x-vu-access'] = access; return hd; }
   function lock(wrong) {
-    accessForm.hidden = false; form.hidden = true; toolsRow.hidden = true; statusEl.textContent = 'Beta: Zugang mit Passwort · ' + ARCHIVE + ' nach dem Freischalten';
+    accessBox.hidden = false; form.hidden = true; hintEl.hidden = true; toolsRow.hidden = true; statusEl.textContent = 'Beta: Zugang mit Passwort · ' + ARCHIVE + ' nach dem Freischalten';
     accessMsg.textContent = wrong ? 'Das Passwort ist nicht korrekt.' : '';
     if (wrong) { try { localStorage.removeItem('vu-ask-access'); } catch (e) {} access = ''; }
     accessInput.focus();
   }
-  function unlock() { accessForm.hidden = true; form.hidden = false; toolsRow.hidden = false; }
+  function unlock() { accessBox.hidden = true; form.hidden = false; hintEl.hidden = false; toolsRow.hidden = false; }
 
   /* Ein Status-Satz unter der Eingabe (Konzept mein-bereich-2026-11, Screen a-home): gesperrt, Kontingent oder keine Verbindung. */
   var ARCHIVE = 'Antworten aus dem Archiv kostenlos';
@@ -162,18 +168,19 @@
   ];
   /* Oft gefragt: feste Fragen, die heute vollständig beantwortet werden (Antwort kommt aus dem Archiv, sobald sie einmal gestellt wurde). */
   var OFTEN = ['Welche Aktien stehen auf einem neuen Jahreshoch?', 'Welche Aktien stehen im Weinstein-Stage-2?', 'Wie hoch ist die Marge bei Apple?'];
+  /* Abschnitte wie die gebauten Bildschirme (shell.js .sh, .tile, .rail, .row): Schiene „Was Atlas kann“, Zeilen „Oft gefragt“. */
   var startEl = h('div', { class: 'ak-start' }, [
     h('section', { class: 'ak-section', 'aria-labelledby': 'ak-can-h' }, [
-      h('h2', { class: 'vu-sect', id: 'ak-can-h', text: 'Was Atlas kann' }),
+      h('div', { class: 'ak-sh' }, [h('h2', { id: 'ak-can-h', text: 'Was Atlas kann' })]),
       h('div', { class: 'ak-can' }, [markup(U.rail(CAN.map(function (c) {
-        return U.tap(U.hud(c.icon, 44, 14) + '<b>' + U.esc(c.title) + '</b><span class="ak-can-q">' + U.esc('„' + c.q + '“') + '</span><span class="ak-can-sub">' + U.esc(c.sub) + '</span>',
-          { tone: 'night', cls: 'ak-can-card', attrs: { 'data-ak-ask': c.q } });
-      }), { label: 'Was Atlas kann', width: 214 }))])
+        return U.tap(U.hud(c.icon, 36, 11) + '<b>' + U.esc(c.title) + '</b><span class="ak-can-q">' + U.esc('„' + c.q + '“') + '</span><span class="ak-can-sub">' + U.esc(c.sub) + '</span>',
+          { cls: 'ak-can-card', attrs: { 'data-ak-ask': c.q } });
+      }), { label: 'Was Atlas kann', width: 200 }))])
     ]),
     h('section', { class: 'ak-section', 'aria-labelledby': 'ak-often-h' }, [
-      h('div', { class: 'vu-sect' }, [h('h2', { id: 'ak-often-h', text: 'Oft gefragt' }), h('span', { class: 'ak-sect-r', text: 'Archiv · kostenlos' })]),
+      h('div', { class: 'ak-sh' }, [h('h2', { id: 'ak-often-h', text: 'Oft gefragt' }), h('span', { class: 'ak-sect-r', text: 'Archiv · kostenlos' })]),
       h('div', { class: 'ak-often' }, [markup(OFTEN.map(function (q) {
-        return U.tap('<span>' + U.esc(q) + '</span><i aria-hidden="true">' + U.glyph('next', 16) + '</i>', { cls: 'ak-often-q', attrs: { 'data-ak-ask': q } });
+        return U.tap('<i class="ak-often-ic" aria-hidden="true">' + U.glyph('spark', 15) + '</i><span>' + U.esc(q) + '</span><i class="ak-often-go" aria-hidden="true">' + U.glyph('next', 16) + '</i>', { cls: 'ak-often-q', attrs: { 'data-ak-ask': q } });
       }).join(''))])
     ]),
     /* Die Grenzen in einem „?“ (L6, Datenschutz, Beta, Spracheingabe) */
@@ -190,10 +197,10 @@
 
   /* Dunkler Kopf: AI ATLAS · BETA, Frage, ein Satz, große Eingabe, ein Status-Satz. */
   var hero = h('header', { class: 'ak-hero' }, [
-    h('p', { class: 'ak-kicker' }, [h('span', { class: 'ak-kicker-ic' }, [markup(U.glyph('spark', 16))]), h('span', { class: 'vu-ltag', text: 'AI Atlas · Beta' })]),
+    h('p', { class: 'ak-kicker' }, [h('span', { class: 'ak-kicker-ic' }, [markup(U.glyph('spark', 13))]), h('span', { class: 'vu-ltag', text: 'AI Atlas' }), h('span', { class: 'ak-beta', text: 'Beta' })]),
     h('h1', { class: 'ak-h1', text: 'Frag Vision Universe.' }),
     h('p', { class: 'ak-lead', text: 'In deinen Worten. Atlas übersetzt in Regeln, Vision Universe rechnet. Jede Zahl mit Quelle.' }),
-    h('div', { class: 'ak-askwrap' }, [accessForm, form, voiceEl, statusEl, toolsRow])
+    h('div', { class: 'ak-askwrap' }, [accessBox, form, hintEl, voiceEl, statusEl, toolsRow])
   ]);
   /* Antwortansicht (Screens a-screen/a-answer): Zurück, AI ATLAS, Herkunft der Antwort. */
   /* Eine Kopfzeile (Owner 10.11.2026): Die Herkunft der Antwort steht als Pille in der Seitenkopfzeile;
@@ -227,8 +234,12 @@
 
   main.appendChild(hero);
   main.appendChild(h('div', { class: 'ak-body' }, [answerTop, conversation, startEl]));
-  /* Strang F, Hinweis „ai“ (assets/legal-notices.json): erscheint erst nach der rechtlichen Freigabe (VUUI.legal). */
+  /* Strang F, Hinweis „ai“ (assets/legal-notices.json): erscheint erst nach der rechtlichen Freigabe (VUUI.legal). Er bleibt
+     sichtbar am Seitenende und steht zusätzlich im Fenster „Daten & Hinweise“ des Rahmens (Prototyp: Link am Seitenende). */
   if (U.legal && U.legal('ai')) main.appendChild(markup(U.legal('ai')));
+  var Nav = window.VUNavigation;
+  if (Nav && Nav.hinweis) Nav.hinweis('ai');
+  if (Nav && Nav.openHinweise) main.appendChild(h('div', { class: 'ak-end' }, [h('button', { class: 'ak-lk', type: 'button', onclick: function () { Nav.openHinweise(); } }, 'Daten & Hinweise')]));
   if (U.bindHelp) U.bindHelp(main);
   /* Zurück und Schließen: zur Seite, von der Atlas geöffnet wurde (nur eigene Seiten), sonst zur Startseite. */
   (function () {
@@ -383,7 +394,7 @@
     document.body.classList.add('ak-answering'); document.body.classList.remove('ak-asking'); answerTop.hidden = !!pageHead; if (pageHead) answerPill.hidden = false;
     var turn = h('section', { class: 'ak-turn', 'aria-live': 'polite' }, [
       context ? h('p', { class: 'ak-q-ref', text: 'Nachfrage zu ' + followText.textContent }) : null,
-      h('p', { class: 'ak-bub', text: question }),
+      h('p', { class: 'ak-bub' }, [h('span', { class: 'ak-find-ic' }, [icon('search')]), h('span', { class: 'ak-bub-t', text: question })]),
       h('div', { class: 'ak-state' }, [h('div', { class: 'ak-state-row' }, [h('span', { class: 'ak-spin', 'aria-hidden': 'true' }), 'Deine Frage wird übersetzt …']), markup(U.skeleton('rows'))])
     ]);
     conversation.insertBefore(turn, conversation.firstChild);
@@ -482,13 +493,13 @@
           else r.supertrader = null;
           refresh(false); setContext(compactOf(question, r));
         }
-        mount.appendChild(translated(r, res, drop, tips));
+        /* Prototyp „suche“: der schwarze Knopf steht in der neongrünen Karte, darunter „Aktien“ als Zeilen. */
+        mount.appendChild(translated(r, res, drop, tips, h('a', { class: 'vu-btn vu-btn--ink ak-btn2 ak-btn-all', href: Ask.screenerUrl(r), text: 'Alle ' + res.matched.toLocaleString('de-DE') + ' im Screener' })));
         mount.appendChild(screenList(res, r));
         mount.appendChild(h('div', { class: 'ak-btns' }, [
-          h('a', { class: 'vu-btn vu-btn--ink ak-btn2', href: Ask.screenerUrl(r), text: 'Alle ' + res.matched.toLocaleString('de-DE') + ' im Screener' }),
-          h('button', { class: 'vu-btn vu-btn--line ak-btn2', type: 'button', onclick: function () { followUp(compactOf(question, r), 'Regel ändern, z. B. „KGV bis 20“ …'); } }, 'Regel ändern')
+          h('button', { class: 'vu-btn vu-btn--line ak-btn2', type: 'button', onclick: function () { followUp(compactOf(question, r), 'Regel ändern, z. B. „KGV bis 20“ …'); } }, 'Regel ändern'),
+          h('button', { class: 'vu-btn vu-btn--line ak-btn2 ak-more', type: 'button', onclick: function () { followUp(compactOf(question, r)); } }, ['Weiter fragen', markup(U.glyph('next', 14))])
         ]));
-        mount.appendChild(h('button', { class: 'ak-more', type: 'button', onclick: function () { followUp(compactOf(question, r)); } }, ['Weiter fragen', markup(U.glyph('next', 14))]));
         mount.appendChild(sources(r, info, res.strategy));
         mount.appendChild(markup(U.help('Eine Liste nach Regeln, keine Empfehlung. Ein niedriges KGV kann auch einmalige Gewinne spiegeln.')));
         mount.appendChild(missingBlock(r));
@@ -521,12 +532,12 @@
   }
 
   /* „So hat Atlas übersetzt“: Regel-Chips (× entfernt eine Regel, kostenlos neu gerechnet) und die große Zahl. */
-  function translated(r, res, onRemove, tips) {
+  function translated(r, res, onRemove, tips, allBtn) {
     var rules = Ask.rules(r);
     var n = res.strategy && res.strategy.mode === 'require' ? rules.length : rules.filter(function (x) { return x.kind === 'filter'; }).length;
     return h('div', { class: 'ak-ans ak-ans--lime' }, [
       h('span', { class: 'vu-ltag ak-ans-tag' }, [markup(U.glyph('spark', 13)), 'So hat Atlas übersetzt']),
-      h('div', { class: 'ak-count' }, [h('b', { class: 'vu-num', text: res.matched.toLocaleString('de-DE') }),
+      h('h2', { class: 'ak-count' }, [h('b', { class: 'vu-num', text: res.matched.toLocaleString('de-DE') }), ' ',
         h('span', { text: 'von ' + res.universe.toLocaleString('de-DE') + ' US-Aktien erfüllen ' + Ask.allOf(n) })]),
       r.understood ? h('p', { class: 'ak-fine', text: r.understood }) : null,
       h('div', { class: 'ak-rcs' }, rules.map(function (x) {
@@ -535,7 +546,8 @@
       res.note ? h('p', { class: 'ak-fine', text: res.note }) : null,
       tips.length ? h('div', { class: 'ak-tips' }, tips.map(function (t) {
         return h('button', { class: 'ak-tip', type: 'button', onclick: function () { onRemove(t.kind, t.id); } }, [t.label + ': ', h('b', { text: t.count + ' Treffer' })]);
-      })) : null
+      })) : null,
+      allBtn || null
     ]);
   }
   /* Die ersten fünf Treffer: Logo, Name, zwei Werte der Frage, rechts die passende Kennzahl. */
@@ -544,14 +556,18 @@
     /* Die passende Kennzahl rechts: die, nach der sortiert ist (z. B. KGV aufsteigend), sonst die erste Spalte. */
     var sortField = r && r.query && r.query.sort && r.query.sort.field;
     var cols = res.columns, key = cols.indexOf(sortField) >= 0 ? sortField : cols[0], rest = cols.filter(function (c) { return c !== key; }).slice(0, 2);
-    return markup('<div class="ak-list">' + res.rows.slice(0, 5).map(function (row) {
-      return '<a class="ak-pos" href="/discover/#/s/US_REAL/' + encodeURIComponent(row.symbol) + '">' + U.logo(row.symbol) +
+    return markup('<div class="ak-eb">Aktien</div><div class="ak-list">' + res.rows.slice(0, 5).map(function (row) {
+      return '<a class="ak-pos"' + stockAttrs(row.symbol, cleanName(row.name) || row.symbol) + '>' + U.logo(row.symbol) +
         '<span class="ak-pos-n"><b>' + U.esc(cleanName(row.name) || row.symbol) + '</b><span>' + U.esc(rest.map(function (c, i) {
           /* wie in der Vorlage: „1,56 Mrd. $ Börsenwert · Kasse netto 5,31 Mrd. $“ */
           return i === 0 ? Ask.value(c, row.values[c]) + ' ' + Ask.name(c) : Ask.name(c) + ' ' + Ask.value(c, row.values[c]);
         }).join(' · ')) + '</span></span>' +
         (key ? '<span class="ak-pos-v"><small>' + U.esc(Ask.name(key)) + '</small><b class="vu-num">' + U.esc(Ask.value(key, row.values[key])) + '</b></span>' : '') + '</a>';
     }).join('') + '</div>');
+  }
+  /* Aktien-Elemente öffnen die Vorschau des Rahmens und führen auf die gemeinsame Aktienseite (App-Konzept 2). */
+  function stockAttrs(sym, name) {
+    return ' href="/aktie/#/' + encodeURIComponent(sym) + '" data-vu-stock="' + U.esc(sym) + '" data-vu-stock-name="' + U.esc(name || sym) + '"';
   }
   function cleanName(n) { return String(n || '').replace(/,? (Inc|Corp|Corporation|Ltd|Limited|plc|N\.V\.|S\.A\.|AG|SE|Holdings?|Co)\.?$/i, '').trim(); }
   /* Quellen-Chips mit Stand. */
@@ -560,7 +576,7 @@
     chips.push([U.worldIcon('screener', 12), 'Screener-Daten' + (info.asOf ? ', Stand ' + dateDe(info.asOf) : '')]);
     if (rules.some(function (x) { return x.source === 'fundamentals'; })) chips.push(['', 'Gewinne und Schulden: SEC']);
     if (strategy) chips.push([U.worldIcon('supertrader', 12), 'Supertrader' + (strategy.asOf ? ', Stand ' + dateDe(strategy.asOf) : '')]);
-    return markup('<div class="ak-srcs">' + chips.map(function (c) { return '<span class="ak-src">' + c[0] + U.esc(c[1]) + '</span>'; }).join('') + '</div>');
+    return markup('<div class="ak-eb">Quellen</div><div class="ak-srcs">' + chips.map(function (c) { return '<span class="ak-src">' + c[0] + U.esc(c[1]) + '</span>'; }).join('') + '</div>');
   }
   function dateDe(iso) { var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso || '')); return m ? m[3] + '.' + m[2] + '.' + m[1] : String(iso || ''); }
   /* Was fehlt oder zurückgehalten ist (unverändert aus der Übersetzung). */
@@ -637,7 +653,7 @@
         ans.appendChild(h('div', { class: 'ak-big vu-num', text: a1 + ' → ' + a2 }));
         ans.appendChild(h('p', { class: 'ak-sub', text: 'Geschäftsjahr ' + e.fromFy + ' bis ' + e.toFy + (e.lastChange !== null ? ' · zuletzt ' + U.pct(e.lastChange * 100, 1) + ' zum Vorjahr' : '') }));
         ans.appendChild(markup(U.bars(e.bars, { width: 320, height: 100, label: e.label + ' je Geschäftsjahr', allLabels: true })));
-        ans.appendChild(markup('<div class="ak-srcs"><span class="ak-src">' + U.worldIcon('fundamental', 12) + 'SEC-Berichte' + (e.asOf ? ', Stand ' + U.esc(dateDe(e.asOf)) : '') + '</span><span class="ak-src">' + U.esc(e.formula) + '</span></div>'));
+        ans.appendChild(markup('<div class="ak-eb">Quellen</div><div class="ak-srcs"><span class="ak-src">' + U.worldIcon('fundamental', 12) + 'SEC-Berichte' + (e.asOf ? ', Stand ' + U.esc(dateDe(e.asOf)) : '') + '</span><span class="ak-src">' + U.esc(e.formula) + '</span></div>'));
         calc.querySelector('.ak-rcs').appendChild(h('span', { class: 'ak-rc', text: 'Zeitraum: GJ ' + e.fromFy + '–' + e.toFy }));
         tail();
         return 'Der ' + e.label + ' von ' + (cleanName(x.name) || x.symbol) + ' ' + (e.last >= e.first ? 'stieg' : 'fiel') + ' von ' + money(e.first) + ' im Geschäftsjahr ' + e.fromFy +
@@ -650,7 +666,7 @@
   function cell(col, v) { return h('td', { text: Fields.format(col, v) }); }
   function strategyCell(s) { return h('td', { class: s.pass === true ? 'ak-pass' : 'ak-fail', text: s.label }); }
   function stockLink(sym, name) {
-    return h('a', { href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym) }, [h('b', { text: sym }), h('span', { class: 'ak-name', text: name || '' })]);
+    return h('a', { href: '/aktie/#/' + encodeURIComponent(sym), 'data-vu-stock': sym, 'data-vu-stock-name': cleanName(name) || sym }, [h('b', { text: sym }), h('span', { class: 'ak-name', text: name || '' })]);
   }
 
   /* Chartbild-Index (gz) ueber die Lese-API des Chartbilds; null bei Fehler. */
@@ -732,17 +748,26 @@
   }
   function isNum(v) { return typeof v === 'number' && isFinite(v); }
   /* Aktienzeile mit Kurs, Bewegung und Mini-Chart aus der Tagesreihe (gleiche Reihe wie der veröffentlichte Schluss). */
+  /* Schluss und Tagesbewegung über die eine Preiswahrheit (quant/engines/published-close.js, ADR-002); der Mini-Chart zeigt
+     dieselbe Reihe. Erfüllt die Reihe den Vertrag nicht, bleibt die Zeile ohne Kurs. */
+  var Close = window.VUPublishedClose;
+  function stockLinkRow(o, sym, name) {
+    var frag = markup(U.stockRow(o)), a = frag.querySelector('a');
+    if (a) { a.setAttribute('data-vu-stock', sym); a.setAttribute('data-vu-stock-name', cleanName(name) || sym); }
+    return frag;
+  }
   function fillRow(host, sym, name, sub) {
-    host.appendChild(markup(U.stockRow({ ticker: sym, name: name || sym, sub: sub, href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym), noPrice: true })));
+    var href = '/aktie/#/' + encodeURIComponent(sym);
+    host.appendChild(stockLinkRow({ ticker: sym, name: name || sym, sub: sub, href: href, noPrice: true }, sym, name));
     var path = Today && Id ? Today.seriesPath(Id, sym) : null;
-    if (!path) return;
+    if (!path || !Close) return;
     fetch(path, { cache: 'default' }).then(function (r) { if (!r.ok) throw Error('HTTP ' + r.status); return r.json(); }).then(function (series) {
-      var pts = (series.points || []).filter(function (p) { return p && isNum(p[1]); });
-      if (pts.length < 2) return;
-      var last = pts[pts.length - 1], mv = Today.move(series, { date: last[0] });
+      var today = new Date().toISOString().slice(0, 10), last = Close.lastPoint(series, today);
+      if (!last) return;
+      var day = Close.dayChange(series, today), mv = Today.move(series, { date: last.date });
       host.textContent = '';
-      host.appendChild(markup(U.stockRow({ ticker: sym, name: name || sym, sub: sub + ' · Schluss ' + last[0].slice(8, 10) + '.' + last[0].slice(5, 7) + '.', href: '/discover/#/s/US_REAL/' + encodeURIComponent(sym),
-        chart: Chart ? Chart.sparkline(mv.values) : '', price: last[1], currency: series.currency || 'USD', changePct: mv.pct })));
+      host.appendChild(stockLinkRow({ ticker: sym, name: name || sym, sub: sub + ' · Schluss ' + last.date.slice(8, 10) + '.' + last.date.slice(5, 7) + '.', href: href,
+        chart: Chart ? Chart.sparkline(mv.values) : '', price: last.close, currency: last.currency || 'USD', changePct: day ? day.change * 100 : null }, sym, name));
     }).catch(function () { /* ohne Reihe bleibt die Zeile ohne Kurs */ });
   }
 
