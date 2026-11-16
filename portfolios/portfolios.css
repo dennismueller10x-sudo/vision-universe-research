@@ -1,134 +1,173 @@
-/* Portfolios (Konzept docs/design/mein-bereich-2026-11, Screens p-depot und p-home; Aussehen nach App-Konzept 2,
-   Owner 14.11.2026; Bausteine aus assets/vu-ui.css).
-   Nur Weiß, Schwarz, Neongrün und drei Graustufen: Veränderung als Pille (Plus neongrün, Minus schwarz), kein Rot und Grün. */
+/* Portfolios nach „App-Konzept 2“ (Owner 14./15./16.11.2026). Der Prototyp hat keinen eigenen Portfolios-Bildschirm; die Seite
+   besteht aus seinen Bausteinen. Werte 1:1 aus docs/design/app-konzept-2-2026-11/prototyp/quelle/kit.js und shell.js
+   (tile #151516 r22 p14, tabs2/tab 36 px, sh h2 22 px, eb 10,5 px, num 900/-.045em, pill 26/21 px, row 11 px, depot() Felder
+   18 px, seg2 18 px, tl() 22 px, end()); dieselben Werte wie der Block .stp in supertrader/assets/st-redesign.css.
+   Hell bleibt wählbar: dieselben Bausteine mit hellen Flächen. Minus als rote Pille (#c4281c, Owner), Plus neongrün. */
 body{background:var(--vu-bg,#fff);margin:0}
-.pf{max-width:1040px;margin:0 auto;padding:10px var(--vu-gutter,16px) 120px}
+.pf{max-width:1040px;margin:0 auto;padding:0 0 120px}
 /* Mit dem Dock der Shell haelt body den Platz unten frei (--vu-dock-space). */
 html[data-vu-dock] .pf{padding-bottom:24px}
 .pf:focus{outline:none}
 .pf-skip{position:absolute;left:-9999px}
 .pf-skip:focus{left:12px;top:12px;z-index:99;padding:8px 12px;border-radius:999px;background:var(--vu-lime);color:#000;font-weight:800}
-.pf-sec{margin-top:26px}
-.pf-sec .vu-sect{margin-top:0}
-.pf-grid{display:grid;grid-template-columns:1fr;gap:10px}
-@media (min-width:640px){.pf-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (min-width:1000px){.pf-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.pf-back{display:inline-flex;align-items:center;gap:6px;min-height:44px;color:var(--vu-ink);font-weight:800;text-decoration:none}
-.pf-cap{margin:8px 0 0}
-.pf-list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
-@media (min-width:900px){.pf-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.pf-reason{margin:10px 0 0;font-size:13px;line-height:1.45}
-.pf .vu-next{margin-top:22px}
-.pf-foot{margin-top:18px;font-size:12.5px;color:var(--vu-mute);max-width:720px}
-.pf .vu-help{margin-top:18px;max-width:720px}
-.pf-news{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:4px;font-size:12.5px}
-.pf-news a{color:var(--vu-ink);text-decoration:underline;text-underline-offset:3px}
-.pf-decision{margin-top:12px}
-.pf-decision>p{margin:0 0 10px}
 
-/* Kopfkachel der Übersicht: Frage, Stand, die drei Gruppen als Zahlenkacheln */
-.pf-head{border-radius:22px;padding:16px}
-:root:not([data-theme=dark]) .pf-head,:root:not([data-theme=dark]) .pf-hero{background:#0e1013;--vu-card:#1c1f24}
-.pf-head .vu-ltag{margin:0}
-.pf-head__q{margin:6px 0 0;font-size:34px;font-weight:900;letter-spacing:-.045em;line-height:1.02;text-wrap:balance}
-.pf-head__lead{margin:8px 0 0;font-size:14px;line-height:1.4;color:#bdbdbd}
-.pf-head__n{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
-.pf-head__n .pf-count{background:#232323;border-radius:18px;min-height:76px}
-:root:not([data-theme=dark]) .pf-head__n .pf-count{background:#1c1f24}
-.pf-head__n .pf-count .vu-stat__l{color:#bdbdbd;font-size:12px}
-.pf-head .pf-head__n .pf-count[aria-current],:root:not([data-theme=dark]) .pf-head__n .pf-count[aria-current]{background:var(--vu-lime)}
-.pf-head__n .pf-count[aria-current] .vu-stat__v,.pf-head__n .pf-count[aria-current] .vu-stat__l{color:#000}
-.pf-today__note{margin:10px 0 0;color:#9b9b9b}
-@media (max-width:359px){.pf-head__q{font-size:29px}.pf-head__n .pf-count .vu-stat__v{font-size:30px}}
+.pfp{--pfp-tile:#151516;--pfp-card:#202022;--pfp-ink:#f4f5f1;--pfp-mut:#a1a7af;--pfp-sec:#c3c7cc;--pfp-track:#2a2a2d;--pfp-grey:#55595f;--pfp-hair:rgba(255,255,255,.09);--pfp-lc:#c8f531;--pfp-bg:#000;
+  color:var(--pfp-ink);font-size:15px;line-height:1.35}
+:root:not([data-theme=dark]) .pfp,:root:not([data-theme=dark]) .pf-sheet{--pfp-tile:#f4f4f4;--pfp-card:#ececec;--pfp-ink:#000;--pfp-mut:#5f5f5f;--pfp-sec:#3a3a3a;--pfp-track:#e1e1e1;--pfp-grey:#b9b9b9;--pfp-hair:rgba(0,0,0,.1);--pfp-lc:#000;--pfp-bg:#fff}
+:root[data-theme=dark] body:has(.pfp){background:#000}
+@media (min-width:700px){.pfp{max-width:760px}}
+.pfp a{color:inherit;text-decoration:none}
+.pfp-px{padding-left:14px;padding-right:14px}
+.pfp-tile{background:var(--pfp-tile);border-radius:22px;padding:14px;display:block;width:100%;box-sizing:border-box;color:inherit;border:0;font:inherit;text-align:inherit;-webkit-tap-highlight-color:transparent}
+.pfp-tap{cursor:pointer;transition:transform .12s}.pfp-tap:active{transform:scale(.97)}
+@media(prefers-reduced-motion:reduce){.pfp-tap{transition:none}.pfp-tap:active{transform:none}}
+.pfp-tap:focus-visible,.pfp-tab:focus-visible,.pfp-more:focus-visible,.pfp-lk:focus-visible,.pfp-row:focus-visible,.pfp-dlink:focus-visible,.pfp-rnd:focus-visible{outline:2px solid var(--vu-focus-ring,#c8f531);outline-offset:2px}
+.pfp-num{font-weight:900;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+.pfp-mut{color:var(--pfp-mut)}.pfp-sec{color:var(--pfp-sec)}
+.pfp-md{font-size:14px}.pfp-sm{font-size:12.5px}.pfp-xs{font-size:11px}.pfp-b7{font-weight:700}.pfp-b8{font-weight:800}
+.pfp-fl{display:flex;align-items:center}.pfp-col{display:flex;flex-direction:column;min-width:0}.pfp-sb{justify-content:space-between}
+.pfp-g6{gap:6px}.pfp-g8{gap:8px}.pfp-g10{gap:10px}.pfp-g12{gap:12px}.pfp-f1{flex:1;min-width:0}
+.pfp-mt8{margin-top:8px}.pfp-mt12{margin-top:12px}.pfp-mt16{margin-top:16px}.pfp-blk{display:block}.pfp-r{text-align:right}.pfp-nw{white-space:nowrap}
+.pfp-ell{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+:where(.pfp) p{margin:0}
+.pfp-eb{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pfp-mut)}
+.pfp-pill{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:#c8f531;color:#101318;font-size:12.5px;font-weight:800;white-space:nowrap;flex:none}
+.pfp-pill--sm{height:21px;font-size:10.5px;padding:0 8px;letter-spacing:.04em;text-transform:uppercase}
+.pfp-pill--ol{background:none;border:1px solid #c8f531;color:var(--pfp-lc)}
+:root:not([data-theme=dark]) .pfp-pill--ol{border-color:#000}
+/* Kursbewegung als Pille (kit.js chg: 26 px, 12,5 px): Plus neongrün, Minus rot (Owner), unverändert grau */
+.pfp .vu-chg,.pf-sheet .vu-chg{height:26px;padding:0 10px;font-size:12.5px;gap:5px;flex:none;background:#c8f531;color:#101318}
+.pfp .vu-chg--down,.pf-sheet .vu-chg--down{background:#c4281c;color:#fff}
+.pfp .vu-chg--flat,.pf-sheet .vu-chg--flat{background:var(--pfp-track);color:var(--pfp-ink)}
 
-/* Depotkarte (Schiene auf der Übersicht, Raster in der Gruppe) */
-.pf-sec .vu-sect>a{min-height:44px;display:inline-flex;align-items:center}
-.pf-dpc{display:flex;flex-direction:column;padding:14px}
-.pf-dpc>.pf-dpc__h{display:flex;justify-content:space-between;gap:10px}
-.pf-dpc__h>span{min-width:0}
-.pf-dpc__h b{display:block;font-size:18px;font-weight:900;letter-spacing:-.03em;margin-top:2px;line-height:1.15}
-.pf-dpc__h .vu-xs{display:block;margin-top:3px}
-.pf-dpc__h>svg{flex:none;color:var(--vu-mute)}
-.pf-dpc__art{display:block;margin-top:10px}
-.pf-dpc>.pf-dpc__f{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:12px;flex-wrap:wrap}
-.pf-dpc__logos{display:flex;gap:4px}
-.pf-dpc__logos .vu-logo-tile{width:30px;height:30px;border-radius:9px;font-size:8px}
-.pf-dpc__n{margin-left:2px}
-.pf-dpc__perf{display:inline-flex;align-items:center;gap:6px}
-.pf-dpc__perf .vu-chg{font-size:12px;padding:2px 8px}
-.pf-new{margin-left:auto;display:inline-block;background:var(--vu-lime);color:#000;font-size:10px;font-weight:900;letter-spacing:.06em;border-radius:999px;padding:3px 8px;text-transform:uppercase;white-space:nowrap}
-/* Schreibtisch: die Schiene wird zum Raster (alles sichtbar, kein Wischen mit der Maus) */
-@media (min-width:1000px){.pf .vu-rail{flex-wrap:wrap;overflow:visible;margin-inline:0;padding:0}.pf .vu-rail>*{width:calc((100% - 20px)/3);max-width:none}
-  .pf-head{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);column-gap:28px;align-items:end;padding:22px}
-  .pf-head>*{grid-column:1}.pf-head__n{grid-column:2;grid-row:1/span 3;margin-top:0}.pf-head .pf-today__note{grid-column:2;grid-row:4;margin-top:8px}}
-/* Methodenbild auf den Karten folgt dem Theme (Klassen aus methodArt, hell) */
+/* Reiter im Inhalt (tabs2/tab): klebt unter dem Kopf; die Tippfläche wächst unsichtbar auf 44 px */
+.pfp-tabs{position:sticky;top:var(--vu-navigation-height,56px);z-index:4;display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--pfp-bg) 70%,transparent)}
+.pfp-tabs::-webkit-scrollbar,.pfp-rail::-webkit-scrollbar{display:none}
+.pfp .pfp-tab{position:relative;height:36px;padding:0 15px;border-radius:99px;background:var(--pfp-tile);color:var(--pfp-ink);font-weight:700;font-size:14px;display:inline-flex;align-items:center;white-space:nowrap;flex:none}
+.pfp-tab::after{content:"";position:absolute;inset:-4px 0}
+.pfp .pfp-tab.is-on{background:var(--pfp-ink);color:var(--pfp-bg)}
+
+/* Abschnittskopf (sh) */
+.pfp-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 14px;margin:26px 0 10px;scroll-margin-top:110px}
+.pfp-sh h2{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:0;color:var(--pfp-ink)}
+.pfp .pfp-more{position:relative;font-size:13px;font-weight:700;color:var(--pfp-mut);white-space:nowrap;background:none;border:0;padding:0;font-family:inherit;cursor:pointer;text-align:right}
+.pfp a.pfp-more,.pfp button.pfp-more{display:inline-block;padding:13px 0;margin:-13px 0}
+
+/* Kopfkachel: Dachzeile mit Pille, große Zahl, h1 34 px (Prototyp #quant), Zeile darunter */
+.pfp .pfp-hero{padding:16px}
+.pfp-h1{font-size:34px;line-height:1;font-weight:900;letter-spacing:-.045em;margin:8px 0 6px;color:var(--pfp-ink);text-wrap:balance;overflow-wrap:anywhere}
+.pfp-big{align-items:flex-end}.pfp-big .pfp-num{font-size:54px}.pfp-big span{line-height:1.25;padding-bottom:4px}
+.pfp-rnd{position:relative;width:36px;height:36px;border-radius:99px;background:var(--pfp-track);color:var(--pfp-ink);display:grid;place-items:center;flex:none}
+.pfp-rnd::after{content:"";position:absolute;inset:-4px}
+.pfp-kv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.pfp-kvn{font-size:30px}
+.pfp .pf-hero__perf{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:12px 0 0;font-size:12.5px;font-weight:700}
+.pf-hero__perf span:last-child{color:var(--pfp-mut);font-weight:600}
+.pf-hl{color:var(--pfp-lc)}
+.pfp-art{display:block;max-width:420px}
+.pfp-art svg{display:block;width:100%;height:auto}
+/* Methodenbild folgt dem Theme (Klassen aus methodArt) */
 .pf-art-b{fill:#f0f0f0}.pf-art-i{stroke:var(--vu-ink)}.pf-art-s{stroke:var(--vu-ink)}.pf-art-it{fill:var(--vu-ink)}
-:root[data-theme=dark] .pf-art-b{fill:#1a1a1a}
+:root[data-theme=dark] .pf-art-b{fill:#2a2a2d}
 :root[data-theme=dark] .pf-art-it{fill:#c8f531}
+:root:not([data-theme=dark]) .pf-art-b{fill:#e1e1e1}
 
-/* Musterdepot-Seite (Screen p-depot): eine Spalte, am Schreibtisch mittig */
-html[data-pf-view=depot] .pf{max-width:752px}
-.pf-hero{border-radius:22px;padding:14px 16px 16px;max-width:720px}
-.pf-hero__top{display:flex;align-items:center;gap:10px;color:#9b9b9b;font-weight:700}
-.pf-hero__back{background:#262626;color:#fff;width:40px;height:40px}
-.pf-hero__name{margin:12px 0 0;font-size:32px;font-weight:900;letter-spacing:-.05em;line-height:.98;text-wrap:balance;overflow-wrap:anywhere}
-.pf-hero__lead{margin:8px 0 0;color:#bdbdbd;font-size:15px;line-height:1.4;max-width:640px}
-.pf-hl{color:var(--vu-lime)}
-.pf-hero__art{margin-top:12px;max-width:520px}
-.pf-hero__minis{margin-top:14px;max-width:520px}
-.pf-hero__minis--tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
-.pf-mini-tile{background:#151515;border-radius:12px;padding:8px 10px}
-.pf-mini-tile small{display:block;font-size:10.5px;font-weight:700;color:#9b9b9b}
-.pf-mini-tile b{font-size:15px;font-weight:900;letter-spacing:-.02em}
-.pf-hero__perf{display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px;margin:12px 0 0;font-size:13px;font-weight:700}
-.pf-hero__perf span:last-child{color:#9b9b9b;font-weight:600}
-@media (max-width:359px){.pf-hero__name{font-size:27px}}
-@media (min-width:600px){.pf-hero__name{font-size:40px}.pf-head__q{font-size:40px}}
-.pf-body{max-width:720px}
-.pf-sect__r{font-size:14px;font-weight:600;color:var(--vu-mute);background:none;border:0;padding:0;font-family:inherit;cursor:pointer;letter-spacing:0;text-align:right;max-width:9em}
-button.pf-sect__r{min-height:44px;min-width:44px;margin:-12px 0}
-.pf-alloc{display:flex;height:44px;border-radius:14px;overflow:hidden;gap:2px}
-.pf-alloc i{display:grid;place-items:center;background:var(--vu-ink);color:var(--vu-inv);min-width:3px;font-style:normal}
-.pf-alloc i.is-first{background:var(--vu-lime);color:#000}
-.pf-alloc i span{font-size:9.5px;font-weight:800;white-space:nowrap;overflow:hidden;font-style:italic}
-.pf-alloc__rest{background:#5c5c5c!important;color:#fff!important}
-.pf-alloc__cash{background:var(--vu-hair)!important;color:var(--vu-ink)!important}
-.pf-alloc__cap{margin:8px 0 0}
-.pf-pzl{list-style:none;margin:0;padding:2px 14px;border-radius:22px;background:var(--vu-card)}
-.pf-pz{border-top:1px solid var(--vu-hair)}
-.pf-pz:first-child{border-top:0}
-.pf-pz__a{display:grid;grid-template-columns:40px minmax(0,1fr) 92px auto;gap:10px;align-items:center;padding:11px 0;color:inherit;text-decoration:none}
-.pf-pz__a--plain{grid-template-columns:40px minmax(0,1fr) auto}
-.pf-pz .vu-logo-tile{width:40px;height:40px;border-radius:11px;font-size:9.5px}
-.pf-pz__name{min-width:0}
-.pf-pz__name b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pf-pz__name span{display:block;font-size:11.5px;color:var(--vu-mute)}
-.pf-pz__chart{height:40px}
-.pf-pz__chg{display:grid;justify-items:end;gap:2px;text-align:right}
-.pf-pz__chg .vu-chg{font-size:11px;padding:2px 7px}
-@media (max-width:379px){.pf-pzl{padding:2px 12px}.pf-pz__a{grid-template-columns:34px minmax(0,1fr) 52px auto;gap:7px}.pf-pz .vu-logo-tile{width:34px;height:34px}.pf-pz__chart svg{width:52px}}
+/* Balken mit Legende (seg2 18 px) */
+.pfp-seg{display:flex;height:18px;border-radius:9px;overflow:hidden;gap:2px}
+.pfp-seg i{display:block;height:100%;transform-origin:left;animation:pfp-grow .9s cubic-bezier(.2,.8,.2,1) both}
+.pfp-l{background:#c8f531}.pfp-w{background:var(--pfp-ink)}.pfp-g{background:var(--pfp-grey)}
+.pfp-key{display:block;width:10px;height:10px;border-radius:3px}
+@keyframes pfp-grow{from{transform:scaleX(0)}to{transform:none}}
+@media(prefers-reduced-motion:reduce){.pfp-seg i,.pfp-df--bar i{animation:none}}
+
+/* Block „Musterdepots“ (#supertrader depot()): Name 92 px, Felder 18 px, Zahl 40 px */
+.pfp-dep{display:block}
+.pfp-dr{display:flex;align-items:center;gap:10px;padding:8px 0}
+.pfp-dn{width:92px;flex:none;line-height:1.15;overflow-wrap:anywhere}
+.pfp-df{flex:1;display:flex;gap:4px;min-width:0}
+.pfp-df i{flex:1;height:18px;border-radius:5px;background:var(--pfp-track);display:block}
+.pfp-df i.is-on{background:#c8f531}
+:root:not([data-theme=dark]) .pfp-df i.is-on{box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
+.pfp-df--bar{height:18px;border-radius:5px;background:var(--pfp-track);overflow:hidden}
+.pfp-df--bar i{flex:none;background:#c8f531;border-radius:0;transform-origin:left;animation:pfp-grow .9s cubic-bezier(.2,.8,.2,1) both}
+.pfp-dc{width:40px;flex:none}
+.pfp-dlink{position:relative;color:inherit;text-decoration:none}
+.pfp-dlink::after{content:"";position:absolute;inset:-5px 0}
+
+/* Schiene aus Kacheln */
+.pfp-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 14px;scrollbar-width:none;overscroll-behavior-x:contain}
+.pfp-rail>*{scroll-snap-align:start;flex:none}
+.pfp-rail>.pfp-card{width:236px}
+.pfp-card{display:flex;flex-direction:column}
+.pfp-cn{display:block;margin-top:8px;font-size:17px;font-weight:800;line-height:1.1;letter-spacing:-.015em}
+.pfp-cm{display:block;margin-top:4px;line-height:1.35}
+.pfp-rail .pfp-cm{display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pfp-cf{display:flex;flex-direction:column;margin-top:auto;padding-top:12px}
+.pfp-logos{display:flex;gap:4px}
+.pfp .pfp-logos .vu-logo-tile{width:30px;height:30px;border-radius:9px;font-size:8px;padding:4px}
+.pfp-stack{display:grid;gap:8px}
+@media (min-width:700px){.pfp-rail{flex-wrap:wrap;overflow:visible}.pfp-rail>.pfp-card{width:calc((100% - 10px)/2)}.pfp-stack.pfp-px:not(nav){grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Zeilen mit Logo (row: 11 px, Logo 44 px, Linie 64 × 30, Pille) */
+.pfp-list{padding:6px 14px}
+.pfp-rows{list-style:none;margin:0;padding:0}
+.pfp-li{border-bottom:1px solid var(--pfp-hair)}
+.pfp-li:last-child{border-bottom:0}
+.pfp-row{display:flex;align-items:center;gap:12px;padding:11px 0;color:inherit;text-decoration:none;min-height:44px}
+.pfp .pfp-row .vu-logo-tile,.pf-sheet .pfp-row .vu-logo-tile{width:44px;height:44px;border-radius:13px;flex:none}
+.pfp-spark{width:64px;height:30px;flex:none}
+.pfp-row .pfp-col>span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pf-mini{display:block;overflow:visible}
-.pf-mini__line{stroke:var(--vu-ink)}
-.pf-mini__stop{stroke:var(--vu-mute)}
-.pf-mini__dot{stroke:var(--vu-ink)}
-.pf-pz .pf-reason{margin:0 0 10px}
-.pf-tl{list-style:none;margin:0;padding:0 0 0 4px}
-.pf-tl__r{position:relative;display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:start;padding:8px 0}
-.pf-tl__r>i{width:12px;height:12px;border-radius:50%;background:var(--vu-ink);margin-top:3px;position:relative;z-index:1}
-.pf-tl__r--raus>i{background:var(--vu-bg,#fff);box-shadow:inset 0 0 0 2.5px var(--vu-ink)}
-.pf-sheet .pf-tl__r--raus>i{background:transparent}
-.pf-tl__r:not(:last-child)::before{content:"";position:absolute;left:5px;top:18px;bottom:-6px;width:2px;background:var(--vu-hair)}
-.pf-tl__r b{display:block;font-size:13.5px}
-.pf-tl__r span{font-size:12px;color:var(--vu-mute)}
-.pf-tl__r .vu-chg{font-size:10.5px;padding:2px 6px}
-/* Kapitel als Kacheln (führen zur Methode in Supertrader bzw. zum Profil in Quant) */
-.pf-eps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:22px}
-.pf-ep{padding:12px}
-.pf-ep__i{display:flex!important;justify-content:space-between;align-items:flex-start;color:var(--vu-mute)}
-.pf-ep .vu-hud{--vu-hud:40px}
-.pf-ep>b{margin-top:10px;font-size:14.5px;line-height:1.2;letter-spacing:-.01em}
-.pf-ep>span:last-child{margin-top:3px;font-size:12px;line-height:1.3;color:var(--vu-mute)}
-.pf-pz__a:focus-visible,.pf-hero__back:focus-visible,.pf-all:focus-visible{outline:3px solid var(--vu-focus-ring);outline-offset:2px}
-/* Fenster „Alle N“ / „Alles“ */
-.pf-sheet .pf-pzl{padding:0;background:none;border-radius:0}
-.pf-sheet .pf-cap{margin-bottom:6px}
+.pf-mini__line{stroke:var(--pfp-ink,var(--vu-ink))}
+.pf-mini__stop{stroke:var(--pfp-mut,var(--vu-mute))}
+.pf-mini__dot{stroke:var(--pfp-bg,#000)}
+.pf-cap{margin:8px 0 0}
+.pfp-pad{padding:8px 0 4px}
+.pf-reason{margin:0 0 11px;font-size:12.5px;line-height:1.45;color:var(--pfp-sec)}
+.pf-news{list-style:none;margin:-4px 0 11px;padding:0;display:grid;gap:4px;font-size:12.5px}
+.pf-news a{color:var(--pfp-ink);text-decoration:underline;text-underline-offset:3px}
+@media (max-width:359px){.pfp-spark{display:none}}
+
+/* Verteilung im Modell */
+.pf-alloc{display:flex;height:44px;border-radius:14px;overflow:hidden;gap:2px}
+.pf-alloc i{display:grid;place-items:center;background:var(--pfp-ink);color:var(--pfp-bg);min-width:3px;font-style:normal}
+.pf-alloc i.is-first{background:#c8f531;color:#101318}
+.pf-alloc i span{font-size:10.5px;font-weight:800;white-space:nowrap;overflow:hidden}
+.pf-alloc .pf-alloc__rest{background:var(--pfp-grey);color:var(--pfp-ink)}
+.pf-alloc .pf-alloc__cash{background:var(--pfp-track);color:var(--pfp-ink)}
+.pf-alloc__cap{margin:8px 0 0;font-size:11px;color:var(--pfp-mut)}
+
+/* Zeitleiste (Fenster „ablauf“, tl()) */
+.pfp-tls{list-style:none;margin:0;padding:0}
+.pfp-tl{display:flex;gap:12px;align-items:stretch}
+.pfp-tl-a{display:flex;flex-direction:column;align-items:center;width:22px;flex:none}
+.pfp-tl-c{width:22px;height:22px;border-radius:99px;border:1.5px solid var(--pfp-grey);display:grid;place-items:center;box-sizing:border-box;flex:none;font-style:normal}
+.pfp-tl--rein .pfp-tl-c{background:#c8f531;color:#101318;border:0}
+.pfp-tl-l{width:2px;flex:1;background:var(--pfp-track);display:block}
+.pfp-tl:last-child .pfp-tl-l{display:none}
+.pfp-tl-b{flex:1;min-width:0;padding-bottom:12px}
+.pfp-tl-b b{font-size:13.5px;font-weight:800;line-height:1.3}
+.pfp-tl-b .vu-chg{margin-top:4px;height:21px;font-size:11px;padding:0 8px}
+
+/* Kacheln „Mehr zur Methode“, Erklärung, Hinweise, Weiter */
+.pfp .vu-hud,.pfp-hud{--vu-hud:40px;width:40px;height:40px;border-radius:12px;background:#0e1013;border:1px solid rgba(200,245,49,.25);color:#c8f531;display:grid;place-items:center;flex:none}
+.pfp-stack>.pfp-tile>svg{flex:none;color:var(--pfp-mut)}
+.pfp-q{width:20px;height:20px;border-radius:99px;background:var(--pfp-ink);color:var(--pfp-bg);display:grid;place-items:center;font-size:12px;font-weight:900;flex:none}
+.pfp-help{align-items:flex-start}
+.pfp-legal .vu-legal{margin:0;background:var(--pfp-tile);border-radius:22px;padding:14px;color:var(--pfp-sec);font-size:12.5px}
+.pfp-legal .vu-legal a{color:var(--pfp-ink)}
+.pf-foot{margin:10px 2px 0;font-size:11px;color:var(--pfp-mut);line-height:1.45}
+.pfp-next .vu-next{margin-top:28px}
+.pfp-end{margin:28px 14px 0;text-align:center}
+.pfp .pfp-lk{display:inline-flex;align-items:center;min-height:44px;background:none;border:0;padding:0 8px;color:var(--pfp-mut);font:inherit;font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.pfp .vu-blank{background:var(--pfp-tile);border-radius:22px;color:var(--pfp-ink)}
+
+/* Fenster (Prototyp .sheet: Karte #202022, Knopf 52 px) */
+.pf-sheet{--pfp-tile:#202022;--pfp-card:#202022;--pfp-ink:#f4f5f1;--pfp-mut:#a1a7af;--pfp-sec:#c3c7cc;--pfp-track:#2a2a2d;--pfp-grey:#55595f;--pfp-hair:rgba(255,255,255,.09);--pfp-lc:#c8f531;--pfp-bg:#151515}
+.pfp-sheet{color:var(--pfp-ink)}
+:where(.pfp-sheet) p{margin:0}
+.pfp-sheet .pfp-card{background:var(--pfp-card);border-radius:16px;padding:6px 12px}
+.pfp-sheet .pfp-btn{height:52px;border-radius:999px;background:#c8f531;color:#101318;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;text-decoration:none}
+.pfp-sheet .pfp-dr{padding:13px 0}
+.pfp-sheet .pfp-dlink::after{display:none}
+.pfp-sheet .pfp-tls{margin-top:4px}
