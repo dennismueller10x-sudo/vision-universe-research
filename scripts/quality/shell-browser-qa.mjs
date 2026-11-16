@@ -150,12 +150,10 @@ for (const [vpName, width, height] of VIEWPORTS) {
           const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav'), strip = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs');
           const places = nav ? [...nav.querySelectorAll('a')] : [], uni = nav && nav.querySelector('button.menu'), ub = uni && uni.getBoundingClientRect();
           const tabs = [...document.querySelectorAll('main [role=tablist] a, main [role=tablist] button, main .dp-tabs .dp-tab, main [class*=tabs] a, main [class*=tabs] button')].filter((n) => n.getClientRects().length);
-          return { dock: !!nav, places: places.map((a) => a.textContent.trim()), place: places.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
-            uni: !!uni && ub.width >= 56 && ub.height >= 56, stripHidden: !strip || strip.hidden, tabs: tabs.length, overflow: document.documentElement.scrollWidth - innerWidth,
-            current: tabs.filter((n) => n.getAttribute('aria-current') === 'page').map((n) => n.textContent.trim()) };
           const own = [...document.querySelectorAll('main .vsp-tabs a')], ob = own.map((a) => { const b = a.getBoundingClientRect(), x = getComputedStyle(a, '::after'); return { h: b.height, hit: b.height + 2 * Math.max(0, -parseFloat(x.top) || 0), w: b.width }; });
           return { ownCurrent: own.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()), ownSmall: ob.filter((b) => b.hit < 44 || b.w < 44).length, ownPill: ob.length ? Math.round(ob[0].h) : null, dock: !!nav, places: places.map((a) => a.textContent.trim()), place: places.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
-            uni: !!uni && ub.width >= 56 && ub.height >= 56, stripHidden: !strip || strip.hidden, tabs: tabs.length, overflow: document.documentElement.scrollWidth - innerWidth };
+            uni: !!uni && ub.width >= 56 && ub.height >= 56, stripHidden: !strip || strip.hidden, tabs: tabs.length, overflow: document.documentElement.scrollWidth - innerWidth,
+            current: tabs.filter((n) => n.getAttribute('aria-current') === 'page').map((n) => n.textContent.trim()) };
         });
         if (inhalt) {
           if (!inhalt.dock || inhalt.places.join('|') !== DOCK.join('|') || !inhalt.uni) fail(where, 'Dock ist nicht Home · Discover · [Universe] · News · Ich: ' + JSON.stringify(inhalt));
