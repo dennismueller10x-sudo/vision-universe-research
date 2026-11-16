@@ -31,7 +31,7 @@
      Version - die 1.0.0-Beobachtungen bleiben unveraendert unter ihrer
      eigenen Reihe stehen. */
   var METHODOLOGY_VERSION = "vu-factor-evidence-2.0.0";
-  var DERIVED_FROM = "quant-v2.3.0";
+  var DERIVED_FROM = "quant-v2.4.0";
   var SHARD_SCHEMA = "factor-evidence-product-1.0.0";
   var SUMMARY_SCHEMA = "factor-evidence-summary-1.0.0";
   var SCREENING_SCHEMA = "factor-evidence-screening-1.0.0";
@@ -287,6 +287,33 @@
     var sorted = values.filter(finite).slice().sort(function (a, b) { return a - b; });
     if (!sorted.length) return null;
     return { low: percentileOf(sorted, 0.02), high: percentileOf(sorted, 0.98), count: sorted.length };
+  }
+
+  /* quant-v2.4.0 (Steuerung 16.11.2026): Periodenabgrenzung, bereinigt um Wachstum.
+     Wer schnell waechst, baut zwangslaeufig Forderungen und Vorraete auf; der Teil der Abgrenzung, den das
+     Umsatzwachstum erklaert, ist kein Qualitaetsmangel (Jones 1991; Dechow, Sloan und Sweeney 1995; Fairfield,
+     Whisenant und Yohn 2003). Querschnitts-Regression je Stichtag ueber alle Titel mit beiden Werten (beide auf 2 %/98 %
+     gekappt): accrualRatio = a + b * revenueGrowthTtmYoy; Komponente ist das Residuum (Wert minus Erwartung, mit dem
+     ungekappten Wert). Ohne Umsatzwachstum oder unter `minimum` Titeln: null. Rueckgabe: {values, a, b, n}. */
+  function growthAdjustedAccruals(accruals, growth, minimum) {
+    var pairs = [];
+    accruals.forEach(function (value, index) {
+      if (finite(value) && finite(growth[index])) pairs.push(index);
+    });
+    var none = { values: accruals.map(function () { return null; }), a: null, b: null, n: pairs.length };
+    if (pairs.length < (minimum || 200)) return none;
+    var xb = winsorBounds(pairs.map(function (i) { return growth[i]; })),
+      yb = winsorBounds(pairs.map(function (i) { return accruals[i]; }));
+    var xs = pairs.map(function (i) { return clamp(growth[i], xb); }), ys = pairs.map(function (i) { return clamp(accruals[i], yb); });
+    var mx = xs.reduce(function (t, v) { return t + v; }, 0) / xs.length, my = ys.reduce(function (t, v) { return t + v; }, 0) / ys.length;
+    var sxy = 0, sxx = 0;
+    xs.forEach(function (x, k) { sxy += (x - mx) * (ys[k] - my); sxx += (x - mx) * (x - mx); });
+    if (!(sxx > 0)) return none;
+    var b = sxy / sxx, a = my - b * mx;
+    var values = accruals.map(function (value, index) {
+      return finite(value) && finite(growth[index]) ? value - (a + b * clamp(growth[index], xb)) : null;
+    });
+    return { values: values, a: a, b: b, n: pairs.length };
   }
 
   function clamp(value, bounds) {
@@ -624,6 +651,7 @@
     confidenceBand: confidenceBand,
     winsorBounds: winsorBounds,
     clamp: clamp,
+    growthAdjustedAccruals: growthAdjustedAccruals,
     midrankPercentiles: midrankPercentiles,
     blend: blend,
     assembleFactor: assembleFactor,

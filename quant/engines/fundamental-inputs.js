@@ -324,6 +324,18 @@
         return Math.abs(entry.value - marginMedian);
       }));
     }
+    /* quant-v2.4.0 (Befund NVDA, Steuerung 16.11.2026): Die Stabilitaet misst nur Einbrueche. Groesster Rueckgang der
+       Jahresmarge von einem frueheren Hoch auf ein spaeteres Tief im selben Fenster (bis zu fuenf Geschaeftsjahre, ab
+       vier); eine nur steigende Marge hat 0. Die symmetrische Abweichung (operatingMarginStability) bleibt als Rohwert
+       fuer die eingefrorenen Forschungsstudien stehen. */
+    if (marginWindow.length >= 4) {
+      var peak = -Infinity, drawdown = 0;
+      marginWindow.forEach(function (entry) {
+        if (entry.value > peak) peak = entry.value;
+        if (peak - entry.value > drawdown) drawdown = peak - entry.value;
+      });
+      raws.operatingMarginDrawdown = drawdown;
+    }
     if (operatingMargins.length >= 4) {
       raws.operatingMarginExpansion3y =
         operatingMargins[operatingMargins.length - 1].value - operatingMargins[operatingMargins.length - 4].value;

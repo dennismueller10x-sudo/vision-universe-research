@@ -1,6 +1,6 @@
 {
- "methodologyVersion": "quant-v2.3.0",
- "modelProfileId": "quant-v2.3.0-full-7f",
+ "methodologyVersion": "quant-v2.4.0",
+ "modelProfileId": "quant-v2.4.0-full-7f",
  "modelVersion": "2.0.0",
  "label": "VU Quant Score 2.0 · Full 7F",
  "status": "SPECIFIED_NOT_ACTIVE",
@@ -41,7 +41,7 @@
     {
      "id": "accrualRatio",
      "weight": 0.25,
-     "input": "(netIncomeTTM-operatingCashFlowTTM)/averageTotalAssets",
+     "input": "residual of (netIncomeTTM-operatingCashFlowTTM)/averageTotalAssets after a cross-sectional OLS on revenueGrowthTtmYoy (both winsorized 2/98; Jones 1991, Dechow/Sloan/Sweeney 1995, Fairfield/Whisenant/Yohn 2003)",
      "window": "TTM",
      "direction": "lower"
     },
@@ -67,9 +67,9 @@
      "direction": "higher"
     },
     {
-     "id": "operatingMarginStability",
+     "id": "operatingMarginDrawdown",
      "weight": 0.2,
-     "input": "medianAbsoluteDeviation(annualOperatingMargin)",
+     "input": "maximum peak-to-trough decline of annualOperatingMargin (rising margins count 0)",
      "window": "last 5 fiscal years; minimum 4",
      "direction": "lower"
     }
