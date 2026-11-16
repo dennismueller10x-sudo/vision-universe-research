@@ -20,6 +20,7 @@ name: Forschung (Buendel research)
 #   hausstrategie-forschung      vormals supertrader-house.yml
 #   edge2-paper                  vormals research-edge2-paper.yml
 #   europa-esef                  neu (Strang M5, 08.11.2026): Konzern-Kennzahlen deutscher Emittenten aus ESEF, nur manuell
+#   quality-marge-pit            neu (16.11.2026): Quality-Margenformen auf neu gebauten PIT-Dokumenten, nur manuell
 # Der Job `auswahl` bildet die Ausloeser der Quellen nach (Dispatch `teil`, Zeitplan am Cron, Push nach
 # Zweig/Pfad, workflow_run nach Name/Typ/Zweig, repository_dispatch nach Typ). Generiert, siehe A-Doc.
 
@@ -49,6 +50,7 @@ on:
           - delisting-probe
           - hausstrategie-forschung
           - europa-esef
+          - quality-marge-pit
           - edge2-paper
       mode:
         description: 'portfolio: portfolios (Musterportfolios) oder holdout-quant (Holdout 2008-2015, einmalig, nur versiegelt)'
@@ -104,6 +106,7 @@ jobs:
       delisting_probe: ${{ steps.wahl.outputs.delisting_probe }}
       hausstrategie_forschung: ${{ steps.wahl.outputs.hausstrategie_forschung }}
       europa_esef: ${{ steps.wahl.outputs.europa_esef }}
+      quality_marge_pit: ${{ steps.wahl.outputs.quality_marge_pit }}
       edge2_paper: ${{ steps.wahl.outputs.edge2_paper }}
     steps:
       - name: Teil waehlen
@@ -139,7 +142,7 @@ jobs:
           export PUSH_FILES PUSH_FILES_UNKNOWN
           python3 - <<'PY'
           import fnmatch, json, os, re
-          SPEC = json.loads(r"""{"delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "edge2-paper": {"crons": ["47 8 * * 6"], "dispatch": true, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "europa-esef": {"crons": [], "dispatch": true, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "products/vorsorge/producer/fetch-legal-sources.sh"]}, "required": []}}""")
+          SPEC = json.loads(r"""{"delisting-probe": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "edge2-paper": {"crons": ["47 8 * * 6"], "dispatch": true, "required": []}, "elliott-register": {"crons": ["23 9 * * 6", "47 7 * * 0", "17 6 * * 1", "41 5 * * 3"], "dispatch": true, "required": []}, "emerging-leaders": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "etf-universum": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "europa-esef": {"crons": [], "dispatch": true, "required": []}, "hausstrategie-forschung": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "labor": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": ["phase"]}, "muster-gesamtrendite": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "mustervolumen": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "portfolio": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"]}, "required": []}, "quality-marge-pit": {"crons": [], "dispatch": true, "required": []}, "v13-archiv": {"crons": [], "dispatch": false, "push": {"branches": ["claude/**"]}, "required": []}, "vorsorge-etf": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": ["products/vorsorge/producer/**", "vorsorge/engines/**", ".github/workflows/research.yml"]}, "required": []}, "vorsorge-recht": {"crons": [], "dispatch": true, "push": {"branches": ["claude/**"], "paths": [".github/workflows/research.yml", "products/vorsorge/producer/fetch-legal-sources.sh"]}, "required": []}}""")
           ev, ref = os.environ.get("EVENT", ""), os.environ.get("REF", "")
           def glob_re(p):
               # GitHub-Filtermuster: ** beliebig, * ohne '/', ? ein Zeichen, [..] Klasse; Praefix '!' = Ausschluss
@@ -1837,3 +1840,62 @@ jobs:
           if git diff --cached --quiet; then echo "Nichts aufzuzeichnen."; exit 0; fi
           git commit -m "EDGE2-PAPER: Woche aufgezeichnet (Lauf ${GITHUB_RUN_ID})"
           scripts/ci/push-with-retry.sh "${GITHUB_REF_NAME}"
+
+  # --- quality-marge-pit: drei Formen der Quality-Margenkomponente gegeneinander (Steuerung 16.11.2026, Forschung, nicht
+  # zertifiziert): SEC companyfacts.zip einmal laden, PIT-Dokumente je Emittent neu bauen (V10-Weg, pit_docs.py), dann
+  # scripts/quant/research/quality-margin-pit.cjs. Rohdaten und Dokumente bleiben im Runner; als Artefakt nur Zaehlungen
+  # und Mittelwerte. Nichts wird committet. Nur manuell, einmal.
+  quality-marge-pit:
+    needs: [auswahl]
+    if: needs.auswahl.outputs.quality_marge_pit == 'true'
+    permissions: {contents: read}
+    concurrency:
+      group: quality-marge-pit-${{ github.ref_name }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Tests der Pruefung
+        run: |
+          set -euo pipefail
+          node --test quant/tests/quality-margin-substitute.test.mjs
+      - name: SEC companyfacts.zip (eine Anfrage)
+        env:
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/v10"
+          # fetch_companyfacts.py legt bulk/companyfacts.zip an (SECHttpClient.download_to)
+          python3 -I scripts/quant/v10/factor/fetch_companyfacts.py "$RUNNER_TEMP/v10"
+          test -s "$RUNNER_TEMP/v10/bulk/companyfacts.zip"
+      - name: PIT-Dokumente je Emittent (V10-Weg)
+        run: |
+          set -euo pipefail
+          P="$RUNNER_TEMP/v10"
+          node --max-old-space-size=8192 scripts/quant/v10/factor/jobs.cjs "$P"
+          python3 -I scripts/quant/v10/factor/pit_docs.py "$P/bulk/companyfacts.zip" "$P/jobs.json" "$P/docs" --workers 4
+          rm -f "$P/bulk/companyfacts.zip"
+          echo "Dokumente: $(find "$P/docs" -name '*.json.gz' | wc -l)"
+      - name: Drei Margenformen rechnen (nur Zaehlungen im Log)
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=12288 scripts/quant/research/quality-margin-pit.cjs --docs "$RUNNER_TEMP/v10/docs" \
+            --out "$RUNNER_TEMP/quality-margin-pit/quality-margin-pit.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: quality-margin-pit-${{ github.run_id }}
+          path: ${{ runner.temp }}/quality-margin-pit
+          retention-days: 30
+          if-no-files-found: error
+      - name: Private Daten entfernen
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/v10"
