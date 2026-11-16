@@ -91,6 +91,22 @@ class ReconstructionTests(unittest.TestCase):
             with self.subTest(metric=metric):
                 self.assertTrue(self.derived[metric].available)
 
+    def test_net_debt_subtracts_short_term_investments_when_reported(self):
+        """Befund c (16.11.2026): kurzfristige Wertpapiere desselben Stichtags zaehlen wie Bargeld."""
+        from quant.tests.fixtures import INSTANT_CONCEPTS
+        resolver, _, _ = resolver_for(
+            3000000003, lambda year: 1000.0 * (year - 2017),
+            instant_concepts=INSTANT_CONCEPTS + (("DebtSecuritiesCurrent", "USD", 0.3),))
+        derived = reconstruct(resolver, 2025, "FY", self.as_of)
+        read = lambda m: resolver.annual(m, 2025, self.as_of)
+        debt, cash, sti = derived["total_debt"], read("cash_and_equivalents"), read("short_term_investments")
+        self.assertTrue(sti.available)
+        self.assertAlmostEqual(derived["net_debt"].value, debt.value - cash.value - sti.value, places=2)
+        # Ohne gemeldete Wertpapiere bleibt es bei Schulden minus Bargeld.
+        self.assertAlmostEqual(self.derived["net_debt"].value,
+                               self.derived["total_debt"].value
+                               - self.resolver.annual("cash_and_equivalents", 2025, self.as_of).value, places=2)
+
     def test_accruals_is_a_ratio_not_a_currency_amount(self):
         accruals = self.derived["accruals"]
         self.assertTrue(accruals.available)

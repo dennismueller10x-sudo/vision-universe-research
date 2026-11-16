@@ -101,7 +101,7 @@ SYNTHETIC_SHARE_COUNT = 1000.0
 def standard_company(cik, fy_ends, annual_revenue, quarterly_pattern=(0.2, 0.24, 0.26, 0.30),
                      week_based=False, ytd_only_from_q2=True, include_balance_sheet=True,
                      revenue_concept="Revenues", comparative_years=2,
-                     flow_concepts=FLOW_CONCEPTS, include_eps=True):
+                     flow_concepts=FLOW_CONCEPTS, include_eps=True, instant_concepts=INSTANT_CONCEPTS):
     """A synthetic issuer that files 10-Qs and 10-Ks the way real ones do.
 
     Q1 is reported as a standalone quarter. Q2 and Q3 are reported ONLY as
@@ -131,7 +131,7 @@ def standard_company(cik, fy_ends, annual_revenue, quarterly_pattern=(0.2, 0.24,
     def emit_instants(annual, end, accession, form, filed, fiscal_year, fiscal_period):
         if not include_balance_sheet:
             return
-        for concept, unit, ratio in INSTANT_CONCEPTS:
+        for concept, unit, ratio in instant_concepts:
             builder.add("us-gaap", concept, unit, round(annual * ratio, 2), end, None,
                         accession, form, filed, fy=fiscal_year, fp=fiscal_period)
 
