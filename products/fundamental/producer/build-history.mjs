@@ -185,7 +185,39 @@ export async function buildHistory({ root }) {
     stats.projected++;
     if (sic4) members.push({ ticker, sic4, sic2: sic4.slice(0, 2), sector: sectorFromSic(sic4), values: await issuerValues(root, projected, doc) });
   }
-  return { shards, stats, industry: industryMedians(members), peers: await peerIndex(root, sic) };
+  return { shards, stats, industry: industryMedians(members), peers: await peerIndex(root, sic), week: filingWeek(shards, stats.consumerAsOf) };
+}
+
+/* Meldewoche fuer den Fundamental-Start (App-Konzept 2, Block „Wie gut ist das Geschaeft?“): welche Firmen in der Woche
+ * (Montag bis Freitag) des neuesten Meldedatums neue Zahlen bei der SEC eingereicht haben. Quelle sind allein die
+ * Meldungen der ausgelieferten Werte (filings: [Aktenzeichen, Einreichungstag]); gezaehlt wird jede Firma einmal, am
+ * ersten Tag der Woche mit einer Meldung, mehrere Aktiengattungen einer CIK einmal. Reihenfolge je Tag und die drei groessten nach dem letzten Jahresumsatz
+ * (nur Darstellung, keine Wertung). Keine Prognose kuenftiger Termine. */
+export function filingWeek(shards, asOf) {
+  const issuers = [];
+  for (const sh of Object.values(shards || {})) for (const [t, h] of Object.entries(sh.issuers || {})) issuers.push([t, h]);
+  let last = '';
+  for (const [, h] of issuers) for (const f of h.filings || []) if (isDate(f[1]) && (!asOf || f[1] <= asOf) && f[1] > last) last = f[1];
+  if (!last) return null;
+  const d = new Date(last + 'T00:00:00Z'), dow = (d.getUTCDay() + 6) % 7;
+  const day = (k) => new Date(d.getTime() + (k - dow) * 864e5).toISOString().slice(0, 10);
+  const from = day(0), to = day(4), days = [0, 1, 2, 3, 4].map((k) => ({ date: day(k), t: [] })), all = [];
+  const revenue = (h) => { const r = (h.annual && h.annual.revenue) || []; const x = r[r.length - 1]; return x && Number.isFinite(x[2]) ? x[2] : 0; };
+  /* Eine Firma, ein Eintrag: mehrere Aktiengattungen derselben CIK (BRK-A/BRK-B, GOOG/GOOGL) zaehlen einmal,
+   * unter dem alphabetisch letzten Kuerzel. */
+  const byCik = new Map();
+  for (const [t, h] of issuers) { const k = h.cik || t, o = byCik.get(k); if (!o || t > o[0]) byCik.set(k, [t, h]); }
+  for (const [t, h] of byCik.values()) {
+    const first = (h.filings || []).map((f) => f[1]).filter((x) => isDate(x) && x >= from && x <= to && x <= last).sort()[0];
+    if (!first) continue;
+    const slot = days.find((x) => x.date === first);
+    if (!slot) continue;
+    const rev = revenue(h);
+    slot.t.push([t, rev]); all.push({ t, name: h.name || t, date: first, rev });
+  }
+  for (const x of days) x.t = x.t.sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : 1)).map((y) => y[0]);
+  all.sort((a, b) => b.rev - a.rev || (a.t < b.t ? -1 : 1));
+  return { from, to, last, count: all.length, days, top: all.slice(0, 3).map((x) => [x.t, x.name, x.date]) };
 }
 
 /* Erstveroeffentlichung der Jahreszahlen: Annahmezeitpunkt des ersten 10-K nach dem Geschaeftsjahresende.
@@ -294,7 +326,7 @@ export function industryMedians(members) {
 
 /** Schreibt die Scherben als .json.gz nach out; Budget je Scherbe und gesamt. */
 export async function writeHistory({ root, out, log = console.log }) {
-  const { shards, stats, industry, peers } = await buildHistory({ root });
+  const { shards, stats, industry, peers, week } = await buildHistory({ root });
   await mkdir(out, { recursive: true });
   let bytes = 0;
   for (const [key, payload] of Object.entries(shards)) {
@@ -316,7 +348,7 @@ export async function writeHistory({ root, out, log = console.log }) {
   bytes += peersJson.length;
   await writeFile(join(out, 'peers.json'), peersJson);
   if (bytes > TOTAL_BUDGET) throw Error('FUNDAMENTAL_HISTORY_BUDGET_EXCEEDED');
-  const report = { schema: SCHEMA, state: 'AVAILABLE', shards: Object.keys(shards).length, industryGroups: Object.keys(industry).length, bytes, ...stats };
+  const report = { schema: SCHEMA, state: 'AVAILABLE', shards: Object.keys(shards).length, industryGroups: Object.keys(industry).length, bytes, ...stats, week };
   await writeFile(join(out, 'status.json'), JSON.stringify(report));
   log(JSON.stringify(report));
   return report;

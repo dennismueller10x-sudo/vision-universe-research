@@ -3,22 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#08080a">
 <link rel="icon" href="data:,">
 <title>Screener — Vision Universe®</title>
 <meta name="description" content="Was suchst du? Aktien nach eigenen Kriterien filtern, gewichten und vergleichen – mit Vision Universe® Screener.">
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <!-- Farbschema vor dem ersten Bild: dieselbe Vision-Universe-Einstellung wie
-     Discover (discover/engines/theme.js). Hell ist Standard. -->
-<script>(function(){var w="dark";try{if(localStorage.getItem("vu-discover-theme-v1")==="light")w="light";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+     Discover (discover/engines/theme.js). Dunkel ist Standard (App-Konzept 2).
+     „Suchen“ (Start ohne Ansicht) trägt seine Reiter im Inhalt: data-vu-tabs="inhalt" vor dem ersten Bild. -->
+<script>(function(){var w="dark";try{if(localStorage.getItem("vu-discover-theme-v1")==="light")w="light";}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);if(!/[?&]view=(?!start(&|$))/.test(location.search)&&!(/[?&]f=/.test(location.search)&&!/[?&]view=start(&|$)/.test(location.search))&&!/[?&]mode=pro/.test(location.search))h.setAttribute("data-vu-tabs","inhalt");h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/assets/vu-ui.css?v=vu-ui-1.4.0">
-<link rel="stylesheet" href="/screener/screener.css?v=ak2-1">
+<link rel="stylesheet" href="/screener/screener.css?v=ak2-2">
 <!-- Vorladen: Startansicht ohne Link-Zustand braucht zuerst nur die Kopfdatei
      (wenige KB, app.js laedt das volle Universum sofort danach); jeder Link mit
      Zustand (?view=, ?f=, ?stock=) braucht sofort das volle Universum. -->
 <script>(function(){var l=document.createElement("link");l.rel="preload";l.as="fetch";l.crossOrigin="anonymous";l.href="/screener/data/universe-US_REAL"+(location.search?"":".meta")+".json";document.head.appendChild(l);})();</script>
 </head>
-<body class="sc"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
+<body class="sc"><vu-navigation theme="dark" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"dark");</script><script src="/assets/site-navigation.js"></script>
 <a class="sc-skip" href="#sc-main">Zum Inhalt</a>
 <div id="sc-root"><main id="sc-main" class="sc-app" tabindex="-1"><div class="sc-hero2 sc-hero2--skel"><div class="sc-skel" style="height:12px;width:140px"></div><div class="sc-skel" style="height:64px;width:86%;margin:14px 0"></div><div class="sc-skel" style="height:84px"></div></div></main></div>
 <noscript><p style="padding:24px">Der Screener benötigt JavaScript.</p></noscript>
@@ -36,6 +37,6 @@
 <script src="/assets/vu-ui.js?v=vu-ui-1.4.0"></script>
 <script src="/assets/vu-chart.js"></script>
 <script src="/screener/ui/charts.js"></script>
-<script src="/screener/app.js?v=ak2-1"></script>
+<script src="/screener/app.js?v=ak2-2"></script>
 </body>
 </html>

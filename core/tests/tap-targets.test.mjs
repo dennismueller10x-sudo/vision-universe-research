@@ -18,8 +18,15 @@ test('44-px-Trefferflächen: Abschnittslinks, Discover-„Alle“, Screener-Satz
     const css = read(file);
     for (const r of rules) assert.ok(css.includes(r + HIT + '}'), file + ': ' + r);
   }
-  /* Ausgefüllte Lücken im Screener-Satz umbrechen als Inline-Text: dort keine absolute Fläche. */
-  assert.doesNotMatch(read('screener/screener.css'), /\.sc-gap\{position:relative\}|\.sc-gap::after/);
+  /* Ausgefüllte Lücken im Screener-Satz umbrechen als Inline-Text: dort keine absolute Fläche. Ausnahme App-Konzept 2
+     (Prototyp #screener): in der Satz-Kachel von „Suchen“ und in den Kopfkacheln sind die Lücken Blöcke ohne Umbruch
+     (inline-block, nowrap) – nur dort, eng gefasst, wächst die Fläche über ::after. */
+  const scCss = read('screener/screener.css');
+  assert.doesNotMatch(scCss, /(^|[},])\.sc-gap(\{position:relative\}|::after)/m);
+  for (const sel of ['body.sc .sc-ak .sc-ak-sent .sc-gap', 'body.sc .sc-hero2 .sc-sentence .sc-gap']) {
+    assert.ok(scCss.includes(sel + '{position:relative;display:inline-block;'), sel + ': Block ohne Umbruch');
+    assert.ok(scCss.includes(sel + '::after{content:"";position:absolute;'), sel + ': Trefferfläche');
+  }
   /* Die Chipleiste scrollt waagrecht und schneidet ab: 2 px Innenabstand oben/unten, Lage über Außenabstand ausgeglichen. */
   assert.match(read('fundamental/app.css'), /\.fu-qchips\{padding-top:2px;padding-bottom:2px;margin-top:8px;margin-bottom:-2px\}/);
 });

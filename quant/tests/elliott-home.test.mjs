@@ -293,7 +293,9 @@ test("EH-15 · the page never scans shards, never defaults to a stock, loads one
   /* Kein <script> mit Fremdquelle, keine Inline-Handler */
   assert.doesNotMatch(html, /\son[a-z]+=/i);
   const bytes = ["elliott/app.js", "elliott/engine/home-model.js", "elliott/elliott.css"].reduce((n, p) => n + readFileSync(join(ROOT, p)).length, 0);
-  assert.ok(bytes < 64 * 1024, "kleines Produktbuendel: " + bytes + " B");
+  /* App-Konzept 2 (Owner 16.11.2026): der Start besteht aus den Prototyp-Bausteinen (Reiter, Kopfkachel, drei Schienen, Wellenlagen
+     mit Schema, „Weiter“-Karte); dafür ist das Bündel von 64 auf 88 KB gewachsen. Es bleibt eine Datei je Art, ohne Quant-Bündel. */
+  assert.ok(bytes < 88 * 1024, "kleines Produktbuendel: " + bytes + " B");
 });
 
 test("EH-16 · accessibility basics of the page", () => {

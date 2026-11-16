@@ -43,7 +43,7 @@ In der Ansicht (`core/watchlist-view.js`) trägt die Identität den Zustand `WAR
 diesem Kürzel handelt heute ein anderes Wertpapier; die frühere Zuordnung ist gesperrt, bis die Identität geklärt ist.“ Jeder
 Abschnitt nennt denselben Text, `links` ist leer: kein Verweis nach Quant, Fundamental, Discover, Technical oder Supertrader, deren
 Seiten noch die alte Zuordnung zeigen. `/konto/watchlist/` zeigt den Text als Warnchip, `/mein-dashboard/` verlinkt die Zeile nicht
-(auch nicht über den Discover-Rückfall).
+(kein Verweis auf `/aktie/`, keine Vorschau).
 
 | Abschnitt | Quelle | Regel in der Watchlist | Frist (domains.json) |
 |---|---|---|---|

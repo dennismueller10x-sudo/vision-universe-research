@@ -29,11 +29,20 @@ test("Entscheidung 4: jedes Muster hat ein Bild (oder das neutrale), gleich auf 
   assert.ok(html.indexOf("/technical/ui/shapes.js") > 0 && html.indexOf("/technical/ui/shapes.js") < html.indexOf("/technical/app.js"));
 });
 
-test("TX01 Start (App-Konzept 2, 14.11.2026): Markt in der Kopfkachel, Heute neu als Karten, Muster als Schiene, fertige Suchen öffnen den Screener, „Weiter“-Karte; keine Zahlenkacheln und Bestenlisten", () => {
+test("TX01 Start nach Prototyp #technical (App-Konzept 2, Owner 14./15.11.2026): Reiter im Inhalt, Kopfkachel mit zwei Anteilen, Heute neu und Muster als Schienen, fertige Suchen öffnen den Screener, „Weiter“-Karte und „Daten & Hinweise“; kein Chart-Quiz, keine Zahlenkacheln und Bestenlisten", () => {
   const home = app.slice(app.indexOf("  function viewHome(main) {"), app.indexOf("  /* Ausgeschlossen: Linien"));
-  for (const s of ["Was zeigt der Chart?", "Jeden Tag lesen feste Regeln die Charts aller US-Aktien und sagen in Worten, was auffällt.", "Heute neu im Chart", "Fertige Suchen", "Tipp öffnet die Treffer im Screener.", "Muster heute im Markt", "Chart lesen in 4 Lektionen", "tc-ms", "#/screener?vorlage=", "MUSTER_GRID.map", "nextCard("])
+  for (const s of ["Was zeigt der Chart?", "Jeden Tag lesen feste Regeln die Charts aller US-Aktien und sagen in Worten, was auffällt.", "Heute neu im Chart", "Muster im Markt", "Fertige Suchen", "Chart lesen in 4 Lektionen",
+    "tc-ms", "#/screener?vorlage=", "MUSTER_GRID.map", "tkForm(", "tkTabs()", "tkTabsMode(true)", "Fundamental: wie gut ist das Geschäft?", "Daten & Hinweise", "tk-seg2", "über 200-Tage-Linie", "darunter"])
     assert.ok(home.includes(s), s);
-  assert.doesNotMatch(home, /Bestenlisten|U\.tile\(|tc-tiles3|setupSheet/);
+  /* Reihenfolge wie im Prototyp: Reiter, Kopfkachel, Heute neu, Muster; danach die Blöcke des bisherigen Starts, zuletzt Weiter und Hinweise. */
+  const order = ["tkTabs()", "tile, tkSh(", "tkSh(\"Heute neu im Chart\"", "musterHead, forms", "tkSh(\"Fertige Suchen\"", "searchSlot, chips", "learn, next", "tk-end"].map((s) => home.indexOf(s));
+  assert.ok(order.every((x, i) => x > 0 && (!i || x > order[i - 1])), "Reihenfolge: " + order.join(","));
+  for (const t of ["Heute", "Muster", "Screener", "Chart", "Lernen"]) assert.ok(app.includes('["' + t + '", "'), "Reiter " + t);
+  assert.match(html, /h\.setAttribute\("data-vu-tabs","inhalt"\)/, "Reiter im Inhalt schon vor dem ersten Bild");
+  assert.match(app, /if \(route\.view !== "home"\) tkTabsMode\(false\)/, "andere Ansichten zeigen die Reiter des Rahmens");
+  assert.match(app, /"data-vu-stock": row\.s, "data-vu-stock-name": name/, "Heute neu: Aktien-Vorschau");
+  assert.match(app, /href: "\/aktie\/#\/" \+ encodeURIComponent\(row\.s\)/);
+  assert.doesNotMatch(home, /Bestenlisten|U\.tile\(|tc-tiles3|setupSheet|Quiz|Punkte/);
 });
 
 test("TX02 Chart-Seite: Urteil, Zonen, drei Sätze, Zonen-Kacheln, Befunde heute, Kapitel; Befund-Sheet mit Erkannt, Ungültig laut Regel, Forschung, Verlauf", () => {
@@ -96,14 +105,17 @@ test("Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json
 
 test("Kleinform im Konzept-Stil: Mini-Charts nutzen VUChart.sparkline (neongrüne Fläche, Endpunkt), keine schwarze Einzellinie", () => {
   assert.doesNotMatch(app, /Chart\.sparkline\(/, "kein technical/ui/chart.js#sparkline in der Oberfläche");
-  assert.match(app, /VC\.sparkline\(sparkMap\[row\.s\], \{ width: 232, height: 84 \}\)/, "Karte „Heute neu im Chart“ (App-Konzept 2: Verlauf über die ganze Kartenbreite)");
+  assert.match(app, /VC\.sparkline\(sparkMap\[row\.s\], \{ width: 220, height: 80 \}\)/, "Karte „Heute neu im Chart“ (Prototyp: Verlauf 220 × 80 über die ganze Kartenbreite)");
 });
 
-test("Markt heute als Ampel in Neonfarben (Owner 10.11.2026): Zustand aus dem Urteil, drei Lichter in der Zustandsfarbe; seit App-Konzept 2 (14.11.2026) in der dunklen Kopfkachel", () => {
+test("Markt heute als Ampel in Neonfarben (Owner 10.11.2026): Zustand aus dem Urteil, drei Lichter in der Zustandsfarbe; seit dem Prototyp #technical im Fenster der Kopfkachel", () => {
   const home = app.slice(app.indexOf("  function viewHome(main) {"), app.indexOf("  /* Ausgeschlossen: Linien"));
   assert.match(home, /\["weak", "mid", "strong"\]\.map/);
-  assert.match(home, /"tc-ms tc-ms--" \+ v\[0\]/);
+  assert.match(home, /"tk-ms-sheet tc-ms--" \+ v\[0\]/);
+  assert.match(home, /tile\.classList\.add\("tc-ms--" \+ v\[0\]\)/, "Zustand auch an der Kopfkachel");
+  assert.match(home, /pop\("tc-about-pop", "Was zeigt der Chart\?"/, "ein Tipp auf die Kopfkachel öffnet das Fenster");
   const css = readFileSync("technical/technical.css", "utf8");
   for (const s of ["--tc-neon-green", "--tc-neon-yellow", "--tc-neon-red", ".tc-ms--strong{", ".tc-ms--mid{", ".tc-ms--weak{", ".tc-ampel", ".tc-ampel i.is-weak.is-on{background:var(--tc-neon-red)", ".tc-ampel i.is-mid.is-on{background:var(--tc-neon-yellow)", ".tc-ampel i.is-strong.is-on{background:var(--tc-neon-green)"]) assert.ok(css.includes(s), s);
-  assert.match(home, /"tc-hero vu-night"/, "Kopfkachel bleibt in beiden Schemata dunkel");
+  /* Prototyp-Werte: Kachel #151516 mit Radius 22, Tagesbewegung Minus rot (Owner); Hell mit eigenen Werten (lesbar). */
+  for (const s of ["--tk-tile:#151516", ".tk .tk-tile{background:var(--tk-tile);border-radius:22px", ".tk .vu-chg--down{background:#c4281c;color:#fff}", ":root:not([data-theme=dark]) .tk{"]) assert.ok(css.includes(s), s);
 });

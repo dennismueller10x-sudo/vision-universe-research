@@ -596,9 +596,6 @@
       next: [['#/suche', 'Jede Firma einzeln (Suche)'], ['#/methodik', 'Methodik und Erklärungen'], ['#/ranglisten/auswahlen', 'Auswahlen aus Discover']],
       actions: [reloadBtn(retry), el('a', { class: 'vu-btn vu-btn--sm vu-btn--line', href: '/status/' }, 'Status')] });
   }
-  /* Startseite (App-Konzept 2, Owner-Freigabe 14.11.2026; Inhalte wie Konzept „Verstehen. Finden.“, Folie FX01): dunkle Kopfkachel
-   * mit Frage, Suche und Firmen-Chips, Checklisten und Ranglisten als Schienen (Ranglisten als Balkenrennen der ersten drei
-   * Plaetze), „Zahlen lesen in 30 Sekunden“ als Balken mit echtem Beispielwert, Branchen als Balken, „Selbst filtern“, „Weiter“. */
   function railHead(title, to, link, sub, tag) {
     return el('div', { class: 'fu-rh' }, [el('div', { class: 'fu-rh-t' }, [el('h2', { text: title }), tag ? el('span', { class: 'fu-rh-tag', text: tag }) : null,
       to ? el('a', { href: to }, [link || 'Alle', glyph('chevron', 'fu-glyph-sm')]) : null]), sub ? el('p', { text: sub }) : null]);
@@ -646,50 +643,178 @@
         bar != null ? el('span', { class: 'fu-lern-b', 'aria-hidden': 'true' }, el('i', { style: 'width:' + bar.toFixed(1) + '%' })) : null]);
     });
   }
-  /* Branchen auf der Startseite: die ersten fuenf Zeilen der Branchen-Seite (gleiche Reihenfolge, gleicher Wert). */
-  function homeIndustries(U) {
+  /* ------------------------------------------------------------ Start nach Prototyp „App-Konzept 2“ (#fundamental, Owner 14./15.11.2026)
+   * Aufbau wie der Prototyp: Reiter im Inhalt (Heute · Ranglisten · Checklisten · Branchen), Kachel „Wie gut ist das Geschäft?“
+   * mit der Meldewoche (SEC-Einreichungen je Werktag, products/fundamental/producer/build-history.mjs#filingWeek), „Höchste
+   * Margen“ als Balkenrennen, Checklisten als Schiene mit Ring, „Weiter“ und „Daten & Hinweise“. Der Prototyp-Block „Schätz mal“
+   * entfällt (Quiz, vom Owner zurückgestellt), der Reiter „Termine“ ebenso (kein Terminkalender in den Daten). Die übrigen Blöcke
+   * des bisherigen Starts (Ranglisten, Zahlen lesen, Branchen, Suche, Selbst filtern) folgen darunter im Design des Prototyps. */
+  /* [Reiter, Sprungmarke auf der Seite, Adresse ohne Skript] */
+  var FP_TABS = [['Heute', 'fp-heute', '#/'], ['Ranglisten', 'fp-rang', '#/ranglisten'], ['Checklisten', 'fp-check', '#/'], ['Branchen', 'fp-branchen', '#/branchen']];
+  var FP_DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr'], FP_DAY_LONG = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag'];
+  var FP_MARGIN_SIZE = '100';
+  function fpTabsMode(on) {
+    var h = document.documentElement;
+    if (global.VUNavigation && global.VUNavigation.rahmen) global.VUNavigation.rahmen({ tabs: on ? 'inhalt' : 'rahmen' });
+    else if (on) h.setAttribute('data-vu-tabs', 'inhalt'); else if (h.getAttribute('data-vu-tabs') === 'inhalt') h.removeAttribute('data-vu-tabs');
+  }
+  function fpSh(title, more, to, id) {
+    return el('div', { class: 'fp-sh', id: id || null }, [el('h2', { text: title }), more ? el('a', { class: 'fp-more', href: to }, more + ' ›') : null]);
+  }
+  /* Aktien-Element: öffnet die Vorschau (assets/vu-stock-sheet.js), ganz geöffnet die Aktienseite. */
+  function stockLink(t, name, cls, kids, label) {
+    return el('a', { class: cls, href: '/aktie/#/' + encodeURIComponent(t), 'data-vu-stock': t, 'data-vu-stock-name': name || t, 'aria-label': label || null }, kids);
+  }
+  function fpLogo(t) { return el('span', { class: 'fp-lg' }, frag(UI.logo(t))); }
+  /* Ring wie im Prototyp (kit.js ring): Spur dunkel, Anteil neongrün mit runden Enden, Wert in der Mitte. */
+  function fpRing(pct, size, sw, text, label) {
+    var r = (size - sw) / 2, c = 2 * Math.PI * r, p = Math.max(0, Math.min(100, pct || 0));
+    var g = svg('svg', { width: size, height: size, viewBox: '0 0 ' + size + ' ' + size, 'aria-hidden': 'true' }, [
+      svg('circle', { class: 'fp-ring-t', cx: size / 2, cy: size / 2, r: r, fill: 'none', 'stroke-width': sw }),
+      svg('circle', { class: 'fp-ring-v', cx: size / 2, cy: size / 2, r: r, fill: 'none', 'stroke-width': sw, 'stroke-linecap': 'round', 'stroke-dasharray': c.toFixed(2), 'stroke-dashoffset': (c * (1 - p / 100)).toFixed(2) })]);
+    return el('span', { class: 'fp-ring', role: 'img', 'aria-label': label, style: 'width:' + size + 'px;height:' + size + 'px' }, [g, el('b', { class: 'fp-num', style: 'font-size:' + Math.round(size * 0.27) + 'px', text: text })]);
+  }
+  /* Spur des Balkenrennens: der Name hell über der Spur und als dunkle Kopie im neongrünen Balken (der Balken schneidet sie ab),
+   * so bleibt er an jeder Stelle lesbar. */
+  function fpBar(name, w) {
+    return el('span', { class: 'fp-race-b' }, [el('span', { class: 'fp-sm fp-b8 fp-rn', text: name }),
+      el('i', { style: 'width:' + w.toFixed(1) + '%' }, el('span', { class: 'fp-sm fp-b8 fp-rn is-on', 'aria-hidden': 'true', style: 'width:' + (10000 / Math.max(w, 1)).toFixed(1) + '%', text: name }))]);
+  }
+  function fpName(n, t) { return shortName(String(n || t || '').replace(/\s+-\s+Class [A-Z]$/i, '').replace(/,?\s+(Inc|Corp|Co|Ltd|LP|plc)\.?$/i, '')) || t; }
+  /* Woche der Meldungen relativ zu heute: dieselbe Woche, die Woche davor, sonst mit Datum. */
+  function weekLead(w) {
+    var mon = function (d) { var x = new Date(d + 'T00:00:00Z'), k = (x.getUTCDay() + 6) % 7; return Date.UTC(x.getUTCFullYear(), x.getUTCMonth(), x.getUTCDate()) - k * 864e5; };
+    var now = new Date(), today = now.getFullYear() + '-' + ('0' + (now.getMonth() + 1)).slice(-2) + '-' + ('0' + now.getDate()).slice(-2);
+    var diff = Math.round((mon(today) - mon(w.from)) / (7 * 864e5));
+    return diff === 0 ? 'Diese Woche' : diff === 1 ? 'Letzte Woche' : 'In der Woche bis ' + M.dateDe(w.to).slice(0, 6);
+  }
+  function fpWeekSheet(w, k, U) {
+    var d = w.days[k], list = d.t.slice(0, 40);
+    pop(FP_DAY_LONG[k] + ', ' + M.dateDe(d.date), el('div', { class: 'fp-pop' }, [
+      el('p', { class: 'vu-ltag', text: d.t.length.toLocaleString('de-DE') + ' Firmen mit neuen Zahlen bei der US-Börsenaufsicht' }),
+      list.length ? el('div', { class: 'fp-daylist' }, list.map(function (t) { var x = U && U.get(t), n = fpName(x && x.n, t); return stockLink(t, n, 'fp-dayrow', [fpLogo(t), el('span', { class: 'fp-f1' }, [el('b', { text: n }), el('small', { text: t })])]); })) : el('p', { class: 'fu-note', text: 'An diesem Tag keine Meldung in den Daten.' }),
+      d.t.length > list.length ? el('p', { class: 'fu-note', text: 'Die 40 größten nach Jahresumsatz.' }) : null,
+      el('p', { class: 'fu-note', text: 'Gezählt wird jede Firma einmal, am ersten Tag der Woche, an dem eine Meldung mit Geschäftszahlen eingegangen ist. Keine Wertung.' })]), 'fp-week-pop');
+  }
+  /* Kachel „Wie gut ist das Geschäft?“: Meldewoche als Säulen Mo–Fr (der stärkste Tag neongrün), darunter die drei größten Firmen. */
+  function fpHero(st, U) {
+    var w = st && st.week, n = st && isNum(st.projected) ? st.projected : null;
+    var eb = el('div', { class: 'fp-eb', text: 'Wie gut ist das Geschäft?' + (n ? ' · ' + n.toLocaleString('de-DE') + ' Firmen' : '') });
+    if (!w || !w.count || !Array.isArray(w.days) || w.days.length !== 5) {
+      return el('div', { class: 'fp-tile fp-hero' }, [eb, el('h1', { class: 'fp-h1', text: 'Umsatz, Gewinn und Cashflow von US-Firmen.' }),
+        el('p', { class: 'fp-sm fp-mut fp-b7', text: 'Aus den Pflichtmeldungen an die US-Börsenaufsicht, jährlich und je Quartal.' })]);
+    }
+    var max = Math.max.apply(null, w.days.map(function (d) { return d.t.length; })) || 1, top = w.days.reduce(function (a, d, i) { return d.t.length > w.days[a].t.length ? i : a; }, 0);
+    var cols = w.days.map(function (d, i) {
+      var h = d.t.length ? Math.max(6, Math.round(d.t.length / max * 60)) : 3;
+      return el('button', { type: 'button', class: 'fp-day', 'aria-haspopup': 'dialog', 'aria-label': FP_DAY_LONG[i] + ', ' + M.dateDe(d.date) + ': ' + d.t.length + ' Firmen', onclick: function () { fpWeekSheet(w, i, U); } }, [
+        el('span', { class: 'fp-day-p', 'aria-hidden': 'true' }, el('i', { class: i === top ? 'is-top' : '', style: 'height:' + h + 'px' })),
+        el('b', { class: 'fp-sm fp-num', text: d.t.length.toLocaleString('de-DE') }), el('span', { class: 'fp-xs fp-mut fp-b7', text: FP_DAYS[i] })]);
+    });
+    var lead = w.top && w.top[0], leadDay = lead ? w.days.map(function (d) { return d.date; }).indexOf(lead[2]) : -1;
+    return el('div', { class: 'fp-tile fp-hero' }, [eb,
+      el('h1', { class: 'fp-h1', text: weekLead(w) + ' meldeten ' + w.count.toLocaleString('de-DE') + ' Firmen ihre Zahlen.' }),
+      el('div', { class: 'fp-days' }, cols),
+      w.top && w.top.length ? el('div', { class: 'fp-who' }, w.top.map(function (x) { return stockLink(x[0], fpName(x[1], x[0]), 'fp-who-l', fpLogo(x[0]), fpName(x[1], x[0])); }).concat([
+        el('span', { class: 'fp-xs fp-mut fp-b7', text: 'Größte nach Umsatz: ' + fpName(lead[1], lead[0]) + (leadDay >= 0 ? ' am ' + FP_DAY_LONG[leadDay] : '') })])) : null]);
+  }
+  /* „Höchste Margen“: dieselbe Rangliste wie #/rangliste/margen (Regel unverändert), Börsenwert ab 100 Mrd. $, sechs Plätze. */
+  function fpMargins(U) {
+    var r = U ? C.ranking(U, 'margen', FP_MARGIN_SIZE, 6) : null;
+    if (!r || !r.rows.length) return null;
+    var max = raceMax(r.rows, 'netMargin');
+    return el('div', { class: 'fp-tile fp-racebox' }, r.rows.map(function (x) {
+      var v = x.netMargin, w = isNum(v) && max > 0 ? Math.max(2, Math.min(100, Math.abs(v) / max * 100)) : 0, n = fpName(x.n, x.s);
+      return stockLink(x.s, n, 'fp-race', [fpLogo(x.s), fpBar(n, w),
+        el('b', { class: 'fp-sm fp-b8 fp-num fp-race-v', text: C.fmt({ kind: 'ratio' }, v) })], n + ': Nettomarge ' + C.fmt({ kind: 'ratio' }, v));
+    }).concat([el('div', { class: 'fp-xs fp-mut fp-b7 fp-cap', text: 'Nettomarge, letztes Geschäftsjahr · Börsenwert ab 100 Mrd. $' })]));
+  }
+  var CK_SUB = { qualitaet: 'Wächst, verdient, wandelt in Cash um', wachstum: 'Umsatz und Gewinn steigen zweistellig', bewertung: 'Gewinn und Cashflow niedrig bewertet' };
+  /* Checkliste als Kachel (Prototyp: Ring 74 px, Name, Satz): der Ring zeigt den Anteil der US-Firmen, die heute alle Punkte erfüllen. */
+  function fpCkTile(list, U) {
+    var hits = U ? ckHits(U, list) : null, of = list.items.length;
+    return el('button', { type: 'button', class: 'fp-tile fp-tap fp-ck', 'aria-haspopup': 'dialog', onclick: function () { ckListSheet(list, U, hits); } }, [
+      hits ? fpRing(hits.length / U.n * 100, 74, 9, hits.length.toLocaleString('de-DE'), hits.length + ' von ' + U.n + ' Firmen erfüllen alle ' + of + ' Punkte') : el('span', { class: 'fp-ring fp-ring-wait', style: 'width:74px;height:74px' }),
+      el('b', { class: 'fp-b8 fp-ck-t', text: list.name }),
+      el('span', { class: 'fp-xs fp-mut fp-ck-s', text: CK_SUB[list.id] || list.items[0].label }),
+      el('span', { class: 'fp-xs fp-sec fp-b7 fp-ck-n', text: hits ? hits.length.toLocaleString('de-DE') + ' Firmen erfüllen alle ' + of + ' Punkte' : of + ' Punkte' })]);
+  }
+  /* Branchen: die ersten fünf Zeilen der Branchen-Seite als Balkenrennen (gleiche Reihenfolge, gleicher Wert). */
+  function fpIndustries(U) {
     var list = C.industries(U, 5).slice(0, 5); if (!list.length) return null;
     var max = Math.max.apply(null, list.map(function (i) { return Math.abs(i.netMargin || 0); }).concat([0.01]));
-    return el('div', { class: 'fu-tilebox2 fu-indmini' }, list.map(function (i) {
-      return el('a', { class: 'fu-race-r', href: '#/branche/' + i.id }, [raceBar(i.label, i.netMargin, max), el('b', { class: 'fu-race-v fu-num', text: isNum(i.netMargin) ? C.fmt({ kind: 'ratio' }, i.netMargin) : '–' })]);
-    }).concat([el('p', { class: 'fu-tile-note', text: 'Median der Nettomarge je Branche, größte Branchen zuerst' })]));
+    return el('div', { class: 'fp-tile fp-racebox' }, list.map(function (i) {
+      var w = isNum(i.netMargin) ? Math.max(2, Math.min(100, Math.abs(i.netMargin) / max * 100)) : 0;
+      return el('a', { class: 'fp-race', href: '#/branche/' + i.id }, [fpBar(i.label, w),
+        el('b', { class: 'fp-sm fp-b8 fp-num fp-race-v', text: isNum(i.netMargin) ? C.fmt({ kind: 'ratio' }, i.netMargin) : '–' })]);
+    }).concat([el('div', { class: 'fp-xs fp-mut fp-b7 fp-cap', text: 'Median der Nettomarge je Branche, größte Branchen zuerst' })]));
   }
   function homeView() {
     setTitle(null); main.setAttribute('data-view', 'home');
-    var lead = el('p', { class: 'fu-hero-lead', text: 'Umsatz, Gewinn und Cashflow von US-Firmen, aus den Pflichtmeldungen an die US-Börsenaufsicht.' });
-    var eyebrow = el('p', { class: 'vu-ltag', text: 'Fundamental' }), footer = el('div');
-    var ranks = el('div', { class: 'fu-rail' }, homeRanks().slice(0, 3).map(function (d) { return rankCard(d, null); })), rankState = el('div', { class: 'fu-rank-state' });
-    var learn = el('div', { class: 'fu-tilebox2 fu-learn' }, learnCards(null));
-    var ckRail = CK ? el('div', { class: 'fu-rail' }, CK.CHECKLISTS.map(function (l) { return ckCard(l, null); })) : null;
-    var indBox = el('div', {}, skel(170));
-    put(main, el('header', { class: 'fu-intro fu-hero2 vu-night' }, [eyebrow, el('h1', { class: 'vu-lt', text: 'Wie gut ist das Geschäft?' }), lead,
-        el('div', { class: 'fu-searchwrap' }, searchBox({ placeholder: 'Firma oder Kürzel, z. B. NVIDIA' })),
-        el('div', { class: 'fu-qchips', role: 'list', 'aria-label': 'Schnellwahl' }, QUICK.map(function (t) { return el('a', { class: 'fu-qchip', role: 'listitem', href: '#/' + t }, [frag(UI.logo(t)), t]); }))]),
-      CK ? railHead('Checklisten', '/screener/', 'Alle ' + CK.CHECKLISTS.length, 'Mehrere Bedingungen auf einmal, jede mit Haken. Wie eine Prüfliste.', 'Neu') : null, ckRail,
-      railHead('Ranglisten', '#/ranglisten', 'Alle ' + C.RANKINGS.length, 'Eine Kennzahl, sortiert. Größe wählbar.'), ranks, rankState,
-      railHead('Zahlen lesen in 30 Sekunden'), learn,
-      railHead('Branchen im Vergleich', '#/branchen', 'Alle', 'Nettomarge, Wachstum und Bewertung je Branche'), indBox,
-      el('div', { class: 'vu-stack fu-gap' }, [navEl('/screener/', el('span', { class: 'vu-hud', style: '--vu-hud:42px' }, productIcon('screener', 'fu-hud-g')), 'Selbst filtern', 'Im Screener nach eigenen Bedingungen')]),
-      el('div', { class: 'fu-next' }, nextEl({ title: 'Hedgefonds: was Investoren halten', sub: 'Depots großer Fonds aus Pflichtmeldungen', href: '/hedgefonds/#/' })),
-      footer);
+    fpTabsMode(true);
+    var page = el('div', { class: 'fp' });
+    var others = [];
+    try {
+      var world = global.VUNavigation && global.VUNavigation.products ? global.VUNavigation.products().filter(function (p) { return p.id === 'fundamental'; })[0] : null;
+      if (world) others = world.tabs.filter(function (t) { return t.href && t.label !== world.label && !FP_TABS.some(function (x) { return x[0] === t.label; }); });
+    } catch (e) { others = []; }
+    var tabs = el('nav', { class: 'fp-tabs', 'aria-label': 'Fundamental-Bereiche' }, FP_TABS.map(function (t, i) {
+      return el('a', { class: 'fp-tab' + (i ? '' : ' is-on'), href: t[2], 'data-fp-tab': t[1], 'aria-current': i ? null : 'true' }, t[0]);
+    }).concat(others.length ? [el('span', { class: 'fp-tabs-sep', 'aria-hidden': 'true' })].concat(others.map(function (t) { return el('a', { class: 'fp-tab fp-tab--go', href: t.href }, t.label); })) : []));
+    tabs.addEventListener('click', function (e) {
+      var a = e.target.closest('[data-fp-tab]'); if (!a) return;
+      e.preventDefault();
+      [].forEach.call(tabs.querySelectorAll('.fp-tab'), function (x) { var on = x === a; x.classList.toggle('is-on', on); if (on) x.setAttribute('aria-current', 'true'); else x.removeAttribute('aria-current'); });
+      var target = document.getElementById(a.getAttribute('data-fp-tab'));
+      if (target) { var y = target.getBoundingClientRect().top + global.scrollY - tabs.getBoundingClientRect().height - (parseFloat(getComputedStyle(tabs).top) || 0) - 4; global.scrollTo({ top: a.getAttribute('data-fp-tab') === 'fp-heute' ? 0 : Math.max(0, y), behavior: 'smooth' }); }
+    });
+    var hero = el('div', { class: 'fp-px', id: 'fp-heute' }, el('div', { class: 'fp-tile fp-hero' }, [el('div', { class: 'fp-eb', text: 'Wie gut ist das Geschäft?' }), el('h1', { class: 'fp-h1', text: 'Umsatz, Gewinn und Cashflow von US-Firmen.' }), el('div', { class: 'fp-days fp-days-wait' })]));
+    var margins = el('div', { class: 'fp-px' }, el('div', { class: 'fp-tile fp-racebox fp-wait' }));
+    var ckRail = CK ? el('div', { class: 'fp-rail' }, CK.CHECKLISTS.map(function (l) { return fpCkTile(l, null); })) : null;
+    var ranks = el('div', { class: 'fp-rail fp-rlrail' }, homeRanks().map(function (d) { return rankCard(d, null); })), rankState = el('div', { class: 'fp-px' });
+    var learn = el('div', { class: 'fp-tile fu-learn' }, learnCards(null));
+    var indBox = el('div', { class: 'fp-px' }, el('div', { class: 'fp-tile fp-racebox fp-wait' }));
+    var endLink = el('button', { type: 'button', class: 'fp-lk', 'data-vu-frame-hinweise': '' }, 'Daten & Hinweise');
+    var asOfNote = el('p', { class: 'fp-xs fp-mut fp-foot' }, 'Zahlen aus den Pflichtmeldungen der Unternehmen · keine Empfehlung');
+    put(page, tabs, hero,
+      fpSh('Höchste Margen', 'Rangliste', '#/rangliste/margen', 'fp-rang'), margins,
+      CK ? fpSh('Checklisten', 'Alle ' + CK.CHECKLISTS.length, '/screener/', 'fp-check') : null, ckRail,
+      fpSh('Weitere Ranglisten', 'Alle ' + C.RANKINGS.length, '#/ranglisten'), ranks, rankState,
+      fpSh('Zahlen lesen in 30 Sekunden'), el('div', { class: 'fp-px' }, learn),
+      fpSh('Branchen im Vergleich', 'Alle', '#/branchen', 'fp-branchen'), indBox,
+      fpSh('Firma suchen'), el('div', { class: 'fp-px fp-find' }, [searchBox({ placeholder: 'Firma oder Kürzel, z. B. NVIDIA' }),
+        el('div', { class: 'fu-qchips', role: 'list', 'aria-label': 'Schnellwahl' }, QUICK.map(function (t) { return el('a', { class: 'fu-qchip', role: 'listitem', href: '#/' + t }, [frag(UI.logo(t)), t]); })),
+        navEl('/screener/', el('span', { class: 'vu-hud', style: '--vu-hud:42px' }, productIcon('screener', 'fu-hud-g')), 'Selbst filtern', 'Im Screener nach eigenen Bedingungen')]),
+      el('div', { class: 'fp-px fp-next' }, nextEl({ title: 'Hedgefonds: was Investoren halten', sub: 'Depots großer Fonds aus Pflichtmeldungen', href: '/hedgefonds/#/' })),
+      el('div', { class: 'fp-end' }, endLink), asOfNote);
+    put(main, page);
     done();
-    put(footer, foot(null));
-    loadCompany('NVDA').then(function (co) {
-      if (main.getAttribute('data-view') !== 'home') return;
-      put(learn, learnCards(co));
-      var asOf = co.raw && co.raw.fundamentals && co.raw.fundamentals.asOf;
-      if (asOf) put(eyebrow, 'Fundamental · Zahlen bis ' + M.dateDe(String(asOf).slice(0, 10)).slice(0, 6));
-      put(footer, foot(asOf));
-    }).catch(function () { put(learn, learnCards(false)); });
+    if (global.VUNavigation && global.VUNavigation.hinweis) global.VUNavigation.hinweis({ text: 'Fundamental: Zahlen aus den Pflichtmeldungen der Unternehmen an die US-Börsenaufsicht. Ranglisten und Checklisten sortieren und prüfen Kennzahlen; keine Empfehlung.' });
+    var st = null, uni = null;
+    function paintHero() { if (main.getAttribute('data-view') === 'home') put(hero, fpHero(st, uni)); }
+    loadStatus().then(function (s) {
+      st = s; paintHero();
+      var asOf = s && s.consumerAsOf;
+      if (asOf) {
+        put(asOfNote, 'Zahlen aus den Pflichtmeldungen der Unternehmen · Stand ' + M.dateDe(asOf) + ' · keine Empfehlung');
+        if (global.VUNavigation && global.VUNavigation.datenstand) global.VUNavigation.datenstand({ datum: asOf, zeilen: [['Geschäftszahlen', 'Meldungen bis ' + M.dateDe(asOf)]].concat(s.week ? [['Meldewoche', M.dateDe(s.week.from).slice(0, 6) + ' bis ' + M.dateDe(s.week.to)]] : []) });
+      }
+    }).catch(function () { st = null; paintHero(); });
+    loadCompany('NVDA').then(function (co) { if (main.getAttribute('data-view') === 'home') put(learn, learnCards(co)); }).catch(function () { put(learn, learnCards(false)); });
     function probe() {
       put(rankState);
       loadUniverse().then(function (U) {
         if (main.getAttribute('data-view') !== 'home') return;
+        uni = U; if (st) paintHero();
+        put(margins, fpMargins(U) || el('p', { class: 'fu-note', text: 'Gerade keine Firma mit Wert.' }));
         put(ranks, homeRanks().map(function (d) { return rankCard(d, U); }));
-        if (ckRail) put(ckRail, CK.CHECKLISTS.map(function (l) { return ckCard(l, U); }));
-        put(lead, 'Umsatz, Gewinn und Cashflow von ' + U.n.toLocaleString('de-DE') + ' US-Firmen, aus den Pflichtmeldungen an die US-Börsenaufsicht.');
-        put(indBox, homeIndustries(U) || navEl('#/branchen', hudGlyph('company'), 'Branchen im Vergleich', 'Nettomarge, Wachstum und Bewertung je Branche'));
-      }).catch(function () { if (main.getAttribute('data-view') === 'home') { put(rankState, rankDown(probe)); put(indBox, navEl('#/branchen', hudGlyph('company'), 'Branchen im Vergleich', 'Nettomarge, Wachstum und Bewertung je Branche')); } });
+        if (ckRail) put(ckRail, CK.CHECKLISTS.map(function (l) { return fpCkTile(l, U); }));
+        put(indBox, fpIndustries(U) || navEl('#/branchen', hudGlyph('company'), 'Branchen im Vergleich', 'Nettomarge, Wachstum und Bewertung je Branche'));
+      }).catch(function () {
+        if (main.getAttribute('data-view') !== 'home') return;
+        put(margins); put(rankState, rankDown(probe));
+        put(indBox, navEl('#/branchen', hudGlyph('company'), 'Branchen im Vergleich', 'Nettomarge, Wachstum und Bewertung je Branche'));
+      });
     }
     probe();
   }
@@ -1182,13 +1307,6 @@
     }
     if (co.U) paint(co.U); else main.addEventListener('fu-universe', function h(e) { main.removeEventListener('fu-universe', h); paint(e.detail); });
     return box;
-  }
-  function ckCard(list, U) {
-    var hits = U ? ckHits(U, list) : null;
-    return el('button', { type: 'button', class: 'fu-ckc', 'aria-haspopup': 'dialog', onclick: function () { ckListSheet(list, U, hits); } }, [
-      el('span', { class: 'fu-ckc-h' }, [el('span', {}, [el('span', { class: 'vu-ltag', text: 'Checkliste' }), el('b', { text: list.name })]), el('span', { class: 'fu-ckn' }, [el('b', { class: 'fu-num', text: String(list.items.length) }), el('small', { text: 'Punkte' })])]),
-      el('span', { class: 'fu-ckc-p', text: list.items.slice(0, 3).map(function (i) { return i.label; }).join(' · ') + ' …' }),
-      el('span', { class: 'fu-ckc-f' }, hits ? hits.slice(0, 5).map(function (t) { return frag(UI.logo(t)); }).concat([el('span', { class: 'fu-ckc-n', text: hits.length.toLocaleString('de-DE') + ' erfüllen alle' })]) : [skel(24, '60%')])]);
   }
   function overview(co, r, ctx) {
     var f = co.f, t = co.t;
@@ -1976,6 +2094,7 @@
     main.removeAttribute('data-view');
     if (r.view !== 'company') { main.removeAttribute('data-ticker'); main.removeAttribute('data-fu-source'); }
     main.setAttribute('data-sub', r.sub || '');
+    if (!(r.view === 'home' && !r.focus)) fpTabsMode(false);
     if (r.view === 'company') company(r); else if (r.view === 'method') method(); else if (r.view === 'ranking') rankingView(r.id); else if (r.view === 'industry') industryView(r.id); else home(r.focus, r);
     if (r.focus === 'suche') { var q = document.getElementById('fu-q'); if (q) q.focus({ preventScroll: true }); }
     if (global.VUNavigation) global.VUNavigation.dock({});

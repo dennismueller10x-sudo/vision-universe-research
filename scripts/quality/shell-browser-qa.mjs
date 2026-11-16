@@ -33,24 +33,35 @@ const ROUTES = [
   ['Discover', '/discover/#/swipen', 'Swipen'], ['Discover', '/discover/#/einzeln/US_REAL', 'Swipen'], ['Discover', '/discover/#/maerkte', 'Märkte'], ['Discover', '/discover/#/watchlist', 'Watchlist'],
   ['Quant', '/quant/#/', 'Quant'], ['Quant', '/quant/#/screener', 'Screener'], ['Quant', '/quant/#/stile', 'Anlagestile'],
   ['Quant', '/quant/#/aktien', 'Aktien'], ['Quant', '/quant/#/aktie/NVDA', 'Aktien'], ['Quant', '/quant/#/methodik', 'Methodik'],
-  // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext)
+  // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext).
+  // Der Start traegt seine Reiter im Inhalt (App-Konzept 2: Heute · Wellenlagen · Zählbar · Neu · Suche · Aufwärts · Abwärts, data-vu-tabs="inhalt");
+  // dort gelten Dock, Universe-Knopf, Reiter im Inhalt und Ueberlauf. Die uebrigen Ansichten zeigen die Reiterzeile des Rahmens.
   ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?zaehlbar=1', 'Zählbar'], ['Elliott', '/elliott/#/?welle=3', 'Zählbar'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
   ['Elliott', '/elliott/#/?richtung=ab', 'Abwärts'], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
-  // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext
+  // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext. Der Start (#/) traegt
+  // seine Reiter im Inhalt (Prototyp #fundamental: Heute · Ranglisten · Checklisten · Branchen); geprueft werden dort Dock und Reiter.
   ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/ranglisten', 'Ranglisten'], ['Fundamental', '/fundamental/#/branchen', 'Branchen'],
   ['Fundamental', '/fundamental/#/methodik', 'Methodik'], ['Fundamental', '/fundamental/#/NVDA', null],
-  // Technical: „Vorlagen“ und „Lernen“ sind eigene Reiter (App-Konzept 2); eine Frage des Assistenten gehoert zu „Lernen“
-  ['Technical', '/technical/#/', 'Technical'], ['Technical', '/technical/#/screener', 'Screener'], ['Technical', '/technical/#/muster', 'Muster'],
+  // Technical: „Vorlagen“ und „Lernen“ sind eigene Reiter (App-Konzept 2); eine Frage des Assistenten gehoert zu „Lernen“.
+  // Der Start traegt seine Reiter im Inhalt (Prototyp #technical: Heute · Muster · Screener · Chart · Lernen, data-vu-tabs="inhalt");
+  // dort gelten Dock, Universe-Knopf, Reiter im Inhalt und Ueberlauf. Die uebrigen Bereiche zeigen die Reiterzeile des Rahmens.
+  ['Technical', '/technical/#/', 'Technical'], ['Technical', '/technical/#/chart', 'Chart'], ['Technical', '/technical/#/screener', 'Screener'], ['Technical', '/technical/#/muster', 'Muster'],
   ['Technical', '/technical/#/screener?reiter=vorlagen', 'Vorlagen'], ['Technical', '/technical/#/lernen', 'Lernen'], ['Technical', '/technical/#/assistent/trendfolge', 'Lernen'],
-  ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
+  // Vorsorge (App-Konzept 2, Owner 16.11.2026): Reiter im Inhalt; erwartet ist der aktive Reiter dort (Start statt Produktname).
+  ['Vorsorge', '/vorsorge/#/', 'Start'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
   ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', 'Förderung'], ['Vorsorge', '/vorsorge/#/monitor', 'Veränderungen'],
+  // Screener: „Suchen“ (/screener/, Prototyp #screener) traegt seine Reiter im Inhalt; Filter, Treffer und Gespeichert zeigen die Reiter des Rahmens.
   ['Screener', '/screener/', 'Screener'], ['Screener','/screener/?f=roic:gt:0.1','Filter'], ['Screener','/screener/?mode=pro','Filter'], ['Screener', '/screener/?view=build', 'Filter'], ['Screener', '/screener/?view=saved', 'Gespeichert'], ['Screener', '/screener/?view=watchlist', 'Watchlist'],
   ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/treffer/', 'Treffer'],
   ['Supertrader', '/supertrader/forschung/', 'Forschung'], ['Supertrader', '/supertrader/sources/', 'Quellen'],
   ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Datenbank'], ['Hedgefonds', '/hedgefonds/#/gruppen-kaeufe', 'Gruppen-Käufe'],
-  ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'],
+  ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'], ['Hedgefonds', '/hedgefonds/#/gruppen-kaeufe/insider', 'Gruppen-Käufe'],
   // Portfolios: fordert Dock und Reiter wie jedes Produkt an (seit dem Rahmen nach App-Konzept 2)
   ['Portfolios', '/portfolios/', 'Portfolios'], ['Portfolios', '/portfolios/#/quant', 'Quant'], ['Portfolios', '/portfolios/#/ki', 'KI'],
+  ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'],
+  // Portfolios: fordert das Dock an und traegt seine Reiter im Inhalt (App-Konzept 2, <html data-vu-tabs="inhalt">); die Reiter
+  // sind Adressen (#/, #/quant, #/ki). Das vierte Feld ist der dort aktive Reiter im Inhalt (aria-current="page").
+  ['Portfolios', '/portfolios/', 'Portfolios', 'Übersicht'], ['Portfolios', '/portfolios/#/quant', 'Quant', 'Quant'], ['Portfolios', '/portfolios/#/ki', 'KI', 'KI'],
   // Alte Quant-Unterseiten: Weiterleitungen auf die App unter /quant/ (quant/ui/legacy-redirect.js). Erwartet ist der Reiter
   // am Ziel: Ranking -> #/screener (Screener), Watchlist -> #/aktien (Aktien), Strategien -> #/stile (Anlagestile).
   ['Quant', '/quant/screener/', 'Screener'], ['Quant', '/quant/strategies/', 'Anlagestile'], ['Quant', '/quant/ranking/', 'Screener'],
@@ -124,14 +135,14 @@ for (const [vpName, width, height] of VIEWPORTS) {
      /dev/shm) darf nicht alle folgenden Navigationen derselben Seite mitreissen. */
   let page = null;
   const fresh = async () => { if (page) await page.close().catch(() => {}); page = await ctx.newPage(); };
-  for (const [product, path, expected] of ROUTES) {
+  for (const [product, path, expected, inhaltExpected] of ROUTES) {
     const where = `${product} ${path} @${vpName}`;
     await fresh();
     try {
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       for (const pass of ['first', 'reload']) {
         if (pass === 'reload') { await page.reload({ waitUntil: 'load' }); await settle(page); }
-        /* App-Konzept 2 (Prototyp #discover/#quant/#supertrader, Owner 15.11.2026): der Start traegt seine Reiter im Inhalt
+        /* App-Konzept 2 (Prototyp #discover/#quant/#supertrader, Owner 15.11.2026; Vorsorge 16.11.2026 auf allen Bereichen): der Start traegt seine Reiter im Inhalt
            (<html data-vu-tabs="inhalt">); die Reiterzeile des Rahmens bleibt dort verborgen. Geprueft werden dann Dock,
            Universe-Knopf, die Reiter im Inhalt und der Ueberlauf. */
         const inhalt = await page.evaluate(() => {
@@ -139,8 +150,10 @@ for (const [vpName, width, height] of VIEWPORTS) {
           const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav'), strip = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs');
           const places = nav ? [...nav.querySelectorAll('a')] : [], uni = nav && nav.querySelector('button.menu'), ub = uni && uni.getBoundingClientRect();
           const tabs = [...document.querySelectorAll('main [role=tablist] a, main [role=tablist] button, main .dp-tabs .dp-tab, main [class*=tabs] a, main [class*=tabs] button')].filter((n) => n.getClientRects().length);
-          return { dock: !!nav, places: places.map((a) => a.textContent.trim()), place: places.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
-            uni: !!uni && ub.width >= 56 && ub.height >= 56, stripHidden: !strip || strip.hidden, tabs: tabs.length, overflow: document.documentElement.scrollWidth - innerWidth };
+          const own = [...document.querySelectorAll('main .vsp-tabs a')], ob = own.map((a) => { const b = a.getBoundingClientRect(), x = getComputedStyle(a, '::after'); return { h: b.height, hit: b.height + 2 * Math.max(0, -parseFloat(x.top) || 0), w: b.width }; });
+          return { ownCurrent: own.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()), ownSmall: ob.filter((b) => b.hit < 44 || b.w < 44).length, ownPill: ob.length ? Math.round(ob[0].h) : null, dock: !!nav, places: places.map((a) => a.textContent.trim()), place: places.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
+            uni: !!uni && ub.width >= 56 && ub.height >= 56, stripHidden: !strip || strip.hidden, tabs: tabs.length, overflow: document.documentElement.scrollWidth - innerWidth,
+            current: tabs.filter((n) => n.getAttribute('aria-current') === 'page').map((n) => n.textContent.trim()) };
         });
         if (inhalt) {
           if (!inhalt.dock || inhalt.places.join('|') !== DOCK.join('|') || !inhalt.uni) fail(where, 'Dock ist nicht Home · Discover · [Universe] · News · Ich: ' + JSON.stringify(inhalt));
@@ -149,6 +162,12 @@ for (const [vpName, width, height] of VIEWPORTS) {
           if (!inhalt.stripHidden) fail(where, 'Reiterzeile des Rahmens doppelt zu den Reitern im Inhalt');
           if (inhalt.tabs < 3) fail(where, 'Reiter im Inhalt fehlen: ' + inhalt.tabs);
           if (inhalt.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + inhalt.overflow + ' px');
+          if (inhaltExpected && (inhalt.current[0] !== inhaltExpected || inhalt.current.length > 1)) fail(where, `${pass}: Reiter im Inhalt aktiv ${inhalt.current.join('|') || '-'} statt ${inhaltExpected}`);
+          // Vorsorge traegt ihre Bereiche als Reiter im Inhalt (.vsp-tabs): genau einer aktiv, Pille 36 px, Tippflaeche 44 px.
+          if (product === 'Vorsorge') {
+            if (inhalt.ownCurrent.join('|') !== String(expected)) fail(where, `${pass}: Reiter im Inhalt aktiv ${inhalt.ownCurrent.join('|') || '-'} statt ${expected}`);
+            if (inhalt.ownPill !== 36 || inhalt.ownSmall) fail(where, 'Reiter im Inhalt: Pille ' + inhalt.ownPill + ' px, zu kleine Tippflaechen ' + inhalt.ownSmall);
+          }
           continue;
         }
         const s = await state(page);
@@ -241,7 +260,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Seiten ohne Dock: der Kopf traegt den Menue-Knopf selbst und passt in jede Breite.
-  for (const path of ['/news/', '/willkommen/', '/konto/']) {
+  for (const path of ['/news/', '/willkommen/', '/konto/', '/ask/']) {
     const where = `kopf ohne Leiste ${path} @${vpName}`;
     await fresh();
     try {
@@ -260,6 +279,37 @@ for (const [vpName, width, height] of VIEWPORTS) {
         if (h.dock) fail(where, 'unerwartetes Dock');
         if (h.overflow > 1 || h.right > h.vw + 1 || h.left < 0 || h.w < 44 || h.h < 44) fail(where, 'Menü-Knopf im Kopf abgeschnitten oder zu klein: ' + JSON.stringify(h));
       }
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Atlas (/ask/) nach App-Konzept 2 (Owner 16.11.2026; Vorlage Fenster „suche“ des Prototyps): Rahmen wie jede Seite (Kopf des
+  // Rahmens, kein eigener Kopf), dunkel als Standard (theme-color #08080a), genau eine h1, Eingabe mit mindestens 16 px Schrift
+  // (kein Zoom beim Antippen), jede Tippfläche im Inhalt mindestens 44 px, „Daten & Hinweise“ öffnet das Fenster des Rahmens.
+  {
+    const where = `atlas /ask/ @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + '/ask/', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const a = await page.evaluate(() => {
+        const vis = (n) => n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden';
+        const ta = document.querySelector('#ak-q'), head = document.querySelector('vu-navigation');
+        return { h1: document.querySelectorAll('h1').length, theme: document.querySelector('meta[name=theme-color]')?.content, own: !!document.querySelector('.ak-hd, vu-navigation[menu-only]'),
+          head: !!head && !!head.shadowRoot && getComputedStyle(head.shadowRoot.querySelector('header')).display !== 'none', font: ta ? parseFloat(getComputedStyle(ta).fontSize) : 0,
+          bar: !!document.querySelector('main form.ak-bar'), can: document.querySelectorAll('main .ak-can-card').length, often: document.querySelectorAll('main .ak-often-q').length,
+          small: [...document.querySelectorAll('main a, main button, main textarea, main input')].filter(vis).map((n) => { const r = n.getBoundingClientRect(); return { n, w: Math.round(r.width), h: Math.round(r.height) }; })
+            .filter((x) => x.w < 44 || x.h < 44).map((x) => (x.n.getAttribute('class') || x.n.tagName.toLowerCase()) + ' ' + x.w + '×' + x.h),
+          overflow: document.documentElement.scrollWidth - innerWidth };
+      });
+      if (a.h1 !== 1) fail(where, 'genau eine h1 erwartet, gefunden ' + a.h1);
+      if (a.theme !== '#08080a') fail(where, 'theme-color nicht dunkel: ' + a.theme);
+      if (a.own || !a.head) fail(where, 'Atlas trägt nicht den Kopf des Rahmens');
+      if (!a.bar || a.font < 16) fail(where, 'Eingabe fehlt oder Schrift unter 16 px: ' + a.font);
+      if (a.can !== 3 || a.often !== 3) fail(where, 'Start unvollständig („Was Atlas kann“ ' + a.can + ', „Oft gefragt“ ' + a.often + ')');
+      if (a.small.length) fail(where, a.small.length + ' Ziele kleiner als 44 px (' + a.small.slice(0, 4).join('; ') + ')');
+      if (a.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + a.overflow + ' px');
+      await page.locator('main .ak-lk').click();
+      const sheet = await page.waitForSelector('#vu-sh-hinweise', { state: 'visible', timeout: 5000 }).then(() => true, () => false);
+      if (!sheet) fail(where, '„Daten & Hinweise“ öffnet das Fenster des Rahmens nicht');
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
@@ -314,6 +364,71 @@ for (const [vpName, width, height] of VIEWPORTS) {
           if (!end.forms) fail(where, 'Inhalt der Seite steht nicht (nachgestellte Konto-API): ' + JSON.stringify(end));
           if (!end.controls || end.bottom > end.dockTop + 1 || !end.reachable) fail(where, 'letztes Bedienelement am Seitenende verdeckt: ' + JSON.stringify(end));
         }
+      }
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Ich (/mein-dashboard/, Prototyp „App-Konzept 2“ #v-ich): die Seite traegt die Reiter von „Mein Bereich“ selbst im Inhalt
+  // (Ich · Gespeichert · Konto, <html data-vu-tabs="inhalt">), die Reiterzeile des Rahmens bleibt verborgen; Dock mit „Ich“ aktiv.
+  // Angemeldet ueber dieselbe nachgestellte Konto-API wie oben, mit einer Watchlist aus zwei echten Kuerzeln (Kennung aus names.json).
+  // Danach Zurueck/Vor ueber die Reiter im Inhalt (Hash #/gespeichert).
+  for (const [path, expected] of [['/mein-dashboard/', 'Ich'], ['/mein-dashboard/#/gespeichert', 'Gespeichert']]) {
+    const where = `ich ${path} @${vpName}`;
+    await fresh();
+    try {
+      await page.addInitScript(() => {
+        Object.defineProperty(globalThis, 'VU_ACCOUNT_CONFIG', { configurable: true, get: () => ({ endpoint: location.origin + '/__qa-konto' }), set() {} });
+        const real = globalThis.fetch;
+        globalThis.fetch = (input, init) => {
+          const url = String((input && input.url) || input), at = url.indexOf('/__qa-konto/v1/');
+          if (at < 0) return real(input, init);
+          const api = url.slice(at + '/__qa-konto'.length).split('?')[0], json = (data) => new Response(JSON.stringify(data), { status: 200, headers: { 'content-type': 'application/json' } });
+          if (api === '/v1/watchlist') {
+            const W = globalThis.VUCore.WatchlistView;
+            return real(W.PATHS.names).then((r) => r.json()).then((d) => { const ix = W.index(d);
+              return json({ items: ['NVDA', 'AAPL'].map((t) => ({ ticker: t, instrumentId: ix.resolveTicker(t), addedAt: '2026-11-01T00:00:00Z' })).filter((x) => x.instrumentId), limits: { items: 500 } }); });
+          }
+          return Promise.resolve(json(api === '/v1/session' ? { authenticated: true, user: { id: 'qa', email: 'qa@example.test' } }
+            : api === '/v1/me' ? { profile: { displayName: 'QA' }, settings: {}, entitlements: { plan_id: 'free' } } : {}));
+        };
+      });
+      await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const at = new URL(page.url()).pathname;
+      if (at !== '/mein-dashboard/') fail(where, 'Seite hat weitergeleitet nach ' + at);
+      const ich = () => page.evaluate(() => {
+        const nav = document.getElementById('vu-dock')?.shadowRoot?.querySelector('nav'), strip = document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs');
+        const tabs = [...document.querySelectorAll('main .md-tabs a')];
+        const reach = (n) => { const b = n.getBoundingClientRect(), a = getComputedStyle(n, '::after'), big = a.content !== 'none' && a.position === 'absolute';
+          return { w: Math.max(b.width, big ? parseFloat(a.width) || 0 : 0), h: Math.max(b.height, big ? parseFloat(a.height) || 0 : 0) }; };
+        const small = [...document.querySelectorAll('main a, main button')].filter((n) => n.getClientRects().length).map((n) => ({ n, s: reach(n) })).filter((x) => x.s.w < 44 || x.s.h < 44)
+          .map((x) => (x.n.className || x.n.tagName) + ' „' + x.n.textContent.trim().slice(0, 20) + '“ ' + Math.round(x.s.w) + '×' + Math.round(x.s.h));
+        return { own: document.documentElement.getAttribute('data-vu-tabs'), labels: tabs.map((a) => a.textContent.trim()), current: tabs.filter((a) => a.getAttribute('aria-current') === 'page').map((a) => a.textContent.trim()),
+          places: nav ? [...nav.querySelectorAll('a')].map((a) => a.textContent.trim()) : [], place: nav ? [...nav.querySelectorAll('a[aria-current=page]')].map((a) => a.textContent.trim()) : [],
+          strip: !!strip && !strip.hidden, h1: document.querySelectorAll('h1').length, app: !document.getElementById('md-app').hidden, overflow: document.documentElement.scrollWidth - innerWidth, small };
+      });
+      const s = await ich();
+      if (s.own !== 'inhalt' || s.strip) fail(where, 'Reiterzeile des Rahmens statt Reiter im Inhalt: ' + JSON.stringify({ own: s.own, strip: s.strip }));
+      if (s.labels.join('|') !== 'Ich|Gespeichert|Konto' || s.current.join('|') !== expected) fail(where, 'Reiter falsch: ' + s.labels.join('|') + ' aktiv ' + s.current.join('|'));
+      if (s.places.join('|') !== DOCK.join('|') || s.place.join('|') !== 'Ich') fail(where, 'Dock falsch: ' + s.places.join('|') + ' aktiv ' + s.place.join('|'));
+      if (s.h1 !== 1) fail(where, s.h1 + ' h1 statt genau einer');
+      if (!s.app) fail(where, 'Inhalt der Seite steht nicht (nachgestellte Konto-API)');
+      if (s.overflow > 1) fail(where, 'horizontaler Ueberlauf ' + s.overflow + ' px');
+      if (s.small.length) fail(where, s.small.length + ' Ziele kleiner als 44 px: ' + s.small.slice(0, 4).join('; '));
+      const end = await page.evaluate(() => {
+        scrollTo({ top: document.scrollingElement.scrollHeight, behavior: 'instant' });
+        const dockTop = document.getElementById('vu-dock').shadowRoot.querySelector('nav').getBoundingClientRect().top;
+        const last = [...document.querySelectorAll('main a, main button')].filter((n) => n.getClientRects().length).at(-1), r = last && last.getBoundingClientRect(), hit = r && document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+        return { dockTop, bottom: r && r.bottom, reachable: !!hit && (hit === last || last.contains(hit) || hit.contains(last)), label: last && last.textContent.trim().slice(0, 30) };
+      });
+      if (end.bottom > end.dockTop + 1 || !end.reachable) fail(where, 'letztes Bedienelement am Seitenende verdeckt: ' + JSON.stringify(end));
+      if (path === '/mein-dashboard/') {
+        await page.evaluate(() => scrollTo({ top: 0, behavior: 'instant' }));
+        await page.locator('main .md-tabs a', { hasText: 'Gespeichert' }).click(); await settle(page);
+        if ((await ich()).current.join('|') !== 'Gespeichert') fail(where, 'Klick Gespeichert markiert nicht');
+        await page.goBack(); await settle(page);
+        if ((await ich()).current.join('|') !== 'Ich') fail(where, 'Zurueck: ' + (await ich()).current.join('|'));
+        await page.goForward(); await settle(page);
+        if ((await ich()).current.join('|') !== 'Gespeichert') fail(where, 'Vor: ' + (await ich()).current.join('|'));
       }
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
@@ -459,20 +574,130 @@ for (const [vpName, width, height] of VIEWPORTS) {
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Zurueck/Vor ueber die Reiter (Hash-Produkte und Seiten-Produkte).
-    // Discover-, Quant- und Supertrader-Start tragen ihre Reiter im Inhalt (App-Konzept 2); der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
-  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']]]) {
+    // Starts mit Reitern im Inhalt (App-Konzept 2): der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
+  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']], ['/fundamental/#/ranglisten', ['Branchen', 'Methodik']], ['/technical/#/screener', ['Muster', 'Lernen']], ['/screener/?view=build', ['Treffer', 'Gespeichert']]]) {
+    const where = `history ${start} @${vpName}`;
+    const own = start.startsWith('/vorsorge/');
+    const cur = async () => own ? (await page.evaluate(() => [...document.querySelectorAll('main .vsp-tabs a[aria-current=page]')].map((a) => a.textContent.trim())[0] || null)) : (await state(page)).current[0];
+    const tab = (label) => own ? page.locator('main .vsp-tabs a', { hasText: label }).first() : page.locator('vu-navigation nav.tabs a', { hasText: label }).first();
+    await fresh();
+    try {
+      await page.goto(base + start, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const first = await cur();
+      if (own && first !== 'Start') fail(where, 'Start markiert nicht: ' + first);
+      for (const label of clicks) { await tab(label).click(); await settle(page); if (await cur() !== label) fail(where, 'Klick ' + label + ' markiert nicht'); }
+      await page.goBack(); await settle(page);
+      if (await cur() !== clicks[0]) fail(where, 'Zurueck: ' + await cur());
+      await page.goBack(); await settle(page);
+      if (await cur() !== first) fail(where, 'Zurueck zum Start: ' + await cur());
+      await page.goForward(); await settle(page);
+      if (await cur() !== clicks[0]) fail(where, 'Vor: ' + await cur());
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  /* Hedgefonds (App-Konzept 2, Prototyp #v-hedgefonds): Reiter im Inhalt (nav.hp-tabs) auf jeder Übersicht. Zurück/Vor
+     über diese Reiter: der aktive Reiter (aria-current) folgt der Adresse, Fonds- und Aktienseite geben die Reiter an den Rahmen zurück. */
+  {
+    const where = `history /hedgefonds/#/ (Reiter im Inhalt) @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + '/hedgefonds/#/', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const cur = () => page.evaluate(() => ({ tab: document.querySelector('main nav.hp-tabs a[aria-current=page]')?.textContent.trim() || null,
+        n: document.querySelectorAll('main nav.hp-tabs').length, mode: document.documentElement.getAttribute('data-vu-tabs'), h1: document.querySelectorAll('h1').length }));
+      const want = async (label, msg) => { const c = await cur(); if (c.tab !== label || c.n !== 1 || c.mode !== 'inhalt' || c.h1 !== 1) fail(where, msg + ': ' + JSON.stringify(c)); };
+      await want('Heute', 'Start');
+      for (const label of ['Investoren', 'Aktien', 'Gruppen-Käufe', 'Insider']) { await page.locator('main nav.hp-tabs a', { hasText: label }).first().click(); await settle(page); await want(label, 'Klick ' + label); }
+      await page.goBack(); await settle(page); await want('Gruppen-Käufe', 'Zurück');
+      await page.goBack(); await settle(page); await want('Aktien', 'Zurück');
+      await page.goForward(); await settle(page); await want('Gruppen-Käufe', 'Vor');
+      await page.goto(base + '/hedgefonds/#/fonds/berkshire', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const f = await cur();
+      if (f.mode === 'inhalt' || f.n) fail(where, 'Fondsseite behält die Reiter im Inhalt: ' + JSON.stringify(f));
+      checks.push({ where, pass: !findings.some((x) => x.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Start mit Reitern im Inhalt (Prototyp #technical): ein Reiter im Inhalt fuehrt in einen Bereich mit der Reiterzeile des
+  // Rahmens, Zurueck bringt die Reiter im Inhalt wieder (ohne doppelte Zeile), Vor wieder den Bereich.
+  for (const [start, label] of [['/technical/#/', 'Screener']]) {
+    const where = `history ${start} Reiter im Inhalt @${vpName}`;
+    await fresh();
+    try {
+      const inhalt = () => page.evaluate(() => ({ own: document.documentElement.getAttribute('data-vu-tabs') === 'inhalt', strip: !document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs') || document.querySelector('vu-navigation').shadowRoot.querySelector('nav.tabs').hidden,
+        tabs: [...document.querySelectorAll('main [class*=tabs] a, main [class*=tabs] button')].filter((n) => n.getClientRects().length).length }));
+      await page.goto(base + start, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      let s = await inhalt();
+      if (!s.own || !s.strip || s.tabs < 3) fail(where, 'Start ohne Reiter im Inhalt: ' + JSON.stringify(s));
+      await page.locator('main [class*=tabs] a', { hasText: label }).first().click(); await settle(page);
+      const st = await state(page);
+      if (!st || st.current[0] !== label) fail(where, 'Klick ' + label + ' zeigt nicht die Reiterzeile des Rahmens mit ' + label + ': ' + JSON.stringify(st && st.current));
+      await page.goBack(); await settle(page);
+      s = await inhalt();
+      if (!s.own || !s.strip || s.tabs < 3) fail(where, 'Zurueck: Reiter im Inhalt fehlen oder doppelt: ' + JSON.stringify(s));
+      await page.goForward(); await settle(page);
+      if ((await state(page))?.current[0] !== label) fail(where, 'Vor: ' + JSON.stringify((await state(page))?.current));
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Screener „Suchen“: Reiter im Inhalt fuehren in die Bereiche mit Rahmen-Reitern; Zurueck stellt „Suchen“ wieder her.
+  {
+    const where = `history /screener/ (Reiter im Inhalt) @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + '/screener/', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const mode = () => page.evaluate(() => document.documentElement.getAttribute('data-vu-tabs'));
+      if (await mode() !== 'inhalt') fail(where, 'Start ohne Reiter im Inhalt');
+      await page.locator('main .sc-ak-tabs a', { hasText: 'Gespeichert' }).first().click(); await settle(page);
+      const s1 = await state(page);
+      if (!s1 || s1.current[0] !== 'Gespeichert') fail(where, 'Reiter „Gespeichert“ markiert den Rahmen nicht: ' + JSON.stringify(s1 && s1.current));
+      await page.goBack(); await settle(page);
+      if (await mode() !== 'inhalt' || !await page.locator('main .sc-ak-tabs a.is-on', { hasText: 'Suchen' }).count()) fail(where, 'Zurueck stellt „Suchen“ nicht her');
+      await page.goForward(); await settle(page);
+      const s2 = await state(page);
+      if (!s2 || s2.current[0] !== 'Gespeichert') fail(where, 'Vor: ' + JSON.stringify(s2 && s2.current));
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Elliott-Start (Reiter im Inhalt, App-Konzept 2): „Zählbar“ im Inhalt fuehrt in die Liste mit der Reiterzeile des Rahmens,
+  // Zurueck bringt die Reiter im Inhalt ohne doppelte Zeile, Vor wieder die Liste; ebenso zurueck aus dem Aktienbild.
+  {
+    const where = `history /elliott/ Reiter im Inhalt @${vpName}`;
+    await fresh();
+    try {
+      const inhalt = () => page.evaluate(() => ({ own: document.documentElement.getAttribute('data-vu-tabs') === 'inhalt', strip: !document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs') || document.querySelector('vu-navigation').shadowRoot.querySelector('nav.tabs').hidden,
+        tabs: [...document.querySelectorAll('#el-main .ek-tabs a, #el-main .ek-tabs button')].filter((n) => n.getClientRects().length).length, h1: document.querySelectorAll('h1').length }));
+      const ok = (s) => s.own && s.strip && s.tabs >= 3 && s.h1 === 1;
+      await page.goto(base + '/elliott/', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      let s = await inhalt();
+      if (!ok(s)) fail(where, 'Start ohne Reiter im Inhalt: ' + JSON.stringify(s));
+      await page.locator('#el-main .ek-tabs a', { hasText: 'Zählbar' }).first().click(); await settle(page);
+      if ((await state(page))?.current[0] !== 'Zählbar') fail(where, 'Klick Zählbar zeigt nicht die Reiterzeile des Rahmens mit Zählbar: ' + JSON.stringify((await state(page))?.current));
+      await page.goBack(); await settle(page);
+      if (!ok(s = await inhalt())) fail(where, 'Zurueck: Reiter im Inhalt fehlen oder doppelt: ' + JSON.stringify(s));
+      await page.goForward(); await settle(page);
+      if ((await state(page))?.current[0] !== 'Zählbar') fail(where, 'Vor: ' + JSON.stringify((await state(page))?.current));
+      await page.goBack(); await settle(page);
+      await page.locator('#el-main a.el-cr').first().click(); await page.waitForSelector('main#qx-main[data-ready="true"]', { timeout: 60000 });
+      if ((await inhalt()).own) fail(where, 'Aktienbild behaelt die Reiter im Inhalt');
+      await page.goBack(); await settle(page);
+      if (!ok(s = await inhalt())) fail(where, 'Zurueck aus dem Aktienbild: ' + JSON.stringify(s));
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Zurueck/Vor ueber Reiter im Inhalt, die Adressen sind (Portfolios, App-Konzept 2): der aktive Reiter folgt der Adresse.
+  const inhaltTab = (pg) => pg.evaluate(() => { const a = [...document.querySelectorAll('main [class*=tabs] a[aria-current=page]')].filter((n) => n.getClientRects().length); return a.length === 1 ? a[0].textContent.trim() : a.length + ' aktiv'; });
+  for (const [start, clicks] of [['/portfolios/', ['Quant', 'KI']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {
       await page.goto(base + start, { waitUntil: 'load', timeout: 90000 }); await settle(page);
-      const first = (await state(page)).current[0];
-      for (const label of clicks) { await page.locator('vu-navigation nav.tabs a', { hasText: label }).first().click(); await settle(page); if ((await state(page)).current[0] !== label) fail(where, 'Klick ' + label + ' markiert nicht'); }
+      const first = await inhaltTab(page);
+      for (const label of clicks) { await page.locator('main [class*=tabs] a', { hasText: label }).first().click(); await settle(page); if (await inhaltTab(page) !== label) fail(where, 'Klick ' + label + ' markiert nicht'); }
       await page.goBack(); await settle(page);
-      if ((await state(page)).current[0] !== clicks[0]) fail(where, 'Zurueck: ' + (await state(page)).current[0]);
+      if (await inhaltTab(page) !== clicks[0]) fail(where, 'Zurueck: ' + await inhaltTab(page));
       await page.goBack(); await settle(page);
-      if ((await state(page)).current[0] !== first) fail(where, 'Zurueck zum Start: ' + (await state(page)).current[0]);
+      if (await inhaltTab(page) !== first) fail(where, 'Zurueck zum Start: ' + await inhaltTab(page));
       await page.goForward(); await settle(page);
-      if ((await state(page)).current[0] !== clicks[0]) fail(where, 'Vor: ' + (await state(page)).current[0]);
+      if (await inhaltTab(page) !== clicks[0]) fail(where, 'Vor: ' + await inhaltTab(page));
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
