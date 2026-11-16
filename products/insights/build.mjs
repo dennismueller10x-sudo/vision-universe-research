@@ -45,6 +45,8 @@ const textOf = (html) => html.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim
 const lesezeit = (a) => Math.max(2, Math.round(a.abschnitte.map((s) => textOf(s.html)).join(' ').split(' ').length / 200));
 const ICON = {
   next: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  // Symbol „insights“ der Produktfamilie (assets/site-navigation.js), für die Report-Kachel des Prototyps
+  heft: '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4" width="13" height="16" rx="2.2"/><path d="M16.5 8h3a1 1 0 0 1 1 1v9a2 2 0 0 1-4 0"/><path fill="currentColor" stroke="none" opacity=".28" d="M6.5 7.5h7v4h-7z"/><path d="M6.5 7.5h7v4h-7z"/><path opacity=".45" d="M6.5 14.5h7M6.5 17h4.5"/></g></svg>',
 };
 
 // Ton einer Note aus dem Gesundheitscheck: stark = Neongrün, schwach = Schwarz (Design-Regel: Plus grün, Minus schwarz)
@@ -80,7 +82,7 @@ function datenBox(t, a) {
     <div class="in-vu-health"><b class="in-vu-label">Gesundheitscheck</b><div>${d.gesundheit.map(([k, v]) => `<span class="${TON(v)}"><i>${k}</i>${esc(v)}</span>`).join('')}</div></div>
     ${fondsHtml}
   </div>
-  <div class="in-vu-fuss"><a class="vu-btn vu-btn--sm" href="/aktie/${t}">${kurz} live in Vision Universe${ICON.next}</a><p class="in-klein">Kurse bis ${datumDE(d.kursStand)}, Geschäftszahlen aus SEC-Meldungen bis ${ttm(d.ttmBis)}. Fondsdaten: Pflichtmeldungen an die SEC (Angabe Dritter). Die App zeigt den aktuellen Stand.</p></div>
+  <div class="in-vu-fuss"><a class="vu-btn vu-btn--sm" href="/aktie/#/${t}">${kurz} live in Vision Universe${ICON.next}</a><p class="in-klein">Kurse bis ${datumDE(d.kursStand)}, Geschäftszahlen aus SEC-Meldungen bis ${ttm(d.ttmBis)}. Fondsdaten: Pflichtmeldungen an die SEC (Angabe Dritter). Die App zeigt den aktuellen Stand.</p></div>
 </section>`;
 }
 
@@ -105,20 +107,22 @@ const appBox = (a) => `<section class="in-app vu-box vu-box--lime" aria-label="�
   <span class="in-kicker">Vision Universe</span>
   <h2>Jede Aktie. Jeden Tag. In Klartext.</h2>
   <p>Vision Universe ist eine Analyse-Software für Aktien. Jeden Abend rechnen wir über 5.600 US-Aktien nach festen Regeln durch: Kurse, Geschäftszahlen aus SEC-Meldungen, Charttechnik und was große Fonds gemeldet haben. Keine Meinungen, keine Empfehlungen, nur nachvollziehbare Daten.</p>
-  <div class="in-links"><a class="vu-btn vu-btn--sm vu-btn--ink" href="/aktie/${a.ticker[0]}">Alle Daten zu ${esc(a.daten.aktien[a.ticker[0]].name.split(' ')[0])}${ICON.next}</a><a class="vu-btn vu-btn--sm vu-btn--line" href="/">Was Vision Universe kann</a></div>
+  <div class="in-links"><a class="vu-btn vu-btn--sm vu-btn--ink" href="/aktie/#/${a.ticker[0]}">Alle Daten zu ${esc(a.daten.aktien[a.ticker[0]].name.split(' ')[0])}${ICON.next}</a><a class="vu-btn vu-btn--sm vu-btn--line" href="/">Was Vision Universe kann</a></div>
   <p class="in-klein">App bald im App Store und bei Google Play · Instagram und TikTok: @app.visionuniverse</p>
 </section>`;
 
 // Teilen-Bild der Übersicht (Owner 12.11.2026): fest statt des Bilds des neuesten Artikels.
 const TEILBILD = '/insights/img/insights-teilen.jpg';
 const CSS_MARKE = 'app-konzept-2';
-function head({ title, description, canonical, image, type = 'website', extra = '', css = `/insights/insights.css?v=${CSS_MARKE}` }) {
+// App-Konzept 2 (Prototyp #news, Owner 14./15.11.2026): jede Insights-Seite zeigt ihre Reiter im Inhalt (data-vu-tabs="inhalt");
+// Startseite und Artikel beginnen mit dem randlosen Titelbild unter dem durchsichtigen Kopf (data-vu-bleed).
+function head({ title, description, canonical, image, type = 'website', extra = '', bleed = false, css = `/insights/insights.css?v=${CSS_MARKE}` }) {
   return `<!DOCTYPE html>
-<html lang="de">
+<html lang="de" data-vu-tabs="inhalt"${bleed ? ' data-vu-bleed' : ''}>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#08080a">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
@@ -139,11 +143,16 @@ ${image ? `<meta property="og:image" content="${SITE}${image}">\n<meta name="twi
 <script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="${css}">
 ${extra}</head>
-<body class="in-body vu-ui"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script><script>if(window.VUNavigation)window.VUNavigation.dock({});</script>
+<body class="in-body vu-ui"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script><script>if(window.VUNavigation)window.VUNavigation.dock({});</script><script>if(window.VUNavigation)window.VUNavigation.hinweis("editorial");</script>
+<script src="/insights/news.js?v=${CSS_MARKE}" defer></script>
 `;
 }
-const TABS = [['artikel', 'Artikel', '/insights/'], ['magazin', 'Aktienmagazin', '/insights/magazin/'], ['reports', 'Reports', '/insights/reports/']];
-const tabs = (aktiv) => `<nav class="in-tabs" aria-label="Insights">${TABS.map(([id, label, href]) => `<a class="vu-chip" href="${href}"${aktiv === id ? ' aria-current="page"' : ''}>${label}</a>`).join('')}</nav>`;
+// Reiter im Inhalt (Prototyp „tabs2“: Heute · Magazin · Kurz erklärt · Reports). Auf der Startseite springen sie zu ihren
+// Abschnitten (news.js markiert den sichtbaren), auf den übrigen Seiten führen sie zur Startseite bzw. zur Übersicht.
+const TABS = [['heute', 'Heute', '/insights/', '#heute'], ['magazin', 'Magazin', '/insights/magazin/', '#magazin'], ['kurz', 'Kurz erklärt', '/insights/#kurz', '#kurz'], ['reports', 'Reports', '/insights/reports/', '#reports']];
+const tabs = (aktiv, start = false) => `<nav class="in-tabs" aria-label="News">${TABS.map(([id, label, href, anker]) => `<a class="in-tab${aktiv === id ? ' on' : ''}" href="${start ? anker : href}"${aktiv === id ? ' aria-current="page"' : ''}${start ? ` data-in-tab="${id}"` : ''}>${label}</a>`).join('')}</nav>`;
+// Seitenende wie im Prototyp („end“): „Daten & Hinweise“ öffnet das Fenster des Kopfes (news.js), ohne Skript die Methodik
+const ende = `<div class="in-end"><a class="in-lk" href="${LEGAL.links.methodik}" data-in-hinweise>Daten &amp; Hinweise</a></div>`;
 const fuss = `<footer class="in-fuss"><p>${esc(LEGAL.notices.editorial.text)}</p><p><a href="${LEGAL.links.methodik}">Methodik, Quellen und Interessen</a> · <a href="/insights/feed.xml">RSS</a></p></footer>
 </body>
 </html>
@@ -172,15 +181,16 @@ function artikelSeite(a) {
     if (i === 2 && a.zitat) h += `<blockquote class="in-zitat"><p>„${esc(a.zitat.text)}“</p><cite>${esc(a.zitat.von)}</cite></blockquote>`;
     return h;
   }).join('\n');
-  return head({ title: `${a.seoTitel || a.titel} · Vision Universe`, description: a.teaser, canonical: url, image: bildSrc(a), type: 'article', extra }) + `<main id="in-main" class="in-wrap in-artikel">
-${tabs('artikel')}
+  // Rahmen des Prototyps (wie das Titelbild der News-Startseite): Bild randlos unter dem durchsichtigen Kopf, Rubrik, Titel,
+  // Aktien mit Tagesbewegung und Lesezeit darauf; darunter die Reiter, Unterzeile und Stand, dann der Text.
+  return head({ title: `${a.seoTitel || a.titel} · Vision Universe`, description: a.teaser, canonical: url, image: bildSrc(a), type: 'article', extra, bleed: true }) + `<main id="in-main" class="in-wrap in-artikel">
 <article>
 <header class="in-kopf">
-  ${aufmacher(a)}
-  <p class="in-meta"><span class="in-pill">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumLang(a.datum)}</time><span>·</span><span>${lesezeit(a)} Min. Lesezeit</span></p>
-  <h1>${esc(a.titel)}</h1>
+  <div class="in-held in-held--artikel">${aufmacher(a)}<span class="in-held-schatten"></span>
+  <div class="in-held-text"><p class="in-p in-p--sm">${esc(a.rubrik)} · <time datetime="${a.datum}">${datumLang(a.datum)}</time></p><h1>${esc(a.titel)}</h1><div class="in-held-tk">${a.ticker.map((t) => tkLink(a, t)).join('')}<span class="in-min">${lesezeit(a)} Min. Lesezeit</span></div></div></div>
+  ${tabs('heute')}
   <p class="in-lead">${esc(a.unterzeile)}</p>
-  <div class="in-kopf-fuss">${aktien(a, true)}<p class="in-autor">Redaktion Vision Universe · Stand ${esc(a.stand)}</p></div>
+  <div class="in-kopf-fuss"><p class="in-autor">Redaktion Vision Universe · Stand ${esc(a.stand)}</p></div>
 </header>
 <div class="in-text">
 ${body}
@@ -192,19 +202,20 @@ ${appBox(a)}
 </article>
 ${weitere(a)}
 ${weiterHeft()}
+${ende}
 </main>
 ` + fuss;
 }
 
 let ALLE = [];
 // Aktien eines Artikels: Logo (eingefroren im Artikel) und Kürzel; auf der Artikelseite führen sie zur Aktie
-const aktien = (a, link = false) => `<span class="in-tk">${a.ticker.map((t) => { const logo = a.daten?.aktien?.[t]?.logo, innen = `${logo ? `<img src="${logo}" alt="" width="20" height="20" loading="lazy">` : ''}${esc(t)}`; return link ? `<a class="in-tk-i" href="/aktie/${t}">${innen}</a>` : `<span class="in-tk-i">${innen}</span>`; }).join('')}</span>`;
+const aktien = (a, link = false) => `<span class="in-tk">${a.ticker.map((t) => { const logo = a.daten?.aktien?.[t]?.logo, innen = `${logo ? `<img src="${logo}" alt="" width="20" height="20" loading="lazy">` : ''}${esc(t)}`; return link ? `<a class="in-tk-i" href="/aktie/#/${t}">${innen}</a>` : `<span class="in-tk-i">${innen}</span>`; }).join('')}</span>`;
 const kartenBild = (a, gross = false) => `<span class="in-karte-bild${a.bild.typ === 'app' ? ' in-karte-bild--app' : ''}"><img src="${bildSrc(a)}" alt="" loading="${gross ? 'eager' : 'lazy'}"${gross ? ' fetchpriority="high"' : ''} width="1600" height="900"></span>`;
 // Karte: Bild, Rubrik, Datum, Titel, Teaser, Aktien. In der Übersicht am Telefon eine Zeile mit Bild links, sonst Bild oben.
 const karte = (a) => `<a class="in-karte" href="/insights/${a.slug}/">${kartenBild(a)}<span class="in-karte-text"><span class="in-meta"><span class="in-pill in-pill--still">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumDE(a.datum)}</time></span><b>${esc(a.titel)}</b><span class="in-karte-teaser">${esc(a.teaser)}</span>${aktien(a)}</span></a>`;
 // Der neueste Artikel füllt den ersten Bildschirm: Bild randlos, Titel darauf, Teaser darunter
 const aufmacherKarte = (a) => `<a class="in-top" href="/insights/${a.slug}/">${kartenBild(a, true)}<span class="in-top-text"><span class="in-meta"><span class="in-pill">${esc(a.rubrik)}</span><time datetime="${a.datum}">${datumDE(a.datum)}</time></span><b>${esc(a.titel)}</b>${aktien(a)}</span><span class="in-karte-teaser">${esc(a.teaser)}</span></a>`;
-const weitere = (a) => { const w = ALLE.filter((x) => x.slug !== a.slug).slice(0, 3); return w.length ? `<section class="in-weitere"><h2 class="in-h2">Weitere Insights</h2>${VUUI.rail(w.map((x) => karte(x)), { label: 'Weitere Insights', width: 264 })}</section>` : ''; };
+const weitere = (a) => { const w = ALLE.filter((x) => x.slug !== a.slug).slice(0, 3); return w.length ? `<section class="in-weitere">${sh('Weitere Artikel', 'Alle', '/insights/')}${w.map(zeile).join('')}</section>` : ''; };
 const reportKarte = (r) => `<a class="in-report vu-night" href="${esc(r.href)}"><span class="in-report-kopf"><span class="in-pill">${esc(r.art)}</span><time datetime="${r.datum}">${datumDE(r.datum)}</time></span><b>${esc(r.titel)}</b><span>${esc(r.text)}</span><em>Report öffnen${ICON.next}</em></a>`;
 
 // Bühne für Aktienmagazin und Aktienreport (Owner 14.11.2026: beide gingen unter): Titelseite groß, Nummer, Titel,
@@ -225,17 +236,49 @@ ${VUUI.stats(fakten)}
 const weiterHeft = () => { const h = LOADED.magazin[0]; return h ? VUUI.next({ title: `Aktienmagazin Nr. ${h.nr}: ${h.titel}`, sub: `${h.seiten} Seiten · KW ${h.kw}`, href: heftUrl(h) }) : ''; };
 const weiterReport = () => { const r = LOADED.reports.find((x) => x.seiten); return r ? VUUI.next({ title: `${r.art} Nr. ${r.nr}: ${r.titel}`, sub: `${r.seiten} Seiten · ${datumLang(r.datum)}`, href: r.href }) : weiterHeft(); };
 
+/* ───────── News-Start nach Prototyp „App-Konzept 2“ (#news, Owner 14./15.11.2026: „1:1 wie im Prototyp“)
+   Aufbau wie p2.js V.news: Titelbild 470 px mit Tagesthema (der neueste Artikel), Reiter Heute · Magazin · Kurz erklärt · Reports,
+   drei Artikelzeilen, Aktienmagazin mit Lesefortschritt, „Kurz erklärt in 30 Sekunden“ (Erklärvideos aus
+   willkommen/config/stories.json), „Zu deinen Aktien“ (news.js, nur mit Watchlist), Aktienreports, dann zusätzlich alle
+   weiteren Artikel, „Weiter“ und „Daten & Hinweise“. Tagesbewegungen setzt news.js aus der veröffentlichten Tagesreihe
+   (quant/engines/published-close.js#dayChange); ohne Skript bleiben Logo und Kürzel stehen. */
+const STORIES = JSON.parse(fs.readFileSync(path.join(root, 'willkommen/config/stories.json'), 'utf8')).stories;
+const kurzDatum = (iso) => datumDE(iso).slice(0, 6);
+const name = (a, t) => (a.daten?.aktien?.[t]?.name || t).replace(/,$/, '');
+// Logo-Kachel des Prototyps (.lg.s): eingefrorenes Logo des Artikels, sonst das Kürzel; dahinter die Tagesbewegung (news.js)
+const tkLink = (a, t, gross = false) => { const logo = a.daten?.aktien?.[t]?.logo; return `<a class="in-tkl" href="/aktie/#/${t}" data-vu-stock="${t}" data-vu-stock-name="${esc(name(a, t))}" aria-label="${esc(name(a, t))} (${t})"><span class="in-lg${gross ? '' : ''}">${logo ? `<img src="${logo}" alt="" width="34" height="34" loading="lazy">` : `<b>${t}</b>`}</span><span class="in-chg" data-in-chg="${t}"></span></a>`; };
+const artBild = (a) => (a.bild.typ === 'app' ? `<span class="in-art-bild in-art-bild--app"><img src="${bildSrc(a)}" alt="" loading="lazy" width="390" height="844"></span>` : `<span class="in-art-bild"><img src="${bildSrc(a)}" alt="" loading="lazy" width="1600" height="900"></span>`);
+// Artikelzeile (Prototyp „art“): Bild 104 px, Rubrik, Titel, Logos mit Tagesbewegung; dazu das Datum wie die Lesezeit im Titelbild
+const zeile = (a) => `<div class="in-art" data-in-tk="${a.ticker.join(' ')}">${artBild(a)}<div class="in-art-text"><span class="in-p in-p--dk in-p--sm">${esc(a.rubrik)}</span><a class="in-art-a" href="/insights/${a.slug}/">${esc(a.titel)}</a><div class="in-art-tk">${a.ticker.map((t) => tkLink(a, t)).join('')}<time class="in-zeit" datetime="${a.datum}">${kurzDatum(a.datum)}</time></div></div></div>`;
+const sh = (titel, mehr = '', href = '', id = '') => `<div class="in-sh"${id ? ` id="${id}"` : ''}><h2>${titel}</h2>${mehr ? `<a href="${href}">${mehr} ›</a>` : ''}</div>`;
+const held = (a) => `<section class="in-held" aria-label="Tagesthema">
+${a.bild.typ === 'app' ? `<span class="in-held-bild in-held-bild--app"><img src="${bildSrc(a)}" alt="" fetchpriority="high" width="390" height="844"></span>` : `<img class="in-held-bild" src="${a.bild.src}" alt="${esc(a.bild.alt)}" fetchpriority="high" width="1600" height="900">`}<span class="in-held-schatten"></span>
+<div class="in-held-text"><span class="in-p in-p--sm">${esc(a.rubrik)} · <time datetime="${a.datum}" data-in-tag>${kurzDatum(a.datum)}</time></span><h1><a class="in-dehn" href="/insights/${a.slug}/">${esc(a.titel)}</a></h1><div class="in-held-tk">${a.ticker.map((t) => tkLink(a, t)).join('')}<span class="in-min">${lesezeit(a)} Min.</span></div></div>
+</section>`;
+// Kachel für Heft oder Report (Prototyp: Aktienmagazin-Kachel mit Titelseite 136 × 192, Pille, Titel, Zeile, Fortschritt, Knopf)
+const heftKachel = ({ href, cover, alt, pill, titel, zeile: z, seiten }) => `<a class="in-heft" href="${esc(href)}" data-in-lesen="${esc(href)}" data-in-seiten="${seiten}"><img src="${esc(cover)}" alt="${esc(alt)}" width="136" height="192" loading="lazy"><span class="in-heft-text"><span class="in-p in-p--sm">${pill}</span><b class="in-heft-titel">${esc(titel)}</b><span class="in-heft-zeile">${z}</span><span class="in-bar" hidden><i></i></span><span class="in-heft-seite" hidden></span><span class="in-btn">Lesen</span></span></a>`;
+const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, '0')}`;
+// Erklärvideo (Prototyp „vid“): Hochformat 150 × 240, Startknopf, Titel und Dauer. Ohne Skript öffnet der Link das Video.
+const video = (s) => { const v = s.slides.find((x) => x.type === 'video'); return v ? `<a class="in-vid" href="${v.src}" data-in-vid="${v.src}" data-in-poster="${v.poster}" data-in-titel="${esc(s.product)}: ${esc(s.tagline)}"><img src="${s.thumb}" alt="" loading="lazy" width="640" height="400"><span class="in-vid-schatten"></span><span class="in-vid-start" aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4l14 8-14 8z"/></svg></span><span class="in-vid-text"><b>${esc(s.tagline.replace(/\.$/, ''))}</b><span>${esc(s.product)} · ${mmss(v.duration)}</span></span></a>` : ''; };
+
 function uebersicht(artikel, reports) {
-  const [erst, ...rest] = artikel, ohneSeiten = reports.filter((r) => !r.seiten);
-  const buehnen = [magazinTeaser(LOADED.magazin[0]), ...reports.filter((r) => r.seiten).slice(0, 1).map((r) => reportTeaser(r))].filter(Boolean);
-  return head({ title: 'Insights · Tagesthemen, Aktienmagazin und Reports · Vision Universe', description: 'Tagesthemen von der Börse, recherchiert und mit den Daten von Vision Universe eingeordnet: Kurse, Geschäftszahlen, Charttechnik und große Fonds. Dazu jede Woche das Aktienmagazin.', canonical: '/insights/', image: TEILBILD }) + `<main id="in-main" class="in-wrap">
-${tabs('artikel')}
-${erst ? aufmacherKarte(erst) : '<p>Noch keine Artikel.</p>'}
-<header class="in-hub in-hub--zeile"><span class="in-kicker">Insights</span><h1>Was die Börse heute bewegt. Und was die Daten dazu sagen.</h1><p class="in-lead">Jeden Tag ein bis zwei Themen: recherchiert, eingeordnet und mit Kursen, Geschäftszahlen und Fondsdaten aus Vision Universe unterlegt.</p></header>
-${buehnen.length ? `<div class="in-buehnen">${buehnen.join('\n')}</div>` : ''}
-${rest.length ? `<section><h2 class="in-h2">Neueste Artikel</h2><div class="in-raster">${rest.map((a) => karte(a)).join('')}</div></section>` : ''}
-${ohneSeiten.length ? `<section id="reports"><div class="in-h2-zeile"><h2 class="in-h2">Reports</h2><a href="/insights/reports/">Alle Reports${ICON.next}</a></div><div class="in-raster in-raster--karten">${ohneSeiten.slice(0, 3).map(reportKarte).join('')}</div></section>` : ''}
-${VUUI.next({ title: DISCOVER.label, sub: DISCOVER.claim, href: DISCOVER.href })}
+  const [erst, ...rest] = artikel, heute = rest.slice(0, 3), weitere = rest.slice(3), heft = LOADED.magazin[0];
+  const mitSeiten = reports.filter((r) => r.seiten), ohneSeiten = reports.filter((r) => !r.seiten);
+  // Erklärvideos der Module in der Reihenfolge von stories.json; der allgemeine Einblick („start“) steht am Ende
+  const videos = [...STORIES.filter((s) => s.id !== 'start'), ...STORIES.filter((s) => s.id === 'start')].map(video).filter(Boolean);
+  return head({ title: 'Insights · Tagesthemen, Aktienmagazin und Reports · Vision Universe', description: 'Tagesthemen von der Börse, recherchiert und mit den Daten von Vision Universe eingeordnet: Kurse, Geschäftszahlen, Charttechnik und große Fonds. Dazu jede Woche das Aktienmagazin.', canonical: '/insights/', image: TEILBILD, bleed: !!erst }) + `<main id="in-main" class="in-news">
+${erst ? held(erst) : '<h1 class="in-px">Insights</h1><p class="in-px">Noch keine Artikel.</p>'}
+${tabs('heute', true)}
+<section id="heute" class="in-px" aria-label="Heute">${heute.map(zeile).join('')}</section>
+${heft ? `<section id="magazin">${sh('Aktienmagazin', 'Alle Ausgaben', '/insights/magazin/')}<div class="in-px">${heftKachel({ href: heftUrl(heft), cover: `${heftUrl(heft)}cover.jpg`, alt: `Titelseite Aktienmagazin Nr. ${heft.nr}`, pill: `Nr. ${heft.nr} · KW ${heft.kw}`, titel: heft.titel, zeile: `${heft.seiten} Seiten · erscheint wöchentlich`, seiten: heft.seiten })}</div></section>` : ''}
+${videos.length ? `<section id="kurz">${sh('Kurz erklärt in 30 Sekunden')}<div class="in-rail" role="list">${videos.map((v) => `<div role="listitem">${v}</div>`).join('')}</div></section>` : ''}
+<section id="deine" hidden>${sh('Zu deinen Aktien')}<div class="in-px" data-in-deine></div></section>
+<section id="reports">${sh('Aktienreports', reports.length ? 'Alle Reports' : '', '/insights/reports/')}<div class="in-px in-reports">${mitSeiten.map((r) => heftKachel({ href: r.href, cover: `${r.href}cover.jpg`, alt: `Titelseite ${r.titel}`, pill: `Nr. ${r.nr} · ${kurzDatum(r.datum)}`, titel: r.titel, zeile: `${r.seiten} Seiten · ${esc(r.art)}`, seiten: r.seiten })).join('')}${ohneSeiten.map((r) => `<a class="in-leerkachel" href="${esc(r.href)}"><span class="in-hud" aria-hidden="true">${ICON.heft}</span><span><b>${esc(r.titel)}</b><span>${esc(r.text)}</span></span></a>`).join('')}${reports.length ? '' : `<div class="in-leerkachel"><span class="in-hud" aria-hidden="true">${ICON.heft}</span><span><b>Der erste Report ist in Arbeit</b><span>Tiefe Analysen einzelner Firmen, als Heft zum Blättern.</span></span></div>`}</div></section>
+${weitere.length ? `<section id="weitere">${sh('Weitere Artikel')}<div class="in-px">${weitere.map(zeile).join('')}</div></section>` : ''}
+${erst ? `<template id="in-held-zeile">${zeile(erst)}</template>` : ''}
+<p class="in-ueber in-px">Was die Börse heute bewegt. Und was die Daten dazu sagen: jeden Tag ein bis zwei Themen, recherchiert, eingeordnet und mit Kursen, Geschäftszahlen und Fondsdaten aus Vision Universe unterlegt.</p>
+<div class="in-px">${VUUI.next({ title: DISCOVER.label, sub: DISCOVER.claim, href: DISCOVER.href })}</div>
+${ende}
 </main>
 ` + fuss;
 }
@@ -260,6 +303,7 @@ ${heftSeiten(r.href, r.seiten)}
 <section class="in-heft-kurz"><h2 class="in-h2">Kurzfassung</h2>${r.kurzfassung.map((p) => `<p>${esc(p)}</p>`).join('')}</section>
 <p class="in-klein">Keine Anlageberatung. Der Report nennt keine Kursziele und gibt keine Empfehlung. Bilder aus Grand Theft Auto VI: Rockstar Games.</p>
 ${weiterHeft()}
+${ende}
 </main>
 ` + fuss;
 }
@@ -271,6 +315,7 @@ ${tabs('reports')}
 <header class="in-hub"><span class="in-kicker">Reports</span><h1>Aktienreports</h1><p class="in-lead">Ein Unternehmen ausführlich: Geschäftsmodell, Zahlen, Bewertung im Vergleich und was die Daten von Vision Universe zeigen. Neue Reports erscheinen hier.</p></header>
 ${reports.length ? `${reports.filter((r) => r.seiten).map((r) => reportTeaser(r, true)).join('\n')}${ohneSeiten.length ? `<div class="in-raster in-raster--karten">${ohneSeiten.map(reportKarte).join('')}</div>` : ''}` : `<div class="in-leer vu-box"><b>Der erste Aktienreport ist in Arbeit.</b><p>Bis dahin: jeden Tag neue Artikel unter Insights und jede Woche das Aktienmagazin.</p><div class="in-links"><a class="vu-btn vu-btn--sm vu-btn--ink" href="/insights/magazin/">Zum Aktienmagazin${ICON.next}</a><a class="vu-btn vu-btn--sm vu-btn--line" href="/insights/">Zu den Artikeln</a></div></div>`}
 ${weiterHeft()}
+${ende}
 </main>
 ` + fuss;
 }
@@ -289,6 +334,7 @@ ${tabs('magazin')}
 ${magazinTeaser(hefte[0], true)}
 ${hefte.length > 1 ? `<section><h2 class="in-h2">Frühere Ausgaben</h2><div class="in-hefte">${hefte.slice(1).map((h) => `<a href="${heftUrl(h)}"><img src="${heftUrl(h)}cover.jpg" alt="" loading="lazy" width="560" height="792"><b>Nr. ${h.nr} · ${esc(h.titel)}</b><span>${datumDE(h.datum)}</span></a>`).join('')}</div></section>` : ''}
 ${weiterReport()}
+${ende}
 </main>
 ` + fuss;
 }
@@ -300,6 +346,7 @@ ${buehne({ ton: 'nacht', gross: true, href: '#s01', lesen: 'Lesen', cover: `${he
 ${heftInhalt(heftUrl(h), h.inhalt)}
 ${heftSeiten(heftUrl(h), h.seiten)}
 ${weiterReport()}
+${ende}
 </main>
 ` + fuss;
 }

@@ -131,7 +131,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
       await page.goto(base + path, { waitUntil: 'load', timeout: 90000 }); await settle(page);
       for (const pass of ['first', 'reload']) {
         if (pass === 'reload') { await page.reload({ waitUntil: 'load' }); await settle(page); }
-        /* App-Konzept 2 (Prototyp #discover/#quant, Owner 15.11.2026): der Start traegt seine Reiter im Inhalt
+        /* App-Konzept 2 (Prototyp #discover/#quant/#supertrader, Owner 15.11.2026): der Start traegt seine Reiter im Inhalt
            (<html data-vu-tabs="inhalt">); die Reiterzeile des Rahmens bleibt dort verborgen. Geprueft werden dann Dock,
            Universe-Knopf, die Reiter im Inhalt und der Ueberlauf. */
         const inhalt = await page.evaluate(() => {
@@ -320,6 +320,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
   }
   // Insights (Ziel des Platzes „News“): das Dock steht auf jeder Seite, „News“ ist aktiv, keine Reiterzeile der Shell (die Seiten
   // tragen ihre eigenen Reiter), der Universe-Knopf oeffnet das Menue, und das Seitenende liegt ueber dem Dock.
+  // App-Konzept 2 (Prototyp #news, Owner 15.11.2026): jede Seite zeigt die Reiter des Prototyps im Inhalt (<html data-vu-tabs="inhalt">,
+  // Heute · Magazin · Kurz erklaert · Reports), jede Tippflaeche dort ist mindestens 44 px gross.
   for (const path of ['/insights/', '/insights/magazin/', '/insights/reports/']) {
     const where = `insights ${path} @${vpName}`;
     await fresh();
@@ -337,13 +339,14 @@ for (const [vpName, width, height] of VIEWPORTS) {
           const d = nav.getBoundingClientRect(), u = nav.querySelector('button.menu').getBoundingClientRect();
           const text = [...document.querySelectorAll('main *, footer *')].filter((n) => !n.children.length && n.textContent.trim() && n.getClientRects().length).reduce((m, n) => Math.max(m, n.getBoundingClientRect().bottom), 0);
           return { places: [...nav.querySelectorAll('a')].map((a) => a.textContent.trim()).join('|'), place: [...nav.querySelectorAll('a[aria-current=page]')].map((a) => a.textContent.trim()).join('|'),
-            tabs: !head.querySelector('nav.tabs').hidden, own: [...document.querySelectorAll('.in-tabs a')].map((a) => a.textContent.trim()).join('|'), toggle: getComputedStyle(head.querySelector('.toggle')).display,
+            tabs: !head.querySelector('nav.tabs').hidden, own: [...document.querySelectorAll('.in-tabs a')].map((a) => a.textContent.trim()).join('|'), inhalt: document.documentElement.getAttribute('data-vu-tabs') === 'inhalt',
+            ownSmall: [...document.querySelectorAll('.in-tabs a')].filter((a) => { const b = a.getBoundingClientRect(), x = getComputedStyle(a, '::after'); return Math.max(b.width, parseFloat(x.width) || 0) < 44 || Math.max(b.height, parseFloat(x.height) || 0) < 44; }).length, toggle: getComputedStyle(head.querySelector('.toggle')).display,
             overflow: document.documentElement.scrollWidth - innerWidth, dockTop: Math.min(d.top, u.top), dockBottom: d.bottom, text, vh: innerHeight, reserved: parseFloat(getComputedStyle(document.body).paddingBottom) };
         });
         const at = where + (target !== path ? ' → ' + target : '');
         if (!s) { fail(at, 'kein Dock'); continue; }
         if (s.places !== DOCK.join('|') || s.place !== 'News') fail(at, 'Dock falsch oder „News“ nicht aktiv: ' + s.places + ' / ' + s.place);
-        if (s.tabs || s.own !== 'Artikel|Aktienmagazin|Reports') fail(at, 'Reiter: Shell ' + s.tabs + ', Seite ' + s.own);
+        if (s.tabs || !s.inhalt || s.own !== 'Heute|Magazin|Kurz erklärt|Reports' || s.ownSmall) fail(at, 'Reiter: Shell ' + s.tabs + ', im Inhalt ' + s.inhalt + ', Seite ' + s.own + ', zu klein ' + s.ownSmall);
         if (s.toggle !== 'none') fail(at, 'Menue-Knopf im Kopf doppelt');
         if (s.overflow > 1) fail(at, 'horizontaler Ueberlauf ' + s.overflow + ' px');
         if (s.text > s.dockTop + 1 || s.dockBottom > s.vh || s.reserved < s.vh - s.dockTop) fail(at, `Seitenende verdeckt (Text bis ${Math.round(s.text)}, Dock ab ${Math.round(s.dockTop)}, frei ${s.reserved})`);
@@ -456,8 +459,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Zurueck/Vor ueber die Reiter (Hash-Produkte und Seiten-Produkte).
-    // Discover- und Quant-Start tragen ihre Reiter im Inhalt (App-Konzept 2); der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
-  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']]]) {
+    // Discover-, Quant- und Supertrader-Start tragen ihre Reiter im Inhalt (App-Konzept 2); der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
+  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {

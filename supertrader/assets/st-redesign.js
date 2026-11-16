@@ -322,51 +322,107 @@
       return SEATS;
     });
   }
-  /* Methode im Fenster: Name, Urheber, ein Satz, drei Denkschritte, Zahlen von heute, Wege zur Liste und zur Seite. */
+  /* ============================================================ App-Konzept 2, 1:1 nach Prototyp (#v-supertrader, Owner 15.11.2026)
+     Aufbau, Reihenfolge und Maße aus docs/design/app-konzept-2-2026-11/prototyp/quelle/p2.js (V.supertrader) und build.js
+     (Fenster „methode“, „ablauf“). CSS-Werte aus shell.js/kit.js im Block „.stp“ in st-redesign.css. Jede Zahl stammt aus den
+     Artefakten der Seite (summary.json, market.json, portfolio.json, backtests.json, stock/NVDA.json); fehlt sie, fehlt der Block.
+     Weggelassen, weil vom Owner zurückgestellt: Muster-Quiz. Die übrigen Blöcke der bisherigen Startseite stehen darunter. */
+  function ppct(v) { return isNum(v) ? U.num(Math.abs(v) * 100, 1) + ' %' : '–'; }
+  function stpSh(title, o) {
+    var x = o || {};
+    return '<div class="stp-sh"' + (x.id ? ' id="' + esc(x.id) + '"' : '') + '><h2>' + esc(title) + '</h2>' +
+      (x.href ? '<a class="stp-more" href="' + esc(x.href) + '">' + esc(x.link) + ' ›</a>' : x.right ? '<span class="stp-more">' + esc(x.right) + '</span>' : '') + '</div>';
+  }
+  function avatar(author, big) { return '<span class="stp-av' + (big ? ' stp-av--xl' : '') + '" aria-hidden="true">' + esc(mono(author)) + '</span>'; }
+  /* Schema je Methode (Owner 16.11.2026: „visuell, aber auch nochmal erklären“; Prototyp-Fenster „methode“). Eine kleine
+     Formbeschreibung je Methode, gezeichnet in derselben Fläche 358 × 120 wie im Prototyp. Keine echten Kurse, keine Zahlen,
+     keine Achsen. p: Kurslinie (mehrere Stücke = Kurslücke), z: Zone [x, y, b, h], s: Höhe der Ungültig-Marke, top: Zone liegt
+     unter dem Kurs (Wette auf Rückgang), box: Kiste der Methode, ma: Durchschnittslinie, vol: Volumenbalken (Index hervorgehoben),
+     t: was das Bild zeigt (für Vorleser). */
+  var SKETCH = {
+    C01: { p: ['8 98 40 82 70 88 100 64 130 72 160 48 190 56 215 50 240 56 262 50 290 36 320 26 350 18'], z: [250, 32, 108, 16], s: 86, ma: '160 48 262 48', t: 'Kurs steigt über das Hoch der letzten 20 Tage' },
+    C02: { p: ['8 72 40 60 70 78 100 58 130 74 160 56 190 72 220 58 245 66 270 50 300 36 330 26 350 20'], z: [250, 40, 108, 16], s: 84, ma: '100 56 270 56', t: 'Kurs steigt nach langer Spanne über das Hoch der letzten 55 Tage' },
+    C03: { p: ['8 104 40 88 70 72 100 56 128 42 150 46 170 76 190 46 210 78 232 44 250 60 270 34 300 26 330 18 350 12'], z: [250, 26, 108, 14], s: 82, box: [140, 40, 110, 42], t: 'Kurs pendelt in einer Kiste und bricht nach oben aus' },
+    C04: { p: ['8 40 30 60 50 80 70 90 90 84 110 92 130 86 150 92 170 84 190 90 210 86 235 88 255 74 280 56 310 40 350 22'], z: [250, 62, 108, 16], s: 98, ma: '8 60 120 84 240 86 350 60', ph: [[90, 'Basis'], [300, 'Aufwärtstrend']], t: 'Lange Seitwärtsphase, dann Ausbruch über die Durchschnittslinie' },
+    C05: { p: ['8 102 50 82 90 66 120 52 150 62 175 70 200 64 225 58 250 48 280 38 320 26 350 16'], z: [250, 40, 108, 14], s: 76, ma: '8 110 120 74 200 72 350 40', t: 'Laufender Aufwärtstrend, kurzer Rücksetzer, neuer Anlauf' },
+    C06: { p: ['8 104 40 60 62 96 96 44 122 78 152 36 174 60 200 30 216 46 236 28 250 36 266 26 290 20 320 12 350 8'], z: [250, 22, 108, 22], s: 92, t: 'Schwankungen werden kleiner, dann Ausbruch' },
+    C07: { p: ['8 110 40 104 70 90 100 64 125 38 150 22 170 30 190 26 210 32 230 28 250 30 275 18 310 12 350 6'], z: [250, 8, 108, 14], s: 40, t: 'Steiler Lauf, dann eine ruhige Pause nahe am Hoch' },
+    C08: { p: ['8 106 40 92 70 72 100 50 125 40 150 46 175 42 200 46 225 42 250 44 275 30 310 20 350 12'], z: [250, 26, 108, 12], s: 54, t: 'Starker Lauf, enge Pause, dann Ausbruch über die Pause' },
+    C09: { p: ['8 86 60 90 110 84 160 88 198 86', '210 46 240 40 280 34 320 30 350 24'], z: [205, 36, 64, 14], s: 58, t: 'Ruhiger Kurs, dann ein Kurssprung nach einer Überraschung' },
+    C10: { p: ['8 102 80 94 150 82 200 62 240 36 265 14 285 22 305 40 330 54 350 62'], z: [285, 40, 73, 14], s: 8, top: true, t: 'Überhitzter Anstieg, dann Umkehr nach unten (nur Forschung)' },
+    C11: { p: ['8 84 50 76 90 66 130 70 170 62 200 66 230 60 250 52 280 44 320 34 350 26'], z: [250, 40, 108, 14], s: 74, vol: [[6, 8, 7, 5, 9, 6, 7, 5, 8, 6, 20, 9, 8], 10], t: 'Aufwärtstag mit mehr Volumen als die Abwärtstage davor' },
+    C12: { p: ['8 92 50 86 100 82 150 76 198 74', '210 44 240 40 280 34 320 28 350 22'], z: [205, 34, 64, 14], s: 56, vol: [[6, 7, 5, 8, 6, 7, 5, 6, 22, 10, 8, 7, 6], 8], t: 'Kurslücke nach oben mit sehr hohem Volumen' },
+    C13: { p: ['8 104 50 84 90 64 130 44 160 30 185 40 210 52 230 58 250 50 280 38 320 26 350 18'], z: [245, 38, 113, 14], s: 70, ma: '8 112 100 84 200 62 260 54 350 38', t: 'Starker Trend, erster Rücksetzer an die 20-Tage-Linie, dann weiter' }
+  };
+  function sketch(cid) {
+    var k = SKETCH[cid]; if (!k) return '';
+    var z = k.z, vol = '';
+    if (k.vol) vol = k.vol[0].map(function (h, i) { var x = 14 + i * 26; return '<rect class="stp-sk-v' + (i === k.vol[1] ? ' is-on' : '') + '" x="' + x + '" y="' + (120 - h) + '" width="14" height="' + h + '" rx="2"/>'; }).join('');
+    return '<div class="stp-card stp-sk stp-mt12"><div class="stp-eb stp-sk-h">Schema der Methode, keine echten Kurse</div>' +
+      '<svg width="100%" viewBox="0 0 358 120" role="img" aria-label="' + esc('Schema, keine echten Kurse: ' + k.t + '. Gestrichelt: Ungültig-Marke laut Methode. Kasten: Zone laut Methode.') + '">' + vol +
+      (k.box ? '<rect class="stp-sk-box" x="' + k.box[0] + '" y="' + k.box[1] + '" width="' + k.box[2] + '" height="' + k.box[3] + '" rx="4"/>' : '') +
+      '<rect class="stp-sk-z" x="' + z[0] + '" y="' + z[1] + '" width="' + z[2] + '" height="' + z[3] + '"/><path class="stp-sk-zl" d="M' + z[0] + ' ' + (k.top ? z[1] + z[3] : z[1]) + 'h' + z[2] + '"/>' +
+      '<path class="stp-sk-s" d="M0 ' + k.s + 'h358"/>' + (k.ma ? '<path class="stp-sk-ma" d="M' + k.ma.replace(/^(\S+ \S+) /, '$1 L') + '"/>' : '') +
+      k.p.map(function (d) { return '<path class="stp-sk-p" d="M' + d.replace(/^(\S+ \S+) /, '$1 L') + '"/>'; }).join('') +
+      (k.ph ? k.ph.map(function (x) { return '<text class="stp-sk-t" x="' + x[0] + '" y="12" text-anchor="middle">' + esc(x[1]) + '</text>'; }).join('') : '') + '</svg>' +
+      '<div class="stp-fl stp-sb stp-xs stp-b7 stp-sk-l"><span class="stp-mut">Ungültig-Marke laut Methode</span><span class="stp-lc">Zone laut Methode</span></div></div>';
+  }
+  /* Methode im Fenster (Prototyp-Fenster „methode“): Kopf mit Monogramm, ein Satz, drei Denkschritte, Zahlen von heute, zwei Knöpfe. */
   function methodSheet(s) {
     var m = N ? N.method(s.candidateId) : null, meta = methodMeta(s), by = s.counts.byStage || {}, th = N ? N.think(s.candidateId) : null;
     var sfHref = '/supertrader/strategies/?sf=' + encodeURIComponent(s.candidateId), own = N ? N.href(s.candidateId) : sfHref, st = m && m.depot && SEATS && SEATS[m.depot];
     var parts = [[by.CHART_CANDIDATE || 0, STAGE_TXT.CHART_CANDIDATE, 'k'], [by.CONFIRMED_RESEARCH_SETUP || 0, STAGE_TXT.CONFIRMED_RESEARCH_SETUP, 'm'], [by.MODELED_TRADE_PLAN || 0, STAGE_TXT.MODELED_TRADE_PLAN, 'l']];
-    pop(cn(s), '<div class="st-k-mh">' + monoHtml(meta.trader, 'st-k-mono--xl') + '<div><b>' + esc(meta.trader) + '</b><span>' + esc(meta.style) + '</span></div>' + (m && m.depot ? '<span class="st-x-tag">Musterdepot</span>' : '') + '</div>' +
-      '<p class="st-k-plain">' + esc(meta.plain) + '</p>' +
-      (th ? '<div class="st-k-th">' + th.map(function (t, i) { return '<div><span class="st-x-stepn">' + (i + 1) + '</span><b>' + esc(t[0]) + '</b><span>' + esc(t[1]) + '</span></div>'; }).join('') + '</div>' : '') +
-      '<div class="st-k-g2"><div class="st-k-box"><b class="st-k-big vu-num">' + n0(s.counts.published) + '</b><span class="st-k-cap">heute erkannt</span></div>' +
-      (st ? '<div class="st-k-box"><b class="st-k-big vu-num">' + n0(st[0]) + ' / ' + n0(st[1]) + '</b><span class="st-k-cap">Plätze im Musterdepot</span>' + seats(st[0], st[1]) + '</div>' : '<div class="st-k-box"><b class="st-k-big vu-num">' + n0(by.MODELED_TRADE_PLAN || 0) + '</b><span class="st-k-cap">Plan fertig</span></div>') + '</div>' +
-      (s.counts.published ? '<div class="st-k-box st-k-gap">' + segs(parts, 'Stufen') + segLegend(parts) + '</div>' : '') +
-      (s.direction === 'SHORT_RESEARCH_ONLY' ? '<div class="st-r-mv">' + U.verdict('none', 'Nur Forschung') + '</div>' : '') +
-      '<div class="st-k-btns"><a class="vu-btn vu-btn--block" href="' + esc(sfHref) + '">' + esc(n0(s.counts.published) + (s.counts.published === 1 ? ' Aktie zeigen' : ' Aktien zeigen')) + '</a>' +
-      (own !== sfHref ? '<a class="vu-btn vu-btn--line vu-btn--block" href="' + esc(own) + '">Methode öffnen</a>' : '') + '</div>' +
-      '<p class="st-k-fine">Forschung, nicht zertifiziert. Die Zahl sagt nichts darüber, ob die Methode Geld verdient.</p>', 'st-k-method');
+    pop('', '<div class="stp-sheet"><div class="stp-fl stp-g12">' + avatar(meta.trader, true) + '<div class="stp-f1"><h2 class="stp-sh-t" style="font-size:26px">' + esc(cn(s)) + '</h2><div class="stp-sm stp-mut">' + esc(meta.trader + ' · ' + meta.style) + '</div></div>' + (m && m.depot ? '<span class="stp-pill stp-pill--sm">Depot</span>' : '') + '</div>' +
+      '<p class="stp-md stp-sec stp-mt12">' + esc(meta.plain) + '</p>' + sketch(s.candidateId) +
+      (th ? '<div class="stp-fl stp-g6 stp-mt8 stp-th">' + th.map(function (t, i) { return '<div class="stp-f1 stp-card"><span class="stp-q">' + (i + 1) + '</span><div class="stp-sm stp-b8 stp-mt8">' + esc(t[0]) + '</div><div class="stp-xs stp-mut">' + esc(t[1]) + '</div></div>'; }).join('') + '</div>' : '') +
+      '<div class="stp-fl stp-g8 stp-mt12"><div class="stp-f1 stp-card"><div class="stp-num stp-lc" style="font-size:30px">' + n0(s.counts.published) + '</div><div class="stp-xs stp-mut stp-b7">Muster heute</div></div>' +
+      (st ? '<div class="stp-f1 stp-card"><div class="stp-num" style="font-size:30px">' + n0(st[0]) + ' / ' + n0(st[1]) + '</div><div class="stp-xs stp-mut stp-b7">Plätze im Musterdepot</div></div>' : '<div class="stp-f1 stp-card"><div class="stp-num" style="font-size:30px">' + n0(by.MODELED_TRADE_PLAN || 0) + '</div><div class="stp-xs stp-mut stp-b7">Plan fertig</div></div>') + '</div>' +
+      (s.counts.published ? '<div class="stp-card stp-mt8 stp-stages">' + segs(parts, 'Stufen') + segLegend(parts) + '</div>' : '') +
+      (s.direction === 'SHORT_RESEARCH_ONLY' ? '<div class="stp-mt8">' + U.verdict('none', 'Nur Forschung') + '</div>' : '') +
+      '<div class="stp-fl stp-g8 stp-mt16"><a class="stp-btn stp-f1" href="' + esc(sfHref) + '">' + esc(n0(s.counts.published) + (s.counts.published === 1 ? ' Aktie zeigen' : ' Aktien zeigen')) + '</a>' +
+      (own !== sfHref ? '<a class="stp-btn stp-btn--ol" href="' + esc(own) + '">Methode öffnen</a>' : '') + '</div>' +
+      '<p class="stp-xs stp-mut stp-mt8 stp-c">Forschung, nicht zertifiziert. Ein Vorteil ist nicht belegt.</p></div>', 'st-k-method');
   }
-
-  /* ============================================================ SX01 Start (Prototyp „App-Konzept 2“, Screen Supertrader) */
-  function methodTile(s) {
-    var m = N ? N.method(s.candidateId) : null, meta = methodMeta(s);
-    return U.tap('<span class="st-k-mt-h">' + monoHtml(meta.trader) + (m && m.depot ? '<span class="st-x-tag st-x-tag--sm">Musterdepot</span>' : '') + '</span>' +
-      '<b class="st-k-mt-n">' + esc(cn(s)) + '</b><span class="st-k-mt-s">' + esc(meta.style) + '</span>' +
-      '<b class="st-k-big vu-num">' + n0(s.counts.published) + '</b><span class="st-k-cap">heute erkannt</span>',
-      { href: N ? N.href(s.candidateId) : '/supertrader/strategies/?sf=' + s.candidateId, cls: 'st-k-mt', attrs: { 'data-k-method': s.candidateId, 'aria-haspopup': 'dialog' } });
+  /* Trader-Kachel (Prototyp trader(): 164 px, Monogramm 64 px, Zahl 38 px). */
+  function traderTile(s) {
+    var m = N ? N.method(s.candidateId) : null, meta = methodMeta(s), pat = m ? m.pattern : cn(s);
+    return '<a class="stp-tile stp-tap stp-trader" href="' + esc(N ? N.href(s.candidateId) : '/supertrader/strategies/?sf=' + s.candidateId) + '" data-k-method="' + esc(s.candidateId) + '" aria-haspopup="dialog" aria-label="' + esc(cn(s) + ', ' + meta.trader + ': ' + n0(s.counts.published) + ' Muster heute') + '">' +
+      '<span class="stp-fl stp-sb stp-top">' + avatar(meta.trader) + (m && m.depot ? '<span class="stp-pill stp-pill--sm">Depot</span>' : '') + '</span>' +
+      '<b class="stp-b8 stp-mt12 stp-tr-n">' + esc(m && /,/.test(meta.trader) ? m.trader : meta.trader) + '</b><span class="stp-xs stp-mut stp-ell">' + esc(pat + ' · ' + meta.style) + '</span>' +
+      '<b class="stp-num stp-lc stp-mt12" style="font-size:38px">' + n0(s.counts.published) + '</b><span class="stp-xs stp-mut stp-b7">Muster heute</span></a>';
   }
-  function planRow(r, S, mx) {
-    var w = isNum(r.pd) && mx ? Math.max(2, Math.min(50, Math.abs(r.pd) / mx * 50)).toFixed(1) : 0;
-    return '<button type="button" class="vu-tap st-k-plan" data-k-plan="' + esc(r.c + '|' + r.t) + '" aria-haspopup="dialog"><span class="st-k-row">' + U.logo(r.t) + '<span class="st-k-nm"><b>' + esc(r.n || r.t) + '</b><span>' + esc(cnId(S, r.c)) + '</span></span>' +
-      '<span class="st-x-mr-v">' + (isNum(r.pd) ? U.chg(r.pd * 100, { digits: 1 }) : '–') + '<small>zur Zone</small></span></span>' +
-      (isNum(r.pd) ? '<span class="st-k-zero" aria-hidden="true"><i class="' + (r.pd >= 0 ? 'is-up' : 'is-down') + '" style="width:' + w + '%"></i></span>' : '') + '</button>';
+  /* Lage des Schlusses auf dem Weg zur Zone (Prototyp plan(): Breite 100 − Abstand × 12 %, Zone als Kasten rechts). */
+  function zoneW(pd) { return isNum(pd) ? (pd >= 0 ? 100 : Math.max(4, 100 - Math.abs(pd) * 100 * 12)) : null; }
+  function zonePill(pd) { return !isNum(pd) ? '' : pd < 0 ? ppct(pd) + ' zur Zone' : ppct(pd) + ' über Zone'; }
+  function planTile(r, S) {
+    var w = zoneW(r.pd);
+    return '<button type="button" class="stp-tile stp-tap stp-plan stp-mt8" data-k-plan="' + esc(r.c + '|' + r.t) + '" aria-haspopup="dialog"><span class="stp-fl stp-g10">' + U.logo(r.t) + '<span class="stp-f1 stp-col"><b class="stp-b8 stp-ell">' + esc(r.n || r.t) + '</b><span class="stp-xs stp-mut">' + esc(cnId(S, r.c)) + '</span></span>' +
+      (isNum(r.pd) ? '<span class="stp-pill">' + esc(zonePill(r.pd)) + '</span>' : '') + '</span>' +
+      (w != null ? '<span class="stp-zone" aria-hidden="true"><span class="stp-bar"><i class="stp-grad" style="width:' + w.toFixed(1) + '%"></i></span><span class="stp-zbox"></span><span class="stp-zdot" style="left:calc(' + w.toFixed(1) + '% - ' + (w >= 99 ? 22 : 9) + 'px)"></span></span>' : '') + '</button>';
   }
-  /* Plan im Fenster: Marken des modellierten Ablaufs aus dem Kandidatenstand der Aktie (nur Stufe „Plan fertig“). */
+  /* Schritt im Ablauf (Prototyp tl()). */
+  function tlStep(on, t, d, s, last) {
+    return '<div class="stp-tl' + (on ? ' is-on' : '') + '"><div class="stp-tl-a"><span class="stp-tl-c">' + (on ? U.glyph('check', 13) : '') + '</span>' + (last ? '' : '<i></i>') + '</div><div class="stp-f1 stp-tl-b"><div class="stp-fl stp-sb"><b' + (on ? '' : ' class="stp-mut"') + '>' + esc(t) + '</b><span class="stp-xs stp-mut">' + esc(d) + '</span></div><div class="stp-xs stp-mut">' + esc(s) + '</div></div></div>';
+  }
+  /* Plan im Fenster (Prototyp-Fenster „ablauf“): Marken aus dem Kandidatenstand der Aktie (nur Stufe „Plan fertig“). */
   function planSheet(r, S, X) {
-    var el = pop(r.n || r.t, '<div class="st-k-mh">' + U.logo(r.t, { xl: true }) + '<div><b>' + esc(cnId(S, r.c)) + '</b><span>' + esc(r.t) + '</span></div><span class="st-x-tag">Plan fertig</span></div>' +
-      '<div class="st-k-box st-k-gap" data-plan>' + U.skeleton('rows') + '</div>' +
-      '<div class="st-k-btns"><a class="vu-btn vu-btn--block" href="' + esc(stockHref(r.t)) + '">Aktie öffnen</a><a class="vu-btn vu-btn--line vu-btn--block" href="' + esc(N ? N.href(r.c) : '/supertrader/strategies/?sf=' + r.c) + '">Methode öffnen</a></div>' +
-      '<p class="st-k-fine">Werte eines Forschungsmodells mit benannten Modellannahmen. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit.</p>', 'st-k-plan');
+    var el = pop('', '<div class="stp-sheet"><div class="stp-fl stp-g12">' + U.logo(r.t, { xl: true }) + '<div class="stp-f1"><h2 class="stp-sh-t">' + esc(r.n || r.t) + '</h2><div class="stp-sm stp-mut">' + esc(cnId(S, r.c)) + '</div></div><span class="stp-pill">Plan fertig</span></div>' +
+      '<div data-plan>' + U.skeleton('rows') + '</div>' +
+      '<div class="stp-fl stp-g8 stp-mt16"><a class="stp-btn stp-f1" href="/aktie/#/' + esc(encodeURIComponent(r.t)) + '" data-vu-stock="' + esc(r.t) + '" data-vu-stock-name="' + esc(r.n || r.t) + '">Aktie öffnen</a><a class="stp-btn stp-btn--ol stp-f1" href="' + esc(N ? N.href(r.c) : '/supertrader/strategies/?sf=' + r.c) + '">Methode öffnen</a></div>' +
+      '<p class="stp-xs stp-mut stp-mt8 stp-c">Werte eines Forschungsmodells mit benannten Modellannahmen. Keine Order, keine Empfehlung, keine Aussage zur Handelbarkeit. <a class="stp-lk" href="' + esc(stockHref(r.t)) + '">Alle Methoden dieser Aktie</a></p></div>', 'st-k-plan');
     var host = el && el.querySelector('[data-plan]'); if (!host) return;
     X.getJSON('sf-candidates/ticker/' + r.sh + '.json').then(function (t) {
       var v = (t.views || []).filter(function (x) { return x.ticker === r.t && x.candidateId === r.c && x.stage === 'MODELED_TRADE_PLAN' && x.plan; })[0];
       if (!v) { host.innerHTML = U.blank('Für diese Aktie liegt heute kein fertiger Plan vor.'); return; }
-      var p = v.plan, onOpen = /OPEN/.test(p.entryType);
-      host.innerHTML = '<span class="vu-ltag">Modellierter Ablauf (hypothetisch)</span>' +
-        zoneBar([{ v: p.stop, label: 'Ungültig-Marke laut Methode' }, { v: v.close, label: 'Schluss', cls: 'me' }, { v: p.trigger, label: onOpen ? 'Referenz (Schluss)' : 'Zone laut Methode', cls: 'z' }]) +
-        '<p class="st-k-fine">' + esc((onOpen ? 'Zone zur Eröffnung ' : 'Zone laut Methode ab ') + dDe(p.earliestSession) + (isNum(p.plannedRiskPct) ? ' · ' + U.num(p.plannedRiskPct * 100, p.plannedRiskPct < 0.01 ? 2 : 1) + ' % Abstand zur Ungültig-Marke' : '') + (isNum(p.limit) ? ' · Limit ' + usd(p.limit) : '')) + '</p>';
+      var p = v.plan, onOpen = /OPEN/.test(p.entryType), lo = p.stop, hi = p.trigger;
+      var pos = isNum(lo) && isNum(hi) && isNum(v.close) && hi > lo ? Math.max(0, Math.min(1, (v.close - lo) / (hi - lo))) : null;
+      host.innerHTML = '<div class="stp-card stp-zcard stp-mt12"><div class="stp-eb">Modellierter Ablauf (hypothetisch)</div>' +
+        '<div class="stp-ztrack" role="img" aria-label="' + esc('Ungültig-Marke laut Methode ' + usd(p.stop) + ', Schluss ' + usd(v.close) + ', ' + (onOpen ? 'Referenz ' : 'Zone laut Methode ') + usd(p.trigger)) + '"><span class="stp-bar"><i class="stp-grad" style="width:' + (pos == null ? 0 : (pos * 100).toFixed(1)) + '%"></i></span><span class="stp-zs"></span>' +
+        (pos == null ? '' : '<span class="stp-zc" style="left:calc(' + (pos * 100).toFixed(1) + '% - ' + (pos * 54).toFixed(0) + 'px)"></span>') + '<span class="stp-zbox stp-zbox--l"></span></div>' +
+        '<div class="stp-fl stp-sb stp-xs stp-mt8 stp-zl"><div><div class="stp-mut">Ungültig-Marke laut Methode</div><b>' + usd(p.stop) + '</b></div><div class="stp-c"><div class="stp-mut">Schluss</div><b>' + usd(v.close) + '</b></div><div class="stp-r"><div class="stp-mut">' + (onOpen ? 'Referenz (Schluss)' : 'Zone laut Methode') + '</div><b class="stp-lc">' + usd(p.trigger) + '</b></div></div></div>' +
+        '<div class="stp-mt16">' + tlStep(1, STAGE_TXT.CHART_CANDIDATE, '', 'Der Chart zeigt das Muster der Methode.') + tlStep(1, STAGE_TXT.CONFIRMED_RESEARCH_SETUP, '', 'Alle prüfbaren Regeln der Methode stimmen.') +
+        tlStep(1, STAGE_TXT.MODELED_TRADE_PLAN, dShort(v.asOf), 'Zone und Ungültig-Marke berechnet' + (isNum(p.plannedRiskPct) ? ', ' + U.num(p.plannedRiskPct * 100, p.plannedRiskPct < 0.01 ? 2 : 1) + ' % Abstand' : '') + '.') +
+        tlStep(0, onOpen ? 'Zone zur Eröffnung' : 'Zone laut Methode', 'ab ' + dShort(p.earliestSession), isNum(p.limit) ? 'Limit ' + usd(p.limit) + ' laut Methode' : 'Wenn der Kurs die Zone erreicht', 1) + '</div>';
     }).catch(function () { host.innerHTML = U.blank('Der Plan ist gerade nicht erreichbar. Bitte später erneut versuchen.'); });
   }
   /* Marktlage im Fenster: Zustand und Messwerte aus market.json (Beschreibung der Gegenwart, keine Vorhersage). */
@@ -375,20 +431,47 @@
       '<div class="st-k-box st-k-gap">' + (rg.measures || []).map(function (x) { return '<div class="st-k-ms"><span>' + esc(x.label) + '</span>' + U.meter(isNum(x.share) ? x.share * 100 : null, { label: x.label, lime: true }) + '<b class="vu-num">' + (isNum(x.share) ? U.num(x.share * 100, 0) + ' %' : '–') + '</b></div>'; }).join('') + '</div>' +
       '<p class="st-k-fine">' + esc('Stand ' + dDe(rg.asOf) + '. ' + String(rg.notAForecast || '').split('. ')[0].replace(/\.?$/, '.') + ' Keine Prognose.') + '</p>', 'st-k-market');
   }
+  var STP_TABS = [['Heute', 'stp-heute'], ['Trader', 'stp-tr'], ['Plan fertig', 'stp-plan'], ['Musterdepots', 'stp-dep'], ['Forschung', 'stp-for']];
+  function stpTabs(wrap) {
+    var nav = document.createElement('nav'); nav.className = 'stp-tabs'; nav.setAttribute('aria-label', 'Supertrader-Bereiche');
+    /* Hinter den fünf Reitern des Prototyps (Sprungmarken) bleiben die übrigen Bereiche erreichbar, die sonst die Reiterzeile des
+       Rahmens zeigt (dieselbe Quelle: VUNavigation.products(), Welt „supertrader“). */
+    var go = [];
+    try {
+      var w = window.VUNavigation && window.VUNavigation.products ? window.VUNavigation.products().filter(function (p) { return p.id === 'supertrader'; })[0] : null;
+      if (w) go = w.tabs.filter(function (t) { return t.href && t.label !== w.label && !STP_TABS.some(function (x) { return x[0] === t.label; }); });
+    } catch (e) { go = []; }
+    nav.innerHTML = STP_TABS.map(function (t, i) { return '<a class="stp-tab' + (i ? '' : ' is-on') + '" href="#' + t[1] + '" data-stp-tab="' + t[1] + '"' + (i ? '' : ' aria-current="true"') + '>' + esc(t[0]) + '</a>'; }).join('') +
+      (go.length ? '<span class="stp-tabs-sep" aria-hidden="true"></span>' + go.map(function (t) { return '<a class="stp-tab" href="' + esc(t.href) + '">' + esc(t.label) + '</a>'; }).join('') : '');
+    nav.addEventListener('click', function (e) {
+      var a = e.target.closest('[data-stp-tab]'); if (!a) return;
+      e.preventDefault();
+      nav.querySelectorAll('[data-stp-tab]').forEach(function (x) { var on = x === a; x.classList.toggle('is-on', on); if (on) x.setAttribute('aria-current', 'true'); else x.removeAttribute('aria-current'); });
+      var target = document.getElementById(a.getAttribute('data-stp-tab'));
+      if (target) { var y = target.getBoundingClientRect().top + window.scrollY - nav.getBoundingClientRect().height - (parseFloat(getComputedStyle(nav).top) || 0) - 4; window.scrollTo({ top: a.getAttribute('data-stp-tab') === 'stp-heute' ? 0 : Math.max(0, y), behavior: 'smooth' }); }
+    });
+    wrap.appendChild(nav);
+  }
   function home(D, X) {
     var sig = D.signals, c = sig.counts || {}, main = page(X.main, X), rg = D.market && D.market.regime;
     var prep = (c.SETUP || 0) + (c.ENTRY_READY || 0), held = (c.ACTIVE || 0) + (c.WARNING || 0) + (c.EXIT || 0);
     var ABOUT = 'Methoden der Profis';
+    main.classList.add('stp');
+    if (window.VUNavigation && window.VUNavigation.rahmen) window.VUNavigation.rahmen({ tabs: 'inhalt' });
     append(main, '<h1 class="st-x-lt vu-visually-hidden">Supertrader: ' + ABOUT + '</h1>' +
       tpl('st-k-about', '<p class="st-k-plain">13 Methoden berühmter Trader als feste Regeln, jeden Tag auf alle US-Aktien angewendet. Musterdepots zeigen, was die Regel tun würde. Ohne echtes Geld.</p><div class="st-k-gap">' + forschTag() + '</div><p class="st-k-fine"><b>Die 13 Methoden.</b> Jede sucht ein bestimmtes Kursmuster.</p>' + flowExplain() + '<p class="st-k-fine">' + LEGAL_LINE + '</p>'));
-    var today = document.createElement('section'); today.className = 'st-x-today st-k-hero'; main.appendChild(today);
-    function hero(by, asOf, busy) {
+    stpTabs(main);
+    /* Heute: Trichter der drei Stufen (Prototyp: Kachel p16, Balken 100 / 62 / 38 %, Zahl 34 px) und die Marktlage in einer Zeile. */
+    var todayWrap = document.createElement('div'); todayWrap.className = 'stp-px'; todayWrap.id = 'stp-heute'; main.appendChild(todayWrap);
+    var today = document.createElement('section'); today.className = 'st-x-today stp-tile stp-hero'; today.setAttribute('aria-label', 'Heute'); todayWrap.appendChild(today);
+    var mm = rg && (rg.measures || []).filter(function (x) { return x.id === 'above200' && isNum(x.share); })[0];
+    function hero(by, nSec, busy) {
       var val = function (k) { return by ? n0(by[k] || 0) : busy ? '…' : '–'; };
       today.setAttribute('aria-busy', busy ? 'true' : 'false');
-      today.innerHTML = '<div class="st-k-hero-h"><span class="vu-ltag st-r-asof">Heute' + (asOf ? ' · ' + dShort(asOf) : '') + '</span>' + forschTag() + '</div>' +
-        '<button type="button" class="st-k-funnel" aria-haspopup="dialog" data-vu-pop="st-k-about" data-vu-pop-title="' + ABOUT + '" aria-label="' + esc('Alle US-Aktien: ' + STAGES.map(function (k) { return STAGE_TXT[k] + ' ' + val(k); }).join(', ') + '. Erklärung öffnen') + '">' +
-        STAGES.map(function (k, i) { return '<span class="st-k-fn s' + (i + 1) + '"' + (by ? ' data-stage="' + k + '"' : '') + '><b>' + esc(STAGE_TXT[k]) + '</b><span class="vu-num">' + val(k) + '</span></span>'; }).join('') + '</button>' +
-        (rg && rg.label ? '<button type="button" class="st-k-mkt" data-k-market="1" aria-haspopup="dialog"><i aria-hidden="true"></i><span><b>Marktlage: ' + esc(rg.label) + '</b></span>' + U.glyph('next', 14) + '</button>' : '');
+      today.innerHTML = '<div class="stp-fl stp-sb stp-g8"><span class="stp-eb st-r-asof">Heute' + (isNum(nSec) ? ' · ' + n0(nSec) + ' Aktien geprüft' : '') + '</span><span class="stp-pill stp-pill--sm stp-pill--ol">Forschung</span></div>' +
+        '<button type="button" class="st-k-funnel stp-funnel" aria-haspopup="dialog" data-vu-pop="st-k-about" data-vu-pop-title="' + ABOUT + '" aria-label="' + esc('Alle US-Aktien: ' + STAGES.map(function (k) { return STAGE_TXT[k] + ' ' + val(k); }).join(', ') + '. Erklärung öffnen') + '">' +
+        STAGES.map(function (k, i) { return '<span class="st-k-fn stp-fn s' + (i + 1) + '"' + (by ? ' data-stage="' + k + '"' : '') + '><b>' + esc(i === 2 ? 'Plan' : STAGE_TXT[k]) + '</b><span class="stp-num">' + val(k) + '</span></span>'; }).join('') + '</button>' +
+        (rg && rg.label ? '<button type="button" class="stp-mkt" data-k-market="1" aria-haspopup="dialog"><i class="stp-dot" aria-hidden="true"></i><span><b>Marktlage: ' + esc(rg.label) + '.</b>' + (mm ? ' <span class="stp-mut">' + esc(U.num(mm.share * 100, 0) + ' % der Aktien über der 200-Tage-Linie.') + '</span>' : '') + '</span></button>' : '');
     }
     hero(null, null, true);
     onTap(main, 'data-k-market', function () { marketSheet(rg); });
@@ -396,55 +479,85 @@
     var planHost = document.createElement('div'); main.appendChild(planHost);
     var newHost = document.createElement('div'); main.appendChild(newHost);
     var depHost = document.createElement('div'); main.appendChild(depHost);
+    var forHost = document.createElement('div'); main.appendChild(forHost);
     var exHost = document.createElement('div'); main.appendChild(exHost);
     var navHost = document.createElement('div'); main.appendChild(navHost);
-    depHost.innerHTML = sh('Musterdepots', { right: 'ohne echtes Geld' }) +
-      '<a class="vu-tap st-k-dep" href="/supertrader/treffer/">' + U.stats([{ value: n0(prep), label: 'warten' }, { value: n0(c.TRIGGERED || 0), label: 'heute aufgenommen' }, { value: n0(held), label: 'im Musterdepot', tone: 'lime' }, { value: n0(c.CLOSED || 0), label: 'abgegeben' }], { label: 'Musterdepots, ohne echtes Geld' }) + '</a><div data-seats></div>';
-    navHost.innerHTML = sh('Wie belastbar?') +
-      '<a class="vu-tap st-k-bel" href="/supertrader/forschung/"><span class="st-k-row">' + forschTag() + '<span class="st-k-go">' + U.glyph('next', 16) + '</span></span><b class="st-k-bel-t" data-bt>Wie belastbar ist welche Methode?</b><span data-bt-g></span></a>' +
-      '<a class="vu-tap st-k-nav" href="/supertrader/hausstrategie/"><span class="st-k-row">' + U.hud('supertrader', 42) + '<span class="st-k-nm st-k-nm--wrap"><b>VU Hausstrategie</b><span>20 Aktien, je 5 %, eigene Regeln, Vorwärtslauf</span></span><span class="st-k-go">' + U.glyph('next', 16) + '</span></span></a>' +
-      U.next({ title: 'Methoden', sub: 'Was sucht welche Methode?', href: '/supertrader/strategies/' }) +
-      '<p class="st-x-foot">' + LEGAL_LINE + '</p>';
-    foot(main, X, sig);
+    railHost.innerHTML = stpSh('Die Trader', { id: 'stp-tr' }) + '<div class="stp-px">' + U.skeleton('rows') + '</div>';
+    /* Musterdepots (Prototyp: eine Kachel mit belegten Plätzen je Depot). Die Zählung des Ablaufs steht im Fenster der Kachel. */
+    var depStats = U.stats([{ value: n0(prep), label: 'warten' }, { value: n0(c.TRIGGERED || 0), label: 'heute aufgenommen' }, { value: n0(held), label: 'im Musterdepot', tone: 'lime' }, { value: n0(c.CLOSED || 0), label: 'abgegeben' }], { label: 'Musterdepots, ohne echtes Geld' });
+    depHost.innerHTML = stpSh('Musterdepots', { id: 'stp-dep', href: '/supertrader/treffer/', link: 'Rechenmodell, kein echtes Geld' }) + '<div class="stp-px"><button type="button" class="stp-tile stp-tap stp-dep" data-stp-dep aria-haspopup="dialog" aria-label="Musterdepots: belegte Plätze und Ablauf öffnen"><span data-seats>' + depStats + '</span></button></div>';
+    var depRows = '';
+    onTap(depHost, 'data-stp-dep', function () {
+      pop('Musterdepots', '<div class="stp-sheet"><p class="stp-sm stp-sec">Fünf Methoden haben ein Musterdepot. Es zeigt, was die Regel tun würde. Rechenmodell, kein echtes Geld.</p><div class="stp-card stp-mt12">' + depStats + '</div>' +
+        (depRows ? '<div class="stp-card stp-mt8">' + depRows + '</div>' : '') +
+        '<a class="stp-btn stp-mt16" href="/supertrader/treffer/">Alle Treffer zeigen</a></div>', 'st-k-dep');
+    });
+    /* Wie belastbar? (Prototyp: Zahl 40 px, Balken 18 px, Zeile darunter, ein Satz). */
+    forHost.innerHTML = stpSh('Wie belastbar?', { id: 'stp-for', right: 'Forschung, nicht zertifiziert' }) +
+      '<div class="stp-px"><a class="stp-tile stp-tap stp-bel" href="/supertrader/forschung/"><span data-bt><b class="stp-num" style="font-size:40px">…</b></span><span class="stp-sm stp-sec stp-mt8 stp-blk">Supertrader zeigt, wie Profis denken und wo ihre Regeln heute greifen. Ein Renditeversprechen ist es nicht.</span></a></div>';
+    /* Weitere Blöcke der bisherigen Startseite im selben Design; danach „Weiter“ und „Daten & Hinweise“ wie im Prototyp. */
+    navHost.innerHTML = stpSh('Eigene Strategie') +
+      '<div class="stp-px"><a class="stp-tile stp-tap stp-fl stp-g12" href="/supertrader/hausstrategie/">' + U.hud('supertrader', 40) + '<span class="stp-f1 stp-col"><b class="stp-b8">VU Hausstrategie</b><span class="stp-xs stp-mut">20 Aktien, je 5 %, eigene Regeln, Vorwärtslauf</span></span>' + U.glyph('next', 18) + '</a>' +
+      '<a class="stp-tile stp-tap stp-fl stp-g12 stp-mt8" href="/supertrader/strategies/">' + U.hud('supertrader', 40) + '<span class="stp-f1 stp-col"><b class="stp-b8">Methoden</b><span class="stp-xs stp-mut">Was sucht welche Methode?</span></span>' + U.glyph('next', 18) + '</a>' +
+      '<p class="stp-xs stp-mut stp-mt12">' + LEGAL_LINE + '</p></div>' +
+      '<div class="stp-px stp-next">' + U.next({ title: 'Technical: Charts und Muster', sub: 'Formationen und Trends im Chart', href: '/technical/' }) + '</div>' +
+      '<div class="stp-end"><button type="button" class="stp-lk" data-stp-hinweise>Daten &amp; Hinweise</button></div>';
+    /* „Daten & Hinweise“: Datenstand, Methodik und Hinweistext der bisherigen Fußzeile im Fenster. */
+    var footNode = X.disclaimer(sig);
+    onTap(navHost, 'data-stp-hinweise', function () {
+      var box = document.createElement('div'); box.className = 'stp-sheet stp-hw';
+      if (footNode) { var cl = footNode.cloneNode(true), d = cl.querySelector('details'); if (d) d.open = true; box.appendChild(cl); }
+      pop('Daten & Hinweise', box, 'st-k-hinweise');
+    });
+    if (window.VUNavigation && window.VUNavigation.datenstand && sig.asOf) window.VUNavigation.datenstand({ datum: sig.asOf, zeilen: [['Supertrader', 'Erkennung auf Tagesschlusskursen vom ' + dDe(sig.asOf)], ['Marktlage', rg && rg.asOf ? 'Stand ' + dDe(rg.asOf) : 'nicht verfügbar', !!(rg && rg.asOf)]] });
 
     X.getJSON('sf-candidates/summary.json').then(function (sum) {
       var by = sum.counts.byStage || {}, list = sum.strategies.slice().sort(function (a, b) { return b.counts.published - a.counts.published; });
       var S = {}; sum.strategies.forEach(function (s) { S[s.candidateId] = s; });
-      hero(by, sum.asOf, false);
-      railHost.innerHTML = sh('Die ' + list.length + ' Methoden', { href: '/supertrader/strategies/', link: 'Alle ' + list.length }) + U.rail(list.map(methodTile), { label: 'Die ' + list.length + ' Methoden', width: 176 });
+      hero(by, sum.dataQuality && sum.dataQuality.securities, false);
+      if (window.VUNavigation && window.VUNavigation.datenstand && sum.asOf) window.VUNavigation.datenstand({ datum: sum.asOf, zeilen: [['Supertrader', 'Erkennung auf Tagesschlusskursen vom ' + dDe(sum.asOf)], ['Marktlage', rg && rg.asOf ? 'Stand ' + dDe(rg.asOf) : 'nicht verfügbar', !!(rg && rg.asOf)]] });
+      railHost.innerHTML = stpSh('Die Trader', { id: 'stp-tr', href: '/supertrader/strategies/', link: 'Alle ' + list.length }) + '<div class="stp-rail" role="group" aria-label="Die ' + list.length + ' Methoden">' + list.map(traderTile).join('') + '</div>';
       onTap(railHost, 'data-k-method', function (cid) { if (S[cid]) methodSheet(S[cid]); });
-      /* Plan fertig: Zone und Ungültig-Marke stehen; Abstand zur Zone heute */
+      /* Plan fertig: Zone und Ungültig-Marke stehen; sortiert nach Abstand zur Zone heute, eine Zeile je Aktie. */
       var rows = []; Object.keys(sum.top || {}).forEach(function (k) { (sum.top[k] || []).forEach(function (r) { if (r.s === 'MODELED_TRADE_PLAN') rows.push(r); }); });
       var seen = {}; rows = rows.sort(function (a, b) { return Math.abs(isNum(a.pd) ? a.pd : 9) - Math.abs(isNum(b.pd) ? b.pd : 9); }).filter(function (r) { if (seen[r.t]) return false; seen[r.t] = 1; return true; });
-      var nPlan = by.MODELED_TRADE_PLAN || rows.length, shown = rows.slice(0, 4), mx = Math.max.apply(null, shown.map(function (r) { return isNum(r.pd) ? Math.abs(r.pd) : 0; }).concat([0.005]));
-      planHost.innerHTML = sh('Plan fertig', { href: '/supertrader/treffer/?schritt=plan', link: 'Alle ' + n0(nPlan) }) + '<p class="st-k-sub">Zone und Ungültig-Marke laut Methode stehen. Abstand zur Zone heute:</p>' +
-        (shown.length ? '<div class="st-k-list st-k-cols">' + shown.map(function (r) { return planRow(r, S, mx); }).join('') + '</div>' : U.blank('Heute hat keine Aktie einen fertigen Plan.'));
+      var nPlan = by.MODELED_TRADE_PLAN || rows.length, shown = rows.slice(0, 3);
+      planHost.innerHTML = stpSh('Plan fertig heute', { id: 'stp-plan', href: '/supertrader/treffer/?schritt=plan', link: 'Alle ' + n0(nPlan) }) +
+        '<div class="stp-px stp-plans">' + (shown.length ? shown.map(function (r) { return planTile(r, S); }).join('') : U.blank('Heute hat keine Aktie einen fertigen Plan.')) + '</div>';
       onTap(planHost, 'data-k-plan', function (key) { var r = rows.filter(function (x) { return x.c + '|' + x.t === key; })[0]; if (r) planSheet(r, S, X); });
-      /* Neu heute: Einträge (Methode × Aktie), die gegenüber dem Vortag dazugekommen oder weggefallen sind (summary.json#changes) */
+      /* Neu heute: Einträge (Methode × Aktie), die gegenüber dem Vortag dazugekommen oder weggefallen sind (summary.json#changes). */
       var ch = sum.changes;
       if (ch && ch.status === 'COMPARED' && Array.isArray(ch.added) && Array.isArray(ch.removed)) {
-        var parts = [[ch.added.length, 'neu erkannt', 'l'], [ch.removed.length, 'nicht mehr erkannt', 'k']];
-        newHost.innerHTML = sh('Neu heute', { right: 'gegenüber ' + dShort(ch.previousAsOf) }) + '<div class="st-k-card st-k-new"><div class="st-k-new-n"><div><b class="st-k-big vu-num">+' + n0(ch.added.length) + '</b><span class="st-k-cap">neu erkannt</span></div><div><b class="st-k-big vu-num">−' + n0(ch.removed.length) + '</b><span class="st-k-cap">nicht mehr erkannt</span></div></div>' +
-          segs(parts, 'Neu heute') + '<p class="st-k-fine">Gezählt je Methode und Aktie.' + (Array.isArray(ch.restaged) && ch.restaged.length ? ' ' + n0(ch.restaged.length) + ' mit neuer Stufe.' : '') + '</p></div>';
+        var a = ch.added.length, rm = ch.removed.length, tot = a + rm || 1;
+        newHost.innerHTML = stpSh('Neu heute') + '<div class="stp-px"><button type="button" class="stp-tile stp-tap stp-new" data-stp-new aria-haspopup="dialog"><span class="stp-fl stp-sb"><span class="stp-col"><b class="stp-num stp-lc" style="font-size:40px">+' + n0(a) + '</b><span class="stp-xs stp-mut stp-b7">neu erkannt</span></span>' +
+          '<span class="stp-col stp-r"><b class="stp-num" style="font-size:40px">−' + n0(rm) + '</b><span class="stp-xs stp-mut stp-b7">nicht mehr erkannt</span></span></span>' +
+          '<span class="stp-seg stp-mt12" role="img" aria-label="' + esc(n0(a) + ' neu erkannt, ' + n0(rm) + ' nicht mehr erkannt') + '"><i class="stp-l" style="width:' + (a / tot * 100).toFixed(1) + '%"></i><i class="stp-w" style="width:' + (rm / tot * 100).toFixed(1) + '%"></i></span></button></div>';
+        onTap(newHost, 'data-stp-new', function () {
+          pop('Neu heute', '<div class="stp-sheet"><p class="stp-sm stp-sec">' + esc('Gegenüber dem ' + dDe(ch.previousAsOf) + ': ' + n0(a) + ' Einträge neu erkannt, ' + n0(rm) + ' nicht mehr erkannt.' + (Array.isArray(ch.restaged) && ch.restaged.length ? ' ' + n0(ch.restaged.length) + ' mit neuer Stufe.' : '')) + '</p><p class="stp-xs stp-mut stp-mt8">Gezählt je Methode und Aktie.</p></div>', 'st-k-new');
+        });
       }
-      /* Belegte Plätze je Musterdepot (nach dem ersten Bild) */
+      /* Belegte Plätze je Musterdepot (Prototyp depot(): Name 92 px, Felder 18 px, Zahl 40 px). */
       return loadSeats(X).then(function (st) {
         var rowsS = (N ? N.ORDER : []).map(function (cid) { var m = N.method(cid); return m && m.depot && st[m.depot] ? [m, st[m.depot]] : null; }).filter(Boolean).sort(function (a, b) { return b[1][0] / b[1][1] - a[1][0] / a[1][1]; });
-        if (rowsS.length) depHost.querySelector('[data-seats]').innerHTML = '<div class="st-k-card st-k-seatbox"><span class="vu-ltag">Belegte Plätze</span>' + rowsS.map(function (x) { return '<a class="st-k-seatrow" href="' + esc(N.href(x[0].id)) + '"><b>' + esc(x[0].trader) + '</b>' + seats(x[1][0], x[1][1]) + '<span class="vu-num">' + n0(x[1][0]) + '/' + n0(x[1][1]) + '</span></a>'; }).join('') + '</div>';
+        if (!rowsS.length) return;
+        var row = function (x) { var f = ''; for (var i = 0; i < x[1][1]; i++) f += '<i' + (i < x[1][0] ? ' class="is-on"' : '') + '></i>'; return '<span class="stp-dr"><b class="stp-sm stp-b8">' + esc(x[0].trader) + '</b><span class="stp-df" role="img" aria-label="' + esc(n0(x[1][0]) + ' von ' + n0(x[1][1]) + ' Plätzen belegt') + '">' + f + '</span><span class="stp-sm stp-b8 stp-r">' + n0(x[1][0]) + '/' + n0(x[1][1]) + '</span></span>'; };
+        depHost.querySelector('[data-seats]').innerHTML = rowsS.map(row).join('');
+        depRows = rowsS.map(function (x) { return '<a class="stp-dlink" href="' + esc(N.href(x[0].id)) + '">' + row(x) + '</a>'; }).join('');
       }).catch(function () {});
-    }).catch(function () { hero(null, null, false); railHost.innerHTML = U.blank('Die 13 Methoden sind gerade nicht erreichbar. Bitte später erneut versuchen.'); });
+    }).catch(function () { hero(null, null, false); railHost.innerHTML = stpSh('Die Trader', { id: 'stp-tr' }) + '<div class="stp-px">' + U.blank('Die 13 Methoden sind gerade nicht erreichbar. Bitte später erneut versuchen.') + '</div>'; });
 
     X.getJSON('backtests.json').then(function (bt) {
       var runs = (bt.runs || []).filter(function (r) { return r.active; }), proven = runs.filter(function (r) { return r.metricsPublishable; }).length;
-      if (!runs.length) return;
+      var t = forHost.querySelector('[data-bt]');
+      if (!runs.length) { if (t) t.innerHTML = '<b class="stp-b8">Wie belastbar ist welche Methode?</b>'; return; }
       var cnt = function (lab) { return runs.filter(function (r) { return (STATUS[r.status] || ['In Prüfung'])[0] === lab; }).length; };
-      var parts = [[cnt('In Prüfung'), 'in Prüfung', 'k'], [cnt('Daten fehlen'), 'Daten fehlen', 'm']];
-      var t = navHost.querySelector('[data-bt]'), g = navHost.querySelector('[data-bt-g]');
-      if (t) t.innerHTML = '<span class="st-k-big vu-num">' + proven + ' von ' + runs.length + '</span><span class="st-k-cap">Regelversionen mit belegtem Vorteil</span>';
-      if (g) g.innerHTML = segs(parts, 'Stand der Prüfung') + segLegend(parts);
-    }).catch(function () {});
+      var pr = cnt('In Prüfung'), df = cnt('Daten fehlen'), rest = Math.max(0, runs.length - pr - df), tot = runs.length;
+      if (t) t.innerHTML = '<b class="stp-num stp-blk" style="font-size:40px">' + proven + ' von ' + tot + '</b><span class="stp-sm stp-mut stp-b7 stp-blk">Regelversionen mit belegtem Vorteil</span>' +
+        '<span class="stp-seg stp-mt12" role="img" aria-label="' + esc(pr + ' in Prüfung, ' + df + ' Daten fehlen' + (rest ? ', ' + rest + ' bereit zum Test' : '')) + '"><i class="stp-w" style="width:' + (pr / tot * 100).toFixed(1) + '%"></i>' + (rest ? '<i class="stp-l" style="width:' + (rest / tot * 100).toFixed(1) + '%"></i>' : '') + '<i class="stp-g" style="width:' + (df / tot * 100).toFixed(1) + '%"></i></span>' +
+        '<span class="stp-fl stp-sb stp-xs stp-b7 stp-mt8"><span>' + pr + ' in Prüfung</span>' + (rest ? '<span>' + rest + ' bereit zum Test</span>' : '') + '<span class="stp-mut">' + df + ' Daten fehlen</span></span>';
+    }).catch(function () { var t = forHost.querySelector('[data-bt]'); if (t) t.innerHTML = '<b class="stp-b8">Wie belastbar ist welche Methode?</b>'; });
 
-    /* So läuft ein Durchgang: ein abgeschlossener Durchgang im Musterdepot (NVIDIA, Turtle · 20 Tage) */
+    /* So läuft ein Durchgang (bisherige Startseite): ein abgeschlossener Durchgang im Musterdepot (NVIDIA, Turtle · 20 Tage). */
     Promise.all([X.getJSON('stock/NVDA.json'), identity(X)]).then(function (r) {
       var st = r[0].strategies && r[0].strategies.DONCHIAN_TURTLE, cyc = null;
       allOf(st || {}).filter(function (s) { return s.symbol === 'NVDA' && s.state === 'CLOSED'; }).forEach(function (s) { var cy = cycle(s); if (cy && cy.out && (!cyc || cy.inn.date > cyc.inn.date)) cyc = cy; });
@@ -452,9 +565,9 @@
       return series('NVDA').then(function (ser) {
         var res = isNum(cyc.inn.price) && cyc.inn.price > 0 && isNum(cyc.out.price) ? cyc.out.price / cyc.inn.price - 1 : null;
         var mon = new Date(cyc.inn.date + 'T12:00:00Z').toLocaleDateString('de-DE', { month: 'long', year: 'numeric', timeZone: 'UTC' });
-        exHost.innerHTML = sh('So läuft ein Durchgang', { href: '/supertrader/beispiel/', link: 'Alle' }) +
-          '<div class="st-k-card"><div class="st-k-row">' + U.logo('NVDA') + '<span class="st-k-nm st-k-nm--wrap"><b>NVIDIA</b><span>' + esc('Musterdepot ' + (N ? N.name('DONCHIAN_TURTLE') : 'Turtle') + ', ' + mon) + '</span></span>' + (isNum(res) ? '<span class="st-r-res">' + U.chg(res * 100) + '</span>' : '') + '</div>' +
-          '<div class="st-k-gap">' + (F ? F.dep(3) : '') + '</div><div class="st-r-gap8" data-chart></div><div class="st-x-marks"><b>① ' + dShort(cyc.inn.date) + '</b> Musterdepot nimmt auf · ' + usd(cyc.inn.price) + '<br><b>② ' + dShort(cyc.out.date) + '</b> Musterdepot gibt ab · ' + usd(cyc.out.price) + '</div></div>';
+        exHost.innerHTML = stpSh('So läuft ein Durchgang', { href: '/supertrader/beispiel/', link: 'Alle' }) +
+          '<div class="stp-px"><div class="stp-tile"><a class="stp-fl stp-g10 stp-stk" href="/aktie/#/NVDA" data-vu-stock="NVDA" data-vu-stock-name="NVIDIA">' + U.logo('NVDA') + '<span class="stp-f1 stp-col"><b class="stp-b8">NVIDIA</b><span class="stp-xs stp-mut">' + esc('Musterdepot ' + (N ? N.name('DONCHIAN_TURTLE') : 'Turtle') + ', ' + mon) + '</span></span>' + (isNum(res) ? U.chg(res * 100) : '') + '</a>' +
+          '<div class="stp-mt12">' + (F ? F.dep(3) : '') + '</div><div class="stp-mt8" data-chart></div><div class="st-x-marks stp-xs"><b>① ' + dShort(cyc.inn.date) + '</b> Musterdepot nimmt auf · ' + usd(cyc.inn.price) + '<br><b>② ' + dShort(cyc.out.date) + '</b> Musterdepot gibt ab · ' + usd(cyc.out.price) + '</div></div></div>';
         drawChart(exHost.querySelector('[data-chart]'), lastMonths(ser.points, 3), { marks: [[cyc.inn.date, '1'], [cyc.out.date, '2']], label: 'NVIDIA', height: 130 });
       });
     }).catch(function () { exHost.innerHTML = ''; });
