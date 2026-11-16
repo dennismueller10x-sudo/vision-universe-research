@@ -106,12 +106,12 @@ async function main() {
          Heute neu als Karten, Muster (alle acht der Musterseite) als Schiene; darunter die fertigen Suchen des bisherigen Starts,
          „Weiter“-Karte und „Daten & Hinweise“. Urteil mit Ampel und Erklärsatz stehen im Fenster der Kopfkachel. */
       await navigate(page,base + "#/");
-      await page.waitForSelector(".tc-idc", { timeout: 30000 });
+      await page.waitForSelector(".tk-scr", { timeout: 30000 });
       /* Die Frage steht als Dachzeile der Kopfkachel (Versalien per CSS), deshalb ohne Groß-/Kleinschreibung. */
       assert(/Was zeigt\s*der Chart/i.test(await page.locator("h1").innerText()), "Titel als Frage fehlt");
       assert(await page.evaluate(() => document.documentElement.getAttribute("data-vu-tabs")) === "inhalt", "Start zeigt seine Reiter nicht im Inhalt");
       assert((await page.locator("main .tk-tabs .tk-tab").allInnerTexts()).slice(0, 5).join("|") === "Heute|Muster|Screener|Chart|Lernen", "Reiter wie im Prototyp fehlen");
-      assert(await page.locator(".tc-idc").count() === 5, "fünf fertige Suchen fehlen");
+      assert(await page.locator(".tk-scr").count() === 5, "fünf fertige Suchen fehlen");
       await page.waitForSelector(".tk-markt .tk-seg2", { timeout: 30000 });
       assert(/über 200-Tage-Linie/.test(await page.locator(".tc-ms").innerText()), "Markt heute in der Kopfkachel fehlt");
       await page.waitForSelector(".tk-forms .tk-form", { timeout: 30000 });

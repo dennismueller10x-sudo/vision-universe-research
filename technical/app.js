@@ -490,7 +490,7 @@
       pop("tc-about-pop", "Was zeigt der Chart?", [
         v ? el("div", { class: "tk-ms-sheet tc-ms--" + v[0], "data-state": v[0] }, [el("span", { class: "tc-ampel", "aria-hidden": "true" }, ["weak", "mid", "strong"].map(function (k) { return el("i", { class: "is-" + k + (k === v[0] ? " is-on" : "") }); })),
           el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }), el("b", { text: v[1] })])]) : null,
-        b ? el("p", { class: "tc-sheet-lead", text: M.breadthSentence(b).replace(/\.?$/, ".") }) : null,
+        b ? el("p", { class: "tc-sheet-lead", text: M.breadthSentence(b).replace(/\.?$/, ".") + (isNum(b.matched) ? " Das sind " + Math.round(b.matched).toLocaleString("de-DE") + " Aktien." : "") }) : null,
         el("p", { class: "tc-sheet-lead", text: LEAD }), stand ? el("p", { class: "tc-note", text: stand }) : null,
         b ? el("p", { class: "tc-note", text: b.source === "market-pulse" ? "Quelle: Marktlage aller US-Aktien (dieselbe Zahl wie in Quant). Zustand heute, keine Prognose." : "Quelle: eigene Zählung von Technical (Marktlage nicht verfügbar). Zustand heute, keine Prognose." }) : null,
         el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: TPL.href("aboveSma200"), text: "Aktien über der 200-Tage-Linie im Screener" })]),
@@ -542,7 +542,7 @@
       });
       put(searches, HOME_SEARCHES.filter(function (x) { return TPL.get(x[0]); }).map(function (x) {
         var t = TPL.get(x[0]), tc = ix.templates && ix.templates[x[0]], count = tc ? tc[0] : ix.presets && ix.presets[x[0]];
-        return el("a", { class: "tk-tile tk-tap tk-scr tc-idc", role: "listitem", href: "#/screener?vorlage=" + encodeURIComponent(x[0]) }, [hudGlyph(x[2], 36),
+        return el("a", { class: "tk-tile tk-tap tk-scr", role: "listitem", href: "#/screener?vorlage=" + encodeURIComponent(x[0]) }, [hudGlyph(x[2], 36),
           el("span", { class: "tk-num tk-lc tk-scr-n", text: de(count) }), el("b", { class: "tk-b8 tk-scr-t", text: plainTitle(t) }), el("span", { class: "tk-xs tk-mut", text: x[1] })]);
       }));
       loadEvidence().then(function (E) {

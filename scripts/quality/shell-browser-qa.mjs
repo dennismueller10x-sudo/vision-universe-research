@@ -40,8 +40,10 @@ const ROUTES = [
   // seine Reiter im Inhalt (Prototyp #fundamental: Heute · Ranglisten · Checklisten · Branchen); geprueft werden dort Dock und Reiter.
   ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/ranglisten', 'Ranglisten'], ['Fundamental', '/fundamental/#/branchen', 'Branchen'],
   ['Fundamental', '/fundamental/#/methodik', 'Methodik'], ['Fundamental', '/fundamental/#/NVDA', null],
-  // Technical: „Vorlagen“ und „Lernen“ sind eigene Reiter (App-Konzept 2); eine Frage des Assistenten gehoert zu „Lernen“
-  ['Technical', '/technical/#/', 'Technical'], ['Technical', '/technical/#/screener', 'Screener'], ['Technical', '/technical/#/muster', 'Muster'],
+  // Technical: „Vorlagen“ und „Lernen“ sind eigene Reiter (App-Konzept 2); eine Frage des Assistenten gehoert zu „Lernen“.
+  // Der Start traegt seine Reiter im Inhalt (Prototyp #technical: Heute · Muster · Screener · Chart · Lernen, data-vu-tabs="inhalt");
+  // dort gelten Dock, Universe-Knopf, Reiter im Inhalt und Ueberlauf. Die uebrigen Bereiche zeigen die Reiterzeile des Rahmens.
+  ['Technical', '/technical/#/', 'Technical'], ['Technical', '/technical/#/chart', 'Chart'], ['Technical', '/technical/#/screener', 'Screener'], ['Technical', '/technical/#/muster', 'Muster'],
   ['Technical', '/technical/#/screener?reiter=vorlagen', 'Vorlagen'], ['Technical', '/technical/#/lernen', 'Lernen'], ['Technical', '/technical/#/assistent/trendfolge', 'Lernen'],
   ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
   ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', 'Förderung'], ['Vorsorge', '/vorsorge/#/monitor', 'Veränderungen'],
@@ -526,7 +528,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
   }
   // Zurueck/Vor ueber die Reiter (Hash-Produkte und Seiten-Produkte).
     // Starts mit Reitern im Inhalt (App-Konzept 2): der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
-  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']], ['/fundamental/#/ranglisten', ['Branchen', 'Methodik']]]) {
+  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']], ['/fundamental/#/ranglisten', ['Branchen', 'Methodik']], ['/technical/#/screener', ['Muster', 'Lernen']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {
@@ -561,6 +563,26 @@ for (const [vpName, width, height] of VIEWPORTS) {
       const f = await cur();
       if (f.mode === 'inhalt' || f.n) fail(where, 'Fondsseite behält die Reiter im Inhalt: ' + JSON.stringify(f));
       checks.push({ where, pass: !findings.some((x) => x.where === where) });
+  // Start mit Reitern im Inhalt (Prototyp #technical): ein Reiter im Inhalt fuehrt in einen Bereich mit der Reiterzeile des
+  // Rahmens, Zurueck bringt die Reiter im Inhalt wieder (ohne doppelte Zeile), Vor wieder den Bereich.
+  for (const [start, label] of [['/technical/#/', 'Screener']]) {
+    const where = `history ${start} Reiter im Inhalt @${vpName}`;
+    await fresh();
+    try {
+      const inhalt = () => page.evaluate(() => ({ own: document.documentElement.getAttribute('data-vu-tabs') === 'inhalt', strip: !document.querySelector('vu-navigation')?.shadowRoot?.querySelector('nav.tabs') || document.querySelector('vu-navigation').shadowRoot.querySelector('nav.tabs').hidden,
+        tabs: [...document.querySelectorAll('main [class*=tabs] a, main [class*=tabs] button')].filter((n) => n.getClientRects().length).length }));
+      await page.goto(base + start, { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      let s = await inhalt();
+      if (!s.own || !s.strip || s.tabs < 3) fail(where, 'Start ohne Reiter im Inhalt: ' + JSON.stringify(s));
+      await page.locator('main [class*=tabs] a', { hasText: label }).first().click(); await settle(page);
+      const st = await state(page);
+      if (!st || st.current[0] !== label) fail(where, 'Klick ' + label + ' zeigt nicht die Reiterzeile des Rahmens mit ' + label + ': ' + JSON.stringify(st && st.current));
+      await page.goBack(); await settle(page);
+      s = await inhalt();
+      if (!s.own || !s.strip || s.tabs < 3) fail(where, 'Zurueck: Reiter im Inhalt fehlen oder doppelt: ' + JSON.stringify(s));
+      await page.goForward(); await settle(page);
+      if ((await state(page))?.current[0] !== label) fail(where, 'Vor: ' + JSON.stringify((await state(page))?.current));
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   await ctx.close();
