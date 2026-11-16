@@ -41,7 +41,7 @@ async function checkLayout(page, vp, label) {
     const offenders = [];
     for (const el of document.querySelectorAll('body *')) {
       const rc = el.getBoundingClientRect();
-      if (rc.width && rc.right > doc.clientWidth + 1 && !el.closest('.sc-tablewrap,.sc-cmp,.sc-toolbar,.sc-filterline,.sc-tabs,.sc-sheet,.sc-prail,.sc-rail,.sc-srail,.vu-persp,vu-navigation,.sc-skip,.sc-toast,.sc-sr')) offenders.push((el.className || el.tagName) + ' ' + Math.round(rc.right));
+      if (rc.width && rc.right > doc.clientWidth + 1 && !el.closest('.sc-tablewrap,.sc-cmp,.sc-toolbar,.sc-filterline,.sc-tabs,.sc-sheet,.sc-prail,.sc-rail,.sc-srail,.vu-persp,.sc-ak-tabs,.sc-ak-mods,.sc-ak-rail,vu-navigation,.sc-skip,.sc-toast,.sc-sr')) offenders.push((el.className || el.tagName) + ' ' + Math.round(rc.right));
       if (offenders.length > 4) break;
     }
     /* Das globale Menue oeffnet der Universe-Knopf in der Mitte des Docks (der Kopf traegt dann keinen eigenen Knopf). */
@@ -96,14 +96,21 @@ for (const theme of ['light', 'dark']) {
 
       // App-Konzept 2 (Owner 14.11.2026): kein Modus-Schalter, Tiefe öffnet sich per Tipp im Fenster
       if (await page.$('.sc-modeseg')) fail(vp, 'Start zeigt einen Modus-Schalter'); else ok('Kein Einfach/Profi-Schalter');
-      // Satz-Bauer, fertige Ideen mit echter Trefferzahl, sechs Perspektiven
-      const ideas = await page.$$eval('.sc-idea .sc-n', (n) => n.map((x) => x.textContent));
-      if (ideas.length < 5 || ideas.some((t) => !/^\d/.test(t))) fail(vp, 'Fertige Ideen ohne echte Trefferzahl: ' + ideas.join(', ')); else ok('Fertige Ideen: ' + ideas.join(' · '));
+      /* App-Konzept 2 (Prototyp #screener): Reiter im Inhalt, Satz-Kachel, Modul-Reiter, Trefferzahl, Kurzliste, Fertige Suchen. */
+      const ak = await page.evaluate(() => ({ mode: document.documentElement.getAttribute('data-vu-tabs'), tabs: [...document.querySelectorAll('main .sc-ak-tabs a')].map((a) => a.textContent.trim()),
+        h1: document.querySelectorAll('h1').length, hits: [...document.querySelectorAll('.sc-ak-hit')].map((a) => ({ t: a.getAttribute('data-vu-stock'), n: !!a.getAttribute('data-vu-stock-name'), href: a.getAttribute('href') })),
+        down: [...document.querySelectorAll('.sc-ak-hit .vu-chg--down')].map((x) => getComputedStyle(x).backgroundColor) }));
+      if (ak.mode !== 'inhalt' || ak.tabs.join('|') !== 'Suchen|Fertige Suchen|Gespeichert|Vergleichen' || ak.h1 !== 1) fail(vp, 'Suchen: Reiter im Inhalt oder h1 falsch: ' + JSON.stringify({ mode: ak.mode, tabs: ak.tabs, h1: ak.h1 })); else ok('Reiter im Inhalt: ' + ak.tabs.join(' · '));
+      if (ak.hits.length !== 5 || ak.hits.some((x) => !x.t || !x.n || x.href !== '/aktie/#/' + encodeURIComponent(x.t))) fail(vp, 'Kurzliste: 5 Aktien mit data-vu-stock und /aktie/#/ erwartet: ' + JSON.stringify(ak.hits)); else ok('Kurzliste: ' + ak.hits.map((x) => x.t).join(', '));
+      if (ak.down.some((c) => c !== 'rgb(196, 40, 28)')) fail(vp, 'Tagesbewegung Minus nicht rot (#c4281c): ' + ak.down.join(', '));
+      // Satz-Bauer, fertige Suchen mit echter Trefferzahl, sechs Perspektiven
+      const ideas = await page.$$eval('.sc-ak-fs .sc-n', (n) => n.map((x) => x.textContent));
+      if (ideas.length < 5 || ideas.some((t) => !/^\d/.test(t))) fail(vp, 'Fertige Suchen ohne echte Trefferzahl: ' + ideas.join(', ')); else ok('Fertige Suchen: ' + ideas.join(' · '));
       /* Konzept „Verstehen. Finden.“ (FX04): fünf Ergänzungen im Satz, je mit Trefferzahl */
       const opts = await page.$$eval('.sc-satz-o .sc-n', (n) => n.map((x) => x.textContent));
       if (opts.length !== 5 || opts.some((t) => !/^\d/.test(t))) fail(vp, 'Satz-Ergänzungen ohne Trefferzahl: ' + opts.join(', ')); else ok('Satz-Ergänzungen: ' + opts.join(' · '));
       const persp = await page.$$eval('.sc-plist .sc-prow b', (b) => b.map((x) => x.textContent.replace('PRO', '').trim()));
-      if (persp.join(',') !== 'Basis,Zahlen,Faktoren,Chart,Methoden,Investoren') fail(vp, 'Perspektiven: ' + persp.join(',')); else ok('Sechs Perspektiven');
+      if (persp.join(',') !== 'Zahlen,Chart,Investoren,Faktoren,Methoden,Basis') fail(vp, 'Perspektiven: ' + persp.join(',')); else ok('Sechs Perspektiven (Reihenfolge des Prototyps)');
 
       // 2 Filterbibliothek (über die Perspektive „Chart“) + Suche "200"
       await page.click('.sc-plist .sc-prow:has-text("Chart")');
@@ -121,6 +128,11 @@ for (const theme of ['light', 'dark']) {
       await checkLayout(page, vp, 'Filter-Detail');
       await shot(page, vp, '03-detail-sma200');
       await page.click('.sc-sheet.is-open .sc-sheet-foot .sc-btn-primary');
+      await settle(page, 700);
+      /* Auf „Suchen“ bleibt die Bedingung im Satz; Trefferzahl und Kurzliste stehen darunter. Weiter in „Screen bauen“. */
+      const onStart = await page.evaluate(() => ({ gaps: document.querySelectorAll('.sc-ak-sent .sc-gap:not(.is-add):not(.is-empty)').length, n: document.querySelector('.sc-ak-n .sc-n')?.textContent, url: location.search }));
+      if (onStart.gaps !== 1 || !/^\d/.test(onStart.n || '') || !/view=start/.test(onStart.url)) fail(vp, 'Suchen: Bedingung nicht im Satz: ' + JSON.stringify(onStart)); else ok('Suchen: 1 Bedingung, ' + onStart.n + ' Treffer');
+      await page.click('.sc-ak-build');
       await settle(page, 700);
 
       // 3 Weitere Filter: Sektor Technologie, Market Cap < 1 Mrd, 52W-Hoch

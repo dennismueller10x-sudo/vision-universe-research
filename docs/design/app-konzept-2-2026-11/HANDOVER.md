@@ -29,7 +29,8 @@ Das war falsch. Maßstab ist jetzt je Bildschirm das Vergleichsbild Prototyp | U
 | Aktie `/aktie/#/<T>` + Vorschau `assets/vu-stock-sheet.js` | live (#2015) |
 | Discover-Start `/discover/` | gebaut und geprüft, Vergleichsbilder dem Owner gezeigt (15.11.); Merge nach Owner-Freigabe der Bilder |
 | Quant-Start `/quant/` | gebaut und geprüft, Vergleichsbilder dem Owner gezeigt (15.11.); Merge nach Owner-Freigabe der Bilder. Linie der Marktlage erscheint nach dem nächsten Marktlage-Lauf (neues Feld `history`) |
-| Supertrader, News, Ich, Technical, Fundamental, Hedgefonds, Screener | offen, je nach AUFTRAG.md |
+| Fundamental-Start `/fundamental/` | gebaut (Zweig `ak2-fundamental`): Reiter im Inhalt, Meldewoche aus der SEC-Historie (`status.json` Feld `week`, `build-history.mjs#filingWeek`) statt kommender Termine (kein Terminkalender in den Daten), Höchste Margen, Checklisten-Ring = Anteil der Firmen mit allen Punkten; „Schätz mal“ (Quiz) und Reiter „Termine“ entfallen |
+| Supertrader, News, Ich, Technical, Hedgefonds, Screener | offen, je nach AUFTRAG.md |
 | Module ohne Prototyp-Bildschirm (Elliott, Vorsorge/Portfolios, Konto, Atlas) | offen: im Design des Prototyps |
 
 Schalter des Rahmens für Seiten: `<html data-vu-bleed>` (Kopf durchsichtig über dem ersten Block), `<html data-vu-tabs="inhalt">`

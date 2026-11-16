@@ -124,6 +124,15 @@
     var end = make("div", "ew-end"), t = ticker(), crumbs = main.querySelector(":scope > .cb-crumbs");
     if (cb.querySelector(".cb-ew-say") && U.next && t) end.appendChild(node(U.next({ title: "Chart-Lage in Technical ansehen", sub: "Trend, Zonen, Befunde", href: "/technical/#/chart/" + encodeURIComponent(t) })));
     if (crumbs) end.appendChild(crumbs);
+    /* Prototyp end(): „Daten & Hinweise“ unter der „Weiter“-Karte öffnet das Fenster des Rahmens mit dem Aktien-Hinweis
+       (assets/legal-notices.json „stock“); der Elliott-Satz und die Methodik stehen weiter im Fenster „Daten & Methodik“. */
+    var N = global.VUNavigation;
+    if (N && N.openHinweise && N.hinweis) {
+      var lk = make("button", "ew-lk", "Daten & Hinweise");
+      lk.type = "button"; lk.setAttribute("aria-haspopup", "dialog");
+      lk.addEventListener("click", function () { N.hinweis("stock"); N.openHinweise(); });
+      end.appendChild(make("div", "ew-end-l")).appendChild(lk);
+    }
     if (end.firstChild) main.appendChild(end);
   }
 

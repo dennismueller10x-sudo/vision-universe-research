@@ -84,16 +84,21 @@
   }
   function simpleEtfs(tab) {
     var U = VS.U;
-    var root = VS.render(VS.intro("Die ETF-Welt", "") +
+    /* App-Konzept 2: Zählung als große Zahl in der Kopfkachel (Prototyp #technical: zwei Zahlen 54 px, Balken 18 px). */
+    var root = VS.render(VS.intro("Die ETF-Welt", "", "ETF-Verzeichnis", '<div class="vsp-hnum-w" id="vs-es-count"></div>') +
       '<form class="vs-termsearch" id="vs-es-form" role="search">' + U.glyph("search", 18) + '<input id="vs-es-q" type="search" placeholder="ETF, ISIN, Index oder Thema" aria-label="ETFs durchsuchen" autocomplete="off"><button type="button" class="vu-round" id="vs-es-filter" aria-label="Filter">' + U.glyph("filter", 17) + '</button></form>' +
-      '<div class="vs-count" id="vs-es-count"></div>' + etfTabs(tab) + '<div id="vs-es-body"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></div>',
+      etfTabs(tab) + '<div id="vs-es-body"><div class="vs-loading">ETF-Verzeichnis wird geladen …</div></div>',
       { dm: [["Was gezeigt wird", "US-gelistete ETFs als Marktabbild: echte Kurshistorie, Schwankung, größter Rückgang; Kosten und Bestände aus den Fondsmeldungen, wo vorhanden. „Einfach“ und „Themen“ sind Ausschnitte, keine Empfehlung."]] });
     root.querySelector("#vs-es-form").addEventListener("submit", function (ev) {
       ev.preventDefault(); var v = root.querySelector("#vs-es-q").value.trim(); if (!v) return;
       VS.go(/^[A-Za-z]{2}[A-Za-z0-9]{9}\d$/.test(v) ? "#/europa/" + v.toUpperCase() : "#/etfs?tab=alle&q=" + encodeURIComponent(v));
     });
     root.querySelector("#vs-es-filter").onclick = filterSheet;
-    var counts = function (m) { root.querySelector("#vs-es-count").innerHTML = '<span class="num">' + m.counts.publicAnalysis.toLocaleString("de-DE") + '</span><b>ETFs</b><small>' + m.counts.complex.toLocaleString("de-DE") + ' komplexe ausgeblendet</small>'; };
+    var counts = function (m) {
+      var a = m.counts.publicAnalysis, c = m.counts.complex, t = (a + c) || 1;
+      root.querySelector("#vs-es-count").innerHTML = '<div class="vsp-hnum"><div><span class="vsp-num vsp-lc">' + a.toLocaleString("de-DE") + '</span><b>ETFs mit Analyse</b></div><div><span class="vsp-num">' + c.toLocaleString("de-DE") + '</span><b class="vsp-mut">komplexe ausgeblendet</b></div></div>' +
+        '<div class="vsp-seg" aria-hidden="true"><i class="l" style="width:' + (a / t * 100).toFixed(1) + '%"></i><i class="g" style="width:' + (c / t * 100).toFixed(1) + '%"></i></div>';
+    };
     var body = root.querySelector("#vs-es-body");
     if (tab === "themen") {
       VS.master().then(function (m) {
@@ -397,7 +402,9 @@
       var head = VS.U.stockHead({ ticker: e.symbol, name: VS.displayName(d.name || sym), what: "ETF · " + (e.category || VS.STRATEGY[e.strategy] || ""), price: mt && mt.price, currency: d.currency,
         changePct: mt && Number.isFinite(mt.change1D) ? mt.change1D * 100 : null, dateLabel: mt && mt.priceDate ? "Schluss " + F.date(mt.priceDate) : "", eurLabel: null, backHref: "#/etfs", saved: watched }, { persp: false });
       head = head.replace('<span class="vu-stockhead__meta">', '<span class="vu-stockhead__meta">' + esc((d.exchange || "") + (d.currency ? " · " + d.currency : "")) + '<br>');
-      root.innerHTML = '<div class="vs-etfhead">' + head + (e.complex ? '<div style="margin-top:8px">' + VS.verdict("weak", VS.RETIRE[e.retirementClass] || "Komplexes Produkt") + '</div>' : "") + '</div>' +
+      /* App-Konzept 2: genau eine h1 je Seite (der Fondsname), Reiter im Inhalt wie alle Vorsorge-Bereiche. */
+      head = head.replace(/<div class="vu-stockhead__name"><b>([\s\S]*?)<\/b>/, '<div class="vu-stockhead__name"><h1 class="vs-etf-h1">$1</h1>');
+      root.innerHTML = VS.tabs(VS.section) + '<div class="vs-etfhead">' + head + (e.complex ? '<div style="margin-top:8px">' + VS.verdict("weak", VS.RETIRE[e.retirementClass] || "Komplexes Produkt") + '</div>' : "") + '</div>' +
         '<div class="vs-etf-sticky"><div class="vu-seg" role="tablist" aria-label="Bereiche">' + mainTabs.map(function (t) { return '<button type="button" role="tab" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + MAIN[t[0]] + '</button>'; }).join("") + '</div>' +
         (moreTabs.length ? '<div class="vs-moretabs"><span class="vu-xs vu-mu">Mehr:</span>' + moreTabs.map(function (t) { return '<button type="button" class="vu-chip" data-tab="' + t[0] + '" aria-pressed="' + (t[0] === tab) + '">' + t[1] + '</button>'; }).join("") + '</div>' : "") + '</div>' +
         (missingTab ? '<p class="vs-note" style="margin-top:12px">Für ' + esc(e.symbol) + ' gibt es diesen Bereich nicht: ' + esc({ performance: "keine Kursreihe", risiko: "keine Kursreihe", bestandteile: "keine Holdings (Quartalsmeldung)", xray: "keine Holdings (Quartalsmeldung)", aenderungen: "keine Holdings- oder Kostenhistorie", kosten: "keine Kostenquote aus dem Prospekt" }[missingTab] || "keine Daten") + '. Du siehst die Übersicht.</p>' : "") +

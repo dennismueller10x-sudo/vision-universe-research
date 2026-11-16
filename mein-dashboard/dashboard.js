@@ -13,12 +13,14 @@
    (Regelereignisse der Methoden als Forschung gekennzeichnet). Serverdaten nur per textContent oder
    ueber VUUI (maskiert jede Eingabe); innerHTML nur in markup() mit VUUI-Ausgabe.
 
-   Aufbau nach dem Konzept docs/design/mein-bereich-2026-11/HANDOVER.md (Screen m-home, Präsentation
-   docs/design/mein-bereich-2026-11/README.md): Begrüßung, Heute bei deinen Aktien, Watchlist,
-   Was sich getan hat (mein-dashboard/events.js), Weiter lernen, Deine Welten.
-   Darstellung nach App-Konzept 2 (Owner 14.11.2026): „Heute“ mit Ring (wie viele im Plus, dieselbe Zusammenfassung wie
-   auf /willkommen/, today.js#summary), die Watchlist als Liste mit Logo, Name, Jahresverlauf und Bewegung; ein Tipp auf
-   eine Aktie öffnet sie im Fenster (VUUI.popup) mit Kurs, Verlauf, ihren Ereignissen, den Perspektiven und „Entfernen“.
+   Aufbau genau nach Prototyp „App-Konzept 2“, Bildschirm #v-ich (Owner 14./15.11.2026: „1:1 wie im Prototyp“), mit echten
+   Daten: Reiter im Inhalt (Ich · Gespeichert · Konto), Kachel mit Ring (wie viele der Aktien im Plus, today.js#summary wie auf
+   /willkommen/, darunter auf der Watchlist · neue Ereignisse · Aktien betroffen), Watchlist als Liste (Logo, Name, jüngstes
+   Ereignis, Jahresverlauf, Bewegung als Pille; ein Tipp öffnet über den Rahmen die Aktien-Vorschau, data-vu-stock), Kachel
+   „Konto und Einstellungen“, „Daten & Hinweise“. Was die Seite vorher zeigte und der Prototyp nicht, steht im Design des
+   Prototyps dazwischen: Was sich getan hat (mein-dashboard/events.js), Weiter lernen, Deine Welten. Zurückgestellt (Owner):
+   Stufen, Punkte, Aufgaben, Abzeichen, Sammlungen, Wochenkarte, Serie. Die Bereiche selbst stammen aus dem früheren Konzept
+   docs/design/mein-bereich-2026-11/HANDOVER.md (Screen m-home, Präsentation docs/design/mein-bereich-2026-11/README.md).
 
    Erweiterung: Jeder Bereich ist ein Modul in MODULES ({id, render(ctx)}). Spaetere
    Bereiche (persoenliche Marktveraenderungen, Watchlist-Benachrichtigungen) kommen als
@@ -30,7 +32,6 @@
   var U = root.VUUI, T = root.VUToday, Chart = root.VUChart, E = root.VUDashboardEvents;
   // Beliebte Kuerzel fuer den Leerzustand: feste Liste, keine Empfehlung (Mockup E08-b).
   var POPULAR = ['NVDA', 'AAPL', 'MSFT', 'AMZN', 'GOOGL', 'META'];
-  var ICONS = '/assets/product-icons.svg#';
   var SHOWN = 12;
   // Erklärvideos der Willkommensseite und ihr Gesehen-Merker (nur gelesen; geschrieben wird er nur auf /willkommen/).
   var STORIES = '/willkommen/config/stories.json', SEEN_KEY = 'vu-welcome-seen-v1';
@@ -48,8 +49,6 @@
   var LOCAL_VIEWS = {'Discover': '/discover/#/watchlist', 'Quant': '/quant/#/aktien', 'Quant-Watchlist': '/quant/#/aktien'};
   var LOCAL_ICONS = {'Discover': 'discover', 'Quant': 'quant', 'Quant-Watchlist': 'quant', 'Technical': 'technical', 'Screener': 'screener'};
   var EUROPE_KEY = 'vu.core.europe.watchlist.v1';
-  // Bevorzugtes Ziel je Aktie (Adressregel aus core/stock-context.js, geliefert in view.links).
-  var LINK_ORDER = ['discover', 'fundamental', 'quant', 'technical'];
 
   // ------------------------------------------------------------ Bausteine
   function $(id) { return document.getElementById(id); }
@@ -63,12 +62,6 @@
     });
     (children || []).forEach(function (c) { if (c) n.appendChild(typeof c === 'string' ? document.createTextNode(c) : c); });
     return n;
-  }
-  function icon(id) {
-    var ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg'), use = document.createElementNS(ns, 'use');
-    svg.setAttribute('viewBox', '0 0 24 24'); svg.setAttribute('aria-hidden', 'true');
-    use.setAttribute('href', ICONS + id); svg.appendChild(use);
-    return svg;
   }
   function notice(text, kind, action) {
     var box = $('ka-status');
@@ -85,9 +78,6 @@
   // Einzige innerHTML-Stelle: nur Markup aus assets/vu-ui.js (VUUI maskiert jede Eingabe) bzw. VUChart.sparkline (nur Zahlen).
   function markup(node, html) { node.innerHTML = html; return node; }
   function cleanName(n) { return String(n || '').replace(/,? (Inc|Corp|Corporation|Ltd|Limited|plc|N\.V\.|S\.A\.|AG|SE|Holdings?|Co)\.?$/i, '').replace(/ Class [A-Z]$/, '').trim(); }
-  var DAYS = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'];
-  function weekday(iso) { var d = new Date(String(iso).slice(0, 10) + 'T12:00:00Z'); return isNaN(d) ? '' : DAYS[d.getUTCDay()]; }
-  function fmtLong(iso) { var d = new Date(String(iso).slice(0, 10) + 'T12:00:00Z'); return isNaN(d) ? '' : d.toLocaleDateString('de-DE', {day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC'}); }
   function fetchJson(path) {
     return fetch(path, {cache: 'default', credentials: 'omit'}).then(function (r) { if (!r.ok) throw new Error('HTTP_' + r.status); return r.json(); });
   }
@@ -165,29 +155,24 @@
   function stockHref(v) {
     // Gesperrte Identitaet (Ticker-Wiederverwendung): die Produktseiten meinen noch das fruehere Wertpapier - kein Verweis.
     if (v.identity && v.identity.reason === 'IDENTITY_QUARANTINED') return null;
-    for (var k = 0; k < LINK_ORDER.length; k++) {
-      var hit = (v.links || []).filter(function (l) { return l.product === LINK_ORDER[k]; })[0];
-      if (hit) return hit.href;
-    }
-    try { return root.VUCore.StockContext.href(root.VUCore.StockContext.fromUs(v.ticker), 'discover'); } catch (e) { return null; }
+    // Ziel jeder Aktie ist die Aktienseite (App-Konzept 2); das Kuerzel kommt aus der einen Identitaetsregel (core/identity.js).
+    var t = v.ticker && Id.normalizeTicker(v.ticker);
+    return t ? '/aktie/#/' + encodeURIComponent(t) : null;
   }
 
   // ------------------------------------------------------------ Module
   var MODULES = [];
-  var MONTHS = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
   var SHORT_DAYS = ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'];
   function closeLabel(iso) { var d = new Date(String(iso).slice(0, 10) + 'T12:00:00Z'); return isNaN(d) ? '' : SHORT_DAYS[d.getUTCDay()] + ' ' + fmtDate(iso); }
   function chev(size) { return markup(el('span', {className: 'md-chev'}), U.glyph('next', size)); }
   function lastClose(views) { return views.filter(function (v) { return v.price && v.price.date; }).map(function (v) { return v.price.date; }).sort().pop() || null; }
 
   MODULES.push({id: 'greeting', render: function () {
-    // Begrüßung mit Datum (Screen m-home): „Montag, 9. November“ / „Guten Tag, Dennis“.
-    var me = ctx.me || {}, name = me.profile && me.profile.displayName, now = new Date(), h = $('md-hello');
-    if (document.documentElement.getAttribute('data-md-view') === 'gespeichert') return;
-    $('md-eyebrow').textContent = DAYS[now.getDay()] + ', ' + now.getDate() + '. ' + MONTHS[now.getMonth()];
-    h.textContent = greeting(now.getHours()) + (name ? ',' : '');
-    if (name) { h.appendChild(el('br')); h.appendChild(document.createTextNode(name)); }
-    // Tarif-Marke „Free · 5 von 500“ klein neben dem Datum (Entscheidung beim Bauen, HANDOVER).
+    // Überschrift der Seite (unsichtbar wie im Prototyp, der Kopf zeigt „Ich“): Gruß mit Namen; im Reiter „Gespeichert“ dessen Name.
+    var me = ctx.me || {}, name = me.profile && me.profile.displayName, h = $('md-hello');
+    if (document.documentElement.getAttribute('data-md-view') === 'gespeichert') { h.textContent = 'Gespeichert'; return; }
+    h.textContent = 'Ich: ' + greeting(new Date().getHours()) + (name ? ', ' + name : '');
+    // Tarif-Marke „Free · 5 von 500“ in der Zeile „Konto und Tarif“ (zeigt nur den heutigen Tarif und die Grenze der Watchlist).
     var plan = (me.entitlements && me.entitlements.plan_id) || 'free', limit = ctx.limits && ctx.limits.items;
     $('md-plan').textContent = ({free: 'Free', plus: 'Plus', pro: 'Pro'}[plan] || plan) + ' · ' + ctx.items.length + (limit ? ' von ' + limit : '');
     $('md-plan').hidden = false;
@@ -208,55 +193,57 @@
     return out;
   }
 
-  /* Heute bei deinen Aktien: drei Zahlen (auf der Watchlist, neue Ereignisse, Aktien betroffen). */
+  /* Kachel oben (Prototyp: Ring 150 px mit Kennzeile und Wort, Satz, drei Zahlenfelder): wie viele der gezeigten Aktien im Plus
+     schlossen (today.js#summary, wie auf /willkommen/), die größte Bewegung, dazu auf der Watchlist, neue Ereignisse, Aktien betroffen. */
   MODULES.push({id: 'today', render: function () {
     var all = views(), last = lastClose(all), ev = ctx.events;
     $('md-today-sec').hidden = !all.length;
     $('md-today-title').textContent = 'Heute bei deinen Aktien' + (last ? ' · Schluss ' + closeLabel(last) : '');
-    // Ring: wie viele der gezeigten Aktien im Plus schlossen, daneben die größte Bewegung (today.js#summary, wie auf /willkommen/).
     var sum = T.summary(all.slice(0, SHOWN)), ring = $('md-today-ring');
-    $('md-today-top').hidden = !sum.measured;
     ring.textContent = '';
-    if (sum.measured) {
-      ring.appendChild(markup(el('span', {className: 'vu-night md-today-r'}), U.ring(sum.up / sum.measured * 100, {size: 84, stroke: 10, text: sum.up + '/' + sum.measured, label: sum.up + ' von ' + sum.measured + ' im Plus, Anteil'})));
-      $('md-today-up').textContent = 'im Plus' + (last ? ' am ' + weekday(last) : '');
-      $('md-today-big').textContent = sum.biggest ? 'Größte Bewegung: ' + sum.biggest.ticker + ' ' + U.pct(sum.biggest.pct) : '';
-    }
+    ring.appendChild(markup(el('span', {}), U.ring(sum.measured ? sum.up / sum.measured * 100 : null, {size: 150, stroke: 14, text: '', label: sum.measured ? sum.up + ' von ' + sum.measured + ' im Plus, Anteil' : 'Im Plus'})));
+    $('md-today-up').textContent = sum.measured ? sum.up + ' von ' + sum.measured : '–';
+    $('md-today-eb').textContent = 'Im Plus' + (last ? ' · ' + SHORT_DAYS[new Date(String(last).slice(0, 10) + 'T12:00:00Z').getUTCDay()] : '');
+    $('md-today-big').textContent = sum.biggest ? 'Größte Bewegung: ' + sum.biggest.ticker + ' ' + U.pct(sum.biggest.pct) + (last ? ' · Schluss ' + closeLabel(last) : '')
+      : last ? 'Schluss ' + closeLabel(last) : 'Noch keine Tagesbewegung';
     $('md-n-watch').textContent = String(all.length);
     $('md-n-events').textContent = ev ? String(ev.events) : '–';
     $('md-n-stocks').textContent = ev ? String(ev.stocks) : '–';
     $('md-watch-fine').textContent = 'Keine Anlageberatung.' + (last ? ' Kurse: veröffentlichter Schluss ' + closeLabel(last) : '');
   }});
 
-  /* Watchlist als Liste: Logo, Name und Kürzel, Jahresverlauf, Schluss und Bewegung; am Ende „Aktie hinzufügen“.
-     Mehr als FOLD + 1 Zeilen klappen hinter „N weitere“ zusammen (ein Tipp zeigt sie hier), mehr als SHOWN stehen unter „Alle“. */
-  var FOLD = 6, unfolded = false;
-  function plainClick(e) { return !(e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey); }
+  /* Ziel einer Aktie: die Aktienseite /aktie/#/<T>; ein Tipp öffnet über den Rahmen die Vorschau (data-vu-stock, Fenster „stock“). */
+  function stockAttrs(v, name, cls, label) {
+    var href = stockHref(v);
+    return {className: cls, href: href, 'data-vu-stock': href ? v.ticker : null, 'data-vu-stock-name': href ? name : null, 'aria-label': label || null};
+  }
+  /* Watchlist als Liste (Prototyp: Logo, Name, eine Zeile darunter, Verlauf, Bewegung als Pille). Die Zeile unter dem Namen ist
+     das jüngste Ereignis aus „Was sich getan hat“ (events.js), sonst das Kürzel. Mehr als FOLD + 1 Zeilen klappen hinter
+     „N weitere“ zusammen (ein Tipp zeigt sie hier), mehr als SHOWN stehen unter „Alle“; am Ende „Aktie hinzufügen“. */
+  var FOLD = 4, unfolded = false;
+  function eventFor(t) { var c = ctx.events ? ctx.events.cards.filter(function (x) { return x.ticker === t; })[0] : null; return c && c.rows[0] ? c.rows[0].text : ''; }
   MODULES.push({id: 'watchlist', render: function () {
     var strip = $('md-strip'), all = views();
     strip.textContent = '';
     $('md-watch-empty').hidden = all.length > 0;
     $('md-watch-all').hidden = !all.length;
-    $('md-watch-all').textContent = 'Alle ' + all.length;
-    $('md-watch-all').appendChild(chev(13));
+    $('md-watch-all').textContent = all.length + (all.length === 1 ? ' Aktie ›' : ' Aktien ›');
     strip.hidden = !all.length;
     if (!all.length) { $('md-find').hidden = false; return; }
     var editing = !$('md-find').hidden, shown = all.slice(0, SHOWN), fold = !editing && !unfolded && shown.length > FOLD + 1;
     strip.classList.toggle('is-editing', editing);
     shown.slice(0, fold ? FOLD : SHOWN).forEach(function (v) {
-      var href = stockHref(v), priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number', name = cleanName(v.name) || v.ticker || '–';
-      var card = el(href ? 'a' : 'div', {className: 'md-wl', href: href || null, 'aria-label': name + (priced ? ', ' + fmtPrice(v.price) : ', kein Kurs')}, [
-        markup(el('span', {className: 'md-wl-logo'}), U.logo(v.ticker)), el('b', {text: name}), el('small', {className: 'md-wl-k', text: v.ticker || '–'})]);
+      var priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number', name = cleanName(v.name) || v.ticker || '–', what = eventFor(v.ticker);
+      var a = stockAttrs(v, name, 'md-wl', name + (priced ? ', ' + fmtPrice(v.price) + (typeof v.pct === 'number' ? ', ' + U.movementLabel(U.pct(v.pct)) : '') : ', kein Kurs') + (what ? ', ' + what : ''));
+      var card = el(a.href ? 'a' : 'div', a, [markup(el('span', {className: 'md-wl-logo'}), U.logo(v.ticker)), el('b', {className: 'md-wl-n', text: name}),
+        el('small', {className: 'md-wl-k', text: v.ticker ? v.ticker + (what ? ' · ' + what : '') : '–'})]);
       if (priced) {
-        var html = Chart && v.spark.length > 1 ? Chart.sparkline(thin(v.spark, 52), {width: 64, height: 28}) : '';
-        card.appendChild(markup(el('div', {className: 'md-wl-c'}), html));
-        card.appendChild(el('div', {className: 'md-wl-p', text: fmtPrice(v.price)}));
-        card.appendChild(markup(el('div', {className: 'md-wl-m'}), U.chg(v.pct)));
+        var html = Chart && v.spark.length > 1 ? Chart.sparkline(thin(v.spark, 40), {width: 64, height: 30}) : '';
+        card.appendChild(markup(el('div', {className: 'md-wl-c', 'aria-hidden': 'true'}), html));
+        card.appendChild(markup(el('div', {className: 'md-wl-m'}), U.chg(v.pct, {digits: 2})));
       } else {
         card.appendChild(el('span', {className: 'md-wl-x', text: v.identity && v.identity.reasonText ? v.identity.reasonText : 'kein Kurs'}));
       }
-      // Tippen öffnet die Aktie im Fenster; der Verweis selbst bleibt (neuer Tab, Tastatur mit Umschalt/Strg, ohne Skript).
-      if (href) card.addEventListener('click', function (e) { if (!plainClick(e) || !U.popup) return; e.preventDefault(); openStock(v, card); });
       var li = el('li', {}, [card]);
       // Bearbeiten (Suche offen): „×“ entfernt eine Aktie, mit „Rückgängig“ wie bisher.
       if (editing) {
@@ -267,15 +254,15 @@
       strip.appendChild(li);
     });
     if (fold) {
-      var more = el('button', {className: 'md-fold', type: 'button', id: 'md-fold', 'aria-expanded': 'false'}, [el('b', {text: (shown.length - FOLD) + ' weitere'}), chev(16)]);
+      var more = el('button', {className: 'md-fold', type: 'button', id: 'md-fold', 'aria-expanded': 'false'}, [el('b', {text: (shown.length - FOLD) + ' weitere'}), chev(14)]);
       more.addEventListener('click', function () {
         unfolded = true; render(['watchlist']);
         var next = strip.children[FOLD] && strip.children[FOLD].querySelector('.md-wl'); if (next) next.focus();
       });
       strip.appendChild(el('li', {}, [more]));
     }
-    var add = el('button', {className: 'md-wl md-wl--add', type: 'button', id: 'md-edit', 'aria-controls': 'md-find', 'aria-expanded': String(editing)},
-      [el('i', {text: editing ? '✓' : '+', 'aria-hidden': 'true'}), editing ? 'Fertig' : 'Aktie hinzufügen', el('small', {text: editing ? '' : 'oder entfernen'})]);
+    var add = el('button', {className: 'md-wl--add', type: 'button', id: 'md-edit', 'aria-controls': 'md-find', 'aria-expanded': String(editing)},
+      [el('span', {}, [el('i', {text: editing ? '✓' : '+', 'aria-hidden': 'true'}), el('b', {text: editing ? 'Fertig' : 'Aktie hinzufügen'}), el('small', {text: editing ? '' : 'oder entfernen'})]), chev(14)]);
     add.addEventListener('click', function () {
       $('md-find').hidden = editing;
       render(['watchlist']);
@@ -284,67 +271,37 @@
     strip.appendChild(el('li', {}, [add]));
   }});
 
-  /* Eine Zeile „Was sich getan hat“ (Welt, Text, Urteil) mit Verweis in die Welt; Karte und Fenster nutzen dieselbe. */
+  /* Eine Zeile „Was sich getan hat“ (Welt, Text, Urteil) mit Verweis in die Welt. */
   function eventRow(c, r) {
     return el('a', {className: 'md-fd-r', href: U.perspectiveHref(r.world, c.ticker) + (r.world === 'supertrader' ? '#sf' : '')}, [
       markup(el('span', {}), U.hud(r.world, 28, 9)), el('span', {}, [el('small', {text: r.label}), r.text]), markup(el('span', {}), U.verdict(r.verdict, r.pill))]);
   }
-  /* Aktie im Fenster (Tiefe per Tipp): Kurs und Bewegung, Jahresverlauf, ihre Ereignisse von heute, die Perspektiven der Welten
-     (Adressen aus view.links, core/stock-context.js), „Ganz öffnen“ und „Entfernen“. Nichts davon ist neu geladen. */
-  function openStock(v, opener) {
-    var href = stockHref(v), priced = v.price && v.price.state !== 'UNAVAILABLE' && typeof v.price.close === 'number', name = cleanName(v.name) || v.ticker || '–';
-    var body = el('div', {className: 'md-st'}, [el('div', {className: 'md-st-h'}, [markup(el('span', {}), U.logo(v.ticker, {xl: true})),
-      el('div', {}, [el('b', {text: name}), el('small', {text: [v.ticker, v.exchange].filter(Boolean).join(' · ')})])])]);
-    if (priced) {
-      body.appendChild(el('div', {className: 'md-st-p'}, [el('b', {className: 'vu-num', text: fmtPrice(v.price)}), markup(el('span', {}), U.chg(v.pct, {big: true})),
-        el('small', {text: v.price.date ? 'Schluss ' + closeLabel(v.price.date) : ''})]));
-      var html = Chart && v.spark.length > 1 ? Chart.sparkline(thin(v.spark, 120), {width: 340, height: 110}) : '';
-      if (html) body.appendChild(markup(el('div', {className: 'md-st-c', 'aria-hidden': 'true'}), html));
-    }
-    var card = ctx.events ? ctx.events.cards.filter(function (c) { return c.ticker === v.ticker; })[0] : null;
-    if (card) {
-      body.appendChild(el('h3', {className: 'vu-ltag', text: 'Was sich getan hat'}));
-      body.appendChild(el('div', {className: 'md-st-ev'}, card.rows.map(function (r) { return eventRow(card, r); })));
-    }
-    var links = (U.PERSPECTIVES || []).map(function (p) {
-      var hit = (v.links || []).filter(function (l) { return l.product === p.id; })[0];
-      return hit ? el('a', {className: 'vu-chip', href: hit.href, 'data-world': p.id}, [markup(el('span', {className: 'md-st-i'}), U.worldIcon(p.icon, 17)), p.label]) : null;
-    }).filter(Boolean);
-    if (links.length) {
-      body.appendChild(el('h3', {className: 'vu-ltag', text: 'Perspektiven'}));
-      body.appendChild(el('nav', {className: 'md-st-l', 'aria-label': 'Perspektiven für ' + (v.ticker || name)}, links));
-    }
-    var remove = el('button', {className: 'vu-btn vu-btn--line', type: 'button', text: 'Entfernen', 'aria-label': (v.ticker || 'Aktie') + ' aus der Watchlist entfernen'});
-    body.appendChild(el('div', {className: 'md-st-a'}, [href ? el('a', {className: 'vu-btn', href: href, text: 'Ganz öffnen'}) : null, remove]));
-    body.appendChild(el('p', {className: 'vu-mu vu-xs md-st-f', text: 'Keine Anlageberatung.' + (priced && v.price.date ? ' Kurs: veröffentlichter Schluss ' + closeLabel(v.price.date) : '')}));
-    var pop = U.popup({id: 'md-stock', title: '', body: body, cls: 'md-stock'});
-    if (!pop) return;
-    var panel = pop.querySelector('.vu-sheet-ui'); if (panel) panel.setAttribute('aria-label', name);
-    remove.addEventListener('click', function () { U.closeSheet(pop); removeItem(v, remove); if (opener && !opener.isConnected && $('md-edit')) $('md-edit').focus(); });
-  }
 
-  /* Was sich getan hat: eine Karte je Aktie mit Ereignissen (mein-dashboard/events.js). */
+  /* Was sich getan hat (nicht im Prototyp, Inhalt der bisherigen Seite): in einer Kachel je Aktie eine Kopfzeile, darunter ihre
+     Ereignisse aus den Welten (mein-dashboard/events.js). */
   MODULES.push({id: 'events', render: function () {
     var ul = $('md-feed'), none = $('md-feed-none'), ev = ctx.events, all = views();
     $('md-events').hidden = !all.length;
     ul.textContent = '';
-    if (!ev) { none.hidden = false; none.textContent = 'Die Ereignisse der Welten sind gerade nicht verfügbar.'; $('md-events-count').textContent = ''; return; }
+    if (!ev) { ul.hidden = true; none.hidden = false; none.textContent = 'Die Ereignisse der Welten sind gerade nicht verfügbar.'; $('md-events-count').textContent = ''; return; }
     $('md-events-count').textContent = ev.events ? ev.events + (ev.events === 1 ? ' Ereignis' : ' Ereignisse') : '';
+    ul.hidden = !ev.cards.length;
     none.hidden = ev.cards.length > 0;
     none.textContent = 'Heute gibt es bei deinen Aktien nichts Neues aus den Welten.';
     ev.cards.forEach(function (c) {
-      var head = el(c.href ? 'a' : 'div', {className: 'md-fd-h', href: c.href || null}, [markup(el('span', {className: 'md-fd-logo'}), U.logo(c.ticker)),
+      var v = all.filter(function (x) { return x.ticker === c.ticker; })[0] || {ticker: c.ticker}, a = stockAttrs(v, c.name, 'md-fd-h');
+      var head = el(a.href ? 'a' : 'div', a, [markup(el('span', {className: 'md-wl-logo'}), U.logo(c.ticker)),
         el('span', {className: 'md-fd-t'}, [el('b', {text: c.name}), el('small', {text: c.priceText})])]);
-      if (c.href) head.appendChild(chev(15));
+      if (a.href) head.appendChild(chev(14));
       var li = el('li', {className: 'md-fd'}, [head]);
       c.rows.forEach(function (r) { li.appendChild(eventRow(c, r)); });
       ul.appendChild(li);
     });
-    $('md-feed-help').lastChild.textContent = 'Ereignisse aus den veröffentlichten Daten der Welten, ohne neue Speicherung. Keine Empfehlung.' +
+    $('md-feed-help').textContent = 'Ereignisse aus den veröffentlichten Daten der Welten, ohne neue Speicherung. Keine Empfehlung.' +
       (ev.research ? ' Supertrader-Methoden: Forschung, nicht zertifiziert.' : '');
   }});
 
-  /* Weiter lernen: nächstes ungesehenes Video der Willkommensseite (nur gelesen, Merker der Willkommensseite). */
+  /* Weiter lernen (nicht im Prototyp, Inhalt der bisherigen Seite): nächstes ungesehenes Video der Willkommensseite (nur gelesen). */
   MODULES.push({id: 'learn', render: function () {
     var list = ctx.stories, sec = $('md-learn-sec');
     if (!list || !list.length) { sec.hidden = true; return; }
@@ -352,9 +309,7 @@
     try { seen = JSON.parse(root.localStorage.getItem(SEEN_KEY) || '{}') || {}; } catch (e) { seen = {}; }
     var done = list.filter(function (s) { return seen[s.id] === s.rev; }), next = list.filter(function (s) { return seen[s.id] !== s.rev; })[0];
     sec.hidden = false;
-    $('md-learn-sub').textContent = done.length + ' von ' + list.length + ' Videos gesehen.';
-    $('md-learn-all').textContent = 'Alle ' + list.length;
-    $('md-learn-all').appendChild(chev(13));
+    $('md-learn-all').textContent = done.length + ' von ' + list.length + ' gesehen ›';
     var card = $('md-learn');
     card.textContent = '';
     card.hidden = !next;
@@ -363,7 +318,7 @@
     var sec2 = Math.round((next.slides || []).reduce(function (n, x) { return n + (x.duration || 0); }, 0));
     card.appendChild(markup(el('span', {className: 'vu-hud md-play'}), U.glyph('play', 18)));
     card.appendChild(el('span', {}, [el('b', {text: video.label || next.tagline}), el('small', {text: next.product + ' · ' + Math.floor(sec2 / 60) + ':' + String(sec2 % 60).padStart(2, '0')})]));
-    card.appendChild(chev(18));
+    card.appendChild(chev(14));
   }});
 
   function removeItem(v, btn) {
@@ -395,7 +350,7 @@
     var host = $('md-popular');
     host.textContent = '';
     POPULAR.forEach(function (t) {
-      var b = el('button', {className: 'vu-chip', type: 'button', 'aria-label': t + ' zur Watchlist hinzufügen', text: '+ ' + t});
+      var b = el('button', {className: 'md-chip', type: 'button', 'aria-label': t + ' zur Watchlist hinzufügen', text: '+ ' + t});
       b.addEventListener('click', function () {
         b.disabled = true;
         ensureNames().then(function (names) {
@@ -453,9 +408,9 @@
     text.textContent = 'Diese Listen liegen nur in diesem Browser. Übernommen sind sie auf jedem Gerät da; die Listen hier bleiben unverändert.';
     names.forEach(function (s) {
       var tickers = bySource[s].map(function (l) { return l.ticker; });
-      var go = el('button', {className: 'vu-btn vu-btn--sm md-take', type: 'button', text: 'Übernehmen', hidden: ctx.summary !== 'ok'});
+      var go = el('button', {className: 'md-take', type: 'button', text: 'Übernehmen', hidden: ctx.summary !== 'ok'});
       var li = el('li', {className: 'md-source'}, [
-        markup(el('span', {className: 'md-source-icon'}), U.hud(LOCAL_ICONS[s] || 'discover', 44)),
+        markup(el('span', {className: 'md-source-icon'}), U.hud(LOCAL_ICONS[s] || 'discover', 40, 12)),
         el('a', {className: 'md-source-text', href: LOCAL_VIEWS[s] || '/discover/#/watchlist'}, [el('b', {text: s + '-Liste'}),
           el('span', {text: tickers.slice(0, 4).join(', ') + (tickers.length > 4 ? ' und ' + (tickers.length - 4) + ' weitere' : '')})]), go]);
       go.addEventListener('click', function () { take(bySource[s], go); });
@@ -480,20 +435,22 @@
     });
   }
 
+  /* Deine Welten (nicht im Prototyp, Inhalt der bisherigen Seite): Schiene aus Kacheln mit Symbol, Name und Zweck. */
   MODULES.push({id: 'shortcuts', once: true, render: function () {
     var ul = $('md-tiles');
     ul.textContent = '';
     SHORTCUTS.forEach(function (p) {
-      ul.appendChild(el('li', {}, [el('a', {className: 'md-tile', href: p.href, 'data-product': p.id, title: p.text},
-        [markup(el('span', {}), U.hud(p.id, 34, 10)), el('b', {text: p.name})])]));
+      ul.appendChild(el('li', {}, [el('a', {className: 'md-tile', href: p.href, 'data-product': p.id},
+        [markup(el('span', {}), U.hud(p.id, 40, 12)), el('b', {text: p.name}), el('small', {text: p.text})])]));
     });
   }});
 
-  /* „Weiter“-Karte am Seitenende (VUUI.next): führt in die erste Welt der Liste. */
-  MODULES.push({id: 'next', once: true, render: function () {
-    var host = $('md-next'), p = SHORTCUTS[0];
-    host.textContent = '';
-    if (U.next) host.appendChild(markup(el('div', {}), U.next({title: p.name, sub: p.text, href: p.href})));
+  /* Reiter im Inhalt (Ich · Gespeichert · Konto): der aktive trägt aria-current. */
+  MODULES.push({id: 'tabs', render: function () {
+    var view = document.documentElement.getAttribute('data-md-view');
+    Array.prototype.forEach.call(document.querySelectorAll('.md-tab[data-md-tab]'), function (a) {
+      if (a.getAttribute('data-md-tab') === view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+    });
   }});
 
   var rendered = {};
@@ -528,12 +485,11 @@
     });
   }
 
-  /* Platz 2 der Leiste „Mein Bereich“: #/gespeichert zeigt das lokal Gemerkte. */
+  /* Reiter „Gespeichert“ (#/gespeichert) zeigt das lokal Gemerkte, „Ich“ (#/ oder ohne Hash) die Seite. */
   function syncView() {
     var saved = /^#\/gespeichert/.test(root.location.hash || '');
     document.documentElement.setAttribute('data-md-view', saved ? 'gespeichert' : 'watchlist');
-    if (saved) { $('md-hello').textContent = 'Gespeichert'; $('md-eyebrow').textContent = 'Mein Bereich'; }
-    else render(['greeting']);
+    render(['greeting', 'tabs']);
   }
   if (typeof document !== 'undefined') {
     syncView(); root.addEventListener('hashchange', syncView);

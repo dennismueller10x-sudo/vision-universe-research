@@ -1101,3 +1101,153 @@ html:not([data-theme=dark]) body.vs .vs-etfhead{background:#0e1013}
 html[data-theme=dark] body.vs .vs-mod.vu-box--ink,html[data-theme=dark] body.vs .vs-mod.vu-box--ink *{color:#fff}
 html[data-theme=dark] body.vs .vs-mod.vu-box--ink .vu-ltag{color:var(--vu-lime,#c8f531)}
 html[data-theme=dark] body.vs .vs-mod.vu-box--ink .vs-mod-mine{color:#000}
+
+/* =========================================================================
+   App-Konzept 2 · Vorsorge im Design des Prototyps (Owner 16.11.2026: „für Elliott, Vorsorge, Portfolios, Konto und Atlas
+   … genau in diesem gleichen Design des Prototyps“). Kein eigener Prototyp-Bildschirm: Bausteine aus shell.js/kit.js/p2.js
+   (#quant, #fundamental, #technical, #ich). Werte direkt übernommen: Kachel #151516 r22 p14, Reiter 36 px, Abschnittskopf
+   22 px mit 26/10 px Abstand, Schienen 10 px Lücke, Rand 14 px, Fenster #151516 mit Karten #202022. Hell: helle Flächen.
+   ========================================================================= */
+body.vs{--vsp-tile:#151516;--vsp-ink:#f4f5f1;--vsp-mut:#a1a7af;--vsp-sec:#c3c7cc;--vsp-track:#2a2a2d;--vsp-pill:#232325;--vsp-lime:#c8f531;--vsp-lc:#c8f531;--vsp-bg:#000;--vsp-card:#202022}
+html[data-theme=dark] body.vs{--bg:#000;background:#000}
+html:not([data-theme=dark]) body.vs{--vsp-tile:#f4f4f4;--vsp-ink:#000;--vsp-mut:#6e6e6e;--vsp-sec:#3a3a3a;--vsp-track:#e1e1e1;--vsp-pill:#e6e6e6;--vsp-lc:#000;--vsp-bg:#fff;--vsp-card:#ebebeb}
+@media (max-width:700px){body.vs{--gutter:14px}}
+main.vs-main.vsp{padding-top:0;font-size:15px;line-height:1.35}
+@media (min-width:700px){main.vs-main.vsp{max-width:720px;margin-left:auto;margin-right:auto;--gutter:16px}}
+/* Reiter im Inhalt (Prototyp .tabs2/.tab): kleben unter dem Kopf; Pille 36 px, Tippfläche 44 px über ::after. */
+.vsp-tabs{position:sticky;top:var(--vu-navigation-height,56px);z-index:4;display:flex;gap:6px;margin:0 calc(-1 * var(--gutter));padding:8px 14px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--vsp-bg) 70%,transparent)}
+.vsp-tabs::-webkit-scrollbar,.vsp-rail::-webkit-scrollbar{display:none}
+body.vs .vsp-tab{position:relative;height:36px;padding:0 15px;border-radius:99px;background:var(--vsp-tile);color:var(--vsp-ink);font-weight:700;font-size:14px;display:inline-flex;align-items:center;white-space:nowrap;flex:none;text-decoration:none}
+.vsp-tab::after{content:"";position:absolute;inset:-4px 0}
+body.vs .vsp-tab.is-on{background:var(--vsp-ink);color:var(--vsp-bg)}
+.vsp-tab:focus-visible{outline:2px solid var(--vu-focus-ring,#c8f531);outline-offset:2px}
+/* Grundbausteine */
+body.vs .vsp-tile{background:var(--vsp-tile);border-radius:22px;padding:14px;display:block;width:100%;box-sizing:border-box;color:var(--vsp-ink);text-decoration:none;border:0;font:inherit;text-align:inherit}
+.vsp-tap{cursor:pointer;transition:transform .12s;-webkit-tap-highlight-color:transparent}.vsp-tap:active{transform:scale(.97)}
+.vsp-tap:focus-visible,.vsp-more:focus-visible{outline:2px solid var(--vu-focus-ring,#c8f531);outline-offset:2px}
+.vsp-num{font-weight:900;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+.vsp-mut{color:var(--vsp-mut)}.vsp-sec{color:var(--vsp-sec)}.vsp-lc{color:var(--vsp-lc)}
+.vsp-sm{font-size:12.5px}.vsp-xs{font-size:11px}.vsp-md{font-size:14px}.vsp-b7{font-weight:700}.vsp-b8{font-weight:800}
+.vsp-f1{flex:1;min-width:0;display:flex;flex-direction:column}.vsp-mt8{margin-top:8px}.vsp-mt12{margin-top:12px}
+.vsp-eb{display:block;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--vsp-mut)}
+.vsp-pill{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:var(--vsp-lime);color:#101318;font-size:12.5px;font-weight:800;white-space:nowrap;flex:none}
+.vsp-pill--dk{background:var(--vsp-pill);color:var(--vsp-ink)}
+.vsp-pills{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px}
+.vsp-pills .vsp-pill{height:22px;font-size:11px;padding:0 8px}
+/* Abschnittskopf (Prototyp .sh) – auch für die älteren Köpfe der Ansichten (VUUI.sect). */
+.vsp-sh,body.vs .vsp .vu-sect{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 10px;scroll-margin-top:110px}
+.vsp-sh h2,body.vs .vsp .vu-sect>h2,body.vs .vsp .vu-sect>h3{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:0;color:var(--vsp-ink)}
+body.vs .vsp-more,body.vs .vsp .vu-sect>a{position:relative;display:inline-block;padding:13px 0;margin:-13px 0;font-size:13px;font-weight:700;color:var(--vsp-mut);white-space:nowrap;text-decoration:none}
+.vsp-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;margin:0 calc(-1 * var(--gutter));padding:0 14px;scrollbar-width:none;overscroll-behavior-x:contain}
+.vsp-rail>*{scroll-snap-align:start;flex:none}
+/* Kopfkachel (Prototyp #quant Marktlage: tile p16, Bogen 260, Zahl 54 px, Lage 34 px, Verlauf 56 px bis an den Rand) */
+body.vs .vsp-head{margin:0;padding:0;background:none;border-radius:0}
+body.vs .vsp-markt{padding:16px;text-align:center;overflow:hidden;display:flex;flex-direction:column;align-items:center}
+.vsp-gwrap{position:relative;display:inline-block;margin-top:8px;line-height:0}
+.vsp-gauge-t{stroke:var(--vsp-track)}.vsp-gauge-v{stroke:var(--vsp-lime)}
+:root:not([data-theme=dark]) .vsp-gauge-v{stroke:#000}
+.vsp-gnum{position:absolute;left:0;right:0;bottom:0;font-size:54px;line-height:1}
+body.vs .vsp-lage{display:block;font-size:34px;line-height:1;font-weight:900;letter-spacing:-.045em;margin:8px 0 2px;color:var(--vsp-ink);text-wrap:balance}
+.vsp-mline{display:block;align-self:stretch;margin:10px -16px -16px;line-height:0}
+.vsp-line-s{stroke:var(--vsp-ink)}
+.vsp-cap{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;font-size:12.5px;font-weight:700;color:var(--vsp-mut)}
+/* Kacheln mit Zahl (Prototyp „Heute im Markt“: drei Kacheln p12, Zahl 34 px, Säulen 86 × 34) */
+.vsp-today{display:flex;gap:8px}
+body.vs .vsp-stat{flex:1;min-width:0;padding:12px;display:flex;flex-direction:column}
+.vsp-stat .vsp-xs{display:block;min-height:28px;margin-top:2px;line-height:1.25}
+.vsp-stat-b{display:block;line-height:0;margin-top:8px}
+.vsp-bars{display:block;max-width:100%}
+.vsp-bars rect{fill:var(--vsp-ink)}.vsp-bars rect.is-now{fill:var(--vsp-lime)}
+:root:not([data-theme=dark]) .vsp-bars rect{fill:#c9c9c9}:root:not([data-theme=dark]) .vsp-bars rect.is-now{fill:#000}
+/* Schiene der Schritte (Prototyp stil(): Zahl 46 px neongrün, Titel 17 px, Satz, Pillen) */
+body.vs .vsp-step{width:200px;display:flex;flex-direction:column}
+.vsp-step b{font-size:17px;line-height:1.1;margin-top:2px}
+.vsp-step .vsp-xs{margin-top:4px;min-height:28px}
+body.vs .vsp-step.is-on{box-shadow:0 0 0 1px rgb(200 245 49/.5),0 0 28px rgb(200 245 49/.18)}
+:root:not([data-theme=dark]) body.vs .vsp-step.is-on{box-shadow:inset 0 0 0 1.5px #000}
+/* Neongrüne Kachel (Prototyp #ich „Deine Woche“: p18, Zahl 36 px, Knopf schwarz 46 px) */
+.vsp-sect{margin-top:22px}
+body.vs .vsp-lime{background:#c8f531;color:#101318;padding:18px;display:flex;flex-direction:column;gap:4px}
+body.vs .vsp-lime .vsp-eb{color:#101318}
+.vsp-limet{font-size:32px;margin-top:2px}
+.vsp-btn{height:52px;border-radius:999px;background:var(--vsp-lime);color:#101318;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 16px;text-decoration:none;border:0;cursor:pointer;font-family:inherit}
+.vsp-btn--bk{background:#000;color:#fff;height:46px;margin-top:10px}
+.vsp-btn--ol{background:none;border:1px solid var(--vsp-mut);color:var(--vsp-ink)}
+/* Zeilenliste (Prototyp #ich Watchlist: Kachel p6/14, Zeile 11 px, Logo 44, Mini-Verlauf 64 × 30, Pille) */
+body.vs .vsp-list{padding:6px 14px}
+body.vs .vsp-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgb(127 127 127/.18);color:inherit;text-decoration:none;min-height:44px}
+.vsp-row:last-child{border-bottom:0}
+.vsp-row .vu-logo-tile{width:44px;height:44px;border-radius:13px}
+.vsp-row .vsp-f1 b,.vsp-row .vsp-f1 span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.vsp-spark{width:64px;height:30px;flex:none;line-height:0;color:var(--vsp-ink)}
+.vsp-spark svg{width:64px;height:30px}
+/* Seitenende (Prototyp end()): „Weiter“-Karte, darunter „Daten & Hinweise“ als Verweis, der das Fenster öffnet. */
+.vsp-next a.vu-next{margin-top:28px}
+body.vs .vsp details.vs-dm{margin:28px 0 0;border:0;background:none;text-align:center}
+body.vs .vsp details.vs-dm>summary{display:inline-flex;align-items:center;gap:6px;min-height:44px;padding:0 8px;list-style:none;cursor:pointer;color:var(--vsp-mut);font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px;border:0;background:none}
+body.vs .vsp details.vs-dm>summary::-webkit-details-marker{display:none}
+body.vs .vsp details.vs-dm>summary::after,body.vs .vsp details.vs-dm>summary::before{display:none}
+body.vs .vsp details.vs-dm>summary small{font-weight:600;color:var(--vsp-mut)}
+body.vs .vsp details.vs-dm .vs-chapsheet{text-align:left}
+body.vs .vsp .vs-disclaimer{margin:4px auto 0;max-width:62ch;text-align:center;font-size:12.5px;line-height:1.45;color:var(--vsp-mut)}
+#vs-more:empty{display:none}
+/* Ältere Bausteine der Ansichten in den Maßen des Prototyps: Kachel #151516 r22, Kopfkachel wie Fundamental (h1 30 px). */
+body.vs .vsp .vu-box:not(.vu-box--lime):not(.vu-box--line):not(.vu-box--ink):not(.vs-mod){background:var(--vsp-tile);border-radius:22px;border:0;color:var(--vsp-ink)}
+body.vs .vsp .vu-box--line{border-radius:22px}
+body.vs .vsp .vu-tile{background:var(--vsp-tile);border-radius:22px}
+body.vs .vsp .vs-intro.vs-head,body.vs .vsp .vs-hero{background:var(--vsp-tile);color:var(--vsp-ink);border-radius:22px;padding:16px;
+  --ink:var(--vsp-ink);--ink-2:var(--vsp-sec);--muted:var(--vsp-mut);--vu-ink:var(--vsp-ink);--vu-inv:var(--vsp-bg);--vu-card:var(--vsp-card);--vu-mute:var(--vsp-mut);--vu-hair:var(--vsp-track)}
+body.vs .vsp .vs-head .vu-ltag,body.vs .vsp .vs-hero .vs-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:.12em;color:var(--vsp-mut)}
+body.vs .vsp .vs-head .vu-lt,body.vs .vsp .vs-hero h1{margin:8px 0 0;font-size:30px;line-height:1;font-weight:900;letter-spacing:-.045em;color:var(--vsp-ink)}
+body.vs .vsp .vs-head .vu-lead,body.vs .vsp .vs-hero .vs-lead,body.vs .vsp .vs-hero .vs-sub,body.vs .vsp .vs-head .vu-mu{color:var(--vsp-mut);font-size:14px}
+body.vs .vsp .vs-head .vu-round{background:var(--vsp-card);color:var(--vsp-ink)}
+body.vs .vsp .vs-hero .vs-pill:not(.primary){background:var(--vsp-card);border-color:transparent;color:var(--vsp-ink)}
+/* Große Zahl in der Kopfkachel (Prototyp #technical: Zahl 54 px neongrün, Satz darunter, Balken 18 px) */
+.vsp-hnum{display:flex;gap:12px;margin-top:12px}
+.vsp-hnum>div{flex:1;min-width:0}
+.vsp-hnum .vsp-num{display:block;font-size:54px}
+.vsp-hnum b{display:block;font-weight:800;margin-top:2px}
+.vsp-seg{display:flex;height:18px;border-radius:9px;overflow:hidden;gap:2px;margin-top:12px}
+.vsp-seg i{display:block;height:100%}
+.vsp-seg .l{background:var(--vsp-lime)}.vsp-seg .w{background:var(--vsp-ink)}.vsp-seg .g{background:#55595f}
+/* Kapitel als Kachel: Fläche wie die Prototyp-Kachel */
+body.vs .vsp details.vu-more:not(.vs-pl-more):not(:is(form *,:has(input,select,textarea),[data-vs-inplace])){background:var(--vsp-tile);border-radius:22px}
+/* Eingaben bedienbar: Schrift 16 px, Tippfläche 44 px */
+body.vs .vsp input[type=number],body.vs .vsp input[type=text],body.vs .vsp input[type=search],body.vs .vsp select,.vs-vsheet input[type=number],.vs-vsheet select{font-size:16px;min-height:44px}
+/* Regler: sichtbare Spur 6 px wie bisher, Tippfläche 44 px über einen durchsichtigen Rand */
+body.vs .vsp .vs-slider input[type=range]{box-sizing:border-box;height:44px;border-top:19px solid transparent;border-bottom:19px solid transparent;background-clip:padding-box;margin:-7px 0 -15px}
+/* Fenster (Prototyp .sheet: #151516, Karten #202022) */
+html[data-theme=dark] .vs-chapsheet .vu-sheet-ui,html[data-theme=dark] .vs-vsheet .vu-sheet-ui{background:#151516;--card:#202022;--panel:#202022;--bg-soft:#202022;--vu-card:#202022}
+html[data-theme=dark] .vs-chapsheet .vu-box,html[data-theme=dark] .vs-vsheet .vu-box{background:#202022}
+@media (min-width:700px){.vsp-tabs,.vsp-rail{margin:0;padding-left:0;padding-right:0}}
+/* Planer: Hebel als Balken um die Mitte (Prototyp fb(): Zeile 6 px, Balken 16 px, Mitte 2 px, Wert 42 px) */
+.vsp-fb{display:flex;align-items:center;gap:8px;padding:6px 0}
+.vsp-fb>span:first-child{width:150px;flex:none}
+.vsp-fb-t{flex:1;display:flex;align-items:center;height:20px;min-width:0}
+.vsp-fb-n,.vsp-fb-p{width:50%;display:flex}.vsp-fb-n{justify-content:flex-end}
+.vsp-fb-n i,.vsp-fb-p i{display:block;height:16px}
+.vsp-fb-n i{background:var(--vsp-ink);border-radius:5px 0 0 5px}.vsp-fb-p i{background:var(--vsp-lime);border-radius:0 5px 5px 0}
+:root:not([data-theme=dark]) .vsp-fb-p i{background:#000}
+.vsp-fb-z{width:2px;height:20px;background:#3a3a3d;flex:none}
+.vsp-fb>span:last-child{width:42px;text-align:right;flex:none}
+@media (max-width:359px){.vsp-fb>span:first-child{width:118px}}
+.vsp-chgc{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
+.vsp-row .vsp-f1 b{white-space:normal;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;line-height:1.2}
+body.vs .vsp #vs-plan-chart{padding:12px 10px 10px}
+.vsp-btnrow{display:flex;gap:8px;margin-top:16px}.vsp-btnrow .vsp-btn{flex:1}
+body.vs .vsp .vs-sliders{padding:6px 14px}
+body.vs .vsp .vs-slider input[type=range]{accent-color:#c8f531}
+:root:not([data-theme=dark]) body.vs .vsp .vs-slider input[type=range]{accent-color:#000}
+body.vs .vsp .vs-result{margin:0;padding:0}
+/* Förderung: Ring in der Kopfkachel (Prototyp #ich ring(64, 150, 14), Inhalt mittig) */
+.vsp-fdhead{display:flex;flex-direction:column;align-items:center;text-align:center;margin-top:14px}
+.vsp-ring{position:relative;display:inline-block;flex:none}
+.vsp-ring svg{transform:rotate(-90deg);display:block}
+.vsp-ring-c{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+/* Fondsseite: Kopfkachel bleibt dunkel (Kurs, Name weiß) in beiden Schemata, Name als h1 in der Größe des Kopfes */
+body.vs .vsp .vs-etfhead{background:#151516;border-radius:22px}
+.vu-stockhead__name h1.vs-etf-h1{display:block;margin:0;font-size:18px;font-weight:900;letter-spacing:-.02em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#fff}
+/* Knöpfe: Schrift im Knopf schwarz auf Neongrün (die allgemeine Regel .vs button erbt sonst die Seitenfarbe) */
+body.vs .vsp-btn{color:#101318}body.vs .vsp-btn--bk{color:#fff}body.vs .vsp-btn--ol{color:var(--vsp-ink)}
+/* Urteil im Ergebnis steht auf der Seite (nicht mehr in der dunklen Kachel): Flächen wie die Pillen des Prototyps */
+body.vs .vsp-more{padding:14px 0;margin:-14px 0}

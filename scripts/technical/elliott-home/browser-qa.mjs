@@ -75,17 +75,26 @@ for (const vp of VIEWPORTS) {
     // Startseite
     await page.goto(BASE + '/elliott/', { waitUntil: 'networkidle' });
     await page.waitForSelector('#el-main[data-state="ready"]');
-    check(/Wellen/.test(await page.locator('h1.el-title').innerText()) && await page.locator('.el-tag .vu-ltag').first().innerText().then((t) => /Elliott/i.test(t)), 'Startseite zeigt Elliott (Frage als Titel), keine Aktie');
+    // App-Konzept 2: die Frage ist die Dachzeile der Kopfkachel (einzige h1), die Seite traegt ihre Reiter im Inhalt
+    check(/Wellen/i.test(await page.locator('h1.el-title').innerText()) && await page.evaluate(() => document.querySelectorAll('h1').length) === 1 && await page.locator('.ek-kopf h1.el-title').count() === 1, 'Startseite zeigt Elliott (Frage als Titel), keine Aktie');
     check(!/NVIDIA|NVDA/.test(await page.locator('h1.el-title').innerText()), 'kein Standardtitel');
-    check(await page.locator('.el-row').count() >= 1, 'mindestens eine Reihe');
-    check(await page.locator('vu-navigation nav.tabs a[aria-current=page]').first().innerText().then((t) => /Elliott/.test(t)), 'Reiter: Elliott aktiv');
+    check(await page.locator('#el-main .ek-rail').count() >= 1, 'mindestens eine Schiene');
+    check(await page.evaluate(() => document.documentElement.getAttribute('data-vu-tabs') === 'inhalt' && document.querySelector('vu-navigation').shadowRoot.querySelector('nav.tabs').hidden) && /Heute/.test(await page.locator('#el-main .ek-tab.is-on').innerText()), 'Reiter im Inhalt: Heute aktiv, Reiterzeile des Rahmens verborgen');
     check(!page.__requests.some((u) => /technical-intelligence\/v3\/shards|index\.json\.gz/.test(u)), 'kein Shard-/Voll-Index-Abruf auf der Startseite');
     const bytes = await page.evaluate(() => performance.getEntriesByType('resource').reduce((n, e) => n + (e.transferSize || 0), 0));
     console.log('    Anfragen:', page.__requests.length, ' uebertragen ca.', Math.round(bytes / 1024), 'KB');
     await layout(page, 'Startseite');
     await page.screenshot({ path: `${OUT}/${vp.name}-${scheme}-home.png` });
     // App-Konzept 2: Kopfkachel, Schiene der zählbaren Aktien, „Weiter“-Karte; „Wellen in 3 Minuten“ lädt beim Antippen (elliott/about.js)
-    check(await page.locator('.el-top .el-today-n').count() === 1 && await page.locator('.el-rail a.el-cr').count() >= 1 && await page.locator('#el-main a.vu-next').count() === 1, 'Kopfkachel, Schiene und „Weiter“-Karte');
+    check(await page.locator('.ek-kopf .ek-big').count() >= 1 && await page.locator('.ek-rail a.el-cr').count() >= 1 && await page.locator('#el-main a.ek-next[href="/technical/#/"]').count() === 1, 'Kopfkachel, Schiene und „Weiter“-Karte');
+    // „Heute neu“: Aktien-Elemente öffnen die Vorschau des Rahmens (data-vu-stock, Ziel /aktie/#/<T>); Wellenlagen tragen „Schema, keine echten Kurse“
+    check(await page.evaluate(() => { const a = [...document.querySelectorAll('.ek-nc[data-vu-stock]')]; return !a.length || a.every((n) => n.getAttribute('href') === '/aktie/#/' + encodeURIComponent(n.dataset.vuStock) && n.dataset.vuStockName); }), '„Heute neu“: data-vu-stock und Ziel /aktie/#/<T>');
+    check(await page.locator('.ek-form').count() === 0 || (/Schema[^.]*keine echten Kurse/.test(await page.locator('#el-main').innerText()) && await page.locator('.ek-form[aria-label*="Schema, keine echten Kurse"]').count() === await page.locator('.ek-form').count()), 'Wellenlagen: als Schema beschriftet');
+    await page.locator('.ek-cover').click();
+    await page.waitForSelector('#ek-kopf-pop:not([hidden])', { timeout: 5000 });
+    check(/Gut anwendbar/.test(await page.locator('#ek-kopf-pop').innerText()), 'Kopfkachel öffnet das Erklärfenster');
+    await page.keyboard.press('Escape');
+    await page.waitForSelector('#ek-kopf-pop', { state: 'hidden' });
     await page.locator('.el-about').click();
     await page.waitForSelector('#el-sheet:not([hidden])', { timeout: 15000 });
     check(/Impuls/.test(await page.locator('#el-sheet').innerText()), 'Fenster „Wellen in 3 Minuten“ öffnet mit Inhalt');
@@ -99,7 +108,7 @@ for (const vp of VIEWPORTS) {
     check(small === 0, 'keine mikroskopischen Texte');
 
     // Weg 1: Zaehlbar-Liste -> Aktie -> Detail
-    const w3 = page.locator('.el-clist a.el-cr').first();
+    const w3 = page.locator('#el-main a.el-cr').first();
     if (await w3.count()) {
       const symbol = await w3.getAttribute('data-symbol');
       await w3.click();
@@ -166,7 +175,7 @@ for (const vp of VIEWPORTS) {
     await page.waitForSelector('#el-main[data-state="ready"]');
     check(/Welle C/.test(await page.locator('h1.el-title').innerText()) && (await page.locator('.el-chip.is-on').allInnerTexts()).some((t) => /Bestätigt/.test(t)), 'Filter-Deep-Link stellt die Auswahl her');
     // Redesign 2027: Plus/Minus nur neongrün/schwarz, kein Rot und kein Grün in Karten und Chips
-    const loud = await page.evaluate(() => [...document.querySelectorAll('.el-card *, .el-chip, .el-split *')].filter((n) => { const c = getComputedStyle(n); return [c.color, c.backgroundColor].some((v) => { const m = /rgba?\((\d+), (\d+), (\d+)/.exec(v); if (!m) return false; const [r, g, b] = m.slice(1).map(Number); return (r > 150 && g < 110 && b < 110) || (g > 120 && r < 110 && b < 110); }); }).length);
+    const loud = await page.evaluate(() => [...document.querySelectorAll('.el-card *, .el-chip')].filter((n) => { const c = getComputedStyle(n); return [c.color, c.backgroundColor].some((v) => { const m = /rgba?\((\d+), (\d+), (\d+)/.exec(v); if (!m) return false; const [r, g, b] = m.slice(1).map(Number); return (r > 150 && g < 110 && b < 110) || (g > 120 && r < 110 && b < 110); }); }).length);
     check(loud === 0, 'keine roten oder grünen Flächen (' + loud + ')');
 
     // Weg 2: Suche NVDA -> Detail

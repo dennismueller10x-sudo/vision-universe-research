@@ -76,7 +76,8 @@ test("Browser und App ohne Seitenfuß; Menü trägt jeden Fuß-Link und den Fuß
 });
 
 test("Seiten mit eigenem Kopf öffnen dasselbe zentrale Menü", () => {
-  for (const file of ["index.html", "scripts/home/index.template.html", "ask/index.html", "preise/index.html", "willkommen/start/index.html"]) {
+  // /ask/ (Atlas) trägt seit App-Konzept 2 (16.11.2026) den Rahmen wie jede Seite; geprüft in core/tests/shell-navigation.test.mjs.
+  for (const file of ["index.html", "scripts/home/index.template.html", "preise/index.html", "willkommen/start/index.html"]) {
     const page = readFileSync(file, "utf8");
     assert.match(page, /<vu-navigation menu-only no-dock/, file);
     assert.match(page, /data-vu-menu-toggle/, file);

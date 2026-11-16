@@ -206,7 +206,7 @@
   /* Eigenschaften (Satz-Bauer) und fertige Ideen: eine Quelle, ein Wort = eine Regel (screener/engine/vocab.js). */
   var V = window.VUScreenerVocab, PROPS = V.PROPS, IDEAS = V.IDEAS, sameFilter = V.sameFilter, propOf = V.propOf;
   function ruleText(f) { var p = propOf(f); return p ? p.word : F.describeFilter(f, ds() ? ds().meta.dict : null); }
-  /** Satz-Bauer: „Zeig mir Aktien, die … und …“ mit neongruenen Luecken. */
+  /** Satz-Bauer: „Zeig mir Aktien, die …, … und ….“ mit neongruenen Luecken und „+ Bedingung“ (Prototyp #screener). */
   function sentence(q, opts) {
     opts = opts || {};
     var fs = Q.filters(q), kids = ['Zeig mir Aktien, die '];
@@ -214,10 +214,11 @@
       if (k) kids.push(k === fs.length - 1 ? ' und ' : ', ');
       kids.push(h('button', { class: 'sc-gap', type: 'button', 'aria-label': ruleText(f) + ' bearbeiten', onclick: needsData(function () { openDetail(f.field, { filter: f }); }) }, ruleText(f)));
     });
-    if (!fs.length) kids.push(h('button', { class: 'sc-gap is-empty', type: 'button', 'aria-label': 'Erste Eigenschaft wählen', onclick: function () { if (state.view === 'build') openLibrary(); else { go({ view: 'build' }); window.scrollTo(0, 0); } } }, '…'));
-    /* „+“ öffnet überall das Kriterien-Fenster (App-Konzept 2: Tiefe per Tipp). */
-    kids.push(' ', h('button', { class: 'sc-gap is-add', type: 'button', 'aria-label': 'Eigenschaft hinzufügen', onclick: function () { openLibrary(); } }, '+'));
-    return h('div', { class: 'sc-sentence' + (opts.small ? ' is-small' : '') + (fs.length > 3 ? ' is-long' : '') }, kids);
+    if (fs.length) kids.push('.');
+    else kids.push(h('button', { class: 'sc-gap is-empty', type: 'button', 'aria-label': 'Erste Bedingung wählen', onclick: function () { openLibrary(); } }, '…'));
+    /* „+ Bedingung“ öffnet überall das Kriterien-Fenster (App-Konzept 2: Tiefe per Tipp). */
+    kids.push(' ', h('button', { class: 'sc-gap is-add', type: 'button', 'aria-label': 'Bedingung hinzufügen', onclick: function () { openLibrary(); } }, '+ Bedingung'));
+    return h('p', { class: 'sc-sentence' + (opts.small ? ' is-small' : '') + (opts.start ? ' sc-ak-sent' : '') + (fs.length > 3 ? ' is-long' : '') }, kids);
   }
 
   // ------------------------------------------------------------ URL-Zustand
@@ -384,6 +385,7 @@
     var y = window.scrollY;
     var main = h('main', { id: 'sc-main', class: 'sc-app', tabindex: '-1' });
     var frag = [main];
+    tabsMode(state.view === 'start');
     if (!state.loaded && !previewing()) { main.append(loadingView()); root.replaceChildren.apply(root, frag); return; }
     if (state.error) { main.append(errorView()); root.replaceChildren.apply(root, frag); return; }
     document.title = ({ start: 'Screener', build: 'Screen bauen', results: 'Treffer', saved: 'Gespeicherte Screens', changes: 'Veränderungen', compare: 'Vergleich', watchlist: 'Watchlist' })[state.view] + ' — Vision Universe® Screener';
@@ -398,6 +400,8 @@
     if (opts.keepScroll) window.scrollTo(0, y);
     if (state.stock && !sheets.some(function (s) { return s.stock; })) setTimeout(function () { openQuick(state.stock, { fromUrl: true }); }, 0);
   }
+  /** „Suchen“ trägt seine Reiter im Inhalt (<html data-vu-tabs="inhalt">); die übrigen Ansichten zeigen die Reiter des Rahmens. */
+  function tabsMode(on) { var hd = document.documentElement; if (!hd || !hd.setAttribute) return; if (on) hd.setAttribute('data-vu-tabs', 'inhalt'); else if (hd.getAttribute('data-vu-tabs') === 'inhalt') hd.removeAttribute('data-vu-tabs'); }
   mqDesk.addEventListener('change', function () { render({ keepScroll: true }); });
   document.addEventListener('vu-theme-change', function () { /* Farben haengen an CSS-Tokens */ });
 
@@ -413,6 +417,7 @@
     var i = info(); if (!i) return null;
     /* VU3: Universum, Datenstand und Quellen gebuendelt in „Daten & Methodik“; sichtbar bleibt nur die Einordnung. */
     return h('footer', { class: 'sc-foot' }, [
+      window.VUNavigation && window.VUNavigation.openHinweise ? h('p', { class: 'sc-ak-end' }, h('button', { class: 'sc-ak-lk', type: 'button', onclick: function () { window.VUNavigation.openHinweise(); } }, 'Daten & Hinweise')) : null,
       h('details', { class: 'vu-dm sc-dm' }, [h('summary', {}, ['Daten & Methodik ', h('small', { text: 'Stand ' + dateDe(i.asOf) })]),
         h('p', { text: 'Universum: ' + nf(i.count) + ' ' + i.universeLabel + ' · Kurse Stand ' + dateDe(i.asOf) + ' · Fundamentaldaten Unternehmensmeldungen bis ' + dateDe(i.fundamentalsAsOf) + '.' }),
         h('p', { text: 'Branchen aus SIC-Codes (kein GICS). Fehlt ein Wert, erfüllt die Aktie das Kriterium nicht. Match = gewichteter Durchschnitt der Perzentile im Gesamtuniversum.' }),
@@ -420,42 +425,104 @@
       h('p', { class: 'sc-legal', text: 'Filter und Übereinstimmung beschreiben Kennzahlen – kein Anlageurteil und keine Kaufempfehlung.' })]);
   }
 
-  // ------------------------------------------------------------ START
-  function viewStart(main) {
-    var i = info(), q = state.query, fs = Q.filters(q);
-    if (state.invalidLink) main.append(invalidNotice());
-    /* App-Konzept 2: eine dunkle Kachel trägt Frage, Satz und Trefferzahl. Universum und Zahl der Kriterien stehen klein
-       darin, der Datenstand unter „Daten & Methodik“ am Seitenende (keine eigene Zeile am Seitenanfang). */
-    var hero = h('section', { class: 'vu-night sc-hero2', 'aria-label': 'Dein Satz' }, [
-      h('div', { class: 'sc-hero2-top' }, [h('h1', { class: 'vu-ltag', id: 'sc-product-title', text: 'Was suchst du?' }),
-        helpBtn('Was suchst du?', ['Sag in einem Satz, was dir wichtig ist. Die Trefferzahl siehst du sofort.']), iconBtn('gear', 'Einstellungen', openSettings)]),
-      sentence(q)]);
-    if (fs.length) {
-      hero.append(h('button', { class: 'vu-btn vu-btn--block sc-sent-cta', type: 'button', onclick: needsData(function () { go({ view: 'results' }); window.scrollTo(0, 0); }) }, [icon('list'), liveN(function () { return result().total; }), ' Treffer zeigen']),
-        h('p', { class: 'sc-sent-desc', text: fs.map(function (f) { return F.describeFilter(f); }).join(' · ') }));
-    } else {
-      /* Die fuenf haeufigsten Ergaenzungen direkt im Satz, je mit Trefferzahl (FX04). Tipp oeffnet das Filter-Sheet. */
-      hero.append(h('div', { class: 'sc-satz-c', role: 'list', 'aria-label': 'Ergänzungen' }, PROPS.slice(0, 5).map(function (p) {
-        return h('button', { class: 'sc-satz-o', type: 'button', role: 'listitem', 'data-prop': p.id, onclick: needsData(function () { openDetail(p.f.field, { draft: p.f, toResults: true }); }) }, [p.word, ' ', liveN(function () { return countOf(queryOf([p.f])); })]);
-      })));
-    }
-    hero.append(h('p', { class: 'sc-universe sc-num' }, [h('strong', { text: nf(i.count) }), ' US-Aktien · ' + F.FIELDS.length + ' Kriterien']));
-    main.append(hero, perspRail());
-    main.append(ideasSection(IDEAS));
-    var list = store.screens().slice(0, 3);
-    main.append(railHead('Deine Screens', { n: store.screens().length || null, onAll: function () { go({ view: 'saved' }); window.scrollTo(0, 0); } }));
-    if (!list.length) main.append(h('div', { class: 'vu-box sc-noscreens' }, [h('span', { class: 'sc-noscreens-i' }, icon('bookmark')), h('span', {}, [h('b', { text: 'Noch kein gespeicherter Screen' }), h('span', { text: 'Gespeichert sieht man beim nächsten Besuch, was neu dazukam.' })])]));
-    else main.append(h('div', { class: 'sc-list sc-srail' }, list.map(savedRow)));
-    if (store.history().length) main.append(recentSection(3));
-    /* Gruppen, Gewichte und alle Kriterien stehen in „Screen bauen“ (kein eigener Modus); Europa als „Weiter“-Karte. */
-    main.append(h('div', { class: 'sc-gap-m' }, navLink(buildURL({ view: 'build' }), glyphHud('filter', 42), 'Eigenen Screen bauen', 'Gruppen, Gewichte, alle Kriterien', function (e) { e.preventDefault(); go({ view: 'build' }); window.scrollTo(0, 0); })),
-      nextCard({ href: '/screener/europa/', attrs: { 'data-europe-link': '' }, title: 'Europäische Aktien', sub: 'Kursveränderung, 52-Wochen-Hoch, 50-Tage-Linie' }));
+  // ------------------------------------------------------------ START (App-Konzept 2, Prototyp #screener)
+  /* Bildschirm „Suchen“ wie im freigegebenen Prototyp (Owner 14./15.11.2026): Reiter im Inhalt, Satz-Kachel mit
+     neongrünen Lücken, Modul-Reiter, Trefferzahl groß mit „Melden“/„Speichern“, die ersten fünf Treffer, „Treffer swipen“ /
+     „Als Tabelle“, Schiene „Fertige Suchen“, „Daten & Hinweise“. Alle Zahlen aus der Engine (adapter.screenSync). */
+  var START_PERSP = ['zahlen', 'chart', 'investoren', 'faktoren', 'methoden', 'basis'];
+  var WORLD_LABEL = { fundamental: 'Fundamental', technical: 'Technical', quant: 'Quant', supertrader: 'Supertrader', hedgefonds: 'Hedgefonds', discover: 'Discover' };
+  /** Reiter im Inhalt (Prototyp tabs2): Suchen · Fertige Suchen · Gespeichert · Vergleichen. */
+  function startTabs() {
+    var nav = h('nav', { class: 'sc-ak-tabs', 'aria-label': 'Screener-Bereiche' });
+    [['Suchen', null], ['Fertige Suchen', 'fertig'], ['Gespeichert', 'saved'], ['Vergleichen', 'compare']].forEach(function (t, k) {
+      var href = t[1] === 'fertig' ? '#sc-f' : t[1] ? buildURL({ view: t[1], query: Q.empty(), screenId: null }) : buildURL({ view: 'start' });
+      nav.append(h('a', { class: 'sc-ak-tab' + (k ? '' : ' is-on'), href: href, 'aria-current': k ? null : 'page', onclick: function (e) {
+        e.preventDefault();
+        if (t[1] === 'fertig') { var n = document.getElementById('sc-f'); if (n) window.scrollTo({ top: Math.max(0, n.getBoundingClientRect().top + window.scrollY - nav.getBoundingClientRect().bottom - 4), behavior: 'smooth' }); return; }
+        if (t[1]) { go({ view: t[1] }); window.scrollTo(0, 0); } else window.scrollTo({ top: 0, behavior: 'smooth' });
+      } }, t[0]));
+    });
+    return nav;
   }
-  /** Schienen-Kopf: Titel, „?“ für den Erklärsatz, „Alle N“. */
-  function railHead(title, o) {
-    o = o || {};
-    return h('div', { class: 'sc-rh' }, h('div', { class: 'sc-rh-t' }, [h('h2', {}, [title, o.help ? helpBtn(title, o.help) : null]),
-      o.onAll ? h('button', { class: 'sc-rh-all', type: 'button', onclick: o.onAll }, [o.n ? 'Alle ' + o.n : 'Alle', icon('next')]) : null]));
+  /** Modul-Reiter unter dem Satz: je Perspektive Symbol, Name und Zahl aktiver Bedingungen („Zahlen · 1“). */
+  function startPersp() {
+    var on = {};
+    Q.filters(state.query).forEach(function (f) { var d = F.field(f.field); if (!d) return; var p = perspOf(d); on[p.id] = (on[p.id] || 0) + 1; });
+    return h('div', { class: 'sc-plist sc-ak-mods', role: 'group', 'aria-label': 'Bedingungen nach Modul' }, START_PERSP.map(function (id) {
+      var p = perspById(id), n = perspFields(p).length;
+      return h('button', { class: 'sc-prow sc-ak-mod' + (on[id] ? ' is-on' : ''), type: 'button', 'data-persp': id, title: p.label + ': ' + n + ' Kriterien' + (on[id] ? ', ' + on[id] + ' aktiv' : ''),
+        onclick: function () { openLibrary({ persp: id }); } }, [p.world ? worldIcon(p.world) : icon(p.glyph), h('b', { text: p.label }), on[id] ? ' · ' + on[id] : null]);
+    }));
+  }
+  function worldIcon(id) {
+    var s = h('span', { class: 'sc-ak-ic', 'aria-hidden': 'true' });
+    s.innerHTML = '<svg viewBox="0 0 24 24"><use href="/assets/product-icons.svg#' + id + '"></use></svg>';
+    return s;
+  }
+  /** Zweite Zeile eines Treffers: die gesuchten Kennzahlen mit ihrem Wert („Nettomarge 23,1 % · KGV 18,2“), sonst was die Firma macht. */
+  function hitSub(i) {
+    var d = ds(), parts = [];
+    Q.filters(state.query).forEach(function (f) {
+      var def = F.field(f.field); if (!def || def.kind !== 'number' || parts.length >= 3) return;
+      parts.push(shortField(def.id) + ' ' + F.format(def, d.value(def.id, i)));
+    });
+    return parts.length ? parts.join(' · ') : subLine(i);
+  }
+  /** Eine Trefferzeile (Prototyp .row): Logo, Name, Kennzahlen, Tagesbewegung als Pille. Öffnet die Aktien-Vorschau des Rahmens. */
+  function akRow(i) {
+    var d = ds(), sym = d.symbol(i), nm = shortName(d.name(i));
+    return h('a', { class: 'sc-ak-row sc-ak-hit', href: '/aktie/#/' + encodeURIComponent(sym), 'data-vu-stock': sym, 'data-vu-stock-name': nm }, [logo(sym),
+      h('span', { class: 'sc-ak-rowt' }, [h('b', { text: nm }), h('span', { text: hitSub(i) })]), chgEl(d.value('perf1d', i))]);
+  }
+  /** Fertige Suche als Kachel (Prototyp: Symbol, Trefferzahl groß, Titel, Modul · Art). */
+  function fsTile(it) {
+    var q = queryOf(it.fs);
+    return h('button', { class: 'sc-ak-fs', type: 'button', 'data-idea': it.id, onclick: needsData(function () { go({ query: queryOf(it.fs), view: 'start', screenId: null }); window.scrollTo(0, 0); }) }, [
+      h('span', { class: 'sc-ak-hud', 'aria-hidden': 'true' }, it.world ? worldIcon(it.world) : icon(it.glyph)),
+      h('span', { class: 'sc-ak-fsn' }, liveN(function () { return countOf(q); })),
+      h('b', { text: it.title }), h('small', { text: (WORLD_LABEL[it.world] ? WORLD_LABEL[it.world] + ' · ' : '') + it.sub })]);
+  }
+  var asTable = needsData(function () { var nq = Q.clone(state.query); nq.view = 'table'; go({ query: nq, view: 'results' }); window.scrollTo(0, 0); });
+  function viewStart(main) {
+    var i = info(), q = state.query, fs = Q.filters(q), saved = state.screenId && store.get(state.screenId);
+    main.classList.add('sc-ak');
+    main.append(h('h1', { class: 'sc-sr', text: 'Screener' + (saved ? ': ' + saved.name : '') }), startTabs());
+    if (state.invalidLink) main.append(h('div', { class: 'sc-ak-px' }, invalidNotice()));
+    /* Satz-Kachel: „In einem Satz · N Kriterien“, der Satz mit Lücken und „+ Bedingung“; ohne Bedingung die fünf häufigsten Ergänzungen mit Trefferzahl. */
+    var tile = h('section', { class: 'sc-ak-tile sc-ak-senttile', 'aria-label': 'Was suchst du?' }, [h('p', { class: 'sc-ak-eb', text: 'In einem Satz · ' + F.FIELDS.length + ' Kriterien' }), sentence(q, { start: true })]);
+    if (!fs.length) tile.append(h('div', { class: 'sc-satz-c', role: 'list', 'aria-label': 'Ergänzungen' }, PROPS.slice(0, 5).map(function (p) {
+      return h('button', { class: 'sc-satz-o', type: 'button', role: 'listitem', 'data-prop': p.id, onclick: needsData(function () { openDetail(p.f.field, { draft: p.f, toResults: true }); }) }, [p.word, ' ', liveN(function () { return countOf(queryOf([p.f])); })]);
+    })));
+    main.append(h('div', { class: 'sc-ak-px' }, tile), startPersp());
+    /* Trefferzahl groß; ohne Bedingung das ganze Universum (aus der Kopfdatei, steht sofort). */
+    var count = fs.length ? h('p', { class: 'sc-ak-n' }, [liveN(function () { return result().total; }), ' ', h('b', { text: 'Treffer' })])
+      : h('p', { class: 'sc-ak-n sc-universe' }, [h('strong', { class: 'sc-num', text: nf(i.count) }), ' ', h('b', { text: 'US-Aktien' })]);
+    main.append(h('div', { class: 'sc-ak-px sc-ak-counthead' }, [count, fs.length ? h('div', { class: 'sc-ak-pills' }, [
+      h('button', { class: 'sc-ak-pill', type: 'button', 'aria-haspopup': 'dialog', onclick: needsData(function () { var sv = state.screenId && store.get(state.screenId); if (!sv) { openSave(); toast('Erst speichern, dann melden'); return; } var sh = openSheet({ title: sv.name }); sh.body.append(notifyCard(sv)); }) }, [icon('bell'), 'Melden']),
+      h('button', { class: 'sc-ak-pill sc-save', type: 'button', 'aria-haspopup': 'dialog', onclick: needsData(openSave) }, saved ? 'Gespeichert' : 'Speichern')]) : null]));
+    /* Die ersten fünf Treffer (Reihenfolge der Engine, ohne Sortierung nach Börsenwert). Bis das volle Universum da ist, bleibt der Block leer. */
+    var list = h('div', { class: 'sc-ak-px sc-ak-live' });
+    if (ds()) {
+      var r = result();
+      /* Zwei Aktiengattungen derselben Firma (z. B. GOOGL/GOOG) zeigt die Kurzliste nur einmal; die Trefferzahl bleibt unverändert. */
+      var seen = {}, top = [];
+      for (var k = 0; k < r.order.length && top.length < 5; k++) { var nm = shortName(ds().name(r.order[k])); if (!seen[nm]) { seen[nm] = 1; top.push(r.order[k]); } }
+      if (r.total) list.append(h('div', { class: 'sc-ak-tile sc-ak-list' }, top.map(akRow)));
+      else list.append(h('div', { class: 'sc-ak-tile sc-ak-none' }, [h('b', { text: 'Keine Treffer' }), h('span', { text: 'Diese Mischung hat heute keine US-Aktie. Tippe eine Lücke an, um sie zu ändern.' })]));
+    }
+    main.append(list);
+    main.append(h('div', { class: 'sc-ak-px sc-ak-acts' }, [
+      h('button', { class: 'sc-ak-btn', type: 'button', onclick: needsData(function () { var r = result(); if (r.total) openPeek(ds().symbol(r.order[0]), { swipe: true }); else toast('Keine Treffer'); }) }, 'Treffer swipen'),
+      h('a', { class: 'sc-ak-btn is-ol', href: buildURL({ view: 'results' }), onclick: function (e) { e.preventDefault(); asTable(); } }, 'Als Tabelle')]));
+    main.append(h('div', { class: 'sc-ak-sh', id: 'sc-f' }, [h('h2', { text: 'Fertige Suchen' }), h('span', { text: 'aus allen Modulen ›' })]),
+      h('div', { class: 'sc-ak-rail', role: 'list', 'aria-label': 'Fertige Suchen' }, IDEAS.map(function (it) { var b = fsTile(it); b.setAttribute('role', 'listitem'); return b; })));
+    /* Was die frühere Startseite zusätzlich zeigte: eigener Screen (Gruppen, Gewichte, Ranking) und Europa – als Zeilen im Design des Prototyps. */
+    main.append(h('div', { class: 'sc-ak-sh' }, [h('h2', { text: 'Mehr im Screener' })]),
+      h('div', { class: 'sc-ak-px' }, h('div', { class: 'sc-ak-tile sc-ak-list sc-ak-more' }, [
+        h('a', { class: 'sc-ak-row sc-ak-build', href: buildURL({ view: 'build' }), onclick: function (e) { e.preventDefault(); go({ view: 'build' }); window.scrollTo(0, 0); } }, [h('span', { class: 'sc-ak-hud', 'aria-hidden': 'true' }, icon('filter')),
+          h('span', { class: 'sc-ak-rowt' }, [h('b', { text: 'Screen bauen' }), h('span', { text: 'Gruppen, Verknüpfung, Ranking, alle Kriterien' })]), icon('next')]),
+        h('a', { class: 'sc-ak-row', href: '/screener/europa/', 'data-europe-link': '' }, [h('span', { class: 'sc-ak-hud', 'aria-hidden': 'true' }, icon('globe')),
+          h('span', { class: 'sc-ak-rowt' }, [h('b', { text: 'Europäische Aktien' }), h('span', { text: 'Kursveränderung, 52-Wochen-Hoch, 50-Tage-Linie' })]), icon('next')])])));
   }
   /** Eine fertige Idee als Kachel: Symbol, Trefferzahl gross (live), Titel, Regel, Logos der ersten Treffer. */
   function ideaTile(it) {
@@ -469,18 +536,6 @@
       h('span', { class: 'sc-idea-n' }, [liveN(function () { return countOf(q); }), h('small', { text: ' Treffer' })]),
       h('b', { text: it.title }), h('small', { text: it.sub }), logos]);
   }
-  /** Fertige Ideen als Schiene bis an den Rand; „Alle N“ klappt sie zum Raster auf. */
-  function ideasSection(list) {
-    var rail = h('div', { class: 'sc-rail' }, list.map(ideaTile));
-    var sec = h('section', { class: 'sc-ideasec', 'aria-label': 'Fertige Ideen' }, [railHead('Fertige Ideen', { n: list.length, help: ['Bewährte Muster als feste Regeln, jederzeit anpassbar.'], onAll: function () { rail.classList.toggle('is-all'); } }), rail]);
-    return sec;
-  }
-  function navLink(href, lead, title, sub, onclick) {
-    var a = h('a', { class: 'vu-navcard', href: href, onclick: onclick || null }, [lead, h('span', { class: 'vu-navcard__text' }, [h('b', { text: title }), sub ? h('span', { text: sub }) : null])]);
-    var go_ = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); go_.setAttribute('class', 'vu-navcard__go'); go_.setAttribute('viewBox', '0 0 24 24'); go_.setAttribute('aria-hidden', 'true'); go_.innerHTML = '<path d="M9 5l7 7-7 7"/>';
-    a.append(go_);
-    return a;
-  }
   function ideasGrid(list) { return h('div', { class: 'sc-rail is-all sc-ideas' }, list.map(ideaTile)); }
   /** Aktive Regeln als neongruene Chips (Tippen bearbeitet, × entfernt). */
   function ruleChips(fs, opts) {
@@ -491,7 +546,7 @@
       return h('span', { class: 'sc-rchip', role: 'listitem' }, [h('button', { class: 'sc-mini-chip', type: 'button', onclick: needsData(function () { openDetail(f.field, { filter: f }); }) }, label),
         opts.remove === false ? null : h('button', { class: 'sc-rchip-x', type: 'button', 'aria-label': F.describeFilter(f) + ' entfernen', onclick: function () { go({ query: Q.removeFilter(state.query, f.id) }, { keepScroll: true }); toast('Regel entfernt'); } }, '×')]);
     });
-    if (opts.add) kids.push(h('button', { class: 'sc-mini-chip is-add', type: 'button', onclick: function () { openLibrary(); }, 'aria-label': 'Filter hinzufügen' }, '+ Filter'));
+    if (opts.add) kids.push(h('span', { class: 'sc-rchip-add', role: 'listitem' }, h('button', { class: 'sc-mini-chip is-add', type: 'button', onclick: function () { openLibrary(); }, 'aria-label': 'Filter hinzufügen' }, '+ Filter')));
     return h('div', { class: 'sc-filterline', role: 'list', 'aria-label': 'Aktive Filter' }, kids);
   }
   function lockShort(f) { return f.id === 'quantScore' ? 'noch nicht freigegeben' : f.source === 'estimates' ? 'keine lizenzierte Quelle' : f.source === 'factor' ? 'keine Methodik' : 'Daten folgen'; }
@@ -514,17 +569,6 @@
       h('p', { class: 'sc-note', text: 'Bei ' + nf(withheld) + ' Aktien werden Marktkapitalisierung und Bewertungskennzahlen nicht gezeigt, weil die gemeldete Aktienzahl oder Währung nicht zum gehandelten Papier passt (z. B. ADRs ausländischer Unternehmen). Margen und Wachstum bleiben filterbar.' }),
       h('p', { class: 'sc-note', text: 'Fehlt ein Wert, erfüllt die Aktie das Kriterium nicht. Der Filter-Impact zeigt, wie viele Aktien dadurch herausfallen.' }));
   });
-  function openSettings() {
-    var s = openSheet({ title: 'Einstellungen' });
-    function row(title, sub, control) { return h('div', { class: 'sc-toggle' }, [h('span', {}, [title, sub ? h('small', { text: sub }) : null]), control]); }
-    var theme = VD.theme;
-    var themeSeg = theme ? h('div', { class: 'sc-seg', role: 'group', 'aria-label': 'Darstellung' }) : h('a', { class: 'sc-link', href: '/discover/#/settings' }, 'Öffnen');
-    var paintTheme = function () { if (!theme) return; themeSeg.replaceChildren.apply(themeSeg, [['light', 'Hell'], ['dark', 'Dunkel']].map(function (m) { return h('button', { type: 'button', 'aria-pressed': String(theme.mode() === m[0]), onclick: function () { theme.set(m[0]); paintTheme(); } }, m[1]); })); };
-    paintTheme();
-    s.body.append(row('Darstellung', 'Vision-Universe-Einstellung – gilt auch für Discover', themeSeg),
-      h('button', { class: 'sc-row', type: 'button', style: { marginTop: '14px' }, onclick: function () { closeTop().then(openUniverseInfo); } }, [icon('vu'), h('div', { class: 'sc-row-main' }, [h('b', { text: 'Daten & Methodik' }), h('span', { text: 'Universum, Quellen, Plausibilitätsprüfung' })]), icon('next')]),
-      h('button', { class: 'sc-row', type: 'button', style: { marginTop: '8px' }, onclick: function () { store.clearHistory(); toast('Verlauf gelöscht'); } }, [icon('trash'), h('div', { class: 'sc-row-main' }, [h('b', { text: 'Verlauf löschen' }), h('span', { text: 'Zuletzt verwendete Screens auf diesem Gerät' })])]));
-  }
   function invalidNotice() {
     return h('div', { class: 'sc-card', role: 'alert', style: { padding: '14px 16px', margin: '12px 0', borderColor: 'var(--sc-warn)' } }, [h('b', { text: 'Dieser Link enthält ungültige Kriterien.' }),
       h('p', { class: 'sc-note', style: { margin: '4px 0 0' }, text: 'Es wurden keine Ersatzregeln angewendet. (' + state.invalidLink.replace('INVALID_QUERY:', '') + ')' })]);
@@ -548,13 +592,6 @@
     try { var q = Q.fromParams(params); go({ query: q, view: 'results', screenId: screenId || null }); window.scrollTo(0, 0); }
     catch (e) { toast('Dieser Screen enthält ungültige Kriterien.'); }
   }
-  function savedRow(s) {
-    var runs = s.runs || [], last = runs[runs.length - 1], d = runs.length === 2 ? E.diff(runs[0].symbols, runs[1].symbols) : null;
-    return h('a', { class: 'sc-row sc-stile', href: location.pathname + '?' + Q.toParams(s.query).toString() + '&view=results&screen=' + s.id, onclick: function (e) { e.preventDefault(); openParams(Q.toParams(s.query).toString(), s.id); } }, [
-      h('div', { class: 'sc-row-side' }, [last ? h('div', { class: 'sc-num sc-stile-n', text: nf(last.count) + ' Treffer' }) : null, d ? h('div', { class: 'sc-num sc-stile-d', text: '+' + d.added.length + ' / −' + d.removed.length }) : null]),
-      h('div', { class: 'sc-row-main' }, [h('b', { text: s.name }), h('span', { text: s.description || screenLabel(s.query) })])]);
-  }
-
   // ------------------------------------------------------------ BUILD
   /** Trefferzahl gross mit Anteilsbalken (C17). */
   function counter(r, opts) {
@@ -607,7 +644,7 @@
   }
   /** Trichter: alle → Regel 1 → Regel 2 … mit echter Zaehlung je Stufe (S02 Profi). */
   function impact(r) {
-    var card = h('ol', { class: 'sc-funnel', 'aria-label': 'Trichter: Treffer nach jeder Regel' });
+    var card = h('div', { class: 'sc-funnel', role: 'group', 'aria-label': 'Trichter: Treffer nach jeder Regel' });
     var fs = Q.filters(state.query);
     r.funnel.forEach(function (st, i) {
       var last = i === r.funnel.length - 1 && i > 0, share = r.universe ? st.count / r.universe * 100 : 0;
@@ -616,7 +653,7 @@
       var sub = def ? perspOf(def).label + ' · ' + F.group(def.group).label : st.kind === 'group' ? (st.standalone ? 'unabhängig von den anderen Gruppen' : 'Gruppe') : null;
       var meta = st.kind !== 'start' && st.lost ? '−' + nf(st.lost) + (st.missing ? ' · davon ' + nf(st.missing) + ' ohne Angabe' : '') : null;
       var pf = f ? r.perFilter[f.id] : null;
-      var row = h('li', { class: 'sc-tl' + (last ? ' is-final' : '') + (st.kind === 'start' ? ' is-start' : '') }, [
+      var row = h('div', { class: 'sc-tl' + (last ? ' is-final' : '') + (st.kind === 'start' ? ' is-start' : '') }, [
         h('div', { class: 'sc-tl-top' }, [h('div', { class: 'sc-tl-main' }, [h('span', { class: 'sc-tl-label' }, [st.kind === 'start' ? null : h('span', { class: 'sc-muted', text: st.kind === 'union' ? '' : 'und ' }), label]),
           sub ? h('small', { text: sub + (meta ? ' · ' + meta : '') }) : meta ? h('small', { text: meta }) : null,
           pf ? h('small', { class: 'sc-tl-alone sc-num', text: nf(pf.pass) + ' Aktien erfüllen allein' + (pf.missing ? ' · ' + nf(pf.missing) + ' ohne Daten' : '') }) : null]), h('b', { class: 'sc-num', text: nf(st.count) })]),
@@ -1333,9 +1370,8 @@
           if (tgt) dq = Q.moveFilter(dq, editing.id, tgt);
         } else dq = Q.addFilter(state.query, draft, state.targetGroup).query;
       } catch (e) { toast('Bitte einen gültigen Wert eingeben'); return; }
-      /* Aus der einfachen Startansicht fuehrt eine neue Regel zum Satz-Bauer (S02). */
-      if (opts.toResults) go({ query: dq, view: 'results' });
-      else if (state.view === 'start') go({ query: dq, view: 'build' });
+      /* App-Konzept 2: auf „Suchen“ bleibt eine neue Bedingung im Satz, Trefferzahl und Liste stehen direkt darunter. */
+      if (opts.toResults && state.view !== 'start') go({ query: dq, view: 'results' });
       else go({ query: dq }, { keepScroll: true });
       toast(editing ? 'Regel geändert' : 'Regel hinzugefügt');
     });

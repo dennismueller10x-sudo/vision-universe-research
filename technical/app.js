@@ -408,64 +408,153 @@
   }
   /** Marktbreite als Urteil: ab 60 % stark, ab 40 % gemischt, darunter schwach (Darstellungsregel, keine Prognose). */
   function breadthVerdict(share) { return share >= 60 ? ["strong", "Starker Markt"] : share >= 40 ? ["mid", "Gemischter Markt"] : ["weak", "Schwacher Markt"]; }
-  function viewHome(main) {
-    /* App-Konzept 2: Kopfkachel (Frage, Anteil über der 200-Tage-Linie als Zahl und Balken, Urteil mit Ampel), darunter Suche und
-       Schienen. Der Erklärsatz und der Stand stehen einen Tipp entfernt im Fenster („i“) und in der Fußzeile. */
-    var LEAD = "Jeden Tag lesen feste Regeln die Charts aller US-Aktien und sagen in Worten, was auffällt.";
-    var stand = "", basis = "";
-    var title = el("h1", { class: "tc-hero-q", text: "Was zeigt der Chart?" }), tag = el("span", { class: "tc-hero-n" });
-    var info = infoBtn("Was Technical zeigt", function () {
-      pop("tc-about-pop", "Was zeigt der Chart?", [el("p", { class: "tc-sheet-lead", text: LEAD }), stand ? el("p", { class: "tc-note", text: stand }) : null, basis ? el("p", { class: "tc-note", text: basis }) : null,
-        el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/muster?reiter=regeln", text: "Regeln und Grenzen" })])]);
+  /* App-Konzept 2 nach Prototyp (Bildschirm #technical, Owner 14./15.11.2026: „1:1 wie im Prototyp“): Reiter im Inhalt
+     (<html data-vu-tabs="inhalt">), Kopfkachel „Was zeigt der Chart?“ mit zwei Anteilen und geteiltem Balken, Schienen „Heute neu im
+     Chart“ und „Muster im Markt“, „Weiter“-Karte, „Daten & Hinweise“. Das Chart-Quiz des Prototyps entfällt (vom Owner zurückgestellt).
+     Was der bisherige Start zusätzlich zeigte (fertige Suchen, Suche, Lernen, Urteil mit Ampel, Erklärsatz), steht darunter bzw. im Fenster. */
+  var TK_TABS = [["Heute", ""], ["Muster", "tk-muster"], ["Screener", "#/screener"], ["Chart", "#/chart"], ["Lernen", "#/lernen"]];
+  /* Weitere Bereiche der Reiterzeile des Rahmens (products/technical/module.json), die der Prototyp nicht zeigt. */
+  var TK_MORE = [["Vorlagen", "#/screener?reiter=vorlagen"], ["Gespeichert", "#/screener/gespeichert"]];
+  /* Musterbilder der Schiene in der Strichsprache des Prototyps (122 × 56): die Pfade der fünf Prototyp-Muster sind übernommen,
+     die übrigen kommen aus technical/ui/shapes.js (36 × 24) und werden auf die Fläche gestreckt. Nur Darstellung. */
+  var TK_FORM = { dreieck: "M4 48 30 12 50 40 72 18 90 34 104 24 118 28", range: "M4 40 20 28 36 40 52 28 68 40 84 28 100 12 118 6",
+    doppelboden: "M4 8 30 46 58 20 86 46 118 8", doppeltop: "M4 50 30 10 58 36 86 10 118 50", kopf: "M4 46 22 26 36 38 60 8 84 38 98 26 118 46" };
+  function tkFormSvg(key) {
+    var own = TK_FORM[key], d = own || (SHP && SHP.SH[key]) || (SHP && SHP.SH.neutral) || "";
+    return h('<svg class="tk-form-ic" width="122" height="56" viewBox="' + (own ? "0 0 122 56" : "0 0 36 24") + '"' + (own ? "" : ' preserveAspectRatio="none"') + ' aria-hidden="true" focusable="false"><path' + (own ? "" : ' vector-effect="non-scaling-stroke"') + ' d="' + d + '"/></svg>');
+  }
+  function tkSh(title, href, more, id) {
+    return el("div", { class: "tk-sh", id: id || null }, [el("h2", { text: title }), href ? el("a", { class: "tk-more", href: href }, [more || "Alle", " ›"]) : null]);
+  }
+  var TK_NOTE = { text: "" };
+  function tkTabsMode(on) { var H = doc.documentElement; if (on) H.setAttribute("data-vu-tabs", "inhalt"); else if (H.getAttribute("data-vu-tabs") === "inhalt") H.removeAttribute("data-vu-tabs"); }
+  function tkTabs() {
+    var nav = el("nav", { class: "tk-tabs", "aria-label": "Technical-Bereiche" });
+    function mark(b) { [].forEach.call(nav.querySelectorAll(".tk-tab"), function (x) { var on = x === b; x.classList.toggle("is-on", on); if (on) x.setAttribute("aria-current", "true"); else x.removeAttribute("aria-current"); }); }
+    TK_TABS.forEach(function (t, i) {
+      if (t[1].charAt(0) === "#") { nav.append(el("a", { class: "tk-tab", href: t[1], text: t[0] })); return; }
+      /* Heute und Muster springen auf dieser Seite (Prototyp: data-tabg); die Adresse bleibt. */
+      var b = el("button", { type: "button", class: "tk-tab" + (i ? "" : " is-on"), "aria-current": i ? null : "true", text: t[0], onclick: function () {
+        mark(b);
+        var target = t[1] && doc.getElementById(t[1]);
+        var y = target ? target.getBoundingClientRect().top + global.scrollY - nav.getBoundingClientRect().height - (parseFloat(global.getComputedStyle(nav).top) || 0) - 4 : 0;
+        global.scrollTo({ top: Math.max(0, y), behavior: "smooth" });
+      } });
+      nav.append(b);
     });
-    var market = el("div", { class: "tc-market-slot" }, [el("div", { class: "tc-skel tc-hero-skel" })]);
-    var head = el("header", { class: "tc-hero vu-night" }, [el("div", { class: "tc-hero-h" }, [el("p", { class: "tc-hero-k" }, [title, tag]), info]), market]);
-    var searchSlot = el("div", { class: "tc-search-slot" }), chips = el("div", { class: "vu-chips tc-quick", role: "list" });
-    var fresh = el("div", { class: "tc-rail", "aria-busy": "true" }, [el("div", { class: "tc-skel", style: "height:214px;width:232px;flex:none" })]);
-    var freshHead = rh("Heute neu im Chart", null, null, "Muster, die sich zuletzt gebildet oder aufgelöst haben.");
-    var searches = el("div", { class: "tc-rail" }), grid = el("div", { class: "tc-mgrid tc-mrail", role: "list" }), foot = el("div");
-    var learn = el("a", { class: "tc-learn", href: "#/lernen" }, [hudGlyph("book", 42), el("span", { class: "tc-learn-t" }, [el("b", { text: "Chart lesen in 4 Lektionen" }), el("span", { class: "tc-learn-s", text: "Kurskerze, Struktur, Unterstützung und Widerstand" })]), h(U.glyph("next", 18))]);
-    put(main, [head, searchSlot, chips, freshHead, fresh, rh("Muster heute im Markt", "#/muster", "Alle", "So viele Aktien zeigen das Muster."), grid,
-      rh("Fertige Suchen", "#/screener?reiter=vorlagen", "Alle 13", "Tipp öffnet die Treffer im Screener."), searches, rh("Lernen"), learn,
-      nextCard("Fundamental: wie gut ist das Geschäft?", "/fundamental/"), foot]);
+    nav.append(el("span", { class: "tk-tabs-sep", "aria-hidden": "true" }));
+    TK_MORE.forEach(function (t) { nav.append(el("a", { class: "tk-tab tk-tab--go", href: t[1], text: t[0] })); });
+    return nav;
+  }
+  /** Kachel „Muster im Markt“ (Prototyp form()): Bild, Name, Zahl, Richtung als Pille (▲ auf, ▼ ab, ◆ offen). */
+  function tkForm(p, n, d) {
+    return el("a", { class: "tk-tile tk-tap tk-form" + (d > 0 ? " is-up" : d < 0 ? " is-down" : ""), href: "#/screener?muster=" + p[3], role: "listitem",
+      "aria-label": p[0] + ": " + de(n) + " Aktien, " + M.directionWords(d) }, [tkFormSvg(p[2]), el("b", { class: "tk-b8 tk-form-n", text: p[0] }),
+      el("span", { class: "tk-form-f", "aria-hidden": "true" }, [el("span", { class: "tk-num", text: de(n) }),
+        el("span", { class: "tk-pill tk-pill--sm" + (d > 0 ? "" : d < 0 ? " tk-pill--wh" : " tk-pill--dk"), text: d > 0 ? "▲ auf" : d < 0 ? "▼ ab" : "◆ offen" })])]);
+  }
+  /* Aktien-Vorschau (Prototyp-Fenster „stock“, assets/vu-stock-sheet.js) für die Karten „Heute neu im Chart“. Wie der Lader des
+     Rahmens (data-vu-stock), aber: hat die Vorschau für eine Aktie keine Daten (z. B. Vorzugsaktien), führt der Tipp auf den Chart
+     dieser Aktie in Technical statt ins Leere. Strg/Cmd/Mittelklick öffnen wie gewohnt das Ziel (/aktie/#/<T>). */
+  var sheetLibP = null;
+  function stockSheetLib() {
+    if (global.VUStockSheet && global.VUStockSheet.open) return Promise.resolve(global.VUStockSheet);
+    if (!sheetLibP) sheetLibP = new Promise(function (ok) {
+      var sc = doc.createElement("script"); sc.src = "/assets/vu-stock-sheet.js";
+      sc.onload = function () { ok(global.VUStockSheet || null); }; sc.onerror = function () { sheetLibP = null; ok(null); };
+      doc.head.appendChild(sc);
+    });
+    return sheetLibP;
+  }
+  function tkStockTap(host) {
+    host.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a[data-vu-stock]");
+      if (!a || e.defaultPrevented || e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      var t = a.getAttribute("data-vu-stock");
+      stockSheetLib().then(function (S) { return S ? S.open(t, { name: a.getAttribute("data-vu-stock-name") || "", trigger: a }) : false; })
+        .catch(function () { return false; }).then(function (ok) { if (!ok) location.hash = M.chartHref(t); });
+    });
+  }
+  function viewHome(main) {
+    var LEAD = "Jeden Tag lesen feste Regeln die Charts aller US-Aktien und sagen in Worten, was auffällt.";
+    var stand = "", asOfAll = null, market = null;
+    tkTabsMode(true);
+    /* Kopfkachel: die Frage ist die Dachzeile (h1), Anteile aus der gemeinsamen Quelle (Entscheidung 10). Ein Tipp öffnet das Fenster
+       mit Urteil und Ampel (Owner 10.11.2026), Erklärsatz, Basis und Stand. */
+    var tag = el("span", { class: "tk-markt-tag" }), title = el("h1", { class: "tk-eb tk-markt-q" }, ["Was zeigt der Chart?", tag]);
+    var body = el("div", { class: "tk-markt-b" }, [el("div", { class: "tc-skel tk-markt-skel" })]);
+    var tile = el("div", { class: "tk-tile tk-markt tc-ms" }, [title, body]);
+    function openAbout() {
+      var b = market, v = b ? breadthVerdict(b.share) : null;
+      pop("tc-about-pop", "Was zeigt der Chart?", [
+        v ? el("div", { class: "tk-ms-sheet tc-ms--" + v[0], "data-state": v[0] }, [el("span", { class: "tc-ampel", "aria-hidden": "true" }, ["weak", "mid", "strong"].map(function (k) { return el("i", { class: "is-" + k + (k === v[0] ? " is-on" : "") }); })),
+          el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }), el("b", { text: v[1] })])]) : null,
+        b ? el("p", { class: "tc-sheet-lead", text: M.breadthSentence(b).replace(/\.?$/, ".") + (isNum(b.matched) ? " Das sind " + Math.round(b.matched).toLocaleString("de-DE") + " Aktien." : "") }) : null,
+        el("p", { class: "tc-sheet-lead", text: LEAD }), stand ? el("p", { class: "tc-note", text: stand }) : null,
+        b ? el("p", { class: "tc-note", text: b.source === "market-pulse" ? "Quelle: Marktlage aller US-Aktien (dieselbe Zahl wie in Quant). Zustand heute, keine Prognose." : "Quelle: eigene Zählung von Technical (Marktlage nicht verfügbar). Zustand heute, keine Prognose." }) : null,
+        el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: TPL.href("aboveSma200"), text: "Aktien über der 200-Tage-Linie im Screener" })]),
+        el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/muster?reiter=regeln", text: "Regeln und Grenzen" })])]);
+    }
+    var cover = el("button", { type: "button", class: "tk-cover", "aria-haspopup": "dialog", "aria-label": "Was zeigt der Chart? Erklärung und Urteil öffnen", onclick: openAbout });
+    tile.append(cover);
+    var fresh = el("div", { class: "tk-rail", role: "list", "aria-label": "Heute neu im Chart", "aria-busy": "true" }, [el("div", { class: "tc-skel tk-nc-skel" })]);
+    tkStockTap(fresh);
+    var forms = el("div", { class: "tk-rail tk-forms", role: "list", "aria-label": "Muster im Markt" });
+    var musterHead = tkSh("Muster im Markt", "#/muster", "Alle", "tk-muster");
+    var searches = el("div", { class: "tk-rail", role: "list", "aria-label": "Fertige Suchen" }), searchSlot = el("div", { class: "tc-search-slot tk-find" }), chips = el("div", { class: "vu-chips tc-quick", role: "list" });
+    var learn = el("a", { class: "tk-tile tk-tap tk-row1 tk-learn", href: "#/lernen" }, [hudGlyph("book", 40), el("span", { class: "tk-f1" }, [el("b", { class: "tk-b8", text: "Chart lesen in 4 Lektionen" }), el("span", { class: "tk-xs tk-mut", text: "Kurskerze, Struktur, Unterstützung und Widerstand" })]), h(U.glyph("next", 18))]);
+    /* „Weiter“-Karte und „Daten & Hinweise“ wie im Prototyp (end()). */
+    var next = el("a", { class: "tk-tile tk-tap tk-gl tk-next", href: "/fundamental/" }, [el("span", { class: "tk-f1" }, [el("span", { class: "tk-eb tk-eb--l", text: "Weiter" }), el("b", { class: "tk-next-t", text: "Fundamental: wie gut ist das Geschäft?" })]),
+      el("span", { class: "tk-rnd", "aria-hidden": "true" }, h(U.glyph("next", 18)))]);
+    /* Prototyp-Fenster „hinweise“ ist das Fenster des Rahmens (Pflicht-Hinweis, Rechtliches); Technical gibt den Listen-Hinweis
+       (assets/legal-notices.json „ranking“) und seinen Satz mit Kursstand dazu. Ohne Rahmen: eigenes Fenster mit derselben Fußzeile. */
+    var hints = el("button", { type: "button", class: "tk-lk", "aria-haspopup": "dialog", text: "Daten & Hinweise", onclick: function () {
+      var NAV = global.VUNavigation;
+      TK_NOTE.text = "Technical beschreibt den Chart nach festen Regeln (Indikatoren und Muster). Keine Handlungsempfehlung, keine Prognose." + (asOfAll ? " Kursstand " + M.dateDe(asOfAll) + "." : "");
+      if (NAV && NAV.openHinweise && NAV.hinweis) { NAV.hinweis("ranking"); NAV.hinweis(TK_NOTE); NAV.openHinweise(); return; }
+      pop("tk-hinweise-pop", "Daten & Hinweise", [footNote(asOfAll), el("p", { class: "tc-note", text: "Technical liest jeden Tag die Kursreihen der US-Aktien nach festen Regeln (Indikatoren und Muster). Die Zahlen beschreiben den Chart, sie sind keine Prognose." }),
+        el("p", { class: "tc-note" }, [el("a", { class: "tc-link", href: "#/muster?reiter=regeln", text: "Datenqualität, Regeln und Evidenz" })])]);
+    } });
+    put(main, [tkTabs(), tile, tkSh("Heute neu im Chart", "#/screener?q=" + encodeURIComponent("neue Formation in den letzten 5 Tagen"), "Alle"), fresh, musterHead, forms,
+      tkSh("Fertige Suchen", "#/screener?reiter=vorlagen", "Alle 13"), searches, searchSlot, chips, tkSh("Lernen"), learn, next, el("div", { class: "tk-end" }, [hints])]);
     loadIndex().then(function (X) {
       var ix = X.index, asOf = X.meta && X.meta.asOf || ix.asOf;
+      asOfAll = asOf;
       if (asOf) stand = "Technical · " + closeLabel(asOf);
       put(searchSlot, searchBox(X.entries, "Aktie oder „Dreieck über der 200-Tage-Linie“", true));
       put(chips, ["NVDA", "AAPL", "TSLA", "MSFT"].filter(X.has).map(function (t) { return el("a", { class: "vu-chip", role: "listitem", href: M.chartHref(t) }, [h(U.logo(t)), t]); }));
-      /* Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json); ohne sie die eigene Zählung, beide mit Stand und Basis. */
+      /* Entscheidung 10: Markt heute aus der gemeinsamen Quelle (market-pulse.json); ohne sie die eigene Zählung, beide mit Stand und Basis.
+         Prototyp: zwei Anteile (über / unter) und ein geteilter Balken. Unter der Linie = Basis minus darüber (dieselbe Basis). */
       var above = ix.presets && ix.presets.aboveSma200, own = isNum(above) && ix.count ? { share: above / ix.count * 100, matched: above, base: ix.count, asOf: asOf, source: "technical" } : null;
       fetchJSON(M.MARKET_PULSE_PATH).catch(function () { return null; }).then(function (pulse) {
         var b = M.marketBreadth(pulse) || own;
-        if (!b) { put(market, el("p", { class: "tc-note", text: LEAD })); return; }
-        var v = breadthVerdict(b.share);
-        basis = M.breadthSentence(b);
-        tag.textContent = " · " + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien";
-        /* Ampel in Neonfarben (Owner-Wunsch 10.11.2026): stark = Neongrün, gemischt = Neongelb, schwach = Neonrot; dieselben Schwellen wie das Urteil.
-           Seit App-Konzept 2 trägt die Ampel die Zustandsfarbe, die Kachel bleibt dunkel. */
-        var lamp = el("span", { class: "tc-ampel", "aria-hidden": "true" }, ["weak", "mid", "strong"].map(function (k) { return el("i", { class: "is-" + k + (k === v[0] ? " is-on" : "") }); }));
-        put(market, el("a", { class: "tc-ms tc-ms--" + v[0], href: TPL.href("aboveSma200"), "data-source": b.source, "data-state": v[0], "aria-label": "Markt heute: " + v[1] + ", " + M.breadthSentence(b) }, [
-          el("div", { class: "tc-ms-top" }, [el("div", { class: "tc-ms-big" }, [el("b", { class: "num", text: Math.round(b.share) + " %" }), el("small", { text: "über der 200-Tage-Linie" })]),
-            el("div", { class: "tc-ms-v" }, [lamp, el("div", {}, [el("span", { class: "vu-ltag", text: "Markt heute" }), el("b", { text: v[1] })])])]),
-          el("div", { class: "tc-ms-bar" }, el("i", { style: "width:" + Math.round(b.share) + "%" })),
-          el("span", { class: "tc-ms-basis" }, [(isNum(b.matched) ? Math.round(b.matched).toLocaleString("de-DE") + " von " : "Basis ") + Math.round(b.base).toLocaleString("de-DE") + " US-Aktien" + (b.asOf ? " · Stand " + M.dateDe(b.asOf) : ""), h(U.glyph("next", 14))])]));
+        if (!b) { put(body, el("p", { class: "tk-sm tk-sec tk-markt-lead", text: LEAD })); return; }
+        market = b;
+        var v = breadthVerdict(b.share), up = Math.round(b.share), pulseBase = b.source === "market-pulse";
+        var below = pulseBase && isNum(b.matched) ? Math.round((b.base - b.matched) / b.base * 100) : null;
+        tag.textContent = " · " + Math.round(b.base).toLocaleString("de-DE") + " Aktien";
+        tile.classList.add("tc-ms--" + v[0]); tile.setAttribute("data-state", v[0]); tile.setAttribute("data-source", b.source);
+        cover.setAttribute("aria-label", "Markt heute: " + v[1] + ", " + M.breadthSentence(b) + ". Erklärung öffnen");
+        put(body, [el("div", { class: "tk-markt-n" }, [el("div", { class: "tk-f1" }, [el("span", { class: "tk-num tk-lc tk-big", text: up + " %" }), el("b", { class: "tk-b8", text: "über 200-Tage-Linie" })]),
+          below != null ? el("div", { class: "tk-f1" }, [el("span", { class: "tk-num tk-big", text: below + " %" }), el("b", { class: "tk-b8 tk-mut", text: "darunter" })]) : null]),
+          el("div", { class: "tk-seg2", "aria-hidden": "true" }, [el("i", { class: "is-up", style: "width:" + up + "%" }), below != null ? el("i", { class: "is-dn", style: "width:" + below + "%" }) : null])]);
       });
       put(searches, HOME_SEARCHES.filter(function (x) { return TPL.get(x[0]); }).map(function (x) {
         var t = TPL.get(x[0]), tc = ix.templates && ix.templates[x[0]], count = tc ? tc[0] : ix.presets && ix.presets[x[0]];
-        return el("a", { class: "tc-idc", href: "#/screener?vorlage=" + encodeURIComponent(x[0]) }, [hudGlyph(x[2], 34), el("b", { text: plainTitle(t) }), el("span", { text: x[1] }),
-          el("div", { class: "tc-idc-n" }, [el("b", { class: "num", text: de(count) }), el("small", { text: "Treffer" })]), isNum(count) && ix.count ? bar(count / ix.count * 100) : null]);
+        return el("a", { class: "tk-tile tk-tap tk-scr", role: "listitem", href: "#/screener?vorlage=" + encodeURIComponent(x[0]) }, [hudGlyph(x[2], 36),
+          el("span", { class: "tk-num tk-lc tk-scr-n", text: de(count) }), el("b", { class: "tk-b8 tk-scr-t", text: plainTitle(t) }), el("span", { class: "tk-xs tk-mut", text: x[1] })]);
       }));
       loadEvidence().then(function (E) {
-        put(grid, MUSTER_GRID.map(function (p) { return mgCell("#/screener?muster=" + p[3], p[0], patternCount(X.meta, p[1]), patternDir(E, p[1]), p[2], 96); }));
-        if (E && E.doc) { var a = grid.previousElementSibling && grid.previousElementSibling.querySelector("a"); if (a) a.firstChild.textContent = "Alle " + E.doc.types.length; }
+        put(forms, MUSTER_GRID.map(function (p) { return tkForm(p, patternCount(X.meta, p[1]), patternDir(E, p[1])); }));
+        if (E && E.doc) { var a = musterHead.querySelector("a"); if (a) a.firstChild.textContent = E.doc.types.length + " Formationen"; }
       });
-      put(foot, footNote(asOf));
       /* „Heute neu im Chart“ braucht die Formationsspalte des Screener-Datensatzes: erst nach dem ersten Bild geladen. */
-      var go = function () { Promise.all([loadScreener(), loadSpark(), loadEvidence()]).then(function (r) { paintFresh(fresh, r[0], asOf, r[2]); }).catch(function () { fresh.removeAttribute("aria-busy"); put(fresh, el("p", { class: "tc-note", text: "Die Musterliste konnte nicht geladen werden." })); }); };
+      var go = function () { Promise.all([loadScreener(), loadSpark(), loadEvidence()]).then(function (r) { paintFresh(fresh, r[0], asOf, r[2]); }).catch(function () { fresh.removeAttribute("aria-busy"); put(fresh, el("p", { class: "tc-note tk-note", text: "Die Musterliste konnte nicht geladen werden." })); }); };
       if (navigator.connection && navigator.connection.saveData) { fresh.removeAttribute("aria-busy"); put(fresh, el("button", { type: "button", class: "vu-btn vu-btn--line vu-btn--sm", text: "Neue Muster laden", onclick: go })); }
       else if (global.requestIdleCallback) global.requestIdleCallback(go, { timeout: 1500 }); else setTimeout(go, 200);
     }).catch(function () {
-      put(market, el("p", { class: "tc-note", text: LEAD }));
+      put(body, el("p", { class: "tk-sm tk-sec tk-markt-lead", text: LEAD }));
       put(searchSlot, stateBox("Daten derzeit nicht verfügbar", "Der Screener-Datensatz konnte nicht geladen werden. Der Chart ist über die Adresse #/chart/<Kürzel> weiter erreichbar."));
     });
   }
@@ -478,7 +567,9 @@
     if (f[1] === "CONFIRMED") return name + ", bestätigt";
     return name + ((f[5] || "").indexOf("V") >= 0 ? ", vorläufig" : ", in Bildung");
   }
-  /** Sechs Aktien mit dem juengsten Muster-Ereignis (Erkennung oder Ausbruch, hoechstens 5 Kalendertage vor dem Stand) als Karten. */
+  /** Sechs Aktien mit dem juengsten Muster-Ereignis (Erkennung oder Ausbruch, hoechstens 5 Kalendertage vor dem Stand) als Karten
+      wie im Prototyp: Logo, Name, Satz, Kursverlauf über die Kartenbreite, Tagesbewegung als Pille; die Richtung steht klein daneben.
+      Ein Tipp öffnet die Aktien-Vorschau (data-vu-stock), „Ganz öffnen“ führt auf /aktie/#/<T>. */
   function paintFresh(host, D, asOf, E) {
     var ds = D.ds, C = ds.cols, cut = asOf ? new Date(Date.parse(asOf) - 5 * 864e5).toISOString().slice(0, 10) : "", pick = [];
     for (var i = 0; i < ds.size; i++) {
@@ -491,13 +582,13 @@
     pick.sort(function (a, b) { return a.at < b.at ? 1 : a.at > b.at ? -1 : b.dir - a.dir || b.vol - a.vol; });
     host.removeAttribute("aria-busy");
     put(host, pick.length ? pick.slice(0, 6).map(function (p) {
-      var row = ds.row(p.i), f = p.f, d = f[1] === "CONFIRMED" && f[4] ? (f[4] === "UP" ? 1 : -1) : patternDir(E, [f[0]]);
-      var sp = el("div", { class: "tc-nc-sp", "aria-hidden": "true" }); /* C06 Kleinform wie im Konzept: Linie mit neongrüner Fläche und Endpunkt (assets/vu-chart.js). */
-      sp.innerHTML = sparkMap && sparkMap[row.s] && VC ? VC.sparkline(sparkMap[row.s], { width: 232, height: 84 }) : "";
-      return el("a", { class: "tc-nc", href: M.chartHref(row.s), title: M.hitSentence(row, [f[0]]) }, [
-        el("div", { class: "tc-nc-h" }, [h(U.logo(row.s)), el("div", { class: "tc-nc-n" }, [el("b", { text: shortName(row.n) || row.s }), el("span", { text: row.s })]), shapeBox(f[0], 30)]),
-        el("div", { class: "tc-nc-s" }, [el("span", { text: freshSentence(f) })]), sp, el("div", { class: "tc-nc-f" }, [h(U.chg(isNum(row.chg1d) ? row.chg1d * 100 : null)), dirVerdict(d)])]);
-    }) : [el("p", { class: "tc-note", text: "In den letzten Tagen haben die Regeln kein neues Chartmuster gefunden." })]);
+      var row = ds.row(p.i), f = p.f, d = f[1] === "CONFIRMED" && f[4] ? (f[4] === "UP" ? 1 : -1) : patternDir(E, [f[0]]), name = shortName(row.n) || row.s;
+      var sp = el("span", { class: "tk-nc-sp", "aria-hidden": "true" }); /* C06 Kleinform: Linie mit neongrüner Fläche und Endpunkt (assets/vu-chart.js). */
+      sp.innerHTML = sparkMap && sparkMap[row.s] && VC ? VC.sparkline(sparkMap[row.s], { width: 220, height: 80 }) : "";
+      return el("a", { class: "tk-tile tk-tap tk-nc", role: "listitem", href: "/aktie/#/" + encodeURIComponent(row.s), "data-vu-stock": row.s, "data-vu-stock-name": name, title: M.hitSentence(row, [f[0]]) }, [
+        el("span", { class: "tk-nc-h" }, [h(U.logo(row.s)), el("span", { class: "tk-f1" }, [el("b", { class: "tk-b8", text: name }), el("span", { class: "tk-xs tk-mut", text: freshSentence(f) })])]), sp,
+        el("span", { class: "tk-nc-f" }, [h(U.chg(isNum(row.chg1d) ? row.chg1d * 100 : null)), el("span", { class: "tk-xs tk-mut", text: M.directionWords(d) })])]);
+    }) : [el("p", { class: "tc-note tk-note", text: "In den letzten Tagen haben die Regeln kein neues Chartmuster gefunden." })]);
   }
   function shortName(n) { return String(n || "").replace(/,? (Inc\.?|Corp(oration)?\.?|Co\.|Ltd\.?|plc|Holdings?|Class [A-C]|N\.V\.|S\.A\.)\b.*$/i, "").slice(0, 18); }
 
@@ -2040,6 +2131,9 @@
     /* Bausteine des Redesigns (vu-ui) gelten fuer Technical; die Akademie behaelt ihre eigene Typografie. */
     main.classList.toggle("vu-ui", route.view !== "academy");
     main.classList.toggle("is-home", route.view === "home");
+    /* App-Konzept 2: nur der Start trägt seine Reiter im Inhalt (Prototyp tabs2); jede andere Ansicht zeigt die Reiterzeile des Rahmens. */
+    main.classList.toggle("tk", route.view === "home");
+    if (route.view !== "home") tkTabsMode(false);
     /* Entscheidung 8: die Übersichten von Akademie und Assistent leiten auf „Lernen“; Lektionen und Fragen behalten ihre Adresse. */
     if (redirectOf(location.hash)) { redirected = true; location.replace(redirectOf(location.hash)); return; }
     if (route.view === "home") { doc.title = "Technical · Vision Universe®"; viewHome(main); }

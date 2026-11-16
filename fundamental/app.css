@@ -1022,3 +1022,100 @@ html[data-theme=dark]{--fu-m0:#c8f531;--fu-m1:#fff;--fu-m2:#9b9b9b;--fu-m3:#fff}
 @media (min-width:1040px){.fu-rail{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible;margin-inline:0;padding-inline:0}.fu-rail>*{width:auto;max-width:none}}
 
 .fu .vu-box--ink .vu-ltag{color:inherit;opacity:.78}
+
+/* ---------- Start nach Prototyp „App-Konzept 2“ (#fundamental): Werte aus prototyp/quelle/shell.js und kit.js (K.css).
+   .fp = Bildschirm, Abstand 14 px (Prototyp .px), Kachel #151516 / 22 px, Abschnittskopf 22 px, Balkenrennen 30 px, Ring 74 px.
+   Hell bleibt lesbar: Kachel hellgrau, Neongrün nur als Fläche, Schrift schwarz. */
+.fp{--fp-tile:#151516;--fp-ink:#f4f5f1;--fp-mut:#a1a7af;--fp-sec:#c3c7cc;--fp-track:#232325;--fp-ring:#2a2a2d;--fp-lime:#c8f531;--fp-lc:#c8f531;--fp-dim:#55595f;--fp-bg:#000;
+  margin:0 calc(-1 * var(--fu-gutter));color:var(--fp-ink);font-size:15px;line-height:1.35}
+:root:not([data-theme=dark]) .fp{--fp-tile:#f4f4f4;--fp-ink:#000;--fp-mut:#6e6e6e;--fp-sec:#3a3a3a;--fp-track:#e1e1e1;--fp-ring:#e1e1e1;--fp-lc:#000;--fp-dim:#b9bcc0;--fp-bg:#fff}
+.fp .fp-px{padding-left:14px;padding-right:14px}
+.fp .fp-tile{background:var(--fp-tile);border-radius:22px;padding:14px;display:block;width:100%;box-sizing:border-box;color:inherit;text-decoration:none;border:0;font:inherit;text-align:inherit}
+.fp .fp-tap{cursor:pointer;transition:transform .12s}.fp .fp-tap:active{transform:scale(.97)}
+.fp .fp-num{font-weight:900;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+.fp .fp-mut{color:var(--fp-mut)}.fp .fp-sec{color:var(--fp-sec)}.fp .fp-lc{color:var(--fp-lc)}
+.fp .fp-sm{font-size:12.5px}.fp .fp-xs{font-size:11px}.fp .fp-b7{font-weight:700}.fp .fp-b8{font-weight:800}.fp .fp-f1{flex:1;min-width:0}
+.fp .fp-eb{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--fp-mut)}
+/* Reiter im Inhalt (Prototyp .tabs2/.tab): klebt unter dem Kopf; Pille 36 px, Tippfläche 44 px. */
+.fp .fp-tabs{position:sticky;top:var(--vu-navigation-height,56px);z-index:4;display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--fp-bg) 70%,transparent)}
+.fp .fp-tabs::-webkit-scrollbar,.fp .fp-rail::-webkit-scrollbar{display:none}
+.fp .fp-tab{position:relative;height:36px;padding:0 15px;border-radius:99px;background:var(--fp-tile);color:var(--fp-ink);font-weight:700;font-size:14px;display:inline-flex;align-items:center;white-space:nowrap;flex:none;text-decoration:none}
+.fp .fp-tab::after{content:"";position:absolute;inset:-4px 0}
+.fp .fp-tab.is-on{background:var(--fp-ink);color:var(--fp-bg)}
+.fp .fp-tabs-sep{flex:none;width:1px;align-self:center;height:20px;background:rgb(127 127 127/.35);margin:0 4px}
+.fp .fp-tab:focus-visible,.fp .fp-tap:focus-visible,.fp a:focus-visible,.fp button:focus-visible{outline:2px solid var(--vu-focus-ring,#4f6b00);outline-offset:2px}
+/* Abschnittskopf (Prototyp .sh) */
+.fp .fp-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:0 14px;margin:26px 0 10px;scroll-margin-top:110px}
+.fp .fp-sh h2{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:0;color:var(--fp-ink)}
+.fp .fp-more{position:relative;font-size:13px;font-weight:700;color:var(--fp-mut);text-decoration:none;white-space:nowrap}
+.fp .fp-more::after{content:"";position:absolute;inset:-14px -8px}
+.fp .fp-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;padding:0 14px;margin:0;scrollbar-width:none;overscroll-behavior-x:contain}
+.fp .fp-rail>*{scroll-snap-align:start;flex:none}
+/* Logo (Prototyp .lg.s 34 px) */
+.fp .fp-lg{display:inline-flex;flex:none;line-height:0}
+.fp .fp-lg .vu-logo-tile{width:34px;height:34px;min-width:34px;border-radius:10px;font-size:8px}
+.fp .fp-lg .vu-logo-tile img{padding:5px}
+/* Kachel „Wie gut ist das Geschäft?“ (Prototyp: tile p16, Titel 30 px, Säulen 34 px breit, bis 60 px hoch) */
+.fp .fp-hero{padding:16px}
+.fp .fp-h1{margin:8px 0 0;font-size:30px;line-height:1;font-weight:900;letter-spacing:-.045em;color:var(--fp-ink)}
+.fp .fp-hero>p{margin:8px 0 0}
+.fp .fp-days{display:flex;gap:8px;margin-top:12px}
+.fp .fp-days-wait{height:104px}
+.fp .fp-day{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px;padding:0;border:0;background:none;color:inherit;font:inherit;cursor:pointer;border-radius:10px}
+.fp .fp-day-p{height:60px;display:flex;align-items:flex-end}
+.fp .fp-day-p i{display:block;width:34px;border-radius:8px;background:var(--fp-dim);transform-origin:bottom;animation:fp-up .9s cubic-bezier(.2,.8,.2,1) both}
+.fp .fp-day-p i.is-top{background:var(--fp-lime)}
+.fp .fp-day b{font-size:12.5px;font-weight:900}
+@keyframes fp-up{from{transform:scaleY(0)}}
+@keyframes fp-grow{from{clip-path:inset(0 100% 0 0)}}
+@media (prefers-reduced-motion:reduce){.fp .fp-day-p i,.fp .fp-race-b i{animation:none}}
+.fp .fp-who{display:flex;align-items:center;gap:4px;margin-top:12px}
+.fp .fp-who>span{margin-left:6px}
+.fp .fp-who-l{position:relative;display:inline-flex;line-height:0}
+.fp .fp-who-l::after{content:"";position:absolute;inset:-5px -3px}
+/* Balkenrennen (Prototyp race(): Logo 34 px, Spur 30 px #232325 / 9 px, Name in der Spur, Wert 50 px rechts) */
+.fp .fp-racebox{padding:8px 14px 14px}
+.fp .fp-racebox.fp-wait{min-height:280px}
+.fp .fp-race{position:relative;display:flex;align-items:center;gap:8px;width:100%;padding:6px 0;text-decoration:none;color:inherit}
+.fp .fp-race::after{content:"";position:absolute;inset:-1px 0}
+.fp .fp-race-b{position:relative;flex:1;min-width:0;height:30px;background:var(--fp-track);border-radius:9px;overflow:hidden}
+.fp .fp-race-b i{position:absolute;left:0;top:0;bottom:0;background:var(--fp-lime);border-radius:9px;animation:fp-grow .9s cubic-bezier(.2,.8,.2,1) both}
+.fp .fp-rn{position:absolute;inset:0;padding:0 8px 0 10px;line-height:30px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--fp-ink)}
+.fp .fp-race-b i{overflow:hidden}
+.fp .fp-rn.is-on{right:auto;color:#101318;font-style:normal}
+.fp .fp-race-v{width:50px;text-align:right;flex:none;letter-spacing:0}
+.fp .fp-cap{margin-top:8px}
+/* Checklisten (Prototyp: Kachel 200 px, Ring 74/9, Name 18 px) */
+.fp .fp-ck{width:200px;display:flex;flex-direction:column;align-items:flex-start}
+.fp .fp-ring{position:relative;display:inline-grid;place-items:center;flex:none}
+.fp .fp-ring svg{position:absolute;inset:0;transform:rotate(-90deg)}
+.fp .fp-ring-t{stroke:var(--fp-ring)}.fp .fp-ring-v{stroke:var(--fp-lime)}
+:root:not([data-theme=dark]) .fp .fp-ring-v{stroke:#000}
+.fp .fp-ring b{position:relative;letter-spacing:-.03em;color:var(--fp-ink)}
+.fp .fp-ring-wait{border-radius:50%;box-shadow:inset 0 0 0 9px var(--fp-ring)}
+.fp .fp-ck-t{margin-top:8px;font-size:18px;line-height:1.1}
+.fp .fp-ck-s{margin-top:4px;line-height:1.3}
+.fp .fp-ck-n{margin-top:auto;padding-top:8px;line-height:1.3}
+/* Weitere Blöcke des bisherigen Starts im Design des Prototyps */
+.fp .fp-rlrail .fu-rlc{width:300px;max-width:86vw;background:var(--fp-tile);border-radius:22px}
+.fp .fu-learn{padding:4px 14px}
+.fp .fp-find .fu-search{max-width:none}
+.fp .fp-find .fu-input{background:var(--fp-tile);border-color:transparent;color:var(--fp-ink)}
+.fp .fp-find .fu-qchips{margin-right:-14px;padding-right:14px}
+.fp .fp-find .fu-qchip{background:var(--fp-tile);color:var(--fp-ink)}
+.fp .fp-find .vu-navcard{margin-top:10px;background:var(--fp-tile);border-radius:22px}
+.fp .fp-next .vu-next{margin-top:28px}
+/* Seitenende (Prototyp .end/.lk) */
+.fp .fp-end{margin:28px 14px 0;text-align:center}
+.fp .fp-lk{position:relative;display:inline-block;padding:0;border:0;background:none;color:var(--fp-mut);font:inherit;font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.fp .fp-lk::after{content:"";position:absolute;inset:-14px -8px}
+.fp .fp-foot{margin:14px 14px 0;text-align:center}
+/* Fenster: Firmen eines Meldetags */
+.fp-pop .fp-daylist{display:flex;flex-direction:column;margin-top:8px}
+.fp-pop .fp-dayrow{display:flex;align-items:center;gap:10px;min-height:48px;text-decoration:none;color:inherit;border-top:1px solid var(--vu-hair,rgb(127 127 127/.2))}
+.fp-pop .fp-dayrow:first-child{border-top:0}
+.fp-pop .fp-dayrow b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fp-pop .fp-dayrow small{display:block;font-size:11.5px;color:var(--vu-muted)}
+.fp-pop .fp-f1{flex:1;min-width:0}
+.fp-pop .fp-lg{display:inline-flex;line-height:0}.fp-pop .fp-lg .vu-logo-tile{width:34px;height:34px;min-width:34px;border-radius:10px;font-size:8px}
+@media (min-width:1040px){.fp .fp-rail{display:flex;overflow-x:auto}.fp .fp-rail>*{width:auto}.fp .fp-rlrail .fu-rlc{width:320px}}
