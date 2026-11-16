@@ -334,13 +334,46 @@
       (x.href ? '<a class="stp-more" href="' + esc(x.href) + '">' + esc(x.link) + ' ›</a>' : x.right ? '<span class="stp-more">' + esc(x.right) + '</span>' : '') + '</div>';
   }
   function avatar(author, big) { return '<span class="stp-av' + (big ? ' stp-av--xl' : '') + '" aria-hidden="true">' + esc(mono(author)) + '</span>'; }
+  /* Schema je Methode (Owner 16.11.2026: „visuell, aber auch nochmal erklären“; Prototyp-Fenster „methode“). Eine kleine
+     Formbeschreibung je Methode, gezeichnet in derselben Fläche 358 × 120 wie im Prototyp. Keine echten Kurse, keine Zahlen,
+     keine Achsen. p: Kurslinie (mehrere Stücke = Kurslücke), z: Zone [x, y, b, h], s: Höhe der Ungültig-Marke, top: Zone liegt
+     unter dem Kurs (Wette auf Rückgang), box: Kiste der Methode, ma: Durchschnittslinie, vol: Volumenbalken (Index hervorgehoben),
+     t: was das Bild zeigt (für Vorleser). */
+  var SKETCH = {
+    C01: { p: ['8 98 40 82 70 88 100 64 130 72 160 48 190 56 215 50 240 56 262 50 290 36 320 26 350 18'], z: [250, 32, 108, 16], s: 86, ma: '160 48 262 48', t: 'Kurs steigt über das Hoch der letzten 20 Tage' },
+    C02: { p: ['8 72 40 60 70 78 100 58 130 74 160 56 190 72 220 58 245 66 270 50 300 36 330 26 350 20'], z: [250, 40, 108, 16], s: 84, ma: '100 56 270 56', t: 'Kurs steigt nach langer Spanne über das Hoch der letzten 55 Tage' },
+    C03: { p: ['8 104 40 88 70 72 100 56 128 42 150 46 170 76 190 46 210 78 232 44 250 60 270 34 300 26 330 18 350 12'], z: [250, 26, 108, 14], s: 82, box: [140, 40, 110, 42], t: 'Kurs pendelt in einer Kiste und bricht nach oben aus' },
+    C04: { p: ['8 40 30 60 50 80 70 90 90 84 110 92 130 86 150 92 170 84 190 90 210 86 235 88 255 74 280 56 310 40 350 22'], z: [250, 62, 108, 16], s: 98, ma: '8 60 120 84 240 86 350 60', ph: [[90, 'Basis'], [300, 'Aufwärtstrend']], t: 'Lange Seitwärtsphase, dann Ausbruch über die Durchschnittslinie' },
+    C05: { p: ['8 102 50 82 90 66 120 52 150 62 175 70 200 64 225 58 250 48 280 38 320 26 350 16'], z: [250, 40, 108, 14], s: 76, ma: '8 110 120 74 200 72 350 40', t: 'Laufender Aufwärtstrend, kurzer Rücksetzer, neuer Anlauf' },
+    C06: { p: ['8 104 40 60 62 96 96 44 122 78 152 36 174 60 200 30 216 46 236 28 250 36 266 26 290 20 320 12 350 8'], z: [250, 22, 108, 22], s: 92, t: 'Schwankungen werden kleiner, dann Ausbruch' },
+    C07: { p: ['8 110 40 104 70 90 100 64 125 38 150 22 170 30 190 26 210 32 230 28 250 30 275 18 310 12 350 6'], z: [250, 8, 108, 14], s: 40, t: 'Steiler Lauf, dann eine ruhige Pause nahe am Hoch' },
+    C08: { p: ['8 106 40 92 70 72 100 50 125 40 150 46 175 42 200 46 225 42 250 44 275 30 310 20 350 12'], z: [250, 26, 108, 12], s: 54, t: 'Starker Lauf, enge Pause, dann Ausbruch über die Pause' },
+    C09: { p: ['8 86 60 90 110 84 160 88 198 86', '210 46 240 40 280 34 320 30 350 24'], z: [205, 36, 64, 14], s: 58, t: 'Ruhiger Kurs, dann ein Kurssprung nach einer Überraschung' },
+    C10: { p: ['8 102 80 94 150 82 200 62 240 36 265 14 285 22 305 40 330 54 350 62'], z: [285, 40, 73, 14], s: 8, top: true, t: 'Überhitzter Anstieg, dann Umkehr nach unten (nur Forschung)' },
+    C11: { p: ['8 84 50 76 90 66 130 70 170 62 200 66 230 60 250 52 280 44 320 34 350 26'], z: [250, 40, 108, 14], s: 74, vol: [[6, 8, 7, 5, 9, 6, 7, 5, 8, 6, 20, 9, 8], 10], t: 'Aufwärtstag mit mehr Volumen als die Abwärtstage davor' },
+    C12: { p: ['8 92 50 86 100 82 150 76 198 74', '210 44 240 40 280 34 320 28 350 22'], z: [205, 34, 64, 14], s: 56, vol: [[6, 7, 5, 8, 6, 7, 5, 6, 22, 10, 8, 7, 6], 8], t: 'Kurslücke nach oben mit sehr hohem Volumen' },
+    C13: { p: ['8 104 50 84 90 64 130 44 160 30 185 40 210 52 230 58 250 50 280 38 320 26 350 18'], z: [245, 38, 113, 14], s: 70, ma: '8 112 100 84 200 62 260 54 350 38', t: 'Starker Trend, erster Rücksetzer an die 20-Tage-Linie, dann weiter' }
+  };
+  function sketch(cid) {
+    var k = SKETCH[cid]; if (!k) return '';
+    var z = k.z, vol = '';
+    if (k.vol) vol = k.vol[0].map(function (h, i) { var x = 14 + i * 26; return '<rect class="stp-sk-v' + (i === k.vol[1] ? ' is-on' : '') + '" x="' + x + '" y="' + (120 - h) + '" width="14" height="' + h + '" rx="2"/>'; }).join('');
+    return '<div class="stp-card stp-sk stp-mt12"><div class="stp-eb stp-sk-h">Schema der Methode, keine echten Kurse</div>' +
+      '<svg width="100%" viewBox="0 0 358 120" role="img" aria-label="' + esc('Schema, keine echten Kurse: ' + k.t + '. Gestrichelt: Ungültig-Marke laut Methode. Kasten: Zone laut Methode.') + '">' + vol +
+      (k.box ? '<rect class="stp-sk-box" x="' + k.box[0] + '" y="' + k.box[1] + '" width="' + k.box[2] + '" height="' + k.box[3] + '" rx="4"/>' : '') +
+      '<rect class="stp-sk-z" x="' + z[0] + '" y="' + z[1] + '" width="' + z[2] + '" height="' + z[3] + '"/><path class="stp-sk-zl" d="M' + z[0] + ' ' + (k.top ? z[1] + z[3] : z[1]) + 'h' + z[2] + '"/>' +
+      '<path class="stp-sk-s" d="M0 ' + k.s + 'h358"/>' + (k.ma ? '<path class="stp-sk-ma" d="M' + k.ma.replace(/^(\S+ \S+) /, '$1 L') + '"/>' : '') +
+      k.p.map(function (d) { return '<path class="stp-sk-p" d="M' + d.replace(/^(\S+ \S+) /, '$1 L') + '"/>'; }).join('') +
+      (k.ph ? k.ph.map(function (x) { return '<text class="stp-sk-t" x="' + x[0] + '" y="12" text-anchor="middle">' + esc(x[1]) + '</text>'; }).join('') : '') + '</svg>' +
+      '<div class="stp-fl stp-sb stp-xs stp-b7 stp-sk-l"><span class="stp-mut">Ungültig-Marke laut Methode</span><span class="stp-lc">Zone laut Methode</span></div></div>';
+  }
   /* Methode im Fenster (Prototyp-Fenster „methode“): Kopf mit Monogramm, ein Satz, drei Denkschritte, Zahlen von heute, zwei Knöpfe. */
   function methodSheet(s) {
     var m = N ? N.method(s.candidateId) : null, meta = methodMeta(s), by = s.counts.byStage || {}, th = N ? N.think(s.candidateId) : null;
     var sfHref = '/supertrader/strategies/?sf=' + encodeURIComponent(s.candidateId), own = N ? N.href(s.candidateId) : sfHref, st = m && m.depot && SEATS && SEATS[m.depot];
     var parts = [[by.CHART_CANDIDATE || 0, STAGE_TXT.CHART_CANDIDATE, 'k'], [by.CONFIRMED_RESEARCH_SETUP || 0, STAGE_TXT.CONFIRMED_RESEARCH_SETUP, 'm'], [by.MODELED_TRADE_PLAN || 0, STAGE_TXT.MODELED_TRADE_PLAN, 'l']];
     pop('', '<div class="stp-sheet"><div class="stp-fl stp-g12">' + avatar(meta.trader, true) + '<div class="stp-f1"><h2 class="stp-sh-t" style="font-size:26px">' + esc(cn(s)) + '</h2><div class="stp-sm stp-mut">' + esc(meta.trader + ' · ' + meta.style) + '</div></div>' + (m && m.depot ? '<span class="stp-pill stp-pill--sm">Depot</span>' : '') + '</div>' +
-      '<p class="stp-md stp-sec stp-mt12">' + esc(meta.plain) + '</p>' +
+      '<p class="stp-md stp-sec stp-mt12">' + esc(meta.plain) + '</p>' + sketch(s.candidateId) +
       (th ? '<div class="stp-fl stp-g6 stp-mt8 stp-th">' + th.map(function (t, i) { return '<div class="stp-f1 stp-card"><span class="stp-q">' + (i + 1) + '</span><div class="stp-sm stp-b8 stp-mt8">' + esc(t[0]) + '</div><div class="stp-xs stp-mut">' + esc(t[1]) + '</div></div>'; }).join('') + '</div>' : '') +
       '<div class="stp-fl stp-g8 stp-mt12"><div class="stp-f1 stp-card"><div class="stp-num stp-lc" style="font-size:30px">' + n0(s.counts.published) + '</div><div class="stp-xs stp-mut stp-b7">Muster heute</div></div>' +
       (st ? '<div class="stp-f1 stp-card"><div class="stp-num" style="font-size:30px">' + n0(st[0]) + ' / ' + n0(st[1]) + '</div><div class="stp-xs stp-mut stp-b7">Plätze im Musterdepot</div></div>' : '<div class="stp-f1 stp-card"><div class="stp-num" style="font-size:30px">' + n0(by.MODELED_TRADE_PLAN || 0) + '</div><div class="stp-xs stp-mut stp-b7">Plan fertig</div></div>') + '</div>' +

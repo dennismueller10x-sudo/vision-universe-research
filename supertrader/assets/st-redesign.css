@@ -816,3 +816,18 @@ html[data-theme="dark"] .st-x-today,html[data-theme="dark"] .st-x-hero{backgroun
 .stp-dlink{display:block;color:inherit;text-decoration:none}
 .stp-hw .st-foot{display:block;margin:0;padding:0;border:0}
 .stp-hw .st-legal{font-size:12.5px;color:var(--stp-mut)}
+/* Schema der Methode im Fenster „Methode“ (Prototyp build.js: Karte r18, p12/0/8, Zone neongrün .22 mit Oberkante, Ungültig-Marke gestrichelt) */
+.stp-sheet .stp-card.stp-sk{border-radius:18px;padding:12px 0 8px}
+.stp-sk-h{padding:0 12px 6px}
+.stp-sk svg{display:block}
+.stp-sk-l{padding:0 12px}
+.stp-sk-p{fill:none;stroke:var(--stp-ink);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.stp-sk-s{stroke:var(--stp-ink);stroke-dasharray:3 4;opacity:.5}
+.stp-sk-z{fill:#c8f531;opacity:.22}
+:root:not([data-theme=dark]) .stp-sk-z{opacity:.45}
+.stp-sk-zl{stroke:#c8f531;stroke-width:1.5}
+:root:not([data-theme=dark]) .stp-sk-zl{stroke:#5f7a00}
+.stp-sk-box{fill:none;stroke:var(--stp-mut);stroke-width:1.2;stroke-dasharray:5 3}
+.stp-sk-ma{fill:none;stroke:var(--stp-mut);stroke-width:1.4;opacity:.8}
+.stp-sk-v{fill:var(--stp-mut);opacity:.4}.stp-sk-v.is-on{opacity:1}.stp-sk-v.is-on{fill:#c8f531}
+.stp-sk-t{fill:var(--stp-mut);font-size:10px;font-weight:700}
