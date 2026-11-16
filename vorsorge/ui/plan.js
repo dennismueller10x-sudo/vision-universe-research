@@ -127,7 +127,7 @@
       /* Zeilenliste wie die Watchlist im Prototyp (#ich): Logo, Name, Index, Mini-Verlauf (53 Wochen), Pille 12 Monate. */
       world.innerHTML = VS.sh("Die großen Indizes", "#/etfs", "Alle ETFs") + '<div class="vsp-px"><div class="vsp-tile vsp-list vs-bigidx">' + rows.map(function (x) {
         var e = x[1], v = e.m && e.m.p ? e.m.p["1Y"] : null;
-        return '<a class="vsp-row vsp-tap" href="' + (VS.indexHref ? VS.indexHref(e) : VS.etfHref(e)) + '" data-sym="' + VS.esc(e.symbol) + '">' + VS.logo(e.symbol) + '<span class="vsp-f1"><b class="vsp-b8">' + VS.esc(x[0][1]) + '</b><span class="vsp-xs vsp-mut">' + VS.esc(e.index || "") + ' · 12 Monate</span></span>' +
+        return '<a class="vsp-row vsp-tap" href="' + (VS.indexHref ? VS.indexHref(e) : VS.etfHref(e)) + '" data-sym="' + VS.esc(e.symbol) + '">' + VS.logo(e.symbol) + '<span class="vsp-f1"><b class="vsp-b8">' + VS.esc(x[0][1]) + '</b><span class="vsp-xs vsp-mut">' + VS.esc(e.index || "") + '</span></span>' +
           '<span class="vsp-spark" aria-hidden="true"></span><span class="vsp-chgc"><small class="vsp-xs vsp-mut vsp-b7">12 Monate</small>' + VS.chg(v) + '</span></a>';
       }).join("") + '</div>' +
         '<p class="vsp-xs vsp-mut vsp-b7 vsp-mt8">' + VS.esc("Gemessen an US-Fonds als Marktabbild" + (last ? ", Kurse bis " + F.date(last) : "") + ". Kaufbar in der EU sind UCITS-ETFs auf denselben Index.") + '</p></div>';

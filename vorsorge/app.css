@@ -1232,7 +1232,7 @@ html[data-theme=dark] .vs-chapsheet .vu-box,html[data-theme=dark] .vs-vsheet .vu
 .vsp-fb>span:last-child{width:42px;text-align:right;flex:none}
 @media (max-width:359px){.vsp-fb>span:first-child{width:118px}}
 .vsp-chgc{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex:none}
-.vsp-row .vsp-f1 b{white-space:normal}
+.vsp-row .vsp-f1 b{white-space:normal;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:anywhere;line-height:1.2}
 body.vs .vsp #vs-plan-chart{padding:12px 10px 10px}
 .vsp-btnrow{display:flex;gap:8px;margin-top:16px}.vsp-btnrow .vsp-btn{flex:1}
 body.vs .vsp .vs-sliders{padding:6px 14px}
