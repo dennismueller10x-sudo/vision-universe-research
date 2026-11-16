@@ -33,6 +33,7 @@
 .wk-pill{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:#c8f531;color:#101318;font-size:12.5px;font-weight:800;white-space:nowrap;flex:none;max-width:100%;overflow:hidden}
 .wk-pill--wh{background:var(--wk-on);color:var(--wk-hole)}
 .wk-pill--bk{background:#000;color:#fff}
+.wk-pill.wk-pill--down{background:#c4281c;color:#fff}
 .wk-pill--sm{height:21px;font-size:10.5px;padding:0 8px;letter-spacing:.04em;text-transform:uppercase}
 .wk-btn{height:52px;border-radius:999px;background:#c8f531;color:#101318;font-weight:800;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px}
 .wk-btn svg{width:14px;height:14px}
@@ -85,6 +86,7 @@
 .wk-mk-ix{display:flex;gap:6px;margin-top:12px}
 .wk-mk-ix>span{flex:1;min-width:0;background:var(--wk-chip);border-radius:12px;padding:8px 9px}
 .wk-mk-ix>span.is-up{background:var(--wk-up)}
+.wk-mk-ix>span.is-down{background:#c4281c}.wk-mk-ix .is-down small,.wk-mk-ix .is-down b{color:#fff}
 .wk-mk-ix small{display:block;font-size:11px;font-weight:700;color:var(--wk-mut);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wk-mk-ix b{display:block;font-size:12.5px;font-weight:800;white-space:nowrap}
 :root:not([data-theme=dark]) .wk-mk-ix .is-up small{color:#101318}
@@ -96,7 +98,9 @@
 .wk-st .vu-logo-tile{width:60px;height:60px;border-radius:18px;font-size:13px}
 .wk-st .vu-logo-tile:has(img:not(.vu-logo-wait)) img{padding:9px}
 .wk-st .vu-chg{height:26px;padding:0 9px;font-size:12.5px;gap:2px;font-variant-numeric:normal}
-:root[data-theme=dark] .wk .vu-chg--down{background:#fff;color:#000}
+/* Tagesbewegung wie auf Discover, Ich, Quant und News: Minus rot mit weisser Schrift (5,9:1), Plus neongruen; hell und dunkel
+   (Owner 16.11.2026: „die Bewegung immer -rot plus grün“) */
+.wk .vu-chg--down{background:#c4281c;color:#fff}
 .wk-st-name{display:block;margin-top:8px;font-size:17px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wk-st-sub{display:block;height:30px;font-size:11px;color:var(--wk-mut);overflow:hidden}
 .wk-st-chart{display:block;margin:6px -14px -14px;height:60px}

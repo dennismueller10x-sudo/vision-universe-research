@@ -355,7 +355,7 @@
     fetchJson(SNAPSHOT).then(function (snap) {
       var chips = indexChips(snap), ix = doc.getElementById('wk-mk-ix');
       if (!ix || chips.length < 2) return;
-      ix.innerHTML = chips.map(function (c) { return '<span' + (c.pct > 0 ? ' class="is-up"' : '') + ' title="' + esc(c.title) + '"><small>' + esc(c.name) + '</small><b>' + esc(signed(c.pct, 1)) + '</b></span>'; }).join('');
+      ix.innerHTML = chips.map(function (c) { return '<span' + (c.pct > 0 ? ' class="is-up"' : c.pct < 0 ? ' class="is-down"' : '') + ' title="' + esc(c.title) + '"><small>' + esc(c.name) + '</small><b>' + esc(signed(c.pct, 1)) + '</b></span>'; }).join('');
       ix.hidden = false;
     }).catch(function () { /* ohne Snapshot bleibt die Zeile der Märkte weg */ });
   }
@@ -633,7 +633,7 @@
     arc.setAttribute('stroke-dasharray', (226.2 * sum.up / sum.measured).toFixed(1) + ' 226.2');
     num.textContent = sum.up + '/' + sum.measured;
     doc.getElementById('wk-day-ring').setAttribute('title', sum.up + ' von ' + sum.measured + ' deiner Aktien im Plus');
-    if (move && sum.biggest) { move.textContent = sum.biggest.ticker + ' ' + U().pct(sum.biggest.pct); move.hidden = false; }
+    if (move && sum.biggest) { move.textContent = sum.biggest.ticker + ' ' + U().pct(sum.biggest.pct); move.classList.toggle('wk-pill--down', sum.biggest.pct < 0); move.hidden = false; }
   }
   function renderWatch(A) {
     var C = global.VUCore || {}, W = C.WatchlistView, Id = C.Identity, T = global.VUToday, E = global.VUDashboardEvents, box = doc.getElementById('wk-watch');
