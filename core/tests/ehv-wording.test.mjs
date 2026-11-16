@@ -76,8 +76,12 @@ test("Hedgefonds: Leiste „Gruppen-Käufe“, alte Adresse #/smart-money leitet
   assert.match(readFileSync("assets/site-navigation.js", "utf8"), /\['gruppen','Gruppen-Käufe','\/hedgefonds\/#\/gruppen-kaeufe','signals'\]/);
 });
 test("Hedgefonds: Quartalsband auf dem Start (gezeigt · gemeldet bis · nächste Meldungen, Entscheidung 6)", () => {
-  const home = hedgeSrc.slice(hedgeSrc.indexOf("function renderHome() {"), hedgeSrc.indexOf("function mvRow("));
-  assert.match(home, /qband\(\)/);
+  /* App-Konzept 2 (Prototyp #v-hedgefonds): der Start zeigt das Band als Meldekachel mit drei Schritten (hpQuarter);
+     Fonds- und Aktienseite behalten qband() mit „Gezeigt · Gemeldet bis · Nächste Meldungen“. */
+  const home = hedgeSrc.slice(hedgeSrc.indexOf("function renderHome() {"), hedgeSrc.indexOf("function hpRow("));
+  assert.match(home, /hpQuarter\(\)/);
+  const tile = hedgeSrc.slice(hedgeSrc.indexOf("function hpQuarter() {"), hedgeSrc.indexOf("function hpStar("));
+  for (const t of ['"gezeigt"', '"gemeldet"', '"Meldefrist"', '"nächste Meldung"', "periodDeadline(p)", "nextDeadline()"]) assert.ok(tile.includes(t), "Start: " + t);
   for (const t of ['col("Gezeigt"', 'col("Gemeldet bis"', 'col("Nächste Meldungen"', '"Depots am "', '"45 Tage später"']) assert.ok(hedgeSrc.includes(t), t);
   const pd = new Function(hedgeSrc.match(/function periodDeadline[\s\S]*?\n  \}\n/)[0] + "return periodDeadline;")();
   const d = (x) => x.toISOString().slice(5, 10);

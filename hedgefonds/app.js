@@ -732,7 +732,7 @@
   function openHinweise() {
     var d = S.data, errs = (d.errors || []).length;
     var rows = [["Datenstand", esc(d.latestPeriodLabel || "") + (d.latestPeriodLabel ? " · " : "") + "zuletzt geprüft " + dateDE(d.generatedAt) + (errs ? " · " + errs + " Fonds derzeit nicht abrufbar" : "") + "."]].concat(HP_METHOD);
-    var el = openSheetHtml("hf-sh-hinweise", "Daten &amp; Hinweise", '<p class="hf-legal">Was große Fonds gemeldet haben (13F, Angabe Dritter). Keine Anlageberatung.</p><dl class="hf-dl">' +
+    var el = openSheetHtml("hf-sh-hinweise", "Daten & Hinweise", '<p class="hf-legal">Was große Fonds gemeldet haben (13F, Angabe Dritter). Keine Anlageberatung.</p><dl class="hf-dl">' +
       rows.map(function (r) { return "<dt>" + r[0] + "</dt><dd>" + r[1] + "</dd>"; }).join("") + "</dl>" +
       (window.VUNavigation && VUNavigation.openHinweise ? '<button type="button" class="vu-btn vu-btn--line vu-btn--block hf-gap-l" data-hp-frame>Hinweise und Quellen</button>' : ""));
     var b = el.querySelector("[data-hp-frame]");

@@ -49,7 +49,7 @@ const ROUTES = [
   ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/treffer/', 'Treffer'],
   ['Supertrader', '/supertrader/forschung/', 'Forschung'], ['Supertrader', '/supertrader/sources/', 'Quellen'],
   ['Hedgefonds', '/hedgefonds/#/', 'Hedgefonds'], ['Hedgefonds', '/hedgefonds/#/investoren', 'Investoren'], ['Hedgefonds', '/hedgefonds/#/datenbank', 'Datenbank'], ['Hedgefonds', '/hedgefonds/#/gruppen-kaeufe', 'Gruppen-Käufe'],
-  ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'],
+  ['Hedgefonds', '/hedgefonds/#/aktien', 'Aktien'], ['Hedgefonds', '/hedgefonds/#/gruppen-kaeufe/insider', 'Gruppen-Käufe'],
   // Portfolios: fordert Dock und Reiter wie jedes Produkt an (seit dem Rahmen nach App-Konzept 2)
   ['Portfolios', '/portfolios/', 'Portfolios'], ['Portfolios', '/portfolios/#/quant', 'Quant'], ['Portfolios', '/portfolios/#/ki', 'KI'],
   // Alte Quant-Unterseiten: Weiterleitungen auf die App unter /quant/ (quant/ui/legacy-redirect.js). Erwartet ist der Reiter
@@ -540,6 +540,27 @@ for (const [vpName, width, height] of VIEWPORTS) {
       await page.goForward(); await settle(page);
       if ((await state(page)).current[0] !== clicks[0]) fail(where, 'Vor: ' + (await state(page)).current[0]);
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  /* Hedgefonds (App-Konzept 2, Prototyp #v-hedgefonds): Reiter im Inhalt (nav.hp-tabs) auf jeder Übersicht. Zurück/Vor
+     über diese Reiter: der aktive Reiter (aria-current) folgt der Adresse, Fonds- und Aktienseite geben die Reiter an den Rahmen zurück. */
+  {
+    const where = `history /hedgefonds/#/ (Reiter im Inhalt) @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + '/hedgefonds/#/', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const cur = () => page.evaluate(() => ({ tab: document.querySelector('main nav.hp-tabs a[aria-current=page]')?.textContent.trim() || null,
+        n: document.querySelectorAll('main nav.hp-tabs').length, mode: document.documentElement.getAttribute('data-vu-tabs'), h1: document.querySelectorAll('h1').length }));
+      const want = async (label, msg) => { const c = await cur(); if (c.tab !== label || c.n !== 1 || c.mode !== 'inhalt' || c.h1 !== 1) fail(where, msg + ': ' + JSON.stringify(c)); };
+      await want('Heute', 'Start');
+      for (const label of ['Investoren', 'Aktien', 'Gruppen-Käufe', 'Insider']) { await page.locator('main nav.hp-tabs a', { hasText: label }).first().click(); await settle(page); await want(label, 'Klick ' + label); }
+      await page.goBack(); await settle(page); await want('Gruppen-Käufe', 'Zurück');
+      await page.goBack(); await settle(page); await want('Aktien', 'Zurück');
+      await page.goForward(); await settle(page); await want('Gruppen-Käufe', 'Vor');
+      await page.goto(base + '/hedgefonds/#/fonds/berkshire', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const f = await cur();
+      if (f.mode === 'inhalt' || f.n) fail(where, 'Fondsseite behält die Reiter im Inhalt: ' + JSON.stringify(f));
+      checks.push({ where, pass: !findings.some((x) => x.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   await ctx.close();
