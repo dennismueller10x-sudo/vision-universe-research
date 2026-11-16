@@ -253,7 +253,17 @@ test("der Anlagestil steht als Satz da, mit dem was erfüllt ist und was fehlt",
     else { mitStil += 1; assert.match(b.strategy.sentence, /Am ehesten passt/); }
   }
   assert.ok(mitStil > 0, "kein Titel der Probe passt zu einem Stil");
-  assert.ok(nurNaechster > 0, "kein Titel der Probe zeigt den nächstliegenden Stil");
+  /* Welcher Titel nur den naechstliegenden Stil zeigt, haengt am Datenstand (16.11.2026: nach dem Materialisierungslauf
+     passte jeder Titel der Probe zu einem Stil). Fehlt der Fall in der Probe, wird er im Faktor-Universum gesucht; geprueft
+     wird der Satz, nicht welcher Titel ihn traegt. */
+  if (!nurNaechster) {
+    const rows = JSON.parse(gunzipSync(readFileSync(join(ROOT, "quant/data/product/factor-evidence-v1/screening.json.gz")))).rows;
+    for (const ticker of Object.keys(rows).sort()) {
+      const b = await api.getIntelligenceBrief(ticker);
+      if (b.strategy.state === "AVAILABLE" && b.strategy.nearest) { nurNaechster += 1; assert.match(b.strategy.sentence, /Am nächsten kommt/, ticker); break; }
+    }
+  }
+  assert.ok(nurNaechster > 0, "kein Titel zeigt den nächstliegenden Stil");
 });
 
 test("die Auskunft sagt, welche Methodik gilt - für jeden Titel mit eigener Vorlage", async () => {

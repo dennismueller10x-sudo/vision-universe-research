@@ -95,8 +95,7 @@ const PRICE_COMPONENTS = {
 
 const FUNDAMENTAL_COMPONENTS = {
   quality: [
-    { id: "accrualRatio", weight: 0.25, direction: "lower", label: "Abstand zwischen Gewinn und Zahlungsfluss, bereinigt um Wachstum", unit: "ratio",
-      note: "Gewinn minus operativer Zahlungsfluss der letzten 12 Monate je durchschnittlicher Bilanzsumme, abzüglich des Teils, den das Umsatzwachstum im Querschnitt erklärt (quant-v2.4.0)." },
+    { id: "accrualRatio", weight: 0.25, direction: "lower", label: "Abstand zwischen Gewinn und Zahlungsfluss", unit: "ratio" },
     { id: "netDebtToAssets", weight: 0.20, direction: "lower", label: "Nettoverschuldung zu Bilanzsumme", unit: "ratio" },
     { id: "equityToAssets", weight: 0.15, direction: "higher", label: "Eigenkapitalquote", unit: "ratio" },
     { id: "positiveFcfYears", weight: 0.20, direction: "higher", label: "Jahre mit positivem freien Zahlungsfluss", unit: "count", noWinsor: true },
@@ -619,17 +618,6 @@ function main() {
     } else countGap("IDENTITY_UNRESOLVED");
 
     records.push({ security, ticker, peer, price, priceStatus, fundamentals, quote });
-  }
-
-  /* 2b. quant-v2.4.0: Periodenabgrenzung um Wachstum bereinigt (factor-evidence.js#growthAdjustedAccruals), ein
-     Querschnitt ueber die generischen Titel (ohne Branchenvorlage), wie die Normierung danach. */
-  {
-    const generic = records.map((record) => Boolean(record.fundamentals) && !templateFor(templates, record.peer?.sic4));
-    const pick = (id) => records.map((record, index) => (generic[index] && finite(record.fundamentals.raws[id]) ? record.fundamentals.raws[id] : null));
-    const adjusted = FactorEvidence.growthAdjustedAccruals(pick("accrualRatio"), pick("revenueGrowthTtmYoy"),
-      contract.normalization.peerFallback.at(-1).minimumValidIssuers);
-    records.forEach((record, index) => { if (generic[index] && finite(adjusted.values[index])) record.fundamentals.raws.accrualRatioGrowthAdjusted = adjusted.values[index]; });
-    console.log("  accruals growth-adjusted: n " + adjusted.n + ", a " + adjusted.a + ", b " + adjusted.b);
   }
 
   /* 3. Cross-sectional normalization, per component, universe and peer. */

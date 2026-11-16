@@ -1,9 +1,9 @@
 {
  "schemaVersion": "factor-evidence-summary-1.0.0",
  "methodologyVersion": "vu-factor-evidence-2.0.0",
- "derivedFrom": "quant-v2.3.0",
+ "derivedFrom": "quant-v2.4.0",
  "changeMethodologyVersion": "vu-change-1.0.0",
- "generatedAt": "2026-11-16T09:41:25.000Z",
+ "generatedAt": "2026-11-16T10:46:38.000Z",
  "asOf": "2026-11-13",
  "publication": {
   "compositeAllowed": false,
@@ -43,10 +43,10 @@
   },
   "scoreCuts": {
    "quality": {
-    "VERY_STRONG": 67.44,
-    "STRONG": 60.05,
-    "NEUTRAL": 49.91,
-    "WEAK": 41.63
+    "VERY_STRONG": 67.57,
+    "STRONG": 59.92,
+    "NEUTRAL": 49.78,
+    "WEAK": 41.79
    },
    "growth": {
     "VERY_STRONG": 75.16,
@@ -124,15 +124,15 @@
    "window": "last 5 fiscal years",
    "input": "count(annualFreeCashFlow>0)"
   },
-  "quality:operatingMarginStability": {
-   "label": "Schwankung der operativen Marge",
+  "quality:operatingMarginDrawdown": {
+   "label": "Größter Einbruch der operativen Marge",
    "weight": 0.2,
    "direction": "lower",
    "unit": "ratio",
    "basis": null,
-   "note": "Median der absoluten Abweichungen der jährlichen operativen Marge vom eigenen Median, über bis zu fünf Geschäftsjahre und erst ab vier.",
+   "note": "Größter Rückgang der jährlichen operativen Marge von einem früheren Hoch auf ein späteres Tief, über bis zu fünf Geschäftsjahre und erst ab vier; steigende Margen zählen nicht (quant-v2.4.0).",
    "window": "last 5 fiscal years; minimum 4",
-   "input": "medianAbsoluteDeviation(annualOperatingMargin)"
+   "input": "max(peak-to-trough decline of annualOperatingMargin, -min(0, median annualOperatingMargin)), margins capped to [-1, 1]; rising margins count 0"
   },
   "growth:revenueCagr3y": {
    "label": "Umsatzwachstum pro Jahr, 3 Jahre",
@@ -799,7 +799,7 @@
   "recomputationDrift": {
    "asOf": "2026-11-13",
    "publishedHash": "d4e7b32a08c02594",
-   "recomputedHash": "fceb4accbfd6caba",
+   "recomputedHash": "3396a671accd94bc",
    "rowsDiffering": 5585,
    "rowsTotal": 6148,
    "note": "Die veroeffentlichte Beobachtung bleibt unveraendert. Sie wurde an diesem Stichtag veroeffentlicht und wird nicht durch eine heutige Neuberechnung ersetzt."
@@ -925,7 +925,7 @@
   "quality:netDebtToAssets": 1983,
   "quality:equityToAssets": 4376,
   "quality:positiveFcfYears": 3454,
-  "quality:operatingMarginStability": 3208,
+  "quality:operatingMarginDrawdown": 3208,
   "growth:revenueCagr3y": 3958,
   "growth:epsCagr3y": 2009,
   "growth:fcfCagr3y": 1947,
@@ -1039,6 +1039,6 @@
   "SHARE_COUNT_SCALE_SUSPECT": 4,
   "NOT_AN_EQUITY_LISTING:PREFERRED": 8
  },
- "runtimeMs": 17109,
- "contentHash": "bb35ad801304f02a"
+ "runtimeMs": 25764,
+ "contentHash": "b869908cdf692b20"
 }

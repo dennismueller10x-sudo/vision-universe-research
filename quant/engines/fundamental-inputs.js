@@ -328,13 +328,18 @@
        Jahresmarge von einem frueheren Hoch auf ein spaeteres Tief im selben Fenster (bis zu fuenf Geschaeftsjahre, ab
        vier); eine nur steigende Marge hat 0. Die symmetrische Abweichung (operatingMarginStability) bleibt als Rohwert
        fuer die eingefrorenen Forschungsstudien stehen. */
+    /* Margen auf -100 % bis +100 % gekappt (ein Verlust vom Hundertfachen des Umsatzes ist keine Marge, die man
+       vergleicht). Liegt die Median-Marge im Fenster unter null, zaehlt ihr Abstand zur Null als Einbruch, wenn er groesser
+       ist: ein Dauerverlust ist keine stabile Marge (Plausibilitaetsprobe 16.11.2026: ohne diese Regel bekaeme SOBR mit
+       schrumpfendem Verlust von -29.481 % auf -2.094 % den besten Wert; mit ihr 1,0 = 100 Prozentpunkte). */
     if (marginWindow.length >= 4) {
+      var capped = marginWindow.map(function (entry) { return Math.max(-1, Math.min(1, entry.value)); });
       var peak = -Infinity, drawdown = 0;
-      marginWindow.forEach(function (entry) {
-        if (entry.value > peak) peak = entry.value;
-        if (peak - entry.value > drawdown) drawdown = peak - entry.value;
+      capped.forEach(function (value) {
+        if (value > peak) peak = value;
+        if (peak - value > drawdown) drawdown = peak - value;
       });
-      raws.operatingMarginDrawdown = drawdown;
+      raws.operatingMarginDrawdown = Math.max(drawdown, -Math.min(0, median(capped)));
     }
     if (operatingMargins.length >= 4) {
       raws.operatingMarginExpansion3y =

@@ -41,7 +41,7 @@
     {
      "id": "accrualRatio",
      "weight": 0.25,
-     "input": "residual of (netIncomeTTM-operatingCashFlowTTM)/averageTotalAssets after a cross-sectional OLS on revenueGrowthTtmYoy (both winsorized 2/98; Jones 1991, Dechow/Sloan/Sweeney 1995, Fairfield/Whisenant/Yohn 2003)",
+     "input": "(netIncomeTTM-operatingCashFlowTTM)/averageTotalAssets",
      "window": "TTM",
      "direction": "lower"
     },
@@ -69,7 +69,7 @@
     {
      "id": "operatingMarginDrawdown",
      "weight": 0.2,
-     "input": "maximum peak-to-trough decline of annualOperatingMargin (rising margins count 0)",
+     "input": "max(peak-to-trough decline of annualOperatingMargin, -min(0, median annualOperatingMargin)), margins capped to [-1, 1]; rising margins count 0",
      "window": "last 5 fiscal years; minimum 4",
      "direction": "lower"
     }
@@ -780,6 +780,22 @@
   "broad component coverage and cross-sectional validation"
  ],
  "versionHistory": [
+  {
+   "version": "quant-v2.4.0",
+   "date": "2026-11-16",
+   "change": "Quality: operatingMarginStability (median absolute deviation of the annual operating margin) is replaced by operatingMarginDrawdown: the largest decline of the annual operating margin from an earlier high to a later low over up to five fiscal years (minimum four), margins capped to [-1, 1]; where the median margin of the window is below zero, its distance to zero counts if larger. Rising margins count 0.",
+   "why": "Plausibility review 16.11.2026 (NVDA): the symmetric deviation penalised rising margins like falling ones, which is wrong regardless of a backtest. A growth adjustment of accruals (Jones 1991; Dechow/Sloan/Sweeney 1995) was measured and dropped: revenue growth explains almost none of the cross-sectional accrual ratio (OLS slope -0.003 on growth in %, 0.092 on revenue change per average assets). The loss-making rule follows the plausibility probe: without it a shrinking loss (SOBR -29,481 % to -2,094 %) scored as perfectly stable. Not backtested: the archived V10 factor panel carries no annual margins; a substitute check (quality without the margin component against quality with the old component) follows in the weekly research run.",
+   "measuredImpact": {
+    "universe": 4120,
+    "factor": "quality",
+    "spearmanRankCorrelation": 0.9588,
+    "medianAbsoluteChange": 1.15,
+    "p90AbsoluteChange": 6.25,
+    "titlesMoving5Points": 592,
+    "titlesMoving10Points": 125,
+    "basis": "build-factor-evidence.mjs before/after on the same inputs, 2026-11-16"
+   }
+  },
   {
    "version": "quant-v2.3.0",
    "date": "2026-11-13",
