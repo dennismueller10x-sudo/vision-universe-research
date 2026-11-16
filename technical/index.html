@@ -10,8 +10,9 @@
 <meta name="description" content="Technical von Vision Universe®: automatische Chartanalyse, technische Indikatoren, Formationserkennung und ein regelbasierter Screener für US-Aktien.">
 <link rel="canonical" href="/technical/">
 <link rel="stylesheet" href="/assets/site-navigation.css">
-<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie die ganze Plattform (Standard hell). -->
-<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
+<!-- Farbschema vor dem ersten Bild: dieselbe gemerkte Wahl wie die ganze Plattform (Standard dunkel). Der Start trägt seine Reiter
+     im Inhalt (App-Konzept 2, data-vu-tabs="inhalt"); app.js nimmt das auf anderen Ansichten wieder weg. -->
+<script>(function(){var w="dark";try{var v=localStorage.getItem("vu-discover-theme-v1");if(v==="dark"||v==="light")w=v;}catch(e){}var h=document.documentElement;h.setAttribute("data-theme",w);h.setAttribute("data-theme-mode",w);if(!location.hash||/^#\/?(\?|$)/.test(location.hash))h.setAttribute("data-vu-tabs","inhalt");var t=document.querySelector('meta[name="theme-color"]');if(t)t.setAttribute("content",w==="dark"?"#08080a":"#ffffff");})();</script>
 <link rel="stylesheet" href="/assets/stock-navigator.css">
 <link rel="stylesheet" href="/assets/vu-ui.css">
 <link rel="stylesheet" href="/assets/vu-stock-chart.css">

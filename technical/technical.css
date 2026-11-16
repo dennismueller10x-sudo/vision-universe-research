@@ -1138,3 +1138,101 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 .tc-screener .tc-tools{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:calc(-1 * var(--tc-gutter));padding-inline:var(--tc-gutter)}
 .tc-screener .tc-tools::-webkit-scrollbar{display:none}
 @media(max-width:359px){.tc-ms-top{flex-wrap:wrap}}
+
+/* ===================================================================== App-Konzept 2 nach Prototyp (Bildschirm #technical)
+   Owner 14./15.11.2026: „1:1 wie im Prototyp“. Werte aus docs/design/app-konzept-2-2026-11/prototyp/quelle (shell.js, kit.js, p2.js):
+   Reiter im Inhalt (tabs2), Kachel 22 px Radius auf #151516, Abschnittskopf 22 px, Schienen bis an den Rand, Pillen, „Weiter“-Karte.
+   Nur der Start (main.tk). Hell bleibt lesbar: dieselben Rollen mit hellen Werten, Neongrün als Schrift wird Schwarz. */
+.tk{--tk-tile:#151516;--tk-ink:#f4f5f1;--tk-mut:#a1a7af;--tk-sec:#c3c7cc;--tk-track:#2a2a2d;--tk-pill:#232325;--tk-lime:#c8f531;--tk-lc:#c8f531;--tk-on:#fff;--tk-on-t:#000;--tk-wh:#fff;--tk-wh-t:#000;
+  color:var(--tk-ink);font-size:15px;line-height:1.35}
+:root:not([data-theme=dark]) .tk{--tk-tile:#f4f4f4;--tk-ink:#000;--tk-mut:#6e6e6e;--tk-sec:#3a3a3a;--tk-track:#e1e1e1;--tk-pill:#e6e6e6;--tk-lc:#000;--tk-on:#000;--tk-on-t:#fff;--tk-wh:#000;--tk-wh-t:#fff}
+.tk .tk-tile{background:var(--tk-tile);border-radius:22px;padding:14px;display:block;width:100%;box-sizing:border-box;color:inherit;text-decoration:none;border:0;font:inherit;text-align:inherit}
+.tk .tk-tap{cursor:pointer;transition:transform .12s}
+.tk .tk-tap:active{transform:scale(.97)}
+.tk .tk-num{font-weight:900;letter-spacing:-.045em;line-height:1;font-variant-numeric:tabular-nums}
+.tk .tk-mut{color:var(--tk-mut)}.tk .tk-sec{color:var(--tk-sec)}.tk .tk-lc{color:var(--tk-lc)}
+.tk .tk-sm{font-size:12.5px}.tk .tk-xs{font-size:11px;line-height:1.35}.tk .tk-b8{font-weight:800}
+.tk .tk-f1{flex:1;min-width:0;display:flex;flex-direction:column}
+.tk .tk-eb{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--tk-mut);line-height:1.35;margin:0}
+.tk .tk-eb--l{color:var(--tk-lc)}
+.tk .tk-pill{display:inline-flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-radius:999px;background:var(--tk-lime);color:#101318;font-size:12.5px;font-weight:800;white-space:nowrap;flex:none}
+.tk .tk-pill--sm{height:21px;font-size:10.5px;padding:0 8px;letter-spacing:.04em;text-transform:uppercase}
+.tk .tk-pill--wh{background:var(--tk-wh);color:var(--tk-wh-t)}
+.tk .tk-pill--dk{background:var(--tk-pill);color:var(--tk-ink)}
+/* Tagesbewegung als Pille (Prototyp chg(), Owner: Minus rot #c4281c, Plus neongrün). */
+.tk .vu-chg{height:26px;padding:0 10px;border-radius:999px;font-size:12.5px;font-weight:800;line-height:1;gap:5px;background:var(--tk-lime);color:#101318}
+.tk .vu-chg--down{background:#c4281c;color:#fff}
+.tk .vu-chg--flat{background:var(--tk-pill);color:var(--tk-ink)}
+.tk a:focus-visible,.tk button:focus-visible{outline:2px solid var(--vu-focus-ring,var(--vu-focus,#4f6b00));outline-offset:2px}
+/* Reiter im Inhalt (Prototyp .tabs2/.tab): klebt unter dem Kopf; die Tippfläche wächst unsichtbar auf 44 px. */
+.tk .tk-tabs{position:sticky;top:var(--vu-navigation-height,56px);z-index:4;display:flex;gap:6px;margin:0 calc(-1 * var(--tc-gutter));padding:8px var(--tc-gutter);overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--vu-bg,#000) 70%,transparent)}
+.tk .tk-tabs::-webkit-scrollbar,.tk .tk-rail::-webkit-scrollbar{display:none}
+#tc-main.tk .tk-tabs .tk-tab{position:relative;height:36px;min-height:0;min-width:0;padding:0 15px;border-radius:99px;background:var(--tk-tile);color:var(--tk-ink);font:700 14px/1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:inline-flex;align-items:center;white-space:nowrap;flex:none;text-decoration:none;border:0;cursor:pointer}
+.tk .tk-tabs .tk-tab::after{content:"";position:absolute;inset:-4px 0}
+#tc-main.tk .tk-tabs .tk-tab.is-on{background:var(--tk-on);color:var(--tk-on-t)}
+.tk .tk-tabs-sep{flex:none;width:1px;align-self:center;height:20px;background:rgb(127 127 127/.35);margin:0 4px}
+/* Kopfkachel (Prototyp: Dachzeile, zwei Zahlen 54 px, geteilter Balken 18 px); ein Tipp öffnet das Fenster. */
+.tk .tk-markt{position:relative;padding:16px}
+.tk .tk-markt-q{font-size:10.5px}
+.tk .tk-markt-n{display:flex;gap:12px;margin-top:12px}
+.tk .tk-markt-n>:first-child{flex:1.25}
+.tk .tk-big{display:block;font-size:54px}
+.tk .tk-markt-n b{display:block;font-size:15px;line-height:1.25;margin-top:2px}
+.tk .tk-seg2{display:flex;height:18px;border-radius:9px;overflow:hidden;gap:2px;margin-top:12px;background:var(--tk-track)}
+.tk .tk-seg2 i{display:block;height:100%}
+.tk .tk-seg2 .is-up{background:var(--tk-lime)}.tk .tk-seg2 .is-dn{background:var(--tk-wh)}
+.tk .tk-markt-skel{height:104px;margin-top:12px}
+.tk .tk-markt-lead{margin:10px 0 0}
+.tk .tk-cover{position:absolute;inset:0;width:100%;border-radius:22px;background:none;border:0;padding:0;margin:0;cursor:pointer}
+.tk-ms-sheet{display:flex;align-items:center;gap:12px;margin:0 0 12px}
+.tk-ms-sheet b{display:block;font-size:20px;font-weight:900;letter-spacing:-.03em}
+/* Abschnittskopf (Prototyp .sh): 22 px, rechts „Alle ›“. */
+.tk .tk-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 10px}
+.tk .tk-sh h2{font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin:0;color:var(--tk-ink)}
+.tk .tk-more{font-size:13px;font-weight:700;color:var(--tk-mut);text-decoration:none;white-space:nowrap;padding:14px 0;margin:-14px 0}
+/* Schiene (Prototyp .rail) bis an den Rand. */
+.tk .tk-rail{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x proximity;margin:0 calc(-1 * var(--tc-gutter));padding:0 var(--tc-gutter);scroll-padding-inline:var(--tc-gutter);scrollbar-width:none;overscroll-behavior-x:contain}
+.tk .tk-rail>*{scroll-snap-align:start;flex:none}
+.tk .tk-note{margin:0;padding:6px 0}
+/* Heute neu im Chart (Prototyp: Kachel 220 px, Logo 44, Linie 220 × 80 über die ganze Breite, Pille). */
+.tk .tk-nc{width:220px;display:flex;flex-direction:column;overflow:hidden}
+.tk .tk-nc-skel{width:220px;height:198px;border-radius:22px}
+.tk .tk-nc-h{display:flex;gap:10px;align-items:center;min-width:0}
+.tk .tk-nc-h .vu-logo-tile{width:44px;height:44px;border-radius:13px}
+.tk .tk-nc-h b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tk .tk-nc-h .tk-xs{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tk .tk-nc-sp{display:block;margin:8px -14px 0;height:80px;line-height:0;color:var(--tk-ink)}
+.tk .tk-nc-sp svg{display:block}
+.tk .tk-nc-sp path[fill^="url"]{opacity:.55}
+.tk .tk-nc-f{display:flex;align-items:center;gap:8px;margin-top:8px;min-width:0}
+.tk .tk-nc-f .tk-xs{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Muster im Markt (Prototyp form(): Kachel 150 px, Bild 122 × 56, Zahl 26 px, Pille ▲ auf / ▼ ab). */
+.tk .tk-form{width:150px;display:flex;flex-direction:column;justify-content:center}
+.tk .tk-form-ic{display:block;fill:none;stroke:var(--tk-ink);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.tk .tk-form.is-up .tk-form-ic{stroke:var(--tk-lc)}
+.tk .tk-form-n{display:block;margin-top:8px;line-height:1.25}
+.tk .tk-form-f{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:4px}
+.tk .tk-form-f .tk-num{font-size:26px}
+/* Fertige Suchen (bisheriger Start; Kachel wie die Suchen des Prototyp-Screeners: Symbol 36, Zahl 36 px). */
+.tk .tk-scr{width:180px;display:flex;flex-direction:column}
+.tk .tk-scr .vu-hud{width:36px;height:36px;border-radius:11px;box-shadow:inset 0 0 0 1px rgba(200,245,49,.25)}
+.tk .tk-scr-n{display:block;font-size:36px;margin-top:12px}
+.tk .tk-scr-t{display:block;line-height:1.1;margin-top:2px}
+.tk .tk-scr .tk-xs{display:block;margin-top:4px}
+.tk .tk-find{margin-top:14px}
+.tk .tk-find+.tc-quick{margin-top:10px}
+/* Lernen (bisheriger Start) als dunkle Zeilenkachel. */
+.tk .tk-row1{display:flex;align-items:center;gap:12px}
+.tk .tk-row1 .vu-hud{box-shadow:inset 0 0 0 1px rgba(200,245,49,.25)}
+.tk .tk-learn>svg{color:var(--tk-mut);flex:none}
+/* „Weiter“-Karte und Seitenende (Prototyp end()). */
+.tk .tk-next{display:flex;align-items:center;gap:12px;padding:18px;margin-top:28px}
+.tk .tk-gl{box-shadow:0 0 0 1px rgba(200,245,49,.5),0 0 28px rgba(200,245,49,.18)}
+:root:not([data-theme=dark]) .tk .tk-gl{box-shadow:0 0 0 1px rgba(0,0,0,.35)}
+.tk .tk-next-t{display:block;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;margin-top:4px}
+.tk .tk-rnd{width:46px;height:46px;border-radius:99px;background:var(--tk-lime);color:#101318;display:grid;place-items:center;flex:none}
+.tk .tk-rnd svg{width:18px;height:18px}
+.tk .tk-end{margin:20px 0 0;text-align:center}
+.tk .tk-lk{color:var(--tk-mut);font:700 12.5px/1 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;text-decoration:underline;text-underline-offset:3px;background:none;border:0;cursor:pointer;min-height:44px;padding:0 10px}
+@media(min-width:761px){.tk .tk-markt-n{max-width:640px}}
+.tc.tk{padding-top:0}

@@ -7,8 +7,9 @@ import {navigate} from '../../quality/browser-navigation.mjs';
 
    Prueft gegen das Repository (statischer Server, keine Auslieferung).
    Struktur nach dem Redesign 2027 (Folien T01–T06); Absicht der Checks unveraendert:
-     Start        Kopfkachel (Frage, Anteil ueber der 200-Tage-Linie, Urteil mit Ampel), Heute neu, acht Muster,
-                  fertige Suchen, „Weiter“-Karte; Erklaersatz im Fenster,
+     Start        nach Prototyp #technical: Reiter im Inhalt, Kopfkachel (Frage, Anteile ueber/unter der
+                  200-Tage-Linie, Balken), Heute neu, acht Muster, fertige Suchen, „Weiter“-Karte; Urteil mit
+                  Ampel und Erklaersatz im Fenster der Kopfkachel,
                   Dock vorhanden
      Screener     Schnellsuche liefert Treffer mit Befund-Pille, Filter-Sheet: ein Chip
                   aendert Trefferzahl und Adresse, Trichter vorhanden; Profi-Tabelle
@@ -101,24 +102,34 @@ async function main() {
     }
 
     await check(key + " Start", async () => {
-      /* App-Konzept 2 (14.11.2026): Markt in der Kopfkachel, Heute neu als Karten, Muster (alle acht der Musterseite) und fertige Suchen als Schiene, „Weiter“-Karte am Ende. */
+      /* App-Konzept 2 nach Prototyp #technical (Owner 14./15.11.2026): Reiter im Inhalt, Kopfkachel mit zwei Anteilen und Balken,
+         Heute neu als Karten, Muster (alle acht der Musterseite) als Schiene; darunter die fertigen Suchen des bisherigen Starts,
+         „Weiter“-Karte und „Daten & Hinweise“. Urteil mit Ampel und Erklärsatz stehen im Fenster der Kopfkachel. */
       await navigate(page,base + "#/");
       await page.waitForSelector(".tc-idc", { timeout: 30000 });
-      /* App-Konzept 2: die Frage steht als Dachzeile der Kopfkachel (Versalien per CSS), deshalb ohne Groß-/Kleinschreibung. */
+      /* Die Frage steht als Dachzeile der Kopfkachel (Versalien per CSS), deshalb ohne Groß-/Kleinschreibung. */
       assert(/Was zeigt\s*der Chart/i.test(await page.locator("h1").innerText()), "Titel als Frage fehlt");
+      assert(await page.evaluate(() => document.documentElement.getAttribute("data-vu-tabs")) === "inhalt", "Start zeigt seine Reiter nicht im Inhalt");
+      assert((await page.locator("main .tk-tabs .tk-tab").allInnerTexts()).slice(0, 5).join("|") === "Heute|Muster|Screener|Chart|Lernen", "Reiter wie im Prototyp fehlen");
       assert(await page.locator(".tc-idc").count() === 5, "fünf fertige Suchen fehlen");
-      assert(/über der 200-Tage-Linie/.test(await page.locator(".tc-ms").innerText()), "Markt heute als Zeile fehlt");
-      await page.waitForSelector(".tc-mgrid .tc-mg", { timeout: 30000 });
-      assert(await page.locator(".tc-mgrid .tc-mg").count() === 8, "Muster-Schiene fehlt");
-      assert(await page.locator(".tc-hero .tc-ms .tc-ampel i.is-on").count() === 1, "Kopfkachel ohne Ampel");
-      assert(await page.locator("#tc-main a.vu-next").count() === 1, "„Weiter“-Karte fehlt");
-      await page.locator(".tc-hero .tc-info").click(); await page.waitForSelector("#tc-about-pop:not([hidden])");
+      await page.waitForSelector(".tk-markt .tk-seg2", { timeout: 30000 });
+      assert(/über 200-Tage-Linie/.test(await page.locator(".tc-ms").innerText()), "Markt heute in der Kopfkachel fehlt");
+      await page.waitForSelector(".tk-forms .tk-form", { timeout: 30000 });
+      assert(await page.locator(".tk-forms .tk-form").count() === 8, "Muster-Schiene fehlt");
+      assert(await page.locator(".tk-forms .tk-form svg.tk-form-ic").count() === 8, "Musterbilder der Schiene fehlen");
+      assert(await page.locator("#tc-main a.tk-next").count() === 1, "„Weiter“-Karte fehlt");
+      await page.locator(".tk-markt .tk-cover").click(); await page.waitForSelector("#tc-about-pop:not([hidden])");
       assert(/Jeden Tag lesen feste Regeln/.test(await page.locator("#tc-about-pop").innerText()), "Erklärsatz im Fenster fehlt");
+      assert(await page.locator("#tc-about-pop .tc-ampel i.is-on").count() === 1, "Fenster der Kopfkachel ohne Ampel");
       await page.keyboard.press("Escape"); await page.waitForFunction(() => !document.getElementById("tc-about-pop"));
-      assert(await page.locator(".tc-tiles3, .tc-ranks, .tc-tcard").count() === 0, "alte Zahlen- oder Bestenlisten-Kacheln");
-      await page.waitForSelector(".tc-rail .tc-nc, .tc-rail .tc-note", { timeout: 30000 });
+      assert(await page.locator(".tc-tiles3, .tc-ranks, .tc-tcard, [data-quiz]").count() === 0, "alte Zahlen- oder Bestenlisten-Kacheln oder Quiz");
+      await page.waitForSelector(".tk-rail .tk-nc, .tk-rail .tk-note", { timeout: 30000 });
+      if (await page.locator(".tk-nc").count()) assert(/^\/aktie\/#\/[A-Z0-9.-]+$/.test(await page.locator(".tk-nc").first().getAttribute("href")) && await page.locator(".tk-nc[data-vu-stock]").count() === await page.locator(".tk-nc").count(), "Heute neu: Aktien-Ziel fehlt");
       await page.waitForFunction(() => !!document.getElementById("vu-dock"), null, { timeout: 10000 });
       await clean("Start");
+      /* Ein anderer Bereich zeigt wieder die Reiterzeile des Rahmens. */
+      await navigate(page,base + "#/screener");
+      await page.waitForFunction(() => document.documentElement.getAttribute("data-vu-tabs") !== "inhalt", null, { timeout: 10000 });
     });
 
     await check(key + " Screener", async () => {
