@@ -47,6 +47,7 @@ const ROUTES = [
   ['Technical', '/technical/#/screener?reiter=vorlagen', 'Vorlagen'], ['Technical', '/technical/#/lernen', 'Lernen'], ['Technical', '/technical/#/assistent/trendfolge', 'Lernen'],
   ['Vorsorge', '/vorsorge/#/', 'Vorsorge'], ['Vorsorge', '/vorsorge/#/plan', 'Planer'], ['Vorsorge', '/vorsorge/#/etfs', 'ETFs'],
   ['Vorsorge', '/vorsorge/#/portfolio', 'Portfolio'], ['Vorsorge', '/vorsorge/#/foerderung', 'Förderung'], ['Vorsorge', '/vorsorge/#/monitor', 'Veränderungen'],
+  // Screener: „Suchen“ (/screener/, Prototyp #screener) traegt seine Reiter im Inhalt; Filter, Treffer und Gespeichert zeigen die Reiter des Rahmens.
   ['Screener', '/screener/', 'Screener'], ['Screener','/screener/?f=roic:gt:0.1','Filter'], ['Screener','/screener/?mode=pro','Filter'], ['Screener', '/screener/?view=build', 'Filter'], ['Screener', '/screener/?view=saved', 'Gespeichert'], ['Screener', '/screener/?view=watchlist', 'Watchlist'],
   ['Supertrader', '/supertrader/', 'Supertrader'], ['Supertrader', '/supertrader/strategies/', 'Methoden'], ['Supertrader', '/supertrader/treffer/', 'Treffer'],
   ['Supertrader', '/supertrader/forschung/', 'Forschung'], ['Supertrader', '/supertrader/sources/', 'Quellen'],
@@ -528,7 +529,7 @@ for (const [vpName, width, height] of VIEWPORTS) {
   }
   // Zurueck/Vor ueber die Reiter (Hash-Produkte und Seiten-Produkte).
     // Starts mit Reitern im Inhalt (App-Konzept 2): der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
-  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']], ['/fundamental/#/ranglisten', ['Branchen', 'Methodik']], ['/technical/#/screener', ['Muster', 'Lernen']]]) {
+  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']], ['/fundamental/#/ranglisten', ['Branchen', 'Methodik']], ['/technical/#/screener', ['Muster', 'Lernen']], ['/screener/?view=build', ['Treffer', 'Gespeichert']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {
@@ -584,6 +585,25 @@ for (const [vpName, width, height] of VIEWPORTS) {
       if (!s.own || !s.strip || s.tabs < 3) fail(where, 'Zurueck: Reiter im Inhalt fehlen oder doppelt: ' + JSON.stringify(s));
       await page.goForward(); await settle(page);
       if ((await state(page))?.current[0] !== label) fail(where, 'Vor: ' + JSON.stringify((await state(page))?.current));
+      checks.push({ where, pass: !findings.some((f) => f.where === where) });
+    } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
+  }
+  // Screener „Suchen“: Reiter im Inhalt fuehren in die Bereiche mit Rahmen-Reitern; Zurueck stellt „Suchen“ wieder her.
+  {
+    const where = `history /screener/ (Reiter im Inhalt) @${vpName}`;
+    await fresh();
+    try {
+      await page.goto(base + '/screener/', { waitUntil: 'load', timeout: 90000 }); await settle(page);
+      const mode = () => page.evaluate(() => document.documentElement.getAttribute('data-vu-tabs'));
+      if (await mode() !== 'inhalt') fail(where, 'Start ohne Reiter im Inhalt');
+      await page.locator('main .sc-ak-tabs a', { hasText: 'Gespeichert' }).first().click(); await settle(page);
+      const s1 = await state(page);
+      if (!s1 || s1.current[0] !== 'Gespeichert') fail(where, 'Reiter „Gespeichert“ markiert den Rahmen nicht: ' + JSON.stringify(s1 && s1.current));
+      await page.goBack(); await settle(page);
+      if (await mode() !== 'inhalt' || !await page.locator('main .sc-ak-tabs a.is-on', { hasText: 'Suchen' }).count()) fail(where, 'Zurueck stellt „Suchen“ nicht her');
+      await page.goForward(); await settle(page);
+      const s2 = await state(page);
+      if (!s2 || s2.current[0] !== 'Gespeichert') fail(where, 'Vor: ' + JSON.stringify(s2 && s2.current));
       checks.push({ where, pass: !findings.some((f) => f.where === where) });
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }

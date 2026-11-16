@@ -489,7 +489,7 @@
     main.append(h('h1', { class: 'sc-sr', text: 'Screener' + (saved ? ': ' + saved.name : '') }), startTabs());
     if (state.invalidLink) main.append(h('div', { class: 'sc-ak-px' }, invalidNotice()));
     /* Satz-Kachel: „In einem Satz · N Kriterien“, der Satz mit Lücken und „+ Bedingung“; ohne Bedingung die fünf häufigsten Ergänzungen mit Trefferzahl. */
-    var tile = h('section', { class: 'sc-ak-tile sc-ak-senttile', 'aria-label': 'Dein Satz' }, [h('p', { class: 'sc-ak-eb', text: 'In einem Satz · ' + F.FIELDS.length + ' Kriterien' }), sentence(q, { start: true })]);
+    var tile = h('section', { class: 'sc-ak-tile sc-ak-senttile', 'aria-label': 'Was suchst du?' }, [h('p', { class: 'sc-ak-eb', text: 'In einem Satz · ' + F.FIELDS.length + ' Kriterien' }), sentence(q, { start: true })]);
     if (!fs.length) tile.append(h('div', { class: 'sc-satz-c', role: 'list', 'aria-label': 'Ergänzungen' }, PROPS.slice(0, 5).map(function (p) {
       return h('button', { class: 'sc-satz-o', type: 'button', role: 'listitem', 'data-prop': p.id, onclick: needsData(function () { openDetail(p.f.field, { draft: p.f, toResults: true }); }) }, [p.word, ' ', liveN(function () { return countOf(queryOf([p.f])); })]);
     })));
@@ -546,7 +546,7 @@
       return h('span', { class: 'sc-rchip', role: 'listitem' }, [h('button', { class: 'sc-mini-chip', type: 'button', onclick: needsData(function () { openDetail(f.field, { filter: f }); }) }, label),
         opts.remove === false ? null : h('button', { class: 'sc-rchip-x', type: 'button', 'aria-label': F.describeFilter(f) + ' entfernen', onclick: function () { go({ query: Q.removeFilter(state.query, f.id) }, { keepScroll: true }); toast('Regel entfernt'); } }, '×')]);
     });
-    if (opts.add) kids.push(h('button', { class: 'sc-mini-chip is-add', type: 'button', onclick: function () { openLibrary(); }, 'aria-label': 'Filter hinzufügen' }, '+ Filter'));
+    if (opts.add) kids.push(h('span', { class: 'sc-rchip-add', role: 'listitem' }, h('button', { class: 'sc-mini-chip is-add', type: 'button', onclick: function () { openLibrary(); }, 'aria-label': 'Filter hinzufügen' }, '+ Filter')));
     return h('div', { class: 'sc-filterline', role: 'list', 'aria-label': 'Aktive Filter' }, kids);
   }
   function lockShort(f) { return f.id === 'quantScore' ? 'noch nicht freigegeben' : f.source === 'estimates' ? 'keine lizenzierte Quelle' : f.source === 'factor' ? 'keine Methodik' : 'Daten folgen'; }
@@ -644,7 +644,7 @@
   }
   /** Trichter: alle → Regel 1 → Regel 2 … mit echter Zaehlung je Stufe (S02 Profi). */
   function impact(r) {
-    var card = h('ol', { class: 'sc-funnel', 'aria-label': 'Trichter: Treffer nach jeder Regel' });
+    var card = h('div', { class: 'sc-funnel', role: 'group', 'aria-label': 'Trichter: Treffer nach jeder Regel' });
     var fs = Q.filters(state.query);
     r.funnel.forEach(function (st, i) {
       var last = i === r.funnel.length - 1 && i > 0, share = r.universe ? st.count / r.universe * 100 : 0;
@@ -653,7 +653,7 @@
       var sub = def ? perspOf(def).label + ' · ' + F.group(def.group).label : st.kind === 'group' ? (st.standalone ? 'unabhängig von den anderen Gruppen' : 'Gruppe') : null;
       var meta = st.kind !== 'start' && st.lost ? '−' + nf(st.lost) + (st.missing ? ' · davon ' + nf(st.missing) + ' ohne Angabe' : '') : null;
       var pf = f ? r.perFilter[f.id] : null;
-      var row = h('li', { class: 'sc-tl' + (last ? ' is-final' : '') + (st.kind === 'start' ? ' is-start' : '') }, [
+      var row = h('div', { class: 'sc-tl' + (last ? ' is-final' : '') + (st.kind === 'start' ? ' is-start' : '') }, [
         h('div', { class: 'sc-tl-top' }, [h('div', { class: 'sc-tl-main' }, [h('span', { class: 'sc-tl-label' }, [st.kind === 'start' ? null : h('span', { class: 'sc-muted', text: st.kind === 'union' ? '' : 'und ' }), label]),
           sub ? h('small', { text: sub + (meta ? ' · ' + meta : '') }) : meta ? h('small', { text: meta }) : null,
           pf ? h('small', { class: 'sc-tl-alone sc-num', text: nf(pf.pass) + ' Aktien erfüllen allein' + (pf.missing ? ' · ' + nf(pf.missing) + ' ohne Daten' : '') }) : null]), h('b', { class: 'sc-num', text: nf(st.count) })]),
