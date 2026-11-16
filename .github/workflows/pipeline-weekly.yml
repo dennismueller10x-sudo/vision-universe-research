@@ -606,7 +606,7 @@ jobs:
       group: backtest-research-${{ github.ref_name }}
       cancel-in-progress: false
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v4
         with:
@@ -656,7 +656,30 @@ jobs:
           if [ -n "${DL:-}" ]; then args+=(--private-delisted "$DL"); fi
           if [ -n "${PANEL:-}" ]; then args+=(--private-factor-panel "$PANEL"); fi
           node --max-old-space-size=12288 scripts/quant/research/build-backtest-research.cjs --out quant/data/product/backtest-research-v1.json "${args[@]}"
-          rm -rf "$RUNNER_TEMP/priv"
+
+      # Ersatzpruefung quant-v2.4.0 (a), Steuerung 16.11.2026: Quality mit gegen ohne alte Margenkomponente auf dem
+      # V10-Panel, oberes gegen unteres Fuenftel. Forschung, nicht zertifiziert; nur Zaehlungen und Mittelwerte als
+      # Artefakt, nichts wird committet. Ein Fehler hier haelt die Backtest-Forschung nicht auf.
+      - name: Ersatzpruefung Quality-Marge (nur mit Panel)
+        if: steps.priv.outputs.panel != ''
+        continue-on-error: true
+        env:
+          PANEL: ${{ steps.priv.outputs.panel }}
+        run: |
+          set -euo pipefail
+          node --max-old-space-size=12288 scripts/quant/research/quality-margin-substitute.cjs --panel "$PANEL" \
+            --out "$RUNNER_TEMP/quality-margin/quality-margin-substitute.json"
+      - uses: actions/upload-artifact@v4
+        if: steps.priv.outputs.panel != ''
+        continue-on-error: true
+        with:
+          name: quality-margin-substitute-${{ github.run_id }}
+          path: ${{ runner.temp }}/quality-margin
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Private Teile entfernen
+        if: always()
+        run: rm -rf "$RUNNER_TEMP/priv"
 
       - name: Vertrag und Tests
         run: |
