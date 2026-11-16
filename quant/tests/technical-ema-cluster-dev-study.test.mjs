@@ -23,6 +23,12 @@ test('unavailable histories, identity reuse and duplicate issuers are disclosed 
   assert.equal(a.selected.length, 1); assert.equal(a.counts.delisted, 0);
   assert.deepEqual(new Set(a.excluded.flatMap(x => x.reasons)), new Set(['REUSED_LISTING_IDENTITY', 'INSUFFICIENT_BARS', 'DUPLICATE_KNOWN_ISSUER', 'NO_DEV_OBSERVATIONS']));
 });
+test('existing non-stock classifications cannot enter the common-equity sample', () => {
+  const input = candidates().slice(0, 2); input[0].nonStockReason = 'FUND_NAME'; input[1].nonStockReason = 'EXCHANGE_NYSE_ARCA';
+  const out = selectSample(input);
+  assert.equal(out.selected.length, 0);
+  assert.ok(out.excluded.every(x => x.reasons.some(r => r.startsWith('KNOWN_NON_STOCK_PRODUCT:'))));
+});
 test('pooled inference uses observations and preserves negative, neutral, censored and cohort results', () => {
   const rows = [0, .03, -.04, -.02].map((v, i) => ({ eventId: '' + i, state: 'OBSERVED', benchmarkExcess: v, directionAdjustedExcess: -v,
     netReturn: v, issuerId: 'issuer-' + (i % 2), timeCluster: '2020-01-0' + (i + 1), cohort: i < 2 ? 'ACTIVE' : 'DELISTED',

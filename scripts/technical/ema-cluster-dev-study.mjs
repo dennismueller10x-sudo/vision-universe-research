@@ -11,7 +11,7 @@ import { createSnapshotStore } from '../supertrader/snapshot/store.mjs';
 import { loadPitData } from '../supertrader/validation/analyze-methods.mjs';
 import { securityFromSegment, benchmarkFromPit } from '../supertrader/source-faithful/runner/snapshot-input.mjs';
 import { flagDiscontinuities } from '../supertrader/source-faithful/integrity/discontinuity.mjs';
-import { encryptForOwner } from '../supertrader/validation/lib.mjs';
+import { encryptForOwner, nonStockProduct } from '../supertrader/validation/lib.mjs';
 const require = createRequire(import.meta.url);
 const S = require('../../quant/engines/research-studies.cjs');
 const V = require('../../quant/engines/research-validation.cjs');
@@ -21,7 +21,7 @@ const root = fileURLToPath(new URL('../..', import.meta.url));
 export const PLAN = Object.freeze({ id: 'EMA_CLUSTER_DEV_200_V1', snapshotId: 'sts1-134d4d62eb88b6ff8d98fe6e56b12a6d',
   warmupFrom: '2015-01-01', from: '2016-01-04', to: '2026-09-30', active: 150, delisted: 50, minBars: 300,
   batchSize: 5, seed: 'VU_EMA_CLUSTER_DEV_200_V1', classification: 'SEC_SIC_DIVISION_AT_MIN_LIST_END_AND_DEV_END',
-  selection: 'EQUAL_STRATUM_ROUND_ROBIN_SHA256_WITHOUT_REPLACEMENT', instrumentClasses: ['EQUITY_COMMON'],
+  selection: 'EQUAL_STRATUM_ROUND_ROBIN_SHA256_WITHOUT_REPLACEMENT', instrumentClasses: ['EQUITY_COMMON'], excludeKnownNonStockProducts: true,
   multipleTesting: 'HOLM_36_PRIMARY_RAW_SPY_EXCESS_TESTS_SECONDARY_GROUPS_DESCRIPTIVE',
   limitations: ['EXPLORATORY_CONDITIONAL_COHORT_NOT_MARKET_REPRESENTATIVE', 'SNAPSHOT_IDENTITY_NOT_AS_PUBLISHED_PIT',
     'MISSING_CIK_USES_LISTING_AS_ISSUER_PROXY', 'PRICE_RETURNS_NO_DIVIDENDS_BOTH_SIDES',
@@ -42,6 +42,7 @@ export function selectSample(candidates) {
   for (const c of candidates) {
     const reasons = [];
     if (!PLAN.instrumentClasses.includes(c.instrumentClass)) reasons.push('NOT_COMMON_EQUITY');
+    if (c.nonStockReason) reasons.push('KNOWN_NON_STOCK_PRODUCT:' + c.nonStockReason);
     if (c.reusedLater) reasons.push('REUSED_LISTING_IDENTITY');
     if (c.bars < PLAN.minBars) reasons.push('INSUFFICIENT_BARS');
     if (!c.hasStudyBars) reasons.push('NO_DEV_OBSERVATIONS');
@@ -124,6 +125,10 @@ async function main() {
   const replayDriver = await opened.io.createDriver();
   const secBuf = await replayDriver.get('v1/tiingo-delisted/daily/US/_validation/sec-pit-r12.json.gz');
   const sec = secBuf ? JSON.parse(zlib.gunzipSync(secBuf)) : {};
+  const metaBuf = await replayDriver.get('v1/tiingo-delisted/daily/US/_validation/manifest.json.gz');
+  const listingMeta = metaBuf ? JSON.parse(zlib.gunzipSync(metaBuf)).entries : {};
+  const companyNames = JSON.parse(opened.io.readRepoFile('quant/data/market/security-master/company-names.json'));
+  const companyByTicker = new Map((companyNames.rows || []).map(r => [r.ticker, r.companyName]));
   const byListing = new Map(pit.listings.map(l => [l.id, l])), byRoot = new Map(), cache = new Map();
   for (const seg of pit.segs) { const id = seg.id.split('#')[0]; if (!byRoot.has(id)) byRoot.set(id, []); byRoot.get(id).push(seg); }
   const candidates = pit.members.map(m => {
@@ -131,6 +136,7 @@ async function main() {
     const cik = sec[l.id]?.cik || segs.find(s => s.fund?.cik)?.fund.cik || null;
     const cutoff = l.listEnd && l.listEnd < PLAN.to ? l.listEnd : PLAN.to;
     return { listingId: l.id, ticker: l.ticker, cik, instrumentClass: m.cls, reusedLater: l.reusedLater,
+      nonStockReason: nonStockProduct({ ticker: l.ticker, exchange: l.exchange, name: m.from === 'STORE' ? companyByTicker.get(l.ticker) : listingMeta[l.id]?.name }),
       bars: bars.length, hasStudyBars: bars.some(b => b.date >= PLAN.from), cohort: l.active ? 'ACTIVE' : l.listEnd && l.listEnd <= PLAN.to ? 'DELISTED' : 'STATUS_UNCERTAIN',
       ...readIndustry(cik, cutoff, cache), startDate: l.startDate, endDate: l.endDate };
   });
