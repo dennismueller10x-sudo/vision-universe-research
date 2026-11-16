@@ -596,9 +596,6 @@
       next: [['#/suche', 'Jede Firma einzeln (Suche)'], ['#/methodik', 'Methodik und Erklärungen'], ['#/ranglisten/auswahlen', 'Auswahlen aus Discover']],
       actions: [reloadBtn(retry), el('a', { class: 'vu-btn vu-btn--sm vu-btn--line', href: '/status/' }, 'Status')] });
   }
-  /* Startseite (App-Konzept 2, Owner-Freigabe 14.11.2026; Inhalte wie Konzept „Verstehen. Finden.“, Folie FX01): dunkle Kopfkachel
-   * mit Frage, Suche und Firmen-Chips, Checklisten und Ranglisten als Schienen (Ranglisten als Balkenrennen der ersten drei
-   * Plaetze), „Zahlen lesen in 30 Sekunden“ als Balken mit echtem Beispielwert, Branchen als Balken, „Selbst filtern“, „Weiter“. */
   function railHead(title, to, link, sub, tag) {
     return el('div', { class: 'fu-rh' }, [el('div', { class: 'fu-rh-t' }, [el('h2', { text: title }), tag ? el('span', { class: 'fu-rh-tag', text: tag }) : null,
       to ? el('a', { href: to }, [link || 'Alle', glyph('chevron', 'fu-glyph-sm')]) : null]), sub ? el('p', { text: sub }) : null]);
@@ -646,14 +643,6 @@
         bar != null ? el('span', { class: 'fu-lern-b', 'aria-hidden': 'true' }, el('i', { style: 'width:' + bar.toFixed(1) + '%' })) : null]);
     });
   }
-  /* Branchen auf der Startseite: die ersten fuenf Zeilen der Branchen-Seite (gleiche Reihenfolge, gleicher Wert). */
-  function homeIndustries(U) {
-    var list = C.industries(U, 5).slice(0, 5); if (!list.length) return null;
-    var max = Math.max.apply(null, list.map(function (i) { return Math.abs(i.netMargin || 0); }).concat([0.01]));
-    return el('div', { class: 'fu-tilebox2 fu-indmini' }, list.map(function (i) {
-      return el('a', { class: 'fu-race-r', href: '#/branche/' + i.id }, [raceBar(i.label, i.netMargin, max), el('b', { class: 'fu-race-v fu-num', text: isNum(i.netMargin) ? C.fmt({ kind: 'ratio' }, i.netMargin) : '–' })]);
-    }).concat([el('p', { class: 'fu-tile-note', text: 'Median der Nettomarge je Branche, größte Branchen zuerst' })]));
-  }
   /* ------------------------------------------------------------ Start nach Prototyp „App-Konzept 2“ (#fundamental, Owner 14./15.11.2026)
    * Aufbau wie der Prototyp: Reiter im Inhalt (Heute · Ranglisten · Checklisten · Branchen), Kachel „Wie gut ist das Geschäft?“
    * mit der Meldewoche (SEC-Einreichungen je Werktag, products/fundamental/producer/build-history.mjs#filingWeek), „Höchste
@@ -685,10 +674,11 @@
       svg('circle', { class: 'fp-ring-v', cx: size / 2, cy: size / 2, r: r, fill: 'none', 'stroke-width': sw, 'stroke-linecap': 'round', 'stroke-dasharray': c.toFixed(2), 'stroke-dashoffset': (c * (1 - p / 100)).toFixed(2) })]);
     return el('span', { class: 'fp-ring', role: 'img', 'aria-label': label, style: 'width:' + size + 'px;height:' + size + 'px' }, [g, el('b', { class: 'fp-num', style: 'font-size:' + Math.round(size * 0.27) + 'px', text: text })]);
   }
-  /* Spur des Balkenrennens: Name zweimal, dunkel nur über dem neongrünen Teil (clip-path), hell über der Spur. */
+  /* Spur des Balkenrennens: der Name hell über der Spur und als dunkle Kopie im neongrünen Balken (der Balken schneidet sie ab),
+   * so bleibt er an jeder Stelle lesbar. */
   function fpBar(name, w) {
-    return el('span', { class: 'fp-race-b' }, [el('i', { style: 'width:' + w.toFixed(1) + '%' }), el('span', { class: 'fp-sm fp-b8 fp-rn', text: name }),
-      el('span', { class: 'fp-sm fp-b8 fp-rn is-on', 'aria-hidden': 'true', style: 'clip-path:inset(0 ' + (100 - w).toFixed(1) + '% 0 0)', text: name })]);
+    return el('span', { class: 'fp-race-b' }, [el('span', { class: 'fp-sm fp-b8 fp-rn', text: name }),
+      el('i', { style: 'width:' + w.toFixed(1) + '%' }, el('span', { class: 'fp-sm fp-b8 fp-rn is-on', 'aria-hidden': 'true', style: 'width:' + (10000 / Math.max(w, 1)).toFixed(1) + '%', text: name }))]);
   }
   function fpName(n, t) { return shortName(String(n || t || '').replace(/\s+-\s+Class [A-Z]$/i, '').replace(/,?\s+(Inc|Corp|Co|Ltd|LP|plc)\.?$/i, '')) || t; }
   /* Woche der Meldungen relativ zu heute: dieselbe Woche, die Woche davor, sonst mit Datum. */
@@ -1317,13 +1307,6 @@
     }
     if (co.U) paint(co.U); else main.addEventListener('fu-universe', function h(e) { main.removeEventListener('fu-universe', h); paint(e.detail); });
     return box;
-  }
-  function ckCard(list, U) {
-    var hits = U ? ckHits(U, list) : null;
-    return el('button', { type: 'button', class: 'fu-ckc', 'aria-haspopup': 'dialog', onclick: function () { ckListSheet(list, U, hits); } }, [
-      el('span', { class: 'fu-ckc-h' }, [el('span', {}, [el('span', { class: 'vu-ltag', text: 'Checkliste' }), el('b', { text: list.name })]), el('span', { class: 'fu-ckn' }, [el('b', { class: 'fu-num', text: String(list.items.length) }), el('small', { text: 'Punkte' })])]),
-      el('span', { class: 'fu-ckc-p', text: list.items.slice(0, 3).map(function (i) { return i.label; }).join(' · ') + ' …' }),
-      el('span', { class: 'fu-ckc-f' }, hits ? hits.slice(0, 5).map(function (t) { return frag(UI.logo(t)); }).concat([el('span', { class: 'fu-ckc-n', text: hits.length.toLocaleString('de-DE') + ' erfüllen alle' })]) : [skel(24, '60%')])]);
   }
   function overview(co, r, ctx) {
     var f = co.f, t = co.t;

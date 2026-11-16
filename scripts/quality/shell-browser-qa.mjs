@@ -36,7 +36,8 @@ const ROUTES = [
   // Elliott: eigenes Produkt; das Aktienbild liegt unter /elliott/#/<T> (alt: /quant/#/elliott/<T>, leitet um), gehoert aber zu Elliott (nur Produktkontext)
   ['Elliott', '/elliott/', 'Elliott'], ['Elliott', '/elliott/#/?zaehlbar=1', 'Zählbar'], ['Elliott', '/elliott/#/?welle=3', 'Zählbar'], ['Elliott', '/elliott/#/?neu=1', 'Neu'], ['Elliott', '/elliott/#/?suche=1', 'Suche'],
   ['Elliott', '/elliott/#/?richtung=ab', 'Abwärts'], ['Elliott', '/elliott/#/NVDA', null], ['Elliott', '/quant/#/elliott/NVDA', null],
-  // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext
+  // Fundamental: eigenes Produkt; die Unternehmensseite /fundamental/#/<T> zeigt nur den Produktkontext. Der Start (#/) traegt
+  // seine Reiter im Inhalt (Prototyp #fundamental: Heute · Ranglisten · Checklisten · Branchen); geprueft werden dort Dock und Reiter.
   ['Fundamental', '/fundamental/#/', 'Fundamental'], ['Fundamental', '/fundamental/#/ranglisten', 'Ranglisten'], ['Fundamental', '/fundamental/#/branchen', 'Branchen'],
   ['Fundamental', '/fundamental/#/methodik', 'Methodik'], ['Fundamental', '/fundamental/#/NVDA', null],
   // Technical: „Vorlagen“ und „Lernen“ sind eigene Reiter (App-Konzept 2); eine Frage des Assistenten gehoert zu „Lernen“
@@ -524,8 +525,8 @@ for (const [vpName, width, height] of VIEWPORTS) {
     } catch (e) { fail(where, 'Abbruch: ' + e.message.split('\n')[0]); }
   }
   // Zurueck/Vor ueber die Reiter (Hash-Produkte und Seiten-Produkte).
-    // Discover-, Quant- und Supertrader-Start tragen ihre Reiter im Inhalt (App-Konzept 2); der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
-  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']]]) {
+    // Starts mit Reitern im Inhalt (App-Konzept 2): der Weg ueber die Rahmen-Reiter beginnt auf einem Unterbereich.
+  for (const [start, clicks] of [['/quant/#/screener', ['Aktien', 'Methodik']], ['/vorsorge/#/', ['ETFs', 'Portfolio']], ['/supertrader/strategies/', ['Treffer', 'Forschung']], ['/discover/#/welten', ['Strategien', 'Swipen']], ['/fundamental/#/ranglisten', ['Branchen', 'Methodik']]]) {
     const where = `history ${start} @${vpName}`;
     await fresh();
     try {
