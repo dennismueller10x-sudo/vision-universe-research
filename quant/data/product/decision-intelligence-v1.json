@@ -1,13 +1,13 @@
 {
  "schemaVersion": "decision-intelligence-1.0.0",
- "generatedAt": "2026-11-14T08:24:13.698Z",
+ "generatedAt": "2026-11-16T09:59:06.846Z",
  "asOf": "2026-11-13",
  "measures": {
-  "RADAR_EVENTS_TOTAL": 1146,
+  "RADAR_EVENTS_TOTAL": 1261,
   "RADAR_EVENTS_BY_TYPE": {
    "SETUP_CONFIRMED": 1,
    "SETUP_NEW": 67,
-   "STRATEGY_MATCH_NEW": 79,
+   "STRATEGY_MATCH_NEW": 152,
    "NEW_52W_HIGH": 125,
    "MOMENTUM_IMPROVED": 130,
    "TREND_UP": 74,
@@ -16,7 +16,7 @@
    "RISK_RISING": 21,
    "SETUP_WEAKENED": 53,
    "SETUP_INVALIDATED": 0,
-   "STRATEGY_MATCH_LOST": 76,
+   "STRATEGY_MATCH_LOST": 118,
    "MOMENTUM_DETERIORATED": 42,
    "TREND_DOWN": 68,
    "EVIDENCE_CHANGED": 0
@@ -28,31 +28,31 @@
   "BACKTEST_WITHHELD_RULES": 84,
   "HISTORICAL_REPLAY_COVERAGE": {
    "universe": 5645,
-   "covered": 5310,
-   "available": 4439,
+   "covered": 5313,
+   "available": 4467,
    "sufficient": {
-    "m1": 2170,
-    "m3": 2115,
-    "m6": 2049,
-    "m12": 1964
+    "m1": 2197,
+    "m3": 2131,
+    "m6": 2062,
+    "m12": 1974
    },
    "broad": {
-    "m6": 827
+    "m6": 836
    },
    "reasons": {
-    "NOT_COVERED": 335,
-    "NO_PRICE_CONDITION_TODAY": 736,
-    "NO_COMPARABLE_CASE": 135
+    "NOT_COVERED": 332,
+    "NO_PRICE_CONDITION_TODAY": 761,
+    "NO_COMPARABLE_CASE": 85
    }
   },
   "WATCHLIST_TRACKABLE_TITLES": 5385,
-  "ALERT_READY_EVENTS": 1146
+  "ALERT_READY_EVENTS": 1261
  },
  "criteria": [
   {
    "question": "welche Aktien heute interessant werden",
    "pass": true,
-   "measured": "935 Karten aus 1146 Ereignissen"
+   "measured": "1008 Karten aus 1261 Ereignissen"
   },
   {
    "question": "warum",
@@ -77,7 +77,7 @@
   {
    "question": "was historisch bei derselben Lage geschah",
    "pass": true,
-   "measured": "2049 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
+   "measured": "2062 Titel mit ≥ 10 abgeschlossenen 6-Monats-Fällen"
   },
   {
    "question": "wie belastbar diese Evidenz ist",
@@ -248,11 +248,11 @@
     "direction": "NEUTRAL"
    },
    "replay": {
-    "episodes": 57,
+    "episodes": 69,
     "horizon": "m6",
     "evidence": "BROAD",
-    "positiveShare": 0.5714285714285714,
-    "medianReturn": 0.035667427520319483
+    "positiveShare": 0.6470588235294118,
+    "medianReturn": 0.06828865088878533
    },
    "factors": 6
   },
@@ -295,7 +295,7 @@
    "replay": {
     "reason": "NO_PRICE_CONDITION_TODAY"
    },
-   "factors": 4
+   "factors": 5
   },
   {
    "ticker": "AMD",
@@ -366,19 +366,18 @@
     "direction": "BULLISH"
    },
    "replay": {
-    "episodes": 9,
-    "horizon": null,
-    "evidence": "WITHHELD",
-    "positiveShare": null,
-    "medianReturn": null
+    "episodes": 12,
+    "horizon": "m6",
+    "evidence": "THIN",
+    "positiveShare": 0.8181818181818182,
+    "medianReturn": 0.2950068712780578
    },
-   "factors": 4
+   "factors": 5
   },
   {
    "ticker": "DXPE",
    "kind": "Small Cap",
    "radarEvents": [
-    "STRATEGY_MATCH_NEW",
     "STRATEGY_MATCH_LOST"
    ],
    "setup": {
@@ -545,7 +544,7 @@
    "replay": {
     "reason": "NOT_COVERED_BY_PATTERN_MATCH"
    },
-   "factors": 2
+   "factors": 4
   },
   {
    "ticker": "AACI",

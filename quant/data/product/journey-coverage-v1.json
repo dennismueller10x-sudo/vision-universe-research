@@ -1,6 +1,6 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-11-14T08:24:59.000Z",
+ "generatedAt": "2026-11-16T09:59:49.000Z",
  "universe": 6309,
  "sample": 500,
  "sampling": "jeder 12. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
@@ -79,9 +79,9 @@
    "id": "patterns",
    "label": "Chance und Risiko in aehnlichen Lagen",
    "answered": 422,
-   "findings": 82,
+   "findings": 85,
    "findingReasons": {
-    "NO_PATTERN_HOLDS": 82
+    "NO_PATTERN_HOLDS": 85
    },
    "withheld": 78,
    "share": 0.844,
@@ -92,15 +92,15 @@
   {
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
-   "answered": 434,
-   "findings": 178,
+   "answered": 435,
+   "findings": 159,
    "findingReasons": {
-    "NO_PROFILE_FITS_WELL": 178
+    "NO_PROFILE_FITS_WELL": 159
    },
-   "withheld": 66,
-   "share": 0.868,
+   "withheld": 65,
+   "share": 0.87,
    "reasons": {
-    "NO_EVIDENCE": 48,
+    "NO_EVIDENCE": 47,
     "NOT_COVERED_BY_FACTOR_EVIDENCE": 15,
     "NOT_AN_EQUITY_LISTING": 3
    }
@@ -109,9 +109,9 @@
    "id": "assignmentChange",
    "label": "Hat sich die Zuordnung geaendert",
    "answered": 500,
-   "findings": 489,
+   "findings": 480,
    "findingReasons": {
-    "NO_ASSIGNMENT_CHANGE": 489
+    "NO_ASSIGNMENT_CHANGE": 480
    },
    "withheld": 0,
    "share": 1,
@@ -143,8 +143,8 @@
  "answeredStationsPerTitle": {
   "4": 4,
   "5": 3,
-  "6": 36,
-  "7": 8,
+  "6": 35,
+  "7": 9,
   "8": 17,
   "9": 5,
   "10": 21,
@@ -154,26 +154,25 @@
   "full": 427,
   "reduced": 73,
   "minimal": 0,
-  "noticeBoxesBefore": 423,
-  "noticeBoxesAfter": 174,
+  "noticeBoxesBefore": 422,
+  "noticeBoxesAfter": 172,
   "worstPageNoticeBoxes": 4,
   "dataPoorPages": 73,
-  "dataPoorNoticeBoxesBefore": 402,
-  "dataPoorNoticeBoxesAfter": 153,
+  "dataPoorNoticeBoxesBefore": 401,
+  "dataPoorNoticeBoxesAfter": 151,
   "substantiveStationsPerTitle": {
    "3": 7,
    "4": 16,
    "5": 19,
-   "6": 1,
-   "7": 25,
+   "7": 26,
    "8": 5,
    "10": 21,
    "11": 406
   },
   "causes": {
    "SHORT_HISTORY": 78,
-   "NO_WEEKLY_SERIES": 27,
-   "NO_FIGURES": 66,
+   "NO_WEEKLY_SERIES": 26,
+   "NO_FIGURES": 65,
    "NOT_AN_EQUITY_LISTING": 3
   },
   "note": "FULL: hoechstens zwei Absagen, die volle Reise bleibt. REDUCED: verdichtete Auskunft, vorhandene Erkenntnisse zuerst, Absagen zu Ursachen gruppiert. MINIMAL: hoechstens eine gehaltvolle Station - eine eigene Aussage statt einer kurzen Reise."
