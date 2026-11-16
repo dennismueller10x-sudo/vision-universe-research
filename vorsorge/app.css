@@ -9,7 +9,8 @@
   --ink:#0b0c0e; --ink-2:#000; --muted:#6e6e6e; --dim:#6e6e6e;
   --line:#e9e9e9; --line-soft:#e9e9e9;
   --accent:#c8f531; --accent-ink:#000; --accent-text:#000; --accent-soft:#eef9c8;
-  --app:#000; --app-2:#151515; --app-ink:#fff; --app-muted:#9b9b9b; --app-line:#262626;
+  /* App-Flächen: im Hellen hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“) */
+  --app:#f4f4f4; --app-2:#e9e9e9; --app-ink:#000; --app-muted:#5d636b; --app-line:#dcdcdc;
   /* Redesign 2027: nur Weiss, Schwarz, Neongruen und drei Graustufen – kein Rot, kein Gruen, kein Orange.
      Richtung zeigt die Kursbewegung (C07) als Pille, nicht die Schriftfarbe. */
   --up:#000; --up-soft:#eef9c8; --down:#000; --down-soft:#f4f4f4; --warn:#000; --warn-soft:#f4f4f4;
@@ -24,7 +25,7 @@ html[data-theme=dark]{
   --ink:#fff; --ink-2:#fff; --muted:#9b9b9b; --dim:#9b9b9b;
   --line:#262626; --line-soft:#262626;
   --accent:#c8f531; --accent-text:#c8f531; --accent-soft:rgba(200,245,49,.12);
-  --app:#151515; --app-2:#262626; --app-line:#333;
+  --app:#151515; --app-2:#262626; --app-ink:#fff; --app-muted:#9b9b9b; --app-line:#333;
   --up:#fff; --up-soft:rgba(200,245,49,.14); --down:#fff; --down-soft:#151515; --warn:#fff; --warn-soft:#151515;
   --s1:#fff; --s2:#9b9b9b; --s3:#c8f531; --s4:#4a4a4a; --s5:#9b9b9b; --s-other:#262626;
   --shadow:0 6px 20px rgba(0,0,0,.25); --shadow-lg:0 14px 34px rgba(0,0,0,.4);
@@ -1251,3 +1252,29 @@ body.vs .vsp .vs-etfhead{background:#151516;border-radius:22px}
 body.vs .vsp-btn{color:#101318}body.vs .vsp-btn--bk{color:#fff}body.vs .vsp-btn--ol{color:var(--vsp-ink)}
 /* Urteil im Ergebnis steht auf der Seite (nicht mehr in der dunklen Kachel): Flächen wie die Pillen des Prototyps */
 body.vs .vsp-more{padding:14px 0;margin:-14px 0}
+
+/* Hell ist vollständig hell (Owner 16.11.2026). Kopfkachel, Weg, App-Flächen und dunkle Kästen im Hellen hellgrau mit dunkler
+   Schrift; dunkel bleibt unverändert (alle Regeln nur unter html:not([data-theme=dark])). */
+html:not([data-theme=dark]) .vs-card.app .down,html:not([data-theme=dark]) .vs-bilanz .warn:not(.is-zero) i{color:#000}
+html:not([data-theme=dark]) .vs-card.app .up{color:#000}
+html:not([data-theme=dark]) .vs-intro.vs-head,html:not([data-theme=dark]) body.vs .vs-hero{background:#f4f4f4;color:#000;
+  --ink:#000;--ink-2:#000;--muted:#5d636b;--dim:#5d636b;--line:#dcdcdc;--line-soft:#dcdcdc;--bg-soft:#e9e9e9;--panel:#e9e9e9;--panel-2:#dcdcdc;--card:#e9e9e9;--accent-text:#000;--s1:#000;
+  --vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-focus-ring:#4f6b00}
+html:not([data-theme=dark]) .vs-head .vu-ltag,html:not([data-theme=dark]) body.vs .vs-hero .vs-eyebrow,html:not([data-theme=dark]) .vs-way-h,html:not([data-theme=dark]) .vs-way-h svg,
+html:not([data-theme=dark]) .vs-way>.vu-ltag,html:not([data-theme=dark]) .vs-head .vs-way>.vu-ltag{color:#5d636b}
+html:not([data-theme=dark]) .vs-head .vu-lt,html:not([data-theme=dark]) body.vs .vs-hero h1{color:#000}
+html:not([data-theme=dark]) .vs-head .vu-lead,html:not([data-theme=dark]) body.vs .vs-hero .vs-lead,html:not([data-theme=dark]) body.vs .vs-hero .vs-sub,
+html:not([data-theme=dark]) body.vs .vs-hero .vs-fine,html:not([data-theme=dark]) .vs-head.vs-ixtop .vu-mu,html:not([data-theme=dark]) .vs-way-r small,
+html:not([data-theme=dark]) .vs-head .vs-way-r small{color:#3a3d42}
+html:not([data-theme=dark]) body.vs .vs-hero .vs-pill:not(.primary){background:#e9e9e9;border-color:#dcdcdc;color:#000}
+html:not([data-theme=dark]) .vs-way{background:#f4f4f4;color:#000}
+html:not([data-theme=dark]) .vs-way-r{border-top-color:#dcdcdc;color:#000}
+html:not([data-theme=dark]) .vs-way-r svg{color:#000}
+html:not([data-theme=dark]) .vs-way-n{background:#000;color:#fff}
+html:not([data-theme=dark]) .vs-head a.vs-way-r{background:#fff;color:#000}
+html:not([data-theme=dark]) .vs-head a.vs-way-r.is-on{box-shadow:inset 0 0 0 1.5px #000}
+html:not([data-theme=dark]) .vs-head .vu-round{background:#e9e9e9;color:#000}
+html:not([data-theme=dark]) body.vs .vs-more a.vu-next,html:not([data-theme=dark]) body.vs .vs-more a.vu-next:hover{color:#000}
+html:not([data-theme=dark]) body.vs .vu-box--ink,html:not([data-theme=dark]) body.vs .vs-lage.is-ink,html:not([data-theme=dark]) .vs-vsheet .vu-box--ink{background:#f4f4f4;color:#000}
+html:not([data-theme=dark]) body.vs .vs-mod.vu-box--ink,html:not([data-theme=dark]) body.vs .vs-mod.vu-box--ink *{color:#000}
+html:not([data-theme=dark]) body.vs .vs-mod.vu-box--ink .vu-ltag{color:#4f6b00}

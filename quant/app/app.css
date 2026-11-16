@@ -2156,3 +2156,19 @@ main.qx-main:has(>.qp){padding-bottom:20px}
 .qp-sheet .qp-ms-h b:last-child{white-space:nowrap}
 .qp .qp-find{margin-top:26px}
 .qp .qp-markt .vu-gauge{width:260px;margin-inline:0}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .qp .qp-trust-i,:root:not([data-theme=dark]) .qv3-trust-i{background:var(--vu-lime,#c8f531);border-color:transparent;color:#101318}
+:root:not([data-theme=dark]) .qk .qk-today,:root:not([data-theme=dark]) .qk .qk-hero,:root:not([data-theme=dark]) .qk .qk-story{background:#f4f4f4;color:#000;--qk-line:#dcdcdc}
+:root:not([data-theme=dark]) .qk .qk-today .vu-ltag,:root:not([data-theme=dark]) .qk .qk-story .vu-ltag,:root:not([data-theme=dark]) .qk .qk-mini.dk small{color:#5d636b}
+:root:not([data-theme=dark]) .qk .qk-today .qk-tg b,:root:not([data-theme=dark]) .qk .qk-hero-t span{color:#4f6b00}
+:root:not([data-theme=dark]) .qk .qk-tg span span,:root:not([data-theme=dark]) .qk .qk-hero-s{color:#3a3d42}
+:root:not([data-theme=dark]) .qk .qk-today-l{border-top-color:#dcdcdc}
+:root:not([data-theme=dark]) .qk .qk-hero .vu-round{background:#e4e4e4;color:#000}
+:root:not([data-theme=dark]) .qk .qk-hero-tag{background:#e4e4e4;color:#3a3d42}
+:root:not([data-theme=dark]) .qk .qk-hero-t,:root:not([data-theme=dark]) .qk .qk-mini.dk b,:root:not([data-theme=dark]) .qk-cmp .qk-cmp-s p{color:#000}
+:root:not([data-theme=dark]) .qk .qk-mini.dk{background:#fff}
+:root:not([data-theme=dark]) .qd .qv3-pro{--vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .qv3 .qv3-ch-hist{background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .qd .qk-pro-light .qv3-prow--h{background:#e9e9e9;color:#000}

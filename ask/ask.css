@@ -270,3 +270,7 @@ body.ak-answering.ak-asking .ak-hero{margin-bottom:16px}
   .ak-can .vu-rail>*{width:auto;max-width:none}
 }
 @media(prefers-reduced-motion:reduce){.ak-spin,.ak-state .vu-skeleton{animation:none}.ak-mic,.ak-send,.ak-bar{transition:none}.ak-mic:active,.ak-send:active{transform:none}}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .ak-kicker-ic,:root:not([data-theme=dark]) .ak-often-ic{background:var(--vu-lime);border-color:transparent;color:#101318}
