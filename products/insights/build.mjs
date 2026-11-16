@@ -34,7 +34,7 @@ export const loadMagazin = () => JSON.parse(fs.readFileSync(path.join(here, 'mag
 const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const de = (v, d = 0) => v.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = (v, d = 0) => (v == null ? '–' : (v > 0 ? '+' : v < 0 ? '−' : '') + de(Math.abs(v * 100), d) + '&nbsp;%');
-const usd = (v) => (v >= 1e12 ? de(v / 1e12, 2) + '&nbsp;Bio.&nbsp;$' : v >= 1e9 ? de(v / 1e9, 1) + '&nbsp;Mrd.&nbsp;$' : de(v / 1e6, 0) + '&nbsp;Mio.&nbsp;$');
+const usd = (v) => (v == null ? '–' : v >= 1e12 ? de(v / 1e12, 2) + '&nbsp;Bio.&nbsp;$' : v >= 1e9 ? de(v / 1e9, 1) + '&nbsp;Mrd.&nbsp;$' : de(v / 1e6, 0) + '&nbsp;Mio.&nbsp;$');
 const datumDE = (iso) => iso.split('-').reverse().join('.');
 const MONATE = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
 const datumLang = (iso) => { const [y, m, d] = iso.split('-').map(Number); return `${d}. ${MONATE[m - 1]} ${y}`; };
@@ -63,7 +63,8 @@ function datenBox(t, a) {
     ['Marktwert', usd(d.marktwert), ''],
     ['Umsatz, letzte 4 Quartale', usd(d.umsatzTTM), d.wachstum == null ? '' : pill(d.wachstum, pct(d.wachstum))],
     ['Nettomarge', prozent(d.nettomarge), ''],
-    [d.kgv == null ? 'KUV (Kurs-Umsatz)' : 'KGV', d.kgv == null ? de(d.kuv, 1) : de(d.kgv, 1), d.kgv == null ? '<em>KGV entfällt: Verlust</em>' : ''],
+    d.kgv == null && d.kuv == null ? ['KGV', '–', '<em>noch keine Jahreszahlen</em>']
+      : [d.kgv == null ? 'KUV (Kurs-Umsatz)' : 'KGV', d.kgv == null ? de(d.kuv, 1) : de(d.kgv, 1), d.kgv == null ? '<em>KGV entfällt: Verlust</em>' : ''],
     ['Trend laut Technik-Engine', TREND[d.trend] || '–', ''],
   ];
   const screens = (a.appScreens?.[t] || []).map((s) => `<a class="in-phone" href="${s.href}"><span class="in-phone-rahmen"><img src="${s.src}" alt="${esc(s.label)}-Ansicht von ${esc(d.name)} in der Vision-Universe-App" loading="eager" decoding="async" width="390" height="844"></span><b>${esc(s.label)}</b><span>${esc(s.text)}</span></a>`).join('');
