@@ -270,6 +270,8 @@
     requireSession().then(function (user) {
       if (!user) return;
       if (window.VUWatchlistPage) window.VUWatchlistPage.start(A, notice);
+      // App-Konzept 2: wie /mein-dashboard/ und /konto/ mit Dock („Ich“), sobald die Sitzung steht.
+      if (window.VUNavigation) window.VUNavigation.dock({});
     });
   };
 

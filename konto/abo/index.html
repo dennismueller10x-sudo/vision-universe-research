@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" data-vu-tabs="inhalt">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#08080a">
 <title>Abonnement · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/assets/vu-ui.css">
@@ -13,16 +13,19 @@
 <link rel="stylesheet" href="/konto/konto.css">
 </head>
 <body class="ka-body vu-ui" data-view="subscription"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
-<main class="ka" id="main">
-<p class="ka-eyebrow">Konto</p>
+<main class="ka ka-ak" id="main">
+<!-- Abonnement im Design des Prototyps „App-Konzept 2“ (Vorlage #v-ich, Owner 16.11.2026): Reiter im Inhalt wie /mein-dashboard/
+     (Ich · Gespeichert · Konto), Kacheln mit 22 px Radius, Knöpfe und Felder wie im Prototyp. Inhalt und Formulare wie bisher. -->
+<nav class="md-tabs" aria-label="Mein Bereich"><a class="md-tab" href="/mein-dashboard/">Ich</a><a class="md-tab" href="/mein-dashboard/#/gespeichert">Gespeichert</a><a class="md-tab" href="/konto/" aria-current="page">Konto</a></nav>
+<a class="ka-up" href="/konto/"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>Konto</a>
 <h1 class="ka-title">Abonnement</h1>
-<nav class="ka-nav" aria-label="Konto"><a href="/konto/">Übersicht</a><a href="/konto/abo/">Abonnement</a><a href="/konto/tarife/">Tarife</a><a href="/konto/einstellungen/">Einstellungen</a><a class="ka-nav-out" href="/mein-dashboard/">Mein Dashboard</a></nav>
 <div class="ka-notice" id="ka-status" role="status" aria-live="polite"></div>
 <section class="ka-card" id="ka-sub"><div class="ka-skeleton" aria-hidden="true"></div></section>
 <section class="ka-card" id="ka-invoices"></section>
 <section class="ka-card" id="ka-withdraw"><h2>Widerruf und Kündigung</h2><p class="ka-muted">Innerhalb von 14 Tagen nach Vertragsschluss kannst du Pro ohne Angabe von Gründen widerrufen; danach endet Pro sofort und du erhältst Zahlungen nach der <a class="ka-link" href="https://konto.visionuniverse.de/rechtliches/widerrufsbelehrung" target="_blank" rel="noopener">Widerrufsbelehrung</a> zurück. Zum Monatsende beenden: kündigen.</p><div class="ka-actions"><a class="ka-btn ka-btn--secondary" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a><a class="ka-btn ka-btn--secondary" href="/konto/kuendigen/">Verträge hier kündigen</a></div></section>
 <section class="ka-card"><h2>Kündigen</h2><p class="ka-muted">Du kannst jederzeit zum Ende der Laufzeit kündigen. Bis dahin bleibt dein Zugang erhalten.</p><div class="ka-actions"><a class="ka-btn ka-btn--secondary" href="/konto/kuendigen/">Verträge hier kündigen</a></div></section>
 <nav class="ka-links" aria-label="Vertrag"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a></nav>
+<div class="ka-end"><button class="ka-lk" type="button" data-vu-frame-hinweise>Daten &amp; Hinweise</button></div>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="de">
+<html lang="de" data-vu-tabs="inhalt">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#ffffff">
+<meta name="theme-color" content="#08080a">
 <title>Watchlist · Vision Universe</title>
 <link rel="stylesheet" href="/assets/site-navigation.css">
 <link rel="stylesheet" href="/assets/vu-ui.css">
@@ -13,8 +13,10 @@
 <link rel="stylesheet" href="/konto/konto.css">
 </head>
 <body class="ka-body vu-ui" data-view="watchlist"><vu-navigation theme="light" theme-switch no-preview></vu-navigation><script>document.querySelector("vu-navigation").setAttribute("theme",document.documentElement.getAttribute("data-theme")||"light");</script><script src="/assets/site-navigation.js"></script>
-<main class="ka ka--wide" id="main">
-<!-- Watchlist-Detail (Mockup E09): Profi-Ansicht von Platz 1 der Leiste „Mein Bereich“; Zurück statt Brotkrumen. -->
+<main class="ka ka-ak ka--wide" id="main">
+<!-- Watchlist-Detail (Mockup E09): Profi-Ansicht von „Ich“; Zurück statt Brotkrumen. Design des Prototyps „App-Konzept 2“ (Vorlage #v-ich,
+     Owner 16.11.2026): Reiter im Inhalt wie /mein-dashboard/ (Ich · Gespeichert · Konto, „Ich“ aktiv), Kacheln wie dort. -->
+<nav class="md-tabs" aria-label="Mein Bereich"><a class="md-tab" href="/mein-dashboard/" aria-current="page">Ich</a><a class="md-tab" href="/mein-dashboard/#/gespeichert">Gespeichert</a><a class="md-tab" href="/konto/">Konto</a></nav>
 <nav class="ka-back" aria-label="Zurück"><a class="ka-back-link" href="/mein-dashboard/"><span class="vu-round" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></span><b>Watchlist</b></a></nav>
 <h1 class="ka-title">Alle Kennzahlen <span class="vu-pro">PRO</span></h1>
 <p class="ka-lead ka-lead--tight">Tiefe je Aktie: Faktoren, Ereignisse, Chart, deine Notiz. Kurzansicht in <a class="ka-link" href="/mein-dashboard/">Mein Dashboard</a>.</p>
@@ -64,6 +66,7 @@
 </details>
 </div>
 <nav class="ka-links" aria-label="Vertrag"><a class="ka-link" href="/konto/kuendigen/">Verträge hier kündigen</a><a class="ka-link" href="https://konto.visionuniverse.de/widerrufen">Vertrag widerrufen</a></nav>
+<div class="ka-end"><button class="ka-lk" type="button" data-vu-frame-hinweise>Daten &amp; Hinweise</button></div>
 </main>
 <script src="/konto/config.js"></script>
 <script src="/konto/account-api.js"></script>

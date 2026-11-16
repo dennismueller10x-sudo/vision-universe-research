@@ -492,3 +492,166 @@ html[data-ka-subscribed] #ka-steps,html[data-ka-subscribed] div.ka-order-only{di
 .ka-list{border-radius:22px}
 .ka-row-text b{font-size:15.5px;font-weight:800}
 .ka-hud--sm{--vu-hud:38px;border-radius:11px}
+
+/* ===== App-Konzept 2 genau nach Prototyp (Owner 16.11.2026: „für … Konto … genau in diesem gleichen Design des Prototyps“).
+   Für Konto hat der Prototyp keinen eigenen Bildschirm; Vorlage ist #v-ich (prototyp/quelle/p2.js) mit der Kachel
+   „Konto und Einstellungen“. Werte aus prototyp/quelle/kit.js und shell.js: Grund #000, Kachel #151516 mit Radius 22 und
+   Rand 14, Kästen #232325, Zeilen 11 px mit Haarlinie rgba(255,255,255,.09), Abschnittstitel 22 px/800 mit 26 px Abstand,
+   Reiter 36 px (.tabs2/.tab), Knopf 52 px rund (.btn), Pille 26 px, Segmente (.seg) 13,5 px/700, Schalter 46 × 28 (sw),
+   gedämpft #a1a7af, Neongrün #c8f531. Hell bleibt lesbar (Werte wie /mein-dashboard/dashboard.css). Nur Darstellung:
+   Formulare, Felder, Zustände, Texte und Pflichtlinks bleiben; Tippflächen wachsen über transparente Ränder auf 44 px. ===== */
+body.ka-body{--vu-card:#f1f1f1;--vu-hair:rgba(0,0,0,.1);--vu-mute:#5d636b;--ak-bg:#fff;--ak-box:#e4e4e4;--ak-sec:#3a3d42;--ak-on:#0d0f12;--ak-onink:#fff;--ak-ol:rgba(0,0,0,.28);--ak-off:#8a8a90;--ak-knob:#fff;
+  background:#fff;color:#0d0f12;font:500 15px/1.35 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased}
+:root[data-theme=dark] body.ka-body{--vu-card:#151516;--vu-hair:rgba(255,255,255,.09);--vu-mute:#a1a7af;--vu-ink:#fff;--vu-inv:#000;--ak-bg:#000;--ak-box:#232325;--ak-sec:#c3c7cc;--ak-on:#fff;--ak-onink:#000;--ak-ol:rgba(255,255,255,.28);--ak-off:#3a3a3d;--ak-knob:#a1a7af;
+  background:#000;color:#f4f5f1}
+.ka{color:inherit}
+
+/* Reiter im Inhalt (Prototyp .tabs2/.tab), gemeinsam mit /mein-dashboard/: Ich · Gespeichert · Konto */
+.md-tabs{position:sticky;top:var(--vu-navigation-height,56px);z-index:4;display:flex;gap:6px;padding:8px 14px;overflow-x:auto;scrollbar-width:none;background:linear-gradient(var(--ak-bg) 70%,transparent)}
+.md-tabs::-webkit-scrollbar{display:none}
+.md-tabs .md-tab{position:relative;height:36px;padding:0 15px;border-radius:99px;background:var(--vu-card);color:inherit;text-decoration:none;font-weight:700;font-size:14px;display:inline-flex;align-items:center;white-space:nowrap;flex:none}
+.md-tabs .md-tab[aria-current]{background:var(--ak-on);color:var(--ak-onink)}
+.md-tab::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
+.md-tab:focus-visible{outline:2px solid var(--vu-focus-ring,#4f6b00);outline-offset:2px}
+
+/* Seitenrahmen der Seiten von „Mein Bereich“ (Konto, Einstellungen, Abonnement, Watchlist): Rand 14 px wie im Prototyp */
+.ka-ak{max-width:560px;padding:0 14px 20px;min-height:0}
+.ka-ak.ka--wide{max-width:1120px}
+.ka-ak>.md-tabs{margin:0 -14px}
+@media(min-width:761px){.ka-ak{padding-top:0}}
+.ka-ak .ka-notice:not(:empty){margin:0 0 10px}
+.ka-ak .ka-skeleton{min-height:220px;margin-top:10px}
+
+/* Kachel (.tile) */
+.ka-tile,.ka-card,.ka-list{background:var(--vu-card);border:0;border-radius:22px;padding:14px}
+@media(min-width:761px){.ka-card{padding:14px}}
+.ka-card+.ka-card,.ka-section+.ka-section{margin-top:10px}
+.ka-card h2,.ka-section h2{margin:0 0 6px;font-size:20px;line-height:1.1;font-weight:800;letter-spacing:-.025em}
+.ka-card p{line-height:1.4}
+.ka-eb{display:block;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;line-height:1.35;color:var(--vu-mute)}
+.ka-muted,.ka-hint{color:var(--vu-mute)}
+.ka-muted{font-size:12.5px;line-height:1.4}
+.ka-ak .ka-title{margin:6px 0 8px;font-size:33px;line-height:1;font-weight:900;letter-spacing:-.045em}
+.ka-ak .ka-lead{font-size:14px;color:var(--ak-sec);line-height:1.4;margin:0 0 12px}
+
+/* Abschnittstitel (.sh) */
+.ka-sh{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:26px 0 10px}
+.ka-sh h2,.ka-me .ka-sh h2{margin:0;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em}
+
+/* Kopf der Kontoseite: Kachel mit Initialen, Name (h1) und Adresse, darunter der Tarif */
+.ka-me .ka-profile{display:flex;align-items:center;gap:14px;margin:0;padding:18px;border-radius:22px;background:var(--vu-card);color:inherit;box-shadow:none}
+.ka-me .ka-profile .ka-initials{width:56px;height:56px;border-radius:99px;background:#c8f531;color:#101318;font-size:20px;font-weight:900;letter-spacing:-.03em;box-shadow:none}
+.ka-me .ka-profile-name{margin:0;font-size:22px;line-height:1.1;font-weight:800;letter-spacing:-.025em;overflow-wrap:anywhere}
+.ka-me .ka-profile-sub{display:block;margin-top:3px;font-size:12.5px;font-weight:700;color:var(--vu-mute);overflow-wrap:anywhere}
+.ka-me .ka-plan-card{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px;padding:14px 14px 14px 18px}
+.ka-me .ka-plan-card b{display:block;margin-top:4px;font-size:28px;font-weight:900;letter-spacing:-.045em;line-height:1;color:inherit}
+:root[data-theme=dark] .ka-me .ka-plan-card b{color:#c8f531}
+.ka-me .ka-plan-card span>span{display:block;margin-top:4px;font-size:11px;font-weight:700;color:var(--vu-mute)}
+.ka-me .ka-plan-card small{font-size:10.5px;letter-spacing:.12em}
+
+/* Neongrüne Kachel (Prototyp „Deine Woche“): offene Pro-Wahl */
+.ka-tile--lime,.ka-me .ka-pending{background:#c8f531;color:#101318;padding:18px;border-radius:22px;margin-top:10px}
+.ka-tile--lime .ka-eb{color:#101318}
+.ka-me .ka-pending h2{margin:4px 0 6px;font-size:22px;font-weight:900;letter-spacing:-.035em}
+.ka-me .ka-pending p{margin:0 0 12px;font-size:12.5px;font-weight:700;opacity:1}
+
+/* Zeilen in der Kachel (.row): Icon, Text, Unterzeile, Pfeil */
+.ka-list{display:block;padding:4px 14px}
+.ka-row{display:flex;align-items:center;gap:12px;min-height:44px;padding:11px 0;border-top:0;border-bottom:1px solid var(--vu-hair);color:inherit;text-decoration:none}
+.ka-list>.ka-row:last-child{border-bottom:0}
+.ka-row--seg{border-bottom:0;padding-bottom:8px}
+.ka-list>.ka-seg-row{margin:0 0 11px}
+.ka-list>.ka-seg-row+.ka-row{border-top:1px solid var(--vu-hair)}
+.ka-row-text{flex:1;min-width:0}
+.ka-row-text b{display:block;font-size:15px;font-weight:800}
+.ka-row-text span{display:block;font-size:11px;color:var(--vu-mute);line-height:1.3;margin-top:1px}
+.ka-row-val{flex:none;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums}
+.ka-go{flex:none;width:14px;height:14px;fill:none;stroke:var(--vu-mute);stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+.ka-list .ka-hud{--vu-hud:32px;border-radius:10px;border:1px solid rgba(200,245,49,.25);background:#0e1013;color:#c8f531}
+.ka-list .ka-hud svg{width:17px;height:17px}
+.ka-row{transition:transform .12s;-webkit-tap-highlight-color:transparent}
+a.ka-row:active{transform:scale(.97)}
+
+/* Segmente (.seg) in der Kachel: Kasten, gewählt weiß auf schwarz */
+.ka-body .vu-seg.ka-seg-row{display:flex;gap:0;padding:4px;border-radius:99px;background:var(--ak-box)}
+.ka-body .vu-seg.ka-seg-row>button{position:relative;flex:1;min-height:36px;padding:0 4px;border-radius:99px;background:transparent;color:var(--vu-mute);font:700 13.5px/1 Inter,system-ui,sans-serif}
+.ka-body .vu-seg.ka-seg-row>button[aria-pressed=true]{background:var(--ak-on);color:var(--ak-onink)}
+.ka-body .vu-seg.ka-seg-row>button::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
+
+/* Knöpfe (.btn): 52 px rund, Neongrün; Umriss (.btn.ol), weiß, schwarz */
+.ka-btn{min-height:52px;padding:0 22px;border:0;border-radius:999px;background:#c8f531;color:#101318;font:800 16px/1.2 Inter,system-ui,sans-serif;gap:8px}
+.ka-btn--secondary{background:transparent;color:inherit;border:1px solid var(--ak-ol)}
+.ka-btn--danger{background:transparent;color:inherit;border:1.5px solid currentColor}
+.ka-btn--ink,.ka-btn--bk{background:#000;color:#fff}
+:root[data-theme=dark] .ka-btn--ink{background:#fff;color:#000}
+.ka-btn--wh{background:#fff;color:#000}
+:root:not([data-theme=dark]) .ka-me .ka-plan-card .ka-btn--wh{background:#0d0f12;color:#fff}
+.ka-btn--sm{position:relative;min-height:36px;padding:0 15px;font-size:13.5px}
+.ka-btn--sm::after{content:"";position:absolute;left:0;right:0;top:50%;height:44px;transform:translateY(-50%)}
+.ka-me .ka-logout{margin-top:22px}
+.ka-actions{gap:8px;margin-top:10px}
+
+/* Felder: ≥ 16 px Schrift, 52 px hoch, Kasten ohne Rand */
+.ka-field label,.ka-legend{font-size:12.5px;font-weight:700;color:var(--vu-mute)}
+.ka-input,.ka-select{min-height:52px;border:0;border-radius:14px;background-color:var(--ak-box);color:inherit;font:600 16px/1.2 Inter,system-ui,sans-serif;padding:14px 16px}
+:root[data-theme=dark] .ka-input,:root[data-theme=dark] .ka-select{background-color:var(--ak-box)}
+.ka-select{padding-right:40px}
+.ka-input:focus,.ka-select:focus,.ka-input:focus-visible,.ka-select:focus-visible{outline:none;box-shadow:0 0 0 2px var(--vu-ink) inset}
+.ka-input[aria-invalid=true]{box-shadow:0 0 0 2px var(--vu-ink) inset}
+.ka-pw button{top:4px;right:4px;min-height:44px;color:inherit;font-weight:800}
+
+/* Benachrichtigungen als Zeilen mit Schalter (Prototyp-Fenster „Melden, wenn …“: Zeile, Schalter 46 × 28) */
+.ka-check.ka-check--sw{display:flex;flex-direction:row-reverse;align-items:center;justify-content:space-between;gap:12px;min-height:50px;padding:11px 0;border-bottom:1px solid var(--vu-hair);font-size:12.5px;font-weight:700;line-height:1.35;cursor:pointer}
+.ka-check.ka-check--sw:last-child{border-bottom:0}
+.ka-check--sw input,.ka-check--sw input:checked{flex:none;width:46px;height:28px;margin:0;border:0;border-radius:99px;cursor:pointer}
+.ka-check--sw input{background:var(--ak-off) radial-gradient(circle at 14px 50%,var(--ak-knob) 10.5px,transparent 11px) no-repeat}
+.ka-check--sw input:checked{background:#c8f531 radial-gradient(circle at 32px 50%,#101318 10.5px,transparent 11px) no-repeat}
+.ka-check--sw span{flex:1;min-width:0}
+
+/* Schlüssel-Wert-Zeilen (Abonnement) wie Zeilen der Kachel */
+.ka-ak .ka-kv{display:block;margin:6px 0 0;font-size:14px}
+.ka-ak .ka-kv dt{float:left;clear:left;padding:11px 0;font-weight:700;color:var(--vu-mute)}
+.ka-ak .ka-kv dd{margin:0;padding:11px 0 11px 120px;text-align:right;border-bottom:1px solid var(--vu-hair);font-weight:800}
+.ka-ak .ka-kv dd:last-child{border-bottom:0}
+
+/* Zurück zur Übersicht (Unterseiten) */
+.ka-up{display:inline-flex;align-items:center;gap:6px;min-height:44px;margin-top:2px;color:var(--vu-mute);font-size:13px;font-weight:700;text-decoration:none}
+.ka-up svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* Meldungen und Marken */
+.ka-notice{border-radius:22px;background:var(--vu-card);color:inherit}
+.ka-notice[data-kind=error]{background:var(--vu-ink);color:var(--vu-inv)}
+.ka-badge{min-height:26px;padding:0 10px;font-size:12.5px;background:#c8f531;color:#101318}
+.ka-badge[data-tone=muted]{background:var(--ak-box);border:0;color:inherit}
+.ka-badge[data-tone=warn]{background:transparent;border:1px solid var(--ak-ol);color:inherit}
+
+/* Pflichtlinks und Schlusszeile (.end/.lk) */
+.ka-ak .ka-links{justify-content:center;gap:0 16px;margin-top:22px}
+.ka-ak .ka-links .ka-link,.ka-me .ka-delete .ka-link{color:var(--vu-mute);font-size:12.5px;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.ka-me .ka-delete{margin:10px 0 0}
+.ka-me .ka-delete .ka-link{display:inline-flex;align-items:center;min-height:44px}
+.ka-end{margin:14px 0 0;text-align:center}
+.ka-lk{min-height:44px;border:0;background:none;padding:0;color:var(--vu-mute);font:700 12.5px/1.2 Inter,system-ui,sans-serif;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ka-lk:focus-visible,.ka-up:focus-visible,.ka-btn:focus-visible{outline:2px solid var(--vu-focus-ring,#4f6b00);outline-offset:2px}
+
+/* Watchlist-Detail: Zurück, Kacheln */
+.ka-ak .ka-back{margin:6px 0 0}
+.ka-ak .ka-back-link{color:var(--vu-mute);font-size:13px;font-weight:700}
+.ka-ak .ka-back-link .vu-round{width:30px;height:30px;background:var(--vu-card);color:inherit}
+.ka-body .wl-row,.ka-body .wl-kpi{border-radius:22px;background:var(--vu-card)}
+.ka-body .wl-chip:not([data-tone=up]){background:var(--ak-box)}
+.ka-body .wl-chip[data-tone=muted]{color:var(--vu-mute)}
+.ka-body .wl-links{gap:0 16px}
+.ka-body .wl-links .ka-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;min-width:44px}
+.ka-body .wl-results{background:var(--vu-card);border:0;border-radius:18px}
+.ka-fieldset>.ka-legend{float:left;width:100%;padding:0;margin:8px 0 2px;font-size:15px;font-weight:800;color:inherit}
+.ka-fieldset>.ka-legend+*{clear:left}
+.ka-ak .ka-card .ka-actions>.ka-btn{flex:1 1 auto}
+.ka-ak .ka-back-link{gap:6px;font-size:13px}
+.ka-ak .ka-back-link .vu-round{width:14px;height:14px;background:none;border-radius:0}
+.ka-ak .ka-back-link .vu-round svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.8;stroke-linecap:round;stroke-linejoin:round}
+/* Kursbewegung als Pille wie auf /mein-dashboard/ (Owner: rot bei Minus, neongrün bei Plus) */
+.ka-ak .vu-chg{height:26px;padding:0 10px;font-size:12.5px;font-weight:800;gap:5px;background:#c8f531;color:#101318}
+.ka-ak .vu-chg--down{background:#c4281c;color:#fff}
+.ka-ak .vu-chg--flat{background:var(--ak-box);color:inherit}
+.ka-forgot{min-height:44px}
