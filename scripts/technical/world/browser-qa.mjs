@@ -313,6 +313,10 @@ async function main() {
       assert(/Linien/i.test(await page.locator(".tc-guide h3").innerText()), "Chart erklären: Schritt 3 ist nicht das Linienbündel");
       assert(await page.locator('.tc-togs [data-layer="ema"][aria-pressed="true"]').count() === 1, "EMA-Bänder nicht eingeschaltet");
       assert(await page.locator(".tc-simple-chart .tc-layers .tc-ema--fast").count() === 1 && await page.locator(".tc-simple-chart .tc-layers .tc-ema--slow").count() === 1, "EMA-Bänder nicht gezeichnet");
+      /* Wochenchart (5J): Baender aus der langen Wochenreihe ueber die ganze Breite; Ebenen fangen keine Klicks ab. */
+      await page.locator('.tc-simple-chart .qc-ranges button[data-range="5Y"]').click();
+      await page.waitForFunction(() => { const f = document.querySelector(".tc-simple-chart .tc-ema--fast"), s = f && f.ownerSVGElement; return f && s && f.getBBox().width > s.getBBox().width * 0.8; }, null, { timeout: 15000 });
+      await page.locator('.tc-simple-chart .qc-ranges button[data-range="1Y"]').click();
       for (let i = 3; i < 6; i++) await page.locator(".tc-guide-nav .vu-btn--ink").click();
       assert(/Fibonacci/i.test(await page.locator(".tc-guide h3").innerText()), "Chart erklären: Schritt 5 ist nicht Fibonacci");
       assert(await page.locator('.tc-togs [data-layer="fib"][aria-pressed="true"]').count() === 1, "Fibonacci-Ebene nicht eingeschaltet");

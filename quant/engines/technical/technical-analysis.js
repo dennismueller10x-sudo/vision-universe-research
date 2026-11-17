@@ -134,6 +134,17 @@
       bundle.chartSeries = { sma20: features.columns.sma20.map(nz), sma50: features.columns.sma50.map(nz), sma200: features.columns.sma200.map(nz),
                              atr: features.columns.atr.map(nz), rsi14: features.columns.rsi14.map(nz), relativeVolume: features.columns.relativeVolume.map(nz),
                              ema20: settled[20].values.map(nz), ema50: settled[50].values.map(nz), ema200: settled[200].values.map(nz) };
+      /* EMA-Cluster-Baender (ema-cluster.js, GMMA 3–15/30–60) je Bar aus der vollen Historie, nur fuer die Anzeige
+         (Technical „EMA-Bänder“, docs/technical/EMA_CLUSTER.md). Rein additiv wie EMA 20/50/200; keine Engine liest sie. */
+      var Cluster = isNode ? require("./ema-cluster.js") : (global.VUTechnical || {}).EmaCluster;
+      if (Cluster) {
+        try {
+          var cr = Cluster.calculate({ asOf: String(series.timestamps[i]).slice(0, 10), bars: series.timestamps.map(function (ts, j) { return { date: String(ts).slice(0, 10), close: series.close[j] }; }) }).rows;
+          var band = function (g, m) { return cr.map(function (r) { return r[g] ? nz(r[g][m]) : null; }); };
+          bundle.chartSeries.emaFastMin = band("fast", "min"); bundle.chartSeries.emaFastMax = band("fast", "max");
+          bundle.chartSeries.emaSlowMin = band("slow", "min"); bundle.chartSeries.emaSlowMax = band("slow", "max");
+        } catch (e) { /* ungueltige Reihe: keine Baender, alle anderen Spalten unveraendert */ }
+      }
     }
     bundle.emaSettlement = {
       version: EXACT_EMA_VERSION, priceSeriesType: series.priceSeriesType, input: "close",

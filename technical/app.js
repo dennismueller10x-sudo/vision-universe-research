@@ -1600,6 +1600,55 @@
       try { emaCache = run(true); } catch (e1) { try { emaCache = run(false); } catch (e2) { emaCache = null; } }
       return emaCache;
     }
+    /* Baender je Datum: [min, max] des schnellen und des langsamen Buendels.
+       Tag: chartSeries.emaFastMin/-Max/emaSlowMin/-Max der Materialisierung (volle Historie, ueber die ganze Breite),
+       sonst die Engine auf den 270 Tagesbalken (nach Anlaufzeit). Woche: Engine im Zeitrahmen 1W auf der langen Wochenreihe. */
+    function bandsFrom(rows) {
+      var byDate = {}, from = null;
+      rows.forEach(function (r) { if (r.fast && r.slow) { byDate[r.date] = { fast: [r.fast.min, r.fast.max], slow: [r.slow.min, r.slow.max] }; if (!from) from = r.date; } });
+      return from ? { byDate: byDate, from: from } : null;
+    }
+    var emaDailyCache;
+    function emaBandsDaily() {
+      if (emaDailyCache !== undefined) return emaDailyCache;
+      var cs = X.cs || {}, k = ["emaFastMin", "emaFastMax", "emaSlowMin", "emaSlowMax"];
+      if (k.every(function (x) { return Array.isArray(cs[x]) && cs[x].length === S.dates.length; })) {
+        var byDate = {}, from = null;
+        S.dates.forEach(function (d, i) {
+          var v = k.map(function (x) { return cs[x][i]; });
+          if (v.every(isNum)) { byDate[String(d).slice(0, 10)] = { fast: [v[0], v[1]], slow: [v[2], v[3]] }; if (!from) from = String(d).slice(0, 10); }
+        });
+        emaDailyCache = from ? { byDate: byDate, from: from } : null;
+      } else { var ec = emaData(); emaDailyCache = ec ? bandsFrom(ec.rows) : null; }
+      return emaDailyCache;
+    }
+    var emaWeekly;
+    function loadEmaWeekly() {
+      emaWeekly = null;
+      loadWeekly(X.T).then(function (w) {
+        var pts = (w && w.status === "CALCULATED" && Array.isArray(w.points) ? w.points : []).filter(function (p) { return p && typeof p[0] === "string" && isNum(p[1]) && p[1] > 0; });
+        if (pts.length < 2 || !VT.EmaCluster) return;
+        try { emaWeekly = bandsFrom(VT.EmaCluster.calculate({ timeframe: "1W", asOf: pts[pts.length - 1][0].slice(0, 10), bars: pts.map(function (p) { return { date: p[0].slice(0, 10), close: p[1] }; }) }).rows); } catch (e) { emaWeekly = null; }
+        if (emaWeekly) draw();
+      }).catch(function () {});
+    }
+    function emaBandsWeekly() { return emaWeekly || null; }
+    /* Tagesverlauf (1T): die Baender des letzten Tagesschlusses als waagrechte Zonen ueber den ganzen Tag. */
+    function paintEmaIntraday(svg, g) {
+      var old = svg.querySelector(".tc-layers"); if (old) old.parentNode.removeChild(old);
+      var bands = simple.ema ? emaBandsDaily() : null, last = null;
+      if (bands) Object.keys(bands.byDate).forEach(function (d) { if (!last || d > last) last = d; });
+      if (!last || !g.y) { put(legend, ""); return; }
+      var r = bands.byDate[last], right = g.w - g.padR, bottom = g.h - g.padBottom, layer = svgEl("g", { class: "tc-layers" }), outside = [];
+      ["slow", "fast"].forEach(function (k) {
+        var y1 = Math.max(0, Math.min(g.y(r[k][1]), g.y(r[k][0]))), y2 = Math.min(bottom, Math.max(g.y(r[k][1]), g.y(r[k][0])));
+        if (y2 <= 0 || y1 >= bottom) { outside.push((k === "fast" ? "schnell " : "langsam ") + de(r[k][0]) + "–" + de(r[k][1]) + " $"); return; }
+        layer.appendChild(svgEl("rect", { class: "tc-ema tc-ema--" + k, x: 2, y: y1.toFixed(1), width: Math.max(0, right - 2), height: Math.max(2, y2 - y1).toFixed(1) }));
+      });
+      var line = svg.querySelector(".vu-chart-line"); if (layer.childNodes.length) svg.insertBefore(layer, line || null);
+      put(legend, "Bänder: EMAs des letzten Tagesschlusses (" + M.dateDe(last) + "), schnelle 3–15 Tage kräftig, langsame 30–60 Tage blass" +
+        (outside.length ? "; außerhalb der heutigen Spanne: " + outside.join(", ") : "") + ".");
+    }
     function fibData() { if (fibCache === undefined) fibCache = VT.ChartExplain && X.ctx ? VT.ChartExplain.fibSwing(X.ctx, VT.TILevels) : null; return fibCache; }
     /* Ebenen der Technical-Welt auf DEM Chart (kein zweiter Zeichner): Zonen, Trendlinie, 200-Tage-Linie.
        Sie gelten fuer die Tagesansicht; im Tagesverlauf (1T) und in Wochenraster-Zeitraeumen bleibt die Kurslinie allein. */
@@ -1612,7 +1661,8 @@
       return null;
     }
     function paintLayers(svg, g, rangeId) {
-      if (!svg || !g || !g.pts || g.intraday) { put(legend, ""); return; }
+      if (!svg || !g || !g.pts) { put(legend, ""); return; }
+      if (g.intraday) { paintEmaIntraday(svg, g); return; }
       var dailyGrain = svg.parentNode && svg.parentNode.dataset && svg.parentNode.dataset.grain === "daily";
       var plotBottom = g.h - g.padBottom, right = g.w - g.padR, note = [];
       var layer = svgEl("g", { class: "tc-layers" }), top = svgEl("g", { class: "tc-layers tc-layers--top" });
@@ -1647,16 +1697,18 @@
         if (d2) layer.appendChild(svgEl("path", { class: "tc-avg tc-avg--stage", d: d2.trim(), fill: "none" }));
         note.push("durchgezogen: 150-Tage-Linie");
       }
-      var ec = simple.ema && dailyGrain ? emaData() : null;
-      if (ec) {
-        var byDate = {}; ec.rows.forEach(function (r) { if (r.fast && r.slow) byDate[r.date] = r; });
-        ["slow", "fast"].forEach(function (k) {
-          var up = [], lo = [];
-          g.pts.forEach(function (p) { var r = byDate[p.t.slice(0, 10)]; if (r) { up.push(p.x.toFixed(1) + " " + g.y(r[k].max).toFixed(1)); lo.push(p.x.toFixed(1) + " " + g.y(r[k].min).toFixed(1)); } });
-          if (up.length > 1) layer.appendChild(svgEl("path", { class: "tc-ema tc-ema--" + k, d: "M" + up.join("L") + "L" + lo.reverse().join("L") + "Z" }));
-        });
-        var firstReady = ec.rows.filter(function (r) { return r.fast && r.slow; })[0];
-        note.push("Bänder: schnelle EMAs 3–15 Tage kräftig, langsame 30–60 Tage blass" + (firstReady ? ", ab " + M.dateDe(firstReady.date) + " nach Anlaufzeit" : ""));
+      if (simple.ema) {
+        var bands = dailyGrain ? emaBandsDaily() : emaBandsWeekly();
+        if (bands) {
+          ["slow", "fast"].forEach(function (k) {
+            var up = [], lo = [];
+            var cy = function (v) { return Math.max(0, Math.min(plotBottom, g.y(v))).toFixed(1); };
+            g.pts.forEach(function (p) { var r = bands.byDate[p.t.slice(0, 10)]; if (r) { up.push(p.x.toFixed(1) + " " + cy(r[k][1])); lo.push(p.x.toFixed(1) + " " + cy(r[k][0])); } });
+            if (up.length > 1) layer.appendChild(svgEl("path", { class: "tc-ema tc-ema--" + k, d: "M" + up.join("L") + "L" + lo.reverse().join("L") + "Z" }));
+          });
+          note.push(dailyGrain ? "Bänder: schnelle EMAs 3–15 Tage kräftig, langsame 30–60 Tage blass" + (bands.from && g.pts[0].t.slice(0, 10) < bands.from ? ", ab " + M.dateDe(bands.from) + " nach Anlaufzeit" : "")
+            : "Bänder im Wochenchart: schnelle EMAs 3–15 Wochen kräftig, langsame 30–60 Wochen blass");
+        } else if (!dailyGrain && emaWeekly === undefined) loadEmaWeekly();
       }
       var fb = simple.fib && dailyGrain ? fibData() : null;
       if (fb) {

@@ -1,6 +1,6 @@
 # EMA Cluster Intelligence – Backendvertrag und Forschung
 
-Implementierung: `quant/engines/technical/ema-cluster.js`. Kein neuer Erzeugerzeitplan. **Anzeige seit 17.11.2026:** Technical-Chartseite, „Chart erklären“ Schritt 3 („Ziehen kurze und lange Linien an einem Strang?“, `technical/engine/chart-explain.js#emaSummary`) und Chip „EMA-Bänder“ (schnelles und langsames Band); im Browser aus den 270 Tagesbalken der Analyse gerechnet, daher nach Anlaufzeit nur für die jüngsten rund drei Monate. Kein Screener-Feld, keine Evidenzaussage am Zustand.
+Implementierung: `quant/engines/technical/ema-cluster.js`. Kein neuer Erzeugerzeitplan. **Anzeige seit 17.11.2026:** Technical-Chartseite, „Chart erklären“ Schritt 3 („Ziehen kurze und lange Linien an einem Strang?“, `technical/engine/chart-explain.js#emaSummary`) und Chip „EMA-Bänder“ (schnelles und langsames Band) in jeder Zeitansicht: Tageschart aus `chartSeries.emaFastMin/-Max/emaSlowMin/-Max` (Materialisierung über die volle Historie, `technical-analysis.js`, dieselbe Engine; bis zum ersten Lauf Rückfall auf die 270 Tagesbalken mit Anlaufzeit), 5J/Max im Zeitrahmen 1W auf der langen Wochenreihe (EMAs 3–15/30–60 Wochen), 1T als Zonen der Bänder des letzten Tagesschlusses. Kein Screener-Feld, keine Evidenzaussage am Zustand.
 
 ## Vertrag und Regeln (1.0.0)
 
