@@ -523,6 +523,8 @@ main.hf-main:has(>.hp){padding-bottom:20px}
 .hf-k2 .hf-qb b{font-size:22px;letter-spacing:-.045em;color:var(--k2-hi)}
 .hf-k2 .hf-qb span:not(.vu-ltag){font-size:11px;font-weight:500;color:var(--k2-mut)}
 .hf-k2 .hf-qb>div.is-next .hf-qb-dot{border:2px solid #55595f;background:var(--k2-on-hi)}
+/* Der nächste Termin trägt dieselbe Schriftfarbe wie die übrigen (sonst greift das alte Weiß auch im hellen Modus: Kontrast 1,09). */
+.hf-k2 .hf-qb>div.is-next b{color:var(--k2-hi)}
 .hf-k2 .hf-qb>div:before{height:2px;top:7px;background:var(--k2-track)}
 :root:not([data-theme=dark]) .hf-k2 .hf-qb-dot{background:#000}
 :root:not([data-theme=dark]) .hf-k2 .hf-qb>div.is-on:has(+.is-on):before{background:#000}
