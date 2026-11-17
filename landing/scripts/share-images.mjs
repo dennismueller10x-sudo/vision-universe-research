@@ -54,7 +54,8 @@ for (const path of ['index.html', ...SITE_PAGES]) {
   const phone = (img) => `<div class="aphone"><div class="in">${ahdr}<div class="scr"><img src="/${img}" alt=""></div><img class="adock" src="/web/img/app/dock.png" alt=""></div></div>`;
   let visual;
   if (d.covers.length && /^(magazin|report)/.test(d.slug)) visual = `<div class="m3 shm">${['p1', 'p2'].map((c) => `<span class="pg ${c}"><img src="/${d.covers[0].replace('-cover', '-s0' + (c === 'p1' ? '2' : '3'))}" alt=""></span>`).join('')}<span class="cv"><img src="/${d.covers[0]}" alt=""></span></div>`;
-  else if (d.slug === 'news' && d.news.length >= 3) visual = `<div class="shn">${d.news.slice(0, 3).map((n) => `<img src="/${n}" alt="">`).join('')}</div>`;
+  // News: allgemeines Bild ohne echte Artikel, weil sich die Artikel täglich ändern (Owner 17.11.2026).
+  else if (d.slug === 'news') visual = `<div class="shg">${[['Tagesthema', 'w1'], ['Nebenwert im Fokus', 'w2'], ['Zukunftsthema', 'w3']].map(([k, w], i) => `<div class="c c${i}"><span class="pill">${k}</span><i class="${w}"></i><i class="w4"></i><i class="w5"></i></div>`).join('')}</div>`;
   else visual = phone(d.img || 'web/img/app/apple.jpg');
   const kicker = d.icon ? `<span class="tagm"><span class="ic"><svg><use href="#${d.icon}"/></svg></span>${esc(d.tag)}</span>` : `<span class="tagm">${esc(d.tag || 'Die App für iPhone und Android')}</span>`;
   await page.setContent(`<!doctype html><html lang="de"><head><meta charset="utf-8"><base href="${base}"><link rel="stylesheet" href="${base}${css}"><style>
@@ -66,7 +67,11 @@ p{margin-top:16px;font-size:23px;font-weight:600;color:#333;line-height:1.35;max
 .st{display:flex;align-items:center;gap:12px;margin-top:26px}.st img{height:44px;width:auto}.st span{font-size:16px;font-weight:800}
 .r{position:relative;z-index:1;align-self:stretch;display:grid;place-items:center}.r .aphone{--pw:270px;margin-top:70px}.r .aphone .scr img{animation:none}
 .shm{width:380px;height:460px}.shm .pg,.shm .cv{width:270px;margin:-190px 0 0 -135px}
-.shn{display:grid;gap:12px;width:360px}.shn img{width:100%;height:150px;object-fit:cover;border-radius:18px;box-shadow:0 18px 30px -18px rgba(0,0,0,.5)}
+.shg{position:relative;width:380px;height:440px}
+.shg .c{position:absolute;left:20px;width:330px;padding:22px;border-radius:24px;background:#000;color:#fff;box-shadow:0 26px 40px -24px rgba(0,0,0,.6)}
+.shg .c0{top:20px;transform:rotate(-4deg)}.shg .c1{top:160px;left:40px;background:#fff;color:#000;box-shadow:inset 0 0 0 2px #000,0 26px 40px -24px rgba(0,0,0,.5)}.shg .c2{top:300px;transform:rotate(3deg)}
+.shg .pill{display:inline-block;padding:6px 12px;border-radius:99px;background:var(--lime);color:#000;font-weight:900;font-size:15px}
+.shg i{display:block;height:14px;margin-top:12px;border-radius:8px;background:currentColor;opacity:.85}.shg .w1{width:90%}.shg .w2{width:80%}.shg .w3{width:86%}.shg .w4{width:70%;opacity:.35}.shg .w5{width:52%;opacity:.35}
 </style></head><body>${sprite}<div class="l"><img class="logo" src="/assets/vision-universe-logo-web.png" alt="">${kicker}<h1>${d.h1}</h1>${d.lead ? `<p>${esc(short(d.lead, 120))}</p>` : ''}
 <div class="st"><img src="/web/img/badge-apple.svg" alt=""><img src="/web/img/badge-google.png" alt=""><span>Bald verfügbar · zum Start kostenlos</span></div></div><div class="r">${visual}</div></body></html>`, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
