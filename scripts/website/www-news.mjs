@@ -109,9 +109,13 @@ export function regions(state) {
     const rep = report ? `<a class="hlm" href="${R}report/">${img(R, report.cover, "Titel des aktuellen Aktienreports")}<span><small>${esc(report.art)} · Nr. ${esc(report.nr)}</small><b>${esc(report.titel)}</b>${report.seiten ? `<em>${esc(report.seiten)} Seiten</em>` : ""}</span></a>` : "";
     return `<div class="hlnews">${cards}</div><div class="hlfix">${mag}${rep}</div>`;
   };
+  // Startseite (Owner 17.11.2026): kompakt, viele kleine Kacheln statt großer Karten. Die News-Seite bleibt groß.
+  const tile = (R, x) => `<a class="ntile" href="${link(x.href)}">${x.img ? `<img src="${R}web/img/news/${x.img}" alt="" loading="lazy">` : "<span class=\"noimg\"></span>"}<span class="k">${esc(x.rubrik)} · ${dmy(x.datum)}</span><b>${esc(x.titel)}</b></a>`;
+  const compact = (R) => `<div class="ncompact"><div class="nfix">${hero(R).split('<div class="hlfix">')[1].replace(/<\/div>$/, "")}</div>`
+    + `<div class="ntiles">${artikel.slice(0, 8).map((x) => tile(R, x)).join("")}</div></div>`;
   const grid = (R, n, ids) => `<div class="newsgrid">${lead(R, a0)}${heftCard(R, heft, ids ? "magazin" : "")}${reportCard(R, report, ids ? "report" : "")}<div class="n3">${artikel.slice(1, 1 + n).map((x) => box(R, x)).join("")}</div></div>`;
   return {
-    "index.html": { hero: hero("./"), start: stand(a0) + grid("./", 3, false) },
+    "index.html": { hero: hero("./"), start: stand(a0) + compact("./") },
     "magazin/index.html": { page: preview("../", { kicker: `Aktienmagazin · Nr. ${heft.nr} · KW ${heft.kw}`, h1: "Das <mark>Aktienmagazin.</mark>",
       lead: `Jede Woche ein neues Heft: was an der Börse los war, einfach erklärt. ${heft.seiten} Seiten zum Durchblättern.`,
       about: "Das Aktienmagazin ist unser Wochenheft. Es fasst die Börsenwoche zusammen und erklärt die wichtigsten Aktien in einfachen Sätzen, mit Bildern und Charts.",
