@@ -58,6 +58,9 @@ const TODAY = arg("--today", new Date().toISOString().slice(0, 10));
 
 const SCALE_DIR = arg("--scale-dir", join(root, "quant", "data", "market", "scale"));
 const OUT_DIR = arg("--out", join(root, "quant", "data", "market", "security-master"));
+/* --only T1,T2 (17.11.2026, Steuerung): nur diese Ticker anhaengen (Positivliste). Ein Ticker der Liste, der nicht
+   angehaengt werden kann, bricht den Lauf ab - eine Freigabe soll nicht still kleiner werden. */
+const ONLY = (() => { const v = arg("--only"); return v ? new Set(v.split(/[\s,]+/).map((t) => t.trim().toUpperCase()).filter(Boolean)) : null; })();
 const MASTER_FILE = arg("--master",
   join(root, SCALE.storage.workingDir, "tiingo", "security-master", "us-security-master.json"));
 const UNIVERSE_FILE = join(SCALE_DIR, "universe-FULL_UNIVERSE.json");
@@ -136,6 +139,7 @@ export function appendOnlyMerge(baselineEntries, masterRows, opts) {
        und Handelsplatz. Jede Bedingung steht trotzdem einzeln da und
        zaehlt einzeln aus: wenn eine Regel im Klassierer kippt, soll der
        Bericht sagen, WELCHE - und nicht nur, dass weniger dazukam. */
+    if (opts.only && !opts.only.has(t)) { skipped.notInAllowList = (skipped.notInAllowList || 0) + 1; continue; }
     if (r.reconciliation_status !== "ADDED") { skipped.notAdded++; continue; }
     if (r.eligible_us_equity !== true) { skipped.notEligible++; continue; }
     if (r.instrument_type !== "EQUITY_COMMON") { skipped.notCommonEquity++; continue; }
@@ -155,6 +159,11 @@ export function appendOnlyMerge(baselineEntries, masterRows, opts) {
   const entries = baseline.concat(appended);
 
   const invariants = assertAppendOnly(baseline, entries);
+  if (opts.only) {
+    const got = new Set(appended.map((e) => String(e.ticker).toUpperCase()));
+    const missing = [...opts.only].filter((t) => !got.has(t));
+    if (missing.length) throw new Error("POSITIVLISTE_NICHT_ANHAENGBAR: " + missing.join(", ") + " (nicht ADDED, nicht EQUITY_COMMON, nicht primaer, inaktiv oder schon im Bestand)");
+  }
   return { entries, appended, skipped, invariants };
 }
 
@@ -233,7 +242,8 @@ function main() {
   console.log(`  Bestand:        ${baseline.length} Titel`);
   console.log(`  Wertpapierstamm: ${masterRows.length} Zeilen (${masterDoc.version})`);
 
-  const merged = appendOnlyMerge(baseline, masterRows, { today: TODAY });
+  const merged = appendOnlyMerge(baseline, masterRows, { today: TODAY, only: ONLY });
+  if (ONLY) console.log(`  Positivliste:   ${[...ONLY].join(", ")}`);
 
   console.log(`\n  Angehaengt:     ${merged.appended.length}`);
   console.log(`  Neues Universum: ${merged.entries.length}`);

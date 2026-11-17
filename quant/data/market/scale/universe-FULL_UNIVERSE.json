@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-09-11T07:25:45.027Z",
+  "generatedAt": "2026-11-17T12:35:04.330Z",
   "gate": "FULL_UNIVERSE",
   "targetSize": null,
-  "actualSize": 7803,
+  "actualSize": 7807,
   "method": "APPEND_ONLY_EXPANSION_FROM_US_SECURITY_MASTER",
   "provider": "tiingo",
   "universeSource": {
@@ -34,10 +34,10 @@
     "Energy": 8,
     "Utilities": 7,
     "Real Estate": 8,
-    "UNKNOWN": 7703
+    "UNKNOWN": 7707
   },
   "byExchange": {
-    "NASDAQ": 4683,
+    "NASDAQ": 4687,
     "NYSE": 2604,
     "NYSE MKT": 27,
     "AMEX": 242,
@@ -50,7 +50,8 @@
   "notes": [
     "2000 Titel aus GATE_2000 uebernommen (Gates sind geschachtelt).",
     "5684 regelbasierte Kandidaten im Anbieteruniversum.",
-    "2119 Titel aus dem US-Wertpapierstamm angehaengt (us-security-master-1.0.0); der Bestand von 5684 Titeln blieb unveraendert."
+    "2119 Titel aus dem US-Wertpapierstamm angehaengt (us-security-master-1.0.0); der Bestand von 5684 Titeln blieb unveraendert.",
+    "4 Titel aus dem US-Wertpapierstamm angehaengt (us-security-master-1.3.0); der Bestand von 7803 Titeln blieb unveraendert."
   ],
   "securities": [
     {
@@ -148309,34 +148310,106 @@
       "industryStatus": "SOURCE_MISSING",
       "startDate": "2025-01-07",
       "selection": "appendedFrom:US_SECURITY_MASTER"
+    },
+    {
+      "securityId": "ref_AZR",
+      "ticker": "AZR",
+      "company": null,
+      "exchange": "NASDAQ",
+      "country": "US",
+      "currency": "USD",
+      "assetType": "Stock",
+      "instrumentType": "COMMON_STOCK",
+      "active": true,
+      "providerSymbol": "AZR",
+      "provider": "tiingo",
+      "sector": null,
+      "sectorStatus": "SOURCE_MISSING",
+      "industry": null,
+      "industryStatus": "SOURCE_MISSING",
+      "startDate": "2018-07-27",
+      "selection": "appendedFrom:US_SECURITY_MASTER"
+    },
+    {
+      "securityId": "ref_FGC",
+      "ticker": "FGC",
+      "company": null,
+      "exchange": "NASDAQ",
+      "country": "US",
+      "currency": "USD",
+      "assetType": "Stock",
+      "instrumentType": "COMMON_STOCK",
+      "active": true,
+      "providerSymbol": "FGC",
+      "provider": "tiingo",
+      "sector": null,
+      "sectorStatus": "SOURCE_MISSING",
+      "industry": null,
+      "industryStatus": "SOURCE_MISSING",
+      "startDate": "2014-04-01",
+      "selection": "appendedFrom:US_SECURITY_MASTER"
+    },
+    {
+      "securityId": "ref_IRLA",
+      "ticker": "IRLA",
+      "company": null,
+      "exchange": "NASDAQ",
+      "country": "US",
+      "currency": "USD",
+      "assetType": "Stock",
+      "instrumentType": "COMMON_STOCK",
+      "active": true,
+      "providerSymbol": "IRLA",
+      "provider": "tiingo",
+      "sector": null,
+      "sectorStatus": "SOURCE_MISSING",
+      "industry": null,
+      "industryStatus": "SOURCE_MISSING",
+      "startDate": "2019-05-09",
+      "selection": "appendedFrom:US_SECURITY_MASTER"
+    },
+    {
+      "securityId": "ref_SRTM",
+      "ticker": "SRTM",
+      "company": null,
+      "exchange": "NASDAQ",
+      "country": "US",
+      "currency": "USD",
+      "assetType": "Stock",
+      "instrumentType": "COMMON_STOCK",
+      "active": true,
+      "providerSymbol": "SRTM",
+      "provider": "tiingo",
+      "sector": null,
+      "sectorStatus": "SOURCE_MISSING",
+      "industry": null,
+      "industryStatus": "SOURCE_MISSING",
+      "startDate": "2023-10-09",
+      "selection": "appendedFrom:US_SECURITY_MASTER"
     }
   ],
   "expansion": {
-    "baselineSize": 5684,
-    "appended": 2119,
+    "baselineSize": 7803,
+    "appended": 4,
     "appendedByExchange": {
-      "NYSE": 375,
-      "NYSE ARCA": 14,
-      "NASDAQ": 1468,
-      "BATS": 208,
-      "NYSE MKT": 9,
-      "AMEX": 45
+      "NASDAQ": 4
     },
-    "securityMasterVersion": "us-security-master-1.0.0",
-    "securityMasterGeneratedAt": "2026-09-11T07:25:38.952Z",
+    "securityMasterVersion": "us-security-master-1.3.0",
+    "securityMasterGeneratedAt": "2026-11-17T00:00:00Z",
     "skipped": {
-      "notAdded": 106492,
+      "notAdded": 0,
       "notEligible": 0,
       "notCommonEquity": 0,
       "notPrimaryVenue": 0,
       "alreadyInBaseline": 0,
       "duplicateWithinAppend": 0,
-      "inactive": 0
+      "inactive": 0,
+      "notInAllowList": 109332
     },
     "invariants": {
-      "baselineEntries": 5684,
-      "resultEntries": 7803,
-      "appended": 2119,
+      "baselineEntries": 7803,
+      "resultEntries": 7807,
+      "appended": 4,
       "baselineFieldChanges": 0,
       "baselineEntriesDropped": 0,
       "checked": [

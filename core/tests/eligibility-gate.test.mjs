@@ -77,3 +77,26 @@ test("EG-6 · Die committete Freigabeliste passt zum committeten Vorstand und is
   for (const ch of c.changes) assert.equal(pm.get(ch.securityId), ch.from, ch.securityId);
   assert.ok(c.changes.every((ch) => ch.reasonAfter), "jeder Wechsel mit Grund");
 });
+
+test("EG-7 · Zugaenge zur Mitgliedschaft nur mit Freigabe je securityId; fehlende freigegebene Zugaenge und Abgaenge bleiben rot", () => {
+  const plus = [...base, ["ref_NEU1", "ELIGIBLE"], ["ref_NEU2", "ELIGIBLE"]];
+  const ohne = evaluate({ prev: doc(base), next: doc(plus), prevUniverse: uni(900), nextUniverse: uni(902), limits: LIMITS });
+  assert.match(ohne.failures.join(), /universeMembersChanged 2 > 0/);
+  const approval = { id: "t", prevSha256: "x", changes: [], membersAdded: ["ref_NEU1", "ref_NEU2"], productUniverseAfter: 902 };
+  const mit = evaluate({ prev: doc(base), next: doc(plus), prevUniverse: uni(900), nextUniverse: uni(902), limits: LIMITS, approval, prevSha256: "x" });
+  assert.equal(mit.decision, "COMMIT", mit.failures.join());
+  assert.equal(mit.counted.universeMembersChanged, 0);
+  assert.equal(mit.approval.membersAdded, 2);
+  const teil = evaluate({ prev: doc(base), next: doc([...base, ["ref_NEU1", "ELIGIBLE"]]), prevUniverse: uni(900), nextUniverse: uni(901), limits: LIMITS,
+    approval: { ...approval, productUniverseAfter: 901 }, prevSha256: "x" });
+  assert.match(teil.failures.join(), /freigegebene Zugaenge fehlen \(ref_NEU2\)/);
+  const weg = evaluate({ prev: doc(base), next: doc([...base.slice(1), ["ref_NEU1", "ELIGIBLE"], ["ref_NEU2", "ELIGIBLE"]]), prevUniverse: uni(900), nextUniverse: uni(901),
+    limits: LIMITS, approval: { ...approval, productUniverseAfter: 901 }, prevSha256: "x" });
+  assert.match(weg.failures.join(), /universeMembersChanged 1 > 0/, "ein Abgang bleibt rot, auch mit freigegebenen Zugaengen");
+});
+
+test("EG-8 · Erweiterung rechnet die Eignung gegen die Mitgliedsdatei im Repo-Pfad (verify-company-master prueft den gespeicherten Pfad)", () => {
+  const wf = readFileSync(join(ROOT, ".github/workflows/security-master-eligibility.yml"), "utf8");
+  assert.match(wf, /echo "ELIG_UNIVERSE=quant\/data\/market\/scale\/universe-FULL_UNIVERSE\.json"/);
+  assert.doesNotMatch(wf, /ELIG_UNIVERSE=\$X\//, "kein Runner-Pfad als Mitgliedsdatei");
+});
