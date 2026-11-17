@@ -8,6 +8,9 @@ import {resolve,extname,sep} from 'node:path';
 import {build,root} from '../scripts/build.mjs';
 import {checkIphonePreview} from './iphone-preview-checks.mjs';
 import {checkConsentDisclosure} from './consent-disclosure-checks.mjs';
+import {checkConsent} from './consent-checks.mjs';
+import {checkStart} from './start-checks.mjs';
+import {withoutConsentBanner} from './consent-banner-helper.mjs';
 
 const output=resolve(root,'tests/output/browser');
 await mkdir(output,{recursive:true});
@@ -15,15 +18,16 @@ const privacyPath=resolve(root,'tests/output/privacy-fixture.html');
 await writeFile(privacyPath,'<!doctype html><html lang="de"><head><title>Testfixture</title></head><body>Nur für Integrationstests.</body></html>');
 await build({output:resolve(output,'blocked')});
 await build({output:resolve(output,'ready'),config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
+await build({output:resolve(output,'ga'),gaId:'G-TEST1234',config:{mode:'public',liveFlowVerified:true,privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
 await build({output:resolve(output,'controlled'),config:{mode:'controlled',privacyReviewed:true,privacyHtmlPath:'tests/output/privacy-fixture.html'}});
 const types={'.html':'text/html','.css':'text/css','.js':'text/javascript','.png':'image/png','.svg':'image/svg+xml','.woff2':'font/woff2'};
 const server=createServer(async(req,res)=>{
-  try{const pathname=new URL(req.url,'http://localhost').pathname;let path=resolve(output,((pathname.startsWith('/ready/')||pathname.startsWith('/blocked/')||pathname.startsWith('/controlled/'))?'':'ready/')+'.'+pathname);if(!path.startsWith(output+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.writeHead(404);res.end('404');}
+  try{const pathname=new URL(req.url,'http://localhost').pathname;let path=resolve(output,((pathname.startsWith('/ready/')||pathname.startsWith('/blocked/')||pathname.startsWith('/controlled/')||pathname.startsWith('/ga/'))?'':'ready/')+'.'+pathname);if(!path.startsWith(output+sep))throw Error();if((await stat(path)).isDirectory())path=resolve(path,'index.html');res.setHeader('Content-Type',types[extname(path)]||'application/octet-stream');res.end(await readFile(path));}catch{res.writeHead(404);res.end('404');}
 });
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const base=`http://127.0.0.1:${server.address().port}`;
 const screenshots=resolve(root,'review');await mkdir(screenshots,{recursive:true});
-const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});
+const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH||(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined),args:['--no-sandbox']});const consentContext=withoutConsentBanner(browser);
 const metrics=[];
 try{
   for(const [name,width,height,limit] of [['desktop',1440,900,Infinity],['iphone',390,844,Infinity],['narrow',320,800,Infinity]]){
@@ -130,5 +134,7 @@ try{
   });
   await native.goto(base+'/ready/');await native.locator('#email').fill('qa@example.test');await native.locator('#consent').check();await native.locator('button[type=submit]').click();await native.waitForURL('**/newsletter/bestaetigen/');assert.match(await native.locator('main').innerText(),/Bestätigungsmail/);await nojs.close();
   await writeFile(resolve(screenshots,'metrics.json'),JSON.stringify({metrics,newsletter:'Eigene Formularoberfläche und gleiche Herkunft mit synthetischen API-Antworten geprüft. Kein echter Postfach-/Klick-/Abmeldetest.',browser:'Chromium',testedAt:new Date().toISOString()},null,2)+'\n');
-  console.log(JSON.stringify({metrics,formChecks:'own design, validation, consent, honeypot, offline, one same-origin request, uncertain outcome, no-JS branded fallback, no iframe',controlledChecks:'ordinary visitors disabled, private fragment removed, bearer only in header, owner types address, same-document activation, no local storage, mobile reflow',liveBrevo:'BLOCKED'},null,2));
+  await checkConsent(consentContext,base);
+  await checkStart(consentContext,base+'/ready');
+  console.log(JSON.stringify({metrics,startChecks:'one screen desktop, short scroll phone, form in first screen, same form ready, no popup, axe',consentChecks:'banner first visit, nothing stored before click, reject, settings, GA only after consent with id, withdraw deletes cookies, popup once with existing form, axe',formChecks:'own design, validation, consent, honeypot, offline, one same-origin request, uncertain outcome, no-JS branded fallback, no iframe',controlledChecks:'ordinary visitors disabled, private fragment removed, bearer only in header, owner types address, same-document activation, no local storage, mobile reflow',liveBrevo:'BLOCKED'},null,2));
 }finally{await browser.close();await new Promise(r=>server.close(r));}
