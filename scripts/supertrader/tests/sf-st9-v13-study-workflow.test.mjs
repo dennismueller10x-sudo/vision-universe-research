@@ -212,9 +212,17 @@ test('data key: 64 hex characters on one line; local round trip with the documen
   fs.mkdirSync(path.join(dec, 'x'));
   execFileSync('tar', ['-xf', path.join(dec, 'st9-output.tar'), '-C', path.join(dec, 'x')], { stdio: 'pipe' });
   for (const [f, c] of Object.entries(files)) assert.equal(fs.readFileSync(path.join(dec, 'x', f), 'utf8'), c, f);
-  // the passphrase is the whole hex line: a passphrase of only its first 63 characters does not decrypt
+  // the passphrase is the whole hex line: a passphrase of only its first 63 characters never recovers the archive.
+  // Deterministic: AES-CBC has no authentication, so a wrong key passes the padding check in about 1 of 256 cases and
+  // then does not throw (flaky when asserted with assert.throws). Either outcome is fine as long as the output is not the
+  // original archive: throwing, or an output that differs from the correctly decrypted tar.
   const k = fs.readFileSync(path.join(dec, 'k.bin'), 'utf8').trim();
-  assert.throws(() => execFileSync('openssl', ['enc', '-d', '-aes-256-cbc', '-pbkdf2', '-iter', '100000', '-pass', `pass:${k.slice(0, 63)}`, '-in', path.join(dec, 'st9-output.tar.enc'), '-out', path.join(dec, 'y.tar')], { stdio: 'pipe' }));
+  let wrongKeyOutput = null;
+  try {
+    execFileSync('openssl', ['enc', '-d', '-aes-256-cbc', '-pbkdf2', '-iter', '100000', '-pass', `pass:${k.slice(0, 63)}`, '-in', path.join(dec, 'st9-output.tar.enc'), '-out', path.join(dec, 'y.tar')], { stdio: 'pipe' });
+    wrongKeyOutput = fs.readFileSync(path.join(dec, 'y.tar'));
+  } catch { /* the usual case: bad decrypt */ }
+  assert.ok(wrongKeyOutput === null || !wrongKeyOutput.equals(fs.readFileSync(path.join(dec, 'st9-output.tar'))), 'a passphrase of only 63 of the 64 characters must never recover the archive');
   fs.rmSync(tmp, { recursive: true, force: true });
 });
 

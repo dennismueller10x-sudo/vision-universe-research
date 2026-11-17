@@ -59,6 +59,9 @@ test("EG-5 · Workflow laeuft die vollstaendige Erzeugerkette (Namensschicht DEB
   const wf = readFileSync(join(ROOT, ".github/workflows/security-master-eligibility.yml"), "utf8");
   const a = wf.indexOf("node scripts/market/build-us-eligibility.mjs"), b = wf.indexOf("node scripts/market/apply-name-layer-class.mjs --classes DEBT"), c = wf.indexOf("node scripts/market/apply-exchange-directory.mjs"), g = wf.indexOf("node scripts/core/eligibility-gate.mjs");
   assert.ok(a > 0 && b > a && c > b && g > c, "Reihenfolge Erzeuger -> Namensschicht -> Boersenverzeichnis -> Gate");
+  /* Beendete Notierungen (#2054) sind zurueckgestellt (Steuerung 17.11.2026): der Schritt laeuft nicht, bis die Forschung
+     private Kopien liest. Dieser Test faellt, wenn ihn jemand ohne diese Entscheidung wieder einschaltet. */
+  assert.equal(wf.includes("node scripts/market/apply-ended-listings.mjs"), false, "apply-ended-listings ist zurueckgestellt");
   assert.match(wf, /IN_APPROVED: \$\{\{ inputs\.approved_catchup \}\}/);
 });
 

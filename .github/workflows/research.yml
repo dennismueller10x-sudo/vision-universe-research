@@ -1870,7 +1870,7 @@ jobs:
           node --test quant/tests/quality-margin-substitute.test.mjs
       - name: SEC companyfacts.zip (eine Anfrage)
         env:
-          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT || 'VisionUniverseResearch info@visionuniverse.de' }}
         run: |
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/v10"

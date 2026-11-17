@@ -90,6 +90,11 @@ async function main() {
     const key = width + "-" + theme;
     const ctx = await browser.newContext({ viewport: { width, height: 900 } });
     await ctx.addInitScript((t) => { try { localStorage.setItem("vu-discover-theme-v1", t); } catch (e) { /* privat */ } }, theme);
+    /* Live-Relay (quant/api/live-relay-client.js, wss://live.visionuniverse.de/live) nicht aus der QA erreichen: der echte Server
+       lehnt den Handshake vom lokalen Prueforigin mit 403 ab, und die Pruefung soll nicht vom Zustand eines externen Dienstes abhaengen.
+       Playwright beantwortet die Verbindung selbst (ohne connectToServer): sie oeffnet, nimmt subscribe/ping an und sendet nichts,
+       der Client bleibt in WAITING_FOR_TRADE wie bei einem ruhigen Markt. Andere Konsolenfehler zaehlen weiter. */
+    await ctx.routeWebSocket(/^wss?:\/\/live\.visionuniverse\.de\//, (ws) => { ws.onMessage(() => { /* Stub: keine Kurse */ }); });
     const page = await ctx.newPage(), errors = [];
     page.on("pageerror", (e) => errors.push("PAGEERROR " + e.message));
     page.on("response", (r) => { if (r.status() >= 400 && !RELEASE_ONLY.concat(OPTIONAL).some((re) => re.test(r.url()))) errors.push("HTTP " + r.status() + " " + new URL(r.url()).pathname); });

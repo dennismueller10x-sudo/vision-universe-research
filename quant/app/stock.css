@@ -386,3 +386,18 @@ html[data-theme=light] .qd .qv-stock,html[data-theme=light] body.qd .qv-stock{--
 .qd .qv-stock .qv3-strat-card .qv3-setup-h>span:first-child>.vu-ltag{display:block;margin-bottom:2px}
 .qd .qv-stock .qv3-strat-card .qv3-setup-h>span:first-child>b{display:block}
 .qd .qv-stock .qk-sim{min-height:1px}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .qd .qv-stock .qk-hud{background:var(--vu-lime,#c8f531);color:#101318;box-shadow:none}
+:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink,:root:not([data-theme=dark]) .qd .qv-stock .qk-story{background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .qd .qv-stock .qk-story .vu-ltag{color:#5d636b}
+:root:not([data-theme=dark]) .qd .qv-stock .qk-story-r{border-top-color:#dcdcdc}
+:root:not([data-theme=dark]) .qd .qv-stock .qk-story-r p,:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-t{color:#000}
+:root:not([data-theme=dark]) .qd .qv-stock .qk-story .vu-verdict--mid{background:#dcdcdc;color:#000}
+:root:not([data-theme=dark]) .qd .qv-stock .qk-story .vu-verdict--weak{background:#000;color:#fff}
+:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-n{color:#4f6b00}
+:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-s,:root:not([data-theme=dark]) .qd .qv-stock .qv3-ink-note{color:#000}
+:root:not([data-theme=dark]) .qd .qv-stock .qv3-segs i{background:#b4b8bd}
+:root:not([data-theme=dark]) .qd .qv-stock .qv3-segs i.is-good{background:var(--vu-lime,#c8f531);box-shadow:inset 0 0 0 1.5px #000}
+:root:not([data-theme=dark]) .qd .qv-stock .qv3-segs i.is-none{background:transparent;box-shadow:inset 0 0 0 1.5px #8a8f96}

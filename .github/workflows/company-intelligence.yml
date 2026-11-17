@@ -92,7 +92,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'universe-audit'
     permissions:
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
@@ -146,7 +146,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && inputs.continuous_refresh == 'full-qa'
     permissions:
       contents: read
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
@@ -244,7 +244,7 @@ jobs:
   production-consumer:
     if: github.event_name == 'workflow_dispatch' && (inputs.production_release == 'validate' || inputs.production_release == 'publish') && !inputs.current_restore_only && !inputs.acceptance && !inputs.pilot && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none')
     needs: validate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
@@ -541,7 +541,7 @@ jobs:
           retention-days: 14
   current-state-restore:
     if: github.event_name == 'workflow_dispatch' && inputs.current_restore_only && (inputs.accepted_handoff == '' || inputs.accepted_handoff == 'none') && !inputs.acceptance && !inputs.pilot
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4

@@ -41,12 +41,20 @@ test("Erklären: Jahresreihe aus den SEC-Berichten der Aktiendatei, letzter Wert
   assert.equal(Ask.explain(file, "free_cash_flow", 4).asOf, "2026-11-08");
 });
 
-test("Seite: ein Status-Satz, Was Atlas kann, Oft gefragt, Grenzen in einem „?“, Knöpfe der Antwort", () => {
+test("Seite: ein Status-Satz, Was die KI kann, Oft gefragt, Grenzen in einem „?“, Knöpfe der Antwort", () => {
   const src = readFileSync(new URL("../app.js", import.meta.url), "utf8");
-  for (const s of ["Frag Vision Universe.", "Was Atlas kann", "Oft gefragt", "Finden", "Vergleichen", "Erklären", "So hat Atlas übersetzt", "So hat Atlas gerechnet", "im Screener", "Regel ändern", "Weiter fragen", "keine Empfehlung"]) assert.ok(src.includes(s), s);
+  for (const s of ["Frag in deinen Worten.", "Was die KI kann", "Oft gefragt", "Finden", "Vergleichen", "Erklären", "So hat die KI übersetzt", "So hat Vision Universe gerechnet", "im Screener", "Regel ändern", "Weiter fragen", "keine Empfehlung"]) assert.ok(src.includes(s), s);
   assert.match(src, /href: Ask\.screenerUrl\(r\)/, "Alle N im Screener über das vorhandene screenerUrl");
   assert.doesNotMatch(src, /Noch gesperrt'\)\)|Atlas fragt diese Welten|Probier zum Beispiel|ak-trust/, "zwei Zustände, Welten-Kacheln und Hinweisblöcke entfallen");
   assert.match(src, /U\.q\(/, "Grenzen in einem „?“");
+  // Owner 16.11.2026: „Vision Universe KI“ – „Vision Universe“ klein als Dachzeile, „KI“ groß; Beta bleibt; kein sichtbares „Atlas“
+  assert.match(src, /h\('span', \{ class: 'vu-ltag', text: 'Vision Universe' \}\), h\('span', \{ class: 'ak-beta', text: 'Beta' \}\)/);
+  assert.match(src, /h\('h1', \{ class: 'ak-h1' \}, \[h\('span', \{ class: 'vu-visually-hidden', text: 'Vision Universe ' \}\), 'KI'\]\)/);
+  assert.equal((src.match(/'[^'\n]*'/g) || []).filter((x) => /Atlas/.test(x)).length, 0, "kein sichtbarer Text mit „Atlas“");
+  // KI-Knopf im Kopf öffnet /ask/?fokus=1: Fokus auf der Eingabe
+  assert.match(src, /if \(params\.get\('fokus'\) === '1'\) \{ try \{ input\.focus\(\{ preventScroll: true \}\); \}/);
+  const html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
+  assert.match(html, /<title>Vision Universe KI<\/title>/);
   const legal = JSON.parse(readFileSync(new URL("../../assets/legal-notices.json", import.meta.url), "utf8"));
   const visible = (src.match(/'[^'\n]*'/g) || []).filter((x) => !/^'\//.test(x)).join(" ") /* Pfade zählen nicht */.replace(/\bkeine?n? [\wäöüß-]+( oder [\wäöüß-]+)?/gi, " ").replace(/kaufen oder verkaufen sollst/g, "").toLowerCase();
   const avoid = legal.wording.flatMap((w) => String(w.avoid || "").replace(/\([^)]*\)/g, "").split(/,| \/ /)).map((a) => a.trim().toLowerCase()).filter((a) => a.length > 3);
@@ -57,7 +65,7 @@ test("Seite: ein Status-Satz, Was Atlas kann, Oft gefragt, Grenzen in einem „?
 test("Darstellung App-Konzept 2: Schiene und Kacheln am Start, neongrüne Übersetzungskarte, Gerüst beim Laden, „Weiter“-Karte; Frageweg unverändert", () => {
   const src = readFileSync(new URL("../app.js", import.meta.url), "utf8"), css = readFileSync(new URL("../ask.css", import.meta.url), "utf8"), html = readFileSync(new URL("../index.html", import.meta.url), "utf8");
   const UI = require("../../assets/vu-ui.js");
-  assert.match(src, /U\.rail\(CAN\.map\(/, "„Was Atlas kann“ als Schiene");
+  assert.match(src, /U\.rail\(CAN\.map\(/, "„Was die KI kann“ als Schiene");
   assert.match(src, /U\.tap\([^\n]*\n?[^\n]*cls: 'ak-can-card', attrs: \{ 'data-ak-ask': c\.q \}/, "Kachel je Beispiel");
   assert.match(src, /cls: 'ak-often-q', attrs: \{ 'data-ak-ask': q \}/, "„Oft gefragt“ als Kacheln");
   assert.match(src, /if \(b && startEl\.contains\(b\)\) ask\(b\.getAttribute\('data-ak-ask'\), true\)/, "Kacheln stellen die Frage über ask(q, true) wie zuvor");

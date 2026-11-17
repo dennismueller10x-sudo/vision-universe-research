@@ -70,7 +70,7 @@ Erklärungen wie „KGV: wie viele Jahresgewinne du beim Kauf bezahlst“ und f�
 | `modelPortfolio` | Musterdepots, Hausstrategie, Modellpositionen |
 | `setup` | Regel-Ergebnisse mit Zonen (Quant-Setup-Karte, Supertrader-Stufen, Technical-Zonen); `forbidden` listet, was dort nicht stehen darf |
 | `thirdParty` | Analysten-Konsens, Kursziele Dritter, 13F, Form 4 |
-| `ai` | AI Atlas und KI-Texte |
+| `ai` | Vision Universe KI und KI-Texte |
 | `editorial` | Magazin, Morning, News, Social-Beiträge |
 
 Jeder Hinweis nennt in `links` die Rechtsseiten (`risikohinweise`, `methodik`, …). Die Adressen stehen in `links`.

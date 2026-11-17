@@ -1,14 +1,15 @@
 /* =========================================================================
-   VISION UNIVERSE — assets/atlas-sheet.js        Atlas auf jeder Aktie
+   VISION UNIVERSE — assets/atlas-sheet.js        Vision Universe KI auf jeder Aktie
 
-   Konzept docs/design/mein-bereich-2026-11 (Folie AX03, Screen a-sheet): Der Atlas-Knopf der Kopfzeile
-   öffnet auf einer Aktienseite ein Sheet „Atlas zu <Name>“ mit Eingabe und drei Fragen zur Aktie.
+   Konzept docs/design/mein-bereich-2026-11 (Folie AX03, Screen a-sheet): Die Kachel „Vision Universe KI“ im Menü
+   öffnet auf einer Aktienseite ein Sheet „KI zu <Name>“ (Dachzeile „Vision Universe“, Owner 16.11.2026; früher
+   „Atlas“) mit Eingabe und drei Fragen zur Aktie.
    Die Aktie geht als Kontext in die Frage; beantwortet wird auf /ask/ wie jede andere Frage
    (Übersetzung und Rechnung unverändert). Das Sheet speichert nichts und sendet selbst nichts.
 
    Welche Aktie: der Aktienkopf trägt data-vu-stock (Kürzel) und data-vu-stock-name
    (assets/stock-navigator.js#head und assets/vu-ui.js#stockHead).
-   Geladen von assets/site-navigation.js beim ersten Tipp auf „Atlas“ einer Aktienseite.
+   Geladen von assets/site-navigation.js beim ersten Tipp auf „Vision Universe KI“ einer Aktienseite.
 
    UMD: Browser globalThis.VUAtlasSheet, Node module.exports (Tests).
    ========================================================================= */
@@ -19,7 +20,7 @@
   root.VUAtlasSheet = api;
 })(typeof globalThis !== "undefined" ? globalThis : this, function (root) {
   "use strict";
-  /* Drei Fragen zur Aktie, die Atlas heute vollständig beantwortet (Umsatz aus SEC-Berichten, Marge, Chartbild). */
+  /* Drei Fragen zur Aktie, die die KI heute vollständig beantwortet (Umsatz aus SEC-Berichten, Marge, Chartbild). */
   var QUESTIONS = [
     ["Wie hat sich der Umsatz entwickelt?", "Wie hat sich der Umsatz bei {n} entwickelt?"],
     ["Wie hoch ist die Marge?", "Wie hoch ist die Marge bei {n}?"],
@@ -52,19 +53,19 @@
   function html(stock) {
     var n = esc(stock.name);
     return '<div class="vu-as-back" data-vu-atlas-sheet><div class="vu-as" role="dialog" aria-modal="true" aria-labelledby="vu-as-t"><div class="vu-as-grab" aria-hidden="true"></div>' +
-      '<div class="vu-as-h"><span class="vu-as-ic">' + SPARK + '</span><b id="vu-as-t">Atlas zu ' + n + '</b><button type="button" class="vu-as-x" data-vu-as-close aria-label="Schließen">' + X + "</button></div>" +
+      '<div class="vu-as-h"><span class="vu-as-ic">' + SPARK + '</span><span class="vu-as-tt"><em class="vu-as-kick">Vision Universe</em><b id="vu-as-t"><span class="vu-as-vh">Vision Universe </span>KI zu ' + n + '</b></span><button type="button" class="vu-as-x" data-vu-as-close aria-label="Schließen">' + X + "</button></div>" +
       '<form class="vu-as-ask"><label class="vu-as-vh" for="vu-as-q">Frage zu ' + n + '</label><textarea id="vu-as-q" rows="2" maxlength="300" placeholder="Frag etwas zu ' + n + ' …"></textarea>' +
       '<div class="vu-as-f"><span>bezieht sich auf diese Aktie</span><button type="submit" class="vu-as-go" aria-label="Frage stellen">' + NEXT + "</button></div></form>" +
       '<div class="vu-as-chips">' + QUESTIONS.map(function (q) {
         return '<a class="vu-as-chip" href="' + esc(href(q[1].replace("{n}", stock.name), stock)) + '">' + esc(q[0]) + "</a>";
       }).join("") + "</div>" +
-      '<p class="vu-as-fine">Atlas übersetzt die Frage, Vision Universe rechnet. Keine Anlageberatung.</p></div></div>';
+      '<p class="vu-as-fine">Die KI übersetzt die Frage, Vision Universe rechnet. Keine Anlageberatung.</p></div></div>';
   }
   var CSS = ".vu-as-back{position:fixed;inset:0;z-index:2147483000;background:rgb(0 0 0/.45);display:flex;align-items:flex-end;justify-content:center;font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif}" +
     ".vu-as{width:100%;max-width:560px;max-height:88dvh;overflow:auto;box-sizing:border-box;border-radius:30px 30px 0 0;background:#fff;color:#000;padding:10px 18px calc(28px + env(safe-area-inset-bottom))}" +
     ":root[data-theme=dark] .vu-as{background:#000;color:#fff}" +
     ".vu-as *{box-sizing:border-box}.vu-as-grab{width:40px;height:5px;border-radius:9px;background:#e9e9e9;margin:0 auto 14px}:root[data-theme=dark] .vu-as-grab{background:#262626}" +
-    ".vu-as-h{display:flex;align-items:center;gap:10px}.vu-as-h b{flex:1;font-size:16px;font-weight:800}.vu-as-ic{display:grid}" +
+    ".vu-as-h{display:flex;align-items:center;gap:10px}.vu-as-tt{flex:1;min-width:0;display:grid;gap:2px}.vu-as-kick{font-style:normal;font-size:10px;line-height:1.1;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#6e6e6e}:root[data-theme=dark] .vu-as-kick{color:#9b9b9b}.vu-as-h b{font-size:16px;font-weight:800}.vu-as-ic{display:grid}" +
     ".vu-as-x{width:44px;height:44px;border:0;border-radius:50%;background:#f4f4f4;color:inherit;display:grid;place-items:center;cursor:pointer}:root[data-theme=dark] .vu-as-x{background:#151515}" +
     ".vu-as-ask{margin-top:10px;border:2px solid currentColor;border-radius:22px;padding:14px 14px 10px}" +
     ".vu-as-ask textarea{display:block;width:100%;min-height:44px;margin:0;padding:0;border:0!important;background:transparent!important;color:inherit;font-family:inherit;font-size:16px;font-weight:700;line-height:1.4;resize:none;outline:none!important;box-shadow:none!important}" +

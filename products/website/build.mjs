@@ -46,7 +46,7 @@ const GLYPH = {
   help: '<circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.6 9.5a2.5 2.5 0 1 1 3.4 2.3c-.7.3-1 .8-1 1.5v.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor"/>'
 };
 const g = (n) => `<svg viewBox="0 0 24 24" aria-hidden="true">${GLYPH[n]}</svg>`;
-/* Modul-Symbole aus dem zentralen Sprite der App (assets/product-icons.svg); AI Atlas hat dort keins. */
+/* Modul-Symbole aus dem zentralen Sprite der App (assets/product-icons.svg); Vision Universe KI (früher AI Atlas) hat dort keins. */
 const mi = (id) => (id === "atlas" ? g("spark") : `<svg viewBox="0 0 24 24" aria-hidden="true"><use href="/assets/product-icons.svg#${id}"/></svg>`);
 const ico = (id, cls = "") => `<span class="ico${cls ? " " + cls : ""}">${mi(id)}</span>`;
 
@@ -86,8 +86,8 @@ export const MODULES = [
   { id: "insights", name: "Insights", q: "Was steckt hinter den Schlagzeilen?", step: "planen", shot: "insights", video: null,
     lead: "Jeden Werktag neue Artikel zu Aktien und Themen, dazu das Aktienmagazin und ausführliche Aktienreports.",
     points: ["Tagesartikel zu großen Werten und Nebenwerten", "Das Aktienmagazin", "Aktienreports"] },
-  { id: "atlas", name: "AI Atlas", q: "Frag in deinen Worten.", step: "planen", shot: null, video: "atlas",
-    lead: "Stell deine Frage so, wie du sie einem Freund stellen würdest. Atlas antwortet mit den Daten der App und nennt die Quelle.",
+  { id: "atlas", name: "Vision Universe KI", q: "Frag in deinen Worten.", step: "planen", shot: null, video: "atlas",
+    lead: "Stell deine Frage so, wie du sie einem Freund stellen würdest. Die KI antwortet mit den Daten der App und nennt die Quelle.",
     points: ["Fragen in eigenen Worten", "Antworten aus den Daten der App, mit Quelle und Datum", "Keine Anlageberatung, keine Empfehlung"] }
 ];
 const MOD = Object.fromEntries(MODULES.map((m) => [m.id, m]));
@@ -113,7 +113,7 @@ const VIDEOS = [
   ["start", "Vision Universe in 30 Sekunden", "Start"], ["discover", "Discover in 30 Sekunden", "Discover"], ["screener", "Screener in 30 Sekunden", "Screener"],
   ["quant", "Quant in 30 Sekunden", "Quant"], ["fundamental", "Fundamental in 30 Sekunden", "Fundamental"], ["technical", "Technical in 30 Sekunden", "Technical"],
   ["elliott", "Elliott in 30 Sekunden", "Elliott"], ["supertrader", "Supertrader in 30 Sekunden", "Supertrader"], ["hedgefonds", "Hedgefonds in 30 Sekunden", "Hedgefonds"],
-  ["vorsorge", "Vorsorge in 30 Sekunden", "Vorsorge"], ["atlas", "AI Atlas in 30 Sekunden", "AI Atlas"]
+  ["vorsorge", "Vorsorge in 30 Sekunden", "Vorsorge"], ["atlas", "Vision Universe KI in 30 Sekunden", "Vision Universe KI"]
 ];
 const FAQ = [
   ["Was ist Vision Universe?", "Eine Analyse-App für Aktien, ETFs und Vorsorge. Elf Bereiche arbeiten mit denselben Daten und erklären jede Zahl in klaren Worten, vom ersten Sparplan bis zur Profi-Analyse."],
@@ -151,7 +151,7 @@ const HONEST = {
   hedgefonds: ["Meldungen zeigen die Vergangenheit.", "13F-Meldungen kommen mit Verzögerung. Du siehst, was Fonds vor Monaten hielten, mit dem Datum groß darüber."],
   portfolios: ["Rechenmodell, kein echtes Geld.", "Die Musterdepots folgen nur ihrer Regel. Eine Wertentwicklung erscheint erst, wenn sie belastbar ist."],
   vorsorge: ["Eine Rechnung ist keine Zusage.", "Vorsorge rechnet mit Annahmen und zeigt drei Beispiele. Vision Universe verkauft keine Produkte."],
-  atlas: ["Atlas rät nicht.", "Er antwortet nur aus den Daten der App und nennt die Quelle. Fehlen Daten, sagt er das."]
+  atlas: ["Die KI rät nicht.", "Sie antwortet nur aus den Daten der App und nennt die Quelle. Fehlen Daten, sagt sie das."]
 };
 const NUMS = [["6.000+", "US-Aktien, täglich neu gerechnet"], ["7.000+", "ETFs für die Vorsorge"], ["12 Jahre", "Geschäftszahlen je Aktie"], ["13", "Methoden bekannter Trader"], ["54", "Themenwelten"]];
 

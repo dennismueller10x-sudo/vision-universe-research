@@ -1358,3 +1358,15 @@ body.sc .sc-hero2 .sc-sentence .sc-gap.is-empty{background:#232325;color:#a1a7af
 body.sc .sc-hero2 .sc-sentence .sc-gap.is-add{background:none;color:#a1a7af;padding:1px 0}
 body.sc .sc-hero2 .sc-sentence .sc-gap::after{content:"";position:absolute;left:-2px;right:-2px;top:-6px;bottom:-6px;width:auto;height:auto;transform:none}
 body.sc .sc-rchip-add{display:inline-flex}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) body.sc .sc-chip-cat,:root:not([data-theme=dark]) body.sc .sc-ak .sc-ak-hud{background:var(--vu-lime);border-color:transparent;color:#101318}
+:root:not([data-theme=dark]) .sc-hero2.vu-night{background:#f4f4f4;color:#000;--vu-card:#e9e9e9;--vu-hair:#dcdcdc}
+:root:not([data-theme=dark]) .sc-hero2 .vu-ltag,:root:not([data-theme=dark]) .sc-hero2 .sc-universe,:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-icon-btn{color:#5d636b}
+:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-icon-btn:hover{background:#e9e9e9;color:#000}
+:root:not([data-theme=dark]) .sc-hero2 .sc-satz-o{background:#e9e9e9}
+:root:not([data-theme=dark]) .sc-hero2 .sc-universe strong,:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-counter-row>span,:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-count small{color:#000}
+:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-counter strong,:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-count{color:#000}
+:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-sentence .sc-gap.is-empty{background:#e4e4e4;color:#5d636b}
+:root:not([data-theme=dark]) body.sc .sc-hero2 .sc-sentence .sc-gap.is-add{color:#5d636b}

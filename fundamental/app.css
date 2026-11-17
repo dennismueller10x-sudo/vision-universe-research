@@ -1119,3 +1119,16 @@ html[data-theme=dark]{--fu-m0:#c8f531;--fu-m1:#fff;--fu-m2:#9b9b9b;--fu-m3:#fff}
 .fp-pop .fp-f1{flex:1;min-width:0}
 .fp-pop .fp-lg{display:inline-flex;line-height:0}.fp-pop .fp-lg .vu-logo-tile{width:34px;height:34px;min-width:34px;border-radius:10px;font-size:8px}
 @media (min-width:1040px){.fp .fp-rail{display:flex;overflow-x:auto}.fp .fp-rail>*{width:auto}.fp .fp-rlrail .fu-rlc{width:320px}}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .fu-chap-i,:root:not([data-theme=dark]) .fu-entry-ico{background:var(--vu-lime);color:#101318}
+:root:not([data-theme=dark]) .fu-night,:root:not([data-theme=dark]) .fu .vu-night{--vu-ink:#000;--vu-inv:#fff;--vu-card:#e9e9e9;--vu-hair:#dcdcdc;--vu-mute:#5d636b;--vu-focus-ring:#4f6b00;--vu-focus:#4f6b00;
+  --vu-text:#000;--vu-text-secondary:#3a3d42;--vu-muted:#5d636b;--vu-line:rgb(0 0 0/.1);--vu-line-strong:rgb(0 0 0/.18);--vu-bg:#fff;--vu-elevated:#e9e9e9;
+  --fu-card:#e9e9e9;--fu-soft:#e9e9e9;--fu-bar:#000;--fu-acc:#4f6b00;--fu-acc-ink:#000;--fu-s1:#dcdcdc;background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .fu a.vu-next{color:#000}
+/* Umschalter der Finanzen auf der Aktienseite im Hellen: heller Grund, aktive Pille schwarz (axe color-contrast ≥ 4,5:1) */
+:root:not([data-theme=dark]) .fu-fin-seg{background:#fff}
+:root:not([data-theme=dark]) .fu-fin-seg button{color:#3a3d42}
+:root:not([data-theme=dark]) .fu-fin-seg button[aria-pressed=true],:root:not([data-theme=dark]) .fu-fin .fu-pill[aria-pressed=true]{background:#000;color:#fff}
+:root:not([data-theme=dark]) .fu-fin .fu-pill{background:#dcdcdc;color:#000}

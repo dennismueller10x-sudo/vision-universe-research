@@ -400,3 +400,11 @@ html[data-vu-bleed] .in-body{padding-top:0!important}
 .in-weitere>.in-sh{padding:0;margin-top:34px}
 @media(min-width:761px){.in-held--artikel{margin:calc(var(--vu-navigation-height,64px) + 8px) 0 0;border-radius:26px}.in-artikel .in-tabs{margin:0}}
 @media(prefers-reduced-motion:reduce){.in-art,.in-heft,.in-vid{transition:none}.in-art:active,.in-heft:active,.in-vid:active{transform:none}}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Dunkel bleibt unverändert. Fotos mit Schatten für die Schrift (.in-held), Video-Standbilder (.in-vid) und der Video-Spieler
+   (.in-player) bleiben dunkel: Bild, keine Fläche. */
+:root:not([data-theme=dark]) .in-buehne--nacht .in-buehne-sub{color:#3a3a3a}
+:root:not([data-theme=dark]) .in-buehne--nacht .vu-btn--line{border-color:rgb(0 0 0/.34);color:#000}
+:root:not([data-theme=dark]) .in-buehne--nacht .in-buehne-cover{box-shadow:0 12px 28px rgb(0 0 0/.22)}
+:root:not([data-theme=dark]) .in-hud{background:var(--vu-lime);border-color:transparent;color:#000}

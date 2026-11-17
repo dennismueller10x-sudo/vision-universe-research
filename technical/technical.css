@@ -1227,3 +1227,24 @@ div.tc-signal{grid-template-columns:44px minmax(0,1fr) auto}
 :root[data-theme=dark] .tc-layers .tc-fib-pt{fill:var(--vu-lime,#c8f531)}
 .tc-layers .tc-fib-label{paint-order:stroke;stroke:var(--vu-inv,#fff);stroke-width:3px;stroke-linejoin:round}
 .tc-guide-sum .vu-verdict{flex-direction:row}
+
+/* Hell ist vollständig hell (Owner 16.11.2026: „wenn ich auf hell den Schalter umlege, dann muss natürlich auch alles hell sein“).
+   Symbolkacheln im Hellen neongrün mit dunklem Zeichen, dunkle Flächen hellgrau mit dunkler Schrift; dunkel unverändert. */
+:root:not([data-theme=dark]) .tc-mg-ic{background:var(--vu-lime);color:#101318}
+:root:not([data-theme=dark]) .tc-mg .tc-mg-ic{background:none;color:#4f6b00}
+:root:not([data-theme=dark]) .tc-mgrid>a.tc-mg,:root:not([data-theme=dark]) .tc-story,:root:not([data-theme=dark]) .tc-today,:root:not([data-theme=dark]) .tc-textsearch.tc-satz{background:#f4f4f4;color:#000}
+:root:not([data-theme=dark]) .tc-mg .tc-dirdot{background:#e4e4e4;color:#000}
+:root:not([data-theme=dark]) .tc-story>.tc-ltag,:root:not([data-theme=dark]) .tc-story-r .tc-ltag,:root:not([data-theme=dark]) .tc-today .tc-ltag,:root:not([data-theme=dark]) .tc-satz .tc-ts-label{color:#5d636b}
+:root:not([data-theme=dark]) .tc-today-s{color:#3a3d42}
+:root:not([data-theme=dark]) .tc-story-r{border-top-color:#dcdcdc}
+:root:not([data-theme=dark]) .tc-story .vu-verdict--mid{background:#dcdcdc;color:#000}
+:root:not([data-theme=dark]) .tc-story .vu-verdict--weak{background:#000;color:#fff}
+:root:not([data-theme=dark]) .tc-story .vu-verdict--none{border-color:#5d636b;color:#5d636b}
+:root:not([data-theme=dark]) .tc-today .vu-ring circle{stroke:#dcdcdc}
+:root:not([data-theme=dark]) .tc-today .vu-ring circle.is-on{stroke:#000}
+:root:not([data-theme=dark]) .tc-satz .tc-ts-input{color:#000}
+:root:not([data-theme=dark]) .tc-ms{color:#000}
+:root:not([data-theme=dark]) .tc-info{background:#000;color:#fff}
+:root:not([data-theme=dark]) .vu-hud .tc-glyph{stroke:#000}
+:root:not([data-theme=dark]) .tk .tk-scr .vu-hud,:root:not([data-theme=dark]) .tk .tk-row1 .vu-hud{box-shadow:none}
+:root:not([data-theme=dark]) .tc-satz .tc-note{color:#5d636b}

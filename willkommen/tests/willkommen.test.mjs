@@ -139,3 +139,20 @@ test('Home: nichts Erfundenes, Wortwahl nach docs/legal/WORTWAHL.md',()=>{
   assert(avoid.length>10);
   for(const a of [...avoid,'für dich'])assert(!new RegExp('(^|[^a-zäöüß])'+a.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|[^a-zäöüß])').test(text),'vermeiden: '+a);
 });
+
+test('Home: Tagesbewegung bei Minus rot, bei Plus neongrün – hell und dunkel, wie Discover, Ich, Quant und News (Owner 16.11.2026)',()=>{
+  const css=read('willkommen/app.css'),js=read('willkommen/app.js');
+  // „die Bewegung immer -rot plus grün“: dieselbe Regel wie .md .vu-chg--down (mein-dashboard/dashboard.css), ohne Schema-Einschränkung
+  assert.match(css,/\n\.wk \.vu-chg--down\{background:#c4281c;color:#fff\}/);
+  assert.doesNotMatch(css,/vu-chg--down\{background:#fff/,'Minus nicht mehr weiß im Dunkeln');
+  assert.match(read('assets/vu-ui.css'),/\.vu-chg\{[^}]*background:var\(--vu-lime\);color:#000\}/,'Plus neongrün mit schwarzer Schrift');
+  // Markt heute: vier Märkte, Minus rot mit weißer Schrift
+  assert.match(js,/c\.pct > 0 \? ' class="is-up"' : c\.pct < 0 \? ' class="is-down"' : ''/);
+  assert.match(css,/\.wk-mk-ix>span\.is-down\{background:#c4281c\}\.wk-mk-ix \.is-down small,\.wk-mk-ix \.is-down b\{color:#fff\}/);
+  // Größte Bewegung in der Kopfkarte
+  assert.match(js,/move\.classList\.toggle\('wk-pill--down', sum\.biggest\.pct < 0\)/);
+  assert.match(css,/\.wk-pill\.wk-pill--down\{background:#c4281c;color:#fff\}/);
+  // Kontrast Weiß auf #c4281c mindestens 4,5:1 (WCAG AA)
+  const lum=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=.03928?v/12.92:((v+.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
+  assert.ok(1.05/(lum('#c4281c')+.05)>=4.5);
+});
