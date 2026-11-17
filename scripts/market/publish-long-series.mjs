@@ -37,6 +37,7 @@ import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-
 import { splitAdjustedCloses } from "./publish-discover-series.mjs";
 import { benchmarkSpec } from "./benchmark-reference.mjs";
 import { applySupplements, supplementedEntries } from "./lib/split-evidence-supplements.mjs";
+import { loadSuccessions, withPredecessor } from "./lib/ticker-succession-bars.mjs";
 import { applyConfirmations } from "./lib/corporate-action-confirmations.mjs";
 
 const require = createRequire(import.meta.url);
@@ -121,6 +122,7 @@ const store = Store.createHistoryStore({ driver, provider: "tiingo", market: "US
                                          prefix: history.prefix || undefined, codec: history.codec || undefined });
 
 /* --------------------------------------------------- Lauf */
+const SUCC = loadSuccessions(root);
 const bilanz = { requested: securities.length, written: 0, unchanged: 0, missing: 0, tooShort: 0, failed: 0 };
 const t0 = Date.now();
 mkdirSync(OUT_DIR, { recursive: true });
@@ -129,8 +131,19 @@ const geschrieben = new Set();
 
 async function einer(s) {
   let reihe;
-  try { reihe = await store.getSeries(s.ticker); }
+  let vorgaenger = null;
+  try {
+    reihe = await store.getSeries(s.ticker);
+    /* Tickerwechsel (ADR-009): ein Nachfolger traegt die Bars seines Vorgaengers vor dem Stichtag. */
+    const eintrag = SUCC.TS.predecessorOf(s.securityId, SUCC.map);
+    if (eintrag) vorgaenger = await store.getSeries(eintrag.fromTicker);
+  }
   catch (err) { bilanz.failed++; console.error(`  ${s.ticker}: ${String(err.message).slice(0, 100)}`); return; }
+  const nachfolge = withPredecessor(reihe, s, SUCC, () => vorgaenger);
+  if (nachfolge.joined) {
+    reihe = nachfolge.payload;
+    console.log(`  ${s.ticker}: Nachfolge von ${nachfolge.joined.from}, ${nachfolge.joined.predecessorBars} + ${nachfolge.joined.successorBars || 0} Bars`);
+  }
   if (!reihe || !reihe.bars || !reihe.bars.length) { bilanz.missing++; return; }
   /* Nur das juengste Listing: nach mehr als einem Jahr ohne Kerze traegt
      das Kuerzel eine andere Firma (survivorship-control.js). */

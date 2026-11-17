@@ -36,6 +36,7 @@ import { createRequire } from "node:module";
 import { loadPreviewConfig, resolveScope, expandPreviewConfig } from "./preview-scope.mjs";
 import { applySupplements } from "./lib/split-evidence-supplements.mjs";
 import { applyConfirmations } from "./lib/corporate-action-confirmations.mjs";
+import { loadSuccessions, withPredecessor } from "./lib/ticker-succession-bars.mjs";
 
 const require = createRequire(import.meta.url);
 const HERE = dirname(fileURLToPath(import.meta.url));
@@ -143,6 +144,7 @@ export function publishDiscoverSeries(opt) {
 
   const written = [], skipped = [];
   const erwartet = new Set();
+  const succ = loadSuccessions(root);
   /* --prune-only: nichts neu schreiben, nur entfernen, was nicht mehr im
      Umfang steht (z. B. nach einem Wechsel der Universumsquelle), und das
      Verzeichnis nachziehen. */
@@ -177,6 +179,12 @@ export function publishDiscoverSeries(opt) {
     }
     let payload = store.readBars(security.securityId, "working");
     let quelle = "working";
+    /* Tickerwechsel (ADR-009): ein Nachfolger traegt die Bars seines Vorgaengers vor dem Stichtag. */
+    const nachfolge = withPredecessor(payload, security, succ, (e) => store.readBars(e.from, "working"));
+    if (nachfolge.joined) {
+      payload = nachfolge.payload;
+      log(`    ${security.ticker.padEnd(6)} Nachfolge von ${nachfolge.joined.from}: ${nachfolge.joined.predecessorBars} + ${nachfolge.joined.successorBars || 0} Bars`);
+    }
     if (!payload && opt.fromPublished) {
       const file = join(publishedDir, security.securityId + ".json");
       if (existsSync(file)) { payload = JSON.parse(readFileSync(file, "utf8")); quelle = "golden-preview"; }
