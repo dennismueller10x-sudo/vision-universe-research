@@ -19,6 +19,9 @@ export function networkError(what,e){
 // Geduld gegen Hosting-Vorgaenge direkt nach dem Deploy (17.11.2026 08:26Z: 503, dann 429 bei ~5.580 Snapshot-Zugriffen, 3 Versuche in
 // 2 s reichten nicht; das gesunde Gate wurde zum dritten Mal geschlossen). Feste Obergrenze: 8 Versuche, Pausen 1/2/4/8/15/30/30 s
 // (Retry-After beachtet, hoechstens 30 s); danach LIVE_ASSET_HOSTING_FAILURE bzw. TransientNetworkError wie bisher.
+// Weitere Entlastung (Steuerung 17.11.2026): ca. 60 s Wartezeit nach dem Deploy vor dem ersten Lesen, hoechstens 2 gleichzeitige Zugriffe
+// (5.580 Assets in kurzer Zeit loesten das Rate-Limit aus).
+export const LIVE_SETTLE_MS=60000,LIVE_READ_CONCURRENCY=2;
 export const LIVE_READ_ATTEMPTS=8,LIVE_READ_PAUSES_MS=Object.freeze([1000,2000,4000,8000,15000,30000,30000]);
 const pauseFor=(attempt,r)=>{
  const base=LIVE_READ_PAUSES_MS[Math.min(attempt-1,LIVE_READ_PAUSES_MS.length-1)],header=Number(r?.headers?.get?.('retry-after'));
