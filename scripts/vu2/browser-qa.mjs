@@ -188,7 +188,7 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
   /* App-Konzept 2 (Owner-Freigabe 14.11.2026): am Seitenende fuehrt die „Weiter“-Karte zum naechsten Ort (quant/app/ui.js, NEXT).
      Sie steht zwischen Inhalt und Fuss, genau einmal, und nennt das hinterlegte Ziel. */
   {const soll={home:'/supertrader/',radar:'#/forschung',strategien:'#/aktien',aktien:'#/meldungen',methodik:'#/screener',screener:'#/stile',vergleich:'#/screener','aktie-nvda':'#/vergleich/NVDA',chartlagen:'#/meldungen?filter=setups'}[view];
-   if(soll){const karten=page.locator('#qx-app > nav.qk2-next a.vu-next');const ziel=await karten.count()===1?await karten.getAttribute('href'):null;if(ziel!==soll)befund(view,width,'Weiter-Karte fehlt oder fuehrt nach '+ziel);}
+   if(soll){const karten=page.locator('#qx-app > nav.qk2-next a.vu-next, #qx-app main > nav.qk2-next a.vu-next');const ziel=await karten.count()===1?await karten.getAttribute('href'):null;if(ziel!==soll)befund(view,width,'Weiter-Karte fehlt oder fuehrt nach '+ziel);}
    else if(view==='nicht-gefunden'&&await page.locator('nav.qk2-next').count())befund(view,width,'Weiter-Karte auf der Fehlerseite');}
   /* DIE BEREICHE, UND KEIN FREMDES PRODUKT - in genau einer Reiterzeile unter dem Kopf,
      die bei jeder Breite sichtbar ist; dazu genau ein Dock, das unten steht. */
@@ -208,7 +208,14 @@ try{for(const width of [1440,390]){const page=await browser.newPage({viewport:{w
      die Reiterzeile des Rahmens ist dort ausgeblendet. Dann muessen diese Reiter sichtbar sein und genau so heissen - sonst gilt die
      Pruefung der Rahmen-Reiterzeile wie bisher. */
   const imInhalt=await page.evaluate(()=>document.documentElement.getAttribute('data-vu-tabs')==='inhalt');
-  if(imInhalt){
+  /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): die Aktienseite hat keine Reiter, weder im Rahmen noch im Inhalt;
+     am Seitenende stehen die Pillen „Diese Aktie in anderen Modulen“ (.vu-sothers, assets/stock-navigator.js). */
+  const modulAktie=await page.locator('.vu-shead--k2').count()>0;
+  if(imInhalt&&modulAktie){
+   if(await page.locator('main nav.qp-tabs').count())befund(view,width,'Reiter auf der Modul-Aktienseite (Klickentwurf: keine)');
+   if(await page.locator('.vu-sothers').count()!==1)befund(view,width,'„Diese Aktie in anderen Modulen“ fehlt');
+  }
+  else if(imInhalt){
    const inhalt=page.locator('main nav.qp-tabs');
    if(await inhalt.count()!==1||!await inhalt.isVisible())befund(view,width,'die Reiter im Inhalt fehlen: main nav.qp-tabs');
    else{const r=(await inhalt.locator('a').allTextContents()).map(t=>t.trim()).join('|');if(r!=='Heute|Landkarte|Anlagestile|Screener|Forschung|Aktien|Meldungen|Methodik|Technische Lagen|Fundamentaldaten')befund(view,width,'Reiter im Inhalt falsch: '+r);}
@@ -730,7 +737,8 @@ Object.defineProperty(window,'QXPages',{configurable:true,set(pages){
  await versuch('keyboard-navigation',width,async()=>{
   await frisch(page,'#/aktie/NVDA','aktie');
   /* Die Aktienanalyse gehoert zum Bereich AKTIEN und markiert ihn. */
-  if(await page.locator(leiste).getByRole('link',{name:'Aktien',exact:true}).getAttribute('aria-current')!=='page')befund('keyboard-navigation',width,'Bereich AKTIEN ist auf der Aktienseite nicht markiert');
+  /* Klickentwurf Modul-Aktienseiten (Owner 17.11.2026): ohne Reiterzeile; die Aktienseite traegt im Kopf das Modul-Etikett „Quant“. */
+  if(!/Quant/.test(await page.locator('.vu-shead-mod').first().textContent({timeout:15000}).catch(()=>'')))befund('keyboard-navigation',width,'Modul-Etikett Quant fehlt im Aktienkopf');
   await page.keyboard.press('Tab');if(!await page.locator('a.qx-skip').evaluate(e=>e===document.activeElement))befund('keyboard-navigation',width,'skip link not first');
   await page.keyboard.press('Enter');if(!await page.locator('main#qx-main').evaluate(e=>e===document.activeElement))befund('keyboard-navigation',width,'skip target not focused');
   /* Die Quant-Suche steht prominent im Hero der Startseite (die Kopfzeile ist
