@@ -73,7 +73,7 @@ jobs:
     # Ohne klares Gate-Urteil (Fehler, uebersprungen) laeuft der Refresh: nur ein
     # ausdrueckliches run=false ueberspringt ihn.
     if: ${{ !cancelled() && vars.COMPANY_INTELLIGENCE_REFRESH_ENABLED != 'false' && needs.gate.outputs.run != 'false' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # Measured full pipeline is 25 min before Pages wait and live QA. Source/request budgets remain fixed.
     # 100 min = 25 Pipeline + >= 50 Pages-Wartefrist (serielle Pages-Laeufe zu je 5-6 min, refresh-dispatch-wait.mjs)
     # + 15 Live-QA-Budget + 10 Reserve fuer Rollback, disable, OFF-Dispatch und Upload (refresh-live-verify.mjs, LIMITS).
