@@ -1,4 +1,13 @@
-# Vision Universe · Coming soon
+# Vision Universe · www.visionuniverse.de
+
+**Seit 17.11.2026: Story-Website** (Owner-Freigabe nach dem Konzept „Website-Konzept Story“, Fassung 9). Die Startseite läuft wie eine Story durch die App: Hero mit „Die App für iPhone und Android“, App Store und Google Play, darunter „Heute neu“ (Reihe 1: Tagesnews zum Wischen, Reihe 2 fest: Aktienmagazin und Aktienreport), eine Sprungleiste zu allen Kapiteln unter dem Menü, je ein Kapitel für Discover, Fundamental, Technical, Supertrader, Vorsorge, Quant, Vision Universe AI, Screener, Hedgefonds, Elliott und Portfolios, dann News, Filme, Social, Fragen und die Anmeldung. Unterseiten: `produkte/<id>/`, `news/`, `app/`.
+
+- Seiten sind Handarbeit (`index.html`, `produkte/*/index.html`, `news/index.html`, `app/index.html`), Stil und Skript unter `web/` (`web/site.css`, `web/site.js`), App-Ansichten unter `web/img/app/`. Kein Inline-Skript, kein Inline-Stil-Block, keine fremden Quellen (CSP aus `scripts/build.mjs`).
+- **Immer aktuell:** Die Bereiche zwischen `<!--NEWS:x-->` und `<!--/NEWS:x-->` gehören `scripts/website/www-news.mjs`; `node products/insights/build.mjs` ruft es bei jedem Bau auf und schreibt landing/ im selben Lauf mit (Wächter `core/tests/www-site.test.mjs`).
+- **Anmeldung unverändert:** Das Formular `#newsletter-form` ist Zeichen für Zeichen die freigegebene Fassung (Felder, Einwilligung `vu-newsletter-v1`, Zustände, `newsletter.js`, API, Server); `npm run test:design` vergleicht es weiter mit der Basis. Nur die Darstellung drumherum ist neu.
+- Filme kommen aus `partner/media/` und laden erst beim Antippen.
+
+## Frühere Fassung: Coming soon
 
 Newsletter öffentlich seit 16.10.2026: konkrete Datenschutzfassung freigegeben, DOI und deutsche Abmeldung tatsächlich abgenommen. [Erfolgreiche öffentliche Freischaltung](https://github.com/dennismueller10x-sudo/vision-universe-research/actions/runs/38903721680), anschließend Hauptdomain ohne Testlink geprüft. Tracking **Ja / unbekannte Zustimmung Nein**; Aufbewahrung und Vorschauenspeicherung ohne erfundene Zusagen dokumentiert. Kein Newsletter an den Bestand.
 
@@ -71,4 +80,6 @@ Alle fünf Original-Shoptexte sind vollständig gesichert. Die künftige App/Web
 
 Ziel des ManyChat-Aufrufs „Kommentiere AKTIE“. `instagram/index.html` übernimmt Aufbau, Videos und Stil der Partnerseite (`../partner/partner.css`, `../partner/partner.js`, `../partner/media/`), ohne App-Links: überall „App bald verfügbar“, der einzige Aufruf führt zur Newsletter-Anmeldung `../#newsletter`. Ganz unten verlinkt die Folie „Unsere Aktienlisten“ die Unterseiten, die neueste zuerst. Ergänzungen in `instagram/instagram.css`.
 
-Neue Liste: `instagram/<thema>/index.html` nach dem Muster von `instagram/robotaxi/` anlegen, in `scripts/build.mjs` (Dateiliste und Instagram-Schleife) eintragen und in `instagram/index.html` als oberste Karte verlinken. Keine Kurse oder Renditen auf den Seiten, damit sie nicht veralten; jede Liste trägt „keine Kauf- oder Verkaufsempfehlung“. `noindex`, wie die Partnerseite.
+**Seit 17.11.2026 im Stil der Story-Website:** `instagram/ki-unterstuetzung/` und `instagram/robotaxi-nebenwerte/` nutzen Kopf, Menü, Fuß und Start-Knopf der Website (`web/site.css`, `web/site.js`) plus `web/liste.css` (Listenkarten, schwarze Lead-Karte „Zum Start benachrichtigen“ → `/#newsletter`). Neue Listen nach diesem Muster anlegen; die älteren Seiten (`robotaxi`, `energie`, `zonen`, Übersicht) laufen noch im Partner-Stil.
+
+Neue Liste: `instagram/<thema>/index.html` nach dem Muster von `instagram/ki-unterstuetzung/` anlegen, in `scripts/build.mjs` (Dateiliste und Instagram-Schleife) eintragen und in `instagram/index.html` als oberste Karte verlinken. Keine Kurse oder Renditen auf den Seiten, damit sie nicht veralten; jede Liste trägt „keine Kauf- oder Verkaufsempfehlung“. `noindex`, wie die Partnerseite.

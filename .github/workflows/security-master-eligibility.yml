@@ -79,6 +79,9 @@ jobs:
           node scripts/market/apply-exchange-directory.mjs --classes DEBT,ETN,PREFERRED,WARRANT,RIGHT,UNIT,ETF \
             --dir "$E/exchange-directory" --eligibility "$E/out/eligibility.json" \
             --reconciliation "$E/out/eligibility-reconciliation.json" --product-universe "$E/scale/universe-ELIGIBLE_US_EQUITY.json"
+          # Beendete Notierungen (scripts/market/apply-ended-listings.mjs, #2054) sind ZURUECKGESTELLT (Steuerung 17.11.2026,
+          # Entscheidung A): Die Umfangsfolge loeschte lange Reihen, auf die eingefrorene Forschung (V10-Population,
+          # Elliott-Registry, Backtest-Tests) verweist. Wieder eingeschaltet erst, wenn die Forschung private Kopien (R2) liest.
 
       - name: Gate (fail closed)
         id: gate

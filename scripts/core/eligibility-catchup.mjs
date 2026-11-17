@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /* Nachholen des Produktuniversums: Freigabeliste + Wirkungsbericht je Produkt (Strang A, 05.11.2026).
    Liest den committeten Stand (--prev) und einen Probelauf der vollstaendigen Erzeugerkette (--next:
-   build-us-eligibility -> apply-name-layer-class DEBT -> apply-exchange-directory), schreibt
+   build-us-eligibility -> apply-name-layer-class DEBT -> apply-exchange-directory -> apply-ended-listings), schreibt
      --out-json  Freigabeliste fuer scripts/core/eligibility-gate.mjs --approved (jeder Wechsel einzeln)
      --out-md    Vorher/Nachher je Produkt (Discover, Quant, Technical, Supertrader, Fundamental, Hedgefonds;
                  Screener folgt dem Discover-Index) und die vollstaendige Liste der Ab- und Zugaenge.

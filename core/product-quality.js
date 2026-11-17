@@ -168,5 +168,17 @@
     return result('DQ-PQ-9', 'Total-Return-Messung: Urteil passt zur Evidenz', 1, f);
   }
 
-  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3, duplicateResolutionSeries, requiredSearchTitles, totalReturnMeasurement };
+  /** DQ-PQ-10 (aus quant/tests/product-services und launch-gates, 17.11.2026): mindestens 97 % des Produktuniversums
+      tragen eine Faktorzeile. Faellt die Deckung, nennt der Befund die Gruende; `stale_last_bar` heisst meist, dass der
+      Titel nicht mehr gehandelt wird und das Universum ihn ueber security-master-eligibility.yml noch entfernen muss. */
+  function factorCoverage(factors) {
+    const title = 'Faktordeckung: mindestens 97 % des Produktuniversums faktorbewertet';
+    const c = factors && factors.coverage;
+    if (!c || !(c.requested > 0)) return result('DQ-PQ-10', title, 0, []);
+    const f = [], share = c.computed / c.requested;
+    if (c.computed < Math.floor(c.requested * 0.97)) f.push('berechnet ' + c.computed + ' von ' + c.requested + ' (' + (share * 100).toFixed(1) + ' %), ausgelassen nach Grund ' + JSON.stringify(c.skippedByReason || {}));
+    return result('DQ-PQ-10', title, 1, f, 'Faktorzeilen ' + c.computed + ' von ' + c.requested + ' (' + (share * 100).toFixed(1) + ' %).');
+  }
+
+  return { universeList, marketStatus, benchmarkNotInUniverse, observationSummary, secUniverse, technicalV3, duplicateResolutionSeries, requiredSearchTitles, totalReturnMeasurement, factorCoverage };
 });

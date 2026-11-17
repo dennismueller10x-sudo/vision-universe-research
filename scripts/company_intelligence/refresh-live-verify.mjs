@@ -52,6 +52,10 @@ const real = (reason, detail) => ({class: CLASSES.REAL, reason, ...(detail ? {de
 
 /** Beurteilung eines QA-Fehlers anhand der Gegenprobe. Rein, ohne Prozess-/Netzzugriff. */
 export function decide({baseline, reproof, qaReport}) {
+ /* Transienter Netzfehler im Lesepfad der Live-QA (universe-browser-qa.mjs schreibt dann einen Bericht mit error.name 'TransientNetworkError',
+    nach drei Leseversuchen je Asset; 16.11.2026 13:57Z: 503, dann ECONNRESET): keine Regression, wiederholen im Rahmen der festen LIMITS.
+    Vor der Gegenprobe, weil auch sie am selben Netzfehler scheitern kann; die wartende Gegenprobe vor der Wiederholung bleibt Pflicht. */
+ if (qaReport && typeof qaReport === 'object' && qaReport.error?.name === 'TransientNetworkError') return {class: CLASSES.PROPAGATION, reason: 'TRANSIENT_NETWORK_ERROR'};
  if (!reproof || typeof reproof !== 'object') return real('PROOF_UNAVAILABLE'); // im Zweifel REAL
  /* Mischstand delivery.json <-> refresh.json direkt nach der Auslieferung (CDN-Rand): Ausbreitungsfall, begrenzt wiederholen (LIMITS).
     Bleibt er nach den Wiederholungen bestehen, endet verifyLive mit RETRIES_EXHAUSTED (fail-closed wie bisher). */

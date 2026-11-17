@@ -272,3 +272,34 @@ test('mixedCheck wirft typisierten Fehler mit beiden Generationen, gleiche Gener
  assert.doesNotThrow(() => mixedCheck({generation: 'a'}, {generation: 'a'}));
  assert.throws(() => mixedCheck({generation: '1606'}, {generation: '6f0b'}), e => e.code === MIXED_CODE && e.delivery === '6f0b' && e.proof === '1606');
 });
+
+// 16.11.2026 13:57Z (Lauf 43865184193): Live-QA brach an 503/ECONNRESET ab; Beweis zeigte denselben Stand, deshalb SAME_STATE_REAL_FAILURE und Gate zu.
+const TRANSIENT_NET = {status: 'FAIL', mode: 'ACTUAL_PRODUCTION', error: {name: 'TransientNetworkError', code: 'ECONNRESET'}};
+
+test('transienter Netzfehler im Lesepfad (Bericht TransientNetworkError) ist trotz gleichem Beweisstand keine echte Regression', () => {
+ const d = decide({baseline: OK('a'), reproof: OK('a'), qaReport: TRANSIENT_NET});
+ assert.equal(d.class, CLASSES.PROPAGATION);assert.equal(d.reason, 'TRANSIENT_NETWORK_ERROR');
+ // auch wenn die Gegenprobe selbst am Netz scheitert (nicht ausgewertet): wiederholt wird erst nach dem wartenden Beweis
+ assert.equal(decide({baseline: OK('a'), reproof: null, qaReport: TRANSIENT_NET}).class, CLASSES.PROPAGATION);
+});
+
+test('Fall 16.11.: Netzfehler -> Pause -> wartender Beweis -> Wiederholung besteht, kein Rollback-Ergebnis', async () => {
+ const h = harness({qa: [{ok: false, report: TRANSIENT_NET}, {ok: true}], proofs: [OK('a'), OK('a'), OK('a')]});
+ const r = await h.run();
+ assert.equal(r.result, 'PASS');assert.equal(r.reason, 'PASSED_ON_RETRY_2');
+ assert.deepEqual(h.log.sleeps, [LIMITS.backoffMs[0]]);
+ assert.equal(h.log.prove[2].maxMs <= LIMITS.proofWaitMs, true);
+});
+
+test('Bleibt der Netzfehler bestehen: Obergrenze der LIMITS, dann Fehler (fail-closed bleibt)', async () => {
+ const h = harness({qa: [{ok: false, report: TRANSIENT_NET}], proofs: [OK('a')]});
+ const r = await h.run();
+ assert.equal(r.result, 'FAIL');assert.equal(r.reason, 'RETRIES_EXHAUSTED');
+ assert.equal(h.log.qa.length, 1 + LIMITS.maxRetries);
+});
+
+test('Inhalts- und Generationsfehler der Browserphase (Bericht ohne TransientNetworkError) bleiben REAL', () => {
+ assert.equal(decide({baseline: OK('a'), reproof: OK('a'), qaReport: {status: 'FAIL', failure: {message: 'x'}}}).class, CLASSES.REAL);
+ assert.equal(decide({baseline: OK('a'), reproof: OK('a'), qaReport: {status: 'FAIL', error: {name: 'AssertionError'}}}).class, CLASSES.REAL);
+ assert.equal(decide({baseline: OK('a'), reproof: OK('a'), qaReport: null}).class, CLASSES.REAL);
+});

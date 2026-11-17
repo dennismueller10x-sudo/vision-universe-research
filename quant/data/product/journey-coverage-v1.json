@@ -1,10 +1,10 @@
 {
  "schemaVersion": "journey-coverage-1.1.0",
- "generatedAt": "2026-11-16T16:09:15.000Z",
+ "generatedAt": "2026-11-17T08:08:20.000Z",
  "universe": 6309,
  "sample": 500,
  "sampling": "jeder 12. Titel der alphabetisch sortierten Liste - deterministisch, damit zwei Laeufe vergleichbar sind",
- "evidenceAsOf": "2026-11-13",
+ "evidenceAsOf": "2026-11-16",
  "evidenceMethodologyVersion": "vu-factor-evidence-2.0.0",
  "stations": [
   {
@@ -30,49 +30,49 @@
   {
    "id": "factorStrength",
    "label": "Wie stark ist die Aktie",
-   "answered": 482,
+   "answered": 463,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 18,
-   "share": 0.964,
+   "withheld": 37,
+   "share": 0.926,
    "reasons": {
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 18
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 37
    }
   },
   {
    "id": "change",
    "label": "Was hat sich veraendert",
-   "answered": 472,
+   "answered": 459,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 28,
-   "share": 0.944,
+   "withheld": 41,
+   "share": 0.918,
    "reasons": {
-    "NO_COMPARABLE_OBSERVATION": 28
+    "NO_COMPARABLE_OBSERVATION": 41
    }
   },
   {
    "id": "setup",
    "label": "Baut sich eine Situation auf",
-   "answered": 450,
+   "answered": 451,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 50,
-   "share": 0.9,
+   "withheld": 49,
+   "share": 0.902,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 50
+    "INSUFFICIENT_HISTORY": 49
    }
   },
   {
    "id": "setupChange",
    "label": "Was diesen Zustand aendern wuerde",
-   "answered": 450,
+   "answered": 451,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 50,
-   "share": 0.9,
+   "withheld": 49,
+   "share": 0.902,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 50
+    "INSUFFICIENT_HISTORY": 49
    }
   },
   {
@@ -92,16 +92,16 @@
   {
    "id": "strategy",
    "label": "Welcher Anlagestil passt",
-   "answered": 435,
-   "findings": 159,
+   "answered": 427,
+   "findings": 152,
    "findingReasons": {
-    "NO_PROFILE_FITS_WELL": 159
+    "NO_PROFILE_FITS_WELL": 152
    },
-   "withheld": 65,
-   "share": 0.87,
+   "withheld": 73,
+   "share": 0.854,
    "reasons": {
-    "NO_EVIDENCE": 47,
-    "NOT_COVERED_BY_FACTOR_EVIDENCE": 15,
+    "NO_EVIDENCE": 36,
+    "NOT_COVERED_BY_FACTOR_EVIDENCE": 34,
     "NOT_AN_EQUITY_LISTING": 3
    }
   },
@@ -109,9 +109,9 @@
    "id": "assignmentChange",
    "label": "Hat sich die Zuordnung geaendert",
    "answered": 500,
-   "findings": 477,
+   "findings": 478,
    "findingReasons": {
-    "NO_ASSIGNMENT_CHANGE": 477
+    "NO_ASSIGNMENT_CHANGE": 478
    },
    "withheld": 0,
    "share": 1,
@@ -120,13 +120,13 @@
   {
    "id": "technical",
    "label": "Kursstruktur",
-   "answered": 450,
+   "answered": 451,
    "findings": 0,
    "findingReasons": {},
-   "withheld": 50,
-   "share": 0.9,
+   "withheld": 49,
+   "share": 0.902,
    "reasons": {
-    "INSUFFICIENT_HISTORY": 50
+    "INSUFFICIENT_HISTORY": 49
    }
   },
   {
@@ -141,38 +141,39 @@
   }
  ],
  "answeredStationsPerTitle": {
-  "4": 4,
+  "4": 7,
   "5": 3,
-  "6": 35,
-  "7": 9,
-  "8": 17,
-  "9": 5,
+  "6": 31,
+  "7": 14,
+  "8": 25,
+  "9": 1,
   "10": 21,
-  "11": 406
+  "11": 398
  },
  "shapes": {
-  "full": 427,
-  "reduced": 73,
+  "full": 419,
+  "reduced": 81,
   "minimal": 0,
-  "noticeBoxesBefore": 422,
-  "noticeBoxesAfter": 172,
+  "noticeBoxesBefore": 467,
+  "noticeBoxesAfter": 180,
   "worstPageNoticeBoxes": 4,
-  "dataPoorPages": 73,
-  "dataPoorNoticeBoxesBefore": 401,
-  "dataPoorNoticeBoxesAfter": 151,
+  "dataPoorPages": 81,
+  "dataPoorNoticeBoxesBefore": 446,
+  "dataPoorNoticeBoxesAfter": 159,
   "substantiveStationsPerTitle": {
-   "3": 7,
+   "3": 10,
    "4": 16,
-   "5": 19,
-   "7": 26,
-   "8": 5,
+   "5": 15,
+   "6": 5,
+   "7": 34,
+   "8": 1,
    "10": 21,
-   "11": 406
+   "11": 398
   },
   "causes": {
    "SHORT_HISTORY": 78,
    "NO_WEEKLY_SERIES": 26,
-   "NO_FIGURES": 65,
+   "NO_FIGURES": 73,
    "NOT_AN_EQUITY_LISTING": 3
   },
   "note": "FULL: hoechstens zwei Absagen, die volle Reise bleibt. REDUCED: verdichtete Auskunft, vorhandene Erkenntnisse zuerst, Absagen zu Ursachen gruppiert. MINIMAL: hoechstens eine gehaltvolle Station - eine eigene Aussage statt einer kurzen Reise."

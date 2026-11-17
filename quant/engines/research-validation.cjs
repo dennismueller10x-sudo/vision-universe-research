@@ -28,6 +28,20 @@ function text(s) { check(typeof s === 'string' && s.length > 0 && s.length <= 51
 function integer(n, min, max) { check(Number.isSafeInteger(n) && n >= min && n <= max, 'INTEGER_OUT_OF_RANGE'); return n; }
 function stamp(body) { const result = { ...body, resultHash: hash(body) }; return freeze(result); }
 function overlap(a, b, c, d) { return a <= d && c <= b; }
+// Same inclusive interval intersection as overlap(), indexed by start with prefix maximum end.
+// Protected candidates include immature/unavailable events exactly as in the previous pair scan.
+function overlapIndex(events, spend) {
+  const sorted = events.slice().sort((a, b) => { spend(1); return a.start - b.start; });
+  const starts = [], ends = []; let maxEnd = -Infinity;
+  for (const e of sorted) { spend(1); starts.push(e.start); maxEnd = Math.max(maxEnd, e.end); ends.push(maxEnd); }
+  return e => {
+    spend(1);
+    if (!starts.length || e.end < starts[0] || e.start > maxEnd) return false;
+    let lo = 0, hi = starts.length;
+    while (lo < hi) { spend(1); const mid = (lo + hi) >>> 1; if (starts[mid] <= e.end) lo = mid + 1; else hi = mid; }
+    return lo > 0 && ends[lo - 1] >= e.start;
+  };
+}
 const DISCLAIMER = 'MECHANICS_ONLY_NOT_CERTIFIED';
 
 /** Calendar entries are exact decision cutoffs. Label availability, not just horizon end,
@@ -56,7 +70,11 @@ function buildWalkForward(config, inputEvents) {
   const foldCount = Math.max(0, Math.floor((usableCalendarLength - tr - va - te) / step) + 1);
   check(foldCount > 0, 'INSUFFICIENT_CALENDAR');
   const operationBudget = integer(config.operationBudget ?? 20000000, 1, 100000000);
-  check(foldCount * events.length * Math.max(1, events.length) <= operationBudget, 'PURGE_OPERATION_BUDGET');
+  // Keep the same resource ceiling. Charge date scans, index construction/comparisons and queries,
+  // rather than rejecting an indexed calculation using the old hypothetical quadratic pair count.
+  let operations = 0;
+  const spend = n => { operations += n; check(operations <= operationBudget, 'PURGE_OPERATION_BUDGET'); };
+  spend(foldCount * events.length * 5); // by(): two protected-candidate scans and three role scans per fold
   const folds = [];
   for (let p = tr + va, k = 0; p + te <= usableCalendarLength; p += step, k++) {
     const trainStart = config.mode === 'EXPANDING' ? 0 : p - va - tr;
@@ -67,13 +85,15 @@ function buildWalkForward(config, inputEvents) {
     for (const role of ['train', 'validation', 'test']) {
       const cutoff = role === 'train' ? bounds.validation[0] : role === 'validation' ? bounds.test[0] : asOf;
       const protectedEvents = role === 'train' ? [...validationCandidates, ...testCandidates] : role === 'validation' ? testCandidates : [];
+      const intersects = overlapIndex(protectedEvents, spend);
       for (const e of by(role)) {
+        spend(1);
         let reason = null;
         if (e.d > asOf || e.a > e.d) reason = 'INPUT_NOT_AVAILABLE_AT_DECISION';
         else if (e.ready === null) reason = 'OUTCOME_UNKNOWN';
         else if (e.ready > asOf || (role === 'test' ? e.ready > cutoff : e.ready >= cutoff)) reason = 'OUTCOME_NOT_MATURE_AT_CUTOFF';
         else if (role !== 'test' && e.ready + embargo * DAY >= cutoff) reason = 'EMBARGO';
-        else if (protectedEvents.some(t => overlap(e.start, e.end, t.start, t.end))) reason = 'PURGED_INFORMATION_OUTCOME_OVERLAP';
+        else if (intersects(e)) reason = 'PURGED_INFORMATION_OUTCOME_OVERLAP';
         if (reason) fold.excluded.push({ id: e.id, role, reason }); else fold[role].push(e.id);
       }
     }

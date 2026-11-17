@@ -55,15 +55,15 @@ try{
     const page=await context.newPage(),errors=[],external=[];let posts=0;
     page.on('pageerror',e=>errors.push(e.message));page.on('request',r=>{if(!r.url().startsWith(base))external.push(r.url());if(r.method()==='POST')posts++});
     await page.goto(base+'/after/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);
-    assert.equal((await page.locator('h1').textContent()).replace(/\s+/g,' ').trim(),'Investieren mit Weitblick. Alles in einer App.');
-    assert.equal(await page.locator('h1 em').innerText(),'Weitblick.');
-    assert.equal(await page.locator('.hero-badge').innerText(),'App bald verfügbar');
-    assert.equal(await page.locator('h1 em').evaluate(e=>getComputedStyle(e).color),'rgb(200, 245, 49)');
+    // Story-Website (Owner 17.11.2026): weiß, Schwarz, ein Neongrün als Marker.
+    assert.equal((await page.locator('h1').textContent()).replace(/\s+/g,' ').trim(),'Aktien und Finanzen richtig verstehen.');
+    assert.equal(await page.locator('h1 mark').innerText(),'richtig verstehen.');
+    assert.equal(await page.locator('h1 mark').evaluate(e=>getComputedStyle(e).backgroundImage),'linear-gradient(rgba(0, 0, 0, 0) 14%, rgb(200, 245, 49) 14%, rgb(200, 245, 49) 90%, rgba(0, 0, 0, 0) 90%)');
     assert.match(await page.locator('h1').evaluate(e=>getComputedStyle(e).fontFamily),/Inter/);
-    assert.equal(await page.locator('.footer').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(7, 10, 9)');
+    assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(255, 255, 255)');
     assert.doesNotMatch(await page.locator('body').innerText(),/Konzeptansicht/);
     const metrics=await page.evaluate(()=>({width:document.documentElement.scrollWidth,height:document.documentElement.scrollHeight}));
-    assert.equal(metrics.width,width,`${name}: no horizontal overflow`);assert.ok(metrics.height<=budget,`${name}: compact coming-soon page (${metrics.height})`);
+    assert.equal(metrics.width,width,`${name}: no horizontal overflow`);void budget;
     await checkIphonePreview(page);
     await checkConsentDisclosure(page);
     // Only the authorized compact presentation differs: the full canonical
@@ -92,10 +92,11 @@ try{
     assert.equal(comparison.hint,'Anmeldung mit E-Mail-Bestätigung.');
     assert.equal(comparison.allOtherMarkupMatches,true,'All form markup other than approved compact presentation unchanged');
     await page.goto(base+'/after/',{waitUntil:'networkidle'});
-    const headerHeight=await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height);
-    await page.evaluate(()=>scrollTo(0,150));await page.waitForFunction(()=>document.querySelector('.lp-head').classList.contains('scrolled'));
-    assert.equal(await page.locator('.lp-head').evaluate(e=>e.getBoundingClientRect().height),headerHeight,'Sticky header must not shift the signup during scroll');
-    await page.evaluate(()=>scrollTo(0,0));await page.waitForFunction(()=>!document.querySelector('.lp-head').classList.contains('scrolled'));
+    const headerHeight=await page.locator('header.nav').evaluate(e=>e.getBoundingClientRect().height);
+    await page.evaluate(()=>scrollTo(0,1500));await page.waitForTimeout(100);
+    assert.equal(await page.locator('header.nav').evaluate(e=>e.getBoundingClientRect().top),0,'Header bleibt oben stehen');
+    assert.equal(await page.locator('header.nav').evaluate(e=>e.getBoundingClientRect().height),headerHeight,'Sticky header must not change height during scroll');
+    await page.evaluate(()=>scrollTo(0,0));
     assert.equal(await page.locator('#email').isDisabled(),false);assert.equal(await page.locator('#consent').isChecked(),false);
     assert.ok(await page.locator('#email').evaluate(e=>parseFloat(getComputedStyle(e).fontSize)>=16),'Email input avoids automatic Safari focus zoom');
     assert.equal(await page.locator('[name=CONSENT_VERSION]').getAttribute('value'),'vu-newsletter-v1');
@@ -118,7 +119,7 @@ try{
     }
     if(['desktop','iphone'].includes(name)){await page.goto(base+'/before/',{waitUntil:'networkidle'});await page.evaluate(()=>document.fonts.ready);await page.screenshot({path:resolve(review,'before-'+name+'.png'),fullPage:true});}
     assert.deepEqual(errors,[]);assert.deepEqual(external,[]);assert.equal(posts,0);
-    results.push({name,viewport:{width,height},pageHeight:metrics.height,horizontalOverflow:false,singleIphone:true,tenOriginalProducts:true,twoColumns:true,completeProductNames:true,formControlsAndConsentUnchanged:true,compactConsentDisclosure:true,signupDirectlyBelow:true,legalTextAndLinksUnchanged:true,legalAxeViolations:0,externalRequests:0,posts:0});await context.close();
+    results.push({name,viewport:{width,height},pageHeight:metrics.height,horizontalOverflow:false,storySite:true,allProducts:true,formControlsAndConsentUnchanged:true,compactConsentDisclosure:true,signupLastSection:true,legalTextAndLinksUnchanged:true,legalAxeViolations:0,externalRequests:0,posts:0});await context.close();
   }
   await writeFile(resolve(review,'checks.json'),JSON.stringify({baseline,reference:provenance.commit,scope:'Local public-mode rendering, approved unchanged privacy document, no credentials or live endpoints; legal copy/links compared with immutable baseline.',results},null,2)+'\n');
   console.log(JSON.stringify(results,null,2));

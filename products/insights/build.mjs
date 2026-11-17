@@ -408,4 +408,12 @@ if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   }
   if (check && stale.length) { console.error('Veraltet (node products/insights/build.mjs): ' + stale.join(', ')); process.exit(1); }
   console.log(`${Object.keys(files).length} Dateien · ${check ? 'geprüft' : stale.length ? 'geschrieben: ' + stale.length : 'unverändert'}`);
+  // www.visionuniverse.de zeigt Artikel, Heft und Report fest in der Seite: im selben Lauf auffrischen
+  // (landing/ gehört mit in denselben Commit; scripts/website/www-news.mjs).
+  if (out === root) {
+    const { syncWww } = await import('../../scripts/website/www-news.mjs');
+    const www = syncWww({ check });
+    if (check && www.length) { console.error('www veraltet (node scripts/website/www-news.mjs): ' + www.join(', ')); process.exit(1); }
+    if (www.length) console.log(`www: ${check ? 'geprüft' : 'aufgefrischt: ' + www.length}`);
+  }
 }

@@ -14,7 +14,7 @@ import {navigate} from '../../quality/browser-navigation.mjs';
      Screener     Schnellsuche liefert Treffer mit Befund-Pille, Filter-Sheet: ein Chip
                   aendert Trefferzahl und Adresse, Trichter vorhanden; Profi-Tabelle
      Chart        Einsteiger: Urteil, Linie (keine Kerzen), drei Saetze, Preise, Signal-Sheet,
-                  „Chart erklären“ (sieben Schritte, Fibonacci-Ebene, Kurz gesagt)
+                  „Chart erklären“ (acht Schritte, EMA-Bänder, Fibonacci-Ebene, Kurz gesagt)
      Chart Studio (PRO, #/chart/<T>/studio) Kerzen gezeichnet, Zeitraum 3M zeichnet weniger Kerzen,
                   Abschnitt "Diese Aktie in Quant und Supertrader" (Stufen ohne
                   Zahl, Links, Research-Status),
@@ -307,18 +307,26 @@ async function main() {
         assert(/Erkannt/.test(await page.locator("#tc-signal-sheet").innerText()), "Befund-Sheet ohne Erkannt");
         await page.keyboard.press("Escape");
       }
-      /* „Chart erklären“ (engine/chart-explain.js): sieben Schritte, je Schritt die passende Ebene, am Ende „Kurz gesagt“.
+      /* „Chart erklären“ (engine/chart-explain.js): acht Schritte, je Schritt die passende Ebene, am Ende „Kurz gesagt“.
          Die Karte bleibt offen, damit die Farbpruefung unten auch sie erfasst. */
       await page.locator(".tc-explain-btn").click();
       await page.waitForSelector(".tc-guide .tc-guide-t");
-      assert(/Schritt 1 von 7/i.test(await page.locator(".tc-guide").innerText()), "Chart erklären: Schritt 1 fehlt");
+      assert(/Schritt 1 von 8/i.test(await page.locator(".tc-guide").innerText()), "Chart erklären: Schritt 1 fehlt");
       await page.waitForSelector(".tc-simple-chart .tc-layers .tc-avg");
-      for (let i = 1; i < 5; i++) await page.locator(".tc-guide-nav .vu-btn--ink").click();
+      await page.locator(".tc-guide-nav .vu-btn--ink").click(); await page.locator(".tc-guide-nav .vu-btn--ink").click();
+      assert(/Linien/i.test(await page.locator(".tc-guide h3").innerText()), "Chart erklären: Schritt 3 ist nicht das Linienbündel");
+      assert(await page.locator('.tc-togs [data-layer="ema"][aria-pressed="true"]').count() === 1, "EMA-Bänder nicht eingeschaltet");
+      assert(await page.locator(".tc-simple-chart .tc-layers .tc-ema--fast").count() === 1 && await page.locator(".tc-simple-chart .tc-layers .tc-ema--slow").count() === 1, "EMA-Bänder nicht gezeichnet");
+      /* Wochenchart (5J): Baender aus der langen Wochenreihe ueber die ganze Breite; Ebenen fangen keine Klicks ab. */
+      await page.locator('.tc-simple-chart .qc-ranges button[data-range="5Y"]').click();
+      await page.waitForFunction(() => { const f = document.querySelector(".tc-simple-chart .tc-ema--fast"), s = f && f.ownerSVGElement; return f && s && f.getBBox().width > s.getBBox().width * 0.8; }, null, { timeout: 15000 });
+      await page.locator('.tc-simple-chart .qc-ranges button[data-range="1Y"]').click();
+      for (let i = 3; i < 6; i++) await page.locator(".tc-guide-nav .vu-btn--ink").click();
       assert(/Fibonacci/i.test(await page.locator(".tc-guide h3").innerText()), "Chart erklären: Schritt 5 ist nicht Fibonacci");
       assert(await page.locator('.tc-togs [data-layer="fib"][aria-pressed="true"]').count() === 1, "Fibonacci-Ebene nicht eingeschaltet");
-      for (let i = 5; i < 8; i++) await page.locator(".tc-guide-nav .vu-btn--ink").click();
+      for (let i = 6; i < 9; i++) await page.locator(".tc-guide-nav .vu-btn--ink").click();
       await page.waitForSelector(".tc-guide-sum");
-      assert(await page.locator(".tc-guide-sum li").count() === 7, "Kurz gesagt: nicht sieben Zeilen");
+      assert(await page.locator(".tc-guide-sum li").count() === 8, "Kurz gesagt: nicht acht Zeilen");
       assert(/keine Vorhersage und keine Handlungsempfehlung/i.test(await page.locator(".tc-guide").innerText()), "Kurz gesagt: Einordnung fehlt");
       /* Kein Rot und kein Gruen auf der Seite (Regel 1): alle sichtbaren Hintergruende und Schriften.
          Einzige Ausnahme: die Tagesveraenderung im gemeinsamen Aktienkopf (Owner 06.11.2026, #1493/#1520, alle Aktien:

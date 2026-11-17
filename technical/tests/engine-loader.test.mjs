@@ -7,7 +7,7 @@ const code=source.slice(source.indexOf('  var ENGINE_SCRIPTS ='),source.indexOf(
 test('Technical starts every download before load events, preserves execution order and shares pending work',async()=>{
  const scripts=[],context={doc:{createElement:()=>({}),head:{appendChild:s=>scripts.push(s)}},Promise};
  vm.runInNewContext(code+';this.load=loadEngines',context);
- const first=context.load();assert.equal(context.load(),first);assert.equal(scripts.length,17);
+ const first=context.load();assert.equal(context.load(),first);assert.equal(scripts.length,18);
  assert(scripts.every(s=>s.async===false),'ordered classic-script queue');
  let done=false;first.then(()=>done=true);
  for(const s of scripts.slice(0,-1))s.onload();await Promise.resolve();assert.equal(done,false);

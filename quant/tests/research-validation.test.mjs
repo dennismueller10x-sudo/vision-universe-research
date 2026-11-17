@@ -7,6 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 const require = createRequire(import.meta.url);
 const V = require('../engines/research-validation.cjs');
+const naiveWalkForward = require('./fixtures/walk-forward-naive.cjs').buildWalkForward;
 const date = n => new Date(Date.UTC(2020, 0, 1 + n)).toISOString().slice(0, 10);
 const calendar = Array.from({ length: 80 }, (_, i) => date(i));
 const config = extra => ({ calendar, trainSize: 10, validationSize: 5, testSize: 5, mode: 'ROLLING', asOf: date(79), ...extra });
@@ -51,6 +52,31 @@ test('purge uses declared information/outcome intersections, embargo uses label 
   assert.ok(r.folds[0].excluded.some(e => e.id === 'E8' && e.reason === 'PURGED_INFORMATION_OUTCOME_OVERLAP'));
   const e = V.buildWalkForward(config({ embargoDays: 1 }), [event(8), event(12), event(16)]);
   assert.ok(e.folds[0].excluded.some(x => x.id === 'E8' && x.reason === 'EMBARGO'));
+});
+
+test('indexed purging is byte-equivalent to the previous pair scan across inclusive boundaries, cutoffs and ordering', () => {
+  const cases = [
+    [event(8), event(12, { informationStart: date(9) }), event(16)], // inclusive endpoint touch must purge
+    [event(8, { outcomeEnd: date(10), outcomeAvailableAt: date(10) }), event(12, { informationStart: date(10) }), event(16)],
+    [event(8, { outcomeEnd: date(9), outcomeAvailableAt: date(9) }), event(12, { informationStart: date(10) }), event(16)],
+    [event(8), event(12, { informationStart: date(0), availableAt: date(13), outcomeAvailableAt: null }), event(16)],
+    [event(8), event(12, { informationStart: date(7), outcomeEnd: date(25), outcomeAvailableAt: date(25) }), event(16, { informationStart: date(0) })],
+    [], [event(8, { outcomeEnd: date(8), outcomeAvailableAt: date(8) })]
+  ];
+  for (const mode of ['ROLLING', 'EXPANDING']) for (const embargoDays of [0, 1, 5]) for (const sample of cases) {
+    const c = config({ mode, embargoDays });
+    assert.equal(JSON.stringify(V.buildWalkForward(c, sample)), JSON.stringify(naiveWalkForward(c, sample)));
+  }
+  let seed = 17012026; const rand = n => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed % n; };
+  for (let trial = 0; trial < 160; trial++) {
+    const sample = Array.from({ length: 30 + rand(100) }, (_, i) => {
+      const d = rand(80), end = d + rand(9);
+      return { id: 'R' + i, decisionAt: date(d), availableAt: date(d + rand(3)), informationStart: date(Math.max(0, d - rand(25))),
+        outcomeEnd: date(end), outcomeAvailableAt: rand(8) ? date(end + rand(4)) : null };
+    }).reverse();
+    const c = config({ mode: trial % 2 ? 'ROLLING' : 'EXPANDING', embargoDays: rand(6), asOf: date(trial % 3 ? 79 : 59) });
+    assert.equal(JSON.stringify(V.buildWalkForward(c, sample)), JSON.stringify(naiveWalkForward(c, sample)), 'trial ' + trial);
+  }
 });
 
 test('future inputs, unknown outcomes, and delayed labels never enter a fitting/evaluation set', () => {

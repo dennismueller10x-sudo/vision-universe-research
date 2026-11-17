@@ -173,7 +173,7 @@ jobs:
       group: vu-ask-deploy
       cancel-in-progress: false
     name: Tests, Ausrollen, Smoke-Test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4

@@ -1,6 +1,7 @@
 /* Existing full-state runner with an optional bounded onboarding batch.
    No model, paid service, partial state promotion or production gate change. */
 import {execFileSync} from 'node:child_process';
+import {childRun} from './child-run.mjs';
 import {readFileSync,writeFileSync} from 'node:fs';
 import {join,resolve} from 'node:path';
 import {createS3DriverFromEnv} from '../market/storage/s3-driver.mjs';
@@ -18,8 +19,8 @@ if(!verification&&!recovery&&!await universeActive(driver))throw Error('CURRENT_
 const sourceBatch=args.includes('--sources');
 const beforeBuild=async({state,temporary,identityRoot})=>{
  // Katalog (company-profiles.json) in den wiederhergestellten privaten Zustand saeen: ohne diesen Schritt fehlt geprueften deutschen Fassungen die Quelle (NO_PROFILE_SOURCE).
- execFileSync('python3',['scripts/company_intelligence/profile_catalogue_seed.py','--state',state,'--identity-root',identityRoot,'--out',join(temporary,'profile-catalogue-seed.json')],{stdio:['ignore','ignore','pipe'],timeout:300000});
- execFileSync('python3',['scripts/company_intelligence/profile_source_audit.py','--state',state,'--identity-root',identityRoot,'--out',join(temporary,'profile-before-funnel.json')],{stdio:['ignore','ignore','pipe'],timeout:300000});
+ childRun('CATALOGUE_SEED','python3',['scripts/company_intelligence/profile_catalogue_seed.py','--state',state,'--identity-root',identityRoot,'--out',join(temporary,'profile-catalogue-seed.json')],{stdio:['ignore','ignore','pipe'],timeout:300000},{temporary});
+ childRun('SOURCE_AUDIT_BEFORE','python3',['scripts/company_intelligence/profile_source_audit.py','--state',state,'--identity-root',identityRoot,'--out',join(temporary,'profile-before-funnel.json')],{stdio:['ignore','ignore','pipe'],timeout:300000},{temporary});
  let preparation={sourceRequests:0,universeDiscovery:false};
  if(sourceBatch){
  const out=join(temporary,'source-onboarding.json');
@@ -43,13 +44,13 @@ const beforeBuild=async({state,temporary,identityRoot})=>{
  preparation=JSON.parse(readFileSync(out));
  }
  const metadata=join(temporary,'profile-qa-metadata.json');
- execFileSync('python3',['scripts/company_intelligence/profile_qa_metadata.py','--state',state,'--out',metadata],{stdio:['ignore','ignore','pipe'],timeout:720000});
+ childRun('QA_METADATA','python3',['scripts/company_intelligence/profile_qa_metadata.py','--state',state,'--out',metadata],{stdio:['ignore','ignore','pipe'],timeout:720000},{temporary});
  return {...preparation,qaMetadata:JSON.parse(readFileSync(metadata))};
 };
 const validateContent=async({state,consumer,temporary,identityRoot})=>{
  const audit=join(temporary,'profile-source-funnel.json'),sample=join(temporary,'profile-sample.json');
  const decisions=join(temporary,'eligibility-decisions.json');
- execFileSync('python3',['scripts/company_intelligence/profile_source_audit.py','--state',state,'--identity-root',identityRoot,'--eligibility',decisions,'--out',audit],{stdio:['ignore','ignore','pipe'],timeout:300000});
+ childRun('SOURCE_AUDIT_FUNNEL','python3',['scripts/company_intelligence/profile_source_audit.py','--state',state,'--identity-root',identityRoot,'--eligibility',decisions,'--out',audit],{stdio:['ignore','ignore','pipe'],timeout:300000},{temporary});
  const funnel=JSON.parse(readFileSync(audit)),m=JSON.parse(readFileSync(join(consumer,'manifest.json')));
  const mandatory={};
  for(const cid of ['iss_cik_0001633917','iss_cik_0001652130']){
@@ -59,10 +60,10 @@ const validateContent=async({state,consumer,temporary,identityRoot})=>{
   const counts=funnel.mandatoryCases[cid];
   mandatory[cid]={ledgerNews:counts.ledgerNewsCount,policyAllowedNews:counts.policyAllowedNews,policyExcludedNews:counts.policyExcludedNews,consumerNews:p.news.length,provenPollableSources:counts.provenPollableSources,profileVersion:p.companyProfile.profileVersion};
  }
- execFileSync('python3',['scripts/company_intelligence/profile_samples.py','--state',state,'--consumer',consumer,'--decisions',decisions,'--out',sample],{stdio:['ignore','ignore','pipe'],timeout:300000});
+ childRun('PROFILE_SAMPLES','python3',['scripts/company_intelligence/profile_samples.py','--state',state,'--consumer',consumer,'--decisions',decisions,'--out',sample],{stdio:['ignore','ignore','pipe'],timeout:300000},{temporary});
  const sampling=JSON.parse(readFileSync(sample));
  if(Object.keys(sampling.groupShortfalls).length)throw Error('REQUIRED_PROFILE_SAMPLE_INCOMPLETE');
- execFileSync('node',['scripts/company_intelligence/universe-browser-qa.mjs','--consumer',consumer,'--sample',sample,'--out',join(temporary,'profile-browser-qa.json')],{stdio:['ignore','ignore','pipe'],timeout:1800000,maxBuffer:1024*1024});
+ childRun('PROFILE_BROWSER_QA','node',['scripts/company_intelligence/universe-browser-qa.mjs','--consumer',consumer,'--sample',sample,'--out',join(temporary,'profile-browser-qa.json')],{stdio:['ignore','ignore','pipe'],timeout:1800000,maxBuffer:1024*1024},{temporary});
  return {status:'PASS',mandatory,sample:sampling.availableGroupCounts};
 };
 const report=await runRefresh(driver,{temporary:resolve(arg('--temporary')),identityRoot:arg('--identity-root'),
