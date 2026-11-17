@@ -23,16 +23,11 @@ test("TS-1 · Register: TCBI -> TXCP loest auf, fremde IDs bleiben, Vorgaenger i
   assert.equal(TS.predecessorOf("ref_NVDA", map), null);
 });
 
-test("TS-2 · jeder Eintrag: IDs aus core/identity.js, gleiche CIK in der CIK-Karte fuer beide Ticker, Beleg vor dem Stichtag", () => {
-  const cikMap = json("quant/data/universe/cik-map.json");
-  const ciks = cikMap.byTicker;
+test("TS-2 · jeder Eintrag: IDs aus core/identity.js, Ticker passend, Beleg vor dem Stichtag (CIK-Gleichheit prueft das Eignungs-Gate, EG-10)", () => {
   for (const e of REG.successions) {
     assert.equal(Identity.securityIdForTicker(e.fromTicker), e.from, e.from);
     assert.equal(Identity.securityIdForTicker(e.toTicker), e.to, e.to);
-    // Die alte Zeile muss die CIK des Registers tragen; die neue, sobald der Stamm sie fuehrt.
-    assert.equal(ciks[e.fromTicker]?.cik, e.cik, `CIK ${e.fromTicker}`);
-    if (ciks[e.toTicker]) assert.equal(ciks[e.toTicker].cik, e.cik, `CIK ${e.toTicker}`);
-    assert.ok(e.source.filed <= e.effective && e.source.quote, e.from);
+    assert.ok(e.source.filed <= e.effective && e.source.quote && e.issuer, e.from);
   }
 });
 

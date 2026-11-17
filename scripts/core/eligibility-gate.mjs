@@ -25,7 +25,7 @@ function statusMap(doc) {
   return m;
 }
 
-export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, approval = null, prevSha256 = null, successions = null }) {
+export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, approval = null, prevSha256 = null, successions = null, cikByTicker = null }) {
   const a = statusMap(prev), b = statusMap(next), transitions = {}, samples = {};
   const approved = new Map((approval?.changes || []).map((c) => [c.securityId, `${c.from}->${c.to}`]));
   const used = new Set(), failures = [];
@@ -48,6 +48,14 @@ export function evaluate({ prev, next, prevUniverse, nextUniverse, limits, appro
      universeMembersChanged. Jeder andere Abgang und Zugang zaehlt weiter. */
   const replacements = Object.values(successions || {}).filter((e) => a.has(e.from) && !b.has(e.from) && b.has(e.to) && !a.has(e.to))
     .map((e) => ({ from: e.from, to: e.to }));
+  /* Regel "gleiche CIK" (ADR-009): ein Austausch gilt nur, wenn die CIK-Karte beide Ticker unter der Register-CIK fuehrt. */
+  for (const e of Object.values(successions || {})) {
+    if (!replacements.some((r) => r.from === e.from)) continue;
+    for (const t of [e.fromTicker, e.toTicker]) {
+      const cik = cikByTicker ? cikByTicker[t]?.cik : undefined;
+      if (cik !== e.cik) failures.push(`Tickernachfolge ${e.from} -> ${e.to}: CIK von ${t} ist ${cik ?? "unbekannt"}, Register ${e.cik}`);
+    }
+  }
   const replacedFrom = new Set(replacements.map((r) => r.from)), replacedTo = new Set(replacements.map((r) => r.to));
   const added = addedIds.filter((id) => !membersApproved.has(id) && !replacedTo.has(id)).length;
   const removed = [...a.keys()].filter((id) => !b.has(id) && !replacedFrom.has(id)).length;
@@ -80,7 +88,8 @@ function main(argv) {
   const TS = require(join(ROOT, "core/ticker-succession.js"));
   const successions = TS.tickerSuccessions(j(join(ROOT, "quant/config/ticker-successions.json")));
   const rep = evaluate({ prev: j(o.prev), next: j(o.next), prevUniverse: j(o["prev-universe"]), nextUniverse: j(o["next-universe"]),
-                         limits: cfg.limits, approval: j(o.approved), prevSha256, successions });
+                         limits: cfg.limits, approval: j(o.approved), prevSha256, successions,
+                         cikByTicker: j(join(ROOT, "quant/data/universe/cik-map.json")).byTicker });
   if (o.out) writeFileSync(o.out, JSON.stringify(rep, null, 2) + "\n");
   console.log(`[eignung] ${rep.decision} · ${JSON.stringify(rep.counted)} · Produktuniversum ${rep.productUniverse.before} -> ${rep.productUniverse.after}`);
   for (const f of rep.failures) console.log(`[eignung] - ${f}`);
