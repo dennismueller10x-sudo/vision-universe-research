@@ -1,130 +1,130 @@
 {
  "schemaVersion": "vu-vorsorge-data-qa-2.0.0",
- "asOf": "2026-11-10",
+ "asOf": "2026-11-16",
  "scope": "TIINGO_ETF_INGEST",
  "ingest": {
   "status": "COMPLETE",
   "report": {
    "schemaVersion": "vu-vorsorge-ingest-report-1.0.0",
    "ingest": "vorsorge-ingest-2.0.0",
-   "activeTickers": 409,
-   "extraEtfs": 387,
+   "activeTickers": 401,
+   "extraEtfs": 386,
    "onlyExtra": true,
-   "universeRows": 7553,
+   "universeRows": 7547,
    "keptFromPreviousRuns": 7148,
-   "processedOk": 405,
+   "processedOk": 399,
    "notFound": 0,
-   "noPrices": 4,
-   "failed": 4,
+   "noPrices": 2,
+   "failed": 2,
    "pending": 0,
    "complete": true,
    "stoppedBecause": null,
    "thisRun": {
-    "requests": 819,
+    "requests": 803,
     "rateLimited": 0,
     "minutes": 11,
-    "newlyAttempted": 409
+    "newlyAttempted": 401
    }
   },
   "catalog": {
    "schemaVersion": "vu-vorsorge-catalog-stats-1.0.0",
    "source": "https://apimedia.tiingo.com/docs/tiingo/daily/supported_tickers.zip",
-   "catalogRows": 109256,
-   "etfRows": 9924,
-   "malformedRows": 158,
-   "activeRows": 7171,
-   "inactiveRows": 2595,
+   "catalogRows": 109306,
+   "etfRows": 9936,
+   "malformedRows": 161,
+   "activeRows": 7163,
+   "inactiveRows": 2612,
    "rowsWithoutPriceDates": 0,
-   "uniqueTickers": 9548,
-   "tickersWithMultipleRows": 214,
-   "activeUniqueTickers": 7170,
+   "uniqueTickers": 9558,
+   "tickersWithMultipleRows": 213,
+   "activeUniqueTickers": 7163,
    "byExchange": {
     "SHE": 426,
-    "SHG": 424,
-    "NYSE": 2945,
-    "BATS": 1813,
-    "NASDAQ": 1633,
+    "SHG": 425,
+    "NYSE": 2943,
+    "BATS": 1814,
+    "NASDAQ": 1634,
     "NYSE MKT": 24,
-    "NYSE ARCA": 1601,
-    "PINK": 585,
+    "NYSE ARCA": 1609,
+    "PINK": 548,
+    "OTCMKTS": 133,
     "AMEX": 50,
-    "OTCMKTS": 93,
     "OTCQB": 8,
-    "OTCGREY": 112,
+    "OTCGREY": 110,
     "NMFQS": 14,
     "OTCBB": 9,
-    "EXPM": 23,
+    "EXPM": 22,
     "OTCD": 5,
     "OTCCE": 1
    },
    "byCurrency": {
-    "USD": 9010,
+    "USD": 9019,
     "CNY": 754,
     "AUD": 2
    },
    "activeByExchange": {
-    "SHE": 400,
-    "SHG": 424,
-    "NYSE": 2641,
-    "BATS": 1478,
+    "SHE": 398,
+    "SHG": 425,
+    "NYSE": 2637,
+    "BATS": 1479,
     "NASDAQ": 1319,
-    "NYSE ARCA": 284,
-    "PINK": 486,
+    "NYSE ARCA": 282,
+    "PINK": 449,
+    "OTCMKTS": 111,
     "AMEX": 31,
-    "OTCMKTS": 72,
     "OTCQB": 8,
     "OTCD": 2,
-    "EXPM": 9,
-    "OTCGREY": 15,
+    "EXPM": 7,
+    "OTCGREY": 13,
     "OTCBB": 1,
     "NMFQS": 1
    },
    "otherAssetTypes": {
-    "Stock": 49452,
-    "Mutual Fund": 49880
+    "Stock": 49488,
+    "Mutual Fund": 49882
    },
-   "staleBefore": "2026-10-11",
-   "maxEndDate": "2026-11-10"
+   "staleBefore": "2026-10-17",
+   "maxEndDate": "2026-11-16"
   },
-  "failedCount": 4
+  "failedCount": 2
  },
  "layers": {
-  "raw": 9924,
-  "canonical": 7546,
-  "listings": 7563,
-  "publicAnalysis": 3967,
+  "raw": 9936,
+  "canonical": 7540,
+  "listings": 7557,
+  "publicAnalysis": 3962,
   "complex": 2127,
   "archive": 8,
-  "review": 1461
+  "review": 1460
  },
  "counts": {
-  "rowsRead": 15388,
-  "listings": 7563,
-  "canonicalFunds": 7546,
-  "shareClasses": 7546,
-  "uniqueTickers": 7562,
-  "publicAnalysis": 3967,
+  "rowsRead": 15382,
+  "listings": 7557,
+  "canonicalFunds": 7540,
+  "shareClasses": 7540,
+  "uniqueTickers": 7556,
+  "publicAnalysis": 3962,
   "complex": 2127,
   "archive": 8,
-  "review": 1461,
-  "consumerVisible": 6094,
-  "withPriceHistory": 7553,
-  "withHistory1Y": 5144,
-  "withHistory3Y": 3478,
-  "withHistory5Y": 2733,
-  "withHistory10Y": 1613,
-  "withTotalReturn": 7165,
-  "leveragedOrInverse": 837,
+  "review": 1460,
+  "consumerVisible": 6089,
+  "withPriceHistory": 7547,
+  "withHistory1Y": 5135,
+  "withHistory3Y": 3468,
+  "withHistory5Y": 2726,
+  "withHistory10Y": 1611,
+  "withTotalReturn": 7160,
+  "leveragedOrInverse": 838,
   "inactive": 8
  },
  "priceCoverage": {
-  "withAnyHistory": 7553,
-  "ratio": 0.9986777733703557,
-  "y1": 5144,
-  "y3": 3478,
-  "y5": 2733,
-  "y10": 1613,
-  "totalReturn": 7165
+  "withAnyHistory": 7547,
+  "ratio": 0.9986767235675532,
+  "y1": 5135,
+  "y3": 3468,
+  "y5": 2726,
+  "y10": 1611,
+  "totalReturn": 7160
  },
  "metadataCoverage": {
   "symbol": 1,
@@ -132,16 +132,16 @@
   "exchange": 1,
   "currency": 1,
   "country": 1,
-  "assetClass": 0.882,
-  "issuer": 0.568,
+  "assetClass": 0.881,
+  "issuer": 0.567,
   "index": 0.148,
   "category": 1,
-  "region": 0.444,
+  "region": 0.445,
   "sector": 0,
   "theme": 0.205,
   "leverage": 1,
   "inverse": 1,
-  "distributionPolicy": 0.654,
+  "distributionPolicy": 0.652,
   "replicationMethod": 0,
   "ter": 0,
   "fundSize": 0,
@@ -154,21 +154,21 @@
   "priceHistoryAvailable": 1
  },
  "missingMetadata": {
-  "issuer": 3270,
-  "sector": 7563,
-  "theme": 6011,
-  "distributionPolicy": 2619,
-  "replicationMethod": 7563,
-  "ter": 7563,
-  "fundSize": 7563,
-  "inceptionDate": 7563,
-  "holdingsCount": 7563,
-  "isin": 7563,
-  "wkn": 7563,
-  "index": 6444,
-  "benchmark": 6444,
-  "assetClass": 895,
-  "region": 4202,
+  "issuer": 3269,
+  "sector": 7557,
+  "theme": 6008,
+  "distributionPolicy": 2629,
+  "replicationMethod": 7557,
+  "ter": 7557,
+  "fundSize": 7557,
+  "inceptionDate": 7557,
+  "holdingsCount": 7557,
+  "isin": 7557,
+  "wkn": 7557,
+  "index": 6440,
+  "benchmark": 6440,
+  "assetClass": 898,
+  "region": 4195,
   "name": 11
  },
  "missingName": 11,
@@ -194,13 +194,6 @@
    }
   ],
   "multiListingFunds": [
-   {
-    "canonicalETFId": "vu-etf-496980fe",
-    "symbols": [
-     "ACMG",
-     "MID"
-    ]
-   },
    {
     "canonicalETFId": "vu-etf-f9e23bba",
     "symbols": [
@@ -281,6 +274,13 @@
     "symbols": [
      "RSHO",
      "WELD"
+    ]
+   },
+   {
+    "canonicalETFId": "vu-etf-a43c1ef0",
+    "symbols": [
+     "XPM",
+     "ZYN"
     ]
    }
   ]
@@ -2018,14 +2018,6 @@
    ]
   },
   {
-   "symbol": "MEMY",
-   "exchange": "BATS",
-   "conflict": "NAME_WITHOUT_FUND_EVIDENCE",
-   "names": [
-    "MEMORY PHARMACEUTICALS CORP"
-   ]
-  },
-  {
    "symbol": "MHD",
    "exchange": "NYSE",
    "conflict": "NAME_SUGGESTS_OPERATING_COMPANY",
@@ -3248,6 +3240,7 @@
   "GIGL",
   "GLDN",
   "GLDW",
+  "GLLD",
   "GOP",
   "GRW",
   "GSOL",
@@ -3267,11 +3260,11 @@
   "IBTE",
   "ICDXF",
   "ICDZF",
-  "ICNGF",
   "IDJEF",
   "IDSEF",
   "IEDGF",
   "IERNF",
+  "IEXXF",
   "IG",
   "IGREF",
   "IHIIF",
@@ -3356,7 +3349,6 @@
   "POW",
   "PPI",
   "PPT",
-  "PRMAF",
   "PRXG",
   "PTLC",
   "REFA",
@@ -3401,7 +3393,6 @@
   "USMD",
   "USUTF",
   "VGDVF",
-  "VGFFF",
   "VLGDF",
   "VNFTF",
   "VNRDF",
@@ -3423,7 +3414,8 @@
   "XTNAF",
   "XXV",
   "ZKPLF",
-  "ZSTTF"
+  "ZSTTF",
+  "ZYN"
  ],
  "priceAnomalies": [
   {
@@ -3492,92 +3484,92 @@
   }
  ],
  "productTypes": {
-  "ETF": 7466,
-  "ETN": 19,
+  "ETF": 7459,
+  "ETN": 20,
   "CEF": 37,
   "ETP": 33,
   "ETC": 8
  },
  "strategies": {
-  "EQUITY": 3074,
+  "EQUITY": 3069,
   "THEMATIC": 508,
   "COMMODITY": 141,
-  "UNKNOWN": 775,
-  "BOND": 1151,
+  "UNKNOWN": 778,
+  "BOND": 1149,
   "ALTERNATIVE": 154,
-  "MULTI_ASSET": 62,
-  "LEVERAGED": 636,
+  "MULTI_ASSET": 61,
+  "LEVERAGED": 637,
   "LEVERAGED_INVERSE": 154,
   "INVERSE": 47,
   "SINGLE_STOCK": 77,
   "BUFFER": 356,
   "DEFINED_OUTCOME": 74,
-  "CRYPTO": 135,
   "OPTION_INCOME": 146,
+  "CRYPTO": 133,
   "COVERED_CALL": 45,
   "MONEY_MARKET": 28
  },
  "retirementClasses": {
-  "STANDARD": 4588,
-  "KOMPLEX": 1369,
-  "NICHT_EINORDENBAR": 692,
-  "SEHR_KOMPLEX": 914
+  "STANDARD": 4580,
+  "KOMPLEX": 1368,
+  "NICHT_EINORDENBAR": 694,
+  "SEHR_KOMPLEX": 915
  },
- "leveragedInverse": 837,
- "singleStock": 449,
+ "leveragedInverse": 838,
+ "singleStock": 450,
  "currencies": {
-  "USD": 6833,
-  "CNY": 728,
+  "USD": 6829,
+  "CNY": 726,
   "AUD": 2
  },
  "exchanges": {
-  "SHE": 400,
-  "SHG": 424,
-  "NYSE": 2833,
-  "BATS": 1669,
-  "NYSE ARCA": 247,
+  "SHE": 398,
+  "SHG": 425,
+  "NYSE": 2822,
+  "BATS": 1671,
+  "NYSE ARCA": 253,
   "NASDAQ": 1365,
-  "PINK": 488,
+  "PINK": 487,
   "AMEX": 31,
   "OTCMKTS": 70,
   "OTCQB": 8,
   "OTCD": 2,
-  "EXPM": 9,
+  "EXPM": 8,
   "OTCGREY": 15,
   "OTCBB": 1,
   "NMFQS": 1
  },
  "countries": {
-  "CN": 824,
-  "US": 6739
+  "CN": 823,
+  "US": 6734
  },
  "assetClasses": {
-  "EQUITY": 4694,
+  "EQUITY": 4690,
   "COMMODITY": 176,
-  "UNKNOWN": 895,
-  "BOND": 1201,
-  "MULTI_ASSET": 287,
-  "CRYPTO": 183,
+  "UNKNOWN": 898,
+  "BOND": 1199,
+  "MULTI_ASSET": 286,
+  "CRYPTO": 181,
   "REAL_ESTATE": 74,
   "MONEY_MARKET": 53
  },
  "regions": {
-  "CHINA": 878,
+  "CHINA": 876,
   "GERMANY": 6,
-  "USA": 1454,
-  "UNKNOWN": 4202,
-  "GLOBAL": 421,
-  "JAPAN": 41,
+  "USA": 1457,
+  "UNKNOWN": 4195,
+  "GLOBAL": 417,
+  "JAPAN": 42,
   "INTERNATIONAL": 220,
-  "EMERGING_MARKETS": 169,
-  "EUROPE": 75,
+  "EMERGING_MARKETS": 170,
+  "EUROPE": 76,
   "INDIA": 23,
-  "DEVELOPED_EX_US": 72,
+  "DEVELOPED_EX_US": 73,
   "VIETNAM": 2
  },
  "issuers": {
-  "UNKNOWN": 3270,
-  "Invesco": 305,
+  "UNKNOWN": 3269,
+  "Invesco": 309,
   "UBS": 15,
   "Corgi": 205,
   "Columbia Threadneedle": 26,
@@ -3591,31 +3583,31 @@
   "Innovator": 181,
   "REX Shares (T-Rex)": 47,
   "Tema": 16,
-  "BlackRock (iShares)": 733,
+  "BlackRock (iShares)": 732,
   "VictoryShares": 27,
-  "American Century": 19,
-  "Global X": 134,
-  "ProShares": 171,
+  "American Century": 18,
+  "Global X": 130,
+  "ProShares": 167,
   "State Street (SPDR)": 226,
   "First Trust": 332,
-  "Bitwise": 14,
   "VanEck": 97,
   "Simplify": 41,
   "WisdomTree": 113,
   "SoFi": 5,
   "KraneShares": 38,
-  "Defiance": 100,
+  "Defiance": 101,
   "Amundi": 7,
   "Alger": 5,
   "21Shares": 15,
   "ARK": 12,
   "DWS (Xtrackers)": 67,
   "Avantis": 31,
+  "Bitwise": 13,
   "J.P. Morgan": 89,
   "Baron": 7,
-  "Principal": 18,
+  "Principal": 20,
   "Grayscale": 16,
-  "Vanguard": 156,
+  "Vanguard": 155,
   "MFS": 15,
   "AllianceBernstein": 21,
   "Franklin Templeton": 70,
@@ -3632,33 +3624,33 @@
   "T. Rowe Price": 36
  },
  "statuses": {
-  "ACTIVE": 7202,
-  "REVIEW": 353,
+  "ACTIVE": 7197,
+  "REVIEW": 352,
   "INACTIVE": 8
  },
- "unknownClassification": 895,
+ "unknownClassification": 898,
  "intelligence": {
-  "publicUniverse": 6094,
+  "publicUniverse": 6089,
   "coverage": {
    "costs": {
-    "count": 3964,
-    "ratio": 0.6505
+    "count": 3953,
+    "ratio": 0.6492
    },
    "aum": {
-    "count": 3988,
-    "ratio": 0.6544
+    "count": 3978,
+    "ratio": 0.6533
    },
    "holdings": {
-    "count": 3988,
-    "ratio": 0.6544
+    "count": 3978,
+    "ratio": 0.6533
    },
    "domicile": {
-    "count": 3988,
-    "ratio": 0.6544
+    "count": 3978,
+    "ratio": 0.6533
    },
    "ucitsStatus": {
-    "count": 3988,
-    "ratio": 0.6544
+    "count": 3978,
+    "ratio": 0.6533
    },
    "isin": {
     "count": 0,
@@ -3768,8 +3760,8 @@
     "id": "TIINGO",
     "type": "MARKET_DATA_PROVIDER",
     "status": "HEALTHY",
-    "lastSuccessfulFetch": "2026-11-10",
-    "items": 7553,
+    "lastSuccessfulFetch": "2026-11-16",
+    "items": 7547,
     "fields": "Kurse, Ausschüttungen, Splits, Namen"
    },
    {
