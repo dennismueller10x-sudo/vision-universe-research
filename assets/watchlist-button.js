@@ -271,8 +271,9 @@
         var t = tickerOfPage();
         Array.prototype.forEach.call(doc.querySelectorAll(".vu-shead .vu-shead-actions"), function (actions) {
           var slot = actions.querySelector(".vu-shead-watch");
-          /* Kopf nach App-Konzept 2: ein Herz (an die Konto-Watchlist gekoppelt, couple) – kein zweites Lesezeichen daneben. */
-          if (actions.querySelector(".vu-shead-heart, .v2-watch-button")) { if (slot) slot.remove(); return; }
+          /* Kopf nach dem Klickentwurf (Owner 17.11.2026): genau ein Merken-Knopf. Mit Konten ist es dieses Lesezeichen (Konto-Watchlist,
+             Rückmeldung, Anmeldehinweis); das Herz der Seite tritt dann zurück. Ohne Konten bleibt nur das Herz (lokale Liste). */
+          Array.prototype.forEach.call(actions.querySelectorAll(".vu-shead-heart, .v2-watch-button"), function (h) { h.hidden = true; h.style.display = "none"; });
           if (slot && slot.getAttribute("data-ticker") === t) return;
           if (slot) slot.remove();
           if (!t) return;
