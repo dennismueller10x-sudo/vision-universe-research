@@ -538,8 +538,11 @@ dialog.vbox button{height:44px;padding:0 20px;border-radius:99px;border:0;backgr
 .ahdr .hd{width:10.3cqw;box-shadow:inset 0 0 0 .55cqw var(--lime);background:#000}
 .ahdr .hd svg{color:var(--lime);width:4.8cqw;height:4.8cqw}
 .aphone .scr{position:relative;flex:1;overflow:hidden}
-.aphone .scr img{display:block;width:100%;height:auto;transition:opacity .2s;animation:ascroll var(--dur,20s) ease-in-out 1.2s infinite alternate}
-@keyframes ascroll{0%,6%{transform:translateY(0)}94%,100%{transform:translateY(calc((788 / var(--H) - 1) * 100%))}}
+/* Die App-Bilder sind lange Screenshots (bis über 6000 px). Früher rollte das ganze Bild per transform durch; Safari
+   auf dem iPhone muss dafür eine Ebene in voller Bildhöhe anlegen und zeigt ab der Grenze seines Grafikspeichers nur Schwarz.
+   Jetzt bleibt das Bild so groß wie der Bildschirm und nur der Ausschnitt (object-position) wandert. */
+.aphone .scr img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;object-position:50% 0;transition:opacity .2s;animation:ascroll var(--dur,20s) ease-in-out 1.2s infinite alternate}
+@keyframes ascroll{0%,6%{object-position:50% 0}94%,100%{object-position:50% 100%}}
 .aphone .adock{position:absolute;left:0;right:0;bottom:0;width:100%;z-index:3;pointer-events:none}
 .aphone:hover .scr img{animation-play-state:paused}
 @media(prefers-reduced-motion:reduce){.aphone .scr img{animation:none}}
