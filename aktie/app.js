@@ -143,7 +143,7 @@
         '<p class="k-sm k-sec k-mt12">' + esc(today) + "</p>" +
         m.entries.map(function (e) {
           var mt = ST && ST.method ? ST.method(e.id) : null;
-          return '<div class="k-card k-mt8" style="border-radius:18px"><div class="k-fl k-sb k-g8"><b class="k-f1">' + esc(e.name) + '</b><span class="k-pill dk" style="font-size:11px">Regel erfüllt laut Methode</span></div>" +
+          return '<div class="k-card k-mt8" style="border-radius:18px"><div class="k-fl k-sb k-g8"><b class="k-f1">' + esc(e.name) + '</b><span class="k-pill dk" style="font-size:11px">Regel erfüllt laut Methode</span></div>' +
             (e.stageText ? '<div class="k-xs k-mut k-b7 k-mt4">Stand im Ablauf: ' + esc(e.stageText) + "</div>" : "") +
             (mt && mt.plain ? '<div class="k-sm k-sec k-mt4">' + esc(mt.plain) + "</div>" : "") +
             (e.met.length ? '<div class="k-xs k-mut k-b7 k-mt4">' + e.met.length + (e.met.length === 1 ? " Regel" : " Regeln") + " erfüllt" + (e.notMet.length ? ", " + e.notMet.length + " nicht" : "") + (e.pending.length ? ", " + e.pending.length + " offen" : "") + "</div>" : "") + "</div>";

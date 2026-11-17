@@ -269,4 +269,5 @@ test("AK-15 Supertrader-Fenster: Pille nur „Regel erfüllt laut Methode“, di
   assert.ok(app.includes("Regel erfüllt laut Methode</span>"), "feste Pille");
   assert.ok(!/stageText\) \+ " laut Methode/.test(app), "keine Stufe mit „laut Methode“ als Urteil");
   assert.ok(app.includes("Stand im Ablauf: "), "Stufe als Stand im Ablauf");
+  assert.doesNotThrow(() => new (require("node:vm").Script)(app, { filename: "aktie/app.js" }), "aktie/app.js ist gültiges JavaScript");
 });
