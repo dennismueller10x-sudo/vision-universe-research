@@ -53,3 +53,19 @@ test('Landingpage /start/: dasselbe Anmeldeformular wie die Startseite, gleich f
   assert.equal(form(built),form(home).replace('href="./datenschutz/"','href="../datenschutz/"'));
 });
 
+// Teilen (Owner 17.11.2026): jede Story-Seite hat ihr eigenes Vorschaubild, ihre eigene Beschreibung und ihre Adresse.
+// Neu bauen mit: node scripts/share-images.mjs
+test('Story-Seiten: eigenes Vorschaubild und eigene Beschreibung zum Teilen',async()=>{
+  const seen=new Map(),descs=new Map();
+  for(const path of ['index.html',...SITE_PAGES]){
+    const html=await readFile(resolve(root,path),'utf8');
+    const img=(html.match(/<meta property="og:image" content="https:\/\/www\.visionuniverse\.de\/(assets\/share\/[a-z-]+\.jpg)">/)||[])[1];
+    assert.ok(img,`${path}: og:image aus assets/share/`);
+    await readFile(resolve(root,img));
+    assert.ok(!seen.has(img),`${path}: Vorschaubild schon bei ${seen.get(img)}`);seen.set(img,path);
+    const desc=(html.match(/<meta property="og:description" content="([^"]+)">/)||[])[1];
+    assert.ok(desc&&!descs.has(desc),`${path}: eigene Beschreibung`);descs.set(desc,path);
+    assert.match(html,/<meta property="og:url" content="https:\/\/www\.visionuniverse\.de\//,`${path}: og:url`);
+  }
+});
+
